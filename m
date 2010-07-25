@@ -1,13 +1,25 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <4c3de30f.cf7d0e0a.6141.4e93@domain.hid>
-References: <4c3de30f.cf7d0e0a.6141.4e93@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Wed, 14 Jul 2010 18:31:28 +0200
-Message-ID: <1279125088.1995.5.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] arch 'powerpc' make: error 'struct
- ipipe_sysinfo' has no member named 'cpufreq'
+Message-ID: <4C4BE198.7030503@domain.hid>
+Date: Sun, 25 Jul 2010 09:02:48 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+References: <4C43C83F.5030401@domain.hid>
+	<4C43D265.9080609@domain.hid>	<4C43FC4F.3010006@domain.hid>
+	<4C440D6F.1060204@domain.hid>	<4C44E9C9.3020600@domain.hid>
+	<4C454C0C.6000100@domain.hid>	<4C4550C8.3070504@domain.hid>
+	<4C45541C.5090507@domain.hid> <4C45CEE6.5000903@domain.hid>
+	<4C460506.3010103@domain.hid> <4C46141F.50103@domain.hid>
+	<4C468040.3030509@domain.hid> <4C468485.5060408@domain.hid>
+	<4C47597F.1010406@domain.hid>
+	<4C478313.2030606@domain.hid>
+	<4C48C1BB.8080606@domain.hid> <4C48C2CE.1030706@domain.hid>
+	<4C4A292F.5040900@domain.hid>
+	<4C4ADFC6.1010900@domain.hid> <4C4B35F1.60103@domain.hid>
+	<4C4B379F.9040107@domain.hid> <4C4BC6D6.8070806@domain.hid>
+In-Reply-To: <4C4BC6D6.8070806@domain.hid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] Adeos patch prevents IRQ 384 (MMC Chip Detect)
+ on omap-2.6.33
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,80 +29,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Peter =?ISO-8859-1?Q?K=FCnnemann?= ITB <itb.pkue@domain.hid>
+To: Bob Feretich <bob.feretich@domain.hid>
 Cc: xenomai@xenomai.org
 
-On Wed, 2010-07-14 at 18:17 +0200, Peter K=C3=BCnnemann ITB wrote:
-> Hi all
->=20
-> I am about to get a xenomai kernel 2.6.34 to be run on a lite5200 platfor=
-m (IceCube?).
-> The patches from=20
->=20
-> "http://download.gna.org/adeos/patches/v2.6/powerpc/adeos-ipipe-2.6.34-po=
-werpc-2.10-03.patch"
->=20
-> did apply without any problem. The make however resulted in the failure r=
-eported below.
->=20
-> ...
->   CC      kernel/time/tick-sched.o
->   LD      kernel/time/built-in.o
->   CC      kernel/xenomai/arch/generic/hal.o
-> In file included from /opt/eldk/ppc_6xx/usr/src/linux-2.6.34-xenomai/arch=
-/powerpc/include/asm/xenomai/hal.h:32,
->                  from kernel/xenomai/arch/generic/hal.c:47:
-> include/asm-generic/xenomai/hal.h: In function 'rthal_get_cpufreq':
-> include/asm-generic/xenomai/hal.h:176: error: 'struct ipipe_sysinfo' has =
-no member named 'cpufreq'
-> include/asm-generic/xenomai/hal.h: In function 'rthal_get_timerfreq':
-> include/asm-generic/xenomai/hal.h:183: error: 'struct ipipe_sysinfo' has =
-no member named 'archdep'
-> In file included from kernel/xenomai/arch/generic/hal.c:47:
+Bob Feretich wrote:
+>   Test 1 results:
+> With the Adeos patch installed, but Adeos disabled, the system ran 
+> normally. IRQ 384s were presented and serviced.  (The SD card removal 
+> amd insertion was handled correctly.)
+> 
 
-You did not specify which Xenomai release you are trying to build in
-your kernel, but I guess it belongs to the 2.4.x series. You need to
-upgrade to the 2.5.x series to support 2.6.34/powerpc. 2.5.3 is a
-recommended.
-
-> /opt/eldk/ppc_6xx/usr/src/linux-2.6.34-xenomai/arch/powerpc/include/asm/x=
-enomai/hal.h: In function 'rthal_get_active_mm':
-> /opt/eldk/ppc_6xx/usr/src/linux-2.6.34-xenomai/arch/powerpc/include/asm/x=
-enomai/hal.h:109: error: 'ipipe_active_mm' undeclared
-> (first use in this function)
-> /opt/eldk/ppc_6xx/usr/src/linux-2.6.34-xenomai/arch/powerpc/include/asm/x=
-enomai/hal.h:109: error: (Each undeclared identifier is
-> reported only once
-> /opt/eldk/ppc_6xx/usr/src/linux-2.6.34-xenomai/arch/powerpc/include/asm/x=
-enomai/hal.h:109: error: for each function it appears in.)
-> kernel/xenomai/arch/generic/hal.c: In function 'rthal_add_proc_leaf':
-> kernel/xenomai/arch/generic/hal.c:740: error: 'struct proc_dir_entry' has=
- no member named 'owner'
-> kernel/xenomai/arch/generic/hal.c: In function 'rthal_proc_register':
-> kernel/xenomai/arch/generic/hal.c:755: error: 'struct proc_dir_entry' has=
- no member named 'owner'
->=20
-> I'ld really like to get the 2.34 kernel running because I managed to make=
- it running without Xenomai already, whereas 2.6.24 did not
-> made it because of other problems with the board settings
->=20
-> Any help would be very much appreciated
->=20
->   mit freundlichen Gr=C3=BC=C3=9Fen,
->   sincerely yours
->   sinc=C3=A8res salutations
->=20
-> Peter Kuennemann
->=20
->=20
->=20
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
-
---=20
-Philippe.
+That is reassuring.
 
 
+> (...)
+> Test 2 results:
+> With the Adeos patch installed,  Adeos enabled, Xenomai disabled, the 
+> spurious irpt patch reverted....
+> The system ran normally, until an IRQ 384 occurred. Then continuous 
+> spurious interrupts occurred.
+
+Ok. So, we have a real issue, which the "fix" was just papering over.
+Now, we just have to understand what happens. Thanks.
+
+Note that the board still works when it displays the "spurious
+interrupts" messages, only the serial console is rendered unusable by
+the messages.
+
+-- 
+					    Gilles.
 
