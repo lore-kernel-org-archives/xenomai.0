@@ -1,20 +1,14 @@
-MIME-Version: 1.0
-In-Reply-To: <4C4D7B8E.4000309@domain.hid>
-References: <AANLkTilWSsSuCKRxQg0NIkeeR28eqpdJfaVm_CiemnqF@mail.gmail.com>
-	<4C46D49F.6030102@domain.hid>
-	<AANLkTikJgzkkxQyM8DQqVz17ovJmPiIkdZMIFJImExIE@mail.gmail.com>
-	<4C46F0D9.4030906@domain.hid>
-	<AANLkTilP98GMfCx1rcgWto9eBmnDwtuavBteD8inFM6V@mail.gmail.com>
-	<4C47F932.3060400@domain.hid>
-	<AANLkTilP1f217jN3krm_Cdqu4LaYwpUMu6mMnLiUJq2f@domain.hid>
-	<4C4823DC.4050500@domain.hid>
-	<AANLkTi=GuZADaU-CedYiqBU1Bj_Li+EAQ_7ZJKXA_qRR@mail.gmail.com>
-	<4C4D7B8E.4000309@domain.hid>
-Date: Mon, 26 Jul 2010 13:31:28 +0100
-Message-ID: <AANLkTim4ZHVhPbzwX5skDWujFcA2d8ceUgUoEvs_R5S1@domain.hid>
-From: Stephen Bryant <sbxenomai@domain.hid>
-Content-Type: multipart/alternative; boundary=0016364267ab5219d6048c4990cc
-Subject: Re: [Xenomai-help] Unexpected preemption of highest priority thread
+From: Flavio Alves <flavio.alves@domain.hid>
+In-Reply-To: <1279048661.31665.81.camel@domain.hid>
+References: <1279046702.31665.65.camel@domain.hid> <4C3CB655.1020801@domain.hid>
+	<1279048661.31665.81.camel@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Date: Mon, 26 Jul 2010 10:06:07 -0300
+Message-ID: <1280149567.1856.15.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] Kernel compilation procedures for imx51
+Reply-To: flavio.alves@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -24,145 +18,118 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
---0016364267ab5219d6048c4990cc
-Content-Type: text/plain; charset=ISO-8859-1
+Hello,
 
-On 26 July 2010 13:11, Gilles Chanteperdrix <
-gilles.chanteperdrix@xenomai.org> wrote:
+I tried to perform the steps indicated by the README and I am still
+having problems to correctly patch the linux kernel with xenomai for the
+imx51 processor.
 
-> >>>>>
-> >>>>>     Stephen Bryant wrote:
-> >>>>>     > I've had a look at dmesg, but cannot find any references to SMI
-> -
-> >>>> what
-> >>>>>     > should I be looking for?
-> >>>>>
-> >>>>>     What is described in the TROUBLESHOOTING file.
-> >>>>>
-> >>>>>
-> >>>>> I have tried disabling the SMI workaround, ensuring that SMI
-> detection
-> >>>>> is not disabled, and logging the kernel output (setting the kernel
-> log
-> >>>>> level to 8 in grub and sending the output to the serial port to be
-> >>>>> picked up by another machine). The troubleshooting file states that I
-> >>>>> should see "Xenomai: Intel chipset found and SMI workaround not
-> >>>>> enabled, you may encounter high interrupt latencies." in this output,
-> >>>>> however this does not occur - I am using an Intel Core 2 Duo but with
-> >>>>> SMP disabled, if this has any relevance.
-> >>>> The SMI detection/workaround is based on the chipset you have. If your
-> >>>> chipset is an ICH10, Stefan posted a patch a few days ago. If it is
-> >>>> another one, then please send us the result of lspci -vv on your
-> target.
-> >>>>
-> >>> It seems to be ICH8, so the result is attached,
-> >> Please try with the following patch:
-> >>
-> >>
-> >> --
-> >>                                             Gilles.
-> >>
-> >
-> > With the patch applied and SMI Workaround not used I get the kernel
-> message
-> > as expected: "...SMI workaround not enabled...".
-> >
-> > However, with the SMI Workaround enabled and Globally disabling SMI I get
-> > the messages:
-> > "Xenomai: SMI-enabled chipset found
-> > Xenomai: SMI workaround failed!"
->
-> It probably means that your board manufacturer has decided, at BIOS
-> level, to prevent you from disabling the SMIs. You may want to try
-> disabling the SMI bits one by one.
->
-> --
->                                             Gilles.
->
+I followed the README file from Xenomai package and the Denx
+instructions
+(http://www.denx.de/en/view/Software/SoftwareXenomaiProjects#Xenomai_Real_Time_Support_for_i).
 
-Do you mean enabling / disabling the individual options in the SMI
-Workaround section of the kernel config file, or are you suggesting
-something lower level / something else?
+Here are the steps that I performed and I would like to know what am I
+doing wrong or if I can continue that it will work correctly:
 
-Steve
+* mkdir linux
+* cd linux
+* git clone git://git.denx.de/linux-2.6-denx.git
+* cd linux-2.6-denx
+* git checkout rel_imx_2.6.31_10.02.00
+* wget http://download.gna.org/xenomai/stable/
+* wget
+http://www.denx.de/en/pub/Software/SoftwareXenomaiProjects/adeos-ipipe-2.6.31-arm-1.15-01-imx51.patch
+* tar xjvf xenomai-2.5.3.tar.bz2
+* cd xenomai-2.5.3/ksrc/arch/arm/patches
+* wget
+http://www.denx.de/en/pub/Software/SoftwareXenomaiProjects/adeos-ipipe-2.6.31-arm-1.15-01.patch
+* cd ../../../..
+* scripts/prepare-kernel.sh --linux=/home/linux/imx51/linux-2.6-denx
+--adeos=/home/linux/imx51/xenomai-2.5.3/ksrc/arch/arm/patches/adeos-ipipe-2.6.31-arm-1.15-01.patch --arch=arm --verbose
 
---0016364267ab5219d6048c4990cc
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Preparing kernel 2.6.31 in /home/linux/imx51/linux-2.6-denx...
+Adeos found - bypassing patch.
+Adeos/arm 1.15-01 installed.
+Links installed.
+Build system ready.
 
-<br><br><div class=3D"gmail_quote">On 26 July 2010 13:11, Gilles Chanteperd=
-rix <span dir=3D"ltr">&lt;<a href=3D"mailto:gilles.chanteperdrix@xenomai.org=
-g">gilles.chanteperdrix@xenomai.org</a>&gt;</span> wrote:<br><blockquote cl=
-ass=3D"gmail_quote" style=3D"border-left: 1px solid rgb(204, 204, 204); mar=
-gin: 0pt 0pt 0pt 0.8ex; padding-left: 1ex;">
-<div><div></div><div class=3D"h5">
-&gt;&gt;&gt;&gt;&gt;<br>
-&gt;&gt;&gt;&gt;&gt; =A0 =A0 Stephen Bryant wrote:<br>
-&gt;&gt;&gt;&gt;&gt; =A0 =A0 &gt; I&#39;ve had a look at dmesg, but cannot =
-find any references to SMI -<br>
-&gt;&gt;&gt;&gt; what<br>
-&gt;&gt;&gt;&gt;&gt; =A0 =A0 &gt; should I be looking for?<br>
-&gt;&gt;&gt;&gt;&gt;<br>
-&gt;&gt;&gt;&gt;&gt; =A0 =A0 What is described in the TROUBLESHOOTING file.=
-<br>
-&gt;&gt;&gt;&gt;&gt;<br>
-&gt;&gt;&gt;&gt;&gt;<br>
-&gt;&gt;&gt;&gt;&gt; I have tried disabling the SMI workaround, ensuring th=
-at SMI detection<br>
-&gt;&gt;&gt;&gt;&gt; is not disabled, and logging the kernel output (settin=
-g the kernel log<br>
-&gt;&gt;&gt;&gt;&gt; level to 8 in grub and sending the output to the seria=
-l port to be<br>
-&gt;&gt;&gt;&gt;&gt; picked up by another machine). The troubleshooting fil=
-e states that I<br>
-&gt;&gt;&gt;&gt;&gt; should see &quot;Xenomai: Intel chipset found and SMI =
-workaround not<br>
-&gt;&gt;&gt;&gt;&gt; enabled, you may encounter high interrupt latencies.&q=
-uot; in this output,<br>
-&gt;&gt;&gt;&gt;&gt; however this does not occur - I am using an Intel Core=
- 2 Duo but with<br>
-&gt;&gt;&gt;&gt;&gt; SMP disabled, if this has any relevance.<br>
-&gt;&gt;&gt;&gt; The SMI detection/workaround is based on the chipset you h=
-ave. If your<br>
-&gt;&gt;&gt;&gt; chipset is an ICH10, Stefan posted a patch a few days ago.=
- If it is<br>
-&gt;&gt;&gt;&gt; another one, then please send us the result of lspci -vv o=
-n your target.<br>
-&gt;&gt;&gt;&gt;<br>
-&gt;&gt;&gt; It seems to be ICH8, so the result is attached,<br>
-&gt;&gt; Please try with the following patch:<br>
-&gt;&gt;<br>
-&gt;&gt;<br>
-&gt;&gt; --<br>
-&gt;&gt; =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
-=A0 =A0 =A0 =A0 =A0 =A0 Gilles.<br>
-&gt;&gt;<br>
-&gt;<br>
-&gt; With the patch applied and SMI Workaround not used I get the kernel me=
-ssage<br>
-&gt; as expected: &quot;...SMI workaround not enabled...&quot;.<br>
-&gt;<br>
-&gt; However, with the SMI Workaround enabled and Globally disabling SMI I =
-get<br>
-&gt; the messages:<br>
-&gt; &quot;Xenomai: SMI-enabled chipset found<br>
-&gt; Xenomai: SMI workaround failed!&quot;<br>
-<br>
-</div></div>It probably means that your board manufacturer has decided, at =
-BIOS<br>
-level, to prevent you from disabling the SMIs. You may want to try<br>
-disabling the SMI bits one by one.<br>
-<br>
---<br>
-<font color=3D"#888888"> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
-=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0Gilles.<br>
-</font></blockquote></div><br>Do you mean enabling / disabling the individu=
-al options in the SMI
-Workaround section of the kernel config file, or are you suggesting
-something lower level / something else?<br><br>Steve<br>
+* cd ../linux-2.6-denx
+* patch -p0 < ../adeos-ipipe-2.6.31-arm-1.15-01-imx51.patch
 
---0016364267ab5219d6048c4990cc--
+patching file b/arch/arm/Makefile
+Hunk #1 FAILED at 50.
+1 out of 1 hunk FAILED -- saving rejects to file b/arch/arm/Makefile.rej
+patching file b/arch/arm/mach-mx51/mx51_3stack.c
+Hunk #1 FAILED at 798.
+1 out of 1 hunk FAILED -- saving rejects to file
+b/arch/arm/mach-mx51/mx51_3stack.c.rej
+patching file b/arch/arm/plat-mxc/time.c
+Hunk #1 FAILED at 113.
+Hunk #2 FAILED at 434.
+Hunk #3 FAILED at 453.
+Hunk #4 FAILED at 488.
+Hunk #5 FAILED at 508.
+5 out of 5 hunks FAILED -- saving rejects to file
+b/arch/arm/plat-mxc/time.c.rej
+
+Best regards,
+
+Flavio
+
+On Tue, 2010-07-13 at 16:17 -0300, Flavio Alves wrote:
+> Hello Gilles,
+> 
+> On Tue, 2010-07-13 at 20:54 +0200, Gilles Chanteperdrix wrote:
+> > Flavio Alves wrote:
+> > > Hello,
+> > > 
+> > > I would like to build a linux kernel with Xenomai to run on a iMX51
+> > > board (iMX51EVK).
+> > > 
+> > > I am currently using the last version of the BSP from Freescale website
+> > > (LTIB). If I apply the BSP's patches before the Xenomai's patches, the
+> > > patches are not applied. So, I first apply Xenomai's patches and then
+> > > BSP's patches.
+> > > 
+> > > The problem in this approach is that I have compilation errors, even if
+> > > I have all the patches successfully applied.
+> > > 
+> > > I saw at Denx homepage that there is a specific patch for Xenomai for
+> > > iMX51. But the patch provided by the website must be used into the
+> > > "rel_imx_2.6.31_10.02.00" tag in in Freescale's LTIB source tree. I
+> > > believe the release version of LTIB that I am using is 10.04.00 (and not
+> > > 10.02.00) and maybe that's the reason why it is not compiling. How do I
+> > > get that release of LTIB?
+> > > 
+> > > I saw that the patch provided in the website
+> > > (adeos-ipipe-2.6.31-arm-1.15-01.patch) is different from the Xenomai
+> > > 2.5.3 package (adeos-ipipe-2.6.31-arm-1.15-02.patch). Does it mean that
+> > > this topic was solved?
+> > 
+> > No. There is no way this topic can be "solved". The Adeos I-pipe patches
+> > are meant to be applied to the mainline kernel. When you try to apply it
+> > to some other tree, you get some issues.
+> > 
+> > The patch adeos-ipipe-2.6.31-arm-1.15-01-imx51.patch (which adds support
+> > for IMX51) is meant to be applied to the rel_imx_2.6.31_10.02.00 relase.
+> > It was not tested with any other release, so, yes, chances are that you
+> > will get issues if you try and apply it to something else. If you want
+> > to checkout the previous release, use git.
+> > 
+> > More information on this topic may be found in
+> > ksrc/arch/arm/patches/README in Xenomai souces.
+> > 
+> 
+> I would ask you how to do that, but that's included in the README. Thank
+> you for the help.
+> 
+> Best regards,
+> 
+> Flavio
+> 
+> 
+
+
 
