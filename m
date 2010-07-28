@@ -1,114 +1,111 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <4C35BAEF.5020308@domain.hid>
-References: <AANLkTik-cpk4RfJGxj422mOvU1xQFdQCfB8gno7uzD7N@mail.gmail.com>
-	<4C34438D.9020905@domain.hid>
-	<AANLkTiklX49KAfAlZND9FhVaTJZpdADFpuUIO-lkm6f6@domain.hid>
-	<4C34EF76.2040602@domain.hid>
-	<AANLkTik9RCKn90TnCj3JWBQF_XWaHbH0vSgp2vOu8HfH@mail.gmail.com>
-	<4C3508E1.7090100@domain.hid>
-	<1278578261.1810.67.camel@domain.hid>
-	<4C359326.1090509@domain.hid>
-	<1278582612.1810.124.camel@domain.hid>
-	<4C35A094.4010206@domain.hid>
-	<1278584354.1810.137.camel@domain.hid>
-	<4C35BAEF.5020308@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Thu, 08 Jul 2010 17:01:30 +0200
-Message-ID: <1278601290.1810.150.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] native: A 32k stack is not always a 'reasonable'
- size
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+MIME-Version: 1.0
+In-Reply-To: <AANLkTikTyH5R8oMS-f-1jcJqryAwT-DKfzxNf1YROALK@mail.gmail.com>
+References: <AANLkTikTyH5R8oMS-f-1jcJqryAwT-DKfzxNf1YROALK@mail.gmail.com>
+Date: Wed, 28 Jul 2010 15:15:02 -0300
+Message-ID: <AANLkTinvhF72tWwCEy85jT3Kk2cQZwRyCtBZNcSZk-yA@mail.gmail.com>
+From: Rodolfo Oliveira <rodolforomao@domain.hid>
+Content-Type: multipart/alternative; boundary=001636417fa3b30b36048c7698c1
+Subject: [Xenomai-core] Bug - Can 2 devices.
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai-help <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: xenomai@xenomai.org
 
-On Thu, 2010-07-08 at 13:47 +0200, Gilles Chanteperdrix wrote:
-> Philippe Gerum wrote:
-> > If I understand the glibc code properly, the stack cache is not
-> > pre-filled, but merely serves to recycle old stacks from terminated
-> > stacks. So, at least until a stack area could actually be reused from
-> > that cache, fresh new stack space for new threads is always obtained via
-> > mmap(), which means that we may have non-contiguous stack spaces most of
-> > the time. It seems that things would start to hit the crapper when some
-> > recycling takes place, in which case an overflow situation could cause a
-> > stack to overflow on its neighbor.
-> 
-> I am not sure I understand what you mean. So, I am going to try and show
-> you what I mean. I run the following program:
-> 
-> #include <stdio.h>
-> 
-> #include <pthread.h>
-> #include <unistd.h>
-> 
-> void *thread(void *cookie)
-> {
->         int x;
->         printf("sp: %p\n", &x);
->         pause();
->         return cookie;
-> }
-> 
-> int main(void)
-> {
->         pthread_t ida, idb;
->         pthread_create(&ida, NULL, thread, NULL);
->         pthread_create(&idb, NULL, thread, NULL);
->         pthread_join(ida, NULL);
->         return 0;
-> }
-> 
-> On an ARMv7 (no FCSE involved) platform. It prints:
-> sp: 0x411a2ddc
-> sp: 0x409a2ddc
-> 
-> I then dump the process mappings, and I get everything contiguous:
-> 401a4000-401a5000 ---p 00000000 00:00 0
-> 401a5000-409a4000 rw-p 00000000 00:00 0
-> 409a4000-409a5000 ---p 00000000 00:00 0
-> 409a5000-411a4000 rw-p 00000000 00:00 0
-> 
-> So, it looks to me like if the thread with the highest stack address go
-> past below the guard page limit, it will overrun the other thread's stack.
+--001636417fa3b30b36048c7698c1
+Content-Type: text/plain; charset=ISO-8859-1
 
-I mean that glibc does not pre-allocate pieces of anon memory to honor
-requests for stack chunks, it gets them on the fly from an internal
-cache if one matches, or mmaps its. Besides, the cache itself is only
-fed with recycled stacks from terminated threads it seems, so we can't
-predict whether all stacks there would be contiguous.
+Hello friends,
 
-For instance, I'm assuming that tweaking your code like below would
-likely prevent the stack segments from being contiguous:
+I am developing a project and I'm using two CAN. The Can one is working, but
+the CAN 2 is not, i 'm recompile the kernel enabled the can 2, but I can not
+make it work.
+Scenario:
+- I can print the frames in CAN 2, I get in the kernel log (dmesg) and the
+frames are correct.
+- CAN 2 works normally if I disable the CAN 1 and recompile the kernel.
 
-        pthread_create(&ida, NULL, thread, NULL);
-      +	mmap(NULL, 8*1024*1024, PROT_READ, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
-	pthread_create(&idb, NULL, thread, NULL);
-        pthread_join(ida, NULL);
+Problem:
+In the "rtcan_raw.c" in function "void rtcan_rcv (struct rtcan_device * dev,
+struct rtcan_skb * skb)" there is a verification "while (recv_listener! =
+NULL) " and the problem is that the variable "recv_listener" is equal to
+NULL . This variable comes from the function "static int
+rtcan_mscan_interrupt (rtdm_irq_t irq_handle *)" (which is on file
+rtcan_mscan.c) this function passes a struct as a parameter "dev = (struct
+rtcan_device *) rtdm_irq_get_arg (irq_handle, void)" to "rtcan_rcv" and it
+contains the recv_listener = dev-> recv_list.
 
-If so, it is indeed likely that segments would be contiguous if threads
-are started the way you did; on the other hand, it is possible that a
-more complex application does not suffer this. Granted, this does not
-help us that much anyway.
+Soon the CAN2 is working but there are some configuration issues in this
+code.
 
-My point is that nothing guarantees us either contiguous or sparse stack
-address ranges, so we probably should not rely on those assumptions.
+Can anyone help me with this problem?
 
-> 
-> On x86, this is a different story. I guess because the kernel or glibc
-> has a stack top randomization strategy.
-> 
+Thank you.
 
--- 
-Philippe.
+--001636417fa3b30b36048c7698c1
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
+<br><div class=3D"gmail_quote"><span><span style=3D"background-color: rgb(2=
+55, 255, 255);" title=3D"Ola amigos,">Hello friends,
+<br>
+<br></span><span style=3D"background-color: rgb(255, 255, 255);" title=3D"E=
+stou desenvolvendo um projeto e estou utilizando duas CAN.">I am developing=
+ a project and I&#39;m using two CAN. </span><span style=3D"background-colo=
+r: rgb(255, 255, 255);" title=3D"A Can 1 esta funcionando, por=E9m a CAN 2 =
+n=E3o esta, recompilei o kernel habilitado por=E9m n=E3o consigo faze-la fu=
+ncionar.">The Can one is working, but the CAN 2 is not, i &#39;m recompile =
+the kernel enabled the can 2, but I can not make it work.
+<br></span><span title=3D"Cen=E1rio:">Scenario:
+<br></span><span style=3D"background-color: rgb(255, 255, 255);" title=3D"-=
+ Eu consigo imprimir os frames que recebo na CAN 2 no log do kernel ( dmesg=
+ ) e os frames est=E3o corretos.">- I can print the frames in CAN 2, I get =
+in the kernel log (dmesg) and the frames are correct.
+<br></span><span style=3D"background-color: rgb(255, 255, 255);" title=3D"-=
+ A CAN 2 funciona normalmente caso eu desabilite a CAN 1 e recompile o kern=
+el.">- CAN 2 works normally if I disable the CAN 1 and recompile the kernel=
+.
+<br>
+<br></span><span title=3D"Problema:">Problem:
+<br></span><span style=3D"background-color: rgb(255, 255, 255);" title=3D"N=
+o arquivo &quot;rtcan_raw.c&quot;, na fun=E7=E3o &quot;void rtcan_rcv(struc=
+t rtcan_device *dev, struct rtcan_skb *skb)&quot; existe a verifica=E7=E3o =
+&quot;while (recv_listener !=3D NULL )&quot; eo problema =E9 que a vari=E1v=
+el &quot;recv_listener&quot; =E9 igual a NULL">In
+the &quot;rtcan_raw.c&quot; in function &quot;void rtcan_rcv (struct rtcan_=
+device *
+dev, struct rtcan_skb * skb)&quot; there is a verification &quot;while
+(recv_listener! =3D NULL) &quot; and the problem is that the variable &quot=
+;recv_listener&quot; is equal to NULL </span><span title=3D".">. </span><sp=
+an style=3D"background-color: rgb(255, 255, 255);" title=3D"Esta vari=E1vel=
+ vem da fun=E7=E3o &quot;static int rtcan_mscan_interrupt(rtdm_irq_t *irq_h=
+andle)&quot; (que est=E1 no arquivo rtcan_mscan.c ) esta fun=E7=E3o passa c=
+omo parametro a struct &quot;dev =3D (struct rtcan_device *)rtdm_irq_get_ar=
+g(irq_handle, void)&quot; para &quot;rtcan_rcv&quot;">This
+variable comes from the function &quot;static int rtcan_mscan_interrupt
+(rtdm_irq_t irq_handle *)&quot; (which is on file rtcan_mscan.c) this
+function passes a struct as a parameter &quot;dev =3D (struct rtcan_device =
+*)
+rtdm_irq_get_arg (irq_handle, void)&quot; to &quot;rtcan_rcv&quot; </span><=
+span style=3D"background-color: rgb(255, 255, 255);" title=3D"e ela cont=E9=
+m o recv_listener =3D dev-&gt;recv_list.">and it contains the recv_listener=
+ =3D dev-&gt; recv_list.
+<br>
+<br></span><span style=3D"background-color: rgb(255, 255, 255);" title=3D"L=
+ogo a CAN2 esta funcionando por=E9m h=E1 algum problemas de configura=E7=E3=
+o neste c=F3digo.">Soon the CAN2 is working but there are some configuratio=
+n issues in this code.
+<br>
+<br></span><span style=3D"background-color: rgb(255, 255, 255);" title=3D"A=
+lgu=E9m pode me ajudar com este problema?">Can anyone help me with this pro=
+blem?
+<br>
+<br></span><span title=3D"Obrigado.">Thank you.</span></span>
+</div><br>
 
+--001636417fa3b30b36048c7698c1--
 
