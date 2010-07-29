@@ -1,13 +1,12 @@
-Message-ID: <4C3EF9EB.2080301@domain.hid>
-Date: Thu, 15 Jul 2010 14:07:07 +0200
+Message-ID: <4C518635.3030600@domain.hid>
+Date: Thu, 29 Jul 2010 15:46:29 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <AANLkTilAdUGrkep3tlofYpRYxEOto2XpM29NWA_F4_7g@domain.hid>	<4C3EF4A1.3090805@domain.hid>	<AANLkTik0R1eoCbOH9aJ4ccjzvW9STZTvh_bTOWt4u07K@mail.gmail.com>
-	<AANLkTilZF4rUb82Cy8DBANm2qKG-nvtbBhBHP1HIRYmW@mail.gmail.com>
-In-Reply-To: <AANLkTilZF4rUb82Cy8DBANm2qKG-nvtbBhBHP1HIRYmW@mail.gmail.com>
+References: <AANLkTinJVMQ3pa07AVeikv3HRyDMxw5HsWNiFC_3OTXG@mail.gmail.com>
+In-Reply-To: <AANLkTinJVMQ3pa07AVeikv3HRyDMxw5HsWNiFC_3OTXG@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Xenomai Compilation error
+Subject: Re: [Xenomai-help] ARM: missing symbols on building the libraries
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,39 +16,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: PREMRAJ SV <svprem20@domain.hid>
-Cc: Xenomai help <xenomai@xenomai.org>
+To: Jan de Kruyf <jan.de.kruyf@domain.hid>
+Cc: xenomai@xenomai.org
 
-PREMRAJ SV wrote:
-> On Thu, Jul 15, 2010 at 11:54 AM, PREMRAJ SV <svprem20@domain.hid> wrote:
+Jan de Kruyf wrote:
+> The Debian library package build gives me this output, no matter what
+> directories I search:
 > 
->> Hi Gilles, I am new to Xenomai.. which linux kernel version is compatible
->> with xenomai 2.5.3 i am using linux-2.6.28 for patching xenomai..shall i use
->> the same kernel version...
->>
->   Let me know Where can i find APIC options while configuring, to disable...
+> dpkg-shlibdeps: warning: symbol xeno_bind_skin_opt used by
+> debian/libxenomai1/usr/lib/libvxworks.so.1.0.0 found in none of the
+> libraries.
 > 
+> so I concluded that perhaps these symbols  are in the realtime kernel
+> interface BUT:
 
-As explained in ksrc/arch/x86/patches/README, we try to maintain
-compatibility with past releases of the kernel. However, if you are
-starting a new project, there is little sense in using such an old
-kernel as Linux 2.6.28.
+Errr... There is absolutely no way user-space code can be dynamically
+linked with kernel functions. The interface between the two is the
+system calls interface.
 
-To look for an option in the kernel configuration, if you are using the
-QT configuration tool, use ctrl-F, if you are using the ncurses
-configuration tool, use /.
+> the System.Map does NOT show they have been compiled in at all, although
+> the standard adeos and xenomai patches have been applied
+> and some of the skins have been enabled in the kernel .config.
+> 
+> Here is the location of most of the symbols in the xenomai.git source
+> (The OlimexKernel directory is merely the top directory where I keep all
+> that stuff)
+> Does someone perhaps know where the Kconfig file or the *.c/h file lives
+> that includes this stuff?
 
-For setting the options of the x86 kernel, see:
-http://www.xenomai.org/index.php/FAQs#Tips_and_tricks_setting_up_your_x86_kernel
+This is user-space stuff, so it is not related to Kconfig.
 
-In particular, you should not select generic i686 as processor type,
-neither should you disable the power management completely, you want PM
-enabled, APM disabled, ACPI enabled, but ACPI_PROCESSOR disabled. It is
-probably impossible to disable APIC because you are running an SMP
-kernel, which can not run without an APIC. And enabling the APIC is
-better anyway.
+As explained in the README.INSTALL file, the sources for the kernel-part
+are located in the subdirectories of the ksrc directory, while the
+sources for the user-space part are located in the subdirectories of the
+src directory.
 
-The next private mail you send me will receive no answer.
+Anyway, all this comes from the libxenomai library. As witnessed by
+people installing and using Xenomai on ARM while following the
+installation instructions in README.INSTALL, everything is fine with
+Xenomai, your problem is elsewhere.
 
 -- 
 					    Gilles.
