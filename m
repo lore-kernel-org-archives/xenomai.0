@@ -1,11 +1,13 @@
-From: Pierre.QUELIN@solystic.com
-Message-ID: <OF7B849C1F.6F40C6B8-ONC125776F.004D1B4E-C125776F.004D1B4E@solystic.com>
-Date: Thu, 29 Jul 2010 16:02:12 +0200
+Message-ID: <4C5198A5.6010002@domain.hid>
+Date: Thu, 29 Jul 2010 17:05:09 +0200
+From: Wolfgang Grandegger <wg@domain.hid>
 MIME-Version: 1.0
-Content-type: multipart/alternative; 
-	Boundary="0__=4EBBFDFCDFDE9DDE8f9e8a93df938690918c4EBBFDFCDFDE9DDE"
-Content-Disposition: inline
-Subject: [Xenomai-core] Pierre QUELIN/VAL/POSTAL est absent(e).
+References: <AANLkTikTyH5R8oMS-f-1jcJqryAwT-DKfzxNf1YROALK@mail.gmail.com>	<AANLkTinvhF72tWwCEy85jT3Kk2cQZwRyCtBZNcSZk-yA@mail.gmail.com>	<4C51223A.2070700@domain.hid>	<AANLkTikib3KYn-m7owo83LKUUMdfPP3=p_g7BPqgb-Gh@domain.hid>	<4C517FF1.1040902@domain.hid>
+	<AANLkTim4HheofHzPvJkMaCtYp49egWmJAzWLM2o3AXJo@domain.hid>
+In-Reply-To: <AANLkTim4HheofHzPvJkMaCtYp49egWmJAzWLM2o3AXJo@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-core] Bug - Can 2 devices.
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -14,29 +16,22 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+To: Rodolfo Oliveira <rodolforomao@domain.hid>
+Cc: Xenomai core <Xenomai-core@domain.hid>
 
---0__=4EBBFDFCDFDE9DDE8f9e8a93df938690918c4EBBFDFCDFDE9DDE
-Content-type: text/plain; charset=ISO-8859-1
-Content-transfer-encoding: quoted-printable
+Hello,
 
+please do not drop the CC to the mailing list.
 
+On 07/29/2010 04:33 PM, Rodolfo Oliveira wrote:
+> Sure, the answers follow:
+> 
+> 1 - What version of Xenomai do you use?
+> A: "Xenomai 2.2.91
 
-Je serai absent(e) =E0 partir du  26/07/2010 de retour le 16/08/2010.
+Puh, that's very old code and I can't identify the MSCAN sources for
+that version. Could you please send your mscan.c?
 
-Je r=E9pondrai =E0 votre message d=E8s mon retour.=
-
---0__=4EBBFDFCDFDE9DDE8f9e8a93df938690918c4EBBFDFCDFDE9DDE
-Content-type: text/html; charset=ISO-8859-1
-Content-Disposition: inline
-Content-transfer-encoding: quoted-printable
-
-<html><body>
-<p>Je serai absent(e) =E0 partir du  26/07/2010 de retour le 16/08/2010=
-.<br>
-<br>
-Je r=E9pondrai =E0 votre message d=E8s mon retour.</body></html>=
-
---0__=4EBBFDFCDFDE9DDE8f9e8a93df938690918c4EBBFDFCDFDE9DDE--
+Wolfgang.
 
 
