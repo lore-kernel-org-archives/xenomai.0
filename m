@@ -1,5 +1,5 @@
-Message-ID: <4C518635.3030600@domain.hid>
-Date: Thu, 29 Jul 2010 15:46:29 +0200
+Message-ID: <4C519885.1070501@domain.hid>
+Date: Thu, 29 Jul 2010 17:04:37 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <AANLkTinJVMQ3pa07AVeikv3HRyDMxw5HsWNiFC_3OTXG@mail.gmail.com>
@@ -20,41 +20,17 @@ To: Jan de Kruyf <jan.de.kruyf@domain.hid>
 Cc: xenomai@xenomai.org
 
 Jan de Kruyf wrote:
-> The Debian library package build gives me this output, no matter what
-> directories I search:
+> Hallo,
+> I came across some weird problem, which might or might not be my own
+> doings, while cross compiling kernel + xenomai.
+> Although this is all Debian flavoured I have a suspicion it comes from
+> the xenomai source, so thats why I posted it here first.
 > 
-> dpkg-shlibdeps: warning: symbol xeno_bind_skin_opt used by
-> debian/libxenomai1/usr/lib/libvxworks.so.1.0.0 found in none of the
-> libraries.
-> 
-> so I concluded that perhaps these symbols  are in the realtime kernel
-> interface BUT:
+> kernel 2.6.31-rc3
+> xenomai git Date:   Mon Jun 28 00:35:30 2010 +0200
 
-Errr... There is absolutely no way user-space code can be dynamically
-linked with kernel functions. The interface between the two is the
-system calls interface.
-
-> the System.Map does NOT show they have been compiled in at all, although
-> the standard adeos and xenomai patches have been applied
-> and some of the skins have been enabled in the kernel .config.
-> 
-> Here is the location of most of the symbols in the xenomai.git source
-> (The OlimexKernel directory is merely the top directory where I keep all
-> that stuff)
-> Does someone perhaps know where the Kconfig file or the *.c/h file lives
-> that includes this stuff?
-
-This is user-space stuff, so it is not related to Kconfig.
-
-As explained in the README.INSTALL file, the sources for the kernel-part
-are located in the subdirectories of the ksrc directory, while the
-sources for the user-space part are located in the subdirectories of the
-src directory.
-
-Anyway, all this comes from the libxenomai library. As witnessed by
-people installing and using Xenomai on ARM while following the
-installation instructions in README.INSTALL, everything is fine with
-Xenomai, your problem is elsewhere.
+I missed that detail. Do you have the same problem with Xenomai 2.5.3
+release ?
 
 -- 
 					    Gilles.
