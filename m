@@ -1,13 +1,13 @@
-Message-ID: <4C5579F3.4000000@domain.hid>
-Date: Sun, 01 Aug 2010 15:43:15 +0200
+Message-ID: <4C55F10A.4080908@domain.hid>
+Date: Mon, 02 Aug 2010 00:11:22 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <001b01cb1e9c$54ddbae0$fe9930a0$@com>	<4C35CC27.1000407@domain.hid>
-	<loom.20100713T211010-119@domain.hid>
-In-Reply-To: <loom.20100713T211010-119@domain.hid>
+References: <181804936ABC2349BE503168465576460F3847C2@domain.hid>	<4C347815.9050107@domain.hid>	<181804936ABC2349BE503168465576460F384F38@domain.hid>	<4C34AD18.9090902@domain.hid>	<181804936ABC2349BE503168465576460F3850F3@domain.hid>
+	<4C34B898.6000803@domain.hid>
+In-Reply-To: <4C34B898.6000803@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] fatal: error xeno_nucleus not found
+Subject: Re: [Xenomai-help] Mixing skin calls (cancellation points)
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,22 +17,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: jmf <xeno.nonono@domain.hid>
+To: Steve Deiters <SteveDeiters@domain.hid>
 Cc: xenomai@xenomai.org
 
-jmf wrote:
-> FATAL: Module xeno_nucleus not found.
-> FATAL: Error running install command for xeno_nucleus
-
-Hi, I had a look into this issues, and these are harmless.
-
-> sudo: /usr/bin/latency: command not found
-
-That is the true error.
-
-This should be fixed by commit 5c76da92cd3a4d1097abcbc61801f6359d98d94c
-http://git.xenomai.org/?p=xenomai-2.5.git;a=commit;h=5c76da92cd3a4d1097abcbc61801f6359d98d94c
-
+Gilles Chanteperdrix wrote:
+> Steve Deiters wrote:
+>>> I already answered that: yes, the thread will re-acquire the 
+>>> mutex. The pthread_cleanup_push/pthread_cleanup_pop services 
+>>> can be called from a native skin thread, they are part of the 
+>>> glibc, not of Xenomai posix skin, so you do not need to link 
+>>> against the Xenomai posix skin library.
+>>>
+>>> Anyway, the proper way to fix this, which we use in the POSIX 
+>>> skin, is to set the cancellation type to asynchronous just 
+>>> before calling rt_cond_wait, saving the previoys cancellation 
+>>> type, then restore the cancellation type after rt_cond_wait.
+>> This is probably the best solution for me.  Can I also use
+>> pthread_setcanceltype without linking to the POSIX skin or is there some
+>> method in the native skin to change the cancellation type?  Can I assume
+>> anything not wrapped in the posix.wrappers is provided by glibc?
+> 
+> Ok. We will also fix this on Xenomai side.
+> 
+Should be fixed with commit 7a39eff4ed5f9e4aa8acb111328b1343511e41ae
+http://git.xenomai.org/?p=xenomai-2.5.git;a=commit;h=7a39eff4ed5f9e4aa8acb111328b1343511e41ae
 
 -- 
 					    Gilles.
