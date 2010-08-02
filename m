@@ -1,82 +1,65 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <4C3EF6D6.6040907@domain.hid>
-References: <1278943817.7023.18.camel@domain.hid>  <4C3EF6D6.6040907@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Thu, 15 Jul 2010 18:11:38 +0200
-Message-ID: <1279210298.1995.38.camel@domain.hid>
-Mime-Version: 1.0
+Message-ID: <4C56DFE5.50209@domain.hid>
+Date: Mon, 02 Aug 2010 17:10:29 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+References: <20100802142702.2554C11D922@domain.hid>
+In-Reply-To: <20100802142702.2554C11D922@domain.hid>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Marvell sheeva support
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Subject: Re: [Xenomai-core] Misleading git tags
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Tim Cussins <timcussins@domain.hid>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Wolfgang Denk <wd@domain.hid>
 Cc: xenomai@xenomai.org
 
-On Thu, 2010-07-15 at 13:53 +0200, Gilles Chanteperdrix wrote:
-> Tim Cussins wrote:
-> > Hi all,
-> > 
-> > We're looking at migrating to one of Marvell's MV88F series SOC's, and
-> > are very keen to deploy Xenomai as part of our solution.
-> > 
-> > I noticed Sergey Didenko was looking at this a few months back and
-> > things looked to be ok - has his (or anyone else's) work made it into a
-> > stable release?
-> > 
-> > I will be able to assist in about a fortnight if that would be useful
-> > for squaring that work away.
-> > 
-> > Let me know if I can help!
+Wolfgang Denk wrote:
+> Dear Gilles,
 > 
-> We are interested. I seem to remember that Serguey had unexplained
-> latencies issues, so, if you start with his work, please bear this in
-> mind, there was probably something wrong with his port. A guide
-> explaining how to port the I-pipe patch on ARM exists:
-> http://www.xenomai.org/index.php/I-pipe:ArmPorting
+> I noticed that "git describe" does not provide helpful information for
+> the Xenomai repository.
 > 
-> The section about chained GPIOs irqs is outdated, if your platform has
-> some, I will explain how it should be implemented.
+> For the current code (tagged as v2.5.4) I still get:
 > 
-> Please start from the I-pipe git (git://git.denx.de/ipipe-2.6.git),
-> merging it with the branch you will use if needed, so that you can
-> submit a patch only containing the modifications necessary for the
-> Sheeva platform.
+> 	-> git describe
+> 	v2.5.1-349-gf8fa381
 > 
-> We can also provide you with a root filesystem for validating this platform.
+> Only with the "--tags" option I get the expected result:
 > 
+> 	-> git describe --tags
+> 	v2.5.4
+> 
+> The behaviour changes from version to version:
+> 
+> 	-> git describe v2.5.0
+> 	fatal: No annotated tags can describe 'fddf7831dc53cce70b7196314cbd0b3aec028350'.
+> 	However, there were unannotated tags: try --tags.
+> 	-> git describe v2.5.1
+> 	v2.5.1
+> 	-> git describe v2.5.2
+> 	v2.5.1-142-g6b3e8f2
+> 	-> git describe v2.5.3
+> 	v2.5.1-232-g55bf2d3
+> 	-> git describe v2.5.4
+> 	v2.5.1-349-gf8fa381
+> 
+> 
+> My recommendation is to always annotate release tags to avoid such
+> confusion.  Thanks.
 
-You can also use the patch below as a starting point for your port:
-http://download.gna.org/adeos/patches/tmp/adeos-ipipe-2.6.29-mv88f6290.patch
+Ok. I annotated 2.5.1 and asked Philippe about it, he told me that he
+never annotated 2.4 releases, so I stopped annotating them. In fact
+annotating 2.5.1 was the real mistake, but I guess you are right, I
+should annotate all of them. Can we change the annotation afterwards?
 
-caveats:
-
-- it is based on an old kernel release, and moving to 2.6.3x would
-require some work. If you need so, then you should merge the
-arm-dependent bits from the patch above with the generic I-pipe bits
-from a newer release as available here (e.g. 2.6.33):
-http://download.gna.org/adeos/patches/v2.6/arm/
-
-- the fcse implementation in that patch won't work with the l2 outer
-cache enabled. The two options have been made mutually exclusive via
-Kconfig.
-
-- you should use Xenomai 2.5.3 or above to get this running.
-
-As a reference point, the worst-case scheduling latency for user-space
-threads, observed on a mv88f6290 using that patch with fcse enabled (no
-l2), is below 70 us.
-
-HTH,
+Anyway, thanks for the remark. If you wonder why I pushed 2.5.4 and did
+not announced it, the announce will come tonight.
 
 -- 
-Philippe.
-
-
+					    Gilles.
 
