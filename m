@@ -1,43 +1,63 @@
-Message-ID: <4C3F192A.8080203@domain.hid>
-Date: Thu, 15 Jul 2010 16:20:26 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: Wolfgang Denk <wd@domain.hid>
 MIME-Version: 1.0
-References: <AANLkTinwyQgI26INSzLlvgyP2hlAmuziK7V3iNCVa8Nd@domain.hid>	<4C3EFB0B.7050801@domain.hid>
-	<AANLkTinH0vj7gAxa8LscV_-Hvmggo9LigQkp30nIUcz6@domain.hid>
-In-Reply-To: <AANLkTinH0vj7gAxa8LscV_-Hvmggo9LigQkp30nIUcz6@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] [RTnet-users] Alignment problem
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Content-type: text/plain; charset=ISO-8859-1
+Content-transfer-encoding: 8bit
+Date: Mon, 02 Aug 2010 16:27:02 +0200
+Message-Id: <20100802142702.2554C11D922@domain.hid>
+Subject: [Xenomai-core] Misleading git tags
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Cyril Wallois <walloiscyril@domain.hid>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-Cyril Wallois wrote:
-> Hi Gilles,
-> 
-> Sorry, I don't mention that my problem has ever been evoqued on
-> xenomai-help one month ago :
+Dear Gilles,
 
-Ok. But if you had used the "reply" function of your MUA, the mail you
-would have sent would have contained a "Reference" header pointing to
-the mail you were replying, which would have allowed the MUA of the
-people reading your mail, including Xenomai mailing list archives, to
-properly sort this new mail as a follow-up of the mail you were replying to.
+I noticed that "git describe" does not provide helpful information for
+the Xenomai repository.
 
-> 0xc002d3c8 correspond to do_page_fault in /proc/kallsyms
+For the current code (tagged as v2.5.4) I still get:
 
-Ok. So, you enter do_page_fault from primary mode. Compile your kernel
-with frame pointers, and try and insert a call to show_stack(NULL,NULL)
-in the Xenomai code printing the messages which you see.
+	-> git describe
+	v2.5.1-349-gf8fa381
+
+Only with the "--tags" option I get the expected result:
+
+	-> git describe --tags
+	v2.5.4
+
+The behaviour changes from version to version:
+
+	-> git describe v2.5.0
+	fatal: No annotated tags can describe 'fddf7831dc53cce70b7196314cbd0b3aec028350'.
+	However, there were unannotated tags: try --tags.
+	-> git describe v2.5.1
+	v2.5.1
+	-> git describe v2.5.2
+	v2.5.1-142-g6b3e8f2
+	-> git describe v2.5.3
+	v2.5.1-232-g55bf2d3
+	-> git describe v2.5.4
+	v2.5.1-349-gf8fa381
+
+
+My recommendation is to always annotate release tags to avoid such
+confusion.  Thanks.
+
+Best regards,
+
+Wolfgang Denk
 
 -- 
-					    Gilles.
+DENX Software Engineering GmbH,     MD: Wolfgang Denk & Detlev Zundel
+HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
+Phone: (+49)-8142-66989-10 Fax: (+49)-8142-66989-80 Email: wd@domain.hid
+NOTE: The  Most  Fundamental  Particles  in  This  Product  Are  Held
+Together  by  a  "Gluing" Force About Which Little is Currently Known
+and Whose Adhesive Power Can Therefore Not Be Permanently Guaranteed.
 
