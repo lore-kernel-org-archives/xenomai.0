@@ -1,12 +1,12 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <4C56EFAE.2020605@domain.hid>
+From: Wolfgang Denk <wd@domain.hid>
+MIME-Version: 1.0
+Content-type: text/plain; charset=ISO-8859-1
+In-reply-to: <4C56DFE5.50209@domain.hid>
 References: <20100802142702.2554C11D922@domain.hid>
-	<4C56DFE5.50209@domain.hid>  <4C56EFAE.2020605@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Mon, 02 Aug 2010 19:26:23 +0200
-Message-ID: <1280769983.6700.74.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
+	<4C56DFE5.50209@domain.hid>
+Date: Mon, 02 Aug 2010 23:12:52 +0200
+Message-Id: <20100802211252.55594D3CE46@domain.hid>
+Content-Transfer-Encoding: quoted-printable
 Subject: Re: [Xenomai-core] Misleading git tags
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -19,55 +19,33 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On Mon, 2010-08-02 at 18:17 +0200, Gilles Chanteperdrix wrote:
-> Gilles Chanteperdrix wrote:
-> > Wolfgang Denk wrote:
-> >> Dear Gilles,
-> >>
-> >> I noticed that "git describe" does not provide helpful information for
-> >> the Xenomai repository.
-> >>
-> >> For the current code (tagged as v2.5.4) I still get:
-> >>
-> >> 	-> git describe
-> >> 	v2.5.1-349-gf8fa381
-> >>
-> >> Only with the "--tags" option I get the expected result:
-> >>
-> >> 	-> git describe --tags
-> >> 	v2.5.4
-> >>
-> >> The behaviour changes from version to version:
-> >>
-> >> 	-> git describe v2.5.0
-> >> 	fatal: No annotated tags can describe 'fddf7831dc53cce70b7196314cbd0b3aec028350'.
-> >> 	However, there were unannotated tags: try --tags.
-> >> 	-> git describe v2.5.1
-> >> 	v2.5.1
-> >> 	-> git describe v2.5.2
-> >> 	v2.5.1-142-g6b3e8f2
-> >> 	-> git describe v2.5.3
-> >> 	v2.5.1-232-g55bf2d3
-> >> 	-> git describe v2.5.4
-> >> 	v2.5.1-349-gf8fa381
-> >>
-> >>
-> >> My recommendation is to always annotate release tags to avoid such
-> >> confusion.  Thanks.
-> > 
-> > Ok. I annotated 2.5.1 and asked Philippe about it, he told me that he
-> > never annotated 2.4 releases, so I stopped annotating them. In fact
-> > annotating 2.5.1 was the real mistake, but I guess you are right, I
-> > should annotate all of them. Can we change the annotation afterwards?
-> 
-> Actually the 2.4 branch is annotated, except for the two last releases.
-> 
+Dear Gilles Chanteperdrix,
 
-2.4 was automatically annotated in the process of migrating from svn to
-git.
+In message <4C56DFE5.50209@domain.hid> you wrote:
+>
+> > My recommendation is to always annotate release tags to avoid such
+> > confusion.  Thanks.
+>=20
+> Ok. I annotated 2.5.1 and asked Philippe about it, he told me that he
+> never annotated 2.4 releases, so I stopped annotating them. In fact
+> annotating 2.5.1 was the real mistake, but I guess you are right, I
+> should annotate all of them. Can we change the annotation afterwards?
 
--- 
-Philippe.
+Not without changing the whole history, which you really don't want
+to do.
 
+> Anyway, thanks for the remark. If you wonder why I pushed 2.5.4 and did
+> not announced it, the announce will come tonight.
 
+I did not wonder, I just happened to notice it :-)
+
+Best regards,
+
+Wolfgang Denk
+
+--=20
+DENX Software Engineering GmbH,     MD: Wolfgang Denk & Detlev Zundel
+HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
+Phone: (+49)-8142-66989-10 Fax: (+49)-8142-66989-80 Email: wd@domain.hid
+"If anything can go wrong, it will."                   - Edsel Murphy
 
