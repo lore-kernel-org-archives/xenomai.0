@@ -1,13 +1,13 @@
-Message-ID: <4C55F10A.4080908@domain.hid>
-Date: Mon, 02 Aug 2010 00:11:22 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <181804936ABC2349BE503168465576460F3847C2@domain.hid>	<4C347815.9050107@domain.hid>	<181804936ABC2349BE503168465576460F384F38@domain.hid>	<4C34AD18.9090902@domain.hid>	<181804936ABC2349BE503168465576460F3850F3@domain.hid>
-	<4C34B898.6000803@domain.hid>
-In-Reply-To: <4C34B898.6000803@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Mixing skin calls (cancellation points)
+In-Reply-To: <AANLkTiktAuNZQP0hqXoHBZMayaywfkZ9By6_ug5B8YM_@domain.hid>
+References: <AANLkTimuiAP=dGQSKG2PYJUnGw--1iXBzPJ1325czz-_@domain.hid>
+	<1280655383.6700.11.camel@domain.hid>
+	<AANLkTiktAuNZQP0hqXoHBZMayaywfkZ9By6_ug5B8YM_@domain.hid>
+Date: Sun, 1 Aug 2010 22:32:48 -0300
+Message-ID: <AANLkTi=b8xQcH+-nOAeP=fJgYwbqug7FFHC-nefv8JuQ@mail.gmail.com>
+From: Flavio de Castro Alves Filho <flavio.alves@domain.hid>
+Content-Type: multipart/alternative; boundary=00163646b956ac2ff2048ccd2dce
+Subject: Re: [Xenomai-help] Problems with user_irq.c Native example
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,31 +17,53 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Steve Deiters <SteveDeiters@domain.hid>
-Cc: xenomai@xenomai.org
+To: Henri Roosen <henriroosen@domain.hid>
+Cc: murilomarinho@domain.hid, xenomai@xenomai.org
 
-Gilles Chanteperdrix wrote:
-> Steve Deiters wrote:
->>> I already answered that: yes, the thread will re-acquire the 
->>> mutex. The pthread_cleanup_push/pthread_cleanup_pop services 
->>> can be called from a native skin thread, they are part of the 
->>> glibc, not of Xenomai posix skin, so you do not need to link 
->>> against the Xenomai posix skin library.
->>>
->>> Anyway, the proper way to fix this, which we use in the POSIX 
->>> skin, is to set the cancellation type to asynchronous just 
->>> before calling rt_cond_wait, saving the previoys cancellation 
->>> type, then restore the cancellation type after rt_cond_wait.
->> This is probably the best solution for me.  Can I also use
->> pthread_setcanceltype without linking to the POSIX skin or is there some
->> method in the native skin to change the cancellation type?  Can I assume
->> anything not wrapped in the posix.wrappers is provided by glibc?
-> 
-> Ok. We will also fix this on Xenomai side.
-> 
-Should be fixed with commit 7a39eff4ed5f9e4aa8acb111328b1343511e41ae
-http://git.xenomai.org/?p=xenomai-2.5.git;a=commit;h=7a39eff4ed5f9e4aa8acb111328b1343511e41ae
+--00163646b956ac2ff2048ccd2dce
+Content-Type: text/plain; charset=ISO-8859-1
 
--- 
-					    Gilles.
+Hello,
+
+I also recommend the rtdm approach. I used it here in a pc/104 and irq7 bus
+and it works very well.
+
+Best regards,
+
+Flavio
+
+Em 01/08/2010 10:13, "Henri Roosen" <henriroosen@domain.hid>escreveu:
+
+If you really want to use the rt_intr_xxx interface, you might want to
+pass the RT_INTR_NOENABLE mode-flag to rt_intr_create and call
+rt_intr_enable after you have acknowledged your interrupt source (or
+just before you wait for the interrupt) in your interrupt handler.
+
+But as Philippe mentioned it is cleaner to use the rtdm driver approach.
+
+Henri.
+
+
+On Sun, Aug 1, 2010 at 11:36 AM, Philippe Gerum <rpm@xenomai.org> wrote:
+> On Sun, 2010-08-01 at 04...
+
+--00163646b956ac2ff2048ccd2dce
+Content-Type: text/html; charset=ISO-8859-1
+
+<p>Hello,</p>
+<p>I also recommend the rtdm approach. I used it here in a pc/104 and irq7 bus and it works very well.</p>
+<p>Best regards,</p>
+<p>Flavio</p>
+<p><blockquote type="cite">Em 01/08/2010 10:13, &quot;Henri Roosen&quot; &lt;<a href="mailto:henriroosen@domain.hid">henriroosen@domain.hid</a>&gt;escreveu:<br><br>If you really want to use the rt_intr_xxx interface, you might want to<br>
+
+pass the RT_INTR_NOENABLE mode-flag to rt_intr_create and call<br>
+rt_intr_enable after you have acknowledged your interrupt source (or<br>
+just before you wait for the interrupt) in your interrupt handler.<br>
+<br>
+But as Philippe mentioned it is cleaner to use the rtdm driver approach.<br>
+<font color="#888888"><br>
+Henri.<br>
+</font><p><font color="#500050"><br>On Sun, Aug 1, 2010 at 11:36 AM, Philippe Gerum &lt;<a href="mailto:rpm@xenomai.org">rpm@xenomai.org</a>&gt; wrote:<br>&gt; On Sun, 2010-08-01 at 04...</font></p></blockquote></p>
+
+--00163646b956ac2ff2048ccd2dce--
 
