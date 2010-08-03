@@ -1,12 +1,22 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <4c583de0.5396cc0a.3011.ffffd8a9@domain.hid>
-References: <4c583de0.5396cc0a.3011.ffffd8a9@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Tue, 03 Aug 2010 18:26:42 +0200
-Message-ID: <1280852802.6700.107.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Some questions about Xenomai
+MIME-Version: 1.0
+In-Reply-To: <4C4F7B47.6040709@domain.hid>
+References: <1279046702.31665.65.camel@domain.hid> <4C3CB655.1020801@domain.hid>
+	<1279048661.31665.81.camel@domain.hid> <1280149567.1856.15.camel@domain.hid>
+	<4C4D9131.7080504@domain.hid> <1280153187.1856.25.camel@domain.hid>
+	<4C4D97AC.2030609@domain.hid> <1280154697.1856.29.camel@domain.hid>
+	<4C4D9E04.6060407@domain.hid> <1280156219.1856.32.camel@domain.hid>
+	<4C4DA340.4030400@domain.hid> <1280187666.1963.34.camel@domain.hid>
+	<4C4E8A64.1000701@domain.hid> <1280239972.1865.7.camel@domain.hid>
+	<4C4EEBE3.9020806@domain.hid>
+	<AANLkTim4A+3sLGzgdhc_Xhfn0bAW+hLZtuUJVyVocLOZ@mail.gmail.com>
+	<AANLkTimGA5k4Vu_aQNXx1bBhT2X3KAZytAKZHWD-HNHK@mail.gmail.com>
+	<4C4F7B47.6040709@domain.hid>
+Date: Tue, 3 Aug 2010 15:07:39 -0300
+Message-ID: <AANLkTin-4N_AdZiEK+dqxsz=E_ZHxDnoGxQikOJCkVo9@domain.hid>
+From: Leandro Favarin <leandro.favarin@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-help] Kernel compilation procedures for imx51
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,102 +26,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Martin Kremenak <m.kremenak@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On Tue, 2010-08-03 at 18:03 +0200, Martin Kremenak wrote:
-> Hi, 
-> 
->  
-> 
-> I want to realize control system based on real time Linux. So I decide
-> me for Xenomai. 
-> 
-> After some research I found a Code Generator for Xenomai from
-> Evidence: http://www.evidence.eu.com/content/view/175/216 which I can
-> generate Code from Scilab/Scicos for Xenoami.
-> 
-> I read the readme-file from Evidence and the recommended Xenomai
-> 2.4.3.
-> 
->  
-> 
-> So I tried to install Xenomai 2.4.3 with Kernel
-> 2.6.24/2.6.24.2/2.6.24.1 on my System. 
-> 
-> I tried this quick build guide:
-> http://www.xenomai.org/index.php/Xenomai_quick_build_quide
-> 
-> On the point where I compile the Kernel I got following error:
-> 
-> debXenomai:/usr/src/linux-2.6.24.2# make 
-> scripts/kconfig/conf -s arch/x86/Kconfig 
->    CHK     include/linux/version.h 
->    CHK     include/linux/utsrelease.h 
->    CALL    scripts/checksyscalls.sh 
->    CHK     include/linux/compile.h 
->    AS      arch/x86/kernel/entry_32.o 
->  arch/x86/kernel/entry_32.S: Assembler messages: 
->  arch/x86/kernel/entry_32.S:270: Error: invalid character '_' in mnemonic 
->  arch/x86/kernel/entry_32.S:321: Error: invalid character '_' in mnemonic 
->  arch/x86/kernel/entry_32.S:351: Error: invalid character '_' in mnemonic 
->  arch/x86/kernel/entry_32.S:521: Error: invalid character '_' in mnemonic 
->  arch/x86/kernel/entry_32.S:536: Error: invalid character '_' in mnemonic 
->  make[1]: *** [arch/x86/kernel/entry_32.o] Fehler 1 
->  make: *** [arch/x86/kernel] Fehler 2 
-> 
-> Have anybody the same problem or a solution to fix the problem?
+Hello,
 
-This is an old cranky Adeos/I-pipe patch with a silly glitch in it,
-disabling CONFIG_PARAVIRT should help. Normally, you should be able to
-pick the latest 2.4.x official release (2.4.10) instead of 2.4.3. All
-releases within a major series are guaranteed to be API and ABI backward
-compatible.
+I have successfully cross-compiled the linux-2.6-imx.git with
+Xenomai's patches (adeos-ipipe-2.6.31-arm-1.16-01.patch and
+adeos-ipipe-2.6.31-arm-1.15-01-imx51.patch, in this sequence) for
+iMX51EVK. Does this kernel works with this board?
 
-In any case, unless the code generator itself has (weird) kernel
-dependencies, you don't need to stick with 2.6.24 for Xenomai 2.4.x to
-work, you may upgrade up to 2.6.30.8 with Xenomai 2.4.10.
+Thanks,
+Leandro Favarin
 
-> 
->  
-> 
-> Maybe anyone have experience with the Code Generator from Evidence and
-> newer versions from Xenomai? It is possible to use a newer version?
-> 
-
-I did not know this generator existed, so ...
-
-> The Evidence wiki and forum is down. Maybe the project is adjusted, so
-> I can not ask some people from Evidence. 
-> 
->  
-> 
-> I also searched for Kernel-Configs for an x86 Intel-System (CoreDuo2),
-> please post your experience. 
-> 
->  
-> 
-> Another open point is the graphical interface. I search for something
-> like xrtailab or  something else. 
-> 
->  
-> 
-> Regards,
-> 
->  
-> 
-> Martin K.
-> 
->  
-> 
-> 
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
-
--- 
-Philippe.
-
-
+On Tue, Jul 27, 2010 at 9:35 PM, Gilles Chanteperdrix
+<gilles.chanteperdrix@xenomai.org> wrote:
+> Leandro Favarin wrote:
+>> Hi,
+>>
+>> I'm working on the same project with Flavio, and followed the
+>> discussion since the beginning.
+>> The result I got after running ltib (compiling) was:
+>>
+>> (...)
+>> =A0CC =A0 =A0 =A0arch/arm/plat-mxc/mc13783_xc.o
+>> arch/arm/plat-mxc/mc13783_xc.c:18:32: error: mach/pmic_external.h: No
+>> such file or directory
+>> make[1]: *** [arch/arm/plat-mxc/mc13783_xc.o] Error 1
+>> make: *** [arch/arm/plat-mxc] Error 2
+>>
+>> What I have to do now?
+>
+> This does not look like an error related to Xenomai. Please report to
+> the relevant mailing list.
+>
+> --
+> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
+=A0 =A0 =A0 =A0Gilles.
+>
 
