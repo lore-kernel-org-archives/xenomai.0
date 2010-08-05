@@ -1,110 +1,105 @@
-Message-ID: <4C6E75E6.5000408@domain.hid>
-Date: Fri, 20 Aug 2010 14:32:38 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <4C5A631B.1040604@domain.hid>
+Date: Thu, 05 Aug 2010 09:07:07 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4C0692A9.2080806@domain.hid>	<1276080083.18906.52.camel@domain.hid>
-	<4C234A15.2030708@domain.hid>
-In-Reply-To: <4C234A15.2030708@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+References: <4C5A26C4.3050702@domain.hid>
+In-Reply-To: <4C5A26C4.3050702@domain.hid>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [PATCH] Mayday support
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Subject: Re: [Xenomai-help] RTDM driver structure
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org, Tschaeche IT-Services <services@domain.hid>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Bob Feretich <bob.feretich@domain.hid>
+Cc: xenomai@xenomai.org
 
-Jan Kiszka wrote:
-> Philippe Gerum wrote:
->> I've toyed a bit to find a generic approach for the nucleus to regain
->> complete control over a userland application running in a syscall-less
->> loop.
->>
->> The original issue was about recovering gracefully from a runaway
->> situation detected by the nucleus watchdog, where a thread would spin in
->> primary mode without issuing any syscall, but this would also apply for
->> real-time signals pending for such a thread. Currently, Xenomai rt
->> signals cannot preempt syscall-less code running in primary mode either.
->>
->> The major difference between the previous approaches we discussed about
->> and this one, is the fact that we now force the runaway thread to run a
->> piece of valid code that calls into the nucleus. We do not force the
->> thread to run faulty code or at a faulty address anymore. Therefore, we
->> can reuse this feature to improve the rt signal management, without
->> having to forge yet-another signal stack frame for this.
->>
->> The code introduced only fixes the watchdog related issue, but also does
->> some groundwork for enhancing the rt signal support later. The
->> implementation details can be found here:
->> http://git.xenomai.org/?p=xenomai-rpm.git;a=commit;h=4cf21a2ae58354819da6475ae869b96c2defda0c
->>
->> The current mayday support is only available for powerpc and x86 for
->> now, more will come in the next days. To have it enabled, you have to
->> upgrade your I-pipe patch to 2.6.32.15-2.7-00 or 2.6.34-2.7-00 for x86,
->> 2.6.33.5-2.10-01 or 2.6.34-2.10-00 for powerpc. That feature relies on a
->> new interface available from those latest patches.
->>
->> The current implementation does not break the 2.5.x ABI on purpose, so
->> we could merge it into the stable branch.
->>
->> We definitely need user feedback on this. Typically, does arming the
->> nucleus watchdog with that patch support in, properly recovers from your
->> favorite "get me out of here" situation? TIA,
->>
->> You can pull this stuff from
->> git://git.xenomai.org/xenomai-rpm.git, queue/mayday branch.
->>
+Bob Feretich wrote:
+>   I want to verify that my understanding of the RTDM driver structure is 
+> correct.
 > 
-> I've retested the feature as it's now in master, and it has one
-> remaining problem: If you run the cpu hog under gdb control and try to
-> break out of the while(1) loop, this doesn't work before the watchdog
-> expired - of course. But if you send the break before the expiry (or hit
-> a breakpoint), something goes wrong. The Xenomai task continues to spin,
-> and there is no chance to kill its process (only gdb).
+> My driver is created as a module that is loaded by Linux insmod. Given 
+> that...
 > 
-> # cat /proc/xenomai/sched
-> CPU  PID    CLASS  PRI      TIMEOUT   TIMEBASE   STAT       NAME
->   0  0      idle    -1      -         master     RR         ROOT/0
->   1  0      idle    -1      -         master     R          ROOT/1
->   0  6120   rt      99      -         master     Tt         cpu-hog
-> # cat /proc/xenomai/stat
-> CPU  PID    MSW        CSW        PF    STAT       %CPU  NAME
->   0  0      0          0          0     00500088    0.0  ROOT/0
->   1  0      0          0          0     00500080   99.7  ROOT/1
->   0  6120   0          1          0     00342180  100.0  cpu-hog
->   0  0      0          21005      0     00000000    0.0  IRQ3340: [timer]
->   1  0      0          35887      0     00000000    0.3  IRQ3340: [timer]
+> My module_init routine (and module_exit)...
+> *  is executed in the Linux driver context.
+> *  should use Linux spin locks and events instead of rt_locks and events.
+> *  can call rtdm_irq_request (rtrm_irq_free) to register my interrupt 
+> handlers
+>        for rt interrupts.
+> *  can call rtdm_device_register (rt_dm_device_unregister) to register 
+> my rt device.
+> *  can call Linux omap dm_timer routines to reserve general purpose timers,
+>        so that Linux will not give my timers to others. (these routines 
+> call Linux locks)
 > 
+> My driver's open_nrt close_nrt entry points... (open_rt & close_rt are 
+> deprecated)
+> *  are executed in the caller's Linux user context, if the caller is a 
+> standard Linux
+>        user process.
+> *  are executed in the caller's Xenomai user context (secondary mode), 
+> if the caller
+>        is a rt user process.
+> *  can use Linux spin locks and events instead of rt_locks and events, 
+> if I know
+>        that protection is not needed from rt tasks and interrupt handlers.
+> *  should use rt locks and events, if protection is needed from rt tasks 
+> and
+>        interrupt handlers.
+> 
+> My driver's ioctl_rt, read_rt, and write_rt entry points...
+> *  are executed in the caller's Xenomai user context (primary mode), if 
+> the caller
+>        is a rt user process running in primary mode.
+> *  are executed in the caller's Xenomai user context (secondary mode), 
+> if the caller
+>        is a rt user process running in secondary mode.
+> *  must use rt locks and events.
+> 
+> My driver's ioctl_nrt, read_nrt, and write_nrt entry points...
+> *  are executed in the caller's Linux user context, if the caller is a 
+> standard
+>        Linux user process.
+> *  I should use rt locks and events, for protection from rt tasks and
+>        interrupt handlers.
+> 
+> My driver's rt interrupt handler entry points...
+> *  are executed in the Xenomai interrupt context.
+> *  must use rt locks and events.
+> 
+> Is the above correct?
 
-Fixable by this tiny change:
+Hi,
 
-diff --git a/ksrc/nucleus/sched.c b/ksrc/nucleus/sched.c
-index 5242d9f..04a344e 100644
---- a/ksrc/nucleus/sched.c
-+++ b/ksrc/nucleus/sched.c
-@@ -175,7 +175,8 @@ void xnsched_init(struct xnsched *sched, int cpu)
- 			     xnthread_name(&sched->rootcb));
- 
- #ifdef CONFIG_XENO_OPT_WATCHDOG
--	xntimer_init(&sched->wdtimer, &nktbase, xnsched_watchdog_handler);
-+	xntimer_init_noblock(&sched->wdtimer, &nktbase,
-+			     xnsched_watchdog_handler);
- 	xntimer_set_name(&sched->wdtimer, "[watchdog]");
- 	xntimer_set_priority(&sched->wdtimer, XNTIMER_LOPRIO);
- 	xntimer_set_sched(&sched->wdtimer, sched);
+Yes, this is correct. Note however, that if you need to lock something
+in the init_module or an nrt callback, and you use a linux lock, you
+will not be able to use this lock from rt context, so, the only way to
+solve this will be to use an rtdm lock.
 
+> 
+> The OMAP3 chip has a collection of hardware timers that must be shared 
+> between the Linux and Xenomai environments. I want to allocate/reserve 5 
+> timers for my use in the real time environment for the creation of pulse 
+> width modulation output signals, but the rest of the timers should be 
+> available for general Linux use. Being able to call omap dm_timer 
+> routines in the module_init and module_exit routines make this much easier.
 
-I.e. the watchdog timer should not be stopped by any ongoing debug
-session of a Xenomai app. Will queue this for upstream.
+Another remark: Xenomai uses, as, a system timer, a timer in one-shot
+mode (same as Linux so-called "high resolution timers"), so, if you
+program several periodic software timers, Xenomai timer subsystem will
+arrange for your timer callbacks to be called at the right time, so it
+looks like you will not gain much by using several hardware timers. If
+you fear that Xenomai timing subsystem will not scale well with many
+timers, you can enable the heap-based or wheel-based timer management.
 
-Jan
+Regards.
 
 -- 
-Siemens AG, Corporate Technology, CT T DE IT 1
-Corporate Competence Center Embedded Linux
+					    Gilles.
 
