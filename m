@@ -1,13 +1,10 @@
-Message-ID: <4C585D60.2040809@domain.hid>
-Date: Tue, 03 Aug 2010 20:18:08 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4C5A26C4.3050702@domain.hid>
+Date: Wed, 04 Aug 2010 19:49:40 -0700
+From: Bob Feretich <bob.feretich@domain.hid>
 MIME-Version: 1.0
-References: <1279046702.31665.65.camel@domain.hid>	<4C3CB655.1020801@domain.hid>	<1279048661.31665.81.camel@domain.hid>	<1280149567.1856.15.camel@domain.hid>	<4C4D9131.7080504@domain.hid>	<1280153187.1856.25.camel@domain.hid>	<4C4D97AC.2030609@domain.hid>	<1280154697.1856.29.camel@domain.hid>	<4C4D9E04.6060407@domain.hid>	<1280156219.1856.32.camel@domain.hid>	<4C4DA340.4030400@domain.hid>	<1280187666.1963.34.camel@domain.hid>	<4C4E8A64.1000701@domain.hid>	<1280239972.1865.7.camel@domain.hid>	<4C4EEBE3.9020806@domain.hid>	<AANLkTim4A+3sLGzgdhc_Xhfn0bAW+hLZtuUJVyVocLOZ@mail.gmail.com>	<AANLkTimGA5k4Vu_aQNXx1bBhT2X3KAZytAKZHWD-HNHK@mail.gmail.com>	<4C4F7B47.6040709@domain.hid>
-	<AANLkTin-4N_AdZiEK+dqxsz=E_ZHxDnoGxQikOJCkVo9@domain.hid>
-In-Reply-To: <AANLkTin-4N_AdZiEK+dqxsz=E_ZHxDnoGxQikOJCkVo9@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Kernel compilation procedures for imx51
+Subject: [Xenomai-help] RTDM driver structure
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,26 +14,73 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Leandro Favarin <leandro.favarin@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Leandro Favarin wrote:
-> Hello,
-> 
-> I have successfully cross-compiled the linux-2.6-imx.git with
-> Xenomai's patches (adeos-ipipe-2.6.31-arm-1.16-01.patch and
-> adeos-ipipe-2.6.31-arm-1.15-01-imx51.patch, in this sequence) for
-> iMX51EVK. Does this kernel works with this board?
+  I want to verify that my understanding of the RTDM driver structure is 
+correct.
 
-It has been tested on the Babbage board, but there should be no
-dependence on board code, except if the board has some custom
-multiplexed GPIOs not handled by the MXC generic code. So, the answer
-is: we do not know.
+My driver is created as a module that is loaded by Linux insmod. Given 
+that...
 
-Note that some new versions of the patches have just been released in
-Xenomai 2.5.4, which include some ironing of the GPIOs, necessary if you
-intend to use the GPIOs concurrently in several drivers.
+My module_init routine (and module_exit)...
+*  is executed in the Linux driver context.
+*  should use Linux spin locks and events instead of rt_locks and events.
+*  can call rtdm_irq_request (rtrm_irq_free) to register my interrupt 
+handlers
+       for rt interrupts.
+*  can call rtdm_device_register (rt_dm_device_unregister) to register 
+my rt device.
+*  can call Linux omap dm_timer routines to reserve general purpose timers,
+       so that Linux will not give my timers to others. (these routines 
+call Linux locks)
 
--- 
-					    Gilles.
+My driver's open_nrt close_nrt entry points... (open_rt & close_rt are 
+deprecated)
+*  are executed in the caller's Linux user context, if the caller is a 
+standard Linux
+       user process.
+*  are executed in the caller's Xenomai user context (secondary mode), 
+if the caller
+       is a rt user process.
+*  can use Linux spin locks and events instead of rt_locks and events, 
+if I know
+       that protection is not needed from rt tasks and interrupt handlers.
+*  should use rt locks and events, if protection is needed from rt tasks 
+and
+       interrupt handlers.
+
+My driver's ioctl_rt, read_rt, and write_rt entry points...
+*  are executed in the caller's Xenomai user context (primary mode), if 
+the caller
+       is a rt user process running in primary mode.
+*  are executed in the caller's Xenomai user context (secondary mode), 
+if the caller
+       is a rt user process running in secondary mode.
+*  must use rt locks and events.
+
+My driver's ioctl_nrt, read_nrt, and write_nrt entry points...
+*  are executed in the caller's Linux user context, if the caller is a 
+standard
+       Linux user process.
+*  I should use rt locks and events, for protection from rt tasks and
+       interrupt handlers.
+
+My driver's rt interrupt handler entry points...
+*  are executed in the Xenomai interrupt context.
+*  must use rt locks and events.
+
+Is the above correct?
+
+The OMAP3 chip has a collection of hardware timers that must be shared 
+between the Linux and Xenomai environments. I want to allocate/reserve 5 
+timers for my use in the real time environment for the creation of pulse 
+width modulation output signals, but the rest of the timers should be 
+available for general Linux use. Being able to call omap dm_timer 
+routines in the module_init and module_exit routines make this much easier.
+
+Regards,
+Bob Feretich
+
+
+
 
