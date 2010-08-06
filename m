@@ -1,13 +1,18 @@
-Message-ID: <4C5B1098.2090209@domain.hid>
-Date: Thu, 05 Aug 2010 21:27:20 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Date: Fri, 6 Aug 2010 11:43:25 +0200
+From: Tschaeche IT-Services <services@domain.hid>
+Message-ID: <20100806094325.GA11479@domain.hid>
+References: <1276880276.12743.73.camel@domain.hid>
+	<4C1BA6F7.9080004@domain.hid>
+	<20100805125828.GA22855@domain.hid>
+	<1281016845.1706.0.camel@domain.hid>
+	<4C5AC77F.1040508@domain.hid>
+	<20100805151932.GA25701@domain.hid>
+	<1281027097.1706.96.camel@domain.hid>
 MIME-Version: 1.0
-References: <4C5A26C4.3050702@domain.hid> <4C5A631B.1040604@domain.hid>
-	<4C5B09A2.8050607@domain.hid>
-In-Reply-To: <4C5B09A2.8050607@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] RTDM driver structure
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1281027097.1706.96.camel@domain.hid>
+Subject: Re: [Xenomai-help] [Xenomai-core] [PULL REQUEST] fixes for 2.5.4
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,34 +22,66 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Bob Feretich <bob.feretich@domain.hid>
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: xenomai@xenomai.org
 
-Bob Feretich wrote:
->   Comments inline...
+On Thu, Aug 05, 2010 at 06:51:37PM +0200, Philippe Gerum wrote:
+> Why do you see different licenses? The nucleus is GPL, as is GPL each
+> and every bit of the Xenomai kernel code. Only userland libs are LGPL.
 > 
-> On 8/5/2010 12:07 AM, Gilles Chanteperdrix wrote:
->> Another remark: Xenomai uses, as, a system timer, a timer in one-shot
->> mode (same as Linux so-called "high resolution timers"), so, if you
->> program several periodic software timers, Xenomai timer subsystem will
->> arrange for your timer callbacks to be called at the right time, so it
->> looks like you will not gain much by using several hardware timers. If
->> you fear that Xenomai timing subsystem will not scale well with many
->> timers, you can enable the heap-based or wheel-based timer management.
-> The GPTimers that I am using have special hardware that drives pins on 
-> the chip. They can be programmed to create waveforms of specific pulse 
-> width and period and auto-restart so that the pulse train is continuous. 
-> Software only gets involved when the pulse width or period needs to be 
-> changed.  If I used the Xenomai timer, software (to change the state of 
-> a GPIO pin) would be invoked every time any of these signals needed to 
-> transition.
+> The decision to give the EXPORT_GPL hint now to in-kernel users is
+> precisely there to make this even more clear, and I will extend this to
+> all in-kernel interfaces in Xenomai 2.6. The reason why I did not push
+> this change to the 2.5.x series is because some legacy Xenomai-based
+> apps implemented as non-GPL kernel modules might qualify for the "gray
+> area" set, as described in this post:
+> http://marc.info/?l=linux-kernel&m=107049625920022&w=2
 > 
-> Using the hardware timers for the generation pulse trains of fixed pulse 
-> width and period takes zero CPU cycles.
+> However, the days when using a dual-kernel system meant running
+> application code to kernel land are long gone; we did work quite hard to
+> provide flexibility, reliability and good performances in userland over
+> time. Therefore, Xenomai 2.6 will strongly advise users to run
+> applications in user-space only, and Xenomai 3.x won't export any kernel
+> space API to kernel-based applications at all (Of course, RTDM will
+> still export an API to build drivers, and to interface with other
+> drivers).
+> 
+> If the issue is about driver code, and not application code, then it is
+> even simpler: driving peripherals is part of the Linux kernel
+> business's, so the GPL rules. If, for any valid or paranoid reason, some
+> of the code driving the peripheral could not be disclosed, then there
+> are options to move it partly or entirely to userland where LGPL
+> applies, even if that may not be the best technical approach.
+> 
+> The bottom line for the Xenomai licensing policy is quite
+> straightforward:
+> 
+> - We built our house on the foundations passed on by others, they gave
+> us the Linux kernel code, we do abide by their license because we are
+> part of their kernel, so our kernel-based code is licensed under the
+> terms of the Linux kernel license. People who want to interpret that
+> license to fit their licensing requirements are on their own. We did not
+> invent the license, we are simply using it and passing it on our own
+> users.
+> 
+> - In userland, we provide LGPL interfaces to applications to call our
+> real-time nucleus services, the same way the glibc provides LGPL
+> interfaces to applications to call standard Linux services.
+> 
+> > did not clarify yet, if our driver code may be open source.
+> > i think, it would be appreciated if not.
+> > 
+> 
+> We can't help in this area, we simply provide some code under a given
+> license. Whether the license fits your requirements depends on your
+> assessment of the situation only.
 
-Ok. Understood, the software could not even reloead the registers fast
-enough.
+personally i would like GPL used in projects, but companies are afraid
+of loosing their intellectual property. Thus, i, in the role of the
+consultant, have to find a solution, which you already explained:
+move the IP into user space and keep the GPLed module/driver part IP free.
 
--- 
-					    Gilles.
+thank you for your detailed explanation,
+
+	Olli
 
