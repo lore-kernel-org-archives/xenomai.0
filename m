@@ -1,19 +1,9 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <20100806094325.GA11479@domain.hid>
-References: <1276880276.12743.73.camel@domain.hid>
-	<4C1BA6F7.9080004@domain.hid>
-	<20100805125828.GA22855@domain.hid>
-	<1281016845.1706.0.camel@domain.hid>
-	<4C5AC77F.1040508@domain.hid>
-	<20100805151932.GA25701@domain.hid>
-	<1281027097.1706.96.camel@domain.hid>
-	<20100806094325.GA11479@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Fri, 06 Aug 2010 12:43:58 +0200
-Message-ID: <1281091438.1706.114.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] [Xenomai-core] [PULL REQUEST] fixes for 2.5.4
+MIME-Version: 1.0
+Date: Fri, 6 Aug 2010 11:22:45 -0300
+Message-ID: <AANLkTimPXWv2octL1y5Hy+rW1yOwEwxo3fY8g_cNrY9v@domain.hid>
+From: Ana Carolina Cardoso de Sousa <anacsousa1@domain.hid>
+Content-Type: multipart/alternative; boundary=0016367fb149b48d24048d286648
+Subject: [Xenomai-help] Problems with the installation
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -23,92 +13,57 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Tschaeche IT-Services <services@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Fri, 2010-08-06 at 11:43 +0200, Tschaeche IT-Services wrote:
-> On Thu, Aug 05, 2010 at 06:51:37PM +0200, Philippe Gerum wrote:
-> > Why do you see different licenses? The nucleus is GPL, as is GPL each
-> > and every bit of the Xenomai kernel code. Only userland libs are LGPL.
-> > 
-> > The decision to give the EXPORT_GPL hint now to in-kernel users is
-> > precisely there to make this even more clear, and I will extend this to
-> > all in-kernel interfaces in Xenomai 2.6. The reason why I did not push
-> > this change to the 2.5.x series is because some legacy Xenomai-based
-> > apps implemented as non-GPL kernel modules might qualify for the "gray
-> > area" set, as described in this post:
-> > http://marc.info/?l=linux-kernel&m=107049625920022&w=2
-> > 
-> > However, the days when using a dual-kernel system meant running
-> > application code to kernel land are long gone; we did work quite hard to
-> > provide flexibility, reliability and good performances in userland over
-> > time. Therefore, Xenomai 2.6 will strongly advise users to run
-> > applications in user-space only, and Xenomai 3.x won't export any kernel
-> > space API to kernel-based applications at all (Of course, RTDM will
-> > still export an API to build drivers, and to interface with other
-> > drivers).
-> > 
-> > If the issue is about driver code, and not application code, then it is
-> > even simpler: driving peripherals is part of the Linux kernel
-> > business's, so the GPL rules. If, for any valid or paranoid reason, some
-> > of the code driving the peripheral could not be disclosed, then there
-> > are options to move it partly or entirely to userland where LGPL
-> > applies, even if that may not be the best technical approach.
-> > 
-> > The bottom line for the Xenomai licensing policy is quite
-> > straightforward:
-> > 
-> > - We built our house on the foundations passed on by others, they gave
-> > us the Linux kernel code, we do abide by their license because we are
-> > part of their kernel, so our kernel-based code is licensed under the
-> > terms of the Linux kernel license. People who want to interpret that
-> > license to fit their licensing requirements are on their own. We did not
-> > invent the license, we are simply using it and passing it on our own
-> > users.
-> > 
-> > - In userland, we provide LGPL interfaces to applications to call our
-> > real-time nucleus services, the same way the glibc provides LGPL
-> > interfaces to applications to call standard Linux services.
-> > 
-> > > did not clarify yet, if our driver code may be open source.
-> > > i think, it would be appreciated if not.
-> > > 
-> > 
-> > We can't help in this area, we simply provide some code under a given
-> > license. Whether the license fits your requirements depends on your
-> > assessment of the situation only.
-> 
-> personally i would like GPL used in projects, but companies are afraid
-> of loosing their intellectual property. Thus, i, in the role of the
-> consultant, have to find a solution, which you already explained:
-> move the IP into user space and keep the GPLed module/driver part IP free.
+--0016367fb149b48d24048d286648
+Content-Type: text/plain; charset=ISO-8859-1
 
-Whatever split between kernel/userland support you may want to implement
-to solve this issue, I would strongly recommend to keep the interrupt
-handling in the RTDM-based kernel driver, including the device request
-acknowledgement part.
+I tried to install using the following steps:
+http://www.lara.unb.br/wiki/index.php/Ubuntu_Real-time_Xenomai
 
-Moving this code to userland would require the thread in charge to
-always be runnable, so that you don't get either an interrupt flood, or
-a device collapse because the interrupt handling is either significantly
-delayed or even stopped. It turns out that such requirement would
-prevent you from using GDB over the process including the interrupt
-handling code, since GDB eagerly stops all threads for single-stepping.
-Of course you could implement the interrupt server outside of the main
-application process, but this would lead to an overly complex design,
-IMO.
+I did the same thing in two others pcs and everything works fine, but in
+this one I can't boot my kernel with xenomai.
 
-In short, keep away from the RT_INTR services. They are wrong by design
-for practical reasons - but I noticed it too late, after I implemented
-and published them.
+I received this message:*
+mout: mount /dev/disk/by_uuid/25fd1958-(...)-c4277c07a785 on root
+failed: Invalid argument
+mount: mounting /dev on /root/dev failed: No such file or directory*
 
-> 
-> thank you for your detailed explanation,
-> 
-> 	Olli
+Before that I received yet another message saying something about the
+temperature in the CPU.
+
+I don't really understand much about xenomai and I'm really lost about what
+to do now.
+I could use some help.
+Thanks.
 
 -- 
-Philippe.
+Att
 
+Ana Carolina Cardoso de Sousa
+anacsousa@domain.hid
+http://sites.google.com/site/unbstyle/
 
+--0016367fb149b48d24048d286648
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+I tried to install using the following steps:<br><a href=3D"http://www.lara=
+.unb.br/wiki/index.php/Ubuntu_Real-time_Xenomai">http://www.lara.unb.br/wik=
+i/index.php/Ubuntu_Real-time_Xenomai</a><br><br>I did the same thing in two=
+ others pcs and everything works fine, but in this one I can&#39;t boot my =
+kernel with xenomai.<br>
+<br>I received this message:<i><br>mout: mount /dev/disk/by_uuid/25fd1958-(=
+...)-c4277c07a785 on root<br>failed: Invalid argument<br>mount: mounting /d=
+ev on /root/dev failed: No such file or directory</i><br><br clear=3D"all">
+Before that I received yet another message saying something about the tempe=
+rature in the CPU.<br><br>I don&#39;t really understand much about xenomai =
+and I&#39;m really lost about what to do now.<br>I could use some help.<br>
+Thanks.<br><br>-- <br>Att<br><br>Ana Carolina Cardoso de Sousa<br><a href=
+=3D"mailto:anacsousa@domain.hid" target=3D"_blank">anacsousa@domain.hid</=
+a><div><a href=3D"http://sites.google.com/site/unbstyle/" target=3D"_blank"=
+>http://sites.google.com/site/unbstyle/</a></div>
+<br>
+
+--0016367fb149b48d24048d286648--
 
