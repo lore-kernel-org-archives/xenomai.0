@@ -1,13 +1,10 @@
-Message-ID: <4C5C540C.1010901@domain.hid>
-Date: Fri, 06 Aug 2010 20:27:24 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CB64A448250ADE40A2D9459AEB556D5E0274D4FBBF@NIHMLBX15.nih.gov>
-In-Reply-To: <CB64A448250ADE40A2D9459AEB556D5E0274D4FBBF@NIHMLBX15.nih.gov>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Use of counter for quadratic encoder in NI
- PCI-6229 board
+Date: Fri, 6 Aug 2010 23:42:21 +0200
+Message-ID: <AANLkTi=yDXty82va8JGzmRA453e021EvomyYitaQTCTg@domain.hid>
+From: Guenter Ebermann <guenter.ebermann@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai-help] migration scenario to xenomai
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,24 +14,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "Kim, Jonghyun (NIH/CC) [F]" <jonghyun.kim@domain.hid>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Kim, Jonghyun (NIH/CC) [F] wrote:
-> OS : Debian 5.0.4 + Xenomai 2.5.2
-> HW : NI PCI-6229
-> 
-> 
-> Hi.
-> I have a question on the use of counter in NI PCI-6229 board.
-> 
-> Thanks to analogy, I can use the functions of AI and AO using NI PCI-6229.
-> But, I failed to use its counter for quadratic encoder.
-> 
-> I think it may work, but it is hard for me because I don't have any verified example.
+Hi,
 
-Before anything else, could you try Xenomai 2.5.4 ?
+At the moment I am thinking about a possible migration of a automotive bus
+measuring/simulation application and some drivers from eCos to Linux/Xenoma=
+i.
+The move is primarily motivated by the huge software and device driver supp=
+ort
+under linux.
 
--- 
-					    Gilles.
+However some device drivers which interfaces our custom devices in FPGA mus=
+t be
+ported to linux or xenomai user-space or xenomai-rtdm.
+
+But I dont want to write device drivers in kernel-space, because this would
+involve some serious restructuring of our current drivers and software
+structure and a possible performance penalty because of unneeded data copyi=
+ng.
+It is also harder to debug a kernel-driver. In eCos there is no
+user/kernel space
+seperation and our custom device drivers access the registers based in FPGA
+directly. The interface of these drivers to the application is not via a de=
+vice
+file but over direct function invocation.
+
+So I thought of moving this part of our communication stack which has hard-=
+real
+time requirement (FlexRay, CAN, LIN) into a seperate process which only liv=
+es
+in the xenomai domain (it will communicate with low-prio linux processes vi=
+a
+non-blocking fifo or such). But this raises two important questions: Can I
+access the FPGA registers directly from a xenomai task in the user space? =
+=A0Or
+do I have to write a minimal linux or xenomai-rtdm device driver which maps
+FPGA registers from kernel to user space?
+
+-- Guenter
 
