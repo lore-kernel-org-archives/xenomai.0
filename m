@@ -1,10 +1,12 @@
+Message-ID: <4C5C83E5.9040508@domain.hid>
+Date: Fri, 06 Aug 2010 14:51:33 -0700
+From: Thomas Lockhart <Thomas.Lockhart@domain.hid>
 MIME-Version: 1.0
-Date: Fri, 6 Aug 2010 23:42:21 +0200
-Message-ID: <AANLkTi=yDXty82va8JGzmRA453e021EvomyYitaQTCTg@domain.hid>
-From: Guenter Ebermann <guenter.ebermann@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai-help] migration scenario to xenomai
+References: <AANLkTi=yDXty82va8JGzmRA453e021EvomyYitaQTCTg@domain.hid>
+In-Reply-To: <AANLkTi=yDXty82va8JGzmRA453e021EvomyYitaQTCTg@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] migration scenario to xenomai
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -14,43 +16,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Guenter Ebermann <guenter.ebermann@domain.hid>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi,
+> So I thought of moving this part of our communication stack which has hard-real
+> time requirement (FlexRay, CAN, LIN) into a seperate process which only lives
+> in the xenomai domain (it will communicate with low-prio linux processes via
+> non-blocking fifo or such). But this raises two important questions: Can I
+> access the FPGA registers directly from a xenomai task in the user space?  Or
+> do I have to write a minimal linux or xenomai-rtdm device driver which maps
+> FPGA registers from kernel to user space?
 
-At the moment I am thinking about a possible migration of a automotive bus
-measuring/simulation application and some drivers from eCos to Linux/Xenoma=
-i.
-The move is primarily motivated by the huge software and device driver supp=
-ort
-under linux.
+You can do direct register access from userland; we do this with several 
+device drivers in our system.
 
-However some device drivers which interfaces our custom devices in FPGA mus=
-t be
-ported to linux or xenomai user-space or xenomai-rtdm.
+We are thinking about trying to refactor a driver to use RTDM due to the 
+recent discussions on losing support for userland interrupt handling, 
+but for our purposes the current support for interrupts in userland has 
+worked fine.
 
-But I dont want to write device drivers in kernel-space, because this would
-involve some serious restructuring of our current drivers and software
-structure and a possible performance penalty because of unneeded data copyi=
-ng.
-It is also harder to debug a kernel-driver. In eCos there is no
-user/kernel space
-seperation and our custom device drivers access the registers based in FPGA
-directly. The interface of these drivers to the application is not via a de=
-vice
-file but over direct function invocation.
+We use pci_scan_bus() and friends for finding the device, and mmap to 
+get it into userland memory.
 
-So I thought of moving this part of our communication stack which has hard-=
-real
-time requirement (FlexRay, CAN, LIN) into a seperate process which only liv=
-es
-in the xenomai domain (it will communicate with low-prio linux processes vi=
-a
-non-blocking fifo or such). But this raises two important questions: Can I
-access the FPGA registers directly from a xenomai task in the user space? =
-=A0Or
-do I have to write a minimal linux or xenomai-rtdm device driver which maps
-FPGA registers from kernel to user space?
+hth
 
--- Guenter
+                         - Tom
 
