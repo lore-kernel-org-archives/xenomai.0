@@ -1,17 +1,19 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <4C5D3D59.3050208@domain.hid>
-References: <AANLkTi=yDXty82va8JGzmRA453e021EvomyYitaQTCTg@domain.hid>
-	<4C5D0F40.1070104@domain.hid>
-	<1DDE5D7F-58F5-4919-A4B4-5FCAD385E679@domain.hid>
-	<4C5D3724.1000908@domain.hid>
-	<B6A5952D-4182-4D39-B28E-0D9BAE2872C4@domain.hid>
-	<4C5D3D59.3050208@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Sat, 07 Aug 2010 13:36:36 +0200
-Message-ID: <1281180996.1706.118.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] migration scenario to xenomai
+MIME-Version: 1.0
+In-Reply-To: <1281091438.1706.114.camel@domain.hid>
+References: <1276880276.12743.73.camel@domain.hid> 
+	<4C1BA6F7.9080004@domain.hid>
+	<20100805125828.GA22855@domain.hid> 
+	<1281016845.1706.0.camel@domain.hid>
+	<4C5AC77F.1040508@domain.hid> 
+	<20100805151932.GA25701@domain.hid>
+	<1281027097.1706.96.camel@domain.hid> 
+	<20100806094325.GA11479@domain.hid>
+	<1281091438.1706.114.camel@domain.hid>
+From: Peter Soetens <peter@domain.hid>
+Date: Sun, 8 Aug 2010 00:08:01 +0200
+Message-ID: <AANLkTinbzuTwXb2nUM+fNMzjVwOnf96VHttBUrx7rG5C@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: Re: [Xenomai-help] [Xenomai-core] [PULL REQUEST] fixes for 2.5.4
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -21,60 +23,82 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai help <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On Sat, 2010-08-07 at 13:02 +0200, Gilles Chanteperdrix wrote:
-> Guenter Ebermann wrote:
-> > Hi Gilles,
-> > 
-> > Gilles Chanteperdrix wrote:
-> >> Guenter Ebermann wrote:
-> >>> Yeah, I understand your point with generic interface and device driver
-> >>> separation. And I really like the way this happens under linux/xenomai. I am
-> >>> also willing to write new drivers which are usable by a broader public using
-> >>> these design principles. But the communication stack I am gona use (AUTOSAR
-> >>> FlexRay stack) does not follow them. AUTOSAR (www.autosar.org) specs defines
-> >>> the Interfaces and layers of the whole communcation system for cars. It does
-> >>> not involve kernel/userspace separation, but it also does not mix the low-level
-> >>> code with application code. Low level code is only implemented in the device
-> >>> drivers (CAN, LIN, FlexRay), but the interface to the upper level stack is not
-> >>> generic (as in linux with device drivers) - it is different for each kind of
-> >>> lower layer device (CAN, LIN, FlexRay) to gain the best performance from each
-> >>> of them.
-> >> Well, it looks to me like you can implement the interface between driver
-> >> and user-space with standard posix interface (especially ioctl), and
-> >> then implement the AUTOSAR interfaces as a user-space library relying on
-> >> this posix interface.
-> > 
-> > Yes, this will work for the send direction for LIN and CAN very fine. But
-> > receive operation happens via function calls (RxIndications) from driver to
-> > upper layer. Also send direction of FLEXRAY is a call from driver to upper
-> > layer with a request to fill the buffers.
-> > 
-> > Can I make callbacks from xenomai rtdm into a xenomai app in user space?
-> > Or can I register C-callbacks with ioctrl at driver?
-> 
-> The support to have this is almost in place, we call it user-space
-> signals, because this is essentially the way posix signals are
-> implemented, but it applies to any type of user-space callback triggered
-> by a kernel-space action.
-> 
-> With the current method, the callback would be called only when
-> returning from a system call, but with the "mayday" support, implemented
-> in Xenomai 2.5.4, we have a way to have the callbacks being able to
-> interrupt any piece of code. The support we have currently is only the
-> core support, we need some window-dressing for the RTDM skin, though.
-> 
-> But all this can be sorted out pretty quickly if need be.
+On Fri, Aug 6, 2010 at 12:43 PM, Philippe Gerum <rpm@xenomai.org> wrote:
+> On Fri, 2010-08-06 at 11:43 +0200, Tschaeche IT-Services wrote:
+>> On Thu, Aug 05, 2010 at 06:51:37PM +0200, Philippe Gerum wrote:
+>> > Why do you see different licenses? The nucleus is GPL, as is GPL each
+>> > and every bit of the Xenomai kernel code. Only userland libs are LGPL.
+>> >
+>> > The decision to give the EXPORT_GPL hint now to in-kernel users is
+>> > precisely there to make this even more clear, and I will extend this to
+>> > all in-kernel interfaces in Xenomai 2.6. The reason why I did not push
+>> > this change to the 2.5.x series is because some legacy Xenomai-based
+>> > apps implemented as non-GPL kernel modules might qualify for the "gray
+>> > area" set, as described in this post:
+>> > http://marc.info/?l=linux-kernel&m=107049625920022&w=2
+>> >
+>> > However, the days when using a dual-kernel system meant running
+>> > application code to kernel land are long gone; we did work quite hard to
+>> > provide flexibility, reliability and good performances in userland over
+>> > time. Therefore, Xenomai 2.6 will strongly advise users to run
+>> > applications in user-space only, and Xenomai 3.x won't export any kernel
+>> > space API to kernel-based applications at all (Of course, RTDM will
+>> > still export an API to build drivers, and to interface with other
+>> > drivers).
+>> >
+>> > If the issue is about driver code, and not application code, then it is
+>> > even simpler: driving peripherals is part of the Linux kernel
+>> > business's, so the GPL rules. If, for any valid or paranoid reason, some
+>> > of the code driving the peripheral could not be disclosed, then there
+>> > are options to move it partly or entirely to userland where LGPL
+>> > applies, even if that may not be the best technical approach.
+>> >
+>> > The bottom line for the Xenomai licensing policy is quite
+>> > straightforward:
+>> >
+>> > - We built our house on the foundations passed on by others, they gave
+>> > us the Linux kernel code, we do abide by their license because we are
+>> > part of their kernel, so our kernel-based code is licensed under the
+>> > terms of the Linux kernel license. People who want to interpret that
+>> > license to fit their licensing requirements are on their own. We did not
+>> > invent the license, we are simply using it and passing it on our own
+>> > users.
+>> >
+>> > - In userland, we provide LGPL interfaces to applications to call our
+>> > real-time nucleus services, the same way the glibc provides LGPL
+>> > interfaces to applications to call standard Linux services.
+>> >
+>> > > did not clarify yet, if our driver code may be open source.
+>> > > i think, it would be appreciated if not.
+>> > >
+>> >
+>> > We can't help in this area, we simply provide some code under a given
+>> > license. Whether the license fits your requirements depends on your
+>> > assessment of the situation only.
+>>
+>> personally i would like GPL used in projects, but companies are afraid
+>> of loosing their intellectual property. Thus, i, in the role of the
+>> consultant, have to find a solution, which you already explained:
+>> move the IP into user space and keep the GPLed module/driver part IP free.
+>
+> Whatever split between kernel/userland support you may want to implement
+> to solve this issue, I would strongly recommend to keep the interrupt
+> handling in the RTDM-based kernel driver, including the device request
+> acknowledgement part.
+>
+> Moving this code to userland would require the thread in charge to
+> always be runnable, so that you don't get either an interrupt flood, or
+> a device collapse because the interrupt handling is either significantly
+> delayed or even stopped. It turns out that such requirement would
+> prevent you from using GDB over the process including the interrupt
+> handling code, since GDB eagerly stops all threads for single-stepping.
 
-Until this is available, a straightforward approach would be to create
-some server thread of high priority in the receiving application,
-waiting for indications on a blocking ioctl() call dequeuing them from
-kernel space, then running the userland callback as required.
+Sorry for the off-topic nitpicking, but GDB 7 supports one-thread-stop/stepping.
+This doesn't in any way shed a different light on Philippe's arguments.
+It's just removing a nit. On a saturday night. While everyone's sleeping.
 
--- 
-Philippe.
-
-
+Peter
 
