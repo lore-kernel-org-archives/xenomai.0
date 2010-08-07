@@ -1,12 +1,12 @@
 Mime-Version: 1.0 (Apple Message framework v1081)
 Content-Type: text/plain; charset=us-ascii
 From: Guenter Ebermann <guenter.ebermann@domain.hid>
-In-Reply-To: <4C5C83E5.9040508@domain.hid>
-Date: Sat, 7 Aug 2010 11:28:17 +0200
+In-Reply-To: <4C5D0F40.1070104@domain.hid>
+Date: Sat, 7 Aug 2010 12:13:34 +0200
 Content-Transfer-Encoding: quoted-printable
-Message-Id: <C7EFC96D-FF5D-4150-A63D-1FFF25412FE7@domain.hid>
+Message-Id: <1DDE5D7F-58F5-4919-A4B4-5FCAD385E679@domain.hid>
 References: <AANLkTi=yDXty82va8JGzmRA453e021EvomyYitaQTCTg@domain.hid>
-	<4C5C83E5.9040508@domain.hid>
+	<4C5D0F40.1070104@domain.hid>
 Subject: Re: [Xenomai-help] migration scenario to xenomai
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -17,66 +17,91 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Thomas Lockhart <Thomas.Lockhart@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-Hi Thomas,
+Hi Gilles,
 
-Thank you very much for your help.
+Am 07.08.2010 um 09:46 schrieb Gilles Chanteperdrix:
+> You can access hardware registers in user-space by mmaping the memory
+> mapped ones with /dev/mem, or using iopl/ioperm and in[lwb]/out[lwb] =
+for
+> the old x86 I/O registers.
 
-Thomas Lockhart wrote:
-> We are thinking about trying to refactor a driver to use RTDM due to =
-the
-> recent discussions on losing support for userland interrupt handling, =
-but for
-> our purposes the current support for interrupts in userland has worked =
-fine.
+Ok, thank you very much. I will look into using /dev/mem (we dont need =
+x86 I/O
+- we use powerpc arch).
 
-If I understand you correctly you are using the rt_intr_*() functions =
-from the
-Native xenomai API in user space.
+> However, if this can help for a first order port to Xenomai,
+> implementing an RTDM driver later is better on the long run. By =
+limiting
+> the interface between the application and low-level code to a well
+> defined interface, it will make it possible to use different
+> applications with the same drivers, or use different hardware with the
+> same application at will, things that are often hard when the =
+low-level
+> code is mixed with the application code.
 
-> We use pci_scan_bus() and friends for finding the device, and mmap to =
-get it
-> into userland memory.
+The xenomai RTDM API is made solely for kernel space, if i understood =
+the docs
+correctly?
 
-Ok. This means your devices are on the pci bus and you have written a =
-kernel
-driver which maps the pci address space of your card to the user space =
+Yeah, I understand your point with generic interface and device driver
+separation. And I really like the way this happens under linux/xenomai. =
+I am
+also willing to write new drivers which are usable by a broader public =
 using
-mmap. I once did the same thing for a PCI data aquisition host driver =
-under
-linux. But, please correct me if I am wrong, such a minimal =
-pci-memory-mapping
-driver cant gain advantage of the xenomai rtdm or other xenomai api. =
-Because
-the whole mapping stuff will happen only once during module init and the =
-user
-space application (which hopefully only stays in the xenomai domain) =
-will take
-over after that.
+these design principles. But the communication stack I am gona use =
+(AUTOSAR
+FlexRay stack) does not follow them. AUTOSAR (www.autosar.org) specs =
+defines
+the Interfaces and layers of the whole communcation system for cars. It =
+does
+not involve kernel/userspace separation, but it also does not mix the =
+low-level
+code with application code. Low level code is only implemented in the =
+device
+drivers (CAN, LIN, FlexRay), but the interface to the upper level stack =
+is not
+generic (as in linux with device drivers) - it is different for each =
+kind of
+lower layer device (CAN, LIN, FlexRay) to gain the best performance from =
+each
+of them.
 
-But the whole PCI stuff leads me to another question:
-I know the PCI-host infrastructure of the linux kernel - device =
-enumeration and
-driver structure. But AFAIK the PCI infrastructure of the linux kernel =
-"only"
-deals with the use case where linux is the master/host on the PCI bus.  =
-Our
-aquisition device must be a bus master PCI slave/device - this means it =
-is
-plugged into a normal PC via PCI-express. Therefor linux on the card is =
-not
-allowed to make bus enumeration. We will have to port our own =
-PCI-device-driver
-which uses the DMA controller to make PCI-burst-transfers to host =
-memory. Is
-there a infrastructure I dont know of, which can help us in this task? =
-E.g.: A
-existing general purpose DMA Api which I only have to extend to the DMA
-controller (I think it is a kind of Freescale Bestcomm) of our new CPU.
+So I will try to keep the AUTOSAR part in a high prio process (deadlines =
+to
+fill communication buffers in-time must be met) in user space which =
+stays in
+the xenomai domain.
+
+For all other things I will try to use the linux design philosophy and =
+RTDM
+drivers.
+
+> And you could even get the drivers you develop merged into Xenomai, if
+> you are willing to publish them.
+
+I will do my best to publish drivers which are not our core business and =
+which
+will be usable by a broader public. E.g. a driver for =
+device-PCI-communication,
+or other drivers which are missing yet for our target processor. And of =
+course
+bug-fixes or extensions of existing drivers.
+
+We will like to use the rt-socket-can MSCAN driver from xenomai. I =
+already
+looked in the source and liked it very much (I maintained, extended and =
+fixed
+a MSCAN driver for eCos). On top of it I would like to write a small =
+AUTOSAR
+Can Driver API in userspace to link it with the rest of the stack.=20
+
+BTW. Is anyone of you using Xenomai on Freescale QorIP P2020?
+I have seen it mentioned in the supported hardware area on the xenomai
+home page.
 
 -Guenter
-
 
 
