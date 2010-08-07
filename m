@@ -1,19 +1,14 @@
+From: Wolfgang Denk <wd@domain.hid>
 MIME-Version: 1.0
-In-Reply-To: <1281091438.1706.114.camel@domain.hid>
-References: <1276880276.12743.73.camel@domain.hid> 
-	<4C1BA6F7.9080004@domain.hid>
-	<20100805125828.GA22855@domain.hid> 
-	<1281016845.1706.0.camel@domain.hid>
-	<4C5AC77F.1040508@domain.hid> 
-	<20100805151932.GA25701@domain.hid>
-	<1281027097.1706.96.camel@domain.hid> 
-	<20100806094325.GA11479@domain.hid>
-	<1281091438.1706.114.camel@domain.hid>
-From: Peter Soetens <peter@domain.hid>
-Date: Sun, 8 Aug 2010 00:08:01 +0200
-Message-ID: <AANLkTinbzuTwXb2nUM+fNMzjVwOnf96VHttBUrx7rG5C@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai-help] [Xenomai-core] [PULL REQUEST] fixes for 2.5.4
+Content-type: text/plain; charset=ISO-8859-1
+In-reply-to: <C7EFC96D-FF5D-4150-A63D-1FFF25412FE7@domain.hid>
+References: <AANLkTi=yDXty82va8JGzmRA453e021EvomyYitaQTCTg@domain.hid>
+	<4C5C83E5.9040508@domain.hid>
+	<C7EFC96D-FF5D-4150-A63D-1FFF25412FE7@domain.hid>
+Date: Sun, 08 Aug 2010 01:17:58 +0200
+Message-Id: <20100807231758.AAC87B715A@gemini.denx.de>
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-help] migration scenario to xenomai
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -23,82 +18,50 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
+To: Guenter Ebermann <guenter.ebermann@domain.hid>
 Cc: xenomai@xenomai.org
 
-On Fri, Aug 6, 2010 at 12:43 PM, Philippe Gerum <rpm@xenomai.org> wrote:
-> On Fri, 2010-08-06 at 11:43 +0200, Tschaeche IT-Services wrote:
->> On Thu, Aug 05, 2010 at 06:51:37PM +0200, Philippe Gerum wrote:
->> > Why do you see different licenses? The nucleus is GPL, as is GPL each
->> > and every bit of the Xenomai kernel code. Only userland libs are LGPL.
->> >
->> > The decision to give the EXPORT_GPL hint now to in-kernel users is
->> > precisely there to make this even more clear, and I will extend this to
->> > all in-kernel interfaces in Xenomai 2.6. The reason why I did not push
->> > this change to the 2.5.x series is because some legacy Xenomai-based
->> > apps implemented as non-GPL kernel modules might qualify for the "gray
->> > area" set, as described in this post:
->> > http://marc.info/?l=linux-kernel&m=107049625920022&w=2
->> >
->> > However, the days when using a dual-kernel system meant running
->> > application code to kernel land are long gone; we did work quite hard to
->> > provide flexibility, reliability and good performances in userland over
->> > time. Therefore, Xenomai 2.6 will strongly advise users to run
->> > applications in user-space only, and Xenomai 3.x won't export any kernel
->> > space API to kernel-based applications at all (Of course, RTDM will
->> > still export an API to build drivers, and to interface with other
->> > drivers).
->> >
->> > If the issue is about driver code, and not application code, then it is
->> > even simpler: driving peripherals is part of the Linux kernel
->> > business's, so the GPL rules. If, for any valid or paranoid reason, some
->> > of the code driving the peripheral could not be disclosed, then there
->> > are options to move it partly or entirely to userland where LGPL
->> > applies, even if that may not be the best technical approach.
->> >
->> > The bottom line for the Xenomai licensing policy is quite
->> > straightforward:
->> >
->> > - We built our house on the foundations passed on by others, they gave
->> > us the Linux kernel code, we do abide by their license because we are
->> > part of their kernel, so our kernel-based code is licensed under the
->> > terms of the Linux kernel license. People who want to interpret that
->> > license to fit their licensing requirements are on their own. We did not
->> > invent the license, we are simply using it and passing it on our own
->> > users.
->> >
->> > - In userland, we provide LGPL interfaces to applications to call our
->> > real-time nucleus services, the same way the glibc provides LGPL
->> > interfaces to applications to call standard Linux services.
->> >
->> > > did not clarify yet, if our driver code may be open source.
->> > > i think, it would be appreciated if not.
->> > >
->> >
->> > We can't help in this area, we simply provide some code under a given
->> > license. Whether the license fits your requirements depends on your
->> > assessment of the situation only.
->>
->> personally i would like GPL used in projects, but companies are afraid
->> of loosing their intellectual property. Thus, i, in the role of the
->> consultant, have to find a solution, which you already explained:
->> move the IP into user space and keep the GPLed module/driver part IP free.
->
-> Whatever split between kernel/userland support you may want to implement
-> to solve this issue, I would strongly recommend to keep the interrupt
-> handling in the RTDM-based kernel driver, including the device request
-> acknowledgement part.
->
-> Moving this code to userland would require the thread in charge to
-> always be runnable, so that you don't get either an interrupt flood, or
-> a device collapse because the interrupt handling is either significantly
-> delayed or even stopped. It turns out that such requirement would
-> prevent you from using GDB over the process including the interrupt
-> handling code, since GDB eagerly stops all threads for single-stepping.
+Dear Guenter Ebermann,
 
-Sorry for the off-topic nitpicking, but GDB 7 supports one-thread-stop/stepping.
-This doesn't in any way shed a different light on Philippe's arguments.
-It's just removing a nit. On a saturday night. While everyone's sleeping.
+In message <C7EFC96D-FF5D-4150-A63D-1FFF25412FE7@domain.hid> you wrot=
+e:
+>=20
+> I know the PCI-host infrastructure of the linux kernel - device enumera=
+tion and
+> driver structure. But AFAIK the PCI infrastructure of the linux kernel =
+"only"
+> deals with the use case where linux is the master/host on the PCI bus. =
+ Our
+> aquisition device must be a bus master PCI slave/device - this means it=
+ is
+> plugged into a normal PC via PCI-express. Therefor linux on the card is=
+ not
+> allowed to make bus enumeration. We will have to port our own PCI-devic=
+e-driver
+> which uses the DMA controller to make PCI-burst-transfers to host memor=
+y. Is
+> there a infrastructure I dont know of, which can help us in this task? =
+E.g.: A
+> existing general purpose DMA Api which I only have to extend to the DMA
+> controller (I think it is a kind of Freescale Bestcomm) of our new CPU.
 
-Peter
+You do not want to use a MPC5200 in any new product. Actually, you do
+not want to use the BestComm in any product.
+
+As for PCIe support: both U-Boot and Linux support initialization of
+hardware with respective capabilities as root complex or as end point.
+For example, the AMCC PPC 440SPe is running in some storage controller
+applications, where for example two of the PCIe busses are configured
+as root complex and the third is used in end point mode.
+
+Best regards,
+
+Wolfgang Denk
+
+--=20
+DENX Software Engineering GmbH,     MD: Wolfgang Denk & Detlev Zundel
+HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
+Phone: (+49)-8142-66989-10 Fax: (+49)-8142-66989-80 Email: wd@domain.hid
+"There was no difference between  the  behavior  of  a  god  and  the
+operations of pure chance..."   - Thomas Pynchon, _Gravity's Rainbow_
 
