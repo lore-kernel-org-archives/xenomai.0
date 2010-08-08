@@ -1,21 +1,13 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <AANLkTinbzuTwXb2nUM+fNMzjVwOnf96VHttBUrx7rG5C@mail.gmail.com>
-References: <1276880276.12743.73.camel@domain.hid>
-	<4C1BA6F7.9080004@domain.hid>
-	<20100805125828.GA22855@domain.hid>
-	<1281016845.1706.0.camel@domain.hid>
-	<4C5AC77F.1040508@domain.hid>
-	<20100805151932.GA25701@domain.hid>
-	<1281027097.1706.96.camel@domain.hid>
-	<20100806094325.GA11479@domain.hid>
-	<1281091438.1706.114.camel@domain.hid>
-	<AANLkTinbzuTwXb2nUM+fNMzjVwOnf96VHttBUrx7rG5C@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Date: Sun, 08 Aug 2010 10:50:38 +0200
-Message-ID: <1281257438.1706.126.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] [Xenomai-core] [PULL REQUEST] fixes for 2.5.4
+MIME-Version: 1.0
+In-Reply-To: <4C5CC360.7070707@domain.hid>
+References: <4C5A26C4.3050702@domain.hid> <4C5A631B.1040604@domain.hid>
+	<4C5CC360.7070707@domain.hid>
+Date: Sun, 8 Aug 2010 17:36:46 +0800
+Message-ID: <AANLkTikC5DvkOQDfGFWL7b8KXFYd+1OkZrQ0Gc+GzzZr@domain.hid>
+From: Everett Wang <everteq@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-help] RTDM driver structure - an update
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -25,91 +17,143 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Peter Soetens <peter@domain.hid>
+To: Bob Feretich <bob.feretich@domain.hid>
 Cc: xenomai@xenomai.org
 
-On Sun, 2010-08-08 at 00:08 +0200, Peter Soetens wrote:
-> On Fri, Aug 6, 2010 at 12:43 PM, Philippe Gerum <rpm@xenomai.org> wrote:
-> > On Fri, 2010-08-06 at 11:43 +0200, Tschaeche IT-Services wrote:
-> >> On Thu, Aug 05, 2010 at 06:51:37PM +0200, Philippe Gerum wrote:
-> >> > Why do you see different licenses? The nucleus is GPL, as is GPL each
-> >> > and every bit of the Xenomai kernel code. Only userland libs are LGPL.
-> >> >
-> >> > The decision to give the EXPORT_GPL hint now to in-kernel users is
-> >> > precisely there to make this even more clear, and I will extend this to
-> >> > all in-kernel interfaces in Xenomai 2.6. The reason why I did not push
-> >> > this change to the 2.5.x series is because some legacy Xenomai-based
-> >> > apps implemented as non-GPL kernel modules might qualify for the "gray
-> >> > area" set, as described in this post:
-> >> > http://marc.info/?l=linux-kernel&m=107049625920022&w=2
-> >> >
-> >> > However, the days when using a dual-kernel system meant running
-> >> > application code to kernel land are long gone; we did work quite hard to
-> >> > provide flexibility, reliability and good performances in userland over
-> >> > time. Therefore, Xenomai 2.6 will strongly advise users to run
-> >> > applications in user-space only, and Xenomai 3.x won't export any kernel
-> >> > space API to kernel-based applications at all (Of course, RTDM will
-> >> > still export an API to build drivers, and to interface with other
-> >> > drivers).
-> >> >
-> >> > If the issue is about driver code, and not application code, then it is
-> >> > even simpler: driving peripherals is part of the Linux kernel
-> >> > business's, so the GPL rules. If, for any valid or paranoid reason, some
-> >> > of the code driving the peripheral could not be disclosed, then there
-> >> > are options to move it partly or entirely to userland where LGPL
-> >> > applies, even if that may not be the best technical approach.
-> >> >
-> >> > The bottom line for the Xenomai licensing policy is quite
-> >> > straightforward:
-> >> >
-> >> > - We built our house on the foundations passed on by others, they gave
-> >> > us the Linux kernel code, we do abide by their license because we are
-> >> > part of their kernel, so our kernel-based code is licensed under the
-> >> > terms of the Linux kernel license. People who want to interpret that
-> >> > license to fit their licensing requirements are on their own. We did not
-> >> > invent the license, we are simply using it and passing it on our own
-> >> > users.
-> >> >
-> >> > - In userland, we provide LGPL interfaces to applications to call our
-> >> > real-time nucleus services, the same way the glibc provides LGPL
-> >> > interfaces to applications to call standard Linux services.
-> >> >
-> >> > > did not clarify yet, if our driver code may be open source.
-> >> > > i think, it would be appreciated if not.
-> >> > >
-> >> >
-> >> > We can't help in this area, we simply provide some code under a given
-> >> > license. Whether the license fits your requirements depends on your
-> >> > assessment of the situation only.
-> >>
-> >> personally i would like GPL used in projects, but companies are afraid
-> >> of loosing their intellectual property. Thus, i, in the role of the
-> >> consultant, have to find a solution, which you already explained:
-> >> move the IP into user space and keep the GPLed module/driver part IP free.
-> >
-> > Whatever split between kernel/userland support you may want to implement
-> > to solve this issue, I would strongly recommend to keep the interrupt
-> > handling in the RTDM-based kernel driver, including the device request
-> > acknowledgement part.
-> >
-> > Moving this code to userland would require the thread in charge to
-> > always be runnable, so that you don't get either an interrupt flood, or
-> > a device collapse because the interrupt handling is either significantly
-> > delayed or even stopped. It turns out that such requirement would
-> > prevent you from using GDB over the process including the interrupt
-> > handling code, since GDB eagerly stops all threads for single-stepping.
-> 
-> Sorry for the off-topic nitpicking, but GDB 7 supports one-thread-stop/stepping.
-> This doesn't in any way shed a different light on Philippe's arguments.
-> It's just removing a nit. On a saturday night. While everyone's sleeping.
+Hi Bob,
 
-Is non-stop debugging available for anything else than x86 these days?
+Great job. :-D Do you have plan to port SPI to RTDM? Last time when I
+checked the rs232 driver
+in RTDM for omap3 still also had problem. I don't mind to work on
+that. But I am driver-challenged person.
 
-> 
-> Peter
+Have a nice weekend.
 
--- 
-Philippe.
+Everett
 
-
+On Sat, Aug 7, 2010 at 10:22 AM, Bob Feretich
+<bob.feretich@domain.hid> wrote:
+> =A0I completed porting my PWM timer driver to Xenomai.
+> I limited the heavy use of the dm_timer routines to the module_init and
+> module_exit routines. Other parts of the driver only used the dm_timer
+> routines that read and wrote timer registers.
+>
+> You guys did a great job defining and implementing Xenomai and RTDM.
+> Porting the Linux driver to RTDM was easy (2 days). It worked the first
+> time I got a clean compile!
+>
+> I have 4 pulse width modulated signals being output by the OMAP3 chip, 3
+> are completely generated by hardware, the other is done by software
+> being activated by RT interrupts. When I examined the signals with a
+> scope, I couldn't tell which one was software generated. In the pure
+> Linux environment I was seeing 100-200 microseconds of jitter on the
+> software generated signal on a lightly loaded system. Under the same
+> conditions in Xenomai, there was no noticeable jitter.
+>
+> Thanks for your help.
+> Regards,
+> Bob Feretich
+>
+> On 8/5/2010 12:07 AM, Gilles Chanteperdrix wrote:
+>> Bob Feretich wrote:
+>>> =A0 =A0I want to verify that my understanding of the RTDM driver struct=
+ure is
+>>> correct.
+>>>
+>>> My driver is created as a module that is loaded by Linux insmod. Given
+>>> that...
+>>>
+>>> My module_init routine (and module_exit)...
+>>> * =A0is executed in the Linux driver context.
+>>> * =A0should use Linux spin locks and events instead of rt_locks and eve=
+nts.
+>>> * =A0can call rtdm_irq_request (rtrm_irq_free) to register my interrupt
+>>> handlers
+>>> =A0 =A0 =A0 =A0 for rt interrupts.
+>>> * =A0can call rtdm_device_register (rt_dm_device_unregister) to registe=
+r
+>>> my rt device.
+>>> * =A0can call Linux omap dm_timer routines to reserve general purpose t=
+imers,
+>>> =A0 =A0 =A0 =A0 so that Linux will not give my timers to others. (these=
+ routines
+>>> call Linux locks)
+>>>
+>>> My driver's open_nrt close_nrt entry points... (open_rt& =A0close_rt ar=
+e
+>>> deprecated)
+>>> * =A0are executed in the caller's Linux user context, if the caller is =
+a
+>>> standard Linux
+>>> =A0 =A0 =A0 =A0 user process.
+>>> * =A0are executed in the caller's Xenomai user context (secondary mode)=
+,
+>>> if the caller
+>>> =A0 =A0 =A0 =A0 is a rt user process.
+>>> * =A0can use Linux spin locks and events instead of rt_locks and events=
+,
+>>> if I know
+>>> =A0 =A0 =A0 =A0 that protection is not needed from rt tasks and interru=
+pt handlers.
+>>> * =A0should use rt locks and events, if protection is needed from rt ta=
+sks
+>>> and
+>>> =A0 =A0 =A0 =A0 interrupt handlers.
+>>>
+>>> My driver's ioctl_rt, read_rt, and write_rt entry points...
+>>> * =A0are executed in the caller's Xenomai user context (primary mode), =
+if
+>>> the caller
+>>> =A0 =A0 =A0 =A0 is a rt user process running in primary mode.
+>>> * =A0are executed in the caller's Xenomai user context (secondary mode)=
+,
+>>> if the caller
+>>> =A0 =A0 =A0 =A0 is a rt user process running in secondary mode.
+>>> * =A0must use rt locks and events.
+>>>
+>>> My driver's ioctl_nrt, read_nrt, and write_nrt entry points...
+>>> * =A0are executed in the caller's Linux user context, if the caller is =
+a
+>>> standard
+>>> =A0 =A0 =A0 =A0 Linux user process.
+>>> * =A0I should use rt locks and events, for protection from rt tasks and
+>>> =A0 =A0 =A0 =A0 interrupt handlers.
+>>>
+>>> My driver's rt interrupt handler entry points...
+>>> * =A0are executed in the Xenomai interrupt context.
+>>> * =A0must use rt locks and events.
+>>>
+>>> Is the above correct?
+>> Hi,
+>>
+>> Yes, this is correct. Note however, that if you need to lock something
+>> in the init_module or an nrt callback, and you use a linux lock, you
+>> will not be able to use this lock from rt context, so, the only way to
+>> solve this will be to use an rtdm lock.
+>>
+>>> The OMAP3 chip has a collection of hardware timers that must be shared
+>>> between the Linux and Xenomai environments. I want to allocate/reserve =
+5
+>>> timers for my use in the real time environment for the creation of puls=
+e
+>>> width modulation output signals, but the rest of the timers should be
+>>> available for general Linux use. Being able to call omap dm_timer
+>>> routines in the module_init and module_exit routines make this much eas=
+ier.
+>> Another remark: Xenomai uses, as, a system timer, a timer in one-shot
+>> mode (same as Linux so-called "high resolution timers"), so, if you
+>> program several periodic software timers, Xenomai timer subsystem will
+>> arrange for your timer callbacks to be called at the right time, so it
+>> looks like you will not gain much by using several hardware timers. If
+>> you fear that Xenomai timing subsystem will not scale well with many
+>> timers, you can enable the heap-based or wheel-based timer management.
+>>
+>> Regards.
+>>
+>
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
+>
 
