@@ -1,49 +1,87 @@
-Message-ID: <4C6E9903.4010003@domain.hid>
-Date: Fri, 20 Aug 2010 17:02:27 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <4C603899.5050402@domain.hid>
+Date: Mon, 09 Aug 2010 19:19:21 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-15
+References: <307507.12667.qm@domain.hid>	
+	<1281350069.1706.139.camel@domain.hid>
+	<4C5FEB8C.200@domain.hid>
+	<1281361025.1706.143.camel@domain.hid>
+In-Reply-To: <1281361025.1706.143.camel@domain.hid>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] [git pull] small RTDM fixes and assorted patches
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Subject: Re: [Xenomai-help] Having trouble with a BeagleBoard GPIO interrupt
+ pin
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@xenomai.org, bob.feretich@domain.hid
 
-The following changes since commit 7e2735614ebe515d57abeaa3ff6df375a7c4149f:
+Philippe Gerum wrote:
+> On Mon, 2010-08-09 at 13:50 +0200, Gilles Chanteperdrix wrote:
+>> Philippe Gerum wrote:
+>>> On Mon, 2010-08-09 at 02:54 -0700, Bob Feretich wrote:
+>>>> I am converting my second driver to RTDM. This one receives a
+>>>> negativing going edge triggered interrupt on GPIO133 of the OMAP3
+>>>> chip.
+>>>>
+>>>> I have...
+>>>> ret = rtdm_irq_request(&adis_data_rdy_irq_handle, irq, 
+>>>>                    adis_data_rdy_irq_handler, 
+>>>>                    RTDM_IRQTYPE_EDGE, 
+>>>>                    "asuspidvr", ctx);
+>>>> then...
+>>>> ret = rtdm_irq_enable(&adis_data_rdy_irq_handle);
+>>>>
+>>>> but the interrupt handler is never invoked.
+>>>>
+>>>> cat /proc/xenomai/irq shows:
+>>>> IRQ         CPU0
+>>>>  37:       15815         [timer]
+>>>>  39:           0         asuspidvr
+>>>>  48:           0         asuspidvr
+>>>>  91:           0         asuspidvr
+>>>> 293:           0         asuspidvr
+>>>> 418:           0         [virtual]
+>>>>
+>>>> IRQ 293 in the interrupt that should be happening.
+>>>>
+>>>> I can see the pulses on the input pin and the non-rt version of the
+>>>> driver sees the interrupts, so that excludes hardware issues and
+>>>> u-boot pin configuration issues.
+>>>>
+>>>> Any suggestions?
+>>>> Regards,
+>>>> Bob Feretich
+>>>>
+>>>>
+>>>> __
+>>> For some reason, that IRQ line may not be properly enabled by the core
+>>> code. Could you introduce this patch? If a valid routine is reported in
+>>> the kernel log message, you could locate it by address, from a kernel
+>>> image objdump.
+>> There may also be more to do than enabling the irq line, such as
+>> programming the hardware to enable irq for this gpio, set the type
+>> (edge, level) and so on. You can try and call request_irq, then free_irq
+>> before calling rtdm_request_irq to see if request_irq would trigger some
+>> actions that rtdm_request_irq does not trigger.
+>>
+> 
+> If you mean that beagle_twl_gpio_setup() still has to be called at this
+> point, then we probably have something broken at ipipe level.
 
-  sched: avoid infinite reschedule loops (2010-08-03 00:11:21 +0200)
+I was rather thinking about gpio_irq_type, which is normally called
+through "set_irq_type". I wonder however, if calling this function for
+an irq registered through rtdm will not screw things up, especially
+since it changes the flow handler, or do nothing because the irq has not
+been registered with request_irq.
 
-are available in the git repository at:
-  git://git.xenomai.org/xenomai-jki.git for-upstream
-
-Jan Kiszka (8):
-      rt_print: Properly return printed length
-      RTDM: Protect xnshadow_ppd_get via nklock
-      RTDM: Plug race between proc_read_dev_info and device deregistration
-      RTDM: Properly clean up on xnvfile setup errors
-      RTDM: Extend device name space in open_fildes proc output
-      Fix symbolic status ouput of root threads
-      Create watchdog as non-blockable timer
-      native: Improve documentation of rt_task_join and rt_task_delete
-
- ksrc/nucleus/sched.c     |    3 ++-
- ksrc/nucleus/thread.c    |    4 ++++
- ksrc/skins/native/task.c |   15 +++++++++++++--
- ksrc/skins/rtdm/core.c   |    2 ++
- ksrc/skins/rtdm/proc.c   |   45 +++++++++++++++++++++++++++++++++++----------
- src/rtdk/rt_print.c      |    1 +
- 6 files changed, 57 insertions(+), 13 deletions(-)
-
-The bug fixes (patches 1-4 and 7) should all be considered for 2.5 as
-well, but some need rebasing. Will look into this once the series is
-acceptable.
-
-Jan
+-- 
+					    Gilles.
 
