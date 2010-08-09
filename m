@@ -1,26 +1,13 @@
-From: Flavio Alves <flavio.alves@domain.hid>
-In-Reply-To: <4C600D17.2020609@domain.hid>
-References: <1279046702.31665.65.camel@domain.hid>	<4C3CB655.1020801@domain.hid>
-	<1279048661.31665.81.camel@domain.hid>	<1280149567.1856.15.camel@domain.hid>
-	<4C4D9131.7080504@domain.hid>	<1280153187.1856.25.camel@domain.hid>
-	<4C4D97AC.2030609@domain.hid>	<1280154697.1856.29.camel@domain.hid>
-	<4C4D9E04.6060407@domain.hid>	<1280156219.1856.32.camel@domain.hid>
-	<4C4DA340.4030400@domain.hid>	<1280187666.1963.34.camel@domain.hid>
-	<4C4E8A64.1000701@domain.hid>	<1280239972.1865.7.camel@domain.hid>
-	<4C4EEBE3.9020806@domain.hid>
-	<AANLkTim4A+3sLGzgdhc_Xhfn0bAW+hLZtuUJVyVocLOZ@mail.gmail.com>
-	<AANLkTimGA5k4Vu_aQNXx1bBhT2X3KAZytAKZHWD-HNHK@mail.gmail.com>
-	<4C4F7B47.6040709@domain.hid>
-	<AANLkTin-4N_AdZiEK+dqxsz=E_ZHxDnoGxQikOJCkVo9@domain.hid>
-	<4C585D60.2040809@domain.hid> <1281356497.17126.19.camel@domain.hid>
-	<4C600D17.2020609@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Mon, 09 Aug 2010 14:37:58 -0300
-Message-ID: <1281375478.23731.6.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Kernel compilation procedures for imx51
-Reply-To: flavio.alves@domain.hid
+Date: Tue, 10 Aug 2010 00:13:12 +0200
+From: Alexis Berlemont <alexis.berlemont@domain.hid>
+Message-ID: <20100809221312.GB3876@domain.hid>
+References: <CB64A448250ADE40A2D9459AEB556D5E0274D4FBBF@NIHMLBX15.nih.gov>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CB64A448250ADE40A2D9459AEB556D5E0274D4FBBF@NIHMLBX15.nih.gov>
+Subject: Re: [Xenomai-help] Use of counter for quadratic encoder in NI
+ PCI-6229 board
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -30,45 +17,85 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: "Kim, Jonghyun (NIH/CC) [F]" <jonghyun.kim@domain.hid>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hello,
+Hi,
 
-Just to report, it worked. We have a working Xenomai version on imx51evk
-using the approach described into the readme file.
-
-Best regards,
-
-Flavio
-
-On Mon, 2010-08-09 at 16:13 +0200, Gilles Chanteperdrix wrote:
-> Flavio Alves wrote:
-> > Hello,
-> > 
-> > I'm still having problems in compiling the kernel with xenomai for the
-> > imx51.
-> > 
-> > I'm having the following error:
-> > 
-> >   LD      .tmp_vmlinux1
-> > arch/arm/plat-mxc/built-in.o: In function `mxc_dvfs_core_probe':
-> > isp1504xc.c:(.devinit.text+0x334): undefined reference to
-> > `cpufreq_trig_needed'
-> > make: *** [.tmp_vmlinux1] Error 1
-> > 
-> > The steps used are the indicated at the xenomai patches README. The
-> > defconfig that I'm using is imx51_defconfig, from the mainstream kernel.
+Kim, Jonghyun (NIH/CC) [F] wrote:
+> OS : Debian 5.0.4 + Xenomai 2.5.2
+> HW : NI PCI-6229
 > 
-> I validated the babbage board with a config derived from this config.
 > 
-> > 
-> > I know that it is not a xenomai issue, but it is caused when I run make
-> > menuconfig and disable the CPU frequency scaling feature, in order to
-> > disable the warning (if the warning is present, xenomai is not
-> > compiled).
+> Hi.
+> I have a question on the use of counter in NI PCI-6229 board.
 > 
-> No. The warning is just that: a warning.
+> Thanks to analogy, I can use the functions of AI and AO using NI PCI-6229.
+> But, I failed to use its counter for quadratic encoder.
+> 
+> I think it may work, but it is hard for me because I don't have any verified example.
+> 
+> Recently, I tried the following code to set the counter up for quadratic encoder:
+> ---------------------------------------------------------------------------------------------------
+> a4l_desc_t dsc = {.sbdata = NULL };
+> a4l_insn_t config;
+> unsigned int data[4];
+> 
+> a4l_open(&dsc, filename);
+> dsc.sbdata = malloc(dsc.sbsize);
+> a4l_fill_desc(&dsc);
+> 
+> config.type = A4L_INSN_CONFIG;
+> config.idx_subd = 10;  // this is correct. I checked it
+> data[0] = A4L_INSN_CONFIG_GPCT_QUADRATURE_ENCODER;
+> data[1] = 0; // X1, X2, X4
+> data[2] = 0; // indexphase HH, LH, ...
+> data[3] = 0; // indexreset
+> config.data = data;
+> config.data_size = 4*sizeof(unsigned int);
+> 
+> a4l_snd_insn(&dsc, &config);
+> ----------------------------------------------------------------------------------------------------
+> 
+> However, the last a4l_snd_insn() returned error code, -22.
 > 
 
+Are you still using the subdevice index 10 ? How did you check that it
+was correct? With my NI6221 board, the GCPT counter seems to be
+located at index 11 and the subdevice index are static (unless there
+is a bug).
 
+# cat /proc/analogy/00-analogy_ni_pcimio                                        
+--  Subdevices --                                                               
+                                                                                
+| idx | type                                                                    
+|  00 | Analog input subdevice                                                  
+|  01 | Analog output subdevice                                                 
+|  02 | Digital input/output subdevice                                          
+|  03 | Unused subdevice                                                        
+|  04 | Unused subdevice                                                        
+|  05 | Calibration subdevice                                                   
+|  06 | Memory subdevice                                                        
+|  07 | Digital input/output subdevice                                          
+|  08 | Unused subdevice                                                        
+|  09 | Serial subdevice                                                        
+|  10 | Unused subdevice                                                        
+|  11 | Counter subdevice                                                       
+|  12 | Counter subdevice                                                       
+|  13 | Counter subdevice    
+
+> 
+> Could you give me the verified sample code for quadratic encoder using NI PCI-6229 board?
+> Or plz help me to use my encoder :(
+> 
+> Many thanks in advance.
+> 
+> Jonghyun
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
+
+-- 
+Alexis.
 
