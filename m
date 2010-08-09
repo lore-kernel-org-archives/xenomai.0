@@ -4,8 +4,8 @@ References: <307507.12667.qm@domain.hid>
 	<1281350069.1706.139.camel@domain.hid>
 	<4C5FEB8C.200@domain.hid>
 Content-Type: text/plain; charset="UTF-8"
-Date: Mon, 09 Aug 2010 15:27:18 +0200
-Message-ID: <1281360438.1706.141.camel@domain.hid>
+Date: Mon, 09 Aug 2010 15:37:05 +0200
+Message-ID: <1281361025.1706.143.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] Having trouble with a BeagleBoard GPIO interrupt
@@ -73,9 +73,8 @@ On Mon, 2010-08-09 at 13:50 +0200, Gilles Chanteperdrix wrote:
 > actions that rtdm_request_irq does not trigger.
 > 
 
-non-rt version of this driver sees interrupts; the ipipe does not change
-anything regarding the hw setup for interrupt sources. It only changes
-the handling.
+If you mean that beagle_twl_gpio_setup() still has to be called at this
+point, then we probably have something broken at ipipe level.
 
 -- 
 Philippe.
