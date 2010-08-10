@@ -1,19 +1,12 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <4C60F042.3000405@domain.hid>
-References: <307507.12667.qm@domain.hid>
-	<1281350069.1706.139.camel@domain.hid>
-	<4C5FEB8C.200@domain.hid>
-	<1281361025.1706.143.camel@domain.hid>
-	<4C603899.5050402@domain.hid>
-	<1281418522.2986.21.camel@domain.hid>
-	<4C60F042.3000405@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Tue, 10 Aug 2010 08:43:41 +0200
-Message-ID: <1281422621.2986.39.camel@domain.hid>
-Mime-Version: 1.0
+Message-ID: <4C610855.1080105@domain.hid>
+Date: Tue, 10 Aug 2010 10:05:41 +0200
+From: Wolfgang Mauerer <wolfgang.mauerer@domain.hid>
+MIME-Version: 1.0
+References: <4C573CCB.7090006@domain.hid>
+In-Reply-To: <4C573CCB.7090006@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [Xenomai-help] Having trouble with a BeagleBoard
- GPIO interrupt pin
+Subject: Re: [Xenomai-core] [announce] Xenomai v2.5.4
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -22,169 +15,167 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Bob Feretich <bob.feretich@domain.hid>
-Cc: xenomai@xenomai.org, xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Xenomai core <Xenomai-core@domain.hid>
 
-On Mon, 2010-08-09 at 23:22 -0700, Bob Feretich wrote:
-> The below sequence worked around the problem:
-> insmod linux_asuspidvr.ko   <-- this driver set the xxxDETET registers
-> via request_irq()
-> rmmod linux_asuspidvr.ko  <-- the driver exits, but the xxxDETECT
-> registers remain set
-> insmod rt_asuspidvr.ko      <-- interrupts now seem to occur properly
+Gilles Chanteperdrix wrote:
+> Hi,
 > 
-> So I modified the rt driver probe routine to do the below:
->     ret = request_irq(irq, adis_data_rdy_dummy_irq_handler, 
->             IRQF_TRIGGER_FALLING | IRQF_DISABLED, "asuspidvr", 
->             adis_data_rdy_dummy_irq_handler);
-> ...
->     disable_irq(GPIO133);
-> ...
->     ret = rtdm_irq_request(&adis_data_rdy_irq_handle, irq,
->                    adis_data_rdy_irq_handler,
->                    RTDM_IRQTYPE_EDGE,
->                    "asuspidvr", ctx);
->     ret = rtdm_irq_enable(&adis_data_rdy_irq_handle);
-> ...
-> This seems to be working! I can now run the rt driver without first
-> running the Linux driver. :-) 
+> you will find Xenomai 2.5.4, aka "Sleep Walk", at the usual place:
+> http://download.gna.org/xenomai/stable/xenomai-2.5.4.tar.bz2
 > 
-> Do you see any problem with me continuing with the above temp fix?
-
-No, because you only use request_irq() to set up the GPIO line properly,
-but you don't actually share the interrupt between linux and Xenomai,
-which is ok.
-
+> It contains the usual amount of bug fixes and I-pipe patches update, as 
+> well as a new piece of nice code: the so-called mayday support, which 
+> should allow Xenomai watchdog to work less brutally (namely, avoid 
+> killing the tasks occupying too much CPU, and send them a signal), and 
+> be the base for a new version of user-space signals in the 2.6 branch.
 > 
-> Philippe,
-> I don't understand your response (below). It is too deep in
-> Adeos/Xenomai technical details.
-> After the issues are worked out on -core, please report back to -help
-> to let us know what we are to do.
+> Alex also pushed a lot of improvements for the analogy support.
 > 
+> So, it seems not everybody has been lazy like me for this last version.
 
-In short, Xenomai does not fully configure an interrupt line the way
-request_irq() does, this is the problem. Having the per-IRQ chip
-set_type() handler called is required to set the xxxDETECT bits in your
-case, and our low-level code (i.e. rthal_irq_request indirectly called
-from rtdm_irq_request) does not do that.
+to satisfy my curiosity: What was the exact reason for not including
+the hostrt stuff? After having spent quite some (obviously wasted)
+effort to make the code compliant with the maintainer's requests, I
+wonder what could have been missing.
 
-> It would also help if you could better describe the meaning of the
-> rtdm_irq_request() flags and whether the Linux request_irq() flags
-> have any implications to Adeos.
+Wolfgang
 > 
-
-They have none. The edge flag is purely Xenomai-related. When shared IRQ
-support is enabled, the EDGE flags passed to rtdm_irq_request() just
-gives a hint to the Xenomai interrupt dispatcher for dealing with edge
-interrupt handlers properly.
-
-> For example, I was quite surprised that both the request_irq() and
-> rtdm_irq_request() to the same IRQ succeeded even though neither
-> included a SHARE flag. This seems to require a rt driver to call both
-> routines to protect its xxxDetect registers.
-
-This is a current flaw in the Xenomai interrupt management routines;
-they should allow the IRQ trigger info to be defined when requesting an
-IRQ (via rtdm_irq_request) the same way request_irq() does on the linux
-side, but they do not support this yet.
-
-request_irq and rtdm_irq_request are not supposed to work together; IRQ
-sharing between linux and Xenomai is not formally defined, because it is
-semantically wrong. Actually, a real-time interrupt hooked via
-rtdm_irq_request should not be grabbed via request_irq() at the same
-time for handling the IRQ. This would mean that both linux and the rt
-domain share that interrupt, which would introduce a flaw, since a
-dependency would exist between the non-rt linux handling and the rt
-handling of the same IRQ. Think of a level-triggered IRQ, requiring
-linux to handle it before it is unmasked anew. To prevent an interrupt
-storm, the rt domain would then have to wait for the non-rt one (i.e.
-linux) to unmask the interrupt channel (i.e. maybe a non-rt device is
-requiring attention), thus introducing an unbounded latency.
-
+> The complete shortlog follows:
+> Alexis Berlemont (48):
+>       analogy: change the context's role (broken)
+>       analogy: the buffer structure is now the central field of a4l_context (bro
+> ken)
+>       analogy: the subdevice structure got a new status field (broken)
+>       analogy: the transfer structure is left with a minimal role (broken)
+>       analogy: first draft of buffer initialization functions (broken)
+>       analogy: adapt open, r/w, select and ioctl functions (broken)
+>       analogy: adapt a4l_set_dev() after a4l_context's overhaul (broken)
+>       analogy: update a4l_set_dev() declaration (broken)
+>       analogy: update comments on a4l_context (broken)
+>       analogy: changes related with subdevice's status field (broken)
+>       analogy: replace transfer setup functions with buffer setup ones (broken)
+>       analogy: update cancel functions (broken)
+>       analogy: rewrite the cancel ioctl handler (broken)
+>       analogy: fix bulk flag declaration in buffer.h (broken)
+>       analogy: update a4l_read and a4l_write (broken)
+>       analogy: update all a4l_buf_* functions (broken)
+>       analogy: last updates in the buffer part (broken)
+>       analogy: cosmetic changes (broken)
+>       analogy: declare the reserve / release functions at the subd level (broken
+> )
+>       analogy: update a4l_get_minor function (broken)
+>       analogy: update a4l_set_dev and remove useless info traces (broken)
+>       analogy: use rtdm_context_to_private (broken)
+>       analogy: minor fix in the subdevice structure declaration
+>       analogy: add some helper macros to test the subdevice's characteristics
+>       analogy: remove useless functions in the subdevice part
+>       analogy: fix the buffer syscalls (ioctl + r/w) after buffer review (broken)
+>       analogy: fix the declaration of the structure a4l_context (broken)
+>       analogy: fix compilation issues and review the mmap ioctl handler (broken)
+>       analogy: cosmetic change (broken)
+>       analogy: fix buffer's compilation issues (broken)
+>       analogy: prettify some subdevice tests (broken)
+>       analogy: [pcimio] fix a huge hack in the mite initialization (broken)
+>       analogy: fix the last compilation problems
+>       analogy: fix a missing setting of the buf field in subdevice (broken)
+>       analogy: fix the subdevice status management
+>       analogy: fix buffer initialization/cleanup calls at open/close times
+>       analogy: [loop] add a debug trace when trigger is called
+>       analogy: fix test of subdevice status in a4l_write
+>       analogy: [fake - loop] remove volatile keywords
+>       analogy: add a detail in a4l_close doxygen doc
+>       analogy: add an arbitrary sleep in cmd_write before closing the device
+>       analogy: [ni_pcimio] really minor changes
+>       analogy: [ni_pcimio] add the missing allocation of the digital ring
+>       analogy: [ni_pcimio] fix timeout value in digital trigger
+>       analogy: remove a4l_subd_is_busy calls in analogy core
+>       analogy: remove calls of a4l_release/reserve_subd in the core
+>       analogy: remove some tests which become with the buffer overhaul
+>       analogy: fix a bug in a4l_fill_desc() when called on an idle device
 > 
-> Regards,
-> Bob Feretich
+> Gilles Chanteperdrix (18):
+>       arm: fix VFP handling in the SMP case
+>       arm: get the nodiv_llimd code to compile in thumb mode
+>       Merge commit 'rpm' into pending
+>       Merge branch 'pending'
+>       rtcan: add missing PCI IDs for old kernels
+>       Merge commit 'rpm/for-upstream' into build-test
+>       Update autotools files
+>       arm: clarify the patches README with regard to vendor-specifi branches
+>       Merge commit 'analogy' into pending
+>       testsuite: adapt "run" scripts to the --with-testdir option
+>       native: add cancellation points
+>       arm: upgrade adeos patches to 2.6.30-1.15-02, 2.6.31-1.16-02, 2.6.33-1.17-
+> 02
+>       Add IMX51 patch
+>       build: bootstrap
+>       compat: add missing PCI ID for 2.4 kernels
+>       sched: avoid infinite reschedule loops
+>       build: bump version number
+>       doc: regenerate
 > 
-> On 8/9/2010 10:35 PM, Philippe Gerum wrote: 
-> > On Mon, 2010-08-09 at 19:19 +0200, Gilles Chanteperdrix wrote:
-> > > Philippe Gerum wrote:
-> > > > On Mon, 2010-08-09 at 13:50 +0200, Gilles Chanteperdrix wrote:
-> > > > > Philippe Gerum wrote:
-> > > > > > On Mon, 2010-08-09 at 02:54 -0700, Bob Feretich wrote:
-> > > > > > > I am converting my second driver to RTDM. This one receives a
-> > > > > > > negativing going edge triggered interrupt on GPIO133 of the OMAP3
-> > > > > > > chip.
-> > > > > > > 
-> > > > > > > I have...
-> > > > > > > ret = rtdm_irq_request(&adis_data_rdy_irq_handle, irq, 
-> > > > > > >                    adis_data_rdy_irq_handler, 
-> > > > > > >                    RTDM_IRQTYPE_EDGE, 
-> > > > > > >                    "asuspidvr", ctx);
-> > > > > > > then...
-> > > > > > > ret = rtdm_irq_enable(&adis_data_rdy_irq_handle);
-> > > > > > > 
-> > > > > > > but the interrupt handler is never invoked.
-> > > > > > > 
-> > > > > > > cat /proc/xenomai/irq shows:
-> > > > > > > IRQ         CPU0
-> > > > > > >  37:       15815         [timer]
-> > > > > > >  39:           0         asuspidvr
-> > > > > > >  48:           0         asuspidvr
-> > > > > > >  91:           0         asuspidvr
-> > > > > > > 293:           0         asuspidvr
-> > > > > > > 418:           0         [virtual]
-> > > > > > > 
-> > > > > > > IRQ 293 in the interrupt that should be happening.
-> > > > > > > 
-> > > > > > > I can see the pulses on the input pin and the non-rt version of the
-> > > > > > > driver sees the interrupts, so that excludes hardware issues and
-> > > > > > > u-boot pin configuration issues.
-> > > > > > > 
-> > > > > > > Any suggestions?
-> > > > > > > Regards,
-> > > > > > > Bob Feretich
-> > > > > > > 
-> > > > > > > 
-> > > > > > > __
-> > > > > > For some reason, that IRQ line may not be properly enabled by the core
-> > > > > > code. Could you introduce this patch? If a valid routine is reported in
-> > > > > > the kernel log message, you could locate it by address, from a kernel
-> > > > > > image objdump.
-> > > > > There may also be more to do than enabling the irq line, such as
-> > > > > programming the hardware to enable irq for this gpio, set the type
-> > > > > (edge, level) and so on. You can try and call request_irq, then free_irq
-> > > > > before calling rtdm_request_irq to see if request_irq would trigger some
-> > > > > actions that rtdm_request_irq does not trigger.
-> > > > > 
-> > > > If you mean that beagle_twl_gpio_setup() still has to be called at this
-> > > > point, then we probably have something broken at ipipe level.
-> > > I was rather thinking about gpio_irq_type, which is normally called
-> > > through "set_irq_type". I wonder however, if calling this function for
-> > > an irq registered through rtdm will not screw things up, especially
-> > > since it changes the flow handler, or do nothing because the irq has not
-> > > been registered with request_irq.
-> > > 
-> > chip->set_type() should be called when setting the IRQ trigger; this one
-> > completely depends on the per-chip routine. In the gpio_irq_type(), that
-> > should be fine, since we relay the settings through
-> > __fixup_irq_handler(), which is Adeos-defined.
-> > 
-> > Xenomai is not currently setting the IRQ trigger when requesting an
-> > interrupt, which is the problem. However, set_type() handlers are often
-> > required to run in secondary mode; this means than any call on behalf of
-> > rtdm_irq_request() would restrict the latter to secondary mode only,
-> > which is not currently the case.
-> > 
-> > This means that we should probably force this requirement on
-> > rthal_irq_request() at some point, because connecting a Xenomai
-> > interrupt descriptor to the Linux core may impose secondary mode on us.
-> > 
-> > PS: switching the discussion to -core where it belongs now.
-> > 
-
--- 
-Philippe.
-
+> Pavel Cheblakov (1):
+>       rtcan: add rtcan_plx_pci driver
+> 
+> Philippe Gerum (46):
+>       generic/hal: remove dead code
+>       powerpc/hal: test XENO_HW_UNLOCKED_SWITCH instead of IPIPE_WANT_PREEMPTIBL
+> E_SWITCH
+>       powerpc: use hardened switch_mm() support when available
+>       powerpc: upgrade I-pipe support to 2.6.33.4-powerpc-2.9-01
+>       nucleus: prevent stack overflow w/ unlocked context switch
+>       scripts: fix --enable-debug help string
+>       posix: fix build w/o CONFIG_PROC_FS
+>       nucleus/heap: fix build w/o CONFIG_PROC_FS
+>       x86: upgrade I-pipe support to 2.6.32.13-x86-2.6-04
+>       x86: update fpu state accessor for 2.6.35+
+>       x86: upgrade I-pipe support to 2.6.34-x86-2.6-04
+>       powerpc: upgrade I-pipe support to 2.6.34-powerpc-2.9-01
+>       uitron: fix wait flag helper
+>       hal/generic: always track switch to foreign stack
+>       compat: provide linux/err.h wrapper to linux/fs.h
+>       nucleus: silence deprecated warnings on __builtin_expect for old compilers
+>       rtai: mark as deprecated
+>       skins: sanitize heap binding
+>       build: check for CONFIG_MMU in user-space
+>       nucleus: fix heap mapping for nommu
+>       wrappers: no need to reserve pages passed to vm_insert_page
+>       x86: upgrade I-pipe support to 2.6.32.15-x86-2.7-00, 2.6.34-x86-2.7-00
+>       powerpc: upgrade I-pipe support to 2.6.33.5-powerpc-2.10-01, 2.6.34-powerpc-2.10-00
+>       x86: upgrade I-pipe support to 2.6.32.15-x86-2.7-00, 2.6.34-x86-2.7-00
+>       arm: upgrade I-pipe support to 2.6.33-arm-1.17-00
+>       blackfin: upgrade I-pipe support to 2.6.34-blackfin-1.14-00
+>       nucleus: introduce generic bits for MAYDAY support
+>       powerpc: enable MAYDAY support
+>       x86: enable MAYDAY support
+>       arm: enable MAYDAY support
+>       blackfin: enable MAYDAY support
+>       nios2: enable MAYDAY support
+>       arm: upgrade I-pipe support to 2.6.33-arm-1.17-01
+>       blackfin: upgrade I-pipe support to 2.6.34-blackfin-1.14-02
+>       powerpc: upgrade I-pipe support to 2.6.33.5-powerpc-2.10-03, 2.6.34-powerpc-2.10-02
+>       x86: upgrade I-pipe support to 2.6.32.15-x86-2.7-02, 2.6.34-x86-2.7-01
+>       common: warn early about missing /dev/rtheap
+>       nucleus: fix uninit variable
+>       nios2: upgrade I-pipe support to 2.6.30-nios2-1.2-00
+>       rtai: disable for MMU-less and 64bit builds
+>       rtdm: fix memory mapping services for nommu platforms
+>       powerpc: introduce HW_MATH_EMU symbol
+>       switchtest: bail out upon sem_wait() error
+>       nucleus: export xnshadow_call_mayday() as a service
+>       powerpc: add calibration values for mpc8xx
+>       powerpc: upgrade I-pipe support to 2.6.34-powerpc-2.10-03
+> 
+> Stefan Kisdaroczi (3):
+>       debian: switch to dpkg-source 3.0 (native) format
+>       debian: fix init script start/stop values
+>       x86: add Intel ICH10_1 to rthal_smi_pci_tbl
+> 
+> Tschaeche IT-Services (1):
+>       nucleus: enable tswitch callout for the root thread
+> 
+> Enjoy.
+> 
 
 
