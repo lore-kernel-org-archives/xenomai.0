@@ -1,33 +1,43 @@
-Message-ID: <4C6E9C68.2030906@domain.hid>
-Date: Fri, 20 Aug 2010 17:16:56 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <4C61BC81.3000107@domain.hid>
+Date: Tue, 10 Aug 2010 22:54:25 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4C6E9903.4010003@domain.hid> <4C6E9C10.3000203@domain.hid>
-In-Reply-To: <4C6E9C10.3000203@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+References: <AANLkTim1+--sP1vMpaduv9Sey+r6-1fN_L2HZ68X1-+T@mail.gmail.com>
+In-Reply-To: <AANLkTim1+--sP1vMpaduv9Sey+r6-1fN_L2HZ68X1-+T@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [git pull] small RTDM fixes and assorted patches
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Subject: Re: [Xenomai-help] Help on IPC example
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Stefan Kisdaroczi <kisda@domain.hid>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Ettore Pedretti <epedrett@domain.hid>
+Cc: xenomai@xenomai.org, John Monnier <monnier@domain.hid>
 
-Stefan Kisdaroczi wrote:
-> Hi Jan,
+Ettore Pedretti wrote:
+> Hello All,
 > 
-> https://mail.gna.org/public/xenomai-core/2010-05/msg00059.html
+> Since pipes will be soon removed from xenomai I would like to use
+> sockets on ipc. I know the question have been already asked but is
+> there any documentation other than the examples at present?
+> 
+> Also, I have compiled the examples in the ipc directory and I get the
+> following error while executing any of the programmes:
+> 
+>  mirkwood:/home/ep41/ipc# ./bufp-label
+> socket: Address family not supported by protocol
+> 
+> What am I doing wrong? Attached my .config file.
 
-Oh, sorry - hard vacation reset, still recovering. Will add this.
-
-Jan
+is the example compiled for xenomai posix skin? If you do not know what
+I am talking about, see:
+http://www.xenomai.org/index.php/Porting_POSIX_applications_to_Xenomai#Compilation_flags.
 
 -- 
-Siemens AG, Corporate Technology, CT T DE IT 1
-Corporate Competence Center Embedded Linux
+					    Gilles.
 
