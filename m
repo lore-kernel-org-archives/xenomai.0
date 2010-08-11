@@ -1,4 +1,4 @@
-From: Tim Cussins <timcussins@domain.hid>
+From: Philippe Gerum <rpm@xenomai.org>
 In-Reply-To: <1281540487.1730.20.camel@domain.hid>
 References: <1278943817.7023.18.camel@domain.hid>  <4C3EF6D6.6040907@domain.hid>
 	<1279210298.1995.38.camel@domain.hid>
@@ -6,8 +6,8 @@ References: <1278943817.7023.18.camel@domain.hid>  <4C3EF6D6.6040907@domain.hid>
 	<1281538723.2246.120.camel@domain.hid>
 	<1281540487.1730.20.camel@domain.hid>
 Content-Type: text/plain; charset="UTF-8"
-Date: Wed, 11 Aug 2010 17:24:23 +0100
-Message-ID: <1281543863.2246.149.camel@domain.hid>
+Date: Wed, 11 Aug 2010 18:30:13 +0200
+Message-ID: <1281544213.1730.24.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] Marvell sheeva support
@@ -20,7 +20,7 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
+To: Tim Cussins <timcussins@domain.hid>
 Cc: xenomai@xenomai.org
 
 On Wed, 2010-08-11 at 17:28 +0200, Philippe Gerum wrote:
@@ -112,8 +112,7 @@ On Wed, 2010-08-11 at 17:28 +0200, Philippe Gerum wrote:
 > > > > 
 > > > > I've tried applying this to vanilla 2.6.29 and 2.6.29.6 - it doesn't
 > > > > apply cleanly (well, fails :P). Am I approaching this the wrong way?
-> > > > Also tried chucking the patch into the xenomai tree and gettingdev.txt (from mkrootfs) would imply that it is 4,64. Without being able to log in, I can't confirm though :) Unless you know a cunning trick? :D
-
+> > > > Also tried chucking the patch into the xenomai tree and getting
 > > > > prepare_kernel.sh to try: still no joy.
 > > > 
 > > > It probably does not apply to vanilla because vanilla has no support for
@@ -154,15 +153,17 @@ On Wed, 2010-08-11 at 17:28 +0200, Philippe Gerum wrote:
 > > 
 > 
 > Does /dev/ttyS0 have major=4, minor=64 on your rootfs?
+> 
 
-dev.txt (from mkrootfs) would imply that it is 4,64. Without being able
-to log in, I can't confirm though :) Unless you know a cunning trick? :D
-
+Well, maybe. ls -l on the nfs server side exporting your rootfs :>
 
 > > Cheers,
 > > Tim
 > > 
 > 
+
+-- 
+Philippe.
 
 
 
