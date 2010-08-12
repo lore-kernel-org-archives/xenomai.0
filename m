@@ -1,95 +1,88 @@
-From: Krzysztof =?UTF-8?Q?B=C5=82aszkowski?= <kb@domain.hid>
-In-Reply-To: <4C6E50C1.9040700@domain.hid>
-References: <1282047938.5255.89.camel@domain.hid>
-	<4C6B146D.9010004@domain.hid>
-	<1282126974.5255.262.camel@domain.hid>
-	<4C6BBD62.3050907@domain.hid>
-	<1282131617.5255.286.camel@domain.hid>
-	<4C6BCB51.4010805@domain.hid>
-	<1282133876.5255.296.camel@domain.hid>
-	<4C6BD403.4030902@domain.hid>
-	<1282136147.5255.306.camel@domain.hid>
-	<4C6BE297.4060706@domain.hid>
-	<1282140262.5255.313.camel@domain.hid>
-	<4C6BE9D3.1080907@domain.hid>
-	<1282141537.5255.315.camel@domain.hid>
-	<4C6BEE9B.1080000@domain.hid>
-	<1282144162.5255.325.camel@domain.hid>
-	<4C6BF8B1.8080206@domain.hid>
-	<1282297638.5255.373.camel@domain.hid>
-	<4C6E50C1.9040700@domain.hid>
-Content-Type: text/plain; charset="utf-8"
-Date: Fri, 20 Aug 2010 17:50:27 +0200
-Message-Id: <1282319427.5255.400.camel@domain.hid>
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <76E258664B189C4CBEF125491CA11ECC9458403925@domain.hid>
+References: <76E258664B189C4CBEF125491CA11ECC9458403922@domain.hid>
+	<76E258664B189C4CBEF125491CA11ECC9458403925@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Date: Thu, 12 Aug 2010 09:12:39 +0200
+Message-ID: <1281597159.1730.71.camel@domain.hid>
 Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai-core] xenomai 2.5.3/native, kernel 2.6.31.8 and fork()
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] 2.6.32.18/x86 (Ubuntu) hangs at boot w/ Xenomai
+ 2.5.3 [was: HELP]
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Zafar Iqbal <Zafar.Iqbal2@domain.hid>
+Cc: "Xenomai-help@domain.hid" <Xenomai-help@domain.hid>
 
-On Fri, 2010-08-20 at 11:54 +0200, Gilles Chanteperdrix wrote:
-> Krzysztof Błaszkowski wrote:
-> >> Yes, now if you find the culprit option, it would be nice to report here
-> >> so that we can fix the I-pipe patch.
-> >>
-> > 
-> > 
-> > I do know it still. All i have are two configs. One which does not work
-> > and one working. I have tried so far breaking working one and also
-> > fixing broken. Both attempts have been unsuccessful.
-> > 
-> > I tried many "obvious" settings mainly in "processor type and features"
-> > with no luck.
-> > 
-> > This process must take some time ( i can't spend whole days on trying
-> > one-by-one each difference, recompile kernel,ync target's rootfs,
-> > reboot target and run fork regression test even that many steps i have
-> > automated)
-> 
-> ever heard about bisecting ?
-
-sure i had.
-
-
->  List the diffs between the two configs
-> apply half of them
-> if it still works, apply half of the rest
-> if it does not unapply half of the one you applied
-> etc...
-> if there are 65000 differences, you will get to the result in 16 steps.
-> you can keep the same rootfs, all you have to do is rebuild the kernel
-> (without "make clean", so that only what changed in the .config is
-> re-compiled).
-> 
-
-i used to use more fine grained changes set until it made me tired.
-
-and i as you may know most changes in "processor features" lead to
-recompile whole kernel - by not cleaning won't save anything.
-
-
-> It should take just an hour or two.
-
-poss. but i don't think so.
-
-Regards,
-
-> 
-> > 
-> > Regards,
+On Thu, 2010-08-12 at 11:46 +0530, Zafar Iqbal wrote:
+> Dear Sir,
 > 
 > 
+> I am Using Ubuntu 10.4 in my system with kernel version 2.6.32.18.
+> I downloaded xenomai-2.5.3 and ptached into linux-2.6.32.18 after that I compiled the whole kenel.using make.
+> After that I made the image of the compiled kernel : make bzImage
+> then copied the image to the location as in the boot folder with the following command cp arch/x86/boot/bzImage /boot/vmlinuz-2.6.32.18-xenomai-2.5.3
+> then I updated my GRUB with the command update-grub.
+> 
+> When I Tried to reboot the System with the Xenomai patched Kernel my system hanged up and it is not able to boot with the new kernel image.
+> 
+> Can you please suggest whats the wrong here.
 
+A few hints:
+
+- that question from mainstream x86 distro users is definitely a FAQ on
+our mailing list. Did you have a look at the mailing list archive, to
+find common answers to this problem?
+https://mail.gna.org/public/xenomai-help/
+
+- Did you read the TROUBLESHOOTING file at the top of the Xenomai tree
+and on our website?
+http://www.xenomai.org/documentation/xenomai-2.5/TROUBLESHOOTING
+
+- Did you read this FAQ?
+http://www.xenomai.org/index.php/FAQs#Tips_and_tricks_setting_up_your_x86_kernel
+
+- Do you mind sending a bit more information than "my system hanged up"?
+Any boot log to share? A kernel config file maybe? Did you disable the
+quiet boot option to see kernel messages while booting? Are there any
+messages at all? Our mail archive is full of advices regarding the way
+to troubleshoot a boot issue on x86, make sure to read them first.
+
+- Please always provide a meaningful subject line, so that people having
+the same issue could later find and reuse the information from that
+thread.  "HELP" - particularly on a list called xenomai-help - does not
+qualify, at all. Because it could be seen as a waste of time by your
+recipients, it may even be counter-productive, and tends to bury your
+mail.
+
+- Please stop posting to xenomai-help-owner, really. This address is for
+sending requests related to your mailing list subscription, only.
+
+- Please do not re-post the very same question multiple times within
+less than 24 hours. It makes no sense; you can check that your previous
+message did arrive in our mail archive, so no need to spam the list with
+a rehash of your previous post. If people did not answer you yet, it may
+be because: 1) you did not provide sufficient input for them to think
+about your issue, 2) they don't have time to answer you at the moment,
+3) they don't care, 4) they don't know, or any combination thereof.
+
+> 
+> 
+> Thanks and Regards,
+> Zafar
+> 
+> 
+> 
 
 -- 
-Krzysztof Blaszkowski
+Philippe.
+
 
 
