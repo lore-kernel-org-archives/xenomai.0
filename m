@@ -1,15 +1,11 @@
-From: Tim Cussins <timcussins@domain.hid>
-In-Reply-To: <1281538723.2246.120.camel@domain.hid>
-References: <1278943817.7023.18.camel@domain.hid>  <4C3EF6D6.6040907@domain.hid>
-	<1279210298.1995.38.camel@domain.hid>
-	<1279623645.2187.35.camel@domain.hid>  <4C469259.3000708@domain.hid>
-	<1281538723.2246.120.camel@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Thu, 12 Aug 2010 16:45:31 +0100
-Message-ID: <1281627931.2211.97.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Marvell sheeva support
+Date: 12 Aug 2010 15:46:01 -0000
+MIME-Version: 1.0
+Message-ID: <1281614099.S.2522.62255.H.TldvbGZnYW5nIEdyYW5kZWdnZXIAUmU6IFtYZW5vbWFpLWhlbHBdIFRpbWluZyBjYWxjdWxhdGlvbg__.f4-234-118.old.1281627960.20877@domain.hid>
+in-reply-to: <4C63E156.2020102@domain.hid>
+From: "prakash srinivasan" <asprakash_83@domain.hid>
+Content-Type: multipart/alternative;
+	boundary="=_c4cbe351e10d7be6dc5128ceff87bcf5"
+Subject: Re: [Xenomai-help] =?utf-8?q?Timing_calculation?=
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,43 +15,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: wg@domain.hid
 Cc: xenomai@xenomai.org
 
-Hi all,
+--=_c4cbe351e10d7be6dc5128ceff87bcf5
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="UTF-8"
 
-On Wed, 2010-08-11 at 15:58 +0100, Tim Cussins wrote:
+>What does:
 
-> I took the mv88f6290 patch and bullied it into applying to vanilla
-> 2.6.29. Built ok, but was at home and no way to test, so I just got on
-> with migrating it to 2.6.33. That seems to be done - check the 2.6.33
-> boot output:
->   
->    ...
->   I-pipe: Domain Xenomai registered.
->   Xenomai: hal/arm started.
->   Xenomai: scheduling class idle registered.
->   Xenomai: scheduling class rt registered.
->   Xenomai: real-time nucleus v2.5.4 (Sleep Walk) loaded.
->   Xenomai: starting native API services.
->   Xenomai: starting POSIX services.
->   Xenomai: starting RTDM services.
->    ...
+>printf(TOTAL LOOP TIMING=%lld us\n", rt_timer_ticks2ns(end-start)/1000);
 
-Just a status update - I think I'm pretty much were Sergey was back here
-(+ some):
 
-vanilla 2.6.33 kernel +
-adeos-ipipe-2.6.33-arm-1.17-02.patch +
-kirkwood specific stuff (taken from adeos-ipipe-2.6.29-mv88f6290.patch)
 
-I can run all the xenomai apps. As with Sergey I'm seeing negative
-values for the minimum latency, which seems odd. See Sergey's post if
-interested:
+>report.
 
-http://www.mail-archive.com/xenomai@xenomai.org
 
-Cheers,
-Tim
 
+TOTAL LOOP TIMING= 5377070 us
+
+In this case (unsigned)(long)(long)start returns 1069623206 and (unsigned)(long)(long)end returns 2151726697
+
+
+
+-Prakash
+--=_c4cbe351e10d7be6dc5128ceff87bcf5
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/html; charset="UTF-8"
+
+>What does:<br />
+>printf(TOTAL LOOP TIMING=3D%lld usn", rt_timer_ticks2ns(end-start)/1000);<=
+br />
+<br />
+>report.<br />
+<br />
+TOTAL LOOP TIMING=3D 5377070 us<br />
+In this case (unsigned)(long)(long)start returns 1069623206 and (unsigned)(=
+long)(long)end returns 2151726697<br />
+<br />
+-Prakash<br><Table border=3D0 Width=3D644 Height=3D57 cellspacing=3D0 cellp=
+adding=3D0 style=3D"font-family:Verdana;font-size:11px;line-height:15px;"><=
+TR><td><A HREF=3D"http://sigads.rediff.com/RealMedia/ads/click_nx.ads/www.r=
+ediffmail.com/signatureline.htm@domain.hid?" target=3D"_blank"><IMG SRC=3D"http=
+://sigads.rediff.com/RealMedia/ads/adstream_nx.ads/www.rediffmail.com/signa=
+tureline.htm@domain.hid"></A></td></TR></Table>
+--=_c4cbe351e10d7be6dc5128ceff87bcf5--
 
