@@ -1,15 +1,12 @@
-Message-ID: <4C642F04.4020008@domain.hid>
-Date: Thu, 12 Aug 2010 19:27:32 +0200
-From: Stefan Kisdaroczi <kisda@domain.hid>
+Message-ID: <4C6447C2.1070001@domain.hid>
+Date: Thu, 12 Aug 2010 21:13:06 +0200
+From: Wolfgang Grandegger <wg@domain.hid>
 MIME-Version: 1.0
-References: <76E258664B189C4CBEF125491CA11ECC9458403922@domain.hid>	<76E258664B189C4CBEF125491CA11ECC9458403925@domain.hid>	<1281597159.1730.71.camel@domain.hid>
-	<E2CAE7F7B064EA49B5CE7EE9A4BB167D14FD14F757@domain.hid>
-In-Reply-To: <E2CAE7F7B064EA49B5CE7EE9A4BB167D14FD14F757@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigC9053E7AFDFBE043D4288801"
-Subject: Re: [Xenomai-help] 2.6.32.18/x86 (Ubuntu) hangs at boot w/ Xenomai
- 2.5.3 [was: HELP]
+References: <1281614099.S.2522.62255.H.TldvbGZnYW5nIEdyYW5kZWdnZXIAUmU6IFtYZW5vbWFpLWhlbHBdIFRpbWluZyBjYWxjdWxhdGlvbg__.f4-234-118.old.1281627480.44273@domain.hid>
+In-Reply-To: <1281614099.S.2522.62255.H.TldvbGZnYW5nIEdyYW5kZWdnZXIAUmU6IFtYZW5vbWFpLWhlbHBdIFRpbWluZyBjYWxjdWxhdGlvbg__.f4-234-118.old.1281627480.44273@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] Timing calculation
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,337 +16,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org, Zafar.Iqbal2@domain.hid
+To: asprakash_83 <asprakash_83@domain.hid>
+Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigC9053E7AFDFBE043D4288801
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+On 08/12/2010 05:38 PM, asprakash_83 wrote:
+> 
+>>> printf(TOTAL LOOP TIMING=%ld us\n", (long)((rt_timer_ticks2ns(end-start))/1000);
+> 
+>> What does:
+> 
+>> printf(TOTAL LOOP TIMING=%lld us\n", rt_timer_ticks2ns(end-start)/1000);
+> 
+>> report.
+> 
+> TOTAL LOOP TIMING = 5377070 us 
+> In this case, the (unsigned) (long) (long)tart returns 1069623206
+> and (unsigned) (long) (long)end returns 2151726697
 
-Hi,
+Are you happy with that result? Did really pass approx. 5 seconds
+between start and end?
 
-to build and install Xenomai on Ubuntu try the "Building Debian packages"=
- howto [1].
-You need probably to call update-initramfs as mentioned here [2].
-
-Please use exactly the xenomai and kernel versions as described in the ho=
-wto.
-
-Regards Stefan
-
-[1] http://www.xenomai.org/index.php/Building_Debian_packages
-[2] http://www.mail-archive.com/xenomai@xenomai.org
-
-Am 12.08.2010 17:40, schrieb Hemal C.Bavishi:
-> Dear Mr. Gerum,
->=20
-> =20
->=20
-> We have followed following steps to install xenomai patch on UBUNTU. Af=
-ter repeated attempt in multiple system, still we are facing
-> same issues.
->=20
-> =20
->=20
-> We have used following version for installing xenomai patch on UBUNTU
->=20
-> =20
->=20
-> 1. linux Kernel: linux-2.6.32.18
->=20
-> 2. Xenomai patch: xenomai-2.5.4
->=20
-> 3. Operating System: UBUNTU 10.04
->=20
-> =20
->=20
-> =20
->=20
-> Following Steps have been followed to install xenomai patch on UBUNTU:
->=20
-> =20
->=20
-> 1. Copied the linux tar file into /usr/src
->=20
-> 2. Copied the xenomai tar file into /usr/src
->=20
-> 3. untar the linux and xenomai file
->=20
-> 4. cd /usr/src/xenomai-2.2.0/scripts/prepare-kernal.sh and appropriate =
-linux directory, architecture(i686) and adeos path were given
->=20
-> 5. Make a copy of the .config file of the running kernel in the present=
- directory.
->=20
-> 6. Next ran make menuconfig and made the following changes:
->=20
-> =20
->=20
-> I.          Selected Processor and feature -> Preemption Mode
->=20
-> II.         Power Management option
->=20
->             a. Disabled ACPI.
->=20
->             b. Disabled Frequency Scaling
->=20
-> 7. Build the Kernel(make command)
->=20
-> 8. copying the image of the kernel to the boot folder
->=20
->     cp arch/x86/boot/bzImage /boot/vmlinuz-2.6.32.18-xenomai-2.5.4
->=20
-> 9. At last, I tried to reboot the system in the new kernel image and fo=
-und the following issues:
->=20
-> =20
->=20
-> =20
->=20
-> dev_node is not supported in this system.
->=20
-> IO APIC#0 ID is already in use.
->=20
-> PnBIOS: Unable to get nod information.
->=20
-> Sdb1 could not mount because of the unsupported optional Feature.
->=20
-> =20
->=20
-> =20
->=20
-> Best Regards,
->=20
-> Hemal Bavishi
->=20
-> Principal Engineer
->=20
-> =20
->=20
-> KPIT Infosystems GmbH | Franziska - Bilek - Weg 9 | 80339 Munich
->=20
-> Phone: +49(0) 89 45 23 5 83 - 06 | Mobile: +49 162 426 9950 | Fax: +49 =
-(0) 89 45 23 5 83 - 07
->=20
->  http://www.kpitcummins.com <http://www.kpitcummins.com/>| mailto:Hemal=
-=2EBavishi@domain.hid
->=20
-> _Frankfurt Branch Office_:
-> KPIT Infosystems GmbH | Mainzer Landstrasse 176 | 60327 Frankfurt | Ger=
-many
->=20
-> Gesch=C3=A4ftsf=C3=BChrer/Managing Director: Sanjay Mandal
-> Handelsregister/Commercial Register: M=C3=BCnchen/Munich HRB 163288
-> Sitz der Gesellschaft/Place of Business: M=C3=BCnchen/Munich | Umsatzst=
-euernummer/VAT Number: DE251280557
->=20
-> Disclaimer: This message contains information that may be privileged or=
- confidential and is the property of KPIT Cummins. It is
-> intended only for the person to whom it is addressed. If you are not th=
-e intended recipient, you are not authorized to read, print,
-> retain copy, disseminate, distribute, or use this message or any part t=
-hereof. If you receive this message in error, please notify
-> the sender immediately and delete all copies of this message. KPIT Cumm=
-ins does not accept any liability for virus infected mails.
->=20
-> *P** **Please consider the impact on the environment before printing th=
-is e-mail*
->=20
-> =20
->=20
-> =20
->=20
-> =20
->=20
-> =20
->=20
-> -----Original Message-----
-> From: Philippe Gerum [mailto:rpm@xenomai.org]
-> Sent: Thursday, August 12, 2010 9:13 AM
-> To: Zafar Iqbal
-> Cc: Hemal C.Bavishi; Xenomai-help@domain.hid
-> Subject: Re: 2.6.32.18/x86 (Ubuntu) hangs at boot w/ Xenomai 2.5.3 [was=
-: HELP]
->=20
-> =20
->=20
-> On Thu, 2010-08-12 at 11:46 +0530, Zafar Iqbal wrote:
->=20
->> Dear Sir,
->=20
->>
->=20
->>
->=20
->> I am Using Ubuntu 10.4 in my system with kernel version 2.6.32.18.
->=20
->> I downloaded xenomai-2.5.3 and ptached into linux-2.6.32.18 after that=
- I compiled the whole kenel.using make.
->=20
->> After that I made the image of the compiled kernel : make bzImage
->=20
->> then copied the image to the location as in the boot folder with the f=
-ollowing command cp arch/x86/boot/bzImage
-> /boot/vmlinuz-2.6.32.18-xenomai-2.5.3
->=20
->> then I updated my GRUB with the command update-grub.
->=20
->>
->=20
->> When I Tried to reboot the System with the Xenomai patched Kernel my s=
-ystem hanged up and it is not able to boot with the new
-> kernel image.
->=20
->>
->=20
->> Can you please suggest whats the wrong here.
->=20
-> =20
->=20
-> A few hints:
->=20
-> =20
->=20
-> - that question from mainstream x86 distro users is definitely a FAQ on=
-
->=20
-> our mailing list. Did you have a look at the mailing list archive, to
->=20
-> find common answers to this problem?
->=20
-> https://mail.gna.org/public/xenomai-help/
->=20
-> =20
->=20
-> - Did you read the TROUBLESHOOTING file at the top of the Xenomai tree
->=20
-> and on our website?
->=20
-> http://www.xenomai.org/documentation/xenomai-2.5/TROUBLESHOOTING
->=20
-> =20
->=20
-> - Did you read this FAQ?
->=20
-> http://www.xenomai.org/index.php/FAQs#Tips_and_tricks_setting_up_your_x=
-86_kernel
->=20
-> =20
->=20
-> - Do you mind sending a bit more information than "my system hanged up"=
-?
->=20
-> Any boot log to share? A kernel config file maybe? Did you disable the
->=20
-> quiet boot option to see kernel messages while booting? Are there any
->=20
-> messages at all? Our mail archive is full of advices regarding the way
->=20
-> to troubleshoot a boot issue on x86, make sure to read them first.
->=20
-> =20
->=20
-> - Please always provide a meaningful subject line, so that people havin=
-g
->=20
-> the same issue could later find and reuse the information from that
->=20
-> thread.  "HELP" - particularly on a list called xenomai-help - does not=
-
->=20
-> qualify, at all. Because it could be seen as a waste of time by your
->=20
-> recipients, it may even be counter-productive, and tends to bury your
->=20
-> mail.
->=20
-> =20
->=20
-> - Please stop posting to xenomai-help-owner, really. This address is fo=
-r
->=20
-> sending requests related to your mailing list subscription, only.
->=20
-> =20
->=20
-> - Please do not re-post the very same question multiple times within
->=20
-> less than 24 hours. It makes no sense; you can check that your previous=
-
->=20
-> message did arrive in our mail archive, so no need to spam the list wit=
-h
->=20
-> a rehash of your previous post. If people did not answer you yet, it ma=
-y
->=20
-> be because: 1) you did not provide sufficient input for them to think
->=20
-> about your issue, 2) they don't have time to answer you at the moment,
->=20
-> 3) they don't care, 4) they don't know, or any combination thereof.
->=20
-> =20
->=20
->>
->=20
->>
->=20
->> Thanks and Regards,
->=20
->> Zafar
->=20
->>
->=20
->>
->=20
->>
->=20
-> =20
->=20
-> --=20
->=20
-> Philippe.
->=20
-> =20
->=20
-> =20
->=20
-> =20
->=20
->=20
-> This message contains information that may be privileged or confidentia=
-l and is the property of the KPIT Cummins Infosystems Ltd. It
-> is intended only for the person to whom it is addressed. If you are not=
- the intended recipient, you are not authorized to read,
-> print, retain copy, disseminate, distribute, or use this message or any=
- part thereof. If you receive this message in error, please
-> notify the sender immediately and delete all copies of this message. KP=
-IT Cummins Infosystems Ltd. does not accept any liability for
-> virus infected mails.
->=20
->=20
->=20
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
-
-
-
---------------enigC9053E7AFDFBE043D4288801
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.3 (MingW32)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
-
-iD8DBQFMZC8SIPTw9rIdn6oRAgLjAJ90neRi9iTRdX4xj8jvrVycpzb4nQCfWfaj
-sChHvUqXTz/h2Ayl2BXQ1P8=
-=Kh7Z
------END PGP SIGNATURE-----
-
---------------enigC9053E7AFDFBE043D4288801--
+Wolfgang.
 
