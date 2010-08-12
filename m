@@ -1,14 +1,10 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <76E258664B189C4CBEF125491CA11ECC9458403925@domain.hid>
-References: <76E258664B189C4CBEF125491CA11ECC9458403922@domain.hid>
-	<76E258664B189C4CBEF125491CA11ECC9458403925@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Thu, 12 Aug 2010 09:12:39 +0200
-Message-ID: <1281597159.1730.71.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] 2.6.32.18/x86 (Ubuntu) hangs at boot w/ Xenomai
- 2.5.3 [was: HELP]
+Date: 12 Aug 2010 09:39:44 -0000
+Message-ID: <20100812093944.14467.qmail@domain.hid>
+MIME-Version: 1.0
+From: "prakash srinivasan" <asprakash_83@domain.hid>
+Content-Type: multipart/alternative;
+	boundary="=_4be0a8905aac45e6a338203f06a49cc1"
+Subject: [Xenomai-help] =?utf-8?q?Timing_calculation?=
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,71 +14,100 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Zafar Iqbal <Zafar.Iqbal2@domain.hid>
-Cc: "Xenomai-help@domain.hid" <Xenomai-help@domain.hid>
+To: xenomai@xenomai.org
 
-On Thu, 2010-08-12 at 11:46 +0530, Zafar Iqbal wrote:
-> Dear Sir,
-> 
-> 
-> I am Using Ubuntu 10.4 in my system with kernel version 2.6.32.18.
-> I downloaded xenomai-2.5.3 and ptached into linux-2.6.32.18 after that I compiled the whole kenel.using make.
-> After that I made the image of the compiled kernel : make bzImage
-> then copied the image to the location as in the boot folder with the following command cp arch/x86/boot/bzImage /boot/vmlinuz-2.6.32.18-xenomai-2.5.3
-> then I updated my GRUB with the command update-grub.
-> 
-> When I Tried to reboot the System with the Xenomai patched Kernel my system hanged up and it is not able to boot with the new kernel image.
-> 
-> Can you please suggest whats the wrong here.
+--=_4be0a8905aac45e6a338203f06a49cc1
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="UTF-8"
 
-A few hints:
+Deal All,
 
-- that question from mainstream x86 distro users is definitely a FAQ on
-our mailing list. Did you have a look at the mailing list archive, to
-find common answers to this problem?
-https://mail.gna.org/public/xenomai-help/
-
-- Did you read the TROUBLESHOOTING file at the top of the Xenomai tree
-and on our website?
-http://www.xenomai.org/documentation/xenomai-2.5/TROUBLESHOOTING
-
-- Did you read this FAQ?
-http://www.xenomai.org/index.php/FAQs#Tips_and_tricks_setting_up_your_x86_kernel
-
-- Do you mind sending a bit more information than "my system hanged up"?
-Any boot log to share? A kernel config file maybe? Did you disable the
-quiet boot option to see kernel messages while booting? Are there any
-messages at all? Our mail archive is full of advices regarding the way
-to troubleshoot a boot issue on x86, make sure to read them first.
-
-- Please always provide a meaningful subject line, so that people having
-the same issue could later find and reuse the information from that
-thread.  "HELP" - particularly on a list called xenomai-help - does not
-qualify, at all. Because it could be seen as a waste of time by your
-recipients, it may even be counter-productive, and tends to bury your
-mail.
-
-- Please stop posting to xenomai-help-owner, really. This address is for
-sending requests related to your mailing list subscription, only.
-
-- Please do not re-post the very same question multiple times within
-less than 24 hours. It makes no sense; you can check that your previous
-message did arrive in our mail archive, so no need to spam the list with
-a rehash of your previous post. If people did not answer you yet, it may
-be because: 1) you did not provide sufficient input for them to think
-about your issue, 2) they don't have time to answer you at the moment,
-3) they don't care, 4) they don't know, or any combination thereof.
-
-> 
-> 
-> Thanks and Regards,
-> Zafar
-> 
-> 
-> 
-
--- 
-Philippe.
+       I am executing a simple for() loop and like to calculate the time period for this loop. I used rt_timer_read(). As per the document, it mentioned that rt_timer_read() returns the current time expressed in clock ticks. I could not able to get an clear idea about it. Suppose if i convert it by using rt_timer_ticks2ns(), I am not getting the proper output. My code is,
 
 
+
+RTIME start, end;
+
+...
+
+...
+
+start=rt_timer_read();
+
+for()
+
+{}
+
+end=rt_timer_read();
+
+printf(TOTAL LOOP TIMING=%ld us\n", (long)((rt_timer_ticks2ns(end-start))/1000);
+
+
+
+I would like to convert the ticks into nano seconds first and then into micro seconds. The final result is irrelevant. I am not sure, where is the issue. Help me to find the timings details properly.
+
+
+
+In the example program trivial-periodic.c, they mentioned 
+
+
+
+"NOTE: printf may have unexpected impact on the timing of your program. It is used here in the critical loop only for demonstration purposes."
+
+
+
+Why?
+
+ 
+
+
+
+-Prakash 
+
+
+
+  
+--=_4be0a8905aac45e6a338203f06a49cc1
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/html; charset="UTF-8"
+
+Deal All,<br />
+       I am executing a simple for() loop and like to calculate the time pe=
+riod for this loop. I used rt_timer_read(). As per the document, it mention=
+ed that rt_timer_read() returns the current time expressed in clock ticks. =
+I could not able to get an clear idea about it. Suppose if i convert it by =
+using rt_timer_ticks2ns(), I am not getting the proper output. My code is,<=
+br />
+<br />
+RTIME start, end;<br />
+=2E..<br />
+=2E..<br />
+start=3Drt_timer_read();<br />
+for()<br />
+{}<br />
+end=3Drt_timer_read();<br />
+printf(TOTAL LOOP TIMING=3D%ld usn", (long)((rt_timer_ticks2ns(end-start))/=
+1000);<br />
+<br />
+I would like to convert the ticks into nano seconds first and then into mic=
+ro seconds. The final result is irrelevant. I am not sure, where is the iss=
+ue. Help me to find the timings details properly.<br />
+<br />
+In the example program trivial-periodic.c, they mentioned <br />
+<br />
+"NOTE: printf may have unexpected impact on the timing of your program. It =
+is used here in the critical loop only for demonstration purposes."<br />
+<br />
+Why?<br />
+ <br />
+<br />
+-Prakash <br />
+<br />
+  <br><Table border=3D0 Width=3D644 Height=3D57 cellspacing=3D0 cellpadding=
+=3D0 style=3D"font-family:Verdana;font-size:11px;line-height:15px;"><TR><td=
+><A HREF=3D"http://sigads.rediff.com/RealMedia/ads/click_nx.ads/www.rediffm=
+ail.com/signatureline.htm@domain.hid?" target=3D"_blank"><IMG SRC=3D"http://sig=
+ads.rediff.com/RealMedia/ads/adstream_nx.ads/www.rediffmail.com/signatureli=
+ne.htm@domain.hid"></A></td></TR></Table>
+--=_4be0a8905aac45e6a338203f06a49cc1--
 
