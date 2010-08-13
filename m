@@ -1,14 +1,15 @@
 From: Hemal C.Bavishi <Hemal.Bavishi@domain.hid>
-Date: Fri, 13 Aug 2010 15:47:20 +0530
-Message-ID: <E2CAE7F7B064EA49B5CE7EE9A4BB167D14FD065788@domain.hid>
+Date: Fri, 13 Aug 2010 15:58:46 +0530
+Message-ID: <E2CAE7F7B064EA49B5CE7EE9A4BB167D14FD065789@domain.hid>
 References: <76E258664B189C4CBEF125491CA11ECC9458403922@domain.hid>
 	<76E258664B189C4CBEF125491CA11ECC9458403925@domain.hid>
 	<1281597159.1730.71.camel@domain.hid>
 	<E2CAE7F7B064EA49B5CE7EE9A4BB167D14FD14F757@domain.hid>,
 	<4C642F04.4020008@domain.hid>
 	<E2CAE7F7B064EA49B5CE7EE9A4BB167D14FD065786@domain.hid>,
-	<4C651A5D.9030101@domain.hid>
-In-Reply-To: <4C651A5D.9030101@domain.hid>
+	<4C651A5D.9030101@domain.hid>,
+	<E2CAE7F7B064EA49B5CE7EE9A4BB167D14FD065788@domain.hid>
+In-Reply-To: <E2CAE7F7B064EA49B5CE7EE9A4BB167D14FD065788@domain.hid>
 Content-Language: en-US
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
@@ -24,8 +25,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Stefan Kisdaroczi <kisda@domain.hid>
+To: "Hemal C.Bavishi" <Hemal.Bavishi@domain.hid>, Stefan Kisdaroczi <kisda@domain.hid>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+
+Dear Stefan,
+
+I have taken the snapshopts of the command prompt and attached below for yo=
+ur reference
+
+root@domain.hid:~# update-initramfs -c -k all
+update-initramfs: Generating /boot/initrd.img-2.6.32-24-generic
+update-initramfs: Generating /boot/initrd.img-2.6.32-21-generic
+root@domain.hid:~# update-grub
+Generating grub.cfg ...
+Found linux image: /boot/vmlinuz-2.6.32.15-xenomai-2.5.4
+Found linux image: /boot/vmlinuz-2.6.32-24-generic
+Found initrd image: /boot/initrd.img-2.6.32-24-generic
+Found linux image: /boot/vmlinuz-2.6.32-21-generic
+Found initrd image: /boot/initrd.img-2.6.32-21-generic
+Found memtest86+ image: /boot/memtest86+.bin
+Found Microsoft Windows XP Professional on /dev/sda1
+done
+root@domain.hid:~#
+
+Best Regards,
+Hemal Bavishi
+________________________________________
+From: Hemal C.Bavishi
+Sent: Friday, August 13, 2010 3:47 PM
+To: Stefan Kisdaroczi
+Cc: xenomai@xenomai.org
+Subject: RE: [Xenomai-help] 2.6.32.18/x86 (Ubuntu) hangs at boot w/ Xenomai=
+ 2.5.3 [was: HELP]
 
 Dear Stefan,
 
