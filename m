@@ -1,23 +1,14 @@
-From: Hemal C.Bavishi <Hemal.Bavishi@domain.hid>
-Date: Mon, 16 Aug 2010 21:38:15 +0530
-Message-ID: <E2CAE7F7B064EA49B5CE7EE9A4BB167D14FD2A1992@domain.hid>
-References: <76E258664B189C4CBEF125491CA11ECC9458403922@domain.hid>
-	<76E258664B189C4CBEF125491CA11ECC9458403925@domain.hid>
-	<1281597159.1730.71.camel@domain.hid>
-	<E2CAE7F7B064EA49B5CE7EE9A4BB167D14FD14F757@domain.hid>,
-	<4C642F04.4020008@domain.hid>
-	<E2CAE7F7B064EA49B5CE7EE9A4BB167D14FD065786@domain.hid>,
-	<4C651A5D.9030101@domain.hid>,
-	<E2CAE7F7B064EA49B5CE7EE9A4BB167D14FD065788@domain.hid>
-	<E2CAE7F7B064EA49B5CE7EE9A4BB167D14FD065789@domain.hid>
-	<4C695C36.1030308@domain.hid>
-In-Reply-To: <4C695C36.1030308@domain.hid>
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+Message-ID: <4C698E16.5050806@domain.hid>
+Date: Mon, 16 Aug 2010 21:14:30 +0200
+From: Theo Veenker <T.J.G.Veenker@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] 2.6.32.18/x86 (Ubuntu) hangs at boot w/ Xenomai
- 2.5.3 [was: HELP]
+References: <4C45539B.70204@domain.hid> <4C6932E8.7050701@domain.hid>
+	<4C694AB3.8050407@domain.hid>
+In-Reply-To: <4C694AB3.8050407@domain.hid>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] kernel 2.6.32.11 with xenomai 2.5.3 fails to
+ boot on ubuntu lucid system
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -27,80 +18,54 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Stefan Kisdaroczi <kisda@domain.hid>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Xenomai help <xenomai@xenomai.org>
 
-Dear Stefan,
-
-The behavior was quite peculiar and it has nothing to do with the "building=
- debian packages howto". However, it would be good if you specify these ste=
-ps into howto under building debian packages for smooth installation for ne=
-w comers:) =
-
-
-Nevertheless, I resolved this issue by explicitly calling the update-initra=
-mfs -c -k with the image name. I was bit surprised with the behavior but it=
- worked for me. =
-
-
-However, I am still facing the problem of hang up issue at boot(blank scree=
-n which other users also has reported) some time (it generally boots after =
-every 3/4 starts). I don't know what's an issue but I observed this behavio=
-r in 4 different system. Do you have any solution for this issue? Do I have=
- to build xenomai with the newer kernel version 2.6.32.34? Would that solve=
- current issue?
-
-Thank you for your support and have a look if you can also resolve task ord=
-ering issue?
-
-Best Regards,
-Hemal Bavishi
-
------Original Message-----
-From: Stefan Kisdaroczi [mailto:kisda@domain.hid] =
-
-Sent: Monday, August 16, 2010 5:42 PM
-To: Hemal C.Bavishi
-Cc: xenomai@xenomai.org
-Subject: Re: [Xenomai-help] 2.6.32.18/x86 (Ubuntu) hangs at boot w/ Xenomai=
- 2.5.3 [was: HELP]
-
-Hi,
-
-On 13.08.2010 12:28, Hemal C.Bavishi wrote:
-> Dear Stefan,
+On 08/16/2010 04:26 PM, Theo Veenker wrote:
+> Gilles Chanteperdrix wrote:
+>> Theo Veenker wrote:
+>>> Hi,
+>>>
+>>> I want to upgrade all our PC's from Ubuntu hardy to lucid and in the
+>>> process
+>>> I'm also going from kernel 2.6.29.5 with Xenomai 2.4.8 to kernel
+>>> 2.6.32.11
+>>> with Xenomai 2.5.3.
+>>>
+>>> I first built and tested the 2.6.32.11 kernel with 2.5.3 on my hardy
+>>> system
+>>> and all went fine. But the problem is it just doesn't run on the
+>>> lucid distro.
+>>
+>> This, I do not understand, the kernel does not need any support from the
+>> distribution for booting, how can the same kernel boot with one
+>> distribution, and not with the other? When you say the "same kernel", do
+>> you mean the exact same zImage or bzImage, or do you mean the kernel
+>> with the same configuration, but with a different compiler, or only the
+>> version is identical?
+>>
 >
-> I have taken the snapshopts of the command prompt and attached below =
-
-> for your reference
+> It is a complete mystery to me either. I compiled my kernel into a deb
+> package
+> and installed the very same deb package on three machines:
+> MSI p45 neo3 with Hardy on it -> works OK
+> MSI p45 neo3 with Ludid on it -> nothing (works fine with regular kernel)
+> MSI 945P with Lucid on it: -> nothing (works fine with regular kernel)
 >
-> root@domain.hid:~# update-initramfs -c -k all
-> update-initramfs: Generating /boot/initrd.img-2.6.32-24-generic
-> update-initramfs: Generating /boot/initrd.img-2.6.32-21-generic
-> root@domain.hid:~# update-grub
-> Generating grub.cfg ...
-> Found linux image: /boot/vmlinuz-2.6.32.15-xenomai-2.5.4
-> Found linux image: /boot/vmlinuz-2.6.32-24-generic Found initrd image: =
+> I'll try the suggestions posted and keep you informed.
 
-> /boot/initrd.img-2.6.32-24-generic
-> Found linux image: /boot/vmlinuz-2.6.32-21-generic Found initrd image: =
+OK. Connected a terminal to catch early kernel messages. Still no output
+unfortunately (with the regular kernel I do get output on the terminal,
+so the connection works).
 
-> /boot/initrd.img-2.6.32-21-generic
-> Found memtest86+ image: /boot/memtest86+.bin Found Microsoft Windows =
+Meanwhile also built and tested kernel 2.6.32.15 + xenomai 2.5.4. Still nothing.
+I'm clueless. I'm running Xenomai for years on dozens of systems and I've
+never run into problems like this. I think I'll have to sit down and take a
+close look at what I'm doing. I've always built my kernels using make-kpkg,
+maybe that somehow introduces a problem here. I'll try without it.
 
-> XP Professional on /dev/sda1 done root@domain.hid:~#
->   =
+(unfortunately/luckily I have to work from home for a few days so I can't
+get to the test system until later this week)
 
-
-According to your "Task execution order"-mail it seems you finally fixed
-this initrd-problem.
-What did you do to solve the issue ? Is something wrong/unclear in the
-"building debian packages howto" that could be improved ? Do I need to
-add the "update-initramfs, update-grub" to the howto for ubuntu lucid ?
-
-Thanks. Stefan
-
-> [cut]
-
-
+Theo
 
