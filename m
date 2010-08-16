@@ -1,62 +1,92 @@
-From: Krzysztof =?UTF-8?Q?B=C5=82aszkowski?= <kb@domain.hid>
-In-Reply-To: <1282320412.1730.637.camel@domain.hid>
-References: <1282319702.5255.405.camel@domain.hid>
-	<1282320412.1730.637.camel@domain.hid>
+From: Hemal C.Bavishi <Hemal.Bavishi@domain.hid>
+Date: Mon, 16 Aug 2010 17:30:54 +0530
+Message-ID: <E2CAE7F7B064EA49B5CE7EE9A4BB167D14FD2A16B4@domain.hid>
+References: <4C45539B.70204@domain.hid>	<4C45770F.10302@domain.hid>
+	<4C458607.1060402@domain.hid>	<4C45869D.9020501@domain.hid>
+	<4C45CF88.20608@domain.hid>	<4C691F66.7070802@domain.hid>
+	<4C6923A0.9000101@domain.hid>
+In-Reply-To: <4C6923A0.9000101@domain.hid>
+Content-Language: en-US
 Content-Type: text/plain; charset="utf-8"
-Date: Fri, 20 Aug 2010 18:20:52 +0200
-Message-Id: <1282321252.5255.415.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai-core] rt timer jitter
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+Subject: Re: [Xenomai-help] kernel 2.6.32.11 with xenomai 2.5.3 fails to
+ boot on ubuntu lucid system
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Stefan Kisdaroczi <kisda@domain.hid>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Fri, 2010-08-20 at 18:06 +0200, Philippe Gerum wrote:
-> On Fri, 2010-08-20 at 17:55 +0200, Krzysztof Błaszkowski wrote:
-> > Do you have any idea about reducing rt timer jitter ?
-> > I experience annoyingly big jitter in a thread which is supposed to run
-> > at 400us (i reckon this is nothing extra demanding from atom @1.6G)
-> > 
-> > 
-> > the thread's loop looks like:
-> > 
-> > {
-> > function1()
-> > ..2()
-> > ..3()
-> > ..4()
-> > 
-> > rt_task_wait_period()
-> > }
-> > 
-> > (^yet another simplified model^)
-> 
-> This is the typical pattern of the latency test. What figures do you get
-> with:
-> 
-> # /usr/xenomai/bin/latency -t0
-> ...
-> # /usr/xenomai/bin/latency -t1
-> 
+SSBhbHNvIGZhY2VkIHNpbWlsYXIgaXNzdWUgd2l0aCBVYnVudHUgMTAuNCBMVFMgKEx1Y2lkIEx5
+bngpLCBMaW51eCBWZXJzaW9uIDIuNi4zMi4xNSBhbmQgWGVub21haSAyLjUuNCBhbmQgaXQgaGFu
+Z3MgYmVmb3JlIG91dHB1dHRpbmcgYW55dGhpbmcgKGp1c3QgYmxhbmsgc2NyZWVuKS4gSG93ZXZl
+ciBpdCB3b3JrcyBzb21ldGltZSBpZiB5b3UgdHJ5IHRvIHJlYm9vdCBpdCBtdWx0aXBsZSB0aW1l
+cyBidXQgSSBhbSBub3Qgc3VyZSB3aGF0J3MgdGhlIHJlYXNvbiBmb3IgdGhpcyEhISENCg0KLS0t
+LS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCkZyb206IHhlbm9tYWktaGVscC1ib3VuY2VzQGduYS5v
+cmcgW21haWx0bzp4ZW5vbWFpLWhlbHAtYm91bmNlc0BnbmEub3JnXSBPbiBCZWhhbGYgT2YgU3Rl
+ZmFuIEtpc2Rhcm9jemkNClNlbnQ6IE1vbmRheSwgQXVndXN0IDE2LCAyMDEwIDE6NDAgUE0NClRv
+OiB4ZW5vbWFpLWhlbHBAZ25hLm9yZw0KU3ViamVjdDogUmU6IFtYZW5vbWFpLWhlbHBdIGtlcm5l
+bCAyLjYuMzIuMTEgd2l0aCB4ZW5vbWFpIDIuNS4zIGZhaWxzIHRvIGJvb3Qgb24gdWJ1bnR1IGx1
+Y2lkIHN5c3RlbQ0KDQpPbiAxNi4wOC4yMDEwIDEzOjIyLCBUaGVvIFZlZW5rZXIgd3JvdGU6DQo+
+IFRoZW8gVmVlbmtlciB3cm90ZToNCj4+IEdpbGxlcyBDaGFudGVwZXJkcml4IHdyb3RlOg0KPj4+
+IFRoZW8gVmVlbmtlciB3cm90ZToNCj4+Pj4gU3RlZmFuIEtpc2Rhcm9jemkgd3JvdGU6DQo+Pj4+
+PiBPbiAyMC4wNy4yMDEwIDA5OjQzLCBUaGVvIFZlZW5rZXIgd3JvdGU6DQo+Pj4+Pj4gSGksDQo+
+Pj4+Pj4NCj4+Pj4+PiBJIHdhbnQgdG8gdXBncmFkZSBhbGwgb3VyIFBDJ3MgZnJvbSBVYnVudHUg
+aGFyZHkgdG8gbHVjaWQgYW5kIGluIA0KPj4+Pj4+IHRoZSBwcm9jZXNzIEknbSBhbHNvIGdvaW5n
+IGZyb20ga2VybmVsIDIuNi4yOS41IHdpdGggWGVub21haSANCj4+Pj4+PiAyLjQuOCB0byBrZXJu
+ZWwNCj4+Pj4+PiAyLjYuMzIuMTENCj4+Pj4+PiB3aXRoIFhlbm9tYWkgMi41LjMuDQo+Pj4+Pj4N
+Cj4+Pj4+PiBJIGZpcnN0IGJ1aWx0IGFuZCB0ZXN0ZWQgdGhlIDIuNi4zMi4xMSBrZXJuZWwgd2l0
+aCAyLjUuMyBvbiBteSANCj4+Pj4+PiBoYXJkeSBzeXN0ZW0gYW5kIGFsbCB3ZW50IGZpbmUuIEJ1
+dCB0aGUgcHJvYmxlbSBpcyBpdCBqdXN0IA0KPj4+Pj4+IGRvZXNuJ3QgcnVuIG9uIHRoZSBsdWNp
+ZCBkaXN0cm8uDQo+Pj4+Pj4gSG93ZXZlciB0aGUgdmFuaWxsYSBrZXJuZWwgcnVucyBmaW5lLiBJ
+IGFsc28gdHJpZWQgd2l0aCBhIGNvbmZpZyANCj4+Pj4+PiBiYXNlZCBvbiB0aGUgdWJ1bnR1IGx1
+Y2lkIGNvbmZpZywgd2l0aCByZWxldmFudCBtb2R1bGVzIGNvbXBpbGVkIA0KPj4+Pj4+IGluIChJ
+IGRvbid0IHVzZSBpbml0cmQpLg0KPj4+Pj4+ICAgDQo+Pj4+PiBBcmUgeW91IHN1cmUgaXQncyBu
+b3QgaW5pdHJkIHJlbGF0ZWQgPw0KPj4+Pj4NCj4+Pj4+IEFmdGVyIGluc3RhbGxpbmcgdGhlIGtl
+cm5lbCB3aXRoIGRwa2cgLS1pbnN0YWxsIGkgaGFkIHRvIHJ1biAnIyANCj4+Pj4+IHVwZGF0ZS1p
+bml0cmFtZnMgLWMgLWsgYWxsJyBhbmQgJyMgdXBkYXRlLWdydWInIG1hbnVhbGx5Lg0KPj4+Pj4g
+VGhpcyBpcyBub3QgbmVjZXNzYXJ5IG9uIGRlYmlhbiBsZW5ueS9zcXVlZXplIGFuZCB3b3JrZWQg
+KGlmIEkgDQo+Pj4+PiByZW1lbWJlciBjb3JyZWN0bHkpIHdpdGggdWJ1bnR1IGthcm1pYyB0b28u
+DQo+Pj4+PiBDaGVjayBpbiB5b3VyIGdydWIgY29uZmlnIGlmIHRoZXJlIGlzIGEgaW5pdHJkIGVu
+dHJ5Lg0KPj4+PiBVbmZvcnR1bmF0ZWx5IHRoaXMgZG9lc24ndCBtYWtlIGEgZGlmZmVyZW5jZS4g
+Q3JlYXRlZCBpbml0cmQgZm9yIA0KPj4+PiByZWd1bGFyIGFuZCBrZXJuZWwgd2l0aCB4ZW5vbWFp
+OyBncnViIGNvbmZpZyBPSy4gQnV0IHN0aWxsIHRoZSANCj4+Pj4gcmVndWxhciBrZXJuZWwgd29y
+a3MgYW5kIHRoZSBvdGhlciBvbmUgZ2l2ZXMgbWUganVzdCBhIGJsYWNrIA0KPj4+PiBzY3JlZW4u
+DQo+Pj4NCj4+PiBIYXZlIHlvdSB0cmllZCByZW1vdmluZyAicXVpZXQiIGZyb20gdGhlIGtlcm5l
+bCBjb21tYW5kIGxpbmU/DQo+Pg0KPj4gWWVzIEkgYWx3YXlzIGRvLiBJdCBzb21laG93IGhhbmdz
+IGJlZm9yZSBvdXRwdXR0aW5nIGFueXRoaW5nLiBJbiB0aGUgDQo+PiBtZWFudGltZSBJIGhhdmUg
+cmVjb21waWxlZCBhZ2FpbiB3aXRoIEJMS19ERVZfSU5JVFJEIHNldCBhbmQgcnVubmluZyANCj4+
+IHVwZGF0ZS1pbml0cmFtZnMgZXRjIGFzIFN0ZWZhbiBzdWdnZXN0ZWQuIE5vIGVmZmVjdC4gV2hl
+biBJIGluc3RhbGwgDQo+PiB0aGlzIGtlcm5lbCBvbiBhbiBVYnVudHUgaGFyZHkgc3lzdGVtIGl0
+IHdvcmtzIGFzIGV4cGVjdGVkOyBvbiBVYnVudHUgDQo+PiBsdWNpZCBpdCBkb2VzIG5vdC4gQ291
+bGQgaXQgYmUgZHVlIHRvIHRoaXMgcGx5bW91dGggY3JhcD8NCj4NCj4gKGJhY2sgZnJvbSBob2xs
+aWRheSkgSSByZWFsbHkgbGlrZSB0byBnZXQgbXkga2VybmVsIHdvcmtpbmcuIEkganVzdCANCj4g
+Y29tcGlsZWQgYSBrZXJuZWwgMi42LjMyLjExIHdpdGggbG90cyBvZiBzdHVmZiAoc291bmQgZXRj
+KSBkaXNhYmxlZC4gDQo+IFRoZSByZWd1bGFyIGtlcm5lbCB3b3JrcyBmaW5lLCB3aXRoIA0KPiBh
+ZGVvcy1pcGlwZS0yLjYuMzIuMTEteDg2LTIuNi0wMy5wYXRjaCBwYXRjaCBhcHBsaWVkIGl0IGRv
+ZXMgbm90IHdvcmsgDQo+IGZvciBVYnVudHUgMTAuMDQgZGlzdHJvIChibGFuayBzY3JlZW4pIGJ1
+dCAqZG9lcyB3b3JrKiBmb3IgVWJ1bnR1IA0KPiA4LjA0Lg0KPiBXaGF0IGNvdWxkIGJlIHRoZSBj
+YXVzZSBvZiB0aGlzIHdlaXJkIHByb2JsZW0/IEl0IG11c3QgYmUgc29tZXRoaW5nIA0KPiB2ZXJ5
+IGVhcmx5IGluIHRoZSBib290IHByb2Nlc3MgdGhhdCdzIGRpZmZlcmVudCBiZXR3ZWVuIHRoZSBk
+aXN0cm8gDQo+IHZlcnNpb25zIHRoYXQgbWFrZXMgdGhlIGtlcm5lbCB3b3JrIGluIG9uZSBlbnZp
+cm9ubWVudCBhbmQgbm90IGluIHRoZSANCj4gb3RoZXIuDQoNCkhhdmUgeW91IHRyaWVkIG11bHRp
+cGxlIHRpbWVzIHRvIGJvb3QgdGhpcyBrZXJuZWw/IE9uIGEgZGViaWFuIHNxdWVlemUgYm94IGkg
+aGFkIHRoZSBwcm9ibGVtIHdpdGggMi42LjMyLjExIGFuZCAyLjUuMyB0aGF0IHRoZSBrZXJuZWwg
+d2FudGVkIHRvIHN0YXJ0IG9ubHkgb25jZSBvZiAzLTUgdHJpZXMuDQpTY3JlZW4gc3RheWVkIGp1
+c3QgYmxhbmsgKHdpdGhvdXQgcXVpZXQpIGp1c3QgYWZ0ZXIgYm9vdGluZy4gTG9va2VkIGxpa2Ug
+YSBlYXJseSB0aW1pbmcgcHJvYmxlbS4gSSBoYXZlIHVwZ3JhZGVkIHRoaXMgYm94IHRvIDIuNi4z
+Mi4xNSBhbmQgMi41LjQgYW5kIHRoZSBwcm9ibGVtIHNlZW1zIGdvbmUuDQoNClN0ZWZhbg0KDQo+
+IEknbSBwb3N0aW5nIG15IGxhdGVzdCBjb25maWcgaW4gdGhlIGhvcGUgc29tZW9uZSBzZWVzIHRo
+YXQgSSBzY3Jld2VkIA0KPiB1cCBzb21ldGhpbmcgdGhlcmUuDQo+DQo+IFRoZW8NCj4NCj4NCj4N
+Cj4gX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18NCj4gWGVu
+b21haS1oZWxwIG1haWxpbmcgbGlzdA0KPiBYZW5vbWFpLWhlbHBAZ25hLm9yZw0KPiBodHRwczov
+L21haWwuZ25hLm9yZy9saXN0aW5mby94ZW5vbWFpLWhlbHANCj4gICANCg0KDQoKCg==
 
-t0:
-
-RTS|     -1.337|     -0.039|     13.285|       0|     0|
-00:02:13/00:02:13
-
-
-i can't run t1 because of missing seno_timerbench.ko (i have no idea how
-to find a config option which would build it)
-
--- 
-Krzysztof Blaszkowski
 
 
