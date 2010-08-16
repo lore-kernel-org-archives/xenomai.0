@@ -1,17 +1,12 @@
-From: Hemal C.Bavishi <Hemal.Bavishi@domain.hid>
-Date: Mon, 16 Aug 2010 17:30:54 +0530
-Message-ID: <E2CAE7F7B064EA49B5CE7EE9A4BB167D14FD2A16B4@domain.hid>
-References: <4C45539B.70204@domain.hid>	<4C45770F.10302@domain.hid>
-	<4C458607.1060402@domain.hid>	<4C45869D.9020501@domain.hid>
-	<4C45CF88.20608@domain.hid>	<4C691F66.7070802@domain.hid>
-	<4C6923A0.9000101@domain.hid>
-In-Reply-To: <4C6923A0.9000101@domain.hid>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Date: Mon, 16 Aug 2010 13:13:43 +0100 (BST)
+From: edward.robbins@domain.hid
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] kernel 2.6.32.11 with xenomai 2.5.3 fails to
- boot on ubuntu lucid system
+Content-Type: text/plain;charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <4C65583D.3030800@domain.hid>
+References: <1281709057.650414331@domain.hid> <4C65583D.3030800@domain.hid>
+Message-ID: <1281960823.030215299@domain.hid>
+Subject: Re: [Xenomai-help] Very high latencies under stress testing
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -21,72 +16,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Stefan Kisdaroczi <kisda@domain.hid>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-SSBhbHNvIGZhY2VkIHNpbWlsYXIgaXNzdWUgd2l0aCBVYnVudHUgMTAuNCBMVFMgKEx1Y2lkIEx5
-bngpLCBMaW51eCBWZXJzaW9uIDIuNi4zMi4xNSBhbmQgWGVub21haSAyLjUuNCBhbmQgaXQgaGFu
-Z3MgYmVmb3JlIG91dHB1dHRpbmcgYW55dGhpbmcgKGp1c3QgYmxhbmsgc2NyZWVuKS4gSG93ZXZl
-ciBpdCB3b3JrcyBzb21ldGltZSBpZiB5b3UgdHJ5IHRvIHJlYm9vdCBpdCBtdWx0aXBsZSB0aW1l
-cyBidXQgSSBhbSBub3Qgc3VyZSB3aGF0J3MgdGhlIHJlYXNvbiBmb3IgdGhpcyEhISENCg0KLS0t
-LS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCkZyb206IHhlbm9tYWktaGVscC1ib3VuY2VzQGduYS5v
-cmcgW21haWx0bzp4ZW5vbWFpLWhlbHAtYm91bmNlc0BnbmEub3JnXSBPbiBCZWhhbGYgT2YgU3Rl
-ZmFuIEtpc2Rhcm9jemkNClNlbnQ6IE1vbmRheSwgQXVndXN0IDE2LCAyMDEwIDE6NDAgUE0NClRv
-OiB4ZW5vbWFpLWhlbHBAZ25hLm9yZw0KU3ViamVjdDogUmU6IFtYZW5vbWFpLWhlbHBdIGtlcm5l
-bCAyLjYuMzIuMTEgd2l0aCB4ZW5vbWFpIDIuNS4zIGZhaWxzIHRvIGJvb3Qgb24gdWJ1bnR1IGx1
-Y2lkIHN5c3RlbQ0KDQpPbiAxNi4wOC4yMDEwIDEzOjIyLCBUaGVvIFZlZW5rZXIgd3JvdGU6DQo+
-IFRoZW8gVmVlbmtlciB3cm90ZToNCj4+IEdpbGxlcyBDaGFudGVwZXJkcml4IHdyb3RlOg0KPj4+
-IFRoZW8gVmVlbmtlciB3cm90ZToNCj4+Pj4gU3RlZmFuIEtpc2Rhcm9jemkgd3JvdGU6DQo+Pj4+
-PiBPbiAyMC4wNy4yMDEwIDA5OjQzLCBUaGVvIFZlZW5rZXIgd3JvdGU6DQo+Pj4+Pj4gSGksDQo+
-Pj4+Pj4NCj4+Pj4+PiBJIHdhbnQgdG8gdXBncmFkZSBhbGwgb3VyIFBDJ3MgZnJvbSBVYnVudHUg
-aGFyZHkgdG8gbHVjaWQgYW5kIGluIA0KPj4+Pj4+IHRoZSBwcm9jZXNzIEknbSBhbHNvIGdvaW5n
-IGZyb20ga2VybmVsIDIuNi4yOS41IHdpdGggWGVub21haSANCj4+Pj4+PiAyLjQuOCB0byBrZXJu
-ZWwNCj4+Pj4+PiAyLjYuMzIuMTENCj4+Pj4+PiB3aXRoIFhlbm9tYWkgMi41LjMuDQo+Pj4+Pj4N
-Cj4+Pj4+PiBJIGZpcnN0IGJ1aWx0IGFuZCB0ZXN0ZWQgdGhlIDIuNi4zMi4xMSBrZXJuZWwgd2l0
-aCAyLjUuMyBvbiBteSANCj4+Pj4+PiBoYXJkeSBzeXN0ZW0gYW5kIGFsbCB3ZW50IGZpbmUuIEJ1
-dCB0aGUgcHJvYmxlbSBpcyBpdCBqdXN0IA0KPj4+Pj4+IGRvZXNuJ3QgcnVuIG9uIHRoZSBsdWNp
-ZCBkaXN0cm8uDQo+Pj4+Pj4gSG93ZXZlciB0aGUgdmFuaWxsYSBrZXJuZWwgcnVucyBmaW5lLiBJ
-IGFsc28gdHJpZWQgd2l0aCBhIGNvbmZpZyANCj4+Pj4+PiBiYXNlZCBvbiB0aGUgdWJ1bnR1IGx1
-Y2lkIGNvbmZpZywgd2l0aCByZWxldmFudCBtb2R1bGVzIGNvbXBpbGVkIA0KPj4+Pj4+IGluIChJ
-IGRvbid0IHVzZSBpbml0cmQpLg0KPj4+Pj4+ICAgDQo+Pj4+PiBBcmUgeW91IHN1cmUgaXQncyBu
-b3QgaW5pdHJkIHJlbGF0ZWQgPw0KPj4+Pj4NCj4+Pj4+IEFmdGVyIGluc3RhbGxpbmcgdGhlIGtl
-cm5lbCB3aXRoIGRwa2cgLS1pbnN0YWxsIGkgaGFkIHRvIHJ1biAnIyANCj4+Pj4+IHVwZGF0ZS1p
-bml0cmFtZnMgLWMgLWsgYWxsJyBhbmQgJyMgdXBkYXRlLWdydWInIG1hbnVhbGx5Lg0KPj4+Pj4g
-VGhpcyBpcyBub3QgbmVjZXNzYXJ5IG9uIGRlYmlhbiBsZW5ueS9zcXVlZXplIGFuZCB3b3JrZWQg
-KGlmIEkgDQo+Pj4+PiByZW1lbWJlciBjb3JyZWN0bHkpIHdpdGggdWJ1bnR1IGthcm1pYyB0b28u
-DQo+Pj4+PiBDaGVjayBpbiB5b3VyIGdydWIgY29uZmlnIGlmIHRoZXJlIGlzIGEgaW5pdHJkIGVu
-dHJ5Lg0KPj4+PiBVbmZvcnR1bmF0ZWx5IHRoaXMgZG9lc24ndCBtYWtlIGEgZGlmZmVyZW5jZS4g
-Q3JlYXRlZCBpbml0cmQgZm9yIA0KPj4+PiByZWd1bGFyIGFuZCBrZXJuZWwgd2l0aCB4ZW5vbWFp
-OyBncnViIGNvbmZpZyBPSy4gQnV0IHN0aWxsIHRoZSANCj4+Pj4gcmVndWxhciBrZXJuZWwgd29y
-a3MgYW5kIHRoZSBvdGhlciBvbmUgZ2l2ZXMgbWUganVzdCBhIGJsYWNrIA0KPj4+PiBzY3JlZW4u
-DQo+Pj4NCj4+PiBIYXZlIHlvdSB0cmllZCByZW1vdmluZyAicXVpZXQiIGZyb20gdGhlIGtlcm5l
-bCBjb21tYW5kIGxpbmU/DQo+Pg0KPj4gWWVzIEkgYWx3YXlzIGRvLiBJdCBzb21laG93IGhhbmdz
-IGJlZm9yZSBvdXRwdXR0aW5nIGFueXRoaW5nLiBJbiB0aGUgDQo+PiBtZWFudGltZSBJIGhhdmUg
-cmVjb21waWxlZCBhZ2FpbiB3aXRoIEJMS19ERVZfSU5JVFJEIHNldCBhbmQgcnVubmluZyANCj4+
-IHVwZGF0ZS1pbml0cmFtZnMgZXRjIGFzIFN0ZWZhbiBzdWdnZXN0ZWQuIE5vIGVmZmVjdC4gV2hl
-biBJIGluc3RhbGwgDQo+PiB0aGlzIGtlcm5lbCBvbiBhbiBVYnVudHUgaGFyZHkgc3lzdGVtIGl0
-IHdvcmtzIGFzIGV4cGVjdGVkOyBvbiBVYnVudHUgDQo+PiBsdWNpZCBpdCBkb2VzIG5vdC4gQ291
-bGQgaXQgYmUgZHVlIHRvIHRoaXMgcGx5bW91dGggY3JhcD8NCj4NCj4gKGJhY2sgZnJvbSBob2xs
-aWRheSkgSSByZWFsbHkgbGlrZSB0byBnZXQgbXkga2VybmVsIHdvcmtpbmcuIEkganVzdCANCj4g
-Y29tcGlsZWQgYSBrZXJuZWwgMi42LjMyLjExIHdpdGggbG90cyBvZiBzdHVmZiAoc291bmQgZXRj
-KSBkaXNhYmxlZC4gDQo+IFRoZSByZWd1bGFyIGtlcm5lbCB3b3JrcyBmaW5lLCB3aXRoIA0KPiBh
-ZGVvcy1pcGlwZS0yLjYuMzIuMTEteDg2LTIuNi0wMy5wYXRjaCBwYXRjaCBhcHBsaWVkIGl0IGRv
-ZXMgbm90IHdvcmsgDQo+IGZvciBVYnVudHUgMTAuMDQgZGlzdHJvIChibGFuayBzY3JlZW4pIGJ1
-dCAqZG9lcyB3b3JrKiBmb3IgVWJ1bnR1IA0KPiA4LjA0Lg0KPiBXaGF0IGNvdWxkIGJlIHRoZSBj
-YXVzZSBvZiB0aGlzIHdlaXJkIHByb2JsZW0/IEl0IG11c3QgYmUgc29tZXRoaW5nIA0KPiB2ZXJ5
-IGVhcmx5IGluIHRoZSBib290IHByb2Nlc3MgdGhhdCdzIGRpZmZlcmVudCBiZXR3ZWVuIHRoZSBk
-aXN0cm8gDQo+IHZlcnNpb25zIHRoYXQgbWFrZXMgdGhlIGtlcm5lbCB3b3JrIGluIG9uZSBlbnZp
-cm9ubWVudCBhbmQgbm90IGluIHRoZSANCj4gb3RoZXIuDQoNCkhhdmUgeW91IHRyaWVkIG11bHRp
-cGxlIHRpbWVzIHRvIGJvb3QgdGhpcyBrZXJuZWw/IE9uIGEgZGViaWFuIHNxdWVlemUgYm94IGkg
-aGFkIHRoZSBwcm9ibGVtIHdpdGggMi42LjMyLjExIGFuZCAyLjUuMyB0aGF0IHRoZSBrZXJuZWwg
-d2FudGVkIHRvIHN0YXJ0IG9ubHkgb25jZSBvZiAzLTUgdHJpZXMuDQpTY3JlZW4gc3RheWVkIGp1
-c3QgYmxhbmsgKHdpdGhvdXQgcXVpZXQpIGp1c3QgYWZ0ZXIgYm9vdGluZy4gTG9va2VkIGxpa2Ug
-YSBlYXJseSB0aW1pbmcgcHJvYmxlbS4gSSBoYXZlIHVwZ3JhZGVkIHRoaXMgYm94IHRvIDIuNi4z
-Mi4xNSBhbmQgMi41LjQgYW5kIHRoZSBwcm9ibGVtIHNlZW1zIGdvbmUuDQoNClN0ZWZhbg0KDQo+
-IEknbSBwb3N0aW5nIG15IGxhdGVzdCBjb25maWcgaW4gdGhlIGhvcGUgc29tZW9uZSBzZWVzIHRo
-YXQgSSBzY3Jld2VkIA0KPiB1cCBzb21ldGhpbmcgdGhlcmUuDQo+DQo+IFRoZW8NCj4NCj4NCj4N
-Cj4gX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18NCj4gWGVu
-b21haS1oZWxwIG1haWxpbmcgbGlzdA0KPiBYZW5vbWFpLWhlbHBAZ25hLm9yZw0KPiBodHRwczov
-L21haWwuZ25hLm9yZy9saXN0aW5mby94ZW5vbWFpLWhlbHANCj4gICANCg0KDQoKCg==
-
+=0A=0AOn Friday, 13 August, 2010 3:35pm, "Gilles Chanteperdrix" <gilles.cha=
+nteperdrix@domain.hid> said:=0A=0A> edward.robbins@domain.hid=
+k wrote:=0A>>=0A>> I wonder if this is to do with graphics? I have set "NoA=
+ccel" in the=0A>> driver section of Xorg.conf (I am using fbdev). I also no=
+tice that=0A>> latencies go massive (e.g. 4200uS) the first time I run glxg=
+ears.=0A>> "glxinfo" reports "Direct rendering: no".=0A> =0A> This is bad n=
+ews. It could come either from the fact that the Xorg=0A> driver shuts hard=
+ware interrupts off (there is nothing xenomai can do=0A> about that), or it=
+ could be an SMI issue. What about using the driver=0A> for the real graphi=
+c card you have ? Probably intel card? Do you observe=0A> any big latencies=
+ if you stress the system with anything else than X?=0A> =0A>> Power manage=
+ment options (ACPUI, APM): Disable ACPI (Advanced=0A>> Configuration and Po=
+wer Interface) Support --> Processor Disable CPU=0A>> Frequency Scaling Dis=
+able CPU idle PM support Disable Power Managment=0A>> Support=0A> =0A> Disa=
+bling ACPI is a bad idea. As repeated many times, only=0A> ACPI_PROCESSOR s=
+hould be disabled, not ACPI.=0A> =0A=0AThanks for your helpful responses.=
+=0A=0AI'm not working on this project again until next week, but on Friday =
+I was able to=0A=0A o Recompile the kernel with ACPI enabled =0A o Boot wit=
+h the 'SMI handler' BIOS option set to disabled....=0A   according to the h=
+elp text this option should be disabled if 'an RTOS =0A   is installed' - I=
+ presume this means that SMIs are completely disabled =0A   and therefore S=
+MIs cannot be the source of the problem =0A  (very convenient BIOS option..=
+. now I begin to appreciate the expense of this board!) =0A o Changed xorg =
+to use the intel video driver=0A=0AAfter doing this I still have problems w=
+ith latencies and X, but did not have a chance to stress the system with no=
+n-graphics tasks. I am thinking that when I get back to it next week I will=
+ compile the kernel a few times and also try writing a large file a number =
+of times to the disk as Philippe suggested. Hopefully this will not cause a=
+ny problems and I can then more confidently attribute the high latency to t=
+he graphics system. I will also attempt to install the I-pipe tracer as sug=
+gested. I'll update when (if!?) I get that far.=0A=0AThanks=0AEdward
 
 
