@@ -1,10 +1,13 @@
-Message-ID: <4C69434C.4050301@domain.hid>
-Date: Mon, 16 Aug 2010 15:55:24 +0200
+Message-ID: <4C694700.6000807@domain.hid>
+Date: Mon, 16 Aug 2010 16:11:12 +0200
 From: Theo Veenker <T.J.G.Veenker@domain.hid>
 MIME-Version: 1.0
-References: <4C45539B.70204@domain.hid>	<4C45770F.10302@domain.hid>	<4C458607.1060402@domain.hid>	<4C45869D.9020501@domain.hid>	<4C45CF88.20608@domain.hid>	<4C691F66.7070802@domain.hid>
-	<4C6923A0.9000101@domain.hid>
-In-Reply-To: <4C6923A0.9000101@domain.hid>
+References: <4C45539B.70204@domain.hid> <4C45770F.10302@domain.hid>
+	<4C458607.1060402@domain.hid> <4C45869D.9020501@domain.hid>
+	<4C45CF88.20608@domain.hid> <4C691F66.7070802@domain.hid>
+	<4C692359.5080802@domain.hid> <4C6941B2.6030105@domain.hid>
+	<4C6942CE.8040207@domain.hid>
+In-Reply-To: <4C6942CE.8040207@domain.hid>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] kernel 2.6.32.11 with xenomai 2.5.3 fails to
@@ -18,21 +21,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Stefan Kisdaroczi <kisda@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-Stefan Kisdaroczi wrote:
-> Have you tried multiple times to boot this kernel? On a debian squeeze
-> box i had
-> the problem with 2.6.32.11 and 2.5.3 that the kernel wanted to start
-> only once of 3-5 tries.
-> Screen stayed just blank (without quiet) just after booting. Looked like
-> a early timing
-> problem. I have upgraded this box to 2.6.32.15 and 2.5.4 and the problem
-> seems gone.
+Gilles Chanteperdrix wrote:
+>>> - have you tried Xenomai 2.5.4 and the Adeos patches it contains?
+>> Yes, that's what I'm working with.
+> 
+> Not according to the post I was answering to.
 
-I tried restarting multiple times. Blank screen every time.
-I'll try 2.6.32.15. Thanks for the tip!
+Ah you're right. Well, what can I say, its my first working day after a
+vacation.
+
+I'll try 2.5.4 (two dot five dot four).
+
+Thanks
 
 Theo
 
