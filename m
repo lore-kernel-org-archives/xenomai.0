@@ -1,42 +1,70 @@
-MIME-Version: 1.0
-In-Reply-To: <4C6BD747.1090304@domain.hid>
-References: <AANLkTikjB1vF+0Ldnc_80_+TJeG2MKo5i42hE5Ah3nj9@domain.hid>
-	<4C6BD747.1090304@domain.hid>
-Date: Wed, 18 Aug 2010 15:58:35 +0200
-Message-ID: <AANLkTimiofme9duMMyiqe3snHmGxWFxGf7AJDaaAGE6b@domain.hid>
-From: marc doz <doz.marc@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] kernel compilation problem with a Cortex A8,
- AM3517 EVM
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <4C6A6FE7.6030508@domain.hid>
+References: <4C6A6FE7.6030508@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Date: Tue, 17 Aug 2010 17:33:27 +0200
+Message-ID: <1282059207.1730.266.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Adeos-main] Deadlock-prone ipipe_critical_enter
+List-Id: General discussion about Adeos <adeos-main.gna.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+List-Archive: </public/adeos-main>
+List-Post: <mailto:adeos-main@gna.org>
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: adeos-main <adeos-main@gna.org>
 
-Indeed, I use the kernel included in the SDK of TI. I will retry with
-a vanilla kernel.
+On Tue, 2010-08-17 at 13:17 +0200, Jan Kiszka wrote:
+> Hi,
+> 
+> it turned out ipipe_critical_enter is broken on SMP > 2 CPUs: On one
+> CPU, Linux may have acquired an rwlock for reading when being preempted
+> by the critical IPI. On some other CPU, Linux may have entered
+> write_lock_irq[save] before the IPI arrived. The reader will be stuck in
+> __ipipe_do_critical_sync, the writer in __write_lock_failed - forever.
+> First seen on real silicon (once per "few" hundreds of boots), finally
+> caught under KVM and nailed down.
+> 
+> Two approaches to resolve this issue come to my mind so far. The first
+> one is to restart the whole ipipe_critical_enter after some (how many?)
+> cycles of futile waiting. The other is to accept the critical IPI even
+> if the top-most domain is stalled (as it sits in write_lock_irq), but
+> I'm not 100% that our optimistic IRQ mask will always allow this when
+> Linux is on the top (I assume we can safely require other domains to
+> avoid such deadlocks by design).
+> 
+> Comments? Better ideas?
 
-2010/8/18 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>:
-> marc doz wrote:
->> Hi,
->>
->> I try to compile a kernel (2.6.32 patched with
->> adeos-ipipe-2.6.33-arm-1.17-02.patch =A0) with xenomai.
->
-> Looking at your sources directory name, are you sure you are using a
-> vanilla Linux kernel from kernel.org? Because this is the only kernel
-> this patch supports.
->
-> --
-> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
-=A0 =A0 =A0 =A0Gilles.
->
+No comment, except good catch. Freaking bug. This one dates back to
+October 2002; vintage stuff.
+
+Option #2 would introduce a problem, in the sense that the semantics of
+ipipe_critical_enter dictates that all preempted CPUs should be able to
+run a post-sync routine in a safe, concurrency-controlled context, when
+the "master" CPU releases the lock, and they do this over the critical
+interrupt handler.
+
+There is no restriction on what that routine may do over the Linux
+domain, neither there is nothing the master CPU may not do while holding
+the super-lock, assuming that all other CPUs are running out of any
+interrupt-free section. Therefore allowing slave CPUs to be preempted
+regardless of the stall bit would introduce some risk there.
+
+So, a check-and-retry approach seems required. Fortunately, we do expect
+the slave CPUs to enter a quiescent state at some point, so that the
+master CPU eventually gets the lock, unless something got really broken
+otherwise.
+
+> 
+> Jan
+> 
+
+-- 
+Philippe.
+
+
 
