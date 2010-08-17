@@ -1,20 +1,10 @@
-Message-ID: <4C6A99F9.5060006@domain.hid>
-Date: Tue, 17 Aug 2010 16:17:29 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <1282047938.5255.89.camel@domain.hid>	
-	<4C6A8194.80008@domain.hid>
-	<1282048491.5255.92.camel@domain.hid>	
-	<4C6A8332.5050308@domain.hid>
-	<1282049663.5255.99.camel@domain.hid>	
-	<4C6A893E.9000907@domain.hid>
-	<1282051157.5255.108.camel@domain.hid>	
-	<4C6A8E49.10204@domain.hid>
-	<1282053444.5255.116.camel@domain.hid>	
-	<4C6A97EB.7000104@domain.hid>
-	<1282054353.5255.121.camel@domain.hid>
-In-Reply-To: <1282054353.5255.121.camel@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <1282047938.5255.89.camel@domain.hid>
+References: <1282047938.5255.89.camel@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Date: Tue, 17 Aug 2010 16:41:07 +0200
+Message-ID: <1282056067.1730.245.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 Subject: Re: [Xenomai-core] xenomai 2.5.3/native, kernel 2.6.31.8 and fork()
 List-Id: Xenomai life and development <xenomai.xenomai.org>
@@ -25,25 +15,63 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: =?UTF-8?B?S3J6eXN6dG9mIELFgmFzemtvd3NraQ==?= <kb@domain.hid>
-Cc: Xenomai core <Xenomai-core@domain.hid>
+To: Krzysztof =?UTF-8?Q?B=C5=82aszkowski?= <kb@domain.hid>
+Cc: xenomai@xenomai.org
 
-Krzysztof B=C5=82aszkowski wrote:
->> In the mean-time, please run your test with Xenomai 2.5.4.
->>
+On Tue, 2010-08-17 at 14:25 +0200, Krzysztof B=C5=82aszkowski wrote:
+> Hello,
 >=20
-> will try to setup everything. it may take an hour too.
+> I found recently that large application uses to segfault before fork()
+> leaves its glibc wrapper.
 >=20
-> i can guess that it will fail too because i have an impression that thi=
-s
-> issue confused you, so it is highly possible that the issue has not bee=
-n
-> solved yet.
+> I included here a test suite which can be easily used to verify what
+> goes wrong. It may be necessary to adjust makefile to compile the code.
+> So, the console is missing output from line #89. We can see instead a
+> message that getpid couldn't be linked which is 1st sign of memory
+> corruption.
+>=20
+> i used to think that this issue could be related to not unbinding heap
+> before fork() but it turned out that it is enough to link userspace with
+> xenomai libraries.
+>=20
+> I wonder if this is known issue and if there is any fix, does 2.5.4 work
+> same ? or maybe there is something wrong with the kernel i use (or adeos
+> patch)
+>=20
+> Another question is why rt_task_create() is marked deprecated in native
+> skin.
 
-Philippe has made a series of cleanups in rt_heaps for 2.5.4, as far as
-I remember, it was only for processors without MMU, but maybe not.
+rt_task_create() as defined by the kernel-side API is marked as
+deprecated. The user-space version of rt_task_create() is not.
+
+>  Does it mean that native skin is going to be removed from source
+> tree ?
+>=20
+
+No. It means that starting with the next major evolution of Xenomai
+(i.e. 3.x), skins will no more export any kernel-based API (except
+RTDM). In short, if your application is running in user-space, nothing
+will change for you. OTOH, applications currently running in kernel
+space over the native API should consider moving to user-space at some
+point, because we won't support the former programming model
+indefinitely. The rationale for this decision is explained here:
+http://www.xenomai.org/index.php/Xenomai:Roadmap#What_Will_Change_With_Xeno=
+mai_3
+
+The keyword here is "application", obviously not drivers, which are by
+essence better supported in kernel space in the Linux environment, and
+Xenomai 3.x will keep on providing what is required to develop them
+there over RTDM.
+
+> Regards,
+>=20
+> _______________________________________________
+> Xenomai-core mailing list
+> Xenomai-core@domain.hid
+> https://mail.gna.org/listinfo/xenomai-core
 
 --=20
-					    Gilles.
+Philippe.
+
 
 
