@@ -1,39 +1,43 @@
-Message-ID: <4C7CA866.2070001@domain.hid>
-Date: Tue, 31 Aug 2010 08:59:50 +0200
-From: Wolfgang Grandegger <wg@domain.hid>
+Message-ID: <4C6A6FE7.6030508@domain.hid>
+Date: Tue, 17 Aug 2010 13:17:59 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <AANLkTimb-CBofvdOa7EVcDTDb0418dJauwhxRNjz4=hJ@mail.gmail.com>
-In-Reply-To: <AANLkTimb-CBofvdOa7EVcDTDb0418dJauwhxRNjz4=hJ@mail.gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Looking for PC104 CAN stacks working under
-	xenomai
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Willy Lambert <lambert.willy@domain.hid>
-Cc: xenomai@xenomai.org
+Subject: [Adeos-main] Deadlock-prone ipipe_critical_enter
+List-Id: General discussion about Adeos <adeos-main.gna.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+List-Archive: </public/adeos-main>
+List-Post: <mailto:adeos-main@gna.org>
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+To: adeos-main <adeos-main@gna.org>
 
-On 08/31/2010 12:45 AM, Willy Lambert wrote:
-> Hi,
-> 
-> I am looking for a PC104 CAN stack that would be easy to integrate for free
-> with xenomai, in other words with a compatible driver distributed on the
-> web. Issomeone using this kind of board ?
-> 
-> The main board used is :
-> http://www.advantech.com/products/PCM-3362/mod_1-DWE9TQ.aspx
-> (I have no doubt about xenomai running on it properly)
+Hi,
 
-The supported devices are listed in the Kconfig file(s):
+it turned out ipipe_critical_enter is broken on SMP > 2 CPUs: On one
+CPU, Linux may have acquired an rwlock for reading when being preempted
+by the critical IPI. On some other CPU, Linux may have entered
+write_lock_irq[save] before the IPI arrived. The reader will be stuck in
+__ipipe_do_critical_sync, the writer in __write_lock_failed - forever.
+First seen on real silicon (once per "few" hundreds of boots), finally
+caught under KVM and nailed down.
 
-http://www.rts.uni-hannover.de/xenomai/lxr/source/ksrc/drivers/can/sja1000/Kconfig
+Two approaches to resolve this issue come to my mind so far. The first
+one is to restart the whole ipipe_critical_enter after some (how many?)
+cycles of futile waiting. The other is to accept the critical IPI even
+if the top-most domain is stalled (as it sits in write_lock_irq), but
+I'm not 100% that our optimistic IRQ mask will always allow this when
+Linux is on the top (I assume we can safely require other domains to
+avoid such deadlocks by design).
 
-Wolfgang.
+Comments? Better ideas?
+
+Jan
+
+-- 
+Siemens AG, Corporate Technology, CT T DE IT 1
+Corporate Competence Center Embedded Linux
 
