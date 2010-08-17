@@ -1,53 +1,111 @@
-Message-ID: <4C74DB38.3010104@domain.hid>
-Date: Wed, 25 Aug 2010 10:58:32 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-References: <1278071401-13880-1-git-send-email-wolfgang.mauerer@domain.hid>	
-	<1278071401-13880-2-git-send-email-wolfgang.mauerer@domain.hid>	
-	<1282725843.1709.12.camel@domain.hid>	
-	<4C74D948.6010906@domain.hid>
-	<1282726435.1709.22.camel@domain.hid>
-In-Reply-To: <1282726435.1709.22.camel@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <1282040830.1730.232.camel@domain.hid>
+References: <4C45539B.70204@domain.hid> <4C6932E8.7050701@domain.hid>
+	<4C694AB3.8050407@domain.hid>  <4C698E16.5050806@domain.hid>
+	<1282040830.1730.232.camel@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Date: Tue, 17 Aug 2010 19:01:10 +0200
+Message-ID: <1282064470.1730.272.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Adeos-main] [PATCH 1/2] ipipe: Pass NTP-corrected time
- information from Linux to higher domains
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: "adeos-main@gna.org" <adeos-main@gna.org>, "Mauerer,
-	Wolfgang" <wolfgang.mauerer@domain.hid>
+Subject: Re: [Xenomai-help] kernel 2.6.32.11 with xenomai 2.5.3 fails to
+ boot on ubuntu lucid system
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Theo Veenker <T.J.G.Veenker@domain.hid>
+Cc: Xenomai help <xenomai@xenomai.org>
 
-Philippe Gerum wrote:
-> On Wed, 2010-08-25 at 10:50 +0200, Jan Kiszka wrote:
->> Philippe Gerum wrote:
->>> On Fri, 2010-07-02 at 13:50 +0200, Wolfgang Mauerer wrote:
->>>
->>> <snip>
->>>
->>>> diff --git a/include/linux/ipipe_tickdev.h b/include/linux/ipipe_tickdev.h
->>>> index 4a1cb1b..86f13e0 100644
->>>> --- a/include/linux/ipipe_tickdev.h
->>>> +++ b/include/linux/ipipe_tickdev.h
->>>> @@ -25,6 +25,7 @@
->>>>  #if defined(CONFIG_IPIPE) && defined(CONFIG_GENERIC_CLOCKEVENTS)
->>> Since we should have CONFIG_HAVE_IPIPE_HOSTRT by now, let's use it.
->> Don't get yet how this fits here.
+On Tue, 2010-08-17 at 12:27 +0200, Philippe Gerum wrote:
+> On Mon, 2010-08-16 at 21:14 +0200, Theo Veenker wrote:
+> > On 08/16/2010 04:26 PM, Theo Veenker wrote:
+> > > Gilles Chanteperdrix wrote:
+> > >> Theo Veenker wrote:
+> > >>> Hi,
+> > >>>
+> > >>> I want to upgrade all our PC's from Ubuntu hardy to lucid and in the
+> > >>> process
+> > >>> I'm also going from kernel 2.6.29.5 with Xenomai 2.4.8 to kernel
+> > >>> 2.6.32.11
+> > >>> with Xenomai 2.5.3.
+> > >>>
+> > >>> I first built and tested the 2.6.32.11 kernel with 2.5.3 on my hardy
+> > >>> system
+> > >>> and all went fine. But the problem is it just doesn't run on the
+> > >>> lucid distro.
+> > >>
+> > >> This, I do not understand, the kernel does not need any support from the
+> > >> distribution for booting, how can the same kernel boot with one
+> > >> distribution, and not with the other? When you say the "same kernel", do
+> > >> you mean the exact same zImage or bzImage, or do you mean the kernel
+> > >> with the same configuration, but with a different compiler, or only the
+> > >> version is identical?
+> > >>
+> > >
+> > > It is a complete mystery to me either. I compiled my kernel into a deb
+> > > package
+> > > and installed the very same deb package on three machines:
+> > > MSI p45 neo3 with Hardy on it -> works OK
+> > > MSI p45 neo3 with Ludid on it -> nothing (works fine with regular kernel)
+> > > MSI 945P with Lucid on it: -> nothing (works fine with regular kernel)
+> > >
+> > > I'll try the suggestions posted and keep you informed.
+> > 
+> > OK. Connected a terminal to catch early kernel messages. Still no output
+> > unfortunately (with the regular kernel I do get output on the terminal,
+> > so the connection works).
+> > 
+> > Meanwhile also built and tested kernel 2.6.32.15 + xenomai 2.5.4. Still nothing.
+> > I'm clueless. I'm running Xenomai for years on dozens of systems and I've
+> > never run into problems like this. I think I'll have to sit down and take a
+> > close look at what I'm doing. I've always built my kernels using make-kpkg,
+> > maybe that somehow introduces a problem here. I'll try without it.
+> > 
+> > (unfortunately/luckily I have to work from home for a few days so I can't
+> > get to the test system until later this week)
 > 
-> arch-dep would define CONFIG_HAVE_IPIPE_HOSTRT [if IPIPE]
+> I failed to reproduce the issue yet, but it very much looks like an
+> I-pipe bug. Could you try the following config variants when time
+> allows:
 > 
+> - on 2.6.32.11 or .15, disable CONFIG_SMP, enable CONFIG_X86_UP_APIC
+> only (*).
+> - on 2.6.32.11 or .15, disable CONFIG_SMP, enable CONFIG_X86_UP_APIC and
+> CONFIG_X86_UP_IOAPIC (*).
+> - on 2.6.32.7, use your normal CONFIG_SMP config, with this patch in:
+> http://download.gna.org/adeos/patches/v2.6/x86/older/adeos-ipipe-2.6.32.7-x86-2.5-01.patch
+> 
+> (*) you need to switch off CONFIG_SMP first, to see those knobs appear
+> in the "processor type and features" menu.
 
-Still don't see the relation to the line you cited above.
+I forgot another important switch: make sure to disable CONFIG_XENOMAI
+completely in your kernel config, only keeping CONFIG_IPIPE, or at least
+to compile out all skins. When the first skin is started, our real-time
+timer starts ticking, and we don't want the relevant code in the way
+while chasing the original issue.
 
-Jan
+> 
+> The fact that you did see the panic blinking signal at least once tends
+> to point the finger at some access fault the kernel tries to recover
+> without success, rather than a sudden freeze. It must happen early
+> enough during the boot process, for the console not to be available yet
+> for reporting what the kernel whines about.
+> 
+> We don't know yet if that bug is either the consequence of some
+> interrupt delivery, and/or induced by code only involved in SMP. Those
+> test configs may help in discovering this.
+> 
+> TIA,
+> 
 
 -- 
-Siemens AG, Corporate Technology, CT T DE IT 1
-Corporate Competence Center Embedded Linux
+Philippe.
+
+
 
