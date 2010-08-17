@@ -1,12 +1,24 @@
-Message-ID: <4C6A4B5C.9030504@domain.hid>
-Date: Tue, 17 Aug 2010 10:42:04 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <76E258664B189C4CBEF125491CA11ECC9458403922@domain.hid>	<76E258664B189C4CBEF125491CA11ECC9458403925@domain.hid>	<1281597159.1730.71.camel@domain.hid>	<E2CAE7F7B064EA49B5CE7EE9A4BB167D14FD14F757@domain.hid>	<4C642F04.4020008@domain.hid>	<E2CAE7F7B064EA49B5CE7EE9A4BB167D14FD065786@domain.hid>	<4C651A5D.9030101@domain.hid>	<E2CAE7F7B064EA49B5CE7EE9A4BB167D14FD065788@domain.hid>	<E2CAE7F7B064EA49B5CE7EE9A4BB167D14FD065789@domain.hid>	<4C695C36.1030308@domain.hid>	<E2CAE7F7B064EA49B5CE7EE9A4BB167D14FD2A1992@domain.hid>
+From: Hemal C.Bavishi <Hemal.Bavishi@domain.hid>
+Date: Tue, 17 Aug 2010 14:36:57 +0530
+Message-ID: <E2CAE7F7B064EA49B5CE7EE9A4BB167D14FD2A1FB8@domain.hid>
+References: <76E258664B189C4CBEF125491CA11ECC9458403922@domain.hid>
+	<76E258664B189C4CBEF125491CA11ECC9458403925@domain.hid>
+	<1281597159.1730.71.camel@domain.hid>
+	<E2CAE7F7B064EA49B5CE7EE9A4BB167D14FD14F757@domain.hid>
+	<4C642F04.4020008@domain.hid>
+	<E2CAE7F7B064EA49B5CE7EE9A4BB167D14FD065786@domain.hid>
+	<4C651A5D.9030101@domain.hid>
+	<E2CAE7F7B064EA49B5CE7EE9A4BB167D14FD065788@domain.hid>
+	<E2CAE7F7B064EA49B5CE7EE9A4BB167D14FD065789@domain.hid>
+	<4C695C36.1030308@domain.hid>
+	<E2CAE7F7B064EA49B5CE7EE9A4BB167D14FD2A1992@domain.hid>
 	<AANLkTingp952EJiZk38P_hywNyKB9333mr1Cs4ctpQcc@domain.hid>
-In-Reply-To: <AANLkTingp952EJiZk38P_hywNyKB9333mr1Cs4ctpQcc@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+	<4C6A4B5C.9030504@domain.hid>
+In-Reply-To: <4C6A4B5C.9030504@domain.hid>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 Subject: Re: [Xenomai-help] 2.6.32.18/x86 (Ubuntu) hangs at boot w/ Xenomai
  2.5.3 [was: HELP]
 List-Id: Help regarding installation and common use of Xenomai
@@ -18,39 +30,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Prakash A S <asprakash83@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, Prakash A S <asprakash83@domain.hid>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Prakash A S wrote:
-> On Mon, Aug 16, 2010 at 9:38 PM, Hemal C.Bavishi <
-> Hemal.Bavishi@domain.hid> wrote:
-> 
->> Dear Stefan,
->>
->> The behavior was quite peculiar and it has nothing to do with the "building
->> debian packages howto". However, it would be good if you specify these steps
->> into howto under building debian packages for smooth installation for new
->> comers:)
->>
->> Nevertheless, I resolved this issue by explicitly calling the
->> update-initramfs -c -k with the image name. I was bit surprised with the
->> behavior but it worked for me.
->>
->> However, I am still facing the problem of hang up issue at boot(blank
->> screen which other users also has reported) some time (it generally boots
->> after every 3/4 starts). I don't know what's an issue but I observed this
->> behavior in 4 different system. Do you have any solution for this issue? Do
->> I have to build xenomai with the newer kernel version 2.6.32.34? Would that
->> solve current issue?
->>
-> 
-> Try to pass (without quote) "noapic nolapic" in kernel boot option and
-> please update the scenario.
+RGVhciBQcmFrYXNoIGFuZCBNci4gQ2hhbnRlcGVyZHJpeCwNCg0KSSBqdXN0IHRyaWVkIHRoZSBv
+cHRpb25zIChub2FwaWMgYW5kIG5vbGFwaWMpIHN1Z2dlc3RlZCBieSB5b3UgYW5kIG5vdyBldmVy
+eSB0aW1lIGl0IGJvb3RzIHVwIGNvcnJlY3RseSB3aXRoIFhlbm9tYWkgcGF0Y2guIEhvd2V2ZXIs
+IGFzIG1lbnRpb25lZCBieSBNci4gQ2hhbnRlcGVyZHJpeCBpdCB3aWxsIGNyZWF0ZSBhIHByb2Js
+ZW0gaWYgQVBJQyBhbmQgSU8gQVBJQyBhcmUgc3VwcG9ydGVkIGJ5IGtlcm5lbCwgWGVub21haSB3
+b3VsZCB0cnkgdG8gdXNlIHRoZW0gYW5kIGl0J2xsIGNyZWF0ZSBhIHByb2JsZW0gc2luY2UgdGhl
+eSBhcmUgbm8gbW9yZSBzdXBwb3J0ZWQuIA0KDQpOZXZlcnRoZWxlc3MsIHdvdWxkIGl0IGJlIHBv
+c3NpYmxlIHRvIGlkZW50aWZ5IGEgcmVhbCBjYXVzZSBvZiB0aGlzIGJlaGF2aW9yPyAod2h5IGl0
+IGJvb3RzIHdpdGggbm9hcGljIGFuZCBub2xhcGljIGJ1dCBub3Qgd2l0aG91dCB0aGVtKSBJIHdv
+dWxkIHNheSBpdCdzIHZhbHVhYmxlIGlucHV0cyBmb3IgdXMgdG8gYW5hbHl6ZSB0aGlzIGlzc3Vl
+IGluIG1vcmUgZGV0YWlsIGFuZCByZXNvbHZlIHRoZW0uIA0KDQpCZXN0IFJlZ2FyZHMsDQpIZW1h
+bCBCYXZpc2hpDQoNCi0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQpGcm9tOiBHaWxsZXMgQ2hh
+bnRlcGVyZHJpeCBbbWFpbHRvOmdpbGxlcy5jaGFudGVwZXJkcml4QHhlbm9tYWkub3JnXSANClNl
+bnQ6IFR1ZXNkYXksIEF1Z3VzdCAxNywgMjAxMCAxMDo0MiBBTQ0KVG86IFByYWthc2ggQSBTDQpD
+YzogSGVtYWwgQy5CYXZpc2hpOyB4ZW5vbWFpLWhlbHBAZ25hLm9yZw0KU3ViamVjdDogUmU6IFtY
+ZW5vbWFpLWhlbHBdIDIuNi4zMi4xOC94ODYgKFVidW50dSkgaGFuZ3MgYXQgYm9vdCB3LyBYZW5v
+bWFpIDIuNS4zIFt3YXM6IEhFTFBdDQoNClByYWthc2ggQSBTIHdyb3RlOg0KPiBPbiBNb24sIEF1
+ZyAxNiwgMjAxMCBhdCA5OjM4IFBNLCBIZW1hbCBDLkJhdmlzaGkgPA0KPiBIZW1hbC5CYXZpc2hp
+QGtwaXRjdW1taW5zLmNvbT4gd3JvdGU6DQo+IA0KPj4gRGVhciBTdGVmYW4sDQo+Pg0KPj4gVGhl
+IGJlaGF2aW9yIHdhcyBxdWl0ZSBwZWN1bGlhciBhbmQgaXQgaGFzIG5vdGhpbmcgdG8gZG8gd2l0
+aCB0aGUgImJ1aWxkaW5nDQo+PiBkZWJpYW4gcGFja2FnZXMgaG93dG8iLiBIb3dldmVyLCBpdCB3
+b3VsZCBiZSBnb29kIGlmIHlvdSBzcGVjaWZ5IHRoZXNlIHN0ZXBzDQo+PiBpbnRvIGhvd3RvIHVu
+ZGVyIGJ1aWxkaW5nIGRlYmlhbiBwYWNrYWdlcyBmb3Igc21vb3RoIGluc3RhbGxhdGlvbiBmb3Ig
+bmV3DQo+PiBjb21lcnM6KQ0KPj4NCj4+IE5ldmVydGhlbGVzcywgSSByZXNvbHZlZCB0aGlzIGlz
+c3VlIGJ5IGV4cGxpY2l0bHkgY2FsbGluZyB0aGUNCj4+IHVwZGF0ZS1pbml0cmFtZnMgLWMgLWsg
+d2l0aCB0aGUgaW1hZ2UgbmFtZS4gSSB3YXMgYml0IHN1cnByaXNlZCB3aXRoIHRoZQ0KPj4gYmVo
+YXZpb3IgYnV0IGl0IHdvcmtlZCBmb3IgbWUuDQo+Pg0KPj4gSG93ZXZlciwgSSBhbSBzdGlsbCBm
+YWNpbmcgdGhlIHByb2JsZW0gb2YgaGFuZyB1cCBpc3N1ZSBhdCBib290KGJsYW5rDQo+PiBzY3Jl
+ZW4gd2hpY2ggb3RoZXIgdXNlcnMgYWxzbyBoYXMgcmVwb3J0ZWQpIHNvbWUgdGltZSAoaXQgZ2Vu
+ZXJhbGx5IGJvb3RzDQo+PiBhZnRlciBldmVyeSAzLzQgc3RhcnRzKS4gSSBkb24ndCBrbm93IHdo
+YXQncyBhbiBpc3N1ZSBidXQgSSBvYnNlcnZlZCB0aGlzDQo+PiBiZWhhdmlvciBpbiA0IGRpZmZl
+cmVudCBzeXN0ZW0uIERvIHlvdSBoYXZlIGFueSBzb2x1dGlvbiBmb3IgdGhpcyBpc3N1ZT8gRG8N
+Cj4+IEkgaGF2ZSB0byBidWlsZCB4ZW5vbWFpIHdpdGggdGhlIG5ld2VyIGtlcm5lbCB2ZXJzaW9u
+IDIuNi4zMi4zND8gV291bGQgdGhhdA0KPj4gc29sdmUgY3VycmVudCBpc3N1ZT8NCj4+DQo+IA0K
+PiBUcnkgdG8gcGFzcyAod2l0aG91dCBxdW90ZSkgIm5vYXBpYyBub2xhcGljIiBpbiBrZXJuZWwg
+Ym9vdCBvcHRpb24gYW5kDQo+IHBsZWFzZSB1cGRhdGUgdGhlIHNjZW5hcmlvLg0KDQpUaGF0IGlz
+IG5vdCBnb2luZyB0byB3b3JrOiBpZiBBUElDIGFuZCBJTy9BUElDIHN1cHBvcnQgYXJlIHNlbGVj
+dGVkIGluDQp0aGUga2VybmVsLCBYZW5vbWFpIHdpbGwgdHJ5IGFuZCB1c2UgdGhlbSwgYW5kIGlm
+IHlvdSBwYXNzIHRoZXNlDQpvcHRpb25zLCBpdCB3aWxsIG5vdCBiZSBhYmxlIHRvIHVzZSB0aGVt
+Lg0KDQotLSANCgkJCQkJICAgIEdpbGxlcy4NCg0KCgo=
 
-That is not going to work: if APIC and IO/APIC support are selected in
-the kernel, Xenomai will try and use them, and if you pass these
-options, it will not be able to use them.
 
--- 
-					    Gilles.
 
