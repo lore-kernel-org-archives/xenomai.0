@@ -1,16 +1,15 @@
-From: Hemal C.Bavishi <Hemal.Bavishi@domain.hid>
-Date: Tue, 17 Aug 2010 19:21:46 +0530
-Message-ID: <E2CAE7F7B064EA49B5CE7EE9A4BB167D14FD065794@domain.hid>
-References: <4C45539B.70204@domain.hid> <4C6932E8.7050701@domain.hid>
-	<4C694AB3.8050407@domain.hid> <4C698E16.5050806@domain.hid>,
-	<1282040830.1730.232.camel@domain.hid>
-In-Reply-To: <1282040830.1730.232.camel@domain.hid>
-Content-Language: en-US
-Content-Type: text/plain; charset="Windows-1252"
-Content-Transfer-Encoding: quoted-printable
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] kernel 2.6.32.11 with xenomai 2.5.3 fails to
- boot on ubuntu lucid system
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Date: Tue, 17 Aug 2010 10:03:36 -0500
+Message-ID: <181804936ABC2349BE503168465576460FA508FF@exchserver.basler.com>
+In-Reply-To: <4C6697F8.1090409@domain.hid>
+References: <181804936ABC2349BE503168465576460F9E6D9C@exchserver.basler.com>	
+	<181804936ABC2349BE503168465576460F9E6DA5@domain.hid> 
+	<4C66939A.1060509@domain.hid> <4C6697F8.1090409@domain.hid>
+From: "Steve Deiters" <SteveDeiters@domain.hid>
+Subject: Re: [Xenomai-help] Page fault in real time task causes lockup
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,333 +19,144 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>, Theo Veenker <T.J.G.Veenker@domain.hid>
-Cc: Xenomai help <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-When I tried to compile it with the latest version of kernel with xenomai 2=
-.5.4, I am getting following errors in Xenomai (disable CONFIG_SMP, enable =
-CONFIG_X86_UP_APIC and
-CONFIG_X86_UP_IOAPIC (*).)
-
-
-kernel/xenomai/arch/generic/hal.c:47:29: error: asm/xenomai/hal.h: No such =
-file or directory
-kernel/xenomai/arch/generic/hal.c:77: error: =91RTHAL_NR_CPUS=92 undeclared=
- here (not in a function)
-kernel/xenomai/arch/generic/hal.c:79: error: =91RTHAL_NR_APCS=92 undeclared=
- here (not in a function)
-kernel/xenomai/arch/generic/hal.c:89: error: expected =91=3D=92, =91,=92, =
-=91;=92, =91asm=92 or =91__attribute__=92 before =91rthal_apc_lock=92
-kernel/xenomai/arch/generic/hal.c:93: error: expected =91=3D=92, =91,=92, =
-=91;=92, =91asm=92 or =91__attribute__=92 before =91rthal_domain=92
-kernel/xenomai/arch/generic/hal.c:97: error: expected =91=3D=92, =91,=92, =
-=91;=92, =91asm=92 or =91__attribute__=92 before =91rthal_trap_handler=92
-kernel/xenomai/arch/generic/hal.c:99: error: =91RTHAL_NR_FAULTS=92 undeclar=
-ed here (not in a function)
-kernel/xenomai/arch/generic/hal.c: In function =91rthal_critical_enter=92:
-kernel/xenomai/arch/generic/hal.c:105: error: implicit declaration of funct=
-ion =91rthal_grab_superlock=92
-kernel/xenomai/arch/generic/hal.c: In function =91rthal_critical_exit=92:
-kernel/xenomai/arch/generic/hal.c:118: error: implicit declaration of funct=
-ion =91rthal_release_superlock=92
-kernel/xenomai/arch/generic/hal.c: At top level:
-kernel/xenomai/arch/generic/hal.c:169: error: expected declaration specifie=
-rs or =91...=92 before =91rthal_irq_handler_t=92
-kernel/xenomai/arch/generic/hal.c:170: error: expected declaration specifie=
-rs or =91...=92 before =91rthal_irq_ackfn_t=92
-kernel/xenomai/arch/generic/hal.c: In function =91rthal_irq_request=92:
-kernel/xenomai/arch/generic/hal.c:172: error: =91handler=92 undeclared (fir=
-st use in this function)
-kernel/xenomai/arch/generic/hal.c:172: error: (Each undeclared identifier i=
-s reported only once
-kernel/xenomai/arch/generic/hal.c:172: error: for each function it appears =
-in.)
-kernel/xenomai/arch/generic/hal.c:175: error: implicit declaration of funct=
-ion =91rthal_virtualize_irq=92
-kernel/xenomai/arch/generic/hal.c:175: error: =91rthal_domain=92 undeclared=
- (first use in this function)
-kernel/xenomai/arch/generic/hal.c:179: error: =91ackfn=92 undeclared (first=
- use in this function)
-kernel/xenomai/arch/generic/hal.c:180: error: =91IPIPE_HANDLE_MASK=92 undec=
-lared (first use in this function)
-kernel/xenomai/arch/generic/hal.c:180: error: =91IPIPE_WIRED_MASK=92 undecl=
-ared (first use in this function)
-kernel/xenomai/arch/generic/hal.c:181: error: =91IPIPE_EXCLUSIVE_MASK=92 un=
-declared (first use in this function)
-kernel/xenomai/arch/generic/hal.c: In function =91rthal_irq_release=92:
-kernel/xenomai/arch/generic/hal.c:215: error: =91rthal_domain=92 undeclared=
- (first use in this function)
-kernel/xenomai/arch/generic/hal.c:216: error: =91IPIPE_PASS_MASK=92 undecla=
-red (first use in this function)
-kernel/xenomai/arch/generic/hal.c: At top level:
-kernel/xenomai/arch/generic/hal.c:390: error: expected =91=3D=92, =91,=92, =
-=91;=92, =91asm=92 or =91__attribute__=92 before =91rthal_trap_catch=92
-kernel/xenomai/arch/generic/hal.c: In function =91rthal_apc_handler=92:
-kernel/xenomai/arch/generic/hal.c:400: error: implicit declaration of funct=
-ion =91rthal_spin_lock=92
-kernel/xenomai/arch/generic/hal.c:400: error: =91rthal_apc_lock=92 undeclar=
-ed (first use in this function)
-kernel/xenomai/arch/generic/hal.c:402: error: implicit declaration of funct=
-ion =91rthal_processor_id=92
-kernel/xenomai/arch/generic/hal.c:413: error: implicit declaration of funct=
-ion =91ffnz=92
-kernel/xenomai/arch/generic/hal.c:418: error: implicit declaration of funct=
-ion =91rthal_spin_unlock=92
-kernel/xenomai/arch/generic/hal.c: In function =91rthal_apc_alloc=92:
-kernel/xenomai/arch/generic/hal.c:526: error: implicit declaration of funct=
-ion =91rthal_spin_lock_irqsave=92
-kernel/xenomai/arch/generic/hal.c:526: error: =91rthal_apc_lock=92 undeclar=
-ed (first use in this function)
-kernel/xenomai/arch/generic/hal.c:537: error: implicit declaration of funct=
-ion =91rthal_spin_unlock_irqrestore=92
-kernel/xenomai/arch/generic/hal.c: In function =91rthal_apc_schedule=92:
-kernel/xenomai/arch/generic/hal.c:608: error: implicit declaration of funct=
-ion =91rthal_local_irq_save=92
-kernel/xenomai/arch/generic/hal.c:611: error: implicit declaration of funct=
-ion =91rthal_schedule_irq_root=92
-kernel/xenomai/arch/generic/hal.c:613: error: implicit declaration of funct=
-ion =91rthal_local_irq_restore=92
-kernel/xenomai/arch/generic/hal.c: In function =91hal_read_proc=92:
-kernel/xenomai/arch/generic/hal.c:628: error: =91IPIPE_MAJOR_NUMBER=92 unde=
-clared (first use in this function)
-kernel/xenomai/arch/generic/hal.c:629: error: =91IPIPE_MINOR_NUMBER=92 unde=
-clared (first use in this function)
-kernel/xenomai/arch/generic/hal.c:630: error: =91IPIPE_PATCH_NUMBER=92 unde=
-clared (first use in this function)
-kernel/xenomai/arch/generic/hal.c: In function =91faults_read_proc=92:
-kernel/xenomai/arch/generic/hal.c:658: error: =91rthal_fault_labels=92 unde=
-clared (first use in this function)
-kernel/xenomai/arch/generic/hal.c: In function =91rthal_add_proc_leaf=92:
-kernel/xenomai/arch/generic/hal.c:744: error: implicit declaration of funct=
-ion =91wrap_proc_dir_entry_owner=92
-kernel/xenomai/arch/generic/hal.c: In function =91rthal_proc_register=92:
-kernel/xenomai/arch/generic/hal.c:786: error: implicit declaration of funct=
-ion =91rthal_nmi_proc_register=92
-kernel/xenomai/arch/generic/hal.c: In function =91rthal_proc_unregister=92:=
-
-kernel/xenomai/arch/generic/hal.c:793: error: implicit declaration of funct=
-ion =91rthal_nmi_proc_unregister=92
-kernel/xenomai/arch/generic/hal.c: In function =91rthal_init=92:
-kernel/xenomai/arch/generic/hal.c:806: error: implicit declaration of funct=
-ion =91rthal_arch_init=92
-kernel/xenomai/arch/generic/hal.c:832: error: invalid use of undefined type=
- =91struct rthal_calibration_data=92
-kernel/xenomai/arch/generic/hal.c:833: error: invalid use of undefined type=
- =91struct rthal_calibration_data=92
-kernel/xenomai/arch/generic/hal.c:834: error: invalid use of undefined type=
- =91struct rthal_calibration_data=92
-kernel/xenomai/arch/generic/hal.c:840: error: implicit declaration of funct=
-ion =91rthal_alloc_virq=92
-kernel/xenomai/arch/generic/hal.c:848: error: =91rthal_current_domain=92 un=
-declared (first use in this function)
-kernel/xenomai/arch/generic/hal.c:851: error: =91IPIPE_HANDLE_MASK=92 undec=
-lared (first use in this function)
-kernel/xenomai/arch/generic/hal.c:874: error: implicit declaration of funct=
-ion =91rthal_register_domain=92
-kernel/xenomai/arch/generic/hal.c:874: error: =91rthal_domain=92 undeclared=
- (first use in this function)
-kernel/xenomai/arch/generic/hal.c:876: error: =91RTHAL_DOMAIN_ID=92 undecla=
-red (first use in this function)
-kernel/xenomai/arch/generic/hal.c:877: error: =91RTHAL_XENO_PRIO=92 undecla=
-red (first use in this function)
-kernel/xenomai/arch/generic/hal.c:877: error: =91rthal_domain_entry=92 unde=
-clared (first use in this function)
-kernel/xenomai/arch/generic/hal.c:915: error: implicit declaration of funct=
-ion =91rthal_free_virq=92
-kernel/xenomai/arch/generic/hal.c:918: error: implicit declaration of funct=
-ion =91rthal_arch_cleanup=92
-kernel/xenomai/arch/generic/hal.c: In function =91rthal_exit=92:
-kernel/xenomai/arch/generic/hal.c:931: error: =91rthal_current_domain=92 un=
-declared (first use in this function)
-kernel/xenomai/arch/generic/hal.c:945: error: implicit declaration of funct=
-ion =91rthal_unregister_domain=92
-kernel/xenomai/arch/generic/hal.c:945: error: =91rthal_domain=92 undeclared=
- (first use in this function)
-kernel/xenomai/arch/generic/hal.c: At top level:
-kernel/xenomai/arch/generic/hal.c:1107: error: =91rthal_irq_enable=92 undec=
-lared here (not in a function)
-kernel/xenomai/arch/generic/hal.c:1107: warning: type defaults to =91int=92=
- in declaration of =91rthal_irq_enable=92
-kernel/xenomai/arch/generic/hal.c:1108: error: =91rthal_irq_disable=92 unde=
-clared here (not in a function)
-kernel/xenomai/arch/generic/hal.c:1108: warning: type defaults to =91int=92=
- in declaration of =91rthal_irq_disable=92
-kernel/xenomai/arch/generic/hal.c:1109: error: =91rthal_irq_end=92 undeclar=
-ed here (not in a function)
-kernel/xenomai/arch/generic/hal.c:1109: warning: type defaults to =91int=92=
- in declaration of =91rthal_irq_end=92
-kernel/xenomai/arch/generic/hal.c:1110: error: =91rthal_irq_host_request=92=
- undeclared here (not in a function)
-kernel/xenomai/arch/generic/hal.c:1110: warning: type defaults to =91int=92=
- in declaration of =91rthal_irq_host_request=92
-kernel/xenomai/arch/generic/hal.c:1111: error: =91rthal_irq_host_release=92=
- undeclared here (not in a function)
-kernel/xenomai/arch/generic/hal.c:1111: warning: type defaults to =91int=92=
- in declaration of =91rthal_irq_host_release=92
-kernel/xenomai/arch/generic/hal.c:1113: error: =91rthal_trap_catch=92 undec=
-lared here (not in a function)
-kernel/xenomai/arch/generic/hal.c:1113: warning: type defaults to =91int=92=
- in declaration of =91rthal_trap_catch=92
-kernel/xenomai/arch/generic/hal.c:1114: error: =91rthal_timer_request=92 un=
-declared here (not in a function)
-kernel/xenomai/arch/generic/hal.c:1114: warning: type defaults to =91int=92=
- in declaration of =91rthal_timer_request=92
-kernel/xenomai/arch/generic/hal.c:1115: error: =91rthal_timer_release=92 un=
-declared here (not in a function)
-kernel/xenomai/arch/generic/hal.c:1115: warning: type defaults to =91int=92=
- in declaration of =91rthal_timer_release=92
-kernel/xenomai/arch/generic/hal.c:1116: error: =91rthal_timer_calibrate=92 =
-undeclared here (not in a function)
-kernel/xenomai/arch/generic/hal.c:1116: warning: type defaults to =91int=92=
- in declaration of =91rthal_timer_calibrate=92
-kernel/xenomai/arch/generic/hal.c:1124: error: =91rthal_domain=92 undeclare=
-d here (not in a function)
-kernel/xenomai/arch/generic/hal.c:1124: warning: type defaults to =91int=92=
- in declaration of =91rthal_domain=92
-kernel/xenomai/arch/generic/hal.c:1135: error: =91kill_proc_info=92 undecla=
-red here (not in a function)
-kernel/xenomai/arch/generic/hal.c:1135: warning: type defaults to =91int=92=
- in declaration of =91kill_proc_info=92
-make[6]: *** [kernel/xenomai/arch/generic/hal.o] Error 1
-make[5]: *** [kernel/xenomai/arch/generic] Error 2
-make[4]: *** [kernel/xenomai/arch] Error 2
-make[3]: *** [kernel/xenomai] Error 2
-make[2]: *** [kernel] Error 2
-make[2]: *** Waiting for unfinished jobs....
-  CC      mm/mincore.o
-  CC      mm/mlock.o
-  CC      mm/mmap.o
-  CC      mm/mprotect.o
-  CC      mm/mremap.o
-  CC      mm/msync.o
-  CC      mm/rmap.o
-  CC      mm/vmalloc.o
-  CC      mm/pagewalk.o
-  CC      mm/init-mm.o
-  CC      mm/bounce.o
-  CC      mm/page_io.o
-  CC      mm/swap_state.o
-  CC      mm/swapfile.o
-  CC      mm/thrash.o
-  CC      mm/dmapool.o
-  CC      mm/hugetlb.o
-  CC      mm/mmu_notifier.o
-  CC      mm/ksm.o
-  CC      mm/slub.o
-  CC      mm/percpu_up.o
-  CC      mm/memcontrol.o
-  CC      mm/page_cgroup.o
-  CC      mm/memory-failure.o
-  LD      mm/built-in.o
-make[2]: Leaving directory `/root/linux-2.6.34.2'
-make[1]: *** [debian/stamp/build/kernel] Error 2
-make[1]: Leaving directory `/root/linux-2.6.34.2'
-make: *** [debian/stamp/do-build-arch] Error 2
-root@domain.hid# cd latency
-
-
-
-________________________________________
-From: xenomai-help-bounces@domain.hid [xenomai-help-bounces@domain.hid] On Behalf=
- Of Philippe Gerum [rpm@xenomai.org]
-Sent: Tuesday, August 17, 2010 3:57 PM
-To: Theo Veenker
-Cc: Xenomai help
-Subject: Re: [Xenomai-help] kernel 2.6.32.11 with xenomai 2.5.3 fails to bo=
-ot on ubuntu lucid system
-
-On Mon, 2010-08-16 at 21:14 +0200, Theo Veenker wrote:
-> On 08/16/2010 04:26 PM, Theo Veenker wrote:
-> > Gilles Chanteperdrix wrote:
-> >> Theo Veenker wrote:
-> >>> Hi,
+> -----Original Message-----
+> From: Gilles Chanteperdrix [mailto:gilles.chanteperdrix@xenomai.org
+> Sent: Saturday, August 14, 2010 8:20 AM
+> To: Steve Deiters
+> Cc: xenomai@xenomai.org
+> Subject: Re: [Xenomai-help] Page fault in real time task causes lockup
+>=20
+> Gilles Chanteperdrix wrote:
+> > Steve Deiters wrote:
+> >>> -----Original Message-----
+> >>> From: xenomai-help-bounces@domain.hid
+> >>> [mailto:xenomai-help-bounces@domain.hid] On Behalf Of Steve Deiters
+> >>> Sent: Friday, August 13, 2010 5:15 PM
+> >>> To: xenomai@xenomai.org
+> >>> Subject: [Xenomai-help] Page fault in real time task causes lockup
 > >>>
-> >>> I want to upgrade all our PC's from Ubuntu hardy to lucid and in the
-> >>> process
-> >>> I'm also going from kernel 2.6.29.5 with Xenomai 2.4.8 to kernel
-> >>> 2.6.32.11
-> >>> with Xenomai 2.5.3.
+> >>> I'm trying to track down a problem where it seems that a=20
+> page fault=20
+> >>> is causing a lockup on my machine.  I am running on a=20
+> PowerPC with=20
+> >>> Linux version 2.6.33.5 and Xenomai 2.5.4, but also saw the same=20
+> >>> thing with Xenomai 2.5.3.
 > >>>
-> >>> I first built and tested the 2.6.32.11 kernel with 2.5.3 on my hardy
-> >>> system
-> >>> and all went fine. But the problem is it just doesn't run on the
-> >>> lucid distro.
+> >>> What I am doing is mmaping a FPGA on the parallel bus in my task=20
+> >>> initialization.  Later on I have a interrupt loop which uses=20
+> >>> rt_intr_wait to service some FPGA stuff.  On access to some of my=20
+> >>> FPGA mapped registers I get a page fault which causes a=20
+> lockup.  I'm=20
+> >>> guessing there is some interaction going on with the rt_intr_wait=20
+> >>> and the fault exception.  If I prefault the map by=20
+> reading some of=20
+> >>> the registers before the loop it is ok.  If I change the=20
+> >>> rt_intr_wait to a timed loop using rt_wait_period and=20
+> don't prefault=20
+> >>> the registers it is ok.
+> >>>
+> >>> If I enable T_WARNSW I get a SIGXCPU when it tries to access the=20
+> >>> mapped registers.  I don't necessarily care that it=20
+> faults there so=20
+> >>> I don't want to have to prefault like I am doing.
+> >>>
+> >>> If I enable some of the debugging options I end up with the=20
+> >>> following exception dump:
+> >>>
+> >>> -----------
+> >>>
+> >>> [   23.623184] Xenomai: Switching  to secondary mode=20
+> after exception
+> >>> #769 from user-space at 0xff187ac (pid 586)
+> >>> [   23.634273] Xenomai: Switching  to secondary mode=20
+> after exception
+> >>> #769 from user-space at 0xff187ac (pid 587)
+> >>> [   23.653414] Xenomai: Switching  to secondary mode=20
+> after exception
+> >>> #769 from user-space at 0xff187ac (pid 592)
+> >>> [   23.675243] Xenomai: Switching dsp_task to secondary mode after
+> >>> exception #769 from user-space at 0x10016634 (pid 595)
+> >>> [   24.456360] Xenomai: Switching dsp_task to secondary mode after
+> >>> exception #769 from user-space at 0x10002d28 (pid 595)
+> >>> [   24.467285] I-pipe: Detected illicit call from domain 'Xenomai'
+> >>> [   24.467300] <3>        into a service reserved for domain=20
+> >>> 'Linux' and
+> >>> below.
+> >>> [   24.480199] Xenomai: Switching dsp_task to secondary mode after
+> >>> exception #1792 in kernel-space at 0xc0062f48 (pid 595)
+> >>> [   24.491109] Oops: Exception in kernel mode, sig: 5 [#1]
+> >>> [   24.496258] PREEMPT MPC5121 BE
+> >>> [   24.499300] Modules linked in: lpcmem axe immmem
+> >>> [   24.503912] NIP: c0062f48 LR: c0025b0c CTR: c01be5b0
+> >>> [   24.508870] REGS: c7bc3c60 TRAP: 0700   Not tainted  (2.6.33.5)
+> >>> [   24.514775] MSR: 00021032 <ME,CE,IR,DR>  CR: 24000422 =20
+> >>> XER: 20000000
+> >>> [   24.521127] TASK =3D c7b30550[595] 'dsp_task' THREAD: c7bc2000
+> >>> [   24.526600] GPR00: 00000001 c7bc3d10 c7b30550 c03ac1c0 00002a39
+> >>> ffffffff c0360000 c03ac1c0
+> >>> [   24.534946] GPR08: 00000000 000028ff 00002900 c0360000 82000442
+> >>> 1003c7b8 00000001 c0360000
+> >>> [   24.543292] GPR16: c03b0000 c7bc3f50 00008000 c0300000 c03b0000
+> >>> c0360000 00000003 c0360000
+> >>> [   24.551638] GPR24: c0360000 c7bc3d3c 0000009c c7bc2000 0000000f
+> >>> c7bc3d4b c039d918 00000001
+> >>> [   24.560180] NIP [c0062f48] __ipipe_unstall_root+0x34/0x80
+> >>> [   24.565564] LR [c0025b0c] vprintk+0x340/0x444
+> >>> [   24.569895] Call Trace:
+> >>> [   24.572336] [c7bc3d10] [c7bc3d4b] 0xc7bc3d4b (unreliable)
+> >>> [   24.577729] [c7bc3d20] [c0025b0c] vprintk+0x340/0x444
+> >>> [   24.582770] [c7bc3db0] [c0026304] printk+0xb8/0x1f8
+> >>> [   24.587640] [c7bc3e00] [c006256c] ipipe_check_context+0xc4/0xcc
+> >>> [   24.593555] [c7bc3e10] [c0299538]=20
+> __down_interruptible+0xb4/0x148
+> >>> [   24.599643] [c7bc3e40] [c004799c] down_interruptible+0xcc/0xdc
+> >>> [   24.605470] [c7bc3e60] [c0075acc] xnshadow_harden+0x64/0x248
+> >>> [   24.611114] [c7bc3e80] [c0075d4c] losyscall_event+0x9c/0x374
+> >>> [   24.616766] [c7bc3ed0] [c0063bc0]=20
+> __ipipe_dispatch_event+0x98/0x1f0
+> >>> [   24.623025] [c7bc3f20] [c000bcf0]=20
+> __ipipe_syscall_root+0x60/0x170
+> >>> [   24.629108] [c7bc3f40] [c00133e4] DoSyscall+0x20/0x5c
+> >>> [   24.634151] --- Exception: c01 at 0xff19c94
+> >>> [   24.634158]     LR =3D 0xff19c08
+> >>> [   24.641360] Instruction dump:
+> >>> [   24.644318] 7c0802a6 90010014 7c0000a6 5400045e=20
+> 7c000124 3d60c036
+> >>> 3d20c03b 814b2858
+> >>> [   24.652055] 3929c1c0 7d4a4a78 312affff 7c095110=20
+> <0f000000> 3d60c036
+> >>> 38600000 392b14f8
+> >>> [   24.660058] ------------[ cut here ]------------
+> >>> [   24.664600] kernel BUG at kernel/ipipe/core.c:311!
+> >>> [   24.669413] ---[ end trace ca02c1a54b14d664 ]---
+> >>> [   24.674021] note: dsp_task[595] exited with preempt_count 1
+> >>>
 > >>
-> >> This, I do not understand, the kernel does not need any support from t=
-he
-> >> distribution for booting, how can the same kernel boot with one
-> >> distribution, and not with the other? When you say the "same kernel", =
-do
-> >> you mean the exact same zImage or bzImage, or do you mean the kernel
-> >> with the same configuration, but with a different compiler, or only th=
-e
-> >> version is identical?
-> >>
-> >
-> > It is a complete mystery to me either. I compiled my kernel into a deb
-> > package
-> > and installed the very same deb package on three machines:
-> > MSI p45 neo3 with Hardy on it -> works OK
-> > MSI p45 neo3 with Ludid on it -> nothing (works fine with regular kerne=
-l)
-> > MSI 945P with Lucid on it: -> nothing (works fine with regular kernel)
-> >
-> > I'll try the suggestions posted and keep you informed.
->
-> OK. Connected a terminal to catch early kernel messages. Still no output
-> unfortunately (with the regular kernel I do get output on the terminal,
-> so the connection works).
->
-> Meanwhile also built and tested kernel 2.6.32.15 + xenomai 2.5.4. Still n=
-othing.
-> I'm clueless. I'm running Xenomai for years on dozens of systems and I've=
+> >> If this gives any more clues, if I comment out the section in=20
+> >> __rt_intr_wait in native/syscall.c where it raises the priority to=20
+> >> XNSCHED_IRQ_PRIO it does not lock up.
+> >=20
+> > This is strange, it looks like the thread wants to move=20
+> from secondary=20
+> > mode to primary mode while it is already running in primary mode.
+> >=20
+> The most probable reason being that the previous call to=20
+> xnshadow_relax went in fact wrong. The thing that could go=20
+> wrong would be xnpod_suspend_thread in xnshadow_relax not=20
+> suspending the thread.
 
-> never run into problems like this. I think I'll have to sit down and take=
- a
-> close look at what I'm doing. I've always built my kernels using make-kpk=
-g,
-> maybe that somehow introduces a problem here. I'll try without it.
->
-> (unfortunately/luckily I have to work from home for a few days so I can't=
+It turns out my problem was caused by an interrupt storm.  I had set up
+the interrupt to propagate to the Linux domain.  When my rt task
+transferred to the Linux domain from the page fault it wasn't able to
+clear the device interrupt flag.  The interrupt was reenabled at the PIC
+level after Linux was done with it, and as soon as that happened it got
+interrupted again.
 
-> get to the test system until later this week)
-
-I failed to reproduce the issue yet, but it very much looks like an
-I-pipe bug. Could you try the following config variants when time
-allows:
-
-- on 2.6.32.11 or .15, disable CONFIG_SMP, enable CONFIG_X86_UP_APIC
-only (*).
-- on 2.6.32.11 or .15, disable CONFIG_SMP, enable CONFIG_X86_UP_APIC and
-CONFIG_X86_UP_IOAPIC (*).
-- on 2.6.32.7, use your normal CONFIG_SMP config, with this patch in:
-http://download.gna.org/adeos/patches/v2.6/x86/older/adeos-ipipe-2.6.32.7-x=
-86-2.5-01.patch
-
-(*) you need to switch off CONFIG_SMP first, to see those knobs appear
-in the "processor type and features" menu.
-
-The fact that you did see the panic blinking signal at least once tends
-to point the finger at some access fault the kernel tries to recover
-without success, rather than a sudden freeze. It must happen early
-enough during the boot process, for the console not to be available yet
-for reporting what the kernel whines about.
-
-We don't know yet if that bug is either the consequence of some
-interrupt delivery, and/or induced by code only involved in SMP. Those
-test configs may help in discovering this.
-
-TIA,
-
---
-Philippe.
-
-
-
-_______________________________________________
-Xenomai-help mailing list
-Xenomai-help@domain.hid
-https://mail.gna.org/listinfo/xenomai-help
-
+My fix was to disable the interrupt at the device level as soon as
+rt_intr_wait returns, and reenable it before calling rt_intr_wait.  I'm
+still not sure why I was getting that exception.
 
 
