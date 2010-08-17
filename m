@@ -1,12 +1,9 @@
-Message-ID: <4C61401D.8010202@domain.hid>
-Date: Tue, 10 Aug 2010 14:03:41 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <4C573CCB.7090006@domain.hid> <4C610855.1080105@domain.hid>
-In-Reply-To: <4C610855.1080105@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [announce] Xenomai v2.5.4
+From: Krzysztof =?UTF-8?Q?B=C5=82aszkowski?= <kb@domain.hid>
+Content-Type: multipart/mixed; boundary="=-lXvOaunfUHm0thvRSyLD"
+Date: Tue, 17 Aug 2010 14:25:38 +0200
+Message-Id: <1282047938.5255.89.camel@domain.hid>
+Mime-Version: 1.0
+Subject: [Xenomai-core] xenomai 2.5.3/native, kernel 2.6.31.8 and fork()
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -15,41 +12,226 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Wolfgang Mauerer <wolfgang.mauerer@domain.hid>
-Cc: Xenomai core <Xenomai-core@domain.hid>
+To: xenomai@xenomai.org
 
-Wolfgang Mauerer wrote:
-> Gilles Chanteperdrix wrote:
->> Hi,
->>
->> you will find Xenomai 2.5.4, aka "Sleep Walk", at the usual place:
->> http://download.gna.org/xenomai/stable/xenomai-2.5.4.tar.bz2
->>
->> It contains the usual amount of bug fixes and I-pipe patches update, as 
->> well as a new piece of nice code: the so-called mayday support, which 
->> should allow Xenomai watchdog to work less brutally (namely, avoid 
->> killing the tasks occupying too much CPU, and send them a signal), and 
->> be the base for a new version of user-space signals in the 2.6 branch.
->>
->> Alex also pushed a lot of improvements for the analogy support.
->>
->> So, it seems not everybody has been lazy like me for this last version.
-> 
-> to satisfy my curiosity: What was the exact reason for not including
-> the hostrt stuff? After having spent quite some (obviously wasted)
-> effort to make the code compliant with the maintainer's requests, I
-> wonder what could have been missing.
 
-I was Ok with the Xenomai part, but we needed Philippe to review the
-Adeos part, and release new versions of the patches, and having delayed
-the 2.5.4 release for some time, and did not feel like delaying it much
-longer.
+--=-lXvOaunfUHm0thvRSyLD
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 
-Besides, we have started the 2.6 branch, and such a big change makes
-perfect material for this new branch.
+Hello,
 
-Your patches are not wasted, they have just been put on hold.
+I found recently that large application uses to segfault before fork()
+leaves its glibc wrapper.
+
+I included here a test suite which can be easily used to verify what
+goes wrong. It may be necessary to adjust makefile to compile the code.
+So, the console is missing output from line #89. We can see instead a
+message that getpid couldn't be linked which is 1st sign of memory
+corruption.
+
+i used to think that this issue could be related to not unbinding heap
+before fork() but it turned out that it is enough to link userspace with
+xenomai libraries.
+
+I wonder if this is known issue and if there is any fix, does 2.5.4 work
+same ? or maybe there is something wrong with the kernel i use (or adeos
+patch)
+
+Another question is why rt_task_create() is marked deprecated in native
+skin. Does it mean that native skin is going to be removed from source
+tree ?
+
+Regards,
 
 -- 
-					    Gilles.
+Krzysztof Blaszkowski
+
+--=-lXvOaunfUHm0thvRSyLD
+Content-Type: application/x-shellscript; name=".try.sh"
+Content-Disposition: attachment; filename=".try.sh"
+Content-Transfer-Encoding: 7bit
+
+
+	insmod ./xeno_shmem_test.ko
+	sleep .1
+	LD_LIBRARY_PATH=`pwd` ./xeno-shmem-fork
+	sleep .1
+	rmmod xeno_shmem_test
+
+--=-lXvOaunfUHm0thvRSyLD
+Content-Disposition: attachment; filename="console.log"
+Content-Type: text/x-log; name="console.log"; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+
+atest:~/xeno-test # ./.try.sh
+main:78 heap 0x401be000
+/root/xeno-test
+main:88
+./xeno-shmem-fork: relocation error: ./xeno-shmem-fork: symbol getpid, version GLIBC_2.0 not defined in file libc.so.6 with link time reference
+main:95 [2234] pid 2236
+main:98 [2234] pid 2236, status 00007f00
+main:99 [2234] pid 2236, WIFSIGNALED 0, WIFEXITED 1, rc 127
+4
+atest:~/xeno-test #
+--=-lXvOaunfUHm0thvRSyLD
+Content-Disposition: attachment; filename="Makefile"
+Content-Type: text/x-makefile; name="Makefile"; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+
+
+export KERNELDIR ?= $(shell pwd)/../kernel
+XENODIR = $(KERNELDIR)/INSTALL/xeno/usr/xenomai
+
+
+obj-m = xeno_shmem_test.o
+xeno_shmem_test-objs = xeno-shmem-fork.o
+
+EXTRA_CFLAGS = -I$(XENODIR)/include
+U_LDFLAGS = -lnative -lxenomai -L$(XENODIR)/lib -D_XENO_SHMEM_
+
+all: xmodule userland
+
+xmodule: xeno-shmem-fork.c
+	$(MAKE) -C $(KERNELDIR) SUBDIRS=`pwd` V=0 -o $(KERNELDIR)/Module.symvers modules 
+	
+userland: xeno-shmem-fork.c
+	gcc xeno-shmem-fork.c $(EXTRA_CFLAGS) $(U_LDFLAGS) -o xeno-shmem-fork
+#	gcc xeno-shmem-fork.c $(EXTRA_CFLAGS)  -o xeno-shmem-fork
+	
+
+give-a-try:
+	insmod ./xeno_shmem_test.ko
+	sleep .1
+	LD_LIBRARY_PATH=`pwd` ./xeno-shmem-fork
+	sleep .1
+	rmmod xeno_shmem_test
+	
+
+
+
+
+
+--=-lXvOaunfUHm0thvRSyLD
+Content-Disposition: attachment; filename="xeno-shmem-fork.c"
+Content-Type: text/x-csrc; name="xeno-shmem-fork.c"; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+
+/* xenomai/native - fork() regression test
+    Systemy mikroprocesorowe 2010
+*/
+
+
+#include <native/heap.h>
+
+
+#define TEST_HEAP "0x12345"
+
+#ifdef __KERNEL__
+#include <linux/module.h>
+
+MODULE_LICENSE("GPL");
+
+#define HEAP_SIZE (16*1024)
+
+RT_HEAP heap_desc;
+void *ptr;
+
+int init(void)
+{
+    int err;
+
+    err = rt_heap_create(&heap_desc, TEST_HEAP , HEAP_SIZE, H_SHARED);
+    if (!err) {
+	    err = rt_heap_alloc(&heap_desc, 0, TM_NONBLOCK, &ptr);
+    }
+    
+    printk("%s:%d heap %p, rc %d\n", __FUNCTION__, __LINE__, ptr, err);
+
+    return err;
+}
+
+void exit(void)
+{
+    printk("%s:%d heap %p\n", __FUNCTION__, __LINE__, ptr);
+    rt_heap_delete(&heap_desc);
+}
+
+module_init(init);
+module_exit(exit);
+
+
+#else
+
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <stdlib.h>
+
+RT_HEAP heap_desc;
+
+void *shared_mem; /* Start address of the shared memory segment */
+
+/* A shared memory segment with Xenomai is implemented as a mappable
+   real-time heap object managed as a single memory block. In this
+   mode, the allocation routine always returns the start address of
+   the heap memory to all callers, and the free routine always leads
+   to a no-op. */
+
+#define EXIT_RC 11
+int main (int argc, char *argv[])
+
+{
+    int err;
+    int pid;
+
+#ifdef _XENO_SHMEM_
+    err = rt_heap_bind(&heap_desc,  TEST_HEAP ,TM_NONBLOCK);
+    if (err)
+	return 1;
+
+    if (rt_heap_alloc(&heap_desc,0,TM_NONBLOCK,&shared_mem))
+	return 2;
+
+#endif
+	
+    printf("%s:%d heap %p\n", __FUNCTION__, __LINE__, shared_mem);
+    system("pwd");
+
+    pid = fork();
+    if (pid < 0) {
+	printf("%s:%d errno %d\n", __FUNCTION__, __LINE__, errno);
+	return 3;
+    }
+    
+    if (pid == 0) {
+	printf("%s:%d\n",  __FUNCTION__, __LINE__);
+	printf("%s:%d [%d] pid %d\n", __FUNCTION__, __LINE__, getpid(), pid);
+	sleep(1);
+	exit(EXIT_RC);
+    } else {
+	int s;
+
+	printf("%s:%d [%d] pid %d\n", __FUNCTION__, __LINE__, getpid(), pid);
+
+	waitpid(pid, &s, 0);
+	printf("%s:%d [%d] pid %d, status %08x\n", __FUNCTION__, __LINE__, getpid(), pid, s);
+	printf("%s:%d [%d] pid %d, WIFSIGNALED %u, WIFEXITED %u, rc %u\n", __FUNCTION__, __LINE__, getpid(), pid, 
+	    WIFSIGNALED(s), WIFEXITED(s), WEXITSTATUS(s));
+	err = (!WIFSIGNALED(s) && WIFEXITED(s) && (WEXITSTATUS(s) == EXIT_RC)) ? 0 : 4;
+    }
+
+#ifdef _XENO_SHMEM_
+    rt_heap_unbind(&heap_desc);
+#endif    
+    printf("%d\n", err);
+
+    return err;
+}
+
+
+#endif
+
+
+--=-lXvOaunfUHm0thvRSyLD--
+
 
