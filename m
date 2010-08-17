@@ -3,8 +3,8 @@ In-Reply-To: <4C6A8194.80008@domain.hid>
 References: <1282047938.5255.89.camel@domain.hid>
 	<4C6A8194.80008@domain.hid>
 Content-Type: text/plain; charset="utf-8"
-Date: Tue, 17 Aug 2010 14:34:51 +0200
-Message-Id: <1282048491.5255.92.camel@domain.hid>
+Date: Tue, 17 Aug 2010 14:35:49 +0200
+Message-Id: <1282048549.5255.93.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Subject: Re: [Xenomai-core] xenomai 2.5.3/native, kernel 2.6.31.8 and fork()
@@ -47,15 +47,10 @@ On Tue, 2010-08-17 at 14:33 +0200, Gilles Chanteperdrix wrote:
 > The libc on the system you run the test is not the same as the one of
 > the compiler. Please re-run the test when using the same libc on the
 > test board as on the machine where you are compiling.
-
-
-I reckon you missed the clue. On the other hand: how can you explain
-that main process even started ? and only child failed ?
-
-and indeed i compile code on one box but run on another anyway both
-rootfs'es are "bit equal".
-
 > 
+
+these rootfs'es are equal regarding libc at least of course.
+
 > 
 
 
