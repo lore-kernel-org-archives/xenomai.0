@@ -1,20 +1,21 @@
-From: Krzysztof =?UTF-8?Q?B=C5=82aszkowski?= <kb@domain.hid>
-In-Reply-To: <4C6BE297.4060706@domain.hid>
-References: <1282047938.5255.89.camel@domain.hid>
+Message-ID: <4C6BE9D3.1080907@domain.hid>
+Date: Wed, 18 Aug 2010 16:10:27 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+References: <1282047938.5255.89.camel@domain.hid>	
 	<4C6B146D.9010004@domain.hid>
-	<1282126974.5255.262.camel@domain.hid>
+	<1282126974.5255.262.camel@domain.hid>	
 	<4C6BBD62.3050907@domain.hid>
-	<1282131617.5255.286.camel@domain.hid>
+	<1282131617.5255.286.camel@domain.hid>	
 	<4C6BCB51.4010805@domain.hid>
-	<1282133876.5255.296.camel@domain.hid>
+	<1282133876.5255.296.camel@domain.hid>	
 	<4C6BD403.4030902@domain.hid>
-	<1282136147.5255.306.camel@domain.hid>
+	<1282136147.5255.306.camel@domain.hid>	
 	<4C6BE297.4060706@domain.hid>
-Content-Type: text/plain; charset="utf-8"
-Date: Wed, 18 Aug 2010 16:04:22 +0200
-Message-Id: <1282140262.5255.313.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
+	<1282140262.5255.313.camel@domain.hid>
+In-Reply-To: <1282140262.5255.313.camel@domain.hid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Subject: Re: [Xenomai-core] xenomai 2.5.3/native, kernel 2.6.31.8 and fork()
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -24,73 +25,19 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: =?UTF-8?B?S3J6eXN6dG9mIELFgmFzemtvd3NraQ==?= <kb@domain.hid>
 Cc: xenomai@xenomai.org
 
-On Wed, 2010-08-18 at 15:39 +0200, Gilles Chanteperdrix wrote:
-> Krzysztof Błaszkowski wrote:
-> > On Wed, 2010-08-18 at 14:37 +0200, Gilles Chanteperdrix wrote:
-> >> Krzysztof Błaszkowski wrote:
-> >>>>> rather i use native clean x86 environment (on e.g. x86_64)
-> >>>> I do this all the time, and never had any problem.
-> >>> i had lots with header files mainly.
-> >> Well, the glibc and Xenomai header files are the same on 64 bits and 32
-> >> bits machines... of course, if you are talking about other libs...
-> > 
-> > 
-> > ;) i don't mean Xenomai and degree of crosscompilation complexity
-> > depends on what you try to compile.
-> > i remember a few years ago it was not so funny.
-> > 
-> >>> and i am happy with my way.
-> >>>
-> >>>> Also, why not running 64 bits code on your atom? There are some x86_32
-> >>>> only atoms? What about SMP?
-> >>> for some other constraints i will not mention i use 32 bits now.
-> >>>
-> >>> this is single core cpu so no point to use smp for e.g. 8 cpus (nor
-> >>> bigsmp)
-> >> Well, my atom has hyper-threading, so, SMP can be used, Linux sees two
-> >> threads. I suspect yours has hyper-threading too, since Linux mentions
-> >> that it sees an ACPI SMP table, but usually, hyper-threading needs to be
-> >> enabled at BIOS level.
-> >>
-> > 
-> > yes, it has "ht". disabled now. i thought that i don't want to try to
-> > solve superposition of various corner cases and stuck on solving this.
-> > 
-> > otoh, i could create such case. did i ?
-> > 
-> > (btw, rtai 3.7 works)
-> 
-> This does not give us any clue, since neither the I-pipe patch nor the
-> heap code are shared. 
+Krzysztof B=C5=82aszkowski wrote:
+> yes. i downloaded this config a while ago. need to setup new kernel
+> 2.6.31.1 with xenomai.=20
+> is 2.5.4 suitable for this test ?=20
+> should i also use adeos-*.31.1-*2.4-09 patch ?
 
-yes, i could not mention it.
+See the versions I posted in my test report yesterday. They were made
+with this configuration.
 
-
-> But as I said, I suspect the bug is rather in the
-> kernel configuration than anywhere else.
-
-i see.
-
-> 
-> We are going to try something else. The .config I use on my atom is here:
-> http://git.xenomai.org/?p=mkrootfs.git;a=blob_plain;f=boards/generic/atom-32/config-2.6.31;hb=HEAD
-> 
-> Could you start from this configuration, adding only what is needed to
-> boot your box (root filesystem device controller, or network controller
-> if booting over nfs, root filesystem), then test this kernel?
-> 
-
-yes. i downloaded this config a while ago. need to setup new kernel
-2.6.31.1 with xenomai. 
-is 2.5.4 suitable for this test ? 
-should i also use adeos-*.31.1-*2.4-09 patch ?
-
-
-
--- 
-Krzysztof Blaszkowski
+--=20
+					    Gilles.
 
 
