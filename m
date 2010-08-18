@@ -1,75 +1,135 @@
-Message-ID: <4C74E022.8030105@domain.hid>
-Date: Wed, 25 Aug 2010 11:19:30 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <1278071401-13880-1-git-send-email-wolfgang.mauerer@domain.hid>	
-	<1278071401-13880-2-git-send-email-wolfgang.mauerer@domain.hid>	
-	<1282725843.1709.12.camel@domain.hid>	
-	<4C74D948.6010906@domain.hid>	
-	<1282726435.1709.22.camel@domain.hid>	
-	<4C74DB38.3010104@domain.hid>
-	<1282727242.1709.26.camel@domain.hid>
-In-Reply-To: <1282727242.1709.26.camel@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Adeos-main] [PATCH 1/2] ipipe: Pass NTP-corrected time
- information from Linux to higher domains
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: "adeos-main@gna.org" <adeos-main@gna.org>, "Mauerer,
-	Wolfgang" <wolfgang.mauerer@domain.hid>
+Date: Wed, 18 Aug 2010 21:16:47 +0530
+Message-ID: <AANLkTi=2kNE2KznfnY0voTbWMFqy5_LESXswjJ25O-hk@domain.hid>
+From: Prakash A S <asprakash83@domain.hid>
+Content-Type: multipart/alternative; boundary=001636c5a8ed24d460048e1af96d
+Subject: Re: [Xenomai-help] Timing calculation
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: xenomai@xenomai.org
 
-Philippe Gerum wrote:
-> On Wed, 2010-08-25 at 10:58 +0200, Jan Kiszka wrote:
->> Philippe Gerum wrote:
->>> On Wed, 2010-08-25 at 10:50 +0200, Jan Kiszka wrote:
->>>> Philippe Gerum wrote:
->>>>> On Fri, 2010-07-02 at 13:50 +0200, Wolfgang Mauerer wrote:
->>>>>
->>>>> <snip>
->>>>>
->>>>>> diff --git a/include/linux/ipipe_tickdev.h b/include/linux/ipipe_tickdev.h
->>>>>> index 4a1cb1b..86f13e0 100644
->>>>>> --- a/include/linux/ipipe_tickdev.h
->>>>>> +++ b/include/linux/ipipe_tickdev.h
->>>>>> @@ -25,6 +25,7 @@
->>>>>>  #if defined(CONFIG_IPIPE) && defined(CONFIG_GENERIC_CLOCKEVENTS)
->>>>> Since we should have CONFIG_HAVE_IPIPE_HOSTRT by now, let's use it.
->>>> Don't get yet how this fits here.
->>> arch-dep would define CONFIG_HAVE_IPIPE_HOSTRT [if IPIPE]
->>>
->> Still don't see the relation to the line you cited above.
->>
-> 
-> That is because you chose to have CONFIG_IPIPE_HOSTRT and
-> CONFIG_HAVE_IPIPE_HOSTRT. I would have only defined the latter, the way
-> you define the former. I'm looking for the hostrt support to be compiled
-> in if CONFIG_HAVE_IPIPE_HOSTRT is available from the arch-dep section,
-> so we don't need CONFIG_IPIPE_HOSTRT. Generic bits may depend on HAVE_*
-> as well.
+--001636c5a8ed24d460048e1af96d
+Content-Type: text/plain; charset=ISO-8859-1
 
-First of all, the code you cited _above_ is not changed by our patches,
-so the context still puzzles me (but maybe you are referring to some
-other place in fact).
+>
+> prakash srinivasan wrote:
+> >>>>> printf(TOTAL LOOP TIMING=%ld us\n",
+> >>>>> (long)((rt_timer_ticks2ns(end-start))/1000);
+> >>>> What does: printf(TOTAL LOOP TIMING=%lld us\n",
+> >>>> rt_timer_ticks2ns(end-start)/1000); report.
+> >>> TOTAL LOOP TIMING = 5377070 us In this case, the (unsigned)
+> >>> (long) (long)tart returns 1069623206 and (unsigned) (long)
+> >>> (long)end returns 2151726697
+> >> Are you happy with that result? Did really pass approx. 5 seconds
+> > between start and end?
+>
+> Could you format your mails correctly to make them readable? Use text,
+> not HTML, truncate at 72 characters, and use > as a quotation mark,
+> meaning that one '>' is the sign that you quote someone, two '>' is you
+> quoting someone who quoted someone else, etc... I am really sorry to
+> have to tell you about this, this is really basic knowledge of the
+> netiquette, we should not have to tell you about it.
+>
+> > Definitely not and I am not confident about this output. Coz in this
+> > loop period I am sending datas from client to the server. Visibly
+> > noted that the server is getting all the datas within a second. So I
+> > am not sure the 5 sec is the right output. I just like to know all
+> > the above conversions are correct? and is it ok that the start ticks
+> > can be more than the end ticks?
+>
+> The result of rt_timer_read is a long long, so, if you cast it to an
+> unsigned, you loose the most significant bits. So, the result is totally
+> meaningless. This again, is basic knowledge of the C language, we should
+> not have to explain.
+>
+> Your bug report is quite insufficient, we do not even know what version
+> of Xenomai you use, maybe you are reporting a bug which has been solved
+> a long time ago. Neither do we know what version of Linux and of the
+> Adoes patch you use, or the contents of your .config file. We do not
+> have a self-contained example that we can run to try and reproduce your
+> issue.
+>
+> So if you want some answers, please give us the means to answer you.
+>
 
-Second, CONFIG_HAVE_IPIPE_HOSTRT is designed to be set independently of
-CONFIG_IPIPE - it's a static arch feature like all the other
-CONFIG_HAVE_* in arch/*/Kconfig. So it takes a second, generically
-defined CONFIG switch if the generic support also depends on
-CONFIG_IPIPE like in this case. That's a kernel convention we follow. If
-you want us to do it I-pipe-specific, no problem, I just want to have
-this pointed out.
+As an community person I AGREED with what you pointed out. My main
+mistake was I subscribed the
+mailing list with an useless mailID. Now I changed my mail ID. Surely
+you will get the proper
+quote in future. In between the mail change, I lost the continuation
+for this topic and did not
+get this reply mail to my new mail ID. Simply copy and pasted the last
+mail from the archive.
 
-Jan
+Obviously I should improve my C language skills.
 
--- 
-Siemens AG, Corporate Technology, CT T DE IT 1
-Corporate Competence Center Embedded Linux
+I am using linux kernel 2.6.30.8 on Ubuntu 8.04,
+Adeos-ipipe-2.6.30.8-x86-2.4-09.patch and Xenomai-2.5.3
+
+-Prakash
+
+--001636c5a8ed24d460048e1af96d
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+
+<blockquote style=3D"border-left: 1px solid rgb(204, 204, 204); margin: 0pt=
+ 0pt 0pt 0.8ex; padding-left: 1ex;" class=3D"gmail_quote">prakash srinivasa=
+n wrote:<br>&gt;&gt;&gt;&gt;&gt; printf(TOTAL LOOP TIMING=3D%ld us\n&quot;,=
+<br>
+&gt;&gt;&gt;&gt;&gt; (long)((rt_timer_ticks2ns(end-start))/1000);<br>&gt;&g=
+t;&gt;&gt; What does: printf(TOTAL LOOP TIMING=3D%lld us\n&quot;,<br>&gt;&g=
+t;&gt;&gt; rt_timer_ticks2ns(end-start)/1000); report.<br>&gt;&gt;&gt; TOTA=
+L LOOP TIMING =3D 5377070 us In this case, the (unsigned)<br>
+&gt;&gt;&gt; (long) (long)tart returns 1069623206 and (unsigned) (long)<br>=
+&gt;&gt;&gt; (long)end returns 2151726697<br>&gt;&gt; Are you happy with th=
+at result? Did really pass approx. 5 seconds<br>&gt; between start and end?=
+<br>
+<br>Could you format your mails correctly to make them readable? Use text,<=
+br>not HTML, truncate at 72 characters, and use &gt; as a quotation mark,<b=
+r>meaning that one &#39;&gt;&#39; is the sign that you quote someone, two &=
+#39;&gt;&#39; is you<br>
+quoting someone who quoted someone else, etc... I am really sorry to<br>hav=
+e to tell you about this, this is really basic knowledge of the<br>netiquet=
+te, we should not have to tell you about it.<br><br>&gt; Definitely not and=
+ I am not confident about this output. Coz in this<br>
+&gt; loop period I am sending datas from client to the server. Visibly<br>&=
+gt; noted that the server is getting all the datas within a second. So I<br=
+>&gt; am not sure the 5 sec is the right output. I just like to know all<br=
+>
+&gt; the above conversions are correct? and is it ok that the start ticks<b=
+r>&gt; can be more than the end ticks?<br><br>The result of rt_timer_read i=
+s a long long, so, if you cast it to an<br>unsigned, you loose the most sig=
+nificant bits. So, the result is totally<br>
+meaningless. This again, is basic knowledge of the C language, we should<br=
+>not have to explain.<br><br>Your bug report is quite insufficient, we do n=
+ot even know what version<br>of Xenomai you use, maybe you are reporting a =
+bug which has been solved<br>
+a long time ago. Neither do we know what version of Linux and of the<br>Ado=
+es patch you use, or the contents of your .config file. We do not<br>have a=
+ self-contained example that we can run to try and reproduce your<br>issue.=
+<br>
+<br>So if you want some answers, please give us the means to answer you.<br=
+></blockquote><pre style=3D"font-family: courier new,monospace;"><font size=
+=3D"2"><font><br>As an community person I AGREED with what you pointed out.=
+ My main mistake was I subscribed the<br>
+mailing list with an useless mailID. Now I changed my mail ID. Surely you w=
+ill get the proper <br>quote in future. In between the mail change, I lost =
+the continuation for this topic and did not<br>get this reply mail to my ne=
+w mail ID. Simply copy and pasted the last mail from the archive. </font></=
+font>=A0<br>
+</pre><font style=3D"font-family: courier new,monospace;" size=3D"2">
+Obviously I should improve my C language skills.
+<br><br>I am using linux kernel 2.6.30.8 on Ubuntu 8.04, Adeos-ipipe-2.6.30=
+.8-x86-2.4-09.patch and Xenomai-2.5.3<br><br>-Prakash</font>
+<br>
+
+--001636c5a8ed24d460048e1af96d--
 
