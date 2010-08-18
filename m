@@ -1,17 +1,15 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <6FCCA913376DD7488F4139A4D11B8F4801465B76@domain.hid>
-References: <6FCCA913376DD7488F4139A4D11B8F4801465AC9@domain.hid>
-	<1282149528.1730.348.camel@domain.hid>
-	<6FCCA913376DD7488F4139A4D11B8F4801465AF8@domain.hid>
-	<1282164261.1730.359.camel@domain.hid>
-	<6FCCA913376DD7488F4139A4D11B8F4801465B76@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Thu, 19 Aug 2010 18:42:33 +0200
-Message-ID: <1282236153.1730.474.camel@domain.hid>
-Mime-Version: 1.0
+Message-ID: <4C6B870C.7090600@domain.hid>
+Date: Wed, 18 Aug 2010 09:09:00 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+References: <4C45539B.70204@domain.hid>	<4C6932E8.7050701@domain.hid>	<4C694AB3.8050407@domain.hid>	<4C698E16.5050806@domain.hid>,
+	<1282040830.1730.232.camel@domain.hid>	<E2CAE7F7B064EA49B5CE7EE9A4BB167D14FD065794@domain.hid>
+	<4C6AA99D.3010907@domain.hid>
+In-Reply-To: <4C6AA99D.3010907@domain.hid>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] RTDM task blocks when connecting gdb to realtime
- task
+Subject: Re: [Xenomai-help] kernel 2.6.32.11 with xenomai 2.5.3 fails to
+ boot on ubuntu lucid system
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -21,160 +19,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "Herrera-Bendezu, Luis" <lherrera@domain.hid>
+To: Stefan Kisdaroczi <kisda@domain.hid>
 Cc: xenomai@xenomai.org
 
-On Thu, 2010-08-19 at 08:26 -0400, Herrera-Bendezu, Luis wrote:
-> >-----Original Message-----
-> >From: Philippe Gerum [mailto:rpm@xenomai.org]
-> >Sent: Wednesday, August 18, 2010 4:44 PM
-> >To: Herrera-Bendezu, Luis
-> >Cc: xenomai@xenomai.org
-> >Subject: RE: [Xenomai-help] RTDM task blocks when connecting gdb to realtime task
-> >
-> >
-> >On Wed, 2010-08-18 at 13:29 -0400, Herrera-Bendezu, Luis wrote:
-> >> Philippe,
-> >>
-> >> >-----Original Message-----
-> >> >From: Philippe Gerum [mailto:rpm@xenomai.org]
-> >> >Sent: Wednesday, August 18, 2010 12:39 PM
-> >> >To: Herrera-Bendezu, Luis
-> >> >Cc: xenomai@xenomai.org
-> >> >Subject: Re: [Xenomai-help] RTDM task blocks when connecting gdb to realtime task
-> >> >
-> >> >
-> >> >On Wed, 2010-08-18 at 12:03 -0400, Herrera-Bendezu, Luis wrote:
-> >> >> Hello:
-> >> >>
-> >> >> I am using Xenomai 2.4.10 on PPC. An RTDM driver creates an RTDM task
-> >> >> using rtdm_task_init() and goes to sleep periodically via function
-> >> >> rtdm_task_sleep().
-> >> >>
-> >> >> When driver is loaded, RTDM task executes as expected. Then a realtime
-> >> >> application is started via gdbserver on target board and on a linux host
-> >> >> a gdb client is connected to that board. As soon as gdb breakpoints the
-> >> >> realtime application the RTDM task never returns from rtdm_task_sleep().
-> >> >> The application does not open the RTMD driver so at this point there is
-> >> >> no interaction with the driver.
-> >> >>
-> >> >> The RTDM task is intr_sim and the timer is no longer firing
-> >> >> # cat /proc/xenomai/timerstat/master
-> >> >> CPU  SCHEDULED   FIRED       TIMEOUT    INTERVAL   HANDLER      NAME
-> >> >> 0    29198042    9132085     3724750    -          NULL
-> >> >> [host-timer]
-> >> >> 0    1340        1340        -          -          xnthread_ti  intr_sim
-> >> >>
-> >> >> The realtime application is ancvbirt.
-> >> >> # cat /proc/xenomai/sched
-> >> >> CPU  PID    PRI      PERIOD     TIMEOUT    TIMEBASE  STAT       NAME
-> >> >>   0  0       -1      0          0          master    R          ROOT
-> >> >>   0  0       90      0          0          master    D          intr_sim
-> >> >>   0  1869     0      0          0          master    XT         ancvbirt
-> >> >>
-> >> >> Any ideas on the cause of the problem and fix?
-> >> >
-> >> >This is a side-effect of hitting a breakpoint in your application
-> >> >introduced by Xenomai: all Xenomai timers are frozen system-wide, until
-> >> >the application is continued. This includes the per-thread timer which
-> >> >is used to have your RTDM task wake up after a delay.
-> >> After continuing the application, the RTDM task does not resume execution.
-> >> I had to reload driver to have it working again.
-> >> >
-> >> >There is a way to prevent this behavior, which was defined for internal
-> >> >purposes only so far. Since Jan is not watching, here is a patch against
-> >> >2.4.10 which happily butchers his nifty interface, that should prevent
-> >> >the per-thread timers of _all_ RTDM tasks from being blocked in that
-> >> >case, which may be enough to help you though:
-> >> >
-> >> >diff --git a/ksrc/skins/rtdm/drvlib.c b/ksrc/skins/rtdm/drvlib.c
-> >> >index 65c630f..0295690 100644
-> >> >--- a/ksrc/skins/rtdm/drvlib.c
-> >> >+++ b/ksrc/skins/rtdm/drvlib.c
-> >> >@@ -144,6 +144,7 @@ int rtdm_task_init(rtdm_task_t *task, const char *name,
-> >> > 	res = xnpod_init_thread(task, rtdm_tbase, name, priority, 0, 0, NULL);
-> >> > 	if (res)
-> >> > 		goto error_out;
-> >> >+	task->rtimer.status |= XNTIMER_NOBLCK;
-> >> >
-> >> > 	if (period > 0) {
-> >> > 		res = xnpod_set_thread_periodic(task, XN_INFINITE,
-> >> >@@ -151,6 +152,7 @@ int rtdm_task_init(rtdm_task_t *task, const char *name,
-> >> > 						(rtdm_tbase,  period));
-> >> > 		if (res)
-> >> > 			goto cleanup_out;
-> >> >+		task->ptimer.status |= XNTIMER_NOBLCK;
-> >> > 	}
-> >> >
-> >> > 	res = xnpod_start_thread(task, 0, 0, XNPOD_ALL_CPUS, task_proc, arg);
-> >> >
-> >> Yes, this patch avoids stopping the timers. I see the value on stopping the
-> >> timers on the RTDM driver when application hits a breakpoint but for some
-> >> reason timer does not recover. I am using Linux 2.6.30.
-> >
-> >Could you paste the output from:
-> >/proc/xenomai/stat
-> >/proc/xenomai/timerstat/master
-> >
-> >after the application has resumed execution?
-> >
-> >TIA,
-> >
-> >
-> >--
-> >Philippe.
-> >
-> Status with application at breakpoint:
-> # cat /proc/xenomai/stat
-> CPU  PID    MSW        CSW        PF    STAT       %CPU  NAME
->   0  0      0          14984      0     00400080   99.7  ROOT
->   0  0      0          3976       0     00000084    0.0  intr_sim
->   0  1261   1          1          1     00301380    0.0  ancvbirt
->   0  0      0          0          0     00000000    0.0  IRQ22: _vip_fpga_codec@domain.hid
->   0  0      0          337375     0     00000000    0.2  IRQ512: [timer]
+Stefan Kisdaroczi wrote:
+> On 17.08.2010 15:51, Hemal C.Bavishi wrote:
+>> When I tried to compile it with the latest version of kernel with xenomai 2.5.4, I am getting following errors in Xenomai (disable CONFIG_SMP, enable CONFIG_X86_UP_APIC and
+>> CONFIG_X86_UP_IOAPIC (*).)
+>>   
 > 
-> # cat /proc/xenomai/timerstat/master
-> CPU  SCHEDULED   FIRED       TIMEOUT    INTERVAL   HANDLER      NAME
-> 0    1005240     326161      1844335    -          NULL         [host-timer]
-> 0    3976        3976        -          -          xnthread_ti  intr_sim
+> Just tested, got the same build error with 2.6.34.
+> If I patch 2.6.34 with prepare-kernel [1] it compiles,
+> if I use the debian packaged patch generated with prepare-patch [2] it
+> fails.
 > 
-> Status of application after application execution is resumed:
-> # cat /proc/xenomai/stat
-> CPU  PID    MSW        CSW        PF    STAT       %CPU  NAME
->   0  0      0          15034      0     00400080   99.6  ROOT
->   0  0      0          3976       0     00000084    0.0  intr_sim
->   0  1261   2          2          2     00300380    0.0  ancvbirt
->   0  0      0          0          0     00000000    0.0  IRQ22: _vip_fpga_codec@domain.hid
->   0  0      0          428462     0     00000000    0.4  IRQ512: [timer]
+> I guess a fix is needed in prepare-patch for 2.6.34, but no time to look
+> closer now.
 > 
-> # cat /proc/xenomai/timerstat/master
-> CPU  SCHEDULED   FIRED       TIMEOUT    INTERVAL   HANDLER      NAME
-> 0    1314446     412961      410890     -          NULL         [host-timer]
-> 0    3976        3976        -          -          xnthread_ti  intr_sim
-> 0    5           2           -          -          xnthread_ti  AncVbiRt-in-int
-> 0    4           1           -          -          xnthread_ti  AncVbiRt-out-in
-> 0    2           2           -          -          xnthread_ti  AncVbiRt-client
-> 0    3           1           -          -          xnthread_ti  AncVbiRt-tsout
-> 0    3           1           -          -          xnthread_ti  AncVbiRt-pudi
-> 0    1           1           -          -          xnthread_ti  AncVbiRt-ancx
-> 0    1           0           -          -          xnthread_ti  AncVbiRt-vbix
-> 0    1           0           -          -          xnthread_ti  AncVbiRt-gpispl
+> Stefan
 > 
-> Notes:
-> 1. GNU gdb Red Hat Linux (6.7-1rh)
-> 2. GNU gdbserver Red Hat Linux (6.7-1rh)
-> 3. set gdb to not stop/print/pass SIGXCPU signal.
-> 4. Same behavior if program is executed within gdb and no breakpoints.
+> [1] xenomai-2.5.4/scripts/prepare-kernel.sh
+> [2] xenomai-2.5.4/debian/prepare-patch.sh
 
-Please check that you are running the modified kernel, and specifically
-the updated xeno_rtdm module. This patch does work as expected.
+prepare-kernel.sh has a "--outpatch" option, which seems to be able to
+generate patches, so, would not it be possible to modify prepare-patch
+to simply call prepare-kernel.sh with the --outpatch option?
 
-> 
-> Thanks,
-> Luis
+This way, we will not have to duplicate into prepare-patch.sh the
+modifications we make to prepare-kernel.sh.
 
 -- 
-Philippe.
-
-
+					    Gilles.
 
