@@ -1,85 +1,103 @@
-MIME-Version: 1.0
-Sender: murlou@domain.hid
-Date: Sun, 1 Aug 2010 04:03:30 -0300
-Message-ID: <AANLkTimuiAP=dGQSKG2PYJUnGw--1iXBzPJ1325czz-_@domain.hid>
-From: Murilo Marinho <murilomarinho@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Subject: [Xenomai-help] Problems with user_irq.c Native example
-Reply-To: murilomarinho@domain.hid
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+From: Krzysztof =?UTF-8?Q?B=C5=82aszkowski?= <kb@domain.hid>
+In-Reply-To: <4C6BFFB2.8020002@domain.hid>
+References: <1282047938.5255.89.camel@domain.hid>
+	<4C6B146D.9010004@domain.hid>
+	<1282126974.5255.262.camel@domain.hid>
+	<4C6BBD62.3050907@domain.hid>
+	<1282131617.5255.286.camel@domain.hid>
+	<4C6BCB51.4010805@domain.hid>
+	<1282133876.5255.296.camel@domain.hid>
+	<4C6BD403.4030902@domain.hid>
+	<1282136147.5255.306.camel@domain.hid>
+	<4C6BE297.4060706@domain.hid>
+	<1282140262.5255.313.camel@domain.hid>
+	<4C6BE9D3.1080907@domain.hid>
+	<1282141537.5255.315.camel@domain.hid>
+	<4C6BEE9B.1080000@domain.hid>
+	<1282144162.5255.325.camel@domain.hid>
+	<4C6BF8B1.8080206@domain.hid>
+	<1282144563.5255.331.camel@domain.hid>
+	<4C6BFFB2.8020002@domain.hid>
+Content-Type: text/plain; charset="utf-8"
+Date: Wed, 18 Aug 2010 19:17:03 +0200
+Message-Id: <1282151823.5255.335.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai-core] xenomai 2.5.3/native, kernel 2.6.31.8 and fork()
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-I tried running the user_irq.c example as described in the section
-7.14 in the native PDF, which is written in the end of this mail.
-At first, it froze my system every time I tried running it. I did some
-changes in the code, trying to find out what was wrong with it.
+On Wed, 2010-08-18 at 17:43 +0200, Gilles Chanteperdrix wrote:
+> Krzysztof Błaszkowski wrote:
+> > On Wed, 2010-08-18 at 17:13 +0200, Gilles Chanteperdrix wrote:
+> >> Krzysztof Błaszkowski wrote:
+> >>> On Wed, 2010-08-18 at 16:30 +0200, Gilles Chanteperdrix wrote:
+> >>>> Krzysztof Błaszkowski wrote:
+> >>>>> On Wed, 2010-08-18 at 16:10 +0200, Gilles Chanteperdrix wrote:
+> >>>>>> Krzysztof Błaszkowski wrote:
+> >>>>>>> yes. i downloaded this config a while ago. need to setup new kernel
+> >>>>>>> 2.6.31.1 with xenomai. 
+> >>>>>>> is 2.5.4 suitable for this test ? 
+> >>>>>>> should i also use adeos-*.31.1-*2.4-09 patch ?
+> >>>>>> See the versions I posted in my test report yesterday. They were made
+> >>>>>> with this configuration.
+> >>>>>>
+> >>>>> ok. kernel 2.6.31.8, 2.5.4, ht will be enabled,
+> >>>>>
+> >>>>> for xenomai's configure i will pass following switches:
+> >>>>> --enable-x86-sep --enable-x86-tsc --enable-smp
+> >>>>>
+> >>>>> is this okay ?
+> >>>> Yes.
+> >>>>
+> >>> bingo !
+> >>>
+> >>> atest:~/xeno-test-254-2 # ./.try.sh 
+> >>> main:79 heap 0x401b1000
+> >>> /root/xeno-test-254-2
+> >>> main:96 [823] pid 825
+> >>> main:89
+> >>> main:90 [825] pid 0
+> >>> main:99 [823] pid 825, status 00000b00
+> >>> main:100 [823] pid 825, WIFSIGNALED 0, WIFEXITED 1, rc 11
+> >>> 0
+> >>> atest:~/xeno-test-254-2 # uname -a
+> >>> Linux atest 2.6.31.8-xeno254-smp-ht #1 SMP Wed Aug 18 17:04:00 CEST 2010
+> >>> i686 i686 i386 GNU/Linux
+> >>>
+> >>>
+> >>> my fork() test works now with kernel configured with your config.
+> >>>
+> >>> so this try proves no doubt that userland (libc, pthreads and so on)
+> >>> work.
+> >>>
+> >>> and i guess that this memory corruption which caused fork to die inside
+> >>> libc can be something specific to UP configuration. (i was thinking
+> >>> about using my config with smp this time)
+> >>>
+> >>> Thank you for sending me kernel configuration which pointed out an area
+> >>> which should be searched further.
+> >> Yes, now if you find the culprit option, it would be nice to report here
+> >> so that we can fix the I-pipe patch.
+> >>
+> > 
+> > okay. will try to dig up.
+> 
+> As a first quick test, could you try and disable CONFIG_AUDITSYSCALL ?
+> 
 
->From what I understood this should work (I'm new to xenomai
-programming), the rt_intr_wait function should pause the running task
-until the interrupt comes, but after inserting some flow controls, I
-found it to be freezing due to excessive processing of the irq_server,
-which at first seemed to be receiving endless interruption signals.
+whole CONFIG_AUDIT disabled and SELINUX too. fork test fails still.
 
-In the next step, I added error handling, but the return value of the
-function was -38, which didn't mean it worked ( as it wasn't a
-positive
-value), nor it was any of the errors described in the function documentation.
 
-I also tried changing from TM_INFINITE to many numerical values to no
-avail, got the same return value.
+-- 
+Krzysztof Blaszkowski
 
-Have I misunderstood the way this function works? Does this error
-means something?
-
-I'm using ubuntu 9.10, xenomai 2.5.3 and kernel 2.6.34
-
-7.14 user_irq.c
-#include <sys/mman.h>
-#include <native/task.h>
-#include <native/intr.h>
-#define IRQ_NUMBER 7 /* Intercept interrupt #7 */
-#define TASK_PRIO 99 /* Highest RT priority */
-#define TASK_MODE 0 /* No flags */
-#define TASK_STKSZ 0 /* Stack size (use default one) */
-RT_INTR intr_desc;
-RT_TASK server_desc;
-void irq_server (void *cookie)
-{
-for (;;) {
-/* Wait for the next interrupt on channel #7. */
-err = rt_intr_wait(&intr_desc,TM_INFINITE);
-if (!err) {
-/* Process interrupt. */
-}
-}
-}
-int main (int argc, char *argv[])
-{
-int err;
-mlockall(MCL_CURRENT|MCL_FUTURE);
-/* ... */
-err = rt_intr_create(&intr_desc,"MyIrq",IRQ_NUMBER,0);
-/* ... */
-err = rt_task_create(&server_desc,
-"MyIrqServer",
-TASK_STKSZ,
-TASK_PRIO,
-TASK_MODE);
-if (!err)
-rt_task_start(&server_desc,&irq_server,NULL);
-/* ... */
-}
-void cleanup (void)
-{
-rt_intr_delete(&intr_desc);
-rt_task_delete(&server_desc);
-}
 
