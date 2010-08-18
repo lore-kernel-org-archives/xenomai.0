@@ -1,14 +1,15 @@
-From: Krzysztof =?UTF-8?Q?B=C5=82aszkowski?= <kb@domain.hid>
-In-Reply-To: <4C6BBD62.3050907@domain.hid>
-References: <1282047938.5255.89.camel@domain.hid>
+Message-ID: <4C6BCB51.4010805@domain.hid>
+Date: Wed, 18 Aug 2010 14:00:17 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+References: <1282047938.5255.89.camel@domain.hid>	
 	<4C6B146D.9010004@domain.hid>
-	<1282126974.5255.262.camel@domain.hid>
+	<1282126974.5255.262.camel@domain.hid>	
 	<4C6BBD62.3050907@domain.hid>
-Content-Type: text/plain; charset="utf-8"
-Date: Wed, 18 Aug 2010 13:40:17 +0200
-Message-Id: <1282131617.5255.286.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
+	<1282131617.5255.286.camel@domain.hid>
+In-Reply-To: <1282131617.5255.286.camel@domain.hid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Subject: Re: [Xenomai-core] xenomai 2.5.3/native, kernel 2.6.31.8 and fork()
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
@@ -18,182 +19,112 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: =?UTF-8?B?S3J6eXN6dG9mIELFgmFzemtvd3NraQ==?= <kb@domain.hid>
 Cc: xenomai@xenomai.org
 
-On Wed, 2010-08-18 at 13:00 +0200, Gilles Chanteperdrix wrote:
-> Krzysztof Błaszkowski wrote:
-> > On Wed, 2010-08-18 at 00:59 +0200, Gilles Chanteperdrix wrote:
-> >> - I have not really checked your user-space compilation flags, I am
-> >> using xeno-config to get the correct ones.
-> > 
-> > xeno-config --skin=native --cflags gives:
-> > 
-> > -I/usr/xenomai/include -D_GNU_SOURCE -D_REENTRANT -Wall -pipe -D__XENO__
-> > 
-> > 
-> > note that there is no xenomai installed on my r&d server
-> > in /usr/xenomai/
-> > 
-> > i build xenomai per kernel and install it in kernel's INSTALL sub-dir
-> > (DESTDIR=) as well as kernel's modules and other related stuff for this
-> > particular kernel.
-> > (otherwise i would go mad soon due to various versions ..)
-> 
-> xeno-config handles the DESTDIR environment variable (failing to do this
-> would be kind of silly, because a lot of people, including the
-> maintainers, use Xenomai mostly in cross-compiled environment).
+Krzysztof B=C5=82aszkowski wrote:
+> On Wed, 2010-08-18 at 13:00 +0200, Gilles Chanteperdrix wrote:
+>> Krzysztof B=C5=82aszkowski wrote:
+>>> On Wed, 2010-08-18 at 00:59 +0200, Gilles Chanteperdrix wrote:
+>>>> - I have not really checked your user-space compilation flags, I am
+>>>> using xeno-config to get the correct ones.
+>>> xeno-config --skin=3Dnative --cflags gives:
+>>>
+>>> -I/usr/xenomai/include -D_GNU_SOURCE -D_REENTRANT -Wall -pipe -D__XEN=
+O__
+>>>
+>>>
+>>> note that there is no xenomai installed on my r&d server
+>>> in /usr/xenomai/
+>>>
+>>> i build xenomai per kernel and install it in kernel's INSTALL sub-dir=
 
-no, it does not.
+>>> (DESTDIR=3D) as well as kernel's modules and other related stuff for =
+this
+>>> particular kernel.
+>>> (otherwise i would go mad soon due to various versions ..)
+>> xeno-config handles the DESTDIR environment variable (failing to do th=
+is
+>> would be kind of silly, because a lot of people, including the
+>> maintainers, use Xenomai mostly in cross-compiled environment).
+>=20
+> no, it does not.
+>=20
+> ./xeno-config
+> xeno-config --verbose
+>         --version=3D"2.5.4"
+>         --cc=3D"gcc"
+>         --arch=3D"x86"
+>         --prefix=3D"/usr/xenomai"
+>         --xeno-cflags=3D"-I/usr/xenomai/include -D_GNU_SOURCE -D_REENTR=
+ANT
+> -Wall -pipe -D__XENO__"
+>         --xeno-ldflags=3D"-L/usr/xenomai/lib -lxenomai -lpthread "
+>         --posix-cflags=3D""
+> POSIX support is not available
+>         --posix-ldflags=3D""
+>         --library-dir=3D"/usr/xenomai/lib"
+> Usage xeno-config --skin=3Dskinname OPTIONS
+> Options :
+>         --help
+>         --v,--verbose
+>         --version
+>         --cc
+>         --arch
+>         --prefix
+>         --skin native|posix|psos|rtai|rtdm|uitron|vrtx|vxworks
+>         --cflags
+>         --ldflags
+>         --lib*-dir,--libdir,--user-libdir
+>=20
+> Deprecated options:
+>         --xeno-cflags
+>         --xeno-ldflags
+>         --posix-cflags
+>         --posix-ldflags
+>=20
+>=20
+> while it was built like this:
+>=20
+> make DESTDIR=3D/root/... install
 
-./xeno-config
-xeno-config --verbose
-        --version="2.5.4"
-        --cc="gcc"
-        --arch="x86"
-        --prefix="/usr/xenomai"
-        --xeno-cflags="-I/usr/xenomai/include -D_GNU_SOURCE -D_REENTRANT
--Wall -pipe -D__XENO__"
-        --xeno-ldflags="-L/usr/xenomai/lib -lxenomai -lpthread "
-        --posix-cflags=""
-POSIX support is not available
-        --posix-ldflags=""
-        --library-dir="/usr/xenomai/lib"
-Usage xeno-config --skin=skinname OPTIONS
-Options :
-        --help
-        --v,--verbose
-        --version
-        --cc
-        --arch
-        --prefix
-        --skin native|posix|psos|rtai|rtdm|uitron|vrtx|vxworks
-        --cflags
-        --ldflags
-        --lib*-dir,--libdir,--user-libdir
+You are not paying attention. I said it "handles the DESTDIR environment
+ variable". So, you should pass DESTDIR as an environment variable to
+xeno-config. As in:
 
-Deprecated options:
-        --xeno-cflags
-        --xeno-ldflags
-        --posix-cflags
-        --posix-ldflags
+DESTDIR=3D/root/.... xeno-config --skin=3Dnative --cflags
 
+The xeno-config script is built when Xenomai is compiled, not installed,
+at this point, it would be against the rules to assume that a DESTDIR is
+set, and hardcode a DESTDIR value into xeno-config.
 
-while it was built like this:
+See GNU make documentation:
+http://www.gnu.org/software/make/manual/html_node/DESTDIR.html
 
-make DESTDIR=/root/... install
+And for a good reason, the final destination of Xenomai on your system
+may be different from where you initially installed it. So, handling
+DESTDIR dynamically in xeno-config makes things more flexible.
 
+> but there is still a difference in xeno-shmem-fork behavior when linked=
 
+> with pthread or not from command line.
 
-> 
-> > xeno-config --skin=native --ldflags gives:
-> > 
-> > -lnative -L/usr/xenomai/lib -lxenomai -lpthread
-> > 
-> > and indeed i missed libpthread but otoh userland without pthread even
-> > does not depend directly on pthreads:
-> > 
-> > ldd xeno-shmem-fork
-> > 	linux-gate.so.1 =>  (0xffffe000)
-> > 	libnative.so.3 => not found
-> > 	libxenomai.so.0 => not found
-> > 	libc.so.6 => /lib/libc.so.6 (0xf7da5000)
-> > 	/lib/ld-linux.so.2 (0xf7f10000)
-> > 
-> > when compiled without pthreads.
-> 
-> libnative depends on pthread, if ldd had been able to find libnative, it
->  would have found the dependency on libpthread.
+Ok. But linking with pthread is the only supported way of using Xenomai. =
+A
+>> What version of opensuse?
+>=20
+> 11.1 - 32. i do not crosscompile on x86_64 to x86 because i have
+> encountered various strange mismatches in the past.
+>=20
+> rather i use native clean x86 environment (on e.g. x86_64)
 
+I do this all the time, and never had any problem.
+Also, why not running 64 bits code on your atom? There are some x86_32
+only atoms? What about SMP?
 
-but there is still a difference in xeno-shmem-fork behavior when linked
-with pthread or not from command line.
+By the way, did you forget to semd me your .config ?
 
-
-> 
-> 
-> >> - your user-space code was missing #include <unistd.h>
-> > 
-> > i added. it changed nothing.
-> 
-> Ok, with all other changes I assume?
-
-i added them and tried incrementally but final source/makefile have all
-these features.
-
-> 
-> >> - some subtle difference in the glibc
-> > 
-> > hmm, i'd say that is rather out my control. i use by default opensuse
-> > for r&d.
-> > 
-> > does this mean that this distro is broken ?
-> > 
-> > (otoh many things are - especially gnome)
-> 
-> What version of opensuse?
-
-11.1 - 32. i do not crosscompile on x86_64 to x86 because i have
-encountered various strange mismatches in the past.
-
-rather i use native clean x86 environment (on e.g. x86_64)
-
-
->  If several toolchains are available, which one
-> are you using?
-
-i use default only. (and i think there is only one)
-gcc -v gives:
-
-Using built-in specs.
-Target: i586-suse-linux
-Configured with: ../configure --prefix=/usr --infodir=/usr/share/info
---mandir=/usr/share/man --libdir=/usr/lib --libexecdir=/usr/lib
---enable-languages=c,c++,objc,fortran,obj-c++,java,ada
---enable-checking=release --with-gxx-include-dir=/usr/include/c++/4.3
---enable-ssp --disable-libssp --with-bugurl=http://bugs.opensuse.org/
---with-pkgversion='SUSE Linux' --disable-libgcj --disable-libmudflap
---with-slibdir=/lib --with-system-zlib --enable-__cxa_atexit
---enable-libstdcxx-allocator=new --disable-libstdcxx-pch
---enable-version-specific-runtime-libs --program-suffix=-4.3
---enable-linux-futex --without-system-libunwind --with-cpu=generic
---build=i586-suse-linux
-Thread model: posix
-gcc version 4.3.2 [gcc-4_3-branch revision 141291] (SUSE Linux)
-
->  I do not mean to say that the glibc is broken, only that
-> xenomai could use it in a way that breaks with the version you are using.
-
-maybe, let's investigate this further.
-
-> 
-> >> In any case, without further information, it is hard for me to dig any
-> >> further tonight. Regards.
-> > 
-> > i see. want you me to send .config file ? anything else ?
-> 
-> Run cat /proc/ipipe/version /proc/xenomai/version, uname and "getconf
-> GNU_LIBPTHREAD_VERSION" on the target, in order to get sure that you run
-> the versions you think you are running. Then please send your .config.
-> 
-> Please also send a full kernel log, from the boot, up to the bug.
-> 
-
-welcome.
- cat /proc/ipipe/version 
-2.4-09
-atest:~/xeno-test-254 # cat /proc/xenomai/version 
-2.5.4
-atest:~/xeno-test-254 # getconf
-bash: getconf: command not found
-atest:~/xeno-test-254 # getconf GNU_LIBPTHREAD_VERSION
-NPTL 2.9
-atest:~/xeno-test-254 # uname -a
-Linux atest 2.6.31.8-xeno254 #1 Tue Aug 17 17:48:32 CEST 2010 i686 i686
-i386 GNU/Linux
-atest:~/xeno-test-254 # 
-
--- 
-Krzysztof Blaszkowski
+--=20
+					    Gilles.
 
 
