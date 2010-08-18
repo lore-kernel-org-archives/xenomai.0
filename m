@@ -1,162 +1,82 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <4C763627.6010907@domain.hid>
-References: <1278071401-13880-1-git-send-email-wolfgang.mauerer@domain.hid>
-	<1278071401-13880-2-git-send-email-wolfgang.mauerer@domain.hid>
-	<1282725843.1709.12.camel@domain.hid>
-	<4C74D948.6010906@domain.hid>
-	<1282726435.1709.22.camel@domain.hid>
-	<4C74DB38.3010104@domain.hid>
-	<1282727242.1709.26.camel@domain.hid>
-	<4C74E022.8030105@domain.hid>
-	<1282728443.1709.46.camel@domain.hid>
-	<4C74EF8B.5090704@domain.hid>
-	<1282735410.1709.129.camel@domain.hid>
-	<4C763627.6010907@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Thu, 26 Aug 2010 12:37:44 +0200
-Message-ID: <1282819064.1709.151.camel@domain.hid>
-Mime-Version: 1.0
+Message-ID: <4C6C019D.1040406@domain.hid>
+Date: Wed, 18 Aug 2010 17:51:57 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+References: <AANLkTi=2kNE2KznfnY0voTbWMFqy5_LESXswjJ25O-hk@domain.hid>
+In-Reply-To: <AANLkTi=2kNE2KznfnY0voTbWMFqy5_LESXswjJ25O-hk@domain.hid>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Adeos-main] [PATCH 1/2] ipipe: Pass NTP-corrected time
- information from Linux to higher domains
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: "adeos-main@gna.org" <adeos-main@gna.org>, "Mauerer,
-	Wolfgang" <wolfgang.mauerer@domain.hid>
+Subject: Re: [Xenomai-help] Timing calculation
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Prakash A S <asprakash83@domain.hid>
+Cc: xenomai@xenomai.org
 
-On Thu, 2010-08-26 at 11:38 +0200, Jan Kiszka wrote:
-> Philippe Gerum wrote:
-> > On Wed, 2010-08-25 at 12:25 +0200, Jan Kiszka wrote:
-> >> Philippe Gerum wrote:
-> >>> On Wed, 2010-08-25 at 11:19 +0200, Jan Kiszka wrote:
-> >>>> Philippe Gerum wrote:
-> >>>>> On Wed, 2010-08-25 at 10:58 +0200, Jan Kiszka wrote:
-> >>>>>> Philippe Gerum wrote:
-> >>>>>>> On Wed, 2010-08-25 at 10:50 +0200, Jan Kiszka wrote:
-> >>>>>>>> Philippe Gerum wrote:
-> >>>>>>>>> On Fri, 2010-07-02 at 13:50 +0200, Wolfgang Mauerer wrote:
-> >>>>>>>>>
-> >>>>>>>>> <snip>
-> >>>>>>>>>
-> >>>>>>>>>> diff --git a/include/linux/ipipe_tickdev.h b/include/linux/ipipe_tickdev.h
-> >>>>>>>>>> index 4a1cb1b..86f13e0 100644
-> >>>>>>>>>> --- a/include/linux/ipipe_tickdev.h
-> >>>>>>>>>> +++ b/include/linux/ipipe_tickdev.h
-> >>>>>>>>>> @@ -25,6 +25,7 @@
-> >>>>>>>>>>  #if defined(CONFIG_IPIPE) && defined(CONFIG_GENERIC_CLOCKEVENTS)
-> >>>>>>>>> Since we should have CONFIG_HAVE_IPIPE_HOSTRT by now, let's use it.
-> >>>>>>>> Don't get yet how this fits here.
-> >>>>>>> arch-dep would define CONFIG_HAVE_IPIPE_HOSTRT [if IPIPE]
-> >>>>>>>
-> >>>>>> Still don't see the relation to the line you cited above.
-> >>>>>>
-> >>>>> That is because you chose to have CONFIG_IPIPE_HOSTRT and
-> >>>>> CONFIG_HAVE_IPIPE_HOSTRT. I would have only defined the latter, the way
-> >>>>> you define the former. I'm looking for the hostrt support to be compiled
-> >>>>> in if CONFIG_HAVE_IPIPE_HOSTRT is available from the arch-dep section,
-> >>>>> so we don't need CONFIG_IPIPE_HOSTRT. Generic bits may depend on HAVE_*
-> >>>>> as well.
-> >>>> First of all, the code you cited _above_ is not changed by our patches,
-> >>>> so the context still puzzles me (but maybe you are referring to some
-> >>>> other place in fact).
-> >>> Patch v2 says:
-> >>>
-> >>> diff --git a/kernel/ipipe/Kconfig b/kernel/ipipe/Kconfig
-> >>> index de5e6a3..bc7a00c 100644
-> >>> --- a/kernel/ipipe/Kconfig
-> >>> +++ b/kernel/ipipe/Kconfig
-> >>> @@ -33,3 +33,10 @@ config IPIPE_UNMASKED_CONTEXT_SWITCH
-> >>>         bool
-> >>>         depends on IPIPE
-> >>>         default n
-> >>> +
-> >>> +config HAVE_IPIPE_HOSTRT
-> >>> +       bool
-> >>> +
-> >>> +config IPIPE_HOSTRT
-> >>> +       def_bool y
-> >>> +       depends on HAVE_IPIPE_HOSTRT && IPIPE
-> >>>
-> >>> So what's your point?
-> >>>
-> >>>> Second, CONFIG_HAVE_IPIPE_HOSTRT is designed to be set independently of
-> >>>> CONFIG_IPIPE - it's a static arch feature like all the other
-> >>>> CONFIG_HAVE_* in arch/*/Kconfig. So it takes a second, generically
-> >>>> defined CONFIG switch if the generic support also depends on
-> >>>> CONFIG_IPIPE like in this case.
-> >>> Which does not make any sense. We don't want to make this selectable at
-> >>> all. Mainline has CONFIG_HAVE_SYSCALL_WRAPPERS for instance, and you
-> >>> won't find any CONFIG_SYSCALL_WRAPPERS, because it makes no sense not to
-> >>> use them when the architecture _have_ them. It goes exactly the same way
-> >>> with hostrt.
-> >> Don't find your example.
-> > 
-> > I just did:
-> >  find . -name 'Kconfig*' -print |xargs grep SYSCALL_WRAPPERS
+Prakash A S wrote:
+>     prakash srinivasan wrote:
+>     >>>>> printf(TOTAL LOOP TIMING=%ld us\n",
+>     >>>>> (long)((rt_timer_ticks2ns(end-start))/1000);
+>     >>>> What does: printf(TOTAL LOOP TIMING=%lld us\n",
+>     >>>> rt_timer_ticks2ns(end-start)/1000); report.
+>     >>> TOTAL LOOP TIMING = 5377070 us In this case, the (unsigned)
+>     >>> (long) (long)tart returns 1069623206 and (unsigned) (long)
+>     >>> (long)end returns 2151726697
+>     >> Are you happy with that result? Did really pass approx. 5 seconds
+>     > between start and end?
 > 
-> Ah, now I see.
+>     Could you format your mails correctly to make them readable? Use text,
+>     not HTML, truncate at 72 characters, and use > as a quotation mark,
+>     meaning that one '>' is the sign that you quote someone, two '>' is you
+>     quoting someone who quoted someone else, etc... I am really sorry to
+>     have to tell you about this, this is really basic knowledge of the
+>     netiquette, we should not have to tell you about it.
 > 
-> > 
-> >>  But maybe you should have a look at
-> >> [HAVE_]USER_RETURN_NOTIFIER (and maybe I should push [HAVE_]IPIPE_HOSTRT
-> >> into arch/Kconfig).
-> > 
-> > And select it conditionally on IPIPE in arch/x86/Kconfig? why not.
+>     > Definitely not and I am not confident about this output. Coz in this
+>     > loop period I am sending datas from client to the server. Visibly
+>     > noted that the server is getting all the datas within a second. So I
+>     > am not sure the 5 sec is the right output. I just like to know all
+>     > the above conversions are correct? and is it ok that the start ticks
+>     > can be more than the end ticks?
 > 
-> I can change this if you want us to, but I think it would be better to
-> have the generic dependency on IPIPE in a generic Kconfig - not every
-> arch version.
+>     The result of rt_timer_read is a long long, so, if you cast it to an
+>     unsigned, you loose the most significant bits. So, the result is totally
+>     meaningless. This again, is basic knowledge of the C language, we should
+>     not have to explain.
+> 
+>     Your bug report is quite insufficient, we do not even know what version
+>     of Xenomai you use, maybe you are reporting a bug which has been solved
+>     a long time ago. Neither do we know what version of Linux and of the
+>     Adoes patch you use, or the contents of your .config file. We do not
+>     have a self-contained example that we can run to try and reproduce your
+>     issue.
+> 
+>     So if you want some answers, please give us the means to answer you.
+> 
+> 
+> As an community person I AGREED with what you pointed out. My main mistake was I subscribed the
+> 
+> mailing list with an useless mailID. Now I changed my mail ID. Surely you will get the proper 
+> quote in future. In between the mail change, I lost the continuation for this topic and did not
+> get this reply mail to my new mail ID. Simply copy and pasted the last mail from the archive.  
 
-What I mean is:
-
-diff --git a/arch/Kconfig b/arch/Kconfig
-index acda512..1b87a53 100644
---- a/arch/Kconfig
-+++ b/arch/Kconfig
-@@ -151,4 +151,7 @@ config HAVE_MIXED_BREAKPOINTS_REGS
- config HAVE_USER_RETURN_NOTIFIER
- 	bool
- 
-+config HAVE_IPIPE_HOSTRT
-+       bool
-+
- source "kernel/gcov/Kconfig"
-diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index dcb0593..96ab0f4 100644
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -58,6 +58,7 @@ config X86
- 	select ANON_INODES
- 	select HAVE_ARCH_KMEMCHECK
- 	select HAVE_USER_RETURN_NOTIFIER
-+	select HAVE_IPIPE_HOSTRT if IPIPE
- 
- config INSTRUCTION_DECODER
- 	def_bool (KPROBES || PERF_EVENTS)
-
-
-=== Because the following would not work as expected:
-
-	select HAVE_IPIPE_HOSTRT
-
-config HAVE_IPIPE_HOSTRT
-        bool
-	depends on IPIPE
-
+We still receive HTML.
 
 > 
-> Jan
+> Obviously I should improve my C language skills.
 > 
+> I am using linux kernel 2.6.30.8 on Ubuntu 8.04,
+> Adeos-ipipe-2.6.30.8-x86-2.4-09.patch and Xenomai-2.5.3
+
+What about the kernel configuration and self-contained test exhibiting
+the behaviour you do not understand?
 
 -- 
-Philippe.
-
-
+					    Gilles.
 
