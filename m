@@ -1,18 +1,16 @@
-Message-ID: <4C722013.1050301@domain.hid>
-Date: Mon, 23 Aug 2010 09:15:31 +0200
-From: Theo Veenker <T.J.G.Veenker@domain.hid>
+From: Paul <paul_c@domain.hid>
+Date: Wed, 18 Aug 2010 10:03:09 +0100
+References: <4C45539B.70204@domain.hid> <4C6AA99D.3010907@domain.hid>
+	<4C6B870C.7090600@domain.hid>
+In-Reply-To: <4C6B870C.7090600@domain.hid>
 MIME-Version: 1.0
-References: <4C45539B.70204@domain.hid> <4C6932E8.7050701@domain.hid>	
-	<4C694AB3.8050407@domain.hid> <4C698E16.5050806@domain.hid>	
-	<1282040830.1730.232.camel@domain.hid>
-	<4C6E75BD.3030404@domain.hid>	
-	<1282309275.1730.587.camel@domain.hid>
-	<1282498608.1961.38.camel@domain.hid>
-In-Reply-To: <1282498608.1961.38.camel@domain.hid>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain;
+  charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Message-Id: <201008181003.09206.paul_c@domain.hid>
 Subject: Re: [Xenomai-help] kernel 2.6.32.11 with xenomai 2.5.3 fails to
- boot on ubuntu lucid system
+	boot on ubuntu lucid system
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -22,141 +20,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Xenomai help <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Philippe Gerum wrote:
-> On Fri, 2010-08-20 at 15:01 +0200, Philippe Gerum wrote:
->> On Fri, 2010-08-20 at 14:31 +0200, Theo Veenker wrote:
->>> Philippe Gerum wrote:
->>>> On Mon, 2010-08-16 at 21:14 +0200, Theo Veenker wrote:
->>>>> On 08/16/2010 04:26 PM, Theo Veenker wrote:
->>>>>> Gilles Chanteperdrix wrote:
->>>>>>> Theo Veenker wrote:
->>>>>>>> Hi,
->>>>>>>>
->>>>>>>> I want to upgrade all our PC's from Ubuntu hardy to lucid and in the
->>>>>>>> process
->>>>>>>> I'm also going from kernel 2.6.29.5 with Xenomai 2.4.8 to kernel
->>>>>>>> 2.6.32.11
->>>>>>>> with Xenomai 2.5.3.
->>>>>>>>
->>>>>>>> I first built and tested the 2.6.32.11 kernel with 2.5.3 on my hardy
->>>>>>>> system
->>>>>>>> and all went fine. But the problem is it just doesn't run on the
->>>>>>>> lucid distro.
->>>>>>> This, I do not understand, the kernel does not need any support from the
->>>>>>> distribution for booting, how can the same kernel boot with one
->>>>>>> distribution, and not with the other? When you say the "same kernel", do
->>>>>>> you mean the exact same zImage or bzImage, or do you mean the kernel
->>>>>>> with the same configuration, but with a different compiler, or only the
->>>>>>> version is identical?
->>>>>>>
->>>>>> It is a complete mystery to me either. I compiled my kernel into a deb
->>>>>> package
->>>>>> and installed the very same deb package on three machines:
->>>>>> MSI p45 neo3 with Hardy on it -> works OK
->>>>>> MSI p45 neo3 with Ludid on it -> nothing (works fine with regular kernel)
->>>>>> MSI 945P with Lucid on it: -> nothing (works fine with regular kernel)
->>>>>>
->>>>>> I'll try the suggestions posted and keep you informed.
->>>>> OK. Connected a terminal to catch early kernel messages. Still no output
->>>>> unfortunately (with the regular kernel I do get output on the terminal,
->>>>> so the connection works).
->>>>>
->>>>> Meanwhile also built and tested kernel 2.6.32.15 + xenomai 2.5.4. Still nothing.
->>>>> I'm clueless. I'm running Xenomai for years on dozens of systems and I've
->>>>> never run into problems like this. I think I'll have to sit down and take a
->>>>> close look at what I'm doing. I've always built my kernels using make-kpkg,
->>>>> maybe that somehow introduces a problem here. I'll try without it.
->>>>>
->>>>> (unfortunately/luckily I have to work from home for a few days so I can't
->>>>> get to the test system until later this week)
->>>> I failed to reproduce the issue yet, but it very much looks like an
->>>> I-pipe bug. Could you try the following config variants when time
->>>> allows:
->>>>
->>>> - on 2.6.32.11 or .15, disable CONFIG_SMP, enable CONFIG_X86_UP_APIC
->>>> only (*).
->>>> - on 2.6.32.11 or .15, disable CONFIG_SMP, enable CONFIG_X86_UP_APIC and
->>>> CONFIG_X86_UP_IOAPIC (*).
->>>> - on 2.6.32.7, use your normal CONFIG_SMP config, with this patch in:
->>>> http://download.gna.org/adeos/patches/v2.6/x86/older/adeos-ipipe-2.6.32.7-x86-2.5-01.patch
->>>>
->>>> (*) you need to switch off CONFIG_SMP first, to see those knobs appear
->>>> in the "processor type and features" menu.
->>>>
->>>> The fact that you did see the panic blinking signal at least once tends
->>>> to point the finger at some access fault the kernel tries to recover
->>>> without success, rather than a sudden freeze. It must happen early
->>>> enough during the boot process, for the console not to be available yet
->>>> for reporting what the kernel whines about.
->>>>
->>>> We don't know yet if that bug is either the consequence of some
->>>> interrupt delivery, and/or induced by code only involved in SMP. Those
->>>> test configs may help in discovering this.
->>>>
->>>> TIA,
->>>>
->>> Here are my results. I've built 5 kernels:
->>> K1: 2.6.32.15 (without the adeos patch applied)
->>> K2: 2.6.32.15 + 2.5.4
->>> K3: 2.6.32.15 + 2.5.4 CONFIG_SMP off, CONFIG_X86_UP_API on, CONFIG_XENOMAI off, CONFIG_IPIPE on
->>> K4: 2.6.32.15 + 2.5.4 as (3) with CONFIG_X86_UP_IOAPIC on
->>> K5: 2.6.32.7 with adeos-ipipe-2.6.32.7-x86-2.5-01.patch
->>>
->>> I now tested these kernels on four systems:
->>> A1: MSI 945P with Ubuntu 8.04
->>> A2: MSI 945P with Ubuntu 10.04
->>> B1: MSI p45 neo3 with Ubuntu 8.04
->>> B2: MSI p45 neo3 with Ubuntu 10.04
->>>
->>> A1 and A2 are identical systems from the same batch and B1 and B2 also.
->>>
->>> What worked:
->>> 	A1		A2		B1		B2
->>> ----------------------------------------------------------------
->>> K1	Y		Y		Y		Y
->>> K2	Y		N/Y		Y		N
->>> K3	Y		N/Y		Y		N
->>> K4	Y		N/Y		Y		N
->>> K5	Y		N/Y		Y		N
->>>
->>> The No/Yes cases means on this system sometimes the kernel would boot
->>> (same as others have reported before). In the No cases I got no ouput
->>> on the attached console.
->>>
->>> Stange as it may be I still do see a strong correlation between the OS
->>> version and whether an adeos patched kernel works or not.
->> I should be able to confirm reasonably soon that the bug depends on
->> having an interrupt pending or not before the kernel entry point is
->> reached. This may depend on whether the bootloader clears the PIC and
->> when before jumping to the kernel start address. It will also depend on
->> the behavior of some device involved in the boot sequence, such as the
->> disk controller, for pending that IRQ or not.
->>
->> If this assumption turns to be correct, please make sure to send me your
->> congrats for having authored the silly piece of code I have right in
->> front of me now, that randomly turns boot screens into black holes since
->> 2003 or so.
-> 
-> This took longer than expected since there were multiple holes to plug
-> for this issue, but here is the patch that makes my box always boot
-> properly again with 2.6.32 kernels :
-> 
-> http://git.denx.de/?p=ipipe-2.6.git;a=commit;h=d7ed9ab34a265d6486504d20ee794548ce6011d3
-> 
-> The fix is included in these patches, which are on their way to xenomai
-> mainline:
-> 
-> http://download.gna.org/adeos/patches/v2.6/x86/older/adeos-ipipe-2.6.32.15-x86-2.7-02.patch
-> http://download.gna.org/adeos/patches/v2.6/x86/older/adeos-ipipe-2.6.32.20-x86-2.7-02.patch
-> http://download.gna.org/adeos/patches/v2.6/x86/adeos-ipipe-2.6.34.5-x86-2.7-03.patch
+On Wednesday 18 August 2010, Gilles Chanteperdrix wrote:
+> Stefan Kisdaroczi wrote:
+> > On 17.08.2010 15:51, Hemal C.Bavishi wrote:
+> >> When I tried to compile it with the latest version of kernel with
+> >> xenomai 2.5.4, I am getting following errors in Xenomai (disable
+> >> CONFIG_SMP, enable CONFIG_X86_UP_APIC and CONFIG_X86_UP_IOAPIC
+> >> (*).)
+> >
+> > Just tested, got the same build error with 2.6.34.
+> > If I patch 2.6.34 with prepare-kernel [1] it compiles,
+> > if I use the debian packaged patch generated with prepare-patch [2]
+> > it fails.
+> >
+> > I guess a fix is needed in prepare-patch for 2.6.34, but no time to
+> > look closer now.
+> >
+> > Stefan
+> >
+> > [1] xenomai-2.5.4/scripts/prepare-kernel.sh
+> > [2] xenomai-2.5.4/debian/prepare-patch.sh
+>
+> prepare-kernel.sh has a "--outpatch" option, which seems to be able
+> to generate patches, so, would not it be possible to modify
+> prepare-patch to simply call prepare-kernel.sh with the --outpatch
+> option?
+>
+> This way, we will not have to duplicate into prepare-patch.sh the
+> modifications we make to prepare-kernel.sh.
 
-Yeehaa, it works! Just tested with 2.6.32.15 and the machines with Ubuntu 10.04
-(the ones using grub2) now boot fine.
+The debian/prepare-patch.sh does not require a kernel source tree and 
+generates patches for multiple kernels & arches - It is a fudge, but it 
+works for the most part and does not impose dependencies of multiple 
+kernel source trees on package build systems.
 
-Philippe, I bow my head in gratitude. Many thanks everbody.
 
-Theo
+Regards, Paul.
+
+
+Regards, Paul.
+
+
+
 
