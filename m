@@ -1,5 +1,5 @@
 From: Krzysztof =?UTF-8?Q?B=C5=82aszkowski?= <kb@domain.hid>
-In-Reply-To: <4C6BFFB2.8020002@domain.hid>
+In-Reply-To: <4C6BF8B1.8080206@domain.hid>
 References: <1282047938.5255.89.camel@domain.hid>
 	<4C6B146D.9010004@domain.hid>
 	<1282126974.5255.262.camel@domain.hid>
@@ -16,11 +16,9 @@ References: <1282047938.5255.89.camel@domain.hid>
 	<4C6BEE9B.1080000@domain.hid>
 	<1282144162.5255.325.camel@domain.hid>
 	<4C6BF8B1.8080206@domain.hid>
-	<1282144563.5255.331.camel@domain.hid>
-	<4C6BFFB2.8020002@domain.hid>
 Content-Type: text/plain; charset="utf-8"
-Date: Wed, 18 Aug 2010 19:17:03 +0200
-Message-Id: <1282151823.5255.335.camel@domain.hid>
+Date: Wed, 18 Aug 2010 17:16:03 +0200
+Message-Id: <1282144563.5255.331.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Subject: Re: [Xenomai-core] xenomai 2.5.3/native, kernel 2.6.31.8 and fork()
@@ -35,66 +33,61 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On Wed, 2010-08-18 at 17:43 +0200, Gilles Chanteperdrix wrote:
+On Wed, 2010-08-18 at 17:13 +0200, Gilles Chanteperdrix wrote:
 > Krzysztof Błaszkowski wrote:
-> > On Wed, 2010-08-18 at 17:13 +0200, Gilles Chanteperdrix wrote:
+> > On Wed, 2010-08-18 at 16:30 +0200, Gilles Chanteperdrix wrote:
 > >> Krzysztof Błaszkowski wrote:
-> >>> On Wed, 2010-08-18 at 16:30 +0200, Gilles Chanteperdrix wrote:
+> >>> On Wed, 2010-08-18 at 16:10 +0200, Gilles Chanteperdrix wrote:
 > >>>> Krzysztof Błaszkowski wrote:
-> >>>>> On Wed, 2010-08-18 at 16:10 +0200, Gilles Chanteperdrix wrote:
-> >>>>>> Krzysztof Błaszkowski wrote:
-> >>>>>>> yes. i downloaded this config a while ago. need to setup new kernel
-> >>>>>>> 2.6.31.1 with xenomai. 
-> >>>>>>> is 2.5.4 suitable for this test ? 
-> >>>>>>> should i also use adeos-*.31.1-*2.4-09 patch ?
-> >>>>>> See the versions I posted in my test report yesterday. They were made
-> >>>>>> with this configuration.
-> >>>>>>
-> >>>>> ok. kernel 2.6.31.8, 2.5.4, ht will be enabled,
-> >>>>>
-> >>>>> for xenomai's configure i will pass following switches:
-> >>>>> --enable-x86-sep --enable-x86-tsc --enable-smp
-> >>>>>
-> >>>>> is this okay ?
-> >>>> Yes.
+> >>>>> yes. i downloaded this config a while ago. need to setup new kernel
+> >>>>> 2.6.31.1 with xenomai. 
+> >>>>> is 2.5.4 suitable for this test ? 
+> >>>>> should i also use adeos-*.31.1-*2.4-09 patch ?
+> >>>> See the versions I posted in my test report yesterday. They were made
+> >>>> with this configuration.
 > >>>>
-> >>> bingo !
+> >>> ok. kernel 2.6.31.8, 2.5.4, ht will be enabled,
 > >>>
-> >>> atest:~/xeno-test-254-2 # ./.try.sh 
-> >>> main:79 heap 0x401b1000
-> >>> /root/xeno-test-254-2
-> >>> main:96 [823] pid 825
-> >>> main:89
-> >>> main:90 [825] pid 0
-> >>> main:99 [823] pid 825, status 00000b00
-> >>> main:100 [823] pid 825, WIFSIGNALED 0, WIFEXITED 1, rc 11
-> >>> 0
-> >>> atest:~/xeno-test-254-2 # uname -a
-> >>> Linux atest 2.6.31.8-xeno254-smp-ht #1 SMP Wed Aug 18 17:04:00 CEST 2010
-> >>> i686 i686 i386 GNU/Linux
+> >>> for xenomai's configure i will pass following switches:
+> >>> --enable-x86-sep --enable-x86-tsc --enable-smp
 > >>>
-> >>>
-> >>> my fork() test works now with kernel configured with your config.
-> >>>
-> >>> so this try proves no doubt that userland (libc, pthreads and so on)
-> >>> work.
-> >>>
-> >>> and i guess that this memory corruption which caused fork to die inside
-> >>> libc can be something specific to UP configuration. (i was thinking
-> >>> about using my config with smp this time)
-> >>>
-> >>> Thank you for sending me kernel configuration which pointed out an area
-> >>> which should be searched further.
-> >> Yes, now if you find the culprit option, it would be nice to report here
-> >> so that we can fix the I-pipe patch.
+> >>> is this okay ?
+> >> Yes.
 > >>
 > > 
-> > okay. will try to dig up.
+> > bingo !
+> > 
+> > atest:~/xeno-test-254-2 # ./.try.sh 
+> > main:79 heap 0x401b1000
+> > /root/xeno-test-254-2
+> > main:96 [823] pid 825
+> > main:89
+> > main:90 [825] pid 0
+> > main:99 [823] pid 825, status 00000b00
+> > main:100 [823] pid 825, WIFSIGNALED 0, WIFEXITED 1, rc 11
+> > 0
+> > atest:~/xeno-test-254-2 # uname -a
+> > Linux atest 2.6.31.8-xeno254-smp-ht #1 SMP Wed Aug 18 17:04:00 CEST 2010
+> > i686 i686 i386 GNU/Linux
+> > 
+> > 
+> > my fork() test works now with kernel configured with your config.
+> > 
+> > so this try proves no doubt that userland (libc, pthreads and so on)
+> > work.
+> > 
+> > and i guess that this memory corruption which caused fork to die inside
+> > libc can be something specific to UP configuration. (i was thinking
+> > about using my config with smp this time)
+> > 
+> > Thank you for sending me kernel configuration which pointed out an area
+> > which should be searched further.
 > 
-> As a first quick test, could you try and disable CONFIG_AUDITSYSCALL ?
+> Yes, now if you find the culprit option, it would be nice to report here
+> so that we can fix the I-pipe patch.
 > 
 
-whole CONFIG_AUDIT disabled and SELINUX too. fork test fails still.
+okay. will try to dig up.
 
 
 -- 
