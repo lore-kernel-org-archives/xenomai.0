@@ -1,13 +1,16 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <6FCCA913376DD7488F4139A4D11B8F4801465AC9@domain.hid>
+Content-class: urn:content-classes:message
+MIME-Version: 1.0
+Content-Type: text/plain;
+	charset="UTF-8"
+Content-Transfer-Encoding: base64
+Date: Wed, 18 Aug 2010 13:29:49 -0400
+Message-ID: <6FCCA913376DD7488F4139A4D11B8F4801465AF8@domain.hid>
+In-Reply-To: <1282149528.1730.348.camel@domain.hid>
 References: <6FCCA913376DD7488F4139A4D11B8F4801465AC9@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Wed, 18 Aug 2010 18:38:48 +0200
-Message-ID: <1282149528.1730.348.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
+	<1282149528.1730.348.camel@domain.hid>
+From: "Herrera-Bendezu, Luis" <lherrera@domain.hid>
 Subject: Re: [Xenomai-help] RTDM task blocks when connecting gdb to realtime
- task
+	task
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,89 +20,77 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "Herrera-Bendezu, Luis" <lherrera@domain.hid>
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On Wed, 2010-08-18 at 12:03 -0400, Herrera-Bendezu, Luis wrote:
-> Hello:
-> 
-> I am using Xenomai 2.4.10 on PPC. An RTDM driver creates an RTDM task
-> using rtdm_task_init() and goes to sleep periodically via function
-> rtdm_task_sleep().
-> 
-> When driver is loaded, RTDM task executes as expected. Then a realtime
-> application is started via gdbserver on target board and on a linux host
-> a gdb client is connected to that board. As soon as gdb breakpoints the
-> realtime application the RTDM task never returns from rtdm_task_sleep().
-> The application does not open the RTMD driver so at this point there is
-> no interaction with the driver.
-> 
-> The RTDM task is intr_sim and the timer is no longer firing
-> # cat /proc/xenomai/timerstat/master
-> CPU  SCHEDULED   FIRED       TIMEOUT    INTERVAL   HANDLER      NAME
-> 0    29198042    9132085     3724750    -          NULL
-> [host-timer]
-> 0    1340        1340        -          -          xnthread_ti  intr_sim
-> 
-> The realtime application is ancvbirt.
-> # cat /proc/xenomai/sched
-> CPU  PID    PRI      PERIOD     TIMEOUT    TIMEBASE  STAT       NAME
->   0  0       -1      0          0          master    R          ROOT
->   0  0       90      0          0          master    D          intr_sim
->   0  1869     0      0          0          master    XT         ancvbirt
-> 
-> Any ideas on the cause of the problem and fix?
-
-This is a side-effect of hitting a breakpoint in your application
-introduced by Xenomai: all Xenomai timers are frozen system-wide, until
-the application is continued. This includes the per-thread timer which
-is used to have your RTDM task wake up after a delay.
-
-There is a way to prevent this behavior, which was defined for internal
-purposes only so far. Since Jan is not watching, here is a patch against
-2.4.10 which happily butchers his nifty interface, that should prevent
-the per-thread timers of _all_ RTDM tasks from being blocked in that
-case, which may be enough to help you though:
-
-diff --git a/ksrc/skins/rtdm/drvlib.c b/ksrc/skins/rtdm/drvlib.c
-index 65c630f..0295690 100644
---- a/ksrc/skins/rtdm/drvlib.c
-+++ b/ksrc/skins/rtdm/drvlib.c
-@@ -144,6 +144,7 @@ int rtdm_task_init(rtdm_task_t *task, const char *name,
- 	res = xnpod_init_thread(task, rtdm_tbase, name, priority, 0, 0, NULL);
- 	if (res)
- 		goto error_out;
-+	task->rtimer.status |= XNTIMER_NOBLCK;
- 
- 	if (period > 0) {
- 		res = xnpod_set_thread_periodic(task, XN_INFINITE,
-@@ -151,6 +152,7 @@ int rtdm_task_init(rtdm_task_t *task, const char *name,
- 						(rtdm_tbase,  period));
- 		if (res)
- 			goto cleanup_out;
-+		task->ptimer.status |= XNTIMER_NOBLCK;
- 	}
- 
- 	res = xnpod_start_thread(task, 0, 0, XNPOD_ALL_CPUS, task_proc, arg);
-
-NOTE: please don't take this patch as an official way to handle this
-issue, it is not. It's an ugly kludge, until we find a better way to
-selectively enable this behavior for built-in timers (2.5.x has a way to
-do this for user-defined timers already, it is called
-xntimer_init_noblock()).
-
-> 
-> Thanks,
-> Luis G. Herrera-Bendezu
-> 
-> 
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
-
--- 
-Philippe.
-
-
+UGhpbGlwcGUsDQoNCj4tLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPkZyb206IFBoaWxpcHBl
+IEdlcnVtIFttYWlsdG86cnBtQHhlbm9tYWkub3JnXQ0KPlNlbnQ6IFdlZG5lc2RheSwgQXVndXN0
+IDE4LCAyMDEwIDEyOjM5IFBNDQo+VG86IEhlcnJlcmEtQmVuZGV6dSwgTHVpcw0KPkNjOiB4ZW5v
+bWFpLWhlbHBAZ25hLm9yZw0KPlN1YmplY3Q6IFJlOiBbWGVub21haS1oZWxwXSBSVERNIHRhc2sg
+YmxvY2tzIHdoZW4gY29ubmVjdGluZyBnZGIgdG8gcmVhbHRpbWUgdGFzaw0KPg0KPg0KPk9uIFdl
+ZCwgMjAxMC0wOC0xOCBhdCAxMjowMyAtMDQwMCwgSGVycmVyYS1CZW5kZXp1LCBMdWlzIHdyb3Rl
+Og0KPj4gSGVsbG86DQo+Pg0KPj4gSSBhbSB1c2luZyBYZW5vbWFpIDIuNC4xMCBvbiBQUEMuIEFu
+IFJURE0gZHJpdmVyIGNyZWF0ZXMgYW4gUlRETSB0YXNrDQo+PiB1c2luZyBydGRtX3Rhc2tfaW5p
+dCgpIGFuZCBnb2VzIHRvIHNsZWVwIHBlcmlvZGljYWxseSB2aWEgZnVuY3Rpb24NCj4+IHJ0ZG1f
+dGFza19zbGVlcCgpLg0KPj4NCj4+IFdoZW4gZHJpdmVyIGlzIGxvYWRlZCwgUlRETSB0YXNrIGV4
+ZWN1dGVzIGFzIGV4cGVjdGVkLiBUaGVuIGEgcmVhbHRpbWUNCj4+IGFwcGxpY2F0aW9uIGlzIHN0
+YXJ0ZWQgdmlhIGdkYnNlcnZlciBvbiB0YXJnZXQgYm9hcmQgYW5kIG9uIGEgbGludXggaG9zdA0K
+Pj4gYSBnZGIgY2xpZW50IGlzIGNvbm5lY3RlZCB0byB0aGF0IGJvYXJkLiBBcyBzb29uIGFzIGdk
+YiBicmVha3BvaW50cyB0aGUNCj4+IHJlYWx0aW1lIGFwcGxpY2F0aW9uIHRoZSBSVERNIHRhc2sg
+bmV2ZXIgcmV0dXJucyBmcm9tIHJ0ZG1fdGFza19zbGVlcCgpLg0KPj4gVGhlIGFwcGxpY2F0aW9u
+IGRvZXMgbm90IG9wZW4gdGhlIFJUTUQgZHJpdmVyIHNvIGF0IHRoaXMgcG9pbnQgdGhlcmUgaXMN
+Cj4+IG5vIGludGVyYWN0aW9uIHdpdGggdGhlIGRyaXZlci4NCj4+DQo+PiBUaGUgUlRETSB0YXNr
+IGlzIGludHJfc2ltIGFuZCB0aGUgdGltZXIgaXMgbm8gbG9uZ2VyIGZpcmluZw0KPj4gIyBjYXQg
+L3Byb2MveGVub21haS90aW1lcnN0YXQvbWFzdGVyDQo+PiBDUFUgIFNDSEVEVUxFRCAgIEZJUkVE
+ICAgICAgIFRJTUVPVVQgICAgSU5URVJWQUwgICBIQU5ETEVSICAgICAgTkFNRQ0KPj4gMCAgICAy
+OTE5ODA0MiAgICA5MTMyMDg1ICAgICAzNzI0NzUwICAgIC0gICAgICAgICAgTlVMTA0KPj4gW2hv
+c3QtdGltZXJdDQo+PiAwICAgIDEzNDAgICAgICAgIDEzNDAgICAgICAgIC0gICAgICAgICAgLSAg
+ICAgICAgICB4bnRocmVhZF90aSAgaW50cl9zaW0NCj4+DQo+PiBUaGUgcmVhbHRpbWUgYXBwbGlj
+YXRpb24gaXMgYW5jdmJpcnQuDQo+PiAjIGNhdCAvcHJvYy94ZW5vbWFpL3NjaGVkDQo+PiBDUFUg
+IFBJRCAgICBQUkkgICAgICBQRVJJT0QgICAgIFRJTUVPVVQgICAgVElNRUJBU0UgIFNUQVQgICAg
+ICAgTkFNRQ0KPj4gICAwICAwICAgICAgIC0xICAgICAgMCAgICAgICAgICAwICAgICAgICAgIG1h
+c3RlciAgICBSICAgICAgICAgIFJPT1QNCj4+ICAgMCAgMCAgICAgICA5MCAgICAgIDAgICAgICAg
+ICAgMCAgICAgICAgICBtYXN0ZXIgICAgRCAgICAgICAgICBpbnRyX3NpbQ0KPj4gICAwICAxODY5
+ICAgICAwICAgICAgMCAgICAgICAgICAwICAgICAgICAgIG1hc3RlciAgICBYVCAgICAgICAgIGFu
+Y3ZiaXJ0DQo+Pg0KPj4gQW55IGlkZWFzIG9uIHRoZSBjYXVzZSBvZiB0aGUgcHJvYmxlbSBhbmQg
+Zml4Pw0KPg0KPlRoaXMgaXMgYSBzaWRlLWVmZmVjdCBvZiBoaXR0aW5nIGEgYnJlYWtwb2ludCBp
+biB5b3VyIGFwcGxpY2F0aW9uDQo+aW50cm9kdWNlZCBieSBYZW5vbWFpOiBhbGwgWGVub21haSB0
+aW1lcnMgYXJlIGZyb3plbiBzeXN0ZW0td2lkZSwgdW50aWwNCj50aGUgYXBwbGljYXRpb24gaXMg
+Y29udGludWVkLiBUaGlzIGluY2x1ZGVzIHRoZSBwZXItdGhyZWFkIHRpbWVyIHdoaWNoDQo+aXMg
+dXNlZCB0byBoYXZlIHlvdXIgUlRETSB0YXNrIHdha2UgdXAgYWZ0ZXIgYSBkZWxheS4NCkFmdGVy
+IGNvbnRpbnVpbmcgdGhlIGFwcGxpY2F0aW9uLCB0aGUgUlRETSB0YXNrIGRvZXMgbm90IHJlc3Vt
+ZSBleGVjdXRpb24uDQpJIGhhZCB0byByZWxvYWQgZHJpdmVyIHRvIGhhdmUgaXQgd29ya2luZyBh
+Z2Fpbi4NCj4NCj5UaGVyZSBpcyBhIHdheSB0byBwcmV2ZW50IHRoaXMgYmVoYXZpb3IsIHdoaWNo
+IHdhcyBkZWZpbmVkIGZvciBpbnRlcm5hbA0KPnB1cnBvc2VzIG9ubHkgc28gZmFyLiBTaW5jZSBK
+YW4gaXMgbm90IHdhdGNoaW5nLCBoZXJlIGlzIGEgcGF0Y2ggYWdhaW5zdA0KPjIuNC4xMCB3aGlj
+aCBoYXBwaWx5IGJ1dGNoZXJzIGhpcyBuaWZ0eSBpbnRlcmZhY2UsIHRoYXQgc2hvdWxkIHByZXZl
+bnQNCj50aGUgcGVyLXRocmVhZCB0aW1lcnMgb2YgX2FsbF8gUlRETSB0YXNrcyBmcm9tIGJlaW5n
+IGJsb2NrZWQgaW4gdGhhdA0KPmNhc2UsIHdoaWNoIG1heSBiZSBlbm91Z2ggdG8gaGVscCB5b3Ug
+dGhvdWdoOg0KPg0KPmRpZmYgLS1naXQgYS9rc3JjL3NraW5zL3J0ZG0vZHJ2bGliLmMgYi9rc3Jj
+L3NraW5zL3J0ZG0vZHJ2bGliLmMNCj5pbmRleCA2NWM2MzBmLi4wMjk1NjkwIDEwMDY0NA0KPi0t
+LSBhL2tzcmMvc2tpbnMvcnRkbS9kcnZsaWIuYw0KPisrKyBiL2tzcmMvc2tpbnMvcnRkbS9kcnZs
+aWIuYw0KPkBAIC0xNDQsNiArMTQ0LDcgQEAgaW50IHJ0ZG1fdGFza19pbml0KHJ0ZG1fdGFza190
+ICp0YXNrLCBjb25zdCBjaGFyICpuYW1lLA0KPiAJcmVzID0geG5wb2RfaW5pdF90aHJlYWQodGFz
+aywgcnRkbV90YmFzZSwgbmFtZSwgcHJpb3JpdHksIDAsIDAsIE5VTEwpOw0KPiAJaWYgKHJlcykN
+Cj4gCQlnb3RvIGVycm9yX291dDsNCj4rCXRhc2stPnJ0aW1lci5zdGF0dXMgfD0gWE5USU1FUl9O
+T0JMQ0s7DQo+DQo+IAlpZiAocGVyaW9kID4gMCkgew0KPiAJCXJlcyA9IHhucG9kX3NldF90aHJl
+YWRfcGVyaW9kaWModGFzaywgWE5fSU5GSU5JVEUsDQo+QEAgLTE1MSw2ICsxNTIsNyBAQCBpbnQg
+cnRkbV90YXNrX2luaXQocnRkbV90YXNrX3QgKnRhc2ssIGNvbnN0IGNoYXIgKm5hbWUsDQo+IAkJ
+CQkJCShydGRtX3RiYXNlLCAgcGVyaW9kKSk7DQo+IAkJaWYgKHJlcykNCj4gCQkJZ290byBjbGVh
+bnVwX291dDsNCj4rCQl0YXNrLT5wdGltZXIuc3RhdHVzIHw9IFhOVElNRVJfTk9CTENLOw0KPiAJ
+fQ0KPg0KPiAJcmVzID0geG5wb2Rfc3RhcnRfdGhyZWFkKHRhc2ssIDAsIDAsIFhOUE9EX0FMTF9D
+UFVTLCB0YXNrX3Byb2MsIGFyZyk7DQo+DQpZZXMsIHRoaXMgcGF0Y2ggYXZvaWRzIHN0b3BwaW5n
+IHRoZSB0aW1lcnMuIEkgc2VlIHRoZSB2YWx1ZSBvbiBzdG9wcGluZyB0aGUNCnRpbWVycyBvbiB0
+aGUgUlRETSBkcml2ZXIgd2hlbiBhcHBsaWNhdGlvbiBoaXRzIGEgYnJlYWtwb2ludCBidXQgZm9y
+IHNvbWUNCnJlYXNvbiB0aW1lciBkb2VzIG5vdCByZWNvdmVyLiBJIGFtIHVzaW5nIExpbnV4IDIu
+Ni4zMC4NCj5OT1RFOiBwbGVhc2UgZG9uJ3QgdGFrZSB0aGlzIHBhdGNoIGFzIGFuIG9mZmljaWFs
+IHdheSB0byBoYW5kbGUgdGhpcw0KPmlzc3VlLCBpdCBpcyBub3QuIEl0J3MgYW4gdWdseSBrbHVk
+Z2UsIHVudGlsIHdlIGZpbmQgYSBiZXR0ZXIgd2F5IHRvDQo+c2VsZWN0aXZlbHkgZW5hYmxlIHRo
+aXMgYmVoYXZpb3IgZm9yIGJ1aWx0LWluIHRpbWVycyAoMi41LnggaGFzIGEgd2F5IHRvDQo+ZG8g
+dGhpcyBmb3IgdXNlci1kZWZpbmVkIHRpbWVycyBhbHJlYWR5LCBpdCBpcyBjYWxsZWQNCj54bnRp
+bWVyX2luaXRfbm9ibG9jaygpKS4NCj4NCj4+DQo+PiBUaGFua3MsDQo+PiBMdWlzIEcuIEhlcnJl
+cmEtQmVuZGV6dQ0KPj4NCj4+DQo+PiBfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fXw0KPj4gWGVub21haS1oZWxwIG1haWxpbmcgbGlzdA0KPj4gWGVub21haS1o
+ZWxwQGduYS5vcmcNCj4+IGh0dHBzOi8vbWFpbC5nbmEub3JnL2xpc3RpbmZvL3hlbm9tYWktaGVs
+cA0KPg0KPi0tDQo+UGhpbGlwcGUuDQo+DQpUaGFua3MsDQpMdWlzDQoNCg==
 
