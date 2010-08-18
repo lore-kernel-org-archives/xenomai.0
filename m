@@ -1,15 +1,13 @@
-Message-ID: <4C76775A.4040104@domain.hid>
-Date: Thu, 26 Aug 2010 16:16:58 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <4C6BD747.1090304@domain.hid>
+Date: Wed, 18 Aug 2010 14:51:19 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4C73EC62.80703@domain.hid> <1282703799.2170.4.camel@domain.hid>
-	<4C74C059.4090704@domain.hid> <1282748002.1995.2.camel@domain.hid>
-	<1282748372.2845.2.camel@domain.hid>
-	<1282759231.5566.3.camel@domain.hid> <4C76483C.8080103@domain.hid>
-In-Reply-To: <4C76483C.8080103@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+References: <AANLkTikjB1vF+0Ldnc_80_+TJeG2MKo5i42hE5Ah3nj9@domain.hid>
+In-Reply-To: <AANLkTikjB1vF+0Ldnc_80_+TJeG2MKo5i42hE5Ah3nj9@domain.hid>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] [RFT] ipipe patch for 2.6.35.3-x86
+Subject: Re: [Xenomai-help] kernel compilation problem with a Cortex A8,
+ AM3517 EVM
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,30 +17,19 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Edward Hoffman <quantalgo@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>, adeos-main <adeos-main@gna.org>
+To: marc doz <doz.marc@domain.hid>
+Cc: xenomai@xenomai.org
 
-Jan Kiszka wrote:
-> Edward Hoffman wrote:
->> Jan,
->>
->> I reconfigured the linux-2.6.35.3 kernel (32-bit) after applying the
->> adeos kernel patch.  All I get when I reboot is a black screen with a
->> blinking cursor.
->>
->> Any suggestions.
->>
+marc doz wrote:
+> Hi,
 > 
-> I'm building a 32-bit kernel in the background. I case that one happens
-> to boot, I will come back and ask for your config.
+> I try to compile a kernel (2.6.32 patched with
+> adeos-ipipe-2.6.33-arm-1.17-02.patch	) with xenomai.
 
-Looks like I do need your .config as I'm only getting a false-positive
-warning from lockdep, the 32-bit kernel boots and runs fine otherwise,
-at least in UP mode.
-
-Jan
+Looking at your sources directory name, are you sure you are using a
+vanilla Linux kernel from kernel.org? Because this is the only kernel
+this patch supports.
 
 -- 
-Siemens AG, Corporate Technology, CT T DE IT 1
-Corporate Competence Center Embedded Linux
+					    Gilles.
 
