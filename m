@@ -1,15 +1,16 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <6FCCA913376DD7488F4139A4D11B8F4801465AF8@domain.hid>
-References: <6FCCA913376DD7488F4139A4D11B8F4801465AC9@domain.hid>
-	<1282149528.1730.348.camel@domain.hid>
-	<6FCCA913376DD7488F4139A4D11B8F4801465AF8@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Wed, 18 Aug 2010 22:44:21 +0200
-Message-ID: <1282164261.1730.359.camel@domain.hid>
-Mime-Version: 1.0
+From: Paul <paul_c@domain.hid>
+Date: Wed, 18 Aug 2010 22:08:06 +0100
+References: <4C45539B.70204@domain.hid> <4C6AA99D.3010907@domain.hid>
+	<4C6C2A4D.70503@domain.hid>
+In-Reply-To: <4C6C2A4D.70503@domain.hid>
+MIME-Version: 1.0
+Content-Type: text/plain;
+  charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] RTDM task blocks when connecting gdb to realtime
- task
+Content-Disposition: inline
+Message-Id: <201008182208.06802.paul_c@domain.hid>
+Subject: Re: [Xenomai-help] kernel 2.6.32.11 with xenomai 2.5.3 fails to
+	boot on ubuntu lucid system [PATCH]
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,99 +20,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "Herrera-Bendezu, Luis" <lherrera@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Wed, 2010-08-18 at 13:29 -0400, Herrera-Bendezu, Luis wrote:
-> Philippe,
-> 
-> >-----Original Message-----
-> >From: Philippe Gerum [mailto:rpm@xenomai.org]
-> >Sent: Wednesday, August 18, 2010 12:39 PM
-> >To: Herrera-Bendezu, Luis
-> >Cc: xenomai@xenomai.org
-> >Subject: Re: [Xenomai-help] RTDM task blocks when connecting gdb to realtime task
+On Wednesday 18 August 2010, Stefan Kisdaroczi wrote:
+> On 17.08.2010 17:24, Stefan Kisdaroczi wrote:
+> > On 17.08.2010 15:51, Hemal C.Bavishi wrote:
+> >> When I tried to compile it with the latest version of kernel with
+> >> xenomai 2.5.4, I am getting following errors in Xenomai (disable
+> >> CONFIG_SMP, enable CONFIG_X86_UP_APIC and CONFIG_X86_UP_IOAPIC
+> >> (*).)
 > >
+> > Just tested, got the same build error with 2.6.34.
+> > If I patch 2.6.34 with prepare-kernel [1] it compiles,
+> > if I use the debian packaged patch generated with prepare-patch [2]
+> > it fails.
 > >
-> >On Wed, 2010-08-18 at 12:03 -0400, Herrera-Bendezu, Luis wrote:
-> >> Hello:
-> >>
-> >> I am using Xenomai 2.4.10 on PPC. An RTDM driver creates an RTDM task
-> >> using rtdm_task_init() and goes to sleep periodically via function
-> >> rtdm_task_sleep().
-> >>
-> >> When driver is loaded, RTDM task executes as expected. Then a realtime
-> >> application is started via gdbserver on target board and on a linux host
-> >> a gdb client is connected to that board. As soon as gdb breakpoints the
-> >> realtime application the RTDM task never returns from rtdm_task_sleep().
-> >> The application does not open the RTMD driver so at this point there is
-> >> no interaction with the driver.
-> >>
-> >> The RTDM task is intr_sim and the timer is no longer firing
-> >> # cat /proc/xenomai/timerstat/master
-> >> CPU  SCHEDULED   FIRED       TIMEOUT    INTERVAL   HANDLER      NAME
-> >> 0    29198042    9132085     3724750    -          NULL
-> >> [host-timer]
-> >> 0    1340        1340        -          -          xnthread_ti  intr_sim
-> >>
-> >> The realtime application is ancvbirt.
-> >> # cat /proc/xenomai/sched
-> >> CPU  PID    PRI      PERIOD     TIMEOUT    TIMEBASE  STAT       NAME
-> >>   0  0       -1      0          0          master    R          ROOT
-> >>   0  0       90      0          0          master    D          intr_sim
-> >>   0  1869     0      0          0          master    XT         ancvbirt
-> >>
-> >> Any ideas on the cause of the problem and fix?
-> >
-> >This is a side-effect of hitting a breakpoint in your application
-> >introduced by Xenomai: all Xenomai timers are frozen system-wide, until
-> >the application is continued. This includes the per-thread timer which
-> >is used to have your RTDM task wake up after a delay.
-> After continuing the application, the RTDM task does not resume execution.
-> I had to reload driver to have it working again.
-> >
-> >There is a way to prevent this behavior, which was defined for internal
-> >purposes only so far. Since Jan is not watching, here is a patch against
-> >2.4.10 which happily butchers his nifty interface, that should prevent
-> >the per-thread timers of _all_ RTDM tasks from being blocked in that
-> >case, which may be enough to help you though:
-> >
-> >diff --git a/ksrc/skins/rtdm/drvlib.c b/ksrc/skins/rtdm/drvlib.c
-> >index 65c630f..0295690 100644
-> >--- a/ksrc/skins/rtdm/drvlib.c
-> >+++ b/ksrc/skins/rtdm/drvlib.c
-> >@@ -144,6 +144,7 @@ int rtdm_task_init(rtdm_task_t *task, const char *name,
-> > 	res = xnpod_init_thread(task, rtdm_tbase, name, priority, 0, 0, NULL);
-> > 	if (res)
-> > 		goto error_out;
-> >+	task->rtimer.status |= XNTIMER_NOBLCK;
-> >
-> > 	if (period > 0) {
-> > 		res = xnpod_set_thread_periodic(task, XN_INFINITE,
-> >@@ -151,6 +152,7 @@ int rtdm_task_init(rtdm_task_t *task, const char *name,
-> > 						(rtdm_tbase,  period));
-> > 		if (res)
-> > 			goto cleanup_out;
-> >+		task->ptimer.status |= XNTIMER_NOBLCK;
-> > 	}
-> >
-> > 	res = xnpod_start_thread(task, 0, 0, XNPOD_ALL_CPUS, task_proc, arg);
-> >
-> Yes, this patch avoids stopping the timers. I see the value on stopping the
-> timers on the RTDM driver when application hits a breakpoint but for some
-> reason timer does not recover. I am using Linux 2.6.30.
+> > I guess a fix is needed in prepare-patch for 2.6.34, but no time to
+> > look closer now.
+>
+> patch for prepare-patch.sh attached.
+> prepare-kernel.sh try's to find ipipe.h and uses the old or new tree
+> structure. Is it ok to change this unconditionally in
+> prepare-patch.sh? All adeos-patches in xenomai-2.5.git have ipipe.h
+> in
+> arch/$linux_arch/include/asm/, so i think yes.
 
-Could you paste the output from:
-/proc/xenomai/stat
-/proc/xenomai/timerstat/master
+As long as no one tries to include a patch for anything prior to 2.6.28 
+(I think that is when everything moved to arch/*/include/asm) - There 
+is only one ipipe patch in head currently for 2.6.25-ppc, but I doubt 
+if anyone would be using it on a Debian build.
 
-after the application has resumed execution?
-
-TIA,
+For that one case, I don't think it worth adding any additional 
+complexity to generate a patch with a limited life span.
 
 
--- 
-Philippe.
+Regards, Paul.
 
 
 
