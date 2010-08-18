@@ -1,13 +1,10 @@
-Message-ID: <4C73FBD5.6080808@domain.hid>
-Date: Tue, 24 Aug 2010 19:05:25 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <4C73EC62.80703@domain.hid>
-	<1282669146.1961.153.camel@domain.hid>
-In-Reply-To: <1282669146.1961.153.camel@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] [Adeos-main] [RFT] ipipe patch for 2.6.35.3-x86
+Date: Wed, 18 Aug 2010 14:37:32 +0200
+Message-ID: <AANLkTikjB1vF+0Ldnc_80_+TJeG2MKo5i42hE5Ah3nj9@domain.hid>
+From: marc doz <doz.marc@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: [Xenomai-help] kernel compilation problem with a Cortex A8,
+	AM3517 EVM
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,48 +14,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai-help <xenomai@xenomai.org>, adeos-main <adeos-main@gna.org>
+To: xenomai@xenomai.org
 
-Philippe Gerum wrote:
-> On Tue, 2010-08-24 at 17:59 +0200, Jan Kiszka wrote:
->> Hi,
->>
->> just uploaded a forward port of the 2.6.34 ipipe patch for x86 to latest
->> stable 2.6.35.3. It boots and runs fine here in 64-bit mode with Xenomai
->> head, but I only ran light tests so far. Anyone interested in upgrading
->> the host kernel (I think I read some request recently) is welcome to
->> give it a try and report results back (specifically on 32 bit as that is
->> a bit out of focus for me ATM). You can download the full git tree from
->>
->> 	git://git.kiszka.org/ipipe-2.6.git queues/2.6.35-x86
->> 	(alternatively also via http://)
->>
-> 
-> Btw, could you pick Wolfgang's host rt clock patch in your queue as
-> well? I only have a few minor issues with it, which are no showstopper.
-> The only thing to care of before merging this to mainline, is that no
-> other arch does support this feature yet, so it is important to make it
-> fully optional in -noarch, and Xenomai-wise also.
-> 
-> We likely need some __IPIPE_FEATURE_* symbol to be defined in
-> arch/x86/include/ipipe_base.h for this purpose, so that depending code
-> could test for presence.
+Hi,
 
-Will have a look.
+I try to compile a kernel (2.6.32 patched with
+adeos-ipipe-2.6.33-arm-1.17-02.patch	) with xenomai.
+The target is AM3517 Evaluation Module. It runs correctly without
+xenomai and the compilation proccess sucess with only adeos patch
 
-There is one further feature on my to-do list anyway: KVM support. Will
-also require a feature bit (for a new root preemption notifier).
+this is my current method :
 
-> 
-> I'll pull the whole thing from your tree when x86_32 is known to rock as
-> well.
+1)with xenomail :
+./scripts/prepare-kernel.sh
+--linux=/home/marc/sdk/AM35x-OMAP35x-PSP-SDK/src/kernel/linux-03.00.00.05_xenomai
+ --arch=arm
+2)in the kernel directory :
+make ARCH=arm CROSS_COMPILE=arm-none-linux-gnueabi- menuconfig
+make ARCH=arm CROSS_COMPILE=arm-none-linux-gnueabi-
 
-OK, great.
+These errors occur :
+arch/arm/xenomai/built-in.o: In function `rthal_irq_host_release':
+/home/marc/sdk/AM35x-OMAP35x-PSP-SDK/src/kernel/linux-03.00.00.05_xenomai/arch/arm/xenomai/hal.c:193:
+undefined reference to `__bad_lock_type'
+arch/arm/xenomai/built-in.o: In function `rthal_irq_host_request':
+/home/marc/sdk/AM35x-OMAP35x-PSP-SDK/src/kernel/linux-03.00.00.05_xenomai/arch/arm/xenomai/hal.c:172:
+undefined reference to `__bad_lock_type'
 
-Jan
+the test is done with  xenomai-2.5.0 and  xenomai-2.5.4
+the toolchain is a codeSourcery toolchain : arm-none-linux-gnueabi-gcc
+(Sourcery G++ 4.3-234) 4.3.3
 
--- 
-Siemens AG, Corporate Technology, CT T DE IT 1
-Corporate Competence Center Embedded Linux
+have you a suggestion ? can you suggest me a kernel version and a
+xenomai version ?
+
+regards,
+marc
 
