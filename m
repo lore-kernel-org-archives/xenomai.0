@@ -1,15 +1,15 @@
-Message-ID: <4C6D24B8.6090808@domain.hid>
-Date: Thu, 19 Aug 2010 14:34:00 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <181804936ABC2349BE503168465576460F9E6D9C@exchserver.basler.com>			<181804936ABC2349BE503168465576460F9E6DA5@domain.hid>
-	<4C66939A.1060509@domain.hid> <4C6697F8.1090409@domain.hid>
-	<181804936ABC2349BE503168465576460FA508FF@exchserver.basler.com>
-	<181804936ABC2349BE503168465576460FAB4A0C@exchserver.basler.com>
-In-Reply-To: <181804936ABC2349BE503168465576460FAB4A0C@exchserver.basler.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Page fault in real time task causes lockup
+In-Reply-To: <AANLkTimiofme9duMMyiqe3snHmGxWFxGf7AJDaaAGE6b@domain.hid>
+References: <AANLkTikjB1vF+0Ldnc_80_+TJeG2MKo5i42hE5Ah3nj9@domain.hid>
+	<4C6BD747.1090304@domain.hid>
+	<AANLkTimiofme9duMMyiqe3snHmGxWFxGf7AJDaaAGE6b@domain.hid>
+Date: Thu, 19 Aug 2010 17:10:36 +0200
+Message-ID: <AANLkTinYt1Gj+Vsm1NXCXyDPa92KS+DMFVhpNcVvYjgw@domain.hid>
+From: marc doz <doz.marc@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-help] kernel compilation problem with a Cortex A8,
+ AM3517 EVM
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,47 +19,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Steve Deiters <SteveDeiters@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-Steve Deiters wrote:
->> It turns out my problem was caused by an interrupt storm.  I 
->> had set up the interrupt to propagate to the Linux domain.  
->> When my rt task transferred to the Linux domain from the page 
->> fault it wasn't able to clear the device interrupt flag.  The 
->> interrupt was reenabled at the PIC level after Linux was done 
->> with it, and as soon as that happened it got interrupted again.
+The compilation is a sucess without the line 172 and 193. It seem that
+spin lock management is different between kernel 2.6.32 ans 2.6.33.
+
+So I think that my realy problem is that is need a adeos patch  for
+kernel 2.6.32 adeos-ipipe-2.6.32-arm* . I have 298 patchs of Texas
+Instrument for the kernel 2.6.32 and my board. So I can't upgrade to
+2.6.33 or downgrade to 2.6.31.
+
+The 2.6.32 adeos-ipipe-2.6.32-arm* patch is not present in the
+downloading section of the adeos website
+
+2010/8/18 marc doz <doz.marc@domain.hid>:
+> Indeed, I use the kernel included in the SDK of TI. I will retry with
+> a vanilla kernel.
+>
+> 2010/8/18 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>:
+>> marc doz wrote:
+>>> Hi,
+>>>
+>>> I try to compile a kernel (2.6.32 patched with
+>>> adeos-ipipe-2.6.33-arm-1.17-02.patch =A0) with xenomai.
 >>
->> My fix was to disable the interrupt at the device level as 
->> soon as rt_intr_wait returns, and reenable it before calling 
->> rt_intr_wait.  I'm still not sure why I was getting that exception.
-> 
-> I'm still getting exceptions like I was getting before.  With the
-> interrupt fix I had in there, the system stays responsive, just that
-> task gets killed.  I'm still trying to track down the problem.
-> 
-> I'm using rt_intr_wait so I am synchronized with an external FPGA, but
-> it is just periodic.  If I replace the rt_intr_wait with a timed wait
-> with rt_wait_period it does not crash.  There seems to be some
-> interaction with the rt_intr_wait I still do not understand.
-> 
-> I'm trying to make sense of the exception numbers it prints in messages
-> like the following.  Maybe this will give me some better insight to what
-> is happening.
-> 
-> [   24.480199] Xenomai: Switching dsp_task to secondary mode after
-> exception #1792 in kernel-space at 0xc0062f48 (pid 595)
-> 
-> I tried turning on the I-pipe tracer to get some more information, but
-> it crashes on startup.
-
-Could you try and reproduce this bug without the FPGA ? For instance by
-requesting a virq (rthal_alloc_virq) in an RTDM driver, then posting
-this virq (rthal_trigger_virq) from an RTDM timer? If you encounter the
-same issue, we will be able to reproduce your issue. If not, then
-chances may be that the problem comes from accessing the FPGA register
-in the irq handler code.
-
--- 
-					    Gilles.
+>> Looking at your sources directory name, are you sure you are using a
+>> vanilla Linux kernel from kernel.org? Because this is the only kernel
+>> this patch supports.
+>>
+>> --
+>> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
+=A0 =A0 =A0 =A0Gilles.
+>>
+>
 
