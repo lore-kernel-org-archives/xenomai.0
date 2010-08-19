@@ -1,14 +1,17 @@
-Message-ID: <4C6D4BDE.1050605@domain.hid>
-Date: Thu, 19 Aug 2010 17:21:02 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4C6D4C01.2010402@domain.hid>
+Date: Thu, 19 Aug 2010 17:21:37 +0200
+From: Stefan Kisdaroczi <kisda@domain.hid>
 MIME-Version: 1.0
-References: <AANLkTikjB1vF+0Ldnc_80_+TJeG2MKo5i42hE5Ah3nj9@domain.hid>	<4C6BD747.1090304@domain.hid>	<AANLkTimiofme9duMMyiqe3snHmGxWFxGf7AJDaaAGE6b@domain.hid>
-	<AANLkTinYt1Gj+Vsm1NXCXyDPa92KS+DMFVhpNcVvYjgw@domain.hid>
-In-Reply-To: <AANLkTinYt1Gj+Vsm1NXCXyDPa92KS+DMFVhpNcVvYjgw@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] kernel compilation problem with a Cortex A8,
- AM3517 EVM
+References: <4C45539B.70204@domain.hid> <4C6AA99D.3010907@domain.hid>
+	<4C6B870C.7090600@domain.hid>
+	<201008181003.09206.paul_c@domain.hid>
+	<4C6BA2A1.4030005@domain.hid>
+In-Reply-To: <4C6BA2A1.4030005@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigCDAD3E95D48DEED35B2D00A1"
+Subject: Re: [Xenomai-help] kernel 2.6.32.11 with xenomai 2.5.3 fails to
+ boot on ubuntu lucid system
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,27 +21,95 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: marc doz <doz.marc@domain.hid>
+To: gilles.chanteperdrix@xenomai.org
 Cc: xenomai@xenomai.org
 
-marc doz wrote:
-> The compilation is a sucess without the line 172 and 193. It seem that
-> spin lock management is different between kernel 2.6.32 ans 2.6.33.
-> 
-> So I think that my realy problem is that is need a adeos patch  for
-> kernel 2.6.32 adeos-ipipe-2.6.32-arm* . I have 298 patchs of Texas
-> Instrument for the kernel 2.6.32 and my board. So I can't upgrade to
-> 2.6.33 or downgrade to 2.6.31.
-> 
-> The 2.6.32 adeos-ipipe-2.6.32-arm* patch is not present in the
-> downloading section of the adeos website
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigCDAD3E95D48DEED35B2D00A1
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-Yes, I did not produce this patch. If you want to do it, you should use
-the I-pipe git: git://git.denx.de/ipipe-2.6.git, then merge the
-ipipe-2.6.32-noarch branch with your vendor branch, then try and apply
-the diff between ipipe-2.6.31-noarch and ipipe-2.6.31-arm or
-ipipe-2.6.33-noarch and ipipe-2.6.33-arm.
+On 18.08.2010 11:06, Gilles Chanteperdrix wrote:
+> Paul wrote:
+>  =20
+>> On Wednesday 18 August 2010, Gilles Chanteperdrix wrote:
+>>    =20
+>>> Stefan Kisdaroczi wrote:
+>>>      =20
+>>>> On 17.08.2010 15:51, Hemal C.Bavishi wrote:
+>>>>        =20
+>>>>> When I tried to compile it with the latest version of kernel with
+>>>>> xenomai 2.5.4, I am getting following errors in Xenomai (disable
+>>>>> CONFIG_SMP, enable CONFIG_X86_UP_APIC and CONFIG_X86_UP_IOAPIC
+>>>>> (*).)
+>>>>>          =20
+>>>> Just tested, got the same build error with 2.6.34.
+>>>> If I patch 2.6.34 with prepare-kernel [1] it compiles,
+>>>> if I use the debian packaged patch generated with prepare-patch [2]
+>>>> it fails.
+>>>>
+>>>> I guess a fix is needed in prepare-patch for 2.6.34, but no time to
+>>>> look closer now.
+>>>>
+>>>> Stefan
+>>>>
+>>>> [1] xenomai-2.5.4/scripts/prepare-kernel.sh
+>>>> [2] xenomai-2.5.4/debian/prepare-patch.sh
+>>>>        =20
+>>> prepare-kernel.sh has a "--outpatch" option, which seems to be able
+>>> to generate patches, so, would not it be possible to modify
+>>> prepare-patch to simply call prepare-kernel.sh with the --outpatch
+>>> option?
+>>>
+>>> This way, we will not have to duplicate into prepare-patch.sh the
+>>> modifications we make to prepare-kernel.sh.
+>>>      =20
+>> The debian/prepare-patch.sh does not require a kernel source tree and =
 
--- 
-					    Gilles.
+>> generates patches for multiple kernels & arches - It is a fudge, but i=
+t=20
+>> works for the most part and does not impose dependencies of multiple=20
+>> kernel source trees on package build systems.
+>>    =20
+> Ok. Understood. The thing is that prepare-patch.sh is broken, so now ma=
+y
+> be a good occasion to merge its functionality in prepare-kernel.sh, so
+> that we do not duplicate the code in these two really non-trivial scrip=
+ts.
+>  =20
+
+Hi Gilles,
+
+There is another copy. The debian/ directory from the xenomai tree is
+not used for debian packages at debian.org. The Debian Maintainer Roland
+Stigge has his own debian/ directory.
+I submitted a bugreport including the patch for this bug to debian [1].
+If we move the prepare-patch.sh out of the debian/ dir (suggested by
+Roland), that would not be necessary.
+
+I suggest to move debian/prepare-patch.sh to
+scripts/prepare-debian-patch.sh.
+I'll create a patch if you agree.
+
+[1] http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=3D593585
+
+Stefan
+
+
+
+--------------enigCDAD3E95D48DEED35B2D00A1
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.10 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+
+iEYEARECAAYFAkxtTAsACgkQIPTw9rIdn6rD+QCfadCqcaiREYW49w6frfz7I/Ao
+M0sAn09ZTTRHP4MyYZUsqrzBVoUYTSNc
+=UY/E
+-----END PGP SIGNATURE-----
+
+--------------enigCDAD3E95D48DEED35B2D00A1--
 
