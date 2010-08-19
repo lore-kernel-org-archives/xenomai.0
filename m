@@ -1,13 +1,18 @@
-Message-ID: <4C6D1213.5010104@domain.hid>
-Date: Thu, 19 Aug 2010 13:14:27 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-References: <AANLkTi=2kNE2KznfnY0voTbWMFqy5_LESXswjJ25O-hk@domain.hid>	<4C6C019D.1040406@domain.hid>	<AANLkTi=uuzsAsgt8mk04VJE0-tmd1YQ5KoiTu3a-dO3v@domain.hid>	<4C6CE4E0.1000609@domain.hid>
-	<AANLkTimS-p0OWzrhuwuLwN27hUvQqTML8B-YALRwLuxz@domain.hid>
-In-Reply-To: <AANLkTimS-p0OWzrhuwuLwN27hUvQqTML8B-YALRwLuxz@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Timing calculation
+Content-Type: text/plain;
+	charset="UTF-8"
+Content-Transfer-Encoding: base64
+Date: Thu, 19 Aug 2010 08:26:54 -0400
+Message-ID: <6FCCA913376DD7488F4139A4D11B8F4801465B76@domain.hid>
+In-Reply-To: <1282164261.1730.359.camel@domain.hid>
+References: <6FCCA913376DD7488F4139A4D11B8F4801465AC9@domain.hid>
+	<1282149528.1730.348.camel@domain.hid>
+	<6FCCA913376DD7488F4139A4D11B8F4801465AF8@domain.hid>
+	<1282164261.1730.359.camel@domain.hid>
+From: "Herrera-Bendezu, Luis" <lherrera@domain.hid>
+Subject: Re: [Xenomai-help] RTDM task blocks when connecting gdb to realtime
+	task
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,131 +22,123 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Prakash A S <asprakash83@domain.hid>
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: xenomai@xenomai.org
 
-Prakash A S wrote:
-> On Thu, Aug 19, 2010 at 1:31 PM, Gilles Chanteperdrix <
-> gilles.chanteperdrix@xenomai.org> wrote:
-> 
->> Prakash A S wrote:
->>> On Wed, Aug 18, 2010 at 9:21 PM, Gilles Chanteperdrix <
->>>> We still receive HTML.
->>>>
->>> May be because of simply copy and pasted the old content in the last
->> thread.
->>> How about the scenario now?.
->> Nope. Still multipart/alternative with HTML.
->>
-> 
-> Sorry, I have no clue why its happening.
-> 
-> 
-> 
->>>
->>>>> Obviously I should improve my C language skills.
->>>>>
->>>>> I am using linux kernel 2.6.30.8 on Ubuntu 8.04,
->>>>> Adeos-ipipe-2.6.30.8-x86-2.4-09.patch and Xenomai-2.5.3
->>>> What about the kernel configuration and self-contained test exhibiting
->>>> the behaviour you do not understand?
->>>>
->>> My .config file is here, http://pastebin.ca/1919917
->> This .config is wrong: it has ACPI disabled.
->>
->>
-> I will enabled the ACPI, recompile the kernel and get back to you later.
-> 
-> 
->>> I tested and understand few test cases below.
->>> switchtest : I am using Intel Dual core processor. ~5731 context switches
->>> happening in a second
->>> cyclictest : Tested with 10 threads. Maximum timer latency is 38us and
->>> minimum is 1us
->>> clocktest : Simply prints the time offset, drift value and wraps compare
->>> with normal linux's gettimeofday(). Not much understand from this test.
->>> latency : user mode latency test provides maximum latency time is 15us.
->>> latency : kernel mode latency test provides maximum latency time is 3.6
->> us
->>> latency : timer mode latency test provides maximum latency time is 3 us
->> So, timing works correctly. If there was something wrong with time
->> keeping, you would have seen latency and switchtest drifting, and
->> printing infinitely increasing or decreasing latencies.
->>
-> 
-> Valuable information.
-
-Well, not really, just common sense.
-
->>> Not much understand about the clocktest.
->>> More helpful if we have any documentations for the all tests rather than
->> how
->>> to use the tests.
->> The fact that ACPI must be enabled is documented, though you disabled
->> it, which proves that you do not read the documentation.
->>
-> 
-> Let me know which document you are talking about?.
-
-It was repeated many times on this mailing list. Every time someone asks
-about how to configure Xenomai on x86. Because a lot of people are doing
-this error.
-
-The document is:
-http://www.xenomai.org/index.php/FAQs#Which_kernel_settings_should_be_avoided.3F
-
-Which says to disable ACPI_PROCESSOR, not ACPI.
-
-> From the beginners point of view, he/she is trying to install a software
-> successfully first and not to worry about the performance scale at initial
-> stage. In the kernel compilation part disabling power management option is
-> one of the usual step followed by the beginners. I did the same and later,
-> forgot that its an important factor.
-
-If the beginner is not worried about performances, then it does not have
-to disable power management.
-
-Anyway, that is exactly my point: you did not read the documentations.
-Because the documentations do not say to disable power management, they
-say to disable CONFIG_APM and CONFIG_ACPI_PROCESSOR.
-http://www.xenomai.org/index.php/FAQs#Which_kernel_settings_should_be_avoided.3F
-
-And you did not read the mailing lists archives either.
-
-> 
-> Hope you remember that the issue was posted by another community person
-> regarding the booting issue after he compiled the kernel. I suggested to use
-> "noacpi" "nolapci" in boot argument.  Though the system was booted properly,
-> your suggestion was, not to use this option. Bcoz the kernel unable to use
-> ACPI. So we have two scenarios here.
-> [1]If we disable the ACPI in BIOS level then the kernel is booting properly.
-> But, the real time system can not use ACPI
-> [2] ACPI enabled. But system will not boot properly.
-
-No, it was noapic nolapic, you are confusing APIC and ACPI. And you can
-get the system to boot without APIC, you simply have to disable it in
-the kernel configuration. Disabling it at run-time will not work with
-Xenomai. This too has been repeated many times on this mailing list. But
-it is not advised, as written here:
-
-http://www.xenomai.org/index.php/Embedded_Device_Support#x86
-
-using APIC leads to better performances.
-
-> 
-> So how to resolve the above issue and please share if you have any specific
-> documents/guidelines/howto/articles on how this ACPI affects the normal
-> Linux and real time systems & why it is mandatory for xenomai.
-> 
-
-Keeping the ACPI enabled is not only about performances (one of its
-sides effects is to disable the BIOS "legacy" power management, so some
-SMIs sources), it is also a way to get the kernel to properly configure
-some hardware details by reading them in the ACPI tables. When it fails
-to do that, unexpected effect may be expected, ranging from interrupt
-storms to boot failures. We experienced this in the past, you may find
-traces in the mailing list archives.
-
--- 
-					    Gilles.
+Pi0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+RnJvbTogUGhpbGlwcGUgR2VydW0gW21haWx0
+bzpycG1AeGVub21haS5vcmddDQo+U2VudDogV2VkbmVzZGF5LCBBdWd1c3QgMTgsIDIwMTAgNDo0
+NCBQTQ0KPlRvOiBIZXJyZXJhLUJlbmRlenUsIEx1aXMNCj5DYzogeGVub21haS1oZWxwQGduYS5v
+cmcNCj5TdWJqZWN0OiBSRTogW1hlbm9tYWktaGVscF0gUlRETSB0YXNrIGJsb2NrcyB3aGVuIGNv
+bm5lY3RpbmcgZ2RiIHRvIHJlYWx0aW1lIHRhc2sNCj4NCj4NCj5PbiBXZWQsIDIwMTAtMDgtMTgg
+YXQgMTM6MjkgLTA0MDAsIEhlcnJlcmEtQmVuZGV6dSwgTHVpcyB3cm90ZToNCj4+IFBoaWxpcHBl
+LA0KPj4NCj4+ID4tLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPj4gPkZyb206IFBoaWxpcHBl
+IEdlcnVtIFttYWlsdG86cnBtQHhlbm9tYWkub3JnXQ0KPj4gPlNlbnQ6IFdlZG5lc2RheSwgQXVn
+dXN0IDE4LCAyMDEwIDEyOjM5IFBNDQo+PiA+VG86IEhlcnJlcmEtQmVuZGV6dSwgTHVpcw0KPj4g
+PkNjOiB4ZW5vbWFpLWhlbHBAZ25hLm9yZw0KPj4gPlN1YmplY3Q6IFJlOiBbWGVub21haS1oZWxw
+XSBSVERNIHRhc2sgYmxvY2tzIHdoZW4gY29ubmVjdGluZyBnZGIgdG8gcmVhbHRpbWUgdGFzaw0K
+Pj4gPg0KPj4gPg0KPj4gPk9uIFdlZCwgMjAxMC0wOC0xOCBhdCAxMjowMyAtMDQwMCwgSGVycmVy
+YS1CZW5kZXp1LCBMdWlzIHdyb3RlOg0KPj4gPj4gSGVsbG86DQo+PiA+Pg0KPj4gPj4gSSBhbSB1
+c2luZyBYZW5vbWFpIDIuNC4xMCBvbiBQUEMuIEFuIFJURE0gZHJpdmVyIGNyZWF0ZXMgYW4gUlRE
+TSB0YXNrDQo+PiA+PiB1c2luZyBydGRtX3Rhc2tfaW5pdCgpIGFuZCBnb2VzIHRvIHNsZWVwIHBl
+cmlvZGljYWxseSB2aWEgZnVuY3Rpb24NCj4+ID4+IHJ0ZG1fdGFza19zbGVlcCgpLg0KPj4gPj4N
+Cj4+ID4+IFdoZW4gZHJpdmVyIGlzIGxvYWRlZCwgUlRETSB0YXNrIGV4ZWN1dGVzIGFzIGV4cGVj
+dGVkLiBUaGVuIGEgcmVhbHRpbWUNCj4+ID4+IGFwcGxpY2F0aW9uIGlzIHN0YXJ0ZWQgdmlhIGdk
+YnNlcnZlciBvbiB0YXJnZXQgYm9hcmQgYW5kIG9uIGEgbGludXggaG9zdA0KPj4gPj4gYSBnZGIg
+Y2xpZW50IGlzIGNvbm5lY3RlZCB0byB0aGF0IGJvYXJkLiBBcyBzb29uIGFzIGdkYiBicmVha3Bv
+aW50cyB0aGUNCj4+ID4+IHJlYWx0aW1lIGFwcGxpY2F0aW9uIHRoZSBSVERNIHRhc2sgbmV2ZXIg
+cmV0dXJucyBmcm9tIHJ0ZG1fdGFza19zbGVlcCgpLg0KPj4gPj4gVGhlIGFwcGxpY2F0aW9uIGRv
+ZXMgbm90IG9wZW4gdGhlIFJUTUQgZHJpdmVyIHNvIGF0IHRoaXMgcG9pbnQgdGhlcmUgaXMNCj4+
+ID4+IG5vIGludGVyYWN0aW9uIHdpdGggdGhlIGRyaXZlci4NCj4+ID4+DQo+PiA+PiBUaGUgUlRE
+TSB0YXNrIGlzIGludHJfc2ltIGFuZCB0aGUgdGltZXIgaXMgbm8gbG9uZ2VyIGZpcmluZw0KPj4g
+Pj4gIyBjYXQgL3Byb2MveGVub21haS90aW1lcnN0YXQvbWFzdGVyDQo+PiA+PiBDUFUgIFNDSEVE
+VUxFRCAgIEZJUkVEICAgICAgIFRJTUVPVVQgICAgSU5URVJWQUwgICBIQU5ETEVSICAgICAgTkFN
+RQ0KPj4gPj4gMCAgICAyOTE5ODA0MiAgICA5MTMyMDg1ICAgICAzNzI0NzUwICAgIC0gICAgICAg
+ICAgTlVMTA0KPj4gPj4gW2hvc3QtdGltZXJdDQo+PiA+PiAwICAgIDEzNDAgICAgICAgIDEzNDAg
+ICAgICAgIC0gICAgICAgICAgLSAgICAgICAgICB4bnRocmVhZF90aSAgaW50cl9zaW0NCj4+ID4+
+DQo+PiA+PiBUaGUgcmVhbHRpbWUgYXBwbGljYXRpb24gaXMgYW5jdmJpcnQuDQo+PiA+PiAjIGNh
+dCAvcHJvYy94ZW5vbWFpL3NjaGVkDQo+PiA+PiBDUFUgIFBJRCAgICBQUkkgICAgICBQRVJJT0Qg
+ICAgIFRJTUVPVVQgICAgVElNRUJBU0UgIFNUQVQgICAgICAgTkFNRQ0KPj4gPj4gICAwICAwICAg
+ICAgIC0xICAgICAgMCAgICAgICAgICAwICAgICAgICAgIG1hc3RlciAgICBSICAgICAgICAgIFJP
+T1QNCj4+ID4+ICAgMCAgMCAgICAgICA5MCAgICAgIDAgICAgICAgICAgMCAgICAgICAgICBtYXN0
+ZXIgICAgRCAgICAgICAgICBpbnRyX3NpbQ0KPj4gPj4gICAwICAxODY5ICAgICAwICAgICAgMCAg
+ICAgICAgICAwICAgICAgICAgIG1hc3RlciAgICBYVCAgICAgICAgIGFuY3ZiaXJ0DQo+PiA+Pg0K
+Pj4gPj4gQW55IGlkZWFzIG9uIHRoZSBjYXVzZSBvZiB0aGUgcHJvYmxlbSBhbmQgZml4Pw0KPj4g
+Pg0KPj4gPlRoaXMgaXMgYSBzaWRlLWVmZmVjdCBvZiBoaXR0aW5nIGEgYnJlYWtwb2ludCBpbiB5
+b3VyIGFwcGxpY2F0aW9uDQo+PiA+aW50cm9kdWNlZCBieSBYZW5vbWFpOiBhbGwgWGVub21haSB0
+aW1lcnMgYXJlIGZyb3plbiBzeXN0ZW0td2lkZSwgdW50aWwNCj4+ID50aGUgYXBwbGljYXRpb24g
+aXMgY29udGludWVkLiBUaGlzIGluY2x1ZGVzIHRoZSBwZXItdGhyZWFkIHRpbWVyIHdoaWNoDQo+
+PiA+aXMgdXNlZCB0byBoYXZlIHlvdXIgUlRETSB0YXNrIHdha2UgdXAgYWZ0ZXIgYSBkZWxheS4N
+Cj4+IEFmdGVyIGNvbnRpbnVpbmcgdGhlIGFwcGxpY2F0aW9uLCB0aGUgUlRETSB0YXNrIGRvZXMg
+bm90IHJlc3VtZSBleGVjdXRpb24uDQo+PiBJIGhhZCB0byByZWxvYWQgZHJpdmVyIHRvIGhhdmUg
+aXQgd29ya2luZyBhZ2Fpbi4NCj4+ID4NCj4+ID5UaGVyZSBpcyBhIHdheSB0byBwcmV2ZW50IHRo
+aXMgYmVoYXZpb3IsIHdoaWNoIHdhcyBkZWZpbmVkIGZvciBpbnRlcm5hbA0KPj4gPnB1cnBvc2Vz
+IG9ubHkgc28gZmFyLiBTaW5jZSBKYW4gaXMgbm90IHdhdGNoaW5nLCBoZXJlIGlzIGEgcGF0Y2gg
+YWdhaW5zdA0KPj4gPjIuNC4xMCB3aGljaCBoYXBwaWx5IGJ1dGNoZXJzIGhpcyBuaWZ0eSBpbnRl
+cmZhY2UsIHRoYXQgc2hvdWxkIHByZXZlbnQNCj4+ID50aGUgcGVyLXRocmVhZCB0aW1lcnMgb2Yg
+X2FsbF8gUlRETSB0YXNrcyBmcm9tIGJlaW5nIGJsb2NrZWQgaW4gdGhhdA0KPj4gPmNhc2UsIHdo
+aWNoIG1heSBiZSBlbm91Z2ggdG8gaGVscCB5b3UgdGhvdWdoOg0KPj4gPg0KPj4gPmRpZmYgLS1n
+aXQgYS9rc3JjL3NraW5zL3J0ZG0vZHJ2bGliLmMgYi9rc3JjL3NraW5zL3J0ZG0vZHJ2bGliLmMN
+Cj4+ID5pbmRleCA2NWM2MzBmLi4wMjk1NjkwIDEwMDY0NA0KPj4gPi0tLSBhL2tzcmMvc2tpbnMv
+cnRkbS9kcnZsaWIuYw0KPj4gPisrKyBiL2tzcmMvc2tpbnMvcnRkbS9kcnZsaWIuYw0KPj4gPkBA
+IC0xNDQsNiArMTQ0LDcgQEAgaW50IHJ0ZG1fdGFza19pbml0KHJ0ZG1fdGFza190ICp0YXNrLCBj
+b25zdCBjaGFyICpuYW1lLA0KPj4gPiAJcmVzID0geG5wb2RfaW5pdF90aHJlYWQodGFzaywgcnRk
+bV90YmFzZSwgbmFtZSwgcHJpb3JpdHksIDAsIDAsIE5VTEwpOw0KPj4gPiAJaWYgKHJlcykNCj4+
+ID4gCQlnb3RvIGVycm9yX291dDsNCj4+ID4rCXRhc2stPnJ0aW1lci5zdGF0dXMgfD0gWE5USU1F
+Ul9OT0JMQ0s7DQo+PiA+DQo+PiA+IAlpZiAocGVyaW9kID4gMCkgew0KPj4gPiAJCXJlcyA9IHhu
+cG9kX3NldF90aHJlYWRfcGVyaW9kaWModGFzaywgWE5fSU5GSU5JVEUsDQo+PiA+QEAgLTE1MSw2
+ICsxNTIsNyBAQCBpbnQgcnRkbV90YXNrX2luaXQocnRkbV90YXNrX3QgKnRhc2ssIGNvbnN0IGNo
+YXIgKm5hbWUsDQo+PiA+IAkJCQkJCShydGRtX3RiYXNlLCAgcGVyaW9kKSk7DQo+PiA+IAkJaWYg
+KHJlcykNCj4+ID4gCQkJZ290byBjbGVhbnVwX291dDsNCj4+ID4rCQl0YXNrLT5wdGltZXIuc3Rh
+dHVzIHw9IFhOVElNRVJfTk9CTENLOw0KPj4gPiAJfQ0KPj4gPg0KPj4gPiAJcmVzID0geG5wb2Rf
+c3RhcnRfdGhyZWFkKHRhc2ssIDAsIDAsIFhOUE9EX0FMTF9DUFVTLCB0YXNrX3Byb2MsIGFyZyk7
+DQo+PiA+DQo+PiBZZXMsIHRoaXMgcGF0Y2ggYXZvaWRzIHN0b3BwaW5nIHRoZSB0aW1lcnMuIEkg
+c2VlIHRoZSB2YWx1ZSBvbiBzdG9wcGluZyB0aGUNCj4+IHRpbWVycyBvbiB0aGUgUlRETSBkcml2
+ZXIgd2hlbiBhcHBsaWNhdGlvbiBoaXRzIGEgYnJlYWtwb2ludCBidXQgZm9yIHNvbWUNCj4+IHJl
+YXNvbiB0aW1lciBkb2VzIG5vdCByZWNvdmVyLiBJIGFtIHVzaW5nIExpbnV4IDIuNi4zMC4NCj4N
+Cj5Db3VsZCB5b3UgcGFzdGUgdGhlIG91dHB1dCBmcm9tOg0KPi9wcm9jL3hlbm9tYWkvc3RhdA0K
+Pi9wcm9jL3hlbm9tYWkvdGltZXJzdGF0L21hc3Rlcg0KPg0KPmFmdGVyIHRoZSBhcHBsaWNhdGlv
+biBoYXMgcmVzdW1lZCBleGVjdXRpb24/DQo+DQo+VElBLA0KPg0KPg0KPi0tDQo+UGhpbGlwcGUu
+DQo+DQpTdGF0dXMgd2l0aCBhcHBsaWNhdGlvbiBhdCBicmVha3BvaW50Og0KIyBjYXQgL3Byb2Mv
+eGVub21haS9zdGF0DQpDUFUgIFBJRCAgICBNU1cgICAgICAgIENTVyAgICAgICAgUEYgICAgU1RB
+VCAgICAgICAlQ1BVICBOQU1FDQogIDAgIDAgICAgICAwICAgICAgICAgIDE0OTg0ICAgICAgMCAg
+ICAgMDA0MDAwODAgICA5OS43ICBST09UDQogIDAgIDAgICAgICAwICAgICAgICAgIDM5NzYgICAg
+ICAgMCAgICAgMDAwMDAwODQgICAgMC4wICBpbnRyX3NpbQ0KICAwICAxMjYxICAgMSAgICAgICAg
+ICAxICAgICAgICAgIDEgICAgIDAwMzAxMzgwICAgIDAuMCAgYW5jdmJpcnQNCiAgMCAgMCAgICAg
+IDAgICAgICAgICAgMCAgICAgICAgICAwICAgICAwMDAwMDAwMCAgICAwLjAgIElSUTIyOiBfdmlw
+X2ZwZ2FfY29kZWNAMjAwMDAwMF9yDQogIDAgIDAgICAgICAwICAgICAgICAgIDMzNzM3NSAgICAg
+MCAgICAgMDAwMDAwMDAgICAgMC4yICBJUlE1MTI6IFt0aW1lcl0NCg0KIyBjYXQgL3Byb2MveGVu
+b21haS90aW1lcnN0YXQvbWFzdGVyDQpDUFUgIFNDSEVEVUxFRCAgIEZJUkVEICAgICAgIFRJTUVP
+VVQgICAgSU5URVJWQUwgICBIQU5ETEVSICAgICAgTkFNRQ0KMCAgICAxMDA1MjQwICAgICAzMjYx
+NjEgICAgICAxODQ0MzM1ICAgIC0gICAgICAgICAgTlVMTCAgICAgICAgIFtob3N0LXRpbWVyXQ0K
+MCAgICAzOTc2ICAgICAgICAzOTc2ICAgICAgICAtICAgICAgICAgIC0gICAgICAgICAgeG50aHJl
+YWRfdGkgIGludHJfc2ltDQoNClN0YXR1cyBvZiBhcHBsaWNhdGlvbiBhZnRlciBhcHBsaWNhdGlv
+biBleGVjdXRpb24gaXMgcmVzdW1lZDoNCiMgY2F0IC9wcm9jL3hlbm9tYWkvc3RhdA0KQ1BVICBQ
+SUQgICAgTVNXICAgICAgICBDU1cgICAgICAgIFBGICAgIFNUQVQgICAgICAgJUNQVSAgTkFNRQ0K
+ICAwICAwICAgICAgMCAgICAgICAgICAxNTAzNCAgICAgIDAgICAgIDAwNDAwMDgwICAgOTkuNiAg
+Uk9PVA0KICAwICAwICAgICAgMCAgICAgICAgICAzOTc2ICAgICAgIDAgICAgIDAwMDAwMDg0ICAg
+IDAuMCAgaW50cl9zaW0NCiAgMCAgMTI2MSAgIDIgICAgICAgICAgMiAgICAgICAgICAyICAgICAw
+MDMwMDM4MCAgICAwLjAgIGFuY3ZiaXJ0DQogIDAgIDAgICAgICAwICAgICAgICAgIDAgICAgICAg
+ICAgMCAgICAgMDAwMDAwMDAgICAgMC4wICBJUlEyMjogX3ZpcF9mcGdhX2NvZGVjQDIwMDAwMDBf
+cg0KICAwICAwICAgICAgMCAgICAgICAgICA0Mjg0NjIgICAgIDAgICAgIDAwMDAwMDAwICAgIDAu
+NCAgSVJRNTEyOiBbdGltZXJdDQoNCiMgY2F0IC9wcm9jL3hlbm9tYWkvdGltZXJzdGF0L21hc3Rl
+cg0KQ1BVICBTQ0hFRFVMRUQgICBGSVJFRCAgICAgICBUSU1FT1VUICAgIElOVEVSVkFMICAgSEFO
+RExFUiAgICAgIE5BTUUNCjAgICAgMTMxNDQ0NiAgICAgNDEyOTYxICAgICAgNDEwODkwICAgICAt
+ICAgICAgICAgIE5VTEwgICAgICAgICBbaG9zdC10aW1lcl0NCjAgICAgMzk3NiAgICAgICAgMzk3
+NiAgICAgICAgLSAgICAgICAgICAtICAgICAgICAgIHhudGhyZWFkX3RpICBpbnRyX3NpbQ0KMCAg
+ICA1ICAgICAgICAgICAyICAgICAgICAgICAtICAgICAgICAgIC0gICAgICAgICAgeG50aHJlYWRf
+dGkgIEFuY1ZiaVJ0LWluLWludA0KMCAgICA0ICAgICAgICAgICAxICAgICAgICAgICAtICAgICAg
+ICAgIC0gICAgICAgICAgeG50aHJlYWRfdGkgIEFuY1ZiaVJ0LW91dC1pbg0KMCAgICAyICAgICAg
+ICAgICAyICAgICAgICAgICAtICAgICAgICAgIC0gICAgICAgICAgeG50aHJlYWRfdGkgIEFuY1Zi
+aVJ0LWNsaWVudA0KMCAgICAzICAgICAgICAgICAxICAgICAgICAgICAtICAgICAgICAgIC0gICAg
+ICAgICAgeG50aHJlYWRfdGkgIEFuY1ZiaVJ0LXRzb3V0DQowICAgIDMgICAgICAgICAgIDEgICAg
+ICAgICAgIC0gICAgICAgICAgLSAgICAgICAgICB4bnRocmVhZF90aSAgQW5jVmJpUnQtcHVkaQ0K
+MCAgICAxICAgICAgICAgICAxICAgICAgICAgICAtICAgICAgICAgIC0gICAgICAgICAgeG50aHJl
+YWRfdGkgIEFuY1ZiaVJ0LWFuY3gNCjAgICAgMSAgICAgICAgICAgMCAgICAgICAgICAgLSAgICAg
+ICAgICAtICAgICAgICAgIHhudGhyZWFkX3RpICBBbmNWYmlSdC12Yml4DQowICAgIDEgICAgICAg
+ICAgIDAgICAgICAgICAgIC0gICAgICAgICAgLSAgICAgICAgICB4bnRocmVhZF90aSAgQW5jVmJp
+UnQtZ3Bpc3BsDQoNCk5vdGVzOg0KMS4gR05VIGdkYiBSZWQgSGF0IExpbnV4ICg2LjctMXJoKQ0K
+Mi4gR05VIGdkYnNlcnZlciBSZWQgSGF0IExpbnV4ICg2LjctMXJoKQ0KMy4gc2V0IGdkYiB0byBu
+b3Qgc3RvcC9wcmludC9wYXNzIFNJR1hDUFUgc2lnbmFsLg0KNC4gU2FtZSBiZWhhdmlvciBpZiBw
+cm9ncmFtIGlzIGV4ZWN1dGVkIHdpdGhpbiBnZGIgYW5kIG5vIGJyZWFrcG9pbnRzLg0KDQpUaGFu
+a3MsDQpMdWlzDQo=
 
