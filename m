@@ -1,5 +1,5 @@
-Message-ID: <4C6CF9F9.4000402@domain.hid>
-Date: Thu, 19 Aug 2010 11:31:37 +0200
+Message-ID: <4C6CFD24.1080004@domain.hid>
+Date: Thu, 19 Aug 2010 11:45:08 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <AANLkTi=dpYJNx+UzbjLy6Jpky2sscccUoVS5VZCAKMUv@domain.hid>	<4C6CF5BF.3060405@domain.hid>
@@ -41,14 +41,11 @@ ramon costa wrote:
 > code does something similar.
 > 
 > How can I do this in the Xenomai framework ?
-
-You can do this any way you like. You will have absolutely no help from
-the Xenomai framework.
-
 > 
 > Does RTDM task store the floating point context during task switching ?
 
-With "soft-float", there is no floating point context to be saved.
+Also note that if you need libm functions, you will need a soft-float
+kernel-mode libm.
 
 -- 
 					    Gilles.
