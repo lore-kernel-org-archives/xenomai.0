@@ -1,13 +1,12 @@
+Message-ID: <4C6D4BDE.1050605@domain.hid>
+Date: Thu, 19 Aug 2010 17:21:02 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <AANLkTimiofme9duMMyiqe3snHmGxWFxGf7AJDaaAGE6b@domain.hid>
-References: <AANLkTikjB1vF+0Ldnc_80_+TJeG2MKo5i42hE5Ah3nj9@domain.hid>
-	<4C6BD747.1090304@domain.hid>
-	<AANLkTimiofme9duMMyiqe3snHmGxWFxGf7AJDaaAGE6b@domain.hid>
-Date: Thu, 19 Aug 2010 17:10:36 +0200
-Message-ID: <AANLkTinYt1Gj+Vsm1NXCXyDPa92KS+DMFVhpNcVvYjgw@domain.hid>
-From: marc doz <doz.marc@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+References: <AANLkTikjB1vF+0Ldnc_80_+TJeG2MKo5i42hE5Ah3nj9@domain.hid>	<4C6BD747.1090304@domain.hid>	<AANLkTimiofme9duMMyiqe3snHmGxWFxGf7AJDaaAGE6b@domain.hid>
+	<AANLkTinYt1Gj+Vsm1NXCXyDPa92KS+DMFVhpNcVvYjgw@domain.hid>
+In-Reply-To: <AANLkTinYt1Gj+Vsm1NXCXyDPa92KS+DMFVhpNcVvYjgw@domain.hid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] kernel compilation problem with a Cortex A8,
  AM3517 EVM
 List-Id: Help regarding installation and common use of Xenomai
@@ -19,38 +18,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: marc doz <doz.marc@domain.hid>
 Cc: xenomai@xenomai.org
 
-The compilation is a sucess without the line 172 and 193. It seem that
-spin lock management is different between kernel 2.6.32 ans 2.6.33.
+marc doz wrote:
+> The compilation is a sucess without the line 172 and 193. It seem that
+> spin lock management is different between kernel 2.6.32 ans 2.6.33.
+> 
+> So I think that my realy problem is that is need a adeos patch  for
+> kernel 2.6.32 adeos-ipipe-2.6.32-arm* . I have 298 patchs of Texas
+> Instrument for the kernel 2.6.32 and my board. So I can't upgrade to
+> 2.6.33 or downgrade to 2.6.31.
+> 
+> The 2.6.32 adeos-ipipe-2.6.32-arm* patch is not present in the
+> downloading section of the adeos website
 
-So I think that my realy problem is that is need a adeos patch  for
-kernel 2.6.32 adeos-ipipe-2.6.32-arm* . I have 298 patchs of Texas
-Instrument for the kernel 2.6.32 and my board. So I can't upgrade to
-2.6.33 or downgrade to 2.6.31.
+Yes, I did not produce this patch. If you want to do it, you should use
+the I-pipe git: git://git.denx.de/ipipe-2.6.git, then merge the
+ipipe-2.6.32-noarch branch with your vendor branch, then try and apply
+the diff between ipipe-2.6.31-noarch and ipipe-2.6.31-arm or
+ipipe-2.6.33-noarch and ipipe-2.6.33-arm.
 
-The 2.6.32 adeos-ipipe-2.6.32-arm* patch is not present in the
-downloading section of the adeos website
-
-2010/8/18 marc doz <doz.marc@domain.hid>:
-> Indeed, I use the kernel included in the SDK of TI. I will retry with
-> a vanilla kernel.
->
-> 2010/8/18 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>:
->> marc doz wrote:
->>> Hi,
->>>
->>> I try to compile a kernel (2.6.32 patched with
->>> adeos-ipipe-2.6.33-arm-1.17-02.patch =A0) with xenomai.
->>
->> Looking at your sources directory name, are you sure you are using a
->> vanilla Linux kernel from kernel.org? Because this is the only kernel
->> this patch supports.
->>
->> --
->> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
-=A0 =A0 =A0 =A0Gilles.
->>
->
+-- 
+					    Gilles.
 
