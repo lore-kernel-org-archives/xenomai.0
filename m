@@ -1,14 +1,13 @@
-Message-ID: <4C6ACFA3.6090408@domain.hid>
-Date: Tue, 17 Aug 2010 20:06:27 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <4C6CF9F9.4000402@domain.hid>
+Date: Thu, 19 Aug 2010 11:31:37 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4C45539B.70204@domain.hid>	<4C6932E8.7050701@domain.hid>	<4C694AB3.8050407@domain.hid>	<4C698E16.5050806@domain.hid>	<1282040830.1730.232.camel@domain.hid>
-	<4C6ACA50.3080108@domain.hid>
-In-Reply-To: <4C6ACA50.3080108@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-15
+References: <AANLkTi=dpYJNx+UzbjLy6Jpky2sscccUoVS5VZCAKMUv@domain.hid>	<4C6CF5BF.3060405@domain.hid>
+	<AANLkTi=MKjwGhRXVGQtPQML5dyO6wUB0edWngncZVqjP@mail.gmail.com>
+In-Reply-To: <AANLkTi=MKjwGhRXVGQtPQML5dyO6wUB0edWngncZVqjP@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] kernel 2.6.32.11 with xenomai 2.5.3 fails to
- boot on ubuntu lucid system
+Subject: Re: [Xenomai-help] using floating point in rtdm
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,36 +17,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Stefan Kisdaroczi <kisda@domain.hid>
-Cc: xenomai@xenomai.org
+To: ramon costa <ramoncostacastello@domain.hid>
+Cc: Xenomai help <xenomai@xenomai.org>
 
-Stefan Kisdaroczi wrote:
-> I installed the kernel (2.6.32.15 2.5.4 x86 32bit) which is working on
-> my laptop in a kvm machine.
-> In the virtual machine the kernel never starts and hangs.
+ramon costa wrote:
+> Hi,
+> 
+> I'm trying to port some old stuff from RTLinuxfree.  As a first step I would
+> like to recompile
+> and check everything. Latter I will try to modify the code structure to  fit
+> xenomai structure.
+> 
+> 
+> - let the kernel compile your module as is, this will generated
+>> "soft-float" code, which means that the operations will be done in
+>> software. Your module will contain undefined references to functions
+>> actually implemented in libgcc. So, you will have to extract the needed
+>> .o from libgcc.a and put them in your module.
+>>
+> 
+> As this is only "temporary" this is the best option. I think my old
+> RTLinuxfree
+> code does something similar.
+> 
+> How can I do this in the Xenomai framework ?
 
-To make sure you are not facing a KVM issue (though they are much rarer
-theses days - given you are using a recent KVM version...), please
-cross-check if the guest behaves identically when booting without KVM
-support (-no-kvm when using qemu-kvm).
+You can do this any way you like. You will have absolutely no help from
+the Xenomai framework.
 
-> I attached gdb to kvm and according to the cpu registers and system.map
-> it hangs in 'doublefault_fn'. As I'm not really familiar with gdb i'm
-> thankful if someone has a hint how to proceed. Thanks
+> 
+> Does RTDM task store the floating point context during task switching ?
 
-Build the kernel with CONFIG_DEBUG_INFO, start "gdb
-/linux/src/path/vmlinux", then type "bt" at the gdb prompt when the
-guest hangs. This should dump a symbolic backtrace - though likely not
-beyond the exception entry. In that case, you could help us by examining
-the origin of the exception (parameters to the exception handler, it
-specifically receives a full register state).
-
-Also note that there are graphical debuggers, e.g. ddd, that can help
-working with gdb without knowing all its commands by heart.
-
-Jan
+With "soft-float", there is no floating point context to be saved.
 
 -- 
-Siemens AG, Corporate Technology, CT T DE IT 1
-Corporate Competence Center Embedded Linux
+					    Gilles.
 
