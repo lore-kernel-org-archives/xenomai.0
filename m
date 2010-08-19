@@ -1,13 +1,15 @@
-Message-ID: <4C6D23CE.1000606@domain.hid>
-Date: Thu, 19 Aug 2010 14:30:06 +0200
+Message-ID: <4C6D24B8.6090808@domain.hid>
+Date: Thu, 19 Aug 2010 14:34:00 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <AANLkTi=dpYJNx+UzbjLy6Jpky2sscccUoVS5VZCAKMUv@domain.hid>	<4C6CF5BF.3060405@domain.hid>	<AANLkTi=MKjwGhRXVGQtPQML5dyO6wUB0edWngncZVqjP@mail.gmail.com>	<4C6CFD24.1080004@domain.hid>
-	<AANLkTinCCejWZQhGOQd=CZ+yq482x0z4VCB5we+1mX9H@mail.gmail.com>
-In-Reply-To: <AANLkTinCCejWZQhGOQd=CZ+yq482x0z4VCB5we+1mX9H@mail.gmail.com>
+References: <181804936ABC2349BE503168465576460F9E6D9C@exchserver.basler.com>			<181804936ABC2349BE503168465576460F9E6DA5@domain.hid>
+	<4C66939A.1060509@domain.hid> <4C6697F8.1090409@domain.hid>
+	<181804936ABC2349BE503168465576460FA508FF@exchserver.basler.com>
+	<181804936ABC2349BE503168465576460FAB4A0C@exchserver.basler.com>
+In-Reply-To: <181804936ABC2349BE503168465576460FAB4A0C@exchserver.basler.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] using floating point in rtdm
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] Page fault in real time task causes lockup
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,67 +19,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: ramon costa <ramoncostacastello@domain.hid>
-Cc: Xenomai help <xenomai@xenomai.org>
+To: Steve Deiters <SteveDeiters@domain.hid>
+Cc: xenomai@xenomai.org
 
-ramon costa wrote:
-> Hi
->=20
-> There are some differences with RTLinuxfree which are making things
-> difficult ... .
->=20
-> One last question (offtopic ?=C2=BF)....
->=20
-> In user space I can use outb commands (using ioperm). For example :
->=20
->=20
-> #define PORT_PARALLEL 0x378
->  outb(valor,PORT_PARALLEL);
->=20
-> This can easily done for fixed addresses like the Parallel PORT. Althou=
-gh it
-> is not nice
-> it is working fine (and it very useful during the porting process )
->=20
->=20
->=20
-> This is more difficult for PCI devices which address is not fixed. In t=
-he
-> kernel space (RTDM) I could use "pci_find_device" commands to obtain th=
-e
-> base device base address.
->=20
-> Once this is done I could do something like:
->=20
-> outw(yint,PCI_BASE_ADRESS_1711 + PCI171x_DA0);
->=20
-> If I Know the device base address   (PCI_BASE_ADRESS_1711), this comman=
-ds
-> would also work
-> in the user space ?
+Steve Deiters wrote:
+>> It turns out my problem was caused by an interrupt storm.  I 
+>> had set up the interrupt to propagate to the Linux domain.  
+>> When my rt task transferred to the Linux domain from the page 
+>> fault it wasn't able to clear the device interrupt flag.  The 
+>> interrupt was reenabled at the PIC level after Linux was done 
+>> with it, and as soon as that happened it got interrupted again.
+>>
+>> My fix was to disable the interrupt at the device level as 
+>> soon as rt_intr_wait returns, and reenable it before calling 
+>> rt_intr_wait.  I'm still not sure why I was getting that exception.
+> 
+> I'm still getting exceptions like I was getting before.  With the
+> interrupt fix I had in there, the system stays responsive, just that
+> task gets killed.  I'm still trying to track down the problem.
+> 
+> I'm using rt_intr_wait so I am synchronized with an external FPGA, but
+> it is just periodic.  If I replace the rt_intr_wait with a timed wait
+> with rt_wait_period it does not crash.  There seems to be some
+> interaction with the rt_intr_wait I still do not understand.
+> 
+> I'm trying to make sense of the exception numbers it prints in messages
+> like the following.  Maybe this will give me some better insight to what
+> is happening.
+> 
+> [   24.480199] Xenomai: Switching dsp_task to secondary mode after
+> exception #1792 in kernel-space at 0xc0062f48 (pid 595)
+> 
+> I tried turning on the I-pipe tracer to get some more information, but
+> it crashes on startup.
 
-Well probably. Addresses such as PCI_BASE_ADDRESS_1711 live in a
-separate address space, only accessible with outb/inb, etc... Accessing
-I/O mapped PCI registers is another story. One way to access them is to
-use libpci (package pciutils) to obtain their physical address, then
-mmap it using /dev/mem.
+Could you try and reproduce this bug without the FPGA ? For instance by
+requesting a virq (rthal_alloc_virq) in an RTDM driver, then posting
+this virq (rthal_trigger_virq) from an RTDM timer? If you encounter the
+same issue, we will be able to reproduce your issue. If not, then
+chances may be that the problem comes from accessing the FPGA register
+in the irq handler code.
 
->=20
-> How can I obtain the base address in the user space ?
->=20
-> (As this is temporary, could I obtain the address in kernel space by a
-> simple program and
-> use it in the user space ?)
-
-PCI_BASE_ADDRESS_1771 looks like a macro to me, so surely, it may be
-used in user-space without "passing it".
-
-The design we encourage to use is the same as for regular Linux
-applications and drivers: driver code in kernel-space using the RTDM
-skin, application code in user-space using the native or posix skin
-(posix is most probably what you are looking for).
-
---=20
+-- 
 					    Gilles.
-
 
