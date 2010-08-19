@@ -1,18 +1,20 @@
-Message-ID: <4C6D663C.9010709@domain.hid>
-Date: Thu, 19 Aug 2010 19:13:32 +0200
-From: Stefan Kisdaroczi <kisda@domain.hid>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
-References: <4C45539B.70204@domain.hid> <4C6AA99D.3010907@domain.hid>
-	<4C6B870C.7090600@domain.hid>
-	<201008181003.09206.paul_c@domain.hid>
-	<4C6BA2A1.4030005@domain.hid> <4C6D4C01.2010402@domain.hid>
-	<4C6D4D9F.2060200@domain.hid>
-In-Reply-To: <4C6D4D9F.2060200@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigF3FB12747712DD7BBE97C8B0"
-Subject: Re: [Xenomai-help] kernel 2.6.32.11 with xenomai 2.5.3 fails to
- boot on ubuntu lucid system
+Content-Type: text/plain;
+	charset="UTF-8"
+Content-Transfer-Encoding: base64
+Date: Thu, 19 Aug 2010 13:13:47 -0400
+Message-ID: <6FCCA913376DD7488F4139A4D11B8F4801465C00@domain.hid>
+In-Reply-To: <1282236153.1730.474.camel@domain.hid>
+References: <6FCCA913376DD7488F4139A4D11B8F4801465AC9@domain.hid>
+	<1282149528.1730.348.camel@domain.hid>
+	<6FCCA913376DD7488F4139A4D11B8F4801465AF8@domain.hid>
+	<1282164261.1730.359.camel@domain.hid>
+	<6FCCA913376DD7488F4139A4D11B8F4801465B76@domain.hid>
+	<1282236153.1730.474.camel@domain.hid>
+From: "Herrera-Bendezu, Luis" <lherrera@domain.hid>
+Subject: Re: [Xenomai-help] RTDM task blocks when connecting gdb to realtime
+	task
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -22,161 +24,148 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigF3FB12747712DD7BBE97C8B0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-
-On 19.08.2010 17:28, Gilles Chanteperdrix wrote:
-> Stefan Kisdaroczi wrote:
->  =20
->> On 18.08.2010 11:06, Gilles Chanteperdrix wrote:
->>    =20
->>> Paul wrote:
->>>  =20
->>>      =20
->>>> On Wednesday 18 August 2010, Gilles Chanteperdrix wrote:
->>>>    =20
->>>>        =20
->>>>> Stefan Kisdaroczi wrote:
->>>>>      =20
->>>>>          =20
->>>>>> On 17.08.2010 15:51, Hemal C.Bavishi wrote:
->>>>>>        =20
->>>>>>            =20
->>>>>>> When I tried to compile it with the latest version of kernel with=
-
->>>>>>> xenomai 2.5.4, I am getting following errors in Xenomai (disable
->>>>>>> CONFIG_SMP, enable CONFIG_X86_UP_APIC and CONFIG_X86_UP_IOAPIC
->>>>>>> (*).)
->>>>>>>          =20
->>>>>>>              =20
->>>>>> Just tested, got the same build error with 2.6.34.
->>>>>> If I patch 2.6.34 with prepare-kernel [1] it compiles,
->>>>>> if I use the debian packaged patch generated with prepare-patch [2=
-]
->>>>>> it fails.
->>>>>>
->>>>>> I guess a fix is needed in prepare-patch for 2.6.34, but no time t=
-o
->>>>>> look closer now.
->>>>>>
->>>>>> Stefan
->>>>>>
->>>>>> [1] xenomai-2.5.4/scripts/prepare-kernel.sh
->>>>>> [2] xenomai-2.5.4/debian/prepare-patch.sh
->>>>>>        =20
->>>>>>            =20
->>>>> prepare-kernel.sh has a "--outpatch" option, which seems to be able=
-
->>>>> to generate patches, so, would not it be possible to modify
->>>>> prepare-patch to simply call prepare-kernel.sh with the --outpatch
->>>>> option?
->>>>>
->>>>> This way, we will not have to duplicate into prepare-patch.sh the
->>>>> modifications we make to prepare-kernel.sh.
->>>>>      =20
->>>>>          =20
->>>> The debian/prepare-patch.sh does not require a kernel source tree an=
-d=20
->>>> generates patches for multiple kernels & arches - It is a fudge, but=
- it=20
->>>> works for the most part and does not impose dependencies of multiple=
-=20
->>>> kernel source trees on package build systems.
->>>>    =20
->>>>        =20
->>> Ok. Understood. The thing is that prepare-patch.sh is broken, so now =
-may
->>> be a good occasion to merge its functionality in prepare-kernel.sh, s=
-o
->>> that we do not duplicate the code in these two really non-trivial scr=
-ipts.
->>>  =20
->>>      =20
->> Hi Gilles,
->>
->> There is another copy. The debian/ directory from the xenomai tree is
->> not used for debian packages at debian.org. The Debian Maintainer Rola=
-nd
->> Stigge has his own debian/ directory.
->>    =20
-> Yes, I know that. And this makes me wonder how Roland generated the
-> patches for 2.5.4, since his script is identical to ours.
->  =20
-
-The patch generating worked without obvious problems and the patches
-apply cleanly. But the patched kernels are failing to build if
-CONFIG_XENOMAI is set on kernels 2.6.33+. As debian squeeze will ship
-with a 2.6.32 kernel he probably just tested 2.6.32 and this worked.
-
-There is also a chance that he didn't test to build a xenomai patched
-kernel at all, as the important thing was to have 2.5.4 uploaded before
-the squeeze-freeze and that no release-critical bugs are filed until the
-package migration from unstable to testing. You released 2.5.4 the 2.8.,
-he uploaded 4.8., freeze was 6.8. and the package migrated to testing
-the 15.8. He already has a upload permission from the
-debian-release-team for a bugfix-upload of xenomai. He really is doing a
-very good job. Yes, I remember the discussion you had last winter about
-2.4.x, but for debian the most important is to have the latest possible
-upstream version uploaded just before freeze, and he succeeded.
-
-For a bad maintaining example look at Ubuntu. I filed a bugreport the
-22.3.2010:
-https://bugs.launchpad.net/ubuntu/+source/xenomai/+bug/544284
-No response, no upload, nothing, still xenomai 2.4.8... And Ubuntu is
-debian unstable based, so they only have to sync.
-This is probably the reason for all those 'building packages for Ubuntu
-10.04'-questions on this list. If Ubuntu would ship a newer version the
-beginners could directly introduce themselves with the 'Why do i get
-negative latency values?'-question :-)
-
->> If we move the prepare-patch.sh out of the debian/ dir (suggested by
->> Roland), that would not be necessary.
->>
->> I suggest to move debian/prepare-patch.sh to
->> scripts/prepare-debian-patch.sh.
->> I'll create a patch if you agree.
->>    =20
-> I do not understand how changing the script location or name remove the=
-
-> duplication between this script and prepare-kernel.sh. We fixed the
-> issue with the location of ipipe.h in prepare-kernel.sh ages ago, so, a=
-s
-> far as I understand, the bug comes from this duplication.
->
-> I really think the good idea is to implement the functionality of
-> prepare-patch.sh (i.e. being able to generate a patch without the kerne=
-l
-> sources) into prepare-kernel.sh --outpatch command, and simply make
-> prepare-patch.sh call prepare-kernel, this would end all the duplicatio=
-n
-> between the two scripts.
->  =20
-
-ok, as you said above it's 'non-trivial' but on the other side we are
-not in a hurry.
-
-Stefan
-
-
-
---------------enigF3FB12747712DD7BBE97C8B0
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.10 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
-
-iEYEARECAAYFAkxtZkMACgkQIPTw9rIdn6pigwCfWnesbNoydMx95lTLRnylhYuX
-btoAniHykXlkndfAzv3LNu89p8wv9xXk
-=nsO9
------END PGP SIGNATURE-----
-
---------------enigF3FB12747712DD7BBE97C8B0--
+UGhpbGlwcGUsDQoNClllcywgdGhlIHBhdGNoIHlvdSBzZW50IG1lIHdvcmtzLCB0aW1lcnMgZG8g
+bm90IHN0b3AgYW5kIFJURE0gdGFzayBpbiBteQ0KZHJpdmVyIGNvbnRpbnVvdXMgdG8gcnVuIHdo
+ZW4gcmVhbHRpbWUgYXBwIGlzIHN0b3BwZWQgYnkgZGVidWdnZXIuDQoNCk15IHN0YXRlbWVudCBi
+ZWxsb3cgd2FzIG5vdCBjbGVhci4gSSBtZWFudCB0aGF0IG9uIHRoZSB1bnBhdGNoZWQga2VybmVs
+LA0KcmVzdW1pbmcgZXhlY3V0aW9uIG9mIHJlYWx0aW1lIGFwcCBkb2VzIG5vdCByZXN1bWUgZXhl
+Y3V0aW9uIG9mIHRoZSBSVERNIHRhc2suDQoNClRoZXJlIGFyZSB0d28gZnVuY3Rpb25zIGxvY2tf
+L3VubG9ja190aW1lcnMoKSwgYXJlIHRoZXNlIGZ1bmN0aW9ucyB1c2VkDQp0byBzdG9wL3N0YXJ0
+IHRpbWVycyB3aGVuIGEgYnJlYWtwb2ludCBpcyBoaXQ/IElmIHllcywgSSBjYW4gcHV0IHNvbWUN
+CnRyYWNpbmcgaW5mb3JtYXRpb24gdG8gY2hlY2sgaWYgdGltZXJzIGFyZSB1bmJsb2NrZWQuDQoN
+Ckx1aXMNCg0KPi0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+RnJvbTogUGhpbGlwcGUgR2Vy
+dW0gW21haWx0bzpycG1AeGVub21haS5vcmddDQo+U2VudDogVGh1cnNkYXksIEF1Z3VzdCAxOSwg
+MjAxMCAxMjo0MyBQTQ0KPlRvOiBIZXJyZXJhLUJlbmRlenUsIEx1aXMNCj5DYzogeGVub21haS1o
+ZWxwQGduYS5vcmcNCj5TdWJqZWN0OiBSRTogW1hlbm9tYWktaGVscF0gUlRETSB0YXNrIGJsb2Nr
+cyB3aGVuIGNvbm5lY3RpbmcgZ2RiIHRvIHJlYWx0aW1lIHRhc2sNCj4NCj4NCj5PbiBUaHUsIDIw
+MTAtMDgtMTkgYXQgMDg6MjYgLTA0MDAsIEhlcnJlcmEtQmVuZGV6dSwgTHVpcyB3cm90ZToNCj4+
+ID4tLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPj4gPkZyb206IFBoaWxpcHBlIEdlcnVtIFtt
+YWlsdG86cnBtQHhlbm9tYWkub3JnXQ0KPj4gPlNlbnQ6IFdlZG5lc2RheSwgQXVndXN0IDE4LCAy
+MDEwIDQ6NDQgUE0NCj4+ID5UbzogSGVycmVyYS1CZW5kZXp1LCBMdWlzDQo+PiA+Q2M6IHhlbm9t
+YWktaGVscEBnbmEub3JnDQo+PiA+U3ViamVjdDogUkU6IFtYZW5vbWFpLWhlbHBdIFJURE0gdGFz
+ayBibG9ja3Mgd2hlbiBjb25uZWN0aW5nIGdkYiB0byByZWFsdGltZSB0YXNrDQo+PiA+DQo+PiA+
+DQo+PiA+T24gV2VkLCAyMDEwLTA4LTE4IGF0IDEzOjI5IC0wNDAwLCBIZXJyZXJhLUJlbmRlenUs
+IEx1aXMgd3JvdGU6DQo+PiA+PiBQaGlsaXBwZSwNCj4+ID4+DQo+PiA+PiA+LS0tLS1PcmlnaW5h
+bCBNZXNzYWdlLS0tLS0NCj4+ID4+ID5Gcm9tOiBQaGlsaXBwZSBHZXJ1bSBbbWFpbHRvOnJwbUB4
+ZW5vbWFpLm9yZ10NCj4+ID4+ID5TZW50OiBXZWRuZXNkYXksIEF1Z3VzdCAxOCwgMjAxMCAxMjoz
+OSBQTQ0KPj4gPj4gPlRvOiBIZXJyZXJhLUJlbmRlenUsIEx1aXMNCj4+ID4+ID5DYzogeGVub21h
+aS1oZWxwQGduYS5vcmcNCj4+ID4+ID5TdWJqZWN0OiBSZTogW1hlbm9tYWktaGVscF0gUlRETSB0
+YXNrIGJsb2NrcyB3aGVuIGNvbm5lY3RpbmcgZ2RiIHRvIHJlYWx0aW1lIHRhc2sNCj4+ID4+ID4N
+Cj4+ID4+ID4NCj4+ID4+ID5PbiBXZWQsIDIwMTAtMDgtMTggYXQgMTI6MDMgLTA0MDAsIEhlcnJl
+cmEtQmVuZGV6dSwgTHVpcyB3cm90ZToNCj4+ID4+ID4+IEhlbGxvOg0KPj4gPj4gPj4NCj4+ID4+
+ID4+IEkgYW0gdXNpbmcgWGVub21haSAyLjQuMTAgb24gUFBDLiBBbiBSVERNIGRyaXZlciBjcmVh
+dGVzIGFuIFJURE0gdGFzaw0KPj4gPj4gPj4gdXNpbmcgcnRkbV90YXNrX2luaXQoKSBhbmQgZ29l
+cyB0byBzbGVlcCBwZXJpb2RpY2FsbHkgdmlhIGZ1bmN0aW9uDQo+PiA+PiA+PiBydGRtX3Rhc2tf
+c2xlZXAoKS4NCj4+ID4+ID4+DQo+PiA+PiA+PiBXaGVuIGRyaXZlciBpcyBsb2FkZWQsIFJURE0g
+dGFzayBleGVjdXRlcyBhcyBleHBlY3RlZC4gVGhlbiBhIHJlYWx0aW1lDQo+PiA+PiA+PiBhcHBs
+aWNhdGlvbiBpcyBzdGFydGVkIHZpYSBnZGJzZXJ2ZXIgb24gdGFyZ2V0IGJvYXJkIGFuZCBvbiBh
+IGxpbnV4IGhvc3QNCj4+ID4+ID4+IGEgZ2RiIGNsaWVudCBpcyBjb25uZWN0ZWQgdG8gdGhhdCBi
+b2FyZC4gQXMgc29vbiBhcyBnZGIgYnJlYWtwb2ludHMgdGhlDQo+PiA+PiA+PiByZWFsdGltZSBh
+cHBsaWNhdGlvbiB0aGUgUlRETSB0YXNrIG5ldmVyIHJldHVybnMgZnJvbSBydGRtX3Rhc2tfc2xl
+ZXAoKS4NCj4+ID4+ID4+IFRoZSBhcHBsaWNhdGlvbiBkb2VzIG5vdCBvcGVuIHRoZSBSVE1EIGRy
+aXZlciBzbyBhdCB0aGlzIHBvaW50IHRoZXJlIGlzDQo+PiA+PiA+PiBubyBpbnRlcmFjdGlvbiB3
+aXRoIHRoZSBkcml2ZXIuDQo+PiA+PiA+Pg0KPj4gPj4gPj4gVGhlIFJURE0gdGFzayBpcyBpbnRy
+X3NpbSBhbmQgdGhlIHRpbWVyIGlzIG5vIGxvbmdlciBmaXJpbmcNCj4+ID4+ID4+ICMgY2F0IC9w
+cm9jL3hlbm9tYWkvdGltZXJzdGF0L21hc3Rlcg0KPj4gPj4gPj4gQ1BVICBTQ0hFRFVMRUQgICBG
+SVJFRCAgICAgICBUSU1FT1VUICAgIElOVEVSVkFMICAgSEFORExFUiAgICAgIE5BTUUNCj4+ID4+
+ID4+IDAgICAgMjkxOTgwNDIgICAgOTEzMjA4NSAgICAgMzcyNDc1MCAgICAtICAgICAgICAgIE5V
+TEwNCj4+ID4+ID4+IFtob3N0LXRpbWVyXQ0KPj4gPj4gPj4gMCAgICAxMzQwICAgICAgICAxMzQw
+ICAgICAgICAtICAgICAgICAgIC0gICAgICAgICAgeG50aHJlYWRfdGkgIGludHJfc2ltDQo+PiA+
+PiA+Pg0KPj4gPj4gPj4gVGhlIHJlYWx0aW1lIGFwcGxpY2F0aW9uIGlzIGFuY3ZiaXJ0Lg0KPj4g
+Pj4gPj4gIyBjYXQgL3Byb2MveGVub21haS9zY2hlZA0KPj4gPj4gPj4gQ1BVICBQSUQgICAgUFJJ
+ICAgICAgUEVSSU9EICAgICBUSU1FT1VUICAgIFRJTUVCQVNFICBTVEFUICAgICAgIE5BTUUNCj4+
+ID4+ID4+ICAgMCAgMCAgICAgICAtMSAgICAgIDAgICAgICAgICAgMCAgICAgICAgICBtYXN0ZXIg
+ICAgUiAgICAgICAgICBST09UDQo+PiA+PiA+PiAgIDAgIDAgICAgICAgOTAgICAgICAwICAgICAg
+ICAgIDAgICAgICAgICAgbWFzdGVyICAgIEQgICAgICAgICAgaW50cl9zaW0NCj4+ID4+ID4+ICAg
+MCAgMTg2OSAgICAgMCAgICAgIDAgICAgICAgICAgMCAgICAgICAgICBtYXN0ZXIgICAgWFQgICAg
+ICAgICBhbmN2YmlydA0KPj4gPj4gPj4NCj4+ID4+ID4+IEFueSBpZGVhcyBvbiB0aGUgY2F1c2Ug
+b2YgdGhlIHByb2JsZW0gYW5kIGZpeD8NCj4+ID4+ID4NCj4+ID4+ID5UaGlzIGlzIGEgc2lkZS1l
+ZmZlY3Qgb2YgaGl0dGluZyBhIGJyZWFrcG9pbnQgaW4geW91ciBhcHBsaWNhdGlvbg0KPj4gPj4g
+PmludHJvZHVjZWQgYnkgWGVub21haTogYWxsIFhlbm9tYWkgdGltZXJzIGFyZSBmcm96ZW4gc3lz
+dGVtLXdpZGUsIHVudGlsDQo+PiA+PiA+dGhlIGFwcGxpY2F0aW9uIGlzIGNvbnRpbnVlZC4gVGhp
+cyBpbmNsdWRlcyB0aGUgcGVyLXRocmVhZCB0aW1lciB3aGljaA0KPj4gPj4gPmlzIHVzZWQgdG8g
+aGF2ZSB5b3VyIFJURE0gdGFzayB3YWtlIHVwIGFmdGVyIGEgZGVsYXkuDQo+PiA+PiBBZnRlciBj
+b250aW51aW5nIHRoZSBhcHBsaWNhdGlvbiwgdGhlIFJURE0gdGFzayBkb2VzIG5vdCByZXN1bWUg
+ZXhlY3V0aW9uLg0KPj4gPj4gSSBoYWQgdG8gcmVsb2FkIGRyaXZlciB0byBoYXZlIGl0IHdvcmtp
+bmcgYWdhaW4uDQo+PiA+PiA+DQo+PiA+PiA+VGhlcmUgaXMgYSB3YXkgdG8gcHJldmVudCB0aGlz
+IGJlaGF2aW9yLCB3aGljaCB3YXMgZGVmaW5lZCBmb3IgaW50ZXJuYWwNCj4+ID4+ID5wdXJwb3Nl
+cyBvbmx5IHNvIGZhci4gU2luY2UgSmFuIGlzIG5vdCB3YXRjaGluZywgaGVyZSBpcyBhIHBhdGNo
+IGFnYWluc3QNCj4+ID4+ID4yLjQuMTAgd2hpY2ggaGFwcGlseSBidXRjaGVycyBoaXMgbmlmdHkg
+aW50ZXJmYWNlLCB0aGF0IHNob3VsZCBwcmV2ZW50DQo+PiA+PiA+dGhlIHBlci10aHJlYWQgdGlt
+ZXJzIG9mIF9hbGxfIFJURE0gdGFza3MgZnJvbSBiZWluZyBibG9ja2VkIGluIHRoYXQNCj4+ID4+
+ID5jYXNlLCB3aGljaCBtYXkgYmUgZW5vdWdoIHRvIGhlbHAgeW91IHRob3VnaDoNCj4+ID4+ID4N
+Cj4+ID4+ID5kaWZmIC0tZ2l0IGEva3NyYy9za2lucy9ydGRtL2RydmxpYi5jIGIva3NyYy9za2lu
+cy9ydGRtL2RydmxpYi5jDQo+PiA+PiA+aW5kZXggNjVjNjMwZi4uMDI5NTY5MCAxMDA2NDQNCj4+
+ID4+ID4tLS0gYS9rc3JjL3NraW5zL3J0ZG0vZHJ2bGliLmMNCj4+ID4+ID4rKysgYi9rc3JjL3Nr
+aW5zL3J0ZG0vZHJ2bGliLmMNCj4+ID4+ID5AQCAtMTQ0LDYgKzE0NCw3IEBAIGludCBydGRtX3Rh
+c2tfaW5pdChydGRtX3Rhc2tfdCAqdGFzaywgY29uc3QgY2hhciAqbmFtZSwNCj4+ID4+ID4gCXJl
+cyA9IHhucG9kX2luaXRfdGhyZWFkKHRhc2ssIHJ0ZG1fdGJhc2UsIG5hbWUsIHByaW9yaXR5LCAw
+LCAwLCBOVUxMKTsNCj4+ID4+ID4gCWlmIChyZXMpDQo+PiA+PiA+IAkJZ290byBlcnJvcl9vdXQ7
+DQo+PiA+PiA+Kwl0YXNrLT5ydGltZXIuc3RhdHVzIHw9IFhOVElNRVJfTk9CTENLOw0KPj4gPj4g
+Pg0KPj4gPj4gPiAJaWYgKHBlcmlvZCA+IDApIHsNCj4+ID4+ID4gCQlyZXMgPSB4bnBvZF9zZXRf
+dGhyZWFkX3BlcmlvZGljKHRhc2ssIFhOX0lORklOSVRFLA0KPj4gPj4gPkBAIC0xNTEsNiArMTUy
+LDcgQEAgaW50IHJ0ZG1fdGFza19pbml0KHJ0ZG1fdGFza190ICp0YXNrLCBjb25zdCBjaGFyICpu
+YW1lLA0KPj4gPj4gPiAJCQkJCQkocnRkbV90YmFzZSwgIHBlcmlvZCkpOw0KPj4gPj4gPiAJCWlm
+IChyZXMpDQo+PiA+PiA+IAkJCWdvdG8gY2xlYW51cF9vdXQ7DQo+PiA+PiA+KwkJdGFzay0+cHRp
+bWVyLnN0YXR1cyB8PSBYTlRJTUVSX05PQkxDSzsNCj4+ID4+ID4gCX0NCj4+ID4+ID4NCj4+ID4+
+ID4gCXJlcyA9IHhucG9kX3N0YXJ0X3RocmVhZCh0YXNrLCAwLCAwLCBYTlBPRF9BTExfQ1BVUywg
+dGFza19wcm9jLCBhcmcpOw0KPj4gPj4gPg0KPj4gPj4gWWVzLCB0aGlzIHBhdGNoIGF2b2lkcyBz
+dG9wcGluZyB0aGUgdGltZXJzLiBJIHNlZSB0aGUgdmFsdWUgb24gc3RvcHBpbmcgdGhlDQo+PiA+
+PiB0aW1lcnMgb24gdGhlIFJURE0gZHJpdmVyIHdoZW4gYXBwbGljYXRpb24gaGl0cyBhIGJyZWFr
+cG9pbnQgYnV0IGZvciBzb21lDQo+PiA+PiByZWFzb24gdGltZXIgZG9lcyBub3QgcmVjb3Zlci4g
+SSBhbSB1c2luZyBMaW51eCAyLjYuMzAuDQo+PiA+DQo+PiA+Q291bGQgeW91IHBhc3RlIHRoZSBv
+dXRwdXQgZnJvbToNCj4+ID4vcHJvYy94ZW5vbWFpL3N0YXQNCj4+ID4vcHJvYy94ZW5vbWFpL3Rp
+bWVyc3RhdC9tYXN0ZXINCj4+ID4NCj4+ID5hZnRlciB0aGUgYXBwbGljYXRpb24gaGFzIHJlc3Vt
+ZWQgZXhlY3V0aW9uPw0KPj4gPg0KPj4gPlRJQSwNCj4+ID4NCj4+ID4NCj4+ID4tLQ0KPj4gPlBo
+aWxpcHBlLg0KPj4gPg0KPj4gU3RhdHVzIHdpdGggYXBwbGljYXRpb24gYXQgYnJlYWtwb2ludDoN
+Cj4+ICMgY2F0IC9wcm9jL3hlbm9tYWkvc3RhdA0KPj4gQ1BVICBQSUQgICAgTVNXICAgICAgICBD
+U1cgICAgICAgIFBGICAgIFNUQVQgICAgICAgJUNQVSAgTkFNRQ0KPj4gICAwICAwICAgICAgMCAg
+ICAgICAgICAxNDk4NCAgICAgIDAgICAgIDAwNDAwMDgwICAgOTkuNyAgUk9PVA0KPj4gICAwICAw
+ICAgICAgMCAgICAgICAgICAzOTc2ICAgICAgIDAgICAgIDAwMDAwMDg0ICAgIDAuMCAgaW50cl9z
+aW0NCj4+ICAgMCAgMTI2MSAgIDEgICAgICAgICAgMSAgICAgICAgICAxICAgICAwMDMwMTM4MCAg
+ICAwLjAgIGFuY3ZiaXJ0DQo+PiAgIDAgIDAgICAgICAwICAgICAgICAgIDAgICAgICAgICAgMCAg
+ICAgMDAwMDAwMDAgICAgMC4wICBJUlEyMjogX3ZpcF9mcGdhX2NvZGVjQDIwMDAwMDBfcg0KPj4g
+ICAwICAwICAgICAgMCAgICAgICAgICAzMzczNzUgICAgIDAgICAgIDAwMDAwMDAwICAgIDAuMiAg
+SVJRNTEyOiBbdGltZXJdDQo+Pg0KPj4gIyBjYXQgL3Byb2MveGVub21haS90aW1lcnN0YXQvbWFz
+dGVyDQo+PiBDUFUgIFNDSEVEVUxFRCAgIEZJUkVEICAgICAgIFRJTUVPVVQgICAgSU5URVJWQUwg
+ICBIQU5ETEVSICAgICAgTkFNRQ0KPj4gMCAgICAxMDA1MjQwICAgICAzMjYxNjEgICAgICAxODQ0
+MzM1ICAgIC0gICAgICAgICAgTlVMTCAgICAgICAgIFtob3N0LXRpbWVyXQ0KPj4gMCAgICAzOTc2
+ICAgICAgICAzOTc2ICAgICAgICAtICAgICAgICAgIC0gICAgICAgICAgeG50aHJlYWRfdGkgIGlu
+dHJfc2ltDQo+Pg0KPj4gU3RhdHVzIG9mIGFwcGxpY2F0aW9uIGFmdGVyIGFwcGxpY2F0aW9uIGV4
+ZWN1dGlvbiBpcyByZXN1bWVkOg0KPj4gIyBjYXQgL3Byb2MveGVub21haS9zdGF0DQo+PiBDUFUg
+IFBJRCAgICBNU1cgICAgICAgIENTVyAgICAgICAgUEYgICAgU1RBVCAgICAgICAlQ1BVICBOQU1F
+DQo+PiAgIDAgIDAgICAgICAwICAgICAgICAgIDE1MDM0ICAgICAgMCAgICAgMDA0MDAwODAgICA5
+OS42ICBST09UDQo+PiAgIDAgIDAgICAgICAwICAgICAgICAgIDM5NzYgICAgICAgMCAgICAgMDAw
+MDAwODQgICAgMC4wICBpbnRyX3NpbQ0KPj4gICAwICAxMjYxICAgMiAgICAgICAgICAyICAgICAg
+ICAgIDIgICAgIDAwMzAwMzgwICAgIDAuMCAgYW5jdmJpcnQNCj4+ICAgMCAgMCAgICAgIDAgICAg
+ICAgICAgMCAgICAgICAgICAwICAgICAwMDAwMDAwMCAgICAwLjAgIElSUTIyOiBfdmlwX2ZwZ2Ff
+Y29kZWNAMjAwMDAwMF9yDQo+PiAgIDAgIDAgICAgICAwICAgICAgICAgIDQyODQ2MiAgICAgMCAg
+ICAgMDAwMDAwMDAgICAgMC40ICBJUlE1MTI6IFt0aW1lcl0NCj4+DQo+PiAjIGNhdCAvcHJvYy94
+ZW5vbWFpL3RpbWVyc3RhdC9tYXN0ZXINCj4+IENQVSAgU0NIRURVTEVEICAgRklSRUQgICAgICAg
+VElNRU9VVCAgICBJTlRFUlZBTCAgIEhBTkRMRVIgICAgICBOQU1FDQo+PiAwICAgIDEzMTQ0NDYg
+ICAgIDQxMjk2MSAgICAgIDQxMDg5MCAgICAgLSAgICAgICAgICBOVUxMICAgICAgICAgW2hvc3Qt
+dGltZXJdDQo+PiAwICAgIDM5NzYgICAgICAgIDM5NzYgICAgICAgIC0gICAgICAgICAgLSAgICAg
+ICAgICB4bnRocmVhZF90aSAgaW50cl9zaW0NCj4+IDAgICAgNSAgICAgICAgICAgMiAgICAgICAg
+ICAgLSAgICAgICAgICAtICAgICAgICAgIHhudGhyZWFkX3RpICBBbmNWYmlSdC1pbi1pbnQNCj4+
+IDAgICAgNCAgICAgICAgICAgMSAgICAgICAgICAgLSAgICAgICAgICAtICAgICAgICAgIHhudGhy
+ZWFkX3RpICBBbmNWYmlSdC1vdXQtaW4NCj4+IDAgICAgMiAgICAgICAgICAgMiAgICAgICAgICAg
+LSAgICAgICAgICAtICAgICAgICAgIHhudGhyZWFkX3RpICBBbmNWYmlSdC1jbGllbnQNCj4+IDAg
+ICAgMyAgICAgICAgICAgMSAgICAgICAgICAgLSAgICAgICAgICAtICAgICAgICAgIHhudGhyZWFk
+X3RpICBBbmNWYmlSdC10c291dA0KPj4gMCAgICAzICAgICAgICAgICAxICAgICAgICAgICAtICAg
+ICAgICAgIC0gICAgICAgICAgeG50aHJlYWRfdGkgIEFuY1ZiaVJ0LXB1ZGkNCj4+IDAgICAgMSAg
+ICAgICAgICAgMSAgICAgICAgICAgLSAgICAgICAgICAtICAgICAgICAgIHhudGhyZWFkX3RpICBB
+bmNWYmlSdC1hbmN4DQo+PiAwICAgIDEgICAgICAgICAgIDAgICAgICAgICAgIC0gICAgICAgICAg
+LSAgICAgICAgICB4bnRocmVhZF90aSAgQW5jVmJpUnQtdmJpeA0KPj4gMCAgICAxICAgICAgICAg
+ICAwICAgICAgICAgICAtICAgICAgICAgIC0gICAgICAgICAgeG50aHJlYWRfdGkgIEFuY1ZiaVJ0
+LWdwaXNwbA0KPj4NCj4+IE5vdGVzOg0KPj4gMS4gR05VIGdkYiBSZWQgSGF0IExpbnV4ICg2Ljct
+MXJoKQ0KPj4gMi4gR05VIGdkYnNlcnZlciBSZWQgSGF0IExpbnV4ICg2LjctMXJoKQ0KPj4gMy4g
+c2V0IGdkYiB0byBub3Qgc3RvcC9wcmludC9wYXNzIFNJR1hDUFUgc2lnbmFsLg0KPj4gNC4gU2Ft
+ZSBiZWhhdmlvciBpZiBwcm9ncmFtIGlzIGV4ZWN1dGVkIHdpdGhpbiBnZGIgYW5kIG5vIGJyZWFr
+cG9pbnRzLg0KPg0KPlBsZWFzZSBjaGVjayB0aGF0IHlvdSBhcmUgcnVubmluZyB0aGUgbW9kaWZp
+ZWQga2VybmVsLCBhbmQgc3BlY2lmaWNhbGx5DQo+dGhlIHVwZGF0ZWQgeGVub19ydGRtIG1vZHVs
+ZS4gVGhpcyBwYXRjaCBkb2VzIHdvcmsgYXMgZXhwZWN0ZWQuDQo+DQo+Pg0KPj4gVGhhbmtzLA0K
+Pj4gTHVpcw0KPg0KPi0tDQo+UGhpbGlwcGUuDQo+DQoNCg==
 
