@@ -1,121 +1,139 @@
-From: Peter Soetens <peter@domain.hid>
-Date: Mon, 9 Aug 2010 11:42:08 +0200
-References: <1276880276.12743.73.camel@domain.hid>
-	<AANLkTinbzuTwXb2nUM+fNMzjVwOnf96VHttBUrx7rG5C@mail.gmail.com>
-	<1281257438.1706.126.camel@domain.hid>
-In-Reply-To: <1281257438.1706.126.camel@domain.hid>
-MIME-Version: 1.0
-Content-Type: Text/Plain;
-  charset="utf-8"
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <4C6E8BFE.5090306@domain.hid>
+References: <4C0692A9.2080806@domain.hid>
+	<1276080083.18906.52.camel@domain.hid>
+	<4C234A15.2030708@domain.hid>  <4C6E75E6.5000408@domain.hid>
+	<1282312845.1730.606.camel@domain.hid>
+	<4C6E8BFE.5090306@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Date: Fri, 20 Aug 2010 16:20:31 +0200
+Message-ID: <1282314031.1730.615.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Message-Id: <201008091142.08707.peter@domain.hid>
-Subject: Re: [Xenomai-help] [Xenomai-core] [PULL REQUEST] fixes for 2.5.4
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Subject: Re: [Xenomai-core] [PATCH] Mayday support
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>, Tschaeche IT-Services <services@domain.hid>
 
-On Sunday 08 August 2010 10:50:38 Philippe Gerum wrote:
-> On Sun, 2010-08-08 at 00:08 +0200, Peter Soetens wrote:
-> > On Fri, Aug 6, 2010 at 12:43 PM, Philippe Gerum <rpm@xenomai.org> wrote:
-> > > On Fri, 2010-08-06 at 11:43 +0200, Tschaeche IT-Services wrote:
-> > >> On Thu, Aug 05, 2010 at 06:51:37PM +0200, Philippe Gerum wrote:
-> > >> > Why do you see different licenses? The nucleus is GPL, as is GPL
-> > >> > each and every bit of the Xenomai kernel code. Only userland libs
-> > >> > are LGPL.
-> > >> >
-> > >> > The decision to give the EXPORT_GPL hint now to in-kernel users is
-> > >> > precisely there to make this even more clear, and I will extend this
-> > >> > to all in-kernel interfaces in Xenomai 2.6. The reason why I did not
-> > >> > push this change to the 2.5.x series is because some legacy
-> > >> > Xenomai-based apps implemented as non-GPL kernel modules might
-> > >> > qualify for the "gray area" set, as described in this post:
-> > >> > http://marc.info/?l=linux-kernel&m=107049625920022&w=2
-> > >> >
-> > >> > However, the days when using a dual-kernel system meant running
-> > >> > application code to kernel land are long gone; we did work quite
-> > >> > hard to provide flexibility, reliability and good performances in
-> > >> > userland over time. Therefore, Xenomai 2.6 will strongly advise
-> > >> > users to run applications in user-space only, and Xenomai 3.x won't
-> > >> > export any kernel space API to kernel-based applications at all (Of
-> > >> > course, RTDM will still export an API to build drivers, and to
-> > >> > interface with other drivers).
-> > >> >
-> > >> > If the issue is about driver code, and not application code, then it
-> > >> > is even simpler: driving peripherals is part of the Linux kernel
-> > >> > business's, so the GPL rules. If, for any valid or paranoid reason,
-> > >> > some of the code driving the peripheral could not be disclosed, then
-> > >> > there are options to move it partly or entirely to userland where
-> > >> > LGPL applies, even if that may not be the best technical approach.
-> > >> >
-> > >> > The bottom line for the Xenomai licensing policy is quite
-> > >> > straightforward:
-> > >> >
-> > >> > - We built our house on the foundations passed on by others, they
-> > >> > gave us the Linux kernel code, we do abide by their license because
-> > >> > we are part of their kernel, so our kernel-based code is licensed
-> > >> > under the terms of the Linux kernel license. People who want to
-> > >> > interpret that license to fit their licensing requirements are on
-> > >> > their own. We did not invent the license, we are simply using it and
-> > >> > passing it on our own users.
-> > >> >
-> > >> > - In userland, we provide LGPL interfaces to applications to call
-> > >> > our real-time nucleus services, the same way the glibc provides LGPL
-> > >> > interfaces to applications to call standard Linux services.
-> > >> >
-> > >> > > did not clarify yet, if our driver code may be open source.
-> > >> > > i think, it would be appreciated if not.
-> > >> >
-> > >> > We can't help in this area, we simply provide some code under a
-> > >> > given license. Whether the license fits your requirements depends on
-> > >> > your assessment of the situation only.
-> > >>
-> > >> personally i would like GPL used in projects, but companies are afraid
-> > >> of loosing their intellectual property. Thus, i, in the role of the
-> > >> consultant, have to find a solution, which you already explained:
-> > >> move the IP into user space and keep the GPLed module/driver part IP
-> > >> free.
-> > >
-> > > Whatever split between kernel/userland support you may want to
-> > > implement to solve this issue, I would strongly recommend to keep the
-> > > interrupt handling in the RTDM-based kernel driver, including the
-> > > device request acknowledgement part.
-> > >
-> > > Moving this code to userland would require the thread in charge to
-> > > always be runnable, so that you don't get either an interrupt flood, or
-> > > a device collapse because the interrupt handling is either
-> > > significantly delayed or even stopped. It turns out that such
-> > > requirement would prevent you from using GDB over the process including
-> > > the interrupt handling code, since GDB eagerly stops all threads for
-> > > single-stepping.
-> >
-> > Sorry for the off-topic nitpicking, but GDB 7 supports
-> > one-thread-stop/stepping. This doesn't in any way shed a different light
-> > on Philippe's arguments. It's just removing a nit. On a saturday night.
-> > While everyone's sleeping.
+On Fri, 2010-08-20 at 16:06 +0200, Jan Kiszka wrote:
+> Philippe Gerum wrote:
+> > On Fri, 2010-08-20 at 14:32 +0200, Jan Kiszka wrote:
+> >> Jan Kiszka wrote:
+> >>> Philippe Gerum wrote:
+> >>>> I've toyed a bit to find a generic approach for the nucleus to regain
+> >>>> complete control over a userland application running in a syscall-less
+> >>>> loop.
+> >>>>
+> >>>> The original issue was about recovering gracefully from a runaway
+> >>>> situation detected by the nucleus watchdog, where a thread would spin in
+> >>>> primary mode without issuing any syscall, but this would also apply for
+> >>>> real-time signals pending for such a thread. Currently, Xenomai rt
+> >>>> signals cannot preempt syscall-less code running in primary mode either.
+> >>>>
+> >>>> The major difference between the previous approaches we discussed about
+> >>>> and this one, is the fact that we now force the runaway thread to run a
+> >>>> piece of valid code that calls into the nucleus. We do not force the
+> >>>> thread to run faulty code or at a faulty address anymore. Therefore, we
+> >>>> can reuse this feature to improve the rt signal management, without
+> >>>> having to forge yet-another signal stack frame for this.
+> >>>>
+> >>>> The code introduced only fixes the watchdog related issue, but also does
+> >>>> some groundwork for enhancing the rt signal support later. The
+> >>>> implementation details can be found here:
+> >>>> http://git.xenomai.org/?p=xenomai-rpm.git;a=commit;h=4cf21a2ae58354819da6475ae869b96c2defda0c
+> >>>>
+> >>>> The current mayday support is only available for powerpc and x86 for
+> >>>> now, more will come in the next days. To have it enabled, you have to
+> >>>> upgrade your I-pipe patch to 2.6.32.15-2.7-00 or 2.6.34-2.7-00 for x86,
+> >>>> 2.6.33.5-2.10-01 or 2.6.34-2.10-00 for powerpc. That feature relies on a
+> >>>> new interface available from those latest patches.
+> >>>>
+> >>>> The current implementation does not break the 2.5.x ABI on purpose, so
+> >>>> we could merge it into the stable branch.
+> >>>>
+> >>>> We definitely need user feedback on this. Typically, does arming the
+> >>>> nucleus watchdog with that patch support in, properly recovers from your
+> >>>> favorite "get me out of here" situation? TIA,
+> >>>>
+> >>>> You can pull this stuff from
+> >>>> git://git.xenomai.org/xenomai-rpm.git, queue/mayday branch.
+> >>>>
+> >>> I've retested the feature as it's now in master, and it has one
+> >>> remaining problem: If you run the cpu hog under gdb control and try to
+> >>> break out of the while(1) loop, this doesn't work before the watchdog
+> >>> expired - of course. But if you send the break before the expiry (or hit
+> >>> a breakpoint), something goes wrong. The Xenomai task continues to spin,
+> >>> and there is no chance to kill its process (only gdb).
+> >>>
+> >>> # cat /proc/xenomai/sched
+> >>> CPU  PID    CLASS  PRI      TIMEOUT   TIMEBASE   STAT       NAME
+> >>>   0  0      idle    -1      -         master     RR         ROOT/0
+> > 
+> > Eeek, we really need to have a look at this funky STAT output.
 > 
-> Is non-stop debugging available for anything else than x86 these days?
+> I've a patch for this queued as well. Was only a cosmetic thing.
+> 
+> > 
+> >>>   1  0      idle    -1      -         master     R          ROOT/1
+> >>>   0  6120   rt      99      -         master     Tt         cpu-hog
+> >>> # cat /proc/xenomai/stat
+> >>> CPU  PID    MSW        CSW        PF    STAT       %CPU  NAME
+> >>>   0  0      0          0          0     00500088    0.0  ROOT/0
+> >>>   1  0      0          0          0     00500080   99.7  ROOT/1
+> >>>   0  6120   0          1          0     00342180  100.0  cpu-hog
+> >>>   0  0      0          21005      0     00000000    0.0  IRQ3340: [timer]
+> >>>   1  0      0          35887      0     00000000    0.3  IRQ3340: [timer]
+> >>>
+> >> Fixable by this tiny change:
+> >>
+> >> diff --git a/ksrc/nucleus/sched.c b/ksrc/nucleus/sched.c
+> >> index 5242d9f..04a344e 100644
+> >> --- a/ksrc/nucleus/sched.c
+> >> +++ b/ksrc/nucleus/sched.c
+> >> @@ -175,7 +175,8 @@ void xnsched_init(struct xnsched *sched, int cpu)
+> >>  			     xnthread_name(&sched->rootcb));
+> >>  
+> >>  #ifdef CONFIG_XENO_OPT_WATCHDOG
+> >> -	xntimer_init(&sched->wdtimer, &nktbase, xnsched_watchdog_handler);
+> >> +	xntimer_init_noblock(&sched->wdtimer, &nktbase,
+> >> +			     xnsched_watchdog_handler);
+> >>  	xntimer_set_name(&sched->wdtimer, "[watchdog]");
+> >>  	xntimer_set_priority(&sched->wdtimer, XNTIMER_LOPRIO);
+> >>  	xntimer_set_sched(&sched->wdtimer, sched);
+> >>
+> >>
+> >> I.e. the watchdog timer should not be stopped by any ongoing debug
+> >> session of a Xenomai app. Will queue this for upstream.
+> > 
+> > Yes, that makes a lot of sense now. The watchdog would not fire if the
+> > task was single-stepped anyway, since the latter would have been moved
+> > to secondary mode first.
+> 
+> Yep.
+> 
+> > 
+> > Did you see this bug happening in a uniprocessor context as well?
+> 
+> No, as it is impossible on a uniprocessor to interact with gdb if a cpu
+> hog - the only existing CPU is simply not available. :)
 
-Good question. Spent quite some time trying to figure this out, both in docs 
-and in gdb(mi) console itself. Couldn't find any way to retrieve this info. 
-Only the serial protocol seems to support it using the qSupported command. I 
-didn't go that far to figure it out.
+I was rather thinking of your hit-a-breakpoint-or-^C-early scenario... I
+thought you did see this on UP as well, and scratched my head to
+understand how this would have been possible. Ok, so let's merge this.
 
-The docs say 'some targets' support it. I do know that it is not a 
-specific/special target, like required for reverse debugging. I'm also guessing 
-that the target needs to support at least the 'async' option, ie, have gdb 
-accept commands while the target program executes.
+> 
+> Jan
+> 
 
-Peter
+-- 
+Philippe.
 
-
-Peter
 
 
