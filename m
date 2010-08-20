@@ -1,16 +1,22 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <4C6E75BD.3030404@domain.hid>
-References: <4C45539B.70204@domain.hid> <4C6932E8.7050701@domain.hid>
-	<4C694AB3.8050407@domain.hid>  <4C698E16.5050806@domain.hid>
-	<1282040830.1730.232.camel@domain.hid>
-	<4C6E75BD.3030404@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Fri, 20 Aug 2010 15:01:15 +0200
-Message-ID: <1282309275.1730.587.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] kernel 2.6.32.11 with xenomai 2.5.3 fails to
- boot on ubuntu lucid system
+Content-class: urn:content-classes:message
+MIME-Version: 1.0
+Content-Type: text/plain;
+	charset="UTF-8"
+Content-Transfer-Encoding: base64
+Date: Fri, 20 Aug 2010 09:30:01 -0400
+Message-ID: <6FCCA913376DD7488F4139A4D11B8F4801465CFD@troe2k1.cs.myharris.net>
+In-Reply-To: <1282282775.1730.504.camel@domain.hid>
+References: <6FCCA913376DD7488F4139A4D11B8F4801465AC9@domain.hid>
+	<1282149528.1730.348.camel@domain.hid>
+	<6FCCA913376DD7488F4139A4D11B8F4801465AF8@domain.hid>
+	<1282164261.1730.359.camel@domain.hid>
+	<6FCCA913376DD7488F4139A4D11B8F4801465B76@domain.hid>
+	<1282236153.1730.474.camel@domain.hid>
+	<6FCCA913376DD7488F4139A4D11B8F4801465C00@domain.hid>
+	<1282282775.1730.504.camel@domain.hid>
+From: "Herrera-Bendezu, Luis" <lherrera@domain.hid>
+Subject: Re: [Xenomai-help] RTDM task blocks when connecting gdb to realtime
+	task
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -20,131 +26,201 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Theo Veenker <T.J.G.Veenker@domain.hid>
-Cc: Xenomai help <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On Fri, 2010-08-20 at 14:31 +0200, Theo Veenker wrote:
-> Philippe Gerum wrote:
-> > On Mon, 2010-08-16 at 21:14 +0200, Theo Veenker wrote:
-> >> On 08/16/2010 04:26 PM, Theo Veenker wrote:
-> >>> Gilles Chanteperdrix wrote:
-> >>>> Theo Veenker wrote:
-> >>>>> Hi,
-> >>>>>
-> >>>>> I want to upgrade all our PC's from Ubuntu hardy to lucid and in the
-> >>>>> process
-> >>>>> I'm also going from kernel 2.6.29.5 with Xenomai 2.4.8 to kernel
-> >>>>> 2.6.32.11
-> >>>>> with Xenomai 2.5.3.
-> >>>>>
-> >>>>> I first built and tested the 2.6.32.11 kernel with 2.5.3 on my hardy
-> >>>>> system
-> >>>>> and all went fine. But the problem is it just doesn't run on the
-> >>>>> lucid distro.
-> >>>> This, I do not understand, the kernel does not need any support from the
-> >>>> distribution for booting, how can the same kernel boot with one
-> >>>> distribution, and not with the other? When you say the "same kernel", do
-> >>>> you mean the exact same zImage or bzImage, or do you mean the kernel
-> >>>> with the same configuration, but with a different compiler, or only the
-> >>>> version is identical?
-> >>>>
-> >>> It is a complete mystery to me either. I compiled my kernel into a deb
-> >>> package
-> >>> and installed the very same deb package on three machines:
-> >>> MSI p45 neo3 with Hardy on it -> works OK
-> >>> MSI p45 neo3 with Ludid on it -> nothing (works fine with regular kernel)
-> >>> MSI 945P with Lucid on it: -> nothing (works fine with regular kernel)
-> >>>
-> >>> I'll try the suggestions posted and keep you informed.
-> >> OK. Connected a terminal to catch early kernel messages. Still no output
-> >> unfortunately (with the regular kernel I do get output on the terminal,
-> >> so the connection works).
-> >>
-> >> Meanwhile also built and tested kernel 2.6.32.15 + xenomai 2.5.4. Still nothing.
-> >> I'm clueless. I'm running Xenomai for years on dozens of systems and I've
-> >> never run into problems like this. I think I'll have to sit down and take a
-> >> close look at what I'm doing. I've always built my kernels using make-kpkg,
-> >> maybe that somehow introduces a problem here. I'll try without it.
-> >>
-> >> (unfortunately/luckily I have to work from home for a few days so I can't
-> >> get to the test system until later this week)
-> > 
-> > I failed to reproduce the issue yet, but it very much looks like an
-> > I-pipe bug. Could you try the following config variants when time
-> > allows:
-> > 
-> > - on 2.6.32.11 or .15, disable CONFIG_SMP, enable CONFIG_X86_UP_APIC
-> > only (*).
-> > - on 2.6.32.11 or .15, disable CONFIG_SMP, enable CONFIG_X86_UP_APIC and
-> > CONFIG_X86_UP_IOAPIC (*).
-> > - on 2.6.32.7, use your normal CONFIG_SMP config, with this patch in:
-> > http://download.gna.org/adeos/patches/v2.6/x86/older/adeos-ipipe-2.6.32.7-x86-2.5-01.patch
-> > 
-> > (*) you need to switch off CONFIG_SMP first, to see those knobs appear
-> > in the "processor type and features" menu.
-> > 
-> > The fact that you did see the panic blinking signal at least once tends
-> > to point the finger at some access fault the kernel tries to recover
-> > without success, rather than a sudden freeze. It must happen early
-> > enough during the boot process, for the console not to be available yet
-> > for reporting what the kernel whines about.
-> > 
-> > We don't know yet if that bug is either the consequence of some
-> > interrupt delivery, and/or induced by code only involved in SMP. Those
-> > test configs may help in discovering this.
-> > 
-> > TIA,
-> > 
-> 
-> Here are my results. I've built 5 kernels:
-> K1: 2.6.32.15 (without the adeos patch applied)
-> K2: 2.6.32.15 + 2.5.4
-> K3: 2.6.32.15 + 2.5.4 CONFIG_SMP off, CONFIG_X86_UP_API on, CONFIG_XENOMAI off, CONFIG_IPIPE on
-> K4: 2.6.32.15 + 2.5.4 as (3) with CONFIG_X86_UP_IOAPIC on
-> K5: 2.6.32.7 with adeos-ipipe-2.6.32.7-x86-2.5-01.patch
-> 
-> I now tested these kernels on four systems:
-> A1: MSI 945P with Ubuntu 8.04
-> A2: MSI 945P with Ubuntu 10.04
-> B1: MSI p45 neo3 with Ubuntu 8.04
-> B2: MSI p45 neo3 with Ubuntu 10.04
-> 
-> A1 and A2 are identical systems from the same batch and B1 and B2 also.
-> 
-> What worked:
-> 	A1		A2		B1		B2
-> ----------------------------------------------------------------
-> K1	Y		Y		Y		Y
-> K2	Y		N/Y		Y		N
-> K3	Y		N/Y		Y		N
-> K4	Y		N/Y		Y		N
-> K5	Y		N/Y		Y		N
-> 
-> The No/Yes cases means on this system sometimes the kernel would boot
-> (same as others have reported before). In the No cases I got no ouput
-> on the attached console.
-> 
-> Stange as it may be I still do see a strong correlation between the OS
-> version and whether an adeos patched kernel works or not.
-
-I should be able to confirm reasonably soon that the bug depends on
-having an interrupt pending or not before the kernel entry point is
-reached. This may depend on whether the bootloader clears the PIC and
-when before jumping to the kernel start address. It will also depend on
-the behavior of some device involved in the boot sequence, such as the
-disk controller, for pending that IRQ or not.
-
-If this assumption turns to be correct, please make sure to send me your
-congrats for having authored the silly piece of code I have right in
-front of me now, that randomly turns boot screens into black holes since
-2003 or so.
-
-> 
-> Regards,
-> Theo
-
--- 
-Philippe.
-
-
+UmVtb3ZlZCB0aGUgZmlyc3QgcGF0Y2ggZm9yIGRybGliLmNhbmQgYXBwbGllZCB0aGUgc2Vjb25k
+IG9uZSB0byB0aW1lci5jLg0KDQpSZXN1bWluZyByZWFsdGltZSB0YXNrIGRvZXMgbm90IHNlZW0g
+dW5ibG9jayBSVERNIHRhc2sgZm9yIG5leHQgc2NoZWR1bGVkDQppbnRlcnZhbCwgMzAgbXMuIEhv
+d2V2ZXIsIHRlcm1pbmF0aW5nIGdkYiBhbmQgcmVzdGFydGluZyBhcHAgb3V0c2lkZSBnZGINCmRv
+ZXMgbWFrZSBSVERNIHRhc2sgcmVzdW1lIGV4ZWN1dGlvbi4gQmVmb3JlLCB0aGUgZHJpdmVyIGhh
+ZCB0byBiZSByZWxvYWRlZC4NCg0KU28gZ2RiIGFwcGVhcnMgdG8gYmUgY2F1c2luZyB0aW1lciB0
+byBibG9jayBldmVuIGlmIG5vIGJyZWFrcG9pbnQgaXMgc2V0LA0KcHJvYmFibHkgc2lnbmFscz8N
+Cg0KUmVnYXJkcywNCkx1aXMNCg0KPi0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+RnJvbTog
+UGhpbGlwcGUgR2VydW0gW21haWx0bzpycG1AeGVub21haS5vcmddDQo+U2VudDogRnJpZGF5LCBB
+dWd1c3QgMjAsIDIwMTAgMTo0MCBBTQ0KPlRvOiBIZXJyZXJhLUJlbmRlenUsIEx1aXMNCj5DYzog
+eGVub21haS1oZWxwQGduYS5vcmcNCj5TdWJqZWN0OiBSRTogW1hlbm9tYWktaGVscF0gUlRETSB0
+YXNrIGJsb2NrcyB3aGVuIGNvbm5lY3RpbmcgZ2RiIHRvIHJlYWx0aW1lIHRhc2sNCj4NCj4NCj5P
+biBUaHUsIDIwMTAtMDgtMTkgYXQgMTM6MTMgLTA0MDAsIEhlcnJlcmEtQmVuZGV6dSwgTHVpcyB3
+cm90ZToNCj4+IFBoaWxpcHBlLA0KPj4NCj4+IFllcywgdGhlIHBhdGNoIHlvdSBzZW50IG1lIHdv
+cmtzLCB0aW1lcnMgZG8gbm90IHN0b3AgYW5kIFJURE0gdGFzayBpbiBteQ0KPj4gZHJpdmVyIGNv
+bnRpbnVvdXMgdG8gcnVuIHdoZW4gcmVhbHRpbWUgYXBwIGlzIHN0b3BwZWQgYnkgZGVidWdnZXIu
+DQo+Pg0KPg0KPkFoLiBPaywgc28gX3RoYXRfIGlzIGEgYnVnLg0KPg0KPj4gTXkgc3RhdGVtZW50
+IGJlbGxvdyB3YXMgbm90IGNsZWFyLiBJIG1lYW50IHRoYXQgb24gdGhlIHVucGF0Y2hlZCBrZXJu
+ZWwsDQo+PiByZXN1bWluZyBleGVjdXRpb24gb2YgcmVhbHRpbWUgYXBwIGRvZXMgbm90IHJlc3Vt
+ZSBleGVjdXRpb24gb2YgdGhlIFJURE0gdGFzay4NCj4+DQo+PiBUaGVyZSBhcmUgdHdvIGZ1bmN0
+aW9ucyBsb2NrXy91bmxvY2tfdGltZXJzKCksIGFyZSB0aGVzZSBmdW5jdGlvbnMgdXNlZA0KPj4g
+dG8gc3RvcC9zdGFydCB0aW1lcnMgd2hlbiBhIGJyZWFrcG9pbnQgaXMgaGl0PyBJZiB5ZXMsIEkg
+Y2FuIHB1dCBzb21lDQo+PiB0cmFjaW5nIGluZm9ybWF0aW9uIHRvIGNoZWNrIGlmIHRpbWVycyBh
+cmUgdW5ibG9ja2VkLg0KPg0KPlllcywgdGhvc2UgYXJlIHRoZSBmdW5jdGlvbnMgaW52b2x2ZWQg
+aW4gdGhpcyBpc3N1ZSwgYW5kIHVubG9ja190aW1lcnMoKQ0KPmlzIGV4cGVjdGVkIHRvIHVuYmxv
+Y2sgYWxsIHRpbWVycyBiZWxvbmdpbmcgdG8gdGhlIG1hc3RlciB0aW1lIGJhc2UsDQo+d2hpY2gg
+aXQgZG9lcy4gSG93ZXZlciwgdGhlIHRpbWluZyBjb2RlIGlzIG1lc3NpbmcgYmFkbHkgd2hlbiBp
+dCBjb21lcw0KPnRvIHBvc3Rwb25lIG5vbi1wZXJpb2RpYyB0aW1lcnMgd2hpbGUgdGhlIHRpbWUg
+YmFzZSBpcyBsb2NrZWQsIGhlbmNlIHRoZQ0KPmJ1Zy4gQ291bGQgeW91IHRyeSB0aGlzIHBhdGNo
+PyBUSUEsDQo+DQo+ZGlmZiAtLWdpdCBhL2tzcmMvbnVjbGV1cy90aW1lci5jIGIva3NyYy9udWNs
+ZXVzL3RpbWVyLmMNCj5pbmRleCA1ZmU4ZDA4Li44MjgyNDRhIDEwMDY0NA0KPi0tLSBhL2tzcmMv
+bnVjbGV1cy90aW1lci5jDQo+KysrIGIva3NyYy9udWNsZXVzL3RpbWVyLmMNCj5AQCAtMjgzLDkg
+KzI4Myw5IEBAIHZvaWQgeG50aW1lcl90aWNrX2FwZXJpb2RpYyh2b2lkKQ0KPiB7DQo+IAl4bnNj
+aGVkX3QgKnNjaGVkID0geG5wb2RfY3VycmVudF9zY2hlZCgpOw0KPiAJeG50aW1lcnFfdCAqdGlt
+ZXJxID0gJnNjaGVkLT50aW1lcnF1ZXVlOw0KPisJeG50aWNrc190IG5vdywgaW50ZXJ2YWw7DQo+
+IAl4bnRpbWVyaF90ICpob2xkZXI7DQo+IAl4bnRpbWVyX3QgKnRpbWVyOw0KPi0JeG50aWNrc190
+IG5vdzsNCj4NCj4gCS8qIE9wdGltaXNhdGlvbjogYW55IGxvY2FsIHRpbWVyIHJlcHJvZ3JhbW1p
+bmcgdHJpZ2dlcmVkIGJ5IGludm9rZWQNCj4gCSAgIHRpbWVyIGhhbmRsZXJzIGNhbiB3YWl0IHVu
+dGlsIHdlIGxlYXZlIHRoZSB0aWNrIGhhbmRsZXIuIFVzZSB0aGlzDQo+QEAgLTMyNCw4ICszMjQs
+OCBAQCB2b2lkIHhudGltZXJfdGlja19hcGVyaW9kaWModm9pZCkNCj4gCQkJCS8qIFBvc3Rwb25l
+IHRoZSBuZXh0IHRpY2sgdG8gYSByZWFzb25hYmxlIGRhdGUgaW4NCj4gCQkJCSAgIHRoZSBmdXR1
+cmUsIHdhaXRpbmcgZm9yIHRoZSB0aW1lYmFzZSB0byBiZSB1bmxvY2tlZA0KPiAJCQkJICAgYXQg
+c29tZSBwb2ludC4gKi8NCj4tCQkJCXhudGltZXJoX2RhdGUoJnRpbWVyLT5hcGxpbmspID0geG50
+aW1lcmhfZGF0ZSgmc2NoZWQtPmh0aW1lci5hcGxpbmspOw0KPi0JCQkJY29udGludWU7DQo+KwkJ
+CQlpbnRlcnZhbCA9IHhuYXJjaF9uc190b190c2MoNTAwMDAwMDAwVUxMKTsNCj4rCQkJCWdvdG8g
+cmVxdWV1ZTsNCj4gCQkJfQ0KPiAJCX0gZWxzZSB7DQo+IAkJCS8qIEJ5IHBvc3Rwb25pbmcgdGhl
+IHByb3BhZ2F0aW9uIG9mIHRoZSBsb3ctcHJpb3JpdHkgaG9zdA0KPkBAIC0zMzcsOCArMzM3LDEw
+IEBAIHZvaWQgeG50aW1lcl90aWNrX2FwZXJpb2RpYyh2b2lkKQ0KPiAJCQkJY29udGludWU7DQo+
+IAkJfQ0KPg0KPisJCWludGVydmFsID0gdGltZXItPmludGVydmFsOw0KPisJcmVxdWV1ZToNCj4g
+CQlkbyB7DQo+LQkJCXhudGltZXJoX2RhdGUoJnRpbWVyLT5hcGxpbmspICs9IHRpbWVyLT5pbnRl
+cnZhbDsNCj4rCQkJeG50aW1lcmhfZGF0ZSgmdGltZXItPmFwbGluaykgKz0gaW50ZXJ2YWw7DQo+
+IAkJfSB3aGlsZSAoeG50aW1lcmhfZGF0ZSgmdGltZXItPmFwbGluaykgPCBub3cgKyBua2xhdGVu
+Y3kpOw0KPiAJCXhudGltZXJfZW5xdWV1ZV9hcGVyaW9kaWModGltZXIpOw0KPiAJfQ0KPg0KPj4N
+Cj4+IEx1aXMNCj4+DQo+PiA+LS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4+ID5Gcm9tOiBQ
+aGlsaXBwZSBHZXJ1bSBbbWFpbHRvOnJwbUB4ZW5vbWFpLm9yZ10NCj4+ID5TZW50OiBUaHVyc2Rh
+eSwgQXVndXN0IDE5LCAyMDEwIDEyOjQzIFBNDQo+PiA+VG86IEhlcnJlcmEtQmVuZGV6dSwgTHVp
+cw0KPj4gPkNjOiB4ZW5vbWFpLWhlbHBAZ25hLm9yZw0KPj4gPlN1YmplY3Q6IFJFOiBbWGVub21h
+aS1oZWxwXSBSVERNIHRhc2sgYmxvY2tzIHdoZW4gY29ubmVjdGluZyBnZGIgdG8gcmVhbHRpbWUg
+dGFzaw0KPj4gPg0KPj4gPg0KPj4gPk9uIFRodSwgMjAxMC0wOC0xOSBhdCAwODoyNiAtMDQwMCwg
+SGVycmVyYS1CZW5kZXp1LCBMdWlzIHdyb3RlOg0KPj4gPj4gPi0tLS0tT3JpZ2luYWwgTWVzc2Fn
+ZS0tLS0tDQo+PiA+PiA+RnJvbTogUGhpbGlwcGUgR2VydW0gW21haWx0bzpycG1AeGVub21haS5v
+cmddDQo+PiA+PiA+U2VudDogV2VkbmVzZGF5LCBBdWd1c3QgMTgsIDIwMTAgNDo0NCBQTQ0KPj4g
+Pj4gPlRvOiBIZXJyZXJhLUJlbmRlenUsIEx1aXMNCj4+ID4+ID5DYzogeGVub21haS1oZWxwQGdu
+YS5vcmcNCj4+ID4+ID5TdWJqZWN0OiBSRTogW1hlbm9tYWktaGVscF0gUlRETSB0YXNrIGJsb2Nr
+cyB3aGVuIGNvbm5lY3RpbmcgZ2RiIHRvIHJlYWx0aW1lIHRhc2sNCj4+ID4+ID4NCj4+ID4+ID4N
+Cj4+ID4+ID5PbiBXZWQsIDIwMTAtMDgtMTggYXQgMTM6MjkgLTA0MDAsIEhlcnJlcmEtQmVuZGV6
+dSwgTHVpcyB3cm90ZToNCj4+ID4+ID4+IFBoaWxpcHBlLA0KPj4gPj4gPj4NCj4+ID4+ID4+ID4t
+LS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPj4gPj4gPj4gPkZyb206IFBoaWxpcHBlIEdlcnVt
+IFttYWlsdG86cnBtQHhlbm9tYWkub3JnXQ0KPj4gPj4gPj4gPlNlbnQ6IFdlZG5lc2RheSwgQXVn
+dXN0IDE4LCAyMDEwIDEyOjM5IFBNDQo+PiA+PiA+PiA+VG86IEhlcnJlcmEtQmVuZGV6dSwgTHVp
+cw0KPj4gPj4gPj4gPkNjOiB4ZW5vbWFpLWhlbHBAZ25hLm9yZw0KPj4gPj4gPj4gPlN1YmplY3Q6
+IFJlOiBbWGVub21haS1oZWxwXSBSVERNIHRhc2sgYmxvY2tzIHdoZW4gY29ubmVjdGluZyBnZGIg
+dG8gcmVhbHRpbWUgdGFzaw0KPj4gPj4gPj4gPg0KPj4gPj4gPj4gPg0KPj4gPj4gPj4gPk9uIFdl
+ZCwgMjAxMC0wOC0xOCBhdCAxMjowMyAtMDQwMCwgSGVycmVyYS1CZW5kZXp1LCBMdWlzIHdyb3Rl
+Og0KPj4gPj4gPj4gPj4gSGVsbG86DQo+PiA+PiA+PiA+Pg0KPj4gPj4gPj4gPj4gSSBhbSB1c2lu
+ZyBYZW5vbWFpIDIuNC4xMCBvbiBQUEMuIEFuIFJURE0gZHJpdmVyIGNyZWF0ZXMgYW4gUlRETSB0
+YXNrDQo+PiA+PiA+PiA+PiB1c2luZyBydGRtX3Rhc2tfaW5pdCgpIGFuZCBnb2VzIHRvIHNsZWVw
+IHBlcmlvZGljYWxseSB2aWEgZnVuY3Rpb24NCj4+ID4+ID4+ID4+IHJ0ZG1fdGFza19zbGVlcCgp
+Lg0KPj4gPj4gPj4gPj4NCj4+ID4+ID4+ID4+IFdoZW4gZHJpdmVyIGlzIGxvYWRlZCwgUlRETSB0
+YXNrIGV4ZWN1dGVzIGFzIGV4cGVjdGVkLiBUaGVuIGEgcmVhbHRpbWUNCj4+ID4+ID4+ID4+IGFw
+cGxpY2F0aW9uIGlzIHN0YXJ0ZWQgdmlhIGdkYnNlcnZlciBvbiB0YXJnZXQgYm9hcmQgYW5kIG9u
+IGEgbGludXggaG9zdA0KPj4gPj4gPj4gPj4gYSBnZGIgY2xpZW50IGlzIGNvbm5lY3RlZCB0byB0
+aGF0IGJvYXJkLiBBcyBzb29uIGFzIGdkYiBicmVha3BvaW50cyB0aGUNCj4+ID4+ID4+ID4+IHJl
+YWx0aW1lIGFwcGxpY2F0aW9uIHRoZSBSVERNIHRhc2sgbmV2ZXIgcmV0dXJucyBmcm9tIHJ0ZG1f
+dGFza19zbGVlcCgpLg0KPj4gPj4gPj4gPj4gVGhlIGFwcGxpY2F0aW9uIGRvZXMgbm90IG9wZW4g
+dGhlIFJUTUQgZHJpdmVyIHNvIGF0IHRoaXMgcG9pbnQgdGhlcmUgaXMNCj4+ID4+ID4+ID4+IG5v
+IGludGVyYWN0aW9uIHdpdGggdGhlIGRyaXZlci4NCj4+ID4+ID4+ID4+DQo+PiA+PiA+PiA+PiBU
+aGUgUlRETSB0YXNrIGlzIGludHJfc2ltIGFuZCB0aGUgdGltZXIgaXMgbm8gbG9uZ2VyIGZpcmlu
+Zw0KPj4gPj4gPj4gPj4gIyBjYXQgL3Byb2MveGVub21haS90aW1lcnN0YXQvbWFzdGVyDQo+PiA+
+PiA+PiA+PiBDUFUgIFNDSEVEVUxFRCAgIEZJUkVEICAgICAgIFRJTUVPVVQgICAgSU5URVJWQUwg
+ICBIQU5ETEVSICAgICAgTkFNRQ0KPj4gPj4gPj4gPj4gMCAgICAyOTE5ODA0MiAgICA5MTMyMDg1
+ICAgICAzNzI0NzUwICAgIC0gICAgICAgICAgTlVMTA0KPj4gPj4gPj4gPj4gW2hvc3QtdGltZXJd
+DQo+PiA+PiA+PiA+PiAwICAgIDEzNDAgICAgICAgIDEzNDAgICAgICAgIC0gICAgICAgICAgLSAg
+ICAgICAgICB4bnRocmVhZF90aSAgaW50cl9zaW0NCj4+ID4+ID4+ID4+DQo+PiA+PiA+PiA+PiBU
+aGUgcmVhbHRpbWUgYXBwbGljYXRpb24gaXMgYW5jdmJpcnQuDQo+PiA+PiA+PiA+PiAjIGNhdCAv
+cHJvYy94ZW5vbWFpL3NjaGVkDQo+PiA+PiA+PiA+PiBDUFUgIFBJRCAgICBQUkkgICAgICBQRVJJ
+T0QgICAgIFRJTUVPVVQgICAgVElNRUJBU0UgIFNUQVQgICAgICAgTkFNRQ0KPj4gPj4gPj4gPj4g
+ICAwICAwICAgICAgIC0xICAgICAgMCAgICAgICAgICAwICAgICAgICAgIG1hc3RlciAgICBSICAg
+ICAgICAgIFJPT1QNCj4+ID4+ID4+ID4+ICAgMCAgMCAgICAgICA5MCAgICAgIDAgICAgICAgICAg
+MCAgICAgICAgICBtYXN0ZXIgICAgRCAgICAgICAgICBpbnRyX3NpbQ0KPj4gPj4gPj4gPj4gICAw
+ICAxODY5ICAgICAwICAgICAgMCAgICAgICAgICAwICAgICAgICAgIG1hc3RlciAgICBYVCAgICAg
+ICAgIGFuY3ZiaXJ0DQo+PiA+PiA+PiA+Pg0KPj4gPj4gPj4gPj4gQW55IGlkZWFzIG9uIHRoZSBj
+YXVzZSBvZiB0aGUgcHJvYmxlbSBhbmQgZml4Pw0KPj4gPj4gPj4gPg0KPj4gPj4gPj4gPlRoaXMg
+aXMgYSBzaWRlLWVmZmVjdCBvZiBoaXR0aW5nIGEgYnJlYWtwb2ludCBpbiB5b3VyIGFwcGxpY2F0
+aW9uDQo+PiA+PiA+PiA+aW50cm9kdWNlZCBieSBYZW5vbWFpOiBhbGwgWGVub21haSB0aW1lcnMg
+YXJlIGZyb3plbiBzeXN0ZW0td2lkZSwgdW50aWwNCj4+ID4+ID4+ID50aGUgYXBwbGljYXRpb24g
+aXMgY29udGludWVkLiBUaGlzIGluY2x1ZGVzIHRoZSBwZXItdGhyZWFkIHRpbWVyIHdoaWNoDQo+
+PiA+PiA+PiA+aXMgdXNlZCB0byBoYXZlIHlvdXIgUlRETSB0YXNrIHdha2UgdXAgYWZ0ZXIgYSBk
+ZWxheS4NCj4+ID4+ID4+IEFmdGVyIGNvbnRpbnVpbmcgdGhlIGFwcGxpY2F0aW9uLCB0aGUgUlRE
+TSB0YXNrIGRvZXMgbm90IHJlc3VtZSBleGVjdXRpb24uDQo+PiA+PiA+PiBJIGhhZCB0byByZWxv
+YWQgZHJpdmVyIHRvIGhhdmUgaXQgd29ya2luZyBhZ2Fpbi4NCj4+ID4+ID4+ID4NCj4+ID4+ID4+
+ID5UaGVyZSBpcyBhIHdheSB0byBwcmV2ZW50IHRoaXMgYmVoYXZpb3IsIHdoaWNoIHdhcyBkZWZp
+bmVkIGZvciBpbnRlcm5hbA0KPj4gPj4gPj4gPnB1cnBvc2VzIG9ubHkgc28gZmFyLiBTaW5jZSBK
+YW4gaXMgbm90IHdhdGNoaW5nLCBoZXJlIGlzIGEgcGF0Y2ggYWdhaW5zdA0KPj4gPj4gPj4gPjIu
+NC4xMCB3aGljaCBoYXBwaWx5IGJ1dGNoZXJzIGhpcyBuaWZ0eSBpbnRlcmZhY2UsIHRoYXQgc2hv
+dWxkIHByZXZlbnQNCj4+ID4+ID4+ID50aGUgcGVyLXRocmVhZCB0aW1lcnMgb2YgX2FsbF8gUlRE
+TSB0YXNrcyBmcm9tIGJlaW5nIGJsb2NrZWQgaW4gdGhhdA0KPj4gPj4gPj4gPmNhc2UsIHdoaWNo
+IG1heSBiZSBlbm91Z2ggdG8gaGVscCB5b3UgdGhvdWdoOg0KPj4gPj4gPj4gPg0KPj4gPj4gPj4g
+PmRpZmYgLS1naXQgYS9rc3JjL3NraW5zL3J0ZG0vZHJ2bGliLmMgYi9rc3JjL3NraW5zL3J0ZG0v
+ZHJ2bGliLmMNCj4+ID4+ID4+ID5pbmRleCA2NWM2MzBmLi4wMjk1NjkwIDEwMDY0NA0KPj4gPj4g
+Pj4gPi0tLSBhL2tzcmMvc2tpbnMvcnRkbS9kcnZsaWIuYw0KPj4gPj4gPj4gPisrKyBiL2tzcmMv
+c2tpbnMvcnRkbS9kcnZsaWIuYw0KPj4gPj4gPj4gPkBAIC0xNDQsNiArMTQ0LDcgQEAgaW50IHJ0
+ZG1fdGFza19pbml0KHJ0ZG1fdGFza190ICp0YXNrLCBjb25zdCBjaGFyICpuYW1lLA0KPj4gPj4g
+Pj4gPiAJcmVzID0geG5wb2RfaW5pdF90aHJlYWQodGFzaywgcnRkbV90YmFzZSwgbmFtZSwgcHJp
+b3JpdHksIDAsIDAsIE5VTEwpOw0KPj4gPj4gPj4gPiAJaWYgKHJlcykNCj4+ID4+ID4+ID4gCQln
+b3RvIGVycm9yX291dDsNCj4+ID4+ID4+ID4rCXRhc2stPnJ0aW1lci5zdGF0dXMgfD0gWE5USU1F
+Ul9OT0JMQ0s7DQo+PiA+PiA+PiA+DQo+PiA+PiA+PiA+IAlpZiAocGVyaW9kID4gMCkgew0KPj4g
+Pj4gPj4gPiAJCXJlcyA9IHhucG9kX3NldF90aHJlYWRfcGVyaW9kaWModGFzaywgWE5fSU5GSU5J
+VEUsDQo+PiA+PiA+PiA+QEAgLTE1MSw2ICsxNTIsNyBAQCBpbnQgcnRkbV90YXNrX2luaXQocnRk
+bV90YXNrX3QgKnRhc2ssIGNvbnN0IGNoYXIgKm5hbWUsDQo+PiA+PiA+PiA+IAkJCQkJCShydGRt
+X3RiYXNlLCAgcGVyaW9kKSk7DQo+PiA+PiA+PiA+IAkJaWYgKHJlcykNCj4+ID4+ID4+ID4gCQkJ
+Z290byBjbGVhbnVwX291dDsNCj4+ID4+ID4+ID4rCQl0YXNrLT5wdGltZXIuc3RhdHVzIHw9IFhO
+VElNRVJfTk9CTENLOw0KPj4gPj4gPj4gPiAJfQ0KPj4gPj4gPj4gPg0KPj4gPj4gPj4gPiAJcmVz
+ID0geG5wb2Rfc3RhcnRfdGhyZWFkKHRhc2ssIDAsIDAsIFhOUE9EX0FMTF9DUFVTLCB0YXNrX3By
+b2MsIGFyZyk7DQo+PiA+PiA+PiA+DQo+PiA+PiA+PiBZZXMsIHRoaXMgcGF0Y2ggYXZvaWRzIHN0
+b3BwaW5nIHRoZSB0aW1lcnMuIEkgc2VlIHRoZSB2YWx1ZSBvbiBzdG9wcGluZyB0aGUNCj4+ID4+
+ID4+IHRpbWVycyBvbiB0aGUgUlRETSBkcml2ZXIgd2hlbiBhcHBsaWNhdGlvbiBoaXRzIGEgYnJl
+YWtwb2ludCBidXQgZm9yIHNvbWUNCj4+ID4+ID4+IHJlYXNvbiB0aW1lciBkb2VzIG5vdCByZWNv
+dmVyLiBJIGFtIHVzaW5nIExpbnV4IDIuNi4zMC4NCj4+ID4+ID4NCj4+ID4+ID5Db3VsZCB5b3Ug
+cGFzdGUgdGhlIG91dHB1dCBmcm9tOg0KPj4gPj4gPi9wcm9jL3hlbm9tYWkvc3RhdA0KPj4gPj4g
+Pi9wcm9jL3hlbm9tYWkvdGltZXJzdGF0L21hc3Rlcg0KPj4gPj4gPg0KPj4gPj4gPmFmdGVyIHRo
+ZSBhcHBsaWNhdGlvbiBoYXMgcmVzdW1lZCBleGVjdXRpb24/DQo+PiA+PiA+DQo+PiA+PiA+VElB
+LA0KPj4gPj4gPg0KPj4gPj4gPg0KPj4gPj4gPi0tDQo+PiA+PiA+UGhpbGlwcGUuDQo+PiA+PiA+
+DQo+PiA+PiBTdGF0dXMgd2l0aCBhcHBsaWNhdGlvbiBhdCBicmVha3BvaW50Og0KPj4gPj4gIyBj
+YXQgL3Byb2MveGVub21haS9zdGF0DQo+PiA+PiBDUFUgIFBJRCAgICBNU1cgICAgICAgIENTVyAg
+ICAgICAgUEYgICAgU1RBVCAgICAgICAlQ1BVICBOQU1FDQo+PiA+PiAgIDAgIDAgICAgICAwICAg
+ICAgICAgIDE0OTg0ICAgICAgMCAgICAgMDA0MDAwODAgICA5OS43ICBST09UDQo+PiA+PiAgIDAg
+IDAgICAgICAwICAgICAgICAgIDM5NzYgICAgICAgMCAgICAgMDAwMDAwODQgICAgMC4wICBpbnRy
+X3NpbQ0KPj4gPj4gICAwICAxMjYxICAgMSAgICAgICAgICAxICAgICAgICAgIDEgICAgIDAwMzAx
+MzgwICAgIDAuMCAgYW5jdmJpcnQNCj4+ID4+ICAgMCAgMCAgICAgIDAgICAgICAgICAgMCAgICAg
+ICAgICAwICAgICAwMDAwMDAwMCAgICAwLjAgIElSUTIyOiBfdmlwX2ZwZ2FfY29kZWNAMjAwMDAw
+MF9yDQo+PiA+PiAgIDAgIDAgICAgICAwICAgICAgICAgIDMzNzM3NSAgICAgMCAgICAgMDAwMDAw
+MDAgICAgMC4yICBJUlE1MTI6IFt0aW1lcl0NCj4+ID4+DQo+PiA+PiAjIGNhdCAvcHJvYy94ZW5v
+bWFpL3RpbWVyc3RhdC9tYXN0ZXINCj4+ID4+IENQVSAgU0NIRURVTEVEICAgRklSRUQgICAgICAg
+VElNRU9VVCAgICBJTlRFUlZBTCAgIEhBTkRMRVIgICAgICBOQU1FDQo+PiA+PiAwICAgIDEwMDUy
+NDAgICAgIDMyNjE2MSAgICAgIDE4NDQzMzUgICAgLSAgICAgICAgICBOVUxMICAgICAgICAgW2hv
+c3QtdGltZXJdDQo+PiA+PiAwICAgIDM5NzYgICAgICAgIDM5NzYgICAgICAgIC0gICAgICAgICAg
+LSAgICAgICAgICB4bnRocmVhZF90aSAgaW50cl9zaW0NCj4+ID4+DQo+PiA+PiBTdGF0dXMgb2Yg
+YXBwbGljYXRpb24gYWZ0ZXIgYXBwbGljYXRpb24gZXhlY3V0aW9uIGlzIHJlc3VtZWQ6DQo+PiA+
+PiAjIGNhdCAvcHJvYy94ZW5vbWFpL3N0YXQNCj4+ID4+IENQVSAgUElEICAgIE1TVyAgICAgICAg
+Q1NXICAgICAgICBQRiAgICBTVEFUICAgICAgICVDUFUgIE5BTUUNCj4+ID4+ICAgMCAgMCAgICAg
+IDAgICAgICAgICAgMTUwMzQgICAgICAwICAgICAwMDQwMDA4MCAgIDk5LjYgIFJPT1QNCj4+ID4+
+ICAgMCAgMCAgICAgIDAgICAgICAgICAgMzk3NiAgICAgICAwICAgICAwMDAwMDA4NCAgICAwLjAg
+IGludHJfc2ltDQo+PiA+PiAgIDAgIDEyNjEgICAyICAgICAgICAgIDIgICAgICAgICAgMiAgICAg
+MDAzMDAzODAgICAgMC4wICBhbmN2YmlydA0KPj4gPj4gICAwICAwICAgICAgMCAgICAgICAgICAw
+ICAgICAgICAgIDAgICAgIDAwMDAwMDAwICAgIDAuMCAgSVJRMjI6IF92aXBfZnBnYV9jb2RlY0Ay
+MDAwMDAwX3INCj4+ID4+ICAgMCAgMCAgICAgIDAgICAgICAgICAgNDI4NDYyICAgICAwICAgICAw
+MDAwMDAwMCAgICAwLjQgIElSUTUxMjogW3RpbWVyXQ0KPj4gPj4NCj4+ID4+ICMgY2F0IC9wcm9j
+L3hlbm9tYWkvdGltZXJzdGF0L21hc3Rlcg0KPj4gPj4gQ1BVICBTQ0hFRFVMRUQgICBGSVJFRCAg
+ICAgICBUSU1FT1VUICAgIElOVEVSVkFMICAgSEFORExFUiAgICAgIE5BTUUNCj4+ID4+IDAgICAg
+MTMxNDQ0NiAgICAgNDEyOTYxICAgICAgNDEwODkwICAgICAtICAgICAgICAgIE5VTEwgICAgICAg
+ICBbaG9zdC10aW1lcl0NCj4+ID4+IDAgICAgMzk3NiAgICAgICAgMzk3NiAgICAgICAgLSAgICAg
+ICAgICAtICAgICAgICAgIHhudGhyZWFkX3RpICBpbnRyX3NpbQ0KPj4gPj4gMCAgICA1ICAgICAg
+ICAgICAyICAgICAgICAgICAtICAgICAgICAgIC0gICAgICAgICAgeG50aHJlYWRfdGkgIEFuY1Zi
+aVJ0LWluLWludA0KPj4gPj4gMCAgICA0ICAgICAgICAgICAxICAgICAgICAgICAtICAgICAgICAg
+IC0gICAgICAgICAgeG50aHJlYWRfdGkgIEFuY1ZiaVJ0LW91dC1pbg0KPj4gPj4gMCAgICAyICAg
+ICAgICAgICAyICAgICAgICAgICAtICAgICAgICAgIC0gICAgICAgICAgeG50aHJlYWRfdGkgIEFu
+Y1ZiaVJ0LWNsaWVudA0KPj4gPj4gMCAgICAzICAgICAgICAgICAxICAgICAgICAgICAtICAgICAg
+ICAgIC0gICAgICAgICAgeG50aHJlYWRfdGkgIEFuY1ZiaVJ0LXRzb3V0DQo+PiA+PiAwICAgIDMg
+ICAgICAgICAgIDEgICAgICAgICAgIC0gICAgICAgICAgLSAgICAgICAgICB4bnRocmVhZF90aSAg
+QW5jVmJpUnQtcHVkaQ0KPj4gPj4gMCAgICAxICAgICAgICAgICAxICAgICAgICAgICAtICAgICAg
+ICAgIC0gICAgICAgICAgeG50aHJlYWRfdGkgIEFuY1ZiaVJ0LWFuY3gNCj4+ID4+IDAgICAgMSAg
+ICAgICAgICAgMCAgICAgICAgICAgLSAgICAgICAgICAtICAgICAgICAgIHhudGhyZWFkX3RpICBB
+bmNWYmlSdC12Yml4DQo+PiA+PiAwICAgIDEgICAgICAgICAgIDAgICAgICAgICAgIC0gICAgICAg
+ICAgLSAgICAgICAgICB4bnRocmVhZF90aSAgQW5jVmJpUnQtZ3Bpc3BsDQo+PiA+Pg0KPj4gPj4g
+Tm90ZXM6DQo+PiA+PiAxLiBHTlUgZ2RiIFJlZCBIYXQgTGludXggKDYuNy0xcmgpDQo+PiA+PiAy
+LiBHTlUgZ2Ric2VydmVyIFJlZCBIYXQgTGludXggKDYuNy0xcmgpDQo+PiA+PiAzLiBzZXQgZ2Ri
+IHRvIG5vdCBzdG9wL3ByaW50L3Bhc3MgU0lHWENQVSBzaWduYWwuDQo+PiA+PiA0LiBTYW1lIGJl
+aGF2aW9yIGlmIHByb2dyYW0gaXMgZXhlY3V0ZWQgd2l0aGluIGdkYiBhbmQgbm8gYnJlYWtwb2lu
+dHMuDQo+PiA+DQo+PiA+UGxlYXNlIGNoZWNrIHRoYXQgeW91IGFyZSBydW5uaW5nIHRoZSBtb2Rp
+ZmllZCBrZXJuZWwsIGFuZCBzcGVjaWZpY2FsbHkNCj4+ID50aGUgdXBkYXRlZCB4ZW5vX3J0ZG0g
+bW9kdWxlLiBUaGlzIHBhdGNoIGRvZXMgd29yayBhcyBleHBlY3RlZC4NCj4+ID4NCj4+ID4+DQo+
+PiA+PiBUaGFua3MsDQo+PiA+PiBMdWlzDQo+PiA+DQo+PiA+LS0NCj4+ID5QaGlsaXBwZS4NCj4+
+ID4NCj4+DQo+DQo+LS0NCj5QaGlsaXBwZS4NCj4NCg0K
 
