@@ -1,14 +1,15 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <AANLkTimcO45PW58j49aZPhjufkSi8dBs0t-wRzHVvEXp@domain.hid>
-References: <AANLkTi=EDSiKDiHyvZ8LpqBC9AAHL+6i=goa4r-rZyJU@mail.gmail.com>
-	<1282298341.1730.555.camel@domain.hid>
-	<AANLkTimcO45PW58j49aZPhjufkSi8dBs0t-wRzHVvEXp@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Fri, 20 Aug 2010 14:17:08 +0200
-Message-ID: <1282306628.1730.568.camel@domain.hid>
-Mime-Version: 1.0
+Message-ID: <4C6E75BD.3030404@domain.hid>
+Date: Fri, 20 Aug 2010 14:31:57 +0200
+From: Theo Veenker <T.J.G.Veenker@domain.hid>
+MIME-Version: 1.0
+References: <4C45539B.70204@domain.hid> <4C6932E8.7050701@domain.hid>	
+	<4C694AB3.8050407@domain.hid> <4C698E16.5050806@domain.hid>
+	<1282040830.1730.232.camel@domain.hid>
+In-Reply-To: <1282040830.1730.232.camel@domain.hid>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] pthread_make_periodic_np
+Subject: Re: [Xenomai-help] kernel 2.6.32.11 with xenomai 2.5.3 fails to
+ boot on ubuntu lucid system
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,77 +19,112 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: ramon costa <ramoncostacastello@domain.hid>
-Cc: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Xenomai help <xenomai@xenomai.org>
 
-On Fri, 2010-08-20 at 12:45 +0200, ramon costa wrote:
-> Hi,
+Philippe Gerum wrote:
+> On Mon, 2010-08-16 at 21:14 +0200, Theo Veenker wrote:
+>> On 08/16/2010 04:26 PM, Theo Veenker wrote:
+>>> Gilles Chanteperdrix wrote:
+>>>> Theo Veenker wrote:
+>>>>> Hi,
+>>>>>
+>>>>> I want to upgrade all our PC's from Ubuntu hardy to lucid and in the
+>>>>> process
+>>>>> I'm also going from kernel 2.6.29.5 with Xenomai 2.4.8 to kernel
+>>>>> 2.6.32.11
+>>>>> with Xenomai 2.5.3.
+>>>>>
+>>>>> I first built and tested the 2.6.32.11 kernel with 2.5.3 on my hardy
+>>>>> system
+>>>>> and all went fine. But the problem is it just doesn't run on the
+>>>>> lucid distro.
+>>>> This, I do not understand, the kernel does not need any support from the
+>>>> distribution for booting, how can the same kernel boot with one
+>>>> distribution, and not with the other? When you say the "same kernel", do
+>>>> you mean the exact same zImage or bzImage, or do you mean the kernel
+>>>> with the same configuration, but with a different compiler, or only the
+>>>> version is identical?
+>>>>
+>>> It is a complete mystery to me either. I compiled my kernel into a deb
+>>> package
+>>> and installed the very same deb package on three machines:
+>>> MSI p45 neo3 with Hardy on it -> works OK
+>>> MSI p45 neo3 with Ludid on it -> nothing (works fine with regular kernel)
+>>> MSI 945P with Lucid on it: -> nothing (works fine with regular kernel)
+>>>
+>>> I'll try the suggestions posted and keep you informed.
+>> OK. Connected a terminal to catch early kernel messages. Still no output
+>> unfortunately (with the regular kernel I do get output on the terminal,
+>> so the connection works).
+>>
+>> Meanwhile also built and tested kernel 2.6.32.15 + xenomai 2.5.4. Still nothing.
+>> I'm clueless. I'm running Xenomai for years on dozens of systems and I've
+>> never run into problems like this. I think I'll have to sit down and take a
+>> close look at what I'm doing. I've always built my kernels using make-kpkg,
+>> maybe that somehow introduces a problem here. I'll try without it.
+>>
+>> (unfortunately/luckily I have to work from home for a few days so I can't
+>> get to the test system until later this week)
 > 
+> I failed to reproduce the issue yet, but it very much looks like an
+> I-pipe bug. Could you try the following config variants when time
+> allows:
 > 
-> I needed to use 
-> #include <pthread.h>
-> #include <posix/pthread.h>
+> - on 2.6.32.11 or .15, disable CONFIG_SMP, enable CONFIG_X86_UP_APIC
+> only (*).
+> - on 2.6.32.11 or .15, disable CONFIG_SMP, enable CONFIG_X86_UP_APIC and
+> CONFIG_X86_UP_IOAPIC (*).
+> - on 2.6.32.7, use your normal CONFIG_SMP config, with this patch in:
+> http://download.gna.org/adeos/patches/v2.6/x86/older/adeos-ipipe-2.6.32.7-x86-2.5-01.patch
 > 
+> (*) you need to switch off CONFIG_SMP first, to see those knobs appear
+> in the "processor type and features" menu.
 > 
-> Is it normal ? I would expect to need 
+> The fact that you did see the panic blinking signal at least once tends
+> to point the finger at some access fault the kernel tries to recover
+> without success, rather than a sudden freeze. It must happen early
+> enough during the boot process, for the console not to be available yet
+> for reporting what the kernel whines about.
 > 
+> We don't know yet if that bug is either the consequence of some
+> interrupt delivery, and/or induced by code only involved in SMP. Those
+> test configs may help in discovering this.
 > 
-> #include <posix/pthread.h>
-> 
-> 
-> only.
+> TIA,
 > 
 
-Please keep the mailing list Cc'ed.
+Here are my results. I've built 5 kernels:
+K1: 2.6.32.15 (without the adeos patch applied)
+K2: 2.6.32.15 + 2.5.4
+K3: 2.6.32.15 + 2.5.4 CONFIG_SMP off, CONFIG_X86_UP_API on, CONFIG_XENOMAI off, CONFIG_IPIPE on
+K4: 2.6.32.15 + 2.5.4 as (3) with CONFIG_X86_UP_IOAPIC on
+K5: 2.6.32.7 with adeos-ipipe-2.6.32.7-x86-2.5-01.patch
 
-You only have to include <pthread.h>, this is what is expected by POSIX.
-"xeno-config --skin=posix --cflags" outputs what is required for that
-purpose.
+I now tested these kernels on four systems:
+A1: MSI 945P with Ubuntu 8.04
+A2: MSI 945P with Ubuntu 10.04
+B1: MSI p45 neo3 with Ubuntu 8.04
+B2: MSI p45 neo3 with Ubuntu 10.04
 
-> 
-> 
-> 
-> From what I found in the manual page and in a Xenomai Makefile I have
-> prepared the following Makefile
-> for a posix skin user space application
-> 
-> 
-> ------------------------------------------------------------------------------------------------------------
-> ### List of applications to be build
-> APPLICATIONS = p1_xn_parallel
-> 
-> 
-> ###### USER SPACE BUILD (no change required normally) ######
-> 
-> 
-> ### Default Xenomai installation path
-> XENO ?= /usr/xenomai
-> 
-> 
-> XENOCONFIG=$(shell PATH=$(XENO):$(XENO)/bin:$(PATH) which xeno-config
-> 2>/dev/null)
-> 
-> 
-> CC=$(shell $(XENOCONFIG) --skin=posix --cc)
-> 
-> 
-> CFLAGS=$(shell $(XENOCONFIG) --skin=posix --cflags) $(MY_CFLAGS)
-> 
-> 
-> LDFLAGS=$(shell $(XENOCONFIG) --skin=posix --ldflags) $(MY_LDFLAGS)
+A1 and A2 are identical systems from the same batch and B1 and B2 also.
 
-[snip]
+What worked:
+	A1		A2		B1		B2
+----------------------------------------------------------------
+K1	Y		Y		Y		Y
+K2	Y		N/Y		Y		N
+K3	Y		N/Y		Y		N
+K4	Y		N/Y		Y		N
+K5	Y		N/Y		Y		N
 
-> 
-> It works. But I would like to know if it is formally correct. May I
-> remove something from it ?
-> 
+The No/Yes cases means on this system sometimes the kernel would boot
+(same as others have reported before). In the No cases I got no ouput
+on the attached console.
 
-If it works, then you should probably keep it this way, until you get
-your feet wet with this environment.
+Stange as it may be I still do see a strong correlation between the OS
+version and whether an adeos patched kernel works or not.
 
--- 
-Philippe.
-
-
+Regards,
+Theo
 
