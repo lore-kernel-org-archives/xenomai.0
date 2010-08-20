@@ -1,63 +1,29 @@
-Date: 12 Aug 2010 15:46:01 -0000
+Message-ID: <4C6EA68E.6000409@domain.hid>
+Date: Fri, 20 Aug 2010 18:00:14 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Message-ID: <1281614099.S.2522.62255.H.TldvbGZnYW5nIEdyYW5kZWdnZXIAUmU6IFtYZW5vbWFpLWhlbHBdIFRpbWluZyBjYWxjdWxhdGlvbg__.f4-234-118.old.1281627960.20877@domain.hid>
-in-reply-to: <4C63E156.2020102@domain.hid>
-From: "prakash srinivasan" <asprakash_83@domain.hid>
-Content-Type: multipart/alternative;
-	boundary="=_c4cbe351e10d7be6dc5128ceff87bcf5"
-Subject: Re: [Xenomai-help] =?utf-8?q?Timing_calculation?=
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+References: <1282319702.5255.405.camel@domain.hid>
+In-Reply-To: <1282319702.5255.405.camel@domain.hid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-core] rt timer jitter
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: wg@domain.hid
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: =?UTF-8?B?S3J6eXN6dG9mIELFgmFzemtvd3NraQ==?= <kb@domain.hid>
 Cc: xenomai@xenomai.org
 
---=_c4cbe351e10d7be6dc5128ceff87bcf5
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="UTF-8"
+Krzysztof B=C5=82aszkowski wrote:
+> Can i do something with this ?
 
->What does:
+Read TROUBLESHOOTING, FAQ, etc...
 
->printf(TOTAL LOOP TIMING=%lld us\n", rt_timer_ticks2ns(end-start)/1000);
+--=20
+					    Gilles.
 
-
-
->report.
-
-
-
-TOTAL LOOP TIMING= 5377070 us
-
-In this case (unsigned)(long)(long)start returns 1069623206 and (unsigned)(long)(long)end returns 2151726697
-
-
-
--Prakash
---=_c4cbe351e10d7be6dc5128ceff87bcf5
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/html; charset="UTF-8"
-
->What does:<br />
->printf(TOTAL LOOP TIMING=3D%lld usn", rt_timer_ticks2ns(end-start)/1000);<=
-br />
-<br />
->report.<br />
-<br />
-TOTAL LOOP TIMING=3D 5377070 us<br />
-In this case (unsigned)(long)(long)start returns 1069623206 and (unsigned)(=
-long)(long)end returns 2151726697<br />
-<br />
--Prakash<br><Table border=3D0 Width=3D644 Height=3D57 cellspacing=3D0 cellp=
-adding=3D0 style=3D"font-family:Verdana;font-size:11px;line-height:15px;"><=
-TR><td><A HREF=3D"http://sigads.rediff.com/RealMedia/ads/click_nx.ads/www.r=
-ediffmail.com/signatureline.htm@domain.hid?" target=3D"_blank"><IMG SRC=3D"http=
-://sigads.rediff.com/RealMedia/ads/adstream_nx.ads/www.rediffmail.com/signa=
-tureline.htm@domain.hid"></A></td></TR></Table>
---=_c4cbe351e10d7be6dc5128ceff87bcf5--
 
