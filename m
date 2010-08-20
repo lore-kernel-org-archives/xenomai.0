@@ -1,78 +1,99 @@
-Message-ID: <4C640F31.9000101@domain.hid>
-Date: Thu, 12 Aug 2010 17:11:45 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <1278943817.7023.18.camel@domain.hid> <4C3EF6D6.6040907@domain.hid>	
-	<1279210298.1995.38.camel@domain.hid>	
-	<1279623645.2187.35.camel@domain.hid> <4C469259.3000708@domain.hid>	
-	<1281538723.2246.120.camel@domain.hid>	
-	<1281540487.1730.20.camel@domain.hid>	
-	<1281543863.2246.149.camel@domain.hid>	
-	<1281544161.1730.23.camel@domain.hid>	
-	<1281545075.2246.167.camel@domain.hid>
-	<4C62D640.6080304@domain.hid> <1281625457.2211.44.camel@domain.hid>
-In-Reply-To: <1281625457.2211.44.camel@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+From: Krzysztof =?UTF-8?Q?B=C5=82aszkowski?= <kb@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Date: Fri, 20 Aug 2010 17:55:02 +0200
+Message-Id: <1282319702.5255.405.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Marvell sheeva support
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Subject: [Xenomai-core] rt timer jitter
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Tim Cussins <timcussins@domain.hid>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, Philippe Gerum <rpm@xenomai.org>
 Cc: xenomai@xenomai.org
 
-Tim Cussins wrote:
-> On Wed, 2010-08-11 at 18:56 +0200, Gilles Chanteperdrix wrote:
->> Tim Cussins wrote:
->>> On Wed, 2010-08-11 at 18:29 +0200, Philippe Gerum wrote:
->>>> On Wed, 2010-08-11 at 17:24 +0100, Tim Cussins wrote:
->>>>> On Wed, 2010-08-11 at 17:28 +0200, Philippe Gerum wrote:
->>>>>> On Wed, 2010-08-11 at 15:58 +0100, Tim Cussins wrote:
-> 
->>>>>>> However, I've got a problem with busybox/getty and /dev/ttyS0 so I can't
->>>>>>> log in via console OR telnet. Once that's solved, I'll be able to run
->>>>>>> the xenomai tests. (In case you've seen it before - /var/log/messages is
->>>>>>> slowly filling with:
->>>>>>>
->>>>>>> Aug 11 16:03:36 init: starting pid 638, tty '/dev/ttyS0': '/sbin/getty
->>>>>>> 115200 ttyS0'
->>>>>>> Aug 11 16:03:36 getty[638]: ttyS0: TCGETS: Inappropriate ioctl for
->>>>>>> device
->>>>>>>
->>>>>>> )
->>>>>>>
->>>>>> Does /dev/ttyS0 have major=4, minor=64 on your rootfs?
->>>>> dev.txt (from mkrootfs) would imply that it is 4,64. Without being able
->>>>> to log in, I can't confirm though :) Unless you know a cunning trick? :D
->>>> Well, maybe. ls -l on the nfs server side exporting your rootfs :>
->>> Pfff :D All the nodes appear as regular files that way - I assumed that
->>> was normal, and that some special magic was happening in busybox to
->>> replace them with nodes... Is there something I'm not doing right?
->>>
->>> I've mounted a debian rootfs over nfs no problems - that tree has *real*
->>> nodes in it, and the show up as such using the ls -l , uh, 'trick' :P
->> It means we have an issue with fakeroot. Just run make clean, then make
->> again to see if it fixes it.
-> 
-> For anyone following this: the files in /dev were regular files instead
-> of real device nodes - hence the ioctl failure.
-> 
-> The nodes were created in a staging tree using fakeroot. I exported the
-> tree by invoking tar directly, so the files appear as regular empty
-> files.
-> 
-> The solution is to invoke tar using fakeroot: this ensures you'll get
-> real device nodes in /dev.
 
-There is a configuration option in mkrootfs to generate the tarball
-directly.
+Do you have any idea about reducing rt timer jitter ?
+I experience annoyingly big jitter in a thread which is supposed to run
+at 400us (i reckon this is nothing extra demanding from atom @1.6G)
+
+
+the thread's loop looks like:
+
+{
+function1()
+..2()
+..3()
+..4()
+
+rt_task_wait_period()
+}
+
+(^yet another simplified model^)
+
+task is periodic while native skin works in aperiodic timer mode.
+(periodic timer has horrible timings - it is apparently not rt timer).
+
+rt_task_wait_period() always exists with 0 (no overruns) and also these
+functions take no longer than 120usec (average is: 80 .. 90)
+
+after task_wait_period() i read tsc (on atom it is constant and also any
+frq adjusting is disabled)
+
+and if compared to previous readout and converted to ns i got jitter in
+range of 10usec .. -18usec.  10 usec means that wait_period exited
+before given time point and -18usec means that it did it with 18usec
+delay.
+
+I noticed that UP configuration has sligthly less jitter.
+
+a part of dmesg:
+
+SGEN-lpc 0x148f: division factor 20 (700), tcks: 2, 15
+sgen_fpga_init:736 [0]: acc 00000000 (before rst 00000000) test 00000000
+sgen_fpga_init:742 0000 c000
+sgen_fpga_init:742 0000 c000
+sgen_fpga_init:742 0000 c000
+sgen_fpga_init:752 0000 8000
+thread_task:2651 peak rt jitter -710[ns], tsc delta 667850
+SGEN-lpc :detected inputs failure. Mask 0x000c
+MOTION: setting Traj cycle time to 400000 nsecs
+MOTION: setting Servo cycle time to 4000000 nsecs
+thread_task:2651 peak rt jitter -3512[ns], tsc delta 672520
+thread_task:2651 peak rt jitter 3694[ns], tsc delta 660510
+thread_task:2651 peak rt jitter -4382[ns], tsc delta 673970
+thread_task:2651 peak rt jitter 5146[ns], tsc delta 658090
+thread_task:2651 peak rt jitter -5558[ns], tsc delta 675930
+thread_task:2651 peak rt jitter 5626[ns], tsc delta 657290
+thread_task:2651 peak rt jitter -5828[ns], tsc delta 676380
+thread_task:2651 peak rt jitter 7264[ns], tsc delta 654560
+thread_task:2651 peak rt jitter -7742[ns], tsc delta 679570
+thread_task:2651 peak rt jitter -9626[ns], tsc delta 682710
+thread_task:2651 peak rt jitter 10156[ns], tsc delta 649740
+thread_task:2651 peak rt jitter -16262[ns], tsc delta 693770
+SGEN-lpc [0] Fmax set to 285714Hz (180000)
+SGEN-lpc [1] Fmax set to 285714Hz (180000)
+SGEN-lpc [2] Fmax set to 285714Hz (150000)
+thread_task:2651 peak rt jitter -18470[ns], tsc delta 697450
+
+
+I must say it is 4 - 5 times worse if compared to rtai 3.7 / 2.6.27.19
+UP.
+
+I use now xenomai 2.5.4 with adeos 2.2-06 patch for same 2.6.27 kernel
+to make these comparisons more reliable.
+
+
+Can i do something with this ?
+
+Regards,
+
 
 -- 
-					    Gilles.
+Krzysztof Blaszkowski
+
 
