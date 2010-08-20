@@ -1,25 +1,24 @@
-Content-class: urn:content-classes:message
-MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="UTF-8"
-Content-Transfer-Encoding: base64
-Date: Fri, 20 Aug 2010 10:25:02 -0400
-Message-ID: <6FCCA913376DD7488F4139A4D11B8F4801465D11@domain.hid>
-In-Reply-To: <4C6E8C79.1050501@domain.hid>
-References: <6FCCA913376DD7488F4139A4D11B8F4801465AC9@domain.hid>	
-	<1282149528.1730.348.camel@domain.hid>	
-	<6FCCA913376DD7488F4139A4D11B8F4801465AF8@domain.hid>	
-	<1282164261.1730.359.camel@domain.hid>	
-	<6FCCA913376DD7488F4139A4D11B8F4801465B76@domain.hid>	
-	<1282236153.1730.474.camel@domain.hid>	
-	<6FCCA913376DD7488F4139A4D11B8F4801465C00@domain.hid>	
-	<1282282775.1730.504.camel@domain.hid>	
-	<6FCCA913376DD7488F4139A4D11B8F4801465CFD@troe2k1.cs.myharris.net>	
-	<1282312185.1730.598.camel@domain.hid>	
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <6FCCA913376DD7488F4139A4D11B8F4801465D11@domain.hid>
+References: <6FCCA913376DD7488F4139A4D11B8F4801465AC9@domain.hid>
+	<1282149528.1730.348.camel@domain.hid>
+	<6FCCA913376DD7488F4139A4D11B8F4801465AF8@domain.hid>
+	<1282164261.1730.359.camel@domain.hid>
+	<6FCCA913376DD7488F4139A4D11B8F4801465B76@domain.hid>
+	<1282236153.1730.474.camel@domain.hid>
+	<6FCCA913376DD7488F4139A4D11B8F4801465C00@domain.hid>
+	<1282282775.1730.504.camel@domain.hid>
+	<6FCCA913376DD7488F4139A4D11B8F4801465CFD@troe2k1.cs.myharris.net>
+	<1282312185.1730.598.camel@domain.hid>
 	<4C6E8A1B.4090006@domain.hid>
 	<1282313187.1730.611.camel@domain.hid>
 	<4C6E8C79.1050501@domain.hid>
-From: "Herrera-Bendezu, Luis" <lherrera@domain.hid>
+	<6FCCA913376DD7488F4139A4D11B8F4801465D11@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Date: Fri, 20 Aug 2010 16:41:05 +0200
+Message-ID: <1282315265.1730.634.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] RTDM task blocks when connecting gdb to realtime
 	task
 List-Id: Help regarding installation and common use of Xenomai
@@ -31,37 +30,60 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>, Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: "Herrera-Bendezu, Luis" <lherrera@domain.hid>
+Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai@xenomai.org
 
-Pi0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+RnJvbTogSmFuIEtpc3prYSBbbWFpbHRvOmph
-bi5raXN6a2FAc2llbWVucy5jb21dDQo+U2VudDogRnJpZGF5LCBBdWd1c3QgMjAsIDIwMTAgMTA6
-MDkgQU0NCj5UbzogUGhpbGlwcGUgR2VydW0NCj5DYzogSGVycmVyYS1CZW5kZXp1LCBMdWlzOyB4
-ZW5vbWFpLWhlbHBAZ25hLm9yZw0KPlN1YmplY3Q6IFJlOiBSVERNIHRhc2sgYmxvY2tzIHdoZW4g
-Y29ubmVjdGluZyBnZGIgdG8gcmVhbHRpbWUgdGFzaw0KPg0KPg0KPlBoaWxpcHBlIEdlcnVtIHdy
-b3RlOg0KPj4gT24gRnJpLCAyMDEwLTA4LTIwIGF0IDE1OjU4ICswMjAwLCBKYW4gS2lzemthIHdy
-b3RlOg0KPj4+IFBoaWxpcHBlIEdlcnVtIHdyb3RlOg0KPj4+Pj4gIEhvd2V2ZXIsIHRlcm1pbmF0
-aW5nIGdkYiBhbmQgcmVzdGFydGluZyBhcHAgb3V0c2lkZSBnZGINCj4+Pj4+IGRvZXMgbWFrZSBS
-VERNIHRhc2sgcmVzdW1lIGV4ZWN1dGlvbi4gQmVmb3JlLCB0aGUgZHJpdmVyIGhhZCB0byBiZSBy
-ZWxvYWRlZC4NCj4+Pj4+DQo+Pj4+PiBTbyBnZGIgYXBwZWFycyB0byBiZSBjYXVzaW5nIHRpbWVy
-IHRvIGJsb2NrIGV2ZW4gaWYgbm8gYnJlYWtwb2ludCBpcyBzZXQsDQo+Pj4+PiBwcm9iYWJseSBz
-aWduYWxzPw0KPj4+Pj4NCj4+Pj4gVGhlcmUgaXMgbm8gcmVhc29uIGZvciB0aGF0LiBTZW5kaW5n
-ICJjb250aW51ZSIgdG8gZ2RiIGlzIGV4cGVjdGVkIHRvDQo+Pj4+IHVuYmxvY2sgdGhlIHRpbWVy
-cywgdW50aWwgdGhlIGNvZGUgaXMgc2luZ2xlLXN0ZXBwZWQgYWdhaW4gKGUuZy4gYWZ0ZXINCj4+
-Pj4gXkMgb3IgYW55IGJyZWFrcG9pbnQpLg0KPj4+IGdkYiBzaWxlbnRseSBpbnRlcmNlcHRzIGEg
-dHJhY2VkIHByb2dyYW0gZm9yIHZhcmlvdXMgcmVhc29ucywgZS5nLg0KPj4+IHRocmVhZCBjcmVh
-dGlvbiBvciBsaWJyYXJ5IGxvYWRpbmcuIEV2ZW4gaWYgbm8gdXNlciBicmVha3BvaW50IGlzIHNl
-dCwNCj4+PiB0aGUgcHJvZ3JhbSBtYXkgYnJpZWZseSBiZSBzdG9wcGVkIG5ldmVydGhlbGVzcy4g
-SWYgdGhhdCBoYXBwZW5zDQo+Pj4gZnJlcXVlbnRseSBlbm91Z2gsIGFuZCBldmVyeSBzdG9wIGNh
-biBhZGQgbGF0ZW5jaWVzIHRvIHJ1bm5pbmcgdGltZXJzLi4uDQo+Pg0KPj4gV2UgYXJlIHRhbGtp
-bmcgYWJvdXQgcGVybWFuZW50IGZyZWV6ZSBvZiB0aW1lcnMsIG5vdCB0cmFuc2llbnQgKGF0IGxl
-YXN0DQo+PiB0aGlzIGlzIHdoYXQgSSBnb3QgZnJvbSB0aGUgb25nb2luZyBkaXNjdXNzaW9uKS4N
-Cj4NCj5ZZXMsIGJ1dCB3aGF0IHdvdWxkIGhhcHBlbiBpZiB0aGUgaW50ZXJydXB0aW9uIHJhdGUg
-aXMgaGlnaGVyIHRoYW4gdGhlDQo+dGltZXIgZGVsYXk/IFdvdWxkbid0IHdlIGVmZmVjdGl2ZWx5
-IGVuZCB1cCB3aXRoIGEgcGVybWFuZW50IGZyZWV6ZT8NCj4NCj5KYW4NCg0KVHJhY2luZyBsb2Nr
-Xy91bmxvY2tfdGltZXJzKCkgY2FsbHMgc2hvd3MgdGhhdCBwcm9ncmFtIGlzIGZyZXF1ZW50bHkN
-CnN0b3BwZWQuIEkgaGFkIHRvIGRpc2FibGUgbm90aWZpY2F0aW9uIG1lY2hhbmlzbSB0byByZXBv
-cnQgc2Vjb25kYXJ5DQptb2RlIHN3aXRjaCBvbiBydCB0YXNrcywgcnRfdGFza19zZXRfbW9kZSgp
-LCB0byBnZXQgYXBlcmlvZGljIHRhc2tzDQpiYWNrIHRvIHJ0IG9wZXJhdGlvbiB3aGVuIGdkYiBy
-ZXN1bWVzIHJ0IHRhc2suDQoNClRoYW5rcywNCkx1aXMNCg==
+On Fri, 2010-08-20 at 10:25 -0400, Herrera-Bendezu, Luis wrote:
+> >-----Original Message-----
+> >From: Jan Kiszka [mailto:jan.kiszka@domain.hid]
+> >Sent: Friday, August 20, 2010 10:09 AM
+> >To: Philippe Gerum
+> >Cc: Herrera-Bendezu, Luis; xenomai@xenomai.org
+> >Subject: Re: RTDM task blocks when connecting gdb to realtime task
+> >
+> >
+> >Philippe Gerum wrote:
+> >> On Fri, 2010-08-20 at 15:58 +0200, Jan Kiszka wrote:
+> >>> Philippe Gerum wrote:
+> >>>>>  However, terminating gdb and restarting app outside gdb
+> >>>>> does make RTDM task resume execution. Before, the driver had to be reloaded.
+> >>>>>
+> >>>>> So gdb appears to be causing timer to block even if no breakpoint is set,
+> >>>>> probably signals?
+> >>>>>
+> >>>> There is no reason for that. Sending "continue" to gdb is expected to
+> >>>> unblock the timers, until the code is single-stepped again (e.g. after
+> >>>> ^C or any breakpoint).
+> >>> gdb silently intercepts a traced program for various reasons, e.g.
+> >>> thread creation or library loading. Even if no user breakpoint is set,
+> >>> the program may briefly be stopped nevertheless. If that happens
+> >>> frequently enough, and every stop can add latencies to running timers...
+> >>
+> >> We are talking about permanent freeze of timers, not transient (at least
+> >> this is what I got from the ongoing discussion).
+> >
+> >Yes, but what would happen if the interruption rate is higher than the
+> >timer delay? Wouldn't we effectively end up with a permanent freeze?
+> >
+> >Jan
+> 
+> Tracing lock_/unlock_timers() calls shows that program is frequently
+> stopped. 
+
+That is expected. The application receives a substantial amount of
+SIGTRAP/SIGSTOP under gdb; what saves us is that this should never be
+continuous.
+
+> I had to disable notification mechanism to report secondary
+> mode switch on rt tasks, rt_task_set_mode(), to get aperiodic tasks
+> back to rt operation when gdb resumes rt task.
+> 
+
+> Thanks,
+> Luis
+
+-- 
+Philippe.
+
+
 
