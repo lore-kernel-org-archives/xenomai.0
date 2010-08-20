@@ -1,63 +1,49 @@
-Message-ID: <4C600D17.2020609@domain.hid>
-Date: Mon, 09 Aug 2010 16:13:43 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4C6E9903.4010003@domain.hid>
+Date: Fri, 20 Aug 2010 17:02:27 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <1279046702.31665.65.camel@domain.hid>	<4C3CB655.1020801@domain.hid>	
-	<1279048661.31665.81.camel@domain.hid>	<1280149567.1856.15.camel@domain.hid>	
-	<4C4D9131.7080504@domain.hid>	<1280153187.1856.25.camel@domain.hid>	
-	<4C4D97AC.2030609@domain.hid>	<1280154697.1856.29.camel@domain.hid>	
-	<4C4D9E04.6060407@domain.hid>	<1280156219.1856.32.camel@domain.hid>	
-	<4C4DA340.4030400@domain.hid>	<1280187666.1963.34.camel@domain.hid>	
-	<4C4E8A64.1000701@domain.hid>	<1280239972.1865.7.camel@domain.hid>	
-	<4C4EEBE3.9020806@domain.hid>	
-	<AANLkTim4A+3sLGzgdhc_Xhfn0bAW+hLZtuUJVyVocLOZ@mail.gmail.com>	
-	<AANLkTimGA5k4Vu_aQNXx1bBhT2X3KAZytAKZHWD-HNHK@mail.gmail.com>	
-	<4C4F7B47.6040709@domain.hid>	
-	<AANLkTin-4N_AdZiEK+dqxsz=E_ZHxDnoGxQikOJCkVo9@domain.hid>	
-	<4C585D60.2040809@domain.hid> <1281356497.17126.19.camel@domain.hid>
-In-Reply-To: <1281356497.17126.19.camel@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Kernel compilation procedures for imx51
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Subject: [Xenomai-core] [git pull] small RTDM fixes and assorted patches
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: flavio.alves@domain.hid
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Flavio Alves wrote:
-> Hello,
-> 
-> I'm still having problems in compiling the kernel with xenomai for the
-> imx51.
-> 
-> I'm having the following error:
-> 
->   LD      .tmp_vmlinux1
-> arch/arm/plat-mxc/built-in.o: In function `mxc_dvfs_core_probe':
-> isp1504xc.c:(.devinit.text+0x334): undefined reference to
-> `cpufreq_trig_needed'
-> make: *** [.tmp_vmlinux1] Error 1
-> 
-> The steps used are the indicated at the xenomai patches README. The
-> defconfig that I'm using is imx51_defconfig, from the mainstream kernel.
+The following changes since commit 7e2735614ebe515d57abeaa3ff6df375a7c4149f:
 
-I validated the babbage board with a config derived from this config.
+  sched: avoid infinite reschedule loops (2010-08-03 00:11:21 +0200)
 
-> 
-> I know that it is not a xenomai issue, but it is caused when I run make
-> menuconfig and disable the CPU frequency scaling feature, in order to
-> disable the warning (if the warning is present, xenomai is not
-> compiled).
+are available in the git repository at:
+  git://git.xenomai.org/xenomai-jki.git for-upstream
 
-No. The warning is just that: a warning.
+Jan Kiszka (8):
+      rt_print: Properly return printed length
+      RTDM: Protect xnshadow_ppd_get via nklock
+      RTDM: Plug race between proc_read_dev_info and device deregistration
+      RTDM: Properly clean up on xnvfile setup errors
+      RTDM: Extend device name space in open_fildes proc output
+      Fix symbolic status ouput of root threads
+      Create watchdog as non-blockable timer
+      native: Improve documentation of rt_task_join and rt_task_delete
 
--- 
-					    Gilles.
+ ksrc/nucleus/sched.c     |    3 ++-
+ ksrc/nucleus/thread.c    |    4 ++++
+ ksrc/skins/native/task.c |   15 +++++++++++++--
+ ksrc/skins/rtdm/core.c   |    2 ++
+ ksrc/skins/rtdm/proc.c   |   45 +++++++++++++++++++++++++++++++++++----------
+ src/rtdk/rt_print.c      |    1 +
+ 6 files changed, 57 insertions(+), 13 deletions(-)
+
+The bug fixes (patches 1-4 and 7) should all be considered for 2.5 as
+well, but some need rebasing. Will look into this once the series is
+acceptable.
+
+Jan
 
