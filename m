@@ -1,110 +1,90 @@
-Message-ID: <4C611708.30702@domain.hid>
-Date: Tue, 10 Aug 2010 02:08:24 -0700
-From: Bob Feretich <bob.feretich@domain.hid>
+Message-ID: <4C6E9C10.3000203@domain.hid>
+Date: Fri, 20 Aug 2010 17:15:28 +0200
+From: Stefan Kisdaroczi <kisda@domain.hid>
 MIME-Version: 1.0
-References: <4C5A26C4.3050702@domain.hid>	<4C5A631B.1040604@domain.hid>	<4C5CC360.7070707@domain.hid>
-	<AANLkTikC5DvkOQDfGFWL7b8KXFYd+1OkZrQ0Gc+GzzZr@domain.hid>
-	<4C60A3B8.2000603@domain.hid>
-	<8A042E82-C083-4876-AFF5-6D51A291C486@domain.hid>
-In-Reply-To: <8A042E82-C083-4876-AFF5-6D51A291C486@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] RTDM driver structure - an update
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+References: <4C6E9903.4010003@domain.hid>
+In-Reply-To: <4C6E9903.4010003@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigAEDC7B5809CDEB7E6E508681"
+Subject: Re: [Xenomai-core] [git pull] small RTDM fixes and assorted patches
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Guenter Ebermann <guenter.ebermann@domain.hid>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai@xenomai.org
 
-  Gunther,
-Thank you for the information.
-No, the my hardware interrupt line is not being shared by other devices. 
-So I really don't want it to be considered "shared". However, my concern 
-was on how driver IRQ request calls are handled.
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigAEDC7B5809CDEB7E6E508681
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-If a driver invokes request_irq() without the SHARED flag, I would 
-expect Linux to reject subsequent request_irq() calls for the same IRQ 
-made by other drivers. Similarly, if the first driver invokes 
-request_irq() with the SHARED flag, I would expect Linux to accept 
-subsequent request_irq() calls for the same IRQ made by other drivers 
-if-and-only-if the other requests are made with the SHARED flag.
+Hi Jan,
 
-My temporary fix for the problem I encountered required me to request 
-the same IRQ from Linux via request_irq() and then from Xenomai via 
-rtdm_irq_request(). I had expected the Xenomai request to fail. However, 
-that expectation assumed that there are interlocks between the 
-environments. I perceived problems in either case. If there are no 
-interlocks, then both a real-time driver and a non-real-time driver may 
-be loaded to service the same IRQ and be ignorant of each other. This 
-would probably be bad.
+https://mail.gna.org/public/xenomai-core/2010-05/msg00059.html
 
-If there are interlocks...
-Then for a non-shared IRQ, the first driver to request the IRQ would 
-receive it. All other requestors, regardless of whether they are Xenomai 
-or Linux would be refused.
-For a shared IRQ, the rules get much more complex. I believe that the 
-first driver to request the IRQ would receive it, but if the driver 
-specified the SHARED flag sharing would restricted the environment of 
-that first driver. Requests made from the other environment should be 
-rejected whether or not they specify SHARED.
-Since my temporary fix (requesting and receiving a non-shared IRQ in 
-both the Linux and Xenomai environments) worked, if proved that there 
-were no interlocks. Phillippe stated that this is a flaw in the current 
-version of Xenomai.
+Stefan
 
-Regards,
-Bob
+Am 20.08.2010 17:02, schrieb Jan Kiszka:
+> The following changes since commit 7e2735614ebe515d57abeaa3ff6df375a7c4=
+149f:
+>=20
+>   sched: avoid infinite reschedule loops (2010-08-03 00:11:21 +0200)
+>=20
+> are available in the git repository at:
+>   git://git.xenomai.org/xenomai-jki.git for-upstream
+>=20
+> Jan Kiszka (8):
+>       rt_print: Properly return printed length
+>       RTDM: Protect xnshadow_ppd_get via nklock
+>       RTDM: Plug race between proc_read_dev_info and device deregistrat=
+ion
+>       RTDM: Properly clean up on xnvfile setup errors
+>       RTDM: Extend device name space in open_fildes proc output
+>       Fix symbolic status ouput of root threads
+>       Create watchdog as non-blockable timer
+>       native: Improve documentation of rt_task_join and rt_task_delete
+>=20
+>  ksrc/nucleus/sched.c     |    3 ++-
+>  ksrc/nucleus/thread.c    |    4 ++++
+>  ksrc/skins/native/task.c |   15 +++++++++++++--
+>  ksrc/skins/rtdm/core.c   |    2 ++
+>  ksrc/skins/rtdm/proc.c   |   45 +++++++++++++++++++++++++++++++++++---=
+-------
+>  src/rtdk/rt_print.c      |    1 +
+>  6 files changed, 57 insertions(+), 13 deletions(-)
+>=20
+> The bug fixes (patches 1-4 and 7) should all be considered for 2.5 as
+> well, but some need rebasing. Will look into this once the series is
+> acceptable.
+>=20
+> Jan
+>=20
+> _______________________________________________
+> Xenomai-core mailing list
+> Xenomai-core@domain.hid
+> https://mail.gna.org/listinfo/xenomai-core
+>=20
 
-On 8/10/2010 12:43 AM, Guenter Ebermann wrote:
-> Hi Bob,
->
-> Am 10.08.2010 um 02:56 schrieb Bob Feretich:
->> Do I need to mark the IRQ SHARED in the request_irq()?
->> Does executing a rtdm_irq_request(), without the SHARED flag, fail if
->> the IRQ was reserved via request_irq()? (The purpose of the flag is not
->> documented in the API manual.)
->> Do I need to specify the SHARED flag in both request_irq() and
->> rtdm_irq_request()? I'd rather not allow any other driver access to my IRQ.
-> I am relatively new to xenomai, but perhaps I can shed some light on shared
-> IRQs: Shared IRQs are used if more than one device share one interrupt line.
-> E.g.: Two PCI cards use the same interrupt line.
->
-> The cards output has high-resistance if the interrupt is disabled.  A external
-> pull-up is used. So if no interrupt is pending the voltage is high on the line.
-> The interrupt must also be level sensitive.
->
-> Whenever a interrupt occurs one card pulls down the IRQ line to ground. This
-> also works if both cards pull the IRQ down the same time (IRQ happens at the
-> same time).
->
-> Also the return value of the IRQ is important if the IRQ is shared.  The first
-> thing you have to do is check if it was your device that issued the irq (by
-> accessing some registers in your device).  If it was your device do what has to
-> be done (ack the interrupt in the device so that it doesnt pull down the level
-> to ground any more) and return IRQ_HANDLED.  If its not your return
-> IRQ_NO_HANDLED or such.
->
-> So if you write a driver for one of this two cards you must use the IRQ_SHARED
-> flag (this is the same with standard linux interrupt API - just call
-> request_irq with irqflags=IRQF_SHARED) so that linux knows that after it calls
-> your handler it must also call all other handlers of this IRQ.
->
-> However shared IRQs can be used for all kind of devices. But PCI is the only
-> example I am aware of where it really is used. It is also the root of alot of
-> problems because one must be really careful to handle such shared IRQs
-> correctly.
->
-> So its more likely your device does not use shared IRQs.
->
-> But perhaps in xenomai API this flag means a different thing I am not yet aware
-> of.
->
-> Kind regards,
-> Guenter
+
+--------------enigAEDC7B5809CDEB7E6E508681
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.3 (MingW32)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+
+iD8DBQFMbpwQIPTw9rIdn6oRAvInAJ0fAOv3S+ZmPbfiAe1x7uJPZtXZwgCfZnV8
+A6k4vVJa1fHZZ7krtK9Wnws=
+=Y+Eb
+-----END PGP SIGNATURE-----
+
+--------------enigAEDC7B5809CDEB7E6E508681--
 
