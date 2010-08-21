@@ -1,12 +1,13 @@
-Message-ID: <4C6F9779.8000206@domain.hid>
-Date: Sat, 21 Aug 2010 11:08:09 +0200
+Message-ID: <4C6FA132.9030308@domain.hid>
+Date: Sat, 21 Aug 2010 11:49:38 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <1282319702.5255.405.camel@domain.hid>
-In-Reply-To: <1282319702.5255.405.camel@domain.hid>
+References: <E1OmSun-0000pX-9o@domain.hid>
+In-Reply-To: <E1OmSun-0000pX-9o@domain.hid>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-core] rt timer jitter
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-core] [Xenomai-git] Jan Kiszka : native: Improve
+ documentation of	rt_task_join and rt_task_delete
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -15,37 +16,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: =?UTF-8?B?S3J6eXN6dG9mIELFgmFzemtvd3NraQ==?= <kb@domain.hid>
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Krzysztof B=C5=82aszkowski wrote:
-> Do you have any idea about reducing rt timer jitter ?
-> I experience annoyingly big jitter in a thread which is supposed to run=
+GIT version control wrote:
+> Module: xenomai-jki
+> Branch: for-upstream
+> Commit: df5646768a089b38343dfe676912006616bde5c2
+> URL:    http://git.xenomai.org/?p=xenomai-jki.git;a=commit;h=df5646768a089b38343dfe676912006616bde5c2
+> 
+> Author: Jan Kiszka <jan.kiszka@domain.hid>
+> Date:   Fri Aug 20 16:22:55 2010 +0200
+> 
+> native: Improve documentation of rt_task_join and rt_task_delete
+> 
+> Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
+> 
+> ---
+> 
+>  ksrc/skins/native/task.c |   15 +++++++++++++--
+>  1 files changed, 13 insertions(+), 2 deletions(-)
+> 
+> diff --git a/ksrc/skins/native/task.c b/ksrc/skins/native/task.c
+> index 6d2472e..73fee5e 100644
+> --- a/ksrc/skins/native/task.c
+> +++ b/ksrc/skins/native/task.c
+> @@ -588,6 +588,9 @@ int rt_task_resume(RT_TASK *task)
+>   *
+>   * Rescheduling: always if @a task is NULL, and possible if the
+>   * deleted task is currently running into a safe section.
+> + *
+> + * @note A task that was successfully joined via rt_task_join() must not be
+> + * explicitly deleted afterwards.
+>   */
 
-> at 400us (i reckon this is nothing extra demanding from atom @1.6G)
+Should not we document the fact that a task which has been successfully
+deleted must be joined (in the process where it is running)? I seem to
+remember that being the subject of a discussion...
 
-
-> thread_task:2651 peak rt jitter -18470[ns], tsc delta 697450
->=20
->=20
-> I must say it is 4 - 5 times worse if compared to rtai 3.7 / 2.6.27.19
-> UP.
->=20
-> I use now xenomai 2.5.4 with adeos 2.2-06 patch for same 2.6.27 kernel
-> to make these comparisons more reliable.
->=20
->=20
-> Can i do something with this ?
-
-Ok. I had read that you had 400us jitter, this would have been pathologic=
-al.
-
-But 10us or 20us jitter on an ATOM is not.
-
-The jitter on an idle system is not really significant, only the worst
-case under several hours of heavy load is really significant.
-
---=20
+-- 
 					    Gilles.
-
 
