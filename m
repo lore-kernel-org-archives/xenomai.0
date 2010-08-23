@@ -1,23 +1,14 @@
-Message-ID: <4C71B41E.6020006@domain.hid>
-Date: Mon, 23 Aug 2010 01:34:54 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4C72403E.4000507@domain.hid>
+Date: Mon, 23 Aug 2010 11:32:46 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <1282047938.5255.89.camel@domain.hid>	
-	<4C6B146D.9010004@domain.hid>	<1282126974.5255.262.camel@domain.hid>	
-	<4C6BBD62.3050907@domain.hid>	<1282131617.5255.286.camel@domain.hid>	
-	<4C6BCB51.4010805@domain.hid>	<1282133876.5255.296.camel@domain.hid>	
-	<4C6BD403.4030902@domain.hid>	<1282136147.5255.306.camel@domain.hid>	
-	<4C6BE297.4060706@domain.hid>	<1282140262.5255.313.camel@domain.hid>	
-	<4C6BE9D3.1080907@domain.hid>	<1282141537.5255.315.camel@domain.hid>	
-	<4C6BEE9B.1080000@domain.hid>	<1282144162.5255.325.camel@domain.hid>	
-	<4C6BF8B1.8080206@domain.hid>	<1282297638.5255.373.camel@domain.hid>	
-	<4C6E50C1.9040700@domain.hid>	<1282319427.5255.400.camel@domain.hid>	
-	<4C70079D.4010502@domain.hid> <4C700E8A.8010305@domain.hid>
-	<1282490032.1961.31.camel@domain.hid>
-In-Reply-To: <1282490032.1961.31.camel@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+References: <E1OmSun-0000pX-9o@domain.hid> <4C6FA132.9030308@domain.hid>
+	<4C6FA32A.40101@domain.hid>
+In-Reply-To: <4C6FA32A.40101@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] xenomai 2.5.3/native, kernel 2.6.31.8 and fork()
+Subject: Re: [Xenomai-core] [Xenomai-git] Jan Kiszka : native: Improve
+ documentation of rt_task_join and rt_task_delete
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -26,40 +17,54 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-Philippe Gerum wrote:
-> On Sat, 2010-08-21 at 19:36 +0200, Gilles Chanteperdrix wrote:
->> Gilles Chanteperdrix wrote:
->>> There are other issues to consider, such as detecting that a private
->>> mutex created in the father continues to be used in the child.
->> A simple fix for this would be to keep a list of mutexes in the native
->> and posix skin, and nullify their magic/opaque pointer at fork. The
->> problem is that there is no more room in pthread_mutex_t, so we will
->> have to malloc at pthread_mutex_init time.
+Jan Kiszka wrote:
+> Am 21.08.2010 11:49, Gilles Chanteperdrix wrote:
+>> GIT version control wrote:
+>>> Module: xenomai-jki
+>>> Branch: for-upstream
+>>> Commit: df5646768a089b38343dfe676912006616bde5c2
+>>> URL:    http://git.xenomai.org/?p=xenomai-jki.git;a=commit;h=df5646768a089b38343dfe676912006616bde5c2
+>>>
+>>> Author: Jan Kiszka <jan.kiszka@domain.hid>
+>>> Date:   Fri Aug 20 16:22:55 2010 +0200
+>>>
+>>> native: Improve documentation of rt_task_join and rt_task_delete
+>>>
+>>> Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
+>>>
+>>> ---
+>>>
+>>>  ksrc/skins/native/task.c |   15 +++++++++++++--
+>>>  1 files changed, 13 insertions(+), 2 deletions(-)
+>>>
+>>> diff --git a/ksrc/skins/native/task.c b/ksrc/skins/native/task.c
+>>> index 6d2472e..73fee5e 100644
+>>> --- a/ksrc/skins/native/task.c
+>>> +++ b/ksrc/skins/native/task.c
+>>> @@ -588,6 +588,9 @@ int rt_task_resume(RT_TASK *task)
+>>>   *
+>>>   * Rescheduling: always if @a task is NULL, and possible if the
+>>>   * deleted task is currently running into a safe section.
+>>> + *
+>>> + * @note A task that was successfully joined via rt_task_join() must not be
+>>> + * explicitly deleted afterwards.
+>>>   */
+>> Should not we document the fact that a task which has been successfully
+>> deleted must be joined (in the process where it is running)? I seem to
+>> remember that being the subject of a discussion...
 >>
 > 
-> Please simply issue a warning as you suggested once when a potentially
-> dangerous situation arises upon fork regarding mutexes. Piling up
-> non-trivial code to prevent an obviously broken application from
-> misbehaving even more is way too expensive if such code could introduce
-> more overhead, and potentially secondary mode switches.
-> 
-> IIUC, we are discussing about apps using in a child context some private
-> mutexes which were initially created in the parent context, right? If
-> so, then a warning upon detection should suffice to have the author go
-> back to the drawing board, and optionally run "man pthread_mutex_init"
-> as well.
+> We already do when describing T_JOINABLE, but we should indeed repeat
+> this here as it may not be obvious. Will update the patch.
 
-Ok. Detection is not that easy with fastsyncs, so here what I set up to do:
-- for mutexes going through the syscall path, return EPERM (the
-documented error for that case), and print a message inn the console.
-- for mutexes going through fastsync, cause a segmentation fault to kill
-the application by setting up an inaccessible mapping where the private
-heap was, this is better than potential silent memory corruption (the
-current situation). But needs be documented.
+Update pushed, for-upstream head is now 95359c1.
+
+Jan
 
 -- 
-					    Gilles.
+Siemens AG, Corporate Technology, CT T DE IT 1
+Corporate Competence Center Embedded Linux
 
