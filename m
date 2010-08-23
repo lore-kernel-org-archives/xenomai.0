@@ -1,13 +1,13 @@
-Message-ID: <4C723497.1060501@domain.hid>
-Date: Mon, 23 Aug 2010 10:43:03 +0200
+Message-ID: <4C723504.5020809@domain.hid>
+Date: Mon, 23 Aug 2010 10:44:52 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <AANLkTinWHLk2fc0qMygBOmgYpAAh88FbUAUFDq2DPRKL@mail.gmail.com>
-	<4C7232E6.8070709@domain.hid>
-In-Reply-To: <4C7232E6.8070709@domain.hid>
+References: <AANLkTi=2kNE2KznfnY0voTbWMFqy5_LESXswjJ25O-hk@domain.hid>
+	<4C6C019D.1040406@domain.hid>
+In-Reply-To: <4C6C019D.1040406@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Xenomai patch for AT91ARM9200
+Subject: Re: [Xenomai-help] Timing calculation
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -22,21 +22,63 @@ Cc: xenomai@xenomai.org
 
 Gilles Chanteperdrix wrote:
 > Prakash A S wrote:
->> Dear All,
->>          Now I am working on AT91RM9200 based processor ARM board with Linux
->> 2.6.20 kernel and also planing to port Xenomai on this board. I preferred
->> xenomai-2.4.0. Because it has adeos-ipipe patch for 2.6.20 kernel. However I
->> found that there is an separate ipipe patch available for AT91 processor in
->> xenomai-2.3.2. Do I need any similar patch for xenomai-2.4.0 or
->> adeos-ipipe-2.6.20-arm-1.802.patch is enough?.
+>>     prakash srinivasan wrote:
+>>     >>>>> printf(TOTAL LOOP TIMING=%ld us\n",
+>>     >>>>> (long)((rt_timer_ticks2ns(end-start))/1000);
+>>     >>>> What does: printf(TOTAL LOOP TIMING=%lld us\n",
+>>     >>>> rt_timer_ticks2ns(end-start)/1000); report.
+>>     >>> TOTAL LOOP TIMING = 5377070 us In this case, the (unsigned)
+>>     >>> (long) (long)tart returns 1069623206 and (unsigned) (long)
+>>     >>> (long)end returns 2151726697
+>>     >> Are you happy with that result? Did really pass approx. 5 seconds
+>>     > between start and end?
 >>
->> I beleive the steps will be like,
->> linux-2.6.20+2.6.20-at91.patch.gz+adeos-ipipe-2.6.20-arm-1.802.patch
+>>     Could you format your mails correctly to make them readable? Use text,
+>>     not HTML, truncate at 72 characters, and use > as a quotation mark,
+>>     meaning that one '>' is the sign that you quote someone, two '>' is you
+>>     quoting someone who quoted someone else, etc... I am really sorry to
+>>     have to tell you about this, this is really basic knowledge of the
+>>     netiquette, we should not have to tell you about it.
+>>
+>>     > Definitely not and I am not confident about this output. Coz in this
+>>     > loop period I am sending datas from client to the server. Visibly
+>>     > noted that the server is getting all the datas within a second. So I
+>>     > am not sure the 5 sec is the right output. I just like to know all
+>>     > the above conversions are correct? and is it ok that the start ticks
+>>     > can be more than the end ticks?
+>>
+>>     The result of rt_timer_read is a long long, so, if you cast it to an
+>>     unsigned, you loose the most significant bits. So, the result is totally
+>>     meaningless. This again, is basic knowledge of the C language, we should
+>>     not have to explain.
+>>
+>>     Your bug report is quite insufficient, we do not even know what version
+>>     of Xenomai you use, maybe you are reporting a bug which has been solved
+>>     a long time ago. Neither do we know what version of Linux and of the
+>>     Adoes patch you use, or the contents of your .config file. We do not
+>>     have a self-contained example that we can run to try and reproduce your
+>>     issue.
+>>
+>>     So if you want some answers, please give us the means to answer you.
+>>
+>>
+>> As an community person I AGREED with what you pointed out. My main mistake was I subscribed the
+>>
+>> mailing list with an useless mailID. Now I changed my mail ID. Surely you will get the proper 
+>> quote in future. In between the mail change, I lost the continuation for this topic and did not
+>> get this reply mail to my new mail ID. Simply copy and pasted the last mail from the archive.  
 > 
-> You did it again: as documented in ksrc/arch/arm/patches/README,
+> We still receive HTML.
+> 
+>> Obviously I should improve my C language skills.
+>>
+>> I am using linux kernel 2.6.30.8 on Ubuntu 8.04,
+>> Adeos-ipipe-2.6.30.8-x86-2.4-09.patch and Xenomai-2.5.3
+> 
+> What about the kernel configuration and self-contained test exhibiting
+> the behaviour you do not understand?
 
-And in the FAQ too:
-http://www.xenomai.org/index.php/FAQs#Which_I-pipe_patch_should_I_use_with_Xenomai_version_X_on_platform_Y.3F
+Prakash, ping?
 
 -- 
 					    Gilles.
