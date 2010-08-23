@@ -1,14 +1,20 @@
-Message-ID: <4C7260B4.4070100@domain.hid>
-Date: Mon, 23 Aug 2010 13:51:16 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4C7262A4.5030607@domain.hid>
+Date: Mon, 23 Aug 2010 13:59:32 +0200
+From: Stefan Kisdaroczi <kisda@domain.hid>
 MIME-Version: 1.0
-References: <AANLkTikjB1vF+0Ldnc_80_+TJeG2MKo5i42hE5Ah3nj9@domain.hid>	<4C6BD747.1090304@domain.hid>	<AANLkTimiofme9duMMyiqe3snHmGxWFxGf7AJDaaAGE6b@domain.hid>	<AANLkTinYt1Gj+Vsm1NXCXyDPa92KS+DMFVhpNcVvYjgw@domain.hid>	<4C6D4BDE.1050605@domain.hid>
-	<AANLkTi=-7yEyDLn1tBmzkxMK+=Tr4F-7XNGdtzoespod@domain.hid>
-In-Reply-To: <AANLkTi=-7yEyDLn1tBmzkxMK+=Tr4F-7XNGdtzoespod@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] kernel compilation problem with a Cortex A8,
- AM3517 EVM
+References: <4C45539B.70204@domain.hid> <4C6932E8.7050701@domain.hid>	
+	<4C694AB3.8050407@domain.hid> <4C698E16.5050806@domain.hid>	
+	<1282040830.1730.232.camel@domain.hid>	
+	<4C6ACA50.3080108@domain.hid>	
+	<1282120049.1730.304.camel@domain.hid>	
+	<4C6BCDE5.6050607@domain.hid> <4C6BE610.7020507@domain.hid>
+	<1282498940.1961.43.camel@domain.hid>
+In-Reply-To: <1282498940.1961.43.camel@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig6F9DDF7D8447C341D1D04007"
+Subject: Re: [Xenomai-help] kernel 2.6.32.11 with xenomai 2.5.3 fails to
+ boot on ubuntu lucid system
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,64 +24,79 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: marc doz <doz.marc@domain.hid>
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: xenomai@xenomai.org
 
-marc doz wrote:
-> Hi,
-> I don't know where do you from my vendor kernel but it seems that it
-> is a 2.6.32 kernel.
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig6F9DDF7D8447C341D1D04007
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-I have no doubt that it is a 2.6.32 kernel. The question is to know
-whether it is a vanilla kernel, i.e. coming from kernel.org. Since in
-your first post the kernel directory was named linux_0030 or something
-like that, I assumed it was not. But in any case it does not change
-anything since the I-pipe patch for arm does not exist for linux-2.6.32
-either.
+On 22.08.2010 19:42, Philippe Gerum wrote:
+> On Wed, 2010-08-18 at 15:54 +0200, Stefan Kisdaroczi wrote:
+>  =20
+>> On 18.08.2010 14:11, Stefan Kisdaroczi wrote:
+>>    =20
+>>> [...]
+>>> hi philippe, hope this helps:
+>>>
+>>>
+>>> (gdb) bt
+>>> #0  doublefault_fn () at arch/x86/kernel/doublefault_32.c:47
+>>> #1  0x00000000 in ?? ()
+>>>
+>>> I set two breakpoints:
+>>> 1) do_test_wp_bit()
+>>> 2) zap_low_mappings()
+>>>
+>>> The second breakpoint is never reached, the fault seems to happen in
+>>> do_test_wp_bit().
+>>> arch/x86/mm/init_32.c : mem_init() -> test_wp_bit() -> do_test_wp_bit=
+()
+>>>  =20
+>>>      =20
+>> If I got it right, do_test_wp_bit() should fault, and then
+>> ipipe_handle_exception gets called.
+>> At this point, ipipe_init_early() was called, but ipipe_init() not.
+>> So, I currently guess the bug is somewhere in ipipe_handle_exception()=
+=2E
+>>    =20
+> As mentioned below, you were right:
+> http://git.denx.de/?p=3Dipipe-2.6.git;a=3Dcommit;h=3Dd7ed9ab34a265d6486=
+504d20ee794548ce6011d3
+>
+> Your assumption that the bootloader was involved in this bug was correc=
+t
+> as well. This is the reason why I could not reproduce the issue over
+> kvm, I was bypassing the installed bootloader, passing -kernel to qemu
+> to directly load an external image, so no IRQ pending on entry to the
+> kernel, ever...
+>
+> Thanks for your help.
+>
+>  =20
 
-> This is my first time with git ! so I will need that you valid my
-> method, please.
-> 
-> I test with these commands :
-> 
-> #git clone git://git.denx.de/ipipe-2.6.git
-> #git checkout -branch -b ipipe-2.6.32-noarch origin/ipipe-2.6.32-noarch
-> #git checkout -b vendor
-> #cp -vR ../TI_linux/* ./
+Tested with 2.6.32.20 and debian squeeze, boots fine, laptop and virtual
+machine.
+Thanks Philippe.
 
-It will work better if the branch "vendor" comes from the vendor git.
+Stefan
 
-> #git add *
-> #git commit
-> #git checkout ipipe-2.6.32-noarch
-> #git merge vendor
 
-Ill-chosen name. Since this is the branch where you will make the merge,
-you should call it, say, vendor+ipipe-2.6.32-arm. Having a branch called
-ipipe-2.6.32-noarch which in fact contains the vendor kernel patches with
 
-> --> no error, no warning
+--------------enig6F9DDF7D8447C341D1D04007
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-That was expected.
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.10 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
-> #git checkout -branch -b ipipe-2.6.31-noarch origin/ipipe-2.6.31-noarch
-> #git checkout -branch -b ipipe-2.6.31-arm origin/ipipe-2.6.31-arm
+iEYEARECAAYFAkxyYq4ACgkQIPTw9rIdn6qBjACfVvCuKb2SoaoHcHcbiBhTCaw9
+1EsAnjh9uDzKAOo2IqjolKD9LB0LSIP8
+=B12W
+-----END PGP SIGNATURE-----
 
-You do not really need to checkout this branches. All you need is to
-generate the patch with:
-git diff origin/ipipe-2.6.31-noarch origin/ipipe-2.6.31-arm
-
-> #git checkout ipipe-2.6.32-noarch
-> #cat ../result.patch | patch -p1
-> #find . -name '*.reji'
-
-The rejects are expected, you are applying changes for a 2.6.31 kernel
-to a 2.6.32 kernel, vendor-specific or not, this makes rejects. Anyway,
-maybe you will get less rejects if you use 2.6.33 instead of 2.6.31.
-
-Rejects in entry-*.S are no good sign, and will be hard to fix (without
-more knowledge of the Adeos patch). Please try 2.6.33.
-
--- 
-					    Gilles.
+--------------enig6F9DDF7D8447C341D1D04007--
 
