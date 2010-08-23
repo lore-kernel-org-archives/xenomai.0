@@ -1,29 +1,11 @@
-From: Krzysztof =?UTF-8?Q?B=C5=82aszkowski?= <kb@domain.hid>
-In-Reply-To: <4C6BFFB2.8020002@domain.hid>
-References: <1282047938.5255.89.camel@domain.hid>
-	<4C6B146D.9010004@domain.hid>
-	<1282126974.5255.262.camel@domain.hid>
-	<4C6BBD62.3050907@domain.hid>
-	<1282131617.5255.286.camel@domain.hid>
-	<4C6BCB51.4010805@domain.hid>
-	<1282133876.5255.296.camel@domain.hid>
-	<4C6BD403.4030902@domain.hid>
-	<1282136147.5255.306.camel@domain.hid>
-	<4C6BE297.4060706@domain.hid>
-	<1282140262.5255.313.camel@domain.hid>
-	<4C6BE9D3.1080907@domain.hid>
-	<1282141537.5255.315.camel@domain.hid>
-	<4C6BEE9B.1080000@domain.hid>
-	<1282144162.5255.325.camel@domain.hid>
-	<4C6BF8B1.8080206@domain.hid>
-	<1282144563.5255.331.camel@domain.hid>
-	<4C6BFFB2.8020002@domain.hid>
-Content-Type: text/plain; charset="utf-8"
-Date: Wed, 18 Aug 2010 18:30:52 +0200
-Message-Id: <1282149052.5255.332.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai-core] xenomai 2.5.3/native, kernel 2.6.31.8 and fork()
+MIME-Version: 1.0
+In-Reply-To: <AANLkTikhNX=0q8M8j1TU1DpM6_EtghX8A0UQ37P6S6Vp@domain.hid>
+References: <AANLkTikhNX=0q8M8j1TU1DpM6_EtghX8A0UQ37P6S6Vp@domain.hid>
+Date: Mon, 23 Aug 2010 07:38:40 -0300
+Message-ID: <AANLkTikCehBXnp6cwks1QQmRwhxe5Hd=McupyEz+wKPC@mail.gmail.com>
+From: Rodolfo Oliveira <rodolforomao@domain.hid>
+Content-Type: multipart/alternative; boundary=0015175cb83874b2fa048e7b40ba
+Subject: [Xenomai-core] problem - eldk 4.2 - ppc
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -32,74 +14,148 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Wed, 2010-08-18 at 17:43 +0200, Gilles Chanteperdrix wrote:
-> Krzysztof Błaszkowski wrote:
-> > On Wed, 2010-08-18 at 17:13 +0200, Gilles Chanteperdrix wrote:
-> >> Krzysztof Błaszkowski wrote:
-> >>> On Wed, 2010-08-18 at 16:30 +0200, Gilles Chanteperdrix wrote:
-> >>>> Krzysztof Błaszkowski wrote:
-> >>>>> On Wed, 2010-08-18 at 16:10 +0200, Gilles Chanteperdrix wrote:
-> >>>>>> Krzysztof Błaszkowski wrote:
-> >>>>>>> yes. i downloaded this config a while ago. need to setup new kernel
-> >>>>>>> 2.6.31.1 with xenomai. 
-> >>>>>>> is 2.5.4 suitable for this test ? 
-> >>>>>>> should i also use adeos-*.31.1-*2.4-09 patch ?
-> >>>>>> See the versions I posted in my test report yesterday. They were made
-> >>>>>> with this configuration.
-> >>>>>>
-> >>>>> ok. kernel 2.6.31.8, 2.5.4, ht will be enabled,
-> >>>>>
-> >>>>> for xenomai's configure i will pass following switches:
-> >>>>> --enable-x86-sep --enable-x86-tsc --enable-smp
-> >>>>>
-> >>>>> is this okay ?
-> >>>> Yes.
-> >>>>
-> >>> bingo !
-> >>>
-> >>> atest:~/xeno-test-254-2 # ./.try.sh 
-> >>> main:79 heap 0x401b1000
-> >>> /root/xeno-test-254-2
-> >>> main:96 [823] pid 825
-> >>> main:89
-> >>> main:90 [825] pid 0
-> >>> main:99 [823] pid 825, status 00000b00
-> >>> main:100 [823] pid 825, WIFSIGNALED 0, WIFEXITED 1, rc 11
-> >>> 0
-> >>> atest:~/xeno-test-254-2 # uname -a
-> >>> Linux atest 2.6.31.8-xeno254-smp-ht #1 SMP Wed Aug 18 17:04:00 CEST 2010
-> >>> i686 i686 i386 GNU/Linux
-> >>>
-> >>>
-> >>> my fork() test works now with kernel configured with your config.
-> >>>
-> >>> so this try proves no doubt that userland (libc, pthreads and so on)
-> >>> work.
-> >>>
-> >>> and i guess that this memory corruption which caused fork to die inside
-> >>> libc can be something specific to UP configuration. (i was thinking
-> >>> about using my config with smp this time)
-> >>>
-> >>> Thank you for sending me kernel configuration which pointed out an area
-> >>> which should be searched further.
-> >> Yes, now if you find the culprit option, it would be nice to report here
-> >> so that we can fix the I-pipe patch.
-> >>
-> > 
-> > okay. will try to dig up.
-> 
-> As a first quick test, could you try and disable CONFIG_AUDITSYSCALL ?
+--0015175cb83874b2fa048e7b40ba
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-okay. i have tried so far smp + ht but it didn't change anything.
+Hi,
+
+Today use the eldk 3.0 version in this processor MPC5200B PPC, but I want t=
+o
+upgrade the kernel to version 2.6 and eldk 4.2 with ELDK can do this more
+easily.
+The problem happens when I try to compile by running the following commands=
+:
+
+make distclean
+make clean
+make menuconfig
+make
+
+many minutes after the following error appears:
+  LD drivers / net / bonding / built-in.o
+  CC [M] drivers / net / bonding / bond_main.o
+  CC [M] drivers/net/bonding/bond_3ad.o
+  CC [M] drivers / net / bonding / bond_alb.o
+  CC [M] drivers / net / bonding / bond_sysfs.o
+  LD [M] drivers / net / bonding / bonding.o
+  LD drivers / net / can / built-in.o
+  CC [M] drivers / net / can / vcan.o
+drivers / net / can / vcan.c: In function 'vcan_setup':
+drivers / net / can / vcan.c: 207: error: implicit declaration of function
+'SET_MODULE_OWNER'
+make [3]: ** [drivers / net / can / vcan.o] Error 1
+make [2]: ** [drivers / net / can] Error 2
+make [1]: ** [drivers / net] Error 2
+make: ** [drivers] Error 2
+rodolfo @ df2684: / $ ls opt/eldk/ppc_82xx/usr/src/linux-2.6.24
+
+can anyone help me?
+
+Thanks
+
+--=20
+
+[]=B4s
 
 
-> 
 
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+Rodolfo R. de O. Neto, Eng. , MBA
+Engenheiro de computa=E7=E3o
+MBA - Governan=E7a em TI
+E-mail: rodolforomao@domain.hid
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
 
--- 
-Krzysztof Blaszkowski
+--0015175cb83874b2fa048e7b40ba
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
+<div class=3D"gmail_quote"><br><span><span style=3D"background-color: rgb(2=
+55, 255, 255);" title=3D"Boa tarde senhores,">Hi,<br>
+
+<br></span><span style=3D"background-color: rgb(255, 255, 255);" title=3D"h=
+oje uso a vers=E3o 3.0 neste no processador MPC5200B PPC, por=E9m quero atu=
+alizar o kernel para a vers=E3o 2.6 e com o eldk 4.2 consigo fazer isto mai=
+s facilmente.">Today
+ use the eldk 3.0 version in this processor MPC5200B PPC, but I want to upg=
+rade=20
+the kernel to version 2.6 and eldk 4.2 with ELDK can do this more easily.
+<br></span><span style=3D"background-color: rgb(255, 255, 255);" title=3D"O=
+ problema acontece quando eu tento compilar executando as seguintes comando=
+s:">The problem happens when I try to compile by running the following comm=
+ands:
+<br></span><span title=3D"make distclean">make distclean
+<br></span><span title=3D"make clean">make clean
+<br></span><span title=3D"make menuconfig">make menuconfig
+<br></span><span title=3D"make">make
+<br>
+<br></span><span style=3D"background-color: rgb(255, 255, 255);" title=3D"m=
+uitos minutos depois aparece o seguinte erro:">many minutes after the follo=
+wing error appears:
+<br>=A0=A0</span><span style=3D"background-color: rgb(255, 255, 255);" titl=
+e=3D"LD drivers/net/bonding/built-in.o">LD drivers / net / bonding / built-=
+in.o
+<br>=A0=A0</span><span style=3D"background-color: rgb(255, 255, 255);" titl=
+e=3D"CC [M] drivers/net/bonding/bond_main.o">CC [M] drivers / net / bonding=
+ / bond_main.o
+<br>=A0=A0</span><span style=3D"background-color: rgb(255, 255, 255);" titl=
+e=3D"CC [M] drivers/net/bonding/bond_3ad.o">CC [M] drivers/net/bonding/bond=
+_3ad.o
+<br>=A0=A0</span><span style=3D"background-color: rgb(255, 255, 255);" titl=
+e=3D"CC [M] drivers/net/bonding/bond_alb.o">CC [M] drivers / net / bonding =
+/ bond_alb.o
+<br>=A0=A0</span><span style=3D"background-color: rgb(255, 255, 255);" titl=
+e=3D"CC [M] drivers/net/bonding/bond_sysfs.o">CC [M] drivers / net / bondin=
+g / bond_sysfs.o
+<br>=A0=A0</span><span title=3D"LD [M] drivers/net/bonding/bonding.o">LD [M=
+] drivers / net / bonding / bonding.o
+<br>=A0=A0</span><span title=3D"LD drivers/net/can/built-in.o">LD drivers /=
+ net / can / built-in.o
+<br>=A0=A0</span><span title=3D"CC [M] drivers/net/can/vcan.o">CC [M] drive=
+rs / net / can / vcan.o
+<br></span><span style=3D"background-color: rgb(255, 255, 255);" title=3D"d=
+rivers/net/can/vcan.c: In function &#39;vcan_setup&#39;:">drivers / net / c=
+an / vcan.c: In function &#39;vcan_setup&#39;:
+<br></span><span title=3D"drivers/net/can/vcan.c:207: error: implicit decla=
+ration of function &#39;SET_MODULE_OWNER&#39;">drivers / net / can / vcan.c=
+: 207: error: implicit declaration of function &#39;SET_MODULE_OWNER&#39;
+<br></span><span title=3D"make[3]: ** [drivers/net/can/vcan.o] Erro 1">make=
+ [3]: ** [drivers / net / can / vcan.o] Error 1
+<br></span><span title=3D"make[2]: ** [drivers/net/can] Erro 2">make [2]: *=
+* [drivers / net / can] Error 2
+<br></span><span title=3D"make[1]: ** [drivers/net] Erro 2">make [1]: ** [d=
+rivers / net] Error 2
+<br></span><span style=3D"background-color: rgb(255, 255, 255);" title=3D"m=
+ake: ** [drivers] Erro 2">make: ** [drivers] Error 2
+<br></span><span style=3D"background-color: rgb(255, 255, 255);" title=3D"r=
+odolfo@domain.hid$ ls">rodolfo @ df2684=
+: / $ ls opt/eldk/ppc_82xx/usr/src/linux-2.6.24
+<br>
+<br></span><span title=3D"algu=E9m pode me ajudar?">can anyone help me?
+<br>
+<br></span><span title=3D"Obrigado">Thanks
+</span></span><br clear=3D"all"><br>-- <br><p><span style=3D"font-size: 11p=
+t; color: rgb(31, 73, 125);">[]=B4s</span></p>
+
+<p><span style=3D"font-size: 11pt; color: rgb(31, 73, 125);"></span></p>
+
+<p><span style=3D"font-size: 11pt; color: rgb(31, 73, 125);">=A0</span></p>
+
+<p><span style=3D"font-size: 10pt; color: rgb(31, 73, 125);">=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D<br>Rodolfo R. de O. Neto, Eng. , MBA<br>
+Engenheiro de computa=E7=E3o<br>MBA - Governan=E7a em TI<br></span><span st=
+yle=3D"font-size: 10pt; color: rgb(31, 73, 125);">E-mail: <a href=3D"mailto=
+:rodolforomao@domain.hid" target=3D"_blank">rodolforomao@domain.hid</a></span=
+><br><span style=3D"font-size: 10pt; color: rgb(31, 73, 125);">
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=A0=A0 </span></p>
+</div>
+
+--0015175cb83874b2fa048e7b40ba--
 
