@@ -1,18 +1,21 @@
-Message-ID: <4C6BCDE5.6050607@domain.hid>
-Date: Wed, 18 Aug 2010 14:11:17 +0200
-From: Stefan Kisdaroczi <kisda@domain.hid>
 MIME-Version: 1.0
-References: <4C45539B.70204@domain.hid> <4C6932E8.7050701@domain.hid>	
-	<4C694AB3.8050407@domain.hid> <4C698E16.5050806@domain.hid>	
-	<1282040830.1730.232.camel@domain.hid>	
-	<4C6ACA50.3080108@domain.hid>
-	<1282120049.1730.304.camel@domain.hid>
-In-Reply-To: <1282120049.1730.304.camel@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig3ECC754FB6417CA5C3DB9298"
-Subject: Re: [Xenomai-help] kernel 2.6.32.11 with xenomai 2.5.3 fails to
- boot on ubuntu lucid system
+In-Reply-To: <4C72749A.5000506@domain.hid>
+References: <AANLkTikjB1vF+0Ldnc_80_+TJeG2MKo5i42hE5Ah3nj9@domain.hid>
+	<4C6BD747.1090304@domain.hid>
+	<AANLkTimiofme9duMMyiqe3snHmGxWFxGf7AJDaaAGE6b@domain.hid>
+	<AANLkTinYt1Gj+Vsm1NXCXyDPa92KS+DMFVhpNcVvYjgw@domain.hid>
+	<4C6D4BDE.1050605@domain.hid>
+	<AANLkTi=-7yEyDLn1tBmzkxMK+=Tr4F-7XNGdtzoespod@domain.hid>
+	<4C7260B4.4070100@domain.hid> <4C726911.6050201@domain.hid>
+	<AANLkTik4KoHd9ni1DYuUej01uh8c7X8Tb0vgqf8ou93=@mail.gmail.com>
+	<4C72749A.5000506@domain.hid>
+Date: Tue, 24 Aug 2010 15:37:15 +0200
+Message-ID: <AANLkTinAp-kyQ9DLqhaMoc9nML7PF4yOmYDXF2850d5G@mail.gmail.com>
+From: marc doz <doz.marc@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-help] kernel compilation problem with a Cortex A8,
+ AM3517 EVM
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -22,214 +25,89 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig3ECC754FB6417CA5C3DB9298
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Hi,
 
-On 18.08.2010 10:27, Philippe Gerum wrote:
-> On Tue, 2010-08-17 at 19:43 +0200, Stefan Kisdaroczi wrote:
->  =20
->> On 17.08.2010 12:27, Philippe Gerum wrote:
->>    =20
->>> On Mon, 2010-08-16 at 21:14 +0200, Theo Veenker wrote:
->>>  =20
->>>      =20
->>>> On 08/16/2010 04:26 PM, Theo Veenker wrote:
->>>>    =20
->>>>        =20
->>>>> Gilles Chanteperdrix wrote:
->>>>>      =20
->>>>>          =20
->>>>>> Theo Veenker wrote:
->>>>>>        =20
->>>>>>            =20
->>>>>>> Hi,
->>>>>>>
->>>>>>> I want to upgrade all our PC's from Ubuntu hardy to lucid and in =
-the
->>>>>>> process
->>>>>>> I'm also going from kernel 2.6.29.5 with Xenomai 2.4.8 to kernel
->>>>>>> 2.6.32.11
->>>>>>> with Xenomai 2.5.3.
->>>>>>>
->>>>>>> I first built and tested the 2.6.32.11 kernel with 2.5.3 on my ha=
-rdy
->>>>>>> system
->>>>>>> and all went fine. But the problem is it just doesn't run on the
->>>>>>> lucid distro.
->>>>>>>          =20
->>>>>>>              =20
->>>>>> This, I do not understand, the kernel does not need any support fr=
-om the
->>>>>> distribution for booting, how can the same kernel boot with one
->>>>>> distribution, and not with the other? When you say the "same kerne=
-l", do
->>>>>> you mean the exact same zImage or bzImage, or do you mean the kern=
-el
->>>>>> with the same configuration, but with a different compiler, or onl=
-y the
->>>>>> version is identical?
->>>>>>
->>>>>>        =20
->>>>>>            =20
->>>>> It is a complete mystery to me either. I compiled my kernel into a =
-deb
->>>>> package
->>>>> and installed the very same deb package on three machines:
->>>>> MSI p45 neo3 with Hardy on it -> works OK
->>>>> MSI p45 neo3 with Ludid on it -> nothing (works fine with regular k=
-ernel)
->>>>> MSI 945P with Lucid on it: -> nothing (works fine with regular kern=
-el)
->>>>>
->>>>> I'll try the suggestions posted and keep you informed.
->>>>>      =20
->>>>>          =20
->>>> OK. Connected a terminal to catch early kernel messages. Still no ou=
-tput
->>>> unfortunately (with the regular kernel I do get output on the termin=
-al,
->>>> so the connection works).
->>>>
->>>> Meanwhile also built and tested kernel 2.6.32.15 + xenomai 2.5.4. St=
-ill nothing.
->>>> I'm clueless. I'm running Xenomai for years on dozens of systems and=
- I've
->>>> never run into problems like this. I think I'll have to sit down and=
- take a
->>>> close look at what I'm doing. I've always built my kernels using mak=
-e-kpkg,
->>>> maybe that somehow introduces a problem here. I'll try without it.
->>>>
->>>> (unfortunately/luckily I have to work from home for a few days so I =
-can't
->>>> get to the test system until later this week)
->>>>    =20
->>>>        =20
->>> I failed to reproduce the issue yet, but it very much looks like an
->>> I-pipe bug. Could you try the following config variants when time
->>> allows:
->>>  =20
->>>      =20
->> I installed the kernel (2.6.32.15 2.5.4 x86 32bit) which is working on=
+You are right !  The texas kernel comes from this repository :
+http://git.kernel.org/?p=3Dlinux/kernel/git/tmlind/linux-omap-2.6.git;a=3Ds=
+hortlog;h=3Drefs/heads/pm
+Ti gives also a TI patch to apply on this kernel.
+This is a 2.6.32 kernel. Actualy, I work with a ipipe patch for 2.6.33
+kernel  but I get compilation errors with this patch.
+--> I am trying to get the a good ipipe patch for this kernel.
 
->> my laptop in a kvm machine.
->> In the virtual machine the kernel never starts and hangs.
->> I attached gdb to kvm and according to the cpu registers and system.ma=
-p
->> it hangs in 'doublefault_fn'. As I'm not really familiar with gdb i'm
->> thankful if someone has a hint how to proceed. Thanks
->>    =20
-> If you could ask for a backtrace ("bt" command) in gdb once attached to=
+This repository contains also a 2.6.31 kernel and I have got the TI
+patch corresponding to this kernel (old TI delivery)
+I patch with  adeos-ipipe-2.6.31-arm-1.16-02.patch. I have got 2 rej
+file. They are easy to solve.
+arch/arm/mach-omap2/timer-gp.c.rej
+arch/arm/mach-omap2/irq.c.rej
+--> This kernel compiles without error and I am testing this solution
+on my target
 
-> the hanged kernel, and post the output there, that would be great.
->  =20
+Thank you for your patience and the  lesson with git
 
-hi philippe, hope this helps:
+It seems that kernel for my card is not a vanilla kernel and it is not
+compatible to adeos/ipipe patch but I will try to continue.
 
-(gdb) bt
-#0  doublefault_fn () at arch/x86/kernel/doublefault_32.c:47
-#1  0x00000000 in ?? ()
+l will keep you updated
 
-I set two breakpoints:
-1) do_test_wp_bit()
-2) zap_low_mappings()
+best regards,
+Marc
 
-The second breakpoint is never reached, the fault seems to happen in
-do_test_wp_bit().
-arch/x86/mm/init_32.c : mem_init() -> test_wp_bit() -> do_test_wp_bit()
-
-Breakpoint 1, do_test_wp_bit () at arch/x86/mm/init_32.c:981
-981             __asm__ __volatile__(
-(gdb) info registers
-eax            0xffdff000       -2101248
-ecx            0x7fc    2044
-edx            0x13e8025        20873253
-ebx            0xff7fe000       -8396800
-esp            0xc1345fc0       0xc1345fc0
-ebp            0x3830   0x3830
-esi            0x160    352
-edi            0x48d    1165
-eip            0xc101a308       0xc101a308 <do_test_wp_bit>
-eflags         0x2      [ ]
-cs             0x60     96
-ss             0x68     104
-ds             0x7b     123
-es             0x7b     123
-fs             0xd8     216
-gs             0x0      0
-
-> Meanwhile, I tried to reproduce the issue in kvm with no luck so far.
-> Aside of timing issues making the boot over kvm quite shaky and most of=
-
-> the time impossible with the APIC enabled, using a legacy 8254 mode
-> boots but never hangs. Pure emulation with -no-kvm or enabling kvm on
-> the host does not make a difference. I've been trying with a 32bit gues=
-t
-> over a 64bit host, and both host and guest in 32bit mode to no avail so=
-
-> far (QEMU PC emulator version 0.12.3 (qemu-kvm-0.12.3)).
+2010/8/23 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>:
+> marc doz wrote:
+>> 03.00.00.05 is version of the SDK. =A0TI said that their kernel is the
+>> result of patches that were applied to the open source kernel 2.6.32 .
+>> But I find some differences with the vanilia kernel.
 >
-> I had a bit more luck on real hw though; a m65 Dell workstation (core2
-> duo) seems to be kind enough to break during early boot. The failure
-> ratio is variable, but 1 crash over 3-5 boots is common; sometimes it
-> even crashes several times in a row. The bad news is that no rs232 is
-> available from this machine, and the crash happens way to early to coun=
-t
-> on any usb<->serial converter to get any debug output; so this is going=
-
-> to take some time to nail down the bug on this hw. I don't expect
-> netconsole to help me in any way either, for the same reason. Here are
-> some more information I could get though:
+> I don't get it, if patches are applied, then it is not a vanilla kernel.
+> Period.
 >
-> - CONFIG_SMP, CONFIG_*_APIC/IO_APIC do not make any difference. I still=
-
-> have a kernel crashing against the wall in plain, basic uniprocessor
-> mode (i.e. 8254 legacy IRQ and timing).
+>> I don't get response from TI about this subject ... I'm waiting informat=
+ion.
+>> I don't access to the vendor git ...
 >
-> - The very same kernel image does not break when booted via tftp here.
-> It really seems to need a boot of the kernel image from the hard drive
-> to get the issue. However, having the rootfs over NFS or on the hdd doe=
-s
-> not seem to make any difference. This could be the sign of a mishandled=
-
-> early access fault, which would be confirmed by your trace showing that=
-
-> the double fault handler is called.
+> I doubt that, TI git repositories are public.
 >
-> - CONFIG_IPIPE introduces the issue alone; no need for CONFIG_XENOMAI.
+>>
+>> I restarted with your advices :
+>>
+>> #git clone git://git.denx.de/ipipe-2.6.git
+>> #git checkout -branch -b ipipe-2.6.32-noarch origin/ipipe-2.6.32-noarch
+>> #git checkout -b vendor
+>> #rm -rf
+>> #cp -vR ../TI_linux/* ./
 >
-> Since you are lucky enough to reproduce the bug over kvm, could you
-> confirm my findings on your setup? i.e. that CONFIG_SMP, CONFIG_*APIC*
-> and CONFIG_XENOMAI are not involved in this?
+>> #git add *
 >
-> PS: At this point, I think this bug only occurs in 32bit mode, but this=
-
-> has to be verified.
+> Still not good. You have to git rm the files which no longer exist.
 >
-> TIA,
+>> #git commit
+>> #git checkout ipipe-2.6.32-noarch
+>> #git merge vendor
+>> #git branch -m ipipe-2.6.32-noarch vendor+ipipe-2.6.32-noarch
+>> #git diff origin/ipipe-2.6.33-noarch origin/ipipe-2.6.33-arm > ../result=
+.patch
+>> #cat ../result.patch | patch -p1
+>> #find ./ -name '*.rej'
+>>
+>> ./init/main.c.rej
+>> ./kernel/ipipe/core.c.rej
+>> ./arch/arm/vfp/vfpmodule.c.rej
+>> ./arch/arm/plat-omap/gpio.c.rej
+>> ./arch/arm/mach-mx25/devices.c.rej
+>> ./include/linux/ipipe.h.rej
+>> ./include/linux/ipipe_percpu.h.rej
+>> ./include/linux/ipipe_base.h.rej
+>>
+>> It seem easier with 2.6.33. I will try to resolve manualy these rejectfi=
+le.
 >
->  =20
-
-
-
---------------enig3ECC754FB6417CA5C3DB9298
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.10 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
-
-iEYEARECAAYFAkxrze0ACgkQIPTw9rIdn6rggwCfTBGXpRcqKkY57CYzIqfExmIb
-qaIAnjJZ6i03o+RLOvCwY34yKHLB7gus
-=MVj5
------END PGP SIGNATURE-----
-
---------------enig3ECC754FB6417CA5C3DB9298--
+> --
+> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
+=A0 =A0 =A0 =A0Gilles.
+>
 
