@@ -1,12 +1,11 @@
-Date: Tue, 24 Aug 2010 22:36:39 -0400
-From: Edward Hoffman <quantalgo@domain.hid>
-In-reply-to: <4C73EC62.80703@domain.hid>
-Message-id: <1282703799.2170.4.camel@domain.hid>
-MIME-version: 1.0
-Content-type: text/plain; charset=us-ascii
-Content-transfer-encoding: 7BIT
-References: <4C73EC62.80703@domain.hid>
-Subject: Re: [Xenomai-help] [RFT] ipipe patch for 2.6.35.3-x86
+MIME-Version: 1.0
+In-Reply-To: <AANLkTikeCvjxZW5xjxMKf3atZO-A=t7AFDCr4oRtHoVz@domain.hid>
+References: <AANLkTikeCvjxZW5xjxMKf3atZO-A=t7AFDCr4oRtHoVz@domain.hid>
+Date: Wed, 25 Aug 2010 09:46:10 +0530
+Message-ID: <AANLkTikVVWzzq0H=GxBi_Wu2=SQiC74e8nR1E5DdYc6a@domain.hid>
+From: Prakash A S <asprakash83@domain.hid>
+Content-Type: multipart/alternative; boundary=00504502d6dd3a8a54048e9e2433
+Subject: Re: [Xenomai-help] Xenomai on intel core i7
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,36 +15,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>, adeos-main <adeos-main@gna.org>
+To: Gajamohan Mohanarajah <gajamohan.m@domain.hid>
+Cc: xenomai@xenomai.org
 
+--00504502d6dd3a8a54048e9e2433
+Content-Type: text/plain; charset=ISO-8859-1
 
-I do not have a git repository setup.  Where can I download a version of
-the patch that to put in the xenomai-2.5.4 patches directory?
+On Wed, Aug 25, 2010 at 3:08 AM, Gajamohan Mohanarajah <
+gajamohan.m@domain.hid> wrote:
 
-I will then rebuild the 2.6.35.3 32-bit kernel and provide you with
-feedback.
-
-RSVP.
-
-Ed
-
-On Tue, 2010-08-24 at 17:59 +0200, Jan Kiszka wrote:
 > Hi,
-> 
-> just uploaded a forward port of the 2.6.34 ipipe patch for x86 to latest
-> stable 2.6.35.3. It boots and runs fine here in 64-bit mode with Xenomai
-> head, but I only ran light tests so far. Anyone interested in upgrading
-> the host kernel (I think I read some request recently) is welcome to
-> give it a try and report results back (specifically on 32 bit as that is
-> a bit out of focus for me ATM). You can download the full git tree from
-> 
-> 	git://git.kiszka.org/ipipe-2.6.git queues/2.6.35-x86
-> 	(alternatively also via http://)
-> 
-> Looking forward to feedback,
-> Jan
-> 
+>
+> Is there any problems when using Xenomai on an i7 (-880 / Dell
+> Precision T1500).
+> Any tips/suggestions/experiences are most welcome.
+>
 
+I am using the same processor. Its working fine.
 
+-prakash
+
+--00504502d6dd3a8a54048e9e2433
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+<br><br><div class=3D"gmail_quote">On Wed, Aug 25, 2010 at 3:08 AM, Gajamoh=
+an Mohanarajah <span dir=3D"ltr">&lt;<a href=3D"mailto:gajamohan.m@domain.hid=
+m">gajamohan.m@domain.hid</a>&gt;</span> wrote:<br><blockquote class=3D"gmai=
+l_quote" style=3D"border-left: 1px solid rgb(204, 204, 204); margin: 0pt 0p=
+t 0pt 0.8ex; padding-left: 1ex;">
+Hi,<br>
+<br>
+Is there any problems when using Xenomai on an i7 (-880 / Dell<br>
+Precision T1500).<br>
+Any tips/suggestions/experiences are most welcome. <br></blockquote><div><b=
+r></div></div>I am using the same processor. Its working fine.<br><br>-prak=
+ash<br>
+
+--00504502d6dd3a8a54048e9e2433--
 
