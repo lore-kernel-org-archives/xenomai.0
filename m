@@ -1,13 +1,13 @@
-Message-ID: <4C6BD5FD.5000005@domain.hid>
-Date: Wed, 18 Aug 2010 14:45:49 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <AANLkTikjB1vF+0Ldnc_80_+TJeG2MKo5i42hE5Ah3nj9@domain.hid>
-In-Reply-To: <AANLkTikjB1vF+0Ldnc_80_+TJeG2MKo5i42hE5Ah3nj9@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] kernel compilation problem with a Cortex A8,
- AM3517 EVM
+From: Patrick Roberts <patrick.m.roberts@domain.hid>
+Date: Wed, 25 Aug 2010 15:01:45 +0000 (UTC)
+Message-ID: <loom.20100825T165507-176@domain.hid>
+References: <AANLkTikeCvjxZW5xjxMKf3atZO-A=t7AFDCr4oRtHoVz@domain.hid>
+	<4C743D5C.3020004@domain.hid>
+	<AANLkTinGZRptSbQPPF-NBiipx2jyt=oz_QHxfftWxMvx@domain.hid>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai-help] Xenomai on intel core i7
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,44 +17,61 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: marc doz <doz.marc@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-marc doz wrote:
-> Hi,
-> 
-> I try to compile a kernel (2.6.32 patched with
-> adeos-ipipe-2.6.33-arm-1.17-02.patch	) with xenomai.
-> The target is AM3517 Evaluation Module. It runs correctly without
-> xenomai and the compilation proccess sucess with only adeos patch
-> 
-> this is my current method :
-> 
-> 1)with xenomail :
-> ./scripts/prepare-kernel.sh
-> --linux=/home/marc/sdk/AM35x-OMAP35x-PSP-SDK/src/kernel/linux-03.00.00.05_xenomai
->  --arch=arm
-> 2)in the kernel directory :
-> make ARCH=arm CROSS_COMPILE=arm-none-linux-gnueabi- menuconfig
-> make ARCH=arm CROSS_COMPILE=arm-none-linux-gnueabi-
-> 
-> These errors occur :
-> arch/arm/xenomai/built-in.o: In function `rthal_irq_host_release':
-> /home/marc/sdk/AM35x-OMAP35x-PSP-SDK/src/kernel/linux-03.00.00.05_xenomai/arch/arm/xenomai/hal.c:193:
-> undefined reference to `__bad_lock_type'
-> arch/arm/xenomai/built-in.o: In function `rthal_irq_host_request':
-> /home/marc/sdk/AM35x-OMAP35x-PSP-SDK/src/kernel/linux-03.00.00.05_xenomai/arch/arm/xenomai/hal.c:172:
-> undefined reference to `__bad_lock_type'
-> 
-> the test is done with  xenomai-2.5.0 and  xenomai-2.5.4
-> the toolchain is a codeSourcery toolchain : arm-none-linux-gnueabi-gcc
-> (Sourcery G++ 4.3-234) 4.3.3
-> 
-> have you a suggestion ? can you suggest me a kernel version and a
-> xenomai version ?
+Gajamohan Mohanarajah <gajamohan.m <at> gmail.com> writes:
 
-Could you send me your kernel configuration?
+> 
+> I still have not tried. Just checking any known issues since the
+> processor is relatively new.
+> 
+> Best Regards,
+> Gajan
+> 
+> On 24 August 2010 23:45, Gilles Chanteperdrix
+> <gilles.chanteperdrix <at> xenomai.org> wrote:
+> > Gajamohan Mohanarajah wrote:
+> >> Hi,
+> >>
+> >> Is there any problems when using Xenomai on an i7 (-880 / Dell
+> >> Precision T1500).
+> >> Any tips/suggestions/experiences are most welcome.
+> >
+> > Why do you ask? Did you have any issue when trying it?
+> >
+> > --
+> >                                            Gilles.
+> >
+>
 
--- 
-					    Gilles.
+ I tried Xenomai on several platforms with the following results:
+ 
+1) Dell laptop with i7 processors, multicore
+    Typical latency was around 5 usec,  but at least once per second had a 
+long pass of approximately 700 usec.   Tried the xenomai SMI work around with 
+no noticable change in results.   Many iterations of kernel settings, periodic 
+high latency passes in all.  For a very good paper on i7 xenomai see:
+http://download.intel.com/design/intarch/papers/322386.pdf  they had more luck 
+than I did.
+ 
+ 
+2) Atom processor laptop
+    Typical latency around 5 usec,  this machine would run 10 minutes or so 
+with low latency but would eventually give a single sporadic high latency pass.
+ 
+3)   PC/104 atom processor
+    This was our desired target from the start the other two were just 
+experiments.
+    Very good success.  Ran four test for two hours each.  1) Non-reatime side 
+unloaded, 2) flood ping to generate interrupts, 3) cpuBurn to load processor, 
+and 4) combination of both cpuBurn and flood ping.
+ 
+Our conclusion is the results are very hardware dependent.       Can't really 
+tell you which processor to use.  I can only give you our results.
+
+Patrick Roberts
+
+
+
+
 
