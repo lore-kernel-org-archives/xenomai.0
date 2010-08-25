@@ -1,20 +1,17 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <4C74E022.8030105@domain.hid>
-References: <1278071401-13880-1-git-send-email-wolfgang.mauerer@domain.hid>
-	<1278071401-13880-2-git-send-email-wolfgang.mauerer@domain.hid>
-	<1282725843.1709.12.camel@domain.hid>
-	<4C74D948.6010906@domain.hid>
-	<1282726435.1709.22.camel@domain.hid>
-	<4C74DB38.3010104@domain.hid>
-	<1282727242.1709.26.camel@domain.hid>
-	<4C74E022.8030105@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Wed, 25 Aug 2010 11:27:23 +0200
-Message-ID: <1282728443.1709.46.camel@domain.hid>
-Mime-Version: 1.0
+Message-ID: <4C74E32D.2080101@domain.hid>
+Date: Wed, 25 Aug 2010 11:32:29 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
+MIME-Version: 1.0
+References: <1278071401-13880-1-git-send-email-wolfgang.mauerer@domain.hid>	
+	<1278071401-13880-3-git-send-email-wolfgang.mauerer@domain.hid>	
+	<1282726349.1709.21.camel@domain.hid>	
+	<4C74DB1C.3030503@domain.hid>
+	<1282728024.1709.39.camel@domain.hid>
+In-Reply-To: <1282728024.1709.39.camel@domain.hid>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Adeos-main] [PATCH 1/2] ipipe: Pass NTP-corrected time
- information from Linux to higher domains
+Subject: Re: [Adeos-main] [PATCH 2/2] ipipe: CLOCK_HOST_REALTIME:
+ x86-specific part
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -23,89 +20,47 @@ List-Post: <mailto:adeos-main@gna.org>
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: "adeos-main@gna.org" <adeos-main@gna.org>, "Mauerer,
 	Wolfgang" <wolfgang.mauerer@domain.hid>
 
-On Wed, 2010-08-25 at 11:19 +0200, Jan Kiszka wrote:
-> Philippe Gerum wrote:
-> > On Wed, 2010-08-25 at 10:58 +0200, Jan Kiszka wrote:
-> >> Philippe Gerum wrote:
-> >>> On Wed, 2010-08-25 at 10:50 +0200, Jan Kiszka wrote:
-> >>>> Philippe Gerum wrote:
-> >>>>> On Fri, 2010-07-02 at 13:50 +0200, Wolfgang Mauerer wrote:
-> >>>>>
-> >>>>> <snip>
-> >>>>>
-> >>>>>> diff --git a/include/linux/ipipe_tickdev.h b/include/linux/ipipe_tickdev.h
-> >>>>>> index 4a1cb1b..86f13e0 100644
-> >>>>>> --- a/include/linux/ipipe_tickdev.h
-> >>>>>> +++ b/include/linux/ipipe_tickdev.h
-> >>>>>> @@ -25,6 +25,7 @@
-> >>>>>>  #if defined(CONFIG_IPIPE) && defined(CONFIG_GENERIC_CLOCKEVENTS)
-> >>>>> Since we should have CONFIG_HAVE_IPIPE_HOSTRT by now, let's use it.
-> >>>> Don't get yet how this fits here.
-> >>> arch-dep would define CONFIG_HAVE_IPIPE_HOSTRT [if IPIPE]
-> >>>
-> >> Still don't see the relation to the line you cited above.
-> >>
-> > 
-> > That is because you chose to have CONFIG_IPIPE_HOSTRT and
-> > CONFIG_HAVE_IPIPE_HOSTRT. I would have only defined the latter, the way
-> > you define the former. I'm looking for the hostrt support to be compiled
-> > in if CONFIG_HAVE_IPIPE_HOSTRT is available from the arch-dep section,
-> > so we don't need CONFIG_IPIPE_HOSTRT. Generic bits may depend on HAVE_*
-> > as well.
+Philippe Gerum wrote:
+>>>> diff --git a/arch/x86/kernel/vsyscall_64.c b/arch/x86/kernel/vsyscall_64.c
+>>>> index 8cb4974..f1b90f7 100644
+>>>> --- a/arch/x86/kernel/vsyscall_64.c
+>>>> +++ b/arch/x86/kernel/vsyscall_64.c
+>>>> @@ -32,6 +32,7 @@
+>>>>  #include <linux/cpu.h>
+>>>>  #include <linux/smp.h>
+>>>>  #include <linux/notifier.h>
+>>>> +#include <linux/ipipe_tickdev.h>
+>>>>  
+>>>>  #include <asm/vsyscall.h>
+>>>>  #include <asm/pgtable.h>
+>>>> @@ -89,6 +90,11 @@ void update_vsyscall(struct timespec *wall_time, struct clocksource *clock)
+>>>>  	vsyscall_gtod_data.wall_to_monotonic = wall_to_monotonic;
+>>>>  	vsyscall_gtod_data.wall_time_coarse = __current_kernel_time();
+>>>>  	write_sequnlock_irqrestore(&vsyscall_gtod_data.lock, flags);
+>>>> +
+>>>> +#ifdef CONFIG_IPIPE_HOSTRT
+>>>> +	if (clock == &clocksource_tsc)
+>>>> +		update_ipipe_hostrt(wall_time, clock);
+>>>> +#endif
+>>>>  }
+>>> It would be nice to move the test on clock to ipipe_update_hostrt() in
+>>> order to hide all nitty-gritty details from mainline. Making the code
+>>> unconditionally compiled in removes the need to #ifdefery.
+>> This code is arch-specific while update_ipipe_hostrt is generic.
+>>
 > 
-> First of all, the code you cited _above_ is not changed by our patches,
-> so the context still puzzles me (but maybe you are referring to some
-> other place in fact).
+> We don't need #ifdefery with the conditional definition of
+> ipipe_update_hostrt() in ipipe_tickdev.h.
 
-Patch v2 says:
+You mean rely on the compiler optimizing the check away? OK, now I get it.
 
-diff --git a/kernel/ipipe/Kconfig b/kernel/ipipe/Kconfig
-index de5e6a3..bc7a00c 100644
---- a/kernel/ipipe/Kconfig
-+++ b/kernel/ipipe/Kconfig
-@@ -33,3 +33,10 @@ config IPIPE_UNMASKED_CONTEXT_SWITCH
-        bool
-        depends on IPIPE
-        default n
-+
-+config HAVE_IPIPE_HOSTRT
-+       bool
-+
-+config IPIPE_HOSTRT
-+       def_bool y
-+       depends on HAVE_IPIPE_HOSTRT && IPIPE
-
-So what's your point?
-
-> 
-> Second, CONFIG_HAVE_IPIPE_HOSTRT is designed to be set independently of
-> CONFIG_IPIPE - it's a static arch feature like all the other
-> CONFIG_HAVE_* in arch/*/Kconfig. So it takes a second, generically
-> defined CONFIG switch if the generic support also depends on
-> CONFIG_IPIPE like in this case.
-
-Which does not make any sense. We don't want to make this selectable at
-all. Mainline has CONFIG_HAVE_SYSCALL_WRAPPERS for instance, and you
-won't find any CONFIG_SYSCALL_WRAPPERS, because it makes no sense not to
-use them when the architecture _have_ them. It goes exactly the same way
-with hostrt.
-
->  That's a kernel convention we follow. If
-> you want us to do it I-pipe-specific, no problem, I just want to have
-> this pointed out.
-
-This is no ipipe-specific. It's just sensible.
-
-> 
-> Jan
-> 
+Jan
 
 -- 
-Philippe.
-
-
+Siemens AG, Corporate Technology, CT T DE IT 1
+Corporate Competence Center Embedded Linux
 
