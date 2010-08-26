@@ -1,14 +1,23 @@
 MIME-Version: 1.0
-In-Reply-To: <1282746138.1709.133.camel@domain.hid>
-References: <AANLkTikXsjX5oRTUYR3Tg_ew9-VEFVMiyTnFUGWRq9Sm@domain.hid>
-	<1282730000.1709.49.camel@domain.hid>
-	<AANLkTi=43FWOyWKFnbEdq3zjgS2s8NsVk6BJ+x-39P7G@mail.gmail.com>
-	<1282746138.1709.133.camel@domain.hid>
-Date: Thu, 26 Aug 2010 09:20:38 +0200
-Message-ID: <AANLkTikiVe_qz3BzwfPUh-1nf6UV7GG1gBZEmv5NU3+f@domain.hid>
-From: Bharath Achuta Bhat <baambekar@domain.hid>
-Content-Type: multipart/alternative; boundary=0016367fb11fcb6545048eb4d5cc
-Subject: Re: [Xenomai-help] Page-fault, switch to secondary mode
+In-Reply-To: <AANLkTin5X6wk2L2Kuk7c4EeiDo2_bk3nZspq0QJovv_L@mail.gmail.com>
+References: <AANLkTikjB1vF+0Ldnc_80_+TJeG2MKo5i42hE5Ah3nj9@domain.hid>
+	<4C6BD747.1090304@domain.hid>
+	<AANLkTimiofme9duMMyiqe3snHmGxWFxGf7AJDaaAGE6b@domain.hid>
+	<AANLkTinYt1Gj+Vsm1NXCXyDPa92KS+DMFVhpNcVvYjgw@domain.hid>
+	<4C6D4BDE.1050605@domain.hid>
+	<AANLkTi=-7yEyDLn1tBmzkxMK+=Tr4F-7XNGdtzoespod@domain.hid>
+	<4C7260B4.4070100@domain.hid> <4C726911.6050201@domain.hid>
+	<AANLkTik4KoHd9ni1DYuUej01uh8c7X8Tb0vgqf8ou93=@mail.gmail.com>
+	<4C72749A.5000506@domain.hid>
+	<AANLkTinAp-kyQ9DLqhaMoc9nML7PF4yOmYDXF2850d5G@mail.gmail.com>
+	<AANLkTin5X6wk2L2Kuk7c4EeiDo2_bk3nZspq0QJovv_L@mail.gmail.com>
+Date: Thu, 26 Aug 2010 12:24:29 +0200
+Message-ID: <AANLkTik9uyyJdPOA8uHn0pD52MqKKt1Az-i5zyuMpvQX@mail.gmail.com>
+From: marc doz <doz.marc@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-help] kernel compilation problem with a Cortex A8,
+ AM3517 EVM
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,282 +27,150 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
+To: Flavio de Castro Alves Filho <flavio.alves@domain.hid>
 Cc: xenomai@xenomai.org
 
---0016367fb11fcb6545048eb4d5cc
-Content-Type: text/plain; charset=ISO-8859-1
+Actualy, I have got 2 versions :
+1) TI SDK : OMAP35x-PSP-SDK-03.00.00.05 with a kernel 2.6.32 which
+comes from linux-omap-2.6.git with specific TI patch for EVM of AM3517
+2) TI SDK : OMAP35x-PSP-SDK-03.00.00.02 with a kernel 2.6.31-rc7 which
+comes from linux-omap-2.6.git with specific TI patch for EVM of AM3517
 
-Hi Philippe,
-Thank you for the suggestion. I will give it a try and let you know.
+I am testing solution 2 with software examples for native skin.
 
-Regards
-Bharath
+./trivial-periodic
+Time since last turn: 1000.024230 ms
+Time since last turn: 999.991461 ms
+Time since last turn: 999.991999 ms
+Time since last turn: 999.999384 ms
+Time since last turn: 999.998538 ms
+Time since last turn: 1000.005999 ms
+Time since last turn: 999.993538 ms
 
-On Wed, Aug 25, 2010 at 4:22 PM, Philippe Gerum <rpm@xenomai.org> wrote:
+./rtprint
+This triggers auto-init of rt_print for the calling thread.
+A last switch to secondary mode can occure here, but future invocations of =
+rt_pr
+401f0470: #1 Yet another RT printer - but to stderr.
+400221e0 Task 1: #1 Hello RT world!
+401f0470: #2 Yet another RT printer - but to stderr.
+401f0470: #3 Yet another RT printer - but to stderr.
 
-> On Wed, 2010-08-25 at 12:06 +0200, Bharath Achuta Bhat wrote:
-> > Hi  Philippe,
-> > It is an mmap-ed I/O memory.
+What do you think about this test ?
+can you recommend me  some measure points  ?
+
+regards,
+Marc
+
+2010/8/24 Flavio de Castro Alves Filho <flavio.alves@domain.hid>:
+> The TI patches were done for which kernel version?
 >
-> This is a TLB miss which ends up in a heavyweight call to fill the linux
-> page table entry. Try to pre-fault the I/O memory region if possible,
-> reading some bytes within the same 4k page.
+> Maybe that's the best version to work with adeos patches.
 >
-> >
-> >
-> > Regards
-> > Bharath
-> >
-> > On Wed, Aug 25, 2010 at 11:53 AM, Philippe Gerum <rpm@xenomai.org>
-> > wrote:
-> >         On Wed, 2010-08-25 at 11:12 +0200, Bharath Achuta Bhat wrote:
-> >         > Hello Xenomai experts,
-> >         >
-> >         >
-> >         > I am running a xenomai-2.5.1 patched kernel (v 2.6.30.3)
-> >         with ipipe
-> >         > version 2.7-06.
-> >         > The target is powerpc (MPC8533E).
-> >         > My application is switching to the secondary mode (I guess
-> >         because of
-> >         > a page-fault) when ntohl() is called.
-> >         > This is a libc function and I am wondering why only this
-> >         function
-> >         > (ntohl()) is causing a page-fault.
-> >
-> >
-> >         What memory are you reading from / writing to in the statement
-> >         involving
-> >         ntohl()? Is this plain RAM, or mapped I/O memory?
-> >
-> >         >
-> >         >
-> >         > Here is how the application looks like
-> >         >
-> >         >
-> >         > main ()
-> >         > {
-> >         > ...
-> >         > ...
-> >         > /* Avoids memory swapping for this program */
-> >         > mlockall(MCL_CURRENT | MCL_FUTURE);
-> >         >
-> >         >
-> >         > ......
-> >         > ......
-> >         > /* signal handlers */
-> >         > .....
-> >         > .....
-> >         > /* create communication pipes */
-> >         > rt_pipe_create(&tPipe1, .....
-> >         > rt_pipe_create(&tPipe2,.......
-> >         >
-> >         >
-> >         > /* create RT tasks */
-> >         > rt_task_create(&tTask1,.....
-> >         > rt_task_create(&tTask2,......
-> >         > ...........
-> >         > ..........
-> >         >
-> >         >
-> >         > /* start the RT tasks */
-> >         > rt_task_start(&tTask1,.....
-> >         > ..............
-> >         > ..............
-> >         >
-> >         >
-> >         > /* turn the current thread into RT function */
-> >         > ret = rt_task_shadow(NULL, "RT main function", 1, T_SUSP);
-> >         >
-> >         >
-> >         > ....
-> >         > ....
-> >         >
-> >         >
-> >         > }
-> >         >
-> >         >
-> >         > One of the rt tasks created calls ntohl() and switches to
-> >         secondary
-> >         > mode.
-> >         > Is there a way to avoid it ?
-> >         >
-> >         >
-> >         > --
-> >         > Thanks and regards
-> >         > Bharath
-> >         >
-> >
-> >         > _______________________________________________
-> >         > Xenomai-help mailing list
-> >         > Xenomai-help@domain.hid
-> >         > https://mail.gna.org/listinfo/xenomai-help
-> >
-> >         --
-> >         Philippe.
-> >
-> >
-> >
-> >
-> >
-> > --
-> > Thanks and regards
-> > Bharath
-> >
+> I use to work with git just when there is in the repository the same
+> configuration of the board that I am working on. My first tries are
+> always with the vanilla kernel from kernel.org and the patches from
+> adeos and the manufactures.
 >
-> --
-> Philippe.
+> Best regards,
 >
+> Flavio
 >
+> 2010/8/24 marc doz <doz.marc@domain.hid>:
+>> Hi,
+>>
+>> You are right ! =A0The texas kernel comes from this repository :
+>> http://git.kernel.org/?p=3Dlinux/kernel/git/tmlind/linux-omap-2.6.git;a=
+=3Dshortlog;h=3Drefs/heads/pm
+>> Ti gives also a TI patch to apply on this kernel.
+>> This is a 2.6.32 kernel. Actualy, I work with a ipipe patch for 2.6.33
+>> kernel =A0but I get compilation errors with this patch.
+>> --> I am trying to get the a good ipipe patch for this kernel.
+>>
+>> This repository contains also a 2.6.31 kernel and I have got the TI
+>> patch corresponding to this kernel (old TI delivery)
+>> I patch with =A0adeos-ipipe-2.6.31-arm-1.16-02.patch. I have got 2 rej
+>> file. They are easy to solve.
+>> arch/arm/mach-omap2/timer-gp.c.rej
+>> arch/arm/mach-omap2/irq.c.rej
+>> --> This kernel compiles without error and I am testing this solution
+>> on my target
+>>
+>> Thank you for your patience and the =A0lesson with git
+>>
+>> It seems that kernel for my card is not a vanilla kernel and it is not
+>> compatible to adeos/ipipe patch but I will try to continue.
+>>
+>> l will keep you updated
+>>
+>> best regards,
+>> Marc
+>>
+>> 2010/8/23 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>:
+>>> marc doz wrote:
+>>>> 03.00.00.05 is version of the SDK. =A0TI said that their kernel is the
+>>>> result of patches that were applied to the open source kernel 2.6.32 .
+>>>> But I find some differences with the vanilia kernel.
+>>>
+>>> I don't get it, if patches are applied, then it is not a vanilla kernel=
+.
+>>> Period.
+>>>
+>>>> I don't get response from TI about this subject ... I'm waiting inform=
+ation.
+>>>> I don't access to the vendor git ...
+>>>
+>>> I doubt that, TI git repositories are public.
+>>>
+>>>>
+>>>> I restarted with your advices :
+>>>>
+>>>> #git clone git://git.denx.de/ipipe-2.6.git
+>>>> #git checkout -branch -b ipipe-2.6.32-noarch origin/ipipe-2.6.32-noarc=
+h
+>>>> #git checkout -b vendor
+>>>> #rm -rf
+>>>> #cp -vR ../TI_linux/* ./
+>>>
+>>>> #git add *
+>>>
+>>> Still not good. You have to git rm the files which no longer exist.
+>>>
+>>>> #git commit
+>>>> #git checkout ipipe-2.6.32-noarch
+>>>> #git merge vendor
+>>>> #git branch -m ipipe-2.6.32-noarch vendor+ipipe-2.6.32-noarch
+>>>> #git diff origin/ipipe-2.6.33-noarch origin/ipipe-2.6.33-arm > ../resu=
+lt.patch
+>>>> #cat ../result.patch | patch -p1
+>>>> #find ./ -name '*.rej'
+>>>>
+>>>> ./init/main.c.rej
+>>>> ./kernel/ipipe/core.c.rej
+>>>> ./arch/arm/vfp/vfpmodule.c.rej
+>>>> ./arch/arm/plat-omap/gpio.c.rej
+>>>> ./arch/arm/mach-mx25/devices.c.rej
+>>>> ./include/linux/ipipe.h.rej
+>>>> ./include/linux/ipipe_percpu.h.rej
+>>>> ./include/linux/ipipe_base.h.rej
+>>>>
+>>>> It seem easier with 2.6.33. I will try to resolve manualy these reject=
+file.
+>>>
+>>> --
+>>> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0=
+ =A0 =A0 =A0 =A0Gilles.
+>>>
+>>
+>> _______________________________________________
+>> Xenomai-help mailing list
+>> Xenomai-help@domain.hid
+>> https://mail.gna.org/listinfo/xenomai-help
+>>
 >
-
-
--- 
-Thanks and regards
-Bharath
-
---0016367fb11fcb6545048eb4d5cc
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-
-Hi=A0Philippe,<div>Thank you for the suggestion. I will give it a try and l=
-et you know.</div><div><br></div><div>Regards</div><div>Bharath<br><br><div=
- class=3D"gmail_quote">On Wed, Aug 25, 2010 at 4:22 PM, Philippe Gerum <spa=
-n dir=3D"ltr">&lt;<a href=3D"mailto:rpm@xenomai.org">rpm@xenomai.org</a>&gt=
-;</span> wrote:<br>
-<blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1p=
-x #ccc solid;padding-left:1ex;"><div class=3D"im">On Wed, 2010-08-25 at 12:=
-06 +0200, Bharath Achuta Bhat wrote:<br>
-&gt; Hi =A0Philippe,<br>
-&gt; It is an mmap-ed I/O memory.<br>
-<br>
-</div>This is a TLB miss which ends up in a heavyweight call to fill the li=
-nux<br>
-page table entry. Try to pre-fault the I/O memory region if possible,<br>
-reading some bytes within the same 4k page.<br>
-<div><div></div><div class=3D"h5"><br>
-&gt;<br>
-&gt;<br>
-&gt; Regards<br>
-&gt; Bharath<br>
-&gt;<br>
-&gt; On Wed, Aug 25, 2010 at 11:53 AM, Philippe Gerum &lt;<a href=3D"mailto=
-:rpm@xenomai.org">rpm@xenomai.org</a>&gt;<br>
-&gt; wrote:<br>
-&gt; =A0 =A0 =A0 =A0 On Wed, 2010-08-25 at 11:12 +0200, Bharath Achuta Bhat=
- wrote:<br>
-&gt; =A0 =A0 =A0 =A0 &gt; Hello Xenomai experts,<br>
-&gt; =A0 =A0 =A0 =A0 &gt;<br>
-&gt; =A0 =A0 =A0 =A0 &gt;<br>
-&gt; =A0 =A0 =A0 =A0 &gt; I am running a xenomai-2.5.1 patched kernel (v 2.=
-6.30.3)<br>
-&gt; =A0 =A0 =A0 =A0 with ipipe<br>
-&gt; =A0 =A0 =A0 =A0 &gt; version 2.7-06.<br>
-&gt; =A0 =A0 =A0 =A0 &gt; The target is powerpc (MPC8533E).<br>
-&gt; =A0 =A0 =A0 =A0 &gt; My application is switching to the secondary mode=
- (I guess<br>
-&gt; =A0 =A0 =A0 =A0 because of<br>
-&gt; =A0 =A0 =A0 =A0 &gt; a page-fault) when ntohl() is called.<br>
-&gt; =A0 =A0 =A0 =A0 &gt; This is a libc function and I am wondering why on=
-ly this<br>
-&gt; =A0 =A0 =A0 =A0 function<br>
-&gt; =A0 =A0 =A0 =A0 &gt; (ntohl()) is causing a page-fault.<br>
-&gt;<br>
-&gt;<br>
-&gt; =A0 =A0 =A0 =A0 What memory are you reading from / writing to in the s=
-tatement<br>
-&gt; =A0 =A0 =A0 =A0 involving<br>
-&gt; =A0 =A0 =A0 =A0 ntohl()? Is this plain RAM, or mapped I/O memory?<br>
-&gt;<br>
-&gt; =A0 =A0 =A0 =A0 &gt;<br>
-&gt; =A0 =A0 =A0 =A0 &gt;<br>
-&gt; =A0 =A0 =A0 =A0 &gt; Here is how the application looks like<br>
-&gt; =A0 =A0 =A0 =A0 &gt;<br>
-&gt; =A0 =A0 =A0 =A0 &gt;<br>
-&gt; =A0 =A0 =A0 =A0 &gt; main ()<br>
-&gt; =A0 =A0 =A0 =A0 &gt; {<br>
-&gt; =A0 =A0 =A0 =A0 &gt; ...<br>
-&gt; =A0 =A0 =A0 =A0 &gt; ...<br>
-&gt; =A0 =A0 =A0 =A0 &gt; /* Avoids memory swapping for this program */<br>
-&gt; =A0 =A0 =A0 =A0 &gt; mlockall(MCL_CURRENT | MCL_FUTURE);<br>
-&gt; =A0 =A0 =A0 =A0 &gt;<br>
-&gt; =A0 =A0 =A0 =A0 &gt;<br>
-&gt; =A0 =A0 =A0 =A0 &gt; ......<br>
-&gt; =A0 =A0 =A0 =A0 &gt; ......<br>
-&gt; =A0 =A0 =A0 =A0 &gt; /* signal handlers */<br>
-&gt; =A0 =A0 =A0 =A0 &gt; .....<br>
-&gt; =A0 =A0 =A0 =A0 &gt; .....<br>
-&gt; =A0 =A0 =A0 =A0 &gt; /* create communication pipes */<br>
-&gt; =A0 =A0 =A0 =A0 &gt; rt_pipe_create(&amp;tPipe1, .....<br>
-&gt; =A0 =A0 =A0 =A0 &gt; rt_pipe_create(&amp;tPipe2,.......<br>
-&gt; =A0 =A0 =A0 =A0 &gt;<br>
-&gt; =A0 =A0 =A0 =A0 &gt;<br>
-&gt; =A0 =A0 =A0 =A0 &gt; /* create RT tasks */<br>
-&gt; =A0 =A0 =A0 =A0 &gt; rt_task_create(&amp;tTask1,.....<br>
-&gt; =A0 =A0 =A0 =A0 &gt; rt_task_create(&amp;tTask2,......<br>
-&gt; =A0 =A0 =A0 =A0 &gt; ...........<br>
-&gt; =A0 =A0 =A0 =A0 &gt; ..........<br>
-&gt; =A0 =A0 =A0 =A0 &gt;<br>
-&gt; =A0 =A0 =A0 =A0 &gt;<br>
-&gt; =A0 =A0 =A0 =A0 &gt; /* start the RT tasks */<br>
-&gt; =A0 =A0 =A0 =A0 &gt; rt_task_start(&amp;tTask1,.....<br>
-&gt; =A0 =A0 =A0 =A0 &gt; ..............<br>
-&gt; =A0 =A0 =A0 =A0 &gt; ..............<br>
-&gt; =A0 =A0 =A0 =A0 &gt;<br>
-&gt; =A0 =A0 =A0 =A0 &gt;<br>
-&gt; =A0 =A0 =A0 =A0 &gt; /* turn the current thread into RT function */<br=
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
 >
-&gt; =A0 =A0 =A0 =A0 &gt; ret =3D rt_task_shadow(NULL, &quot;RT main functi=
-on&quot;, 1, T_SUSP);<br>
-&gt; =A0 =A0 =A0 =A0 &gt;<br>
-&gt; =A0 =A0 =A0 =A0 &gt;<br>
-&gt; =A0 =A0 =A0 =A0 &gt; ....<br>
-&gt; =A0 =A0 =A0 =A0 &gt; ....<br>
-&gt; =A0 =A0 =A0 =A0 &gt;<br>
-&gt; =A0 =A0 =A0 =A0 &gt;<br>
-&gt; =A0 =A0 =A0 =A0 &gt; }<br>
-&gt; =A0 =A0 =A0 =A0 &gt;<br>
-&gt; =A0 =A0 =A0 =A0 &gt;<br>
-&gt; =A0 =A0 =A0 =A0 &gt; One of the rt tasks created calls ntohl() and swi=
-tches to<br>
-&gt; =A0 =A0 =A0 =A0 secondary<br>
-&gt; =A0 =A0 =A0 =A0 &gt; mode.<br>
-&gt; =A0 =A0 =A0 =A0 &gt; Is there a way to avoid it ?<br>
-&gt; =A0 =A0 =A0 =A0 &gt;<br>
-&gt; =A0 =A0 =A0 =A0 &gt;<br>
-&gt; =A0 =A0 =A0 =A0 &gt; --<br>
-&gt; =A0 =A0 =A0 =A0 &gt; Thanks and regards<br>
-&gt; =A0 =A0 =A0 =A0 &gt; Bharath<br>
-&gt; =A0 =A0 =A0 =A0 &gt;<br>
-&gt;<br>
-&gt; =A0 =A0 =A0 =A0 &gt; _______________________________________________<b=
-r>
-&gt; =A0 =A0 =A0 =A0 &gt; Xenomai-help mailing list<br>
-&gt; =A0 =A0 =A0 =A0 &gt; <a href=3D"mailto:Xenomai-help@domain.hid">Xenomai-h=
-elp@domain.hid</a><br>
-&gt; =A0 =A0 =A0 =A0 &gt; <a href=3D"https://mail.gna.org/listinfo/xenomai-=
-help" target=3D"_blank">https://mail.gna.org/listinfo/xenomai-help</a><br>
-&gt;<br>
-&gt; =A0 =A0 =A0 =A0 --<br>
-&gt; =A0 =A0 =A0 =A0 Philippe.<br>
-&gt;<br>
-&gt;<br>
-&gt;<br>
-&gt;<br>
-&gt;<br>
-&gt; --<br>
-&gt; Thanks and regards<br>
-&gt; Bharath<br>
-&gt;<br>
-<br>
-</div></div>--<br>
-<font color=3D"#888888">Philippe.<br>
-<br>
-<br>
-</font></blockquote></div><br><br clear=3D"all"><br>-- <br>Thanks and regar=
-ds<br>Bharath<br><br>
-</div>
-
---0016367fb11fcb6545048eb4d5cc--
 
