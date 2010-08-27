@@ -1,13 +1,11 @@
-Message-ID: <4C73E973.3080706@domain.hid>
-Date: Tue, 24 Aug 2010 17:46:59 +0200
+Message-ID: <4C7783C9.5090501@domain.hid>
+Date: Fri, 27 Aug 2010 11:22:17 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <4C6E9903.4010003@domain.hid> <4C6EA06E.6090105@domain.hid>
-In-Reply-To: <4C6EA06E.6090105@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [git pull v2] small RTDM fixes and assorted
-	patches
+Subject: [Xenomai-core] False positive XENO_BUGON(NUCLEUS,
+	need_resched == 0)?
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -16,48 +14,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: xenomai-core <xenomai@xenomai.org>
 
-Jan Kiszka wrote:
-> The following changes since commit 7e2735614ebe515d57abeaa3ff6df375a7c4149f:
-> 
->   sched: avoid infinite reschedule loops (2010-08-03 00:11:21 +0200)
-> 
-> are available in the git repository at:
->   git://git.xenomai.org/xenomai-jki.git for-upstream
-> 
-> Jan Kiszka (8):
->       rt_print: Properly return printed length
->       RTDM: Protect xnshadow_ppd_get via nklock
->       RTDM: Plug race between proc_read_dev_info and device deregistration
->       RTDM: Properly clean up on xnvfile setup errors
->       RTDM: Extend device name space in open_fildes proc output
->       Fix symbolic status ouput of root threads
->       Create watchdog as non-blockable timer
->       native: Improve documentation of rt_task_join and rt_task_delete
-> 
-> Stefan Kisdaroczi (1):
->       RTDM device profiles: Document open_rt, socket_rt and close_rt deprecation
-> 
->  include/rtdm/rtcan.h     |    4 ++--
->  include/rtdm/rtserial.h  |    4 ++--
->  include/rtdm/rttesting.h |    4 ++--
->  ksrc/nucleus/sched.c     |    3 ++-
->  ksrc/nucleus/thread.c    |    4 ++++
->  ksrc/skins/native/task.c |   15 +++++++++++++--
->  ksrc/skins/rtdm/core.c   |    2 ++
->  ksrc/skins/rtdm/proc.c   |   45 +++++++++++++++++++++++++++++++++++----------
->  src/rtdk/rt_print.c      |    1 +
->  9 files changed, 63 insertions(+), 19 deletions(-)
-> 
-> Updated to include Stefan's long-pending RTDM profile updates.
+Hi,
 
-That queue just gained another patch that should be included:
+I'm hitting that bug check in __xnpod_schedule after
+xnintr_clock_handler issued a xnpod_schedule like this:
 
-      nucleus: Fix lock imbalance in registry_proc_callback
+	if (--sched->inesting == 0) {
+		__clrbits(sched->status, XNINIRQ);
+		xnpod_schedule();
+	}
 
-Fortunately head-only, a xnvfile regression.
+Either the assumption behind the bug check is no longer correct (no call
+to xnpod_schedule() without a real need), or we should check for
+__xnpod_test_resched(sched) in xnintr_clock_handler (but under nklock then).
+
+Comments?
 
 Jan
 
