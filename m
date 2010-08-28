@@ -1,14 +1,9 @@
-Message-ID: <4C777B3C.7090203@domain.hid>
-Date: Fri, 27 Aug 2010 10:45:48 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <AANLkTikjB1vF+0Ldnc_80_+TJeG2MKo5i42hE5Ah3nj9@domain.hid>	<4C6BD747.1090304@domain.hid>	<AANLkTimiofme9duMMyiqe3snHmGxWFxGf7AJDaaAGE6b@domain.hid>	<AANLkTinYt1Gj+Vsm1NXCXyDPa92KS+DMFVhpNcVvYjgw@domain.hid>	<4C6D4BDE.1050605@domain.hid>	<AANLkTi=-7yEyDLn1tBmzkxMK+=Tr4F-7XNGdtzoespod@domain.hid>	<4C7260B4.4070100@domain.hid>	<4C726911.6050201@domain.hid>	<AANLkTik4KoHd9ni1DYuUej01uh8c7X8Tb0vgqf8ou93=@mail.gmail.com>	<4C72749A.5000506@domain.hid>	<AANLkTinAp-kyQ9DLqhaMoc9nML7PF4yOmYDXF2850d5G@mail.gmail.com>	<AANLkTin5X6wk2L2Kuk7c4EeiDo2_bk3nZspq0QJovv_L@mail.gmail.com>	<AANLkTik9uyyJdPOA8uHn0pD52MqKKt1Az-i5zyuMpvQX@mail.gmail.com>	<4C765EF8.50500@domain.hid>
-	<AANLkTinWX2q41qgKgPGbYKiaTQ3rNYZCHA+E=UFT9fFh@domain.hid>
-In-Reply-To: <AANLkTinWX2q41qgKgPGbYKiaTQ3rNYZCHA+E=UFT9fFh@domain.hid>
+Message-ID: <20100828044534.21096@domain.hid>
+Date: Sat, 28 Aug 2010 05:03:24 -0400
+From: "C Robinson" <starknight__@domain.hid>
+Content-transfer-encoding: quoted-printable
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] kernel compilation problem with a Cortex A8,
- AM3517 EVM
+Subject: [Xenomai-help] Ubuntu packages
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,31 +13,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: marc doz <doz.marc@domain.hid>
-Cc: Xenomai help <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-marc doz wrote:
-> Hi,
-> Your script runs since yesterday.
-> I don't see "Listening on any address 5566"
-> 
+Hi,
 
-Ah. Could you send me your mkrootfs configuration file (should be named
-.config at the top of your build tree).
+I'm seeking some clarification on a few points.   The background is that I h=
+ave some software I need to install which requires Xenomai on Ubuntu.   Bein=
+g fairly recent on the Linux scene, following the installation guide for Xen=
+omai has been something of a voyage of exploration, as yet unfinished - and =
+somewhat more complicated as I'm doing this on a bootable usb key.
 
-> with latency test :
-> RTT|  16:17:55  (periodic user-mode task, 1000 us period, priority 99)
-> RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat best|--lat worst
-> RTD|     14.230|     15.307|     27.307|       0|     0|      3.692|     58.538
-> To day, I will learn to understand latency logs
+In any case, a colleague mentioned there was an easier way using the availab=
+le packages in the Ubuntu repositories, i.e. the xenomai-runtime and associa=
+ted packages.  It was implied that with a straight-forward 'aptitude install=
+ xenomai-runtime' and voila I have a RTOS ready to use.   Given the descript=
+ions of these packages (and no mention of patching of the kernel for example=
+), I don't think that this is their purpose, particularly when I tried downl=
+oading the xenomai examples where the second step is :
 
-The lat min, lat avg, lat max are the minimum, average and maximum
-latencies on one second, overruns and msw should be zero if everything
-is fine, lat best and lat worst are the best case and worst case
-latencies for the whole run-time of the program.
+make XENO=3D<xenomai-installation-path> KSRC=3D<xenomai-kernel-source>
 
+Could someone confirm (or refute) this suspicion (that the packages do not p=
+rovide access to a RTOS) and perhaps explain the intended use of the xenomai=
+ packages available on the ubuntu repositories - I've not seen any detailed =
+reference as to why one would download and install these packages (say, in a=
+ddition to having already gone through the long process of kernel patching +=
+ compilation + user space setup).
 
--- 
-					    Gilles.
-
+Thanks for any assistance,
+Charles
 
