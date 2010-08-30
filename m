@@ -1,12 +1,9 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <20100828090856.24882@domain.hid>
-References: <20100828090856.24882@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Sat, 28 Aug 2010 15:46:19 +0200
-Message-ID: <1283003179.1709.217.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Ubuntu packages
+MIME-Version: 1.0
+Date: Mon, 30 Aug 2010 21:31:17 +0530
+Message-ID: <AANLkTin4EBuE7jeKeeJorBVk+CGy=6w86o2_DzjHLdUs@domain.hid>
+From: Prakash A S <asprakash83@domain.hid>
+Content-Type: multipart/alternative; boundary=00504502e2fd21403a048f0c93b1
+Subject: [Xenomai-help] Xeno-test failed on ARM AT91RM9200 processor
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,77 +13,66 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: C Robinson <starknight__@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Sat, 2010-08-28 at 09:08 -0400, C Robinson wrote:
-> Hi Gilles,
-> 
-> Thanks for the quick response.   I saw this page earlier today, but must have missed the part in brackets, where it says the packages are necessary along with an appropriately patched and compiled kernel. 
->   
-> Also, cheers for the additional tip regarding the use of the Debian packages as opposed to Ubuntu.  I was using a more convoluted approach to the installation, and the one you linked to is appearing much more efficient so far (kernel currently compiling).
-> 
+--00504502e2fd21403a048f0c93b1
+Content-Type: text/plain; charset=ISO-8859-1
 
-Sidenote: the kernel patches for 2.6.32/x86 shipped with Xenomai 2.5.4
-have a serious issue, which may cause a random lockup during early boot.
-You may want to use one of these instead: 
-http://download.gna.org/adeos/patches/v2.6/x86/older/adeos-ipipe-2.6.32.15-x86-2.7-02.patch
-http://download.gna.org/adeos/patches/v2.6/x86/older/adeos-ipipe-2.6.32.20-x86-2.7-02.patch
+Hi,
+    I am trying to port Xenomai-2.4.0 on ARM AT91RM9200 processor. I used
+adeos-ipipe-2.6.20-arm-1.7-06.patch with Linux kernel 2.6.20. All the stuffs
+went fine, compiled the kernel and ported on the same processor. The xenomai
+components loaded fine while loading the kernel image. However when I
+executed the xeno-test, I am getting the error,  "please build busybox's ash
+with support for getopts" and quit the test.
 
-> Best wishes,
-> Charles
-> 
-> 
-> 
-> 
-> -----Original Message-----
-> From: "Gilles Chanteperdrix" [gilles.chanteperdrix@xenomai.org]
-> Date: 08/28/2010 05:42 AM
-> To: "C Robinson" <starknight__@domain.hid>
-> CC: xenomai@xenomai.org
-> Subject: Re: [Xenomai-help] Ubuntu packages
-> 
-> C Robinson wrote:
-> > Hi,
-> > 
-> > I'm seeking some clarification on a few points.   The background is
-> > that I have some software I need to install which requires Xenomai on
-> > Ubuntu.   Being fairly recent on the Linux scene, following the
-> > installation guide for Xenomai has been something of a voyage of
-> > exploration, as yet unfinished - and somewhat more complicated as I'm
-> > doing this on a bootable usb key.
-> > 
-> > In any case, a colleague mentioned there was an easier way using the
-> > available packages in the Ubuntu repositories, i.e. the
-> > xenomai-runtime and associated packages.  It was implied that with a
-> > straight-forward 'aptitude install xenomai-runtime' and voila I have
-> > a RTOS ready to use.   Given the descriptions of these packages (and
-> > no mention of patching of the kernel for example), I don't think that
-> > this is their purpose, particularly when I tried downloading the
-> > xenomai examples where the second step is :
-> > 
-> > make XENO=<xenomai-installation-path> KSRC=<xenomai-kernel-source>
-> > 
-> > Could someone confirm (or refute) this suspicion (that the packages
-> > do not provide access to a RTOS) and perhaps explain the intended use
-> > of the xenomai packages available on the ubuntu repositories - I've
-> > not seen any detailed reference as to why one would download and
-> > install these packages (say, in addition to having already gone
-> > through the long process of kernel patching + compilation + user
-> > space setup).
-> > 
-> > Thanks for any assistance, Charles
-> 
-> See:
-> http://www.xenomai.org/index.php/Building_Debian_packages
-> 
-> Please pay attention to the version of the packages available on Ubuntu.
-> As far as I understood, they are outdated, so, you would probably better
-> use the Debian package and install them on Ubuntu.
-> 
+I am using BusyBox-1.15.3 enabled with GETOPT. I noticed that the "getopts"
+link is not available with the busybox bin. But it has only "getopt". I
+checked few other latest version of Busybox. But I could not find it in
+other versions also. However the x86 desktop Linux contains both getopt and
+getopts.
 
--- 
-Philippe.
+Few online guides claimed that the getopts is builtin with Busybox. I
+created an getopts softlink for busybox manually anf then tried the
+xeno-test. But getting the error,  "getopts: applet not found". I could not
+find the exact reason for this issue. I also tried to execute the tests
+separately like latency, switchtest,.etc. But getting the same error, "syntax
+error: word unexpected (expecting ")")".
+
+FYI, the busybox configured with ASH shell.
+
+Help me to solve the issues.
+
+-Prakash
+
+--00504502e2fd21403a048f0c93b1
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+Hi,<br>=A0=A0=A0 I am trying to port Xenomai-2.4.0 on ARM AT91RM9200 proces=
+sor. I used adeos-ipipe-2.6.20-arm-1.7-06.patch with Linux kernel 2.6.20. A=
+ll the stuffs went fine, compiled the kernel and ported on the same process=
+or. The xenomai components loaded fine while loading the kernel image. Howe=
+ver when I executed the xeno-test, I am getting the error,=A0 &quot;please =
+build busybox&#39;s ash with support for getopts&quot; and quit the test.<b=
+r>
+
+<br>I am using BusyBox-1.15.3 enabled with GETOPT. I noticed that the &quot=
+;getopts&quot; link is not available with the busybox bin. But it has only =
+&quot;getopt&quot;. I checked few other latest version of Busybox. But I co=
+uld not find it in other versions also. However the x86 desktop Linux conta=
+ins both getopt and getopts.<br>
+<br>Few online guides claimed that the getopts is builtin with Busybox. I c=
+reated an getopts softlink for busybox manually anf then tried the xeno-tes=
+t. But getting the error,=A0 <style type=3D"text/css">e: pre-wrap; }</style=
+>&quot;getopts: applet not found&quot;. I could not find the exact reason f=
+or this issue. I also tried to execute the tests separately like latency, s=
+witchtest,.etc. But getting the same error, <style type=3D"text/css">{ whit=
+e-space: pre-wrap; }</style>&quot;syntax error: word unexpected (expecting =
+&quot;)&quot;)&quot;.<br>
+<br>FYI, the busybox configured with ASH shell.<br><br>Help me to solve the=
+ issues.<br><br>-Prakash<br>=20
 
 
+--00504502e2fd21403a048f0c93b1--
 
