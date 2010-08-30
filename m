@@ -1,9 +1,12 @@
-MIME-Version: 1.0
-Date: Tue, 31 Aug 2010 00:45:11 +0200
-Message-ID: <AANLkTimb-CBofvdOa7EVcDTDb0418dJauwhxRNjz4=hJ@mail.gmail.com>
-From: Willy Lambert <lambert.willy@domain.hid>
-Content-Type: multipart/alternative; boundary=00032555bb5a8d8a9d048f123703
-Subject: [Xenomai-help] Looking for PC104 CAN stacks working under xenomai
+From: jmf <xeno.nonono@domain.hid>
+Date: Mon, 30 Aug 2010 23:18:26 +0000 (UTC)
+Message-ID: <loom.20100831T011722-431@domain.hid>
+References: <loom.20100830T183243-347@domain.hid>
+	<4C7BED23.5050400@domain.hid>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] How to resolve this lockup situation?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,26 +18,15 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
---00032555bb5a8d8a9d048f123703
-Content-Type: text/plain; charset=ISO-8859-1
+Maybe to clarify: the SDK of the said device comes with a shared lib
+(whose function I'm calling from an RT thread) and that deamon which
+is probably doing the communication with the usb device; with the old
+setup where things were still working, I just didn't notice it's existence.
+These two only come as binaries. So yes, my system has a serious flaw,
+it's not RT. Before, the deamon obviously answered to the shared lib
+function in a timely manner. Until we can redesign that system from
+ground up and get rid of the non-RT compatible component, I'm just
+concerned with getting the old status back. I don't understand what's
+different, but is there any way to get Linux some processing time back?
 
-Hi,
-
-I am looking for a PC104 CAN stack that would be easy to integrate for free
-with xenomai, in other words with a compatible driver distributed on the
-web. Issomeone using this kind of board ?
-
-The main board used is :
-http://www.advantech.com/products/PCM-3362/mod_1-DWE9TQ.aspx
-(I have no doubt about xenomai running on it properly)
-
-Thank in advance for your help.
-
---00032555bb5a8d8a9d048f123703
-Content-Type: text/html; charset=ISO-8859-1
-
-Hi,<br><br>I am looking for a PC104 CAN stack that would be easy to integrate for free with xenomai, in other words with a compatible driver distributed on the web. Issomeone using this kind of board ?<br><br>The main board used is :<br>
-<a href="http://www.advantech.com/products/PCM-3362/mod_1-DWE9TQ.aspx">http://www.advantech.com/products/PCM-3362/mod_1-DWE9TQ.aspx</a><br>(I have no doubt about xenomai running on it properly)<br><br>Thank in advance for your help.<br>
-
---00032555bb5a8d8a9d048f123703--
 
