@@ -1,100 +1,383 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <8sld2b$hq8lvg@domain.hid>
-References: <8sld2b$hq8lvg@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Mon, 27 Sep 2010 19:03:32 +0200
-Message-ID: <1285607012.1717.14.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Unloading xeno_psos cannot cleanup some sources
- completely.
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Mime-Version: 1.0 (Apple Message framework v1081)
+Content-Type: text/plain; charset=us-ascii
+From: Stefan Schaal <sschaal@domain.hid>
+In-Reply-To: <EF26EBA9-96F5-4D43-97E2-BBC75A9C2876@domain.hid>
+Date: Thu, 2 Sep 2010 14:18:42 -0700
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <4AA1E47D-FCC9-45AC-9D7F-8D53AD7DA66C@usc.edu>
+References: <5BACCC6E-A481-4953-ABAC-ACE3185E1A9C@usc.edu>
+	<3712D196-B8B5-430C-A5F5-189C77F76997@domain.hid>
+	<20100712222926.GA2463@domain.hid>
+	<F730DBD8-DEB8-4C64-BA65-19657D6EFA95@domain.hid>
+	<4495E38D-134C-425D-B797-1174E8849E3F@usc.edu>
+	<20100714210331.GC3246@domain.hid>
+	<373BD2C2-B474-4E1F-A46C-0C704E6C318B@usc.edu>
+	<EDE3463F-03C5-44C5-BAEA-A44321376428@domain.hid>
+	<20100719220129.GA3662@domain.hid>
+	<B12C8A29-C30F-4E9B-9963-236989778ECD@usc.edu>
+	<20100823230949.GA5809@domain.hid>
+	<EF26EBA9-96F5-4D43-97E2-BBC75A9C2876@domain.hid>
+Subject: Re: [Xenomai-core] analogy - experimental branch
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Gao <gwysu@domain.hid>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Stefan Schaal <sschaal@domain.hid>
+Cc: Peter Pastor Sampedro <pastorsa@domain.hid>, xenomai@xenomai.org
 
-On Sat, 2010-09-25 at 08:36 +0800, Gao wrote:
-> Hi  All ,
->  
-> After I load xeno_psos.ko by "/sbin/insmod xeno_psos.ko", and run my
-> test program, whic create a queue by "q_vcreate", but not delete it in
-> the test program.  After I finish running my test program. Then I
-> unload the xeno_psos and then reload it again, it will crash as
-> follow:     
->  
->  
->  /sbin/rmmod xeno_psos
-> Xenomai: stopping pSOS+ services.
-> 
-> # /sbin/insmod xeno_psos.ko
-> Xenomai: starting pSOS+ services.
-> proc_dir_entry 'registry/psos' already registered
-> ------------[ cut here ]------------
-> Badness at fs/proc/generic.c:590
-> NIP: c00f7988 LR: c00f7988 CTR: c0027f20
-> REGS: c182bda0 TRAP: 0700   Not tainted  (2.6.33.4)
-> MSR: 00029032 <EE,ME,CE,IR,DR>  CR: 22000442  XER: 00000000
-> TASK = c181cc60[4] 'events/0' THREAD: c182a000
-> GPR00: c00f7988 c182be50 c181cc60 00000038 c03bd180 c0394ae0 00000000
-> 3eced82e
-> GPR08: 00000100 00000000 00000003 c182a000 42000424 100af23c 01ffe800
-> 01ff50a0
-> GPR16: 01fd05d8 01ff507c c0348e18 c0320aa8 c182bea8 c03bd77c c0394fd8
-> c313e7c4
-> GPR24: c313e950 c0394fd8 00000000 c1881700 c1a35a80 c1a35600 c1a35ae0
-> c1a35600
-> NIP [c00f7988] proc_register+0xe4/0x1d0
-> LR [c00f7988] proc_register+0xe4/0x1d0
-> Call Trace:
-> [c182be50] [c00f7988] proc_register+0xe4/0x1d0 (unreliable)
-> [c182be80] [c00f7b90] create_proc_entry+0x60/0xac
-> [c182bea0] [c0056d10] registry_proc_callback+0x318/0x394
-> [c182bf60] [c002fe6c] worker_thread+0x12c/0x1c4
-> [c182bfc0] [c0033dcc] kthread+0x78/0x7c
-> [c182bff0] [c000f6c0] kernel_thread+0x4c/0x68
-> Instruction dump:
-> 2f9f0000 419e0034 807f0008 7fc4f378 4bf1ab6d 2f830000 409effe4
-> 809b0008
-> 3c60c032 7fc5f378 38636ce4 4bf264a5 <0fe00000> 83bb0038 939b0038
-> 93bc0030
-> 
->  
->  
->  
-> The problem is caused by the reason that unloading xeno_psos.ko
-> cannot clean up the the queues show as follow: 
->  
-> # pwd
-> /proc/xenomai/registry/psos/queues
-> # ls
-> cmq  q2r
-> 
->  
-> So can the problem be fixed? Thanks.
+Hi Alexis,
 
-Yes, likely. But this is not on the hot path right now, so the issue is
-queued. Thanks for reporting.
+ we are making great progress with our work. One issue that came up is =
+whether it would be possible to add
 
->  
->  
-> Best regards,
-> Wenyi Gao
->  
-> 
+   .stop_src =3D TRIG_COUNT,
+   .stop_arg =3D n,
+
+in the command structure, i.e., that the command terminates after n =
+scans. Currently, when I try this, dmesg tells me that this method is =
+not supported.
+
+Best wishes,
+
+-Stefan
+
+
+
+
+On Aug 23, 2010, at 23:49, Stefan Schaal wrote:
+
+> Hi Alexis,
+>=20
+> amazing progress!! And it works! I just ran my test program on our =
+NI6259 board and got perfect performance. I quickly tested 5MHz  DIO =
+rate, and it appeared to work fine according to the square waves on the =
+oscilloscope.=20
+>=20
+> I will go back to developing our DAQ interface, and report back to the =
+Xenomai list about performance.
+>=20
+> Thanks so much!!!!
+>=20
+> Best wishes,
+>=20
+> -Stefan
+>=20
+>=20
+> On Aug 23, 2010, at 16:09, Alexis Berlemont wrote:
+>=20
+>> Hi,
+>>=20
+>> Stefan Schaal wrote:
+>>> Hi Alexis,
+>>>=20
+>>> as usually, we are more than grateful that you are willing to spend =
+time on this issue. Here are answers to your questions:
+>>>=20
+>>> 1) I tried CR_INVERT -- no success
+>>> 2) I tried very slow frequencies like 10Hz in the counter clock =
+(which is nicely visualized on my oscilloscope) -- no success
+>>> 3) I tried to send a 0 with cmd_bits -- and interestingly, this ALSO =
+takes my DIO line high (sorry, I thought I had tested this before). This =
+would indicate that we do not access the FIFO at all?
+>>> 4) I have my own test program to send alternating 0xffffffff and 0x0 =
+values to the devices to generate a square wave on the oscilloscope. I =
+cannot see anything of the square wave executed.
+>>>=20
+>>=20
+>> At last, it comes!!!
+>>=20
+>> Thanks to your test program and your help, I think I have fixed this
+>> bug. Could you clone my git repository (branch analogy), and give it =
+a
+>> try with your own test program.
+>>=20
+>> There was a bug in the mite configuration which explained why the
+>> wrong data were sent to the DIO subdevice. That was also the reason
+>> why no interrupt came from the mite.
+>>=20
+>>> Best wishes,
+>>>=20
+>>> -Stefan
+>>>=20
+>>>=20
+>>> On Jul 19, 2010, at 15:01, Alexis Berlemont wrote:
+>>>=20
+>>>> Hi,
+>>>>=20
+>>>> Sorry for answering late.=20
+>>>>=20
+>>>> Stefan Schaal wrote:
+>>>>> Hi Alexis,
+>>>>>=20
+>>>>> I managed to port some of the Comedi examples to Analogy. In =
+particular, I could configure one of my counter subdevices to become a =
+high frequency clock, following the gpct_pulse_generator.c example. I =
+routed the output of the clock to my PFI0 pin, and could visualize the =
+signal on an oscilloscope. Thus, I know have the clock I need to trigger =
+CMD-based DIO, as you suggested. (I will post some sample code of this =
+in the near future after all is cleaned up).
+>>>>>=20
+>>>>> Next, I went back to cmd_bits.c and try to make it work on my =
+NI6259 board. For scan_begin_src=3DTRIG_EXT   I need to choose =
+scan_begin_arg =3D 28 (which is kCDO_Update_Source_SelectG0_Out in the =
+NI documentation, and NI_CDIO_SCAN_BEGIN_SRC_G0_OUT in the comedi.h =
+file).
+>>>>>=20
+>>>>> When running cmd_bits.c in this way and monitoring the DO channels =
+on an oscilloscope, the DO switches to HIGH when the acquisition is =
+triggered (i.e., the value of the first element in the FIFO), but the =
+FIFO is not processed any further, i.e., not emptied. If I DO NOT run =
+the counter-clock above, the DO does not even switch to HIGH. I also =
+checked whether 28 is the right value for scan_begin_arg by trying a =
+wide range of values, but only for scan_begin_arg =3D 28 I get the DO =
+bit switched to HIGH at the beginning of the acquisition.
+>>>>>=20
+>>>>> In Comedi, the cmd.flags is set to CMDF_WRITE for such externally =
+triggered acquisitions, which I tried, but it did not help.
+>>>>>=20
+>>>>> Thus, it appears that I still have a problem in processing the =
+FIFO, despite it appears that all other things are now correctly =
+connected (Comedi has an example do_waveform.c, which is pretty much =
+what I try to use for testing in my own code).
+>>>>>=20
+>>>>> Would you have any thoughts on what might go wrong? It looks like =
+we are just a tiny bit away from succeeding with cmd_bits.c on my board.
+>>>>>=20
+>>>>=20
+>>>> I had time to have a look at your problem. Unfortunately, I do not
+>>>> have any solution. I just have some questions you may find stupid:
+>>>>=20
+>>>> - Did you try to invert the sample clock polarity by setting the =
+flag
+>>>> CR_INVERT in the command field scan_begin_arg?
+>>>> - Which frequencies did you generate with the counter subdevice? =
+Even
+>>>> the lowest one did nothing (Something like 10Hz)?
+>>>> - Did you try to send 0 with cmd_bits ? Just to check that the DO =
+stay
+>>>> to LOW, which would mean that the values (or at least the first =
+one)
+>>>> are properly loaded into the device.
+>>>> - So far, cmd_bits always sends the same value (the one you passed =
+as
+>>>> argument); we should modify it so that the complement value is
+>>>> written every two samples. That would allow us to physically check
+>>>> how many samples are "played" by the DO.=20
+>>>>=20
+>>>>> Best wishes,
+>>>>>=20
+>>>>> -Stefan
+>>>>>=20
+>>>>>=20
+>>>>>=20
+>>>>>=20
+>>>>>=20
+>>>>> On Jul 14, 2010, at 17:46, Stefan Schaal wrote:
+>>>>>=20
+>>>>>> Hi Alexis,
+>>>>>>=20
+>>>>>> in the Comedi examples =
+(http://www.comedi.org/download/comedilib-0.8.1.tar.gz, the =
+do_waveform.c example), they suggest to use a general purpose counter as =
+clocking input to a cmd-based DIO acquisition. This seems to be the =
+signal "kCDO_Update_Source_SelectG0_Out            =3D 28" from the enum =
+you found in the NI documentation.
+>>>>>>=20
+>>>>>> For this purpose, the counter needs to be configured and =
+triggered. Does Analogy already have the functionality to do such =
+operations? The Comedi libraries have an example for this, too, in =
+gpct_pulse_generator.c, just that this example uses a variety of =
+function calls that I cannot directly map to the current Analogy =
+functionality.
+>>>>>>=20
+>>>>>> Or, do you happen to know whether there is another, easier to =
+access, clock source?
+>>>>>>=20
+>>>>>> Best wishes,
+>>>>>>=20
+>>>>>> -Stefan
+>>>>>>=20
+>>>>>>=20
+>>>>>> On Jul 14, 2010, at 14:03, Alexis Berlemont wrote:
+>>>>>>=20
+>>>>>>> Stefan Schaal wrote:
+>>>>>>>> Hi Alexis,
+>>>>>>>>=20
+>>>>>>>> maybe it is more useful to mention what I actually want to =
+achieve with DIO on my NI6259.  My DIO communication involves a series =
+of interactions with another board to collect sensory data from a robot, =
+and to send out commands to this board. For instance, to read one of the =
+sensors, a sequence of DIO values need to be written to tell the board =
+to send the data. I programmed this initially with synchronous =
+instructions using a4l_sync_dio(), but this turns out to be too slow. =
+Thus, the hope is to use commands, i.e., fill the FIFO with the sequence =
+of values which I need to execute, and then use asynchronous DIO to =
+obtain much higher speed of communicating the values in the FIFO.
+>>>>>>>>=20
+>>>>>>>> Thus, what I essentially try to do is to put about 10-20 scans =
+in the FIFO, and then write the FIFO as fast as possible to my NI6259 =
+DIO subdevice.
+>>>>>>>>=20
+>>>>>>>> Would you have any ideas how to do this fast writing of the =
+scans in the FIFO with the current analogy functionality?
+>>>>>>>>=20
+>>>>>>> Right now, I don't know. I think your idea of using DIO commands =
+may
+>>>>>>> be suitable (I don't know your timing constraints). So what not
+>>>>>>> proceeding ?
+>>>>>>>=20
+>>>>>>>> Thanks a lot!
+>>>>>>>>=20
+>>>>>>>> -Stefan
+>>>>>>>>=20
+>>>>>>>>=20
+>>>>>>>> On Jul 12, 2010, at 22:51, Stefan Schaal wrote:
+>>>>>>>>=20
+>>>>>>>>> Hi Alexis,
+>>>>>>>>>=20
+>>>>>>>>> thanks a lot for the explanations. One item I am confused =
+about is that you write that TRIG_TIMER is not suitable for DIO, but in =
+cmd_write.c in your sample code, it is used for the analog write without =
+problems. Wouldn't one be able to just use the same clock source for DIO =
+as in analogue I/O?
+>>>>>>>>>=20
+>>>>>>>>> Best wishes,
+>>>>>>>>>=20
+>>>>>>>>> -Stefan
+>>>>>>>>>=20
+>>>>>>>>>=20
+>>>>>>>>>=20
+>>>>>>>>> On Jul 12, 2010, at 15:29, Alexis Berlemont wrote:
+>>>>>>>>>=20
+>>>>>>>>>> Hi,
+>>>>>>>>>>=20
+>>>>>>>>>> Stefan Schaal wrote:
+>>>>>>>>>>> Hi Alexis,
+>>>>>>>>>>>=20
+>>>>>>>>>>> I guess I slowly understand that my clocking signal =
+connected to
+>>>>>>>>>>> scan_begin_arg has to come from an external DIO input, if
+>>>>>>>>>>> scan_bigin_src =3D TRIG_EXT, and that the insn instruction =
+is still
+>>>>>>>>>>> needed to trigger the entire acquisition.=20
+>>>>>>>>>>=20
+>>>>>>>>>> Yes. The trigger instruction is needed so as to start the =
+whole
+>>>>>>>>>> acquisition (which is composed of many scans). A periodic =
+external
+>>>>>>>>>> signal is needed so as to trigger each scan.
+>>>>>>>>>>=20
+>>>>>>>>>>>=20
+>>>>>>>>>>> Alternatively, would it be possible to use the internal =
+clocking signals like=20
+>>>>>>>>>>>=20
+>>>>>>>>>>> scan_bigin_src =3D TRIG_FOLLOW
+>>>>>>>>>>>=20
+>>>>>>>>>>> or=20
+>>>>>>>>>>>=20
+>>>>>>>>>>> scan_bigin_src =3D TRIG_TIMER
+>>>>>>>>>>=20
+>>>>>>>>>> I think you are right. If the sampling clock comes from =
+another
+>>>>>>>>>> subdevice, TRIG_EXT may not be the most appropriate constant. =
+However,
+>>>>>>>>>> the original comedi driver only expects TRIG_EXT even if... =
+the
+>>>>>>>>>> sampling signal is not external.
+>>>>>>>>>>=20
+>>>>>>>>>> TRIG_TIMER does not seem suitable because it assumes an =
+independant
+>>>>>>>>>> sampling clock is available. =20
+>>>>>>>>>>=20
+>>>>>>>>>> And TRIG_FOLLOW may be the most appropriate one. We should =
+modify the
+>>>>>>>>>> driver so that TRIG_FOLLOW is used if the analog sampling =
+clock is
+>>>>>>>>>> chosen.
+>>>>>>>>>>=20
+>>>>>>>>>>>=20
+>>>>>>>>>>>=20
+>>>>>>>>>>> if I try any of these sources, I get an error -22, and dmesg =
+reports:
+>>>>>>>>>>>=20
+>>>>>>>>>>> [195882.321300] Analogy: a4l_check_cmddesc: scan_begin_src, =
+trigger unsupported
+>>>>>>>>>>>=20
+>>>>>>>>>>=20
+>>>>>>>>>> For me, the command interface is an empty shell because the =
+various
+>>>>>>>>>> parameters (start_src, scan_begin_src, ...) and the values =
+(TRIG_*)
+>>>>>>>>>> are imposed. And, on the other side, the driver is fully in =
+charge of
+>>>>>>>>>> the command structure as it is. So, the comedi command =
+imposes a
+>>>>>>>>>> communication method but does not ease the driver's task of =
+managing
+>>>>>>>>>> it (errors checking, translation, etc.)
+>>>>>>>>>>=20
+>>>>>>>>>> And, in our case: DIO, we may conclude that this imposed API =
+does not
+>>>>>>>>>> fit well: in scan_begin_arg, we have to pass an index which =
+is
+>>>>>>>>>> supposed to correspond to some sampling clock (which is =
+specific to a
+>>>>>>>>>> board). Then, we use a generic interface with board-specific
+>>>>>>>>>> arguments.
+>>>>>>>>>>=20
+>>>>>>>>>> So, to sum up, I understand your point: the way we control =
+the driver
+>>>>>>>>>> may not always be the most appropriate one. But, we inherited =
+from
+>>>>>>>>>> comedi both the interface and the drivers.=20
+>>>>>>>>>>=20
+>>>>>>>>>> On my side, I am working on trying to implement (as a =
+background task)
+>>>>>>>>>> a generic interface a little bit more based on discovery =
+(query /
+>>>>>>>>>> enum) that would render the command interface obsolete. =
+Unfortunately,
+>>>>>>>>>> I have nothing interesting to show yet.
+>>>>>>>>>>=20
+>>>>>>>>>>> Best wishes,
+>>>>>>>>>>>=20
+>>>>>>>>>>> -STefan
+>>>>>>>>>>>=20
+>>>>>>>>>>>=20
+>>>>>>>>>>=20
+>>>>>>>>>=20
+>>>>>>>>>=20
+>>>>>>>>> _______________________________________________
+>>>>>>>>> Xenomai-core mailing list
+>>>>>>>>> Xenomai-core@domain.hid
+>>>>>>>>> https://mail.gna.org/listinfo/xenomai-core
+>>>>>>>>=20
+>>>>>>>=20
+>>>>>>> --=20
+>>>>>>> Alexis.
+>>>>>>=20
+>>>>>>=20
+>>>>>> _______________________________________________
+>>>>>> Xenomai-core mailing list
+>>>>>> Xenomai-core@domain.hid
+>>>>>> https://mail.gna.org/listinfo/xenomai-core
+>>>>>=20
+>>>>=20
+>>>> --=20
+>>>> Alexis.
+>>>=20
+>>=20
+>> --=20
+>> Alexis.
+>=20
+>=20
 > _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
-
--- 
-Philippe.
-
+> Xenomai-core mailing list
+> Xenomai-core@domain.hid
+> https://mail.gna.org/listinfo/xenomai-core
 
 
