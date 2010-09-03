@@ -1,11 +1,11 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <8slc8n$imkgbb@domain.hid>
-References: <8slc8n$imkgbb@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Fri, 03 Sep 2010 07:27:11 +0200
-Message-ID: <1283491631.1709.2095.camel@domain.hid>
-Mime-Version: 1.0
+Message-Id: <8slsrl$2ebaut@domain.hid>
+From: "Gao" <gwysu@domain.hid>
+Date: Fri, 3 Sep 2010 13:44:49 +0800
+MIME-Version: 1.0
+Content-Type: text/plain;
+	charset="gb2312"
 Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <1283491631.1709.2095.camel@domain.hid>
 Subject: Re: [Xenomai-help] Powerpc kernel cannot boot with xenomai
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -16,32 +16,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gao <gwysu@domain.hid>
+To: 'Philippe Gerum' <rpm@xenomai.org>
 Cc: xenomai@xenomai.org
 
+
+Thank you Philippe, my board can boot up when the pSos emulator is not =
+built
+into the kernel. But once it is built into the kernel, the kernel cannot
+boot up.=20
+ =20
+
+-----Original Message-----
+From: Philippe Gerum [mailto:rpm@xenomai.org
+Sent: 2010=C4=EA9=D4=C23=C8=D5 13:27
+To: Gao
+Cc: xenomai@xenomai.org
+Subject: RE: [Xenomai-help] Powerpc kernel cannot boot with xenomai
+
 On Wed, 2010-09-01 at 17:02 +0800, Gao wrote:
-> Thank you Philippe very much. Yes, it seems that Xenomail may not support
-> the MPC870 cpu. But you mean the Xenomai with linux 2.6.34 kernel can
-> support it, right?
+> Thank you Philippe very much. Yes, it seems that Xenomail may not=20
+> support the MPC870 cpu. But you mean the Xenomai with linux 2.6.34=20
+> kernel can support it, right?
 
 I mean that a port of Xenomai to a custom board based on a CPU from the
-mpc855 family is known to work, based on a 2.6.34 kernel, and that is
-the only port of Xenomai to this architecture I'm aware of. The latest
+mpc855 family is known to work, based on a 2.6.34 kernel, and that is =
+the
+only port of Xenomai to this architecture I'm aware of. The latest
 I-pipe/powerpc patch for 2.6.34 does include that support for 8xx.
 
 Now, it should be possible for you to backport the I-pipe bits from the
 2.6.34 patch required to run 8xx to 2.6.33, if your bsp is based on that
 release.
 
->  Another question, is there a officail document that say
-> runing Xenomai on the mpc855 family processors needs 2.6.34 kernel?=20
+>  Another question, is there a officail document that say runing=20
+> Xenomai on the mpc855 family processors needs 2.6.34 kernel?
 >=20
 
 You are currently reading it.
 
 > -----Original Message-----
-> From: Philippe Gerum [mailto:rpm@xenomai.org
-> Sent: 2010=E5=B9=B49=E6=9C=881=E6=97=A5 16:39
+> From: Philippe Gerum [mailto:rpm@xenomai.org]
+> Sent: 2010=C4=EA9=D4=C21=C8=D5 16:39
 > To: Gao
 > Cc: xenomai@xenomai.org
 > Subject: RE: [Xenomai-help] Powerpc kernel cannot boot with xenomai
@@ -49,17 +64,18 @@ You are currently reading it.
 > On Wed, 2010-09-01 at 16:11 +0800, Gao wrote:
 > > Hi Philippe,
 > >=20
-> > Are you sure  xenomai(2.5.4) doesn't support the cpu MPC870? Thank you.
+> > Are you sure  xenomai(2.5.4) doesn't support the cpu MPC870? Thank =
+you.
 > >=20
 >=20
-> I'm saying that your particular board is not known to run Xenomai, nothin=
-g
-> else. Those which officially do are listed here:
-> http://www.xenomai.org/index.php/Embedded_Device_Support#Supported_Archit=
-ect
+> I'm saying that your particular board is not known to run Xenomai,=20
+> nothing else. Those which officially do are listed here:
+> http://www.xenomai.org/index.php/Embedded_Device_Support#Supported_Arc
+> hitect
 > ures
 >=20
-> In any case, if you want to run Xenomai on a processor from the mpc855
+> In any case, if you want to run Xenomai on a processor from the mpc855 =
+
 > family, 2.6.34 is a requirement.
 >=20
 > >=20
@@ -67,7 +83,7 @@ ect
 > >=20
 > > -----Original Message-----
 > > From: Philippe Gerum [mailto:rpm@xenomai.org]
-> > Sent: 2010=E5=B9=B49=E6=9C=881=E6=97=A5 15:53
+> > Sent: 2010=C4=EA9=D4=C21=C8=D5 15:53
 > > To: Gao
 > > Cc: xenomai@xenomai.org
 > > Subject: Re: [Xenomai-help] Powerpc kernel cannot boot with xenomai
@@ -75,12 +91,14 @@ ect
 > > On Wed, 2010-09-01 at 15:47 +0800, Gao wrote:
 > > > Hi All,
 > > > =20
-> > > I patched the kernel with xenomai, but the kernel "cuImage" cannot=20
+> > > I patched the kernel with xenomai, but the kernel "cuImage" cannot =
+
 > > > boot up, below is the console output:
 > > >     =20
 > > > U-Boot 2009.06.00-svn21572 (Aug 24 2010 - 11:20:12)
 > > > =20
-> > > CPU:   MPC885ZPnn at 100 MHz: 8 kB I-Cache 8 kB D-Cache FEC present
+> > > CPU:   MPC885ZPnn at 100 MHz: 8 kB I-Cache 8 kB D-Cache FEC =
+present
 > >=20
 > > This board is not supported. What goes wrong is likely the I-pipe=20
 > > patch for this particular hardware.
@@ -109,10 +127,10 @@ ect
 > > >   Device 0: Model: SanDisk SDCFH-002G Firm: HDX 5.04 Ser#:
 > > > AOZ043010001455
 > > >             Type: Removable Hard Disk
-> > >             Capacity: 1918.0 MB =3D 1.8 GB (3928176 x 512) Hit any ke=
-y=20
-> > > to stop autoboot:  0 ## Booting kernel from Legacy Image at 00100000=20
-> > > ...
+> > >             Capacity: 1918.0 MB =3D 1.8 GB (3928176 x 512) Hit any =
+
+> > > key to stop autoboot:  0 ## Booting kernel from Legacy Image at=20
+> > > 00100000 ...
 > > >    Image Name:   Linux-2.6.33.4
 > > >    Image Type:   PowerPC Linux Kernel Image (gzip compressed)
 > > >    Data Size:    1873951 Bytes =3D  1.8 MB
@@ -120,8 +138,8 @@ y=20
 > > >    Entry Point:  00400558
 > > >    Verifying Checksum ... OK
 > > >    Uncompressing Kernel Image ... OK Memory <- <0x0 0x0> (0MB)
-> > > ENET0: local-mac-address <- 00:00:00:00:00:00 CPU clock-frequency <-=20
-> > > 0x0 (0MHz) CPU timebase-frequency <- 0x0 (0MHz)
+> > > ENET0: local-mac-address <- 00:00:00:00:00:00 CPU clock-frequency=20
+> > > <- 0x0 (0MHz) CPU timebase-frequency <- 0x0 (0MHz)
 > > > =20
 > > > zImage starting: loaded at 0x00400000 (sp: 0x01b88990) Allocating=20
 > > > 0x3d6de0 bytes for kernel ...
@@ -133,11 +151,13 @@ y=20
 > > >=20
 > > > =20
 > > > =20
-> > > Before I patched xenomai, the kernel can boot up with below console
+> > > Before I patched xenomai, the kernel can boot up with below=20
+> > > console
 > > > output:
 > > > =20
 > > > =20
-> > > CPU:   MPC885ZPnn at 100 MHz: 8 kB I-Cache 8 kB D-Cache FEC present
+> > > CPU:   MPC885ZPnn at 100 MHz: 8 kB I-Cache 8 kB D-Cache FEC =
+present
 > > > Board: RXT-2000
 > > > I2C:   ready
 > > > DRAM:  32 MB
@@ -162,21 +182,21 @@ y=20
 > > >   Device 0: Model: SanDisk SDCFH-002G Firm: HDX 5.04 Ser#:
 > > > AOZ043010001455
 > > >             Type: Removable Hard Disk
-> > >             Capacity: 1918.0 MB =3D 1.8 GB (3928176 x 512) Hit any ke=
-y=20
-> > > to stop autoboot:  0 ## Booting kernel from Legacy Image at 00100000=20
-> > > ...
+> > >             Capacity: 1918.0 MB =3D 1.8 GB (3928176 x 512) Hit any =
+
+> > > key to stop autoboot:  0 ## Booting kernel from Legacy Image at=20
+> > > 00100000 ...
 > > >    Image Name:   Linux-2.6.33.4
 > > >    Image Type:   PowerPC Linux Kernel Image (gzip compressed)
 > > >    Data Size:    1697346 Bytes =3D  1.6 MB
 > > >    Load Address: 00400000
 > > >    Entry Point:  00400558
 > > >    Verifying Checksum ... OK
-> > >    Uncompressing Kernel Image ... OK Memory <- <0x0 0x2000000>=20
+> > >    Uncompressing Kernel Image ... OK Memory <- <0x0 0x2000000>
 > > > (32MB)
-> > > ENET0: local-mac-address <- 00:d0:dd:ff:20:00 CPU clock-frequency <-=20
-> > > 0x5f5e100 (100MHz) CPU timebase-frequency <- 0x2faf08 (3MHz) CPU=20
-> > > bus-frequency <- 0x2faf080 (50MHz)
+> > > ENET0: local-mac-address <- 00:d0:dd:ff:20:00 CPU clock-frequency=20
+> > > <- 0x5f5e100 (100MHz) CPU timebase-frequency <- 0x2faf08 (3MHz)=20
+> > > CPU bus-frequency <- 0x2faf080 (50MHz)
 > > > =20
 > > > zImage starting: loaded at 0x00400000 (sp: 0x01b88990) Allocating=20
 > > > 0x35e3f0 bytes for kernel ...
@@ -190,7 +210,8 @@ y=20
 > > >=20
 > > > =20
 > > > It seems the boot loader doesn't pass the boot parameters to the=20
-> > > kernel that cannot boot up. Any one can help me? Thanks in advance.
+> > > kernel that cannot boot up. Any one can help me? Thanks in =
+advance.
 > > > =20
 > > > =20
 > > > =20
@@ -216,8 +237,9 @@ y=20
 >=20
 >=20
 
---=20
+--
 Philippe.
+
 
 
 
