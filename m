@@ -1,13 +1,12 @@
-Message-ID: <4C7F9923.30209@domain.hid>
-Date: Thu, 02 Sep 2010 14:31:31 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <20100902042326.27700@domain.hid>
-	<4C7F6549.7020703@domain.hid>
-In-Reply-To: <4C7F6549.7020703@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Validating installation of Xenomai
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <8slc8n$imkgbb@domain.hid>
+References: <8slc8n$imkgbb@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Date: Fri, 03 Sep 2010 07:27:11 +0200
+Message-ID: <1283491631.1709.2095.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-help] Powerpc kernel cannot boot with xenomai
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,48 +16,208 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: C Robinson <starknight__@domain.hid>
+To: Gao <gwysu@domain.hid>
 Cc: xenomai@xenomai.org
 
-Gilles Chanteperdrix wrote:
-> C Robinson wrote:
->> Hello,
->>
->> I followed the suggested install procedure to setup a Xenomai kernel on my x86 Ubuntu system.  
->> (http://www.xenomai.org/index.php/Building_Debian_packages)  
->> I would like to verify that everything is hunky-dory, but I'm not quite sure how.   I have read in some places that "user space" needs to be set up, although this is not mentioned in the reference I followed.   Is this still necessary?
->>
->> The command:
->> 	dmesg | grep Xenomai
->> Shows:	
->> -------------------------------------------------------------------------------------------------------------
->> 	[    0.659903] I-pipe: Domain Xenomai registered.
->> 	[    0.659928] Xenomai: hal/i386 started.
->> 	[    0.659942] Xenomai: scheduling class idle registered.
->> 	[    0.659944] Xenomai: scheduling class rt registered.
->> 	[    0.660450] Xenomai: real-time nucleus v2.5.4 (Sleep Walk) loaded.
->> 	[    0.660570] Xenomai: starting native API services.
->> 	[    0.660572] Xenomai: starting POSIX services.
->> 	[    0.660599] Xenomai: starting RTDM services.
->> -------------------------------------------------------------------------------------------------------------
->>
->> The command: 
->> 	xeno-test
->> Is not quite so promising (there was more of the same text above and below the output shown below):
-> 
-> We get that a lot. Fixing xeno-test is on our todo list, but not just
-> for right now.
-> In the mean-time, you can run the tests one by one.
-> 
-> The following paper:
-> http://download.intel.com/design/intarch/papers/322386.pdf
-> 
-> Is not really up to date with regard to kernel configuration, but gives
-> an overview of our testsuite.
+On Wed, 2010-09-01 at 17:02 +0800, Gao wrote:
+> Thank you Philippe very much. Yes, it seems that Xenomail may not support
+> the MPC870 cpu. But you mean the Xenomai with linux 2.6.34 kernel can
+> support it, right?
 
-Actually, the tests descriptions are the ones from the manual pages
-which should have been installed with xenomai.
+I mean that a port of Xenomai to a custom board based on a CPU from the
+mpc855 family is known to work, based on a 2.6.34 kernel, and that is
+the only port of Xenomai to this architecture I'm aware of. The latest
+I-pipe/powerpc patch for 2.6.34 does include that support for 8xx.
 
--- 
-					    Gilles.
+Now, it should be possible for you to backport the I-pipe bits from the
+2.6.34 patch required to run 8xx to 2.6.33, if your bsp is based on that
+release.
+
+>  Another question, is there a officail document that say
+> runing Xenomai on the mpc855 family processors needs 2.6.34 kernel?=20
+>=20
+
+You are currently reading it.
+
+> -----Original Message-----
+> From: Philippe Gerum [mailto:rpm@xenomai.org
+> Sent: 2010=E5=B9=B49=E6=9C=881=E6=97=A5 16:39
+> To: Gao
+> Cc: xenomai@xenomai.org
+> Subject: RE: [Xenomai-help] Powerpc kernel cannot boot with xenomai
+>=20
+> On Wed, 2010-09-01 at 16:11 +0800, Gao wrote:
+> > Hi Philippe,
+> >=20
+> > Are you sure  xenomai(2.5.4) doesn't support the cpu MPC870? Thank you.
+> >=20
+>=20
+> I'm saying that your particular board is not known to run Xenomai, nothin=
+g
+> else. Those which officially do are listed here:
+> http://www.xenomai.org/index.php/Embedded_Device_Support#Supported_Archit=
+ect
+> ures
+>=20
+> In any case, if you want to run Xenomai on a processor from the mpc855
+> family, 2.6.34 is a requirement.
+>=20
+> >=20
+> > Wenyi Gao
+> >=20
+> > -----Original Message-----
+> > From: Philippe Gerum [mailto:rpm@xenomai.org]
+> > Sent: 2010=E5=B9=B49=E6=9C=881=E6=97=A5 15:53
+> > To: Gao
+> > Cc: xenomai@xenomai.org
+> > Subject: Re: [Xenomai-help] Powerpc kernel cannot boot with xenomai
+> >=20
+> > On Wed, 2010-09-01 at 15:47 +0800, Gao wrote:
+> > > Hi All,
+> > > =20
+> > > I patched the kernel with xenomai, but the kernel "cuImage" cannot=20
+> > > boot up, below is the console output:
+> > >     =20
+> > > U-Boot 2009.06.00-svn21572 (Aug 24 2010 - 11:20:12)
+> > > =20
+> > > CPU:   MPC885ZPnn at 100 MHz: 8 kB I-Cache 8 kB D-Cache FEC present
+> >=20
+> > This board is not supported. What goes wrong is likely the I-pipe=20
+> > patch for this particular hardware.
+> >=20
+> > > Board: RXT-2000
+> > > I2C:   ready
+> > > DRAM:  32 MB
+> > > 1 gd->ram_size =3D (2000000) CONFIG_SYS_MEM_TOP_HIDE (0)
+> > > 2 gd->ram_size =3D (2000000) CONFIG_SYS_MEM_TOP_HIDE (0)
+> > > IRIS: bd->bi_memsize (2000000) gd(ff002ec0)->gd->ram_size(2000000)
+> > > IRIS: bd->bi_memsize (2000000)
+> > > Now running in RAM - U-Boot at: 01f89000
+> > > FLASH: 16 MB
+> > > In:    serial
+> > > Out:   serial
+> > > Err:   serial
+> > > Net:   FEC ETHERNET
+> > > IRIS: IDE testing
+> > > IRIS: CONFIG_CMD_IDE
+> > > PCMCIA:IRIS: NO CONFIG_START_IDE
+> > > SanDisk SDP 5/3 0.6
+> > >             Fixed Disk Card
+> > >             IDE interface
+> > >             [silicon] [unique] [single] [sleep] [standby] [idle]=20
+> > > [low power] Bus 0: OK
+> > >   Device 0: Model: SanDisk SDCFH-002G Firm: HDX 5.04 Ser#:
+> > > AOZ043010001455
+> > >             Type: Removable Hard Disk
+> > >             Capacity: 1918.0 MB =3D 1.8 GB (3928176 x 512) Hit any ke=
+y=20
+> > > to stop autoboot:  0 ## Booting kernel from Legacy Image at 00100000=20
+> > > ...
+> > >    Image Name:   Linux-2.6.33.4
+> > >    Image Type:   PowerPC Linux Kernel Image (gzip compressed)
+> > >    Data Size:    1873951 Bytes =3D  1.8 MB
+> > >    Load Address: 00400000
+> > >    Entry Point:  00400558
+> > >    Verifying Checksum ... OK
+> > >    Uncompressing Kernel Image ... OK Memory <- <0x0 0x0> (0MB)
+> > > ENET0: local-mac-address <- 00:00:00:00:00:00 CPU clock-frequency <-=20
+> > > 0x0 (0MHz) CPU timebase-frequency <- 0x0 (0MHz)
+> > > =20
+> > > zImage starting: loaded at 0x00400000 (sp: 0x01b88990) Allocating=20
+> > > 0x3d6de0 bytes for kernel ...
+> > > gunzipping (0x00000000 <- 0x0040c000:0x007fd97c)...done 0x3adf34=20
+> > > bytes
+> > > =20
+> > > Linux/PowerPC load:
+> > > Finalizing device tree... flat tree at 0x80a300
+> > >=20
+> > > =20
+> > > =20
+> > > Before I patched xenomai, the kernel can boot up with below console
+> > > output:
+> > > =20
+> > > =20
+> > > CPU:   MPC885ZPnn at 100 MHz: 8 kB I-Cache 8 kB D-Cache FEC present
+> > > Board: RXT-2000
+> > > I2C:   ready
+> > > DRAM:  32 MB
+> > > 1 gd->ram_size =3D (2000000) CONFIG_SYS_MEM_TOP_HIDE (0)
+> > > 2 gd->ram_size =3D (2000000) CONFIG_SYS_MEM_TOP_HIDE (0)
+> > > IRIS: bd->bi_memsize (2000000) gd(ff002ec0)->gd->ram_size(2000000)
+> > > IRIS: bd->bi_memsize (2000000)
+> > > Now running in RAM - U-Boot at: 01f89000
+> > > FLASH: 16 MB
+> > > In:    serial
+> > > Out:   serial
+> > > Err:   serial
+> > > Net:   FEC ETHERNET
+> > > IRIS: IDE testing
+> > > IRIS: CONFIG_CMD_IDE
+> > > PCMCIA:IRIS: NO CONFIG_START_IDE
+> > > SanDisk SDP 5/3 0.6
+> > >             Fixed Disk Card
+> > >             IDE interface
+> > >             [silicon] [unique] [single] [sleep] [standby] [idle]=20
+> > > [low power] Bus 0: OK
+> > >   Device 0: Model: SanDisk SDCFH-002G Firm: HDX 5.04 Ser#:
+> > > AOZ043010001455
+> > >             Type: Removable Hard Disk
+> > >             Capacity: 1918.0 MB =3D 1.8 GB (3928176 x 512) Hit any ke=
+y=20
+> > > to stop autoboot:  0 ## Booting kernel from Legacy Image at 00100000=20
+> > > ...
+> > >    Image Name:   Linux-2.6.33.4
+> > >    Image Type:   PowerPC Linux Kernel Image (gzip compressed)
+> > >    Data Size:    1697346 Bytes =3D  1.6 MB
+> > >    Load Address: 00400000
+> > >    Entry Point:  00400558
+> > >    Verifying Checksum ... OK
+> > >    Uncompressing Kernel Image ... OK Memory <- <0x0 0x2000000>=20
+> > > (32MB)
+> > > ENET0: local-mac-address <- 00:d0:dd:ff:20:00 CPU clock-frequency <-=20
+> > > 0x5f5e100 (100MHz) CPU timebase-frequency <- 0x2faf08 (3MHz) CPU=20
+> > > bus-frequency <- 0x2faf080 (50MHz)
+> > > =20
+> > > zImage starting: loaded at 0x00400000 (sp: 0x01b88990) Allocating=20
+> > > 0x35e3f0 bytes for kernel ...
+> > > gunzipping (0x00000000 <- 0x0040c000:0x00799450)...done 0x349f2c=20
+> > > bytes
+> > > =20
+> > > Linux/PowerPC load: root=3D/dev/sda1 rw rootfstype=3Dext3=20
+> > > ip=3D169.254.0.2::169.254.0.1:255.255.0.0 console=3DttyCPM0,38400=20
+> > > Finalizing device tree... flat tree at 0x7a6300 Using RxT-Carrier=20
+> > > machine description ...................
+> > >=20
+> > > =20
+> > > It seems the boot loader doesn't pass the boot parameters to the=20
+> > > kernel that cannot boot up. Any one can help me? Thanks in advance.
+> > > =20
+> > > =20
+> > > =20
+> > > =20
+> > > Best regards,
+> > > Wenyi Gao
+> > > =20
+> > >=20
+> > > _______________________________________________
+> > > Xenomai-help mailing list
+> > > Xenomai-help@domain.hid
+> > > https://mail.gna.org/listinfo/xenomai-help
+> >=20
+> > --
+> > Philippe.
+> >=20
+> >=20
+> >=20
+>=20
+> --
+> Philippe.
+>=20
+>=20
+>=20
+
+--=20
+Philippe.
+
+
 
