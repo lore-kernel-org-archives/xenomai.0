@@ -1,12 +1,13 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <20100903085639.12173@domain.hid>
-References: <20100903085639.12173@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Fri, 03 Sep 2010 16:32:18 +0200
-Message-ID: <1283524338.1709.2133.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] Xenomai-help Digest, Vol 60, Issue 2
+Date: Fri, 3 Sep 2010 17:30:33 +0100 (BST)
+From: edward.robbins@domain.hid
+MIME-Version: 1.0
+Content-Type: multipart/mixed;boundary="----=_20100903173033000000_64107"
+In-Reply-To: <4C692FC3.5040802@domain.hid>
+References: <1281709057.650414331@domain.hid>
+	<4C65583D.3030800@domain.hid> 
+	<1281960823.030215299@domain.hid> <4C692FC3.5040802@domain.hid>
+Message-ID: <1283531433.789315367@domain.hid>
+Subject: Re: [Xenomai-help] Very high latencies under stress testing
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,110 +17,272 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: C Robinson <starknight__@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On Fri, 2010-09-03 at 08:56 -0400, C Robinson wrote:
-> Hi,
->=20
-> So the position I am in is still not knowing how to run the examples.   A=
-ttempting the command "sudo make  /home/<user name>/xenomai-2.5.4" from the=
- directory /usr/xenomai_egs/xenomai-head/examples/, results in the followin=
-g error (as mentioned previously):
->=20
-> -------------------------------------------------------------------------=
----------------------------------------------------
-> xddp-echo.c: In function ?realtime_thread?:
-> xddp-echo.c:115: error: ?SOL_XDDP? undeclared (first use in this function=
-)
-> xddp-echo.c:115: error: (Each undeclared identifier is reported only once
-> xddp-echo.c:115: error: for each function it appears in.)
-> xddp-echo.c:115: error: ?XDDP_POOLSZ? undeclared (first use in this funct=
-ion)
-> make[1]: *** [xddp-echo] Error 1
-> -------------------------------------------------------------------------=
---------------------------------------------------
->=20
-> and shortly afterwards ended with:
->=20
-> make[1]: *** [all] Error 2
-> make[1]: Leaving directory `/usr/xenomai_egs/xenomai-head/examples/posix'
->=20
-> How do I get around this error?  In addition, is it ok to use the default=
- user account. (or should a specific xenomai account be set up)
->=20
+------=_20100903173033000000_64107
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-The guidelines are misleading, in the sense that pulling xenomai-head
-today will download the code for the upcoming 2.6.x release.
-Unfortunately, changes were made to the rtipc support for 2.6.x, which
-are not available to 2.5.x. So, building the xenomai-head (2.6.x)
-examples against headers and libraries belonging to 2.5(.4) won't
-neither build nor work.
+I have now installed the i-pipe tracer and run some tests. Yesterday I thou=
+ght I had gotten a high latency without X running, while compiling the kern=
+el to stress the system, but now I think I might have been mistaken. Either=
+ way I was using a kernel whose configuration I couldn't remember, and didn=
+'t have the I-Pipe tracer installed at that time, so the observation wasn't=
+ particularly useful.=0A=0AToday I have tried using the intel video driver =
+with the option "NoAccel", and that seems to stop the high latencies; with =
+this option I can kill X, restart it, and run glxgears without issues, all =
+while compiling the linux kernel and having xeno-test or latency running. T=
+he highest latency I have gotten so far is 18uS. =0A=0AHowever, if anyone i=
+s interested I have made a trace without the NoAccel option, when the laten=
+cy jumped to 1113uS upon starting X, attached.=0A=0AA couple of other thing=
+s:=0A=0AYesterday when running xeno-test, I got a few of these messages:=0A=
+   "INFO: task sync:20539 blocked for more than 120 seconds...."=0AI have n=
+ot seen this again today, and I don't know if it could be related, but I wa=
+s also getting lots of strange USB disconnect sort of messages yesterday...=
+ I haven't seen any more today, and as I said before that kernel may have b=
+een useless anyway.=0A=0AI am also getting this message from xeno-test:=0A =
+  "FATAL: module xeno-nucleus not found"=0A=0AAnd:=0A   "Warning Linux is c=
+ompiled to use FPU in kernel space=0A    For this reason, switch test can n=
+ot test using FPU in Linux Kernel-space"=0A=0AI presume these last two are =
+because I did something wrong at kernel compile time?=0A=0AAlso, I tried to=
+ compile Xenomai 2.5.4 with a 2.6.34 kernel because it has a network driver=
+ that I really need, but the build failed. I think this has been resolved p=
+reviously (as I have seen some information in the mailing list about a prob=
+lem in the debian kernel patch script), but am not sure how to use the corr=
+ected script with my system. Can anyone help?=0A=0AI will keep testing.=0A=
+=0AThanks,=0A=0AEdward=0A=0A=0AOn Monday, 16 August, 2010 1:32pm, "Gilles C=
+hanteperdrix" <gilles.chanteperdrix@xenomai.org> said:=0A=0A> edward.robbin=
+s@domain.hid wrote:=0A>>=0A>> On Friday, 13 August, 2010 3:35=
+pm, "Gilles Chanteperdrix"=0A>> <gilles.chanteperdrix@xenomai.org> said:=0A=
+>>=0A>>> edward.robbins@domain.hid wrote:=0A>>>> I wonder if =
+this is to do with graphics? I have set "NoAccel" in the=0A>>>> driver sect=
+ion of Xorg.conf (I am using fbdev). I also notice that=0A>>>> latencies go=
+ massive (e.g. 4200uS) the first time I run glxgears.=0A>>>> "glxinfo" repo=
+rts "Direct rendering: no".=0A>>> This is bad news. It could come either fr=
+om the fact that the Xorg=0A>>> driver shuts hardware interrupts off (there=
+ is nothing xenomai can do=0A>>> about that), or it could be an SMI issue. =
+What about using the driver=0A>>> for the real graphic card you have ? Prob=
+ably intel card? Do you observe=0A>>> any big latencies if you stress the s=
+ystem with anything else than X?=0A>>>=0A>>>> Power management options (ACP=
+UI, APM): Disable ACPI (Advanced=0A>>>> Configuration and Power Interface) =
+Support --> Processor Disable CPU=0A>>>> Frequency Scaling Disable CPU idle=
+ PM support Disable Power Managment=0A>>>> Support=0A>>> Disabling ACPI is =
+a bad idea. As repeated many times, only=0A>>> ACPI_PROCESSOR should be dis=
+abled, not ACPI.=0A>>>=0A>>=0A>> Thanks for your helpful responses.=0A>>=0A=
+>> I'm not working on this project again until next week, but on Friday I w=
+as able=0A>> to=0A>>=0A>>  o Recompile the kernel with ACPI enabled=0A>>  o=
+ Boot with the 'SMI handler' BIOS option set to disabled....=0A>>    accord=
+ing to the help text this option should be disabled if 'an RTOS=0A>>    is =
+installed' - I presume this means that SMIs are completely disabled=0A>>   =
+ and therefore SMIs cannot be the source of the problem=0A>>   (very conven=
+ient BIOS option... now I begin to appreciate the expense of this=0A>> boar=
+d!)=0A>>  o Changed xorg to use the intel video driver=0A> =0A> Now you can=
+ try NoAccel with the intel video driver too....=0A> =0A> =0A> --=0A> =09=
+=09=09=09=09    Gilles.=0A> =0A
+------=_20100903173033000000_64107
+Content-Type: application/octet-stream;name="ipipe_trace"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="ipipe_trace"
 
-Sorry for the time lost fiddling with this. The guidelines were written
-at a time when -head was actually the development tree for the 2.5.x
-release. We opened the 2.6.x branch recently, thus becoming the new
--head.
-
->=20
-> Trying to get up the man pages results in:
->=20
-> -------------------------------------------------------------------------=
---------------------------------------------------
-> clocktest man
-> The program 'clocktest' is currently not installed.  You can install it b=
-y typing:
-> sudo apt-get install xenomai-runtime
-> -------------------------------------------------------------------------=
---------------------------------------------------
-> Is this because I installed the xenomai-runtime package manually via the =
-Debian guideline ? (Synaptic shows this as being already installed, perhaps=
- this is a result of the earlier problem?).
->=20
-
-I can't tell, but I can give you the steps to build any 2.5.x release
-the way it should work for you, i.e. from the official tarball, assuming
-x86 is your target system:
-
-- unpack xenomai-2.5.4.tar.bz2 (yeah, ok, this one is no news)
-- mkdir -p .../your/build/tree
-- cd .../your/build/tree
-- .../xenomai-2.5.4/configure [--enable-x86-sep]* [--prefix=3D/install-dir]
-- make install
-
-At this stage, you should have the userland bits properly compiled and
-installed in /install-dir. This defaults to /usr/xenomai if
-unspecified.=20
-
-Those userland bits should work with any Xenomai 2.5.x kernel support,
-regardless of whether you got it from the ubuntu/debian repos via apt,
-or rebuilt it manually, assuming that the distro package was built with
-sane defaults.
-
-If you plan to rebuild your own kernel with Xenomai support instead of
-picking the one shipped with the distro, then README.INSTALL, =C2=A72.1
-should help. Why this could be a good idea is explained here:=20
-http://www.xenomai.org/index.php/FAQs#Tips_and_tricks_setting_up_your_x86_k=
-ernel
-
-If you go for manual install, I would suggest that you purge all
-previous Xenomai packages from your system, to avoid hair pulling
-conflicts.
-
-(*) best for x86_32, unless if running pre-Pentium II+ antiques. Not
-needed on x86_64.
-
->=20
-> Thanks,
-> Charles
->=20
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
-
---=20
-Philippe.
+SS1waXBlIGZyb3plbiBiYWNrLXRyYWNpbmcgc2VydmljZSBvbiAyLjYuMzIuMTUteGVub21haS0y
+LjUuNC9pcGlwZS0yLjctMDEKLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tCkNQVTogMCwgRnJlZXplOiA1NDIzMzQ0NDUzNDQ3IGN5Y2xl
+cywgVHJhY2UgUG9pbnRzOiAxMDAgKCsxMCkKQ2FsaWJyYXRlZCBtaW5pbXVtIHRyYWNlLXBvaW50
+IG92ZXJoZWFkOiAwLjEzMSB1cwoKICstLS0tLSBIYXJkIElSUXMgKCd8JzogbG9ja2VkKQogfCst
+LS0tIDx1bnVzZWQ+CiB8fCstLS0gPHVudXNlZD4KIHx8fCstLSBYZW5vbWFpCiB8fHx8Ky0gTGlu
+dXggKCcqJzogZG9tYWluIHN0YWxsZWQsICcrJzogY3VycmVudCwgJyMnOiBjdXJyZW50K3N0YWxs
+ZWQpCiB8fHx8fCAgICAgICAgICAgICAgICAgICAgICAgICstLS0tLS0tLS0tIERlbGF5IGZsYWcg
+KCcrJzogPiAxIHVzLCAnISc6ID4gMTAgdXMpCiB8fHx8fCAgICAgICAgICAgICAgICAgICAgICAg
+IHwgICAgICAgICstIE5NSSBub2lzZSAoJ04nKQogfHx8fHwgICAgICAgICAgICAgICAgICAgICAg
+ICB8ICAgICAgICB8CiAgICAgIFR5cGUgICAgVXNlciBWYWwuICAgVGltZSAgICBEZWxheSAgRnVu
+Y3Rpb24gKFBhcmVudCkKOnwgICMqZnVuYyAgICAgICAgICAgICAgIC0xMjE1ICAgIDAuMzc4ICB4
+bnNjaGVkX3BpY2tfbmV4dCsweDQgKF9feG5wb2Rfc2NoZWR1bGUrMHgxZTMpCjp8ICAjKmZ1bmMg
+ICAgICAgICAgICAgICAtMTIxNCAgICAwLjQ5MSAgX19waHlzX2FkZHIrMHg0IChfX3hucG9kX3Nj
+aGVkdWxlKzB4NTYyKQo6fCAgIypbMTQ2NzBdIHNhbXBsaW4gOTkgLTEyMTQgICAgMC4zNzggIF9f
+eG5wb2Rfc2NoZWR1bGUrMHg4MzQgKHhucG9kX3N1c3BlbmRfdGhyZWFkKzB4MjgxKQo6fCAgIypm
+dW5jICAgICAgICAgICAgICAgLTEyMTQgICAgMC4yMjEgIHhudGltZXJfZ2V0X292ZXJydW5zKzB4
+OCAoeG5wb2Rfd2FpdF90aHJlYWRfcGVyaW9kKzB4MTRjKQo6fCAgIypmdW5jICAgICAgICAgICAg
+ICAgLTEyMTMgICAgMC4yMTMgIF9faXBpcGVfcmVzdG9yZV9waXBlbGluZV9oZWFkKzB4NyAoeG5w
+b2Rfd2FpdF90aHJlYWRfcGVyaW9kKzB4MWNiKQo6fCAgKyplbmQgICAgIDB4ODAwMDAwMDAgLTEy
+MTMgICAgMC4zMTkgIF9faXBpcGVfcmVzdG9yZV9waXBlbGluZV9oZWFkKzB4MTM3ICh4bnBvZF93
+YWl0X3RocmVhZF9wZXJpb2QrMHgxY2IpCjp8ICArKmJlZ2luICAgMHg4MDAwMDAwMSAtMTIxMyAg
+ICAwLjI4MSAgX19pcGlwZV9kaXNwYXRjaF9ldmVudCsweDFkOSAoX19pcGlwZV9zeXNjYWxsX3Jv
+b3QrMHhjZCkKOnwgICsqZW5kICAgICAweDgwMDAwMDAxIC0xMjEzICAgIDAuMjI5ICBfX2lwaXBl
+X2Rpc3BhdGNoX2V2ZW50KzB4M2YwIChfX2lwaXBlX3N5c2NhbGxfcm9vdCsweGNkKQo6fCAgKypi
+ZWdpbiAgIDB4ODAwMDAwMDEgLTEyMTIgICAgMC41NzMgIF9faXBpcGVfc3lzY2FsbF9yb290KzB4
+ZWMgKF9faXBpcGVfc3lzY2FsbF9yb290X3RodW5rKzB4MzUpCjogICArKmZ1bmMgICAgICAgICAg
+ICAgICAtMTIxMiAgICAwLjIxNCAgX19pcGlwZV9zeXNjYWxsX3Jvb3QrMHgxMSAoX19pcGlwZV9z
+eXNjYWxsX3Jvb3RfdGh1bmsrMHgzNSkKOiAgICsqZnVuYyAgICAgICAgICAgICAgIC0xMjEyICAg
+IDAuMjEwICBfX2lwaXBlX2Rpc3BhdGNoX2V2ZW50KzB4MTEgKF9faXBpcGVfc3lzY2FsbF9yb290
+KzB4Y2QpCjp8ICArKmJlZ2luICAgMHg4MDAwMDAwMSAtMTIxMSAgICAwLjI4MSAgX19pcGlwZV9k
+aXNwYXRjaF9ldmVudCsweDM0IChfX2lwaXBlX3N5c2NhbGxfcm9vdCsweGNkKQo6fCAgKyplbmQg
+ICAgIDB4ODAwMDAwMDEgLTEyMTEgICAgMC4yMTQgIF9faXBpcGVfZGlzcGF0Y2hfZXZlbnQrMHgx
+YTYgKF9faXBpcGVfc3lzY2FsbF9yb290KzB4Y2QpCjogICArKmZ1bmMgICAgICAgICAgICAgICAt
+MTIxMSAgICAwLjIxNyAgaGlzeXNjYWxsX2V2ZW50KzB4MTEgKF9faXBpcGVfZGlzcGF0Y2hfZXZl
+bnQrMHgxYjcpCjogICArKmZ1bmMgICAgICAgICAgICAgICAtMTIxMSAgICAwLjE4NyAgX19ydF90
+YXNrX3dhaXRfcGVyaW9kKzB4YiAoaGlzeXNjYWxsX2V2ZW50KzB4MTUxKQo6ICAgKypmdW5jICAg
+ICAgICAgICAgICAgLTEyMTAgICAgMC4xOTUgIHJ0X3Rhc2tfd2FpdF9wZXJpb2QrMHg0IChfX3J0
+X3Rhc2tfd2FpdF9wZXJpb2QrMHgxYykKOiAgICsqZnVuYyAgICAgICAgICAgICAgIC0xMjEwICAg
+IDAuMTk4ICB4bnBvZF93YWl0X3RocmVhZF9wZXJpb2QrMHhiIChydF90YXNrX3dhaXRfcGVyaW9k
+KzB4M2IpCjp8ICArKmJlZ2luICAgMHg4MDAwMDAwMCAtMTIxMCAgICAwLjI3MCAgeG5wb2Rfd2Fp
+dF90aHJlYWRfcGVyaW9kKzB4M2QgKHJ0X3Rhc2tfd2FpdF9wZXJpb2QrMHgzYikKOnwgICMqZnVu
+YyAgICAgICAgICAgICAgIC0xMjEwICAgIDAuMjYyICB4bnBvZF9zdXNwZW5kX3RocmVhZCsweDEx
+ICh4bnBvZF93YWl0X3RocmVhZF9wZXJpb2QrMHgxMjYpCjp8ICAjKmZ1bmMgICAgICAgICAgICAg
+ICAtMTIxMCAgICAwLjI0MCAgX194bnBvZF9zY2hlZHVsZSsweDExICh4bnBvZF9zdXNwZW5kX3Ro
+cmVhZCsweDI4MSkKOnwgICMqWzE0NjcwXSBzYW1wbGluIDk5IC0xMjA5ICAgIDAuMjE3ICBfX3hu
+cG9kX3NjaGVkdWxlKzB4MTg5ICh4bnBvZF9zdXNwZW5kX3RocmVhZCsweDI4MSkKOnwgICMqZnVu
+YyAgICAgICAgICAgICAgIC0xMjA5ICAgIDAuMzY3ICB4bnNjaGVkX3BpY2tfbmV4dCsweDQgKF9f
+eG5wb2Rfc2NoZWR1bGUrMHgxZTMpCjp8ICAjKmZ1bmMgICAgICAgICAgICAgICAtMTIwOSAgICAw
+LjQyNCAgX19waHlzX2FkZHIrMHg0IChfX3hucG9kX3NjaGVkdWxlKzB4NTYyKQo6fCAgIypbMTMy
+NzNdIGRkICAgICAgLTEgLTEyMDggICAgMC40MjAgIF9feG5wb2Rfc2NoZWR1bGUrMHg4MzQgKHhu
+aW50cl9jbG9ja19oYW5kbGVyKzB4MTMwKQo6fCAgICNmdW5jICAgICAgICAgICAgICAgLTEyMDgg
+ICAgMC40MDggIF9faXBpcGVfd2Fsa19waXBlbGluZSsweDExIChfX2lwaXBlX2Rpc3BhdGNoX3dp
+cmVkX25vY2hlY2srMHgxZGEpCjp8ICAgI2VuZCAgICAgMHgwMDAwMDBmNiAtMTIwNyAgICAwLjM0
+NSAgY29tbW9uX2ludGVycnVwdCsweDM5IChfX2lwaXBlX3N5bmNfc3RhZ2UrMHgxOTUpCjogICAg
+I2Z1bmMgICAgICAgICAgICAgICAtMTIwNyAgICAwLjIyMSAgX19pcGlwZV9nZXRfaW9hcGljX2ly
+cV92ZWN0b3IrMHg0IChfX2lwaXBlX3N5bmNfc3RhZ2UrMHgxY2UpCjogICAgI2Z1bmMgICAgICAg
+ICAgICAgICAtMTIwNyAgICAwLjIwMiAgc21wX2NhbGxfZnVuY3Rpb25fc2luZ2xlX2ludGVycnVw
+dCsweDQgKF9faXBpcGVfc3luY19zdGFnZSsweDIxYikKOiAgICAjZnVuYyAgICAgICAgICAgICAg
+IC0xMjA3ICAgIDAuMTk1ICBpcnFfZW50ZXIrMHg5IChzbXBfY2FsbF9mdW5jdGlvbl9zaW5nbGVf
+aW50ZXJydXB0KzB4ZSkKOnwgICAjYmVnaW4gICAweDgwMDAwMDAxIC0xMjA2ICAgIDAuMjQzICBk
+ZWJ1Z19zbXBfcHJvY2Vzc29yX2lkKzB4NDQgKGlycV9lbnRlcisweDEzKQo6fCAgICNlbmQgICAg
+IDB4ODAwMDAwMDEgLTEyMDYgICAgMC4yNTEgIGRlYnVnX3NtcF9wcm9jZXNzb3JfaWQrMHg5NCAo
+aXJxX2VudGVyKzB4MTMpCjogICAgI2Z1bmMgICAgICAgICAgICAgICAtMTIwNiAgICAwLjE5NSAg
+cmN1X2lycV9lbnRlcisweDkgKGlycV9lbnRlcisweDFhKQo6fCAgICNiZWdpbiAgIDB4ODAwMDAw
+MDEgLTEyMDYgICAgMC4yNDAgIGRlYnVnX3NtcF9wcm9jZXNzb3JfaWQrMHg0NCAocmN1X2lycV9l
+bnRlcisweDFhKQo6fCAgICNlbmQgICAgIDB4ODAwMDAwMDEgLTEyMDYgICAgMC4yNTUgIGRlYnVn
+X3NtcF9wcm9jZXNzb3JfaWQrMHg5NCAocmN1X2lycV9lbnRlcisweDFhKQo6ICAgICNmdW5jICAg
+ICAgICAgICAgICAgLTEyMDUgICAgMC4yMDIgIGlkbGVfY3B1KzB4NCAoaXJxX2VudGVyKzB4MjEp
+CjogICAgI2Z1bmMgICAgICAgICAgICAgICAtMTIwNSAgICAwLjIwNiAgYWRkX3ByZWVtcHRfY291
+bnQrMHg5IChpcnFfZW50ZXIrMHg1OSkKOiAgICAjZnVuYyAgICAgICAgICAgICAgIC0xMjA1ICAg
+IDAuMTk1ICBpcGlwZV9jaGVja19jb250ZXh0KzB4MTEgKGFkZF9wcmVlbXB0X2NvdW50KzB4MWMp
+Cjp8ICAgI2JlZ2luICAgMHg4MDAwMDAwMSAtMTIwNSAgICAwLjI2MiAgaXBpcGVfY2hlY2tfY29u
+dGV4dCsweDMzIChhZGRfcHJlZW1wdF9jb3VudCsweDFjKQo6fCAgICNlbmQgICAgIDB4ODAwMDAw
+MDEgLTEyMDQgICAgMC4yMjkgIGlwaXBlX2NoZWNrX2NvbnRleHQrMHhkYSAoYWRkX3ByZWVtcHRf
+Y291bnQrMHgxYykKOiAgICAjZnVuYyAgICAgICAgICAgICAgIC0xMjA0ICAgIDAuMTk1ICBnZW5l
+cmljX3NtcF9jYWxsX2Z1bmN0aW9uX3NpbmdsZV9pbnRlcnJ1cHQrMHhkIChzbXBfY2FsbF9mdW5j
+dGlvbl9zaW5nbGVfaW50ZXJydXB0KzB4MTMpCjp8ICAgI2JlZ2luICAgMHg4MDAwMDAwMSAtMTIw
+NCAgICAwLjI0MCAgZGVidWdfc21wX3Byb2Nlc3Nvcl9pZCsweDQ0IChnZW5lcmljX3NtcF9jYWxs
+X2Z1bmN0aW9uX3NpbmdsZV9pbnRlcnJ1cHQrMHgxZSkKOnwgICAjZW5kICAgICAweDgwMDAwMDAx
+IC0xMjA0ICAgIDAuMjI1ICBkZWJ1Z19zbXBfcHJvY2Vzc29yX2lkKzB4OTQgKGdlbmVyaWNfc21w
+X2NhbGxfZnVuY3Rpb25fc2luZ2xlX2ludGVycnVwdCsweDFlKQo6fCAgICNiZWdpbiAgIDB4ODAw
+MDAwMDEgLTEyMDQgICAgMC4yMzIgIGRlYnVnX3NtcF9wcm9jZXNzb3JfaWQrMHg0NCAoZ2VuZXJp
+Y19zbXBfY2FsbF9mdW5jdGlvbl9zaW5nbGVfaW50ZXJydXB0KzB4MzkpCjp8ICAgI2VuZCAgICAg
+MHg4MDAwMDAwMSAtMTIwMyAgICAwLjIyMSAgZGVidWdfc21wX3Byb2Nlc3Nvcl9pZCsweDk0IChn
+ZW5lcmljX3NtcF9jYWxsX2Z1bmN0aW9uX3NpbmdsZV9pbnRlcnJ1cHQrMHgzOSkKOiAgICAjZnVu
+YyAgICAgICAgICAgICAgIC0xMjAzICAgIDAuMTk5ICBfc3Bpbl9sb2NrKzB4OSAoZ2VuZXJpY19z
+bXBfY2FsbF9mdW5jdGlvbl9zaW5nbGVfaW50ZXJydXB0KzB4N2QpCjogICAgI2Z1bmMgICAgICAg
+ICAgICAgICAtMTIwMyAgICAwLjE5MSAgYWRkX3ByZWVtcHRfY291bnQrMHg5IChfc3Bpbl9sb2Nr
+KzB4MWIpCjogICAgI2Z1bmMgICAgICAgICAgICAgICAtMTIwMyAgICAwLjE4NyAgaXBpcGVfY2hl
+Y2tfY29udGV4dCsweDExIChhZGRfcHJlZW1wdF9jb3VudCsweDFjKQo6fCAgICNiZWdpbiAgIDB4
+ODAwMDAwMDEgLTEyMDMgICAgMC4yNTEgIGlwaXBlX2NoZWNrX2NvbnRleHQrMHgzMyAoYWRkX3By
+ZWVtcHRfY291bnQrMHgxYykKOnwgICAjZW5kICAgICAweDgwMDAwMDAxIC0xMjAyICAgIDAuMjc3
+ICBpcGlwZV9jaGVja19jb250ZXh0KzB4ZGEgKGFkZF9wcmVlbXB0X2NvdW50KzB4MWMpCjogICAg
+I2Z1bmMgICAgICAgICAgICAgICAtMTIwMiAgICAwLjE5MSAgX3NwaW5fdW5sb2NrKzB4NCAoZ2Vu
+ZXJpY19zbXBfY2FsbF9mdW5jdGlvbl9zaW5nbGVfaW50ZXJydXB0KzB4YTcpCjogICAgI2Z1bmMg
+ICAgICAgICAgICAgICAtMTIwMiAgICAwLjE5NSAgc3ViX3ByZWVtcHRfY291bnQrMHg5IChfc3Bp
+bl91bmxvY2srMHgxNSkKOiAgICAjZnVuYyAgICAgICAgICAgICAgIC0xMjAyICAgIDAuMTg3ICBp
+cGlwZV9jaGVja19jb250ZXh0KzB4MTEgKHN1Yl9wcmVlbXB0X2NvdW50KzB4MWMpCjp8ICAgI2Jl
+Z2luICAgMHg4MDAwMDAwMSAtMTIwMSAgICAwLjI1MSAgaXBpcGVfY2hlY2tfY29udGV4dCsweDMz
+IChzdWJfcHJlZW1wdF9jb3VudCsweDFjKQo6fCAgICNlbmQgICAgIDB4ODAwMDAwMDEgLTEyMDEg
+ICAgMC4yNTggIGlwaXBlX2NoZWNrX2NvbnRleHQrMHhkYSAoc3ViX3ByZWVtcHRfY291bnQrMHgx
+YykKOiAgICAjZnVuYyAgICAgICAgICAgICAgIC0xMjAxICAgIDAuMTk1ICBfX2NwYV9mbHVzaF9h
+bGwrMHg5IChnZW5lcmljX3NtcF9jYWxsX2Z1bmN0aW9uX3NpbmdsZV9pbnRlcnJ1cHQrMHhlNikK
+OiAgICAjZnVuYyAgICAgICAgICAgICAgIC0xMjAxICAgIDAuMTkxICBpcGlwZV9jaGVja19jb250
+ZXh0KzB4MTEgKF9fY3BhX2ZsdXNoX2FsbCsweDI2KQo6fCAgICNiZWdpbiAgIDB4ODAwMDAwMDEg
+LTEyMDEgICAgMC4yNTUgIGlwaXBlX2NoZWNrX2NvbnRleHQrMHgzMyAoX19jcGFfZmx1c2hfYWxs
+KzB4MjYpCjp8ICAgI2VuZCAgICAgMHg4MDAwMDAwMSAtMTIwMCAgICAwLjU0NyAgaXBpcGVfY2hl
+Y2tfY29udGV4dCsweGRhIChfX2NwYV9mbHVzaF9hbGwrMHgyNikKOiAgICAjZnVuYyAgICAgICAg
+ICAgICAgIC0xMjAwICAgIDAuMTk1ICBfX2lwaXBlX3Jlc3RvcmVfcm9vdCsweGIgKF9fY3BhX2Zs
+dXNoX2FsbCsweDY3KQo6fCAgICNiZWdpbiAgIDB4ODAwMDAwMDEgLTEyMDAgICAgMC4yNDAgIF9f
+aXBpcGVfcmVzdG9yZV9yb290KzB4MmQgKF9fY3BhX2ZsdXNoX2FsbCsweDY3KQo6fCAgICNlbmQg
+ICAgIDB4ODAwMDAwMDEgLTExOTkhIDExNzMuMjU4ICBfX2lwaXBlX3Jlc3RvcmVfcm9vdCsweDdk
+IChfX2NwYV9mbHVzaF9hbGwrMHg2NykKOnwgICAjYmVnaW4gICAweDAwMDAwMGY2ICAgLTI2KyAg
+IDEuNTQ5ICBjb21tb25faW50ZXJydXB0KzB4MjAgKF9fY3BhX2ZsdXNoX2FsbCsweDdmKQo6fCAg
+ICNmdW5jICAgICAgICAgICAgICAgICAtMjQgICAgMC40NzIgIF9faXBpcGVfaGFuZGxlX2lycSsw
+eDExIChjb21tb25faW50ZXJydXB0KzB4MjcpCjp8ICAgI2Z1bmMgICAgICAgICAgICAgICAgIC0y
+NCAgICAwLjI5MiAgaXJxX3RvX2Rlc2MrMHg0IChfX2lwaXBlX2hhbmRsZV9pcnErMHgxMzQpCjp8
+ICAgI2Z1bmMgICAgICAgICAgICAgICAgIC0yNCAgICAwLjM5MCAgX19pcGlwZV9hY2tfYXBpYysw
+eDQgKF9faXBpcGVfaGFuZGxlX2lycSsweDEzYykKOnwgICAjZnVuYyAgICAgICAgICAgICAgICAg
+LTIzICAgIDAuNjMwICBuYXRpdmVfYXBpY19tZW1fd3JpdGUrMHg0IChfX2lwaXBlX2Fja19hcGlj
+KzB4MWQpCjp8ICAgI2Z1bmMgICAgICAgICAgICAgICAgIC0yMyAgICAwLjMxOCAgX19pcGlwZV9k
+aXNwYXRjaF93aXJlZCsweGQgKF9faXBpcGVfaGFuZGxlX2lycSsweDE0NykKOnwgICAjZnVuYyAg
+ICAgICAgICAgICAgICAgLTIyICAgIDAuNDQyICBfX2lwaXBlX2Rpc3BhdGNoX3dpcmVkX25vY2hl
+Y2srMHgxMSAoX19pcGlwZV9kaXNwYXRjaF93aXJlZCsweGJhKQo6fCAgIypmdW5jICAgICAgICAg
+ICAgICAgICAtMjIgICAgMC41OTIgIHhuaW50cl9jbG9ja19oYW5kbGVyKzB4YiAoX19pcGlwZV9k
+aXNwYXRjaF93aXJlZF9ub2NoZWNrKzB4MTJiKQo6fCAgIypmdW5jICAgICAgICAgICAgICAgICAt
+MjEgICAgMC44NjIgIHhudGltZXJfdGlja19hcGVyaW9kaWMrMHhiICh4bmludHJfY2xvY2tfaGFu
+ZGxlcisweDgxKQo6fCAgIypmdW5jICAgICAgICAgICAgICAgICAtMjAgICAgMC4yNzQgIHhudGhy
+ZWFkX3BlcmlvZGljX2hhbmRsZXIrMHg0ICh4bnRpbWVyX3RpY2tfYXBlcmlvZGljKzB4OGQpCjp8
+ICAjKmZ1bmMgICAgICAgICAgICAgICAgIC0yMCsgICAxLjA1MCAgeG5wb2RfcmVzdW1lX3RocmVh
+ZCsweDExICh4bnRocmVhZF9wZXJpb2RpY19oYW5kbGVyKzB4MmQpCjp8ICAjKlsxNDY3MF0gc2Ft
+cGxpbiA5OSAgIC0xOSAgICAwLjY4NiAgeG5wb2RfcmVzdW1lX3RocmVhZCsweGZhICh4bnRocmVh
+ZF9wZXJpb2RpY19oYW5kbGVyKzB4MmQpCjp8ICAjKmZ1bmMgICAgICAgICAgICAgICAgIC0xOCAg
+ICAwLjI5MiAgeG50aW1lcl9uZXh0X2xvY2FsX3Nob3QrMHg5ICh4bnRpbWVyX3RpY2tfYXBlcmlv
+ZGljKzB4MTkxKQo6fCAgIypldmVudCAgIHRpY2tANzkgICAgICAtMTggICAgMC4zMDcgIHhudGlt
+ZXJfbmV4dF9sb2NhbF9zaG90KzB4YjAgKHhudGltZXJfdGlja19hcGVyaW9kaWMrMHgxOTEpCjp8
+ICAjKmZ1bmMgICAgICAgICAgICAgICAgIC0xOCAgICAwLjQ5OSAgbmF0aXZlX2FwaWNfbWVtX3dy
+aXRlKzB4NCAoeG50aW1lcl9uZXh0X2xvY2FsX3Nob3QrMHhlNSkKOnwgICMqZnVuYyAgICAgICAg
+ICAgICAgICAgLTE3ICAgIDAuNjYwICBfX3hucG9kX3NjaGVkdWxlKzB4MTEgKHhuaW50cl9jbG9j
+a19oYW5kbGVyKzB4MTMwKQo6fCAgIypbMTMyNzNdIGRkICAgICAgLTEgICAtMTcgICAgMC4yNzMg
+IF9feG5wb2Rfc2NoZWR1bGUrMHgxODkgKHhuaW50cl9jbG9ja19oYW5kbGVyKzB4MTMwKQo6fCAg
+IypmdW5jICAgICAgICAgICAgICAgICAtMTYrICAgMS42OTEgIHhuc2NoZWRfcGlja19uZXh0KzB4
+NCAoX194bnBvZF9zY2hlZHVsZSsweDFlMykKOnwgICMqZnVuYyAgICAgICAgICAgICAgICAgLTE1
+KyAgIDEuMjgyICBfX3BoeXNfYWRkcisweDQgKF9feG5wb2Rfc2NoZWR1bGUrMHg1NjIpCjp8ICAj
+KlsxNDY3MF0gc2FtcGxpbiA5OSAgIC0xMyAgICAwLjg5NiAgX194bnBvZF9zY2hlZHVsZSsweDgz
+NCAoeG5wb2Rfc3VzcGVuZF90aHJlYWQrMHgyODEpCjp8ICAjKmZ1bmMgICAgICAgICAgICAgICAg
+IC0xMyAgICAwLjI0NyAgeG50aW1lcl9nZXRfb3ZlcnJ1bnMrMHg4ICh4bnBvZF93YWl0X3RocmVh
+ZF9wZXJpb2QrMHgxNGMpCjp8ICAjKmZ1bmMgICAgICAgICAgICAgICAgIC0xMiAgICAwLjMxMSAg
+X19pcGlwZV9yZXN0b3JlX3BpcGVsaW5lX2hlYWQrMHg3ICh4bnBvZF93YWl0X3RocmVhZF9wZXJp
+b2QrMHgxY2IpCjp8ICArKmVuZCAgICAgMHg4MDAwMDAwMCAgIC0xMisgICAxLjcxMCAgX19pcGlw
+ZV9yZXN0b3JlX3BpcGVsaW5lX2hlYWQrMHgxMzcgKHhucG9kX3dhaXRfdGhyZWFkX3BlcmlvZCsw
+eDFjYikKOnwgICsqYmVnaW4gICAweDgwMDAwMDAxICAgLTEwICAgIDAuMzYzICBfX2lwaXBlX2Rp
+c3BhdGNoX2V2ZW50KzB4MWQ5IChfX2lwaXBlX3N5c2NhbGxfcm9vdCsweGNkKQo6fCAgKyplbmQg
+ICAgIDB4ODAwMDAwMDEgICAtMTAgICAgMC4zMzAgIF9faXBpcGVfZGlzcGF0Y2hfZXZlbnQrMHgz
+ZjAgKF9faXBpcGVfc3lzY2FsbF9yb290KzB4Y2QpCjp8ICArKmJlZ2luICAgMHg4MDAwMDAwMSAg
+IC0xMCsgICA1LjEzNSAgX19pcGlwZV9zeXNjYWxsX3Jvb3QrMHhlYyAoX19pcGlwZV9zeXNjYWxs
+X3Jvb3RfdGh1bmsrMHgzNSkKOiAgICsqZnVuYyAgICAgICAgICAgICAgICAgIC00ICAgIDAuMzMw
+ICBfX2lwaXBlX3N5c2NhbGxfcm9vdCsweDExIChfX2lwaXBlX3N5c2NhbGxfcm9vdF90aHVuaysw
+eDM1KQo6ICAgKypmdW5jICAgICAgICAgICAgICAgICAgLTQgICAgMC4yMTMgIF9faXBpcGVfZGlz
+cGF0Y2hfZXZlbnQrMHgxMSAoX19pcGlwZV9zeXNjYWxsX3Jvb3QrMHhjZCkKOnwgICsqYmVnaW4g
+ICAweDgwMDAwMDAxICAgIC00ICAgIDAuNDgwICBfX2lwaXBlX2Rpc3BhdGNoX2V2ZW50KzB4MzQg
+KF9faXBpcGVfc3lzY2FsbF9yb290KzB4Y2QpCjp8ICArKmVuZCAgICAgMHg4MDAwMDAwMSAgICAt
+MyAgICAwLjI1OSAgX19pcGlwZV9kaXNwYXRjaF9ldmVudCsweDFhNiAoX19pcGlwZV9zeXNjYWxs
+X3Jvb3QrMHhjZCkKOiAgICsqZnVuYyAgICAgICAgICAgICAgICAgIC0zICAgIDAuNjE1ICBoaXN5
+c2NhbGxfZXZlbnQrMHgxMSAoX19pcGlwZV9kaXNwYXRjaF9ldmVudCsweDFiNykKOiAgICsqZnVu
+YyAgICAgICAgICAgICAgICAgIC0zICAgIDAuNTQ3ICB4bnNoYWRvd19zeXNfdHJhY2UrMHg3ICho
+aXN5c2NhbGxfZXZlbnQrMHgxNTEpCjogICArKmZ1bmMgICAgICAgICAgICAgICAgICAtMiAgICAw
+LjI5MiAgaXBpcGVfdHJhY2VfZnJvemVuX3Jlc2V0KzB4YiAoeG5zaGFkb3dfc3lzX3RyYWNlKzB4
+NjkpCjogICArKmZ1bmMgICAgICAgICAgICAgICAgICAtMiAgICAwLjE5OCAgX19pcGlwZV9nbG9i
+YWxfcGF0aF9sb2NrKzB4NCAoaXBpcGVfdHJhY2VfZnJvemVuX3Jlc2V0KzB4MWMpCjogICArKmZ1
+bmMgICAgICAgICAgICAgICAgICAtMiAgICAwLjE5MSAgX19pcGlwZV9zcGluX2xvY2tfaXJxc2F2
+ZSsweGIgKF9faXBpcGVfZ2xvYmFsX3BhdGhfbG9jaysweDE1KQo6fCAgKypiZWdpbiAgIDB4ODAw
+MDAwMDEgICAgLTErICAgMS4zMTYgIF9faXBpcGVfc3Bpbl9sb2NrX2lycXNhdmUrMHgyYSAoX19p
+cGlwZV9nbG9iYWxfcGF0aF9sb2NrKzB4MTUpCjp8ICAjKmZ1bmMgICAgICAgICAgICAgICAgICAg
+MCAgICAwLjI2NiAgX19pcGlwZV9zcGluX3VubG9ja19pcnFjb21wbGV0ZSsweGIgKF9faXBpcGVf
+Z2xvYmFsX3BhdGhfdW5sb2NrKzB4N2QpCjp8ICArKmVuZCAgICAgMHg4MDAwMDAwMSAgICAgMCAg
+ICAwLjIzNiAgX19pcGlwZV9zcGluX3VubG9ja19pcnFjb21wbGV0ZSsweGNmIChfX2lwaXBlX2ds
+b2JhbF9wYXRoX3VubG9jaysweDdkKQo8ICAgKypmcmVlemUgIDB4MDAxMGZjNjYgICAgIDAgICAg
+MC4yMTQgIHhuc2hhZG93X3N5c190cmFjZSsweDczIChoaXN5c2NhbGxfZXZlbnQrMHgxNTEpCiB8
+ICArKmJlZ2luICAgMHg4MDAwMDAwMSAgICAgMCAgICAwLjI1MSAgX19pcGlwZV9kaXNwYXRjaF9l
+dmVudCsweDFkOSAoX19pcGlwZV9zeXNjYWxsX3Jvb3QrMHhjZCkKIHwgICsqZW5kICAgICAweDgw
+MDAwMDAxICAgICAwICAgIDAuMjE0ICBfX2lwaXBlX2Rpc3BhdGNoX2V2ZW50KzB4M2YwIChfX2lw
+aXBlX3N5c2NhbGxfcm9vdCsweGNkKQogfCAgKypiZWdpbiAgIDB4ODAwMDAwMDEgICAgIDAgICAg
+MC42NDggIF9faXBpcGVfc3lzY2FsbF9yb290KzB4ZWMgKF9faXBpcGVfc3lzY2FsbF9yb290X3Ro
+dW5rKzB4MzUpCiAgICArKmZ1bmMgICAgICAgICAgICAgICAgICAgMSAgICAwLjIxMCAgX19pcGlw
+ZV9zeXNjYWxsX3Jvb3QrMHgxMSAoX19pcGlwZV9zeXNjYWxsX3Jvb3RfdGh1bmsrMHgzNSkKICAg
+ICsqZnVuYyAgICAgICAgICAgICAgICAgICAxICAgIDAuMTg3ICBfX2lwaXBlX2Rpc3BhdGNoX2V2
+ZW50KzB4MTEgKF9faXBpcGVfc3lzY2FsbF9yb290KzB4Y2QpCiB8ICArKmJlZ2luICAgMHg4MDAw
+MDAwMSAgICAgMSAgICAwLjI2MiAgX19pcGlwZV9kaXNwYXRjaF9ldmVudCsweDM0IChfX2lwaXBl
+X3N5c2NhbGxfcm9vdCsweGNkKQogfCAgKyplbmQgICAgIDB4ODAwMDAwMDEgICAgIDEgICAgMC4x
+OTkgIF9faXBpcGVfZGlzcGF0Y2hfZXZlbnQrMHgxYTYgKF9faXBpcGVfc3lzY2FsbF9yb290KzB4
+Y2QpCiAgICArKmZ1bmMgICAgICAgICAgICAgICAgICAgMiAgICAwLjM0OCAgaGlzeXNjYWxsX2V2
+ZW50KzB4MTEgKF9faXBpcGVfZGlzcGF0Y2hfZXZlbnQrMHgxYjcpCiAgICArKmZ1bmMgICAgICAg
+ICAgICAgICAgICAgMiAgICAwLjI4MSAgX19ydF90YXNrX3dhaXRfcGVyaW9kKzB4YiAoaGlzeXNj
+YWxsX2V2ZW50KzB4MTUxKQogICAgKypmdW5jICAgICAgICAgICAgICAgICAgIDIgICAgMC4wMDAg
+IHJ0X3Rhc2tfd2FpdF9wZXJpb2QrMHg0IChfX3J0X3Rhc2tfd2FpdF9wZXJpb2QrMHgxYykK
+------=_20100903173033000000_64107--
 
 
 
