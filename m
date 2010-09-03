@@ -1,12 +1,9 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <8slsrl$2ebaut@domain.hid>
-References: <8slsrl$2ebaut@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Fri, 03 Sep 2010 09:11:12 +0200
-Message-ID: <1283497872.1709.2098.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] Powerpc kernel cannot boot with xenomai
+Message-ID: <20100903085639.12173@domain.hid>
+Date: Fri, 03 Sep 2010 08:56:39 -0400
+From: "C Robinson" <starknight__@domain.hid>
+Content-transfer-encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Subject: Re: [Xenomai-help] Xenomai-help Digest, Vol 60, Issue 2
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,232 +13,51 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gao <gwysu@domain.hid>
-Cc: xenomai@xenomai.org
-
-On Fri, 2010-09-03 at 13:44 +0800, Gao wrote:
-> Thank you Philippe, my board can boot up when the pSos emulator is not bu=
-ilt
-> into the kernel. But once it is built into the kernel, the kernel cannot
-> boot up.=20
-
-This likely happens when the real-time core enables its internal timer
-when the kernel enables the first skin, in your case the pSOS one. This
-is usually due to an issue in the I-pipe patch.
-
->  =20
->=20
-> -----Original Message-----
-> From: Philippe Gerum [mailto:rpm@xenomai.org
-> Sent: 2010=E5=B9=B49=E6=9C=883=E6=97=A5 13:27
-> To: Gao
-> Cc: xenomai@xenomai.org
-> Subject: RE: [Xenomai-help] Powerpc kernel cannot boot with xenomai
->=20
-> On Wed, 2010-09-01 at 17:02 +0800, Gao wrote:
-> > Thank you Philippe very much. Yes, it seems that Xenomail may not=20
-> > support the MPC870 cpu. But you mean the Xenomai with linux 2.6.34=20
-> > kernel can support it, right?
->=20
-> I mean that a port of Xenomai to a custom board based on a CPU from the
-> mpc855 family is known to work, based on a 2.6.34 kernel, and that is the
-> only port of Xenomai to this architecture I'm aware of. The latest
-> I-pipe/powerpc patch for 2.6.34 does include that support for 8xx.
->=20
-> Now, it should be possible for you to backport the I-pipe bits from the
-> 2.6.34 patch required to run 8xx to 2.6.33, if your bsp is based on that
-> release.
->=20
-> >  Another question, is there a officail document that say runing=20
-> > Xenomai on the mpc855 family processors needs 2.6.34 kernel?
-> >=20
->=20
-> You are currently reading it.
->=20
-> > -----Original Message-----
-> > From: Philippe Gerum [mailto:rpm@xenomai.org]
-> > Sent: 2010=E5=B9=B49=E6=9C=881=E6=97=A5 16:39
-> > To: Gao
-> > Cc: xenomai@xenomai.org
-> > Subject: RE: [Xenomai-help] Powerpc kernel cannot boot with xenomai
-> >=20
-> > On Wed, 2010-09-01 at 16:11 +0800, Gao wrote:
-> > > Hi Philippe,
-> > >=20
-> > > Are you sure  xenomai(2.5.4) doesn't support the cpu MPC870? Thank yo=
-u.
-> > >=20
-> >=20
-> > I'm saying that your particular board is not known to run Xenomai,=20
-> > nothing else. Those which officially do are listed here:
-> > http://www.xenomai.org/index.php/Embedded_Device_Support#Supported_Arc
-> > hitect
-> > ures
-> >=20
-> > In any case, if you want to run Xenomai on a processor from the mpc855=20
-> > family, 2.6.34 is a requirement.
-> >=20
-> > >=20
-> > > Wenyi Gao
-> > >=20
-> > > -----Original Message-----
-> > > From: Philippe Gerum [mailto:rpm@xenomai.org]
-> > > Sent: 2010=E5=B9=B49=E6=9C=881=E6=97=A5 15:53
-> > > To: Gao
-> > > Cc: xenomai@xenomai.org
-> > > Subject: Re: [Xenomai-help] Powerpc kernel cannot boot with xenomai
-> > >=20
-> > > On Wed, 2010-09-01 at 15:47 +0800, Gao wrote:
-> > > > Hi All,
-> > > > =20
-> > > > I patched the kernel with xenomai, but the kernel "cuImage" cannot=20
-> > > > boot up, below is the console output:
-> > > >     =20
-> > > > U-Boot 2009.06.00-svn21572 (Aug 24 2010 - 11:20:12)
-> > > > =20
-> > > > CPU:   MPC885ZPnn at 100 MHz: 8 kB I-Cache 8 kB D-Cache FEC present
-> > >=20
-> > > This board is not supported. What goes wrong is likely the I-pipe=20
-> > > patch for this particular hardware.
-> > >=20
-> > > > Board: RXT-2000
-> > > > I2C:   ready
-> > > > DRAM:  32 MB
-> > > > 1 gd->ram_size =3D (2000000) CONFIG_SYS_MEM_TOP_HIDE (0)
-> > > > 2 gd->ram_size =3D (2000000) CONFIG_SYS_MEM_TOP_HIDE (0)
-> > > > IRIS: bd->bi_memsize (2000000) gd(ff002ec0)->gd->ram_size(2000000)
-> > > > IRIS: bd->bi_memsize (2000000)
-> > > > Now running in RAM - U-Boot at: 01f89000
-> > > > FLASH: 16 MB
-> > > > In:    serial
-> > > > Out:   serial
-> > > > Err:   serial
-> > > > Net:   FEC ETHERNET
-> > > > IRIS: IDE testing
-> > > > IRIS: CONFIG_CMD_IDE
-> > > > PCMCIA:IRIS: NO CONFIG_START_IDE
-> > > > SanDisk SDP 5/3 0.6
-> > > >             Fixed Disk Card
-> > > >             IDE interface
-> > > >             [silicon] [unique] [single] [sleep] [standby] [idle]=20
-> > > > [low power] Bus 0: OK
-> > > >   Device 0: Model: SanDisk SDCFH-002G Firm: HDX 5.04 Ser#:
-> > > > AOZ043010001455
-> > > >             Type: Removable Hard Disk
-> > > >             Capacity: 1918.0 MB =3D 1.8 GB (3928176 x 512) Hit any=20
-> > > > key to stop autoboot:  0 ## Booting kernel from Legacy Image at=20
-> > > > 00100000 ...
-> > > >    Image Name:   Linux-2.6.33.4
-> > > >    Image Type:   PowerPC Linux Kernel Image (gzip compressed)
-> > > >    Data Size:    1873951 Bytes =3D  1.8 MB
-> > > >    Load Address: 00400000
-> > > >    Entry Point:  00400558
-> > > >    Verifying Checksum ... OK
-> > > >    Uncompressing Kernel Image ... OK Memory <- <0x0 0x0> (0MB)
-> > > > ENET0: local-mac-address <- 00:00:00:00:00:00 CPU clock-frequency=20
-> > > > <- 0x0 (0MHz) CPU timebase-frequency <- 0x0 (0MHz)
-> > > > =20
-> > > > zImage starting: loaded at 0x00400000 (sp: 0x01b88990) Allocating=20
-> > > > 0x3d6de0 bytes for kernel ...
-> > > > gunzipping (0x00000000 <- 0x0040c000:0x007fd97c)...done 0x3adf34=20
-> > > > bytes
-> > > > =20
-> > > > Linux/PowerPC load:
-> > > > Finalizing device tree... flat tree at 0x80a300
-> > > >=20
-> > > > =20
-> > > > =20
-> > > > Before I patched xenomai, the kernel can boot up with below=20
-> > > > console
-> > > > output:
-> > > > =20
-> > > > =20
-> > > > CPU:   MPC885ZPnn at 100 MHz: 8 kB I-Cache 8 kB D-Cache FEC present
-> > > > Board: RXT-2000
-> > > > I2C:   ready
-> > > > DRAM:  32 MB
-> > > > 1 gd->ram_size =3D (2000000) CONFIG_SYS_MEM_TOP_HIDE (0)
-> > > > 2 gd->ram_size =3D (2000000) CONFIG_SYS_MEM_TOP_HIDE (0)
-> > > > IRIS: bd->bi_memsize (2000000) gd(ff002ec0)->gd->ram_size(2000000)
-> > > > IRIS: bd->bi_memsize (2000000)
-> > > > Now running in RAM - U-Boot at: 01f89000
-> > > > FLASH: 16 MB
-> > > > In:    serial
-> > > > Out:   serial
-> > > > Err:   serial
-> > > > Net:   FEC ETHERNET
-> > > > IRIS: IDE testing
-> > > > IRIS: CONFIG_CMD_IDE
-> > > > PCMCIA:IRIS: NO CONFIG_START_IDE
-> > > > SanDisk SDP 5/3 0.6
-> > > >             Fixed Disk Card
-> > > >             IDE interface
-> > > >             [silicon] [unique] [single] [sleep] [standby] [idle]=20
-> > > > [low power] Bus 0: OK
-> > > >   Device 0: Model: SanDisk SDCFH-002G Firm: HDX 5.04 Ser#:
-> > > > AOZ043010001455
-> > > >             Type: Removable Hard Disk
-> > > >             Capacity: 1918.0 MB =3D 1.8 GB (3928176 x 512) Hit any=20
-> > > > key to stop autoboot:  0 ## Booting kernel from Legacy Image at=20
-> > > > 00100000 ...
-> > > >    Image Name:   Linux-2.6.33.4
-> > > >    Image Type:   PowerPC Linux Kernel Image (gzip compressed)
-> > > >    Data Size:    1697346 Bytes =3D  1.6 MB
-> > > >    Load Address: 00400000
-> > > >    Entry Point:  00400558
-> > > >    Verifying Checksum ... OK
-> > > >    Uncompressing Kernel Image ... OK Memory <- <0x0 0x2000000>
-> > > > (32MB)
-> > > > ENET0: local-mac-address <- 00:d0:dd:ff:20:00 CPU clock-frequency=20
-> > > > <- 0x5f5e100 (100MHz) CPU timebase-frequency <- 0x2faf08 (3MHz)=20
-> > > > CPU bus-frequency <- 0x2faf080 (50MHz)
-> > > > =20
-> > > > zImage starting: loaded at 0x00400000 (sp: 0x01b88990) Allocating=20
-> > > > 0x35e3f0 bytes for kernel ...
-> > > > gunzipping (0x00000000 <- 0x0040c000:0x00799450)...done 0x349f2c=20
-> > > > bytes
-> > > > =20
-> > > > Linux/PowerPC load: root=3D/dev/sda1 rw rootfstype=3Dext3=20
-> > > > ip=3D169.254.0.2::169.254.0.1:255.255.0.0 console=3DttyCPM0,38400=20
-> > > > Finalizing device tree... flat tree at 0x7a6300 Using RxT-Carrier=20
-> > > > machine description ...................
-> > > >=20
-> > > > =20
-> > > > It seems the boot loader doesn't pass the boot parameters to the=20
-> > > > kernel that cannot boot up. Any one can help me? Thanks in advance.
-> > > > =20
-> > > > =20
-> > > > =20
-> > > > =20
-> > > > Best regards,
-> > > > Wenyi Gao
-> > > > =20
-> > > >=20
-> > > > _______________________________________________
-> > > > Xenomai-help mailing list
-> > > > Xenomai-help@domain.hid
-> > > > https://mail.gna.org/listinfo/xenomai-help
-> > >=20
-> > > --
-> > > Philippe.
-> > >=20
-> > >=20
-> > >=20
-> >=20
-> > --
-> > Philippe.
-> >=20
-> >=20
-> >=20
->=20
-> --
-> Philippe.
->=20
->=20
->=20
-
---=20
-Philippe.
+To: xenomai@xenomai.org
 
 
+Hi,
+
+So the position I am in is still not knowing how to run the examples.   Atte=
+mpting the command "sudo make  /home/<user name>/xenomai-2.5.4" from the dir=
+ectory /usr/xenomai_egs/xenomai-head/examples/, results in the following err=
+or (as mentioned previously):
+
+----------------------------------------------------------------------------=
+------------------------------------------------
+xddp-echo.c: In function ?realtime_thread?:
+xddp-echo.c:115: error: ?SOL_XDDP? undeclared (first use in this function)
+xddp-echo.c:115: error: (Each undeclared identifier is reported only once
+xddp-echo.c:115: error: for each function it appears in.)
+xddp-echo.c:115: error: ?XDDP_POOLSZ? undeclared (first use in this function=
+)
+make[1]: *** [xddp-echo] Error 1
+----------------------------------------------------------------------------=
+-----------------------------------------------
+
+and shortly afterwards ended with:
+
+make[1]: *** [all] Error 2
+make[1]: Leaving directory `/usr/xenomai_egs/xenomai-head/examples/posix'
+
+How do I get around this error?  In addition, is it ok to use the default us=
+er account. (or should a specific xenomai account be set up)
+
+Trying to get up the man pages results in:
+
+----------------------------------------------------------------------------=
+-----------------------------------------------
+clocktest man
+The program 'clocktest' is currently not installed.  You can install it by t=
+yping:
+sudo apt-get install xenomai-runtime
+----------------------------------------------------------------------------=
+-----------------------------------------------
+Is this because I installed the xenomai-runtime package manually via the Deb=
+ian guideline ? (Synaptic shows this as being already installed, perhaps thi=
+s is a result of the earlier problem?).
+
+
+Thanks,
+Charles
 
