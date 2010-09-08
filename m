@@ -1,12 +1,11 @@
-Message-ID: <4C879AB9.6000907@domain.hid>
-Date: Wed, 08 Sep 2010 16:16:25 +0200
-From: Stefan Kisdaroczi <kisda@domain.hid>
-MIME-Version: 1.0
-References: <AANLkTi=J9DJvEE274+rDiYBrqQSt7kNRZ3oW9+KPW7ra@domain.hid>
+From: Philippe Gerum <rpm@xenomai.org>
 In-Reply-To: <AANLkTi=J9DJvEE274+rDiYBrqQSt7kNRZ3oW9+KPW7ra@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig00717202DC3B7AA42233E4BF"
+References: <AANLkTi=J9DJvEE274+rDiYBrqQSt7kNRZ3oW9+KPW7ra@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Date: Wed, 08 Sep 2010 16:18:59 +0200
+Message-ID: <1283955539.24088.55.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] question about priorities
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -17,88 +16,69 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: charles.clerdan@domain.hid
+To: Charles Clerdan <charles.clerdan@domain.hid>
 Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig00717202DC3B7AA42233E4BF
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-
-Hi Charles,
-
-On 08.09.2010 13:45, Charles Clerdan wrote:
+On Wed, 2010-09-08 at 13:45 +0200, Charles Clerdan wrote:
 > Hi,
->
->
+> 
+> 
 > I have a technical question about priorities under Xenomai.
->
+> 
 > According to my research, Xenomai use priority levels from 0 to 99. 99
-> is the highest effective priority and 0 the lowest.
+> is the highest effective priority and 0 the lowest. 
+
+To be precise, the Xenomai core can handle up to 258 priority levels
+(0(lowest)-257(highest)). Within this range, skins/APIs set their own
+sub-range, remapping levels internally to fit their specs. E.g. for
+real-time threads, the native and posix skins use 1-99 , the VxWorks
+skin uses 255-1, pSOS uses 1-255. All keep level 0 for special
+Xenomai-enabled non-RT threads.
+
 > But Linux uses levels from 0 to 139. For current task it uses levels
 > 100 to 139 where 100 is highest priority than 139, and for "real time"
 > threads 0 to 99 where 0 is highest than 99.s
+
+SCHED_FIFO is 1-99 for static priorities. We are only interested in
+remapping SCHED_FIFO and SCHED_RR over our priority scale. Other non-RT
+scheduling classes managed by Linux are out of scope for Xenomai.
+
+>  
 > So when a task jumps in secondary modes is there a conversion of its
 > own priority (100 - primary_mode_priority) or does she keep the same
 > number.
+
+SCHED_FIFO/SCHED_RR threads share the same priority scales both in Linux
+and Xenomai domains.
+
 > When two tasks with two different priorities are in secondary modes,
 > is there a priority inversion between them or a crossed convertion of
 > the priorities?
 
-caution: I may be wrong, corrections welcome.
+The priority of threads is not the issue. The issue here is that Linux
+would run as the idle task of Xenomai, so a RT thread moving to
+secondary mode - i.e. scheduled by Linux - would not compete anymore
+with RT threads still scheduled by the Xenomai nucleus.
 
-If you use the command 'ps -Ac' it will show you priorities from 0-139.
-139 is best.
+To work around this priority inversion, there is a mechanism to make the
+Linux activity as a whole inherit the Xenomai priority of the Xenomai
+thread which currently runs in secondary mode; it is enabled by default
+(XENO_OPT_PRIOCPL). However, this mechanism only prevents a low-priority
+Xenomai thread in primary mode from preempting a high-priority Xenomai
+thread running in secondary mode; it does not give back all real-time
+guarantees to the latter though.
 
-The low prio range 0-39 is for tasks scheduled with the default
-SCHED_OTHER scheduling policy. Linux uses CFS (completely fair
-scheduler) today for SCHED_OTHER. The priority of these task can be
-changed using the command 'renice'. 'renice 19 <pid>' sets the priority
-to 0. 'renice -20 <pid>' sets it to 39. 'renice 0 <pid>' to 19 (default).=
+> 
+> Regards,
+> 
+> Charles
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
 
-
-The priority range displayed as 40-139 is for linux "real-time" taks.
-These are tasks handled with the SCHED_FIFO or SCHED_RR policy. To
-change the scheduling policy of a process, you can use the 'chrt'
-command. The real priority range of SCHED_FIFO or SCHED_RR is 0-99 (99
-is best), but if you want to take the scheduling policy into account
-like 'ps -Ac' does, a offset of 40 is added for these tasks, so 40-139
-is displayed. If you have a SCHED_FIFO task with the lowest prio 0 and
-you do a hard loop (bad idea) the SCHED_OTHER tasks don't get cputime
-anymore.
-
-Xenomai realtime tasks are SCHED_FIFO or SCHED_RR and have the same
-priority range (0-99) as the linux "real-time" tasks. A xenomai
-SCHED_FIFO task with prio 99 in secondary mode is handled equally as a
-normal linux task with SCHED_FIFO and prio 99 by the linux kernel (prio
-displayed as 139 with 'ps -Ac'). But a xenomai task with the lowest
-priority 0 in secondary mode has still better prio than all the
-SCHED_OTHER linux tasks. Xenomai tasks keep/have the same priority under
-the realtime and the linux scheduler.
-
-So the task scheduling priority is something like:
-1. xenomai task in primary mode handled by the realtime scheduler
-2. xenomai task in secondary mode or linux "real-time" task, both
-handled by the linux scheduler, they compete
-3. linux SCHED_OTHER tasks handled by the linux scheduler
-
-Regards Stefan
+-- 
+Philippe.
 
 
-
---------------enig00717202DC3B7AA42233E4BF
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.10 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
-
-iEYEARECAAYFAkyHmsAACgkQIPTw9rIdn6r4tQCeIW51B5GdphZEJI4HxkuoannN
-VZQAn3dp3TifaPROVVlG0lsL0YRhmFYU
-=olzD
------END PGP SIGNATURE-----
-
---------------enig00717202DC3B7AA42233E4BF--
 
