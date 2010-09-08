@@ -1,9 +1,12 @@
+Message-ID: <4C8779EA.5030506@domain.hid>
+Date: Wed, 08 Sep 2010 13:56:26 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Date: Wed, 8 Sep 2010 13:45:57 +0200
-Message-ID: <AANLkTi=J9DJvEE274+rDiYBrqQSt7kNRZ3oW9+KPW7ra@domain.hid>
-From: Charles Clerdan <charles.clerdan@domain.hid>
-Content-Type: multipart/alternative; boundary=0016e65684be8b18bd048fbe0e70
-Subject: [Xenomai-help] question about priorities
+References: <20100908111656.GA24409@domain.hid>
+In-Reply-To: <20100908111656.GA24409@domain.hid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] XENO_HW_SMI_WORKAROUND safety
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -13,45 +16,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Richard Cochran <richardcochran@domain.hid>
+Cc: xenomai@xenomai.org
 
---0016e65684be8b18bd048fbe0e70
-Content-Type: text/plain; charset=ISO-8859-1
+Richard Cochran wrote:
+> As an x86 dummy, I have a question about XENO_HW_SMI_WORKAROUND and
+> XENO_HW_SMI_ALL. I remember from the 2009 RTLW, that Thomas Gleixner
+> said not to disable SMIs or it might melt my cpu.
+> 
+> Is there any risk in enabling the Xenomai options?
 
-Hi,
+Some people seem to have used it without any problem. The problem
+happens if SMIs are used for regulating the cpu fans speed. So far, I
+have not seen PCs which do this, but who knows?
 
+You can run a stress test, measuring the CPU temperature, with and
+without the SMIs disabled. This way, if the SMIs are involved in
+regulating the cpu fan speed, you will know it, and in this case, yes,
+you can not disable them.
 
-I have a technical question about priorities under Xenomai.
+Note however that the Intel chipsets allow to prevent you from disabling
+the SMIs. So, it would be plain silly if your PC manufacturer used the
+SMI for regulating the cpu fan speed, and did not prevent you from
+disabling them.
 
-According to my research, Xenomai use priority levels from 0 to 99. 99 is
-the highest effective priority and 0 the lowest.
-But Linux uses levels from 0 to 139. For current task it uses levels 100 to
-139 where 100 is highest priority than 139, and for "real time" threads 0 to
-99 where 0 is highest than 99.s
-So when a task jumps in secondary modes is there a conversion of its own
-priority (100 - primary_mode_priority) or does she keep the same number.
-When two tasks with two different priorities are in secondary modes, is
-there a priority inversion between them or a crossed convertion of the
-priorities?
-
-Regards,
-
-Charles
-
---0016e65684be8b18bd048fbe0e70
-Content-Type: text/html; charset=ISO-8859-1
-
-Hi,<br><br><br>I have a technical question about priorities under 
-Xenomai.<br><br>According to my research, Xenomai use priority levels 
-from 0 to 99. 99 is the highest effective priority and 0 the lowest. <br>
-But Linux uses levels from 0 to 139. For current task it uses levels 100
- to 139 where 100 is highest priority than 139, and for &quot;real time&quot; 
-threads 0 to 99 where 0 is highest than 99.s <br>So when a task jumps in
- secondary modes is there a conversion of its own priority (100 - 
-primary_mode_priority) or does she keep the same number.<br>
-When two tasks with two different priorities are in secondary modes, is 
-there a priority inversion between them or a crossed convertion of the 
-priorities?<br><br>Regards,<br><br>Charles<br>
-
---0016e65684be8b18bd048fbe0e70--
+-- 
+                                                                Gilles.
 
