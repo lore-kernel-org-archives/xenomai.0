@@ -1,227 +1,104 @@
+Message-ID: <4C879AB9.6000907@domain.hid>
+Date: Wed, 08 Sep 2010 16:16:25 +0200
+From: Stefan Kisdaroczi <kisda@domain.hid>
 MIME-Version: 1.0
-In-Reply-To: <AANLkTimUrZpJMzbMWN=T3rEr=FmxbiVbHYfzviXy08CF@mail.gmail.com>
-References: <AANLkTikTyH5R8oMS-f-1jcJqryAwT-DKfzxNf1YROALK@mail.gmail.com>
-	<AANLkTinvhF72tWwCEy85jT3Kk2cQZwRyCtBZNcSZk-yA@mail.gmail.com>
-	<4C51223A.2070700@domain.hid>
-	<AANLkTikib3KYn-m7owo83LKUUMdfPP3=p_g7BPqgb-Gh@domain.hid>
-	<4C517FF1.1040902@domain.hid>
-	<AANLkTim4HheofHzPvJkMaCtYp49egWmJAzWLM2o3AXJo@domain.hid>
-	<4C5198A5.6010002@domain.hid>
-	<AANLkTi=s+24Sravpy=r91M9bRoNdKzafopTcngV7rLLv@domain.hid>
-	<4C51D317.9020103@domain.hid> <4C51E361.8020102@domain.hid>
-	<AANLkTikNB7c3E58Q1kxg99TPUVo3E_deojtzgDvW5asL@mail.gmail.com>
-	<AANLkTiktuJ1G6-ELngAsd7kNAR+WtMC7XWcP=-0USZS1@domain.hid>
-	<4C61A995.3030906@domain.hid>
-	<AANLkTi=Xbz4jQp4hWz38f1rwA=LKJyqcaK=oqBhsYAMY@mail.gmail.com>
-	<4C698A2E.7060300@domain.hid>
-	<AANLkTimUrZpJMzbMWN=T3rEr=FmxbiVbHYfzviXy08CF@mail.gmail.com>
-Date: Thu, 2 Sep 2010 08:29:07 -0300
-Message-ID: <AANLkTimzdzPQkPV7FvXwtQ_FBBLVaHmo2oN8mgPnSm+L@mail.gmail.com>
-From: Rodolfo Oliveira <rodolforomao@domain.hid>
-Content-Type: multipart/alternative; boundary=0015175cdee24c7511048f451ffd
-Subject: Re: [Xenomai-core] Bug - Can 2 devices.
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+References: <AANLkTi=J9DJvEE274+rDiYBrqQSt7kNRZ3oW9+KPW7ra@domain.hid>
+In-Reply-To: <AANLkTi=J9DJvEE274+rDiYBrqQSt7kNRZ3oW9+KPW7ra@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig00717202DC3B7AA42233E4BF"
+Subject: Re: [Xenomai-help] question about priorities
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Wolfgang Grandegger <wg@domain.hid>, xenomai@xenomai.org
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: charles.clerdan@domain.hid
+Cc: xenomai@xenomai.org
 
---0015175cdee24c7511048f451ffd
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig00717202DC3B7AA42233E4BF
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
-Hello Worlfgang,
+Hi Charles,
 
-Thank you for your help, I discovered that the problem was in my SOCK
-application in user space, not in the kernel. You were very thoughtful,
-thank you.
-
-Rodolfo Romao.
-Computer Engineer
-MBA - IT Governance
-
-2010/8/16 Rodolfo Oliveira <rodolforomao@domain.hid>
-
-> hmm... it's really... ok !
->
-> thnks
->
-> 2010/8/16 Wolfgang Grandegger <wg@domain.hid>
->
->  On 08/16/2010 08:32 PM, Rodolfo Oliveira wrote:
->> > Hi Wolfgang!
->> > I ran the rtcanrecv but this showing the following message:
->> > #. / Rtcanrecv
->> > / Home / testing / can.libs / lt-rtcanrecv: error while loading shared
->> > libraries: libnative.so.0: can not open shared object file: No such fi=
-le
->> or
->> > directory
->> > # Find. Z grep rtcanrecv
->> > . / Can / .svn / text-base / base rtcanrecv.c.svn
->> > . / Can / .deps / rtcanrecv.Po
->> > . / Can / .libs / rtcanrecv
->> > . / Can / .libs / lt-rtcanrecv
->> > . / Can / rtcanrecv
->> > . / Can / rtcanrecv.c
->> > . / Can / rtcanrecv.o
->> >
->> > You know what means this?
->>
->> I did already answer this question. See below.
->>
->> Wolfgang.
->>
->> > 2010/8/10 Wolfgang Grandegger <wg@domain.hid>
->> >
->> >> On 08/10/2010 08:22 PM, Rodolfo Oliveira wrote:
->> >>> Hello Wolf,
->> >>>
->> >>> When trying to run the program rtcanrecv is the following message:
->> >>> . / Rtcanrecv
->> >>> / Home / test / can /. / Libs / lt-rtcanrecv: error while loading
->> shared
->> >>> libraries: libnative.so.0: can not open shared object file: No such
->> file
->> >> or
->> >>> directory.
->> >>>
->> >>> Can you help me?
->> >>
->> >> Either set LD_LIBRARY_PATH pointing to the Xenomai libraries or
->> properly
->> >> install the utilities as described in README.INSTALL.
->> >>
->> >> Wolfgang.
->> >>
->> >
->> >
->> >
->>
->>
+On 08.09.2010 13:45, Charles Clerdan wrote:
+> Hi,
 >
 >
-> --
+> I have a technical question about priorities under Xenomai.
 >
-> []=B4s
->
->
->
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> Rodolfo R. de O. Neto, Eng. , MBA
-> Engenheiro de computa=E7=E3o
-> MBA - Governan=E7a em TI
-> E-mail: rodolforomao@domain.hid
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
->
->
+> According to my research, Xenomai use priority levels from 0 to 99. 99
+> is the highest effective priority and 0 the lowest.
+> But Linux uses levels from 0 to 139. For current task it uses levels
+> 100 to 139 where 100 is highest priority than 139, and for "real time"
+> threads 0 to 99 where 0 is highest than 99.s
+> So when a task jumps in secondary modes is there a conversion of its
+> own priority (100 - primary_mode_priority) or does she keep the same
+> number.
+> When two tasks with two different priorities are in secondary modes,
+> is there a priority inversion between them or a crossed convertion of
+> the priorities?
+
+caution: I may be wrong, corrections welcome.
+
+If you use the command 'ps -Ac' it will show you priorities from 0-139.
+139 is best.
+
+The low prio range 0-39 is for tasks scheduled with the default
+SCHED_OTHER scheduling policy. Linux uses CFS (completely fair
+scheduler) today for SCHED_OTHER. The priority of these task can be
+changed using the command 'renice'. 'renice 19 <pid>' sets the priority
+to 0. 'renice -20 <pid>' sets it to 39. 'renice 0 <pid>' to 19 (default).=
 
 
---=20
+The priority range displayed as 40-139 is for linux "real-time" taks.
+These are tasks handled with the SCHED_FIFO or SCHED_RR policy. To
+change the scheduling policy of a process, you can use the 'chrt'
+command. The real priority range of SCHED_FIFO or SCHED_RR is 0-99 (99
+is best), but if you want to take the scheduling policy into account
+like 'ps -Ac' does, a offset of 40 is added for these tasks, so 40-139
+is displayed. If you have a SCHED_FIFO task with the lowest prio 0 and
+you do a hard loop (bad idea) the SCHED_OTHER tasks don't get cputime
+anymore.
 
-[]=B4s
+Xenomai realtime tasks are SCHED_FIFO or SCHED_RR and have the same
+priority range (0-99) as the linux "real-time" tasks. A xenomai
+SCHED_FIFO task with prio 99 in secondary mode is handled equally as a
+normal linux task with SCHED_FIFO and prio 99 by the linux kernel (prio
+displayed as 139 with 'ps -Ac'). But a xenomai task with the lowest
+priority 0 in secondary mode has still better prio than all the
+SCHED_OTHER linux tasks. Xenomai tasks keep/have the same priority under
+the realtime and the linux scheduler.
+
+So the task scheduling priority is something like:
+1. xenomai task in primary mode handled by the realtime scheduler
+2. xenomai task in secondary mode or linux "real-time" task, both
+handled by the linux scheduler, they compete
+3. linux SCHED_OTHER tasks handled by the linux scheduler
+
+Regards Stefan
 
 
 
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-Rodolfo R. de O. Neto, Eng. , MBA
-Engenheiro de computa=E7=E3o
-MBA - Governan=E7a em TI
-E-mail: rodolforomao@domain.hid
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+--------------enig00717202DC3B7AA42233E4BF
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
---0015175cdee24c7511048f451ffd
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.10 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
-<span style=3D"BACKGROUND-COLOR: #e6ecf9; COLOR: #000" title=3D"">Hello Wor=
-lfgang,<br><br></span><span style=3D"BACKGROUND-COLOR: #fff" title=3D"">Tha=
-nk you for your help, I discovered that the problem was in my SOCK applicat=
-ion in user space, not in the kernel. </span><span title=3D"">You were very=
- thoughtful, thank you.<br>
-<br></span><span style=3D"BACKGROUND-COLOR: #fff" title=3D"">Rodolfo Romao.=
-<br></span><span title=3D"">Computer Engineer<br></span><span style=3D"BACK=
-GROUND-COLOR: #fff" title=3D"">MBA - IT Governance</span><br><br>
-<div class=3D"gmail_quote">2010/8/16 Rodolfo Oliveira <span dir=3D"ltr">&lt=
-;<a href=3D"mailto:rodolforomao@domain.hid">rodolforomao@domain.hid</a>&gt;</=
-span><br>
-<blockquote style=3D"BORDER-LEFT: #ccc 1px solid; MARGIN: 0px 0px 0px 0.8ex=
-; PADDING-LEFT: 1ex" class=3D"gmail_quote">hmm... it&#39;s really... ok !<b=
-r><br>thnks<br><br>
-<div class=3D"gmail_quote">2010/8/16 Wolfgang Grandegger <span dir=3D"ltr">=
-&lt;<a href=3D"mailto:wg@domain.hid" target=3D"_blank">wg@domain.hid=
-m</a>&gt;</span>=20
-<div>
-<div></div>
-<div class=3D"h5"><br>
-<blockquote style=3D"BORDER-LEFT: rgb(204,204,204) 1px solid; MARGIN: 0pt 0=
-pt 0pt 0.8ex; PADDING-LEFT: 1ex" class=3D"gmail_quote">
-<div>On 08/16/2010 08:32 PM, Rodolfo Oliveira wrote:<br>&gt; Hi Wolfgang!<b=
-r>&gt; I ran the rtcanrecv but this showing the following message:<br>&gt; =
-#. / Rtcanrecv<br>&gt; / Home / testing / can.libs / lt-rtcanrecv: error wh=
-ile loading shared<br>
-&gt; libraries: libnative.so.0: can not open shared object file: No such fi=
-le or<br>&gt; directory<br>&gt; # Find. Z grep rtcanrecv<br>&gt; . / Can / =
-.svn / text-base / base rtcanrecv.c.svn<br>&gt; . / Can / .deps / rtcanrecv=
-.Po<br>
-&gt; . / Can / .libs / rtcanrecv<br>&gt; . / Can / .libs / lt-rtcanrecv<br>=
-&gt; . / Can / rtcanrecv<br>&gt; . / Can / rtcanrecv.c<br>&gt; . / Can / rt=
-canrecv.o<br>&gt;<br>&gt; You know what means this?<br><br></div>I did alre=
-ady answer this question. See below.<br>
-<font color=3D"#888888"><br>Wolfgang.<br></font>
-<div>
-<div></div>
-<div><br>&gt; 2010/8/10 Wolfgang Grandegger &lt;<a href=3D"mailto:wg@domain.hid=
-gger.com" target=3D"_blank">wg@domain.hid</a>&gt;<br>&gt;<br>&gt;&gt; O=
-n 08/10/2010 08:22 PM, Rodolfo Oliveira wrote:<br>&gt;&gt;&gt; Hello Wolf,<=
-br>
-&gt;&gt;&gt;<br>&gt;&gt;&gt; When trying to run the program rtcanrecv is th=
-e following message:<br>&gt;&gt;&gt; . / Rtcanrecv<br>&gt;&gt;&gt; / Home /=
- test / can /. / Libs / lt-rtcanrecv: error while loading shared<br>&gt;&gt=
-;&gt; libraries: libnative.so.0: can not open shared object file: No such f=
-ile<br>
-&gt;&gt; or<br>&gt;&gt;&gt; directory.<br>&gt;&gt;&gt;<br>&gt;&gt;&gt; Can =
-you help me?<br>&gt;&gt;<br>&gt;&gt; Either set LD_LIBRARY_PATH pointing to=
- the Xenomai libraries or properly<br>&gt;&gt; install the utilities as des=
-cribed in README.INSTALL.<br>
-&gt;&gt;<br>&gt;&gt; Wolfgang.<br>&gt;&gt;<br>&gt;<br>&gt;<br>&gt;<br><br><=
-/div></div></blockquote></div></div></div><br><br clear=3D"all">
-<div>
-<div></div>
-<div class=3D"h5"><br>-- <br>
-<p><span style=3D"COLOR: rgb(31,73,125); FONT-SIZE: 11pt">[]=B4s</span></p>
-<p><span style=3D"COLOR: rgb(31,73,125); FONT-SIZE: 11pt"></span></p>
-<p><span style=3D"COLOR: rgb(31,73,125); FONT-SIZE: 11pt">=A0</span></p>
-<p><span style=3D"COLOR: rgb(31,73,125); FONT-SIZE: 10pt">=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D<br>Rodolfo R. de O. Neto, Eng. , MBA<br>Engenheiro de compu=
-ta=E7=E3o<br>MBA - Governan=E7a em TI<br></span><span style=3D"COLOR: rgb(3=
-1,73,125); FONT-SIZE: 10pt">E-mail: <a href=3D"mailto:rodolforomao@domain.hid=
-m" target=3D"_blank">rodolforomao@domain.hid</a></span><br>
-<span style=3D"COLOR: rgb(31,73,125); FONT-SIZE: 10pt">=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=A0=A0 </span></p><br></div></div></blockquote></div><br><br cl=
-ear=3D"all"><br>-- <br>
-<p><span style=3D"COLOR: rgb(31,73,125); FONT-SIZE: 11pt">[]=B4s</span></p>
-<p><span style=3D"COLOR: rgb(31,73,125); FONT-SIZE: 11pt"></span></p>
-<p><span style=3D"COLOR: rgb(31,73,125); FONT-SIZE: 11pt">=A0</span></p>
-<p><span style=3D"COLOR: rgb(31,73,125); FONT-SIZE: 10pt">=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D<br>Rodolfo R. de O. Neto, Eng. , MBA<br>Engenheiro de compu=
-ta=E7=E3o<br>MBA - Governan=E7a em TI<br></span><span style=3D"COLOR: rgb(3=
-1,73,125); FONT-SIZE: 10pt">E-mail: <a href=3D"mailto:rodolforomao@domain.hid=
-m" target=3D"_blank">rodolforomao@domain.hid</a></span><br>
-<span style=3D"COLOR: rgb(31,73,125); FONT-SIZE: 10pt">=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=A0=A0 </span></p><br>
+iEYEARECAAYFAkyHmsAACgkQIPTw9rIdn6r4tQCeIW51B5GdphZEJI4HxkuoannN
+VZQAn3dp3TifaPROVVlG0lsL0YRhmFYU
+=olzD
+-----END PGP SIGNATURE-----
 
---0015175cdee24c7511048f451ffd--
+--------------enig00717202DC3B7AA42233E4BF--
 
