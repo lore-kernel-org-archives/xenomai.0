@@ -1,5 +1,5 @@
-Message-ID: <4C873797.1030803@domain.hid>
-Date: Wed, 08 Sep 2010 09:13:27 +0200
+Message-ID: <4C87418D.1090601@domain.hid>
+Date: Wed, 08 Sep 2010 09:55:57 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <4C8605E6.4000400@domain.hid> <4C862A3B.2050300@domain.hid>
@@ -54,52 +54,9 @@ Bob Feretich wrote:
 >      rc = rt_event_wait(&event3, TM_NONBLOC, ...);
 >      if (rc==0) end = 1;
 > }
-> 
-> I changed the way my system of programs worked and replaced the first 
-> two rt_event_wait()s with ioctls, which execute rtdm_event_wait()s.  
-> This fix seemed to work around the problem. Initial testing show no Oopses.
-> 
->>> Another is...
->>> Unable to handle kernel paging request at virtual address 70000049
->>> pgd = cf034000
->>> [70000049] *pgd=00000000
->>> Internal error: Oops: 805 [#1]
->>> last sysfs file: /sys/devices/virtual/gpio/gpio7/value
->>> Modules linked in: rtservo_driver rtasuspidvr
->>> CPU: 0    Not tainted  (2.6.33 #10)
->>> PC is at 0x40038998
->>> LR is at 0x40038984
->>> pc : [<40038998>]    lr : [<40038984>]    psr: 60000113
->>> sp : cf0f3ff8  ip : 00000000  fp : 00000001
->>> r10: 40242c3c  r9 : 00000000  r8 : 40242c40
->>> r7 : 000f0042  r6 : 40242c40  r5 : 402434b0  r4 : 00000000
->>> r3 : 00000a64  r2 : 70000049  r1 : ffffffab  r0 : 00000000
->>> Flags: nZCv  IRQs on  FIQs on  Mode SVC_32  ISA ARM  Segment user
->>> Control: 10c5387d  Table: 8f034019  DAC: 00000015
->>> Process navigator (pid: 646, stack limit = 0xcf0f22e8)
->>> Stack: (0xcf0f3ff8 to 0xcf0f4000)
->>> 3fe0:                                                       00000000
->>> 00000000
->>> Code: 0affffe9 e3500000 059d3014 059d2008 (05823000)
->>> ---[ end trace 6d46aff735536a73 ]---
->> This is the real user-space fault. Happening at pc 0x40038998 which
->> corresponds to an address in your process. However, the stack pointer is
->> invalid here. So, the most probablie reason for such fault is that you
->> overwrote some piece of stack, which caused the return from a function
->> to try and use cf0f3ff8 as a stack address, causing the fault.
-> 0x40038998 is somewhere in /usr/xenomai/lib/native.so.3.0.0. A load map 
-> that I captured from one small iteration after the above Oops showed the 
-> executable section of native.so starting at 0x40035000.
-> 
-> I have a deadline in a few days, then some travel, so I can't dig 
-> further into the rt_event Oopses for two weeks.
 
-Chances are high that the faults come from some memory corruption in the
-application, or stack overflows, or things like that. If you pass an
-invalid address to a Xenomai service, it will cause a segmentation
-fault, but that does not make the Xenomai service buggy.
+Is this is a loop using all the CPU (all the events with TM_NONBLOCK) ?
 
 -- 
-
-                                                                Gilles.
+					    Gilles.
 
