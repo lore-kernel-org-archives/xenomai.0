@@ -1,15 +1,9 @@
-Message-ID: <4C87C33D.1060809@domain.hid>
-Date: Wed, 08 Sep 2010 19:09:17 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <4C8605E6.4000400@domain.hid> <4C862A3B.2050300@domain.hid>
-	<4C8713A2.9010705@domain.hid> <4C87418D.1090601@domain.hid>
-	<4C87C126.1050203@domain.hid>
-In-Reply-To: <4C87C126.1050203@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Oops during rt_event_wait();
- formerly "How do I force..."
+Date: Fri, 10 Sep 2010 15:42:24 -0400
+From: Edward Hoffman <quantalgo@domain.hid>
+Message-id: <1284147744.2171.0.camel@domain.hid>
+MIME-version: 1.0
+Content-type: multipart/mixed; boundary="Boundary_(ID_2M117k2cuTaS5RkAV0lX7A)"
+Subject: [Xenomai-help] [Fwd: Re: Adding rtnet-0.9.12 to xenomai-2.5.4]
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,73 +13,71 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Bob Feretich <bob.feretich@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai-help <xenomai@xenomai.org>
 
-Bob Feretich wrote:
->   I changed the subject from "How do I force a core dump on a page fault 
-> event?", because the thread's topic has drifted.
-> Comments inline...
-> On 9/8/2010 12:55 AM, Gilles Chanteperdrix wrote:
->> ...Snipped...
->>> No. This problem started occurring when I integrated the whole system
->>> together. I'm going to have to work on it a bit to reduce it to a
->>> suitable code segment .
->>> The Xenomai content of the loop is:
->>> while (!end) {
->>>       ...
->>>       rc = rt_event_wait(&event1,..);
->>>       ...
->>>       rc = rt_event_clear(&event1,..);
->>>       ...
->>>       rc = rt_event_wait(&event2,..);
->>>       ...
->>>       rc = rt_event_clear(&event2,..);
->>>       ...
->>>       rc = rt_event_wait(&event3, TM_NONBLOC, ...);
->>>       if (rc==0) end = 1;
->>> }
->> Is this is a loop using all the CPU (all the events with TM_NONBLOCK) ?
-> No, just the last wait has TM_NONBLOCK. CPU utilization for the task is 
-> about 2%.
 
-Ok.
+--Boundary_(ID_2M117k2cuTaS5RkAV0lX7A)
+Content-type: text/plain; charset=us-ascii
+Content-transfer-encoding: 7BIT
 
-> 
-> I examined my use of the rt_event mechanism, trying to identify how my 
-> use might be unusual.
+Jan,
 
-Well, the first unusual thing I see, is that you wait sequentially for
-several events. Since each event has 32 bits, you should not really
-require more than one event.
+I am trying to integrate rtnet-0.9.12 to xenomai-2.5.4 for the purposes
+of building UDP into kernel mode. After hand configuring the config file
+with my drivers, etc.  (I read your previous posts), the config fails
+with:
 
-> 
->     * The above calls are in a rt-user-task and are bracketed with
->       bind/unbind, outside the loop. The task starts in secondary mode,
->       performs the loop in primary mode, then finishes in secondary mode.
->     * rt_event_create and rt_event_delete occur in a rtdm driver init
->       and exit routines.
->     * However, rt_event_signal is invoked in interrupt handlers. I think
->       that this may be unusual. Normally, interrupt handlers would use
->       the rtdm_event mechanism.
-> 
-> Could rt_event_signal be sensitive to being invoked from the context of 
-> a real time interrupt?
+checking for Xenomai version... configure: error: *** Unsupported
+Xenomai version 2.5.4 in /usr/xenomai. It also fails with 2.5.3.
 
-rt_event_signal is documented as being able to be invoked in interrupt
-handlers.
+Is there a workaround or an updated version of rtnet?
 
-> 
-> Interrupt handler stack space is usually quite small. Does 
-> rt_event_signal make heavy use of the stack?
+RSVP.
 
-The interrupts handler do not use separated stacks on this architecture.
-The stack of whatever kernel thread is preempted by the interrupt
-handler is used. But no, rt_event_signal does not require special a lot
-of stack space.
+Thanks.
 
-Anway, have you tried gdb to see where the error points?
+Ed
 
--- 
-					    Gilles.
+
+
+--Boundary_(ID_2M117k2cuTaS5RkAV0lX7A)
+Content-type: message/rfc822
+Content-disposition: inline
+Content-description: Forwarded message - Re: Adding rtnet-0.9.12 to
+ xenomai-2.5.4
+
+Disposition-notification-to: quantalgo@domain.hid
+Date: Thu, 09 Sep 2010 22:52:49 -0400
+From: Edward Hoffman <quantalgo@domain.hid>
+Subject: Re: Adding rtnet-0.9.12 to xenomai-2.5.4
+In-reply-to: <1282703799.2170.4.camel@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Message-id: <1284087168.22830.6.camel@domain.hid>
+MIME-version: 1.0
+X-Mailer: Evolution 2.28.3
+Content-type: text/plain; charset=us-ascii
+Content-transfer-encoding: 7BIT
+References: <4C73EC62.80703@domain.hid> <1282703799.2170.4.camel@domain.hid>
+
+
+Jan,
+
+I am trying to integrate rtnet-0.9.12 to xenomai-2.5.4 for the purposes
+of building UDP into kernel mode. After hand configuring the config file
+with my drivers, etc.  (I read your previous posts), the config fails
+with:
+
+checking for Xenomai version... configure: error: *** Unsupported
+Xenomai version 2.5.4 in /usr/xenomai. It also fails with 2.5.3.
+
+Is there a workaround or an updated version of rtnet?
+
+RSVP.
+
+Thanks.
+
+Ed
+
+
+--Boundary_(ID_2M117k2cuTaS5RkAV0lX7A)--
 
