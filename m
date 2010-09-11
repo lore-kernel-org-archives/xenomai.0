@@ -1,9 +1,14 @@
-Date: Fri, 10 Sep 2010 17:24:35 -0400
-From: Edward Hoffman <quantalgo@domain.hid>
-Message-id: <1284153875.7864.4.camel@domain.hid>
-MIME-version: 1.0
-Content-type: multipart/mixed; boundary="Boundary_(ID_nCiCLH4xCZp0Tv2DRxol6A)"
-Subject: [Xenomai-help] [Fwd: [Fwd: Re: Adding rtnet-0.9.12 to
+Message-ID: <4C8BD72E.1010906@domain.hid>
+Date: Sat, 11 Sep 2010 21:23:26 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
+MIME-Version: 1.0
+References: <1284153875.7864.4.camel@domain.hid>
+In-Reply-To: <1284153875.7864.4.camel@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigF7039D5DD6EE138339CD699F"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-help] [Fwd: [Fwd: Re: Adding rtnet-0.9.12 to
 	xenomai-2.5.4]]
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -14,134 +19,62 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: jan.kiszka@domain.hid, xenomai@xenomai.org
+To: Edward Hoffman <quantalgo@domain.hid>
+Cc: rtnet-users <rtnet-users@domain.hid>
+
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigF7039D5DD6EE138339CD699F
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+Ed,
+
+I think this was a misunderstanding: I meant that RTnet-related
+questions should be handled on the rtnet-users list. So I'm only BCC'ing
+xenomai-help now.
+
+Am 10.09.2010 23:24, Edward Hoffman wrote:
+> Jan,
+>=20
+> Sorry, I am a newbie.  Is using rtnet required or can the same UDP
+> interface be done using RTDM sockets in xenomai?
+
+No, the RTDM socket interface is a pure interconnection between the
+application and the protocol driver. For UDP, RTnet is such a driver.
+
+[...]
+>=20
+> I am trying to integrate rtnet-0.9.12 to xenomai-2.5.4 for the purposes=
+
+> of building UDP into kernel mode. After hand configuring the config fil=
+e
+> with my drivers, etc.  (I read your previous posts), the config fails
+> with:
+>=20
+> checking for Xenomai version... configure: error: *** Unsupported
+> Xenomai version 2.5.4 in /usr/xenomai. It also fails with 2.5.3.
+>=20
+> Is there a workaround or an updated version of rtnet?
+
+I asked for some more details about what you did and if you really read
+the thread on RTnet's ./configure. Please answer those questions.
+
+Jan
 
 
---Boundary_(ID_nCiCLH4xCZp0Tv2DRxol6A)
-Content-type: text/plain; charset=us-ascii
-Content-transfer-encoding: 7BIT
+--------------enigF7039D5DD6EE138339CD699F
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.15 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org/
 
-Jan,
+iEYEARECAAYFAkyL1zoACgkQitSsb3rl5xQoRACg1wO6LbSxX8xdAt3RczKymhPP
+420AoMo7wZX5LHbX3SIRn+bf0eTEMXx8
+=rrjW
+-----END PGP SIGNATURE-----
 
-Sorry, I am a newbie.  Is using rtnet required or can the same UDP
-interface be done using RTDM sockets in xenomai?
-
-RSVP.
-
-
-Thanks,
-
-Ed
-
-
-
-
-
-
-
-
-
-
-Jan,
-
-I am trying to integrate rtnet-0.9.12 to xenomai-2.5.4 for the purposes
-of building UDP into kernel mode. After hand configuring the config file
-with my drivers, etc.  (I read your previous posts), the config fails
-with:
-
-checking for Xenomai version... configure: error: *** Unsupported
-Xenomai version 2.5.4 in /usr/xenomai. It also fails with 2.5.3.
-
-Is there a workaround or an updated version of rtnet?
-
-RSVP.
-
-Thanks.
-
-Ed
-
---Boundary_(ID_nCiCLH4xCZp0Tv2DRxol6A)
-Content-type: message/rfc822
-Content-disposition: inline
-Content-description: Forwarded message - [Fwd: Re: Adding rtnet-0.9.12 to
- xenomai-2.5.4]
-
-Disposition-notification-to: quantalgo@domain.hid
-Date: Fri, 10 Sep 2010 15:42:25 -0400
-From: Edward Hoffman <quantalgo@domain.hid>
-Subject: [Fwd: Re: Adding rtnet-0.9.12 to xenomai-2.5.4]
-To: xenomai-help <xenomai@xenomai.org>
-Message-id: <1284147744.2171.0.camel@domain.hid>
-MIME-version: 1.0
-X-Mailer: Evolution 2.28.3
-Content-type: multipart/mixed; boundary="Boundary_(ID_4KWehFFIRDu4tQhWeqtzfA)"
-
-
---Boundary_(ID_4KWehFFIRDu4tQhWeqtzfA)
-Content-type: text/plain; charset=us-ascii
-Content-transfer-encoding: 7BIT
-
-Jan,
-
-I am trying to integrate rtnet-0.9.12 to xenomai-2.5.4 for the purposes
-of building UDP into kernel mode. After hand configuring the config file
-with my drivers, etc.  (I read your previous posts), the config fails
-with:
-
-checking for Xenomai version... configure: error: *** Unsupported
-Xenomai version 2.5.4 in /usr/xenomai. It also fails with 2.5.3.
-
-Is there a workaround or an updated version of rtnet?
-
-RSVP.
-
-Thanks.
-
-Ed
-
-
-
---Boundary_(ID_4KWehFFIRDu4tQhWeqtzfA)
-Content-type: message/rfc822
-Content-disposition: inline
-Content-description: Forwarded message - Re: Adding rtnet-0.9.12 to
- xenomai-2.5.4
-
-Disposition-notification-to: quantalgo@domain.hid
-Date: Thu, 09 Sep 2010 22:52:49 -0400
-From: Edward Hoffman <quantalgo@domain.hid>
-Subject: Re: Adding rtnet-0.9.12 to xenomai-2.5.4
-In-reply-to: <1282703799.2170.4.camel@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Message-id: <1284087168.22830.6.camel@domain.hid>
-MIME-version: 1.0
-X-Mailer: Evolution 2.28.3
-Content-type: text/plain; charset=us-ascii
-Content-transfer-encoding: 7BIT
-References: <4C73EC62.80703@domain.hid> <1282703799.2170.4.camel@domain.hid>
-
-
-Jan,
-
-I am trying to integrate rtnet-0.9.12 to xenomai-2.5.4 for the purposes
-of building UDP into kernel mode. After hand configuring the config file
-with my drivers, etc.  (I read your previous posts), the config fails
-with:
-
-checking for Xenomai version... configure: error: *** Unsupported
-Xenomai version 2.5.4 in /usr/xenomai. It also fails with 2.5.3.
-
-Is there a workaround or an updated version of rtnet?
-
-RSVP.
-
-Thanks.
-
-Ed
-
-
---Boundary_(ID_4KWehFFIRDu4tQhWeqtzfA)--
-
---Boundary_(ID_nCiCLH4xCZp0Tv2DRxol6A)--
+--------------enigF7039D5DD6EE138339CD699F--
 
