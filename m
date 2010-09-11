@@ -1,15 +1,11 @@
-Message-ID: <4C8BD72E.1010906@domain.hid>
-Date: Sat, 11 Sep 2010 21:23:26 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <7301cc886b22b37fcbc8cda61c515d07.squirrel@domain.hid>
+Date: Sat, 11 Sep 2010 15:08:53 -0500 (CDT)
+From: "Travis Stratman" <tstratman@domain.hid>
 MIME-Version: 1.0
-References: <1284153875.7864.4.camel@domain.hid>
-In-Reply-To: <1284153875.7864.4.camel@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigF7039D5DD6EE138339CD699F"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-help] [Fwd: [Fwd: Re: Adding rtnet-0.9.12 to
-	xenomai-2.5.4]]
+Content-Type: text/plain;charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
+Subject: [Xenomai-help] Bottom half task scheduling
+Reply-To: tstratman@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,62 +15,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Edward Hoffman <quantalgo@domain.hid>
-Cc: rtnet-users <rtnet-users@domain.hid>
+To: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigF7039D5DD6EE138339CD699F
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Hello,
 
-Ed,
+I am writing a Xenomai driver with an interrupt that must trigger a
+complex series of hardware accesses that may not be atomic (i.e. waiting
+for DMA to complete). I'd like to move this section to a bottom half. In a
+Linux driver I would use a workqueue but I haven't been able to determine
+what the preferred method would be in Xenomai. All of the task creation
+API that I have considered cannot be called from an interrupt handler as
+they may reschedule.
 
-I think this was a misunderstanding: I meant that RTnet-related
-questions should be handled on the rtnet-users list. So I'm only BCC'ing
-xenomai-help now.
+Can anyone point me to some documentation or example that covers this? Any
+pointers would be appreciated.
 
-Am 10.09.2010 23:24, Edward Hoffman wrote:
-> Jan,
->=20
-> Sorry, I am a newbie.  Is using rtnet required or can the same UDP
-> interface be done using RTDM sockets in xenomai?
+Thanks,
 
-No, the RTDM socket interface is a pure interconnection between the
-application and the protocol driver. For UDP, RTnet is such a driver.
+TAS
 
-[...]
->=20
-> I am trying to integrate rtnet-0.9.12 to xenomai-2.5.4 for the purposes=
-
-> of building UDP into kernel mode. After hand configuring the config fil=
-e
-> with my drivers, etc.  (I read your previous posts), the config fails
-> with:
->=20
-> checking for Xenomai version... configure: error: *** Unsupported
-> Xenomai version 2.5.4 in /usr/xenomai. It also fails with 2.5.3.
->=20
-> Is there a workaround or an updated version of rtnet?
-
-I asked for some more details about what you did and if you really read
-the thread on RTnet's ./configure. Please answer those questions.
-
-Jan
-
-
---------------enigF7039D5DD6EE138339CD699F
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.15 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org/
-
-iEYEARECAAYFAkyL1zoACgkQitSsb3rl5xQoRACg1wO6LbSxX8xdAt3RczKymhPP
-420AoMo7wZX5LHbX3SIRn+bf0eTEMXx8
-=rrjW
------END PGP SIGNATURE-----
-
---------------enigF7039D5DD6EE138339CD699F--
 
