@@ -1,9 +1,12 @@
+Message-ID: <4C8DE9CE.9050900@domain.hid>
+Date: Mon, 13 Sep 2010 11:07:26 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Date: Mon, 13 Sep 2010 10:06:29 +0200
-Message-ID: <AANLkTi=Wke_BOMmq4P-SSoaMnaDVfBV=2Hmn5TZF7QgQ@mail.gmail.com>
-From: =?ISO-8859-1?Q?Jens_K=F6hler?= <jenskxxx@domain.hid>
-Content-Type: multipart/alternative; boundary=90e6ba8e4d1ae22e6704901f9285
-Subject: [Xenomai-help] rt_queue_read and EPERM?
+References: <AANLkTi=Wke_BOMmq4P-SSoaMnaDVfBV=2Hmn5TZF7QgQ@mail.gmail.com>
+In-Reply-To: <AANLkTi=Wke_BOMmq4P-SSoaMnaDVfBV=2Hmn5TZF7QgQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-help] rt_queue_read and EPERM?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -13,42 +16,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: =?UTF-8?B?SmVucyBLw7ZobGVy?= <jenskxxx@domain.hid>
+Cc: xenomai@xenomai.org
 
---90e6ba8e4d1ae22e6704901f9285
-Content-Type: text/plain; charset=ISO-8859-1
+Jens K=C3=B6hler wrote:
+> Hello
+>=20
+> I am try to use a RT_QUEUE. I am writing messages with rt_queue_write t=
+o
+> the queue. But when function rt_queue_read is called result is always  =
+"-1".
+> =20
+> "-1" means EPERM. What means exactly: "EEPERM is returned if this
+> service should block"? I don't understand why a function should block t=
+o
+> get a message from a queue!?
 
-Hello
-I am try to use a RT_QUEUE. I am writing messages with rt_queue_write to the
-queue. But when function rt_queue_read is called result is always  "-1".
+A piece of code is worth a thousand words. Please send us a piece of
+code showing the behaviour you find suspicious.
 
-"-1" means EPERM. What means exactly: "EEPERM is returned if this service
-should block"? I don't understand why a function should block to get a
-message from a queue!?
+--=20
+					    Gilles.
 
-Thanks and regards,
-Jens,
-
---90e6ba8e4d1ae22e6704901f9285
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-
-<p>Hello</p>
-<div>I am try to use a RT_QUEUE. I am writing messages with r<font face=3D"=
-Helv" size=3D"2"><font face=3D"Helv" size=3D"2">t_queue_write to the queue.=
- But=A0when function=A0<font face=3D"Helv" size=3D"2"><font face=3D"Helv" s=
-ize=3D"2">rt_queue_read is called result is=A0always=A0 &quot;-1&quot;.</fo=
-nt></font></font></font></div>
-
-<div><font face=3D"Helv"></font>=A0</div>
-<div><font face=3D"Helv">&quot;-1&quot; means </font><font face=3D"Helv">EP=
-ERM. What means exactly:=A0&quot;EEPERM is returned if this service should =
-block&quot;? I don&#39;t understand why a function should block to get a me=
-ssage from a queue!?</font></div>
-
-<div><font face=3D"Helv"></font>=A0</div>
-<div>Thanks and regards,</div>
-<div>Jens,</div>
-
---90e6ba8e4d1ae22e6704901f9285--
 
