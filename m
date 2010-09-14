@@ -1,13 +1,12 @@
-Message-ID: <4C8E3203.3080005@domain.hid>
-Date: Mon, 13 Sep 2010 16:15:31 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <AANLkTi=Wke_BOMmq4P-SSoaMnaDVfBV=2Hmn5TZF7QgQ@mail.gmail.com>	<4C8DE9CE.9050900@domain.hid>	<AANLkTik4rjQzwnU82OBudtkeS+kO+fbD1RjFXvXK7=qS@mail.gmail.com>	<4C8E118F.7010404@domain.hid>
-	<AANLkTi=zxAy4wVyf2T_0XcxpnCkXRtApWhimmJO5hSFr@domain.hid>
-In-Reply-To: <AANLkTi=zxAy4wVyf2T_0XcxpnCkXRtApWhimmJO5hSFr@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+From: Zafar Iqbal <Zafar.Iqbal2@domain.hid>
+Date: Tue, 14 Sep 2010 16:45:04 +0530
+Message-ID: <76E258664B189C4CBEF125491CA11ECC945B6553D4@domain.hid>
+Content-Language: en-US
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] rt_queue_read and EPERM?
+MIME-Version: 1.0
+Subject: [Xenomai-help] HELP: Xenomai: POSIX skin or
+	CONFIG_XENO_OPT_PERVASIVE disabled
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,18 +16,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: =?UTF-8?B?SmVucyBLw7ZobGVy?= <jenskxxx@domain.hid>
-Cc: xenomai@xenomai.org
+To: "Xenomai-help@domain.hid" <Xenomai-help@domain.hid>
 
-Jens K=C3=B6hler wrote:
-> Yes this is true. It is not a Xenomai task.
+Dear Sir,
 
-The documentation is a bit misleading, I agree, the paragram about
--EPERM is for kernel mode usage of rt_queue_read. In user-space mode,
-EPERM is returned if the calling thread is not a Xenomai thread, before
-even testing whether a message is available.
 
---=20
-					    Gilles.
+I Installed the Xenomai Successfully in MY System with Ubuntu 10.04.
+Operationg System: Ubuntu 10.4
+Xenomai Version: 2.5.4.
+refrence for the installation: http://www.xenomai.org/index.php/Building_De=
+bian_packages
+
+
+
+later I compiled the example code provided in the xenomai folder and i got =
+compiled sucessfully but while running the executable I am getting the foll=
+owing different error:
+
+for POSIX Code:
+root@domain.hid# ./satch =
+
+Xenomai: POSIX skin or CONFIG_XENO_OPT_PERVASIVE disabled.
+(modprobe xeno_posix?)
+
+for native code
+
+root@domain.hid# ./rtprint =
+
+Xenomai: native skin or CONFIG_XENO_OPT_PERVASIVE disabled.
+(modprobe xeno_native?)
+root@domain.hid# =
+
+
+
+Please Suggest Me whats wrong here in the above code.
+
+Thanks and Regards
+Zafar
+
 
 
