@@ -1,10 +1,13 @@
+Message-ID: <4C9209F4.7050900@domain.hid>
+Date: Thu, 16 Sep 2010 14:13:40 +0200
+From: Stefan Kisdaroczi <kisda@domain.hid>
 MIME-Version: 1.0
-Sender: madjsw@domain.hid
-Date: Wed, 15 Sep 2010 16:40:22 -0500
-Message-ID: <AANLkTikF63jMSnD-XDq_KvApr1EZoGPLP6rFG7HcwpPC@mail.gmail.com>
-From: Jeff Weber <jwamsc@domain.hid>
-Content-Type: multipart/alternative; boundary=0016364ef6fa3b93560490532d82
-Subject: [Xenomai-help] isolate realtime and Linux by CPU on SMP system
+References: <4C91D29F.7020106@domain.hid>
+In-Reply-To: <4C91D29F.7020106@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig35611B6C8B7146CA44BA5154"
+Subject: Re: [Xenomai-help] (Not yet) Xenomai 2.5.5.
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,86 +19,64 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
---0016364ef6fa3b93560490532d82
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig35611B6C8B7146CA44BA5154
 Content-Type: text/plain; charset=ISO-8859-1
-
-I have a SMP system with 2 CPUs, and wish to assign all Linux functionality
-(processes, threads, interrupts, etc)  to one CPU, and all Xenomai, RTnet
-functionality to the other CPU.  Global solutions for isolating each domain
-would be preferrable to walking lists of processes, threads, etc.
-
-Initially, writing to /proc/xenomai/affinity appears to isolate all Xenomai
-threads to the desired CPU.  (I haven't had an opportunity to test Xenomai
-interrupts yet.)
-
-Then I encountered difficulties when starting to isolate Linux processes,
-threads.  Using the kernel boot option isolcpus=0 resulted in 49 out of 126
-Linux processes running on CPU0.
-
-Switching instead to boot option isolcpus=1 placed 11 out of 126 Linux
-processes on CPU1, the remainder on CPU0  The processes running on CPU1 were
-migration/1, ksoftirqd/1, watchdog/1, etc, so this may be the bare minimum
-possible on CPU1.  I considered this "good enough".
-
-Then I attempted to set Xenomai global affinity to CPU1:
-echo 00000002 > /proc/xenomai/affinity
-But running my Xenomai Posix skin application failed:
-Xenomai Posix skin init: pthread_setschedparam: Invalid argument
-
-Interestingly, switching Xenomai global affinity to CPU0 then succeeded:
-echo 00000001 > /proc/xenomai/affinity
-But my Xenomai threads then ran on CPU0 alongside the bulk of the Linux
-processes.
-
-I was able to assign all Linux interrupts to either CPU, without any
-difficulties, by manipulating the IRQBALANCE_BANNED_CPUS environment for the
-irqbalance daemon.
-
-What is the best way to assign Linux to use one CPU, and Xenomai, RTnet to
-use the other CPU?
-
-my config:
-x86 32-bit arch
-linux-2.6.34.5
-Xenomai-2.5.4
-adeos-ipipe-2.6.34.5-x86-2.7-03.patch
-
-TIA,
-Jeff
-
---0016364ef6fa3b93560490532d82
-Content-Type: text/html; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
-I have a SMP system with 2 CPUs, and wish to assign all Linux functionality=
- (processes, threads, interrupts, etc)=A0 to one CPU, and all Xenomai, RTne=
-t=A0 functionality to the other CPU.=A0 Global solutions for isolating each=
- domain would be preferrable to walking lists of processes, threads, etc.<b=
-r>
-<br>Initially, writing to /proc/xenomai/affinity appears to isolate all Xen=
-omai threads to the desired CPU.=A0 (I haven&#39;t had an opportunity to te=
-st Xenomai interrupts yet.)<br><br>Then I encountered difficulties when sta=
-rting to isolate Linux processes, threads.=A0 Using the kernel boot option =
-isolcpus=3D0 resulted in 49 out of 126 Linux processes running on CPU0.<br>
-<br>Switching instead to boot option isolcpus=3D1 placed 11 out of 126 Linu=
-x processes on CPU1, the remainder on CPU0=A0 The processes running on CPU1=
- were migration/1, ksoftirqd/1, watchdog/1, etc, so this may be the bare mi=
-nimum possible on CPU1.=A0 I considered this &quot;good enough&quot;.<br>
-<br>Then I attempted to set Xenomai global affinity to CPU1:<br>echo 000000=
-02 &gt; /proc/xenomai/affinity<br>But running my Xenomai Posix skin applica=
-tion failed:<br>Xenomai Posix skin init: pthread_setschedparam: Invalid arg=
-ument<br>
-<br>Interestingly, switching Xenomai global affinity to CPU0 then succeeded=
-:<br>echo 00000001 &gt; /proc/xenomai/affinity<br>But my Xenomai threads th=
-en ran on CPU0 alongside the bulk of the Linux processes.<br><br>I was able=
- to assign all Linux interrupts to either CPU, without any difficulties, by=
- manipulating the IRQBALANCE_BANNED_CPUS environment for the irqbalance dae=
-mon.<br>
-<br>What is the best way to assign Linux to use one CPU, and Xenomai, RTnet=
- to use the other CPU?<br><br>my config:<br>x86 32-bit arch<br>linux-2.6.34=
-.5<br>Xenomai-2.5.4<br>adeos-ipipe-2.6.34.5-x86-2.7-03.patch<br><br>TIA,<br=
+On 16.09.2010 10:17, Gilles Chanteperdrix wrote:
+> Hi,
 >
-Jeff<br>
+> I would like to make that next release of Xenomai,
 
---0016364ef6fa3b93560490532d82--
+Hi Gilles,
+
+don't forget [1] Peter Soetens rtcan patch [2]:
+[1] https://mail.gna.org/public/xenomai-help/2010-08/msg00085.html
+[2] https://mail.gna.org/public/xenomai-help/2010-07/msg00112.html
+
+Stefan
+
+>  especially since the
+> fix for the I-pipe on x86_32 with grub2 has been available for some tim=
+e
+> now, and has not yet been in a stable release.
+>
+> So, I have a few minor questions:
+> - Wolfgang, Alexis, it seems we have a few warnings when compiling
+> rtcan/analogy tools with recent versions of gcc (4.4.1 from
+> codesourcery). You will find the logs here:
+> http://sisyphus.hd.free.fr/~gilles/pastebin/KVSBtb
+> we are not in a hurry to fix this, so simply tell me if the fix is easy=
+
+> or not.
+> - Alexis, from the mailing list discussions, you probably have some
+> commits ready in the analoty branch, would it be possible to have a pul=
+l
+> request for these?
+> - Jan, where are we with CLOCK_HOST_REALTIME, are the I-pipe ready?
+> Should I merge Wolfgang's patches, or the I-pipe/Xenomai interface has
+> changed following the discussions with Philippe?
+>
+> Thanks in advance.
+>
+>  =20
+
+
+
+--------------enig35611B6C8B7146CA44BA5154
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.10 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+
+iEYEARECAAYFAkySCf8ACgkQIPTw9rIdn6rjwQCeOdnMTjr7J8nEsEA6w3m7dVbT
+QSwAn2jKc6hqI0SJgx7QHRiLS+GqJHPv
+=l4H8
+-----END PGP SIGNATURE-----
+
+--------------enig35611B6C8B7146CA44BA5154--
 
