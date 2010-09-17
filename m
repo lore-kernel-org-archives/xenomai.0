@@ -1,5 +1,5 @@
-Message-ID: <4C92AB0E.3010100@domain.hid>
-Date: Fri, 17 Sep 2010 01:41:02 +0200
+Message-ID: <4C933ECF.9020301@domain.hid>
+Date: Fri, 17 Sep 2010 12:11:27 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <4C91D29F.7020106@domain.hid> <4C91E05E.6010202@domain.hid>
@@ -68,9 +68,6 @@ Jan Kiszka wrote:
 > unconditionally backported. But even for head, we can perfectly skip the
 > debugging part. Important are the fixes. I've reordered and shortened my
 > queue already.
-
-Ah, ok, it was hard to tell since it came in the for-upstream branch...
-
 > 
 >> The risk is that on SMP machines, the cpus start
 >> dumping stack traces concurrently, resulting in an unreadable mess (we
@@ -85,6 +82,11 @@ Ah, ok, it was hard to tell since it came in the for-upstream branch...
 > while walking the write handlers. Moreover, I would like to get more
 > data in case the user did not yet prepare for catching a Xenomai panic.
 > But, of course, dump regressions must be avoided.
+
+We could use a separate lock to prevent multiple panics at the same time
+from talking at the same time. But now that I think about it, panic
+probably alread takes care of this.
+
 > 
 >> I also do not understand the game with panic. It looks to me there is a
 >> risk of breaking compatibility with older Adeos patches, whose panic was
@@ -93,9 +95,10 @@ Ah, ok, it was hard to tell since it came in the for-upstream branch...
 > Do you have some versions in mind? Something in the early 2.6.20th or
 > younger?
 
-Your patch assumes that anything later than 2.6.0 has a correct,
-Adeos-aware panic. I just wonder whether this is true.
+Not much of an issue finally. Except stubborn newcomers, people using
+old patches probably have been using them for a long time and do not
+have much kernel panics debug to do.
 
 -- 
-                                                                Gilles.
+					    Gilles.
 
