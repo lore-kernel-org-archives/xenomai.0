@@ -1,14 +1,11 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <4C97106E.7060602@domain.hid>
-References: <AANLkTi=5RZVyUPvThyLDRPsmD9U0=A8_UPPm3bUi1E_q@domain.hid>
-	<1284960227.4114.11.camel@domain.hid>
-	<4C97106E.7060602@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Mon, 20 Sep 2010 09:54:30 +0200
-Message-ID: <1284969270.4114.12.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] pSOS+ simple example returns error code -14
+From: Zafar Iqbal <Zafar.Iqbal2@domain.hid>
+Date: Mon, 20 Sep 2010 17:56:09 +0530
+Message-ID: <76E258664B189C4CBEF125491CA11ECC945B6553E2@domain.hid>
+Content-Language: en-US
+Content-Type: text/plain; charset="Windows-1252"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+Subject: [Xenomai-help] Error in Porting from POSIX to Xenomai POSIX
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,69 +15,22 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: "Xenomai-help@domain.hid" <Xenomai-help@domain.hid>
 
-On Mon, 2010-09-20 at 09:42 +0200, Gilles Chanteperdrix wrote:
-> Philippe Gerum wrote:
-> > On Sun, 2010-09-19 at 16:04 +0100, ronny meeus wrote:
-> >> Hello
-> >>
-> >> I'm using xenomai in a qemu setup.
-> >> My final goal is to use xenomai to port extisting pSOS application to
-> >> the linux platform.
-> >>
-> >> The first step I did was building a kernel with the pSOS skin enabled.
-> >> These traces are generated at kernel startup:
-> >> [    0.212363] I-pipe: Domain Xenomai registered.
-> >> [    0.212363] Xenomai: hal/i386 started.
-> >> [    0.212363] Xenomai: scheduling class idle registered.
-> >> [    0.212363] Xenomai: scheduling class rt registered.
-> >> [    0.246987] Xenomai: real-time nucleus v2.5.4 (Sleep Walk) loaded.
-> >> [    0.246987] Xenomai: debug mode enabled.
-> >> [    0.274658] Xenomai: starting native API services.
-> >> [    0.274658] Xenomai: starting POSIX services.
-> >> [    0.296357] Xenomai: starting RTDM services.
-> >> [    0.296357] Xenomai: registered exported object RN#0 (regions)
-> >> [    0.296357] Xenomai: starting pSOS+ services.
-> >> [    0.305601] HugeTLB registered 4 MB page size, pre-allocated 0
-> >> pages
-> >>
-> >> This is the example application:
-> >>
-> >> #include <psos+/psos.h>
-> >>
-> >> void task2_func(u_long a,u_long b,u_long c,u_long d)
-> >> {
-> >>         while (1) {
-> >>                 tm_wkafter(1000);
-> >>         }
-> >> }
-> >>
-> >> int main(int argc, char **argv)
-> >> {
-> >>         unsigned long tid;
-> >>         unsigned long args[4] = {0,0,0,0};
-> >>
-> >>         t_create("TEST",10,160000,160000,0,&tid);
-> >>         t_start(tid,0,task2_func,args);
-> >>         while (1) {
-> >>                 sleep(100);
-> >>         }
-> >> }
-> > 
-> > I'm unsure whether the code above is actually the one which issues the
-> > output mentioned below. I see no t_shadow call, and no status printout
-> > there.
-> 
-> Maybe the auto-shadowing of the main thread?
-> 
+Hi,
 
-Correct. I did not recall we had auto-shadowing in place for pSOS
-actually.
+I am getting one problem When I am trying to Compile my old PTHREAD code wi=
+th the xenomai posix skin
+the problem is as follows:
 
--- 
-Philippe.
+"/usr/include/xenomai/asm/xenomai/atomic.h:76: error: expected identifier o=
+r =91(=92 before numeric constant"   for all the source file.
+
+Can someone suggest what the wrong here.
+
+
+Thanks and Regards,
+Zafar
 
 
 
