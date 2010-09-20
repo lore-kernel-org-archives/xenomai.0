@@ -1,11 +1,12 @@
-From: Zafar Iqbal <Zafar.Iqbal2@domain.hid>
-Date: Mon, 20 Sep 2010 17:56:09 +0530
-Message-ID: <76E258664B189C4CBEF125491CA11ECC945B6553E2@domain.hid>
-Content-Language: en-US
-Content-Type: text/plain; charset="Windows-1252"
-Content-Transfer-Encoding: quoted-printable
+Message-ID: <4C975648.7040401@domain.hid>
+Date: Mon, 20 Sep 2010 14:40:40 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Subject: [Xenomai-help] Error in Porting from POSIX to Xenomai POSIX
+References: <76E258664B189C4CBEF125491CA11ECC945B6553E2@domain.hid>
+In-Reply-To: <76E258664B189C4CBEF125491CA11ECC945B6553E2@domain.hid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-help] Error in Porting from POSIX to Xenomai POSIX
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,22 +16,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "Xenomai-help@domain.hid" <Xenomai-help@domain.hid>
+To: Zafar Iqbal <Zafar.Iqbal2@domain.hid>
+Cc: "Xenomai-help@domain.hid" <Xenomai-help@domain.hid>
 
-Hi,
+Zafar Iqbal wrote:
+> Hi,
+>=20
+> I am getting one problem When I am trying to Compile my old PTHREAD cod=
+e with the xenomai posix skin
+> the problem is as follows:
+>=20
+> "/usr/include/xenomai/asm/xenomai/atomic.h:76: error: expected identifi=
+er or =E2=80=98(=E2=80=99 before numeric constant"   for all the source f=
+ile.
+>=20
+> Can someone suggest what the wrong here.
 
-I am getting one problem When I am trying to Compile my old PTHREAD code wi=
-th the xenomai posix skin
-the problem is as follows:
+I have no idea what is going wrong with your code, but what I know for
+sure is what is wrong with your post: you do not give us ANY information
+which would allow us to answer.
 
-"/usr/include/xenomai/asm/xenomai/atomic.h:76: error: expected identifier o=
-r =91(=92 before numeric constant"   for all the source file.
-
-Can someone suggest what the wrong here.
-
-
-Thanks and Regards,
-Zafar
-
+--=20
+					    Gilles.
 
 
