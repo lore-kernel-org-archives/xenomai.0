@@ -1,13 +1,10 @@
-Message-ID: <4C933ECF.9020301@domain.hid>
-Date: Fri, 17 Sep 2010 12:11:27 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Date: Mon, 20 Sep 2010 11:43:28 +0200
+From: Alexis Berlemont <alexis.berlemont@domain.hid>
+Message-ID: <20100920094328.GA29405@domain.hid>
 MIME-Version: 1.0
-References: <4C91D29F.7020106@domain.hid> <4C91E05E.6010202@domain.hid>
-	<4C926742.4010601@domain.hid> <4C92A9D5.7010602@domain.hid>
-In-Reply-To: <4C92A9D5.7010602@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] (Not yet) Xenomai 2.5.5.
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Subject: [Xenomai-core] [PULL REQUEST] analogy: bugfixes
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -16,89 +13,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: Xenomai core <Xenomai-core@domain.hid>
+To: xenomai@xenomai.org
 
-Jan Kiszka wrote:
-> Am 16.09.2010 20:51, Gilles Chanteperdrix wrote:
->> Jan Kiszka wrote:
->>> Am 16.09.2010 10:17, Gilles Chanteperdrix wrote:
->>>> Hi,
->>>>
->>>> I would like to make that next release of Xenomai, especially since the
->>>> fix for the I-pipe on x86_32 with grub2 has been available for some time
->>>> now, and has not yet been in a stable release.
->>>>
->>>> So, I have a few minor questions:
->>>> - Wolfgang, Alexis, it seems we have a few warnings when compiling
->>>> rtcan/analogy tools with recent versions of gcc (4.4.1 from
->>>> codesourcery). You will find the logs here:
->>>> http://sisyphus.hd.free.fr/~gilles/pastebin/KVSBtb
->>>> we are not in a hurry to fix this, so simply tell me if the fix is easy
->>>> or not.
->>>> - Alexis, from the mailing list discussions, you probably have some
->>>> commits ready in the analoty branch, would it be possible to have a pull
->>>> request for these?
->>>> - Jan, where are we with CLOCK_HOST_REALTIME, are the I-pipe ready?
->>>> Should I merge Wolfgang's patches, or the I-pipe/Xenomai interface has
->>>> changed following the discussions with Philippe?
->>> I've a ready-to-use version that should address all of Philippe's
->>> remarks in my 2.6.35 queue [1]. The plan was to push it along this line,
->>> but then things got stuck due to the 32-bit boot hang report by Ed
->>> Hoffman (still waiting for further information from him). Also my KVM
->>> patches in that queue do not work yet, but they will likely be postponed.
->>>
->>> Besides that, I've longer queue of fixes and enhancement to Xenomai [2]
->>> that partially depends on [1]. I already sent pull requests, but then
->>> did not refresh it due to the dependency.
->>>
->>> Unfortunately, I'm "a bit" short on time the next weeks, so we need to
->>> find the cheapest way of getting the most important stuff merged for
->>> 2.5.5 I guess. I already started backporting the critical sync fixes for
->>> I-pipe to 2.6.34 [3], just sent no pull request yet.
->> Ok. I would like to be able to merge at least before the middle of next
->> week so as to validate a bit the result before releasing, hopefully,
->> before the end of next week.
->>
->> I had a look at the patches you pushed. I find it a bit dangerous to
->> merge quickly such patches, which fiddle with the nklock, without
->> extensive testing.
-> 
-> This is first of all xenomai-head stuff, nothing that shall be
-> unconditionally backported. But even for head, we can perfectly skip the
-> debugging part. Important are the fixes. I've reordered and shortened my
-> queue already.
-> 
->> The risk is that on SMP machines, the cpus start
->> dumping stack traces concurrently, resulting in an unreadable mess (we
->> have seen this in the past actually), whereas, correct me if I am wrong,
->> if the output takes place on the serial port, which is the current
->> preferred debug setup with Xenomai, we do not have to schedule klogd to
->> get an output, so we do not have to release the nklock.
-> 
-> I will have to check this again, but I bet the need for dropping nklock
-> came from the fact that more than the serial port was configured (that's
-> default here). Then some other console driver may have locked things up
-> while walking the write handlers. Moreover, I would like to get more
-> data in case the user did not yet prepare for catching a Xenomai panic.
-> But, of course, dump regressions must be avoided.
+The following changes since commit 9d70c373eee0ac43a1b5869600e33ec6bff89868:
 
-We could use a separate lock to prevent multiple panics at the same time
-from talking at the same time. But now that I think about it, panic
-probably alread takes care of this.
+  rtcan: Mask the SJA_MOD register when probing for channels (2010-09-16 20:43:34 +0200)
 
-> 
->> I also do not understand the game with panic. It looks to me there is a
->> risk of breaking compatibility with older Adeos patches, whose panic was
->> not as solid as the one of the current releases.
-> 
-> Do you have some versions in mind? Something in the early 2.6.20th or
-> younger?
+are available in the git repository at:
+  git://git.xenomai.org/xenomai-abe.git analogy
 
-Not much of an issue finally. Except stubborn newcomers, people using
-old patches probably have been using them for a long time and do not
-have much kernel panics debug to do.
+Alexis Berlemont (9):
+      analogy: minor change in analogy Kconfig text
+      analogy: add comments in the buffer management code
+      analogy: fix a bug in the DIO subdevice's mite configuration
+      analogy: minor changes in cmd_bits
+      analogy: comsetic change in mite.c
+      analogy: [pcimio] rework the mite setup procedures
+      analogy: [pcimio] fix a forgotten warning
+      analogy: [pcimio] add the initialization of the ring for gpct subd
+      analogy: fix compilation warnings with gcc-4.4.1
+
+ include/analogy/buffer.h                           |   52 ++++++-
+ ksrc/drivers/analogy/Kconfig                       |    2 +-
+ ksrc/drivers/analogy/buffer.c                      |   23 +++-
+ .../analogy/national_instruments/mio_common.c      |  155 +++++++++++++-------
+ ksrc/drivers/analogy/national_instruments/mite.c   |    4 +-
+ src/drvlib/analogy/sync.c                          |   44 ++++--
+ src/utils/analogy/cmd_bits.c                       |    6 +-
+ src/utils/analogy/insn_bits.c                      |    9 +-
+ 8 files changed, 213 insertions(+), 82 deletions(-)
 
 -- 
-					    Gilles.
+Alexis.
 
