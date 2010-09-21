@@ -1,12 +1,10 @@
-Message-ID: <4C972E39.4010900@domain.hid>
-Date: Mon, 20 Sep 2010 11:49:45 +0200
+Message-ID: <4C991345.7020808@domain.hid>
+Date: Tue, 21 Sep 2010 22:19:17 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <20100920094328.GA29405@domain.hid>
-In-Reply-To: <20100920094328.GA29405@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [PULL REQUEST] analogy: bugfixes
+Subject: [Xenomai-core] X86 kernel configuration checklist
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -15,19 +13,22 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Alexis Berlemont <alexis.berlemont@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai-core <xenomai@xenomai.org>
 
-Alexis Berlemont wrote:
-> The following changes since commit 9d70c373eee0ac43a1b5869600e33ec6bff89868:
-> 
->   rtcan: Mask the SJA_MOD register when probing for channels (2010-09-16 20:43:34 +0200)
-> 
-> are available in the git repository at:
->   git://git.xenomai.org/xenomai-abe.git analogy
 
-Pulled. Thanks.
+Hi,
+
+I added a new page on the wiki:
+http://www.xenomai.org/index.php/Configuring_x86_kernels
+
+and tried and reference it in various places (Debian packages, FAQ about
+x86). Please feel free to complete and revise it.
+
+The intent is to use it as an answer to new comers questions, instead of
+constantly rehashing the same advices.
+
+TIA,
 
 -- 
-					    Gilles.
+                                                                Gilles.
 
