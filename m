@@ -1,10 +1,10 @@
-Message-ID: <4C991345.7020808@domain.hid>
-Date: Tue, 21 Sep 2010 22:19:17 +0200
+Message-ID: <4C9915CC.4050601@domain.hid>
+Date: Tue, 21 Sep 2010 22:30:04 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] X86 kernel configuration checklist
+Subject: [Xenomai-core] Wiki: add a request for information page
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -13,19 +13,15 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
+To: Xenomai core <Xenomai-core@domain.hid>
 
 
-Hi,
+Hi again,
 
-I added a new page on the wiki:
-http://www.xenomai.org/index.php/Configuring_x86_kernels
+a second page for answering mails, here is a page intended to answer
+mails which do not contain enough information.
 
-and tried and reference it in various places (Debian packages, FAQ about
-x86). Please feel free to complete and revise it.
-
-The intent is to use it as an answer to new comers questions, instead of
-constantly rehashing the same advices.
+Again, please feel free to edit.
 
 TIA,
 
