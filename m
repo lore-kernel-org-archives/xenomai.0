@@ -1,13 +1,12 @@
-Date: Tue, 21 Sep 2010 22:06:11 +0200
-From: "Mariusz Janiak" <mariuszjaniak@domain.hid>
-Message-ID: <4c9910335ccc47.39737985@domain.hid>
-References: <4c98be64201c58.15378618@domain.hid> <4C98C555.9050300@domain.hid>
-In-reply-to: <4c98be64201c58.15378618@domain.hid> <4C98C555.9050300@domain.hid>
+Message-ID: <4C9915EA.7050105@domain.hid>
+Date: Tue, 21 Sep 2010 22:30:34 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-2"
+References: <76E258664B189C4CBEF125491CA11ECC945B6553E2@domain.hid>
+In-Reply-To: <76E258664B189C4CBEF125491CA11ECC945B6553E2@domain.hid>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-Subject: Re: [Xenomai-help] Support for PCAN-PCI Express card
+Subject: Re: [Xenomai-help] Error in Porting from POSIX to Xenomai POSIX
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,20 +16,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Wolfgang Grandegger <wg@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: Zafar Iqbal <Zafar.Iqbal2@domain.hid>
+Cc: "Xenomai-help@domain.hid" <Xenomai-help@domain.hid>
 
-Dnia 21-09-2010 o godz. 16:46 Wolfgang Grandegger napisa=B3(a):
-> On 09/21/2010 04:17 PM, Mariusz Janiak wrote:
-> > Hi,
-> >=20
-> > Does Xenomai Peak CAN driver support PCAN-PCI Express card?
+Zafar Iqbal wrote:
+> Hi,
 >=20
-> Probably. What is the PCI vendor and device id of that card?
+> I am getting one problem When I am trying to Compile my old PTHREAD cod=
+e with the xenomai posix skin
+> the problem is as follows:
+>=20
+> "/usr/include/xenomai/asm/xenomai/atomic.h:76: error: expected identifi=
+er or =E2=80=98(=E2=80=99 before numeric constant"   for all the source f=
+ile.
+>=20
+> Can someone suggest what the wrong here.
 
-I don't know. I don't have this card yet. How can I check it?
+http://www.xenomai.org/index.php/Request_for_information
 
-Mariusz.
-
+--=20
+                                                                Gilles.
 
 
