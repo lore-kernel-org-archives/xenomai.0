@@ -1,10 +1,12 @@
-Date: Wed, 22 Sep 2010 21:14:18 +0800 
-From: gwysu@domain.hid
-MIME-Version: 1.0
-Content-Type: multipart/alternative;
-	boundary="=-sinamail_alt_69d942fabeb74c54f78a0fdafe85b819"
-Message-Id: <20100922131418.C9A25B7480C@mail3-117.sinamail.sina.com.cn>
-Subject: [Xenomai-help] Failed to build simulator xenosim-2.4.7
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <20100922131418.C9A25B7480C@mail3-117.sinamail.sina.com.cn>
+References: <20100922131418.C9A25B7480C@mail3-117.sinamail.sina.com.cn>
+Content-Type: text/plain; charset="UTF-8"
+Date: Wed, 22 Sep 2010 16:12:31 +0200
+Message-ID: <1285164751.1661.9.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] Failed to build simulator xenosim-2.4.7
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -14,75 +16,60 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Xenomai-help@domain.hid
+To: gwysu@domain.hid
+Cc: Xenomai-help@domain.hid
 
---=-sinamail_alt_69d942fabeb74c54f78a0fdafe85b819
-Content-Type: text/plain;
-	charset=GBK
-Content-Transfer-Encoding: base64
-Content-Disposition: inline
+On Wed, 2010-09-22 at 21:14 +0800, gwysu@domain.hid wrote:
+> Hi All,
+> 
+> I built the xenosim-2.4.7 using on ubuntu, but failed. Does anyone
+> have a idea about the problem as follow:
 
-SGkgQWxsLA0KDQpJIGJ1aWx0IHRoZSB4ZW5vc2ltLTIuNC43IHVzaW5nIG9uIHVidW50dSwgYnV0
-IGZhaWxlZC4gRG9lcyBhbnlvbmUgaGF2ZSBhIGlkZWEgYWJvdXQgdGhlIHByb2JsZW0gYXMgZm9s
-bG93Og0KDQpjZCBjcCAmJiBtYWtlIC4uLy4uLy4uL2djYy0yLjk1LjMvZ2NjL2NwL3BhcnNlLmMK
-bWFrZVs0XTogRW50ZXJpbmcgZGlyZWN0b3J5IGAvaG9tZS93eWdhby93b3Jrc3BhY2UvcHJvamVj
-dC94ZW5vbWFpLTIuNS40L3NpbV9idWlsZGRpci9nY2ljL2djYy1idWlsZC9nY2MvY3AnCmV4cGVj
-dCAzMCBzaGlmdC9yZWR1Y2UgY29uZmxpY3RzIGFuZCA0MiByZWR1Y2UvcmVkdWNlIGNvbmZsaWN0
-cy4KY2QgLi4vLi4vLi4vZ2NjLTIuOTUuMy9nY2MvY3A7IGJpc29uIC1kIC1vIHBhcnNlLmMgcGFy
-c2UueQpwYXJzZS55Ojc0Ny4xOS0yMDogJCQgZm9yIHRoZSBtaWRydWxlIGF0ICQ0IG9mIGBjb25z
-dHJ1Y3Rvcl9kZWNsYXJhdG9yJyBoYXMgbm8gZGVjbGFyZWQgdHlwZQpwYXJzZS55Ojc1NS4xOS0y
-MDogJCQgZm9yIHRoZSBtaWRydWxlIGF0ICQ1IG9mIGBjb25zdHJ1Y3Rvcl9kZWNsYXJhdG9yJyBo
-YXMgbm8gZGVjbGFyZWQgdHlwZQpwYXJzZS55Ojc2My4xOS0yMDogJCQgZm9yIHRoZSBtaWRydWxl
-IGF0ICQ0IG9mIGBjb25zdHJ1Y3Rvcl9kZWNsYXJhdG9yJyBoYXMgbm8gZGVjbGFyZWQgdHlwZQpw
-YXJzZS55Ojc3MS4xOS0yMDogJCQgZm9yIHRoZSBtaWRydWxlIGF0ICQ1IG9mIGBjb25zdHJ1Y3Rv
-cl9kZWNsYXJhdG9yJyBoYXMgbm8gZGVjbGFyZWQgdHlwZQptYWtlWzRdOiAqKiogWy4uLy4uLy4u
-L2djYy0yLjk1LjMvZ2NjL2NwL3BhcnNlLmNdIEVycm9yIDEKbWFrZVs0XTogTGVhdmluZyBkaXJl
-Y3RvcnkgYC9ob21lL3d5Z2FvL3dvcmtzcGFjZS9wcm9qZWN0L3hlbm9tYWktMi41LjQvc2ltX2J1
-aWxkZGlyL2djaWMvZ2NjLWJ1aWxkL2djYy9jcCcKbWFrZVszXTogKioqIFsuLi8uLi9nY2MtMi45
-NS4zL2djYy9jcC9wYXJzZS5jXSBFcnJvciAyCm1ha2VbM106IExlYXZpbmcgZGlyZWN0b3J5IGAv
-aG9tZS93eWdhby93b3Jrc3BhY2UvcHJvamVjdC94ZW5vbWFpLTIuNS40L3NpbV9idWlsZGRpci9n
-Y2ljL2djYy1idWlsZC9nY2MnCm1ha2VbMl06ICoqKiBbYWxsLWdjY10gRXJyb3IgMgptYWtlWzJd
-OiBMZWF2aW5nIGRpcmVjdG9yeSBgL2hvbWUvd3lnYW8vd29ya3NwYWNlL3Byb2plY3QveGVub21h
-aS0yLjUuNC9zaW1fYnVpbGRkaXIvZ2NpYy9nY2MtYnVpbGQnCm1ha2VbMV06ICoqKiBbZ2NjLWJ1
-aWxkLy5nY2ljLWJ1aWx0XSBFcnJvciAyCm1ha2VbMV06IExlYXZpbmcgZGlyZWN0b3J5IGAvaG9t
-ZS93eWdhby93b3Jrc3BhY2UvcHJvamVjdC94ZW5vbWFpLTIuNS40L3NpbV9idWlsZGRpci9nY2lj
-JwptYWtlOiAqKiogW2luc3RhbGwtcmVjdXJzaXZlXSBFcnJvciAxCgo=
+A recent bison release probably needs --yacc to parse this antique
+grammar file properly. Beyond that, the simulator direly needs a lot of
+work to cope with current toolchains (i.e. more recent than debian
+woody...).
 
+In short, either build it over an oldish distro using an ancient
+toolchain (typically over qemu), or forget about it.
 
---=-sinamail_alt_69d942fabeb74c54f78a0fdafe85b819
-Content-Type: text/html; 
-	charset=GBK
-Content-Transfer-Encoding: base64
-Content-Disposition: inline
+> 
+> cd cp && make ../../../gcc-2.95.3/gcc/cp/parse.c
+> make[4]: Entering directory
+> `/home/wygao/workspace/project/xenomai-2.5.4/sim_builddir/gcic/gcc-build/gcc/cp'
+> expect 30 shift/reduce conflicts and 42 reduce/reduce conflicts.
+> cd ../../../gcc-2.95.3/gcc/cp; bison -d -o parse.c parse.y
+> parse.y:747.19-20: $$ for the midrule at $4 of
+> `constructor_declarator' has no declared type
+> parse.y:755.19-20: $$ for the midrule at $5 of
+> `constructor_declarator' has no declared type
+> parse.y:763.19-20: $$ for the midrule at $4 of
+> `constructor_declarator' has no declared type
+> parse.y:771.19-20: $$ for the midrule at $5 of
+> `constructor_declarator' has no declared type
+> make[4]: *** [../../../gcc-2.95.3/gcc/cp/parse.c] Error 1
+> make[4]: Leaving directory
+> `/home/wygao/workspace/project/xenomai-2.5.4/sim_builddir/gcic/gcc-build/gcc/cp'
+> make[3]: *** [../../gcc-2.95.3/gcc/cp/parse.c] Error 2
+> make[3]: Leaving directory
+> `/home/wygao/workspace/project/xenomai-2.5.4/sim_builddir/gcic/gcc-build/gcc'
+> make[2]: *** [all-gcc] Error 2
+> make[2]: Leaving directory
+> `/home/wygao/workspace/project/xenomai-2.5.4/sim_builddir/gcic/gcc-build'
+> make[1]: *** [gcc-build/.gcic-built] Error 2
+> make[1]: Leaving directory
+> `/home/wygao/workspace/project/xenomai-2.5.4/sim_builddir/gcic'
+> make: *** [install-recursive] Error 1
+> 
+> 
+> 
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
 
-PFA+SGkgQWxsLDwvUD4NCjxQPjwvUD4NCjxQPkkgYnVpbHQgdGhlIHhlbm9zaW0tMi40LjcgdXNp
-bmcgb24gdWJ1bnR1LCBidXQgZmFpbGVkLiBEb2VzIGFueW9uZSBoYXZlIGEgaWRlYSBhYm91dCB0
-aGUgcHJvYmxlbSBhcyBmb2xsb3c6PC9QPg0KPFA+PC9QPg0KPFA+Y2QgY3AgJmFtcDsmYW1wOyBt
-YWtlIC4uLy4uLy4uL2djYy0yLjk1LjMvZ2NjL2NwL3BhcnNlLmM8QlI+bWFrZVs0XTogRW50ZXJp
-bmcgZGlyZWN0b3J5IGAvaG9tZS93eWdhby93b3Jrc3BhY2UvcHJvamVjdC94ZW5vbWFpLTIuNS40
-L3NpbV9idWlsZGRpci9nY2ljL2djYy1idWlsZC9nY2MvY3AnPEJSPmV4cGVjdCAzMCBzaGlmdC9y
-ZWR1Y2UgY29uZmxpY3RzIGFuZCA0MiByZWR1Y2UvcmVkdWNlIGNvbmZsaWN0cy48QlI+Y2QgLi4v
-Li4vLi4vZ2NjLTIuOTUuMy9nY2MvY3A7IGJpc29uIC1kIC1vIHBhcnNlLmMgcGFyc2UueTxCUj5w
-YXJzZS55Ojc0Ny4xOS0yMDogJCQgZm9yIHRoZSBtaWRydWxlIGF0ICQ0IG9mIGBjb25zdHJ1Y3Rv
-cl9kZWNsYXJhdG9yJyBoYXMgbm8gZGVjbGFyZWQgdHlwZTxCUj5wYXJzZS55Ojc1NS4xOS0yMDog
-JCQgZm9yIHRoZSBtaWRydWxlIGF0ICQ1IG9mIGBjb25zdHJ1Y3Rvcl9kZWNsYXJhdG9yJyBoYXMg
-bm8gZGVjbGFyZWQgdHlwZTxCUj5wYXJzZS55Ojc2My4xOS0yMDogJCQgZm9yIHRoZSBtaWRydWxl
-IGF0ICQ0IG9mIGBjb25zdHJ1Y3Rvcl9kZWNsYXJhdG9yJyBoYXMgbm8gZGVjbGFyZWQgdHlwZTxC
-Uj5wYXJzZS55Ojc3MS4xOS0yMDogJCQgZm9yIHRoZSBtaWRydWxlIGF0ICQ1IG9mIGBjb25zdHJ1
-Y3Rvcl9kZWNsYXJhdG9yJyBoYXMgbm8gZGVjbGFyZWQgdHlwZTxCUj5tYWtlWzRdOiAqKiogWy4u
-Ly4uLy4uL2djYy0yLjk1LjMvZ2NjL2NwL3BhcnNlLmNdIEVycm9yIDE8QlI+bWFrZVs0XTogTGVh
-dmluZyBkaXJlY3RvcnkgYC9ob21lL3d5Z2FvL3dvcmtzcGFjZS9wcm9qZWN0L3hlbm9tYWktMi41
-LjQvc2ltX2J1aWxkZGlyL2djaWMvZ2NjLWJ1aWxkL2djYy9jcCc8QlI+bWFrZVszXTogKioqIFsu
-Li8uLi9nY2MtMi45NS4zL2djYy9jcC9wYXJzZS5jXSBFcnJvciAyPEJSPm1ha2VbM106IExlYXZp
-bmcgZGlyZWN0b3J5IGAvaG9tZS93eWdhby93b3Jrc3BhY2UvcHJvamVjdC94ZW5vbWFpLTIuNS40
-L3NpbV9idWlsZGRpci9nY2ljL2djYy1idWlsZC9nY2MnPEJSPm1ha2VbMl06ICoqKiBbYWxsLWdj
-Y10gRXJyb3IgMjxCUj5tYWtlWzJdOiBMZWF2aW5nIGRpcmVjdG9yeSBgL2hvbWUvd3lnYW8vd29y
-a3NwYWNlL3Byb2plY3QveGVub21haS0yLjUuNC9zaW1fYnVpbGRkaXIvZ2NpYy9nY2MtYnVpbGQn
-PEJSPm1ha2VbMV06ICoqKiBbZ2NjLWJ1aWxkLy5nY2ljLWJ1aWx0XSBFcnJvciAyPEJSPm1ha2Vb
-MV06IExlYXZpbmcgZGlyZWN0b3J5IGAvaG9tZS93eWdhby93b3Jrc3BhY2UvcHJvamVjdC94ZW5v
-bWFpLTIuNS40L3NpbV9idWlsZGRpci9nY2ljJzxCUj5tYWtlOiAqKiogW2luc3RhbGwtcmVjdXJz
-aXZlXSBFcnJvciAxPEJSPjxCUj48L1A+
+-- 
+Philippe.
 
 
---=-sinamail_alt_69d942fabeb74c54f78a0fdafe85b819--
 
