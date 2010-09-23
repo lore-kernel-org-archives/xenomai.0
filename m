@@ -1,11 +1,14 @@
-Date: Thu, 23 Sep 2010 17:52:30 +0800 
-From: gwysu@domain.hid
-MIME-Version: 1.0
-Content-Type: multipart/alternative;
-	boundary="=-sinamail_alt_4a8dadab5366f2812c74b12796fb59dc"
-Message-Id: <20100923095230.B712AB7480C@mail3-117.sinamail.sina.com.cn>
-Subject: [Xenomai-help] =?gbk?b?u9i4tKO6UmU6ILvYuLSjulJlOiBIb3cgdG8gYWRk?=
-	=?gbk?q?_=22t=5Frestart=22_to_pSoS_emulator?=
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <20100923095230.B712AB7480C@mail3-117.sinamail.sina.com.cn>
+References: <20100923095230.B712AB7480C@mail3-117.sinamail.sina.com.cn>
+Content-Type: text/plain; charset="UTF-8"
+Date: Thu, 23 Sep 2010 14:33:57 +0200
+Message-ID: <1285245237.1661.137.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help]
+ =?utf-8?b?5Zue5aSN77yaUmU6IOWbnuWkje+8mlJlOiBIb3cg?=
+ =?utf-8?q?to_add_=22t=5Frestart=22_to_pSoS_emulator?=
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -15,49 +18,51 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
+To: gwysu@domain.hid
 Cc: Xenomai-help <Xenomai-help@domain.hid>
 
---=-sinamail_alt_4a8dadab5366f2812c74b12796fb59dc
-Content-Type: text/plain;
-	charset=GBK
-Content-Transfer-Encoding: base64
-Content-Disposition: inline
+On Thu, 2010-09-23 at 17:52 +0800, gwysu@domain.hid wrote:
+> Thank you Philippe very much. I am working on porting our pSoS code to
+> xenomai. There are many syscall "t_restart" in our code. The case is
+> not like what you mentioned. Let me give a example to illustrate our
+> case:
+> 
+> Task A create and start Task B with parameter "X", then Task B run and
+> suspend when its parameter is "X". At rigth time, Task A restart Task
+> B with parameter "Y", the Task will re-run with a new parameter "Y"
+> and won't suspend.
 
-VGhhbmsgeW91IFBoaWxpcHBlJm5ic3A7dmVyeSBtdWNoLiBJIGFtIHdvcmtpbmcgb24gcG9ydGlu
-ZyBvdXIgcFNvUyBjb2RlIHRvIHhlbm9tYWkuIFRoZXJlJm5ic3A7YXJlJm5ic3A7bWFueSBzeXNj
-YWxsICJ0X3Jlc3RhcnQiIGluIG91ciBjb2RlLiBUaGUgY2FzZSBpcyBub3QgbGlrZSZuYnNwO3do
-YXQgeW91IG1lbnRpb25lZC4mbmJzcDtMZXQgbWUgZ2l2ZSBhIGV4YW1wbGUgdG8gaWxsdXN0cmF0
-ZSBvdXIgY2FzZToNClRhc2sgQSBjcmVhdGUgYW5kIHN0YXJ0IFRhc2sgQiB3aXRoJm5ic3A7cGFy
-YW1ldGVyJm5ic3A7IlgiLCB0aGVuJm5ic3A7VGFzayBCIHJ1biZuYnNwO2FuZCBzdXNwZW5kIHdo
-ZW4gaXRzIHBhcmFtZXRlciBpcyAiWCIuIEF0IHJpZ3RoIHRpbWUsIFRhc2smbmJzcDtBIHJlc3Rh
-cnQmbmJzcDtUYXNrIEIgd2l0aCBwYXJhbWV0ZXIgIlkiLCB0aGUmbmJzcDtUYXNrIHdpbGwmbmJz
-cDtyZS1ydW4gd2l0aCBhIG5ldyBwYXJhbWV0ZXIgIlkiIGFuZCZuYnNwO3dvbid0IHN1c3BlbmQu
-DQombmJzcDsNCkkganVzdCBkb24ndCB3YW50IHRvIG1vZGlmeSB0aGUgY29kZSBhbmQgd2FudCB0
-byBpbXBsZW1lbnQgdGhlJm5ic3A7c3lzY2FsbCAicmVzdGFydCIgdG8gbWFrZSB0aGUgcG9ydGlu
-ZyBzbW9vdGhseS4gDQombmJzcDsNCkJlc3QgcmVnYXJkcw0KV2VueWkmbmJzcDtHYW8mbmJzcDsK
+I still don't see the requirement for t_restart() in your description.
+Task A doing t_delete(task B), then t_create(task B) + t_start(task B,
+param=X or Y) would behave exactly the same way AFAICS. Again, the only
+feature that t_restart() buys you is forcibly unblocking a task from a
+pending state, at the expense of branching back to its entry point. Task
+B does not seem to pend on anything, it is merely suspended, and only
+waits for task A for resetting it. I see no difference with
+self-deletion followed by a respawn.
+
+> 
+>  
+> 
+> I just don't want to modify the code and want to implement the syscall
+> "restart" to make the porting smoothly. 
+> 
+> 
+
+t_restart() has non-trivial semantics for user-space threads. Trying to
+emulate it may cost more than getting rid of it, unless you are ready to
+invest some time to make your way through Xenomai's innards. YMMV.
+
+>  
+> 
+> Best regards
+> 
+> Wenyi Gao 
+> 
+> 
+
+-- 
+Philippe.
 
 
---=-sinamail_alt_4a8dadab5366f2812c74b12796fb59dc
-Content-Type: text/html; 
-	charset=GBK
-Content-Transfer-Encoding: base64
-Content-Disposition: inline
-
-PFA+VGhhbmsgeW91IFBoaWxpcHBlJm5ic3A7dmVyeSBtdWNoLiBJIGFtIHdvcmtpbmcgb24gcG9y
-dGluZyBvdXIgcFNvUyBjb2RlIHRvIHhlbm9tYWkuIFRoZXJlJm5ic3A7YXJlJm5ic3A7bWFueSBz
-eXNjYWxsICJ0X3Jlc3RhcnQiIGluIG91ciBjb2RlLiBUaGUgY2FzZSBpcyBub3QgbGlrZSZuYnNw
-O3doYXQgeW91IG1lbnRpb25lZC4mbmJzcDtMZXQgbWUgZ2l2ZSBhIGV4YW1wbGUgdG8gaWxsdXN0
-cmF0ZSBvdXIgY2FzZTo8L1A+DQo8UD5UYXNrIEEgY3JlYXRlIGFuZCBzdGFydCBUYXNrIEIgd2l0
-aCZuYnNwO3BhcmFtZXRlciZuYnNwOyJYIiwgdGhlbiZuYnNwO1Rhc2sgQiBydW4mbmJzcDthbmQg
-c3VzcGVuZCB3aGVuIGl0cyBwYXJhbWV0ZXIgaXMgIlgiLiBBdCByaWd0aCB0aW1lLCBUYXNrJm5i
-c3A7QSByZXN0YXJ0Jm5ic3A7VGFzayBCIHdpdGggcGFyYW1ldGVyICJZIiwgdGhlJm5ic3A7VGFz
-ayB3aWxsJm5ic3A7cmUtcnVuIHdpdGggYSBuZXcgcGFyYW1ldGVyICJZIiBhbmQmbmJzcDt3b24n
-dCBzdXNwZW5kLjwvUD4NCjxQPiZuYnNwOzwvUD4NCjxQPkkganVzdCBkb24ndCB3YW50IHRvIG1v
-ZGlmeSB0aGUgY29kZSBhbmQgd2FudCB0byBpbXBsZW1lbnQgdGhlJm5ic3A7c3lzY2FsbCAicmVz
-dGFydCIgdG8gbWFrZSB0aGUgcG9ydGluZyBzbW9vdGhseS4gPC9QPg0KPFA+Jm5ic3A7PC9QPg0K
-PFA+QmVzdCByZWdhcmRzPC9QPg0KPFA+V2VueWkmbmJzcDtHYW8mbmJzcDs8QlI+PC9QPg==
-
-
---=-sinamail_alt_4a8dadab5366f2812c74b12796fb59dc--
 
