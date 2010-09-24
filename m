@@ -1,13 +1,14 @@
-Message-ID: <4C9D0B69.4000507@domain.hid>
-Date: Fri, 24 Sep 2010 22:34:49 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: Stefan Kisdaroczi <kisda@domain.hid>
+Date: Fri, 24 Sep 2010 23:21:42 +0200
+References: <AANLkTimFXFr48DgXSj=53pNjAQB7w+mjOwwuEYQXc3KV@mail.gmail.com>
+In-Reply-To: <AANLkTimFXFr48DgXSj=53pNjAQB7w+mjOwwuEYQXc3KV@mail.gmail.com>
 MIME-Version: 1.0
-References: <AANLkTim0ROW9R84M2cmxBOKc3m2EUuPOUK5og0p5ErcN@mail.gmail.com>
-	<4C9D0ACB.1000004@domain.hid>
-In-Reply-To: <4C9D0ACB.1000004@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: Text/Plain;
+  charset="iso-8859-1"
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] rt_task_start returns -38 (ENOSYS)
+Message-Id: <201009242321.42954.kisda@domain.hid>
+Subject: Re: [Xenomai-help] switchtest/xeon-test fails: Help needed
+	(Ubuntu/Core i7)
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,53 +18,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: martin mangard <martin@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Gilles Chanteperdrix wrote:
-> martin mangard wrote:
->> Hello
->>
->> I installed Xenomai on a x86 machine (kernel 2.6.30 wih xenomai
->> 2.4.10). In order to verify the installation I ran the
->> latency-testprogram from the test-suite.
->> The latency test program aborts with the error ENOSYS :
->>
->>
->> == Sampling period: 100 us
->> == Test mode: periodic user-mode task
->> == All results in microseconds
->> latency: failed to start display task, code -38
->>
->> This output ist generated if the call err =
->> rt_task_start(&display_task, &display, NULL); ---> fails.
->>
->> As mentioned in the documentation this error occurs, if not all
->> necesary modules are loaded or configured.
->>
->> during the startup following messages occur:
->>
->> .
->> .
->> I-pipe: Domain Xenomai registered.
->> Xenomai: hal/i386 started.
->> Xenomai: real-time nucleus v2.4.10 (Flavor Crystal 7) loaded.
->> Xenomai: starting native API services.
->> Xenomai: starting POSIX services.
->> Xenomai: starting RTDM services.
->> Xenomai: starting RTAI emulator.
->> .
->> .
->>
-> 
-> Please send us the full logs, from the boot up to the point where your
-> program fails.
+Am Freitag 24 September 2010, 22:05:37 schrieb Gajamohan Mohanarajah:
+> Hi,
 
-As well as the "latency" command line which fails.
+> 3. I am compiling the kernel using [fakeroot make-kpkg --initrd
+> --append-to-version=-xenomaiflv kernel-image kernel-headers
+> --overlay-dir=$HOME/kernel-package]. After changing just the
+> CONFIG_XENO_OPT_SYS_HEAPSZ via [make menuconfig], when I issue the the
+> above command, the kernel goes on to a full recompile which  takes 2
+> hours :(.
 
-> 
+Have you set CONCURRENCY_LEVEL to the numer of cores ?
+  [CONCURRENCY_LEVEL=8 fakeroot make-kpkg --initrd ... ... ... ]
 
+Never tried, but "-j x" should work too today:
+  [fakeroot make-kpkg -j 8 ... ... ...]
 
--- 
-                                                                Gilles.
+Regards Stefan
 
