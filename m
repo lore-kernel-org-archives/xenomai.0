@@ -1,14 +1,11 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <20100923095230.B712AB7480C@mail3-117.sinamail.sina.com.cn>
-References: <20100923095230.B712AB7480C@mail3-117.sinamail.sina.com.cn>
-Content-Type: text/plain; charset="UTF-8"
-Date: Thu, 23 Sep 2010 14:33:57 +0200
-Message-ID: <1285245237.1661.137.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help]
- =?utf-8?b?5Zue5aSN77yaUmU6IOWbnuWkje+8mlJlOiBIb3cg?=
- =?utf-8?q?to_add_=22t=5Frestart=22_to_pSoS_emulator?=
+Date: Fri, 24 Sep 2010 11:27:19 +0800 
+From: gwysu@domain.hid
+MIME-Version: 1.0
+Content-Type: multipart/alternative;
+	boundary="=-sinamail_alt_f502141760e2f8a160373108a90e34f7"
+Message-Id: <20100924032719.75F9EB7480F@mail3-117.sinamail.sina.com.cn>
+Subject: [Xenomai-help] =?gbk?b?UmWjulJlOiCjulJlOl9SZaO6UmU6IEhvdyB0byBh?=
+	=?gbk?q?dd=22t=5Frestart=22_to_pSoS_emulator?=
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,51 +15,103 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: gwysu@domain.hid
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: Xenomai-help <Xenomai-help@domain.hid>
 
-On Thu, 2010-09-23 at 17:52 +0800, gwysu@domain.hid wrote:
-> Thank you Philippe very much. I am working on porting our pSoS code to
-> xenomai. There are many syscall "t_restart" in our code. The case is
-> not like what you mentioned. Let me give a example to illustrate our
-> case:
-> 
-> Task A create and start Task B with parameter "X", then Task B run and
-> suspend when its parameter is "X". At rigth time, Task A restart Task
-> B with parameter "Y", the Task will re-run with a new parameter "Y"
-> and won't suspend.
+--=-sinamail_alt_f502141760e2f8a160373108a90e34f7
+Content-Type: text/plain;
+	charset=GBK
+Content-Transfer-Encoding: base64
+Content-Disposition: inline
 
-I still don't see the requirement for t_restart() in your description.
-Task A doing t_delete(task B), then t_create(task B) + t_start(task B,
-param=X or Y) would behave exactly the same way AFAICS. Again, the only
-feature that t_restart() buys you is forcibly unblocking a task from a
-pending state, at the expense of branching back to its entry point. Task
-B does not seem to pend on anything, it is merely suspended, and only
-waits for task A for resetting it. I see no difference with
-self-deletion followed by a respawn.
+Ci0tLS0tINStyrzTyrz+IC0tLS0tCreivP7Iy6O6UGhpbGlwcGUgR2VydW0gPHJwbUB4ZW5vbWFp
+Lm9yZz4KytW8/sjLo7pnd3lzdUBzaW5hLmNvbQrW98zio7pSZTogu9i4tKO6UmU6X7vYuLSjulJl
+OiBbWGVub21haS1oZWxwXUhvdyB0byBhZGQidF9yZXN0YXJ0IiB0byBwU29TIGVtdWxhdG9yCsjV
+xtqjujIwMTAtOS0yMyAyMDozMzo1NwoKT24gVGh1LCAyMDEwLTA5LTIzIGF0IDE3OjUyICswODAw
+LCBnd3lzdUBzaW5hLmNvbSB3cm90ZToKPj4gVGhhbmsgeW91IFBoaWxpcHBlIHZlcnkgbXVjaC4g
+SSBhbSB3b3JraW5nIG9uIHBvcnRpbmcgb3VyIHBTb1MgY29kZSB0bwo+PiB4ZW5vbWFpLiBUaGVy
+ZSBhcmUgbWFueSBzeXNjYWxsICJ0X3Jlc3RhcnQiIGluIG91ciBjb2RlLiBUaGUgY2FzZSBpcwo+
+PiBub3QgbGlrZSB3aGF0IHlvdSBtZW50aW9uZWQuIExldCBtZSBnaXZlIGEgZXhhbXBsZSB0byBp
+bGx1c3RyYXRlIG91cgo+PiBjYXNlOgo+PiAKPiA+VGFzayBBIGNyZWF0ZSBhbmQgc3RhcnQgVGFz
+ayBCIHdpdGggcGFyYW1ldGVyICJYIiwgdGhlbiBUYXNrIEIgcnVuIGFuZAo+PiBzdXNwZW5kIHdo
+ZW4gaXRzIHBhcmFtZXRlciBpcyAiWCIuIEF0IHJpZ3RoIHRpbWUsIFRhc2sgQSByZXN0YXJ0IFRh
+c2sKPj4gQiB3aXRoIHBhcmFtZXRlciAiWSIsIHRoZSBUYXNrIHdpbGwgcmUtcnVuIHdpdGggYSBu
+ZXcgcGFyYW1ldGVyICJZIgo+PiBhbmQgd29uJ3Qgc3VzcGVuZC4KCj4gSSBzdGlsbCBkb24ndCBz
+ZWUgdGhlIHJlcXVpcmVtZW50IGZvciB0X3Jlc3RhcnQoKSBpbiB5b3VyIGRlc2NyaXB0aW9uLgo+
+IFRhc2sgQSBkb2luZyB0X2RlbGV0ZSh0YXNrIEIpLCB0aGVuIHRfY3JlYXRlKHRhc2sgQikgKyB0
+X3N0YXJ0KHRhc2sgQiwKPiBwYXJhbT1YIG9yIFkpIHdvdWxkIGJlaGF2ZSBleGFjdGx5IHRoZSBz
+YW1lIHdheSBBRkFJQ1MuIEFnYWluLCB0aGUgb25seQo+IGZlYXR1cmUgdGhhdCB0X3Jlc3RhcnQo
+KSBidXlzIHlvdSBpcyBmb3JjaWJseSB1bmJsb2NraW5nIGEgdGFzayBmcm9tIGEKPiBwZW5kaW5n
+IHN0YXRlLCBhdCB0aGUgZXhwZW5zZSBvZiBicmFuY2hpbmcgYmFjayB0byBpdHMgZW50cnkgcG9p
+bnQuIFRhc2sKPiBCIGRvZXMgbm90IHNlZW0gdG8gcGVuZCBvbiBhbnl0aGluZywgaXQgaXMgbWVy
+ZWx5IHN1c3BlbmRlZCwgYW5kIG9ubHkKPiB3YWl0cyBmb3IgdGFzayBBIGZvciByZXNldHRpbmcg
+aXQuIEkgc2VlIG5vIGRpZmZlcmVuY2Ugd2l0aAo+IHNlbGYtZGVsZXRpb24gZm9sbG93ZWQgYnkg
+YSByZXNwYXduLg0KClllcywgaXQgc2VlbXMgdGhlIGJldHRlciB3YXkgaXMgZGVsZXRpbmcgdGFz
+ayBCIGFuZCB0aGVuIGNyZWF0aW5nIGFuZCBzdGFydGluZyBpdC4gVGhlIG9ubHkgc2lkZSBlZmZl
+Y3QgaXMgdGhhdCB0aGUgdGFzayZuYnNwO0lEIG9mIHRhc2sgQiB3aWxsIGJlJm5ic3A7Y2hhbmdl
+ZCB0byBhIG5ldyBvbmUuICZuYnNwO0J1dCZuYnNwO3RoYXQgc2h1bGQgbm90IGJlIGEgcHJvYmxl
+bS4KPj4KPj4gCj4+IAo+PiBJIGp1c3QgZG9uJ3Qgd2FudCB0byBtb2RpZnkgdGhlIGNvZGUgYW5k
+IHdhbnQgdG8gaW1wbGVtZW50IHRoZSBzeXNjYWxsCj4+ICJyZXN0YXJ0IiB0byBtYWtlIHRoZSBw
+b3J0aW5nIHNtb290aGx5LiAKPj4gCj4+IAoKPiB0X3Jlc3RhcnQoKSBoYXMgbm9uLXRyaXZpYWwg
+c2VtYW50aWNzIGZvciB1c2VyLXNwYWNlIHRocmVhZHMuIFRyeWluZyB0bwo+IGVtdWxhdGUgaXQg
+bWF5IGNvc3QgbW9yZSB0aGFuIGdldHRpbmcgcmlkIG9mIGl0LCB1bmxlc3MgeW91IGFyZSByZWFk
+eSB0bwo+IGludmVzdCBzb21lIHRpbWUgdG8gbWFrZSB5b3VyIHdheSB0aHJvdWdoIFhlbm9tYWkn
+cyBpbm5hcmRzLiBZTU1WLg0KJm5ic3A7DQpJIGFtIHZlcnkgaW50ZXJlc3RlZCBpbiB4ZW5vbWFp
+IGFuZCBJIGhvcGUgSSZuYnNwO2NhbiBoYXZlIG1vcmUgdGltZSB0byByZXNlYXJjaCBpdCBkZWVw
+bHkuIFRoYW5rcy4NCiZuYnNwOw0KPj4gCj4+IAo+PiBCZXN0IHJlZ2FyZHMKPj4gCj4+IFdlbnlp
+IEdhbyAKPj4gCj4+IAoKPiAtLSAKPlBoaWxpcHBlLgoKCg==
 
-> 
->  
-> 
-> I just don't want to modify the code and want to implement the syscall
-> "restart" to make the porting smoothly. 
-> 
-> 
 
-t_restart() has non-trivial semantics for user-space threads. Trying to
-emulate it may cost more than getting rid of it, unless you are ready to
-invest some time to make your way through Xenomai's innards. YMMV.
+--=-sinamail_alt_f502141760e2f8a160373108a90e34f7
+Content-Type: text/html; 
+	charset=GBK
+Content-Transfer-Encoding: base64
+Content-Disposition: inline
 
->  
-> 
-> Best regards
-> 
-> Wenyi Gao 
-> 
-> 
+PFA+PEJSPi0tLS0tINStyrzTyrz+IC0tLS0tPEJSPreivP7Iy6O6UGhpbGlwcGUgR2VydW0gJmx0
+O3JwbUB4ZW5vbWFpLm9yZyZndDs8QlI+ytW8/sjLo7pnd3lzdUBzaW5hLmNvbTxCUj7W98zio7pS
+ZTogu9i4tKO6UmU6X7vYuLSjulJlOiBbWGVub21haS1oZWxwXUhvdyB0byBhZGQidF9yZXN0YXJ0
+IiB0byBwU29TIGVtdWxhdG9yPEJSPsjVxtqjujIwMTAtOS0yMyAyMDozMzo1NzxCUj48QlI+T24g
+VGh1LCAyMDEwLTA5LTIzIGF0IDE3OjUyICswODAwLCBnd3lzdUBzaW5hLmNvbSB3cm90ZTo8QlI+
+Jmd0OyZndDsgVGhhbmsgeW91IFBoaWxpcHBlIHZlcnkgbXVjaC4gSSBhbSB3b3JraW5nIG9uIHBv
+cnRpbmcgb3VyIHBTb1MgY29kZSB0bzxCUj4mZ3Q7Jmd0OyB4ZW5vbWFpLiBUaGVyZSBhcmUgbWFu
+eSBzeXNjYWxsICJ0X3Jlc3RhcnQiIGluIG91ciBjb2RlLiBUaGUgY2FzZSBpczxCUj4mZ3Q7Jmd0
+OyBub3QgbGlrZSB3aGF0IHlvdSBtZW50aW9uZWQuIExldCBtZSBnaXZlIGEgZXhhbXBsZSB0byBp
+bGx1c3RyYXRlIG91cjxCUj4mZ3Q7Jmd0OyBjYXNlOjxCUj4mZ3Q7Jmd0OyA8QlI+Jmd0OyAmZ3Q7
+VGFzayBBIGNyZWF0ZSBhbmQgc3RhcnQgVGFzayBCIHdpdGggcGFyYW1ldGVyICJYIiwgdGhlbiBU
+YXNrIEIgcnVuIGFuZDxCUj4mZ3Q7Jmd0OyBzdXNwZW5kIHdoZW4gaXRzIHBhcmFtZXRlciBpcyAi
+WCIuIEF0IHJpZ3RoIHRpbWUsIFRhc2sgQSByZXN0YXJ0IFRhc2s8QlI+Jmd0OyZndDsgQiB3aXRo
+IHBhcmFtZXRlciAiWSIsIHRoZSBUYXNrIHdpbGwgcmUtcnVuIHdpdGggYSBuZXcgcGFyYW1ldGVy
+ICJZIjxCUj4mZ3Q7Jmd0OyBhbmQgd29uJ3Qgc3VzcGVuZC48QlI+PEJSPiZndDsgSSBzdGlsbCBk
+b24ndCBzZWUgdGhlIHJlcXVpcmVtZW50IGZvciB0X3Jlc3RhcnQoKSBpbiB5b3VyIGRlc2NyaXB0
+aW9uLjxCUj4mZ3Q7IFRhc2sgQSBkb2luZyB0X2RlbGV0ZSh0YXNrIEIpLCB0aGVuIHRfY3JlYXRl
+KHRhc2sgQikgKyB0X3N0YXJ0KHRhc2sgQiw8QlI+Jmd0OyBwYXJhbT1YIG9yIFkpIHdvdWxkIGJl
+aGF2ZSBleGFjdGx5IHRoZSBzYW1lIHdheSBBRkFJQ1MuIEFnYWluLCB0aGUgb25seTxCUj4mZ3Q7
+IGZlYXR1cmUgdGhhdCB0X3Jlc3RhcnQoKSBidXlzIHlvdSBpcyBmb3JjaWJseSB1bmJsb2NraW5n
+IGEgdGFzayBmcm9tIGE8QlI+Jmd0OyBwZW5kaW5nIHN0YXRlLCBhdCB0aGUgZXhwZW5zZSBvZiBi
+cmFuY2hpbmcgYmFjayB0byBpdHMgZW50cnkgcG9pbnQuIFRhc2s8QlI+Jmd0OyBCIGRvZXMgbm90
+IHNlZW0gdG8gcGVuZCBvbiBhbnl0aGluZywgaXQgaXMgbWVyZWx5IHN1c3BlbmRlZCwgYW5kIG9u
+bHk8QlI+Jmd0OyB3YWl0cyBmb3IgdGFzayBBIGZvciByZXNldHRpbmcgaXQuIEkgc2VlIG5vIGRp
+ZmZlcmVuY2Ugd2l0aDxCUj4mZ3Q7IHNlbGYtZGVsZXRpb24gZm9sbG93ZWQgYnkgYSByZXNwYXdu
+LjwvUD4NCjxQPjxCUj5ZZXMsIGl0IHNlZW1zIHRoZSBiZXR0ZXIgd2F5IGlzIGRlbGV0aW5nIHRh
+c2sgQiBhbmQgdGhlbiBjcmVhdGluZyBhbmQgc3RhcnRpbmcgaXQuIFRoZSBvbmx5IHNpZGUgZWZm
+ZWN0IGlzIHRoYXQgdGhlIHRhc2smbmJzcDtJRCBvZiB0YXNrIEIgd2lsbCBiZSZuYnNwO2NoYW5n
+ZWQgdG8gYSBuZXcgb25lLiAmbmJzcDtCdXQmbmJzcDt0aGF0IHNodWxkIG5vdCBiZSBhIHByb2Js
+ZW0uPEJSPiZndDsmZ3Q7PEJSPiZndDsmZ3Q7IDxCUj4mZ3Q7Jmd0OyA8QlI+Jmd0OyZndDsgSSBq
+dXN0IGRvbid0IHdhbnQgdG8gbW9kaWZ5IHRoZSBjb2RlIGFuZCB3YW50IHRvIGltcGxlbWVudCB0
+aGUgc3lzY2FsbDxCUj4mZ3Q7Jmd0OyAicmVzdGFydCIgdG8gbWFrZSB0aGUgcG9ydGluZyBzbW9v
+dGhseS4gPEJSPiZndDsmZ3Q7IDxCUj4mZ3Q7Jmd0OyA8QlI+PEJSPiZndDsgdF9yZXN0YXJ0KCkg
+aGFzIG5vbi10cml2aWFsIHNlbWFudGljcyBmb3IgdXNlci1zcGFjZSB0aHJlYWRzLiBUcnlpbmcg
+dG88QlI+Jmd0OyBlbXVsYXRlIGl0IG1heSBjb3N0IG1vcmUgdGhhbiBnZXR0aW5nIHJpZCBvZiBp
+dCwgdW5sZXNzIHlvdSBhcmUgcmVhZHkgdG88QlI+Jmd0OyBpbnZlc3Qgc29tZSB0aW1lIHRvIG1h
+a2UgeW91ciB3YXkgdGhyb3VnaCBYZW5vbWFpJ3MgaW5uYXJkcy4gWU1NVi48L1A+DQo8UD4mbmJz
+cDs8L1A+DQo8UD5JIGFtIHZlcnkgaW50ZXJlc3RlZCBpbiB4ZW5vbWFpIGFuZCBJIGhvcGUgSSZu
+YnNwO2NhbiBoYXZlIG1vcmUgdGltZSB0byByZXNlYXJjaCBpdCBkZWVwbHkuIFRoYW5rcy48L1A+
+DQo8UD4mbmJzcDs8L1A+DQo8UD4mZ3Q7Jmd0OyA8QlI+Jmd0OyZndDsgPEJSPiZndDsmZ3Q7IEJl
+c3QgcmVnYXJkczxCUj4mZ3Q7Jmd0OyA8QlI+Jmd0OyZndDsgV2VueWkgR2FvIDxCUj4mZ3Q7Jmd0
+OyA8QlI+Jmd0OyZndDsgPEJSPjxCUj4mZ3Q7IC0tIDxCUj4mZ3Q7UGhpbGlwcGUuPEJSPjxCUj48
+QlI+PC9QPg==
 
--- 
-Philippe.
 
-
+--=-sinamail_alt_f502141760e2f8a160373108a90e34f7--
 
