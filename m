@@ -1,14 +1,13 @@
-Message-ID: <4C9DB383.1050606@domain.hid>
-Date: Sat, 25 Sep 2010 10:32:03 +0200
+Message-ID: <4C9DDCD3.20705@domain.hid>
+Date: Sat, 25 Sep 2010 13:28:19 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <AANLkTimFXFr48DgXSj=53pNjAQB7w+mjOwwuEYQXc3KV@mail.gmail.com>	<4C9D0A94.9030501@domain.hid>
-	<AANLkTikQi1+5F5e5x1om=4HMqmwc9twJ+ZtK-kWN8gnD@mail.gmail.com>
-In-Reply-To: <AANLkTikQi1+5F5e5x1om=4HMqmwc9twJ+ZtK-kWN8gnD@mail.gmail.com>
+References: <8sld2b$hq8lvg@domain.hid>
+In-Reply-To: <8sld2b$hq8lvg@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] switchtest/xeon-test fails: Help needed
- (Ubuntu/Core i7)
+Subject: Re: [Xenomai-help] Unloading xeno_psos cannot cleanup some sources
+ completely.
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,16 +17,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gajamohan Mohanarajah <gajamohan.m@domain.hid>
+To: Gao <gwysu@domain.hid>
 Cc: xenomai@xenomai.org
 
-Gajamohan Mohanarajah wrote:
->> You can also configure your kernel to only keep what is needed for you
->> real-time system. In any case, please make sure to take a look at:
->> http://www.xenomai.org/index.php/Configuring_x86_kernels
-> I will double check once I solve the switchtest error.
+Gao wrote:
+> Hi  All ,
+>  
+> After I load xeno_psos.ko by "/sbin/insmod xeno_psos.ko", and run my test
+> program, whic create a queue by "q_vcreate", but not delete it in the test
+> program.  After I finish running my test program. Then I unload the
+> xeno_psos and then reload it again, it will crash as follow:     
+> (...)
+> So can the problem be fixed? Thanks.
 
-Please check this first.
+http://www.xenomai.org/index.php/Request_for_information
 
 -- 
                                                                 Gilles.
