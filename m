@@ -1,13 +1,14 @@
-Message-Id: <8slsrl$30mq2h@domain.hid>
-From: "Gao" <gwysu@domain.hid>
-Date: Sun, 26 Sep 2010 08:20:32 +0800
+Message-ID: <4C9F3163.4050106@domain.hid>
+Date: Sun, 26 Sep 2010 13:41:23 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
+References: <AANLkTimFXFr48DgXSj=53pNjAQB7w+mjOwwuEYQXc3KV@mail.gmail.com>	<4C9D0A94.9030501@domain.hid>	<AANLkTikQi1+5F5e5x1om=4HMqmwc9twJ+ZtK-kWN8gnD@mail.gmail.com>	<4C9DB383.1050606@domain.hid>	<AANLkTikR8pc1w27pi11wA7rS-K6C3wzSQXkE33iKHfcX@mail.gmail.com>	<4C9E6C21.8010403@domain.hid>
+	<AANLkTimte2sxk535RfQ4M7b2gT4v1PJAzUiVB_nh7-zO@mail.gmail.com>
+In-Reply-To: <AANLkTimte2sxk535RfQ4M7b2gT4v1PJAzUiVB_nh7-zO@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-In-Reply-To: <4C9DDCD3.20705@domain.hid>
-Subject: Re: [Xenomai-help] Unloading xeno_psos cannot cleanup some sources
-	completely.
+Subject: Re: [Xenomai-help] switchtest/xeon-test fails: Help needed
+ (Ubuntu/Core i7)
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,16 +18,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: 'Gilles Chanteperdrix' <gilles.chanteperdrix@xenomai.org>
+To: Gajamohan Mohanarajah <gajamohan.m@domain.hid>
 Cc: xenomai@xenomai.org
 
- 
+Gajamohan Mohanarajah wrote:
+> Hi Gilles,
+> 
+> Thanks a lot!  With XENO_OPT_SYS_STACKPOOLSZ set to 1024 and then
+> setting it up along the wiki instructions worked fine. (no error on
+> kern.log and switch test works fine too)
+> 
+> But, when ACPI is enabled (but CONFIG_ACPI_PROCESSOR is not set) and
+> with an AHCI bios setting, while booting it drops to initramfs shell
+> saying [Gave up waiting for root device.. /dev/disk/by-uuid/.... does
+> not exist. Dropping to shell !].
+> 
+> Please Note:
+> 1. I couldn't reproduce this problem with an ubuntu kernel (without
+> Xenomai patch) ACPI enabled, CONFIG_ACPI_PROCESSOR  not set and AHCI
+> on bios.
+> 2. cat /proc/modules shows an [ahci] on initramfs/busybox
+> 3. root=/dev/sda1 on grep config instead of uuid also did not help.
 
-I am using the xenomai version 2.5.4 and linux version 2.6.33.4 for powerpc
-arch.
+Please capture the full kernel logs and post them here (do not forget to
+remove the "quiet" argument which ubuntu passes on the kernel command line).
 
-
-Best regards
-Wenyi Gao
-
+-- 
+                                                                Gilles.
 
