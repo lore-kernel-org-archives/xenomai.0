@@ -1,11 +1,12 @@
-From: Steve Deiters <SteveDeiters@domain.hid>
-Date: Fri, 1 Oct 2010 19:51:37 +0000
-Message-ID: <DE2B7FDC88E7C44E90CE24BD414F34F709BFDD@exchange2010.basler.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+Message-ID: <4CA6D3A8.8070805@domain.hid>
+Date: Sat, 02 Oct 2010 08:39:36 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Subject: [Xenomai-core] enable_kernel_fp broken with IPIPE on PowerPC
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig08BB7C7A8638F6C01AEDF47F"
+Sender: jan.kiszka@domain.hid
+Subject: [Xenomai-core] [git pull] Patch queue for head
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -14,49 +15,74 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: "Xenomai Core (xenomai@xenomai.org)" <xenomai@xenomai.org>, adeos-main <adeos-main@gna.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Xenomai core <Xenomai-core@domain.hid>
 
-I'm getting a thread crash where an unaligned floating point access occurs.=
-  I tracked the cause down to enable_kernel_fp within the fix_alignment rou=
-tine.  The enable_kernel_fp routine is as follows:
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig08BB7C7A8638F6C01AEDF47F
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: quoted-printable
 
-void enable_kernel_fp(void)
-{
-        unsigned long flags;
+The following changes since commit 738ffe93e9e23a78f42a6ff7fe8e952d90462a=
+67:
 
-        WARN_ON(preemptible());
+  rtdm: sanitize openfd vfile handling (2010-09-24 09:45:40 +0200)
 
-        local_irq_save_hw_cond(flags);
+are available in the git repository at:
+  git://git.xenomai.org/xenomai-jki.git for-upstream
 
-#ifdef CONFIG_SMP
-        if (current->thread.regs && (current->thread.regs->msr & MSR_FP))
-                giveup_fpu(current);
-        else
-                giveup_fpu(NULL);       /* just enables FP for kernel */
-#else
-        giveup_fpu(last_task_used_math);
-#endif /* CONFIG_SMP */
-        local_irq_restore_hw_cond(flags);
-}
+Jan Kiszka (14):
+      rt_print: Properly return printed length
+      RTDM: Protect xnshadow_ppd_get via nklock
+      RTDM: Plug race between proc_read_dev_info and device deregistratio=
+n
+      RTDM: Properly clean up on xnvfile setup errors
+      RTDM: Extend device name space in open_fildes proc output
+      Fix symbolic status ouput of root threads
+      Create watchdog as non-blockable timer
+      native: Improve documentation of rt_task_join and rt_task_delete
+      nucleus: Fix lock imbalance in registry_proc_callback
+      Export rthal_apc_pending/virq to modules
+      x86: Add PCI ID of Series 5/3400 Intel chipset to SMI workaround
+      x86: Add PCI ID of 631xESB/632xESB/3100 Intel chipset to SMI workar=
+ound
+      x86: Add PCI ID of Intel ICH9M-E chipset to SMI workaround
+      x86: Add PCI ID of Intel ICH9M chipset to SMI workaround
+
+Stefan Kisdaroczi (1):
+      RTDM device profiles: Document open_rt, socket_rt and close_rt depr=
+ecation
+
+ include/asm-generic/pci_ids.h |   12 +++++++++++
+ include/rtdm/rtcan.h          |    4 +-
+ include/rtdm/rtserial.h       |    4 +-
+ include/rtdm/rttesting.h      |    4 +-
+ ksrc/arch/generic/hal.c       |    2 +
+ ksrc/arch/x86/smi.c           |    4 +++
+ ksrc/nucleus/registry.c       |    3 +-
+ ksrc/nucleus/sched.c          |    3 +-
+ ksrc/nucleus/thread.c         |    4 +++
+ ksrc/skins/native/task.c      |   16 ++++++++++++-
+ ksrc/skins/rtdm/core.c        |    2 +
+ ksrc/skins/rtdm/proc.c        |   45 +++++++++++++++++++++++++++++++----=
+-----
+ src/rtdk/rt_print.c           |    1 +
+ 13 files changed, 84 insertions(+), 20 deletions(-)
 
 
+--------------enig08BB7C7A8638F6C01AEDF47F
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-The local_irq_save_hw_cond saves the old MSR value in flags.  When this val=
-ue is restored with local_irq_restore_hw_cond it loses the MSR[FP] bit that=
- was set in giveup_fpu.  If the MSR[FP] was not previously set before it sa=
-ved the flags, I get a FPU exception a bit later in the alignment handling.
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.15 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org/
 
+iEYEARECAAYFAkym060ACgkQitSsb3rl5xQbAACgh83fPZcmzwwnPrDElEAuoAGx
+hzYAoN0Z+Se3xyjhxe/bZU48cM6fN/Fu
+=Ps5D
+-----END PGP SIGNATURE-----
 
-As a quick fix I changed the line to restore to
-
-        local_irq_restore_hw_cond(flags|MSR_FP);
-
-
-I'm not sure this is a correct fix.  I'm don't know where else there might =
-be code that is modifying the MSR in a similar fashion.  It seems any such =
-case would be broken.
-
-I'm using the ipipe version 2.10-03 patch that was bundled with Xenomai 2.5=
-.4 on Linux 2.6.33.5.  I noticed that this is still the same though in the =
-2.11-00 ipipe patch.
+--------------enig08BB7C7A8638F6C01AEDF47F--
 
