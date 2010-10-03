@@ -1,12 +1,11 @@
-Message-ID: <4CA7C183.7010405@domain.hid>
-Date: Sun, 03 Oct 2010 01:34:27 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4CA8D713.8090900@domain.hid>
+Date: Sun, 03 Oct 2010 21:18:43 +0200
+From: Javier Herrero <jherrero@domain.hid>
 MIME-Version: 1.0
-References: <4CA5157D.8080505@domain.hid> <4CA59847.3020503@domain.hid>
-In-Reply-To: <4CA59847.3020503@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Adeos-main] [pull request] ipipe-2.6.33-arm-1.18-00
+Subject: [Adeos-main] Problem with dm9000 and
+	adeos-ipipe-2.6.34-blackfin-1.14-02.patch
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -15,21 +14,31 @@ List-Post: <mailto:adeos-main@gna.org>
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Adeos <adeos-main@gna.org>
+To: adeos-main@gna.org
 
-Gilles Chanteperdrix wrote:
-> Gilles Chanteperdrix wrote:
->> The following changes since commit b94a1b70ad2675f45d177aec16a814695a799a99:
->>   Philippe Gerum (1):
->>         Merge remote branch 'gilles-2.6.33' into ipipe-2.6.33-arm
->>
->> are available in the git repository at:
-> 
-> Hold on, I have an issue on AT91. Will send a new pull request when solved.
+  Hello,
 
-Should be OK now.
+I'm trying adeos on a Blackfin BF532 board with a DM9000 ethernet 
+interface. If ethernet is down (cable disconnected) the system boots and 
+works OK, but as soon as the ethernet cable is plugged, the system 
+apparently hangs. After several seconds, a message  dm9000 dm9000.0: 
+status check fail: 226 appears.
+
+I've read a previous post about problems with dm9000 and an ARM 
+processor, 
+https://mail.gna.org/public/xenomai-help/2010-03/msg00147.html but it 
+seems that there was not a response.
+
+Thank you very much. Best regards,
+
+Javier
 
 -- 
-                                                                Gilles.
+------------------------------------------------------------------------
+Javier Herrero                            EMAIL: jherrero@domain.hid
+Chief Technology Officer
+HV Sistemas S.L.                          PHONE:         +34 949 336 806
+Los Charcones, 17                         FAX:           +34 949 336 792
+19170 El Casar - Guadalajara - Spain      WEB: http://www.hvsistemas.com
+
 
