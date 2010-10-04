@@ -1,13 +1,15 @@
-Message-ID: <4CA9CB9A.5090200@domain.hid>
-Date: Mon, 04 Oct 2010 14:42:02 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: Steve Deiters <SteveDeiters@domain.hid>
+Date: Mon, 4 Oct 2010 16:01:42 +0000
+Message-ID: <DE2B7FDC88E7C44E90CE24BD414F34F709D648@domain.hid>
+References: <DE2B7FDC88E7C44E90CE24BD414F34F709BFDD@exchange2010.basler.com>
+	<1286187139.1702.94.camel@domain.hid>
+In-Reply-To: <1286187139.1702.94.camel@domain.hid>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <4CA9BF97.2060609@domain.hid>
-In-Reply-To: <4CA9BF97.2060609@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [git pull] Refreshed & host-clock-enhanced queue
- for	head
+Subject: Re: [Xenomai-core] [Adeos-main] enable_kernel_fp broken with IPIPE
+	on PowerPC
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -16,17 +18,62 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: Xenomai core <Xenomai-core@domain.hid>, Wolfgang Mauerer <wolfgang.mauerer@domain.hid>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: adeos-main <adeos-main@gna.org>, "Xenomai Core (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-Jan Kiszka wrote:
-> The following changes since commit 0f0db62bc5ed90aaf85c87af876fbc319131a640:
-> 
->   Merge remote branch 'v2.5.x' (2010-10-04 10:27:03 +0200)
-
-Ok. Could you rebase instead of merge so that our branches do not start
-diverging ?
-
--- 
-					    Gilles.
+PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBQaGlsaXBwZSBHZXJ1bSBbbWFp
+bHRvOnJwbUB4ZW5vbWFpLm9yZ10NCj4gU2VudDogTW9uZGF5LCBPY3RvYmVyIDA0LCAyMDEwIDU6
+MTIgQU0NCj4gVG86IFN0ZXZlIERlaXRlcnMNCj4gQ2M6IFhlbm9tYWkgQ29yZSAoeGVub21haS1j
+b3JlQGduYS5vcmcpOyBhZGVvcy1tYWluDQo+IFN1YmplY3Q6IFJlOiBbQWRlb3MtbWFpbl0gZW5h
+YmxlX2tlcm5lbF9mcCBicm9rZW4gd2l0aCBJUElQRSBvbiBQb3dlclBDDQo+IA0KPiBPbiBGcmks
+IDIwMTAtMTAtMDEgYXQgMTk6NTEgKzAwMDAsIFN0ZXZlIERlaXRlcnMgd3JvdGU6DQo+ID4gSSdt
+IGdldHRpbmcgYSB0aHJlYWQgY3Jhc2ggd2hlcmUgYW4gdW5hbGlnbmVkIGZsb2F0aW5nIHBvaW50
+IGFjY2Vzcw0KPiBvY2N1cnMuICBJIHRyYWNrZWQgdGhlIGNhdXNlIGRvd24gdG8gZW5hYmxlX2tl
+cm5lbF9mcCB3aXRoaW4gdGhlDQo+IGZpeF9hbGlnbm1lbnQgcm91dGluZS4gIFRoZSBlbmFibGVf
+a2VybmVsX2ZwIHJvdXRpbmUgaXMgYXMgZm9sbG93czoNCj4gPg0KPiA+IHZvaWQgZW5hYmxlX2tl
+cm5lbF9mcCh2b2lkKQ0KPiA+IHsNCj4gPiAgICAgICAgIHVuc2lnbmVkIGxvbmcgZmxhZ3M7DQo+
+ID4NCj4gPiAgICAgICAgIFdBUk5fT04ocHJlZW1wdGlibGUoKSk7DQo+ID4NCj4gPiAgICAgICAg
+IGxvY2FsX2lycV9zYXZlX2h3X2NvbmQoZmxhZ3MpOw0KPiA+DQo+ID4gI2lmZGVmIENPTkZJR19T
+TVANCj4gPiAgICAgICAgIGlmIChjdXJyZW50LT50aHJlYWQucmVncyAmJiAoY3VycmVudC0+dGhy
+ZWFkLnJlZ3MtPm1zciAmDQo+IE1TUl9GUCkpDQo+ID4gICAgICAgICAgICAgICAgIGdpdmV1cF9m
+cHUoY3VycmVudCk7DQo+ID4gICAgICAgICBlbHNlDQo+ID4gICAgICAgICAgICAgICAgIGdpdmV1
+cF9mcHUoTlVMTCk7ICAgICAgIC8qIGp1c3QgZW5hYmxlcyBGUCBmb3Iga2VybmVsICovDQo+ID4g
+I2Vsc2UNCj4gPiAgICAgICAgIGdpdmV1cF9mcHUobGFzdF90YXNrX3VzZWRfbWF0aCk7DQo+ID4g
+I2VuZGlmIC8qIENPTkZJR19TTVAgKi8NCj4gPiAgICAgICAgIGxvY2FsX2lycV9yZXN0b3JlX2h3
+X2NvbmQoZmxhZ3MpOw0KPiA+IH0NCj4gPg0KPiA+DQo+ID4NCj4gPiBUaGUgbG9jYWxfaXJxX3Nh
+dmVfaHdfY29uZCBzYXZlcyB0aGUgb2xkIE1TUiB2YWx1ZSBpbiBmbGFncy4gIFdoZW4gdGhpcw0K
+PiB2YWx1ZSBpcyByZXN0b3JlZCB3aXRoIGxvY2FsX2lycV9yZXN0b3JlX2h3X2NvbmQgaXQgbG9z
+ZXMgdGhlIE1TUltGUF0gYml0DQo+IHRoYXQgd2FzIHNldCBpbiBnaXZldXBfZnB1LiAgSWYgdGhl
+IE1TUltGUF0gd2FzIG5vdCBwcmV2aW91c2x5IHNldCBiZWZvcmUNCj4gaXQgc2F2ZWQgdGhlIGZs
+YWdzLCBJIGdldCBhIEZQVSBleGNlcHRpb24gYSBiaXQgbGF0ZXIgaW4gdGhlIGFsaWdubWVudA0K
+PiBoYW5kbGluZy4NCj4gPg0KPiA+DQo+ID4gQXMgYSBxdWljayBmaXggSSBjaGFuZ2VkIHRoZSBs
+aW5lIHRvIHJlc3RvcmUgdG8NCj4gPg0KPiA+ICAgICAgICAgbG9jYWxfaXJxX3Jlc3RvcmVfaHdf
+Y29uZChmbGFnc3xNU1JfRlApOw0KPiA+DQo+ID4NCj4gPiBJJ20gbm90IHN1cmUgdGhpcyBpcyBh
+IGNvcnJlY3QgZml4LiAgSSdtIGRvbid0IGtub3cgd2hlcmUgZWxzZSB0aGVyZQ0KPiBtaWdodCBi
+ZSBjb2RlIHRoYXQgaXMgbW9kaWZ5aW5nIHRoZSBNU1IgaW4gYSBzaW1pbGFyIGZhc2hpb24uICBJ
+dCBzZWVtcw0KPiBhbnkgc3VjaCBjYXNlIHdvdWxkIGJlIGJyb2tlbi4NCj4gPg0KPiA+IEknbSB1
+c2luZyB0aGUgaXBpcGUgdmVyc2lvbiAyLjEwLTAzIHBhdGNoIHRoYXQgd2FzIGJ1bmRsZWQgd2l0
+aCBYZW5vbWFpDQo+IDIuNS40IG9uIExpbnV4IDIuNi4zMy41LiAgSSBub3RpY2VkIHRoYXQgdGhp
+cyBpcyBzdGlsbCB0aGUgc2FtZSB0aG91Z2ggaW4NCj4gdGhlIDIuMTEtMDAgaXBpcGUgcGF0Y2gu
+DQo+ID4NCj4gDQo+IEFjdHVhbGx5LCBnaXZldXBfZnB1IGFscmVhZHkgaGFuZGxlcyB0aGUgaW50
+ZXJydXB0IHN0YXRlIHByb3Blcmx5LCBzbw0KPiB0aGUgcHJvdGVjdGlvbiBjb2RlIGluIGVuYWJs
+ZV9rZXJuZWxfZnAgaXMgYnVnZ3kgYW5kIHVzZWxlc3MgYXMgd2VsbC4NCj4gSSBkaWQgbm90IHNl
+ZSBhbnkgb3RoZXIgc3BvdCB3aGVyZSBjYWxsaW5nIGFzc2VtYmx5IGNvZGUgd2hpY2ggbWF5IHRv
+dWNoDQo+IHRoZSBNU1Igd291bGQgY29uZmxpY3Qgd2l0aCBpbnRlcnJ1cHQgcHJvdGVjdGlvbiBp
+biB0aGUgY2FsbGVyLiBDb3VsZA0KPiB5b3UgdHJ5IHRoaXMgcGF0Y2ggaW5zdGVhZD8NCj4gDQo+
+IGRpZmYgLS1naXQgYS9hcmNoL3Bvd2VycGMva2VybmVsL3Byb2Nlc3MuYyBiL2FyY2gvcG93ZXJw
+Yy9rZXJuZWwvcHJvY2Vzcy5jDQo+IGluZGV4IGU0ZWFjYTQuLjM3NDNiMjcgMTAwNjQ0DQo+IC0t
+LSBhL2FyY2gvcG93ZXJwYy9rZXJuZWwvcHJvY2Vzcy5jDQo+ICsrKyBiL2FyY2gvcG93ZXJwYy9r
+ZXJuZWwvcHJvY2Vzcy5jDQo+IEBAIC05OCwxMiArOTgsOCBAQCB2b2lkIGZsdXNoX2ZwX3RvX3Ro
+cmVhZChzdHJ1Y3QgdGFza19zdHJ1Y3QgKnRzaykNCj4gDQo+ICB2b2lkIGVuYWJsZV9rZXJuZWxf
+ZnAodm9pZCkNCj4gIHsNCj4gLQl1bnNpZ25lZCBsb25nIGZsYWdzOw0KPiAtDQo+ICAJV0FSTl9P
+TihwcmVlbXB0aWJsZSgpKTsNCj4gDQo+IC0JbG9jYWxfaXJxX3NhdmVfaHdfY29uZChmbGFncyk7
+DQo+IC0NCj4gICNpZmRlZiBDT05GSUdfU01QDQo+ICAJaWYgKGN1cnJlbnQtPnRocmVhZC5yZWdz
+ICYmIChjdXJyZW50LT50aHJlYWQucmVncy0+bXNyICYgTVNSX0ZQKSkNCj4gIAkJZ2l2ZXVwX2Zw
+dShjdXJyZW50KTsNCj4gQEAgLTExMiw3ICsxMDgsNiBAQCB2b2lkIGVuYWJsZV9rZXJuZWxfZnAo
+dm9pZCkNCj4gICNlbHNlDQo+ICAJZ2l2ZXVwX2ZwdShsYXN0X3Rhc2tfdXNlZF9tYXRoKTsNCj4g
+ICNlbmRpZiAvKiBDT05GSUdfU01QICovDQo+IC0JbG9jYWxfaXJxX3Jlc3RvcmVfaHdfY29uZChm
+bGFncyk7DQo+ICB9DQo+ICBFWFBPUlRfU1lNQk9MKGVuYWJsZV9rZXJuZWxfZnApOw0KPiANCg0K
+VGhpcyBhbHNvIHdvcmtzIGZvciBtZS4gIEkgd2lsbCB1c2UgdGhpcyBmb3Igbm93Lg0KDQpUaGFu
+a3MuDQoNCg0KDQo=
 
