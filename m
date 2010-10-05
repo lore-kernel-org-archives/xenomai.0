@@ -1,10 +1,12 @@
-Message-ID: <4CAAF0CA.7060603@domain.hid>
-Date: Tue, 05 Oct 2010 11:32:58 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <4CAAF648.8000001@domain.hid>
+Date: Tue, 05 Oct 2010 11:56:24 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-15
+References: <4CAAF0CA.7060603@domain.hid>
+In-Reply-To: <4CAAF0CA.7060603@domain.hid>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] Overcoming the "foreign" stack
+Subject: Re: [Xenomai-core] Overcoming the "foreign" stack
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -13,46 +15,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Xenomai core <Xenomai-core@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: Xenomai core <Xenomai-core@domain.hid>
 
-Hi,
+Jan Kiszka wrote:
+> Hi,
+> 
+> quite a few limitations and complications of using Linux services over
+> non-Linux domains relate to potentially invalid "current" and
+> "thread_info". The non-Linux domain could maintain their own kernel
+> stacks while Linux tend to derive current and thread_info from the stack
+> pointer. This is not an issue anymore on x86-64 (both states are stored
+> in per-cpu variables) but other archs (e.g. x86-32 or ARM) still use the
+> stack and may continue to do so.
 
-quite a few limitations and complications of using Linux services over
-non-Linux domains relate to potentially invalid "current" and
-"thread_info". The non-Linux domain could maintain their own kernel
-stacks while Linux tend to derive current and thread_info from the stack
-pointer. This is not an issue anymore on x86-64 (both states are stored
-in per-cpu variables) but other archs (e.g. x86-32 or ARM) still use the
-stack and may continue to do so.
+On ARM vanilla tracing capabilities have way too much overhead to be
+really usable. I have tested a "standalone" version of mcount which
+calls directly the Ipipe tracer, and I get less overhead, something like
+20%.
 
-I just looked into this thing again as I'm evaluating ways to exploit
-the kernel's tracing framework also under Xenomai. Unfortunately, it
-does a lot of fiddling with preempt_count and need_resched, so patching
-it for Xenomai use would become a maintenance nightmare.
+The philosophy of ftrace is well explained by the following sentence,
+extracted from the ftrace design text file: "Also keep in mind that this
+mcount function will be called *a lot*, so optimizing for the default
+case of no tracer will help the smooth running of your system when
+tracing is disabled."
 
-An alternative, also for other use cases like kgdb and probably perf, is
-to get rid of our dependency on home-grown stacks. I think we are on
-that way already as in-kernel skins have been deprecated. The only
-remaining user after them will be RTDM driver tasks. But I think those
-could simply become in-kernel shadows of kthreads which would bind their
-stacks to what Linux provides. Moreover, Xenomai could start updating
-"current" and "thread_info" on context switches (unless this already
-happens implicitly). That would give us proper contexts for system-level
-tracing and profiling.
+When using the I-pipe tracer, we are interested in precisely the reverse
+optimization: we do not care about the overhead of mcount when the
+tracer is not enabled, we will not keep the tracer enabled in
+configuration when not tracint anyway, but we really want mcount to have
+as little overhead as possible when the tracer is enabled.
 
-My key question is currently if and how much of this could be realized
-in 2.6. Could we drop in-kernel skins in that version? If not, what
-about disabling them by default, converting RTDM tasks to a
-kthread-based approach, and enabling tracing etc. only in that case?
-However, this might be a bit fragile unless we can establish
-compile-time or run-time requirements negotiation between Adeos and its
-users (Xenomai) about the stack model.
+Still on ARM, the perf code requires handling an interrupt when the
+performance counters overflow. So, getting this to work with the I-pipe
+would mean ironing this irq handler and all the functions it calls, and
+all the spinlocks that are involved.
 
-Comments, ideas?
-
-Jan
+What I am trying to say is that trying to use the vanilla
+infrastructures will probably cause many more problems than just the
+stack issue, and if we look at the I-pipe tracer example again, it is
+really not obvious what the vanilla infrastructure bring us: only the
+ftrace_register/ftrace_unregister services, at the expense of 20% more
+overhead.
 
 -- 
-Siemens AG, Corporate Technology, CT T DE IT 1
-Corporate Competence Center Embedded Linux
+					    Gilles.
 
