@@ -1,9 +1,9 @@
-Message-ID: <4CAB24D9.5000308@domain.hid>
-Date: Tue, 05 Oct 2010 15:15:05 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4CAB2994.40505@domain.hid>
+Date: Tue, 05 Oct 2010 15:35:16 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <4CAAF0CA.7060603@domain.hid>
-In-Reply-To: <4CAAF0CA.7060603@domain.hid>
+References: <4CAAF0CA.7060603@domain.hid> <4CAB24D9.5000308@domain.hid>
+In-Reply-To: <4CAB24D9.5000308@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-core] Overcoming the "foreign" stack
@@ -15,51 +15,64 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: Xenomai core <Xenomai-core@domain.hid>
 
-Jan Kiszka wrote:
-> Hi,
+Am 05.10.2010 15:15, Gilles Chanteperdrix wrote:
+> Jan Kiszka wrote:
+>> Hi,
+>>
+>> quite a few limitations and complications of using Linux services over
+>> non-Linux domains relate to potentially invalid "current" and
+>> "thread_info". The non-Linux domain could maintain their own kernel
+>> stacks while Linux tend to derive current and thread_info from the stack
+>> pointer. This is not an issue anymore on x86-64 (both states are stored
+>> in per-cpu variables) but other archs (e.g. x86-32 or ARM) still use the
+>> stack and may continue to do so.
+>>
+>> I just looked into this thing again as I'm evaluating ways to exploit
+>> the kernel's tracing framework also under Xenomai. Unfortunately, it
+>> does a lot of fiddling with preempt_count and need_resched, so patching
+>> it for Xenomai use would become a maintenance nightmare.
+>>
+>> An alternative, also for other use cases like kgdb and probably perf, is
+>> to get rid of our dependency on home-grown stacks. I think we are on
+>> that way already as in-kernel skins have been deprecated. The only
+>> remaining user after them will be RTDM driver tasks. But I think those
+>> could simply become in-kernel shadows of kthreads which would bind their
+>> stacks to what Linux provides. Moreover, Xenomai could start updating
+>> "current" and "thread_info" on context switches (unless this already
+>> happens implicitly). That would give us proper contexts for system-level
+>> tracing and profiling.
+>>
+>> My key question is currently if and how much of this could be realized
+>> in 2.6. Could we drop in-kernel skins in that version? If not, what
+>> about disabling them by default, converting RTDM tasks to a
+>> kthread-based approach, and enabling tracing etc. only in that case?
+>> However, this might be a bit fragile unless we can establish
+>> compile-time or run-time requirements negotiation between Adeos and its
+>> users (Xenomai) about the stack model.
 > 
-> quite a few limitations and complications of using Linux services over
-> non-Linux domains relate to potentially invalid "current" and
-> "thread_info". The non-Linux domain could maintain their own kernel
-> stacks while Linux tend to derive current and thread_info from the stack
-> pointer. This is not an issue anymore on x86-64 (both states are stored
-> in per-cpu variables) but other archs (e.g. x86-32 or ARM) still use the
-> stack and may continue to do so.
-> 
-> I just looked into this thing again as I'm evaluating ways to exploit
-> the kernel's tracing framework also under Xenomai. Unfortunately, it
-> does a lot of fiddling with preempt_count and need_resched, so patching
-> it for Xenomai use would become a maintenance nightmare.
-> 
-> An alternative, also for other use cases like kgdb and probably perf, is
-> to get rid of our dependency on home-grown stacks. I think we are on
-> that way already as in-kernel skins have been deprecated. The only
-> remaining user after them will be RTDM driver tasks. But I think those
-> could simply become in-kernel shadows of kthreads which would bind their
-> stacks to what Linux provides. Moreover, Xenomai could start updating
-> "current" and "thread_info" on context switches (unless this already
-> happens implicitly). That would give us proper contexts for system-level
-> tracing and profiling.
-> 
-> My key question is currently if and how much of this could be realized
-> in 2.6. Could we drop in-kernel skins in that version? If not, what
-> about disabling them by default, converting RTDM tasks to a
-> kthread-based approach, and enabling tracing etc. only in that case?
-> However, this might be a bit fragile unless we can establish
-> compile-time or run-time requirements negotiation between Adeos and its
-> users (Xenomai) about the stack model.
+> A stupid question: why not make things the other way around: patch the
+> current and current_thread_info functions to be made I-pipe aware and
+> use an "ipipe_current" pointer to the current thread task_struct. Of
+> course, there are places where the current or current_thread_info macros
+> are implemented in assembly, so it may be not simple as it sounds, but
+> it would allow to keep 128 Kb stacks if we want. This also means that we
+> would have to put a task_struct at the bottom of every Xenomai task.
 
-A stupid question: why not make things the other way around: patch the
-current and current_thread_info functions to be made I-pipe aware and
-use an "ipipe_current" pointer to the current thread task_struct. Of
-course, there are places where the current or current_thread_info macros
-are implemented in assembly, so it may be not simple as it sounds, but
-it would allow to keep 128 Kb stacks if we want. This also means that we
-would have to put a task_struct at the bottom of every Xenomai task.
+First of all, overhead vs. maintenance. Either every access to
+preempt_count() would require a check for the current domain and its
+foreign stack flag, or I would have to patch dozens (if that is enough)
+of code sites in the tracer framework.
+
+And, second, this would prevent aligning current/thread_info with the
+currently running shadow, the nice add-on I would like to gain with this
+rework.
+
+Jan
 
 -- 
-					    Gilles.
+Siemens AG, Corporate Technology, CT T DE IT 1
+Corporate Competence Center Embedded Linux
 
