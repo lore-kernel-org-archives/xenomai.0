@@ -1,15 +1,10 @@
-Message-ID: <4CAC3F55.4050007@domain.hid>
-Date: Wed, 06 Oct 2010 11:20:21 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <4CAC65FA.70506@domain.hid>
+Date: Wed, 06 Oct 2010 14:05:14 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4CAAF0CA.7060603@domain.hid> <4CAB24D9.5000308@domain.hid>
-	<4CAB2994.40505@domain.hid> <4CAB2B37.7010104@domain.hid>
-	<4CAB2C4B.6090005@domain.hid> <4CAB2D1C.70907@domain.hid>
-	<4CAB305B.60406@domain.hid> <4CAB3450.5090105@domain.hid>
-In-Reply-To: <4CAB3450.5090105@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] Overcoming the "foreign" stack
+Subject: [Xenomai-core] [announce] Xenomai v2.5.5
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -18,115 +13,142 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai core <Xenomai-core@domain.hid>
+To: Xenomai help <xenomai@xenomai.org>, Xenomai core <Xenomai-core@domain.hid>
 
-Am 05.10.2010 16:21, Gilles Chanteperdrix wrote:
-> Jan Kiszka wrote:
->> Am 05.10.2010 15:50, Gilles Chanteperdrix wrote:
->>> Jan Kiszka wrote:
->>>> Am 05.10.2010 15:42, Gilles Chanteperdrix wrote:
->>>>> Jan Kiszka wrote:
->>>>>> Am 05.10.2010 15:15, Gilles Chanteperdrix wrote:
->>>>>>> Jan Kiszka wrote:
->>>>>>>> Hi,
->>>>>>>>
->>>>>>>> quite a few limitations and complications of using Linux services over
->>>>>>>> non-Linux domains relate to potentially invalid "current" and
->>>>>>>> "thread_info". The non-Linux domain could maintain their own kernel
->>>>>>>> stacks while Linux tend to derive current and thread_info from the stack
->>>>>>>> pointer. This is not an issue anymore on x86-64 (both states are stored
->>>>>>>> in per-cpu variables) but other archs (e.g. x86-32 or ARM) still use the
->>>>>>>> stack and may continue to do so.
->>>>>>>>
->>>>>>>> I just looked into this thing again as I'm evaluating ways to exploit
->>>>>>>> the kernel's tracing framework also under Xenomai. Unfortunately, it
->>>>>>>> does a lot of fiddling with preempt_count and need_resched, so patching
->>>>>>>> it for Xenomai use would become a maintenance nightmare.
->>>>>>>>
->>>>>>>> An alternative, also for other use cases like kgdb and probably perf, is
->>>>>>>> to get rid of our dependency on home-grown stacks. I think we are on
->>>>>>>> that way already as in-kernel skins have been deprecated. The only
->>>>>>>> remaining user after them will be RTDM driver tasks. But I think those
->>>>>>>> could simply become in-kernel shadows of kthreads which would bind their
->>>>>>>> stacks to what Linux provides. Moreover, Xenomai could start updating
->>>>>>>> "current" and "thread_info" on context switches (unless this already
->>>>>>>> happens implicitly). That would give us proper contexts for system-level
->>>>>>>> tracing and profiling.
->>>>>>>>
->>>>>>>> My key question is currently if and how much of this could be realized
->>>>>>>> in 2.6. Could we drop in-kernel skins in that version? If not, what
->>>>>>>> about disabling them by default, converting RTDM tasks to a
->>>>>>>> kthread-based approach, and enabling tracing etc. only in that case?
->>>>>>>> However, this might be a bit fragile unless we can establish
->>>>>>>> compile-time or run-time requirements negotiation between Adeos and its
->>>>>>>> users (Xenomai) about the stack model.
->>>>>>> A stupid question: why not make things the other way around: patch the
->>>>>>> current and current_thread_info functions to be made I-pipe aware and
->>>>>>> use an "ipipe_current" pointer to the current thread task_struct. Of
->>>>>>> course, there are places where the current or current_thread_info macros
->>>>>>> are implemented in assembly, so it may be not simple as it sounds, but
->>>>>>> it would allow to keep 128 Kb stacks if we want. This also means that we
->>>>>>> would have to put a task_struct at the bottom of every Xenomai task.
->>>>>> First of all, overhead vs. maintenance. Either every access to
->>>>>> preempt_count() would require a check for the current domain and its
->>>>>> foreign stack flag, or I would have to patch dozens (if that is enough)
->>>>>> of code sites in the tracer framework.
->>>>> No. I mean we would dereference a pointer named ipipe_current. That is
->>>>> all, no other check. This pointer would be maintained elsewhere. And we
->>>>> modify the "current" macro, like:
->>>>>
->>>>> #ifdef CONFIG_IPIPE
->>>>> extern struct task_struct *ipipe_current;
->>>>> #define current ipipe_current
->>>>> #endif
->>>>>
->>>>> Any calll site gets modified automatically. Or current_thread_info, if
->>>>> it is current_thread_info which is obtained using the stack pointer mask
->>>>> trick.
->>>> The stack pointer mask trick only works with fixed-sized stacks, not a
->>>> guaranteed property of in-kernel Xenomai threads.
->>> Precisely the reason why I propose to replace it with a global variable
->>> reference, or a per-cpu variable for SMP systems.
->>
->> Then why is Linux not using this in favor of the stack pointer approach
->> on, say, ARM?
->>
->> For sure, we can patch all Adeos-supported archs away from stack-based
->> to per-cpu current & thread_info, but I don't feel comfortable with this
->> in some way invasive approach as well. Well, maybe it's just my personal
->> misperception.
-> 
-> It is as much invasive as modifying local_irq_save/local_irq_restore.
-> The real question about the global pointer approach, is, if it so much
-> less efficient, how does Xenomai, which uses this scheme, manage to have
-> good performances on ARM?
 
-Xenomai has no heavily-used preempt_disable/enable that is built on top
-of thread_info. But I also have no numbers on this.
+Hi,
 
-I looked closer at the kernel dependencies on a fixed stack size.
-Besides current and thread_info, further features that make use of this
-are stack unwinding (boundary checks) and overflow checking. So while we
-can work around the dependency for some tracing requirements, I really
-see no point in heading for this long-term. It just creates more subtle
-patching needs in Adeos, and it also requires work on Xenomai side. I
-really think it's better provide a compatible context to reduce
-maintenance efforts.
+Xenomai 2.5.5, aka "Ghosts", is available:
+http://download.gna.org/xenomai/stable/xenomai-2.5.5.tar.bz2
 
-So I played a bit with converting RTDM tasks to in-kernel shadows. It
-works but needs more fine-tuning. My proposal for 2.6 now looks like this:
+It contains bug fixes for:
+- the x86 I-pipe issue, which caused freeze-on-boot issue, very 
+reproducible with grub 2
+- a ppc I-pipe issue, which involved unaligned access to floating point 
+values
+- the debian patch generation script, which caused invalid patches to be
+generated for recent kernel releases
+- a few compilation issues with recent compilers and or innfrequently 
+used compilation options
+- issues with using fork with process-private user-space mutexes
 
- - add mm-less shadow support to the nucleus (changes in
-   xnarch_switch_to and xnshadow_map)
- - convert RTDM tasks to in-kernel shadows
- - switch current and thread_info on Xenomai task switches
- - make in-kernel skins optional, default off
- - let in-kernel skins dependent on disabled tracing
+And improvements:
+- of the user-space latency on all platforms by optimizing the RPI code 
+and the relax code
+- of the ARM support to code, in order to support SMP systems
+- of the analogy stack by Alexis
+- of the user-space latency on ARM in general and OMAP3 in particular, 
+as a result of some work both on Xenomai timer code and on the I-pipe 
+patch
+- of the scheduler "resched" bit handling by simplifying it, following 
+the correction of an incorrect warning
 
-Jan
+Note: Xenomai 2.5.5 is the last release to contain a patch for Linux 2.4
+on x86 and to export kernel-mode services to non GPL modules.
+
+Enjoy.
+
+The complete shortlog follows:
+Alexis Berlemont (9):
+      analogy: minor change in analogy Kconfig text
+      analogy: add comments in the buffer management code
+      analogy: fix a bug in the DIO subdevice's mite configuration
+      analogy: minor changes in cmd_bits
+      analogy: comsetic change in mite.c
+      analogy: [pcimio] rework the mite setup procedures
+      analogy: [pcimio] fix a forgotten warning
+      analogy: [pcimio] add the initialization of the ring for gpct subd
+      analogy: fix compilation warnings with gcc-4.4.1
+
+Gilles Chanteperdrix (24):
+      fix private heap unmapping upon fork.
+      Do not assume that XN_NO_HANDLE is NULL
+      Set user-space current thread handle to XN_NO_HANDLE after fork
+      fix comment
+      Fix typo in edaf1e2e54343b6e4bf5cf6ece9175ec0ab21cad
+      sem_heap: map an inaccessible heap upon fork.
+      posix: add a magic to internal structures.
+      arm: fix VFP context handling on SMP systems
+      Merge commit 'rpm/for-upstream'
+      arm: fix atomic operations
+      arm: fix typo in 4a739c5ce29b50bee780bf620852a2fff6a71431
+      autotools: regenerate
+      arm: better calibrate the timer programming latency
+      arith: add the nodiv_imuldiv_ceil routine
+      arm: use the nodiv_imuldiv routine for timer programming.
+      hal: export missing apc symbols
+      nucleus: modify /proc/xenomai/latency
+      nucleus: add a margin for early timer shots
+      nucleus/sched: fix rescheduling bit test macros
+      arm: add calibrated scheduling latencies
+      arm: remove debug printk
+      smi: add PCI ID for old kernels
+      build: boostrap
+      doc: regenerate
+
+Jan Kiszka (8):
+      RTDM: Protect xnshadow_ppd_get via nklock
+      nucleus: Fix symbolic status output of root threads
+      nucleus: Create watchdog as non-blockable timer
+      native: Improve documentation of rt_task_join and rt_task_delete
+      x86: Add PCI ID of Series 5/3400 Intel chipset to SMI workaround
+      x86: Add PCI ID of 631xESB/632xESB/3100 Intel chipset to SMI workaround
+      x86: Add PCI ID of Intel ICH9M-E chipset to SMI workaround
+      x86: Add PCI ID of Intel ICH9M chipset to SMI workaround
+
+Mike Frysinger (1):
+      blackfin: clean up syscall assembly
+
+Peter Soetens (1):
+      rtcan: Mask the SJA_MOD register when probing for channels
+
+Philippe Gerum (36):
+      powerpc: upgrade I-pipe support to 2.6.34.4-powerpc-2.10-04
+      nucleus: demote RPI boost upon linux-originated signal
+      blackfin: upgrade I-pipe support to 2.6.35.2-blackfin-1.15-00
+      nucleus: requeue blocked non-periodic timers properly
+      x86: upgrade I-pipe support to 2.6.32.20-x86-2.7-02, 2.6.34.5-x86-2.7-03
+      arm: force enable preemptible switch support in SMP mode
+      arm: enable VFP support in SMP
+      arm: use rthal_processor_id() over non-linux contexts
+      powerpc: resync thread switch code with mainline >= 2.6.32
+      x86: increase SMP calibration value
+      nucleus/sched: move locking to resume_rpi/suspend_rpi
+      hal/generic: inline APC scheduling code
+      nucleus, posix: use fast APC scheduling call
+      nucleus/shadow: shorten the uninterruptible path to secondary mode
+      nucleus/sched: prevent remote wakeup from triggering a debug assertion
+      powerpc: upgrade I-pipe support to 2.6.35.4-powerpc-2.11-00
+      nucleus/sched: fix race in non-atomic suspend path
+      nucleus/sched: raise self-resched condition when unlocking scheduler
+      nucleus: fix build issue introduced by 4860668b6
+      x86: upgrade I-pipe support to 2.6.32.20-x86-2.7-03, 2.6.34.5-x86-2.7-04
+      nucleus: please C++ parsers
+      nucleus: do not rely on implicit header inclusion
+      rtdm: fix build for non-pervasive mode
+      rtipc: fix build for non-pervasive mode
+      nucleus/shadow: fix build for simulation mode
+      native: fix build for simulation mode
+      nucleus/bufd: fix documentation group tag
+      psos: fix t_shadow() regression
+      psos: introduce t_setreg/t_getreg syscalls
+      arm: upgrade adeos patch to 2.6.33-1.18-00
+      x86: upgrade adeos patch to 2.6.35.7-2.7-04
+      powerpc: upgrade I-pipe support to 2.6.34.4-powerpc-2.10-05, 2.6.35.7-powerpc-2.11-01
+      blackfin: upgrade I-pipe support to 2.6.34-blackfin-1.15-01, 2.6.35.7-blackfin-1.15-01
+      nucleus: disable u_mode watchdog for MMU-less
+      can: adapt to platform driver infrastructure changes for 2.6.35
+      powerpc: upgrade I-pipe support to 2.6.35.7-powerpc-2.11-02
+
+Stefan Kisdaroczi (3):
+      debian: fix asm include directory linking in prepare-patch.sh
+      debian: move debian/prepare-patch.sh to scripts/
+      RTDM device profiles: Document open_rt, socket_rt and close_rt deprecation
+
+Wolfgang Grandegger (1):
+      nucleus: switch to ioctl_unlocked
+
 
 -- 
-Siemens AG, Corporate Technology, CT T DE IT 1
-Corporate Competence Center Embedded Linux
+                                                                Gilles.
 
