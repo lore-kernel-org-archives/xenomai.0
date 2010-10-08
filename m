@@ -1,12 +1,9 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <20101007115728.GA24500@domain.hid>
-References: <20101007115728.GA24500@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Thu, 07 Oct 2010 16:07:37 +0200
-Message-ID: <1286460457.13186.35.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] kernel oopses when killing realtime task
+MIME-Version: 1.0
+Date: Thu, 7 Oct 2010 18:44:22 -0700
+Message-ID: <AANLkTi=6tAnApCNw9hzQUEYR7BcsgDSU3YA5N+xn-uN2@domain.hid>
+From: Peter Pastor <peter.pastor@domain.hid>
+Content-Type: multipart/alternative; boundary=00c09f89956857f542049211267a
+Subject: [Xenomai-help] latency spike when starting opengl windows
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,74 +13,77 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Pavel Machek <pma@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Thu, 2010-10-07 at 13:57 +0200, Pavel Machek wrote:
-> Hi!
-> 
-> I have... quite an interesting setup here.
-> 
-> SMP machine, with special PCI card; that card has GPIOs and serial
-> ports. Unfortunately, there's only one interrupt, shared between
-> serials and GPIO pins, and serials are way too complex to be handled
-> by realtime layer.
-> 
+--00c09f89956857f542049211267a
+Content-Type: text/plain; charset=ISO-8859-1
 
-[snip]
+Hey there,
 
-> 
-> Unregistration is:
->         my_context->ready = 0;
->         rtdm_irq_disable(&my_context->irq_handle);
-> 
-> 
-> Unfortunately, when the userspace app is ran and killed repeatedly (so
-> that interrupt is registered/unregistered all the time), I get
-> oopses in __ipipe_dispatch_wired() -- it seems to call into the NULL
-> pointer.
+I noticed a spike in the latency over around 600-800microseconds when
+starting an opengl window.
 
-rtdm_irq_disable() will only mask the IRQ in the PIC, not unregister the
-handler from the pipeline core. In case your handler is pulled out from
-the kernel as part of a module, this may explain this behavior.
-rtdm_irq_free() is something you likely look after.
+I have the SMI workaround enabled and also included my device id in the
 
-> 
-> I decided that "wired" interrupt when the source is shared between
-> Linux and Xenomai, is wrong thing, so I disable "wired" interrupts
-> altogether, but that only moved oops to __virq_end. 
-> 
+/usr/src/xenomai/ksrc/arch/x86/smi.c
 
-"wired" just means "deliver to topmost domain unconditionally", this is
-a way to optimize the IRQ delivery path to the real-time handler,
-without going through the entire domain propagation logic. As you
-already found out, this is not related to registration issues.
+file
 
-> I'm using 2.6.27.21-ELinOS-46 with xenomai-2.4.7 . Problem does go
-> away if I boot with maxcpus=1.
-> 
-> Any ideas? (Besides using non-historic kernel; but that's
-> unfortunately not exactly easy here.)
+lspci -vvv -nn shows a
 
-The I-pipe code for x86 had a number of fixes since 2.6.27, including
-rather serious ones. At the very least, I would recommend to check
-whether this one is in your tree:
-http://git.denx.de/?p=ipipe-2.6.git;a=commit;h=80a79bb5b0e74d75fa4a511d7b9a08a015e37f46
+Intel Corporation 82801JIR (ICH10R) LPC Interface Controller [8086:3a16]
 
-This may decrease worst case latency in SMP quite significantly under
-load.
+so I added
 
-> 
-> 								Pavel
-> 
-> 
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
+{PCI_DEVICE(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ICH10_1)},
 
--- 
-Philippe.
+After recompiling the kernel I finally saw
 
+[    2.443949] Xenomai: SMI-enabled chipset found
 
+( I did not see that line before )
+but unfortunately I also saw
+
+[    2.443957] Xenomai: SMI workaround failed!
+
+Well, the latency test still showed spikes of about 600-800microsends when
+for example starting or closing glxgears. I am using a nvidia FxQuadro FX
+4800 and I am using the latest nvidia driver which I downloaded from the
+nvidia homepage (256.53).
+
+I am running
+Linux xeno_machine 2.6.31.4-ipipe #1 SMP Thu Oct 7 18:13:54 PDT 2010 x86_64
+GNU/Linux
+and Xenomai version is 2.5.2
+
+Thanks for any help,
+ Peter
+
+--00c09f89956857f542049211267a
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+Hey there,<br><br>I noticed a spike in the latency over around 600-800micro=
+seconds when starting an opengl window.<br><br>I have the SMI workaround en=
+abled and al<font size=3D"2">so included my device id in the </font><pre cl=
+ass=3D"wiki">
+<font size=3D"2">/usr/src/xenomai/ksrc/arch/x86/smi.c <br></font></pre><fon=
+t size=3D"2">file<br><br></font>lspci -vvv -nn shows a <br><br>Intel Corpor=
+ation 82801JIR (ICH10R) LPC Interface Controller [8086:3a16]<br><br>so I ad=
+ded <br>
+<pre class=3D"wiki">{PCI_DEVICE(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_IC=
+H10_1)},</pre>
+After recompiling the kernel I finally saw<br><br>[=A0=A0=A0 2.443949] Xeno=
+mai: SMI-enabled chipset found<br><br>( I did not see that line before )<br=
+>but unfortunately I also saw<br><br>[=A0=A0=A0 2.443957] Xenomai: SMI work=
+around failed!<br>
+<br>Well, the latency test still showed spikes of about 600-800microsends w=
+hen for example starting or closing glxgears. I am using a nvidia FxQuadro =
+FX 4800 and I am using the latest nvidia driver which I downloaded from the=
+ nvidia homepage (256.53).<br>
+<br>I am running<br>Linux xeno_machine 2.6.31.4-ipipe #1 SMP Thu Oct 7 18:1=
+3:54 PDT 2010 x86_64 GNU/Linux<br>and Xenomai version is 2.5.2<br><br>Thank=
+s for any help,<br>=A0Peter<br><br><br>
+
+--00c09f89956857f542049211267a--
 
