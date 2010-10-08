@@ -1,11 +1,11 @@
-Message-ID: <4CAEC633.8040609@domain.hid>
-Date: Fri, 08 Oct 2010 09:20:19 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <20101007115728.GA24500@domain.hid>	<4CADBDC2.8080600@domain.hid>
-	<20101008070148.GB2255@domain.hid>
+From: Philippe Gerum <rpm@xenomai.org>
 In-Reply-To: <20101008070148.GB2255@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+References: <20101007115728.GA24500@domain.hid>
+	<4CADBDC2.8080600@domain.hid>  <20101008070148.GB2255@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Date: Fri, 08 Oct 2010 10:17:28 +0200
+Message-ID: <1286525848.13186.93.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] kernel oopses when killing realtime task
 List-Id: Help regarding installation and common use of Xenomai
@@ -20,56 +20,58 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: Pavel Machek <pma@domain.hid>
 Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai@xenomai.org
 
-Pavel Machek wrote:
+On Fri, 2010-10-08 at 09:01 +0200, Pavel Machek wrote:
 > Hi!
 > 
->>> I have... quite an interesting setup here.
->>>
->>> SMP machine, with special PCI card; that card has GPIOs and serial
->>> ports. Unfortunately, there's only one interrupt, shared between
->>> serials and GPIO pins, and serials are way too complex to be handled
->>> by realtime layer.
->>>
->>> So I ended up with
->>>
->>>         // we also have an interrupt handler:                                                                                                                 
->>>         ret = rtdm_irq_request(&my_context->irq_handle,
->>>         gpio_rt_config.irq, demo_interrupt,
->>>                                RTDM_IRQTYPE_SHARED,
->>>         context->device->proc_name, my_context);
->>>
->>> and 
->>>
->>> static int demo_interrupt(rtdm_irq_t *irq_context)
->>> {
->>>         struct demodrv_context *ctx;
->>>         int           dev_id;
->>>         int           ret = RTDM_IRQ_HANDLED; // usual return value                                                                                           
->>>         unsigned pending, output;
->>>
->>>         ctx = rtdm_irq_get_arg(irq_context, struct demodrv_context);
->>>         dev_id    = ctx->dev_id;
->>>
->>>         if (!ctx->ready) {
->>>                 printk(KERN_CRIT "Unexpected interrupt\n");
->>>                 return XN_ISR_PROPAGATE;
->> Who sets ready and when? Looks racy.
+> > > I have... quite an interesting setup here.
+> > > 
+> > > SMP machine, with special PCI card; that card has GPIOs and serial
+> > > ports. Unfortunately, there's only one interrupt, shared between
+> > > serials and GPIO pins, and serials are way too complex to be handled
+> > > by realtime layer.
+> > > 
+> > > So I ended up with
+> > > 
+> > >         // we also have an interrupt handler:                                                                                                                 
+> > >         ret = rtdm_irq_request(&my_context->irq_handle,
+> > >         gpio_rt_config.irq, demo_interrupt,
+> > >                                RTDM_IRQTYPE_SHARED,
+> > >         context->device->proc_name, my_context);
+> > > 
+> > > and 
+> > > 
+> > > static int demo_interrupt(rtdm_irq_t *irq_context)
+> > > {
+> > >         struct demodrv_context *ctx;
+> > >         int           dev_id;
+> > >         int           ret = RTDM_IRQ_HANDLED; // usual return value                                                                                           
+> > >         unsigned pending, output;
+> > > 
+> > >         ctx = rtdm_irq_get_arg(irq_context, struct demodrv_context);
+> > >         dev_id    = ctx->dev_id;
+> > > 
+> > >         if (!ctx->ready) {
+> > >                 printk(KERN_CRIT "Unexpected interrupt\n");
+> > >                 return XN_ISR_PROPAGATE;
+> > 
+> > Who sets ready and when? Looks racy.
 > 
 > Debugging aid; yes, this one is racy.
 > 
->>>         rtdm_lock_put(&ctx->lock);
->>>  
->>>         /* We need to propagate the interrupt, so that PMC-6L serials                                                                                         
->>>            work. Result is that interrupt latencies can't be                                                                                                  
->>>            guaranteed when serials are in use.  */
->>>
->>>          return RTDM_IRQ_HANDLED;
->>> }
->>>
->>> Unregistration is:
->>>         my_context->ready = 0;
->>>         rtdm_irq_disable(&my_context->irq_handle);
->> Where is rtdm_irq_free? Again, this ready flag looks racy.
+> > >         rtdm_lock_put(&ctx->lock);
+> > >  
+> > >         /* We need to propagate the interrupt, so that PMC-6L serials                                                                                         
+> > >            work. Result is that interrupt latencies can't be                                                                                                  
+> > >            guaranteed when serials are in use.  */
+> > > 
+> > >          return RTDM_IRQ_HANDLED;
+> > > }
+> > > 
+> > > Unregistration is:
+> > >         my_context->ready = 0;
+> > >         rtdm_irq_disable(&my_context->irq_handle);
+> > 
+> > Where is rtdm_irq_free? Again, this ready flag looks racy.
 > 
 > Aha, sorry, I quoted wrong snippet. rtdm_irq_free() follows
 > immediately, like this:
@@ -106,33 +108,32 @@ Pavel Machek wrote:
 > my attempts to work around the problem. I'll attach the full source at
 > the end.
 > 
->>> Unfortunately, when the userspace app is ran and killed repeatedly (so
->>> that interrupt is registered/unregistered all the time), I get
->>> oopses in __ipipe_dispatch_wired() -- it seems to call into the NULL
->>> pointer.
->>>
->>> I decided that "wired" interrupt when the source is shared between
->>> Linux and Xenomai, is wrong thing, so I disable "wired" interrupts
->>> altogether, but that only moved oops to __virq_end. 
->> This is wrong. The only way to get a determistically shared IRQs across
->> domains is via the wired path, either using the pattern Gilles cited or,
->> in a slight variation, signaling down via a separate rtdm_nrtsig.
+> > > Unfortunately, when the userspace app is ran and killed repeatedly (so
+> > > that interrupt is registered/unregistered all the time), I get
+> > > oopses in __ipipe_dispatch_wired() -- it seems to call into the NULL
+> > > pointer.
+> > > 
+> > > I decided that "wired" interrupt when the source is shared between
+> > > Linux and Xenomai, is wrong thing, so I disable "wired" interrupts
+> > > altogether, but that only moved oops to __virq_end. 
+> > 
+> > This is wrong. The only way to get a determistically shared IRQs across
+> > domains is via the wired path, either using the pattern Gilles cited or,
+> > in a slight variation, signaling down via a separate rtdm_nrtsig.
 > 
 > For now, I'm trying to get it not to oops; deterministic latencies are
 > the next topic :-(.
 
-Another remark, Xenomai releases of a given branch are ABI and API
-compatible, so, upgrade to the latest version of the 2.4 branch, which
-is 2.4.9.1 will not hurt. In the same vein, I-pipe patches are backward
-compatibles, so, upgrade to
-http://download.gna.org/adeos/patches/v2.6/x86/older/adeos-ipipe-2.6.27-x86-2.2-03.patch
+The main issue is that we don't lock our IRQ descriptors (the pipeline
+ones) when running the handlers, so another CPU clearing them via
+ipipe_virtualize_irq() may well sink the boat...
 
-is recommended if it is not the I-pipe you are using.
-
-It would be nice if you could at least test these versions, if they
-work, we would know whether the issue you have has been solved since the
-release of these versions.
+The unwritten rule has always been to assume that drivers would stop
+_and_ drain interrupts on all CPUs before unregistering handlers, then
+exiting the code. Granted, that's a bit much.
 
 -- 
-                                                                Gilles.
+Philippe.
+
+
 
