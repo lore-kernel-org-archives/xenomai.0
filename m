@@ -1,12 +1,14 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <AANLkTi=6d4sZN11G0TfDXZPfwS8dDkhgE=LjnGcS4AG1@domain.hid>
-References: <AANLkTi=6d4sZN11G0TfDXZPfwS8dDkhgE=LjnGcS4AG1@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Sat, 09 Oct 2010 10:03:52 +0200
-Message-ID: <1286611432.13186.200.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Xenomai and PEAK can bus card problem
+Message-ID: <4CB02734.3060900@domain.hid>
+Date: Sat, 09 Oct 2010 10:26:28 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
+MIME-Version: 1.0
+References: <AANLkTi=6tAnApCNw9hzQUEYR7BcsgDSU3YA5N+xn-uN2@domain.hid>
+In-Reply-To: <AANLkTi=6tAnApCNw9hzQUEYR7BcsgDSU3YA5N+xn-uN2@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigBA440A49FDE32587F6A58ADE"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-help] latency spike when starting opengl windows
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -19,46 +21,71 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: Peter Pastor <peter.pastor@domain.hid>
 Cc: xenomai@xenomai.org
 
-On Fri, 2010-10-08 at 23:44 -0700, Peter Pastor wrote:
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigBA440A49FDE32587F6A58ADE
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+Am 08.10.2010 03:44, Peter Pastor wrote:
 > Hey there,
-> 
-> I installed Xenomai 2.5.2 with Linux 2.6.31.4 kernel (ubuntu 9.10).
-> Everything seemed to work just fine. However, after inserting the PEAK
-> PCI can bus card the Xenomai kernel stopped booting while normal
-> kernels (non-xenomai) still boot.
-> 
-> I am running a 64 bit dell precision workstation (T7500) with 8 cores
-> and a NVIDIA 4800 FX. The attached text file contains the output of
-> lspci -vvv -nn. 
-> 
-> I followed the install instruction for Xenomai 2.5.2 as posted here
-> http://wiki.barrett.com/support/wiki/InstallXenomai25
-> 
-> Unfortunately, I have no idea how to debug this problem. I have the
-> "feeling" that it has to do with the APIC and the way interrupts are
-> assigned.
-> 
-> Attached is also 2 syslogs of failed boots. I really hope that someone
-> can make sense out of them or at least can give me some hints on how
-> to trace down the problem.
+>=20
+> I noticed a spike in the latency over around 600-800microseconds when
+> starting an opengl window.
+>=20
+> I have the SMI workaround enabled and also included my device id in the=
 
-Your .config would be valuable as well.
+>=20
+> /usr/src/xenomai/ksrc/arch/x86/smi.c
+>=20
+> file
+>=20
+> lspci -vvv -nn shows a
+>=20
+> Intel Corporation 82801JIR (ICH10R) LPC Interface Controller [8086:3a16=
+]
+>=20
+> so I added
+>=20
+> {PCI_DEVICE(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ICH10_1)},
+>=20
+> After recompiling the kernel I finally saw
+>=20
+> [    2.443949] Xenomai: SMI-enabled chipset found
+>=20
+> ( I did not see that line before )
+> but unfortunately I also saw
+>=20
+> [    2.443957] Xenomai: SMI workaround failed!
+>=20
+> Well, the latency test still showed spikes of about 600-800microsends w=
+hen
+> for example starting or closing glxgears. I am using a nvidia FxQuadro =
+FX
+> 4800 and I am using the latest nvidia driver which I downloaded from th=
+e
+> nvidia homepage (256.53).
 
-Try disabling CONFIG_PCI_MSI if it is present.
+The nice nvdidia driver is known to cause latency peaks during DMA
+memory allocation/mapping (wbinvd...). You will have to leave it in a
+stable state (no X restarts, no 3D or CUDA setup/tear-down, not sure
+about mode switches ATM) as long as the RT load is running.
 
-> 
-> I recompiled Xenomai with linux 2.6.31.8 with the adeos patch provided
-> by Xenomai, but still, I got the same trouble.
-> 
-> Thanks,
->  peter
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
-
--- 
-Philippe.
+Jan
 
 
+--------------enigBA440A49FDE32587F6A58ADE
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.15 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org/
+
+iEYEARECAAYFAkywJzgACgkQitSsb3rl5xT/SwCgnaPJQYcEMdDioPMbCjMm9rEQ
+2OgAniaU9WzusLR/8yQ9jtsTH0cEArYj
+=mTfj
+-----END PGP SIGNATURE-----
+
+--------------enigBA440A49FDE32587F6A58ADE--
 
