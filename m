@@ -1,12 +1,9 @@
 From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <AANLkTi=uCSYFazTzxLQWBhJgkmcoeJbLkd4Wv-O=tzb=@mail.gmail.com>
+In-Reply-To: <AANLkTi=6d4sZN11G0TfDXZPfwS8dDkhgE=LjnGcS4AG1@domain.hid>
 References: <AANLkTi=6d4sZN11G0TfDXZPfwS8dDkhgE=LjnGcS4AG1@domain.hid>
-	<1286611432.13186.200.camel@domain.hid>
-	<AANLkTinfQTmC=165zLerDF1JsYnS-XHaUtWrMuOGmN4D@mail.gmail.com>
-	<AANLkTi=uCSYFazTzxLQWBhJgkmcoeJbLkd4Wv-O=tzb=@mail.gmail.com>
 Content-Type: text/plain; charset="UTF-8"
-Date: Sun, 10 Oct 2010 23:28:36 +0200
-Message-ID: <1286746116.13186.214.camel@domain.hid>
+Date: Sat, 09 Oct 2010 10:03:52 +0200
+Message-ID: <1286611432.13186.200.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] Xenomai and PEAK can bus card problem
@@ -22,22 +19,43 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: Peter Pastor <peter.pastor@domain.hid>
 Cc: xenomai@xenomai.org
 
-On Sun, 2010-10-10 at 12:30 -0700, Peter Pastor wrote:
-> Hey,
+On Fri, 2010-10-08 at 23:44 -0700, Peter Pastor wrote:
+> Hey there,
 > 
-> I have installed xenomai 2.5.5 using linux 2.6.31.8 and the
-> corresponding adeos patch adeos-ipipe-2.6.31.8-x86-2.4-09.patch.
+> I installed Xenomai 2.5.2 with Linux 2.6.31.4 kernel (ubuntu 9.10).
+> Everything seemed to work just fine. However, after inserting the PEAK
+> PCI can bus card the Xenomai kernel stopped booting while normal
+> kernels (non-xenomai) still boot.
 > 
-> I also tried to disable CONFIG_PCI_MSI by passing pci=nomsi in grub as
-> documented in /usr/src/linux/Documentation/kernel-parameters.txt. I
-> did not disable the CONFIG_PCI_MSI option since it is selected by:
-> AMD_IOMMU && X86_64 && PCI && ACPI ...and I did not know which of
-> these options I should deselect. Also, when I disable ACPI completely,
-> the kernel only detects a single cpu, although there are 8 cores in
-> the system.
+> I am running a 64 bit dell precision workstation (T7500) with 8 cores
+> and a NVIDIA 4800 FX. The attached text file contains the output of
+> lspci -vvv -nn. 
+> 
+> I followed the install instruction for Xenomai 2.5.2 as posted here
+> http://wiki.barrett.com/support/wiki/InstallXenomai25
+> 
+> Unfortunately, I have no idea how to debug this problem. I have the
+> "feeling" that it has to do with the APIC and the way interrupts are
+> assigned.
+> 
+> Attached is also 2 syslogs of failed boots. I really hope that someone
+> can make sense out of them or at least can give me some hints on how
+> to trace down the problem.
 
-Disabling ACPI completely is a dead end; however you may try to disable
-AMD_IOMMU if you don't have this feature supported in your chipset.
+Your .config would be valuable as well.
+
+Try disabling CONFIG_PCI_MSI if it is present.
+
+> 
+> I recompiled Xenomai with linux 2.6.31.8 with the adeos patch provided
+> by Xenomai, but still, I got the same trouble.
+> 
+> Thanks,
+>  peter
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
 
 -- 
 Philippe.
