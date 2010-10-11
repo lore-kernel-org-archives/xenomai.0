@@ -1,12 +1,12 @@
-Mime-Version: 1.0 (Apple Message framework v753.1)
-In-Reply-To: <mailman.6356.1286778008.12503.xenomai@xenomai.org>
-References: <mailman.6356.1286778008.12503.xenomai@xenomai.org>
-Content-Type: text/plain; charset=US-ASCII; delsp=yes; format=flowed
-Message-Id: <7504E039-6366-480F-ACA3-018E520122E6@domain.hid>
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <9c78cfdc7e17a926a13b77a35adde88a.squirrel@domain.hid>
+References: <9c78cfdc7e17a926a13b77a35adde88a.squirrel@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Date: Mon, 11 Oct 2010 11:39:49 +0200
+Message-ID: <1286789989.1740.19.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-From: Andreas Glatz <andi.glatz@domain.hid>
-Date: Mon, 11 Oct 2010 11:31:37 +0200
-Subject: Re: [Xenomai-help] New scheduler class
+Subject: Re: [Xenomai-help] License Question
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,26 +16,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: cagnulein@domain.hid
+Cc: xenomai@xenomai.org
 
+On Mon, 2010-10-11 at 09:50 +0200, Cagnulein wrote:
+> Hi, i'm following with huge interest this project and i would like to join
+> in some way.
+> 
+> I'm developping some real time driver module for an embedeed system and i
+> would like to release the source code.
+> 
+> I'm developping an application too that uses xenomai + my realtime drivers.
+> 
+> This application links xenomai_native.
+> 
+> I've only a question: following the gpl/lgpl license, do i have the duty
+> to release my application source code?
+> 
+> If you can't answer ( we are technicians not lawyers :) ), do you know
+> someone who could answer to this question?
 
->
-> The auto-relax feature is now available from -head (upcoming  
-> 2.6.x). You
-> will need all commits from
-> http://git.xenomai.org/?p=xenomai- 
-> head.git;a=commit;h=b75cec19387e561f82ac55595db8c993b049f071
-> to
-> http://git.xenomai.org/?p=xenomai- 
-> head.git;a=commit;h=6653a9e8eb7339b749989bd74adc3ac3bd29e4da
->
-> -- 
-> Philippe.
->
->
+Our licensing scheme is plain simple:
 
-Very nice. Will try it out soon on my G4 PB Aluminium.
+- your kernel-based code based on the Xenomai infrastructure falls under
+the kernel license; typically, your driver is concerned. This is GPL
+land.
 
-Andreas
+- linking against Xenomai's libnative support makes your application
+fall under the LGPL. Distributing it does not require you to provide its
+source code (this does not however invalidate any other reasons why you
+would have to provide such code, if any -- but LGPL does not require
+that).
+
+-- 
+Philippe.
+
 
 
