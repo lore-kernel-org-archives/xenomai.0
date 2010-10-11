@@ -1,14 +1,10 @@
-Message-ID: <4CB3424A.5090504@domain.hid>
-Date: Mon, 11 Oct 2010 18:58:50 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <4CB35360.6080003@domain.hid>
+Date: Mon, 11 Oct 2010 14:11:44 -0400
+From: Roger Carns <rpcarns@domain.hid>
 MIME-Version: 1.0
-References: <4CB33738.206@domain.hid> <4CB338AB.3070803@domain.hid>
-	<4CB339F9.5080202@domain.hid> <4CB33F04.3000600@domain.hid>
-	<4CB34031.5090505@domain.hid>
-In-Reply-To: <4CB34031.5090505@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Xenomai and capabilities
+Content-Type: multipart/alternative;
+	boundary="------------060505090503050703040907"
+Subject: [Xenomai-help] rt_io_get_region
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -18,41 +14,61 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Am 11.10.2010 18:49, Gilles Chanteperdrix wrote:
-> Jan Kiszka wrote:
->> Am 11.10.2010 18:23, Gilles Chanteperdrix wrote:
->>> Jan Kiszka wrote:
->>>> enabling the Xenomai watchdog should provide a reasonably safe&secure
->>>> environment.
->>> AFAIK, the BIG FAT warning at the bottom of this page still applies. You
->>> can make an environment with no hardware lockups, but secure, I do not
->>> think so. We do not know how Xenomai APIs could be exploited for a
->>> non-root user to become root.
->>
->> For sure, no one audited the interface for security so far. There is no
->> hole in design that comes to my mind ATM, but I would be surprised as
->> well if you couldn't develop any exploit for some bug or missing check.
->> Still, there is a huge difference between giving anyone root access and
->> confining Xenomai access this way.
-> 
-> I was just reacting to "reasonably secure". The experience proves that
-> if you do not do any particular effort for security, then your code is
-> not secure. Not even reasonably.
+This is a multi-part message in MIME format.
+--------------060505090503050703040907
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 
-This is no black-or-white domain, and I wouldn't say we spend no effort
-on security at all. We do have interest in making the userspace APIs
-robust which addresses security up to a certain level as well.
-
-What is still definitely not secure, though, is RTnet as it consequently
-lacks any kind of check on user-passed addresses. But that's not
-Xenomai's fault (rather mine).
-
-Jan
-
+  Does rt_io_get_region function be called from user space and does it 
+return a user space address and if so how is it return? Also is there 
+doc out there someplace on usage of this function.
 -- 
-Siemens AG, Corporate Technology, CT T DE IT 1
-Corporate Competence Center Embedded Linux
+
+*Roger Carns*
+
+TSS Engineering
+321-722-0082 x222 (w)
+
+rpcarns@domain.hid
+_www.tssleft.com <http://www.tssleft.com/>_ _We Move Projects Left. You 
+Feel Better.
+
+
+--------------060505090503050703040907
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+
+    <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+  </head>
+  <body bgcolor="#ffffff" text="#000000">
+    Does rt_io_get_region function be called from user space and does it
+    return a user space address and if so how is it return? Also is
+    there doc out there someplace on usage of this function.&nbsp; <br>
+    <div class="moz-signature">-- <br>
+      <style type="text/css">p { margin-bottom: 0.08in; direction: ltr; color: rgb(0, 0, 0); }p.western { font-family: "Times New Roman",serif; font-size: 12pt; }p.cjk { font-family: "Lucida Sans Unicode"; font-size: 12pt; }p.ctl { font-family: "Mangal"; font-size: 12pt; }a:link {  }</style>
+      <p class="western" style="margin-bottom: 0in;"><font face="Arial,
+          sans-serif"><b>Roger
+            Carns</b></font></p>
+      <p class="western" style="margin-bottom: 0in;"><font face="Arial,
+          sans-serif"><span style="font-weight: normal;">TSS
+            Engineering <br>
+            321-722-0082 x222 (w) </span></font>
+      </p>
+      <p class="western" style="margin-bottom: 0in;"><font face="Arial,
+          sans-serif"><span style="font-weight: normal;"><a class="moz-txt-link-abbreviated" href="mailto:rpcarns@domain.hid">rpcarns@domain.hid</a></span></font><br>
+        <font color="#000080"><span lang="zxx"><u><a
+                href="http://www.tssleft.com/">www.tssleft.com</a></u></span></font>
+        <sub><font size="2">We Move Projects Left. You Feel Better.</font></sub>
+      </p>
+    </div>
+  </body>
+</html>
+
+--------------060505090503050703040907--
 
