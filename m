@@ -1,12 +1,13 @@
+Message-ID: <4CB33F04.3000600@domain.hid>
+Date: Mon, 11 Oct 2010 18:44:52 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-In-Reply-To: <7504E039-6366-480F-ACA3-018E520122E6@domain.hid>
-References: <mailman.6356.1286778008.12503.xenomai@xenomai.org>
-	<7504E039-6366-480F-ACA3-018E520122E6@domain.hid>
-Date: Mon, 11 Oct 2010 17:35:20 +0200
-Message-ID: <AANLkTin__DMjjDxFzBCOiA1Z+ODq01KA6FSWSzEwET3y@domain.hid>
-From: Henri Roosen <henriroosen@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Subject: Re: [Xenomai-help] New scheduler class
+References: <4CB33738.206@domain.hid> <4CB338AB.3070803@domain.hid>
+	<4CB339F9.5080202@domain.hid>
+In-Reply-To: <4CB339F9.5080202@domain.hid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] Xenomai and capabilities
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,43 +17,51 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Andreas Glatz <andi.glatz@domain.hid>
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Thanks for the patches Philippe. I applied them to xenomai 2.5.5.
-Tests with a basic application look good, however our bigger project
-doesn't. I checked already if we release all mutexes; the base prio 0
-thread thread released all of them but stays in primary domain after a
-xenomai call.
+Am 11.10.2010 18:23, Gilles Chanteperdrix wrote:
+> Jan Kiszka wrote:
+>> Am 11.10.2010 18:11, Anders Blomdell wrote:
+>>> We are planning to extend our use of xenomai to a wider audience at our
+>>> department, and therefore I would like to know which is the better way to let
+>>> users run xenomai programs with a minimum of system privileges, the
+>>> possibilities I can see are:
+>>>
+>>> 1. Let the user run anything as root; simple but obviously a security nightmare.
+>>> 2. Write a suid program that let's its children inherit the right capabilities
+>>> and then does a seteuid and does an execve; unfortunately this implies that the
+>>> program that is execve'd has the right capabilties set [which has to be done by
+>>> the suid program as well], and this can only be done on filesystems that can
+>>> have extended attributes (i.e. no FAT, NFS, etc).
+>>> 3. Write a suid program that drops all unneeded privileges and then use dlopen
+>>> and friends to execute the user code.
+>>>
+>>> I guess that there exists better ways, so somebody please enlighten me.
+>>>
+>>
+>> A bit better, but not perfect:
+>>
+>> http://www.xenomai.org/index.php/Non-root_RT
+>>
+>> Combining this with mediated hardware access (robust drivers) and
+>> enabling the Xenomai watchdog should provide a reasonably safe&secure
+>> environment.
+> 
+> AFAIK, the BIG FAT warning at the bottom of this page still applies. You
+> can make an environment with no hardware lockups, but secure, I do not
+> think so. We do not know how Xenomai APIs could be exploited for a
+> non-root user to become root.
 
-I'll setup a clean environment, just to be sure, and will investigate
-further tomorrow.
+For sure, no one audited the interface for security so far. There is no
+hole in design that comes to my mind ATM, but I would be surprised as
+well if you couldn't develop any exploit for some bug or missing check.
+Still, there is a huge difference between giving anyone root access and
+confining Xenomai access this way.
 
-On Mon, Oct 11, 2010 at 11:31 AM, Andreas Glatz <andi.glatz@domain.hid> wrote:
->
->>
->> The auto-relax feature is now available from -head (upcoming
->> 2.6.x). You
->> will need all commits from
->> http://git.xenomai.org/?p=xenomai-
->> head.git;a=commit;h=b75cec19387e561f82ac55595db8c993b049f071
->> to
->> http://git.xenomai.org/?p=xenomai-
->> head.git;a=commit;h=6653a9e8eb7339b749989bd74adc3ac3bd29e4da
->>
->> --
->> Philippe.
->>
->>
->
-> Very nice. Will try it out soon on my G4 PB Aluminium.
->
-> Andreas
->
->
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
->
+Jan
+
+-- 
+Siemens AG, Corporate Technology, CT T DE IT 1
+Corporate Competence Center Embedded Linux
 
