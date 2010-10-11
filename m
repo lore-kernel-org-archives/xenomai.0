@@ -1,9 +1,10 @@
-Message-ID: <4CB03CDF.1050405@domain.hid>
-Date: Sat, 09 Oct 2010 11:58:55 +0200
+Message-ID: <4CB2B98A.8010605@domain.hid>
+Date: Mon, 11 Oct 2010 09:15:22 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <AANLkTi=6d4sZN11G0TfDXZPfwS8dDkhgE=LjnGcS4AG1@domain.hid>
-In-Reply-To: <AANLkTi=6d4sZN11G0TfDXZPfwS8dDkhgE=LjnGcS4AG1@domain.hid>
+References: <AANLkTi=6d4sZN11G0TfDXZPfwS8dDkhgE=LjnGcS4AG1@domain.hid>	<1286611432.13186.200.camel@domain.hid>	<AANLkTinfQTmC=165zLerDF1JsYnS-XHaUtWrMuOGmN4D@mail.gmail.com>
+	<AANLkTi=uCSYFazTzxLQWBhJgkmcoeJbLkd4Wv-O=tzb=@mail.gmail.com>
+In-Reply-To: <AANLkTi=uCSYFazTzxLQWBhJgkmcoeJbLkd4Wv-O=tzb=@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] Xenomai and PEAK can bus card problem
@@ -20,12 +21,13 @@ To: Peter Pastor <peter.pastor@domain.hid>
 Cc: xenomai@xenomai.org
 
 Peter Pastor wrote:
-> Hey there,
-> 
-> I installed Xenomai 2.5.2 with Linux 2.6.31.4 kernel (ubuntu 9.10).
+> I tried to avoid issues with the nvidia kernel module by not using the
+> nvidia kernel module but using the default "nv" driver. However, I am not
+> sure whether this made things better/worse or had any influence at all.
+> Interestingly, the assigned IRQ is 11 which is also used by the PEAK CAN-Bus
+> controller.
 
-Please upgrade to Xenomai 2.5.5. A Nasty bug was fixed which caused x86
-machines not to boot with grub 2.
+This can not work. See Xenomai FAQ.
 
 -- 
                                                                 Gilles.
