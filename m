@@ -1,14 +1,13 @@
-Message-ID: <4CB3F950.8070106@domain.hid>
-Date: Tue, 12 Oct 2010 07:59:44 +0200
+Message-ID: <4CB40261.40903@domain.hid>
+Date: Tue, 12 Oct 2010 08:38:25 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <AANLkTi=6d4sZN11G0TfDXZPfwS8dDkhgE=LjnGcS4AG1@domain.hid>	<1286611432.13186.200.camel@domain.hid>	<AANLkTinfQTmC=165zLerDF1JsYnS-XHaUtWrMuOGmN4D@mail.gmail.com>	<AANLkTi=uCSYFazTzxLQWBhJgkmcoeJbLkd4Wv-O=tzb=@mail.gmail.com>	<4CB2B98A.8010605@domain.hid>	<AANLkTinrw0yUPApypmaN4L+Auv4WtE+BRJr-wkDjiAE-@domain.hid>	<4CB36116.8090507@domain.hid>
-	<4CB367AA.6020403@domain.hid>	<AANLkTimpY=60yJbWBwnu7KWZMst5ajFvrRoFzVx092oN@mail.gmail.com>	<AANLkTimTRK9RG6md3vVoohx7KFw2uwczZGGaXvajnPxq@domain.hid>
-	<AANLkTimhhDqZnoURH8+8CU8bPx1KKMhemDJjwo8ni2sj@domain.hid>
-In-Reply-To: <AANLkTimhhDqZnoURH8+8CU8bPx1KKMhemDJjwo8ni2sj@domain.hid>
+References: <AANLkTi=6d4sZN11G0TfDXZPfwS8dDkhgE=LjnGcS4AG1@domain.hid>	<AANLkTinrw0yUPApypmaN4L+Auv4WtE+BRJr-wkDjiAE-@domain.hid>	<4CB36116.8090507@domain.hid>	<201010112309.22031.kisda@domain.hid>
+	<4CB3857C.30303@domain.hid>
+In-Reply-To: <4CB3857C.30303@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig682E3C6E53F0DBF9258C528B"
+	boundary="------------enigF9BC234B5A07DDDF41956F65"
 Sender: jan.kiszka@domain.hid
 Subject: Re: [Xenomai-help] Xenomai and PEAK can bus card problem
 List-Id: Help regarding installation and common use of Xenomai
@@ -20,53 +19,73 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Peter Pastor <peter.pastor@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig682E3C6E53F0DBF9258C528B
+--------------enigF9BC234B5A07DDDF41956F65
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
-Am 12.10.2010 03:55, Peter Pastor wrote:
-> Hey Wolfgang,
->=20
-> I made some great progress in the last few hours. I figured that the PE=
-AK
-> PCI can bus card had IRQ 11 according to "lspci" and after the kernel
-> modules are loaded it switched to IRQ 16 which caused all the trouble s=
-ince
-> the USB and the SCSI controller have the same IRQ.
->=20
-> Now, I just went ahead and hard coded
->=20
-> /usr/src/xenomai/ksrc/drivers/can/sja1000/rtcan_sja1000.c
-> FUNCTION rtcan_sja1000_register...
-> #############
->=20
->     chip->bus_err_on =3D 1;
->=20
->     printk("PETER chip->irq_num =3D %i\n", chip->irq_num);
->     chip->irq_num =3D 11;
->     printk("PETER chip->irq_num =3D %i\n", chip->irq_num);
->=20
->     ret =3D rtdm_irq_request(&dev->irq_handle,
->                chip->irq_num, rtcan_sja_interrupt,
->                chip->irq_flags, sja_ctrl_name, dev);
+Am 11.10.2010 23:45, Gilles Chanteperdrix wrote:
+> Stefan Kisdaroczi wrote:
+>> Am Montag 11 Oktober 2010, 21:10:14 schrieb Gilles Chanteperdrix:
+>>> Peter Pastor wrote:
+>>>> Hey Gilles,
+>>>>
+>>>> Thanks for the hint. I "fixed" this problem by loading the nvidia dr=
+iver
+>>>> (instead of nv) as default. Now the graphic cards uses IRQ 24 which =
+does
+>>>> not collide with IRQ 11 of the CAN bus card (see attached lspci.txt)=
+=2E
+>>>>
+>>>> The only other device that uses IRQ 11 is
+>>>> # 00:00.0 Host bridge [0600]: Intel Corporation 5520 I/O Hub to ESI =
+Port
+>>>> [8086:3406] (rev 13)
+>>>>
+>>>> But I guess that is ok, is it ? I checked the FAQs and went through =
+the
+>>>> list but I feel I can't do much. I will try a few things and disable=
 
-You can't change reality (physical wiring) this way.
+>>>> everything that is unneeded. The FAQ list also suggests to enable
+>>>> CONFIG_PCI_MSI which is disabled right now. What would now be a
+>>>> reasonable thing to do ?
+>>> Keep PCI_MSI disabled. The FAQ is wrong and should be fixed.
+>>
+>> Hi Gilles and Jan,
+>>
+>> what is wrong with PCI_MSI? In late june there was a discussion on thi=
+s list=20
+>> about irq-sharing [1]. Jan's statement at the end of the discussion:
+>>> The better news is that modern hardware now more and more provides MS=
+I,
+>>> and that's an inherently unshared IRQ source.
+>>
+>> We consider ordering custom built pcie boards (msi) to solve the irq-s=
+haring=20
+>> problem i have with my pci board. Bad idea ?
+>>
+>> Stefan
+>>
+>> [1] https://mail.gna.org/public/xenomai-help/2010-06/msg00194.html
+>=20
+> The patch Adeos as-is does not support MSI. See the thread here:
+> https://mail.gna.org/public/adeos-main/2008-08/threads.html
+>=20
 
-If you do not need the USB interface, unbind the driver so that the
-Linux IRQ usage ends:
+Provided the chipset allows fast PCI config access, this should still be
+fixable. Will see if I can find some cycles for this.
 
-echo 0000:00:1a.0 > /sys/bus/pci/drivers/ehci_hcd/unbind
-     ^^^^^^^^^^^^
-(fill in the according PCI ID)
+Moreover, there is long-term hope: MSI-X does not suffer from that need
+to interact with shared resources - for a good reasons: the old way
+scales poorly.
 
 Jan
 
 
---------------enig682E3C6E53F0DBF9258C528B
+--------------enigF9BC234B5A07DDDF41956F65
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -75,10 +94,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v2.0.15 (GNU/Linux)
 Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org/
 
-iEYEARECAAYFAkyz+V0ACgkQitSsb3rl5xQzNwCggMS9iie3rzr8uYiW4pfHauHF
-uasAn3gqBJkOJCFgPlzVqH/cYKyK4xNx
-=FNVh
+iEYEARECAAYFAky0AmEACgkQitSsb3rl5xQypACgwuLeufjuwcoMRmey/LasaR7d
+vHkAoMw6CIqngcjAqtVJM28Dw7CzFOIy
+=c3Om
 -----END PGP SIGNATURE-----
 
---------------enig682E3C6E53F0DBF9258C528B--
+--------------enigF9BC234B5A07DDDF41956F65--
 
