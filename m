@@ -1,23 +1,15 @@
-Date: Sat, 23 Oct 2010 15:32:53 +0100 (BST)
-From: edward.robbins@domain.hid
-MIME-Version: 1.0
-Content-Type: text/plain;charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <4CC2E9F8.9040205@domain.hid>
-References: <1281709057.650414331@domain.hid>
-	<4C65583D.3030800@domain.hid> 
-	<1281960823.030215299@domain.hid> <4C692FC3.5040802@domain.hid> 
-	<1283531433.789315367@domain.hid>        
-	<1283590285.1709.2153.camel@domain.hid>       
-	<1287134519.029617765@domain.hid>      
-	<1287143691.028416668@domain.hid> <4CB85C64.9040307@domain.hid> 
-	<1287496324.10921156@domain.hid> <4CBDF92F.20403@domain.hid>    
-	<1287832106.517512323@domain.hid> <4CC2C361.5020608@domain.hid> 
-	<1287832939.719617755@domain.hid> <4CC2C8AB.70708@domain.hid>  
-	<1287841513.64613295@domain.hid> <4CC2E86F.5060304@domain.hid> 
-	<1287842205.0925650@domain.hid> <4CC2E9F8.9040205@domain.hid>
-Message-ID: <1287844373.032420306@domain.hid>
-Subject: Re: [Xenomai-help] Very high latencies under stress testing
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <20101013090353.GA6902@domain.hid>
+References: <20101007115728.GA24500@domain.hid>
+	<4CADBDC2.8080600@domain.hid> <20101008070148.GB2255@domain.hid>
+	<1286530884.13186.109.camel@domain.hid>
+	<20101013090353.GA6902@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Date: Wed, 13 Oct 2010 11:16:15 +0200
+Message-ID: <1286961375.1759.71.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] kernel oopses when killing realtime task
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -27,25 +19,98 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Pavel Machek <pma@domain.hid>
+Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai@xenomai.org
 
-Assuming you mean /var/log/messages and dmesg, they say nothing about SMIs =
-except what I previously wrote.=0A=0AI have managed to boot with SMI disabl=
-ed in BIOS. The only trouble is I have to manually go into the BIOS bootloa=
-der and select to boot from USB every time or it reports there is no bootab=
-le device. It warns in the BIOS that disabling SMI will cause legacy USB bo=
-ot to not work, so I presume this is the cause since my root fs is on a USB=
- attached compact flash. =0A=0AI will try now running tests with SMI disabl=
-ed in the BIOS. =0A=0A=0AOn Saturday, 23 October, 2010 2:58pm, "Gilles Chan=
-teperdrix" <gilles.chanteperdrix@xenomai.org> said:=0A=0A> edward.robbins@domain.hid=
-xfordtechnologies.co.uk wrote:=0A>> Oh no...=0A>>=0A>> dmesg | grep SMI=0A>=
->=0A>> CPU0: Thermal monitoring handled by SMI=0A>> CPU1: Thermal monitorin=
-g handled by SMI=0A>>=0A>> So I guess that didn't work? I have used the 'Gl=
-obally disable SMIs option' at=0A>> kernel config time.... there is an opti=
-on in  the BIOS to disable SMI but I was=0A>> having problems with it... wi=
-ll investigate. Any other options?=0A> =0A> What do the boot logs say?=0A> =
-=0A> --=0A>                                                                =
- Gilles.=0A> =0A
+On Wed, 2010-10-13 at 11:03 +0200, Pavel Machek wrote:
+> Hi!
+> 
+> > > Now... I'm aware that lock_get/put around irq_free should be
+> > > unneccessary, as should be irq_disable and my ->ready flag. Those were
+> > > my attempts to work around the problem. I'll attach the full source at
+> > > the end.
+> > > 
+> > > > > Unfortunately, when the userspace app is ran and killed repeatedly (so
+> > > > > that interrupt is registered/unregistered all the time), I get
+> > > > > oopses in __ipipe_dispatch_wired() -- it seems to call into the NULL
+> > > > > pointer.
+> > > > > 
+> > > > > I decided that "wired" interrupt when the source is shared between
+> > > > > Linux and Xenomai, is wrong thing, so I disable "wired" interrupts
+> > > > > altogether, but that only moved oops to __virq_end. 
+> > > > 
+> > > > This is wrong. The only way to get a determistically shared IRQs across
+> > > > domains is via the wired path, either using the pattern Gilles cited or,
+> > > > in a slight variation, signaling down via a separate rtdm_nrtsig.
+> > > 
+> > > For now, I'm trying to get it not to oops; deterministic latencies are
+> > > the next topic :-(.
+> > 
+> > Could you try the patches below? Absolutely untested as required by the
+> > breaktiquette, but might help. Hopefully.
+> 
+> Thanks!
+> 
+> I hope I applied the patch correctly, it was slightly
+> tricky... Unfortunately, it causes hang at first attempt to kill
+> realtime task :-(.
+
+Ah. Weird. The IRQ drain code is supposed to be called only when an
+interrupt is unregistered from the Xenomai layer, which is not directly
+related to killing a task. Maybe some of the task cleanup code involves
+unregistering IRQs though, so this might explain.
+
+> 
+> > @@ -1250,6 +1250,32 @@ int ipipe_unregister_domain(struct ipipe_domain
+> > *ipd)
+> >  	return 0;
+> >  }
+> >  
+> > +void ipipe_drain_interrupt(struct ipipe_domain *ipd, unsigned int irq)
+> > +{
+> > +	struct ipipe_percpu_domain_data *p;
+> > +	unsigned long flags;
+> > +	int cpu;
+> > +
+> > +	flags = ipipe_critical_enter(NULL);
+> > +	clear_bit(IPIPE_HANDLE_FLAG, &ipd->irqs[irq].control);
+> > +	clear_bit(IPIPE_STICKY_FLAG, &ipd->irqs[irq].control);
+> > +	set_bit(IPIPE_PASS_FLAG, &ipd->irqs[irq].control);
+> > +	ipipe_critical_exit(flags);
+> > +
+> > +	for_each_online_cpu(cpu) {
+> > +		local_irq_save_hw(flags);
+> > +		p = ipipe_percpudom_ptr(ipd, cpu);
+> > +		do {
+> > +			local_irq_restore_hw(flags);
+> > +			cpu_relax();
+> > +			local_irq_save_hw(flags);
+> > +		} while (test_bit(irq, p->irqpend_lomask) ||
+> > +			 test_bit(IPIPE_STALL_FLAG, &p->status));
+> > +		local_irq_restore_hw(flags);
+> > +	}
+> > +}
+> > +EXPORT_SYMBOL_GPL(ipipe_drain_interrupt);
+> > +
+> 
+> This is the interesting place, right?
+
+Yes. I messed up. We need the test on the STALL bit to make 100% sure
+that we are not about clearing the function pointer under the feet of
+the wired IRQ dispatcher, but at the same time, we enter the drain
+routine with the STALL bit set for the target domain. So this code is
+plain silly (patent not granted, way too much prior art).
+
+As a quick check, you could try removing the second test_bit from the
+end loop condition.
+
+>  I'll stick printks there and see
+> what happens.
+> 
+> 								Pavel
+
+-- 
+Philippe.
+
 
 
