@@ -1,17 +1,13 @@
-Date: Wed, 13 Oct 2010 11:26:17 +0200
-From: Pavel Machek <pma@domain.hid>
-Message-ID: <20101013092617.GB6902@domain.hid>
-References: <20101007115728.GA24500@domain.hid>
-	<4CADBDC2.8080600@domain.hid>
-	<20101008070148.GB2255@domain.hid>
-	<1286530884.13186.109.camel@domain.hid>
-	<20101013090353.GA6902@domain.hid>
-	<1286961375.1759.71.camel@domain.hid>
+Message-ID: <4CB57DB2.3010709@domain.hid>
+Date: Wed, 13 Oct 2010 11:36:50 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1286961375.1759.71.camel@domain.hid>
-Subject: Re: [Xenomai-help] kernel oopses when killing realtime task
+References: <DF9F3A3C150B0646A17FF1487C1B6D5E0380C00C@rennsmail06.eu.thmulti.com>
+	<DF9F3A3C150B0646A17FF1487C1B6D5E0380C00E@rennsmail06.eu.thmulti.com>
+In-Reply-To: <DF9F3A3C150B0646A17FF1487C1B6D5E0380C00E@rennsmail06.eu.thmulti.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] rt_heap and DMA32 zone
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -21,69 +17,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai@xenomai.org
+To: "Daniel Jacques (Alten)" <jacques.daniel@domain.hid>
+Cc: xenomai@xenomai.org
 
-Hi!
-
-> > Thanks!
-> > 
-> > I hope I applied the patch correctly, it was slightly
-> > tricky... Unfortunately, it causes hang at first attempt to kill
-> > realtime task :-(.
+Daniel Jacques (Alten) wrote:
+> Hi all,
 > 
-> Ah. Weird. The IRQ drain code is supposed to be called only when an
-> interrupt is unregistered from the Xenomai layer, which is not directly
-> related to killing a task. Maybe some of the task cleanup code involves
-> unregistering IRQs though, so this might explain.
-
-Task cleanup definitely unregisters IRQ, yes.
-
-> > > +void ipipe_drain_interrupt(struct ipipe_domain *ipd, unsigned int irq)
-> > > +{
-> > > +	struct ipipe_percpu_domain_data *p;
-> > > +	unsigned long flags;
-> > > +	int cpu;
-> > > +
-> > > +	flags = ipipe_critical_enter(NULL);
-> > > +	clear_bit(IPIPE_HANDLE_FLAG, &ipd->irqs[irq].control);
-> > > +	clear_bit(IPIPE_STICKY_FLAG, &ipd->irqs[irq].control);
-> > > +	set_bit(IPIPE_PASS_FLAG, &ipd->irqs[irq].control);
-> > > +	ipipe_critical_exit(flags);
-> > > +
-> > > +	for_each_online_cpu(cpu) {
-> > > +		local_irq_save_hw(flags);
-> > > +		p = ipipe_percpudom_ptr(ipd, cpu);
-> > > +		do {
-> > > +			local_irq_restore_hw(flags);
-> > > +			cpu_relax();
-> > > +			local_irq_save_hw(flags);
-> > > +		} while (test_bit(irq, p->irqpend_lomask) ||
-> > > +			 test_bit(IPIPE_STALL_FLAG, &p->status));
-> > > +		local_irq_restore_hw(flags);
-> > > +	}
-> > > +}
-> > > +EXPORT_SYMBOL_GPL(ipipe_drain_interrupt);
-> > > +
-> > 
-> > This is the interesting place, right?
+>  
 > 
-> Yes. I messed up. We need the test on the STALL bit to make 100% sure
-> that we are not about clearing the function pointer under the feet of
-> the wired IRQ dispatcher, but at the same time, we enter the drain
-> routine with the STALL bit set for the target domain. So this code is
-> plain silly (patent not granted, way too much prior art).
+> I am working on 64 bits Linux 2.6.32.15 and xenomai 2.5.4.
+> 
+> I am using rt_heap to share memory between user and kernel domain.
+> 
+> I tried to create a shared memory of 16 Mbytes, but it appears that I
+> cannot create  a heap larger than 3 Mbytes.
 
-:-).
+http://www.xenomai.org/index.php/Request_for_information
 
-> As a quick check, you could try removing the second test_bit from the
-> end loop condition.
-
-Yes, with IPIPE_STALL_FLAG test removed it "works", but I assume that
-at that point it is placebo patch ;-).
-
-Should we test IPIPE_STALL_FLAG on all but current CPUs?
-								Pavel
-
-								
+-- 
+					    Gilles.
 
