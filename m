@@ -1,11 +1,11 @@
 MIME-Version: 1.0
-Sender: patrickdepinguin@domain.hid
-Date: Tue, 12 Oct 2010 14:10:20 +0200
-Message-ID: <AANLkTi=hTtiyjxUr5FivrSOzjjuNPNF9aUFvjB36gKaL@mail.gmail.com>
-From: Thomas De Schampheleire <patrickdepinguin+xenomai@domain.hid>
-Content-Type: multipart/mixed; boundary=0015175cdfac62d34804926a5cd5
-Subject: [Xenomai-core] prepare-kernel.sh --default fails silently if no
-	default patch can be found
+In-Reply-To: <4CB41FF2.9030602@domain.hid>
+References: <4CB41FF2.9030602@domain.hid>
+Date: Wed, 13 Oct 2010 08:31:10 +0200
+Message-ID: <AANLkTi=kR0fT-NFOuC_z=Y8HNVaXu1j5f76VG1TVoFD5@domain.hid>
+From: Alexis Berlemont <alexis.berlemont@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: Re: [Xenomai-core] Analogy regressions in xenomai 2.5.5.1
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -14,70 +14,53 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
-
---0015175cdfac62d34804926a5cd5
-Content-Type: text/plain; charset=ISO-8859-1
+To: Daniele Nicolodi <daniele@domain.hid>
+Cc: xenomai@xenomai.org
 
 Hi,
 
-If the prepare-kernel.sh script is executed with the --default option,
-but no default patch can be found for the selected linux kernel
-version, the script incorrectly tries to continue (and hangs executing
-a malformed grep command)
+On Tue, Oct 12, 2010 at 10:44 AM, Daniele Nicolodi <daniele@domain.hid> wrote:
+> Hello, I just installed xenomai 2.5.5 on a 2.6.35.7 kernel and I'm
+> noticing serious regressions on analogy basic features:
+>
+> 1. Buffer management is badly broken. It is not possible to run any
+> acquisition command that wraps around in the ring buffer. That can be
+> simply reproduced with:
+>
+> cmd_read -v d analogy0 -s 0 -S 0
+>
+> after a while it will fail with: "cmd_read: a4l_read failed (ret=-32)".
+> In dmesg the driver reports: "Analogy: MITE: DME overwrite of free area".
 
-If no default patch can be found, the $adeos_default_patch variable is
-set /dev/null. This filename in this variable is later checked for
-readability with 'test -r', which succeeds for /dev/null. This causes
-the script to continue with an invalid patch, and subsequently hangs
-on the following command:
+OK. Maybe, it is not Analogy's buffer management; it may be specific
+to the NI driver. Did you try to reproduce the bug with another driver
+(analogy_fake for example)? It may be due to some fix I made this
+summer (which is surprising, I thought I tested the change quite
+exhaustively... Sorry for that).
 
-adeos_version=`grep '^#define.*IPIPE_ARCH_STRING.*"' $asm_ipipe_h
-2>/dev/null|head -n1|sed -e 's,.*"\(.*\)"$,\1,'`
+>
+> 2. Buffer is kept memory mapped after the mapping process dies. If a
+> process mapping a device buffer dies before un-mapping the buffer, it is
+> not possible to reconfigure the bnuffer. a4l_set_bufsize fails with
+> error code 32 and dmesg read "Analogy: a4l_ioctl_bufcfg: please unmap
+> before configuring buffer". Sinche the mapping process died I do not
+> know how to do this.
+>
+With a 2.4.x release, did you manage to reproduce the bug?
 
-where
-asm_ipipe_h=`ls
-$linux_tree/include/asm-{$linux_arch,$xenomai_arch}/ipipe.h
-2>/dev/null|head -n1
+> When I proposed some easy changes to the analogy API, to make it much
+> less confusing with trivial changes, Alexis expressed concerns about API
+> stability. What about functional stability? I think the reported ones
+> are major problems easily catch with simple pre-release tests...
+>
+> Cheers,
+> Daniele
+>
+> _______________________________________________
+> Xenomai-core mailing list
+> Xenomai-core@domain.hid
+> https://mail.gna.org/listinfo/xenomai-core
+>
 
-But since the patch failed, $asm_ipipe_h is also empty, the grep
-command translates to:
-grep  ^#define.*IPIPE_ARCH_STRING.*"
-so grep waits for input since no files are given, and the
-prepare-kernel.sh script is effectively blocked (without useful
-output).
-
-Please find in attachment a patch that adds a check for /dev/null
-instead of simply 'test -r', and adds some output in case no default
-patch could be found.
-
-Best regards,
-Thomas
-
---0015175cdfac62d34804926a5cd5
-Content-Type: application/octet-stream; 
-	name="xenomai-05-improve-output-of-prepare-kernel-script.patch"
-Content-Disposition: attachment; 
-	filename="xenomai-05-improve-output-of-prepare-kernel-script.patch"
-Content-Transfer-Encoding: base64
-X-Attachment-Id: f_gf6q6iat0
-
-LS0tIHhlbm9tYWktMi41LjQub3JpZy9zY3JpcHRzL3ByZXBhcmUta2VybmVsLnNoCTIwMTAtMDUt
-MTggMjA6MzE6MTcuMDAwMDAwMDAwICswMjAwCisrKyB4ZW5vbWFpLTIuNS40L3NjcmlwdHMvcHJl
-cGFyZS1rZXJuZWwuc2gJMjAxMC0xMC0xMiAxMzoyMjo0NS4yNTAxNDE3MTUgKzAyMDAKQEAgLTM3
-Myw2ICszNzMsOSBAQAogICAgICAgZGVmYXVsdF9hZGVvc19wYXRjaD0iYCggbHMgJHhlbm9tYWlf
-cm9vdC9rc3JjL2FyY2gvJHhlbm9tYWlfYXJjaC9wYXRjaGVzL2FkZW9zLWlwaXBlLSRsaW51eF92
-ZXJzaW9uKi17JGxpbnV4X2FyY2gsJHhlbm9tYWlfYXJjaH0tKnxzb3J0IC1yICkgMj4vZGV2L251
-bGwgfCBoZWFkIC1uMWAiCiAgICBmaQogICAgaWYgdGVzdCB4JGRlZmF1bHRfYWRlb3NfcGF0Y2gg
-PSB4OyB0aGVuCisgICAgICBpZiB0ZXN0IHgkdmVyYm9zZSA9IHgxOyB0aGVuCisgICAgICAgICBl
-Y2hvICIkbWU6IG5vIGRlZmF1bHQgQWRlb3MgcGF0Y2ggZm91bmQuIiA+JjIKKyAgICAgIGZpCiAg
-ICAgICBkZWZhdWx0X2FkZW9zX3BhdGNoPS9kZXYvbnVsbAogICAgZmkKICAgIHdoaWxlIHRlc3Qg
-eCRhZGVvc19wYXRjaCA9IHg7IGRvCkBAIC0zODMsNyArMzg2LDcgQEAKICAgICAgIGlmIHRlc3Qg
-eCRhZGVvc19wYXRjaCA9IHg7IHRoZW4KICAgICAgICAgIGFkZW9zX3BhdGNoPSRkZWZhdWx0X2Fk
-ZW9zX3BhdGNoCiAgICAgICBmaQotICAgICAgaWYgdGVzdCBcISAtciAiJGFkZW9zX3BhdGNoIjsg
-dGhlbgorICAgICAgaWYgdGVzdCBcISAtciAiJGFkZW9zX3BhdGNoIiAtbyB4JGFkZW9zX3BhdGNo
-ID0geC9kZXYvbnVsbDsgdGhlbgogICAgICAgICAgZWNobyAiJG1lOiBjYW5ub3QgcmVhZCBBZGVv
-cyBwYXRjaCBmcm9tICRhZGVvc19wYXRjaCIgPiYyCiAgICAgICAgICB1c2VkZWZhdWx0PQogICAg
-ICAgICAgYWRlb3NfcGF0Y2g9Cg==
---0015175cdfac62d34804926a5cd5--
+Alexis.
 
