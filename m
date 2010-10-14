@@ -1,10 +1,13 @@
-Message-ID: <02b61548f11b624ae3f5330b1564a038.squirrel@domain.hid>
-Date: Wed, 13 Oct 2010 08:08:11 +0200
-From: "Cagnulein" <cagnulein@domain.hid>
+Message-ID: <4CB6A592.7080205@domain.hid>
+Date: Thu, 14 Oct 2010 08:39:14 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: multipart/mixed;boundary="----=_20101013080811_18666"
+References: <AANLkTik6p=tM+JWHhsp8McPo+ZydtTZZk6ay-Ot_pgRk@domain.hid>	<4CB552F2.90500@domain.hid>
+	<AANLkTinKiBchwG6F0GkG-VucM=QikUO8LefNeDOw_jCb@domain.hid>
+In-Reply-To: <AANLkTinKiBchwG6F0GkG-VucM=QikUO8LefNeDOw_jCb@domain.hid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] HELP: Real-time Drivers
-Reply-To: cagnulein@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -14,57 +17,71 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Peter Warner <xenomai.start@domain.hid>
+Cc: Xenomai help <xenomai@xenomai.org>
 
-------=_20101013080811_18666
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Peter Warner wrote:
+> Hi Gilles,
+> 
+> Thanks for your mail,
+> 
+> I will just give the detail of my system:
+> Processor Core 2 Duo.
+> Operating System: Ubuntu 10.04
+> Kernel version: 2.6.32.20
+> xenomai Version: 2.5.5.1
+> 
+> Now I will Explain What I Did.
+> 
+> In  the Kernel Configuration(make menuconfig)
+> 
+>  Real-time sub-system  --->
+>     DRIVERS ---->
+>          SERIAL DRIVERS ------>
+>          <M> 16550A UART driver
+>           HARDWARE ACCESS MODE(PORT-based I/O) ------->
+> 
+> I build the kernel and installed the xenomai patched kernel.
+> the Include path is /usr/include/xenomai/
 
-> On 13/10/2010 06:19, Peter Warner wrote:
-> Dear Xenomai Users,
->
-> I want to develop the real-time driver for my UART(RS-232) can any one
-> please Suggest How can I develop it.
-> Can I get Example Code and what are the different API I need to use.
-> What are the Different Compilation and Linker flag I need to use.
-Hi, you can see the example provided with xenomai under ksrc
-<http://git.xenomai.org/?p=xenomai-2.5.git;a=tree;f=ksrc;hb=14c921b86a82debe367c782b33273f8ba470cf6e>
-/ drivers
-<http://git.xenomai.org/?p=xenomai-2.5.git;a=tree;f=ksrc/drivers;hb=14c921b86a82debe367c782b33273f8ba470cf6e>
-/ serial
-<http://git.xenomai.org/?p=xenomai-2.5.git;a=tree;f=ksrc/drivers/serial;hb=14c921b86a82debe367c782b33273f8ba470cf6e>
-/ *(*
-http://git.xenomai.org/?p=xenomai-2.5.git;a=tree;f=ksrc/drivers/serial;h=9cd6f200fdf45fc2550c95431a552d647df934f4;hb=14c921b86a82debe367c782b33273f8ba470cf6e
-)
-<http://git.xenomai.org/?p=xenomai-2.5.git;a=tree;f=ksrc/drivers/serial;h=9cd6f200fdf45fc2550c95431a552d647df934f4;hb=14c921b86a82debe367c782b33273f8ba470cf6e>.
+You should have installed the kernel modules too...
 
-Take a look to the wiki too ( http://xenomai.org/index.php/16550A ).
+> Later I entered into the directory xenomai-2.5.5.1/examples.
+> Invoked the command make.
+> next to folder native and invoked the generated executables they all are
+> working fine
+> 
+> next i entered to folder
+> 
+> /usr/src/xenomai-2.5.5.1/examples/rtdm/profiles/serial     and invoked
+> make. finally  the executable *cross-link* was generated.
+> 
+> When I invoke the *cross-link* it ihas given the following error message:
+>                      *main : can't open rtser0 (write), No such device*
+> 
+> I guess the corresponding device driver I need to install. How can I do
+> the same.
 
-If you tell me which architecture you are using i could help you more
-(if i know it).
-Bye
-<http://git.xenomai.org/?p=xenomai-2.5.git;a=tree;f=ksrc/drivers/serial;h=9cd6f200fdf45fc2550c95431a552d647df934f4;hb=14c921b86a82debe367c782b33273f8ba470cf6e>
+If the device driver is compiled as a module, you need to load the
+module, yes.
 
->
-> Thanks a lot
->
-> regards
-> Peter
->
->
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
+> on the Other hand i have done one more Operation
+> 
+> I used /usr/src/xenomai-2.5.5.1/ksrc/drivers/serial  and Tried to invoke
+> the make but it has  given the following error message;
+> Makefile:25: /Rules.make: No such file or directory
+> make: *** No rule to make target `/Rules.make'.  Stop.
+> 
+> I just want to clarify from you that is it a driver module. How can I
+> fix this bug.
 
+No bug here. At least not in Xenomai code. The question you ask is about
+Linux kernel modules. I am sorry, but you are on the Xenomai mailing
+list here, we will help you solve issues with Xenomai, but we do not
+have the bandwidth to teach you how to compile and use Linux and Linux
+kernel modules. There are a lot of ressources on the web which will
+teach you that anyway.
 
-------=_20101013080811_18666
-Content-Type: text/html; name="untitled-[2]"
-Content-Transfer-Encoding: 8bit
-Content-Disposition: attachment; filename="untitled-[2]"
-
-
-------=_20101013080811_18666--
-
-
+-- 
+                                                                Gilles.
 
