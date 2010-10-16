@@ -1,21 +1,10 @@
-Message-ID: <4CB85035.4060409@domain.hid>
-Date: Fri, 15 Oct 2010 14:59:33 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-References: <4CB06CE9.9090204@domain.hid>	
-	<1287070938.1628.20.camel@domain.hid>
-	<4CB72B5D.1070304@domain.hid>
-	<1287073013.1628.25.camel@domain.hid>
-	<4CB743FA.20504@domain.hid> <4CB7482C.9060602@domain.hid>
-	<4CB753EC.9010107@domain.hid> <4CB75976.6040302@domain.hid>
-	<4CB7F73F.2050509@domain.hid> <4CB835DE.3060600@domain.hid>
-	<4CB84D5D.6090106@domain.hid>
-In-Reply-To: <4CB84D5D.6090106@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig75154C163CF34ABFA9A49E5B"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-core] [forge] irqbench removal
+From: Stefan Schaal <sschaal@domain.hid>
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: quoted-printable
+Date: Fri, 15 Oct 2010 22:43:08 -0700
+Message-Id: <515034A5-8E42-4ACC-B08E-FC8A05DEB293@domain.hid>
+Mime-Version: 1.0 (Apple Message framework v1081)
+Subject: [Xenomai-core] hanging in Xenomai 2.5.5
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -24,160 +13,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Wolfgang Grandegger <wg@domain.hid>
-Cc: Xenomai core <Xenomai-core@domain.hid>
+To: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig75154C163CF34ABFA9A49E5B
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Hi everybody,
 
-Am 15.10.2010 14:47, Wolfgang Grandegger wrote:
-> On 10/15/2010 01:07 PM, Wolfgang Grandegger wrote:
->> On 10/15/2010 08:39 AM, Jan Kiszka wrote:
->>> Am 14.10.2010 21:26, Wolfgang Grandegger wrote:
->>>> On 10/14/2010 09:03 PM, Jan Kiszka wrote:
->>>>> Am 14.10.2010 20:13, Wolfgang Grandegger wrote:
->>>>>> Hi Jan,
->>>>>>
->>>>>> On 10/14/2010 07:55 PM, Jan Kiszka wrote:
->>>>>>> Am 14.10.2010 18:16, Philippe Gerum wrote:
->>>>>>>> On Thu, 2010-10-14 at 18:10 +0200, Jan Kiszka wrote:
->>>>>>>>> Am 14.10.2010 17:42, Philippe Gerum wrote:
->>>>>>>>>> On Sat, 2010-10-09 at 15:23 +0200, Jan Kiszka wrote:
->>>>>>>>>>> Philippe,
->>>>>>>>>>>
->>>>>>>>>>> irqbench does not inherently depend on a third I-pipe domain.=
- It is a
->>>>>>>>>>> useful testcase, the only in our portfolio that targets a per=
-ipheral
->>>>>>>>>>> device use case. In fact, it was only of the first test cases=
- for Native
->>>>>>>>>>> RTDM IIRC.
->>>>>>>>>>>
->>>>>>>>>>> Please revert the removal and then cut out only the few parts=
- that
->>>>>>>>>>> actually instantiate an additional domain (i.e. mode 3.
->>>>>>>>>>
->>>>>>>>>> So, what do we do with this? Any chance we move to arch-neutra=
-l code for
->>>>>>>>>> this test?
->>>>>>>>>
->>>>>>>>> Arch-neutral is impossible due to the inherent hardware depende=
-ncy. But
->>>>>>>>> I'm waiting on some comments by Wolfgang on their work as that'=
-s
->>>>>>>>> probably the best requirements source for multi-arch support.
->>>>>>>>
->>>>>>>> I mean that the bulk of the code could be made arch-neutral, wit=
-h only
->>>>>>>> callouts to solve the arch-dependent/uart issues. Typically, 165=
-50's are
->>>>>>>> not uncommon on powerpc, but we obviously don't program them via=
+  here is a quick first report on an issue that appeared with Xenomai =
+2.5.5 --- NOTE: 2.5.4 (and earlier) DOES NOT have this issue.
 
->>>>>>>> ioports. A second level of indirection could provide the entire =
-chip
->>>>>>>> handling, to fit other uarts, maybe?
->>>>>>>
->>>>>>> If there are suitable UARTs around, refactoring the code accordin=
-gly and
->>>>>>> maybe adding support for one of them as reference would be a good=
- next
->>>>>>> step. But first I would like to understand (or recall - I think W=
-olfgang
->>>>>>> once explained it) the motivations for not going this path with t=
-he
->>>>>>> gpiobench test and learn its requirements to avoid doing refactor=
-ings
->>>>>>> twice or more.
->>>>>>
->>>>>> Well, it's a long time ago that I wrote gpioirqbench, which is der=
-ived
->>>>>> from Jan's irqbench. Obviously, it uses GPIO pins to signal events=
+We run multiple real-time processes, synchronized by semaphores and =
+interprocess communication using shared memory. All is cleanly =
+implemented using the xenomai real-time functions, no mode switches. The =
+different processes are distributed on different processors of our =
+multi-core machine using rt_task_spawn() with the T_CPU directive.=20
 
->>>>>> instead of signals from the parallel port or serial line. I never
->>>>>> supported the serial line for embedded boards.
->>>>>
->>>>> What was the reason? That it is too often blocked by a terminal?
->>>>
->>>> Mainly because there is no RTserial driver for the serial interface =
-on
->>>> the embedded boards, e.g. for the PSC, SCC. Furthermore, they are
->>>> usually handled by firmware with ring buffers, dma, etc. which would=
+Up to version 2.5.4, this worked fine.
 
->>>> introduce additional delays. They might be negligible, though.
->>>>
->>>>>> You can get the code with:
->>>>>>
->>>>>>   $ git clone git://git.denx.de/gpioirqbench
->>>>>>
->>>>>> It uses a simple hw abstruction layer defined in target/gpioirq-hw=
-=2Eh:
->>>>>>
->>>>>> http://git.denx.de/?p=3Dgpioirqbench.git;a=3Dblob;f=3Dtarget/gpioi=
-rq-hw.h;h=3D76849da0964c7dbb6831fe02374922dcf89b3bb1;hb=3DHEAD
->>>>>
->>>>> Is this abstracting the target side, right?
->>>>
->>>> Yep.
->>>>
->>>>>> Don't know if it's generic enough to support the parallel and seri=
-al
->>>>>> port interface as well. Anyway, with working generic GPIO lib supp=
-ort,
->>>>>> it's quite simple to support new hardware, e.g. i.MX31 boards.
->>>>>>
->>>>>> The host side to measure precisely the latency is even more tricky=
-=2E
->>>>>
->>>>> Depends. If you can map the GPIO output on something RS232 or paral=
-lel
->>>>> port compatible, you are done. Usually, there is always some x86 bo=
-x
->>>>
->>>> THe GPIO lines of most embedded boards don't like 5V. The are specif=
-ied
->>>> for 3.3V plus something less than 5V. I was thinking about that alre=
-ady
->>>> but finally didn't want to damage the board. A 3.3V serial interface=
- on
->>>> the PC would be fine, though.
->>>
->>> Sounds like we just need a voltage divider for RS232 -> GPIO. The oth=
-er
->>> way should be fine as everything above 3 V is considered High, and I
->>> think to remember that even the invalid range of +/-3 V is reported a=
-s
->>> Low by typical (PC-)UARTs.
->>
->> I just googled around a bit and found:
->>
->>   http://www.rs232-converters.com/rs232-to_ttl3.3_converters.htm
->=20
-> Or at ebay: http://shop.ebay.at/i.html?_kw=3Dttl&_kw=3Dconverter
->=20
+With version 2.5.5 (and 2.5.5.1), the processes hang after a few seconds =
+of running (CPU consumption goes to zero), and usually one of them hangs =
+so badly that it cannot be killed anymore with kill -9 -- thus reboot is =
+required.
 
-Look perfect on first sight - but not on second: They all convert RX/TX,
-but we need status line conversions. So you need at least some re-wiring
-via a breakout box a special cable. Still, it's a good base to build upon=
-=2E
+The problems happens on BOTH our i386 machine (Dell 8-core, ubuntu 9.04, =
+kernel 2.6.29.5) AND x86_64 machine (Dell 8 core, ubuntu 9.10, kernel =
+2.6.31.4). Thus, this seems to be specific to the xenomai release 2.5.5 =
+and higher.
 
-Jan
+No "dmesg" print-outs when this error occurs.
 
+We will try to create a simple test program to illustrate the problem, =
+but maybe the issue is already obvious to some of the experts on this =
+list.
 
---------------enig75154C163CF34ABFA9A49E5B
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+Best wishes,
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.15 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org/
-
-iEYEARECAAYFAky4UDgACgkQitSsb3rl5xQ0gQCdHuh6YJAVIyUGQsNUOw/guhvA
-boYAoLHiA2sNatPLxjRFplqPOjaJUlYL
-=OElJ
------END PGP SIGNATURE-----
-
---------------enig75154C163CF34ABFA9A49E5B--
+-Stefan=
 
