@@ -1,18 +1,11 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <1287152003.579923730@domain.hid>
-References: <1281709057.650414331@domain.hid>
-	<4C65583D.3030800@domain.hid>  <1281960823.030215299@domain.hid>
-	<4C692FC3.5040802@domain.hid>  <1283531433.789315367@domain.hid>
-	<1283590285.1709.2153.camel@domain.hid>
-	<1287134519.029617765@domain.hid>
-	<1287143691.028416668@domain.hid>
-	<4CB85C64.9040307@domain.hid>  <1287152003.579923730@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Fri, 15 Oct 2010 16:33:44 +0200
-Message-ID: <1287153224.1628.80.camel@domain.hid>
-Mime-Version: 1.0
+From: luxInteg <lux-integ@domain.hid>
+Date: Sun, 17 Oct 2010 15:23:21 +0100
+MIME-Version: 1.0
+Content-Type: text/plain;
+  charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Very high latencies under stress testing
+Message-Id: <201010171523.21229.lux-integ@domain.hid>
+Subject: [Xenomai-help] xenomai-2.5.5 xml requirments
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -22,48 +15,91 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: edward.robbins@domain.hid
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Fri, 2010-10-15 at 15:13 +0100,
-edward.robbins@domain.hid wrote:
-> Will do. Should I leave in Philippes patch? I will assume no for
-> now...
-> 
+Greetings,
 
-That patch is correct and unrelated to the next problem. An other issue
-is that the generic mtrr code is not ipipe aware, so it is not really
-interrupt free.
+I have successfully patched, compiled and installed kernels  2.6.32 and 
+2.6.35.7   with senomai-2.5.5 on a computer  (not on the internet) 
+ with these:-
+----cpu amd64 2 cores
+----kernel: linux-2.6.35.7 (64-bit CBLFS linux)
 
-> On Friday, 15 October, 2010 2:51pm, "Gilles Chanteperdrix"
-> <gilles.chanteperdrix@xenomai.org> said:
-> 
-> > edward.robbins@domain.hid wrote:
-> > > I am also finding that tasks are frequently hanging, causing
-> > > ipipetraces with "INFO: task xxx:xxx blocked for more than 120
-> > > seconds". Ihave just had this with apt-get update, and was
-> previously
-> > > getting itwith grub-install. Could this be related?
-> > 
-> > Yes. There is obviously an issue in your patched kernel, we need to
-> find
-> > this first before we draw any conclusion from any other behaviour.
-> > 
-> > From the trace you sent, it looks like it happens in the MTRR code,
-> but
-> > it could also be an SMI, or some other bug. For debugging purposes,
-> > could you try disabling MTRRs in the kernel configuration?
-> > 
-> > --
-> > Gilles.
-> > 
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
-
--- 
-Philippe.
+I am now attempting to build the xenomai userspace  tools (out of kernel-
+build)  via autonconf
 
 
+----------A) if I pass:-
+-------------------------
+--enable-dbx \
+--with-dbx-root=/usr/share/xml/docbook/xml-dtd-4.5  \
+--disable-dbx-network
+
+to configure
+
+configure responds with:-
+-------------------
+checking for docbook-xml root dir... /usr/share/xml/docbook/xml-dtd-4.5
+checking for docbook-xsl root dir... network
+configure: error: The Docbook XML DTD was not found, and accessing it
+through network is forbidden.
+
+AND no makefiles are generated.
+
+
+I have xml installed as follows
+
+
+rtBOX [ ~ ]# ls -l /usr/share/xml/docbook
+total 8
+drwxr-xr-x  3 root root 4096 Oct  8 18:31 xml-dtd-4.5
+drwxr-xr-x 19 root root 4096 Oct  8 18:31 xsl-stylesheets-1.75.2
+rtBOX [ ~ ]# 
+
+
+
+
+rtBOX [ ~ ]# ls -l  /usr/share/xml/docbook/xml-dtd-4.5
+total 392
+-rw-r--r-- 1 root root   9174 Oct  8 18:31 calstblx.dtd
+-rw-r--r-- 1 root root  10155 Oct  8 18:31 dbcentx.mod
+-rw-r--r-- 1 root root   1565 Oct  8 18:31 dbgenent.mod
+-rw-r--r-- 1 root root  63686 Oct  8 18:31 dbhierx.mod
+-rw-r--r-- 1 root root   4521 Oct  8 18:31 dbnotnx.mod
+-rw-r--r-- 1 root root 247056 Oct  8 18:31 dbpoolx.mod
+-rw-r--r-- 1 root root   4010 Oct  8 18:31 docbook.cat
+-rw-r--r-- 1 root root   5791 Oct  8 18:31 docbookx.dtd
+drwxr-xr-x 2 root root   4096 Oct  8 18:31 ent
+-rw-r--r-- 1 root root   8184 Oct  8 18:31 htmltblx.mod
+-rw-r--r-- 1 root root  13150 Oct  8 18:31 soextblx.dtd
+rtBOX [ ~ ]# 
+
+
+----------B) if  I do-NOT pass the above to configure makefiles are generatd 
+but  make ends like so
+
+------------------------------
+SGML_CATALOG_FILES=../../../../../doc/docbook/catalog \
+        xsltproc --catalogs --xinclude --nonet  --output xeno-titlepage.xsl \
+ http://docbook.sourceforge.net/release/xsl/current/template/titlepage.xsl 
+xeno-titlepage.spec.xml
+../../../../../doc/docbook/catalog:0: element rewriteURI: Catalog error : 
+rewriteURI entry 'rewritePrefix' broken ?: 
+http://http://docbook.sourceforge.net/release/xsl/current/
+I/O error : Attempt to load network entity 
+http://docbook.sourceforge.net/release/xsl/current/template/titlepage.xsl
+warning: failed to load external entity 
+"http://docbook.sourceforge.net/release/xsl/current/template/titlepage.xsl"
+cannot parse 
+http://docbook.sourceforge.net/release/xsl/current/template/titlepage.xsl
+make[5]: *** [xeno-titlepage.xsl] Error 4
+
+
+
+I would like to have the XML documentation so I would be grateful If someone   
+tell me which files I should have and where in my xml installation these 
+should live to enable xenomai-2.5.5 compilation.
+
+sinceely
+lux-integ
 
