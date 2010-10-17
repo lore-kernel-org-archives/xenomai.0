@@ -1,13 +1,12 @@
-Message-ID: <4CB54F93.4000102@domain.hid>
-Date: Wed, 13 Oct 2010 08:20:03 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <13402262.2612151287339120062.JavaMail.defaultUser@domain.hid>
+Date: Sun, 17 Oct 2010 20:12:00 +0200 (CEST)
+From: "gprizzi@domain.hid" <gprizzi@domain.hid>
 MIME-Version: 1.0
-References: <AANLkTi=6d4sZN11G0TfDXZPfwS8dDkhgE=LjnGcS4AG1@domain.hid>	<1286611432.13186.200.camel@domain.hid>	<AANLkTinfQTmC=165zLerDF1JsYnS-XHaUtWrMuOGmN4D@mail.gmail.com>	<AANLkTi=uCSYFazTzxLQWBhJgkmcoeJbLkd4Wv-O=tzb=@mail.gmail.com>	<4CB2B98A.8010605@domain.hid>	<AANLkTinrw0yUPApypmaN4L+Auv4WtE+BRJr-wkDjiAE-@domain.hid>	<4CB36116.8090507@domain.hid>	<4CB367AA.6020403@domain.hid>	<AANLkTimpY=60yJbWBwnu7KWZMst5ajFvrRoFzVx092oN@mail.gmail.com>	<AANLkTimTRK9RG6md3vVoohx7KFw2uwczZGGaXvajnPxq@domain.hid>	<4CB4103E.80009@domain.hid>	<AANLkTikwqboZGsSC99yMOQZTm48QoT8C6j+RPi3Wcs=k@domain.hid>	<4CB49A14.3050400@domain.hid>
-	<AANLkTik2jiYm58JQkqv_f9E6KTZiyUb4B+kP27xezP2G@mail.gmail.com>
-In-Reply-To: <AANLkTik2jiYm58JQkqv_f9E6KTZiyUb4B+kP27xezP2G@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Xenomai and PEAK can bus card problem
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_314624_7892787.1287339120062"
+Subject: [Xenomai-help] Error building xenomai 2.5.5.1 on kubuntu 10.10 64
+	bit
+Reply-To: "gprizzi@domain.hid" <gprizzi@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -17,44 +16,114 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Peter Pastor <peter.pastor@domain.hid>
-Cc: xenomai@xenomai.org, Jan Kiszka <jan.kiszka@domain.hid>
+To: xenomai@xenomai.org
 
-Peter Pastor wrote:
-> Hey Jan, Wolfgang, Gilles,
-> 
-> After actually trying to reroute the interrupt by cutting and jumping
-> the pins on the PCI card we figured that there was actually a 64bit PCI
-> slot free. Also, according to wikipedia...  "PCI-X 1.0b and PCI-X 2.0
-> are backward compatible with some PCI standards." Thus, we simply stuck
-> the card in that slot and got assigned an interrupt that is not shared
-> by other devices. Well, after rerouting things back to the initial
-> configuration on the card, we were able to load the rtcan modules and
-> communicate on the CAN bus !!
-> 
-> THANKS again for all the help and please let me know if you want me to
-> run some tests. We are running xenomai 2.6.31 with xenomai 2.5.5.1 and
-> thelinux_2.6.31-14.48.diff.gz ubuntu patch and the
-> adeos-ipipe-2.6.31.8-x86-2.4-09.patch on a 64bit dell precision
-> workstation T7500.
-> 
-> The only problem remaining is the fact that we get latency problems the
-> moment we start an opengl window but as mentioned in another thread,
-> there is nothing Xenomai can do about. Also, the MSI workaround is
-> enabled but fails. I hope that this does not cause problems for our
-> purposes of using Xenomai.
+------=_Part_314624_7892787.1287339120062
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-Hi Peter,
+ Hello everyone,
 
-good news. Moving the card in the slot was what I was among the things I
-was thinking about when I suggested you to look at the FAQ. So,
-apparently, I was not precise enough. The same goes for the X issue,
-when I told you to look at the TROUBLESHOOTING guide, the
-TROUBLESHOOTING guide suggests to use "NoAccel" in the X server
-configuration. Did you try that?
+ I am a new user of xenomai.
+ I am trying to install xenomai on a system with the following characterist=
+ics:
 
-Regards.
+ - Intel Q6600
+ - Kubuntu 10.10 - 64 bits version
+ - linux kernel 2.6.35.7
+ - xenomai 2.5.5.1
+ - ggc  compiler version (Ubuntu/Linaro 4.4.4-14ubuntu5) 4.4.5
 
--- 
-                                                                Gilles.
+
+I followed the instructions for "Buildin Debian packages" from xenomai.org.
+Everything was OK till applying patch to kernel.
+
+After that I tried to build the kernel executing the following command:
+
+CONCURRENCY_LEVEL=3D2 CLEAN_SOURCE=3Dno fakeroot make-kpkg --initrd --appen=
+d-to-version -xenomai-2.5.5.1 --revision 1.0 kernel_image kernel_headers
+
+but i get the following errors and build fails.
+
+
+
+
+
+
+
+
+
+CC      kernel/xenomai/nucleus/pod.o
+In file included from /home/giampy/linux-2.6.35.7/arch/x86/include/asm/xeno=
+mai/bits/pod.h:4,
+                 from kernel/xenomai/nucleus/pod.c:47:
+/home/giampy/linux-2.6.35.7/arch/x86/include/asm/xenomai/bits/pod_64.h: In =
+function =E2=80=98xnarch_switch_to=E2=80=99:
+/home/giampy/linux-2.6.35.7/arch/x86/include/asm/xenomai/bits/pod_64.h:98: =
+error: implicit declaration of function =E2=80=98per_cpu_var=E2=80=99
+/home/giampy/linux-2.6.35.7/arch/x86/include/asm/xenomai/bits/pod_64.h:98: =
+error: lvalue required in asm statement
+/home/giampy/linux-2.6.35.7/arch/x86/include/asm/xenomai/bits/pod_64.h:98: =
+error: invalid lvalue in asm output 6
+/home/giampy/linux-2.6.35.7/arch/x86/include/asm/xenomai/bits/pod_64.h:98: =
+error: memory input 14 is not directly addressable
+/home/giampy/linux-2.6.35.7/arch/x86/include/asm/xenomai/bits/pod_64.h: In =
+function =E2=80=98xnarch_thread_trampoline=E2=80=99:
+/home/giampy/linux-2.6.35.7/arch/x86/include/asm/xenomai/bits/pod_64.h:113:=
+ error: lvalue required in asm statement
+/home/giampy/linux-2.6.35.7/arch/x86/include/asm/xenomai/bits/pod_64.h:113:=
+ error: invalid lvalue in asm output 0
+make[4]: *** [kernel/xenomai/nucleus/pod.o] Error 1
+make[3]: *** [kernel/xenomai/nucleus] Error 2
+make[2]: *** [kernel/xenomai] Error 2
+make[1]: *** [kernel] Error 2
+make[1]: *** Waiting for unfinished jobs....
+
+
+Please can anyone help me to solve this problem?
+
+
+
+Thank you in advance.
+
+Gianpaolo Rizzi
+ 
+------=_Part_314624_7892787.1287339120062
+Content-Type: text/html;charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+&nbsp;Hello everyone,<BR><BR>&nbsp;I am a new user of xenomai.<BR>&nbsp;I a=
+m trying to install xenomai on a system with the following characteristics:=
+<BR><BR>&nbsp;- Intel Q6600<BR>&nbsp;- Kubuntu 10.10 - 64 bits version<BR>&=
+nbsp;- linux kernel 2.6.35.7<BR>&nbsp;- xenomai 2.5.5.1<BR>&nbsp;- ggc&nbsp=
+; compiler version (Ubuntu/Linaro 4.4.4-14ubuntu5) 4.4.5<BR><BR><BR>I follo=
+wed the instructions for "Buildin Debian packages" from xenomai.org.<BR>Eve=
+rything was OK till applying patch to kernel.<BR><BR>After that I tried to =
+build the kernel&nbsp;executing the following command:<BR><BR><PRE>CONCURRE=
+NCY_LEVEL=3D2 CLEAN_SOURCE=3Dno fakeroot make-kpkg --initrd --append-to-ver=
+sion -xenomai-2.5.5.1 --revision 1.0 kernel_image kernel_headers<BR><BR>but=
+ i get the following errors and build fails.<BR><BR><BR><BR><BR><BR><BR><BR=
+><BR><BR>CC      kernel/xenomai/nucleus/pod.o<BR>In file included from /hom=
+e/giampy/linux-2.6.35.7/arch/x86/include/asm/xenomai/bits/pod.h:4,<BR>     =
+            from kernel/xenomai/nucleus/pod.c:47:<BR>/home/giampy/linux-2.6=
+.35.7/arch/x86/include/asm/xenomai/bits/pod_64.h: In function =E2=80=98xnar=
+ch_switch_to=E2=80=99:<BR>/home/giampy/linux-2.6.35.7/arch/x86/include/asm/=
+xenomai/bits/pod_64.h:98: error: implicit declaration of function =E2=80=98=
+per_cpu_var=E2=80=99<BR>/home/giampy/linux-2.6.35.7/arch/x86/include/asm/xe=
+nomai/bits/pod_64.h:98: error: lvalue required in asm statement<BR>/home/gi=
+ampy/linux-2.6.35.7/arch/x86/include/asm/xenomai/bits/pod_64.h:98: error: i=
+nvalid lvalue in asm output 6<BR>/home/giampy/linux-2.6.35.7/arch/x86/inclu=
+de/asm/xenomai/bits/pod_64.h:98: error: memory input 14 is not directly add=
+ressable<BR>/home/giampy/linux-2.6.35.7/arch/x86/include/asm/xenomai/bits/p=
+od_64.h: In function =E2=80=98xnarch_thread_trampoline=E2=80=99:<BR>/home/g=
+iampy/linux-2.6.35.7/arch/x86/include/asm/xenomai/bits/pod_64.h:113: error:=
+ lvalue required in asm statement<BR>/home/giampy/linux-2.6.35.7/arch/x86/i=
+nclude/asm/xenomai/bits/pod_64.h:113: error: invalid lvalue in asm output 0=
+<BR>make[4]: *** [kernel/xenomai/nucleus/pod.o] Error 1<BR>make[3]: *** [ke=
+rnel/xenomai/nucleus] Error 2<BR>make[2]: *** [kernel/xenomai] Error 2<BR>m=
+ake[1]: *** [kernel] Error 2<BR>make[1]: *** Waiting for unfinished jobs...=
+.<BR><BR><BR>Please can anyone help me to solve this problem?<BR><BR><BR><B=
+R>Thank you in advance.<BR><BR>Gianpaolo Rizzi<BR>&nbsp;</PRE>
+------=_Part_314624_7892787.1287339120062--
+
 
