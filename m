@@ -1,12 +1,13 @@
-Message-ID: <4CBCB5A7.4070407@domain.hid>
-Date: Mon, 18 Oct 2010 23:01:27 +0200
+Message-ID: <4CBCC40D.8040902@domain.hid>
+Date: Tue, 19 Oct 2010 00:02:53 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <201010182122.40649.lux-integ@domain.hid>
-In-Reply-To: <201010182122.40649.lux-integ@domain.hid>
+References: <30575170.2609951287430146052.JavaMail.defaultUser@domain.hid>
+In-Reply-To: <30575170.2609951287430146052.JavaMail.defaultUser@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] in kernel rtai and xenomai -a question
+Subject: Re: [Xenomai-help] R: Re: Error building xenomai 2.5.5.1 on kubuntu
+ 10.10 64	bit
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,21 +17,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: luxInteg <lux-integ@domain.hid>
-Cc: xenomai@xenomai.org
+To: "gprizzi@domain.hid" <gprizzi@domain.hid>
+Cc: Xenomai help <xenomai@xenomai.org>
 
-luxInteg wrote:
-> I am dabbling with xenomai. and kernel2.6.35.7.  
-> QUESTION:
+gprizzi@domain.hid wrote:
 > 
-> If one enables RTAI in the   (under staging drivers) in kernel  compilation,  
-> will this interfere with the functioning of xenomai?
+> Here below you can find my .config file.
+> 
+> What have I missed?
+> 
+> Thank you for your support.
 
-I do not think there is RTAI in linux 2.6.35.7. Which 2.6.35.7 kernel
-exactly are you talking about? If it is the one from kernel.org, which
-RTAI option are you talking about?
+The problem is that we do not enable CONFIG_CC_STACKPROTECTOR in our
+x86_84 build test and that we got caught. Could you try the following patch?
 
+diff --git a/include/asm-x86/wrappers_64.h b/include/asm-x86/wrappers_64.h
+index a61f6ba..0d04b9c 100644
+--- a/include/asm-x86/wrappers_64.h
++++ b/include/asm-x86/wrappers_64.h
+@@ -78,4 +78,8 @@ typedef union thread_xstate x86_fpustate;
+ #define x86_fpustate_ptr(t) ((t)->fpu.state)
+ #endif
+
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,34)
++#define per_cpu_var(var) (var)
++#endif /* Linux >= 2.6.34 */
++
+ #endif /* _XENO_ASM_X86_WRAPPERS_64_H */
+
+Also note that the configuration you posted is not suitable for running
+Linux with Xenomai, please have a look at this page:
+http://www.xenomai.org/index.php/Configuring_x86_kernels
 
 -- 
                                                                 Gilles.
+
 
