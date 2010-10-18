@@ -1,14 +1,10 @@
-Date: Sun, 17 Oct 2010 23:35:03 +0200
-From: Alexis Berlemont <alexis.berlemont@domain.hid>
-Message-ID: <20101017213503.GA21390@domain.hid>
-References: <4CB41FF2.9030602@domain.hid>
-	<AANLkTi=kR0fT-NFOuC_z=Y8HNVaXu1j5f76VG1TVoFD5@domain.hid>
-	<4CB5CBCE.9050908@domain.hid>
+Message-ID: <4CBC82BD.7050407@domain.hid>
+Date: Mon, 18 Oct 2010 19:24:13 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <4CB5CBCE.9050908@domain.hid>
-Subject: Re: [Xenomai-core] Analogy regressions in xenomai 2.5.5.1
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-core] ftrace and perf support for I-pipe & Xenomai
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -17,493 +13,254 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Daniele Nicolodi <daniele@domain.hid>
-Cc: xenomai@xenomai.org
+To: Xenomai core <Xenomai-core@domain.hid>, adeos-main <adeos-main@gna.org>
 
 Hi,
 
-Daniele Nicolodi wrote:
-> On 13/10/10 08:31, Alexis Berlemont wrote:
-> >> 1. Buffer management is badly broken. It is not possible to run any
-> >> acquisition command that wraps around in the ring buffer. That can be
-> >> simply reproduced with:
-> >>
-> >> cmd_read -v d analogy0 -s 0 -S 0
-> >>
-> >> after a while it will fail with: "cmd_read: a4l_read failed (ret=-32)".
-> >> In dmesg the driver reports: "Analogy: MITE: DME overwrite of free area".
-> > 
-> > OK. Maybe, it is not Analogy's buffer management; it may be specific
-> > to the NI driver. Did you try to reproduce the bug with another driver
-> > (analogy_fake for example)? It may be due to some fix I made this
-> > summer (which is surprising, I thought I tested the change quite
-> > exhaustively... Sorry for that).
-> 
-> The problem is probably in the NI driver. I'm unable to reproduce the
-> bug with the analogy_fake driver. See attached test script.
-> 
+here are the early results of my experiments on enabling ftrace and also
+perf for use under Xenomai. Things work quite well so far, at least on
+x86-64 which allows access to current and current_thread_info from
+arbitrary contexts.
 
-The bug was not located in the NI driver but in the wrong setting of
-the default size of the buffer. It is fixed now. If you have time to
-cross-check on your board, that would be nice (xenomai-abe / branch
-analogy). 
+My primary goal was event tracing via ftrace, and this is the
+still minimalistic outcome (excerpt of a latency run):
 
-> >> 2. Buffer is kept memory mapped after the mapping process dies. If a
-> >> process mapping a device buffer dies before un-mapping the buffer, it is
-> >> not possible to reconfigure the bnuffer. a4l_set_bufsize fails with
-> >> error code 32 and dmesg read "Analogy: a4l_ioctl_bufcfg: please unmap
-> >> before configuring buffer". Sinche the mapping process died I do not
-> >> know how to do this.
-> >>
-> > With a 2.4.x release, did you manage to reproduce the bug?
-> 
-> I'm unable to reproduce the bug with xenomai 2.5.3. See attached test.
-> It depends on a patch to make the --read-buffer-size and
-> --write-buffer-size options to analogy_config to effectively work. Also
-> attached. I do not have a 2.5.4 version handy.
-> 
-> Cheers,
-> -- 
-> Daniele
-> 
+   sampling-4872-4874  [000]  1075.969437: xn_nucleus_thread_suspend: thread=0xffffc90010909840 thread_name=sampling-4872 mask=4 timeout=0 timeout_mode=0 wchan=0x0
+   sampling-4872-4874  [000]  1075.969438: xn_nucleus_sched:     status=2000000
+   sampling-4872-4874  [000]  1075.969438: xn_nucleus_sched_switch: prev=0xffffc90010909840 prev_name=sampling-4872 next=0xffffffff82501e80 next_name=ROOT/0
+    display-4872-4873  [000]  1075.969441: sys_exit:             NR 1 = 70
+    display-4872-4873  [000]  1075.969442: sys_exit_write:       0x46
+    display-4872-4873  [000]  1075.969448: sys_enter:            NR 1 (1, ce3a6000, 50, 1010100, 0, fefefeff)
+    display-4872-4873  [000]  1075.969448: sys_enter_write:      fd: 0x00000001, buf: 0xce3a6000, count: 0x00000050
+    display-4872-4873  [000]  1075.969453: sched_wakeup:         comm=display-4872 pid=4873 prio=120 success=0 target_cpu=000
+    display-4872-4873  [000]  1075.969458: sys_exit:             NR 1 = 80
+    display-4872-4873  [000]  1075.969459: sys_exit_write:       0x50
+    display-4872-4873  [000]  1075.969477: sys_enter:            NR 1 (1, ce3a6000, 50, 1010100, 25252525, fefefeff)
+    display-4872-4873  [000]  1075.969478: sys_enter_write:      fd: 0x00000001, buf: 0xce3a6000, count: 0x00000050
+    display-4872-4873  [000]  1075.969483: sched_wakeup:         comm=display-4872 pid=4873 prio=120 success=0 target_cpu=000
+    display-4872-4873  [000]  1075.969488: sys_exit:             NR 1 = 80
+    display-4872-4873  [000]  1075.969488: sys_exit_write:       0x50
+    display-4872-4873  [000]  1075.969497: sched_wakeup:         comm=gatekeeper/0 pid=44 prio=0 success=1 target_cpu=000
+    display-4872-4873  [000]  1075.969499: sched_stat_runtime:   comm=display-4872 pid=4873 runtime=132372 [ns] vruntime=59700061733 [ns]
+    display-4872-4873  [000]  1075.969501: sched_switch:         prev_comm=display-4872 prev_pid=4873 prev_prio=120 prev_state=S ==> next_comm=gatekeeper/0 next_pid=44 next_prio=0
+    gatekeeper/0-44    [000]  1075.969505: xn_nucleus_thread_resume: thread=0xffffc90010908c40 thread_name=display-4872 mask=200
+    gatekeeper/0-44    [000]  1075.969506: xn_nucleus_sched_remote: status=2000000
+    gatekeeper/0-44    [000]  1075.969507: xn_nucleus_sched:     status=2000000
+    gatekeeper/0-44    [000]  1075.969507: xn_nucleus_sched_switch: prev=0xffffffff82501e80 prev_name=ROOT/0 next=0xffffc90010908c40 next_name=display-4872
+    display-4872-4873  [000]  1075.969511: xn_nucleus_thread_suspend: thread=0xffffc90010908c40 thread_name=display-4872 mask=2 timeout=0 timeout_mode=0 wchan=0xffffc90010909608
 
+The dump above was generated by "trace-cmd report", but the GUI of
+kernelshark works as well. Only a few Xenomai tracepoints were converted
+to TRACE_EVENT, so this is not yet fully chatty.
 
+I furthermore enabled the use of the function and function graph tracer
+over Xenomai (the full loop of the latency sampling thread):
 
-> /**
->  * analogy for linux - input command test program
->  */
-> 
-> #include <stdio.h>
-> #include <stdlib.h>
-> #include <unistd.h>
-> #include <sys/mman.h>
-> #include <errno.h>
-> #include <getopt.h>
-> #include <string.h>
-> 
-> #include <analogy/analogy.h>
-> 
-> /* default device name */
-> #define DEVICE "analogy0"
-> 
-> #define DEBUG(frmt, args...) fprintf(stderr, frmt"\n", ##args)
-> #define ERROR(frmt, args...) fprintf(stderr, frmt"\n", ##args)
-> 
-> int main(int argc, char **argv)
-> {
->      int rv = 0;
->      unsigned long bufsize;
->      void *map = NULL;
->      a4l_desc_t dsc;
-> 
->      char *filename = argv[1];
-> 
->      /* open the device */
->      rv = a4l_open(&dsc, filename);
->      if (rv < 0) {	  
-> 	  ERROR("analogy open");
-> 	  return rv;
->      }
->                     
->      /* cancel any command which might be in progress */
->      a4l_snd_cancel(&dsc, dsc.idx_read_subd);
->      
->      /* get buffer size to map */
->      rv = a4l_get_bufsize(&dsc, dsc.idx_read_subd, &bufsize);
->      if (rv < 0) {
-> 	  ERROR("analogy get bufsize");
-> 	  return rv;
->      }
-> 
->      /* map read subdevice buffer */
->      rv = a4l_mmap(&dsc, dsc.idx_read_subd, bufsize, &map);
->      if (rv < 0) {
-> 	  ERROR("analogy mmap");
-> 	  return rv;
->      }
-> 
->      if (argc > 2) {
-> 	  DEBUG("BUG!");
->      } else {	  
-> 	  /* unmap subdevice buffer */
-> 	  munmap(map, bufsize);
->      }
->      
->      /* close file descriptor */
->      a4l_close(&dsc);
->      
->      exit(0);
-> }
-> 
+ 0)               |  __ipipe_syscall_root() {
+ 0)               |    __ipipe_dispatch_event() {
+ 0)               |      hisyscall_event() {
+ 0)               |        __rt_task_wait_period() {
+ 0)               |          rt_task_wait_period() {
+ 0)               |            xnpod_wait_thread_period() {
+ 0)               |              xnpod_suspend_thread() {
+ 0)               |                __xnpod_schedule() {
+ 0)               |                  ipipe_send_ipi() {
+ 0)   0.425 us    |                    __ipipe_send_ipi();
+ 0)   1.416 us    |                  }
+ 0)               |                  xnsched_pick_next() {
+ 0)   0.368 us    |                    xnsched_tp_pick();
+ 0)               |                    xnsched_sporadic_pick() {
+ 0)   0.368 us    |                      getmlq();
+ 0)   1.375 us    |                    }
+ 0)               |                    xnsched_rt_pick() {
+ 0)   0.372 us    |                      getmlq();
+ 0)   1.374 us    |                    }
+ 0)   0.357 us    |                    xnsched_idle_pick();
+ 0)   6.415 us    |                  }
+ 0)   0.371 us    |                  __phys_addr();
+ ------------------------------------------
+ 0)  samplin-4850  =>    <idle>-0   
+ ------------------------------------------
 
-> commit e7ac38f3f45e439a8d383f3b4adafbb97bf543fe
-> Author: Daniele Nicolodi <nicolodi@domain.hid>
-> Date:   Wed Oct 13 16:03:30 2010 +0200
-> 
->     Make the --read-buffer-size and --write-buffer-size otpions effective.
-> 
-> diff --git a/src/utils/analogy/analogy_config.c b/src/utils/analogy/analogy_config.c
-> index 1482322..2ce3ddd 100644
-> --- a/src/utils/analogy/analogy_config.c
-> +++ b/src/utils/analogy/analogy_config.c
-> @@ -31,28 +31,25 @@
->  
->  #include <analogy/analogy.h>
->  
-> -/* Declare precompilation constants */
-> -#define __NBMIN_ARG 2
-> -#define __NBMAX_ARG 3
-> -#define __OPTS_DELIMITER ","
-> +enum action {
-> +	ATTACH_DRIVER,
-> +	DETACH_DRIVER,
-> +	CONFIGURE_BUFFER_SIZE,
-> +};
->  
-> -/* Declare prog variables */
-> -int vlevel = 1;
-> -int unatt_act = 0;
-> -struct option a4l_conf_opts[] = {
-> -	{"help", no_argument, NULL, 'h'},
-> -	{"verbose", no_argument, NULL, 'v'},
-> -	{"quiet", no_argument, NULL, 'q'},
-> -	{"version", no_argument, NULL, 'V'},
-> -	{"remove", no_argument, NULL, 'r'},
-> -	{"read-buffer-size", required_argument, NULL, 'R'},
-> -	{"write-buffer-size", required_argument, NULL, 'W'},
-> -	{0},
-> +enum subdevice {
-> +	READ_SUBDEVICE,
-> +	WRITE_SUBDEVICE,
->  };
->  
-> +/* Verbosity level */
-> +int vlevel = 1;
-> +
-> +/* Driver specific Options delimiter */
-> +#define DELIMITER ","
-> +
->  int compute_opts(char *opts, unsigned int *nb, unsigned long *res)
->  {
-> -
->  	int ret = 0, len, ofs;
->  
->  	/* Check arg and inits it */
-> @@ -67,7 +64,7 @@ int compute_opts(char *opts, unsigned int *nb, unsigned long *res)
->  	do {
->  		(*nb)++;
->  		len = strlen(opts);
-> -		ofs = strcspn(opts, __OPTS_DELIMITER);
-> +		ofs = strcspn(opts, DELIMITER);
->  		if (res != NULL) {
->  			res[(*nb) - 1] = strtoul(opts, NULL, 0);
->  			if (errno != 0) {
-> @@ -104,79 +101,57 @@ void do_print_usage(void)
->  		"\t\t -W, --write-buffer-size: write buffer size in kB\n");
->  }
->  
-> -int main(int argc, char *argv[])
-> +int detach_driver(const char *devfile)
->  {
-> -	int c;
-> -	char *devfile;
-> -	a4l_lnkdesc_t lnkdsc;
-> -	int chk_nb, ret = 0, fd = -1;
-> -
-> -	/* Init the descriptor structure */
-> -	memset(&lnkdsc, 0, sizeof(a4l_lnkdesc_t));
-> -
-> -	/* Compute arguments */
-> -	while ((c =
-> -		getopt_long(argc, argv, "hvqVrR:W:", a4l_conf_opts,
-> -			    NULL)) >= 0) {
-> -		switch (c) {
-> -		case 'h':
-> -			do_print_usage();
-> -			goto out_a4l_config;
-> -		case 'v':
-> -			vlevel = 2;
-> -			break;
-> -		case 'q':
-> -			vlevel = 0;
-> -			break;
-> -		case 'V':
-> -			do_print_version();
-> -			goto out_a4l_config;
-> -		case 'r':
-> -			unatt_act = 1;
-> -			break;
-> -		case 'R':
-> -			break;
-> -		case 'W':
-> -			break;
-> -		}
-> +	/* Open device */
-> +	int fd = a4l_sys_open(devfile);
-> +	if (fd < 0) {
-> +		fprintf(stderr, "a4l_open failed ret=%d\n", fd);
-> +		return fd;
->  	}
->  
-> -	/* Check the last arguments */
-> -	chk_nb = (unatt_act == 0) ? __NBMIN_ARG : __NBMIN_ARG - 1;
-> -	if (argc - optind < chk_nb) {
-> -		do_print_usage();
-> -		goto out_a4l_config;
-> +	/* Detach driver */
-> +	int ret = a4l_sys_detach(fd);
-> +	if (ret < 0) {
-> +		fprintf(stderr, "a4l_snd_detach failed ret=%d\n", ret);
-> +		return ret;
->  	}
-> +	
-> +	/* Close device */
-> +	a4l_sys_close(fd);
->  
-> -	/* Get the device file name */
-> -	devfile = argv[optind];
-> +	return 0;
-> +}
-> +
-> +int attach_driver(const char *devfile, char *driver, char *opts)
-> +{	
-> +	int ret;
-> +	a4l_lnkdesc_t lnkdsc;
-> +
-> +	/* Init the descriptor structure */
-> +	memset(&lnkdsc, 0, sizeof(a4l_lnkdesc_t));
->  
->  	/* Fill the descriptor with the driver name */
-> -	if (unatt_act == 0) {
-> -		lnkdsc.bname = argv[optind + 1];
-> -		lnkdsc.bname_size = strlen(argv[optind + 1]);
-> -	}
-> +	lnkdsc.bname = driver;
-> +	lnkdsc.bname_size = strlen(driver);
->  
-> -	/* Handle the last arguments: the driver-specific args */
-> -	if (unatt_act == 1 || argc - optind != __NBMAX_ARG)
-> -		lnkdsc.opts_size = 0;
-> -	else {
-> -		char *opts = argv[optind + __NBMAX_ARG - 1];
-> +	/* Handle driver specific options */
-> +	lnkdsc.opts_size = 0;
-> +	if (opts != NULL) {
->  		if ((ret = compute_opts(opts, &lnkdsc.opts_size, NULL)) < 0) {
->  			fprintf(stderr,
->  				"analogy_config: specific-driver options recovery failed\n");
->  			fprintf(stderr,
->  				"\twarning: specific-driver options must be integer value\n");
->  			do_print_usage();
-> -			goto out_a4l_config;
-> +			return -1;
->  		}
->  
->  		lnkdsc.opts = malloc(lnkdsc.opts_size);
->  		if (lnkdsc.opts == NULL) {
->  			fprintf(stderr,
->  				"analogy_config: memory allocation failed\n");
-> -			ret = -ENOMEM;
-> -			goto out_a4l_config;
-> +			return -ENOMEM;
->  		}
->  
->  		if ((ret =
-> @@ -186,38 +161,165 @@ int main(int argc, char *argv[])
->  			fprintf(stderr,
->  				"\twarning: specific-driver options must be integer value\n");
->  			do_print_usage();
-> -			goto out_a4l_config;
-> +			return -1;
->  		}
->  	}
->  
->  	/* Open the specified file */
-> -	fd = a4l_sys_open(devfile);
-> +	int fd = a4l_sys_open(devfile);
->  	if (fd < 0) {
-> -		ret = fd;
-> -		fprintf(stderr, "analogy_config: a4l_open failed ret=%d\n",
-> -			ret);
-> -		goto out_a4l_config;
-> +		fprintf(stderr, "a4l_open failed ret=%d\n", fd);
-> +		return fd;
->  	}
->  
-> -	/* Trigger the ioctl */
-> -	if (unatt_act == 0)
-> -		ret = a4l_sys_attach(fd, &lnkdsc);
-> -	else
-> -		ret = a4l_sys_detach(fd);
-> +	/* Attach driver */
-> +	ret = a4l_sys_attach(fd, &lnkdsc);
->  	if (ret < 0) {
-> -		fprintf(stderr, "analogy_config: %s failed ret=%d\n",
-> -			(unatt_act ==
-> -			 0) ? "a4l_snd_attach" : "a4l_snd_detach", ret);
-> -		goto out_a4l_config;
-> +		fprintf(stderr, "a4l_snd_attach failed ret=%d\n", ret);
-> +		return ret;
->  	}
->  
-> -out_a4l_config:
-> +	/* Close device */	
-> +	a4l_sys_close(fd);
->  
-> -	if (fd >= 0)
-> -		a4l_sys_close(fd);
-> +	free(lnkdsc.opts);
->  
-> -	if (lnkdsc.opts != NULL)
-> -		free(lnkdsc.opts);
-> +	return 0;
-> +}
->  
-> -	return ret;
-> +int configure_buffer_size(char *device, int subd, unsigned long size)
-> +{
-> +	/* Open device */
-> +	a4l_desc_t dsc;
-> +	int ret = a4l_open(&dsc, device);
-> +	if (ret < 0) {
-> +		fprintf(stderr, "a4l_open error ret=%d\n", ret);
-> +		return ret;
-> +	}
-> +
-> +	/* Choose subdevice */
-> +	unsigned long subd_idx = (subd == READ_SUBDEVICE ? dsc.idx_read_subd : dsc.idx_write_subd);
-> +	const char *name = (subd == READ_SUBDEVICE ? "read" : "write");
-> +
-> +	/* Get buffer size */
-> +	unsigned long bufsize;
-> +	ret = a4l_get_bufsize(&dsc, subd_idx, &bufsize);
-> +	if (ret < 0) {
-> +		fprintf(stderr, "a4l_get_bufsize error ret=%d\n", ret);
-> +		return ret;
-> +	}
-> +
-> +	if (size > 0) {
-> +
-> +		/* Configure buffer size */
-> +		ret = a4l_set_bufsize(&dsc, subd_idx, size);
-> +		if (ret < 0) {
-> +			fprintf(stderr, "a4l_set_bufsize error ret=%d\n", ret);
-> +			return -1;
-> +		}
-> +
-> +		/* Report buffer size */
-> +		if (vlevel > 1) {
-> +			fprintf(stdout, "old %s buffer size = %lu\n", name, bufsize);
-> +			fprintf(stdout, "new %s buffer size = %lu\n", name, size);
-> +		}
-> +
-> +	} else {
-> +
-> +		/* Report buffer size */
-> +		if (vlevel > 0)
-> +			fprintf(stdout, "%s buffer size = %lu\n", name, bufsize);
-> +		else
-> +			fprintf(stdout, "%lu\n", bufsize);
-> +
-> +	}
-> +
-> +	/* Close device */
-> +	ret = a4l_close(&dsc);
-> +	if (ret < 0) {
-> +		fprintf(stderr, "a4l_close error ret=%d\n", ret);
-> +		return -1;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +int main(int argc, char *argv[])
-> +{
-> +	int c;
-> +	int action;
-> +	int subdevice = -1;
-> +	unsigned long size = 0;
-> +
-> +	/* Default action is to attach a driver */
-> +	action = ATTACH_DRIVER;
-> +
-> +	struct option options[] = {
-> +		{"help",              no_argument,       NULL, 'h'},
-> +		{"verbose",           no_argument,       NULL, 'v'},
-> +		{"quiet",             no_argument,       NULL, 'q'},
-> +		{"version",           no_argument,       NULL, 'V'},
-> +		{"remove",            no_argument,       NULL, 'r'},
-> +		{"read-buffer-size",  optional_argument, NULL, 'R'},
-> +		{"write-buffer-size", optional_argument, NULL, 'W'},
-> +		{ 0 },
-> +	};
-> +
-> +	/* Compute arguments */
-> +	while ((c =
-> +		getopt_long(argc, argv, "hvqVrR::W::", options, NULL)) >= 0) {
-> +		switch (c) {
-> +		case 'h':
-> +			do_print_usage();
-> +			return 0;
-> +		case 'v':
-> +			vlevel = 2;
-> +			break;
-> +		case 'q':
-> +			vlevel = 0;
-> +			break;
-> +		case 'V':
-> +			do_print_version();
-> +			return 0;
-> +		case 'r':
-> +			action = DETACH_DRIVER;
-> +			break;
-> +		case 'R':
-> +			action = CONFIGURE_BUFFER_SIZE;
-> +			subdevice = READ_SUBDEVICE;
-> +			if (optarg)
-> +				size = strtoul(optarg, NULL, 10);
-> +			break;
-> +		case 'W':
-> +			action = CONFIGURE_BUFFER_SIZE;
-> +			subdevice = WRITE_SUBDEVICE;
-> +			if (optarg)
-> +				size = strtoul(optarg, NULL, 10);
-> +			break;
-> +		}
-> +	}
-> +
-> +	switch (action) {
-> +	case ATTACH_DRIVER:
-> +		if ((argc - optind) == 2)
-> +			return attach_driver(argv[optind], argv[optind+1], NULL);
-> +		if ((argc - optind) == 3)
-> +			return attach_driver(argv[optind], argv[optind+1], argv[optind+2]);
-> +		do_print_usage();
-> +		return -1;
-> +		
-> +	case DETACH_DRIVER:
-> +		if ((argc - optind) == 1)
-> +			return detach_driver(argv[optind]);
-> +		do_print_usage();
-> +		return -1;
-> +
-> +	case CONFIGURE_BUFFER_SIZE:
-> +		if ((argc - optind) == 1)
-> +			return configure_buffer_size(argv[optind], subdevice, size);
-> +		do_print_usage();
-> +		return -1;
-> +	}
-> +
-> +	return 0;
->  }
-> 
+ 0) + 35.050 us   |                                }
+ 0) + 46.805 us   |                              }
+ 0)   0.533 us    |                              __ipipe_walk_pipeline();
+ 0) + 49.183 us   |                            }
+ 0) + 50.242 us   |                          }
+ 0) + 54.607 us   |                        }
+ 0) + 77.866 us   |                    } /* do_softirq */
+ 0)   0.387 us    |                    rcu_irq_exit();
+ 0)   0.383 us    |                    idle_cpu();
+ 0)               |                    tick_nohz_stop_sched_tick() {
+ 0)   1.048 us    |                      ipipe_check_context();
+ 0)               |                      ktime_get() {
+ 0)   0.894 us    |                        read_hpet();
+ 0)   1.972 us    |                      }
+ 0)   0.406 us    |                      update_ts_time_stats();
+ 0)   0.376 us    |                      timekeeping_max_deferment();
+ 0)   0.533 us    |                      rcu_needs_cpu();
+ 0)   0.368 us    |                      printk_needs_cpu();
+ 0)               |                      get_next_timer_interrupt() {
+ 0)   0.406 us    |                        _raw_spin_lock();
+ 0)   0.368 us    |                        _raw_spin_unlock();
+ 0)               |                        hrtimer_get_next_event() {
+ 0)               |                          _raw_spin_lock_irqsave() {
+ 0)   1.059 us    |                            ipipe_check_context();
+ 0)   2.130 us    |                          }
+ 0)   0.353 us    |                          __ipipe_spin_unlock_debug();
+ 0)               |                          _raw_spin_unlock_irqrestore() {
+ 0)               |                            __ipipe_restore_root() {
+ 0)   1.025 us    |                              ipipe_check_context();
+ 0)   2.186 us    |                            }
+ 0)   3.177 us    |                          }
+ 0)   7.955 us    |                        }
+ 0) + 11.035 us   |                      }
+ 0)   0.571 us    |                      select_nohz_load_balancer();
+ 0)               |                      __ipipe_restore_root() {
+ 0)   1.025 us    |                        ipipe_check_context();
+ 0)   2.058 us    |                      }
+ 0) + 25.250 us   |                    }
+ 0) ! 106.862 us  |                  } /* irq_exit */
+ 0) ! 386.745 us  |                } /* smp_apic_timer_interrupt */
+ 0)   <========== |
+ 0) ! 389.524 us  |              } /* __ipipe_sync_stage */
+ 0) ! 390.692 us  |            } /* __ipipe_walk_pipeline */
+ 0) ! 409.742 us  |          } /* __ipipe_dispatch_wired_nocheck */
+ 0) ! 410.819 us  |        } /* __ipipe_dispatch_wired */
+ 0) ! 415.161 us  |      } /* __ipipe_handle_irq */
+ 0) ! 422.534 us  |    } /* __ipipe_halt_root */
+ 0) ! 423.563 us  |  } /* default_idle */
+ 0)   0.387 us    |  __exit_idle();
+ 0)   1.056 us    |  ipipe_check_context();
+ 0)   0.383 us    |  enter_idle();
+ 0)               |  default_idle() {
+ 0)               |    __ipipe_halt_root() {
+ 0)               |      __ipipe_handle_irq() {
+ 0)   0.417 us    |        irq_to_desc();
+ 0)               |        __ipipe_ack_apic() {
+ 0)   0.364 us    |          native_apic_mem_write();
+ 0)   1.355 us    |        }
+ 0)               |        __ipipe_dispatch_wired() {
+ 0)               |          __ipipe_dispatch_wired_nocheck() {
+ 0)               |            xnintr_clock_handler() {
+ 0)   0.360 us    |              rthal_nmi_disarm();
+ 0)               |              xntimer_tick_aperiodic() {
+ 0)               |                xnthread_periodic_handler() {
+ 0)               |                  xnpod_resume_thread() {
+ 0)               |                    xnsched_rt_enqueue() {
+ 0)   0.383 us    |                      addmlq();
+ 0)   1.416 us    |                    }
+ 0)   2.806 us    |                  }
+ 0)   3.820 us    |                }
+ 0)               |                xntimer_next_local_shot() {
+ 0)   0.357 us    |                  native_apic_mem_write();
+ 0)   0.360 us    |                  rthal_nmi_arm();
+ 0)   2.712 us    |                }
+ 0)   8.466 us    |              }
+ 0)               |              __xnpod_schedule() {
+ 0)               |                ipipe_send_ipi() {
+ 0)   0.409 us    |                  __ipipe_send_ipi();
+ 0)   1.413 us    |                }
+ 0)               |                xnsched_pick_next() {
+ 0)   0.356 us    |                  xnsched_tp_pick();
+ 0)               |                  xnsched_sporadic_pick() {
+ 0)   0.439 us    |                    getmlq();
+ 0)   1.427 us    |                  }
+ 0)   4.019 us    |                }
+ 0)   0.353 us    |                __phys_addr();
+ ------------------------------------------
+ 0)    <idle>-0    =>  samplin-4850 
+ ------------------------------------------
 
-> _______________________________________________
-> Xenomai-core mailing list
-> Xenomai-core@domain.hid
-> https://mail.gna.org/listinfo/xenomai-core
+ 0) + 87.054 us   |                } /* __xnpod_schedule */
+ 0) + 88.240 us   |              } /* xnpod_suspend_thread */
+ 0)   0.383 us    |              xntimer_get_overruns();
+ 0)   0.740 us    |              __ipipe_restore_pipeline_head();
+ 0) + 92.217 us   |            } /* xnpod_wait_thread_period */
+ 0) + 93.284 us   |          } /* rt_task_wait_period */
+ 0) + 94.347 us   |        } /* __rt_task_wait_period */
+ 0) + 95.485 us   |      } /* hisyscall_event */
+ 0) + 97.987 us   |    } /* __ipipe_dispatch_event */
+ 0) + 99.422 us   |  } /* __ipipe_syscall_root */
 
+The function graph tracer is nice to understand call paths, but its
+performance impact is devastating (two tracepoints per function, entry
+*and* exit).
+
+Finally I fixed some remaining I-pipe bug and got perf working:
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+   PerfTop:     973 irqs/sec  kernel:29.5%  exact:  0.0% [1000Hz cycles],  (all, cpu: 0)
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+             samples  pcnt function                       DSO
+             _______ _____ ______________________________ _______________________________________________
+
+             5858.00 55.8% loads                          /home/jan/calibrator                           
+              861.00  8.2% __xnpod_schedule               [kernel.kallsyms]                              
+              842.00  8.0% __ipipe_check_percpu_access    [kernel.kallsyms]                              
+              485.00  4.6% read_hpet                      [kernel.kallsyms]                              
+              288.00  2.7% __switch_to                    [kernel.kallsyms]                              
+              144.00  1.4% xnintr_clock_handler           [kernel.kallsyms]                              
+              136.00  1.3% irq_entries_start              [kernel.kallsyms]                              
+              113.00  1.1% ipipe_check_context            [kernel.kallsyms]                              
+               92.00  0.9% xnpod_wait_thread_period       [kernel.kallsyms]                              
+               77.00  0.7% sched_clock                    [kernel.kallsyms]                              
+               73.00  0.7% _raw_spin_lock                 [kernel.kallsyms]                              
+               72.00  0.7% xntimer_tick_aperiodic         [kernel.kallsyms]                              
+               68.00  0.6% xnpod_suspend_thread           [kernel.kallsyms]                              
+               48.00  0.5% intel_pmu_disable_all          [kernel.kallsyms]                              
+               48.00  0.5% __ipipe_send_ipi               [kernel.kallsyms]                              
+               46.00  0.4% __ipipe_restore_root           [kernel.kallsyms]                              
+               46.00  0.4% __ipipe_dispatch_event         [kernel.kallsyms]                              
+               45.00  0.4% xntimer_next_local_shot        [kernel.kallsyms]                              
+               42.00  0.4% sched_clock_local              [kernel.kallsyms]                              
+               41.00  0.4% rt_task_wait_period            /home/jan/xenomai/inst64/lib/libnative.so.3.0.0
+               38.00  0.4% hisyscall_event                [kernel.kallsyms]                              
+               35.00  0.3% perf_ctx_adjust_freq           [kernel.kallsyms]                              
+               34.00  0.3% __pthread_setcanceltype        /lib64/libpthread-2.9.so                       
+
+This is the output of "perf top" using the PMU to trigger NMIs
+frequently, but you can also use it with other event sources, including
+the Xenomai ftrace instrumentations.
+
+The patch queues for those experiments are still rather short. Find all
+I-pipe patches on top of my 2.6.34-x86 queue at
+
+    git://git.kiszka.org/ipipe-2.6 queues/2.6.35-x86-trace
+
+The patches are about allowing preempt_disable/enable over any context
+and hardening a few core paths of ftrace and perf:
+
+    ipipe: Harden ftrace function and function-graph tracer
+    ipipe: Harden clocks used by ftrace and perf
+    ipipe: Remove context check from add/sub_preempt_count
+    ipipe: Add root domain guard to preempt_schedule
+
+Then there is a short queue for Xenomai, demonstrating how the
+instrumentation can be converted:
+
+    git://git.xenomai.org/xenomai-jki.git queues/ftrace
+
+There are surely some traps&pitfalls remaining, even on x86-64. One is,
+e.g., that enabling/disabling tracepoints can impose high latency on
+running real time load (tons of ipipe_critical_enter...). However, if
+used carefully, these tools can be very helpful for Xenomai-based
+development. Another is that in-kernel threads are of course still not
+recognized by the tracer (no own current, no pid). But once we got rid
+of the Xenomai-created in-kernel threads they should work fine across
+all arch and deliver consistent states as well.
+
+One todo on my list is looking for a way to capture and visualize the
+pipeline and hard-irq states of all domains. It might be challenging as
+I want to avoid forking the trace-cmd tools just for this purpose.
+
+If anyone want to give this a try, please drop me a note on your
+experiences.
+
+Jan
 
 -- 
-Alexis.
+Siemens AG, Corporate Technology, CT T DE IT 1
+Corporate Competence Center Embedded Linux
 
