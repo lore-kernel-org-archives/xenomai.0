@@ -1,11 +1,7 @@
-Content-class: urn:content-classes:message
+Message-ID: <4CBD7182.2050500@domain.hid>
+Date: Tue, 19 Oct 2010 12:22:58 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="utf-8"
-Content-Transfer-Encoding: base64
-Date: Tue, 19 Oct 2010 11:37:09 +0200
-Message-ID: <DF9F3A3C150B0646A17FF1487C1B6D5E0380C01F@rennsmail06.eu.thmulti.com>
-In-Reply-To: <4CB78450.70204@domain.hid>
 References: <DF9F3A3C150B0646A17FF1487C1B6D5E0380C00C@rennsmail06.eu.thmulti.com>
 	<DF9F3A3C150B0646A17FF1487C1B6D5E0380C00E@rennsmail06.eu.thmulti.com>
 	<4CB57DB2.3010709@domain.hid>
@@ -13,7 +9,10 @@ References: <DF9F3A3C150B0646A17FF1487C1B6D5E0380C00C@rennsmail06.eu.thmulti.com
 	<4CB5A7DD.9090203@domain.hid>
 	<DF9F3A3C150B0646A17FF1487C1B6D5E0380C011@domain.hid>
 	<4CB78450.70204@domain.hid>
-From: "Daniel Jacques (Alten)" <jacques.daniel@domain.hid>
+	<DF9F3A3C150B0646A17FF1487C1B6D5E0380C01F@rennsmail06.eu.thmulti.com>
+In-Reply-To: <DF9F3A3C150B0646A17FF1487C1B6D5E0380C01F@rennsmail06.eu.thmulti.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] rt_heap and DMA32 zone
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -24,56 +23,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: "Daniel Jacques (Alten)" <jacques.daniel@domain.hid>
 Cc: xenomai@xenomai.org
 
-SGksDQoNCkkgbm90aWNlZCBzb21lIGFsbG9jYXRpb24gZmFpbHVyZSB1c2luZyBrbWFsbG9jIGlu
-IGNhc2Ugb2YgR0ZQX0RNQTMyIHdpdGggYmlnIHNpemUsIGV2ZW4gaWYgSSBtb2RpZmllZCB0aGUg
-Q09ORklHX0ZPUkNFX01BWF9aT05FT1JERVIgdG8gYmUgY29oZXJlbnQgd2l0aCBteSBtYXggc2l6
-ZSAoMzJNQikuDQpJIGRvbid0IGtub3cgdGhlIHJlYXNvbiBvZiB0aGlzIGZhaWx1cmUuIEkgYW0g
-aW50ZXJlc3RpbmcgYnkgYW55IGlkZWEgYWJvdXQgdGhpcyBwb2ludCAuLi4NCk1lYW53aGlsZSwg
-dG8gYXZvaWQgdGhpcyB0cm91YmxlIEkgcGVyZm9ybWVkIHRoZSBmb2xsb3dpbmcgYWRkaXRpb25h
-bCBwYXRjaCBpbiBrc3JjL251Y2xldXMvaGVhcC5jIHRvIGZvcmNlIHVzaW5nIG9mIF9fZ2V0X2Zy
-ZWVfcGFnZXMgaW5zdGVhZCBvZiBrbWFsbG9jIGluIGNhc2Ugb2YgR0ZQX0RNQTMyIGZsYWcuDQpK
-YWNxdWVzDQoNCioqKiAuLi8uLi8uLi94ZW5vbWFpLTIuNS40X29sZC9rc3JjL251Y2xldXMvaGVh
-cC5jICAgICAgMjAxMC0xMC0xMyAxNzoxMDoyNy4wMDAwMDAwMDAgKzAyMDANCi0tLSBoZWFwLmMg
-ICAgICAyMDEwLTEwLTE5IDA5OjIyOjEzLjAwMDAwMDAwMCArMDIwMA0KKioqKioqKioqKioqKioq
-IHN0YXRpYyBpbmxpbmUgdm9pZCAqX19hbGxvY19hbmRfcmVzZXJ2ZV8NCioqKiAxMDMzLDEwMzkg
-KioqKg0KICAgICAgICAgICAgICAgICAqIE90aGVyd2lzZSwgd2UgaGF2ZSBiZWVuIGFza2VkIGZv
-ciBzb21lIGttYWxsb2MoKQ0KICAgICAgICAgICAgICAgICAqIHNwYWNlLiBBc3N1bWUgdGhhdCB3
-ZSBjYW4gd2FpdCB0byBnZXQgdGhlIHJlcXVpcmVkIG1lbW9yeS4NCiAgICAgICAgICAgICAgICAg
-Ki8NCiEgICAgICAgICAgICAgICBpZiAoc2l6ZSA8PSBLTUFMTE9DX01BWF9TSVpFKQ0KICAgICAg
-ICAgICAgICAgICAgICAgICAgcHRyID0ga21hbGxvYyhzaXplLCBrbWZsYWdzIHwgR0ZQX0tFUk5F
-TCk7DQogICAgICAgICAgICAgICAgZWxzZQ0KICAgICAgICAgICAgICAgICAgICAgICAgcHRyID0g
-KHZvaWQgKilfX2dldF9mcmVlX3BhZ2VzKGttZmxhZ3MgfCBHRlBfS0VSTkVMLA0KLS0tIDEwMzMs
-MTAzOSAtLS0tDQogICAgICAgICAgICAgICAgICogT3RoZXJ3aXNlLCB3ZSBoYXZlIGJlZW4gYXNr
-ZWQgZm9yIHNvbWUga21hbGxvYygpDQogICAgICAgICAgICAgICAgICogc3BhY2UuIEFzc3VtZSB0
-aGF0IHdlIGNhbiB3YWl0IHRvIGdldCB0aGUgcmVxdWlyZWQgbWVtb3J5Lg0KICAgICAgICAgICAg
-ICAgICAqLw0KISAgICAgICAgICAgICAgIGlmICghKGttZmxhZ3MgJiBHRlBfRE1BMzIpICYmIChz
-aXplIDw9IEtNQUxMT0NfTUFYX1NJWkUpKQ0KICAgICAgICAgICAgICAgICAgICAgICAgcHRyID0g
-a21hbGxvYyhzaXplLCBrbWZsYWdzIHwgR0ZQX0tFUk5FTCk7DQogICAgICAgICAgICAgICAgZWxz
-ZQ0KICAgICAgICAgICAgICAgICAgICAgICAgcHRyID0gKHZvaWQgKilfX2dldF9mcmVlX3BhZ2Vz
-KGttZmxhZ3MgfCBHRlBfS0VSTkVMLA0KKioqKioqKioqKioqKioqIHN0YXRpYyB2b2lkIF9fdW5y
-ZXNlcnZlX2FuZF9mcmVlX2hlYXAodm8NCioqKiAxMDY2LDEwNzIgKioqKg0KICAgICAgICAgICAg
-ICAgIGZvciAodmFkZHIgPSB2YWJhc2U7IHZhZGRyIDwgdmFiYXNlICsgc2l6ZTsgdmFkZHIgKz0g
-UEFHRV9TSVpFKQ0KICAgICAgICAgICAgICAgICAgICAgICAgQ2xlYXJQYWdlUmVzZXJ2ZWQodmly
-dF90b19wYWdlKHZhZGRyKSk7DQogIA0KISAgICAgICAgICAgICAgIGlmIChzaXplIDw9IEtNQUxM
-T0NfTUFYX1NJWkUpDQogICAgICAgICAgICAgICAgICAgICAgICBrZnJlZShwdHIpOw0KICAgICAg
-ICAgICAgICAgIGVsc2UNCiAgICAgICAgICAgICAgICAgICAgICAgIGZyZWVfcGFnZXMoKHVuc2ln
-bmVkIGxvbmcpcHRyLCBnZXRfb3JkZXIoc2l6ZSkpOw0KLS0tIDEwNjYsMTA3MiAtLS0tDQogICAg
-ICAgICAgICAgICAgZm9yICh2YWRkciA9IHZhYmFzZTsgdmFkZHIgPCB2YWJhc2UgKyBzaXplOyB2
-YWRkciArPSBQQUdFX1NJWkUpDQogICAgICAgICAgICAgICAgICAgICAgICBDbGVhclBhZ2VSZXNl
-cnZlZCh2aXJ0X3RvX3BhZ2UodmFkZHIpKTsNCiAgDQohICAgICAgICAgICAgICAgaWYgKCEoa21m
-bGFncyAmIEdGUF9ETUEzMikgJiYgKHNpemUgPD0gS01BTExPQ19NQVhfU0laRSkpDQogICAgICAg
-ICAgICAgICAgICAgICAgICBrZnJlZShwdHIpOw0KICAgICAgICAgICAgICAgIGVsc2UNCiAgICAg
-ICAgICAgICAgICAgICAgICAgIGZyZWVfcGFnZXMoKHVuc2lnbmVkIGxvbmcpcHRyLCBnZXRfb3Jk
-ZXIoc2l6ZSkpOw0KDQotLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KRnJvbTogR2lsbGVzIENo
-YW50ZXBlcmRyaXggW21haWx0bzpnaWxsZXMuY2hhbnRlcGVyZHJpeEB4ZW5vbWFpLm9yZ10gDQpT
-ZW50OiB2ZW5kcmVkaSAxNSBvY3RvYnJlIDIwMTAgMDA6MzANClRvOiBEYW5pZWwgSmFjcXVlcyAo
-QWx0ZW4pDQpDYzogeGVub21haS1oZWxwQGduYS5vcmcNClN1YmplY3Q6IFJlOiBbWGVub21haS1o
-ZWxwXSBydF9oZWFwIGFuZCBETUEzMiB6b25lDQoNCkRhbmllbCBKYWNxdWVzIChBbHRlbikgd3Jv
-dGU6DQo+IFllcywgaXQgc2VlbXMgdG8gYmUgdGhlIHNvbHV0aW9uLg0KPiBJIHBlcmZvcm1lZCB0
-aGUgZm9sbG93aW5nIHBhdGNoIGFuZCB0aGUgcHJvYmxlbSBpcyBzb2x2ZWQgb24gbXkgYXBwbGlj
-YXRpb24NCg0KQXBwbGllZCwgdGhhbmtzLg0KDQotLSANCiAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBHaWxsZXMuDQo=
+Daniel Jacques (Alten) wrote:
+> Hi,
+> 
+> I noticed some allocation failure using kmalloc in case of GFP_DMA32 with big size, even if I modified the CONFIG_FORCE_MAX_ZONEORDER to be coherent with my max size (32MB).
+> I don't know the reason of this failure. I am interesting by any idea about this point ...
+> Meanwhile, to avoid this trouble I performed the following additional patch in ksrc/nucleus/heap.c to force using of __get_free_pages instead of kmalloc in case of GFP_DMA32 flag.
+> Jacques
+
+At this point, the problem seems to be in linux code. So, there should
+be no need to modify xenomai code. Are you sure that kmalloc does not
+fail due to fragmentation?
+
+-- 
+					    Gilles.
 
