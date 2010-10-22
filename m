@@ -1,12 +1,12 @@
-Message-ID: <4CC20803.3060003@domain.hid>
-Date: Fri, 22 Oct 2010 23:54:11 +0200
+Message-ID: <4CC20AD2.4060501@domain.hid>
+Date: Sat, 23 Oct 2010 00:06:10 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4CC206AE.5010704@domain.hid>
-In-Reply-To: <4CC206AE.5010704@domain.hid>
+References: <AANLkTinN+KBK2B77opSCwDvb9bneObxL1+FTmmwpQGup@domain.hid>
+In-Reply-To: <AANLkTinN+KBK2B77opSCwDvb9bneObxL1+FTmmwpQGup@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] SMP load
+Subject: Re: [Xenomai-help] Slow hard drive access in xenomai
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -16,57 +16,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Simon Leonard <sleonard@domain.hid>
+To: Peter Pastor <peter.pastor@domain.hid>
 Cc: xenomai@xenomai.org
 
-Simon Leonard wrote:
-> I sort of have a newbie problem regarding getting multiple threads 
-> running on multiple cores (quad core). It did work on my previous system 
-> (2.5-rc1) but I can't get it to work with 2.5.5.2 (or 2.5.5.1, 2.5.4). 
-> Here's my small example:
+Peter Pastor wrote:
+> Hey there,
 > 
-> #include <pthread.h>
-> void* thread( void* ){
->    unsigned long long i=0;
->    while( 1 ) i++;
->    return NULL;
-> }
+> I am running xenomai 2.5.4 on linux 2.6.31.4-ipipe. (.config is attached)
 > 
-> int main(){
+> The system is running fairly stable, however, the hard drive access is
+> very slow.
 > 
->    pthread_t tid1, tid2, tid3, tid4;
->    pthread_attr_t at1, at2, at3, at4;
+> When running
+> $ hdparam -tT /dev/sdh
 > 
->    pthread_attr_init( &at1 );
->    pthread_attr_init( &at2 );
->    pthread_attr_init( &at3 );
->    pthread_attr_init( &at4 );
+> I get a access rate of around 3mb/s under xenomai. However, when I boot
+> the regular ubuntu (non-rt) kernel I get an access rate of about 120mb/s
 > 
->    pthread_create( &tid1, &at1, thread, NULL );
->    pthread_create( &tid2, &at2, thread, NULL );
->    pthread_create( &tid3, &at3, thread, NULL );
->    pthread_create( &tid4, &at4, thread, NULL );
-> 
->    pthread_join( tid1, NULL );
-> 
->    return 0;
-> }
-> 
-> If I compile with
-> g++ main.cpp -lpthread
-> and run I get 400% load (4 cores)
-> 
-> If I compile with
-> g++ main.cpp `/usr/xenomai/bin/xeno-config --skin posix --cflags` 
-> `/usr/xenomai/bin/xeno-config --skin posix --ldflags`
-> I only get 100% load (1 core)
+> I do not really know where to start looking for the cause of this
+> problem. I disabled CONFIG_PCI_MSI (see config). Also, i can see that
+> IRQ16 is shared between ioc0 (I assume that is my hard drive)
 
-You need to use sched_setaffinity to set the cpu on which each thread
-should run. Xenomai does not do any load balancing because threads
-migrations introduce latencies.
+Nope, your hard disk controller is "ahci". The question now is to know
+if the configuration with which you have this issue is exactly the same
+as the non-RT one, only with Xenomai enabled. If you are in this case,
+then please send the two boot logs.
 
-By the way, if you do that with this test program, your computer will be
-frozen unless you enable Xenomai watchdog.
+Also, does this happen while running any Xenomai program?
+Do you really need things like NUMA, SPARSEMEM, SECCOMP, AUDITSYSCALL,
+KPROBES, FTRACE, SELINUX?
+
 
 -- 
                                                                 Gilles.
