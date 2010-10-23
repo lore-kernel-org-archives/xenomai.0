@@ -1,5 +1,5 @@
-Message-ID: <4CC2E9F8.9040205@domain.hid>
-Date: Sat, 23 Oct 2010 15:58:16 +0200
+Message-ID: <4CC2ECC1.5080207@domain.hid>
+Date: Sat, 23 Oct 2010 16:10:09 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <1281709057.650414331@domain.hid> <4C65583D.3030800@domain.hid>
@@ -30,16 +30,24 @@ To: edward.robbins@domain.hid
 Cc: xenomai@xenomai.org
 
 edward.robbins@domain.hid wrote:
-> Oh no... 
+> Oh no...
 > 
 > dmesg | grep SMI
 > 
-> CPU0: Thermal monitoring handled by SMI
-> CPU1: Thermal monitoring handled by SMI
+> CPU0: Thermal monitoring handled by SMI CPU1: Thermal monitoring
+> handled by SMI
 > 
-> So I guess that didn't work? I have used the 'Globally disable SMIs option' at kernel config time.... there is an option in  the BIOS to disable SMI but I was having problems with it... will investigate. Any other options?
+> So I guess that didn't work? I have used the 'Globally disable SMIs
+> option' at kernel config time.... there is an option in  the BIOS to
+> disable SMI but I was having problems with it... will investigate.
+> Any other options?
 
-What do the boot logs say?
+See:
+http://www.xenomai.org/index.php/Configuring_x86_kernels#In_case_of_high_latencies
+
+Note that if SMIs are involved in regulating temperature on your system,
+disabling them may cause your CPU to overheat. So, when running dohell,
+you should check the CPU temperature.
 
 -- 
                                                                 Gilles.
