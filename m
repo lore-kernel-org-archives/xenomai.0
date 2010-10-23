@@ -1,12 +1,20 @@
-Message-ID: <4CC35937.8060001@domain.hid>
-Date: Sat, 23 Oct 2010 23:52:55 +0200
+Message-ID: <4CC2F334.4060804@domain.hid>
+Date: Sat, 23 Oct 2010 16:37:40 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <1287845650.32319352@domain.hid>
-	<4CC30152.6060208@domain.hid>	<1287850862.74211776@domain.hid>
-	<1287851184.14497074@domain.hid>
-	<1287859578.113425004@domain.hid>
-In-Reply-To: <1287859578.113425004@domain.hid>
+References: <1281709057.650414331@domain.hid> <4C65583D.3030800@domain.hid>
+	<1281960823.030215299@domain.hid> <4C692FC3.5040802@domain.hid>
+	<1283531433.789315367@domain.hid>
+	<1283590285.1709.2153.camel@domain.hid>
+	<1287134519.029617765@domain.hid>
+	<1287143691.028416668@domain.hid> <4CB85C64.9040307@domain.hid>
+	<1287496324.10921156@domain.hid> <4CBDF92F.20403@domain.hid>
+	<1287832106.517512323@domain.hid> <4CC2C361.5020608@domain.hid>
+	<1287832939.719617755@domain.hid> <4CC2C8AB.70708@domain.hid>
+	<1287841513.64613295@domain.hid> <4CC2E86F.5060304@domain.hid>
+	<1287842205.0925650@domain.hid> <4CC2E9F8.9040205@domain.hid>
+	<1287844373.032420306@domain.hid>
+In-Reply-To: <1287844373.032420306@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] Very high latencies under stress testing
@@ -23,59 +31,16 @@ To: edward.robbins@domain.hid
 Cc: xenomai@xenomai.org
 
 edward.robbins@domain.hid wrote:
-> But no cigar...
-> 
-> Latency at 4491us, trace attached
-> 
-> I've supposedly got SMI disabled, MTRRs are disabled, ACPI processor
-> disabled, CPU frequency scaling disabled, MSI and MSI-X disabled. I
-> can't disable USB legacy in the BIOS because the option is grayed out
-> (and no other options seem to make it work. I'm running through the
-> troubleshooting file to see if there's anything else I can try but I
-> can't see anything.
-> 
-> The BIOS has a ridiculous number of options, I have gone through and
-> disabled most of them even though in many cases I'm really not sure
-> what it is that they do - I just hope they don't cause anything to
-> melt:
-> 
-> CRID, disabled memory thermal management, turned off lots of ACPI and
+> Assuming you mean /var/log/messages and dmesg, they say nothing about
+> SMIs except what I previously wrote.
 
-Pay attention not to disable ACPI completely, as this enables APM, the
-legacy power management, and this one causes high latencies.
+Then it means, as I tried to explain in the link I posted, that Xenomai
+SMI workaround code does not support your chipset. But adding it should
+be really easy.
 
-> power options - C2, C3, S4 wakeup from RTC, Trusted Execution
-
-
-> Technology, P-States, Thermal Mode, C-States, C-State Pop Up Mode,
-> C-State Pop Down Mode, DeepC4, Hard C4E, C6 Enhanced Multi Threaded
-> Thermal Monitoring (EMTTM), Bi-directional PROCHOT, Dynamic FSB
-> Switching, Turbo Mode, ACPI 3.0 T-States, CPU Digital Thermal Sensor,
-> PCI Clock Run, Storage Break Event, PCIE Break Event, PCI Break
-> Event, EHCI Break Event, UHCI Break Event, HDA Break Event, ACPI S3,
-> wake on PME and set "ACPI Selection" from Acpi3.0 to Acpi1.0B in the
-> hope it will be better supported.
-> 
-> I'm at a bit of a loss. Next I will try to figure out how to read the
-> traces. The latency consistently jumps from <20us (normally around
-> 14/15) to just under 4500us each time I run the test, so I am
-> wondering if it is some specific thing that takes this long. I will
-> also try to read the LTP output to see what it's doing when it fails,
-> and see if this is consistent.
-> 
-> Gilles, I really appreciate all the help, thank you.
-
-You are welcome, no problem. A few things to try: could you try and use
-the latest I-pipe for 2.6.35? Just to rule out anything which would have
-been fixed since 2.6.32.
-
-Something else, did you try to run your system completely without
-framebuffer and X-window? In good old text mode?
-
-I do not know what more to suggest. The traces you sent show
-consistently ipipe_check_context at the point where you have the issue,
-I do not know whether this is a coincidence. Do you get any I-pipe
-message in the kernel logs after the latency peak happens?
+And yes, legacy usb is based on SMIs. But as far as I know, it is
+something for keyboards and mice (emulating PS/2 peripherals using USB
+peripherals). It should not prevent you from booting from an USB key.
 
 -- 
                                                                 Gilles.
