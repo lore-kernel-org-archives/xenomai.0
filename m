@@ -1,11 +1,12 @@
-Message-ID: <4CC30BAC.8090704@domain.hid>
-Date: Sat, 23 Oct 2010 18:22:04 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Date: Sat, 23 Oct 2010 17:26:24 +0100 (BST)
+From: edward.robbins@domain.hid
 MIME-Version: 1.0
-References: <1287845650.32319352@domain.hid> <4CC309B6.8070505@domain.hid>
-In-Reply-To: <4CC309B6.8070505@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain;charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <1287850862.74211776@domain.hid>
+References: <1287845650.32319352@domain.hid> <4CC30152.6060208@domain.hid>
+	<1287850862.74211776@domain.hid>
+Message-ID: <1287851184.14497074@domain.hid>
 Subject: Re: [Xenomai-help] Very high latencies under stress testing
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -16,31 +17,19 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: edward.robbins@domain.hid
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Gilles Chanteperdrix wrote:
-> edward.robbins@domain.hid wrote:
->> Forgot to copy the list:
->>
->>
->> Okay, so smi.c does not appear to contain my the PCI ID of my LPC
->> chip. Motherboard has intel GS45 chipset, and "lspci -nn" says:
->>
->> 00:1f.0 ISA bridge [0601]: Intel Corporation ICH9M-E LPC Interface
->> Controller [8086:2917] (rev 03)
->>
->> Is this what I'm looking for? (What has ISA got to do with this?)
-> 
-> The address of the register used to disable the SMIs is stored in the
-> PCI configuration space of this PCI peripheral. This address is an
-> io-port address, so, technically the ISA bus is used to disable the
-> SMIs. "LPC", means low pin count, which, I think refer to the wayq this
-> peripheral is wired somewhere.
-> 
-> 
-http://en.wikipedia.org/wiki/LPC_bus
+Oh, and I got the SMI-enabled chipset found and SMI workaround enabled mess=
+ages this time=0A=0AOn Saturday, 23 October, 2010 5:21pm, edward.robbins@domain.hid=
+fordtechnologies.co.uk said:=0A=0A>>> So I guess I should add=0A>>>=0A>>> #=
+define PCI_DEVICE_ID_INTEL_ICH9_9        0x2917=0A>>=0A>> The define exists=
+ in include/linux/pci_ids.h as PCI_DEVICE_ID_INTEL_ICH9_1=0A>>=0A>> Adding =
+it to xenoami/pci_ids.s is only useful if you are using an older=0A>> kerne=
+l which has not got this define. 2.6.33 here has it.=0A>>=0A> =0A> Okay, I'=
+m using 2.6.32, but it exists here too, don't know how I missed it.=0A> =0A=
+> Just finished installing kernel.. booting now, ready to dohell ;)=0A> =0A=
+> Edward=0A> =0A> =0A> _______________________________________________=0A> =
+Xenomai-help mailing list=0A> Xenomai-help@domain.hid> https://mail.gna.org=
+/listinfo/xenomai-help=0A> =0A
 
--- 
-                                                                Gilles.
 
