@@ -1,21 +1,9 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <4CC5D8FF.5080109@domain.hid>
-References: <20101007115728.GA24500@domain.hid>
-	<4CADBDC2.8080600@domain.hid> <20101008070148.GB2255@domain.hid>
-	<1286530884.13186.109.camel@domain.hid>
-	<20101013090353.GA6902@domain.hid>
-	<1286961375.1759.71.camel@domain.hid>
-	<20101013092617.GB6902@domain.hid>
-	<1286981521.1759.83.camel@domain.hid>
-	<1288025329.26618.132.camel@domain.hid>  <4CC5C80E.2070004@domain.hid>
-	<1288033731.26618.161.camel@domain.hid>  <4CC5D742.9080307@domain.hid>
-	<1288034435.26618.164.camel@domain.hid>  <4CC5D8FF.5080109@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Mon, 25 Oct 2010 23:12:46 +0200
-Message-ID: <1288041166.26618.182.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] kernel oopses when killing realtime task
+MIME-Version: 1.0
+Date: Tue, 26 Oct 2010 02:49:03 +0530
+Message-ID: <AANLkTin30_=udvCD6D87cV4yqYoMt+BMTo4is8COdv_f@domain.hid>
+From: Peter Warner <xenomai.start@domain.hid>
+Content-Type: multipart/alternative; boundary=000e0cd25856a961e80493778ae4
+Subject: [Xenomai-help] Serial Driver for PCI Card
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -25,93 +13,53 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Mon, 2010-10-25 at 21:22 +0200, Jan Kiszka wrote:
-> Am 25.10.2010 21:20, Philippe Gerum wrote:
-> > On Mon, 2010-10-25 at 21:15 +0200, Jan Kiszka wrote:
-> >> Am 25.10.2010 21:08, Philippe Gerum wrote:
-> >>> On Mon, 2010-10-25 at 20:10 +0200, Jan Kiszka wrote:
-> >>>> Am 25.10.2010 18:48, Philippe Gerum wrote:
-> >>>>> On Wed, 2010-10-13 at 16:52 +0200, Philippe Gerum wrote: 
-> >>>>>>>
-> >>>>>>> Should we test IPIPE_STALL_FLAG on all but current CPUs?
-> >>>>>>
-> >>>>>> That would solve this particular issue, but we should drain the pipeline
-> >>>>>> out of any Xenomai critical section. The way it is done now may induce a
-> >>>>>> deadlock (e.g. CPU0 waiting for CPU1 to acknowledge critical entry in
-> >>>>>> ipipe_enter_critical when getting some IPI, and CPU1 waiting hw IRQs off
-> >>>>>> for CPU0 to release the Xenomai lock that annoys us right now).
-> >>>>>>
-> >>>>>> I'll come up with something hopefully better and tested in the next
-> >>>>>> days.
-> >>>>>>
-> >>>>>
-> >>>>> Sorry for the lag. In case that helps, here is another approach, based
-> >>>>> on telling the pipeline to ignore the irq about to be detached, so that
-> >>>>> it passes all further occurrences down to the next domain, without
-> >>>>
-> >>>> Err, won't this irritate that next domain, ie. won't Linux dump warnings
-> >>>> about a spurious/unhandled IRQ? I think either the old handler shall
-> >>>> receive the last event or no one.
-> >>>
-> >>> Flipping the IRQ modes within a ipipe_critical_enter/exit section gives
-> >>> you that guarantee. You are supposed to have disabled the irq line
-> >>> before detaching, and critical IPIs cannot be acknowledged until all
-> >>> CPUs have re-enabled interrupts at some point. Therefore, there are only
-> >>> two scenarii:
-> >>>
-> >>> - irq was disabled before delivery, and a pending interrupt is masked by
-> >>> the PIC and never delivered to the CPU.
-> >>>
-> >>> - an interrupt sneaked in before disabling, it is currently processed by
-> >>> the pipeline in the low handler on some CPU, in which case interrupts
-> >>> are off, so a critical IPI could be acked yet, and the irq mode bits
-> >>> still allow dispatching to the target domain on that CPU. The assumption
-> >>> which is happily made is that only head domains are interested in
-> >>> un-virtualizing irqs, so the dispatch will happen immediately, while the
-> >>> handler is still valid (actually, we are not allowed to un-virtualize
-> >>> root irqs, and intermediate Adeos domains are already considered as
-> >>> endangered species, so this is fine).
-> >>>
-> >>>>
-> >>>> Why this complex solution, why not simply draining (via critical_enter
-> >>>> or whatever) - but _after_ xnintr_irq_detach, ie. while the related
-> >>>> resources are still valid?
-> >>>>
-> >>>
-> >>> Because it's already too late. You have cleared the handler pointer when
-> >>> un-virtualizing via xnarch_release_irq, and the wired irq dispatcher or
-> >>> the log syncer on another CPU could then branch to eip $0.
-> >>
-> >> Just make ipipe_virtualize_irq install a nop handler instead of NULL.
-> > 
-> > This does not solve the issue of the last interrupt which should be
-> > processed. You don't want to miss it.
-> 
-> Don't understand. No interrupt is supposed to arrive anymore on
-> deregistration, the last user is supposed to be down by now. We just
-> need to catch though that slipped through.
+--000e0cd25856a961e80493778ae4
+Content-Type: text/plain; charset=ISO-8859-1
 
-No, we are handling the case when an interrupt is currently handled on a
-CPU which is not the one that unregisters the IRQ, and which managed to
-sneak in while the irq source was about to be masked in the PIC. This is
-purely asynchronous for us in SMP, since we don't have irq descriptor
-locks for the pipeline, we only have them at Xenomai level, which is one
-step too far to protected our low level Adeos handler against that kind
-of race. Logically speaking, there is no reason why you would accept to
-leave that irq unhandled if it is there and known from a CPU (it was
-actually the first point you raised).
+Hi,
 
-The proper way to fix this issue would have been to fix xnintr_detach in
-the first place, because calling ipipe_virtualize_irq() while holding a
-lock with irqs off is wrong. We could have then drained the pipeline
-from the unregistering code. I'm rather going for a decent solution
-which is not prone to regression for 2.x.
+I have two serial ports in my system one is generic and another one is on
+add-on cards(PCI).
+I compiled the xenomai serial driver as a module and when I am trying to
+load it using the following command:
+
+modprobe xeno_16550A io=0x3f8, 0x2f8 irq=4,3 baud_base=115200,115200
+
+then I am getting the error message unknown symbol in object for more
+information type dmesg.  when I am typing dmesg I am getting the message
+unknown identifier "io".
+
+Can anyone suggest what are the steps to be taken or to modify the driver
+for the extended serial port.  or Else I have the linux driver for it
+provided by the vendor Is there any way that it can be made to xenomai
+complaint. If it can be done then please suggest what are the steps to be
+taken.
+
+Bye Bye
 
 -- 
-Philippe.
+Regards,
+peter
 
+--000e0cd25856a961e80493778ae4
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
+Hi,<br><br>I have two serial ports in my system one is generic and another =
+one is on add-on cards(PCI). <br>I compiled the xenomai serial driver as a =
+module and when I am trying to load it using the following command:<br><br>
+modprobe xeno_16550A io=3D0x3f8, 0x2f8 irq=3D4,3 baud_base=3D115200,115200<=
+br><br>then I am getting the error message unknown symbol in object for mor=
+e information type dmesg.=A0 when I am typing dmesg I am getting the messag=
+e=A0 unknown identifier &quot;io&quot;.<br>
+<br>Can anyone suggest what are the steps to be taken or to modify the driv=
+er for the extended serial port.=A0 or Else I have the linux driver for it =
+provided by the vendor Is there any way that it can be made to xenomai comp=
+laint. If it can be done then please suggest what are the steps to be taken=
+.<br>
+<br>Bye Bye<br clear=3D"all"><br>-- <br>Regards,<br>peter<br><br>
+
+--000e0cd25856a961e80493778ae4--
 
