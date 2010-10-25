@@ -1,18 +1,20 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <1286981521.1759.83.camel@domain.hid>
-References: <20101007115728.GA24500@domain.hid>
-	<4CADBDC2.8080600@domain.hid> <20101008070148.GB2255@domain.hid>
-	<1286530884.13186.109.camel@domain.hid>
-	<20101013090353.GA6902@domain.hid>
-	<1286961375.1759.71.camel@domain.hid>
-	<20101013092617.GB6902@domain.hid>
-	<1286981521.1759.83.camel@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Mon, 25 Oct 2010 18:48:49 +0200
-Message-ID: <1288025329.26618.132.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] kernel oopses when killing realtime task
+MIME-Version: 1.0
+In-Reply-To: <AANLkTimp5_OXSo_EGkn6O0mexR1Oxb_m9SJEfPmrSf0M@mail.gmail.com>
+References: <AANLkTinN+KBK2B77opSCwDvb9bneObxL1+FTmmwpQGup@domain.hid>
+	<4CC20AD2.4060501@domain.hid>
+	<AANLkTimyj5TRgan5nE5ey6h8-WO_-na=U66si-e9Xx9F@mail.gmail.com>
+	<4CC44C02.4050003@domain.hid>
+	<AANLkTinjUHYvNJwcuEd2RQuQLWL3WvGx-jFb5iG88f0c@domain.hid>
+	<AANLkTikGFw6dxQHC1ukWHsTP-QoHzpbDzeMdLj=jZRP5@domain.hid>
+	<AANLkTimsGjmPNE1GOzmyF4pHQe6m4RmFphuhGqdTrs1D@mail.gmail.com>
+	<4CC5603E.1090707@domain.hid> <4CC566A2.2000702@domain.hid>
+	<AANLkTik76N-mL6ogtzFJ_vX4NF=7oDc_zdCA_y33z+Jh@domain.hid>
+	<AANLkTimp5_OXSo_EGkn6O0mexR1Oxb_m9SJEfPmrSf0M@mail.gmail.com>
+Date: Mon, 25 Oct 2010 11:04:48 -0700
+Message-ID: <AANLkTi=Ne35gXZ=BRo09eXRjEtvPaXnkp6ix9tMWUwvn@domain.hid>
+From: Peter Pastor <peter.pastor@domain.hid>
+Content-Type: multipart/alternative; boundary=0016363b9056f63982049374d3a2
+Subject: Re: [Xenomai-help] Slow hard drive access in xenomai
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -22,52 +24,125 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Pavel Machek <pma@domain.hid>
-Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai@xenomai.org
+To: Eric Noulard <eric.noulard@domain.hid>
+Cc: xenomai@xenomai.org
 
-On Wed, 2010-10-13 at 16:52 +0200, Philippe Gerum wrote: 
-> > 
-> > Should we test IPIPE_STALL_FLAG on all but current CPUs?
-> 
-> That would solve this particular issue, but we should drain the pipeline
-> out of any Xenomai critical section. The way it is done now may induce a
-> deadlock (e.g. CPU0 waiting for CPU1 to acknowledge critical entry in
-> ipipe_enter_critical when getting some IPI, and CPU1 waiting hw IRQs off
-> for CPU0 to release the Xenomai lock that annoys us right now).
-> 
-> I'll come up with something hopefully better and tested in the next
-> days.
-> 
+--0016363b9056f63982049374d3a2
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-Sorry for the lag. In case that helps, here is another approach, based
-on telling the pipeline to ignore the irq about to be detached, so that
-it passes all further occurrences down to the next domain, without
-handling any on the target domain anymore. Once this operation is done,
-we are safe, and no handler for this interrupt could run in parallel on
-other CPUs for the given domain, while we attempt to clear it in the
-domain's IRQ descriptor. Said differently, the inserted code tells the
-pipeline to skip the target domain when handling the interrupt.
+Hey Eric,
 
-For this to work, we have to ignore the irq before we enter the irqs off
-section which disables the interrupt descriptor in Xenomai (breaking the
-section across the IRQ unregistration call - i.e. xnarch_release_irq() -
-would introduce a race). Patches against 2.6.35.7 and Xenomai 2.5.5.2,
-but the backport should be reasonably straightforward.
+Thanks for your prompt response. However, I do not have the "FLAT_MEMORY"
+option available. I can only select the sparse memory model.
 
-HTH,
+I have upgraded to 2.6.35 and so far the problem has not occured. However, =
+I
+haven't used the system much. Again, it seems that a specific event trigger=
+s
+the problem.
 
-Cherry-pick these commits for the I-pipe part:
-http://git.denx.de/?p=ipipe-2.6.git;a=commit;h=b786b2c5963d5884d60f265a6efc40276d8487e2
-http://git.denx.de/?p=ipipe-2.6.git;a=commit;h=ca5f69024fec66c7b25d9b5b6507501c4a47c3a9
+Also, can someone tell me whether the ubuntu kernel patch is recommended to
+use with Xenomai ? If so, can someone tell me how to get the patch for my
+particular kernel version 2.6.35 ? ( I am sorry if this is the wrong mailin=
+g
+list to ask this question )
+
+THANKS,
+ peter
 
 
-And the rest is on top of Xenomai 2.5.5.2:
-http://git.xenomai.org/?p=xenomai-rpm.git;a=commit;h=737e3bb09e2364658cfc59a0037f5e39a81fb799
-http://git.xenomai.org/?p=xenomai-rpm.git;a=commit;h=5ee600768743906342a350ecbca51a01ca5689b4
+On Mon, Oct 25, 2010 at 9:24 AM, Eric Noulard <eric.noulard@domain.hid>wrote=
+:
 
--- 
-Philippe.
+> 2010/10/25 Peter Pastor <peter.pastor@domain.hid>:
+> > Hey guys,
+> >
+>
+> [...]
+>
+> > @Eric:
+> > I still haven't managed to disable SPARSEMEM. From what I understand, i=
+n
+> > order to disable SPARSEMEM I have to disable options that "selects:
+> > SPARSEMEM". MEMORY_HOTPLUG_SPARSE depends on SPARSEMEM,
+> disabling/enabling
+> > it does not get me closer to be able to disable SPARSEMEM, does it ?
+>
+> The MEMORY_HOTPLUG_SPARSE dependency was just an example.
+> You may have several other options depending on it (I don't know the
+> full list of them).
+>
+> In the "Memory model" section of kernel configuration
+> if you chose "FLAT" memory model it should disable any "SPARSEMEM_xx"
+> option alltogether.
+>
+> However as stated by Jan, your problem does not seem to be in this area
+> may be you should first upgrade to 2.6.35 and then tweak more kernel
+> options if the problem persist.
+>
+> --
+> Erk
+> Membre de l'April - =AB promouvoir et d=E9fendre le logiciel libre =BB -
+> http://www.april.org
+>
 
+--0016363b9056f63982049374d3a2
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
+Hey Eric,<br><br>Thanks for your prompt response. However, I do not have th=
+e &quot;FLAT_MEMORY&quot; option available. I can only select the sparse me=
+mory model.<br><br>I have upgraded to 2.6.35 and so far the problem has not=
+ occured. However, I haven&#39;t used the system much. Again, it seems that=
+ a specific event triggers the problem.<br>
+<br>Also, can someone tell me whether the ubuntu kernel patch is recommende=
+d to use with Xenomai ? If so, can someone tell me how to get the patch for=
+ my particular kernel version 2.6.35 ? ( I am sorry if this is the wrong ma=
+iling list to ask this question )<br>
+<br>THANKS,<br>=A0peter<br><br><br><div class=3D"gmail_quote">On Mon, Oct 2=
+5, 2010 at 9:24 AM, Eric Noulard <span dir=3D"ltr">&lt;<a href=3D"mailto:er=
+ic.noulard@domain.hid">eric.noulard@domain.hid</a>&gt;</span> wrote:<br><bloc=
+kquote class=3D"gmail_quote" style=3D"margin: 0pt 0pt 0pt 0.8ex; border-lef=
+t: 1px solid rgb(204, 204, 204); padding-left: 1ex;">
+2010/10/25 Peter Pastor &lt;<a href=3D"mailto:peter.pastor@domain.hid">peter=
+.pastor@domain.hid</a>&gt;:<br>
+&gt; Hey guys,<br>
+&gt;<br>
+<br>
+[...]<br>
+<div class=3D"im"><br>
+&gt; @Eric:<br>
+&gt; I still haven&#39;t managed to disable SPARSEMEM. From what I understa=
+nd, in<br>
+&gt; order to disable SPARSEMEM I have to disable options that &quot;select=
+s:<br>
+&gt; SPARSEMEM&quot;. MEMORY_HOTPLUG_SPARSE depends on SPARSEMEM, disabling=
+/enabling<br>
+&gt; it does not get me closer to be able to disable SPARSEMEM, does it ?<b=
+r>
+<br>
+</div>The MEMORY_HOTPLUG_SPARSE dependency was just an example.<br>
+You may have several other options depending on it (I don&#39;t know the<br=
+>
+full list of them).<br>
+<br>
+In the &quot;Memory model&quot; section of kernel configuration<br>
+if you chose &quot;FLAT&quot; memory model it should disable any &quot;SPAR=
+SEMEM_xx&quot;<br>
+option alltogether.<br>
+<br>
+However as stated by Jan, your problem does not seem to be in this area<br>
+may be you should first upgrade to 2.6.35 and then tweak more kernel<br>
+options if the problem persist.<br>
+<div><div></div><div class=3D"h5"><br>
+--<br>
+Erk<br>
+Membre de l&#39;April - =AB promouvoir et d=E9fendre le logiciel libre =BB =
+-<br>
+<a href=3D"http://www.april.org" target=3D"_blank">http://www.april.org</a>=
+<br>
+</div></div></blockquote></div><br>
 
+--0016363b9056f63982049374d3a2--
 
