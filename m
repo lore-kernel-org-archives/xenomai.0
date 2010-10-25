@@ -1,25 +1,27 @@
-Message-ID: <4CC5F525.7040206@domain.hid>
-Date: Mon, 25 Oct 2010 23:22:45 +0200
+Message-ID: <4CC5F612.8040508@domain.hid>
+Date: Mon, 25 Oct 2010 23:26:42 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <20101007115728.GA24500@domain.hid>	
-	<4CADBDC2.8080600@domain.hid>
-	<20101008070148.GB2255@domain.hid>	
-	<1286530884.13186.109.camel@domain.hid>	
-	<20101013090353.GA6902@domain.hid>	
-	<1286961375.1759.71.camel@domain.hid>	
-	<20101013092617.GB6902@domain.hid>	
-	<1286981521.1759.83.camel@domain.hid>	
-	<1288025329.26618.132.camel@domain.hid> <4CC5C80E.2070004@domain.hid>	
-	<1288033731.26618.161.camel@domain.hid> <4CC5D742.9080307@domain.hid>	
-	<1288034435.26618.164.camel@domain.hid> <4CC5D8FF.5080109@domain.hid>
-	<1288041166.26618.182.camel@domain.hid>
-In-Reply-To: <1288041166.26618.182.camel@domain.hid>
+References: <AANLkTinN+KBK2B77opSCwDvb9bneObxL1+FTmmwpQGup@domain.hid>	
+	<4CC20AD2.4060501@domain.hid>	
+	<AANLkTimyj5TRgan5nE5ey6h8-WO_-na=U66si-e9Xx9F@mail.gmail.com>	
+	<4CC44C02.4050003@domain.hid>	
+	<AANLkTinjUHYvNJwcuEd2RQuQLWL3WvGx-jFb5iG88f0c@domain.hid>	
+	<AANLkTikGFw6dxQHC1ukWHsTP-QoHzpbDzeMdLj=jZRP5@domain.hid>	
+	<AANLkTimsGjmPNE1GOzmyF4pHQe6m4RmFphuhGqdTrs1D@mail.gmail.com>	
+	<4CC5603E.1090707@domain.hid>	<4CC566A2.2000702@domain.hid>	
+	<AANLkTik76N-mL6ogtzFJ_vX4NF=7oDc_zdCA_y33z+Jh@domain.hid>	
+	<AANLkTimp5_OXSo_EGkn6O0mexR1Oxb_m9SJEfPmrSf0M@mail.gmail.com>	
+	<AANLkTi=Ne35gXZ=BRo09eXRjEtvPaXnkp6ix9tMWUwvn@domain.hid>	
+	<4CC5C93E.70503@domain.hid>	
+	<AANLkTimS7-CEvA74Viwu4mLm9-O_NpakXYG7=FXK1L1f@domain.hid>	
+	<4CC5DD1F.4090405@domain.hid> <1288041712.26618.189.camel@domain.hid>
+In-Reply-To: <1288041712.26618.189.camel@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig900302A116AC96596BFDF5CE"
+	boundary="------------enig6987D8C713068FCBD775E599"
 Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-help] kernel oopses when killing realtime task
+Subject: Re: [Xenomai-help] Slow hard drive access in xenomai
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -30,150 +32,98 @@ List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+Cc: xenomai@xenomai.org, Peter Pastor <peter.pastor@domain.hid>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig900302A116AC96596BFDF5CE
+--------------enig6987D8C713068FCBD775E599
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-Am 25.10.2010 23:12, Philippe Gerum wrote:
-> On Mon, 2010-10-25 at 21:22 +0200, Jan Kiszka wrote:
->> Am 25.10.2010 21:20, Philippe Gerum wrote:
->>> On Mon, 2010-10-25 at 21:15 +0200, Jan Kiszka wrote:
->>>> Am 25.10.2010 21:08, Philippe Gerum wrote:
->>>>> On Mon, 2010-10-25 at 20:10 +0200, Jan Kiszka wrote:
->>>>>> Am 25.10.2010 18:48, Philippe Gerum wrote:
->>>>>>> On Wed, 2010-10-13 at 16:52 +0200, Philippe Gerum wrote:=20
->>>>>>>>>
->>>>>>>>> Should we test IPIPE_STALL_FLAG on all but current CPUs?
->>>>>>>>
->>>>>>>> That would solve this particular issue, but we should drain the =
-pipeline
->>>>>>>> out of any Xenomai critical section. The way it is done now may =
-induce a
->>>>>>>> deadlock (e.g. CPU0 waiting for CPU1 to acknowledge critical ent=
-ry in
->>>>>>>> ipipe_enter_critical when getting some IPI, and CPU1 waiting hw =
-IRQs off
->>>>>>>> for CPU0 to release the Xenomai lock that annoys us right now).
->>>>>>>>
->>>>>>>> I'll come up with something hopefully better and tested in the n=
-ext
->>>>>>>> days.
->>>>>>>>
->>>>>>>
->>>>>>> Sorry for the lag. In case that helps, here is another approach, =
-based
->>>>>>> on telling the pipeline to ignore the irq about to be detached, s=
-o that
->>>>>>> it passes all further occurrences down to the next domain, withou=
-t
->>>>>>
->>>>>> Err, won't this irritate that next domain, ie. won't Linux dump wa=
-rnings
->>>>>> about a spurious/unhandled IRQ? I think either the old handler sha=
-ll
->>>>>> receive the last event or no one.
->>>>>
->>>>> Flipping the IRQ modes within a ipipe_critical_enter/exit section g=
-ives
->>>>> you that guarantee. You are supposed to have disabled the irq line
->>>>> before detaching, and critical IPIs cannot be acknowledged until al=
-l
->>>>> CPUs have re-enabled interrupts at some point. Therefore, there are=
- only
->>>>> two scenarii:
->>>>>
->>>>> - irq was disabled before delivery, and a pending interrupt is mask=
-ed by
->>>>> the PIC and never delivered to the CPU.
->>>>>
->>>>> - an interrupt sneaked in before disabling, it is currently process=
-ed by
->>>>> the pipeline in the low handler on some CPU, in which case interrup=
-ts
->>>>> are off, so a critical IPI could be acked yet, and the irq mode bit=
-s
->>>>> still allow dispatching to the target domain on that CPU. The assum=
-ption
->>>>> which is happily made is that only head domains are interested in
->>>>> un-virtualizing irqs, so the dispatch will happen immediately, whil=
-e the
->>>>> handler is still valid (actually, we are not allowed to un-virtuali=
-ze
->>>>> root irqs, and intermediate Adeos domains are already considered as=
-
->>>>> endangered species, so this is fine).
->>>>>
->>>>>>
->>>>>> Why this complex solution, why not simply draining (via critical_e=
-nter
->>>>>> or whatever) - but _after_ xnintr_irq_detach, ie. while the relate=
-d
->>>>>> resources are still valid?
->>>>>>
->>>>>
->>>>> Because it's already too late. You have cleared the handler pointer=
- when
->>>>> un-virtualizing via xnarch_release_irq, and the wired irq dispatche=
-r or
->>>>> the log syncer on another CPU could then branch to eip $0.
->>>>
->>>> Just make ipipe_virtualize_irq install a nop handler instead of NULL=
-=2E
+Am 25.10.2010 23:21, Philippe Gerum wrote:
+> On Mon, 2010-10-25 at 21:40 +0200, Jan Kiszka wrote:
+>> Am 25.10.2010 21:03, Peter Pastor wrote:
+>>> Hey Jan,
 >>>
->>> This does not solve the issue of the last interrupt which should be
->>> processed. You don't want to miss it.
+>>> I did not apply any ubuntu patch for kernel 2.6.35 (since I do not ha=
+ve
+>>> one).  Also, good to know that I should not use xenomai patches toget=
+her
+>>> with ubuntu patches.
+>>>
+>>> Anyway, the problem occurred as well with the kernel 2.6.35 (see atta=
+ched
+>>> dmesg_bad_2.6.35)
+>>> I also attached the config.
+>>>
 >>
->> Don't understand. No interrupt is supposed to arrive anymore on
->> deregistration, the last user is supposed to be down by now. We just
->> need to catch though that slipped through.
->=20
-> No, we are handling the case when an interrupt is currently handled on =
-a
-> CPU which is not the one that unregisters the IRQ, and which managed to=
-
-> sneak in while the irq source was about to be masked in the PIC. This i=
-s
-> purely asynchronous for us in SMP, since we don't have irq descriptor
-> locks for the pipeline, we only have them at Xenomai level, which is on=
+>> ...
+>>
+>>> [ 5751.714643] irq 16: nobody cared (try booting with the "irqpoll" o=
+ption)
+>>> [ 5751.714649] Pid: 0, comm: swapper Tainted: P            2.6.35-ipi=
+pe-2.5.4-slim #2
+>>> [ 5751.714653] Call Trace:
+>>> [ 5751.714655]  <IRQ>  [<ffffffff8108bb56>] __report_bad_irq+0x26/0xa=
+0
+>>> [ 5751.714668]  [<ffffffff8108bd5c>] note_interrupt+0x18c/0x1d0
+>>> [ 5751.714672]  [<ffffffff8108c77d>] handle_fasteoi_irq+0xcd/0x100
+>>> [ 5751.714677]  [<ffffffff8100656d>] handle_irq+0x1d/0x30
+>>> [ 5751.714681]  [<ffffffff81005a40>] do_IRQ+0x70/0x100
+>>> [ 5751.714685]  [<ffffffff81092147>] __ipipe_sync_stage+0x207/0x20d
+>>> [ 5751.714689]  [<ffffffff810059d0>] ? do_IRQ+0x0/0x100
+>>> [ 5751.714692]  [<ffffffff8109214d>] ? __xirq_end+0x0/0x9c
+>>> [ 5751.714696]  [<ffffffff810059d0>] ? do_IRQ+0x0/0x100
+>>> [ 5751.714700]  [<ffffffff810926a3>] __ipipe_walk_pipeline+0x113/0x12=
+0
+>>> [ 5751.714706]  [<ffffffff81024414>] __ipipe_handle_irq+0x124/0x310
+>>> [ 5751.714708]  [<ffffffff8108bf10>] ? __ipipe_ack_fasteoi_irq+0x0/0x=
+10
+>>> [ 5751.714712]  [<ffffffff814f78d3>] common_interrupt+0x13/0x2c
+>>> [ 5751.714713]  <EOI>  [<ffffffff810249d6>] ? __ipipe_halt_root+0x26/=
+0x40
+>>> [ 5751.714718]  [<ffffffff81061191>] ? atomic_notifier_call_chain+0x1=
+1/0x20
+>>> [ 5751.714722]  [<ffffffff8100cbd5>] default_idle+0x45/0x50
+>>> [ 5751.714725]  [<ffffffff8100198a>] cpu_idle+0x7a/0xd0
+>>> [ 5751.714728]  [<ffffffff814f14a1>] start_secondary+0x1c1/0x1c5
+>>> [ 5751.714730] handlers:
+>>> [ 5751.714730] [<ffffffff8136ed60>] (usb_hcd_irq+0x0/0xb0)
+>>> [ 5751.714735] [<ffffffffa00bac30>] (mpt_interrupt+0x0/0xa00 [mptbase=
+])
+>>> [ 5751.714747] Disabling IRQ #16
+>>
+>> I'm not yet sure, but a first thought: We have a shared fasteoi IRQ
+>> here, and we are on SMP. Compared to vanilla, the fasteoi flow of ipip=
 e
-> step too far to protected our low level Adeos handler against that kind=
+>> looks so much different to me ATM that I tend to believe two cores end=
 
-> of race. Logically speaking, there is no reason why you would accept to=
+>> up having this IRQ queued at the same time. One runs first and handles=
 
-> leave that irq unhandled if it is there and known from a CPU (it was
-> actually the first point you raised).
-
-If that handler is already running, the IRQ will get handled, we just
-need to wait for the handler to finish after we returned from
-ipipe_virtualize_irq =3D> thus we need a barrier here.
-
-If the handler was about to run but we deregistered it a bit quicker,
-the IRQ need not be addressed at device level anymore. Reason: we
-already switched off any IRQ assertions in the device before we entered
-ipipe_virtualize_irq. So no harm is caused, that IRQ line is deasserted
-already (IOW: the IRQ became a spurious one while cleaning up).
-
+>> all triggers, the second bails out like above.
+>>
+>> Philippe, we _end_ fasteoi in the ipipe ack path. Do we mask them prio=
+r
+>> to this? What prevents a second IRQ arriving after this early eoi?
 >=20
-> The proper way to fix this issue would have been to fix xnintr_detach i=
-n
-> the first place, because calling ipipe_virtualize_irq() while holding a=
+> All fasteoi handlers are supposed to mask+ack when the pipeline is
+> enabled,=20
 
-> lock with irqs off is wrong. We could have then drained the pipeline
-> from the unregistering code. I'm rather going for a decent solution
-> which is not prone to regression for 2.x.
->=20
+What am I missing? The code I was looking at (__ipipe_ack_fasteoi) just
+does a regular eoi at chip level.
 
-Again, I see no reason for a more complex solution than avoiding that
-NULL pointer dereference at ipipe level as I suggested and adding a very
-simply system wide barrier right after dropping nklock in xnintr_detach.
+> to avoid interrupt storm due to the deferral we may introduce
+> in the irq delivery. I do see this in the regular ioapic chip
+> descriptor, but this is lacking with interrupt remap. I guess we could
+> have a problem with Intel IOMMUs.
+
+IOMMUs should blow up the system anyway once a PCI driver is used in the
+RT domain (DMA remapping involved Linux locks and may even allocate
+memory). Guess we should add a !IPIPE to their Kconfig entries.
 
 Jan
 
 
---------------enig900302A116AC96596BFDF5CE
+--------------enig6987D8C713068FCBD775E599
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -182,10 +132,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v2.0.15 (GNU/Linux)
 Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org/
 
-iEYEARECAAYFAkzF9SUACgkQitSsb3rl5xTodgCeI+dcxMaEKFmlXbPTQbfCBNKP
-PLIAnR9s3lIzPM18WTQ/URg6ASlKxcrj
-=1PF/
+iEYEARECAAYFAkzF9hIACgkQitSsb3rl5xReSQCgylK00Gqcr+qzhIa14EEKmZmh
+BmgAn2zzaetAdI7qGmntWm4wqajvYxVH
+=tlef
 -----END PGP SIGNATURE-----
 
---------------enig900302A116AC96596BFDF5CE--
+--------------enig6987D8C713068FCBD775E599--
 
