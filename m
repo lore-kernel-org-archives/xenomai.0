@@ -1,24 +1,15 @@
-Message-ID: <4CC5D8FF.5080109@domain.hid>
-Date: Mon, 25 Oct 2010 21:22:39 +0200
+Message-ID: <4CC5DD1F.4090405@domain.hid>
+Date: Mon, 25 Oct 2010 21:40:15 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <20101007115728.GA24500@domain.hid>	
-	<4CADBDC2.8080600@domain.hid>
-	<20101008070148.GB2255@domain.hid>	
-	<1286530884.13186.109.camel@domain.hid>	
-	<20101013090353.GA6902@domain.hid>	
-	<1286961375.1759.71.camel@domain.hid>	
-	<20101013092617.GB6902@domain.hid>	
-	<1286981521.1759.83.camel@domain.hid>	
-	<1288025329.26618.132.camel@domain.hid> <4CC5C80E.2070004@domain.hid>	
-	<1288033731.26618.161.camel@domain.hid> <4CC5D742.9080307@domain.hid>
-	<1288034435.26618.164.camel@domain.hid>
-In-Reply-To: <1288034435.26618.164.camel@domain.hid>
+References: <AANLkTinN+KBK2B77opSCwDvb9bneObxL1+FTmmwpQGup@domain.hid>	<4CC20AD2.4060501@domain.hid>	<AANLkTimyj5TRgan5nE5ey6h8-WO_-na=U66si-e9Xx9F@mail.gmail.com>	<4CC44C02.4050003@domain.hid>	<AANLkTinjUHYvNJwcuEd2RQuQLWL3WvGx-jFb5iG88f0c@domain.hid>	<AANLkTikGFw6dxQHC1ukWHsTP-QoHzpbDzeMdLj=jZRP5@domain.hid>	<AANLkTimsGjmPNE1GOzmyF4pHQe6m4RmFphuhGqdTrs1D@mail.gmail.com>	<4CC5603E.1090707@domain.hid>	<4CC566A2.2000702@domain.hid>	<AANLkTik76N-mL6ogtzFJ_vX4NF=7oDc_zdCA_y33z+Jh@domain.hid>	<AANLkTimp5_OXSo_EGkn6O0mexR1Oxb_m9SJEfPmrSf0M@mail.gmail.com>	<AANLkTi=Ne35gXZ=BRo09eXRjEtvPaXnkp6ix9tMWUwvn@domain.hid>	<4CC5C93E.70503@domain.hid>
+	<AANLkTimS7-CEvA74Viwu4mLm9-O_NpakXYG7=FXK1L1f@domain.hid>
+In-Reply-To: <AANLkTimS7-CEvA74Viwu4mLm9-O_NpakXYG7=FXK1L1f@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig50BD61C66AE875C49EA1CC1A"
+	boundary="------------enigE0099271D0642EFC00EA8357"
 Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-help] kernel oopses when killing realtime task
+Subject: Re: [Xenomai-help] Slow hard drive access in xenomai
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
@@ -28,103 +19,76 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
+To: Peter Pastor <peter.pastor@domain.hid>, Philippe Gerum <rpm@xenomai.org>
 Cc: xenomai@xenomai.org
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig50BD61C66AE875C49EA1CC1A
-Content-Type: text/plain; charset=UTF-8
+--------------enigE0099271D0642EFC00EA8357
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
-Am 25.10.2010 21:20, Philippe Gerum wrote:
-> On Mon, 2010-10-25 at 21:15 +0200, Jan Kiszka wrote:
->> Am 25.10.2010 21:08, Philippe Gerum wrote:
->>> On Mon, 2010-10-25 at 20:10 +0200, Jan Kiszka wrote:
->>>> Am 25.10.2010 18:48, Philippe Gerum wrote:
->>>>> On Wed, 2010-10-13 at 16:52 +0200, Philippe Gerum wrote:=20
->>>>>>>
->>>>>>> Should we test IPIPE_STALL_FLAG on all but current CPUs?
->>>>>>
->>>>>> That would solve this particular issue, but we should drain the pi=
-peline
->>>>>> out of any Xenomai critical section. The way it is done now may in=
-duce a
->>>>>> deadlock (e.g. CPU0 waiting for CPU1 to acknowledge critical entry=
- in
->>>>>> ipipe_enter_critical when getting some IPI, and CPU1 waiting hw IR=
-Qs off
->>>>>> for CPU0 to release the Xenomai lock that annoys us right now).
->>>>>>
->>>>>> I'll come up with something hopefully better and tested in the nex=
-t
->>>>>> days.
->>>>>>
->>>>>
->>>>> Sorry for the lag. In case that helps, here is another approach, ba=
-sed
->>>>> on telling the pipeline to ignore the irq about to be detached, so =
-that
->>>>> it passes all further occurrences down to the next domain, without
->>>>
->>>> Err, won't this irritate that next domain, ie. won't Linux dump warn=
-ings
->>>> about a spurious/unhandled IRQ? I think either the old handler shall=
-
->>>> receive the last event or no one.
->>>
->>> Flipping the IRQ modes within a ipipe_critical_enter/exit section giv=
-es
->>> you that guarantee. You are supposed to have disabled the irq line
->>> before detaching, and critical IPIs cannot be acknowledged until all
->>> CPUs have re-enabled interrupts at some point. Therefore, there are o=
-nly
->>> two scenarii:
->>>
->>> - irq was disabled before delivery, and a pending interrupt is masked=
- by
->>> the PIC and never delivered to the CPU.
->>>
->>> - an interrupt sneaked in before disabling, it is currently processed=
- by
->>> the pipeline in the low handler on some CPU, in which case interrupts=
-
->>> are off, so a critical IPI could be acked yet, and the irq mode bits
->>> still allow dispatching to the target domain on that CPU. The assumpt=
-ion
->>> which is happily made is that only head domains are interested in
->>> un-virtualizing irqs, so the dispatch will happen immediately, while =
-the
->>> handler is still valid (actually, we are not allowed to un-virtualize=
-
->>> root irqs, and intermediate Adeos domains are already considered as
->>> endangered species, so this is fine).
->>>
->>>>
->>>> Why this complex solution, why not simply draining (via critical_ent=
-er
->>>> or whatever) - but _after_ xnintr_irq_detach, ie. while the related
->>>> resources are still valid?
->>>>
->>>
->>> Because it's already too late. You have cleared the handler pointer w=
-hen
->>> un-virtualizing via xnarch_release_irq, and the wired irq dispatcher =
-or
->>> the log syncer on another CPU could then branch to eip $0.
->>
->> Just make ipipe_virtualize_irq install a nop handler instead of NULL.
+Am 25.10.2010 21:03, Peter Pastor wrote:
+> Hey Jan,
 >=20
-> This does not solve the issue of the last interrupt which should be
-> processed. You don't want to miss it.
+> I did not apply any ubuntu patch for kernel 2.6.35 (since I do not have=
 
-Don't understand. No interrupt is supposed to arrive anymore on
-deregistration, the last user is supposed to be down by now. We just
-need to catch though that slipped through.
+> one).  Also, good to know that I should not use xenomai patches togethe=
+r
+> with ubuntu patches.
+>=20
+> Anyway, the problem occurred as well with the kernel 2.6.35 (see attach=
+ed
+> dmesg_bad_2.6.35)
+> I also attached the config.
+>=20
+
+=2E..
+
+> [ 5751.714643] irq 16: nobody cared (try booting with the "irqpoll" opt=
+ion)
+> [ 5751.714649] Pid: 0, comm: swapper Tainted: P            2.6.35-ipipe=
+-2.5.4-slim #2
+> [ 5751.714653] Call Trace:
+> [ 5751.714655]  <IRQ>  [<ffffffff8108bb56>] __report_bad_irq+0x26/0xa0
+> [ 5751.714668]  [<ffffffff8108bd5c>] note_interrupt+0x18c/0x1d0
+> [ 5751.714672]  [<ffffffff8108c77d>] handle_fasteoi_irq+0xcd/0x100
+> [ 5751.714677]  [<ffffffff8100656d>] handle_irq+0x1d/0x30
+> [ 5751.714681]  [<ffffffff81005a40>] do_IRQ+0x70/0x100
+> [ 5751.714685]  [<ffffffff81092147>] __ipipe_sync_stage+0x207/0x20d
+> [ 5751.714689]  [<ffffffff810059d0>] ? do_IRQ+0x0/0x100
+> [ 5751.714692]  [<ffffffff8109214d>] ? __xirq_end+0x0/0x9c
+> [ 5751.714696]  [<ffffffff810059d0>] ? do_IRQ+0x0/0x100
+> [ 5751.714700]  [<ffffffff810926a3>] __ipipe_walk_pipeline+0x113/0x120
+> [ 5751.714706]  [<ffffffff81024414>] __ipipe_handle_irq+0x124/0x310
+> [ 5751.714708]  [<ffffffff8108bf10>] ? __ipipe_ack_fasteoi_irq+0x0/0x10=
+
+> [ 5751.714712]  [<ffffffff814f78d3>] common_interrupt+0x13/0x2c
+> [ 5751.714713]  <EOI>  [<ffffffff810249d6>] ? __ipipe_halt_root+0x26/0x=
+40
+> [ 5751.714718]  [<ffffffff81061191>] ? atomic_notifier_call_chain+0x11/=
+0x20
+> [ 5751.714722]  [<ffffffff8100cbd5>] default_idle+0x45/0x50
+> [ 5751.714725]  [<ffffffff8100198a>] cpu_idle+0x7a/0xd0
+> [ 5751.714728]  [<ffffffff814f14a1>] start_secondary+0x1c1/0x1c5
+> [ 5751.714730] handlers:
+> [ 5751.714730] [<ffffffff8136ed60>] (usb_hcd_irq+0x0/0xb0)
+> [ 5751.714735] [<ffffffffa00bac30>] (mpt_interrupt+0x0/0xa00 [mptbase])=
+
+> [ 5751.714747] Disabling IRQ #16
+
+I'm not yet sure, but a first thought: We have a shared fasteoi IRQ
+here, and we are on SMP. Compared to vanilla, the fasteoi flow of ipipe
+looks so much different to me ATM that I tend to believe two cores end
+up having this IRQ queued at the same time. One runs first and handles
+all triggers, the second bails out like above.
+
+Philippe, we _end_ fasteoi in the ipipe ack path. Do we mask them prior
+to this? What prevents a second IRQ arriving after this early eoi?
 
 Jan
 
 
---------------enig50BD61C66AE875C49EA1CC1A
+--------------enigE0099271D0642EFC00EA8357
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -133,10 +97,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v2.0.15 (GNU/Linux)
 Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org/
 
-iEYEARECAAYFAkzF2P8ACgkQitSsb3rl5xS6ugCgtl2jPobhkdel8MvrWupogsOx
-noUAoJmeF7brnzKBJMUPFiezHsNF2BJS
-=cYPu
+iEYEARECAAYFAkzF3R8ACgkQitSsb3rl5xRBFQCgyYGqDLpmGpy1KtCZ7bv+GA08
+vt4An1Q+oYpqELaleqECV/mA+mJFV+NB
+=Nszr
 -----END PGP SIGNATURE-----
 
---------------enig50BD61C66AE875C49EA1CC1A--
+--------------enigE0099271D0642EFC00EA8357--
 
