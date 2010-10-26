@@ -1,102 +1,62 @@
-Message-ID: <4CCEF104.7050409@domain.hid>
-Date: Mon, 01 Nov 2010 17:55:32 +0100
-From: Anders Blomdell <anders.blomdell@domain.hid>
+Message-ID: <4CC665AC.5030802@domain.hid>
+Date: Tue, 26 Oct 2010 07:22:52 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4CC82C8D.3080808@domain.hid> <4CC84327.9070202@domain.hid>
-	<4CC92786.3030509@domain.hid> <4CC92902.4040904@domain.hid>
-	<4CC943A2.9020806@domain.hid> <4CC94E0B.9070106@domain.hid>
-In-Reply-To: <4CC94E0B.9070106@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+References: <AANLkTinN+KBK2B77opSCwDvb9bneObxL1+FTmmwpQGup@domain.hid>	<4CC20AD2.4060501@domain.hid>
+	<AANLkTi=W0w277PctkebaC=BcTLNZeW3KMzPzp=X1isB=@mail.gmail.com>
+In-Reply-To: <AANLkTi=W0w277PctkebaC=BcTLNZeW3KMzPzp=X1isB=@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] Potential problem with rt_eepro100
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Subject: Re: [Xenomai-help] Slow hard drive access in xenomai
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Peter Pastor <peter.pastor@domain.hid>
 Cc: xenomai@xenomai.org
 
-Jan Kiszka wrote:
-> Am 28.10.2010 11:34, Anders Blomdell wrote:
->> Jan Kiszka wrote:
->>> Am 28.10.2010 09:34, Anders Blomdell wrote:
->>>> Anders Blomdell wrote:
->>>>> Anders Blomdell wrote:
->>>>>> Hi,
->>>>>>
->>>>>> I'm trying to use rt_eepro100, for sending raw ethernet packets,
->>>>>> but I'm
->>>>>> experincing occasionally weird behaviour.
->>>>>>
->>>>>> Versions of things:
->>>>>>
->>>>>>   linux-2.6.34.5
->>>>>>   xenomai-2.5.5.2
->>>>>>   rtnet-39f7fcf
->>>>>>
->>>>>> The testprogram runs on two computers with "Intel Corporation
->>>>>> 82557/8/9/0/1 Ethernet Pro 100 (rev 08)" controller, where one
->>>>>> computer
->>>>>> acts as a mirror sending back packets received from the ethernet (only
->>>>>> those two computers on the network), and the other sends packets and
->>>>>> measures roundtrip time. Most packets comes back in approximately 100
->>>>>> us, but occasionally the reception times out (once in about 100000
->>>>>> packets or more), but the packets gets immediately received when
->>>>>> reception is retried, which might indicate a race between
->>>>>> rt_dev_recvmsg
->>>>>> and interrupt, but I might miss something obvious.
->>>>> Changing one of the ethernet cards to a "Intel Corporation 82541PI
->>>>> Gigabit Ethernet Controller (rev 05)", while keeping everything else
->>>>> constant, changes behavior somewhat; after receiving a few 100000
->>>>> packets, reception stops entirely (-EAGAIN is returned), while
->>>>> transmission proceeds as it should (and mirror returns packets).
->>>>>
->>>>> Any suggestions on what to try?
->>>> Since the problem disappears with 'maxcpus=1', I suspect I have a SMP
->>>> issue (machine is a Core2 Quad), so I'll move to xenomai-core.
->>>> (original message can be found at
->>>> http://sourceforge.net/mailarchive/message.php?msg_name=4CC82C8D.3080808%40control.lth.se
->>>> )
->>>>
->>>> Xenomai-core gurus: which is the corrrect way to debug SMP issues?
->>>> Can I run I-pipe-tracer and expect to be able save at least 150 us of
->>>> traces for all cpus? Any hints/suggestions/insigths are welcome...
->>> The i-pipe tracer unfortunately only saves traces for a the CPU that
->>> triggered the freeze. To have a full pictures, you may want to try my
->>> ftrace port I posted recently for 2.6.35.
->> 2.6.35.7 ?
->>
+Peter Pastor wrote:
+> Hey Gilles,
 > 
-> Exactly.
-Finally managed to get the ftrace to work
-(one possible bug: had to manually copy 
-include/xenomai/trace/xn_nucleus.h to 
-include/xenomai/trace/events/xn_nucleus.h), and it looks like it can be 
-very useful...
+> Thanks for you prompt response !
+> 
+> I noticed that the problem of slow hard disc access does happen after
+> a certain event. Right after booting xenomai "hdparam -t" gives me
+> 120MB/s which is what I get when running the non-real-time kernel.
+> Even when I run my real-time tasks everything seems to be fine.
+> However, I just had the case that I tried to play a sound (just for
+> testing) which triggered some output in the dmesg (see attached
+> xenomai_problem.txt). The output of dmesg up to this point is
+> contained in xenomai_fine.txt and the dmesg log of the non-real-time
+> linux kernel is in dmesg_linux.txt.
+> 
+> I disabled the audio card again and as of now, I haven't seen that
+> problem. I can't really make sense out of what dmesg spit out. Would
+> be great if someone could shine some light on this. It would be great
+> if someone could let me know whether disabling the sound card solved
+> the problem.
+> 
+>>> Do you really need things like NUMA, SPARSEMEM, SECCOMP, AUDITSYSCALL,
+>>> KPROBES, FTRACE, SELINUX?
+> I am actually not sure what all these options mean, I also haven't
+> spend time to figure things out. What impact could disabling these
+> options have ? Do they decrease latency? address the problem above?
+> other things?
 
-But I don't think it will give much info at the moment, since no 
-xenomai/ipipe interrupt activity shows up, and adding that is far above 
-my league :-(
+dmesg_fine is not fine at all. The SATA drives attached to the "ioc" SAS
+controller, seem to experience continuous errors. And since this
+interrupt line is shared with the HDA driver, there is something
+suspicious here. You can know which one of the two drivers has issues by
+disabling one of them.
 
-My current theory is that the problem occurs when something like this 
-takes place:
+Also, Linux seems to complain that it sees 32 cpus whereas you limited
+the number of cpus to 8.
 
-   CPU-i		CPU-j		CPU-k		CPU-l
-
-rt_dev_sendmsg
-		xmit_irq
-rt_dev_recvmsg			recv_irq
-
-So now I'll try to instrument the code to see if the assumtion holds. 
-Stay tuned...
-
-Regards
-
-Anders
-
-
+-- 
+                                                                Gilles.
 
