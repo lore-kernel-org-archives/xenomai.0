@@ -1,10 +1,12 @@
-Message-ID: <4CC5AC7D.9090700@domain.hid>
-Date: Mon, 25 Oct 2010 18:12:45 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <4CC92786.3030509@domain.hid>
+Date: Thu, 28 Oct 2010 09:34:30 +0200
+From: Anders Blomdell <anders.blomdell@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-15
+References: <4CC82C8D.3080808@domain.hid> <4CC84327.9070202@domain.hid>
+In-Reply-To: <4CC84327.9070202@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] Enabling classic MSI for real-time domains
+Subject: Re: [Xenomai-core] [RTnet-users] Potential problem with rt_eepro100
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -13,47 +15,51 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: adeos-main <adeos-main@gna.org>, Xenomai core <Xenomai-core@domain.hid>
+To: xenomai@xenomai.org
+Cc: rtnet-developers@domain.hid, rtnet-users <rtnet-users@domain.hid>
 
-Hi,
+Anders Blomdell wrote:
+> Anders Blomdell wrote:
+>> Hi,
+>>
+>> I'm trying to use rt_eepro100, for sending raw ethernet packets, but I'm
+>> experincing occasionally weird behaviour.
+>>
+>> Versions of things:
+>>
+>>   linux-2.6.34.5
+>>   xenomai-2.5.5.2
+>>   rtnet-39f7fcf
+>>
+>> The testprogram runs on two computers with "Intel Corporation
+>> 82557/8/9/0/1 Ethernet Pro 100 (rev 08)" controller, where one computer
+>> acts as a mirror sending back packets received from the ethernet (only
+>> those two computers on the network), and the other sends packets and
+>> measures roundtrip time. Most packets comes back in approximately 100
+>> us, but occasionally the reception times out (once in about 100000
+>> packets or more), but the packets gets immediately received when
+>> reception is retried, which might indicate a race between rt_dev_recvmsg
+>> and interrupt, but I might miss something obvious.
+> 
+> Changing one of the ethernet cards to a "Intel Corporation 82541PI 
+> Gigabit Ethernet Controller (rev 05)", while keeping everything else 
+> constant, changes behavior somewhat; after receiving a few 100000 
+> packets, reception stops entirely (-EAGAIN is returned), while 
+> transmission proceeds as it should (and mirror returns packets).
+> 
+> Any suggestions on what to try?
 
-for the past days, I had a look at the issue of classic MSIs (ie. not
-MSI-X) under non-Linux I-pipe domains. Actually, the path that matters
-most, IRQ delivery, is perfectly OK as is: just a simple ack on the APIC
-and a NOP on completion.
+Since the problem disappears with 'maxcpus=1', I suspect I have a SMP 
+issue (machine is a Core2 Quad), so I'll move to xenomai-core.
+(original message can be found at 
+http://sourceforge.net/mailarchive/message.php?msg_name=4CC82C8D.3080808%40control.lth.se 
+)
 
-Problematic are IRQ enable/disable (which automatically includes
-setup/cleanup) and affinity updates. The point is that we specified at
-least the first two services to be usable from RT context as well.
-That's a nice-to-have with fast IRQ chips, but its a nightmare with
-others. Classic MSI belongs to the latter category.
+Xenomai-core gurus: which is the corrrect way to debug SMP issues?
+Can I run I-pipe-tracer and expect to be able save at least 150 us of 
+traces for all cpus? Any hints/suggestions/insigths are welcome...
 
-So we basically have two main options now, each having two variants:
+Regards
 
- 1) disallow IRQ enabled/disable over non-root contexts
-    1a) confine this to certain IRQs like MSI or
-    1b) make it a generic API property
-
- 2) provide ipipe_irq_mask/unmask services and use them in Xenomai
-    2a) for MSI, either to map them on a software mask or
-    2b) to map them on MSI-specific services that bypass the ordinary
-        [un]mask_msi_irq and use hardened ones (*)
-
-I would prefer to go for the cheaper option 1), probably 1a) as we have
-non-MSI users out there that do disable/enable trickery from RT
-contexts. Unfortunately, also 1a) will require some new interface
-between I-pipe and Xenomai to inform the user about the limited
-usability of enable/disable and likely even enforce it at Xenomai level.
-
-Comments, ideas?
-
-Jan
-
-(*) Previously posted patches to address the MSI issue by hardening both
-pci_config_lock and pci_lock likely failed as the latter is of too broad
-scope, including wake_up_all.
-
--- 
-Siemens AG, Corporate Technology, CT T DE IT 1
-Corporate Competence Center Embedded Linux
+Anders Blomdell
 
