@@ -1,146 +1,102 @@
-Message-ID: <4CC66524.6000105@domain.hid>
-Date: Tue, 26 Oct 2010 07:20:36 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <4CCEF104.7050409@domain.hid>
+Date: Mon, 01 Nov 2010 17:55:32 +0100
+From: Anders Blomdell <anders.blomdell@domain.hid>
 MIME-Version: 1.0
-References: <AANLkTinN+KBK2B77opSCwDvb9bneObxL1+FTmmwpQGup@domain.hid>	
-	<4CC20AD2.4060501@domain.hid>	
-	<AANLkTimyj5TRgan5nE5ey6h8-WO_-na=U66si-e9Xx9F@mail.gmail.com>	
-	<4CC44C02.4050003@domain.hid>	
-	<AANLkTinjUHYvNJwcuEd2RQuQLWL3WvGx-jFb5iG88f0c@domain.hid>	
-	<AANLkTikGFw6dxQHC1ukWHsTP-QoHzpbDzeMdLj=jZRP5@domain.hid>	
-	<AANLkTimsGjmPNE1GOzmyF4pHQe6m4RmFphuhGqdTrs1D@mail.gmail.com>	
-	<4CC5603E.1090707@domain.hid>	<4CC566A2.2000702@domain.hid>	
-	<AANLkTik76N-mL6ogtzFJ_vX4NF=7oDc_zdCA_y33z+Jh@domain.hid>	
-	<AANLkTimp5_OXSo_EGkn6O0mexR1Oxb_m9SJEfPmrSf0M@mail.gmail.com>	
-	<AANLkTi=Ne35gXZ=BRo09eXRjEtvPaXnkp6ix9tMWUwvn@domain.hid>	
-	<4CC5C93E.70503@domain.hid>	
-	<AANLkTimS7-CEvA74Viwu4mLm9-O_NpakXYG7=FXK1L1f@domain.hid>	
-	<4CC5DD1F.4090405@domain.hid> <1288041712.26618.189.camel@domain.hid>	
-	<4CC5F612.8040508@domain.hid> <1288042994.26618.206.camel@domain.hid>
-In-Reply-To: <1288042994.26618.206.camel@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigB61DF17C7C899F4B18D3BD78"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-help] Slow hard drive access in xenomai
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+References: <4CC82C8D.3080808@domain.hid> <4CC84327.9070202@domain.hid>
+	<4CC92786.3030509@domain.hid> <4CC92902.4040904@domain.hid>
+	<4CC943A2.9020806@domain.hid> <4CC94E0B.9070106@domain.hid>
+In-Reply-To: <4CC94E0B.9070106@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-core] Potential problem with rt_eepro100
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org, Peter Pastor <peter.pastor@domain.hid>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigB61DF17C7C899F4B18D3BD78
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-
-Am 25.10.2010 23:43, Philippe Gerum wrote:
-> On Mon, 2010-10-25 at 23:26 +0200, Jan Kiszka wrote:
->> Am 25.10.2010 23:21, Philippe Gerum wrote:
->>> On Mon, 2010-10-25 at 21:40 +0200, Jan Kiszka wrote:
->>>> Am 25.10.2010 21:03, Peter Pastor wrote:
->>>>> Hey Jan,
+Jan Kiszka wrote:
+> Am 28.10.2010 11:34, Anders Blomdell wrote:
+>> Jan Kiszka wrote:
+>>> Am 28.10.2010 09:34, Anders Blomdell wrote:
+>>>> Anders Blomdell wrote:
+>>>>> Anders Blomdell wrote:
+>>>>>> Hi,
+>>>>>>
+>>>>>> I'm trying to use rt_eepro100, for sending raw ethernet packets,
+>>>>>> but I'm
+>>>>>> experincing occasionally weird behaviour.
+>>>>>>
+>>>>>> Versions of things:
+>>>>>>
+>>>>>>   linux-2.6.34.5
+>>>>>>   xenomai-2.5.5.2
+>>>>>>   rtnet-39f7fcf
+>>>>>>
+>>>>>> The testprogram runs on two computers with "Intel Corporation
+>>>>>> 82557/8/9/0/1 Ethernet Pro 100 (rev 08)" controller, where one
+>>>>>> computer
+>>>>>> acts as a mirror sending back packets received from the ethernet (only
+>>>>>> those two computers on the network), and the other sends packets and
+>>>>>> measures roundtrip time. Most packets comes back in approximately 100
+>>>>>> us, but occasionally the reception times out (once in about 100000
+>>>>>> packets or more), but the packets gets immediately received when
+>>>>>> reception is retried, which might indicate a race between
+>>>>>> rt_dev_recvmsg
+>>>>>> and interrupt, but I might miss something obvious.
+>>>>> Changing one of the ethernet cards to a "Intel Corporation 82541PI
+>>>>> Gigabit Ethernet Controller (rev 05)", while keeping everything else
+>>>>> constant, changes behavior somewhat; after receiving a few 100000
+>>>>> packets, reception stops entirely (-EAGAIN is returned), while
+>>>>> transmission proceeds as it should (and mirror returns packets).
 >>>>>
->>>>> I did not apply any ubuntu patch for kernel 2.6.35 (since I do not =
-have
->>>>> one).  Also, good to know that I should not use xenomai patches tog=
-ether
->>>>> with ubuntu patches.
->>>>>
->>>>> Anyway, the problem occurred as well with the kernel 2.6.35 (see at=
-tached
->>>>> dmesg_bad_2.6.35)
->>>>> I also attached the config.
->>>>>
+>>>>> Any suggestions on what to try?
+>>>> Since the problem disappears with 'maxcpus=1', I suspect I have a SMP
+>>>> issue (machine is a Core2 Quad), so I'll move to xenomai-core.
+>>>> (original message can be found at
+>>>> http://sourceforge.net/mailarchive/message.php?msg_name=4CC82C8D.3080808%40control.lth.se
+>>>> )
 >>>>
->>>> ...
->>>>
->>>>> [ 5751.714643] irq 16: nobody cared (try booting with the "irqpoll"=
- option)
->>>>> [ 5751.714649] Pid: 0, comm: swapper Tainted: P            2.6.35-i=
-pipe-2.5.4-slim #2
->>>>> [ 5751.714653] Call Trace:
->>>>> [ 5751.714655]  <IRQ>  [<ffffffff8108bb56>] __report_bad_irq+0x26/0=
-xa0
->>>>> [ 5751.714668]  [<ffffffff8108bd5c>] note_interrupt+0x18c/0x1d0
->>>>> [ 5751.714672]  [<ffffffff8108c77d>] handle_fasteoi_irq+0xcd/0x100
->>>>> [ 5751.714677]  [<ffffffff8100656d>] handle_irq+0x1d/0x30
->>>>> [ 5751.714681]  [<ffffffff81005a40>] do_IRQ+0x70/0x100
->>>>> [ 5751.714685]  [<ffffffff81092147>] __ipipe_sync_stage+0x207/0x20d=
-
->>>>> [ 5751.714689]  [<ffffffff810059d0>] ? do_IRQ+0x0/0x100
->>>>> [ 5751.714692]  [<ffffffff8109214d>] ? __xirq_end+0x0/0x9c
->>>>> [ 5751.714696]  [<ffffffff810059d0>] ? do_IRQ+0x0/0x100
->>>>> [ 5751.714700]  [<ffffffff810926a3>] __ipipe_walk_pipeline+0x113/0x=
-120
->>>>> [ 5751.714706]  [<ffffffff81024414>] __ipipe_handle_irq+0x124/0x310=
-
->>>>> [ 5751.714708]  [<ffffffff8108bf10>] ? __ipipe_ack_fasteoi_irq+0x0/=
-0x10
->>>>> [ 5751.714712]  [<ffffffff814f78d3>] common_interrupt+0x13/0x2c
->>>>> [ 5751.714713]  <EOI>  [<ffffffff810249d6>] ? __ipipe_halt_root+0x2=
-6/0x40
->>>>> [ 5751.714718]  [<ffffffff81061191>] ? atomic_notifier_call_chain+0=
-x11/0x20
->>>>> [ 5751.714722]  [<ffffffff8100cbd5>] default_idle+0x45/0x50
->>>>> [ 5751.714725]  [<ffffffff8100198a>] cpu_idle+0x7a/0xd0
->>>>> [ 5751.714728]  [<ffffffff814f14a1>] start_secondary+0x1c1/0x1c5
->>>>> [ 5751.714730] handlers:
->>>>> [ 5751.714730] [<ffffffff8136ed60>] (usb_hcd_irq+0x0/0xb0)
->>>>> [ 5751.714735] [<ffffffffa00bac30>] (mpt_interrupt+0x0/0xa00 [mptba=
-se])
->>>>> [ 5751.714747] Disabling IRQ #16
->>>>
->>>> I'm not yet sure, but a first thought: We have a shared fasteoi IRQ
->>>> here, and we are on SMP. Compared to vanilla, the fasteoi flow of ip=
-ipe
->>>> looks so much different to me ATM that I tend to believe two cores e=
-nd
->>>> up having this IRQ queued at the same time. One runs first and handl=
-es
->>>> all triggers, the second bails out like above.
->>>>
->>>> Philippe, we _end_ fasteoi in the ipipe ack path. Do we mask them pr=
-ior
->>>> to this? What prevents a second IRQ arriving after this early eoi?
->>>
->>> All fasteoi handlers are supposed to mask+ack when the pipeline is
->>> enabled,=20
+>>>> Xenomai-core gurus: which is the corrrect way to debug SMP issues?
+>>>> Can I run I-pipe-tracer and expect to be able save at least 150 us of
+>>>> traces for all cpus? Any hints/suggestions/insigths are welcome...
+>>> The i-pipe tracer unfortunately only saves traces for a the CPU that
+>>> triggered the freeze. To have a full pictures, you may want to try my
+>>> ftrace port I posted recently for 2.6.35.
+>> 2.6.35.7 ?
 >>
->> What am I missing? The code I was looking at (__ipipe_ack_fasteoi) jus=
-t
->> does a regular eoi at chip level.
->=20
-> Have a look at the chip handlers.
+> 
+> Exactly.
+Finally managed to get the ftrace to work
+(one possible bug: had to manually copy 
+include/xenomai/trace/xn_nucleus.h to 
+include/xenomai/trace/events/xn_nucleus.h), and it looks like it can be 
+very useful...
 
-Ah, indeed (though we don't have this in the edge case - but that's a
-different story), and Peter's last test disprove my idea also.
+But I don't think it will give much info at the moment, since no 
+xenomai/ipipe interrupt activity shows up, and adding that is far above 
+my league :-(
 
-Need to think about alternatives and possible instrumentations, once I'm
-awake.
+My current theory is that the problem occurs when something like this 
+takes place:
 
-Jan
+   CPU-i		CPU-j		CPU-k		CPU-l
+
+rt_dev_sendmsg
+		xmit_irq
+rt_dev_recvmsg			recv_irq
+
+So now I'll try to instrument the code to see if the assumtion holds. 
+Stay tuned...
+
+Regards
+
+Anders
 
 
---------------enigB61DF17C7C899F4B18D3BD78
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.15 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org/
-
-iEYEARECAAYFAkzGZSgACgkQitSsb3rl5xQnYACfQxGsD961rCOJZLIPoX0PPNPJ
-emMAoIgoBwr5RKofVPY65twqD0UzFQI4
-=S6/X
------END PGP SIGNATURE-----
-
---------------enigB61DF17C7C899F4B18D3BD78--
 
