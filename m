@@ -1,36 +1,51 @@
-Message-ID: <4CFE2117.5010604@domain.hid>
-Date: Tue, 07 Dec 2010 12:57:11 +0100
+Message-ID: <4CD090F8.7040909@domain.hid>
+Date: Tue, 02 Nov 2010 23:30:16 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4CFE1E35.3020603@domain.hid> <4CFE1FA4.2030501@domain.hid>
-In-Reply-To: <4CFE1FA4.2030501@domain.hid>
+References: <AANLkTinN+KBK2B77opSCwDvb9bneObxL1+FTmmwpQGup@domain.hid>	<4CC20AD2.4060501@domain.hid>	<AANLkTi=W0w277PctkebaC=BcTLNZeW3KMzPzp=X1isB=@mail.gmail.com>	<4CC665AC.5030802@domain.hid>	<AANLkTi=5YF3QnvK9iGpBs8enuA+=MHz7gKjE1p_3whM+@mail.gmail.com>	<4CD00450.6020100@domain.hid>
+	<AANLkTikFiNw5HcDJsnbVsER9xjvPWAm5dBbZM9uiRh6x@domain.hid>
+In-Reply-To: <AANLkTikFiNw5HcDJsnbVsER9xjvPWAm5dBbZM9uiRh6x@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] Problem with gcc-4.5.1
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Subject: Re: [Xenomai-help] Slow hard drive access in xenomai
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Anders Blomdell <anders.blomdell@domain.hid>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Peter Pastor <peter.pastor@domain.hid>
+Cc: xenomai@xenomai.org
 
-Gilles Chanteperdrix wrote:
-> Anders Blomdell wrote:
->> When compiling Xenomai on Fedora-14 with gcc-4.5.1 [version 4.5.1 
->> 20100924 (Red Hat 4.5.1-4)], the loading of xeno_nucleus fails with the 
->> attached kernel OOPS, a notable difference between the 4.5.1 compiled 
->> version and a working one built with gcc-4.4.4 on the same system with 
->> the same configuration, sis tthat __rthal_x86_nodiv_ullimd is not 
->> inlined, is this anybody has seen before?
+Peter Pastor wrote:
+> Hey Gilles,
 > 
-> No, that is new, we need to see the disassembly of __rthal_x86_nodiv_ullimd
+> I do understand the intention of why I should disable either of the two (usb
+> controller and SATA drives), however, what I meant is, I need both
+> "permanently". If I disable all the usb ports, then I only have access over
+> ethernet (ssh), since the keyboard is attached to the computer through usb
+> (there are no other options). Also, to the best of my knowledge, disabling
+> means disabling them in the BIOS, correct? If so, I do not see how I could
+> enable the usb controller again... Are there other ways to do that. If not,
+> please let me know how to do it. The other option, disabling the SATA drives
+> does not make sense either, since I need them to boot the kernel, do I ?
+
+I was talking about the Intel HDA driver and the "ioc" driver. Since you
+have another disk controller (ahci), you may probably boot on it for the
+sake of testing.
+
 > 
-We would also need to know what were the arguments passed to this
-function which cause the crash to happen.
+> Anyway, I added the kernel parameter "irqpooll" as suggested by the error
+> msg in the kernel log... and since then I haven't seen the problem occurring
+> again. The documentation says that I will loose some performance and I am
+> wondering how much that is. However, I am willing to debug this further and
+> to remove the irqpoll option again.
+
+But if you are satisfied with irqpoll, why bother?
+
 
 -- 
                                                                 Gilles.
