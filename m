@@ -1,50 +1,33 @@
-Message-ID: <4CEE9115.6000404@domain.hid>
-Date: Thu, 25 Nov 2010 17:38:45 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <4CD00450.6020100@domain.hid>
+Date: Tue, 02 Nov 2010 13:30:08 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4CEE8FF0.6000704@domain.hid>
-In-Reply-To: <4CEE8FF0.6000704@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+References: <AANLkTinN+KBK2B77opSCwDvb9bneObxL1+FTmmwpQGup@domain.hid>	<4CC20AD2.4060501@domain.hid>	<AANLkTi=W0w277PctkebaC=BcTLNZeW3KMzPzp=X1isB=@mail.gmail.com>	<4CC665AC.5030802@domain.hid>
+	<AANLkTi=5YF3QnvK9iGpBs8enuA+=MHz7gKjE1p_3whM+@mail.gmail.com>
+In-Reply-To: <AANLkTi=5YF3QnvK9iGpBs8enuA+=MHz7gKjE1p_3whM+@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: [Adeos-main] [PATCH 2/3] ipipe: Drop spurious irq_enter/exit from
-	__ipipe_sync_stage
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/options/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: adeos-main <adeos-main@gna.org>
+Subject: Re: [Xenomai-help] Slow hard drive access in xenomai
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Peter Pastor <peter.pastor@domain.hid>
+Cc: xenomai@xenomai.org
 
-Invoking irq_enter/exit for root vIRQs is arch business (at least x86
-needs to interleave it with exit code).
+Peter Pastor wrote:
+> I would like to switch of either of the two devices that are attached to IRQ
+> 16, the problem however is, I need both.
 
-Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
----
- kernel/ipipe/core.c |    6 ++----
- 1 files changed, 2 insertions(+), 4 deletions(-)
+The idea was to disable each one in turn to see which one is faulty. Not
+disable them permanently.
 
-diff --git a/kernel/ipipe/core.c b/kernel/ipipe/core.c
-index 756ad02..129113b 100644
---- a/kernel/ipipe/core.c
-+++ b/kernel/ipipe/core.c
-@@ -1240,11 +1240,9 @@ void __ipipe_sync_stage(void)
- 		if (likely(ipd != ipipe_root_domain)) {
- 			ipd->irqs[irq].handler(irq, ipd->irqs[irq].cookie);
- 			__ipipe_run_irqtail(irq);
--		} else if (ipipe_virtual_irq_p(irq)) {
--			irq_enter();
-+		} else if (ipipe_virtual_irq_p(irq))
- 			__ipipe_do_root_virq(ipd, irq);
--			irq_exit();
--		} else
-+		else
- 			__ipipe_do_root_xirq(ipd, irq);
- 
- 		local_irq_disable_hw();
+
 -- 
-1.7.1
+                                                                Gilles.
 
