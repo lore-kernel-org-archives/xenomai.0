@@ -1,8 +1,8 @@
-Message-ID: <4CD2A96B.3080001@domain.hid>
-Date: Thu, 04 Nov 2010 13:39:07 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4CD2B2A7.9010900@domain.hid>
+Date: Thu, 04 Nov 2010 14:18:31 +0100
+From: Anders Blomdell <anders.blomdell@domain.hid>
 MIME-Version: 1.0
-References: <4CC82C8D.3080808@domain.hid>	<4CC94E0B.9070106@domain.hid>	<4CCEF104.7050409@domain.hid>	<4CD11AB1.8090407@domain.hid>	<4CD13A70.8040702@domain.hid>	<4CD14B1E.4000707@domain.hid>	<4CD14C92.90901@domain.hid>	<4CD14DBC.3060505@domain.hid>	<4CD1509A.3000908@domain.hid>	<4CD152F3.4080203@domain.hid>	<4CD16654.6080704@domain.hid>	<4CD18782.7090607@domain.hid>	<4CD191EE.7000604@domain.hid>	<4CD1936E.50203@domain.hid>	<4CD1BA29.9000303@domain.hid>	<1288816871.1842.84.camel@domain.hid>
+References: <4CC82C8D.3080808@domain.hid>	<4CCEF104.7050409@domain.hid>	<4CD11AB1.8090407@domain.hid>	<4CD13A70.8040702@domain.hid>	<4CD14B1E.4000707@domain.hid>	<4CD14C92.90901@domain.hid>	<4CD14DBC.3060505@domain.hid>	<4CD1509A.3000908@domain.hid>	<4CD152F3.4080203@domain.hid>	<4CD16654.6080704@domain.hid>	<4CD18782.7090607@domain.hid>	<4CD191EE.7000604@domain.hid>	<4CD1936E.50203@domain.hid>	<4CD1BA29.9000303@domain.hid>	<1288816871.1842.84.camel@domain.hid>
 	<4CD1DC1B.8060407@domain.hid>	<4CD1DE12.5010309@domain.hid>
 	<4CD1E890.5010702@domain.hid> <4CD1EC2F.4040603@domain.hid>
 	<4CD1ED16.8030103@domain.hid> <4CD1EDA8.10007@domain.hid>
@@ -11,8 +11,9 @@ References: <4CC82C8D.3080808@domain.hid>	<4CC94E0B.9070106@domain.hid>	<4CCEF10
 	<4CD1F906.1070703@domain.hid> <4CD1FABD.1080301@domain.hid>
 	<4CD2612C.2070507@domain.hid> <4CD279F7.7070502@domain.hid>
 	<4CD27C46.8010302@domain.hid> <4CD27DC2.7060607@domain.hid>
-In-Reply-To: <4CD27DC2.7060607@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+	<4CD2A96B.3080001@domain.hid>
+In-Reply-To: <4CD2A96B.3080001@domain.hid>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-core] Potential problem with rt_eepro100
 List-Id: Xenomai life and development <xenomai.xenomai.org>
@@ -23,77 +24,81 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Jan Kiszka <jan.kiszka@domain.hid>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Jan Kiszka wrote:
-> Am 04.11.2010 10:26, Jan Kiszka wrote:
->> Am 04.11.2010 10:16, Gilles Chanteperdrix wrote:
->>> Jan Kiszka wrote:
->>>> Take a step back and look at the root cause for this issue again. Unlocked
+Gilles Chanteperdrix wrote:
+> Jan Kiszka wrote:
+>> Am 04.11.2010 10:26, Jan Kiszka wrote:
+>>> Am 04.11.2010 10:16, Gilles Chanteperdrix wrote:
+>>>> Jan Kiszka wrote:
+>>>>> Take a step back and look at the root cause for this issue again. Unlocked
+>>>>>
+>>>>> 	if need-resched
+>>>>> 		__xnpod_schedule
+>>>>>
+>>>>> is inherently racy and will always be (not only for the remote
+>>>>> reschedule case BTW).
+>>>> Ok, let us examine what may happen with this code if we only set the
+>>>> XNRESCHED bit on the local cpu. First, other bits than XNRESCHED do not
+>>>> matter, because they can not change under our feet. So, we have two
+>>>> cases for this race:
+>>>> 1- we see the XNRESCHED bit, but it has been cleared once nklock is
+>>>> locked in __xnpod_schedule.
+>>>> 2- we do not see the XNRESCHED bit, but it get set right after we test it.
 >>>>
->>>> 	if need-resched
->>>> 		__xnpod_schedule
+>>>> 1 is not a problem.
+>>> Yes, as long as we remove the debug check from the scheduler code (or
+>>> fix it somehow). The scheduling code already catches this race.
+>>>
+>>>> 2 is not a problem, because anything which sets the XNRESCHED (it may
+>>>> only be an interrupt in fact) bit will cause xnpod_schedule to be called
+>>>> right after that.
 >>>>
->>>> is inherently racy and will always be (not only for the remote
->>>> reschedule case BTW).
->>> Ok, let us examine what may happen with this code if we only set the
->>> XNRESCHED bit on the local cpu. First, other bits than XNRESCHED do not
->>> matter, because they can not change under our feet. So, we have two
->>> cases for this race:
->>> 1- we see the XNRESCHED bit, but it has been cleared once nklock is
->>> locked in __xnpod_schedule.
->>> 2- we do not see the XNRESCHED bit, but it get set right after we test it.
+>>>> So no, no race here provided that we only set the XNRESCHED bit on the
+>>>> local cpu.
+>>>>
+>>>>  So we either have to accept this and remove the
+>>>>> debugging check from the scheduler or push the check back to
+>>>>> __xnpod_schedule where it once came from. When this it cleaned up, we
+>>>>> can look into the remote resched protocol again.
+>>>> The problem of the debug check is that it checks whether the scheduler
+>>>> state is modified without the XNRESCHED bit being set. And this is the
+>>>> problem, because yes, in that case, we have a race: the scheduler state
+>>>> may be modified before the XNRESCHED bit is set by an IPI.
+>>>>
+>>>> If we want to fix the debug check, we have to have a special bit, on in
+>>>> the sched->status flag, only for the purpose of debugging. Or remove the
+>>>> debug check.
+>>> Exactly my point. Is there any benefit in keeping the debug check? The
+>>> code to make it work may end up as "complex" as the logic it verifies,
+>>> at least that's my current feeling.
 >>>
->>> 1 is not a problem.
->> Yes, as long as we remove the debug check from the scheduler code (or
->> fix it somehow). The scheduling code already catches this race.
->>
->>> 2 is not a problem, because anything which sets the XNRESCHED (it may
->>> only be an interrupt in fact) bit will cause xnpod_schedule to be called
->>> right after that.
->>>
->>> So no, no race here provided that we only set the XNRESCHED bit on the
->>> local cpu.
->>>
->>>  So we either have to accept this and remove the
->>>> debugging check from the scheduler or push the check back to
->>>> __xnpod_schedule where it once came from. When this it cleaned up, we
->>>> can look into the remote resched protocol again.
->>> The problem of the debug check is that it checks whether the scheduler
->>> state is modified without the XNRESCHED bit being set. And this is the
->>> problem, because yes, in that case, we have a race: the scheduler state
->>> may be modified before the XNRESCHED bit is set by an IPI.
->>>
->>> If we want to fix the debug check, we have to have a special bit, on in
->>> the sched->status flag, only for the purpose of debugging. Or remove the
->>> debug check.
->> Exactly my point. Is there any benefit in keeping the debug check? The
->> code to make it work may end up as "complex" as the logic it verifies,
->> at least that's my current feeling.
->>
+>> This would be the radical approach of removing the check (and cleaning
+>> up some bits). If it's acceptable, I would split it up properly.
 > 
-> This would be the radical approach of removing the check (and cleaning
-> up some bits). If it's acceptable, I would split it up properly.
+> This debug check saved our asses when debugging SMP issues, and I
+> suspect it may help debugging skin issues. So, I think we should try and
+> keep it.
+> 
+> 
+> At first sight, here you are more breaking things than cleaning them.
+Still, it has the SMP record for my test program, still runs with ftrace 
+on (after 2 hours, where it previously failed after maximum 23 minutes).
 
-This debug check saved our asses when debugging SMP issues, and I
-suspect it may help debugging skin issues. So, I think we should try and
-keep it.
+If I get the gist of Jan's changes, they are (using the IPI to transfer 
+one bit of information: your cpu needs to reschedule):
 
-> @@ -2162,21 +2163,21 @@ static inline void xnpod_switch_to(xnsched_t *sched,
->  
->  static inline int __xnpod_test_resched(struct xnsched *sched)
->  {
-> -	int resched = testbits(sched->status, XNRESCHED);
-> +	int resched = xnsched_resched_p(sched);
->  #ifdef CONFIG_SMP
->  	/* Send resched IPI to remote CPU(s). */
-> -	if (unlikely(xnsched_resched_p(sched))) {
-> +	if (unlikely(resched)) {
+xnsched_set_resched:
+-      setbits((__sched__)->status, XNRESCHED);
 
-At first sight, here you are more breaking things than cleaning them.
+xnpod_schedule_handler:
++	xnsched_set_resched(sched);
+	
+If you (we?) decide to keep the debug checks, under what circumstances 
+would the current check trigger (in laymans language, that I'll be able 
+to understand)?
 
+/Anders
 
--- 
-                                                                Gilles.
 
