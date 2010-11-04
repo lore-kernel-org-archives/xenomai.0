@@ -1,8 +1,8 @@
-Message-ID: <4CD34293.7040802@domain.hid>
-Date: Fri, 05 Nov 2010 00:32:35 +0100
+Message-ID: <4CD34355.5020304@domain.hid>
+Date: Fri, 05 Nov 2010 00:35:49 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <4CC82C8D.3080808@domain.hid>	<4CD152F3.4080203@domain.hid>	<4CD16654.6080704@domain.hid>	<4CD18782.7090607@domain.hid>	<4CD191EE.7000604@domain.hid>	<4CD1936E.50203@domain.hid>	<4CD1BA29.9000303@domain.hid>	<1288816871.1842.84.camel@domain.hid>	<4CD1DC1B.8060407@domain.hid>	<4CD1DE12.5010309@domain.hid>	<4CD1E890.5010702@domain.hid>
+References: <4CC82C8D.3080808@domain.hid>	<4CD14DBC.3060505@domain.hid>	<4CD1509A.3000908@domain.hid>	<4CD152F3.4080203@domain.hid>	<4CD16654.6080704@domain.hid>	<4CD18782.7090607@domain.hid>	<4CD191EE.7000604@domain.hid>	<4CD1936E.50203@domain.hid>	<4CD1BA29.9000303@domain.hid>	<1288816871.1842.84.camel@domain.hid>	<4CD1DC1B.8060407@domain.hid>	<4CD1DE12.5010309@domain.hid>	<4CD1E890.5010702@domain.hid>
 	<4CD1EC2F.4040603@domain.hid>	<4CD1ED16.8030103@domain.hid>
 	<4CD1EDA8.10007@domain.hid>	<4CD1F33C.5070208@domain.hid>
 	<4CD1F3F5.5080505@domain.hid>	<4CD1F4FE.9020908@domain.hid>
@@ -11,13 +11,12 @@ References: <4CC82C8D.3080808@domain.hid>	<4CD152F3.4080203@domain.hid>	<4CD1665
 	<4CD279F7.7070502@domain.hid>	<4CD27C46.8010302@domain.hid>
 	<4CD27DC2.7060607@domain.hid>	<4CD2A96B.3080001@domain.hid>
 	<4CD2B2A7.9010900@domain.hid>	<4CD2C50F.1090604@domain.hid>
-	<4CD2C8E2.9090608@domain.hid>	<4CD2D25D.6000604@domain.hid>
-	<4CD32EF1.7000202@domain.hid> <4CD33D59.1010003@domain.hid>
-	<4CD340E0.7020109@domain.hid>
-In-Reply-To: <4CD340E0.7020109@domain.hid>
+	<4CD32E76.3080004@domain.hid> <4CD33F0C.1050403@domain.hid>
+	<4CD340AA.60002@domain.hid>
+In-Reply-To: <4CD340AA.60002@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enigF0787A1BA0D35926B9A5C041"
+	boundary="------------enigA931632F75EF3195DA0E5AA6"
 Sender: jan.kiszka@domain.hid
 Subject: Re: [Xenomai-core] Potential problem with rt_eepro100
 List-Id: Xenomai life and development <xenomai.xenomai.org>
@@ -32,66 +31,99 @@ To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigF0787A1BA0D35926B9A5C041
+--------------enigA931632F75EF3195DA0E5AA6
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-Am 05.11.2010 00:25, Gilles Chanteperdrix wrote:
+Am 05.11.2010 00:24, Gilles Chanteperdrix wrote:
 > Jan Kiszka wrote:
->> Am 04.11.2010 23:08, Gilles Chanteperdrix wrote:
+>> Am 04.11.2010 23:06, Gilles Chanteperdrix wrote:
 >>> Jan Kiszka wrote:
->>>> rework. Safer for now is likely to revert 56ff4329ff, keeping nucleu=
-s
->>>> debugging off.
->>> That is not enough.
+>>>>>> At first sight, here you are more breaking things than cleaning th=
+em.
+>>>>> Still, it has the SMP record for my test program, still runs with f=
+trace=20
+>>>>> on (after 2 hours, where it previously failed after maximum 23 minu=
+tes).
+>>>> My version was indeed still buggy, I'm reworking it ATM.
+>>>>
+>>>>> If I get the gist of Jan's changes, they are (using the IPI to tran=
+sfer=20
+>>>>> one bit of information: your cpu needs to reschedule):
+>>>>>
+>>>>> xnsched_set_resched:
+>>>>> -      setbits((__sched__)->status, XNRESCHED);
+>>>>>
+>>>>> xnpod_schedule_handler:
+>>>>> +	xnsched_set_resched(sched);
+>>>>> =09
+>>>>> If you (we?) decide to keep the debug checks, under what circumstan=
+ces=20
+>>>>> would the current check trigger (in laymans language, that I'll be =
+able=20
+>>>>> to understand)?
+>>>> That's actually what /me is wondering as well. I do not see yet how =
+you
+>>>> can reliably detect a missed reschedule reliably (that was the purpo=
+se
+>>>> of the debug check) given the racy nature between signaling resched =
+and
+>>>> processing the resched hints.
+>>> The purpose of the debugging change is to detect a change of the
+>>> scheduler state which was not followed by setting the XNRESCHED bit.
 >>
->> It is, I've reviewed the code today.
+>> But that is nucleus business, nothing skins can screw up (as long as
+>> they do not misuse APIs).
 >=20
-> The fallouts I am talking about are:
-> 47dac49c71e89b684203e854d1b0172ecacbc555
-
-Not related.
-
-> 38f2ca83a8e63cc94eaa911ff1c0940c884b5078
-
-An optimization.
-
-> 5e7cfa5c25672e4478a721eadbd6f6c5b4f88a2f
-
-That fall out of that commit is fixed in my series.
-
+> Yes, but it happens that we modify the nucleus from time to time.
 >=20
 >>
->>> This commit was followed by several others to "fix
->>> the fix". You know how things are, someone proposes a fix, which fixe=
-s
->>> things for him, but it breaks in the other people configurations (one=
- of
->>> the fallouts was a complete revamp of include/asm-arm/atomic.h for
->>> instance).
->>>
+>>> Getting it to work is relatively simple: we add a "scheduler change s=
+et
+>>> remotely" bit to the sched structure which is NOT in the status bit, =
+set
+>>> this bit when changing a remote sched (under nklock). In the debug ch=
+eck
+>>> code, if the scheduler state changed, and the XNRESCHED bit is not se=
+t,
+>>> only consider this a but if this new bit is not set. All this is
+>>> compiled out if the debug is not enabled.
 >>
->> I've pushed a series that reverts that commit, then fixes and cleans u=
-p
->> on top of it. Just pushed if you want to take a look. We can find some=
-
->> alternative debugging mechanism independently (though I'm curious to s=
-ee
->> it - it still makes no sense to me).
+>> I still see no benefit in this check. Where to you want to place the b=
+it
+>> set? Aren't that just the same locations where
+>> xnsched_set_[self_]resched already is today?
 >=20
-> Since the fix is simply a modification to what we have currently. I
-> would prefer if we did not remove it. In fact, I think it would be
-> simpler if we started from what we currently have than reverting past
-> patches.
+> Well no, that would be another bit in the sched structure which would
+> allow us to manipulate the status bits from the local cpu. That
+> supplementary bit would only be changed from a distant CPU, and serve t=
+o
+> detect the race which causes the false positive. The resched bits are
+> set on the local cpu to get xnpod_schedule to trigger a rescheduling on=
 
-Look at the series, it goes step by step to an IMHO clean state. We can
-pull out the debugging check removal, though, if you prefer to work on
-top of the existing code.
+> the distance cpu. That bit would be set on the remote cpu's sched. Only=
+
+> when debugging is enabled.
+>=20
+>>
+>> But maybe you can provide some motivating bug scenarios, real ones of
+>> the past or realistic ones of the future.
+>=20
+> Of course. The bug is anything which changes the scheduler state but
+> does not set the XNRESCHED bit. This happened when we started the SMP
+> port. New scheduling policies would be good candidates for a revival of=
+
+> this bug.
+>=20
+
+You don't gain any worthwhile check if you cannot make the
+instrumentation required for a stable detection simpler than the proper
+problem solution itself. And this is what I'm still skeptical of.
 
 Jan
 
 
---------------enigF0787A1BA0D35926B9A5C041
+--------------enigA931632F75EF3195DA0E5AA6
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -100,10 +132,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v2.0.15 (GNU/Linux)
 Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org/
 
-iEYEARECAAYFAkzTQpgACgkQitSsb3rl5xQtdQCginvZZ2gxHKBiexo2GJhuBFaq
-ckQAoMGbZx/8Vbpc0rToaCgyrh38vIe0
-=FVdJ
+iEYEARECAAYFAkzTQ1kACgkQitSsb3rl5xRTJgCeIDhLs99uep/nJKTHMug/caph
+Q0sAnRXPtLw8rH+xwLYkSGojFH0rwQg4
+=DzY/
 -----END PGP SIGNATURE-----
 
---------------enigF0787A1BA0D35926B9A5C041--
+--------------enigA931632F75EF3195DA0E5AA6--
 
