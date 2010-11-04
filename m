@@ -1,14 +1,15 @@
-Message-ID: <4CD27A7E.1010304@domain.hid>
-Date: Thu, 04 Nov 2010 10:18:54 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4CD27C46.8010302@domain.hid>
+Date: Thu, 04 Nov 2010 10:26:30 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <4CC82C8D.3080808@domain.hid>	<4CC92902.4040904@domain.hid>	<4CC943A2.9020806@domain.hid>	<4CC94E0B.9070106@domain.hid>	<4CCEF104.7050409@domain.hid>	<4CD11AB1.8090407@domain.hid>	<4CD13A70.8040702@domain.hid>	<4CD14B1E.4000707@domain.hid>	<4CD14C92.90901@domain.hid>	<4CD14DBC.3060505@domain.hid>	<4CD1509A.3000908@domain.hid>	<4CD152F3.4080203@domain.hid>	<4CD16654.6080704@domain.hid>	<4CD18782.7090607@domain.hid>	<4CD191EE.7000604@domain.hid>	<4CD1936E.50203@domain.hid>	<4CD1BA29.9000303@domain.hid>	<1288816871.1842.84.camel@domain.hid>	<4CD1DC1B.8060407@domain.hid>	<4CD1DE12.5010309@domain.hid>	<4CD1E890.5010702@domain.hid>
-	<4CD1EC2F.4040603@domain.hid>	<4CD1ED16.8030103@domain.hid>
-	<4CD1EDA8.10007@domain.hid>	<4CD1F33C.5070208@domain.hid>
-	<4CD1F3F5.5080505@domain.hid>	<4CD1F4FE.9020908@domain.hid>
-	<4CD1F69B.9070100@domain.hid>	<4CD1F906.1070703@domain.hid>
-	<4CD1FABD.1080301@domain.hid>	<4CD2612C.2070507@domain.hid>
-	<4CD279F7.7070502@domain.hid>
+References: <4CC82C8D.3080808@domain.hid>	<4CC92902.4040904@domain.hid>	<4CC943A2.9020806@domain.hid>	<4CC94E0B.9070106@domain.hid>	<4CCEF104.7050409@domain.hid>	<4CD11AB1.8090407@domain.hid>	<4CD13A70.8040702@domain.hid>	<4CD14B1E.4000707@domain.hid>	<4CD14C92.90901@domain.hid>	<4CD14DBC.3060505@domain.hid>	<4CD1509A.3000908@domain.hid>	<4CD152F3.4080203@domain.hid>	<4CD16654.6080704@domain.hid>	<4CD18782.7090607@domain.hid>	<4CD191EE.7000604@domain.hid>	<4CD1936E.50203@domain.hid>	<4CD1BA29.9000303@domain.hid>	<1288816871.1842.84.camel@domain.hid>
+	<4CD1DC1B.8060407@domain.hid>	<4CD1DE12.5010309@domain.hid>
+	<4CD1E890.5010702@domain.hid> <4CD1EC2F.4040603@domain.hid>
+	<4CD1ED16.8030103@domain.hid> <4CD1EDA8.10007@domain.hid>
+	<4CD1F33C.5070208@domain.hid> <4CD1F3F5.5080505@domain.hid>
+	<4CD1F4FE.9020908@domain.hid> <4CD1F69B.9070100@domain.hid>
+	<4CD1F906.1070703@domain.hid> <4CD1FABD.1080301@domain.hid>
+	<4CD2612C.2070507@domain.hid> <4CD279F7.7070502@domain.hid>
 In-Reply-To: <4CD279F7.7070502@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
@@ -21,10 +22,10 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Gilles Chanteperdrix wrote:
+Am 04.11.2010 10:16, Gilles Chanteperdrix wrote:
 > Jan Kiszka wrote:
 >> Take a step back and look at the root cause for this issue again. Unlocked
 >>
@@ -43,6 +44,10 @@ Gilles Chanteperdrix wrote:
 > 2- we do not see the XNRESCHED bit, but it get set right after we test it.
 > 
 > 1 is not a problem.
+
+Yes, as long as we remove the debug check from the scheduler code (or
+fix it somehow). The scheduling code already catches this race.
+
 > 2 is not a problem, because anything which sets the XNRESCHED (it may
 > only be an interrupt in fact) bit will cause xnpod_schedule to be called
 > right after that.
@@ -61,12 +66,16 @@ Gilles Chanteperdrix wrote:
 > may be modified before the XNRESCHED bit is set by an IPI.
 > 
 > If we want to fix the debug check, we have to have a special bit, on in
-                                                                   NOT
 > the sched->status flag, only for the purpose of debugging. Or remove the
 > debug check.
-> 
 
+Exactly my point. Is there any benefit in keeping the debug check? The
+code to make it work may end up as "complex" as the logic it verifies,
+at least that's my current feeling.
+
+Jan
 
 -- 
-                                                                Gilles.
+Siemens AG, Corporate Technology, CT T DE IT 1
+Corporate Competence Center Embedded Linux
 
