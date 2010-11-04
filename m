@@ -1,8 +1,8 @@
-Message-ID: <4CD340AA.60002@domain.hid>
-Date: Fri, 05 Nov 2010 00:24:26 +0100
+Message-ID: <4CD340E0.7020109@domain.hid>
+Date: Fri, 05 Nov 2010 00:25:20 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4CC82C8D.3080808@domain.hid>	<4CD14C92.90901@domain.hid>	<4CD14DBC.3060505@domain.hid>	<4CD1509A.3000908@domain.hid>	<4CD152F3.4080203@domain.hid>	<4CD16654.6080704@domain.hid>	<4CD18782.7090607@domain.hid>	<4CD191EE.7000604@domain.hid>	<4CD1936E.50203@domain.hid>	<4CD1BA29.9000303@domain.hid>	<1288816871.1842.84.camel@domain.hid>	<4CD1DC1B.8060407@domain.hid>	<4CD1DE12.5010309@domain.hid>	<4CD1E890.5010702@domain.hid>
+References: <4CC82C8D.3080808@domain.hid>	<4CD1509A.3000908@domain.hid>	<4CD152F3.4080203@domain.hid>	<4CD16654.6080704@domain.hid>	<4CD18782.7090607@domain.hid>	<4CD191EE.7000604@domain.hid>	<4CD1936E.50203@domain.hid>	<4CD1BA29.9000303@domain.hid>	<1288816871.1842.84.camel@domain.hid>	<4CD1DC1B.8060407@domain.hid>	<4CD1DE12.5010309@domain.hid>	<4CD1E890.5010702@domain.hid>
 	<4CD1EC2F.4040603@domain.hid>	<4CD1ED16.8030103@domain.hid>
 	<4CD1EDA8.10007@domain.hid>	<4CD1F33C.5070208@domain.hid>
 	<4CD1F3F5.5080505@domain.hid>	<4CD1F4FE.9020908@domain.hid>
@@ -11,8 +11,9 @@ References: <4CC82C8D.3080808@domain.hid>	<4CD14C92.90901@domain.hid>	<4CD14DBC.
 	<4CD279F7.7070502@domain.hid>	<4CD27C46.8010302@domain.hid>
 	<4CD27DC2.7060607@domain.hid>	<4CD2A96B.3080001@domain.hid>
 	<4CD2B2A7.9010900@domain.hid>	<4CD2C50F.1090604@domain.hid>
-	<4CD32E76.3080004@domain.hid> <4CD33F0C.1050403@domain.hid>
-In-Reply-To: <4CD33F0C.1050403@domain.hid>
+	<4CD2C8E2.9090608@domain.hid>	<4CD2D25D.6000604@domain.hid>
+	<4CD32EF1.7000202@domain.hid> <4CD33D59.1010003@domain.hid>
+In-Reply-To: <4CD33D59.1010003@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-core] Potential problem with rt_eepro100
@@ -28,65 +29,37 @@ To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
 Jan Kiszka wrote:
-> Am 04.11.2010 23:06, Gilles Chanteperdrix wrote:
+> Am 04.11.2010 23:08, Gilles Chanteperdrix wrote:
 >> Jan Kiszka wrote:
->>>>> At first sight, here you are more breaking things than cleaning them.
->>>> Still, it has the SMP record for my test program, still runs with ftrace 
->>>> on (after 2 hours, where it previously failed after maximum 23 minutes).
->>> My version was indeed still buggy, I'm reworking it ATM.
->>>
->>>> If I get the gist of Jan's changes, they are (using the IPI to transfer 
->>>> one bit of information: your cpu needs to reschedule):
->>>>
->>>> xnsched_set_resched:
->>>> -      setbits((__sched__)->status, XNRESCHED);
->>>>
->>>> xnpod_schedule_handler:
->>>> +	xnsched_set_resched(sched);
->>>> 	
->>>> If you (we?) decide to keep the debug checks, under what circumstances 
->>>> would the current check trigger (in laymans language, that I'll be able 
->>>> to understand)?
->>> That's actually what /me is wondering as well. I do not see yet how you
->>> can reliably detect a missed reschedule reliably (that was the purpose
->>> of the debug check) given the racy nature between signaling resched and
->>> processing the resched hints.
->> The purpose of the debugging change is to detect a change of the
->> scheduler state which was not followed by setting the XNRESCHED bit.
+>>> rework. Safer for now is likely to revert 56ff4329ff, keeping nucleus
+>>> debugging off.
+>> That is not enough.
 > 
-> But that is nucleus business, nothing skins can screw up (as long as
-> they do not misuse APIs).
+> It is, I've reviewed the code today.
 
-Yes, but it happens that we modify the nucleus from time to time.
+The fallouts I am talking about are:
+47dac49c71e89b684203e854d1b0172ecacbc555
+38f2ca83a8e63cc94eaa911ff1c0940c884b5078
+5e7cfa5c25672e4478a721eadbd6f6c5b4f88a2f
+
 
 > 
->> Getting it to work is relatively simple: we add a "scheduler change set
->> remotely" bit to the sched structure which is NOT in the status bit, set
->> this bit when changing a remote sched (under nklock). In the debug check
->> code, if the scheduler state changed, and the XNRESCHED bit is not set,
->> only consider this a but if this new bit is not set. All this is
->> compiled out if the debug is not enabled.
+>> This commit was followed by several others to "fix
+>> the fix". You know how things are, someone proposes a fix, which fixes
+>> things for him, but it breaks in the other people configurations (one of
+>> the fallouts was a complete revamp of include/asm-arm/atomic.h for
+>> instance).
+>>
 > 
-> I still see no benefit in this check. Where to you want to place the bit
-> set? Aren't that just the same locations where
-> xnsched_set_[self_]resched already is today?
+> I've pushed a series that reverts that commit, then fixes and cleans up
+> on top of it. Just pushed if you want to take a look. We can find some
+> alternative debugging mechanism independently (though I'm curious to see
+> it - it still makes no sense to me).
 
-Well no, that would be another bit in the sched structure which would
-allow us to manipulate the status bits from the local cpu. That
-supplementary bit would only be changed from a distant CPU, and serve to
-detect the race which causes the false positive. The resched bits are
-set on the local cpu to get xnpod_schedule to trigger a rescheduling on
-the distance cpu. That bit would be set on the remote cpu's sched. Only
-when debugging is enabled.
-
-> 
-> But maybe you can provide some motivating bug scenarios, real ones of
-> the past or realistic ones of the future.
-
-Of course. The bug is anything which changes the scheduler state but
-does not set the XNRESCHED bit. This happened when we started the SMP
-port. New scheduling policies would be good candidates for a revival of
-this bug.
+Since the fix is simply a modification to what we have currently. I
+would prefer if we did not remove it. In fact, I think it would be
+simpler if we started from what we currently have than reverting past
+patches.
 
 -- 
                                                                 Gilles.
