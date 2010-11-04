@@ -1,92 +1,43 @@
-Message-ID: <4CC6BCBB.8020902@domain.hid>
-Date: Tue, 26 Oct 2010 13:34:19 +0200
+Message-ID: <4CD32EF1.7000202@domain.hid>
+Date: Thu, 04 Nov 2010 23:08:49 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <AANLkTimeLKjkOf-y-Jb89EQrbWYjxAbmNf-QqUWXd+tP@mail.gmail.com>
-	<AANLkTi=y8ix9REzUeCU+adyKTE=C-M=P_gFTtjVDO+rw@domain.hid>
-In-Reply-To: <AANLkTi=y8ix9REzUeCU+adyKTE=C-M=P_gFTtjVDO+rw@domain.hid>
+References: <4CC82C8D.3080808@domain.hid>	<4CD14C92.90901@domain.hid>	<4CD14DBC.3060505@domain.hid>	<4CD1509A.3000908@domain.hid>	<4CD152F3.4080203@domain.hid>	<4CD16654.6080704@domain.hid>	<4CD18782.7090607@domain.hid>	<4CD191EE.7000604@domain.hid>	<4CD1936E.50203@domain.hid>	<4CD1BA29.9000303@domain.hid>	<1288816871.1842.84.camel@domain.hid>
+	<4CD1DC1B.8060407@domain.hid>	<4CD1DE12.5010309@domain.hid>
+	<4CD1E890.5010702@domain.hid> <4CD1EC2F.4040603@domain.hid>
+	<4CD1ED16.8030103@domain.hid> <4CD1EDA8.10007@domain.hid>
+	<4CD1F33C.5070208@domain.hid> <4CD1F3F5.5080505@domain.hid>
+	<4CD1F4FE.9020908@domain.hid> <4CD1F69B.9070100@domain.hid>
+	<4CD1F906.1070703@domain.hid> <4CD1FABD.1080301@domain.hid>
+	<4CD2612C.2070507@domain.hid> <4CD279F7.7070502@domain.hid>
+	<4CD27C46.8010302@domain.hid> <4CD27DC2.7060607@domain.hid>
+	<4CD2A96B.3080001@domain.hid> <4CD2B2A7.9010900@domain.hid>
+	<4CD2C50F.1090604@domain.hid> <4CD2C8E2.9090608@domain.hid>
+	<4CD2D25D.6000604@domain.hid>
+In-Reply-To: <4CD2D25D.6000604@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Possible memory leak in psos skin message queue
- handling
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Subject: Re: [Xenomai-core] Potential problem with rt_eepro100
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: ronny meeus <ronny.meeus@domain.hid>
-Cc: Xenomai-help@domain.hid
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-ronny meeus wrote:
-> Hello
-> 
-> I did some further debugging on the problem described below and I made
-> some progress.
-> At creation time of the message queue using:
-> q_create("TEST",0,Q_NOLIMIT|Q_PRIOR,&qid);
-> a chunk of message buffers (64) is allocated and added to the free
-> message list of the queue (queue->freeq).
-> Once the message queue is deleted, the messages are added into the
-> global psosmbufq.
-> During the q_create/q_delete loop, the memory pool get depleted since
-> the number of messages in the psosmbufq keeps on increasing all the time.
-> 
-> In my opinion if the Q_PRIBUF is not set during queue creation, the
-> "psosmbufq" has to be used to allocate/release from/to.
-> This also implies that the local freeq in the queue object is not used
-> in this mode anymore.
-> Each time a message needs to be send, in function get_mbuf it is simply
-> taken from the psosmbufq. In case this would be empty, a feed_pool
-> operation is called on it.
-> 
-> static psosmbuf_t *get_mbuf(psosqueue_t *queue, u_long msglen)
-> {
->     psosmbuf_t *mbuf = NULL;
-> 
->     if (testbits(queue->synchbase.status, Q_NOCACHE)) {
->         mbuf =
->             (psosmbuf_t *) xnmalloc(sizeof(*mbuf) + msglen -
->                         sizeof(mbuf->data));
-> 
->         if (mbuf)
->             inith(&mbuf->link);
->     } else {
->         xnholder_t *holder = NULL;
->         if (testbits(queue->synchbase.status, Q_SHAREDINIT)) {
->             holder = getq(&psosmbufq);
->             if (!holder) {
->                 feed_pool(&psoschunkq,
-> &psosmbufq,PSOS_QUEUE_MIN_ALLOC,queue->maxlen);
->                 holder = getq(&psosmbufq);
->             }
->         } else {
->             holder = getq(&queue->freeq);
->             if (!holder && testbits(queue->synchbase.status, Q_INFINITE)) {
->                 feed_pool(&queue->chunkq,&queue->freeq,
-> PSOS_QUEUE_MIN_ALLOC,queue->maxlen);
->                 holder = getq(&queue->freeq);
->             }   
->         }
->         if (holder)
->             mbuf = link2psosmbuf(holder);
->     }
->     return mbuf;
-> }
-> 
-> I have adapted the code accordingly and rerun my tests. Now it runs forever.
-> (Of course I also did changes in the code to create and delete a queue.)
-> 
-> Now the question is: Is my understanding correct? If it is, the flag
-> Q_SHAREDINIT would be better renamed to Q_SHAREDMSGS.
-> 
-> Please share your thoughts.
+Jan Kiszka wrote:
+> rework. Safer for now is likely to revert 56ff4329ff, keeping nucleus
+> debugging off.
 
-A patch would be better than some fancy HTML colouring, if you intend
-your fix to be reviewed/integrated.
+That is not enough. This commit was followed by several others to "fix
+the fix". You know how things are, someone proposes a fix, which fixes
+things for him, but it breaks in the other people configurations (one of
+the fallouts was a complete revamp of include/asm-arm/atomic.h for
+instance).
 
 -- 
                                                                 Gilles.
