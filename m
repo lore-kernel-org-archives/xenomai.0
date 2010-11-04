@@ -1,6 +1,6 @@
-Message-ID: <4CD28E14.3030609@domain.hid>
-Date: Thu, 04 Nov 2010 11:42:28 +0100
-From: Anders Blomdell <anders.blomdell@domain.hid>
+Message-ID: <4CD2A96B.3080001@domain.hid>
+Date: Thu, 04 Nov 2010 13:39:07 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <4CC82C8D.3080808@domain.hid>	<4CC94E0B.9070106@domain.hid>	<4CCEF104.7050409@domain.hid>	<4CD11AB1.8090407@domain.hid>	<4CD13A70.8040702@domain.hid>	<4CD14B1E.4000707@domain.hid>	<4CD14C92.90901@domain.hid>	<4CD14DBC.3060505@domain.hid>	<4CD1509A.3000908@domain.hid>	<4CD152F3.4080203@domain.hid>	<4CD16654.6080704@domain.hid>	<4CD18782.7090607@domain.hid>	<4CD191EE.7000604@domain.hid>	<4CD1936E.50203@domain.hid>	<4CD1BA29.9000303@domain.hid>	<1288816871.1842.84.camel@domain.hid>
 	<4CD1DC1B.8060407@domain.hid>	<4CD1DE12.5010309@domain.hid>
@@ -12,7 +12,7 @@ References: <4CC82C8D.3080808@domain.hid>	<4CC94E0B.9070106@domain.hid>	<4CCEF10
 	<4CD2612C.2070507@domain.hid> <4CD279F7.7070502@domain.hid>
 	<4CD27C46.8010302@domain.hid> <4CD27DC2.7060607@domain.hid>
 In-Reply-To: <4CD27DC2.7060607@domain.hid>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-core] Potential problem with rt_eepro100
 List-Id: Xenomai life and development <xenomai.xenomai.org>
@@ -75,71 +75,11 @@ Jan Kiszka wrote:
 > 
 > This would be the radical approach of removing the check (and cleaning
 > up some bits). If it's acceptable, I would split it up properly.
-> 
-> diff --git a/include/nucleus/pod.h b/include/nucleus/pod.h
-> index 01ff0a7..71f8311 100644
-> --- a/include/nucleus/pod.h
-> +++ b/include/nucleus/pod.h
-> @@ -277,14 +277,9 @@ static inline void xnpod_schedule(void)
->  	 * context is active, or if we are caught in the middle of a
->  	 * unlocked context switch.
->  	 */
-> -#if XENO_DEBUG(NUCLEUS)
-> -	if (testbits(sched->status, XNKCOUT|XNINIRQ|XNSWLOCK))
-> -		return;
-> -#else /* !XENO_DEBUG(NUCLEUS) */
->  	if (testbits(sched->status,
->  		     XNKCOUT|XNINIRQ|XNSWLOCK|XNRESCHED) != XNRESCHED)
->  		return;
-> -#endif /* !XENO_DEBUG(NUCLEUS) */
->  
->  	__xnpod_schedule(sched);
->  }
-> diff --git a/include/nucleus/sched.h b/include/nucleus/sched.h
-> index df56417..c832b91 100644
-> --- a/include/nucleus/sched.h
-> +++ b/include/nucleus/sched.h
-> @@ -177,17 +177,16 @@ static inline int xnsched_self_resched_p(struct xnsched *sched)
->  
->  /* Set self resched flag for the given scheduler. */
->  #define xnsched_set_self_resched(__sched__) do {		\
-> -  setbits((__sched__)->status, XNRESCHED);			\
-> +	__setbits((__sched__)->status, XNRESCHED);		\
->  } while (0)
->  
->  /* Set specific resched flag into the local scheduler mask. */
->  #define xnsched_set_resched(__sched__) do {				\
-> -  xnsched_t *current_sched = xnpod_current_sched();			\
-> -  setbits(current_sched->status, XNRESCHED);				\
-> -  if (current_sched != (__sched__))	{				\
-> -      xnarch_cpu_set(xnsched_cpu(__sched__), current_sched->resched);	\
-> -      setbits((__sched__)->status, XNRESCHED);				\
-> -  }									\
-> +	xnsched_t *current_sched = xnpod_current_sched();		\
-> +	__setbits(current_sched->status, XNRESCHED);			\
-> +	if (current_sched != (__sched__))				\
-> +		xnarch_cpu_set(xnsched_cpu(__sched__),			\
-> +			       current_sched->resched);			\
->  } while (0)
->  
->  void xnsched_zombie_hooks(struct xnthread *thread);
-> diff --git a/ksrc/nucleus/pod.c b/ksrc/nucleus/pod.c
-> index 9e135f3..87dc136 100644
-> --- a/ksrc/nucleus/pod.c
-> +++ b/ksrc/nucleus/pod.c
-> @@ -284,10 +284,11 @@ void xnpod_schedule_handler(void) /* Called with hw interrupts off. */
->  	trace_xn_nucleus_sched_remote(sched);
->  #if defined(CONFIG_SMP) && defined(CONFIG_XENO_OPT_PRIOCPL)
->  	if (testbits(sched->status, XNRPICK)) {
-> -		clrbits(sched->status, XNRPICK);
-> +		__clrbits(sched->status, XNRPICK);
->  		xnshadow_rpi_check();
->  	}
->  #endif /* CONFIG_SMP && CONFIG_XENO_OPT_PRIOCPL */
-> +	xnsched_set_resched(sched);
->  	xnpod_schedule();
->  }
->  
+
+This debug check saved our asses when debugging SMP issues, and I
+suspect it may help debugging skin issues. So, I think we should try and
+keep it.
+
 > @@ -2162,21 +2163,21 @@ static inline void xnpod_switch_to(xnsched_t *sched,
 >  
 >  static inline int __xnpod_test_resched(struct xnsched *sched)
@@ -150,48 +90,10 @@ Jan Kiszka wrote:
 >  	/* Send resched IPI to remote CPU(s). */
 > -	if (unlikely(xnsched_resched_p(sched))) {
 > +	if (unlikely(resched)) {
->  		xnarch_send_ipi(sched->resched);
->  		xnarch_cpus_clear(sched->resched);
->  	}
->  #endif
-> -	clrbits(sched->status, XNRESCHED);
-> +	__clrbits(sched->status, XNRESCHED);
->  	return resched;
->  }
->  
->  void __xnpod_schedule(struct xnsched *sched)
->  {
-> -	int zombie, switched, need_resched, shadow;
-> +	int zombie, switched, shadow;
->  	struct xnthread *prev, *next, *curr;
->  	spl_t s;
->  
-> @@ -2194,11 +2195,10 @@ void __xnpod_schedule(struct xnsched *sched)
->  			 xnthread_current_priority(curr));
->  reschedule:
->  	switched = 0;
-> -	need_resched = __xnpod_test_resched(sched);
-> -#if !XENO_DEBUG(NUCLEUS)
-> -	if (!need_resched)
-> +
-> +	if (!__xnpod_test_resched(sched))
->  		goto signal_unlock_and_exit;
-> -#endif /* !XENO_DEBUG(NUCLEUS) */
-> +
->  	zombie = xnthread_test_state(curr, XNZOMBIE);
->  
->  	next = xnsched_pick_next(sched);
-> @@ -2213,8 +2213,6 @@ reschedule:
->  		goto signal_unlock_and_exit;
->  	}
->  
-> -	XENO_BUGON(NUCLEUS, need_resched == 0);
-> -
->  	prev = curr;
->  
->  	trace_xn_nucleus_sched_switch(prev, next);
 
-And remember to make the diff to head and not ftrace branch :-)
+At first sight, here you are more breaking things than cleaning them.
 
-/Anders
+
+-- 
+                                                                Gilles.
 
