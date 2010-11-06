@@ -1,17 +1,9 @@
 MIME-Version: 1.0
-In-Reply-To: <4CD1CAEA.8030208@domain.hid>
-References: <AANLkTimeLKjkOf-y-Jb89EQrbWYjxAbmNf-QqUWXd+tP@mail.gmail.com>
-	<AANLkTi=y8ix9REzUeCU+adyKTE=C-M=P_gFTtjVDO+rw@domain.hid>
-	<4CC6BCBB.8020902@domain.hid>
-	<AANLkTik1+vF_AzF7iYwzsJi9nh-giBOU7vNjaeK0TiCH@mail.gmail.com>
-	<AANLkTimZ3L9Sy3OPB4p_x2xYMJnKZwz3m1uF==PRx0ER@mail.gmail.com>
-	<4CD1CAEA.8030208@domain.hid>
-Date: Wed, 3 Nov 2010 22:15:12 +0100
-Message-ID: <AANLkTi=xR8SARqmA554KW1zJLo9DtwQFseM7hwt11JnV@mail.gmail.com>
-From: ronny meeus <ronny.meeus@domain.hid>
-Content-Type: multipart/alternative; boundary=0016367b600c79feef04942c8978
-Subject: Re: [Xenomai-help] Possible memory leak in psos skin message queue
-	handling
+Date: Fri, 5 Nov 2010 19:26:29 -0700
+Message-ID: <AANLkTimpz6=DWjrKLRoG6O5XGotgQX6FTZR+U2b54awU@mail.gmail.com>
+From: Peter Pastor <peter.pastor@domain.hid>
+Content-Type: multipart/alternative; boundary=0016361e7fe45c33220494591ea3
+Subject: [Xenomai-help] detect mode switches to primary mode
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -21,48 +13,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai-help@domain.hid
+To: xenomai@xenomai.org
 
---0016367b600c79feef04942c8978
+--0016361e7fe45c33220494591ea3
 Content-Type: text/plain; charset=ISO-8859-1
 
-Thanks !
+Dear all,
 
-Ronny
+I am running several boarder line threads that are running in primary mode
+only when accessing some shared memory, otherwise I want them to run in
+secondary mode. I have used rt_task_set_mode to warn me upon switches to
+secondary modes, however, my question is, is there a similar way to detect
+mode switches to primary mode ?
 
-On Wed, Nov 3, 2010 at 9:49 PM, Gilles Chanteperdrix <
-gilles.chanteperdrix@xenomai.org> wrote:
+I have figured out a workaround using pthread_set_mode_np to force the
+thread to run in secondary mode (after shared memory access) and right
+before I force it back to primary mode do a printf and see whether I get a
+warning of switching into secondary mode (if so, then I know that the thread
+was running in primary mode, if not, then the thread was running in
+secondary mode.)
 
-> ronny meeus wrote:
-> > Hello
-> >
-> > any feedback on the patch I have posted last week?
->
-> The patch is in Philippe's queue, so, on its way to be merged.
->
-> --
->                                                                Gilles.
->
+Again, my question is, is there an elegant way to detect mode switches from
+secondary mode to primary mode ?
 
---0016367b600c79feef04942c8978
+THANKS,
+ peter
+
+--0016361e7fe45c33220494591ea3
 Content-Type: text/html; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
-<div>Thanks !</div>
-<div>=A0</div>
-<div>Ronny<br><br></div>
-<div class=3D"gmail_quote">On Wed, Nov 3, 2010 at 9:49 PM, Gilles Chanteper=
-drix <span dir=3D"ltr">&lt;<a href=3D"mailto:gilles.chanteperdrix@xenomai.org=
-rg">gilles.chanteperdrix@xenomai.org</a>&gt;</span> wrote:<br>
-<blockquote style=3D"BORDER-LEFT: #ccc 1px solid; MARGIN: 0px 0px 0px 0.8ex=
-; PADDING-LEFT: 1ex" class=3D"gmail_quote">
-<div class=3D"im">ronny meeus wrote:<br>&gt; Hello<br>&gt;<br>&gt; any feed=
-back on the patch I have posted last week?<br><br></div>The patch is in Phi=
-lippe&#39;s queue, so, on its way to be merged.<br><br>--<br><font color=3D=
-"#888888">=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
-=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0Gilles.<br>
-</font></blockquote></div><br>
+Dear all,<br><br>I am running several boarder line threads that are running=
+ in primary mode only when accessing some shared memory, otherwise I want t=
+hem to run in secondary mode. I have used rt_task_set_mode to warn me upon =
+switches to secondary modes, however, my question is, is there a similar wa=
+y to detect mode switches to primary mode ?<br>
+<br>I have figured out a workaround using pthread_set_mode_np to force the =
+thread to run in secondary mode (after shared memory access) and right befo=
+re I force it back to primary mode do a printf and see whether I get a warn=
+ing of switching into secondary mode (if so, then I know that the thread wa=
+s running in primary mode, if not, then the thread was running in secondary=
+ mode.)<br>
+<br>Again, my question is, is there an elegant way to detect mode switches =
+from secondary mode to primary mode ?<br><br>THANKS,<br>=A0peter<br>
 
---0016367b600c79feef04942c8978--
+--0016361e7fe45c33220494591ea3--
 
