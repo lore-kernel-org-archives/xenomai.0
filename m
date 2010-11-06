@@ -1,5 +1,5 @@
-Message-ID: <4CD57571.3090006@domain.hid>
-Date: Sat, 06 Nov 2010 16:34:09 +0100
+Message-ID: <4CD57D82.4050007@domain.hid>
+Date: Sat, 06 Nov 2010 17:08:34 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <AANLkTimpz6=DWjrKLRoG6O5XGotgQX6FTZR+U2b54awU@mail.gmail.com>	<4CD55D61.7050208@domain.hid>
@@ -40,20 +40,21 @@ Peter Pastor Sampedro wrote:
 > 
 > Anyways, thanks for letting me know that there is no clean way to see
 > when/where mode switches from secondary to primary modes happen.
+> 
+> Thanks,
+>  peter
 
-Posix function calls which cause this thread to switch to primary mode
-require this to work correctly. So, you can not call them and hope to
-remain in secondary mode. As explained here:
-http://www.xenomai.org/index.php/Porting_POSIX_applications_to_Xenomai#Compilation_flags.
+Ok. Got it. But there must be some kind of misunderstanding: a high
+priority thread running in secondary mode is not what you want, because
+it makes it interruptible by non real-time interrupt, bottom halves,
+tasklets, etc destroying its guaranteed latencies... But a null priority
+thread running in primary mode is harmless. Since it has a null
+priority, it will not prevent high priority thread from running.
 
-Linking the application to Xenomai posix skin is not sufficient to have
-this application use Xenomai services. The --wrap mechanism does this.
-So, if you want to be sure to use Linux service instead of Xenomai
-service, you should use the __real prefix.
+Something else: if you want to avoid issues, the mutex protecting the
+shared memory area shared between a high priority thread and the border
+line thread should have priority inheritance enabled.
 
-In short, I do not understand what you are trying to do.
-
-What about sending a small piece of code to explain it?
 -- 
                                                                 Gilles.
 
