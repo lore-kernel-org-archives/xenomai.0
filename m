@@ -1,128 +1,59 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <4CD663F2.2080704@domain.hid>
-References: <4CC82C8D.3080808@domain.hid>
-	<1288816871.1842.84.camel@domain.hid>	 <4CD1DC1B.8060407@domain.hid>
-	<4CD1DE12.5010309@domain.hid>	 <4CD1E890.5010702@domain.hid>
-	<4CD1EC2F.4040603@domain.hid>	 <4CD1ED16.8030103@domain.hid>
-	<4CD1EDA8.10007@domain.hid>	 <4CD1F33C.5070208@domain.hid>
-	<4CD1F3F5.5080505@domain.hid>	 <4CD1F4FE.9020908@domain.hid>
-	<4CD1F69B.9070100@domain.hid>	 <4CD1F906.1070703@domain.hid>
-	<4CD1FABD.1080301@domain.hid>	 <4CD2612C.2070507@domain.hid>
-	<4CD279F7.7070502@domain.hid>	 <4CD27C46.8010302@domain.hid>
-	<4CD27DC2.7060607@domain.hid>	 <4CD2A96B.3080001@domain.hid>
-	<4CD2B2A7.9010900@domain.hid>	 <4CD2C50F.1090604@domain.hid>
-	<4CD32E76.3080004@domain.hid>	 <4CD33F0C.1050403@domain.hid>
-	<4CD340AA.60002@domain.hid>	 <4CD34355.5020304@domain.hid>
-	<4CD35DC7.1000507@domain.hid>	 <4CD3DAC5.6000400@domain.hid>
-	<4CD4A0EF.1@domain.hid>	 <4CD5B9FC.6050602@domain.hid>
-	<4CD5BC82.6060106@domain.hid> <1289083796.1842.239.camel@domain.hid>
-	<4CD5FA26.4090504@domain.hid>  <4CD663F2.2080704@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Sun, 07 Nov 2010 11:03:47 +0100
-Message-ID: <1289124227.1842.283.camel@domain.hid>
-Mime-Version: 1.0
+Message-ID: <4CD57571.3090006@domain.hid>
+Date: Sat, 06 Nov 2010 16:34:09 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+References: <AANLkTimpz6=DWjrKLRoG6O5XGotgQX6FTZR+U2b54awU@mail.gmail.com>	<4CD55D61.7050208@domain.hid>
+	<AANLkTimhUUYDkHh6wJ_zL8dLJgCi+7F8kOXrA63LzTO9@domain.hid>
+In-Reply-To: <AANLkTimhUUYDkHh6wJ_zL8dLJgCi+7F8kOXrA63LzTO9@domain.hid>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] Potential problem with rt_eepro100
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Subject: Re: [Xenomai-help] detect mode switches to primary mode
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Jan Kiszka <jan.kiszka@domain.hid>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Peter Pastor Sampedro <pastorsa@domain.hid>
+Cc: xenomai@xenomai.org
 
-On Sun, 2010-11-07 at 09:31 +0100, Gilles Chanteperdrix wrote:
-> Jan Kiszka wrote:
-> >>> Anyway, after some thoughts, I think we are going to try and make the
-> >>> current situation work instead of going back to the old way.
-> >>>
-> >>> You can find the patch which attempts to do so here:
-> >>> http://sisyphus.hd.free.fr/~gilles/sched_status.txt
-> >> Ack. At last, this addresses the real issues without asking for
-> >> regression funkiness: fix the lack of barrier before testing XNSCHED in
-> > 
-> > Check the kernel, we actually need it on both sides. Wherever the final
-> > barriers will be, we should leave a comment behind why they are there.
-> > Could be picked up from kernel/smp.c.
+Peter Pastor Sampedro wrote:
+> Hey Gilles,
 > 
-> We have it on both sides: the non-local flags are modified while holding
-> the nklock. Unlocking the nklock implies a barrier.
+> Thanks for your prompt response !
+> 
+>> If you have a borderline thread sharing memory with a primary-mode only
+>> thread, you are supposed to protect the accesses to the shared memory
+>> with a mutex, then the borderline thread will automatically switch to
+>> primary mode when it acquires the mutex. When it gets out of this
+>> critical section and it calls a function which requires running in
+>> secondary mode, then it will switch automatically to secondary mode.
+> 
+> That is exactly what I am doing. However, since I am linking my
+> program against the posix skin, I may call some posix function in the
+> non-real-time part of the boarder line thread which cause my thread to
+> switch back to primary mode... which is exactly what I don't want it
+> to do.
+> 
+> Anyways, thanks for letting me know that there is no clean way to see
+> when/where mode switches from secondary to primary modes happen.
 
-I think we may have an issue with this kind of construct:
+Posix function calls which cause this thread to switch to primary mode
+require this to work correctly. So, you can not call them and hope to
+remain in secondary mode. As explained here:
+http://www.xenomai.org/index.php/Porting_POSIX_applications_to_Xenomai#Compilation_flags.
 
-xnlock_get_irq*(&nklock)
-	xnpod_resume/suspend/whatever_thread()
-		xnlock_get_irq*(&nklock)
-		...
-		xnlock_put_irq*(&nklock)
-	xnpod_schedule()
-		xnlock_get_irq*(&nklock)
-			send_ipi
-			=====> xnpod_schedule_handler on dest CPU
-		xnlock_put_irq*(&nklock)
-xnlock_put_irq*(&nklock)
+Linking the application to Xenomai posix skin is not sufficient to have
+this application use Xenomai services. The --wrap mechanism does this.
+So, if you want to be sure to use Linux service instead of Xenomai
+service, you should use the __real prefix.
 
-The issue would be triggered by the use of recursive locking. In that
-case, the source CPU would only sync its cache when the lock is actually
-dropped by the outer xnlock_put_irq* call and the inner
-xnlock_get/put_irq* would not act as barriers, so the remote
-rescheduling handler won't always see the XNSCHED update done remotely,
-and may lead to a no-op. So we need a barrier before sending the IPI in
-__xnpod_test_resched().
+In short, I do not understand what you are trying to do.
 
-This could not happen if all schedule state changes where clearly
-isolated from rescheduling calls in different critical sections, but
-it's sometimes not an option not to group them for consistency reasons.
-
-> 
-> > 
-> >> the xnpod_schedule pre-test, and stop sched->status trashing due to
-> >> XNINIRQ/XNHTICK/XNRPICK ops done un-synced on nklock.
-> >>
-> >> In short, this patch looks like moving the local-only flags where they
-> >> belong, i.e. anywhere you want but *outside* of the status with remotely
-> >> accessed bits. XNRPICK seems to be handled differently, but it makes
-> >> sense to group it with other RPI data as you did, so fine with me.
-> > 
-> > I just hope we finally converge over a solution. Looks like all
-> > possibilities have been explored now. A few more comments on this one:
-> > 
-> > It probably makes sense to group the status bits accordingly (both their
-> > values and definitions) and briefly document on which status field they
-> > are supposed to be applied.
-> 
-> Ok, but I wanted them to not use the same values, so that we can use the
-> sched->status | sched->lstatus trick in xnpod_schedule. Something is
-> lacking too: we probably need to use sched->status | sched->lstatus for
-> display in /proc.
-> 
-> > 
-> > I do not understand the split logic - or some bits are simply not yet
-> > migrated. XNHDEFER, XNSWLOCK, XNKCOUT are all local-only as well, no?
-> > Then better put them in the _local_ status field, that's more consistent
-> > (and would help if we once wanted to optimize their cache line usage).
-> 
-> Maybe the naming is not good the. ->status is everything which is
-> modified under nklock, ->lstatus is for XNINIRQ and XNHTICK which are
-> modified without holding the nklock.
-> 
-> > 
-> > The naming is unfortunate: status vs. lstatus. This is asking for
-> > confusion and typos. They must be better distinguishable, e.g.
-> > local_status. Or we need accessors that have debug checks built in,
-> > catching wrong bits for their target fields.
-> 
-> I agree.
-> 
-> > 
-> > Good catch of the RPI breakage, Gilles!
-> 
-
+What about sending a small piece of code to explain it?
 -- 
-Philippe.
-
-
+                                                                Gilles.
 
