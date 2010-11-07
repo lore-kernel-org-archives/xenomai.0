@@ -1,14 +1,26 @@
-Message-ID: <4CD683DF.3000306@domain.hid>
-Date: Sun, 07 Nov 2010 11:47:59 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <AANLkTinQotwe=EwATsmdKnanN-ZwT8c+CobzBRDqptEj@domain.hid>
-	<4CCB4573.30607@domain.hid>
-In-Reply-To: <4CCB4573.30607@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <1288251968.1816.22.camel@domain.hid>
+References: <20101007115728.GA24500@domain.hid>
+	<4CADBDC2.8080600@domain.hid> <20101008070148.GB2255@domain.hid>
+	<1286530884.13186.109.camel@domain.hid>
+	<20101013090353.GA6902@domain.hid>
+	<1286961375.1759.71.camel@domain.hid>
+	<20101013092617.GB6902@domain.hid>
+	<1286981521.1759.83.camel@domain.hid>
+	<1288025329.26618.132.camel@domain.hid>  <4CC5C80E.2070004@domain.hid>
+	<1288033731.26618.161.camel@domain.hid>  <4CC5D742.9080307@domain.hid>
+	<1288034435.26618.164.camel@domain.hid>  <4CC5D8FF.5080109@domain.hid>
+	<1288041166.26618.182.camel@domain.hid>  <4CC5F525.7040206@domain.hid>
+	<1288042858.26618.204.camel@domain.hid>  <4CC5FAE6.6010305@domain.hid>
+	<1288068231.26618.224.camel@domain.hid> <4CC665A1.9040707@domain.hid>
+	<4CC72D27.3010607@domain.hid> <1288243034.1816.14.camel@domain.hid>
+	<4CC926BE.7040105@domain.hid>  <1288251968.1816.22.camel@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Date: Sun, 07 Nov 2010 16:15:59 +0100
+Message-ID: <1289142959.1842.295.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] High resolution timers disabled on AT91SAM9G20
- board	after patching
+Subject: Re: [Xenomai-help] kernel oopses when killing realtime task
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -18,164 +30,92 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: at91_enthus <nwromania@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai@xenomai.org
 
-Gilles Chanteperdrix wrote:
-> at91_enthus wrote:
->> Hi!
->>
->> I installed the latest xenomai patch on a AT91SAM9G20 board and
->> everything looked good at a first glance: no compilation problems, low
->> latencies.
->>
->> However, when I typed cat /proc/timer_list , the resolutions in  cpu0
->> and cpu1 items showed 100000 (ns).
->> (I compiled the Xenomai patched kernel with High Resolution Timers enabled.)
->>
->> I don't have this problem when I boot a real time kernel (RT_PREEMPT).
+On Thu, 2010-10-28 at 09:46 +0200, Philippe Gerum wrote:
+> On Thu, 2010-10-28 at 09:31 +0200, Jan Kiszka wrote:
+> > Am 28.10.2010 07:17, Philippe Gerum wrote:
+> > > On Tue, 2010-10-26 at 21:33 +0200, Jan Kiszka wrote:
+> > >> Am 26.10.2010 07:22, Jan Kiszka wrote:
+> > >>> Will come up with two patches for stable, one for I-pipe and one for
+> > >>> Xenomai, later today. Then we can discuss which cases I'm missing.
+> > >>
+> > >> While meditating over my approach (which turned out to be less trivial
+> > >> as expected - of course), I also reconsidered your current patches. The
+> > >> concerns I had (forwarding of spurious IRQ to Linux) turned out to be
+> > >> harmless (Linux will ignore such few spurious events).
+> > >>
+> > > 
+> > > That is not even an issue if you consider the sequence to be
+> > > xnarch_disable_irq then ipipe_control (new version, doing a critical
+> > > entry to flip the irq mode).
+> > 
+> > When you want to support shared IRQs, xnarch_disable_irq is tabu. I
+> > suppose you meant some my_device_disable_irqs().
 > 
-> You mean another real-time kernel? If RT_PREEMPT uses the sys timer
-> running at 32kHz, and it tells you that it has a 1ns resolution, then it
-> is lying, because 32kHz, means a 30us resolution.
+> No, it is perfectly valid provided you made sure that no handler
+> remained on the shared list. There is absolutely no reason to keep a
+> line unmasked if no device is supposed to be active on it. Hence the
+> release sequence described earlier.
 > 
-> Xenomai uses one TC as a timer at whatever frequency your chip proposes
-> over 1 MHz, this means a resolution below 1us, the downside is that this
-> also means a very short wrap time. And since the TC is also used as a
-> clock, this means that we must enter the timer interrupt handler before
-> the counter wraps. And this is something that Linux without Xenomai
-> running can not guarantee.
+> > 
+> > > 
+> > >> Still, the approach to sync via shutting down the line for the current
+> > >> domain before xnintr_irq_detach doesn't work for us. It only works if
+> > >> xnintr_irq_detach actually detaches from the line, but it breaks if
+> > >> there are users remaining.
+> > >>
+> > >> We need intrlock to check if we are the last user while removing
+> > >> ourselves from the list. And we cannot postpone line detaching after the
+> > >> critical section as we may otherwise race with the next registration on
+> > >> that line. IOW, I don't see how to solve the issue without moving the
+> > >> drain after the detach and making the detach safer instead.
+> > >>
+> > >> Do you agree?
+> > >>
+> > > 
+> > > I agree this is not trivial, for sure. To keep things simple, I would
+> > > introduce a new "teardown" flag to freeze the descriptor, thus avoiding
+> > > further attachments, while xnintr_detach can probe the shared list for
+> > > lingering users, and eventually call xnarch_disable_irq
+> > > +xnarch_ignore_irq+xnarch_release_irq in sequence with all locks
+> > > dropped, if empty.
+> > > 
+> > > The only adverse effect I can see ATM would be some concurrent caller of
+> > > xnintr_detach() blocked on the teardown flag on another CPU, albeit it
+> > > _could_ have joined the bandwagon, attaching the irq, in case the shared
+> > > list proved to remain active (and thus xnarch_release_irq was not
+> > > called). But this may also look like a simple way to prevent live
+> > > locking of interrupt descriptors. YMMV.
+> > 
+> > This sounds like it's best discussed based on patches.
+> > 
+> 
+> Likely, yes. I'll have a look when time allows.
 
-On the other hand, we can keep the timer ticking behind Linux' back.
-Does the following patch fix the issue for you?
+The following patches implements the teardown approach. The basic idea
+is:
+- neither break nor improve old setups with legacy I-pipe patches not
+providing the revised ipipe_control_irq call.
+- fix the SMP race when detaching interrupts.
 
-diff --git a/arch/arm/mach-at91/at91_ipipe_time.c
-b/arch/arm/mach-at91/at91_ipipe_time.c
-index b0327eb..6c6f0d7 100644
---- a/arch/arm/mach-at91/at91_ipipe_time.c
-+++ b/arch/arm/mach-at91/at91_ipipe_time.c
-@@ -76,9 +76,7 @@
- #define TCNXCNS(timer,v) ((v) << ((timer)<<1))
- #define AT91_TC_REG_MASK (0xffff)
+The last patch also fixes two other issues:
+- do not alter the irq descriptor (e.g. cookie and stats) if the
+attachment fails early
+- do not set irq affinity before the validity checks, and set it only
+for the first handler introduced in the shared list.
 
--static unsigned long next_match;
--
--static unsigned max_delta_ticks, min_delta_ticks;
-+static unsigned max_delta_ticks, min_delta_ticks, tick_pending;
- static struct clock_event_device clkevt;
- static int tc_timer_clock;
+http://git.xenomai.org/?p=xenomai-rpm.git;a=commit;h=ea771aec61c399dc85e14d3de571cffaa5b9b1e7
+http://git.xenomai.org/?p=xenomai-rpm.git;a=commit;h=4fa4643f8e59ca0528b059f82e97c0b37419e62e
 
-@@ -116,7 +114,11 @@ EXPORT_SYMBOL(__ipipe_mach_ticks_per_jiffy);
-  */
- static irqreturn_t at91_timer_interrupt(int irq, void *dev_id)
- {
--	clkevt.event_handler(&clkevt);
-+	if (__ipipe_mach_timerstolen || tick_pending) {
-+		tick_pending = 0;
-+		clkevt.event_handler(&clkevt);
-+	}
-+
- 	return IRQ_HANDLED;
- }
-
-@@ -130,12 +132,8 @@ void __ipipe_mach_acktimer(void)
- {
- 	at91_tc_read(AT91_TC_SR);
-
--	if (unlikely(!__ipipe_mach_timerstolen)) {
--		__ipipe_tsc_update();
--		next_match = (next_match + __ipipe_mach_ticks_per_jiffy)
--			& AT91_TC_REG_MASK;
--		write_RC(next_match);
--	}
-+	if (unlikely(!__ipipe_mach_timerstolen))
-+		__ipipe_mach_set_dec(max_delta_ticks);
- }
-
- static void
-@@ -147,7 +145,7 @@ at91_tc_set_mode(enum clock_event_mode mode, struct
-clock_event_device *dev)
- 	/* Disable all interrupts. */
- 	at91_tc_write(AT91_TC_IDR, ~0ul);
-
--	if (mode == CLOCK_EVT_MODE_PERIODIC) {
-+	if (mode == CLOCK_EVT_MODE_ONESHOT) {
- 		unsigned long v;
-
- #ifndef CONFIG_ARCH_AT91SAM9263
-@@ -169,9 +167,7 @@ at91_tc_set_mode(enum clock_event_mode mode, struct
-clock_event_device *dev)
- 		/* Use the clock selected by at91_timer_init as input clock. */
- 		at91_tc_write(AT91_TC_CMR, tc_timer_clock);
-
--		/* Load the TC register C. */
--		next_match = __ipipe_mach_ticks_per_jiffy;
--		write_RC(next_match);
-+		__ipipe_mach_set_dec(max_delta_ticks);
-
- 		/* Enable CPCS interrupt. */
- 		at91_tc_write(AT91_TC_IER, AT91_TC_CPCS);
-@@ -181,6 +177,14 @@ at91_tc_set_mode(enum clock_event_mode mode, struct
-clock_event_device *dev)
- 	}
- }
-
-+static int
-+at91_tc_set_next_event(unsigned long delta, struct clock_event_device *dev)
-+{
-+	tick_pending = 1;
-+	__ipipe_mach_set_dec(delta);
-+	return 0;
-+}
-+
- /*
-  * Reprogram the timer
-  */
-@@ -208,10 +212,11 @@ int __ipipe_check_tickdev(const char *devname)
-
- static struct clock_event_device clkevt = {
- 	.name		= "at91_tc" __stringify(CONFIG_IPIPE_AT91_TC),
--	.features	= CLOCK_EVT_FEAT_PERIODIC,
-+	.features	= CLOCK_EVT_FEAT_ONESHOT,
- 	.shift		= 20,
- 	.rating		= 250,
- 	.set_mode	= at91_tc_set_mode,
-+	.set_next_event = at91_tc_set_next_event,
- };
-
- static struct __ipipe_tscinfo tsc_info = {
-@@ -230,7 +235,7 @@ static struct __ipipe_tscinfo tsc_info = {
-
- void __ipipe_mach_release_timer(void)
- {
--	__ipipe_mach_set_dec(__ipipe_mach_ticks_per_jiffy);
-+	clkevt.set_next_event(__ipipe_mach_ticks_per_jiffy, &clkevt);
- }
- EXPORT_SYMBOL(__ipipe_mach_release_timer);
-
-@@ -293,15 +298,16 @@ void __init at91_timer_init(void)
- 	clkevt.max_delta_ns = wrap_ns;
- 	clkevt.min_delta_ns = 2000;
- 	clkevt.cpumask = cpumask_of(0);
--	clockevents_register_device(&clkevt);
--
--	tsc_info.freq = divided_freq;
--	__ipipe_tsc_register(&tsc_info);
-
- 	__ipipe_mach_ticks_per_jiffy = (divided_freq + HZ/2) / HZ;
- 	max_delta_ticks = (wrap_ns * clkevt.mult) >> clkevt.shift;
- 	min_delta_ticks = ((unsigned long long) clkevt.min_delta_ns
- 			   * clkevt.mult) >> clkevt.shift;
-+
-+	clockevents_register_device(&clkevt);
-+
-+	tsc_info.freq = divided_freq;
-+	__ipipe_tsc_register(&tsc_info);
- }
-
- #ifdef CONFIG_ARCH_AT91RM9200
-
+> 
+> > Jan
+> > 
+> 
 
 -- 
-                                                                Gilles.
+Philippe.
+
+
 
