@@ -17,8 +17,8 @@ References: <20101007115728.GA24500@domain.hid>
 	<4CC926BE.7040105@domain.hid>  <1288251968.1816.22.camel@domain.hid>
 	<1289142959.1842.295.camel@domain.hid>  <4CD6D22C.2030708@domain.hid>
 Content-Type: text/plain; charset="UTF-8"
-Date: Sun, 07 Nov 2010 17:55:22 +0100
-Message-ID: <1289148922.1842.299.camel@domain.hid>
+Date: Sun, 07 Nov 2010 17:59:40 +0100
+Message-ID: <1289149180.1842.301.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] kernel oopses when killing realtime task
@@ -114,9 +114,9 @@ On Sun, 2010-11-07 at 17:22 +0100, Jan Kiszka wrote:
 > 
 > Separate commits? At least mention it in the change log.
 
-I'm unsure this really matters. The bugs could only bite when taking the
-error path (who makes mistakes these days?), and the affinity fix
-depends on the race fix.
+Yeah, ok. In fact it makes sense to mention this in the last commit log
+for those who still show bad taste enough to make programming errors.
+Ahem.
 
 > 
 > Jan
