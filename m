@@ -1,102 +1,149 @@
-Message-ID: <4CD67A92.5090009@domain.hid>
-Date: Sun, 07 Nov 2010 11:08:18 +0100
+Message-ID: <4CD6D22C.2030708@domain.hid>
+Date: Sun, 07 Nov 2010 17:22:04 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <4CC82C8D.3080808@domain.hid>	 <4CD1DE12.5010309@domain.hid>	
-	<4CD1E890.5010702@domain.hid>	 <4CD1EC2F.4040603@domain.hid>	
-	<4CD1ED16.8030103@domain.hid>	 <4CD1EDA8.10007@domain.hid>	
-	<4CD1F33C.5070208@domain.hid>	 <4CD1F3F5.5080505@domain.hid>	
-	<4CD1F4FE.9020908@domain.hid>	 <4CD1F69B.9070100@domain.hid>	
-	<4CD1F906.1070703@domain.hid>	 <4CD1FABD.1080301@domain.hid>	
-	<4CD2612C.2070507@domain.hid>	 <4CD279F7.7070502@domain.hid>	
-	<4CD27C46.8010302@domain.hid>	 <4CD27DC2.7060607@domain.hid>	
-	<4CD2A96B.3080001@domain.hid>	 <4CD2B2A7.9010900@domain.hid>	
-	<4CD2C50F.1090604@domain.hid>	 <4CD32E76.3080004@domain.hid>	
-	<4CD33F0C.1050403@domain.hid>	 <4CD340AA.60002@domain.hid>	
-	<4CD34355.5020304@domain.hid>	 <4CD35DC7.1000507@domain.hid>	
-	<4CD3DAC5.6000400@domain.hid>	 <4CD4A0EF.1@domain.hid>	
-	<4CD5B9FC.6050602@domain.hid>	 <4CD5BC82.6060106@domain.hid>
-	<1289083796.1842.239.camel@domain.hid>	 <4CD5FA26.4090504@domain.hid>
-	<4CD663F2.2080704@domain.hid> <1289124227.1842.283.camel@domain.hid
-	shift>
-In-Reply-To: <1289124227.1842.283.camel@domain.hid>
+References: <20101007115728.GA24500@domain.hid>	
+	<4CADBDC2.8080600@domain.hid>
+	<20101008070148.GB2255@domain.hid>	
+	<1286530884.13186.109.camel@domain.hid>	
+	<20101013090353.GA6902@domain.hid>	
+	<1286961375.1759.71.camel@domain.hid>	
+	<20101013092617.GB6902@domain.hid>	
+	<1286981521.1759.83.camel@domain.hid>	
+	<1288025329.26618.132.camel@domain.hid> <4CC5C80E.2070004@domain.hid>	
+	<1288033731.26618.161.camel@domain.hid> <4CC5D742.9080307@domain.hid>	
+	<1288034435.26618.164.camel@domain.hid> <4CC5D8FF.5080109@domain.hid>	
+	<1288041166.26618.182.camel@domain.hid> <4CC5F525.7040206@domain.hid>	
+	<1288042858.26618.204.camel@domain.hid> <4CC5FAE6.6010305@domain.hid>	
+	<1288068231.26618.224.camel@domain.hid>
+	<4CC665A1.9040707@domain.hid>	 <4CC72D27.3010607@domain.hid>
+	<1288243034.1816.14.camel@domain.hid>	 <4CC926BE.7040105@domain.hid>
+	<1288251968.1816.22.camel@domain.hid>
+	<1289142959.1842.295.camel@domain.hid>
+In-Reply-To: <1289142959.1842.295.camel@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig00F0D1A44537E08742EFA0BD"
+	boundary="------------enig7B6746909E794DF41BFEEAE1"
 Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-core] Potential problem with rt_eepro100
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Subject: Re: [Xenomai-help] kernel oopses when killing realtime task
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
 To: Philippe Gerum <rpm@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+Cc: xenomai@xenomai.org
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig00F0D1A44537E08742EFA0BD
+--------------enig7B6746909E794DF41BFEEAE1
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-Am 07.11.2010 11:03, Philippe Gerum wrote:
-> On Sun, 2010-11-07 at 09:31 +0100, Gilles Chanteperdrix wrote:
->> Jan Kiszka wrote:
->>>>> Anyway, after some thoughts, I think we are going to try and make t=
-he
->>>>> current situation work instead of going back to the old way.
+Am 07.11.2010 16:15, Philippe Gerum wrote:
+> On Thu, 2010-10-28 at 09:46 +0200, Philippe Gerum wrote:
+>> On Thu, 2010-10-28 at 09:31 +0200, Jan Kiszka wrote:
+>>> Am 28.10.2010 07:17, Philippe Gerum wrote:
+>>>> On Tue, 2010-10-26 at 21:33 +0200, Jan Kiszka wrote:
+>>>>> Am 26.10.2010 07:22, Jan Kiszka wrote:
+>>>>>> Will come up with two patches for stable, one for I-pipe and one f=
+or
+>>>>>> Xenomai, later today. Then we can discuss which cases I'm missing.=
+
 >>>>>
->>>>> You can find the patch which attempts to do so here:
->>>>> http://sisyphus.hd.free.fr/~gilles/sched_status.txt
->>>> Ack. At last, this addresses the real issues without asking for
->>>> regression funkiness: fix the lack of barrier before testing XNSCHED=
- in
+>>>>> While meditating over my approach (which turned out to be less triv=
+ial
+>>>>> as expected - of course), I also reconsidered your current patches.=
+ The
+>>>>> concerns I had (forwarding of spurious IRQ to Linux) turned out to =
+be
+>>>>> harmless (Linux will ignore such few spurious events).
+>>>>>
+>>>>
+>>>> That is not even an issue if you consider the sequence to be
+>>>> xnarch_disable_irq then ipipe_control (new version, doing a critical=
+
+>>>> entry to flip the irq mode).
 >>>
->>> Check the kernel, we actually need it on both sides. Wherever the fin=
-al
->>> barriers will be, we should leave a comment behind why they are there=
-=2E
->>> Could be picked up from kernel/smp.c.
+>>> When you want to support shared IRQs, xnarch_disable_irq is tabu. I
+>>> suppose you meant some my_device_disable_irqs().
 >>
->> We have it on both sides: the non-local flags are modified while holdi=
-ng
->> the nklock. Unlocking the nklock implies a barrier.
+>> No, it is perfectly valid provided you made sure that no handler
+>> remained on the shared list. There is absolutely no reason to keep a
+>> line unmasked if no device is supposed to be active on it. Hence the
+>> release sequence described earlier.
+>>
+>>>
+>>>>
+>>>>> Still, the approach to sync via shutting down the line for the curr=
+ent
+>>>>> domain before xnintr_irq_detach doesn't work for us. It only works =
+if
+>>>>> xnintr_irq_detach actually detaches from the line, but it breaks if=
+
+>>>>> there are users remaining.
+>>>>>
+>>>>> We need intrlock to check if we are the last user while removing
+>>>>> ourselves from the list. And we cannot postpone line detaching afte=
+r the
+>>>>> critical section as we may otherwise race with the next registratio=
+n on
+>>>>> that line. IOW, I don't see how to solve the issue without moving t=
+he
+>>>>> drain after the detach and making the detach safer instead.
+>>>>>
+>>>>> Do you agree?
+>>>>>
+>>>>
+>>>> I agree this is not trivial, for sure. To keep things simple, I woul=
+d
+>>>> introduce a new "teardown" flag to freeze the descriptor, thus avoid=
+ing
+>>>> further attachments, while xnintr_detach can probe the shared list f=
+or
+>>>> lingering users, and eventually call xnarch_disable_irq
+>>>> +xnarch_ignore_irq+xnarch_release_irq in sequence with all locks
+>>>> dropped, if empty.
+>>>>
+>>>> The only adverse effect I can see ATM would be some concurrent calle=
+r of
+>>>> xnintr_detach() blocked on the teardown flag on another CPU, albeit =
+it
+>>>> _could_ have joined the bandwagon, attaching the irq, in case the sh=
+ared
+>>>> list proved to remain active (and thus xnarch_release_irq was not
+>>>> called). But this may also look like a simple way to prevent live
+>>>> locking of interrupt descriptors. YMMV.
+>>>
+>>> This sounds like it's best discussed based on patches.
+>>>
+>>
+>> Likely, yes. I'll have a look when time allows.
 >=20
-> I think we may have an issue with this kind of construct:
+> The following patches implements the teardown approach. The basic idea
+> is:
+> - neither break nor improve old setups with legacy I-pipe patches not
+> providing the revised ipipe_control_irq call.
+> - fix the SMP race when detaching interrupts.
+
+Looks good.
+
 >=20
-> xnlock_get_irq*(&nklock)
-> 	xnpod_resume/suspend/whatever_thread()
-> 		xnlock_get_irq*(&nklock)
-> 		...
-> 		xnlock_put_irq*(&nklock)
-> 	xnpod_schedule()
-> 		xnlock_get_irq*(&nklock)
-> 			send_ipi
-> 			=3D=3D=3D=3D=3D> xnpod_schedule_handler on dest CPU
-> 		xnlock_put_irq*(&nklock)
-> xnlock_put_irq*(&nklock)
->=20
-> The issue would be triggered by the use of recursive locking. In that
-> case, the source CPU would only sync its cache when the lock is actuall=
-y
-> dropped by the outer xnlock_put_irq* call and the inner
-> xnlock_get/put_irq* would not act as barriers, so the remote
-> rescheduling handler won't always see the XNSCHED update done remotely,=
+> The last patch also fixes two other issues:
+> - do not alter the irq descriptor (e.g. cookie and stats) if the
+> attachment fails early
+> - do not set irq affinity before the validity checks, and set it only
+> for the first handler introduced in the shared list.
 
-> and may lead to a no-op. So we need a barrier before sending the IPI in=
-
-> __xnpod_test_resched().
-
-That's what I said.
-
-And we need it on the reader side as an rmb().
+Separate commits? At least mention it in the change log.
 
 Jan
 
 
---------------enig00F0D1A44537E08742EFA0BD
+--------------enig7B6746909E794DF41BFEEAE1
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -105,10 +152,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v2.0.15 (GNU/Linux)
 Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org/
 
-iEYEARECAAYFAkzWepIACgkQitSsb3rl5xSppwCfQ12nzSdWqO1XBlr1iOzx2zTM
-TqoAoOmCV0A4kI1T9wlaRA40ygsdr613
-=mHFX
+iEYEARECAAYFAkzW0jAACgkQitSsb3rl5xRsPACgreKLb49REQ9pPfwVIH6XDVyp
+IoEAnj6arwbu5QfzYzqQ5eFM9FcgYOCh
+=6vNu
 -----END PGP SIGNATURE-----
 
---------------enig00F0D1A44537E08742EFA0BD--
+--------------enig7B6746909E794DF41BFEEAE1--
 
