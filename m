@@ -1,11 +1,12 @@
-Date: Mon, 8 Nov 2010 16:14:05 -0000 (GMT)
-From: edward.robbins@domain.hid
+Message-ID: <4CD8246B.1080307@domain.hid>
+Date: Mon, 08 Nov 2010 08:25:15 -0800
+From: Thomas Lockhart <Thomas.Lockhart@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <4CD817BB.80404@domain.hid>
 References: <1289211836.298721730@domain.hid> <4CD817BB.80404@domain.hid>
-Message-ID: <1289232845.384714670@domain.hid>
+	<1289232845.384714670@domain.hid>
+In-Reply-To: <1289232845.384714670@domain.hid>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] Supported cPCI systems
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -16,25 +17,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Thomas Lockhart <Thomas.Lockhart@domain.hid>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "edward.robbins@domain.hid" <edward.robbins@domain.hid>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>, "Lockhart,
+	Thomas G (388G)" <Thomas.G.Lockhart@domain.hid>
 
-Hi, and thanks for your response. A couple of questions:=0A=0ADoes the PP42=
-1 work with consistently low latencies? =0ADid you need to modify Xenomai o=
-r the kernel at all? =0ACould you tell me what kernel and xenomai versions =
-you are using?=0A=0AThanks,=0AEdward=0A=0AOn Monday, 8 November, 2010 3:31p=
-m, "Thomas Lockhart" <Thomas.Lockhart@domain.hid> said:=0A=0A>> since I h=
-ave been unsuccessful getting Xenomai to work on our MEN=0A>> F19P and F17 =
-systems, I would like to hear from anyone who has had=0A>> success with oth=
-er cPCI based systems - preferably x86 with dual=0A>> processor support, bu=
-t failing that anything will do at this point.=0A> =0A> We have had success=
- with a dual-processor cPCI Xeon board from=0A> Concurrent Technologies (a =
-PP421 I think).=0A> =0A> I have another board from them (a PP531 I think) w=
-hich will not boot=0A> recent Linux kernels (past 2.6.27 or so) including t=
-he FC13 distro disk.=0A> The company claims FC13 is supported so I don't kn=
-ow what is up with=0A> that. So far they have not been helpful on that fron=
-t. I haven't done=0A> much with Xenomai on that board but I think it builds=
- and runs with a=0A> 2.6.26-based kernel.=0A> =0A> hth=0A> =0A>            =
-         - Tom=0A> =0A
+> Does the PP421 work with consistently low latencies?
+> Did you need to modify Xenomai or the kernel at all?
+> Could you tell me what kernel and xenomai versions you are using?
 
+Yes, latencies are good (small with a few usec jitter as I recall). We 
+did not need any patching or modifications beyond the basic Xenomai 
+patching itself. We are using vanilla 2.6.26 kernels (due to constraints 
+from a non-real-time driver). It is a 2.6.26-8 kernel and Xenomai-2.4.3.
+
+hth
+
+                       - Tom
 
