@@ -1,31 +1,11 @@
-Message-ID: <4CD948BB.4040201@domain.hid>
-Date: Tue, 09 Nov 2010 14:12:27 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+From: Anders Bach Madsen <abm@domain.hid>
+Date: Wed, 10 Nov 2010 13:34:55 +0100
+Message-ID: <169292FFF5F27141906C787A21B56C402E4320953C@RD01.rd.local>
+Content-Language: da-DK
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <20101007115728.GA24500@domain.hid>	
-	<1286530884.13186.109.camel@domain.hid>	
-	<20101013090353.GA6902@domain.hid>	
-	<1286961375.1759.71.camel@domain.hid>	
-	<20101013092617.GB6902@domain.hid>	
-	<1286981521.1759.83.camel@domain.hid>	
-	<1288025329.26618.132.camel@domain.hid> <4CC5C80E.2070004@domain.hid>	
-	<1288033731.26618.161.camel@domain.hid> <4CC5D742.9080307@domain.hid>	
-	<1288034435.26618.164.camel@domain.hid> <4CC5D8FF.5080109@domain.hid>	
-	<1288041166.26618.182.camel@domain.hid> <4CC5F525.7040206@domain.hid>	
-	<1288042858.26618.204.camel@domain.hid> <4CC5FAE6.6010305@domain.hid>	
-	<1288068231.26618.224.camel@domain.hid>
-	<4CC665A1.9040707@domain.hid>	 <4CC72D27.3010607@domain.hid>
-	<1288243034.1816.14.camel@domain.hid>	 <4CC926BE.7040105@domain.hid>
-	<1288251968.1816.22.camel@domain.hid>	
-	<1289142959.1842.295.camel@domain.hid> <4CD6D22C.2030708@domain.hid>	
-	<4CD8FFC4.5040202@domain.hid> <1289291217.1957.16.camel@domain.hid shift>	
-	<4CD908AD.9000202@domain.hid> <1289295412.1957.32.camel@domain.hid>
-In-Reply-To: <1289295412.1957.32.camel@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig0F4BE84E77895334ABBD6188"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-help] kernel oopses when killing realtime task
+Subject: [Xenomai-help] Socket can devices?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -35,97 +15,120 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig0F4BE84E77895334ABBD6188
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Hey
 
-Am 09.11.2010 10:36, Philippe Gerum wrote:
-> On Tue, 2010-11-09 at 09:39 +0100, Jan Kiszka wrote:
->> Am 09.11.2010 09:26, Philippe Gerum wrote:
->>> On Tue, 2010-11-09 at 09:01 +0100, Jan Kiszka wrote:
->>>> Am 07.11.2010 17:22, Jan Kiszka wrote:
->>>>> Am 07.11.2010 16:15, Philippe Gerum wrote:
->>>>>> The following patches implements the teardown approach. The basic =
-idea
->>>>>> is:
->>>>>> - neither break nor improve old setups with legacy I-pipe patches =
-not
->>>>>> providing the revised ipipe_control_irq call.
->>>>>> - fix the SMP race when detaching interrupts.
->>>>>
->>>>> Looks good.
->>>>
->>>> This actually causes one regression: I've just learned that people a=
-re
->>>> already happily using MSIs with Xenomai in the field. This is perfec=
-tly
->>>> fine as long as you don't fiddle with rtdm_irq_disable/enable in
->>>> non-root contexts or while hard IRQs are disable. The latter require=
-ment
->>>> would be violated by this fix now.
->>>
->>> What we could do is handle this corner-case in the ipipe directly, go=
-ing
->>> for a nop when IRQs are off on a per-arch basis only to please those
->>> users,
->>
->> Don't we disable hard IRQs also then the root domain is the only
->> registered one? I'm worried about pushing regressions around, then to
->> plain Linux use-cases of MSI (which are not broken in anyway - except
->> for powerpc).
->=20
-> The idea is to provide an ad hoc ipipe service for this, to be used by
-> the HAL. A service that would check the controller for the target IRQ,
-> and handle MSI ones conditionally. For sure, we just can't put those
-> conditionally bluntly into the chip mask handler and expect the kernel
-> to be happy.
->=20
-> In fact, we already have __ipipe_enable/disable_irq from the internal
-> Adeos interface avail, but they are mostly wrappers for now. We could
-> make them a bit more smart, and handle the MSI issue as well. We would
-> then tell the HAL to switch to using those arch-agnostic helpers
-> generally, instead of peeking directly into the chip controller structs=
+We have installed a Xenomai system on a Atom based computer, which runs fin=
+e. We have connected a CAN card, which should be supported by the RT-Socket=
+-CAN drivers in Xenomai. The card is also identified during boot and the pr=
+oper kernel modules are loaded. We are however unable to create device node=
+s for this card, as we cannot find it in the list of devices!
 
-> like today.
+Any suggestions on how to create the device files /dev/rtcan0 and /dev/rtca=
+n1 ?
 
-This belongs to I-pipe, like we already have ipipe_end, just properly
-wrapped to avoid descriptor access. That's specifically important if we
-want to emulate MSI masking in software. I've the generic I-pipe
-infrastructure ready, but the backend, so far consisting of x86 MSI
-hardening, unfortunately needs to be rewritten.
+If more information is needed, please say so :)
 
->=20
-> If that ipipe "feature" is not detected by the HAL, then we would
-> refrain from disabling the IRQ in xnintr_detach. In effect, this would
-> leave the SMP race window open, but since we need recent ipipes to get
-> it plugged already anyway (for the revised ipipe_control_irq), we would=
+/Anders=20
 
-> still remain in the current situation:
-> - old patches? no SMP race fix, no regression
-> - new patches? SMP race fix avail, no regression
+Xenomai:
 
-Sounds good.
+[    0.385244] I-pipe: Domain Xenomai registered.
+[    0.385447] Xenomai: hal/i386 started.
+[    0.385622] Xenomai: scheduling class idle registered.
+[    0.385765] Xenomai: scheduling class rt registered.
+[    0.389559] Xenomai: real-time nucleus v2.5.5.2 (Ghosts) loaded.
+[    0.389968] Xenomai: SMI-enabled chipset found
+[    0.390125] Xenomai: SMI workaround enabled
+[    0.390292] Xenomai: NMI watchdog not available.
+[    0.390453] Xenomai: starting native API services.
+[    0.390595] Xenomai: starting POSIX services.
+[    0.390786] Xenomai: starting RTDM services.
 
-Jan
+CAN card:
+
+[    7.603720] RT-Socket-CAN 0.90.2 - (C) 2006 RT-Socket-CAN Development Te=
+am
+[    7.663851] RTCAN SJA1000 driver initialized
+[    7.688604]   alloc irq_desc for 20 on node -1
+[    7.688614]   alloc kstat_irqs on node -1
+[    7.688634] IXXAT-PCI-CAN 0000:03:07.0: PCI INT A -> GSI 20 (level, low)=
+ -> IRQ 20
+[    7.688651] IXXAT-PCI-CAN: Initializing device 10b5:9050:2540
+[    7.688817] IXXAT-PCI-CAN: base_addr=3D0xf80c6800 conf_addr=3D0xec80 irq=
+=3D20 ocr=3D0xde cdr=3D0x80
+[    7.688862] rtcan: registered rtcan0
+[    7.688881] IXXAT-PCI-CAN: base_addr=3D0xf80c6a00 conf_addr=3D0xec80 irq=
+=3D20 ocr=3D0xde cdr=3D0x80
+[    7.688916] rtcan: registered rtcan1
+
+Devices
+
+rogd-xeno ~ # cat /proc/devices
+Character devices:
+  1 mem
+  4 /dev/vc/0
+  4 tty
+  4 ttyS
+  5 /dev/tty
+  5 /dev/console
+  5 /dev/ptmx
+  7 vcs
+ 10 misc
+ 13 input
+ 21 sg
+ 29 fb
+128 ptm
+136 pts
+150 rtpipe
+180 usb
+189 usb_device
+202 cpu/msr
+203 cpu/cpuid
+226 drm
+251 hidraw
+252 usbmon
+253 bsg
+254 rtc
+
+Block devices:
+  1 ramdisk
+259 blkext
+  7 loop
+  8 sd
+ 11 sr
+ 65 sd
+ 66 sd
+ 67 sd
+ 68 sd
+ 69 sd
+ 70 sd
+ 71 sd
+ 93 nftl
+128 sd
+129 sd
+130 sd
+131 sd
+132 sd
+133 sd
+134 sd
+135 sd
 
 
---------------enig0F4BE84E77895334ABBD6188
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+Best regards/Med venlig hilsen
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.15 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org/
+Anders Bach Madsen
+PhD Computer Science, Software Developer
 
-iEYEARECAAYFAkzZSL4ACgkQitSsb3rl5xSl8QCeI/PKYIuX+AchBr4NO5SqThm0
-04wAmgLXINA2x1OD79JNgJ8zfuCkUdr8
-=iC2Q
------END PGP SIGNATURE-----
+R&D
+Delta 4=A0=20
+DK-8382 Hinnerup
+http://www.rogd.dk
+=A0
+Tlf:=A0=A0 +45 8764 0884
+Mobil: +45 2225 1331
+Fax:=A0=A0 +45 8764 0844
 
---------------enig0F4BE84E77895334ABBD6188--
+
 
