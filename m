@@ -1,119 +1,61 @@
-Message-ID: <4CD67BF4.4050307@domain.hid>
-Date: Sun, 07 Nov 2010 11:14:12 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-References: <4CC82C8D.3080808@domain.hid>	 <4CD1ED16.8030103@domain.hid>	
-	<4CD1EDA8.10007@domain.hid>	 <4CD1F33C.5070208@domain.hid>	
-	<4CD1F3F5.5080505@domain.hid>	 <4CD1F4FE.9020908@domain.hid>	
-	<4CD1F69B.9070100@domain.hid>	 <4CD1F906.1070703@domain.hid>	
-	<4CD1FABD.1080301@domain.hid>	 <4CD2612C.2070507@domain.hid>	
-	<4CD279F7.7070502@domain.hid>	 <4CD27C46.8010302@domain.hid>	
-	<4CD27DC2.7060607@domain.hid>	 <4CD2A96B.3080001@domain.hid>	
-	<4CD2B2A7.9010900@domain.hid>	
-	<4CD2C50F.1090604@domain.hid>	 <4CD32E76.3080004@domain.hid>	
-	<4CD33F0C.1050403@domain.hid>	 <4CD340AA.60002@domain.hid>	
-	<4CD34355.5020304@domain.hid>	 <4CD35DC7.1000507@domain.hid>	
-	<4CD3DAC5.6000400@domain.hid>	 <4CD4A0EF.1@domain.hid>	
-	<4CD5B9FC.6050602@domain.hid>	 <4CD5BC82.6060106@domain.hid>
-	<1289083796.1842.239.camel@domain.hid>	 <4CD5FA26.4090504@domain.hid>
-	<4CD663F2.2080704@domain.hid> <1289124227.1842.283.camel@domain.hid
-	shift> <4CD67A92.5090009@domain.hid> <4CD67B77.2000502@domain.hid>
-In-Reply-To: <4CD67B77.2000502@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigBAD7E71772432F1D150FA09B"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-core] Potential problem with rt_eepro100
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
-
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigBAD7E71772432F1D150FA09B
-Content-Type: text/plain; charset=UTF-8
+From: Anders Bach Madsen <abm@domain.hid>
+Date: Wed, 10 Nov 2010 15:32:07 +0100
+Message-ID: <169292FFF5F27141906C787A21B56C402E4320954C@RD01.rd.local>
+References: <169292FFF5F27141906C787A21B56C402E4320953C@RD01.rd.local>
+	<201011101343.19148.smolorz@domain.hid>
+In-Reply-To: <201011101343.19148.smolorz@domain.hid>
+Content-Language: da-DK
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+Subject: Re: [Xenomai-help] Socket can devices?
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Am 07.11.2010 11:12, Gilles Chanteperdrix wrote:
-> Jan Kiszka wrote:
->> Am 07.11.2010 11:03, Philippe Gerum wrote:
->>> On Sun, 2010-11-07 at 09:31 +0100, Gilles Chanteperdrix wrote:
->>>> Jan Kiszka wrote:
->>>>>>> Anyway, after some thoughts, I think we are going to try and make=
- the
->>>>>>> current situation work instead of going back to the old way.
->>>>>>>
->>>>>>> You can find the patch which attempts to do so here:
->>>>>>> http://sisyphus.hd.free.fr/~gilles/sched_status.txt
->>>>>> Ack. At last, this addresses the real issues without asking for
->>>>>> regression funkiness: fix the lack of barrier before testing XNSCH=
-ED in
->>>>> Check the kernel, we actually need it on both sides. Wherever the f=
-inal
->>>>> barriers will be, we should leave a comment behind why they are the=
-re.
->>>>> Could be picked up from kernel/smp.c.
->>>> We have it on both sides: the non-local flags are modified while hol=
-ding
->>>> the nklock. Unlocking the nklock implies a barrier.
->>> I think we may have an issue with this kind of construct:
->>>
->>> xnlock_get_irq*(&nklock)
->>> 	xnpod_resume/suspend/whatever_thread()
->>> 		xnlock_get_irq*(&nklock)
->>> 		...
->>> 		xnlock_put_irq*(&nklock)
->>> 	xnpod_schedule()
->>> 		xnlock_get_irq*(&nklock)
->>> 			send_ipi
->>> 			=3D=3D=3D=3D=3D> xnpod_schedule_handler on dest CPU
->>> 		xnlock_put_irq*(&nklock)
->>> xnlock_put_irq*(&nklock)
->>>
->>> The issue would be triggered by the use of recursive locking. In that=
+Thank you very much for the clarification, but this just raises my next que=
+stion. How can I use canFestival and the RTDM socket api? I can't seem to f=
+ind any information on this, not on the xenomai page or on the canfestival =
+page.=20
 
->>> case, the source CPU would only sync its cache when the lock is actua=
-lly
->>> dropped by the outer xnlock_put_irq* call and the inner
->>> xnlock_get/put_irq* would not act as barriers, so the remote
->>> rescheduling handler won't always see the XNSCHED update done remotel=
-y,
->>> and may lead to a no-op. So we need a barrier before sending the IPI =
-in
->>> __xnpod_test_resched().
->>
->> That's what I said.
->>
->> And we need it on the reader side as an rmb().
+Are there anybody who is using canfestival together with RTDM can drivers? =
+And can you provide a pointer to where I can find more information or provi=
+de some. That you be of great help.
+
+/Anders
+
+-----Oprindelig meddelelse-----
+Fra: Sebastian Smolorz [mailto:smolorz@domain.hid
+Sendt: 10. november 2010 13:43
+Til: Anders Bach Madsen
+Cc: xenomai@xenomai.org
+Emne: Re: [Xenomai-help] Socket can devices?
+
+Anders Bach Madsen wrote:
+> We have installed a Xenomai system on a Atom based computer, which runs
+> fine. We have connected a CAN card, which should be supported by the
+> RT-Socket-CAN drivers in Xenomai. The card is also identified during
+> boot and the proper kernel modules are loaded. We are however unable to
+> create device nodes for this card, as we cannot find it in the list of
+> devices!
 >=20
-> This one we have, in xnpod_schedule_handler.
->=20
+> Any suggestions on how to create the device files /dev/rtcan0 and
+> /dev/rtcan1 ?
 
-Right, with your patch (the above sounded like we only need it on writer
-side).
+There are no device nodes for RT-Socket-CAN devices. You are supposed to us=
+e=20
+the RTDM socket API. See the Xenomai examples and utils for usage examples:
 
-Jan
+http://www.rts.uni-hannover.de/xenomai/lxr/source/src/utils/can/rtcansend.c
 
+--=20
+Sebastian
 
---------------enigBAD7E71772432F1D150FA09B
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.15 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org/
-
-iEYEARECAAYFAkzWe/UACgkQitSsb3rl5xSiQwCdHA7ArwAzTha9l5Hprd7/zC2L
-xT4AoI3CPmRefT5OUdfU1FZ3auB1MrOB
-=PLLh
------END PGP SIGNATURE-----
-
---------------enigBAD7E71772432F1D150FA09B--
 
