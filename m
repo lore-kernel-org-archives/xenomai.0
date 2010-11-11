@@ -1,107 +1,68 @@
-Message-ID: <4CE3A39D.7080901@domain.hid>
-Date: Wed, 17 Nov 2010 10:42:53 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <4CDC0FBD.9050402@domain.hid>
+Date: Thu, 11 Nov 2010 16:46:05 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <mailman.45.1289905237.25153.xenomai@xenomai.org>	<E1C5E37E-623F-41B8-892C-5101FD132E4A@gmail.com>
-	<1289983426.1933.406.camel@domain.hid>
-In-Reply-To: <1289983426.1933.406.camel@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+References: <4CC82C8D.3080808@domain.hid>	
+	<1288816871.1842.84.camel@domain.hid>	
+	<4CD1DC1B.8060407@domain.hid>	<4CD1DE12.5010309@domain.hid>	
+	<4CD1E890.5010702@domain.hid>	<4CD1EC2F.4040603@domain.hid>	
+	<4CD1ED16.8030103@domain.hid>	<4CD1EDA8.10007@domain.hid>	
+	<4CD1F33C.5070208@domain.hid>	<4CD1F3F5.5080505@domain.hid>	
+	<4CD1F4FE.9020908@domain.hid>	<4CD1F69B.9070100@domain.hid>	
+	<4CD1F906.1070703@domain.hid>	<4CD1FABD.1080301@domain.hid>	
+	<4CD2612C.2070507@domain.hid>	<4CD279F7.7070502@domain.hid>	
+	<4CD27C46.8010302@domain.hid>	<4CD27DC2.7060607@domain.hid>	
+	<4CD2A96B.3080001@domain.hid>	<4CD2B2A7.9010900@domain.hid>	
+	<4CD2C50F.1090604@domain.hid>	<4CD32E76.3080004@domain.hid>	
+	<4CD33F0C.1050403@domain.hid>	<4CD340AA.60002@domain.hid>	
+	<4CD34355.5020304@domain.hid> <4CD35DC7.1000507@domain.hid>	
+	<4CD3DAC5.6000400@domain.hid> <4CD4A0EF.1@domain.hid>	
+	<4CD5B9FC.6050602@domain.hid> <4CD5BC82.6060106@domain.hid>
+	<1289083796.1842.239.camel@domain.hid> <4CD5FA26.4090504@domain.hid>
+In-Reply-To: <4CD5FA26.4090504@domain.hid>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Debug/trace tools for xenomai applications.
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Subject: Re: [Xenomai-core] Potential problem with rt_eepro100
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>, Andreas Glatz <andi.glatz@domain.hid>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Am 17.11.2010 09:43, Philippe Gerum wrote:
-> On Tue, 2010-11-16 at 11:46 +0000, Andreas Glatz wrote: 
->>>
->>>
->>> On Mon, 2010-11-15 at 21:26 +0100, ronny meeus wrote: 
->>>> Hello 
->>>>
->>>>
->>>> Thanks for the information. 
->>>> I was testing on QEMU but I have seen that there are issue with
->>>> the 
->>>> timing anyhow. 
->>>> I'm currently changing to a target environment. Once this is 
->>>> completed, I will re-run my tests and get back with the result. 
->>>>
->>>>
->>>> I do not really understand what you mean with the simulator. 
->>>> Where can I find more information about it? 
->>>
->>>
->>> http://git.xenomai.org/?p=xenosim.git;a=blob;f=doc/mvm-manual.txt;h=1c6767ea2890d68e1c1c5cfe1420e189b3cc5328;hb=06919eb3a6b6baf7880ea3ade1ecc5f610c35794 
->>>
->>>
->>
->>
->> So in other words the simulator is a good debugging tool if your
->> application doesn't (i) directly access hardware (mmap aso...)
->> (ii) doesn't used assembly code written for another platform and (iii)
->> can be compiled with the gcc 2.95.3. 
->>
->>
->> For the first two restrictions this means in other words that
->> the application should follow the golden design standard which
->> proposes to put all hardware depended code into rtdm drivers and
->> everything else into the application. 
+Jan Kiszka wrote:
+> I just hope we finally converge over a solution. Looks like all
+> possibilities have been explored now. A few more comments on this one:
 > 
-> Exactly. The hardware-dependent code should be either:
-> - stubbed or replaced with some C/C++ code providing limited feedback,
-> enough to have the application running.
-> - left in, but connected internally to a software component partially or
-> fully modeling the hardware. Such component would run within the
-> simulator directly, which is actually an extensible event-driven
-> simulation engine, with a C++ interface to build add-ons/models.
+> It probably makes sense to group the status bits accordingly (both their
+> values and definitions) and briefly document on which status field they
+> are supposed to be applied.
 > 
->>
->>
->> Could one (partly) work around the first two restrictions by letting
->> the simulator run inside of qemu which emulates the
->> target architecture?
-
-Most Xenomai core development I do takes place over qemu/kvm - for years
-now. Before that I was using plain qemu, but that's comparatively slow.
-It can be fast, in fact, if your target is at least an order of
-magnitude slower than the qemu host...
-
+> I do not understand the split logic - or some bits are simply not yet
+> migrated. XNHDEFER, XNSWLOCK, XNKCOUT are all local-only as well, no?
+> Then better put them in the _local_ status field, that's more consistent
+> (and would help if we once wanted to optimize their cache line usage).
 > 
-> Maybe for the inline assembly code which is not directly device-related.
-> Running RTDM drivers in simulation mode would require to simulate the
-> devices with a model though.
+> The naming is unfortunate: status vs. lstatus. This is asking for
+> confusion and typos. They must be better distinguishable, e.g.
+> local_status. Or we need accessors that have debug checks built in,
+> catching wrong bits for their target fields.
+> 
+> Good catch of the RPI breakage, Gilles!
 
-Depending on the device complexity, of course, writing such a model for
-qemu(/kvm) can be a few hundred lines of code. Moreover, using kvm on
-the target, you could also pass peripherals through. Right now there are
-good chances that this works on x86 with PCI devices. We should see more
-support for this in the future, including PowerPC (partially working
-already) and ARM.
+Hi Jan,
 
-Still, virtualization can easily ruin timing. The best results I've seen
-were a few hundred microseconds timer latency (from the hardware to the
-RT task in the guest) when running kvm over preempt-rt. Fine for
-functional test, problematic to find latency issues.
+I just pushed a modified version of this patch, including your remarks
+as well as the ones of Philippe. I suspect some of the cleanup patches
+you sent still make sense over this patch, would it be possible to
+rebase them over this pushed version?
 
-Emulation can work around the timing problem to some degree. Qemu has a
-special mode, -icount, that emulates the TSC based on the guest
-progress. Haven't tried recently, but it promises to give the guest the
-illusion of proper time progress and compensate for stolen time due to
-emulation and host scheduling effects. Just makes emulation yet a bit
-slower.
-
-Jan
+TIA,
 
 -- 
-Siemens AG, Corporate Technology, CT T DE IT 1
-Corporate Competence Center Embedded Linux
+                                                                Gilles.
 
