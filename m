@@ -1,41 +1,70 @@
-Message-ID: <4CE94D8F.60209@domain.hid>
-Date: Sun, 21 Nov 2010 17:49:19 +0100
+Message-ID: <4CDED97B.7050700@domain.hid>
+Date: Sat, 13 Nov 2010 19:31:23 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <E2CAE7F7B064EA49B5CE7EE9A4BB167D14FF9E1190@domain.hid>
-In-Reply-To: <E2CAE7F7B064EA49B5CE7EE9A4BB167D14FF9E1190@domain.hid>
+References: <4CC82C8D.3080808@domain.hid>	 <4CD1DE12.5010309@domain.hid>	
+	<4CD1E890.5010702@domain.hid>	<4CD1EC2F.4040603@domain.hid>	
+	<4CD1ED16.8030103@domain.hid>	<4CD1EDA8.10007@domain.hid>	
+	<4CD1F33C.5070208@domain.hid>	<4CD1F3F5.5080505@domain.hid>	
+	<4CD1F4FE.9020908@domain.hid>	<4CD1F69B.9070100@domain.hid>	
+	<4CD1F906.1070703@domain.hid>	<4CD1FABD.1080301@domain.hid>	
+	<4CD2612C.2070507@domain.hid>	<4CD279F7.7070502@domain.hid>	
+	<4CD27C46.8010302@domain.hid>	<4CD27DC2.7060607@domain.hid>	
+	<4CD2A96B.3080001@domain.hid>	<4CD2B2A7.9010900@domain.hid>	
+	<4CD2C50F.1090604@domain.hid>	<4CD32E76.3080004@domain.hid>	
+	<4CD33F0C.1050403@domain.hid>	<4CD340AA.60002@domain.hid>	
+	<4CD34355.5020304@domain.hid> <4CD35DC7.1000507@domain.hid>	
+	<4CD3DAC5.6000400@domain.hid> <4CD4A0EF.1@domain.hid>	
+	<4CD5B9FC.6050602@domain.hid> <4CD5BC82.6060106@domain.hid>
+	<1289083796.1842.239.camel@domain.hid> <4CD5FA26.4090504@domain.hid>
+	<4CDC0FBD.9050402@domain.hid> <4CDD5EEE.9080303@domain.hid>
+In-Reply-To: <4CDD5EEE.9080303@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] GUI Debugging tool for Linux
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Subject: Re: [Xenomai-core] Potential problem with rt_eepro100
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: "Hemal C.Bavishi" <Hemal.Bavishi@domain.hid>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hemal C.Bavishi wrote:
-> Dear All,
+Jan Kiszka wrote:
+> Am 11.11.2010 16:46, Gilles Chanteperdrix wrote:
+>> Jan Kiszka wrote:
+>>> I just hope we finally converge over a solution. Looks like all
+>>> possibilities have been explored now. A few more comments on this one:
+>>>
+>>> It probably makes sense to group the status bits accordingly (both their
+>>> values and definitions) and briefly document on which status field they
+>>> are supposed to be applied.
+>>>
+>>> I do not understand the split logic - or some bits are simply not yet
+>>> migrated. XNHDEFER, XNSWLOCK, XNKCOUT are all local-only as well, no?
+>>> Then better put them in the _local_ status field, that's more consistent
+>>> (and would help if we once wanted to optimize their cache line usage).
+>>>
+>>> The naming is unfortunate: status vs. lstatus. This is asking for
+>>> confusion and typos. They must be better distinguishable, e.g.
+>>> local_status. Or we need accessors that have debug checks built in,
+>>> catching wrong bits for their target fields.
+>>>
+>>> Good catch of the RPI breakage, Gilles!
+>> Hi Jan,
+>>
+>> I just pushed a modified version of this patch, including your remarks
+>> as well as the ones of Philippe. I suspect some of the cleanup patches
+>> you sent still make sense over this patch, would it be possible to
+>> rebase them over this pushed version?
 > 
-> Do you have any idea of GUI C debugging tool for Linux works for
-> Xenomai patch? I tried to use DDD (Data Display Debugger) but when I
-> load my program compiled with xenomai kernel then it gives me an
-> error "xenomai binding failed". I also tried to use other debugger
-> program like GPS but I got almost similar issue(thread debugging
-> using libthead_db enabled - program exited with code 01). Please
-> help.
+> Just rebased and pushed my queue. One additional optimization was added
+> ("Optimize setting of XNRESCHED"), basic tests passed.
 
-On second thought, the message "xneomai binding failed", probably means
-that the machine where you are running ddd is running on a kernel
-without xenomai. So, if you are trying to debug a Xenomai application
-remotely, you should be using gdbserver. Before you ask: I have no idea
-how to do remote debugging with ddd, but this question is off-topic here
-anyway, you should find some information elsewhere.
+Ah, I thought about this one, I wonder why I forgot it. Merged, thanks.
 
 -- 
                                                                 Gilles.
