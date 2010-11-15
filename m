@@ -1,12 +1,13 @@
-Message-ID: <4CE1B213.9000407@domain.hid>
-Date: Mon, 15 Nov 2010 23:20:03 +0100
+Message-ID: <4CE1B2D8.5080902@domain.hid>
+Date: Mon, 15 Nov 2010 23:23:20 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <4CE18A9F.5030007@domain.hid> <1289852437.1933.173.camel@domain.hid>
-In-Reply-To: <1289852437.1933.173.camel@domain.hid>
+References: <4CE18A9F.5030007@domain.hid> <4CE18FDF.4010700@domain.hid>
+	<1289854422.1933.204.camel@domain.hid>
+In-Reply-To: <1289854422.1933.204.camel@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig8D6CF2F11CB38164670E7998"
+	boundary="------------enigB00CF2A75E34970AFE02AB5E"
 Sender: jan.kiszka@domain.hid
 Subject: Re: [Adeos-main] Flaw in x86-32 syscall/irq return path - and maybe
  more
@@ -22,88 +23,129 @@ To: Philippe Gerum <rpm@xenomai.org>
 Cc: adeos-main <adeos-main@gna.org>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig8D6CF2F11CB38164670E7998
-Content-Type: text/plain; charset=ISO-8859-1
+--------------enigB00CF2A75E34970AFE02AB5E
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-Am 15.11.2010 21:20, Philippe Gerum wrote:
-> On Mon, 2010-11-15 at 20:31 +0100, Jan Kiszka wrote:
->> Hi Philippe,
->>
->> debugging some variant of I-pipe over an x86-32 target, I think I foun=
-d
->> some fairly old flaw in the IRQ virtualization that causes reschedulin=
-g
->> delays (up to deadlocks) for Linux:
->>
->> - we are in sysenter_tail (other exit paths should be affected as well=
-)
->> - we DISABLE_INTERRUPTS, but only virtually
->> - we go past "testl $_TIF_ALLWORK_MASK, %ecx", nothing to be done
->> - an IRQ for Linux arrives, it is pushed to the backlog
->> - __ipipe_unstall_iret_root replays the IRQ as the regs we are about t=
-o
->>   return to have IF set (obviously, we return from a syscall)
->> - the Linux IRQ handler sets _TIF_NEED_RESCHED, but doesn't perform th=
+Am 15.11.2010 21:53, Philippe Gerum wrote:
+> On Mon, 2010-11-15 at 20:54 +0100, Jan Kiszka wrote:
+>> Am 15.11.2010 20:31, Jan Kiszka wrote:
+>>> Hi Philippe,
+>>>
+>>> debugging some variant of I-pipe over an x86-32 target, I think I fou=
+nd
+>>> some fairly old flaw in the IRQ virtualization that causes rescheduli=
+ng
+>>> delays (up to deadlocks) for Linux:
+>>>
+>>> - we are in sysenter_tail (other exit paths should be affected as wel=
+l)
+>>> - we DISABLE_INTERRUPTS, but only virtually
+>>> - we go past "testl $_TIF_ALLWORK_MASK, %ecx", nothing to be done
+>>> - an IRQ for Linux arrives, it is pushed to the backlog
+>>> - __ipipe_unstall_iret_root replays the IRQ as the regs we are about =
+to
+>>>   return to have IF set (obviously, we return from a syscall)
+>>> - the Linux IRQ handler sets _TIF_NEED_RESCHED, but doesn't perform t=
+he
+>>>   work on return as __ipipe_sync_stage set the stall flag for the Lin=
+ux
+>>>   domain before calling the handler
+>>> - but now the preempted sysenter return also does no reschedule as it=
+
+>>>   already passed the check - bang!
+>>>
+>>> Another variant of this Linux rescheduling issue:
+>>>
+>>> - we are in a lengthy loop inside the kernel, but we are preemptible
+>>>   most of the time
+>>> - after disabling Linux IRQs briefly, we are calling
+>>>   local_irq_enable() again
+>>> - in the meantime, we received a Linux IRQ which is now pending in th=
 e
->>   work on return as __ipipe_sync_stage set the stall flag for the Linu=
-x
->>   domain before calling the handler
->> - but now the preempted sysenter return also does no reschedule as it
->>   already passed the check - bang!
->=20
-> Ouch. You must have had a really busy Monday to find this one.
->=20
+>>>   backlog
+>>> - __ipipe_unstall_root triggers __ipipe_sync_stage
+>>> - Linux handler is called, sets NEED_RESCHED but does not reschedule
+>>>   (see above)
+>>> - we do not test for resched again as we are not returning to user
+>>>   space, and that for quite some time - bang!
 >>
->> Another variant of this Linux rescheduling issue:
+>> And this one actually affects x86-64 as well: Here, ret_from_intr chec=
+ks
+>> for NEED_RESCHED only if IF is set in the flags of the preempted
+>> context. But if the Linux domain is alone, we enter __ipipe_do_root_xi=
+rq
+>> with hard IRQs disabled, thus we push this information incorrectly on
+>> the Linux handler stack, preventing the required rescheduling check.
 >>
->> - we are in a lengthy loop inside the kernel, but we are preemptible
->>   most of the time
->> - after disabling Linux IRQs briefly, we are calling
->>   local_irq_enable() again
->> - in the meantime, we received a Linux IRQ which is now pending in the=
-
->>   backlog
->> - __ipipe_unstall_root triggers __ipipe_sync_stage
->> - Linux handler is called, sets NEED_RESCHED but does not reschedule
->>   (see above)
->> - we do not test for resched again as we are not returning to user
->>   space, and that for quite some time - bang!
->>
->> I think both issues are only related to virtualizing DISABLE_INTERRUPT=
-S
->> for entry_32.S and I wonder if this doesn't finally qualify for a swit=
-ch
->> to the 64-bit model. Or do you see simpler fixes?
+>> I guess the simplest fix for this is to drop the
+>> "!__ipipe_pipeline_head_p(ipd)" check from __ipipe_sync_stage.
 >>
 >=20
-> We could probably use hw masking from sysenter_tail and on, but quite
-> frankly, I think this time, enough is enough and this bug calls for a
-> radical fix, which is indeed getting rid of interrupt virtualization in=
+> We can't do that unfortunately, we would introduce significant latency
+> when the interrupt is to be delivered to the high priority domain. This=
 
-> the kernel entry/exit paths for x86_32, which no other arch ever
-> implemented anyway.
+> check makes sure to keep irqs off when delivering to Xenomai for
+> instance, since we don't want the handler to be delayed for pushing
+> non-rt interrupts to the log while handling a rt event.
 >=20
-> The decision to virtualize there as well was taken circa 2.4.18, when
-> upstream did not care that much about latency yet. Things have changed,=
+> Not that pretty, but this would be innocuous latency-wise:
+>=20
+> diff --git a/arch/x86/include/asm/ipipe_64.h b/arch/x86/include/asm/ipi=
+pe_64.h
+> index b9367f6..a3b4fed 100644
+> --- a/arch/x86/include/asm/ipipe_64.h
+> +++ b/arch/x86/include/asm/ipipe_64.h
+> @@ -71,6 +71,7 @@ static inline void __do_root_xirq(ipipe_irq_handler_t=
+ handler,
+>  			     "pushq $0\n\t"
+>  			     "pushq %%rax\n\t"
+>  			     "pushfq\n\t"
+> +			     "orq   %[x86if],(%%rsp)\n\t"
+>  			     "pushq %[kernel_cs]\n\t"
+>  			     "pushq $__xirq_end\n\t"
+>  			     "pushq %[vector]\n\t"
+> @@ -91,7 +92,8 @@ static inline void __do_root_xirq(ipipe_irq_handler_t=
+ handler,
+>  			     : /* no output */
+>  			     : [kernel_cs] "i" (__KERNEL_CS),
+>  			       [vector] "rm" (regs->orig_ax),
+> -			       [handler] "r" (handler), "D" (regs)
+> +			       [handler] "r" (handler), "D" (regs),
+> +			       [x86if] "i" (X86_EFLAGS_IF)
+>  			     : "rax");
+>  }
+> =20
+> @@ -109,6 +111,7 @@ static inline void __do_root_virq(ipipe_irq_handler=
+_t handler,
+>  			     "pushq $0\n\t"
+>  			     "pushq %%rax\n\t"
+>  			     "pushfq\n\t"
+> +			     "orq   %[x86if],(%%rsp)\n\t"
+>  			     "pushq %[kernel_cs]\n\t"
+>  			     "pushq $__virq_end\n\t"
+>  			     "pushq $-1\n\t"
+> @@ -125,7 +128,8 @@ static inline void __do_root_virq(ipipe_irq_handler=
+_t handler,
+>  			     "call  *%[handler]\n\t"
+>  			     : /* no output */
+>  			     : [kernel_cs] "i" (__KERNEL_CS),
+> -			       [handler] "r" (handler), "D" (irq), "S" (cookie)
+> +			       [handler] "r" (handler), "D" (irq), "S" (cookie),
+> +			       [x86if] "i" (X86_EFLAGS_IF)
+>  			     : "rax");
+>  	irq_exit();
+>  	__asm__ __volatile__("cli\n\t"
 
-> and there is no more reason to virtualize interrupts in very short
-> critical sections, at the expense of a lot more complexity.
->=20
-> - __ipipe_unstall_iret_root
-> - __ipipe_kpreempt_root
-> and much of the nonsense we do to track linux's interrupt state would g=
-o
-> away.
->=20
-
-Much involved code is shared here, so I will check with $customer if and
-how we can contribute to such a cleanup.
+Of course, this works as well. The alternative would be
+"!__ipipe_pipeline_head_p(ipd) || ipd =3D=3D ipipe_root_domain" - just a =
+bit
+shorter.
 
 Jan
 
 
---------------enig8D6CF2F11CB38164670E7998
+--------------enigB00CF2A75E34970AFE02AB5E
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -112,10 +154,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v2.0.15 (GNU/Linux)
 Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org/
 
-iEYEARECAAYFAkzhshMACgkQitSsb3rl5xR/mwCgkvRhK7COZel/NyxkEo27+TN+
-zfQAnAqIvQdVmoz8U8ddzYzTS+fpbieY
-=wr1S
+iEYEARECAAYFAkzhstgACgkQitSsb3rl5xTqFQCfRwel6hyCXQOLFiArvp/9D8GS
+TcoAoJVKOKRyLcvd2RdrpKRi2LtOlwFt
+=ULxV
 -----END PGP SIGNATURE-----
 
---------------enig8D6CF2F11CB38164670E7998--
+--------------enigB00CF2A75E34970AFE02AB5E--
 
