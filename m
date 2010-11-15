@@ -1,51 +1,60 @@
+Message-ID: <4CE18A9F.5030007@domain.hid>
+Date: Mon, 15 Nov 2010 20:31:43 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-In-Reply-To: <4CE44C5F.8060800@domain.hid>
-References: <AANLkTi=HxK7HbpmJX-YNrr2xWHduK=6nW=gAUQuMuUNs@domain.hid>
-	<4CE44C5F.8060800@domain.hid>
-Date: Wed, 17 Nov 2010 19:53:55 -0200
-Message-ID: <AANLkTimhQRwcw61Oko_Yy-DsHJAWa=ERxF9Qgh7Rgj9y@domain.hid>
-From: Flavio de Castro Alves Filho <flavio.alves@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-core] How to get involved?
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 7bit
+Subject: [Adeos-main] Flaw in x86-32 syscall/irq return path - and maybe more
+List-Id: General discussion about Adeos <adeos-main.gna.org>
+List-Unsubscribe: <https://mail.gna.org/options/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+List-Archive: </public/adeos-main>
+List-Post: <mailto:adeos-main@gna.org>
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: adeos-main <adeos-main@gna.org>
 
-Yes, of course.
+Hi Philippe,
 
-In fact, I need to finish it :-)
+debugging some variant of I-pipe over an x86-32 target, I think I found
+some fairly old flaw in the IRQ virtualization that causes rescheduling
+delays (up to deadlocks) for Linux:
 
-Thank you very much.
+- we are in sysenter_tail (other exit paths should be affected as well)
+- we DISABLE_INTERRUPTS, but only virtually
+- we go past "testl $_TIF_ALLWORK_MASK, %ecx", nothing to be done
+- an IRQ for Linux arrives, it is pushed to the backlog
+- __ipipe_unstall_iret_root replays the IRQ as the regs we are about to
+  return to have IF set (obviously, we return from a syscall)
+- the Linux IRQ handler sets _TIF_NEED_RESCHED, but doesn't perform the
+  work on return as __ipipe_sync_stage set the stall flag for the Linux
+  domain before calling the handler
+- but now the preempted sysenter return also does no reschedule as it
+  already passed the check - bang!
 
-Best regards,
+Another variant of this Linux rescheduling issue:
 
-Flavio
+- we are in a lengthy loop inside the kernel, but we are preemptible
+  most of the time
+- after disabling Linux IRQs briefly, we are calling
+  local_irq_enable() again
+- in the meantime, we received a Linux IRQ which is now pending in the
+  backlog
+- __ipipe_unstall_root triggers __ipipe_sync_stage
+- Linux handler is called, sets NEED_RESCHED but does not reschedule
+  (see above)
+- we do not test for resched again as we are not returning to user
+  space, and that for quite some time - bang!
 
-2010/11/17 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>:
-> Flavio de Castro Alves Filho wrote:
->> Hello,
->>
->> We are from Brazil and we are working with Xenomai in our embedded
->> linux projects.
->>
->> I intend to join the community of developers of this very nice Linux
->> component and I would like to know how to get involved? Is there any
->> TODO list or CMS where the issues/whishlist are stored?
->>
->> Thank you and best regards,
->
-> First, you could start by contributint the I-pipe port to OMAP L-138 ?
->
-> --
-> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
-=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0Gilles.
->
+I think both issues are only related to virtualizing DISABLE_INTERRUPTS
+for entry_32.S and I wonder if this doesn't finally qualify for a switch
+to the 64-bit model. Or do you see simpler fixes?
+
+Jan
+
+-- 
+Siemens AG, Corporate Technology, CT T DE IT 1
+Corporate Competence Center Embedded Linux
 
