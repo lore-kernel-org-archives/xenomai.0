@@ -1,13 +1,13 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <AANLkTimpBp3+w3thbLwCSiTz--h7HBZx+ZLtV4vhbemo@domain.hid>
-References: <AANLkTimpBp3+w3thbLwCSiTz--h7HBZx+ZLtV4vhbemo@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Mon, 15 Nov 2010 11:19:29 +0100
-Message-ID: <1289816369.1933.97.camel@domain.hid>
-Mime-Version: 1.0
+Message-ID: <4CE13133.4070006@domain.hid>
+Date: Mon, 15 Nov 2010 14:10:11 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+References: <AANLkTinuEh+5J4Osq895PN92VXNc1OgNF8HD526f--dA@mail.gmail.com>
+	<1289813422.1933.79.camel@domain.hid>
+In-Reply-To: <1289813422.1933.79.camel@domain.hid>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] psos+ Skin: argument passing to task body
- sometimes failing
+Subject: Re: [Xenomai-help] Debug/trace tools for xenomai applications.
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -17,51 +17,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: ronny meeus <ronny.meeus@domain.hid>
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: Xenomai-help@domain.hid
 
-On Wed, 2010-10-20 at 22:28 +0200, ronny meeus wrote:
-> Hello
+Philippe Gerum wrote:
+> If you want to validate the pSOS emulation core, the best tool is the
+> simulator. Unfortunately, this tools still requires to be built with an
+> antiquated C++ toolchain, so the only sane way to enable it nowadays is
+> via qemu. You would need ~2 hours to set this up.
 > 
-> it is me again.
-> 
-> This is the configuration I'm using: Target based on QEMU, Xenomai
-> 2.5.4 and the PSOS skin.
-> [    0.623238] Xenomai: hal/i386 started.
-> [    0.633758] Xenomai: scheduling class idle registered.
-> [    0.636172] Xenomai: scheduling class rt registered.
-> [    0.693178] Xenomai: real-time nucleus v2.5.4 (Sleep Walk) loaded.
-> [    0.723234] Xenomai: starting native API services.
-> [    0.728107] Xenomai: starting pSOS+ services.
-> 
-> I sometimes observe issues in passing task arguments to the taskbody
-> of the pSOS task.
-> Observations:
-> 1 During debugging I observe in 50% of the cases that all arguments of
-> some task are 0 (all 4). There is no issue with this task if the
-> debugger is not used.
-> 2 During a task creation (in some scenarios) I see in 100% of the
-> cases that all arguments are 0 while the parameters are fine for other
-> application scenarios where the same code is used to create the task
-> itself.
-> 
-> Conclusion: strange behavior is seen (looks like a race
-> condition ...).
-> 
-> I did already some research in the code and on the web and came across
-> following thread:
-> http://www.mail-archive.com/xenomai@xenomai.org
-> 
-> This explains the mechanism and also talks about a problem that has
-> been resolved in this area.
-> I think there is still a gap somewhere.
+> If you want to try this, I can help. Otherwise, other suggestions you
+> already got on this list will do.
 
-That bug was never addressed actually (errno = EPROCRASTINATE). Try this
-patch:
-http://git.xenomai.org/?p=xenomai-rpm.git;a=commit;h=4f30d401be83bb7754b018c82f6f8791c75da06f
+Maybe we should put a page on the wiki on how to use the simulator?
 
 -- 
-Philippe.
-
-
+                                                                Gilles.
 
