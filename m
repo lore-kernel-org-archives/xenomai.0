@@ -1,77 +1,121 @@
-Message-ID: <4CEFA1A4.1040901@domain.hid>
-Date: Fri, 26 Nov 2010 13:01:40 +0100
+Message-ID: <4CE1B213.9000407@domain.hid>
+Date: Mon, 15 Nov 2010 23:20:03 +0100
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] [PATCH] prepare-kernel: Use auto-generated temp
-	directory for --outpatch
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai core <Xenomai-core@domain.hid>
+References: <4CE18A9F.5030007@domain.hid> <1289852437.1933.173.camel@domain.hid>
+In-Reply-To: <1289852437.1933.173.camel@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig8D6CF2F11CB38164670E7998"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Adeos-main] Flaw in x86-32 syscall/irq return path - and maybe
+ more
+List-Id: General discussion about Adeos <adeos-main.gna.org>
+List-Unsubscribe: <https://mail.gna.org/options/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+List-Archive: </public/adeos-main>
+List-Post: <mailto:adeos-main@gna.org>
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: adeos-main <adeos-main@gna.org>
 
-Asking the user to provide a temp directory for --outpatch and not
-cleaning it up after completion is error-prone. Instead, generate such a
-directory automatically and also remove it again when done.
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig8D6CF2F11CB38164670E7998
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
----
- scripts/prepare-kernel.sh |   14 ++++----------
- 1 files changed, 4 insertions(+), 10 deletions(-)
+Am 15.11.2010 21:20, Philippe Gerum wrote:
+> On Mon, 2010-11-15 at 20:31 +0100, Jan Kiszka wrote:
+>> Hi Philippe,
+>>
+>> debugging some variant of I-pipe over an x86-32 target, I think I foun=
+d
+>> some fairly old flaw in the IRQ virtualization that causes reschedulin=
+g
+>> delays (up to deadlocks) for Linux:
+>>
+>> - we are in sysenter_tail (other exit paths should be affected as well=
+)
+>> - we DISABLE_INTERRUPTS, but only virtually
+>> - we go past "testl $_TIF_ALLWORK_MASK, %ecx", nothing to be done
+>> - an IRQ for Linux arrives, it is pushed to the backlog
+>> - __ipipe_unstall_iret_root replays the IRQ as the regs we are about t=
+o
+>>   return to have IF set (obviously, we return from a syscall)
+>> - the Linux IRQ handler sets _TIF_NEED_RESCHED, but doesn't perform th=
+e
+>>   work on return as __ipipe_sync_stage set the stall flag for the Linu=
+x
+>>   domain before calling the handler
+>> - but now the preempted sysenter return also does no reschedule as it
+>>   already passed the check - bang!
+>=20
+> Ouch. You must have had a really busy Monday to find this one.
+>=20
+>>
+>> Another variant of this Linux rescheduling issue:
+>>
+>> - we are in a lengthy loop inside the kernel, but we are preemptible
+>>   most of the time
+>> - after disabling Linux IRQs briefly, we are calling
+>>   local_irq_enable() again
+>> - in the meantime, we received a Linux IRQ which is now pending in the=
 
-diff --git a/scripts/prepare-kernel.sh b/scripts/prepare-kernel.sh
-index ab9d1c1..8d41e94 100755
---- a/scripts/prepare-kernel.sh
-+++ b/scripts/prepare-kernel.sh
-@@ -168,7 +168,7 @@ generate_patch() {
- }
- 
- 
--usage='usage: prepare-kernel --linux=<linux-tree> --adeos=<adeos-patch> [--arch=<arch>] [--outpatch=<file> <tempdir> [--filterkvers=y|n] [--filterarch=y|n]] [--forcelink] [--default] [--verbose]'
-+usage='usage: prepare-kernel --linux=<linux-tree> --adeos=<adeos-patch> [--arch=<arch>] [--outpatch=<file> [--filterkvers=y|n] [--filterarch=y|n]] [--forcelink] [--default] [--verbose]'
- me=`basename $0`
- 
- while test $# -gt 0; do
-@@ -186,8 +186,6 @@ while test $# -gt 0; do
- 	;;
-     --outpatch=*)
- 	output_patch=`echo $1|sed -e 's,^--outpatch=\\(.*\\)$,\\1,g'`
--	shift
--	temp_tree=`echo $1|sed -e 's,^--tempdir=\\(.*\\)$,\\1,g'`
- 	;;
-     --filterkvers=*)
-         patch_kernelversion_filter=`echo $1|sed -e 's,^--filterkvers=\\(.*\\)$,\\1,g'`
-@@ -257,13 +255,8 @@ fi
- # Create an empty output patch file, and initialize the temporary tree.
- if test "x$output_patch" != "x"; then
- 
--    # The directory must exist, but should be empty. To lower the risks of data
--    # loss, the script does not deletes files itself.
--    if test ! -d $temp_tree; then
--        echo "$me: $temp_tree (temporary tree) is not an existing directory" >&2
--        exit 2
--    fi
--    temp_tree=`cd $temp_tree && pwd`
-+    temp_tree=$TMPDIR/prepare-kernel-$$
-+    mkdir $temp_tree
- 
-     patchdir=`dirname $output_patch`
-     patchdir=`cd $patchdir && pwd`
-@@ -592,6 +585,7 @@ if test "x$output_patch" != "x"; then
-     echo 'Generating patch.'
-     fi
-     generate_patch > "$output_patch"
-+    rm -rf $temp_tree
- fi
- 
- if test x$verbose = x1; then
--- 
-1.7.1
+>>   backlog
+>> - __ipipe_unstall_root triggers __ipipe_sync_stage
+>> - Linux handler is called, sets NEED_RESCHED but does not reschedule
+>>   (see above)
+>> - we do not test for resched again as we are not returning to user
+>>   space, and that for quite some time - bang!
+>>
+>> I think both issues are only related to virtualizing DISABLE_INTERRUPT=
+S
+>> for entry_32.S and I wonder if this doesn't finally qualify for a swit=
+ch
+>> to the 64-bit model. Or do you see simpler fixes?
+>>
+>=20
+> We could probably use hw masking from sysenter_tail and on, but quite
+> frankly, I think this time, enough is enough and this bug calls for a
+> radical fix, which is indeed getting rid of interrupt virtualization in=
+
+> the kernel entry/exit paths for x86_32, which no other arch ever
+> implemented anyway.
+>=20
+> The decision to virtualize there as well was taken circa 2.4.18, when
+> upstream did not care that much about latency yet. Things have changed,=
+
+> and there is no more reason to virtualize interrupts in very short
+> critical sections, at the expense of a lot more complexity.
+>=20
+> - __ipipe_unstall_iret_root
+> - __ipipe_kpreempt_root
+> and much of the nonsense we do to track linux's interrupt state would g=
+o
+> away.
+>=20
+
+Much involved code is shared here, so I will check with $customer if and
+how we can contribute to such a cleanup.
+
+Jan
+
+
+--------------enig8D6CF2F11CB38164670E7998
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.15 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org/
+
+iEYEARECAAYFAkzhshMACgkQitSsb3rl5xR/mwCgkvRhK7COZel/NyxkEo27+TN+
+zfQAnAqIvQdVmoz8U8ddzYzTS+fpbieY
+=wr1S
+-----END PGP SIGNATURE-----
+
+--------------enig8D6CF2F11CB38164670E7998--
 
