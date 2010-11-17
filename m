@@ -1,55 +1,51 @@
-Message-ID: <4CF40D43.2070200@domain.hid>
-Date: Mon, 29 Nov 2010 21:29:55 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <20101129195014.b79eb9be.inflo@domain.hid>
-In-Reply-To: <20101129195014.b79eb9be.inflo@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] xenomai user lib build error
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+In-Reply-To: <4CE44C5F.8060800@domain.hid>
+References: <AANLkTi=HxK7HbpmJX-YNrr2xWHduK=6nW=gAUQuMuUNs@domain.hid>
+	<4CE44C5F.8060800@domain.hid>
+Date: Wed, 17 Nov 2010 19:53:55 -0200
+Message-ID: <AANLkTimhQRwcw61Oko_Yy-DsHJAWa=ERxF9Qgh7Rgj9y@domain.hid>
+From: Flavio de Castro Alves Filho <flavio.alves@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-core] How to get involved?
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: inflo <inflo@domain.hid>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-inflo wrote:
-> hi, i wanna build xenomai user libs for powerpc 40x (405GP) cpu. The
-> patching (preparing) of the linux kernel (2.6.36.7) works with the
-> adeos patch.
-> 
-> But when i want to build the user libs, i get the error that e.g.
-> linux/errno.h could not be found. linux/errno.h is in
-> /usr/src/linux-2.6.35.7/include/linux/errno.h so it must be a false
-> setup path i think, but i dont know where i should do that?
+Yes, of course.
 
-No, linux/errno.h is supposed to be found in the toolchain installation
-directory. If it is not installed there, then your toolchain is not
-correctly installed.
+In fact, I need to finish it :-)
 
-You can check this without trying and compiling Xenomai:
+Thank you very much.
 
-If the following program:
+Best regards,
 
-#include <stdio.h>
-#include <errno.h>
+Flavio
 
-int main(void)
-{
-	printf("%d\n", EINVAL);
-	return 0;
-}
-
-Does not compile correctly with your toolchain, then your toolchain is
-not correctly installed.
-
-
--- 
-                                                                Gilles.
+2010/11/17 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>:
+> Flavio de Castro Alves Filho wrote:
+>> Hello,
+>>
+>> We are from Brazil and we are working with Xenomai in our embedded
+>> linux projects.
+>>
+>> I intend to join the community of developers of this very nice Linux
+>> component and I would like to know how to get involved? Is there any
+>> TODO list or CMS where the issues/whishlist are stored?
+>>
+>> Thank you and best regards,
+>
+> First, you could start by contributint the I-pipe port to OMAP L-138 ?
+>
+> --
+> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
+=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0Gilles.
+>
 
