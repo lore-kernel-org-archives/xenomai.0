@@ -1,5 +1,5 @@
-Message-ID: <4CE93407.6010702@domain.hid>
-Date: Sun, 21 Nov 2010 16:00:23 +0100
+Message-ID: <4CE94D8F.60209@domain.hid>
+Date: Sun, 21 Nov 2010 17:49:19 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <E2CAE7F7B064EA49B5CE7EE9A4BB167D14FF9E1190@domain.hid>
@@ -30,12 +30,12 @@ Hemal C.Bavishi wrote:
 > using libthead_db enabled - program exited with code 01). Please
 > help.
 
-ddd is a gdb frontend. So, please try and load your program with gdb,
-and show us the error message.
-
-Telling us which version of xenomai, on which architecture, and whether
-you are remote debugging would also help us reproduce the issue.
-
+On second thought, the message "xneomai binding failed", probably means
+that the machine where you are running ddd is running on a kernel
+without xenomai. So, if you are trying to debug a Xenomai application
+remotely, you should be using gdbserver. Before you ask: I have no idea
+how to do remote debugging with ddd, but this question is off-topic here
+anyway, you should find some information elsewhere.
 
 -- 
                                                                 Gilles.
