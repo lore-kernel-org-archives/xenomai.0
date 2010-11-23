@@ -1,9 +1,10 @@
-Message-ID: <4CEC17DD.6050004@domain.hid>
-Date: Tue, 23 Nov 2010 20:37:01 +0100
+Message-ID: <4CEC42D4.5010009@domain.hid>
+Date: Tue, 23 Nov 2010 23:40:20 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <AANLkTiny-NB-R4ELThQ0HE3LALz03cvcNuamnsa2kqiC@mail.gmail.com>
-In-Reply-To: <AANLkTiny-NB-R4ELThQ0HE3LALz03cvcNuamnsa2kqiC@mail.gmail.com>
+References: <AANLkTiny-NB-R4ELThQ0HE3LALz03cvcNuamnsa2kqiC@mail.gmail.com>	<4CEC17DD.6050004@domain.hid>
+	<AANLkTikDwEO-g9KvgBMXoccO1RAWtDcscekUEH+UpwFE@mail.gmail.com>
+In-Reply-To: <AANLkTikDwEO-g9KvgBMXoccO1RAWtDcscekUEH+UpwFE@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] Xenomai installation on archlinux
@@ -17,16 +18,21 @@ List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: tadele shiferaw <metitad@domain.hid>
-Cc: xenomai@xenomai.org
+Cc: Xenomai help <xenomai@xenomai.org>
 
 tadele shiferaw wrote:
-> I am tryin to install xenomai 2.5.5.2 on archlinux with kernel version
-> 2.6.35.7. I was able to run and patch adeos. Then I configured the  kernel
-> to disable
+> Yes, and I have disabled
+> 
+>     - CONFIG_CPU_FREQ
+>     - CONFIG_APM
+>     - CONFIG_ACPI_PROCESSOR
+>     - CONFIG_PCI_MSI
 
-Have you read
-http://www.xenomai.org/index.php/Configuring_x86_kernels
-?
+And have you selected the right configuration for your processor? Please
+send your kernel configuration, otherwise, we have no way to understand
+what is wrong.
+
+Please no private messages.
 
 -- 
                                                                 Gilles.
