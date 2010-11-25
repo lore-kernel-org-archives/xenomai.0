@@ -1,37 +1,42 @@
-Message-ID: <4CE44C5F.8060800@domain.hid>
-Date: Wed, 17 Nov 2010 22:42:55 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: Zafar Iqbal <Zafar.Iqbal2@domain.hid>
+Date: Thu, 25 Nov 2010 14:35:29 +0530
+Message-ID: <76E258664B189C4CBEF125491CA11ECC945B65542C@KCINPUNHJCMS01.kpit.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <AANLkTi=HxK7HbpmJX-YNrr2xWHduK=6nW=gAUQuMuUNs@domain.hid>
-In-Reply-To: <AANLkTi=HxK7HbpmJX-YNrr2xWHduK=6nW=gAUQuMuUNs@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] How to get involved?
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Subject: [Xenomai-help] UART Hanging
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Flavio de Castro Alves Filho <flavio.alves@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: "Xenomai-help@domain.hid" <Xenomai-help@domain.hid>
+Cc: Sathyabhodha N R <Sathyabhodha.NR@kpitcummins.com>
 
-Flavio de Castro Alves Filho wrote:
-> Hello,
-> 
-> We are from Brazil and we are working with Xenomai in our embedded
-> linux projects.
-> 
-> I intend to join the community of developers of this very nice Linux
-> component and I would like to know how to get involved? Is there any
-> TODO list or CMS where the issues/whishlist are stored?
-> 
-> Thank you and best regards,
+Hi All,
 
-First, you could start by contributint the I-pipe port to OMAP L-138 ?
+My System Configuration is:
 
--- 
-                                                                Gilles.
+Processor: INTEL's CORE2DUO
+RAM: 4GB
+Operating System: UBUNTU 10.04
+xenoma: 2.5.4
+
+
+I am using the driver and the sample application programme  provided with x=
+enomai, while running it the whole system is getting hanged after few minut=
+es, I tried it for many number of times but every time I am facing the same=
+ problem.
+Can some one suggest whats the problem here. Is the Migration to xenomai 2.=
+5.5.2 will solve the problem.
+
+Thanks and Regards,
+Zafar
+
+
 
