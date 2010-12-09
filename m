@@ -1,9 +1,12 @@
 MIME-Version: 1.0
-Date: Wed, 8 Dec 2010 17:32:00 -0800
-Message-ID: <AANLkTinZ8j2LX009maJ5bva2UvJohisvnBuEB4UJqdov@domain.hid>
+In-Reply-To: <AANLkTinZ8j2LX009maJ5bva2UvJohisvnBuEB4UJqdov@domain.hid>
+References: <AANLkTinZ8j2LX009maJ5bva2UvJohisvnBuEB4UJqdov@domain.hid>
+Date: Wed, 8 Dec 2010 17:55:11 -0800
+Message-ID: <AANLkTimSFv8vMRnC8C_Q2sgm4_sg+e+JtbMMZQUjswOV@mail.gmail.com>
 From: Peter Pastor <peter.pastor@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
-Subject: [Xenomai-help] Xenomai on laptops
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai-help] Fwd: Xenomai on laptops
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -13,7 +16,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
+To: xenomai@xenomai.org, asprakash83@domain.hid
+
+Hey !
+
+Sorry for bothering again, but I just saw the following 2 posts on the
+mailing list:
+
+-------
+Dell laptop with i7 processors, multicore
+    Typical latency was around 5 usec,  but at least once per second had a
+long pass of approximately 700 usec.   Tried the xenomai SMI work around wi=
+th
+no noticable change in results.
+-------
+-------
+> Hi,
+> Is there any problems when using Xenomai on an i7 (-880 / Dell
+> Precision T1500).
+> Any tips/suggestions/experiences are most welcome.
+
+I am using the same processor. Its working fine.
+-------
+
+...and I am wondering whether someone could report a laptop setup
+(model?) that uses an i7 CPU and that does not suffer from "huge"
+latency spikes ?
+
+THANKS so much,
+ Peter
+
+
+---------- Forwarded message ----------
+From: Peter Pastor <peter.pastor@domain.hid>
+Date: Wed, Dec 8, 2010 at 5:32 PM
+Subject: Xenomai on laptops
 To: xenomai@xenomai.org
+
 
 Hello !
 
@@ -34,5 +73,5 @@ issues with i7 CPUs reported ?
 I hope this question is not off topic.
 
 THANKS for any help,
- Peter
+=A0Peter
 
