@@ -1,5 +1,5 @@
-Message-ID: <23853267.81641292179530810.JavaMail.defaultUser@domain.hid>
-Date: Sun, 12 Dec 2010 19:45:30 +0100 (CET)
+Message-ID: <8659178.81831292179675169.JavaMail.defaultUser@domain.hid>
+Date: Sun, 12 Dec 2010 19:47:55 +0100 (CET)
 From: "mau.salvi@domain.hid" <mau.salvi@domain.hid>
 MIME-Version: 1.0
 Content-Type: text/plain;charset="UTF-8"
@@ -56,6 +56,7 @@ patch (2.8) was released for x86 arch, with more modifies into IRQ=20
 code: does new patch fixes this problem?
 
 Thanks in advance, bye
+
 
 
 Supera i limiti: raddoppia la velocit=C3=A0 da 10 a 20 Mega!   Risparmia co=
