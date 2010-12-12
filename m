@@ -1,12 +1,11 @@
+Message-ID: <23853267.81641292179530810.JavaMail.defaultUser@domain.hid>
+Date: Sun, 12 Dec 2010 19:45:30 +0100 (CET)
+From: "mau.salvi@domain.hid" <mau.salvi@domain.hid>
 MIME-Version: 1.0
-In-Reply-To: <AANLkTinZ8j2LX009maJ5bva2UvJohisvnBuEB4UJqdov@domain.hid>
-References: <AANLkTinZ8j2LX009maJ5bva2UvJohisvnBuEB4UJqdov@domain.hid>
-Date: Wed, 8 Dec 2010 17:55:11 -0800
-Message-ID: <AANLkTimSFv8vMRnC8C_Q2sgm4_sg+e+JtbMMZQUjswOV@mail.gmail.com>
-From: Peter Pastor <peter.pastor@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain;charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai-help] Fwd: Xenomai on laptops
+Subject: [Xenomai-help] Interrupt handling vs. scheduler
+Reply-To: "mau.salvi@domain.hid" <mau.salvi@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -16,62 +15,51 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org, asprakash83@domain.hid
-
-Hey !
-
-Sorry for bothering again, but I just saw the following 2 posts on the
-mailing list:
-
--------
-Dell laptop with i7 processors, multicore
-    Typical latency was around 5 usec,  but at least once per second had a
-long pass of approximately 700 usec.   Tried the xenomai SMI work around wi=
-th
-no noticable change in results.
--------
--------
-> Hi,
-> Is there any problems when using Xenomai on an i7 (-880 / Dell
-> Precision T1500).
-> Any tips/suggestions/experiences are most welcome.
-
-I am using the same processor. Its working fine.
--------
-
-...and I am wondering whether someone could report a laptop setup
-(model?) that uses an i7 CPU and that does not suffer from "huge"
-latency spikes ?
-
-THANKS so much,
- Peter
-
-
----------- Forwarded message ----------
-From: Peter Pastor <peter.pastor@domain.hid>
-Date: Wed, Dec 8, 2010 at 5:32 PM
-Subject: Xenomai on laptops
 To: xenomai@xenomai.org
 
+Hello to all,
 
-Hello !
+I observed a strange behaviour on oscilloscope during=20
+interrupt handling when RT periodic tasks reschedule happens.
 
-I am looking into buying a laptop to run Xenomai (and RTnet) and I am
-having trouble choosing the appropriate setup.
+I have=20
+an interrupt generated every 1ms by a PCI card: the interrupt was=20
+handled into user-space with a RT task (priority 99) that sleeps on=20
+rt_intr_wait(), and the handler was created with I_NOAUTOENA flag, so=20
+there is a rt_intr_enable() call each cycle immediately before=20
+rt_intr_wait(). Into my code there is another task that works=20
+periodically on this PCI card data.
 
-The plan is to run xenomai on the laptop and use rtnet to communicate
-to some controller boards in real-time. I have done this with a
-desktop computer and it worked just fine, however, now I need to run
-the same thing on a portable device.
+Due to a "slip" between PC and PCI=20
+card hardware timers, sometimes there is an overlap between interrupt=20
+handling and periodic task wakeup: in detail, during interrupt=20
+handling, the periodic time for latter task expires, so wakeup must=20
+take place. In this (and only in this) condition I observe a wrong call=20
+to interrupt handling task immediately after the end of right handling:=20
+so, I have two consecutive interrupt calls, as the expire timer signal=20
+was delivered also to my interrupt handler. Task wakeup takes=20
+regularily place.
 
-I might have to use a RTnet compliant PCMCIA card (if such a thing
-exists) because most (Dell) laptops do not have rtnet compliant NICs
-(do they?). It would be great to get advice on which gigabit PCMCIA
-ethernet card works with Xenomai (and RTnet). Also, are there any
-issues with i7 CPUs reported ?
+This behaviour happens only if there is some other=20
+periodic task into my executable: without that, interrupts was properly=20
+handled every 1ms. "Strange" behaviour also happens if periodic task=20
+does nothing (waits rescheduling only).
 
-I hope this question is not off topic.
+I'm working on Ubuntu 10.04=20
+x86 with Xenomai 2.5.5.2 on a vanilla kernel 2.6.35.7, Adeos patch 2.7-
+04.
+Hardware:  Intel Celeron M 512 MHz processor, motherboard with SMI=20
+services disabled by Xenomai at startup.
 
-THANKS for any help,
-=A0Peter
+I've seen that a new Adeos=20
+patch (2.8) was released for x86 arch, with more modifies into IRQ=20
+code: does new patch fixes this problem?
+
+Thanks in advance, bye
+
+
+Supera i limiti: raddoppia la velocit=C3=A0 da 10 a 20 Mega!   Risparmia co=
+n Tutto Incluso: telefono + adsl 20 mega a soli 29,95 =E2=82=AC al mese per=
+ due anni!  SCONTO DI 240 EURO!  http://abbonati.tiscali.it/telefono-adsl/p=
+rodotti/tc/tuttoincluso/?WT.mc_id=3D01fw 
 
