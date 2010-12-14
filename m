@@ -1,25 +1,14 @@
-Date: Thu, 23 Dec 2010 22:55:49 +0100 (CET)
-From: "Waschk,Kolja" <xenoka09@domain.hid>
-In-Reply-To: <4D13C271.50101@domain.hid>
-Message-ID: <alpine.DEB.2.00.1012232244590.3018@domain.hid>
-References: <alpine.DEB.1.10.1012211818430.9596@domain.hid>
-	<4D110810.1090504@domain.hid>
-	<alpine.DEB.1.10.1012221012270.10955@domain.hid>
-	<alpine.DEB.1.10.1012221306370.10955@domain.hid>
-	<1293025850.22129.15.camel@domain.hid>
-	<alpine.DEB.1.10.1012221511320.11502@domain.hid>
-	<1293027465.22129.17.camel@domain.hid>
-	<alpine.DEB.1.10.1012221612360.11502@domain.hid>
-	<1293031751.22129.21.camel@domain.hid>
-	<alpine.DEB.1.10.1012221805260.11502@domain.hid>
-	<alpine.DEB.1.10.1012221912220.11502@domain.hid>
-	<1293042519.22129.91.camel@domain.hid>
-	<alpine.DEB.1.10.1012221944080.11502@domain.hid>
-	<1293094412.22129.102.camel@domain.hid> <4D13C271.50101@domain.hid>
+Message-ID: <4D07CEEA.1080604@domain.hid>
+Date: Tue, 14 Dec 2010 21:09:14 +0100
+From: Stefan Kisdaroczi <kisda@domain.hid>
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
-Subject: Re: [Xenomai-help] gdb/gdbserver hangs during rt_task_create
-Reply-To: Kolja Waschk <xenoka09@domain.hid>
+References: <8slsrl$4tljao@domain.hid>
+	<4D07BB97.4050600@domain.hid>
+In-Reply-To: <4D07BB97.4050600@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig404BE4567262675F1E526DE6"
+Subject: Re: [Xenomai-help] xeno-nucleus Oops!
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -29,24 +18,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai GNA <xenomai@xenomai.org>
+To: sleonard@domain.hid
+Cc: xenomai@xenomai.org
 
-Hi,
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig404BE4567262675F1E526DE6
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-> And gdb 6.5 over linuxthreads is pretty much outdated... Also, some bugs
+On 14.12.2010 19:46, Simon Leonard wrote:
+> Hi,
+>
+> We had a HD crash and I'm reinstalling our system. Same kernel
+> (2.6.35.7), same Xenomai (2.5.5.2), new distribution (old: Fedora 12,
+> new: Fedora 14). AFAIC the configuration is similar to the previous
+> configuration.
+>
+> However, I can't get anything to work as I get a kernel oops when I
+> load xeno_nucleus. Here is the log following `modprobe xeno_nucleus`
 
-That's what comes in the most current Blackfin toolchain release 2010R1
+Have a look at this thread:
+https://mail.gna.org/public/xenomai-core/2010-12/msg00011.html
 
-> have been fixed in Xenomai 2.5.3. So, I think it is useless pursuing
-
-I'm using 2.5.5.2. Just referred to 2.4.7 being my base for comparison
-
-Kolja
+Stefan
 
 
--- 
-mr. kolja waschk - haubach-39 - 22765 hh - germany
-fon +49 40 889130-34 - fax -35 - http://www.ixo.de
 
+--------------enig404BE4567262675F1E526DE6
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.10 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+
+iEYEARECAAYFAk0HzvAACgkQIPTw9rIdn6qw4QCcCu1F3WjJgDsKeX8OvL2mJLpR
+g70AniBbUgWJ7S8ndRKm8tH+pdKkUZYg
+=DtFk
+-----END PGP SIGNATURE-----
+
+--------------enig404BE4567262675F1E526DE6--
 
