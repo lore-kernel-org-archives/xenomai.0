@@ -1,46 +1,39 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <201012300654.27439.paul_c@domain.hid>
-References: <201012300654.27439.paul_c@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Thu, 30 Dec 2010 09:16:03 +0100
-Message-ID: <1293696963.1837.10.camel@domain.hid>
-Mime-Version: 1.0
+Message-ID: <4D08AD65.5000909@domain.hid>
+Date: Wed, 15 Dec 2010 12:58:29 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+References: <AANLkTinWuPngUQ=LxG+v_zdCc0WyCNwyNy1KxBXcUnaC@mail.gmail.com>
+In-Reply-To: <AANLkTinWuPngUQ=LxG+v_zdCc0WyCNwyNy1KxBXcUnaC@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Adeos-main] Bug in 2.6.35-7 patch
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/options/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-To: Paul <paul_c@domain.hid>
-Cc: adeos-main <adeos-main@gna.org>
+Subject: Re: [Xenomai-help] How to clear Xenomai Buffer
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: srinu prasad <linuxsrinuprasad@domain.hid>
+Cc: Xenomai-help@domain.hid
 
-On Thu, 2010-12-30 at 06:54 +0000, Paul wrote:
-> Compiling the current ipipe patch for x86 
-> (adeos-ipipe-2.6.35.7-x86-2.8-00.patch), hit a problem with 
-> __ipipe_spin_unlock_debug being unresolved. Digging in to 
-> linux/ipipe.h, I see it is conditional on CONFIG_IPIPE_DEBUG_INTERNAL, 
-> yet in core.c, it also depends on CONFIG_SMP. The blackfin & powerpc 
-> patches are correct... Could someone please take a look at ipipe.h, 
-> line 193 and confirm the error.
+srinu prasad wrote:
+> Hi
+> 
+>          If i run RTLINUX program in Xenomai environment  first time it
+> gives proper result , and if i maid any changes , it gives old result only ,
+> how to clear Xenomai  buffer
 
-Confirmed. The fix is already pending in the GIT tree. I'll issue 2.8-01
-today.
+I do not know about others on this list, but I have no idea what you are
+talking about. So, if you want to get an answer, I suggest you describe
+your problem clearly or send us a piece of code where you show us what
+Xenomai services you use and you suspect to misbehave.
 
-> 
-> Regards, Paul.
-> 
-> 
-> _______________________________________________
-> Adeos-main mailing list
-> Adeos-main@domain.hid
-> https://mail.gna.org/listinfo/adeos-main
+Please make sure to also include the information asked here:
+http://www.xenomai.org/index.php/Request_for_information
 
 -- 
-Philippe.
-
-
+                                                                Gilles.
 
