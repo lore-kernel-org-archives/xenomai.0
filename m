@@ -1,12 +1,17 @@
-Message-ID: <4D1FAE66.8080005@domain.hid>
-Date: Sat, 01 Jan 2011 23:44:54 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <20101216183906.107373zy122ag800@domain.hid>
+Date: Thu, 16 Dec 2010 18:39:06 +0100
+From: Michel He <michel.he@domain.hid>
+References: <20101216130423.19383g369jps4nk0@domain.hid>
+	<4D0A0615.5080304@domain.hid>
+In-Reply-To: <4D0A0615.5080304@domain.hid>
 MIME-Version: 1.0
-References: <6FCCA913376DD7488F4139A4D11B8F48016311A5@domain.hid>
-In-Reply-To: <6FCCA913376DD7488F4139A4D11B8F48016311A5@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] [Xenomai -help] User space access to DMA memory
+Content-Type: text/plain;
+ charset=UTF-8;
+ DelSp="Yes";
+ format="flowed"
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-help] Gumstix / RTNET / INT Problem
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -16,23 +21,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "Herrera-Bendezu, Luis" <lherrera@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-Herrera-Bendezu, Luis wrote:
-> Hello:
-> 
-> I have the following setup:
-> PPC405EX
-> Linux 2.6.30.3
-> Xenomai 2.4.10
-> I-pipe 2.7-02
-> ppc_4xx-gcc (GCC) 4.2.2
-> Configuration file is attached
+Hi,
 
-Do you have the same issue with the latest version of the I-pipe patch
-for this same version of the Linux kernel? It should be 2.8-00.
+Ok, I find out the cause. It is the Xenomai IRQ type management problem.
+to resolve that, I added set_irq_type(dev->irq, =20
+IRQ_TYPE_EDGE_FALLING); after the rtdm_irq_request, but sometime =20
+during the loading of the driver it seems to be locked ? Otherwise it =20
+could get jump to the handler after that interrupt declenched
 
--- 
-                                                                Gilles.
+thank you for your advise
+
+
+
+Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> a =C3=A9crit=C2=A0:
+
+> Michel He wrote:
+>> Hello All,
+>>
+>>      I'm currently developing a RTNet RTDM driver for the chip SMSC
+>> Lan9221 in Gumstix expansion board. I'm using the patch from
+>> blog.gmane.org/gmane.linux.real-time...overo-sakoman.diff for Linux
+>> 2.6.33.
+>
+> What version of Xenomai? What version of the I-pipe patch? why do you
+> need an additional patch, why not using mainline + I-pipe?
+>
+> Also, you do not give us a full URL to the patch you are talking about,
+> so we can not download it?
+>
+> --
+>                                                                 Gilles.
+>
+
+
 
