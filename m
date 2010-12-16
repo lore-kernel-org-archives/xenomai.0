@@ -1,39 +1,37 @@
-Message-ID: <4D32276A.2080406@domain.hid>
-Date: Sun, 16 Jan 2011 00:02:02 +0100
+Message-ID: <4D0A0615.5080304@domain.hid>
+Date: Thu, 16 Dec 2010 13:29:09 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4D306110.7000104@domain.hid> <4D3061DA.4000002@domain.hid>
-	<4D3065DE.8000107@domain.hid>
-In-Reply-To: <4D3065DE.8000107@domain.hid>
+References: <20101216130423.19383g369jps4nk0@domain.hid>
+In-Reply-To: <20101216130423.19383g369jps4nk0@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [PATCH] Add INTEL_IDLE to list of problematic
- config	options
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Subject: Re: [Xenomai-help] Gumstix / RTNET / INT Problem
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: Xenomai core <Xenomai-core@domain.hid>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Michel He <michel.he@domain.hid>
+Cc: xenomai@xenomai.org
 
-Jan Kiszka wrote:
-> Am 14.01.2011 15:46, Gilles Chanteperdrix wrote:
->> Jan Kiszka wrote:
->>> See TROUBLESHOOTING for explanation.
->> Ok. Please update the wiki too.
->>
+Michel He wrote:
+> Hello All,
 > 
-> Done.
+>      I'm currently developing a RTNet RTDM driver for the chip SMSC  
+> Lan9221 in Gumstix expansion board. I'm using the patch from  
+> blog.gmane.org/gmane.linux.real-time...overo-sakoman.diff for Linux  
+> 2.6.33.
 
-I think we should also copy it to the x86 configuration page:
-http://www.xenomai.org/index.php/Configuring_x86_kernels
+What version of Xenomai? What version of the I-pipe patch? why do you
+need an additional patch, why not using mainline + I-pipe?
 
-And I wonder in fact if this information should be duplicated or if the
-FAQ should not point to this page.
+Also, you do not give us a full URL to the patch you are talking about,
+so we can not download it?
 
 -- 
                                                                 Gilles.
