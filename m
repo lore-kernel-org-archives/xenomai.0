@@ -1,15 +1,9 @@
-Date: Mon, 20 Dec 2010 08:59:48 +0100
-From: Richard Cochran <richardcochran@domain.hid>
-Message-ID: <20101220075948.GA8454@domain.hid>
-References: <BAY149-w131A596DF2F2249BFEFAA3E4150@domain.hid>
-	<1292524810.1837.261.camel@domain.hid>
-	<BAY149-w569BBC6219044CB125C68BE4150@domain.hid>
-	<1292576987.1837.291.camel@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1292576987.1837.291.camel@domain.hid>
-Subject: Re: [Xenomai-help] Xenomai and timers.
+Date: Mon, 20 Dec 2010 14:28:27 +0100
+Message-ID: <AANLkTikiCm5B-KwteOfzTwtCV8RXj1QFgfQCAmCCoC8V@mail.gmail.com>
+From: Marten Lootsma <m.lootsma@domain.hid>
+Content-Type: multipart/alternative; boundary=90e6ba6e8e78c7e40f0497d77e9d
+Subject: [Xenomai-help] Xenomai on Freescale iMX35
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -19,21 +13,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Xenomai Help <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On Fri, Dec 17, 2010 at 10:09:47AM +0100, Philippe Gerum wrote:
-> grained in essence. I'm talking about large arbitrary leaps forward done
-> using clock_settime() from an application context.
-> 
-> A possible answer then, is two fold:
+--90e6ba6e8e78c7e40f0497d77e9d
+Content-Type: text/plain; charset=ISO-8859-1
 
-BTW, there has been some discussion on the lkml recently on the
-question, how can a program detect that a clock has been reset?
+Dear all,
 
-The latest suggested patch and a summary is at:
+We have a platform with a Freescale iMX35 processor and we would like to use
+Xenomai. We have kernel versions 2.6.28 and 2.6.31 running (customized with
+Freescale and our own patches for hardware support). I read that support is
+included for the iMX31 and 51 which are closely related. In the trac I saw
+some iMX35 related commits as well.
 
-   http://article.gmane.org/gmane.linux.kernel/1070389
+1. What is the status of the support for iMX35?
+2. And if needed what is a good starting point for implementing/contributing
+the port to iMX35?
 
-Richard
+Best regards,
+Marten Lootsma
+
+--90e6ba6e8e78c7e40f0497d77e9d
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+Dear all,<br><br>We have a platform with a Freescale iMX35 processor and we=
+ would like to use Xenomai. We have kernel versions 2.6.28 and 2.6.31 runni=
+ng (customized with Freescale and our own patches for hardware support). I =
+read that support is included for the iMX31 and 51 which are closely relate=
+d. In the trac I saw some iMX35 related commits as well.<br>
+<br>1. What is the status of the support for iMX35?<br>2. And if needed wha=
+t is a good starting point for implementing/contributing the port to iMX35?=
+<br><br>Best regards,<br>Marten Lootsma<br>
+
+--90e6ba6e8e78c7e40f0497d77e9d--
 
