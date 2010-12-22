@@ -1,14 +1,17 @@
-Date: Wed, 22 Dec 2010 10:30:29 +0100 (CET)
-From: Kolja Waschk <xenoka09@domain.hid>
-In-Reply-To: <4D110810.1090504@domain.hid>
-Message-ID: <alpine.DEB.1.10.1012221012270.10955@domain.hid>
-References: <alpine.DEB.1.10.1012211818430.9596@domain.hid>
-	<4D110810.1090504@domain.hid>
+Message-ID: <20101222120352.14638lyeejpadxy8@domain.hid>
+Date: Wed, 22 Dec 2010 12:03:52 +0100
+From: Michel He <michel.he@domain.hid>
+References: <20101216130423.19383g369jps4nk0@domain.hid>
+	<4D0A0615.5080304@domain.hid>
+In-Reply-To: <4D0A0615.5080304@domain.hid>
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; format=flowed; charset=US-ASCII
-Sender: "Kolja Waschk,,," <xenoka09@domain.hid>
-Subject: Re: [Xenomai-help] gdb/gdbserver hangs during rt_task_create
-Reply-To: xenoka09@domain.hid
+Content-Type: text/plain;
+ charset=UTF-8;
+ DelSp="Yes";
+ format="flowed"
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-help] Gumstix / RTNET / INT Problem
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -18,31 +21,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Xenomai GNA <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org, "rtnet-users@domain.hid" <rtnet-users@domain.hid>
 
->> 154     int r = rt_task_create(&thread, thread_name.c_str(), 128*1024, prio, T_FPU|T_JOINABLE);
-> Is there any trace on the serial console?
+Hello Gilles
 
-Hasn't been, but I now after I enabled Xenomai debugging and watchdog, at least there's some indication what's going wrong. The "last words" of the application are
+     Thank you for your help and quick answer. Currently I have =20
+another problem in RTNet, it occured during the TDMA initialization :
 
+This is the DMESG log:
 ...
-> Xenomai: registered exported object  (mutexes)
-> Xenomai: registered exported object  (mutexes)
-> Xenomai: watchdog triggered -- signaling runaway thread 'pfda'
-> Backtrace: 0xbcdcc6, 0, 0, 0
+<4>[   79.155764] initializing loopback...
+<4>[   79.161636] RTnet: registered rtlo
+<4>[   79.268076] RTcfg: init real-time configuration distribution protocol
+<4>[   79.355733] RTmac: init realtime media access control
+<4>[   79.428991] RTmac/TDMA: init time division multiple access =20
+control mechanism
+<6>[   80.465015] Xenomai: suspending kernel thread bf0087b0 =20
+('rtnet-stack') at 0xbf05266c after exception #8
 
-And in gdb it shows up as a SIGXCPU:
+I'd like to know what is the exception #8 ? what could be the cause ?
 
-Program received signal SIGXCPU, CPU time limit exceeded.
-...
-(gdb) bt
-#0  pthread_setcanceltype (type=0, oldtype=0x0) at libpthread/linuxthreads.old/forward.c:161
-#1  0x00f35450 in __wrap_pthread_cond_wait (cond=<value optimized out>, mutex=<value optimized out>)
-     at ../../../../xenomai-2.5.5.2/src/skins/posix/cond.c:123
-#2  0x00be72c6 in consume_socket (ctx=0x837788, sp=0x1778240) at mongoose.c:3871
-#3  0x00be753a in worker_thread (ctx=0x837788) at mongoose.c:3914
-...
+Thank you very much again
 
 
-Kolja
+Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> a =C3=A9crit=C2=A0:
+
+> Michel He wrote:
+>> Hello All,
+>>
+>>      I'm currently developing a RTNet RTDM driver for the chip SMSC
+>> Lan9221 in Gumstix expansion board. I'm using the patch from
+>> blog.gmane.org/gmane.linux.real-time...overo-sakoman.diff for Linux
+>> 2.6.33.
+>
+> What version of Xenomai? What version of the I-pipe patch? why do you
+> need an additional patch, why not using mainline + I-pipe?
+>
+> Also, you do not give us a full URL to the patch you are talking about,
+> so we can not download it?
+>
+> --
+>                                                                 Gilles.
+>
+
+
 
