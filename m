@@ -2,10 +2,10 @@ Mime-Version: 1.0 (Apple Message framework v753.1)
 In-Reply-To: <mailman.13966.1293037981.32598.xenomai@xenomai.org>
 References: <mailman.13966.1293037981.32598.xenomai@xenomai.org>
 Content-Type: text/plain; charset=US-ASCII; delsp=yes; format=flowed
-Message-Id: <729FBB2A-CBFE-47A1-920D-DC7D69FF061B@gmail.com>
+Message-Id: <40767404-D45D-43EF-A547-63278CC78AF7@domain.hid>
 Content-Transfer-Encoding: 7bit
 From: Andreas Glatz <andi.glatz@domain.hid>
-Date: Thu, 23 Dec 2010 00:06:21 +0100
+Date: Thu, 23 Dec 2010 00:10:45 +0100
 Subject: Re: [Xenomai-help] gdb/gdbserver hangs during rt_task_create
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -18,7 +18,7 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
-Hi,
+Hi again,
 
 >
 >> Check whether the thread manager does attempt to call into the  
@@ -52,13 +52,11 @@ Hi,
 >    0  305    rt      49      -         master     X           
 > Console_Output_Thread
 >
-> Kolja
->
 
-Which version of gdb/gdbserver are you using? We had a similar  
-problem before upgrading to gdb/gdbserver 7.0.
-Unfortunately, I didn't hv enough time to investigate the issue. So i  
-just accepted it being some kind of magic...
+I forgot to describe our problem: Gdb hung at rt_task_start() when  
+trying to step through it. But debugging worked fine if I set a  
+breakpoint in the task body, way after any rt_task_start(). Btw, do  
+you call rt_task_start() from a RT task body?
 
 Andreas
 
