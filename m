@@ -1,15 +1,12 @@
-Message-ID: <4D127ECE.8040802@domain.hid>
-Date: Wed, 22 Dec 2010 23:42:22 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <20101216130423.19383g369jps4nk0@domain.hid>
-	<4D0A0615.5080304@domain.hid>
-	<20101222120352.14638lyeejpadxy8@domain.hid>
-	<20101222161628.168821tlu4jc9wss@domain.hid>
-In-Reply-To: <20101222161628.168821tlu4jc9wss@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+Mime-Version: 1.0 (Apple Message framework v753.1)
+In-Reply-To: <mailman.13966.1293037981.32598.xenomai@xenomai.org>
+References: <mailman.13966.1293037981.32598.xenomai@xenomai.org>
+Content-Type: text/plain; charset=US-ASCII; delsp=yes; format=flowed
+Message-Id: <729FBB2A-CBFE-47A1-920D-DC7D69FF061B@gmail.com>
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Gumstix / RTNET / INT Problem
+From: Andreas Glatz <andi.glatz@domain.hid>
+Date: Thu, 23 Dec 2010 00:06:21 +0100
+Subject: Re: [Xenomai-help] gdb/gdbserver hangs during rt_task_create
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -19,60 +16,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Michel He <michel.he@domain.hid>
-Cc: xenomai@xenomai.org, "rtnet-users@domain.hid" <rtnet-users@domain.hid>
+To: xenomai@xenomai.org
 
-Michel He wrote:
-> So here, I add some debug info:
-> 
-> <6>[  172.419753] Xenomai: suspending kernel thread bf062500  
-> ('rtnet-stack') at 0xbf0ac72c after exception #8
+Hi,
 
-Exception 8 is unaligned access.
+>
+>> Check whether the thread manager does attempt to call into the  
+>> Xenomai
+>> replacement for the pthread_cond_wait call.
+>
+> I have to apologize; the pthread_cond_wait -> EPERM appeared after  
+> enabling
+> debug output to trace the actual problem I had when I started this  
+> mail thread,
+> but is seems unrelated. I have completely disabled that part of  
+> code, and with
+> it also disabled the use of all pthread* functions. Only native  
+> skin functions
+> are used by my remaining code and I'm back to the original problem  
+> (gdb hangs
+> at some point when stepi'ing through rt_task_start).
+>
+> Even though debugging is enabled, nothing is printed on the  
+> console. The target
+> cannot be reached on the console (Ctrl-C doesn't work) and GDB also  
+> doesn't
+> react on Ctrl-C. telnet to the target works, however. cat /proc/ 
+> xenomai/sched
+> shows the half started task as "X Console_Output_Thread":
+>
+> / # cat /proc/xenomai/sched
+> CPU  PID    CLASS  PRI      TIMEOUT   TIMEBASE   STAT       NAME
+>    0  0      rt      49      -         master     R          ROOT
+>    0  303    rt      49      -         master     RT         main
+>    0  305    rt      49      -         master     X           
+> Console_Output_Thread
+>
+> Kolja
+>
 
-> 
-> bf062500 u STACK_manager        [rt_loopback]
-> 
-> Now, let's find 0xbf0ac72c
-> 00000000 a tdma_proto.c [tdma]
-> bf0abd7c t $a   [tdma]
-> bf0abdf4 t $d   [tdma]
-> bf0abdf8 t $a   [tdma]
-> bf0abee0 t $d   [tdma]
-> bf0abee4 t $a   [tdma]
-> bf0abfcc t $d   [tdma]
-> bf0abfd4 t $a   [tdma]
-> bf0ac1fc t $d   [tdma]
-> bf0ac208 t $a   [tdma]
-> bf0acb28 t $d   [tdma]
-> bf0acb40 t $a   [tdma]
-> bf0acd70 t $d   [tdma]
-> 
-> bf0ac72c - bf0abd7c = 9b0
-> 
-> 
-> 0000048c <tdma_packet_rx>:
-> ...
->       9b0:	e186200c 	orr	r2, r6, ip
+Which version of gdb/gdbserver are you using? We had a similar  
+problem before upgrading to gdb/gdbserver 7.0.
+Unfortunately, I didn't hv enough time to investigate the issue. So i  
+just accepted it being some kind of magic...
 
-Well, you probably got the result wrong, or maybe you are not
-disassembling the module currently running, or maybe the exception
-address is off by +/-4. As far as I know, an unaligned access may only
-happen when dereferencing a pointer, so the faulting instruction should
-be an str, an ldr, an stm or an ldm (or maybe a coprocessor instruction).
-
-ISTR we already saw this issue with RTnet on PXA, look in the archives,
-I do not remember if it has been fixed, but I believe so, are you using
-the last RTnet release?
-
-> 
-> However I have no idea how to correspond the 9b0 to which line of  
-> codes from tdma_proto.c ?? Any idea ?
-
-This is a basic GNU binutils question, it has nothing specific to do
-with Xenomai or RTnet. If your module is compiled with debug infos, you
-can use addr2line or use objdump -S instead of objdump -d.
-
--- 
-                                                                Gilles.
+Andreas
 
