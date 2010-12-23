@@ -1,12 +1,14 @@
-Mime-Version: 1.0 (Apple Message framework v753.1)
-In-Reply-To: <mailman.13966.1293037981.32598.xenomai@xenomai.org>
-References: <mailman.13966.1293037981.32598.xenomai@xenomai.org>
-Content-Type: text/plain; charset=US-ASCII; delsp=yes; format=flowed
-Message-Id: <40767404-D45D-43EF-A547-63278CC78AF7@domain.hid>
-Content-Transfer-Encoding: 7bit
-From: Andreas Glatz <andi.glatz@domain.hid>
-Date: Thu, 23 Dec 2010 00:10:45 +0100
-Subject: Re: [Xenomai-help] gdb/gdbserver hangs during rt_task_create
+From: Bryan Hilterbrand <bhilterbrand@domain.hid>
+Date: Wed, 22 Dec 2010 19:11:18 -0700
+Message-ID: <D7352E9EB94BE54D8E052C5D9FE093294798D63DD4@domain.hid>
+References: <AANLkTimuiAP=dGQSKG2PYJUnGw--1iXBzPJ1325czz-_@domain.hid>
+	<1280655383.6700.11.camel@domain.hid>
+In-Reply-To: <1280655383.6700.11.camel@domain.hid>
+Content-Language: en-US
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+Subject: Re: [Xenomai-help] Problems with user_irq.c Native example
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -16,47 +18,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi again,
+On Sunday, 2010-08-01, Philippe Gerum wrote:
+> Also note that [userland interrupt] support may introduce serious issues
+> down the road,
+> like not being able to use gdb over your application; using it in new
+> apps is a bad idea in the first place, because interrupt handling is
+> fundamentally a kernel thing, and should remain so.
+>
+> Providing this interface was a mistake, it is now deprecated, and
+> scheduled for removal in 3.x. The right approach is to process
+> (real-time) interrupts in kernel space from a RTDM driver, waking up a
+> userland thread as needed. That thread may wait for events via blocking
+> ioctl()/read() requests directed at the driver, thus following the
+> standard programming model.
 
->
->> Check whether the thread manager does attempt to call into the  
->> Xenomai
->> replacement for the pthread_cond_wait call.
->
-> I have to apologize; the pthread_cond_wait -> EPERM appeared after  
-> enabling
-> debug output to trace the actual problem I had when I started this  
-> mail thread,
-> but is seems unrelated. I have completely disabled that part of  
-> code, and with
-> it also disabled the use of all pthread* functions. Only native  
-> skin functions
-> are used by my remaining code and I'm back to the original problem  
-> (gdb hangs
-> at some point when stepi'ing through rt_task_start).
->
-> Even though debugging is enabled, nothing is printed on the  
-> console. The target
-> cannot be reached on the console (Ctrl-C doesn't work) and GDB also  
-> doesn't
-> react on Ctrl-C. telnet to the target works, however. cat /proc/ 
-> xenomai/sched
-> shows the half started task as "X Console_Output_Thread":
->
-> / # cat /proc/xenomai/sched
-> CPU  PID    CLASS  PRI      TIMEOUT   TIMEBASE   STAT       NAME
->    0  0      rt      49      -         master     R          ROOT
->    0  303    rt      49      -         master     RT         main
->    0  305    rt      49      -         master     X           
-> Console_Output_Thread
->
+I just discovered this thread, and I'm trying to solve a similar problem.
 
-I forgot to describe our problem: Gdb hung at rt_task_start() when  
-trying to step through it. But debugging worked fine if I set a  
-breakpoint in the task body, way after any rt_task_start(). Btw, do  
-you call rt_task_start() from a RT task body?
+Philippe, can you point me to a RTDM driver example that uses an interrupt
+and blocks the reader? Or is this something that I will need to figure out
+myself? A good RTDM example would be a start...
 
-Andreas
+I'm on an older version of Xenomai (2.3) if that makes a difference.
+
+Thank you for any help you can give me!
 
