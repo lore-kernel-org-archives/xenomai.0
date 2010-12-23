@@ -1,9 +1,24 @@
-MIME-Version: 1.0
-Date: Thu, 23 Dec 2010 09:04:09 +0530
-Message-ID: <AANLkTikSv9m0efGfxgcQ=0Bee5DPxZSC+4U=Csd4ccwM@mail.gmail.com>
-From: Peter Warner <xenomai.start@domain.hid>
-Content-Type: multipart/alternative; boundary=0016e6dab18af09a1e04980b8af2
-Subject: [Xenomai-help] rt_dev_read hangup
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <alpine.DEB.1.10.1012221944080.11502@domain.hid>
+References: <alpine.DEB.1.10.1012211818430.9596@domain.hid>
+	<4D110810.1090504@domain.hid>
+	<alpine.DEB.1.10.1012221012270.10955@domain.hid>
+	<alpine.DEB.1.10.1012221306370.10955@domain.hid>
+	<1293025850.22129.15.camel@domain.hid>
+	<alpine.DEB.1.10.1012221511320.11502@domain.hid>
+	<1293027465.22129.17.camel@domain.hid>
+	<alpine.DEB.1.10.1012221612360.11502@domain.hid>
+	<1293031751.22129.21.camel@domain.hid>
+	<alpine.DEB.1.10.1012221805260.11502@domain.hid>
+	<alpine.DEB.1.10.1012221912220.11502@domain.hid>
+	<1293042519.22129.91.camel@domain.hid>
+	<alpine.DEB.1.10.1012221944080.11502@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Date: Thu, 23 Dec 2010 09:53:32 +0100
+Message-ID: <1293094412.22129.102.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] gdb/gdbserver hangs during rt_task_create
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -13,59 +28,51 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Kolja Waschk <xenoka09@domain.hid>
+Cc: Xenomai GNA <xenomai@xenomai.org>
 
---0016e6dab18af09a1e04980b8af2
-Content-Type: text/plain; charset=ISO-8859-1
+On Wed, 2010-12-22 at 20:00 +0100, Kolja Waschk wrote:
+> >> In my actual application however I never get past the rt_task_create, even if
+> >> I set a breakpoint at some line somewhen later.
+> 
+> > What if you don't single step but (c)ontinue?
+> 
+> It "hangs".
+> 
+> But wait, just in this moment I discovered that I can get further if I
+> set all priorities, i.e. priority of the main task (with rt_task_shadow) and the
+> tasks where I couldn't get past rt_task_create, to 0 instead of 49 as before. Then at
+> least "cont" works to the next breakpoint (stepping over with "next" still doesn't).
+> 
 
-Hi Xenomai Users,
+This is typically a linuxthreads issue. Because there is a hidden
+manager in the loop which wants to get involved into the process of
+starting other threads, you can end up with priority issues breaking the
+internal protocol. The manager thread is not known from Xenomai, so in
+your case, it looks like starved from CPU albeit other threads expect it
+to kick in at some point. This can only happen if some of the protocol
+is based on busy waiting, which seems to be the case there.
 
-first I Will Give the Details of My System:
+> Debugging with gdb at the moment feels unnecessarily complicated. Very often
+> the "next" doesn't bring me to the next line in my current source, but to some unexpected
+> place (e.g. to a rt_mutex_acquire_inner() which was called in a subroutine four
+> levels deeper..). I don't remember me becoming that confused with my previous
+> setup (Blackfin 2.6.28 kernel with Xenomai 2.4.7) or in other C++ apps ;)
 
-Processor: core2duo
-RAM: 4GB
-Operating System: Ubuntu 10.04
-kernel: 2.6.32.15 (Patched with xenomai)
-Xenomai: 2.5.4
+This is likely not related to the runtime environment at all. GDB has
+not a great track record when it comes to multi-thread debugging even if
+the situation improved over time, and things tend to get worse when
+linuxthreads are in the loop because of the number of magic interactions
+with the manager thread, and use of signals internally. What does have
+an impact is your toolchain and how aggressive it is when optimizing the
+code. What you see is not what you get in that case.
 
-I am Using UART sample code Code Provided with xenomai. It is working fine
-for about few minutes I am able to send and receive data accurately.
-I am using rt_dev_read()  and rt_dev_write() from the user space to read and
-write the data respectively. However the code is getting hanged after some
-time I tried to debug and Finally I found the code is getting hanged every
-time at rt_dev_read() it is not coming back from there.
+> 
+> Kolja
+> 
 
-What Might be wrong here I tried to find out the documentation of
-rt_dev_read() but I did not get it.
-Again I tried the same with xenomai-2.5.5.2 and I found it is getting hanged
-Immediately i.e It is not running at all.
-
-can any of you Please Suggest whats the Wrong Here.
-any Suggestion?
+-- 
+Philippe.
 
 
-
-Thank you.
-
---0016e6dab18af09a1e04980b8af2
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-
-Hi Xenomai Users,<br><br>first I Will Give the Details of My System:<br><br=
->Processor: core2duo<br>RAM: 4GB<br>Operating System: Ubuntu 10.04<br>kerne=
-l: 2.6.32.15 (Patched with xenomai)<br>Xenomai: 2.5.4<br><br>I am Using UAR=
-T sample code Code Provided with xenomai. It is working fine for about few =
-minutes I am able to send and receive data accurately. <br>
-I am using rt_dev_read()=A0 and rt_dev_write() from the user space to read =
-and write the data respectively. However the code is getting hanged after s=
-ome time I tried to debug and Finally I found the code is getting hanged ev=
-ery time at rt_dev_read() it is not coming back from there.<br>
-<br>What Might be wrong here I tried to find out the documentation of rt_de=
-v_read() but I did not get it.<br>Again I tried the same with xenomai-2.5.5=
-.2 and I found it is getting hanged Immediately i.e It is not running at al=
-l.<br>
-<br>can any of you Please Suggest whats the Wrong Here.<br>any Suggestion?<=
-br><br><br><br>Thank you.<br><br><br><br>
-
---0016e6dab18af09a1e04980b8af2--
 
