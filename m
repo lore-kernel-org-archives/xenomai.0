@@ -1,16 +1,14 @@
-Date: Thu, 23 Dec 2010 10:09:07 +0100 (CET)
-From: Kolja Waschk <xenoka09@domain.hid>
-In-Reply-To: <40767404-D45D-43EF-A547-63278CC78AF7@domain.hid>
-Message-ID: <alpine.DEB.1.10.1012231008550.13108@domain.hid>
-References: <mailman.13966.1293037981.32598.xenomai@xenomai.org>
-	<40767404-D45D-43EF-A547-63278CC78AF7@domain.hid>
-MIME-Version: 1.0
-Content-Type: MULTIPART/MIXED;
-	BOUNDARY="-1463809534-241591458-1293095308=:13108"
-Content-ID: <alpine.DEB.1.10.1012231008551.13108@domain.hid>
-Sender: "Kolja Waschk,,," <xenoka09@domain.hid>
-Subject: Re: [Xenomai-help] gdb/gdbserver hangs during rt_task_create
-Reply-To: xenoka09@domain.hid
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <D7352E9EB94BE54D8E052C5D9FE093294798D63DD4@domain.hid>
+References: <AANLkTimuiAP=dGQSKG2PYJUnGw--1iXBzPJ1325czz-_@domain.hid>
+	<1280655383.6700.11.camel@domain.hid>
+	<D7352E9EB94BE54D8E052C5D9FE093294798D63DD4@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Date: Thu, 23 Dec 2010 10:11:46 +0100
+Message-ID: <1293095506.22129.118.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] Problems with user_irq.c Native example
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -20,84 +18,55 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Bryan Hilterbrand <bhilterbrand@domain.hid>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+On Wed, 2010-12-22 at 19:11 -0700, Bryan Hilterbrand wrote:
+> On Sunday, 2010-08-01, Philippe Gerum wrote:
+> > Also note that [userland interrupt] support may introduce serious issues
+> > down the road,
+> > like not being able to use gdb over your application; using it in new
+> > apps is a bad idea in the first place, because interrupt handling is
+> > fundamentally a kernel thing, and should remain so.
+> >
+> > Providing this interface was a mistake, it is now deprecated, and
+> > scheduled for removal in 3.x. The right approach is to process
+> > (real-time) interrupts in kernel space from a RTDM driver, waking up a
+> > userland thread as needed. That thread may wait for events via blocking
+> > ioctl()/read() requests directed at the driver, thus following the
+> > standard programming model.
+> 
+> I just discovered this thread, and I'm trying to solve a similar problem.
+> 
+> Philippe, can you point me to a RTDM driver example that uses an interrupt
+> and blocks the reader? Or is this something that I will need to figure out
+> myself? A good RTDM example would be a start...
+> 
 
----1463809534-241591458-1293095308=:13108
-Content-Type: TEXT/PLAIN; CHARSET=US-ASCII; FORMAT=flowed
-Content-ID: <alpine.DEB.1.10.1012231008552.13108@domain.hid>
-
-Hi,
-
-> I forgot to describe our problem: Gdb hung at rt_task_start() when trying to 
-> step through it. But debugging worked fine if I set a breakpoint in the task
-
-Looks similar, but I observed the problem already with first rt_task_create()
-(which, however, causes a call to rt_task_start() for the manager thread(?)).
-
-> body, way after any rt_task_start(). Btw, do you call rt_task_start() from a 
-> RT task body?
-
-Yes. To be exact, I call rt_task_create and rt_task_start from my main task,
-which is RT after calling rt_task_shadow.
-
-I've attached a small example that allows to examine the behaviour. The following
-happens in my setup, i.e. when I start "try" on the Blackfin target with
-gdbserver and connect with gdb from the host:
-
-1. gdb set to break at "main" runs to the line with mlockall(...)
-2. I can step line by line using "next" to the one with rt_task_create
-
-Regardless now whether I type "next" or set a breakpoint in one of the following
-lines up to the rt_task_join line and "cont", gdb just prints the following
-lines and seems to freeze. Ctrl-C doesn't do anything. Finally after 8 seconds
-the subtask finishes and gdb reports "Program exited normally".
+The interrupt-related doc starts here:
+http://www.xenomai.org/documentation/xenomai-2.3/html/api/group__rtdmirq.html
 
 
-24 if (r == 0) r = rt_task_create(&subtask, "subtask", 0, PRIO, T_FPU|T_JOINABLE);
-(gdb)  next
-[New Thread 304]
-Reading in symbols for ../../../../xenomai-2.5.5.2/src/skins/native/task.c...done.
-<freeze>
+> I'm on an older version of Xenomai (2.3) if that makes a difference.
+> 
+
+Here is an example, driving a 16550 UART. You will find an interaction
+between the IRQ handler and the ioctl code, via the "ioc_event" RTDM
+even object. The ioctl() code blocks the caller until the event is
+posted from the handler, I guess your are looking after something
+similar.
+http://git.xenomai.org/?p=xenomai-2.3.git;a=blob;f=ksrc/drivers/serial/16550A.c;h=59236ae7b9edfa855701acb99d82f2721e23a866;hb=ea356248b8730fe8126ade4a1f8e49d179352310
+
+I guess you keep stuck on 2.3.x because your fixture is deployed, but
+really, unless you are perfectly happy with this release, you should
+consider moving to 2.5.5.2 when/if any unexplained or weird bug happens.
+Older kernels that were fashionable in 2007 are still supported by the
+latest 2.5.x.
+
+> Thank you for any help you can give me!
+
+-- 
+Philippe.
 
 
-Kolja
-
-
-P.S. It's gdbserver 6.5 and gdb 6.6; unmodified Blackfin tools 2010R1-RC4.
-
-
-
-
-
----1463809534-241591458-1293095308=:13108
-Content-Type: TEXT/X-CSRC; NAME=try.c
-Content-Transfer-Encoding: BASE64
-Content-ID: <alpine.DEB.1.10.1012231008260.13108@domain.hid>
-Content-Description: 
-Content-Disposition: ATTACHMENT; FILENAME=try.c
-
-I2luY2x1ZGUgPHN0ZGlvLmg+DQojaW5jbHVkZSA8c3lzL21tYW4uaD4NCiNp
-bmNsdWRlIDxuYXRpdmUvdGFzay5oPg0KDQojZGVmaW5lIFBSSU8gNDkNCg0K
-dm9pZCBzdWJ0YXNrX2VudHJ5KHZvaWQgKmNvb2tpZSkNCnsNCiAgc2xlZXAo
-OCk7DQp9DQoNCmludCBtYWluICgpDQp7DQogIGludCByOw0KICBpbnQgaTsN
-CiAgUlRfVEFTSyBtYWludGFzazsNCiAgUlRfVEFTSyBzdWJ0YXNrOw0KDQog
-IG1sb2NrYWxsKE1DTF9DVVJSRU5UfE1DTF9GVVRVUkUpOw0KDQogIHIgPSBy
-dF90YXNrX3NoYWRvdygmbWFpbnRhc2ssICJtYWludGFzayIsIFBSSU8sIDAp
-Ow0KICBpZiAociAhPSAwKSBwcmludGYoIkNvdWxkbid0IHJ0X3Rhc2tfc2hh
-ZG93OiAiKTsNCg0KICBpZiAociA9PSAwKSByID0gcnRfdGFza19jcmVhdGUo
-JnN1YnRhc2ssICJzdWJ0YXNrIiwgMCwgUFJJTywgVF9GUFV8VF9KT0lOQUJM
-RSk7DQogIGlmIChyICE9IDApIHByaW50ZigiQ291bGRuJ3QgcnRfdGFza19j
-cmVhdGU6ICIpOw0KDQogIGlmIChyID09IDApIHIgPSBydF90YXNrX3N0YXJ0
-KCZzdWJ0YXNrLCBzdWJ0YXNrX2VudHJ5LCBOVUxMKTsNCiAgaWYgKHIgIT0g
-MCkgcHJpbnRmKCJDb3VsZG4ndCBydF90YXNrX3N0YXJ0OiAiKTsNCg0KICBp
-ZiAociA9PSAwKSBmb3IgKGk9MDsgaTw1OyBpKyspIHsgcHJpbnRmKCJzbGVl
-cCAlZFxuIiwgaSk7IHNsZWVwKDEpOyB9DQoNCiAgaWYgKHIgPT0gMCkgciA9
-IHJ0X3Rhc2tfam9pbigmc3VidGFzayk7DQogIGlmIChyICE9IDApIHByaW50
-ZigiQ291bGRuJ3QgcnRfdGFza19qb2luOiAiKTsNCg0KICBwcmludGYoInI9
-JWRcbiIsIHIpOw0KICByZXR1cm4gcjsNCn0NCg==
-
----1463809534-241591458-1293095308=:13108--
 
