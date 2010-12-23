@@ -1,14 +1,13 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <D7352E9EB94BE54D8E052C5D9FE093294798D63DD4@domain.hid>
-References: <AANLkTimuiAP=dGQSKG2PYJUnGw--1iXBzPJ1325czz-_@domain.hid>
-	<1280655383.6700.11.camel@domain.hid>
-	<D7352E9EB94BE54D8E052C5D9FE093294798D63DD4@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Thu, 23 Dec 2010 10:11:46 +0100
-Message-ID: <1293095506.22129.118.camel@domain.hid>
-Mime-Version: 1.0
+Message-ID: <4D13C271.50101@domain.hid>
+Date: Thu, 23 Dec 2010 22:43:13 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+References: <alpine.DEB.1.10.1012211818430.9596@domain.hid>	<4D110810.1090504@domain.hid>	<alpine.DEB.1.10.1012221012270.10955@domain.hid>	<alpine.DEB.1.10.1012221306370.10955@domain.hid>	<1293025850.22129.15.camel@domain.hid>	<alpine.DEB.1.10.1012221511320.11502@domain.hid>	<1293027465.22129.17.camel@domain.hid>	<alpine.DEB.1.10.1012221612360.11502@domain.hid>	<1293031751.22129.21.camel@domain.hid>	<alpine.DEB.1.10.1012221805260.11502@domain.hid>	<alpine.DEB.1.10.1012221912220.11502@domain.hid>	<1293042519.22129.91.camel@domain.hid>	<alpine.DEB.1.10.1012221944080.11502@domain.hid>
+	<1293094412.22129.102.camel@domain.hid>
+In-Reply-To: <1293094412.22129.102.camel@domain.hid>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Problems with user_irq.c Native example
+Subject: Re: [Xenomai-help] gdb/gdbserver hangs during rt_task_create
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -18,55 +17,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Bryan Hilterbrand <bhilterbrand@domain.hid>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Xenomai GNA <xenomai@xenomai.org>
 
-On Wed, 2010-12-22 at 19:11 -0700, Bryan Hilterbrand wrote:
-> On Sunday, 2010-08-01, Philippe Gerum wrote:
-> > Also note that [userland interrupt] support may introduce serious issues
-> > down the road,
-> > like not being able to use gdb over your application; using it in new
-> > apps is a bad idea in the first place, because interrupt handling is
-> > fundamentally a kernel thing, and should remain so.
-> >
-> > Providing this interface was a mistake, it is now deprecated, and
-> > scheduled for removal in 3.x. The right approach is to process
-> > (real-time) interrupts in kernel space from a RTDM driver, waking up a
-> > userland thread as needed. That thread may wait for events via blocking
-> > ioctl()/read() requests directed at the driver, thus following the
-> > standard programming model.
+Philippe Gerum wrote:
+> On Wed, 2010-12-22 at 20:00 +0100, Kolja Waschk wrote:
+>>>> In my actual application however I never get past the rt_task_create, even if
+>>>> I set a breakpoint at some line somewhen later.
+>>> What if you don't single step but (c)ontinue?
+>> It "hangs".
+>>
+>> But wait, just in this moment I discovered that I can get further if I
+>> set all priorities, i.e. priority of the main task (with rt_task_shadow) and the
+>> tasks where I couldn't get past rt_task_create, to 0 instead of 49 as before. Then at
+>> least "cont" works to the next breakpoint (stepping over with "next" still doesn't).
+>>
 > 
-> I just discovered this thread, and I'm trying to solve a similar problem.
+> This is typically a linuxthreads issue. Because there is a hidden
+> manager in the loop which wants to get involved into the process of
+> starting other threads, you can end up with priority issues breaking the
+> internal protocol. The manager thread is not known from Xenomai, so in
+> your case, it looks like starved from CPU albeit other threads expect it
+> to kick in at some point. This can only happen if some of the protocol
+> is based on busy waiting, which seems to be the case there.
 > 
-> Philippe, can you point me to a RTDM driver example that uses an interrupt
-> and blocks the reader? Or is this something that I will need to figure out
-> myself? A good RTDM example would be a start...
+>> Debugging with gdb at the moment feels unnecessarily complicated. Very often
+>> the "next" doesn't bring me to the next line in my current source, but to some unexpected
+>> place (e.g. to a rt_mutex_acquire_inner() which was called in a subroutine four
+>> levels deeper..). I don't remember me becoming that confused with my previous
+>> setup (Blackfin 2.6.28 kernel with Xenomai 2.4.7) or in other C++ apps ;)
 > 
+> This is likely not related to the runtime environment at all. GDB has
+> not a great track record when it comes to multi-thread debugging even if
+> the situation improved over time, and things tend to get worse when
+> linuxthreads are in the loop because of the number of magic interactions
+> with the manager thread, and use of signals internally. What does have
+> an impact is your toolchain and how aggressive it is when optimizing the
+> code. What you see is not what you get in that case.
 
-The interrupt-related doc starts here:
-http://www.xenomai.org/documentation/xenomai-2.3/html/api/group__rtdmirq.html
-
-
-> I'm on an older version of Xenomai (2.3) if that makes a difference.
-> 
-
-Here is an example, driving a 16550 UART. You will find an interaction
-between the IRQ handler and the ioctl code, via the "ioc_event" RTDM
-even object. The ioctl() code blocks the caller until the event is
-posted from the handler, I guess your are looking after something
-similar.
-http://git.xenomai.org/?p=xenomai-2.3.git;a=blob;f=ksrc/drivers/serial/16550A.c;h=59236ae7b9edfa855701acb99d82f2721e23a866;hb=ea356248b8730fe8126ade4a1f8e49d179352310
-
-I guess you keep stuck on 2.3.x because your fixture is deployed, but
-really, unless you are perfectly happy with this release, you should
-consider moving to 2.5.5.2 when/if any unexplained or weird bug happens.
-Older kernels that were fashionable in 2007 are still supported by the
-latest 2.5.x.
-
-> Thank you for any help you can give me!
+And gdb 6.5 over linuxthreads is pretty much outdated... Also, some bugs
+have been fixed in Xenomai 2.5.3. So, I think it is useless pursuing
+investigating this issue until you can confirm that you can reproduce it
+with current versions of libc, gdb and Xenomai.
 
 -- 
-Philippe.
-
-
+                                                                Gilles.
 
