@@ -1,14 +1,9 @@
-From: Bryan Hilterbrand <bhilterbrand@domain.hid>
-Date: Wed, 22 Dec 2010 19:11:18 -0700
-Message-ID: <D7352E9EB94BE54D8E052C5D9FE093294798D63DD4@domain.hid>
-References: <AANLkTimuiAP=dGQSKG2PYJUnGw--1iXBzPJ1325czz-_@domain.hid>
-	<1280655383.6700.11.camel@domain.hid>
-In-Reply-To: <1280655383.6700.11.camel@domain.hid>
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Problems with user_irq.c Native example
+Date: Thu, 23 Dec 2010 09:04:09 +0530
+Message-ID: <AANLkTikSv9m0efGfxgcQ=0Bee5DPxZSC+4U=Csd4ccwM@mail.gmail.com>
+From: Peter Warner <xenomai.start@domain.hid>
+Content-Type: multipart/alternative; boundary=0016e6dab18af09a1e04980b8af2
+Subject: [Xenomai-help] rt_dev_read hangup
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -18,30 +13,59 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On Sunday, 2010-08-01, Philippe Gerum wrote:
-> Also note that [userland interrupt] support may introduce serious issues
-> down the road,
-> like not being able to use gdb over your application; using it in new
-> apps is a bad idea in the first place, because interrupt handling is
-> fundamentally a kernel thing, and should remain so.
->
-> Providing this interface was a mistake, it is now deprecated, and
-> scheduled for removal in 3.x. The right approach is to process
-> (real-time) interrupts in kernel space from a RTDM driver, waking up a
-> userland thread as needed. That thread may wait for events via blocking
-> ioctl()/read() requests directed at the driver, thus following the
-> standard programming model.
+--0016e6dab18af09a1e04980b8af2
+Content-Type: text/plain; charset=ISO-8859-1
 
-I just discovered this thread, and I'm trying to solve a similar problem.
+Hi Xenomai Users,
 
-Philippe, can you point me to a RTDM driver example that uses an interrupt
-and blocks the reader? Or is this something that I will need to figure out
-myself? A good RTDM example would be a start...
+first I Will Give the Details of My System:
 
-I'm on an older version of Xenomai (2.3) if that makes a difference.
+Processor: core2duo
+RAM: 4GB
+Operating System: Ubuntu 10.04
+kernel: 2.6.32.15 (Patched with xenomai)
+Xenomai: 2.5.4
 
-Thank you for any help you can give me!
+I am Using UART sample code Code Provided with xenomai. It is working fine
+for about few minutes I am able to send and receive data accurately.
+I am using rt_dev_read()  and rt_dev_write() from the user space to read and
+write the data respectively. However the code is getting hanged after some
+time I tried to debug and Finally I found the code is getting hanged every
+time at rt_dev_read() it is not coming back from there.
+
+What Might be wrong here I tried to find out the documentation of
+rt_dev_read() but I did not get it.
+Again I tried the same with xenomai-2.5.5.2 and I found it is getting hanged
+Immediately i.e It is not running at all.
+
+can any of you Please Suggest whats the Wrong Here.
+any Suggestion?
+
+
+
+Thank you.
+
+--0016e6dab18af09a1e04980b8af2
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+Hi Xenomai Users,<br><br>first I Will Give the Details of My System:<br><br=
+>Processor: core2duo<br>RAM: 4GB<br>Operating System: Ubuntu 10.04<br>kerne=
+l: 2.6.32.15 (Patched with xenomai)<br>Xenomai: 2.5.4<br><br>I am Using UAR=
+T sample code Code Provided with xenomai. It is working fine for about few =
+minutes I am able to send and receive data accurately. <br>
+I am using rt_dev_read()=A0 and rt_dev_write() from the user space to read =
+and write the data respectively. However the code is getting hanged after s=
+ome time I tried to debug and Finally I found the code is getting hanged ev=
+ery time at rt_dev_read() it is not coming back from there.<br>
+<br>What Might be wrong here I tried to find out the documentation of rt_de=
+v_read() but I did not get it.<br>Again I tried the same with xenomai-2.5.5=
+.2 and I found it is getting hanged Immediately i.e It is not running at al=
+l.<br>
+<br>can any of you Please Suggest whats the Wrong Here.<br>any Suggestion?<=
+br><br><br><br>Thank you.<br><br><br><br>
+
+--0016e6dab18af09a1e04980b8af2--
 
