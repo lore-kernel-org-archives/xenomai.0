@@ -1,14 +1,16 @@
 From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <AANLkTikHyianvhgO7bbe9RGkgCJsNjPXsFt1J_pvtWOc@domain.hid>
-References: <8659178.81831292179675169.JavaMail.defaultUser@domain.hid>
-	<1292191450.1837.22.camel@domain.hid>
-	<AANLkTikHyianvhgO7bbe9RGkgCJsNjPXsFt1J_pvtWOc@domain.hid>
+In-Reply-To: <alpine.DEB.1.10.1012271521010.20479@domain.hid>
+References: <alpine.DEB.1.10.1012211818430.9596@domain.hid>
+	<4D110810.1090504@domain.hid>
+	<alpine.DEB.1.10.1012221012270.10955@domain.hid>
+	<alpine.DEB.1.10.1012271521010.20479@domain.hid>
 Content-Type: text/plain; charset="UTF-8"
-Date: Tue, 14 Dec 2010 21:26:06 +0100
-Message-ID: <1292358366.1837.152.camel@domain.hid>
+Date: Mon, 27 Dec 2010 17:31:24 +0100
+Message-ID: <1293467484.1856.0.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Interrupt handling vs. scheduler
+Subject: Re: [Xenomai-help] gdb/gdbserver and pthread_cond_wait (was:
+ gdb/gdbserver hangs...)
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -18,58 +20,84 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Mauro <mau.salvi@domain.hid>
-Cc: xenomai@xenomai.org
+To: Kolja Waschk <xenoka09@domain.hid>
+Cc: Xenomai GNA <xenomai@xenomai.org>
 
-On Tue, 2010-12-14 at 20:37 +0100, Mauro wrote:
-> 2010/12/12 Philippe Gerum <rpm@xenomai.org>
->         
->         
->         
->         What is the return value of rt_intr_wait() in both the valid
->         and
->         spurious cases?
->         
->         
->         --
->         Philippe.
->         
->         
+On Mon, 2010-12-27 at 15:44 +0100, Kolja Waschk wrote:
+> Hi,
 > 
+> I've made up a small test program for my issue with pthread_cond_wait and gdb.
+> Sorry for posting code again, I've made it as compact as possible.
 > 
-> Return value is 1 in both cases.
-> 
-> 
-> I forgot to mention that periodic task was a Xenomai RT task with
-> priority less than interrupt task priority.
-> 
+> The behaviour of the attached program depends on whether it is run via
+> gdbserver or without.
 
-I see no way for a timer expiration to wake up the wrong thread (each
-thread has its own private periodic timer). However I see a scenario
-where your low priority thread could trigger a subsequent IRQ early
-enough in the time frame to let you think of a spurious return of
-rt_intr_wait(), albeit you did receive two different IRQs as
-rt_intr_wait() indicates.
-
-Maybe you should try instrumenting rt_intr_handler()
-(ksrc/skins/native.syscall.c) to issue a spot on your oscilloscope, so
-as to observe whether you actually get the following sequence:
-
-- rt_intr_handler
-- IRQ server wakeup and block back in rt_intr_wait
-- periodic task wakeup, trigger IRQ via mmio of some sort
-- rt_intr_handler
-- second IRQ server wakeup
-
-all in a short time frame.
-
-Please keep the list Cced.
+The test code creates SCHED_OTHER threads. This is likely not what you
+wanted to do.
 
 > 
-> Thank you, bye.
+> 
+> When run via gdbserver, the pthread_cond_wait sometimes returns EPERM:
+> 
+> > Remote debugging from host 10.0.10.10
+> > T0: pthread_cond_wait: 1
+> > ... repeats for T0 and T1 ...
+> > T1: pthread_cond_wait: 1
+> > T1: pthread_cond_wait: 1
+> > T0: pthread_cond_wait: 1
+> > T2: pthread_cond_wait: 0
+> > Child exited with retcode = 0
 > 
 > 
-> Mauro
+> Started directly, it prints what I would expect:
+> 
+> > T0: pthread_cond_wait: 0
+> > T1: pthread_cond_wait: 0
+> > T2: pthread_cond_wait: 0
+> 
+> 
+> Am I missing something when configuring the threads, cond variable etc.?
+> 
+> About my environment:
+> 
+>   - Xenomai 2.5.5.2, unmodified
+>   - blackfin FDPIC toolchain 2010R1-RC4 (gcc 4.3.5, gdb 6.6, gdbserver 6.5)
+>   - blackfin-linux-dist 2010R1-RC5 (kernel 2.6.34 with I-pipe upgraded to 1.15-01)
+> 
+> 
+> I compile "try.c" with the following command line:
+> 
+> bfin-linux-uclibc-gcc \
+>    -I/opt/uClinux/blackfin-linux-dist/staging/usr/include \
+>    -L/opt/uClinux/blackfin-linux-dist/staging/usr/lib \
+>    -Wl,@/opt/uClinux/blackfin-linux-dist/staging/usr/lib/posix.wrappers \
+>    -g -fPIC -fmessage-length=0 -mfast-fp -D_GNU_SOURCE -D_REENTRANT -D__XENO__ \
+>    -o try try.c -lxenomai -lpthread_rt
+> 
+> 
+> The gdb script contains only a few commands:
+> 
+> set verbose on
+> set solib-absolute-prefix notexistent
+> set solib-search-path /opt/uClinux/blackfin-linux-dist/staging/usr/lib:/opt/uClinux/bfin-linux-uclibc/bfin-linux-uclibc/runtime/lib
+> file try 
+> target remote 10.0.10.9:2222
+> break main
+> cont
+> cont
+> 
+> 
+> The pthread_cond_wait, returning EPERM immediately, causes a lockup in a
+> program that I'm trying to debug (see old thread about gdb/gdbserver hanging).
+> I currently know no measure against this behaviour other than to sleep for a
+> while in that case...
+> 
+> Thanks for any hints!
+> Kolja
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
 
 -- 
 Philippe.
