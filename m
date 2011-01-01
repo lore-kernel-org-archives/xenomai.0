@@ -1,17 +1,12 @@
-Message-ID: <20101216183906.107373zy122ag800@domain.hid>
-Date: Thu, 16 Dec 2010 18:39:06 +0100
-From: Michel He <michel.he@domain.hid>
-References: <20101216130423.19383g369jps4nk0@domain.hid>
-	<4D0A0615.5080304@domain.hid>
-In-Reply-To: <4D0A0615.5080304@domain.hid>
+Message-ID: <4D1FB03E.10801@domain.hid>
+Date: Sat, 01 Jan 2011 23:52:46 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=UTF-8;
- DelSp="Yes";
- format="flowed"
-Content-Disposition: inline
+References: <AANLkTinON5_8sj8o6NYBJ1ukyB41eRSP-tQa4kxG_qPm@domain.hid>
+In-Reply-To: <AANLkTinON5_8sj8o6NYBJ1ukyB41eRSP-tQa4kxG_qPm@domain.hid>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] Gumstix / RTNET / INT Problem
+Subject: Re: [Xenomai-help] I-pipe support to 2.6.35.7-x86-2.8-00
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -21,40 +16,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Gianni Perugini <gperugini@domain.hid>
 Cc: xenomai@xenomai.org
 
-Hi,
+Gianni Perugini wrote:
+> Hello to everyone,
+>=20
+> I=E2=80=99ve seen on the Adeos website that there is a new patch for li=
+nux
+> 2.6.35.7 x86 arch: adeos-ipipe-2.6.35.7-x86-2.8-00.patch.
+> Does anyone knows where I can find documentation explaining the
+> differences between adeos-ipipe-2.6.35.7-x86-2.7-04.patch and the
+> above patch?
 
-Ok, I find out the cause. It is the Xenomai IRQ type management problem.
-to resolve that, I added set_irq_type(dev->irq, =20
-IRQ_TYPE_EDGE_FALLING); after the rtdm_irq_request, but sometime =20
-during the loading of the driver it seems to be locked ? Otherwise it =20
-could get jump to the handler after that interrupt declenched
-
-thank you for your advise
+This information may be found in the git logs:
+http://git.denx.de/?p=3Dipipe-2.6.git;a=3Dshortlog;h=3D50001867b31b51e9ee=
+f0ecb5207dc273d0097c79
 
 
+> Is it safe to use the new patch with xenomai 2.5.5.2?
 
-Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> a =C3=A9crit=C2=A0:
+As explained in ksrc/arch/x86/patches/README in Xenomai sources, and
+repeated many times on this list, yes, it should be safe.
 
-> Michel He wrote:
->> Hello All,
->>
->>      I'm currently developing a RTNet RTDM driver for the chip SMSC
->> Lan9221 in Gumstix expansion board. I'm using the patch from
->> blog.gmane.org/gmane.linux.real-time...overo-sakoman.diff for Linux
->> 2.6.33.
->
-> What version of Xenomai? What version of the I-pipe patch? why do you
-> need an additional patch, why not using mainline + I-pipe?
->
-> Also, you do not give us a full URL to the patch you are talking about,
-> so we can not download it?
->
-> --
->                                                                 Gilles.
->
-
+--=20
+                                                                Gilles.
 
 
