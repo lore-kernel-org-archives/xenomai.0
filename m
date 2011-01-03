@@ -1,13 +1,14 @@
-Message-ID: <4D21FF77.5000101@domain.hid>
-Date: Mon, 03 Jan 2011 17:55:19 +0100
-From: Stefan Kisdaroczi <kisda@domain.hid>
+Message-ID: <4D222D7D.4020106@domain.hid>
+Date: Mon, 03 Jan 2011 21:11:41 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4D21E45B.90003@domain.hid>
-In-Reply-To: <4D21E45B.90003@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig7E8A2B48730F5D6761411734"
-Subject: Re: [Xenomai-help] 16550A driver and 2-port pci board, irq sharing
+References: <AANLkTin3RZggnBPuFzfWgLiaARBJQE+u0iN-+m=Z80j9@domain.hid>	<AANLkTin5BCRNAnsfdaJr54iR=UcJ5svvVi-WT_fLOpXO@mail.gmail.com>	<4D1F4BA4.6090000@domain.hid>	<AANLkTik-H5J-Wp=6Oc8ne_G+m=qzWyUTDTNdUiLjUJPt@domain.hid>	<4D1FA645.1000101@domain.hid>	<AANLkTim1wpPyNNUFWot0KRVZoQTz1fwxuyP259VrkHiU@mail.gmail.com>	<1294068560.1837.72.camel@domain.hid>	<1294069047.1837.79.camel@domain.hid>
+	<AANLkTinfZLuYCBuqiUZLBoRYagwu0S6q9DSESouWFZrP@mail.gmail.com>
+In-Reply-To: <AANLkTinfZLuYCBuqiUZLBoRYagwu0S6q9DSESouWFZrP@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] Problems with Installation. Error message in
+ xeno-test: "Xenomai: /dev/rtheap is missing".
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -17,44 +18,19 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Alexandre Oliveira <alexandrenagy@domain.hid>
+Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig7E8A2B48730F5D6761411734
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Alexandre Oliveira wrote:
+> Hello,
+> 
+> I'm gonna try it right now, disable l-pipe and recompile.
 
-On 03.01.2011 15:59, Stefan Kisdaroczi wrote:
-> Hi Jan,
->
-> I try to add support for the Moxa CP132 RS422 dualport pci board to the=
+Please also check:
+http://www.xenomai.org/index.php/Configuring_x86_kernels
 
-> 16550A driver. In the function rt_16550_open() the call to
-> rtdm_irq_request() fails with EBUSY (-16) for the second port.
->
-> Looking at the source the driver seems to be able to handle multiple
-> serial ports with the same (shared) IRQ. Any hints ?
->  =20
+Your kernel is not configured correctly.
 
-enabling CONFIG_XENO_OPT_SHIRQ did help ... sorry
-Stefan
-
-
-
---------------enig7E8A2B48730F5D6761411734
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.10 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
-
-iEYEARECAAYFAk0h/30ACgkQIPTw9rIdn6rCRQCcDw1MmTmTX2K/5yD/ZvGiCKTm
-bscAn09ffueAiOvHXqskGsRRVoLCYHzE
-=Xwwm
------END PGP SIGNATURE-----
-
---------------enig7E8A2B48730F5D6761411734--
+-- 
+                                                                Gilles.
 
