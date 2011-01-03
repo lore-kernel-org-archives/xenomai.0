@@ -1,12 +1,11 @@
-Message-ID: <4D1FB03E.10801@domain.hid>
-Date: Sat, 01 Jan 2011 23:52:46 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4D21E45B.90003@domain.hid>
+Date: Mon, 03 Jan 2011 15:59:39 +0100
+From: Stefan Kisdaroczi <kisda@domain.hid>
 MIME-Version: 1.0
-References: <AANLkTinON5_8sj8o6NYBJ1ukyB41eRSP-tQa4kxG_qPm@domain.hid>
-In-Reply-To: <AANLkTinON5_8sj8o6NYBJ1ukyB41eRSP-tQa4kxG_qPm@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] I-pipe support to 2.6.35.7-x86-2.8-00
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig8DE0533AE8DBD2999E2A285B"
+Subject: [Xenomai-help] 16550A driver and 2-port pci board, irq sharing
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -16,30 +15,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gianni Perugini <gperugini@domain.hid>
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Gianni Perugini wrote:
-> Hello to everyone,
->=20
-> I=E2=80=99ve seen on the Adeos website that there is a new patch for li=
-nux
-> 2.6.35.7 x86 arch: adeos-ipipe-2.6.35.7-x86-2.8-00.patch.
-> Does anyone knows where I can find documentation explaining the
-> differences between adeos-ipipe-2.6.35.7-x86-2.7-04.patch and the
-> above patch?
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig8DE0533AE8DBD2999E2A285B
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-This information may be found in the git logs:
-http://git.denx.de/?p=3Dipipe-2.6.git;a=3Dshortlog;h=3D50001867b31b51e9ee=
-f0ecb5207dc273d0097c79
+Hi Jan,
+
+I try to add support for the Moxa CP132 RS422 dualport pci board to the
+16550A driver. In the function rt_16550_open() the call to
+rtdm_irq_request() fails with EBUSY (-16) for the second port.
+
+Looking at the source the driver seems to be able to handle multiple
+serial ports with the same (shared) IRQ. Any hints ?
+
+Stefan
+
+x86 32bit, xenomai-2.5.5, linux 2.6.32, ipipe 2.7-03,
+examples/cross-link app
 
 
-> Is it safe to use the new patch with xenomai 2.5.5.2?
 
-As explained in ksrc/arch/x86/patches/README in Xenomai sources, and
-repeated many times on this list, yes, it should be safe.
+--------------enig8DE0533AE8DBD2999E2A285B
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
---=20
-                                                                Gilles.
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.10 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
+iEYEARECAAYFAk0h5GQACgkQIPTw9rIdn6qyHACeM7a74IRaS0TBmSFw9+ugsSSl
+/XAAn3Z80664XEZE/2IDQssaxlt8S7IH
+=Sg6P
+-----END PGP SIGNATURE-----
+
+--------------enig8DE0533AE8DBD2999E2A285B--
 
