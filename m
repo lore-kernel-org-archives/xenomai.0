@@ -1,12 +1,16 @@
-Message-ID: <4D34642E.9090300@domain.hid>
-Date: Mon, 17 Jan 2011 16:45:50 +0100
+Message-ID: <4D238C56.40906@domain.hid>
+Date: Tue, 04 Jan 2011 22:08:38 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4D31B6C3.5060007@domain.hid>
-In-Reply-To: <4D31B6C3.5060007@domain.hid>
+References: <4D233AB4.5070702@domain.hid> <4D2352C9.9050006@domain.hid>
+	<4D2377B5.1040807@domain.hid>
+	<4D23785B.5050108@domain.hid> <4D2379EF.5@domain.hid>
+	<4D237A89.3010205@domain.hid> <4D237CA9.2090408@domain.hid>
+	<4D237F62.2030609@domain.hid> <4D2381B6.80304@domain.hid>
+In-Reply-To: <4D2381B6.80304@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Question on periodic task
+Subject: Re: [Xenomai-help] Xenomai failure
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -16,45 +20,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Wong Sheng Chao <wong@domain.hid>
+To: Tamas Szklenar <tszklenar@domain.hid>
 Cc: xenomai@xenomai.org
 
-Wong Sheng Chao wrote:
-> Hi
+Tamas Szklenar wrote:
+> Hi Gilles,
 > 
-> I'm a newbie in real time programming and I recently came to know of 
-> Xenomai. After patching the Xenomai to the linux kernel, I ran some 
-> examples that I found from the Internet to get a better understanding of 
-> the periodic task. Everything seems to run fine when I start two tasks 
-> with period of 1s and 2s, but the system freezes when I added more tasks 
-> ( more than 2 tasks). The period is at 1s, 2s and 3s so i think the 
-> processor has more than enough time to process the tasks.
-> 
-> I also read that the periodic mode is emulated by a software driver 
-> which uses one-shot mode programming. Thus i did not enable periodic 
-> timing when I compile the Linux kernel, is this the cause of the problem?
-> 
-> I'm using a system with Core i7, ubuntu 10.04, linux kernel 2.6.32.15, 
-> xenomai 2.5.4
-> 
-> Do let me know what I did wrong in the code, thanks in advance!!
-> 
-> 
-> void demo (void *arg)
-> {
->   //take in argument
->   int num = (int *)arg;
-> 
->   RT_TASK *curtask;
->   RT_TASK_INFO curtaskinfo;
-> 
->   curtask=rt_task_self();
->   rt_task_inquire(curtask,&curtaskinfo);
-> 
->   // task period in seconds
->   rt_task_set_periodic(NULL, TM_NOW, (1000000000 * num));
+> Thanks for the help. In a previous kernel config I used 
+> CONFIG_HIGH_RES_TIMERS, but I had the same failure.
+> I will change my config now and I will send you a mail if I'm finished.
 
-Should be 1000000000ULL * num here.
+I have no real idea then. Please try and boot the kernel with loglevel=7
+and capture the logs with netconsole (your kernel seems to have
+netconsole enabled, you only need to configure it, see
+Documentation/networking/netconsole.txt in the kernel sources).
 
 -- 
                                                                 Gilles.
