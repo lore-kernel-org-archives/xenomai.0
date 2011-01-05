@@ -1,13 +1,19 @@
-Date: Thu, 20 Jan 2011 09:28:41 +0100 (CET)
-From: Kolja Waschk <xenoka09@domain.hid>
-In-Reply-To: <OF1911EB62.67FE0A4E-ONC125781E.0029C740-C125781E.002C4F5B@LocalDomain>
-Message-ID: <alpine.DEB.1.10.1101200922440.1211@domain.hid>
-References: <OF1911EB62.67FE0A4E-ONC125781E.0029C740-C125781E.002C4F5B@LocalDomain>
+Message-ID: <4D23BAF8.2060606@domain.hid>
+Date: Tue, 04 Jan 2011 19:27:36 -0500
+From: Tamas Szklenar <tszklenar@domain.hid>
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
-Sender: "Kolja Waschk,,," <xenoka09@domain.hid>
-Subject: Re: [Xenomai-help] debug posix skin - pthread_cond_wait return EPERM
-Reply-To: xenoka09@domain.hid
+References: <4D233AB4.5070702@domain.hid> <4D2352C9.9050006@domain.hid>
+	<4D2377B5.1040807@domain.hid>
+	<4D23785B.5050108@domain.hid> <4D2379EF.5@domain.hid>
+	<4D237A89.3010205@domain.hid> <4D237CA9.2090408@domain.hid>
+	<4D237F62.2030609@domain.hid> <4D2381B6.80304@domain.hid>
+	<4D238C56.40906@domain.hid> <4D238EA1.7020409@domain.hid>
+	<4D239001.9050604@domain.hid> <4D239301.80803@domain.hid>
+	<4D2396A2.7070006@domain.hid>
+In-Reply-To: <4D2396A2.7070006@domain.hid>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] Xenomai failure
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -17,22 +23,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Pierre.QUELIN@solystic.com
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-Hi,
+Hi Gilles,
 
-> pthread_cond_wait (). it returns EPERM when the application is started with gdb.
+I patched the process.c file and compiled the kernel again. After the 
+reboot I started the system with the new kernel but it failed right 
+after the grub, only pretty black screen. The worst is that because of 
+this there is no log message...
 
-I also stumbled over this
+I think that I have to start now to compile a very new "no xeno" kernel 
+and after this start the Xenomai patch again.
 
-(see https://mail.gna.org/public/xenomai-help/2010-12/msg00080.html)
+Thanks for the help!
 
-and so far have not found a solution. In my application, there's a tight loop
-calling pthread_cond_wait and I have to issue usleep(100) in case of EPERM, to
-avoid total lockup when running with gdbserver. It is absolutely no issue
-without gdbserver though.
-
-Kolja
-
+Tamas
 
