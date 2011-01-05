@@ -1,11 +1,21 @@
 MIME-Version: 1.0
-Message-ID: <OF53B8EEE0.69903FD4-ONC125781F.002A9283-C125781F.002FEBD2@domain.hid>
-Date: Fri, 21 Jan 2011 09:43:22 +0100
-From: Pierre.QUELIN@solystic.com
-Content-type: multipart/alternative; 
-	Boundary="0__=4EBBF28CDFB914138f9e8a93df938690918c4EBBF28CDFB91413"
-Content-Disposition: inline
-Subject: Re: [Xenomai-help] debug posix skin - pthread_cond_wait return EPERM
+In-Reply-To: <4D222F88.9000905@domain.hid>
+References: <AANLkTin3RZggnBPuFzfWgLiaARBJQE+u0iN-+m=Z80j9@domain.hid>
+	<AANLkTin5BCRNAnsfdaJr54iR=UcJ5svvVi-WT_fLOpXO@mail.gmail.com>
+	<4D1F4BA4.6090000@domain.hid>
+	<AANLkTik-H5J-Wp=6Oc8ne_G+m=qzWyUTDTNdUiLjUJPt@domain.hid>
+	<4D1FA645.1000101@domain.hid>
+	<AANLkTim1wpPyNNUFWot0KRVZoQTz1fwxuyP259VrkHiU@mail.gmail.com>
+	<1294068560.1837.72.camel@domain.hid>
+	<1294069047.1837.79.camel@domain.hid>
+	<AANLkTinfZLuYCBuqiUZLBoRYagwu0S6q9DSESouWFZrP@mail.gmail.com>
+	<4D222F88.9000905@domain.hid>
+Date: Tue, 4 Jan 2011 22:29:55 -0200
+Message-ID: <AANLkTi=9y6c=pmS1jg3xNTbzygUjMDBJOfoudhLTTAtw@domain.hid>
+From: Alexandre Oliveira <alexandrenagy@domain.hid>
+Content-Type: multipart/alternative; boundary=001636c931e4f7867804990e7b79
+Subject: Re: [Xenomai-help] Problems with Installation. Error message in
+ xeno-test: "Xenomai: /dev/rtheap is missing".
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -15,156 +25,253 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: gilles.chanteperdrix@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
+--001636c931e4f7867804990e7b79
+Content-Type: text/plain; charset=ISO-8859-1
 
---0__=4EBBF28CDFB914138f9e8a93df938690918c4EBBF28CDFB91413
-Content-Transfer-Encoding: quoted-printable
-Content-type: text/plain; charset=ISO-8859-1
+Well, I did some changes and the problem still remain. I'm posting for
+updating.
+
+I installed Ubuntu 10.10, just to see if the pure system identify the
+processor correctly. The answer is yes.
+
+====
+phall@domain.hid:~$ cat /proc/cpuinfo
+processor    : 0
+vendor_id    : GenuineIntel
+cpu family    : 15
+model        : 4
+model name    : Intel(R) Pentium(R) 4 CPU 3.00GHz
+stepping    : 3
+cpu MHz        : 2999.838
+cache size    : 2048 KB
+physical id    : 0
+siblings    : 2
+core id        : 0
+cpu cores    : 1
+apicid        : 0
+initial apicid    : 0
+fdiv_bug    : no
+hlt_bug        : no
+f00f_bug    : no
+coma_bug    : no
+fpu        : yes
+fpu_exception    : yes
+cpuid level    : 5
+wp        : yes
+flags        : fpu vme de pse tsc msr pae mce cx8 apic mtrr pge mca cmov pat
+pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe lm constant_tsc pebs
+bts pni dtes64 monitor ds_cpl est cid cx16 xtpr
+bogomips    : 5999.67
+clflush size    : 64
+cache_alignment    : 128
+address sizes    : 36 bits physical, 48 bits virtual
+power management:
+
+processor    : 1
+vendor_id    : GenuineIntel
+cpu family    : 15
+model        : 4
+model name    : Intel(R) Pentium(R) 4 CPU 3.00GHz
+stepping    : 3
+cpu MHz        : 2999.838
+cache size    : 2048 KB
+physical id    : 0
+siblings    : 2
+core id        : 0
+cpu cores    : 1
+apicid        : 1
+initial apicid    : 1
+fdiv_bug    : no
+hlt_bug        : no
+f00f_bug    : no
+coma_bug    : no
+fpu        : yes
+fpu_exception    : yes
+cpuid level    : 5
+wp        : yes
+flags        : fpu vme de pse tsc msr pae mce cx8 apic mtrr pge mca cmov pat
+pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe lm constant_tsc pebs
+bts pni dtes64 monitor ds_cpl est cid cx16 xtpr
+bogomips    : 6000.61
+clflush size    : 64
+cache_alignment    : 128
+address sizes    : 36 bits physical, 48 bits virtual
+power management:
+=====
+
+So, I looked in the original configure file of the kernel and it is compiled
+with 'Pentium Pro' processor.
+
+Ok, then I restart to compile the kernel, by checking all issues at:
+http://www.xenomai.org/index.php/Configuring_x86_kernels
+
+I choosed Pentium 4 processor.
+
+CONFIG_APM disable.
+CONFIG_ACPI_PROCESSOR disable.
+CONFIG_CPU_FREQ disable.
+CONFIG_INPUT_PCSPKR disable.
+SMI disable (like before).
+
+The difference between the later ones is:
+Before, I disabled all ACPI. Now, I just disabled that ones at the FAQ.
+CONFIG_CPU_FREQ was disabled.
+
+So, when I boot the new kernel, the /proc/cpuinfo returns 0.00 of CPU
+Frequency again...
+
+The problem is the error at identifying the processor.
+The new /proc/cpuinfo returns only one processor... not the both nucleus,
+like that one up here.
+I really didn't could identify what option could do this.
+I compile the kernel with the PENTIUM PRO type... and the same bug occurs.
+
+At my house, worked in a Atlhon X2 4400+.
+
+I'm testing now at another computer of the Laboratory with a Intel Core 2
+Duo.
+
+I'm going to continue the tries. I realy intend to send another e-mail with
+the solution. :)
+
+Another time, I really thank you all for the help. Let's keep going.
+
+Att.
+Alexandre.
 
 
+2011/1/3 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 
-> Kolja Waschk wrote:
->>>> file cond-torture-posix
->>> Ok. On my side: I call set solib-absolute-prefix to where the debug
->>> binaries for the target filesystem are. And I call
->>> handle SIG34 nostop noprint pass.
->>>
->>> Coud you try and do the same?
->> Is SIG34 the same on blackfin? I do not remember ever having seen SIG34,
-only
->> SIG32 ("Real-time event 32")
->>
->> Independent of that, the result is always the same SEGV. I cannot use
-the absolute-prefix currently, as the directory layout is different on the
-target. So my script is now
->>
->> set solib-absolute-prefix notexistent
->> set
-solib-search-path /opt/uClinux/blackfin-linux-dist/staging/usr/lib:/opt/uCl=
-inux/bfin-linux-uclibc/bfin-linux-uclibc/runtime/lib
-
->> file cond-torture-posix
->> handle SIG34 nostop noprint pass
->> target remote 10.0.10.9:2222
->>
->> And regardless whether I add an "break main", the SEGV will occur
-immediately after telling gdb to "cont".
->>
->> Does my "try.c" always succeed (all errbits=3D0x0010) in your environmen=
-t?
+> Alexandre Oliveira wrote:
+> > root@domain.hid# cpufreq-set -f 3.0Ghz
+> > No cpufreq support
+> > root@domain.hid#
 >
-> Ok, I get the failure if I set up a breakpoint right after the call to
-> pthread=5Fcond=5Fwait, as noted by Pierre. After some debugging, it appea=
-rs
-> that the syscall is restarted whereas it should return to user-spacce
-> and let the user-space skin do its job. So, it seems that somehow, the
-> behaviour is different for gdb signals than for usual signals.
+> That is normal, cpufreq support should be disabled if you intend Xenomai
+> to work correctly.
 >
-> Working on it now, will tell you when we have a status.
+> --
+>                                                                 Gilles.
+>
 
-The following patch seems to fix the issue, but I am not yet sure
-whether it is really correct:
-
-diff --git a/ksrc/nucleus/shadow.c b/ksrc/nucleus/shadow.c
-index d27494c..717a8a0 100644
---- a/ksrc/nucleus/shadow.c
-+++ b/ksrc/nucleus/shadow.c
-@@ -770,7 +770,7 @@ static inline void request=5Fsyscall=5Frestart(xnthread=
-=5Ft
-*thread,
-                         if (=5F=5Fxn=5Finterrupted=5Fp(regs)) {
-                                     =5F=5Fxn=5Ferror=5Freturn(regs,
-                                                               (sysflags &
-=5F=5Fxn=5Fexec=5Fnorestart) ?
--
--ERESTARTNOHAND : -ERESTARTSYS);
-+                                                              -EINTR :
--ERESTARTSYS);
-                                     notify =3D !xnthread=5Ftest=5Fstate(th=
-read,
-XNDEBUG);
-                         }
-
-
-
---
-                                                                Gilles.
-
-Sorry but I'm a novice.
-
-As I understand, your patch is a kernel patch and I need to rebuild the
-kernel package.
-Where can I find the cond-torture-posix application to reproduce the
-problem with your test case ?
-My PC is a very standard one (Xeon dual core and my distro an Ubuntu 10.10
-so I think it's very easy to reproduce the test case.
-Do you know if there is a bug tracker where tickets are logged to be
-informed when this point will be solved ?
-
-Thank you for you help.
-
-Pierre Qu=E9lin
-
---0__=4EBBF28CDFB914138f9e8a93df938690918c4EBBF28CDFB91413
+--001636c931e4f7867804990e7b79
+Content-Type: text/html; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
-Content-type: text/html; charset=ISO-8859-1
-Content-Disposition: inline
 
-<html><body><p><tt>&gt; Kolja Waschk wrote:<br>&gt;&gt;&gt;&gt; file cond-t=
-orture-posix<br>&gt;&gt;&gt; Ok. On my side: I call set solib-absolute-pref=
-ix to where the debug<br>&gt;&gt;&gt; binaries for the target filesystem ar=
-e. And I call<br>&gt;&gt;&gt; handle SIG34 nostop noprint pass.<br>&gt;&gt;=
-&gt;<br>&gt;&gt;&gt; Coud you try and do the same?<br>&gt;&gt; Is SIG34 the=
- same on blackfin? I do not remember ever having seen SIG34, only<br>&gt;&g=
-t; SIG32 (&quot;Real-time event 32&quot;)<br>&gt;&gt;<br>&gt;&gt; Independe=
-nt of that, the result is always the same SEGV. I cannot use the absolute-p=
-refix currently, as the directory layout is different on the target. So my =
-script is now<br>&gt;&gt;<br>&gt;&gt; set solib-absolute-prefix notexistent=
-<br>&gt;&gt; set solib-search-path /opt/uClinux/blackfin-linux-dist/staging=
-/usr/lib:/opt/uClinux/bfin-linux-uclibc/bfin-linux-uclibc/runtime/lib<br>&g=
-t;&gt; file cond-torture-posix<br>&gt;&gt; handle SIG34 nostop noprint pass=
-<br>&gt;&gt; target remote 10.0.10.9:2222<br>&gt;&gt;<br>&gt;&gt; And regar=
-dless whether I add an &quot;break main&quot;, the SEGV will occur immediat=
-ely after telling gdb to &quot;cont&quot;.<br>&gt;&gt;<br>&gt;&gt; Does my =
-&quot;try.c&quot; always succeed (all errbits=3D0x0010) in your environment=
-?<br>&gt; <br>&gt; Ok, I get the failure if I set up a breakpoint right aft=
-er the call to<br>&gt; pthread=5Fcond=5Fwait, as noted by Pierre. After som=
-e debugging, it appears<br>&gt; that the syscall is restarted whereas it sh=
-ould return to user-spacce<br>&gt; and let the user-space skin do its job. =
-So, it seems that somehow, the<br>&gt; behaviour is different for gdb signa=
-ls than for usual signals.<br>&gt; <br>&gt; Working on it now, will tell yo=
-u when we have a status.<br><br>The following patch seems to fix the issue,=
- but I am not yet sure <br>whether it is really correct:<br><br>diff --git =
-a/ksrc/nucleus/shadow.c b/ksrc/nucleus/shadow.c<br>index d27494c..717a8a0 1=
-00644<br>--- a/ksrc/nucleus/shadow.c<br>+++ b/ksrc/nucleus/shadow.c<br>@@ -=
-770,7 +770,7 @@ static inline void request=5Fsyscall=5Frestart(xnthread=5Ft=
- *thread,<br>                                   if (=5F=5Fxn=5Finterrupted=
-=5Fp(regs)) {<br>                                                    =5F=5F=
-xn=5Ferror=5Freturn(regs,<br>                                              =
-                                        &nbsp; (sysflags &amp; =5F=5Fxn=5Fe=
-xec=5Fnorestart) ?<br>-                                                    =
-                                 &nbsp; -ERESTARTNOHAND : -ERESTARTSYS);<br=
->+                                                                         =
-            &nbsp; -EINTR : -ERESTARTSYS);<br>                             =
-                       notify =3D !xnthread=5Ftest=5Fstate(thread, XNDEBUG)=
-;<br>                                   }<br> <br><br><br>-- <br> &nbsp; &n=
-bsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; =
-&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp=
-; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;Gilles.<br>=
-</tt><br><font size=3D"4">Sorry but I'm a novice.</font><br><br><font size=
-=3D"4">As I understand, your patch is a kernel patch and I need to rebuild =
-the kernel package.</font><br><font size=3D"4">Where can I find the cond-to=
-rture-posix application to reproduce the problem with your test case ?</fon=
-t><br><font size=3D"4">My PC is a very standard one (Xeon dual core and my =
-distro an Ubuntu 10.10 so I think it's very easy to reproduce the test case=
-.</font><br><font size=3D"4">Do you know if there is a bug tracker where ti=
-ckets are logged to be informed when this point will be solved ?<br></font>=
-<br><font size=3D"4">Thank you for you help.<br><br>Pierre Qu=E9lin<br></fo=
-nt><BR>
-</body></html>
+Well, I did some changes and the problem still remain. I&#39;m posting for =
+updating.<br><br>I installed Ubuntu 10.10, just to see if the pure system i=
+dentify the processor correctly. The answer is yes.<br><br>=3D=3D=3D=3D<br>=
+phall@domain.hid:~$ cat /proc/cpuinfo <br>
 
---0__=4EBBF28CDFB914138f9e8a93df938690918c4EBBF28CDFB91413--
 
+
+processor=A0=A0=A0 : 0<br>vendor_id=A0=A0=A0 : GenuineIntel<br>cpu family=
+=A0=A0=A0 : 15<br>model=A0=A0=A0 =A0=A0=A0 : 4<br>model name=A0=A0=A0 : Int=
+el(R) Pentium(R) 4 CPU 3.00GHz<br>stepping=A0=A0=A0 : 3<br>cpu MHz=A0=A0=A0=
+ =A0=A0=A0 : 2999.838<br>cache size=A0=A0=A0 : 2048 KB<br>
+
+
+
+physical id=A0=A0=A0 : 0<br>siblings=A0=A0=A0 : 2<br>core id=A0=A0=A0 =A0=
+=A0=A0 : 0<br>cpu cores=A0=A0=A0 : 1<br>apicid=A0=A0=A0 =A0=A0=A0 : 0<br>in=
+itial apicid=A0=A0=A0 : 0<br>fdiv_bug=A0=A0=A0 : no<br>hlt_bug=A0=A0=A0 =A0=
+=A0=A0 : no<br>f00f_bug=A0=A0=A0 : no<br>coma_bug=A0=A0=A0 : no<br>fpu=A0=
+=A0=A0 =A0=A0=A0 : yes<br>
+
+
+
+fpu_exception=A0=A0=A0 : yes<br>cpuid level=A0=A0=A0 : 5<br>wp=A0=A0=A0 =A0=
+=A0=A0 : yes<br>flags=A0=A0=A0 =A0=A0=A0 : fpu vme de pse tsc msr pae mce c=
+x8 apic mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss h=
+t tm pbe lm constant_tsc pebs bts pni dtes64 monitor ds_cpl est cid cx16 xt=
+pr<br>
+
+
+
+bogomips=A0=A0=A0 : 5999.67<br>clflush size=A0=A0=A0 : 64<br>cache_alignmen=
+t=A0=A0=A0 : 128<br>address sizes=A0=A0=A0 : 36 bits physical, 48 bits virt=
+ual<br>power management:<br><br>processor=A0=A0=A0 : 1<br>vendor_id=A0=A0=
+=A0 : GenuineIntel<br>cpu family=A0=A0=A0 : 15<br>
+
+
+
+model=A0=A0=A0 =A0=A0=A0 : 4<br>model name=A0=A0=A0 : Intel(R) Pentium(R) 4=
+ CPU 3.00GHz<br>stepping=A0=A0=A0 : 3<br>cpu MHz=A0=A0=A0 =A0=A0=A0 : 2999.=
+838<br>cache size=A0=A0=A0 : 2048 KB<br>physical id=A0=A0=A0 : 0<br>sibling=
+s=A0=A0=A0 : 2<br>core id=A0=A0=A0 =A0=A0=A0 : 0<br>cpu cores=A0=A0=A0 : 1<=
+br>
+
+
+
+apicid=A0=A0=A0 =A0=A0=A0 : 1<br>initial apicid=A0=A0=A0 : 1<br>fdiv_bug=A0=
+=A0=A0 : no<br>hlt_bug=A0=A0=A0 =A0=A0=A0 : no<br>f00f_bug=A0=A0=A0 : no<br=
+>coma_bug=A0=A0=A0 : no<br>fpu=A0=A0=A0 =A0=A0=A0 : yes<br>fpu_exception=A0=
+=A0=A0 : yes<br>cpuid level=A0=A0=A0 : 5<br>wp=A0=A0=A0 =A0=A0=A0 : yes<br>=
+flags=A0=A0=A0 =A0=A0=A0 : fpu vme de pse tsc msr pae mce cx8 apic mtrr pge=
+ mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe lm cons=
+tant_tsc pebs bts pni dtes64 monitor ds_cpl est cid cx16 xtpr<br>
+
+
+
+bogomips=A0=A0=A0 : 6000.61<br>clflush size=A0=A0=A0 : 64<br>cache_alignmen=
+t=A0=A0=A0 : 128<br>address sizes=A0=A0=A0 : 36 bits physical, 48 bits virt=
+ual<br>power management:<br>=3D=3D=3D=3D=3D<br><br>So, I looked in the orig=
+inal configure file of the kernel and it is compiled with &#39;Pentium Pro&=
+#39; processor.<br>
+
+
+
+<br>Ok, then I restart to compile the kernel, by checking all issues at:<br=
+><a href=3D"http://www.xenomai.org/index.php/Configuring_x86_kernels" targe=
+t=3D"_blank">http://www.xenomai.org/index.php/Configuring_x86_kernels</a><b=
+r>
+
+
+<br>I choosed Pentium 4 processor.<br>
+<br>CONFIG_APM disable.<br>CONFIG_ACPI_PROCESSOR
+disable.<br>CONFIG_CPU_FREQ disable.<br>CONFIG_INPUT_PCSPKR disable.<br>SMI=
+ disable (like before).<br><br>The difference between the later ones is:<br=
+>Before, I disabled all ACPI. Now, I just disabled that ones at the FAQ.<br=
+>
+
+
+
+CONFIG_CPU_FREQ was disabled.<br><br>So, when I boot the new kernel, the /p=
+roc/cpuinfo returns 0.00 of CPU Frequency again...<br><br>The problem is th=
+e error at identifying the processor.<br>The new /proc/cpuinfo returns only=
+ one processor... not the both nucleus, like that one up here.<br>
+I really didn&#39;t could identify what option could do this.<br>I compile =
+the kernel with the PENTIUM PRO type... and the same bug occurs.<br><br>At =
+my house, worked in a Atlhon X2 4400+. <br><br>I&#39;m testing now at anoth=
+er computer of the Laboratory with a Intel Core 2 Duo.<br>
+<br>I&#39;m going to continue the tries. I realy intend to send another e-m=
+ail with the solution. :)<br><br>Another time, I really thank you all for t=
+he help. Let&#39;s keep going.<br><br>Att.<br>Alexandre.<br><br><br><div cl=
+ass=3D"gmail_quote">
+2011/1/3 Gilles Chanteperdrix <span dir=3D"ltr">&lt;<a href=3D"mailto:gille=
+s.chanteperdrix@domain.hid" target=3D"_blank">gilles.chanteperdrix@xenomai.org=
+.org</a>&gt;</span><br>
+
+
+<blockquote class=3D"gmail_quote" style=3D"margin: 0pt 0pt 0pt 0.8ex; borde=
+r-left: 1px solid rgb(204, 204, 204); padding-left: 1ex;"><div>Alexandre Ol=
+iveira wrote:<br>
+&gt; root@domain.hid# cpufreq-set -f 3.0Ghz<br>
+&gt; No cpufreq support<br>
+&gt; root@domain.hid#<br>
+<br>
+</div>That is normal, cpufreq support should be disabled if you intend Xeno=
+mai<br>
+to work correctly.<br>
+<br>
+--<br>
+<font color=3D"#888888"> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
+=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0=
+ =A0Gilles.<br>
+</font></blockquote></div><br>
+
+--001636c931e4f7867804990e7b79--
 
