@@ -1,14 +1,11 @@
-Message-ID: <4D25D592.2030308@domain.hid>
-Date: Thu, 06 Jan 2011 09:45:38 -0500
-From: "Steven A. Falco" <sfalco@domain.hid>
-MIME-Version: 1.0
-References: <6FCCA913376DD7488F4139A4D11B8F48016311A5@domain.hid>	<4D1FAE66.8080005@domain.hid>	<6FCCA913376DD7488F4139A4D11B8F4801673CAB@troe2k1.cs.myharris.net>
-	<4D24E3AC.2000904@domain.hid> <4D24EB92.3050104@domain.hid>
-	<4D24F0B7.7010604@domain.hid> <4D25D271.3040104@domain.hid>
-In-Reply-To: <4D25D271.3040104@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] [Xenomai -help] User space access to DMA memory
+Message-ID: <12d5cebd852.gprizzi@domain.hid>
+Date: Thu, 6 Jan 2011 21:01:56 +0100 (CET)
+From: "gprizzi@domain.hid" <gprizzi@domain.hid>
+Mime-Version: 1.0
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_193331_14025014.1294344116309"
+Subject: [Xenomai-help] R: Re: R: Re:  error in executing xenomai tests
+Reply-To: "gprizzi@domain.hid" <gprizzi@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -18,132 +15,219 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "Steven A. Falco" <sfalco@domain.hid>
+To: gilles.chanteperdrix@xenomai.org
 Cc: xenomai@xenomai.org
 
-On 01/06/2011 09:32 AM, Steven A. Falco wrote:
-> On 01/05/2011 05:29 PM, Gilles Chanteperdrix wrote:
->> Steven A. Falco wrote:
->>> On 01/05/2011 04:33 PM, Gilles Chanteperdrix wrote:
->>>> Herrera-Bendezu, Luis wrote:
->>>>> Gilles:
->>>>>
->>>>>> Herrera-Bendezu, Luis wrote:
->>>>>>> Hello:
->>>>>>>
->>>>>>> I have the following setup:
->>>>>>> PPC405EX
->>>>>>> Linux 2.6.30.3
->>>>>>> Xenomai 2.4.10
->>>>>>> I-pipe 2.7-02
->>>>>>> ppc_4xx-gcc (GCC) 4.2.2
->>>>>>> Configuration file is attached
->>>>>> Do you have the same issue with the latest version of the I-pipe patch
->>>>>> for this same version of the Linux kernel? It should be 2.8-00.
->>>>> Tried I-pipe 2.8-00 which needs Linux 2.6.32.
->>>> Sorry, I misread the ftp list, I was rather thinking about:
->>>> http://download.gna.org/adeos/patches/v2.6/powerpc/older/adeos-ipipe-2.6.30.3-powerpc-DENX-2.7-06.patch
->>>>
->>>>
->>>>  It resulted on same problem
->>>>> as reported with Linux 2.6.30.3 I-pipe 2.7-02.
->>>>>
->>>>> Was there any particular set of changes that you expected it could fix the
->>>>> problem? Do you think more recent versions may work? If yes, which version
->>>>> could be tried?
->>>> Yes, there was a fix, specifially in the powerpc tree, with mappings
->>>> issue. But I think it is older than 2.6.32.
->>>>
->>>> Now that I look at your message again, your problem seems more likely to
->>>> be in your code. Specifically, you say: "bus address returned by
->>>> pci_alloc_consistent()". I do not think pci_alloc_consistent return
->>>> value is a bus address. The dma_handle returned by pointer probably is.
->>>> But I am not sure you are supposed to know this.
->>>
->>> pci_alloc_consistent() returns two values.  The kernel address is
->>> returned directly (as a void *), and the bus address is returned
->>> through the dma_handle pointer (third function argument).
->>>
->>> Luis' original email indicated that he tried rtdm_mmap_to_user()
->>> on the kernel address, and he tried rtdm_iomap_to_user() on the
->>> bus address. Either way caused the crash he reported.
->>
->> Ok. Could you try to do the same operation with the native API? You just
->> have to pass H_SHARED | H_DMA | H_NONCACHED as flags to rt_heap_create 
->> to get the same effect as pci_dma_alloc_coherent.
->>
->> Just to see if the error lies in RTDM implementation or in Xenomai 
->> generic code.
->>
->>
->>>
->>> We have a home-grown program (mm) that basically opens /dev/mem
->>> and allows peek/poke.  Using that with the bus address works to
->>> access the memory.  We also pass that address to our hardware,
->>> and it correctly DMAs the data.  So we believe the bus address
->>> is correct.
->>
->> You mean much like devmem2? Now even part of the busybox?
-> 
-> I had not known about devmem2 when I wrote my "mm" program; "mm"
-> turns out to be very similar to devmem2.
-> 
-> One difference is that I use mmap64() rather than mmap(), because
-> the PowerPC440EPx uses 36-bit addresses even though it has a 32-bit
-> instruction set.  Other than that, the two programs are remarkably
-> similar.
+------=_Part_193331_14025014.1294344116309
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-I should have mentioned that while the "mm" tool is 64-bit capable,
-the CPU Luis is currently running on is a PowerPC _405EX_, which
-uses conventional 32-bit addressing.  Hence, devmem2 should be
-fully interchangeable with mm for testing purposes.
+Dear Sir,
 
-And any software bugs would not have anything to do with the wider
-address space of the PPC440EPx.  I didn't want people to go down
-the wrong path. :-)
+I find your considerations very useful, unfortunately I am not  expert in tuning conventional 
+operating system with real time patch.
 
-	Steve
+If you can help me I will greatly appreciate your advices.
 
-> 
-> 	Steve
-> 
->>
->>>
->>> I believe Luis has also tried a third approach - allocating with
->>> kzalloc(size, GFP_DMA), and using rtdm_mmap_to_user() on the
->>> resulting pointer.  That works, but getting the bus address is
->>> a bit ugly - basically page_to_phys(virt_to_page()) of the pointer.
->>>
->>> So there is something different about the way pci_alloc_consistent()
->>> allocates memory as compared to kzalloc(GFP_DMA).  kzalloc(GFP_DMA)
->>> works with rtdm_mmap_to_user() but pci_alloc_consistent() does
->>> not.
->>
->> This gives me an idea. Could you try the following patch? Even before 
->> trying the native API.
->>
->> diff --git a/ksrc/skins/rtdm/drvlib.c b/ksrc/skins/rtdm/drvlib.c
->> index 3495e63..d7dd3db 100644
->> --- a/ksrc/skins/rtdm/drvlib.c
->> +++ b/ksrc/skins/rtdm/drvlib.c
->> @@ -1810,7 +1810,7 @@ static int rtdm_mmap_buffer(struct file *filp, struct vm_area_struct *vma)
->>  	vaddr = (unsigned long)mmap_data->src_vaddr;
->>  	paddr = mmap_data->src_paddr;
->>  	if (paddr == 0)	/* kmalloc memory? */
->> -		paddr = __pa(vaddr);
->> +		paddr = page_to_phys(virt_to_page(vaddr));
->>  
->>  	maddr = vma->vm_start;
->>  	size = vma->vm_end - vma->vm_start;
->>
->>
-> 
-> 
+I run latency test and got the following results:
 
+root@domain.hid# ./latency
+== Sampling period: 100 us
+== Test mode: periodic user-mode task
+== All results in microseconds
+warming up...
+RTT|  00:00:01  (periodic user-mode task, 100 us period, priority 99)
+RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat best|--lat worst
+RTD|     -1.786|      2.224|     19.821|       0|     0|     -1.786|     19.821
+RTD|     -1.796|      2.330|     19.490|       0|     0|     -1.796|     19.821
+RTD|     -1.831|      2.231|     19.495|       0|     0|     -1.831|     19.821
+RTD|     -1.772|      2.291|     19.743|       0|     0|     -1.831|     19.821
+RTD|     -1.473|      2.460|     19.708|       0|     0|     -1.831|     19.821
+RTD|     -1.524|      2.381|     19.717|       0|     0|     -1.831|     19.821
+RTD|     -1.752|      2.338|     19.807|       0|     0|     -1.831|     19.821
+RTD|     -1.893|      2.297|     19.520|       0|     0|     -1.893|     19.821
+RTD|     -2.192|      2.284|     19.549|       0|     0|     -2.192|     19.821
+RTD|     -1.635|      2.327|     19.530|       0|     0|     -2.192|     19.821
+RTD|     -1.416|      2.406|     19.580|       0|     0|     -2.192|     19.821
+RTD|     -1.305|      2.471|     14.930|       0|     0|     -2.192|     19.821
+RTD|     -1.782|      2.409|     14.999|       0|     0|     -2.192|     19.821
+RTD|     -1.774|      2.364|     18.456|       0|     0|     -2.192|     19.821
+RTD|     -1.784|      2.328|     19.914|       0|     0|     -2.192|     19.914
+RTD|     -1.768|      2.293|     19.639|       0|     0|     -2.192|     19.914
+RTD|     -1.777|      2.263|     19.463|       0|     0|     -2.192|     19.914
+RTD|     -1.228|      2.389|     19.923|       0|     0|     -2.192|     19.923
+RTD|     -1.223|      2.405|     19.579|       0|     0|     -2.192|     19.923
+RTD|     -1.778|      2.431|     14.499|       0|     0|     -2.192|     19.923
+RTD|     -1.983|      2.493|     15.335|       0|     0|     -2.192|     19.923
+
+
+Looking at the worst case of a latency of about 20 us with a task at 2 KHz
+I can estimate 2*10^-3 * 20 * 10 ^-6 = 40 * 10^-3 sec lost for latency in 1 sec..
+In the average case I will have 5*10^-3 sec. lost for latency in 1 sec. 
+
+I think that these percentage can be accepted in a robotic position control,
+what do you think about these assumption?
+
+Can you suggest me a better way to evaluate the latency with respect of robotic 
+position control system or can you suggest me some useful articles to read about this topic?
+
+My kernel has the following configuration
+
+CONFIG_PREEMPT_VOLUNTARY=y
+# CONFIG_PREEMPT is not set
+
+CONFIG_HIGH_RES_TIMERS=y 
+
+and I had a look at 
+
+https://rt.wiki.kernel.org/index.php/Frequently_Asked_Questions
+
+Do you think that setting CONFIG_PREEMT=y instead of 
+CONFIG_PREEMPT_VOLUNTARY=y
+will significantly reduce latency?
+
+Thank you for your kind support.
+
+
+Gianpaolo Rizzi
+
+
+
+----Messaggio originale----
+Da: gilles.chanteperdrix@xenomai.org
+Data: 5-gen-2011 8.06 PM
+A: "gprizzi@domain.hid"<gprizzi@domain.hid>
+Cc: <xenomai@xenomai.org>
+Ogg: Re: R: Re: [Xenomai-help] error in executing xenomai tests
+
+gprizzi@domain.hid wrote:
+> Tank you for your quick and clear replay.
+> 
+> I am going to use xenomai to run OROCOS based control applications.
+> The faster frequency of periodic tasks is estimated between 1KHz to 2 KHz.
+
+Well, that is not enough information. If you seriously want to meet some
+deadlines, you have to make a few calculations, then see if your system
+has sufficient latency, using the "latency" test. But this really is the
+job you should be doing.
+
+Note that for 1kHz or 2kHz on x86 platform, preempt_rt latencies may be
+worth checking.
 
 -- 
-A: Because it makes the logic of the discussion difficult to follow.
-Q: Why shouldn't I top post?
-A: No.
-Q: Should I top post?
+					    Gilles.
+
+
+
+ 
+------=_Part_193331_14025014.1294344116309
+Content-Type: text/html;charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+Dear Sir,<br><br>I find your considerations very useful, unfortunately I am=
+ not&nbsp; expert in tuning conventional <br>operating system with real tim=
+e patch.<br><br>If you can help me I will greatly appreciate your advices.<=
+br><br>I run latency test and got the following results:<br><br>root@domain.hid=
+1010:/usr/lib/xenomai# ./latency<br>=3D=3D Sampling period: 100 us<br>=3D=
+=3D Test mode: periodic user-mode task<br>=3D=3D All results in microsecond=
+s<br>warming up...<br>RTT|&nbsp; 00:00:01&nbsp; (periodic user-mode task, 1=
+00 us period, priority 99)<br>RTH|----lat min|----lat avg|----lat max|-over=
+run|---msw|---lat best|--lat worst<br>RTD|&nbsp;&nbsp;&nbsp;&nbsp; -1.786|&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2.224|&nbsp;&nbsp;&nbsp;&nbsp; 19.821|&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0|&nbsp;&nbsp;&nbsp;&nbsp; 0|&nbsp;&nbsp;&nbs=
+p;&nbsp; -1.786|&nbsp;&nbsp;&nbsp;&nbsp; 19.821<br>RTD|&nbsp;&nbsp;&nbsp;&n=
+bsp; -1.796|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2.330|&nbsp;&nbsp;&nbsp;&nbsp; 1=
+9.490|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0|&nbsp;&nbsp;&nbsp;&nbsp; 0|&nb=
+sp;&nbsp;&nbsp;&nbsp; -1.796|&nbsp;&nbsp;&nbsp;&nbsp; 19.821<br>RTD|&nbsp;&=
+nbsp;&nbsp;&nbsp; -1.831|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2.231|&nbsp;&nbsp;&=
+nbsp;&nbsp; 19.495|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0|&nbsp;&nbsp;&nbsp=
+;&nbsp; 0|&nbsp;&nbsp;&nbsp;&nbsp; -1.831|&nbsp;&nbsp;&nbsp;&nbsp; 19.821<b=
+r>RTD|&nbsp;&nbsp;&nbsp;&nbsp; -1.772|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2.291|=
+&nbsp;&nbsp;&nbsp;&nbsp; 19.743|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0|&nbs=
+p;&nbsp;&nbsp;&nbsp; 0|&nbsp;&nbsp;&nbsp;&nbsp; -1.831|&nbsp;&nbsp;&nbsp;&n=
+bsp; 19.821<br>RTD|&nbsp;&nbsp;&nbsp;&nbsp; -1.473|&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp; 2.460|&nbsp;&nbsp;&nbsp;&nbsp; 19.708|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp; 0|&nbsp;&nbsp;&nbsp;&nbsp; 0|&nbsp;&nbsp;&nbsp;&nbsp; -1.831|&nbsp;&=
+nbsp;&nbsp;&nbsp; 19.821<br>RTD|&nbsp;&nbsp;&nbsp;&nbsp; -1.524|&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp; 2.381|&nbsp;&nbsp;&nbsp;&nbsp; 19.717|&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp; 0|&nbsp;&nbsp;&nbsp;&nbsp; 0|&nbsp;&nbsp;&nbsp;&nbsp; -=
+1.831|&nbsp;&nbsp;&nbsp;&nbsp; 19.821<br>RTD|&nbsp;&nbsp;&nbsp;&nbsp; -1.75=
+2|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2.338|&nbsp;&nbsp;&nbsp;&nbsp; 19.807|&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0|&nbsp;&nbsp;&nbsp;&nbsp; 0|&nbsp;&nbsp;&=
+nbsp;&nbsp; -1.831|&nbsp;&nbsp;&nbsp;&nbsp; 19.821<br>RTD|&nbsp;&nbsp;&nbsp=
+;&nbsp; -1.893|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2.297|&nbsp;&nbsp;&nbsp;&nbsp=
+; 19.520|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0|&nbsp;&nbsp;&nbsp;&nbsp; 0|=
+&nbsp;&nbsp;&nbsp;&nbsp; -1.893|&nbsp;&nbsp;&nbsp;&nbsp; 19.821<br>RTD|&nbs=
+p;&nbsp;&nbsp;&nbsp; -2.192|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2.284|&nbsp;&nbs=
+p;&nbsp;&nbsp; 19.549|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0|&nbsp;&nbsp;&n=
+bsp;&nbsp; 0|&nbsp;&nbsp;&nbsp;&nbsp; -2.192|&nbsp;&nbsp;&nbsp;&nbsp; 19.82=
+1<br>RTD|&nbsp;&nbsp;&nbsp;&nbsp; -1.635|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2.3=
+27|&nbsp;&nbsp;&nbsp;&nbsp; 19.530|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0|&=
+nbsp;&nbsp;&nbsp;&nbsp; 0|&nbsp;&nbsp;&nbsp;&nbsp; -2.192|&nbsp;&nbsp;&nbsp=
+;&nbsp; 19.821<br>RTD|&nbsp;&nbsp;&nbsp;&nbsp; -1.416|&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp; 2.406|&nbsp;&nbsp;&nbsp;&nbsp; 19.580|&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp; 0|&nbsp;&nbsp;&nbsp;&nbsp; 0|&nbsp;&nbsp;&nbsp;&nbsp; -2.192|&nbs=
+p;&nbsp;&nbsp;&nbsp; 19.821<br>RTD|&nbsp;&nbsp;&nbsp;&nbsp; -1.305|&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp; 2.471|&nbsp;&nbsp;&nbsp;&nbsp; 14.930|&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp; 0|&nbsp;&nbsp;&nbsp;&nbsp; 0|&nbsp;&nbsp;&nbsp;&nbsp=
+; -2.192|&nbsp;&nbsp;&nbsp;&nbsp; 19.821<br>RTD|&nbsp;&nbsp;&nbsp;&nbsp; -1=
+.782|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2.409|&nbsp;&nbsp;&nbsp;&nbsp; 14.999|&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0|&nbsp;&nbsp;&nbsp;&nbsp; 0|&nbsp;&nbs=
+p;&nbsp;&nbsp; -2.192|&nbsp;&nbsp;&nbsp;&nbsp; 19.821<br>RTD|&nbsp;&nbsp;&n=
+bsp;&nbsp; -1.774|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2.364|&nbsp;&nbsp;&nbsp;&n=
+bsp; 18.456|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0|&nbsp;&nbsp;&nbsp;&nbsp;=
+ 0|&nbsp;&nbsp;&nbsp;&nbsp; -2.192|&nbsp;&nbsp;&nbsp;&nbsp; 19.821<br>RTD|&=
+nbsp;&nbsp;&nbsp;&nbsp; -1.784|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2.328|&nbsp;&=
+nbsp;&nbsp;&nbsp; 19.914|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0|&nbsp;&nbsp=
+;&nbsp;&nbsp; 0|&nbsp;&nbsp;&nbsp;&nbsp; -2.192|&nbsp;&nbsp;&nbsp;&nbsp; 19=
+.914<br>RTD|&nbsp;&nbsp;&nbsp;&nbsp; -1.768|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+2.293|&nbsp;&nbsp;&nbsp;&nbsp; 19.639|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; =
+0|&nbsp;&nbsp;&nbsp;&nbsp; 0|&nbsp;&nbsp;&nbsp;&nbsp; -2.192|&nbsp;&nbsp;&n=
+bsp;&nbsp; 19.914<br>RTD|&nbsp;&nbsp;&nbsp;&nbsp; -1.777|&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp; 2.263|&nbsp;&nbsp;&nbsp;&nbsp; 19.463|&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp; 0|&nbsp;&nbsp;&nbsp;&nbsp; 0|&nbsp;&nbsp;&nbsp;&nbsp; -2.192|&=
+nbsp;&nbsp;&nbsp;&nbsp; 19.914<br>RTD|&nbsp;&nbsp;&nbsp;&nbsp; -1.228|&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp; 2.389|&nbsp;&nbsp;&nbsp;&nbsp; 19.923|&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp; 0|&nbsp;&nbsp;&nbsp;&nbsp; 0|&nbsp;&nbsp;&nbsp;&n=
+bsp; -2.192|&nbsp;&nbsp;&nbsp;&nbsp; 19.923<br>RTD|&nbsp;&nbsp;&nbsp;&nbsp;=
+ -1.223|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2.405|&nbsp;&nbsp;&nbsp;&nbsp; 19.57=
+9|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0|&nbsp;&nbsp;&nbsp;&nbsp; 0|&nbsp;&=
+nbsp;&nbsp;&nbsp; -2.192|&nbsp;&nbsp;&nbsp;&nbsp; 19.923<br>RTD|&nbsp;&nbsp=
+;&nbsp;&nbsp; -1.778|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2.431|&nbsp;&nbsp;&nbsp=
+;&nbsp; 14.499|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0|&nbsp;&nbsp;&nbsp;&nb=
+sp; 0|&nbsp;&nbsp;&nbsp;&nbsp; -2.192|&nbsp;&nbsp;&nbsp;&nbsp; 19.923<br>RT=
+D|&nbsp;&nbsp;&nbsp;&nbsp; -1.983|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2.493|&nbs=
+p;&nbsp;&nbsp;&nbsp; 15.335|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0|&nbsp;&n=
+bsp;&nbsp;&nbsp; 0|&nbsp;&nbsp;&nbsp;&nbsp; -2.192|&nbsp;&nbsp;&nbsp;&nbsp;=
+ 19.923<br><br><br>Looking at the worst case of a latency of about 20 us wi=
+th a task at 2 KHz<br>I can estimate 2*10^-3 * 20 * 10 ^-6 =3D 40 * 10^-3 s=
+ec lost for latency in 1 sec..<br>In the average case I will have 5*10^-3 s=
+ec. lost for latency in 1 sec. <br><br>I think that these percentage can be=
+ accepted in a robotic position control,<br>what do you think about these a=
+ssumption?<br><br>Can you suggest me a better way to evaluate the latency w=
+ith respect of robotic <br>position control system or can you suggest me so=
+me useful articles to read about this topic?<br><br>My kernel has the follo=
+wing configuration<br><br>CONFIG_PREEMPT_VOLUNTARY=3Dy<br># CONFIG_PREEMPT =
+is not set<br><br>CONFIG_HIGH_RES_TIMERS=3Dy <br><br>and I had a look at <b=
+r><br>https://rt.wiki.kernel.org/index.php/Frequently_Asked_Questions<br><b=
+r>Do you think that setting CONFIG_PREEMT=3Dy instead of <br>CONFIG_PREEMPT=
+_VOLUNTARY=3Dy<br>will significantly reduce latency?<br><br>Thank you for y=
+our kind support.<br><br><br>Gianpaolo Rizzi<br>
+<br>
+----Messaggio originale----<br>Da: gilles.chanteperdrix@xenomai.org<br>Data=
+: 5-gen-2011 8.06 PM<br>A: "gprizzi@domain.hid"&lt;gprizzi@domain.hid&gt;<br>Cc: &l=
+t;xenomai@xenomai.org&gt;<br>Ogg: Re: R: Re: [Xenomai-help] error in execu=
+ting xenomai tests<br><br>gprizzi@domain.hid wrote:<br>&gt; Tank you for your q=
+uick and clear replay.<br>&gt; <br>&gt; I am going to use xenomai to run OR=
+OCOS based control applications.<br>&gt; The faster frequency of periodic t=
+asks is estimated between 1KHz to 2 KHz.<br><br>Well, that is not enough in=
+formation. If you seriously want to meet some<br>deadlines, you have to mak=
+e a few calculations, then see if your system<br>has sufficient latency, us=
+ing the "latency" test. But this really is the<br>job you should be doing.<=
+br><br>Note that for 1kHz or 2kHz on x86 platform, preempt_rt latencies may=
+ be<br>worth checking.<br><br>-- <br>=09=09=09=09=09&nbsp;&nbsp;&nbsp; Gill=
+es.<br><br><br>
+
+------=_Part_193331_14025014.1294344116309--
+
 
