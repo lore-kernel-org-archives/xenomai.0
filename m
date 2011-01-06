@@ -1,5 +1,5 @@
-Message-ID: <4D26286F.1060309@domain.hid>
-Date: Thu, 06 Jan 2011 21:39:11 +0100
+Message-ID: <4D263341.1080601@domain.hid>
+Date: Thu, 06 Jan 2011 22:25:21 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <12d5cebd852.gprizzi@domain.hid>
@@ -20,57 +20,58 @@ To: "gprizzi@domain.hid" <gprizzi@domain.hid>
 Cc: xenomai@xenomai.org
 
 gprizzi@domain.hid wrote:
-> Looking at the worst case of a latency of about 20 us with a task at 2 KHz
-> I can estimate 2*10^-3 * 20 * 10 ^-6 = 40 * 10^-3 sec lost for latency in 1 sec..
-> In the average case I will have 5*10^-3 sec. lost for latency in 1 sec. 
+> Dear Sir,
 > 
-> I think that these percentage can be accepted in a robotic position control,
-> what do you think about these assumption?
+> I find your considerations very useful, unfortunately I am not  expert in tuning conventional 
+> operating system with real time patch.
 > 
-> Can you suggest me a better way to evaluate the latency with respect of robotic 
-> position control system or can you suggest me some useful articles to read about this topic?
-
-There is this piece of meat between your ears called a brain. Do not you
-think, that, at some point, you will have to do what you are paid for
-and use it?
-
-Suppose that you have one acquisition, one one actuation, and some
-real-time task between the two. If you know that the maximum allowed
-time between the two is R, the worst case execution time of the
-real-time task is W. Then the maximum wake up latency your system should
-be able to provide is around R - W, or (R - W) / 2 if you want to play
-it safe.
-
-Of course, that was just a very sample example. And the problem you are
-trying to solve may define other constraints. But that is the spirit.
-
-In other words, I can not tell you whether 20us or 40us, or 80us is
-enough for the system you are trying to build. I do not know.
-
-Your problem is not about tuning Xenomai or preempt_rt. As far as
-Xenomai is concerned, once it is installed, there are only a few things
-you need to tune, and you will know when you need it. For instance, you
-could start by tuning /proc/xenomai/latency so that the latency test
-does not return negative values. But this is not your priority IMO.
-
-> and I had a look at 
+> If you can help me I will greatly appreciate your advices.
 > 
-> https://rt.wiki.kernel.org/index.php/Frequently_Asked_Questions
+> I run latency test and got the following results:
 > 
-> Do you think that setting CONFIG_PREEMT=y instead of 
-> CONFIG_PREEMPT_VOLUNTARY=y
-> will significantly reduce latency?
+> root@domain.hid# ./latency
+> == Sampling period: 100 us
+> == Test mode: periodic user-mode task
+> == All results in microseconds
+> warming up...
+> RTT|  00:00:01  (periodic user-mode task, 100 us period, priority 99)
+> RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat best|--lat worst
+> RTD|     -1.786|      2.224|     19.821|       0|     0|     -1.786|     19.821
+> RTD|     -1.796|      2.330|     19.490|       0|     0|     -1.796|     19.821
+> RTD|     -1.831|      2.231|     19.495|       0|     0|     -1.831|     19.821
+> RTD|     -1.772|      2.291|     19.743|       0|     0|     -1.831|     19.821
+> RTD|     -1.473|      2.460|     19.708|       0|     0|     -1.831|     19.821
+> RTD|     -1.524|      2.381|     19.717|       0|     0|     -1.831|     19.821
+> RTD|     -1.752|      2.338|     19.807|       0|     0|     -1.831|     19.821
+> RTD|     -1.893|      2.297|     19.520|       0|     0|     -1.893|     19.821
+> RTD|     -2.192|      2.284|     19.549|       0|     0|     -2.192|     19.821
+> RTD|     -1.635|      2.327|     19.530|       0|     0|     -2.192|     19.821
+> RTD|     -1.416|      2.406|     19.580|       0|     0|     -2.192|     19.821
+> RTD|     -1.305|      2.471|     14.930|       0|     0|     -2.192|     19.821
+> RTD|     -1.782|      2.409|     14.999|       0|     0|     -2.192|     19.821
+> RTD|     -1.774|      2.364|     18.456|       0|     0|     -2.192|     19.821
+> RTD|     -1.784|      2.328|     19.914|       0|     0|     -2.192|     19.914
+> RTD|     -1.768|      2.293|     19.639|       0|     0|     -2.192|     19.914
+> RTD|     -1.777|      2.263|     19.463|       0|     0|     -2.192|     19.914
+> RTD|     -1.228|      2.389|     19.923|       0|     0|     -2.192|     19.923
+> RTD|     -1.223|      2.405|     19.579|       0|     0|     -2.192|     19.923
+> RTD|     -1.778|      2.431|     14.499|       0|     0|     -2.192|     19.923
+> RTD|     -1.983|      2.493|     15.335|       0|     0|     -2.192|     19.923
 
-No, I was suggesting using the preempt_rt patch instead of Xenomai,
-which is another way of having a deterministic operating system. With
-this patch, there is no point in using CONFIG_PREEMPT or
-CONFIG_PREEMPT_VOLUNTARY. The point is to use CONFIG_PREEMPT_RT.
+The info you are missing here, and which is not obvious, I admit, is
+that by running latency 30 seconds on an idle system, you are not even
+close of knowing the worst case latency of Xenomai on your system.
 
-Since you do not strike me as a co-kernel programming expert, chances
-are that if preempt_rt is sufficient for the requirements of your system
-and stable enough on your system, developing the application you have to
-develop will be much less painful.
+In order to evaluate the worst case latency of Xenomai on your system,
+you have to run the latency test, for a long time, on a loaded system,
+and with the frequency of the task whose latency you are interested in.
+
+That said, I insist, unless you know or even have rough estimates of the
+way your final application is behaving, this does not give you much of a
+clue. Otherwise, you can not answer the question "is this latency
+sufficient ?" right away, you have to wait for the application to be
+developed and running.
 
 -- 
-					    Gilles.
+                                                                Gilles.
 
