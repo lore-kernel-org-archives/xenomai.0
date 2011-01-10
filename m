@@ -1,14 +1,14 @@
-Message-ID: <4D2B6A91.5090702@domain.hid>
-Date: Mon, 10 Jan 2011 21:22:41 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
+From: Peter Soetens <peter@domain.hid>
+Date: Mon, 10 Jan 2011 21:37:20 +0100
 References: <201101101718.58201.peter@domain.hid>
 	<201101101741.52481.peter@domain.hid>
-	<4D2B4F2C.7060603@domain.hid>
-	<201101102115.01996.peter@domain.hid>
-In-Reply-To: <201101102115.01996.peter@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+	<4D2B38BD.2050708@domain.hid>
+In-Reply-To: <4D2B38BD.2050708@domain.hid>
+MIME-Version: 1.0
+Content-Type: Text/Plain;
+  charset="utf-8"
 Content-Transfer-Encoding: 7bit
+Message-Id: <201101102137.20799.peter@domain.hid>
 Subject: Re: [Xenomai-help] Correct use of xeno_sigshadow_install()
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -19,61 +19,127 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Peter Soetens <peter@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai-help <xenomai@xenomai.org>
 
-Peter Soetens wrote:
-> On Monday 10 January 2011 19:25:48 Gilles Chanteperdrix wrote:
->> Peter Soetens wrote:
->>> On Monday 10 January 2011 17:24:28 Gilles Chanteperdrix wrote:
->>>> Peter Soetens wrote:
->>>>> Hi,
->>>>>
->>>>> A while ago, I was advised to call xeno_sigshadow_install() after a
->>>>> library installed a sigwinch signal handler (I believe this was Xenomai
->>>>> 2.5.1). Could it be that this is no longer supported in recent versions
->>>>> ? What is the correct way to avoid a segfault if an application
->>>>> installed a sigwinch handler after Xenomai did ?
->>>> I think we already answered that at the time, but if you install your
->>>> own sigwinch handler, you should:
->>>> - register it with the SA_SIGINFO flag
->>>> - call xeno_sigwinch_handler and consider that the signal is for the
->>>> application only if this function returns 0.
->>> This is indeed in the API docs, but it's not an option since it's a third
->>> party library (readline) doing this, it doesn't depend on or know
->>> Xenomai.
->> Actually, readline behaviour is highly configurable, and looking a bit
->> at its documentation, we find that its behaviour with regard to sigwinch
->> is configurable, see:
->> rl_catch_sigwinch
->> rl_resize_terminal
+On Monday 10 January 2011 17:50:05 Gilles Chanteperdrix wrote:
+> Peter Soetens wrote:
+> > On Monday 10 January 2011 17:24:28 Gilles Chanteperdrix wrote:
+> >> Peter Soetens wrote:
+> >>> Hi,
+> >>> 
+> >>> A while ago, I was advised to call xeno_sigshadow_install() after a
+> >>> library installed a sigwinch signal handler (I believe this was Xenomai
+> >>> 2.5.1). Could it be that this is no longer supported in recent versions
+> >>> ? What is the correct way to avoid a segfault if an application
+> >>> installed a sigwinch handler after Xenomai did ?
+> >> 
+> >> I think we already answered that at the time, but if you install your
+> >> own sigwinch handler, you should:
+> >> - register it with the SA_SIGINFO flag
+> >> - call xeno_sigwinch_handler and consider that the signal is for the
+> >> application only if this function returns 0.
+> > 
+> > This is indeed in the API docs, but it's not an option since it's a third
+> > party library (readline) doing this, it doesn't depend on or know
+> > Xenomai.
+> > 
+> >> If you can not do that, then redefine SIGSHADOW in
+> >> include/asm-generic/syscall.h to a different value, and recompile both
+> >> Xenomai user-space and kernel-space support. Note however that when
+> >> starting applications in gdb you will then have to type:
+> >> 
+> >> handle <the_new_signal> pass nostop print
+> >> 
+> >> If you want to be able to debug Xenomai applications.
+> > 
+> > Hmm....
+> > 
+> > So defining the xeno_sigshadow_install() function ourselves (since it's
+> > not in any Xenomai header) and calling it after the readline signal
+> > handlers were installed is not gonna work ?
 > 
-> But we *want* to catch sigwinch/resize_terminal, since this happens quite 
-> often. Without this signal the terminal width is not being communicated to the 
-> readline library and it displays its columns in a too large or too small 
-> width.
+> The thing is that xeno_sigshadow_installi is an internal function,
+> particularily, it is not thread safe. The exported function is
+> xeno_sigshadow_install_once, but it will not do anything the second time
+> it gets called.
 > 
-> It's the terminal emulator giving us this signal, and it is meaningful to us. 
-> It's Xenomai doing something fundamentally flawed, or I fundamentally 
-> misunderstand it. 
+> If you take care of this thread-safety issue, calling
+> xeno_sigshadow_install should be OK, since it just installs
+> xeno_sigshadow_handler as a handler for SIGSHADOW, calling
+> xeno_sigwinch_handler, then the handler your application registered
+> before. All this code is relatively simple, and you will find it in
+> src/skins/common/sigshadow.c
+> 
+> Now, I suspect the issue you have is something else, so, could you post
+> the faulting code, reduced to a simple self-contained test case?
 
-Look at the documentation of rl_catch_sigwinch, rl_resize_terminal, they
-have been made precisely, for your use-case. rl_catch_sigwinch will get
-readline not to catch the signal.
+main.cpp:
+#include <readline/readline.h>
+#include <readline/history.h>
+#include <xenomai/native/task.h>
+#include <malloc.h>
+#include <sys/mman.h>
+#include <stdio.h>
 
-Then you will register a signal handler for your application, which
-calls, xeno_sigwinch_handler, and if that returns zero, calls
-rl_resize_terminal.
+char* line_read = 0;
 
-> Why can't you register a signal handler, without interfering 
-> with other handlers for the same signal ?
+char *rl_gets ()
+{
+  /* If the buffer has already been allocated,                                                                                                                                                                 
+     return the memory to the free pool. */
+  if (line_read)
+    {
+      free (line_read);
+      line_read = 0;
+    }
 
-Well, signal handlers are a per-process global ressource, look at
-sigaction documentation, this API is done this way, this is not
-Xenomai's fault, not even Linux' fault, you are barking at the wrong
-tree. That is precisely the reason why readline gives you access to
-rl_catch_sigwinch, rl_resize_terminal, and Xenomai to xeno_sigwinch_handler.
+  if (rl_set_signals() != 0)
+    printf("Error setting signals !\n");
 
--- 
-                                                                Gilles.
+  line_read = readline ( ">" );
+
+  /* If the line has any text in it,                                                                                                                                                                           
+     save it on the history. */
+  if (line_read && *line_read) {
+    add_history (line_read);
+  }
+  return (line_read);
+}
+
+int main(void)
+{
+  mlockall(MCL_CURRENT | MCL_FUTURE);
+
+  RT_TASK xenotask;
+  rt_task_shadow( &(xenotask),0, 10, 0);
+  rl_completion_append_character = '\0'; // avoid adding spaces                                                                                                                                                
+
+  if ( read_history(".history") != 0 ) {
+    read_history("~/.history");
+  }
+
+  // Let readline intercept relevant signals                                                                                                                                                                   
+  if(rl_catch_signals == 0)
+    printf("Error catching signals !\n");
+
+  if (rl_set_signals() != 0)
+    printf("Error setting signals !\n");
+
+  while (1)
+    {
+      rl_gets();
+    }
+  return 0;
+}
+
+make main CXXFLAGS=-I/usr/include/xenomai LDFLAGS="-lnative -lpthread -
+lncurses -lreadline -lxenomai"
+
+./main
+>
+<now resize your xterm window>
+Segmentation fault
+
+Peter
 
