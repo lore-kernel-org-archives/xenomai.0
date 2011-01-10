@@ -1,5 +1,5 @@
-Message-ID: <4D2B32BC.8080308@domain.hid>
-Date: Mon, 10 Jan 2011 17:24:28 +0100
+Message-ID: <4D2B36A6.3020402@domain.hid>
+Date: Mon, 10 Jan 2011 17:41:10 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <201101101718.58201.peter@domain.hid>
@@ -28,20 +28,8 @@ Peter Soetens wrote:
 > correct way to avoid a segfault if an application installed a sigwinch handler 
 > after Xenomai did ?
 
-I think we already answered that at the time, but if you install your
-own sigwinch handler, you should:
-- register it with the SA_SIGINFO flag
-- call xeno_sigwinch_handler and consider that the signal is for the
-application only if this function returns 0.
-
-If you can not do that, then redefine SIGSHADOW in
-include/asm-generic/syscall.h to a different value, and recompile both
-Xenomai user-space and kernel-space support. Note however that when
-starting applications in gdb you will then have to type:
-
-handle <the_new_signal> pass nostop print
-
-If you want to be able to debug Xenomai applications.
+In fact, I am not sure I understand your question. Could you post a
+simple example having this issue?
 
 -- 
                                                                 Gilles.
