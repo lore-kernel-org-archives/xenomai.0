@@ -1,5 +1,5 @@
-Message-ID: <4D2B6FE4.2010508@domain.hid>
-Date: Mon, 10 Jan 2011 21:45:24 +0100
+Message-ID: <4D2B8271.6090306@domain.hid>
+Date: Mon, 10 Jan 2011 23:04:33 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <201101101718.58201.peter@domain.hid>
@@ -93,60 +93,10 @@ Peter Soetens wrote:
 > 
 >   if (rl_set_signals() != 0)
 >     printf("Error setting signals !\n");
-> 
->   line_read = readline ( ">" );
-> 
->   /* If the line has any text in it,                                                                                                                                                                           
->      save it on the history. */
->   if (line_read && *line_read) {
->     add_history (line_read);
->   }
->   return (line_read);
-> }
-> 
-> int main(void)
-> {
->   mlockall(MCL_CURRENT | MCL_FUTURE);
-> 
->   RT_TASK xenotask;
->   rt_task_shadow( &(xenotask),0, 10, 0);
->   rl_completion_append_character = '\0'; // avoid adding spaces                                                                                                                                                
-> 
->   if ( read_history(".history") != 0 ) {
->     read_history("~/.history");
->   }
-> 
->   // Let readline intercept relevant signals                                                                                                                                                                   
->   if(rl_catch_signals == 0)
->     printf("Error catching signals !\n");
-> 
->   if (rl_set_signals() != 0)
->     printf("Error setting signals !\n");
-> 
->   while (1)
->     {
->       rl_gets();
->     }
->   return 0;
-> }
-> 
-> make main CXXFLAGS=-I/usr/include/xenomai LDFLAGS="-lnative -lpthread -
-> lncurses -lreadline -lxenomai"
-> 
-> ./main
-> <now resize your xterm window>
-> Segmentation fault
 
-You can not do that, Xenomai requires that xeno_sigwinch_handler be
-called when SIGWINCH is received. To do that, you have either:
-- to arrange for Xenomai xeno_sigshadow_install_once to be called after
-the time when readline installs its handlers, that is what calling
-xeno_sigshadow_install achieved, but this was fragile
-- use another signal than SIGWINCH as internal signal used by Xenomai,
-at the expense of some additional line launching gdb.
-- define your own signal and handle correctly both Xenomai and
-libreadline signals in that handler.
-
+By the way, here you are installing the libreadline signals again. So,
+if you managed to install Xenomai signal handler with
+xeno_sigshadow_install, here you are overriding it again.
 
 -- 
                                                                 Gilles.
