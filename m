@@ -1,14 +1,11 @@
-Message-ID: <4D2AD0CC.90004@domain.hid>
-Date: Mon, 10 Jan 2011 10:26:36 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: Peter Soetens <peter@domain.hid>
+Date: Mon, 10 Jan 2011 17:18:58 +0100
 MIME-Version: 1.0
-References: <AANLkTimQ5KK_qqdCmfmeA2+spnGcCy1frEwrUhDa_RwV@mail.gmail.com>	<4D25AEAC.6010703@domain.hid>
-	<AANLkTikge-wcVnzbT+oPZ85L7ttfwkSTDrBHzbxMe781@domain.hid>
-In-Reply-To: <AANLkTikge-wcVnzbT+oPZ85L7ttfwkSTDrBHzbxMe781@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: Text/Plain;
+  charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Xenomai/switchtest pthread_create: Resource
- temporarily unavailable on i7 860 CPU
+Message-Id: <201101101718.58201.peter@domain.hid>
+Subject: [Xenomai-help] Correct use of xeno_sigshadow_install()
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -18,25 +15,16 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Donggu Kang <cdslashboot@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai-help <xenomai@xenomai.org>
 
-Donggu Kang wrote:
-> Dear Gilles.
-> 
-> Thank you for your quick reply
-> 
-> I've tried to look up your answer about my question(./switchtest -T10
-> => pthread_create:Resource
-> temporarily unavailable) in January 05, 2011 list, but I haven't been
-> to find it.
-> Let me know which answer is suitable for my question.
-> 
-> I thing your answer is 'Increase size of the kernel tasks stacks
-> pool', is it right?
+Hi,
 
-Have you tried it?
+A while ago, I was advised to call xeno_sigshadow_install() after a library 
+installed a sigwinch signal handler (I believe this was Xenomai 2.5.1). Could 
+it be that this is no longer supported in recent versions ? What is the 
+correct way to avoid a segfault if an application installed a sigwinch handler 
+after Xenomai did ?
 
--- 
-                                                                Gilles.
+Regards,
+Peter
 
