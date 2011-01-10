@@ -1,5 +1,5 @@
-Message-ID: <4D2B38BD.2050708@domain.hid>
-Date: Mon, 10 Jan 2011 17:50:05 +0100
+Message-ID: <4D2B4F2C.7060603@domain.hid>
+Date: Mon, 10 Jan 2011 19:25:48 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <201101101718.58201.peter@domain.hid>
@@ -39,36 +39,12 @@ Peter Soetens wrote:
 > 
 > This is indeed in the API docs, but it's not an option since it's a third 
 > party library (readline) doing this, it doesn't depend on or know Xenomai.
-> 
->> If you can not do that, then redefine SIGSHADOW in
->> include/asm-generic/syscall.h to a different value, and recompile both
->> Xenomai user-space and kernel-space support. Note however that when
->> starting applications in gdb you will then have to type:
->>
->> handle <the_new_signal> pass nostop print
->>
->> If you want to be able to debug Xenomai applications.
-> 
-> Hmm....
-> 
-> So defining the xeno_sigshadow_install() function ourselves (since it's not in 
-> any Xenomai header) and calling it after the readline signal handlers were 
-> installed is not gonna work ?
 
-The thing is that xeno_sigshadow_installi is an internal function,
-particularily, it is not thread safe. The exported function is
-xeno_sigshadow_install_once, but it will not do anything the second time
-it gets called.
-
-If you take care of this thread-safety issue, calling
-xeno_sigshadow_install should be OK, since it just installs
-xeno_sigshadow_handler as a handler for SIGSHADOW, calling
-xeno_sigwinch_handler, then the handler your application registered
-before. All this code is relatively simple, and you will find it in
-src/skins/common/sigshadow.c
-
-Now, I suspect the issue you have is something else, so, could you post
-the faulting code, reduced to a simple self-contained test case?
+Actually, readline behaviour is highly configurable, and looking a bit
+at its documentation, we find that its behaviour with regard to sigwinch
+is configurable, see:
+rl_catch_sigwinch
+rl_resize_terminal
 
 -- 
                                                                 Gilles.
