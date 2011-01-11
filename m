@@ -1,16 +1,9 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <alpine.DEB.1.10.1101111917460.17125@domain.hid>
-References: <alpine.DEB.1.10.1101111320530.16506@domain.hid>
-	<4D2C80FC.7040903@domain.hid>
-	<alpine.DEB.1.10.1101111846540.17125@domain.hid>
-	<1294769226.1828.247.camel@domain.hid>
-	<alpine.DEB.1.10.1101111917460.17125@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Tue, 11 Jan 2011 19:27:27 +0100
-Message-ID: <1294770447.1828.250.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] blackfin kernel oops under heavy load
+Message-ID: <566288.27144.qm@domain.hid>
+Date: Wed, 12 Jan 2011 04:41:17 +0800 (SGT)
+From: Ramon Rusli <mon_nie@domain.hid>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="0-815606879-1294778477=:27144"
+Subject: [Xenomai-help] about rtnet usage for real time networking
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -20,22 +13,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenoka09@domain.hid
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
+Cc: Ramon Rusli <mon_nie@domain.hid>
 
-On Tue, 2011-01-11 at 19:18 +0100, Kolja Waschk wrote:
-> > realtime IRQs), and there is no straightforward tips on how to track it
-> > unfortunately. Well, your report is queued, thanks. I can't do much
-> > better for now.
-> 
-> Okay, thanks - if you want me to try anything or record more details in my
-> environment later let me know. - Kolja
-> 
+--0-815606879-1294778477=:27144
+Content-Type: text/plain; charset=us-ascii
 
-Ok, thanks.
+Dear,
 
--- 
-Philippe.
+Hi, I am Ramon.I am new with xenomai and rtnet. I want to ask about this question: Why is Xenomai need to use RTnet as network protocol stack to build a real time networking? Is it crucial? Can't Xenomai build real-time network without RTnet (or other network protocol stack, if it is there)? Or is it because Xenomai didn't have service to build real-time networking? Or is there some kind of problem with Xenomai's real time network, so for solution, it use RTnet?
+
+Thanks
 
 
+
+      
+--0-815606879-1294778477=:27144
+Content-Type: text/html; charset=us-ascii
+
+<table cellspacing="0" cellpadding="0" border="0" ><tr><td valign="top" style="font: inherit;">Dear,<br><br>Hi, I am Ramon.I am new with xenomai and rtnet. I want to ask about this question: Why is Xenomai need to use RTnet as network protocol stack to build a real time networking? Is it crucial? Can't Xenomai build real-time network without RTnet (or other network protocol stack, if it is there)? Or is it because Xenomai didn't have service to build real-time networking? Or is there some kind of problem with Xenomai's real time network, so for solution, it use RTnet?<br><br>Thanks<br></td></tr></table><br>
+
+      
+--0-815606879-1294778477=:27144--
 
