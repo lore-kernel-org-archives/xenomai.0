@@ -1,16 +1,19 @@
-Message-ID: <4D2DD61E.7000006@domain.hid>
-Date: Wed, 12 Jan 2011 17:26:06 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Content-class: urn:content-classes:message
 MIME-Version: 1.0
+Content-Type: text/plain;
+	charset="utf-8"
+Content-Transfer-Encoding: base64
+Date: Wed, 12 Jan 2011 13:16:42 -0500
+Message-ID: <6FCCA913376DD7488F4139A4D11B8F48016741F6@domain.hid>
+In-Reply-To: <4D2DD61E.7000006@domain.hid>
 References: <6FCCA913376DD7488F4139A4D11B8F48016311A5@domain.hid>	<4D1FAE66.8080005@domain.hid>	<6FCCA913376DD7488F4139A4D11B8F4801673CAB@troe2k1.cs.myharris.net>	<4D24E3AC.2000904@domain.hid>
 	<4D24EB92.3050104@domain.hid>	<4D24F0B7.7010604@domain.hid>	<6FCCA913376DD7488F4139A4D11B8F4801673CD4@domain.hid>
 	<4D25C9D6.4030707@domain.hid> <4D2CE77C.7000109@domain.hid>
 	<6FCCA913376DD7488F4139A4D11B8F4801674163@domain.hid>
 	<4D2DAE16.2060805@domain.hid>
 	<6FCCA913376DD7488F4139A4D11B8F48016741A9@domain.hid>
-In-Reply-To: <6FCCA913376DD7488F4139A4D11B8F48016741A9@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+	<4D2DD61E.7000006@domain.hid>
+From: "Herrera-Bendezu, Luis" <lherrera@domain.hid>
 Subject: Re: [Xenomai-help] [Xenomai -help] User space access to DMA memory
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -21,153 +24,118 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "Herrera-Bendezu, Luis" <lherrera@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-Herrera-Bendezu, Luis wrote:
->> From: Gilles Chanteperdrix [mailto:gilles.chanteperdrix@xenomai.org]
->> Sent: Wednesday, January 12, 2011 8:35 AM
->> To: Herrera-Bendezu, Luis
->> Cc: xenomai@xenomai.org
->> Subject: Re: [Xenomai-help] [Xenomai -help] User space access to DMA memory
->>
->> Herrera-Bendezu, Luis wrote:
->>>> -----Original Message-----
->>>> From: Gilles Chanteperdrix [mailto:gilles.chanteperdrix@xenomai.org]
->>>> Sent: Tuesday, January 11, 2011 6:28 PM
->>>> To: Herrera-Bendezu, Luis
->>>> Cc: xenomai@xenomai.org
->>>> Subject: Re: [Xenomai-help] [Xenomai -help] User space access to DMA memory
->>>>
->>>> Gilles Chanteperdrix wrote:
->>>>> Herrera-Bendezu, Luis wrote:
->>>>>> On 01/05/2011 5:29 PM Gilles Chanteperdrix wrote:
->>>>>>> Steven A. Falco wrote:
->>>>>>>> On 01/05/2011 04:33 PM, Gilles Chanteperdrix wrote:
->>>>>>> Ok. Could you try to do the same operation with the native API? You just
->>>>>>> have to pass H_SHARED | H_DMA | H_NONCACHED as flags to rt_heap_create
->>>>>>> to get the same effect as pci_dma_alloc_coherent.
->>>>>>>
->>>>>>> Just to see if the error lies in RTDM implementation or in Xenomai
->>>>>>> generic code.
->>>>>>>
->>>>>>>
->>>>> (...)
->>>>> What about the other thing I asked you to test?
->>>>>
->>>> Ping? Any news about this test?
->>> rt_heap_create() with flags H_SHARED | H_DMA | H_NONCACHED report -EINVAL.
->>> Documentation indicates that H_NONCACHE is not compatible with H_DMA.
->> Right, supporting H_NONCACHED | H_DMA would mean that we would have to
->> use kmalloc/get_free_pages then establish a non-cached mapping in
->> kernel-space with vm_map_ram.
->>
->> Could you try with H_NONCACHED, but without H_DMA? Of course, the
->> mapping can not be used for DMA, as it will probably not be physically
->> contiguous, but at least you can try whether accessing in user-space a
->> non-cached mapping works.
-> It does work but unless an external unit writes to heap memory it would
-> be difficult to verify that the non-cached memory actually works, i.e.
-> access from user space gets expected value(s).
-
-I am quite confident this works.
-
->> In any case, we see a defect in the RTDM interface here: we can not ask
->> the mapping to be mapped non-cacheable, which somewhat defeats the
->> purpose of pci_alloc_consistent. I do not know enough the powerpc
->> architecture to know whether this could be the cause of your issue (the
->> same physical area mapped twice, once cached, once non-cached). However,
->> on the ARM architecture, for instance, it is bad.
->>
-> 
-> Let me summarize the ideas discussed so far to allocate consistent memory
-> suitable for DMA and corresponding mapping to user space:
-> * rt_heap cannot be created with both H_NONCACHED and H_DMA. But it is
->   automatically mapped to user space with rt_heap_bind().
-> 
->   A solution can be to allocate heap with H_SHARED | H_DMA, somehow
->   get bus address of single block of memory (rt_heap { sba } ?) to
->   used for DMA operations.
-
-The test with rt_heap was just a test to have a comparison between
-xnheap code and rtdm_mmap. But we may indeed want to fix mmappable
-xnheaps later on.
-
->   
-> * RTDM interface rtdm_mmap/unmap cannot handle non-cacheable memory.
-> 
->   A solution can be to allocate GFP_DMA memory with kmalloc(), use
->   rtdm_mmap to map to user space. Programmatically make memory
->   consistent before/after DMA transfer to/from external unit, e.g.
->   dma_sync_single_for_device()/dma_sync_single_for_cpu(). This is
->   similar to what streaming DMA mappings do.
-> 
-> * Ideally, it should be possible to take memory allocated from
->   dma_alloc_coherent()/pci_alloc_consistent() and mapped it to
->   user space using rtdm_mmap().
-
-To check that the non-cacheable mapping is indeed the problem, here is a
-patch which adds the possibility to add non-cacheable mappings:
-
-diff --git a/ksrc/skins/rtdm/drvlib.c b/ksrc/skins/rtdm/drvlib.c
-index 3495e63..ec0ddae 100644
---- a/ksrc/skins/rtdm/drvlib.c
-+++ b/ksrc/skins/rtdm/drvlib.c
-@@ -1791,6 +1791,7 @@ void rtdm_nrtsig_pend(rtdm_nrtsig_t *nrt_sig);
-
- #if defined(CONFIG_XENO_OPT_PERVASIVE) || defined(DOXYGEN_CPP)
- struct rtdm_mmap_data {
-+	int noncached;
- 	void *src_vaddr;
- 	phys_addr_t src_paddr;
- 	struct vm_operations_struct *vm_ops;
-@@ -1815,6 +1816,9 @@ static int rtdm_mmap_buffer(struct file *filp,
-struct vm_area_struct *vma)
- 	maddr = vma->vm_start;
- 	size = vma->vm_end - vma->vm_start;
-
-+	if (mmap_data->noncached)
-+		vma->vm_page_prot = pgprot_noncached(vma->vm_page_prot);
-+
- #ifdef CONFIG_MMU
- 	/* Catch vmalloc memory (vaddr is 0 for I/O mapping) */
- 	if ((vaddr >= VMALLOC_START) && (vaddr < VMALLOC_END)) {
-@@ -1975,6 +1979,24 @@ int rtdm_mmap_to_user(rtdm_user_info_t *user_info,
- 		      void *vm_private_data)
- {
- 	struct rtdm_mmap_data mmap_data = {
-+		.noncached = 0,
-+		.src_vaddr = src_addr,
-+		.src_paddr = 0,
-+		.vm_ops = vm_ops,
-+		.vm_private_data = vm_private_data
-+	};
-+
-+	return rtdm_do_mmap(user_info, &mmap_data, len, prot, pptr);
-+}
-+
-+int rtdm_mmap_noncached_to_user(rtdm_user_info_t *user_info,
-+				void *src_addr, size_t len,
-+				int prot, void **pptr,
-+				struct vm_operations_struct *vm_ops,
-+				void *vm_private_data)
-+{
-+	struct rtdm_mmap_data mmap_data = {
-+		.noncached = 1,
- 		.src_vaddr = src_addr,
- 		.src_paddr = 0,
- 		.vm_ops = vm_ops,
-@@ -2043,6 +2065,7 @@ int rtdm_iomap_to_user(rtdm_user_info_t *user_info,
- 		       void *vm_private_data)
- {
- 	struct rtdm_mmap_data mmap_data = {
-+		.noncached = 0,
- 		.src_vaddr = NULL,
- 		.src_paddr = src_addr,
- 		.vm_ops = vm_ops,
-
-Simply call rtdm_mmap_noncached_to_user instead of rtdm_mmap_to_user.
-
--- 
-					    Gilles.
+PkZyb206IEdpbGxlcyBDaGFudGVwZXJkcml4IFttYWlsdG86Z2lsbGVzLmNoYW50ZXBlcmRyaXhA
+eGVub21haS5vcmddDQo+U2VudDogV2VkbmVzZGF5LCBKYW51YXJ5IDEyLCAyMDExIDExOjI2IEFN
+DQo+VG86IEhlcnJlcmEtQmVuZGV6dSwgTHVpcw0KPkNjOiB4ZW5vbWFpLWhlbHBAZ25hLm9yZw0K
+PlN1YmplY3Q6IFJlOiBbWGVub21haS1oZWxwXSBbWGVub21haSAtaGVscF0gVXNlciBzcGFjZSBh
+Y2Nlc3MgdG8gRE1BIG1lbW9yeQ0KPg0KPkhlcnJlcmEtQmVuZGV6dSwgTHVpcyB3cm90ZToNCj4+
+PiBGcm9tOiBHaWxsZXMgQ2hhbnRlcGVyZHJpeCBbbWFpbHRvOmdpbGxlcy5jaGFudGVwZXJkcml4
+QHhlbm9tYWkub3JnXQ0KPj4+IFNlbnQ6IFdlZG5lc2RheSwgSmFudWFyeSAxMiwgMjAxMSA4OjM1
+IEFNDQo+Pj4gVG86IEhlcnJlcmEtQmVuZGV6dSwgTHVpcw0KPj4+IENjOiB4ZW5vbWFpLWhlbHBA
+Z25hLm9yZw0KPj4+IFN1YmplY3Q6IFJlOiBbWGVub21haS1oZWxwXSBbWGVub21haSAtaGVscF0g
+VXNlciBzcGFjZSBhY2Nlc3MgdG8gRE1BIG1lbW9yeQ0KPj4+DQo+Pj4gSGVycmVyYS1CZW5kZXp1
+LCBMdWlzIHdyb3RlOg0KPj4+Pj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4+Pj4+IEZy
+b206IEdpbGxlcyBDaGFudGVwZXJkcml4IFttYWlsdG86Z2lsbGVzLmNoYW50ZXBlcmRyaXhAeGVu
+b21haS5vcmddDQo+Pj4+PiBTZW50OiBUdWVzZGF5LCBKYW51YXJ5IDExLCAyMDExIDY6MjggUE0N
+Cj4+Pj4+IFRvOiBIZXJyZXJhLUJlbmRlenUsIEx1aXMNCj4+Pj4+IENjOiB4ZW5vbWFpLWhlbHBA
+Z25hLm9yZw0KPj4+Pj4gU3ViamVjdDogUmU6IFtYZW5vbWFpLWhlbHBdIFtYZW5vbWFpIC1oZWxw
+XSBVc2VyIHNwYWNlIGFjY2VzcyB0byBETUEgbWVtb3J5DQo+Pj4+Pg0KPj4+Pj4gR2lsbGVzIENo
+YW50ZXBlcmRyaXggd3JvdGU6DQo+Pj4+Pj4gSGVycmVyYS1CZW5kZXp1LCBMdWlzIHdyb3RlOg0K
+Pj4+Pj4+PiBPbiAwMS8wNS8yMDExIDU6MjkgUE0gR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6
+DQo+Pj4+Pj4+PiBTdGV2ZW4gQS4gRmFsY28gd3JvdGU6DQo+Pj4+Pj4+Pj4gT24gMDEvMDUvMjAx
+MSAwNDozMyBQTSwgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6DQo+Pj4+Pj4+PiBPay4gQ291
+bGQgeW91IHRyeSB0byBkbyB0aGUgc2FtZSBvcGVyYXRpb24gd2l0aCB0aGUgbmF0aXZlIEFQST8g
+WW91IGp1c3QNCj4+Pj4+Pj4+IGhhdmUgdG8gcGFzcyBIX1NIQVJFRCB8IEhfRE1BIHwgSF9OT05D
+QUNIRUQgYXMgZmxhZ3MgdG8gcnRfaGVhcF9jcmVhdGUNCj4+Pj4+Pj4+IHRvIGdldCB0aGUgc2Ft
+ZSBlZmZlY3QgYXMgcGNpX2RtYV9hbGxvY19jb2hlcmVudC4NCj4+Pj4+Pj4+DQo+Pj4+Pj4+PiBK
+dXN0IHRvIHNlZSBpZiB0aGUgZXJyb3IgbGllcyBpbiBSVERNIGltcGxlbWVudGF0aW9uIG9yIGlu
+IFhlbm9tYWkNCj4+Pj4+Pj4+IGdlbmVyaWMgY29kZS4NCj4+Pj4+Pj4+DQo+Pj4+Pj4+Pg0KPj4+
+Pj4+ICguLi4pDQo+Pj4+Pj4gV2hhdCBhYm91dCB0aGUgb3RoZXIgdGhpbmcgSSBhc2tlZCB5b3Ug
+dG8gdGVzdD8NCj4+Pj4+Pg0KPj4+Pj4gUGluZz8gQW55IG5ld3MgYWJvdXQgdGhpcyB0ZXN0Pw0K
+Pj4+PiBydF9oZWFwX2NyZWF0ZSgpIHdpdGggZmxhZ3MgSF9TSEFSRUQgfCBIX0RNQSB8IEhfTk9O
+Q0FDSEVEIHJlcG9ydCAtRUlOVkFMLg0KPj4+PiBEb2N1bWVudGF0aW9uIGluZGljYXRlcyB0aGF0
+IEhfTk9OQ0FDSEUgaXMgbm90IGNvbXBhdGlibGUgd2l0aCBIX0RNQS4NCj4+PiBSaWdodCwgc3Vw
+cG9ydGluZyBIX05PTkNBQ0hFRCB8IEhfRE1BIHdvdWxkIG1lYW4gdGhhdCB3ZSB3b3VsZCBoYXZl
+IHRvDQo+Pj4gdXNlIGttYWxsb2MvZ2V0X2ZyZWVfcGFnZXMgdGhlbiBlc3RhYmxpc2ggYSBub24t
+Y2FjaGVkIG1hcHBpbmcgaW4NCj4+PiBrZXJuZWwtc3BhY2Ugd2l0aCB2bV9tYXBfcmFtLg0KPj4+
+DQo+Pj4gQ291bGQgeW91IHRyeSB3aXRoIEhfTk9OQ0FDSEVELCBidXQgd2l0aG91dCBIX0RNQT8g
+T2YgY291cnNlLCB0aGUNCj4+PiBtYXBwaW5nIGNhbiBub3QgYmUgdXNlZCBmb3IgRE1BLCBhcyBp
+dCB3aWxsIHByb2JhYmx5IG5vdCBiZSBwaHlzaWNhbGx5DQo+Pj4gY29udGlndW91cywgYnV0IGF0
+IGxlYXN0IHlvdSBjYW4gdHJ5IHdoZXRoZXIgYWNjZXNzaW5nIGluIHVzZXItc3BhY2UgYQ0KPj4+
+IG5vbi1jYWNoZWQgbWFwcGluZyB3b3Jrcy4NCj4+IEl0IGRvZXMgd29yayBidXQgdW5sZXNzIGFu
+IGV4dGVybmFsIHVuaXQgd3JpdGVzIHRvIGhlYXAgbWVtb3J5IGl0IHdvdWxkDQo+PiBiZSBkaWZm
+aWN1bHQgdG8gdmVyaWZ5IHRoYXQgdGhlIG5vbi1jYWNoZWQgbWVtb3J5IGFjdHVhbGx5IHdvcmtz
+LCBpLmUuDQo+PiBhY2Nlc3MgZnJvbSB1c2VyIHNwYWNlIGdldHMgZXhwZWN0ZWQgdmFsdWUocyku
+DQo+DQo+SSBhbSBxdWl0ZSBjb25maWRlbnQgdGhpcyB3b3Jrcy4NCj4NCj4+PiBJbiBhbnkgY2Fz
+ZSwgd2Ugc2VlIGEgZGVmZWN0IGluIHRoZSBSVERNIGludGVyZmFjZSBoZXJlOiB3ZSBjYW4gbm90
+IGFzaw0KPj4+IHRoZSBtYXBwaW5nIHRvIGJlIG1hcHBlZCBub24tY2FjaGVhYmxlLCB3aGljaCBz
+b21ld2hhdCBkZWZlYXRzIHRoZQ0KPj4+IHB1cnBvc2Ugb2YgcGNpX2FsbG9jX2NvbnNpc3RlbnQu
+IEkgZG8gbm90IGtub3cgZW5vdWdoIHRoZSBwb3dlcnBjDQo+Pj4gYXJjaGl0ZWN0dXJlIHRvIGtu
+b3cgd2hldGhlciB0aGlzIGNvdWxkIGJlIHRoZSBjYXVzZSBvZiB5b3VyIGlzc3VlICh0aGUNCj4+
+PiBzYW1lIHBoeXNpY2FsIGFyZWEgbWFwcGVkIHR3aWNlLCBvbmNlIGNhY2hlZCwgb25jZSBub24t
+Y2FjaGVkKS4gSG93ZXZlciwNCj4+PiBvbiB0aGUgQVJNIGFyY2hpdGVjdHVyZSwgZm9yIGluc3Rh
+bmNlLCBpdCBpcyBiYWQuDQo+Pj4NCj4+DQo+PiBMZXQgbWUgc3VtbWFyaXplIHRoZSBpZGVhcyBk
+aXNjdXNzZWQgc28gZmFyIHRvIGFsbG9jYXRlIGNvbnNpc3RlbnQgbWVtb3J5DQo+PiBzdWl0YWJs
+ZSBmb3IgRE1BIGFuZCBjb3JyZXNwb25kaW5nIG1hcHBpbmcgdG8gdXNlciBzcGFjZToNCj4+ICog
+cnRfaGVhcCBjYW5ub3QgYmUgY3JlYXRlZCB3aXRoIGJvdGggSF9OT05DQUNIRUQgYW5kIEhfRE1B
+LiBCdXQgaXQgaXMNCj4+ICAgYXV0b21hdGljYWxseSBtYXBwZWQgdG8gdXNlciBzcGFjZSB3aXRo
+IHJ0X2hlYXBfYmluZCgpLg0KPj4NCj4+ICAgQSBzb2x1dGlvbiBjYW4gYmUgdG8gYWxsb2NhdGUg
+aGVhcCB3aXRoIEhfU0hBUkVEIHwgSF9ETUEsIHNvbWVob3cNCj4+ICAgZ2V0IGJ1cyBhZGRyZXNz
+IG9mIHNpbmdsZSBibG9jayBvZiBtZW1vcnkgKHJ0X2hlYXAgeyBzYmEgfSA/KSB0bw0KPj4gICB1
+c2VkIGZvciBETUEgb3BlcmF0aW9ucy4NCj4NCj5UaGUgdGVzdCB3aXRoIHJ0X2hlYXAgd2FzIGp1
+c3QgYSB0ZXN0IHRvIGhhdmUgYSBjb21wYXJpc29uIGJldHdlZW4NCj54bmhlYXAgY29kZSBhbmQg
+cnRkbV9tbWFwLiBCdXQgd2UgbWF5IGluZGVlZCB3YW50IHRvIGZpeCBtbWFwcGFibGUNCj54bmhl
+YXBzIGxhdGVyIG9uLg0KPg0KPj4NCj4+ICogUlRETSBpbnRlcmZhY2UgcnRkbV9tbWFwL3VubWFw
+IGNhbm5vdCBoYW5kbGUgbm9uLWNhY2hlYWJsZSBtZW1vcnkuDQo+Pg0KPj4gICBBIHNvbHV0aW9u
+IGNhbiBiZSB0byBhbGxvY2F0ZSBHRlBfRE1BIG1lbW9yeSB3aXRoIGttYWxsb2MoKSwgdXNlDQo+
+PiAgIHJ0ZG1fbW1hcCB0byBtYXAgdG8gdXNlciBzcGFjZS4gUHJvZ3JhbW1hdGljYWxseSBtYWtl
+IG1lbW9yeQ0KPj4gICBjb25zaXN0ZW50IGJlZm9yZS9hZnRlciBETUEgdHJhbnNmZXIgdG8vZnJv
+bSBleHRlcm5hbCB1bml0LCBlLmcuDQo+PiAgIGRtYV9zeW5jX3NpbmdsZV9mb3JfZGV2aWNlKCkv
+ZG1hX3N5bmNfc2luZ2xlX2Zvcl9jcHUoKS4gVGhpcyBpcw0KPj4gICBzaW1pbGFyIHRvIHdoYXQg
+c3RyZWFtaW5nIERNQSBtYXBwaW5ncyBkby4NCj4+DQo+PiAqIElkZWFsbHksIGl0IHNob3VsZCBi
+ZSBwb3NzaWJsZSB0byB0YWtlIG1lbW9yeSBhbGxvY2F0ZWQgZnJvbQ0KPj4gICBkbWFfYWxsb2Nf
+Y29oZXJlbnQoKS9wY2lfYWxsb2NfY29uc2lzdGVudCgpIGFuZCBtYXBwZWQgaXQgdG8NCj4+ICAg
+dXNlciBzcGFjZSB1c2luZyBydGRtX21tYXAoKS4NCj4NCj5UbyBjaGVjayB0aGF0IHRoZSBub24t
+Y2FjaGVhYmxlIG1hcHBpbmcgaXMgaW5kZWVkIHRoZSBwcm9ibGVtLCBoZXJlIGlzIGENCj5wYXRj
+aCB3aGljaCBhZGRzIHRoZSBwb3NzaWJpbGl0eSB0byBhZGQgbm9uLWNhY2hlYWJsZSBtYXBwaW5n
+czoNCj4NCj5kaWZmIC0tZ2l0IGEva3NyYy9za2lucy9ydGRtL2RydmxpYi5jIGIva3NyYy9za2lu
+cy9ydGRtL2RydmxpYi5jDQo+aW5kZXggMzQ5NWU2My4uZWMwZGRhZSAxMDA2NDQNCj4tLS0gYS9r
+c3JjL3NraW5zL3J0ZG0vZHJ2bGliLmMNCj4rKysgYi9rc3JjL3NraW5zL3J0ZG0vZHJ2bGliLmMN
+Cj5AQCAtMTc5MSw2ICsxNzkxLDcgQEAgdm9pZCBydGRtX25ydHNpZ19wZW5kKHJ0ZG1fbnJ0c2ln
+X3QgKm5ydF9zaWcpOw0KPg0KPiAjaWYgZGVmaW5lZChDT05GSUdfWEVOT19PUFRfUEVSVkFTSVZF
+KSB8fCBkZWZpbmVkKERPWFlHRU5fQ1BQKQ0KPiBzdHJ1Y3QgcnRkbV9tbWFwX2RhdGEgew0KPisJ
+aW50IG5vbmNhY2hlZDsNCj4gCXZvaWQgKnNyY192YWRkcjsNCj4gCXBoeXNfYWRkcl90IHNyY19w
+YWRkcjsNCj4gCXN0cnVjdCB2bV9vcGVyYXRpb25zX3N0cnVjdCAqdm1fb3BzOw0KPkBAIC0xODE1
+LDYgKzE4MTYsOSBAQCBzdGF0aWMgaW50IHJ0ZG1fbW1hcF9idWZmZXIoc3RydWN0IGZpbGUgKmZp
+bHAsDQo+c3RydWN0IHZtX2FyZWFfc3RydWN0ICp2bWEpDQo+IAltYWRkciA9IHZtYS0+dm1fc3Rh
+cnQ7DQo+IAlzaXplID0gdm1hLT52bV9lbmQgLSB2bWEtPnZtX3N0YXJ0Ow0KPg0KPisJaWYgKG1t
+YXBfZGF0YS0+bm9uY2FjaGVkKQ0KPisJCXZtYS0+dm1fcGFnZV9wcm90ID0gcGdwcm90X25vbmNh
+Y2hlZCh2bWEtPnZtX3BhZ2VfcHJvdCk7DQo+Kw0KPiAjaWZkZWYgQ09ORklHX01NVQ0KPiAJLyog
+Q2F0Y2ggdm1hbGxvYyBtZW1vcnkgKHZhZGRyIGlzIDAgZm9yIEkvTyBtYXBwaW5nKSAqLw0KPiAJ
+aWYgKCh2YWRkciA+PSBWTUFMTE9DX1NUQVJUKSAmJiAodmFkZHIgPCBWTUFMTE9DX0VORCkpIHsN
+Cj5AQCAtMTk3NSw2ICsxOTc5LDI0IEBAIGludCBydGRtX21tYXBfdG9fdXNlcihydGRtX3VzZXJf
+aW5mb190ICp1c2VyX2luZm8sDQo+IAkJICAgICAgdm9pZCAqdm1fcHJpdmF0ZV9kYXRhKQ0KPiB7
+DQo+IAlzdHJ1Y3QgcnRkbV9tbWFwX2RhdGEgbW1hcF9kYXRhID0gew0KPisJCS5ub25jYWNoZWQg
+PSAwLA0KPisJCS5zcmNfdmFkZHIgPSBzcmNfYWRkciwNCj4rCQkuc3JjX3BhZGRyID0gMCwNCj4r
+CQkudm1fb3BzID0gdm1fb3BzLA0KPisJCS52bV9wcml2YXRlX2RhdGEgPSB2bV9wcml2YXRlX2Rh
+dGENCj4rCX07DQo+Kw0KPisJcmV0dXJuIHJ0ZG1fZG9fbW1hcCh1c2VyX2luZm8sICZtbWFwX2Rh
+dGEsIGxlbiwgcHJvdCwgcHB0cik7DQo+K30NCj4rDQo+K2ludCBydGRtX21tYXBfbm9uY2FjaGVk
+X3RvX3VzZXIocnRkbV91c2VyX2luZm9fdCAqdXNlcl9pbmZvLA0KPisJCQkJdm9pZCAqc3JjX2Fk
+ZHIsIHNpemVfdCBsZW4sDQo+KwkJCQlpbnQgcHJvdCwgdm9pZCAqKnBwdHIsDQo+KwkJCQlzdHJ1
+Y3Qgdm1fb3BlcmF0aW9uc19zdHJ1Y3QgKnZtX29wcywNCj4rCQkJCXZvaWQgKnZtX3ByaXZhdGVf
+ZGF0YSkNCj4rew0KPisJc3RydWN0IHJ0ZG1fbW1hcF9kYXRhIG1tYXBfZGF0YSA9IHsNCj4rCQku
+bm9uY2FjaGVkID0gMSwNCj4gCQkuc3JjX3ZhZGRyID0gc3JjX2FkZHIsDQo+IAkJLnNyY19wYWRk
+ciA9IDAsDQo+IAkJLnZtX29wcyA9IHZtX29wcywNCj5AQCAtMjA0Myw2ICsyMDY1LDcgQEAgaW50
+IHJ0ZG1faW9tYXBfdG9fdXNlcihydGRtX3VzZXJfaW5mb190ICp1c2VyX2luZm8sDQo+IAkJICAg
+ICAgIHZvaWQgKnZtX3ByaXZhdGVfZGF0YSkNCj4gew0KPiAJc3RydWN0IHJ0ZG1fbW1hcF9kYXRh
+IG1tYXBfZGF0YSA9IHsNCj4rCQkubm9uY2FjaGVkID0gMCwNCj4gCQkuc3JjX3ZhZGRyID0gTlVM
+TCwNCj4gCQkuc3JjX3BhZGRyID0gc3JjX2FkZHIsDQo+IAkJLnZtX29wcyA9IHZtX29wcywNCj4N
+Cj5TaW1wbHkgY2FsbCBydGRtX21tYXBfbm9uY2FjaGVkX3RvX3VzZXIgaW5zdGVhZCBvZiBydGRt
+X21tYXBfdG9fdXNlci4NCj4NCg0KR2V0IHNhbWUga2VybmVsIHBhbmljIGVycm9yIGFzIGJlZm9y
+ZSB3aXRoIHRoaXMgcGF0Y2guIEkgbmVlZCB0byBsb29rIGNsb3Nlcg0KYXQgd2hhdCBhcmUgdGhl
+IG1lbW9yeSBhbGxvY2F0aW9uIGZ1bmN0aW9ucyB1c2VkIGJ5IHBjaV8gYW5kIGRtYV8uDQoNCkx1
+aXMNCg0K
 
