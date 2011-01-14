@@ -1,11 +1,11 @@
-Date: Thu, 13 Jan 2011 00:35:57 +0100
-From: Alexis Berlemont <alexis.berlemont@domain.hid>
-Message-ID: <20110112233555.GB3049@domain.hid>
+Message-ID: <4D306110.7000104@domain.hid>
+Date: Fri, 14 Jan 2011 15:43:28 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Subject: [Xenomai-core] [PULL REQUEST] analogy: bug fixes in buffer size
-	config
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-core] [PATCH] Add INTEL_IDLE to list of problematic config
+	options
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -14,35 +14,51 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+To: Xenomai core <Xenomai-core@domain.hid>
 
-The following changes since commit c0993894a7ab56d9c3f5444e90e68602673288de:
+See TROUBLESHOOTING for explanation.
 
-  16550A: Disable PCI configuration option for platforms without PCI (2011-01-08 01:05:02 +0100)
+Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
+---
+ TROUBLESHOOTING      |    4 ++++
+ scripts/Kconfig.frag |    9 +++++----
+ 2 files changed, 9 insertions(+), 4 deletions(-)
 
-are available in the git repository at:
-  ssh+git://git.xenomai.org/xenomai-abe.git analogy 
-
-Alexis Berlemont (5):
-      analogy: fix the default size of the buffer
-      analogy: [pcimio] minor fix in log messages
-      analogy: implement configuration of buffer default size
-      analogy: add a "sys" function for the ioctl BUFCONFIG
-      analogy: add buffer configuration facility in analogy_config
-
- include/analogy/analogy.h                        |    2 +
- include/analogy/buffer.h                         |    8 +
- include/analogy/transfer.h                       |    3 +
- include/analogy/types.h                          |    4 +-
- ksrc/drivers/analogy/buffer.c                    |   17 +-
- ksrc/drivers/analogy/national_instruments/mite.c |    2 +-
- ksrc/drivers/analogy/rtdm_interface.c            |   10 +-
- ksrc/drivers/analogy/transfer.c                  |    4 +
- src/drvlib/analogy/async.c                       |    9 +-
- src/drvlib/analogy/sys.c                         |   33 +++
- src/utils/analogy/analogy_config.c               |  241 ++++++++++++++--------
- 11 files changed, 223 insertions(+), 110 deletions(-)
-
+diff --git a/TROUBLESHOOTING b/TROUBLESHOOTING
+index 4d84a79..e8d4b53 100644
+--- a/TROUBLESHOOTING
++++ b/TROUBLESHOOTING
+@@ -57,6 +57,10 @@ sleep states, increasing latency in ways dependent upon both the
+ BIOS's ACPI tables and code.  You may be able to suppress the sleeping
+ with 'idle=poll' boot-arg, test to find out
+ 
++INTEL_IDLE: Just like ACPI_PROCESSOR, this idle driver sends the CPU
++into deep C states, also causing huge latencies because the APIC timer
++that Xenomai uses may not fire anymore.
++
+ Summarizing, the latencies incurred here are dependent upon CPU, BIOS,
+ and motherboard; ie they're hard to predict, so we are conservative.
+ Feel free to test on your platform, (xeno-test runs testsuite/latency
+diff --git a/scripts/Kconfig.frag b/scripts/Kconfig.frag
+index 3a52ed4..c136ebf 100644
+--- a/scripts/Kconfig.frag
++++ b/scripts/Kconfig.frag
+@@ -1,10 +1,11 @@
+ 
+ menu "Real-time sub-system"
+ 
+-comment "WARNING! You enabled APM, CPU Frequency scaling or ACPI 'processor'"
+-	depends on APM || CPU_FREQ || ACPI_PROCESSOR
+-comment "option. These options are known to cause troubles with Xenomai."
+-	depends on APM || CPU_FREQ || ACPI_PROCESSOR
++if APM || CPU_FREQ || ACPI_PROCESSOR || INTEL_IDLE
++comment "WARNING! You enabled APM, CPU Frequency scaling, ACPI 'processor'"
++comment "or Intel cpuidle option. These options are known to cause troubles"
++comment "with Xenomai, disable them."
++endif
+ 
+ comment "NOTE: Xenomai conflicts with PC speaker support."
+ 	depends on !X86_TSC && X86 && INPUT_PCSPKR
 -- 
-Alexis.
+1.7.1
 
