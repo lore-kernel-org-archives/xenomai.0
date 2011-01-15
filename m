@@ -1,12 +1,12 @@
-Message-ID: <4D238C44.8000101@domain.hid>
-Date: Tue, 04 Jan 2011 22:08:20 +0100
+Message-ID: <4D3227DA.9080909@domain.hid>
+Date: Sun, 16 Jan 2011 00:03:54 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <AANLkTim+BeV2q5stB-ErSVqF9Oy5BJTHtZF29aPN1c6w@domain.hid>
-In-Reply-To: <AANLkTim+BeV2q5stB-ErSVqF9Oy5BJTHtZF29aPN1c6w@domain.hid>
+References: <4D31B6C3.5060007@domain.hid>
+In-Reply-To: <4D31B6C3.5060007@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] PCI1711 Rtdm driver reading and writing error
+Subject: Re: [Xenomai-help] Question on periodic task
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -16,37 +16,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: adilkaraoz <adilkaraoz@domain.hid>
+To: Wong Sheng Chao <wong@domain.hid>
 Cc: xenomai@xenomai.org
 
-adilkaraoz wrote:
->   pci1711_card->location = pci_resource_start(dev, PCI_1711_BAR & 0xFFFFFFF0
-> );
->   pci1711_card->mem_size = pci_resource_len(dev, PCI_1711_BAR & 0xFFFFFFF0
-> );
-
-I really have doubts about this: the arguments passed to these functions
-should be a something ranging from 0 to 5 inclusive. Now, PCI_1711_BAR &
-0xFFFFFFF0 seems odd.
-If PCI_1711_BAR is less than 0x10, the result of this mask will always be 0.
-If PCI_1711_BAR is greater than 0xf, you end up accessing random memory.
-
-Also note that since 2.6.28, there is a pci_ioremap_bar function, which
-does all the pci_resouce and ioremap job.
-
+Wong Sheng Chao wrote:
+> Hi
 > 
->   //if(pci1711_card->location == 0){
->     printk( KERN_WARNING "xeno_pc1711_driver: location = %lx mem = %lx\n",
-> pci1711_card->location, pci1711_card->mem_size);
->   //}
+> I'm a newbie in real time programming and I recently came to know of 
+> Xenomai. After patching the Xenomai to the linux kernel, I ran some 
+> examples that I found from the Internet to get a better understanding of 
+> the periodic task. Everything seems to run fine when I start two tasks 
+> with period of 1s and 2s, but the system freezes when I added more tasks 
+> ( more than 2 tasks). The period is at 1s, 2s and 3s so i think the 
+> processor has more than enough time to process the tasks.
 > 
->     ret_val = pci_read_config_byte(dev, PCI_INTERRUPT_LINE, &irq);
->     if (!ret_val){
-> rtdm_printk("interrupt line no:%d",irq);
->  }
+> I also read that the periodic mode is emulated by a software driver 
+> which uses one-shot mode programming. Thus i did not enable periodic 
+> timing when I compile the Linux kernel, is this the cause of the problem?
+> 
+> I'm using a system with Core i7, ubuntu 10.04, linux kernel 2.6.32.15, 
+> xenomai 2.5.4
+> 
+> Do let me know what I did wrong in the code, thanks in advance!!
 
-That is not the way to get the interrupt line either, you should use
-dev->irq.
+You almost send us all the information we ask on this page:
+http://www.xenomai.org/index.php/Request_for_information
+
+We lack:
+- the version of the Adeos patch you use
+- the kernel logs from the boot up to the bug itself.
 
 -- 
                                                                 Gilles.
