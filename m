@@ -1,18 +1,11 @@
-Message-ID: <4D239301.80803@domain.hid>
-Date: Tue, 04 Jan 2011 16:37:05 -0500
-From: Tamas Szklenar <tszklenar@domain.hid>
 MIME-Version: 1.0
-References: <4D233AB4.5070702@domain.hid> <4D2352C9.9050006@domain.hid>
-	<4D2377B5.1040807@domain.hid>
-	<4D23785B.5050108@domain.hid> <4D2379EF.5@domain.hid>
-	<4D237A89.3010205@domain.hid> <4D237CA9.2090408@domain.hid>
-	<4D237F62.2030609@domain.hid> <4D2381B6.80304@domain.hid>
-	<4D238C56.40906@domain.hid> <4D238EA1.7020409@domain.hid>
-	<4D239001.9050604@domain.hid>
-In-Reply-To: <4D239001.9050604@domain.hid>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Xenomai failure
+Sender: madjsw@domain.hid
+Date: Mon, 17 Jan 2011 14:15:59 -0600
+Message-ID: <AANLkTi=w67oJVc+iwJdN3znbje0PMiEcjtEUic3xMcNj@domain.hid>
+From: Jeff Weber <jwamsc@domain.hid>
+Content-Type: multipart/alternative; boundary=0016367fb44fc9240e049a107306
+Subject: [Xenomai-help] segfault sharing mutex from kernel space to user
+	space
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -22,194 +15,228 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Hi Gilles,
+--0016367fb44fc9240e049a107306
+Content-Type: text/plain; charset=ISO-8859-1
 
-Sure here is the output:
+I get a segfault when attempting to rt_mutex_acquire a mutex created in
+kernel space.  I've reduced the issue to the following sample code.
+Help finding my mistake is appreciated.
 
-~$ cat /proc/timer_list
-
-Timer List Version: v0.6
-HRTIMER_MAX_CLOCK_BASES: 2
-now at 292297967595 nsecs
-
-cpu: 0
-  clock 0:
-   .base:       ffff880001a0e838
-   .index:      0
-   .resolution: 4000250 nsecs
-   .get_time:   ktime_get_real
-active timers:
-  clock 1:
-   .base:       ffff880001a0e870
-   .index:      1
-   .resolution: 4000250 nsecs
-   .get_time:   ktime_get
-active timers:
-  #0: <ffff88020a665ac8>, hrtimer_wakeup, S:01
-  # expires at 308624130994-308654130993 nsecs [in 16326163399 to 
-16356163398 nsecs]
-
-cpu: 1
-  clock 0:
-   .base:       ffff880001a4e838
-   .index:      0
-   .resolution: 4000250 nsecs
-   .get_time:   ktime_get_real
-active timers:
-  clock 1:
-   .base:       ffff880001a4e870
-   .index:      1
-   .resolution: 4000250 nsecs
-   .get_time:   ktime_get
-active timers:
-  #0: <ffffffff81750bf8>, sched_rt_period_timer, S:01
-  # expires at 293000000000-293000000000 nsecs [in 702032405 to 
-702032405 nsecs]
-  #1: <ffff8802086af9a8>, hrtimer_wakeup, S:01
-  # expires at 293173168132-293174168131 nsecs [in 875200537 to 
-876200536 nsecs]
-  #2: <ffff8802086559a8>, hrtimer_wakeup, S:01
-  # expires at 1013712348906-1013812348906 nsecs [in 721414381311 to 
-721514381311 nsecs]
-
-cpu: 2
-  clock 0:
-   .base:       ffff880001a8e838
-   .index:      0
-   .resolution: 4000250 nsecs
-   .get_time:   ktime_get_real
-active timers:
-  clock 1:
-   .base:       ffff880001a8e870
-   .index:      1
-   .resolution: 4000250 nsecs
-   .get_time:   ktime_get
-active timers:
-  #0: <ffff88020a771ac8>, hrtimer_wakeup, S:01
-  # expires at 292503107490-292503637489 nsecs [in 205139895 to 
-205669894 nsecs]
-  #1: <ffff88020fc8b9a8>, hrtimer_wakeup, S:01
-  # expires at 292524960948-292529960947 nsecs [in 226993353 to 
-231993352 nsecs]
-  #2: <ffff88020e888958>, posix_timer_fn, S:01
-  # expires at 293134262249-293134262249 nsecs [in 836294654 to 
-836294654 nsecs]
-  #3: <ffff88020d1e39a8>, hrtimer_wakeup, S:01
-  # expires at 315876197364-315906197363 nsecs [in 23578229769 to 
-23608229768 nsecs]
-  #4: <ffff88020857fed8>, hrtimer_wakeup, S:01
-  # expires at 338648664865-338648714865 nsecs [in 46350697270 to 
-46350747270 nsecs]
-  #5: <ffff88020d192470>, it_real_fn, S:01
-  # expires at 1816696421423-1816696421423 nsecs [in 1524398453828 to 
-1524398453828 nsecs]
-  #6: <ffff88020a761ed8>, hrtimer_wakeup, S:01
-  # expires at 3613091023499-3613091073499 nsecs [in 3320793055904 to 
-3320793105904 nsecs]
-  #7: <ffff88020a63b9a8>, hrtimer_wakeup, S:01
-  # expires at 86411067787013-86411167787013 nsecs [in 86118769819418 to 
-86118869819418 nsecs]
-
-cpu: 3
-  clock 0:
-   .base:       ffff880001ace838
-   .index:      0
-   .resolution: 4000250 nsecs
-   .get_time:   ktime_get_real
-active timers:
-  #0: <ffff88020d00fd68>, hrtimer_wakeup, S:01
-  # expires at 1294176961287775295-1294176961287825295 nsecs [in 
-1294176668989807700 to 1294176668989857700 nsecs]
-  clock 1:
-   .base:       ffff880001ace870
-   .index:      1
-   .resolution: 4000250 nsecs
-   .get_time:   ktime_get
-active timers:
-  #0: <ffff8802085999a8>, hrtimer_wakeup, S:01
-  # expires at 293101174531-293102174530 nsecs [in 803206936 to 
-804206935 nsecs]
-  #1: <ffff88020a7299a8>, hrtimer_wakeup, S:01
-  # expires at 293165117088-293166117087 nsecs [in 867149493 to 
-868149492 nsecs]
-  #2: <ffff88020e95b9a8>, hrtimer_wakeup, S:01
-  # expires at 296121072213-296126072212 nsecs [in 3823104618 to 
-3828104617 nsecs]
+TIA,
+Jeff
 
 
-Tick Device: mode:     0
-Broadcast device
-Clock Event Device: pit
-  max_delta_ns:   27461866
-  min_delta_ns:   12571
-  mult:           5124677
-  shift:          32
-  mode:           2
-  next_event:     9223372036854775807 nsecs
-  set_next_event: pit_next_event
-  set_mode:       init_pit_timer
-  event_handler:  tick_handle_periodic_broadcast
-  retries:        0
-tick_broadcast_mask: 0000000f
+Kernel space Code:
+#include <linux/module.h>
+#include <linux/init.h>
+#include <native/mutex.h>
+#include "testAPI.h"  /* defines MTXNAME */
+
+#define MODNAME  "XenoTest"
+
+static RT_MUTEX sMtx;
+
+static int __init mymodule_init(void)
+{
+    int status;
+
+    status = rt_mutex_create(&sMtx, MTXNAME);
+    if (status) {
+    printk ("rt_mutex_create: %d\n", status);
+        return 1;
+    }
+
+    printk ("loaded module %s\n", MODNAME);
+    return 0;
+}
+
+static void __exit mymodule_exit(void)
+{
+    rt_mutex_delete(&sMtx);
+
+    printk ("unloaded module %s\n", MODNAME);
+    return;
+}
+
+module_init(mymodule_init);
+module_exit(mymodule_exit);
+
+MODULE_LICENSE("GPL");
 
 
-Tick Device: mode:     0
-Per CPU device: 0
-Clock Event Device: lapic
-  max_delta_ns:   668154819
-  min_delta_ns:   1194
-  mult:           53922821
-  shift:          32
-  mode:           1
-  next_event:     9223372036854775807 nsecs
-  set_next_event: lapic_next_event
-  set_mode:       lapic_timer_setup
-  event_handler:  tick_handle_periodic
-  retries:        0
 
-Tick Device: mode:     0
-Per CPU device: 1
-Clock Event Device: lapic
-  max_delta_ns:   668154819
-  min_delta_ns:   1194
-  mult:           53922821
-  shift:          32
-  mode:           1
-  next_event:     9223372036854775807 nsecs
-  set_next_event: lapic_next_event
-  set_mode:       lapic_timer_setup
-  event_handler:  tick_handle_periodic
-  retries:        0
+User space Code:
+#include <stdio.h>
+#include <sys/mman.h>
+#include <native/mutex.h>
+#include <native/task.h>
 
-Tick Device: mode:     0
-Per CPU device: 2
-Clock Event Device: lapic
-  max_delta_ns:   668154819
-  min_delta_ns:   1194
-  mult:           53922821
-  shift:          32
-  mode:           1
-  next_event:     9223372036854775807 nsecs
-  set_next_event: lapic_next_event
-  set_mode:       lapic_timer_setup
-  event_handler:  tick_handle_periodic
-  retries:        0
+#include "testAPI.h"    /* defines MTXNAME */
 
-Tick Device: mode:     0
-Per CPU device: 3
-Clock Event Device: lapic
-  max_delta_ns:   668154819
-  min_delta_ns:   1194
-  mult:           53922821
-  shift:          32
-  mode:           1
-  next_event:     9223372036854775807 nsecs
-  set_next_event: lapic_next_event
-  set_mode:       lapic_timer_setup
-  event_handler:  tick_handle_periodic
-  retries:        0
+#define PRIO    0
+#define MODE    0
 
+int main(void)
+{
+    RT_MUTEX mtx;
+    RT_TASK  tsk;
+    RT_MUTEX_INFO info;
+    int status;
+
+    mlockall(MCL_CURRENT|MCL_FUTURE);
+
+    status = rt_task_shadow(&tsk, NULL, PRIO, MODE);
+    if (status) {
+        fprintf(stderr, "rt_task_shadow: %d\n", status);
+        return 1;
+    }
+
+    status = rt_mutex_bind(&mtx, MTXNAME, TM_INFINITE);
+    if (status) {
+        fprintf(stderr, "rt_mutex_bind: %d\n", status);
+        return 1;
+    }
+
+    status = rt_mutex_inquire(&mtx, &info);
+    if (status) {
+        fprintf(stderr, "rt_mutex_inquire: %d\n", status);
+        return 1;
+    }
+
+    status = rt_mutex_acquire(&mtx, TM_INFINITE); /* SEGFAULT HERE! */
+    if (status) {
+        fprintf(stderr, "rt_mutex_acquire: %d\n", status);
+        return 1;
+    }
+
+    status = rt_mutex_release(&mtx);
+    if (status) {
+        fprintf(stderr, "rt_mutex_release: %d\n", status);
+        return 1;
+    }
+
+    printf("test success\n");   // back to primary mode
+    return 0;
+}
+
+my kernel
+
+backtrace:
+Program terminated with signal 11, Segmentation fault.
+#0  0xb770077a in xnarch_atomic_cmpxchg (v=0xb777ac00, old=0, newval=21)
+    at ../../../src/include/asm/xenomai/atomic.h:95
+95              __asm__ __volatile__(LOCK_PREFIX "cmpxchgl %1,%2"
+(gdb) bt full
+#0  0xb770077a in xnarch_atomic_cmpxchg (v=0xb777ac00, old=0, newval=21)
+    at ../../../src/include/asm/xenomai/atomic.h:95
+        ptr = 0xb777ac00
+        prev = 4294967295
+#1  0xb7700815 in xnsynch_fast_acquire (fastlock=0xb777ac00, new_ownerh=21)
+    at ../../../include/nucleus/synch.h:52
+        lock_state = 3077595124
+#2  0xb7700c3a in rt_mutex_acquire_inner (mutex=0xbfecd690, timeout=0,
+    mode=XN_RELATIVE) at mutex.c:83
+        err = 134513420
+        cur = 21
+#3  0xb7700e01 in rt_mutex_acquire (mutex=0xbfecd690, timeout=0) at
+mutex.c:129
+No locals.
+#4  0x0804884a in main () at uspace.c:38
+        mtx = {opaque = 19, fastlock = 0xb777ac00, lockcnt = 0}
+        tsk = {opaque = 21, opaque2 = 3075921616}
+        info = {locked = 0, nwaiters = 0,
+          name = "TestMtx\000\000\000\060\000@domain.hid%", '\000'
+<repeats 12 times>,
+          owner =
+"\000\000\000\000\364\036\331\336\020\037\331\336\365Pd\340\005\005UU\000\037\331\336\000\000\000\000\023\000\000"}
+        status = 0
+
+my config:
+arch: x86
+linux: 2.6.35.10
+xenomai: 2.5.5.2
+
+BTW: I did a checkout of git tag v2.5.5.2, and XENO_VERSION_STRING is
+"2.5.5.1"
+
+--0016367fb44fc9240e049a107306
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+I get a segfault when attempting to rt_mutex_acquire a mutex created in ker=
+nel space.=A0 I&#39;ve reduced the issue to the following sample code.<br>H=
+elp finding my mistake is appreciated.<br><br>TIA,<br>Jeff<br><br><br>Kerne=
+l space Code:<br>
+#include &lt;linux/module.h&gt;<br>#include &lt;linux/init.h&gt;<br>#includ=
+e &lt;native/mutex.h&gt;<br>#include &quot;testAPI.h&quot;=A0  /* defines M=
+TXNAME */<br><br>#define MODNAME=A0 &quot;XenoTest&quot;<br><br>static RT_M=
+UTEX sMtx;<br>
+<br>static int __init mymodule_init(void)<br>{<br>=A0=A0=A0 int status;<br>=
+<br>=A0=A0=A0 status =3D rt_mutex_create(&amp;sMtx, MTXNAME);<br>=A0=A0=A0 =
+if (status) {<br>=A0=A0=A0 printk (&quot;rt_mutex_create: %d\n&quot;, statu=
+s);<br>=A0=A0=A0=A0=A0=A0=A0 return 1;<br>
+=A0=A0=A0 }<br><br>=A0=A0=A0 printk (&quot;loaded module %s\n&quot;, MODNAM=
+E);<br>=A0=A0=A0 return 0;<br>}<br><br>static void __exit mymodule_exit(voi=
+d)<br>{<br>=A0=A0=A0 rt_mutex_delete(&amp;sMtx);<br><br>=A0=A0=A0 printk (&=
+quot;unloaded module %s\n&quot;, MODNAME);<br>
+=A0=A0=A0 return;<br>}<br><br>module_init(mymodule_init);<br>module_exit(my=
+module_exit);<br><br>MODULE_LICENSE(&quot;GPL&quot;);<br><br><br><br>User s=
+pace Code:<br>#include &lt;stdio.h&gt;<br>#include &lt;sys/mman.h&gt;<br>#i=
+nclude &lt;native/mutex.h&gt;<br>
+#include &lt;native/task.h&gt;<br><br>#include &quot;testAPI.h&quot;=A0=A0=
+=A0 /* defines MTXNAME */<br><br>#define PRIO=A0=A0=A0 0<br>#define MODE=A0=
+=A0=A0 0<br><br>int main(void)<br>{<br>=A0=A0=A0 RT_MUTEX mtx;<br>=A0=A0=A0=
+ RT_TASK=A0 tsk;<br>=A0=A0=A0 RT_MUTEX_INFO info;<br>
+=A0=A0=A0 int status;<br><br>=A0=A0=A0 mlockall(MCL_CURRENT|MCL_FUTURE);<br=
+><br>=A0=A0=A0 status =3D rt_task_shadow(&amp;tsk, NULL, PRIO, MODE);<br>=
+=A0=A0=A0 if (status) {<br>=A0=A0=A0=A0=A0=A0=A0 fprintf(stderr, &quot;rt_t=
+ask_shadow: %d\n&quot;, status);<br>=A0=A0=A0=A0=A0=A0=A0 return 1;<br>
+=A0=A0=A0 }<br><br>=A0=A0=A0 status =3D rt_mutex_bind(&amp;mtx, MTXNAME, TM=
+_INFINITE);<br>=A0=A0=A0 if (status) {<br>=A0=A0=A0=A0=A0=A0=A0 fprintf(std=
+err, &quot;rt_mutex_bind: %d\n&quot;, status);<br>=A0=A0=A0=A0=A0=A0=A0 ret=
+urn 1;<br>=A0=A0=A0 }<br><br>=A0=A0=A0 status =3D rt_mutex_inquire(&amp;mtx=
+, &amp;info);<br>
+=A0=A0=A0 if (status) {<br>=A0=A0=A0=A0=A0=A0=A0 fprintf(stderr, &quot;rt_m=
+utex_inquire: %d\n&quot;, status);<br>=A0=A0=A0=A0=A0=A0=A0 return 1;<br>=
+=A0=A0=A0 }<br><br>=A0=A0=A0 status =3D rt_mutex_acquire(&amp;mtx, TM_INFIN=
+ITE); /* SEGFAULT HERE! */<br>=A0=A0=A0 if (status) {<br>
+=A0=A0=A0=A0=A0=A0=A0 fprintf(stderr, &quot;rt_mutex_acquire: %d\n&quot;, s=
+tatus);<br>=A0=A0=A0=A0=A0=A0=A0 return 1;<br>=A0=A0=A0 }<br><br>=A0=A0=A0 =
+status =3D rt_mutex_release(&amp;mtx);<br>=A0=A0=A0 if (status) {<br>=A0=A0=
+=A0=A0=A0=A0=A0 fprintf(stderr, &quot;rt_mutex_release: %d\n&quot;, status)=
+;<br>
+=A0=A0=A0=A0=A0=A0=A0 return 1;<br>=A0=A0=A0 }<br><br>=A0=A0=A0 printf(&quo=
+t;test success\n&quot;);=A0=A0 // back to primary mode<br>=A0=A0=A0 return =
+0;<br>}<br><br>my kernel <br><br>backtrace:<br>Program terminated with sign=
+al 11, Segmentation fault.<br>#0=A0 0xb770077a in xnarch_atomic_cmpxchg (v=
+=3D0xb777ac00, old=3D0, newval=3D21)<br>
+=A0=A0=A0 at ../../../src/include/asm/xenomai/atomic.h:95<br>95=A0=A0=A0=A0=
+=A0=A0=A0=A0=A0=A0=A0=A0=A0 __asm__ __volatile__(LOCK_PREFIX &quot;cmpxchgl=
+ %1,%2&quot;<br>(gdb) bt full<br>#0=A0 0xb770077a in xnarch_atomic_cmpxchg =
+(v=3D0xb777ac00, old=3D0, newval=3D21)<br>
+=A0=A0=A0 at ../../../src/include/asm/xenomai/atomic.h:95<br>=A0=A0=A0=A0=
+=A0=A0=A0 ptr =3D 0xb777ac00<br>=A0=A0=A0=A0=A0=A0=A0 prev =3D 4294967295<b=
+r>#1=A0 0xb7700815 in xnsynch_fast_acquire (fastlock=3D0xb777ac00, new_owne=
+rh=3D21)<br>=A0=A0=A0 at ../../../include/nucleus/synch.h:52<br>
+=A0=A0=A0=A0=A0=A0=A0 lock_state =3D 3077595124<br>#2=A0 0xb7700c3a in rt_m=
+utex_acquire_inner (mutex=3D0xbfecd690, timeout=3D0,<br>=A0=A0=A0 mode=3DXN=
+_RELATIVE) at mutex.c:83<br>=A0=A0=A0=A0=A0=A0=A0 err =3D 134513420<br>=A0=
+=A0=A0=A0=A0=A0=A0 cur =3D 21<br>#3=A0 0xb7700e01 in rt_mutex_acquire (mute=
+x=3D0xbfecd690, timeout=3D0) at mutex.c:129<br>
+No locals.<br>#4=A0 0x0804884a in main () at uspace.c:38<br>=A0=A0=A0=A0=A0=
+=A0=A0 mtx =3D {opaque =3D 19, fastlock =3D 0xb777ac00, lockcnt =3D 0}<br>=
+=A0=A0=A0=A0=A0=A0=A0 tsk =3D {opaque =3D 21, opaque2 =3D 3075921616}<br>=
+=A0=A0=A0=A0=A0=A0=A0 info =3D {locked =3D 0, nwaiters =3D 0,<br>
+=A0=A0=A0=A0=A0=A0=A0=A0=A0 name =3D &quot;TestMtx\000\000\000\060\000@domain.hid=
+i\340\000\177%&quot;, &#39;\000&#39; &lt;repeats 12 times&gt;,<br>=A0=A0=A0=
+=A0=A0=A0=A0=A0=A0 owner =3D &quot;\000\000\000\000\364\036\331\336\020\037=
+\331\336\365Pd\340\005\005UU\000\037\331\336\000\000\000\000\023\000\000&qu=
+ot;}<br>
+=A0=A0=A0=A0=A0=A0=A0 status =3D 0<br><br>my config:<br>arch: x86<br>linux:=
+ 2.6.35.10<br>xenomai: 2.5.5.2 <br><br>BTW: I did a checkout of git tag v2.=
+5.5.2, and XENO_VERSION_STRING is &quot;2.5.5.1&quot;<br><br>
+
+--0016367fb44fc9240e049a107306--
 
