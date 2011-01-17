@@ -1,12 +1,13 @@
-Message-ID: <4D34A82F.6070000@domain.hid>
-Date: Mon, 17 Jan 2011 21:35:59 +0100
-From: WONG Sheng Chao <wong@domain.hid>
+Message-ID: <4D34B900.4050604@domain.hid>
+Date: Mon, 17 Jan 2011 22:47:44 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4D31B6C3.5060007@domain.hid> <4D34642E.9090300@domain.hid>
-In-Reply-To: <4D34642E.9090300@domain.hid>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+References: <AANLkTi=w67oJVc+iwJdN3znbje0PMiEcjtEUic3xMcNj@domain.hid>
+In-Reply-To: <AANLkTi=w67oJVc+iwJdN3znbje0PMiEcjtEUic3xMcNj@domain.hid>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-help] [SOLVED] Re:  Question on periodic task
+Subject: Re: [Xenomai-help] segfault sharing mutex from kernel space to user
+ space
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -16,48 +17,150 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Jeff Weber <jwamsc@domain.hid>
 Cc: xenomai@xenomai.org
 
-Problem solved, it was a problem with unsigned long long (ULL). Thanks 
-Gilles and Philippe.
+Jeff Weber wrote:
+> I get a segfault when attempting to rt_mutex_acquire a mutex created in
+> kernel space.  I've reduced the issue to the following sample code.
+> Help finding my mistake is appreciated.
+> 
+> TIA,
+> Jeff
+> 
+> 
+> Kernel space Code:
+> #include <linux/module.h>
+> #include <linux/init.h>
+> #include <native/mutex.h>
+> #include "testAPI.h"  /* defines MTXNAME */
+> 
+> #define MODNAME  "XenoTest"
+> 
+> static RT_MUTEX sMtx;
+> 
+> static int __init mymodule_init(void)
+> {
+>     int status;
+> 
+>     status = rt_mutex_create(&sMtx, MTXNAME);
+>     if (status) {
+>     printk ("rt_mutex_create: %d\n", status);
+>         return 1;
+>     }
+> 
+>     printk ("loaded module %s\n", MODNAME);
+>     return 0;
+> }
+> 
+> static void __exit mymodule_exit(void)
+> {
+>     rt_mutex_delete(&sMtx);
+> 
+>     printk ("unloaded module %s\n", MODNAME);
+>     return;
+> }
+> 
+> module_init(mymodule_init);
+> module_exit(mymodule_exit);
+> 
+> MODULE_LICENSE("GPL");
+> 
+> 
+> 
+> User space Code:
+> #include <stdio.h>
+> #include <sys/mman.h>
+> #include <native/mutex.h>
+> #include <native/task.h>
+> 
+> #include "testAPI.h"    /* defines MTXNAME */
+> 
+> #define PRIO    0
+> #define MODE    0
+> 
+> int main(void)
+> {
+>     RT_MUTEX mtx;
+>     RT_TASK  tsk;
+>     RT_MUTEX_INFO info;
+>     int status;
+> 
+>     mlockall(MCL_CURRENT|MCL_FUTURE);
+> 
+>     status = rt_task_shadow(&tsk, NULL, PRIO, MODE);
+>     if (status) {
+>         fprintf(stderr, "rt_task_shadow: %d\n", status);
+>         return 1;
+>     }
+> 
+>     status = rt_mutex_bind(&mtx, MTXNAME, TM_INFINITE);
+>     if (status) {
+>         fprintf(stderr, "rt_mutex_bind: %d\n", status);
+>         return 1;
+>     }
+> 
+>     status = rt_mutex_inquire(&mtx, &info);
+>     if (status) {
+>         fprintf(stderr, "rt_mutex_inquire: %d\n", status);
+>         return 1;
+>     }
+> 
+>     status = rt_mutex_acquire(&mtx, TM_INFINITE); /* SEGFAULT HERE! */
+>     if (status) {
+>         fprintf(stderr, "rt_mutex_acquire: %d\n", status);
+>         return 1;
+>     }
+> 
+>     status = rt_mutex_release(&mtx);
+>     if (status) {
+>         fprintf(stderr, "rt_mutex_release: %d\n", status);
+>         return 1;
+>     }
+> 
+>     printf("test success\n");   // back to primary mode
+>     return 0;
+> }
+> 
+> my kernel
+> 
+> backtrace:
+> Program terminated with signal 11, Segmentation fault.
+> #0  0xb770077a in xnarch_atomic_cmpxchg (v=0xb777ac00, old=0, newval=21)
+>     at ../../../src/include/asm/xenomai/atomic.h:95
+> 95              __asm__ __volatile__(LOCK_PREFIX "cmpxchgl %1,%2"
+> (gdb) bt full
+> #0  0xb770077a in xnarch_atomic_cmpxchg (v=0xb777ac00, old=0, newval=21)
+>     at ../../../src/include/asm/xenomai/atomic.h:95
+>         ptr = 0xb777ac00
+>         prev = 4294967295
+> #1  0xb7700815 in xnsynch_fast_acquire (fastlock=0xb777ac00, new_ownerh=21)
+>     at ../../../include/nucleus/synch.h:52
+>         lock_state = 3077595124
+> #2  0xb7700c3a in rt_mutex_acquire_inner (mutex=0xbfecd690, timeout=0,
+>     mode=XN_RELATIVE) at mutex.c:83
+>         err = 134513420
+>         cur = 21
+> #3  0xb7700e01 in rt_mutex_acquire (mutex=0xbfecd690, timeout=0) at
+> mutex.c:129
+> No locals.
+> #4  0x0804884a in main () at uspace.c:38
+>         mtx = {opaque = 19, fastlock = 0xb777ac00, lockcnt = 0}
+>         tsk = {opaque = 21, opaque2 = 3075921616}
+>         info = {locked = 0, nwaiters = 0,
+>           name = "TestMtx\000\000\000\060\000@domain.hid%", '\000'
+> <repeats 12 times>,
+>           owner =
+> "\000\000\000\000\364\036\331\336\020\037\331\336\365Pd\340\005\005UU\000\037\331\336\000\000\000\000\023\000\000"}
+>         status = 0
+> 
+> my config:
+> arch: x86
+> linux: 2.6.35.10
+> xenomai: 2.5.5.2
 
-On 1/17/2011 4:45 PM, Gilles Chanteperdrix wrote:
-> Wong Sheng Chao wrote:
->> Hi
->>
->> I'm a newbie in real time programming and I recently came to know of
->> Xenomai. After patching the Xenomai to the linux kernel, I ran some
->> examples that I found from the Internet to get a better understanding of
->> the periodic task. Everything seems to run fine when I start two tasks
->> with period of 1s and 2s, but the system freezes when I added more tasks
->> ( more than 2 tasks). The period is at 1s, 2s and 3s so i think the
->> processor has more than enough time to process the tasks.
->>
->> I also read that the periodic mode is emulated by a software driver
->> which uses one-shot mode programming. Thus i did not enable periodic
->> timing when I compile the Linux kernel, is this the cause of the problem?
->>
->> I'm using a system with Core i7, ubuntu 10.04, linux kernel 2.6.32.15,
->> xenomai 2.5.4
->>
->> Do let me know what I did wrong in the code, thanks in advance!!
->>
->>
->> void demo (void *arg)
->> {
->>    //take in argument
->>    int num = (int *)arg;
->>
->>    RT_TASK *curtask;
->>    RT_TASK_INFO curtaskinfo;
->>
->>    curtask=rt_task_self();
->>    rt_task_inquire(curtask,&curtaskinfo);
->>
->>    // task period in seconds
->>    rt_task_set_periodic(NULL, TM_NOW, (1000000000 * num));
-> Should be 1000000000ULL * num here.
->
+32 bits? 64 bits? uniprocessor? multiprocessor?
 
+-- 
+                                                                Gilles.
 
