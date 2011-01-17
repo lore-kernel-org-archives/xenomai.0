@@ -1,5 +1,5 @@
-Message-ID: <4D347656.1050609@domain.hid>
-Date: Mon, 17 Jan 2011 18:03:18 +0100
+Message-ID: <4D3485AC.3070500@domain.hid>
+Date: Mon, 17 Jan 2011 19:08:44 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <007901cbb667$db66b860$92342920$@innovative-dsp.com>
@@ -23,8 +23,19 @@ Peter Hua wrote:
 > Is there any example code to map PCI registers into user space?  I am having
 > problem getting functions rtdm_iomap_to_user and mmap to compile.   My code
 > is attached.  
+> 
+>  
+> 
+> Xenomai - 2.4.10
+> 
+> Kernel - 2.6.29.1
+> 
+> OS - Red Hat 5.5
 
-What platform? What error message do you get?
+You will find the documentation of Xenomai 2.4.10 API here:
+http://www.xenomai.org/documentation/xenomai-2.4/html/api/index.html
+
+As you can see, it has no rtdm_iomap_to_user funtion.
 
 -- 
                                                                 Gilles.
