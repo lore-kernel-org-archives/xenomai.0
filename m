@@ -1,12 +1,10 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <4D3460A7.2080109@domain.hid>
-References: <4D31B6C3.5060007@domain.hid> <4D3227DA.9080909@domain.hid>
-	<4D342298.8090603@domain.hid> <4D344563.6060506@domain.hid>
-	<4D3460A7.2080109@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Mon, 17 Jan 2011 16:35:13 +0100
-Message-ID: <1295278513.1857.1.camel@domain.hid>
-Mime-Version: 1.0
+Message-ID: <4D34642E.9090300@domain.hid>
+Date: Mon, 17 Jan 2011 16:45:50 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+References: <4D31B6C3.5060007@domain.hid>
+In-Reply-To: <4D31B6C3.5060007@domain.hid>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] Question on periodic task
 List-Id: Help regarding installation and common use of Xenomai
@@ -21,93 +19,43 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: Wong Sheng Chao <wong@domain.hid>
 Cc: xenomai@xenomai.org
 
-On Mon, 2011-01-17 at 16:30 +0100, Wong Sheng Chao wrote:
-> You can try booting in text mode, and set the vga mode to have a lot of
-> lines, then run the test in text mode, to at least see if the reason of
-> the freeze you observe is a kernel oops.
+Wong Sheng Chao wrote:
+> Hi
 > 
-> I tried booting it in text mode and the program still freezes after i 
-> execute the user-space program. There were no error messages.
+> I'm a newbie in real time programming and I recently came to know of 
+> Xenomai. After patching the Xenomai to the linux kernel, I ran some 
+> examples that I found from the Internet to get a better understanding of 
+> the periodic task. Everything seems to run fine when I start two tasks 
+> with period of 1s and 2s, but the system freezes when I added more tasks 
+> ( more than 2 tasks). The period is at 1s, 2s and 3s so i think the 
+> processor has more than enough time to process the tasks.
 > 
-> If you do not see anything, then enable all the I-pipe and Xenomai
-> debugs, and try again.
+> I also read that the periodic mode is emulated by a software driver 
+> which uses one-shot mode programming. Thus i did not enable periodic 
+> timing when I compile the Linux kernel, is this the cause of the problem?
 > 
-> How do I enable I-pipe and Xenomai debugs? Do I need to set these 
-> options during kernel configuration time? Will enabling I-pipe let me 
-> know if it's a kernel-oops?
+> I'm using a system with Core i7, ubuntu 10.04, linux kernel 2.6.32.15, 
+> xenomai 2.5.4
+> 
+> Do let me know what I did wrong in the code, thanks in advance!!
+> 
+> 
+> void demo (void *arg)
+> {
+>   //take in argument
+>   int num = (int *)arg;
+> 
+>   RT_TASK *curtask;
+>   RT_TASK_INFO curtaskinfo;
+> 
+>   curtask=rt_task_self();
+>   rt_task_inquire(curtask,&curtaskinfo);
+> 
+>   // task period in seconds
+>   rt_task_set_periodic(NULL, TM_NOW, (1000000000 * num));
 
-Before anything else, you should really start testing the return code of
-your syscalls, specifically for rt_task_wait_period(), and break from
-your while() loop if something went wrong.
-
-> 
-> Thanks again for your help!
-> 
-> Regards
-> Wong
-> 
-> 
-> 
-> On 01/17/2011 02:34 PM, Gilles Chanteperdrix wrote:
-> > Wong Sheng Chao wrote:
-> >> On 01/16/2011 12:03 AM, Gilles Chanteperdrix wrote:
-> >>> Wong Sheng Chao wrote:
-> >>>> Hi
-> >>>>
-> >>>> I'm a newbie in real time programming and I recently came to know of
-> >>>> Xenomai. After patching the Xenomai to the linux kernel, I ran some
-> >>>> examples that I found from the Internet to get a better understanding of
-> >>>> the periodic task. Everything seems to run fine when I start two tasks
-> >>>> with period of 1s and 2s, but the system freezes when I added more tasks
-> >>>> ( more than 2 tasks). The period is at 1s, 2s and 3s so i think the
-> >>>> processor has more than enough time to process the tasks.
-> >>>>
-> >>>> I also read that the periodic mode is emulated by a software driver
-> >>>> which uses one-shot mode programming. Thus i did not enable periodic
-> >>>> timing when I compile the Linux kernel, is this the cause of the problem?
-> >>>>
-> >>>> I'm using a system with Core i7, ubuntu 10.04, linux kernel 2.6.32.15,
-> >>>> xenomai 2.5.4
-> >>>>
-> >>>> Do let me know what I did wrong in the code, thanks in advance!!
-> >>> You almost send us all the information we ask on this page:
-> >>> http://www.xenomai.org/index.php/Request_for_information
-> >>>
-> >>> We lack:
-> >>> - the version of the Adeos patch you use
-> >>> - the kernel logs from the boot up to the bug itself.
-> >>>
-> >> - the version of the Adeos patch you use
-> >>
-> >> I'm using the Adeos patch 2.6.32.15-x86-2.7-01.patch
-> >>
-> >> - the kernel logs from the boot up to the bug itself.
-> >>
-> >> I was not sure how to do this, so I google online and it seems that
-> >> there are two ways of doing this, through serial port or ethernet.
-> >> However I have only one linux system setup. Any suggestion on how I can
-> >> provide the kernel logs?
-> >>
-> >> After the kernel freezes, I reboot the system and went to /var/log to
-> >> check the kern.log file at the time of the bug, but no logs were made on
-> >> that particular time, is netconsole or serial port the only method of
-> >> troubleshooting?
-> > You can try booting in text mode, and set the vga mode to have a lot of
-> > lines, then run the test in text mode, to at least see if the reason of
-> > the freeze you observe is a kernel oops.
-> >
-> > If you do not see anything, then enable all the I-pipe and Xenomai
-> > debugs, and try again.
-> >
-> 
-> 
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
+Should be 1000000000ULL * num here.
 
 -- 
-Philippe.
-
-
+                                                                Gilles.
 
