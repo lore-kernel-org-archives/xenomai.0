@@ -1,12 +1,12 @@
 From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <AANLkTikiWqBARgHe+7ZKGwLtqQux_qZMDsqkGGZpXUsm@domain.hid>
-References: <AANLkTikiWqBARgHe+7ZKGwLtqQux_qZMDsqkGGZpXUsm@domain.hid>
+In-Reply-To: <4CEE8FF0.6000704@domain.hid>
+References: <4CEE8FF0.6000704@domain.hid>
 Content-Type: text/plain; charset="UTF-8"
-Date: Mon, 10 Jan 2011 16:06:13 +0100
-Message-ID: <1294671973.1828.188.camel@domain.hid>
+Date: Tue, 18 Jan 2011 18:13:17 +0100
+Message-ID: <1295370797.1857.86.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Adeos-main] S3C2440 ipipe_suspend_domain
+Subject: Re: [Adeos-main] [git pull] Updates for ipipe-2.6.36-noarch
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/options/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -15,87 +15,43 @@ List-Post: <mailto:adeos-main@gna.org>
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-To: Radoslaw Rybaniec <radek.rybaniec@domain.hid>
-Cc: adeos-main@gna.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: adeos-main <adeos-main@gna.org>
 
-On Mon, 2011-01-10 at 15:34 +0100, Radoslaw Rybaniec wrote:
-> Hi!
+On Thu, 2010-11-25 at 17:33 +0100, Jan Kiszka wrote:
+> The following changes since commit 4c83ab8e3ac5b194695e38bbc253f78e6072ad24:
 > 
-> I'm trying to set up adeos ipipe on board EM2440 board based on
-> S3C2440 (it's similar to mini2440). Kernel version is 2.6.30.4 with
-> I-pipe 1.15-03. System is stable when one domain exists . Now I'm
-> trying to write kernel module that will catch interrupts from one of
-> the hardware timers of the S3C2440. Unfortunately I can't get it to
-> work. There is something wrong with ipipe_suspend_domain. When this
-> function is called in a endless loop the system hangs no matter if
-> priority of the module is grater or smaller than root domain. If this
-> function isn't called in loop than it doesn't affect system stability
-> if priority of module is less than kernel and hangs the system if
-> module's priority is greater.
+>   ipipe: tell __ipipe_run_irqtail about the latest IRQ number (2010-11-05 13:52:55 +0100)
+> 
+> are available in the git repository at:
+>   git://git.kiszka.org/ipipe-2.6 queues/2.6.35-noarch
+> 
+> [edited log]
+> Jan Kiszka (4):
+>       ipipe: Provide wrapper for IRQ mask/unmask at chip level
 
-What is wrong is in your code, and with your interpretation of what
-ipipe_suspend_domain() is there for.
+Could you give me some hints about the intended usage of these?
 
-Your code calls it from the domain entry, which is a domain init
-callback, so this makes no sense. There is no heavy-weight threading in
-adeos, only a cooperative tasking mechanism. So you should not expect
-ipipe_suspend_domain() to block but rather to check whether some low
-priority domain has some interrupt to handle, and switch the current
-pipeline context to it if so. In any case, it does not change the
-current thread of execution kernel-wise.
+>       ipipe: Drop spurious irq_enter/exit from __ipipe_sync_stage
 
-Additionally, we do not support domains with lower priority than linux
-nowadays. In fact, only the adeos core should call
-ipipe_suspend_domain(), when walking the pipeline. You should not call
-it from your domain code.
+Actually, what is wrong is not with irq_enter/exit, but rather with the
+fact that we should only attempt a preemption resched when a virq
+handler returns, and that is a generic operation. There is no point in
+having uselessly hairy code in the arch-dep section, and that code is
+pure nop with CONFIG_PREEMPT off.
 
-If you want to see how adeos is being used these days, check out
-http://www.xenomai.org/documentation/branches/v2.3.x/pdf/Life-with-Adeos-rev-B.pdf
+I just merged something along these lines.
 
+>       ipipe: Provide __ipipe_spin_trylock_irq for !CONFIG_IPIPE
+>       Merge commit 'v2.6.35.9' into queues/2.6.35-noarch
 > 
-> Here are some parts of module:
-> 
-> static int __init adis_init(void)
-> {
-> 
-> 	struct ipipe_domain_attr attr;
-> 	
-> 	printk("Timer irq jitter test start\n");
-> 
-> 	ipipe_init_attr (&attr);
->         attr.name      = "TimeJitter";
-> 	attr.domid = 2;
->         attr.priority   = IPIPE_ROOT_PRIO+1 ;
->         attr.entry      = &domain_entry;
-> 	
-> 	return ipipe_register_domain(&this_domain,&attr);
-> }
-> 
-> static void domain_entry(void)
-> {
-> 	printk("Domain started\n");
-> 	printk("%s %s\n", __DATE__, __TIME__);
-> 	prepare_timer();
-> 	ipipe_virtualize_irq(ipipe_current_domain, IRQ_TIMER3,
-> 			(ipipe_irq_handler_t) &adis_timer_interrupt,NULL,NULL,
-> 			IPIPE_HANDLE_MASK|IPIPE_PASS_MASK);
-> 	ipipe_control_irq(IRQ_TIMER3,0,IPIPE_ENABLE_MASK);
-> 
-> /*  while(1)*/
->   {
-> 	  ipipe_suspend_domain();
->   }
-> }
-> 
-> void adis_timer_interrupt(unsigned irq)
-> {
-> 	ipipe_control_irq(irq,0,IPIPE_ENABLE_MASK);
-> }
-> 
-> _______________________________________________
-> Adeos-main mailing list
-> Adeos-main@domain.hid
-> https://mail.gna.org/listinfo/adeos-main
+> Will follow up with the ipipe specific patches for review.
+
+I'll be merging the IRQ virtualization removal for x86_32 next, but I
+want to issue an intermediate patch with the pending fixes first, given
+the potential for regression there is when messing with entry.S.
+However, I'll merge the EFLAGS fixes early on, since they are obviously
+required and right, and merge them along with 2.8-03 asap.
 
 -- 
 Philippe.
