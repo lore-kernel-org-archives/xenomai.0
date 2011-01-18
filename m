@@ -1,6 +1,6 @@
-Message-ID: <4D357C2B.80709@domain.hid>
-Date: Tue, 18 Jan 2011 12:40:27 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <4D359506.6090907@domain.hid>
+Date: Tue, 18 Jan 2011 14:26:30 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <AANLkTi=w67oJVc+iwJdN3znbje0PMiEcjtEUic3xMcNj@domain.hid>	
 	<4D3561A5.6000804@domain.hid> <4D35635A.4040403@domain.hid>
@@ -20,9 +20,9 @@ List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: Philippe Gerum <rpm@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai@xenomai.org
 
-On 2011-01-18 11:46, Philippe Gerum wrote:
+Philippe Gerum wrote:
 > On Tue, 2011-01-18 at 10:54 +0100, Jan Kiszka wrote:
 >> On 2011-01-18 10:47, Jan Kiszka wrote:
 >>> On 2011-01-17 21:15, Jeff Weber wrote:
@@ -167,7 +167,6 @@ On 2011-01-18 11:46, Philippe Gerum wrote:
 >>>> BTW: I did a checkout of git tag v2.5.5.2, and XENO_VERSION_STRING is
 >>>> "2.5.5.1"
 >>>>
->>>
 >>> A) In-kernel use of the Xenomai skins is deprecated, and mixing user and
 >>> kernel space use won't make it easier for you to overcome this in your
 >>> system.
@@ -175,7 +174,6 @@ On 2011-01-18 11:46, Philippe Gerum wrote:
 >>> B) If you actually depend on a shared mutex (I would really recommend to
 >>> revalidate that need), you must create it in user space so that it gains
 >>> a user space compatible fastlock.
->>
 >> Hmm, which just turned out to be impossible as rt_mutex_bind is only for
 >> user space.
 >>
@@ -192,26 +190,12 @@ On 2011-01-18 11:46, Philippe Gerum wrote:
 > x86_64, which is silenced when moving the RT_MUTEX_INFO buffer, and I
 > don't think rt_mutex_inquire() has any memory overwrite issue.
 
-Does this turn the memory corruption into an error?
-
-diff --git a/ksrc/skins/native/syscall.c b/ksrc/skins/native/syscall.c
-index b0f3766..3398b93 100644
---- a/ksrc/skins/native/syscall.c
-+++ b/ksrc/skins/native/syscall.c
-@@ -1590,6 +1590,9 @@ static int __rt_mutex_bind(struct pt_regs *regs)
- 		return err;
- 
- #ifdef CONFIG_XENO_FASTSYNCH
-+	if (mutex->cpid)
-+		return -EPERM;
-+
- 	ph.fastlock =
- 		(void *)xnheap_mapped_offset(&xnsys_ppd_get(1)->sem_heap,
- 					     mutex->synch_base.fastlock);
-
-Jan
+If I agree that the in-kernel native API is deprecated. If we look at
+it, we see that the rt_mutex_create implementation was made much more
+complicated than, for instance, the one of the posix skin one which
+allows Jeff's case to work correctly. I have to admit that I am puzzled
+as to why such complication.
 
 -- 
-Siemens AG, Corporate Technology, CT T DE IT 1
-Corporate Competence Center Embedded Linux
+                                                                Gilles.
 
