@@ -1,13 +1,13 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <AANLkTi=w67oJVc+iwJdN3znbje0PMiEcjtEUic3xMcNj@domain.hid>
+Message-ID: <4D3561A5.6000804@domain.hid>
+Date: Tue, 18 Jan 2011 10:47:17 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
+MIME-Version: 1.0
 References: <AANLkTi=w67oJVc+iwJdN3znbje0PMiEcjtEUic3xMcNj@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Tue, 18 Jan 2011 09:56:57 +0100
-Message-ID: <1295341017.1857.62.camel@domain.hid>
-Mime-Version: 1.0
+In-Reply-To: <AANLkTi=w67oJVc+iwJdN3znbje0PMiEcjtEUic3xMcNj@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] segfault sharing mutex from kernel space to user
- space
+	space
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -20,24 +20,165 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: Jeff Weber <jwamsc@domain.hid>
 Cc: xenomai@xenomai.org
 
-On Mon, 2011-01-17 at 14:15 -0600, Jeff Weber wrote:
-> I get a segfault when attempting to rt_mutex_acquire a mutex created
-> in kernel space.  I've reduced the issue to the following sample code.
+On 2011-01-17 21:15, Jeff Weber wrote:
+> I get a segfault when attempting to rt_mutex_acquire a mutex created in
+> kernel space.  I've reduced the issue to the following sample code.
 > Help finding my mistake is appreciated.
-
-[snip]
-
+> 
+> TIA,
+> Jeff
+> 
+> 
+> Kernel space Code:
+> #include <linux/module.h>
+> #include <linux/init.h>
+> #include <native/mutex.h>
+> #include "testAPI.h"  /* defines MTXNAME */
+> 
+> #define MODNAME  "XenoTest"
+> 
+> static RT_MUTEX sMtx;
+> 
+> static int __init mymodule_init(void)
+> {
+>     int status;
+> 
+>     status = rt_mutex_create(&sMtx, MTXNAME);
+>     if (status) {
+>     printk ("rt_mutex_create: %d\n", status);
+>         return 1;
+>     }
+> 
+>     printk ("loaded module %s\n", MODNAME);
+>     return 0;
+> }
+> 
+> static void __exit mymodule_exit(void)
+> {
+>     rt_mutex_delete(&sMtx);
+> 
+>     printk ("unloaded module %s\n", MODNAME);
+>     return;
+> }
+> 
+> module_init(mymodule_init);
+> module_exit(mymodule_exit);
+> 
+> MODULE_LICENSE("GPL");
+> 
+> 
+> 
+> User space Code:
+> #include <stdio.h>
+> #include <sys/mman.h>
+> #include <native/mutex.h>
+> #include <native/task.h>
+> 
+> #include "testAPI.h"    /* defines MTXNAME */
+> 
+> #define PRIO    0
+> #define MODE    0
+> 
 > int main(void)
 > {
 >     RT_MUTEX mtx;
 >     RT_TASK  tsk;
 >     RT_MUTEX_INFO info;
+>     int status;
+> 
+>     mlockall(MCL_CURRENT|MCL_FUTURE);
+> 
+>     status = rt_task_shadow(&tsk, NULL, PRIO, MODE);
+>     if (status) {
+>         fprintf(stderr, "rt_task_shadow: %d\n", status);
+>         return 1;
+>     }
+> 
+>     status = rt_mutex_bind(&mtx, MTXNAME, TM_INFINITE);
+>     if (status) {
+>         fprintf(stderr, "rt_mutex_bind: %d\n", status);
+>         return 1;
+>     }
+> 
+>     status = rt_mutex_inquire(&mtx, &info);
+>     if (status) {
+>         fprintf(stderr, "rt_mutex_inquire: %d\n", status);
+>         return 1;
+>     }
+> 
+>     status = rt_mutex_acquire(&mtx, TM_INFINITE); /* SEGFAULT HERE! */
+>     if (status) {
+>         fprintf(stderr, "rt_mutex_acquire: %d\n", status);
+>         return 1;
+>     }
+> 
+>     status = rt_mutex_release(&mtx);
+>     if (status) {
+>         fprintf(stderr, "rt_mutex_release: %d\n", status);
+>         return 1;
+>     }
+> 
+>     printf("test success\n");   // back to primary mode
+>     return 0;
+> }
+> 
+> my kernel
+> 
+> backtrace:
+> Program terminated with signal 11, Segmentation fault.
+> #0  0xb770077a in xnarch_atomic_cmpxchg (v=0xb777ac00, old=0, newval=21)
+>     at ../../../src/include/asm/xenomai/atomic.h:95
+> 95              __asm__ __volatile__(LOCK_PREFIX "cmpxchgl %1,%2"
+> (gdb) bt full
+> #0  0xb770077a in xnarch_atomic_cmpxchg (v=0xb777ac00, old=0, newval=21)
+>     at ../../../src/include/asm/xenomai/atomic.h:95
+>         ptr = 0xb777ac00
+>         prev = 4294967295
+> #1  0xb7700815 in xnsynch_fast_acquire (fastlock=0xb777ac00, new_ownerh=21)
+>     at ../../../include/nucleus/synch.h:52
+>         lock_state = 3077595124
+> #2  0xb7700c3a in rt_mutex_acquire_inner (mutex=0xbfecd690, timeout=0,
+>     mode=XN_RELATIVE) at mutex.c:83
+>         err = 134513420
+>         cur = 21
+> #3  0xb7700e01 in rt_mutex_acquire (mutex=0xbfecd690, timeout=0) at
+> mutex.c:129
+> No locals.
+> #4  0x0804884a in main () at uspace.c:38
+>         mtx = {opaque = 19, fastlock = 0xb777ac00, lockcnt = 0}
+>         tsk = {opaque = 21, opaque2 = 3075921616}
+>         info = {locked = 0, nwaiters = 0,
+>           name = "TestMtx\000\000\000\060\000@domain.hid%", '\000'
+> <repeats 12 times>,
+>           owner =
+> "\000\000\000\000\364\036\331\336\020\037\331\336\365Pd\340\005\005UU\000\037\331\336\000\000\000\000\023\000\000"}
+>         status = 0
+> 
+> my config:
+> arch: x86
+> linux: 2.6.35.10
+> xenomai: 2.5.5.2
+> 
+> BTW: I did a checkout of git tag v2.5.5.2, and XENO_VERSION_STRING is
+> "2.5.5.1"
+> 
 
-Could you move the RT_MUTEX_INFO buffer to global scope and try again?
-TIA,
+A) In-kernel use of the Xenomai skins is deprecated, and mixing user and
+kernel space use won't make it easier for you to overcome this in your
+system.
+
+B) If you actually depend on a shared mutex (I would really recommend to
+revalidate that need), you must create it in user space so that it gains
+a user space compatible fastlock. Otherwise, the mutex will only be
+initialized for in-kernel use, and binding to it from user space will
+make the latter fail.
+
+I guess we should catch this case more gracefully as long as we support
+in-kernel mutexes...
+
+Jan
 
 -- 
-Philippe.
-
-
+Siemens AG, Corporate Technology, CT T DE IT 1
+Corporate Competence Center Embedded Linux
 
