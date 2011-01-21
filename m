@@ -1,9 +1,11 @@
+Date: Fri, 21 Jan 2011 18:01:26 +0100 (CET)
+From: Michel Rinaldi <automation.03@domain.hid>
+Message-ID: <22767829.221295629285203.JavaMail.SYSTEM@PC-MRINALDI>
+In-Reply-To: <14515395.201295629170328.JavaMail.SYSTEM@PC-MRINALDI>
 MIME-Version: 1.0
-Date: Fri, 21 Jan 2011 11:33:17 -0500
-Message-ID: <AANLkTinBygMQvUu=j-0HyYb-rcYj1vkx-xAiH4TYTjjL@mail.gmail.com>
-From: Waldemar Valdas Bancewicz <valdas.bancewicz@domain.hid>
-Content-Type: multipart/alternative; boundary=000e0cd2dfe0b92e8e049a5dce34
-Subject: [Xenomai-help] Gatekeeper high cpu utilization
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_21_29574853.1295629285187"
+Subject: [Xenomai-help] Problems with rt_task_create and rt_task_join
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -15,37 +17,43 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
---000e0cd2dfe0b92e8e049a5dce34
-Content-Type: text/plain; charset=UTF-8
+------=_Part_21_29574853.1295629285187
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 
-Sadly I can no longer work with Xenomai. I congratulate the people that have
-worked on Xenomai, learning about this technology has been a great pleasure.
-I will take away a new perspective on what I learned about RTOSs at the
-university, where nobody even thought of having Linux and an RTOS running
-side-by-side. The idea of leveraging the power of Linux while retaining hard
-real-time capabilities is, at least to me, amazing. I will be joining a
-small start-up company that has a philosophy that if you have a bunch of
-some of the brightest minds working together in an environment where each of
-them is treated with respect then you will create great software. Now I will
-have Xenomai in my toolbelt :-)
+Hi to all, 
 
--- 
-Waldemar Valdas Bancewicz
+I'm running an application on a Linux system with kernel 2.6.35.7 patched with Xenomai 2.5.5.2, Adeos ipipe patch 2.7-04. 
+My application uses native skin and creates some realtime tasks, each with rt_task_shadow(), each other with rt_task_create(). When I call for first time rt_task_create(), this function is very slow (700-800 ms) to execute, also if rt_task_shadow() calls come first. Subsequent calls of rt_task_create() are quick as expected. I read on manual that at first call rt_task_create() creates a signal handler for SIGWINCH signal: could be this operation that wastes time, maybe on waiting some resources from Linx kernel? 
+Another problem that I've encountered is that if I call a rt_int_delete() and then a rt_task_join() on userspace task that handles destroyed IRQ, rt_task_join() never returns (obviously this task was created with joinable flag). If I create this task without joinable flag and then I call rt_task_delete() instead rt_task_join() I obtain two different behaviours: sometimes rt_task_delete() returns but I still view task on /proc/xenomai/sched (with X status), sometimes system freezes on this call. 
+Thanks to all in advance. 
+Regards 
 
---000e0cd2dfe0b92e8e049a5dce34
-Content-Type: text/html; charset=UTF-8
+Mauro Salvini 
 
-Sadly I can no longer work with Xenomai. I congratulate the 
-people that have worked on Xenomai, learning about this technology has 
-been a great pleasure. I will take away a new perspective on what I 
-learned about RTOSs at the university, where nobody even thought of 
-having Linux and an RTOS running side-by-side. The idea of leveraging 
-the power of Linux while retaining hard real-time capabilities is, at 
-least to me, amazing. I will be joining a small start-up company that 
-has a philosophy that if you have a bunch of some of the brightest minds
- working together in an environment where each of them is treated with 
-respect then you will create great software. Now I will have Xenomai in 
-my toolbelt :-)<br clear="all"><br>-- <br><div>Waldemar Valdas Bancewicz</div><div><br></div><br>
 
---000e0cd2dfe0b92e8e049a5dce34--
+------=_Part_21_29574853.1295629285187
+Content-Type: text/html; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+<html><head><style type=3D'text/css'>p { margin: 0; }</style></head><body><=
+div style=3D'font-family: Times New Roman; font-size: 12pt; color: #000000'=
+>Hi to all,<br><br>I'm running an application on a Linux system with kernel=
+ 2.6.35.7 patched with Xenomai 2.5.5.2, Adeos ipipe patch 2.7-04.<br>My app=
+lication uses native skin and creates some realtime tasks, each with rt_tas=
+k_shadow(), each other with rt_task_create(). When I call for first time rt=
+_task_create(), this function is very slow (700-800 ms) to execute, also if=
+ rt_task_shadow() calls come first. Subsequent calls of rt_task_create() ar=
+e quick as expected. I read on manual that at first call rt_task_create() c=
+reates a signal handler for SIGWINCH signal: could be this operation that w=
+astes time, maybe on waiting some resources from Linx kernel? <br>Another p=
+roblem that I've encountered is that if I call a rt_int_delete() and then a=
+ rt_task_join() on userspace task that handles destroyed IRQ,&nbsp; rt_task=
+_join() never returns (obviously this task was created with joinable flag).=
+ If I create this task without joinable flag and then I call rt_task_delete=
+() instead rt_task_join() I obtain two different behaviours: sometimes rt_t=
+ask_delete() returns but I still view task on /proc/xenomai/sched (with X s=
+tatus), sometimes system freezes on this call.<br>Thanks to all in advance.=
+<br>Regards<br><br>Mauro Salvini<br><br></div></body></html>
+------=_Part_21_29574853.1295629285187--
 
