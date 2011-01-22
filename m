@@ -1,14 +1,19 @@
-Message-ID: <4D3E576B.7060208@domain.hid>
-Date: Tue, 25 Jan 2011 05:54:03 +0100
+Message-ID: <4D3AF5B4.5000507@domain.hid>
+Date: Sat, 22 Jan 2011 16:20:20 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <AANLkTi=wo34Zr40GZ+HKegcFKYYcDqj8uzgEqyDCqDj=@mail.gmail.com>	<4D3E385A.5010209@domain.hid>	<AANLkTikk=xBwB2JzxgyC08=nZY8gAHeXht+_cfZBMGK7@domain.hid>	<4D3E42BA.4000601@domain.hid>	<AANLkTi=E=4mSZ_QwD5wNXQMZ2dQJO6kG8vMLGnD52cy0@domain.hid>	<4D3E4EBA.6050806@domain.hid>	<AANLkTike9rXOKAuGy3Pi+ot8-753pzNAEK=xjhsgzU3O@mail.gmail.com>	<4D3E5169.8050103@domain.hid>
-	<AANLkTimxTLpGR6KvVBuermWiaqwkuod7QQxNVBXrmtyd@domain.hid>
-In-Reply-To: <AANLkTimxTLpGR6KvVBuermWiaqwkuod7QQxNVBXrmtyd@domain.hid>
+References: <OF1911EB62.67FE0A4E-ONC125781E.0029C740-C125781E.002C4F5B@LocalDomain>
+	<alpine.DEB.1.10.1101200922440.1211@domain.hid>
+	<4D384CC9.2040303@domain.hid>
+	<alpine.DEB.1.10.1101201702340.1990@domain.hid>
+	<4D386922.5080807@domain.hid>
+	<alpine.DEB.1.10.1101201811090.1990@domain.hid>
+	<4D38809E.3080906@domain.hid> <4D388975.80606@domain.hid>
+	<alpine.DEB.1.10.1101211225490.3495@domain.hid>
+In-Reply-To: <alpine.DEB.1.10.1101211225490.3495@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Segmentation Fault when writing in registers
- (AT91SAM - ARM9)
+Subject: Re: [Xenomai-help] debug posix skin - pthread_cond_wait return EPERM
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -18,106 +23,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: at91_enthus <nwromania@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: xenoka09@domain.hid
+Cc: xenomai@xenomai.org
 
-at91_enthus wrote:
-> On Mon, Jan 24, 2011 at 10:28 PM, Gilles Chanteperdrix <
-> gilles.chanteperdrix@xenomai.org> wrote:
+Kolja Waschk wrote:
+> Hi,
 > 
->> at91_enthus wrote:
->>> On Mon, Jan 24, 2011 at 10:16 PM, Gilles Chanteperdrix <
->>> gilles.chanteperdrix@xenomai.org> wrote:
->>>
->>>> at91_enthus wrote:
->>>>> On Mon, Jan 24, 2011 at 9:25 PM, Gilles Chanteperdrix <
->>>>> gilles.chanteperdrix@xenomai.org> wrote:
->>>>>
->>>>>> at91_enthus wrote:
->>>>>>> On Mon, Jan 24, 2011 at 8:41 PM, Gilles Chanteperdrix <
->>>>>>> gilles.chanteperdrix@xenomai.org> wrote:
->>>>>>>
->>>>>>>> at91_enthus wrote:
->>>>>>>>> Hi.
->>>>>>>>>
->>>>>>>>> I  was testing Xenomai on my AT91SAM9G20-based board and tried to
->>>> adapt
->>>>>>>> the
->>>>>>>>> code found here:
->>>>>>>>> http://www.armadeus.com/wiki/index.php?title=Xenomai:Blinking_LEDs.
->>>>>>>> By the way, this code is ridiculous. It creates a real-time task to
->>>>>>>> write to some non real-time device, which makes the real-time task
->>>>>> useless.
->>>>>>> I know.
->>>>>> Yes, but this example is bad in many ways:
->>>>>> - first it uses xenomai api to create a real-time task, and uses write
->>>>>> which causes the real-time task to switch to secondary domain;
->>>>>> - the Makefile does not use xeno-config, which have been the
->> recommended
->>>>>> way of getting the compiler flags since day 1;
->>>>>> - it nullifies SIGTERM and SIGINT, which is a dubious decision, and
->>>>>> could lead people to believe that they should do the same when using
->>>>>> Xenomai, whereas there is no such requirement.
->>>>>> - the pointers point to outdated version of the documentation.
->>>>>> - it uses runinfo/xeno-load, which are kind of outdated too, make
->> things
->>>>>> uselessly complicated, and in any case, tell you to type Ctrl-C to
->>>>>> interrupt the program, which is bound to fail if anything goes wrong,
->>>>>> since SIGINT is neutralized in the program.
->>>>>>
->>>>>>> That's why I went to mmap().
->>>>>> That is not really the right solution either. I admit that for driving
->>>>>> leds, it may be a bit overkill, but anyway, what you should do is
->> write
->>>>>> an RTDM driver for driving the leds. Keeping the driver separated from
->>>>>> the application will allow the same program to run on other platforms
->>>>>> where driving the LEDS is done differently without changing much of
->> the
->>>>>> application code. In other word, the application/driver separation is
->> a
->>>>>> sane one.
->>>>>>
->>>>>> Anyway, mmap should work.
->>>>>>
->>>>>>  (I chose that sample code because, for
->>>>>>> now, I am only learning to use basic functions)
->>>>>>>> Wrong test here. Should be "if (aic_base == MAP_FAILED)"
->>>>>>> Indeed, my program fails miserably when I check the mapping of AIC,
->> not
->>>>>>> PIOB's. And yet, I just can't figure why in the non-Xenomai code, AIC
->>>>>>> mmap-ing works  fine.
->>>>>> Well errno might give you a clue. Do you have FCSE enabled?
->>>>>>
->>>>>> Regards.
->>>>>>
->>>>>> --
->>>>>>
->> Gilles.
->>>>> FCSE is enabled. errno returns  22 (invalid argument).
->>>> best effort or guaranteed?
->>>
->>> Best effort
->>>
->>>
->>>> Please activate FCSE messages.
->>>
->>> ... compiling new kernel
->>>
->>>
->>>> How big is
->>>> MAP_SIZE?
->>>>
->>>>
->>> 4096
->> Ok. Could you post your full kernel configuration, as well as the full
->> program?
->>
+>> The following patch seems to fix the issue, but I am not yet sure
+>> diff --git a/ksrc/nucleus/shadow.c b/ksrc/nucleus/shadow.c
 > 
-> I put the .config and the code in the attachments.
+> Yes it does fix it for me too. The output of my "try" program when run with
+> gdbserver still differs from the output when run standalone, but at least there
+> are no EPERM results anymore. The first two tasks cycle pthread_cond_wait more
+> than once.
+> 
+> 0 3x 0x0010
+> 1 2x 0x0010
+> 2 1x 0x0010
 
-If you remove all the native skin stuff, only keep main and
-open_controller, do not link with the native library, you can confirm
-that this same program runs without trouble?
+Actually, that is normal, what you see are "spurious wake-ups" caused by
+the signals sent by gdb, these are allowed by the posix specification.
+However calling pthread_cond_wait again should not return immediately,
+it should block until the call to pthread_cond_broadcast, so there
+should not be a lockup.
 
 -- 
                                                                 Gilles.
