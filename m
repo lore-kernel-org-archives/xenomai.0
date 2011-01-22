@@ -1,14 +1,12 @@
-Message-ID: <4D3E6B94.5060302@domain.hid>
-Date: Tue, 25 Jan 2011 07:20:04 +0100
+Message-ID: <4D3B2C93.70005@domain.hid>
+Date: Sat, 22 Jan 2011 20:14:27 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <AANLkTi=wo34Zr40GZ+HKegcFKYYcDqj8uzgEqyDCqDj=@mail.gmail.com>	<4D3E385A.5010209@domain.hid>	<AANLkTikk=xBwB2JzxgyC08=nZY8gAHeXht+_cfZBMGK7@domain.hid>	<4D3E42BA.4000601@domain.hid>	<AANLkTi=E=4mSZ_QwD5wNXQMZ2dQJO6kG8vMLGnD52cy0@domain.hid>	<4D3E4EBA.6050806@domain.hid>	<AANLkTike9rXOKAuGy3Pi+ot8-753pzNAEK=xjhsgzU3O@mail.gmail.com>	<4D3E5169.8050103@domain.hid>	<AANLkTimxTLpGR6KvVBuermWiaqwkuod7QQxNVBXrmtyd@domain.hid>	<4D3E576B.7060208@domain.hid>	<AANLkTinAKRXB8jYJ-dMN0miqM37bT1O=oHa-uYaQQ-yo@domain.hid>	<4D3E5959.9090205@domain.hid>	<AANLkTimPA6yhFEYjQ-jpJtjQOx-2179HKNs3HTTwjY0T@mail.gmail.com>	<4D3E5BC2.6070700@domain.hid>
-	<AANLkTikzrOHi8caNdYg_FOY4NdhjWsh5qZZGYvD1URJ2@domain.hid>
-In-Reply-To: <AANLkTikzrOHi8caNdYg_FOY4NdhjWsh5qZZGYvD1URJ2@domain.hid>
+References: <22767829.221295629285203.JavaMail.SYSTEM@PC-MRINALDI>
+In-Reply-To: <22767829.221295629285203.JavaMail.SYSTEM@PC-MRINALDI>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Segmentation Fault when writing in registers
- (AT91SAM - ARM9)
+Subject: Re: [Xenomai-help] Problems with rt_task_create and rt_task_join
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -18,66 +16,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: at91_enthus <nwromania@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: Michel Rinaldi <automation.03@domain.hid>
+Cc: xenomai@xenomai.org
 
-at91_enthus wrote:
->>> Oh. I assumed without mlockall (it wasn't part of my original code).
->>> Now, I placed mlockall in my original code (right before
->> open_controller())
->>> and the pin gets toggled according to my scope.
->> Ok. Show me the Makefile then.
+Michel Rinaldi wrote:
+> Hi to all,
 > 
-> And the code which works.
-> 
-> 
->  see attachment
-> 
-> 
->> Including the
->> value of the defines please (not all of them, only those the program
->> uses for open_controller).
->>
->>
->>
-> #define AT91C_BASE_AIC          0xFFFFF000 // (AIC) Base Address
-> #define AT91C_BASE_PIOB        0xFFFFF600 // (PIOB) Base Address
-> #define PIO_PER             0x00000000 // (PIO_PER) PIO Enable Register
-> #define PIO_PDR             0x00000004 // (PIO_PDR) PIO Disable Register
-> #define PIO_PSR             0x00000008 // (PIO_PSR) PIO Status Register
-> #define PIO_OER             0x00000010 // (PIO_OER) Output Enable Register
-> #define PIO_SODR           0x00000030 // (PIO_SODR) Set Output Data Register
-> #define PIO_CODR           0x00000034 // (PIO_CODR) Clear Output Data
-> Register
-> #define PIO_PPUDR         0x00000060 // (PIO_PPUDR) Pull-up Disable Register
-> #define PIO_MDDR           0x00000054 // (PIO_MDDR) Multi-driver Disable
-> Register
-> 
-> 
+> I'm running an application on a Linux system with kernel 2.6.35.7
+> patched with Xenomai 2.5.5.2, Adeos ipipe patch 2.7-04. My
+> application uses native skin and creates some realtime tasks, each
+> with rt_task_shadow(), each other with rt_task_create(). When I call
+> for first time rt_task_create(), this function is very slow (700-800
+> ms)
 
-I am unable to reproduce your issue. That said, I am using standard
-Makefiles, that is:
-
-XENO_CONFIG = DESTDIR="$(staging)" $(staging)/bin/xeno-config
-
-XENO_NATIVE_CPPFLAGS = $(shell $(XENO_CONFIG) --skin=native --cflags)
-XENO_NATIVE_LIBS = $(shell $(XENO_CONFIG) --skin=native --ldflags)
-
-Where staging would be "/" in your case.
-
-If I want static libraries, I prepend -static to XENO_NATIVE_LIBS, I do
-not try to link both with static and dynamic libraries. I suspect this
-is the cause of your problem, either that or the fact that you have some
-ulimit.
-
-Note that my toolchain does not even allow mixing static and dynamic
-libraries. I get this warning when linking:
-/usr/local/arm-2010q1/bin/../lib/gcc/arm-none-linux-gnueabi/4.4.1/../../../../arm-none-linux-gnueabi/bin/ld:
-/usr/local/arm-2010q1/bin/../arm-none-linux-gnueabi/libc/armv4t/usr/lib/libc.a(dl-tsd.o)(.text+0x18):
-R_ARM_TLS_LE32 relocation not permitted in shared object
-
-And a segmentation fault when running (though I do not even access the
-mmapped area).
+A reason for the service being so slow the first time it is called may
+be the on-demand libraries loading. But for this to take a long time,
+the native skin library would have to be stored on a really slow storage
+device, or compressed and the processor you are using being a really
+slow one. Anyway, you do not tell us on what architecture you get this
+issue? What processor are you using? Where is the library stored?
 
 -- 
                                                                 Gilles.
