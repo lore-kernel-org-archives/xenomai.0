@@ -1,65 +1,50 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <1295370797.1857.86.camel@domain.hid>
-References: <4CEE8FF0.6000704@domain.hid> <1295370797.1857.86.camel@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Tue, 25 Jan 2011 20:45:47 +0100
-Message-ID: <1295984747.1518.12.camel@domain.hid>
-Mime-Version: 1.0
+Message-ID: <4D3D7107.7030603@domain.hid>
+Date: Mon, 24 Jan 2011 13:31:03 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+References: <OF1911EB62.67FE0A4E-ONC125781E.0029C740-C125781E.002C4F5B@LocalDomain>
+	<alpine.DEB.1.10.1101200922440.1211@domain.hid>
+	<4D384CC9.2040303@domain.hid>
+	<alpine.DEB.1.10.1101201702340.1990@domain.hid>
+	<4D386922.5080807@domain.hid>
+	<alpine.DEB.1.10.1101201811090.1990@domain.hid>
+	<4D387148.3030306@domain.hid>
+	<alpine.DEB.1.10.1101211222330.3495@domain.hid>
+In-Reply-To: <alpine.DEB.1.10.1101211222330.3495@domain.hid>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Adeos-main] [git pull] Updates for ipipe-2.6.36-noarch
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/options/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: adeos-main <adeos-main@gna.org>
+Subject: Re: [Xenomai-help] debug posix skin - pthread_cond_wait return EPERM
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: xenoka09@domain.hid
+Cc: xenomai@xenomai.org
 
-On Tue, 2011-01-18 at 18:13 +0100, Philippe Gerum wrote:
-> On Thu, 2010-11-25 at 17:33 +0100, Jan Kiszka wrote:
-> > The following changes since commit 4c83ab8e3ac5b194695e38bbc253f78e6072ad24:
-> > 
-> >   ipipe: tell __ipipe_run_irqtail about the latest IRQ number (2010-11-05 13:52:55 +0100)
-> > 
-> > are available in the git repository at:
-> >   git://git.kiszka.org/ipipe-2.6 queues/2.6.35-noarch
-> > 
-> > [edited log]
-> > Jan Kiszka (4):
-> >       ipipe: Provide wrapper for IRQ mask/unmask at chip level
+Kolja Waschk wrote:
+> Hi,
 > 
-> Could you give me some hints about the intended usage of these?
+>>> Independent of that, the result is always the same SEGV. 
+> ..
+>> So, I am afraid you are on you own if you want to debug this.
 > 
-> >       ipipe: Drop spurious irq_enter/exit from __ipipe_sync_stage
+> It seems that's completely unrelated. The SEGV always occurs if I compile my
+> application with -lpthread explicitly listed in the ldflags, as xeno-config
+> suggests. Maybe a toolchain problem, I'll ask there first
 > 
-> Actually, what is wrong is not with irq_enter/exit, but rather with the
-> fact that we should only attempt a preemption resched when a virq
-> handler returns, and that is a generic operation. There is no point in
-> having uselessly hairy code in the arch-dep section, and that code is
-> pure nop with CONFIG_PREEMPT off.
-> 
-> I just merged something along these lines.
-> 
-> >       ipipe: Provide __ipipe_spin_trylock_irq for !CONFIG_IPIPE
-> >       Merge commit 'v2.6.35.9' into queues/2.6.35-noarch
-> > 
-> > Will follow up with the ipipe specific patches for review.
-> 
-> I'll be merging the IRQ virtualization removal for x86_32 next, but I
-> want to issue an intermediate patch with the pending fixes first, given
-> the potential for regression there is when messing with entry.S.
-> However, I'll merge the EFLAGS fixes early on, since they are obviously
-> required and right, and merge them along with 2.8-03 asap.
-> 
+> http://blackfin.uclinux.org/gf/forummessage/97601
 
-Actually, my latest patch is crap. 2.8-03 introduces a regression w/
-CONFIG_PREEMPT. I'll revert this and provide a better approach.
+The thing I do not understand is that you should not pass any ldflags to
+cond-torture-posix, Xenomai build system should have been taken care
+about this.
+
+Anyway, are you using libpthread as a static library?
 
 -- 
-Philippe.
-
-
+                                                                Gilles.
 
