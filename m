@@ -1,5 +1,5 @@
-Message-ID: <4D3E5666.8040809@domain.hid>
-Date: Tue, 25 Jan 2011 05:49:42 +0100
+Message-ID: <4D3E576B.7060208@domain.hid>
+Date: Tue, 25 Jan 2011 05:54:03 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <AANLkTi=wo34Zr40GZ+HKegcFKYYcDqj8uzgEqyDCqDj=@mail.gmail.com>	<4D3E385A.5010209@domain.hid>	<AANLkTikk=xBwB2JzxgyC08=nZY8gAHeXht+_cfZBMGK7@domain.hid>	<4D3E42BA.4000601@domain.hid>	<AANLkTi=E=4mSZ_QwD5wNXQMZ2dQJO6kG8vMLGnD52cy0@domain.hid>	<4D3E4EBA.6050806@domain.hid>	<AANLkTike9rXOKAuGy3Pi+ot8-753pzNAEK=xjhsgzU3O@mail.gmail.com>	<4D3E5169.8050103@domain.hid>
@@ -114,16 +114,10 @@ at91_enthus wrote:
 >>
 > 
 > I put the .config and the code in the attachments.
-> 
-> 
->> Are you running this program as root?
->>
->>
-> I run it with sudo.
 
-Ok. Please make sure that you are not running with some funky ulimit
-settings then, I will try and compile it on at91sam9263.
-
+If you remove all the native skin stuff, only keep main and
+open_controller, do not link with the native library, you can confirm
+that this same program runs without trouble?
 
 -- 
                                                                 Gilles.
