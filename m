@@ -1,13 +1,15 @@
-Message-ID: <4D3E97D5.3050609@domain.hid>
-Date: Tue, 25 Jan 2011 10:28:53 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
+Date: Tue, 25 Jan 2011 10:46:07 +0100 (CET)
+From: Kolja Waschk <xenoka09@domain.hid>
+In-Reply-To: <4D3E97D5.3050609@domain.hid>
+Message-ID: <alpine.DEB.1.10.1101251039180.12329@domain.hid>
 References: <alpine.DEB.1.10.1101251010320.12329@domain.hid>
-In-Reply-To: <alpine.DEB.1.10.1101251010320.12329@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+	<4D3E97D5.3050609@domain.hid>
+MIME-Version: 1.0
+Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
+Sender: "Kolja Waschk,,," <xenoka09@domain.hid>
 Subject: Re: [Xenomai-help] NULL pointer access on bfin when linking with
  xenomai and pthread
+Reply-To: xenoka09@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -17,56 +19,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenoka09@domain.hid
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-Kolja Waschk wrote:
-> Ok, I'll start a new thread with the details. I'm not so sure if this is actually
-> related to Xenomai, but until now I was only able to reproduce it in conjunction with
-> xenomai libs, so ...
-> 
-> The example is already reduced to a minimum. I'm working with a Blackfin-based
-> board like BF537-STAMP, with 2010R1-RC5 blackfin-linux-dist on it and stock kernel
-> as it comes with the dist (2.6.34.7-ADI-2010R1). Just Xenomai 2.5.3 was replaced
-> by 2.5.5.2. Toolchain is 2010R1-RC4 taken as binary from blackfin.uclinux.org.
-> 
-> The code itself actually doesn't seem to matter. The problem can be reproduced with an
-> example as simple as this "a.c":
-> 
->> int main (void) { return 0; }
-> 
-> Normally, this can be started on the target via gdbserver and debugged from the host. 
-> I used the gdb command script
-> 
->> file a.out
->> target remote 10.0.10.9:2222
->> break main
->> cont
-> 
-> The target would run the example, and stop, e.g. at "Breakpoint 1, 0x00b7b626 in main ()"
-> 
-> These compile commands produce a working a.out:
-> 
->> bfin-linux-uclibc-gcc  -L/opt/uClinux/blackfin-linux-dist/staging/usr/lib -lpthread a.c
-> 
-> or
-> 
->> bfin-linux-uclibc-gcc  -L/opt/uClinux/blackfin-linux-dist/staging/usr/lib -lpthread_rt -lxenomai a.c
-> 
-> but this one that combines all -l options above doesn't:
-> 
->> bfin-linux-uclibc-gcc  -L/opt/uClinux/blackfin-linux-dist/staging/usr/lib -lpthread_rt -lxenomai -lpthread a.c
-> 
-> (Adding -lrt, to complete the suggested posix-ldflags, doesn't help, so I omit
-> it here for shortness)
-> 
-> The result on the target, when started with gdbserver and as soon as the host
-> says "cont", is a NULL pointer access.  It seems to occur even before main() is
-> reached.
+> Some Xenomai code is executed before the main function is called. What I
+> do not understand is why gdb does not stop at the place of the segfault?
 
-Some Xenomai code is executed before the main function is called. What I
-do not understand is why gdb does not stop at the place of the segfault?
+Good point. Sorry, it does, but I fail to get useful information from there. Even
+with -g and
 
--- 
-                                                                Gilles.
+> set solib-absolute-prefix notexistent
+> set solib-search-path /opt/uClinux/blackfin-linux-dist/staging/usr/lib:/opt/uClinux/bfin-linux-uclibc/bfin-linux-uclibc/runtime/lib
+
+..gdb doesn't seem to be able to resolve the addresses in the library:
+
+Program received signal SIGSEGV, Segmentation fault.
+0x01666f10 in ?? ()
+(gdb) bt
+#0  0x01666f10 in ?? ()
+#1  0x01666eda in ?? ()
+Backtrace stopped: previous frame identical to this frame (corrupt stack?)
+(gdb) info sharedlibrary 
+>From        To          Syms Read   Shared Object Library
+0x016c33cc  0x016c8244  No          /opt/uClinux-2010R1-RC5_tools-RC4/blackfin-linux-dist/staging/usr/lib/libpthread_rt.so.1
+0x00ea936c  0x00eab048  No          /opt/uClinux-2010R1-RC5_tools-RC4/blackfin-linux-dist/staging/usr/lib/libxenomai.so.0
+0x01664108  0x016689ec  No          /opt/uClinux-2010R1-RC5_tools-RC4/bfin-linux-uclibc/bfin-linux-uclibc/runtime/lib/libpthread.so.0
+0x0152060c  0x01520a54  No          /opt/uClinux-2010R1-RC5_tools-RC4/bfin-linux-uclibc/bfin-linux-uclibc/runtime/lib/librt.so.0
+0x016523d4  0x0165dd88  No          /opt/uClinux-2010R1-RC5_tools-RC4/bfin-linux-uclibc/bfin-linux-uclibc/runtime/lib/libgcc_s.so.1
+0x0160ca24  0x01636df8  No          /opt/uClinux-2010R1-RC5_tools-RC4/bfin-linux-uclibc/bfin-linux-uclibc/runtime/lib/libc.so.0
+0x019c0c60  0x019c4634  No          /opt/uClinux-2010R1-RC5_tools-RC4/bfin-linux-uclibc/bfin-linux-uclibc/runtime/lib/ld-uClibc.so.0
+(gdb)
+
+
+
+Kolja
+
+
 
