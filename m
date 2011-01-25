@@ -1,7 +1,7 @@
-Date: Tue, 25 Jan 2011 09:53:20 +0100 (CET)
-From: Kolja Waschk <xenoka09@domain.hid>
-In-Reply-To: <4D3D7107.7030603@domain.hid>
-Message-ID: <alpine.DEB.1.10.1101250941170.12329@domain.hid>
+Message-ID: <4D3E8EF9.2010606@domain.hid>
+Date: Tue, 25 Jan 2011 09:51:05 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
 References: <OF1911EB62.67FE0A4E-ONC125781E.0029C740-C125781E.002C4F5B@LocalDomain>
 	<alpine.DEB.1.10.1101200922440.1211@domain.hid>
 	<4D384CC9.2040303@domain.hid>
@@ -11,11 +11,11 @@ References: <OF1911EB62.67FE0A4E-ONC125781E.0029C740-C125781E.002C4F5B@LocalDoma
 	<4D387148.3030306@domain.hid>
 	<alpine.DEB.1.10.1101211222330.3495@domain.hid>
 	<4D3D7107.7030603@domain.hid>
-MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
-Sender: "Kolja Waschk,,," <xenoka09@domain.hid>
+	<alpine.DEB.1.10.1101250941170.12329@domain.hid>
+In-Reply-To: <alpine.DEB.1.10.1101250941170.12329@domain.hid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] debug posix skin - pthread_cond_wait return EPERM
-Reply-To: xenoka09@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -25,46 +25,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: xenoka09@domain.hid
 Cc: xenomai@xenomai.org
 
-Hi,
+Kolja Waschk wrote:
+> Hi,
+> 
+>> The thing I do not understand is that you should not pass any ldflags to
+>> cond-torture-posix, Xenomai build system should have been taken care
+> 
+> I have to admit I haven't watched how cond-torture-posix was built. The one I
+> used then was built during the build process of blackfin-uclinux-dist. But
+> since it is the same error that occurs in my shortened example, and xeno-config
+> emits those flags, I assumed that compile flags were used for
+> cond-torture-posix similarly.
+> 
+> The short example I refer to is the one described in my posting to the 
+> blackfin toolchain-help Forum: Given the example code "a.c"
+> 
+> int main()
+> {
+>      return 0;
+> }
+> 
+> Compile it with:
+> 
+> bfin-linux-uclibc-gcc  -L/opt/uClinux/blackfin-linux-dist/staging/usr/lib -lxenomai -lpthread_rt -lpthread a.c
 
-> The thing I do not understand is that you should not pass any ldflags to
-> cond-torture-posix, Xenomai build system should have been taken care
+The link order is wrong. It should be -lpthread_rt -lxenomai -lpthread.
 
-I have to admit I haven't watched how cond-torture-posix was built. The one I
-used then was built during the build process of blackfin-uclinux-dist. But
-since it is the same error that occurs in my shortened example, and xeno-config
-emits those flags, I assumed that compile flags were used for
-cond-torture-posix similarly.
-
-The short example I refer to is the one described in my posting to the 
-blackfin toolchain-help Forum: Given the example code "a.c"
-
-int main()
-{
-     return 0;
-}
-
-Compile it with:
-
-bfin-linux-uclibc-gcc  -L/opt/uClinux/blackfin-linux-dist/staging/usr/lib -lxenomai -lpthread_rt -lpthread a.c
-
-And then load it on a BF537-STAMP via gdbserver. As soon as it is started with
-gdb from the development host, the gdbserver/a.out process will terminate with
-NULL pointer access exception. Even before main() is reached...  The SEGV doesn't
-occur if -lpthread is omitted.
-
-More details: http://blackfin.uclinux.org/gf/forummessage/97601
-
-If you think this is really Xenomai-related, I think we should start a separate thread for it
-here or at least change the subject
-
-> Anyway, are you using libpthread as a static library?
-
-No, all shared.
-
-Kolja
-
+-- 
+                                                                Gilles.
 
