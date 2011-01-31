@@ -1,13 +1,10 @@
-Message-ID: <4D45C174.1010507@domain.hid>
-Date: Sun, 30 Jan 2011 20:52:20 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <AANLkTim_=XGD=Qi-92do496o=q8=itz03jHdSj1EAu-+@mail.gmail.com>	<4D45821D.5090501@domain.hid>
-	<AANLkTinBoW=kEeFB3xpfi+Jkjhek32v9kvJdZ=uN0Kz7@domain.hid>
-In-Reply-To: <AANLkTinBoW=kEeFB3xpfi+Jkjhek32v9kvJdZ=uN0Kz7@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Question on using Xenomai patch on Ubuntu 10.10
+Date: Mon, 31 Jan 2011 09:55:33 +0100
+Message-ID: <AANLkTi=7M-cqps4b--i6Kud3o6-awuntk2Zpwj7JHZ8a@domain.hid>
+From: gryma biloy <gryma.biloy@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai-help] Is xenomai OK for early boot purpose ?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -17,37 +14,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Huub van Niekerk <huubvanniekerk@domain.hid>
-Cc: Xenomai help <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Huub van Niekerk wrote:
-> Thank you. It doesn't run. For ubuntu 10.10, it said that all I have to do
-> is use apt-get to install xenomai. I did that and the packagemanager tells
-> me they necessary packages are installed now. Now on
-> http://www.xenomai.org/index.php/Xenomai_quick_build_quide is says that
-> after manual install you should end up with a kernel-<version>-xenomai. I
-> don't have that. Can you point me to info where it says what I should do
-> after an apt-get install ? I've been looking but can't find anything useful.
+Hello,
 
-Xenomai is a Linux kernel extension. As such, it requires re-building a
-Linux kernel. So, it appears that you do not really understand what
-Xenomai is. Before running head-on into installing Xenomai and compiling
-applications without really understand what Xenomai is, I suggest you
-read a few things, here:
+On a project running Linux on a beagle board, I'd like to add the
+following capabilities to my platform :
+=A0 - real time processes with periodic tasks (10ms, 100ms & 200 ms) and
+a low jitter (< 50 us)
+=A0 - early boot operations (i.e. being able to perform some tasks asap
+after a power on reset)
 
-http://www.xenomai.org/index.php/Publications
+I've searched for solutions over the net and Xenomai seems to be a
+possible candidate to fulfill
+these constraints. Can you please share your knowledge to confirm that
+Xenomai would make
+the job (especially on the early boot side) ?
 
-Most notably, the "life with adeos" and "native API Tour" documents.
+Also, I don't have a clear understanding of Xenomai availability
+during the Linux kernel startup.
+If a statically link Xenomai to the kernel, when would it be operational ?
 
-Please beware: if later posts on this list show that you have not done
-your homework, you will be properly flamed.
+Thanks a lot for your help,
 
-The installation guide using Debian packages may be found here:
-http://www.xenomai.org/index.php/Building_Debian_packages
-
-Next private mail will receive no answer.
-Please do not top-post.
-
--- 
-                                                                Gilles.
+--
+Gryma
 
