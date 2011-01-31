@@ -1,10 +1,12 @@
+Content-Class: urn:content-classes:message
 MIME-Version: 1.0
-Date: Mon, 31 Jan 2011 09:55:33 +0100
-Message-ID: <AANLkTi=7M-cqps4b--i6Kud3o6-awuntk2Zpwj7JHZ8a@domain.hid>
-From: gryma biloy <gryma.biloy@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain;
+	charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai-help] Is xenomai OK for early boot purpose ?
+Date: Mon, 31 Jan 2011 10:46:58 +0100
+Message-ID: <3FF315C710820E47A04E55C6F7D9B0AD5F3244@domain.hid>
+From: <roderik.wildenburg@domain.hid>
+Subject: [Xenomai-help] CONFIG_XENO_OPT_SELECT
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -16,27 +18,27 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
-Hello,
+In the Xenomai 2.4.x series there was a kernel option =
+CONFIG_XENO_OPT_SELECT.
+Unfortunately there is no help available for this option and Google  =
+wasn=B4t very fertile.
+Could somebody tell me, what this option is for?
+I am asking, as we face some problems with "select" in a Xenomai task =
+(task is stuck in select, was permanently marked as running (R in =
+/proc/xenomai/sched) and lower priority tasks weren=B4t  scheduled). I =
+am wondering whether this could be related to this option, which isn=B4t =
+activated in my kernel config.
+We are running a 2.4.25 PPC Kernel with Xenomai 2.4.9.
 
-On a project running Linux on a beagle board, I'd like to add the
-following capabilities to my platform :
-=A0 - real time processes with periodic tasks (10ms, 100ms & 200 ms) and
-a low jitter (< 50 us)
-=A0 - early boot operations (i.e. being able to perform some tasks asap
-after a power on reset)
+Many thanks in advance
+Roderik
 
-I've searched for solutions over the net and Xenomai seems to be a
-possible candidate to fulfill
-these constraints. Can you please share your knowledge to confirm that
-Xenomai would make
-the job (especially on the early boot side) ?
-
-Also, I don't have a clear understanding of Xenomai availability
-during the Linux kernel startup.
-If a statically link Xenomai to the kernel, when would it be operational ?
-
-Thanks a lot for your help,
-
---
-Gryma
+--------------------------------------------------------
+manroland AG
+Vorsitzender des Aufsichtsrates: Hanno C. Fiedler
+Vorstand: Gerd Finkbeiner (Vorsitzender), Dr. Ingo Koch, Dr. Markus =
+Rall, Paul Steidle  =20
+Sitz der Gesellschaft: Offenbach am Main, Registergericht: Amtsgericht =
+Offenbach HRB-Nr. 42592
+USt-Ident-Nr. DE 250200933
 
