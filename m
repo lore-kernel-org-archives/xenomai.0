@@ -1,13 +1,12 @@
-Message-ID: <4D4A8354.7010209@domain.hid>
-Date: Thu, 03 Feb 2011 11:28:36 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4D4A84ED.7030604@domain.hid>
+Date: Thu, 03 Feb 2011 11:35:25 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <AANLkTi=pm4BfNAwCzw-6HLOiKfJQmgMQdPmVXTcCBSBs@domain.hid>	<4D49CF24.9080700@domain.hid>	<AANLkTinaTVSJW1jQzn7+jbsQgNE+HAEOXLEK3LC0MoWR@mail.gmail.com>	<4D49D608.5020006@domain.hid>	<AANLkTinU4b-SY6Vy7=Ss+Nxrp-+qEZ6qsTudBsmrjbh_@domain.hid>
-	<4D4A80F6.5020600@domain.hid>
-In-Reply-To: <4D4A80F6.5020600@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+References: <AANLkTikSnhe5fnSLQm7eSOh9R7YA2cJ=m78n+S3kpW9K@mail.gmail.com>
+In-Reply-To: <AANLkTikSnhe5fnSLQm7eSOh9R7YA2cJ=m78n+S3kpW9K@mail.gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] I-pipe clock source change and MMC issues (AT91)
+Subject: Re: [Xenomai-help] RT OS Selection advice for parallel processing
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -17,83 +16,59 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: at91_enthus <nwromania@domain.hid>
+To: Rudolf Meijering <rudolf@domain.hid>
 Cc: xenomai@xenomai.org
 
-Gilles Chanteperdrix wrote:
-> at91_enthus wrote:
->> On Wed, Feb 2, 2011 at 4:09 PM, Gilles Chanteperdrix <
->> gilles.chanteperdrix@xenomai.org> wrote:
->>
->>> at91_enthus wrote:
->>>> On Wed, Feb 2, 2011 at 3:39 PM, Gilles Chanteperdrix
->>>> <gilles.chanteperdrix@xenomai.org
->>>> <mailto:gilles.chanteperdrix@xenomai.org>> wrote:
->>>>
->>>>     at91_enthus wrote:
->>>>     > Hi.
->>>>     >
->>>>     > In order to get better accuracy with Xenomai, I modified the I-pipe
->>>>     > timebase (MCK divider) in arch/arm.mach-at91/at91_ipipe_time.c.
->>>>     > Unfortunately, I cannot mount the rootfs on the MMC, since the MMC
->>>>     > controller is no longer functioning. I tried to change TCx in
->>> kernel
->>>>     > configuration to no avail.
->>>>     > When I switch back to a timebase of 1 MHz, the MMC works fine.
->>>>
->>>>     The thing is that we are a bit tight on AT91. A 16 bits counter is
->>> used
->>>>     for both the timer and the tsc emulation, and this tsc must be
->>> refreshed
->>>>     at least once before it wraps. The problem is that since it is a 16
->>> bits
->>>>     counter, it wraps really fast, on my AT91SAM9263 it wraps in 20 ms,
->>> and
->>>>     since the Linux default period is 10ms we are actually quite close to
->>>>     the limit.
->>>>
->>>>     Anyway, trying to get a better accuracy than 1us is kind of useless
->>> on
->>>>     AT91, since even reading this counter takes more than 1us. So, you
->>> are
->>>>     not in fact improving anything. The 1MHz is even a bit overkill.
->>> On the other hand, the AT91SAM9G20 may be running at a better frequency.
->>> But with latencies in the order of tens of microseconds, having a better
->>> accuracy than 1us still does not make really much sense.
->>
->>
->>
->>> Why do you need
->>> this accuracy?
->>>
->> I want to time stamp the samples from a 8 channel SPI-based ADC. I know that
->> a conversion takes between 3 and 5 microseconds depending on the SPI clock.
->> What I want is to adapt the code to acquire a fixed numb
-
-er of samples in
->> user space (I knew it was a long shot). Plain, Xenomai-free, userland
->> application was out of the question, so I figured that a userspace
->> application in Xenomai run at highest priority should doand the trick.
->>
->> On a second thought, a simple linux kernel module is what I want (this way I
->> can use interrupts and one of the platform's six timers).
+On 2011-02-03 09:57, Rudolf Meijering wrote:
+> Hi,
 > 
-> You can use interrupts and the platform's six timers in a Xenomai driver
-> based on the RTDM skin. The thing is, what interrupt latency is your target?
+> We are in the process of developing a non-tracking safety Radar and would
+> really appreciate some guidance in selecting a real-time operating system
+> especially with the aim of offloading processing to a GPU. Can anyone share
+> their experience with real-time GPU offloading on either Xenomai or Realtime
+> Linux (PREEMPT_RT patch)? I have read reports on 900us delays with Nvidia
+> graphics drivers, has this been resolved?
+
+The NVIDIA CUDA bits cause problems to any RT scenario when you trigger
+DMA memory allocations/releases, thus mapping during runtime (wbinvd). I
+can't tell you details, but my colleagues somehow solved this for our
+non-RT GPU offloading tasks although we received no information which
+APIs can trigger the problematic code paths (the binary blob is in the
+loop so only NVIDIA can tell).
+
 > 
+> Background:
+> The application basically requires the radar to output a disable
+> signal, within 100ms, when an object is detected. Radar data is received
+> every 1 ms and processed.
+> 
+> Platform: x86_64, most likely Intel i7 CPU
+> Total processing latency: 100ms
+> Interrupt frequency: 1KHz
+> 
+> From what I can read both Xenomai and Realtime Linux should easily meet
+> these requirements, but what about RT GPU support?
 
-To make myself clear:
-you got:
-- the AD conversion (amounts for an unknown amount of time between 3 and
-5us)
-- the SPI interrupt
-- some unknown interrupt latency which amouunts to several tens of
-microseconds with Xenomai, and to a few hundreds of microseconds with Linux.
-- the interrupt handler is invoked.
+Given the fact that the NVIDIA driver is neither designed nor properly
+tested against PREEMPT-RT (you need extra hacks to make it work), I'm a
+bit skeptical that you can expect any RT properties when trying to use
+the GPU in time critical paths. No one (except maybe the vendor) knows
+the timing of the GPU hardware and software bits under critical load
+scenarios.
 
-What good will it make to have a timestamping precision with a
-sub-microsecond range in the interrupt handler code?
+If "just" that 100 ms is the deadline and you measure over a long time
+that your GPU tasks always complete much earlier, you may argue that
+it's /probably/ safe. But if you need to certify this, well...
+
+[ And, personally, I don't trust the NVIDIA driver a lot. But that might
+be influenced by the fact that latest versions lock up my notebook
+regularly after resume and that I filed another obvious locking issue of
+the compilable driver stub around mmap_sem without any response from the
+vendor. ]
+
+Jan
 
 -- 
-					    Gilles.
+Siemens AG, Corporate Technology, CT T DE IT 1
+Corporate Competence Center Embedded Linux
 
