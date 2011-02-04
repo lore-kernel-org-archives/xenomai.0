@@ -1,14 +1,15 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <000001cbc4a8$a4dd7dc0$ee987940$@de>
-References: <mailman.9368.1296765304.10284.xenomai@xenomai.org>
-	<000001cbc4a8$a4dd7dc0$ee987940$@de>
-Content-Type: text/plain; charset="UTF-8"
-Date: Fri, 04 Feb 2011 22:40:06 +0100
-Message-ID: <1296855606.2087.38.camel@domain.hid>
-Mime-Version: 1.0
+From: "Franz Engel" <franz_lambert_engel@domain.hid>
+References: <mailman.9723.1296855625.10284.xenomai@xenomai.org>
+In-Reply-To: <mailman.9723.1296855625.10284.xenomai@xenomai.org>
+Date: Fri, 4 Feb 2011 22:10:51 +0100
+Message-ID: <000001cbc4b0$03297d50$097c77f0$@de>
+MIME-Version: 1.0
+Content-Type: text/plain;
+	charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Language: de
 Subject: Re: [Xenomai-help] [    1.954665] Xenomai: native skin init failed,
- code -19
+	code -19
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -18,8 +19,782 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Franz Engel <franz_lambert_engel@domain.hid>
+To: rpm@xenomai.org
 Cc: xenomai@xenomai.org
+
+Here is my full boot log:
+[    0.000000] Initializing cgroup subsys cpuset
+[    0.000000] Initializing cgroup subsys cpu
+[    0.000000] Linux version 2.6.32.7-xenomai (root@domain.hid) (gcc
+version 4.4.3 (Ubuntu 4.4.3-4ubuntu5) ) #1 SMP Fri Feb 4 21:49:49 CET 2011
+[    0.000000] Command line: BOOT_IMAGE=/boot/vmlinuz-2.6.32.7-xenomai
+root=UUID=03b334bf-d381-4065-bdc1-64c267d32c4c ro
+[    0.000000] KERNEL supported cpus:
+[    0.000000]   Intel GenuineIntel
+[    0.000000]   AMD AuthenticAMD
+[    0.000000]   Centaur CentaurHauls
+[    0.000000] BIOS-provided physical RAM map:
+[    0.000000]  BIOS-e820: 0000000000000000 - 0000000000098400 (usable)
+[    0.000000]  BIOS-e820: 0000000000098400 - 00000000000a0000 (reserved)
+[    0.000000]  BIOS-e820: 00000000000e2000 - 0000000000100000 (reserved)
+[    0.000000]  BIOS-e820: 0000000000100000 - 00000000cfe90000 (usable)
+[    0.000000]  BIOS-e820: 00000000cfe90000 - 00000000cfe9e000 (ACPI data)
+[    0.000000]  BIOS-e820: 00000000cfe9e000 - 00000000cfee0000 (ACPI NVS)
+[    0.000000]  BIOS-e820: 00000000cfee0000 - 00000000cff00000 (reserved)
+[    0.000000]  BIOS-e820: 00000000fff00000 - 0000000100000000 (reserved)
+[    0.000000]  BIOS-e820: 0000000100000000 - 00000001b0000000 (usable)
+[    0.000000] DMI present.
+[    0.000000] AMI BIOS detected: BIOS may corrupt low RAM, working around
+it.
+[    0.000000] e820 update range: 0000000000000000 - 0000000000010000
+(usable) ==> (reserved)
+[    0.000000] last_pfn = 0x1b0000 max_arch_pfn = 0x400000000
+[    0.000000] MTRR default type: uncachable
+[    0.000000] MTRR fixed ranges enabled:
+[    0.000000]   00000-9FFFF write-back
+[    0.000000]   A0000-EFFFF uncachable
+[    0.000000]   F0000-FFFFF write-protect
+[    0.000000] MTRR variable ranges enabled:
+[    0.000000]   0 base 000000000000 mask FFFF80000000 write-back
+[    0.000000]   1 base 000080000000 mask FFFFC0000000 write-back
+[    0.000000]   2 base 0000C0000000 mask FFFFF0000000 write-back
+[    0.000000]   3 disabled
+[    0.000000]   4 disabled
+[    0.000000]   5 disabled
+[    0.000000]   6 disabled
+[    0.000000]   7 disabled
+[    0.000000] TOM2: 00000001b0000000 aka 6912M
+[    0.000000] x86 PAT enabled: cpu 0, old 0x7040600070406, new
+0x7010600070106
+[    0.000000] e820 update range: 00000000d0000000 - 0000000100000000
+(usable) ==> (reserved)
+[    0.000000] last_pfn = 0xcfe90 max_arch_pfn = 0x400000000
+[    0.000000] Scanning 0 areas for low memory corruption
+[    0.000000] modified physical RAM map:
+[    0.000000]  modified: 0000000000000000 - 0000000000010000 (reserved)
+[    0.000000]  modified: 0000000000010000 - 0000000000098400 (usable)
+[    0.000000]  modified: 0000000000098400 - 00000000000a0000 (reserved)
+[    0.000000]  modified: 00000000000e2000 - 0000000000100000 (reserved)
+[    0.000000]  modified: 0000000000100000 - 00000000cfe90000 (usable)
+[    0.000000]  modified: 00000000cfe90000 - 00000000cfe9e000 (ACPI data)
+[    0.000000]  modified: 00000000cfe9e000 - 00000000cfee0000 (ACPI NVS)
+[    0.000000]  modified: 00000000cfee0000 - 00000000cff00000 (reserved)
+[    0.000000]  modified: 00000000fff00000 - 0000000100000000 (reserved)
+[    0.000000]  modified: 0000000100000000 - 00000001b0000000 (usable)
+[    0.000000] initial memory mapped : 0 - 20000000
+[    0.000000] Using GB pages for direct mapping
+[    0.000000] init_memory_mapping: 0000000000000000-00000000cfe90000
+[    0.000000]  0000000000 - 00c0000000 page 1G
+[    0.000000]  00c0000000 - 00cfe00000 page 2M
+[    0.000000]  00cfe00000 - 00cfe90000 page 4k
+[    0.000000] kernel direct mapping tables up to cfe90000 @ 10000-13000
+[    0.000000] init_memory_mapping: 0000000100000000-00000001b0000000
+[    0.000000]  0100000000 - 0180000000 page 1G
+[    0.000000]  0180000000 - 01b0000000 page 2M
+[    0.000000] kernel direct mapping tables up to 1b0000000 @ 12000-14000
+[    0.000000] RAMDISK: 37837000 - 37fefa02
+[    0.000000] Scanning NUMA topology in Northbridge 24
+[    0.000000] No NUMA configuration found
+[    0.000000] Faking a node at 0000000000000000-00000001b0000000
+[    0.000000] Bootmem setup node 0 0000000000000000-00000001b0000000
+[    0.000000]   NODE_DATA [0000000000013000 - 0000000000017fff]
+[    0.000000]   bootmap [0000000000018000 -  000000000004dfff] pages 36
+[    0.000000] (8 early reservations) ==> bootmem [0000000000 - 01b0000000]
+[    0.000000]   #0 [0000000000 - 0000001000]   BIOS data page ==>
+[0000000000 - 0000001000]
+[    0.000000]   #1 [0000006000 - 0000008000]       TRAMPOLINE ==>
+[0000006000 - 0000008000]
+[    0.000000]   #2 [0001000000 - 0001ad33a4]    TEXT DATA BSS ==>
+[0001000000 - 0001ad33a4]
+[    0.000000]   #3 [0037837000 - 0037fefa02]          RAMDISK ==>
+[0037837000 - 0037fefa02]
+[    0.000000]   #4 [0000098400 - 0000100000]    BIOS reserved ==>
+[0000098400 - 0000100000]
+[    0.000000]   #5 [0001ad4000 - 0001ad4234]              BRK ==>
+[0001ad4000 - 0001ad4234]
+[    0.000000]   #6 [0000010000 - 0000012000]          PGTABLE ==>
+[0000010000 - 0000012000]
+[    0.000000]   #7 [0000012000 - 0000013000]          PGTABLE ==>
+[0000012000 - 0000013000]
+[    0.000000] found SMP MP-table at [ffff8800000ff780] ff780
+[    0.000000]  [ffffea0000000000-ffffea0005ffffff] PMD ->
+[ffff880028600000-ffff88002dbfffff] on node 0
+[    0.000000] Zone PFN ranges:
+[    0.000000]   DMA      0x00000010 -> 0x00001000
+[    0.000000]   DMA32    0x00001000 -> 0x00100000
+[    0.000000]   Normal   0x00100000 -> 0x001b0000
+[    0.000000] Movable zone start PFN for each node
+[    0.000000] early_node_map[3] active PFN ranges
+[    0.000000]     0: 0x00000010 -> 0x00000098
+[    0.000000]     0: 0x00000100 -> 0x000cfe90
+[    0.000000]     0: 0x00100000 -> 0x001b0000
+[    0.000000] On node 0 totalpages: 1572376
+[    0.000000]   DMA zone: 56 pages used for memmap
+[    0.000000]   DMA zone: 109 pages reserved
+[    0.000000]   DMA zone: 3811 pages, LIFO batch:0
+[    0.000000]   DMA32 zone: 14280 pages used for memmap
+[    0.000000]   DMA32 zone: 833224 pages, LIFO batch:31
+[    0.000000]   Normal zone: 9856 pages used for memmap
+[    0.000000]   Normal zone: 711040 pages, LIFO batch:31
+[    0.000000] SFI: Simple Firmware Interface v0.7 http://simplefirmware.org
+[    0.000000] Intel MultiProcessor Specification v1.4
+[    0.000000] MPTABLE: OEM ID: AMD     
+[    0.000000] MPTABLE: Product ID: RS780       
+[    0.000000] MPTABLE: APIC at: 0xFEE00000
+[    0.000000] Processor #0 (Bootup-CPU)
+[    0.000000] Processor #1
+[    0.000000] Processor #2
+[    0.000000] Processor #3
+[    0.000000] Processor #4
+[    0.000000] Processor #5
+[    0.000000] I/O APIC #6 Version 33 at 0xFEC00000.
+[    0.000000] Processors: 6
+[    0.000000] SMP: Allowing 6 CPUs, 0 hotplug CPUs
+[    0.000000] nr_irqs_gsi: 24
+[    0.000000] Allocating PCI resources starting at cff00000 (gap:
+cff00000:30000000)
+[    0.000000] NR_CPUS:64 nr_cpumask_bits:64 nr_cpu_ids:6 nr_node_ids:1
+[    0.000000] PERCPU: Embedded 64 pages/cpu @ffff880028200000 s232088 r8192
+d21864 u262144
+[    0.000000] pcpu-alloc: s232088 r8192 d21864 u262144 alloc=1*2097152
+[    0.000000] pcpu-alloc: [0] 0 1 2 3 4 5 - - 
+[    0.000000] Built 1 zonelists in Node order, mobility grouping on.  Total
+pages: 1548075
+[    0.000000] Policy zone: Normal
+[    0.000000] Kernel command line:
+BOOT_IMAGE=/boot/vmlinuz-2.6.32.7-xenomai
+root=UUID=03b334bf-d381-4065-bdc1-64c267d32c4c ro
+[    0.000000] PID hash table entries: 4096 (order: 3, 32768 bytes)
+[    0.000000] Initializing CPU#0
+[    0.000000] Checking aperture...
+[    0.000000] No AGP bridge found
+[    0.000000] Node 0: aperture @ 20000000 size 32 MB
+[    0.000000] Aperture pointing to e820 RAM. Ignoring.
+[    0.000000] Your BIOS doesn't leave a aperture memory hole
+[    0.000000] Please enable the IOMMU option in the BIOS setup
+[    0.000000] This costs you 64 MB of RAM
+[    0.000000] Mapping aperture over 65536 KB of RAM @ 20000000
+[    0.000000] Memory: 6115072k/7077888k available (5303k kernel code,
+788384k absent, 174432k reserved, 2438k data, 800k init)
+[    0.000000] SLUB: Genslabs=14, HWalign=64, Order=0-3, MinObjects=0,
+CPUs=6, Nodes=1
+[    0.000000] Hierarchical RCU implementation.
+[    0.000000] NR_IRQS:4352 nr_irqs:456
+[    0.000000] I-pipe 2.6-02: pipeline enabled.
+[    0.000000] spurious 8259A interrupt: IRQ7.
+[    0.000000] Console: colour VGA+ 80x25
+[    0.000000] console [tty0] enabled
+[    0.000000] allocated 62914560 bytes of page_cgroup
+[    0.000000] please try 'cgroup_disable=memory' option if you don't want
+memory cgroups
+[    0.000000] Fast TSC calibration using PIT
+[    0.000000] Detected 3299.761 MHz processor.
+[    0.020004] Calibrating delay loop (skipped), value calculated using
+timer frequency.. 5599.58 BogoMIPS (lpj=27997940)
+[    0.020083] Security Framework initialized
+[    0.020115] SELinux:  Disabled at boot.
+[    0.020794] Dentry cache hash table entries: 1048576 (order: 11, 8388608
+bytes)
+[    0.022980] Inode-cache hash table entries: 524288 (order: 10, 4194304
+bytes)
+[    0.030128] Mount-cache hash table entries: 256
+[    0.030263] Initializing cgroup subsys ns
+[    0.030325] Initializing cgroup subsys cpuacct
+[    0.030357] Initializing cgroup subsys memory
+[    0.030393] Initializing cgroup subsys devices
+[    0.030423] Initializing cgroup subsys freezer
+[    0.030454] Initializing cgroup subsys net_cls
+[    0.030497] CPU: L1 I Cache: 64K (64 bytes/line), D cache 64K (64
+bytes/line)
+[    0.030528] CPU: L2 Cache: 512K (64 bytes/line)
+[    0.030559] CPU 0/0x0 -> Node 0
+[    0.030589] tseg: 0000000000
+[    0.030596] CPU: Physical Processor ID: 0
+[    0.030626] CPU: Processor Core ID: 0
+[    0.030657] mce: CPU supports 6 MCE banks
+[    0.030692] using C1E aware idle routine
+[    0.030722] Performance Events: AMD PMU driver.
+[    0.030781] ... version:                0
+[    0.030811] ... bit width:              48
+[    0.030841] ... generic registers:      4
+[    0.030871] ... value mask:             0000ffffffffffff
+[    0.030902] ... max period:             00007fffffffffff
+[    0.030932] ... fixed-purpose events:   0
+[    0.030962] ... event mask:             000000000000000f
+[    0.031002] ftrace: converting mcount calls to 0f 1f 44 00 00
+[    0.031035] ftrace: allocating 19971 entries in 79 pages
+[    0.036592] Setting APIC routing to flat
+[    0.036670] ExtINT not setup in hardware but reported by MP table
+[    0.036780]   alloc irq_desc for 16 on node 0
+[    0.036781]   alloc kstat_irqs on node 0
+[    0.036784]   alloc irq_desc for 17 on node 0
+[    0.036785]   alloc kstat_irqs on node 0
+[    0.036788]   alloc irq_desc for 18 on node 0
+[    0.036789]   alloc kstat_irqs on node 0
+[    0.036791]   alloc irq_desc for 19 on node 0
+[    0.036792]   alloc kstat_irqs on node 0
+[    0.036795]   alloc irq_desc for 20 on node 0
+[    0.036796]   alloc kstat_irqs on node 0
+[    0.036909] ..TIMER: vector=0x30 apic1=0 pin1=2 apic2=0 pin2=0
+[    0.040000] ..MP-BIOS bug: 8254 timer not connected to IO-APIC
+[    0.040000] ...trying to set up timer (IRQ0) through the 8259A ...
+[    0.040000] ..... (found apic 0 pin 0) ...
+[    0.157049] ....... works.
+[    0.157109] CPU0: AMD Phenom(tm) II X6 1055T Processor stepping 00
+[    0.270138] Booting processor 1 APIC 0x1 ip 0x6000
+[    0.030000] Initializing CPU#1
+[    0.030000] CPU: L1 I Cache: 64K (64 bytes/line), D cache 64K (64
+bytes/line)
+[    0.030000] CPU: L2 Cache: 512K (64 bytes/line)
+[    0.030000] CPU 1/0x1 -> Node 0
+[    0.030000] CPU: Physical Processor ID: 0
+[    0.030000] CPU: Processor Core ID: 1
+[    0.430096] CPU1: AMD Phenom(tm) II X6 1055T Processor stepping 00
+[    0.430357] checking TSC synchronization [CPU#0 -> CPU#1]: passed.
+[    0.440015] System has AMD C1E enabled
+[    0.440050] Booting processor 2 APIC 0x2 ip 0x6000
+[    0.440088] Switch to broadcast mode on CPU1
+[    0.030000] Initializing CPU#2
+[    0.030000] CPU: L1 I Cache: 64K (64 bytes/line), D cache 64K (64
+bytes/line)
+[    0.030000] CPU: L2 Cache: 512K (64 bytes/line)
+[    0.030000] CPU 2/0x2 -> Node 0
+[    0.030000] CPU: Physical Processor ID: 0
+[    0.030000] CPU: Processor Core ID: 2
+[    0.600057] CPU2: AMD Phenom(tm) II X6 1055T Processor stepping 00
+[    0.600318] checking TSC synchronization [CPU#0 -> CPU#2]: passed.
+[    0.610015] Switch to broadcast mode on CPU2
+[    0.610054] Booting processor 3 APIC 0x3 ip 0x6000
+[    0.030000] Initializing CPU#3
+[    0.030000] CPU: L1 I Cache: 64K (64 bytes/line), D cache 64K (64
+bytes/line)
+[    0.030000] CPU: L2 Cache: 512K (64 bytes/line)
+[    0.030000] CPU 3/0x3 -> Node 0
+[    0.030000] CPU: Physical Processor ID: 0
+[    0.030000] CPU: Processor Core ID: 3
+[    0.770062] CPU3: AMD Phenom(tm) II X6 1055T Processor stepping 00
+[    0.770323] checking TSC synchronization [CPU#0 -> CPU#3]: passed.
+[    0.780028] Switch to broadcast mode on CPU3
+[    0.780077] Booting processor 4 APIC 0x4 ip 0x6000
+[    0.030000] Initializing CPU#4
+[    0.030000] CPU: L1 I Cache: 64K (64 bytes/line), D cache 64K (64
+bytes/line)
+[    0.030000] CPU: L2 Cache: 512K (64 bytes/line)
+[    0.030000] CPU 4/0x4 -> Node 0
+[    0.030000] CPU: Physical Processor ID: 0
+[    0.030000] CPU: Processor Core ID: 4
+[    0.940072] CPU4: AMD Phenom(tm) II X6 1055T Processor stepping 00
+[    0.940334] checking TSC synchronization [CPU#0 -> CPU#4]: passed.
+[    0.950031] Switch to broadcast mode on CPU4
+[    0.950079] Booting processor 5 APIC 0x5 ip 0x6000
+[    0.030000] Initializing CPU#5
+[    0.030000] CPU: L1 I Cache: 64K (64 bytes/line), D cache 64K (64
+bytes/line)
+[    0.030000] CPU: L2 Cache: 512K (64 bytes/line)
+[    0.030000] CPU 5/0x5 -> Node 0
+[    0.030000] CPU: Physical Processor ID: 0
+[    0.030000] CPU: Processor Core ID: 5
+[    1.110077] CPU5: AMD Phenom(tm) II X6 1055T Processor stepping 00
+[    1.110339] checking TSC synchronization [CPU#0 -> CPU#5]: passed.
+[    1.120037] Brought up 6 CPUs
+[    1.120036] Switch to broadcast mode on CPU5
+[    1.120100] Total of 6 processors activated (33600.94 BogoMIPS).
+[    1.122511] CPU0 attaching sched-domain:
+[    1.122513]  domain 0: span 0-5 level MC
+[    1.122515]   groups: 0 1 2 3 4 5
+[    1.122522] CPU1 attaching sched-domain:
+[    1.122524]  domain 0: span 0-5 level MC
+[    1.122526]   groups: 1 2 3 4 5 0
+[    1.122532] CPU2 attaching sched-domain:
+[    1.122534]  domain 0: span 0-5 level MC
+[    1.122536]   groups: 2 3 4 5 0 1
+[    1.122542] CPU3 attaching sched-domain:
+[    1.122543]  domain 0: span 0-5 level MC
+[    1.122545]   groups: 3 4 5 0 1 2
+[    1.122551] CPU4 attaching sched-domain:
+[    1.122553]  domain 0: span 0-5 level MC
+[    1.122555]   groups: 4 5 0 1 2 3
+[    1.122560] CPU5 attaching sched-domain:
+[    1.122562]  domain 0: span 0-5 level MC
+[    1.122564]   groups: 5 0 1 2 3 4
+[    1.122794] devtmpfs: initialized
+[    1.130456] regulator: core version 0.5
+[    1.130648] NET: Registered protocol family 16
+[    1.131164] node 0 link 0: io port [1000, ffffff]
+[    1.131174] TOM: 00000000d0000000 aka 3328M
+[    1.131219] Fam 10h mmconf [e0000000, efffffff]
+[    1.131228] node 0 link 0: mmio [a0000, bffff]
+[    1.131241] node 0 link 0: mmio [d0000000, dfffffff]
+[    1.131254] node 0 link 0: mmio [e0000000, efffffff] ==> none
+[    1.131267] node 0 link 0: mmio [f0000000, ffefffff]
+[    1.131280] TOM2: 00000001b0000000 aka 6912M
+[    1.131325] bus: [00,07] on node 0 link 0
+[    1.131333] bus: 00 index 0 io port: [0, ffff]
+[    1.131342] bus: 00 index 1 mmio: [a0000, bffff]
+[    1.131350] bus: 00 index 2 mmio: [d0000000, dfffffff]
+[    1.131359] bus: 00 index 3 mmio: [f0000000, ffffffff]
+[    1.131368] bus: 00 index 4 mmio: [1b0000000, fcffffffff]
+[    1.131719] PCI: Using configuration type 1 for base access
+[    1.131769] PCI: Using configuration type 1 for extended access
+[    1.141932] bio: create slab <bio-0> at 0
+[    1.142645] vgaarb: loaded
+[    1.143197] SCSI subsystem initialized
+[    1.143660] libata version 3.00 loaded.
+[    1.143884] usbcore: registered new interface driver usbfs
+[    1.144011] usbcore: registered new interface driver hub
+[    1.144132] usbcore: registered new device driver usb
+[    1.144571] PCI: Probing PCI hardware
+[    1.144647] PCI: Probing PCI hardware (bus 00)
+[    1.145049] pci 0000:00:02.0: PME# supported from D0 D3hot D3cold
+[    1.145101] pci 0000:00:02.0: PME# disabled
+[    1.145319] pci 0000:00:11.0: reg 10 io port: [0xc000-0xc007]
+[    1.145338] pci 0000:00:11.0: reg 14 io port: [0xb000-0xb003]
+[    1.145357] pci 0000:00:11.0: reg 18 io port: [0xa000-0xa007]
+[    1.145376] pci 0000:00:11.0: reg 1c io port: [0x9000-0x9003]
+[    1.145395] pci 0000:00:11.0: reg 20 io port: [0x8000-0x800f]
+[    1.145414] pci 0000:00:11.0: reg 24 32bit mmio: [0xfe7ffc00-0xfe7fffff]
+[    1.145553] pci 0000:00:12.0: reg 10 32bit mmio: [0xfe7fe000-0xfe7fefff]
+[    1.145721] pci 0000:00:12.2: reg 10 32bit mmio: [0xfe7ff800-0xfe7ff8ff]
+[    1.145833] pci 0000:00:12.2: supports D1 D2
+[    1.145841] pci 0000:00:12.2: PME# supported from D0 D1 D2 D3hot
+[    1.145894] pci 0000:00:12.2: PME# disabled
+[    1.146011] pci 0000:00:13.0: reg 10 32bit mmio: [0xfe7fd000-0xfe7fdfff]
+[    1.146171] pci 0000:00:13.2: reg 10 32bit mmio: [0xfe7ff400-0xfe7ff4ff]
+[    1.146283] pci 0000:00:13.2: supports D1 D2
+[    1.146291] pci 0000:00:13.2: PME# supported from D0 D1 D2 D3hot
+[    1.146343] pci 0000:00:13.2: PME# disabled
+[    1.146604] pci 0000:00:14.2: reg 10 64bit mmio: [0xfe7f4000-0xfe7f7fff]
+[    1.146697] pci 0000:00:14.2: PME# supported from D0 D3hot D3cold
+[    1.146750] pci 0000:00:14.2: PME# disabled
+[    1.147014] pci 0000:00:14.5: reg 10 32bit mmio: [0xfe7fc000-0xfe7fcfff]
+[    1.147246] pci 0000:00:15.0: supports D1 D2
+[    1.147349] pci 0000:00:16.0: reg 10 32bit mmio: [0xfe7f3000-0xfe7f3fff]
+[    1.147509] pci 0000:00:16.2: reg 10 32bit mmio: [0xfe7ff000-0xfe7ff0ff]
+[    1.147621] pci 0000:00:16.2: supports D1 D2
+[    1.147629] pci 0000:00:16.2: PME# supported from D0 D1 D2 D3hot
+[    1.147682] pci 0000:00:16.2: PME# disabled
+[    1.148331] pci 0000:01:00.0: reg 10 64bit mmio pref:
+[0xd0000000-0xdfffffff]
+[    1.148359] pci 0000:01:00.0: reg 18 64bit mmio: [0xfe8e0000-0xfe8fffff]
+[    1.148377] pci 0000:01:00.0: reg 20 io port: [0xd000-0xd0ff]
+[    1.148403] pci 0000:01:00.0: reg 30 32bit mmio pref:
+[0xfe8c0000-0xfe8dffff]
+[    1.148457] pci 0000:01:00.0: supports D1 D2
+[    1.150094] pci 0000:01:00.1: reg 10 64bit mmio: [0xfe8bc000-0xfe8bffff]
+[    1.150191] pci 0000:01:00.1: supports D1 D2
+[    1.150418] pci 0000:00:02.0: bridge io port: [0xd000-0xdfff]
+[    1.150431] pci 0000:00:02.0: bridge 32bit mmio: [0xfe800000-0xfe8fffff]
+[    1.150449] pci 0000:00:02.0: bridge 64bit mmio pref:
+[0xd0000000-0xdfffffff]
+[    1.150565] pci 0000:02:05.0: reg 10 32bit mmio: [0xfe9f0000-0xfe9fffff]
+[    1.150851] pci 0000:00:14.4: transparent bridge
+[    1.150913] pci 0000:00:14.4: bridge 32bit mmio: [0xfe900000-0xfe9fffff]
+[    1.151037] pci 0000:03:00.0: reg 10 io port: [0xe800-0xe8ff]
+[    1.151080] pci 0000:03:00.0: reg 18 64bit mmio pref:
+[0xfdfff000-0xfdffffff]
+[    1.151113] pci 0000:03:00.0: reg 20 64bit mmio pref:
+[0xfdff8000-0xfdffbfff]
+[    1.151208] pci 0000:03:00.0: supports D1 D2
+[    1.151216] pci 0000:03:00.0: PME# supported from D0 D1 D2 D3hot D3cold
+[    1.151270] pci 0000:03:00.0: PME# disabled
+[    1.151509] pci 0000:00:15.0: bridge io port: [0xe000-0xefff]
+[    1.151532] pci 0000:00:15.0: bridge 64bit mmio pref:
+[0xfdf00000-0xfdffffff]
+[    1.153220] vgaarb: device added:
+PCI:0000:01:00.0,decodes=io+mem,owns=io+mem,locks=none
+[    1.153717] pci 0000:00:14.3: default IRQ router [1002:439d]
+[    1.154449] NetLabel: Initializing
+[    1.154523] NetLabel:  domain hash size = 128
+[    1.154567] NetLabel:  protocols = UNLABELED CIPSOv4
+[    1.154663] NetLabel:  unlabeled traffic allowed by default
+[    1.154918] Switching to clocksource tsc
+[    1.155547] Switch to broadcast mode on CPU0
+[    1.161834] pci 0000:00:02.0: PCI bridge, secondary bus 0000:01
+[    1.161885] pci 0000:00:02.0:   IO window: 0xd000-0xdfff
+[    1.161938] pci 0000:00:02.0:   MEM window: 0xfe800000-0xfe8fffff
+[    1.161990] pci 0000:00:02.0:   PREFETCH window:
+0x000000d0000000-0x000000dfffffff
+[    1.162051] pci 0000:00:14.4: PCI bridge, secondary bus 0000:02
+[    1.162099] pci 0000:00:14.4:   IO window: disabled
+[    1.162152] pci 0000:00:14.4:   MEM window: 0xfe900000-0xfe9fffff
+[    1.162204] pci 0000:00:14.4:   PREFETCH window: disabled
+[    1.162261] pci 0000:00:15.0: PCI bridge, secondary bus 0000:03
+[    1.162311] pci 0000:00:15.0:   IO window: 0xe000-0xefff
+[    1.162364] pci 0000:00:15.0:   MEM window: disabled
+[    1.162414] pci 0000:00:15.0:   PREFETCH window:
+0x000000fdf00000-0x000000fdffffff
+[    1.162495] pci 0000:00:02.0: PCI->APIC IRQ transform: INT A -> IRQ 18
+[    1.162548] pci 0000:00:02.0: setting latency timer to 64
+[    1.162585] pci 0000:00:15.0: can't find IRQ for PCI INT A; probably
+buggy MP table
+[    1.162643] pci 0000:00:15.0: setting latency timer to 64
+[    1.162655] pci_bus 0000:00: resource 0 io:  [0x00-0xffff]
+[    1.162665] pci_bus 0000:00: resource 1 mem:
+[0x000000-0xffffffffffffffff]
+[    1.162675] pci_bus 0000:01: resource 0 io:  [0xd000-0xdfff]
+[    1.162689] pci_bus 0000:01: resource 1 mem: [0xfe800000-0xfe8fffff]
+[    1.164260] pci_bus 0000:01: resource 2 pref mem [0xd0000000-0xdfffffff]
+[    1.164272] pci_bus 0000:02: resource 1 mem: [0xfe900000-0xfe9fffff]
+[    1.164283] pci_bus 0000:02: resource 3 io:  [0x00-0xffff]
+[    1.164294] pci_bus 0000:02: resource 4 mem:
+[0x000000-0xffffffffffffffff]
+[    1.164306] pci_bus 0000:03: resource 0 io:  [0xe000-0xefff]
+[    1.164317] pci_bus 0000:03: resource 2 pref mem [0xfdf00000-0xfdffffff]
+[    1.164397] NET: Registered protocol family 2
+[    1.165827] IP route cache hash table entries: 262144 (order: 9, 2097152
+bytes)
+[    1.171578] TCP established hash table entries: 524288 (order: 11,
+8388608 bytes)
+[    1.175782] TCP bind hash table entries: 65536 (order: 8, 1048576 bytes)
+[    1.176070] TCP: Hash tables configured (established 524288 bind 65536)
+[    1.176121] TCP reno registered
+[    1.176393] NET: Registered protocol family 1
+[    1.254576] pci 0000:01:00.0: Boot video device
+[    1.254803] Trying to unpack rootfs image as initramfs...
+[    1.442605] Freeing initrd memory: 7906k freed
+[    1.448783] PCI-DMA: Disabling AGP.
+[    1.449026] PCI-DMA: aperture base @ 20000000 size 65536 KB
+[    1.449076] PCI-DMA: using GART IOMMU.
+[    1.449127] PCI-DMA: Reserving 64MB of IOMMU area in the AGP aperture
+[    1.454358] platform rtc_cmos: registered platform RTC device (no PNP
+device found)
+[    1.456348] Scanning for low memory corruption every 60 seconds
+[    1.456699] audit: initializing netlink socket (disabled)
+[    1.456823] type=2000 audit(1296856761.454:1): initialized
+[    1.465233] I-pipe: Domain Xenomai registered.
+[    1.465635] Xenomai: hal/x86_64 started.
+[    1.465774] Xenomai: scheduling class idle registered.
+[    1.465829] Xenomai: scheduling class rt registered.
+[    1.469909] Xenomai: real-time nucleus v2.5.5.2 (Ghosts) loaded.
+[    1.964768] Xenomai: native skin init failed, code -19.
+[    1.964855] Xenomai: starting POSIX services.
+[    2.464820] Xenomai: POSIX skin init failed, code -19.
+[    2.964858] Xenomai: RTDM skin init failed, code -19.
+[    2.965787] HugeTLB registered 2 MB page size, pre-allocated 0 pages
+[    2.975025] VFS: Disk quotas dquot_6.5.2
+[    2.975302] Dquot-cache hash table entries: 512 (order 0, 4096 bytes)
+[    2.977988] fuse init (API version 7.13)
+[    2.978493] msgmni has been set to 11958
+[    2.980218] alg: No test for stdrng (krng)
+[    2.980218] Block layer SCSI generic (bsg) driver version 0.4 loaded
+(major 253)
+[    2.980218] io scheduler noop registered
+[    2.980218] io scheduler anticipatory registered
+[    2.980218] io scheduler deadline registered
+[    2.980360] io scheduler cfq registered (default)
+[    2.981169]   alloc irq_desc for 24 on node 0
+[    2.981177]   alloc kstat_irqs on node 0
+[    2.981206] pcieport 0000:00:02.0: irq 24 for MSI/MSI-X
+[    2.981232] pcieport 0000:00:02.0: setting latency timer to 64
+[    2.981654] pcieport 0000:00:15.0: device [1002:43a0] has invalid IRQ;
+check vendor BIOS
+[    2.981865]   alloc irq_desc for 25 on node 0
+[    2.981873]   alloc kstat_irqs on node 0
+[    2.981903] pcieport 0000:00:15.0: irq 25 for MSI/MSI-X
+[    2.981932] pcieport 0000:00:15.0: setting latency timer to 64
+[    2.982203] pci_hotplug: PCI Hot Plug PCI Core version: 0.5
+[    2.982319] pciehp: PCI Express Hot Plug Controller Driver version: 0.4
+[    2.989062] Linux agpgart interface v0.103
+[    2.989173] Serial: 8250/16550 driver, 4 ports, IRQ sharing enabled
+[    2.996593] brd: module loaded
+[    2.999090] loop: module loaded
+[    3.001313] Fixed MDIO Bus: probed
+[    3.001555] PPP generic driver version 2.4.2
+[    3.001781] tun: Universal TUN/TAP device driver, 1.6
+[    3.001862] tun: (C) 1999-2004 Max Krasnyansky <maxk@domain.hid>
+[    3.002206] ehci_hcd: USB 2.0 'Enhanced' Host Controller (EHCI) Driver
+[    3.002492] ehci_hcd 0000:00:12.2: PCI->APIC IRQ transform: INT B -> IRQ
+17
+[    3.002662] ehci_hcd 0000:00:12.2: EHCI Host Controller
+[    3.002863] ehci_hcd 0000:00:12.2: new USB bus registered, assigned bus
+number 1
+[    3.004581] ehci_hcd 0000:00:12.2: debug port 1
+[    3.004680] ehci_hcd 0000:00:12.2: irq 17, io mem 0xfe7ff800
+[    3.024634] ehci_hcd 0000:00:12.2: USB 2.0 started, EHCI 1.00
+[    3.025104] usb usb1: configuration #1 chosen from 1 choice
+[    3.025265] hub 1-0:1.0: USB hub found
+[    3.025371] hub 1-0:1.0: 5 ports detected
+[    3.026106] ehci_hcd 0000:00:13.2: PCI->APIC IRQ transform: INT B -> IRQ
+17
+[    3.026185] ehci_hcd 0000:00:13.2: EHCI Host Controller
+[    3.026351] ehci_hcd 0000:00:13.2: new USB bus registered, assigned bus
+number 2
+[    3.026495] ehci_hcd 0000:00:13.2: debug port 1
+[    3.026572] ehci_hcd 0000:00:13.2: irq 17, io mem 0xfe7ff400
+[    3.044720] ehci_hcd 0000:00:13.2: USB 2.0 started, EHCI 1.00
+[    3.045144] usb usb2: configuration #1 chosen from 1 choice
+[    3.045288] hub 2-0:1.0: USB hub found
+[    3.045387] hub 2-0:1.0: 5 ports detected
+[    3.046007] ehci_hcd 0000:00:16.2: PCI->APIC IRQ transform: INT B -> IRQ
+17
+[    3.046085] ehci_hcd 0000:00:16.2: EHCI Host Controller
+[    3.046267] ehci_hcd 0000:00:16.2: new USB bus registered, assigned bus
+number 3
+[    3.046411] ehci_hcd 0000:00:16.2: debug port 1
+[    3.046488] ehci_hcd 0000:00:16.2: irq 17, io mem 0xfe7ff000
+[    3.064626] ehci_hcd 0000:00:16.2: USB 2.0 started, EHCI 1.00
+[    3.065092] usb usb3: configuration #1 chosen from 1 choice
+[    3.065267] hub 3-0:1.0: USB hub found
+[    3.065366] hub 3-0:1.0: 4 ports detected
+[    3.065915] ohci_hcd: USB 1.1 'Open' Host Controller (OHCI) Driver
+[    3.066193] ohci_hcd 0000:00:12.0: PCI->APIC IRQ transform: INT A -> IRQ
+18
+[    3.066269] ohci_hcd 0000:00:12.0: OHCI Host Controller
+[    3.066439] ohci_hcd 0000:00:12.0: new USB bus registered, assigned bus
+number 4
+[    3.066569] ohci_hcd 0000:00:12.0: irq 18, io mem 0xfe7fe000
+[    3.128570] usb usb4: configuration #1 chosen from 1 choice
+[    3.128770] hub 4-0:1.0: USB hub found
+[    3.128871] hub 4-0:1.0: 5 ports detected
+[    3.130131] ohci_hcd 0000:00:13.0: PCI->APIC IRQ transform: INT A -> IRQ
+18
+[    3.130206] ohci_hcd 0000:00:13.0: OHCI Host Controller
+[    3.130373] ohci_hcd 0000:00:13.0: new USB bus registered, assigned bus
+number 5
+[    3.130504] ohci_hcd 0000:00:13.0: irq 18, io mem 0xfe7fd000
+[    3.188368] usb usb5: configuration #1 chosen from 1 choice
+[    3.188542] hub 5-0:1.0: USB hub found
+[    3.188642] hub 5-0:1.0: 5 ports detected
+[    3.189848] ohci_hcd 0000:00:14.5: PCI->APIC IRQ transform: INT C -> IRQ
+18
+[    3.189923] ohci_hcd 0000:00:14.5: OHCI Host Controller
+[    3.190088] ohci_hcd 0000:00:14.5: new USB bus registered, assigned bus
+number 6
+[    3.190212] ohci_hcd 0000:00:14.5: irq 18, io mem 0xfe7fc000
+[    3.248477] usb usb6: configuration #1 chosen from 1 choice
+[    3.248650] hub 6-0:1.0: USB hub found
+[    3.248750] hub 6-0:1.0: 2 ports detected
+[    3.249945] ohci_hcd 0000:00:16.0: PCI->APIC IRQ transform: INT A -> IRQ
+18
+[    3.250020] ohci_hcd 0000:00:16.0: OHCI Host Controller
+[    3.250183] ohci_hcd 0000:00:16.0: new USB bus registered, assigned bus
+number 7
+[    3.250307] ohci_hcd 0000:00:16.0: irq 18, io mem 0xfe7f3000
+[    3.308379] usb usb7: configuration #1 chosen from 1 choice
+[    3.309112] hub 7-0:1.0: USB hub found
+[    3.309193] hub 7-0:1.0: 4 ports detected
+[    3.310403] uhci_hcd: USB Universal Host Controller Interface driver
+[    3.311107] serio: i8042 KBD port at 0x60,0x64 irq 1
+[    3.311174] serio: i8042 AUX port at 0x60,0x64 irq 12
+[    3.311457] mice: PS/2 mouse device common for all mice
+[    3.311759] rtc_cmos rtc_cmos: rtc core: registered rtc_cmos as rtc0
+[    3.311871] rtc0: alarms up to one day, 114 bytes nvram
+[    3.312352] device-mapper: uevent: version 1.0.3
+[    3.313066] device-mapper: ioctl: 4.15.0-ioctl (2009-04-01) initialised:
+dm-devel@domain.hid
+[    3.313841] device-mapper: multipath: version 1.1.0 loaded
+[    3.313907] device-mapper: multipath round-robin: version 1.0.0 loaded
+[    3.314271] cpuidle: using governor ladder
+[    3.314320] cpuidle: using governor menu
+[    3.315247] TCP cubic registered
+[    3.315862] NET: Registered protocol family 10
+[    3.317179] lo: Disabled Privacy Extensions
+[    3.317941] NET: Registered protocol family 17
+[    3.318412] registered taskstats version 1
+[    3.319663] rtc_cmos rtc_cmos: setting system clock to 2011-02-04
+21:59:24 UTC (1296856764)
+[    3.319729] BIOS EDD facility v0.16 2004-Jun-25, 0 devices found
+[    3.319785] EDD information not available.
+[    3.320135] Freeing unused kernel memory: 800k freed
+[    3.320618] Write protecting the kernel read-only data: 7216k
+[    3.331617] input: AT Translated Set 2 keyboard as
+/devices/platform/i8042/serio0/input/input0
+[    3.383884] udev: starting version 151
+[    3.464875] ahci 0000:00:11.0: version 3.0
+[    3.464915] ahci 0000:00:11.0: PCI->APIC IRQ transform: INT A -> IRQ 19
+[    3.465091]   alloc irq_desc for 26 on node 0
+[    3.465100]   alloc kstat_irqs on node 0
+[    3.465135] ahci 0000:00:11.0: irq 26 for MSI/MSI-X
+[    3.465338] ahci 0000:00:11.0: AHCI 0001.0200 32 slots 6 ports 3 Gbps
+0x3f impl SATA mode
+[    3.465404] ahci 0000:00:11.0: flags: 64bit ncq sntf ilck pm led clo pmp
+pio slum part 
+[    3.466041] scsi0 : ahci
+[    3.466454] scsi1 : ahci
+[    3.466790] scsi2 : ahci
+[    3.467184] scsi3 : ahci
+[    3.467665] scsi4 : ahci
+[    3.467890] scsi5 : ahci
+[    3.468176] ata1: SATA max UDMA/133 abar m1024@domain.hid port 0xfe7ffd00
+irq 26
+[    3.468241] ata2: SATA max UDMA/133 abar m1024@domain.hid port 0xfe7ffd80
+irq 26
+[    3.468304] ata3: SATA max UDMA/133 abar m1024@domain.hid port 0xfe7ffe00
+irq 26
+[    3.468369] ata4: SATA max UDMA/133 abar m1024@domain.hid port 0xfe7ffe80
+irq 26
+[    3.468433] ata5: SATA max UDMA/133 abar m1024@domain.hid port 0xfe7fff00
+irq 26
+[    3.468497] ata6: SATA max UDMA/133 abar m1024@domain.hid port 0xfe7fff80
+irq 26
+[    3.486959] r8169 Gigabit Ethernet driver 2.3LK-NAPI loaded
+[    3.487065] r8169 0000:03:00.0: PCI->APIC IRQ transform: INT A -> IRQ 16
+[    3.487251] r8169 0000:03:00.0: setting latency timer to 64
+[    3.487269] r8169 0000:03:00.0: unknown MAC, using family default
+[    3.487409]   alloc irq_desc for 27 on node 0
+[    3.487418]   alloc kstat_irqs on node 0
+[    3.487461] r8169 0000:03:00.0: irq 27 for MSI/MSI-X
+[    3.488874] eth0: RTL8168b/8111b at 0xffffc90002680000,
+90:fb:a6:e6:2c:2f, XID 0c100000 IRQ 27
+[    3.644752] usb 4-2: new full speed USB device using ohci_hcd and address
+2
+[    3.814849] ata4: SATA link down (SStatus 0 SControl 300)
+[    3.814991] ata3: SATA link down (SStatus 0 SControl 300)
+[    3.815082] ata6: SATA link down (SStatus 0 SControl 300)
+[    3.915353] usb 4-2: configuration #1 chosen from 1 choice
+[    3.994767] ata1: SATA link up 3.0 Gbps (SStatus 123 SControl 300)
+[    3.994878] ata5: SATA link up 1.5 Gbps (SStatus 113 SControl 300)
+[    3.994968] ata2: SATA link up 3.0 Gbps (SStatus 123 SControl 300)
+[    3.997449] ata5.00: ATAPI: ATAPI   DVD A  DH16AASH, SA15, max UDMA/100,
+ATAPI AN
+[    3.997713] ata1.00: ATA-8: WDC WD10EADS-22M2B0, 01.00A01, max UDMA/133
+[    3.997770] ata1.00: 1953525168 sectors, multi 0: LBA48 NCQ (depth
+31/32), AA
+[    3.999035] ata5.00: configured for UDMA/100
+[    4.000133] ata1.00: configured for UDMA/133
+[    4.000154] ata2.00: ATA-7: SAMSUNG HD160JJ/P, ZM100-34, max UDMA7
+[    4.000164] ata2.00: 312500000 sectors, multi 0: LBA48 NCQ (depth 31/32),
+AA
+[    4.005415] ata2.00: configured for UDMA/133
+[    4.015062] scsi 0:0:0:0: Direct-Access     ATA      WDC WD10EADS-22M
+01.0 PQ: 0 ANSI: 5
+[    4.015742] sd 0:0:0:0: Attached scsi generic sg0 type 0
+[    4.016331] sd 0:0:0:0: [sda] 1953525168 512-byte logical blocks: (1.00
+TB/931 GiB)
+[    4.016603] sd 0:0:0:0: [sda] Write Protect is off
+[    4.016664] sd 0:0:0:0: [sda] Mode Sense: 00 3a 00 00
+[    4.016814] sd 0:0:0:0: [sda] Write cache: enabled, read cache: enabled,
+doesn't support DPO or FUA
+[    4.017590]  sda:
+[    4.025098] scsi 1:0:0:0: Direct-Access     ATA      SAMSUNG HD160JJ/
+ZM10 PQ: 0 ANSI: 5
+[    4.025826] sd 1:0:0:0: [sdb] 312500000 512-byte logical blocks: (160
+GB/149 GiB)
+[    4.025810] sd 1:0:0:0: Attached scsi generic sg1 type 0
+[    4.026249] sd 1:0:0:0: [sdb] Write Protect is off
+[    4.026333] sd 1:0:0:0: [sdb] Mode Sense: 00 3a 00 00
+[    4.026493] sd 1:0:0:0: [sdb] Write cache: enabled, read cache: enabled,
+doesn't support DPO or FUA
+[    4.027192]  sdb: sda1 sda2
+[    4.029976] scsi 4:0:0:0: CD-ROM            ATAPI    DVD A  DH16AASH
+SA15 PQ: 0 ANSI: 5
+[    4.030664] sd 0:0:0:0: [sda] Attached SCSI disk
+[    4.033737]  sdb1 sdb2 <
+[    4.034751] usb 2-1: new high speed USB device using ehci_hcd and address
+2
+[    4.036557] sr0: scsi3-mmc drive: 48x/48x writer dvd-ram cd/rw xa/form2
+cdda tray
+[    4.036636] Uniform CD-ROM driver Revision: 3.20
+[    4.037024] sr 4:0:0:0: Attached scsi CD-ROM sr0
+[    4.037279] sr 4:0:0:0: Attached scsi generic sg2 type 5
+[    4.061868]  sdb5 >
+[    4.063245] sd 1:0:0:0: [sdb] Attached SCSI disk
+[    4.187152] usb 2-1: configuration #1 chosen from 1 choice
+[    4.304842] usb 2-3: new high speed USB device using ehci_hcd and address
+3
+[    4.458429] usb 2-3: configuration #1 chosen from 1 choice
+[    4.494827] Initializing USB Mass Storage driver...
+[    4.496288] scsi6 : SCSI emulation for USB Mass Storage devices
+[    4.496716] usb-storage: device found at 3
+[    4.496728] usb-storage: waiting for device to settle before scanning
+[    4.496824] usbcore: registered new interface driver usb-storage
+[    4.496884] USB Mass Storage support registered.
+[    4.507914] EXT4-fs (sdb1): mounted filesystem with ordered data mode
+[    4.553476] usbcore: registered new interface driver hiddev
+[    4.556147] generic-usb: probe of 0003:0A48:4001.0001 failed with error
+-22
+[    4.556274] usbcore: registered new interface driver usbhid
+[    4.556359] usbhid: v2.6:USB HID core driver
+[    4.574909] usb 2-4: new high speed USB device using ehci_hcd and address
+4
+[    4.735171] usb 2-4: configuration #1 chosen from 4 choices
+[    9.495622] usb-storage: device scan complete
+[    9.497192] scsi 6:0:0:0: Direct-Access     Generic  USB SD Reader
+1.00 PQ: 0 ANSI: 0
+[    9.497941] scsi 6:0:0:1: Direct-Access     Generic  USB CF Reader
+1.01 PQ: 0 ANSI: 0
+[    9.498690] scsi 6:0:0:2: Direct-Access     Generic  USB xD/SM Reader
+1.02 PQ: 0 ANSI: 0
+[    9.499690] scsi 6:0:0:3: Direct-Access     Generic  USB MS Reader
+1.03 PQ: 0 ANSI: 0 CCS
+[    9.500440] scsi 6:0:0:4: Direct-Access     Generic  Mini SD Reader
+1.06 PQ: 0 ANSI: 0
+[    9.502500] sd 6:0:0:0: Attached scsi generic sg3 type 0
+[    9.503145] sd 6:0:0:1: Attached scsi generic sg4 type 0
+[    9.503751] sd 6:0:0:2: Attached scsi generic sg5 type 0
+[    9.504344] sd 6:0:0:3: Attached scsi generic sg6 type 0
+[    9.505209] sd 6:0:0:4: Attached scsi generic sg7 type 0
+[    9.510569] sd 6:0:0:0: [sdc] Attached SCSI removable disk
+[    9.511444] sd 6:0:0:1: [sdd] Attached SCSI removable disk
+[    9.512318] sd 6:0:0:2: [sde] Attached SCSI removable disk
+[    9.513193] sd 6:0:0:3: [sdf] Attached SCSI removable disk
+[    9.514073] sd 6:0:0:4: [sdg] Attached SCSI removable disk
+[   18.477424] udev: starting version 151
+[   18.486529] Adding 6382584k swap on /dev/sdb5.  Priority:-1 extents:1
+across:6382584k 
+[   19.053828] fglrx: module license 'Proprietary. (C) 2002 - ATI
+Technologies, Starnberg, GERMANY' taints kernel.
+[   19.053845] Disabling lock debugging due to kernel taint
+[   19.058442] fglrx: Unknown symbol acpi_get_devices
+[   19.060585] fglrx: Unknown symbol acpi_bus_get_device
+[   19.061503] fglrx: Unknown symbol acpi_evaluate_object
+[   19.064026] fglrx: Unknown symbol unregister_acpi_notifier
+[   19.066441] fglrx: Unknown symbol acpi_disabled
+[   19.068964] fglrx: Unknown symbol acpi_get_handle
+[   19.070313] fglrx: Unknown symbol acpi_get_next_object
+[   19.071126] fglrx: Unknown symbol register_acpi_notifier
+[   19.125796] piix4_smbus 0000:00:14.0: SMBus Host Controller at 0xb00,
+revision 0
+[   19.220078] EDAC MC: Ver: 2.1.0 Feb  4 2011
+[   19.242550] Linux video capture interface: v2.00
+[   19.296791] pwc: Philips webcam module version 10.0.13 loaded.
+[   19.296791] pwc: Supports Philips PCA645/646, PCVC675/680/690,
+PCVC720[40]/730/740/750 & PCVC830/840.
+[   19.296798] pwc: Also supports the Askey VC010, various Logitech
+Quickcams, Samsung MPC-C10 and MPC-C30,
+[   19.296815] pwc: the Creative WebCam 5 & Pro Ex, SOTEC Afina Eye and
+Visionite VCS-UC300 and VCS-UM100.
+[   19.296920] pwc: Logitech QuickCam 4000 Pro USB webcam detected.
+[   19.297226] pwc: Registered as /dev/video0.
+[   19.300779] input: PWC snapshot button as
+/devices/pci0000:00/0000:00:12.0/usb4/4-2/input/input1
+[   19.301125] usbcore: registered new interface driver Philips webcam
+[   19.375156] cfg80211: Calling CRDA to update world regulatory domain
+[   19.400041] cfg80211: World regulatory domain updated:
+[   19.400052] 	(start_freq - end_freq @ bandwidth), (max_antenna_gain,
+max_eirp)
+[   19.400066] 	(2402000 KHz - 2472000 KHz @ 40000 KHz), (300 mBi, 2000 mBm)
+[   19.400078] 	(2457000 KHz - 2482000 KHz @ 20000 KHz), (300 mBi, 2000 mBm)
+[   19.400091] 	(2474000 KHz - 2494000 KHz @ 20000 KHz), (300 mBi, 2000 mBm)
+[   19.400103] 	(5170000 KHz - 5250000 KHz @ 40000 KHz), (300 mBi, 2000 mBm)
+[   19.400115] 	(5735000 KHz - 5835000 KHz @ 40000 KHz), (300 mBi, 2000 mBm)
+[   19.445515] EDAC amd64_edac:  Ver: 3.2.0 Feb  4 2011
+[   19.446459] EDAC amd64: This node reports that Memory ECC is currently
+disabled, set F3x44[22] (0000:00:18.3).
+[   19.446488] EDAC amd64: WARNING: ECC is disabled by BIOS. Module will NOT
+be loaded.
+[   19.446498]  Either Enable ECC in the BIOS, or set 'ecc_enable_override'.
+[   19.446507]  Also, use of the override can cause unknown side effects.
+[   19.446832] amd64_edac: probe of 0000:00:18.2 failed with error -22
+[   19.570776] dib0700: loaded with support for 13 different device-types
+[   19.572145] dvb-usb: found a 'Pinnacle PCTV 73e' in warm state.
+[   19.572275] dvb-usb: will pass the complete MPEG2 transport stream to the
+software demuxer.
+[   19.572557] DVB: registering new adapter (Pinnacle PCTV 73e)
+[   19.732867] r8169: eth0: link down
+[   19.733635] ADDRCONF(NETDEV_UP): eth0: link is not ready
+[   19.745032] ath5k 0000:02:05.0: PCI->APIC IRQ transform: INT A -> IRQ 20
+[   19.745275] ath5k 0000:02:05.0: registered as 'phy0'
+[   19.822223] DVB: registering adapter 0 frontend 0 (DiBcom 7000PC)...
+[   19.876771] input: ImPS/2 Generic Wheel Mouse as
+/devices/platform/i8042/serio1/input/input2
+[   20.064595] DiB0070: successfully identified
+[   20.064805] input: IR-receiver inside an USB DVB receiver as
+/devices/pci0000:00/0000:00:13.2/usb2/2-1/input/input3
+[   20.065016] dvb-usb: schedule remote query interval to 50 msecs.
+[   20.065016] dvb-usb: Pinnacle PCTV 73e successfully initialized and
+connected.
+[   20.065359] usbcore: registered new interface driver dvb_usb_dib0700
 
 On Fri, 2011-02-04 at 21:18 +0100, Franz Engel wrote:
 > Hello,
@@ -4484,11 +5259,15 @@ send your full boot log with C1E disabled and patch in.
 > > > > Hello,
 > > > > 
 > > > > I have a little problem. I'm a Xenomai newbie (that is not the
-> > > > problem). My problem begun with the installation. I installed Xenomai
-> > > > on my PC at work (Intel, 64 Bit Ubuntu). Now I try to install Xenomai
-> > > > also on my home PC (AMD Phenom II X6, 64 Bit Ubuntu). On my PC at work
+> > > > problem). My problem begun with the installation. I installed
+Xenomai
+> > > > on my PC at work (Intel, 64 Bit Ubuntu). Now I try to install
+Xenomai
+> > > > also on my home PC (AMD Phenom II X6, 64 Bit Ubuntu). On my PC at
+work
 > > > > there is no problem. But at home I have no chance.
-> > > > I already read about this problem. When I start the latency test I get
+> > > > I already read about this problem. When I start the latency test I
+get
 > > > > this message:
 > > > > Xenomai: native skin or CONFIG_XENO_OPT_PERVASIVE disabled.
 > > > > (modprobe xeno_native?)
@@ -4530,10 +5309,12 @@ send your full boot log with C1E disabled and patch in.
 > > > > When I used the Xenomai-Skript:
 > > > > ./prepare-kernel.sh --linux=/usr/src/linux
 > > > > 
-> > > > I choose the default parameter "X86_64" (I use a 64 Bit Ubuntu) and I
+> > > > I choose the default parameter "X86_64" (I use a 64 Bit Ubuntu) and
+I
 > > > > tried different processor configurations on my kernel
 > > > > (Opteron/Athlon64/Hammer/K8 and Generic-x86-64). Does somewhere know
-> > > > what I made wrong? Do I have to change the prepare-kernel.sh parameter
+> > > > what I made wrong? Do I have to change the prepare-kernel.sh
+parameter
 > > > > from x86_64 to something else?
 > > > > 
 > > > > Best regards,
@@ -4553,5 +5334,19 @@ send your full boot log with C1E disabled and patch in.
 -- 
 Philippe.
 
+
+
+
+
+------------------------------
+
+_______________________________________________
+Xenomai-help mailing list
+Xenomai-help@domain.hid
+https://mail.gna.org/listinfo/xenomai-help
+
+
+End of Xenomai-help Digest, Vol 65, Issue 10
+********************************************
 
 
