@@ -1,14 +1,13 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <000001cbc4b0$03297d50$097c77f0$@de>
-References: <mailman.9723.1296855625.10284.xenomai@xenomai.org>
-	<000001cbc4b0$03297d50$097c77f0$@de>
-Content-Type: text/plain; charset="UTF-8"
-Date: Fri, 04 Feb 2011 23:32:24 +0100
-Message-ID: <1296858744.2087.44.camel@domain.hid>
-Mime-Version: 1.0
+Message-ID: <4D4C7F10.3020703@domain.hid>
+Date: Fri, 04 Feb 2011 23:34:56 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+References: <AANLkTi=pm4BfNAwCzw-6HLOiKfJQmgMQdPmVXTcCBSBs@domain.hid>	<4D49CF24.9080700@domain.hid>	<AANLkTinaTVSJW1jQzn7+jbsQgNE+HAEOXLEK3LC0MoWR@mail.gmail.com>	<4D49D608.5020006@domain.hid>	<AANLkTinU4b-SY6Vy7=Ss+Nxrp-+qEZ6qsTudBsmrjbh_@domain.hid>	<4D4A80F6.5020600@domain.hid>	<4D4A8354.7010209@domain.hid>
+	<AANLkTim3M6fPN5u6AjNn5xdwbOM9AmzB+yG2w37o1A3J@mail.gmail.com>
+In-Reply-To: <AANLkTim3M6fPN5u6AjNn5xdwbOM9AmzB+yG2w37o1A3J@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] [    1.954665] Xenomai: native skin init failed,
- code -19
+Subject: Re: [Xenomai-help] I-pipe clock source change and MMC issues (AT91)
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -18,45 +17,125 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Franz Engel <franz_lambert_engel@domain.hid>
+To: at91_enthus <nwromania@domain.hid>
 Cc: xenomai@xenomai.org
 
-On Fri, 2011-02-04 at 22:10 +0100, Franz Engel wrote:
-> Here is my full boot log:
+at91_enthus wrote:
+> On Thu, Feb 3, 2011 at 4:28 AM, Gilles Chanteperdrix <
+> gilles.chanteperdrix@xenomai.org> wrote:
+> 
+>> Gilles Chanteperdrix wrote:
+>>> at91_enthus wrote:
+>>>> On Wed, Feb 2, 2011 at 4:09 PM, Gilles Chanteperdrix <
+>>>> gilles.chanteperdrix@xenomai.org> wrote:
+>>>>
+>>>>> at91_enthus wrote:
+>>>>>> On Wed, Feb 2, 2011 at 3:39 PM, Gilles Chanteperdrix
+>>>>>> <gilles.chanteperdrix@xenomai.org
+>>>>>> <mailto:gilles.chanteperdrix@xenomai.org>> wrote:
+>>>>>>
+>>>>>>     at91_enthus wrote:
+>>>>>>     > Hi.
+>>>>>>     >
+>>>>>>     > In order to get better accuracy with Xenomai, I modified the
+>> I-pipe
+>>>>>>     > timebase (MCK divider) in arch/arm.mach-at91/at91_ipipe_time.c.
+>>>>>>     > Unfortunately, I cannot mount the rootfs on the MMC, since the
+>> MMC
+>>>>>>     > controller is no longer functioning. I tried to change TCx in
+>>>>> kernel
+>>>>>>     > configuration to no avail.
+>>>>>>     > When I switch back to a timebase of 1 MHz, the MMC works fine.
+>>>>>>
+>>>>>>     The thing is that we are a bit tight on AT91. A 16 bits counter is
+>>>>> used
+>>>>>>     for both the timer and the tsc emulation, and this tsc must be
+>>>>> refreshed
+>>>>>>     at least once before it wraps. The problem is that since it is a
+>> 16
+>>>>> bits
+>>>>>>     counter, it wraps really fast, on my AT91SAM9263 it wraps in 20
+>> ms,
+>>>>> and
+>>>>>>     since the Linux default period is 10ms we are actually quite close
+>> to
+>>>>>>     the limit.
+>>>>>>
+>>>>>>     Anyway, trying to get a better accuracy than 1us is kind of
+>> useless
+>>>>> on
+>>>>>>     AT91, since even reading this counter takes more than 1us. So, you
+>>>>> are
+>>>>>>     not in fact improving anything. The 1MHz is even a bit overkill.
+>>>>> On the other hand, the AT91SAM9G20 may be running at a better
+>> frequency.
+>>>>> But with latencies in the order of tens of microseconds, having a
+>> better
+>>>>> accuracy than 1us still does not make really much sense.
+>>>>
+>>>>
+>>>>> Why do you need
+>>>>> this accuracy?
+>>>>>
+>>>> I want to time stamp the samples from a 8 channel SPI-based ADC. I know
+>> that
+>>>> a conversion takes between 3 and 5 microseconds depending on the SPI
+>> clock.
+>>>> What I want is to adapt the code to acquire a fixed numb
+>> er of samples in
+>>>> user space (I knew it was a long shot). Plain, Xenomai-free, userland
+>>>> application was out of the question, so I figured that a userspace
+>>>> application in Xenomai run at highest priority should doand the trick.
+>>>>
+>>>> On a second thought, a simple linux kernel module is what I want (this
+>> way I
+>>>> can use interrupts and one of the platform's six timers).
+>>> You can use interrupts and the platform's six timers in a Xenomai driver
+>>> based on the RTDM skin. The thing is, what interrupt latency is your
+>> target?
+>> To make myself clear:
+>> you got:
+>> - the AD conversion (amounts for an unknown amount of time between 3 and
+>> 5us)
+>> - the SPI interrupt
+>> - some unknown interrupt latency which amouunts to several tens of
+>> microseconds with Xenomai, and to a few hundreds of microseconds with
+>> Linux.
+>> - the interrupt handler is invoked.
+>>
+> 
+> What good will it make to have a timestamping precision with a
+>> sub-microsecond range in the interrupt handler code?
+>>
+>> --
+>>                                             Gilles.
+>>
+> 
+> Rookie mistake. Indeed, I can have everything in userspace using Xenomai. I
+> wrote a simple program that did a periodic job every 100 us and the jitter
+> was very small (around 20 us without load and around 35 us with SSH-ing and
+> Xenomai compilation running on board).
+> 
+> Somewhat unrelated to this thread, I found that when I invoked
+> rt_task_set_periodic(), I got very precise timings (as expected). However,
+> when I tried to insert small delays using rt_timer_spin(), the errors
+> (t_meas - t_spin_func_argument) were not large, but noticeable. For example,
+> I can precisely measure a 50 us periodic task on the scope. With the same
+> interval in rt_timer_spin(), I get 55-60 us. As far as I understood, all
+> timing-related functions use the same time base, so what's the reason for
+> this behavior?
 
-[snip]
+Where do you use rt_timer_spin, in kernel-space, or in user-space? How
+long do you spin?
 
-> [    0.030589] tseg: 0000000000
-> [    0.030596] CPU: Physical Processor ID: 0
-> [    0.030626] CPU: Processor Core ID: 0
-> [    0.030657] mce: CPU supports 6 MCE banks
-> [    0.030692] using C1E aware idle routine
 
-This means that you are not running the patched kernel. There is no way
-the c1e_idle routine which outputs the above message could run with it
-applied.
+> 
+> 
+> Regards,
+> R.
+> 
 
-[snip]
-
-> [    0.030000] CPU: L2 Cache: 512K (64 bytes/line)
-> [    0.030000] CPU 1/0x1 -> Node 0
-> [    0.030000] CPU: Physical Processor ID: 0
-> [    0.030000] CPU: Processor Core ID: 1
-> [    0.430096] CPU1: AMD Phenom(tm) II X6 1055T Processor stepping 00
-> [    0.430357] checking TSC synchronization [CPU#0 -> CPU#1]: passed.
-> [    0.440015] System has AMD C1E enabled
-
-This means you BIOS did not disable C1E properly. The CPU still
-advertises this mode. 
-
-In fact, once C1E is properly disabled by the BIOS, you should not need
-the patch at all.
-
-Please check your BIOS setup and kernel install. You don't seem to be
-running what you think you do actually.
 
 -- 
-Philippe.
-
-
+                                                                Gilles.
 
