@@ -1,16 +1,15 @@
 MIME-Version: 1.0
-In-Reply-To: <4D4A8354.7010209@domain.hid>
-References: <AANLkTi=pm4BfNAwCzw-6HLOiKfJQmgMQdPmVXTcCBSBs@domain.hid>
-	<4D49CF24.9080700@domain.hid>
-	<AANLkTinaTVSJW1jQzn7+jbsQgNE+HAEOXLEK3LC0MoWR@mail.gmail.com>
-	<4D49D608.5020006@domain.hid>
-	<AANLkTinU4b-SY6Vy7=Ss+Nxrp-+qEZ6qsTudBsmrjbh_@domain.hid>
-	<4D4A80F6.5020600@domain.hid> <4D4A8354.7010209@domain.hid>
-Date: Thu, 3 Feb 2011 22:24:19 -0600
-Message-ID: <AANLkTim3M6fPN5u6AjNn5xdwbOM9AmzB+yG2w37o1A3J@mail.gmail.com>
-From: at91_enthus <nwromania@domain.hid>
-Content-Type: multipart/alternative; boundary=e0cb4e6ff3658165b1049b6d41a0
-Subject: Re: [Xenomai-help] I-pipe clock source change and MMC issues (AT91)
+In-Reply-To: <4D4AABF4.6030804@domain.hid>
+References: <AANLkTikSnhe5fnSLQm7eSOh9R7YA2cJ=m78n+S3kpW9K@mail.gmail.com>
+	<4D4A84ED.7030604@domain.hid> <4D4A8BD8.1060900@domain.hid>
+	<4D4A9052.2090508@domain.hid> <4D4A9118.2070602@domain.hid>
+	<4D4A957B.6050907@domain.hid> <4D4A9654.80402@domain.hid>
+	<4D4AA479.2020808@domain.hid> <4D4AABF4.6030804@domain.hid>
+Date: Fri, 4 Feb 2011 15:33:04 +0200
+Message-ID: <AANLkTimdawDBCnZon1v06F6uFf1dqwt8Re11rXPv6ZnY@mail.gmail.com>
+From: Rudolf Meijering <rudolf@domain.hid>
+Content-Type: multipart/alternative; boundary=90e6ba4fc1ceff0527049b74eb4c
+Subject: Re: [Xenomai-help] RT OS Selection advice for parallel processing
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -21,252 +20,163 @@ List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+Cc: Jan Kiszka <jan.kiszka@domain.hid>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
---e0cb4e6ff3658165b1049b6d41a0
-Content-Type: text/plain; charset=ISO-8859-1
+--90e6ba4fc1ceff0527049b74eb4c
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: quoted-printable
 
-On Thu, Feb 3, 2011 at 4:28 AM, Gilles Chanteperdrix <
+Thanks a lot for everyone's input! It seems like for our application, GPU
+off-loading is not the way to go. We have redesigned our system for all
+processing to take place on the Intel i7. Total maximum processing latency
+stays 100ms, and interrupt frequency goes up to 1.5 KHz.
+
+I have done some research on the pro's and con's of PREEMPT_RT vs Xenomai.
+As far as I can determine some of the benefits include:
+1. Programming with Xenomai native API's are more elegant than POSIX
+real-time API=92s.
+2. Xenomai has possibly less overhead than a full preemptive kernel. The
+user interface does not require RT capabilities.
+
+Are there any other substantial benefits worth considering? Which would you
+use?
+
+Regards,
+
+On Thu, Feb 3, 2011 at 3:21 PM, Gilles Chanteperdrix <
 gilles.chanteperdrix@xenomai.org> wrote:
 
-> Gilles Chanteperdrix wrote:
-> > at91_enthus wrote:
-> >> On Wed, Feb 2, 2011 at 4:09 PM, Gilles Chanteperdrix <
-> >> gilles.chanteperdrix@xenomai.org> wrote:
-> >>
-> >>> at91_enthus wrote:
-> >>>> On Wed, Feb 2, 2011 at 3:39 PM, Gilles Chanteperdrix
-> >>>> <gilles.chanteperdrix@xenomai.org
-> >>>> <mailto:gilles.chanteperdrix@xenomai.org>> wrote:
-> >>>>
-> >>>>     at91_enthus wrote:
-> >>>>     > Hi.
-> >>>>     >
-> >>>>     > In order to get better accuracy with Xenomai, I modified the
-> I-pipe
-> >>>>     > timebase (MCK divider) in arch/arm.mach-at91/at91_ipipe_time.c.
-> >>>>     > Unfortunately, I cannot mount the rootfs on the MMC, since the
-> MMC
-> >>>>     > controller is no longer functioning. I tried to change TCx in
-> >>> kernel
-> >>>>     > configuration to no avail.
-> >>>>     > When I switch back to a timebase of 1 MHz, the MMC works fine.
-> >>>>
-> >>>>     The thing is that we are a bit tight on AT91. A 16 bits counter is
-> >>> used
-> >>>>     for both the timer and the tsc emulation, and this tsc must be
-> >>> refreshed
-> >>>>     at least once before it wraps. The problem is that since it is a
-> 16
-> >>> bits
-> >>>>     counter, it wraps really fast, on my AT91SAM9263 it wraps in 20
-> ms,
-> >>> and
-> >>>>     since the Linux default period is 10ms we are actually quite close
-> to
-> >>>>     the limit.
-> >>>>
-> >>>>     Anyway, trying to get a better accuracy than 1us is kind of
-> useless
-> >>> on
-> >>>>     AT91, since even reading this counter takes more than 1us. So, you
-> >>> are
-> >>>>     not in fact improving anything. The 1MHz is even a bit overkill.
-> >>> On the other hand, the AT91SAM9G20 may be running at a better
-> frequency.
-> >>> But with latencies in the order of tens of microseconds, having a
-> better
-> >>> accuracy than 1us still does not make really much sense.
-> >>
-> >>
-> >>
-> >>> Why do you need
-> >>> this accuracy?
-> >>>
-> >> I want to time stamp the samples from a 8 channel SPI-based ADC. I know
-> that
-> >> a conversion takes between 3 and 5 microseconds depending on the SPI
-> clock.
-> >> What I want is to adapt the code to acquire a fixed numb
->
-> er of samples in
-> >> user space (I knew it was a long shot). Plain, Xenomai-free, userland
-> >> application was out of the question, so I figured that a userspace
-> >> application in Xenomai run at highest priority should doand the trick.
-> >>
-> >> On a second thought, a simple linux kernel module is what I want (this
-> way I
-> >> can use interrupts and one of the platform's six timers).
+> Jan Kiszka wrote:
+> > On 2011-02-03 12:49, Gilles Chanteperdrix wrote:
+> >> Jan Kiszka wrote:
+> >>> On 2011-02-03 12:27, Gilles Chanteperdrix wrote:
+> >>>> Jan Kiszka wrote:
+> >>>>> On 2011-02-03 12:04, Gilles Chanteperdrix wrote:
+> >>>>>> Jan Kiszka wrote:
+> >>>>>>> [ And, personally, I don't trust the NVIDIA driver a lot. But tha=
+t
+> might
+> >>>>>>> be influenced by the fact that latest versions lock up my noteboo=
+k
+> >>>>>>> regularly after resume and that I filed another obvious locking
+> issue of
+> >>>>>>> the compilable driver stub around mmap_sem without any response
+> from the
+> >>>>>>> vendor. ]
+> >>>>>> Some colleague of mine is using the NVIDIA driver (through the
+> opengl
+> >>>>>> mapping, not CUDA/VDPAU, whatever) on high-end NVIDIA boards in a
+> non RT
+> >>>>>> situation. he definitely observed some huge latencies not due to
+> >>>>>> scheduling issues, when uploading textures to the GPU. We are
+> talking
+> >>>>>> tens of milliseconds here.
+> >>>>> Ugh, tens of milliseconds is heavy, more than I would expect from
+> >>>>> wbinvd. OTOH, uploading textures may involve mapping the RAM that
+> >>>>> contains them for the GPU. To exclude that as source, he could try
+> >>>>> instrumenting CACHE_FLUSH() (in nv-linux.h).
+> >>>> No, it really looks like a bug in the blob. Of course the 40ms is a
+> spot
+> >>>> from time to time, usually, the upload is really fast.
+> >>> Unless it's a stall on the PCI bus, the blob should leaves some trace=
+s
+> >>> in ftrace.
+> >> I am talking about the kernel-space blob. ftrance does just show that
+> >> the ioctl has been submitted.
 > >
-> > You can use interrupts and the platform's six timers in a Xenomai driver
-> > based on the RTDM skin. The thing is, what interrupt latency is your
-> target?
-> >
+> > Function tracing takes you at least into the blob wrapper, both for
+> > requests issued to the blob and for its callbacks to access Linux
+> > services. It looks like NVIDIA as concentrating both arch and kernel
+> > specific abstractions there, not in the blob (but that's just an
+> > impression).
 >
-> To make myself clear:
-> you got:
-> - the AD conversion (amounts for an unknown amount of time between 3 and
-> 5us)
-> - the SPI interrupt
-> - some unknown interrupt latency which amouunts to several tens of
-> microseconds with Xenomai, and to a few hundreds of microseconds with
-> Linux.
-> - the interrupt handler is invoked.
->
-
-What good will it make to have a timestamping precision with a
-> sub-microsecond range in the interrupt handler code?
+> Sorry, I misunderstood ftrace, I thought strace. No, we did not try ftrac=
+e.
 >
 > --
 >                                             Gilles.
 >
 
-Rookie mistake. Indeed, I can have everything in userspace using Xenomai. I
-wrote a simple program that did a periodic job every 100 us and the jitter
-was very small (around 20 us without load and around 35 us with SSH-ing and
-Xenomai compilation running on board).
-
-Somewhat unrelated to this thread, I found that when I invoked
-rt_task_set_periodic(), I got very precise timings (as expected). However,
-when I tried to insert small delays using rt_timer_spin(), the errors
-(t_meas - t_spin_func_argument) were not large, but noticeable. For example,
-I can precisely measure a 50 us periodic task on the scope. With the same
-interval in rt_timer_spin(), I get 55-60 us. As far as I understood, all
-timing-related functions use the same time base, so what's the reason for
-this behavior?
-
-
-Regards,
-R.
-
---e0cb4e6ff3658165b1049b6d41a0
-Content-Type: text/html; charset=ISO-8859-1
+--90e6ba4fc1ceff0527049b74eb4c
+Content-Type: text/html; charset=windows-1252
 Content-Transfer-Encoding: quoted-printable
 
-<br><br><div class=3D"gmail_quote">On Thu, Feb 3, 2011 at 4:28 AM, Gilles C=
-hanteperdrix <span dir=3D"ltr">&lt;<a href=3D"mailto:gilles.chanteperdrix@xenomai.org=
-enomai.org">gilles.chanteperdrix@xenomai.org</a>&gt;</span> wrote:<br><bloc=
-kquote class=3D"gmail_quote" style=3D"margin: 0pt 0pt 0pt 0.8ex; border-lef=
-t: 1px solid rgb(204, 204, 204); padding-left: 1ex;">
-<div><div></div><div class=3D"h5">Gilles Chanteperdrix wrote:<br>
-&gt; at91_enthus wrote:<br>
-&gt;&gt; On Wed, Feb 2, 2011 at 4:09 PM, Gilles Chanteperdrix &lt;<br>
-&gt;&gt; <a href=3D"mailto:gilles.chanteperdrix@xenomai.org">gilles.chantep=
-erdrix@domain.hid</a>&gt; wrote:<br>
-&gt;&gt;<br>
-&gt;&gt;&gt; at91_enthus wrote:<br>
-&gt;&gt;&gt;&gt; On Wed, Feb 2, 2011 at 3:39 PM, Gilles Chanteperdrix<br>
-&gt;&gt;&gt;&gt; &lt;<a href=3D"mailto:gilles.chanteperdrix@xenomai.org">gi=
-lles.chanteperdrix@domain.hid</a><br>
-&gt;&gt;&gt;&gt; &lt;mailto:<a href=3D"mailto:gilles.chanteperdrix@xenomai.org.=
-org">gilles.chanteperdrix@xenomai.org</a>&gt;&gt; wrote:<br>
-&gt;&gt;&gt;&gt;<br>
-&gt;&gt;&gt;&gt; =A0 =A0 at91_enthus wrote:<br>
-&gt;&gt;&gt;&gt; =A0 =A0 &gt; Hi.<br>
-&gt;&gt;&gt;&gt; =A0 =A0 &gt;<br>
-&gt;&gt;&gt;&gt; =A0 =A0 &gt; In order to get better accuracy with Xenomai,=
- I modified the I-pipe<br>
-&gt;&gt;&gt;&gt; =A0 =A0 &gt; timebase (MCK divider) in arch/arm.mach-at91/=
-at91_ipipe_time.c.<br>
-&gt;&gt;&gt;&gt; =A0 =A0 &gt; Unfortunately, I cannot mount the rootfs on t=
-he MMC, since the MMC<br>
-&gt;&gt;&gt;&gt; =A0 =A0 &gt; controller is no longer functioning. I tried =
-to change TCx in<br>
-&gt;&gt;&gt; kernel<br>
-&gt;&gt;&gt;&gt; =A0 =A0 &gt; configuration to no avail.<br>
-&gt;&gt;&gt;&gt; =A0 =A0 &gt; When I switch back to a timebase of 1 MHz, th=
-e MMC works fine.<br>
-&gt;&gt;&gt;&gt;<br>
-&gt;&gt;&gt;&gt; =A0 =A0 The thing is that we are a bit tight on AT91. A 16=
- bits counter is<br>
-&gt;&gt;&gt; used<br>
-&gt;&gt;&gt;&gt; =A0 =A0 for both the timer and the tsc emulation, and this=
- tsc must be<br>
-&gt;&gt;&gt; refreshed<br>
-&gt;&gt;&gt;&gt; =A0 =A0 at least once before it wraps. The problem is that=
- since it is a 16<br>
-&gt;&gt;&gt; bits<br>
-&gt;&gt;&gt;&gt; =A0 =A0 counter, it wraps really fast, on my AT91SAM9263 i=
-t wraps in 20 ms,<br>
-&gt;&gt;&gt; and<br>
-&gt;&gt;&gt;&gt; =A0 =A0 since the Linux default period is 10ms we are actu=
-ally quite close to<br>
-&gt;&gt;&gt;&gt; =A0 =A0 the limit.<br>
-&gt;&gt;&gt;&gt;<br>
-&gt;&gt;&gt;&gt; =A0 =A0 Anyway, trying to get a better accuracy than 1us i=
-s kind of useless<br>
-&gt;&gt;&gt; on<br>
-&gt;&gt;&gt;&gt; =A0 =A0 AT91, since even reading this counter takes more t=
-han 1us. So, you<br>
-&gt;&gt;&gt; are<br>
-&gt;&gt;&gt;&gt; =A0 =A0 not in fact improving anything. The 1MHz is even a=
- bit overkill.<br>
-&gt;&gt;&gt; On the other hand, the AT91SAM9G20 may be running at a better =
-frequency.<br>
-&gt;&gt;&gt; But with latencies in the order of tens of microseconds, havin=
-g a better<br>
-&gt;&gt;&gt; accuracy than 1us still does not make really much sense.<br>
-&gt;&gt;<br>
-&gt;&gt;<br>
-&gt;&gt;<br>
-&gt;&gt;&gt; Why do you need<br>
-&gt;&gt;&gt; this accuracy?<br>
-&gt;&gt;&gt;<br>
-&gt;&gt; I want to time stamp the samples from a 8 channel SPI-based ADC. I=
- know that<br>
-&gt;&gt; a conversion takes between 3 and 5 microseconds depending on the S=
-PI clock.<br>
-&gt;&gt; What I want is to adapt the code to acquire a fixed numb<br>
-<br>
-er of samples in<br>
-&gt;&gt; user space (I knew it was a long shot). Plain, Xenomai-free, userl=
-and<br>
-&gt;&gt; application was out of the question, so I figured that a userspace=
-<br>
-</div></div>&gt;&gt; application in Xenomai run at highest priority should =
-doand the trick.<br>
-<div class=3D"im">&gt;&gt;<br>
-&gt;&gt; On a second thought, a simple linux kernel module is what I want (=
-this way I<br>
-&gt;&gt; can use interrupts and one of the platform&#39;s six timers).<br>
+Thanks a lot for everyone&#39;s input! It seems like for our application, G=
+PU off-loading is not the way to go. We have redesigned our system for all =
+processing to take place on the Intel i7. Total maximum processing latency =
+stays 100ms, and interrupt frequency goes up to 1.5 KHz.<div>
+<br></div><div>I have done some research on the pro&#39;s and con&#39;s of =
+PREEMPT_RT vs Xenomai. As far as I can determine some of the benefits inclu=
+de:</div><div><div>1. Programming with Xenomai native API&#39;s are more el=
+egant than POSIX real-time API=92s.</div>
+<div>2. Xenomai has possibly less overhead than a full preemptive kernel. T=
+he user interface does not require RT capabilities.</div></div><div><br></d=
+iv><div>Are there any other substantial benefits worth considering? Which w=
+ould you use?</div>
+<div><br></div><div>Regards,</div><div><br><div class=3D"gmail_quote">On Th=
+u, Feb 3, 2011 at 3:21 PM, Gilles Chanteperdrix <span dir=3D"ltr">&lt;<a hr=
+ef=3D"mailto:gilles.chanteperdrix@xenomai.org">gilles.chanteperdrix@xenomai.org=
+.org</a>&gt;</span> wrote:<br>
+<blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1p=
+x #ccc solid;padding-left:1ex;"><div><div></div><div class=3D"h5">Jan Kiszk=
+a wrote:<br>
+&gt; On 2011-02-03 12:49, Gilles Chanteperdrix wrote:<br>
+&gt;&gt; Jan Kiszka wrote:<br>
+&gt;&gt;&gt; On 2011-02-03 12:27, Gilles Chanteperdrix wrote:<br>
+&gt;&gt;&gt;&gt; Jan Kiszka wrote:<br>
+&gt;&gt;&gt;&gt;&gt; On 2011-02-03 12:04, Gilles Chanteperdrix wrote:<br>
+&gt;&gt;&gt;&gt;&gt;&gt; Jan Kiszka wrote:<br>
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; [ And, personally, I don&#39;t trust the NVIDI=
+A driver a lot. But that might<br>
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; be influenced by the fact that latest versions=
+ lock up my notebook<br>
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; regularly after resume and that I filed anothe=
+r obvious locking issue of<br>
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; the compilable driver stub around mmap_sem wit=
+hout any response from the<br>
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; vendor. ]<br>
+&gt;&gt;&gt;&gt;&gt;&gt; Some colleague of mine is using the NVIDIA driver =
+(through the opengl<br>
+&gt;&gt;&gt;&gt;&gt;&gt; mapping, not CUDA/VDPAU, whatever) on high-end NVI=
+DIA boards in a non RT<br>
+&gt;&gt;&gt;&gt;&gt;&gt; situation. he definitely observed some huge latenc=
+ies not due to<br>
+&gt;&gt;&gt;&gt;&gt;&gt; scheduling issues, when uploading textures to the =
+GPU. We are talking<br>
+&gt;&gt;&gt;&gt;&gt;&gt; tens of milliseconds here.<br>
+&gt;&gt;&gt;&gt;&gt; Ugh, tens of milliseconds is heavy, more than I would =
+expect from<br>
+&gt;&gt;&gt;&gt;&gt; wbinvd. OTOH, uploading textures may involve mapping t=
+he RAM that<br>
+&gt;&gt;&gt;&gt;&gt; contains them for the GPU. To exclude that as source, =
+he could try<br>
+&gt;&gt;&gt;&gt;&gt; instrumenting CACHE_FLUSH() (in nv-linux.h).<br>
+&gt;&gt;&gt;&gt; No, it really looks like a bug in the blob. Of course the =
+40ms is a spot<br>
+&gt;&gt;&gt;&gt; from time to time, usually, the upload is really fast.<br>
+&gt;&gt;&gt; Unless it&#39;s a stall on the PCI bus, the blob should leaves=
+ some traces<br>
+&gt;&gt;&gt; in ftrace.<br>
+&gt;&gt; I am talking about the kernel-space blob. ftrance does just show t=
+hat<br>
+&gt;&gt; the ioctl has been submitted.<br>
 &gt;<br>
-&gt; You can use interrupts and the platform&#39;s six timers in a Xenomai =
-driver<br>
-&gt; based on the RTDM skin. The thing is, what interrupt latency is your t=
-arget?<br>
-&gt;<br>
-<br>
-</div>To make myself clear:<br>
-you got:<br>
-- the AD conversion (amounts for an unknown amount of time between 3 and<br=
+&gt; Function tracing takes you at least into the blob wrapper, both for<br=
 >
-5us)<br>
-- the SPI interrupt<br>
-- some unknown interrupt latency which amouunts to several tens of<br>
-microseconds with Xenomai, and to a few hundreds of microseconds with Linux=
-.<br>
-- the interrupt handler is invoked.<br>
-=A0</blockquote><blockquote class=3D"gmail_quote" style=3D"margin: 0pt 0pt =
-0pt 0.8ex; border-left: 1px solid rgb(204, 204, 204); padding-left: 1ex;">
-What good will it make to have a timestamping precision with a<br>
-sub-microsecond range in the interrupt handler code?<br>
+&gt; requests issued to the blob and for its callbacks to access Linux<br>
+&gt; services. It looks like NVIDIA as concentrating both arch and kernel<b=
+r>
+&gt; specific abstractions there, not in the blob (but that&#39;s just an<b=
+r>
+&gt; impression).<br>
+<br>
+</div></div>Sorry, I misunderstood ftrace, I thought strace. No, we did not=
+ try ftrace.<br>
 <br>
 --<br>
 <font color=3D"#888888"> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0Gilles.<br>
-</font></blockquote></div><br>Rookie mistake. Indeed, I can have everything=
- in userspace using=20
-Xenomai. I wrote a simple program that did a periodic job every 100 us=20
-and the jitter was very small (around 20 us without load and around 35=20
-us with SSH-ing and Xenomai compilation running on board).<br><br>Somewhat =
-unrelated to this thread, I found that when I invoked rt_task_set_periodic(=
-), I got very precise timings (as expected). However, when I tried to inser=
-t small delays using rt_timer_spin(), the errors (t_meas - t_spin_func_argu=
-ment) were not large, but noticeable. For example, I can precisely measure =
-a 50 us periodic task on the scope. With the same interval in rt_timer_spin=
-(), I get 55-60 us. As far as I understood, all timing-related functions us=
-e the same time base, so what&#39;s the reason for this behavior?<br>
-<br><br>Regards,<br>R.<br>
+</font></blockquote></div><br></div>
 
---e0cb4e6ff3658165b1049b6d41a0--
+--90e6ba4fc1ceff0527049b74eb4c--
 
