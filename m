@@ -3,8 +3,8 @@ References: <mailman.9723.1296855625.10284.xenomai@xenomai.org>
 	<000001cbc4b0$03297d50$097c77f0$@de>
 	<1296858744.2087.44.camel@domain.hid>
 In-Reply-To: <1296858744.2087.44.camel@domain.hid>
-Date: Sat, 5 Feb 2011 20:28:42 +0100
-Message-ID: <000001cbc56a$e6237600$b26a6200$@de>
+Date: Sat, 5 Feb 2011 22:55:39 +0100
+Message-ID: <000001cbc57f$6e0b1690$4a2143b0$@de>
 MIME-Version: 1.0
 Content-Type: text/plain;
 	charset="utf-8"
@@ -24,56 +24,11 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: 'Philippe Gerum' <rpm@xenomai.org>
 Cc: xenomai@xenomai.org
 
-Hello Philippe,
+Sorry. I'm a kernel newbie. I found the line " else if =
+(check_c1e_idle(c)) " in the process.c and replace it with " else if =
+(maybe_c1e && check_c1e_idle(c)) " manually. And now it works!!!
 
-In my BIOS I disabled the "Cool 'n' quite" option (I think this is C1E =
-for AMD). I tried the patch again but I get a failure-message. I made =
-the following steps:
-I save the patch to a file ("xen.patch"):
---- a/arch/x86/kernel/process.c
-+++ b/arch/x86/kernel/process.c
-@@ -637,8 +637,10 @@ void __cpuinit select_idle_routine(const struct =
-cpuinfo_x86 *c)
- {
- #ifdef CONFIG_IPIPE
- #define default_to_mwait force_mwait
-+#define maybe_c1e  0
- #else
- #define default_to_mwait 1
-+#define maybe_c1e  1
- #endif
- #ifdef CONFIG_SMP
-        if (pm_idle =3D=3D poll_idle && smp_num_siblings > 1) {
-@@ -655,7 +657,7 @@ void __cpuinit select_idle_routine(const struct =
-cpuinfo_x86 *c)
-                 */
-                printk(KERN_INFO "using mwait in idle threads.\n");
-                pm_idle =3D mwait_idle;
--       } else if (check_c1e_idle(c)) {
-+       } else if (maybe_c1e && check_c1e_idle(c)) {
-                printk(KERN_INFO "using C1E aware idle routine\n");
-                pm_idle =3D c1e_idle;
-        } else
-
-I downloaded/unpacked Xenomai-2.5.5.2
-I downloaded/unpacked Linux-2.6.32.20
-
-./prepare-kernel.sh --linux=3D/usr/src/linux-2.6.32.20 =
---adeos=3D/home/xenomai-head/ksrc/arch/x86/patches/adeos-ipipe-2.6.32.20-=
-x86-2.6-02.patch
-
-cd /usr/src/linux2.6.32.20
-patch -p1 -b < /home/xen.patch
-
-Then I get the following message:
-patching file arch/x86/kernel/process.c
-Hunk #1 succeeded at 550 with fuzz 1 (offset -87 lines).
-Hunk #2 FAILED at 657.
-1 out of 2 hunks FAILED -- saving rejects to file =
-arch/x86/kernel/process.c.rej
-
-Did I do something wrong?
-
+Philippe, thank you very much!
 
 -----Urspr=C3=BCngliche Nachricht-----
 Von: Philippe Gerum [mailto:rpm@xenomai.org
