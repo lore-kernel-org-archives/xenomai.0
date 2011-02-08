@@ -1,12 +1,21 @@
-Message-ID: <4D3AEC05.20609@domain.hid>
-Date: Sat, 22 Jan 2011 15:39:01 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <OF53B8EEE0.69903FD4-ONC125781F.002A9283-C125781F.002FEBD2@domain.hid>
-In-Reply-To: <OF53B8EEE0.69903FD4-ONC125781F.002A9283-C125781F.002FEBD2@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <4D513427.6050707@domain.hid>
+References: <AANLkTinvryUHtzDWQa9j=Z83jNe1FbJtRYaqMHNORfvp@domain.hid>
+	<4D5039AD.2070205@domain.hid>
+	<AANLkTincD+0eKF7tM8aj5s4tepF0KwQ6xkJ52G1Lq4iT@mail.gmail.com>
+	<4D50433D.1040804@domain.hid>
+	<AANLkTi=SfPm6HVK2abFWV8uAd5wWnWv9vf0mkby8282r@domain.hid>
+	<1297154320.2023.6.camel@domain.hid>
+	<AANLkTim4Q_F5wY77TBH5T0oT3P2X2pex7B-8cr6Q+XyS@mail.gmail.com>
+	<1297156556.2023.9.camel@domain.hid>  <4D513278.4090606@domain.hid>
+	<1297167172.2023.11.camel@domain.hid>  <4D513427.6050707@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Date: Tue, 08 Feb 2011 13:22:30 +0100
+Message-ID: <1297167750.2023.13.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] debug posix skin - pthread_cond_wait return EPERM
+Subject: Re: [Xenomai-help] Exception handlers in primary domain /
+ user-space signals
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -16,92 +25,111 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-Pierre.QUELIN@solystic.com wrote:
+On Tue, 2011-02-08 at 13:16 +0100, Gilles Chanteperdrix wrote:
+> Philippe Gerum wrote:
+> > On Tue, 2011-02-08 at 13:09 +0100, Gilles Chanteperdrix wrote:
+> >> Philippe Gerum wrote:
+> >>> On Tue, 2011-02-08 at 10:10 +0100, Henri Roosen wrote:
+> >>>> On Tue, Feb 8, 2011 at 9:38 AM, Philippe Gerum <rpm@xenomai.org> wrote:
+> >>>>> On Tue, 2011-02-08 at 09:21 +0100, Henri Roosen wrote:
+> >>>>>> On Mon, Feb 7, 2011 at 8:08 PM, Gilles Chanteperdrix
+> >>>>>> <gilles.chanteperdrix@xenomai.org> wrote:
+> >>>>>>> Henri Roosen wrote:
+> >>>>>>>> On Mon, Feb 7, 2011 at 7:27 PM, Gilles Chanteperdrix
+> >>>>>>>> <gilles.chanteperdrix@xenomai.org> wrote:
+> >>>>>>>>> Henri Roosen wrote:
+> >>>>>>>>>> We are using signal handlers for catching exceptions which our
+> >>>>>>>>>> application is allowed to make and which we know how to handle.
+> >>>>>>>>>>
+> >>>>>>>>>> The current Xenomai implementation is to switch to the secondary
+> >>>>>>>>>> domain and call the handlers from there.
+> >>>>>>>>>> Unfortunately this takes too much time for our application and we
+> >>>>>>>>>> would like to handle the exception without the switch to the secondary
+> >>>>>>>>>> domain, in primary domain.
+> >>>>>>>>>>
+> >>>>>>>>>> Can anyone give some advice how to implement that?
+> >>>>>>>>>> Will "user-space signals" which was planned for Xenomai 2.6 fulfill this need?
+> >>>>>>>>>> Is there already code available for user-space signals?
+> >>>>>>>>> In the 2.5 series, we added some code to support signals. The signals
+> >>>>>>>>> are multiplexed per-skin in kernel-space, and demultiplexed in
+> >>>>>>>>> user-space, upon exit of system calls. We implemented a unit test of
+> >>>>>>>>> this functionality with the "sigtest" skin and user-space test, but they
+> >>>>>>>>> only work upon return from system calls.
+> >>>>>>>>>
+> >>>>>>>>> Then we added support for the "mayday" page, which made us realize, that
+> >>>>>>>>> maybe implementing signals handling at any time, not only when returning
+> >>>>>>>>> from system calls, was possible. But then came the realization that in
+> >>>>>>>>> order to implement that, we would have to fiddle with the FPU, which is
+> >>>>>>>>> an area where we have a certain tradition for not getting the things
+> >>>>>>>>> right at the first attempt. So, we kind of stopped here.
+> >>>>>>>>>
+> >>>>>>>>> So, if you want some ad-hoc signals upon return from system call, the
+> >>>>>>>>> task is pretty easy. If you want the full posix signals interface, then
+> >>>>>>>>> things are going to be a bit harder.
+> >>>>>>>>>
+> >>>>>>>> I am afraid it's going to be a bit harder; we would need it when the
+> >>>>>>>> exception occurs and that is in most cases not at a place in the code
+> >>>>>>>> where there is a system call :-(.
+> >>>>>>> What kind of exception is it? Could not the exception be signalled at
+> >>>>>>> the next system call?
+> >>>>>> Our customers provide the application code, we provide more or less
+> >>>>>> the framework. Customers can install exception handlers for for
+> >>>>>> instance floating point exceptions (SIGFPE).
+> >>>>>> Besides that we provide a means of tracing the application code, which
+> >>>>>> is handled by breakpoints in the code which then does some bookkeeping
+> >>>>>> and lets the task run again. Of course that has some overhead also
+> >>>>>> when using our old OS, but Linux-Xenomai has so much overhead because
+> >>>>>> of the secondary domain switch. Therefore we would like to handle it
+> >>>>>> in primary domain.
+> >>>>> Connect a high priority shadow task in userland to an exception handler
+> >>>>> installed in kernel space via some synchronization (semaphore, event,
+> >>>>> whatever). The handler would be called upon exception, then would wake
+> >>>>> up your task in userland, which would preempt immediately any other task
+> >>>>> activity due to its higher priority. This would not entail any mode
+> >>>>> switch, only a fast context switch between Xenomai contexts.
+> >>>>>
+> >>>>> Over this "exception server" task context, you should be able to execute
+> >>>>> any kind of user-space handler to mimic the POSIX signal interface as
+> >>>>> much as required. Of course this would not run over the faulting context
+> >>>>> like POSIX signals do (unless SIGEV_THREAD is used), but this might be
+> >>>>> ok for your purpose.
+> >>>>>
+> >>>> Unfortunately we do need the faulting context for the SIGFPE signal
+> >>>> and SIGTRAP (x86) / SIGILL (arm) signals...
+> >>>
+> >>> It's too much to ask in the current implementation. There is no quick
+> >>> fix to this, I mean if you want to have a standard signal frame to
+> >>> exploit in userland. Otherwise, you could pull some relevant bits from
+> >>> the exception frame in kernel space (you have the struct pt_regs of the
+> >>> faulting context avail there), and pass them through your
+> >>> synchronization mechanism to userland, so as to fake some kind of
+> >>> pseudo-signal frame.
+> >> All this is certainly doable, but even without Xenomai, going to
+> >> kernel-space in case of exception then building a signal frame, going
+> >> back to user-space, executing the signal handler, then returning from
+> >> the signal (possibly going to kernel-space again) is not exactly a light
+> >> operation. So, surely, exceptions should remain exceptional and using
+> >> them routinely does not look like the right thing to do.
+> > 
+> > No, you missed the point. The idea is not to forge a stack frame in
+> > kernel space. The idea is to propagate enough information to userland in
+> > order to provide whatever bits are needed there.
 > 
->> Kolja Waschk wrote:
->>>>> file cond-torture-posix
->>>> Ok. On my side: I call set solib-absolute-prefix to where the debug
->>>> binaries for the target filesystem are. And I call
->>>> handle SIG34 nostop noprint pass.
->>>>
->>>> Coud you try and do the same?
->>> Is SIG34 the same on blackfin? I do not remember ever having seen SIG34,
-> only
->>> SIG32 ("Real-time event 32")
->>>
->>> Independent of that, the result is always the same SEGV. I cannot use
-> the absolute-prefix currently, as the directory layout is different on the
-> target. So my script is now
->>> set solib-absolute-prefix notexistent
->>> set
-> solib-search-path /opt/uClinux/blackfin-linux-dist/staging/usr/lib:/opt/uClinux/bfin-linux-uclibc/bfin-linux-uclibc/runtime/lib
-> 
->>> file cond-torture-posix
->>> handle SIG34 nostop noprint pass
->>> target remote 10.0.10.9:2222
->>>
->>> And regardless whether I add an "break main", the SEGV will occur
-> immediately after telling gdb to "cont".
->>> Does my "try.c" always succeed (all errbits=0x0010) in your environment?
->> Ok, I get the failure if I set up a breakpoint right after the call to
->> pthread_cond_wait, as noted by Pierre. After some debugging, it appears
->> that the syscall is restarted whereas it should return to user-spacce
->> and let the user-space skin do its job. So, it seems that somehow, the
->> behaviour is different for gdb signals than for usual signals.
->>
->> Working on it now, will tell you when we have a status.
-> 
-> The following patch seems to fix the issue, but I am not yet sure
-> whether it is really correct:
-> 
-> diff --git a/ksrc/nucleus/shadow.c b/ksrc/nucleus/shadow.c
-> index d27494c..717a8a0 100644
-> --- a/ksrc/nucleus/shadow.c
-> +++ b/ksrc/nucleus/shadow.c
-> @@ -770,7 +770,7 @@ static inline void request_syscall_restart(xnthread_t
-> *thread,
->                          if (__xn_interrupted_p(regs)) {
->                                      __xn_error_return(regs,
->                                                                (sysflags &
-> __xn_exec_norestart) ?
-> -
-> -ERESTARTNOHAND : -ERESTARTSYS);
-> +                                                              -EINTR :
-> -ERESTARTSYS);
->                                      notify = !xnthread_test_state(thread,
-> XNDEBUG);
->                          }
+> I was not talking about the Xenomai case specifically, but since Henri
+> would like to have the full signals implementation with Xenomai, this
+> does a apply to Xenomai too.
 > 
 > 
-> 
-> --
->                                                                 Gilles.
-> 
-> Sorry but I'm a novice.
-> 
-> As I understand, your patch is a kernel patch and I need to rebuild the
-> kernel package.
 
-Yes.
-
-> Where can I find the cond-torture-posix application to reproduce the
-> problem with your test case ?
-
-It is part of Xenomai installation.
-
-> My PC is a very standard one (Xeon dual core and my distro an Ubuntu 10.10
-> so I think it's very easy to reproduce the test case.
-> Do you know if there is a bug tracker where tickets are logged to be
-> informed when this point will be solved ?
-
-No. We use the mailing list for this. From our point of view, however,
-the point is solved.
-
-Also note that I did not replied to you personally, only to the list,
-because otherwise I receive spam from you.
+I think we all agree that having a complete signal implementation for
+Xenomai in pure rt mode won't happen overnight. So the point is now: how
+could it be mimicked, at least for the most useful part.
 
 -- 
-                                                                Gilles.
+Philippe.
+
+
 
