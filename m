@@ -1,4 +1,4 @@
-MIME-Version: 1.0
+From: Philippe Gerum <rpm@xenomai.org>
 In-Reply-To: <4D5137B0.8050006@domain.hid>
 References: <AANLkTinvryUHtzDWQa9j=Z83jNe1FbJtRYaqMHNORfvp@domain.hid>
 	<4D5039AD.2070205@domain.hid>
@@ -7,16 +7,16 @@ References: <AANLkTinvryUHtzDWQa9j=Z83jNe1FbJtRYaqMHNORfvp@domain.hid>
 	<AANLkTi=SfPm6HVK2abFWV8uAd5wWnWv9vf0mkby8282r@domain.hid>
 	<1297154320.2023.6.camel@domain.hid>
 	<AANLkTim4Q_F5wY77TBH5T0oT3P2X2pex7B-8cr6Q+XyS@mail.gmail.com>
-	<1297156556.2023.9.camel@domain.hid> <4D513278.4090606@domain.hid>
-	<1297167172.2023.11.camel@domain.hid> <4D513427.6050707@domain.hid>
-	<1297167750.2023.13.camel@domain.hid> <4D5137B0.8050006@domain.hid>
-Date: Tue, 8 Feb 2011 13:51:59 +0100
-Message-ID: <AANLkTikh_Z8Jg0nYb=089Szzh=_gn=ZZnvBcswnGuTur@domain.hid>
-From: Henri Roosen <henriroosen@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+	<1297156556.2023.9.camel@domain.hid>  <4D513278.4090606@domain.hid>
+	<1297167172.2023.11.camel@domain.hid>  <4D513427.6050707@domain.hid>
+	<1297167750.2023.13.camel@domain.hid>  <4D5137B0.8050006@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Date: Tue, 08 Feb 2011 13:53:35 +0100
+Message-ID: <1297169615.2023.14.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] Exception handlers in primary domain /
-	user-space signals
+ user-space signals
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -29,54 +29,38 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On Tue, Feb 8, 2011 at 1:31 PM, Gilles Chanteperdrix
-<gilles.chanteperdrix@xenomai.org> wrote:
+On Tue, 2011-02-08 at 13:31 +0100, Gilles Chanteperdrix wrote:
 > Philippe Gerum wrote:
->> On Tue, 2011-02-08 at 13:16 +0100, Gilles Chanteperdrix wrote:
->>> I was not talking about the Xenomai case specifically, but since Henri
->>> would like to have the full signals implementation with Xenomai, this
->>> does a apply to Xenomai too.
->>>
->>>
->>
->> I think we all agree that having a complete signal implementation for
->> Xenomai in pure rt mode won't happen overnight. So the point is now: how
->> could it be mimicked, at least for the most useful part.
->>
->
+> > On Tue, 2011-02-08 at 13:16 +0100, Gilles Chanteperdrix wrote:
+> >> I was not talking about the Xenomai case specifically, but since Henri
+> >> would like to have the full signals implementation with Xenomai, this
+> >> does a apply to Xenomai too.
+> >>
+> >>
+> > 
+> > I think we all agree that having a complete signal implementation for
+> > Xenomai in pure rt mode won't happen overnight. So the point is now: how
+> > could it be mimicked, at least for the most useful part.
+> > 
+> 
 > My point is that whatever you do, a switch user-kernel, then kernel-user
 > is not going to be lightweight, so avoiding it in the application in the
 > first place may be a better idea.
->
+
+Sometimes you can't decide what the application code wants, that is the
+issue.
+
+> 
 > My aim with implementing complete signals was rather for things like
 > timer_* and mq_notify, where the interface requires them, I did not even
 > imagine implementing SIGFPE, SIGILL, SIGTRAP, which I thought could not
 > be time critical anyway, for the reasons explained earlier. So, my
 > question (rather to Henri) is: what would we need SIGFPE, SIGILL,
 > SIGTRAP in an real-time application for?
+> 
 
-I agree it might be unusual. For the tracing use case: the SIGTRAP we
-use as a means for tracing whether code is actually executed, just
-like breakpoints, we exchange the code to 0xcc and handle the
-exceptions do book-keeping but don't stop the task. We know this has
-overhead, it also had when using our old OS. The old OS handled it in
-an accepted amount of time. Using the Xenomai kernel it also works,
-however the overhead is not acceptable anymore.
-Installing a floating point exception handler was also provided to our
-customers with the old OS and we have to make that available now too.
-So actually it is all because of legacy reasons, we have to provide
-similar functionality as with the old OS.
+-- 
+Philippe.
 
-I'm afraid we cannot mimic enough so it suits our use cases. We need
-the fault context to handle the exception and to set the IP one
-instruction back.
 
-Thanks,
-Henri.
-
->
-> --
-> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
-=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0Gilles.
->
 
