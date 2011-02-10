@@ -1,10 +1,11 @@
-Date: Thu, 10 Feb 2011 16:20:17 +0100 (CET)
-From: Mauro Salvini <mauro.salvini@domain.hid>
-Message-ID: <7679056.61297351216093.JavaMail.SYSTEM@pc-msalvini>
-In-Reply-To: <21381658.41297350790328.JavaMail.SYSTEM@pc-msalvini>
+Message-ID: <4D540EC9.8060009@domain.hid>
+Date: Thu, 10 Feb 2011 17:14:01 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_3_18595445.1297351216093"
+References: <7679056.61297351216093.JavaMail.SYSTEM@pc-msalvini>
+In-Reply-To: <7679056.61297351216093.JavaMail.SYSTEM@pc-msalvini>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] Problems with rt_task_create and rt_task_join
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -15,27 +16,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Mauro Salvini <mauro.salvini@domain.hid>
+Cc: xenomai@xenomai.org
 
-------=_Part_3_18595445.1297351216093
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Mauro Salvini wrote:
+> Hello to all, finally I found a bug into my code which is not related
+> with join functions. Now all works fine. Thank you for support (and
+> tolerate) me!
+> 
+> I have one just one last question (another!) to you: I create a
+> pthread with joinable attribute, and then I transform it in a
+> realtime ask with rt_task_shadow().
+> When I join this task I must call
+> pthread_join(), because rt_task_join() generates a segmentation fault
+> (in the point where latter function internally calls pthread_join()).
+>  Is this behaviour correct?
 
-Hello to all, 
-finally I found a bug into my code which is not related with join functions. Now all works fine. Thank you for support (and tolerate) me! 
+Well, looking at the code, this should not happen. The question is: how
+do you ensure, in the code that calls rt_task_join, that the thread
+being created had the time to call rt_task_shadow? In other words, are
+you sure that you are not passing rt_task_join an uninitialized RT_TASK?
 
-I have one just one last question (another!) to you: 
-I create a pthread with joinable attribute, and then I transform it in a realtime ask with rt_task_shadow(). 
-When I join this task I must call pthread_join(), because rt_task_join() generates a segmentation fault (in the point where latter function internally calls pthread_join()). 
-Is this behaviour correct? 
+So, as usual, we are missing a simple standalone test showing the issue
+you have.
 
-Thanks again in advance, regards 
-Mauro 
-
-------=_Part_3_18595445.1297351216093
-Content-Type: text/html; charset=utf-8
-Content-Transfer-Encoding: 7bit
-
-<html><head><style type='text/css'>p { margin: 0; }</style></head><body><div style='font-family: Times New Roman; font-size: 12pt; color: #000000'>Hello to all,<br>finally I found a bug into my code which is not related with join functions. Now all works fine. Thank you for support (and tolerate) me!<br><br>I have one just one last question (another!) to you:<br>I create a pthread with joinable attribute, and then I transform it in a realtime ask with rt_task_shadow().<br>When I join this task I must call pthread_join(), because rt_task_join() generates a segmentation fault (in the point where latter function internally calls pthread_join()).<br>Is this behaviour correct?<br><br>Thanks again in advance, regards<br>Mauro<br></div></body></html>
-------=_Part_3_18595445.1297351216093--
+-- 
+					    Gilles.
 
