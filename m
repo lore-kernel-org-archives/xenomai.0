@@ -1,18 +1,13 @@
-Date: Mon, 28 Feb 2011 13:56:58 +0100 (CET)
-From: Kolja Waschk <xenoka09@domain.hid>
-In-Reply-To: <4D6B97E5.5030901@domain.hid>
-Message-ID: <alpine.DEB.1.10.1102281353490.12109@domain.hid>
-References: <alpine.DEB.1.10.1102281209570.12109@domain.hid>
-	<4D6B9032.5060907@domain.hid>
-	<alpine.DEB.1.10.1102281325340.12109@domain.hid>
-	<4D6B92C8.3070505@domain.hid>
-	<alpine.DEB.1.10.1102281342180.12109@domain.hid>
-	<4D6B97E5.5030901@domain.hid>
+Message-ID: <4D55B072.4050602@domain.hid>
+Date: Fri, 11 Feb 2011 22:56:02 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
-Sender: "Kolja Waschk,,," <xenoka09@domain.hid>
-Subject: Re: [Xenomai-help] More blackfin kernel oops under heavy load
-Reply-To: xenoka09@domain.hid
+References: <327302.79333.qm@domain.hid>
+	<4D55ACC8.1030104@domain.hid>
+In-Reply-To: <4D55ACC8.1030104@domain.hid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-help] USB and C++?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -22,19 +17,22 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: =?UTF-8?B?R2VuZ2lzIEthbmhnIFRvbGVkbyBSYW3DrXJleg==?= <gengiskanhg.geo@domain.hid>
 Cc: xenomai@xenomai.org
 
->> Yes. I just tried and replaced the select with a loop accept()ing on the now
->> nonblocking socket plus some usleep() and still the fault occurs as with
->> select(). No other thread in the current setup uses select().
->
-> Mmmm busy waiting? But is Linux able to run from time to time?
+Gilles Chanteperdrix wrote:
+> Gengis Kanhg Toledo Ram=C3=ADrez wrote:
+>> 3. Which one is the recommended distro for this?
+>=20
+> You do not have much choice here: the only distributions for which we
+> provide the necessary stuff are the .deb based one. That would be Debia=
+n
+> or Ubuntu, maybe others, I do not know.
 
-Yes, an usleep(100000) after each "check" of all sockets allowed me to telnet
-into the system while the server runs, for example
+There is a lot of them actually:
+http://en.wikipedia.org/wiki/List_of_Linux_distributions#Debian-based
 
-
-
+--=20
+                                                                Gilles.
 
 
