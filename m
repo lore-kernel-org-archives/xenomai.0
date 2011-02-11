@@ -1,12 +1,11 @@
-Message-ID: <4D5517B4.8060007@domain.hid>
-Date: Fri, 11 Feb 2011 12:04:20 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <327302.79333.qm@domain.hid>
+Date: Fri, 11 Feb 2011 13:13:00 -0800 (PST)
+From: =?iso-8859-1?Q?Gengis_Kanhg_Toledo_Ram=EDrez?=
+	<gengiskanhg.geo@domain.hid>
 MIME-Version: 1.0
-References: <21119302.61297421436968.JavaMail.SYSTEM@pc-msalvini>
-In-Reply-To: <21119302.61297421436968.JavaMail.SYSTEM@pc-msalvini>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Signal mask inheritance
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai-help] USB and C++?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -16,45 +15,14 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Mauro Salvini <mauro.salvini@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Mauro Salvini wrote:
-> Hi to all,
-> 
-> I would build an application where only one of real-time tasks
-> executes a custom signal handler to respond to a set of signals (ex
-> SIGINT, SIGTERM). Xenomai tasks are also POSIX threads, so I think
-> that at creation they inherits all signal masks and handlers from
-> parent thread.
-
-Handlers are per-process, not per-thread.
-
-> So, what I can do in my app is reset signal mask to
-> block all signals when new task starts.
-
-Why do this? Why not only mask the signals you want to handle in the
-separate thread?
-
-And yes, you must let Xenomai thread handle SIGWINCH
-
-> By the way, is there a method in Xenomai to initialize all RT_TASK
-> structure fields without use field names (eg
-> PTHREAD_MUTEX_INITIALIZER )? I use this simple define:
-
-Well, as you found out, one of the members of the RT_TASK structure is
-the pthread_t identifier of the corresponding thread, so, how do you
-figure it would be possible to initialize the RT_TASK in advance before
-the thread is even created?
-
-And by the way, POSIX has PTHREAD_MUTEX_INITIALIZER, not
-PTHREAD_INITIALIZER. So, you are comparing things which are not really
-comparable.
-
-Listen, we do have limited ressources to answer your questions, so
-please take time to read some documentation, and think a bit before
-asking questions.
-
--- 
-					    Gilles.
+Hello to every one:=0A=0AFirst, I would like to congratulate this effort ca=
+lled Xenomai as well as its =0Acommunity.=0A=0AMy questions to you are thes=
+e=0A=0A1. Is it possible to use XENOMAI with the USB port? in hard or soft =
+mode?=0A2. What about porting a C++ application to XENOMAI? I know there is=
+ a guide =0Arelated to RTAI, but it is from 2004 =0A=0A(http://people.mech.=
+kuleuven.be/~psoetens/portingtolxrt.html)=0A3. Which one is the recommended=
+ distro for this?=0A=0AThanks you very much in advance for your reply.=0A=
+=0ARegards.=0A=0A
 
