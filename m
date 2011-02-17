@@ -1,53 +1,68 @@
-Message-ID: <4D766E9E.6050207@domain.hid>
-Date: Tue, 08 Mar 2011 18:59:58 +0100
-From: Wolfgang Grandegger <wg@domain.hid>
+Message-ID: <4D5CF34B.3030905@domain.hid>
+Date: Thu, 17 Feb 2011 11:07:07 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4D7628BD.5050006@domain.hid>
-In-Reply-To: <4D7628BD.5050006@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+References: <608520.76294.qm@domain.hid>
+In-Reply-To: <608520.76294.qm@domain.hid>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [announce] Xenomai 2.5.6
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Subject: Re: [Xenomai-help] valgrind and modprobe xeno_posix
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai help <xenomai@xenomai.org>, Xenomai core <Xenomai-core@domain.hid>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Franz Engel <franz_lambert_engel@domain.hid>
+Cc: xenomai@xenomai.org
 
-Hi Gilles,
-
-On 03/08/2011 02:01 PM, Gilles Chanteperdrix wrote:
+Franz Engel wrote:
 > Hi,
 > 
-> Xenomai 2.5.6, a.k.a. "Wormhole Wizards" is available at the usual
-> place: 
-> http://download.gna.org/xenomai/stable/xenomai-2.5.6.tar.bz2
+> I'm still doubtful if I installed Xenomai correctly. When I start my QT-Programm 
+> it runs correctly and I can see a new process in /proc/xenomai/state with the 
+> name of my program. I insert the following lines in my *.pro-File (the draft for 
+> my makefile):
+> LIBS += -Wl,@usr/xenomai/lib/posix.wrappers -L/usr/xenomai/lib -lpthread_rt 
+> -lxenomai -lpthread -lrt -Xlinker -rpath -Xlinker /usr/xenomai/lib
+> LIBS += -I/usr/xenomai/include -D_GNU_SOURCE -D_REENTRANT -Wall -pipe -D__XENO__ 
+> -I/usr/xenomai/include/posix
 > 
-> It contains mainly bug fixes, for:
-> - SMP scheduling bugs introduced by the "optimization" in the last
-> release;
-> - a cleanup of all architectures kernel threads initializations,
-> triggered by an issue on powerpc;
-> - some psos skin updates;
-> - some analogy updates;
-> - some compilation issues on ARM and x86 for latest toolchains, and with
-> uclibc;
-> - some issues with gdb on blackfin.
+> I'm absoult no makefile pro. The two lines are the only thing I changed in my 
+> *.pro file. Do I have to make more changes?
+
+Wrong makefile, see:
+http://www.xenomai.org/index.php/Porting_POSIX_applications_to_Xenomai#Compilation_flags
+
+
+> Futhermore, when I run:
+> valgrind --leak-check=yes ./demo
 > 
-> And as usual an update of many I-pipe patches, including modifications
-> to use the latest kernel release to date (2.6.37), and wrappers fixes.
+> I get the correct valgrind output, but also a line of xenomai:
+> Xenomai: POSIX skin or CONFIG_XENO_OPT_PERVASIVE disabled
+> (modprobe xeno_posix?)
+> 
+> Do I use a bad makefile?
 
-Thanks a lot. I'm looking to the new ARM patches:
+Yes, you use a bad makefile, but this is not the reason why your
+application does not work with valgrind: Xenomai applications do not
+work with valgrind.
 
-  adeos-ipipe-2.6.33-arm-1.18-02.patch
-  adeos-ipipe-2.6.35.9-arm-1.18-01.patch
+Also note that the QT library is compiled to use Linux posix objects,
+not Xenomai posix objects, so depending on what you do, mixing some
+Xenomai code with QT code will not work. The real-time part of the
+application has to clearly been separated from the rest, and only this
+part needs to be linked with Xenomai flags, so, the simplest thing to do
+is to put the real-time part of the application in a dynamic library,
+link-edit this dynamic library with Xenomai posix skin flags, then link
+with this dynamic library the rest of the application, without Xenomai
+posix skin flags. And in the interface between the library and the
+applicaiton, do not put any inline functions calling Xenomai posix skin
+services, as this would ruin what you are trying to achieve.
 
-Why is ipipe version 1.18-01 used for 2.6.35.9 (and not 1.18-02)? Or is
-it just a typo?
-
-Wolfgang.
+-- 
+					    Gilles.
 
