@@ -1,20 +1,13 @@
-Message-ID: <4D709FDC.5030402@domain.hid>
-Date: Fri, 04 Mar 2011 09:16:28 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <4D5FE8D6.6030204@domain.hid>
+Date: Sat, 19 Feb 2011 16:59:18 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <20110302151603.GA14557@domain.hid>
-	<4D6E61B6.906@domain.hid> <4D6E8A06.9060508@domain.hid>
-	<20110303072147.GA4353@domain.hid>
-	<1299137548.2072.3.camel@domain.hid> <4D6F88D6.4010105@domain.hid>
-	<4D6F89C8.9060005@domain.hid> <1299156880.2072.6.camel@domain.hid>
-	<4D702802.5080001@domain.hid> <1299225060.2107.20.camel@domain.hid>
-	<20110304081121.GA12640@domain.hid>
-In-Reply-To: <20110304081121.GA12640@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig00285A39062C7632D09C209D"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-help] Stuck MSI in normal Linux driver
+References: <AANLkTikiCm5B-KwteOfzTwtCV8RXj1QFgfQCAmCCoC8V@mail.gmail.com>	<20101220154041.48C75CDE29A@gemini.denx.de>	<AANLkTi=C3FQ_Cms9qanmc1dgMgSvMC1Rrt-0X0tOPZMp@domain.hid>	<20110215200753.C4B6C146940@domain.hid>	<1297880887.1947.3.camel@domain.hid>	<AANLkTin-2JJz3V+7bE7q1SjT0TBniRaO+byS_R0mzJF_@domain.hid>
+	<1298111755.3304.1.camel@domain.hid>
+In-Reply-To: <1298111755.3304.1.camel@domain.hid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] Xenomai on Freescale iMX35
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -24,68 +17,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Richard Cochran <richardcochran@domain.hid>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Marten Lootsma <m.lootsma@domain.hid>
+Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig00285A39062C7632D09C209D
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Marten Lootsma wrote:
+> Hi Flavio,
+> 
+> But the second link
+> (http://git.kernel.org/?p=linux/kernel/git/torvalds/linux-2.6.git;a=tree;f=arch/arm/mach-mx3;h=8021c7efda789b8fe5ae3e896b62ae125b231958;hb=795abaf1e4e188c4171e3cd3dbb11a9fcacaf505) isn't a Freescale link, is it?
 
-On 2011-03-04 09:11, Richard Cochran wrote:
-> On Fri, Mar 04, 2011 at 08:51:00AM +0100, Philippe Gerum wrote:
->>
->> I'm not saying this would be impossible to enable MSIs there, I'm just=
+Marten, please read carefully the latest of Wolfgang's mails again, and
+stop posting the same question over and over again: Wolfgang answered.
+If you did not understand something in this answer, please tell us what
+you did not understand, but stop skipping the answer.
 
->> saying that so far: nobody cared. Terrae incognitae.
->=20
-> I care!
->=20
-> When the first MSI interrupt from my PCIe card should arrive, running
-> on a P2020RBD, the machine locks up. My BDI shows me that both cores
-> are going round in circles.
->=20
-> * core 1
->   __ipipe_check_percpu_access ()  at kernel/ipipe/core.c:2067
->   ipipe_suspend_domain ()         at kernel/ipipe/core.c:826
->   __ipipe_check_percpu_access ()  at arch/powerpc/include/asm/ipipe_hwi=
-rq.h:57
->   ipipe_suspend_domain ()         at kernel/ipipe/core.c:860
->   cpu_idle ()                     at arch/powerpc/kernel/idle.c:64
->   ipipe_suspend_domain ()         at arch/powerpc/include/asm/ipipe_hwi=
-rq.h:57
->=20
-> * core 2
->   ipipe_suspend_domain ()         at kernel/ipipe/core.c:858
->   cpu_idle ()                     at arch/powerpc/kernel/idle.c:64
->   ipipe_suspend_domain ()         at arch/powerpc/include/asm/ipipe_hwi=
-rq.h:57
->=20
-> Any thoughts?
-
-Well, if PPC masks MSIs on ack, you may run on a bug check or on an
-already acquired Linux spin lock.
-
-Independent of the need to add RT-safe mask/unmask support for MSIs
-midterm, you likely first of all want to get rid of this masking in the
-fast-path. I suspect it's not needed, also on PPC.
-
-Jan
-
-
---------------enig00285A39062C7632D09C209D
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.15 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org/
-
-iEYEARECAAYFAk1wn9wACgkQitSsb3rl5xSgEQCbBzQY0OQYJ+xi8QsUXad8SFbP
-NloAoKZGfnP3o0jKxUatNyFwzRUX1hOr
-=VAIi
------END PGP SIGNATURE-----
-
---------------enig00285A39062C7632D09C209D--
+-- 
+                                                                Gilles.
 
