@@ -1,14 +1,17 @@
-Message-ID: <4D6F89C8.9060005@domain.hid>
-Date: Thu, 03 Mar 2011 13:30:00 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-References: <20110302151603.GA14557@domain.hid>	<4D6E61B6.906@domain.hid>
-	<4D6E8A06.9060508@domain.hid>	<20110303072147.GA4353@domain.hid>
-	<1299137548.2072.3.camel@domain.hid> <4D6F88D6.4010105@domain.hid>
-In-Reply-To: <4D6F88D6.4010105@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Stuck MSI in normal Linux driver
+From: Marten Lootsma <m.lootsma@domain.hid>
+In-Reply-To: <AANLkTin-2JJz3V+7bE7q1SjT0TBniRaO+byS_R0mzJF_@domain.hid>
+References: <AANLkTikiCm5B-KwteOfzTwtCV8RXj1QFgfQCAmCCoC8V@mail.gmail.com>
+	<20101220154041.48C75CDE29A@gemini.denx.de>
+	<AANLkTi=C3FQ_Cms9qanmc1dgMgSvMC1Rrt-0X0tOPZMp@domain.hid>
+	<20110215200753.C4B6C146940@domain.hid>
+	<1297880887.1947.3.camel@domain.hid>
+	<AANLkTin-2JJz3V+7bE7q1SjT0TBniRaO+byS_R0mzJF_@domain.hid>
+Content-Type: text/plain; charset="utf-8"
+Date: Sat, 19 Feb 2011 11:35:55 +0100
+Message-ID: <1298111755.3304.1.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai-help] Xenomai on Freescale iMX35
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -18,71 +21,67 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Wolfgang Grandegger <wg@domain.hid>, Philippe Gerum <rpm@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Flavio de Castro Alves Filho <flavio.alves@domain.hid>
+Cc: xenomai@xenomai.org
 
-On 2011-03-03 13:25, Wolfgang Grandegger wrote:
-> Hi Philippe,
+Hi Flavio,
+
+But the second link
+(http://git.kernel.org/?p=linux/kernel/git/torvalds/linux-2.6.git;a=tree;f=arch/arm/mach-mx3;h=8021c7efda789b8fe5ae3e896b62ae125b231958;hb=795abaf1e4e188c4171e3cd3dbb11a9fcacaf505) isn't a Freescale link, is it?
+
+Best regards,
+Marten
+
+В Пт., 18/02/2011 в 09:41 -0200, Flavio de Castro Alves Filho пишет:
+> Hello,
 > 
-> On 03/03/2011 08:32 AM, Philippe Gerum wrote:
->> On Thu, 2011-03-03 at 08:21 +0100, Richard Cochran wrote:
->>> On Wed, Mar 02, 2011 at 07:18:46PM +0100, Jan Kiszka wrote:
->>>> On 2011-03-02 16:26, Gilles Chanteperdrix wrote:
->>>>> Richard Cochran wrote:
->>>>>> The wiki pages 
->>>>>>
->>>>>>    http://www.xenomai.org/index.php/FAQs
->>>>>>    http://www.xenomai.org/index.php/Configuring_x86_kernels
->>>>>>
->>>>>> say not to enable MSI on x86, with a link to a very old (2008)
->>>>>> discussion.
->>>
->>> ...
->>>
->>>> The current situation looks like this:
->>>>  - MSI[-X] usage for plain Linux drivers is fine, we are using it on
->>>>    machines where you can hardly avoid MSI today
->>>>  - MSI[-X] usage for RTDM (ie. RT) drivers is basically fine as long as
->>>>    you avoid enabling/disabling from RT context (also used for quite
->>>>    a while here, no known issues under this restriction)
->>>
->>> Okay, so I understand from this:
->>>
->>> 1. The wiki warning is out of date.
->>>
->>> 2. My own PCIe MSI driver/card *should* work.
->>>    (It is not a current known limitation of adeos/xenomai.)
->>
->> The situation is not that clear. Enabling CONFIG_PCI_MSI on some 83xx
->> board did cause a lock up at boot for me, so this may point the finger
->> at the pipeline core for ppc, and not to Xenomai which was barely active
->> at that stage.
+> I'm not an expert in git, but I believe the Freescale's git repository
+> is different from mainline git repository, isn't it?
 > 
-> Now I remember vaguely that we have seen a similar issue on the mpc8308
-> in autumn last year. Here is what you wrote that time:
+> I agree with Wolfgang regarding the future support of iMX35 in
+> mainline kernel (a long way to go).
 > 
-> On 09/29/2010 04:12 PM, Philippe Gerum wrote:
->> Ok, I have a good news: the issue is spotted; and a bad one: this is no
->> trivial stuff to fix. In short, CONFIG_PCI_MSI causes the PIC code to
->> read PCI config memory on the fly during operations (which is intensely
->> insane but that is how it goes). Of course, it does that via the regular
->> PCI helpers, which are stuffed with normal locking constructs we may
->> _not_ call from any real-time/non-regular context.
->>
->> To sum up, we need to call those helpers to ack/mask interrupts within
->> the I-pipe, but we are not allowed to do this because this is inherently
->> unsafe.
->>
->> Work-around: disable CONFIG_PCI_MSI in your configuration.
->> The real fix would require much more thought, to make the PCI helpers
->> Adeos-aware without inducing high latency.
+> Best regards,
+> 
+> Flavio
+> 
+> 
+> 2011/2/16 Marten Lootsma <m.lootsma@domain.hid>:
+> > Hi Wolfgang,
+> >
+> > On Tue, 2011-02-15 at 21:07 +0100, Wolfgang Denk wrote:
+> >> Dear Marten,
+> >>
+> >> In message <AANLkTi=C3FQ_Cms9qanmc1dgMgSvMC1Rrt-0X0tOPZMp@domain.hid> you wrote:
+> >> >
+> >> > Thank you for your answer. If I understood correctly the Freescale kernel
+> >> > development has been added to the mailline kernel tree:
+> >> > http://opensource.freescale.com/git?p=imx/linux-2.6-imx.git;a=summary
+> >> > http://git.kernel.org/?p=linux/kernel/git/torvalds/linux-2.6.git;a=tree;f=arch/arm/mach-mx3;h=8021c7efda789b8fe5ae3e896b62ae125b231958;hb=795abaf1e4e188c4171e3cd3dbb11a9fcacaf505
+> >> >
+> >> > Is this what you meant?
+> >>
+> >> Oops?  What makes you think so?
+> > I thought so because I saw mx35 specific code (which we got through
+> > Freescale patches) in the kernel git (see my second link):
+> > [linux/kernel/git/torvalds/linux-2.6.git] / arch / arm / mach-mx3 /
+> >
+> > Or am I totally mistaken?
+> >
+> > Best regards,
+> > Marten Lootsma
+> >
+> >
+> > _______________________________________________
+> > Xenomai-help mailing list
+> > Xenomai-help@domain.hid
+> > https://mail.gna.org/listinfo/xenomai-help
+> >
+> 
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
 
-As MSIs are edge-triggered, only requiring ack at the interrupt
-controller level, could it be that PPC is using the wrong flow handler here?
 
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT T DE IT 1
-Corporate Competence Center Embedded Linux
 
