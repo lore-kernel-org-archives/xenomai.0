@@ -1,18 +1,12 @@
-Date: Sat, 12 Feb 2011 19:13:32 +0100
-From: Richard Cochran <richardcochran@domain.hid>
-Message-ID: <20110212181332.GA2820@domain.hid>
-References: <AANLkTikSnhe5fnSLQm7eSOh9R7YA2cJ=m78n+S3kpW9K@mail.gmail.com>
-	<4D4A84ED.7030604@domain.hid> <4D4A8BD8.1060900@domain.hid>
-	<4D4A9052.2090508@domain.hid> <4D4A9118.2070602@domain.hid>
-	<4D4A957B.6050907@domain.hid> <4D4A9654.80402@domain.hid>
-	<4D4AA479.2020808@domain.hid> <4D4AABF4.6030804@domain.hid>
-	<AANLkTimdawDBCnZon1v06F6uFf1dqwt8Re11rXPv6ZnY@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <AANLkTimdawDBCnZon1v06F6uFf1dqwt8Re11rXPv6ZnY@mail.gmail.com>
-Subject: Re: [Xenomai-help] RT OS Selection advice for parallel processing
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <AANLkTikH_NciDFN402p-bvPW__K2du9bZRgcS7AUfz+t@domain.hid>
+References: <AANLkTikH_NciDFN402p-bvPW__K2du9bZRgcS7AUfz+t@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Date: Mon, 21 Feb 2011 21:00:10 +0100
+Message-ID: <1298318410.2075.5.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] rt_pipe_stream: not getting EPIPE
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -22,71 +16,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Rudolf Meijering <rudolf@domain.hid>
-Cc: Jan Kiszka <jan.kiszka@domain.hid>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: varname <varname@domain.hid>
+Cc: xenomai@xenomai.org
 
-On Fri, Feb 04, 2011 at 03:33:04PM +0200, Rudolf Meijering wrote:
-> I have done some research on the pro's and con's of PREEMPT_RT vs Xenomai.
-> As far as I can determine some of the benefits include:
-> 1. Programming with Xenomai native API's are more elegant than POSIX
-> real-time API’s.
-> 2. Xenomai has possibly less overhead than a full preemptive kernel. The
-> user interface does not require RT capabilities.
+On Mon, 2011-02-21 at 18:54 +0100, varname wrote:
+> All,
 > 
-> Are there any other substantial benefits worth considering? Which would you
-> use?
+> trying to write a simple producer / consumer using message pipes in
+> the native API, this phrase from the documentation (found here [1])
+> confuses me:
+> 
+> "-EPIPE is returned if the associated special device is not yet open."
+> 
+> It's not so much the sentence itself, but more the fact that I'm not
+> getting that return value from rt_pipe_stream() when streaming bytes
+> to a RT_PIPE that hasn't had its "special device" opened in secondary
+> domain.
+> 
+> I've attached a modified trivial-periodic.c that demonstrates what I'm
+> seeing. Afaik there is nothing open(2)-ing the /dev/rtp9 in the
+> secondary domain. All writes succeed, up to about write 31 (*1024),
+> after which all writes return 0.
+> 
+> [..]
+> wrote: 1024, res: 1024
+> wrote: 1024, res: 948
+> wrote: 1024, res: 0
+> wrote: 1024, res: 0
+> [..]
+> 
+> Is the documentation incorrect, or am I misunderstanding something?
 
-In my view, the most important advantage of Xenomai is superior real
-time performance. To convince yourself about this, try the following
-simple experiment.
+The doc is wrong (former implementation, 2.1.x series), the pipe
+services do buffer real-time output until the special device is
+eventually opened starting with Xenomai 2.2.x. Since you are using
+rt_pipe_stream(), the output is directed to an internal buffer until
+there is no more space there, which causes the final 0-byte returns.
 
-1. Compile both RT_PREEMPT and Xenomai for your target hardware.
+So everything looks ok, except the doc.
 
-2. Run cyclictest under various loads and priorities. (For Xenomai, be
-   sure to use the version of cyclictest included with the Xenomai libraries.)
+> 
+> Related info:
+>   Xenomai: 2.5.5.2
+>   Kernel: 2.6.32.26
+> 
+> [1] http://www.xenomai.org/documentation/trunk/html/api/group__pipe.html#gb4d85ecda7675a75611500070c28b22e
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
 
-For the Freescale P2020 PowerPC platform, I recently tested Xenomai
-2.4 (kernel 2.6.30) and the latest RT_PREEMPT (kernel 2.6.33). Xenomai
-has maximal latencies around 10 usec, and RT_PREEMPT has around 40
-usec, but with occasional spikes to over 400 usec.
+-- 
+Philippe.
 
-Obviously, there are bugs or unfixed latencies in RT_PREEMPT on that
-platform. One can always roll up the sleeves and go fixing these
-problems, but my point is that Xenomai offers better performance out
-of the box.
-
-In general, I would choose a Linux flavor for an application like
-this:
-
-1. Does plain old Linux offer good enough real time performance for my
-   needs? If yes, then use Linux.
-
-2. Does RT_PREEMPT do it? If yes, use it, because it is closer to
-   mainline Linux than Xenomai.
-
-3. Does Xenomai fill the bill? If yes, use it.
-
-4. Out of choices, you can't use Linux after all.
-
-For my needs, I have landed at choice #3 more than once. My experience
-with Xenomai has been extremely positive, and after meeting the main
-developers (Philippe, Gilles, and Jan) at the first ever Xenomai users
-meeting (at the 11th RTLW, 2009, in Dresden) I have tremendous
-confidence in them. Also, it was eye opening to see how Xenomai has
-been used in several demanding commerical projects.
-
-Another important consideration is which kernel version to use. Both
-Xenomai and RT_PREEMPT are only offered on selected kernel
-versions. It might be that some new Linux kernel feature is not
-present in your RT kernel version, so you have to choose carefully.
-
-Finally, for safety critical applications, it might be hard to get a
-Linux based system certified. I have never attempted this, but I
-imagine that an analytical correctness "proof" would be infeasible for
-a Linux based system.
-
-HTH,
-
-Richard
 
 
