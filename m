@@ -1,9 +1,11 @@
-Message-ID: <4D640F19.6010105@domain.hid>
-Date: Tue, 22 Feb 2011 20:31:37 +0100
+Resent-To: Xenomai help <xenomai@xenomai.org>
+Resent-Message-Id: <4D6410A7.6070901@domain.hid>
+Message-ID: <4D641056.2030308@domain.hid>
+Date: Tue, 22 Feb 2011 20:36:54 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <753266.83805.qm@domain.hid>
-In-Reply-To: <753266.83805.qm@domain.hid>
+References: <497156.82404.qm@domain.hid>
+In-Reply-To: <497156.82404.qm@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] [ask] error undefined reference while trying to
@@ -18,18 +20,16 @@ List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: Ramon Rusli <mon_nie@domain.hid>
-Cc: xenomai@xenomai.org
 
 Ramon Rusli wrote:
 > Dear,
 > 
-> I am using gcc to compile and make executable file with xenomai, but
-> it getting error, so I want to ask how to get it compiled. I am using
-> the code that I got from
-> http://www.cs.ru.nl/lab/xenomai/exercises/ex01/Exercise-1.html
+> Thanks, I am sorry that I didn't read that before.
 
-On the same page, see "Compiling a Xenomai program".
+Yes, you should read the whole page, including all the documents it
+references, such as the "native API tour".
 
 -- 
                                                                 Gilles.
+
 
