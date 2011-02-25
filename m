@@ -1,13 +1,14 @@
-Message-ID: <4D66371A.2020301@domain.hid>
-Date: Thu, 24 Feb 2011 11:46:50 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <AANLkTimhw6cOHeDP3D4Om8nBiT-aURPWxbIrT23hNcNW@mail.gmail.com>		<4BF8F73D.3070008@domain.hid>	<AANLkTikT2AgxYKn4rK1jHtHzcK_AwJBzNANjDtAnyrwt@domain.hid>	<4BF94DE3.90001@domain.hid>
-	<loom.20110224T101958-641@domain.hid>
-In-Reply-To: <loom.20110224T101958-641@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] problem with xeno_16550A:Fatal Module not found
+In-Reply-To: <4D64CBE3.3020901@domain.hid>
+References: <AANLkTi=M7Nzd2Yw-99H=zvweAy15LzwhZwDm1TW1U3DT@mail.gmail.com>
+	<4D64CBE3.3020901@domain.hid>
+Date: Fri, 25 Feb 2011 14:35:21 +0800
+Message-ID: <AANLkTikUiSgogD+8yaGzW5tiZkK9Lb-27Rr1jowfhtG6@domain.hid>
+From: Sonic Zhang <sonic.adi@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-help] Which arm gcc version should be used to build
+ xenomai 2.5.5.2?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -17,42 +18,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: zair <zair.online@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-zair wrote:
-> Hi All,
+On Wed, Feb 23, 2011 at 4:57 PM, Gilles Chanteperdrix
+<gilles.chanteperdrix@xenomai.org> wrote:
+> Sonic Zhang wrote:
+>> Hi,
+>>
+>> Which arm gcc version should be used to build xenomai 2.5.5.2? I get
+>> build error if latest arm gcc from code sourcery is use.
+>
+> Hello,
+>
+> yes, actually 2.5.5.2 starts to be a bit old, and dates back from before
+> I started using this new release.
+>
 
-Hi,
+Which kernel version does this new release against? 2.6.37?
 
-as a general rule, please do not reply some random mail even remotely
-related when having a new issue.
 
-> I am new to serial programming.. as i was looking for my error got this 
-> permalink. 
+Sonic
 
-What permalink?
-
-> I don find xeno_16550A.ko in my lib/modules/<kernel>/kernel/drivers/serial   
-
-Well, did you enable it in the kernel configuration?
-If yes, are you sure you enabled it as a module and not built-in the kernel?
-If that is not the issue you have, we need more details about your
-setup, see:
-http://www.xenomai.org/index.php/Request_for_information
-
-> How to insert tat module into that.. 
-
-See:
-http://www.xenomai.org/index.php/16550A
-
-> Am using laptop now for this sserial 
-> programming. I will be getting my beagle board on monday.. 28th.. so I will be 
-> using tat for my applcn using xenomai.. pls help me in this regard..
-
-Your project deadlines are your problem, there is nothing we can do
-about it.
-
--- 
-					    Gilles.
+> Anyway, you may find the fix for this compilation error here:
+> http://git.xenomai.org/?p=3Dxenomai-2.5.git;a=3Dcommitdiff;h=3D895afb3507=
+8f11a776ed192d139ea4c4f25f40a8;hp=3D1e4df2d9e4fc6c12d9dbaa4c574c4d84021d0ec=
+6
+> and here:
+> http://git.xenomai.org/?p=3Dxenomai-2.5.git;a=3Dcommitdiff;h=3D2671234528=
+f92c96d77066e774dbeffdfb922c6e;hp=3D895afb35078f11a776ed192d139ea4c4f25f40a=
+8
+>
+> Regards.
+>
+> --
+> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
+=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0Gilles.
+>
 
