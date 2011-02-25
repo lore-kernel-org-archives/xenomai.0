@@ -1,14 +1,20 @@
-Message-ID: <4D676AA3.4040408@domain.hid>
-Date: Fri, 25 Feb 2011 09:38:59 +0100
+Message-ID: <4D679B8E.5040001@domain.hid>
+Date: Fri, 25 Feb 2011 13:07:42 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <AANLkTi=M7Nzd2Yw-99H=zvweAy15LzwhZwDm1TW1U3DT@mail.gmail.com>	<4D64CBE3.3020901@domain.hid>
-	<AANLkTikUiSgogD+8yaGzW5tiZkK9Lb-27Rr1jowfhtG6@domain.hid>
-In-Reply-To: <AANLkTikUiSgogD+8yaGzW5tiZkK9Lb-27Rr1jowfhtG6@domain.hid>
+References: <AANLkTikiCm5B-KwteOfzTwtCV8RXj1QFgfQCAmCCoC8V@mail.gmail.com>	
+	<20101220154041.48C75CDE29A@gemini.denx.de>	
+	<AANLkTi=C3FQ_Cms9qanmc1dgMgSvMC1Rrt-0X0tOPZMp@domain.hid>	
+	<20110215200753.C4B6C146940@domain.hid>	
+	<1297880887.1947.3.camel@domain.hid>	
+	<AANLkTin-2JJz3V+7bE7q1SjT0TBniRaO+byS_R0mzJF_@domain.hid>	
+	<1298111755.3304.1.camel@domain.hid>
+	<4D5FE8D6.6030204@domain.hid>	 <4D601B37.2010003@domain.hid>
+	<1298156382.3304.13.camel@domain.hid>
+In-Reply-To: <1298156382.3304.13.camel@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Which arm gcc version should be used to build
- xenomai 2.5.5.2?
+Subject: Re: [Xenomai-help] Xenomai on Freescale iMX35
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -18,26 +24,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Sonic Zhang <sonic.adi@domain.hid>
+To: Marten Lootsma <m.lootsma@domain.hid>
 Cc: xenomai@xenomai.org
 
-Sonic Zhang wrote:
-> On Wed, Feb 23, 2011 at 4:57 PM, Gilles Chanteperdrix
-> <gilles.chanteperdrix@xenomai.org> wrote:
->> Sonic Zhang wrote:
->>> Hi,
->>>
->>> Which arm gcc version should be used to build xenomai 2.5.5.2? I get
->>> build error if latest arm gcc from code sourcery is use.
->> Hello,
->>
->> yes, actually 2.5.5.2 starts to be a bit old, and dates back from before
->> I started using this new release.
->>
+Marten Lootsma wrote:
+> Hi,
 > 
-> Which kernel version does this new release against? 2.6.37?
+> Thanks for clarifying. I am quite blue to git/kernel/versioning and in
+> my optimism I underestimated the complexity of versioning and patching.
+> I guess therefore I did not understand the answer of Wolfgang totally. 
+> 
+> Do I understand correct that: Xenomai support for iMX35 depends fully on
+> the developers of Freescale to put their patches into the mainline
+> kernel? 
+> 
+> Is there a way to be involved/contribute on that?
 
-I am talking about the new release of the codesourcery compiler.
+Hi Marten,
+
+it turns out 2.6.35, on which I am currently working, has some support
+for imx35, so, you can give it a try.
+
+The current status of my work is on this git repository:
+git://git.xenomai.org/ipipe-gch.git
+The branch which interests you would be for-ipipe-2.6.35-arm.
+
+Regards.
 
 -- 
                                                                 Gilles.
