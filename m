@@ -1,20 +1,13 @@
-Message-ID: <4D679B8E.5040001@domain.hid>
-Date: Fri, 25 Feb 2011 13:07:42 +0100
+Message-ID: <4D67F69C.5080908@domain.hid>
+Date: Fri, 25 Feb 2011 19:36:12 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <AANLkTikiCm5B-KwteOfzTwtCV8RXj1QFgfQCAmCCoC8V@mail.gmail.com>	
-	<20101220154041.48C75CDE29A@gemini.denx.de>	
-	<AANLkTi=C3FQ_Cms9qanmc1dgMgSvMC1Rrt-0X0tOPZMp@domain.hid>	
-	<20110215200753.C4B6C146940@domain.hid>	
-	<1297880887.1947.3.camel@domain.hid>	
-	<AANLkTin-2JJz3V+7bE7q1SjT0TBniRaO+byS_R0mzJF_@domain.hid>	
-	<1298111755.3304.1.camel@domain.hid>
-	<4D5FE8D6.6030204@domain.hid>	 <4D601B37.2010003@domain.hid>
-	<1298156382.3304.13.camel@domain.hid>
-In-Reply-To: <1298156382.3304.13.camel@domain.hid>
+References: <AANLkTimhw6cOHeDP3D4Om8nBiT-aURPWxbIrT23hNcNW@mail.gmail.com>	<4BF8F73D.3070008@domain.hid>	<AANLkTikT2AgxYKn4rK1jHtHzcK_AwJBzNANjDtAnyrwt@domain.hid>	<4BF94DE3.90001@domain.hid>	<loom.20110224T101958-641@domain.hid>	<4D66371A.2020301@domain.hid>
+	<AANLkTinRd-KQ1HKy1tn1USfxL-8GT8FdZKujKTzfo_HE@mail.gmail.com>
+In-Reply-To: <AANLkTinRd-KQ1HKy1tn1USfxL-8GT8FdZKujKTzfo_HE@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Xenomai on Freescale iMX35
+Subject: Re: [Xenomai-help] problem with xeno_16550A:Fatal Module not found
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -24,32 +17,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Marten Lootsma <m.lootsma@domain.hid>
-Cc: xenomai@xenomai.org
+To: zaheer sheriff <zair.online@domain.hid>
+Cc: Xenomai help <xenomai@xenomai.org>
 
-Marten Lootsma wrote:
-> Hi,
-> 
-> Thanks for clarifying. I am quite blue to git/kernel/versioning and in
-> my optimism I underestimated the complexity of versioning and patching.
-> I guess therefore I did not understand the answer of Wolfgang totally. 
-> 
-> Do I understand correct that: Xenomai support for iMX35 depends fully on
-> the developers of Freescale to put their patches into the mainline
-> kernel? 
-> 
-> Is there a way to be involved/contribute on that?
+zaheer sheriff wrote:
+> Sir,
+>      Sorry I am unaware of that .. ll not do tat mistake in future..
 
-Hi Marten,
+Ok. Since we are at it, there are other rules, please:
+- no html
+- no top-posting
+- no personal mails
 
-it turns out 2.6.35, on which I am currently working, has some support
-for imx35, so, you can give it a try.
+>      Yes now i ve included serial in .config file recompiled n configured
+> xenomai..
+>      Now when i give modprobe xeno_16550A io=0x03f8 irq=4 baud_base=115200
+> tx_fifo=16 start_index=0
+> its not showing any message immediately $ prompt s comin..
+> Now when I use setserial /dev/ttyS0
+> its showing UART:none
+> I dunno where the problem is.. I don ve serial port RS232 in my laptop dell
+> inspiron 1464.
+> Is tat a problem... for that i connected usb to serial converter... dunno
+> how to make use of the driver xeno_16550A
+> pls help me.. I need to know wher the problem could be..
 
-The current status of my work is on this git repository:
-git://git.xenomai.org/ipipe-gch.git
-The branch which interests you would be for-ipipe-2.6.35-arm.
-
-Regards.
+If you want help, please read the links I posted, and do what they tell you.
 
 -- 
                                                                 Gilles.
