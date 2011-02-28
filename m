@@ -1,20 +1,11 @@
-Date: Mon, 28 Feb 2011 19:46:09 +0100 (CET)
-From: Kolja Waschk <xenoka09@domain.hid>
-In-Reply-To: <4D6BA899.90600@domain.hid>
-Message-ID: <alpine.DEB.1.10.1102281944470.12808@domain.hid>
-References: <alpine.DEB.1.10.1102281209570.12109@domain.hid>
-	<4D6B9032.5060907@domain.hid>
-	<alpine.DEB.1.10.1102281325340.12109@domain.hid>
-	<4D6B92C8.3070505@domain.hid>
-	<alpine.DEB.1.10.1102281342180.12109@domain.hid>
-	<4D6B97E5.5030901@domain.hid>
-	<alpine.DEB.1.10.1102281353490.12109@domain.hid>
-	<4D6BA899.90600@domain.hid>
+From: "Franz Engel" <franz_lambert_engel@domain.hid>
+Date: Mon, 28 Feb 2011 23:12:07 +0100
+Message-ID: <000501cbd794$8a0d7320$9e285960$@de>
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII; format=flowed
-Sender: "Kolja Waschk,,," <xenoka09@domain.hid>
-Subject: Re: [Xenomai-help] More blackfin kernel oops under heavy load
-Reply-To: xenoka09@domain.hid
+Content-Type: multipart/alternative;
+	boundary="----=_NextPart_000_0006_01CBD79C.EBD1DB20"
+Content-Language: de
+Subject: [Xenomai-help] RTnet compile autoconf question
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -24,63 +15,150 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: lux-integ@domain.hid
 Cc: xenomai@xenomai.org
 
-> I do not really understand what we are talking about. Are we talking
-> about Linux select/accept or Xenomai select/accept? Why not using the
+This is a multi-part message in MIME format.
 
-Linux select/accept. Using the blocking accept() would have changed the
-behaviour somewhat compared to the original design. Anyway, I think that doesn't
-actually matter much.
+------=_NextPart_000_0006_01CBD79C.EBD1DB20
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 
-I have meanwhile derived a much smaller RTDM driver kernel module, test
-application with blocking accept() ;) plus Makefile that do not depend on any
-particular external hardware anymore: A SPORT interface (SPORT1 receiver) is
-configured with internal clock and frame sync generation and so on itself
-generates a lot of interrupts, and this alltogether quite quickly reproduces
-the problem on my system. The files together are less than 1000 lines, 20kb.
+> Greetings
 
-I'd really appreciate if you or someone could take a look at it and maybe try
-the code on his own bf537 system whether the same faults occur, and why. May I
-post the files here (as a zipped attachment? inline)? I've already uploaded
-a copy at
+> 
 
-> http://www.ixo.de/tmp/till20110228.tgz
+> I want to have a go a RTnet.  The released tarball has
 
-If I can do anything to make it more comfortable to try this, please let me know.
+> autoconf implemented but the README  suggests    otherwise.  Has
 
-Short docs: The modt.c is derived from a larger "real" driver. I tried to strip
-much processing code from it. It doesn't configure the SPORT interface to
-really act reasonable anymore, just to generate a lot of interrupts, including
-overflow error interrupts. After putting the path to the kernel into the
-Makefile it should compile the module out-of-tree if you simply start "make".
+> anybody on
 
-The test application "till" starts one thread that continously contacts the
-modt driver via ioctl. This ioctl does nothing but waits for an event that
-is raised by the interrupts. The original application uses this ioctl()
-to receive a pointer to a single received packet in mapped memory. I modified
-the original driver so that it just receives data in the same buffer where
-the original used a setup with a ring of several buffers.
+> list built  RTnet with
 
-Another thread accept()s incoming connections on port 80 and emits a small
-chunk of text, enough to satisfy a simple wget.
+> 
 
-In the current configuration, the fault occurs immediately after loading the
-module and starting "till" on my system. Probably the SPORT configuration causes
-much too many interrupts, but the fault still exactly looks like what I experience
-in my real system. Previous setups required me to actually contact the server
-and get some data, e.g. with
+> ./configure
 
-> while true; do wget http://host -O /dev/null ; done
+> make
 
-1000x thanks for taking a look in advance... 
-Kolja
+> make install
+
+> 
+
+> and if so advice would be much appreciated
+
+ 
+
+I used this commands:
+
+./configure --with-linux=/usr/src/linux
+--with-rtext-config=/usr/xenomai/bin/xeno-config --enable-examples
+--enable-rtcap
+
+make
+
+make install
+
+ 
 
 
+------=_NextPart_000_0006_01CBD79C.EBD1DB20
+Content-Type: text/html;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 
-
-
-
+<html xmlns:v=3D"urn:schemas-microsoft-com:vml" =
+xmlns:o=3D"urn:schemas-microsoft-com:office:office" =
+xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
+xmlns:m=3D"http://schemas.microsoft.com/office/2004/12/omml" =
+xmlns=3D"http://www.w3.org/TR/REC-html40"><head><META =
+HTTP-EQUIV=3D"Content-Type" CONTENT=3D"text/html; =
+charset=3Dus-ascii"><meta name=3DGenerator content=3D"Microsoft Word 12 =
+(filtered medium)"><style><!--
+/* Font Definitions */
+@font-face
+	{font-family:"Cambria Math";
+	panose-1:2 4 5 3 5 4 6 3 2 4;}
+@font-face
+	{font-family:Calibri;
+	panose-1:2 15 5 2 2 2 4 3 2 4;}
+@font-face
+	{font-family:Consolas;
+	panose-1:2 11 6 9 2 2 4 3 2 4;}
+/* Style Definitions */
+p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin:0cm;
+	margin-bottom:.0001pt;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";}
+a:link, span.MsoHyperlink
+	{mso-style-priority:99;
+	color:blue;
+	text-decoration:underline;}
+a:visited, span.MsoHyperlinkFollowed
+	{mso-style-priority:99;
+	color:purple;
+	text-decoration:underline;}
+p.MsoPlainText, li.MsoPlainText, div.MsoPlainText
+	{mso-style-priority:99;
+	mso-style-link:"Nur Text Zchn";
+	margin:0cm;
+	margin-bottom:.0001pt;
+	font-size:10.5pt;
+	font-family:Consolas;}
+span.E-MailFormatvorlage17
+	{mso-style-type:personal-compose;
+	font-family:"Calibri","sans-serif";
+	color:windowtext;}
+span.NurTextZchn
+	{mso-style-name:"Nur Text Zchn";
+	mso-style-priority:99;
+	mso-style-link:"Nur Text";
+	font-family:Consolas;}
+.MsoChpDefault
+	{mso-style-type:export-only;}
+@page WordSection1
+	{size:612.0pt 792.0pt;
+	margin:70.85pt 70.85pt 2.0cm 70.85pt;}
+div.WordSection1
+	{page:WordSection1;}
+--></style><!--[if gte mso 9]><xml>
+<o:shapedefaults v:ext=3D"edit" spidmax=3D"1026" />
+</xml><![endif]--><!--[if gte mso 9]><xml>
+<o:shapelayout v:ext=3D"edit">
+<o:idmap v:ext=3D"edit" data=3D"1" />
+</o:shapelayout></xml><![endif]--></head><body lang=3DDE link=3Dblue =
+vlink=3Dpurple><div class=3DWordSection1><p class=3DMsoPlainText><span =
+lang=3DEN-US>&gt; Greetings<o:p></o:p></span></p><p =
+class=3DMsoPlainText><span lang=3DEN-US>&gt; <o:p></o:p></span></p><p =
+class=3DMsoPlainText><span lang=3DEN-US>&gt; I want to have a go a =
+RTnet.&nbsp; The released tarball has<o:p></o:p></span></p><p =
+class=3DMsoPlainText><span lang=3DEN-US>&gt; autoconf implemented but =
+the README&nbsp; suggests&nbsp;&nbsp;&nbsp; otherwise.&nbsp; =
+Has<o:p></o:p></span></p><p class=3DMsoPlainText><span lang=3DEN-US>&gt; =
+anybody on<o:p></o:p></span></p><p class=3DMsoPlainText><span =
+lang=3DEN-US>&gt; list built&nbsp; RTnet with<o:p></o:p></span></p><p =
+class=3DMsoPlainText><span lang=3DEN-US>&gt; <o:p></o:p></span></p><p =
+class=3DMsoPlainText><span lang=3DEN-US>&gt; =
+./configure<o:p></o:p></span></p><p class=3DMsoPlainText><span =
+lang=3DEN-US>&gt; make<o:p></o:p></span></p><p =
+class=3DMsoPlainText><span lang=3DEN-US>&gt; make =
+install<o:p></o:p></span></p><p class=3DMsoPlainText><span =
+lang=3DEN-US>&gt; <o:p></o:p></span></p><p class=3DMsoPlainText><span =
+lang=3DEN-US>&gt; and if so advice would be much =
+appreciated<o:p></o:p></span></p><p class=3DMsoNormal><span =
+lang=3DEN-US><o:p>&nbsp;</o:p></span></p><p class=3DMsoNormal><span =
+lang=3DEN-US>I used this commands:<o:p></o:p></span></p><p =
+class=3DMsoPlainText><span lang=3DEN-US>./configure =
+--with-linux=3D/usr/src/linux =
+--with-rtext-config=3D/usr/xenomai/bin/xeno-config --enable-examples =
+--enable-rtcap<o:p></o:p></span></p><p class=3DMsoPlainText><span =
+lang=3DEN-US>make<o:p></o:p></span></p><p class=3DMsoPlainText><span =
+lang=3DEN-US>make install<o:p></o:p></span></p><p =
+class=3DMsoNormal><span =
+lang=3DEN-US><o:p>&nbsp;</o:p></span></p></div></body></html>
+------=_NextPart_000_0006_01CBD79C.EBD1DB20--
 
 
