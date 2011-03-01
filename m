@@ -1,16 +1,12 @@
+Message-ID: <4D6D0AE7.7070103@domain.hid>
+Date: Tue, 01 Mar 2011 16:04:07 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <1297880887.1947.3.camel@domain.hid>
-References: <AANLkTikiCm5B-KwteOfzTwtCV8RXj1QFgfQCAmCCoC8V@mail.gmail.com>
-	<20101220154041.48C75CDE29A@gemini.denx.de>
-	<AANLkTi=C3FQ_Cms9qanmc1dgMgSvMC1Rrt-0X0tOPZMp@domain.hid>
-	<20110215200753.C4B6C146940@domain.hid>
-	<1297880887.1947.3.camel@domain.hid>
-Date: Fri, 18 Feb 2011 09:41:29 -0200
-Message-ID: <AANLkTin-2JJz3V+7bE7q1SjT0TBniRaO+byS_R0mzJF_@domain.hid>
-From: Flavio de Castro Alves Filho <flavio.alves@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] Xenomai on Freescale iMX35
+References: <AANLkTimQBPGtBysVt7UHeBgaNiU045nWCBDSaHuEDJk6@domain.hid>
+In-Reply-To: <AANLkTimQBPGtBysVt7UHeBgaNiU045nWCBDSaHuEDJk6@domain.hid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] SMP load balancing
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -20,55 +16,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Jeff Weber <jwamsc@domain.hid>
+Cc: xenomai@xenomai.org
 
-Hello,
+Jeff Weber wrote:
+> I am looking for guidance on how much I can rely upon the Linux kernel and
+> Xenomai schedulers to perform automatic load balancing, vs. how much I must
+> load balance manually.  My config:
+> 
+> x86 SMP system with 2 CPUs
+> Linux 2.6.35.10 + xenomai-2.5.5.2
+> ISA hardware device with 1 IRQ
+> Xenomai kernel module driver using old-style native API (may be ported to
+> RTDM in the future)
+> user space application with multiple Linux and Xenomai threads
+> no effort [yet] to explicitly set CPU affinities for either Xenomai, nor
+> Linux
+> cat /proc/xenomai/affinity output = 000000ff
+> 
+> question:  From /proc/xenomai/stat , I see all Xenomai kernel driver and
+> userspace threads running on only CPU0, though my IRQ handler is being
+> balanced on both CPUs.  Will Xenomai ever "balance" or "migrate" threads to
+> other CPUs if the affinity mask allows this?
 
-I'm not an expert in git, but I believe the Freescale's git repository
-is different from mainline git repository, isn't it?
+Xenomai does not make any load balancing, because a migration introduces
+a huge latency, so, what you have to do is to set an affinity with just
+one bit set. And changing affinity during a thread's life is not
+recommended.
 
-I agree with Wolfgang regarding the future support of iMX35 in
-mainline kernel (a long way to go).
+> 
+> question: Does the Linux scheduler assume it owns 100% of the cycles on CPU0
+> (where all the Xenomai threads happen to be running), and thus make
+> incorrect scheduling decisions for Linux threads on CPU0?
 
-Best regards,
+I am not sure, what does top say ?
 
-Flavio
-
-
-2011/2/16 Marten Lootsma <m.lootsma@domain.hid>:
-> Hi Wolfgang,
->
-> On Tue, 2011-02-15 at 21:07 +0100, Wolfgang Denk wrote:
->> Dear Marten,
->>
->> In message <AANLkTi=3DC3FQ_Cms9qanmc1dgMgSvMC1Rrt-0X0tOPZMp@domain.hid=
-om> you wrote:
->> >
->> > Thank you for your answer. If I understood correctly the Freescale ker=
-nel
->> > development has been added to the mailline kernel tree:
->> > http://opensource.freescale.com/git?p=3Dimx/linux-2.6-imx.git;a=3Dsumm=
-ary
->> > http://git.kernel.org/?p=3Dlinux/kernel/git/torvalds/linux-2.6.git;a=
-=3Dtree;f=3Darch/arm/mach-mx3;h=3D8021c7efda789b8fe5ae3e896b62ae125b231958;=
-hb=3D795abaf1e4e188c4171e3cd3dbb11a9fcacaf505
->> >
->> > Is this what you meant?
->>
->> Oops? =A0What makes you think so?
-> I thought so because I saw mx35 specific code (which we got through
-> Freescale patches) in the kernel git (see my second link):
-> [linux/kernel/git/torvalds/linux-2.6.git] / arch / arm / mach-mx3 /
->
-> Or am I totally mistaken?
->
-> Best regards,
-> Marten Lootsma
->
->
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
->
+-- 
+					    Gilles.
 
