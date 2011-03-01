@@ -1,5 +1,5 @@
-Message-ID: <4D6D0AE7.7070103@domain.hid>
-Date: Tue, 01 Mar 2011 16:04:07 +0100
+Message-ID: <4D6D0AEF.8070100@domain.hid>
+Date: Tue, 01 Mar 2011 16:04:15 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <AANLkTimQBPGtBysVt7UHeBgaNiU045nWCBDSaHuEDJk6@domain.hid>
