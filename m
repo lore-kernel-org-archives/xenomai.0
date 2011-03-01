@@ -1,20 +1,10 @@
-Message-ID: <4D6CE2E8.2070706@domain.hid>
-Date: Tue, 01 Mar 2011 13:13:28 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <alpine.DEB.1.10.1102281209570.12109@domain.hid>
-	<4D6B9032.5060907@domain.hid>
-	<alpine.DEB.1.10.1102281325340.12109@domain.hid>
-	<4D6B92C8.3070505@domain.hid>
-	<alpine.DEB.1.10.1102281342180.12109@domain.hid>
-	<4D6B97E5.5030901@domain.hid>
-	<alpine.DEB.1.10.1102281353490.12109@domain.hid>
-	<4D6BA899.90600@domain.hid>
-	<alpine.DEB.1.10.1102281944470.12808@domain.hid>
-In-Reply-To: <alpine.DEB.1.10.1102281944470.12808@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] More blackfin kernel oops under heavy load
+Sender: madjsw@domain.hid
+Date: Tue, 1 Mar 2011 08:56:07 -0600
+Message-ID: <AANLkTimQBPGtBysVt7UHeBgaNiU045nWCBDSaHuEDJk6@domain.hid>
+From: Jeff Weber <jwamsc@domain.hid>
+Content-Type: multipart/alternative; boundary=e0cb4e3853a40b84b4049d6cfffc
+Subject: [Xenomai-help] SMP load balancing
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -24,36 +14,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenoka09@domain.hid
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Kolja Waschk wrote:
->> I do not really understand what we are talking about. Are we talking
->> about Linux select/accept or Xenomai select/accept? Why not using the
-> 
-> Linux select/accept. Using the blocking accept() would have changed the
-> behaviour somewhat compared to the original design. Anyway, I think that doesn't
-> actually matter much.
-> 
-> I have meanwhile derived a much smaller RTDM driver kernel module, test
-> application with blocking accept() ;) plus Makefile that do not depend on any
-> particular external hardware anymore: A SPORT interface (SPORT1 receiver) is
-> configured with internal clock and frame sync generation and so on itself
-> generates a lot of interrupts, and this alltogether quite quickly reproduces
-> the problem on my system. The files together are less than 1000 lines, 20kb.
-> 
-> I'd really appreciate if you or someone could take a look at it and maybe try
-> the code on his own bf537 system whether the same faults occur, and why. May I
-> post the files here (as a zipped attachment? inline)? I've already uploaded
-> a copy at
-> 
->> http://www.ixo.de/tmp/till20110228.tgz
+--e0cb4e3853a40b84b4049d6cfffc
+Content-Type: text/plain; charset=ISO-8859-1
 
-Thanks a lot. I do not know much about blackfin, Philippe is the
-specialist. But having this code will certainly help find the issue.
+I am looking for guidance on how much I can rely upon the Linux kernel and
+Xenomai schedulers to perform automatic load balancing, vs. how much I must
+load balance manually.  My config:
 
-Regards.
+x86 SMP system with 2 CPUs
+Linux 2.6.35.10 + xenomai-2.5.5.2
+ISA hardware device with 1 IRQ
+Xenomai kernel module driver using old-style native API (may be ported to
+RTDM in the future)
+user space application with multiple Linux and Xenomai threads
+no effort [yet] to explicitly set CPU affinities for either Xenomai, nor
+Linux
+cat /proc/xenomai/affinity output = 000000ff
 
--- 
-                                                                Gilles.
+question:  From /proc/xenomai/stat , I see all Xenomai kernel driver and
+userspace threads running on only CPU0, though my IRQ handler is being
+balanced on both CPUs.  Will Xenomai ever "balance" or "migrate" threads to
+other CPUs if the affinity mask allows this?
+
+question: Does the Linux scheduler assume it owns 100% of the cycles on CPU0
+(where all the Xenomai threads happen to be running), and thus make
+incorrect scheduling decisions for Linux threads on CPU0?
+
+thanks,
+Jeff
+
+--e0cb4e3853a40b84b4049d6cfffc
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+I am looking for guidance on how much I can rely upon the Linux kernel and =
+Xenomai schedulers to perform automatic load balancing, vs. how much I must=
+ load balance manually.=A0 My config:<br><br>x86 SMP system with 2 CPUs<br>
+Linux 2.6.35.10 + xenomai-2.5.5.2<br>ISA hardware device with 1 IRQ<br>Xeno=
+mai kernel module driver using old-style native API (may be ported to RTDM =
+in the future)<br>user space application with multiple Linux and Xenomai th=
+reads<br>
+no effort [yet] to explicitly set CPU affinities for either Xenomai, nor Li=
+nux<br>cat /proc/xenomai/affinity output =3D 000000ff<br><br>question:=A0 F=
+rom /proc/xenomai/stat , I see all Xenomai kernel driver and userspace thre=
+ads running on only CPU0, though my IRQ handler is being balanced on both C=
+PUs.=A0 Will Xenomai ever &quot;balance&quot; or &quot;migrate&quot; thread=
+s to other CPUs if the affinity mask allows this?<br>
+<br>question: Does the Linux scheduler assume it owns 100% of the cycles on=
+ CPU0 (where all the Xenomai threads happen to be running), and thus make i=
+ncorrect scheduling decisions for Linux threads on CPU0?<br><br>thanks,<br>
+Jeff<br><br>
+
+--e0cb4e3853a40b84b4049d6cfffc--
 
