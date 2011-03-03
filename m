@@ -1,106 +1,36 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <AANLkTin8hwsKv1oZf1Tv_F97hZEVy=T=KzMcPSsn-O8r@domain.hid>
-References: <mailman.6356.1286778008.12503.xenomai@xenomai.org>
-	<7504E039-6366-480F-ACA3-018E520122E6@domain.hid>
-	<AANLkTin__DMjjDxFzBCOiA1Z+ODq01KA6FSWSzEwET3y@domain.hid>
-	<AANLkTik=JkttWXUj5Zm04cpQTokGh3y272PzwUkdmS2N@mail.gmail.com>
-	<AANLkTin8hwsKv1oZf1Tv_F97hZEVy=T=KzMcPSsn-O8r@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Mon, 28 Mar 2011 13:44:42 +0200
-Message-ID: <1301312682.2108.1.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] New scheduler class
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Henri Roosen <henriroosen@domain.hid>
-Cc: Andreas Glatz <andi.glatz@domain.hid>, xenomai@xenomai.org
+Date: Thu, 3 Mar 2011 08:24:52 +0100
+From: Richard Cochran <richardcochran@domain.hid>
+Message-ID: <20110303072452.GB4353@domain.hid>
+References: <20110226200209.GA19514@domain.hid>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20110226200209.GA19514@domain.hid>
+Subject: Re: [Adeos-main] 13th Real Time Linux Workshop - 1st Call for Papers
+List-Id: General discussion about Adeos <adeos-main.gna.org>
+List-Unsubscribe: <https://mail.gna.org/options/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+List-Archive: </public/adeos-main>
+List-Post: <mailto:adeos-main@gna.org>
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+To: Nicholas Mc Guire <der.herr@domain.hid>
+Cc: adeos-main@gna.org
 
-On Mon, 2011-03-28 at 12:56 +0200, Henri Roosen wrote:
-> Hi,
+On Sat, Feb 26, 2011 at 09:02:09PM +0100, Nicholas Mc Guire wrote:
+>                        13th Real-Time Linux Workshop
 > 
-> We are using the back-ported auto-relax patches of Xenomai-head on the
-> 2.5.6 release on Linux 2.6.32.15.
-> 
-> We noticed that our prio-0 shadowed task is not always auto-relaxed
-> and traced it back to a problem with rt_task_send/receive/reply. The
-> rt_task_send/receive/reply mechanism uses the xnsynch primitive to
-> implement its PIP. However, this mechanism only acquires the xysynch
-> primitive without releasing it. This results in the resource counter
-> never be 0 anymore and thus breaking the auto-relaxed which is based
-> on this resource counter.
-> 
-> I guess releasing the xnsynch resets the owner, which is not wanted either..
-> Any idea for a fix?
-> 
+>                             October 20-22, 2011
+>                      Faculty of Electrical Engineering
+>                     Czech Technical University in Prague
+>                            Prague, Czech Republic
 
-The main issue is that this interface is totally at odds with the
-fastsync support. Will have a look.
+Any word on another XUM?
 
-> Thanks,
-> Henri.
-> 
-> 
-> On Tue, Oct 12, 2010 at 9:16 AM, Henri Roosen <henriroosen@domain.hid> wrote:
-> > That was a problem with our build environment.
-> >
-> > Patches work and the base-prio 0 task nicely switches to the Linux
-> > domain and competes with the Linux threads for the processor. Now we
-> > don't loose TCP connection to our target anymore.
-> >
-> > Thanks!
-> >
-> > Henri
-> >
-> > On Mon, Oct 11, 2010 at 5:35 PM, Henri Roosen <henriroosen@domain.hid> wrote:
-> >> Thanks for the patches Philippe. I applied them to xenomai 2.5.5.
-> >> Tests with a basic application look good, however our bigger project
-> >> doesn't. I checked already if we release all mutexes; the base prio 0
-> >> thread thread released all of them but stays in primary domain after a
-> >> xenomai call.
-> >>
-> >> I'll setup a clean environment, just to be sure, and will investigate
-> >> further tomorrow.
-> >>
-> >> On Mon, Oct 11, 2010 at 11:31 AM, Andreas Glatz <andi.glatz@domain.hid> wrote:
-> >>>
-> >>>>
-> >>>> The auto-relax feature is now available from -head (upcoming
-> >>>> 2.6.x). You
-> >>>> will need all commits from
-> >>>> http://git.xenomai.org/?p=xenomai-
-> >>>> head.git;a=commit;h=b75cec19387e561f82ac55595db8c993b049f071
-> >>>> to
-> >>>> http://git.xenomai.org/?p=xenomai-
-> >>>> head.git;a=commit;h=6653a9e8eb7339b749989bd74adc3ac3bd29e4da
-> >>>>
-> >>>> --
-> >>>> Philippe.
-> >>>>
-> >>>>
-> >>>
-> >>> Very nice. Will try it out soon on my G4 PB Aluminium.
-> >>>
-> >>> Andreas
-> >>>
-> >>>
-> >>> _______________________________________________
-> >>> Xenomai-help mailing list
-> >>> Xenomai-help@domain.hid
-> >>> https://mail.gna.org/listinfo/xenomai-help
-> >>>
-> >>
-> >
+That would be a big incentive for me to attend!
 
--- 
-Philippe.
+Thanks,
 
-
+Richard
 
