@@ -1,11 +1,16 @@
-From: "Franz Engel" <franz_lambert_engel@domain.hid>
-Date: Thu, 3 Mar 2011 20:32:24 +0100
-Message-ID: <001801cbd9d9$b9472810$2bd57830$@de>
-MIME-Version: 1.0
-Content-Type: multipart/alternative;
-	boundary="----=_NextPart_000_0019_01CBD9E2.1B0B9010"
-Content-Language: de
-Subject: [Xenomai-help] Dual Processor
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <4D6F89C8.9060005@domain.hid>
+References: <20110302151603.GA14557@domain.hid>
+	<4D6E61B6.906@domain.hid> <4D6E8A06.9060508@domain.hid>
+	<20110303072147.GA4353@domain.hid>
+	<1299137548.2072.3.camel@domain.hid> <4D6F88D6.4010105@domain.hid>
+	<4D6F89C8.9060005@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Date: Thu, 03 Mar 2011 13:54:40 +0100
+Message-ID: <1299156880.2072.6.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] Stuck MSI in normal Linux driver
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -15,93 +20,78 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-This is a multi-part message in MIME format.
+On Thu, 2011-03-03 at 13:30 +0100, Jan Kiszka wrote:
+> On 2011-03-03 13:25, Wolfgang Grandegger wrote:
+> > Hi Philippe,
+> > 
+> > On 03/03/2011 08:32 AM, Philippe Gerum wrote:
+> >> On Thu, 2011-03-03 at 08:21 +0100, Richard Cochran wrote:
+> >>> On Wed, Mar 02, 2011 at 07:18:46PM +0100, Jan Kiszka wrote:
+> >>>> On 2011-03-02 16:26, Gilles Chanteperdrix wrote:
+> >>>>> Richard Cochran wrote:
+> >>>>>> The wiki pages 
+> >>>>>>
+> >>>>>>    http://www.xenomai.org/index.php/FAQs
+> >>>>>>    http://www.xenomai.org/index.php/Configuring_x86_kernels
+> >>>>>>
+> >>>>>> say not to enable MSI on x86, with a link to a very old (2008)
+> >>>>>> discussion.
+> >>>
+> >>> ...
+> >>>
+> >>>> The current situation looks like this:
+> >>>>  - MSI[-X] usage for plain Linux drivers is fine, we are using it on
+> >>>>    machines where you can hardly avoid MSI today
+> >>>>  - MSI[-X] usage for RTDM (ie. RT) drivers is basically fine as long as
+> >>>>    you avoid enabling/disabling from RT context (also used for quite
+> >>>>    a while here, no known issues under this restriction)
+> >>>
+> >>> Okay, so I understand from this:
+> >>>
+> >>> 1. The wiki warning is out of date.
+> >>>
+> >>> 2. My own PCIe MSI driver/card *should* work.
+> >>>    (It is not a current known limitation of adeos/xenomai.)
+> >>
+> >> The situation is not that clear. Enabling CONFIG_PCI_MSI on some 83xx
+> >> board did cause a lock up at boot for me, so this may point the finger
+> >> at the pipeline core for ppc, and not to Xenomai which was barely active
+> >> at that stage.
+> > 
+> > Now I remember vaguely that we have seen a similar issue on the mpc8308
+> > in autumn last year. Here is what you wrote that time:
+> > 
+> > On 09/29/2010 04:12 PM, Philippe Gerum wrote:
+> >> Ok, I have a good news: the issue is spotted; and a bad one: this is no
+> >> trivial stuff to fix. In short, CONFIG_PCI_MSI causes the PIC code to
+> >> read PCI config memory on the fly during operations (which is intensely
+> >> insane but that is how it goes). Of course, it does that via the regular
+> >> PCI helpers, which are stuffed with normal locking constructs we may
+> >> _not_ call from any real-time/non-regular context.
+> >>
+> >> To sum up, we need to call those helpers to ack/mask interrupts within
+> >> the I-pipe, but we are not allowed to do this because this is inherently
+> >> unsafe.
+> >>
+> >> Work-around: disable CONFIG_PCI_MSI in your configuration.
+> >> The real fix would require much more thought, to make the PCI helpers
+> >> Adeos-aware without inducing high latency.
+> 
+> As MSIs are edge-triggered, only requiring ack at the interrupt
+> controller level, could it be that PPC is using the wrong flow handler here?
 
-------=_NextPart_000_0019_01CBD9E2.1B0B9010
-Content-Type: text/plain;
-	charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+The pipeline forces mask/ack to prevent adverse effect of deferred
+delivery to downstream handlers. Some chips require this.
 
-Hi,
+> 
+> Jan
+> 
 
-=20
+-- 
+Philippe.
 
-Does anyone has experience with multi-processor boards? In fact, I want =
-to
-buy a mainboard with 2 x Intel Xeon Processor (=E1 6 Cores). Could this =
-be a
-problem?
-
-=20
-
-Regards,
-
-    Franz
-
-
-------=_NextPart_000_0019_01CBD9E2.1B0B9010
-Content-Type: text/html;
-	charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-
-<META HTTP-EQUIV=3D"Content-Type" CONTENT=3D"text/html; =
-charset=3Diso-8859-1">
-<html xmlns:v=3D"urn:schemas-microsoft-com:vml" =
-xmlns:o=3D"urn:schemas-microsoft-com:office:office" =
-xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
-xmlns:m=3D"http://schemas.microsoft.com/office/2004/12/omml" =
-xmlns=3D"http://www.w3.org/TR/REC-html40"><head><meta name=3DGenerator =
-content=3D"Microsoft Word 12 (filtered medium)"><style><!--
-/* Font Definitions */
-@font-face
-	{font-family:"Cambria Math";
-	panose-1:2 4 5 3 5 4 6 3 2 4;}
-@font-face
-	{font-family:Calibri;
-	panose-1:2 15 5 2 2 2 4 3 2 4;}
-/* Style Definitions */
-p.MsoNormal, li.MsoNormal, div.MsoNormal
-	{margin:0cm;
-	margin-bottom:.0001pt;
-	font-size:11.0pt;
-	font-family:"Calibri","sans-serif";}
-a:link, span.MsoHyperlink
-	{mso-style-priority:99;
-	color:blue;
-	text-decoration:underline;}
-a:visited, span.MsoHyperlinkFollowed
-	{mso-style-priority:99;
-	color:purple;
-	text-decoration:underline;}
-span.E-MailFormatvorlage17
-	{mso-style-type:personal-compose;
-	font-family:"Calibri","sans-serif";
-	color:windowtext;}
-.MsoChpDefault
-	{mso-style-type:export-only;}
-@page WordSection1
-	{size:612.0pt 792.0pt;
-	margin:70.85pt 70.85pt 2.0cm 70.85pt;}
-div.WordSection1
-	{page:WordSection1;}
---></style><!--[if gte mso 9]><xml>
-<o:shapedefaults v:ext=3D"edit" spidmax=3D"1026" />
-</xml><![endif]--><!--[if gte mso 9]><xml>
-<o:shapelayout v:ext=3D"edit">
-<o:idmap v:ext=3D"edit" data=3D"1" />
-</o:shapelayout></xml><![endif]--></head><body lang=3DDE link=3Dblue =
-vlink=3Dpurple><div class=3DWordSection1><p class=3DMsoNormal><span =
-lang=3DEN-US>Hi,<o:p></o:p></span></p><p class=3DMsoNormal><span =
-lang=3DEN-US><o:p>&nbsp;</o:p></span></p><p class=3DMsoNormal><span =
-lang=3DEN-US>Does anyone has experience with multi-processor boards? In =
-fact, I want to buy a mainboard with 2 x Intel Xeon Processor (&aacute; =
-6 Cores). Could this be a problem?<o:p></o:p></span></p><p =
-class=3DMsoNormal><span lang=3DEN-US><o:p>&nbsp;</o:p></span></p><p =
-class=3DMsoNormal><span lang=3DEN-US>Regards,<o:p></o:p></span></p><p =
-class=3DMsoNormal><span lang=3DEN-US>&nbsp;&nbsp;&nbsp; =
-Franz<o:p></o:p></span></p></div></body></html>
-------=_NextPart_000_0019_01CBD9E2.1B0B9010--
 
 
