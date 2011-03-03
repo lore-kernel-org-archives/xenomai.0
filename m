@@ -1,17 +1,11 @@
-From: Marten Lootsma <m.lootsma@domain.hid>
-In-Reply-To: <AANLkTin-2JJz3V+7bE7q1SjT0TBniRaO+byS_R0mzJF_@domain.hid>
-References: <AANLkTikiCm5B-KwteOfzTwtCV8RXj1QFgfQCAmCCoC8V@mail.gmail.com>
-	<20101220154041.48C75CDE29A@gemini.denx.de>
-	<AANLkTi=C3FQ_Cms9qanmc1dgMgSvMC1Rrt-0X0tOPZMp@domain.hid>
-	<20110215200753.C4B6C146940@domain.hid>
-	<1297880887.1947.3.camel@domain.hid>
-	<AANLkTin-2JJz3V+7bE7q1SjT0TBniRaO+byS_R0mzJF_@domain.hid>
-Content-Type: text/plain; charset="utf-8"
-Date: Sat, 19 Feb 2011 11:35:55 +0100
-Message-ID: <1298111755.3304.1.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai-help] Xenomai on Freescale iMX35
+From: "Franz Engel" <franz_lambert_engel@domain.hid>
+Date: Thu, 3 Mar 2011 20:32:24 +0100
+Message-ID: <001801cbd9d9$b9472810$2bd57830$@de>
+MIME-Version: 1.0
+Content-Type: multipart/alternative;
+	boundary="----=_NextPart_000_0019_01CBD9E2.1B0B9010"
+Content-Language: de
+Subject: [Xenomai-help] Dual Processor
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -21,67 +15,93 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Flavio de Castro Alves Filho <flavio.alves@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Hi Flavio,
+This is a multi-part message in MIME format.
 
-But the second link
-(http://git.kernel.org/?p=linux/kernel/git/torvalds/linux-2.6.git;a=tree;f=arch/arm/mach-mx3;h=8021c7efda789b8fe5ae3e896b62ae125b231958;hb=795abaf1e4e188c4171e3cd3dbb11a9fcacaf505) isn't a Freescale link, is it?
+------=_NextPart_000_0019_01CBD9E2.1B0B9010
+Content-Type: text/plain;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 
-Best regards,
-Marten
+Hi,
 
-В Пт., 18/02/2011 в 09:41 -0200, Flavio de Castro Alves Filho пишет:
-> Hello,
-> 
-> I'm not an expert in git, but I believe the Freescale's git repository
-> is different from mainline git repository, isn't it?
-> 
-> I agree with Wolfgang regarding the future support of iMX35 in
-> mainline kernel (a long way to go).
-> 
-> Best regards,
-> 
-> Flavio
-> 
-> 
-> 2011/2/16 Marten Lootsma <m.lootsma@domain.hid>:
-> > Hi Wolfgang,
-> >
-> > On Tue, 2011-02-15 at 21:07 +0100, Wolfgang Denk wrote:
-> >> Dear Marten,
-> >>
-> >> In message <AANLkTi=C3FQ_Cms9qanmc1dgMgSvMC1Rrt-0X0tOPZMp@domain.hid> you wrote:
-> >> >
-> >> > Thank you for your answer. If I understood correctly the Freescale kernel
-> >> > development has been added to the mailline kernel tree:
-> >> > http://opensource.freescale.com/git?p=imx/linux-2.6-imx.git;a=summary
-> >> > http://git.kernel.org/?p=linux/kernel/git/torvalds/linux-2.6.git;a=tree;f=arch/arm/mach-mx3;h=8021c7efda789b8fe5ae3e896b62ae125b231958;hb=795abaf1e4e188c4171e3cd3dbb11a9fcacaf505
-> >> >
-> >> > Is this what you meant?
-> >>
-> >> Oops?  What makes you think so?
-> > I thought so because I saw mx35 specific code (which we got through
-> > Freescale patches) in the kernel git (see my second link):
-> > [linux/kernel/git/torvalds/linux-2.6.git] / arch / arm / mach-mx3 /
-> >
-> > Or am I totally mistaken?
-> >
-> > Best regards,
-> > Marten Lootsma
-> >
-> >
-> > _______________________________________________
-> > Xenomai-help mailing list
-> > Xenomai-help@domain.hid
-> > https://mail.gna.org/listinfo/xenomai-help
-> >
-> 
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
+=20
 
+Does anyone has experience with multi-processor boards? In fact, I want =
+to
+buy a mainboard with 2 x Intel Xeon Processor (=E1 6 Cores). Could this =
+be a
+problem?
+
+=20
+
+Regards,
+
+    Franz
+
+
+------=_NextPart_000_0019_01CBD9E2.1B0B9010
+Content-Type: text/html;
+	charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+
+<META HTTP-EQUIV=3D"Content-Type" CONTENT=3D"text/html; =
+charset=3Diso-8859-1">
+<html xmlns:v=3D"urn:schemas-microsoft-com:vml" =
+xmlns:o=3D"urn:schemas-microsoft-com:office:office" =
+xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
+xmlns:m=3D"http://schemas.microsoft.com/office/2004/12/omml" =
+xmlns=3D"http://www.w3.org/TR/REC-html40"><head><meta name=3DGenerator =
+content=3D"Microsoft Word 12 (filtered medium)"><style><!--
+/* Font Definitions */
+@font-face
+	{font-family:"Cambria Math";
+	panose-1:2 4 5 3 5 4 6 3 2 4;}
+@font-face
+	{font-family:Calibri;
+	panose-1:2 15 5 2 2 2 4 3 2 4;}
+/* Style Definitions */
+p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin:0cm;
+	margin-bottom:.0001pt;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";}
+a:link, span.MsoHyperlink
+	{mso-style-priority:99;
+	color:blue;
+	text-decoration:underline;}
+a:visited, span.MsoHyperlinkFollowed
+	{mso-style-priority:99;
+	color:purple;
+	text-decoration:underline;}
+span.E-MailFormatvorlage17
+	{mso-style-type:personal-compose;
+	font-family:"Calibri","sans-serif";
+	color:windowtext;}
+.MsoChpDefault
+	{mso-style-type:export-only;}
+@page WordSection1
+	{size:612.0pt 792.0pt;
+	margin:70.85pt 70.85pt 2.0cm 70.85pt;}
+div.WordSection1
+	{page:WordSection1;}
+--></style><!--[if gte mso 9]><xml>
+<o:shapedefaults v:ext=3D"edit" spidmax=3D"1026" />
+</xml><![endif]--><!--[if gte mso 9]><xml>
+<o:shapelayout v:ext=3D"edit">
+<o:idmap v:ext=3D"edit" data=3D"1" />
+</o:shapelayout></xml><![endif]--></head><body lang=3DDE link=3Dblue =
+vlink=3Dpurple><div class=3DWordSection1><p class=3DMsoNormal><span =
+lang=3DEN-US>Hi,<o:p></o:p></span></p><p class=3DMsoNormal><span =
+lang=3DEN-US><o:p>&nbsp;</o:p></span></p><p class=3DMsoNormal><span =
+lang=3DEN-US>Does anyone has experience with multi-processor boards? In =
+fact, I want to buy a mainboard with 2 x Intel Xeon Processor (&aacute; =
+6 Cores). Could this be a problem?<o:p></o:p></span></p><p =
+class=3DMsoNormal><span lang=3DEN-US><o:p>&nbsp;</o:p></span></p><p =
+class=3DMsoNormal><span lang=3DEN-US>Regards,<o:p></o:p></span></p><p =
+class=3DMsoNormal><span lang=3DEN-US>&nbsp;&nbsp;&nbsp; =
+Franz<o:p></o:p></span></p></div></body></html>
+------=_NextPart_000_0019_01CBD9E2.1B0B9010--
 
 
