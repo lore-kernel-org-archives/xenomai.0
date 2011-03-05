@@ -1,61 +1,69 @@
-Message-ID: <608520.76294.qm@domain.hid>
-Date: Thu, 17 Feb 2011 09:45:43 +0000 (GMT)
-From: Franz Engel <franz_lambert_engel@domain.hid>
-MIME-Version: 1.0
-Content-Type: multipart/alternative; boundary="0-33883117-1297935943=:76294"
-Subject: [Xenomai-help] valgrind and modprobe xeno_posix
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+From: Michael Bernhard <michael.bernhard@domain.hid>
+Date: Sat, 05 Mar 2011 16:12:33 +0100
+Message-ID: <4D7252E1.9050000@domain.hid>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-core] Runtime error on PXA270 for branch
+	'for-ipipe-2.6.35-arm' in 'ipipe-gch.git'
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
 To: xenomai@xenomai.org
 
---0-33883117-1297935943=:76294
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: quoted-printable
+Hello!
 
-Hi,=0A=0AI'm still doubtful if I installed Xenomai correctly. When I start =
-my QT-Programm =0Ait runs correctly and I can see a new process in /proc/xe=
-nomai/state with the =0Aname of my program. I insert the following lines in=
- my *.pro-File (the draft for =0Amy makefile):=0ALIBS +=3D -Wl,@usr/xenomai=
-/lib/posix.wrappers -L/usr/xenomai/lib -lpthread_rt =0A-lxenomai -lpthread =
--lrt -Xlinker -rpath -Xlinker /usr/xenomai/lib=0ALIBS +=3D -I/usr/xenomai/i=
-nclude -D_GNU_SOURCE -D_REENTRANT -Wall -pipe -D__XENO__ =0A-I/usr/xenomai/=
-include/posix=0A=0AI'm absoult no makefile pro. The two lines are the only =
-thing I changed in my =0A*.pro file. Do I have to make more changes?=0A=0AF=
-uthermore,=A0when I run:=0Avalgrind --leak-check=3Dyes ./demo=0A=0AI get th=
-e correct valgrind output, but also a line of xenomai:=0AXenomai: POSIX ski=
-n or CONFIG_XENO_OPT_PERVASIVE disabled=0A(modprobe xeno_posix?)=0A=0ADo I =
-use a bad makefile?=0A=0AThanking you in anticipation,=0A=A0=A0=A0=A0 Franz=
-=0A=0A=0A
---0-33883117-1297935943=:76294
-Content-Type: text/html; charset=iso-8859-1
-Content-Transfer-Encoding: quoted-printable
+I'm trying to get running the ipipe patch on a 2.6.35 kernel. I've seen
+that Gilles was working on that port lately so I gave it a try.
 
-<html><head><style type=3D"text/css"><!-- DIV {margin:0px;} --></style></he=
-ad><body><div style=3D"font-family:times new roman, new york, times, serif;=
-font-size:12pt"><DIV>Hi,</DIV>=0A<DIV>&nbsp;</DIV>=0A<DIV>I'm still doubtfu=
-l if I installed Xenomai correctly. When I start my QT-Programm it runs cor=
-rectly and I can see a new process in /proc/xenomai/state with the name of =
-my program. I insert the following lines in my *.pro-File (the draft for my=
- makefile):</DIV>=0A<DIV>LIBS +=3D -Wl,@usr/xenomai/lib/posix.wrappers -L/u=
-sr/xenomai/lib -lpthread_rt -lxenomai -lpthread -lrt -Xlinker -rpath -Xlink=
-er /usr/xenomai/lib</DIV>=0A<DIV>LIBS +=3D -I/usr/xenomai/include -D_GNU_SO=
-URCE -D_REENTRANT -Wall -pipe -D__XENO__ -I/usr/xenomai/include/posix</DIV>=
-=0A<DIV>&nbsp;</DIV>=0A<DIV>I'm absoult no makefile pro. The two lines are =
-the only thing I changed in my *.pro file. Do I have to make more changes?<=
-/DIV>=0A<DIV>&nbsp;</DIV>=0A<DIV>Futhermore,&nbsp;when I run:</DIV>=0A<DIV>=
-valgrind --leak-check=3Dyes ./demo</DIV>=0A<DIV>&nbsp;</DIV>=0A<DIV>I get t=
-he correct valgrind output, but also a line of xenomai:</DIV>=0A<DIV>Xenoma=
-i: POSIX skin or CONFIG_XENO_OPT_PERVASIVE disabled</DIV>=0A<DIV>(modprobe =
-xeno_posix?)</DIV>=0A<DIV>&nbsp;</DIV>=0A<DIV>Do I use a bad makefile?</DIV=
->=0A<DIV>&nbsp;</DIV>=0A<DIV>Thanking you in anticipation,</DIV>=0A<DIV>&nb=
-sp;&nbsp;&nbsp;&nbsp; Franz</DIV>=0A<DIV>&nbsp;</DIV></div><br></body></htm=
-l>
---0-33883117-1297935943=:76294--
+The kernel is booting fine. However init does not continue and the
+NETDEV watchdog triggers:
+
+
+[   23.043294] Freeing init memory: 124K
+[   31.995507] ------------[ cut here ]------------
+[   32.009368] WARNING: at /home/mib/EBX04/ipipe-2.6/net/sched/sch_generic.c:258 dev_watchdog+0x17c/0x290()
+[   32.037640] NETDEV WATCHDOG: eth0 (dm9000): transmit queue 0 timed out
+[   32.057061] Modules linked in:
+[   32.066209] [<c002d7a8>] (unwind_backtrace+0x0/0xec) from [<c004137c>] (warn_slowpath_common+0x4c/0x64)
+[   32.094207] [<c004137c>] (warn_slowpath_common+0x4c/0x64) from [<c0041414>] (warn_slowpath_fmt+0x2c/0x3c)
+[   32.122715] [<c0041414>] (warn_slowpath_fmt+0x2c/0x3c) from [<c026af20>] (dev_watchdog+0x17c/0x290)
+[   32.149695] [<c026af20>] (dev_watchdog+0x17c/0x290) from [<c004c490>] (run_timer_softirq+0x184/0x258)
+[   32.177192] [<c004c490>] (run_timer_softirq+0x184/0x258) from [<c00469a4>] (__do_softirq+0x88/0x124)
+[   32.204409] [<c00469a4>] (__do_softirq+0x88/0x124) from [<c0046a88>] (irq_exit+0x48/0x5c)
+[   32.228816] [<c0046a88>] (irq_exit+0x48/0x5c) from [<c0027070>] (asm_do_IRQ+0x70/0x8c)
+[   32.252409] [<c0027070>] (asm_do_IRQ+0x70/0x8c) from [<c0027aa4>] (__irq_svc+0x44/0xd0)
+[   32.276250] Exception stack(0xc0415f80 to 0xc0415fc8)
+[   32.291291] 5f80: 00000001 00000000 c0415fc8 60000013 c0414000 c0022020 c002201c c0417b50
+[   32.315654] 5fa0: a001ffa8 69054117 a001ff74 00000000 00000000 c0415fc8 c002905c c0029068
+[   32.340003] 5fc0: 60000013 ffffffff
+[   32.350403] [<c0027aa4>] (__irq_svc+0x44/0xd0) from [<c0029068>] (default_idle+0x2c/0x30)
+[   32.374756] [<c0029068>] (default_idle+0x2c/0x30) from [<c0029550>] (cpu_idle+0x58/0xac)
+[   32.398881] [<c0029550>] (cpu_idle+0x58/0xac) from [<c0008b0c>] (start_kernel+0x284/0x2e4)
+[   32.423502] [<c0008b0c>] (start_kernel+0x284/0x2e4) from [<a0008034>] (0xa0008034)
+[   32.446064] ---[ end trace a6d3f140188b1aa5 ]---
+
+The same behavior happens even if I disable FCSE and IPIPE or either of it.
+I think this is pretty much what this tree contains.
+
+A vanilla 2.6.35.9 kernel is booting fine with colibri_pxa270_defconfig.
+
+As you see from the defconfig, the target is a PXA270 colibri board.
+
+For me the behavior is a bit strange because the kernel already fetched
+the IP address via DHCP and also mounted the NFS root file system
+
+Does somebody have an idea in which direction I should investigate?
+
+Of course I can provide more information if needed. We would like to
+use Xenomai on this ARM board with kernel 2.6.35.
+
+Best regards,
+Michael
+
 
