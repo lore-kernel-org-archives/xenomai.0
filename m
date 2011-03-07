@@ -1,19 +1,15 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <4D752659.3070701@domain.hid>
-References: <20110302151603.GA14557@domain.hid>
-	<4D6E61B6.906@domain.hid> <4D6E8A06.9060508@domain.hid>
-	<20110303072147.GA4353@domain.hid>
-	<1299137548.2072.3.camel@domain.hid> <4D6F88D6.4010105@domain.hid>
-	<4D6F89C8.9060005@domain.hid> <1299156880.2072.6.camel@domain.hid>
-	<4D702802.5080001@domain.hid> <1299225060.2107.20.camel@domain.hid>
-	<20110307092604.GA21619@domain.hid>
-	<1299515837.2088.47.camel@domain.hid>  <4D752659.3070701@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Mon, 07 Mar 2011 22:47:45 +0100
-Message-ID: <1299534465.2088.51.camel@domain.hid>
-Mime-Version: 1.0
+Message-ID: <4D75594F.5000607@domain.hid>
+Date: Mon, 07 Mar 2011 23:16:47 +0100
+From: Wolfgang Grandegger <wg@domain.hid>
+MIME-Version: 1.0
+References: <AANLkTik7MKLjvrZY1BsowqBtodJoP7fUt6--H4WOS-W4@domain.hid>	<4D74975F.4050009@domain.hid>	<4D74C683.1020904@domain.hid>	<AANLkTi=0kGcZwfTesBKbQ9u6OedaUU8vsMogAbhYceN+@mail.gmail.com>	<4D752CDB.5030904@domain.hid>
+	<AANLkTimnZRTFO3u1bn2b+8PfGhnf9XZNKUvpCtwA4Mvc@domain.hid>
+	<4D754DD5.3010006@domain.hid>
+In-Reply-To: <4D754DD5.3010006@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Stuck MSI in normal Linux driver
+Subject: Re: [Xenomai-help] irqloop hangs on Beagleboard ARM with
+	2.5.5.2/2.6.33
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -24,34 +20,34 @@ List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>, Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai@xenomai.org
 
-On Mon, 2011-03-07 at 19:39 +0100, Gilles Chanteperdrix wrote:
-> Philippe Gerum wrote:
-> > +static void fsl_msi_cascade(unsigned int irq, struct irq_desc *desc)
-> > +{
-> > (...)
-> > +	if ((msi_data->feature &  FSL_PIC_IP_MASK) == FSL_PIC_IP_IPIC) {
-> > +		if (desc->chip->mask_ack)
-> > +			desc->chip->mask_ack(irq);
-> > +		else {
-> > +			desc->chip->mask(irq);
-> > +			desc->chip->ack(irq);
-> > +		}
-> > +	} else
-> > +		desc->chip->eoi(irq);
-> > +
-> > (...)
-> > +
-> > +	desc->chip->unmask(irq);
+On 03/07/2011 10:27 PM, Gilles Chanteperdrix wrote:
+> Eric Eric wrote:
+>> On Mon, Mar 7, 2011 at 2:07 PM, Gilles Chanteperdrix
+>> <gilles.chanteperdrix@xenomai.org> wrote:
+>>> Eric Eric wrote:
+>>>> OK, it looks like I would basically have to replace gpioirq-hw.h
+>>>> bare-bones GPIO driver for the beagle to get this to work.  Other than
+>>>> that, am I correct that the hardware configuration would be two boards
+>>>> connected to each other using two GPIO pins for trigger and response?
+>>> Well, the gpiolib functions are safe to be used from real-time domain.
+>>
+>> Hmm, it looked like gpioirqbench went through some pain to -not- use
+>> gpiolib and to manually configure and operate the hardware, so I
+>> assumed this was not safe.  It's certainly a more pleasant task using
+>> gpiolib.  It does beg the question why gpioirqbench isn't doing this.
 > 
-> Do we have to unmask here if we just eoi'ed on entry?
-> 
+> The reason is historical.
 
-eoi is actually mask+eoi in the mpic case.
+Right, at that time only a few archs/systems supported the gpolib,
+especially with interrupts. But I already have an implementation for the
+Qong i.MX31 board using the generic gpiolib. I will dig for it later
+this week. "gpioirqbench" measures how fast iPipe or Xenomai software
+can respond to an external event (interrupt) in a user-space or
+kernel-space task or the Xenomai or iPipe interrupt handler. Anyway,
+"gpioirqbench" also needs a host to trigger and measure the latencies in
+*hardware*. This is the tricky part. I used a mpc8xx based system.
 
--- 
-Philippe.
-
-
+Wolfgang.
 
