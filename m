@@ -1,55 +1,51 @@
-Message-ID: <COL122-W376680783697A8A880DC2BBDA20@domain.hid>
-Content-Type: multipart/alternative;
-	boundary="_bc3e43f0-0b01-4117-8930-4f77757915b9_"
-From: krishna m <krishnamurthyjs@domain.hid>
-Date: Tue, 5 Apr 2011 19:18:44 +0530
+Message-ID: <4D74B024.5010008@domain.hid>
+Date: Mon, 07 Mar 2011 11:15:00 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Subject: [Xenomai-core] Tiny Core Linux + xenomai/RTAI
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+References: <AANLkTik2mjdhFGGedWVVT=itGeusDPE=QbDhZCC7oD_+@mail.gmail.com>
+In-Reply-To: <AANLkTik2mjdhFGGedWVVT=itGeusDPE=QbDhZCC7oD_+@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] Program hangs using "rt_task_sleep" in a
+ particular way
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org, rtai@domain.hid
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Jonathan ILIAS-PILLET <ismael@domain.hid>
+Cc: armadeus-forum@domain.hid, xenomai@xenomai.org
 
---_bc3e43f0-0b01-4117-8930-4f77757915b9_
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Jonathan ILIAS-PILLET wrote:
+> Hello,
+> 
+> We encounter a problem in a particular situation. In the attached
+> source, when we change the value passed to rt_task_sleep (line 35), the
+> program never returns.
+> 
+> This appears only with values greater or equal to 100000 (and maybe some
+> other values between 10000 and 100000) and only when we use
+> rt_task_sleep between the two rt_task_spawn calls.
+> 
+> Is there something we've done wrong ?
+> 
+> We use and Armadeus APF27 platform. I don't know if this behavior is
+> related to this architecture, to Xenomai or both.
 
+We do not know anything about your setup (except the platform). See:
+http://www.xenomai.org/index.php/Request_for_information
 
-Has anyone tried applying Xenomai or RTAI patch to the tiny core Linux? Wil=
-l it give a better performance compared to the plain vanilla Linux because =
-the kernel footprint is small? 		 	   		  =
+It would also be interesting to know if you have root thread priority
+coupling enabled.
 
---_bc3e43f0-0b01-4117-8930-4f77757915b9_
-Content-Type: text/html; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+In any case, your real-time tasks should never use all the cpu without
+letting Linux run. The only way to guarantee the stability of the system
+is by letting Linux run from time to time.
 
-<html>
-<head>
-<style><!--
-.hmmessage P
-{
-margin:0px=3B
-padding:0px
-}
-body.hmmessage
-{
-font-size: 10pt=3B
-font-family:Tahoma
-}
---></style>
-</head>
-<body class=3D'hmmessage'>
-<SPAN style=3D"FONT-FAMILY: 'Tahoma'=2C'sans-serif'=3B FONT-SIZE: 10pt">Has=
- anyone tried applying Xenomai or RTAI patch to the tiny core Linux? Will i=
-t give a better performance compared to the plain vanilla Linux because the=
- kernel footprint is small?<?xml:namespace prefix =3D o ns =3D "urn:schemas=
--microsoft-com:office:office" /><o:p></o:p></SPAN><BR> 		 	   		  </body>
-</html>=
-
---_bc3e43f0-0b01-4117-8930-4f77757915b9_--
+-- 
+					    Gilles.
 
