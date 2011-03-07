@@ -1,13 +1,14 @@
-Message-ID: <4D8B195C.2020107@domain.hid>
-Date: Thu, 24 Mar 2011 11:13:48 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <AANLkTikC-6XF9nx58AEyiuU_ZYa29jjg37km6eRer5Kz@domain.hid>
-	<1300956568.2077.5.camel@domain.hid>
-In-Reply-To: <1300956568.2077.5.camel@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] unable to build xenomai-head
+From: Michael Bernhard <michael.bernhard@domain.hid>
+Date: Mon, 07 Mar 2011 15:44:38 +0100
+Message-ID: <il2r0m$oqp$1@domain.hid>
+References: <4D7252E1.9050000@domain.hid> <4D725BF5.70707@domain.hid>
+	<4D74C725.1080603@domain.hid>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+In-Reply-To: <4D74C725.1080603@domain.hid>
+Subject: Re: [Xenomai-help] Runtime error on PXA270 for branch
+ 'for-ipipe-2.6.35-arm' in 'ipipe-gch.git'
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -17,48 +18,19 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Philippe Gerum wrote:
-> On Wed, 2011-03-23 at 15:11 -0500, Jeff Weber wrote:
->> I am unable to build the xenomai head. "make modules" gives
->>
->>
->>   CHK     include/linux/version.h
->>   CHK     include/generated/utsrelease.h
->>   CALL    scripts/checksyscalls.sh
->>   CC [M]  kernel/xenomai/nucleus/registry.o
->> kernel/xenomai/nucleus/registry.c:226:8: warning: type defaults to
->> =E2=80=98int=E2=80=99 in declaration of =E2=80=98DECLARE_MUTEX=E2=80=99=
+Hello Gilles
 
->> kernel/xenomai/nucleus/registry.c:226:1: warning: parameter names
->> (without types) in function declaration
->> kernel/xenomai/nucleus/registry.c: In function
->> =E2=80=98registry_proc_callback=E2=80=99:
->> kernel/xenomai/nucleus/registry.c:250:8: error: =E2=80=98export_mutex=E2=
-=80=99
->> undeclared (first use in this function)
->> kernel/xenomai/nucleus/registry.c:250:8: note: each undeclared
->> identifier is reported only once for each function it appears in
->> kernel/xenomai/nucleus/registry.c: At top level:
->> kernel/xenomai/nucleus/registry.c:226:8: warning: =E2=80=98DECLARE_MUT=
-EX=E2=80=99
->> declared =E2=80=98static=E2=80=99 but never defined
->> make[3]: *** [kernel/xenomai/nucleus/registry.o] Error 1
->> make[2]: *** [kernel/xenomai/nucleus] Error 2
->> make[1]: *** [kernel/xenomai] Error 2
->> make: *** [kernel] Error 2
->> make: *** Waiting for unfinished jobs....
->>
->=20
-> -head should now be up-to-date wrt 2.5.x fixes. Please retry and report=
+Gilles Chanteperdrix wrote:
+> Ping? Could you test this patch?
+>
 
-> any issue. TIA,
+Sorry for the late answer. I tested the patch today and it really solved the problem.
+I have a running Xenomai installation now.
 
-Sorry, I forgot about that.
+Thanks for your help.
 
---=20
-					    Gilles.
+Michael
 
 
