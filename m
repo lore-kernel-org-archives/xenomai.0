@@ -1,13 +1,14 @@
-Message-ID: <4D7A1FF0.6090106@domain.hid>
-Date: Fri, 11 Mar 2011 14:13:20 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4D79DD32.4050307@domain.hid> <4D79E28B.3090004@domain.hid>
-	<4D79F0ED.6080101@domain.hid>
-In-Reply-To: <4D79F0ED.6080101@domain.hid>
+Sender: ismael.ilias@domain.hid
+In-Reply-To: <4D74B024.5010008@domain.hid>
+References: <AANLkTik2mjdhFGGedWVVT=itGeusDPE=QbDhZCC7oD_+@mail.gmail.com>
+	<4D74B024.5010008@domain.hid>
+Date: Mon, 7 Mar 2011 15:29:33 +0100
+Message-ID: <AANLkTikT3fkGjfQBu+s8iqfUJ6Qfo+mDwkvENDEcmqSQ@mail.gmail.com>
+From: Jonathan ILIAS-PILLET <ismael@domain.hid>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] rt_task_delete trouble
+Subject: Re: [Xenomai-help] Program hangs using "rt_task_sleep" in a
+ particular way
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -17,47 +18,50 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: johann.obermayr@domain.hid
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Johann Obermayr wrote:
-> We use xenomai 2.5.5.2 and linux kernel 2.6.32.15. gcc 4.3.3
-> 
-> Here you have some more details.
-> a kernel module have a watchdog checker for some 'user-tasks'
-> if a 'user-task' have a while loop, than the kernel module will suspend
-> the user-task and call also the mayday function.
-> 
-> But on some other errorhandling, we have a high priortity watchdog task 
-> control the 'user'-tasks.
-> On error the watchdog task suspend all user-tasks. (this work correct)
-> Than the watchdog-task switch off the user-task watchdog.
-> Make errorhandling and some other function (dump user-task stack)
-> Than the watchdog task will delete some user-task.
-> But if a user-task is in a while loop, the system hangs.
-> in user mode we have no mayday function.
+2011/3/7 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>:
+> We do not know anything about your setup (except the platform). See:
+> http://www.xenomai.org/index.php/Request_for_information
 
->From my point of view, you should be using the watchdog provided by
-Xenomai. Did you notice that in your application, you can register a
-signal handler to handle the watchdog signal? This would allow you to
-use the watchdog provided by Xenomai to handle tasks blocked in infinite
-loops. Then use your watchdog to handle other cases.
+Oh, sorry. Here it is :
+- linux kernel : 2.6.29.6
+- adeos patch : adeos-ipipe-2.6.29-arm-1.13-00.patch
+- xenomai : 2.4.8
+- host linux distribution : ubuntu 10.04 (64 bits)
+- compiler : gcc 4.2.1 (buildroot's generated toolchain)
 
-See the example at examples/native/sigdebug.c
+For those who knows it, all of this comes from Armadeus distribution
+(vendor package for the board we use) in version 3.3 which is based on
+buildroot (see http://www.armadeus.com/wiki/).
 
-> it's look like, that when watchdog-task call rt_task_delete(user_task) , 
-> the user_task continue running.
-> Is this so ?
+> It would also be interesting to know if you have root thread priority
+> coupling enabled.
 
-Yes, this is probably the reason. The thing is that the watchdog task
-calling rt_task_delete calls pthread_cancel, which causes a switch to
-secondary mode. What I do not understand, however, is that since you
-have priority coupling enabled, it should work. So, I have to reproduce
-this case to understand. But actually, now that I think about it,
-Wolfgang signalled the same issue with pthread_cancel and the posix skin
-a long time ago, I looked at it, and I seem to remember that after
-investigation, it could not work.
+Actually, I've never choose any option about this, I thought it was
+activated by default. Perhaps I messed the kernel configuration
+related to this, where this feature can be enabled or disabled ?
 
+According to http://www.xenomai.org/index.php/Proc/xenomai/sched, I
+guess it is enabled :
+# cat /proc/xenomai/sched
+CPU  PID    PRI      PERIOD     TIMEOUT    TIMEBASE  STAT       NAME
+ 0  0       -1      0          0          master    R          ROOT
+
+
+> In any case, your real-time tasks should never use all the cpu without
+> letting Linux run. The only way to guarantee the stability of the system
+> is by letting Linux run from time to time.
+
+OK, I understand. Linux kernel is time dependant (at least for the
+scheduler). But is there a specific reason for this or is it a general
+precaution ?
+
+When you say "time to time", is there any rule to follow to be sure
+that enough time is given to Linux ? Something like CPU cannot spend
+more than 500 ms in one second for primary mode threads ?
+
+Thanks
 -- 
-					    Gilles.
+Jonathan ILIAS-PILLET
 
