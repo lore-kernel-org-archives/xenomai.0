@@ -1,12 +1,13 @@
-Message-ID: <4D79CCE7.6020504@domain.hid>
-Date: Fri, 11 Mar 2011 08:19:03 +0100
+Message-ID: <4D74C725.1080603@domain.hid>
+Date: Mon, 07 Mar 2011 12:53:09 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <AANLkTik+Mm_0Xn4kAOs-9B-AGVi0+G8k+ZJUd4LTAJ-j@domain.hid>
-In-Reply-To: <AANLkTik+Mm_0Xn4kAOs-9B-AGVi0+G8k+ZJUd4LTAJ-j@domain.hid>
+References: <4D7252E1.9050000@domain.hid> <4D725BF5.70707@domain.hid>
+In-Reply-To: <4D725BF5.70707@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] removing Xenomai modules hangs system
+Subject: Re: [Xenomai-help] Runtime error on PXA270 for branch
+ 'for-ipipe-2.6.35-arm' in 'ipipe-gch.git'
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -16,15 +17,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jeff Weber <jwamsc@domain.hid>
-Cc: xenomai@xenomai.org
+To: Michael Bernhard <michael.bernhard@domain.hid>
+Cc: Xenomai help <xenomai@xenomai.org>
 
-Jeff Weber wrote:
-> xeno2:~ # rmmod -v
-> /lib/modules/2.6.37.3-xeno-2.5.6-smp/kernel/kernel/xenomai/skins/rtdm/xeno_rtdm.ko
-> rmmod xeno_rtdm, wait=no
+Gilles Chanteperdrix wrote:
+> Michael Bernhard wrote:
+>> Hello!
+>>
+>> I'm trying to get running the ipipe patch on a 2.6.35 kernel. I've seen
+>> that Gilles was working on that port lately so I gave it a try.
+>>
+>> The kernel is booting fine. However init does not continue and the
+>> NETDEV watchdog triggers:
+> 
+> Hi,
+> 
+> please use Xenomai mailing lists, not my private address.
+> 
+> Does the following path help?
+> 
+> diff --git a/arch/arm/plat-pxa/gpio.c b/arch/arm/plat-pxa/gpio.c
+> index 4769217..975dfe0 100644
+> --- a/arch/arm/plat-pxa/gpio.c
+> +++ b/arch/arm/plat-pxa/gpio.c
+> @@ -286,7 +286,7 @@ void __init pxa_init_gpio(int mux_irq, int start,
+> int end, set_wake_t fn)
+> 
+>         for (irq  = gpio_to_irq(start); irq <= gpio_to_irq(end); irq++) {
+>                 set_irq_chip(irq, &pxa_muxed_gpio_chip);
+> -               set_irq_handler(irq, handle_level_irq);
+> +               set_irq_handler(irq, handle_edge_irq);
+>                 set_irq_flags(irq, IRQF_VALID | IRQF_PROBE);
+>         }
+> 
+> 
+> 
 
-What is this "wait=no" ?
+Ping? Could you test this patch?
 
 -- 
                                                                 Gilles.
