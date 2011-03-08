@@ -1,12 +1,13 @@
-Message-ID: <4D75EEF5.3040704@domain.hid>
-Date: Tue, 08 Mar 2011 09:55:17 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4D75FD0C.1070101@domain.hid>
+Date: Tue, 08 Mar 2011 10:55:24 +0100
+From: Fabrice Gasnier <fabrice.gasnier@domain.hid>
 MIME-Version: 1.0
-References: <E274A7B0-01B0-44E5-883D-CBE692A245A3@domain.hid>
-In-Reply-To: <E274A7B0-01B0-44E5-883D-CBE692A245A3@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+References: <4D74EE69.5020705@domain.hid> <4D754DF2.8060908@domain.hid>
+In-Reply-To: <4D754DF2.8060908@domain.hid>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Xenomai support for pandaboard
+Subject: Re: [Xenomai-help] Build and run xenomai 2.5.5.2 - linux-2.6.33 on
+ imx27
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -16,20 +17,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: davide doninelli <Davide.Doninelli@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-davide doninelli wrote:
-> Hi,
-> On the supported board list, pandaboard result unsupported.
-> 
-> I would like to now if is supported?
+Fine,
 
-No. I would very much like to have a pandaboard, but have ordered a one
-on digi-key since november, and still have not received anything... I
-have better hopes with other SMP boards such as the ST-Ericsson snowball
-based ones.
+This patch fixes both issues on 2.6.33 kernel!
+Thanks.
+I'll let you know in case I detect something else.
 
--- 
-                                                                Gilles.
+Regarding 2.6.35 patch, I need to check more things as I don't use it 
+for the moment. (no valuable config / board support yet).
+I quiclky tried it, but cannot boot it (yet). I'll give it some more 
+tries and keep you informed.
+
+Thanks again.
+Fabrice
+
+On 07/03/2011 22:28, Gilles Chanteperdrix wrote:
+> Fabrice Gasnier wrote:
+>    
+>> Dear all,
+>>
+>> I'm currently evaluating xenomai 2.5.5.2 on a i.MX27 platform with
+>> adeos-ipipe-2.6.33-arm-1.18-01.patch.
+>>      
+> Could you try the following patch? Instead of
+> adeos-ipipe-2.6.33-arm-1.18-01.patch?
+>
+> http://www.xenomai.org/~gch/pub/adeos-ipipe-2.6.33-arm-1.18-02-rc1.patch
+>
+> It fixes things a bit differently.
+>
+> Thanks in advance.
+>
+>    
 
