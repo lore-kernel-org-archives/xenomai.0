@@ -1,14 +1,12 @@
-Message-ID: <4D75EE14.2010009@domain.hid>
-Date: Tue, 08 Mar 2011 09:51:32 +0100
+Message-ID: <4D75EEF5.3040704@domain.hid>
+Date: Tue, 08 Mar 2011 09:55:17 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4D74EE69.5020705@domain.hid> <4D754DF2.8060908@domain.hid>
-	<4D75E84D.5050803@domain.hid>
-In-Reply-To: <4D75E84D.5050803@domain.hid>
+References: <E274A7B0-01B0-44E5-883D-CBE692A245A3@domain.hid>
+In-Reply-To: <E274A7B0-01B0-44E5-883D-CBE692A245A3@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Build and run xenomai 2.5.5.2 - linux-2.6.33 on
- imx27
+Subject: Re: [Xenomai-help] Xenomai support for pandaboard
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -18,20 +16,19 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Fabrice Gasnier <fabrice.gasnier@domain.hid>
+To: davide doninelli <Davide.Doninelli@domain.hid>
 Cc: xenomai@xenomai.org
 
-Fabrice Gasnier wrote:
+davide doninelli wrote:
 > Hi,
+> On the supported board list, pandaboard result unsupported.
 > 
-> Off course, I would try it. I cannot get access to it (403 Forbidden, 
-> You don't have permission to access 
-> /~gch/pub/adeos-ipipe-2.6.33-arm-1.18-02-rc1.patch on this server.)
+> I would like to now if is supported?
 
-Since you are at it, could you try:
-
-http://www.xenomai.org/~gch/pub/adeos-ipipe-2.6.35-arm-1.18-01-rc1.patch
-?
+No. I would very much like to have a pandaboard, but have ordered a one
+on digi-key since november, and still have not received anything... I
+have better hopes with other SMP boards such as the ST-Ericsson snowball
+based ones.
 
 -- 
                                                                 Gilles.
