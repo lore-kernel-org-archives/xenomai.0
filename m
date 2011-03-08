@@ -1,13 +1,14 @@
-Message-ID: <4D74975F.4050009@domain.hid>
-Date: Mon, 07 Mar 2011 09:29:19 +0100
+Message-ID: <4D75EE14.2010009@domain.hid>
+Date: Tue, 08 Mar 2011 09:51:32 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <AANLkTik7MKLjvrZY1BsowqBtodJoP7fUt6--H4WOS-W4@domain.hid>
-In-Reply-To: <AANLkTik7MKLjvrZY1BsowqBtodJoP7fUt6--H4WOS-W4@domain.hid>
+References: <4D74EE69.5020705@domain.hid> <4D754DF2.8060908@domain.hid>
+	<4D75E84D.5050803@domain.hid>
+In-Reply-To: <4D75E84D.5050803@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] irqloop hangs on Beagleboard ARM with
-	2.5.5.2/2.6.33
+Subject: Re: [Xenomai-help] Build and run xenomai 2.5.5.2 - linux-2.6.33 on
+ imx27
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -17,21 +18,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Eric Eric <ericrebates@domain.hid>
+To: Fabrice Gasnier <fabrice.gasnier@domain.hid>
 Cc: xenomai@xenomai.org
 
-Eric Eric wrote:
-> Hi, I'm attempting to run irqloop/irqbench and irqloop just appears to
-> hang indefinitely.  Behavior is the same with -t0 and -t1.  I am able
-> to successfully run other tests such as latency and switchtest.  Below
-> is the output of strace ./irqloop -t1. xeno_irqbench is loaded, I have
-> a null modem cable connected to an x86 running irqbench and have
-> disabled the serial log output and serial tty on the beagle.
+Fabrice Gasnier wrote:
+> Hi,
+> 
+> Off course, I would try it. I cannot get access to it (403 Forbidden, 
+> You don't have permission to access 
+> /~gch/pub/adeos-ipipe-2.6.33-arm-1.18-02-rc1.patch on this server.)
 
-I am not sure, but I think irqloop currently only works on x86. You
-should try gpioirqbench instead.
+Since you are at it, could you try:
 
-http://www.denx.de/wiki/DULG/AN2008_03_Xenomai_gpioirqbench
+http://www.xenomai.org/~gch/pub/adeos-ipipe-2.6.35-arm-1.18-01-rc1.patch
+?
 
 -- 
                                                                 Gilles.
