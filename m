@@ -1,14 +1,11 @@
-Message-ID: <4D75FDFA.3000003@domain.hid>
-Date: Tue, 08 Mar 2011 10:59:22 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: Lin Zhang <Lin.Zhang@domain.hid>
+Date: Tue, 8 Mar 2011 18:22:18 +0100
+Message-ID: <FA526D37A62FA141B5D2D8700F5167C83D79AE3E0C@ICTS-S-EXC4-CA.luna.kuleuven.be>
+Content-Language: en-US
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <4D74EE69.5020705@domain.hid> <4D754DF2.8060908@domain.hid>
-	<4D75FD0C.1070101@domain.hid>
-In-Reply-To: <4D75FD0C.1070101@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Build and run xenomai 2.5.5.2 - linux-2.6.33 on
- imx27
+Subject: [Xenomai-help] libnative.so.3: cannot handle TLS data
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -18,28 +15,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Fabrice Gasnier <fabrice.gasnier@domain.hid>
-Cc: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Fabrice Gasnier wrote:
-> Fine,
-> 
-> This patch fixes both issues on 2.6.33 kernel!
-> Thanks.
-> I'll let you know in case I detect something else.
-> 
-> Regarding 2.6.35 patch, I need to check more things as I don't use it 
-> for the moment. (no valuable config / board support yet).
-> I quiclky tried it, but cannot boot it (yet). I'll give it some more 
-> tries and keep you informed.
-> 
-> Thanks again.
-> Fabrice
+Dear all,=20
 
-Ok. Forget it, the code in the 2.6.35 patch is the same anyway, and was
-build-tested on imx27. 2.5.6 will be released soon with both these patches.
+I am building my own embedded system with xenomai-2.5.5.2 and virtex ii xup=
+ board with powerpc.=20
 
+The linux kernel is 2.6.33, with xenomai and powerpc patched. I use busybox=
+ 1.6.1 stable version.
 
--- 
-					    Gilles.
+I tried the following line on my powerpc system:=20
+
+/usr/xenomai/bin # ./latency
+
+Then I received an error:
+./latency: error while loading shared libraries: libnative.so.3: cannot han=
+dle TLS data
+
+My xenomai related software does not run, it reports a similar error:
+error while loading shared libraries: libxenomai.so.0: cannot handle TLS da=
+ta
+
+Have anyone seen this kind of problem? Could you please give me some hints?
+
+Thanks in advance.
+
+Best regards,
+Lin =
 
