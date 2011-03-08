@@ -1,13 +1,14 @@
-Message-ID: <4D74B024.5010008@domain.hid>
-Date: Mon, 07 Mar 2011 11:15:00 +0100
+Message-ID: <4D75ECA7.1070504@domain.hid>
+Date: Tue, 08 Mar 2011 09:45:27 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <AANLkTik2mjdhFGGedWVVT=itGeusDPE=QbDhZCC7oD_+@mail.gmail.com>
-In-Reply-To: <AANLkTik2mjdhFGGedWVVT=itGeusDPE=QbDhZCC7oD_+@mail.gmail.com>
+References: <4D74EE69.5020705@domain.hid> <4D754DF2.8060908@domain.hid>
+	<4D75E84D.5050803@domain.hid>
+In-Reply-To: <4D75E84D.5050803@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Program hangs using "rt_task_sleep" in a
- particular way
+Subject: Re: [Xenomai-help] Build and run xenomai 2.5.5.2 - linux-2.6.33 on
+ imx27
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -17,35 +18,19 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jonathan ILIAS-PILLET <ismael@domain.hid>
-Cc: armadeus-forum@domain.hid, xenomai@xenomai.org
+To: Fabrice Gasnier <fabrice.gasnier@domain.hid>
+Cc: xenomai@xenomai.org
 
-Jonathan ILIAS-PILLET wrote:
-> Hello,
+Fabrice Gasnier wrote:
+> Hi,
 > 
-> We encounter a problem in a particular situation. In the attached
-> source, when we change the value passed to rt_task_sleep (line 35), the
-> program never returns.
+> Off course, I would try it. I cannot get access to it (403 Forbidden, 
+> You don't have permission to access 
+> /~gch/pub/adeos-ipipe-2.6.33-arm-1.18-02-rc1.patch on this server.)
 > 
-> This appears only with values greater or equal to 100000 (and maybe some
-> other values between 10000 and 100000) and only when we use
-> rt_task_sleep between the two rt_task_spawn calls.
-> 
-> Is there something we've done wrong ?
-> 
-> We use and Armadeus APF27 platform. I don't know if this behavior is
-> related to this architecture, to Xenomai or both.
 
-We do not know anything about your setup (except the platform). See:
-http://www.xenomai.org/index.php/Request_for_information
-
-It would also be interesting to know if you have root thread priority
-coupling enabled.
-
-In any case, your real-time tasks should never use all the cpu without
-letting Linux run. The only way to guarantee the stability of the system
-is by letting Linux run from time to time.
+Sorry, please try again...
 
 -- 
-					    Gilles.
+                                                                Gilles.
 
