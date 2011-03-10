@@ -1,13 +1,11 @@
-Message-ID: <4D791BAB.9040406@domain.hid>
-Date: Thu, 10 Mar 2011 19:42:51 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: Lin Zhang <Lin.Zhang@domain.hid>
+Date: Thu, 10 Mar 2011 22:48:20 +0100
+Message-ID: <FA526D37A62FA141B5D2D8700F5167C83D79AE3E13@domain.hid>
+Content-Language: en-US
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <AANLkTim6O4XMWav05C5LRKN3snqeicZbCzqB-czkx2sW@mail.gmail.com>	<4D787DB7.2020503@domain.hid>	<4D78CC23.5030302@domain.hid>	<AANLkTik_2=H8f3CjEzPVsrVOzMtCkFWt+YAmZMbTR1q2@domain.hid>	<4D791819.8090106@domain.hid>
-	<AANLkTikPUuyf-kp0bfLLec4LVAcUUdNRH2EsjcAAAYdB@mail.gmail.com>
-In-Reply-To: <AANLkTikPUuyf-kp0bfLLec4LVAcUUdNRH2EsjcAAAYdB@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] rtdm_printk
+Subject: [Xenomai-help] Xenomai Posix skin init, device or resource busy
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -17,92 +15,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jeff Weber <jwamsc@domain.hid>
-Cc: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Jeff Weber wrote:
-> On Thu, Mar 10, 2011 at 12:27 PM, Gilles Chanteperdrix <
-> gilles.chanteperdrix@xenomai.org> wrote:
-> 
->> Jeff Weber wrote:
->>> On Thu, Mar 10, 2011 at 7:03 AM, Gilles Chanteperdrix <
->>> gilles.chanteperdrix@xenomai.org> wrote:
->>>
->>>> Gilles Chanteperdrix wrote:
->>>>> Jeff Weber wrote:
->>>>>> When writing a RTDM kernel module driver, when must rtdm_printk() be
->>>> used
->>>>>> instead of printk() ?
->>>>> If RTDM was, one day, ported over something else than a Linux
->>>>> kernel-space based solution (for instance, over a port of Xenomai
->>>>> without Linux, or in Linux user-space), then you would not have to
->>>>> change your driver codeto have it compile over that new port.
->>>>>
->>>>> Until then, printk and rtdm_printk are identical.
->>>>>
->>>>> Note that the first paragraph is something very hypothetical, because
->> in
->>>>> an RTDM driver, you generally have some other Linux kernel-space
->>>>> specific code, such as for instance the registration as a PCI driver,
->>>>> though the necessary parts of the Linux API could be implemented for
->>>>> that hypothetical port. But in that case, so could printk.
->>>>>
->>>>> So...
->>>> I guess the real reason for rtdm_printk is that at some point in the
->>>> past (probably before the Adeos era), printk was not safe to be called
->>>> from the real-time domain. In that case, rtdm_printk would be safe to be
->>>> called from the real-time domain. So, the answer is that you should use
->>>> rtdm_printk if you are calling from a Xenomai domain interrupt handler,
->>>> or from the context of a thread running in primary mode.
->>>>
->>>>
->>> What happens when a driver executes a non-realtime kernel function, from
->> a
->>> Xenomai domain interrupt handler, or from the context of a thread running
->> in
->>> primary mode?  Say the driver executes kmalloc() instead of
->> rtdm_malloc(),
->>> or copy_to_user() instead of rtdm_copy_to_user().  Hopefully these are
->>> better examples than [rtdm_]printk() .
->>>
->>> Does the offending user space thread transition to secondary mode?
->>>
->>> What happens to the offending interrupt handler?
->>>
->>> Do the notions of primary, secondary mode apply to the kernel as well?
->> The notion of primary, secondary mode applies to user-space Xenomai
->> threads. However, the mechanism used to automatically switch between
->> primary and secondary mode is the system calls handling. So, in short,
->> if you already are in kernel-space and call a non-realtime compatible
->> linux kernel function, you risk anything from fault to lockup, or debug
->> message if you have I-pipe debugging enabled. Daemons are flying around
->> your nose.
->>
->>>
->>> Perhaps it's easier not analyze, separate all the non/realtime driver
->>> contexts, and always use the rtdm_ functions; say rtdm_malloc()
->> everywhere
->>> in the driver (never use kmalloc).  Would this practice work?
->> It is not really hard, in a driver, to know whether you are in the
->> Xenomai or Linux domain. Everything executed by Linux is executing in
->> Linux domain (so init_module, exit_module, any callback you register to
->> a Linux subsystem, such as pci), as well as the _nrt callbaccks of an
->> RTDM driver. Irq handlers registered with rtdm_irq_request aand the _rt
->> callbacks registered in RTDM drivers/protocol are executed in primary
->> domain.
->>
->> Say I have a driver utility function that can be called indirectly from
-> either RT or NRT contexts, and say this function in turn needs to allocate
-> kernel memory.  Can the function safely call rtdm_malloc regardless of the
-> context?  Or, must the code test for the NRT/RT context and call kmalloc()
-> or rtdm_malloc() appropriately?
+Deal all,=20
 
-You can not call in Linux domain any function which suspends its caller
-such as rtdm_event_wait. But rtdm_malloc is ok. Every function documents
-in the API documentation, from which contexts it can be called. See for
-instance:
-http://www.xenomai.org/documentation/xenomai-2.5/html/api/group__util.html#g34dfd5c060c67acc684eb4b4256cd4ba
+I am using Xenomai 2.5.6 (with debug info) + linux 2.6.33 on PowerPC. When =
+I run my program, I receive the following error:
 
--- 
-					    Gilles.
+Xenomai: Switching MainThread to secondary mode after exception #1025 from =
+user-space at 0xf477000)
+Xenomai: Switching MainThread to secondary mode after exception #1025 from =
+user-space at 0xf541324)
+Xenomai: Switching MainThread to secondary mode after exception #1025 from =
+user-space at 0xf53ac4c)
+...
+Xenomai: Switching MainThread to secondary mode after exception #1025 from =
+user-space at 0xf53b084)
+..
+Xenomai: native: cleaning up cond "" (ret=3D0).
+Xenomai: native: cleaning up cond "" (ret=3D0).
+Xenomai: native: cleaning up mutex "" (ret=3D0).
+Xenomai: native: cleaning up mutex "" (ret=3D0).
+
+Xenomai Posix skin init: pthread_setschedparam: Device or resource busy
+~#
+
+I tried=20
+~ # latency=20
+=3D=3D Sampling period: 100 us
+=3D=3D Test mode: periodic user-mode task
+=3D=3D All results in microseconds
+latency: failed to set periodic, code -110
+warming up...
+
+I am a beginner on using Xenomai, I think there is something wrong with my =
+configuration, could someone please help me?
+
+Thanks in advance.=20
+
+Best regards,=20
+Lin=
 
