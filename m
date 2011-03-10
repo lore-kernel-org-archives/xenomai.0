@@ -1,10 +1,12 @@
+Message-ID: <4D787DB7.2020503@domain.hid>
+Date: Thu, 10 Mar 2011 08:28:55 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Sender: madjsw@domain.hid
-Date: Wed, 9 Mar 2011 22:29:43 -0600
-Message-ID: <AANLkTim6O4XMWav05C5LRKN3snqeicZbCzqB-czkx2sW@mail.gmail.com>
-From: Jeff Weber <jwamsc@domain.hid>
-Content-Type: multipart/alternative; boundary=0016e6de008b6f6321049e194bf3
-Subject: [Xenomai-help] rtdm_printk
+References: <AANLkTim6O4XMWav05C5LRKN3snqeicZbCzqB-czkx2sW@mail.gmail.com>
+In-Reply-To: <AANLkTim6O4XMWav05C5LRKN3snqeicZbCzqB-czkx2sW@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] rtdm_printk
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -14,21 +16,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Jeff Weber <jwamsc@domain.hid>
+Cc: xenomai@xenomai.org
 
---0016e6de008b6f6321049e194bf3
-Content-Type: text/plain; charset=ISO-8859-1
+Jeff Weber wrote:
+> When writing a RTDM kernel module driver, when must rtdm_printk() be used
+> instead of printk() ?
 
-When writing a RTDM kernel module driver, when must rtdm_printk() be used
-instead of printk() ?
+If RTDM was, one day, ported over something else than a Linux
+kernel-space based solution (for instance, over a port of Xenomai
+without Linux, or in Linux user-space), then you would not have to
+change your driver codeto have it compile over that new port.
 
-thanks,
-Jeff
+Until then, printk and rtdm_printk are identical.
 
---0016e6de008b6f6321049e194bf3
-Content-Type: text/html; charset=ISO-8859-1
+Note that the first paragraph is something very hypothetical, because in
+an RTDM driver, you generally have some other Linux kernel-space
+specific code, such as for instance the registration as a PCI driver,
+though the necessary parts of the Linux API could be implemented for
+that hypothetical port. But in that case, so could printk.
 
-When writing a RTDM kernel module driver, when must rtdm_printk() be used instead of printk() ?<br><br>thanks,<br>Jeff<br>
+So...
 
---0016e6de008b6f6321049e194bf3--
+-- 
+                                                                Gilles.
 
