@@ -1,14 +1,13 @@
-Message-ID: <4D74C683.1020904@domain.hid>
-Date: Mon, 07 Mar 2011 12:50:27 +0100
-From: Wolfgang Grandegger <wg@domain.hid>
+Message-ID: <4D78CC23.5030302@domain.hid>
+Date: Thu, 10 Mar 2011 14:03:31 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <AANLkTik7MKLjvrZY1BsowqBtodJoP7fUt6--H4WOS-W4@domain.hid>
-	<4D74975F.4050009@domain.hid>
-In-Reply-To: <4D74975F.4050009@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+References: <AANLkTim6O4XMWav05C5LRKN3snqeicZbCzqB-czkx2sW@mail.gmail.com>
+	<4D787DB7.2020503@domain.hid>
+In-Reply-To: <4D787DB7.2020503@domain.hid>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] irqloop hangs on Beagleboard ARM
-	with	2.5.5.2/2.6.33
+Subject: Re: [Xenomai-help] rtdm_printk
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -18,30 +17,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Jeff Weber <jwamsc@domain.hid>
 Cc: xenomai@xenomai.org
 
-On 03/07/2011 09:29 AM, Gilles Chanteperdrix wrote:
-> Eric Eric wrote:
->> Hi, I'm attempting to run irqloop/irqbench and irqloop just appears to
->> hang indefinitely.  Behavior is the same with -t0 and -t1.  I am able
->> to successfully run other tests such as latency and switchtest.  Below
->> is the output of strace ./irqloop -t1. xeno_irqbench is loaded, I have
->> a null modem cable connected to an x86 running irqbench and have
->> disabled the serial log output and serial tty on the beagle.
+Gilles Chanteperdrix wrote:
+> Jeff Weber wrote:
+>> When writing a RTDM kernel module driver, when must rtdm_printk() be used
+>> instead of printk() ?
 > 
-> I am not sure, but I think irqloop currently only works on x86. You
-> should try gpioirqbench instead.
+> If RTDM was, one day, ported over something else than a Linux
+> kernel-space based solution (for instance, over a port of Xenomai
+> without Linux, or in Linux user-space), then you would not have to
+> change your driver codeto have it compile over that new port.
 > 
-> http://www.denx.de/wiki/DULG/AN2008_03_Xenomai_gpioirqbench
+> Until then, printk and rtdm_printk are identical.
+> 
+> Note that the first paragraph is something very hypothetical, because in
+> an RTDM driver, you generally have some other Linux kernel-space
+> specific code, such as for instance the registration as a PCI driver,
+> though the necessary parts of the Linux API could be implemented for
+> that hypothetical port. But in that case, so could printk.
+> 
+> So...
 
+I guess the real reason for rtdm_printk is that at some point in the
+past (probably before the Adeos era), printk was not safe to be called
+from the real-time domain. In that case, rtdm_printk would be safe to be
+called from the real-time domain. So, the answer is that you should use
+rtdm_printk if you are calling from a Xenomai domain interrupt handler,
+or from the context of a thread running in primary mode.
 
-Yes, irqbench requires a 16650-compatible serial or parallel interface
-accessible via ioports, which is usually not available on embedded
-systems. In contrast, gpioirqbench uses GPIO pins but getting it working
-on the Beagle board is also not straight-forward. At least it does not
-work out-of-the-box.
-
-Wolfgang.
-
+-- 
+					    Gilles.
 
