@@ -1,13 +1,9 @@
-Message-ID: <4D7A3FE1.1050006@domain.hid>
-Date: Fri, 11 Mar 2011 16:29:37 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <126057.74776.qm@domain.hid>
+Date: Sun, 13 Mar 2011 08:12:22 -0700 (PDT)
+From: egemen kaleli <menege1@domain.hid>
 MIME-Version: 1.0
-References: <AANLkTik+Mm_0Xn4kAOs-9B-AGVi0+G8k+ZJUd4LTAJ-j@domain.hid>	<4D79CCE7.6020504@domain.hid>
-	<AANLkTinb7eG-KoLe38LNsfxE+pUBV2aKfOJq19BMdvfX@mail.gmail.com>
-In-Reply-To: <AANLkTinb7eG-KoLe38LNsfxE+pUBV2aKfOJq19BMdvfX@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] removing Xenomai modules hangs system
+Content-Type: multipart/alternative; boundary="0-1250280238-1300029142=:74776"
+Subject: [Xenomai-help] pointers in shared memory
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -17,27 +13,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jeff Weber <jwamsc@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Jeff Weber wrote:
-> On Fri, Mar 11, 2011 at 1:19 AM, Gilles Chanteperdrix <
-> gilles.chanteperdrix@xenomai.org> wrote:
-> 
->> Jeff Weber wrote:
->>> xeno2:~ # rmmod -v
->>>
->> /lib/modules/2.6.37.3-xeno-2.5.6-smp/kernel/kernel/xenomai/skins/rtdm/xeno_rtdm.ko
->>> rmmod xeno_rtdm, wait=no
->> What is this "wait=no" ?
->>
->> I don't know.  When I run 'rmmod -v" the verbose reporting reveals that
-> rmmod is doing that on my behalf.
-> 
-yeah, but the first time, you use modprobe -r, why using rmmod the
-second time? how do we know that it is not using rmmod with wait=no
-which causes the issue?
+--0-1250280238-1300029142=:74776
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
--- 
-					    Gilles.
+Hello,
+=C2=A0=C2=A0I have created a shared memory segment using native memory heap=
+ services.Two process is communicating properly except sharing pointers.How=
+ I can make processes share pointers?Many thanks for helps in advance.
+Egemen KALEL=C4=B0.=0A=0A=0A      
+--0-1250280238-1300029142=:74776
+Content-Type: text/html; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+<table cellspacing=3D"0" cellpadding=3D"0" border=3D"0" ><tr><td valign=3D"=
+top" style=3D"font: inherit;">Hello,<div><br></div><div>&nbsp;&nbsp;I have =
+created a shared memory segment using native memory heap services.Two proce=
+ss is communicating properly except sharing pointers.How I can make process=
+es share pointers?Many thanks for helps in advance.</div><div><br></div><di=
+v>Egemen KALEL=C4=B0.</div></td></tr></table><br>=0A=0A      
+--0-1250280238-1300029142=:74776--
 
