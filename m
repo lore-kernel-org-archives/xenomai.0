@@ -1,11 +1,12 @@
-Message-ID: <4D7DF910.5000706@domain.hid>
-Date: Mon, 14 Mar 2011 12:16:32 +0100
-From: Johann Obermayr <johann.obermayr@domain.hid>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-15"; format="flowed"
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai-help] xnshadow_call_mayday no signal_handler call
-Reply-To: johann.obermayr@domain.hid
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <4D7DF910.5000706@domain.hid>
+References: <4D7DF910.5000706@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Date: Mon, 14 Mar 2011 14:17:32 +0100
+Message-ID: <1300108652.2105.11.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] xnshadow_call_mayday no signal_handler call
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -15,37 +16,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: johann.obermayr@domain.hid
+Cc: xenomai@xenomai.org
 
-Hello,
+On Mon, 2011-03-14 at 12:16 +0100, Johann Obermayr wrote:
+> Hello,
+> 
+> if i call xnshadow_call_mayday for a realtime task with prio=0, the 
+> signal_handler
+> is not called.
 
-if i call xnshadow_call_mayday for a realtime task with prio=3D0, the=20
-signal_handler
-is not called.
+It does not make sense to call it for such thread. Besides,
+xnshadow_call_mayday() is an internal interface, with strict calling
+context requirements, so you are not supposed to use it at all.
 
-Xenomai 2.5.6, linux kernel 2.6.32.15. gcc 4.3.3
+> 
+> Xenomai 2.5.6, linux kernel 2.6.32.15. gcc 4.3.3
+> 
 
---=20
-Mit freundlichen Gr=FC=DFen, best regards
-     Johann Obermayr
+-- 
+Philippe.
 
-Software Entwicklung
-________________________________________________
-SIGMATEK GmbH&  Co KG
-Sigmatekstra=DFe 1
-5112 Lamprechtshausen
-=D6sterreich / Austria
-
-Tel.  :  +43 / 6274/ 43 21-0   (Durchwahl leider nicht m=F6glich)
-Fax   :  +43 / 6274/ 43 21-18  (bzw 300 im Werk 2 )
-E-Mail: johann.obermayr@domain.hid
-http://www.sigmatek-automation.com
-****************************Please note:********************************
-  This email and all attachments are confidential and intended solely for
-  the person or entity to whom it is addressed. If you are not the named
-  addressee you must not make this email and all attachments accessible
-  to any other person. If you have received this email in error please
-  delete it together with all attachments.
-************************************************************************
 
 
