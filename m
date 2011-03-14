@@ -1,14 +1,11 @@
-Message-ID: <4D7DF905.3040101@domain.hid>
-Date: Mon, 14 Mar 2011 12:16:21 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4D7DF910.5000706@domain.hid>
+Date: Mon, 14 Mar 2011 12:16:32 +0100
+From: Johann Obermayr <johann.obermayr@domain.hid>
 MIME-Version: 1.0
-References: <126057.74776.qm@domain.hid>
-	<4D7D5072.7080408@domain.hid>
-	<680118.86144.qm@domain.hid>
-In-Reply-To: <680118.86144.qm@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] pointers in shared memory
+Content-Type: text/plain; charset="iso-8859-15"; format="flowed"
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai-help] xnshadow_call_mayday no signal_handler call
+Reply-To: johann.obermayr@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -18,21 +15,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: egemen kaleli <menege1@domain.hid>
-Cc: Xenomai help <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-egemen kaleli wrote:
-> if   I had enough experience enough to answer the questions I would do answer 
-> with pleasure..
+Hello,
 
-I do not see what experience is required to answer this mail:
-https://mail.gna.org/public/xenomai-help/2010-11/msg00072.html
+if i call xnshadow_call_mayday for a realtime task with prio=3D0, the=20
+signal_handler
+is not called.
 
-Also, please:
-- use the mailing lists
-- avoid top posting
-- avoid HTML mails.
+Xenomai 2.5.6, linux kernel 2.6.32.15. gcc 4.3.3
 
--- 
-					    Gilles.
+--=20
+Mit freundlichen Gr=FC=DFen, best regards
+     Johann Obermayr
+
+Software Entwicklung
+________________________________________________
+SIGMATEK GmbH&  Co KG
+Sigmatekstra=DFe 1
+5112 Lamprechtshausen
+=D6sterreich / Austria
+
+Tel.  :  +43 / 6274/ 43 21-0   (Durchwahl leider nicht m=F6glich)
+Fax   :  +43 / 6274/ 43 21-18  (bzw 300 im Werk 2 )
+E-Mail: johann.obermayr@domain.hid
+http://www.sigmatek-automation.com
+****************************Please note:********************************
+  This email and all attachments are confidential and intended solely for
+  the person or entity to whom it is addressed. If you are not the named
+  addressee you must not make this email and all attachments accessible
+  to any other person. If you have received this email in error please
+  delete it together with all attachments.
+************************************************************************
+
 
