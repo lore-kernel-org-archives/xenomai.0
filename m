@@ -1,13 +1,10 @@
-Message-ID: <4D77A08D.1030106@domain.hid>
-Date: Wed, 09 Mar 2011 16:45:17 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4D7E5F7D.9060508@domain.hid>
+Date: Mon, 14 Mar 2011 19:33:33 +0100
+From: Anders Blomdell <anders.blomdell@domain.hid>
 MIME-Version: 1.0
-References: <540841299685269@domain.hid>
-In-Reply-To: <540841299685269@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] Runtime error on PXA270 for
- branch	'for-ipipe-2.6.35-arm' in 'ipipe-gch.git'
+Subject: [Xenomai-core] NI analog card shows wrong IRQ number after reboot
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -16,22 +13,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Nazarov Sergey <s-nazarov@domain.hid>
-Cc: michael.bernhard@domain.hid, xenomai@xenomai.org
+To: xenomai-core <xenomai@xenomai.org>
 
-Nazarov Sergey wrote:
-> Hello! The problem is the same as on my Compulab EM-X270 board, I
-> think. dm9000 ethernet controller works unstable with level-type irq
-> handler. Sergey.
+Which is due to the fact that pci_enable_device (mite.c) is called at mite_setup
+instead of mite_init. The bad thing with this, is that interrupt conflicts can
+only be found AFTER the driver has been started with analogy_config, which is
+often too late (since interrupt conflicts will bring down the machine).
 
-Hi Sergey,
+Would it be a good idea to pci_enable_device in mite_init as well, or will that
+break something else?
 
-The I-pipe patches for ARM included in Xenomai 2.5.6, released
-yesterday, reversed the irq type to edge, as another user reported the
-same failure on another board (colibri).
+Regards
 
-Regards.
+Anders Blomdell
+
 
 -- 
-					    Gilles.
+Anders Blomdell                  Email: anders.blomdell@domain.hid
+Department of Automatic Control
+Lund University                  Phone:    +46 46 222 4625
+P.O. Box 118                     Fax:      +46 46 138118
+SE-221 00 Lund, Sweden
 
