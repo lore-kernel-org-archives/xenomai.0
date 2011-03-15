@@ -1,10 +1,12 @@
-Message-ID: <4D7E6CAC.6010703@domain.hid>
-Date: Mon, 14 Mar 2011 20:29:48 +0100
+Message-ID: <4D7FA754.9010308@domain.hid>
+Date: Tue, 15 Mar 2011 18:52:20 +0100
 From: Anders Blomdell <anders.blomdell@domain.hid>
 MIME-Version: 1.0
+References: <4D7E6CAC.6010703@domain.hid>
+In-Reply-To: <4D7E6CAC.6010703@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] Duplicate symbols in analogy
+Subject: Re: [Xenomai-core] Duplicate symbols in analogy
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -15,13 +17,21 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: xenomai-core <xenomai@xenomai.org>
 
-I think it would make sense to change the name conflicts between analogy and
-comedi (range_unknown is one of them), to make it possible to have comedi and
-analogy to coexist on the same machine, anybody in support of this?
+On 2011-03-14 20.29, Anders Blomdell wrote:
+> I think it would make sense to change the name conflicts between analogy and
+> comedi (range_unknown is one of them), to make it possible to have comedi and
+> analogy to coexist on the same machine, anybody in support of this?
+Anybody against then? IMHO it's a bad idea to have name conflicts with drivers
+in the kernel (even if they are still in the saging area). What prefix should I
+add to all modified exported symbols, would this make sense (a4ld == "Analogy
+for Linux Driver"):
+
+  mite_unsetup -> a4ld_mite_unsetup
+  etc...
 
 Regards
 
-Anders Blomdell
+Anders
 
 -- 
 Anders Blomdell                  Email: anders.blomdell@domain.hid
