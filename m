@@ -1,11 +1,13 @@
-Message-ID: <4D7E829F.4060106@domain.hid>
-Date: Mon, 14 Mar 2011 22:03:27 +0100
-From: Johann Obermayr <johann.obermayr@domain.hid>
+Message-ID: <4D7F37F4.9010206@domain.hid>
+Date: Tue, 15 Mar 2011 10:57:08 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-15"; format="flowed"
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai-help] event from rt to nrt
-Reply-To: johann.obermayr@domain.hid
+References: <E274A7B0-01B0-44E5-883D-CBE692A245A3@domain.hid>
+	<4D75EEF5.3040704@domain.hid>
+In-Reply-To: <4D75EEF5.3040704@domain.hid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] Xenomai support for pandaboard
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -15,39 +17,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: davide doninelli <Davide.Doninelli@domain.hid>
+Cc: xenomai@xenomai.org
 
-Hello,
+Gilles Chanteperdrix wrote:
+> davide doninelli wrote:
+>> Hi,
+>> On the supported board list, pandaboard result unsupported.
+>>
+>> I would like to now if is supported?
+> 
+> No. I would very much like to have a pandaboard, but have ordered a one
+> on digi-key since november, and still have not received anything... I
+> have better hopes with other SMP boards such as the ST-Ericsson snowball
+> based ones.
+> 
 
-is there a way to pulse a event from a high prio task to
-a event_wait in a rt-task (prio=3D0) without domain switch ?
-rt_event_wait only work in primary domain. is there a other way ?
+It seems I talked too fast. I finally received a panda board. I will
+tell you when the port is done.
 
-Thanks
-
-   Xenomai 2.5.6, linux kernel 2.6.32.15. gcc 4.3.3
-
---=20
-Mit freundlichen Gr=FC=DFen, best regards
-     Johann Obermayr
-
-Software Entwicklung
-________________________________________________
-SIGMATEK GmbH&  Co KG
-Sigmatekstra=DFe 1
-5112 Lamprechtshausen
-=D6sterreich / Austria
-
-Tel.  :  +43 / 6274/ 43 21-0   (Durchwahl leider nicht m=F6glich)
-Fax   :  +43 / 6274/ 43 21-18  (bzw 300 im Werk 2 )
-E-Mail: johann.obermayr@domain.hid
-http://www.sigmatek-automation.com
-****************************Please note:********************************
-  This email and all attachments are confidential and intended solely for
-  the person or entity to whom it is addressed. If you are not the named
-  addressee you must not make this email and all attachments accessible
-  to any other person. If you have received this email in error please
-  delete it together with all attachments.
-************************************************************************
-
+-- 
+					    Gilles.
 
