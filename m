@@ -1,13 +1,18 @@
-Message-ID: <4D7F72C8.6010703@domain.hid>
-Date: Tue, 15 Mar 2011 15:08:08 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <mailman.59.1300186812.30139.xenomai@xenomai.org>
-	<892507.57310.qm@domain.hid>
-In-Reply-To: <892507.57310.qm@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Xenomai-help Digest, Vol 66, Issue 24
+In-Reply-To: <4D75594F.5000607@domain.hid>
+References: <AANLkTik7MKLjvrZY1BsowqBtodJoP7fUt6--H4WOS-W4@domain.hid>
+	<4D74975F.4050009@domain.hid> <4D74C683.1020904@domain.hid>
+	<AANLkTi=0kGcZwfTesBKbQ9u6OedaUU8vsMogAbhYceN+@mail.gmail.com>
+	<4D752CDB.5030904@domain.hid>
+	<AANLkTimnZRTFO3u1bn2b+8PfGhnf9XZNKUvpCtwA4Mvc@domain.hid>
+	<4D754DD5.3010006@domain.hid> <4D75594F.5000607@domain.hid>
+Date: Wed, 16 Mar 2011 01:34:06 -0400
+Message-ID: <AANLkTi=wYK-h-8a6Q+q6M8jLpy_NqEGDPoghHuy623X_@domain.hid>
+From: Eric Eric <ericrebates@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-help] irqloop hangs on Beagleboard ARM with
+	2.5.5.2/2.6.33
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -17,16 +22,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: egemen kaleli <menege1@domain.hid>
+To: Wolfgang Grandegger <wg@domain.hid>
 Cc: xenomai@xenomai.org
 
-egemen kaleli wrote:
-> ohh so sorry,I had thought that nobody had answered my previous post(that 
-> problem is not fixed anyway). I will prepare a report as soon as possible.
+Hi Wolfgang, were you able to find the gpiolib irqloop implementation?
+I'm still interested in running this experiment on the Beagleboard.
 
-You are still posting HTML.
+Thanks,
 
+- Eric
 
--- 
-					    Gilles.
+On Mon, Mar 7, 2011 at 5:16 PM, Wolfgang Grandegger <wg@domain.hid> wro=
+te:
+> On 03/07/2011 10:27 PM, Gilles Chanteperdrix wrote:
+>> Eric Eric wrote:
+>>> On Mon, Mar 7, 2011 at 2:07 PM, Gilles Chanteperdrix
+>>> <gilles.chanteperdrix@xenomai.org> wrote:
+>>>> Eric Eric wrote:
+>>>>> OK, it looks like I would basically have to replace gpioirq-hw.h
+>>>>> bare-bones GPIO driver for the beagle to get this to work. =A0Other t=
+han
+>>>>> that, am I correct that the hardware configuration would be two board=
+s
+>>>>> connected to each other using two GPIO pins for trigger and response?
+>>>> Well, the gpiolib functions are safe to be used from real-time domain.
+>>>
+>>> Hmm, it looked like gpioirqbench went through some pain to -not- use
+>>> gpiolib and to manually configure and operate the hardware, so I
+>>> assumed this was not safe. =A0It's certainly a more pleasant task using
+>>> gpiolib. =A0It does beg the question why gpioirqbench isn't doing this.
+>>
+>> The reason is historical.
+>
+> Right, at that time only a few archs/systems supported the gpolib,
+> especially with interrupts. But I already have an implementation for the
+> Qong i.MX31 board using the generic gpiolib. I will dig for it later
+> this week. "gpioirqbench" measures how fast iPipe or Xenomai software
+> can respond to an external event (interrupt) in a user-space or
+> kernel-space task or the Xenomai or iPipe interrupt handler. Anyway,
+> "gpioirqbench" also needs a host to trigger and measure the latencies in
+> *hardware*. This is the tricky part. I used a mpc8xx based system.
+>
+> Wolfgang.
+>
 
