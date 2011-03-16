@@ -1,69 +1,65 @@
-Date: Mon, 7 Mar 2011 10:26:04 +0100
-From: Richard Cochran <richardcochran@domain.hid>
-Message-ID: <20110307092604.GA21619@domain.hid>
-References: <20110302151603.GA14557@domain.hid>
-	<4D6E61B6.906@domain.hid> <4D6E8A06.9060508@domain.hid>
-	<20110303072147.GA4353@domain.hid>
-	<1299137548.2072.3.camel@domain.hid> <4D6F88D6.4010105@domain.hid>
-	<4D6F89C8.9060005@domain.hid> <1299156880.2072.6.camel@domain.hid>
-	<4D702802.5080001@domain.hid> <1299225060.2107.20.camel@domain.hid>
+Message-ID: <COL122-W19B5CA8D607DECB4104A8FBDCE0@domain.hid>
+Content-Type: multipart/alternative;
+	boundary="_826dc080-71df-4277-b538-fd850a255477_"
+From: krishna m <krishnamurthyjs@domain.hid>
+Date: Wed, 16 Mar 2011 19:13:36 +0530
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1299225060.2107.20.camel@domain.hid>
-Subject: Re: [Xenomai-help] Stuck MSI in normal Linux driver
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>, Jan Kiszka <jan.kiszka@domain.hid>
+Subject: [Adeos-main] MSI support in latest adeos Patch
+List-Id: General discussion about Adeos <adeos-main.gna.org>
+List-Unsubscribe: <https://mail.gna.org/options/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+List-Archive: </public/adeos-main>
+List-Post: <mailto:adeos-main@gna.org>
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+To: adeos-main@gna.org
 
-On Fri, Mar 04, 2011 at 08:51:00AM +0100, Philippe Gerum wrote:
-> I'm not saying this would be impossible to enable MSIs there, I'm just
-> saying that so far: nobody cared. Terrae incognitae.
+--_826dc080-71df-4277-b538-fd850a255477_
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 
-Philippe,
 
-I read adeos-ipipe-2.6.36-powerpc-2.12-02.patch in order to
-re-acquaint myself with adeos. While I do not pretend to really
-understand it, I did notice an incongruity in the interrupt handling
-for my particular board.
+Hi All=2C
+I wanted to know if the latest adeos Patch  [version adeos-ipipe-2.6.37-x86=
+-2.9-00] supports MSI. I have read in the Xenomai FAQ that MSI is not suppo=
+rted by the ipipe patch. If it is not supported now is there a plan to supp=
+ort it in the future and is there a development version available with MSI =
+support ?=20
 
-The function, fsl_msi_cascade, in arch/powerpc/sysdev/fsl_msi.c:185
-has in the non-ipipe version two different actions
+thanks=2C
+Krishna=20
 
-	desc->chip->unmask(irq);
-	desc->chip->eoi(irq);
 
-depending on whether the controller is an ipic or mpic. The ipipe
-code unconditionally executes ipic/unmask.
+ 		 	   		  =
 
-I noticed that the function 
+--_826dc080-71df-4277-b538-fd850a255477_
+Content-Type: text/html; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 
-	cpm_cascade() in arch/powerpc/platforms/8xx/m8xx_setup.c
+<html>
+<head>
+<style><!--
+.hmmessage P
+{
+margin:0px=3B
+padding:0px
+}
+body.hmmessage
+{
+font-size: 10pt=3B
+font-family:Tahoma
+}
+--></style>
+</head>
+<body class=3D'hmmessage'>
+Hi All=2C<br>I wanted to know if the latest adeos Patch  [version adeos-ipi=
+pe-2.6.37-x86-2.9-00] supports MSI. I have read in the Xenomai FAQ that MSI=
+ is not supported by the ipipe patch. If it is not supported now is there a=
+ plan to support it in the future and is there a development version availa=
+ble with MSI support ? <br><br>thanks=2C<br>Krishna <br><pre><br></pre><br>=
+ 		 	   		  </body>
+</html>=
 
-does call eoi(), so I guessed that the eoi() in fsl_msi_cascade()
-might have been overlooked. Putting the eoi() into the ipipe version
-lets the machine handle the interrupts, and my test programs will even
-run with the PCIe card and driver.
-
-However, I am really making a grab in the dark, and I see strange
-warnings like unexpected (in_irq() || irqs_disabled()) from
-kernel/softirq.c:143 and so on.
-
-Also, more interrupts appear for my card in /proc/interrupts than
-expected.
-
-Is this any kind of hint, or am I just completely lost?
-
-Thanks,
-
-Richard
-
+--_826dc080-71df-4277-b538-fd850a255477_--
 
