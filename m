@@ -1,9 +1,10 @@
-Message-ID: <4D80E70F.7080603@domain.hid>
-Date: Wed, 16 Mar 2011 17:36:31 +0100
+Message-ID: <4D80F083.1070809@domain.hid>
+Date: Wed, 16 Mar 2011 18:16:51 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <AANLkTinJv1CCxQ3qL8z55xg6EqAr0e1nSRAC_EptCtV8@domain.hid>
-In-Reply-To: <AANLkTinJv1CCxQ3qL8z55xg6EqAr0e1nSRAC_EptCtV8@domain.hid>
+References: <AANLkTinJv1CCxQ3qL8z55xg6EqAr0e1nSRAC_EptCtV8@domain.hid>	<4D80E70F.7080603@domain.hid>
+	<AANLkTikwcmm6uB6rO3trpzP+9gK=rxbWR20zSnyB03SS@mail.gmail.com>
+In-Reply-To: <AANLkTikwcmm6uB6rO3trpzP+9gK=rxbWR20zSnyB03SS@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] request
@@ -17,24 +18,28 @@ List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: suresh reddy <sureshreddy.balijepalli@domain.hid>
-Cc: xenomai@xenomai.org
+Cc: Xenomai help <xenomai@xenomai.org>
 
 suresh reddy wrote:
-> Hi,
+> thanks for the reply.
 > 
-> iam running ubuntu on Pandaboard . I would like to add the xenomai to this
-> ubuntu on pandaboard.
+> inorder to progress my project i have to do porting xenomai on pandaboard as
+> soon as possible .how
 > 
-> Please let me know anyone whether xenomai supports pandaboard  .If not what
-> should i do to make it support the pandaboard.
+> can i try to work it on pandaboard ?
+> 
 
-Port on the pandaboard is underway.
+Sure you can. We even have a guide for porting Xenomai on ARM board. You
+ will find it in Xenomai FAQ.
 
-> Let me explain about the porting procedure to pandaboard on which the ubuntu
-> is running.
+But depending on well you know how the Adeos patch works, it is probably
+better to let us do it.
 
-I think we have a pretty good idea on the porting procedure to any
-board, at least arm board, ubuntu or not. But thanks for the proposal.
+In the meantime, I would advise you to start using Xenomai on another
+board already supported (beagle, or babbage for instance), then switch
+to panda when we have the support available.
+
+The next private mail you send me will receive no answer.
 
 -- 
 					    Gilles.
