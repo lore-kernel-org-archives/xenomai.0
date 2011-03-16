@@ -1,13 +1,9 @@
-Message-ID: <4D80BADD.9090301@domain.hid>
-Date: Wed, 16 Mar 2011 14:27:57 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <FA526D37A62FA141B5D2D8700F5167C83D79AE3E1A@ICTS-S-EXC4-CA.luna.kuleuven.be>
-In-Reply-To: <FA526D37A62FA141B5D2D8700F5167C83D79AE3E1A@ICTS-S-EXC4-CA.luna.kuleuven.be>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] [solved]:  Xenomai Posix skin init,
- device or resource busy
+Date: Wed, 16 Mar 2011 17:28:47 +0100
+Message-ID: <AANLkTinJv1CCxQ3qL8z55xg6EqAr0e1nSRAC_EptCtV8@domain.hid>
+From: suresh reddy <sureshreddy.balijepalli@domain.hid>
+Content-Type: multipart/alternative; boundary=20cf30563eef072577049e9c0a02
+Subject: [Xenomai-help] request
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -17,30 +13,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Lin Zhang <Lin.Zhang@domain.hid>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Lin Zhang wrote:
-> Dear all,
-> 
-> Last week I had "Device or resource busy" error when I run my
-> program, yesterday I found a solution. (Only for my application,but
-> could be helpful for someone else..).
-> 
-> When building xenomai, I used "./configure --enable-dlopen-skins ..",
-> which is not necessary for my application. So I just rebuilt xenomai
-> without this option.
-> 
-> Thanks again for Gilles' warm help. :)
+--20cf30563eef072577049e9c0a02
+Content-Type: text/plain; charset=ISO-8859-1
 
-Ok. Thanks for telling us. Maybe you could have answered my last answer
-and we could have helped you solve this issue faster?
+Hi,
 
-Anyway, standard tests such as latency, at least, should work with
---enable-dlopen-skins. So, it seems we have a bug to fix.
+iam running ubuntu on Pandaboard . I would like to add the xenomai to this
+ubuntu on pandaboard.
 
-Regards.
+Please let me know anyone whether xenomai supports pandaboard  .If not what
+should i do to make it support the pandaboard.
+Let me explain about the porting procedure to pandaboard on which the ubuntu
+is running.
 
 -- 
-					    Gilles.
+Thanking you
+Suresh balijepalli
+westerndorfer strasse
+47g/0119
+Rosenheim ph no. 4917645388362
+Zip code 83024,Baveria ,Germany
+
+--20cf30563eef072577049e9c0a02
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><meta http-equiv=3D"content-type" content=3D"text/html; ch=
+arset=3Dutf-8"><span class=3D"Apple-style-span" style=3D"font-family: arial=
+, sans-serif; font-size: 13px; border-collapse: collapse; ">Hi,<div><br></d=
+iv><div>iam running ubuntu on Pandaboard . I would like to add the xenomai =
+to this ubuntu on pandaboard.=A0</div>
+<div><br></div><div>Please let me know anyone whether xenomai supports pand=
+aboard =A0.If not what should i do to make it support the pandaboard.</div>=
+<div>Let me explain about the porting procedure to pandaboard on which the =
+ubuntu is running.<br clear=3D"all">
+</div></span><br>-- <br><div dir=3D"ltr">Thanking you<br>Suresh balijepalli=
+<br>westerndorfer strasse<br>47g/0119<br>Rosenheim ph no. 4917645388362<br>=
+Zip code 83024,Baveria ,Germany</div><br>
+</div>
+
+--20cf30563eef072577049e9c0a02--
 
