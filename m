@@ -1,10 +1,11 @@
-Message-ID: <4D80BA8B.7050803@domain.hid>
-Date: Wed, 16 Mar 2011 14:26:35 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4D81C6AD.8050803@domain.hid>
+Date: Thu, 17 Mar 2011 09:30:37 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
 References: <COL122-W1001B88CC08016B1C1774EBDCE0@domain.hid>
-In-Reply-To: <COL122-W1001B88CC08016B1C1774EBDCE0@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+	<4D80BA8B.7050803@domain.hid>
+In-Reply-To: <4D80BA8B.7050803@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-core] MSI support in Xenomai
 List-Id: Xenomai life and development <xenomai.xenomai.org>
@@ -15,19 +16,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: krishna m <krishnamurthyjs@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, krishna m <krishnamurthyjs@domain.hid>
 Cc: xenomai@xenomai.org
 
-krishna m wrote:
-> Hi All, I wanted to know if the latest Xenomai [Version
-> xenomai-2.5.6] supports MSI interrupts. I am using the adeos Patch
-> [version adeos-ipipe-2.6.37-x86-2.9-00] and corresponding Linux
-> kernel [version: linux-2.6.37]. I have read in the Xenomai FAQ that
-> MSI is not supported by the ipipe patch just wanted to know if the
-> latest Xenomai and Ipipe supports MSI.
+On 2011-03-16 14:26, Gilles Chanteperdrix wrote:
+> krishna m wrote:
+>> Hi All, I wanted to know if the latest Xenomai [Version
+>> xenomai-2.5.6] supports MSI interrupts. I am using the adeos Patch
+>> [version adeos-ipipe-2.6.37-x86-2.9-00] and corresponding Linux
+>> kernel [version: linux-2.6.37]. I have read in the Xenomai FAQ that
+>> MSI is not supported by the ipipe patch just wanted to know if the
+>> latest Xenomai and Ipipe supports MSI.
+> 
+> No.
 
-No.
+Strictly spoken, but it works in practice. See
+
+http://thread.gmane.org/gmane.linux.real-time.xenomai.users/12135
+
+Jan
 
 -- 
-					    Gilles.
+Siemens AG, Corporate Technology, CT T DE IT 1
+Corporate Competence Center Embedded Linux
 
