@@ -1,13 +1,10 @@
-Message-ID: <4D81C6AD.8050803@domain.hid>
-Date: Thu, 17 Mar 2011 09:30:37 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <COL122-W1001B88CC08016B1C1774EBDCE0@domain.hid>
-	<4D80BA8B.7050803@domain.hid>
-In-Reply-To: <4D80BA8B.7050803@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] MSI support in Xenomai
+Date: Fri, 18 Mar 2011 19:08:11 +0800
+Message-ID: <AANLkTi=i5ZKes7ZRMGEvCggwEfrvq=z2=dS+aZBKCUCH@mail.gmail.com>
+From: alamo hwuang <lovealamo@domain.hid>
+Content-Type: multipart/alternative; boundary=000e0cd3acda2f80aa049ebfcb50
+Subject: [Xenomai-core] Help:make error in xenomai 2.5.6 and linux kernel
+	2.6.37.
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -16,27 +13,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, krishna m <krishnamurthyjs@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 2011-03-16 14:26, Gilles Chanteperdrix wrote:
-> krishna m wrote:
->> Hi All, I wanted to know if the latest Xenomai [Version
->> xenomai-2.5.6] supports MSI interrupts. I am using the adeos Patch
->> [version adeos-ipipe-2.6.37-x86-2.9-00] and corresponding Linux
->> kernel [version: linux-2.6.37]. I have read in the Xenomai FAQ that
->> MSI is not supported by the ipipe patch just wanted to know if the
->> latest Xenomai and Ipipe supports MSI.
-> 
-> No.
+--000e0cd3acda2f80aa049ebfcb50
+Content-Type: text/plain; charset=ISO-8859-1
 
-Strictly spoken, but it works in practice. See
+Hi ,I am a new bird to use xenomai  and I want to use the xenomai on sandy
+bridge i7 2600k with xenomai 2.5.6 and linux kernel 2.6.37.
+But,I got error when I make kernel 2.6.37 patched xenomai.
+like below:
 
-http://thread.gmane.org/gmane.linux.real-time.xenomai.users/12135
+"kernle\xenomai\nucleus\shadow.c: In function "gatekeeper_thread"
+ kernle\xenomai\nucleus\shadow.c:929:error implicit declaration of function
+"set_cpus_allowed"
 
-Jan
+How can I fixed the problem?
 
--- 
-Siemens AG, Corporate Technology, CT T DE IT 1
-Corporate Competence Center Embedded Linux
+thanks for your advice.
+
+--000e0cd3acda2f80aa049ebfcb50
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+<div>Hi ,I am a new bird to use xenomai=A0 and I want to use the xenomai on=
+ sandy bridge i7 2600k with xenomai 2.5.6 and linux kernel 2.6.37. </div>
+<div>But,I got error when I make kernel 2.6.37=A0patched xenomai. </div>
+<div>like below:</div>
+<div>=A0</div>
+<div>&quot;kernle\xenomai\nucleus\shadow.c: In function &quot;gatekeeper_th=
+read&quot;</div>
+<div>=A0kernle\xenomai\nucleus\shadow.c:929:error implicit declaration of f=
+unction &quot;set_cpus_allowed&quot;</div>
+<div>=A0</div>
+<div>How can I fixed the problem? </div>
+<div>=A0</div>
+<div>thanks for your advice.</div>
+
+--000e0cd3acda2f80aa049ebfcb50--
 
