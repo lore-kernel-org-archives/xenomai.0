@@ -1,12 +1,13 @@
-Message-ID: <4D860512.4040404@domain.hid>
-Date: Sun, 20 Mar 2011 14:45:54 +0100
+Message-ID: <4D860E5D.90102@domain.hid>
+Date: Sun, 20 Mar 2011 15:25:33 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <AANLkTim6tgodUUDYw-zpyadLCj_f=PKKd_CShKTkMuUc@domain.hid>
-In-Reply-To: <AANLkTim6tgodUUDYw-zpyadLCj_f=PKKd_CShKTkMuUc@domain.hid>
+References: <mailman.25.1300532408.23962.xenomai@xenomai.org>	<AANLkTimXw7wO=JzNNHDVtY_86R1qxLZjexVatmMPjoKw@domain.hid>	<AANLkTin5j_zFQbzb6gh5uq_eETGh3wQO+pc+L87_nr7H@mail.gmail.com>	<4D860094.6060304@domain.hid>
+	<AANLkTikvuJTDc4JwxU_6BE3QUOVfWAYwkrB6Q-2wWpSH@mail.gmail.com>
+In-Reply-To: <AANLkTikvuJTDc4JwxU_6BE3QUOVfWAYwkrB6Q-2wWpSH@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Xenomai System Call
+Subject: Re: [Xenomai-help] Xenomai-core Digest, Vol 66, Issue 9
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -16,31 +17,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Peter Warner <xenomai.start@domain.hid>
-Cc: xenomai@xenomai.org
+To: alamo hwuang <lovealamo@domain.hid>
+Cc: Xenomai help <xenomai@xenomai.org>
 
-Peter Warner wrote:
-> Hi All,
+alamo hwuang wrote:
+> Hi gilles,
 > 
-> My System Detail:
-> Operating System: Ubuntu 10.04
-> Xenomai: 2.5.5.2
+> the toolchain of building xenomai and kernel is gcc 4.3.4.
 > 
-> I Just want to implement some system calls for xenomai. Can you Please
-> Suggest me How It can be done.
+> linux-xkps1:~/Desktop # gcc -v
+> Using built-in specs.
+> Target: x86_64-suse-linux
+> Configured with: ../configure --prefix=/usr --infodir=/usr/share/info
+> --mandir=/usr/share/man --libdir=/usr/lib64 --libexecdir=/usr/lib64
+> --enable-languages=c,c++,objc,fortran,obj-c++,java,ada
+> --enable-checking=release --with-gxx-include-dir=/usr/include/c++/4.3
+> --enable-ssp --disable-libssp
+> --with-bugurl=http://bugs.opensuse.org/--with-pkgversion='SUSE Linux'
+> --disable-libgcj --disable-libmudflap
+> --with-slibdir=/lib64 --with-system-zlib --enable-__cxa_atexit
+> --enable-libstdcxx-allocator=new --disable-libstdcxx-pch
+> --enable-version-specific-runtime-libs --program-suffix=-4.3
+> --enable-linux-futex --without-system-libunwind --with-cpu=generic
+> --build=x86_64-suse-linux
+> Thread model: posix
+> gcc version 4.3.4 [gcc-4_3-branch revision 152973] (SUSE Linux)
+>  My application is building by icc 11-072.
+> 
+> The latency is just like below.
 
-What you want may be creating a new skin, or adding a syscall to an
-existing skin. Either way, it is relatively simple, you just have to
-look at the way an existing skin is done.
-
-For instance, for the native skin service rt_task_create, the service is
-implemented in src/skins/native/task.c,  emits a syscall using the
-syscall number __native_task_create defined in include/native/task.h,
-and the syscall is caught in kernel-space in
-ksrc/skins/native/syscall.c, where its implementation uses the
-kernel-space service rt_task_create defined in ksrc/skins/native/task.c.
-This last step is not mandatory if you do not intend your new service to
-be also available to kernel modules.
+Ok. So latency works, the problem is in the application. If you are not
+compiling the application with gcc, try using gcc. If it still does not
+work, try and reduce the application to a simple test case exhibiting
+the issue you are seeing, then post this test case here.
 
 -- 
                                                                 Gilles.
