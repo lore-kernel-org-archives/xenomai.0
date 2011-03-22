@@ -1,10 +1,9 @@
-Message-ID: <COL122-W19B5CA8D607DECB4104A8FBDCE0@domain.hid>
-Content-Type: multipart/alternative;
-	boundary="_826dc080-71df-4277-b538-fd850a255477_"
-From: krishna m <krishnamurthyjs@domain.hid>
-Date: Wed, 16 Mar 2011 19:13:36 +0530
 MIME-Version: 1.0
-Subject: [Adeos-main] MSI support in latest adeos Patch
+Date: Mon, 21 Mar 2011 22:43:02 -0300
+Message-ID: <AANLkTinbWB880bzWqR2o-6Ah2A_iZCucMQU-HaOcunEL@mail.gmail.com>
+From: Rodrigo Muraro <rodrigo.muraro@domain.hid>
+Content-Type: multipart/alternative; boundary=0016e6d6476b6a6649049f085dcc
+Subject: [Adeos-main] port du Xenomai
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/options/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -15,51 +14,67 @@ List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
 To: adeos-main@gna.org
 
---_826dc080-71df-4277-b538-fd850a255477_
-Content-Type: text/plain; charset="iso-8859-1"
+--0016e6d6476b6a6649049f085dcc
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
+Salut,
 
-Hi All=2C
-I wanted to know if the latest adeos Patch  [version adeos-ipipe-2.6.37-x86=
--2.9-00] supports MSI. I have read in the Xenomai FAQ that MSI is not suppo=
-rted by the ipipe patch. If it is not supported now is there a plan to supp=
-ort it in the future and is there a development version available with MSI =
-support ?=20
+Je suis en train de porter Xenomai pour le processeur OMAP-L138.
 
-thanks=2C
-Krishna=20
+Je suis parti du kernel 2.6.34 fourni par Texas Instruments e j'ai applique
+le patch I-pipe Xenomai 2.5.4.
 
+Ensuite j'ai suivi les indications d=E9crites dans le document suivant:
+http://www.xenomai.org/index.php/I-pipe:ArmPorting
 
- 		 	   		  =
+J'ai modifi=E9 que le fichier time.c du repertoire arch/arm/mach-davinci
 
---_826dc080-71df-4277-b538-fd850a255477_
-Content-Type: text/html; charset="iso-8859-1"
+Le kernel se bloque pendant l'initialisation du pilote USB, plus pr=E9cis=
+=E9ment
+apr=E8s l'appel =E0 la fonction msleep.
+
+J'ai fait un essai en plus:
+J'ai appliqu=E9 le patch Xenomai mais j'ai d=E9sactiv=E9 l'option Xenomai d=
+ans le
+menuconfig. La compilation s'est bien pass=E9 et le kernel s'est toujours
+bloqu=E9.
+
+Le source du kernel que j'ai parti (2.6.34 fourni par Texas Instruments)
+marche bien.
+
+Est-ce que vous pouvez m'aider?
+
+Merci,
+
+Rodrigo
+
+--0016e6d6476b6a6649049f085dcc
+Content-Type: text/html; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
-<html>
-<head>
-<style><!--
-.hmmessage P
-{
-margin:0px=3B
-padding:0px
-}
-body.hmmessage
-{
-font-size: 10pt=3B
-font-family:Tahoma
-}
---></style>
-</head>
-<body class=3D'hmmessage'>
-Hi All=2C<br>I wanted to know if the latest adeos Patch  [version adeos-ipi=
-pe-2.6.37-x86-2.9-00] supports MSI. I have read in the Xenomai FAQ that MSI=
- is not supported by the ipipe patch. If it is not supported now is there a=
- plan to support it in the future and is there a development version availa=
-ble with MSI support ? <br><br>thanks=2C<br>Krishna <br><pre><br></pre><br>=
- 		 	   		  </body>
-</html>=
+Salut,<div><br></div><div>Je suis en train de porter Xenomai pour le proces=
+seur OMAP-L138.</div><div><br></div><div>Je suis parti du kernel 2.6.34 fou=
+rni par Texas Instruments e j&#39;ai applique le patch I-pipe Xenomai 2.5.4=
+.</div>
+<div><br></div><div>Ensuite j&#39;ai suivi les indications d=E9crites dans =
+le document suivant:</div><div><span class=3D"Apple-style-span" style=3D"bo=
+rder-collapse: collapse; font-family: arial, sans-serif; font-size: 13px; "=
+><a href=3D"http://www.xenomai.org/index.php/I-pipe:ArmPorting" target=3D"_=
+blank" style=3D"color: rgb(42, 93, 176); ">http://www.xenomai.org/index.php=
+/I-pipe:ArmPorting</a></span></div>
+<div><br></div><div>J&#39;ai modifi=E9 que le fichier time.c du repertoire =
+arch/arm/mach-davinci</div><div><br></div><div>Le kernel se bloque pendant =
+l&#39;initialisation du pilote USB, plus pr=E9cis=E9ment apr=E8s l&#39;appe=
+l =E0 la fonction msleep.</div>
+<div><br></div><div>J&#39;ai fait un essai en plus:</div><div>J&#39;ai appl=
+iqu=E9 le patch Xenomai mais j&#39;ai d=E9sactiv=E9 l&#39;option Xenomai da=
+ns le menuconfig. La compilation s&#39;est bien pass=E9 et le kernel s&#39;=
+est toujours bloqu=E9.</div>
+<div><br></div><div>Le source du kernel que j&#39;ai parti (2.6.34 fourni p=
+ar Texas Instruments) marche bien.</div><div><br></div><div>Est-ce que vous=
+ pouvez m&#39;aider?</div><div><br></div><div>Merci,</div><div><br></div>
+<div>Rodrigo</div>
 
---_826dc080-71df-4277-b538-fd850a255477_--
+--0016e6d6476b6a6649049f085dcc--
 
