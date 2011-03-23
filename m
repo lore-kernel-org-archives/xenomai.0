@@ -1,12 +1,10 @@
-Message-ID: <4D8892D4.4010701@domain.hid>
-Date: Tue, 22 Mar 2011 13:15:16 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <846378.85636.qm@domain.hid>
-In-Reply-To: <846378.85636.qm@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Problem with Posix Skin and RTnet
+Sender: madjsw@domain.hid
+Date: Tue, 22 Mar 2011 19:59:11 -0500
+Message-ID: <AANLkTi=LM5LNr1mT-f3xY-w-ATzRNPZX3hPVsFpG=TnC@mail.gmail.com>
+From: Jeff Weber <jwamsc@domain.hid>
+Content-Type: multipart/alternative; boundary=e0cb4e3854b866fa57049f1bdeef
+Subject: [Xenomai-help] CLOCK_REALTIME synchronized to NTP
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -16,18 +14,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Franz Engel <franz_lambert_engel@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Franz Engel wrote:
-> Is there something wrong?
+--e0cb4e3854b866fa57049f1bdeef
+Content-Type: text/plain; charset=ISO-8859-1
 
-The way to compile applications for Xenomai posix skin is described here:
-http://www.xenomai.org/index.php/Porting_POSIX_applications_to_Xenomai#Compilation_flags
+I need to timetag events from a realtime context with a NPT-synchronized
+system clock.  This topic comes up periodically on the mailing list.  Last I
+recall, there was talk of adding the capability via an alternate
+(non-CLOCK_REALTIME) clock_id. What is the status of this topic?
 
-I do not know about cmake, but you should teach cmake to use xeno-config
-to obtain the flags.
+thanks,
+Jeff
 
--- 
-                                                                Gilles.
+--e0cb4e3854b866fa57049f1bdeef
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+I need to timetag events from a realtime context with a NPT-synchronized sy=
+stem clock. =A0This topic comes up periodically on the mailing list. =A0Las=
+t I recall, there was talk of adding the capability via an alternate (non-C=
+LOCK_REALTIME) clock_id. What is the status of this topic?<div>
+<br></div><div>thanks,</div><div>Jeff</div>
+
+--e0cb4e3854b866fa57049f1bdeef--
 
