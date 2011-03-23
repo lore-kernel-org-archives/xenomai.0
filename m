@@ -1,12 +1,11 @@
-Message-ID: <4D89A334.4090802@domain.hid>
-Date: Wed, 23 Mar 2011 08:37:24 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4D89BF75.1060500@domain.hid>
+Date: Wed, 23 Mar 2011 10:37:57 +0100
+From: Johann Obermayr <johann.obermayr@domain.hid>
 MIME-Version: 1.0
-References: <AANLkTi=LM5LNr1mT-f3xY-w-ATzRNPZX3hPVsFpG=TnC@mail.gmail.com>
-In-Reply-To: <AANLkTi=LM5LNr1mT-f3xY-w-ATzRNPZX3hPVsFpG=TnC@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] CLOCK_REALTIME synchronized to NTP
+Subject: [Xenomai-help] task switching logging
+Reply-To: johann.obermayr@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -16,20 +15,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jeff Weber <jwamsc@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Jeff Weber wrote:
-> I need to timetag events from a realtime context with a NPT-synchronized
-> system clock.  This topic comes up periodically on the mailing list.  Last I
-> recall, there was talk of adding the capability via an alternate
-> (non-CLOCK_REALTIME) clock_id. What is the status of this topic?
+Hello,
 
-The CLOCK_HOST_REALTIME is available in the xenomai-head branch (to be
-2.6 branch, soon). It requires modifications of the I-pipe patch which
-are available, at least, on x86, but are probably not really hard to
-implement on other platforms.
+we use follow function to report task switching.
+     rt_task_add_hook(T_HOOK_SWITCH, (void(*)(void*))taskSwitchXenomai);
+     sched_info_install_switch_hook(taskSwitchLinux);
 
--- 
-                                                                Gilles.
+we does not get a hook callback for switch from gatekeeper to primary 
+domain.
+
+we have a shadow task running in primary. on some function it switch 
+back to secondary.
+if we switch back the task with rt_task_set_mode(0,T_PRIMARY).
+we only see the switching to gatekeeper and not the switch to primary ?
+
+Any solution ?
+
+Xenomai 2.5.6, linux kernel 2.6.32.15. gcc 4.3.3
+
+
+   Jimmy
+
 
