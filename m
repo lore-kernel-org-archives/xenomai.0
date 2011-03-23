@@ -1,12 +1,12 @@
-Message-ID: <4D89A769.7020106@domain.hid>
-Date: Wed, 23 Mar 2011 08:55:21 +0100
+Message-ID: <4D89A8EC.1070702@domain.hid>
+Date: Wed, 23 Mar 2011 09:01:48 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <AANLkTinyoHF6tNGv5OvMEByYG1Eof8PSo9tnRO+_xEAd@domain.hid>
-In-Reply-To: <AANLkTinyoHF6tNGv5OvMEByYG1Eof8PSo9tnRO+_xEAd@domain.hid>
+References: <AANLkTimFAxy81d7NErKOT0S4esN20DtQbUu4d42K4_8s@domain.hid>
+In-Reply-To: <AANLkTimFAxy81d7NErKOT0S4esN20DtQbUu4d42K4_8s@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] Help:Is the latency test right?
+Subject: Re: [Xenomai-core] Help: What is this in xenomai? rtheap crash?
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -19,65 +19,62 @@ To: alamo hwuang <lovealamo@domain.hid>
 Cc: xenomai@xenomai.org
 
 alamo hwuang wrote:
-> Hi , I am using the xenomai to build the paltform and getting a latency test
-> results.
-> 
-> RTT|  00:00:01  (periodic user-mode task, 100 us period, priority 99)
-> RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat best|--lat
-> worst
-> RTD|     -2.362|     -2.179|      0.017|       0|     0|     -2.428|
-> 3.189
-> 
-> How can I read the meaning of those results ?
-> 
-> and Are those results are correct???
+> Hello , I am a new bird using the xemomai! I use my classmate program to run
+> on the xenomai and I got the below information .It seems that the rtheap
+> crash ??
 
-It depends on what platform you are running. But from the results you
-get, you are probably running latency on x86_64, without any load. The
-results you get doing so are probably meaningless. If you wonder about
-the negative latencies, they simply mean that your system is not
-calibrated correctly.
-
-The latency tool measures the wake up latency of user-space/kernel-space
-task by using the timer services, so, in fact, the timer wake-up
-latency. However, in order to compensate for the constant overhead of
-the thread wake-up path, the timer services anticipate. So, when you ask
-for a thread to be woken up at time T, the timer will tick at
-T - compensation
-So, that when the task is finally woken up, it will appear to have woken
-up at a time close to T.
-This anticipation may be chosen with /proc/xenomai/latency
-
-A system running Xenomai has to be calibrated, an anticipation has to be
-chosen according to what you want, and what your system can do. So, you
-should do:
-
-echo 0 > /proc/xenomai/latency
-This will disable the anticipation.
-
-Then run latency under load for a long time.
-
-Then according to the results given by the test, and what you need for
-your application, echo the value you choose to /proc/xenomai/latency.
-
-The value the latency test will give you with a null anticipation is the
-scheduling latency.
-
-Xenomai pick some default value for this anticipations which comes from
-boards on which we test it, which can result on negative latencies on
-other boards.
-
+Nope, this does not seem to have anything to do with rtheap.
 
 > 
-> what is the max size of  a xenomai task stack size?
+> 
+> How can I solve this problem ????
+> 
+> the xenomai is 2.5.4 and the kernel is 2.6.34.5.
 
-Xenomai relies on the glibc to create threads. So, the rule for stack
-sizes are no different for a Xenomai task than for any non real-time
-task on the system. But beware of mlockall (see the TROUBLESHOOTING
-guide on this subject).
+Please upgrade to Xenomai 2.5.6 (though the problem is not related).
 
-Please note that for such questions, the xenomai-help mailing list is
-more appropriate.
+> 
+> 
+> 
+> 
+> 
+> thanks for your help.
+> 
+> linux-xkps1:~/Desktop/linux # Bin/APP_LTE_DEMO config.txt
+> Noise Generated
+> *** glibc detected *** Bin/APP_LTE_DEMO: malloc(): memory corruption:
+> 0x00000000176fbba0 ***
+
+This is the real error message, the heap (malloc heap, not rtheap) is
+corrupted.
+
+> ======= Backtrace: =========
+> /lib64/libc.so.6(+0x75018)[0x7f6ae8eb6018]
+> /lib64/libc.so.6(+0x77f7f)[0x7f6ae8eb8f7f]
+> /lib64/libc.so.6(__libc_malloc+0x77)[0x7f6ae8ebb057]
+> Bin/APP_LTE_DEMO[0x41f284]
+> /usr/xenomai/lib/libnative.so.3(+0x728c)[0x7f6ae961328c]
+> /lib64/libpthread.so.0(+0x75f0)[0x7f6ae981e5f0]
+> /lib64/libc.so.6(clone+0x6d)[0x7f6ae8f1584d]
+
+This backtrace shows that the error is detected by glibc malloc.
+
+> ======= Memory map: ========
+> (...)
+> 7f6aea15a000-7f6aea15d000 rw-s 00000000 00:0e 2199
+> /dev/rtheapAborted
+
+This is a list of the mapped areas which show that the rtheap is mapped,
+which is normal, but the rtheap has nothing to do with the normal heap
+corruption.
+
+Heap corruption is a sign that something misbehaves, and write on memory
+that is not currently allocated, or some block was freed twice, things
+like that. The most probable culprit is the application itself and it is
+what should be investigated first.
+
+Same remark as previous mail: you should use xenomai-help for such
+questions, not xenomai-core.
 
 -- 
                                                                 Gilles.
