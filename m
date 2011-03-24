@@ -2,8 +2,8 @@ From: Philippe Gerum <rpm@xenomai.org>
 In-Reply-To: <AANLkTikC-6XF9nx58AEyiuU_ZYa29jjg37km6eRer5Kz@domain.hid>
 References: <AANLkTikC-6XF9nx58AEyiuU_ZYa29jjg37km6eRer5Kz@domain.hid>
 Content-Type: text/plain; charset="UTF-8"
-Date: Thu, 24 Mar 2011 08:37:50 +0100
-Message-ID: <1300952270.2077.1.camel@domain.hid>
+Date: Thu, 24 Mar 2011 09:49:28 +0100
+Message-ID: <1300956568.2077.5.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 Subject: Re: [Xenomai-help] unable to build xenomai-head
@@ -49,25 +49,8 @@ On Wed, 2011-03-23 at 15:11 -0500, Jeff Weber wrote:
 > make: *** Waiting for unfinished jobs....
 >=20
 
-DECLARE_MUTEX vanished away in 2.6.37; the required compat wrapper was
-merged into 2.5.x, but not to 2.6.x yet.
-
-diff --git a/include/asm-generic/wrappers.h
-b/include/asm-generic/wrappers.h
-index e5b8c89..4f99fd5 100644
---- a/include/asm-generic/wrappers.h
-+++ b/include/asm-generic/wrappers.h
-@@ -622,4 +622,9 @@ static inline void wrap_proc_dir_entry_owner(struct
-proc_dir_entry *entry)
- #define unlocked_ioctl ioctl
- #endif
-=20
-+#ifndef DEFINE_SEMAPHORE
-+/* Legacy DECLARE_MUTEX vanished in 2.6.37 */
-+#define DEFINE_SEMAPHORE(sem) DECLARE_MUTEX(sem)
-+#endif
-+
- #endif /* _XENO_ASM_GENERIC_WRAPPERS_H */
+-head should now be up-to-date wrt 2.5.x fixes. Please retry and report
+any issue. TIA,
 
 >=20
 > this config:
