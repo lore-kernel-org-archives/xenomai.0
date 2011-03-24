@@ -1,10 +1,11 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <AANLkTikC-6XF9nx58AEyiuU_ZYa29jjg37km6eRer5Kz@domain.hid>
+Message-ID: <4D8B195C.2020107@domain.hid>
+Date: Thu, 24 Mar 2011 11:13:48 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
 References: <AANLkTikC-6XF9nx58AEyiuU_ZYa29jjg37km6eRer5Kz@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Thu, 24 Mar 2011 09:49:28 +0100
-Message-ID: <1300956568.2077.5.camel@domain.hid>
-Mime-Version: 1.0
+	<1300956568.2077.5.camel@domain.hid>
+In-Reply-To: <1300956568.2077.5.camel@domain.hid>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 Subject: Re: [Xenomai-help] unable to build xenomai-head
 List-Id: Help regarding installation and common use of Xenomai
@@ -16,78 +17,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jeff Weber <jwamsc@domain.hid>
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On Wed, 2011-03-23 at 15:11 -0500, Jeff Weber wrote:
-> I am unable to build the xenomai head. "make modules" gives
->=20
->=20
->   CHK     include/linux/version.h
->   CHK     include/generated/utsrelease.h
->   CALL    scripts/checksyscalls.sh
->   CC [M]  kernel/xenomai/nucleus/registry.o
-> kernel/xenomai/nucleus/registry.c:226:8: warning: type defaults to
-> =E2=80=98int=E2=80=99 in declaration of =E2=80=98DECLARE_MUTEX=E2=80=99
-> kernel/xenomai/nucleus/registry.c:226:1: warning: parameter names
-> (without types) in function declaration
-> kernel/xenomai/nucleus/registry.c: In function
-> =E2=80=98registry_proc_callback=E2=80=99:
-> kernel/xenomai/nucleus/registry.c:250:8: error: =E2=80=98export_mutex=E2=
+Philippe Gerum wrote:
+> On Wed, 2011-03-23 at 15:11 -0500, Jeff Weber wrote:
+>> I am unable to build the xenomai head. "make modules" gives
+>>
+>>
+>>   CHK     include/linux/version.h
+>>   CHK     include/generated/utsrelease.h
+>>   CALL    scripts/checksyscalls.sh
+>>   CC [M]  kernel/xenomai/nucleus/registry.o
+>> kernel/xenomai/nucleus/registry.c:226:8: warning: type defaults to
+>> =E2=80=98int=E2=80=99 in declaration of =E2=80=98DECLARE_MUTEX=E2=80=99=
+
+>> kernel/xenomai/nucleus/registry.c:226:1: warning: parameter names
+>> (without types) in function declaration
+>> kernel/xenomai/nucleus/registry.c: In function
+>> =E2=80=98registry_proc_callback=E2=80=99:
+>> kernel/xenomai/nucleus/registry.c:250:8: error: =E2=80=98export_mutex=E2=
 =80=99
-> undeclared (first use in this function)
-> kernel/xenomai/nucleus/registry.c:250:8: note: each undeclared
-> identifier is reported only once for each function it appears in
-> kernel/xenomai/nucleus/registry.c: At top level:
-> kernel/xenomai/nucleus/registry.c:226:8: warning: =E2=80=98DECLARE_MUTEX=
-=E2=80=99
-> declared =E2=80=98static=E2=80=99 but never defined
-> make[3]: *** [kernel/xenomai/nucleus/registry.o] Error 1
-> make[2]: *** [kernel/xenomai/nucleus] Error 2
-> make[1]: *** [kernel/xenomai] Error 2
-> make: *** [kernel] Error 2
-> make: *** Waiting for unfinished jobs....
+>> undeclared (first use in this function)
+>> kernel/xenomai/nucleus/registry.c:250:8: note: each undeclared
+>> identifier is reported only once for each function it appears in
+>> kernel/xenomai/nucleus/registry.c: At top level:
+>> kernel/xenomai/nucleus/registry.c:226:8: warning: =E2=80=98DECLARE_MUT=
+EX=E2=80=99
+>> declared =E2=80=98static=E2=80=99 but never defined
+>> make[3]: *** [kernel/xenomai/nucleus/registry.o] Error 1
+>> make[2]: *** [kernel/xenomai/nucleus] Error 2
+>> make[1]: *** [kernel/xenomai] Error 2
+>> make: *** [kernel] Error 2
+>> make: *** Waiting for unfinished jobs....
+>>
 >=20
+> -head should now be up-to-date wrt 2.5.x fixes. Please retry and report=
 
--head should now be up-to-date wrt 2.5.x fixes. Please retry and report
-any issue. TIA,
+> any issue. TIA,
 
->=20
-> this config:
-> linux=3D/usr/src/linux-2.6.37.3
-> xenomai=3D xenomai-head
-> adeos=3Dadeos-ipipe-2.6.37-x86-2.9-00.patch
-> arch=3Dx86 32-bit on SMP
->=20
->=20
-> I recently successfully build the same config using the released
-> xenomai-2.5.6 with no problems.
-> I'm  not yet experienced in git, but I obtained the xenomai-head
-> branch by:
->=20
->=20
-> git clone git://xenomai.org/xenomai-head.git
->=20
->=20
-> Did I fetch the branch wrong, or does the xenomai-head branch
-> currently not build?
-> I need the CLOCK_HOST_REALTIME feature.
->=20
->=20
-> TIA,
-> Jeff
->=20
->=20
->=20
->=20
->=20
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
+Sorry, I forgot about that.
 
 --=20
-Philippe.
-
+					    Gilles.
 
 
