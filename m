@@ -1,12 +1,12 @@
-Message-ID: <4D8C6AD3.8060402@domain.hid>
-Date: Fri, 25 Mar 2011 11:13:39 +0100
+Message-ID: <4D8C6BC2.2050808@domain.hid>
+Date: Fri, 25 Mar 2011 11:17:38 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <27340542.1331151.1300980168620.JavaMail.root@domain.hid>
-In-Reply-To: <27340542.1331151.1300980168620.JavaMail.root@domain.hid>
+References: <AANLkTingRPWqG1SZAaNs4TKeJFXicZWGqmL2A1rT8vrf@domain.hid>
+In-Reply-To: <AANLkTingRPWqG1SZAaNs4TKeJFXicZWGqmL2A1rT8vrf@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Xenomai Kernel panic
+Subject: Re: [Xenomai-help] Scheduling questions...
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -16,43 +16,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: George Afonso <george.afonso@domain.hid>
+To: Eric Eric <ericrebates@domain.hid>
 Cc: xenomai@xenomai.org
 
-George Afonso wrote:
-> Spam detection software, running on the system "xenomai.org", has
-> identified this incoming email as possible spam.  The original message
-> has been attached to this so you can view it (if it isn't spam) or label
-> similar future email.  If you have any questions, see
-> the administrator of that system for details.
-> (...)
-> Hello, 
-
-Hi,
-
-Sorry for the late answer, your mail was treated as spam, due to the
-fact that it is HTML, and that the .config were sent in plain text.
-
+Eric Eric wrote:
+> Hello, I've been reading through some of the documentation and have a
+> few questions regarding scheduling:
 > 
-> I was using xenomai and wanted to install it in a new computer, i follow the same steps as before, 
-> I configure the kernel as advised in xenomai website using linux .config default file (see configxeno) 
-> In order to test the configuration, I use the same config file for a simple kernel (without xenomai) (ie : avoiding ACPI processor, apm and cpufreq as advised in your web site) (see configlinux). 
+> - API docs say that rt_task_set_mode can allow a task to undergo
+> round-robin scheduling.  This seems to imply that we can have an
+> environment of mixed round-robin and FIFO task scheduling.  Is this
+> correct?  If so, what is the scheduling relationship between tasks
+> running in FIFO and RR modes?
 > 
-> I've no problem with the configlinux (it boots without problems) but i have a kernel panic with configxeno : 
+> - I am concerned about Linux starvation.  For example, suppose a
+> misbehaving RT task spins and burns CPU indefinitely (watchdog
+> notwithstanding).  I would still like to preempt this task and allow
+> Linux to run for up to some maximum time (say up to 30mS every 200mS).
+>  So, if using RR scheduling, is there a way to use rt_task_slice to
+> allocate time to Linux?  Is there a Linux shadow thread that I can
+> allocate time to?
 
-The data you give us are quite insufficient. Your xenoconfig does not
-follow the usual advices, I suggest you read:
-http://www.xenomai.org/index.php/Configuring_x86_kernels
-
-If you want us to help you, please send us the information asked here:
-http://www.xenomai.org/index.php/Request_for_information
-
-The most important thing being the full kernel logs, from the boot up to
-the oops, and the full text of the oops, not just some partial piece of
-it. I see here that you copied the oops text manually, this will not do.
-What you should do is capture the full logs with a serial console, or
-netconsole.
-
+It looks like you misunderstand round-robin: round-robin only occurs
+between tasks running at the same priority. That is what makes it
+compatible with FIFO scheduling. And that is the way RTOSes have always
+been doing this, and it is even in the posix specification with the
+SCHED_RR policy and the sched_yield() service.
 
 -- 
 					    Gilles.
