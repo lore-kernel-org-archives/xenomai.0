@@ -1,12 +1,18 @@
-Message-ID: <4D8C7153.5010606@domain.hid>
-Date: Fri, 25 Mar 2011 11:41:23 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <COL122-W5950CD7CCEB15743DB8B9BBDB90@domain.hid>
+Content-Type: multipart/alternative;
+	boundary="_551aee14-d93a-4ef4-a94a-37c85515f42a_"
+From: krishna m <krishnamurthyjs@domain.hid>
+Date: Fri, 25 Mar 2011 17:51:06 +0530
+In-Reply-To: <COL122-W659C1B6386C63F74DEBCA2BDB40@domain.hid>
+References: <COL122-W1001B88CC08016B1C1774EBDCE0@domain.hid>,
+	<4D80BA8B.7050803@domain.hid>, <4D81C6AD.8050803@domain.hid>,
+	<COL122-W637BE46C7D8B2CB7F79760BDB50@domain.hid>, ,
+	<4D88925C.3040609@domain.hid>,
+	<COL122-W1673FD60DDA60D713554EBDB40@domain.hid>,
+	<4D88D39D.907@domain.hid>, <4D88D66F.6020605@domain.hid>,
+	<COL122-W659C1B6386C63F74DEBCA2BDB40@domain.hid>
 MIME-Version: 1.0
-References: <e9120c91-7bfe-489f-a80d-16e2bfdec46c@domain.hid>
-In-Reply-To: <e9120c91-7bfe-489f-a80d-16e2bfdec46c@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-core] 'cannot map MAYDAY page' on blackfin
+Subject: Re: [Xenomai-core] MSI support in Xenomai
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -15,54 +21,323 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: =?UTF-8?B?0JTQtdC90LjRgSDQm9Cw0YLRi9GI0LXQsg==?= <latyshev@domain.hid>
+To: gilles.chanteperdrix@xenomai.org, jan.kiszka@domain.hid
 Cc: xenomai@xenomai.org
 
-=D0=94=D0=B5=D0=BD=D0=B8=D1=81 =D0=9B=D0=B0=D1=82=D1=8B=D1=88=D0=B5=D0=B2=
- wrote:
-> Hi All. I am trying to run xenomai on blackfin ADZS-BF537-EZLITE
-> board, but I'm getting an error when trying to execute any test
-> programs like arith, clocktest etc.
->=20
->=20
-> Software versions: linux-2.6.35.7 xenomai-2.5.5.2
->=20
->=20
-> example:
->=20
->=20
-> # /usr/xenomai/bin/arith Xenomai: binding failed: Cannot allocate
-> memory.
->=20
->=20
-> # dmesg | tail -5
->=20
-> [ 7.288690] PHY: 0:01 - Link is Up - 100/Full [ 7.502574] Looking up
-> port of RPC 100005/1 on 192.168.4.9 [ 7.593737] VFS: Mounted root
-> (nfs filesystem) on device 0:11. [ 7.601396] Freeing unused kernel
-> memory: 104k freed [ 300.787988] Xenomai: arith[330] cannot map
-> MAYDAY page
->=20
->=20
-> All happens in root console.
->=20
->=20
-> I found that the error returns from the function
-> validate_mmap_request when the flag BDI_CAP_MAP_DIRECT is checked in
->  file->f_mapping->backing_dev_info->capabilities while mapping memory
-> in map_mayday_page. Looks like this flag must be set for /dev/rtheap,
-> but it's not. Is it bug on NOMMU system or maybe my fault? I've build
-> kernel and system as explained in README.INSTALL.
+--_551aee14-d93a-4ef4-a94a-37c85515f42a_
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 
-Hi,
 
-This issue does not happen when we validate Xenomai. Could you give us
-more information, such as the .config for your kernel, and the options
-you pass on configure command line?
+=20
 
-Regards.
+From: krishnamurthyjs@domain.hid
+To: gilles.chanteperdrix@xenomai.org jan.kiszka@domain.hid
+Date: Tue=2C 22 Mar 2011 23:50:27 +0530
+CC: xenomai@xenomai.org
+Subject: Re: [Xenomai-core] MSI support in Xenomai
 
---=20
-					    Gilles.
 
+
+
+> Date: Tue=2C 22 Mar 2011 18:03:43 +0100
+> From: gilles.chanteperdrix@xenomai.org
+> To: jan.kiszka@domain.hid
+> CC: krishnamurthyjs@domain.hid xenomai@xenomai.org
+> Subject: Re: MSI support in Xenomai
+>=20
+> Jan Kiszka wrote:
+> > On 2011-03-22 16:55=2C krishna m wrote:
+>=20
+> >> Mar 22 21:12:47 localhost kernel: test_dev: Probe for device function=
+=3D0
+> >> Mar 22 21:12:47 localhost kernel: test_dev 0000:15:00.0: found PCI INT=
+ A -> IRQ 10
+> >=20
+> > Here you get IRQ 10...
+> >=20
+> >> Mar 22 21:12:47 localhost kernel: pci_bar =3D 0xfe000000
+> >> Mar 22 21:12:47 localhost kernel: Xenomai: RTDM: RT open handler is de=
+precated=2C=20
+> >> driver requires update.
+> >> Mar 22 21:12:47 localhost kernel: Xenomai: RTDM: RT close handler is d=
+eprecated=2C=20
+> >> driver requires update.
+> >=20
+> > [ These messages also have a meaning=2C though unrelated to the crash. =
+]
+> >=20
+> >> Mar 22 21:12:47 localhost kernel: test_dev: IRQ 16 successfully assign=
+ed to the=20
+> >> device.
+> >=20
+> > ...but here IRQ 16 is assigned. Broken output or a real inconsistency?
+> >=20
+> > Also=2C where is the MSI? You should see log messages about MSI/MSI-X I=
+RQ
+> > number assignment when properly enabling the support at PCI level.
+>=20
+> Maybe pci_enable_msi was called after request_irq ?
+>=20
+>=20
+> --=20
+> Gilles.
+=20
+Just check my code:
+i do enable MSI  (pci_enable_msi) before rtdm_irq_request pasted the code b=
+elow part of my PCI probe function in the device driver:
+=20
+......
+rtdm_dev =3D kmalloc(sizeof(struct rtdm_device)=2C GFP_KERNEL)=3B
+  if(!rtdm_dev) {
+   printk(KERN_WARNING "RUBICON: kmalloc failed\n")=3B
+   ret =3D -ENOMEM=3B //Insufficient storage space is available.
+   goto fail_pci=3B
+  }
+
+  //copy the structure to the new memory
+  memcpy(rtdm_dev=2C &rubicon_rtdm_driver=2C sizeof(struct rtdm_device))=3B
+
+  //create filename
+  snprintf(rtdm_dev->device_name=2C
+           RTDM_MAX_DEVNAME_LEN=2C "rtser%d"=2C 0 /*i*/)=3B
+  rtdm_dev->device_id =3D 0=3B //i=3B
+
+  //define two other members of the rtdm_device structure
+  rtdm_dev->proc_name =3D rtdm_dev->device_name=3B
+=20
+  ret =3D rtdm_dev_register(rtdm_dev)=3B
+  if(ret < 0) {
+   printk(KERN_WARNING"RUBICON: cannot register device\n")=3B
+   goto fail_pci=3B
+  }
+  g_rubicon_context.xen_device =3D rtdm_dev=3B
+=20
+  ret =3D pci_enable_msi(dev)=3B
+  if(ret) {
+   printk("RUBICON: Enabling MSI failed wuth error code: 0x%x\n"=2C ret)=3B
+   goto fail_pci=3B
+  }
+
+  g_rubicon_context.irq =3D dev->irq=3B /* save the allocated IRQ */
+  g_rubicon_context.dev =3D dev=3B /* Save the PCI queue h/w device ctx */
+  dev_set_drvdata(dev=2C(void *) &(g_rubicon_context))=3B
+  /* request the irq for the device */
+  ret =3D rtdm_irq_request(&g_rubicon_context.irq_handle=2C
+                         g_rubicon_context.irq=2C
+                         rubicon_irq_handler=2C
+                         RTDM_IRQTYPE_SHARED=2C
+                         "rubicon"=2C
+                         (void *)&g_rubicon_context)=3B
+....
+=20
+>From IRQ number perspective:
+Mar 22 21:12:47 localhost kernel: test_dev 0000:15:00.0: found PCI INT A ->=
+ IRQ 10  >>>> is the print from the Kernel PCI Probe and=20
+Mar 22 21:12:47 localhost kernel: test_dev: IRQ 16 successfully assigned >>=
+>>>> is my Print after enabling MSI and registering for irq.
+=20
+I get the similar print with the Plain Linux kernel with the IRQ being assi=
+gned MSI enabled is irq 20. [Below i have pasted the kernel log of plain li=
+nux kernel]. I have tested the MSI interrupts and they work fine.=20
+Mar 22 23:47:49 localhost kernel: test_dev: Probe for device function=3D0
+Mar 22 23:47:49 localhost kernel: test_dev 0000:15:00.0: found PCI INT A ->=
+ IRQ 10
+Mar 22 23:47:49 localhost kernel: pci_bar =3D 0xfe000000=20
+Mar 22 23:47:49 localhost kernel: test_dev: IRQ 20 successfully assigned to=
+ the device.
+Mar 22 23:47:49 localhost kernel: test_dev: Probe for device function=3D1
+Mar 22 23:47:49 localhost kernel: test_dev: Successfully added test_dev Dev=
+ice Driver.
+=20
+Just wanted to add 3 more questions:
+1. Which versions of Linux=2C Adeos patch and xenomai are tested for stable=
+ MSI functionality ? Please let me know.
+2. I am using the Xenomai Version linux-2.6.37=2C xenomai-2.5.6 and adeos-i=
+pipe-2.6.37-x86-2.9-00. Is this combination fine ?
+3. I looked at the /proc/interrupts and with out xenomai loaded [i.e. defau=
+lt linux kernel] I see my card beaing assigned MSI-EDGE interrupt and with =
+xenomai kernel i don't see the entry in the /proc/interrupts but in /proc/x=
+enomai/irq i see this entry=20
+IRQ           CPU0  =20
+16:              0       test_drv
+521:             0       [IPI]
+524:        869467       [timer]
+525:             0       [critical sync]
+546:             0       [virtual]
+
+thanks
+-krishna=20
+=20
+
+_______________________________________________ Xenomai-core mailing list X=
+enomai-core@domain.hid https://mail.gna.org/listinfo/xenomai-core 		 	   		  =
+
+--_551aee14-d93a-4ef4-a94a-37c85515f42a_
+Content-Type: text/html; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+
+<html>
+<head>
+<style><!--
+.hmmessage P
+{
+margin:0px=3B
+padding:0px
+}
+body.hmmessage
+{
+font-size: 10pt=3B
+font-family:Tahoma
+}
+--></style>
+</head>
+<body class=3D'hmmessage'>
+&nbsp=3B<BR>
+
+From: krishnamurthyjs@domain.hid<BR>To: gilles.chanteperdrix@xenomai.org=
+=3B jan.kiszka@domain.hid<BR>Date: Tue=2C 22 Mar 2011 23:50:27 +0530<BR>CC=
+: xenomai@xenomai.org<BR>Subject: Re: [Xenomai-core] MSI support in Xenoma=
+i<BR><BR>
+<META name=3DGenerator content=3D"Microsoft SafeHTML">
+<STYLE>
+.ExternalClass .ecxhmmessage P
+{padding:0px=3B}
+.ExternalClass body.ecxhmmessage
+{font-size:10pt=3Bfont-family:Tahoma=3B}
+
+</STYLE>
+&gt=3B Date: Tue=2C 22 Mar 2011 18:03:43 +0100<BR>&gt=3B From: gilles.chant=
+eperdrix@domain.hid<BR>&gt=3B To: jan.kiszka@domain.hid<BR>&gt=3B CC: kri=
+shnamurthyjs@domain.hid xenomai@xenomai.org<BR>&gt=3B Subject: Re: MSI=
+ support in Xenomai<BR>&gt=3B <BR>&gt=3B Jan Kiszka wrote:<BR>&gt=3B &gt=3B=
+ On 2011-03-22 16:55=2C krishna m wrote:<BR>&gt=3B <BR>&gt=3B &gt=3B&gt=3B =
+Mar 22 21:12:47 localhost kernel: test_dev: Probe for device function=3D0<B=
+R>&gt=3B &gt=3B&gt=3B Mar 22 21:12:47 localhost kernel: test_dev 0000:15:00=
+.0: found PCI INT A -&gt=3B IRQ 10<BR>&gt=3B &gt=3B <BR>&gt=3B &gt=3B Here =
+you get IRQ 10...<BR>&gt=3B &gt=3B <BR>&gt=3B &gt=3B&gt=3B Mar 22 21:12:47 =
+localhost kernel: pci_bar =3D 0xfe000000<BR>&gt=3B &gt=3B&gt=3B Mar 22 21:1=
+2:47 localhost kernel: Xenomai: RTDM: RT open handler is deprecated=2C <BR>=
+&gt=3B &gt=3B&gt=3B driver requires update.<BR>&gt=3B &gt=3B&gt=3B Mar 22 2=
+1:12:47 localhost kernel: Xenomai: RTDM: RT close handler is deprecated=2C =
+<BR>&gt=3B &gt=3B&gt=3B driver requires update.<BR>&gt=3B &gt=3B <BR>&gt=3B=
+ &gt=3B [ These messages also have a meaning=2C though unrelated to the cra=
+sh. ]<BR>&gt=3B &gt=3B <BR>&gt=3B &gt=3B&gt=3B Mar 22 21:12:47 localhost ke=
+rnel: test_dev: IRQ 16 successfully assigned to the <BR>&gt=3B &gt=3B&gt=3B=
+ device.<BR>&gt=3B &gt=3B <BR>&gt=3B &gt=3B ...but here IRQ 16 is assigned.=
+ Broken output or a real inconsistency?<BR>&gt=3B &gt=3B <BR>&gt=3B &gt=3B =
+Also=2C where is the MSI? You should see log messages about MSI/MSI-X IRQ<B=
+R>&gt=3B &gt=3B number assignment when properly enabling the support at PCI=
+ level.<BR>&gt=3B <BR>&gt=3B Maybe pci_enable_msi was called after request_=
+irq ?<BR>&gt=3B <BR>&gt=3B <BR>&gt=3B -- <BR>&gt=3B Gilles.<BR>&nbsp=3B<BR>=
+Just check my code:<BR>i do enable MSI&nbsp=3B (<FONT face=3D"Courier New">=
+pci_enable_msi) </FONT>before <FONT face=3D"Courier New">rtdm_irq_request p=
+asted the code below part of my PCI probe function in the device driver:</F=
+ONT><BR>&nbsp=3B<BR>......<BR><FONT face=3D"Courier New">rtdm_dev =3D kmall=
+oc(sizeof(struct rtdm_device)=2C GFP_KERNEL)=3B<BR>&nbsp=3B&nbsp=3Bif(!rtdm=
+_dev) {<BR>&nbsp=3B&nbsp=3B&nbsp=3Bprintk(KERN_WARNING "RUBICON: kmalloc fa=
+iled\n")=3B<BR>&nbsp=3B&nbsp=3B&nbsp=3Bret =3D -ENOMEM=3B //Insufficient st=
+orage space is available.<BR>&nbsp=3B&nbsp=3B&nbsp=3Bgoto fail_pci=3B<BR>&n=
+bsp=3B&nbsp=3B}</FONT><BR><FONT face=3D"Courier New"><BR>&nbsp=3B&nbsp=3B//=
+copy the structure to the new memory<BR>&nbsp=3B&nbsp=3Bmemcpy(rtdm_dev=2C =
+&amp=3Brubicon_rtdm_driver=2C sizeof(struct rtdm_device))=3B<BR><BR>&nbsp=
+=3B&nbsp=3B//create filename<BR>&nbsp=3B&nbsp=3Bsnprintf(rtdm_dev-&gt=3Bdev=
+ice_name=2C<BR>&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbs=
+p=3B&nbsp=3B&nbsp=3B RTDM_MAX_DEVNAME_LEN=2C "rtser%d"=2C 0 /*i*/)=3B<BR>&n=
+bsp=3B&nbsp=3Brtdm_dev-&gt=3Bdevice_id =3D 0=3B //i=3B<BR><BR>&nbsp=3B&nbsp=
+=3B//define two other members of the rtdm_device structure<BR>&nbsp=3B&nbsp=
+=3Brtdm_dev-&gt=3Bproc_name =3D rtdm_dev-&gt=3Bdevice_name=3B</FONT><BR><FO=
+NT face=3D"Courier New"></FONT>&nbsp=3B<BR><FONT face=3D"Courier New">&nbsp=
+=3B&nbsp=3Bret =3D rtdm_dev_register(rtdm_dev)=3B<BR>&nbsp=3B&nbsp=3Bif(ret=
+ &lt=3B 0) {<BR>&nbsp=3B&nbsp=3B&nbsp=3Bprintk(KERN_WARNING"RUBICON: cannot=
+ register device\n")=3B<BR>&nbsp=3B&nbsp=3B&nbsp=3Bgoto fail_pci=3B<BR>&nbs=
+p=3B&nbsp=3B}</FONT><BR><FONT face=3D"Courier New">&nbsp=3B&nbsp=3Bg_rubico=
+n_context.xen_device =3D rtdm_dev=3B</FONT><BR><FONT face=3D"Courier New"><=
+/FONT>&nbsp=3B<BR><FONT face=3D"Courier New">&nbsp=3B&nbsp=3B<U>ret =3D pci=
+_enable_msi(dev)=3B</U></FONT><BR><FONT face=3D"Courier New">&nbsp=3B&nbsp=
+=3Bif(ret) {<BR>&nbsp=3B&nbsp=3B&nbsp=3Bprintk("RUBICON: Enabling MSI faile=
+d wuth error code: 0x%x\n"=2C ret)=3B<BR>&nbsp=3B&nbsp=3B&nbsp=3Bgoto fail_=
+pci=3B<BR>&nbsp=3B&nbsp=3B}</FONT><BR><FONT face=3D"Courier New"><BR>&nbsp=
+=3B&nbsp=3Bg_rubicon_context.irq =3D dev-&gt=3Birq=3B /* save the allocated=
+ IRQ */<BR>&nbsp=3B&nbsp=3Bg_rubicon_context.dev =3D dev=3B /* Save the PCI=
+ queue h/w device ctx */</FONT><BR><FONT face=3D"Courier New">&nbsp=3B&nbsp=
+=3Bdev_set_drvdata(dev=2C(void *) &amp=3B(g_rubicon_context))=3B</FONT><BR>=
+<FONT face=3D"Courier New">&nbsp=3B&nbsp=3B/* request the irq for the devic=
+e */<BR>&nbsp=3B&nbsp=3B<U>ret =3D rtdm_irq_request</U>(&amp=3Bg_rubicon_co=
+ntext.irq_handle=2C<BR>&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbs=
+p=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=
+=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B g_rubic=
+on_context.irq=2C<BR>&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=
+=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B=
+&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B rubicon_ir=
+q_handler=2C<BR>&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nb=
+sp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=
+=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B RTDM_IRQTYPE_SH=
+ARED=2C<BR>&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B=
+&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nb=
+sp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B "rubicon"=2C<BR>&nbsp=
+=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B=
+&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nb=
+sp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B (void *)&amp=3Bg_rubicon_context)=3B<=
+/FONT><BR><FONT face=3D"Courier New">....</FONT><BR><FONT face=3D"Courier N=
+ew"></FONT>&nbsp=3B<BR><FONT face=3D"Courier New"><FONT face=3DTahoma>From =
+IRQ number perspective</FONT>:</FONT><BR><FONT face=3D"Courier New">Mar 22 =
+21:12:47 localhost kernel: test_dev 0000:15:00.0: found PCI INT A -&gt=3B I=
+RQ 10&nbsp=3B &gt=3B&gt=3B&gt=3B&gt=3B <FONT face=3DTahoma>is the print fro=
+m the Kernel PCI Probe and </FONT><BR>Mar 22 21:12:47 localhost kernel: tes=
+t_dev: IRQ 16 successfully assigned &gt=3B&gt=3B&gt=3B&gt=3B&gt=3B&gt=3B <F=
+ONT face=3DTahoma>is my Print after enabling MSI and registering for irq.</=
+FONT><BR><FONT face=3DTahoma></FONT>&nbsp=3B<BR><FONT face=3DTahoma>I get t=
+he similar print with the Plain Linux kernel with the IRQ being assigned MS=
+I enabled is irq 20. [Below i have pasted the kernel log of plain linux ker=
+nel]. I have tested the MSI interrupts and they work fine. </FONT><BR><FONT=
+ face=3DTahoma><FONT face=3D"Courier New">Mar 22 23:47:49 localhost kernel:=
+ test_dev: Probe for device function=3D0<BR>Mar 22 23:47:49 localhost kerne=
+l: test_dev 0000:15:00.0: found PCI INT A -&gt=3B IRQ 10<BR>Mar 22 23:47:49=
+ localhost kernel: pci_bar =3D 0xfe000000 <BR>Mar 22 23:47:49 localhost ker=
+nel: test_dev: IRQ 20 successfully assigned to the device.<BR>Mar 22 23:47:=
+49 localhost kernel: test_dev: Probe for device function=3D1<BR>Mar 22 23:4=
+7:49 localhost kernel: test_dev: Successfully added test_dev Device Driver.=
+</FONT></FONT></FONT><BR>
+<FONT face=3D"Courier New"><FONT face=3DTahoma><FONT face=3D"Courier New"><=
+/FONT></FONT></FONT>&nbsp=3B<BR>
+<FONT face=3D"Courier New"><FONT face=3DTahoma><FONT face=3D"Courier New">J=
+ust wanted to add 3 more questions:</FONT></FONT></FONT><BR>
+<FONT face=3D"Courier New">1. Which versions of Linux=2C Adeos patch and xe=
+nomai are tested for stable MSI functionality ? Please let me know.</FONT><=
+BR>
+<FONT face=3D"Courier New"><FONT face=3DTahoma><FONT face=3D"Courier New">2=
+. I am using the Xenomai Version linux-2.6.37=2C xenomai-2.5.6 and adeos-ip=
+ipe-2.6.37-x86-2.9-00. Is&nbsp=3Bthis combination fine ?</FONT></FONT></FON=
+T><BR>
+<FONT face=3D"Courier New"><FONT face=3DTahoma><FONT face=3D"Courier New">3=
+. I looked at the /proc/interrupts and with out xenomai loaded [i.e. defaul=
+t linux kernel] I see my card beaing assigned MSI-EDGE interrupt and with x=
+enomai kernel i don't see the entry in the /proc/interrupts but in /proc/xe=
+nomai/irq i see this entry </FONT></FONT></FONT><BR>
+<FONT face=3D"Courier New"><FONT face=3DTahoma><FONT face=3D"Courier New">I=
+RQ&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&=
+nbsp=3B CPU0&nbsp=3B&nbsp=3B </FONT><BR></FONT>16:&nbsp=3B&nbsp=3B&nbsp=3B&=
+nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbs=
+p=3B 0&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B test_drv</FONT><BR>
+<FONT face=3D"Courier New">521:&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbs=
+p=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B 0&nbsp=3B&nbsp=3B&nbsp=
+=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B[IPI]</FONT><BR>
+<FONT face=3D"Courier New">524:&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbs=
+p=3B&nbsp=3B&nbsp=3B869467&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&=
+nbsp=3B[timer]</FONT><BR>
+<FONT face=3D"Courier New">525:&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbs=
+p=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B 0&nbsp=3B&nbsp=3B&nbsp=
+=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B[critical sync]</FONT><BR>
+<FONT face=3D"Courier New">546:&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbs=
+p=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B 0&nbsp=3B&nbsp=3B&nbsp=
+=3B&nbsp=3B&nbsp=3B&nbsp=3B&nbsp=3B[virtual]</FONT><BR>
+<FONT face=3D"Courier New"><BR><FONT face=3DTahoma>thanks<BR></FONT><FONT f=
+ace=3DTahoma>-krishna <BR></FONT></FONT><FONT face=3D"Courier New">&nbsp=3B=
+<BR></FONT><BR>_______________________________________________ Xenomai-core=
+ mailing list Xenomai-core@domain.hid https://mail.gna.org/listinfo/xenomai-co=
+re<BR> 		 	   		  </body>
+</html>=
+
+--_551aee14-d93a-4ef4-a94a-37c85515f42a_--
 
