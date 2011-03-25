@@ -1,15 +1,12 @@
-Message-ID: <4D8C5C8A.9090605@domain.hid>
-Date: Fri, 25 Mar 2011 10:12:42 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <4D8C6AD3.8060402@domain.hid>
+Date: Fri, 25 Mar 2011 11:13:39 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <AANLkTi=BBfLtXpYDzd2XxRmb58mP2M0QuBoP05_04PAH@mail.gmail.com>
-In-Reply-To: <AANLkTi=BBfLtXpYDzd2XxRmb58mP2M0QuBoP05_04PAH@mail.gmail.com>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig6B8DED78CF774EE6D33A2177"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-help] help:Can xenomai cooperate with such Xen ,
- KVM or other virtual machine and work well?
+References: <27340542.1331151.1300980168620.JavaMail.root@domain.hid>
+In-Reply-To: <27340542.1331151.1300980168620.JavaMail.root@domain.hid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] Xenomai Kernel panic
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -19,49 +16,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: alamo hwuang <lovealamo@domain.hid>
+To: George Afonso <george.afonso@domain.hid>
 Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig6B8DED78CF774EE6D33A2177
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+George Afonso wrote:
+> Spam detection software, running on the system "xenomai.org", has
+> identified this incoming email as possible spam.  The original message
+> has been attached to this so you can view it (if it isn't spam) or label
+> similar future email.  If you have any questions, see
+> the administrator of that system for details.
+> (...)
+> Hello, 
 
-On 2011-03-25 03:20, alamo hwuang wrote:
-> hello ,every one.
->=20
-> I want to use the xenomai into the virtual machine. But I havd doubt
-> that xenomai works upon adeos and hardware. Can xenomai works well
-> with Xen ,KVM or other virtual machine ?  Is there no any possible?
+Hi,
 
-It's working fine in KVM. We also have it running under VirtualBox,
-though you then have to set a fixed CPU frequency as VBox does not
-support paravirtual TSC calibration. Xen in HVM mode should work as
-well, but I never tested it. Anyway, the major advantages of KVM are
-that it's simple to set up (it's part of Linux) and that you can debug
-the Xenomai kernel or drivers (when passing PCI devices through) at
-source code level.
+Sorry for the late answer, your mail was treated as spam, due to the
+fact that it is HTML, and that the .config were sent in plain text.
 
-That said, none of the solutions currently provide any real-time
-guarantees. There is WIP to improve KVM, but the result will likely be
-at least one order of magnitude worse than real hardware.
+> 
+> I was using xenomai and wanted to install it in a new computer, i follow the same steps as before, 
+> I configure the kernel as advised in xenomai website using linux .config default file (see configxeno) 
+> In order to test the configuration, I use the same config file for a simple kernel (without xenomai) (ie : avoiding ACPI processor, apm and cpufreq as advised in your web site) (see configlinux). 
+> 
+> I've no problem with the configlinux (it boots without problems) but i have a kernel panic with configxeno : 
 
-Jan
+The data you give us are quite insufficient. Your xenoconfig does not
+follow the usual advices, I suggest you read:
+http://www.xenomai.org/index.php/Configuring_x86_kernels
+
+If you want us to help you, please send us the information asked here:
+http://www.xenomai.org/index.php/Request_for_information
+
+The most important thing being the full kernel logs, from the boot up to
+the oops, and the full text of the oops, not just some partial piece of
+it. I see here that you copied the oops text manually, this will not do.
+What you should do is capture the full logs with a serial console, or
+netconsole.
 
 
---------------enig6B8DED78CF774EE6D33A2177
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.15 (GNU/Linux)
-Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org/
-
-iEYEARECAAYFAk2MXI4ACgkQitSsb3rl5xTL/ACeKMLG65v0BtqqXkWJAAEmJxbY
-LAUAnRd+pXTfP5IjJSaWQUkLq9k7VQCe
-=RjVC
------END PGP SIGNATURE-----
-
---------------enig6B8DED78CF774EE6D33A2177--
+-- 
+					    Gilles.
 
