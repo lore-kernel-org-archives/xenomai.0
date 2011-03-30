@@ -1,13 +1,13 @@
-Message-ID: <4D93A416.2030800@domain.hid>
-Date: Wed, 30 Mar 2011 23:43:50 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <AANLkTingRPWqG1SZAaNs4TKeJFXicZWGqmL2A1rT8vrf@domain.hid>	<1301041270.2079.8.camel@domain.hid>	<AANLkTikkkj0GTbpG2m8ozy8TjTJ1Yz0CHoU4FEP8dqsS@mail.gmail.com>	<1301083171.3221.93.camel@domain.hid>	<AANLkTinANQJYmAi942WcvnGWL4FZFJBo4S6-WxG2obKH@mail.gmail.com>	<1301086366.3221.105.camel@domain.hid>	<AANLkTin6ooP_SZpNoTW3+Wb_0GA2U7SotV6LTeH_qOnY@mail.gmail.com>	<1301460841.2092.10.camel@domain.hid>
-	<AANLkTi=BQfeyZ-SRP8=+QX-ufwQVd=bjMw_d6bQp3KM0@domain.hid>
-In-Reply-To: <AANLkTi=BQfeyZ-SRP8=+QX-ufwQVd=bjMw_d6bQp3KM0@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Scheduling questions...
+Sender: madjsw@domain.hid
+In-Reply-To: <4D89A334.4090802@domain.hid>
+References: <AANLkTi=LM5LNr1mT-f3xY-w-ATzRNPZX3hPVsFpG=TnC@mail.gmail.com>
+	<4D89A334.4090802@domain.hid>
+Date: Wed, 30 Mar 2011 16:56:30 -0500
+Message-ID: <AANLkTikiEN7Pd-F2FqgXf9MGSTqg1wq_KxsumfZeR5xX@mail.gmail.com>
+From: Jeff Weber <jwamsc@domain.hid>
+Content-Type: multipart/alternative; boundary=0016e6db2942cfaa74049fba3f11
+Subject: Re: [Xenomai-help] CLOCK_REALTIME synchronized to NTP
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -17,62 +17,102 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Eric Eric <ericrebates@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-Eric Eric wrote:
-> Thanks Philippe.  I was thinking of avoiding POSIX only because some
-> of my colleagues have noticed severe performance hits using non-native
-> skins in commercial RTOSs, particularly Integrity.  Would you expect
-> POSIX performance to be roughly the same as native?
+--0016e6db2942cfaa74049fba3f11
+Content-Type: text/plain; charset=ISO-8859-1
 
-Hi Eric,
+On Wed, Mar 23, 2011 at 2:37 AM, Gilles Chanteperdrix <
+gilles.chanteperdrix@xenomai.org> wrote:
 
-posix and native are both skins implemented using the same internal
-services, so, their performances should be comparable. If you find some
-posix service much slower than its native counterpart, we would consider
-it a bug.
+> Jeff Weber wrote:
+> > I need to timetag events from a realtime context with a NPT-synchronized
+> > system clock.  This topic comes up periodically on the mailing list.
+>  Last I
+> > recall, there was talk of adding the capability via an alternate
+> > (non-CLOCK_REALTIME) clock_id. What is the status of this topic?
+>
+> The CLOCK_HOST_REALTIME is available in the xenomai-head branch (to be
+> 2.6 branch, soon). It requires modifications of the I-pipe patch which
+> are available, at least, on x86, but are probably not really hard to
+> implement on other platforms.
+>
 
-> TP is interesting, and may work for my applications since we are likely to
-> do much of our real-time work in-kernel to get the absolute minimum
-> latency possible.
+ clock_gettime(CLOCK_HOST_REALTIME) fails when called from kernel, and from
+clocktest.  Any ideas why?
+Does the CLOCK_HOST_REALTIME need to be initialized in some way?
+Test and config follow.
 
-On what hardware? On a typical x86 machine, the user-space performances
- are sufficient for a large majority of applications. Besides, there are
-other points to consider than performance in order to choose between
-kernel-space and user-space:
-- kernel-space code is harder to debug, this results in longer time to
-complete your project;
-- kernel-space code is covered by the GPL license;
-- imitating what you do with the Linux kernel, you can split the code
-between application and driver, the driver going to kernel-space and
-being implemented on top of the RTDM skin;
-- Xenomai kernel-space APIs will be discontinued in Xenomai 3.x branch
-(except, obviously, the RTDM skin).
+TIA,
+Jeff
 
-I would go the other way: first try user-space, if performances are not
-sufficient, they try and find other ways, maybe changing hardware for
-instance, move time critical parts in an RTDM driver, and move the
-application to kernel-space only as the last resort.
 
-> 
-> On a related note, I noticed on page 14 of
-> http://retis.sssup.it/~lipari/courses/str09/12.xeno-handout.pdf that
-> when Xenomai is in secondary mode, all Linux interrupts are stalled.
-> This would seem to imply that doing something like select in a Xenomai
-> user-task would be problematic, as we would have wait until Linux goes
-> into background mode to unstall Linux interrupts.  Is there any way
-> around this?  The slide suggests that this behavior is "to reduce
-> latency" although I suspect there may be other motivations.
 
-The irq shield is not available in recent versions of Xenomai. But when
-it was still there, obvious cases such as a thread suspending after
-entering secondary mode were handled by disabling the shield in that
-case: the shield was only enabled when a Xenomai thread was running in
-secondary mode, not when it was suspended.
+# /usr/xenomai/bin/clocktest -D -C 42
+hostrt data area is not live
+clock_gettime failed for clock id 42
+hostrt data area is not live
 
-Regards.
+# grep -rw CLOCK_HOST_REALTIME /usr/xenomai/include/
+/usr/xenomai/include/posix/time.h:#define CLOCK_HOST_REALTIME 42
 
--- 
-                                                                Gilles.
+ # zgrep HOSTRT /proc/config.gz
+CONFIG_XENO_OPT_HOSTRT=y
+CONFIG_HAVE_IPIPE_HOSTRT=y
+
+# cat /proc/xenomai/version
+2.5.90
+
+# cat /proc/ipipe/version
+2.9-00
+
+# uname -r
+2.6.37.3-xeno-head-smp
+
+Architecture is x86 32-bit SMP with TSC.
+
+--0016e6db2942cfaa74049fba3f11
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+On Wed, Mar 23, 2011 at 2:37 AM, Gilles Chanteperdrix <span dir=3D"ltr">&lt=
+;<a href=3D"mailto:gilles.chanteperdrix@xenomai.org">gilles.chanteperdrix@xenomai.org=
+enomai.org</a>&gt;</span> wrote:<br><div class=3D"gmail_quote"><blockquote =
+class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid=
+;padding-left:1ex;">
+<div><div></div><div class=3D"h5">Jeff Weber wrote:<br>
+&gt; I need to timetag events from a realtime context with a NPT-synchroniz=
+ed<br>
+&gt; system clock. =A0This topic comes up periodically on the mailing list.=
+ =A0Last I<br>
+&gt; recall, there was talk of adding the capability via an alternate<br>
+&gt; (non-CLOCK_REALTIME) clock_id. What is the status of this topic?<br>
+<br>
+</div></div>The CLOCK_HOST_REALTIME is available in the xenomai-head branch=
+ (to be<br>
+2.6 branch, soon). It requires modifications of the I-pipe patch which<br>
+are available, at least, on x86, but are probably not really hard to<br>
+implement on other platforms.<br></blockquote><div><br></div><div>=A0clock_=
+gettime(CLOCK_HOST_REALTIME) fails when called from kernel, and from clockt=
+est. =A0Any ideas why?</div><div>Does the=A0CLOCK_HOST_REALTIME need to be =
+initialized in some way?</div>
+<div>Test and config follow.</div><div><br></div><div>TIA,</div><div>Jeff</=
+div><div><br></div><div><br></div><div><br></div></div><div># /usr/xenomai/=
+bin/clocktest -D -C 42</div><div>hostrt data area is not live</div><div>
+clock_gettime failed for clock id 42</div><div>hostrt data area is not live=
+</div><div><br></div><div><div># grep -rw CLOCK_HOST_REALTIME /usr/xenomai/=
+include/</div><div>/usr/xenomai/include/posix/time.h:#define CLOCK_HOST_REA=
+LTIME 42</div>
+</div><div><br></div><div><div>=A0# zgrep HOSTRT /proc/config.gz</div><div>=
+CONFIG_XENO_OPT_HOSTRT=3Dy</div><div>CONFIG_HAVE_IPIPE_HOSTRT=3Dy</div></di=
+v><div><br></div><div><div># cat /proc/xenomai/version</div><div>2.5.90</di=
+v>
+</div><div><br></div><div><div># cat /proc/ipipe/version</div><div>2.9-00</=
+div></div><div><br></div><div><div># uname -r</div><div>2.6.37.3-xeno-head-=
+smp</div></div><div><br></div><div>Architecture is x86 32-bit SMP with TSC.=
+</div>
+<div><br></div>
+
+--0016e6db2942cfaa74049fba3f11--
 
