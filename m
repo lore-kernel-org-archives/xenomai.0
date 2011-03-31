@@ -1,79 +1,161 @@
-Message-ID: <4D9494B6.6040304@domain.hid>
-Date: Thu, 31 Mar 2011 16:50:30 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <AANLkTi=ptfmh+VVBB29cmsg10od0FLdxY=p-yGj3xLFb@domain.hid>	<1301412534.2109.24.camel@domain.hid>	<4D922EF5.8020808@domain.hid>	<1301426227.2109.35.camel@domain.hid>	<4D9230C5.7050007@domain.hid>	<1301426830.2109.41.camel@domain.hid>	<4D923306.60409@domain.hid>	<1301461081.2092.14.camel@domain.hid>	<AANLkTim=xKo51rErYUN9+h2MONaAg9BJ5E_dJuRCwYg_@domain.hid>	<1301472945.2092.21.camel@domain.hid>	<AANLkTikNq2r+wjC0z+mkczjq8F67ztmXRDBMnHQ4-a9E@mail.gmail.com>	<AANLkTinAFpi1rAsU-DbgQUPKpEev4215evzRWmYZJzWP@mail.gmail.com>
-	<4D948F87.9010109@domain.hid>
-In-Reply-To: <4D948F87.9010109@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <il5a9u$hss$1@domain.hid>
+References: <il5a9u$hss$1@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Date: Thu, 31 Mar 2011 10:32:16 +0200
+Message-ID: <1301560336.2155.35.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Priority coupling broken?
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Henri Roosen <henriroosen@domain.hid>
-Cc: xenomai@xenomai.org
+Subject: Re: [Adeos-main] [RFC] PPC 85xx: Support for doorbell-based IPIs
+List-Id: General discussion about Adeos <adeos-main.gna.org>
+List-Unsubscribe: <https://mail.gna.org/options/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+List-Archive: </public/adeos-main>
+List-Post: <mailto:adeos-main@gna.org>
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+To: Florian Boelstler <kernel@domain.hid>
+Cc: adeos-main@gna.org
 
-Gilles Chanteperdrix wrote:
-> Henri Roosen wrote:
->> Did some more tracing to see why the lower priority thread is
->> scheduled before the higher prio thread is ended.
->>
->> The highest priority task makes a system call and gets relaxed by
->> xnshadow_relax. The rpi is pushed here and a Linux call with
->> LO_WAKEUP_REQ is scheduled. Then I see the scheduler scheduling to the
->> ROOT task. So far so good!
->>
->> In the Linux domain, we run into the lostage_handler, where the
->> scheduled LO_WAKEUP_REQ is executed. Here there is a call to
->> xnpod_schedule() which actually causes a switch back to the primary
->> domain and the lower priority Xenomai task to be scheduled in, even
->> before the wanted process is woken up.
->>
->> Now, I am unsure what is faulty here and maybe Philippe or someone can
->> answer that. Personally I would have expected the xnpod_schedule (or
->> xnsched_pick_next) to know about the rpi list and not schedule a lower
->> priority task than of any on that list. I was unable to find such
->> code.
->>
+On Tue, 2011-03-08 at 14:17 +0100, Florian Boelstler wrote:
+> Hi,
 > 
-> Unless I am wrong, what happens is whait is intended, at least if we
-> read the comment:
-> 		case LO_WAKEUP_REQ:
-> 			/*
-> 			 * We need to downgrade the root thread
-> 			 * priority whenever the APC runs over a
-> 			 * non-shadow, so that the temporary boost we
-> 			 * applied in xnshadow_relax() is not
-> 			 * spuriously inherited by the latter until
-> 			 * the relaxed shadow actually resumes in
-> 			 * secondary mode.
-> 			 */
-> 			rpi_clear_local(xnshadow_thread(current));
-> 			xnpod_schedule();
-> 
-> Which means that we do not want other Linux kernel code than the
-> real-time thread itself to inherit from this thread priority. Except
-> that all the code from the switch to root thread to the lostage_handler
-> (which means any Linux currently preempted critical section) already
-> inherited the priority.
+> (repost from xenomai-core)
 
-The problem is that calling wake_up_process (a bit below that code) does
-not guarantee that the next thread scheduled is the shadow running in
-secondary mode. There may be other Linux threads with higher priorities,
-and we do not want them to inherit this priority. The idea is that if
-the next process scheduled is indeed the real-time shadow running in
-secondary mode, the RPI will be applied in do_schedule_event. But of
-course, this leaves a window for another real-time thread to preempt. At
-least it is the way I would understand this, but I am not sure I
-understand RPI all that well, so, I will shut up and let Philippe answer.
+[snip]
+
+> diff --git a/arch/powerpc/kernel/ipipe.c b/arch/powerpc/kernel/ipipe.c
+> index 825dc26..1cfc918 100644
+> --- a/arch/powerpc/kernel/ipipe.c
+> +++ b/arch/powerpc/kernel/ipipe.c
+> @@ -467,11 +467,35 @@ static int __ipipe_exit_irq(struct pt_regs *regs)
+>       return 0;
+>   }
+> 
+> +void __ipipe_grab_ipi(struct pt_regs *regs, int irq)
+> +{
+> +    //printk(KERN_INFO "%s(): I-pipe: irq %d\n", __func__, irq);
+> +
+> +    if (likely(irq != NO_IRQ_IGNORE)) {
+
+AFAIU, this test will always match.
+
+> +        ipipe_trace_irq_entry(irq);
+> +#ifdef CONFIG_SMP
+> +        /* Check for cascaded I-pipe IPIs */
+> +        if (irq == __ipipe_ipi_irq)
+
+__ipipe_ipi_virq normally matches the virq number of the debugger IPI
+which is piggybacked for multiplexing more IPIs internally. I fail to
+see how any doorbell IPI could ever match this test. I suspect that
+everything gets channeled through __ipipe_handle_irq() here.
+
+> +        {
+> +            //printk(KERN_INFO "I-pipe: grabbed ipi irq %d\n", irq);
+> +            __ipipe_ipi_demux(irq, regs);
+> +        }
+> +        else
+> +#endif /* CONFIG_SMP */
+> +            __ipipe_handle_irq(irq, regs);
+> +    }
+> +
+> +    ipipe_trace_irq_exit(irq);
+> +
+> +    __ipipe_exit_irq(regs);
+> +}
+> +
+>   asmlinkage int __ipipe_grab_irq(struct pt_regs *regs)
+>   {
+>       int irq;
+> 
+>       irq = ppc_md.get_irq();
+> +    //printk(KERN_INFO "I-pipe: grabbed irq %d\n", irq);
+>       if (unlikely(irq == NO_IRQ)) {
+>           __get_cpu_var(irq_stat).spurious_irqs++;
+>           return __ipipe_exit_irq(regs);
+> @@ -482,7 +506,10 @@ asmlinkage int __ipipe_grab_irq(struct pt_regs *regs)
+>   #ifdef CONFIG_SMP
+>           /* Check for cascaded I-pipe IPIs */
+>           if (irq == __ipipe_ipi_irq)
+> +        {
+> +            printk(KERN_INFO "I-pipe: ipi irq %d\n", irq);
+>               __ipipe_ipi_demux(irq, regs);
+> +        }
+>           else
+>   #endif /* CONFIG_SMP */
+>               __ipipe_handle_irq(irq, regs);
+> diff --git a/arch/powerpc/kernel/smp.c b/arch/powerpc/kernel/smp.c
+> index 5f7d048..2dc860c 100644
+> --- a/arch/powerpc/kernel/smp.c
+> +++ b/arch/powerpc/kernel/smp.c
+> @@ -113,6 +113,7 @@ void smp_message_recv(int msg)
+>   #endif /* CONFIG_DEBUGGER */
+>           /* FALLTHROUGH */
+>       default:
+> +        dump_stack();
+>           printk("SMP %d: smp_message_recv(): unknown msg %d\n",
+>                  smp_processor_id(), msg);
+>           break;
+> diff --git a/arch/powerpc/kernel/traps.c b/arch/powerpc/kernel/traps.c
+> index 2866cf0..344bc7a 100644
+> --- a/arch/powerpc/kernel/traps.c
+> +++ b/arch/powerpc/kernel/traps.c
+> @@ -1386,6 +1386,7 @@ void vsx_assist_exception(struct pt_regs *regs)
+>   void doorbell_exception(struct pt_regs *regs)
+>   {
+>   #ifdef CONFIG_SMP
+> +    extern void __ipipe_grab_ipi(struct pt_regs *regs, int irq);
+
+arch/powerpc/include/asm/ipipe.h
+
+>       int cpu = smp_processor_id();
+>       int msg;
+> 
+> @@ -1394,7 +1395,8 @@ void doorbell_exception(struct pt_regs *regs)
+> 
+>       for (msg = 0; msg < 4; msg++)
+>           if (test_and_clear_bit(msg, &dbell_smp_message[cpu]))
+> -            smp_message_recv(msg);
+> +            //smp_message_recv(msg);
+> +            __ipipe_grab_ipi(regs,255-(4-msg));
+
+Some hint in the code about the way you determine the doorbell IRQ
+number would be useful.
+
+This patch is missing a critical piece for stability.
+In the regular Adeos/powerpc support (head_32.S), check why this:
+EXCEPTION(0x500, HardwareInterrupt, do_IRQ, EXC_XFER_LITE)
+is replaced by that:
+EXCEPTION(0x500, HardwareInterrupt, __ipipe_grab_irq, EXC_XFER_IPIPE)
+
+The logic should be the same for the doorbell intercept code, albeit
+adapted for full transfer with all GPRS being restored upon exit.
+
+Hint: because the interrupt mask is virtualized, we may receive a
+doorbell while linux _thinks_ it has disabled IRQ, it just happens that
+the interrupt pipeline won't deliver it immediately, but will wait for
+the kernel to unstall the root stage. __ipipe_ret_from_except makes sure
+that linux is accepting IRQs before running the regular return path from
+interrupt, i.e. looking for pending rescheduling, signals etc.
+
+OTOH, if we allow any interrupt to take the normal linux return path
+even in cases where linux was not supposed to accept IRQs (e.g. between
+local_irq_enable/disable sections), then things are likely to go wrong
+shortly after.
+
+>   #else
+>       printk(KERN_WARNING "Received doorbell on non-smp system\n");
+>   #endif
+> 
+> 
+> _______________________________________________
+> Adeos-main mailing list
+> Adeos-main@domain.hid
+> https://mail.gna.org/listinfo/adeos-main
 
 -- 
-					    Gilles.
+Philippe.
+
+
 
