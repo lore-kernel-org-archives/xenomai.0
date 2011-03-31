@@ -1,20 +1,12 @@
+Message-ID: <4D9494B6.6040304@domain.hid>
+Date: Thu, 31 Mar 2011 16:50:30 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <4D948F87.9010109@domain.hid>
-References: <AANLkTi=ptfmh+VVBB29cmsg10od0FLdxY=p-yGj3xLFb@domain.hid>
-	<1301412534.2109.24.camel@domain.hid> <4D922EF5.8020808@domain.hid>
-	<1301426227.2109.35.camel@domain.hid> <4D9230C5.7050007@domain.hid>
-	<1301426830.2109.41.camel@domain.hid> <4D923306.60409@domain.hid>
-	<1301461081.2092.14.camel@domain.hid>
-	<AANLkTim=xKo51rErYUN9+h2MONaAg9BJ5E_dJuRCwYg_@domain.hid>
-	<1301472945.2092.21.camel@domain.hid>
-	<AANLkTikNq2r+wjC0z+mkczjq8F67ztmXRDBMnHQ4-a9E@mail.gmail.com>
-	<AANLkTinAFpi1rAsU-DbgQUPKpEev4215evzRWmYZJzWP@mail.gmail.com>
+References: <AANLkTi=ptfmh+VVBB29cmsg10od0FLdxY=p-yGj3xLFb@domain.hid>	<1301412534.2109.24.camel@domain.hid>	<4D922EF5.8020808@domain.hid>	<1301426227.2109.35.camel@domain.hid>	<4D9230C5.7050007@domain.hid>	<1301426830.2109.41.camel@domain.hid>	<4D923306.60409@domain.hid>	<1301461081.2092.14.camel@domain.hid>	<AANLkTim=xKo51rErYUN9+h2MONaAg9BJ5E_dJuRCwYg_@domain.hid>	<1301472945.2092.21.camel@domain.hid>	<AANLkTikNq2r+wjC0z+mkczjq8F67ztmXRDBMnHQ4-a9E@mail.gmail.com>	<AANLkTinAFpi1rAsU-DbgQUPKpEev4215evzRWmYZJzWP@mail.gmail.com>
 	<4D948F87.9010109@domain.hid>
-Date: Thu, 31 Mar 2011 16:44:42 +0200
-Message-ID: <AANLkTi=j3OPT0jrRS1_faEA_sQcN8iZ+nATwiCLW22VS@mail.gmail.com>
-From: Henri Roosen <henriroosen@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <4D948F87.9010109@domain.hid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] Priority coupling broken?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -25,11 +17,10 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Henri Roosen <henriroosen@domain.hid>
 Cc: xenomai@xenomai.org
 
-On Thu, Mar 31, 2011 at 4:28 PM, Gilles Chanteperdrix
-<gilles.chanteperdrix@xenomai.org> wrote:
+Gilles Chanteperdrix wrote:
 > Henri Roosen wrote:
 >> Did some more tracing to see why the lower priority thread is
 >> scheduled before the higher prio thread is ended.
@@ -51,49 +42,38 @@ On Thu, Mar 31, 2011 at 4:28 PM, Gilles Chanteperdrix
 >> priority task than of any on that list. I was unable to find such
 >> code.
 >>
->
+> 
 > Unless I am wrong, what happens is whait is intended, at least if we
 > read the comment:
-> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0case LO_WAKEUP_REQ:
-> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0/*
-> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 * We need to downgrade th=
-e root thread
-> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 * priority whenever the A=
-PC runs over a
-> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 * non-shadow, so that the=
- temporary boost we
-> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 * applied in xnshadow_rel=
-ax() is not
-> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 * spuriously inherited by=
- the latter until
-> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 * the relaxed shadow actu=
-ally resumes in
-> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 * secondary mode.
-> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 */
-> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0rpi_clear_local(xnshadow_t=
-hread(current));
-> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0xnpod_schedule();
->
+> 		case LO_WAKEUP_REQ:
+> 			/*
+> 			 * We need to downgrade the root thread
+> 			 * priority whenever the APC runs over a
+> 			 * non-shadow, so that the temporary boost we
+> 			 * applied in xnshadow_relax() is not
+> 			 * spuriously inherited by the latter until
+> 			 * the relaxed shadow actually resumes in
+> 			 * secondary mode.
+> 			 */
+> 			rpi_clear_local(xnshadow_thread(current));
+> 			xnpod_schedule();
+> 
 > Which means that we do not want other Linux kernel code than the
 > real-time thread itself to inherit from this thread priority. Except
 > that all the code from the switch to root thread to the lostage_handler
 > (which means any Linux currently preempted critical section) already
 > inherited the priority.
->
-> --
-> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
-=A0 =A0 =A0 =A0Gilles.
->
 
-Yes, I think too that what is coded here might be what is intended.
-Except the behavior that exactly at this xnpod_schedule() call the
-lower priority threads from the primary domain are scheduled in, while
-Priority Coupling promises to not schedule any of those before the
-higher priority relaxed thread. That is why I'm wondering where that
-specific code is, which I would expect somewhere down the line of
-xnpod_schedule() which would peek the rpi list or so. Or is it my
-misunderstanding to expect such code?
+The problem is that calling wake_up_process (a bit below that code) does
+not guarantee that the next thread scheduled is the shadow running in
+secondary mode. There may be other Linux threads with higher priorities,
+and we do not want them to inherit this priority. The idea is that if
+the next process scheduled is indeed the real-time shadow running in
+secondary mode, the RPI will be applied in do_schedule_event. But of
+course, this leaves a window for another real-time thread to preempt. At
+least it is the way I would understand this, but I am not sure I
+understand RPI all that well, so, I will shut up and let Philippe answer.
 
-Thanks,
-Henri
+-- 
+					    Gilles.
 
