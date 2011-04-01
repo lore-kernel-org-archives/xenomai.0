@@ -1,56 +1,42 @@
-Message-ID: <4DBBECEB.4020809@domain.hid>
-Date: Sat, 30 Apr 2011 13:05:15 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <E1QFme6-0000lI-Pf@domain.hid> <4DBB05A6.10704@domain.hid>
-	<4DBBE8C5.9080508@domain.hid>
-In-Reply-To: <4DBBE8C5.9080508@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-core] [Xenomai-git] Jan Kiszka : x86: Fix return type
- of DO_SYSCALL_INNER macro
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+From: davide doninelli <davide.doninelli@domain.hid>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Date: Fri, 1 Apr 2011 10:46:58 +0200
+Message-ID: <A537C502-9185-43A0-999B-A2DB8583008E@edu.hefr.ch>
+MIME-Version: 1.0 (Apple Message framework v1084)
+Subject: [Xenomai-help] process on linux
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: xenomai@xenomai.org
 
-Jan Kiszka wrote:
-> On 2011-04-29 20:38, Gilles Chanteperdrix wrote:
->> GIT version control wrote:
->>> Module: xenomai-jki
->>> Branch: for-upstream
->>> Commit: 852c130d16410a597536c39d06b6abd1c9c6c822
->>> URL:    http://git.xenomai.org/?p=3Dxenomai-jki.git;a=3Dcommit;h=3D85=
-2c130d16410a597536c39d06b6abd1c9c6c822
->>>
->>> Author: Jan Kiszka <jan.kiszka@domain.hid>
->>> Date:   Fri Apr 29 14:12:13 2011 +0200
->>>
->>> x86: Fix return type of DO_SYSCALL_INNER macro
->>>
->>> gcc will complain about 'conversion to =E2=80=98int=E2=80=99 from =E2=
-=80=98long int=E2=80=99 may alter
->>> its value' with -Wconversion as DO_SYSCALL treats the return value of=
+Hi 
+i see in linux proces 3 xenomai processes per xenomai RT task .
+I don't understand what are the first 2 process.
+Is that right? What are used for? Tasks are like in envelope?
+i don't find information about that.
 
->>> DO_SYSCALL_INNER as int. Align DO_SYSCALL_INNER to its user.
->>>
->>> Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
->> Should not it be aligned the other way around? Using longs everywhere?=
+#ps
+....
+ 483 root     ./interrupt_xeno_userspacen 
+  484 root     ./interrupt_xeno_userspacen 
+  485 root     ./interrupt_xeno_userspacen 
 
->> In case a syscall returns a pointer?
->=20
-> Maybe. But let's do this when we have a use case. Lots of arch macros,
-> inline functions, and core code would have to be touched.
+# cat /proc/xenomai/stat 
+CPU  PID    MSW        CSW        PF    STAT       %CPU  NAME
+  0  0      0          71         0     00500080  100.0  ROOT
+  0  485    0          47         0     00320184    0.0  mytask
+  0  0      0          1984       0     00000000    0.0  IRQ26: [timer]
 
-Right, sorry for the noise.
 
---=20
-                                                                Gilles.
 
+
+tanks in advance
+Davide Doninelli
 
