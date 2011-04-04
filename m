@@ -1,11 +1,11 @@
-Message-ID: <4D99DC22.8010000@domain.hid>
-Date: Mon, 04 Apr 2011 16:56:34 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <4D99DC22.8010000@domain.hid>
 References: <201104041641.58183.smolorz@domain.hid>
-	<1301928474.2052.57.camel@domain.hid>
-In-Reply-To: <1301928474.2052.57.camel@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+	<1301928474.2052.57.camel@domain.hid>  <4D99DC22.8010000@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Date: Mon, 04 Apr 2011 16:57:46 +0200
+Message-ID: <1301929066.2052.66.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-core] Bug in Linux kernel 2.6.37 blocks xenomai threads
 List-Id: Xenomai life and development <xenomai.xenomai.org>
@@ -16,30 +16,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-Philippe Gerum wrote:
-> On Mon, 2011-04-04 at 16:41 +0200, Sebastian Smolorz wrote:
->> Hi,
->>
->> there is a bug in kernel 2.6.37 (fixed in 2.6.37.1, see commit 
->> 1cdc65e1400d863f28af868ee1e645485b04f5ed) which blocks RT threads during 
->> creation. They stick to a certain CPU core for a certain amount of time 
->> (sometimes minutes ...) before they are migrated to the proper core and run 
->> as expected.
->>
->> Philippe, Gilles, maybe you could generate a new i-pipe patch based on the 
->> newest 2.6.37-series kernel. I patched a 2.6.37.6 kernel with adeos-
->> ipipe-2.6.37-x86-2.9-00.patch and the problem was gone.
->>
+On Mon, 2011-04-04 at 16:56 +0200, Gilles Chanteperdrix wrote:
+> Philippe Gerum wrote:
+> > On Mon, 2011-04-04 at 16:41 +0200, Sebastian Smolorz wrote:
+> >> Hi,
+> >>
+> >> there is a bug in kernel 2.6.37 (fixed in 2.6.37.1, see commit 
+> >> 1cdc65e1400d863f28af868ee1e645485b04f5ed) which blocks RT threads during 
+> >> creation. They stick to a certain CPU core for a certain amount of time 
+> >> (sometimes minutes ...) before they are migrated to the proper core and run 
+> >> as expected.
+> >>
+> >> Philippe, Gilles, maybe you could generate a new i-pipe patch based on the 
+> >> newest 2.6.37-series kernel. I patched a 2.6.37.6 kernel with adeos-
+> >> ipipe-2.6.37-x86-2.9-00.patch and the problem was gone.
+> >>
+> > 
+> > Ok, I'll handle this. I have some patches from Jan which have been
+> > pending for too long in my tree to add to this one.
 > 
-> Ok, I'll handle this. I have some patches from Jan which have been
-> pending for too long in my tree to add to this one.
+> Since you are at it, could you have a look at:
+> https://mail.gna.org/public/adeos-main/2011-04/msg00001.html
+> 
 
-Since you are at it, could you have a look at:
-https://mail.gna.org/public/adeos-main/2011-04/msg00001.html
+Ok, queued. Thanks.
 
 -- 
-					    Gilles.
+Philippe.
+
+
 
