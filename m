@@ -1,10 +1,9 @@
-From: Henry Bausley <hbausley@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Mon, 04 Apr 2011 09:12:54 -0700
-Message-ID: <1301933574.2049.7.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-help] Placing Xenomai and Linux on Seperate CPU's
+MIME-Version: 1.0
+Date: Mon, 4 Apr 2011 15:22:50 -0400
+Message-ID: <BANLkTi=QSd8qm6jwQKB3mZLwTsmp1t7phw@domain.hid>
+From: Eric Eric <ericrebates@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: [Xenomai-help] commercial users of xenomai, commercial support, JTAG
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -16,31 +15,27 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
+Hello, in the course of evaluating migration from Integrity to
+Xenomai, a few questions have come up that I am having a hard time
+finding info on:
 
-Is there a way to place linux on its own core so that it continues to
-operate under high realtime loads?  
+- Are there any examples of commercial projects that use Xenomai?  I'm
+specifically looking for propaganda like this RTEMS flier:
+http://www.rtems.com/sites/default/files/RTEMS-Users-V2.pdf
 
-I seem to be able to do this with a xenomai kernel task and user space
-task. As a test I created a large load in my kernel task which of course
-caused my xenomai user space application to come to a crawl as expected
-since they were both on CPU0.  
+- Are there any companies offering commercial support services for
+Xenomai, such as FSMLabs does for RTLinux or OAR does for RTEMS?
 
-I recompiled my kernel task with  T_FPU|T_CPU(2).  With the xenomai user
-space task on CPU0 and kernel task on CPU2 they operated in parallel so
-my xenomai user space task did not come to crawl.  
+- Can Xenomai kernel-level tasks be debugged via JTAG?  Although we
+would do most of our work in user-tasks, there is a non-trivial part
+that is highly latency sensitive and will need to go in the kernel
+(bearing in mind GPL compliance of course).  There is concern that
+this could be problematic to debug.  We sometimes use a Blackhawk JTAG
+with TI CodeComposer to debug Linux drivers.
 
-I was hoping linux could run on CPU1 & CPU3 so that keyboard input and
-mouse input doesn't stop under heavy loads in a kernel task .  However
-currently under heavy kernel loading linux basically stops.
+I think it was asked before, but we are using ARM.
 
-I am currently using xenomai 2.5.5.2 w/ Ubuntu 10.04 and testing on an
-ATOM D525 which shows up as 4 CPU's (two cores with two hyper threads)
-my second test machine is a i5 750 (four cores).
+Thanks.
 
-
-
-
-
-Outbound scan for Spam or Virus by Barracuda at Delta Tau
-
+- Eric
 
