@@ -1,43 +1,42 @@
-Date: Tue, 8 Mar 2011 08:55:49 +0100
-From: Richard Cochran <richardcochran@domain.hid>
-Message-ID: <20110308075548.GA3186@domain.hid>
-References: <20110303072147.GA4353@domain.hid>
-	<1299137548.2072.3.camel@domain.hid> <4D6F88D6.4010105@domain.hid>
-	<4D6F89C8.9060005@domain.hid> <1299156880.2072.6.camel@domain.hid>
-	<4D702802.5080001@domain.hid> <1299225060.2107.20.camel@domain.hid>
-	<20110307092604.GA21619@domain.hid>
-	<1299515837.2088.47.camel@domain.hid>
-	<20110307183348.GA3272@domain.hid>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20110307183348.GA3272@domain.hid>
-Subject: Re: [Xenomai-help] Stuck MSI in normal Linux driver
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <201104041641.58183.smolorz@domain.hid>
+References: <201104041641.58183.smolorz@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Date: Mon, 04 Apr 2011 16:47:54 +0200
+Message-ID: <1301928474.2052.57.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-core] Bug in Linux kernel 2.6.37 blocks xenomai threads
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>, Jan Kiszka <jan.kiszka@domain.hid>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Sebastian Smolorz <smolorz@domain.hid>
+Cc: xenomai@xenomai.org
 
-On Mon, Mar 07, 2011 at 07:33:48PM +0100, Richard Cochran wrote:
-> The only strange thing is that many more interrupts appear in
-> /proc/interrupts than expected,
+On Mon, 2011-04-04 at 16:41 +0200, Sebastian Smolorz wrote:
+> Hi,
+> 
+> there is a bug in kernel 2.6.37 (fixed in 2.6.37.1, see commit 
+> 1cdc65e1400d863f28af868ee1e645485b04f5ed) which blocks RT threads during 
+> creation. They stick to a certain CPU core for a certain amount of time 
+> (sometimes minutes ...) before they are migrated to the proper core and run 
+> as expected.
+> 
+> Philippe, Gilles, maybe you could generate a new i-pipe patch based on the 
+> newest 2.6.37-series kernel. I patched a 2.6.37.6 kernel with adeos-
+> ipipe-2.6.37-x86-2.9-00.patch and the problem was gone.
+> 
 
-Actually, I lied.
+Ok, I'll handle this. I have some patches from Jan which have been
+pending for too long in my tree to add to this one.
 
-I forgot how about a second interrupt source on this card. Every event
-might raise two interrupts, but if they occur close together in time,
-Linux sees only one in /proc/interrupts.
+-- 
+Philippe.
 
-So, Philippe, it is working perfectly.
 
-Thanks again,
-
-Richard
 
