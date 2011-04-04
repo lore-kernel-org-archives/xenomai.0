@@ -1,48 +1,45 @@
-Message-ID: <4D75E84D.5050803@domain.hid>
-Date: Tue, 08 Mar 2011 09:26:53 +0100
-From: Fabrice Gasnier <fabrice.gasnier@domain.hid>
+Message-ID: <4D99DC22.8010000@domain.hid>
+Date: Mon, 04 Apr 2011 16:56:34 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4D74EE69.5020705@domain.hid> <4D754DF2.8060908@domain.hid>
-In-Reply-To: <4D754DF2.8060908@domain.hid>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+References: <201104041641.58183.smolorz@domain.hid>
+	<1301928474.2052.57.camel@domain.hid>
+In-Reply-To: <1301928474.2052.57.camel@domain.hid>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Build and run xenomai 2.5.5.2 - linux-2.6.33 on
- imx27
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Subject: Re: [Xenomai-core] Bug in Linux kernel 2.6.37 blocks xenomai threads
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: xenomai@xenomai.org
 
-Hi,
-
-Off course, I would try it. I cannot get access to it (403 Forbidden, 
-You don't have permission to access 
-/~gch/pub/adeos-ipipe-2.6.33-arm-1.18-02-rc1.patch on this server.)
-
-
-On 07/03/2011 22:28, Gilles Chanteperdrix wrote:
-> Fabrice Gasnier wrote:
->    
->> Dear all,
+Philippe Gerum wrote:
+> On Mon, 2011-04-04 at 16:41 +0200, Sebastian Smolorz wrote:
+>> Hi,
 >>
->> I'm currently evaluating xenomai 2.5.5.2 on a i.MX27 platform with
->> adeos-ipipe-2.6.33-arm-1.18-01.patch.
->>      
-> Could you try the following patch? Instead of
-> adeos-ipipe-2.6.33-arm-1.18-01.patch?
->
-> http://www.xenomai.org/~gch/pub/adeos-ipipe-2.6.33-arm-1.18-02-rc1.patch
->
-> It fixes things a bit differently.
->
-> Thanks in advance.
->
->    
+>> there is a bug in kernel 2.6.37 (fixed in 2.6.37.1, see commit 
+>> 1cdc65e1400d863f28af868ee1e645485b04f5ed) which blocks RT threads during 
+>> creation. They stick to a certain CPU core for a certain amount of time 
+>> (sometimes minutes ...) before they are migrated to the proper core and run 
+>> as expected.
+>>
+>> Philippe, Gilles, maybe you could generate a new i-pipe patch based on the 
+>> newest 2.6.37-series kernel. I patched a 2.6.37.6 kernel with adeos-
+>> ipipe-2.6.37-x86-2.9-00.patch and the problem was gone.
+>>
+> 
+> Ok, I'll handle this. I have some patches from Jan which have been
+> pending for too long in my tree to add to this one.
+
+Since you are at it, could you have a look at:
+https://mail.gna.org/public/adeos-main/2011-04/msg00001.html
+
+-- 
+					    Gilles.
 
