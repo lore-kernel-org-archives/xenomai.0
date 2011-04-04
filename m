@@ -1,10 +1,10 @@
-Message-ID: <4D9627BC.2040705@domain.hid>
-Date: Fri, 01 Apr 2011 21:30:04 +0200
-From: Julien Delange <julien@domain.hid>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+From: Henry Bausley <hbausley@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Date: Mon, 04 Apr 2011 09:12:54 -0700
+Message-ID: <1301933574.2049.7.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-help] Porting comedi drivers to the analogy layer
+Subject: [Xenomai-help] Placing Xenomai and Linux on Seperate CPU's
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -16,20 +16,31 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
-Dear all,
 
-I'm currently using Xenomai with the analogy drivers for one card. It 
-works perfectly and I am able to interface real-time apps with my 
-national instrument card. However, the card I had until now (PCI-6071E) 
-is supported by both the analogy layer of Xenomai and comedi. Now, I 
-would like to use another national instrument card : the PCI-6704. 
-Unfortunately, it seems not supported by the analogy layer even if the 
-comedi driver supports it. So, I am wondering if porting the driver from 
-comedi to the analogy layer would require a significant development 
-effort and if there was similar initiative (potential port that were not 
-backported to the trunk of Xenomai).
+Is there a way to place linux on its own core so that it continues to
+operate under high realtime loads?  
 
-Thanks for any comment/suggestion,
+I seem to be able to do this with a xenomai kernel task and user space
+task. As a test I created a large load in my kernel task which of course
+caused my xenomai user space application to come to a crawl as expected
+since they were both on CPU0.  
 
-Best regards,
+I recompiled my kernel task with  T_FPU|T_CPU(2).  With the xenomai user
+space task on CPU0 and kernel task on CPU2 they operated in parallel so
+my xenomai user space task did not come to crawl.  
+
+I was hoping linux could run on CPU1 & CPU3 so that keyboard input and
+mouse input doesn't stop under heavy loads in a kernel task .  However
+currently under heavy kernel loading linux basically stops.
+
+I am currently using xenomai 2.5.5.2 w/ Ubuntu 10.04 and testing on an
+ATOM D525 which shows up as 4 CPU's (two cores with two hyper threads)
+my second test machine is a i5 750 (four cores).
+
+
+
+
+
+Outbound scan for Spam or Virus by Barracuda at Delta Tau
+
 
