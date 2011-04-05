@@ -1,36 +1,42 @@
-Message-ID: <4D75ECA7.1070504@domain.hid>
-Date: Tue, 08 Mar 2011 09:45:27 +0100
+Message-ID: <4D9B33BA.5060807@domain.hid>
+Date: Tue, 05 Apr 2011 17:22:34 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4D74EE69.5020705@domain.hid> <4D754DF2.8060908@domain.hid>
-	<4D75E84D.5050803@domain.hid>
-In-Reply-To: <4D75E84D.5050803@domain.hid>
+References: <COL122-W376680783697A8A880DC2BBDA20@domain.hid>
+In-Reply-To: <COL122-W376680783697A8A880DC2BBDA20@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Build and run xenomai 2.5.5.2 - linux-2.6.33 on
- imx27
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Subject: Re: [Xenomai-core] Tiny Core Linux + xenomai/RTAI
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Fabrice Gasnier <fabrice.gasnier@domain.hid>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: krishna m <krishnamurthyjs@domain.hid>
 Cc: xenomai@xenomai.org
 
-Fabrice Gasnier wrote:
-> Hi,
-> 
-> Off course, I would try it. I cannot get access to it (403 Forbidden, 
-> You don't have permission to access 
-> /~gch/pub/adeos-ipipe-2.6.33-arm-1.18-02-rc1.patch on this server.)
-> 
+krishna m wrote:
+> Has anyone tried applying Xenomai or RTAI patch to the tiny core
+> Linux? Will it give a better performance compared to the plain
+> vanilla Linux because the kernel footprint is small?
 
-Sorry, please try again...
+Let us make this clear, since apparently people still seem to wonder:
+Xenomai only relies on the Linux kernel and the C library you use, it
+does not care about any distribution. Whether tiny core, Ubuntu, Fedora,
+Debian, Slackware, gentoo, it does not matter.
+
+And since you still have not understood either, a reminder: the Xenomai
+mailing lists are an old fashioned RFC 1855 plain text, 72 columns,
+bottom posting, mailing list. So, please no HTML, no
+multipart/alternative, no head-twisting long lines.
+
+And no cross-posting with RTAI mailing list, most people are not
+subscribed to the two lists, so will get mailer daemon errors when
+posting to the mailing list they are not subscribed to.
 
 -- 
-                                                                Gilles.
+					    Gilles.
 
