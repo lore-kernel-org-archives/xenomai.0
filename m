@@ -1,16 +1,14 @@
-Message-ID: <4D9D4E30.3020804@domain.hid>
-Date: Thu, 07 Apr 2011 07:40:00 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <COL122-W4082C3BC356937E8C1DDADBDA50@domain.hid>	
-	<4D9CA930.3000204@domain.hid>	
-	<BLU0-SMTP74AA1DAE7E44EF487B424DBDA50@domain.hid>
-	<1302128785.2030.90.camel@domain.hid>
-In-Reply-To: <1302128785.2030.90.camel@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+From: Robert Berger <gmane@domain.hid>
+Date: Tue, 05 Apr 2011 21:36:25 +0300
+Message-ID: <infnf9$6jm$1@domain.hid>
+References: <COL122-W376680783697A8A880DC2BBDA20@domain.hid>	<infaa9$eoe$1@domain.hid>
+	<4D9B4EC0.5080701@domain.hid>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] Backfire: User <-> Kernel latancy mesurement
- tool on Xenomai
+In-Reply-To: <4D9B4EC0.5080701@domain.hid>
+Subject: Re: [Xenomai-core] Tiny Core Linux + xenomai/RTAI
+Reply-To: gmane@domain.hid
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -19,31 +17,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Philippe Gerum wrote:
-> On Wed, 2011-04-06 at 19:31 +0100, krishna murthy j s wrote:
->> Thanks for the reply. Can you please tell me why my questions are
->> useless. Such attitude will take Xenomai user group no where. 
+Hi Gilles,
+
+On 04/05/2011 08:17 PM, Gilles Chanteperdrix wrote:
 > 
-> So, don't take what was said earlier personally. It is just that
-> sometimes, people may have tuned their bullshit deflector a bit eagerly.
-> Mine is totally busted btw, so you never know.
+> Ok, we are on Xenomai-core, so, let us discuss. If we admit that the OP
+> is indeed talking about latencies (a quantifiable measure of
+> determinism), suggesting that the effect on cache of the Linux kernel
+> might influence the latencies is not completely irrelevant: the
+> benchmark we make with Xenomai tend to consistently show that cache
+> thrashing by the Linux kernel has an effect on latencies.
 
-My apologies for losing my temper. There are valid reasons to choose
-preempt_rt over Xenomai, but each time we test, we see that we get lower
-latencies with Xenomai, so, lower latencies is not among those valid
-reasons.
+Yes this did not immediately come into my mind. Linux cache thrashing
+affects latencies of threads running under Xenomai (user and/or kernel
+space), but as you point out (
+http://permalink.gmane.org/gmane.linux.real-time.xenomai.devel/8167 )
+that is distro independent.
 
-But, by the way, if you are into choosing preempt_rt or Xenomai, you
-should ponder these other reasons. Notably the fact that it is much
-easier to write a real-time application with preempt_rt without
-understanding its inner workings, than it is with Xenomai.
+I know that the answer to this question might not be trivial, but what
+would you suggest could be done to minimize cache thrashing?
 
-I wonder if we should not make a wiki page which dispassionately
-document the dual-kernel vs native preemption issue.
+> 
+> Also, having shorter latencies means that we cover a larger range of
+> user-application needs. So, we try to have short latencies.
+> 
 
--- 
-                                                                Gilles.
+Whoever wants to see Xenomai latencies in action can compile cyclictest
+with and without Xenomai and see the differences. On the platforms I've
+tried so far the differences are clearly visible;)
+
+Regards,
+
+Robert
+...Never test for an error condition you don't know how to handle.
+
+My public pgp key is available at:
+http://pgp.mit.edu:11371/pks/lookup?op=get&search=0x90320BF1
+
+
 
