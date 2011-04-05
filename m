@@ -1,15 +1,14 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <BANLkTi=0JaxowohXC408bEBHmkXxS1Hqrw@domain.hid>
+From: Stefan Kisdaroczi <kisda@domain.hid>
+Date: Tue, 5 Apr 2011 15:21:46 +0200
 References: <1301933574.2049.7.camel@domain.hid>
 	<BANLkTimPjGJdLY_zDGNSWdSvg6kgSy7OtA@mail.gmail.com>
-	<1301998495.2084.53.camel@domain.hid>
-	<BANLkTi=0JaxowohXC408bEBHmkXxS1Hqrw@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Tue, 05 Apr 2011 12:36:21 +0200
-Message-ID: <1301999781.2084.57.camel@domain.hid>
-Mime-Version: 1.0
+In-Reply-To: <BANLkTimPjGJdLY_zDGNSWdSvg6kgSy7OtA@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: multipart/signed; boundary="nextPart10674964.mOYiJNyrQo";
+	protocol="application/pgp-signature"; micalg=pgp-sha1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] xenomai without ubuntu?
+Message-Id: <201104051521.56720.kisda@domain.hid>
+Subject: Re: [Xenomai-help] Placing Xenomai and Linux on Seperate CPU's
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -22,71 +21,34 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: suresh reddy <sureshreddy.balijepalli@domain.hid>
 Cc: xenomai@xenomai.org
 
-On Tue, 2011-04-05 at 12:26 +0200, suresh reddy wrote:
-> Ok .Then 
-> 
-> 
-> i have to port alone xenomai without ubuntu . Am i right?
-> 
+--nextPart10674964.mOYiJNyrQo
+Content-Type: Text/Plain;
+  charset="iso-8859-15"
+Content-Transfer-Encoding: quoted-printable
 
-If you want Xenomai running on another Linux platform/architecture,
-check the information on the net, check the Xenomai code base. If you
-want Xenomai to run on bare hardware, this is a DIY task.
+Am Dienstag 05 April 2011, 12.03:15 schrieb suresh reddy:
+> Dear Xenomai Team,
+>=20
+> Iam booting from sd card on my target board with ubuntu 10.04 .
+>=20
+> Is it possible to port xenomai besides ubuntu 10.04.
 
-PS: please do not reuse completely unrelated posts to ask your
-questions. Mailing list users are relying on subjects to follow threads.
+Installing xenomai on Debian or Ubuntu:
+http://www.xenomai.org/index.php/Building_Debian_packages
 
-> 
-> 
-> 
-> 
-> 
-> On 5 April 2011 12:14, Philippe Gerum <rpm@xenomai.org> wrote:
->         
->         On Tue, 2011-04-05 at 12:03 +0200, suresh reddy wrote:
->         > Dear Xenomai Team,
->         >
->         >
->         > Iam booting from sd card on my target board with ubuntu
->         10.04 .
->         >
->         >
->         > Is it possible to port xenomai besides ubuntu 10.04.
->         >
->         
->         
->         No, actually not. It already took us AGES to escape linux
->         0.99pl12 on an
->         overclocked 486SX, so I can't really imagine another port
->         right now.
->         This just drained us for the next ten years.
->         
->         Any other help we could bring?
->         
->         >
->         >
->         >
->         > _______________________________________________
->         > Xenomai-help mailing list
->         > Xenomai-help@domain.hid
->         > https://mail.gna.org/listinfo/xenomai-help
->         
->         
->         --
->         Philippe.
->         
->         
-> 
-> 
-> 
-> -- 
-> 
-> Suresh balijepalli
-> Rosenehim,Baveria.
-> 
+Stefan
 
--- 
-Philippe.
+--nextPart10674964.mOYiJNyrQo
+Content-Type: application/pgp-signature; name=signature.asc 
+Content-Description: This is a digitally signed message part.
 
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.10 (GNU/Linux)
 
+iEYEABECAAYFAk2bF2oACgkQIPTw9rIdn6r7yACeL5yjf0vCHHWnjoFNvHbrc7fF
+7IsAn2F/dbUMHcPEDRvR6DUtGPr0OAWY
+=daGT
+-----END PGP SIGNATURE-----
+
+--nextPart10674964.mOYiJNyrQo--
 
