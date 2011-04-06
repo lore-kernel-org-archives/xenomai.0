@@ -1,13 +1,10 @@
-From: Robert Berger <gmane@domain.hid>
-Date: Tue, 05 Apr 2011 17:51:52 +0300
-Message-ID: <infaa9$eoe$1@domain.hid>
-References: <COL122-W376680783697A8A880DC2BBDA20@domain.hid>
+Date: Wed, 6 Apr 2011 09:19:00 +0800
+From: "arethe.rtai" <arethe.rtai@domain.hid>
+Message-ID: <201104060918575625047@domain.hid>
 Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-In-Reply-To: <COL122-W376680783697A8A880DC2BBDA20@domain.hid>
-Subject: Re: [Xenomai-core] Tiny Core Linux + xenomai/RTAI
-Reply-To: gmane@domain.hid
+Content-Type: multipart/alternative;
+	boundary="=====003_Dragon312627638266_====="
+Subject: [Xenomai-core] Would Xenomai adopt RTL after the patent is expired?
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -16,55 +13,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
-Cc: rtai@domain.hid
+To: Xenomai-core <Xenomai-core@domain.hid>
 
-Hi Krishna,
 
-On 04/05/2011 04:48 PM, krishna m wrote:
-> Has anyone tried applying Xenomai or RTAI patch to the tiny core Linux?
+This is a multi-part message in MIME format.
 
-No
+--=====003_Dragon312627638266_=====
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 
-> Will it give a better performance compared to the plain vanilla Linux
-> because the kernel footprint is small?
+HI:
+   The patents that cover RT-Linux are set to expire in a few years, then, would Xenomai adopt the RTL technology? As known, the RTL idea is clean and minimalistic, it may improve the determinism of Xenomai.
+Regards arethe
+2011-04-06 
 
-I guess the Linux Kernel is pretty much the same with the vanilla
-kernel. The reason it might offer better performance does most likely
-not come from the kernel, but because in such a small system less
-services are running, which might eat less CPU time.
 
-Will performance be better?
 
-Depends on what you mean with performance.
+arethe.rtai 
 
-If you apply Xenomai/RTAI to a vanilla Linux kernel throughput and
-number crunching (performance) will get worse and determinism will get
-better.
+--=====003_Dragon312627638266_=====
+Content-Type: text/html;
+	charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 
-Real-time is not about "performance" (speed, throughput), but about
-determinism and those are conflicting requirements.
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML><HEAD>
+<META http-equiv=Content-Type content="text/html; charset=us-ascii">
+<META content="MSHTML 6.00.6000.17095" name=GENERATOR><LINK 
+href="BLOCKQUOTE{margin-Top: 0px; margin-Bottom: 0px; margin-Left: 2em}" 
+rel=stylesheet></HEAD>
+<BODY style="FONT-SIZE: 10pt; MARGIN: 10px; FONT-FAMILY: verdana">
+<DIV><FONT face="" size=2>HI:</FONT></DIV>
+<DIV><FONT face="">&nbsp;&nbsp; T<SPAN class=Apple-style-span 
+style="WORD-SPACING: 0px; FONT: medium 'Times New Roman'; TEXT-TRANSFORM: none; COLOR: rgb(0,0,0); TEXT-INDENT: 0px; WHITE-SPACE: normal; LETTER-SPACING: normal; BORDER-COLLAPSE: separate; orphans: 2; widows: 2; -webkit-border-horizontal-spacing: 0px; -webkit-border-vertical-spacing: 0px; -webkit-text-decorations-in-effect: none; -webkit-text-size-adjust: auto; -webkit-text-stroke-width: 0px"><SPAN 
+class=Apple-style-span 
+style="FONT-SIZE: 13px; FONT-FAMILY: arial, sans-serif; BORDER-COLLAPSE: collapse">he 
+patents that cover RT-Linux are set to expire in a few years, then, would 
+Xenomai adopt the RTL technology? As known, the RTL idea is clean and 
+minimalistic, it may improve the determinism of 
+Xenomai.</SPAN></SPAN></FONT></DIV>
+<DIV><SPAN class=Apple-style-span 
+style="WORD-SPACING: 0px; FONT: medium 'Times New Roman'; TEXT-TRANSFORM: none; COLOR: rgb(0,0,0); TEXT-INDENT: 0px; WHITE-SPACE: normal; LETTER-SPACING: normal; BORDER-COLLAPSE: separate; orphans: 2; widows: 2; -webkit-border-horizontal-spacing: 0px; -webkit-border-vertical-spacing: 0px; -webkit-text-decorations-in-effect: none; -webkit-text-size-adjust: auto; -webkit-text-stroke-width: 0px"><SPAN 
+class=Apple-style-span 
+style="FONT-SIZE: 13px; FONT-FAMILY: arial, sans-serif; BORDER-COLLAPSE: collapse"><FONT 
+face="">Regards arethe</FONT></SPAN></SPAN></DIV>
+<DIV align=left><FONT face="" color=#c0c0c0 size=2>2011-04-06 </FONT></DIV><FONT 
+size=2><FONT face="">
+<HR style="WIDTH: 122px; HEIGHT: 2px" align=left SIZE=2>
+</FONT>
+<DIV><FONT color=#c0c0c0 size=2><FONT face=""><SPAN>arethe.rtai</SPAN> 
+</FONT></FONT></DIV></FONT></BODY></HTML>
 
-You can have a look at an article of mine for a more detailed
-explanation of what I mean:
-http://www.eetimes.com/design/embedded/4204740/Getting-real--time--about-embedded-GNU-Linux
-
-Regards,
-
-Robert
-
-> 
-> 
-> 
-> _______________________________________________
-> Rtai mailing list
-> Rtai@domain.hid
-> https://mail.rtai.org/cgi-bin/mailman/listinfo/rtai
-
-...A clever person solves a problem.A wise person avoids it.- Einstein
-
-My public pgp key is available at:
-http://pgp.mit.edu:11371/pks/lookup?op=get&search=0x90320BF1
-
+--=====003_Dragon312627638266_=====--
 
 
