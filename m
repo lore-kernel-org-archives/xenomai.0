@@ -1,14 +1,10 @@
-From: Robert Berger <gmane@domain.hid>
-Date: Tue, 05 Apr 2011 21:36:25 +0300
-Message-ID: <infnf9$6jm$1@domain.hid>
-References: <COL122-W376680783697A8A880DC2BBDA20@domain.hid>	<infaa9$eoe$1@domain.hid>
-	<4D9B4EC0.5080701@domain.hid>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-In-Reply-To: <4D9B4EC0.5080701@domain.hid>
-Subject: Re: [Xenomai-core] Tiny Core Linux + xenomai/RTAI
-Reply-To: gmane@domain.hid
+Date: Thu, 7 Apr 2011 19:08:55 +0200
+From: Richard Cochran <richardcochran@domain.hid>
+Message-ID: <20110407170855.GA22659@domain.hid>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Subject: [Xenomai-core] ARM IXP: ipipe regression from 2.6.31 to .33 and .35
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -17,44 +13,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
-
-Hi Gilles,
-
-On 04/05/2011 08:17 PM, Gilles Chanteperdrix wrote:
-> 
-> Ok, we are on Xenomai-core, so, let us discuss. If we admit that the OP
-> is indeed talking about latencies (a quantifiable measure of
-> determinism), suggesting that the effect on cache of the Linux kernel
-> might influence the latencies is not completely irrelevant: the
-> benchmark we make with Xenomai tend to consistently show that cache
-> thrashing by the Linux kernel has an effect on latencies.
-
-Yes this did not immediately come into my mind. Linux cache thrashing
-affects latencies of threads running under Xenomai (user and/or kernel
-space), but as you point out (
-http://permalink.gmane.org/gmane.linux.real-time.xenomai.devel/8167 )
-that is distro independent.
-
-I know that the answer to this question might not be trivial, but what
-would you suggest could be done to minimize cache thrashing?
-
-> 
-> Also, having shorter latencies means that we cover a larger range of
-> user-application needs. So, we try to have short latencies.
-> 
-
-Whoever wants to see Xenomai latencies in action can compile cyclictest
-with and without Xenomai and see the differences. On the platforms I've
-tried so far the differences are clearly visible;)
-
-Regards,
-
-Robert
-...Never test for an error condition you don't know how to handle.
-
-My public pgp key is available at:
-http://pgp.mit.edu:11371/pks/lookup?op=get&search=0x90320BF1
+To: adeos-main@gna.org
+Cc: Xenomai-core@domain.hid
 
 
+I have been trying to bring my IXP425 based system up to date, and I
+have found an apparent regression. Everything worked fine with ipipe
+2.6.30 and Xenomai 2.4. With 2.6.31 an ipipe kernel still boots, but
+starting with 2.6.33 the trouble begins (see below).
+
+I see that Gilles refactored the TSC emulation starting with
+2.6.33. I wonder whether this could be the cause?
+
+I did not immediately see any obvious bug, but I don't fully
+understand the newer TSC code. I would appreciate any hints.
+
+Thanks,
+Richard
+
+** ipipe-2.6.31-arm-1.16-01
+
+   Seems to boot fine.
+
+** ipipe-2.6.33-arm-1.18-01
+
+   Boots, but runs very slowly. FCSE on/off makes no difference.
+   After a few seconds, it seem to hand, but it might just be very
+   slow. Once I saw this on the console:
+
+      hrtimer: interrupt took 1414795601278721 ns
+
+   coming from kernel/hrtimer.c:1363
+
+      printk_once(KERN_WARNING "hrtimer: interrupt took %llu ns\n", ...)
+
+** ipipe-2.6.35.9-arm-1.18-01
+
+   Does not boot with ipipe. FCSE on/off makes no difference.
+   It *does* boot without ipipe enabled.
 
