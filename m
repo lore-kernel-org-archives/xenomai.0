@@ -1,14 +1,10 @@
-Date: Fri, 8 Apr 2011 08:51:22 +0200
-From: Richard Cochran <richardcochran@domain.hid>
-Message-ID: <20110408065122.GB18160@domain.hid>
-References: <20110407170855.GA22659@domain.hid>
-	<4D9E0354.4010600@domain.hid> <4D9EAC97.4090307@domain.hid>
+Message-ID: <4D9F0679.7080109@domain.hid>
+Date: Fri, 8 Apr 2011 14:58:33 +0200
+From: Jesper Christensen <jbc@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <4D9EAC97.4090307@domain.hid>
-Subject: Re: [Xenomai-core] [Adeos-main] ARM IXP: ipipe regression from
- 2.6.31 to .33 and .35
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-core] kernel threads crash
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -17,26 +13,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: adeos-main@gna.org, Xenomai-core@domain.hid
+To: xenomai@xenomai.org
 
-On Fri, Apr 08, 2011 at 08:35:03AM +0200, Gilles Chanteperdrix wrote:
+Hi
 
-> - the TSC emulation code is factored, so that when porting to a new
-> port, we avoid copy-pasting the TSC emulation;
+I'm trying to implement some gateway functionality in the kernel on a
+emerson CPCI6200 board, but have run into some strange errors. The
+kernel module is made up of two threads that run every 1 ms. I have also
+made use of the rtpc dispatcher in rtnet to dispatch control messages
+from a netlink socket to the RT part of my kernel module.
 
-The ARM porting page on the wiki is out of date with regards to this.
+The problem is that when loaded the threads get suspended due to exceptions:
 
-> - it is ready for multi-SOCs kernels (all the TSC emulations are
-> compiled-in, the one chosen is copied to the vectors page when the
-> ipipe_tsc_register function is called). This is the direction ARM linux
-> is going, if you followed the ARM wrestling on the linux-arm-kernel
-> mailing list.
+Xenomai: suspending kernel thread b929cbc0 ('tt_upgw_0') at 0xb929cbc0
+after exception #1792
 
-Yes, that thread was really entertaining ;)
+or
+
+Xenomai: suspending kernel thread b929cbc0 ('tt_upgw_0') at 0x0 after
+exception #1025
+
+or
+
+Xenomai: suspending kernel thread b911f518 ('rtnet-rtpc') at 0xb911f940
+after exception #1792
 
 
-Thanks for all your good work,
+I have ported the "gianfar" driver from linux to rtnet.
 
-Richard
+The versions and hardware are listed below. The errors are most likely
+due to faulty software on my part, but i would like to ask if there are
+any known issues with the versions or hardware i'm using. I would also
+like to ask if there are any ways of further debugging the errors as i
+am not getting very far with the above messages.
+
+
+
+System info:
+
+Linux kernel: 2.6.29.6
+i-pipe version: 2.7-04
+processor: powerpc mpc8572
+xenomai version: 2.5.3
+rtnet version: 0.9.12
+
+-- 
+/Jesper
+
+
 
