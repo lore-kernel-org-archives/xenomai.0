@@ -1,5 +1,5 @@
-Message-ID: <4D9EB884.6020804@domain.hid>
-Date: Fri, 08 Apr 2011 09:25:56 +0200
+Message-ID: <4D9EB96D.3090309@domain.hid>
+Date: Fri, 08 Apr 2011 09:29:49 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <F73025C3-F590-4CB7-A8E1-0EFF62E9A656@domain.hid>
@@ -26,14 +26,9 @@ Nolan Waite wrote:
 > immediately prior to running the latency test, but received nothing,
 > so I believe the attached kernel log to be whole.
 
-Is there any way you could set up a serial console instead? Could you
-try running latency in text mode?
+Could you try disabling debug in Xenomai configuration, as well as the
+function tracer?
 
-If the latency test succeeds, how do the figures it prints look?
-
-Could you try
-latency -p 1000
-?
 
 -- 
 					    Gilles.
