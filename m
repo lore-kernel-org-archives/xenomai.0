@@ -1,12 +1,11 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <201104051603.53977.smolorz@domain.hid>
-References: <201104051603.53977.smolorz@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Tue, 05 Apr 2011 16:08:18 +0200
-Message-ID: <1302012498.2084.58.camel@domain.hid>
-Mime-Version: 1.0
+Message-ID: <4D9F2804.5030205@domain.hid>
+Date: Fri, 08 Apr 2011 17:21:40 +0200
+From: Martin Elshuber <martine@domain.hid>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Adeos-main] [PATCH] x86: fix ipipe tracer
+Subject: [Adeos-main] ADEOS NIOS II port - definitions in
+	include/asm-nios2/ipipe.h
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/options/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -15,38 +14,32 @@ List-Post: <mailto:adeos-main@gna.org>
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-To: Sebastian Smolorz <smolorz@domain.hid>
-Cc: adeos-main <adeos-main@gna.org>
+To: adeos-main@gna.org
 
-On Tue, 2011-04-05 at 16:03 +0200, Sebastian Smolorz wrote:
-> The ipipe tracer was broken when CONFIG_IPIPE_TRACE_IRQSOFF was
-> enabled. The reason was that in local_irq_restore_hw(flags)
-> native irqs were not enabled again.
-> 
-> Signed-off-by: Sebastian Smolorz <smolorz@domain.hid>
-> ---
->  arch/x86/include/asm/irqflags.h |    2 +-
->  1 files changed, 1 insertions(+), 1 deletions(-)
-> 
-> diff --git a/arch/x86/include/asm/irqflags.h 
-> b/arch/x86/include/asm/irqflags.h
-> index ddfd8cc..6e316c0 100644
-> --- a/arch/x86/include/asm/irqflags.h
-> +++ b/arch/x86/include/asm/irqflags.h
-> @@ -283,7 +283,7 @@ static inline int irqs_disabled_hw(void)
->  #define local_irq_restore_hw(flags) do {		\
->  		if ((flags) & X86_EFLAGS_IF)		\
->  			ipipe_trace_end(0x80000001);	\
-> -		native_irq_disable();			\
-> +		native_restore_fl(flags);		\
->  	} while (0)
->  
->  #else /* !CONFIG_IPIPE_TRACE_IRQSOFF */
+Hello,
 
-Queued, thanks.
+I faced a problem with Xenomai xntimer when using the
+http://download.gna.org/adeos/patches/v2.6/nios2/adeos-ipipe-2.6.30-nios2-1.2-00.patch
+patch.
 
--- 
-Philippe.
+xntimer uses the ipipe abstractions for hrclock and hrtimer and relies 
+on the constants
 
+#define __ipipe_hrtimer_freq    1000000 /* 1 us */
+#define __ipipe_hrclock_freq    nasys_clock_freq
+
+defined in include/asm-nios2/ipipe.h to do a final adjustment.
+
+The two definitions above will fail, if either the hrtimer is not 
+clocked with 1Mhz, or
+the hrclock is clocked with another frequency than nasys_clock_freq.
+I am quite new to ADEOS, but guess that
+
+#define __ipipe_hrtimer_freq    na_hrtimer_clock_freq
+#define __ipipe_hrclock_freq    na_hrclock_clock_freq
+
+is a better choice. At least for me this solves the problem.
+
+Martin Elshuber
 
 
