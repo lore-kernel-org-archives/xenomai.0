@@ -1,14 +1,13 @@
-Message-ID: <4DA45E42.5030500@domain.hid>
-Date: Tue, 12 Apr 2011 16:14:26 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <4DA0B878.9010106@domain.hid>
+Date: Sat, 09 Apr 2011 21:50:16 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4D9F0679.7080109@domain.hid>	<1302268379.2101.35.camel@domain.hid>		<4DA30C80.3010107@domain.hid>	<1302531493.2054.355.camel@domain.hid>		<4DA30E14.6070401@domain.hid>	<1302532049.2054.357.camel@domain.hid>		<4DA31108.9080000@domain.hid>	<1302532753.2054	<4DA314F1.3070504@domain.hid>
-	<4DA31EB6.4040909@domain.hid> <4DA4544F.7020300@domain.hid>
-	<4DA45660.4000003@domain.hid> <4DA45D0F.4090501@domain.hid>
-In-Reply-To: <4DA45D0F.4090501@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+References: <20110409184122.GA11908@domain.hid>	<20110409185503.GB11908@domain.hid>
+	<4DA0B580.4070602@domain.hid>
+In-Reply-To: <4DA0B580.4070602@domain.hid>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] kernel threads crash
+Subject: Re: [Xenomai-core] arm ixp: more trouble with recent xenomai
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -17,18 +16,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jesper Christensen <jbc@domain.hid>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Richard Cochran <richardcochran@domain.hid>
+Cc: xenomai@xenomai.org
 
-On 2011-04-12 16:09, Jesper Christensen wrote:
-> Speaking of rtpc, could there be a race condition when using a
-> rtdm_lock_t to synchronize between a linux thread and a xenomai thread?
+Gilles Chanteperdrix wrote:
+> Richard Cochran wrote:
+>> On Sat, Apr 09, 2011 at 08:41:22PM +0200, Richard Cochran wrote:
+>>> I tried disabling various CONFIG options, and I found by accident that
+>>> enabling IPIPE_DEBUG allows the system to run just fine.
+>> Update: It is not enough for me to enable IPIPE_DEBUG. The kernels
+>> that boot have all of the XENO_OPT_DEBUG options enabled.
+>>
+>> Disabling XENO_OPT_DEBUG results in a kernel that freezes. I will try
+>> to find out which of these options makes a difference.
+> 
+> Just to have an idea where the issue come from, could you try reverting
+> all the changes which were made on the tsc and timer? i.e. revert to the
+> original ipipe_mach_get_tsc and ipipe_mach_set_dec?
+> 
+The exact commit to revert is this one:
+http://git.xenomai.org/?p=ipipe-gch.git;a=commitdiff;h=cbd591ed5797f105ff45e04cca3bc939388624ea;hp=a2761e92ecd573bc3a3b068d4ebb7cc06313213c
 
-Without seeing at some code, I can't comment on this meaningfully.
-
-Jan
+Also please try disabling the FCSE code. This one changed too...
 
 -- 
-Siemens AG, Corporate Technology, CT T DE IT 1
-Corporate Competence Center Embedded Linux
+                                                                Gilles.
 
