@@ -1,13 +1,11 @@
-Message-ID: <4D9FBC1A.5040303@domain.hid>
-Date: Sat, 09 Apr 2011 03:53:30 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: Doninelli Davide <Davide.Doninelli@domain.hid>
+Date: Sat, 9 Apr 2011 09:52:39 +0200
+Message-ID: <68A9C7E0-33D0-4039-88AF-A1B62F1889BD@edu.hefr.ch>
+Content-Language: en-US
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <F73025C3-F590-4CB7-A8E1-0EFF62E9A656@domain.hid>	<4D9EB884.6020804@domain.hid>
-	<205D3924-0110-4DA7-838B-DF40BDBE6702@domain.hid>
-In-Reply-To: <205D3924-0110-4DA7-838B-DF40BDBE6702@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Total system lockup doing anything real-time
+Subject: [Xenomai-help] ioremap domain
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -17,17 +15,12 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Nolan Waite <nolan@domain.hid>
-Cc: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Nolan Waite wrote:
-> Hi, thanks for taking a look.
-> 
-> Before trying the suggestions below, I configured the kernel as requested in your other reply: I disabled Xenomai debug and turned off the function tracer. I attached the new .config for reference.
+Hi,
+ioremap and related function like readw/l or writew/l are executed in which=
+ domain?
 
-Ok. Still in the kernel configuration. Please try disabling Analogy and
-Comedi completely.
-
--- 
-                                                                Gilles.
+Thanks in advance=20
+Davide=
 
