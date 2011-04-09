@@ -1,10 +1,10 @@
-Message-ID: <4D9FB431.6010203@domain.hid>
-Date: Sat, 09 Apr 2011 03:19:45 +0200
+Message-ID: <4D9FB6F3.4010908@domain.hid>
+Date: Sat, 09 Apr 2011 03:31:31 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <F73025C3-F590-4CB7-A8E1-0EFF62E9A656@domain.hid>	<4D9EB884.6020804@domain.hid>
-	<205D3924-0110-4DA7-838B-DF40BDBE6702@domain.hid>
-In-Reply-To: <205D3924-0110-4DA7-838B-DF40BDBE6702@domain.hid>
+References: <mailman.5107.1302246791.23203.xenomai@xenomai.org>
+	<A651E730-C30A-4DA4-81EE-A4C5C6497BA6@domain.hid>
+In-Reply-To: <A651E730-C30A-4DA4-81EE-A4C5C6497BA6@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] Total system lockup doing anything real-time
@@ -21,34 +21,22 @@ To: Nolan Waite <nolan@domain.hid>
 Cc: xenomai@xenomai.org
 
 Nolan Waite wrote:
-> Hi, thanks for taking a look.
+> On 2011-04-08, at 1:13 AM, nolan@domain.hid wrote:
 > 
-> Before trying the suggestions below, I configured the kernel as requested in your other reply: I disabled Xenomai debug and turned off the function tracer. I attached the new .config for reference.
+>> I've attached a zip containing the output of dmesg (as run just before running the latency test), the output of `cat /proc/interrupts`, and my kernel .config file. I set up netconsole immediately prior to running the latency test, but received nothing, so I believe the attached kernel log to be whole.
 > 
-> On 2011-04-08, at 1:25 AM, Gilles Chanteperdrix wrote:
+> Sorry, here they are.
 > 
->> Is there any way you could set up a serial console instead?
-> 
-> I'll try but odds aren't good. Sorry.
 
-If:
-- the machine has a serial port (I mean a ream one, ttySx, not ttyUSBx)
-- you have another machine which can be plugged on this serial port
-Then it should work, simply read Documentation/serial-console.txt in the
-Linux kernel sources. Otherwise, forget it.
+The /proc/interrupts is highly suspicious. From your logs we see that
+you have many usual peripherals (disks, network card, USB controller,
+etc...), but we do not see the interrupt they use in /proc/interrupts.
+Are you sure that you show us the full contents of /proc/interrupts?
 
-> 
->> Could you try running latency in text mode?
-> 
-> Sure. I get the same results as in desktop mode. See attached 'textmode.kernel.log', a dump of dmesg immediately before running latency.
+Also, when running in text mode, please try killing X-window and
+unloading the radeon/drm modules.
 
-The question being, do you get the text of a kernel oops when the bug
-happens? Because if this is what happens, what we would like is the
-kernel oops text, and the serial console is the best way to get it. If
-you do not get any message after launching the latency test, then forget
-about the serial console, please try enabling the nmi watchdog as
-explained in Documentation/nmi_watchdog.txt in the Linux kernel sources.
-
+We would be interested in the results of "lsmod" on your machine too...
 
 -- 
                                                                 Gilles.
