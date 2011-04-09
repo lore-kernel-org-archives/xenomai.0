@@ -1,14 +1,12 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <4DA30E14.6070401@domain.hid>
-References: <4D9F0679.7080109@domain.hid> <1302268379.2101.35.camel@domain.hid>
-	<4DA30C80.3010107@domain.hid> <1302531493.2054.355.camel@domain.hid>
-	<4DA30E14.6070401@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Mon, 11 Apr 2011 16:34:04 +0200
-Message-ID: <1302532444.2054.359.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] kernel threads crash
+Date: Sat, 9 Apr 2011 20:55:03 +0200
+From: Richard Cochran <richardcochran@domain.hid>
+Message-ID: <20110409185503.GB11908@domain.hid>
+References: <20110409184122.GA11908@domain.hid>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20110409184122.GA11908@domain.hid>
+Subject: Re: [Xenomai-core] arm ixp: more trouble with recent xenomai
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -17,114 +15,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jesper Christensen <jbc@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Mon, 2011-04-11 at 16:20 +0200, Jesper Christensen wrote:
-> Problem is the NIP in question is the address of the thread structure as
-> seen in the error message.
+On Sat, Apr 09, 2011 at 08:41:22PM +0200, Richard Cochran wrote:
 > 
+> I tried disabling various CONFIG options, and I found by accident that
+> enabling IPIPE_DEBUG allows the system to run just fine.
 
-Is your code spawning -rt kernel threads frequently/periodically, or
-only when the application initializes?
+Update: It is not enough for me to enable IPIPE_DEBUG. The kernels
+that boot have all of the XENO_OPT_DEBUG options enabled.
 
-> /Jesper
-> 
-> 
-> On 2011-04-11 16:18, Philippe Gerum wrote:
-> > On Mon, 2011-04-11 at 16:13 +0200, Jesper Christensen wrote:
-> >   
-> >> I have updated to xenomai 2.5.6, but i'm still seeing exceptions
-> >> (considerably less often though):
-> >>
-> >> Xenomai: suspending kernel thread b92a39d0 ('tt_upgw_0') at 0xb92a39d0
-> >> after exception #1792
-> >>     
-> > You should build your code statically into the kernel, not as a module,
-> > and find out which code raises the MCE.
-> >
-> > CONFIG_DEBUG_INFO=y, then objdump -dl vmlinux, looking for the NIP
-> > mentioned.
-> >
-> >   
-> >> /Jesper
-> >>
-> >>
-> >> On 2011-04-08 15:12, Philippe Gerum wrote:
-> >>     
-> >>> On Fri, 2011-04-08 at 14:58 +0200, Jesper Christensen wrote:
-> >>>   
-> >>>       
-> >>>> Hi
-> >>>>
-> >>>> I'm trying to implement some gateway functionality in the kernel on a
-> >>>> emerson CPCI6200 board, but have run into some strange errors. The
-> >>>> kernel module is made up of two threads that run every 1 ms. I have also
-> >>>> made use of the rtpc dispatcher in rtnet to dispatch control messages
-> >>>> from a netlink socket to the RT part of my kernel module.
-> >>>>
-> >>>> The problem is that when loaded the threads get suspended due to exceptions:
-> >>>>
-> >>>> Xenomai: suspending kernel thread b929cbc0 ('tt_upgw_0') at 0xb929cbc0
-> >>>> after exception #1792
-> >>>>
-> >>>> or
-> >>>>
-> >>>> Xenomai: suspending kernel thread b929cbc0 ('tt_upgw_0') at 0x0 after
-> >>>> exception #1025
-> >>>>
-> >>>> or
-> >>>>
-> >>>> Xenomai: suspending kernel thread b911f518 ('rtnet-rtpc') at 0xb911f940
-> >>>> after exception #1792
-> >>>>
-> >>>>
-> >>>> I have ported the "gianfar" driver from linux to rtnet.
-> >>>>
-> >>>> The versions and hardware are listed below. The errors are most likely
-> >>>> due to faulty software on my part, but i would like to ask if there are
-> >>>> any known issues with the versions or hardware i'm using. I would also
-> >>>> like to ask if there are any ways of further debugging the errors as i
-> >>>> am not getting very far with the above messages.
-> >>>>     
-> >>>>         
-> >>> A severe bug at kthread init was fixed in the 2.5.5.2 - 2.5.6 timeframe,
-> >>> which would cause exactly the kind of weird behavior you are seeing
-> >>> right now. The bug triggered random code execution due to stack memory
-> >>> pollution at init on powerpc for Xenomai kthreads:
-> >>> http://git.xenomai.org/?p=xenomai-rpm.git;a=commit;h=90699565cbce41f2cec193d57857bb5817efc19a
-> >>> http://git.xenomai.org/?p=xenomai-rpm.git;a=commit;h=da20c20d4b4d892d40c657ad1d32ddb6d0ceb47c
-> >>> http://git.xenomai.org/?p=xenomai-rpm.git;a=commit;h=a5886b354dc18f054b187b58cfbacfb60bccaf47
-> >>>
-> >>> You need at the very least those three patches (from the top of my
-> >>> head), but it would be much better to upgrade to 2.5.6.
-> >>>
-> >>>   
-> >>>       
-> >>>>
-> >>>> System info:
-> >>>>
-> >>>> Linux kernel: 2.6.29.6
-> >>>> i-pipe version: 2.7-04
-> >>>> processor: powerpc mpc8572
-> >>>> xenomai version: 2.5.3
-> >>>> rtnet version: 0.9.12
-> >>>>
-> >>>>     
-> >>>>         
-> >>>   
-> >>>       
-> >>
-> >> _______________________________________________
-> >> Xenomai-core mailing list
-> >> Xenomai-core@domain.hid
-> >> https://mail.gna.org/listinfo/xenomai-core
-> >>     
-> >   
-> 
+Disabling XENO_OPT_DEBUG results in a kernel that freezes. I will try
+to find out which of these options makes a difference.
 
--- 
-Philippe.
+Thanks,
 
-
+Richard
 
