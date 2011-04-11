@@ -1,16 +1,13 @@
-Date: Mon, 11 Apr 2011 07:53:44 +0200
-From: Richard Cochran <richardcochran@domain.hid>
-Message-ID: <20110411055344.GA5854@domain.hid>
-References: <20110409184122.GA11908@domain.hid>
-	<20110409185503.GB11908@domain.hid>
-	<4DA0B580.4070602@domain.hid> <4DA0B878.9010106@domain.hid>
-	<20110410065250.GA28869@domain.hid>
-	<4DA192E0.2090802@domain.hid>
+Message-ID: <4DA2A514.4090702@domain.hid>
+Date: Mon, 11 Apr 2011 08:52:04 +0200
+From: Jesper Christensen <jbc@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <4DA192E0.2090802@domain.hid>
-Subject: Re: [Xenomai-core] arm ixp: more trouble with recent xenomai
+References: <4D9F0679.7080109@domain.hid>
+	<20110408191529.GA2802@domain.hid>
+In-Reply-To: <20110408191529.GA2802@domain.hid>
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-core] kernel threads crash
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -19,31 +16,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Richard Cochran <richardcochran@domain.hid>
 Cc: xenomai@xenomai.org
 
-On Sun, Apr 10, 2011 at 01:22:08PM +0200, Gilles Chanteperdrix wrote:
-> 
-> Also, about the performances, Xenomai 2.4 did not have the Xenomai
-> preemptible context switches. Maybe with FCSE, it results in reduced
-> latencies to disable this option in Xenomai 2.5.
+I have made a number of changes to rtnet (scatter gather support, icmp
+fixes etc.) so maybe i could send you a tar ball of the entire directory?
 
-So, are you saying that XENO_HW_UNLOCKED_SWITCH=n might improve
-latency?
+/Jesper
 
-The help for this option says...
 
-    This option reduces interrupt latency when costly cache and
-    TLB flushes are required to switch context, and may improve
-    concurrency on some SMP/multi-core systems as well.
-
-    You definitely want to enable that option on embedded ARM
-    platforms.
-
-so I am confused.
-
-Thanks,
-
-Richard
+On 2011-04-08 21:15, Richard Cochran wrote:
+> On Fri, Apr 08, 2011 at 02:58:33PM +0200, Jesper Christensen wrote:
+>
+>   
+>> I have ported the "gianfar" driver from linux to rtnet.
+>>     
+> Can you publish this driver? I have been wanting to make a rtnet
+> gianfar myself.
+>
+> Thanks,
+>
+> Richard
+>
+>   
 
 
