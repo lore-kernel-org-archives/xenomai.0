@@ -1,13 +1,12 @@
-Message-ID: <4D9F1CD3.9050309@domain.hid>
-Date: Fri, 8 Apr 2011 16:33:55 +0200
-From: Jesper Christensen <jbc@domain.hid>
+Message-ID: <4DA2ABE9.9050906@domain.hid>
+Date: Mon, 11 Apr 2011 09:21:13 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4D9F0679.7080109@domain.hid> <1302268379.2101.35.camel@domain.hid>	
-	<4D9F0B86.30103@domain.hid> <1302269999.2101.45.camel@domain.hid>
-In-Reply-To: <1302269999.2101.45.camel@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
+References: <76E258664B189C4CBEF125491CA11ECC949E3EB344@domain.hid>
+In-Reply-To: <76E258664B189C4CBEF125491CA11ECC949E3EB344@domain.hid>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] kernel threads crash
+Subject: Re: [Xenomai-core] Unsubscribe
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -16,107 +15,17 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Naresh Kumar V <Naresh.V@kpitcummins.com>
+Cc: "Xenomai-core@domain.hid" <Xenomai-core@domain.hid>
 
+Naresh Kumar V wrote:
+> Hi,
+> 
+> Please Unsubscribe from this mail chain.
 
-With the risk of jinx'ing it the 2.5.6 version seems to have done the
-trick. Huge thanks to you Philippe, you have saved my head from
-decapitation :)
+Simply go to the URL at the bottom of the mail signature, and do it your
+self.
 
-/Jesper
-
-
-On 2011-04-08 15:39, Philippe Gerum wrote:
-> On Fri, 2011-04-08 at 15:20 +0200, Jesper Christensen wrote:
->   
->> Thanks i'll give 2.5.6 a shot.
->>
->> Also it has come to my attention that there is some source files
->> (arch/powerpc/platforms/85xx/cpci6200.c,
->> arch/powerpc/platforms/85xx/cpci6200.h,
->> arch/powerpc/platforms/85xx/cpci6200_timer.c) that are probably not
->> covered by the adeos patch. Am i correct in assuming these need some
->> work to support i-pipe?
->>
->>     
-> I can't tell since I have no access to them, this is probably not a
-> mainline port.
->
-> In any case, if any of those files implements the support for the
-> programmable interrupt controller, hw timer, gpios and/or any form of
-> cascaded interrupt handling, this is correct: they should be made I-pipe
-> aware.
->
->   
->> /Jesper
->>
->>
->> On 2011-04-08 15:12, Philippe Gerum wrote:
->>     
->>> On Fri, 2011-04-08 at 14:58 +0200, Jesper Christensen wrote:
->>>   
->>>       
->>>> Hi
->>>>
->>>> I'm trying to implement some gateway functionality in the kernel on a
->>>> emerson CPCI6200 board, but have run into some strange errors. The
->>>> kernel module is made up of two threads that run every 1 ms. I have also
->>>> made use of the rtpc dispatcher in rtnet to dispatch control messages
->>>> from a netlink socket to the RT part of my kernel module.
->>>>
->>>> The problem is that when loaded the threads get suspended due to exceptions:
->>>>
->>>> Xenomai: suspending kernel thread b929cbc0 ('tt_upgw_0') at 0xb929cbc0
->>>> after exception #1792
->>>>
->>>> or
->>>>
->>>> Xenomai: suspending kernel thread b929cbc0 ('tt_upgw_0') at 0x0 after
->>>> exception #1025
->>>>
->>>> or
->>>>
->>>> Xenomai: suspending kernel thread b911f518 ('rtnet-rtpc') at 0xb911f940
->>>> after exception #1792
->>>>
->>>>
->>>> I have ported the "gianfar" driver from linux to rtnet.
->>>>
->>>> The versions and hardware are listed below. The errors are most likely
->>>> due to faulty software on my part, but i would like to ask if there are
->>>> any known issues with the versions or hardware i'm using. I would also
->>>> like to ask if there are any ways of further debugging the errors as i
->>>> am not getting very far with the above messages.
->>>>     
->>>>         
->>> A severe bug at kthread init was fixed in the 2.5.5.2 - 2.5.6 timeframe,
->>> which would cause exactly the kind of weird behavior you are seeing
->>> right now. The bug triggered random code execution due to stack memory
->>> pollution at init on powerpc for Xenomai kthreads:
->>> http://git.xenomai.org/?p=xenomai-rpm.git;a=commit;h=90699565cbce41f2cec193d57857bb5817efc19a
->>> http://git.xenomai.org/?p=xenomai-rpm.git;a=commit;h=da20c20d4b4d892d40c657ad1d32ddb6d0ceb47c
->>> http://git.xenomai.org/?p=xenomai-rpm.git;a=commit;h=a5886b354dc18f054b187b58cfbacfb60bccaf47
->>>
->>> You need at the very least those three patches (from the top of my
->>> head), but it would be much better to upgrade to 2.5.6.
->>>
->>>   
->>>       
->>>>
->>>> System info:
->>>>
->>>> Linux kernel: 2.6.29.6
->>>> i-pipe version: 2.7-04
->>>> processor: powerpc mpc8572
->>>> xenomai version: 2.5.3
->>>> rtnet version: 0.9.12
->>>>
->>>>     
->>>>         
->>>   
->>>       
->>     
->   
-
+-- 
+                                                                Gilles.
 
