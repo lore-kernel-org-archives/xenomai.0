@@ -1,15 +1,13 @@
-Message-ID: <4D9F2BCF.3080505@domain.hid>
-Date: Fri, 08 Apr 2011 17:37:51 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4DA2C94C.1010005@domain.hid>
+Date: Mon, 11 Apr 2011 11:26:36 +0200
+From: Jesper Christensen <jbc@domain.hid>
 MIME-Version: 1.0
-References: <20110407170855.GA22659@domain.hid>
-	<4D9E0354.4010600@domain.hid> <4D9EAC97.4090307@domain.hid>
-	<20110408065122.GB18160@domain.hid>
-In-Reply-To: <20110408065122.GB18160@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+References: <4D9F0679.7080109@domain.hid>	<20110408191529.GA2802@domain.hid>	<4DA2A514.4090702@domain.hid>	<20110411065527.GA3617@domain.hid>
+	<4DA2A6D0.8000705@domain.hid> <4DA2C767.3070507@domain.hid>
+In-Reply-To: <4DA2C767.3070507@domain.hid>
+Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [Adeos-main] ARM IXP: ipipe regression from
- 2.6.31 to .33 and .35
+Subject: Re: [Xenomai-core] kernel threads crash
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -18,35 +16,72 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Richard Cochran <richardcochran@domain.hid>
-Cc: adeos-main@gna.org, Xenomai-core@domain.hid
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai@xenomai.org
 
-Richard Cochran wrote:
-> On Fri, Apr 08, 2011 at 08:35:03AM +0200, Gilles Chanteperdrix wrote:
-> 
->> - the TSC emulation code is factored, so that when porting to a new
->> port, we avoid copy-pasting the TSC emulation;
-> 
-> The ARM porting page on the wiki is out of date with regards to this.
+Yeah we've been stupid enough not to use the version from the git
+repository, but i'll see what i can do over the next few days (snowed
+under at work :(  ). I should be able to do some diffs against the git
+repository.
 
-Yes, and about the GPIO demuxing too. I will update it when I am done
-with the Panda port, which will allow me to document the SMP bits...
+/Jesper
 
-> 
->> - it is ready for multi-SOCs kernels (all the TSC emulations are
->> compiled-in, the one chosen is copied to the vectors page when the
->> ipipe_tsc_register function is called). This is the direction ARM linux
->> is going, if you followed the ARM wrestling on the linux-arm-kernel
->> mailing list.
-> 
-> Yes, that thread was really entertaining ;)
-> 
-> 
-> Thanks for all your good work,
 
-You are welcome, it is a pleasure to work with people who do not expect
-us to do all the fixing on our own.
+On 2011-04-11 11:18, Jan Kiszka wrote:
+> On 2011-04-11 08:59, Jesper Christensen wrote:
+>   
+>> There you go.
+>>
+>>     
+> Even better would be individual patches (one for each topic) so that we
+> can more easily review/merge your improvements into RTnet. If you are
+> not familiar with this process, maybe you can convince Richard to do the
+> break-up... :)
+>
+> Also, please follow up on RTnet-list(s) about RTnet topics.
+>
+> TIA,
+> Jan
+>
+>   
+>> On 2011-04-11 08:55, Richard Cochran wrote:
+>>     
+>>> On Mon, Apr 11, 2011 at 08:52:04AM +0200, Jesper Christensen wrote:
+>>>   
+>>>       
+>>>> I have made a number of changes to rtnet (scatter gather support, icmp
+>>>> fixes etc.) so maybe i could send you a tar ball of the entire directory?
+>>>>     
+>>>>         
+>>> Yes, please do.
+>>>
+>>> thanks,
+>>> Richard
+>>>
+>>>   
+>>>       
+>>>> On 2011-04-08 21:15, Richard Cochran wrote:
+>>>>     
+>>>>         
+>>>>> On Fri, Apr 08, 2011 at 02:58:33PM +0200, Jesper Christensen wrote:
+>>>>>
+>>>>>   
+>>>>>       
+>>>>>           
+>>>>>> I have ported the "gianfar" driver from linux to rtnet.
+>>>>>>     
+>>>>>>         
+>>>>>>             
+>>>>> Can you publish this driver? I have been wanting to make a rtnet
+>>>>> gianfar myself.
+>>>>>
+>>>>> Thanks,
+>>>>>
+>>>>> Richard
+>>>>>
+>>>>>   
+>>>>>       
+>>>>>           
+>   
 
--- 
-					    Gilles.
 
