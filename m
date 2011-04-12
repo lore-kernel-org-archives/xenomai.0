@@ -1,11 +1,10 @@
-Date: Tue, 12 Apr 2011 15:14:53 +0200 (CEST)
-From: Mauro Salvini <mauro.salvini@domain.hid>
-Message-ID: <537545.221302614089218.JavaMail.SYSTEM@pc-msalvini>
-In-Reply-To: <18922906.201302613837843.JavaMail.SYSTEM@pc-msalvini>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-help] rt_task_join() small issue on not-joinable task
+Sender: madjsw@domain.hid
+Date: Tue, 12 Apr 2011 09:27:19 -0500
+Message-ID: <BANLkTikTWM75UZknkYRt=MeOUDJVsNmLAA@mail.gmail.com>
+From: Jeff Weber <jwamsc@domain.hid>
+Content-Type: multipart/alternative; boundary=00163683340a61c00a04a0b97d0a
+Subject: [Xenomai-help] pthread exit and PTHREAD_WARNSW
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -17,71 +16,113 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
-Hi to all, 
+--00163683340a61c00a04a0b97d0a
+Content-Type: text/plain; charset=ISO-8859-1
 
-I'm running Xenomai 2.5.5.2 IPipe 2.7-04 on kernel 2.6.35.7-x86. 
+>From testing, I found that if I enable PTHREAD_WARNSW for a pthread, I must
+explicitly disable this mode before the thread terminates, or the thread
+draws a signal 24 SIGXCPU.
 
-I have a main real time task that creates a thread: this thread calls rt_task_shadow() to turns itself into real-time task 
-I discovered this: if I exit from this task and then call rt_task_join() on it from main task, rt_task_join() returns 0 instead -EINVAL as expected (T_JOINABLE flag does not exist for rt_task_shadow() function). Is it correct a behavior? 
+I've tried to simplify my thread terminations by pushing a function which
+calls pthread_set_mode_np(PTHREAD_WARNSW, 0) onto the thread cleanup stack,
+and always terminating the thread via pthread_exit().  However, this method
+still draws a signal 24 SIGXCPU.    Here's a sample backtrace:
 
-Here a simple code to explain it: 
+Program terminated with signal 24, CPU time limit exceeded.
+#0  0xffffe424 in __kernel_vsyscall ()
+(gdb) bt full
+#0  0xffffe424 in __kernel_vsyscall ()
+No symbol table info available.
+#1  0xb781d561 in pthread_once () from /lib/libpthread.so.0
+No symbol table info available.
+#2  0xb76e0450 in ?? () from /lib/libgcc_s.so.1
+No symbol table info available.
+#3  0xb76e09de in _Unwind_ForcedUnwind () from /lib/libgcc_s.so.1
+No symbol table info available.
+#4  0xb7821032 in _Unwind_ForcedUnwind () from /lib/libpthread.so.0
+No symbol table info available.
+#5  0xb781ea97 in __pthread_unwind () from /lib/libpthread.so.0
+No symbol table info available.
+#6  0xb7818a5e in pthread_exit () from /lib/libpthread.so.0
+No symbol table info available.
+#7  0x0804969b in my program termination code
 
-RT_TASK taskHandler; 
-pthread_t threadHandler; 
-char bContinue; 
+Am I coding this incorrectly, or is this just the way pthreads interacts
+with Xenomai?
 
-void task1 (void *arg) 
-{ 
-   while( bContinue ) 
-   { 
-      rt_printf("running\n"); 
-      rt_task_sleep(500000000); 
-   } 
-   rt_printf("exit\n"); 
-} 
+my config:
+# xeno-config --version
+2.5.6
+# ldd ./mq_test
+        linux-gate.so.1 =>  (0xffffe000)
+        libpthread_rt.so.1 => /usr/xenomai/lib/libpthread_rt.so.1
+(0xb778b000)
+        libxenomai.so.0 => /usr/xenomai/lib/libxenomai.so.0 (0xb7785000)
+        libpthread.so.0 => /lib/libpthread.so.0 (0xb776a000)
+        librt.so.1 => /lib/librt.so.1 (0xb7760000)
+        librtdk.so.0 => /usr/xenomai/lib/librtdk.so.0 (0xb775a000)
+        libstdc++.so.6 => /usr/lib/libstdc++.so.6 (0xb766a000)
+        libm.so.6 => /lib/libm.so.6 (0xb7640000)
+        libgcc_s.so.1 => /lib/libgcc_s.so.1 (0xb7622000)
+        libc.so.6 => /lib/libc.so.6 (0xb74b7000)
+        /lib/ld-linux.so.2 (0xb77b4000)
+#> rpm -qf /lib/libpthread.so.0
+glibc-2.11.2-3.1.1.i686
+# uname -a
+Linux xeno2 2.6.37.3-xeno-2.5.6-smp #1 SMP PREEMPT Fri Mar 11 12:43:02 CST
+2011 i686 i686 i386 GNU/Linux
 
-void * thread1 (void *arg) 
-{ 
-   int ret=0; 
-   rt_printf("shadow:%d\n",(ret=rt_task_shadow(&taskHandler,"Task1",50,0))); 
-   if(ret==0) 
-      task1(NULL); 
-   return NULL; 
-} 
 
-int main (int argc, char** argv) 
-{ 
-   mlockall ( MCL_CURRENT | MCL_FUTURE ); 
-   rt_print_auto_init(1); 
+TIA,
+Jeff
 
-   rt_task_shadow(NULL,"Maintask",70,T_JOINABLE); 
+--00163683340a61c00a04a0b97d0a
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-   bContinue=1; 
-   rt_printf("thread create:%d\n",pthread_create ( &threadHandler , NULL , thread1 , NULL )); 
-   rt_task_sleep(2000000000ULL); 
-   bContinue=0; 
-   rt_printf("join:%d\n",rt_task_join(&taskHandler)); 
+>From testing, I found that if I enable=A0PTHREAD_WARNSW for a pthread, I mu=
+st explicitly disable this mode before the thread terminates, or the thread=
+ draws=A0a signal 24 SIGXCPU.<div><br></div><div>I&#39;ve tried to simplify=
+ my thread terminations by pushing a function which calls=A0pthread_set_mod=
+e_np(PTHREAD_WARNSW, 0) onto the thread cleanup stack, and always terminati=
+ng the thread via pthread_exit(). =A0However, this method still draws a sig=
+nal 24 SIGXCPU. =A0 =A0Here&#39;s a sample backtrace:</div>
+<div><br></div><div><div>Program terminated with signal 24, CPU time limit =
+exceeded.</div><div>#0 =A00xffffe424 in __kernel_vsyscall ()</div><div>(gdb=
+) bt full</div><div>#0 =A00xffffe424 in __kernel_vsyscall ()</div><div>No s=
+ymbol table info available.</div>
+<div>#1 =A00xb781d561 in pthread_once () from /lib/libpthread.so.0</div><di=
+v>No symbol table info available.</div><div>#2 =A00xb76e0450 in ?? () from =
+/lib/libgcc_s.so.1</div><div>No symbol table info available.</div><div>#3 =
+=A00xb76e09de in _Unwind_ForcedUnwind () from /lib/libgcc_s.so.1</div>
+<div>No symbol table info available.</div><div>#4 =A00xb7821032 in _Unwind_=
+ForcedUnwind () from /lib/libpthread.so.0</div><div>No symbol table info av=
+ailable.</div><div>#5 =A00xb781ea97 in __pthread_unwind () from /lib/libpth=
+read.so.0</div>
+<div>No symbol table info available.</div><div>#6 =A00xb7818a5e in pthread_=
+exit () from /lib/libpthread.so.0</div><div>No symbol table info available.=
+</div><div>#7 =A00x0804969b in my program termination code
+</div></div><div><br></div><div>Am I coding this incorrectly, or is this ju=
+st the way pthreads interacts with Xenomai?</div><div><br></div><div>my con=
+fig:</div><div><div># xeno-config --version</div><div>2.5.6</div><div>
+# ldd ./mq_test</div><div>=A0=A0 =A0 =A0 =A0linux-gate.so.1 =3D&gt; =A0(0xf=
+fffe000)</div><div>=A0=A0 =A0 =A0 =A0libpthread_rt.so.1 =3D&gt; /usr/xenoma=
+i/lib/libpthread_rt.so.1 (0xb778b000)</div><div>=A0=A0 =A0 =A0 =A0libxenoma=
+i.so.0 =3D&gt; /usr/xenomai/lib/libxenomai.so.0 (0xb7785000)</div>
+<div>=A0=A0 =A0 =A0 =A0libpthread.so.0 =3D&gt; /lib/libpthread.so.0 (0xb776=
+a000)</div><div>=A0=A0 =A0 =A0 =A0librt.so.1 =3D&gt; /lib/librt.so.1 (0xb77=
+60000)</div><div>=A0=A0 =A0 =A0 =A0librtdk.so.0 =3D&gt; /usr/xenomai/lib/li=
+brtdk.so.0 (0xb775a000)</div><div>
+=A0=A0 =A0 =A0 =A0libstdc++.so.6 =3D&gt; /usr/lib/libstdc++.so.6 (0xb766a00=
+0)</div><div>=A0=A0 =A0 =A0 =A0libm.so.6 =3D&gt; /lib/libm.so.6 (0xb7640000=
+)</div><div>=A0=A0 =A0 =A0 =A0libgcc_s.so.1 =3D&gt; /lib/libgcc_s.so.1 (0xb=
+7622000)</div><div>=A0=A0 =A0 =A0 =A0libc.so.6 =3D&gt; /lib/libc.so.6 (0xb7=
+4b7000)</div>
+<div>=A0=A0 =A0 =A0 =A0/lib/ld-linux.so.2 (0xb77b4000)</div><div>#&gt; rpm =
+-qf /lib/libpthread.so.0</div><div>glibc-2.11.2-3.1.1.i686</div></div><div>=
+#=A0uname -a</div><div>Linux xeno2 2.6.37.3-xeno-2.5.6-smp #1 SMP PREEMPT F=
+ri Mar 11 12:43:02 CST 2011 i686 i686 i386 GNU/Linux</div>
+<div><br></div><div><br></div><div>TIA,</div><div>Jeff</div><div><br></div>
 
-   return 0; 
-} 
-
-Output is: 
-
-thread create:0 
-shadow:0 
-running 
-running 
-running 
-running 
-exit 
-join:0 
-
-I know that rt_task_shadow() wasn't made to create new tasks, it wants to be an example code only. 
-
-Regards 
-
-Mauro 
-
-PS: I discovered this behavior because if I redo immediately pthread_create() call after rt_task_join(), rt_task_shadow() returns -EEXIST (peraphs only if main task has bigger priority than created task: if it has equal or smaller priority, rt_task_shadow() call works fine. But this is another affair). 
-
+--00163683340a61c00a04a0b97d0a--
 
