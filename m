@@ -1,9 +1,12 @@
+Message-ID: <4DA42C48.2070305@domain.hid>
+Date: Tue, 12 Apr 2011 12:41:12 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Date: Tue, 12 Apr 2011 12:20:46 +0200
-Message-ID: <BANLkTikQGtGBbH-0mz+ThphHs1LZjt4yeg@domain.hid>
-From: suresh reddy <sureshreddy.balijepalli@domain.hid>
-Content-Type: multipart/alternative; boundary=00504502af90a6e39304a0b60b73
-Subject: [Adeos-main] Adeos ipipe for pandaboard
+References: <BANLkTikQGtGBbH-0mz+ThphHs1LZjt4yeg@domain.hid>
+In-Reply-To: <BANLkTikQGtGBbH-0mz+ThphHs1LZjt4yeg@domain.hid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Adeos-main] Adeos ipipe for pandaboard
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/options/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -12,29 +15,22 @@ List-Post: <mailto:adeos-main@gna.org>
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-To: adeos-main@gna.org
+To: suresh reddy <sureshreddy.balijepalli@domain.hid>
+Cc: adeos-main@gna.org
 
---00504502af90a6e39304a0b60b73
-Content-Type: text/plain; charset=ISO-8859-1
+suresh reddy wrote:
+> Dear Adeos Team,
+> 
+> I would like to ask you that the latest Ipipe patch supports pandaboard (ARM
+> Cortex A9) board ??
 
-Dear Adeos Team,
-
-I would like to ask you that the latest Ipipe patch supports pandaboard (ARM
-Cortex A9) board ??
+What is wrong with you? You are unable to read? You asked this question
+three times on the Xenomai mailing lists, and I even gave you private
+answers. So, go read the answers again, and if there is something in the
+answer that you did not understand, ask about that, but please stop
+asking the same question over and over again, you are really getting on
+my nerves.
 
 -- 
-
-Suresh balijepalli
-Rosenehim,Baveria.
-
---00504502af90a6e39304a0b60b73
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr">Dear Adeos Team,<div><br></div><div>I would like to ask yo=
-u that the latest Ipipe patch supports pandaboard (ARM Cortex A9) board ??=
-=A0</div><div><br>-- <br><br>Suresh balijepalli<br>Rosenehim,Baveria.<br>
-</div></div>
-
---00504502af90a6e39304a0b60b73--
+                                                                Gilles.
 
