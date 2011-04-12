@@ -1,5 +1,5 @@
-Message-ID: <4DA45788.3030605@domain.hid>
-Date: Tue, 12 Apr 2011 15:45:44 +0200
+Message-ID: <4DA45D0F.4090501@domain.hid>
+Date: Tue, 12 Apr 2011 16:09:19 +0200
 From: Jesper Christensen <jbc@domain.hid>
 MIME-Version: 1.0
 References: <4D9F0679.7080109@domain.hid>	<1302268379.2101.35.camel@domain.hid>		<4DA30C80.3010107@domain.hid>	<1302531493.2054.355.camel@domain.hid>		<4DA30E14.6070401@domain.hid>	<1302532049.2054.357.camel@domain.hid>		<4DA31108.9080000@domain.hid>	<1302532753.2054	<4DA314F1.3070504@domain.hid>
@@ -20,8 +20,8 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai@xenomai.org
 
-Unfortunately it's not part of the tar ball, but i might be able to post
-a source file that sums it up pretty well.
+Speaking of rtpc, could there be a race condition when using a
+rtdm_lock_t to synchronize between a linux thread and a xenomai thread?
 
 /Jesper
 
