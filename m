@@ -1,13 +1,12 @@
-Message-ID: <4DA6E57B.9080600@domain.hid>
-Date: Thu, 14 Apr 2011 14:15:55 +0200
+Message-ID: <4DA6E5FB.1050204@domain.hid>
+Date: Thu, 14 Apr 2011 14:18:03 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <BANLkTikTWM75UZknkYRt=MeOUDJVsNmLAA@mail.gmail.com>	<4DA463D2.9030502@domain.hid>	<BANLkTi=YMQzg9943duUB2kdvawpYs7Z8KQ@mail.gmail.com>	<4DA46DA4.8070007@domain.hid>
-	<BANLkTi=0JqnSnWzj34nk1-4ufRt-sEnr7A@mail.gmail.com>
-In-Reply-To: <BANLkTi=0JqnSnWzj34nk1-4ufRt-sEnr7A@mail.gmail.com>
+References: <BANLkTi=fp61zxZyg=gGt4moNNw_hLa8_og@domain.hid>
+In-Reply-To: <BANLkTi=fp61zxZyg=gGt4moNNw_hLa8_og@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] pthread exit and PTHREAD_WARNSW
+Subject: Re: [Xenomai-help] avoiding page faults
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -21,75 +20,34 @@ To: Jeff Weber <jwamsc@domain.hid>
 Cc: xenomai@xenomai.org
 
 Jeff Weber wrote:
-> On Tue, Apr 12, 2011 at 10:20 AM, Gilles Chanteperdrix <
-> gilles.chanteperdrix@xenomai.org> wrote:
+> I wish to avoid unwanted transitions of POSIX pthreads to secondary mode due
+> to page faults.
 > 
->> Jeff Weber wrote:
->>> Gilles:
->>>
->>> On Tue, Apr 12, 2011 at 9:38 AM, Gilles Chanteperdrix <
->>> gilles.chanteperdrix@xenomai.org> wrote:
->>>
->>>> Jeff Weber wrote:
->>>>
->>>> Hi Jeff,
->>>>
->>>> any news about the hostrt patch I sent you for x86_32? Does it work?
->>>>
->>> Yes it works.  However my call to clock_gettime(CLOCK_HOST_REALTIME)
->> takes
->>> too long (110 nsec on my CPU) for my ISR, so I will read the TSC instead,
->>> and convert the TSC to host time in another thread.  Thanks for your help
->>> though.
->> Wow, it makes me wonder what kind of ISR with a multi-us latency can not
->> handle a 110ns service. But I admit that the hostrt clock_gettime
->> service is a bit heavy. I am afraid there is not much we can do. Could
->> you get me disassembly of the kernel-space clock.o file, so that I
->> verify that we do not end up using divisions? For instance
->> clock_gettime(CLOCK_MONOTONIC) is wrong, and uses the real division.
->>
+> Does calling
+> mlockall(MCL_CURRENT | MCL_FUTURE)
 > 
-> See attached.  Let me know if attachment gets stripped off along the way.
+> lock pages when the memory is allocated, or referenced?
 > 
->>>
->>>>> From testing, I found that if I enable PTHREAD_WARNSW for a pthread, I
->>>> must
->>>>> explicitly disable this mode before the thread terminates, or the
->> thread
->>>>> draws a signal 24 SIGXCPU.
->>>> Yes, the problem is that we can put such migration if the thread
->>>> function returns, but it will not work in case pthread_exit is called.
->>>>
->>> I'm interested if there is a way to automatically disable PTHREAD_WARNSW
->> as
->>> threads terminate, using return from the entry function.  I was only
->> using
->>> pthread_exit() to leverage the thread cleanup stack capability, and queue
->> a
->>> call to pthread_set_mode_np(PTHREAD_WARNSW, 0) .
->> You can do that in the trampoline in src/skins/posix/thread.c, right
->> after the call to entry(cookie). I will send a patch tonight if you prefer.
->>
+> From reviewing Xenomai, Linux RT_PREEMPT, and RTAI code, it appears the
+> answer is that memory is locked when the page is "referenced" (not
+> allocated), and that referencing by write is preferred over referencing by
+> read.  xeno_fault_stack() appears to pre-fault a subset of the stack when
+> turning the calling thread into a Xenomai thread.
 > 
-> Yes, a patch would be appreciated at your earliest convenience.  No need to
-> rush it tonight. Do you consider this a candidate for released code, or
-> should I consider this a 1-off?
+> If true, then I should allocate my own stack for each pthread created in my
+> program, and write every page ahead of time, then
+> call pthread_attr_setstack() prior to thread creation.  I should also write
+> every page of every dynamically allocated memory object.
+> 
+> Please help me verify if this understanding is correct.
 
-Ok. Here it comes. Sorry for the delay.
-diff --git a/src/skins/posix/thread.c b/src/skins/posix/thread.c
-index 109650c..c913ac4 100644
---- a/src/skins/posix/thread.c
-+++ b/src/skins/posix/thread.c
-@@ -235,6 +235,7 @@ static void *__pthread_trampoline(void *arg)
- 		if (policy != SCHED_OTHER)
- 			XENOMAI_SYSCALL1(__xn_sys_migrate, XENOMAI_XENO_DOMAIN);
- 		status = start(cookie);
-+		XENOMAI_SYSCALL1(__xn_sys_migrate, XENOMAI_LINUX_DOMAIN);
- 	} else
- 		status = (void *)-err;
- 
-Since it does not fix the issue completely, I am not sure it is the right
-solution. I guess doing something in kernel-space would be better.
+mlockall(MCL_CURRENT) locks all the memory currently mapped.
+mlockall(MCL_FUTURE) will lock all the memory when it is allocated/mapped.
+
+The only thing which remains allocated on demand is the main thread
+stack. This explains why we use xeno_fault_stack(), which faults a
+"reasonable" amount of stack, in order to get the kernel to allocate and
+map memory.
 
 -- 
 					    Gilles.
