@@ -1,9 +1,13 @@
+Message-ID: <4DA701A9.8030700@domain.hid>
+Date: Thu, 14 Apr 2011 16:16:09 +0200
+From: Jesper Christensen <jbc@domain.hid>
 MIME-Version: 1.0
-From: Jean-Michel Hautbois <jhautbois@domain.hid>
-Date: Wed, 27 Apr 2011 20:42:57 +0200
-Message-ID: <BANLkTi=UuSsFMmin_vGQFp3-vn=7JVT8Cg@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Subject: [Xenomai-core] [PowerPC]Badness at mmu_context_nohash
+References: <4DA6F0DD.1080403@domain.hid> <1302787886.2083.27.camel@domain.hid>	
+	<4DA6FABA.7020407@domain.hid> <1302790179.2083.57.camel@domain.hid>
+In-Reply-To: <1302790179.2083.57.camel@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-core] kernel threads crash - possible race condition?
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -12,42 +16,117 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi list,
 
-I am currently using a Xenomai port on a linux 2.6.35.11 linux kernel
-and the adeos-ipipe-2.6.35.7-powerpc-2.12-01.patch.
-I am facing a scheduling issue on a P2020 (dual core PowerPC), and I
-get the following message :
+On 2011-04-14 16:09, Philippe Gerum wrote:
+> On Thu, 2011-04-14 at 15:46 +0200, Jesper Christensen wrote:
+>   
+>> Actually i have been running with CONFIG_XENO_HW_UNLOCKED_SWITCH the
+>> whole time
+>>     
+> You mean enabled?
+>   
+Disabled, sorry.
+>   
+>>  and i also raised the stack size from 4k to 8k. I do however
+>> think there could be some fishyness in entry_32.S. In
+>> "transfer_to_handler" SPRN_SPRG3 is used to check for stack overflow (at
+>> least in my kernel 2.6.29.6), but i must admit i haven't seen any of
+>> that in the kernel log.
+>>
+>>     
+> Mmm, you are right. In any case, what we want with the unmasked switch
+> feature is to allow interrupts while we flush the tlb and set the new mm
+> context, which may be lengthy on some low end platforms. Allowing the
+> switch code to be preempted during the register swap is of no use wrt
+> latency.
+>
+> Do you have a patch at hand which you could post that flips MSR_EE in
+> rthal_thread_switch already?
+>
+>   
+This protects the whole function, but it should flip the bit inside like
+you suggest.
 
-Badness at arch/powerpc/mm/mmu_context_nohash.c:209
-NIP: c0018d20 LR: c039b94c CTR: c00343e4
-REGS: ecfadce0 TRAP: 0700   Tainted: G        W    (2.6.35.11)
-MSR: 00021000 <ME,CE>  CR: 24000488  XER: 00000000
-TASK = ec5220d0[496] 'sipaq' THREAD: ecfac000 CPU: 1
-GPR00: 00000001 ecfadd90 ec5220d0 ec5df340 ec58a700 00000000 ffffffff 00000003
-GPR08: c04a2d98 00000007 c04a2d98 0067e000 0002f385 1007f1f8 c04a5b40 ecfac040
-GPR16: c04a5b40 c04deb80 c04a2120 c04a2d98 c04a5b40 c04d008c ecfac000 00029000
-GPR24: c04d0000 c04d1e6c 00000001 ec58a700 eceaf390 c04d1e78 c0b23b40 ec5df340
-NIP [c0018d20] switch_mmu_context+0x80/0x438
-LR [c039b94c] schedule+0x774/0x7dc
-Call Trace:
-[ecfadd90] [44000484] 0x44000484 (unreliable)
-[ecfadde0] [c039b94c] schedule+0x774/0x7dc
-[ecfade50] [c039cb98] do_nanosleep+0xc8/0x114
-[ecfade80] [c0059bf8] hrtimer_nanosleep+0xd8/0x158
-[ecfadf10] [c0059d48] sys_nanosleep+0xd0/0xd4
-[ecfadf40] [c0013c0c] ret_from_syscall+0x0/0x3c
---- Exception: c01 at 0xffa6cc4
-   LR = 0xffa6cb0
-Instruction dump:
-40a2fff0 4c00012c 2f800000 409e0128 813b018c 2f830000 39290001 913b018c
-419e0020 8003018c 7c000034 5400d97e <0f000000> 8123018c 3929ffff 9123018c
+diff --git a/include/asm-powerpc/bits/pod.h b/include/asm-powerpc/bits/pod.h
+old mode 100644
+new mode 100755
+index 6269907..e279647
+--- a/include/asm-powerpc/bits/pod.h
++++ b/include/asm-powerpc/bits/pod.h
+@@ -106,6 +106,7 @@ static inline void xnarch_switch_to(xnarchtcb_t
+*out_tcb,
+        struct mm_struct *prev_mm = out_tcb->active_mm, *next_mm;
+        struct task_struct *prev = out_tcb->active_task;
+        struct task_struct *next = in_tcb->user_task;
++       unsigned long flags;
+ 
+        if (likely(next != NULL)) {
+                in_tcb->active_task = next;
+@@ -156,12 +157,14 @@ static inline void xnarch_switch_to(xnarchtcb_t
+*out_tcb,
+ #endif /* PPC32 */
+ #endif /* !__IPIPE_FEATURE_HARDENED_SWITCHMM */
+ 
++    rthal_local_irq_save_hw(flags);
+ #ifdef CONFIG_PPC64
+        rthal_thread_switch(out_tcb->tsp, in_tcb->tsp, next == NULL);
+ #else
+        rthal_thread_switch(out_tcb->tsp, in_tcb->tsp);
+ #endif
+        barrier();
++       rthal_local_irq_restore_hw(flags);
+ }
 
-Do you have a clue on how to start debugging it ?
-It is happening quite randomly... :).
+>> /Jesper
+>>
+>>
+>> On 2011-04-14 15:31, Philippe Gerum wrote:
+>>     
+>>> On Thu, 2011-04-14 at 15:04 +0200, Jesper Christensen wrote:
+>>>   
+>>>       
+>>>> I wrote about some problems concerning stack corruption when running
+>>>> xenomai on ppc. I have found out that if i disable hardware interrupts
+>>>> while running "rthal_thread_switch" the problem seems to dissapear
+>>>> somewhat. I saw a crash yesterday after running for 3 hours, and i'm
+>>>> currently running a test (has been running for 3 hours). Usually it
+>>>> would fail after 30-40 minutes. My question is: could there be a problem
+>>>> if we receive an interrupt between updating the stack pointer and the
+>>>> sprg3 register with the new thread pointer?
+>>>>
+>>>>     
+>>>>         
+>>> Normally, there should not be any issue (famous last words), since we
+>>> would run Xenomai-only code over the preempted context, and we don't
+>>> depend on SPRG3 to fetch the current phys address. In fact, at this
+>>> stage we simply don't care about the linux context, only referring to
+>>> the current Xenomai thread, which is obtained differently.
+>>>
+>>> Try switching off CONFIG_XENO_HW_UNLOCKED_SWITCH, in the "machine"
+>>> config area, if this ends up being rock-solid, then this would be a hint
+>>> that something may be fishy in this area. Raising your k-thread stack
+>>> sizes in a separate test may be interesting to check too, if not already
+>>> done.
+>>>
+>>>
+>>>   
+>>>       
+>>>> /Jesper
+>>>>
+>>>>
+>>>>
+>>>> _______________________________________________
+>>>> Xenomai-core mailing list
+>>>> Xenomai-core@domain.hid
+>>>> https://mail.gna.org/listinfo/xenomai-core
+>>>>     
+>>>>         
+>>>   
+>>>       
+>>     
+>   
 
-Thanks in advance !
-JM
 
