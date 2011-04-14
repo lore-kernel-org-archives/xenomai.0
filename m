@@ -1,19 +1,13 @@
-Message-ID: <4DB2EED1.8010104@domain.hid>
-Date: Sat, 23 Apr 2011 17:22:57 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <20110409184122.GA11908@domain.hid>
-	<20110409185503.GB11908@domain.hid>
-	<4DA0B580.4070602@domain.hid> <4DA0B878.9010106@domain.hid>
-	<20110410065250.GA28869@domain.hid>
-	<4DA192E0.2090802@domain.hid>
-	<20110414164248.GA4725@domain.hid>
-	<4DA846FF.5040204@domain.hid> <4DB11857.4030604@domain.hid>
-	<20110423142109.GA332@domain.hid>
-In-Reply-To: <20110423142109.GA332@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <4DA6FABA.7020407@domain.hid>
+References: <4DA6F0DD.1080403@domain.hid> <1302787886.2083.27.camel@domain.hid>
+	<4DA6FABA.7020407@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Date: Thu, 14 Apr 2011 16:09:39 +0200
+Message-ID: <1302790179.2083.57.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] arm ixp: more trouble with recent xenomai
+Subject: Re: [Xenomai-core] kernel threads crash - possible race condition?
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -22,45 +16,75 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Richard Cochran <richardcochran@domain.hid>
-Cc: xenomai@xenomai.org
+To: Jesper Christensen <jbc@domain.hid>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Richard Cochran wrote:
-> On Fri, Apr 22, 2011 at 07:55:35AM +0200, Gilles Chanteperdrix wrote:
->> I also had a look at the culprit patch, reducing it to the bare minimum
->> (no useless whitespace changes and no function moves), and it boils down
->> to only two differences:
->> 1- the fact that we use the "generic" clocksource created by
->> ipipe_tsc_register, which probably has a shift of 25 or 26 bits instead
->> of the 20 bits shift of the original clocksource, and returns a 64 bits
->> value instead of 32 bits.
->> 2- the fact that the tsc update is done with hardware irqs off in the
->> original patch.
-> 
-> Thanks for looking into this for me. I tried the patch, but the
-> result is the same as before:
-> 
-> - Kernel freezes immediately if xenomai is not a module.
-> 
-> - If xenomai is a module, the nucleus loads, but the first skin module
->   freezes the machine.
-> 
-> I will take a closer look next week to see if I can find out at least
-> where the freeze happens.
+On Thu, 2011-04-14 at 15:46 +0200, Jesper Christensen wrote:
+> Actually i have been running with CONFIG_XENO_HW_UNLOCKED_SWITCH the
+> whole time
 
-Ok. It means that rthal_calibrate_timer works, the system freezes when
-Xenomai steals the timer. However, since the ipipe_mach_set_dec,
-ipipe_mach_release_timer code did not change, it does not really make
-sense. But in order to trace the issue, you should probably trace the
-calls to ipipe_mach_set_dec/ipipe_mach_acktimer to see which one is the
-last before the freeze.
+You mean enabled?
 
-On my side, I have run benches on at91sam9263, but am not done yet,
-though yet I have not found a lot of differences in latencies between
-2.4.10 and 2.5.6.
+>  and i also raised the stack size from 4k to 8k. I do however
+> think there could be some fishyness in entry_32.S. In
+> "transfer_to_handler" SPRN_SPRG3 is used to check for stack overflow (at
+> least in my kernel 2.6.29.6), but i must admit i haven't seen any of
+> that in the kernel log.
+> 
 
-Which version of the I-pipe patch were you running with 2.4.10?
+Mmm, you are right. In any case, what we want with the unmasked switch
+feature is to allow interrupts while we flush the tlb and set the new mm
+context, which may be lengthy on some low end platforms. Allowing the
+switch code to be preempted during the register swap is of no use wrt
+latency.
+
+Do you have a patch at hand which you could post that flips MSR_EE in
+rthal_thread_switch already?
+
+> /Jesper
+> 
+> 
+> On 2011-04-14 15:31, Philippe Gerum wrote:
+> > On Thu, 2011-04-14 at 15:04 +0200, Jesper Christensen wrote:
+> >   
+> >> I wrote about some problems concerning stack corruption when running
+> >> xenomai on ppc. I have found out that if i disable hardware interrupts
+> >> while running "rthal_thread_switch" the problem seems to dissapear
+> >> somewhat. I saw a crash yesterday after running for 3 hours, and i'm
+> >> currently running a test (has been running for 3 hours). Usually it
+> >> would fail after 30-40 minutes. My question is: could there be a problem
+> >> if we receive an interrupt between updating the stack pointer and the
+> >> sprg3 register with the new thread pointer?
+> >>
+> >>     
+> > Normally, there should not be any issue (famous last words), since we
+> > would run Xenomai-only code over the preempted context, and we don't
+> > depend on SPRG3 to fetch the current phys address. In fact, at this
+> > stage we simply don't care about the linux context, only referring to
+> > the current Xenomai thread, which is obtained differently.
+> >
+> > Try switching off CONFIG_XENO_HW_UNLOCKED_SWITCH, in the "machine"
+> > config area, if this ends up being rock-solid, then this would be a hint
+> > that something may be fishy in this area. Raising your k-thread stack
+> > sizes in a separate test may be interesting to check too, if not already
+> > done.
+> >
+> >
+> >   
+> >> /Jesper
+> >>
+> >>
+> >>
+> >> _______________________________________________
+> >> Xenomai-core mailing list
+> >> Xenomai-core@domain.hid
+> >> https://mail.gna.org/listinfo/xenomai-core
+> >>     
+> >   
+> 
 
 -- 
-                                                                Gilles.
+Philippe.
+
+
 
