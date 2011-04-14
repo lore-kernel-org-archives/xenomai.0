@@ -1,13 +1,15 @@
-Content-class: urn:content-classes:message
+Message-ID: <4DA6E39A.6030504@domain.hid>
+Date: Thu, 14 Apr 2011 14:07:54 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Date: Thu, 14 Apr 2011 11:38:11 +0200
-Message-ID: <DFFBF4EB468A894AB1474ED220F05AF60134C17E@srv-dc.ona-electroerosion.com>
-In-reply-to: <4DA6A36D.6070908@domain.hid>
-From: "Asier Tamayo" <asier.tamayo@domain.hid>
-Subject: Re: [Xenomai-help] FW: rtdm_iomap_to_user() I-pipe error
+References: <F73025C3-F590-4CB7-A8E1-0EFF62E9A656@domain.hid>	<4D9EB884.6020804@domain.hid>	<205D3924-0110-4DA7-838B-DF40BDBE6702@domain.hid>	<4D9FB431.6010203@domain.hid>
+	<9948C373-EE10-42D0-A854-DC6A6C38B830@domain.hid>
+	<4DA433B7.5020608@domain.hid>
+	<C373CD6F-10C0-4368-AF4C-10E406D6B52A@nolanw.ca>
+In-Reply-To: <C373CD6F-10C0-4368-AF4C-10E406D6B52A@nolanw.ca>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] Total system lockup doing anything real-time
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -17,94 +19,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
+To: Nolan Waite <nolan@domain.hid>
 Cc: xenomai@xenomai.org
 
-Hello Jan,
+Nolan Waite wrote:
+> On 2011-04-12, at 5:12 AM, Gilles Chanteperdrix wrote:
+> 
+>> In the kernel configuration. Could you try changing the following 
+>> configuration options: CONFIG_FTRACE to n CONFIG_SECURITY to n 
+>> CONFIG_DEBUG_RODATA to n CONFIG_KGDB to n CONFIG_AUDIT to n Could
+>> you to try a 64 bits kernel (with the 32 bits compatibility layer, 
+>> it should work with a 32 bits rootfs)?
+> 
+> I changed these settings as asked and switched to a 64-bit kernel (I
+> had problems cross-compiling, my own fault I'm sure, so I just
+> grabbed the x86_64 version of Ubuntu 10.04, but used the same kernel
+> source tree I was using before), and now latency runs no problem!
+> I've attached the .config here just in case anyone's following along.
+> 
+> 
+> I'll reenable Analogy or Comedi and see how that goes, but for now
+> things are looking good. Let me know if there's any logs or anything
+> you'd like to see.
+> 
+> Thanks so much for your walking me through the troubleshooting. Very
+> much appreciated.
 
-First of all, thanks for your quick answer.=20
+Well, I am not sure we are through. IMO, we should try and find which of
+the options solves the issue, starting with the 64 bits build.
 
-Yes, you're completely right. My user application called rt_dev_ioctl, =
-which eventually called rtdm_iomap_to_user, after rt_task_shadow. Now, I =
-call it just after mlockall and rt_dev_open, and before rt_task_shadow. =
-The rtdm_iomap_to_user function now seems to be working correctly, and =
-dmesg no longer shows the previous errors. [By the way, it could be =
-interesting to add a rtdm_in_rt_context() check in the =
-rtdm_iomap_to_user function, which would return an error if in RT]
-
-However, when I later try to write to the device, nothing is written. =
-The mmap seems not to be correct. The following lines may show the =
-problem:
-	rtdm_printk("location %lx --> base %p --> iomap_to_user %p --> =
-virt_to_phys %lx \n",=20
-		my_context->location, my_context->base_address, new_iomap, =
-virt_to_phys(new_iomap));
-
-gives the following result:
-	location  20000000 -> base e0a00000 --> iomap_to_user b5f6f000 --> =
-virt_to_phys f5f6f000
-
-where the variables are:
-	[unsigned long] xen_mydriver->location =3D pci_resource_start(dev,0);
-	[void __iomem*] xen_mydriver->base_address =3D =
-ioremap(xen_mydriver->location, xen_mydriver->mem_size);
-	[void __iomem*] new_iomap
-	rtdm_iomap_to_user(user_info,my_context->location, 300, =
-PROT_READ|PROT_WRITE, &new_iomap, NULL, NULL);
-
-If I execute in my RTDM driver:
-	*(unsigned short*)(my_context->base_address + 0x100) =3D 0xAAAA;
-
-I can see that the address is written. However, if I execute (either in =
-the driver or from the RT task):
-	*(unsigned short*)(new_iomap + 0x100) =3D 0xAAAA;
-It doesn't work.
-
-Does anybody know what is wrong? I'm sure I must be missing something =
-important, but I can't see what.
-
-
-Best regards,
-
-Asier
-
-
-
-> -----Original Message-----
-> From: Jan Kiszka [mailto:jan.kiszka@domain.hid]
-> Sent: Thursday, April 14, 2011 9:34 AM
-> To: Asier Tamayo
-> Cc: xenomai@xenomai.org
-> Subject: Re: FW: rtdm_iomap_to_user() I-pipe error
->=20
->=20
-> On 2011-04-14 08:14, Asier Tamayo wrote:
-> >=20
-> > Hello,
-> >=20
-> > I'm porting a PCI driver to a RTDM. Until now, I have=20
-> successfully done most of the job.
-> >=20
-> > I'm using Xenomai version 2.4.7 and Linux 2.6.27, from the=20
-> ELinOS 5.0 distribution.
-> >=20
-> > My problem appears with the rtdm_iomap_to_user() function.=20
-> I want to allow a RT task to access the PCI memory directly,=20
-> via mmap. As the RTDM has no mmap() function, I'm trying to=20
-> use rtdm_iomap_to_user, but it always gives me the following error:
-> >=20
-> > 	I-pipe: Detected illicit call from domain 'Xenomai'
-> > 	        into a service reserved for domain 'Linux' and below.
->=20
-> This is also documented: rtdm_iomap_to_user is not supposed=20
-> to be called
-> from RT task context. This means your driver should only call it from
-> handlers registered for *_nrt entry points.
->=20
-> Jan
->=20
-> --=20
-> Siemens AG, Corporate Technology, CT T DE IT 1
-> Corporate Competence Center Embedded Linux
->=20
+-- 
+					    Gilles.
 
