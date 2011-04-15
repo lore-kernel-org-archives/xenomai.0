@@ -1,13 +1,14 @@
-Content-class: urn:content-classes:message
+Message-ID: <4DA84917.1000400@domain.hid>
+Date: Fri, 15 Apr 2011 15:33:11 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Date: Tue, 26 Apr 2011 12:05:50 +0200
-Message-ID: <DFFBF4EB468A894AB1474ED220F05AF60134C17F@srv-dc.ona-electroerosion.com>
-In-Reply-To: <DFFBF4EB468A894AB1474ED220F05AF60134C17E@srv-dc.ona-electroerosion.com>
-From: "Asier Tamayo" <asier.tamayo@domain.hid>
-Subject: Re: [Xenomai-help] FW: rtdm_iomap_to_user() I-pipe error
+References: <AANLkTinvryUHtzDWQa9j=Z83jNe1FbJtRYaqMHNORfvp@domain.hid>	<4D5039AD.2070205@domain.hid>	<AANLkTincD+0eKF7tM8aj5s4tepF0KwQ6xkJ52G1Lq4iT@mail.gmail.com>	<4D50433D.1040804@domain.hid>	<AANLkTi=SfPm6HVK2abFWV8uAd5wWnWv9vf0mkby8282r@domain.hid>	<1297154320.2023.6.camel@domain.hid>	<AANLkTim4Q_F5wY77TBH5T0oT3P2X2pex7B-8cr6Q+XyS@mail.gmail.com>	<1297156556.2023.9.camel@domain.hid>	<4D513278.4090606@domain.hid>	<1297167172.2023.11.camel@domain.hid>	<4D513427.6050707@domain.hid>	<1297167750.2023.13.camel@domain.hid>	<4D5137B0.8050006@domain.hid>	<AANLkTikh_Z8Jg0nYb=089Szzh=_gn=ZZnvBcswnGuTur@domain.hid>	<1297169771.2023.15.camel@domain.hid>	<4D514109.9060103@domain.hid>	<1297171546.2023.19.camel@domain.hid>	<AANLkTik9oR2h84WKhTarsaEEDhBYhyofLPZH4SjEUZyA@mail.gmail.com>
+	<BANLkTim+YXr+_tpF+np3S_+O1CSNNOSVLQ@mail.gmail.com>
+In-Reply-To: <BANLkTim+YXr+_tpF+np3S_+O1CSNNOSVLQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] Exception handlers in primary domain /
+ user-space signals
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -17,158 +18,75 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
+To: Henri Roosen <henriroosen@domain.hid>
 Cc: xenomai@xenomai.org
 
-Hello again,
+Henri Roosen wrote:
+> Ok, I'm back on this one now.
+> 
+> I couldn't find the 'the signal rebase over the mayday support'
+> patches which Philippe mentioned. I searched the xenomai-2.5 and
+> xenomai-head trees. Is it somewhere available? It might be a good
+> starting point.
 
-When one doesn't get replies to his questions, it may be either because: =
-i) they are too obvious (RTFM), ii) too difficult, iii) there is little =
-information and it makes the checking in one's system impossible, or iv) =
-they haven't been correctly explained. It may also be that the help =
-demander is not being polite.
+When Philippe said: "So you need the signal rebase over the mayday
+support I merged a few months ago.". The "I merged a few months ago" was
+referring to the mayday support, not the signal rebase. This signal
+rebase does not exist. Because, especially due to FPU handling, it is
+not a trivial thing to do. sigcontext makes things even more complicated.
 
-As i have received no answer, I will assume I haven't explained my =
-problem correctly and will give myself a second chance ;) The following =
-lines will just rewrite my question, since I haven't been able to find =
-any new clue:
+> 
+> The way I see it, currently available is an implementation like used
+> in sigtest. This means using a special skin that gets a handler
+> installed for signals at xeno_bind_skin(..., handler). Current status
+> seems to me a framework for supporting kill system calls. As far as I
+> can see the signal reporting part has no support for sigcontext (which
+> is a requirement for us). Also there is no connection of events like
+> SIGFPE to this mechanism.
 
-I'm porting a PCI driver to a RTDM, using Xenomai version 2.4.7 and =
-Linux 2.6.27, from the ELinOS 5.0 distribution.
+The current framework allows:
+- sending a signal to a thread
+- getting the handler executed by the thread.
 
-I want to allow a RT task to access the PCI memory directly, by calling =
-the rtdm_iomap_to_user() function just after mlockall and rt_dev_open, =
-and before rt_task_shadow. The function returns me a correct value, but =
-then I cannot access the PCI registers by using that address. The mmap =
-seems not to be correct. The values I get:
+But, nothing sends signals to a thread, and nothings allows registering
+handlers for handling different signals.
 
-Driver:
-	xen_mydriver->location =3D pci_resource_start(dev,0); --> 0x20000000=20
-	xen_mydriver->base_address =3D ioremap(xen_mydriver->location, =
-xen_mydriver->mem_size); --> 0xe0a00000=20
-	*(unsigned short*)(my_context->base_address + 0x100) =3D 0xAAAA; --> It =
-works
+What the mayday support would changes is the way a signal handler could
+get executed by a thread.
 
-RT task:
-	rtdm_iomap_to_user(user_info,my_context->location, 300, =
-PROT_READ|PROT_WRITE, &new_iomap, NULL, NULL); --> 0xb5f6f000=20
-	virt_to_phys(new_iomap) --> 0xf5f6f000
-	*(unsigned short*)(new_iomap + 0x100) =3D 0xAAAA; --> It doesn't work =
-(either in the driver or in the RT task)
+> 
+> Where I see the mayday implementation comes in use is when sending
+> signals to other threads: it forces the target thread to make a kernel
+> call from userspace. Then the handle_rt_signals() function can handle
+> the pending signals.
+> Is the mayday implementation also needed for exception signals
+> (SIGFPE), which are generated by the task itself? I see the current
+> implementation needs a system call from userspace to provide the
+> struct xnsigs to kernel space. So I guess answer to the last question
+> is yes... but that might also have some overhead as we were in kernel
+> space already..
 
-Hope this time I'll get some clue. I promise I won't send this question =
-again without any new information.
+No real overhead. Since we are in kernel-space, the signal handler will
+get executed when going back to user-space. The exception causes a
+switch to kernel-space anyway.
 
-Anyway, thanks for your time. Best regards,
+> 
+> Is it a good idea to implement SIGFPE support using the signal-skin?
 
-Asier
+I think it is a better idea to implement this with whatever skin you are
+using native, posix, etc...
+
+> 
+> So for me there are some unclarities of how to implement primary
+> domain exception handling from userspace. Would be good when this
+> email triggers a discussion of how to correctly implement it so I can
+> then make a useful contribution to the project.
+> 
+> Thanks,
+> Henri.
+> 
 
 
-
-> -----Original Message-----
-> From: xenomai-help-bounces@domain.hid
-> [mailto:xenomai-help-bounces@domain.hid Behalf Of Asier Tamayo
-> Sent: Thursday, April 14, 2011 11:38 AM
-> To: Jan Kiszka
-> Cc: xenomai@xenomai.org
-> Subject: Re: [Xenomai-help] FW: rtdm_iomap_to_user() I-pipe error
->=20
->=20
-> Hello Jan,
->=20
-> First of all, thanks for your quick answer.=20
->=20
-> Yes, you're completely right. My user application called=20
-> rt_dev_ioctl, which eventually called rtdm_iomap_to_user,=20
-> after rt_task_shadow. Now, I call it just after mlockall and=20
-> rt_dev_open, and before rt_task_shadow. The=20
-> rtdm_iomap_to_user function now seems to be working=20
-> correctly, and dmesg no longer shows the previous errors. [By=20
-> the way, it could be interesting to add a=20
-> rtdm_in_rt_context() check in the rtdm_iomap_to_user=20
-> function, which would return an error if in RT]
->=20
-> However, when I later try to write to the device, nothing is=20
-> written. The mmap seems not to be correct. The following=20
-> lines may show the problem:
-> 	rtdm_printk("location %lx --> base %p --> iomap_to_user=20
-> %p --> virt_to_phys %lx \n",=20
-> 		my_context->location, my_context->base_address,=20
-> new_iomap, virt_to_phys(new_iomap));
->=20
-> gives the following result:
-> 	location  20000000 -> base e0a00000 --> iomap_to_user=20
-> b5f6f000 --> virt_to_phys f5f6f000
->=20
-> where the variables are:
-> 	[unsigned long] xen_mydriver->location =3D=20
-> pci_resource_start(dev,0);
-> 	[void __iomem*] xen_mydriver->base_address =3D=20
-> ioremap(xen_mydriver->location, xen_mydriver->mem_size);
-> 	[void __iomem*] new_iomap
-> 	rtdm_iomap_to_user(user_info,my_context->location, 300,=20
-> PROT_READ|PROT_WRITE, &new_iomap, NULL, NULL);
->=20
-> If I execute in my RTDM driver:
-> 	*(unsigned short*)(my_context->base_address + 0x100) =3D 0xAAAA;
->=20
-> I can see that the address is written. However, if I execute=20
-> (either in the driver or from the RT task):
-> 	*(unsigned short*)(new_iomap + 0x100) =3D 0xAAAA;
-> It doesn't work.
->=20
-> Does anybody know what is wrong? I'm sure I must be missing=20
-> something important, but I can't see what.
->=20
->=20
-> Best regards,
->=20
-> Asier
->=20
->=20
->=20
-> > -----Original Message-----
-> > From: Jan Kiszka [mailto:jan.kiszka@domain.hid]
-> > Sent: Thursday, April 14, 2011 9:34 AM
-> > To: Asier Tamayo
-> > Cc: xenomai@xenomai.org
-> > Subject: Re: FW: rtdm_iomap_to_user() I-pipe error
-> >=20
-> >=20
-> > On 2011-04-14 08:14, Asier Tamayo wrote:
-> > >=20
-> > > Hello,
-> > >=20
-> > > I'm porting a PCI driver to a RTDM. Until now, I have=20
-> > successfully done most of the job.
-> > >=20
-> > > I'm using Xenomai version 2.4.7 and Linux 2.6.27, from the=20
-> > ELinOS 5.0 distribution.
-> > >=20
-> > > My problem appears with the rtdm_iomap_to_user() function.=20
-> > I want to allow a RT task to access the PCI memory directly,=20
-> > via mmap. As the RTDM has no mmap() function, I'm trying to=20
-> > use rtdm_iomap_to_user, but it always gives me the following error:
-> > >=20
-> > > 	I-pipe: Detected illicit call from domain 'Xenomai'
-> > > 	        into a service reserved for domain 'Linux' and below.
-> >=20
-> > This is also documented: rtdm_iomap_to_user is not supposed=20
-> > to be called
-> > from RT task context. This means your driver should only=20
-> call it from
-> > handlers registered for *_nrt entry points.
-> >=20
-> > Jan
-> >=20
-> > --=20
-> > Siemens AG, Corporate Technology, CT T DE IT 1
-> > Corporate Competence Center Embedded Linux
-> >=20
->=20
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
->=20
+-- 
+                                                                Gilles.
 
