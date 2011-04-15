@@ -1,42 +1,43 @@
-Message-ID: <4D9FB6F3.4010908@domain.hid>
-Date: Sat, 09 Apr 2011 03:31:31 +0200
+Message-ID: <4DA845AF.9080103@domain.hid>
+Date: Fri, 15 Apr 2011 15:18:39 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <mailman.5107.1302246791.23203.xenomai@xenomai.org>
-	<A651E730-C30A-4DA4-81EE-A4C5C6497BA6@domain.hid>
-In-Reply-To: <A651E730-C30A-4DA4-81EE-A4C5C6497BA6@domain.hid>
+References: <20110409184122.GA11908@domain.hid>
+	<20110409185503.GB11908@domain.hid>
+	<4DA0B580.4070602@domain.hid> <4DA0B878.9010106@domain.hid>
+	<20110410065250.GA28869@domain.hid>
+	<4DA17996.3010103@domain.hid>
+	<20110411171437.GA3715@domain.hid>
+	<4DA37209.4000503@domain.hid>
+	<20110412054348.GA2973@domain.hid>
+	<4DA3FC97.10807@domain.hid>
+	<20110414164923.GB4725@domain.hid>
+In-Reply-To: <20110414164923.GB4725@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Total system lockup doing anything real-time
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Subject: Re: [Xenomai-core] arm ixp: more trouble with recent xenomai
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Nolan Waite <nolan@domain.hid>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Richard Cochran <richardcochran@domain.hid>
 Cc: xenomai@xenomai.org
 
-Nolan Waite wrote:
-> On 2011-04-08, at 1:13 AM, nolan@domain.hid wrote:
+Richard Cochran wrote:
+> On Tue, Apr 12, 2011 at 09:17:43AM +0200, Gilles Chanteperdrix wrote:
+>> Not only that. The aim of the test is to trigger the worst case path. I
+>> suspect you can not trigger it with a 10 minutes tests. As you probably
+>> remember, I was once running Xenomai on IXP465, and the latency with
+>> Xenomai 2.4 and FCSE was around 150us.
 > 
->> I've attached a zip containing the output of dmesg (as run just before running the latency test), the output of `cat /proc/interrupts`, and my kernel .config file. I set up netconsole immediately prior to running the latency test, but received nothing, so I believe the attached kernel log to be whole.
-> 
-> Sorry, here they are.
-> 
+> But that was FCSE best effort, no?
 
-The /proc/interrupts is highly suspicious. From your logs we see that
-you have many usual peripherals (disks, network card, USB controller,
-etc...), but we do not see the interrupt they use in /proc/interrupts.
-Are you sure that you show us the full contents of /proc/interrupts?
-
-Also, when running in text mode, please try killing X-window and
-unloading the radeon/drm modules.
-
-We would be interested in the results of "lsmod" on your machine too...
+Guaranteed, but with all the load in the noltp_hell script (that is
+nework load, I/O load, hackbench, etc...).
 
 -- 
                                                                 Gilles.
