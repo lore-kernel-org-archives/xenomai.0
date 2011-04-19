@@ -1,14 +1,27 @@
-Message-ID: <4DB9536B.1030007@domain.hid>
-Date: Thu, 28 Apr 2011 13:45:47 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <3161507.241303982782859.JavaMail.SYSTEM@pc-msalvini>
-	<4DB94A3E.9070906@domain.hid>
-In-Reply-To: <4DB94A3E.9070906@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0 (Apple Message framework v1084)
+From: davide doninelli <davide.doninelli@domain.hid>
+In-Reply-To: <4DA84917.1000400@domain.hid>
+Date: Tue, 19 Apr 2011 18:30:50 +0200
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] rt_task_join() call hangs in shared
-	lib	destructor
+Message-ID: <63426532-1738-4117-B6C8-C329D63AA4BF@edu.hefr.ch>
+References: <AANLkTinvryUHtzDWQa9j=Z83jNe1FbJtRYaqMHNORfvp@domain.hid>
+	<4D5039AD.2070205@domain.hid>
+	<AANLkTincD+0eKF7tM8aj5s4tepF0KwQ6xkJ52G1Lq4iT@mail.gmail.com>
+	<4D50433D.1040804@domain.hid>
+	<AANLkTi=SfPm6HVK2abFWV8uAd5wWnWv9vf0mkby8282r@domain.hid>
+	<1297154320.2023.6.camel@domain.hid>
+	<AANLkTim4Q_F5wY77TBH5T0oT3P2X2pex7B-8cr6Q+XyS@mail.gmail.com>
+	<1297156556.2023.9.camel@domain.hid>	<4D513278.4090606@domain.hid>
+	<1297167172.2023.11.camel@domain.hid>	<4D513427.6050707@domain.hid>
+	<1297167750.2023.13.camel@domain.hid>	<4D5137B0.8050006@domain.hid>
+	<AANLkTikh_Z8Jg0nYb=089Szzh=_gn=ZZnvBcswnGuTur@domain.hid>
+	<1297169771.2023.15.camel@domain.hid>	<4D514109.9060103@domain.hid>
+	<1297171546.2023.19.camel@domain.hid>
+	<AANLkTik9oR2h84WKhTarsaEEDhBYhyofLPZH4SjEUZyA@mail.gmail.com>
+	<BANLkTim+YXr+_tpF+np3S_+O1CSNNOSVLQ@mail.gmail.com>
+	<4DA84917.1000400@domain.hid>
+Subject: [Xenomai-help] Xenomai rt_printf() don't print
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -18,46 +31,18 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Mauro Salvini <mauro.salvini@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Gilles Chanteperdrix wrote:
-> Mauro Salvini wrote:
->>> It looks like a typical pthread_join deadlock. The thread you are 
->>> joining is locked on a pthread mutex, that some other thread (I
->>> would say, the one calling pthread_join) has. It can not work. You
->>> should not call pthread_join while holding a mutex.
->> Yes, it looks like this, but I don't use any mutex in my task. It
->> looks like dlclose() locks a mutex used also by pthread_join() (that
->> was called into shared object destructor), and here is deadlock. But
->> executing realtime task as normal thread does not raise this issue.
-> 
-> The trace you sent clearly shows that the problem happens because
-> rt_task_trampoline calls pthread_exit. In your tests with
-> rt_task_shadow/pthread_create, did you try to use pthread_exit? Or could
-> you try replacing the call to pthread_exit in rt_task_trampoline with a
-> return?
-
-Answering to myself: no, in your examples you did not use pthread_exit,
-that is the difference with the rt_task_create case.
-
-So, could you try the following patch?
-
-diff --git a/src/skins/native/task.c b/src/skins/native/task.c
-index be4ea2c..70ba6f7 100644
---- a/src/skins/native/task.c
-+++ b/src/skins/native/task.c
-@@ -113,7 +113,7 @@ static void *rt_task_trampoline(void *cookie)
-
-       fail:
-
--	pthread_exit((void *)err);
-+	return (void *)err;
- }
-
- int rt_task_create(RT_TASK *task,
+Hi,
+With xenomai on the APF27, the commands rt_printf() don't print on console? 
+Have someone  the same issue?
+Or i need to change some output ? (on which serial  print out) 
 
 
--- 
-                                                                Gilles.
+rt_printk() works fine.
+
+
+
+thanks in advance 
+Davide Doninelli
 
