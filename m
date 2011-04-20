@@ -1,112 +1,121 @@
+Message-ID: <COL104-W40EFBABDB7D1AD7B0D1690E9930@domain.hid>
+Content-Type: multipart/alternative;
+	boundary="_eb4f078f-3fa5-4179-a4ae-ad0e70c43df8_"
+From: =?iso-8859-1?B?RnJhbudvaXMgQmVhdWZvcnQ=?= <francois.beaufort@domain.hid>
+Date: Wed, 20 Apr 2011 15:13:06 +0200
+In-Reply-To: <4DAEBB48.2070700@domain.hid>
+References: <COL104-W8B4D8E6C75C99ECA28042E9930@domain.hid>,
+	<4DAE99F2.7030002@domain.hid>
+	<COL104-W334D71DB0C86070AC9F939E9930@domain.hid>,
+	<4DAEBB48.2070700@domain.hid>
 MIME-Version: 1.0
-In-Reply-To: <4DBC6D98.2070306@domain.hid>
-References: <4DB8149A.7080600@domain.hid> <4DB83CBE.5040007@domain.hid>
-	<4DB94BA0.1020503@domain.hid> <4DB94C9C.7080904@domain.hid>
-	<4DB991E6.90403@domain.hid> <4DB99E47.7000904@domain.hid>
-	<BANLkTik_MeMvpq2x7N0WmML97uW5=HxsLw@domain.hid>
-	<4DB9B978.2010200@domain.hid>
-	<BANLkTinSWAT+33YFAD-z0kz6pesSQBe7qw@domain.hid>
-	<4DB9C0D3.4030003@domain.hid> <4DBA9C26.2040903@domain.hid>
-	<4DBAA1DE.4000108@domain.hid> <4DBBDCA9.1040609@domain.hid>
-	<BANLkTintQjX=O0DBYbyW2=jhyNQuyeZ=pQ@mail.gmail.com>
-	<4DBC6D98.2070306@domain.hid>
-Date: Sun, 1 May 2011 02:28:41 +0600
-Message-ID: <BANLkTi=Q07ByVtHNobQBR1uNkHwRAsoo5g@domain.hid>
-From: Alexey Galakhov <agalakhov@domain.hid>
-Content-Type: multipart/alternative; boundary=20cf300fad3be2851904a228a284
-Subject: Re: [Adeos-main] Ipipe hangs on ARM MINI2440 after switching
-	clocksource
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/options/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: adeos-main@gna.org
+Subject: Re: [Xenomai-help] [Xenomai-core] xenomai and framebuffer-ipu on
+	target iMx35
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: xenomai@xenomai.org
 
---20cf300fad3be2851904a228a284
-Content-Type: text/plain; charset=ISO-8859-1
-
-2011/5/1 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-
->
-> Ok. Could you try only keeping the part with ipipe_handle_chained_irq,
-> leaving the handle_edge_irqs?
->
-
-Sure. I'll do it tomorrow.
-
-There is another one issue: the board hangs after about 2-3 minutes running.
-I found that it is caused by a semi-permanent (order of 2^64 iterations)
-loop in (untouched) kernel timer code, most likely due to weird return value
-of __ipipe_tsc_get. I haven't found the source of this problem yet. I tried
-a small fix:
-
---- time.c.org    2011-04-26 20:52:00.000000000 +0600
-+++ time.c    2011-05-01 02:03:33.000000000 +0600
-@@ -124,7 +124,7 @@
-
- static inline unsigned long timer_freerunning_getvalue(void)
- {
--    return __raw_readl(S3C2410_TCNTO(3));
-+    return (unsigned long)__raw_readw(S3C2410_TCNTO(3));
- }
-
- static inline unsigned long timer_freerunning_getticksoffset(unsigned long
-tval)
-@@ -390,6 +390,6 @@
-
- unsigned long __ipipe_mach_get_dec(void)
- {
--    return __raw_readl(S3C2410_TCNTO(4));
-+    return (unsigned long)__raw_readw(S3C2410_TCNTO(4));
- }
- #endif /* CONFIG_IPIPE */
-
-but it didn't work. (In fact, TCNTOs of S4C2440 are 16-bit, not 32-bit, and
-the datasheet does not guarantee that higher bits are read as zeroes; in
-fact they are, but I tried explicit conversion anyway just in case. No
-effect.).
-
---
-Alex
-
---20cf300fad3be2851904a228a284
-Content-Type: text/html; charset=ISO-8859-1
+--_eb4f078f-3fa5-4179-a4ae-ad0e70c43df8_
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 
-<div class=3D"gmail_quote">2011/5/1 Gilles Chanteperdrix <span dir=3D"ltr">=
-&lt;<a href=3D"mailto:gilles.chanteperdrix@xenomai.org">gilles.chanteperdri=
-x@domain.hid</a>&gt;</span><br><blockquote class=3D"gmail_quote" style=3D"=
-margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex;">
-<div><div></div><div class=3D"h5"><br>
-</div></div>Ok. Could you try only keeping the part with ipipe_handle_chain=
-ed_irq,<br>
-leaving the handle_edge_irqs?<font color=3D"#888888"><br></font></blockquot=
-e><div><br>Sure. I&#39;ll do it tomorrow.<br><br>There is another one issue=
-: the board hangs after about 2-3 minutes running. I found that it is cause=
-d by a semi-permanent (order of 2^64 iterations) loop in (untouched) kernel=
- timer code, most likely due to weird return value of __ipipe_tsc_get. I ha=
-ven&#39;t found the source of this problem yet. I tried a small fix:<br>
-<br></div></div>--- <a href=3D"http://time.c.org">time.c.org</a>=A0=A0=A0 2=
-011-04-26 20:52:00.000000000 +0600<br>+++ time.c=A0=A0=A0 2011-05-01 02:03:=
-33.000000000 +0600<br>@@ -124,7 +124,7 @@<br>=A0<br>=A0static inline unsign=
-ed long timer_freerunning_getvalue(void)<br>
-=A0{<br>-=A0=A0=A0 return __raw_readl(S3C2410_TCNTO(3));<br>+=A0=A0=A0 retu=
-rn (unsigned long)__raw_readw(S3C2410_TCNTO(3));<br>=A0}<br>=A0<br>=A0stati=
-c inline unsigned long timer_freerunning_getticksoffset(unsigned long tval)=
-<br>@@ -390,6 +390,6 @@<br>
-=A0<br>=A0unsigned long __ipipe_mach_get_dec(void)<br>=A0{<br>-=A0=A0=A0 re=
-turn __raw_readl(S3C2410_TCNTO(4));<br>+=A0=A0=A0 return (unsigned long)__r=
-aw_readw(S3C2410_TCNTO(4));<br>=A0}<br>=A0#endif /* CONFIG_IPIPE */<br><br>=
-but it didn&#39;t work. (In fact, TCNTOs of S4C2440 are 16-bit, not 32-bit,=
- and the datasheet does not guarantee that higher bits are read as zeroes; =
-in fact they are, but I tried explicit conversion anyway just in case. No e=
-ffect.).<br>
-<br>--<br>Alex<br>
 
---20cf300fad3be2851904a228a284--
+
+
+> Date: Wed=2C 20 Apr 2011 12:54:00 +0200
+> From: gilles.chanteperdrix@xenomai.org
+> To: francois.beaufort@domain.hid
+> CC: xenomai@xenomai.org
+> Subject: Re: [Xenomai-core] xenomai and framebuffer-ipu on target iMx35
+>=20
+> Fran=E7ois Beaufort wrote:
+> > I can't show you  /proc/interrupts when ipu and I-pipe are enabled
+> > because the system doesn't start in this case.
+>=20
+> Ok. I failed to get that from your first mail. I do not know either if
+> you are using a vanilla kernel=2C or a patched one?
+>=20
+> If a patched one=2C then you have to verify that generic_handle_irq is
+> replaced with ipipe_handle_chained_irq for multiplexed GPIO irqs.
+>=20
+> Note that I CCd the Xenomai-help mailing list=2C next private mail will
+> receive no answer.
+>=20
+> --=20
+>                                                                 Gilles.
+>=20
+
+Thank you for your answers.
+
+I can now start Linux-xenomai with framebuffer and ipu.
+
+I use a kernel patched by the Phytec BSP patches and next by the adeos pipe=
+.
+
+I have modified the file linux-2.6.35.9/drivers/dma/ipu/ipu_irq.c :
+
+lines 305 and 343 :
+
+-  generic_handle_irq(irq)=3B
++ ipipe_handle_chained_irq(irq)=3B
+
+
+This file is not modified by any patch.
+
+Thank you.
+
+Fran=E7ois.
+
+ 		 	   		  =
+
+--_eb4f078f-3fa5-4179-a4ae-ad0e70c43df8_
+Content-Type: text/html; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+
+<html>
+<head>
+<style><!--
+.hmmessage P
+{
+margin:0px=3B
+padding:0px
+}
+body.hmmessage
+{
+font-size: 10pt=3B
+font-family:Tahoma
+}
+--></style>
+</head>
+<body class=3D'hmmessage'>
+<br><br>&gt=3B Date: Wed=2C 20 Apr 2011 12:54:00 +0200<br>&gt=3B From: gill=
+es.chanteperdrix@domain.hid<br>&gt=3B To: francois.beaufort@domain.hid<br>&gt=
+=3B CC: xenomai@xenomai.org<br>&gt=3B Subject: Re: [Xenomai-core] xenomai =
+and framebuffer-ipu on target iMx35<br>&gt=3B <br>&gt=3B Fran=E7ois Beaufor=
+t wrote:<br>&gt=3B &gt=3B I can't show you  /proc/interrupts when ipu and I=
+-pipe are enabled<br>&gt=3B &gt=3B because the system doesn't start in this=
+ case.<br>&gt=3B <br>&gt=3B Ok. I failed to get that from your first mail. =
+I do not know either if<br>&gt=3B you are using a vanilla kernel=2C or a pa=
+tched one?<br>&gt=3B <br>&gt=3B If a patched one=2C then you have to verify=
+ that generic_handle_irq is<br>&gt=3B replaced with ipipe_handle_chained_ir=
+q for multiplexed GPIO irqs.<br>&gt=3B <br>&gt=3B Note that I CCd the Xenom=
+ai-help mailing list=2C next private mail will<br>&gt=3B receive no answer.=
+<br>&gt=3B <br>&gt=3B -- <br>&gt=3B                                        =
+                         Gilles.<br>&gt=3B <br><br>Thank you for your answe=
+rs.<br><br>I can now start Linux-xenomai with framebuffer and ipu.<br><br>I=
+ use a kernel patched by the Phytec BSP patches and next by the adeos pipe.=
+<br><br>I have modified the file linux-2.6.35.9/drivers/dma/ipu/ipu_irq.c :=
+<br><br>lines 305 and 343 :<br><br>-&nbsp=3B generic_handle_irq(irq)=3B<br>=
++ ipipe_handle_chained_irq(irq)=3B<br><br><br>This file is not modified by =
+any patch.<br><br>Thank you.<br><br>Fran=E7ois.<br><br> 		 	   		  </body>
+</html>=
+
+--_eb4f078f-3fa5-4179-a4ae-ad0e70c43df8_--
 
