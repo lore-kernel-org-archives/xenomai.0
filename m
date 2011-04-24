@@ -1,13 +1,13 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <4DA6FABA.7020407@domain.hid>
-References: <4DA6F0DD.1080403@domain.hid> <1302787886.2083.27.camel@domain.hid>
-	<4DA6FABA.7020407@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Thu, 14 Apr 2011 16:09:39 +0200
-Message-ID: <1302790179.2083.57.camel@domain.hid>
-Mime-Version: 1.0
+Message-ID: <4DB484C4.6040204@domain.hid>
+Date: Sun, 24 Apr 2011 22:15:00 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+References: <20110409184122.GA11908@domain.hid>	<20110409185503.GB11908@domain.hid>	<4DA0B580.4070602@domain.hid>	<4DA0B878.9010106@domain.hid>	<20110410065250.GA28869@domain.hid>	<4DA192E0.2090802@domain.hid>	<20110414164248.GA4725@domain.hid>	<4DA846FF.5040204@domain.hid>
+	<4DB11857.4030604@domain.hid>
+In-Reply-To: <4DB11857.4030604@domain.hid>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] kernel threads crash - possible race condition?
+Subject: Re: [Xenomai-core] arm ixp: more trouble with recent xenomai
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -16,75 +16,55 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jesper Christensen <jbc@domain.hid>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Richard Cochran <richardcochran@domain.hid>
+Cc: xenomai@xenomai.org
 
-On Thu, 2011-04-14 at 15:46 +0200, Jesper Christensen wrote:
-> Actually i have been running with CONFIG_XENO_HW_UNLOCKED_SWITCH the
-> whole time
-
-You mean enabled?
-
->  and i also raised the stack size from 4k to 8k. I do however
-> think there could be some fishyness in entry_32.S. In
-> "transfer_to_handler" SPRN_SPRG3 is used to check for stack overflow (at
-> least in my kernel 2.6.29.6), but i must admit i haven't seen any of
-> that in the kernel log.
+Gilles Chanteperdrix wrote:
+> Gilles Chanteperdrix wrote:
+>> Richard Cochran wrote:
+>>> On Sun, Apr 10, 2011 at 01:22:08PM +0200, Gilles Chanteperdrix wrote:
+>>>> To help debugging this, please run the kernel which crashes with I-pipe
+>>>> enabled, without Xenomai, and the attached test, in order to see if the
+>>>> tsc behaves correctly.
+>>> Getting back to this, I did try the test program with ipipe 2.6.35 but
+>>> without xenomai. It seems to run fine. But I only ran it for a few
+>>> minutes.  The exact version was ipipe-2.6.35.9-arm-1.18-01 plus endian
+>>> fix, and I attached the config.
+>>>
+>>> I enabled the *third* #if-elif-else case thinking it to be the correct
+>>> one to test. (see below)
+>>> (...)
+>> Yes, that was the correct thing to do. I assumed that when you enabled
+>> Xenomai, the system was running, and that it frozen when you started a
+>> Xenomai application. Which is not your case at all.
+>>> So, assuming I got that right, then the new tsc code passes the test.
+>>> Next I'll try to get some better information about the freeze. Any
+>>> other ideas?
+>> We have only one commit to inspect, that should not be so hard. Next
+>> thing to try is to see what changed in the other parts of this commit.
+>> We should look at the interrupt handler, ipipe_mach_set_dec,
+>> ipipe_mach_release_timer to see what change had such an effect. I will
+>> try to reorder the functions to have a more readable diff. You can also
+>> check if we pass the rthal_calibrate_timer function.
 > 
-
-Mmm, you are right. In any case, what we want with the unmasked switch
-feature is to allow interrupts while we flush the tlb and set the new mm
-context, which may be lengthy on some low end platforms. Allowing the
-switch code to be preempted during the register swap is of no use wrt
-latency.
-
-Do you have a patch at hand which you could post that flips MSR_EE in
-rthal_thread_switch already?
-
-> /Jesper
+> Hi Richard,
 > 
-> 
-> On 2011-04-14 15:31, Philippe Gerum wrote:
-> > On Thu, 2011-04-14 at 15:04 +0200, Jesper Christensen wrote:
-> >   
-> >> I wrote about some problems concerning stack corruption when running
-> >> xenomai on ppc. I have found out that if i disable hardware interrupts
-> >> while running "rthal_thread_switch" the problem seems to dissapear
-> >> somewhat. I saw a crash yesterday after running for 3 hours, and i'm
-> >> currently running a test (has been running for 3 hours). Usually it
-> >> would fail after 30-40 minutes. My question is: could there be a problem
-> >> if we receive an interrupt between updating the stack pointer and the
-> >> sprg3 register with the new thread pointer?
-> >>
-> >>     
-> > Normally, there should not be any issue (famous last words), since we
-> > would run Xenomai-only code over the preempted context, and we don't
-> > depend on SPRG3 to fetch the current phys address. In fact, at this
-> > stage we simply don't care about the linux context, only referring to
-> > the current Xenomai thread, which is obtained differently.
-> >
-> > Try switching off CONFIG_XENO_HW_UNLOCKED_SWITCH, in the "machine"
-> > config area, if this ends up being rock-solid, then this would be a hint
-> > that something may be fishy in this area. Raising your k-thread stack
-> > sizes in a separate test may be interesting to check too, if not already
-> > done.
-> >
-> >
-> >   
-> >> /Jesper
-> >>
-> >>
-> >>
-> >> _______________________________________________
-> >> Xenomai-core mailing list
-> >> Xenomai-core@domain.hid
-> >> https://mail.gna.org/listinfo/xenomai-core
-> >>     
-> >   
-> 
+> I am currently running some benchmarks on an AT91SAM9263 board, to see
+> whether we have some performance regression.
+
+Hi Richard,
+
+some temporary results on the benchmark here:
+http://www.xenomai.org/~gch/latency-at91sam9263.png
+
+The worst case latency seems not to vary much over time, it looks like
+it is decreasing a bit, but the differences may well be in the
+measurement noise. Unlocked context switch actually improves the latency.
+
+I will update the png as I get new results.
+
+Regards.
 
 -- 
-Philippe.
-
-
+                                                                Gilles.
 
