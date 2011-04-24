@@ -1,12 +1,9 @@
-Message-ID: <4DB3479B.20609@domain.hid>
-Date: Sat, 23 Apr 2011 23:41:47 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <BANLkTim3Z6v5Jr+O8197WZZAOpHsPwjwPA@mail.gmail.com>
-In-Reply-To: <BANLkTim3Z6v5Jr+O8197WZZAOpHsPwjwPA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] FAQ, context switch latency
+Date: Sat, 23 Apr 2011 19:10:31 -0500
+Message-ID: <BANLkTimm_1HqM0tg9YL=y7ZKQBNH1=YgxA@mail.gmail.com>
+From: at91_enthus <nwromania@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: [Xenomai-help] apt-get mmap() error after upgrading to Xenomai 2.5.6
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -16,40 +13,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Eric Eric <ericrebates@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai-help <xenomai@xenomai.org>
 
-Eric Eric wrote:
-> Hello, I've asked a lot of questions here and gotten very prompt and helpful
-> responses, so I summarized them in a FAQ since I figure others may have
-> similar questions.  See http://ericrebates.zzl.org/xen_faq.txt .  If this
-> seems useful maybe someone can append them to the end of the wiki FAQ.
+Hi.
 
-I am not sure all questions really are really that frequent, but yes, we
-should add some to the FAQ. Would you be willing to do it? If yes, I
-will give you write access to the wiki.
+I patched a 2.6.35 kernel with Xenomai 2.5.6.
 
-> 
-> On another note, I have been comparing Xenomai's context switch latency to
-> GHS Integrity.  I found that on average Xenomai seems to take three times as
-> long to context switch versus Integrity (12uS vs. 4uS) running almost
-> identical test code.  Does anyone know why this may be or how to reduce this
-> latency in Xenomai?  Since it appears Gilles helped implement the fast
-> context switching extension for the Linux kernel, I'm assuming Xenomai is
-> also taking advantage of this extension.
+I was able to do a first update and even install a few packages on my
+Atmel board.
+However, when I tried to install some more on the board, I got his
+error message:
+-----------------------------------------------------------------------------------------------------------------
+Reading package lists... Error!
+E: Couldn't make mmap of 25165824 bytes - mmap (12: Cannot allocate memory)
+W: Unable to close mmap - mmap (22: Invalid argument)
+E: The package lists or status file could not be parsed or opened.
+-----------------------------------------------------------------------------------------------------------------
 
-I assume you are measuring context switch times in kernel-space, then
-FCSE will not help you, FCSE helps for MMU context switches. And if you
-are testing on omap3, FCSE is not implemented for omap3. Do you have
-unlocked context switch enabled ?
-What I-pipe patch version are you using?
+What's interesting about this situation is that apt-get works great
+after a fresh rootfs install.
+As soon as I issue apt-get update/upgrade/install for a
+second/third/... time, I get the above error message.
 
-You can probably reduce a bit the time by using rt_timer_tsc() or even
-xnarch_get_cpu_tsc() to do the measurements, then rt_timer_tsc2ns after
-the second measurement, but I am afraid you will not go as low as 4us.
-You can also try and enable the I-pipe tracer to see where the time is
-spent, but beware of the time dilation...
+The filesystem resides on a ext4 formatted uSD, so this error cannot
+be jffs2-related.
+Also, increasing the cache size in apt configuration files doesn't work.
 
--- 
-                                                                Gilles.
+Here are some alternative configurations that didn't mess with apt-get:
+
+(1) kernel 2.6.33, no Xenomai
+(2) kernel  2.6.33, Xenomai 2.5.5
+(3) kernel 2.6.35, no Xenomai
+
+and here are the ones that made me think that 2.5.6 might interfere
+with apt-get:
+
+(1) kernel 2.6.33, Xenomai 2.5.6
+(2) kernel 2.6.35, Xenomai 2.5.6
+
+
+System configuration:
+
+rootfs:       Debian Squeeze
+proc:        AT91SAM9G20
+kernel:      2.6.35.9
+Xenomai:  2.5.6
+
+Thank you,
+R.
 
