@@ -1,13 +1,12 @@
-Message-ID: <4DB7098C.9050905@domain.hid>
-Date: Tue, 26 Apr 2011 20:06:04 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <21817662.201303825804906.JavaMail.SYSTEM@pc-msalvini>
-In-Reply-To: <21817662.201303825804906.JavaMail.SYSTEM@pc-msalvini>
-Content-Type: text/plain; charset=UTF-8
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <1183078C0D064042B3AD2D03E3859EF174E31A@AREXCH02.mra.roland-man.biz>
+References: <1183078C0D064042B3AD2D03E3859EF174E31A@AREXCH02.mra.roland-man.biz>
+Content-Type: text/plain; charset="UTF-8"
+Date: Tue, 26 Apr 2011 22:27:32 +0200
+Message-ID: <1303849652.1961.7.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] rt_task_join() call hangs in shared lib
-	destructor
+Subject: Re: [Xenomai-help] message pipe message boundaries
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -17,21 +16,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Mauro Salvini <mauro.salvini@domain.hid>
+To: dietmar.schindler@domain.hid
 Cc: xenomai@xenomai.org
 
-Mauro Salvini wrote:
-> Hi, 
-> 
-> as from mail subject, I have an issue with rt_task_join() when called into shared object destructor.
-> 
-> I run xenomai 2.5.5.2 IPipe patch 2.7-4 on x86 2.6.35.7 kernel, Ubuntu Lucid 10.04.1. 
+On Tue, 2011-04-26 at 11:48 +0200, dietmar.schindler@domain.hid
+wrote:
+> The documentation of rt_pipe_write() says: "rt_pipe_write() always
+> preserves message boundaries, which means that all data sent through a
+> single call of this service will be gathered in a single read(2)
+> operation from the special device." Is this supposed to mean also that
+> data sent through two calls of this service will be gathered in two
+> read(2) operations, or would it be conforming that data sent through two
+> calls of this service will be gathered in a single read(2) operation?
 
-Do you have the same issue with the latest version of the branch you
-use? That is 2.5.6?
+One read() per rt_pipe_write() operation, always.
 
-Has not pthread_join alone the same behaviour?
+> 
+> --------------------------------------------------------
+> manroland AG
+> Vorsitzender des Aufsichtsrates: Hanno C. Fiedler
+> Vorstand: Gerd Finkbeiner (Vorsitzender), Dr. Ingo Koch, Dr. Markus Rall, Paul Steidle   
+> Sitz der Gesellschaft: Offenbach am Main, Registergericht: Amtsgericht Offenbach HRB-Nr. 42592
+> USt-Ident-Nr. DE 250200933
+> 
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
 
 -- 
-                                                                Gilles.
+Philippe.
+
+
 
