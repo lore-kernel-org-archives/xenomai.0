@@ -1,5 +1,5 @@
-Message-ID: <4DB85895.2060007@domain.hid>
-Date: Wed, 27 Apr 2011 19:55:33 +0200
+Message-ID: <4DB85C18.5020802@domain.hid>
+Date: Wed, 27 Apr 2011 20:10:32 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <4DB8149A.7080600@domain.hid>	<4DB83CBE.5040007@domain.hid>
@@ -39,30 +39,10 @@ Alexey Galakhov wrote:
 > Interrupts from timer4 are still generated, so the system may boot with
 > ipipe off even with broken free-running timer without any obvious problems,
 > am I right?
-> 
-> 
->> But I think your problem has more to do with the following commit, could
->> you try reverting it?
->>
->> http://git.xenomai.org/?p=ipipe-gch.git;a=commitdiff;h=6ab29d9c7a4b119f45ef4d93780e894fe1c0c6c6;hp=cd9c5e016092258d4450e137be2d0844d0fe8b38
->>
->> The same issue was reported on ixp4xx.
->>
-> 
-> I'll give it a try tomorrow, thanks. A little question about this part of
-> the patch:
-> -       if (!__ipipe_mach_timerstolen)
-> +       if (!__ipipe_mach_timerstolen) {
-> +               spin_lock(&timer_lock);
->                 getticksoffset_tscupdate();
-> +               spin_unlock(&timer_lock);
-> +       }
-> Is it a bugfix (forgotten spinlock added) or is it due to change of
-> getticksoffset_tscupdate() contents? (Just trying to understand how it
-> works.)
 
-Looks like a mistake... Not having an S3C platform, I modified this code
-and only compile-tested it.
+I have absolutely no idea. Fabian Godehart sent the patch, saying that
+it fixed an issue, I merged it. That is all.
+
 
 -- 
                                                                 Gilles.
