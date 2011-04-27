@@ -1,15 +1,9 @@
-Message-ID: <4DB6AB8E.2070000@domain.hid>
-Date: Tue, 26 Apr 2011 13:25:02 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <20110409184122.GA11908@domain.hid>	<20110409185503.GB11908@domain.hid>	<4DA0B580.4070602@domain.hid>
-	<4DA0B878.9010106@domain.hid>	<20110410065250.GA28869@domain.hid>	<4DA192E0.2090802@domain.hid>	<20110414164248.GA4725@domain.hid>	<4DA846FF.5040204@domain.hid>
-	<4DB11857.4030604@domain.hid>	<4DB484C4.6040204@domain.hid>	<20110425064852.GA3700@domain.hid>
-	<4DB522F0.3090705@domain.hid>
-In-Reply-To: <4DB522F0.3090705@domain.hid>
+From: Jean-Michel Hautbois <jhautbois@domain.hid>
+Date: Wed, 27 Apr 2011 20:42:57 +0200
+Message-ID: <BANLkTi=UuSsFMmin_vGQFp3-vn=7JVT8Cg@domain.hid>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] arm ixp: more trouble with recent xenomai
+Subject: [Xenomai-core] [PowerPC]Badness at mmu_context_nohash
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -18,59 +12,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Richard Cochran <richardcochran@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Gilles Chanteperdrix wrote:
-> Richard Cochran wrote:
->> On Sun, Apr 24, 2011 at 10:15:00PM +0200, Gilles Chanteperdrix wrote:
->>> some temporary results on the benchmark here:
->>> http://www.xenomai.org/~gch/latency-at91sam9263.png
->>>
->>> The worst case latency seems not to vary much over time, it looks like
->>> it is decreasing a bit, but the differences may well be in the
->>> measurement noise. Unlocked context switch actually improves the latency.
->>>
->>> I will update the png as I get new results.
->> Gilles,
->>
->> That is a very interesting graph. It might be nice to have a
->> "performance benchmarks" page on the wiki, including that figure, plus
->> the description of the test setup. I can contribute IXP and some
->> PowerPC results.
-> 
-> Yes, we should set this up. The xeno-test currently in the head branch
-> is made to help doing this.
-> 
->> Regarding the measured performance, the graphs are shaped like the
->> letter, H (or like a Bactrian camel, with two humps).
->>
->> I appears to me that the peaks of the 2.4.10 lines (red, green) are
->> standing clearly to the left of the 2.5.6 lines (blue, purple), by
->> about 10 microseconds. I would say that 2.4.10 outperforms 2.5.6, on
->> average.
-> 
-> I added the average latencies (except for 2.4.10 with the I-pipe 1.14-04
-> patch). The peak corresponds roughly to the average "lat max" column in
-> latency results.
-> 
-> Both the I-pipe version and Xenomai version seem to contribute to the
-> increased average latency.
-> 
-> The unlocked context switch also improves the worst-case at the expense
-> of the average.
-> 
-> But there is hope, 2.6.33-1.18-03 introduces pic muting and re-enables
-> irq in the middle of gpio demuxing, which seems to improve the average
-> latency.
+Hi list,
 
-Hi Richard,
+I am currently using a Xenomai port on a linux 2.6.35.11 linux kernel
+and the adeos-ipipe-2.6.35.7-powerpc-2.12-01.patch.
+I am facing a scheduling issue on a P2020 (dual core PowerPC), and I
+get the following message :
 
-I jumped to conclusions too quickly. I am not sure the results I obtain
-really are meaningful. I am probably not doing it enough rigorously.
+Badness at arch/powerpc/mm/mmu_context_nohash.c:209
+NIP: c0018d20 LR: c039b94c CTR: c00343e4
+REGS: ecfadce0 TRAP: 0700   Tainted: G        W    (2.6.35.11)
+MSR: 00021000 <ME,CE>  CR: 24000488  XER: 00000000
+TASK = ec5220d0[496] 'sipaq' THREAD: ecfac000 CPU: 1
+GPR00: 00000001 ecfadd90 ec5220d0 ec5df340 ec58a700 00000000 ffffffff 00000003
+GPR08: c04a2d98 00000007 c04a2d98 0067e000 0002f385 1007f1f8 c04a5b40 ecfac040
+GPR16: c04a5b40 c04deb80 c04a2120 c04a2d98 c04a5b40 c04d008c ecfac000 00029000
+GPR24: c04d0000 c04d1e6c 00000001 ec58a700 eceaf390 c04d1e78 c0b23b40 ec5df340
+NIP [c0018d20] switch_mmu_context+0x80/0x438
+LR [c039b94c] schedule+0x774/0x7dc
+Call Trace:
+[ecfadd90] [44000484] 0x44000484 (unreliable)
+[ecfadde0] [c039b94c] schedule+0x774/0x7dc
+[ecfade50] [c039cb98] do_nanosleep+0xc8/0x114
+[ecfade80] [c0059bf8] hrtimer_nanosleep+0xd8/0x158
+[ecfadf10] [c0059d48] sys_nanosleep+0xd0/0xd4
+[ecfadf40] [c0013c0c] ret_from_syscall+0x0/0x3c
+--- Exception: c01 at 0xffa6cc4
+   LR = 0xffa6cb0
+Instruction dump:
+40a2fff0 4c00012c 2f800000 409e0128 813b018c 2f830000 39290001 913b018c
+419e0020 8003018c 7c000034 5400d97e <0f000000> 8123018c 3929ffff 9123018c
 
-Regards.
+Do you have a clue on how to start debugging it ?
+It is happening quite randomly... :).
 
--- 
-                                                                Gilles.
+Thanks in advance !
+JM
 
