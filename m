@@ -1,12 +1,11 @@
-Content-class: urn:content-classes:message
+Message-ID: <4DB7C8DA.8030803@domain.hid>
+Date: Wed, 27 Apr 2011 09:42:18 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="utf-8"
-Content-Transfer-Encoding: base64
-Date: Wed, 27 Apr 2011 09:05:47 +0200
-Message-ID: <DFFBF4EB468A894AB1474ED220F05AF60134C181@domain.hid>
-In-Reply-To: <4DB6A93D.3070402@domain.hid>
-From: "Asier Tamayo" <asier.tamayo@domain.hid>
+References: <DFFBF4EB468A894AB1474ED220F05AF60134C181@domain.hid>
+In-Reply-To: <DFFBF4EB468A894AB1474ED220F05AF60134C181@domain.hid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] FW: rtdm_iomap_to_user() I-pipe error
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -17,72 +16,55 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Asier Tamayo <asier.tamayo@domain.hid>
 Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai@xenomai.org
 
-SGVsbG8sDQoNClRoYW5rcyBmb3IgeW91ciBoZWxwLiANCg0KSSBrbm93IG15IFhlbm9tYWkgdmVy
-c2lvbiBpcyBxdWl0ZSBvdXQgb2YgZGF0ZS4gSG93ZXZlciwgYXMgSSdtIHVzaW5nIHRoZSBFTGlu
-T1MgZGlzdHJpYnV0aW9uICh3aGljaCBhbHJlYWR5IGhhcyBpdHMgb3duIHBhdGNoZXMpLCBJIGZp
-bmQgaXQgcmVhbGx5IGRpZmZpY3VsdCB0byB1cGdyYWRlIHRvIFhlbm9tYWkgMi40LjEwLiBBbnl3
-YXksIEkgY2FuIGFwcGx5IGNoYW5nZXMgdG8gc29tZSBmaWxlcy4gDQoNClRoZSBydGRtX2lvbWFw
-X3RvX3VzZXIgZnVuY3Rpb24gaXMgcmVmZXJlbmNlZCBpbiBkcnZsaWIuYyBhbmQgcnRkbV9kcml2
-ZXIuaDogSSBjb21wYXJlIHRoZSAyLjQuNyBhbmQgMi40LjEwIHZlcnNpb25zIGFuZCB0aGV5IGFy
-ZSBhbG1vc3QgaWRlbnRpY2FsLCBzbyBJIHRoaW5rIHRoZXJlIHdpbGwgYmUgbm8gdXNlIGluIHBh
-dGNoaW5nIHRoZSBrZXJuZWwgZm9yIHRoZXNlIDIgZmlsZXMuIERvIHlvdSBrbm93IG9mIGFueSBv
-dGhlciBmaWxlIHRoYXQgY291bGQgbWFrZSBhbnkgZGlmZmVyZW5jZSBpbiBteSBwcm9ibGVtPyAN
-Cg0KSWYgSSBjb21wYXJlIHZlcnNpb25zIDIuNC43IGFuZCAyLjUuNiAodGhlIGxhc3Qgb25lKSBv
-ZiBYZW5vbWFpLCBJIGNhbiBzZWUgdGhlIGxhc3QgdmVyc2lvbiB1c2VzICIvZGV2L3J0aGVhcCIg
-aW5zdGVhZCBvZiAiL2Rldi96ZXJvIiBhbmQgdGhhdCB0aGVyZSBhcmUgc29tZSBjaGFuZ2VzIGlm
-IENPTkZJR19NTVUgaXMgbm90IGRlZmluZWQuIE15IHN5c3RlbSAoSW50ZWwgQXRvbSBOMjcwIENQ
-VSkgaXMgY29uZmlndXJlZCB3aXRoIE1NVSBhbmQgdGhlcmVmb3JlIHRoZSBvbmx5IGFjdHVhbCBj
-aGFuZ2VzIGJldHdlZW4gdGhlIHZlcnNpb25zIGFyZSByZWdhcmRpbmcgImRldi9ydGhlYXAiLiBE
-b2VzIGl0IG1ha2UgYW55IGRpZmZlcmVuY2U/IFhlbm9tYWkgMi40LjcgaGFzICIvZGV2L3J0cGhl
-YXAiIGJ1dCBubyAiL2Rldi9ydGhlYXAiOyBzaG91bGQgSSB1c2UgaXQgaW5zdGVhZCBvZiAiL2Rl
-di96ZXJvIj8NCg0KDQo+ID4gdmlydF90b19waHlzKG5ld19pb21hcCkgLS0+IDB4ZjVmNmYwMDAg
-DQo+IA0KPiB2aXJ0X3RvX3BoeXMgaXMgbm90IHN1cHBvc2VkIHRvIHdvcmsgaW4gdGhhdCBjYXNl
-LiBTaW5jZSB5b3UgaW9yZW1hcCdlZA0KPiB0aGUgYWRkcmVzcywgeW91IGFscmVhZHkga25vdyB0
-aGUgcGh5c2ljYWwgYWRkcmVzcyBhbnl3YXkuDQo+IA0KSXMgdGhlcmUgYW55IGZ1bmN0aW9uIHRo
-YXQgd2lsbCB0ZWxsIG1lIHRoZSByZWFsIHBoeXNpY2FsIGFkZHJlc3MgaW4gb3JkZXIgdG8gbWFr
-ZSBzdXJlIHRoZSBtYXBwaW5nIGlzIGNvcnJlY3Q/DQoNCkFnYWluLCB0aGFua3MgZm9yIHlvdXIg
-aGVscC4NCg0KQmVzdCByZWdhcmRzLA0KDQpBc2llcg0KDQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNz
-YWdlLS0tLS0NCj4gRnJvbTogR2lsbGVzIENoYW50ZXBlcmRyaXggW21haWx0bzpnaWxsZXMuY2hh
-bnRlcGVyZHJpeEB4ZW5vbWFpLm9yZ10NCj4gU2VudDogVHVlc2RheSwgQXByaWwgMjYsIDIwMTEg
-MToxNSBQTQ0KPiBUbzogQXNpZXIgVGFtYXlvDQo+IENjOiBKYW4gS2lzemthOyB4ZW5vbWFpLWhl
-bHBAZ25hLm9yZw0KPiBTdWJqZWN0OiBSZTogW1hlbm9tYWktaGVscF0gRlc6IHJ0ZG1faW9tYXBf
-dG9fdXNlcigpIEktcGlwZSBlcnJvcg0KPiANCj4gDQo+IEFzaWVyIFRhbWF5byB3cm90ZToNCj4g
-PiBIZWxsbyBhZ2FpbiwNCj4gPiANCj4gPiBXaGVuIG9uZSBkb2Vzbid0IGdldCByZXBsaWVzIHRv
-IGhpcyBxdWVzdGlvbnMsIGl0IG1heSBiZSBlaXRoZXINCj4gPiBiZWNhdXNlOiBpKSB0aGV5IGFy
-ZSB0b28gb2J2aW91cyAoUlRGTSksIGlpKSB0b28gZGlmZmljdWx0LCBpaWkpDQo+ID4gdGhlcmUg
-aXMgbGl0dGxlIGluZm9ybWF0aW9uIGFuZCBpdCBtYWtlcyB0aGUgY2hlY2tpbmcgaW4gDQo+IG9u
-ZSdzIHN5c3RlbQ0KPiA+IGltcG9zc2libGUsIG9yIGl2KSB0aGV5IGhhdmVuJ3QgYmVlbiBjb3Jy
-ZWN0bHkgZXhwbGFpbmVkLiANCj4gSXQgbWF5IGFsc28NCj4gPiBiZSB0aGF0IHRoZSBoZWxwIGRl
-bWFuZGVyIGlzIG5vdCBiZWluZyBwb2xpdGUuDQo+ID4gDQo+ID4gQXMgaSBoYXZlIHJlY2VpdmVk
-IG5vIGFuc3dlciwgSSB3aWxsIGFzc3VtZSBJIGhhdmVuJ3QgZXhwbGFpbmVkIG15DQo+ID4gcHJv
-YmxlbSBjb3JyZWN0bHkgYW5kIHdpbGwgZ2l2ZSBteXNlbGYgYSBzZWNvbmQgY2hhbmNlIDspIFRo
-ZQ0KPiA+IGZvbGxvd2luZyBsaW5lcyB3aWxsIGp1c3QgcmV3cml0ZSBteSBxdWVzdGlvbiwgc2lu
-Y2UgSSBoYXZlbid0IGJlZW4NCj4gPiBhYmxlIHRvIGZpbmQgYW55IG5ldyBjbHVlOg0KPiA+IA0K
-PiA+IEknbSBwb3J0aW5nIGEgUENJIGRyaXZlciB0byBhIFJURE0sIHVzaW5nIFhlbm9tYWkgdmVy
-c2lvbiAyLjQuNyBhbmQNCj4gPiBMaW51eCAyLjYuMjcsIGZyb20gdGhlIEVMaW5PUyA1LjAgZGlz
-dHJpYnV0aW9uLg0KPiANCj4gQmVmb3JlIGFueXRoaW5nIGVsc2UsIHBsZWFzZSB0cnkgdGhlIGxh
-dGVzdCB2ZXJzaW9uIG9mIHRoZSBicmFuY2ggeW91DQo+IHVzZSAodGhhdCB3b3VsZCBiZSBYZW5v
-bWFpIDIuNC4xMCkNCj4gDQo+ID4gDQo+ID4gSSB3YW50IHRvIGFsbG93IGEgUlQgdGFzayB0byBh
-Y2Nlc3MgdGhlIFBDSSBtZW1vcnkgZGlyZWN0bHksIGJ5DQo+ID4gY2FsbGluZyB0aGUgcnRkbV9p
-b21hcF90b191c2VyKCkgZnVuY3Rpb24ganVzdCBhZnRlciBtbG9ja2FsbCBhbmQNCj4gPiBydF9k
-ZXZfb3BlbiwgYW5kIGJlZm9yZSBydF90YXNrX3NoYWRvdy4gVGhlIGZ1bmN0aW9uIHJldHVybnMg
-bWUgYQ0KPiA+IGNvcnJlY3QgdmFsdWUsIGJ1dCB0aGVuIEkgY2Fubm90IGFjY2VzcyB0aGUgUENJ
-IHJlZ2lzdGVycyBieSB1c2luZw0KPiA+IHRoYXQgYWRkcmVzcy4gVGhlIG1tYXAgc2VlbXMgbm90
-IHRvIGJlIGNvcnJlY3QuIFRoZSB2YWx1ZXMgSSBnZXQ6DQo+ID4gDQo+ID4gRHJpdmVyOiB4ZW5f
-bXlkcml2ZXItPmxvY2F0aW9uID0gcGNpX3Jlc291cmNlX3N0YXJ0KGRldiwwKTsgLS0+DQo+ID4g
-MHgyMDAwMDAwMCB4ZW5fbXlkcml2ZXItPmJhc2VfYWRkcmVzcyA9DQo+ID4gaW9yZW1hcCh4ZW5f
-bXlkcml2ZXItPmxvY2F0aW9uLCB4ZW5fbXlkcml2ZXItPm1lbV9zaXplKTsgLS0+DQo+ID4gMHhl
-MGEwMDAwMCAqKHVuc2lnbmVkIHNob3J0KikobXlfY29udGV4dC0+YmFzZV9hZGRyZXNzICsgMHgx
-MDApID0NCj4gPiAweEFBQUE7IC0tPiBJdCB3b3Jrcw0KPiA+IA0KPiA+IFJUIHRhc2s6IHJ0ZG1f
-aW9tYXBfdG9fdXNlcih1c2VyX2luZm8sbXlfY29udGV4dC0+bG9jYXRpb24sIDMwMCwNCj4gPiBQ
-Uk9UX1JFQUR8UFJPVF9XUklURSwgJm5ld19pb21hcCwgTlVMTCwgTlVMTCk7IC0tPiAweGI1ZjZm
-MDAwIA0KPiA+IHZpcnRfdG9fcGh5cyhuZXdfaW9tYXApIC0tPiAweGY1ZjZmMDAwICoodW5zaWdu
-ZWQgDQo+IHNob3J0KikobmV3X2lvbWFwICsNCj4gDQo+IHZpcnRfdG9fcGh5cyBpcyBub3Qgc3Vw
-cG9zZWQgdG8gd29yayBpbiB0aGF0IGNhc2UuIFNpbmNlIHlvdSANCj4gaW9yZW1hcCdlZA0KPiB0
-aGUgYWRkcmVzcywgeW91IGFscmVhZHkga25vdyB0aGUgcGh5c2ljYWwgYWRkcmVzcyBhbnl3YXku
-DQo+IA0KPiAtLSANCj4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICANCj4gICBHaWxsZXMuDQo+IA0K
+Asier Tamayo wrote:
+> Hello,
+> 
+> Thanks for your help.
+> 
+> I know my Xenomai version is quite out of date. However, as I'm using
+> the ELinOS distribution (which already has its own patches), I find
+> it really difficult to upgrade to Xenomai 2.4.10. Anyway, I can apply
+> changes to some files.
+
+Sorry, I do not mean that you should upgrade to 2.4.10, I mean you
+should run a self-contained test case on an unpatched 2.4.10, in order
+to see whether you observe the same behaviour.
+
+> 
+> The rtdm_iomap_to_user function is referenced in drvlib.c and
+> rtdm_driver.h: I compare the 2.4.7 and 2.4.10 versions and they are
+> almost identical, so I think there will be no use in patching the
+> kernel for these 2 files. Do you know of any other file that could
+> make any difference in my problem?
+> 
+> If I compare versions 2.4.7 and 2.5.6 (the last one) of Xenomai, I
+> can see the last version uses "/dev/rtheap" instead of "/dev/zero"
+> and that there are some changes if CONFIG_MMU is not defined. My
+> system (Intel Atom N270 CPU) is configured with MMU and therefore the
+> only actual changes between the versions are regarding "dev/rtheap".
+> Does it make any difference? Xenomai 2.4.7 has "/dev/rtpheap" but no
+> "/dev/rtheap"; should I use it instead of "/dev/zero"?
+
+The implementation is different, in order to know why, and which problem
+ it solves, you can look into git history. The advantage of using
+/dev/rtheap is that the implementation is shared with other skins.
+
+> 
+> 
+>>> virt_to_phys(new_iomap) --> 0xf5f6f000
+>> virt_to_phys is not supposed to work in that case. Since you
+>> ioremap'ed the address, you already know the physical address
+>> anyway.
+>> 
+> Is there any function that will tell me the real physical address in
+> order to make sure the mapping is correct?
+
+I would say vmalloc_to_page. But do not take my word for it, check the
+"linux device drivers" book.
+
+-- 
+					    Gilles.
 
