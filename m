@@ -1,15 +1,13 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <1183078C0D064042B3AD2D03E3859EF174E43D@AREXCH02.mra.roland-man.biz>
-References: <1183078C0D064042B3AD2D03E3859EF174E31A@AREXCH02.mra.roland-man.biz>
-	<1303849652.1961.7.camel@domain.hid>
-	<1183078C0D064042B3AD2D03E3859EF174E3E4@domain.hid>
-	<1183078C0D064042B3AD2D03E3859EF174E43D@AREXCH02.mra.roland-man.biz>
-Content-Type: text/plain; charset="UTF-8"
-Date: Wed, 27 Apr 2011 23:42:38 +0200
-Message-ID: <1303940558.1932.33.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] message pipe message boundaries
+Content-class: urn:content-classes:message
+MIME-Version: 1.0
+Content-Type: text/plain;
+	charset="utf-8"
+Content-Transfer-Encoding: base64
+Date: Thu, 28 Apr 2011 10:54:30 +0200
+Message-ID: <DFFBF4EB468A894AB1474ED220F05AF60134C182@domain.hid>
+In-Reply-To: <4DB85435.8040400@domain.hid>
+From: "Asier Tamayo" <asier.tamayo@domain.hid>
+Subject: Re: [Xenomai-help] FW: rtdm_iomap_to_user() I-pipe error
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -19,51 +17,74 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: dietmar.schindler@domain.hid
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai@xenomai.org
 
-On Wed, 2011-04-27 at 14:22 +0200, dietmar.schindler@domain.hid
-wrote:
-> > From: xenomai-help-bounces@domain.hid
-> [mailto:xenomai-help-bounces@domain.hid]
-> > On Behalf Of dietmar.schindler@domain.hid
-> > Sent: Wednesday, April 27, 2011 10:50 AM
-> > 
-> > > From: xenomai-help-bounces@domain.hid
-> > > On Behalf Of Philippe Gerum
-> > > Sent: Tuesday, April 26, 2011 10:28 PM
-> > >
-> > > ...
-> > > One read() per rt_pipe_write() operation, always.
-> > 
-> > Thank you for your answer. Is "One readv() per rt_pipe_write()
-> > operation" supposed to be true also, or is there something special to
-> be
-> > taken into consideration regarding readv(2)?
-> 
-> Meanwhile, I found some facts which allow me to elaborate on my
-> question. The rtpipe device hasn't a readv file operation implemented,
-> so the kernel substitutes the readv call by a series of read calls to
-> the device driver; due to this, under certain circumstances readv(2)
-> gathers more than a single rt_pipe_write() call's data. (I can provide
-> an example case, if desired.) Wouldn't it be desirable to implement the
-> readv file operation in the rtpipe driver so that the guarantee "One
-> read() per rt_pipe_write()" could cover readv(2) also?
-
-No objection to merge this. Patch welcome.
-
->  (Besides, this
-> would make the phrase "Operates just like read" in the readv(2) man page
-> more correct.)
-
-Having readv() operate like read() would not give any guarantee wrt
-message boundaries, because it is the real-time write side which makes
-the decision regarding this, not the read side. So you could have
-readv() operate like read() and still have blurred boundaries in case
-rt_pipe_stream() is used instead of rt_pipe_write().
-
--- 
-Philippe.
-
-
+SGVsbG8sDQoNCkZpbmFsbHkgcnRkbV9pb21hcF90b191c2VyIHdvcmtzISBJdCB3YXMgYW4gaW5p
+dGlhbGl6YXRpb24gZXJyb3I6IHRoZSBwcm9iZSgpIGZ1bmN0aW9uIGNvcnJlY3RseSBzdG9yZWQg
+dGhlIHBjaV9yZXNvdXJjZV9zdGFydCBhbmQgcGNpX3Jlc291cmNlX2xlbiB2YWx1ZXMgaW4gdGhl
+IHhlbl9teWRyaXZlciB2YXJpYWJsZSwgYnV0IHRoZXNlIHZhbHVlcyB3ZXJlIG5vdCBjb3BpZWQg
+aW50byB0aGUgY29udGV4dC0+ZGV2X3ByaXZhdGUgc3RydWN0dXJlIGluIHRoZSBvcGVuKCkgZnVu
+Y3Rpb24uIFRoZSBpb2N0bCBmdW5jdGlvbiB1c2VkIG15X2NvbnRleHQtPmxvY2F0aW9uLCB3aGlj
+aCB3YXMgMC4NCg0KSW4gdGhlIG5ldyB3b3JraW5nIGRyaXZlciwgdGhlIG9wZW4oKSBmdW5jdGlv
+biBjb3JyZWN0bHkgaW5pdGlhbGl6ZXMgdGhlIGNvbnRleHQtPmRldl9wcml2YXRlIHZhcmlhYmxl
+LiBMYXRlciwgcnRkbV9pb21hcF90b191c2VyKCkgaXMgY2FsbGVkIHdpdGggdGhlIGNvcnJlY3Qg
+dmFsdWVzLg0KDQpHaWxsZXMsIHRoYW5rIHlvdSB2ZXJ5IG11Y2ggZm9yIHlvdXIgaGVscCBhbmQg
+cGF0aWVuY2UuIEl0IHdvdWxkIGhhdmUgYmVlbiBtdWNoIGhhcmRlciB0byBmaW5kIGEgc29sdXRp
+b24gd2l0aG91dCB5b3VyIGluZGljYXRpb25zLiANCg0KQnkgdGhlIHdheSwgSSBoYXZlIHVwZ3Jh
+ZGVkIHRvIFhlbm9tYWkgMi40LjEwLiBJdCB3YXMgcXVpdGUgc3RyYWlnaHRmb3J3YXJkLiBJIGhh
+dmVuJ3QgYXBwbGllZCB0aGUgcGF0Y2hlcyBmcm9tIGtzcmMvYXJjaC94ODYvcGF0Y2hlcy9hZGVv
+cy1pcGlwZSouDQoNClRoYW5rIHlvdSBmb3IgeW91ciBoZWxwLg0KDQpCZXN0IHJlZ2FyZHMsDQoN
+CkFzaWVyDQoNCg0KDQoNCg0KPiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBH
+aWxsZXMgQ2hhbnRlcGVyZHJpeCBbbWFpbHRvOmdpbGxlcy5jaGFudGVwZXJkcml4QHhlbm9tYWku
+b3JnXQ0KPiBTZW50OiBXZWRuZXNkYXksIEFwcmlsIDI3LCAyMDExIDc6MzcgUE0NCj4gVG86IEFz
+aWVyIFRhbWF5bw0KPiBDYzogSmFuIEtpc3prYTsgeGVub21haS1oZWxwQGduYS5vcmcNCj4gU3Vi
+amVjdDogUmU6IFtYZW5vbWFpLWhlbHBdIEZXOiBydGRtX2lvbWFwX3RvX3VzZXIoKSBJLXBpcGUg
+ZXJyb3INCj4gDQo+IA0KPiBHaWxsZXMgQ2hhbnRlcGVyZHJpeCB3cm90ZToNCj4gPiBBc2llciBU
+YW1heW8gd3JvdGU6DQo+ID4+IEhlbGxvLA0KPiA+Pg0KPiA+PiBUaGFua3MgZm9yIHlvdXIgaGVs
+cC4NCj4gPj4NCj4gPj4gSSBrbm93IG15IFhlbm9tYWkgdmVyc2lvbiBpcyBxdWl0ZSBvdXQgb2Yg
+ZGF0ZS4gSG93ZXZlciwgDQo+IGFzIEknbSB1c2luZw0KPiA+PiB0aGUgRUxpbk9TIGRpc3RyaWJ1
+dGlvbiAod2hpY2ggYWxyZWFkeSBoYXMgaXRzIG93biBwYXRjaGVzKSwgSSBmaW5kDQo+ID4+IGl0
+IHJlYWxseSBkaWZmaWN1bHQgdG8gdXBncmFkZSB0byBYZW5vbWFpIDIuNC4xMC4gQW55d2F5LCAN
+Cj4gSSBjYW4gYXBwbHkNCj4gPj4gY2hhbmdlcyB0byBzb21lIGZpbGVzLg0KPiA+IA0KPiA+IFNv
+cnJ5LCBJIGRvIG5vdCBtZWFuIHRoYXQgeW91IHNob3VsZCB1cGdyYWRlIHRvIDIuNC4xMCwgSSBt
+ZWFuIHlvdQ0KPiA+IHNob3VsZCBydW4gYSBzZWxmLWNvbnRhaW5lZCB0ZXN0IGNhc2Ugb24gYW4g
+dW5wYXRjaGVkIA0KPiAyLjQuMTAsIGluIG9yZGVyDQo+ID4gdG8gc2VlIHdoZXRoZXIgeW91IG9i
+c2VydmUgdGhlIHNhbWUgYmVoYXZpb3VyLg0KPiA+IA0KPiA+PiBUaGUgcnRkbV9pb21hcF90b191
+c2VyIGZ1bmN0aW9uIGlzIHJlZmVyZW5jZWQgaW4gZHJ2bGliLmMgYW5kDQo+ID4+IHJ0ZG1fZHJp
+dmVyLmg6IEkgY29tcGFyZSB0aGUgMi40LjcgYW5kIDIuNC4xMCB2ZXJzaW9ucyBhbmQgdGhleSBh
+cmUNCj4gPj4gYWxtb3N0IGlkZW50aWNhbCwgc28gSSB0aGluayB0aGVyZSB3aWxsIGJlIG5vIHVz
+ZSBpbiBwYXRjaGluZyB0aGUNCj4gPj4ga2VybmVsIGZvciB0aGVzZSAyIGZpbGVzLiBEbyB5b3Ug
+a25vdyBvZiBhbnkgb3RoZXIgZmlsZSB0aGF0IGNvdWxkDQo+ID4+IG1ha2UgYW55IGRpZmZlcmVu
+Y2UgaW4gbXkgcHJvYmxlbT8NCj4gPj4NCj4gPj4gSWYgSSBjb21wYXJlIHZlcnNpb25zIDIuNC43
+IGFuZCAyLjUuNiAodGhlIGxhc3Qgb25lKSBvZiBYZW5vbWFpLCBJDQo+ID4+IGNhbiBzZWUgdGhl
+IGxhc3QgdmVyc2lvbiB1c2VzICIvZGV2L3J0aGVhcCIgaW5zdGVhZCBvZiAiL2Rldi96ZXJvIg0K
+PiA+PiBhbmQgdGhhdCB0aGVyZSBhcmUgc29tZSBjaGFuZ2VzIGlmIENPTkZJR19NTVUgaXMgbm90
+IGRlZmluZWQuIE15DQo+ID4+IHN5c3RlbSAoSW50ZWwgQXRvbSBOMjcwIENQVSkgaXMgY29uZmln
+dXJlZCB3aXRoIE1NVSBhbmQgDQo+IHRoZXJlZm9yZSB0aGUNCj4gPj4gb25seSBhY3R1YWwgY2hh
+bmdlcyBiZXR3ZWVuIHRoZSB2ZXJzaW9ucyBhcmUgcmVnYXJkaW5nIA0KPiAiZGV2L3J0aGVhcCIu
+DQo+ID4+IERvZXMgaXQgbWFrZSBhbnkgZGlmZmVyZW5jZT8gWGVub21haSAyLjQuNyBoYXMgDQo+
+ICIvZGV2L3J0cGhlYXAiIGJ1dCBubw0KPiA+PiAiL2Rldi9ydGhlYXAiOyBzaG91bGQgSSB1c2Ug
+aXQgaW5zdGVhZCBvZiAiL2Rldi96ZXJvIj8NCj4gPiANCj4gPiBUaGUgaW1wbGVtZW50YXRpb24g
+aXMgZGlmZmVyZW50LCBpbiBvcmRlciB0byBrbm93IHdoeSwgYW5kIA0KPiB3aGljaCBwcm9ibGVt
+DQo+ID4gIGl0IHNvbHZlcywgeW91IGNhbiBsb29rIGludG8gZ2l0IGhpc3RvcnkuIFRoZSBhZHZh
+bnRhZ2Ugb2YgdXNpbmcNCj4gPiAvZGV2L3J0aGVhcCBpcyB0aGF0IHRoZSBpbXBsZW1lbnRhdGlv
+biBpcyBzaGFyZWQgd2l0aCBvdGhlciBza2lucy4NCj4gPiANCj4gPj4NCj4gPj4+PiB2aXJ0X3Rv
+X3BoeXMobmV3X2lvbWFwKSAtLT4gMHhmNWY2ZjAwMA0KPiA+Pj4gdmlydF90b19waHlzIGlzIG5v
+dCBzdXBwb3NlZCB0byB3b3JrIGluIHRoYXQgY2FzZS4gU2luY2UgeW91DQo+ID4+PiBpb3JlbWFw
+J2VkIHRoZSBhZGRyZXNzLCB5b3UgYWxyZWFkeSBrbm93IHRoZSBwaHlzaWNhbCBhZGRyZXNzDQo+
+ID4+PiBhbnl3YXkuDQo+ID4+Pg0KPiA+PiBJcyB0aGVyZSBhbnkgZnVuY3Rpb24gdGhhdCB3aWxs
+IHRlbGwgbWUgdGhlIHJlYWwgcGh5c2ljYWwgDQo+IGFkZHJlc3MgaW4NCj4gPj4gb3JkZXIgdG8g
+bWFrZSBzdXJlIHRoZSBtYXBwaW5nIGlzIGNvcnJlY3Q/DQo+ID4gDQo+ID4gSSB3b3VsZCBzYXkg
+dm1hbGxvY190b19wYWdlLiBCdXQgZG8gbm90IHRha2UgbXkgd29yZCBmb3IgDQo+IGl0LCBjaGVj
+ayB0aGUNCj4gPiAibGludXggZGV2aWNlIGRyaXZlcnMiIGJvb2suDQo+ID4gDQo+IHZtYWxsb2Nf
+dG9fcGFnZSB3b3VsZCB3b3JrIGZvciBhbiBhZGRyZXNzIHJldHVybmVkIGJ5IHZtYWxsb2MvaW9y
+ZW1hcCwNCj4gbm90IGZvciBvbmUgcmV0dXJuZWQgYnkgdGhlIG1hcHBpbmcgZnVuY3Rpb25zLg0K
+PiANCj4gVG8gY2hlY2sgd2hhdCBoYXBwZW5zLCB5b3Ugc2hvdWxkIHRyYWNlIGRydmxpYi5jIHRv
+IHNlZSB3aGF0IA0KPiBwYXJhbWV0ZXJzDQo+IGFyZSBmaW5hbGx5IHBhc3NlZCB0byByZW1hcF9w
+YWdlX3JhbmdlLg0KPiANCj4gQnV0IHRoZXJlIHdlcmUgc2V2ZXJhbCBjaGFuZ2VzIGJldHdlZW4g
+Mi40IGFuZCAyLjUsIHNvLCBJIA0KPiB3b3VsZCBzdWdnZXN0DQo+IHRyeWluZyAyLjUuNiwganVz
+dCB3aXRoIHRoZSBzaW1wbGUgdGVzdCBjYXNlLCBubyBuZWVkIHRvIHVwZ3JhZGUgdGhlDQo+IGxp
+bnV4IGtlcm5lbC4NCj4gDQo+IC0tIA0KPiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIA0KPiAgIEdpbGxlcy4NCj4gDQo=
 
