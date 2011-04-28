@@ -1,53 +1,95 @@
-Message-ID: <4DADC9A4.3020309@domain.hid>
-Date: Tue, 19 Apr 2011 19:43:00 +0200
+Message-ID: <4DB9CF05.2030205@domain.hid>
+Date: Thu, 28 Apr 2011 22:33:09 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <AANLkTinvryUHtzDWQa9j=Z83jNe1FbJtRYaqMHNORfvp@domain.hid>
-	<4D5039AD.2070205@domain.hid>
-	<AANLkTincD+0eKF7tM8aj5s4tepF0KwQ6xkJ52G1Lq4iT@mail.gmail.com>
-	<4D50433D.1040804@domain.hid>
-	<AANLkTi=SfPm6HVK2abFWV8uAd5wWnWv9vf0mkby8282r@domain.hid>
-	<1297154320.2023.6.camel@domain.hid>
-	<AANLkTim4Q_F5wY77TBH5T0oT3P2X2pex7B-8cr6Q+XyS@mail.gmail.com>
-	<1297156556.2023.9.camel@domain.hid>	<4D513278.4090606@domain.hid>
-	<1297167172.2023.11.camel@domain.hid>	<4D513427.6050707@domain.hid>
-	<1297167750.2023.13.camel@domain.hid>	<4D5137B0.8050006@domain.hid>
-	<AANLkTikh_Z8Jg0nYb=089Szzh=_gn=ZZnvBcswnGuTur@domain.hid>
-	<1297169771.2023.15.camel@domain.hid>	<4D514109.9060103@domain.hid>
-	<1297171546.2023.19.camel@domain.hid>
-	<AANLkTik9oR2h84WKhTarsaEEDhBYhyofLPZH4SjEUZyA@mail.gmail.com>
-	<BANLkTim+YXr+_tpF+np3S_+O1CSNNOSVLQ@mail.gmail.com>
-	<4DA84917.1000400@domain.hid>
-	<63426532-1738-4117-B6C8-C329D63AA4BF@edu.hefr.ch>
-	<4DADC2AD.7030707@domain.hid>
-	<22964D33-8717-4B81-88B4-9051D0F1EA36@domain.hid>
-In-Reply-To: <22964D33-8717-4B81-88B4-9051D0F1EA36@domain.hid>
+References: <4DB8149A.7080600@domain.hid>
+	<4DB83CBE.5040007@domain.hid>	<4DB94BA0.1020503@domain.hid>
+	<4DB94C9C.7080904@domain.hid>
+In-Reply-To: <4DB94C9C.7080904@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Xenomai rt_printf() don't print
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: davide doninelli <Davide.Doninelli@domain.hid>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+Subject: Re: [Adeos-main] Ipipe hangs on ARM MINI2440 after
+	switching	clocksource
+List-Id: General discussion about Adeos <adeos-main.gna.org>
+List-Unsubscribe: <https://mail.gna.org/options/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+List-Archive: </public/adeos-main>
+List-Post: <mailto:adeos-main@gna.org>
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+To: Alexey Galakhov <agalakhov@domain.hid>
+Cc: adeos-main@gna.org
 
-davide doninelli wrote:
-> Hi,
-> sorry i precise
-> Linux kernel v.2.6.29.6
-> Adeos patch 2.6.29 2.6.26-mxc
-> Xenomai v. 2.4.8
+Gilles Chanteperdrix wrote:
+> Alexey Galakhov wrote:
+>> On 04/27/2011 09:56 PM, Gilles Chanteperdrix wrote:
+>>> But I think your problem has more to do with the following commit, could
+>>> you try reverting it?
+>>> http://git.xenomai.org/?p=ipipe-gch.git;a=commitdiff;h=6ab29d9c7a4b119f45ef4d93780e894fe1c0c6c6;hp=cd9c5e016092258d4450e137be2d0844d0fe8b38
+>>>
+>>> The same issue was reported on ixp4xx.
+>> Just tried to revert this patch. Hangs. But now in a different way: it
+>> starts to initialize peripherals and stops on LED initialization. Looks
+>> like race conditions since it stops in slightly different place each
+>> time I try to boot (randomly at led3, led4 or "backlight" LED). Last
+>> lines of dmesg are, i.e.:
+>>
+>> [    3.090000] samsung-ts s3c2440-ts: driver attached, registering input
+>> device
+>> [    3.100000] input: S3C24XX TouchScreen as /devices/virtual/input/input0
+>> [    3.120000] S3C24XX RTC, (c) 2004,2006 Simtec Electronics
+>> [    3.120000] s3c-rtc s3c2410-rtc: rtc disabled, re-enabling
+>> [    3.135000] s3c-rtc s3c2410-rtc: rtc core: registered s3c as rtc0
+>> [    3.135000] i2c /dev entries driver
+>> [    3.155000] S3C2410 Watchdog Timer, (c) 2004 Simtec Electronics
+>> [    3.160000] s3c2410-wdt s3c2410-wdt: watchdog inactive, reset
+>> disabled, irq enabled
+>> [    3.180000] s3c-sdi s3c2440-sdi: powered down.
+>> [    3.180000] s3c-sdi s3c2440-sdi: mmc0 - using pio, sw SDIO IRQ
+>> [    3.185000] s3c-sdi s3c2440-sdi: running at 0kHz (requested: 0kHz).
+>> [    3.200000] Registered led device: led1
+>> [    3.205000] Registered led device: led2
+>> [    3.210000] s3c-sdi s3c2440-sdi: running at 398kHz (requested: 400kHz).
+>> [    3.215000] Registered led device: led3
+>> [    3.220000] Registered led device: led4
+>> (hangs)
+>>
+>> Going to try kgdb over serial line.
+> 
+> Ok. Better try without this patch first, then try reapplying the patch
+> when you are certain that everything else works correctly. The patch
+> enables some assembly code that was never actually tested. On my side, I
+> will try and test it separately.
+> 
 
-As mentioned in the first paragraph, please try and verify that the
-problem exists with the latest version of that branch (2.4.10).
+With the following patch, the asm code looks fine to me:
 
-Please also send us a small self-contained test case.
+diff --git a/arch/arm/kernel/ipipe_tsc_asm.S
+b/arch/arm/kernel/ipipe_tsc_asm.S
+index ca88882..d3c833f 100644
+--- a/arch/arm/kernel/ipipe_tsc_asm.S
++++ b/arch/arm/kernel/ipipe_tsc_asm.S
+@@ -143,7 +143,7 @@ __ipipe_decrementer_16:
+ 	ldr	ip, [r0]
+ 	ldr	r2, .LCdec16_last_cnt
+ 	subs 	ip, r2, ip
+-	addcs	ip, ip, #0x10000
++	addcc	ip, ip, #0x10000
+ 	myldrd	r2, r3, r3, .LCdec16_last_tsc
+ 	cmp	r1, r2
+ 	bne	1b
+@@ -155,7 +155,7 @@ __ipipe_decrementer_16:
+ 	ldr	ip, [r0]
+ 	ldr	r2, .LCdec16_last_cnt
+ 	subs 	ip, r2, ip
+-	addcs	ip, ip, #0x10000
++	addcc	ip, ip, #0x10000
+ 	myldrd	r2, r3, r3, .LCdec16_last_tsc
+ 	cmp	r1, r3
+ 	bne	1b
+
+
 
 -- 
                                                                 Gilles.
