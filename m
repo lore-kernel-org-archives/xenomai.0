@@ -1,17 +1,11 @@
-Message-ID: <4DBAB87D.4000302@domain.hid>
-Date: Fri, 29 Apr 2011 19:09:17 +0600
-From: Alexey Galakhov <agalakhov@domain.hid>
+Message-ID: <4DBAFF5A.30108@domain.hid>
+Date: Fri, 29 Apr 2011 20:11:38 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <4DB8149A.7080600@domain.hid>	<4DB83CBE.5040007@domain.hid>	<4DB94BA0.1020503@domain.hid>	<4DB94C9C.7080904@domain.hid>	<4DB991E6.90403@domain.hid>	<4DB99E47.7000904@domain.hid>	<BANLkTik_MeMvpq2x7N0WmML97uW5=HxsLw@domain.hid>	<4DB9B978.2010200@domain.hid>
-	<BANLkTinSWAT+33YFAD-z0kz6pesSQBe7qw@domain.hid>
-	<4DB9C0D3.4030003@domain.hid> <4DBA9C26.2040903@domain.hid>
-	<4DBAA1DE.4000108@domain.hid> <4DBAAA45.5070405@domain.hid>
-	<4DBAAB9D.7070100@domain.hid>
-In-Reply-To: <4DBAAB9D.7070100@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Adeos-main] Ipipe hangs on ARM MINI2440 after switching
-	clocksource
+Subject: [Adeos-main] [PATCH] ipipe: Restore root state before disabling hw
+	irqs
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/options/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -20,32 +14,43 @@ List-Post: <mailto:adeos-main@gna.org>
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: adeos-main@gna.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: adeos-main <adeos-main@gna.org>
 
-On 04/29/2011 06:14 PM, Gilles Chanteperdrix wrote:
-> Alexey Galakhov wrote:
->> On 04/29/2011 05:32 PM, Gilles Chanteperdrix wrote:
->>> Alexey Galakhov wrote:
->>> Now going to try your asm patch.
->>> Ok. Two things to check:
->>> - if the irqs are handled by handle_edge, try using handle_level instead;
->>> - if the irqs are demuxed gpios, check that ipipe_handle_chained_irq is
->>> used instead of generic_handle_irq.
->>>
->>> I will check on my side tonight.
->> Same with the patch.
-> The patch was supposed to fix the hang at "Switching to ipipe_tsc
-> source". Does your kernel still hang there?
->
-Sorry, my mistake, used an incorrect uImage to boot.
+root_stall_after_handler is a fixup for the root state, required when
+CONFIG_TRACE_IRQFLAGS is enabled. It then calls local_irq_disable which
+reenables hard irqs as a side effect. This causes all types of
+corruptions after return from __ipipe_sync_stage which is supposed to
+leave hard irqs off.
 
-The "ipipe_tsc clocksource" bug is FIXED now. Thank you very much!
+Fix it by reordering root_stall_after_handler and local_irq_disable_hw.
 
-Now chasing the first bug, mmc interrupt flood...
+Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
+---
+ kernel/ipipe/core.c |    4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
 
---
-Alex
-
-
+diff --git a/kernel/ipipe/core.c b/kernel/ipipe/core.c
+index 9ad7757..9aa4800 100644
+--- a/kernel/ipipe/core.c
++++ b/kernel/ipipe/core.c
+@@ -1277,14 +1277,14 @@ void __ipipe_sync_stage(void)
+ 			irq_enter();
+ 			ipd->irqs[irq].handler(irq, ipd->irqs[irq].cookie);
+ 			irq_exit();
+-			local_irq_disable_hw();
+ 			root_stall_after_handler();
++			local_irq_disable_hw();
+ 			while (__ipipe_check_root_resched())
+ 				__ipipe_preempt_schedule_irq();
+ 		} else {
+ 			__ipipe_do_root_xirq(ipd, irq);
+-			local_irq_disable_hw();
+ 			root_stall_after_handler();
++			local_irq_disable_hw();
+ 		}
+ 
+ 		p = ipipe_cpudom_ptr(__ipipe_current_domain);
+-- 
+1.7.1
 
