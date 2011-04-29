@@ -1,11 +1,12 @@
-Message-ID: <4DBA8655.9050400@domain.hid>
-Date: Fri, 29 Apr 2011 11:35:17 +0200
-From: Thierry Bultel <thierry.bultel@domain.hid>
+Message-ID: <4DBA9AFB.4030401@domain.hid>
+Date: Fri, 29 Apr 2011 13:03:23 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: multipart/alternative;
-	boundary="------------070606030900080203050009"
-Subject: [Xenomai-help] How to interpret /proc/xenomai/stat CPU time of
- threads with priority 0
+References: <BANLkTi=T7CtZUhLzbU2bz4Z8Ph=N=_Bs=g@domain.hid>
+In-Reply-To: <BANLkTi=T7CtZUhLzbU2bz4Z8Ph=N=_Bs=g@domain.hid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] dlopen of libnative fails
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -15,77 +16,78 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org, Jean-Baptiste Tredez <jean-baptiste.tredez@domain.hid>, Nicolas Mabire <nicolas.mabire@domain.hid>
+To: martin mangard <martin@domain.hid>
+Cc: xenomai@xenomai.org
 
-This is a multi-part message in MIME format.
---------------070606030900080203050009
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+martin mangard wrote:
+> Hello,
+> 
+> I installed xenomai Version 2.5.6 on a x86 machine. I use dlopen in
+> order to use the xenomai libraries.
+> 
+> 
+>     hXenomai=dlopen("/usr/lib/libxenocalls-2.5.6.so",RTLD_NOW);
+>     if(!hXenomai)
+> 	{
+>         fprintf (stderr, "%s\n", dlerror());
+>         fflush(stderr);
+> 	}
+> 
+> 
+> dlopen aborts with the error: "/usr/lib/libnative.so.3: undefined
+> symbol: xeno_current_mode_key"
+> 
+> I configured xenomai with the option " --enable-dlopen-skins "
+> 
+> What do I have to change in order be able to dlopen the libnative.so.3 library?
 
-Hi all,
+xeno_current_mod_key is defined in the libxenomai.so library. So, we
+have two solutions:
 
-I was wondering if the displayed CPU time was, for these particular 
-threads,
-the only time spent in primary mode, of the total amount of time spent 
-on the CPU.
+either we make explicit the dependence between libnative.so and
+libxenomai.so, as in the following patch:
 
-I am namely currently debugging an application which has such kind of 
-thread,
-with a period of 50ms, and that takes up to 23% of the CPU.
-That is bad, but not a real issue if that time is spent only in 
-secondary mode,
-but I do not know how to figure it out.
-The mode switches frequency is equal to the period of my thread, since 
-it uses rt_task_wait_period
+index 3497f90..23beb50 100644
+--- a/src/skins/native/Makefile.am
++++ b/src/skins/native/Makefile.am
+@@ -2,6 +2,8 @@ lib_LTLIBRARIES = libnative.la
+ 
+ libnative_la_LDFLAGS = @XENO_DLOPEN_CONSTRAINT@ -version-info 3:0:0 -lpthread
+ 
++libnative_la_LIBADD = ../common/libxenomai.la
++
+ libnative_la_SOURCES = \
+ 	alarm.c \
+ 	buffer.c \
+diff --git a/src/skins/native/Makefile.in b/src/skins/native/Makefile.in
+index 2775661..011f380 100644
+--- a/src/skins/native/Makefile.in
++++ b/src/skins/native/Makefile.in
+@@ -58,7 +58,7 @@ am__strip_dir = `echo $$p | sed -e 's|^.*/||'`;
+ am__installdirs = "$(DESTDIR)$(libdir)"
+ libLTLIBRARIES_INSTALL = $(INSTALL)
+ LTLIBRARIES = $(lib_LTLIBRARIES)
+-libnative_la_LIBADD =
++libnative_la_DEPENDENCIES = ../common/libxenomai.la
+ am_libnative_la_OBJECTS = libnative_la-alarm.lo libnative_la-buffer.lo \
+ 	libnative_la-cond.lo libnative_la-event.lo \
+ 	libnative_la-heap.lo libnative_la-init.lo libnative_la-intr.lo \
+@@ -249,6 +249,7 @@ top_builddir = @top_builddir@
+ top_srcdir = @top_srcdir@
+ lib_LTLIBRARIES = libnative.la
+ libnative_la_LDFLAGS = @XENO_DLOPEN_CONSTRAINT@ -version-info 3:0:0 -lpthread
++libnative_la_LIBADD = ../common/libxenomai.la
+ libnative_la_SOURCES = \
+ 	alarm.c \
+ 	buffer.c \
 
-I am a little bit concerned, my fear is that secondary mode time would 
-be counted in the ROOT task ...
-BTW, I am using version 2.5.2 (I know, it's old ;-) ).
+I am not sure it will not break the parallel build though it does not
+seem to break on a core i7 (make -j 8).
 
-Any help would be appreciated.
+Or you explicitly dlopen libxenomai.so with RTLD_GLOBAL before dlopening
+libnative.so. The drawback being that you pollute the process namespace
+with libxenomai symbols.
 
-Thanks
-Thierry
-
---------------070606030900080203050009
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
-  <head>
-
-    <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
-  </head>
-  <body bgcolor="#ffffff" text="#000000">
-    <font size="-1">Hi all,<br>
-      <br>
-      I was wondering if the displayed CPU time was, for these
-      particular threads, <br>
-      the only time spent in primary mode, of the total amount of time
-      spent on the CPU.<br>
-      <br>
-      I am namely currently debugging an application which has such kind
-      of thread,<br>
-      with a period of 50ms, and that takes up to 23% of the CPU.<br>
-      That is bad, but not a real issue if that time is spent only in
-      secondary mode,<br>
-      but I do not know how to figure it out. <br>
-      The mode switches frequency is equal to the period&nbsp;of my thread,
-      since it uses rt_task_wait_period<br>
-      <br>
-      I am a little bit concerned, my fear is that secondary mode time
-      would be counted in the ROOT task ...<br>
-      BTW, I am using version 2.5.2 (I know, it's old <span
-        class="moz-smiley-s3"><span> ;-) </span></span>).<br>
-      <br>
-      Any help would be appreciated.<br>
-      <br>
-      Thanks<br>
-      Thierry<br>
-    </font>
-  </body>
-</html>
-
---------------070606030900080203050009--
+-- 
+                                                                Gilles.
 
