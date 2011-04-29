@@ -1,41 +1,43 @@
-Message-ID: <4DAEBB48.2070700@domain.hid>
-Date: Wed, 20 Apr 2011 12:54:00 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4DBA9065.1010507@domain.hid>
+Date: Fri, 29 Apr 2011 12:18:13 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <COL104-W8B4D8E6C75C99ECA28042E9930@domain.hid>,
-	<4DAE99F2.7030002@domain.hid>
-	<COL104-W334D71DB0C86070AC9F939E9930@domain.hid>
-In-Reply-To: <COL104-W334D71DB0C86070AC9F939E9930@domain.hid>
+References: <BANLkTi=ayVOVM5Zyag=mgK2S7QUc3_-oxw@domain.hid>
+	<BANLkTinf+tfYG8s1RF6sN7ROOc8DLC6e-A@mail.gmail.com>
+In-Reply-To: <BANLkTinf+tfYG8s1RF6sN7ROOc8DLC6e-A@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] [Xenomai-core] xenomai and framebuffer-ipu on
-	target iMx35
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: =?UTF-8?B?RnJhbsOnb2lzIEJlYXVmb3J0?= <francois.beaufort@domain.hid>
-Cc: Xenomai help <xenomai@xenomai.org>
+Subject: Re: [Adeos-main] adeos-ipipe-2.6.37.6-x86-2.9-01.patch build fails
+List-Id: General discussion about Adeos <adeos-main.gna.org>
+List-Unsubscribe: <https://mail.gna.org/options/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+List-Archive: </public/adeos-main>
+List-Post: <mailto:adeos-main@gna.org>
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+To: Henri Roosen <henriroosen@domain.hid>
+Cc: adeos-main@gna.org
 
-Fran=C3=A7ois Beaufort wrote:
-> I can't show you  /proc/interrupts when ipu and I-pipe are enabled
-> because the system doesn't start in this case.
+On 2011-04-29 11:48, Henri Roosen wrote:
+> Arch: x86
+> Kernel: 2.6.37.6
+> Config: see attachment.
+>=20
+> The build fails when CONFIG_X86_LOCAL_APIC is not defined:
+> arch/x86/kernel/ipipe.c:156: error: implicit declaration of function
+> =E2=80=98ipipe_apic_vector_irq=E2=80=99
+>=20
+> The attached patch fixes the problem but should be checked for correctn=
+ess!
 
-Ok. I failed to get that from your first mail. I do not know either if
-you are using a vanilla kernel, or a patched one?
+Right, mea culpa.
 
-If a patched one, then you have to verify that generic_handle_irq is
-replaced with ipipe_handle_chained_irq for multiplexed GPIO irqs.
+Please just reorder the hunks to save one #ifdef.
 
-Note that I CCd the Xenomai-help mailing list, next private mail will
-receive no answer.
+Jan
 
 --=20
-                                                                Gilles.
-
+Siemens AG, Corporate Technology, CT T DE IT 1
+Corporate Competence Center Embedded Linux
 
