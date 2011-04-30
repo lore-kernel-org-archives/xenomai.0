@@ -1,5 +1,5 @@
 MIME-Version: 1.0
-In-Reply-To: <BANLkTintQjX=O0DBYbyW2=jhyNQuyeZ=pQ@mail.gmail.com>
+In-Reply-To: <BANLkTikNqOVEwRPUhcd0YOHELqYU=3DfgQ@mail.gmail.com>
 References: <4DB8149A.7080600@domain.hid> <4DB83CBE.5040007@domain.hid>
 	<4DB94BA0.1020503@domain.hid> <4DB94C9C.7080904@domain.hid>
 	<4DB991E6.90403@domain.hid> <4DB99E47.7000904@domain.hid>
@@ -9,10 +9,11 @@ References: <4DB8149A.7080600@domain.hid> <4DB83CBE.5040007@domain.hid>
 	<4DB9C0D3.4030003@domain.hid> <4DBA9C26.2040903@domain.hid>
 	<4DBAA1DE.4000108@domain.hid> <4DBBDCA9.1040609@domain.hid>
 	<BANLkTintQjX=O0DBYbyW2=jhyNQuyeZ=pQ@mail.gmail.com>
-Date: Sat, 30 Apr 2011 23:39:08 +0600
-Message-ID: <BANLkTikNqOVEwRPUhcd0YOHELqYU=3DfgQ@mail.gmail.com>
+	<BANLkTikNqOVEwRPUhcd0YOHELqYU=3DfgQ@mail.gmail.com>
+Date: Sun, 1 May 2011 00:41:26 +0600
+Message-ID: <BANLkTim1j9Fx4=P9a+c5jK5EoBEp-5MrdQ@mail.gmail.com>
 From: Alexey Galakhov <agalakhov@domain.hid>
-Content-Type: multipart/alternative; boundary=000e0cd5954c7a142704a2264422
+Content-Type: multipart/alternative; boundary=90e6ba5bc9c950af7304a227237e
 Subject: Re: [Adeos-main] Ipipe hangs on ARM MINI2440 after switching
 	clocksource
 List-Id: General discussion about Adeos <adeos-main.gna.org>
@@ -26,25 +27,23 @@ List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: adeos-main@gna.org
 
---000e0cd5954c7a142704a2264422
+--90e6ba5bc9c950af7304a227237e
 Content-Type: text/plain; charset=ISO-8859-1
 
 2011/4/30 Alexey Galakhov <agalakhov@domain.hid>
 
 >
-> It works!! Thank you!
+> Hmmmm... It seems to be unstable, it generally works but with random
+> hangups. Trying to debug.
 >
-> --
-> Alex
->
->
-Hmmmm... It seems to be unstable, it generally works but with random
-hangups. Trying to debug.
+
+Looks like now it's not IRQ related. Seems to be kind of overflow in
+logarithmic_accumulation (), probably due to changes in timer code.
 
 --
 Alex
 
---000e0cd5954c7a142704a2264422
+--90e6ba5bc9c950af7304a227237e
 Content-Type: text/html; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
@@ -52,10 +51,11 @@ Content-Transfer-Encoding: quoted-printable
 tr">&lt;<a href=3D"mailto:agalakhov@domain.hid">agalakhov@domain.hid</a>&gt;<=
 /span><br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;bord=
 er-left:1px #ccc solid;padding-left:1ex;">
-<div class=3D"gmail_quote"><div><div class=3D"h5"><br></div></div><div>It w=
-orks!! Thank you!<br><br>--<br>Alex <br></div></div><br>
-</blockquote></div><br>Hmmmm... It seems to be unstable, it generally works=
- but with random hangups. Trying to debug.<br><br>--<br>Alex<br>
+<div class=3D"im"><br></div>Hmmmm... It seems to be unstable, it generally =
+works but with random hangups. Trying to debug.<br></blockquote><div><br>Lo=
+oks like now it&#39;s not IRQ related. Seems to be kind of overflow in loga=
+rithmic_accumulation (), probably due to changes in timer code.<br>
+<br>--<br>Alex <br></div></div>
 
---000e0cd5954c7a142704a2264422--
+--90e6ba5bc9c950af7304a227237e--
 
