@@ -1,12 +1,19 @@
-Message-ID: <4DBC6D98.2070306@domain.hid>
-Date: Sat, 30 Apr 2011 22:14:16 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4DB8149A.7080600@domain.hid>	<4DB83CBE.5040007@domain.hid>	<4DB94BA0.1020503@domain.hid>	<4DB94C9C.7080904@domain.hid>	<4DB991E6.90403@domain.hid>	<4DB99E47.7000904@domain.hid>	<BANLkTik_MeMvpq2x7N0WmML97uW5=HxsLw@domain.hid>	<4DB9B978.2010200@domain.hid>	<BANLkTinSWAT+33YFAD-z0kz6pesSQBe7qw@domain.hid>	<4DB9C0D3.4030003@domain.hid>	<4DBA9C26.2040903@domain.hid>	<4DBAA1DE.4000108@domain.hid>	<4DBBDCA9.1040609@domain.hid>
+In-Reply-To: <4DBC6D98.2070306@domain.hid>
+References: <4DB8149A.7080600@domain.hid> <4DB83CBE.5040007@domain.hid>
+	<4DB94BA0.1020503@domain.hid> <4DB94C9C.7080904@domain.hid>
+	<4DB991E6.90403@domain.hid> <4DB99E47.7000904@domain.hid>
+	<BANLkTik_MeMvpq2x7N0WmML97uW5=HxsLw@domain.hid>
+	<4DB9B978.2010200@domain.hid>
+	<BANLkTinSWAT+33YFAD-z0kz6pesSQBe7qw@domain.hid>
+	<4DB9C0D3.4030003@domain.hid> <4DBA9C26.2040903@domain.hid>
+	<4DBAA1DE.4000108@domain.hid> <4DBBDCA9.1040609@domain.hid>
 	<BANLkTintQjX=O0DBYbyW2=jhyNQuyeZ=pQ@mail.gmail.com>
-In-Reply-To: <BANLkTintQjX=O0DBYbyW2=jhyNQuyeZ=pQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+	<4DBC6D98.2070306@domain.hid>
+Date: Sun, 1 May 2011 02:28:41 +0600
+Message-ID: <BANLkTi=Q07ByVtHNobQBR1uNkHwRAsoo5g@domain.hid>
+From: Alexey Galakhov <agalakhov@domain.hid>
+Content-Type: multipart/alternative; boundary=20cf300fad3be2851904a228a284
 Subject: Re: [Adeos-main] Ipipe hangs on ARM MINI2440 after switching
 	clocksource
 List-Id: General discussion about Adeos <adeos-main.gna.org>
@@ -17,84 +24,89 @@ List-Post: <mailto:adeos-main@gna.org>
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-To: Alexey Galakhov <agalakhov@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: adeos-main@gna.org
 
-Alexey Galakhov wrote:
-> 2011/4/30 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-> 
->> Please try the following patch:
->>
->> diff --git a/arch/arm/plat-s3c24xx/irq.c b/arch/arm/plat-s3c24xx/irq.c
->> index c48d99a..8a29d9d 100644
->> --- a/arch/arm/plat-s3c24xx/irq.c
->> +++ b/arch/arm/plat-s3c24xx/irq.c
->> @@ -627,7 +627,7 @@ void __init s3c24xx_init_irq(void)
->>                default:
->>                        //irqdbf("registering irq %d (s3c irq)\n", irqno);
->>                        set_irq_chip(irqno, &s3c_irq_chip);
->> -                       set_irq_handler(irqno, handle_edge_irq);
->> +                       set_irq_handler(irqno, handle_level_irq);
->>                        set_irq_flags(irqno, IRQF_VALID);
->>                }
->>        }
->> @@ -647,14 +647,14 @@ void __init s3c24xx_init_irq(void)
->>        for (irqno = IRQ_EINT0; irqno <= IRQ_EINT3; irqno++) {
->>                irqdbf("registering irq %d (ext int)\n", irqno);
->>                set_irq_chip(irqno, &s3c_irq_eint0t4);
->> -               set_irq_handler(irqno, handle_edge_irq);
->> +               set_irq_handler(irqno, handle_level_irq);
->>                set_irq_flags(irqno, IRQF_VALID);
->>        }
->>
->>        for (irqno = IRQ_EINT4; irqno <= IRQ_EINT23; irqno++) {
->>                irqdbf("registering irq %d (extended s3c irq)\n", irqno);
->>                set_irq_chip(irqno, &s3c_irqext_chip);
->> -               set_irq_handler(irqno, handle_edge_irq);
->> +               set_irq_handler(irqno, handle_level_irq);
->>                set_irq_flags(irqno, IRQF_VALID);
->>        }
->>
->> @@ -686,7 +686,7 @@ void __init s3c24xx_init_irq(void)
->>        for (irqno = IRQ_TC; irqno <= IRQ_ADC; irqno++) {
->>                irqdbf("registering irq %d (s3c adc irq)\n", irqno);
->>                set_irq_chip(irqno, &s3c_irq_adc);
->> -               set_irq_handler(irqno, handle_edge_irq);
->> +               set_irq_handler(irqno, handle_level_irq);
->>                set_irq_flags(irqno, IRQF_VALID);
->>        }
->>
->> diff --git a/arch/arm/plat-samsung/irq-uart.c
->> b/arch/arm/plat-samsung/irq-uart.c
->> index 4f8c102..1da5aff 100644
->> --- a/arch/arm/plat-samsung/irq-uart.c
->> +++ b/arch/arm/plat-samsung/irq-uart.c
->> @@ -88,13 +88,13 @@ static void s3c_irq_demux_uart(unsigned int irq, struct
->> irq_desc *desc)
->>        int base = uirq->base_irq;
->>
->>        if (pend & (1 << 0))
->> -               generic_handle_irq(base);
->> +               ipipe_handle_chained_irq(base);
->>        if (pend & (1 << 1))
->> -               generic_handle_irq(base + 1);
->> +               ipipe_handle_chained_irq(base + 1);
->>        if (pend & (1 << 2))
->> -               generic_handle_irq(base + 2);
->> +               ipipe_handle_chained_irq(base + 2);
->>        if (pend & (1 << 3))
->> -               generic_handle_irq(base + 3);
->> +               ipipe_handle_chained_irq(base + 3);
->>  }
->>
->>  static struct irq_chip s3c_irq_uart = {
->>
->>
->> It works!! Thank you!
+--20cf300fad3be2851904a228a284
+Content-Type: text/plain; charset=ISO-8859-1
 
-Ok. Could you try only keeping the part with ipipe_handle_chained_irq,
-leaving the handle_edge_irqs?
+2011/5/1 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 
--- 
-                                                                Gilles.
+>
+> Ok. Could you try only keeping the part with ipipe_handle_chained_irq,
+> leaving the handle_edge_irqs?
+>
+
+Sure. I'll do it tomorrow.
+
+There is another one issue: the board hangs after about 2-3 minutes running.
+I found that it is caused by a semi-permanent (order of 2^64 iterations)
+loop in (untouched) kernel timer code, most likely due to weird return value
+of __ipipe_tsc_get. I haven't found the source of this problem yet. I tried
+a small fix:
+
+--- time.c.org    2011-04-26 20:52:00.000000000 +0600
++++ time.c    2011-05-01 02:03:33.000000000 +0600
+@@ -124,7 +124,7 @@
+
+ static inline unsigned long timer_freerunning_getvalue(void)
+ {
+-    return __raw_readl(S3C2410_TCNTO(3));
++    return (unsigned long)__raw_readw(S3C2410_TCNTO(3));
+ }
+
+ static inline unsigned long timer_freerunning_getticksoffset(unsigned long
+tval)
+@@ -390,6 +390,6 @@
+
+ unsigned long __ipipe_mach_get_dec(void)
+ {
+-    return __raw_readl(S3C2410_TCNTO(4));
++    return (unsigned long)__raw_readw(S3C2410_TCNTO(4));
+ }
+ #endif /* CONFIG_IPIPE */
+
+but it didn't work. (In fact, TCNTOs of S4C2440 are 16-bit, not 32-bit, and
+the datasheet does not guarantee that higher bits are read as zeroes; in
+fact they are, but I tried explicit conversion anyway just in case. No
+effect.).
+
+--
+Alex
+
+--20cf300fad3be2851904a228a284
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+<div class=3D"gmail_quote">2011/5/1 Gilles Chanteperdrix <span dir=3D"ltr">=
+&lt;<a href=3D"mailto:gilles.chanteperdrix@xenomai.org">gilles.chanteperdri=
+x@domain.hid</a>&gt;</span><br><blockquote class=3D"gmail_quote" style=3D"=
+margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex;">
+<div><div></div><div class=3D"h5"><br>
+</div></div>Ok. Could you try only keeping the part with ipipe_handle_chain=
+ed_irq,<br>
+leaving the handle_edge_irqs?<font color=3D"#888888"><br></font></blockquot=
+e><div><br>Sure. I&#39;ll do it tomorrow.<br><br>There is another one issue=
+: the board hangs after about 2-3 minutes running. I found that it is cause=
+d by a semi-permanent (order of 2^64 iterations) loop in (untouched) kernel=
+ timer code, most likely due to weird return value of __ipipe_tsc_get. I ha=
+ven&#39;t found the source of this problem yet. I tried a small fix:<br>
+<br></div></div>--- <a href=3D"http://time.c.org">time.c.org</a>=A0=A0=A0 2=
+011-04-26 20:52:00.000000000 +0600<br>+++ time.c=A0=A0=A0 2011-05-01 02:03:=
+33.000000000 +0600<br>@@ -124,7 +124,7 @@<br>=A0<br>=A0static inline unsign=
+ed long timer_freerunning_getvalue(void)<br>
+=A0{<br>-=A0=A0=A0 return __raw_readl(S3C2410_TCNTO(3));<br>+=A0=A0=A0 retu=
+rn (unsigned long)__raw_readw(S3C2410_TCNTO(3));<br>=A0}<br>=A0<br>=A0stati=
+c inline unsigned long timer_freerunning_getticksoffset(unsigned long tval)=
+<br>@@ -390,6 +390,6 @@<br>
+=A0<br>=A0unsigned long __ipipe_mach_get_dec(void)<br>=A0{<br>-=A0=A0=A0 re=
+turn __raw_readl(S3C2410_TCNTO(4));<br>+=A0=A0=A0 return (unsigned long)__r=
+aw_readw(S3C2410_TCNTO(4));<br>=A0}<br>=A0#endif /* CONFIG_IPIPE */<br><br>=
+but it didn&#39;t work. (In fact, TCNTOs of S4C2440 are 16-bit, not 32-bit,=
+ and the datasheet does not guarantee that higher bits are read as zeroes; =
+in fact they are, but I tried explicit conversion anyway just in case. No e=
+ffect.).<br>
+<br>--<br>Alex<br>
+
+--20cf300fad3be2851904a228a284--
 
