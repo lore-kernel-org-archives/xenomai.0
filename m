@@ -1,56 +1,37 @@
-Date: Thu, 12 May 2011 19:04:32 +0200
-From: Richard Cochran <richardcochran@domain.hid>
-Message-ID: <20110512170432.GA4659@domain.hid>
-References: <20110409184122.GA11908@domain.hid>
-	<20110409185503.GB11908@domain.hid>
-	<4DA0B580.4070602@domain.hid> <4DA0B878.9010106@domain.hid>
-	<20110410065250.GA28869@domain.hid>
-	<4DA192E0.2090802@domain.hid>
-	<20110414164248.GA4725@domain.hid>
-	<4DCB23D6.9010706@domain.hid>
+Message-ID: <4DC0406C.7060402@domain.hid>
+Date: Tue, 03 May 2011 19:50:36 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <4DCB23D6.9010706@domain.hid>
-Subject: Re: [Xenomai-core] arm ixp: more trouble with recent xenomai
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+References: <9037.49937.qm@domain.hid>
+In-Reply-To: <9037.49937.qm@domain.hid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] Problem with the configuration of new system
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Franz Engel <franz_lambert_engel@domain.hid>
 Cc: xenomai@xenomai.org
 
-On Thu, May 12, 2011 at 02:03:34AM +0200, Gilles Chanteperdrix wrote:
-> the issue on ixp looks like the last one to be fixed on arm. If you have
-> time, could you try the following program? It makes a very basic test,
-> but not having a big-endian ixp at end, I am wondering about very basic
-> assumptions...:
+On 05/03/2011 07:45 PM, Franz Engel wrote:
+> Hello,
+> 
+> I've a problem with my new system. I already patched the system with
+> adeos and also with the preperation skript of Xenomai. For the first
+> configuration I use a kernel-configuration where xenomai is disabled
+> and only ipipe is enabled. Even when I start the system it boots
+> correct and it runs a few seconds (long enough to recognize the
+> network), then the system freezs and two leds of the keyboard begins
+> blinking.
 
-~> armeb-unknown-linux-gnueabi-gcc -Wall arm.c
-arm.c: In function 'f':
-arm.c:7: warning: control reaches end of non-void function
-arm.c: In function 'g':
-arm.c:13: warning: control reaches end of non-void function
+This is a kernel oops. Please send us the kernel logs.
 
-and then
-
-# ./a.out 
-f: ffffffff
-g: ffffffff
-
-> If you do not have time, do you agree for a revert of the KUSER_TSC code
-> to the one we had before, and which is working for you?
-
-I sorry about not getting back about this. I have had crunch trying to
-meet a deadline, but now that is over. Tomorrow I'm on the road, but
-next week looks good for IXP testing.
-
-And thanks, thanks, for all your good work,
-
-Richard
-
+-- 
+                                                                Gilles.
 
