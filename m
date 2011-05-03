@@ -1,16 +1,14 @@
+Content-Transfer-Encoding: 7bit
+Content-Class: urn:content-classes:message
 MIME-Version: 1.0
-In-Reply-To: <1304262109.2063.4.camel@domain.hid>
-References: <mailman.6356.1286778008.12503.xenomai@xenomai.org>
-	<7504E039-6366-480F-ACA3-018E520122E6@domain.hid>
-	<AANLkTin__DMjjDxFzBCOiA1Z+ODq01KA6FSWSzEwET3y@domain.hid>
-	<AANLkTik=JkttWXUj5Zm04cpQTokGh3y272PzwUkdmS2N@mail.gmail.com>
-	<AANLkTin8hwsKv1oZf1Tv_F97hZEVy=T=KzMcPSsn-O8r@domain.hid>
-	<1304262109.2063.4.camel@domain.hid>
-Date: Mon, 2 May 2011 10:58:44 +0200
-Message-ID: <BANLkTikvUkLKJ0fybCjxXBP82GkiNPdAWw@domain.hid>
-From: Henri Roosen <henriroosen@domain.hid>
-Content-Type: multipart/mixed; boundary=0050450145d228907f04a2473bf9
-Subject: Re: [Xenomai-help] New scheduler class
+Content-Type: multipart/mixed; boundary="----_=_NextPart_001_01CC096A.41D32BDD"
+Date: Tue, 3 May 2011 10:15:25 +0200
+Message-ID: <1183078C0D064042B3AD2D03E3859EF174E826@domain.hid>
+In-Reply-To: <1183078C0D064042B3AD2D03E3859EF174E5BC@AREXCH02.mra.roland-man.biz>
+References: <1183078C0D064042B3AD2D03E3859EF174E31A@AREXCH02.mra.roland-man.biz><1303849652.1961.7.camel@domain.hid><1183078C0D064042B3AD2D03E3859EF174E3E4@domain.hid><1183078C0D064042B3AD2D03E3859EF174E43D@AREXCH02.mra.roland-man.biz><1303940558.1932.33.camel@domain.hid>
+	<1183078C0D064042B3AD2D03E3859EF174E5BC@AREXCH02.mra.roland-man.biz>
+From: <dietmar.schindler@domain.hid>
+Subject: Re: [Xenomai-help] message pipe message boundaries
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -20,157 +18,103 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Andreas Glatz <andi.glatz@domain.hid>, xenomai@xenomai.org
+Cc: xenomai@xenomai.org
 
---0050450145d228907f04a2473bf9
-Content-Type: text/plain; charset=ISO-8859-1
+This is a multi-part message in MIME format.
 
-Hi Philippe,
+------_=_NextPart_001_01CC096A.41D32BDD
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 
-Thanks for the patch! Unfortunately this does not resolve the 'stuck
-in primary of prio 0 after rt_task_send'.
+> From: xenomai-help-bounces@domain.hid
+[mailto:xenomai-help-bounces@domain.hid]
+> On Behalf Of dietmar.schindler@domain.hid
+> Sent: Friday, April 29, 2011 8:31 AM
+> Cc: xenomai@xenomai.org
+> Subject: Re: [Xenomai-help] message pipe message boundaries
+>=20
+> > From: Philippe Gerum [mailto:rpm@xenomai.org]
+> > Sent: Wednesday, April 27, 2011 11:43 PM
+> >
+> > On Wed, 2011-04-27 at 14:22 +0200, dietmar.schindler@domain.hid
+> > wrote:
+> > > ... Wouldn't it be desirable to implement the
+> > > readv file operation in the rtpipe driver so that the guarantee
+"One
+> > > read() per rt_pipe_write()" could cover readv(2) also?
+> >
+> > No objection to merge this. Patch welcome.
+>=20
+> Well, I'll try to come up with one.
 
-I'll attach the basic test application that reproduces it. All prints
-should contain secondary mode because all tasks are prio 0 and the
-auto-relax patches are compiled in.
+We at manroland now use (with Xenomai 2.4) the attached patch, which
+implements the readv file operation in the rtpipe driver so that the
+assertion "One read() per rt_pipe_write()" (message boundaries
+preserved) covers readv(2) also.
+--=20
+Dietmar
 
-The producer which does the rt_task_send() call does not auto-relax to
-secondary mode.
+--------------------------------------------------------
+manroland AG
+Vorsitzender des Aufsichtsrates: Hanno C. Fiedler
+Vorstand: Gerd Finkbeiner (Vorsitzender), Dr. Ingo Koch, Dr. Markus =
+Rall, Paul Steidle  =20
+Sitz der Gesellschaft: Offenbach am Main, Registergericht: Amtsgericht =
+Offenbach HRB-Nr. 42592
+USt-Ident-Nr. DE 250200933
 
-Thanks,
-Henri.
-
-On Sun, May 1, 2011 at 5:01 PM, Philippe Gerum <rpm@xenomai.org> wrote:
-> On Mon, 2011-03-28 at 12:56 +0200, Henri Roosen wrote:
->> Hi,
->>
->> We are using the back-ported auto-relax patches of Xenomai-head on the
->> 2.5.6 release on Linux 2.6.32.15.
->>
->> We noticed that our prio-0 shadowed task is not always auto-relaxed
->> and traced it back to a problem with rt_task_send/receive/reply. The
->> rt_task_send/receive/reply mechanism uses the xnsynch primitive to
->> implement its PIP. However, this mechanism only acquires the xysynch
->> primitive without releasing it. This results in the resource counter
->> never be 0 anymore and thus breaking the auto-relaxed which is based
->> on this resource counter.
->>
->> I guess releasing the xnsynch resets the owner, which is not wanted either..
->> Any idea for a fix?
->
-> Could you give a try at this one? TIA,
-> http://git.xenomai.org/?p=xenomai-rpm.git;a=commit;h=becb13774ab687d016857f6a972f4124fbd10c44
->
->>
->> Thanks,
->> Henri.
->>
->>
->> On Tue, Oct 12, 2010 at 9:16 AM, Henri Roosen <henriroosen@domain.hid> wrote:
->> > That was a problem with our build environment.
->> >
->> > Patches work and the base-prio 0 task nicely switches to the Linux
->> > domain and competes with the Linux threads for the processor. Now we
->> > don't loose TCP connection to our target anymore.
->> >
->> > Thanks!
->> >
->> > Henri
->> >
->> > On Mon, Oct 11, 2010 at 5:35 PM, Henri Roosen <henriroosen@domain.hid> wrote:
->> >> Thanks for the patches Philippe. I applied them to xenomai 2.5.5.
->> >> Tests with a basic application look good, however our bigger project
->> >> doesn't. I checked already if we release all mutexes; the base prio 0
->> >> thread thread released all of them but stays in primary domain after a
->> >> xenomai call.
->> >>
->> >> I'll setup a clean environment, just to be sure, and will investigate
->> >> further tomorrow.
->> >>
->> >> On Mon, Oct 11, 2010 at 11:31 AM, Andreas Glatz <andi.glatz@domain.hid> wrote:
->> >>>
->> >>>>
->> >>>> The auto-relax feature is now available from -head (upcoming
->> >>>> 2.6.x). You
->> >>>> will need all commits from
->> >>>> http://git.xenomai.org/?p=xenomai-
->> >>>> head.git;a=commit;h=b75cec19387e561f82ac55595db8c993b049f071
->> >>>> to
->> >>>> http://git.xenomai.org/?p=xenomai-
->> >>>> head.git;a=commit;h=6653a9e8eb7339b749989bd74adc3ac3bd29e4da
->> >>>>
->> >>>> --
->> >>>> Philippe.
->> >>>>
->> >>>>
->> >>>
->> >>> Very nice. Will try it out soon on my G4 PB Aluminium.
->> >>>
->> >>> Andreas
->> >>>
->> >>>
->> >>> _______________________________________________
->> >>> Xenomai-help mailing list
->> >>> Xenomai-help@domain.hid
->> >>> https://mail.gna.org/listinfo/xenomai-help
->> >>>
->> >>
->> >
->
-> --
-> Philippe.
->
->
->
-
---0050450145d228907f04a2473bf9
-Content-Type: text/x-csrc; charset=US-ASCII; name="test_autorelax_tasksend.c"
-Content-Disposition: attachment; filename="test_autorelax_tasksend.c"
+------_=_NextPart_001_01CC096A.41D32BDD
+Content-Type: application/octet-stream;
+	name="pipe.diff"
 Content-Transfer-Encoding: base64
-X-Attachment-Id: f_gn76ht8c0
+Content-Description: pipe.diff
+Content-Disposition: attachment;
+	filename="pipe.diff"
 
-I2luY2x1ZGUgPHN5cy9tbWFuLmg+CiNpbmNsdWRlIDxzdGRpby5oPgojaW5jbHVkZSA8dW5pc3Rk
-Lmg+CiNpbmNsdWRlIDxzdHJpbmcuaD4KI2luY2x1ZGUgPG5hdGl2ZS90YXNrLmg+CiNpbmNsdWRl
-IDxuYXRpdmUvcXVldWUuaD4KI2luY2x1ZGUgPGFzbS1nZW5lcmljL3hlbm9tYWkvYml0cy9jdXJy
-ZW50Lmg+CgojZGVmaW5lIENPTlNVTUVSX1RBU0tfUFJJICAgIDAKI2RlZmluZSBDT05TVU1FUl9T
-VEFDS19TSVpFICA4MTkyCgojZGVmaW5lIFBST0RVQ0VSX1RBU0tfUFJJICAgIDAKI2RlZmluZSBQ
-Uk9EVUNFUl9TVEFDS19TSVpFICA4MTkyCgojZGVmaW5lIENPTlNVTUVSX1dBSVQgMTUwCiNkZWZp
-bmUgUFJPRFVDRVJfVFJJRyA0MAoKI2RlZmluZSBNQVhfU1RSSU5HX0xFTiA0MAoKc3RhdGljIGNv
-bnN0IGNoYXIgKnNhdGNoX3NfdHVuZXNbXSA9IHsKICAgICJTdXJmaW5nIFdpdGggVGhlIEFsaWVu
-IiwKICAgICJMb3JkcyBvZiBLYXJtYSIsCiAgICAiQmFuYW5hIE1hbmdvIiwKICAgICJQc3ljaG8g
-TW9ua2V5IiwKICAgICJMdW1pbm91cyBGbGVzaCBHaWFudHMiLAogICAgIk1vcm9jY2FuIFN1bnNl
-dCIsCiAgICAiU2F0Y2ggQm9vZ2llIiwKICAgICJGbHlpbmcgSW4gQSBCbHVlIERyZWFtIiwKICAg
-ICJSaWRlIiwKICAgICJTdW1tZXIgU29uZyIsCiAgICAiU3BlZWQgT2YgTGlnaHQiLAogICAgIkNy
-eXN0YWwgUGxhbmV0IiwKICAgICJSYXNwYmVycnkgSmFtIERlbHRhLVYiLAogICAgIkNoYW1wYWdu
-ZT8iLAogICAgIkNsb3VkcyBSYWNlIEFjcm9zcyBUaGUgU2t5IiwKICAgICJFbmdpbmVzIE9mIENy
-ZWF0aW9uIgp9OwoKc3RhdGljIFJUX1RBU0sgcHJvZHVjZXJfdGFzaywKCSAgICAgICBjb25zdW1l
-cl90YXNrOwoKdm9pZCBjb25zdW1lcih2b2lkICpjb29raWUpCnsKICAgIGNoYXIgYnVmW01BWF9T
-VFJJTkdfTEVOXTsKICAgIFJUX1RBU0tfTUNCIG1jYjsKICAgIGludCBmbG93aWQ7CiAgICBpbnQg
-bW9kZTsKCiAgICBmb3IgKDs7KQoJewoJcnRfdGFza19zbGVlcChDT05TVU1FUl9XQUlUKTsKCglm
-b3IgKDs7KQoJICAgIHsKCSAgICBtY2Iub3Bjb2RlID0gMDsJLyogRHVtbXkuICovCgkgICAgbWNi
-LmRhdGEgPSAoY2FkZHJfdClidWY7CgkgICAgbWNiLnNpemUgPSBzaXplb2YoYnVmKTsKCSAgICBm
-bG93aWQgPSBydF90YXNrX3JlY2VpdmUoJm1jYixUTV9OT05CTE9DSyk7CiAgICAgICAgICAgIG1v
-ZGUgPSB4ZW5vX2dldF9jdXJyZW50X21vZGUoKTsKCSAgICBpZiAoZmxvd2lkIDwgMCkKCQlicmVh
-azsKCgkgICAgcHJpbnRmKCJOb3cgcGxheWluZyAlcy4uLiBpbiAlcyBtb2RlLlxuIixidWYsICht
-b2RlICYgWE5SRUxBWCkgPyAic2Vjb25kYXJ5IiA6ICJwcmltYXJ5Iik7CgkgICAgcnRfdGFza19y
-ZXBseShmbG93aWQsTlVMTCk7CgkgICAgfQoJfQp9Cgp2b2lkIHByb2R1Y2VyKHZvaWQgKmNvb2tp
-ZSkKewogICAgaW50IG5leHRfbXNnID0gMDsKICAgIFJUX1RBU0tfTUNCIG1jYjsKICAgIGNvbnN0
-IGNoYXIgKm1zZzsKICAgIGludCBtb2RlOwoKICAgIGZvciAoOzspCgl7CglydF90YXNrX3NsZWVw
-KFBST0RVQ0VSX1RSSUcpOwoKCW1zZyA9IHNhdGNoX3NfdHVuZXNbbmV4dF9tc2crK107CgluZXh0
-X21zZyAlPSAoc2l6ZW9mKHNhdGNoX3NfdHVuZXMpIC8gc2l6ZW9mKHNhdGNoX3NfdHVuZXNbMF0p
-KTsKCgltY2Iub3Bjb2RlID0gMDsJLyogRHVtbXkuICovCgltY2IuZGF0YSA9IChjYWRkcl90KW1z
-ZzsKCW1jYi5zaXplID0gc3RybGVuKG1zZykgKyAxOyAvKiBcMCBtdXN0IGJlIGNvcGllZC4gKi8K
-CXJ0X3Rhc2tfc2VuZCgmY29uc3VtZXJfdGFzaywmbWNiLE5VTEwsVE1fSU5GSU5JVEUpOwoJbW9k
-ZSA9IHhlbm9fZ2V0X2N1cnJlbnRfbW9kZSgpOwogICAgICAgIHByaW50ZigiUHJvZHVjZXIgbW9k
-ZSAlc1xuIiwgKG1vZGUgJiBYTlJFTEFYKSA/ICJzZWNvbmRhcnkiIDogInByaW1hcnkiKTsKCX0K
-fQoKaW50IG1haW4odm9pZCkKewogICAgbWxvY2thbGwoTUNMX0NVUlJFTlQgfCBNQ0xfRlVUVVJF
-KTsKICAgIHJ0X3RpbWVyX3NldF9tb2RlKDEwMDAwMDApOwkvKiBGb3JjIDFtcyBwZXJpb2RpYyB0
-aWNrLiAqLwoKICAgIHJ0X3Rhc2tfc3Bhd24oJmNvbnN1bWVyX3Rhc2ssCgkJICAiQ29uc3VtZXJU
-YXNrIiwKCQkgIENPTlNVTUVSX1NUQUNLX1NJWkUsCgkJICBDT05TVU1FUl9UQVNLX1BSSSwKCQkg
-IDAsCgkJICAmY29uc3VtZXIsCgkJICBOVUxMKTsKCiAgICBydF90YXNrX3NwYXduKCZwcm9kdWNl
-cl90YXNrLAoJCSAgIlByb2R1Y2VyVGFzayIsCgkJICBQUk9EVUNFUl9TVEFDS19TSVpFLAoJCSAg
-UFJPRFVDRVJfVEFTS19QUkksCgkJICAwLAoJCSAgJnByb2R1Y2VyLAoJCSAgTlVMTCk7CiAgICB3
-aGlsZSAoMSk7CiAgICByZXR1cm4gMDsKfQoK
---0050450145d228907f04a2473bf9--
+SW5kZXg6IGJyYW5jaGVzL01SX1hlbm9tYWkyXzQvc291cmNlL2tzcmMvbnVjbGV1cy9waXBlLmMK
+PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
+PT09PT09PT09PQotLS0gYnJhbmNoZXMvTVJfWGVub21haTJfNC9zb3VyY2Uva3NyYy9udWNsZXVz
+L3BpcGUuYwkocmV2aXNpb24gMzU1NSkKKysrIGJyYW5jaGVzL01SX1hlbm9tYWkyXzQvc291cmNl
+L2tzcmMvbnVjbGV1cy9waXBlLmMJKHJldmlzaW9uIDM1NTYpCkBAIC03MjksOCArNzI5LDggQEAK
+IAlyZXR1cm4gMDsKIH0KIAotc3RhdGljIHNzaXplX3QgeG5waXBlX3JlYWQoc3RydWN0IGZpbGUg
+KmZpbGUsCi0JCQkgICBjaGFyICpidWYsIHNpemVfdCBjb3VudCwgbG9mZl90ICpwcG9zKQorc3Rh
+dGljIHNzaXplX3QgeG5waXBlX3JlYWRfdl8oc3RydWN0IGZpbGUgKmZpbGUsIHZvaWQgKmJ1Zl9p
+b3ZlYywgc2l6ZV90IGNvdW50LAorCQkJICAgICAgaW50IHYpCiB7CiAJc3RydWN0IHhucGlwZV9z
+dGF0ZSAqc3RhdGUgPSBmaWxlLT5wcml2YXRlX2RhdGE7CiAJaW50IHNpZ3BlbmRpbmcsIGVyciA9
+IDA7CkBAIC03MzksOSArNzM5LDEyIEBACiAJc3RydWN0IHhuaG9sZGVyICpoOwogCXNzaXplX3Qg
+cmV0OwogCXNwbF90IHM7CisJY2hhciAqYnVmOworCXNpemVfdCB2ZWNfY291bnQ7CisJY29uc3Qg
+c3RydWN0IGlvdmVjICp2ZWM7CiAKLQlpZiAoIWFjY2Vzc19vayhWRVJJRllfV1JJVEUsIGJ1Ziwg
+Y291bnQpKQotCQlyZXR1cm4gLUVGQVVMVDsKKwlpZiAodikJdmVjID0gYnVmX2lvdmVjLCB2ZWNf
+Y291bnQgPSBjb3VudCwgY291bnQgPSAwOworCWVsc2UJYnVmID0gYnVmX2lvdmVjOwogCiAJeG5s
+b2NrX2dldF9pcnFzYXZlKCZua2xvY2ssIHMpOwogCkBAIC03ODEsOSArNzg0LDIwIEBACiAJICog
+ZW50aXJlbHkuCiAJICovCiAKKwlyZXQgPQogCWluYnl0ZXMgPSAwOwogCiAJZm9yICg7Oykgewor
+CQlpZiAodikgaWYgKGluYnl0ZXMgPT0gY291bnQpIGlmICh2ZWNfY291bnQpIHsKKwkJICAgIGJ1
+ZiA9IHZlYy0+aW92X2Jhc2UsIGNvdW50ID0gdmVjKystPmlvdl9sZW4sIC0tdmVjX2NvdW50Owor
+CQkgICAgaW5ieXRlcyA9IDA7CisJCSAgICBpZiAoIWFjY2Vzc19vayhWRVJJRllfV1JJVEUsIGJ1
+ZiwgY291bnQpKSB7CisJCQllcnIgPSAtRUZBVUxUOyBicmVhazsKKwkJICAgIH0KKworCQkgICAg
+Y29udGludWU7CisJCX0KKwogCQluYnl0ZXMgPSB4bnBpcGVfbV9zaXplKG1oKSAtIHhucGlwZV9t
+X3Jkb2ZmKG1oKTsKIAogCQlpZiAobmJ5dGVzICsgaW5ieXRlcyA+IGNvdW50KQpAQCAtODA2LDEx
+ICs4MjAsMTEgQEAKIAkJfQogCiAJCWluYnl0ZXMgKz0gbmJ5dGVzOworCQlyZXQgKz0gbmJ5dGVz
+OwogCQl4bnBpcGVfbV9yZG9mZihtaCkgKz0gbmJ5dGVzOwogCX0KIAotCXN0YXRlLT5pb25yZCAt
+PSBpbmJ5dGVzOwotCXJldCA9IGluYnl0ZXM7CisJc3RhdGUtPmlvbnJkIC09IHJldDsKIAogCWlm
+ICh4bnBpcGVfbV9zaXplKG1oKSA+IHhucGlwZV9tX3Jkb2ZmKG1oKSkKIAkJcHJlcGVuZHEoJnN0
+YXRlLT5vdXRxLCAmbWgtPmxpbmspOwpAQCAtODM3LDYgKzg1MSwyMSBAQAogCXJldHVybiBlcnIg
+PyA6IHJldDsKIH0KIAorc3RhdGljIHNzaXplX3QgeG5waXBlX3JlYWQoc3RydWN0IGZpbGUgKmZp
+bGUsCisJCQkgICBjaGFyICpidWYsIHNpemVfdCBjb3VudCwgbG9mZl90ICpwcG9zKQoreworCWlm
+ICghYWNjZXNzX29rKFZFUklGWV9XUklURSwgYnVmLCBjb3VudCkpCisJCXJldHVybiAtRUZBVUxU
+OworCisJcmV0dXJuIHhucGlwZV9yZWFkX3ZfKGZpbGUsIGJ1ZiwgY291bnQsIDApOworfQorCitz
+dGF0aWMgc3NpemVfdCB4bnBpcGVfcmVhZHYoc3RydWN0IGZpbGUgKmZpbGUsIGNvbnN0IHN0cnVj
+dCBpb3ZlYyAqaW92ZWMsCisJCQkgICAgdW5zaWduZWQgbG9uZyBjb3VudCwgbG9mZl90ICpwcG9z
+KQoreworCXJldHVybiB4bnBpcGVfcmVhZF92XyhmaWxlLCBpb3ZlYywgY291bnQsIDEpOworfQor
+CiBzdGF0aWMgc3NpemVfdCB4bnBpcGVfd3JpdGUoc3RydWN0IGZpbGUgKmZpbGUsCiAJCQkgICAg
+Y29uc3QgY2hhciAqYnVmLCBzaXplX3QgY291bnQsIGxvZmZfdCAqcHBvcykKIHsKQEAgLTEwNjAs
+NiArMTA4OSw3IEBACiBzdGF0aWMgc3RydWN0IGZpbGVfb3BlcmF0aW9ucyB4bnBpcGVfZm9wcyA9
+IHsKIAkub3duZXIgPSBUSElTX01PRFVMRSwKIAkucmVhZCA9IHhucGlwZV9yZWFkLAorCS5yZWFk
+diA9IHhucGlwZV9yZWFkdiwKIAkud3JpdGUgPSB4bnBpcGVfd3JpdGUsCiAJLnBvbGwgPSB4bnBp
+cGVfcG9sbCwKIAkuaW9jdGwgPSB4bnBpcGVfaW9jdGwsCg==
+
+------_=_NextPart_001_01CC096A.41D32BDD--
+
+
 
