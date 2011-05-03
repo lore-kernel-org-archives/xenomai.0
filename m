@@ -1,9 +1,13 @@
+From: Stefan Kisdaroczi <kisda@domain.hid>
+Date: Tue, 3 May 2011 14:36:31 +0200
+References: <4DBD4DA6.2070101@domain.hid>
+In-Reply-To: <4DBD4DA6.2070101@domain.hid>
 MIME-Version: 1.0
-Date: Tue, 3 May 2011 14:07:28 +0200
-Message-ID: <BANLkTikzGAMXZ--TaxmxXZDsoYJSesC26g@domain.hid>
-From: Aurele Traynard <aurele.traynard@domain.hid>
-Content-Type: multipart/alternative; boundary=bcaec51a8172e6476f04a25dfb70
-Subject: [Xenomai-help] reading/writing registers
+Content-Type: multipart/signed; boundary="nextPart2038175.HSUBsEnhQ3";
+	protocol="application/pgp-signature"; micalg=pgp-sha1
+Content-Transfer-Encoding: 7bit
+Message-Id: <201105031436.37688.kisda@domain.hid>
+Subject: Re: [Xenomai-help] Building Xenomai for Ubuntu 10.10 32 bit
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -13,63 +17,85 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Xenomai help <xenomai@xenomai.org>
+To: Uwe Fechner <u.fechner@domain.hid>
+Cc: xenomai@xenomai.org
 
---bcaec51a8172e6476f04a25dfb70
-Content-Type: text/plain; charset=ISO-8859-1
-
-hello,
-
-I am writing a little test. I put all my RT things in a module : one ISR and
-one RT task.
-in init_module I call :
-
-drv->data.regs = ioremap(0x04000000, 64*1024*1024);
-drv->data.gpio = ioremap(0x40E00000, 64*1024*1024);
-this is to acces registers
-
-rthal_irq_request(8, my_rt_isr, NULL, &(drv->data));
-rthal_irq_enable(8);
-for the ISR
-
-in my interrupt routine I use : writel(1, data->gpio + 0x48); for hardware
-interrupt acknowledge
-
-but when my interrupt routine is called linux is freezing so i think that I
-am never going out of the ISR (I am 99.9% sure).
-I am not sure but I think that It is due to the hardware interrupt
-aknoledge...
-
-my question is :
-can I call "writel(1, data->gpio + 0x48);" in my ISR?
-is it good or not?
-is there an other way to access registers?
-
-thanks for your answers.
-
-PS firstly I was calling : "GEDR0 = 0x1;" but in RT task this macro doesn't
-work
-
---bcaec51a8172e6476f04a25dfb70
-Content-Type: text/html; charset=ISO-8859-1
+--nextPart2038175.HSUBsEnhQ3
+Content-Type: Text/Plain;
+  charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 
-hello,<br><br>I am writing a little test. I put all my RT things in a modul=
-e : one ISR and one RT task.<br>in init_module I call :<br><br>drv-&gt;data=
-.regs =3D ioremap(0x04000000, 64*1024*1024);<br>drv-&gt;data.gpio =3D iorem=
-ap(0x40E00000, 64*1024*1024);<br>
-this is to acces registers<br><br>rthal_irq_request(8, my_rt_isr, NULL, &am=
-p;(drv-&gt;data));<br>rthal_irq_enable(8);<br>for the ISR<br><br>in my inte=
-rrupt routine I use : writel(1, data-&gt;gpio + 0x48); for hardware interru=
-pt acknowledge<br>
-<br>but when my interrupt routine is called linux is freezing so i think th=
-at I am never going out of the ISR (I am 99.9% sure).<br>I am not sure but =
-I think that It is due to the hardware interrupt aknoledge...<br><br>my que=
-stion is : <br>
-can I call &quot;writel(1, data-&gt;gpio + 0x48);&quot; in my ISR? <br>is i=
-t good or not? <br>is there an other way to access registers?<br><br>thanks=
- for your answers.<br><br>PS firstly I was calling : &quot;GEDR0 =3D 0x1;&q=
-uot; but in RT task this macro doesn&#39;t work<br>
+Hi,
 
---bcaec51a8172e6476f04a25dfb70--
+Am Sonntag 01 Mai 2011, 14.10:14 schrieb Uwe Fechner:
+>  Hello,
+>=20
+> I am trying to compile Xenomai for Ubuntu 10.10 32 bit for
+> a Dell Latitude E6400 Laptop.
+>=20
+> First I tried to follow the following explanations:
+> http://www.xenomai.org/index.php/Building_Debian_packages
+
+ok
+=20
+> I had the following problems:
+> - the Xenomai version, that comes with Ubuntu 10.10 is
+>   very old, so I tried to compile my own packages
+
+ok
+
+> - using git didn't work, because I needed a user name and
+>   password, that I don't have (the following command failed:)
+>   git clone git://xenomai.org/xenomai-2.5.git
+
+There is no password to access the git repository. Are you behind a proxy?
+
+> - then I tried to compile packages from a tar.bz2 archive
+>   I was able to compile the packages, but they did not work
+
+What did not work?
+
+>  I suppose, that I have some wrong .config options.
+>=20
+> I then tried to compile a Linux kernel in the way, that is
+> suggested for Ubuntu, using this tutorial:
+> [...]
+> Now my questions:
+> I would like to use kernel 2.6.38 or 2.6.39-RC5 with
+> xenomai 2.5.6.
+>=20
+> 1) Is this a good choice, or is an older kernel or an older
+>    version of Xenomai more likely to work?
+
+There is no adeos-ipipe-patch for 2.6.38 or .39-RC5.
+
+> 2) Do I need to run scripts/prepare-kernel.sh, or not?
+>    This is mentioned at:
+>    http://www.xenomai.org/documentation/xenomai-2.5/README.INSTALL
+>    but not mentioned at:
+>    http://www.xenomai.org/index.php/Building_Debian_packages
+
+If you follow "Building_Debian_packages" you dont need it.
+
+If you are able to copy&paste the commands from "Building_Debian_packages"=
+=20
+into your local console, it should work. If not, please tell which step fai=
+led=20
+and why (exact error message).
+
+Stefan
+
+--nextPart2038175.HSUBsEnhQ3
+Content-Type: application/pgp-signature; name=signature.asc 
+Content-Description: This is a digitally signed message part.
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.10 (GNU/Linux)
+
+iEYEABECAAYFAk2/9s8ACgkQIPTw9rIdn6oUWACeJ9RfUuKbDRVAoxU+mNgtbq/w
+yUQAnAlh2NakZlSYWKg0MpnC6fVJGQhz
+=qDAq
+-----END PGP SIGNATURE-----
+
+--nextPart2038175.HSUBsEnhQ3--
 
