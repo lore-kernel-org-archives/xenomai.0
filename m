@@ -1,13 +1,12 @@
-Message-ID: <4DC0F4E0.2070707@domain.hid>
-Date: Wed, 04 May 2011 08:40:32 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <1183078C0D064042B3AD2D03E3859EF174E31A@AREXCH02.mra.roland-man.biz><1303849652.1961.7.camel@domain.hid><1183078C0D064042B3AD2D03E3859EF174E3E4@domain.hid><1183078C0D064042B3AD2D03E3859EF174E43D@AREXCH02.mra.roland-man.biz><1303940558.1932.33.camel@domain.hid>	<1183078C0D064042B3AD2D03E3859EF174E5BC@AREXCH02.mra.roland-man.biz><1183078C0D064042B3AD2D03E3859EF174E826@domain.hid>	<4DBFE062.3020902@domain.hid>	<1183078C0D064042B3AD2D03E3859EF174E87B@AREXCH02.mra.roland-man.biz>	<4DC03CE8.4050608@domain.hid>
-	<1183078C0D064042B3AD2D03E3859EF174E92F@AREXCH02.mra.roland-man.biz>
-In-Reply-To: <1183078C0D064042B3AD2D03E3859EF174E92F@AREXCH02.mra.roland-man.biz>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] message pipe message boundaries
+In-Reply-To: <4DC03D39.2040305@domain.hid>
+References: <BANLkTikzGAMXZ--TaxmxXZDsoYJSesC26g@domain.hid>
+	<4DC03D39.2040305@domain.hid>
+Date: Wed, 4 May 2011 09:11:18 +0200
+Message-ID: <BANLkTi=Pj2Rk0u_ih7zKx+pmyhSTGM3Y-Q@mail.gmail.com>
+From: Aurele Traynard <aurele.traynard@domain.hid>
+Content-Type: multipart/alternative; boundary=20cf307f34008b6d6804a26df6f0
+Subject: Re: [Xenomai-help] reading/writing registers
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -17,32 +16,152 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: dietmar.schindler@domain.hid
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Xenomai help <xenomai@xenomai.org>
 
-On 05/04/2011 08:36 AM, dietmar.schindler@domain.hid wrote:
->> From: Gilles Chanteperdrix [mailto:gilles.chanteperdrix@xenomai.org]
->> Sent: Tuesday, May 03, 2011 7:36 PM
->> ...
->>>> On 05/03/2011 10:15 AM, dietmar.schindler@domain.hid wrote:
->>>>> ...
->>>>> We at manroland now use (with Xenomai 2.4) the attached patch, which
->>>>> implements the readv file operation in the rtpipe driver so that the
->>>>> assertion "One read() per rt_pipe_write()" (message boundaries
->>>>> preserved) covers readv(2) also.
->> ...
->> Unfortunately, the patch as is is a bit hard to read. IMO, only
->> implementing readv will result in a more straight-forward implementation
->> which we could merge.
-> 
-> I understand. If you prefer, I can provide a patch which multiplies out the functions to a separate readv, though this will result in code duplication of the whole read function. Alternatively, I could comment the changes so that they are easier to read.
-> Please let me know which flavour you favour.
+--20cf307f34008b6d6804a26df6f0
+Content-Type: text/plain; charset=ISO-8859-1
 
-What I suggest, is that you make a patch which removes the read
-implementation and adds the readv implementation. In this case, the
-kernel will use readv to implement read anyway, and there will be no
-code duplication.
+Ok I will explain more things :
+My software makes the system freezing, when my interrupt handler is called
+for the first time I think that he is called again and again and again and
+this never stops. And so this freeze the system
+but I am not totaly sure.
+I'm sure that it is not Xenomai's fault it is just mine. I think I don't use
+Xenomai correctly...
+That's why I am asking if "ioremap" "readl/writel" is the best way to
+read/write CPU registers and if there are other ways.
 
--- 
-                                                                Gilles.
+CPU (XScale) : PXA270 520MHz, 256Mo RAM (100MHz)
+gcc : from CodeSourcery
+$ arm-none-linux-gnueabi-gcc --version
+$ arm-none-linux-gnueabi-gcc (Sourcery G++ Lite 2010q1-202) 4.4.1
+
+linux : 2.6.33.2
+Xenomai 2.5.6
+patch : ksrc/arch/arm/patches/adeos-ipipe-2.6.33-arm-1.18-02.patch
+
+
+
+2011/5/3 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+
+> On 05/03/2011 02:07 PM, Aurele Traynard wrote:
+> > hello,
+> >
+> > I am writing a little test. I put all my RT things in a module : one ISR
+> and
+> > one RT task.
+> > in init_module I call :
+> >
+> > drv->data.regs = ioremap(0x04000000, 64*1024*1024);
+> > drv->data.gpio = ioremap(0x40E00000, 64*1024*1024);
+> > this is to acces registers
+> >
+> > rthal_irq_request(8, my_rt_isr, NULL, &(drv->data));
+> > rthal_irq_enable(8);
+> > for the ISR
+> >
+> > in my interrupt routine I use : writel(1, data->gpio + 0x48); for
+> hardware
+> > interrupt acknowledge
+> >
+> > but when my interrupt routine is called linux is freezing so i think that
+> I
+> > am never going out of the ISR (I am 99.9% sure).
+> > I am not sure but I think that It is due to the hardware interrupt
+> > aknoledge...
+> >
+> > my question is :
+> > can I call "writel(1, data->gpio + 0x48);" in my ISR?
+> > is it good or not?
+> > is there an other way to access registers?
+> >
+> > thanks for your answers.
+> >
+> > PS firstly I was calling : "GEDR0 = 0x1;" but in RT task this macro
+> doesn't
+> > work
+>
+> Why is that? What are the symptoms?
+>
+> Other than that, have a look at:
+> http://www.xenomai.org/index.php/Request_for_information
+>
+> --
+>                                                                 Gilles.
+>
+
+--20cf307f34008b6d6804a26df6f0
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+Ok I will explain more things :<br>My software makes the system freezing, w=
+hen my interrupt handler is called for the first time I think that he is ca=
+lled again and again and again and this never stops. And so this freeze the=
+ system<br>
+but I am not totaly sure. <br>I&#39;m sure that it is not Xenomai&#39;s fau=
+lt it is just mine. I think I don&#39;t use Xenomai correctly...<br>That&#3=
+9;s why I am asking if &quot;ioremap&quot; &quot;readl/writel&quot; is the =
+best way to read/write CPU registers and if there are other ways.<br>
+<br>CPU (XScale) : PXA270 520MHz, 256Mo RAM (100MHz)<br>gcc : from CodeSour=
+cery <br>$ arm-none-linux-gnueabi-gcc --version<br>$ arm-none-linux-gnueabi=
+-gcc (Sourcery G++ Lite 2010q1-202) 4.4.1<br><br>linux : 2.6.33.2<br>Xenoma=
+i 2.5.6<br>
+patch : ksrc/arch/arm/patches/adeos-ipipe-2.6.33-arm-1.18-02.patch<br><br><=
+br><br><div class=3D"gmail_quote">2011/5/3 Gilles Chanteperdrix <span dir=
+=3D"ltr">&lt;<a href=3D"mailto:gilles.chanteperdrix@xenomai.org">gilles.cha=
+nteperdrix@domain.hid</a>&gt;</span><br>
+<blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1p=
+x #ccc solid;padding-left:1ex;"><div><div></div><div class=3D"h5">On 05/03/=
+2011 02:07 PM, Aurele Traynard wrote:<br>
+&gt; hello,<br>
+&gt;<br>
+&gt; I am writing a little test. I put all my RT things in a module : one I=
+SR and<br>
+&gt; one RT task.<br>
+&gt; in init_module I call :<br>
+&gt;<br>
+&gt; drv-&gt;data.regs =3D ioremap(0x04000000, 64*1024*1024);<br>
+&gt; drv-&gt;data.gpio =3D ioremap(0x40E00000, 64*1024*1024);<br>
+&gt; this is to acces registers<br>
+&gt;<br>
+&gt; rthal_irq_request(8, my_rt_isr, NULL, &amp;(drv-&gt;data));<br>
+&gt; rthal_irq_enable(8);<br>
+&gt; for the ISR<br>
+&gt;<br>
+&gt; in my interrupt routine I use : writel(1, data-&gt;gpio + 0x48); for h=
+ardware<br>
+&gt; interrupt acknowledge<br>
+&gt;<br>
+&gt; but when my interrupt routine is called linux is freezing so i think t=
+hat I<br>
+&gt; am never going out of the ISR (I am 99.9% sure).<br>
+&gt; I am not sure but I think that It is due to the hardware interrupt<br>
+&gt; aknoledge...<br>
+&gt;<br>
+&gt; my question is :<br>
+&gt; can I call &quot;writel(1, data-&gt;gpio + 0x48);&quot; in my ISR?<br>
+&gt; is it good or not?<br>
+&gt; is there an other way to access registers?<br>
+&gt;<br>
+&gt; thanks for your answers.<br>
+&gt;<br>
+&gt; PS firstly I was calling : &quot;GEDR0 =3D 0x1;&quot; but in RT task t=
+his macro doesn&#39;t<br>
+&gt; work<br>
+<br>
+</div></div>Why is that? What are the symptoms?<br>
+<br>
+Other than that, have a look at:<br>
+<a href=3D"http://www.xenomai.org/index.php/Request_for_information" target=
+=3D"_blank">http://www.xenomai.org/index.php/Request_for_information</a><br=
+>
+<br>
+--<br>
+<font color=3D"#888888"> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
+=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0=
+ =A0Gilles.<br>
+</font></blockquote></div><br>
+
+--20cf307f34008b6d6804a26df6f0--
 
