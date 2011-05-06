@@ -1,5 +1,5 @@
-Message-ID: <4DC3D0FC.2060806@domain.hid>
-Date: Fri, 06 May 2011 16:44:12 +0600
+Message-ID: <4DC3D551.9020600@domain.hid>
+Date: Fri, 06 May 2011 17:02:41 +0600
 From: Alexey Galakhov <agalakhov@domain.hid>
 MIME-Version: 1.0
 References: <4DC2962B.9060802@domain.hid> <4DC299F2.40700@domain.hid>
@@ -28,13 +28,8 @@ On 05/06/2011 03:55 PM, Gilles Chanteperdrix wrote:
 > The problem probably comes from the fact that you are running with
 > CONFIG_GENERIC_CLOCKEVENTS, I will try and reproduce this on different
 > hardware.
-Today I found that the problem is reproduceable on an emulator. There is
-a fork of qemu that emulates mini2440 board, it is here:
-http://repo.or.cz/w/qemu/mini2440.git . Now I test on the emulator first
-as it is faster and does not wear out board's flash.
-
-It is a bit hacked, i.e. you have to have a bootloader in
-./mini2440/u-boot.bin and so on but it is quite usable.
+Looks like S3C2440 is one of the few systems that have
+GENERIC_CLOCKEVENTS off (see Kconfig). Other systems seem to turn it on.
 
 --
 Alex
