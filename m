@@ -1,5 +1,5 @@
-Message-ID: <4DC3BF3C.2030405@domain.hid>
-Date: Fri, 06 May 2011 15:28:28 +0600
+Message-ID: <4DC3C04A.90801@domain.hid>
+Date: Fri, 06 May 2011 15:32:58 +0600
 From: Alexey Galakhov <agalakhov@domain.hid>
 MIME-Version: 1.0
 References: <4DC2962B.9060802@domain.hid> <4DC299F2.40700@domain.hid>
@@ -27,27 +27,7 @@ On 05/05/2011 11:26 PM, Gilles Chanteperdrix wrote:
 > Please try and move the cal to ipipe_tsc_update to the acktimer function.
 > Also call printk in the actkimer function, in order to see if the last
 > action is a set_dec, or an acktimer.
-Just tried to add printk (not moved anything). Got:
-
-ipipe_mach_set_dec: 4294967295
-ipipe_mach_set_dec: 4294967295
-ipipe_mach_set_dec: 42186
-Xenomai: scheduling class idle registered.
-Xenomai: scheduling class rt registered.
-acktimer
-acktimer
-acktimer
-acktimer
-acktimer
-Xenomai: real-time nucleus v2.5.6 (Wormhole Wizards) loaded.
-ipipe_mach_set_dec: 42187
-Xenomai: starting native API services.
-Xenomai: starting POSIX services.
-Xenomai: starting RTDM services.
-acktimer
-msgmni has been set to 119
-Block layer SCSI generic (bsg) driver version 0.4 loaded (major 253)
-io scheduler noop registered (default)
+Tried to move the call. Got exactly the same hangup and dmesg.
 
 --
 Alex
