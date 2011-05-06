@@ -1,5 +1,5 @@
-Message-ID: <4DC3C076.7010203@domain.hid>
-Date: Fri, 06 May 2011 11:33:42 +0200
+Message-ID: <4DC3C575.9000902@domain.hid>
+Date: Fri, 06 May 2011 11:55:01 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <4DC2962B.9060802@domain.hid> <4DC299F2.40700@domain.hid>
@@ -30,10 +30,21 @@ On 05/06/2011 11:28 AM, Alexey Galakhov wrote:
 >> Also call printk in the actkimer function, in order to see if the last
 >> action is a set_dec, or an acktimer.
 > Just tried to add printk (not moved anything). Got:
+
+Just explaining what happens.
+
 > 
 > ipipe_mach_set_dec: 4294967295
 > ipipe_mach_set_dec: 4294967295
+
+These are for the setup calibration (rthal_calibrate_timer).
+
 > ipipe_mach_set_dec: 42186
+
+This is the call to __ipipe_mach_release_timer, at the end of
+calibration, which should put the timer back under Linux control, in
+auto-reload mode.
+
 > Xenomai: scheduling class idle registered.
 > Xenomai: scheduling class rt registered.
 > acktimer
@@ -41,21 +52,28 @@ On 05/06/2011 11:28 AM, Alexey Galakhov wrote:
 > acktimer
 > acktimer
 > acktimer
+
+Linux ticks, set_dec is not called, because the timer auto-reloads.
+
 > Xenomai: real-time nucleus v2.5.6 (Wormhole Wizards) loaded.
 > ipipe_mach_set_dec: 42187
+
+Here the timer goes under Xenomai control, ipipe_mach_timerstolen is set
+to 1.
+
 > Xenomai: starting native API services.
 > Xenomai: starting POSIX services.
 > Xenomai: starting RTDM services.
 > acktimer
-> msgmni has been set to 119
-> Block layer SCSI generic (bsg) driver version 0.4 loaded (major 253)
-> io scheduler noop registered (default)
 
-Ok, so there is a timer interrupt which does not result in reprogramming
-the timer, all you need to find out is why... Could you print the tsc
-value for each of these printks?
-Also, have you tried putting the call to the tsc update function in the
-acktimer function?
+First timer interrupt, should trig a call to Xenomai tick timer handler,
+which should reprogram the next timer. At this time, there is only one
+timer in Xenomai's list: the host timer, so, we should see an
+set_dec(42186) again.
+
+The problem probably comes from the fact that you are running with
+CONFIG_GENERIC_CLOCKEVENTS, I will try and reproduce this on different
+hardware.
 
 -- 
 					    Gilles.
