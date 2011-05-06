@@ -1,13 +1,12 @@
-Message-ID: <4DC430AE.20206@domain.hid>
-Date: Fri, 06 May 2011 19:32:30 +0200
+Message-ID: <4DC43293.8000907@domain.hid>
+Date: Fri, 06 May 2011 19:40:35 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <BANLkTi=qj7YfrFvQJPPZQbLjx=QSJqWzng@domain.hid>
-In-Reply-To: <BANLkTi=qj7YfrFvQJPPZQbLjx=QSJqWzng@domain.hid>
+References: <2A5271086BF5EA4A891F3804135DEA82069C8336@domain.hid>
+In-Reply-To: <2A5271086BF5EA4A891F3804135DEA82069C8336@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] user-space support : Inconsistency detected by
- ld.so
+Subject: Re: [Xenomai-help] Installation problem
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -17,46 +16,51 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Aurele Traynard <aurele.traynard@domain.hid>
-Cc: Xenomai help <xenomai@xenomai.org>
+To: BONOS Antonis <antonis.bonos@domain.hid>
+Cc: xenomai@xenomai.org
 
-On 05/06/2011 05:13 PM, Aurele Traynard wrote:
-> hello all,
+On 05/06/2011 05:18 PM, BONOS Antonis wrote:
+> Hello,
 > 
-> I have a problem whith user-space support :
-> I compile a program with makefile of Xenomai and when i want to use it this
-> apear :
+> I'm compiling a 2.6.35.9 kernel patched with xenomai 2.5.6, on a Core I7
+> PC, and experiencing problems running xeno-test, and my own real time
+> programs.
 > 
-> Inconsistency detected by ld.so: dl-deps.c: 622: _dl_map_object_deps:
-> Assertion`nlist > 1' failed!
+> I attached the .config file I used for the kernel, the dmesg log, and
+> xeno-test result ( redacted because /proc/ipipe/Linux was quite
+> uninterresting).
+> I have a problem with theses errors, for instance with xeno-test: 
 > 
-> compilation process :
+> ...
+> running: ./run -- -sh -T 120 -t0 # latency ....
+> Xenomai: native skin or CONFIG_XENO_OPT_PERVASIVE disabled.
+> (modprobe xeno_native?)
+> ERROR: Module xeno_timerbench does not exist in /proc/modules
+> ERROR: Module xeno_rtdm does not exist in /proc/modules
+> ERROR: Module xeno_native does not exist in /proc/modules
+> ERROR: Module xeno_nucleus does not exist in /proc/modules
 > 
-> DESTDIR=/home/aurele/workdir/test/test_noyau/buildroot-2010.08/output/staging
-> make
-> XENO=/home/aurele/workdir/test/test_noyau/buildroot-2010.08/output/staging/usr/xenomai/
-> arm-none-linux-gnueabi-gcc
-> -I/home/aurele/workdir/test/test_noyau/buildroot-2010.08/output/staging/usr/xenomai/include
-> -D_GNU_SOURCE -D_REENTRANT -Wall -pipe -D__XENO__   -lnative
-> -L/home/aurele/workdir/test/test_noyau/buildroot-2010.08/output/staging/usr/xenomai/lib
-> -lxenomai -lpthread  -O -Xlinker -rpath -Xlinker
-> /home/aurele/workdir/test/test_noyau/buildroot-2010.08/output/staging/usr/xenomai/lib
-> playing_led_rt.c   -o playing_led_rt
-> playing_led_rt.c: In function 'main':
-> playing_led_rt.c:126:2: warning: format '%08X' expects type 'unsigned int',
-> but argument 3 has type 'long unsigned int'
-> playing_led_rt.c:128:2: warning: format '%08X' expects type 'unsigned int',
-> but argument 2 has type 'long unsigned int'
 > 
-> I have made two programs one with rt_tasks but he don't work, so supress all
-> real-time call and it doesn't work again with the same error.
+> I do have compiled with CONFIG_XENO_OPT_PERVASIVE, and " modprobe
+> xeno_native "  does nothing to help At startup I do have 
+> [    1.246870] I-pipe: Domain Xenomai registered.
+> [    1.246959] Xenomai: hal/x86_64 started.
+> [    1.246972] Xenomai: scheduling class idle registered.
+> [    1.246974] Xenomai: scheduling class rt registered.
+> [    1.247822] Xenomai: real-time nucleus v2.5.6 (Wormhole Wizards)
+> loaded.
+> [    1.247978] Xenomai: starting native API services.
+> [    1.247980] Xenomai: starting POSIX services.
+> [    1.247996] Xenomai: starting RTDM services.
 > 
-> does anyone have a way to go?
-> thanks for reply
+> 
+> I'm quite stuck with this issue, I've tried searching on the net, but
+> I'm unable to find a pr <<.config>> o <<dmesg.log>> b <<xeno-test.log>>
+> lem similar to this one
 
-This looks like a bug in the context switch routine. How is
-CONFIG_IWMMXT in your kernel configuration?
-
+Could you try configuring xenomai user-space support with
+--enable-x86-sep if you have not done it yet? Or on the contrary disable
+it if it is enabled?
 
 -- 
                                                                 Gilles.
