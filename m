@@ -1,46 +1,47 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <BANLkTim1tWxvzUx2gUwLbQVbob4tRqbCFw@domain.hid>
-References: <BANLkTim1tWxvzUx2gUwLbQVbob4tRqbCFw@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Fri, 13 May 2011 08:50:02 +0200
-Message-ID: <1305269402.2147.6.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] I suspect the shared memory of Xenomai has bug.
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+From: "=?gb2312?B?wr3Qobui?=" <luxiaohu09@domain.hid>
+Date: Sat, 07 May 2011 20:08:30 +0800
+Message-ID: <PPYDAHUVRSLEIHIXAVJCNNKDVCNH.luxiaohu09@domain.hid>
+MIME-Version: 1.0
+Content-Type: multipart/alternative;
+	boundary="----=_180324_1304770110_27849.html"
+Subject: [Xenomai-help] share momory under RTAI-SKIN
+Reply-To: =?gb2312?B?wr3Qobui?= <luxiaohu09@domain.hid>
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: arethe rtai <arethe.rtai@domain.hid>
-Cc: Xenomai-core@domain.hid
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: xenomai@xenomai.org
 
-On Fri, 2011-05-13 at 09:25 +0800, arethe rtai wrote:
-> HI all:
->        I always got null while I request a shared memory through RTAI
-> skins in the user space.
->        Some bugs maybe exist in the sub-system. I traced the execution
-> stream of rt_shm_alloc, and found the mmap() operation always return
-> -22. I suspect the problem should be same while we use other skins,
-> because the mmap operation is implemented in /ksrc/nucleus/heap.c.
->        Is there anyone encountered this problem?
+------=_180324_1304770110_27849.html
+Content-Type: text/plain;
+	charset="gb2312"
+Content-Transfer-Encoding: base64
 
-No. The fact is that the RTAI skin has not been actively maintained for
-years now, so a local bug there is possible. Due to the lack of users
-and interest, this skin was removed from the upcoming 2.6.x series.
+aGVsbG8gdG8gZXZlcnlvbmUsIGlzIHRoZXJlIGFueWJvZHkgc3VjY2VlcyBpbiB1c2luZyBT
+SEVNIHVuZGVyIHRoZSBSVEFJLVNLSU4uIGkgbmVlZCB0byB1c2UgdGhlIHNoYXJlZCBtZW1v
+cnkgd2hpY2ggd2VyZSBhbGxvY2F0ZWQgaW4gdGhlIGtlcm5hbCBzcGFjZSwgYnV0IGFsd2F5
+cyBnZXQgYSBOVUxMIHBvaW50ZXIuIHNvIHdvdWxkIHlvdSBwbGVhc2UgZ2l2ZSBtZSBzb21l
+IGFkdmlzZSBvbiB0aGUgZGV0YWlsIHdoaWNoIGkgbmVlZCB0byBwYXkgbW9yZSBhdHRlbnRp
+b24uIA0KdGhhbmtzLg0KDQp0aWdlci5sdQo=
 
-> Regards Arethe.
-> 
-> _______________________________________________
-> Xenomai-core mailing list
-> Xenomai-core@domain.hid
-> https://mail.gna.org/listinfo/xenomai-core
+------=_180324_1304770110_27849.html
+Content-Type: text/html;
+	charset="gb2312"
+Content-Transfer-Encoding: base64
 
--- 
-Philippe.
+PFA+aGVsbG8gdG8gZXZlcnlvbmUsIGlzIHRoZXJlIGFueWJvZHkgc3VjY2VlcyBpbiB1c2lu
+ZyBTSEVNIHVuZGVyIHRoZSBSVEFJLVNLSU4uIGkgbmVlZCB0byB1c2UgdGhlIHNoYXJlZCBt
+ZW1vcnkgd2hpY2ggd2VyZSZuYnNwO2FsbG9jYXRlZCBpbiB0aGUga2VybmFsIHNwYWNlLCBi
+dXQgYWx3YXlzIGdldCBhIE5VTEwgcG9pbnRlci4gc28gd291bGQgeW91IHBsZWFzZSBnaXZl
+IG1lIHNvbWUgYWR2aXNlIG9uIHRoZSBkZXRhaWwgd2hpY2ggaSBuZWVkIHRvIHBheSBtb3Jl
+IGF0dGVudGlvbi4gPC9QPg0KPFA+dGhhbmtzLjwvUD4NCjxQPiZuYnNwOzwvUD4NCjxQPnRp
+Z2VyLmx1PC9QPg==
 
+------=_180324_1304770110_27849.html--
 
 
