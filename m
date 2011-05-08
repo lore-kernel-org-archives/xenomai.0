@@ -1,12 +1,11 @@
-Message-ID: <4DC5ABBF.9000909@domain.hid>
-Date: Sat, 07 May 2011 22:29:51 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: luxInteg <lux-integ@domain.hid>
+Date: Sun, 8 May 2011 16:52:16 +0100
 MIME-Version: 1.0
-References: <PPYDAHUVRSLEIHIXAVJCNNKDVCNH.luxiaohu09@domain.hid>
-In-Reply-To: <PPYDAHUVRSLEIHIXAVJCNNKDVCNH.luxiaohu09@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] share momory under RTAI-SKIN
+Content-Type: text/plain;
+  charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Message-Id: <201105081652.16258.lux-integ@domain.hid>
+Subject: [Xenomai-help] xenomai for 2.6.38/39 linux kernels -when?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -16,20 +15,16 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: =?UTF-8?B?6ZmG5bCP6JmO?= <luxiaohu09@domain.hid>
-Cc: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 05/07/2011 02:08 PM, =E9=99=86=E5=B0=8F=E8=99=8E wrote:
-> hello to everyone, is there anybody succees in using SHEM under the
-> RTAI-SKIN. i need to use the shared memory which were allocated in
-> the kernal space, but always get a NULL pointer. so would you please
-> give me some advise on the detail which i need to pay more attention.
->  thanks.
+Greetings,
 
-http://www.xenomai.org/index.php/Request_for_information
+I am using linux-2.6.38.x kernels  (amd64  -pure 64 bit).  I   noticed the   
+latest Xenomai patches even for stuff in the git repositories are  for 
+linux-2.6.37.6    Unfortunately  the setups I have  VGA   will not work with 
+less than linux-2.6.38.x.  So could someone give an indication of when we can 
+expect xenomai to be available for 2.6.38/2.6.39 kernels please?
 
-
---=20
-                                                                Gilles.
-
+regards
+luxInteg
 
