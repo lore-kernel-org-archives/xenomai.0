@@ -1,18 +1,11 @@
-Message-ID: <4DC3D551.9020600@domain.hid>
-Date: Fri, 06 May 2011 17:02:41 +0600
-From: Alexey Galakhov <agalakhov@domain.hid>
-MIME-Version: 1.0
-References: <4DC2962B.9060802@domain.hid> <4DC299F2.40700@domain.hid>
-	<4DC2A315.8030707@domain.hid> <4DC2ADE1.9000301@domain.hid>
-	<4DC2B06B.9020303@domain.hid> <4DC2B75C.8030503@domain.hid>
-	<4DC2C10C.9080102@domain.hid> <4DC2C411.60109@domain.hid>
-	<4DC2D0C9.3020605@domain.hid> <4DC2DDC6.8090909@domain.hid>
-	<4DC3BF3C.2030405@domain.hid> <4DC3C575.9000902@domain.hid>
-In-Reply-To: <4DC3C575.9000902@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Adeos-main] mini2440: ipipe kernel stuck in idle loop after
- xenomai init
+Message-ID: <12fd55445c8.sdiani@domain.hid>
+Date: Mon, 9 May 2011 17:16:00 +0200 (CEST)
+From: "sdiani@domain.hid" <sdiani@domain.hid>
+Mime-Version: 1.0
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_24961_7693636.1304954160591"
+Subject: [Adeos-main] R: Re:  Adeos for PowerPc 2.6.29.4-64 bit
+Reply-To: "sdiani@domain.hid" <sdiani@domain.hid>
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/options/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -21,16 +14,98 @@ List-Post: <mailto:adeos-main@gna.org>
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: rpm@xenomai.org
 Cc: adeos-main@gna.org
 
-On 05/06/2011 03:55 PM, Gilles Chanteperdrix wrote:
-> The problem probably comes from the fact that you are running with
-> CONFIG_GENERIC_CLOCKEVENTS, I will try and reproduce this on different
-> hardware.
-Looks like S3C2440 is one of the few systems that have
-GENERIC_CLOCKEVENTS off (see Kconfig). Other systems seem to turn it on.
+------=_Part_24961_7693636.1304954160591
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
---
-Alex
+Tonight I try it and I will tell You
+
+Thanks
+
+Sergio
+
+----Messaggio originale----
+Da: rpm@xenomai.org
+Data: 4-mag-2011 16.44
+A: "sdiani@domain.hid"<sdiani@domain.hid>
+Cc: <adeos-main@gna.org>
+Ogg: Re: [Adeos-main] Adeos for PowerPc 2.6.29.4-64 bit
+
+On Wed, 2011-05-04 at 14:57 +0200, sdiani@domain.hid wrote:
+> 
+> Hi everyone,
+> i'm trying to compile the 2.6.29.4 64-bit Denx kernel for PowerPC
+> ( PPC 970 , G5 Desktop ).
+> I have applied the
+> patch  adeos-ipipe-2.6.29.4-powerpc-DENX-2.7-04.patch  and after
+> reboot i get this error:
+> 
+>                         NIP [000001C968] .power4_idle+0x54/0x58 
+>                         LR = (null)
+>                             ....
+>                         Exceptionn: 901 at power4_idle+0x54/0x58
+>                                     LR = .cpu_idle +0x11c/0x1d4
+> 
+> It regards the idle_power4.S file and the only changes in it, are
+> about the CONFIG_SOFTDISABLE.
+> Can Anyone help me to solve it ?
+
+The power save code for powermac won't work as is with Adeos. Try
+booting with powersave=off.
+
+> 
+> Thank you in advance
+> 
+> Sergio
+> _______________________________________________
+> Adeos-main mailing list
+> Adeos-main@domain.hid
+> https://mail.gna.org/listinfo/adeos-main
+
+-- 
+Philippe.
+
+
+
+
+
+------=_Part_24961_7693636.1304954160591
+Content-Type: text/html;charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+Tonight I try it and I will&nbsp;tell You<BR><BR>Thanks<BR><BR>Sergio<BR>
+<BLOCKQUOTE>----Messaggio originale----<BR>Da: rpm@xenomai.org<BR>Data: 4-m=
+ag-2011 16.44<BR>A: "sdiani@domain.hid"&lt;sdiani@domain.hid&gt;<BR>Cc: &lt;ade=
+os-main@domain.hid&gt;<BR>Ogg: Re: [Adeos-main] Adeos for PowerPc 2.6.29.4-64 =
+bit<BR><BR>On Wed, 2011-05-04 at 14:57 +0200, sdiani@domain.hid wrote:<BR>&gt=
+; <BR>&gt; Hi everyone,<BR>&gt; i'm trying to compile the 2.6.29.4 64-bit D=
+enx kernel for PowerPC<BR>&gt; ( PPC 970 , G5 Desktop ).<BR>&gt; I have app=
+lied the<BR>&gt; patch&nbsp; adeos-ipipe-2.6.29.4-powerpc-DENX-2.7-04.patch=
+&nbsp; and after<BR>&gt; reboot i get this error:<BR>&gt; <BR>&gt;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; NIP [000001C96=
+8] .power4_idle+0x54/0x58 <BR>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp; LR =3D (null)<BR>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&=
+nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
+p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ....<B=
+R>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
+sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
+ Exceptionn: 901 at power4_idle+0x54/0x58<BR>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
+;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
+bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; LR =3D .cpu_idle +0x11c/0x1d4<BR>&=
+gt; <BR>&gt; It regards the idle_power4.S file and the only changes in it, =
+are<BR>&gt; about the CONFIG_SOFTDISABLE.<BR>&gt; Can Anyone help me to sol=
+ve it ?<BR><BR>The power save code for powermac won't work as is with Adeos=
+. Try<BR>booting with powersave=3Doff.<BR><BR>&gt; <BR>&gt; Thank you in ad=
+vance<BR>&gt; <BR>&gt; Sergio<BR>&gt; _____________________________________=
+__________<BR>&gt; Adeos-main mailing list<BR>&gt; Adeos-main@domain.hid<BR>&g=
+t; https://mail.gna.org/listinfo/adeos-main<BR><BR>-- <BR>Philippe.<BR><BR>=
+<BR><BR></BLOCKQUOTE><BR>
+------=_Part_24961_7693636.1304954160591--
+
 
