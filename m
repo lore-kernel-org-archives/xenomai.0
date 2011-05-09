@@ -1,13 +1,15 @@
+Content-Transfer-Encoding: 7bit
+Content-Class: urn:content-classes:message
 MIME-Version: 1.0
-In-Reply-To: <4DC430AE.20206@domain.hid>
-References: <BANLkTi=qj7YfrFvQJPPZQbLjx=QSJqWzng@domain.hid>
-	<4DC430AE.20206@domain.hid>
-Date: Mon, 9 May 2011 08:57:11 +0200
-Message-ID: <BANLkTik9LH8WO8uTvWz+msGt=L61ZagJyg@domain.hid>
-From: Aurele Traynard <aurele.traynard@domain.hid>
-Content-Type: multipart/alternative; boundary=0016e645b94847b2b004a2d2596c
-Subject: Re: [Xenomai-help] user-space support : Inconsistency detected by
-	ld.so
+Content-Type: multipart/mixed; boundary="----_=_NextPart_001_01CC0E1B.CC8A1362"
+Date: Mon, 9 May 2011 09:36:23 +0200
+Message-ID: <1183078C0D064042B3AD2D03E3859EF174ECBA@AREXCH02.mra.roland-man.biz>
+In-Reply-To: <4DC25C69.5020001@domain.hid>
+References: <1183078C0D064042B3AD2D03E3859EF174E31A@AREXCH02.mra.roland-man.biz><1303849652.1961.7.camel@domain.hid><1183078C0D064042B3AD2D03E3859EF174E3E4@domain.hid><1183078C0D064042B3AD2D03E3859EF174E43D@AREXCH02.mra.roland-man.biz><1303940558.1932.33.camel@domain.hid>	<1183078C0D064042B3AD2D03E3859EF174E5BC@AREXCH02.mra.roland-man.biz><1183078C0D064042B3AD2D03E3859EF174E826@domain.hid>	<4DBFE062.3020902@domain.hid>	<1183078C0D064042B3AD2D03E3859EF174E87B@AREXCH02.mra.roland-man.biz>	<4DC03CE8.4050608@domain.hid>	<1183078C0D064042B3AD2D03E3859EF174E92F@AREXCH02.mra.roland-man.biz>	<4DC0F4E0.2070707@domain.hid>
+	<1183078C0D064042B3AD2D03E3859EF174EA21@domain.hid>
+	<4DC25C69.5020001@domain.hid>
+From: <dietmar.schindler@domain.hid>
+Subject: Re: [Xenomai-help] message pipe message boundaries
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -17,135 +19,86 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai help <xenomai@xenomai.org>
+Cc: xenomai@xenomai.org
 
---0016e645b94847b2b004a2d2596c
-Content-Type: text/plain; charset=ISO-8859-1
+This is a multi-part message in MIME format.
 
-Hello
-
-it is activate... is it bad or is there a workaround
-CONFIG_IWMMXT=y
-
-thanks
-
-2011/5/6 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-
-> On 05/06/2011 05:13 PM, Aurele Traynard wrote:
-> > hello all,
-> >
-> > I have a problem whith user-space support :
-> > I compile a program with makefile of Xenomai and when i want to use it
-> this
-> > apear :
-> >
-> > Inconsistency detected by ld.so: dl-deps.c: 622: _dl_map_object_deps:
-> > Assertion`nlist > 1' failed!
-> >
-> > compilation process :
-> >
-> >
-> DESTDIR=/home/aurele/workdir/test/test_noyau/buildroot-2010.08/output/staging
-> > make
-> >
-> XENO=/home/aurele/workdir/test/test_noyau/buildroot-2010.08/output/staging/usr/xenomai/
-> > arm-none-linux-gnueabi-gcc
-> >
-> -I/home/aurele/workdir/test/test_noyau/buildroot-2010.08/output/staging/usr/xenomai/include
-> > -D_GNU_SOURCE -D_REENTRANT -Wall -pipe -D__XENO__   -lnative
-> >
-> -L/home/aurele/workdir/test/test_noyau/buildroot-2010.08/output/staging/usr/xenomai/lib
-> > -lxenomai -lpthread  -O -Xlinker -rpath -Xlinker
-> >
-> /home/aurele/workdir/test/test_noyau/buildroot-2010.08/output/staging/usr/xenomai/lib
-> > playing_led_rt.c   -o playing_led_rt
-> > playing_led_rt.c: In function 'main':
-> > playing_led_rt.c:126:2: warning: format '%08X' expects type 'unsigned
-> int',
-> > but argument 3 has type 'long unsigned int'
-> > playing_led_rt.c:128:2: warning: format '%08X' expects type 'unsigned
-> int',
-> > but argument 2 has type 'long unsigned int'
-> >
-> > I have made two programs one with rt_tasks but he don't work, so supress
-> all
-> > real-time call and it doesn't work again with the same error.
-> >
-> > does anyone have a way to go?
-> > thanks for reply
->
-> This looks like a bug in the context switch routine. How is
-> CONFIG_IWMMXT in your kernel configuration?
->
->
-> --
->                                                                 Gilles.
->
-
---0016e645b94847b2b004a2d2596c
-Content-Type: text/html; charset=ISO-8859-1
+------_=_NextPart_001_01CC0E1B.CC8A1362
+Content-Type: text/plain;
+	charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Hello<br><br>it is activate... is it bad or is there a workaround <br>CONFI=
-G_IWMMXT=3Dy<br><br>thanks<br><br><div class=3D"gmail_quote">2011/5/6 Gille=
-s Chanteperdrix <span dir=3D"ltr">&lt;<a href=3D"mailto:gilles.chanteperdri=
-x@domain.hid">gilles.chanteperdrix@xenomai.org</a>&gt;</span><br>
-<blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1p=
-x #ccc solid;padding-left:1ex;"><div><div></div><div class=3D"h5">On 05/06/=
-2011 05:13 PM, Aurele Traynard wrote:<br>
-&gt; hello all,<br>
-&gt;<br>
-&gt; I have a problem whith user-space support :<br>
-&gt; I compile a program with makefile of Xenomai and when i want to use it=
- this<br>
-&gt; apear :<br>
-&gt;<br>
-&gt; Inconsistency detected by ld.so: dl-deps.c: 622: _dl_map_object_deps:<=
-br>
-&gt; Assertion`nlist &gt; 1&#39; failed!<br>
-&gt;<br>
-&gt; compilation process :<br>
-&gt;<br>
-&gt; DESTDIR=3D/home/aurele/workdir/test/test_noyau/buildroot-2010.08/outpu=
-t/staging<br>
-&gt; make<br>
-&gt; XENO=3D/home/aurele/workdir/test/test_noyau/buildroot-2010.08/output/s=
-taging/usr/xenomai/<br>
-&gt; arm-none-linux-gnueabi-gcc<br>
-&gt; -I/home/aurele/workdir/test/test_noyau/buildroot-2010.08/output/stagin=
-g/usr/xenomai/include<br>
-&gt; -D_GNU_SOURCE -D_REENTRANT -Wall -pipe -D__XENO__ =A0 -lnative<br>
-&gt; -L/home/aurele/workdir/test/test_noyau/buildroot-2010.08/output/stagin=
-g/usr/xenomai/lib<br>
-&gt; -lxenomai -lpthread =A0-O -Xlinker -rpath -Xlinker<br>
-&gt; /home/aurele/workdir/test/test_noyau/buildroot-2010.08/output/staging/=
-usr/xenomai/lib<br>
-&gt; playing_led_rt.c =A0 -o playing_led_rt<br>
-&gt; playing_led_rt.c: In function &#39;main&#39;:<br>
-&gt; playing_led_rt.c:126:2: warning: format &#39;%08X&#39; expects type &#=
-39;unsigned int&#39;,<br>
-&gt; but argument 3 has type &#39;long unsigned int&#39;<br>
-&gt; playing_led_rt.c:128:2: warning: format &#39;%08X&#39; expects type &#=
-39;unsigned int&#39;,<br>
-&gt; but argument 2 has type &#39;long unsigned int&#39;<br>
-&gt;<br>
-&gt; I have made two programs one with rt_tasks but he don&#39;t work, so s=
-upress all<br>
-&gt; real-time call and it doesn&#39;t work again with the same error.<br>
-&gt;<br>
-&gt; does anyone have a way to go?<br>
-&gt; thanks for reply<br>
-<br>
-</div></div>This looks like a bug in the context switch routine. How is<br>
-CONFIG_IWMMXT in your kernel configuration?<br>
-<br>
-<br>
---<br>
-<font color=3D"#888888"> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
-=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0=
- =A0Gilles.<br>
-</font></blockquote></div><br>
+> From: Gilles Chanteperdrix [mailto:gilles.chanteperdrix@xenomai.org]
+> Sent: Thursday, May 05, 2011 10:15 AM
+> ...
+> You can provide the readv implementation, and implement read in terms =
+of
+> readv by passing an iovec with just one buffer. Please also try and =
+make
+> the code a bit more readable than in the previous patch, with only one
+> statement and one "if" by line.
 
---0016e645b94847b2b004a2d2596c--
+Hello,
+
+thank you for your suggestions. I now remade the patch accordingly. If =
+you have further improvements to suggest, please let me know.
+
+--=20
+Dietmar
+
+--------------------------------------------------------
+manroland AG
+Vorsitzender des Aufsichtsrates: Hanno C. Fiedler
+Vorstand: Gerd Finkbeiner (Vorsitzender), Dr. Ingo Koch, Dr. Markus =
+Rall, Paul Steidle  =20
+Sitz der Gesellschaft: Offenbach am Main, Registergericht: Amtsgericht =
+Offenbach HRB-Nr. 42592
+USt-Ident-Nr. DE 250200933
+
+------_=_NextPart_001_01CC0E1B.CC8A1362
+Content-Type: application/octet-stream;
+	name="pipe.diff"
+Content-Transfer-Encoding: base64
+Content-Description: pipe.diff
+Content-Disposition: attachment;
+	filename="pipe.diff"
+
+SW5kZXg6IHBpcGUuYwo9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
+PT09PT09PT09PT09PT09PT09PT09PT09Ci0tLSBwaXBlLmMJKHJldmlzaW9uIDM1NTUpCisrKyBw
+aXBlLmMJKHJldmlzaW9uIDM1NzcpCkBAIC03MjksOCArNzI5LDggQEAKIAlyZXR1cm4gMDsKIH0K
+IAotc3RhdGljIHNzaXplX3QgeG5waXBlX3JlYWQoc3RydWN0IGZpbGUgKmZpbGUsCi0JCQkgICBj
+aGFyICpidWYsIHNpemVfdCBjb3VudCwgbG9mZl90ICpwcG9zKQorc3RhdGljIHNzaXplX3QgeG5w
+aXBlX3JlYWR2KHN0cnVjdCBmaWxlICpmaWxlLCBjb25zdCBzdHJ1Y3QgaW92ZWMgKmlvdmVjLAor
+CQkJICAgIHVuc2lnbmVkIGxvbmcgbnJfc2VncywgbG9mZl90ICpwcG9zKQogewogCXN0cnVjdCB4
+bnBpcGVfc3RhdGUgKnN0YXRlID0gZmlsZS0+cHJpdmF0ZV9kYXRhOwogCWludCBzaWdwZW5kaW5n
+LCBlcnIgPSAwOwpAQCAtNzM5LDkgKzczOSw4IEBACiAJc3RydWN0IHhuaG9sZGVyICpoOwogCXNz
+aXplX3QgcmV0OwogCXNwbF90IHM7Ci0KLQlpZiAoIWFjY2Vzc19vayhWRVJJRllfV1JJVEUsIGJ1
+ZiwgY291bnQpKQotCQlyZXR1cm4gLUVGQVVMVDsKKwljaGFyICpidWY7CisJc2l6ZV90IGNvdW50
+ID0gMDsKIAogCXhubG9ja19nZXRfaXJxc2F2ZSgmbmtsb2NrLCBzKTsKIApAQCAtNzgyLDggKzc4
+MSwyMSBAQAogCSAqLwogCiAJaW5ieXRlcyA9IDA7CisJcmV0ID0gMDsKIAogCWZvciAoOzspIHsK
+KwkJaWYgKGluYnl0ZXMgPT0gY291bnQgJiYgbnJfc2VncykgeworCQkJYnVmID0gaW92ZWMtPmlv
+dl9iYXNlLCBjb3VudCA9IGlvdmVjKystPmlvdl9sZW47CisJCQktLW5yX3NlZ3M7CisJCQlpbmJ5
+dGVzID0gMDsKKwkJCWlmICghYWNjZXNzX29rKFZFUklGWV9XUklURSwgYnVmLCBjb3VudCkpIHsK
+KwkJCQllcnIgPSAtRUZBVUxUOworCQkJCWJyZWFrOworCQkJfQorCisJCQljb250aW51ZTsKKwkJ
+fQorCiAJCW5ieXRlcyA9IHhucGlwZV9tX3NpemUobWgpIC0geG5waXBlX21fcmRvZmYobWgpOwog
+CiAJCWlmIChuYnl0ZXMgKyBpbmJ5dGVzID4gY291bnQpCkBAIC04MDcsMTAgKzgxOSwxMCBAQAog
+CiAJCWluYnl0ZXMgKz0gbmJ5dGVzOwogCQl4bnBpcGVfbV9yZG9mZihtaCkgKz0gbmJ5dGVzOwor
+CQlyZXQgKz0gbmJ5dGVzOwogCX0KIAotCXN0YXRlLT5pb25yZCAtPSBpbmJ5dGVzOwotCXJldCA9
+IGluYnl0ZXM7CisJc3RhdGUtPmlvbnJkIC09IHJldDsKIAogCWlmICh4bnBpcGVfbV9zaXplKG1o
+KSA+IHhucGlwZV9tX3Jkb2ZmKG1oKSkKIAkJcHJlcGVuZHEoJnN0YXRlLT5vdXRxLCAmbWgtPmxp
+bmspOwpAQCAtODM3LDYgKzg0OSwxMyBAQAogCXJldHVybiBlcnIgPyA6IHJldDsKIH0KIAorc3Rh
+dGljIHNzaXplX3QgeG5waXBlX3JlYWQoc3RydWN0IGZpbGUgKmZpbGUsCisJCQkgICBjaGFyICpi
+dWYsIHNpemVfdCBjb3VudCwgbG9mZl90ICpwcG9zKQoreworCXN0cnVjdCBpb3ZlYyBpb3YgPSB7
+IC5pb3ZfYmFzZSA9IGJ1ZiwgLmlvdl9sZW4gPSBjb3VudCB9OworCXJldHVybiB4bnBpcGVfcmVh
+ZHYoZmlsZSwgJmlvdiwgMSwgcHBvcyk7Cit9CisKIHN0YXRpYyBzc2l6ZV90IHhucGlwZV93cml0
+ZShzdHJ1Y3QgZmlsZSAqZmlsZSwKIAkJCSAgICBjb25zdCBjaGFyICpidWYsIHNpemVfdCBjb3Vu
+dCwgbG9mZl90ICpwcG9zKQogewpAQCAtMTA2MCw2ICsxMDc5LDcgQEAKIHN0YXRpYyBzdHJ1Y3Qg
+ZmlsZV9vcGVyYXRpb25zIHhucGlwZV9mb3BzID0gewogCS5vd25lciA9IFRISVNfTU9EVUxFLAog
+CS5yZWFkID0geG5waXBlX3JlYWQsCisJLnJlYWR2ID0geG5waXBlX3JlYWR2LAogCS53cml0ZSA9
+IHhucGlwZV93cml0ZSwKIAkucG9sbCA9IHhucGlwZV9wb2xsLAogCS5pb2N0bCA9IHhucGlwZV9p
+b2N0bCwK
+
+------_=_NextPart_001_01CC0E1B.CC8A1362--
+
+
 
