@@ -1,14 +1,14 @@
-Content-class: urn:content-classes:message
+Message-ID: <4DC82CD1.4030605@domain.hid>
+Date: Mon, 09 May 2011 20:05:05 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Date: Mon, 9 May 2011 10:36:46 +0200
-Message-ID: <2A5271086BF5EA4A891F3804135DEA82069C8430@domain.hid>
-References: <2A5271086BF5EA4A891F3804135DEA82069C8336@domain.hid>
-	<4DC43293.8000907@domain.hid>
-From: "BONOS Antonis" <antonis.bonos@domain.hid>
-Subject: Re: [Xenomai-help] Installation problem
+References: <BANLkTi=qj7YfrFvQJPPZQbLjx=QSJqWzng@domain.hid>	<4DC430AE.20206@domain.hid>
+	<BANLkTik9LH8WO8uTvWz+msGt=L61ZagJyg@domain.hid>
+In-Reply-To: <BANLkTik9LH8WO8uTvWz+msGt=L61ZagJyg@domain.hid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] user-space support : Inconsistency detected by
+ ld.so
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -18,53 +18,22 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Aurele Traynard <aurele.traynard@domain.hid>
+Cc: Xenomai help <xenomai@xenomai.org>
+
+On 05/09/2011 08:57 AM, Aurele Traynard wrote:
+> Hello
+> 
+> it is activate... is it bad or is there a workaround
+> CONFIG_IWMMXT=y
+
+I am unable to find the exact post, but at some point in the past around
+august 2009, we commented out the code in Xenomai context switch, which
+takes care of IWMMXT. This means that real-time tasks should run without
+using iwmmxt. And that Xenomai should be compiled with
+CONFIG_XENO_HW_FPU off.
 
 
- Thanks for your help
-
->> Hello,
->>=20
->> I'm compiling a 2.6.35.9 kernel patched with xenomai 2.5.6, on a Core
-
->> I7 PC, and experiencing problems running xeno-test, and my own real=20
->> time programs.
->>=20
->> I attached the .config file I used for the kernel, the dmesg log, and
-
->> xeno-test result ( redacted because /proc/ipipe/Linux was quite=20
->> uninterresting).
->> I have a problem with theses errors, for instance with xeno-test:=20
->>=20
->> ...
->> running: ./run -- -sh -T 120 -t0 # latency ....
->> Xenomai: native skin or CONFIG_XENO_OPT_PERVASIVE disabled.
->> (modprobe xeno_native?)
->> ERROR: Module xeno_timerbench does not exist in /proc/modules
->> ERROR: Module xeno_rtdm does not exist in /proc/modules
->> ERROR: Module xeno_native does not exist in /proc/modules
->> ERROR: Module xeno_nucleus does not exist in /proc/modules
-
->> I'm quite stuck with this issue, I've tried searching on the net, but
-
->> I'm unable to find a pr <<.config>> o <<dmesg.log>> b=20
->> <<xeno-test.log>> lem similar to this one
-
->Could you try configuring xenomai user-space support with
---enable-x86-sep if you have not done it yet? Or on the=20
-> contrary disable it if it is enabled?
-
-I understand you're refering to the way to configure the xenomai
-compilation.
-I tried with /.configure --enable-x86-sep  and without, and I still have
-the same behaviour.
-
-I'm currently trying to compile using the configuration recommanded in
-this white paper from intel=20
-http://embedded.communities.intel.com/servlet/JiveServlet/download/4435-
-1248/xeno_intel.pdf
-
-
-Regards
+-- 
+                                                                Gilles.
 
