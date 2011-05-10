@@ -1,54 +1,172 @@
 MIME-Version: 1.0
-In-Reply-To: <4DCB8544.60705@domain.hid>
-References: <BANLkTimLY=RNyzZi7zm_Ln8iLDriEHPBUw@domain.hid>
-	<4DCA45CA.1020208@domain.hid>
-	<BANLkTim7dgHQn4seiQ+t2kSg0CHEq2oydA@mail.gmail.com>
-	<4DCB8544.60705@domain.hid>
-Date: Thu, 12 May 2011 18:22:31 +0800
-Message-ID: <BANLkTi=KQMr=APNq_JrTPcQSvSx--A2+Sw@domain.hid>
-From: AKS <aungkyas@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Subject: Re: [Adeos-main] building user space xenomai 2.5.6 for ARM
-Reply-To: aungkyas@domain.hid
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/options/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
+In-Reply-To: <4DC82CD1.4030605@domain.hid>
+References: <BANLkTi=qj7YfrFvQJPPZQbLjx=QSJqWzng@domain.hid>
+	<4DC430AE.20206@domain.hid>
+	<BANLkTik9LH8WO8uTvWz+msGt=L61ZagJyg@domain.hid>
+	<4DC82CD1.4030605@domain.hid>
+Date: Tue, 10 May 2011 15:36:47 +0200
+Message-ID: <BANLkTimnHqD3NqCcqaR3ZRsJyFjX3HTrWg@domain.hid>
+From: Aurele Traynard <aurele.traynard@domain.hid>
+Content-Type: multipart/alternative; boundary=0016e645b948363d6404a2ec0cd1
+Subject: Re: [Xenomai-help] user-space support : Inconsistency detected by
+	ld.so
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Adeos <adeos-main@gna.org>
+Cc: Xenomai help <xenomai@xenomai.org>
 
-Hi
+--0016e645b948363d6404a2ec0cd1
+Content-Type: text/plain; charset=ISO-8859-1
 
-Thanks for the tips and cheers.
+I made a kernel without IWMMXT and it works fine
 
-On 5/12/11, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote:
-> On 05/12/2011 02:37 AM, AKS wrote:
->> Hi Gilles
->>
->> Thanks and how to configure so that thumb will not be included.
->>
->> I checked ./configure --help | grep -i thumb
->>
->> But I did not see any hint how to omit thum2.
->>
->> I can native compile kernel, drivers and user space applications on
->> target. But xenomai client is an issue. Please advise. Thanks!
+thanks a lot!
+
+2011/5/9 Gilles Chanteperdrix
+
+> On 05/09/2011 08:57 AM, Aurele Traynard wrote:
+> > Hello
+> >
+> > it is activate... is it bad or is there a workaround
+> > CONFIG_IWMMXT=y
 >
-> I never had this issue, so, I do not know how to get a toolchain
-> compiling for thumb by default to compile for the arm instruction set.
-> What you can do, however, is to use a different toolchain.
+> I am unable to find the exact post, but at some point in the past around
+> august 2009, we commented out the code in Xenomai context switch, which
+> takes care of IWMMXT. This means that real-time tasks should run without
+> using iwmmxt. And that Xenomai should be compiled with
+> CONFIG_XENO_HW_FPU off.
 >
-> See crosstool-ng is you want to build your own. Or use one which does
-> not compile for thumb. Codesourcery for instance, or a linux distribution.
->
-> In any case, the Xenomai or Adeos mailing lists are not the best place
-> to get an answer to such question.
 >
 > --
 >                                                                 Gilles.
 >
+2011/5/6 Gilles Chanteperdrix
+This looks like a bug in the context switch routine. How is
+CONFIG_IWMMXT in your kernel configuration?
+
+On 05/06/2011 05:13 PM, Aurele Traynard wrote:
+> hello all,
+>
+> I have a problem whith user-space support :
+> I compile a program with makefile of Xenomai and when i want to use it
+this
+> apear :
+>
+> Inconsistency detected by ld.so: dl-deps.c: 622: _dl_map_object_deps:
+> Assertion`nlist > 1' failed!
+>
+> compilation process :
+>
+> DESTDIR=/home/aurele/workdir/
+test/test_noyau/buildroot-2010.08/output/staging
+> make
+>
+XENO=/home/aurele/workdir/test/test_noyau/buildroot-2010.08/output/staging/usr/xenomai/
+> arm-none-linux-gnueabi-gcc
+>
+-I/home/aurele/workdir/test/test_noyau/buildroot-2010.08/output/staging/usr/xenomai/include
+> -D_GNU_SOURCE -D_REENTRANT -Wall -pipe -D__XENO__   -lnative
+>
+-L/home/aurele/workdir/test/test_noyau/buildroot-2010.08/output/staging/usr/xenomai/lib
+> -lxenomai -lpthread  -O -Xlinker -rpath -Xlinker
+>
+/home/aurele/workdir/test/test_noyau/buildroot-2010.08/output/staging/usr/xenomai/lib
+> playing_led_rt.c   -o playing_led_rt
+> playing_led_rt.c: In function 'main':
+> playing_led_rt.c:126:2: warning: format '%08X' expects type 'unsigned
+int',
+> but argument 3 has type 'long unsigned int'
+> playing_led_rt.c:128:2: warning: format '%08X' expects type 'unsigned
+int',
+> but argument 2 has type 'long unsigned int'
+>
+> I have made two programs one with rt_tasks but he don't work, so supress
+all
+> real-time call and it doesn't work again with the same error.
+>
+> does anyone have a way to go?
+> thanks for reply
+
+--0016e645b948363d6404a2ec0cd1
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+I made a kernel without IWMMXT and it works fine<br><br>thanks a lot!<br><b=
+r><div class=3D"gmail_quote">2011/5/9 Gilles Chanteperdrix<br><blockquote c=
+lass=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;=
+padding-left:1ex;">
+<div class=3D"im">On 05/09/2011 08:57 AM, Aurele Traynard wrote:<br>
+&gt; Hello<br>
+&gt;<br>
+&gt; it is activate... is it bad or is there a workaround<br>
+&gt; CONFIG_IWMMXT=3Dy<br>
+<br>
+</div>I am unable to find the exact post, but at some point in the past aro=
+und<br>
+august 2009, we commented out the code in Xenomai context switch, which<br>
+takes care of IWMMXT. This means that real-time tasks should run without<br=
+>
+using iwmmxt. And that Xenomai should be compiled with<br>
+CONFIG_XENO_HW_FPU off.<br>
+<br>
+<br>
+--<br>
+<font color=3D"#888888"> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
+=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0=
+ =A0Gilles.<br>
+</font></blockquote></div>2011/5/6 Gilles Chanteperdrix<span dir=3D"ltr"></=
+span><br>This looks like a bug in the context switch routine. How is<br>
+CONFIG_IWMMXT in your kernel configuration?<br><br>On 05/06/2011 05:13 PM, =
+Aurele Traynard wrote:<br>
+&gt; hello all,<br>
+&gt;<br>
+&gt; I have a problem whith user-space support :<br>
+&gt; I compile a program with makefile of Xenomai and when i want to use it=
+ this<br>
+&gt; apear :<br>
+&gt;<br>
+&gt; Inconsistency detected by ld.so: dl-deps.c: 622: _dl_map_object_deps:<=
+br>
+&gt; Assertion`nlist &gt; 1&#39; failed!<br>
+&gt;<br>
+&gt; compilation process :<br>
+&gt;<br>
+&gt; DESTDIR=3D/home/aurele/workdir/<div class=3D"im">test/test_noyau/build=
+root-2010.08/output/staging<br>
+&gt; make<br>
+&gt; XENO=3D/home/aurele/workdir/test/test_noyau/buildroot-2010.08/output/s=
+taging/usr/xenomai/<br>
+&gt; arm-none-linux-gnueabi-gcc<br>
+&gt; -I/home/aurele/workdir/test/test_noyau/buildroot-2010.08/output/stagin=
+g/usr/xenomai/include<br>
+&gt; -D_GNU_SOURCE -D_REENTRANT -Wall -pipe -D__XENO__ =A0 -lnative<br>
+&gt; -L/home/aurele/workdir/test/test_noyau/buildroot-2010.08/output/stagin=
+g/usr/xenomai/lib<br>
+&gt; -lxenomai -lpthread =A0-O -Xlinker -rpath -Xlinker<br>
+&gt; /home/aurele/workdir/test/test_noyau/buildroot-2010.08/output/staging/=
+usr/xenomai/lib<br>
+&gt; playing_led_rt.c =A0 -o playing_led_rt<br>
+&gt; playing_led_rt.c: In function &#39;main&#39;:<br>
+&gt; playing_led_rt.c:126:2: warning: format &#39;%08X&#39; expects type &#=
+39;unsigned int&#39;,<br>
+&gt; but argument 3 has type &#39;long unsigned int&#39;<br>
+&gt; playing_led_rt.c:128:2: warning: format &#39;%08X&#39; expects type &#=
+39;unsigned int&#39;,<br>
+&gt; but argument 2 has type &#39;long unsigned int&#39;<br>
+&gt;<br>
+&gt; I have made two programs one with rt_tasks but he don&#39;t work, so s=
+upress all<br>
+&gt; real-time call and it doesn&#39;t work again with the same error.<br>
+&gt;<br>
+&gt; does anyone have a way to go?<br>
+&gt; thanks for reply</div>
+
+--0016e645b948363d6404a2ec0cd1--
 
