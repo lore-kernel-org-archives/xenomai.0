@@ -1,10 +1,11 @@
-Message-ID: <4DDA66CF.2010307@domain.hid>
-Date: Mon, 23 May 2011 15:53:19 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <4DC96142.7020008@domain.hid>
+Date: Tue, 10 May 2011 18:01:06 +0200
+From: Roberto Bielli <roberto.bielli@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-15
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] [PULL] native: Fix msendq fastlock leakage
+Subject: [Xenomai-core] SWITCH TASK TO SECONDARY MODE DURING GDB SESSION
+	DOESN'T WORK
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -13,104 +14,117 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Xenomai core <Xenomai-core@domain.hid>
+To: xenomai@xenomai.org
 
-The following changes since commit aec30a2543afa18fa7832deee85e187b0faeb1f0:
+Hi,
 
-  xeno-test: fix reference to @XENO_TEST_DIR@ (2011-05-15 21:20:41 +0200)
+i try the next C code in a gdb session on a ARM target with brakpoints 
+and i found a strange behaviour.
+I expected that the task 'tsk1' never execute instead if i put a 
+breakpoint on the instruction 'varInt += 1;' i see that it's executed.
+I sospect that there is this behavior:
 
-are available in the git repository at:
-  git://git.xenomai.org/xenomai-jki.git for-upstream
+1. i start gdb with application. The application is not running.
+2. i enable the breakpoint on the instruction 'err = 
+rt_task_start(&tsk1, &test_tsk1, NULL );'
+3. i enable the breakpoint on the instruction 'varInt += 1;' in tsk1
+4. run the application that stop on the instruction 'err = 
+rt_task_start(&tsk1, &test_tsk1, NULL );'
+so the task is in secondary mode for the breakpoint hit if i understand 
+correctly .
+5. i make a single step and do the rt_task_start in main, so i see that 
+i break in the task on the instruction 'varInt += 1;' in tsk1
+this is strange because main has shadow and has a priority equal o 99, 
+instead  tsk1 has a priority equal to 49.
+6, the program execute the instruction  'varInt += 1;' and then return 
+to main.
+7 then the main has always the control.
 
-Jan Kiszka (1):
-      native: Fix msendq fastlock leakage
+The question is:
+Why the priority is not respected ? I think this. Maybe the main is in 
+secondary mode for the breakpoint and when make a rt_task_create the new 
+task is in primary
+mode for the initial instruction. Then receive the signal ( verified 
+with rt_task_set_mode(0, T_WARNSW, NULL); ) and switch to secondary mode 
+but initially the task tsk is in primary mode and execute before main.
 
- include/native/task.h    |    5 +++++
- ksrc/skins/native/task.c |   13 ++++++-------
- 2 files changed, 11 insertions(+), 7 deletions(-)
+Is a known problem ?
 
-------8<------
+Best Regards
 
-When a native task terminates without going through rt_task_delete, we
-leaked the fastlock so far. Fix it by moving the release into the delete
-hook. As the ppd is already invalid at that point, we have to save the
-heap address in the task data structure.
 
-Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
----
- include/native/task.h    |    5 +++++
- ksrc/skins/native/task.c |   13 ++++++-------
- 2 files changed, 11 insertions(+), 7 deletions(-)
 
-diff --git a/include/native/task.h b/include/native/task.h
-index 519aaec..0d44ccf 100644
---- a/include/native/task.h
-+++ b/include/native/task.h
-@@ -22,6 +22,7 @@
- #ifndef _XENO_TASK_H
- #define _XENO_TASK_H
- 
-+#include <nucleus/heap.h>
- #include <nucleus/sched.h>
- #include <native/types.h>
- 
-@@ -166,6 +167,10 @@ typedef struct rt_task {
-     xnsynch_t mrecv,
- 	      msendq;
- 
-+#ifdef CONFIG_XENO_FASTSYNCH
-+	xnheap_t *msendq_fastlock_heap;
-+#endif /* CONFIG_XENO_FASTSYNCH */
-+
-     int flowgen;		/* !< Flow id. generator. */
- #endif /* CONFIG_XENO_OPT_NATIVE_MPS */
- 
-diff --git a/ksrc/skins/native/task.c b/ksrc/skins/native/task.c
-index 1192509..6970363 100644
---- a/ksrc/skins/native/task.c
-+++ b/ksrc/skins/native/task.c
-@@ -79,6 +79,9 @@ static void __task_delete_hook(xnthread_t *thread)
- 	   hooks are done. */
- 	xnsynch_destroy(&task->mrecv);
- 	xnsynch_destroy(&task->msendq);
-+#ifdef CONFIG_XENO_FASTSYNCH
-+	xnheap_free(task->msendq_fastlock_heap, task->msendq.fastlock);
-+#endif /* CONFIG_XENO_FASTSYNCH */
- #endif /* CONFIG_XENO_OPT_NATIVE_MPS */
- 
- 	xnsynch_destroy(&task->safesynch);
-@@ -301,7 +304,8 @@ int rt_task_create(RT_TASK *task,
- #ifdef CONFIG_XENO_OPT_NATIVE_MPS
- #ifdef CONFIG_XENO_FASTSYNCH
- 	/* Allocate lock memory for in-kernel use */
--	fastlock = xnheap_alloc(&xnsys_ppd_get(0)->sem_heap,
-+	task->msendq_fastlock_heap = &xnsys_ppd_get(0)->sem_heap;
-+	fastlock = xnheap_alloc(task->msendq_fastlock_heap,
- 				sizeof(*fastlock));
- 	if (fastlock == NULL)
- 		return -ENOMEM;
-@@ -328,7 +332,7 @@ int rt_task_create(RT_TASK *task,
- 	err = xnthread_register(&task->thread_base, name ? task->rname : "");
- 	if (err) {
- #if defined(CONFIG_XENO_OPT_NATIVE_MPS) && defined(CONFIG_XENO_FASTSYNCH)
--		xnheap_free(&xnsys_ppd_get(0)->sem_heap, fastlock);
-+		xnheap_free(task->msendq_fastlock_heap, fastlock);
- #endif
- 		xnpod_delete_thread(&task->thread_base);
- 	} else
-@@ -640,11 +644,6 @@ int rt_task_delete(RT_TASK *task)
- 	if (err)
- 		goto unlock_and_exit;
- 
--#if defined(CONFIG_XENO_OPT_NATIVE_MPS) && defined(CONFIG_XENO_FASTSYNCH)
--	xnheap_free(&xnsys_ppd_get(0)->sem_heap,
--		    task->msendq.fastlock);
--#endif
--
- 	/* Does not return if task is current. */
- 	xnpod_delete_thread(&task->thread_base);
- 
+CODE---------------------------------
+
+
+int varInt = 0;
+RT_TASK tsk1, tskMain;
+
+int main (int argc, char *argv[])
+{
+     int err;
+     mlockall(MCL_CURRENT|MCL_FUTURE);
+
+     rt_task_shadow(&tskMain, "main", 99, 0);
+
+     err  = rt_task_create( &tsk1, "tsk1", 0, 49, T_FPU );
+     err = rt_task_start(&tsk1, &test_tsk1, NULL );
+
+     for (;;)
+     {
+         if( varInt > 1 )
+             break;
+     }
+
+
+     printf("Task started\n");
+
+     return 0;
+}
+
+void test_tsk1( void * args )
+{
+
+     for( ;;)
+     {
+         varInt += 1;
+         rt_task_sleep( 100000000 );
+     }
+}
+
 -- 
-1.7.1
++------------------------------------------------------------------------------------------------+
+							
+Roberto Bielli
+Sviluppo Software					
+Axel S.r.l.					
+							
+Via Del Cannino, 3 				
+21020 Crosio Della Valle			
+Varese - Italy					
+							
+Telefono: +39 0332 949600			
+Fax:      +39 0332 969315			
+							
+E-mail:   roberto.bielli@domain.hid	
+Web Site: www.axelsw.it
+
++------------------------------------------------------------------------------------------------+
+
+Si precisa che le informazioni contenute in questo messaggio sono riservate e ad uso esclusivo del destinatario.
+Qualora il messaggio in parola Le fosse pervenuto per errore, La preghiamo di eliminarlo senza copiarlo e di non inoltrarlo a terzi,
+dandocene gentilmente comunicazione. Grazie.
+Informativa sul trattamento dei dati personali (D. Lgs. 196/2003).
+I dati utilizzati per la spedizione del presente messaggio sono utilizzati da Axel S.r.l., titolare del trattamento,
+per l'invio delle comunicazioni dei diversi settori aziendali, non essendo autorizzata la divulgazione a terzi.
+Potrete rivolgere alla seguente mail richieste di verifica, rettifica o cancellazione dei Vostri dati: info@domain.hid
+
+This e-mail and any attachments is confidential and may contain privileged information
+intended for the addressee(s) only. Dissemination, copying, printing or use by anybody
+else is unauthorised. If you are not the intended recipient,
+please delete this message and any attachments and advise the sender
+by return e-mail.Thank you.  			
+							
++------------------------------------------------------------------------------------------------+
+
 
