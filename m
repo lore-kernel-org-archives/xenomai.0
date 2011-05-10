@@ -1,12 +1,12 @@
-Message-ID: <4DC976C0.6000506@domain.hid>
-Date: Tue, 10 May 2011 10:32:48 -0700
-From: Thomas Lockhart <Thomas.Lockhart@domain.hid>
+From: Wolfgang Denk <wd@domain.hid>
 MIME-Version: 1.0
+Content-type: text/plain; charset=ISO-8859-1
+Content-transfer-encoding: 8bit
+In-reply-to: <201105101823.50226.lux-integ@domain.hid>
 References: <201105101823.50226.lux-integ@domain.hid>
-In-Reply-To: <201105101823.50226.lux-integ@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] preferred  uid?
+Date: Tue, 10 May 2011 20:20:39 +0200
+Message-Id: <20110510182039.CF301D6BE23@domain.hid>
+Subject: Re: [Xenomai-help] preferred uid?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -19,23 +19,30 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: luxInteg <lux-integ@domain.hid>
 Cc: Xenomai help <xenomai@xenomai.org>
 
-luxInteg wrote:
-> greetings
->
+Dear luxInteg,
+
+In message <201105101823.50226.lux-integ@domain.hid> you wrote:
+> 
 > I normally  compile stuff as an ordinary user,  but   I noticed in this area   
 > people often compile as root as  kernel  modules are involved.   I note 
 > xenomai can be compiled either as user or root so  is there a preferred way ?
->   
-The patched kernel and fundamental Xenomai kernel modules must be 
-installed and loaded as root, but can in principle be built by any user. 
-The userland Xenomai libraries could be built by any user but (for my 
-systems anyway) are installed in areas requiring root permissions. Code 
-you build yourself on top of userland Xenomai can be built by any user 
-(this is what I do), but must be run with a subset of root permissions 
-to allow setting thread priorities etc.
 
-hth
+You should incorporate the rule to always work as normal user only,
+and only in the very few cases where you really need root permissions
+(like when installing code into system direcotries or loading kernel
+modules) you should use "sudo" or similar.
 
-                                       - Tom
 
+Short answer: all compilations and all other building of sowtare
+should always be done as normal user only, and never ever as root.
+
+Best regards,
+
+Wolfgang Denk
+
+-- 
+DENX Software Engineering GmbH,     MD: Wolfgang Denk & Detlev Zundel
+HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
+Phone: (+49)-8142-66989-10 Fax: (+49)-8142-66989-80 Email: wd@domain.hid
+Of course there's no reason for it, it's just our policy.
 
