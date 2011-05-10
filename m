@@ -1,10 +1,10 @@
-Message-ID: <12fd55445c8.sdiani@domain.hid>
-Date: Mon, 9 May 2011 17:16:00 +0200 (CEST)
+Message-ID: <12fd9d1aac8.sdiani@domain.hid>
+Date: Tue, 10 May 2011 14:11:27 +0200 (CEST)
 From: "sdiani@domain.hid" <sdiani@domain.hid>
 Mime-Version: 1.0
 Content-Type: multipart/alternative; 
-	boundary="----=_Part_24961_7693636.1304954160591"
-Subject: [Adeos-main] R: Re:  Adeos for PowerPc 2.6.29.4-64 bit
+	boundary="----=_Part_30241_12640927.1305029487308"
+Subject: [Adeos-main] R:  R: Re:  Adeos for PowerPc 2.6.29.4-64 bit
 Reply-To: "sdiani@domain.hid" <sdiani@domain.hid>
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/options/adeos-main>,
@@ -17,9 +17,23 @@ List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 To: rpm@xenomai.org
 Cc: adeos-main@gna.org
 
-------=_Part_24961_7693636.1304954160591
+------=_Part_30241_12640927.1305029487308
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
+
+It seems working, it worked for 1 hour without freezing
+Now i want to stress the kernel a bit.
+
+Thank's a lot
+
+Sergio
+
+----Messaggio originale----
+Da: sdiani@domain.hid
+Data: 9-mag-2011 17.16
+A: <rpm@xenomai.org>
+Cc: <adeos-main@gna.org>
+Ogg: [Adeos-main] R: Re: Adeos for PowerPc 2.6.29.4-64 bit
 
 Tonight I try it and I will tell You
 
@@ -72,11 +86,18 @@ Philippe.
 
 
 
-------=_Part_24961_7693636.1304954160591
+
+
+------=_Part_30241_12640927.1305029487308
 Content-Type: text/html;charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Tonight I try it and I will&nbsp;tell You<BR><BR>Thanks<BR><BR>Sergio<BR>
+It seems working,&nbsp;it worked for 1 hour without freezing<BR>Now i want =
+to stress the kernel a bit.<BR><BR>Thank's a lot<BR><BR>Sergio<BR>
+<BLOCKQUOTE>----Messaggio originale----<BR>Da: sdiani@domain.hid<BR>Data: 9-m=
+ag-2011 17.16<BR>A: &lt;rpm@xenomai.org&gt;<BR>Cc: &lt;adeos-main@gna.org&g=
+t;<BR>Ogg: [Adeos-main] R: Re: Adeos for PowerPc 2.6.29.4-64 bit<BR><BR>Ton=
+ight I try it and I will&nbsp;tell You<BR><BR>Thanks<BR><BR>Sergio<BR>
 <BLOCKQUOTE>----Messaggio originale----<BR>Da: rpm@xenomai.org<BR>Data: 4-m=
 ag-2011 16.44<BR>A: "sdiani@domain.hid"&lt;sdiani@domain.hid&gt;<BR>Cc: &lt;ade=
 os-main@domain.hid&gt;<BR>Ogg: Re: [Adeos-main] Adeos for PowerPc 2.6.29.4-64 =
@@ -105,7 +126,7 @@ ve it ?<BR><BR>The power save code for powermac won't work as is with Adeos=
 vance<BR>&gt; <BR>&gt; Sergio<BR>&gt; _____________________________________=
 __________<BR>&gt; Adeos-main mailing list<BR>&gt; Adeos-main@domain.hid<BR>&g=
 t; https://mail.gna.org/listinfo/adeos-main<BR><BR>-- <BR>Philippe.<BR><BR>=
-<BR><BR></BLOCKQUOTE><BR>
-------=_Part_24961_7693636.1304954160591--
+<BR><BR></BLOCKQUOTE><BR><BR></BLOCKQUOTE><BR>
+------=_Part_30241_12640927.1305029487308--
 
 
