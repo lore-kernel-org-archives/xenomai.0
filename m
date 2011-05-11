@@ -1,12 +1,18 @@
-Message-ID: <4DCA45CA.1020208@domain.hid>
-Date: Wed, 11 May 2011 10:16:10 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4DCA6525.6010401@domain.hid>
+Date: Wed, 11 May 2011 16:29:57 +0600
+From: Alexey Galakhov <agalakhov@domain.hid>
 MIME-Version: 1.0
-References: <BANLkTimLY=RNyzZi7zm_Ln8iLDriEHPBUw@domain.hid>
-In-Reply-To: <BANLkTimLY=RNyzZi7zm_Ln8iLDriEHPBUw@domain.hid>
+References: <4DC2962B.9060802@domain.hid> <4DC299F2.40700@domain.hid>
+	<4DC2A315.8030707@domain.hid> <4DC2ADE1.9000301@domain.hid>
+	<4DC2B06B.9020303@domain.hid> <4DC2B75C.8030503@domain.hid>
+	<4DC2C10C.9080102@domain.hid> <4DC2C411.60109@domain.hid>
+	<4DC2D0C9.3020605@domain.hid> <4DC2DDC6.8090909@domain.hid>
+	<4DC3BF3C.2030405@domain.hid> <4DC3C076.7010203@domain.hid>
+In-Reply-To: <4DC3C076.7010203@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Adeos-main] building user space xenomai 2.5.6 for ARM
+Subject: Re: [Adeos-main] mini2440: ipipe kernel stuck in idle loop after
+ xenomai init
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/options/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -15,48 +21,47 @@ List-Post: <mailto:adeos-main@gna.org>
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-To: aungkyas@domain.hid
-Cc: Adeos <adeos-main@gna.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: adeos-main@gna.org
 
-On 05/11/2011 08:44 AM, AKS wrote:
-> Hi Gilles and other mates
-> 
-> Good day! I would like to ask your help in building user space xenomai.
-> 
-> I have patched Adeos-ipipe-2.6.35.9-arm-1.18-01.patch to omap 2.6.35
-> so that it will work with Xenomai 2.5.6. I have managed to compile the
-> I-piped patched Linux kernel and let the Xenomai running - I have tested
-> on the Linux by dmesg | grep -i I-pipe and dmesg | grep -i Xenomai. And
-> I can ./configure the Xenomai by
-> 
-> ./configure --enable-arm-mach=omap3 --enable-arm-arch=armv7l as the
+On 05/06/2011 03:33 PM, Gilles Chanteperdrix wrote:
+> Ok, so there is a timer interrupt which does not result in reprogramming
+> the timer, all you need to find out is why... Could you print the tsc
+> value for each of these printks?
+> Also, have you tried putting the call to the tsc update function in the
+> acktimer function?
+I did some more investigations and found what actually happens. The call
+to xntimer_next_local_shot does not result in a call to
+rthal_timer_program_shot due to "if (h == NULL)" condition. Does it mean
+empty queue?
 
-You do not need enable-arm-arch, all omap3 have the same architecture,
-so configure takes care of this.
+Xenomai: real-time nucleus v2.5.6 (Wormhole Wizards) loaded.
+rthal_timer_request[non-generic]
+go
+rthal_irq_request 30
+ipipe_virtualize_irq 30 c0066bcc
+rthal_timer_set_oneshot 1
+_mach_set_dec 42187 3035818
+_tsc_update
+xenomai- steal_timer 1
+xntimer_next_local_shot
+xnarch_program_timer_shot 0
+rthal_timer_program_shot 0
+xntimer_tick_aperiodic
+xntimer_next_local_shot
+- return xntimerq_it_begin == NULL
+Xenomai: starting native API services.
+Xenomai: starting POSIX services.
+Xenomai: starting RTDM services.
+_mach_acktimer 0
+xntimer_tick_aperiodic
+xntimer_next_local_shot
+- return xntimerq_it_begin == NULL
+msgmni has been set to 119
+Block layer SCSI generic (bsg) driver version 0.4 loaded (major 253)
+io scheduler noop registered (default)
 
-> kernel returns armv7l when uname -i. But I cannot sudo make install it
-> by native compiling on my target machine. On my host machine which
-> is running Ubuntu 10.10, I can make (after ./configure as stated above)
-> and make install.
-> 
-> But on my target box running omap3 processor with armv7l core - I am
-> using Gumstix - I cannot make or make install.
-> 
-> It exits with error 1, giving me the message as follows
-> 
-> {standard input}: Assembler messages:
-> {standard input}:47: Error: invalid swi expression
-> {standard input}:47: Error: value of 10420290 too large
-> 
-> xxxxx
-> 
-> Then return with Error 1. I am using Ubuntu/Linaro gcc compiler for ARM
-> gcc 4.5.2 and I will be glad if anyone can share experience to fix this issue.
-> Cheers!
+--
+Alex
 
-You are probably compiling for the thumb or thumb2 instruction set. We
-do not support thumb. Compile for ARM. You should also enable EABI.
-
--- 
-					    Gilles.
 
