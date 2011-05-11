@@ -1,6 +1,6 @@
-Message-ID: <4DCA8290.6060105@domain.hid>
-Date: Wed, 11 May 2011 18:35:28 +0600
-From: Alexey Galakhov <agalakhov@domain.hid>
+Message-ID: <4DCB20F0.2080304@domain.hid>
+Date: Thu, 12 May 2011 01:51:12 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <4DC2962B.9060802@domain.hid>
 	<4DC299F2.40700@domain.hid>	<4DC2A315.8030707@domain.hid>
@@ -10,7 +10,8 @@ References: <4DC2962B.9060802@domain.hid>
 	<4DC2DDC6.8090909@domain.hid>	<4DC3BF3C.2030405@domain.hid>
 	<4DC3C076.7010203@domain.hid>	<4DCA6525.6010401@domain.hid>
 	<4DCA69F0.9040104@domain.hid> <4DCA800A.80108@domain.hid>
-In-Reply-To: <4DCA800A.80108@domain.hid>
+	<4DCA8290.6060105@domain.hid>
+In-Reply-To: <4DCA8290.6060105@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Adeos-main] mini2440: ipipe kernel stuck in idle loop after
@@ -23,27 +24,30 @@ List-Post: <mailto:adeos-main@gna.org>
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Alexey Galakhov <agalakhov@domain.hid>
 Cc: adeos-main@gna.org
 
-On 05/11/2011 06:24 PM, Gilles Chanteperdrix wrote:
-> Try this:
-> diff --git a/ksrc/arch/arm/hal.c b/ksrc/arch/arm/hal.c
-> index 2ca0d6c..534f97f 100644
-> --- a/ksrc/arch/arm/hal.c
-> +++ b/ksrc/arch/arm/hal.c
-> @@ -322,7 +322,7 @@ int rthal_timer_request(void (*handler)(void), int cpu)
->  
->  	rthal_timer_set_oneshot(1);
->  
-> -	return 0;
-> +	return 1000000000UL / HZ;
->  }
-Seems to be fixed, thanks!
+On 05/11/2011 02:35 PM, Alexey Galakhov wrote:
+> On 05/11/2011 06:24 PM, Gilles Chanteperdrix wrote:
+>> Try this:
+>> diff --git a/ksrc/arch/arm/hal.c b/ksrc/arch/arm/hal.c
+>> index 2ca0d6c..534f97f 100644
+>> --- a/ksrc/arch/arm/hal.c
+>> +++ b/ksrc/arch/arm/hal.c
+>> @@ -322,7 +322,7 @@ int rthal_timer_request(void (*handler)(void), int cpu)
+>>  
+>>  	rthal_timer_set_oneshot(1);
+>>  
+>> -	return 0;
+>> +	return 1000000000UL / HZ;
+>>  }
+> Seems to be fixed, thanks!
+> 
+> I just compared generic and non-generic rthal_timer_request and already
+> tried "return 1" but did not realized that "1G/Hz" is correct return value.
 
-I just compared generic and non-generic rthal_timer_request and already
-tried "return 1" but did not realized that "1G/Hz" is correct return value.
+That is good news, all the Xenomai and I-pipe patches were merged.
 
---
-Alex
+-- 
+                                                                Gilles.
 
