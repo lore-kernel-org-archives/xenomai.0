@@ -1,5 +1,11 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <4DCA52E8.80904@domain.hid>
+Content-Class: urn:content-classes:message
+MIME-Version: 1.0
+Content-Type: text/plain;
+	charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+Date: Wed, 11 May 2011 12:48:11 +0200
+Message-ID: <1183078C0D064042B3AD2D03E3859EF179C957@domain.hid>
+In-Reply-To: <1305105644.2098.17.camel@domain.hid>
 References: <1183078C0D064042B3AD2D03E3859EF174E31A@AREXCH02.mra.roland-man.biz>
 	<1303849652.1961.7.camel@domain.hid>
 	<1183078C0D064042B3AD2D03E3859EF174E3E4@domain.hid>
@@ -15,12 +21,8 @@ References: <1183078C0D064042B3AD2D03E3859EF174E31A@AREXCH02.mra.roland-man.biz>
 	<1183078C0D064042B3AD2D03E3859EF174EA21@domain.hid>
 	<4DC25C69.5020001@domain.hid>
 	<1183078C0D064042B3AD2D03E3859EF174ECBA@AREXCH02.mra.roland-man.biz>
-	<4DCA52E8.80904@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Wed, 11 May 2011 11:20:44 +0200
-Message-ID: <1305105644.2098.17.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
+	<4DCA52E8.80904@domain.hid> <1305105644.2098.17.camel@domain.hid>
+From: <dietmar.schindler@domain.hid>
 Subject: Re: [Xenomai-help] message pipe message boundaries
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -31,43 +33,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org, dietmar.schindler@domain.hid
+Cc: xenomai@xenomai.org
 
-On Wed, 2011-05-11 at 11:12 +0200, Gilles Chanteperdrix wrote:
-> On 05/09/2011 09:36 AM, dietmar.schindler@domain.hid wrote:
-> >> From: Gilles Chanteperdrix
-> >> [mailto:gilles.chanteperdrix@xenomai.org] Sent: Thursday, May 05,
-> >> 2011 10:15 AM ... You can provide the readv implementation, and
-> >> implement read in terms of readv by passing an iovec with just one
-> >> buffer. Please also try and make the code a bit more readable than
-> >> in the previous patch, with only one statement and one "if" by
-> >> line.
-> > 
-> > Hello,
-> > 
-> > thank you for your suggestions. I now remade the patch accordingly.
-> > If you have further improvements to suggest, please let me know.
-> 
-> I am sorry to ask you to change your patch again, but the loop is quite
-> hard to understand. It would be nice if you could use a simple loops
-> which copies the pieces of the iovec. So, maybe use two nested loops.
-> 
+> From: Philippe Gerum [mailto:rpm@xenomai.org]
+> Sent: Wednesday, May 11, 2011 11:21 AM
+> ...
+> Also, let's avoid constructs like these:
+>=20
+> >                       buf =3D iovec->iov_base, count =3D =
+iovec++->iov_len;
+>=20
+> Disk space is cheap so we can afford a few more characters per line;
+> ...
 
+Could you please explain what you mean by this? I can imagine to put a =
+few more characters into the line above by changing it to
 
-Also, let's avoid constructs like these:
+	buf =3D iovec->iov_base, count =3D iovec->iov_len, ++iovec;
 
->                       buf = iovec->iov_base, count = iovec++->iov_len;
+but this would seem to contradict your recommendation below.
 
-Disk space is cheap so we can afford a few more characters per line;
-however, engineering time for tracking down issues introduced by
-obfuscated code is expensive.
+> In short, one executable statement per line is desired, our code =
+should
+> have nothing to hide.
 
-In short, one executable statement per line is desired, our code should
-have nothing to hide.
+Since the above code line contains only one statement, I assume you mean =
+one assignment-expression, and will do accordingly.
 
--- 
-Philippe.
+By the way, what is your convention regarding goto?
+--=20
+Dietmar
 
+--------------------------------------------------------
+manroland AG
+Vorsitzender des Aufsichtsrates: Hanno C. Fiedler
+Vorstand: Gerd Finkbeiner (Vorsitzender), Dr. Ingo Koch, Dr. Markus =
+Rall, Paul Steidle  =20
+Sitz der Gesellschaft: Offenbach am Main, Registergericht: Amtsgericht =
+Offenbach HRB-Nr. 42592
+USt-Ident-Nr. DE 250200933
 
 
