@@ -1,14 +1,13 @@
-Message-ID: <4DC99265.5030903@domain.hid>
-Date: Tue, 10 May 2011 21:30:45 +0200
+Message-ID: <4DCA52E8.80904@domain.hid>
+Date: Wed, 11 May 2011 11:12:08 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <509DA52866E38F47878413CF102D751F709E6632A2@domain.hid>
-	<509DA52866E38F47878413CF102D751F709E6632A7@domain.hid>
-In-Reply-To: <509DA52866E38F47878413CF102D751F709E6632A7@domain.hid>
+References: <1183078C0D064042B3AD2D03E3859EF174E31A@AREXCH02.mra.roland-man.biz><1303849652.1961.7.camel@domain.hid><1183078C0D064042B3AD2D03E3859EF174E3E4@domain.hid><1183078C0D064042B3AD2D03E3859EF174E43D@AREXCH02.mra.roland-man.biz><1303940558.1932.33.camel@domain.hid>	<1183078C0D064042B3AD2D03E3859EF174E5BC@AREXCH02.mra.roland-man.biz><1183078C0D064042B3AD2D03E3859EF174E826@domain.hid>	<4DBFE062.3020902@domain.hid>	<1183078C0D064042B3AD2D03E3859EF174E87B@AREXCH02.mra.roland-man.biz>	<4DC03CE8.4050608@domain.hid>	<1183078C0D064042B3AD2D03E3859EF174E92F@AREXCH02.mra.roland-man.biz>	<4DC0F4E0.2070707@domain.hid>	<1183078C0D064042B3AD2D03E3859EF174EA21@domain.hid>	<4DC25C69.5020001@domain.hid>
+	<1183078C0D064042B3AD2D03E3859EF174ECBA@AREXCH02.mra.roland-man.biz>
+In-Reply-To: <1183078C0D064042B3AD2D03E3859EF174ECBA@AREXCH02.mra.roland-man.biz>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Is Xenomai Fully Functional for me(newbie) on
- Linux 2.6.37.6
+Subject: Re: [Xenomai-help] message pipe message boundaries
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -18,44 +17,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Sambasiva Rao Manchili <sambasiva.manchili@domain.hid>
-Cc: Antonio Gambin <antonio.gambin@domain.hid>, "Xenomai-help@domain.hid" <Xenomai-help@domain.hid>
+To: dietmar.schindler@domain.hid
+Cc: xenomai@xenomai.org
 
-On 05/10/2011 02:38 PM, Sambasiva Rao Manchili wrote:
-> Hi Gilles,
-> After browing through  Xenomai Help Server(Gna), I found my problem is
-> very close to the one of the users by name BONOS Antonis, who requested
-> for  help  on an issue"Installation problem" yesterday!!!
-> As I followed the pdf
-> http://embedded.communities.intel.com/servlet/JiveServlet/download/4435-1248/xeno_intel.pdf,
-> BONOS Antonis also followed it.
->  
-> Looking forward for your help!!!
+On 05/09/2011 09:36 AM, dietmar.schindler@domain.hid wrote:
+>> From: Gilles Chanteperdrix
+>> [mailto:gilles.chanteperdrix@xenomai.org] Sent: Thursday, May 05,
+>> 2011 10:15 AM ... You can provide the readv implementation, and
+>> implement read in terms of readv by passing an iovec with just one
+>> buffer. Please also try and make the code a bit more readable than
+>> in the previous patch, with only one statement and one "if" by
+>> line.
+> 
+> Hello,
+> 
+> thank you for your suggestions. I now remade the patch accordingly.
+> If you have further improvements to suggest, please let me know.
 
-Hi Sambasiva,
-
-I am not the only one replying on this list!
-
-Especially since I only seldom run Xenomai on x86 these days. We already
-had this error, but am unable to find the precise post. It is a
-configuration error. So, please try removing all the superfluous things
-in your kernel you will not use, such as numa, syscalls auditing,
-selinux, ftrace, etc...
-
-Regards.
-
-
-------------------------------------------------------------------------
-> This email and any attachment may contain confidential information which
-> is intended for use only by the addressee(s) named above. If you
-> received this email by mistake, please notify the sender immediately,
-> and delete the email from your system. You are prohibited from copying,
-> disseminating or otherwise using the email or any attachment.
-
-If you intend to send some confidential information, please do not send
-them to a public mailing list, as the only way for us to comply with
-this disclaimer is to unsubscribe you.
+I am sorry to ask you to change your patch again, but the loop is quite
+hard to understand. It would be nice if you could use a simple loops
+which copies the pieces of the iovec. So, maybe use two nested loops.
 
 -- 
-                                                                Gilles.
+					    Gilles.
 
