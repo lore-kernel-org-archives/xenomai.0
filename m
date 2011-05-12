@@ -1,9 +1,10 @@
-Message-ID: <184545.11821.qm@domain.hid>
-Date: Thu, 12 May 2011 11:02:21 -0700 (PDT)
-From: Guvenc Gulce <gulceg@domain.hid>
-MIME-Version: 1.0
+From: Tadele Shiferaw <metitad@domain.hid>
 Content-Type: text/plain; charset=us-ascii
-Subject: [Xenomai-help] IDDP/XDDP File/Socket descriptors with select/epoll
+Content-Transfer-Encoding: quoted-printable
+Date: Thu, 12 May 2011 20:40:34 +0200
+Message-Id: <DF7E26C2-E774-47BE-A9C9-D53789A4D44B@gmail.com>
+Mime-Version: 1.0 (Apple Message framework v1084)
+Subject: [Xenomai-help] xeno-test fail ????
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -15,18 +16,21 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: Xenomai-help@domain.hid
 
-Hi
-The Xenomai IPC Mechanisms IDDP and XDDP use the Posix Socket API.
-Is it possible to monitor the returned file/socket descriptors of IDDP/XDDP
-sockets using the select/epoll mechanisms ?
+After installing xenomai 2.5.6 with kernel linux 2.6.37 on my ibm =
+laptop, I perform xeno-test and i get the following output=20
 
-For example can we monitor the socket descriptors of IDDP Sockets using
-the posix select and/or linux epoll mechanism if those sockets
-are running in the context of two xenomai real time threads which are 
-trying to communicate with each other over IDDP ?
+ dd workload started, pids 2801 stored in /va	=
+r/lock/xeno-test.2659.pids
+ 2801 pts/0    00:00:00 dd
+ something died a 2801 or=20
+ something died a 2801 or
+ something died a 2801 or=20
+ something died a 2801 or
+ something died a 2801 or=20
+ something died a 2801 or
 
-Thanks & Regards
+Can anyone explain me what this message means?=20
 
-Guvenc 
-
+Thanks,
+Meti=
 
