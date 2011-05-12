@@ -1,14 +1,15 @@
-Content-Type: text/plain; charset=us-ascii
-Mime-Version: 1.0 (Apple Message framework v1084)
-From: Tadele Shiferaw <metitad@domain.hid>
-In-Reply-To: <4DCC4621.9010902@domain.hid>
-Date: Thu, 12 May 2011 22:50:59 +0200
+From: luxInteg <lux-integ@domain.hid>
+Date: Thu, 12 May 2011 22:01:47 +0100
+References: <201105101823.50226.lux-integ@domain.hid>
+	<201105111631.00882.lux-integ@domain.hid>
+	<4DCAABF6.9090606@domain.hid>
+In-Reply-To: <4DCAABF6.9090606@domain.hid>
+MIME-Version: 1.0
+Content-Type: Text/Plain;
+  charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <AB9ED233-A89B-42CF-9E0D-305674EA373A@gmail.com>
-References: <DF7E26C2-E774-47BE-A9C9-D53789A4D44B@gmail.com>	<4DCC4471.5060207@domain.hid>
-	<88FEA99F-FBC4-43D9-AAFF-97FF404EA642@domain.hid>
-	<4DCC4621.9010902@domain.hid>
-Subject: Re: [Xenomai-help] xeno-test fail ????
+Message-Id: <201105122201.47478.lux-integ@domain.hid>
+Subject: Re: [Xenomai-help] preferred  uid?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -18,23 +19,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Xenomai-help@domain.hid
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Xenomai help <xenomai@xenomai.org>
 
-
-On May 12, 2011, at 10:42 PM, Gilles Chanteperdrix wrote:
-
-> On 05/12/2011 10:39 PM, Tadele Shiferaw wrote:
->> I dont understand what that means but I run xeno-test from
->> xenomai/bin and that was the output. I saw a previous discussion with
->> same problem and one suggestion was not to build the kernel with
->> CONFIG_ACPI all disabled rather only CONFIG_ACPI_PROCESS ... So I am
->> rebuilding the kernel to..But does the output mean a failure?
+On Wednesday 11 May 2011 16:32:06 Gilles Chanteperdrix wrote:
+> On 05/11/2011 05:31 PM, luxInteg wrote:
+> > On Tuesday 10 May 2011 20:23:43 Gilles Chanteperdrix wrote:
+> >> On 05/10/2011 07:23 PM, luxInteg wrote:
+> >>> greetings
+> >>> 
+> >>> I normally  compile stuff as an ordinary user,  but   I noticed in this
+> >>> area people often compile as root as  kernel  modules are involved.   I
+> >>> note xenomai can be compiled either as user or root so  is there a
+> >>> preferred way ?
+> >> 
+> >> As others have said, compile as ordinary user, run make install or make
+> >> modules_install as root, or run "sudo make install". Another reason for
+> >> running "make install" as root, is that root privilege is also required
+> >> to create the device nodes (/dev/rtheap, /dev/rtp*) needed by Xenomai
+> >> applications.
+> > 
+> > yes this is my rule of thumb  too
+> > 
+> > However   as I read through the install file  in the xenomai tarball   I
+> > noticed  there  was only reference   to 'make install' (at least on x86
+> > platforms).  i did this   and did not bother with running make.  Is this
+> > acceptable?
 > 
-> What part exactly of "Please do not use xeno-test" do you not understand?
+> As we already told you, it is preferable to run
+> make
+> then
+> sudo make install
 > 
-> -- 
->                                                                Gilles.
- The "launch the test by hand part" .
+> For reasons already explained in the three answers you received.
 
-Meti
+so perhaps you should update the INSTALL file   that accompany released 
+tarballs of xenomai  then?
 
