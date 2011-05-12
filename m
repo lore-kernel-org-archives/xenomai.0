@@ -1,37 +1,35 @@
-Message-ID: <4DC2616E.2070301@domain.hid>
-Date: Thu, 05 May 2011 10:35:58 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Date: Fri, 13 May 2011 00:52:03 +0200
+From: Alexis Berlemont <alexis.berlemont@domain.hid>
+Message-ID: <20110512225203.GB2904@domain.hid>
 MIME-Version: 1.0
-References: <920250.14934.qm@domain.hid>
-In-Reply-To: <920250.14934.qm@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Problem with the configuration of new system
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Subject: [Xenomai-core] analogy: wake-up threshold
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Franz Engel <franz_lambert_engel@domain.hid>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Stefan Schaal <sschaal@domain.hid>
 Cc: xenomai@xenomai.org
 
-On 2011-05-05 10:30, Franz Engel wrote:
->> On 2011-05-05 07:30, Franz Engel wrote:
->>> Hi,
->>>
->>>
-> After some days to learn how I receive logs on another PC, here is my 
-> log. The problem is that the PC hangs after a few seconds. 
+Hi Stefan, 
 
-OK... Can you provide your .config please?
+A few months ago, you asked me whether it was possible to prevent the
+OS from waking up your process each time a few bytes were
+acquired. You came with the idea to implement a wake-up threshold below
+which the user space process is kept in sleep state.
 
-Jan
+A few days ago, I updated my experimental branch: two new user-space
+functions were added: a4l_set_wakesize() and
+a4l_get_wakesize(). Thanks to them, you will be able to configure the
+wished behaviour.
+
+I hope this will help you.
 
 -- 
-Siemens AG, Corporate Technology, CT T DE IT 1
-Corporate Competence Center Embedded Linux
+Alexis.
 
