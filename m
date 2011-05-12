@@ -1,12 +1,13 @@
-Message-ID: <4DCC4621.9010902@domain.hid>
-Date: Thu, 12 May 2011 22:42:09 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Mime-Version: 1.0 (Apple Message framework v1084)
+From: Tadele Shiferaw <metitad@domain.hid>
+In-Reply-To: <4DCC4621.9010902@domain.hid>
+Date: Thu, 12 May 2011 22:50:59 +0200
+Content-Transfer-Encoding: 7bit
+Message-Id: <AB9ED233-A89B-42CF-9E0D-305674EA373A@gmail.com>
 References: <DF7E26C2-E774-47BE-A9C9-D53789A4D44B@gmail.com>	<4DCC4471.5060207@domain.hid>
 	<88FEA99F-FBC4-43D9-AAFF-97FF404EA642@domain.hid>
-In-Reply-To: <88FEA99F-FBC4-43D9-AAFF-97FF404EA642@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+	<4DCC4621.9010902@domain.hid>
 Subject: Re: [Xenomai-help] xeno-test fail ????
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -17,18 +18,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Tadele Shiferaw <metitad@domain.hid>
-Cc: Xenomai-help@domain.hid
+To: Xenomai-help@domain.hid
 
-On 05/12/2011 10:39 PM, Tadele Shiferaw wrote:
-> I dont understand what that means but I run xeno-test from
-> xenomai/bin and that was the output. I saw a previous discussion with
-> same problem and one suggestion was not to build the kernel with
-> CONFIG_ACPI all disabled rather only CONFIG_ACPI_PROCESS ... So I am
-> rebuilding the kernel to..But does the output mean a failure?
 
-What part exactly of "Please do not use xeno-test" do you not understand?
+On May 12, 2011, at 10:42 PM, Gilles Chanteperdrix wrote:
 
--- 
-                                                                Gilles.
+> On 05/12/2011 10:39 PM, Tadele Shiferaw wrote:
+>> I dont understand what that means but I run xeno-test from
+>> xenomai/bin and that was the output. I saw a previous discussion with
+>> same problem and one suggestion was not to build the kernel with
+>> CONFIG_ACPI all disabled rather only CONFIG_ACPI_PROCESS ... So I am
+>> rebuilding the kernel to..But does the output mean a failure?
+> 
+> What part exactly of "Please do not use xeno-test" do you not understand?
+> 
+> -- 
+>                                                                Gilles.
+ The "launch the test by hand part" .
+
+Meti
 
