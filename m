@@ -1,16 +1,13 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <SNT136-w203D311728EC78CF0DCAB1C6860@domain.hid>
-References: <505044.35954.qm@domain.hid>
-	, <4DC2908C.2020501@domain.hid> <4DC29BB9.1090709@domain.hid>
-	, <4DC2B804.9070604@domain.hid>
-	, <4549EF6022ACA546AAA8FC8544AC20100D9D2C5D@XCHG2.ms.msli.com>
-	<SNT136-w203D311728EC78CF0DCAB1C6860@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Fri, 13 May 2011 12:26:26 +0200
-Message-ID: <1305282386.2147.10.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Problems with rt pipes after upgrade
+Message-ID: <4DCD0B37.40105@domain.hid>
+Date: Fri, 13 May 2011 12:43:03 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+References: <294B28951EBE8146839AF99A61CB5FCE6B3F1A7999@domain.hid>
+In-Reply-To: <294B28951EBE8146839AF99A61CB5FCE6B3F1A7999@domain.hid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-help] Xenomai 2.5.X - 32 bit X86 is not running on
+ newer Kernel Versions
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -20,60 +17,89 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Thomas Schaefer <thomas_schaefer_canada@domain.hid>
-Cc: xenomai@xenomai.org
+To: "Benner Bernd (MH/EES)" <B.Benner@domain.hid>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Wed, 2011-05-11 at 07:46 -0700, Thomas Schaefer wrote:
-> 
+On 05/13/2011 11:55 AM, Benner Bernd (MH/EES) wrote:
 > Hi,
-> 
-> we are currently running an earlier version of Xenomai (2.5.3) on a Quad core Xeon with kernel 2.6.31.8(X86_64).
-> I was looking into upgrading to the latest Xenomai version from the git head and kernel 2.6.37.6.
-> Everything seems to work well except creating rt_pipes in the kernel driver.
-> First I thought this is a problem with our PCIe driver but I see the same problem when loading xeno_klat.
-> 
-> # modprobe xeno_klat
-> [ 70.511784] ------------[ cut here ]------------
-> [ 70.516422] WARNING: at fs/proc/generic.c:860 remove_proc_entry+0x25b/0x260()
-> [ 70.523556] Hardware name: D-Mitri
-> [ 70.526960] remove_proc_entry: removing non-empty directory 'native/pipes', leaking at least 'klat_pipe'
-> [ 70.536433] Modules linked in: xeno_klat bonding [last unloaded: scsi_wait_scan]
-> [ 70.545910] Pid: 296, comm: kworker/1:1 Not tainted 2.6.37.6 #4
-> [ 70.551834] Call Trace:
-> [ 70.554291] [<ffffffff8103fb1b>] ? warn_slowpath_common+0x7b/0xc0
-> [ 70.560484] [<ffffffff8103fc15>] ? warn_slowpath_fmt+0x45/0x50
-> [ 70.566402] [<ffffffff81162975>] ? __xlate_proc_name+0x35/0xd0
-> [ 70.572330] [<ffffffff81162d0b>] ? remove_proc_entry+0x25b/0x260
-> [ 70.578434] [<ffffffff81094375>] ? registry_proc_callback+0x4b5/0x5c0
-> [ 70.584963] [<ffffffff81093ec0>] ? registry_proc_callback+0x0/0x5c0
-> [ 70.591330] [<ffffffff81055da7>] ? process_one_work+0x107/0x3c0
-> [ 70.597351] [<ffffffff810564ac>] ? worker_thread+0x14c/0x410
-> [ 70.603106] [<ffffffff81056360>] ? worker_thread+0x0/0x410
-> [ 70.608678] [<ffffffff81059e25>] ? kthread+0x95/0xa0
-> [ 70.613758] [<ffffffff81003fb4>] ? kernel_thread_helper+0x4/0x10
-> [ 70.619857] [<ffffffff81059d90>] ? kthread+0x0/0xa0
-> [ 70.624840] [<ffffffff81003fb0>] ? kernel_thread_helper+0x0/0x10
-> [ 70.630941] ---[ end trace 793ec26c5b485748 ]---
-> 
-> 
-> I would appreciate if someone could point me in the right direction of the possible cause.
+> =20
+>    we have a well running X86 Realtime system with Kernel 2.6.29 and
+> xenomai-2.4.10. The system is able to boot from a stick and runs on all=
 
-This very much looks like a race in the registry support. We have to
-resync registry object deletion done from primary mode with the linux
-kernel actually doing the work for us (via /procfs), and somehow, we
-don't do this right. This is not a critical issue and will likely not
-break your platform, but this is still quite ugly, and requires a fix.
+> our computers.
+> To fix some X11- problems with newer graphic chipsets, we try to upgrad=
+e
+> to a newer Kernel version.
+> =20
+>    We are starting with Kernel 2.6.34.5 and xenomai-2.5.5.2 using the
+> latest ADEOS-patches. This system works on some test machines, but on
+> some Core 2 Duo 3 GHz systems with Intel Desktop Chipset ( Lenovo and H=
+P
+> ) the system freeze and/or produces strange console outputs ( only line=
 
-Could you give us some hints about how to reproduce this easily? TIA,
+> feeds ) after a start of latency or clocktest.
+> We are not able to get a kernel log from this systems.
+> =20
+>   All permutations of Kernel 2.6.34.5, Kernel 2.6.35.13, xenomai-2.5.3,=
 
-> 
-> 
-> Thanks,
-> Thomas 		 	   		  
-> _______________________________________________ Xenomai-help mailing list Xenomai-help@domain.hid https://mail.gna.org/listinfo/xenomai-help
+> xenomai-2.5.5.2, xenomai-2.5.6 has the same problems on the Core 2 Duo =
+3
+> GHz machines.
+> On other machines with slower Mobile Core 2 Duo or Pentiom M processors=
 
--- 
-Philippe.
+> the system runs or has sometimes the same problem.
+> =20
+>   I have try some changes in the Kernel configuration, without any
+> success.  I have also try a combination of Kernel 2.6.35.13. and
+> xenomai-2.4.10 with some changes in the xenomai headers to run with
+> newer Kernels. This version has the same problem on the Core 2 Duo 3 GH=
+z
+> systems.
+> =20
+>   Is there any way to find the reason of this problems with Xenomai
+> 2.5.X and newer Kernels 2.6.3X with 32 bit X86 or has anybody similar
+> problems fixed.
 
+Have you tried with something more recent than 2.6.34? We had a problem
+revealed by grub2, I do not remember which version fixed it. Otherwise,
+you have to enable early printk and redirect the console to serial port
+or netconsole, in order to capture it from another computer. Without
+these logs, there is not much we can do.
+
+Could you post your kernel configuration?
+
+> =20
+> Thanks in advance
+> =20
+> Mit freundlichen Gr=C3=BC=C3=9Fen / Best Regards
+> Bernd Benner
+> MH/SGT3
+> *moehwald*
+> *Bosch Group*
+> Moehwald GmbH
+> Michelinstra=C3=9Fe 21
+> 66424 Homburg
+> GERMANY
+> _www.moehwald.de_
+> _b.benner@domain.hid_ <mailto:b.benner@domain.hid>
+> Moehwald GmbH, Sitz/Registered Office: Homburg/Saar, Zentrales
+> Handelsregister/Registered Court: Saarbr=C3=BCcken HRB 2812
+> Gesch=C3=A4ftsf=C3=BChrung/Managing Directors: Jens Last, Wolfgang Geen=
+en
+> =20
+> =20
+> =20
+> =20
+>=20
+>=20
+>=20
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
+
+
+--=20
+                                                                Gilles.
 
 
