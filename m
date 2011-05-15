@@ -10,8 +10,8 @@ References: <505044.35954.qm@domain.hid>
 	<4DCEBA37.1030901@domain.hid>  <4DCEBB1B.2000200@domain.hid>
 	<1305472912.2386.7.camel@domain.hid>  <4DCFF09B.5090901@domain.hid>
 Content-Type: text/plain; charset="UTF-8"
-Date: Sun, 15 May 2011 17:29:26 +0200
-Message-ID: <1305473366.2386.8.camel@domain.hid>
+Date: Sun, 15 May 2011 17:32:59 +0200
+Message-ID: <1305473579.2386.10.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] Problems with rt pipes after upgrade
@@ -114,7 +114,21 @@ On Sun, 2011-05-15 at 17:26 +0200, Jan Kiszka wrote:
 > 
 > Sure? :)
 
-I really need a brain rebase...
+This one should be better.
+
+diff --git a/ksrc/nucleus/vfile.c b/ksrc/nucleus/vfile.c
+index d8ac398..4898e86 100644
+--- a/ksrc/nucleus/vfile.c
++++ b/ksrc/nucleus/vfile.c
+@@ -752,7 +752,7 @@ int xnvfile_init_link(const char *from,
+ 
+ 	ppde = parent->entry.pde;
+ 	pde = proc_symlink(from, ppde, to);
+-	if (vlink->entry.pde == NULL)
++	if (pde == NULL)
+ 		return -ENOMEM;
+ 
+ 	vlink->entry.parent = parent;
 
 > 
 > Jan
