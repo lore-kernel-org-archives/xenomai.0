@@ -1,14 +1,21 @@
-Message-ID: <4DD13882.8000708@domain.hid>
-Date: Mon, 16 May 2011 16:45:22 +0200
-From: Wolfgang Grandegger <wg@domain.hid>
+Message-ID: <SNT136-w54A82C95878BE6CEE0C031C68D0@domain.hid>
+From: Thomas Schaefer <thomas_schaefer_canada@domain.hid>
+Date: Mon, 16 May 2011 09:13:39 -0700
+In-Reply-To: <1305473579.2386.10.camel@domain.hid>
+References: <505044.35954.qm@domain.hid>,, ,
+	<4DC2908C.2020501@domain.hid> <4DC29BB9.1090709@domain.hid>,, ,
+	<4DC2B804.9070604@domain.hid>,, ,
+	<4549EF6022ACA546AAA8FC8544AC20100D9D2C5D@XCHG2.ms.msli.com>,,
+	<SNT136-w203D311728EC78CF0DCAB1C6860@domain.hid>,,
+	<1305282386.2147.10.camel@domain.hid>,
+	<SNT136-w1186529A4B49E82E01FEDCC6880@domain.hid>,
+	<4DCEBA37.1030901@domain.hid>
+	<4DCEBB1B.2000200@domain.hid>,<1305472912.2386.7.camel@domain.hid>
+	<4DCFF09B.5090901@domain.hid>,<1305473579.2386.10.camel@domain.hid>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <89B30389DB4AE240AC1227F3FDBB7CCF029B910A@ontex.i.omicron.de>	<4DCD2EE8.2010904@domain.hid>	<89B30389DB4AE240AC1227F3FDBB7CCF029B910B@ontex.i.omicron.de>	<4DD102DA.9080206@domain.hid>
-	<4DD107AD.5000307@domain.hid>
-	<89B30389DB4AE240AC1227F3FDBB7CCF029B910F@ontex.i.omicron.de>
-In-Reply-To: <89B30389DB4AE240AC1227F3FDBB7CCF029B910F@ontex.i.omicron.de>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] build xenomai userspace app, illegal instruction
+Subject: Re: [Xenomai-help] Problems with rt pipes after upgrade
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -18,77 +25,167 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "Koenig, Florian" <F.Koenig@domain.hid>
-Cc: xenomai@xenomai.org
-
-Hello,
-
-On 05/16/2011 03:27 PM, Koenig, Florian wrote:
-> Hi,
-> i started from new and have done the following:
-> 
-> 
-> i deleted /opt/eldk-4.2 and installed it new with:
-> $ ./install -d /opt/eldk-4.2 ppc_4xx
-
-BTW: also be aware of ELDK_FIXOWER and ELDK_MAKEDEV.b
-
-> Then i setup env-vars and goto /usr/src/xenomai-2.5.6:
-> $ export ARCH=powerpc
-> $ export DESTDIR=/opt/eldk-4.2/ppc_4xx
-> $ export PATH=$PATH:/opt/eldk-4.2/usr/bin:/opt/eldk-4.2/bin
-> 
-> Then i configured xenomai userspace with:
-> $ ./configure --host=powerpc-linux      (without --prefix=)
-> $ make
-> $ make install
-> 
-> Then i goto /usr/src/xenomai/examples and run:
-> $ make XENO=/opt/eldk-4.2/ppc_4xx/usr/xenomai/bin
-> 
-> And then it returns, where it searches for includes in
-> -I/lib/modules/2.6.32-5-686/build/include/xenomai/posix
-> Which is my local x86 kernel, not the powerpc kernel?
-
-The kernel is used just for build Xenomai kernel modules. For
-cross-compilation you must provide "KSRC=<path-to-your-kernel>. But it's
-*not* used for building user-space apps.
-
-> make XENO=/opt/eldk-4.2/ppc_4xx/usr/xenomai/
-> --xeno-cflags is deprecated, use --skin=name --cflags instead --xeno-ldflags
-> is deprecated, use --skin=name --ldflags instead
-> make[1]: Entering directory `/usr/src/xenomai-2.5.6/examples/rtdm/driver-api'
-> powerpc-linux-gcc -I/opt/eldk-4.2/ppc_4xx/usr/xenomai/include -D_GNU_SOURCE
-> -D_REENTRANT -Wall -pipe -D__XENO__   -L/opt/eldk-4.2/ppc_4xx/usr/xenomai/lib
-> -lxenomai -lpthread  -lnative -lrtdm -Xlinker -rpath -Xlinker
-> /opt/eldk-4.2/ppc_4xx/usr/xenomai/lib  tut01-skeleton-app.c   -o
-> tut01-skeleton-app
-> tut01-skeleton-app.c:54: warning: second argument of 'main' should be 'char
-> **'
-
-Looks good now. The path is pointing to the Xenomai installation dir:
-/opt/eldk-4.2/ppc_4xx/usr/xenomai/
-
-> After copying trivial-periodic to 405GP cpu, it returns illegal instruction.
-
-Hm, in a previous mail I asked if the installed Xenomai programs from
-the test suite like "latency" or "cyclictest" do work. Is that the case?
-If not, it's most likely not a build problem.
-
-> Is /opt/eldk-4.2 meant to be the rootfs of the 405GP cpu ? I use a initramfs,
-> which is placed in /usr/src/initramfs, so i only copy the xenomai lib/ folder
-> from /opt/eldk-4.2/ppc_4xx/lib into my initramfs/lib folder.
-
-It's up to you to define the rootfs and install the Xenomai programs into:
-
-  $ export DESTDIR=/usr/src/initramfs
-  $ cd xenomai-2.5.6
-  $ make install
-
-That's likely to much data. The following should work as well:
-
-  $ make install-exec
+To: xenomai@xenomai.org
 
 
-Wolfgang.
+Hi=2C
+
+----------------------------------------
+> From: rpm@xenomai.org
+> To: jan.kiszka@domain.hid
+> Date: Sun=2C 15 May 2011 17:32:59 +0200
+> CC: xenomai@xenomai.org
+> Subject: Re: [Xenomai-help] Problems with rt pipes after upgrade
+>
+> On Sun=2C 2011-05-15 at 17:26 +0200=2C Jan Kiszka wrote:
+> > On 2011-05-15 17:21=2C Philippe Gerum wrote:
+> > > On Sat=2C 2011-05-14 at 19:25 +0200=2C Gilles Chanteperdrix wrote:
+> > >> On 05/14/2011 07:21 PM=2C Gilles Chanteperdrix wrote:
+> > >>> On 05/14/2011 12:39 AM=2C Thomas Schaefer wrote:
+> > >>>>
+> > >>>> Hello=2C
+> > >>>>
+> > >>>> ----------------------------------------
+> > >>>>> Subject: Re: [Xenomai-help] Problems with rt pipes after upgrade
+> > >>>>> From: rpm@xenomai.org
+> > >>>>> To: thomas_schaefer_canada@domain.hid
+> > >>>>> CC: xenomai@xenomai.org
+> > >>>>> Date: Fri=2C 13 May 2011 12:26:26 +0200
+> > >>>>>
+> > >>>>> On Wed=2C 2011-05-11 at 07:46 -0700=2C Thomas Schaefer wrote:
+> > >>>>>>
+> > >>>>>> Hi=2C
+> > >>>>>>
+> > >>>>>> we are currently running an earlier version of Xenomai (2.5.3) o=
+n a Quad core Xeon with kernel 2.6.31.8(X86_64).
+> > >>>>>> I was looking into upgrading to the latest Xenomai version from =
+the git head and kernel 2.6.37.6.
+> > >>>>>> Everything seems to work well except creating rt_pipes in the ke=
+rnel driver.
+> > >>>>>> First I thought this is a problem with our PCIe driver but I see=
+ the same problem when loading xeno_klat.
+> > >>>>>>
+> > >>>>>> # modprobe xeno_klat
+> > >>>>>> [ 70.511784] ------------[ cut here ]------------
+> > >>>>>> [ 70.516422] WARNING: at fs/proc/generic.c:860 remove_proc_entry=
++0x25b/0x260()
+> > >>>>>> [ 70.523556] Hardware name: D-Mitri
+> > >>>>>> [ 70.526960] remove_proc_entry: removing non-empty directory 'na=
+tive/pipes'=2C leaking at least 'klat_pipe'
+> > >>>>>> [ 70.536433] Modules linked in: xeno_klat bonding [last unloaded=
+: scsi_wait_scan]
+> > >>>>>> [ 70.545910] Pid: 296=2C comm: kworker/1:1 Not tainted 2.6.37.6 =
+#4
+> > >>>>>> [ 70.551834] Call Trace:
+> > >>>>>> [ 70.554291] [] ? warn_slowpath_common+0x7b/0xc0
+> > >>>>>> [ 70.560484] [] ? warn_slowpath_fmt+0x45/0x50
+> > >>>>>> [ 70.566402] [] ? __xlate_proc_name+0x35/0xd0
+> > >>>>>> [ 70.572330] [] ? remove_proc_entry+0x25b/0x260
+> > >>>>>> [ 70.578434] [] ? registry_proc_callback+0x4b5/0x5c0
+> > >>>>>> [ 70.584963] [] ? registry_proc_callback+0x0/0x5c0
+> > >>>>>> [ 70.591330] [] ? process_one_work+0x107/0x3c0
+> > >>>>>> [ 70.597351] [] ? worker_thread+0x14c/0x410
+> > >>>>>> [ 70.603106] [] ? worker_thread+0x0/0x410
+> > >>>>>> [ 70.608678] [] ? kthread+0x95/0xa0
+> > >>>>>> [ 70.613758] [] ? kernel_thread_helper+0x4/0x10
+> > >>>>>> [ 70.619857] [] ? kthread+0x0/0xa0
+> > >>>>>> [ 70.624840] [] ? kernel_thread_helper+0x0/0x10
+> > >>>>>> [ 70.630941] ---[ end trace 793ec26c5b485748 ]---
+> > >>>>>>
+> > >>>>>>
+> > >>>>>> I would appreciate if someone could point me in the right direct=
+ion of the possible cause.
+> > >>>>>
+> > >>>>> This very much looks like a race in the registry support. We have=
+ to
+> > >>>>> resync registry object deletion done from primary mode with the l=
+inux
+> > >>>>> kernel actually doing the work for us (via /procfs)=2C and someho=
+w=2C we
+> > >>>>> don't do this right. This is not a critical issue and will likely=
+ not
+> > >>>>> break your platform=2C but this is still quite ugly=2C and requir=
+es a fix.
+> > >>>>>
+> > >>>>> Could you give us some hints about how to reproduce this easily? =
+TIA=2C
+> > >>>>>
+> > >>>>
+> > >>>> I used VBox and installed a very basic Debian squeeze with the net=
+inst.iso.
+> > >>>> Installed our kernel into it from the debian package I created and=
+ copied xeno_klat.ko to it.
+> > >>>> Running insmod xeno_klat.ko shows the same symptom.
+> > >>>
+> > >>> xeno_klat insmods here without any problem. You probably have some
+> > >>> debugging option enabled. Could your post the .config of the kernel=
+ you use?
+> > >>>
+> > >>
+> > >> I enabled approximately all debugging options. Now I reproduce this =
+bug.
+> > >>
+> > >>
+> > >
+> > > Ok=2C I introduced this one. Two bugs in one actually=2C here are the=
+ fixes:
+> > >
+> > > diff --git a/ksrc/nucleus/vfile.c b/ksrc/nucleus/vfile.c
+> > > index d8ac398..6aa42b3 100644
+> > > --- a/ksrc/nucleus/vfile.c
+> > > +++ b/ksrc/nucleus/vfile.c
+> > > @@ -752=2C8 +752=2C10 @@ int xnvfile_init_link(const char *from=2C
+> > >
+> > > ppde =3D parent->entry.pde=3B
+> > > pde =3D proc_symlink(from=2C ppde=2C to)=3B
+> > > - if (vlink->entry.pde =3D=3D NULL)
+> > > + if (pde =3D=3D NULL) {
+> > > + remove_proc_entry(pde->name=2C ppde)=3B
+> >
+> > Sure? :)
+>
+> This one should be better.
+>
+> diff --git a/ksrc/nucleus/vfile.c b/ksrc/nucleus/vfile.c
+> index d8ac398..4898e86 100644
+> --- a/ksrc/nucleus/vfile.c
+> +++ b/ksrc/nucleus/vfile.c
+> @@ -752=2C7 +752=2C7 @@ int xnvfile_init_link(const char *from=2C
+>
+> ppde =3D parent->entry.pde=3B
+> pde =3D proc_symlink(from=2C ppde=2C to)=3B
+> - if (vlink->entry.pde =3D=3D NULL)
+> + if (pde =3D=3D NULL)
+> return -ENOMEM=3B
+>
+> vlink->entry.parent =3D parent=3B
+>
+> >
+> > Jan
+> >
+> > > return -ENOMEM=3B
+> > > + }
+> > >
+> > > vlink->entry.parent =3D parent=3B
+> > > vlink->entry.pde =3D pde=3B
+> > >
+> >
+>
+> --
+> Philippe.
+>
+=20
+=20
+Thank you very much.
+This seems to have fixed the problem.
+=20
+Thomas
+=20
+
+>
+>
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help 		 	   		  =
 
