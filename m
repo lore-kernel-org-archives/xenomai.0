@@ -1,17 +1,12 @@
-Message-ID: <4DD3EAAF.2010902@domain.hid>
-Date: Wed, 18 May 2011 17:50:07 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
-MIME-Version: 1.0
-References: <294B28951EBE8146839AF99A61CB5FCE6B3F1A7999@domain.hid>	<4DCD0DFC.7050506@domain.hid>
-	<294B28951EBE8146839AF99A61CB5FCE6B3F1A7DDD@SI-MBX17.de.bosch.com>
-	<4DD25DF5.1070609@domain.hid>
-	<294B28951EBE8146839AF99A61CB5FCE6B3FF1946E@SI-MBX17.de.bosch.com>
-In-Reply-To: <294B28951EBE8146839AF99A61CB5FCE6B3FF1946E@SI-MBX17.de.bosch.com>
-Content-Type: text/plain; charset=ISO-8859-1
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <243955.44519.qm@domain.hid>
+References: <243955.44519.qm@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Date: Wed, 18 May 2011 23:29:08 +0200
+Message-ID: <1305754148.2151.124.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Same problems with ipipe-2.6.37-x86-branch and
- xenoami-head.git on Core 2 Duo E8400 - fixed with CONFIG_HPET_TIMER
- disabled
+Subject: Re: [Xenomai-help] xenomai x86 linux config file checker
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -21,43 +16,169 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "Benner Bernd (MH/EES)" <B.Benner@domain.hid>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: A User <t02446@domain.hid>
+Cc: xenomai@xenomai.org
 
-On 2011-05-18 17:40, Benner Bernd (MH/EES) wrote:
-> Hello,
+On Tue, 2011-05-17 at 13:25 -0700, A User wrote:
+> I see that there is advice for setting up a Xenomai Linux config in
+> various places:
 > 
->   I have rebuild my Kernel 2.6.37.6-x86 and uses xenomai-head.git. ( is this xenomai-2.6 git ? )
-> This version has the same problems on the Core 2 Duo E8400 machines.
+> http://www.xenomai.org/index.php/FAQs#Tips_and_tricks_setting_up_your_x86_kernel
+> http://www.xenomai.org/index.php/Configuring_x86_kernels
 > 
->   But there are some strange kernel messages on startup:
-> 
-> May 18 16:07:33 (none) user.warn kernel: CE: hpet3 increased min_delta_ns to 7500 nsec
-> May 18 16:07:33 (none) user.warn kernel: CE: hpet3 increased min_delta_ns to 11250 nsec
-> May 18 16:07:33 (none) user.warn kernel: hrtimer: interrupt took 5978 ns
-> ...
-> May 18 16:07:33 (none) user.warn kernel: CE: hpet2 increased min_delta_ns to 11250 nsec
-> ...
->   after a start of latency ( via ssh ) the linux domain will slow down and the sata driver will come in trouble.
-> 
-> 
->   If I rebuild my Kernel with CONFIG_HPET_TIMER disabled, latency will run normally on the Core 2 Duo E8400 machines.
-> 
->   CONFIG_HPET_TIMER has to be disabled on faster Core 2 Duo machines! There must be a consistency problem! ( probably in
-> io_apic- handling with CONFIG_HPET_TIMER enabled )
-> 
->   I will rebuild and test my kernel with stable 2.5.X xenomai versions and ADEOS patches with CONFIG_HPET_TIMER disabled!
+> I think it is messy to check the options, so I wrote a shell script
+> "xeno_x86_check_config" to make it easier.  I wrote it for x86, it may be useful to make it more general.  It checks the options that
+> I think are important, and lists them.  I may have some of the choices
+> wrong, but experts can correct them or modify the script as
+> requirements change.  You may find it useful to add this script to the
+> Xenomai package.
 
-Ah! I bet you have >3 HPET timers, and they are MSI capable. In that
-case, Linux will actually prefer them over the LAPIC as clockevent
-device, and Xenomai breaks apart. I didn't discovered this as my test
-"machine" (QEMU/KVM) requires extra switches to enable that scenario.
-However, it's getting more and more common on modern hardware, we should
-take some measures to catch this conflict.
+Makes a lot of sense. It is a simple and nice way to keep the valuable
+config tweaks and other black magic stuff in a single place on a
+per-arch basis. And this could be extended to other archs having config
+pecularities with Xenomai. Ok, I'll pick this script in my queue.
+Thanks.
 
-Jan
+> 
+> -Andy
+> 
+> <<<<<
+> #! /bin/sh
+> 
+> # check Linux kernel config file for x86 Xenomai conditions
+> # xeno_x86_check_config
+> # Copyright 2011 Andy Tannenbaum
+> 
+> if [ -z "$1"  -o ! -f "$1" ]; then
+>       echo usage: xeno_x86_check_config configfile
+>       exit 1
+> fi
+> 
+> # find iff set
+> 
+> echo cpu type:
+> 
+> for i in \
+> \
+> CONFIG_M386 \
+> CONFIG_M486 \
+> CONFIG_M586 \
+> CONFIG_M586TSC \
+> CONFIG_M586MMX \
+> CONFIG_M686 \
+> CONFIG_MPENTIUMII \
+> CONFIG_MPENTIUMIII \
+> CONFIG_MPENTIUMM \
+> CONFIG_MPENTIUM4 \
+> CONFIG_MK6 \
+> CONFIG_MK7 \
+> CONFIG_MK8 \
+> CONFIG_MCRUSOE \
+> CONFIG_MEFFICEON \
+> CONFIG_MWINCHIPC6 \
+> CONFIG_MWINCHIP3D \
+> CONFIG_MGEODEGX1 \
+> CONFIG_MGEODE_LX \
+> CONFIG_MCYRIXIII \
+> CONFIG_MVIAC3_2 \
+> CONFIG_MVIAC7 \
+> CONFIG_MPSC \
+> CONFIG_MCORE2 \
+> CONFIG_MATOM \
+> CONFIG_GENERIC_CPU \
+> CONFIG_X86_GENERIC \
+> CONFIG_X86_CPU \
+> 
+> do
+> 
+> grep -w ${i}=y $1
+> 
+> done
+> echo
+> 
+> # find whether set
+> 
+> echo want these set if possible:
+> 
+> for i in \
+> \
+> CONFIG_XENO_HW_SMI_WORKAROUND \
+> CONFIG_XENO_OPT_PERVASIVE \
+> 
+> do
+> 
+> grep -w $i $1 || echo $i not found in $1
+> 
+> done
+> echo
+> 
+> # find whether set
+> 
+> echo want these not set:
+> 
+> for i in \
+> \
+> CONFIG_CPU_FREQ \
+> CONFIG_APM \
+> CONFIG_ACPI_PROCESSOR \
+> CONFIG_PCI_MSI \
+> CONFIG_INTEL_IDLE \
+> 
+> do
+> 
+> grep -w $i $1 || echo $i not found in $1
+> 
+> done
+> echo
+> 
+> # find whether set
+> 
+> echo want these not set if pre-Pentium:
+> 
+> for i in \
+> \
+> CONFIG_INPUT_PCSPKR \
+> CONFIG_X86_TSC \
+> 
+> do
+> 
+> grep -w $i $1 || echo $i not found in $1
+> 
+> done
+> echo
+> 
+> # find whether set
+> 
+> echo want IPIPE, and either set X86_LOCAL_APIC or not set HPET_TIMER:
+> 
+> for i in \
+> \
+> CONFIG_X86_LOCAL_APIC \
+> CONFIG_HPET_TIMER \
+> CONFIG_IPIPE \
+> 
+> do
+> 
+> grep -w $i $1 || echo $i not found in $1
+> 
+> done
+> echo
+> 
+> echo Xenomai options:
+> grep CONFIG_XENO $1
+> echo
+> 
+> echo Preempt options:
+> grep PREEMPT $1
+> >>>>>
+> 
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
 
 -- 
-Siemens AG, Corporate Technology, CT T DE IT 1
-Corporate Competence Center Embedded Linux
+Philippe.
+
+
 
