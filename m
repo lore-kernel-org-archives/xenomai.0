@@ -1,9 +1,10 @@
-Message-ID: <243955.44519.qm@domain.hid>
-Date: Tue, 17 May 2011 13:25:57 -0700 (PDT)
-From: A User <t02446@domain.hid>
+Message-ID: <COL121-W1621563F87D156AC81C9E3AA8F0@domain.hid>
+Content-Type: multipart/alternative;
+	boundary="_b79b382b-4fad-4fcf-9f44-87cfab4a92fc_"
+From: Robert Perez <robertperez67@domain.hid>
+Date: Wed, 18 May 2011 07:40:00 -0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Subject: [Xenomai-help] xenomai x86 linux config file checker
+Subject: [Xenomai-help] Anouncement.
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -15,148 +16,70 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
-I see that there is advice for setting up a Xenomai Linux config in
-various places:
+--_b79b382b-4fad-4fcf-9f44-87cfab4a92fc_
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 
-http://www.xenomai.org/index.php/FAQs#Tips_and_tricks_setting_up_your_x86_kernel
-http://www.xenomai.org/index.php/Configuring_x86_kernels
 
-I think it is messy to check the options, so I wrote a shell script
-"xeno_x86_check_config" to make it easier.  I wrote it for x86, it may be useful to make it more general.  It checks the options that
-I think are important, and lists them.  I may have some of the choices
-wrong, but experts can correct them or modify the script as
-requirements change.  You may find it useful to add this script to the
-Xenomai package.
+Dear all list members.
 
--Andy
+A Xenomai based Open Source Project called FreeDCS is participating in a co=
+ntest to win funding for continuing its development.
+FreeDCS aims to be an Open Source Distributed Control System to be used at =
+the industrial level=2C as well as for home and educational purposes in Uni=
+versities.
 
-<<<<<
-#! /bin/sh
+I kindly ask for your vote to be selected as one of the 20 finalist project=
+s by visiting the project home page http://freedcs.sourceforge.net/index.ht=
+ml and clicking=20
+the "Votar" button after inserting the text in the textbox.
 
-# check Linux kernel config file for x86 Xenomai conditions
-# xeno_x86_check_config
-# Copyright 2011 Andy Tannenbaum
+I think that if this project succeed=2C it will be great for the Xenomai co=
+mmunity as well=2C as the installed base of Xenomai will increase and we al=
+l will have an open platform for control systems.
 
-if [ -z "$1"  -o ! -f "$1" ]; then
-      echo usage: xeno_x86_check_config configfile
-      exit 1
-fi
+Best Regards.
+Ing. Robert P=E9rez. 		 	   		  =
 
-# find iff set
+--_b79b382b-4fad-4fcf-9f44-87cfab4a92fc_
+Content-Type: text/html; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 
-echo cpu type:
+<html>
+<head>
+<style><!--
+.hmmessage P
+{
+margin:0px=3B
+padding:0px
+}
+body.hmmessage
+{
+font-size: 10pt=3B
+font-family:Tahoma
+}
+--></style>
+</head>
+<body class=3D'hmmessage'>
+<P style=3D"MARGIN: 0cm 0cm 0pt" class=3DMsoNormal><SPAN style=3D"FONT-FAMI=
+LY: Tahoma=3B COLOR: #2a2a2a=3B FONT-SIZE: 10pt">Dear all list members.<BR>=
+<BR>A Xenomai based Open Source Project called FreeDCS is participating in =
+a contest to win funding for continuing its development.<BR>FreeDCS aims to=
+ be an Open Source Distributed Control System to be used at the industrial =
+level=2C as well as for home and educational purposes in Universities.<BR><=
+/SPAN></P>
+<P style=3D"MARGIN: 0cm 0cm 0pt" class=3DMsoNormal><SPAN style=3D"FONT-FAMI=
+LY: Tahoma=3B COLOR: #2a2a2a=3B FONT-SIZE: 10pt">I kindly ask for your vote=
+ to be selected as one of the 20 finalist projects by visiting the project =
+home page <A href=3D"http://freedcs.sourceforge.net/index.html">http://free=
+dcs.sourceforge.net/index.html</A> and clicking <BR>the "Votar" button afte=
+r inserting the text in the textbox.<BR><BR>I think that if this project su=
+cceed=2C it will be great for the Xenomai community as well=2C as the insta=
+lled base of Xenomai will increase and we all will have an open platform fo=
+r control systems.<BR><BR>Best Regards.<BR>Ing. Robert P=E9rez.<?xml:namesp=
+ace prefix =3D o ns =3D "urn:schemas-microsoft-com:office:office" /><o:p></=
+o:p></SPAN></P> 		 	   		  </body>
+</html>=
 
-for i in \
-\
-CONFIG_M386 \
-CONFIG_M486 \
-CONFIG_M586 \
-CONFIG_M586TSC \
-CONFIG_M586MMX \
-CONFIG_M686 \
-CONFIG_MPENTIUMII \
-CONFIG_MPENTIUMIII \
-CONFIG_MPENTIUMM \
-CONFIG_MPENTIUM4 \
-CONFIG_MK6 \
-CONFIG_MK7 \
-CONFIG_MK8 \
-CONFIG_MCRUSOE \
-CONFIG_MEFFICEON \
-CONFIG_MWINCHIPC6 \
-CONFIG_MWINCHIP3D \
-CONFIG_MGEODEGX1 \
-CONFIG_MGEODE_LX \
-CONFIG_MCYRIXIII \
-CONFIG_MVIAC3_2 \
-CONFIG_MVIAC7 \
-CONFIG_MPSC \
-CONFIG_MCORE2 \
-CONFIG_MATOM \
-CONFIG_GENERIC_CPU \
-CONFIG_X86_GENERIC \
-CONFIG_X86_CPU \
-
-do
-
-grep -w ${i}=y $1
-
-done
-echo
-
-# find whether set
-
-echo want these set if possible:
-
-for i in \
-\
-CONFIG_XENO_HW_SMI_WORKAROUND \
-CONFIG_XENO_OPT_PERVASIVE \
-
-do
-
-grep -w $i $1 || echo $i not found in $1
-
-done
-echo
-
-# find whether set
-
-echo want these not set:
-
-for i in \
-\
-CONFIG_CPU_FREQ \
-CONFIG_APM \
-CONFIG_ACPI_PROCESSOR \
-CONFIG_PCI_MSI \
-CONFIG_INTEL_IDLE \
-
-do
-
-grep -w $i $1 || echo $i not found in $1
-
-done
-echo
-
-# find whether set
-
-echo want these not set if pre-Pentium:
-
-for i in \
-\
-CONFIG_INPUT_PCSPKR \
-CONFIG_X86_TSC \
-
-do
-
-grep -w $i $1 || echo $i not found in $1
-
-done
-echo
-
-# find whether set
-
-echo want IPIPE, and either set X86_LOCAL_APIC or not set HPET_TIMER:
-
-for i in \
-\
-CONFIG_X86_LOCAL_APIC \
-CONFIG_HPET_TIMER \
-CONFIG_IPIPE \
-
-do
-
-grep -w $i $1 || echo $i not found in $1
-
-done
-echo
-
-echo Xenomai options:
-grep CONFIG_XENO $1
-echo
-
-echo Preempt options:
-grep PREEMPT $1
->>>>>
+--_b79b382b-4fad-4fcf-9f44-87cfab4a92fc_--
 
