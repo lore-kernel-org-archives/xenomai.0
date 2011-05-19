@@ -1,9 +1,11 @@
-MIME-Version: 1.0
-Message-ID: <OF15B3A65E.95FCDE8A-ONC125788C.002F7603-C125788C.002FD68D@esa.int>
-From: julien.delange@domain.hid
-Date: Tue, 10 May 2011 10:42:32 +0200
-Content-Type: text/plain; charset="US-ASCII"
-Subject: [Xenomai-core] Integration of new drivers in xenomai
+Date: Thu, 19 May 2011 15:40:58 +0800
+From: "arethe.rtai" <arethe.rtai@domain.hid>
+Message-ID: <201105191540561098802@domain.hid>
+Mime-Version: 1.0
+Content-Type: multipart/alternative;
+	boundary="=====003_Dragon027263767421_====="
+Subject: [Xenomai-core] I solved the problem of the shared memory cannot be
+	allocated in the user space
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -12,30 +14,64 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+To: Xenomai-core <Xenomai-core@domain.hid>
 
-Dear all,
 
-For my work, I had to develop drivers for the 6052 and 6701 boards from 
-National Instruments. These boards are already supported by the Comedi 
-drivers but were not supported by Xenomai yet. So, I took the code from 
-Comedi and adapt it to Xenomai with the analogy layer (a4l* functions and 
-so on). It introduces two new drivers : analogy_ni_670x and 
-analogy_ni_660x.
+This is a multi-part message in MIME format.
 
-At this time, the driver compiles and loads correctly. I will have the 
-hardware in ten days to test the code and make sure it works from a 
-functional point of view.
+--=====003_Dragon027263767421_=====
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 
-In order to contribute to Xenomai, I would like to know if this code could 
-be integrated in Xenomai repository. In particular, what are the 
-conditions to integrate third-party code and especially driver code. Then, 
-if it seems interesting for you, I will submit a patch as soon as I 
-checked that it works correctly with the physical boards.
+HI all:
+     I solved the problem of the shared memory cannot be allocated in the user space. 
+Because the shared memory space are allocated from the kheap, but the kheap is not a mapped heap, i.e. its pages are not reserved.
+I init the kheap by xnheap_init_mapped rather than xnheap_init. The problem is solved.
+If there is a need, I can submit the patch to Xenomai.
 
-Thanks for any suggestion,
+Qin Chenggang
 
-Best regards,
+2011-05-19 
 
+
+
+arethe.rtai 
+
+--=====003_Dragon027263767421_=====
+Content-Type: text/html;
+	charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML><HEAD>
+<META http-equiv=Content-Type content="text/html; charset=us-ascii">
+<META content="MSHTML 6.00.6000.17097" name=GENERATOR><LINK 
+href="BLOCKQUOTE{margin-Top: 0px; margin-Bottom: 0px; margin-Left: 2em}" 
+rel=stylesheet></HEAD>
+<BODY style="FONT-SIZE: 10pt; MARGIN: 10px; FONT-FAMILY: verdana">
+<DIV><FONT face=Verdana size=2>
+<DIV><FONT color=#000080 size=2>HI all:</FONT></DIV>
+<DIV><FONT color=#000080 size=2>&nbsp;&nbsp;&nbsp;&nbsp; I&nbsp;solved the 
+problem of the shared memory cannot be allocated in the user space. 
+</FONT></DIV>
+<DIV><FONT color=#000080 size=2>Because the shared&nbsp;memory space are 
+allocated from the kheap, but the kheap is not a mapped heap, i.e. its pages are 
+not reserved.</FONT></DIV>
+<DIV><FONT color=#000080>I init the kheap by xnheap_init_mapped rather than 
+xnheap_init. The problem is solved.</FONT></DIV>
+<DIV style="TEXT-INDENT: 2em"><FONT color=#000080>If there is a need, I can 
+submit the patch to Xenomai.</FONT></DIV>
+<DIV><FONT color=#000080></FONT>&nbsp;</DIV>
+<DIV><FONT color=#000080>Qin Chenggang</FONT></DIV></FONT></DIV>
+<DIV><FONT face=Verdana size=2></FONT>&nbsp;</DIV>
+<DIV align=left><FONT face=Verdana color=#c0c0c0 size=2>2011-05-19 
+</FONT></DIV><FONT face=Verdana size=2>
+<HR style="WIDTH: 122px; HEIGHT: 2px" align=left SIZE=2>
+
+<DIV><FONT face=Verdana color=#c0c0c0 size=2><SPAN>arethe.rtai</SPAN> 
+</FONT></DIV></FONT></BODY></HTML>
+
+--=====003_Dragon027263767421_=====--
 
 
