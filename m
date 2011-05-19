@@ -1,9 +1,13 @@
+Message-ID: <4DD55CEE.4030607@domain.hid>
+Date: Thu, 19 May 2011 20:09:50 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Date: Thu, 19 May 2011 16:41:09 +0200
-Message-ID: <BANLkTimo07YLRZKw2faMv3r5MuBeG047zQ@mail.gmail.com>
-From: suresh reddy <sureshreddy.balijepalli@domain.hid>
-Content-Type: multipart/alternative; boundary=bcaec5430548f2c70104a3a1fe90
-Subject: [Xenomai-help] Regarding available stable versions for pandaboard
+References: <BANLkTimo07YLRZKw2faMv3r5MuBeG047zQ@mail.gmail.com>
+In-Reply-To: <BANLkTimo07YLRZKw2faMv3r5MuBeG047zQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] Regarding available stable versions for
+	pandaboard
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -13,30 +17,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: suresh reddy <sureshreddy.balijepalli@domain.hid>
+Cc: xenomai@xenomai.org
 
---bcaec5430548f2c70104a3a1fe90
-Content-Type: text/plain; charset=ISO-8859-1
+On 05/19/2011 04:41 PM, suresh reddy wrote:
+> Hi all,
+> 
+> iam running ubuntu 10.04 on my pandaboard  with the kernel 2.6.35-903-omap4.
+> 
+> the latest linux kernel available is 2.6.38 and  the xenomai latest
+> version is v2.5.6. My question is is it compatible if i compile with the
+> available adeos patch for pandaboard?
 
-Hi all,
+Yes. You may have to adjust include/asm-arm/hal.h, as explained in the
+arm porting guide though.
 
-iam running ubuntu 10.04 on my pandaboard  with the kernel 2.6.35-903-omap4.
-
-the latest linux kernel available is 2.6.38 and  the xenomai latest version
-is v2.5.6. My question is is it compatible if i compile with the available
-adeos patch for pandaboard?
-
---bcaec5430548f2c70104a3a1fe90
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr">Hi all,<div><br></div><div>iam running ubuntu 10.04 on my =
-pandaboard =A0with the kernel 2.6.35-903-omap4.</div><div><br></div><div>th=
-e latest linux kernel available is 2.6.38 and =A0the xenomai latest version=
- is v2.5.6. My question is is it compatible if i compile with the available=
- adeos patch for pandaboard?</div>
-<div><br><br>
-</div></div>
-
---bcaec5430548f2c70104a3a1fe90--
+-- 
+                                                                Gilles.
 
