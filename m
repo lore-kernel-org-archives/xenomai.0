@@ -1,13 +1,10 @@
-Message-ID: <4DD55CEE.4030607@domain.hid>
-Date: Thu, 19 May 2011 20:09:50 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <BANLkTimo07YLRZKw2faMv3r5MuBeG047zQ@mail.gmail.com>
-In-Reply-To: <BANLkTimo07YLRZKw2faMv3r5MuBeG047zQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Regarding available stable versions for
-	pandaboard
+Sender: madjsw@domain.hid
+Date: Thu, 19 May 2011 13:30:29 -0500
+Message-ID: <BANLkTinUMLHw_i23WGmcbBrEJiTREnyY6w@domain.hid>
+From: Jeff Weber <jwamsc@domain.hid>
+Content-Type: multipart/alternative; boundary=0016e6deddd21f682704a3a533ed
+Subject: [Xenomai-help] priority coupling and Linux threads
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -17,21 +14,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: suresh reddy <sureshreddy.balijepalli@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 05/19/2011 04:41 PM, suresh reddy wrote:
-> Hi all,
-> 
-> iam running ubuntu 10.04 on my pandaboard  with the kernel 2.6.35-903-omap4.
-> 
-> the latest linux kernel available is 2.6.38 and  the xenomai latest
-> version is v2.5.6. My question is is it compatible if i compile with the
-> available adeos patch for pandaboard?
+--0016e6deddd21f682704a3a533ed
+Content-Type: text/plain; charset=ISO-8859-1
 
-Yes. You may have to adjust include/asm-arm/hal.h, as explained in the
-arm porting guide though.
+If XENO_OPT_PRIOCPL is enabled, can a non-Xenomai Linux thread, created
+via __real_pthread_create() preempt a Xenomai primary-mode or Xenomai
+secondary-mode thread?
 
--- 
-                                                                Gilles.
+For example, when the Linux kernel inherits the priority of a primary-mode
+thread to run it in secondary mode, can the kernel then discover some other
+Linux thread with better priority and preempt the secondary mode thread?
+
+TIA,
+Jeff
+
+--0016e6deddd21f682704a3a533ed
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+If=A0XENO_OPT_PRIOCPL is enabled, can a non-Xenomai Linux thread, created v=
+ia=A0__real_pthread_create() preempt a Xenomai primary-mode or Xenomai seco=
+ndary-mode thread?<div><br></div><div>For example, when the Linux kernel in=
+herits the priority of a primary-mode thread to run it in secondary mode, c=
+an the kernel then discover some other Linux thread with better priority an=
+d preempt the secondary mode thread?</div>
+<div><br></div><div>TIA,</div><div>Jeff</div>
+
+--0016e6deddd21f682704a3a533ed--
 
