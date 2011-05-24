@@ -1,11 +1,12 @@
-Message-ID: <4DC96142.7020008@domain.hid>
-Date: Tue, 10 May 2011 18:01:06 +0200
-From: Roberto Bielli <roberto.bielli@domain.hid>
+Message-ID: <4DDB349B.5030209@domain.hid>
+Date: Tue, 24 May 2011 06:31:23 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+References: <4DDA66CF.2010307@domain.hid>
+In-Reply-To: <4DDA66CF.2010307@domain.hid>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] SWITCH TASK TO SECONDARY MODE DURING GDB SESSION
-	DOESN'T WORK
+Subject: Re: [Xenomai-core] [PULL] native: Fix msendq fastlock leakage
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -14,117 +15,95 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: Xenomai core <Xenomai-core@domain.hid>
 
-Hi,
+On 05/23/2011 03:53 PM, Jan Kiszka wrote:
+> The following changes since commit aec30a2543afa18fa7832deee85e187b0faeb1f0:
+> 
+>   xeno-test: fix reference to @XENO_TEST_DIR@ (2011-05-15 21:20:41 +0200)
+> 
+> are available in the git repository at:
+>   git://git.xenomai.org/xenomai-jki.git for-upstream
+> 
+> Jan Kiszka (1):
+>       native: Fix msendq fastlock leakage
+> 
+>  include/native/task.h    |    5 +++++
+>  ksrc/skins/native/task.c |   13 ++++++-------
+>  2 files changed, 11 insertions(+), 7 deletions(-)
+> 
+> ------8<------
+> 
+> When a native task terminates without going through rt_task_delete, we
+> leaked the fastlock so far. Fix it by moving the release into the delete
+> hook. As the ppd is already invalid at that point, we have to save the
+> heap address in the task data structure.
 
-i try the next C code in a gdb session on a ARM target with brakpoints 
-and i found a strange behaviour.
-I expected that the task 'tsk1' never execute instead if i put a 
-breakpoint on the instruction 'varInt += 1;' i see that it's executed.
-I sospect that there is this behavior:
+I Jan, I once worked on a patch to reverse the ppd cleanup order, in order
+to fix bugs of this kind. Here it comes. I do not remember why I did not
+commit it, but I guess it was not working well. Could we restart working
+from this patch?
 
-1. i start gdb with application. The application is not running.
-2. i enable the breakpoint on the instruction 'err = 
-rt_task_start(&tsk1, &test_tsk1, NULL );'
-3. i enable the breakpoint on the instruction 'varInt += 1;' in tsk1
-4. run the application that stop on the instruction 'err = 
-rt_task_start(&tsk1, &test_tsk1, NULL );'
-so the task is in secondary mode for the breakpoint hit if i understand 
-correctly .
-5. i make a single step and do the rt_task_start in main, so i see that 
-i break in the task on the instruction 'varInt += 1;' in tsk1
-this is strange because main has shadow and has a priority equal o 99, 
-instead  tsk1 has a priority equal to 49.
-6, the program execute the instruction  'varInt += 1;' and then return 
-to main.
-7 then the main has always the control.
+>From 038ecf08cd66b3112e0fe277d71d294b8eb83bcc Mon Sep 17 00:00:00 2001
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Date: Sun, 29 Aug 2010 14:52:08 +0200
+Subject: [PATCH] nucleus: reverse ppd cleanup order
 
-The question is:
-Why the priority is not respected ? I think this. Maybe the main is in 
-secondary mode for the breakpoint and when make a rt_task_create the new 
-task is in primary
-mode for the initial instruction. Then receive the signal ( verified 
-with rt_task_set_mode(0, T_WARNSW, NULL); ) and switch to secondary mode 
-but initially the task tsk is in primary mode and execute before main.
+---
+ ksrc/nucleus/shadow.c |   11 ++++++-----
+ 1 files changed, 6 insertions(+), 5 deletions(-)
 
-Is a known problem ?
+diff --git a/ksrc/nucleus/shadow.c b/ksrc/nucleus/shadow.c
+index b2d4326..725ae43 100644
+--- a/ksrc/nucleus/shadow.c
++++ b/ksrc/nucleus/shadow.c
+@@ -556,7 +556,7 @@ static unsigned ppd_lookup_inner(xnqueue_t **pq,
+ 	}
+ 	while (holder &&
+ 	       (ppd->key.mm < pkey->mm ||
+-		(ppd->key.mm == pkey->mm && ppd->key.muxid < pkey->muxid)));
++		(ppd->key.mm == pkey->mm && ppd->key.muxid > pkey->muxid)));
+ 
+ 	if (ppd->key.mm == pkey->mm && ppd->key.muxid == pkey->muxid) {
+ 		/* found it, return it. */
+@@ -566,7 +566,7 @@ static unsigned ppd_lookup_inner(xnqueue_t **pq,
+ 
+ 	/* not found, return successor for insertion. */
+ 	if (ppd->key.mm < pkey->mm ||
+-	    (ppd->key.mm == pkey->mm && ppd->key.muxid < pkey->muxid))
++	    (ppd->key.mm == pkey->mm && ppd->key.muxid > pkey->muxid))
+ 		*pholder = holder ? link2ppd(holder) : NULL;
+ 	else
+ 		*pholder = ppd;
+@@ -589,10 +589,11 @@ static int ppd_insert(xnshadow_ppd_t * holder)
+ 	}
+ 
+ 	inith(&holder->link);
+-	if (next)
++	if (next) {
+ 		insertq(q, &next->link, &holder->link);
+-	else
++	} else {
+ 		appendq(q, &holder->link);
++	}
+ 	xnlock_put_irqrestore(&nklock, s);
+ 
+ 	return 0;
+@@ -640,7 +641,7 @@ static inline void ppd_remove_mm(struct mm_struct *mm,
+ 	xnqueue_t *q;
+ 	spl_t s;
+ 
+-	key.muxid = 0;
++	key.muxid = ~0UL;
+ 	key.mm = mm;
+ 	xnlock_get_irqsave(&nklock, s);
+ 	ppd_lookup_inner(&q, &ppd, &key);
+-- 
+1.7.2.5
 
-Best Regards
 
-
-
-CODE---------------------------------
-
-
-int varInt = 0;
-RT_TASK tsk1, tskMain;
-
-int main (int argc, char *argv[])
-{
-     int err;
-     mlockall(MCL_CURRENT|MCL_FUTURE);
-
-     rt_task_shadow(&tskMain, "main", 99, 0);
-
-     err  = rt_task_create( &tsk1, "tsk1", 0, 49, T_FPU );
-     err = rt_task_start(&tsk1, &test_tsk1, NULL );
-
-     for (;;)
-     {
-         if( varInt > 1 )
-             break;
-     }
-
-
-     printf("Task started\n");
-
-     return 0;
-}
-
-void test_tsk1( void * args )
-{
-
-     for( ;;)
-     {
-         varInt += 1;
-         rt_task_sleep( 100000000 );
-     }
-}
 
 -- 
-+------------------------------------------------------------------------------------------------+
-							
-Roberto Bielli
-Sviluppo Software					
-Axel S.r.l.					
-							
-Via Del Cannino, 3 				
-21020 Crosio Della Valle			
-Varese - Italy					
-							
-Telefono: +39 0332 949600			
-Fax:      +39 0332 969315			
-							
-E-mail:   roberto.bielli@domain.hid	
-Web Site: www.axelsw.it
-
-+------------------------------------------------------------------------------------------------+
-
-Si precisa che le informazioni contenute in questo messaggio sono riservate e ad uso esclusivo del destinatario.
-Qualora il messaggio in parola Le fosse pervenuto per errore, La preghiamo di eliminarlo senza copiarlo e di non inoltrarlo a terzi,
-dandocene gentilmente comunicazione. Grazie.
-Informativa sul trattamento dei dati personali (D. Lgs. 196/2003).
-I dati utilizzati per la spedizione del presente messaggio sono utilizzati da Axel S.r.l., titolare del trattamento,
-per l'invio delle comunicazioni dei diversi settori aziendali, non essendo autorizzata la divulgazione a terzi.
-Potrete rivolgere alla seguente mail richieste di verifica, rettifica o cancellazione dei Vostri dati: info@domain.hid
-
-This e-mail and any attachments is confidential and may contain privileged information
-intended for the addressee(s) only. Dissemination, copying, printing or use by anybody
-else is unauthorised. If you are not the intended recipient,
-please delete this message and any attachments and advise the sender
-by return e-mail.Thank you.  			
-							
-+------------------------------------------------------------------------------------------------+
-
+                                                                Gilles.
 
