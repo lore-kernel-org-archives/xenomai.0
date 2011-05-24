@@ -1,13 +1,13 @@
-Message-ID: <4DDBA4D6.5070106@domain.hid>
-Date: Tue, 24 May 2011 14:30:14 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4DDBB82D.6040803@domain.hid>
+Date: Tue, 24 May 2011 15:52:45 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
 References: <4DDA66CF.2010307@domain.hid> <4DDB349B.5030209@domain.hid>
 	<4DDB76C6.2090008@domain.hid> <4DDB7B3D.2030607@domain.hid>
 	<4DDB7C2C.4030206@domain.hid> <4DDB8136.10506@domain.hid>
 	<4DDB8A1D.4050704@domain.hid> <4DDB8B5F.9070906@domain.hid>
-	<4DDBA341.6060009@domain.hid>
-In-Reply-To: <4DDBA341.6060009@domain.hid>
+	<4DDBA341.6060009@domain.hid> <4DDBA4D6.5070106@domain.hid>
+In-Reply-To: <4DDBA4D6.5070106@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-core] [PULL] native: Fix msendq fastlock leakage
@@ -19,131 +19,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: Xenomai core <Xenomai-core@domain.hid>
 
-On 05/24/2011 02:23 PM, Jan Kiszka wrote:
-> On 2011-05-24 12:41, Gilles Chanteperdrix wrote:
->> On 05/24/2011 12:36 PM, Jan Kiszka wrote:
->>> On 2011-05-24 11:58, Gilles Chanteperdrix wrote:
->>>> On 05/24/2011 11:36 AM, Jan Kiszka wrote:
->>>>> On 2011-05-24 11:32, Gilles Chanteperdrix wrote:
->>>>>> On 05/24/2011 11:13 AM, Jan Kiszka wrote:
->>>>>>> On 2011-05-24 06:31, Gilles Chanteperdrix wrote:
->>>>>>>> On 05/23/2011 03:53 PM, Jan Kiszka wrote:
->>>>>>>>> The following changes since commit aec30a2543afa18fa7832deee85e187b0faeb1f0:
->>>>>>>>>
->>>>>>>>>   xeno-test: fix reference to @XENO_TEST_DIR@ (2011-05-15 21:20:41 +0200)
->>>>>>>>>
->>>>>>>>> are available in the git repository at:
->>>>>>>>>   git://git.xenomai.org/xenomai-jki.git for-upstream
->>>>>>>>>
->>>>>>>>> Jan Kiszka (1):
->>>>>>>>>       native: Fix msendq fastlock leakage
->>>>>>>>>
->>>>>>>>>  include/native/task.h    |    5 +++++
->>>>>>>>>  ksrc/skins/native/task.c |   13 ++++++-------
->>>>>>>>>  2 files changed, 11 insertions(+), 7 deletions(-)
->>>>>>>>>
->>>>>>>>> ------8<------
->>>>>>>>>
->>>>>>>>> When a native task terminates without going through rt_task_delete, we
->>>>>>>>> leaked the fastlock so far. Fix it by moving the release into the delete
->>>>>>>>> hook. As the ppd is already invalid at that point, we have to save the
->>>>>>>>> heap address in the task data structure.
->>>>>>>>
->>>>>>>> I Jan, I once worked on a patch to reverse the ppd cleanup order, in order
->>>>>>>> to fix bugs of this kind. Here it comes. I do not remember why I did not
->>>>>>>> commit it, but I guess it was not working well. Could we restart working
->>>>>>>> from this patch?
->>>>>>>>
->>>>>>>> From 038ecf08cd66b3112e0fe277d71d294b8eb83bcc Mon Sep 17 00:00:00 2001
->>>>>>>> From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
->>>>>>>> Date: Sun, 29 Aug 2010 14:52:08 +0200
->>>>>>>> Subject: [PATCH] nucleus: reverse ppd cleanup order
->>>>>>>>
->>>>>>>> ---
->>>>>>>>  ksrc/nucleus/shadow.c |   11 ++++++-----
->>>>>>>>  1 files changed, 6 insertions(+), 5 deletions(-)
->>>>>>>>
->>>>>>>> diff --git a/ksrc/nucleus/shadow.c b/ksrc/nucleus/shadow.c
->>>>>>>> index b2d4326..725ae43 100644
->>>>>>>> --- a/ksrc/nucleus/shadow.c
->>>>>>>> +++ b/ksrc/nucleus/shadow.c
->>>>>>>> @@ -556,7 +556,7 @@ static unsigned ppd_lookup_inner(xnqueue_t **pq,
->>>>>>>>  	}
->>>>>>>>  	while (holder &&
->>>>>>>>  	       (ppd->key.mm < pkey->mm ||
->>>>>>>> -		(ppd->key.mm == pkey->mm && ppd->key.muxid < pkey->muxid)));
->>>>>>>> +		(ppd->key.mm == pkey->mm && ppd->key.muxid > pkey->muxid)));
->>>>>>>>  
->>>>>>>>  	if (ppd->key.mm == pkey->mm && ppd->key.muxid == pkey->muxid) {
->>>>>>>>  		/* found it, return it. */
->>>>>>>> @@ -566,7 +566,7 @@ static unsigned ppd_lookup_inner(xnqueue_t **pq,
->>>>>>>>  
->>>>>>>>  	/* not found, return successor for insertion. */
->>>>>>>>  	if (ppd->key.mm < pkey->mm ||
->>>>>>>> -	    (ppd->key.mm == pkey->mm && ppd->key.muxid < pkey->muxid))
->>>>>>>> +	    (ppd->key.mm == pkey->mm && ppd->key.muxid > pkey->muxid))
->>>>>>>>  		*pholder = holder ? link2ppd(holder) : NULL;
->>>>>>>>  	else
->>>>>>>>  		*pholder = ppd;
->>>>>>>> @@ -589,10 +589,11 @@ static int ppd_insert(xnshadow_ppd_t * holder)
->>>>>>>>  	}
->>>>>>>>  
->>>>>>>>  	inith(&holder->link);
->>>>>>>> -	if (next)
->>>>>>>> +	if (next) {
->>>>>>>>  		insertq(q, &next->link, &holder->link);
->>>>>>>> -	else
->>>>>>>> +	} else {
->>>>>>>>  		appendq(q, &holder->link);
->>>>>>>> +	}
->>>>>>>>  	xnlock_put_irqrestore(&nklock, s);
->>>>>>>>  
->>>>>>>>  	return 0;
->>>>>>>> @@ -640,7 +641,7 @@ static inline void ppd_remove_mm(struct mm_struct *mm,
->>>>>>>>  	xnqueue_t *q;
->>>>>>>>  	spl_t s;
->>>>>>>>  
->>>>>>>> -	key.muxid = 0;
->>>>>>>> +	key.muxid = ~0UL;
->>>>>>>>  	key.mm = mm;
->>>>>>>>  	xnlock_get_irqsave(&nklock, s);
->>>>>>>>  	ppd_lookup_inner(&q, &ppd, &key);
->>>>>>>
->>>>>>> Unfortunately, that won't help. I think we are forced to clear
->>>>>>> xnshadow_thrptd before calling into xnpod_delete_thread, but we would
->>>>>>> need that for xnshadow_ppd_get (=>xnpod_userspace_p()).
->>>>>>
->>>>>> I remember that now. Even if it worked, when the cleanup handler is
->>>>>> called, current->mm is NULL. We need to do this differently, the sys ppd
->>>>>> should be treated differently and passed to the other ppds cleanup routines.
+On 2011-05-24 14:30, Gilles Chanteperdrix wrote:
+>>>>>> Do you already have an idea how to get that info to the delete hook
+>>>>>> function?
 >>>>>
->>>>> Do you already have an idea how to get that info to the delete hook
->>>>> function?
+>>>>> Yes. We start by not applying the list reversal patch, then the sys_ppd
+>>>>> is the first in the list. So, we can, in the function ppd_remove_mm,
+>>>>> start by removing all the others ppd, then remove the sys ppd (that is
+>>>>> the first), last. This changes a few signatures in the core code, a lot
+>>>>> of things in the skin code, but that would be for the better...
 >>>>
->>>> Yes. We start by not applying the list reversal patch, then the sys_ppd
->>>> is the first in the list. So, we can, in the function ppd_remove_mm,
->>>> start by removing all the others ppd, then remove the sys ppd (that is
->>>> the first), last. This changes a few signatures in the core code, a lot
->>>> of things in the skin code, but that would be for the better...
+>>>> I still don't see how this affects the order we use in
+>>>> do_taskexit_event, the one that prevents xnsys_get_ppd usage even when
+>>>> the mm is still present.
 >>>
->>> I still don't see how this affects the order we use in
->>> do_taskexit_event, the one that prevents xnsys_get_ppd usage even when
->>> the mm is still present.
+>>> The idea is to change the cleanup routines not to call xnsys_get_ppd.
 >>
->> The idea is to change the cleanup routines not to call xnsys_get_ppd.
+>> ...and use what instead? Sorry, I'm slow today.
 > 
-> ...and use what instead? Sorry, I'm slow today.
+> The sys_ppd passed as other argument to the cleanup function.
 
-The sys_ppd passed as other argument to the cleanup function.
+That would affect all thread hooks, not only the one for deletion. And
+it would pull in more shadow-specific bits into the pod.
 
-> 
-> Jan
-> 
+Moreover, I think we would still be in troubles as mm, thus ppd,
+deletion takes place before last task deletion, thus taskexit hook
+invocation. That's due to the cleanup ordering in the kernel's do_exit.
 
+However, if you have a patch, I'd be happy to test and rework my leakage
+fix.
+
+Jan
 
 -- 
-					    Gilles.
+Siemens AG, Corporate Technology, CT T DE IT 1
+Corporate Competence Center Embedded Linux
 
