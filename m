@@ -1,14 +1,10 @@
-Message-ID: <4DDABEAB.70804@domain.hid>
-Date: Mon, 23 May 2011 22:08:11 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <897759.67778.qm@domain.hid>
+Date: Tue, 24 May 2011 17:35:05 -0700 (PDT)
+From: Jules Warsh <juleswarsh@domain.hid>
 MIME-Version: 1.0
-References: <BANLkTimo07YLRZKw2faMv3r5MuBeG047zQ@mail.gmail.com>	<4DD55CEE.4030607@domain.hid>	<BANLkTim2KPKjhgSSAcyF4g1-CVFXFsCjTw@domain.hid>	<4DD6CFFA.50108@domain.hid>
-	<BANLkTikVPXqV=PBBFS-fwAtDox8S0EPb3g@domain.hid>
-In-Reply-To: <BANLkTikVPXqV=PBBFS-fwAtDox8S0EPb3g@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Regarding available stable versions for
-	pandaboard
+Content-Type: multipart/alternative; boundary="0-257697931-1306283705=:67778"
+Subject: [Xenomai-help] Analogy simultaneous read write commands
+Reply-To: Jules Warsh <juleswarsh@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -18,58 +14,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: suresh reddy <sureshreddy.balijepalli@domain.hid>
-Cc: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 05/21/2011 09:54 AM, suresh reddy wrote:
-> On 20 May 2011 09:32, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org
->> wrote:
-> 
->> On 05/20/2011 11:26 AM, suresh reddy wrote:
->>> On 05/19/2011 04:41 PM, suresh reddy wrote:
->>>> Hi all,
->>>>
->>>> iam running ubuntu 10.04 on my pandaboard  with the kernel
->>> 2.6.35-903-omap4.
->>>>
->>>> the latest linux kernel available is 2.6.38 and  the xenomai latest
->>>> version is v2.5.6. My question is is it compatible if i compile with the
->>>> available adeos patch for pandaboard?
->>>
->>> Yes. You may have to adjust include/asm-arm/hal.h, as explained in the
->>> arm porting guide though.
->>>
->>>
->>> Ok. So,the linux kernel 2.6.38 and xenomai latest version with two
->>> macros adding in
->>> include/asm-arm/hal.h will make it compile  for pandaboard  .
->>
->> No. You can not use linux kernel 2.6.38, you need to pick the ipipe tree
->> from the git I sent you a link in a previous mail.
->>
-> 
->  yes i understanded that i have to take ipipe code from your previous mail
-> and xenomai code of latest stable release but what i did not understanded is
-> 
-> linux kernel code .Do i need to download the linux kernel code from
-> www.kernel.org  or its just enough to download the ipipe and xenomai to
-> /usr/src/
-> directory where omap4 linux kernel headers were there . And compile them .
+--0-257697931-1306283705=:67778
+Content-Type: text/plain; charset=us-ascii
 
-Ok, nobody answered, so I am going to answer after all.
+Hello,
 
-You question is frightening: it shows that since the time you are
-talking about Xenomai and sending mails to this list, you did not take
-the time to either try and install Xenomai on another platform than
-panda (which I told you several times to do), or even read Xenomai
-installation instruction.
+Is it possible to:
+- Set a command (a4l_snd_command) to read data from an Analogy subdevice,
+- Set a command (a4l_snd_command) to write data to a different Analogy subdevice,
+- Trigger both commands, and
 
-The Adeos I-pipe patch is a patch for the Linux kernel, but in order to
-generate that patch, we maintain in the I-pipe git repository the
-patched kernel, and extract the patch from that repository. The link I
-sent you is a link to that repository, not a link to the patch, you do
-not need any kernel to apply it.
+- Collect/write data from/to buffers ?
 
--- 
-                                                                Gilles.
+
+Or whatever other actions to implement the same functionality above?
+
+Thank you.
+
+--0-257697931-1306283705=:67778
+Content-Type: text/html; charset=us-ascii
+
+<html><body><div style="color:#000; background-color:#fff; font-family:times new roman, new york, times, serif;font-size:12pt"><div>Hello,</div><div><br></div><div>Is it possible to:</div><div>- Set a command (a4l_snd_command) to read data from an Analogy subdevice,</div><div>- Set a command (a4l_snd_command) to write data to a different Analogy subdevice,</div><div>- Trigger both commands, and<br></div><div>- Collect/write data from/to buffers ?<br></div><div><br></div><div>Or whatever other actions to implement the same functionality above?</div><div><br></div><div>Thank you.</div><div></div></div></body></html>
+--0-257697931-1306283705=:67778--
 
