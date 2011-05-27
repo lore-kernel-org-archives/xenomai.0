@@ -1,12 +1,12 @@
-Message-ID: <4DDFBDCD.4040809@domain.hid>
-Date: Fri, 27 May 2011 17:05:49 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <4DDFCFCC.1000409@domain.hid>
+Date: Fri, 27 May 2011 18:22:36 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <4DDE8DC9.2020905@domain.hid>
 	<4DDF475A.5080504@domain.hid>	<4DDFB30F.8000003@domain.hid>
-	<4DDFB780.4010009@domain.hid>
-In-Reply-To: <4DDFB780.4010009@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+	<4DDFB780.4010009@domain.hid> <4DDFBDCD.4040809@domain.hid>
+In-Reply-To: <4DDFBDCD.4040809@domain.hid>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] Huge clock drift
 List-Id: Help regarding installation and common use of Xenomai
@@ -18,83 +18,85 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, Jonas Witt <jonas.witt@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai@xenomai.org
 
-On 2011-05-27 16:38, Gilles Chanteperdrix wrote:
-> On 05/27/2011 04:19 PM, Jonas Witt wrote:
->> Am 27.05.2011 08:40, schrieb Gilles Chanteperdrix:
->>> On 05/26/2011 07:28 PM, Jonas Witt wrote:
->>>> Hi all,
+On 05/27/2011 05:05 PM, Jan Kiszka wrote:
+> On 2011-05-27 16:38, Gilles Chanteperdrix wrote:
+>> On 05/27/2011 04:19 PM, Jonas Witt wrote:
+>>> Am 27.05.2011 08:40, schrieb Gilles Chanteperdrix:
+>>>> On 05/26/2011 07:28 PM, Jonas Witt wrote:
+>>>>> Hi all,
+>>>>>
+>>>>> i am having a problem concerning the clock drift under load:
+>>>>>
+>>>>> # /usr/xenomai/bin/clocktest
+>>>>> == Tested clock: 0 (CLOCK_REALTIME)
+>>>>> CPU      ToD offset [us] ToD drift [us/s]      warps max delta [us]
+>>>>> --- -------------------- ---------------- ---------- --------------
+>>>>>     0          775571614.0       166776.858          0            0.0
+>>>>>
+>>>>>
+>>>>> It remains in the hundreds of MILLIseconds, changing constantly. My
+>>>>> setup consists of an embedded Intel Atom board (1.6GHz Z530 processor)
+>>>>> with a 2.6.32.7 kernel and Xenomai 2.5.2.
+>>>> Hi Jonas,
 >>>>
->>>> i am having a problem concerning the clock drift under load:
+>>>> Could you try and see if 2.5.6 with latest I-pipe patches has the same
+>>>> behaviour?
 >>>>
->>>> # /usr/xenomai/bin/clocktest
->>>> == Tested clock: 0 (CLOCK_REALTIME)
->>>> CPU      ToD offset [us] ToD drift [us/s]      warps max delta [us]
->>>> --- -------------------- ---------------- ---------- --------------
->>>>     0          775571614.0       166776.858          0            0.0
+>>>>> Latencies under load are
+>>>>> reasonable. Mean latency<  10us. Maximum latency<  40us.
+>>>>>
+>>>>> Without load the ToD offset is approximately constant over time with a
+>>>>> ToD drift in the range of 10 microseconds (strangely after a while this
+>>>>> settles in a range of 2 microseconds). Does anyone have an idea how this
+>>>>> can be caused?
+>>>> First, I am not sure clocktest is meant to be use under load. Second,
+>>>> does your system uses ntp?
 >>>>
+>>>>> As a workaround I currently use rt_timer_read() in all
+>>>>> relevant programs (also the non-realtime ones), since I need consistent
+>>>>> timestamps between realtime and non-realtime tasks.
+>>>> In order to solve this particular issue, we have a solution, but not yet
+>>>> in stable released versions.
 >>>>
->>>> It remains in the hundreds of MILLIseconds, changing constantly. My
->>>> setup consists of an embedded Intel Atom board (1.6GHz Z530 processor)
->>>> with a 2.6.32.7 kernel and Xenomai 2.5.2.
->>> Hi Jonas,
->>>
->>> Could you try and see if 2.5.6 with latest I-pipe patches has the same
->>> behaviour?
->>>
->>>> Latencies under load are
->>>> reasonable. Mean latency<  10us. Maximum latency<  40us.
+>>>>> One other (maybe unrelated) strange behavior is occasional secondary
+>>>>> mode switches when calling rt_queue_read(...).
+>>>> For this error, we need more details, such as a simple test case
+>>>> allowing to reproduce the issue, and again, you need to be sure to
+>>>> reproduce the issue on latest stable release with latest I-pipe patches.
 >>>>
->>>> Without load the ToD offset is approximately constant over time with a
->>>> ToD drift in the range of 10 microseconds (strangely after a while this
->>>> settles in a range of 2 microseconds). Does anyone have an idea how this
->>>> can be caused?
->>> First, I am not sure clocktest is meant to be use under load. Second,
->>> does your system uses ntp?
+>>>> Regards.
 >>>
->>>> As a workaround I currently use rt_timer_read() in all
->>>> relevant programs (also the non-realtime ones), since I need consistent
->>>> timestamps between realtime and non-realtime tasks.
->>> In order to solve this particular issue, we have a solution, but not yet
->>> in stable released versions.
+>>> Hi Gilles,
 >>>
->>>> One other (maybe unrelated) strange behavior is occasional secondary
->>>> mode switches when calling rt_queue_read(...).
->>> For this error, we need more details, such as a simple test case
->>> allowing to reproduce the issue, and again, you need to be sure to
->>> reproduce the issue on latest stable release with latest I-pipe patches.
->>>
->>> Regards.
+>>> thanks for your input. I will try Xenomai 2.5.6 soon. In the meantime I 
+>>> wrote a simple load simulator to reproduce the issue with my more 
+>>> complex program. The clock drift only occurs with a load of more than 
+>>> 30%. Below that the clock is fine. So you may have to adjust the 
+>>> attached code (e.g. change the 2000 value in the for-loop to something 
+>>> larger) to stress your system to that level where the processing time is 
+>>> more than 2000 microseconds.
 >>
->> Hi Gilles,
->>
->> thanks for your input. I will try Xenomai 2.5.6 soon. In the meantime I 
->> wrote a simple load simulator to reproduce the issue with my more 
->> complex program. The clock drift only occurs with a load of more than 
->> 30%. Below that the clock is fine. So you may have to adjust the 
->> attached code (e.g. change the 2000 value in the for-loop to something 
->> larger) to stress your system to that level where the processing time is 
->> more than 2000 microseconds.
+>> My point was that maybe clocktest is not meant to be run under load. To
+>> this, we should ask Jan to answer, as he wrote this test and knows what
+>> is inside.
 > 
-> My point was that maybe clocktest is not meant to be run under load. To
-> this, we should ask Jan to answer, as he wrote this test and knows what
-> is inside.
+> There are some simple measures in clocktest to check if the clock
+> read-outs were done without major preemptions. But even in extreme load,
+> this should only cause temporary offsets, no constant drift, no
+> persistent delta after taking away the load.
+> 
+> What is the clocksourse Linux is using? See
+> /sys/devices/system/clocksource/clocksource0/current_clocksource.
+> 
+> More important, you still didn't answer Gilles' question about ntp.
 
-There are some simple measures in clocktest to check if the clock
-read-outs were done without major preemptions. But even in extreme load,
-this should only cause temporary offsets, no constant drift, no
-persistent delta after taking away the load.
-
-What is the clocksourse Linux is using? See
-/sys/devices/system/clocksource/clocksource0/current_clocksource.
-
-More important, you still didn't answer Gilles' question about ntp.
-
-Jan
+Furthermore, if some real-time task prevents linux from receiving its
+timer interrupts for long periods (2ms with a 1kHz kernel is a long
+period), you can not expect Linux timer system to work smoothly.
 
 -- 
-Siemens AG, Corporate Technology, CT T DE IT 1
-Corporate Competence Center Embedded Linux
+					    Gilles.
 
