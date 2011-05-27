@@ -1,12 +1,12 @@
-Message-ID: <4DDFCFCC.1000409@domain.hid>
-Date: Fri, 27 May 2011 18:22:36 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4DDFEDA2.40206@domain.hid>
+Date: Fri, 27 May 2011 20:29:54 +0200
+From: Jonas Witt <jonas.witt@domain.hid>
 MIME-Version: 1.0
 References: <4DDE8DC9.2020905@domain.hid>
 	<4DDF475A.5080504@domain.hid>	<4DDFB30F.8000003@domain.hid>
 	<4DDFB780.4010009@domain.hid> <4DDFBDCD.4040809@domain.hid>
 In-Reply-To: <4DDFBDCD.4040809@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] Huge clock drift
 List-Id: Help regarding installation and common use of Xenomai
@@ -21,7 +21,7 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai@xenomai.org
 
-On 05/27/2011 05:05 PM, Jan Kiszka wrote:
+Am 27.05.2011 17:05, schrieb Jan Kiszka:
 > On 2011-05-27 16:38, Gilles Chanteperdrix wrote:
 >> On 05/27/2011 04:19 PM, Jonas Witt wrote:
 >>> Am 27.05.2011 08:40, schrieb Gilles Chanteperdrix:
@@ -34,7 +34,7 @@ On 05/27/2011 05:05 PM, Jan Kiszka wrote:
 >>>>> == Tested clock: 0 (CLOCK_REALTIME)
 >>>>> CPU      ToD offset [us] ToD drift [us/s]      warps max delta [us]
 >>>>> --- -------------------- ---------------- ---------- --------------
->>>>>     0          775571614.0       166776.858          0            0.0
+>>>>>      0          775571614.0       166776.858          0            0.0
 >>>>>
 >>>>>
 >>>>> It remains in the hundreds of MILLIseconds, changing constantly. My
@@ -46,7 +46,7 @@ On 05/27/2011 05:05 PM, Jan Kiszka wrote:
 >>>> behaviour?
 >>>>
 >>>>> Latencies under load are
->>>>> reasonable. Mean latency<  10us. Maximum latency<  40us.
+>>>>> reasonable. Mean latency<   10us. Maximum latency<   40us.
 >>>>>
 >>>>> Without load the ToD offset is approximately constant over time with a
 >>>>> ToD drift in the range of 10 microseconds (strangely after a while this
@@ -68,35 +68,40 @@ On 05/27/2011 05:05 PM, Jan Kiszka wrote:
 >>>> reproduce the issue on latest stable release with latest I-pipe patches.
 >>>>
 >>>> Regards.
->>>
 >>> Hi Gilles,
 >>>
->>> thanks for your input. I will try Xenomai 2.5.6 soon. In the meantime I 
->>> wrote a simple load simulator to reproduce the issue with my more 
->>> complex program. The clock drift only occurs with a load of more than 
->>> 30%. Below that the clock is fine. So you may have to adjust the 
->>> attached code (e.g. change the 2000 value in the for-loop to something 
->>> larger) to stress your system to that level where the processing time is 
+>>> thanks for your input. I will try Xenomai 2.5.6 soon. In the meantime I
+>>> wrote a simple load simulator to reproduce the issue with my more
+>>> complex program. The clock drift only occurs with a load of more than
+>>> 30%. Below that the clock is fine. So you may have to adjust the
+>>> attached code (e.g. change the 2000 value in the for-loop to something
+>>> larger) to stress your system to that level where the processing time is
 >>> more than 2000 microseconds.
->>
 >> My point was that maybe clocktest is not meant to be run under load. To
 >> this, we should ask Jan to answer, as he wrote this test and knows what
 >> is inside.
-> 
 > There are some simple measures in clocktest to check if the clock
 > read-outs were done without major preemptions. But even in extreme load,
 > this should only cause temporary offsets, no constant drift, no
 > persistent delta after taking away the load.
-> 
+>
 > What is the clocksourse Linux is using? See
 > /sys/devices/system/clocksource/clocksource0/current_clocksource.
-> 
+>
 > More important, you still didn't answer Gilles' question about ntp.
+>
+> Jan
+>
+Sorry, I missed the NTP-part. I am not using NTP. Just plain timer 
+queries on a single system.
 
-Furthermore, if some real-time task prevents linux from receiving its
-timer interrupts for long periods (2ms with a 1kHz kernel is a long
-period), you can not expect Linux timer system to work smoothly.
+My clock source is tsc which is the same for Xenomai I suppose.
 
--- 
-					    Gilles.
+I wonder how a Xenomai task, even if it occupies 50% or even 90% of a 4 
+milliseconds time slice can interfere with the tsc. The tsc is not 
+incremented via an interrupt, is it? But I do not know much about the 
+inner workings of these functions.
+
+Jonas
+
 
