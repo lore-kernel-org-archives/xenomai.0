@@ -1,14 +1,15 @@
-Message-ID: <4DFB3A47.4040702@domain.hid>
-Date: Fri, 17 Jun 2011 13:28:07 +0200
+Message-ID: <4DE52CEF.5090000@domain.hid>
+Date: Tue, 31 May 2011 20:01:19 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <4DFB1DC3.80203@domain.hid> <4DFB32B2.1010904@domain.hid>
-	<4DFB3466.10908@domain.hid> <4DFB3521.2010109@domain.hid>
-	<4DFB38E3.10204@domain.hid> <4DFB39F3.5080507@domain.hid>
-In-Reply-To: <4DFB39F3.5080507@domain.hid>
+References: <4DE4D2F1.20305@domain.hid>
+	<1306859397.2153.52.camel@domain.hid>		<4DE51973.70104@domain.hid>
+	<1306861115.2153.67.camel@domain.hid> <4DE5202F.70309@domain.hid>
+	<4DE52C36.9010306@domain.hid>
+In-Reply-To: <4DE52C36.9010306@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [PATCH] nucleus: Fix interrupt handler tails
+Subject: Re: [Xenomai-core] Fragile lock usage tracking for auto-relax
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -20,44 +21,94 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: Xenomai core <Xenomai-core@domain.hid>
 
-On 2011-06-17 13:26, Gilles Chanteperdrix wrote:
-> On 06/17/2011 01:22 PM, Jan Kiszka wrote:
->> On 2011-06-17 13:06, Gilles Chanteperdrix wrote:
->>> On 06/17/2011 01:03 PM, Jan Kiszka wrote:
->>>> On 2011-06-17 12:55, Gilles Chanteperdrix wrote:
->>>>> On 06/17/2011 11:26 AM, Jan Kiszka wrote:
->>>>>> Our current interrupt handlers assume that they leave over the same task
->>>>>> and CPU they entered. But CONFIG_XENO_HW_UNLOCKED_SWITCH and commit
->>>>>> f6af9b831c broke this assumption: xnpod_schedule invoked from the
->>>>>> handler tail can now actually trigger a domain migration
+On 2011-05-31 19:58, Gilles Chanteperdrix wrote:
+> On 05/31/2011 07:06 PM, Jan Kiszka wrote:
+>> On 2011-05-31 18:58, Philippe Gerum wrote:
+>>> On Tue, 2011-05-31 at 18:38 +0200, Jan Kiszka wrote:
+>>>> On 2011-05-31 18:29, Philippe Gerum wrote:
+>>>>> On Tue, 2011-05-31 at 13:37 +0200, Jan Kiszka wrote:
+>>>>>> Hi Philippe,
+>>>>>>
+>>>>>> enabling XENO_OPT_DEBUG_NUCLEUS reveals some shortcomings of the
+>>>>>> in-kernel lock usage tracking via xnthread_t::hrescnt. This BUGON in
+>>>>>> xnsynch_release triggers for RT threads:
+>>>>>>
+>>>>>> 	XENO_BUGON(NUCLEUS, xnthread_get_rescnt(lastowner) < 0);
+>>>>>>
+>>>>>> RT threads do not balance their lock and unlock syscalls, so their
+>>>>>> counter goes wild quite quickly.
+>>>>>>
+>>>>>> But just limiting the bug check to XNOTHER threads is neither a
+>>>>>> solution. How to deal with the counter on scheduling policy changes?
+>>>>>>
+>>>>>> So my suggestion is to convert the auto-relax feature into a service,
+>>>>>> user space can request based on a counter that user space maintains
+>>>>>> independently. I.e. we should create another shared word that user space
+>>>>>> increments and decrements on lock acquisitions/releases on its own. The
+>>>>>> nucleus just tests it when deciding about the relax on return to user space.
+>>>>>>
+>>>>>> But before hacking into that direction, I'd like to hear if it makes
+>>>>>> sense to you.
 >>>>>
->>>>> What unlocked context swith introduce from my point of view is simply
->>>>> sections where interrupt happen which do not reschedule.
+>>>>> At first glance, this does not seem to address the root issue. The
+>>>>> bottom line is that we should not have any thread release an owned lock
+>>>>> it does not hold, kthread or not.
 >>>>>
->>>>> f6af9b831c introduce a rescheduling point, but does not change what
->>>>> happens during the interrupt handler either.
+>>>>> In that respect, xnsynch_release() looks fishy because it may be called
+>>>>> over a context which is _not_ the lock owner, but the thread who is
+>>>>> deleting the lock owner, so assuming lastowner == current_thread when
+>>>>> releasing is wrong.
 >>>>>
->>>>> So, I do not really understand this commit message. Either we can assume
->>>>> that interrupt handlers migrate tasks or not, but this does not seem to
->>>>> have anything to do with unlocked context switches or commit f6af9b831c.
+>>>>> At the very least, the following patch would prevent
+>>>>> xnsynch_release_all_ownerships() to break badly. The same way, the
+>>>>> fastlock stuff does not track the owner properly in the synchro object.
+>>>>> We should fix those issues before going further, they may be related to
+>>>>> the bug described.
+>>>>>
+>>>>> Totally, genuinely, 100% untested.
+>>>>>
+>>>>> diff --git a/ksrc/nucleus/synch.c b/ksrc/nucleus/synch.c
+>>>>> index 3a53527..0785533 100644
+>>>>> --- a/ksrc/nucleus/synch.c
+>>>>> +++ b/ksrc/nucleus/synch.c
+>>>>> @@ -424,6 +424,7 @@ xnflags_t xnsynch_acquire(struct xnsynch *synch, xnticks_t timeout,
+>>>>>  						 XN_NO_HANDLE, threadh);
+>>>>>  
+>>>>>  		if (likely(fastlock == XN_NO_HANDLE)) {
+>>>>> +			xnsynch_set_owner(synch, thread);
+>>>>>  			xnthread_inc_rescnt(thread);
+>>>>>  			xnthread_clear_info(thread,
+>>>>>  					    XNRMID | XNTIMEO | XNBREAK);
+>>>>> @@ -718,7 +719,7 @@ struct xnthread *xnsynch_release(struct xnsynch *synch)
+>>>>>  
+>>>>>  	XENO_BUGON(NUCLEUS, !testbits(synch->status, XNSYNCH_OWNER));
+>>>>>  
+>>>>> -	lastowner = xnpod_current_thread();
+>>>>> +	lastowner = synch->owner ?: xnpod_current_thread();
+>>>>>  	xnthread_dec_rescnt(lastowner);
+>>>>>  	XENO_BUGON(NUCLEUS, xnthread_get_rescnt(lastowner) < 0);
+>>>>>  	lastownerh = xnthread_handle(lastowner);
+>>>>>
 >>>>
->>>> It has: Task is about to relax, re-enables interrupts in
->>>> xnpod_resume_thread, IRQ hits, handler is entered over the relaxing RT
->>>> task, xnpod_schedule in its tail performs the switch to root, which then
->>>> continues to relaxed task, IRQ tail resumes over a different task, on
->>>> SMP potentially also on a different CPU. I can send you a the trace if
->>>> you want to have a closer look.
+>>>> That's maybe another problem, need to check.
+>>>>
+>>>> Back to the original issue: with fastlock, kernel space has absolutely
+>>>> no clue about how many locks user space may hold - unless someone is
+>>>> contending for all those locks. IOW, you can't reliably track resource
+>>>> ownership at kernel level without user space help out. The current way
+>>>> it helps (enforced syscalls of XNOTHER threads) is insufficient.
 >>>
->>> Ok. Got it. But what has this to do with unlocked context switches ?
+>>> The thing is: we don't care about knowing how many locks some
+>>> non-current thread owns. What the nucleus wants to know is whether the
+>>> _current user-space_ thread owns a lock, which is enough for the
+>>> autorelax management. This restricted scope makes the logic fine.
 >>
->> Also before commit f6af9b831c, there was a window with enabled IRQs in
->> the relaxation path. So the above scenario should have been possible
->> even earlier.
+>> Nope, this does not work for threads that undergo policy changes (see
+>> reply to Gilles).
 > 
-> Unlocked context swith enables irqs, but sets the XNSWLOCK bit, so, no
-> other rescheduling can take place.
+> Is it a really useful use-cache?
 
-Ah, OK. Will remove that from the commit log.
+The question is rather if it a valid one.
 
 Jan
 
