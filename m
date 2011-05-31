@@ -1,172 +1,47 @@
+Message-ID: <4DE4D2F1.20305@domain.hid>
+Date: Tue, 31 May 2011 13:37:21 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-In-Reply-To: <4DC82CD1.4030605@domain.hid>
-References: <BANLkTi=qj7YfrFvQJPPZQbLjx=QSJqWzng@domain.hid>
-	<4DC430AE.20206@domain.hid>
-	<BANLkTik9LH8WO8uTvWz+msGt=L61ZagJyg@domain.hid>
-	<4DC82CD1.4030605@domain.hid>
-Date: Tue, 10 May 2011 15:36:47 +0200
-Message-ID: <BANLkTimnHqD3NqCcqaR3ZRsJyFjX3HTrWg@domain.hid>
-From: Aurele Traynard <aurele.traynard@domain.hid>
-Content-Type: multipart/alternative; boundary=0016e645b948363d6404a2ec0cd1
-Subject: Re: [Xenomai-help] user-space support : Inconsistency detected by
-	ld.so
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-core] Fragile lock usage tracking for auto-relax
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai help <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Xenomai core <Xenomai-core@domain.hid>
 
---0016e645b948363d6404a2ec0cd1
-Content-Type: text/plain; charset=ISO-8859-1
+Hi Philippe,
 
-I made a kernel without IWMMXT and it works fine
+enabling XENO_OPT_DEBUG_NUCLEUS reveals some shortcomings of the
+in-kernel lock usage tracking via xnthread_t::hrescnt. This BUGON in
+xnsynch_release triggers for RT threads:
 
-thanks a lot!
+	XENO_BUGON(NUCLEUS, xnthread_get_rescnt(lastowner) < 0);
 
-2011/5/9 Gilles Chanteperdrix
+RT threads do not balance their lock and unlock syscalls, so their
+counter goes wild quite quickly.
 
-> On 05/09/2011 08:57 AM, Aurele Traynard wrote:
-> > Hello
-> >
-> > it is activate... is it bad or is there a workaround
-> > CONFIG_IWMMXT=y
->
-> I am unable to find the exact post, but at some point in the past around
-> august 2009, we commented out the code in Xenomai context switch, which
-> takes care of IWMMXT. This means that real-time tasks should run without
-> using iwmmxt. And that Xenomai should be compiled with
-> CONFIG_XENO_HW_FPU off.
->
->
-> --
->                                                                 Gilles.
->
-2011/5/6 Gilles Chanteperdrix
-This looks like a bug in the context switch routine. How is
-CONFIG_IWMMXT in your kernel configuration?
+But just limiting the bug check to XNOTHER threads is neither a
+solution. How to deal with the counter on scheduling policy changes?
 
-On 05/06/2011 05:13 PM, Aurele Traynard wrote:
-> hello all,
->
-> I have a problem whith user-space support :
-> I compile a program with makefile of Xenomai and when i want to use it
-this
-> apear :
->
-> Inconsistency detected by ld.so: dl-deps.c: 622: _dl_map_object_deps:
-> Assertion`nlist > 1' failed!
->
-> compilation process :
->
-> DESTDIR=/home/aurele/workdir/
-test/test_noyau/buildroot-2010.08/output/staging
-> make
->
-XENO=/home/aurele/workdir/test/test_noyau/buildroot-2010.08/output/staging/usr/xenomai/
-> arm-none-linux-gnueabi-gcc
->
--I/home/aurele/workdir/test/test_noyau/buildroot-2010.08/output/staging/usr/xenomai/include
-> -D_GNU_SOURCE -D_REENTRANT -Wall -pipe -D__XENO__   -lnative
->
--L/home/aurele/workdir/test/test_noyau/buildroot-2010.08/output/staging/usr/xenomai/lib
-> -lxenomai -lpthread  -O -Xlinker -rpath -Xlinker
->
-/home/aurele/workdir/test/test_noyau/buildroot-2010.08/output/staging/usr/xenomai/lib
-> playing_led_rt.c   -o playing_led_rt
-> playing_led_rt.c: In function 'main':
-> playing_led_rt.c:126:2: warning: format '%08X' expects type 'unsigned
-int',
-> but argument 3 has type 'long unsigned int'
-> playing_led_rt.c:128:2: warning: format '%08X' expects type 'unsigned
-int',
-> but argument 2 has type 'long unsigned int'
->
-> I have made two programs one with rt_tasks but he don't work, so supress
-all
-> real-time call and it doesn't work again with the same error.
->
-> does anyone have a way to go?
-> thanks for reply
+So my suggestion is to convert the auto-relax feature into a service,
+user space can request based on a counter that user space maintains
+independently. I.e. we should create another shared word that user space
+increments and decrements on lock acquisitions/releases on its own. The
+nucleus just tests it when deciding about the relax on return to user space.
 
---0016e645b948363d6404a2ec0cd1
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+But before hacking into that direction, I'd like to hear if it makes
+sense to you.
 
-I made a kernel without IWMMXT and it works fine<br><br>thanks a lot!<br><b=
-r><div class=3D"gmail_quote">2011/5/9 Gilles Chanteperdrix<br><blockquote c=
-lass=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;=
-padding-left:1ex;">
-<div class=3D"im">On 05/09/2011 08:57 AM, Aurele Traynard wrote:<br>
-&gt; Hello<br>
-&gt;<br>
-&gt; it is activate... is it bad or is there a workaround<br>
-&gt; CONFIG_IWMMXT=3Dy<br>
-<br>
-</div>I am unable to find the exact post, but at some point in the past aro=
-und<br>
-august 2009, we commented out the code in Xenomai context switch, which<br>
-takes care of IWMMXT. This means that real-time tasks should run without<br=
->
-using iwmmxt. And that Xenomai should be compiled with<br>
-CONFIG_XENO_HW_FPU off.<br>
-<br>
-<br>
---<br>
-<font color=3D"#888888"> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
-=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0=
- =A0Gilles.<br>
-</font></blockquote></div>2011/5/6 Gilles Chanteperdrix<span dir=3D"ltr"></=
-span><br>This looks like a bug in the context switch routine. How is<br>
-CONFIG_IWMMXT in your kernel configuration?<br><br>On 05/06/2011 05:13 PM, =
-Aurele Traynard wrote:<br>
-&gt; hello all,<br>
-&gt;<br>
-&gt; I have a problem whith user-space support :<br>
-&gt; I compile a program with makefile of Xenomai and when i want to use it=
- this<br>
-&gt; apear :<br>
-&gt;<br>
-&gt; Inconsistency detected by ld.so: dl-deps.c: 622: _dl_map_object_deps:<=
-br>
-&gt; Assertion`nlist &gt; 1&#39; failed!<br>
-&gt;<br>
-&gt; compilation process :<br>
-&gt;<br>
-&gt; DESTDIR=3D/home/aurele/workdir/<div class=3D"im">test/test_noyau/build=
-root-2010.08/output/staging<br>
-&gt; make<br>
-&gt; XENO=3D/home/aurele/workdir/test/test_noyau/buildroot-2010.08/output/s=
-taging/usr/xenomai/<br>
-&gt; arm-none-linux-gnueabi-gcc<br>
-&gt; -I/home/aurele/workdir/test/test_noyau/buildroot-2010.08/output/stagin=
-g/usr/xenomai/include<br>
-&gt; -D_GNU_SOURCE -D_REENTRANT -Wall -pipe -D__XENO__ =A0 -lnative<br>
-&gt; -L/home/aurele/workdir/test/test_noyau/buildroot-2010.08/output/stagin=
-g/usr/xenomai/lib<br>
-&gt; -lxenomai -lpthread =A0-O -Xlinker -rpath -Xlinker<br>
-&gt; /home/aurele/workdir/test/test_noyau/buildroot-2010.08/output/staging/=
-usr/xenomai/lib<br>
-&gt; playing_led_rt.c =A0 -o playing_led_rt<br>
-&gt; playing_led_rt.c: In function &#39;main&#39;:<br>
-&gt; playing_led_rt.c:126:2: warning: format &#39;%08X&#39; expects type &#=
-39;unsigned int&#39;,<br>
-&gt; but argument 3 has type &#39;long unsigned int&#39;<br>
-&gt; playing_led_rt.c:128:2: warning: format &#39;%08X&#39; expects type &#=
-39;unsigned int&#39;,<br>
-&gt; but argument 2 has type &#39;long unsigned int&#39;<br>
-&gt;<br>
-&gt; I have made two programs one with rt_tasks but he don&#39;t work, so s=
-upress all<br>
-&gt; real-time call and it doesn&#39;t work again with the same error.<br>
-&gt;<br>
-&gt; does anyone have a way to go?<br>
-&gt; thanks for reply</div>
+Jan
 
---0016e645b948363d6404a2ec0cd1--
+-- 
+Siemens AG, Corporate Technology, CT T DE IT 1
+Corporate Competence Center Embedded Linux
 
