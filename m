@@ -1,12 +1,14 @@
-From: "cagnulein" <cagnulein@domain.hid>
-Date: Wed, 15 Jun 2011 12:38:40 +0200
-Message-ID: <bdZ5rCnhGWTy.SDNFd313@domain.hid>
+Message-ID: <4DE52C36.9010306@domain.hid>
+Date: Tue, 31 May 2011 19:58:14 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Language: i-default
+References: <4DE4D2F1.20305@domain.hid>
+	<1306859397.2153.52.camel@domain.hid>		<4DE51973.70104@domain.hid>
+	<1306861115.2153.67.camel@domain.hid> <4DE5202F.70309@domain.hid>
+In-Reply-To: <4DE5202F.70309@domain.hid>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai-core] R: Re:  Fwd: Re:  rt_task_delete doesn't work
-Reply-To: cagnulein <cagnulein@domain.hid>
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-core] Fragile lock usage tracking for auto-relax
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -15,197 +17,95 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Roberto Bielli <roberto.bielli@domain.hid>
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: Xenomai core <Xenomai-core@domain.hid>
 
-Ops sorry :)
-I will try your code on my system asap.
-Bye
-
--- msg. originale --
-Oggetto: Re: [Xenomai-core] Fwd: Re:  rt_task_delete doesn't work
-Da: Roberto Bielli <roberto.bielli@domain.hid>
-Data: 15/06/2011 12:19
-
-the tasks has not the same rt_task. One it's a create, one is a =
-start.
-
-
-
-Il 14/06/2011 18:27, Cagnulein ha scritto:
->>       err =3D rt_task_create(&pluto, namePluto, 0x2000, 20, T_FPU =
-);
->>       if( err !=3D 0 )
->>           printf("error task create %s\n", namePluto );
->>
->>       err =3D rt_task_start(&pluto, (void *)test1, NULL );
-> You've created 2 tasks with the same RT_TASK variable. Is it =
-volunteer?
-> Roberto Viola
->
->>
->> Here is the example and the command.
->>
->> RT_TASK pippo;
->> RT_TASK pluto;
->>
->> void test1()
->> {
->>       int err;
->>
->>       err =3D rt_task_delete(&pippo );
->>       if( err !=3D 0 )
->>           printf("error task delete\n");
->>
->> }
->>
->> int main (int argc, char *argv[])
->> {
->>       //    Porta di comunicazione
->>       //int s;
->>
->>       mlockall(MCL_CURRENT|MCL_FUTURE);
->>
->>       // gestione signal handler
->>       //struct sigaction sa;
->>       //sa.sa_sigaction =3D (void *)sigHandler;
->>       //sigemptyset (&sa.sa_mask);
->>       //sa.sa_flags =3D SA_SIGINFO;
->>
->>       //sigaction(SIGTERM,&sa, NULL);
->>       //sigaction(SIGINT,&sa, NULL);
->>       //sigaction(SIGPIPE,&sa, NULL);
->>       //sigaction(SIGFPE,&sa, NULL);
->>       //sigaction(SIGSEGV,&sa, NULL);
->>
->>
->>       char * namePippo =3D "pippo";
->>       char * namePluto =3D "pluto";
->>       int err;
->>       err =3D rt_task_create(&pippo, namePippo, 0x2000, 20, T_FPU =
-);
->>       if( err !=3D 0 )
->>           printf("error task create %s\n", namePippo );
->>       err =3D rt_task_create(&pluto, namePluto, 0x2000, 20, T_FPU =
-);
->>       if( err !=3D 0 )
->>           printf("error task create %s\n", namePluto );
->>
->>       err =3D rt_task_start(&pluto, (void *)test1, NULL );
->>       if( err !=3D 0 )
->>           printf("error task start %s\n", namePluto );
->>
->> }
->>
->> --COMMAND--
->>
->> # gdb --args ./apgs -D
->> GNU gdb (GDB) 6.8.50.20080821-cvs
->> Copyright (C) 2008 Free Software Foundation, Inc.
->> License GPLv3+: GNU GPL version 3 or later
->> <http://gnu.org/licenses/gpl.html>
->> This is free software: you are free to change and redistribute it.
->> There is NO WARRANTY, to the extent permitted by law.  Type "show =
-copying"
->> and "show warranty" for details.
->> This GDB was configured as "arm-mv5sft-linux-gnueabi".
->> For bug reporting instructions, please see:
->> <http://www.gnu.org/software/gdb/bugs/>...
->> (gdb) r
->> `/flash/apgs' has disappeared; keeping its symbols.
->> Starting program: /flash/apgs -D
->> [Thread debugging using libthread_db enabled]
->> [New Thread 0x2acf7490 (LWP 537)]
->> [New Thread 0x2acfc490 (LWP 538)]
->>
->> Program received signal SIGSEGV, Segmentation fault.
->> [Switching to Thread 0x2acfc490 (LWP 538)]
->> 0x2aab9d74 in _dl_catch_error () from /lib/ld-linux.so.3
->> (gdb)
->>
->>
->> Il 10/06/2011 19:32, Gilles Chanteperdrix ha scritto:
->>>   On 06/10/2011 06:51 PM, Roberto Bielli wrote:
->>>>   The segmentation fault was not on this code line.
->>>>   i upgraded the version to 2.5.6 but the error is the same.
+On 05/31/2011 07:06 PM, Jan Kiszka wrote:
+> On 2011-05-31 18:58, Philippe Gerum wrote:
+>> On Tue, 2011-05-31 at 18:38 +0200, Jan Kiszka wrote:
+>>> On 2011-05-31 18:29, Philippe Gerum wrote:
+>>>> On Tue, 2011-05-31 at 13:37 +0200, Jan Kiszka wrote:
+>>>>> Hi Philippe,
+>>>>>
+>>>>> enabling XENO_OPT_DEBUG_NUCLEUS reveals some shortcomings of the
+>>>>> in-kernel lock usage tracking via xnthread_t::hrescnt. This BUGON in
+>>>>> xnsynch_release triggers for RT threads:
+>>>>>
+>>>>> 	XENO_BUGON(NUCLEUS, xnthread_get_rescnt(lastowner) < 0);
+>>>>>
+>>>>> RT threads do not balance their lock and unlock syscalls, so their
+>>>>> counter goes wild quite quickly.
+>>>>>
+>>>>> But just limiting the bug check to XNOTHER threads is neither a
+>>>>> solution. How to deal with the counter on scheduling policy changes?
+>>>>>
+>>>>> So my suggestion is to convert the auto-relax feature into a service,
+>>>>> user space can request based on a counter that user space maintains
+>>>>> independently. I.e. we should create another shared word that user space
+>>>>> increments and decrements on lock acquisitions/releases on its own. The
+>>>>> nucleus just tests it when deciding about the relax on return to user space.
+>>>>>
+>>>>> But before hacking into that direction, I'd like to hear if it makes
+>>>>> sense to you.
 >>>>
->>>>   The fault is when i try to delete a realtime task from another
->>>> realtime
->>>>   task.
+>>>> At first glance, this does not seem to address the root issue. The
+>>>> bottom line is that we should not have any thread release an owned lock
+>>>> it does not hold, kthread or not.
 >>>>
->>>>   It's possible to do that  ?
->>>   Please post a self-contained testcase. A self-contained test case =
-is
->>>   worth a thousand words.
+>>>> In that respect, xnsynch_release() looks fishy because it may be called
+>>>> over a context which is _not_ the lock owner, but the thread who is
+>>>> deleting the lock owner, so assuming lastowner == current_thread when
+>>>> releasing is wrong.
+>>>>
+>>>> At the very least, the following patch would prevent
+>>>> xnsynch_release_all_ownerships() to break badly. The same way, the
+>>>> fastlock stuff does not track the owner properly in the synchro object.
+>>>> We should fix those issues before going further, they may be related to
+>>>> the bug described.
+>>>>
+>>>> Totally, genuinely, 100% untested.
+>>>>
+>>>> diff --git a/ksrc/nucleus/synch.c b/ksrc/nucleus/synch.c
+>>>> index 3a53527..0785533 100644
+>>>> --- a/ksrc/nucleus/synch.c
+>>>> +++ b/ksrc/nucleus/synch.c
+>>>> @@ -424,6 +424,7 @@ xnflags_t xnsynch_acquire(struct xnsynch *synch, xnticks_t timeout,
+>>>>  						 XN_NO_HANDLE, threadh);
+>>>>  
+>>>>  		if (likely(fastlock == XN_NO_HANDLE)) {
+>>>> +			xnsynch_set_owner(synch, thread);
+>>>>  			xnthread_inc_rescnt(thread);
+>>>>  			xnthread_clear_info(thread,
+>>>>  					    XNRMID | XNTIMEO | XNBREAK);
+>>>> @@ -718,7 +719,7 @@ struct xnthread *xnsynch_release(struct xnsynch *synch)
+>>>>  
+>>>>  	XENO_BUGON(NUCLEUS, !testbits(synch->status, XNSYNCH_OWNER));
+>>>>  
+>>>> -	lastowner = xnpod_current_thread();
+>>>> +	lastowner = synch->owner ?: xnpod_current_thread();
+>>>>  	xnthread_dec_rescnt(lastowner);
+>>>>  	XENO_BUGON(NUCLEUS, xnthread_get_rescnt(lastowner) < 0);
+>>>>  	lastownerh = xnthread_handle(lastowner);
+>>>>
 >>>
+>>> That's maybe another problem, need to check.
+>>>
+>>> Back to the original issue: with fastlock, kernel space has absolutely
+>>> no clue about how many locks user space may hold - unless someone is
+>>> contending for all those locks. IOW, you can't reliably track resource
+>>> ownership at kernel level without user space help out. The current way
+>>> it helps (enforced syscalls of XNOTHER threads) is insufficient.
 >>
->>
->> -----
->> Nessun virus nel messaggio.
->> Controllato da AVG - www.avg.com
->> Versione: 10.0.1382 / Database dei virus: 1513/3699 -  Data di =
-rilascio:
->> 12/06/2011
->>
->>
->> _______________________________________________
->> Xenomai-core mailing list
->> Xenomai-core@domain.hid
->> https://mail.gna.org/listinfo/xenomai-core
->>
->
->
-> -----
-> Nessun virus nel messaggio.
-> Controllato da AVG - www.avg.com
-> Versione: 10.0.1382 / Database dei virus: 1513/3703 -  Data di rilascio: =
-14/06/2011
+>> The thing is: we don't care about knowing how many locks some
+>> non-current thread owns. What the nucleus wants to know is whether the
+>> _current user-space_ thread owns a lock, which is enough for the
+>> autorelax management. This restricted scope makes the logic fine.
+> 
+> Nope, this does not work for threads that undergo policy changes (see
+> reply to Gilles).
 
+Is it a really useful use-cache?
 
---=20
-+---------------------------------------------------------------------------=
----------------------+
-						=09
-Roberto Bielli
-Sviluppo Software				=09
-Axel S.r.l.				=09
-						=09
-Via Del Cannino, 3 			=09
-21020 Crosio Della Valle		=09
-Varese - Italy				=09
-						=09
-Telefono: +39 0332 949600		=09
-Fax:      +39 0332 969315		=09
-						=09
-E-mail:   roberto.bielli@domain.hid
-Web Site: www.axelsw.it
-
-+---------------------------------------------------------------------------=
----------------------+
-
-Si precisa che le informazioni contenute in questo messaggio sono riservate =
-e ad uso esclusivo del destinatario.
-Qualora il messaggio in parola Le fosse pervenuto per errore, La preghiamo =
-di eliminarlo senza copiarlo e di non inoltrarlo a terzi,
-dandocene gentilmente comunicazione. Grazie.
-Informativa sul trattamento dei dati personali (D. Lgs. 196/2003).
-I dati utilizzati per la spedizione del presente messaggio sono utilizzati =
-da Axel S.r.l., titolare del trattamento,
-per l'invio delle comunicazioni dei diversi settori aziendali, non essendo =
-autorizzata la divulgazione a terzi.
-Potrete rivolgere alla seguente mail richieste di verifica, rettifica o =
-cancellazione dei Vostri dati: info@domain.hid
-
-This e-mail and any attachments is confidential and may contain privileged =
-information
-intended for the addressee(s) only. Dissemination, copying, printing or use =
-by anybody
-else is unauthorised. If you are not the intended recipient,
-please delete this message and any attachments and advise the sender
-by return e-mail.Thank you.  		=09
-						=09
-+---------------------------------------------------------------------------=
----------------------+
-
-
+-- 
+                                                                Gilles.
 
