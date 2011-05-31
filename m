@@ -1,6 +1,6 @@
-Message-ID: <4DE51970.7010006@domain.hid>
-Date: Tue, 31 May 2011 18:38:08 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4DE51973.70104@domain.hid>
+Date: Tue, 31 May 2011 18:38:11 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
 References: <4DE4D2F1.20305@domain.hid> <1306859397.2153.52.camel@domain.hid>
 In-Reply-To: <1306859397.2153.52.camel@domain.hid>
@@ -16,9 +16,9 @@ List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
 To: Philippe Gerum <rpm@xenomai.org>
-Cc: Jan Kiszka <jan.kiszka@domain.hid>, Xenomai core <Xenomai-core@domain.hid>
+Cc: Xenomai core <Xenomai-core@domain.hid>
 
-On 05/31/2011 06:29 PM, Philippe Gerum wrote:
+On 2011-05-31 18:29, Philippe Gerum wrote:
 > On Tue, 2011-05-31 at 13:37 +0200, Jan Kiszka wrote:
 >> Hi Philippe,
 >>
@@ -57,11 +57,48 @@ On 05/31/2011 06:29 PM, Philippe Gerum wrote:
 > fastlock stuff does not track the owner properly in the synchro object.
 > We should fix those issues before going further, they may be related to
 > the bug described.
+> 
+> Totally, genuinely, 100% untested.
+> 
+> diff --git a/ksrc/nucleus/synch.c b/ksrc/nucleus/synch.c
+> index 3a53527..0785533 100644
+> --- a/ksrc/nucleus/synch.c
+> +++ b/ksrc/nucleus/synch.c
+> @@ -424,6 +424,7 @@ xnflags_t xnsynch_acquire(struct xnsynch *synch, xnticks_t timeout,
+>  						 XN_NO_HANDLE, threadh);
+>  
+>  		if (likely(fastlock == XN_NO_HANDLE)) {
+> +			xnsynch_set_owner(synch, thread);
+>  			xnthread_inc_rescnt(thread);
+>  			xnthread_clear_info(thread,
+>  					    XNRMID | XNTIMEO | XNBREAK);
+> @@ -718,7 +719,7 @@ struct xnthread *xnsynch_release(struct xnsynch *synch)
+>  
+>  	XENO_BUGON(NUCLEUS, !testbits(synch->status, XNSYNCH_OWNER));
+>  
+> -	lastowner = xnpod_current_thread();
+> +	lastowner = synch->owner ?: xnpod_current_thread();
+>  	xnthread_dec_rescnt(lastowner);
+>  	XENO_BUGON(NUCLEUS, xnthread_get_rescnt(lastowner) < 0);
+>  	lastownerh = xnthread_handle(lastowner);
+> 
 
-It looks to me like xnsynch_fast_release uses cmpxchg, so, will not set
-the owner to NULL if the current owner is not the thread releasing the
-mutex. Is it not sufficient?
+That's maybe another problem, need to check.
+
+Back to the original issue: with fastlock, kernel space has absolutely
+no clue about how many locks user space may hold - unless someone is
+contending for all those locks. IOW, you can't reliably track resource
+ownership at kernel level without user space help out. The current way
+it helps (enforced syscalls of XNOTHER threads) is insufficient.
+
+Alternatively to plain counting of ownership in user space, we could
+adopt mainline's robust mutex mechanism (a user space maintained list)
+that solves the release-all-ownerships issue. But I haven't looked into
+details yet.
+
+Jan
 
 -- 
-					    Gilles.
+Siemens AG, Corporate Technology, CT T DE IT 1
+Corporate Competence Center Embedded Linux
 
