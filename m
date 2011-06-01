@@ -1,14 +1,10 @@
-Message-ID: <4DE566A5.2050107@domain.hid>
-Date: Tue, 31 May 2011 18:07:33 -0400
-From: Andrew Tannenbaum <trb@domain.hid>
+Message-ID: <528683.58306.qm@domain.hid>
+Date: Tue, 31 May 2011 22:35:08 -0700 (PDT)
+From: sanjay anvekar <sanjayanvekar@domain.hid>
 MIME-Version: 1.0
-References: <4DE51CE7.3040001@domain.hid>
-	<106BE02A53F94ADC82EF475F2C54C128@domain.hid>
-In-Reply-To: <106BE02A53F94ADC82EF475F2C54C128@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] trouble running PEAK CAN board on Atom N270 with
-	Xenomai 2.5.5.2
+Content-Type: multipart/alternative; boundary="0-2079389687-1306906508=:58306"
+Subject: [Xenomai-help] help-IntelAtom
+Reply-To: sanjay anvekar <sanjayanvekar@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -18,144 +14,89 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>, xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Jan Kiszka wrote:
-> On 2011-05-31 18:52, Andrew Tannenbaum wrote:
->> I am having trouble getting my PEAK CAN board running under
->> Linux/Xenomai.  It crashes when it loads xeno_can_peak_pci.ko.
->>
->> I tried mailing to PEAK Linux support, but they said they had no one
->> providing Linux RT support at this time.
->>
->> I have an Advantech PCM-9361 PCI104 Atom N270 motherboard with a PEAK
->> PCI104 CAN 2-channel board.
->>
->> I plugged the CAN board into the Atom board, and I plugged a Copley
->> Accelnet servo into the first port of the CAN board.
->>
->> I installed a copy of Ubuntu 10.04.2 LTS on the Atom, that distro kernel
->> runs ok.
->>
->> I downloaded a copy of Linux 2.6.35.7 from kernel.org, and compiled it
->> (mostly with the Ubuntu distro config), that runs ok.
->>
->> I downloaded a copy of Xenomai 2.5.5.2 from xenomai.org, and patched the
->> 2.6.35.7 to provide basic Xenomai functionality, including POSIX and
->> RTDM interfaces, and I was able to run the Xenomai testsuite/latency
->> test with decent latency.
->>
->> Note that in my current kernel, I turned CONFIG_XENO_HW_SMI_WORKAROUND
->> off, because I had been getting the "SMI workaround failed" message:
->>
->> May 24 17:02:00 atom1 kernel: [    1.252782] I-pipe: Domain Xenomai
->> registered.
->> May 24 17:02:00 atom1 kernel: [    1.252900] Xenomai: hal/i386 started.
->> May 24 17:02:00 atom1 kernel: [    1.252960] Xenomai: scheduling class
->> idle registered.
->> May 24 17:02:00 atom1 kernel: [    1.252970] Xenomai: scheduling class
->> rt registered.
->> May 24 17:02:00 atom1 kernel: [    1.256862] Xenomai: real-time nucleus
->> v2.5.5.2 (Ghosts) loaded.
->> May 24 17:02:00 atom1 kernel: [    1.257212] Xenomai: SMI-enabled
->> chipset found
->> May 24 17:02:00 atom1 kernel: [    1.257238] Xenomai: SMI workaround
->> failed!
->> May 24 17:02:00 atom1 kernel: [    1.257328] Xenomai: starting native
->> API services.
->> May 24 17:02:00 atom1 kernel: [    1.257340] Xenomai: starting POSIX
->> services.
->> May 24 17:02:00 atom1 kernel: [    1.257430] Xenomai: starting RTDM
->> services.
->>
->> I understand that 2.5.6 is current Xenomai, but I started this a few
->> months ago, so I'm running 2.5.5.2.
->>
->> At this point, I was ready to try to talk with the PEAK CAN board, so I
->> turned on
->>
->> CONFIG_XENO_DRIVERS_CAN_SJA1000=m
->> CONFIG_XENO_DRIVERS_CAN_SJA1000_PEAK_PCI=m
->>
->> Without driver support for the board, lspci sees the CAN board.  I want
->> to talk to the board using the Xenomai interface, but I am not sure of
->> the best way to make that work.
->>
->> I downloaded and compiled peak-linux-driver-7.2 (I'm not sure that is
->> necessary, so I won't discuss that yet.)
->>
->> Here is the PEAK board stanza from lspci -v:
->>
->> 01:04.0 Network controller: PEAK-System Technik GmbH PCAN-PCI CAN-Bus
->> controller (rev 02)
->>      Subsystem: PEAK-System Technik GmbH Device 0004
->>      Flags: medium devsel, IRQ 10
->>      Memory at fdcd0000 (32-bit, non-prefetchable) [size=64K]
->>      Memory at fdce0000 (32-bit, non-prefetchable) [size=64K]
->>      Kernel modules: xeno_can_peak_pci
->>
->> I have not been able to run a kernel that with the Xenomai/Linux CAN/PCI
->> driver.  It fails during the boot process when loading the PEAK driver.
->>
->> If I move the CAN/PEAK drivers out of the way, the kernel runs correctly
->> (as a Linux kernel - not talking with the CAN board).  I moved these
->> drivers aside, adding ".no" to the names:
->>
->> ./kernel/drivers/xenomai/can/sja1000/xeno_can_sja1000.ko.no
->> ./kernel/drivers/xenomai/can/sja1000/xeno_can_peak_pci.ko.no
->>
->> I can insmod these by hand, the SJA1000 driver loads ok, the PEAK driver
->> causes the system to freeze.  tail /var/log/syslog looks like this:
->>
->> May 31 12:14:25 atom1 kernel: [410578.847836] RTCAN SJA1000 driver
->> initialized
->> May 31 12:15:19 atom1 kernel: [410632.808061] PEAK-PCI-CAN: initializing
->> device 001c:0001
->> May 31 12:15:19 atom1 kernel: [410632.808106] PEAK-PCI-CAN 0000:01:04.0:
->> PCI INT A ->  GSI 16 (level, low) ->  IRQ 16
->
-> Important are the IRQs reported while loading. The PCI config space data
-> lspci is listing is more informational. If other devices share the same
-> IRQ, you lose unless
->   - you can move those other devices elsewhere (change slot, disable
->     device)
->   - you can move the CAN adapter to a different slot, thus - maybe - to
->     a different IRQ
->
-> Jan
->
+--0-2079389687-1306906508=:58306
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-Thanks, Jan.
+Hi,=0A=A0=A0=A0=A0 I am facing problem running Xenomai test programs and it=
+ gives me following error.=0A>clocktest=0A>/usr/xenomai/bin/clocktest: erro=
+r while loading shared libraries: /usr/xenomai/lib/libpthread_rt.so.1: ELF =
+file OS ABI invalid=0A=0Asimilar error is seen when I try to run latency or=
+ any other Xenomai test program.=0A=0A=0AI am using Xenomai 2.5.6 patched t=
+o Kernel 2.6.37. When I do uname and dmesg following are the output=0A=0A>u=
+name -a=0A=0ALinux (none) 2.6.37-ipipe #2 SMP PREEMPT Mon May 30 15:28:24 I=
+ST 2011 i686 unknown=0A=0A>dmesg | grep I-pipe=0A=0A[=A0=A0=A0 0.000] I-pip=
+e 2.9-0: pipeline enabled.=0A[=A0=A0=A0 2.330] I-pipe: Domain Xenomai regis=
+tered.=0A=0A>dmesg | grep Xenomai=0A[=A0=A0=A0 2.330] I-pipe: Domain Xenoma=
+i registered.=0A[=A0=A0=A0 2.336] Xenomai: hal/i36 started.=0A[=A0=A0=A0 2.=
+339] Xenomai: scheduling class idle registered.=0A[=A0=A0=A0 2.330] Xenomai=
+: scheduling class rt registered.=0A[=A0=A0=A0 2.302] Xenomai: real-time nu=
+cleus v2.5.6 (Wormhole Wizards) loaded.=0A[=A0=A0=A0 2.307] Xenomai: SMI-en=
+abled chipset found=0A[=A0=A0=A0 2.309] Xenomai: SMI workaround enabled=0A[=
+=A0=A0=A0 2.305] Xenomai: starting native API services.=0A[=A0=A0=A0 2.306]=
+ Xenomai: starting POSIX services.=0A[=A0=A0=A0 2.302] Xenomai: starting RT=
+DM services.=0A=0AWhat I tried-=0A- Tried setting LD_LIBRARY_PATH=3D/usr/xe=
+nomai/lib/=0A- Tried rebuilding xenomai with=0A=A0=A0=A0=A0 --enable-x86-se=
+p --enable-smp --host=3Di686-linux CFLAGS=3D"-m32 -O2" LDFLAGS=3D"-m32" opt=
+ion=0A=A0=A0=A0 and also only --enable-x86-sep --enable-smp options=0A=0A- =
+Tried building and running 'rtprint' example program and had same error.=0A=
+- Tried to statically link the 'rtprint' example program and got following =
+error=0A=0Agcc -static -I/media/New1/Linux/xenomai/install/usr/xenomai/incl=
+ude -D_GNU_SOURCE -Wall -pipe -D__XENO__ -L/media/New1/Linux/xenomai/instal=
+l/usr/xenomai/lib -Xlinker -rpath -Xlinker /media/New1/Linux/xenomai/instal=
+l/usr/xenomai/lib -o rtprint rtprint.o -lnative -lxenomai -lpthread_rt -lrt=
+dk=0A/usr/bin/ld: cannot find -lc=0Acollect2: ld returned 1 exit status=0Am=
+ake: *** [rtprint] Error 1=0A=0APlease help me to solve this problem.=0A=0A=
+Thanks & Best regards,=0ASanjay=0A
+--0-2079389687-1306906508=:58306
+Content-Type: text/html; charset=iso-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-I was able to get my board running.  For the benefit of others who might 
-have the same problem I did:
-
-The PEAK PCAN PC/104-Plus board has a hardware jumper (J9) for Interrupt 
-Select.  The first position (INT A) was IRQ 16 on my system.  The second 
-position (INT B) was IRQ 17, and that makes it work for me.  There are 3 
-sets of jumpers: ID, Clock, and Interrupt.  The device manual says this:
-
-"For communication with the host the PCAN-PC/104-Plus card uses
-the PCI interface where specific relations between the lengths of the
-signal lines must be met. Different line lengths result from different
-positions of a PC/104-Plus card in a PC/104 stack. Therefore the
-PCAN-PC/104-Plus card must be adjusted to a specific position in
-the stack by setting the appropriate jumpers. The spatial distance to
-the host results in the index for the assignment of the jumpers."
-
-I didn't want to change Clock, since that might mess with the signal 
-time settings for my board in the first position.  I did change the 
-other two jumpers - ID and Interrupt.  When I only changed Interrupt, 
-that didn't work (my kernel would crash when I loaded the PEAK driver).
-
-Once I got it running, I was able to run the rtcan tools: rtcanconfig, 
-rtcansend, and rtcanrecv.  The source and README for those are in 
-xenomai-n.n.n/src/utils/can/ .  First I tried to run rtcansend followed 
-by rtcanrecv (from the command line), but rtcanrecv would not find the 
-answer messages.  When I ran rtcanrecv first (and it blocked) it would 
-then get answers when I'd send messages with rtcansend (in another 
-xterm).  Maybe I need to set a mode so that the answer messages will be 
-held in a buffer, I'll have to check.
-
--Andy
+<html><body><div style=3D"color:#000; background-color:#fff; font-family:ti=
+mes new roman, new york, times, serif;font-size:12pt"><div>Hi,</div><div><s=
+pan>&nbsp;&nbsp;&nbsp;&nbsp; I am facing problem running Xenomai test progr=
+ams and it gives me following error.</span></div><div><span>&gt;clocktest<b=
+r>&gt;/usr/xenomai/bin/clocktest: error while loading shared libraries: /us=
+r/xenomai/lib/libpthread_rt.so.1: ELF file OS ABI invalid</span></div><div>=
+<br><span></span></div><div><span>similar error is seen when I try to run l=
+atency or any other Xenomai test program.<br></span></div><div><br><span></=
+span></div><div><span>I am using Xenomai 2.5.6 patched to Kernel 2.6.37. Wh=
+en I do uname and dmesg following are the output</span></div><div><span><br=
+></span></div><div>&gt;uname -a<br></div><div>Linux (none) 2.6.37-ipipe #2 =
+SMP PREEMPT Mon May 30 15:28:24 IST 2011 i686 unknown</div><div><br><span><=
+/span></div><div><span>&gt;dmesg | grep
+ I-pipe<br></span></div><div><span>[&nbsp;&nbsp;&nbsp; 0.000] I-pipe 2.9-0:=
+ pipeline enabled.<br>[&nbsp;&nbsp;&nbsp; 2.330] I-pipe: Domain Xenomai reg=
+istered.</span></div><div><br><span></span></div><div><span>&gt;dmesg | gre=
+p Xenomai</span></div><div><span>[&nbsp;&nbsp;&nbsp; 2.330] I-pipe: Domain =
+Xenomai registered.<br>[&nbsp;&nbsp;&nbsp; 2.336] Xenomai: hal/i36 started.=
+<br>[&nbsp;&nbsp;&nbsp; 2.339] Xenomai: scheduling class idle registered.<b=
+r>[&nbsp;&nbsp;&nbsp; 2.330] Xenomai: scheduling class rt registered.<br>[&=
+nbsp;&nbsp;&nbsp; 2.302] Xenomai: real-time nucleus v2.5.6 (Wormhole Wizard=
+s) loaded.<br>[&nbsp;&nbsp;&nbsp; 2.307] Xenomai: SMI-enabled chipset found=
+<br>[&nbsp;&nbsp;&nbsp; 2.309] Xenomai: SMI workaround enabled<br>[&nbsp;&n=
+bsp;&nbsp; 2.305] Xenomai: starting native API services.<br>[&nbsp;&nbsp;&n=
+bsp; 2.306] Xenomai: starting POSIX services.<br>[&nbsp;&nbsp;&nbsp; 2.302]=
+ Xenomai: starting RTDM
+ services.</span></div><div><br><span></span></div><div><span>What I tried-=
+</span></div><div><span>- Tried setting LD_LIBRARY_PATH=3D/usr/xenomai/lib/=
+</span></div><div><span>- Tried rebuilding xenomai with</span></div><div><s=
+pan>&nbsp;&nbsp;&nbsp;&nbsp; --enable-x86-sep --enable-smp --host=3Di686-li=
+nux CFLAGS=3D"-m32 -O2" LDFLAGS=3D"-m32" option</span></div><div><span>&nbs=
+p;&nbsp;&nbsp; and also only --enable-x86-sep --enable-smp options<br></spa=
+n></div><div><span>- Tried building and running 'rtprint' example program a=
+nd had same error.</span></div><div><span>- Tried to statically link the 'r=
+tprint' example program and got following error</span></div><div><span><br>=
+gcc -static -I/media/New1/Linux/xenomai/install/usr/xenomai/include -D_GNU_=
+SOURCE -Wall -pipe -D__XENO__ -L/media/New1/Linux/xenomai/install/usr/xenom=
+ai/lib -Xlinker -rpath -Xlinker /media/New1/Linux/xenomai/install/usr/xenom=
+ai/lib -o rtprint rtprint.o -lnative -lxenomai -lpthread_rt
+ -lrtdk<br>/usr/bin/ld: cannot find -lc<br>collect2: ld returned 1 exit sta=
+tus<br>make: *** [rtprint] Error 1</span></div><div><br><span></span></div>=
+<div>Please help me to solve this problem.</div><div><br></div><div>Thanks =
+&amp; Best regards,</div><div>Sanjay<br><span></span></div></div></body></h=
+tml>
+--0-2079389687-1306906508=:58306--
 
