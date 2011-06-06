@@ -1,12 +1,9 @@
-Date: Thu, 2 Jun 2011 22:00:12 +0200
-From: Alexis Berlemont <alexis.berlemont@domain.hid>
-Message-ID: <20110602200012.GB2772@domain.hid>
-References: <897759.67778.qm@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <897759.67778.qm@domain.hid>
-Subject: Re: [Xenomai-help] Analogy simultaneous read write commands
+Date: Mon, 6 Jun 2011 17:46:53 +0200
+Message-ID: <BANLkTi=gonDhctX-5w=L1f_rQP-JVNSDYQ@mail.gmail.com>
+From: suresh reddy <sureshreddy.balijepalli@domain.hid>
+Content-Type: multipart/alternative; boundary=20cf3033475136f02604a50d037c
+Subject: Re: [Xenomai-help] pandaboard -deconfig
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -16,53 +13,77 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jules Warsh <juleswarsh@domain.hid>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Hi,
+--20cf3033475136f02604a50d037c
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-Once more, sorry for the late reply.
+Dear Xenomai Team,
 
-Jules Warsh wrote:
-> Hello,
-> 
-> Is it possible to:
-> - Set a command (a4l_snd_command) to read data from an Analogy subdevice,
-> - Set a command (a4l_snd_command) to write data to a different Analogy subdevice,
-> - Trigger both commands, and
-
-Yes. It is possible
-
-With one file descriptor (an a4l_desc_t to be more precise):
- - you can launch many synchronous acquisitions (instruction) on many
-   subdevices.
- - you can launch only one asynchronous acquisition (command) on any
-   subdevice (the asynchronous buffer is instanciated with the
-   creation of the file descriptor)
-
-So, all you have to do is open as many file descriptor on the same
-analogy device (let's say analogy0) as the number of simultaneous
-acquisitions you want to trigger.
-
-> 
-> - Collect/write data from/to buffers ?
-
-Yes. If you have opened two file descriptors, you will read on one fd
-(with a4l_async_read()) and write on the other one (with
-a4l_async_write()).
-
-> 
-> 
-> Or whatever other actions to implement the same functionality above?
-> 
-> Thank you.
-
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
+$xenomai_root/scripts/prepare-kernel.sh --arch=3Darm \
+  --adeos=3D$xenomai_root/ksrc/arch/arm/patches/adeos-ipipe-2.6.20-arm-* \
+  --linux=3D$linux_tree$ cd $linux_tree
+$ make ARCH=3Darm CROSS_COMPILE=3Darm-linux- O=3D$build_root csb637_defconf=
+ig
 
 
--- 
-Alexis.
+I  have doubts in above highlighted issues .
+
+1. CD $linux_tree
+
+i have taken snapshot of ipipe-gch from xenomai git repository. (It is
+patched kernel)
+
+*On my host pc (intel )*
+
+i changed to  CD =A7 ipipe-gch   (since this is the ipipe patched linux ker=
+nel
+tree). Is this the correct way ?
+
+
+2. if i make menu config im entering into host pc (i mean i386
+configuration) but not the arm . how can i configure for pandaboard .
+
+--20cf3033475136f02604a50d037c
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><div><br></div><div><br></div><div><br></div><div>Dear Xen=
+omai Team,</div><div><br></div><div><meta http-equiv=3D"content-type" conte=
+nt=3D"text/html; charset=3Dutf-8"><span class=3D"Apple-style-span" style=3D=
+"font-family: sans-serif; font-size: 13px; line-height: 19px; "><pre style=
+=3D"padding-top: 1em; padding-right: 1em; padding-bottom: 1em; padding-left=
+: 1em; border-top-width: 1px; border-right-width: 1px; border-bottom-width:=
+ 1px; border-left-width: 1px; border-top-style: dashed; border-right-style:=
+ dashed; border-bottom-style: dashed; border-left-style: dashed; border-top=
+-color: rgb(47, 111, 171); border-right-color: rgb(47, 111, 171); border-bo=
+ttom-color: rgb(47, 111, 171); border-left-color: rgb(47, 111, 171); backgr=
+ound-color: rgb(249, 249, 249); line-height: 1.1em; ">
+<span class=3D"Apple-style-span" style=3D"color: black; ">$xenomai_root/scr=
+ipts/prepare-kernel.sh --arch=3Darm \
+  --adeos=3D$xenomai_root/ksrc/arch/arm/patches/adeos-ipipe-2.6.20-arm-* \
+  --linux=3D$linux_tree
+</span><font class=3D"Apple-style-span" color=3D"#33CC00">$ cd $linux_tree<=
+/font>
+$ make ARCH=3Darm CROSS_COMPILE=3Darm-linux- O=3D$build_root <font class=3D=
+"Apple-style-span" color=3D"#6633FF">csb637_defconfig</font>
+</pre></span></div><div><br></div><div>I =A0have doubts in above highlighte=
+d issues .</div><div><br></div><div>1. CD $linux_tree</div><div><br></div><=
+div>i have taken snapshot of ipipe-gch from xenomai git repository. (It is =
+patched kernel)</div>
+<div><br></div><div><b>On my host pc (intel )</b>=A0</div><div><br></div><d=
+iv>i changed to =A0<font class=3D"Apple-style-span" color=3D"#009900">CD =
+=A7 ipipe-gch</font> =A0 (since this is the ipipe patched linux kernel tree=
+). Is this the correct way ?</div>
+<div><br></div><div><br></div><div>2. if i make menu config im entering int=
+o host pc (i mean i386 configuration) but not the arm . how can i configure=
+ for pandaboard .=A0</div><div><br></div><div><br></div><div><br></div><div=
+>
+<br></div><div><br></div><div><br></div><div><br></div><div><br></div><div>=
+<br></div><div><br></div><div><br></div><div><br></div><div><br></div><div>=
+<br></div><div><br></div><div><br></div><br>
+</div>
+
+--20cf3033475136f02604a50d037c--
 
