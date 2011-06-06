@@ -1,8 +1,11 @@
+Message-ID: <4DECF994.2030604@domain.hid>
+Date: Mon, 06 Jun 2011 18:00:20 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Date: Mon, 6 Jun 2011 17:46:53 +0200
-Message-ID: <BANLkTi=gonDhctX-5w=L1f_rQP-JVNSDYQ@mail.gmail.com>
-From: suresh reddy <sureshreddy.balijepalli@domain.hid>
-Content-Type: multipart/alternative; boundary=20cf3033475136f02604a50d037c
+References: <BANLkTi=gonDhctX-5w=L1f_rQP-JVNSDYQ@mail.gmail.com>
+In-Reply-To: <BANLkTi=gonDhctX-5w=L1f_rQP-JVNSDYQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Subject: Re: [Xenomai-help] pandaboard -deconfig
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -13,77 +16,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: suresh reddy <sureshreddy.balijepalli@domain.hid>
+Cc: xenomai@xenomai.org
 
---20cf3033475136f02604a50d037c
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+On 06/06/2011 05:46 PM, suresh reddy wrote:
+> Dear Xenomai Team,
+>=20
+> $xenomai_root/scripts/prepare-kernel.sh --arch=3Darm \
+>   --adeos=3D$xenomai_root/ksrc/arch/arm/patches/adeos-ipipe-2.6.20-arm-=
+* \
+>   --linux=3D$linux_tree$ cd $linux_tree
+> $ make ARCH=3Darm CROSS_COMPILE=3Darm-linux- O=3D$build_root csb637_def=
+config
+>=20
+>=20
+> I  have doubts in above highlighted issues .
+>=20
+> 1. CD $linux_tree
+>=20
+> i have taken snapshot of ipipe-gch from xenomai git repository. (It is
+> patched kernel)
+>=20
+> *On my host pc (intel )*
+>=20
+> i changed to  CD =C2=A7 ipipe-gch   (since this is the ipipe patched li=
+nux kernel
+> tree). Is this the correct way ?
 
-Dear Xenomai Team,
+$linux_tree is the value of a shell variable, used as a place holder,
+which you can replace with whatever you want.
 
-$xenomai_root/scripts/prepare-kernel.sh --arch=3Darm \
-  --adeos=3D$xenomai_root/ksrc/arch/arm/patches/adeos-ipipe-2.6.20-arm-* \
-  --linux=3D$linux_tree$ cd $linux_tree
-$ make ARCH=3Darm CROSS_COMPILE=3Darm-linux- O=3D$build_root csb637_defconf=
-ig
+>=20
+>=20
+> 2. if i make menu config im entering into host pc (i mean i386
+> configuration) but not the arm . how can i configure for pandaboard .
 
+This is a question about cross-compiling linux. As such, it has nothing
+to do with Xenomai and is off-topic on this mailing list. There are many
+places on the web where you can find documentation on compiling the
+Linux kernel. As I already advised you privately, you will find this
+documentation, for instance, on the panda board wiki.
 
-I  have doubts in above highlighted issues .
+--=20
+					    Gilles.
 
-1. CD $linux_tree
-
-i have taken snapshot of ipipe-gch from xenomai git repository. (It is
-patched kernel)
-
-*On my host pc (intel )*
-
-i changed to  CD =A7 ipipe-gch   (since this is the ipipe patched linux ker=
-nel
-tree). Is this the correct way ?
-
-
-2. if i make menu config im entering into host pc (i mean i386
-configuration) but not the arm . how can i configure for pandaboard .
-
---20cf3033475136f02604a50d037c
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr"><div><br></div><div><br></div><div><br></div><div>Dear Xen=
-omai Team,</div><div><br></div><div><meta http-equiv=3D"content-type" conte=
-nt=3D"text/html; charset=3Dutf-8"><span class=3D"Apple-style-span" style=3D=
-"font-family: sans-serif; font-size: 13px; line-height: 19px; "><pre style=
-=3D"padding-top: 1em; padding-right: 1em; padding-bottom: 1em; padding-left=
-: 1em; border-top-width: 1px; border-right-width: 1px; border-bottom-width:=
- 1px; border-left-width: 1px; border-top-style: dashed; border-right-style:=
- dashed; border-bottom-style: dashed; border-left-style: dashed; border-top=
--color: rgb(47, 111, 171); border-right-color: rgb(47, 111, 171); border-bo=
-ttom-color: rgb(47, 111, 171); border-left-color: rgb(47, 111, 171); backgr=
-ound-color: rgb(249, 249, 249); line-height: 1.1em; ">
-<span class=3D"Apple-style-span" style=3D"color: black; ">$xenomai_root/scr=
-ipts/prepare-kernel.sh --arch=3Darm \
-  --adeos=3D$xenomai_root/ksrc/arch/arm/patches/adeos-ipipe-2.6.20-arm-* \
-  --linux=3D$linux_tree
-</span><font class=3D"Apple-style-span" color=3D"#33CC00">$ cd $linux_tree<=
-/font>
-$ make ARCH=3Darm CROSS_COMPILE=3Darm-linux- O=3D$build_root <font class=3D=
-"Apple-style-span" color=3D"#6633FF">csb637_defconfig</font>
-</pre></span></div><div><br></div><div>I =A0have doubts in above highlighte=
-d issues .</div><div><br></div><div>1. CD $linux_tree</div><div><br></div><=
-div>i have taken snapshot of ipipe-gch from xenomai git repository. (It is =
-patched kernel)</div>
-<div><br></div><div><b>On my host pc (intel )</b>=A0</div><div><br></div><d=
-iv>i changed to =A0<font class=3D"Apple-style-span" color=3D"#009900">CD =
-=A7 ipipe-gch</font> =A0 (since this is the ipipe patched linux kernel tree=
-). Is this the correct way ?</div>
-<div><br></div><div><br></div><div>2. if i make menu config im entering int=
-o host pc (i mean i386 configuration) but not the arm . how can i configure=
- for pandaboard .=A0</div><div><br></div><div><br></div><div><br></div><div=
->
-<br></div><div><br></div><div><br></div><div><br></div><div><br></div><div>=
-<br></div><div><br></div><div><br></div><div><br></div><div><br></div><div>=
-<br></div><div><br></div><div><br></div><br>
-</div>
-
---20cf3033475136f02604a50d037c--
 
