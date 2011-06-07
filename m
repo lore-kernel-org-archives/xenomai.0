@@ -1,64 +1,53 @@
-From: VEYSSIERE Nicolas <nicolas.veyssiere@domain.hid>
-Date: Wed, 22 Jun 2011 14:47:15 +0200
-Message-ID: <18303_1308746837_4E01E455_18303_6972_2_ECB646CBB62FD044927FDEDF0252D3E701E388B3645B@THSONEA01CMS03P.one.grp>
-References: <18303_1308739447_4E01C777_18303_558_1_ECB646CBB62FD044927FDEDF0252D3E701E388B3612E@THSONEA01CMS03P.one.grp>
-	<4E01CA9A.2040709@domain.hid>
-	<17296_1308741006_4E01CD8E_17296_18611_1_ECB646CBB62FD044927FDEDF0252D3E701E388B361AA@THSONEA01CMS03P.one.grp>
-	<4E01CE25.2020202@domain.hid>
-	<17288_1308741885_4E01D0FD_17288_343_1_ECB646CBB62FD044927FDEDF0252D3E701E388B36206@domain.hid>
-	<4E01E0EE.90002@domain.hid>
-In-Reply-To: <4E01E0EE.90002@domain.hid>
-Content-Language: fr-FR
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Kernel panic on boot with 2.5.6
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+From: Jan Kiszka <jan.kiszka@domain.hid>
+Date: Tue,  7 Jun 2011 16:17:55 +0200
+Message-Id: <da3b15637621ec5b887db5c72dff969b3d7ae0da.1307456218.git.jan.kiszka@domain.hid>
+In-Reply-To: <cover.1307456217.git.jan.kiszka@domain.hid>
+References: <cover.1307456217.git.jan.kiszka@domain.hid>
+In-Reply-To: <cover.1307456217.git.jan.kiszka@domain.hid>
+References: <cover.1307456217.git.jan.kiszka@domain.hid>
+Subject: [Adeos-main] [PATCH 5/5] ipipe: x86: Avoid trashing
+	vector_irq[IRQ_MOVE_CLEANUP_VECTOR] on migration
+List-Id: General discussion about Adeos <adeos-main.gna.org>
+List-Unsubscribe: <https://mail.gna.org/options/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+List-Archive: </public/adeos-main>
+List-Post: <mailto:adeos-main@gna.org>
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: adeos-main <adeos-main@gna.org>
 
-WWVzLCBteSBob3N0IGlzIFdpbmRvd3MsIEkgY2FuJ3QgY2hhbmdlIGFueXRoaW5nIGFib3V0IHRo
-YXQsIGFuZCB5ZXMgaXQgaXMgb25seSBmb3IgdGVzdGluZy4NCg0KSSBjaGFuZ2VkIG15IGJvb3Qg
-bGluZSA6IFsgICAgMC4wMDAwMDBdIEtlcm5lbCBjb21tYW5kIGxpbmU6IHJvb3Q9L2Rldi9zZGEz
-IHhlbm9faGFsLmNwdWZyZXE9MTIwMCBjbG9ja3NvdXJjZT10c2MgY29uc29sZT10dHkwIGNvbnNv
-bGU9dHR5UzAsMTE1MjAwIG5vYXBpYyBhY3BpPW5vaXJxIHZpZGVvPXZlc2FmYjptdHJyOjMseXdy
-YXAgdmdhPTYNCg0KQnV0IEkgZGlkbid0IGZpbmQgdGhlIHJhbmdlIG9yIHRoZSB1bml0IGZvciBj
-cHVmcmVxLCBhbmQgbWF5YmUgSSBoYWQgdG8gcHJlZml4IGNsb2Nrc291cmNlIHdpdGggeGVub19o
-YWwgPw0KDQpCdXQgSSBub3RpY2VkIHRoaXMgaW4gdGhlIGxvZyA6IA0KDQpbICAgIDEuMjAyNjk0
-XSBCVUc6IHVuYWJsZSB0byBoYW5kbGUga2VybmVsIE5VTEwgcG9pbnRlciBkZXJlZmVyZW5jZSBh
-dCAwMDAwMDkyMA0KWyAgICAxLjIwMjY5NF0gSVA6IFs8YzEwNzM2ZmU+XSBfX3hpcnFfZW5kKzB4
-MTIvMHgyZQ0KWyAgICAxLjIwMjY5NF0gKnBkZSA9IDAwMDAwMDAwIA0KWyAgICAxLjIwMjY5NF0g
-T29wczogMDAwMCBbIzFdIFNNUA0KDQpDYW4gaXQgYmUgYmVjYXVzZSBTTVAgaXMgYWN0aXZhdGVk
-IGFuZCB0aGF0IHZpcnR1YWxib3ggaXMgZW5hYmxpbmcgb25seSAxIHByb2Nlc3NvciB3aXRoIDEg
-Y29yZSA/DQoNCg0KLS0gDQpOaWNvbGFzIFZFWVNTSUVSRQ0KDQoNCi0tLS0tTWVzc2FnZSBkJ29y
-aWdpbmUtLS0tLQ0KRGXCoDogSmFuIEtpc3prYSBbbWFpbHRvOmphbi5raXN6a2FAc2llbWVucy5j
-b21dIA0KRW52b3nDqcKgOiBtZXJjcmVkaSAyMiBqdWluIDIwMTEgMTQ6MzMNCsOAwqA6IFZFWVNT
-SUVSRSBOaWNvbGFzDQpDY8KgOiBHaWxsZXMgQ2hhbnRlcGVyZHJpeDsgeGVub21haS1oZWxwQGdu
-YS5vcmcNCk9iamV0wqA6IFJlOiBLZXJuZWwgcGFuaWMgb24gYm9vdCB3aXRoIDIuNS42DQoNCk9u
-IDIwMTEtMDYtMjIgMTM6MjQsIFZFWVNTSUVSRSBOaWNvbGFzIHdyb3RlOg0KPiBGaXJzdCB0aW1l
-IGZvciBtZSBoZXJlLg0KPiANCj4gVGhlIGxvZyBhcmUgaW4gdGhlIGF0dGFjaGVtZW50Lg0KPiAN
-Cg0KLi4uDQoNCj4gWyAgICAwLjM4Mzk1MF0gLS0tLS0tLS0tLS0tWyBjdXQgaGVyZSBdLS0tLS0t
-LS0tLS0tDQo+IFsgICAgMC4zODQ5NTBdIFdBUk5JTkc6IGF0IGFyY2gveDg2L2tlcm5lbC9hcGlj
-L2FwaWMuYzoxMjg5IHNldHVwX2xvY2FsX0FQSUMrMHgxZTEvMHgyY2IoKQ0KPiBbICAgIDAuMzg1
-OTUwXSBIYXJkd2FyZSBuYW1lOiBWaXJ0dWFsQm94DQo+IFsgICAgMC4zODY5NTBdIE1vZHVsZXMg
-bGlua2VkIGluOg0KPiBbICAgIDAuMzg5OTQ5XSBQaWQ6IDEsIGNvbW06IHN3YXBwZXIgTm90IHRh
-aW50ZWQgMi42LjM4LXhlbm9tYWktcjYgIzENCg0KV2hhdCdzIHlvdXIgaG9zdCBzeXN0ZW0sIFdp
-bmRvd3M/IElmIGl0J3MgTGludXgsIGRvbid0IHVzZSBWQm94LCB1c2UNClFFTVUvS1ZNIChpdCdz
-IGtub3cgdG8gaG9zdCBYZW5vbWFpIHg4NiB3aXRob3V0IG1ham9yIHByb2JsZW1zLCBpdCdzIG15
-DQpwcmltYXJ5IHRlc3QgcGxhdGZvcm0gZm9yIHllYXJzKS4NCg0KV2hhdCBtYXkgaGVscCBpZiB5
-b3UgY2FuJ3QgYXZvaWQgVkJveCBpcyB0byBwcm92aWRlIHRoZSBob3N0J3MgQ1BVDQpmcmVxdWVu
-Y3kgc3RhdGljYWxseSB0byBYZW5vbWFpICh4ZW5vX2hhbC5jcHVmcmVxPS4uLikgYW5kIGVuZm9y
-Y2UgdGhlDQp0c2MgYXMgY2xvY2tzb3VyY2UgKGNsb2Nrc291cmNlPXRzYykuIFRpbWVrZWVwaW5n
-IG1heSBnbyBtYWQgaW4gdGhlDQpndWVzdCwgYnV0IGl0J3MgZm9yIHRlc3RpbmcgcHVycG9zZXMg
-b25seSBhbnl3YXkuDQoNCkphbg0KDQotLSANClNpZW1lbnMgQUcsIENvcnBvcmF0ZSBUZWNobm9s
-b2d5LCBDVCBUIERFIElUIDENCkNvcnBvcmF0ZSBDb21wZXRlbmNlIENlbnRlciBFbWJlZGRlZCBM
-aW51eA0K
+smp_irq_move_cleanup_interrupt walks all vectors starting at
+FIRST_EXTERNAL_VECTOR, checking for vectors on the move. Unfortunately,
+FIRST_EXTERNAL_VECTOR equals IRQ_MOVE_CLEANUP_VECTOR and is incorrectly
+identified as a migrating one because we set its vector_irq to something
+else than -1. The result is that smp_irq_move_cleanup_interrupt sets
+vector_irq to -1 again, and __ipipe_handle_irq will BUG on the next
+migration IRQ.
+
+Fix this by starting the vector walk above FIRST_EXTERNAL_VECTOR.
+
+Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
+---
+ arch/x86/kernel/apic/io_apic.c |    3 ++-
+ 1 files changed, 2 insertions(+), 1 deletions(-)
+
+diff --git a/arch/x86/kernel/apic/io_apic.c b/arch/x86/kernel/apic/io_apic.c
+index db1e9f3..2c0f203 100644
+--- a/arch/x86/kernel/apic/io_apic.c
++++ b/arch/x86/kernel/apic/io_apic.c
+@@ -2337,7 +2337,8 @@ asmlinkage void smp_irq_move_cleanup_interrupt(void)
+ 	irq_enter();
+ 
+ 	me = smp_processor_id();
+-	for (vector = FIRST_EXTERNAL_VECTOR; vector < NR_VECTORS; vector++) {
++	for (vector = FIRST_EXTERNAL_VECTOR + 1; vector < NR_VECTORS;
++	     vector++) {
+ 		unsigned int irq;
+ 		unsigned int irr;
+ 		struct irq_desc *desc;
+-- 
+1.7.1
+
 
