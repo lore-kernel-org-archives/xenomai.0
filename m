@@ -1,12 +1,12 @@
-From: Jan Kiszka <jan.kiszka@domain.hid>
-Date: Tue,  7 Jun 2011 16:17:55 +0200
-Message-Id: <da3b15637621ec5b887db5c72dff969b3d7ae0da.1307456218.git.jan.kiszka@domain.hid>
+From: Philippe Gerum <rpm@xenomai.org>
 In-Reply-To: <cover.1307456217.git.jan.kiszka@domain.hid>
 References: <cover.1307456217.git.jan.kiszka@domain.hid>
-In-Reply-To: <cover.1307456217.git.jan.kiszka@domain.hid>
-References: <cover.1307456217.git.jan.kiszka@domain.hid>
-Subject: [Adeos-main] [PATCH 5/5] ipipe: x86: Avoid trashing
-	vector_irq[IRQ_MOVE_CLEANUP_VECTOR] on migration
+Content-Type: text/plain; charset="UTF-8"
+Date: Tue, 07 Jun 2011 16:23:03 +0200
+Message-ID: <1307456583.2148.118.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Adeos-main] [PATCH 0/5] [PULL] ipipe-2.6.38-x86
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/options/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -15,39 +15,48 @@ List-Post: <mailto:adeos-main@gna.org>
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: adeos-main <adeos-main@gna.org>
 
-smp_irq_move_cleanup_interrupt walks all vectors starting at
-FIRST_EXTERNAL_VECTOR, checking for vectors on the move. Unfortunately,
-FIRST_EXTERNAL_VECTOR equals IRQ_MOVE_CLEANUP_VECTOR and is incorrectly
-identified as a migrating one because we set its vector_irq to something
-else than -1. The result is that smp_irq_move_cleanup_interrupt sets
-vector_irq to -1 again, and __ipipe_handle_irq will BUG on the next
-migration IRQ.
+On Tue, 2011-06-07 at 16:17 +0200, Jan Kiszka wrote:
+> The following changes since commit c6ef3e86ff13163e416f3f91df8a4df2ca36bcb3:
+> 
+>   ipipe: x86: Fix 64-bit IRQ exit path (2011-06-04 16:16:52 +0200)
+> 
+> are available in the git repository at:
+>   git://git.kiszka.org/ipipe queues/2.6.38-x86
+> 
+> Shortened summary below. Excluded:
+> 
+> Jan Kiszka (1):
+>       Merge branch 'queues/2.6.38-noarch' into queues/2.6.38-x86
+> 
+> One last wish: Please create the arch branches by forking off from
+> noarch, not from mainline. That avoids needless merge conflicts when
+> pulling in noarch updates later on. Thanks!
 
-Fix this by starting the vector walk above FIRST_EXTERNAL_VECTOR.
+That should be always the case since 2005 or so... If 2.6.38 escapes
+that rule, then this was unintended, because that makes no sense.
 
-Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
----
- arch/x86/kernel/apic/io_apic.c |    3 ++-
- 1 files changed, 2 insertions(+), 1 deletions(-)
+> 
+> Jan Kiszka (5):
+>   ipipe: x86: Fix irq->vector lookup for IRQ_MOVE_CLEANUP_VECTOR
+>   ipipe: x86: Optimize ipipe_percpu_domain_data::status accesses
+>   ipipe: x86: Fix flags corruption in arch_mangle_irq_bits on 64-bit
+>     systems
+>   ipipe: x86: Unbreak !CONFIG_SPARSE_IRQ build
+>   ipipe: x86: Avoid trashing vector_irq[IRQ_MOVE_CLEANUP_VECTOR] on
+>     migration
+> 
+>  arch/x86/include/asm/ipipe_base.h |    2 --
+>  arch/x86/include/asm/irqflags.h   |    2 +-
+>  arch/x86/kernel/apic/io_apic.c    |   11 ++++++++---
+>  arch/x86/kernel/ipipe.c           |    4 +++-
+>  4 files changed, 12 insertions(+), 7 deletions(-)
+> 
 
-diff --git a/arch/x86/kernel/apic/io_apic.c b/arch/x86/kernel/apic/io_apic.c
-index db1e9f3..2c0f203 100644
---- a/arch/x86/kernel/apic/io_apic.c
-+++ b/arch/x86/kernel/apic/io_apic.c
-@@ -2337,7 +2337,8 @@ asmlinkage void smp_irq_move_cleanup_interrupt(void)
- 	irq_enter();
- 
- 	me = smp_processor_id();
--	for (vector = FIRST_EXTERNAL_VECTOR; vector < NR_VECTORS; vector++) {
-+	for (vector = FIRST_EXTERNAL_VECTOR + 1; vector < NR_VECTORS;
-+	     vector++) {
- 		unsigned int irq;
- 		unsigned int irr;
- 		struct irq_desc *desc;
 -- 
-1.7.1
+Philippe.
+
 
 
