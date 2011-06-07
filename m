@@ -1,12 +1,7 @@
 From: Jan Kiszka <jan.kiszka@domain.hid>
-Date: Tue,  7 Jun 2011 16:17:52 +0200
-Message-Id: <8b8ab428453ae4d414eebb715acf984c5f6b2c09.1307456217.git.jan.kiszka@domain.hid>
-In-Reply-To: <cover.1307456217.git.jan.kiszka@domain.hid>
-References: <cover.1307456217.git.jan.kiszka@domain.hid>
-In-Reply-To: <cover.1307456217.git.jan.kiszka@domain.hid>
-References: <cover.1307456217.git.jan.kiszka@domain.hid>
-Subject: [Adeos-main] [PATCH 2/5] ipipe: x86: Optimize
-	ipipe_percpu_domain_data::status accesses
+Date: Tue,  7 Jun 2011 16:17:50 +0200
+Message-Id: <cover.1307456217.git.jan.kiszka@domain.hid>
+Subject: [Adeos-main] [PATCH 0/5] [PULL] ipipe-2.6.38-x86
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/options/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -18,49 +13,35 @@ List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 To: Philippe Gerum <rpm@xenomai.org>
 Cc: adeos-main <adeos-main@gna.org>
 
-Just like in the noarch part, drop the remaining atomic ops used for
-status manipulation.
+The following changes since commit c6ef3e86ff13163e416f3f91df8a4df2ca36bcb3:
 
-Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
----
+  ipipe: x86: Fix 64-bit IRQ exit path (2011-06-04 16:16:52 +0200)
+
+are available in the git repository at:
+  git://git.kiszka.org/ipipe queues/2.6.38-x86
+
+Shortened summary below. Excluded:
+
+Jan Kiszka (1):
+      Merge branch 'queues/2.6.38-noarch' into queues/2.6.38-x86
+
+One last wish: Please create the arch branches by forking off from
+noarch, not from mainline. That avoids needless merge conflicts when
+pulling in noarch updates later on. Thanks!
+
+Jan Kiszka (5):
+  ipipe: x86: Fix irq->vector lookup for IRQ_MOVE_CLEANUP_VECTOR
+  ipipe: x86: Optimize ipipe_percpu_domain_data::status accesses
+  ipipe: x86: Fix flags corruption in arch_mangle_irq_bits on 64-bit
+    systems
+  ipipe: x86: Unbreak !CONFIG_SPARSE_IRQ build
+  ipipe: x86: Avoid trashing vector_irq[IRQ_MOVE_CLEANUP_VECTOR] on
+    migration
+
  arch/x86/include/asm/ipipe_base.h |    2 --
- arch/x86/kernel/ipipe.c           |    2 +-
- 2 files changed, 1 insertions(+), 3 deletions(-)
-
-diff --git a/arch/x86/include/asm/ipipe_base.h b/arch/x86/include/asm/ipipe_base.h
-index 44c8c73..8fb76ac 100644
---- a/arch/x86/include/asm/ipipe_base.h
-+++ b/arch/x86/include/asm/ipipe_base.h
-@@ -131,7 +131,6 @@
- static inline void __ipipe_stall_root(void)
- {
- 	__asm__ __volatile__(GET_ROOT_STATUS_ADDR
--			     LOCK_PREFIX
- 			     TEST_AND_SET_ROOT_STATUS
- 			     PUT_ROOT_STATUS_ADDR
- 			     : : : ROOT_TEST_CLOBBER_LIST, "memory");
-@@ -142,7 +141,6 @@ static inline unsigned long __ipipe_test_and_stall_root(void)
- 	int oldbit;
- 
- 	__asm__ __volatile__(GET_ROOT_STATUS_ADDR
--			     LOCK_PREFIX
- 			     TEST_AND_SET_ROOT_STATUS
- 			     "sbbl %0,%0;"
- 			     PUT_ROOT_STATUS_ADDR
-diff --git a/arch/x86/kernel/ipipe.c b/arch/x86/kernel/ipipe.c
-index cd63d02..b34cce9 100644
---- a/arch/x86/kernel/ipipe.c
-+++ b/arch/x86/kernel/ipipe.c
-@@ -420,7 +420,7 @@ void __ipipe_halt_root(void)
- 	p = ipipe_root_cpudom_ptr();
- 
- 	trace_hardirqs_on();
--	clear_bit(IPIPE_STALL_FLAG, &p->status);
-+	__clear_bit(IPIPE_STALL_FLAG, &p->status);
- 
- 	if (unlikely(__ipipe_ipending_p(p))) {
- 		__ipipe_sync_pipeline();
--- 
-1.7.1
+ arch/x86/include/asm/irqflags.h   |    2 +-
+ arch/x86/kernel/apic/io_apic.c    |   11 ++++++++---
+ arch/x86/kernel/ipipe.c           |    4 +++-
+ 4 files changed, 12 insertions(+), 7 deletions(-)
 
 
