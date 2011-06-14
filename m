@@ -1,12 +1,11 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <cover.1307456217.git.jan.kiszka@domain.hid>
-References: <cover.1307456217.git.jan.kiszka@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Tue, 07 Jun 2011 16:23:03 +0200
-Message-ID: <1307456583.2148.118.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Adeos-main] [PATCH 0/5] [PULL] ipipe-2.6.38-x86
+MIME-Version: 1.0
+Date: Tue, 14 Jun 2011 14:09:31 +1000
+Message-ID: <BANLkTi=4KnpNyzx73XqHErLT9_5bQWHnHg@domain.hid>
+From: AKS <aungkyas@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: [Adeos-main] xenomai-runtime package for Ubuntu (can we get 2.6.38
+ hard real time kernel with it?)
+Reply-To: aungkyas@domain.hid
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/options/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -15,48 +14,34 @@ List-Post: <mailto:adeos-main@gna.org>
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: adeos-main <adeos-main@gna.org>
+To: Adeos <adeos-main@gna.org>
 
-On Tue, 2011-06-07 at 16:17 +0200, Jan Kiszka wrote:
-> The following changes since commit c6ef3e86ff13163e416f3f91df8a4df2ca36bcb3:
-> 
->   ipipe: x86: Fix 64-bit IRQ exit path (2011-06-04 16:16:52 +0200)
-> 
-> are available in the git repository at:
->   git://git.kiszka.org/ipipe queues/2.6.38-x86
-> 
-> Shortened summary below. Excluded:
-> 
-> Jan Kiszka (1):
->       Merge branch 'queues/2.6.38-noarch' into queues/2.6.38-x86
-> 
-> One last wish: Please create the arch branches by forking off from
-> noarch, not from mainline. That avoids needless merge conflicts when
-> pulling in noarch updates later on. Thanks!
+Hi
 
-That should be always the case since 2005 or so... If 2.6.38 escapes
-that rule, then this was unintended, because that makes no sense.
+Good day everyone. I have questions about "xenomai-runtime" package
+that can be installed in Ubuntu using "apt-get install". xenomai-runtime
+relies on libxenomai1. It is recommended to have "linux-patch-xenomai"
+too. I can understand why it needs libxenomai1 library but I cannot figure
+out how it can patch the Linux kernel to be real time. I assume it is still
+needed to patch "adeos I-pipe" into the kernel to make it real time. The
+package information states that the "linux-patch-xenomai" package is just
+an adeos I-pipe patch, but the Linux source has to be virgin source code
+from mainstream kernel.
+https://launchpad.net/ubuntu/natty/+package/xenomai-runtime
 
-> 
-> Jan Kiszka (5):
->   ipipe: x86: Fix irq->vector lookup for IRQ_MOVE_CLEANUP_VECTOR
->   ipipe: x86: Optimize ipipe_percpu_domain_data::status accesses
->   ipipe: x86: Fix flags corruption in arch_mangle_irq_bits on 64-bit
->     systems
->   ipipe: x86: Unbreak !CONFIG_SPARSE_IRQ build
->   ipipe: x86: Avoid trashing vector_irq[IRQ_MOVE_CLEANUP_VECTOR] on
->     migration
-> 
->  arch/x86/include/asm/ipipe_base.h |    2 --
->  arch/x86/include/asm/irqflags.h   |    2 +-
->  arch/x86/kernel/apic/io_apic.c    |   11 ++++++++---
->  arch/x86/kernel/ipipe.c           |    4 +++-
->  4 files changed, 12 insertions(+), 7 deletions(-)
-> 
+First will that patch is for new kernel compilation? I think the question I
+have is already asked. I guess I am repeating Robinson's question below.
 
--- 
-Philippe.
+https://mail.gna.org/public/xenomai-help/2010-08/msg00309.html
 
+I assume that package uses Xenomai 2.5.5.2-1. Since it is Ubuntu Natty,
+its Kernel is 2.6.35+ or can even be 2.6.38 (but from this forum, I learned
+that the latest adeos I-pipe linux kernel patch was 2.6.35. So which is the
+latest and greatest xenomai. Am I right?
 
+My other question is that can I compile a 2.6.38 kernel, drivers and rootfile
+system with Ubuntu Natty, since that patch and xenomai-runtime do not
+limit the kernel number. Can it be possible to build an Ubuntu with 2.6.38
+real time kernel based on Xenomai. I will be glad if anyone can kindly share
+or point me to documentation for xenomai-runtime. Thanks!
 
