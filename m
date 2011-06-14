@@ -1,12 +1,13 @@
-Message-ID: <4DFF2D33.8090702@domain.hid>
-Date: Mon, 20 Jun 2011 13:21:23 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4DF7436D.6040706@domain.hid>
+Date: Tue, 14 Jun 2011 12:18:05 +0100
+From: Jakub Nowacki <j.s.nowacki@domain.hid>
 MIME-Version: 1.0
-References: <BANLkTi=DsC9d_LVt3deiBCUAQq2-UubTuA@mail.gmail.com>
-In-Reply-To: <BANLkTi=DsC9d_LVt3deiBCUAQq2-UubTuA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
+References: <4DF5EA11.5010006@domain.hid> <4DF64C3A.6080407@domain.hid>
+	<4DF65FC8.1000703@domain.hid> <4DF6F87E.7000500@domain.hid>
+In-Reply-To: <4DF6F87E.7000500@domain.hid>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] regarding freezing at booting
+Subject: Re: [Xenomai-help] Xenomai on i7-870
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -16,68 +17,50 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: suresh reddy <sureshreddy.balijepalli@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: Xenomai help <xenomai@xenomai.org>
 
-On 06/20/2011 11:52 AM, suresh reddy wrote:
-> Dear xenomai,
-> 
-> I compiled the the kernel and builded the uImage . I transfered the uImage
-> to FAT partion of SD Card  and the directories DEV and usr (That generated
-> due to make DESTDIR) to root filesystem of the sd card.
-> 
-> i started booting from sd card . It giving me the below result and freezing.
-> Iam seeing nothing on terminal after this .
+On 06/14/2011 06:58 AM, Jan Kiszka wrote:
+>
+> Do you have the irqbalance daemon running? If yes, disable it and retry.
 
-It means the kernel encountered an error before the console is enabled.
-Enable CONFIG_EARLY_PRINTK and pass earlyprintk on the kernel command
-line to know what the problem is.
+Yes I had. Disabling it helped, namely system works now. I just think I 
+have a slightly higher latencies. Namely, in the 100 us period the 
+average is most of the times about -0.4 us, whereas min and max are 
+approx. -2.5 us and 22 us, respectively. They are still quite good but I 
+think I had slightly lower, especially the max was around 11 us, for no 
+PM. But is not that important for me now.
 
-Note that since I told you to download ipipe-gch, I finalized the port
-of the I-pipe patch on panda board. So, if you download the ipipe-gch
-git again, you will be able to enable CONFIG_SMP.
+> If it helps, you may also want to try
+>
+> git://git.kiszka.org/ipipe.git queues/2.6.38-x86
+>
+> If that doesn't help, try to disable CONFIG_DMAR (though it should left
+> off by default during boot) and CONFIG_INTR_REMAP.
 
+They are now both on. Since the kernel works now should I let them be or 
+still switch them off?
 
-> And i thought whether my uImage that i created was crashed , so thought of
-> building it again .
-> when i run the make uImage , it giving me error No rule to make target
-> uImage . stop
-> 
-> make ARCH=arm CROSS_COMPILE=arm-none-linux-gnueabi-
-> O=/home/balijepalli/pandaboard/build uImage
-> make: *** No rule to make target `uImage'.  Stop.
-> 
-> then i ran
-> test06:/home/balijepalli/pandaboard/ipipe-gch# make ARCH=arm
-> CROSS_COMPILE=arm-none-linux-gnueabi- O=/home/balijepalli/pandaboard/build
-> omap4_panda_defconfig
-> make: *** No rule to make target `omap4_panda_defconfig'.  Stop.
-> 
-> so i went to to 1st step to check scripts/prepare. kernel.sh as below
->  test06:/home/balijepalli/pandaboard/xenomai-2.5.6#
-> scripts/prepare-kernel.sh --linux=/home/balijepalli/pandaboard/ipipe-gch
-> --arch=arm
-> scripts/prepare-kernel.sh: line 350: linux_: command not found
-> 
-> 
->  i checked this scripts/prepare.kernel.sh by downloading the xenomai again
-> but i got the same error.
+> Regarding CONFIG_HPET_TIMER: That's not selectable on x86-64. If you
+> have "enough" cores, the kernel will run out of HPET timers and won't
+> select them as clock events. With 8 cores, you should be safe, but
+> better check the kernel boot messages for "hpet" or the state of
+> /proc/timer_list regarding "Clock Event Device" when booting the same
+> kernel without Xenomai support.
 
-I do not know what to do from this explanation. You are giving us either
-too much or not enough information.
+Thanks for clarifying that. BTW my /proc/timer_list says for 'Clock 
+Event Device' 'pit' for the first one and 'lapic' for other on both 
+ubuntu and ipipe kernel. Hence, looks like no 'hpet' is involved. Also I 
+didn't find any 'hpet' messages in the kernel log.
 
-Some ideas:
+Since a new Adeos patch has just arrived, I'll give it a try with kernel 
+2.6.38.8 and see how it behaves. BTW maybe it's a silly question but 
+should I rebuild Xenomai each time I install new kernel? Or rephrasing 
+it, when should I rebuild Xenomai?
 
-The prepared kernel should be built in the sources directory or in its
-own build directory. And this is an exclusive or, if you start mixing
-out-of-tree build with in-source builds you start having problems.
+Once more thank you very much for the help.
 
-The omap4_panda_defconfig does not exist in the I-pipe patch, you have
-to configure the kernel manually (start from omap2plus_defconfig, and
-disable all options related to other omaps than omap4).
+Best wishes,
 
-You should not try and prepare a kernel which has already been prepared.
-
--- 
-                                                                Gilles.
+Jakub
 
