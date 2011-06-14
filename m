@@ -1,12 +1,12 @@
-Message-ID: <4DFDF79F.1090502@domain.hid>
-Date: Sun, 19 Jun 2011 15:20:31 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <BANLkTikoPvhb1XmycYm=MROT7=BGA8cisg@domain.hid>
-In-Reply-To: <BANLkTikoPvhb1XmycYm=MROT7=BGA8cisg@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Problem accesing I2C without using Linux kernel
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <3FF315C710820E47A04E55C6F7D9B0AD7FE9FF@AREXCH02.mra.roland-man.biz>
+References: <3FF315C710820E47A04E55C6F7D9B0AD7FE9FF@AREXCH02.mra.roland-man.biz>
+Content-Type: text/plain; charset="UTF-8"
+Date: Tue, 14 Jun 2011 11:39:51 +0200
+Message-ID: <1308044391.2699.2.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-help] Xenomai 2.5.6 with PPC-Kernel 2.4.25
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -16,57 +16,77 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Andrey Nechypurenko <andreynech@domain.hid>
+To: roderik.wildenburg@domain.hid
 Cc: xenomai@xenomai.org
 
-On 06/19/2011 03:16 PM, Andrey Nechypurenko wrote:
-> Hi,
-> 
-> I am working on real-time control application using BeagleBoard
-> and Xenomai. Some sensors are connected to the second i2c bus. It
-> is necessary to collect sensor data strictly periodically and
-> that is why I would prefer to query the sensors from xenomai
-> thread.
-> 
-> I can read sensor data from user space using kernel interface,
-> i.e. via /dev/i2c-2 file. However, as I understand, doing it from
-> the xenomai thread will lead to the context switch and degrade
-> the real-time performance (introduce unpredictable delays and all
-> other badnesses :-) ). That is why I decide to try to access
-> OMAP's i2c controller directly without using kernel driver and
-> /dev file system.
-> 
-> For this purposes, I simply poke the relevant parts from u-boot
-> sources and thought that it should work. Unfortunately it is
-> not. I am getting the "Bus error" message which is coming not
-> from my test program and then the program quits.
-> 
-> I am suspecting that there is some kind of conflict with
-> kernel. I am not experienced enough with kernel internals and
-> that is why the questions I would like to ask are: a) whether my
-> assumption about possible conflict with kernel is reasonable, b)
-> would it help to recompile the kernel with i2c support completely
-> disabled and c) if such kernel will work at all on BB? Please
-> note, that for this application I do not need any power
-> management and no display output.
-> 
-> Just for the sake of completeness, and if somebody is interested
-> in more details, here is the brief outline of what I did and how
-> it fails. I was doing the following steps:
-> 
-> 1. Open /dev/mem and memory map the I2C 2 region at
-> 0x48072000 (as defined in the TRM which is in meanwhile become
-> my most popular reading :-) ):
-> 
-> fd = open("/dev/mem", O_RDWR | O_SYNC);
-> i2c_base = mmap(NULL, sizeof(i2c_base),
->                PROT_READ | PROT_WRITE,
->                MAP_SHARED, fd, I2C_DEFAULT_BASE);
+On Tue, 2011-06-14 at 10:52 +0200, roderik.wildenburg@domain.hid
+wrote:
+> Sorry for asking again, but my question form June 7. wasn=C2=B4t answered=
+ and I am not able to work it out by my own:
+> When I use a PPC-Kernel 2.4.25 with Xenomai 2.5.6 I get the message=20
+> "Xenomai: mmap local sem heap: No such device or address" when I start th=
+e latency test (and other programs).
+>=20
+> But the rtheap-Device exists (see below). Can anybody give me a short hin=
+t in which direction to search.
+> Is Xenomai 2.5.6 intend to work with Kernel 2.4. ?
+>=20
 
-What is the value of i2c_base here? If it is MAP_FAILED, then mmap
-failed. And one reason for failing would be that sizeof(i2c_base) is not
-a multiple of the page size.
+Yes. I don't have the bandwidth avail to have a look at this ATM. I'll
+try to this week.
 
--- 
-                                                                Gilles.
+> Thank you in advance
+> Roderik=20
+>=20
+> -----------------------------------------
+> mrconfig:/fat/sbin # ll /dev/rtheap
+> crw-rw-rw-    1 root     root      10, 254 May 19 14:16 /dev/rtheap
+>=20
+> mrconfig:/fat/sbin # strace ./latency
+> execve("./latency", ["./latency"], [/* 37 vars */]) =3D 0
+> uname({sys=3D"Linux", node=3D"mrconfig", ...}) =3D 0
+> :
+> :
+> :
+> access("/dev/rtheap", F_OK)             =3D 0
+> rt_sigaction(SIGILL, {0xff23cb8, [ILL], SA_RESTART}, {SIG_DFL}, 8) =3D 0
+> rt_sigaction(SIGILL, {SIG_DFL}, {0xff23cb8, [ILL], SA_RESTART}, 8) =3D 0
+> open("/dev/rtheap", O_RDWR)             =3D 3
+> ioctl(3, 0, 0xc7dd9210)                 =3D 0
+> mmap(NULL, 12288, PROT_READ|PROT_WRITE, MAP_SHARED, 3, 0) =3D -1 ENXIO (N=
+o such device or address)
+> close(3)                                =3D 0
+> dup(2)                                  =3D 3
+> fcntl64(3, F_GETFL)                     =3D 0x2 (flags O_RDWR)
+> fstat64(3, {st_mode=3DS_IFCHR|0600, st_rdev=3Dmakedev(4, 64), ...}) =3D 0
+> ioctl(3, TCGETS, {B38400 opost isig icanon echo ...}) =3D 0
+> mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) =
+=3D 0x30016000
+> _llseek(3, 0, 0x7fffeac8, SEEK_CUR)     =3D -1 ESPIPE (Illegal seek)
+> write(3, "Xenomai: mmap local sem heap: No"..., 56Xenomai: mmap local sem=
+ heap: No such device or address
+> ) =3D 56
+> close(3)                                =3D 0
+> munmap(0x30016000, 4096)                =3D 0
+> exit(1)
+>=20
+> --------------------------------------------------------
+> manroland AG
+> Vorsitzender des Aufsichtsrates: Hanno C. Fiedler
+> Vorstand: Gerd Finkbeiner (Vorsitzender), Dr. Ingo Koch, Dr. Markus Rall,=
+ Paul Steidle  =20
+> Sitz der Gesellschaft: Offenbach am Main, Registergericht: Amtsgericht Of=
+fenbach HRB-Nr. 42592
+> USt-Ident-Nr. DE 250200933
+>=20
+>=20
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
+
+--=20
+Philippe.
+
+
 
