@@ -1,10 +1,11 @@
-Message-ID: <4DF74D3C.4020303@domain.hid>
-Date: Tue, 14 Jun 2011 13:59:56 +0200
-From: Roberto Bielli <roberto.bielli@domain.hid>
+From: Wolfgang Denk <wd@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] Fwd: Re:  rt_task_delete doesn't work
+Content-type: text/plain; charset=ISO-8859-1
+Content-transfer-encoding: 8bit
+Date: Tue, 14 Jun 2011 16:48:43 +0200
+Message-Id: <20110614144843.9CA8011EEDAF@gemini.denx.de>
+Subject: Re: [Xenomai-core] RTLWS13 / XUM-2011, 20-22 Oct 2011,
+	Prague - Call for Participation
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -13,105 +14,66 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+To: Xenomai Help <xenomai@xenomai.org>, Xenomai Core <xenomai@xenomai.org>, adeos-main@gna.org
+
+Hello everybody,
+
+on Tue, 26 Apr 2011 I wrote:
+
+> I guess you have all read the announcement of the
+> 
+>        13th Real-Time Linux Workshop
+> 
+>             October 20-22, 2011
+>      Faculty of Electrical Engineering
+>     Czech Technical University in Prague
+>            Prague, Czech Republic
+> 
+> and the related Call for Papers.  For reference, please see here:
+> 
+> https://www.osadl.org/RTLWS-2011.rtlws-2011.0.html
+> 
+> 
+> I think this will be a nice opportunity to hold our
+> 
+> 	Xenomai User Metting 2011
+> 
+> Nicholas Mc Guire was kind enough to invite us to put the XUM into a
+> track at RTLWS, so fro the technical / organizational side we are clear.
+> 
+> What's needed it a lot of participants, and people who are willing to
+> give presentations.  Ideally such papers should go through the RTLWS
+> review process so they get added to the proceedings, see
+> https://www.osadl.org/RTLWS13-Abstract.submission-form.0.html
+> 
+> 
+> Could everybody who is interestted to participate, either just as
+> attendee or as lecturer) please drop me a short note so we can
+> estimate if we reach some critical mass? Please send this information
+> to my address, so we avoid flooding the mailing list(s) without need.
+> 
+> Of course, any public discussion of the event as such and about
+> possible presentations is welcome, too.
 
 
+Please note that the deadline for abstract submission expires on June
+20, 2011, i. e. in LESS THAN A WEEK from now.
 
-Here is the example and the command.
-
-RT_TASK pippo;
-RT_TASK pluto;
-
-void test1()
-{
-     int err;
-
-     err = rt_task_delete(&pippo );
-     if( err != 0 )
-         printf("error task delete\n");
-
-}
-
-int main (int argc, char *argv[])
-{
-     //    Porta di comunicazione
-     //int s;
-
-     mlockall(MCL_CURRENT|MCL_FUTURE);
-
-     // gestione signal handler
-     //struct sigaction sa;
-     //sa.sa_sigaction = (void *)sigHandler;
-     //sigemptyset (&sa.sa_mask);
-     //sa.sa_flags = SA_SIGINFO;
-
-     //sigaction(SIGTERM,&sa, NULL);
-     //sigaction(SIGINT,&sa, NULL);
-     //sigaction(SIGPIPE,&sa, NULL);
-     //sigaction(SIGFPE,&sa, NULL);
-     //sigaction(SIGSEGV,&sa, NULL);
+For details please see https://www.osadl.org/Single-View.111+M5460cc8c9d4.0.html
 
 
-     char * namePippo = "pippo";
-     char * namePluto = "pluto";
-     int err;
-     err = rt_task_create(&pippo, namePippo, 0x2000, 20, T_FPU );
-     if( err != 0 )
-         printf("error task create %s\n", namePippo );
-     err = rt_task_create(&pluto, namePluto, 0x2000, 20, T_FPU );
-     if( err != 0 )
-         printf("error task create %s\n", namePluto );
+To anybody who has anything to present: Please submit your abstracts NOW!
 
-     err = rt_task_start(&pluto, (void *)test1, NULL );
-     if( err != 0 )
-         printf("error task start %s\n", namePluto );
-
-}
-
---COMMAND--
-
-# gdb --args ./apgs -D
-GNU gdb (GDB) 6.8.50.20080821-cvs
-Copyright (C) 2008 Free Software Foundation, Inc.
-License GPLv3+: GNU GPL version 3 or later
-<http://gnu.org/licenses/gpl.html>
-This is free software: you are free to change and redistribute it.
-There is NO WARRANTY, to the extent permitted by law.  Type "show copying"
-and "show warranty" for details.
-This GDB was configured as "arm-mv5sft-linux-gnueabi".
-For bug reporting instructions, please see:
-<http://www.gnu.org/software/gdb/bugs/>...
-(gdb) r
-`/flash/apgs' has disappeared; keeping its symbols.
-Starting program: /flash/apgs -D
-[Thread debugging using libthread_db enabled]
-[New Thread 0x2acf7490 (LWP 537)]
-[New Thread 0x2acfc490 (LWP 538)]
-
-Program received signal SIGSEGV, Segmentation fault.
-[Switching to Thread 0x2acfc490 (LWP 538)]
-0x2aab9d74 in _dl_catch_error () from /lib/ld-linux.so.3
-(gdb)
+To anybody who considers participating: Please drop me a note!
 
 
-Il 10/06/2011 19:32, Gilles Chanteperdrix ha scritto:
->  On 06/10/2011 06:51 PM, Roberto Bielli wrote:
->>  The segmentation fault was not on this code line.
->>  i upgraded the version to 2.5.6 but the error is the same.
->>
->>  The fault is when i try to delete a realtime task from another realtime
->>  task.
->>
->>  It's possible to do that  ?
->  Please post a self-contained testcase. A self-contained test case is
->  worth a thousand words.
->
+Thanks, and best regards,
 
+Wolfgang Denk
 
-
------
-Nessun virus nel messaggio.
-Controllato da AVG - www.avg.com
-Versione: 10.0.1382 / Database dei virus: 1513/3699 -  Data di rilascio: 12/06/2011
-
+-- 
+DENX Software Engineering GmbH,     MD: Wolfgang Denk & Detlev Zundel
+HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
+Phone: (+49)-8142-66989-10 Fax: (+49)-8142-66989-80 Email: wd@domain.hid
+Never put off until tomorrow what you can put off indefinitely.
 
