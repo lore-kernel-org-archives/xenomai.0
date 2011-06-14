@@ -1,14 +1,9 @@
-Message-ID: <4DF8DC11.9000102@domain.hid>
-Date: Wed, 15 Jun 2011 17:21:37 +0100
-From: Jakub Nowacki <j.s.nowacki@domain.hid>
 MIME-Version: 1.0
-References: <4DF5EA11.5010006@domain.hid> <4DF64C3A.6080407@domain.hid>
-	<4DF65FC8.1000703@domain.hid> <4DF6F87E.7000500@domain.hid>
-	<4DF7436D.6040706@domain.hid> <4DF74640.5070802@domain.hid>
-In-Reply-To: <4DF74640.5070802@domain.hid>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Xenomai on i7-870
+Date: Tue, 14 Jun 2011 11:17:23 +0200
+Message-ID: <BANLkTinhVjCZH-ni-M-HWUv5EY5hy8YcBA@mail.gmail.com>
+From: suresh reddy <sureshreddy.balijepalli@domain.hid>
+Content-Type: multipart/alternative; boundary=bcaec5489e7df19a9404a5a880de
+Subject: [Xenomai-help] xenomai configuration
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -18,94 +13,1234 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: Xenomai help <xenomai@xenomai.org>
+To: Xenomai help <xenomai@xenomai.org>
 
-On 06/14/2011 12:30 PM, Jan Kiszka wrote:
-> On 2011-06-14 13:18, Jakub Nowacki wrote:
->> On 06/14/2011 06:58 AM, Jan Kiszka wrote:
->>>
->>> Do you have the irqbalance daemon running? If yes, disable it and retry.
->>
->> Yes I had. Disabling it helped, namely system works now. I just think I
->> have a slightly higher latencies. Namely, in the 100 us period the
->> average is most of the times about -0.4 us, whereas min and max are
->> approx. -2.5 us and 22 us, respectively. They are still quite good but I
->> think I had slightly lower, especially the max was around 11 us, for no
->> PM. But is not that important for me now.
->
-> How long did each of those tests run? And under which load?
->
->>
->>> If it helps, you may also want to try
->>>
->>> git://git.kiszka.org/ipipe.git queues/2.6.38-x86
->>>
->>> If that doesn't help, try to disable CONFIG_DMAR (though it should left
->>> off by default during boot) and CONFIG_INTR_REMAP.
->>
->> They are now both on. Since the kernel works now should I let them be or
->> still switch them off?
->
-> It will at least prevent you from accidentally using it.
->
->>
->>> Regarding CONFIG_HPET_TIMER: That's not selectable on x86-64. If you
->>> have "enough" cores, the kernel will run out of HPET timers and won't
->>> select them as clock events. With 8 cores, you should be safe, but
->>> better check the kernel boot messages for "hpet" or the state of
->>> /proc/timer_list regarding "Clock Event Device" when booting the same
->>> kernel without Xenomai support.
->>
->> Thanks for clarifying that. BTW my /proc/timer_list says for 'Clock
->> Event Device' 'pit' for the first one and 'lapic' for other on both
->> ubuntu and ipipe kernel. Hence, looks like no 'hpet' is involved. Also I
->> didn't find any 'hpet' messages in the kernel log.
->>
->> Since a new Adeos patch has just arrived, I'll give it a try with kernel
->> 2.6.38.8 and see how it behaves.
->
-> That /should/ make irqbalance work - though I'm not 100% sure, we are
-> still hunting bugs in our 2.6.35-based kernel here.
+--bcaec5489e7df19a9404a5a880de
+Content-Type: text/plain; charset=ISO-8859-1
 
-I managed to compile kernel 2.6.38.8 with ipipe without any problems. 
-The irqbalance now works correctly, namely, when it is switched on 
-system does not freeze any more. Moreover, I have all cores working now. 
-I also switched off CONFIG_DMAR and CONFIG_INTR_REMAP as suggested.
-
-I did some latency tests on these new kernels, that is, I have 2.6.38.8 
-kernel compiled for generic and core2 (just for testing). Below I show 
-summary.
-
-Linux-2.6.38.8-generic-ipipe, user task
-RTS|     -2.495|     -0.416|     62.433|       0|     0| 
-00:30:00/00:30:00
-
-Linux-2.6.38.8-generic-ipipe, kernel task
-RTS|     -3.008|     -1.499|     15.214|       0|     0| 
-00:30:00/00:30:00
-
-Linux-2.6.38.8-core2-ipipe, user task
-RTS|     -2.528|     -0.431|     18.153|       0|     0| 
-00:30:00/00:30:00
-
-Linux-2.6.38.8-core2-ipipe, kernel task
-RTS|     -2.962|     -1.433|     14.501|       0|     0| 
-00:30:00/00:30:00
-
-They look pretty good but for user task in generic kernel I have about 
-once in 30 min a task with maximum latency approx. 70 us (I did a couple 
-of test and it was there). I didn't see it for core2 but I did only one 
-test, so it actually can be there. It is not what you define as 
-'pathological' latency and I'm not sure what can cause that. I have SMI 
-workaround switched on. On the other hand I have MSI enabled (because I 
-cannot disable them in *config) and Legacy USB in BIOS, because, for 
-some reason, my USB keyboard doesn't work in grub without it (I cannot 
-select anything in grub but it works later in the system correctly).
-
-Best wishes,
-
-Jakub
+Dear all,
+Iam running the below command . It giving me the config options as below .
+It showing me as linux is not building in xenomai tree (maked below).It
+seems i went wrong somewhere . Can somebody let me know where should i check
+for this option.
 
 
+test06:/home/balijepalli/pandaboard/build#
+/home/balijepalli/pandaboard/xenomai-2.5.6/configure
+--build=i486-pc-linux-gnu --host=arm-none-linux-gnueabi
+--enable-arm-mach=omap3 --enable-arm-tsc
+
+
+checking build system type... i486-pc-linux-gnu
+
+
+checking host system type... arm-none-linux-gnueabi
+
+
+checking for a BSD-compatible install... /usr/bin/install -c
+
+
+checking for arm-none-linux-gnueabi-gcc... arm-none-linux-gnueabi-gcc
+
+
+checking whether the C compiler works... yes
+
+
+checking for C compiler default output file name... a.out
+
+
+checking for suffix of executables...
+
+
+checking whether we are cross compiling... yes
+
+
+checking for suffix of object files... o
+
+
+checking whether we are using the GNU C compiler... yes
+
+
+checking whether arm-none-linux-gnueabi-gcc accepts -g... yes
+
+
+checking for arm-none-linux-gnueabi-gcc option to accept ISO C89... none
+needed
+
+checking how to run the C preprocessor... arm-none-linux-gnueabi-gcc -E
+
+
+checking target system type... arm-none-linux-gnueabi
+
+
+checking for arm-none-linux-gnueabi-gcc... arm-none-linux-gnueabi-gcc
+
+
+checking whether we are using the GNU C compiler... (cached) yes
+
+
+checking whether arm-none-linux-gnueabi-gcc accepts -g... yes
+
+
+checking for arm-none-linux-gnueabi-gcc option to accept ISO C89... (cached)
+none needed
+
+checking how to run the C preprocessor... arm-none-linux-gnueabi-gcc -E
+
+
+checking whether build environment is sane... yes
+
+
+checking for a thread-safe mkdir -p... /bin/mkdir -p
+
+
+checking for gawk... gawk
+
+
+checking whether make sets $(MAKE)... yes
+
+
+checking for style of include used by make... GNU
+
+
+checking for arm-none-linux-gnueabi-strip... arm-none-linux-gnueabi-strip
+
+
+checking dependency style of arm-none-linux-gnueabi-gcc... gcc3
+
+
+checking whether to enable maintainer-specific portions of Makefiles... no
+
+
+checking dependency style of arm-none-linux-gnueabi-gcc... gcc3
+
+
+checking for flex... flex
+
+
+checking lex output file root... lex.yy
+
+
+checking lex library... none needed
+
+
+checking whether yytext is a pointer... no
+
+
+checking for target architecture... arm
+
+
+checking for a sed that does not truncate output... /bin/sed
+
+
+checking for grep that handles long lines and -e... /bin/grep
+
+
+checking for egrep... /bin/grep -E
+
+
+checking for fgrep... /bin/grep -F
+
+
+checking for ld used by arm-none-linux-gnueabi-gcc...
+/home/balijepalli/pandaboard/toolchain_1/arm-2009q1/arm-none-linux-gnueabi/bin/ld
+
+checking if the linker
+(/home/balijepalli/pandaboard/toolchain_1/arm-2009q1/arm-none-linux-gnueabi/bin/ld)
+is GNU ld... yes
+checking for BSD- or MS-compatible name lister (nm)...
+/home/balijepalli/pandaboard/toolchain_1/arm-2009q1/bin/arm-none-linux-gnueabi-nm
+-B
+checking the name lister
+(/home/balijepalli/pandaboard/toolchain_1/arm-2009q1/bin/arm-none-linux-gnueabi-nm
+-B) interface... BSD nm
+checking whether ln -s works... yes
+
+
+checking the maximum length of command line arguments... 1572864
+
+
+checking whether the shell understands some XSI constructs... yes
+
+
+checking whether the shell understands "+="... yes
+
+
+checking for
+/home/balijepalli/pandaboard/toolchain_1/arm-2009q1/arm-none-linux-gnueabi/bin/ld
+option to reload object files... -r
+
+checking how to recognize dependent libraries... pass_all
+
+
+checking for arm-none-linux-gnueabi-ar... arm-none-linux-gnueabi-ar
+
+
+checking for arm-none-linux-gnueabi-strip... (cached)
+arm-none-linux-gnueabi-strip
+
+checking for arm-none-linux-gnueabi-ranlib... arm-none-linux-gnueabi-ranlib
+
+
+checking command to parse
+/home/balijepalli/pandaboard/toolchain_1/arm-2009q1/bin/arm-none-linux-gnueabi-nm
+-B output from arm-none-linux-gnueabi-gcc object... ok
+checking for ANSI C header files... yes
+
+
+checking for sys/types.h... yes
+
+
+checking for sys/stat.h... yes
+
+
+checking for stdlib.h... yes
+
+
+checking for string.h... yes
+
+
+checking for memory.h... yes
+
+
+checking for strings.h... yes
+
+
+checking for inttypes.h... yes
+
+
+checking for stdint.h... yes
+
+
+checking for unistd.h... yes
+
+
+checking for dlfcn.h... yes
+
+
+checking for objdir... .libs
+
+
+checking if arm-none-linux-gnueabi-gcc supports -fno-rtti -fno-exceptions...
+no
+
+checking for arm-none-linux-gnueabi-gcc option to produce PIC... -fPIC -DPIC
+
+
+checking if arm-none-linux-gnueabi-gcc PIC flag -fPIC -DPIC works... yes
+
+
+checking if arm-none-linux-gnueabi-gcc static flag -static works... yes
+
+
+checking if arm-none-linux-gnueabi-gcc supports -c -o file.o... yes
+
+
+checking if arm-none-linux-gnueabi-gcc supports -c -o file.o... (cached) yes
+
+
+checking whether the arm-none-linux-gnueabi-gcc linker
+(/home/balijepalli/pandaboard/toolchain_1/arm-2009q1/arm-none-linux-gnueabi/bin/ld)
+supports shared libraries... yes
+checking whether -lc should be explicitly linked in... no
+
+
+checking dynamic linker characteristics... GNU/Linux ld.so
+
+
+checking how to hardcode library paths into programs... immediate
+
+
+checking whether stripping libraries is possible... yes
+
+
+checking if libtool supports shared libraries... yes
+
+
+checking whether to build shared libraries... yes
+
+
+checking whether to build static libraries... yes
+
+
+checking for debug symbols... no
+
+
+checking for SMP support... no
+
+
+checking for ARM EABI interface... no
+
+
+checking for ARM machine... omap3
+
+
+checking for ARM EABI interface... no
+
+
+checking for ARM architecture version... 7
+
+
+checking for ARM SA1100 architecture... no
+
+
+checking for ARM Xscale3 architecture... no
+
+
+checking for TSC emulation in user-space.... yes
+
+
+checking whether building Linux in Xenomai build tree... no
+
+
+checking for Doxygen documentation... no
+
+
+checking for doxygen... doxygen
+
+
+checking for dot... NO
+
+
+checking whether compiling Docbook XML documentation... no
+
+
+checking for xmllint... xmllint
+
+
+checking for xsltproc... xsltproc
+
+
+checking for fop... no
+
+
+checking whether Docbook XML documentation generation can use network.... no
+
+
+checking for docbook-xml root dir... /usr/share/sgml/docbook/dtd/xml/4.2
+
+
+checking for docbook-xsl root dir... network
+
+
+checking whether using LaTeX non-stop mode... no
+
+
+checking mqueue.h usability... yes
+
+
+checking mqueue.h presence... yes
+
+
+checking for mqueue.h... yes
+
+
+checking for shm_open... yes
+
+
+checking for shm_unlink... yes
+
+
+checking for mmap64... yes
+
+
+checking for ftruncate64... yes
+
+
+checking for pthread_mutexattr_setprotocol... yes
+
+
+checking for pthread_condattr_setclock... yes
+
+
+checking for pthread_spin_lock... yes
+
+
+checking for fork... yes
+
+
+checking for sched_setaffinity... ok
+
+
+checking for specific GCC switches... done
+
+
+checking whether ld supports @file... yes
+
+
+checking whether the POSIX skin library automatically calls mlockall... no
+
+
+checking whether the pSOS skin library automatically calls mlockall... no
+
+
+checking whether the uITRON skin library automatically calls mlockall... no
+
+
+checking whether to enable dlopen support for skin libraries... no
+
+
+checking location for test binaries... ${exec_prefix}/bin
+
+
+configure: creating ./config.status
+
+
+config.status: creating Makefile
+
+
+config.status: creating config/Makefile
+
+
+config.status: creating scripts/Makefile
+
+
+config.status: creating scripts/xeno-config
+
+
+config.status: creating scripts/xeno-load
+
+
+config.status: creating scripts/xeno-test
+
+
+config.status: creating scripts/xeno
+
+
+config.status: creating src/Makefile
+
+
+config.status: creating src/rtdk/Makefile
+
+
+config.status: creating src/skins/Makefile
+
+
+config.status: creating src/skins/common/Makefile
+
+
+config.status: creating src/skins/posix/Makefile
+
+
+config.status: creating src/skins/native/Makefile
+
+
+config.status: creating src/skins/vxworks/Makefile
+
+
+config.status: creating src/skins/psos+/Makefile
+
+
+config.status: creating src/skins/vrtx/Makefile
+
+
+config.status: creating src/skins/rtdm/Makefile
+
+
+config.status: creating src/skins/rtai/Makefile
+
+
+config.status: creating src/skins/uitron/Makefile
+
+
+config.status: creating src/drvlib/Makefile
+
+
+config.status: creating src/drvlib/analogy/Makefile
+
+
+config.status: creating src/include/Makefile
+
+
+config.status: creating src/testsuite/Makefile
+
+
+config.status: creating src/testsuite/latency/Makefile
+
+
+config.status: creating src/testsuite/cyclic/Makefile
+
+
+config.status: creating src/testsuite/switchtest/Makefile
+
+
+config.status: creating src/testsuite/irqbench/Makefile
+
+
+config.status: creating src/testsuite/clocktest/Makefile
+
+
+config.status: creating src/testsuite/klatency/Makefile
+
+
+config.status: creating src/testsuite/unit/Makefile
+
+
+config.status: creating src/testsuite/sigtest/Makefile
+
+
+config.status: creating src/utils/Makefile
+
+
+config.status: creating src/utils/can/Makefile
+
+
+config.status: creating src/utils/analogy/Makefile
+
+
+config.status: creating src/utils/ps/Makefile
+
+
+config.status: creating include/Makefile
+
+
+config.status: creating include/asm-generic/Makefile
+
+
+config.status: creating include/asm-generic/bits/Makefile
+
+
+config.status: creating include/asm-blackfin/Makefile
+
+
+config.status: creating include/asm-blackfin/bits/Makefile
+
+
+config.status: creating include/asm-x86/Makefile
+
+
+config.status: creating include/asm-x86/bits/Makefile
+
+
+config.status: creating include/asm-powerpc/Makefile
+
+
+config.status: creating include/asm-powerpc/bits/Makefile
+
+
+config.status: creating include/asm-arm/Makefile
+
+
+config.status: creating include/asm-arm/bits/Makefile
+
+
+config.status: creating include/asm-nios2/Makefile
+
+
+config.status: creating include/asm-nios2/bits/Makefile
+
+
+config.status: creating include/asm-sim/Makefile
+
+
+config.status: creating include/asm-sim/bits/Makefile
+config.status: creating include/native/Makefile
+config.status: creating include/nucleus/Makefile
+config.status: creating include/posix/Makefile
+config.status: creating include/posix/sys/Makefile
+config.status: creating include/psos+/Makefile
+config.status: creating include/rtai/Makefile
+config.status: creating include/rtdm/Makefile
+config.status: creating include/analogy/Makefile
+config.status: creating include/uitron/Makefile
+config.status: creating include/vrtx/Makefile
+config.status: creating include/vxworks/Makefile
+config.status: creating doc/Makefile
+config.status: creating doc/txt/Makefile
+config.status: creating doc/man/Makefile
+config.status: creating doc/man/clocktest.man
+config.status: creating doc/man/cyclictest.man
+config.status: creating doc/man/irqbench.man
+config.status: creating doc/man/irqloop.man
+config.status: creating doc/man/klatency.man
+config.status: creating doc/man/latency.man
+config.status: creating doc/man/rtcanconfig.man
+config.status: creating doc/man/rtcanrecv.man
+config.status: creating doc/man/rtcansend.man
+config.status: creating doc/man/switchbench.man
+config.status: creating doc/man/switchtest.man
+config.status: creating doc/man/runinfo.man
+config.status: creating doc/man/xeno.man
+config.status: creating doc/man/xeno-config.man
+config.status: creating doc/man/xeno-info.man
+config.status: creating doc/man/xeno-load.man
+config.status: creating doc/man/xeno-test.man
+config.status: creating doc/doxygen/Makefile
+config.status: creating doc/doxygen/Doxyfile-common
+config.status: creating doc/doxygen/Doxyfile
+config.status: creating doc/doxygen/Doxyfile-native
+config.status: creating doc/doxygen/Doxyfile-nucleus
+config.status: creating doc/doxygen/Doxyfile-posix
+config.status: creating doc/doxygen/Doxyfile-rtdm
+config.status: creating doc/docbook/Makefile
+config.status: creating doc/docbook/catalog
+config.status: creating doc/docbook/custom-stylesheets/Makefile
+config.status: creating doc/docbook/custom-stylesheets/xsl/Makefile
+config.status: creating doc/docbook/custom-stylesheets/xsl/common/Makefile
+config.status: creating doc/docbook/custom-stylesheets/xsl/fo/Makefile
+config.status: creating doc/docbook/custom-stylesheets/xsl/html/Makefile
+config.status: creating doc/docbook/custom-stylesheets/xsl/html/chunk.xsl
+config.status: creating doc/docbook/custom-stylesheets/xsl/html/onechunk.xsl
+config.status: creating doc/docbook/xenomai/Makefile
+config.status: creating src/include/xeno_config.h
+config.status: src/include/xeno_config.h is unchanged
+config.status: linking
+/home/balijepalli/pandaboard/xenomai-2.5.6/include/asm-arm to
+src/include/asm/xenomai
+config.status: linking
+/home/balijepalli/pandaboard/xenomai-2.5.6/include/asm-generic to
+src/include/asm-generic/xenomai
+config.status: executing depfiles commands
+config.status: executing libtool commands
+test06:/home/balijepalli/pandaboard/build#
+
+
+-- 
+
+Suresh balijepalli
+Rosenehim,Baveria.
+
+--bcaec5489e7df19a9404a5a880de
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: base64
+
+PGRpdiBkaXI9Imx0ciI+RGVhciBhbGwsPGRpdj5JYW0gcnVubmluZyB0aGUgYmVsb3cgY29tbWFu
+ZCAuIEl0IGdpdmluZyBtZSB0aGUgY29uZmlnIG9wdGlvbnMgYXMgYmVsb3cgLiBJdCBzaG93aW5n
+IG1lIGFzIGxpbnV4IGlzIG5vdCBidWlsZGluZyBpbiB4ZW5vbWFpIHRyZWUgKG1ha2VkIGJlbG93
+KS5JdCBzZWVtcyBpIHdlbnQgd3Jvbmcgc29tZXdoZXJlIC4gQ2FuIHNvbWVib2R5IGxldCBtZSBr
+bm93IHdoZXJlIHNob3VsZCBpIGNoZWNrIGZvciB0aGlzIG9wdGlvbi48L2Rpdj4KPGRpdj48YnI+
+PC9kaXY+PGRpdj48YnI+PC9kaXY+PGRpdj48ZGl2PnRlc3QwNjovaG9tZS9iYWxpamVwYWxsaS9w
+YW5kYWJvYXJkL2J1aWxkIyAvaG9tZS9iYWxpamVwYWxsaS9wYW5kYWJvYXJkL3hlbm9tYWktMi41
+LjYvY29uZmlndXJlIC0tYnVpbGQ9aTQ4Ni1wYy1saW51eC1nbnUgLS1ob3N0PWFybS1ub25lLWxp
+bnV4LWdudWVhYmkgLS1lbmFibGUtYXJtLW1hY2g9b21hcDMgLS1lbmFibGUtYXJtLXRzYyCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoDwvZGl2Pgo8
+ZGl2PmNoZWNraW5nIGJ1aWxkIHN5c3RlbSB0eXBlLi4uIGk0ODYtcGMtbGludXgtZ251IKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgoDwvZGl2PjxkaXY+Y2hlY2tpbmcgaG9zdCBzeXN0ZW0gdHlwZS4uLiBhcm0t
+bm9uZS1saW51eC1nbnVlYWJpIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKCgPC9kaXY+CjxkaXY+Y2hlY2tpbmcgZm9y
+IGEgQlNELWNvbXBhdGlibGUgaW5zdGFsbC4uLiAvdXNyL2Jpbi9pbnN0YWxsIC1jIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgPC9k
+aXY+PGRpdj5jaGVja2luZyBmb3IgYXJtLW5vbmUtbGludXgtZ251ZWFiaS1nY2MuLi4gYXJtLW5v
+bmUtbGludXgtZ251ZWFiaS1nY2MgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoKA8L2Rpdj4KPGRpdj5jaGVja2luZyB3aGV0aGVyIHRoZSBDIGNvbXBp
+bGVyIHdvcmtzLi4uIHllcyCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKA8L2Rpdj48ZGl2PmNoZWNraW5n
+IGZvciBDIGNvbXBpbGVyIGRlZmF1bHQgb3V0cHV0IGZpbGUgbmFtZS4uLiBhLm91dCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+oDwvZGl2Pgo8ZGl2PmNoZWNraW5nIGZvciBzdWZmaXggb2YgZXhlY3V0YWJsZXMuLi4goCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgoDwvZGl2PjxkaXY+Y2hlY2tpbmcgd2hldGhlciB3ZSBhcmUg
+Y3Jvc3MgY29tcGlsaW5nLi4uIHllcyCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgPC9kaXY+CjxkaXY+Y2hl
+Y2tpbmcgZm9yIHN1ZmZpeCBvZiBvYmplY3QgZmlsZXMuLi4gbyCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgPC9kaXY+PGRpdj5jaGVja2luZyB3aGV0aGVyIHdlIGFyZSB1c2luZyB0aGUgR05VIEMg
+Y29tcGlsZXIuLi4geWVzIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoKA8L2Rpdj4KPGRpdj5jaGVja2luZyB3aGV0aGVyIGFy
+bS1ub25lLWxpbnV4LWdudWVhYmktZ2NjIGFjY2VwdHMgLWcuLi4geWVzIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoKA8L2Rpdj48ZGl2
+PmNoZWNraW5nIGZvciBhcm0tbm9uZS1saW51eC1nbnVlYWJpLWdjYyBvcHRpb24gdG8gYWNjZXB0
+IElTTyBDODkuLi4gbm9uZSBuZWVkZWQgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgoDwvZGl2Pgo8ZGl2PmNoZWNraW5nIGhvdyB0byBydW4gdGhlIEMgcHJlcHJvY2Vz
+c29yLi4uIGFybS1ub25lLWxpbnV4LWdudWVhYmktZ2NjIC1FIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgoDwvZGl2PjxkaXY+Y2hlY2tpbmcgdGFyZ2V0
+IHN5c3RlbSB0eXBlLi4uIGFybS1ub25lLWxpbnV4LWdudWVhYmkgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKCgPC9kaXY+
+CjxkaXY+Y2hlY2tpbmcgZm9yIGFybS1ub25lLWxpbnV4LWdudWVhYmktZ2NjLi4uIGFybS1ub25l
+LWxpbnV4LWdudWVhYmktZ2NjIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKCgPC9kaXY+PGRpdj5jaGVja2luZyB3aGV0aGVyIHdlIGFyZSB1c2luZyB0
+aGUgR05VIEMgY29tcGlsZXIuLi4gKGNhY2hlZCkgeWVzIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKA8L2Rpdj4KPGRpdj5jaGVja2luZyB3
+aGV0aGVyIGFybS1ub25lLWxpbnV4LWdudWVhYmktZ2NjIGFjY2VwdHMgLWcuLi4geWVzIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoKA8
+L2Rpdj48ZGl2PmNoZWNraW5nIGZvciBhcm0tbm9uZS1saW51eC1nbnVlYWJpLWdjYyBvcHRpb24g
+dG8gYWNjZXB0IElTTyBDODkuLi4gKGNhY2hlZCkgbm9uZSBuZWVkZWQgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoDwvZGl2Pgo8ZGl2PmNoZWNraW5nIGhvdyB0byBydW4gdGhlIEMg
+cHJlcHJvY2Vzc29yLi4uIGFybS1ub25lLWxpbnV4LWdudWVhYmktZ2NjIC1FIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgoDwvZGl2PjxkaXY+Y2hlY2tp
+bmcgd2hldGhlciBidWlsZCBlbnZpcm9ubWVudCBpcyBzYW5lLi4uIHllcyCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKCgPC9kaXY+CjxkaXY+Y2hlY2tpbmcgZm9yIGEgdGhyZWFkLXNhZmUgbWtkaXIgLXAuLi4gL2Jp
+bi9ta2RpciAtcCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgPC9kaXY+PGRpdj5jaGVja2luZyBmb3IgZ2F3ay4uLiBn
+YXdrIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoKA8L2Rpdj4KPGRpdj5j
+aGVja2luZyB3aGV0aGVyIG1ha2Ugc2V0cyAkKE1BS0UpLi4uIHllcyCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoKA8L2Rpdj48ZGl2PmNoZWNraW5nIGZvciBzdHlsZSBvZiBpbmNsdWRlIHVzZWQgYnkg
+bWFrZS4uLiBHTlUgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgoDwvZGl2Pgo8ZGl2PmNoZWNraW5nIGZvciBhcm0t
+bm9uZS1saW51eC1nbnVlYWJpLXN0cmlwLi4uIGFybS1ub25lLWxpbnV4LWdudWVhYmktc3RyaXAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgoDwvZGl2Pjxk
+aXY+Y2hlY2tpbmcgZGVwZW5kZW5jeSBzdHlsZSBvZiBhcm0tbm9uZS1saW51eC1nbnVlYWJpLWdj
+Yy4uLiBnY2MzIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKCgPC9kaXY+CjxkaXY+Y2hlY2tpbmcgd2hldGhlciB0byBlbmFibGUgbWFpbnRh
+aW5lci1zcGVjaWZpYyBwb3J0aW9ucyBvZiBNYWtlZmlsZXMuLi4gbm8goCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgPC9kaXY+PGRpdj5jaGVja2luZyBkZXBl
+bmRlbmN5IHN0eWxlIG9mIGFybS1ub25lLWxpbnV4LWdudWVhYmktZ2NjLi4uIGdjYzMgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoKA8L2Rp
+dj4KPGRpdj5jaGVja2luZyBmb3IgZmxleC4uLiBmbGV4IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoKA8L2Rpdj48ZGl2PmNoZWNraW5nIGxleCBvdXRwdXQgZmlsZSByb290
+Li4uIGxleC55eSCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgoDwvZGl2Pgo8ZGl2PmNoZWNraW5n
+IGxleCBsaWJyYXJ5Li4uIG5vbmUgbmVlZGVkIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+oDwvZGl2PjxkaXY+Y2hlY2tpbmcgd2hldGhlciB5eXRleHQgaXMgYSBwb2ludGVyLi4uIG5vIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgPC9kaXY+CjxkaXY+Y2hlY2tpbmcgZm9yIHRhcmdldCBhcmNo
+aXRlY3R1cmUuLi4gYXJtIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKCgPC9kaXY+PGRpdj5jaGVj
+a2luZyBmb3IgYSBzZWQgdGhhdCBkb2VzIG5vdCB0cnVuY2F0ZSBvdXRwdXQuLi4gL2Jpbi9zZWQg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKA8L2Rpdj4KPGRpdj5jaGVja2luZyBmb3IgZ3JlcCB0aGF0IGhhbmRsZXMgbG9uZyBsaW5l
+cyBhbmQgLWUuLi4gL2Jpbi9ncmVwIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoKA8L2Rpdj48ZGl2PmNoZWNraW5nIGZvciBlZ3JlcC4u
+LiAvYmluL2dyZXAgLUUgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoDwvZGl2Pgo8ZGl2
+PmNoZWNraW5nIGZvciBmZ3JlcC4uLiAvYmluL2dyZXAgLUYgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoDwvZGl2PjxkaXY+Y2hlY2tpbmcgZm9yIGxkIHVzZWQgYnkgYXJtLW5vbmUtbGlu
+dXgtZ251ZWFiaS1nY2MuLi4gL2hvbWUvYmFsaWplcGFsbGkvcGFuZGFib2FyZC90b29sY2hhaW5f
+MS9hcm0tMjAwOXExL2FybS1ub25lLWxpbnV4LWdudWVhYmkvYmluL2xkIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKCgPC9kaXY+CjxkaXY+Y2hlY2tpbmcgaWYgdGhl
+IGxpbmtlciAoL2hvbWUvYmFsaWplcGFsbGkvcGFuZGFib2FyZC90b29sY2hhaW5fMS9hcm0tMjAw
+OXExL2FybS1ub25lLWxpbnV4LWdudWVhYmkvYmluL2xkKSBpcyBHTlUgbGQuLi4geWVzIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKCgPC9kaXY+
+PGRpdj5jaGVja2luZyBmb3IgQlNELSBvciBNUy1jb21wYXRpYmxlIG5hbWUgbGlzdGVyIChubSku
+Li4gL2hvbWUvYmFsaWplcGFsbGkvcGFuZGFib2FyZC90b29sY2hhaW5fMS9hcm0tMjAwOXExL2Jp
+bi9hcm0tbm9uZS1saW51eC1nbnVlYWJpLW5tIC1CIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoKA8L2Rpdj4KPGRpdj5jaGVja2luZyB0aGUgbmFtZSBsaXN0ZXIgKC9ob21l
+L2JhbGlqZXBhbGxpL3BhbmRhYm9hcmQvdG9vbGNoYWluXzEvYXJtLTIwMDlxMS9iaW4vYXJtLW5v
+bmUtbGludXgtZ251ZWFiaS1ubSAtQikgaW50ZXJmYWNlLi4uIEJTRCBubSCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoKA8L2Rpdj48ZGl2PmNoZWNraW5nIHdo
+ZXRoZXIgbG4gLXMgd29ya3MuLi4geWVzIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgoDwv
+ZGl2Pgo8ZGl2PmNoZWNraW5nIHRoZSBtYXhpbXVtIGxlbmd0aCBvZiBjb21tYW5kIGxpbmUgYXJn
+dW1lbnRzLi4uIDE1NzI4NjQgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoDwvZGl2PjxkaXY+Y2hlY2tpbmcgd2hldGhlciB0aGUgc2hlbGwg
+dW5kZXJzdGFuZHMgc29tZSBYU0kgY29uc3RydWN0cy4uLiB5ZXMgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKCgPC9kaXY+CjxkaXY+Y2hlY2tp
+bmcgd2hldGhlciB0aGUgc2hlbGwgdW5kZXJzdGFuZHMgJnF1b3Q7Kz0mcXVvdDsuLi4geWVzIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoDwvZGl2PjxkaXY+Y2hlY2tpbmcgZm9yIC9ob21lL2JhbGlqZXBhbGxpL3Bh
+bmRhYm9hcmQvdG9vbGNoYWluXzEvYXJtLTIwMDlxMS9hcm0tbm9uZS1saW51eC1nbnVlYWJpL2Jp
+bi9sZCBvcHRpb24gdG8gcmVsb2FkIG9iamVjdCBmaWxlcy4uLiAtciCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgPC9kaXY+CjxkaXY+Y2hlY2tpbmcgaG93
+IHRvIHJlY29nbml6ZSBkZXBlbmRlbnQgbGlicmFyaWVzLi4uIHBhc3NfYWxsIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKCgPC9k
+aXY+PGRpdj5jaGVja2luZyBmb3IgYXJtLW5vbmUtbGludXgtZ251ZWFiaS1hci4uLiBhcm0tbm9u
+ZS1saW51eC1nbnVlYWJpLWFyIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoKA8L2Rpdj4KPGRpdj5jaGVja2luZyBmb3IgYXJtLW5vbmUtbGludXgt
+Z251ZWFiaS1zdHJpcC4uLiAoY2FjaGVkKSBhcm0tbm9uZS1saW51eC1nbnVlYWJpLXN0cmlwIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKA8L2Rpdj48ZGl2PmNoZWNraW5n
+IGZvciBhcm0tbm9uZS1saW51eC1nbnVlYWJpLXJhbmxpYi4uLiBhcm0tbm9uZS1saW51eC1nbnVl
+YWJpLXJhbmxpYiCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+oDwvZGl2Pgo8ZGl2PmNoZWNraW5nIGNvbW1hbmQgdG8gcGFyc2UgL2hvbWUvYmFsaWplcGFsbGkv
+cGFuZGFib2FyZC90b29sY2hhaW5fMS9hcm0tMjAwOXExL2Jpbi9hcm0tbm9uZS1saW51eC1nbnVl
+YWJpLW5tIC1CIG91dHB1dCBmcm9tIGFybS1ub25lLWxpbnV4LWdudWVhYmktZ2NjIG9iamVjdC4u
+LiBvayCgIKAgoCCgIKAgoCCgIKAgoDwvZGl2PjxkaXY+Y2hlY2tpbmcgZm9yIEFOU0kgQyBoZWFk
+ZXIgZmlsZXMuLi4geWVzIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKCgPC9kaXY+CjxkaXY+Y2hl
+Y2tpbmcgZm9yIHN5cy90eXBlcy5oLi4uIHllcyCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKCgPC9kaXY+PGRpdj5jaGVja2luZyBmb3Igc3lzL3N0YXQuaC4uLiB5ZXMgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKA8L2Rpdj4KPGRpdj5jaGVja2luZyBmb3Igc3RkbGli
+LmguLi4geWVzIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKA8L2Rpdj48ZGl2
+PmNoZWNraW5nIGZvciBzdHJpbmcuaC4uLiB5ZXMgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoDwvZGl2Pgo8ZGl2PmNoZWNraW5nIGZvciBtZW1vcnkuaC4uLiB5ZXMgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoDwvZGl2PjxkaXY+Y2hlY2tpbmcgZm9yIHN0
+cmluZ3MuaC4uLiB5ZXMgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKCgPC9kaXY+
+CjxkaXY+Y2hlY2tpbmcgZm9yIGludHR5cGVzLmguLi4geWVzIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgPC9kaXY+PGRpdj5jaGVja2luZyBmb3Igc3RkaW50LmguLi4geWVzIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKA8L2Rpdj4KPGRpdj5jaGVja2luZyBm
+b3IgdW5pc3RkLmguLi4geWVzIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKA8
+L2Rpdj48ZGl2PmNoZWNraW5nIGZvciBkbGZjbi5oLi4uIHllcyCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgoDwvZGl2Pgo8ZGl2PmNoZWNraW5nIGZvciBvYmpkaXIuLi4gLmxp
+YnMgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoDwvZGl2PjxkaXY+Y2hlY2tp
+bmcgaWYgYXJtLW5vbmUtbGludXgtZ251ZWFiaS1nY2Mgc3VwcG9ydHMgLWZuby1ydHRpIC1mbm8t
+ZXhjZXB0aW9ucy4uLiBubyCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKCgPC9kaXY+CjxkaXY+Y2hlY2tpbmcgZm9yIGFybS1ub25lLWxpbnV4LWdudWVhYmktZ2NjIG9w
+dGlvbiB0byBwcm9kdWNlIFBJQy4uLiAtZlBJQyAtRFBJQyCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgPC9kaXY+PGRpdj5jaGVja2luZyBpZiBhcm0tbm9uZS1s
+aW51eC1nbnVlYWJpLWdjYyBQSUMgZmxhZyAtZlBJQyAtRFBJQyB3b3Jrcy4uLiB5ZXMgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKA8L2Rpdj4KPGRpdj5j
+aGVja2luZyBpZiBhcm0tbm9uZS1saW51eC1nbnVlYWJpLWdjYyBzdGF0aWMgZmxhZyAtc3RhdGlj
+IHdvcmtzLi4uIHllcyCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoKA8L2Rpdj48ZGl2PmNoZWNraW5nIGlmIGFybS1ub25lLWxpbnV4LWdudWVhYmktZ2Nj
+IHN1cHBvcnRzIC1jIC1vIGZpbGUuby4uLiB5ZXMgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgoDwvZGl2Pgo8ZGl2PmNoZWNraW5nIGlmIGFybS1u
+b25lLWxpbnV4LWdudWVhYmktZ2NjIHN1cHBvcnRzIC1jIC1vIGZpbGUuby4uLiAoY2FjaGVkKSB5
+ZXMgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoDwvZGl2Pjxk
+aXY+Y2hlY2tpbmcgd2hldGhlciB0aGUgYXJtLW5vbmUtbGludXgtZ251ZWFiaS1nY2MgbGlua2Vy
+ICgvaG9tZS9iYWxpamVwYWxsaS9wYW5kYWJvYXJkL3Rvb2xjaGFpbl8xL2FybS0yMDA5cTEvYXJt
+LW5vbmUtbGludXgtZ251ZWFiaS9iaW4vbGQpIHN1cHBvcnRzIHNoYXJlZCBsaWJyYXJpZXMuLi4g
+eWVzIKAgoCCgIKCgPC9kaXY+CjxkaXY+Y2hlY2tpbmcgd2hldGhlciAtbGMgc2hvdWxkIGJlIGV4
+cGxpY2l0bHkgbGlua2VkIGluLi4uIG5vIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKCgPC9kaXY+PGRpdj5jaGVja2luZyBkeW5h
+bWljIGxpbmtlciBjaGFyYWN0ZXJpc3RpY3MuLi4gR05VL0xpbnV4IGxkLnNvIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKA8L2Rp
+dj4KPGRpdj5jaGVja2luZyBob3cgdG8gaGFyZGNvZGUgbGlicmFyeSBwYXRocyBpbnRvIHByb2dy
+YW1zLi4uIGltbWVkaWF0ZSCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoKA8L2Rpdj48ZGl2PmNoZWNraW5nIHdoZXRoZXIgc3RyaXBwaW5nIGxp
+YnJhcmllcyBpcyBwb3NzaWJsZS4uLiB5ZXMgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgoDwvZGl2Pgo8ZGl2PmNoZWNraW5n
+IGlmIGxpYnRvb2wgc3VwcG9ydHMgc2hhcmVkIGxpYnJhcmllcy4uLiB5ZXMgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oDwvZGl2PjxkaXY+Y2hlY2tpbmcgd2hldGhlciB0byBidWlsZCBzaGFyZWQgbGlicmFyaWVzLi4u
+IHllcyCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKCgPC9kaXY+CjxkaXY+Y2hlY2tpbmcgd2hldGhlciB0byBidWls
+ZCBzdGF0aWMgbGlicmFyaWVzLi4uIHllcyCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKCgPC9kaXY+PGRpdj5jaGVj
+a2luZyBmb3IgZGVidWcgc3ltYm9scy4uLiBubyCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKA8L2Rpdj4KPGRpdj5jaGVja2luZyBmb3IgU01QIHN1cHBvcnQuLi4gbm8goCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKA8L2Rpdj48ZGl2PmNoZWNraW5nIGZvciBBUk0gRUFC
+SSBpbnRlcmZhY2UuLi4gbm8goCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgoDwvZGl2Pgo8ZGl2
+PmNoZWNraW5nIGZvciBBUk0gbWFjaGluZS4uLiBvbWFwMyCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgoDwvZGl2PjxkaXY+Y2hlY2tpbmcgZm9yIEFSTSBFQUJJIGludGVyZmFjZS4uLiBu
+byCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKCgPC9kaXY+CjxkaXY+Y2hlY2tpbmcgZm9yIEFS
+TSBhcmNoaXRlY3R1cmUgdmVyc2lvbi4uLiA3IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgPC9kaXY+
+PGRpdj5jaGVja2luZyBmb3IgQVJNIFNBMTEwMCBhcmNoaXRlY3R1cmUuLi4gbm8goCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKA8L2Rpdj4KPGRpdj5jaGVja2luZyBmb3IgQVJNIFhzY2FsZTMgYXJjaGl0
+ZWN0dXJlLi4uIG5vIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoKA8L2Rpdj48ZGl2PmNoZWNraW5nIGZv
+ciBUU0MgZW11bGF0aW9uIGluIHVzZXItc3BhY2UuLi4uIHllcyCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoDwv
+ZGl2Pgo8ZGl2Pjxmb250IGNsYXNzPSJBcHBsZS1zdHlsZS1zcGFuIiBjb2xvcj0iI0ZGMDAwMCI+
+Y2hlY2tpbmcgd2hldGhlciBidWlsZGluZyBMaW51eCBpbiBYZW5vbWFpIGJ1aWxkIHRyZWUuLi4g
+bm8goDwvZm9udD4goCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgoDwvZGl2Pgo8ZGl2PmNoZWNraW5nIGZvciBEb3h5Z2VuIGRvY3VtZW50
+YXRpb24uLi4gbm8goCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoDwvZGl2PjxkaXY+Y2hlY2tpbmcg
+Zm9yIGRveHlnZW4uLi4gZG94eWdlbiCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKCg
+PC9kaXY+CjxkaXY+Y2hlY2tpbmcgZm9yIGRvdC4uLiBOTyCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgPC9kaXY+PGRpdj5jaGVja2luZyB3aGV0aGVyIGNvbXBpbGlu
+ZyBEb2Nib29rIFhNTCBkb2N1bWVudGF0aW9uLi4uIG5vIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKA8L2Rpdj4KPGRpdj5jaGVj
+a2luZyBmb3IgeG1sbGludC4uLiB4bWxsaW50IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoKA8L2Rpdj48ZGl2PmNoZWNraW5nIGZvciB4c2x0cHJvYy4uLiB4c2x0cHJvYyCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgoDwvZGl2Pgo8ZGl2PmNoZWNraW5nIGZvciBmb3AuLi4g
+bm8goCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoDwvZGl2PjxkaXY+
+Y2hlY2tpbmcgd2hldGhlciBEb2Nib29rIFhNTCBkb2N1bWVudGF0aW9uIGdlbmVyYXRpb24gY2Fu
+IHVzZSBuZXR3b3JrLi4uLiBubyCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgPC9kaXY+CjxkaXY+Y2hlY2tpbmcgZm9yIGRvY2Jvb2steG1sIHJvb3QgZGlyLi4u
+IC91c3Ivc2hhcmUvc2dtbC9kb2Nib29rL2R0ZC94bWwvNC4yIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgPC9kaXY+PGRpdj5jaGVja2luZyBmb3IgZG9j
+Ym9vay14c2wgcm9vdCBkaXIuLi4gbmV0d29yayCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKA8L2Rpdj4K
+PGRpdj5jaGVja2luZyB3aGV0aGVyIHVzaW5nIExhVGVYIG5vbi1zdG9wIG1vZGUuLi4gbm8goCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKA8L2Rpdj48ZGl2PmNoZWNraW5nIG1xdWV1ZS5oIHVzYWJpbGl0eS4uLiB5
+ZXMgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoDwvZGl2Pgo8ZGl2PmNoZWNraW5nIG1x
+dWV1ZS5oIHByZXNlbmNlLi4uIHllcyCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgoDwv
+ZGl2PjxkaXY+Y2hlY2tpbmcgZm9yIG1xdWV1ZS5oLi4uIHllcyCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgPC9kaXY+CjxkaXY+Y2hlY2tpbmcgZm9yIHNobV9vcGVuLi4uIHll
+cyCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgPC9kaXY+PGRpdj5jaGVja2lu
+ZyBmb3Igc2htX3VubGluay4uLiB5ZXMgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKA8L2Rpdj4KPGRpdj5jaGVja2luZyBmb3IgbW1hcDY0Li4uIHllcyCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKA8L2Rpdj48ZGl2PmNoZWNraW5nIGZvciBmdHJ1bmNhdGU2
+NC4uLiB5ZXMgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgoDwvZGl2Pgo8ZGl2PmNo
+ZWNraW5nIGZvciBwdGhyZWFkX211dGV4YXR0cl9zZXRwcm90b2NvbC4uLiB5ZXMgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgoDwvZGl2PjxkaXY+Y2hlY2tpbmcgZm9yIHB0aHJlYWRfY29uZGF0dHJfc2V0Y2xvY2su
+Li4geWVzIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKCgPC9kaXY+CjxkaXY+Y2hlY2tpbmcgZm9yIHB0aHJl
+YWRfc3Bpbl9sb2NrLi4uIHllcyCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKCgPC9kaXY+PGRp
+dj5jaGVja2luZyBmb3IgZm9yay4uLiB5ZXMgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKA8L2Rpdj4KPGRpdj5jaGVja2luZyBmb3Igc2NoZWRfc2V0YWZmaW5pdHkuLi4g
+b2sgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKA8L2Rpdj48ZGl2PmNoZWNraW5nIGZvciBz
+cGVjaWZpYyBHQ0Mgc3dpdGNoZXMuLi4gZG9uZSCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoDwvZGl2
+Pgo8ZGl2PmNoZWNraW5nIHdoZXRoZXIgbGQgc3VwcG9ydHMgQGZpbGUuLi4geWVzIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgoDwvZGl2PjxkaXY+Y2hlY2tpbmcgd2hldGhlciB0aGUgUE9TSVggc2tp
+biBsaWJyYXJ5IGF1dG9tYXRpY2FsbHkgY2FsbHMgbWxvY2thbGwuLi4gbm8goCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgPC9kaXY+CjxkaXY+Y2hlY2tpbmcg
+d2hldGhlciB0aGUgcFNPUyBza2luIGxpYnJhcnkgYXV0b21hdGljYWxseSBjYWxscyBtbG9ja2Fs
+bC4uLiBubyCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKCg
+PC9kaXY+PGRpdj5jaGVja2luZyB3aGV0aGVyIHRoZSB1SVRST04gc2tpbiBsaWJyYXJ5IGF1dG9t
+YXRpY2FsbHkgY2FsbHMgbWxvY2thbGwuLi4gbm8goCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoKA8L2Rpdj4KPGRpdj5jaGVja2luZyB3aGV0aGVyIHRvIGVuYWJs
+ZSBkbG9wZW4gc3VwcG9ydCBmb3Igc2tpbiBsaWJyYXJpZXMuLi4gbm8goCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKA8L2Rpdj48ZGl2PmNoZWNr
+aW5nIGxvY2F0aW9uIGZvciB0ZXN0IGJpbmFyaWVzLi4uICR7ZXhlY19wcmVmaXh9L2JpbiCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgoDwvZGl2Pgo8ZGl2PmNvbmZpZ3VyZTogY3JlYXRpbmcgLi9jb25maWcuc3RhdHVzIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgoDwvZGl2PjxkaXY+Y29uZmlnLnN0YXR1czogY3JlYXRp
+bmcgTWFrZWZpbGUgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgPC9kaXY+CjxkaXY+
+Y29uZmlnLnN0YXR1czogY3JlYXRpbmcgY29uZmlnL01ha2VmaWxlIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKCgPC9kaXY+PGRpdj5jb25maWcuc3RhdHVzOiBjcmVhdGluZyBzY3JpcHRzL01ha2Vm
+aWxlIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKA8L2Rpdj4KPGRpdj5jb25maWcuc3RhdHVzOiBj
+cmVhdGluZyBzY3JpcHRzL3hlbm8tY29uZmlnIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoKA8L2Rpdj48
+ZGl2PmNvbmZpZy5zdGF0dXM6IGNyZWF0aW5nIHNjcmlwdHMveGVuby1sb2FkIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgoDwvZGl2Pgo8ZGl2PmNvbmZpZy5zdGF0dXM6IGNyZWF0aW5nIHNjcmlwdHMv
+eGVuby10ZXN0IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgoDwvZGl2PjxkaXY+Y29uZmlnLnN0YXR1
+czogY3JlYXRpbmcgc2NyaXB0cy94ZW5vIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgPC9k
+aXY+CjxkaXY+Y29uZmlnLnN0YXR1czogY3JlYXRpbmcgc3JjL01ha2VmaWxlIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgPC9kaXY+PGRpdj5jb25maWcuc3RhdHVzOiBjcmVhdGluZyBzcmMv
+cnRkay9NYWtlZmlsZSCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoKA8L2Rpdj4KPGRpdj5jb25maWcu
+c3RhdHVzOiBjcmVhdGluZyBzcmMvc2tpbnMvTWFrZWZpbGUgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKA8L2Rpdj48ZGl2PmNvbmZpZy5zdGF0dXM6IGNyZWF0aW5nIHNyYy9za2lucy9jb21tb24vTWFr
+ZWZpbGUgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgoDwvZGl2Pgo8ZGl2PmNvbmZpZy5zdGF0dXM6IGNyZWF0aW5n
+IHNyYy9za2lucy9wb3NpeC9NYWtlZmlsZSCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoDwvZGl2PjxkaXY+Y29u
+ZmlnLnN0YXR1czogY3JlYXRpbmcgc3JjL3NraW5zL25hdGl2ZS9NYWtlZmlsZSCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKCgPC9kaXY+CjxkaXY+Y29uZmlnLnN0YXR1czogY3JlYXRpbmcgc3JjL3NraW5zL3Z4d29y
+a3MvTWFrZWZpbGUgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgPC9kaXY+PGRpdj5jb25maWcuc3RhdHVzOiBjcmVh
+dGluZyBzcmMvc2tpbnMvcHNvcysvTWFrZWZpbGUgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKA8L2Rpdj4KPGRp
+dj5jb25maWcuc3RhdHVzOiBjcmVhdGluZyBzcmMvc2tpbnMvdnJ0eC9NYWtlZmlsZSCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoKA8L2Rpdj48ZGl2PmNvbmZpZy5zdGF0dXM6IGNyZWF0aW5nIHNyYy9za2lucy9y
+dGRtL01ha2VmaWxlIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgoDwvZGl2Pgo8ZGl2PmNvbmZpZy5zdGF0dXM6
+IGNyZWF0aW5nIHNyYy9za2lucy9ydGFpL01ha2VmaWxlIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgoDwvZGl2
+PjxkaXY+Y29uZmlnLnN0YXR1czogY3JlYXRpbmcgc3JjL3NraW5zL3VpdHJvbi9NYWtlZmlsZSCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKCgPC9kaXY+CjxkaXY+Y29uZmlnLnN0YXR1czogY3JlYXRpbmcgc3JjL2Ry
+dmxpYi9NYWtlZmlsZSCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKCgPC9kaXY+PGRpdj5jb25maWcuc3Rh
+dHVzOiBjcmVhdGluZyBzcmMvZHJ2bGliL2FuYWxvZ3kvTWFrZWZpbGUgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoKA8
+L2Rpdj4KPGRpdj5jb25maWcuc3RhdHVzOiBjcmVhdGluZyBzcmMvaW5jbHVkZS9NYWtlZmlsZSCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKA8L2Rpdj48ZGl2PmNvbmZpZy5zdGF0dXM6IGNyZWF0aW5nIHNy
+Yy90ZXN0c3VpdGUvTWFrZWZpbGUgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoDwvZGl2Pgo8ZGl2PmNvbmZp
+Zy5zdGF0dXM6IGNyZWF0aW5nIHNyYy90ZXN0c3VpdGUvbGF0ZW5jeS9NYWtlZmlsZSCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoDwvZGl2PjxkaXY+Y29uZmlnLnN0YXR1czogY3JlYXRpbmcgc3JjL3Rlc3RzdWl0ZS9jeWNs
+aWMvTWFrZWZpbGUgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKCgPC9kaXY+CjxkaXY+Y29uZmlnLnN0YXR1czogY3JlYXRp
+bmcgc3JjL3Rlc3RzdWl0ZS9zd2l0Y2h0ZXN0L01ha2VmaWxlIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKCgPC9kaXY+PGRpdj5j
+b25maWcuc3RhdHVzOiBjcmVhdGluZyBzcmMvdGVzdHN1aXRlL2lycWJlbmNoL01ha2VmaWxlIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoKA8L2Rpdj4KPGRpdj5jb25maWcuc3RhdHVzOiBjcmVhdGluZyBzcmMvdGVzdHN1aXRl
+L2Nsb2NrdGVzdC9NYWtlZmlsZSCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKA8L2Rpdj48ZGl2PmNvbmZpZy5zdGF0dXM6IGNy
+ZWF0aW5nIHNyYy90ZXN0c3VpdGUva2xhdGVuY3kvTWFrZWZpbGUgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgoDwvZGl2Pgo8
+ZGl2PmNvbmZpZy5zdGF0dXM6IGNyZWF0aW5nIHNyYy90ZXN0c3VpdGUvdW5pdC9NYWtlZmlsZSCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgoDwvZGl2PjxkaXY+Y29uZmlnLnN0YXR1czogY3JlYXRpbmcgc3JjL3Rlc3Rz
+dWl0ZS9zaWd0ZXN0L01ha2VmaWxlIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgPC9kaXY+CjxkaXY+Y29uZmlnLnN0YXR1
+czogY3JlYXRpbmcgc3JjL3V0aWxzL01ha2VmaWxlIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgPC9k
+aXY+PGRpdj5jb25maWcuc3RhdHVzOiBjcmVhdGluZyBzcmMvdXRpbHMvY2FuL01ha2VmaWxlIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKA8L2Rpdj4KPGRpdj5jb25maWcuc3RhdHVzOiBjcmVhdGluZyBzcmMv
+dXRpbHMvYW5hbG9neS9NYWtlZmlsZSCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKA8L2Rpdj48ZGl2PmNvbmZpZy5z
+dGF0dXM6IGNyZWF0aW5nIHNyYy91dGlscy9wcy9NYWtlZmlsZSCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+oDwvZGl2Pgo8ZGl2PmNvbmZpZy5zdGF0dXM6IGNyZWF0aW5nIGluY2x1ZGUvTWFrZWZpbGUgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoDwvZGl2PjxkaXY+Y29uZmlnLnN0YXR1czogY3JlYXRpbmcg
+aW5jbHVkZS9hc20tZ2VuZXJpYy9NYWtlZmlsZSCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgPC9kaXY+CjxkaXY+Y29u
+ZmlnLnN0YXR1czogY3JlYXRpbmcgaW5jbHVkZS9hc20tZ2VuZXJpYy9iaXRzL01ha2VmaWxlIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKCgPC9kaXY+PGRpdj5jb25maWcuc3RhdHVzOiBjcmVhdGluZyBpbmNsdWRlL2FzbS1ibGFj
+a2Zpbi9NYWtlZmlsZSCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoKA8L2Rpdj4KPGRpdj5jb25maWcuc3RhdHVzOiBjcmVh
+dGluZyBpbmNsdWRlL2FzbS1ibGFja2Zpbi9iaXRzL01ha2VmaWxlIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKA8L2Rpdj48ZGl2
+PmNvbmZpZy5zdGF0dXM6IGNyZWF0aW5nIGluY2x1ZGUvYXNtLXg4Ni9NYWtlZmlsZSCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoDwvZGl2Pgo8ZGl2PmNvbmZpZy5zdGF0dXM6IGNyZWF0aW5nIGluY2x1ZGUvYXNt
+LXg4Ni9iaXRzL01ha2VmaWxlIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgoDwvZGl2PjxkaXY+Y29uZmlnLnN0YXR1czog
+Y3JlYXRpbmcgaW5jbHVkZS9hc20tcG93ZXJwYy9NYWtlZmlsZSCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgPC9kaXY+
+CjxkaXY+Y29uZmlnLnN0YXR1czogY3JlYXRpbmcgaW5jbHVkZS9hc20tcG93ZXJwYy9iaXRzL01h
+a2VmaWxlIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKCgPC9kaXY+PGRpdj5jb25maWcuc3RhdHVzOiBjcmVhdGluZyBpbmNsdWRl
+L2FzbS1hcm0vTWFrZWZpbGUgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKA8L2Rpdj4KPGRpdj5jb25maWcuc3Rh
+dHVzOiBjcmVhdGluZyBpbmNsdWRlL2FzbS1hcm0vYml0cy9NYWtlZmlsZSCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoKA8
+L2Rpdj48ZGl2PmNvbmZpZy5zdGF0dXM6IGNyZWF0aW5nIGluY2x1ZGUvYXNtLW5pb3MyL01ha2Vm
+aWxlIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoDwvZGl2Pgo8ZGl2PmNvbmZpZy5zdGF0dXM6IGNyZWF0aW5nIGlu
+Y2x1ZGUvYXNtLW5pb3MyL2JpdHMvTWFrZWZpbGUgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgoDwvZGl2PjxkaXY+Y29uZmln
+LnN0YXR1czogY3JlYXRpbmcgaW5jbHVkZS9hc20tc2ltL01ha2VmaWxlIKAgoCCgIKAgoCCgIKAg
+oCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCg
+IKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAgoCCgIKAg
+oCCgPC9kaXY+CjxkaXY+Y29uZmlnLnN0YXR1czogY3JlYXRpbmcgaW5jbHVkZS9hc20tc2ltL2Jp
+dHMvTWFrZWZpbGU8L2Rpdj48ZGl2PmNvbmZpZy5zdGF0dXM6IGNyZWF0aW5nIGluY2x1ZGUvbmF0
+aXZlL01ha2VmaWxlPC9kaXY+PGRpdj5jb25maWcuc3RhdHVzOiBjcmVhdGluZyBpbmNsdWRlL251
+Y2xldXMvTWFrZWZpbGU8L2Rpdj48ZGl2PmNvbmZpZy5zdGF0dXM6IGNyZWF0aW5nIGluY2x1ZGUv
+cG9zaXgvTWFrZWZpbGU8L2Rpdj4KPGRpdj5jb25maWcuc3RhdHVzOiBjcmVhdGluZyBpbmNsdWRl
+L3Bvc2l4L3N5cy9NYWtlZmlsZTwvZGl2PjxkaXY+Y29uZmlnLnN0YXR1czogY3JlYXRpbmcgaW5j
+bHVkZS9wc29zKy9NYWtlZmlsZTwvZGl2PjxkaXY+Y29uZmlnLnN0YXR1czogY3JlYXRpbmcgaW5j
+bHVkZS9ydGFpL01ha2VmaWxlPC9kaXY+PGRpdj5jb25maWcuc3RhdHVzOiBjcmVhdGluZyBpbmNs
+dWRlL3J0ZG0vTWFrZWZpbGU8L2Rpdj4KPGRpdj5jb25maWcuc3RhdHVzOiBjcmVhdGluZyBpbmNs
+dWRlL2FuYWxvZ3kvTWFrZWZpbGU8L2Rpdj48ZGl2PmNvbmZpZy5zdGF0dXM6IGNyZWF0aW5nIGlu
+Y2x1ZGUvdWl0cm9uL01ha2VmaWxlPC9kaXY+PGRpdj5jb25maWcuc3RhdHVzOiBjcmVhdGluZyBp
+bmNsdWRlL3ZydHgvTWFrZWZpbGU8L2Rpdj48ZGl2PmNvbmZpZy5zdGF0dXM6IGNyZWF0aW5nIGlu
+Y2x1ZGUvdnh3b3Jrcy9NYWtlZmlsZTwvZGl2Pgo8ZGl2PmNvbmZpZy5zdGF0dXM6IGNyZWF0aW5n
+IGRvYy9NYWtlZmlsZTwvZGl2PjxkaXY+Y29uZmlnLnN0YXR1czogY3JlYXRpbmcgZG9jL3R4dC9N
+YWtlZmlsZTwvZGl2PjxkaXY+Y29uZmlnLnN0YXR1czogY3JlYXRpbmcgZG9jL21hbi9NYWtlZmls
+ZTwvZGl2PjxkaXY+Y29uZmlnLnN0YXR1czogY3JlYXRpbmcgZG9jL21hbi9jbG9ja3Rlc3QubWFu
+PC9kaXY+PGRpdj5jb25maWcuc3RhdHVzOiBjcmVhdGluZyBkb2MvbWFuL2N5Y2xpY3Rlc3QubWFu
+PC9kaXY+CjxkaXY+Y29uZmlnLnN0YXR1czogY3JlYXRpbmcgZG9jL21hbi9pcnFiZW5jaC5tYW48
+L2Rpdj48ZGl2PmNvbmZpZy5zdGF0dXM6IGNyZWF0aW5nIGRvYy9tYW4vaXJxbG9vcC5tYW48L2Rp
+dj48ZGl2PmNvbmZpZy5zdGF0dXM6IGNyZWF0aW5nIGRvYy9tYW4va2xhdGVuY3kubWFuPC9kaXY+
+PGRpdj5jb25maWcuc3RhdHVzOiBjcmVhdGluZyBkb2MvbWFuL2xhdGVuY3kubWFuPC9kaXY+PGRp
+dj4KY29uZmlnLnN0YXR1czogY3JlYXRpbmcgZG9jL21hbi9ydGNhbmNvbmZpZy5tYW48L2Rpdj48
+ZGl2PmNvbmZpZy5zdGF0dXM6IGNyZWF0aW5nIGRvYy9tYW4vcnRjYW5yZWN2Lm1hbjwvZGl2Pjxk
+aXY+Y29uZmlnLnN0YXR1czogY3JlYXRpbmcgZG9jL21hbi9ydGNhbnNlbmQubWFuPC9kaXY+PGRp
+dj5jb25maWcuc3RhdHVzOiBjcmVhdGluZyBkb2MvbWFuL3N3aXRjaGJlbmNoLm1hbjwvZGl2Pgo8
+ZGl2PmNvbmZpZy5zdGF0dXM6IGNyZWF0aW5nIGRvYy9tYW4vc3dpdGNodGVzdC5tYW48L2Rpdj48
+ZGl2PmNvbmZpZy5zdGF0dXM6IGNyZWF0aW5nIGRvYy9tYW4vcnVuaW5mby5tYW48L2Rpdj48ZGl2
+PmNvbmZpZy5zdGF0dXM6IGNyZWF0aW5nIGRvYy9tYW4veGVuby5tYW48L2Rpdj48ZGl2PmNvbmZp
+Zy5zdGF0dXM6IGNyZWF0aW5nIGRvYy9tYW4veGVuby1jb25maWcubWFuPC9kaXY+PGRpdj4KY29u
+ZmlnLnN0YXR1czogY3JlYXRpbmcgZG9jL21hbi94ZW5vLWluZm8ubWFuPC9kaXY+PGRpdj5jb25m
+aWcuc3RhdHVzOiBjcmVhdGluZyBkb2MvbWFuL3hlbm8tbG9hZC5tYW48L2Rpdj48ZGl2PmNvbmZp
+Zy5zdGF0dXM6IGNyZWF0aW5nIGRvYy9tYW4veGVuby10ZXN0Lm1hbjwvZGl2PjxkaXY+Y29uZmln
+LnN0YXR1czogY3JlYXRpbmcgZG9jL2RveHlnZW4vTWFrZWZpbGU8L2Rpdj48ZGl2Pgpjb25maWcu
+c3RhdHVzOiBjcmVhdGluZyBkb2MvZG94eWdlbi9Eb3h5ZmlsZS1jb21tb248L2Rpdj48ZGl2PmNv
+bmZpZy5zdGF0dXM6IGNyZWF0aW5nIGRvYy9kb3h5Z2VuL0RveHlmaWxlPC9kaXY+PGRpdj5jb25m
+aWcuc3RhdHVzOiBjcmVhdGluZyBkb2MvZG94eWdlbi9Eb3h5ZmlsZS1uYXRpdmU8L2Rpdj48ZGl2
+PmNvbmZpZy5zdGF0dXM6IGNyZWF0aW5nIGRvYy9kb3h5Z2VuL0RveHlmaWxlLW51Y2xldXM8L2Rp
+dj4KPGRpdj5jb25maWcuc3RhdHVzOiBjcmVhdGluZyBkb2MvZG94eWdlbi9Eb3h5ZmlsZS1wb3Np
+eDwvZGl2PjxkaXY+Y29uZmlnLnN0YXR1czogY3JlYXRpbmcgZG9jL2RveHlnZW4vRG94eWZpbGUt
+cnRkbTwvZGl2PjxkaXY+Y29uZmlnLnN0YXR1czogY3JlYXRpbmcgZG9jL2RvY2Jvb2svTWFrZWZp
+bGU8L2Rpdj48ZGl2PmNvbmZpZy5zdGF0dXM6IGNyZWF0aW5nIGRvYy9kb2Nib29rL2NhdGFsb2c8
+L2Rpdj4KPGRpdj5jb25maWcuc3RhdHVzOiBjcmVhdGluZyBkb2MvZG9jYm9vay9jdXN0b20tc3R5
+bGVzaGVldHMvTWFrZWZpbGU8L2Rpdj48ZGl2PmNvbmZpZy5zdGF0dXM6IGNyZWF0aW5nIGRvYy9k
+b2Nib29rL2N1c3RvbS1zdHlsZXNoZWV0cy94c2wvTWFrZWZpbGU8L2Rpdj48ZGl2PmNvbmZpZy5z
+dGF0dXM6IGNyZWF0aW5nIGRvYy9kb2Nib29rL2N1c3RvbS1zdHlsZXNoZWV0cy94c2wvY29tbW9u
+L01ha2VmaWxlPC9kaXY+CjxkaXY+Y29uZmlnLnN0YXR1czogY3JlYXRpbmcgZG9jL2RvY2Jvb2sv
+Y3VzdG9tLXN0eWxlc2hlZXRzL3hzbC9mby9NYWtlZmlsZTwvZGl2PjxkaXY+Y29uZmlnLnN0YXR1
+czogY3JlYXRpbmcgZG9jL2RvY2Jvb2svY3VzdG9tLXN0eWxlc2hlZXRzL3hzbC9odG1sL01ha2Vm
+aWxlPC9kaXY+PGRpdj5jb25maWcuc3RhdHVzOiBjcmVhdGluZyBkb2MvZG9jYm9vay9jdXN0b20t
+c3R5bGVzaGVldHMveHNsL2h0bWwvY2h1bmsueHNsPC9kaXY+CjxkaXY+Y29uZmlnLnN0YXR1czog
+Y3JlYXRpbmcgZG9jL2RvY2Jvb2svY3VzdG9tLXN0eWxlc2hlZXRzL3hzbC9odG1sL29uZWNodW5r
+LnhzbDwvZGl2PjxkaXY+Y29uZmlnLnN0YXR1czogY3JlYXRpbmcgZG9jL2RvY2Jvb2sveGVub21h
+aS9NYWtlZmlsZTwvZGl2PjxkaXY+Y29uZmlnLnN0YXR1czogY3JlYXRpbmcgc3JjL2luY2x1ZGUv
+eGVub19jb25maWcuaDwvZGl2PjxkaXY+Y29uZmlnLnN0YXR1czogc3JjL2luY2x1ZGUveGVub19j
+b25maWcuaCBpcyB1bmNoYW5nZWQ8L2Rpdj4KPGRpdj5jb25maWcuc3RhdHVzOiBsaW5raW5nIC9o
+b21lL2JhbGlqZXBhbGxpL3BhbmRhYm9hcmQveGVub21haS0yLjUuNi9pbmNsdWRlL2FzbS1hcm0g
+dG8gc3JjL2luY2x1ZGUvYXNtL3hlbm9tYWk8L2Rpdj48ZGl2PmNvbmZpZy5zdGF0dXM6IGxpbmtp
+bmcgL2hvbWUvYmFsaWplcGFsbGkvcGFuZGFib2FyZC94ZW5vbWFpLTIuNS42L2luY2x1ZGUvYXNt
+LWdlbmVyaWMgdG8gc3JjL2luY2x1ZGUvYXNtLWdlbmVyaWMveGVub21haTwvZGl2Pgo8ZGl2PmNv
+bmZpZy5zdGF0dXM6IGV4ZWN1dGluZyBkZXBmaWxlcyBjb21tYW5kczwvZGl2PjxkaXY+Y29uZmln
+LnN0YXR1czogZXhlY3V0aW5nIGxpYnRvb2wgY29tbWFuZHM8L2Rpdj48ZGl2PnRlc3QwNjovaG9t
+ZS9iYWxpamVwYWxsaS9wYW5kYWJvYXJkL2J1aWxkIzwvZGl2PjxkaXY+PGJyPjwvZGl2Pjxicj4t
+LSA8YnI+PGJyPlN1cmVzaCBiYWxpamVwYWxsaTxicj5Sb3NlbmVoaW0sQmF2ZXJpYS48YnI+Cgo8
+L2Rpdj48L2Rpdj4K
+--bcaec5489e7df19a9404a5a880de--
 
