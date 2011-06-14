@@ -1,12 +1,11 @@
-Message-ID: <4DFA1F3C.7090209@domain.hid>
-Date: Thu, 16 Jun 2011 11:20:28 -0400
-From: Andrew Tannenbaum <trb@domain.hid>
+Message-ID: <4DF728B9.7000209@domain.hid>
+Date: Tue, 14 Jun 2011 11:24:09 +0200
+From: Johann Obermayr <johann.obermayr@domain.hid>
 MIME-Version: 1.0
-References: <4DF934BD.50505@domain.hid>
-In-Reply-To: <4DF934BD.50505@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] rtcanrecv output line-buffering
+Subject: [Xenomai-help] rt_task_block
+Reply-To: johann.obermayr@domain.hid
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -18,31 +17,18 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
-I was trying to use the Xenomai RT-Socket-CAN rtcanrecv in a Tcl/Tk 
-script GUI wrapper.
+Hello,
 
-rtcanrecv uses printf to stdout, and it line-buffers when attached to a 
-tty, but it uses larger buffers (so it is unusable) when run from a 
-script with no tty.
+we using xenomai 2.5.6.
+we use mayday to interrupt some user task.
+in the mayday handler we call siglongjmp to do a correct shutdown of the 
+task.
+But in shutdown the task must be delete from some list's. but the access 
+to the list
+was safed by a mutex. But after mayday, the task was in unblock mode.
+is there a way to disable the unblock mode ?
+rt_task_block ?
 
-Tcl does stdio with pipes rather than ptys (that is, Tcl thinks it has 
-no tty for stdio).  I think both bash and perl use ptys (and so don't 
-have this problem).  I haven't done a more thorough survey, but that's 
-not the point.
-
-I think it would be nice to modify rtcanrecv so it can write stdout in 
-line-buffered mode.  If you think this is a good idea, please either set 
-line buffering with
-
-     setvbuf(stdout, NULL, _IOLBF, 0);
-
-at the top of src/utils/can/rtcanrecv.c:rt_task() or
-
-     fflush(stdout);
-
-after the printf("\n") at the bottom of rt_task(), or you could add a 
-command line getopt option for line-buffering that would do one of the 
-above.
-
--Andy
+thanks for help.
+   jimmy
 
