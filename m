@@ -1,9 +1,10 @@
-Message-ID: <4DF83DF1.2080501@domain.hid>
-Date: Wed, 15 Jun 2011 07:06:57 +0200
+Message-ID: <4DF88AD4.9020008@domain.hid>
+Date: Wed, 15 Jun 2011 12:35:00 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4DF837EF.6010207@domain.hid>
-In-Reply-To: <4DF837EF.6010207@domain.hid>
+References: <4DF837EF.6010207@domain.hid> <4DF83DF1.2080501@domain.hid>
+	<4DF87266.5070703@domain.hid>
+In-Reply-To: <4DF87266.5070703@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] Beagleboard xenomai
@@ -17,30 +18,44 @@ List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: David Wiebe <dwiebe2@domain.hid>
-Cc: xenomai@xenomai.org
+Cc: Xenomai help <xenomai@xenomai.org>
 
-On 06/15/2011 06:41 AM, David Wiebe wrote:
-> Hello,
+On 06/15/2011 10:50 AM, David Wiebe wrote:
 > 
-> Thanks for reading this. I checked out the beagleboard version of 
-> xenomai. I tried make menuconfig and got the following
 > 
-> david@domain.hid$ make 
-> menuconfig
-> scripts/kconfig/mconf arch/arm/Kconfig
-> init/Kconfig:1319: can't open file "arch/arm/xenomai/Kconfig"
-> make[1]: *** [menuconfig] Error 1
-> make: *** [menuconfig] Error 2
-> 
-> I know that arch/arm/xenomai/Kconfig is a link to a file but its broken. 
-> How now? Where should the link be pointing?
+> On 11-06-14 10:06 PM, Gilles Chanteperdrix wrote:
+>> On 06/15/2011 06:41 AM, David Wiebe wrote:
+>>> Hello,
+>>>
+>>> Thanks for reading this. I checked out the beagleboard version of
+>>> xenomai. I tried make menuconfig and got the following
+>>>
+>>> david@domain.hid$ make
+>>> menuconfig
+>>> scripts/kconfig/mconf arch/arm/Kconfig
+>>> init/Kconfig:1319: can't open file "arch/arm/xenomai/Kconfig"
+>>> make[1]: *** [menuconfig] Error 1
+>>> make: *** [menuconfig] Error 2
+>>>
+>>> I know that arch/arm/xenomai/Kconfig is a link to a file but its broken.
+>>> How now? Where should the link be pointing?
+>> I did not know there was a beagleboard version, and I do not know about
+>> it. What I do know, however, is that "make menuconfig", will work in
+>> Linux kernel sources prepared with the "prepare-kernel.sh" script, as
+>> explained in installation instructions here:
+>>
+>> http://www.xenomai.org/documentation/xenomai-2.5/README.INSTALL
+>>
+> And thats the other part of my dilemma, there is no prepare-kernel.sh in 
+> the scripts directory. I should have been more explicit.
 
-I did not know there was a beagleboard version, and I do not know about
-it. What I do know, however, is that "make menuconfig", will work in
-Linux kernel sources prepared with the "prepare-kernel.sh" script, as
-explained in installation instructions here:
+It is part of Xenomai sources distribution. Latest release being:
+http://download.gna.org/xenomai/stable/xenomai-2.5.6.tar.bz2
 
-http://www.xenomai.org/documentation/xenomai-2.5/README.INSTALL
+If you seek support for any other repackaged sources, you asked the
+wrong mailing-list.
+
+Please keep the discussion public.
 
 -- 
                                                                 Gilles.
