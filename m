@@ -1,13 +1,10 @@
-Message-ID: <4DF88AD4.9020008@domain.hid>
-Date: Wed, 15 Jun 2011 12:35:00 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <4DF837EF.6010207@domain.hid> <4DF83DF1.2080501@domain.hid>
-	<4DF87266.5070703@domain.hid>
-In-Reply-To: <4DF87266.5070703@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+From: Christian Kapeller <christian.kapeller@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Date: Wed, 15 Jun 2011 14:02:00 +0200
+Message-ID: <1308139320.2568.7.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Beagleboard xenomai
+Subject: [Xenomai-help] unexpected rt_task_sleep behaviour
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -17,46 +14,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: David Wiebe <dwiebe2@domain.hid>
-Cc: Xenomai help <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 06/15/2011 10:50 AM, David Wiebe wrote:
-> 
-> 
-> On 11-06-14 10:06 PM, Gilles Chanteperdrix wrote:
->> On 06/15/2011 06:41 AM, David Wiebe wrote:
->>> Hello,
->>>
->>> Thanks for reading this. I checked out the beagleboard version of
->>> xenomai. I tried make menuconfig and got the following
->>>
->>> david@domain.hid$ make
->>> menuconfig
->>> scripts/kconfig/mconf arch/arm/Kconfig
->>> init/Kconfig:1319: can't open file "arch/arm/xenomai/Kconfig"
->>> make[1]: *** [menuconfig] Error 1
->>> make: *** [menuconfig] Error 2
->>>
->>> I know that arch/arm/xenomai/Kconfig is a link to a file but its broken.
->>> How now? Where should the link be pointing?
->> I did not know there was a beagleboard version, and I do not know about
->> it. What I do know, however, is that "make menuconfig", will work in
->> Linux kernel sources prepared with the "prepare-kernel.sh" script, as
->> explained in installation instructions here:
->>
->> http://www.xenomai.org/documentation/xenomai-2.5/README.INSTALL
->>
-> And thats the other part of my dilemma, there is no prepare-kernel.sh in 
-> the scripts directory. I should have been more explicit.
+Hi,
 
-It is part of Xenomai sources distribution. Latest release being:
-http://download.gna.org/xenomai/stable/xenomai-2.5.6.tar.bz2
+I am using a KARO TX-51 board (imx 515) running linux 2.6.31.12 + karo
+supplied bsp patches. Xenomai is at version 2.5.6
 
-If you seek support for any other repackaged sources, you asked the
-wrong mailing-list.
+In a userspace task i create an interrupt, and want to wait for 1 to 14
+ms. If I supply any non zero delay to rt_task_sleep, I get a delay of
+830 ms (measured on scope) no matter what delay argument i use.
 
-Please keep the discussion public.
+It seems something got wrong with the adeos patch. I also experience
+that the serial console is quite laggy.
 
--- 
-                                                                Gilles.
+ Can anyone give me some pointers where to start investigating this
+matter?
+
+Regards,
+Christian
+
 
