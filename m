@@ -1,10 +1,9 @@
-From: Christian Kapeller <christian.kapeller@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Wed, 15 Jun 2011 14:02:00 +0200
-Message-ID: <1308139320.2568.7.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-help] unexpected rt_task_sleep behaviour
+MIME-Version: 1.0
+Date: Wed, 15 Jun 2011 14:49:11 +0200
+Message-ID: <BANLkTi=-J9m2badxOt2yMqx1kDRVqd2aSQ@mail.gmail.com>
+From: suresh reddy <sureshreddy.balijepalli@domain.hid>
+Content-Type: multipart/alternative; boundary=bcaec501604343021e04a5bf9494
+Subject: [Xenomai-help] Regarding booting the Pandaboard.
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -14,24 +13,60 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Xenomai help <xenomai@xenomai.org>
 
-Hi,
+--bcaec501604343021e04a5bf9494
+Content-Type: text/plain; charset=ISO-8859-1
 
-I am using a KARO TX-51 board (imx 515) running linux 2.6.31.12 + karo
-supplied bsp patches. Xenomai is at version 2.5.6
+Dear all,
 
-In a userspace task i create an interrupt, and want to wait for 1 to 14
-ms. If I supply any non zero delay to rt_task_sleep, I get a delay of
-830 ms (measured on scope) no matter what delay argument i use.
+I would like to ask about the  how to boot the Pandaboard after compiling
+and building the kernel on host machine.
 
-It seems something got wrong with the adeos patch. I also experience
-that the serial console is quite laggy.
+Now I have on my host machine build and root directories . The build
+directory has uImage(arch/arm/boot)
+. The root directory has usr and dev directories.
 
- Can anyone give me some pointers where to start investigating this
-matter?
 
-Regards,
-Christian
+I moved the usr and dev directories to sdcard .
 
+The SD contains the ubuntu prebuilt binaries to boot ubuntu on pandaboard.
+
+Now do i need to remove that ubuntu binaries (that were running previously
+on board) and copy the uImage from build directory (arch/arm /boot) or is it
+enough to move usr and dev directories to sd filesystem and boot the board
+as previously with(old ubuntu kernel itself).
+
+
+Thanks
+Suresh balijepalli
+Rosenehim,Baveria.
+
+--bcaec501604343021e04a5bf9494
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr">Dear all,<div><br></div><div>I would like to ask about the=
+ =A0how to boot the Pandaboard after compiling and building the kernel on h=
+ost machine.</div><div><br></div><div>Now I have on my host machine build a=
+nd root directories . The build directory has uImage(arch/arm/boot)</div>
+
+
+<div>. The root directory has usr and dev directories.</div><div><br></div>=
+<div><br></div><div>I moved the usr and dev directories to sdcard .=A0</div=
+><div><br></div><div>The SD contains the ubuntu prebuilt binaries to boot u=
+buntu on pandaboard.</div>
+
+
+<div><br></div><div>Now do i need to remove that ubuntu binaries (that were=
+ running previously on board) and copy the uImage from build directory (arc=
+h/arm /boot) or is it enough to move usr and dev directories to sd filesyst=
+em and boot the board as previously with(old ubuntu kernel itself).=A0<br>
+
+
+<br></div><div><br></div><div>Thanks<br>Suresh balijepalli<br>Rosenehim,Bav=
+eria.<br>
+</div></div>
+
+--bcaec501604343021e04a5bf9494--
 
