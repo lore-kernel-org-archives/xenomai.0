@@ -1,5 +1,5 @@
-Message-ID: <4DF9CA75.1040903@domain.hid>
-Date: Thu, 16 Jun 2011 10:18:45 +0100
+Message-ID: <4DF9CA8B.8070304@domain.hid>
+Date: Thu, 16 Jun 2011 10:19:07 +0100
 From: Jakub Nowacki <j.s.nowacki@domain.hid>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
@@ -16,33 +16,24 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: Xenomai help <xenomai@xenomai.org>
 
-On 16 June 2011 08:01, Gilles Chanteperdrix
-<gilles.chanteperdrix@xenomai.org> wrote:
-> On 06/15/2011 10:43 PM, Jakub Nowacki wrote:
->> On 15/06/2011 17:51, Gilles Chanteperdrix wrote:
->>> On 06/15/2011 06:21 PM, Jakub Nowacki wrote:
->>>> I have SMI workaround switched on.
->>>
->>> Have you verified that the your chipset is supported by SMI workaround?
->>> http://www.xenomai.org/index.php/Configuring_x86_kernels#In_case_of_high_latencies
->>>
->> Indeed, it's not on, nothing SMI-related shown in Krenel's log. I've
->> found that my LPC is 'Intel Corporation 5 Series Chipset LPC Interface
->> Controller (rev 06)' (full lspci log is enclosed for a reference).
+On 16 June 2011 09:52, Pavel Machek <pma@domain.hid> wrote:
 >
-> You should use lspci -n in order to get the numerical ids.
+>> that. I have SMI workaround switched on. On the other hand I have
+>> MSI enabled (because I cannot disable them in *config) and Legacy
+>> USB in BIOS, because, for some reason, my USB keyboard doesn't work
+>> in grub without it (I cannot select anything in grub but it works
+>> later in the system correctly).
+>
+> This may be well it.
+>
+> GRUB tries to access keyboard controller (it does not have a USB
+> support), thus you need "Legacy USB" in BIOS. Linux can handle USB and
+> does not need it.
+>
+> Get PS/2 keyboard for an experiment...
 
-Yes, I noticed that after I went home and looked into the log. 'lspci
--nn' gives:
-
-00:1f.0 ISA bridge [0601]: Intel Corporation 5 Series Chipset LPC
-Interface Controller [8086:3b0a] (rev 06)
-
-BTW the above wiki entry is slightly misleading because it suggest
-'lspci -vv', whereas, if you want the actual numerical IDs you need
-the -n or -nn option.
-
-Cheers,
-
-Jakub
+Thanks for clarifying that. The problem with Intel's Q57 and other new
+motherboards I've seen recently is that they do not have PS/2 (I've
+got even the adaptor with the keyboard but there is just no place to
+plug it in).
 
