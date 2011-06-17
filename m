@@ -1,12 +1,12 @@
-Message-ID: <4DFA4961.1030805@domain.hid>
-Date: Thu, 16 Jun 2011 20:20:17 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <006001cc2c41$18e6ff70$4ab4fe50$@de>
-In-Reply-To: <006001cc2c41$18e6ff70$4ab4fe50$@de>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] CameraLink
+In-Reply-To: <4DF9DCE3.70703@domain.hid>
+References: <4DF9CA75.1040903@domain.hid>
+	<4DF9DCE3.70703@domain.hid>
+Date: Fri, 17 Jun 2011 15:05:30 +0100
+Message-ID: <BANLkTinki=NqJ1f1vyGNBMHLZuwiCtrmMw@domain.hid>
+From: Jakub Nowacki <j.s.nowacki@domain.hid>
+Content-Type: multipart/alternative; boundary=0016363b85d2da1a6b04a5e8e0f2
+Subject: Re: [Xenomai-help] Xenomai on i7-870
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -16,30 +16,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Franz Engel <franz_lambert_engel@domain.hid>
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Xenomai help <xenomai@xenomai.org>
 
-On 06/16/2011 06:18 PM, Franz Engel wrote:
-> Hello,
-> 
->  
-> 
-> I have to integrate a laser sensor with a cameraLink. Has somebody
-> experience with that? I have no idea where I've to start to make the driver
-> realtime. Or is it not needful to do that?
+--0016363b85d2da1a6b04a5e8e0f2
+Content-Type: text/plain; charset=ISO-8859-1
 
-Hi,
+>
+>
+> I've added my ID to the table in smi.c file as:
 
-If you want to write a real-time driver, you should use the RTDM skin
-and read:
-http://www.xenomai.org/documentation/branches/v2.3.x/pdf/RTDM-and-Applications.pdf
+{PCI_DEVICE(PCI_VENDOR_ID_INTEL,
+PCI_DEVICE_ID_INTEL_5_3400_SERIES_LPC_MIN+0xa)}
 
-The skin itself is documented here:
-http://www.xenomai.org/documentation/xenomai-2.5/html/api/group__rtdm.html
+Everything complies OK but during the startup I get message:
 
-As to whether this is really needed, only you can tell.
+[    2.137733] Xenomai: SMI-enabled chipset found
+[    2.137744] Xenomai: SMI workaround failed!
 
+Should I do something extra apart from adding it to the table?
 
--- 
-                                                                Gilles.
+Best wishes,
+
+Jakub
+
+--0016363b85d2da1a6b04a5e8e0f2
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+<div class=3D"gmail_quote"><blockquote class=3D"gmail_quote" style=3D"margi=
+n:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex;"><font class=3D"A=
+pple-style-span" color=3D"#888888"><br></font></blockquote></div>I&#39;ve a=
+dded my ID to the table in smi.c file as:<div>
+<br><div>{PCI_DEVICE(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_5_3400_SERIES=
+_LPC_MIN+0xa)}</div><div><br></div></div><div>Everything complies OK but du=
+ring the startup I get message:</div><div><br></div><div><div>[ =A0 =A02.13=
+7733] Xenomai: SMI-enabled chipset found</div>
+<div>[ =A0 =A02.137744] Xenomai: SMI workaround failed!</div></div><div><br=
+></div><div>Should I do something extra apart from adding it to the table?<=
+/div><div><br></div><div>Best=A0wishes,</div><div><br></div><div>Jakub</div=
+>
+
+--0016363b85d2da1a6b04a5e8e0f2--
 
