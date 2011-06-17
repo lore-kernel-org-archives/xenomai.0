@@ -1,15 +1,13 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <4DFB4455.7050809@domain.hid>
-References: <4DFB1E0B.1070903@domain.hid> <4DFB3346.6000405@domain.hid>
-	<4DFB346C.6040607@domain.hid> <1308311928.2270.33.camel@domain.hid>
-	<4DFB4455.7050809@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Fri, 17 Jun 2011 14:12:39 +0200
-Message-ID: <1308312759.2270.34.camel@domain.hid>
-Mime-Version: 1.0
+Message-ID: <4DFB869F.9080006@domain.hid>
+Date: Fri, 17 Jun 2011 18:53:51 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+References: <E1QXaC2-0007dE-Ar@domain.hid>
+In-Reply-To: <E1QXaC2-0007dE-Ar@domain.hid>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [RFC][PATCH] nucleus: Prevent rescheduling while
- in	xntbase_tick
+Subject: Re: [Xenomai-core] [Xenomai-git] Jan Kiszka : nucleus: Fix
+	interrupt handler tails
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -18,43 +16,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: Xenomai core <Xenomai-core@domain.hid>
+To: Xenomai core <Xenomai-core@domain.hid>
 
-On Fri, 2011-06-17 at 14:11 +0200, Jan Kiszka wrote:
-> On 2011-06-17 13:58, Philippe Gerum wrote:
-> > On Fri, 2011-06-17 at 13:03 +0200, Jan Kiszka wrote:
-> >> On 2011-06-17 12:58, Gilles Chanteperdrix wrote:
-> >>> On 06/17/2011 11:27 AM, Jan Kiszka wrote:
-> >>>> Based on code inspection, it looks like a timer handler triggering a
-> >>>> reschedule in the path xntbase_tick -> xntimer_tick_aperiodic /
-> >>>> xntimer_tick_periodic_inner -> handler can cause problems, e.g. a
-> >>>> reschedule before all expired timers were processed. The timer core is
-> >>>> usually run atomically from an interrupt handler, so better emulate an
-> >>>> IRQ context inside xntbase_tick by setting XNINIRQ.
-> >>>
-> >>> I do not understand this one either: if we are inside
-> >>> xntimer_tick_aperiodic, XNINIRQ is already set.
-> >>
-> >> Not if you come via xntbase_tick, called by the mentioned skins also
-> >> outside a timer IRQ (at least based on my understanding of that skin
-> >> APIs). But I might be wrong, I just came across this while checking for
-> >> potentially invalid cached xnpod_current_sched values.
-> > 
-> > That is ok, ui_timer(), tickAnnounce() and tm_tick() are designed by the
-> > respective RTOS to be called from IRQ context.
+On 06/17/2011 04:38 PM, GIT version control wrote:
+> Module: xenomai-jki
+> Branch: for-upstream
+> Commit: 7203b1a66ca0825d5bcda1c3abab9ca048177914
+> URL:    http://git.xenomai.org/?p=xenomai-jki.git;a=commit;h=7203b1a66ca0825d5bcda1c3abab9ca048177914
 > 
-> Fine. Should we add a XENO_ASSERT to set this in stone and for
-> documentation purposes?
+> Author: Jan Kiszka <jan.kiszka@domain.hid>
+> Date:   Fri Jun 17 09:46:19 2011 +0200
+> 
+> nucleus: Fix interrupt handler tails
+> 
+> Our current interrupt handlers assume that they leave over the same task
+> and CPU they entered. But commit f6af9b831c broke this assumption:
+> xnpod_schedule invoked from the handler tail can now actually trigger a
+> domain migration, and that can also include a CPU migration. This causes
+> subtle corruptions as invalid xnstat_exectime_t objects may be restored
+> and - even worse - we may improperly flush XNHTICK of the old CPU,
+> leaving Linux timer-wise dead there (as happened to us).
+> 
+> Fix this by moving XNHTICK replay and exectime accounting before the
+> scheduling point. Note that this introduces a tiny imprecision in the
+> accounting.
 
-I think so.
-
-> 
-> Jan
-> 
+I am not sure I understand why moving the XNHTICK replay is needed: if
+we switch to secondary mode, the HTICK is handled by xnpod_schedule
+anyway, or am I missing something?
 
 -- 
-Philippe.
-
-
+                                                                Gilles.
 
