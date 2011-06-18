@@ -1,12 +1,12 @@
-Message-ID: <4DF72AE9.10904@domain.hid>
-Date: Tue, 14 Jun 2011 11:33:29 +0200
+Message-ID: <4DFC8430.8090704@domain.hid>
+Date: Sat, 18 Jun 2011 12:55:44 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <BANLkTinhVjCZH-ni-M-HWUv5EY5hy8YcBA@mail.gmail.com>
-In-Reply-To: <BANLkTinhVjCZH-ni-M-HWUv5EY5hy8YcBA@mail.gmail.com>
+References: <4DF837EF.6010207@domain.hid> <ithju6$l6t$1@domain.hid>
+In-Reply-To: <ithju6$l6t$1@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] xenomai configuration
+Subject: Re: [Xenomai-help] Beagleboard xenomai
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -16,20 +16,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: suresh reddy <sureshreddy.balijepalli@domain.hid>
-Cc: Xenomai help <xenomai@xenomai.org>
+To: gmane@domain.hid
+Cc: xenomai@xenomai.org
 
-On 06/14/2011 11:17 AM, suresh reddy wrote:
-> Dear all,
-> Iam running the below command . It giving me the config options as below
-> . It showing me as linux is not building in xenomai tree (maked
-> below).It seems i went wrong somewhere . Can somebody let me know where
-> should i check for this option.
+On 06/18/2011 09:25 AM, Robert Berger wrote:
+> Hi David,
+> 
+> On 06/15/2011 07:41 AM, David Wiebe wrote:
+>> Hello,
+>>
+>> Thanks for reading this. I checked out the beagleboard version of
+>> xenomai. 
+>>
+> 
+> Can you please tell me where to check out the beagleboard version of
+> xenomai?
+> 
+> Do you happen to know if this works on the beagle-xm rev c as well?
 
-No. There is nothing wrong. Building linux in xenomai build tree is
-enabled by an option which you did not pass, and which is about to be
-deprecated.
+Just to make something clear: Xenomai standard version should work on
+beagle.
 
 -- 
-					    Gilles.
+                                                                Gilles.
 
