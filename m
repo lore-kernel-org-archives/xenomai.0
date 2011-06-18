@@ -5,8 +5,8 @@ References: <3FF315C710820E47A04E55C6F7D9B0AD7FE9FF@AREXCH02.mra.roland-man.biz>
 	<3FF315C710820E47A04E55C6F7D9B0AD7FEA2C@AREXCH02.mra.roland-man.biz>
 	<1308387052.2122.14.camel@domain.hid>  <4DFCABDA.6000702@domain.hid>
 Content-Type: text/plain; charset="UTF-8"
-Date: Sat, 18 Jun 2011 16:21:58 +0200
-Message-ID: <1308406918.2122.24.camel@domain.hid>
+Date: Sat, 18 Jun 2011 16:35:23 +0200
+Message-ID: <1308407723.2122.30.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] Xenomai 2.5.6 with PPC-Kernel 2.4.25
@@ -59,24 +59,13 @@ On Sat, 2011-06-18 at 15:44 +0200, Gilles Chanteperdrix wrote:
 > > get lost. For this reason, I would not consider the current state as
 > > being production-grade.
 > 
-> How do you see that reschedule events are lost?
-
-The pace of the supposedly 1sec periodic display stabilizes only when
-other processes run in the background and becomes erratic when the
-switch test is running alone, whilst the system does not seem to lose
-its idea of time. Additionally, signals do not seem to make their way to
-the shadows upon ^C. I did not track the issue in depth though, so at
-this stage I'm speculating.
-
->  Does this happen also on
+> How do you see that reschedule events are lost? Does this happen also on
 > other systems?
 > 
 
-Can't tell, I'm not using 2.5.x that much these days. I did not see any
-issue during the sh4 port, which seems to exclude 2.6.x from the
-potential victims.
-
-Guts feeling is that this might be specific to 2.4 kernels.
+nios2, x86_32, blackfin, arm11/mpcore, 85xx are all running the switch
+test fine over 2.5.x + 2.6 kernels. This tends to point the finger at an
+issue between the pipeline for 2.4/ppc and the real-time core.
 
 -- 
 Philippe.
