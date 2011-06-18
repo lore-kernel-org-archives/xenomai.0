@@ -1,16 +1,14 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <1308407723.2122.30.camel@domain.hid>
-References: <3FF315C710820E47A04E55C6F7D9B0AD7FE9FF@AREXCH02.mra.roland-man.biz>
-	<1308044391.2699.2.camel@domain.hid>
-	<3FF315C710820E47A04E55C6F7D9B0AD7FEA2C@AREXCH02.mra.roland-man.biz>
-	<1308387052.2122.14.camel@domain.hid>  <4DFCABDA.6000702@domain.hid>
-	<1308407723.2122.30.camel@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Sat, 18 Jun 2011 16:44:36 +0200
-Message-ID: <1308408276.2122.31.camel@domain.hid>
-Mime-Version: 1.0
+Message-ID: <4DFCC18F.3060207@domain.hid>
+Date: Sat, 18 Jun 2011 17:17:35 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+References: <4DF9CA75.1040903@domain.hid>	<4DF9DCE3.70703@domain.hid>	<BANLkTinki=NqJ1f1vyGNBMHLZuwiCtrmMw@domain.hid>
+	<4DFBA463.3090902@domain.hid> <4DFBAEB9.8060106@domain.hid>
+	<4DFBB08B.5020005@domain.hid>
+In-Reply-To: <4DFBB08B.5020005@domain.hid>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Xenomai 2.5.6 with PPC-Kernel 2.4.25
+Subject: Re: [Xenomai-help] Xenomai on i7-870
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -20,61 +18,62 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Jakub Nowacki <j.s.nowacki@domain.hid>
+Cc: Xenomai help <xenomai@xenomai.org>
 
-On Sat, 2011-06-18 at 16:35 +0200, Philippe Gerum wrote:
-> On Sat, 2011-06-18 at 15:44 +0200, Gilles Chanteperdrix wrote:
-> > On 06/18/2011 10:50 AM, Philippe Gerum wrote:
-> > > On Tue, 2011-06-14 at 14:47 +0200, roderik.wildenburg@domain.hid
-> > > wrote:
-> > >> Perhaps this may help:
-> > >> I instrumented src/common/sem_heap.c   and ksrc/nucleus/heap.c with printf and printk (see appended files) and this is the output:
-> > >>
-> > >> 1:mrconfig:~ # latency
-> > >> 2:xeno_init_private_heap
-> > >> 3:map_sem_heap syscall 0
-> > >> 4:xeno_map_heap open 3
-> > >> 5:xnheap_ioctl private data: 00000000
-> > >> 6:xeno_map_heap ioctl 0 handle 0xc7dd9210
-> > >> 7:xnheap_mmap 00000000 00000000
-> > >> 8:xeno_map_heap 0xffffffff
-> > >> 9:Xenomai: mmap local sem heap: No such device or address
-> > >> 10:mrconfig:~ #
-> > >>
-> > >>
-> > >> It looks like (if I figured it out correctly) as if in function sem_heap.c->xeno_map_heap()  (which is called from xeno_init_privat_heap() via function map_sem_heap())  the ioctl-Call fails. 
-> > >> xeno_map_heap() passes correctly an argument unequal NULL as third parameter to ioctl() (line6), but in kernel space function xnheap_ioctl() the 3. parameter arrives as NULL(line 5). This sets file->private_data to NULL which in turn lets xnheap_mmap() fail, as this function expects file->private_data != NULL (line7).
-> > >> Therefore xnheap_mmap() returns -ENIXIO to xeno_map_heap() which outputs the error message " Xenomai: mmap local sem heap: No such device or address".
-> > >> The one million dollar question is, why the 3. parameter of ioctl() mutates to NULL. Any idea?
-> > >>
-> > >> If I can do anything else, let me know.
-> > >>
-> > > 
-> > > You will need these patches to run linux 2.4.25 over 2.5.6. The first
-> > > one fixes the ioctl() issue.
-> > > http://git.xenomai.org/?p=xenomai-rpm.git;a=commit;h=c2a24b90667e12d0614e5d8442dba74f137f9d4d
-> > > http://git.xenomai.org/?p=xenomai-rpm.git;a=commit;h=bebc2a8e6b430c99041800330dc6061665371d90
-> > > 
-> > > Note: the switch test does not seem to be running correctly on my
-> > > icecube (albeit the latency one does), somehow linux reschedule events
-> > > get lost. For this reason, I would not consider the current state as
-> > > being production-grade.
-> > 
-> > How do you see that reschedule events are lost? Does this happen also on
-> > other systems?
-> > 
+On 06/17/2011 09:52 PM, Jakub Nowacki wrote:
 > 
-> nios2, x86_32, blackfin, arm11/mpcore, 85xx are all running the switch
-> test fine over 2.5.x + 2.6 kernels. This tends to point the finger at an
-> issue between the pipeline for 2.4/ppc and the real-time core.
 > 
+> On 17/06/2011 20:44, Gilles Chanteperdrix wrote:
+>> On 06/17/2011 09:00 PM, Gilles Chanteperdrix wrote:
+>>> On 06/17/2011 04:05 PM, Jakub Nowacki wrote:
+>>>>>
+>>>>>
+>>>>> I've added my ID to the table in smi.c file as:
+>>>>
+>>>> {PCI_DEVICE(PCI_VENDOR_ID_INTEL,
+>>>> PCI_DEVICE_ID_INTEL_5_3400_SERIES_LPC_MIN+0xa)}
+>>>>
+>>>> Everything complies OK but during the startup I get message:
+>>>>
+>>>> [    2.137733] Xenomai: SMI-enabled chipset found
+>>>> [    2.137744] Xenomai: SMI workaround failed!
+>>>>
+>>>> Should I do something extra apart from adding it to the table?
+>>>
+>>> There are two reasons why it may not work:
+>>> - the way to globally disable SMIs has changed with the chipset version
+>>> you are using;
+>>> - the BIOS of your PC locks the SMI disabling bit.
+>>>
+>>> So, the next step is to check the chipset datasheet.
+>>
+>>  From your first mail, the chipset you use is a Q57, the datasheet says
+>> that the GLB_SMI_EN is still there. So, what you should do is check
+>> whether the SMI_LOCK bit is set. The following (untested) patch should
+>> print the lock bit value:
+>>
+>> diff --git a/ksrc/arch/x86/smi.c b/ksrc/arch/x86/smi.c
+>> index d80b14b..97e6774 100644
+>> --- a/ksrc/arch/x86/smi.c
+>> +++ b/ksrc/arch/x86/smi.c
+>> @@ -157,7 +157,8 @@ void rthal_smi_disable(void)
+>>          mask_bits(rthal_smi_masked_bits, rthal_smi_en_addr);
+>>
+>>          if (inl(rthal_smi_en_addr)&  rthal_smi_masked_bits)
+>> -               printk("Xenomai: SMI workaround failed!\n");
+>> +               printk("Xenomai: SMI workaround failed!, BIOS lock: d\n",
+>> +                      !!(inl(rthal_smi_en_addr + 0xA0 - SMI_CTRL_ADDR)&  (1<<  4)));
+>>          else
+>>                  printk("Xenomai: SMI workaround enabled\n");
+>>
+> 
+> You were faster. Thanks! Sorry for slight cross posting. I have this 
+> machine at work so I probably test it on Monday.
 
-mpc52xx over 2.6 is ok as well, but not over 2.4. Something may be at
-work in the pipeline code for 2.4.25.
+The next step is to try disabling the individual bits (TC0, USB legacy,
+etc...), as they may not affected by the SMI_LOCK bit.
 
 -- 
-Philippe.
-
-
+                                                                Gilles.
 
