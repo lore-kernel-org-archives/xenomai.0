@@ -1,13 +1,17 @@
-Message-ID: <4DFDF2E1.1060106@domain.hid>
-Date: Sun, 19 Jun 2011 15:00:17 +0200
+Message-ID: <4DFE189D.5030908@domain.hid>
+Date: Sun, 19 Jun 2011 17:41:17 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4DDA66CF.2010307@domain.hid> <4DFDCBEA.6010905@domain.hid>
-	<4DFDDAB8.4090709@domain.hid>
-In-Reply-To: <4DFDDAB8.4090709@domain.hid>
+References: <E1QXaC2-0007dE-Ar@domain.hid>	<4DFB869F.9080006@domain.hid>	<4DFB88EC.9090100@domain.hid>	<4DFBA305.9000303@domain.hid>
+	<4DFC7C0E.1090700@domain.hid>	<4DFC9575.1030904@domain.hid>
+	<4DFC95B7.8070703@domain.hid>	<4DFCA09B.20609@domain.hid>
+	<4DFCA323.6030704@domain.hid> <4DFCA432.3070203@domain.hid>
+	<4DFCAF07.8020607@domain.hid>
+In-Reply-To: <4DFCAF07.8020607@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [PULL] native: Fix msendq fastlock leakage
+Subject: Re: [Xenomai-core] [Xenomai-git] Jan Kiszka : nucleus: Fix
+	interrupt handler tails
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -19,116 +23,94 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: Xenomai core <Xenomai-core@domain.hid>
 
-On 06/19/2011 01:17 PM, Gilles Chanteperdrix wrote:
-> On 06/19/2011 12:14 PM, Gilles Chanteperdrix wrote:
->> I am working on this ppd cleanup issue again, I am asking for help to
->> find a fix in -head for all cases where the sys_ppd is needed during
->> some cleanup.
+On 06/18/2011 03:58 PM, Jan Kiszka wrote:
+> On 2011-06-18 15:12, Gilles Chanteperdrix wrote:
+>> On 06/18/2011 03:07 PM, Jan Kiszka wrote:
+>>> On 2011-06-18 14:56, Gilles Chanteperdrix wrote:
+>>>> On 06/18/2011 02:10 PM, Jan Kiszka wrote:
+>>>>> On 2011-06-18 14:09, Gilles Chanteperdrix wrote:
+>>>>>> On 06/18/2011 12:21 PM, Jan Kiszka wrote:
+>>>>>>> On 2011-06-17 20:55, Gilles Chanteperdrix wrote:
+>>>>>>>> On 06/17/2011 07:03 PM, Jan Kiszka wrote:
+>>>>>>>>> On 2011-06-17 18:53, Gilles Chanteperdrix wrote:
+>>>>>>>>>> On 06/17/2011 04:38 PM, GIT version control wrote:
+>>>>>>>>>>> Module: xenomai-jki
+>>>>>>>>>>> Branch: for-upstream
+>>>>>>>>>>> Commit: 7203b1a66ca0825d5bcda1c3abab9ca048177914
+>>>>>>>>>>> URL:    http://git.xenomai.org/?p=xenomai-jki.git;a=commit;h=7203b1a66ca0825d5bcda1c3abab9ca048177914
+>>>>>>>>>>>
+>>>>>>>>>>> Author: Jan Kiszka <jan.kiszka@domain.hid>
+>>>>>>>>>>> Date:   Fri Jun 17 09:46:19 2011 +0200
+>>>>>>>>>>>
+>>>>>>>>>>> nucleus: Fix interrupt handler tails
+>>>>>>>>>>>
+>>>>>>>>>>> Our current interrupt handlers assume that they leave over the same task
+>>>>>>>>>>> and CPU they entered. But commit f6af9b831c broke this assumption:
+>>>>>>>>>>> xnpod_schedule invoked from the handler tail can now actually trigger a
+>>>>>>>>>>> domain migration, and that can also include a CPU migration. This causes
+>>>>>>>>>>> subtle corruptions as invalid xnstat_exectime_t objects may be restored
+>>>>>>>>>>> and - even worse - we may improperly flush XNHTICK of the old CPU,
+>>>>>>>>>>> leaving Linux timer-wise dead there (as happened to us).
+>>>>>>>>>>>
+>>>>>>>>>>> Fix this by moving XNHTICK replay and exectime accounting before the
+>>>>>>>>>>> scheduling point. Note that this introduces a tiny imprecision in the
+>>>>>>>>>>> accounting.
+>>>>>>>>>>
+>>>>>>>>>> I am not sure I understand why moving the XNHTICK replay is needed: if
+>>>>>>>>>> we switch to secondary mode, the HTICK is handled by xnpod_schedule
+>>>>>>>>>> anyway, or am I missing something?
+>>>>>>>>>
+>>>>>>>>> The replay can work on an invalid sched (after CPU migration in
+>>>>>>>>> secondary mode). We could reload the sched, but just moving the replay
+>>>>>>>>> is simpler.
+>>>>>>>>
+>>>>>>>> But does it not remove the purpose of this delayed replay?
+>>>>>>>
+>>>>>>> Hmm, yes, in the corner case of coalesced timed RT task wakeup and host
+>>>>>>> tick over a root thread. Well, then we actually have to reload sched and
+>>>>>>> keep the ordering to catch that as well.
+>>>>>>>
+>>>>>>>>
+>>>>>>>> Note that if you want to reload the sched, you also have to shut
+>>>>>>>> interrupts off, because upon return from xnpod_schedule after migration,
+>>>>>>>> interrupts are on.
+>>>>>>>
+>>>>>>> That would be another severe bug if we left an interrupt handler with
+>>>>>>> hard IRQs enabled - the interrupt tail code of ipipe would break.
+>>>>>>>
+>>>>>>> Fortunately, only xnpod_suspend_thread re-enables IRQs and returns.
+>>>>>>> xnpod_schedule also re-enables but then terminates the context (in
+>>>>>>> xnshadow_exit). So we are safe.
+>>>>>>
+>>>>>> I do not think we are, at least on platforms where context switches
+>>>>>> happen with irqs on.
+>>>>>
+>>>>> Can you sketch a problematic path?
+>>>>
+>>>> On platforms with IPIPE_WANT_PREEMPTIBLE_SWITCH on, all context switches
+>>>> happens with irqs on. So, in particular, the context switch to a relaxed
+>>>> task happens with irqs on. In __xnpod_schedule, we then return from
+>>>> xnpod_switch_to with irqs on, and so return from __xnpod_schedule with
+>>>> irqs on.
+>>>
+>>> "/* We are returning to xnshadow_relax via
+>>>     xnpod_suspend_thread, do nothing,
+>>>     xnpod_suspend_thread will re-enable interrupts. */"
+>>>
+>>> Looks like this is outdated. I think we best fix this in
+>>> __xnpod_schedule by disabling irqs there instead of forcing otherwise
+>>> redundant disabling into all handler return paths.
 >>
->> The problem is that when the ppd cleanup is invoked:
->> - we have no guarantee that current is a thread from the Xenomai
->> application;
->> - if it is, current->mm is NULL.
+>> I agree.
 >>
->> So, associating the sys_ppd to either current or current->mm does not
->> work. What we could do is pass the sys_ppd to all the other ppds cleanup
->> handlers, this would fix cases such as freeing mutexes fastlock, but
->> that does not help when the sys_ppd is needed during a thread deletion hook.
->>
->> I would like to find a solution where simply calling xnsys_ppd_get()
->> will work, where we do not have an xnsys_ppd_get for each context, such
->> as for instance xnsys_ppd_get_by_mm/xnsys_ppd_get_by_task_struct,
->> because it would be too error-prone.
->>
->> Any idea anyone?
 > 
-> The best I could come up with: use a ptd to store the mm currently 
-> being cleaned up, so that xnshadow_ppd_get continues to work, even
-> in the middle of a cleanup.
+> I've queued a corresponding patch, and also one to clean up that special
+> handshake between xnshadow_relax and xnpod_suspend_thread a bit.
+> Consider both as RFC.
 
-In order to also get xnshadow_ppd_get to work in task deletion hooks 
-(which is needed to avoid the issue at the origin of this thread), we 
-also need to set this ptd upon shadow mapping, so it is still there 
-when reaching the task deletion hook (where current->mm may be NULL). 
-Hence the patch:
-
-diff --git a/ksrc/nucleus/shadow.c b/ksrc/nucleus/shadow.c
-index b243600..6bc4210 100644
---- a/ksrc/nucleus/shadow.c
-+++ b/ksrc/nucleus/shadow.c
-@@ -65,6 +65,11 @@ int nkthrptd;
- EXPORT_SYMBOL_GPL(nkthrptd);
- int nkerrptd;
- EXPORT_SYMBOL_GPL(nkerrptd);
-+int nkmmptd;
-+EXPORT_SYMBOL_GPL(nkmmptd);
-+
-+#define xnshadow_mmptd(t) ((t)->ptd[nkmmptd])
-+#define xnshadow_mm(t) ((struct mm_struct *)xnshadow_mmptd(t))
- 
- struct xnskin_slot {
- 	struct xnskin_props *props;
-@@ -1304,6 +1309,8 @@ int xnshadow_map(xnthread_t *thread, xncompletion_t __user *u_completion,
- 	 * friends.
- 	 */
- 	xnshadow_thrptd(current) = thread;
-+	xnshadow_mmptd(current) = current->mm;
-+
- 	rthal_enable_notifier(current);
- 
- 	if (xnthread_base_priority(thread) == 0 &&
-@@ -2759,7 +2766,15 @@ static void detach_ppd(xnshadow_ppd_t * ppd)
- 
- static inline void do_cleanup_event(struct mm_struct *mm)
- {
-+	struct task_struct *p = current;
-+	struct mm_struct *old;
-+
-+	old = xnshadow_mm(p);
-+	xnshadow_mmptd(p) = mm;
-+
- 	ppd_remove_mm(mm, &detach_ppd);
-+
-+	xnshadow_mmptd(p) = old;
- }
- 
- RTHAL_DECLARE_CLEANUP_EVENT(cleanup_event);
-@@ -2925,7 +2940,7 @@ EXPORT_SYMBOL_GPL(xnshadow_unregister_interface);
- xnshadow_ppd_t *xnshadow_ppd_get(unsigned muxid)
- {
- 	if (xnpod_userspace_p())
--		return ppd_lookup(muxid, current->mm);
-+		return ppd_lookup(muxid, xnshadow_mm(current) ?: current->mm);
- 
- 	return NULL;
- }
-@@ -2960,8 +2975,9 @@ int xnshadow_mount(void)
- 	sema_init(&completion_mutex, 1);
- 	nkthrptd = rthal_alloc_ptdkey();
- 	nkerrptd = rthal_alloc_ptdkey();
-+	nkmmptd = rthal_alloc_ptdkey();
- 
--	if (nkthrptd < 0 || nkerrptd < 0) {
-+	if (nkthrptd < 0 || nkerrptd < 0 || nkmmptd < 0) {
- 		printk(KERN_ERR "Xenomai: cannot allocate PTD slots\n");
- 		return -ENOMEM;
- 	}
-diff --git a/ksrc/skins/posix/mutex.c b/ksrc/skins/posix/mutex.c
-index 6ce75e5..cc86852 100644
---- a/ksrc/skins/posix/mutex.c
-+++ b/ksrc/skins/posix/mutex.c
-@@ -219,10 +219,6 @@ void pse51_mutex_destroy_internal(pse51_mutex_t *mutex,
- 	xnlock_put_irqrestore(&nklock, s);
- 
- #ifdef CONFIG_XENO_FASTSYNCH
--	/* We call xnheap_free even if the mutex is not pshared; when
--	   this function is called from pse51_mutexq_cleanup, the
--	   sem_heap is destroyed, or not the one to which the fastlock
--	   belongs, xnheap will simply return an error. */
- 	xnheap_free(&xnsys_ppd_get(mutex->attr.pshared)->sem_heap,
- 		    mutex->synchbase.fastlock);
- #endif /* CONFIG_XENO_FASTSYNCH */
-
+Merged your whole branch, but took the liberty to change it a bit
+(replacing the commit concerning unlocked context switches with comments
+changes only, and changing the commit about xntbase_tick).
 
 -- 
                                                                 Gilles.
