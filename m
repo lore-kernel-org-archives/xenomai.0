@@ -1,9 +1,10 @@
-Message-ID: <4DFDDAB8.4090709@domain.hid>
-Date: Sun, 19 Jun 2011 13:17:12 +0200
+Message-ID: <4DFDF2E1.1060106@domain.hid>
+Date: Sun, 19 Jun 2011 15:00:17 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <4DDA66CF.2010307@domain.hid> <4DFDCBEA.6010905@domain.hid>
-In-Reply-To: <4DFDCBEA.6010905@domain.hid>
+	<4DFDDAB8.4090709@domain.hid>
+In-Reply-To: <4DFDDAB8.4090709@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-core] [PULL] native: Fix msendq fastlock leakage
@@ -18,74 +19,86 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: Xenomai core <Xenomai-core@domain.hid>
 
-On 06/19/2011 12:14 PM, Gilles Chanteperdrix wrote:
-> I am working on this ppd cleanup issue again, I am asking for help to
-> find a fix in -head for all cases where the sys_ppd is needed during
-> some cleanup.
+On 06/19/2011 01:17 PM, Gilles Chanteperdrix wrote:
+> On 06/19/2011 12:14 PM, Gilles Chanteperdrix wrote:
+>> I am working on this ppd cleanup issue again, I am asking for help to
+>> find a fix in -head for all cases where the sys_ppd is needed during
+>> some cleanup.
+>>
+>> The problem is that when the ppd cleanup is invoked:
+>> - we have no guarantee that current is a thread from the Xenomai
+>> application;
+>> - if it is, current->mm is NULL.
+>>
+>> So, associating the sys_ppd to either current or current->mm does not
+>> work. What we could do is pass the sys_ppd to all the other ppds cleanup
+>> handlers, this would fix cases such as freeing mutexes fastlock, but
+>> that does not help when the sys_ppd is needed during a thread deletion hook.
+>>
+>> I would like to find a solution where simply calling xnsys_ppd_get()
+>> will work, where we do not have an xnsys_ppd_get for each context, such
+>> as for instance xnsys_ppd_get_by_mm/xnsys_ppd_get_by_task_struct,
+>> because it would be too error-prone.
+>>
+>> Any idea anyone?
 > 
-> The problem is that when the ppd cleanup is invoked:
-> - we have no guarantee that current is a thread from the Xenomai
-> application;
-> - if it is, current->mm is NULL.
-> 
-> So, associating the sys_ppd to either current or current->mm does not
-> work. What we could do is pass the sys_ppd to all the other ppds cleanup
-> handlers, this would fix cases such as freeing mutexes fastlock, but
-> that does not help when the sys_ppd is needed during a thread deletion hook.
-> 
-> I would like to find a solution where simply calling xnsys_ppd_get()
-> will work, where we do not have an xnsys_ppd_get for each context, such
-> as for instance xnsys_ppd_get_by_mm/xnsys_ppd_get_by_task_struct,
-> because it would be too error-prone.
-> 
-> Any idea anyone?
+> The best I could come up with: use a ptd to store the mm currently 
+> being cleaned up, so that xnshadow_ppd_get continues to work, even
+> in the middle of a cleanup.
 
-The best I could come up with: use a ptd to store the mm currently 
-being cleaned up, so that xnshadow_ppd_get continues to work, even
-in the middle of a cleanup.
+In order to also get xnshadow_ppd_get to work in task deletion hooks 
+(which is needed to avoid the issue at the origin of this thread), we 
+also need to set this ptd upon shadow mapping, so it is still there 
+when reaching the task deletion hook (where current->mm may be NULL). 
+Hence the patch:
 
 diff --git a/ksrc/nucleus/shadow.c b/ksrc/nucleus/shadow.c
-index b243600..b542b4f 100644
+index b243600..6bc4210 100644
 --- a/ksrc/nucleus/shadow.c
 +++ b/ksrc/nucleus/shadow.c
-@@ -65,6 +65,8 @@ int nkthrptd;
+@@ -65,6 +65,11 @@ int nkthrptd;
  EXPORT_SYMBOL_GPL(nkthrptd);
  int nkerrptd;
  EXPORT_SYMBOL_GPL(nkerrptd);
 +int nkmmptd;
 +EXPORT_SYMBOL_GPL(nkmmptd);
++
++#define xnshadow_mmptd(t) ((t)->ptd[nkmmptd])
++#define xnshadow_mm(t) ((struct mm_struct *)xnshadow_mmptd(t))
  
  struct xnskin_slot {
  	struct xnskin_props *props;
-@@ -2759,7 +2761,14 @@ static void detach_ppd(xnshadow_ppd_t * ppd)
+@@ -1304,6 +1309,8 @@ int xnshadow_map(xnthread_t *thread, xncompletion_t __user *u_completion,
+ 	 * friends.
+ 	 */
+ 	xnshadow_thrptd(current) = thread;
++	xnshadow_mmptd(current) = current->mm;
++
+ 	rthal_enable_notifier(current);
+ 
+ 	if (xnthread_base_priority(thread) == 0 &&
+@@ -2759,7 +2766,15 @@ static void detach_ppd(xnshadow_ppd_t * ppd)
  
  static inline void do_cleanup_event(struct mm_struct *mm)
  {
++	struct task_struct *p = current;
 +	struct mm_struct *old;
 +
-+	old = (struct mm_struct *)(current->ptd[nkmmptd]);
-+	current->ptd[nkmmptd] = mm;
++	old = xnshadow_mm(p);
++	xnshadow_mmptd(p) = mm;
 +
  	ppd_remove_mm(mm, &detach_ppd);
 +
-+	current->ptd[nkmmptd] = old;
++	xnshadow_mmptd(p) = old;
  }
  
  RTHAL_DECLARE_CLEANUP_EVENT(cleanup_event);
-@@ -2924,8 +2933,14 @@ EXPORT_SYMBOL_GPL(xnshadow_unregister_interface);
-  */
+@@ -2925,7 +2940,7 @@ EXPORT_SYMBOL_GPL(xnshadow_unregister_interface);
  xnshadow_ppd_t *xnshadow_ppd_get(unsigned muxid)
  {
--	if (xnpod_userspace_p())
+ 	if (xnpod_userspace_p())
 -		return ppd_lookup(muxid, current->mm);
-+	if (xnpod_userspace_p()) {
-+		struct mm_struct *mm;
-+
-+		mm = (struct mm_struct *)current->ptd[nkmmptd] ?: current->mm;
-+		/* ptd is not null if we are currently cleaning up an mm */
-+
-+		return ppd_lookup(muxid, mm);
-+	}
++		return ppd_lookup(muxid, xnshadow_mm(current) ?: current->mm);
  
  	return NULL;
  }
