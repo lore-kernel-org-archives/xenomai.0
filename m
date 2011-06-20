@@ -1,14 +1,12 @@
-Message-ID: <4DFF2B40.9010004@domain.hid>
-Date: Mon, 20 Jun 2011 13:13:04 +0200
+Message-ID: <4DFF2D33.8090702@domain.hid>
+Date: Mon, 20 Jun 2011 13:21:23 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <BANLkTikoPvhb1XmycYm=MROT7=BGA8cisg@domain.hid>	<4DFDF79F.1090502@domain.hid>	<BANLkTinVUd-R1cpD+40MGZZckzGhwrqRvw@domain.hid>	<4DFDFD2F.1080506@domain.hid>	<BANLkTimdiUofRrXahOThW5C1RixQ-s5pMQ@mail.gmail.com>	<4DFE038F.202@domain.hid>	<BANLkTi=RiME1P8vvx3imrq39gEmyZOJbDQ@mail.gmail.com>	<4DFE2A71.5060307@domain.hid>	<BANLkTin1O4aZc0fAM2_W=wiaq+6Zy4+48w@domain.hid>	<4DFE8D82.1060903@domain.hid>
-	<4DFED482.5050703@domain.hid> <4DFEF367.9000301@domain.hid>
-	<4DFEFF7F.3000308@domain.hid>
-In-Reply-To: <4DFEFF7F.3000308@domain.hid>
+References: <BANLkTi=DsC9d_LVt3deiBCUAQq2-UubTuA@mail.gmail.com>
+In-Reply-To: <BANLkTi=DsC9d_LVt3deiBCUAQq2-UubTuA@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Compiling program with xenomai support
+Subject: Re: [Xenomai-help] regarding freezing at booting
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -18,63 +16,67 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: David Wiebe <dwiebe2@domain.hid>
-Cc: xenomai@xenomai.org
+To: suresh reddy <sureshreddy.balijepalli@domain.hid>
+Cc: Xenomai help <xenomai@xenomai.org>
 
-On 06/20/2011 10:06 AM, David Wiebe wrote:
-> On 11-06-20 12:14 AM, Gilles Chanteperdrix wrote:
->> On 06/20/2011 07:02 AM, David Wiebe wrote:
->>> /home/david/xenomai-2.5.6.test/include/nucleus/types.h:41:32: error:
->>> asm/xenomai/system.h: No such file or directory
->> Could you show us the arguments you pass to Xenomai "configure" script?
->> Normally, the "asm" directory is created by Xenomai install rule.
->>
->> Posting your test code would also help us try and reproduce this issue.
->>
-> Of course!
+On 06/20/2011 11:52 AM, suresh reddy wrote:
+> Dear xenomai,
 > 
-> <test2.c>
-> #include <stdio.h>
-> #include <stdlib.h>
-> #include <fcntl.h>
-> #include <unistd.h>
-> #include <sys/stat.h>
-> #include <sys/types.h>
-> #include <sys/ioctl.h>
-> #include <signal.h>
-> #include <sys/mman.h>
+> I compiled the the kernel and builded the uImage . I transfered the uImage
+> to FAT partion of SD Card  and the directories DEV and usr (That generated
+> due to make DESTDIR) to root filesystem of the sd card.
 > 
-> #include <native/task.h>
-> #include <native/timer.h>
-> 
-> #define TIMESLEEP 1000000000 /* 1 sec */
-> 
-> 
-> int main(void)
-> {
-> }
-> <!test2.c>
-> 
-> <The configure script>
-> ./configure --build=i686-pc-linux-gnu --host=arm-none-linux-gnueabi 
-> --enable-arm-mach=omap3
-> <!The configure script>
-> 
-> <The make install>
-> make DESTDIR=/home/david/sdir/ install
-> <!The make install>
+> i started booting from sd card . It giving me the below result and freezing.
+> Iam seeing nothing on terminal after this .
 
-Then, the header should be found under 
-/home/david/sdir/usr/xenomai/include/xenomai
+It means the kernel encountered an error before the console is enabled.
+Enable CONFIG_EARLY_PRINTK and pass earlyprintk on the kernel command
+line to know what the problem is.
 
-In order to compile your test you should use xeno-config.
+Note that since I told you to download ipipe-gch, I finalized the port
+of the I-pipe patch on panda board. So, if you download the ipipe-gch
+git again, you will be able to enable CONFIG_SMP.
 
-Typing, for instance:
 
-CFLAGS=`DESTDIR=/home/david/sdir /home/david/sdir/usr/xenomai/bin/bin/xeno-config --skin native --cflags`
-LDFLAGS=`DESTDIR=/home/david/sdir /home/david/sdir/usr/xenomai/bin/bin/xeno-config --skin native --ldflags`
-arm-none-linux-gnueabi-gcc -o test2 $CFLAGS test2.c $LDFLAGS
+> And i thought whether my uImage that i created was crashed , so thought of
+> building it again .
+> when i run the make uImage , it giving me error No rule to make target
+> uImage . stop
+> 
+> make ARCH=arm CROSS_COMPILE=arm-none-linux-gnueabi-
+> O=/home/balijepalli/pandaboard/build uImage
+> make: *** No rule to make target `uImage'.  Stop.
+> 
+> then i ran
+> test06:/home/balijepalli/pandaboard/ipipe-gch# make ARCH=arm
+> CROSS_COMPILE=arm-none-linux-gnueabi- O=/home/balijepalli/pandaboard/build
+> omap4_panda_defconfig
+> make: *** No rule to make target `omap4_panda_defconfig'.  Stop.
+> 
+> so i went to to 1st step to check scripts/prepare. kernel.sh as below
+>  test06:/home/balijepalli/pandaboard/xenomai-2.5.6#
+> scripts/prepare-kernel.sh --linux=/home/balijepalli/pandaboard/ipipe-gch
+> --arch=arm
+> scripts/prepare-kernel.sh: line 350: linux_: command not found
+> 
+> 
+>  i checked this scripts/prepare.kernel.sh by downloading the xenomai again
+> but i got the same error.
 
+I do not know what to do from this explanation. You are giving us either
+too much or not enough information.
+
+Some ideas:
+
+The prepared kernel should be built in the sources directory or in its
+own build directory. And this is an exclusive or, if you start mixing
+out-of-tree build with in-source builds you start having problems.
+
+The omap4_panda_defconfig does not exist in the I-pipe patch, you have
+to configure the kernel manually (start from omap2plus_defconfig, and
+disable all options related to other omaps than omap4).
+
+You should not try and prepare a kernel which has already been prepared.
 
 -- 
                                                                 Gilles.
