@@ -1,18 +1,17 @@
-Message-ID: <4DFFB2F8.7090301@domain.hid>
-Date: Mon, 20 Jun 2011 22:52:08 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4DFFB2F3.5080508@domain.hid>
+Date: Mon, 20 Jun 2011 22:52:03 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <E1QXaC2-0007dE-Ar@domain.hid>	<4DFB869F.9080006@domain.hid>	<4DFB88EC.9090100@domain.hid>	<4DFBA305.9000303@domain.hid>	<4DFC7C0E.1090700@domain.hid>	<4DFC9575.1030904@domain.hid>	<4DFC95B7.8070703@domain.hid>	<4DFCA09B.20609@domain.hid>	<4DFCA323.6030704@domain.hid>
-	<4DFCA432.3070203@domain.hid>	<4DFCAF07.8020607@domain.hid>
-	<4DFE189D.5030908@domain.hid>	<4DFF78AA.9050904@domain.hid>
-	<4DFF8476.2000306@domain.hid> <4DFFA19C.30000@domain.hid>
-	<4DFFA24F.4050601@domain.hid> <4DFFA27F.3020808@domain.hid>
-	<4DFFA4C0.70000@domain.hid> <4DFFB095.2030607@domain.hid>
-In-Reply-To: <4DFFB095.2030607@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [Xenomai-git] Jan Kiszka : nucleus: Fix
-	interrupt handler tails
+References: <4DDA66CF.2010307@domain.hid>
+	<4DFDCBEA.6010905@domain.hid>	<4DFDDAB8.4090709@domain.hid>
+	<4DFDF2E1.1060106@domain.hid>	<4DFF7E4A.3070807@domain.hid>
+	<4DFF8775.7080704@domain.hid>
+In-Reply-To: <4DFF8775.7080704@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig4BE1DB33EA2039806799AEBB"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-core] [PULL] native: Fix msendq fastlock leakage
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -21,64 +20,102 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: Xenomai core <Xenomai-core@domain.hid>
 
-On 06/20/2011 10:41 PM, Jan Kiszka wrote:
-> xnarch_switch_to is the central entry point for everyone. It may decide
-> to branch to switch_to or __switch_to, or it simply handles all on its
-> own - that's depending on the arch.
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig4BE1DB33EA2039806799AEBB
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-No, the Linux kernel does not know anything about xnarch_switch_to, so
-the schedule() function continues to use switch_to happily.
-xnarch_switch_to is only used to switch from xnthread_t to xnthread_t,
-by __xnpod_schedule(). Now, that some architecture (namely x86) decide
-that xnarch_switch_to should use switch_to (or more likely an inner
-__switch_to) when the xnthread_t has a non NULL user_task member is an
-implementation detail.
+On 2011-06-20 19:46, Gilles Chanteperdrix wrote:
+> On 06/20/2011 07:07 PM, Jan Kiszka wrote:
+>>>  static inline void do_cleanup_event(struct mm_struct *mm)
+>>>  {
+>>> +	struct task_struct *p =3D current;
+>>> +	struct mm_struct *old;
+>>> +
+>>> +	old =3D xnshadow_mm(p);
+>>> +	xnshadow_mmptd(p) =3D mm;
+>>> +
+>>>  	ppd_remove_mm(mm, &detach_ppd);
+>>> +
+>>> +	xnshadow_mmptd(p) =3D old;
+>>
+>> I don't have the full picture yet, but that feels racy: If the context=
 
-> Can you point out where in those paths irqs are disabled again (after
-> entering xnarch_switch_to)
+>> over which we clean up that foreign mm is also using xnshadow_mmptd,
+>> other threads in that process may dislike this temporary change.
+>=20
+> This mmptd is only used by xnshadow_ppd_get (which never dereferences i=
+t
+> by the way
 
-They are not disabled again after xnarch_switch_to, they are disabled
-when starting switch_to.
+I know that the current code is safe. Avoiding mm_struct types is about
+keeping it safe in the future. Why track the type if its just an opaque
+key and should be handled as such?
 
- and left off for each of the unlocked
-> switching archs? I'm still skeptical that the need for disable irqs
-> during thread switch on some archs also leads to unconditionally
-> disabled hard irqs when returning from xnarch_switch_to.
-> 
-> But even if that's all the case today, we would better set this
-> requirement in stone:
-> 
-> diff --git a/ksrc/nucleus/pod.c b/ksrc/nucleus/pod.c
-> index f2fc2ab..c4c5807 100644
-> --- a/ksrc/nucleus/pod.c
-> +++ b/ksrc/nucleus/pod.c
-> @@ -2273,6 +2273,8 @@ reschedule:
-> 
->  	xnpod_switch_to(sched, prev, next);
-> 
-> +	XENO_BUGON(NUCLEUS, !irqs_disabled_hw());
-> +
+). And if the current thread is running the cleanup event, it
+> is not running any other service at the same time. So, this is safe.
 
-You misunderstand me: only after the second half context switch in the
-case of xnshadow_relax are the interrupts disabled. Because this second
-half-switch started as a switch_to and not an xnarch_switch_to, so,
-started as:
+Ah, xnshadow_mmptd is per-thread, not per-process as I incorrectly
+assumed. Then it's safe.
 
-#define switch_to(prev,next,last)                                       \
-do {                                                                    \
-        local_irq_disable_hw_cond();                                    \
-        last = __switch_to(prev,task_thread_info(prev),
-task_thread_info(next));        \
-        local_irq_enable_hw_cond();                                     \
-} while (0)
+>=20
+> An alternative implementation would be to use some global per-cpu
+> variable and disable the preemption during cleanup. But that would not
+> fix the case of the shadow cleanups where current->mm is already null.
+>=20
+> The remaining problem is an irq interrupting the cleanup, and using
+> xnshadow_ppd_get. But I would not expect that to happen. I mean,
+> xnshadow_ppd_get is more a service to be used for implementation of
+> system calls.
 
-(On ARM for instance).
+Yes, that kind of usage would be a bug in the first place.
 
-But that is true, we could assert this in the shadow epilogue case.
+>=20
+>>> diff --git a/ksrc/skins/posix/mutex.c b/ksrc/skins/posix/mutex.c
+>>> index 6ce75e5..cc86852 100644
+>>> --- a/ksrc/skins/posix/mutex.c
+>>> +++ b/ksrc/skins/posix/mutex.c
+>>> @@ -219,10 +219,6 @@ void pse51_mutex_destroy_internal(pse51_mutex_t =
+*mutex,
+>>>  	xnlock_put_irqrestore(&nklock, s);
+>>> =20
+>>>  #ifdef CONFIG_XENO_FASTSYNCH
+>>> -	/* We call xnheap_free even if the mutex is not pshared; when
+>>> -	   this function is called from pse51_mutexq_cleanup, the
+>>> -	   sem_heap is destroyed, or not the one to which the fastlock
+>>> -	   belongs, xnheap will simply return an error. */
+>>
+>> I think this comment is not completely obsolete. It still applies /wrt=
 
--- 
-                                                                Gilles.
+>> shared/non-shared.
+>=20
+> If we apply this patch after the one changing the ppd cleanup order,
+> everything falls in place (I can even put a warning in xnheap_destroy i=
+f
+> the heap has some bytes still in use when destroyed).
+
+"We call xnheap_free even if the mutex is not pshared." This still
+applies and is unrelated to the ppd changes.
+
+Jan
+
+
+--------------enig4BE1DB33EA2039806799AEBB
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.15 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org/
+
+iEYEARECAAYFAk3/svMACgkQitSsb3rl5xREPQCgkt4twuyDzvHJsAAWeZJsmQ9X
+6ikAoMmPV8FOg+MSjO6jv7EYaDWMZD9e
+=gPuv
+-----END PGP SIGNATURE-----
+
+--------------enig4BE1DB33EA2039806799AEBB--
 
