@@ -1,14 +1,18 @@
-Message-ID: <4DFF8775.7080704@domain.hid>
-Date: Mon, 20 Jun 2011 19:46:29 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4DFFA19C.30000@domain.hid>
+Date: Mon, 20 Jun 2011 21:38:04 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <4DDA66CF.2010307@domain.hid> <4DFDCBEA.6010905@domain.hid>
-	<4DFDDAB8.4090709@domain.hid> <4DFDF2E1.1060106@domain.hid>
-	<4DFF7E4A.3070807@domain.hid>
-In-Reply-To: <4DFF7E4A.3070807@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [PULL] native: Fix msendq fastlock leakage
+References: <E1QXaC2-0007dE-Ar@domain.hid>	<4DFB869F.9080006@domain.hid>	<4DFB88EC.9090100@domain.hid>	<4DFBA305.9000303@domain.hid>	<4DFC7C0E.1090700@domain.hid>	<4DFC9575.1030904@domain.hid>	<4DFC95B7.8070703@domain.hid>	<4DFCA09B.20609@domain.hid>	<4DFCA323.6030704@domain.hid>
+	<4DFCA432.3070203@domain.hid>	<4DFCAF07.8020607@domain.hid>
+	<4DFE189D.5030908@domain.hid>	<4DFF78AA.9050904@domain.hid>
+	<4DFF8476.2000306@domain.hid>
+In-Reply-To: <4DFF8476.2000306@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig3CF45F2ED179305F510568E8"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-core] [Xenomai-git] Jan Kiszka : nucleus: Fix
+	interrupt handler tails
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -17,64 +21,51 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: Xenomai core <Xenomai-core@domain.hid>
 
-On 06/20/2011 07:07 PM, Jan Kiszka wrote:
->>  static inline void do_cleanup_event(struct mm_struct *mm)
->>  {
->> +	struct task_struct *p = current;
->> +	struct mm_struct *old;
->> +
->> +	old = xnshadow_mm(p);
->> +	xnshadow_mmptd(p) = mm;
->> +
->>  	ppd_remove_mm(mm, &detach_ppd);
->> +
->> +	xnshadow_mmptd(p) = old;
-> 
-> I don't have the full picture yet, but that feels racy: If the context
-> over which we clean up that foreign mm is also using xnshadow_mmptd,
-> other threads in that process may dislike this temporary change.
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig3CF45F2ED179305F510568E8
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-This mmptd is only used by xnshadow_ppd_get (which never dereferences it
-by the way). And if the current thread is running the cleanup event, it
-is not running any other service at the same time. So, this is safe.
+On 2011-06-20 19:33, Gilles Chanteperdrix wrote:
+> On 06/20/2011 06:43 PM, Jan Kiszka wrote:
+>> On 2011-06-19 17:41, Gilles Chanteperdrix wrote:
+>>> Merged your whole branch, but took the liberty to change it a bit
+>>> (replacing the commit concerning unlocked context switches with comme=
+nts
+>>> changes only, and changing the commit about xntbase_tick).
+>>
+>> What makes splmax() redundant for the unlocked context switch case? IM=
+O
+>> that bug is still present.
+>=20
+> No, the bug is between my keyboard and chair. On architectures with
+> unlocked context switches, the Linux task switch still happens with irq=
+s
+> off, only the mm switch happens with irqs on.
 
-An alternative implementation would be to use some global per-cpu
-variable and disable the preemption during cleanup. But that would not
-fix the case of the shadow cleanups where current->mm is already null.
+Then why do we call xnlock_get_irqsave in
+xnsched_finish_unlocked_switch? Why not simply xnlock_get if irqs are
+off anyway?
 
-The remaining problem is an irq interrupting the cleanup, and using
-xnshadow_ppd_get. But I would not expect that to happen. I mean,
-xnshadow_ppd_get is more a service to be used for implementation of
-system calls.
+Jan
 
->> diff --git a/ksrc/skins/posix/mutex.c b/ksrc/skins/posix/mutex.c
->> index 6ce75e5..cc86852 100644
->> --- a/ksrc/skins/posix/mutex.c
->> +++ b/ksrc/skins/posix/mutex.c
->> @@ -219,10 +219,6 @@ void pse51_mutex_destroy_internal(pse51_mutex_t *mutex,
->>  	xnlock_put_irqrestore(&nklock, s);
->>  
->>  #ifdef CONFIG_XENO_FASTSYNCH
->> -	/* We call xnheap_free even if the mutex is not pshared; when
->> -	   this function is called from pse51_mutexq_cleanup, the
->> -	   sem_heap is destroyed, or not the one to which the fastlock
->> -	   belongs, xnheap will simply return an error. */
-> 
-> I think this comment is not completely obsolete. It still applies /wrt
-> shared/non-shared.
 
-If we apply this patch after the one changing the ppd cleanup order,
-everything falls in place (I can even put a warning in xnheap_destroy if
-the heap has some bytes still in use when destroyed).
+--------------enig3CF45F2ED179305F510568E8
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-> If we can resolve that potential race, this looks like a nice solution.
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.15 (GNU/Linux)
+Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org/
 
-It may look a bit overkill, since it uses an adeos ptd. On the other
-hand, who else uses them anyway ;-)
+iEYEARECAAYFAk3/oaEACgkQitSsb3rl5xSPUgCdGC7yJfhbiL0RwI53AKYM4fwK
+7H4AoMnx0h2FqKUavYLjWF0sItwruOrS
+=IVwj
+-----END PGP SIGNATURE-----
 
--- 
-                                                                Gilles.
+--------------enig3CF45F2ED179305F510568E8--
 
