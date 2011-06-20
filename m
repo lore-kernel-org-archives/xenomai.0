@@ -1,14 +1,18 @@
-Message-ID: <4DFF99CE.8090804@domain.hid>
-Date: Mon, 20 Jun 2011 12:04:46 -0700
-From: David Wiebe <dwiebe2@domain.hid>
+Message-ID: <4DFFBBDB.4030703@domain.hid>
+Date: Mon, 20 Jun 2011 22:30:03 +0100
+From: Jakub Nowacki <j.s.nowacki@domain.hid>
 MIME-Version: 1.0
-References: <BANLkTikoPvhb1XmycYm=MROT7=BGA8cisg@domain.hid>	<4DFDF79F.1090502@domain.hid>	<BANLkTinVUd-R1cpD+40MGZZckzGhwrqRvw@domain.hid>	<4DFDFD2F.1080506@domain.hid>	<BANLkTimdiUofRrXahOThW5C1RixQ-s5pMQ@mail.gmail.com>	<4DFE038F.202@domain.hid>	<BANLkTi=RiME1P8vvx3imrq39gEmyZOJbDQ@mail.gmail.com>	<4DFE2A71.5060307@domain.hid>	<BANLkTin1O4aZc0fAM2_W=wiaq+6Zy4+48w@domain.hid>	<4DFE8D82.1060903@domain.hid>
-	<4DFED482.5050703@domain.hid> <4DFEF367.9000301@domain.hid>
-	<4DFEFF7F.3000308@domain.hid> <4DFF2B40.9010004@domain.hid>
-In-Reply-To: <4DFF2B40.9010004@domain.hid>
+References: <4DF9CA75.1040903@domain.hid>	<4DF9DCE3.70703@domain.hid>	
+	<BANLkTinki=NqJ1f1vyGNBMHLZuwiCtrmMw@domain.hid>	
+	<4DFBA463.3090902@domain.hid>	<4DFBAEB9.8060106@domain.hid>	
+	<4DFBB08B.5020005@domain.hid>	<4DFCC18F.3060207@domain.hid>	
+	<BANLkTin00xA-LMikumq1C4_nFyFbCdgi+Q@mail.gmail.com>	
+	<4DFF610F.5070602@domain.hid> <4DFF664C.5030504@domain.hid>
+	<1308586589.2119.10.camel@domain.hid> <4DFF84C0.6010008@domain.hid>
+In-Reply-To: <4DFF84C0.6010008@domain.hid>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Compiling program with xenomai support
+Subject: Re: [Xenomai-help] Xenomai on i7-870
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -19,75 +23,39 @@ List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+Cc: Xenomai help <xenomai@xenomai.org>
 
-On 11-06-20 04:13 AM, Gilles Chanteperdrix wrote:
-> On 06/20/2011 10:06 AM, David Wiebe wrote:
->> On 11-06-20 12:14 AM, Gilles Chanteperdrix wrote:
->>> On 06/20/2011 07:02 AM, David Wiebe wrote:
->>>> /home/david/xenomai-2.5.6.test/include/nucleus/types.h:41:32: error:
->>>> asm/xenomai/system.h: No such file or directory
->>> Could you show us the arguments you pass to Xenomai "configure" script?
->>> Normally, the "asm" directory is created by Xenomai install rule.
->>>
->>> Posting your test code would also help us try and reproduce this issue.
->>>
->> Of course!
+On 20/06/2011 18:34, Gilles Chanteperdrix wrote:
+> On 06/20/2011 06:16 PM, Philippe Gerum wrote:
+>> On Mon, 2011-06-20 at 16:25 +0100, Jakub Nowacki wrote:
+>>> On 06/20/2011 04:02 PM, Gilles Chanteperdrix wrote:
+>>>> You have to increase CONFIG_XENO_OPT_SYS_STACKPOOLSZ.
+>>>>
+>>> It is 128 Kb now. Should it be more? Is there any (thumb) rule for this
+>>> value?
 >>
->> <test2.c>
->> #include<stdio.h>
->> #include<stdlib.h>
->> #include<fcntl.h>
->> #include<unistd.h>
->> #include<sys/stat.h>
->> #include<sys/types.h>
->> #include<sys/ioctl.h>
->> #include<signal.h>
->> #include<sys/mman.h>
+>> Max # of concurrent kernel-based Xenomai threads x stack_size. 8k stack
+>> minimum is a safe bet for x86_64.
 >>
->> #include<native/task.h>
->> #include<native/timer.h>
+>> Typically, RTDM (driver) tasks in kernel space are Xenomai ones, so you
+>> would need to reserve stack space for each of them in this amount.
 >>
->> #define TIMESLEEP 1000000000 /* 1 sec */
->>
->>
->> int main(void)
->> {
->> }
->> <!test2.c>
->>
->> <The configure script>
->> ./configure --build=i686-pc-linux-gnu --host=arm-none-linux-gnueabi
->> --enable-arm-mach=omap3
->> <!The configure script>
->>
->> <The make install>
->> make DESTDIR=/home/david/sdir/ install
->> <!The make install>
-> Then, the header should be found under
-> /home/david/sdir/usr/xenomai/include/xenomai
+>> The switchtest driver is RTDM-based, and may run a number of RTDM tasks,
+>> depending on the test scenario.
 >
-> In order to compile your test you should use xeno-config.
+> The default scenario being to run 6 rtdm tasks by cpu (that would make
+> 48 on an 8 cores processor).
 >
-> Typing, for instance:
->
-> CFLAGS=`DESTDIR=/home/david/sdir /home/david/sdir/usr/xenomai/bin/bin/xeno-config --skin native --cflags`
-> LDFLAGS=`DESTDIR=/home/david/sdir /home/david/sdir/usr/xenomai/bin/bin/xeno-config --skin native --ldflags`
-> arm-none-linux-gnueabi-gcc -o test2 $CFLAGS test2.c $LDFLAGS
->
->
-Gilles,
+Thanks for the explanation. I've changed the stack pool size to 512kb, 
+which is slightly more then minimum, and it allowed the test to run.
 
-Thank you for the info. My example program compiled. I fixed the typos 
-and reposted.
+As for the tests, I don't think I have to be more pessimistic in it. I 
+have to (finally) do some lab testing, which would potentially reveal 
+some problems. Nonetheless, thanks for the suggestions.
 
-CFLAGS=`DESTDIR=/home/david/sdir /home/david/sdir/usr/xenomai/bin/xeno-config --skin native --cflags`
+Cheers,
 
-LDFLAGS=`DESTDIR=/home/david/sdir /home/david/sdir/usr/xenomai/bin/xeno-config --skin native --ldflags`
+Jakub
 
-arm-none-linux-gnueabi-gcc -o test2 $CFLAGS test2.c $LDFLAGS
 
-Sincerely,
-
-David
 
