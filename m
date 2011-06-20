@@ -1,13 +1,10 @@
-Message-ID: <4DF7436D.6040706@domain.hid>
-Date: Tue, 14 Jun 2011 12:18:05 +0100
-From: Jakub Nowacki <j.s.nowacki@domain.hid>
 MIME-Version: 1.0
-References: <4DF5EA11.5010006@domain.hid> <4DF64C3A.6080407@domain.hid>
-	<4DF65FC8.1000703@domain.hid> <4DF6F87E.7000500@domain.hid>
-In-Reply-To: <4DF6F87E.7000500@domain.hid>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Xenomai on i7-870
+Content-Type: multipart/mixed;
+ boundary="=_31f52a22752377fe5b0f769de427fc54"
+Date: Mon, 20 Jun 2011 16:14:14 +0200
+From: Michael Thalmeier <michael@domain.hid>
+Message-ID: <f801f3950e5f79192ebc8824bfd54545@domain.hid>
+Subject: [Xenomai-help] mprotect in Xenomai
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -17,50 +14,113 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: Xenomai help <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 06/14/2011 06:58 AM, Jan Kiszka wrote:
->
-> Do you have the irqbalance daemon running? If yes, disable it and retry.
+--=_31f52a22752377fe5b0f769de427fc54
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8;
+ format=flowed
 
-Yes I had. Disabling it helped, namely system works now. I just think I 
-have a slightly higher latencies. Namely, in the 100 us period the 
-average is most of the times about -0.4 us, whereas min and max are 
-approx. -2.5 us and 22 us, respectively. They are still quite good but I 
-think I had slightly lower, especially the max was around 11 us, for no 
-PM. But is not that important for me now.
+ Hello !
 
-> If it helps, you may also want to try
->
-> git://git.kiszka.org/ipipe.git queues/2.6.38-x86
->
-> If that doesn't help, try to disable CONFIG_DMAR (though it should left
-> off by default during boot) and CONFIG_INTR_REMAP.
+ We have a xenomai application that uses mprotect to change write 
+ protection in order to set and clear breakpoint codes.
+ This works quite well (the code invoking mprotect switches to linux, 
+ but thats ok).
+ The problem is that from time to time the realtime task executing code 
+ in the area changed with mprotect also switches domains to handle a page 
+ fault.
+ Is there some functionality in xenomai to change memory protection not 
+ using mprotect ?
+ Attached you find a short sample that can reproduce this problem.
 
-They are now both on. Since the kernel works now should I let them be or 
-still switch them off?
+ Thanks Michael
+--=_31f52a22752377fe5b0f769de427fc54
+Content-Transfer-Encoding: base64
+Content-Type: text/x-c;
+ name=tst_mprotect.c
+Content-Disposition: attachment;
+ filename=tst_mprotect.c
 
-> Regarding CONFIG_HPET_TIMER: That's not selectable on x86-64. If you
-> have "enough" cores, the kernel will run out of HPET timers and won't
-> select them as clock events. With 8 cores, you should be safe, but
-> better check the kernel boot messages for "hpet" or the state of
-> /proc/timer_list regarding "Clock Event Device" when booting the same
-> kernel without Xenomai support.
+LyoNCiAqIERlc2NyaXB0aW9uOg0KICoNCiAqCW1wcm90ZWN0IHRlc3QNCiAqLw0KI2luY2x1ZGUg
+PHN0ZGxpYi5oPg0KI2luY2x1ZGUgPHN0ZGlvLmg+DQojaW5jbHVkZSA8dW5pc3RkLmg+DQojaW5j
+bHVkZSA8c3lzL21tYW4uaD4NCiNpbmNsdWRlIDxzeXMvdHlwZXMuaD4NCiNpbmNsdWRlIDxydGRt
+L3J0ZG0uaD4NCiNpbmNsdWRlIDxuYXRpdmUvdGFzay5oPg0KI2luY2x1ZGUgPG5hdGl2ZS90aW1l
+ci5oPg0KI2luY2x1ZGUgPG5hdGl2ZS9tdXRleC5oPg0KI2luY2x1ZGUgPHJ0ZGsuaD4NCiNpbmNs
+dWRlIDxzaWduYWwuaD4NCiNpbmNsdWRlIDxleGVjaW5mby5oPg0KDQojZGVmaW5lIE5VTV9MT09Q
+UyAxMDAwMDAwDQojZGVmaW5lIFJUVF9QUklPICA5OQ0KDQpSVF9UQVNLIHJ0X3Rhc2tfZGVzYzsN
+CnN0YXRpYyBpbnQgZmluaXNoZWQgPSAwOw0KDQovLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8v
+Ly8vLy8vLy8vLy8vLy8vLy8vLy8vLy8NCi8vIGRlZmluZWQgZnJvbSB4ZW5vbWFpIHN5c2NhbGwu
+aA0KI2RlZmluZSBTSUdERUJVR19VTkRFRklORUQJCQkwDQojZGVmaW5lIFNJR0RFQlVHX01JR1JB
+VEVfU0lHTkFMCQkxDQojZGVmaW5lIFNJR0RFQlVHX01JR1JBVEVfU1lTQ0FMTAkyDQojZGVmaW5l
+IFNJR0RFQlVHX01JR1JBVEVfRkFVTFQJCTMNCiNkZWZpbmUgU0lHREVCVUdfTUlHUkFURV9QUklP
+SU5WCTQNCiNkZWZpbmUgU0lHREVCVUdfTk9NTE9DSwkJCTUNCiNkZWZpbmUgU0lHREVCVUdfV0FU
+Q0hET0cJCQk2DQovLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8v
+Ly8vLy8NCi8vIG93biBkZWZpbmVkDQojZGVmaW5lIFNJR0RFQlVHX1NUT1BUSFJFQUQJCQkxNw0K
+DQpzdGF0aWMgY29uc3QgY2hhciAqR2V0U0lHWENQVXN1YkNvZGUoaW50IHN1YlNpZykgew0KDQoJ
+aWYgKHN1YlNpZyA9PSBTSUdERUJVR19VTkRFRklORUQpCQkJcmV0dXJuICJTRF9VTkRFRklORUQi
+Ow0KCWlmIChzdWJTaWcgPT0gU0lHREVCVUdfTUlHUkFURV9TSUdOQUwpCQlyZXR1cm4gIlNEX01J
+R1JBVEVfU0lHTkFMIjsNCglpZiAoc3ViU2lnID09IFNJR0RFQlVHX01JR1JBVEVfU1lTQ0FMTCkJ
+CXJldHVybiAiU0RfTUlHUkFURV9TWVNDQUxMIjsNCglpZiAoc3ViU2lnID09IFNJR0RFQlVHX01J
+R1JBVEVfRkFVTFQpCQlyZXR1cm4gIlNEX01JR1JBVEVfRkFVTFQiOw0KCWlmIChzdWJTaWcgPT0g
+U0lHREVCVUdfTUlHUkFURV9QUklPSU5WKQkJcmV0dXJuICJTRF9NSUdSQVRFX1BSSU9JTlYiOw0K
+CWlmIChzdWJTaWcgPT0gU0lHREVCVUdfTk9NTE9DSykJCQkJcmV0dXJuICJTRF9OT01MT0NLIjsN
+CglpZiAoc3ViU2lnID09IFNJR0RFQlVHX1dBVENIRE9HKQkJCXJldHVybiAiU0RfV0FUQ0hET0ci
+Ow0KCWlmIChzdWJTaWcgPT0gU0lHREVCVUdfU1RPUFRIUkVBRCkJCQlyZXR1cm4gIlNEX1NUT1BU
+SFJFQUQiOw0KCXJldHVybiAiPz8/IjsNCn0NCg0Kc3RhdGljIHZvaWQgd2Fybl91cG9uX3N3aXRj
+aChpbnQgc2lnLCBzaWdpbmZvX3QgKmluZm8sIHZvaWQgKmNvbnRleHQpDQp7DQoJaWYgKHNpZyA9
+PSBTSUdYQ1BVKSB7DQoNCgkJcHJpbnRmKCJyZWNlaXZlZCBTSUdYQ1BVXG4iKTsNCgkJcHJpbnRm
+KCJTSUdYQ1BVIHN1YmNvZGU6ICVzXG4iLCBHZXRTSUdYQ1BVc3ViQ29kZShpbmZvLT5zaV92YWx1
+ZS5zaXZhbF9pbnQpKTsNCgkJDQoJCWZpbmlzaGVkID0gMTsNCgl9DQp9DQoNCi8qIFRoaXMgaXMg
+dGhlIHJlYWx0aW1lIHRhc2sgKi8NCnN0YXRpYyB2b2lkIHJ0X3Rhc2tfcHJvYyh2b2lkICphcmcp
+DQp7DQoJdW5zaWduZWQgbG9uZyBsb25nIGNvdW50ZXIgPSAwOw0KCQ0KCXJ0X3Rhc2tfc2V0X21v
+ZGUoMCwgVF9XQVJOU1csIE5VTEwpOw0KDQoJaWYgKHJ0X3Rhc2tfc2V0X3BlcmlvZGljKE5VTEws
+IFRNX05PVywgMTAwMDAwKSkgew0KCQlydF9wcmludGYoImZhaWxlZCB0byBzZXQgaGlnaCBwZXJp
+b2RpY1xuIik7DQoJCXJldHVybjsNCgl9DQoJd2hpbGUgKCFmaW5pc2hlZCkgew0KCQlydF90YXNr
+X3dhaXRfcGVyaW9kKE5VTEwpOw0KCQlpZiAoY291bnRlciA+IDEwMDApIHsNCgkJCWNvdW50ZXIg
+PSAwOw0KCQkJcnRfcHJpbnRmKCIuIik7DQoJCX0NCgl9DQp9DQoNCnZvaWQgZm9vKHZvaWQpDQp7
+DQoJcHJpbnRmKCJmb29cbiIpOw0KfQ0KDQppbnQgbWFpbihpbnQgYXJnYywgY2hhciAqYXJndltd
+KQ0Kew0KCWludCByZXQ7DQoJaW50IGZsYWdzID0gUFJPVF9SRUFEIHwgUFJPVF9FWEVDOw0KCXVp
+bnQ4X3QgYXdsX29yaWdfaW5zdHIgPSAwOw0KCWNvbnN0IHVpbnQ4X3QgYXdsX2JyZWFrX2NvZGUg
+PSAweGNjOw0KCWNoYXIgKiBhZGRyID0gTlVMTDsNCglzdHJ1Y3Qgc2lnYWN0aW9uIHNhX25ldywg
+c2Ffb2xkOw0KCWludCBjb3VudGVyID0gMTsNCg0KCXNhX25ldy5zYV9zaWdhY3Rpb24gPSB3YXJu
+X3Vwb25fc3dpdGNoOw0KCXNhX25ldy5zYV9mbGFncwkJPSAgIFNBX1NJR0lORk8gIC8qICBJbnZv
+a2Ugc2lnbmFsLWNhdGNoaW5nIGZ1bmN0aW9uIHdpdGgNCgkJCQkJCQkJCQkJdGhyZWUgYXJndW1l
+bnRzIGluc3RlYWQgb2Ygb25lLiAqLw0KCQkJCQkJICB8IFNBX05PREVGRVI7CS8qICBEb24ndCBh
+dXRvbWF0aWNhbGx5IGJsb2NrIHRoZSBzaWduYWwgd2hlbg0KCQkJCQkJCQkJCQlpdHMgaGFuZGxl
+ciBpcyBiZWluZyBleGVjdXRlZC4gKi8NCglzaWdlbXB0eXNldCgmc2FfbmV3LnNhX21hc2spOw0K
+CQ0KCWlmIChzaWdhY3Rpb24oU0lHWENQVSwgJnNhX25ldywgJnNhX29sZCkgPCAwKSB7DQoJCXBy
+aW50ZigiZmFpbGVkIHRvIGluc3RhbGwgc2lnbmFsIGhhbmRsZXIgZm9yIFNJR1hDUFVcbiIpOw0K
+CQlleGl0KDEpOw0KCX0NCg0KCXJ0X3Rhc2tfc2V0X21vZGUoMCwgVF9XQVJOU1csIE5VTEwpOw0K
+DQoJLyogTm8gbWVtb3J5LXN3YXBwaW5nIGZvciB0aGlzIHByb2dyYW1tICovDQoJcmV0ID0gbWxv
+Y2thbGwoTUNMX0NVUlJFTlQgfCBNQ0xfRlVUVVJFKTsNCglpZiAocmV0KSB7DQoJCXBlcnJvcigi
+RVJST1IgOiBtbG9ja2FsbCBoYXMgZmFpbGxlZCIpOw0KCQlleGl0KDEpOw0KCX0NCglwcmludGYo
+ImZvbyA9ICVwIHJ0X3Rhc2tfcHJvYz0lcFxuIiwgJmZvbywgJnJ0X3Rhc2tfcHJvYyk7DQoJYWRk
+ciA9ICZydF90YXNrX3Byb2MgLSAoKGludCkoJnJ0X3Rhc2tfcHJvYykgJiAoMHgxMDAwIC0gMSkp
+Ow0KCXByaW50ZigiYWRkciA9ICVwXG4iLCBhZGRyKTsNCg0KDQoJaWYgKHJ0X3Rhc2tfc2hhZG93
+KE5VTEwsICJtYWluIiwgNTAsIDApKSB7DQoJCXByaW50ZigiZmFpbGVkIHRvIHNoYWRvdyBtYWlu
+IHRhc2tcbiIpOw0KCQlleGl0KDEpOw0KCX0NCg0KCXJ0X3ByaW50X2F1dG9faW5pdCgxKTsNCg0K
+CS8qDQoJICogVHVybiB0aGUgY3VycmVudCBsaW51eCB0YXNrIGludG8gYSB4ZW5vbWFpIFJULXRh
+c2sgDQoJICogaGlnaGVzdCBwcmlvcml0eQ0KCSAqLw0KCXJldCA9IHJ0X3Rhc2tfY3JlYXRlKCZy
+dF90YXNrX2Rlc2MsICJSVFQiLCAwLCBSVFRfUFJJTywgVF9KT0lOQUJMRSk7DQoJaWYgKHJldCkg
+ew0KCQlmcHJpbnRmKHN0ZGVyciwgIkVSUk9SIDogcnRfdGFza19jcmVhdGU6ICVzXG4iLA0KCQkJ
+c3RyZXJyb3IoLXJldCkpOw0KCQlleGl0KDEpOw0KCX0NCglydF9wcmludGYoIkNyZWF0ZWQgdGFz
+a1xuIik7DQoJcmV0ID0gcnRfdGFza19zdGFydCgmcnRfdGFza19kZXNjLCAmcnRfdGFza19wcm9j
+LCBOVUxMKTsNCglpZiAocmV0KSB7DQoJCWZwcmludGYoc3RkZXJyLCAiRVJST1IgOiBydF90YXNr
+X3N0YXJ0OiAlc1xuIiwNCgkJCXN0cmVycm9yKC1yZXQpKTsNCgkJZXhpdCgxKTsNCgl9DQoJcnRf
+cHJpbnRmKCJTdGFydGVkIHRhc2tcbiIpOw0KDQoJd2hpbGUgKCFmaW5pc2hlZCkgew0KCQlmbGFn
+cyA9IFBST1RfUkVBRCB8IFBST1RfRVhFQyB8IFBST1RfV1JJVEU7DQoJCW1wcm90ZWN0KGFkZHIg
+LCAweDEwMDAsICBmbGFncyk7DQoNCgkJLy8gc2V0IGJyZWFrcG9pbnQgY29kZQ0KCQlpZiAoIWF3
+bF9vcmlnX2luc3RyKSB7DQoJCQltZW1jcHkoJmF3bF9vcmlnX2luc3RyLCAmZm9vLCBzaXplb2Yo
+YXdsX29yaWdfaW5zdHIpKTsNCgkJCW1lbWNweSgmZm9vLCAmYXdsX2JyZWFrX2NvZGUsIHNpemVv
+Zihhd2xfYnJlYWtfY29kZSkpOw0KCQl9DQoJCS8vIHJlc3RvcmUgb3JpZ2luYWwgY29kZQ0KCQll
+bHNlIHsNCgkJCW1lbWNweSgmZm9vLCAmYXdsX29yaWdfaW5zdHIsIHNpemVvZihhd2xfb3JpZ19p
+bnN0cikpOw0KCQkJYXdsX29yaWdfaW5zdHIgPSAwOw0KCQl9DQoJCQ0KCQkvL3J0X3ByaW50Zigi
+LSByZW1vdmluZyBtZW1vcnkgcHJvdGVjdGlvblxuIik7DQoJCWZsYWdzID0gUFJPVF9SRUFEIHwg
+UFJPVF9FWEVDOw0KCQltcHJvdGVjdChhZGRyLCAweDEwMDAsICBmbGFncyk7DQoNCgkJaWYgKGNv
+dW50ZXIrKyA+IDEwKSB7DQoJCQljb3VudGVyID0gMTsNCgkJfQ0KDQoJCXVzbGVlcChjb3VudGVy
+KTsNCgl9DQoNCglydF90YXNrX2pvaW4oJnJ0X3Rhc2tfZGVzYyk7DQoJcHJpbnRmKCJUYXNrIGpv
+aW5lZFxuIik7DQoNCglyZXR1cm4gMDsNCn0NCg==
+--=_31f52a22752377fe5b0f769de427fc54--
 
-Thanks for clarifying that. BTW my /proc/timer_list says for 'Clock 
-Event Device' 'pit' for the first one and 'lapic' for other on both 
-ubuntu and ipipe kernel. Hence, looks like no 'hpet' is involved. Also I 
-didn't find any 'hpet' messages in the kernel log.
-
-Since a new Adeos patch has just arrived, I'll give it a try with kernel 
-2.6.38.8 and see how it behaves. BTW maybe it's a silly question but 
-should I rebuild Xenomai each time I install new kernel? Or rephrasing 
-it, when should I rebuild Xenomai?
-
-Once more thank you very much for the help.
-
-Best wishes,
-
-Jakub
 
