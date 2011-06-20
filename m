@@ -1,10 +1,15 @@
 MIME-Version: 1.0
-Content-Type: multipart/mixed;
- boundary="=_31f52a22752377fe5b0f769de427fc54"
-Date: Mon, 20 Jun 2011 16:14:14 +0200
-From: Michael Thalmeier <michael@domain.hid>
-Message-ID: <f801f3950e5f79192ebc8824bfd54545@domain.hid>
-Subject: [Xenomai-help] mprotect in Xenomai
+In-Reply-To: <4DFCC18F.3060207@domain.hid>
+References: <4DF9CA75.1040903@domain.hid> <4DF9DCE3.70703@domain.hid>
+	<BANLkTinki=NqJ1f1vyGNBMHLZuwiCtrmMw@domain.hid>
+	<4DFBA463.3090902@domain.hid> <4DFBAEB9.8060106@domain.hid>
+	<4DFBB08B.5020005@domain.hid> <4DFCC18F.3060207@domain.hid>
+Date: Mon, 20 Jun 2011 15:34:35 +0100
+Message-ID: <BANLkTin00xA-LMikumq1C4_nFyFbCdgi+Q@mail.gmail.com>
+From: Jakub Nowacki <j.s.nowacki@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-help] Xenomai on i7-870
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -14,113 +19,113 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Xenomai help <xenomai@xenomai.org>
 
---=_31f52a22752377fe5b0f769de427fc54
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset=UTF-8;
- format=flowed
+On 18 June 2011 16:17, Gilles Chanteperdrix
+<gilles.chanteperdrix@xenomai.org> wrote:
+> On 06/17/2011 09:52 PM, Jakub Nowacki wrote:
+>> On 17/06/2011 20:44, Gilles Chanteperdrix wrote:
+>>> =A0From your first mail, the chipset you use is a Q57, the datasheet sa=
+ys
+>>> that the GLB_SMI_EN is still there. So, what you should do is check
+>>> whether the SMI_LOCK bit is set. The following (untested) patch should
+>>> print the lock bit value:
+>>>
+>>> diff --git a/ksrc/arch/x86/smi.c b/ksrc/arch/x86/smi.c
+>>> index d80b14b..97e6774 100644
+>>> --- a/ksrc/arch/x86/smi.c
+>>> +++ b/ksrc/arch/x86/smi.c
+>>> @@ -157,7 +157,8 @@ void rthal_smi_disable(void)
+>>> =A0 =A0 =A0 =A0 =A0mask_bits(rthal_smi_masked_bits, rthal_smi_en_addr);
+>>>
+>>> =A0 =A0 =A0 =A0 =A0if (inl(rthal_smi_en_addr)& =A0rthal_smi_masked_bits=
+)
+>>> - =A0 =A0 =A0 =A0 =A0 =A0 =A0 printk("Xenomai: SMI workaround failed!\n=
+");
+>>> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 printk("Xenomai: SMI workaround failed!, =
+BIOS lock: d\n",
+>>> + =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0!!(inl(rthal_smi_en_addr +=
+ 0xA0 - SMI_CTRL_ADDR)& =A0(1<< =A04)));
+>>> =A0 =A0 =A0 =A0 =A0else
+>>> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0printk("Xenomai: SMI workaround enab=
+led\n");
+>>>
+>>
+>> You were faster. Thanks! Sorry for slight cross posting. I have this
+>> machine at work so I probably test it on Monday.
+>
+> The next step is to try disabling the individual bits (TC0, USB legacy,
+> etc...), as they may not affected by the SMI_LOCK bit.
+>
 
- Hello !
+I've added the patch to smi.c and, as suspected, the SMI_LOCK is on,
+namely, kernel log looks like:
 
- We have a xenomai application that uses mprotect to change write 
- protection in order to set and clear breakpoint codes.
- This works quite well (the code invoking mprotect switches to linux, 
- but thats ok).
- The problem is that from time to time the realtime task executing code 
- in the area changed with mprotect also switches domains to handle a page 
- fault.
- Is there some functionality in xenomai to change memory protection not 
- using mprotect ?
- Attached you find a short sample that can reproduce this problem.
+[    2.111453] Xenomai: SMI workaround failed!, BIOS lock: 1
 
- Thanks Michael
---=_31f52a22752377fe5b0f769de427fc54
-Content-Transfer-Encoding: base64
-Content-Type: text/x-c;
- name=tst_mprotect.c
-Content-Disposition: attachment;
- filename=tst_mprotect.c
+I switched off the global SMI disable leaving the particular bits
+disabled and it seems to work:
 
-LyoNCiAqIERlc2NyaXB0aW9uOg0KICoNCiAqCW1wcm90ZWN0IHRlc3QNCiAqLw0KI2luY2x1ZGUg
-PHN0ZGxpYi5oPg0KI2luY2x1ZGUgPHN0ZGlvLmg+DQojaW5jbHVkZSA8dW5pc3RkLmg+DQojaW5j
-bHVkZSA8c3lzL21tYW4uaD4NCiNpbmNsdWRlIDxzeXMvdHlwZXMuaD4NCiNpbmNsdWRlIDxydGRt
-L3J0ZG0uaD4NCiNpbmNsdWRlIDxuYXRpdmUvdGFzay5oPg0KI2luY2x1ZGUgPG5hdGl2ZS90aW1l
-ci5oPg0KI2luY2x1ZGUgPG5hdGl2ZS9tdXRleC5oPg0KI2luY2x1ZGUgPHJ0ZGsuaD4NCiNpbmNs
-dWRlIDxzaWduYWwuaD4NCiNpbmNsdWRlIDxleGVjaW5mby5oPg0KDQojZGVmaW5lIE5VTV9MT09Q
-UyAxMDAwMDAwDQojZGVmaW5lIFJUVF9QUklPICA5OQ0KDQpSVF9UQVNLIHJ0X3Rhc2tfZGVzYzsN
-CnN0YXRpYyBpbnQgZmluaXNoZWQgPSAwOw0KDQovLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8v
-Ly8vLy8vLy8vLy8vLy8vLy8vLy8vLy8NCi8vIGRlZmluZWQgZnJvbSB4ZW5vbWFpIHN5c2NhbGwu
-aA0KI2RlZmluZSBTSUdERUJVR19VTkRFRklORUQJCQkwDQojZGVmaW5lIFNJR0RFQlVHX01JR1JB
-VEVfU0lHTkFMCQkxDQojZGVmaW5lIFNJR0RFQlVHX01JR1JBVEVfU1lTQ0FMTAkyDQojZGVmaW5l
-IFNJR0RFQlVHX01JR1JBVEVfRkFVTFQJCTMNCiNkZWZpbmUgU0lHREVCVUdfTUlHUkFURV9QUklP
-SU5WCTQNCiNkZWZpbmUgU0lHREVCVUdfTk9NTE9DSwkJCTUNCiNkZWZpbmUgU0lHREVCVUdfV0FU
-Q0hET0cJCQk2DQovLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8v
-Ly8vLy8NCi8vIG93biBkZWZpbmVkDQojZGVmaW5lIFNJR0RFQlVHX1NUT1BUSFJFQUQJCQkxNw0K
-DQpzdGF0aWMgY29uc3QgY2hhciAqR2V0U0lHWENQVXN1YkNvZGUoaW50IHN1YlNpZykgew0KDQoJ
-aWYgKHN1YlNpZyA9PSBTSUdERUJVR19VTkRFRklORUQpCQkJcmV0dXJuICJTRF9VTkRFRklORUQi
-Ow0KCWlmIChzdWJTaWcgPT0gU0lHREVCVUdfTUlHUkFURV9TSUdOQUwpCQlyZXR1cm4gIlNEX01J
-R1JBVEVfU0lHTkFMIjsNCglpZiAoc3ViU2lnID09IFNJR0RFQlVHX01JR1JBVEVfU1lTQ0FMTCkJ
-CXJldHVybiAiU0RfTUlHUkFURV9TWVNDQUxMIjsNCglpZiAoc3ViU2lnID09IFNJR0RFQlVHX01J
-R1JBVEVfRkFVTFQpCQlyZXR1cm4gIlNEX01JR1JBVEVfRkFVTFQiOw0KCWlmIChzdWJTaWcgPT0g
-U0lHREVCVUdfTUlHUkFURV9QUklPSU5WKQkJcmV0dXJuICJTRF9NSUdSQVRFX1BSSU9JTlYiOw0K
-CWlmIChzdWJTaWcgPT0gU0lHREVCVUdfTk9NTE9DSykJCQkJcmV0dXJuICJTRF9OT01MT0NLIjsN
-CglpZiAoc3ViU2lnID09IFNJR0RFQlVHX1dBVENIRE9HKQkJCXJldHVybiAiU0RfV0FUQ0hET0ci
-Ow0KCWlmIChzdWJTaWcgPT0gU0lHREVCVUdfU1RPUFRIUkVBRCkJCQlyZXR1cm4gIlNEX1NUT1BU
-SFJFQUQiOw0KCXJldHVybiAiPz8/IjsNCn0NCg0Kc3RhdGljIHZvaWQgd2Fybl91cG9uX3N3aXRj
-aChpbnQgc2lnLCBzaWdpbmZvX3QgKmluZm8sIHZvaWQgKmNvbnRleHQpDQp7DQoJaWYgKHNpZyA9
-PSBTSUdYQ1BVKSB7DQoNCgkJcHJpbnRmKCJyZWNlaXZlZCBTSUdYQ1BVXG4iKTsNCgkJcHJpbnRm
-KCJTSUdYQ1BVIHN1YmNvZGU6ICVzXG4iLCBHZXRTSUdYQ1BVc3ViQ29kZShpbmZvLT5zaV92YWx1
-ZS5zaXZhbF9pbnQpKTsNCgkJDQoJCWZpbmlzaGVkID0gMTsNCgl9DQp9DQoNCi8qIFRoaXMgaXMg
-dGhlIHJlYWx0aW1lIHRhc2sgKi8NCnN0YXRpYyB2b2lkIHJ0X3Rhc2tfcHJvYyh2b2lkICphcmcp
-DQp7DQoJdW5zaWduZWQgbG9uZyBsb25nIGNvdW50ZXIgPSAwOw0KCQ0KCXJ0X3Rhc2tfc2V0X21v
-ZGUoMCwgVF9XQVJOU1csIE5VTEwpOw0KDQoJaWYgKHJ0X3Rhc2tfc2V0X3BlcmlvZGljKE5VTEws
-IFRNX05PVywgMTAwMDAwKSkgew0KCQlydF9wcmludGYoImZhaWxlZCB0byBzZXQgaGlnaCBwZXJp
-b2RpY1xuIik7DQoJCXJldHVybjsNCgl9DQoJd2hpbGUgKCFmaW5pc2hlZCkgew0KCQlydF90YXNr
-X3dhaXRfcGVyaW9kKE5VTEwpOw0KCQlpZiAoY291bnRlciA+IDEwMDApIHsNCgkJCWNvdW50ZXIg
-PSAwOw0KCQkJcnRfcHJpbnRmKCIuIik7DQoJCX0NCgl9DQp9DQoNCnZvaWQgZm9vKHZvaWQpDQp7
-DQoJcHJpbnRmKCJmb29cbiIpOw0KfQ0KDQppbnQgbWFpbihpbnQgYXJnYywgY2hhciAqYXJndltd
-KQ0Kew0KCWludCByZXQ7DQoJaW50IGZsYWdzID0gUFJPVF9SRUFEIHwgUFJPVF9FWEVDOw0KCXVp
-bnQ4X3QgYXdsX29yaWdfaW5zdHIgPSAwOw0KCWNvbnN0IHVpbnQ4X3QgYXdsX2JyZWFrX2NvZGUg
-PSAweGNjOw0KCWNoYXIgKiBhZGRyID0gTlVMTDsNCglzdHJ1Y3Qgc2lnYWN0aW9uIHNhX25ldywg
-c2Ffb2xkOw0KCWludCBjb3VudGVyID0gMTsNCg0KCXNhX25ldy5zYV9zaWdhY3Rpb24gPSB3YXJu
-X3Vwb25fc3dpdGNoOw0KCXNhX25ldy5zYV9mbGFncwkJPSAgIFNBX1NJR0lORk8gIC8qICBJbnZv
-a2Ugc2lnbmFsLWNhdGNoaW5nIGZ1bmN0aW9uIHdpdGgNCgkJCQkJCQkJCQkJdGhyZWUgYXJndW1l
-bnRzIGluc3RlYWQgb2Ygb25lLiAqLw0KCQkJCQkJICB8IFNBX05PREVGRVI7CS8qICBEb24ndCBh
-dXRvbWF0aWNhbGx5IGJsb2NrIHRoZSBzaWduYWwgd2hlbg0KCQkJCQkJCQkJCQlpdHMgaGFuZGxl
-ciBpcyBiZWluZyBleGVjdXRlZC4gKi8NCglzaWdlbXB0eXNldCgmc2FfbmV3LnNhX21hc2spOw0K
-CQ0KCWlmIChzaWdhY3Rpb24oU0lHWENQVSwgJnNhX25ldywgJnNhX29sZCkgPCAwKSB7DQoJCXBy
-aW50ZigiZmFpbGVkIHRvIGluc3RhbGwgc2lnbmFsIGhhbmRsZXIgZm9yIFNJR1hDUFVcbiIpOw0K
-CQlleGl0KDEpOw0KCX0NCg0KCXJ0X3Rhc2tfc2V0X21vZGUoMCwgVF9XQVJOU1csIE5VTEwpOw0K
-DQoJLyogTm8gbWVtb3J5LXN3YXBwaW5nIGZvciB0aGlzIHByb2dyYW1tICovDQoJcmV0ID0gbWxv
-Y2thbGwoTUNMX0NVUlJFTlQgfCBNQ0xfRlVUVVJFKTsNCglpZiAocmV0KSB7DQoJCXBlcnJvcigi
-RVJST1IgOiBtbG9ja2FsbCBoYXMgZmFpbGxlZCIpOw0KCQlleGl0KDEpOw0KCX0NCglwcmludGYo
-ImZvbyA9ICVwIHJ0X3Rhc2tfcHJvYz0lcFxuIiwgJmZvbywgJnJ0X3Rhc2tfcHJvYyk7DQoJYWRk
-ciA9ICZydF90YXNrX3Byb2MgLSAoKGludCkoJnJ0X3Rhc2tfcHJvYykgJiAoMHgxMDAwIC0gMSkp
-Ow0KCXByaW50ZigiYWRkciA9ICVwXG4iLCBhZGRyKTsNCg0KDQoJaWYgKHJ0X3Rhc2tfc2hhZG93
-KE5VTEwsICJtYWluIiwgNTAsIDApKSB7DQoJCXByaW50ZigiZmFpbGVkIHRvIHNoYWRvdyBtYWlu
-IHRhc2tcbiIpOw0KCQlleGl0KDEpOw0KCX0NCg0KCXJ0X3ByaW50X2F1dG9faW5pdCgxKTsNCg0K
-CS8qDQoJICogVHVybiB0aGUgY3VycmVudCBsaW51eCB0YXNrIGludG8gYSB4ZW5vbWFpIFJULXRh
-c2sgDQoJICogaGlnaGVzdCBwcmlvcml0eQ0KCSAqLw0KCXJldCA9IHJ0X3Rhc2tfY3JlYXRlKCZy
-dF90YXNrX2Rlc2MsICJSVFQiLCAwLCBSVFRfUFJJTywgVF9KT0lOQUJMRSk7DQoJaWYgKHJldCkg
-ew0KCQlmcHJpbnRmKHN0ZGVyciwgIkVSUk9SIDogcnRfdGFza19jcmVhdGU6ICVzXG4iLA0KCQkJ
-c3RyZXJyb3IoLXJldCkpOw0KCQlleGl0KDEpOw0KCX0NCglydF9wcmludGYoIkNyZWF0ZWQgdGFz
-a1xuIik7DQoJcmV0ID0gcnRfdGFza19zdGFydCgmcnRfdGFza19kZXNjLCAmcnRfdGFza19wcm9j
-LCBOVUxMKTsNCglpZiAocmV0KSB7DQoJCWZwcmludGYoc3RkZXJyLCAiRVJST1IgOiBydF90YXNr
-X3N0YXJ0OiAlc1xuIiwNCgkJCXN0cmVycm9yKC1yZXQpKTsNCgkJZXhpdCgxKTsNCgl9DQoJcnRf
-cHJpbnRmKCJTdGFydGVkIHRhc2tcbiIpOw0KDQoJd2hpbGUgKCFmaW5pc2hlZCkgew0KCQlmbGFn
-cyA9IFBST1RfUkVBRCB8IFBST1RfRVhFQyB8IFBST1RfV1JJVEU7DQoJCW1wcm90ZWN0KGFkZHIg
-LCAweDEwMDAsICBmbGFncyk7DQoNCgkJLy8gc2V0IGJyZWFrcG9pbnQgY29kZQ0KCQlpZiAoIWF3
-bF9vcmlnX2luc3RyKSB7DQoJCQltZW1jcHkoJmF3bF9vcmlnX2luc3RyLCAmZm9vLCBzaXplb2Yo
-YXdsX29yaWdfaW5zdHIpKTsNCgkJCW1lbWNweSgmZm9vLCAmYXdsX2JyZWFrX2NvZGUsIHNpemVv
-Zihhd2xfYnJlYWtfY29kZSkpOw0KCQl9DQoJCS8vIHJlc3RvcmUgb3JpZ2luYWwgY29kZQ0KCQll
-bHNlIHsNCgkJCW1lbWNweSgmZm9vLCAmYXdsX29yaWdfaW5zdHIsIHNpemVvZihhd2xfb3JpZ19p
-bnN0cikpOw0KCQkJYXdsX29yaWdfaW5zdHIgPSAwOw0KCQl9DQoJCQ0KCQkvL3J0X3ByaW50Zigi
-LSByZW1vdmluZyBtZW1vcnkgcHJvdGVjdGlvblxuIik7DQoJCWZsYWdzID0gUFJPVF9SRUFEIHwg
-UFJPVF9FWEVDOw0KCQltcHJvdGVjdChhZGRyLCAweDEwMDAsICBmbGFncyk7DQoNCgkJaWYgKGNv
-dW50ZXIrKyA+IDEwKSB7DQoJCQljb3VudGVyID0gMTsNCgkJfQ0KDQoJCXVzbGVlcChjb3VudGVy
-KTsNCgl9DQoNCglydF90YXNrX2pvaW4oJnJ0X3Rhc2tfZGVzYyk7DQoJcHJpbnRmKCJUYXNrIGpv
-aW5lZFxuIik7DQoNCglyZXR1cm4gMDsNCn0NCg==
---=_31f52a22752377fe5b0f769de427fc54--
+[    2.121558] Xenomai: SMI-enabled chipset found
+[    2.121568] Xenomai: SMI workaround enabled
 
+BTW I've found that often motherboards have SMI locked and it is not
+changeable in BIOS.
+
+As for latency tests it helped, I think. I did series of tests with
+large load (8x'dd if=3D/dev/zero of=3D/dev/null') and the results look
+something like that:
+
+Latency for user task (-t0), period 100 us:
+RTS|     -2.363|     -1.936|     20.443|       0|     0|    00:30:00/00:30:=
+00
+Latency for kernel task (-t1), period 100 us:
+RTS|     -2.924|     -2.500|     12.974|       0|     0|    00:30:00/00:30:=
+00
+Latency for timer IRQ (-t2), period 100 us:
+RTS|     -3.327|     -2.970|     10.572|       0|     0|    00:30:00/00:30:=
+00
+
+Interestingly, I'm getting the same results for core2 kernel without
+SMI workaround working. I was just getting high latencies approx. 70
+us for generic kernel. I'm not sure though how is it possible. Also,
+the higher latencies of above 10 us are arriving not too often but
+relatively regularly (without any visible pattern, though). I'm not
+sure if such a latencies are rather normal or caused by something
+'bad'.
+
+Moreover, I seem not be able to do switch test; when I run it I'm getting:
+
+=3D=3D Testing FPU check routines...
+r0: 1 !=3D 2
+r1: 1 !=3D 2
+r2: 1 !=3D 2
+r3: 1 !=3D 2
+r4: 1 !=3D 2
+r5: 1 !=3D 2
+r6: 1 !=3D 2
+r7: 1 !=3D 2
+=3D=3D FPU check routines: OK.
+ioctl(RTTST_RTIOC_SWTEST_CREATE_KTASK): Cannot allocate memory
+=3D=3D Threads: sleeper_ufps0-0 rtk0-1 rtk0-2 rtk_fp0-3 rtk_fp0-4
+rtk_fp_ufpp0-5 rtk_fp_ufpp0-6 rtup0-7 rtup0-8 rtup_ufpp0-9
+rtup_ufpp0-10 rtus0-11 rtus0-12 rtus_ufps0-13 rtus_ufps0-14 rtuo0-15
+rtuo0-16 rtuo_ufpp0-17 rtuo_ufpp0-18 rtuo_ufps0-19 rtuo_ufps0-20
+rtuo_ufpp_ufps0-21 rtuo_ufpp_ufps0-22 sleeper_ufps1-0 rtk1-1 rtk1-2
+rtk_fp1-3 rtk_fp1-4 rtk_fp_ufpp1-5 rtk_fp_ufpp1-6 rtup1-7 rtup1-8
+rtup_ufpp1-9 rtup_ufpp1-10 rtus1-11 rtus1-12 rtus_ufps1-13
+rtus_ufps1-14 rtuo1-15 rtuo1-16 rtuo_ufpp1-17 rtuo_ufpp1-18
+rtuo_ufps1-19 rtuo_ufps1-20 rtuo_ufpp_ufps1-21 rtuo_ufpp_ufps1-22
+sleeper_ufps2-0 rtk2-1 rtk2-2 rtk_fp2-3RTT|  363494:24:53
+RTH|---------cpu|ctx switches|-------total
+RTD|           0|           0|           0
+RTD|           1|           0|           0
+RTD|           2|           0|           0
+
+Thanks again for the a lot of help I received so far.
+
+Best wishes,
+
+Jakub
 
