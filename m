@@ -1,12 +1,22 @@
-Message-ID: <4E00A476.2080006@domain.hid>
-Date: Tue, 21 Jun 2011 16:02:30 +0200
+Message-ID: <4E00A530.1060601@domain.hid>
+Date: Tue, 21 Jun 2011 16:05:36 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <BANLkTi=qe3CqD9U_T3nF6xBN+nZNbxF7Gg@domain.hid>
-In-Reply-To: <BANLkTi=qe3CqD9U_T3nF6xBN+nZNbxF7Gg@domain.hid>
+References: <3FF315C710820E47A04E55C6F7D9B0AD7FE9FF@AREXCH02.mra.roland-man.biz>	
+	<1308044391.2699.2.camel@domain.hid>	
+	<3FF315C710820E47A04E55C6F7D9B0AD7FEA2C@AREXCH02.mra.roland-man.biz>	
+	<1308387052.2122.14.camel@domain.hid> <4DFCABDA.6000702@domain.hid>	
+	<1308406918.2122.24.camel@domain.hid>	
+	<3FF315C710820E47A04E55C6F7D9B0AD7FECDA@AREXCH02.mra.roland-man.biz>	
+	<1308652557.2125.45.camel@domain.hid>	
+	<3FF315C710820E47A04E55C6F7D9B0AD7FECF6@domain.hid>	
+	<4E008174.2060305@domain.hid>	
+	<3FF315C710820E47A04E55C6F7D9B0AD7FED23@domain.hid>
+	<1308662104.2125.50.camel@domain.hid>
+In-Reply-To: <1308662104.2125.50.camel@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] regarding ARMv.s error
+Subject: Re: [Xenomai-help] Xenomai 2.5.6 with PPC-Kernel 2.4.25
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -16,43 +26,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: suresh reddy <sureshreddy.balijepalli@domain.hid>
-Cc: Xenomai help <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On 06/21/2011 03:11 PM, suresh reddy wrote:
-> Dear all,
+On 06/21/2011 03:15 PM, Philippe Gerum wrote:
+> On Tue, 2011-06-21 at 15:05 +0200, roderik.wildenburg@domain.hid
+> wrote:
+>>> But more importantly, since, the time when we print the result is so
+>>> imprecise, some variations are normal, so, chances are that the 2%
+>>> variation is normal.
+>>>
+>>
+>> Ok. Here is a switchtest with Xenomai 2.4.9 on PPC-Kernel 2.4.25 and indeed fluctuation is again about 2%.
+>> But the number of context switches is just about 25% of switchtest from Xeno 2.5.6 on a PPC-2.6.34. Did you change the tasks period from 2.4.9 to 2.5.6?
+>> So, if the gurus say this variation is within the normal bandwidth it is ok for me.
 > 
-> 
-> i have downloaded ipipe patched kernel from xenomai git .and applied the
-> patches to the xenomai 2.5.6 sources as mentioned .
-> 
-> make ARCH=arm CROSS_COMPILE=arm-none-linux-gnueabi- O=../build
-> omap2plus_defconfig
-> make ARCH=arm CROSS_COMPILE=arm-none-linux-gnueabi- O=../build menuconfig
-> 
-> i just removed all the other boards from TI except Pandaboard. I did not
-> touched any other options.
-> 
-> then I run the command
-> 
-> make ARCH=arm CROSS_COMPILE=arm-none-linux-gnueabi- O=../build uImage
-> 
-> then it giving me the error as below
-> 
-> /home/balijepalli/omap4/ipipe-gch/arch/arm/kernel/entry-armv.S: Assembler
-> messages:
-> /home/balijepalli/omap4/ipipe-gch/arch/arm/kernel/entry-armv.S:1407: Error:
-> undefined symbol `.L99973' in operation setting `up_b_offset'
-> /home/balijepalli/omap4/ipipe-gch/arch/arm/kernel/entry-armv.S:1407: Error:
-> undefined symbol `.L99973' in operation setting `up_b_offset'
-> /home/balijepalli/omap4/ipipe-gch/arch/arm/kernel/entry-armv.S:1407: Error:
-> local label `"9997" (instance number 3 of a fb label)' is not defined
-> make[2]: *** [arch/arm/kernel/entry-armv.o] Error 1
-> make[1]: *** [arch/arm/kernel] Error 2
-> make: *** [sub-make] Error 2
+> The number of switches is related to the number of tasks running in this
+> test, nofpu reduces this number. So that is ok. The problem with this
+> test is that switches/sec values are sampled by a regular linux thread
+> which nanosleeps, so at least over 2.4, the delay is not accurate. So
+> the number of switches observed can't be either.
 
-Disable SMP kernel boot on UP system, you do not need it for OMAP4,
-since OMAP4 is an SMP system.
+The task which nanosleeps does not really sample the number of context
+switches, it is part of the context switches chain, and simply prints
+the number when it sees that the last time the number was printed is
+more than 1s ago. So, how many context switches happen depends greatly
+on how many time the context switches chain passed by this task, and so
+is not regular.
+
+The switchtest code also changed between 2.4 and 2.6, which is why you
+can not compare the numbers.
+
+Pay no attention to the number of context switches. All which matters is
+that this number increase over time, this is why we print them.
 
 -- 
 					    Gilles.
