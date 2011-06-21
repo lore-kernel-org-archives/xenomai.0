@@ -1,12 +1,22 @@
-Message-ID: <213583.55278.qm@domain.hid>
-References: <737283.11182.qm@domain.hid>
-	<4DEF2D3D.9090409@domain.hid> 
-Date: Tue, 21 Jun 2011 05:02:24 -0700 (PDT)
-From: sanjay anvekar <sanjayanvekar@domain.hid>
+Content-Class: urn:content-classes:message
 MIME-Version: 1.0
-Content-Type: multipart/alternative; boundary="0-520288917-1308657744=:55278"
-Subject: Re: [Xenomai-help] Xenomai-Driver
-Reply-To: sanjay anvekar <sanjayanvekar@domain.hid>
+Content-Type: text/plain;
+	charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+Date: Tue, 21 Jun 2011 15:05:42 +0200
+Message-ID: <3FF315C710820E47A04E55C6F7D9B0AD7FED23@domain.hid>
+In-Reply-To: <4E008174.2060305@domain.hid>
+References: <3FF315C710820E47A04E55C6F7D9B0AD7FE9FF@AREXCH02.mra.roland-man.biz>
+	<1308044391.2699.2.camel@domain.hid>
+	<3FF315C710820E47A04E55C6F7D9B0AD7FEA2C@AREXCH02.mra.roland-man.biz>
+	<1308387052.2122.14.camel@domain.hid> <4DFCABDA.6000702@domain.hid>
+	<1308406918.2122.24.camel@domain.hid>
+	<3FF315C710820E47A04E55C6F7D9B0AD7FECDA@AREXCH02.mra.roland-man.biz>
+	<1308652557.2125.45.camel@domain.hid>
+	<3FF315C710820E47A04E55C6F7D9B0AD7FECF6@domain.hid>
+	<4E008174.2060305@domain.hid>
+From: <roderik.wildenburg@domain.hid>
+Subject: Re: [Xenomai-help] Xenomai 2.5.6 with PPC-Kernel 2.4.25
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -16,80 +26,177 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: gilles.chanteperdrix@xenomai.org
+Cc: xenomai@xenomai.org
 
---0-520288917-1308657744=:55278
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: quoted-printable
+> But more importantly, since, the time when we print the result is so
+> imprecise, some variations are normal, so, chances are that the 2%
+> variation is normal.
+>
 
-Hi Gilles,=0A=A0=A0=A0=A0 Thanks for your reply. I am using 'rt_task_sleep(=
-100us)' at the end of every task to let Linux task run.=0AWith this I am ab=
-le to run my application program , but I am not able to debug using 'GDB'. =
-Also is there any=0Abetter way to allow Linux task run instead of using 'rt=
-_task_sleep' ? My application has got 5 different task of =0A=0Aequal prior=
-ity and I want to run these in Round Robin fashion , I used 'rt_task_set_mo=
-de(0,XNRRB ,NULL)'=0Ato enable Round Robin scheduling mode, but task are no=
-t getting executed in Round Robin fashion. =0A=0AAm I missing something ? P=
-lease help me.=0A=0AThanks & Best Regards,=0ASanjay=0A=0A=0A=0A____________=
-____________________=0AFrom: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org=
-omai.org>=0ATo: sanjay anvekar <sanjayanvekar@domain.hid>=0ACc: "xenomai-hel=
-p@domain.hid" <xenomai@xenomai.org>=0ASent: Wednesday, 8 June 2011 1:35 PM=0A=
-Subject: Re: [Xenomai-help] Xenomai-Driver=0A=0AOn 06/08/2011 04:22 AM, san=
-jay anvekar wrote:=0A>=A0 =A0 =A0 rt_task_yield() - To allow=0A execution o=
-f other tasks.=0A=0AIt is a bit hard to answer without seeing any code, but=
- there is a=0Asimple remark we can make: rt_task_yield does not "allow exec=
-ution of=0Aother tasks", rt_task_yield only allows execution of tasks with =
-same=0Apriority as the current task. Your real-time tasks have to let Linux=
- run=0Afrom time to time if you want the serial port and graphic display to=
- run=0Acorrectly, and in order to do this they have to get suspended,=0Art_=
-task_yield will definitely not do that.=0A=0A-- =0A=A0 =A0 =A0 =A0 =A0 =A0 =
-=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0=
- =A0 =A0 =A0 =A0 =A0 =A0 =A0 Gilles.
---0-520288917-1308657744=:55278
-Content-Type: text/html; charset=iso-8859-1
-Content-Transfer-Encoding: quoted-printable
+Ok. Here is a switchtest with Xenomai 2.4.9 on PPC-Kernel 2.4.25 and =
+indeed fluctuation is again about 2%.
+But the number of context switches is just about 25% of switchtest from =
+Xeno 2.5.6 on a PPC-2.6.34. Did you change the tasks period from 2.4.9 =
+to 2.5.6?
+So, if the gurus say this variation is within the normal bandwidth it is =
+ok for me.
 
-<html><body><div style=3D"color:#000; background-color:#fff; font-family:ti=
-mes new roman, new york, times, serif;font-size:12pt"><div><span></span><sp=
-an>Hi Gilles,</span></div><div style=3D"font-family: times new roman,new yo=
-rk,times,serif; font-size: 12pt;"><div style=3D"font-family: times new roma=
-n,new york,times,serif; font-size: 12pt;"><div id=3D"yiv143611138"><div sty=
-le=3D"color: rgb(0, 0, 0); background-color: rgb(255, 255, 255); font-famil=
-y: times new roman,new york,times,serif; font-size: 12pt;"><div><span>&nbsp=
-;&nbsp;&nbsp;&nbsp; Thanks for your reply. I am using 'rt_task_sleep(</span=
-><span> 100us</span><span>)' at the end of every task to let Linux task run=
-.</span></div><div><span>With this I am able to run my application program =
-, but I am not able to debug using 'GDB'. Also is there any</span></div><di=
-v><span>better way to allow Linux task run instead of using 'rt_task_sleep'=
- ? My application has got 5 different task of
- <br></span></div><div><span>equal priority and I want to run these in Roun=
-d Robin fashion , I used 'rt_task_set_mode(0,XNRRB ,NULL)'</span></div><div=
-><span>to enable Round Robin scheduling mode, but task are not getting exec=
-uted in Round Robin fashion. <br></span></div><div><span>Am I missing somet=
-hing ? Please help=0A me.</span></div><div><br><span></span></div><div><spa=
-n>Thanks &amp; Best Regards,</span></div><div><span>Sanjay<br></span></div>=
-<div><br></div><div style=3D"font-family: times new roman,new york,times,se=
-rif; font-size: 12pt;"><div style=3D"font-family: times new roman,new york,=
-times,serif; font-size: 12pt;"><font face=3D"Arial" size=3D"2"><hr size=3D"=
-1"><b><span style=3D"font-weight: bold;">From:</span></b> Gilles Chanteperd=
-rix &lt;gilles.chanteperdrix@xenomai.org&gt;<br><b><span style=3D"font-weig=
-ht: bold;">To:</span></b> sanjay anvekar &lt;sanjayanvekar@domain.hid&gt;<br=
-><b><span style=3D"font-weight: bold;">Cc:</span></b> "xenomai@xenomai.org=
-" &lt;xenomai@xenomai.org&gt;<br><b><span style=3D"font-weight: bold;">Sen=
-t:</span></b> Wednesday, 8 June 2011 1:35 PM<br><b><span style=3D"font-weig=
-ht: bold;">Subject:</span></b> Re: [Xenomai-help] Xenomai-Driver<br></font>=
-<br>On 06/08/2011 04:22 AM, sanjay anvekar wrote:<br>&gt;&nbsp; &nbsp; &nbs=
-p; rt_task_yield() - To allow=0A execution of other tasks.<br><br>It is a b=
-it hard to answer without seeing any code, but there is a<br>simple remark =
-we can make: rt_task_yield does not "allow execution of<br>other tasks", rt=
-_task_yield only allows execution of tasks with same<br>priority as the cur=
-rent task. Your real-time tasks have to let Linux run<br>from time to time =
-if you want the serial port and graphic display to run<br>correctly, and in=
- order to do this they have to get suspended,<br>rt_task_yield will definit=
-ely not do that.<br><br>-- <br>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &n=
-bsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; =
-&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp=
-; &nbsp; &nbsp; &nbsp; &nbsp; Gilles.<br><br><br></div></div></div></div><b=
-r><br></div></div></div></body></html>
---0-520288917-1308657744=:55278--
+>Spare time has become a luxury over the last months. I'll try to find a
+>time slot next week to have a look at this again.
+
+Tanks a lot!
+ I don=C2=B4t dare to say, but I am on vacation for the rest of this and =
+the next week, so I only can do testing as of 4. of July again.
+
+Roderik
+
+-------------------------------------------------------------------------=
+---
+Xenomai 2.4.9 on PPC-2.4.25:
+RW24:/fat/sbin # switchtest
+=3D=3D Testing FPU check routines...
+r0: 1 !=3D 2
+r1: 1 !=3D 2
+r2: 1 !=3D 2
+r3: 1 !=3D 2
+r4: 1 !=3D 2
+r5: 1 !=3D 2
+r6: 1 !=3D 2
+r7: 1 !=3D 2
+r8: 1 !=3D 2
+r9: 1 !=3D 2
+r10: 1 !=3D 2
+r11: 1 !=3D 2
+r12: 1 !=3D 2
+r13: 1 !=3D 2
+r14: 1 !=3D 2
+r15: 1 !=3D 2
+r16: 1 !=3D 2
+r17: 1 !=3D 2
+r18: 1 !=3D 2
+r19: 1 !=3D 2
+r20: 1 !=3D 2
+r21: 1 !=3D 2
+r22: 1 !=3D 2
+r23: 1 !=3D 2
+r24: 1 !=3D 2
+r25: 1 !=3D 2
+r26: 1 !=3D 2
+r27: 1 !=3D 2
+r28: 1 !=3D 2
+r29: 1 !=3D 2
+r30: 1 !=3D 2
+r31: 1 !=3D 2
+=3D=3D FPU check routines: OK.
+=3D=3D Threads: sleeper_ufps-0 rtk-1 rtk-2 rtk_fp-3 rtk_fp-4 =
+rtk_fp_ufpp-5 rtk_fp_ufpp-6 rtup-7 rtup-8 rtup_ufpp-9 rtup_ufpp-10 =
+rtus-11 rtus-12 rtus_ufps-13 rtus_ufps-14 rtuo-15 rtuo-16 rtuo_ufpp-17 =
+rtuo_ufpp-18 rtuo_ufps-19 rtuo_ufps-20 rtuo_ufpp_ufps-21 =
+rtuo_ufpp_ufps-22
+RTT|  00:00:01
+RTH|ctx switches|-------total
+RTD|        1150|        1150
+RTD|        1150|        2300
+RTD|        1173|        3473
+RTD|        1173|        4646
+RTD|        1150|        5796
+RTD|        1173|        6969
+RTD|        1150|        8119
+RTD|        1173|        9292
+RTD|        1150|       10442
+RTD|        1173|       11615
+RTD|        1173|       12788
+RTD|        1150|       13938
+RTD|        1173|       15111
+RTD|        1173|       16284
+RTD|        1150|       17434
+RTD|        1150|       18584
+RTD|        1150|       19734
+RTD|        1173|       20907
+RTD|        1150|       22057
+RTD|        1150|       23207
+RTD|        1150|       24357
+RTT|  00:00:22
+RTH|ctx switches|-------total
+RTD|        1173|       25530
+RTD|        1173|       26703
+RTD|        1173|       27876
+RTD|        1173|       29049
+RTD|        1150|       30199
+RTD|        1150|       31349
+RTD|        1150|       32499
+RTD|        1173|       33672
+RTD|        1173|       34845
+RTD|        1173|       36018
+RTD|        1150|       37168
+RTD|        1150|       38318
+RTD|        1150|       39468
+RTD|        1173|       40641
+RTD|        1150|       41791
+RTD|        1150|       42941
+RTD|        1173|       44114
+RTD|        1150|       45264
+RTD|        1150|       46414
+RTD|        1150|       47564
+RTD|        1173|       48737
+RTT|  00:00:43
+RW24:/fat/sbin # cat /proc/xenomai/version
+2.4.9
+RW24:/fat/sbin # cat /proc/xenomai/sched
+CPU  PID    PRI      PERIOD     TIMEOUT    TIMEBASE  STAT       NAME
+  0  0       -1      0          0          master    R          ROOT
+  0  0       99      200000000  45608637   master    D          =
+rt-watchdog
+RW24:/fat/sbin # cat /proc/xenomai/stat
+CPU  PID    MSW        CSW        PF    STAT       %CPU  NAME
+  0  0      0          38989      0     00500080   98.3  ROOT
+  0  0      0          701        0     00000084    0.0  rt-watchdog
+  0  0      0          14730      0     00000000    0.1  IRQ256: [timer]
+RW24:/fat/sbin #
+
+
+> -----Urspr=C3=BCngliche Nachricht-----
+> Von: Gilles Chanteperdrix [mailto:gilles.chanteperdrix@xenomai.org]
+> Gesendet: Dienstag, 21. Juni 2011 13:33
+> An: Wildenburg, Roderik RAEK1 MRA
+> Cc: rpm@xenomai.org; xenomai@xenomai.org
+> Betreff: Re: AW: AW: [Xenomai-help] Xenomai 2.5.6 with PPC-Kernel =
+2.4.25
+>=20
+> On 06/21/2011 01:22 PM, roderik.wildenburg@domain.hid wrote:
+> >> 2% off seems a lot for a transient load, and this would not happen =
+on a
+> >> periodic basis anyway. This needs to be investigated. Could you run
+> >> switchtest in nofpu mode?
+> >
+> > Still fluctuates about 2% (see !!  mark) but now more erratic. The =
+reduced
+> number of context switches is caused by the reduced number of tasks?
+>=20
+> switchest works by switching context between several tasks. One of =
+this
+> task does sleep, in order to avoid starving linux, and also prints the
+> numbers approximately every second.
+>=20
+> When there are less task, we enter the sleeping task more often, so,
+> yes, there are less context switches.
+>=20
+> But more importantly, since, the time when we print the result is so
+> imprecise, some variations are normal, so, chances are that the 2%
+> variation is normal.
+>=20
+> --
+>                                                                 =
+Gilles.
+
+--------------------------------------------------------
+manroland AG
+Vorsitzender des Aufsichtsrates: Hanno C. Fiedler
+Vorstand: Gerd Finkbeiner (Vorsitzender), Dr. Ingo Koch, Dr. Markus =
+Rall, Paul Steidle  =20
+Sitz der Gesellschaft: Offenbach am Main, Registergericht: Amtsgericht =
+Offenbach HRB-Nr. 42592
+USt-Ident-Nr. DE 250200933
+
 
