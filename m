@@ -1,14 +1,13 @@
-Message-ID: <4E01050D.8000800@domain.hid>
-Date: Tue, 21 Jun 2011 22:54:37 +0200
+Message-ID: <4E011869.2070307@domain.hid>
+Date: Wed, 22 Jun 2011 00:17:13 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <737283.11182.qm@domain.hid>
-	<4DEF2D3D.9090409@domain.hid>
-	<213583.55278.qm@domain.hid>
-In-Reply-To: <213583.55278.qm@domain.hid>
+References: <f801f3950e5f79192ebc8824bfd54545@domain.hid>	<4DFF5FEE.8060901@domain.hid>
+	<loom.20110621T110521-226@domain.hid>
+In-Reply-To: <loom.20110621T110521-226@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Xenomai-Driver
+Subject: Re: [Xenomai-help] mprotect in Xenomai
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -18,34 +17,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: sanjay anvekar <sanjayanvekar@domain.hid>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Michael Thalmeier <michael@domain.hid>
+Cc: xenomai@xenomai.org
 
-On 06/21/2011 02:02 PM, sanjay anvekar wrote:
-> Hi Gilles, Thanks for your reply. I am using 'rt_task_sleep(100us)'
-> at the end of every task to let Linux task run. With this I am able
-> to run my application program , but I am not able to debug using
-> 'GDB'.
-
-What happens when you try and debug with gdb?
-
-> Also is there any better way to allow Linux task run instead
-> of using 'rt_task_sleep' ? My application has got 5 different task of
-
-First, the application should wait interrupts and react upon them, not
-do any polling, this should normally leave some time for Linux to run if
-the system is well dimensioned.
-
+On 06/21/2011 11:08 AM, Michael Thalmeier wrote:
+> Gilles Chanteperdrix <gilles.chanteperdrix <at> xenomai.org> writes:
 > 
-> 
-> equal priority and I want to run these in Round Robin fashion , I
-> used 'rt_task_set_mode(0,XNRRB ,NULL)' to enable Round Robin
-> scheduling mode, but task are not getting executed in Round Robin
-> fashion.
+>>
+>> On 06/20/2011 04:14 PM, Michael Thalmeier wrote:
+>>>  Hello !
+>>>  ...
+>>
+>> I am afraid this is platform dependent, on what architecture do you get
+>> this behaviour?
+>>
+> I have only tested this behaviour on x86 until now.
+> The system runs a kernel 2.6.32.15 with xenomai 2.5.6.
 
-I do not think round-robin is what you want: it will not let linux run.
-rt_task_set_mode probably returns an error when you use XNRRB, because
-it does not expect this bit to be set.
+Issue reproduced, and seem specific to x86 (32, the application
+segfaults on x86_64).
+
+The answer to the original question is no: we do not provide any service
+to do the same thing as mprotect, so, if you want this application to
+work, you will have to dig in the kernel mm code and find exactly what
+is going on.
 
 -- 
                                                                 Gilles.
