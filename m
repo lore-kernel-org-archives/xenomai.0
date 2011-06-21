@@ -1,13 +1,22 @@
-Message-ID: <4DF74BAD.1070002@domain.hid>
-Date: Tue, 14 Jun 2011 13:53:17 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <BANLkTinhVjCZH-ni-M-HWUv5EY5hy8YcBA@mail.gmail.com>	<4DF72AE9.10904@domain.hid>	<BANLkTin-cH7UsO+Gq6aniRLWRGSDE_0ktw@domain.hid>	<4DF747F5.8010506@domain.hid>
-	<BANLkTimW5HV15bs3R1nf=51qc3jB+U=xRw@domain.hid>
-In-Reply-To: <BANLkTimW5HV15bs3R1nf=51qc3jB+U=xRw@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <4E00A530.1060601@domain.hid>
+References: <3FF315C710820E47A04E55C6F7D9B0AD7FE9FF@AREXCH02.mra.roland-man.biz>
+	<1308044391.2699.2.camel@domain.hid>
+	<3FF315C710820E47A04E55C6F7D9B0AD7FEA2C@AREXCH02.mra.roland-man.biz>
+	<1308387052.2122.14.camel@domain.hid>  <4DFCABDA.6000702@domain.hid>
+	<1308406918.2122.24.camel@domain.hid>
+	<3FF315C710820E47A04E55C6F7D9B0AD7FECDA@AREXCH02.mra.roland-man.biz>
+	<1308652557.2125.45.camel@domain.hid>
+	<3FF315C710820E47A04E55C6F7D9B0AD7FECF6@domain.hid>
+	<4E008174.2060305@domain.hid>
+	<3FF315C710820E47A04E55C6F7D9B0AD7FED23@domain.hid>
+	<1308662104.2125.50.camel@domain.hid>  <4E00A530.1060601@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Date: Tue, 21 Jun 2011 16:35:27 +0200
+Message-ID: <1308666927.2125.101.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] xenomai configuration
+Subject: Re: [Xenomai-help] Xenomai 2.5.6 with PPC-Kernel 2.4.25
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -17,15 +26,54 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: suresh reddy <sureshreddy.balijepalli@domain.hid>
-Cc: Xenomai help <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On 06/14/2011 01:39 PM, suresh reddy wrote:
-> Iam using arm2009q1 toolchain.
+On Tue, 2011-06-21 at 16:05 +0200, Gilles Chanteperdrix wrote:
+> On 06/21/2011 03:15 PM, Philippe Gerum wrote:
+> > On Tue, 2011-06-21 at 15:05 +0200, roderik.wildenburg@domain.hid
+> > wrote:
+> >>> But more importantly, since, the time when we print the result is so
+> >>> imprecise, some variations are normal, so, chances are that the 2%
+> >>> variation is normal.
+> >>>
+> >>
+> >> Ok. Here is a switchtest with Xenomai 2.4.9 on PPC-Kernel 2.4.25 and indeed fluctuation is again about 2%.
+> >> But the number of context switches is just about 25% of switchtest from Xeno 2.5.6 on a PPC-2.6.34. Did you change the tasks period from 2.4.9 to 2.5.6?
+> >> So, if the gurus say this variation is within the normal bandwidth it is ok for me.
+> > 
+> > The number of switches is related to the number of tasks running in this
+> > test, nofpu reduces this number. So that is ok. The problem with this
+> > test is that switches/sec values are sampled by a regular linux thread
+> > which nanosleeps, so at least over 2.4, the delay is not accurate. So
+> > the number of switches observed can't be either.
+> 
+> The task which nanosleeps does not really sample the number of context
+> switches, it is part of the context switches chain, and simply prints
+> the number when it sees that the last time the number was printed is
+> more than 1s ago. So, how many context switches happen depends greatly
+> on how many time the context switches chain passed by this task, and so
+> is not regular.
 
-Ok. I will have a look at this tonight. Could you try something more
-recent in the mean-time ?
+This is why the sleeper actually samples somehow, polling then printing
+the switch count from the driver based on a 1ms period it runs, given
+that the scheduling chain should be reasonably fixed. Granted, this
+cannot be precise at all in any case.
+
+> 
+> The switchtest code also changed between 2.4
+>  and 2.6, which is why you
+> can not compare the numbers.
+> 
+> Pay no attention to the number of context switches. All which matters is
+> that this number increase over time, this is why we print them.
+> 
+
+And as a matter of fact, this is the good way to quickly detect the
+kernel 2.4 issue we have.
 
 -- 
-                                                                Gilles.
+Philippe.
+
+
 
