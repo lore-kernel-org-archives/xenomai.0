@@ -1,12 +1,12 @@
-From: Michael Thalmeier <michael@domain.hid>
-Date: Tue, 21 Jun 2011 09:08:51 +0000 (UTC)
-Message-ID: <loom.20110621T110521-226@domain.hid>
-References: <f801f3950e5f79192ebc8824bfd54545@domain.hid>
-	<4DFF5FEE.8060901@domain.hid>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] mprotect in Xenomai
+MIME-Version: 1.0
+In-Reply-To: <4E005580.6010205@domain.hid>
+References: <BANLkTi=xprfSAwzV6g=GmC7q1sEUz4_t_g@domain.hid>
+	<4E005580.6010205@domain.hid>
+Date: Tue, 21 Jun 2011 11:14:26 +0200
+Message-ID: <BANLkTikdVgqFCXTqD4GarOahQEMLbrGyLg@domain.hid>
+From: suresh reddy <sureshreddy.balijepalli@domain.hid>
+Content-Type: multipart/alternative; boundary=bcaec517a9ba4f01b104a6354714
+Subject: Re: [Xenomai-help] unsupported arm machine
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -16,22 +16,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Xenomai help <xenomai@xenomai.org>
 
-Gilles Chanteperdrix <gilles.chanteperdrix <at> xenomai.org> writes:
+--bcaec517a9ba4f01b104a6354714
+Content-Type: text/plain; charset=ISO-8859-1
 
-> 
-> On 06/20/2011 04:14 PM, Michael Thalmeier wrote:
-> >  Hello !
-> >  ...
-> 
-> I am afraid this is platform dependent, on what architecture do you get
-> this behaviour?
-> 
-I have only tested this behaviour on x86 until now.
-The system runs a kernel 2.6.32.15 with xenomai 2.5.6.
+Dear Giles,
 
-Thanks Michael
+As far as i seen in the git  it seems that i have to patch all the files in
+xenomai-head  with my xenomai sources.
+
+Wil this fix all my issues that im facing now and in next steps
 
 
+
+
+Thanks
+
+--bcaec517a9ba4f01b104a6354714
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><meta http-equiv=3D"content-type" content=3D"text/html; ch=
+arset=3Dutf-8"><span class=3D"Apple-style-span" style=3D"font-family: sans-=
+serif; "><br>Dear Giles,</span><div><span class=3D"Apple-style-span" style=
+=3D"font-family: sans-serif; "><br>
+</span></div><div><span class=3D"Apple-style-span" style=3D"font-family: sa=
+ns-serif; ">As far as i seen in the git =A0it seems that i have to patch al=
+l the files in xenomai-head =A0with my xenomai sources.</span></div><div><f=
+ont class=3D"Apple-style-span" face=3D"sans-serif"><br>
+</font></div><div><span class=3D"Apple-style-span" style=3D"font-family: sa=
+ns-serif; ">Wil this fix all my issues that im facing now and in next steps=
+=A0</span></div><div><span class=3D"Apple-style-span" style=3D"font-family:=
+ sans-serif; "><br>
+</span></div><div><span class=3D"Apple-style-span" style=3D"font-family: sa=
+ns-serif; "><br></span></div><div><span class=3D"Apple-style-span" style=3D=
+"font-family: sans-serif; "><br></span></div><div><span class=3D"Apple-styl=
+e-span" style=3D"font-family: sans-serif; "><br>
+</span></div><div><span class=3D"Apple-style-span" style=3D"font-family: sa=
+ns-serif; ">Thanks=A0</span></div><div><span class=3D"Apple-style-span" sty=
+le=3D"font-family: sans-serif; "><br><br><br></span>
+</div></div>
+
+--bcaec517a9ba4f01b104a6354714--
 
