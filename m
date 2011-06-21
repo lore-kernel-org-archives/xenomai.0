@@ -1,22 +1,14 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <4E00A530.1060601@domain.hid>
-References: <3FF315C710820E47A04E55C6F7D9B0AD7FE9FF@AREXCH02.mra.roland-man.biz>
-	<1308044391.2699.2.camel@domain.hid>
-	<3FF315C710820E47A04E55C6F7D9B0AD7FEA2C@AREXCH02.mra.roland-man.biz>
-	<1308387052.2122.14.camel@domain.hid>  <4DFCABDA.6000702@domain.hid>
-	<1308406918.2122.24.camel@domain.hid>
-	<3FF315C710820E47A04E55C6F7D9B0AD7FECDA@AREXCH02.mra.roland-man.biz>
-	<1308652557.2125.45.camel@domain.hid>
-	<3FF315C710820E47A04E55C6F7D9B0AD7FECF6@domain.hid>
-	<4E008174.2060305@domain.hid>
-	<3FF315C710820E47A04E55C6F7D9B0AD7FED23@domain.hid>
-	<1308662104.2125.50.camel@domain.hid>  <4E00A530.1060601@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Tue, 21 Jun 2011 16:35:27 +0200
-Message-ID: <1308666927.2125.101.camel@domain.hid>
-Mime-Version: 1.0
+Message-ID: <4E01050D.8000800@domain.hid>
+Date: Tue, 21 Jun 2011 22:54:37 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+References: <737283.11182.qm@domain.hid>
+	<4DEF2D3D.9090409@domain.hid>
+	<213583.55278.qm@domain.hid>
+In-Reply-To: <213583.55278.qm@domain.hid>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Xenomai 2.5.6 with PPC-Kernel 2.4.25
+Subject: Re: [Xenomai-help] Xenomai-Driver
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -26,54 +18,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: sanjay anvekar <sanjayanvekar@domain.hid>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Tue, 2011-06-21 at 16:05 +0200, Gilles Chanteperdrix wrote:
-> On 06/21/2011 03:15 PM, Philippe Gerum wrote:
-> > On Tue, 2011-06-21 at 15:05 +0200, roderik.wildenburg@domain.hid
-> > wrote:
-> >>> But more importantly, since, the time when we print the result is so
-> >>> imprecise, some variations are normal, so, chances are that the 2%
-> >>> variation is normal.
-> >>>
-> >>
-> >> Ok. Here is a switchtest with Xenomai 2.4.9 on PPC-Kernel 2.4.25 and indeed fluctuation is again about 2%.
-> >> But the number of context switches is just about 25% of switchtest from Xeno 2.5.6 on a PPC-2.6.34. Did you change the tasks period from 2.4.9 to 2.5.6?
-> >> So, if the gurus say this variation is within the normal bandwidth it is ok for me.
-> > 
-> > The number of switches is related to the number of tasks running in this
-> > test, nofpu reduces this number. So that is ok. The problem with this
-> > test is that switches/sec values are sampled by a regular linux thread
-> > which nanosleeps, so at least over 2.4, the delay is not accurate. So
-> > the number of switches observed can't be either.
-> 
-> The task which nanosleeps does not really sample the number of context
-> switches, it is part of the context switches chain, and simply prints
-> the number when it sees that the last time the number was printed is
-> more than 1s ago. So, how many context switches happen depends greatly
-> on how many time the context switches chain passed by this task, and so
-> is not regular.
+On 06/21/2011 02:02 PM, sanjay anvekar wrote:
+> Hi Gilles, Thanks for your reply. I am using 'rt_task_sleep(100us)'
+> at the end of every task to let Linux task run. With this I am able
+> to run my application program , but I am not able to debug using
+> 'GDB'.
 
-This is why the sleeper actually samples somehow, polling then printing
-the switch count from the driver based on a 1ms period it runs, given
-that the scheduling chain should be reasonably fixed. Granted, this
-cannot be precise at all in any case.
+What happens when you try and debug with gdb?
+
+> Also is there any better way to allow Linux task run instead
+> of using 'rt_task_sleep' ? My application has got 5 different task of
+
+First, the application should wait interrupts and react upon them, not
+do any polling, this should normally leave some time for Linux to run if
+the system is well dimensioned.
 
 > 
-> The switchtest code also changed between 2.4
->  and 2.6, which is why you
-> can not compare the numbers.
 > 
-> Pay no attention to the number of context switches. All which matters is
-> that this number increase over time, this is why we print them.
-> 
+> equal priority and I want to run these in Round Robin fashion , I
+> used 'rt_task_set_mode(0,XNRRB ,NULL)' to enable Round Robin
+> scheduling mode, but task are not getting executed in Round Robin
+> fashion.
 
-And as a matter of fact, this is the good way to quickly detect the
-kernel 2.4 issue we have.
+I do not think round-robin is what you want: it will not let linux run.
+rt_task_set_mode probably returns an error when you use XNRRB, because
+it does not expect this bit to be set.
 
 -- 
-Philippe.
-
-
+                                                                Gilles.
 
