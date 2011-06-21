@@ -1,18 +1,13 @@
-Content-Class: urn:content-classes:message
+Message-ID: <4E007406.3060601@domain.hid>
+Date: Tue, 21 Jun 2011 12:35:50 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-Date: Tue, 21 Jun 2011 12:04:28 +0200
-Message-ID: <3FF315C710820E47A04E55C6F7D9B0AD7FECDA@AREXCH02.mra.roland-man.biz>
-In-Reply-To: <1308406918.2122.24.camel@domain.hid>
-References: <3FF315C710820E47A04E55C6F7D9B0AD7FE9FF@AREXCH02.mra.roland-man.biz>
-	<1308044391.2699.2.camel@domain.hid>
-	<3FF315C710820E47A04E55C6F7D9B0AD7FEA2C@AREXCH02.mra.roland-man.biz>
-	<1308387052.2122.14.camel@domain.hid> <4DFCABDA.6000702@domain.hid>
-	<1308406918.2122.24.camel@domain.hid>
-From: <roderik.wildenburg@domain.hid>
-Subject: Re: [Xenomai-help] Xenomai 2.5.6 with PPC-Kernel 2.4.25
+References: <BANLkTi=xprfSAwzV6g=GmC7q1sEUz4_t_g@domain.hid>	<4E005580.6010205@domain.hid>
+	<BANLkTikdVgqFCXTqD4GarOahQEMLbrGyLg@domain.hid>
+In-Reply-To: <BANLkTikdVgqFCXTqD4GarOahQEMLbrGyLg@domain.hid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] unsupported arm machine
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -22,187 +17,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: rpm@xenomai.org, gilles.chanteperdrix@xenomai.org
-Cc: xenomai@xenomai.org
+To: suresh reddy <sureshreddy.balijepalli@domain.hid>
+Cc: Xenomai help <xenomai@xenomai.org>
 
-I confirm that switchtest runs (nearly) perfectly on PPC-Kernel 2.6.34 =
-with Xenomai 2.5.6. The only anomaly I could see is a "collapse" of the =
-number of context switches exactly every 7 seconds by 2% (see below).  =
-Is this worth to pay attention to? (No other Xenomai-Task is running =
-except for a watchdog task with a period of 500ms)=20
-On the opposite, switchtest runs erratic on PPC-2.4.25 with Xenomai =
-2.5.6 as you already mentioned: The number of context switches is much =
-smaller then (only about 2%) with  PPC-2.6.34 and fluctuate very much =
-(see below).
-Do you think you will find some spare time to fix this Problem?
+On 06/21/2011 11:14 AM, suresh reddy wrote:
+> Dear Giles,
+> 
+> As far as i seen in the git  it seems that i have to patch all the files in
+> xenomai-head  with my xenomai sources.
 
-Roderik
+I do not understand your question. If you clone xenomai git repository, 
+first, I would suggest cloning 2.5.x repository, then you have to 
+follow the same installation instructions as the one you followed for 
+the tarball.
 
+If you prefer to patch xenomai 2.5.6 sources, the patches you need to 
+apply are:
+http://git.xenomai.org/?p=xenomai-2.5.git;a=commit;h=3893f285f2dc4a8e877d23920788793a2fa317e4
+http://git.xenomai.org/?p=xenomai-2.5.git;a=commit;h=65cede2c06cd04673c72253e72611a36f6e2be80
+http://git.xenomai.org/?p=xenomai-2.5.git;a=commit;h=b694685509aba3df9f26d62115d90831d71bb859
+http://git.xenomai.org/?p=xenomai-2.5.git;a=commit;h=aeb9fe9169a378c1e586ca326d1f7071f9631880
 
-Xenomai 2.5.6 on PPC-2.6.34:
-RTH|ctx switches|-------total
-RTD|        4347|     7290193
-RTD|        4347|     7294540
-RTD|        4347|     7298887
-RTD|        4347|     7303234
-RTD|        4282|     7307516
-RTD|        4345|     7311861
-RTD|        4345|     7316206
-RTD|        4347|     7320553
-RTD|        4347|     7324900
-RTD|        4347|     7329247
-RTD|        4347|     7333594
-RTD|        4282|     7337876
-RTD|        4345|     7342221
-RTD|        4345|     7346566
-RTD|        4347|     7350913
-RTD|        4347|     7355260
-RTD|        4347|     7359607
-RTD|        4347|     7363954
-RTD|        4282|     7368236
-RTD|        4345|     7372581
-RTD|        4345|     7376926
-RTT|  00:28:31
-WE01:~ # cat /proc/xenomai/sched
-CPU  PID    CLASS  PRI      TIMEOUT   TIMEBASE   STAT       NAME
-  0  0      idle    -1      -         master     R          ROOT
-  0  0      rt      99      496ms670us  master     D          =
-rt-watchdog
+> 
+> Wil this fix all my issues that im facing now and in next steps
 
+It will get the pandaboard running with CONFIG_SMP enabled. If you have
+other issues, no, it will not do anything for them.
 
-Xenomai 2.5.6 on PPC-2.4.25:
-RTH|ctx switches|-------total
-RTD|         138|       25321
-RTD|          73|       25394
-RTD|          65|       25459
-RTD|         138|       25597
-RTD|          73|       25670
-RTD|          65|       25735
-RTD|         138|       25873
-RTD|         138|       26011
-RTD|         138|       26149
-RTD|         138|       26287
-RTD|         138|       26425
-RTD|         138|       26563
-RTD|         138|       26701
-RTD|         138|       26839
-RTD|         138|       26977
-RTD|          73|       27050
-RTD|          65|       27115
-RTD|         138|       27253
-RTD|         138|       27391
-RTD|         138|       27529
-RTD|         138|       27667
-RTT|  00:09:48
-mrconfig:~ # cat /proc/xenomai/sched
-CPU  PID    CLASS  PRI      TIMEOUT   TIMEBASE   STAT       NAME
-  0  0      idle    -1      -         master     R          ROOT
-  0  0      rt      60      185ms803us  master     D          =
-rt-watchdog
-
-
-> -----Urspr=C3=BCngliche Nachricht-----
-> Von: Philippe Gerum [mailto:rpm@xenomai.org]
-> Gesendet: Samstag, 18. Juni 2011 16:22
-> An: Gilles Chanteperdrix
-> Cc: Wildenburg, Roderik RAEK1 MRA; xenomai@xenomai.org
-> Betreff: Re: [Xenomai-help] Xenomai 2.5.6 with PPC-Kernel 2.4.25
->=20
-> On Sat, 2011-06-18 at 15:44 +0200, Gilles Chanteperdrix wrote:
-> > On 06/18/2011 10:50 AM, Philippe Gerum wrote:
-> > > On Tue, 2011-06-14 at 14:47 +0200, =
-roderik.wildenburg@domain.hid
-> > > wrote:
-> > >> Perhaps this may help:
-> > >> I instrumented src/common/sem_heap.c   and ksrc/nucleus/heap.c =
-with printf
-> and printk (see appended files) and this is the output:
-> > >>
-> > >> 1:mrconfig:~ # latency
-> > >> 2:xeno_init_private_heap
-> > >> 3:map_sem_heap syscall 0
-> > >> 4:xeno_map_heap open 3
-> > >> 5:xnheap_ioctl private data: 00000000
-> > >> 6:xeno_map_heap ioctl 0 handle 0xc7dd9210
-> > >> 7:xnheap_mmap 00000000 00000000
-> > >> 8:xeno_map_heap 0xffffffff
-> > >> 9:Xenomai: mmap local sem heap: No such device or address
-> > >> 10:mrconfig:~ #
-> > >>
-> > >>
-> > >> It looks like (if I figured it out correctly) as if in function =
-sem_heap.c-
-> >xeno_map_heap()  (which is called from xeno_init_privat_heap() via =
-function
-> map_sem_heap())  the ioctl-Call fails.
-> > >> xeno_map_heap() passes correctly an argument unequal NULL as =
-third
-> parameter to ioctl() (line6), but in kernel space function =
-xnheap_ioctl() the 3.
-> parameter arrives as NULL(line 5). This sets file->private_data to =
-NULL which in
-> turn lets xnheap_mmap() fail, as this function expects =
-file->private_data !=3D NULL
-> (line7).
-> > >> Therefore xnheap_mmap() returns -ENIXIO to xeno_map_heap() which
-> outputs the error message " Xenomai: mmap local sem heap: No such =
-device or
-> address".
-> > >> The one million dollar question is, why the 3. parameter of =
-ioctl() mutates to
-> NULL. Any idea?
-> > >>
-> > >> If I can do anything else, let me know.
-> > >>
-> > >
-> > > You will need these patches to run linux 2.4.25 over 2.5.6. The =
-first
-> > > one fixes the ioctl() issue.
-> > > http://git.xenomai.org/?p=3Dxenomai-
-> rpm.git;a=3Dcommit;h=3Dc2a24b90667e12d0614e5d8442dba74f137f9d4d
-> > > http://git.xenomai.org/?p=3Dxenomai-
-> rpm.git;a=3Dcommit;h=3Dbebc2a8e6b430c99041800330dc6061665371d90
-> > >
-> > > Note: the switch test does not seem to be running correctly on my
-> > > icecube (albeit the latency one does), somehow linux reschedule =
-events
-> > > get lost. For this reason, I would not consider the current state =
-as
-> > > being production-grade.
-> >
-> > How do you see that reschedule events are lost?
->=20
-> The pace of the supposedly 1sec periodic display stabilizes only when
-> other processes run in the background and becomes erratic when the
-> switch test is running alone, whilst the system does not seem to lose
-> its idea of time. Additionally, signals do not seem to make their way =
-to
-> the shadows upon ^C. I did not track the issue in depth though, so at
-> this stage I'm speculating.
->=20
-> >  Does this happen also on
-> > other systems?
-> >
->=20
-> Can't tell, I'm not using 2.5.x that much these days. I did not see =
-any
-> issue during the sh4 port, which seems to exclude 2.6.x from the
-> potential victims.
->=20
-> Guts feeling is that this might be specific to 2.4 kernels.
->=20
-> --
-> Philippe.
->=20
->
-
---------------------------------------------------------
-manroland AG
-Vorsitzender des Aufsichtsrates: Hanno C. Fiedler
-Vorstand: Gerd Finkbeiner (Vorsitzender), Dr. Ingo Koch, Dr. Markus =
-Rall, Paul Steidle  =20
-Sitz der Gesellschaft: Offenbach am Main, Registergericht: Amtsgericht =
-Offenbach HRB-Nr. 42592
-USt-Ident-Nr. DE 250200933
-
+-- 
+                                                                Gilles.
 
