@@ -1,13 +1,13 @@
-Message-ID: <4E01DF86.4020003@domain.hid>
-Date: Wed, 22 Jun 2011 14:26:46 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <4E022367.7020200@domain.hid>
+Date: Wed, 22 Jun 2011 19:16:23 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4E01B55C.7030507@domain.hid> <4E01C5B1.3020307@domain.hid>
-	<4E01CA10.1090703@domain.hid> <4E01CA75.90201@domain.hid>
-In-Reply-To: <4E01CA75.90201@domain.hid>
+References: <1305813493.2118.112.camel@domain.hid>	 <4DD55E3E.2030203@domain.hid>
+	<4DD5633C.6050708@domain.hid> <1305836984.2118.125.camel@domain.hid>
+In-Reply-To: <1305836984.2118.125.camel@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] User space stack pre-faulting
+Subject: Re: [Xenomai-core] [RFC] Getting rid of the NMI latency watchdog
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -16,36 +16,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai core <Xenomai-core@domain.hid>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai@xenomai.org
 
-On 2011-06-22 12:56, Gilles Chanteperdrix wrote:
-> On 06/22/2011 12:55 PM, Jan Kiszka wrote:
->> On 2011-06-22 12:36, Gilles Chanteperdrix wrote:
->>> On 06/22/2011 11:26 AM, Jan Kiszka wrote:
->>>> Hi Gilles,
+On 05/19/2011 10:29 PM, Philippe Gerum wrote:
+> On Thu, 2011-05-19 at 20:36 +0200, Jan Kiszka wrote:
+>> On 2011-05-19 20:15, Gilles Chanteperdrix wrote:
+>>> On 05/19/2011 03:58 PM, Philippe Gerum wrote:
+>>>> For this reason, I'm considering issuing a patch for a complete removal
+>>>> of the NMI latency watchdog code in Xenomai 2.6.x, disabling the feature
+>>>> for 2.6.38 kernels and above in 2.5.x.
 >>>>
->>>> do you remember reasons for only pre-faulting the main thread's stack?
->>>> The desire to avoid wasting resources by forcing all stacks into memory?
->>>>
->>>> I've the requirement on my table to provide a generic solution of all
->>>> shadow threads. I think this should be possible using pthread_getattr_np
->>>> and walking the stack page-wise, but I may miss some pitfall.
+>>>> Comments welcome.
 >>>
->>> Last time I checked, only the main thread stack was mapped on demand.
->>> Other threads have mmaped stacks, which are made present by mlockall,
->>> so, do not need faulting.
+>>> I am in the same case as you: I no longer use Xeno's NMI watchdog, so I
+>>> agree to get rid of it.
 >>
->> That's definitely not the case in general. Customer has just confirmed
->> that pre-faulting thread stacks avoids first-access domain switches.
+>> Yeah. The last time we wanted to use it get more information about a
+>> hard hang, the CPU we used was not supported.
+>>
+>> Philippe, did you test the Linux watchdog already, if it generate proper
+>> results on artificial Xenomai lockups on a single core?
 > 
-> self-contained test case please.
+> This works provided we tell the pipeline to enter printk-sync mode when
+> the watchdog kicks. So I'd say that we could probably do a better job in
+> making the pipeline core smarter wrt NMI watchdog context handling than
+> asking Xenomai to dup the mainline code for having its own NMI handling.
 
-Yes, will check this. Currently distracted again by a higher prio oops :-/.
-
-Jan
+If nobody disagrees, I am removing this code from -head. Now.
 
 -- 
-Siemens AG, Corporate Technology, CT T DE IT 1
-Corporate Competence Center Embedded Linux
+                                                                Gilles.
 
