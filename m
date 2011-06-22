@@ -1,43 +1,74 @@
-Message-ID: <4E145EAE.6000006@domain.hid>
-Date: Wed, 06 Jul 2011 15:10:06 +0200
-From: zenati <omar.zenati@domain.hid>
+Message-ID: <4E022C64.3040805@domain.hid>
+Date: Wed, 22 Jun 2011 10:54:44 -0700
+From: David Wiebe <dwiebe2@domain.hid>
 MIME-Version: 1.0
-References: <4E00B9BA.2050306@domain.hid> <4E145376.8000402@domain.hid>
-	<4E145A2E.2080406@domain.hid>
-In-Reply-To: <4E145A2E.2080406@domain.hid>
+References: <BANLkTi=qe3CqD9U_T3nF6xBN+nZNbxF7Gg@domain.hid>	
+	<4E00A476.2080006@domain.hid> <4E01977E.1080202@domain.hid>	
+	<4E01AB2C.4070409@domain.hid> <1308733051.2159.12.camel@domain.hid>	
+	<4E02162A.9060004@domain.hid> <1308760138.2159.92.camel@domain.hid>
+In-Reply-To: <1308760138.2159.92.camel@domain.hid>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] Implementation of skin Arinc653,
- process don't return
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Subject: Re: [Xenomai-help] rt_dev_ioctl
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai-core@domain.hid
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@xenomai.org
 
-No I don't implement any handler, but there isn't a handler by default? 
-I don't see any handler of signals in the sources of others skins. it 
-means that I have to implement a handler in source of the test?
+On 11-06-22 09:28 AM, Philippe Gerum wrote:
+> On Wed, 2011-06-22 at 09:19 -0700, David Wiebe wrote:
+>> On 11-06-22 01:57 AM, Philippe Gerum wrote:
+>> Still not compiling.
+>>
+> Your build flags are likely wrong. Did you get them via xeno-config?
 
-On 07/06/2011 02:50 PM, Gilles Chanteperdrix wrote:
-> On 07/06/2011 02:22 PM, zenati wrote:
->> Dear,
->>
->> I have implement a first version of the skin Arinc 653. However, I match
->> one bug. Each time I execute a test I have implemented (Hello world
->> test). The process display "Hello world!" but don't return and even if I
->> do control-z or control-c the process don't terminate.
->>
->> have and idea to fix this problem??
-> It is hard to say anything witout seeing any code, but, when you hit
-> ctrl-C or ctrl-Z, the process receives a signal SIGINT or SIGTSTP. So,
-> in the implementation of this skin, did you handle the interruption of
-> blocking system calls by a signal correctly ?
->
+Here are my build flags.
+
+CFLAGS=`DESTDIR=/home/david/sdir 
+/home/david/sdir/usr/xenomai/bin/xenomai-config --skin native --cflags`
+
+LDFLAGS=`DESTDIR=/home/david/sdir 
+/home/david/sdir/usr/xenomai/bin/xenomai-config --skin native --ldflags`
+
+
+
+>>> On Wed, 2011-06-22 at 01:43 -0700, David Wiebe wrote:
+>>>> Hello,
+>>>>
+>>>> I'm re-writing my code to work with xenomai and I don't know how to get
+>>>> rt_dev_ioctl to compile in my program.
+>>>>
+>>>> #include<rtdk.h>   in my program doesn't help
+>>> #include<rtdm/rtdm.h>
+>>>
+>>>> david@domain.hid$
+>>>> arm-none-linux-gnueabi-gcc -o xenomai-spi-eth-00002 $CFLAGS
+>>>> xenomai-spi-eth-00002.c $LDFLAGS -I
+>>>> /home/david/122720101858-beagleboard-working-set/kernel/linux/include/
+>>>> xenomai-spi-eth-00002.c: In function 'main':
+>>>> xenomai-spi-eth-00002.c:137: warning: implicit declaration of function
+>>>> 'rt_dev_open'
+>>>> xenomai-spi-eth-00002.c:145: warning: implicit declaration of function
+>>>> 'rt_dev_ioctl'
+>>>> /tmp/ccZErCuj.o: In function `main':
+>>>> xenomai-spi-eth-00002.c:(.text+0x2c4): undefined reference to `rt_dev_open'
+>>>> xenomai-spi-eth-00002.c:(.text+0x318): undefined reference to `rt_dev_ioctl'
+>>>> collect2: ld returned 1 exit status
+>>>>
+>>>>
+>>>> David
+>>>>
+>>>>
+>>>> _______________________________________________
+>>>> Xenomai-help mailing list
+>>>> Xenomai-help@domain.hid
+>>>> https://mail.gna.org/listinfo/xenomai-help
 
 
