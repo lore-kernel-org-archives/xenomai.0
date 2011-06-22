@@ -1,11 +1,13 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <2157_1308732935_4E01AE07_2157_14293_1_ECB646CBB62FD044927FDEDF0252D3E701E388AD6F15@domain.hid>
+From: VEYSSIERE Nicolas <nicolas.veyssiere@domain.hid>
+Date: Wed, 22 Jun 2011 12:04:04 +0200
+Message-ID: <2157_1308737045_4E01BE15_2157_18238_1_ECB646CBB62FD044927FDEDF0252D3E701E388B3607D@THSONEA01CMS03P.one.grp>
 References: <2157_1308732935_4E01AE07_2157_14293_1_ECB646CBB62FD044927FDEDF0252D3E701E388AD6F15@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Wed, 22 Jun 2011 11:32:52 +0200
-Message-ID: <1308735172.2159.15.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
+	<1308735172.2159.15.camel@domain.hid>
+In-Reply-To: <1308735172.2159.15.camel@domain.hid>
+Content-Language: fr-FR
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 Subject: Re: [Xenomai-help] Xenomai 2.5.6 and 2.6.38.8 kernel
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -16,110 +18,53 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: VEYSSIERE Nicolas <nicolas.veyssiere@domain.hid>
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Wed, 2011-06-22 at 10:55 +0200, VEYSSIERE Nicolas wrote:
-> Same thing here, I tried to patch linux 2.6.38 with the latest adeos
-> patch
-> (http://download.gna.org/adeos/patches/v2.6/x86/adeos-ipipe-2.6.38.8-x86-=
-2.10-00.patch) but the kernel compilation failed :
->=20
-> =20
-
-Support for latency watchdog is discontinued starting from 2.6.38.
-
-diff --git a/ksrc/arch/x86/hal_32.c b/ksrc/arch/x86/hal_32.c
-index 5f5ff2c..de21c90 100644
---- a/ksrc/arch/x86/hal_32.c
-+++ b/ksrc/arch/x86/hal_32.c
-@@ -337,7 +337,7 @@ int rthal_arch_init(void)
- 		rthal_smi_restore();
- 		return -ENODEV;
- 	}
--#ifdef CONFIG_GENERIC_CLOCKEVENTS
-+#if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,38) && defined(CONFIG_GENERIC_=
-CLOCKEVENTS)
- 	if (nmi_watchdog =3D=3D NMI_IO_APIC) {
- 		printk("Xenomai: NMI kernel watchdog set to NMI_IO_APIC (nmi_watchdog=3D=
-1).\n"
- 		       "         This will disable the LAPIC as a clock device, and\n"
->=20
-> =20
->=20
-> =E2=80=A6=E2=80=A6
->=20
->   LD      arch/x86/pci/built-in.o
->=20
->   CC      arch/x86/power/cpu.o
->=20
->   CC      arch/x86/power/hibernate_32.o
->=20
->   AS      arch/x86/power/hibernate_asm_32.o
->=20
->   LD      arch/x86/power/built-in.o
->=20
->   CC      arch/x86/video/fbdev.o
->=20
->   LD      arch/x86/video/built-in.o
->=20
->   CC      arch/x86/xenomai/hal_32.o
->=20
-> arch/x86/xenomai/hal_32.c: In function 'rthal_arch_init':
->=20
-> arch/x86/xenomai/hal_32.c:341: error: 'nmi_watchdog' undeclared (first
-> use in this function)
->=20
-> arch/x86/xenomai/hal_32.c:341: error: (Each undeclared identifier is
-> reported only once
->=20
-> arch/x86/xenomai/hal_32.c:341: error: for each function it appears
-> in.)
->=20
-> arch/x86/xenomai/hal_32.c:341: error: 'NMI_IO_APIC' undeclared (first
-> use in this function)
->=20
-> At top level:
->=20
-> cc1: warning: unrecognized command line option
-> "-Wno-unused-but-set-variable"
->=20
-> make[1]: *** [arch/x86/xenomai/hal_32.o] Error 1
->=20
-> make: *** [arch/x86/xenomai] Error 2
->=20
-> =20
->=20
-> =20
->=20
-> =20
->=20
-> Can someone tell me what to do ?
->=20
-> =20
->=20
-> Thanks.
->=20
-> =20
->=20
-> Regards,
->=20
-> =20
->=20
-> --=20
->=20
-> Nicolas VEYSSIERE
->=20
-> =20
->=20
->=20
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
-
---=20
-Philippe.
-
-
+R3JlYXQgISB0aGFuayB5b3UgIQ0KDQoNClJlZ2FyZHMsDQoNCi0tIA0KTmljb2xhcyBWRVlTU0lF
+UkUNCg0KDQotLS0tLU1lc3NhZ2UgZCdvcmlnaW5lLS0tLS0NCkRlwqA6IFBoaWxpcHBlIEdlcnVt
+IFttYWlsdG86cnBtQHhlbm9tYWkub3JnXSANCkVudm95w6nCoDogbWVyY3JlZGkgMjIganVpbiAy
+MDExIDExOjMzDQrDgMKgOiBWRVlTU0lFUkUgTmljb2xhcw0KQ2PCoDogeGVub21haS1oZWxwQGdu
+YS5vcmcNCk9iamV0wqA6IFJlOiBbWGVub21haS1oZWxwXSBYZW5vbWFpIDIuNS42IGFuZCAyLjYu
+MzguOCBrZXJuZWwNCg0KT24gV2VkLCAyMDExLTA2LTIyIGF0IDEwOjU1ICswMjAwLCBWRVlTU0lF
+UkUgTmljb2xhcyB3cm90ZToNCj4gU2FtZSB0aGluZyBoZXJlLCBJIHRyaWVkIHRvIHBhdGNoIGxp
+bnV4IDIuNi4zOCB3aXRoIHRoZSBsYXRlc3QgYWRlb3MNCj4gcGF0Y2gNCj4gKGh0dHA6Ly9kb3du
+bG9hZC5nbmEub3JnL2FkZW9zL3BhdGNoZXMvdjIuNi94ODYvYWRlb3MtaXBpcGUtMi42LjM4Ljgt
+eDg2LTIuMTAtMDAucGF0Y2gpIGJ1dCB0aGUga2VybmVsIGNvbXBpbGF0aW9uIGZhaWxlZCA6DQo+
+IA0KPiAgDQoNClN1cHBvcnQgZm9yIGxhdGVuY3kgd2F0Y2hkb2cgaXMgZGlzY29udGludWVkIHN0
+YXJ0aW5nIGZyb20gMi42LjM4Lg0KDQpkaWZmIC0tZ2l0IGEva3NyYy9hcmNoL3g4Ni9oYWxfMzIu
+YyBiL2tzcmMvYXJjaC94ODYvaGFsXzMyLmMNCmluZGV4IDVmNWZmMmMuLmRlMjFjOTAgMTAwNjQ0
+DQotLS0gYS9rc3JjL2FyY2gveDg2L2hhbF8zMi5jDQorKysgYi9rc3JjL2FyY2gveDg2L2hhbF8z
+Mi5jDQpAQCAtMzM3LDcgKzMzNyw3IEBAIGludCBydGhhbF9hcmNoX2luaXQodm9pZCkNCiAJCXJ0
+aGFsX3NtaV9yZXN0b3JlKCk7DQogCQlyZXR1cm4gLUVOT0RFVjsNCiAJfQ0KLSNpZmRlZiBDT05G
+SUdfR0VORVJJQ19DTE9DS0VWRU5UUw0KKyNpZiBMSU5VWF9WRVJTSU9OX0NPREUgPCBLRVJORUxf
+VkVSU0lPTigyLDYsMzgpICYmIGRlZmluZWQoQ09ORklHX0dFTkVSSUNfQ0xPQ0tFVkVOVFMpDQog
+CWlmIChubWlfd2F0Y2hkb2cgPT0gTk1JX0lPX0FQSUMpIHsNCiAJCXByaW50aygiWGVub21haTog
+Tk1JIGtlcm5lbCB3YXRjaGRvZyBzZXQgdG8gTk1JX0lPX0FQSUMgKG5taV93YXRjaGRvZz0xKS5c
+biINCiAJCSAgICAgICAiICAgICAgICAgVGhpcyB3aWxsIGRpc2FibGUgdGhlIExBUElDIGFzIGEg
+Y2xvY2sgZGV2aWNlLCBhbmRcbiINCj4gDQo+ICANCj4gDQo+IOKApuKApg0KPiANCj4gICBMRCAg
+ICAgIGFyY2gveDg2L3BjaS9idWlsdC1pbi5vDQo+IA0KPiAgIENDICAgICAgYXJjaC94ODYvcG93
+ZXIvY3B1Lm8NCj4gDQo+ICAgQ0MgICAgICBhcmNoL3g4Ni9wb3dlci9oaWJlcm5hdGVfMzIubw0K
+PiANCj4gICBBUyAgICAgIGFyY2gveDg2L3Bvd2VyL2hpYmVybmF0ZV9hc21fMzIubw0KPiANCj4g
+ICBMRCAgICAgIGFyY2gveDg2L3Bvd2VyL2J1aWx0LWluLm8NCj4gDQo+ICAgQ0MgICAgICBhcmNo
+L3g4Ni92aWRlby9mYmRldi5vDQo+IA0KPiAgIExEICAgICAgYXJjaC94ODYvdmlkZW8vYnVpbHQt
+aW4ubw0KPiANCj4gICBDQyAgICAgIGFyY2gveDg2L3hlbm9tYWkvaGFsXzMyLm8NCj4gDQo+IGFy
+Y2gveDg2L3hlbm9tYWkvaGFsXzMyLmM6IEluIGZ1bmN0aW9uICdydGhhbF9hcmNoX2luaXQnOg0K
+PiANCj4gYXJjaC94ODYveGVub21haS9oYWxfMzIuYzozNDE6IGVycm9yOiAnbm1pX3dhdGNoZG9n
+JyB1bmRlY2xhcmVkIChmaXJzdA0KPiB1c2UgaW4gdGhpcyBmdW5jdGlvbikNCj4gDQo+IGFyY2gv
+eDg2L3hlbm9tYWkvaGFsXzMyLmM6MzQxOiBlcnJvcjogKEVhY2ggdW5kZWNsYXJlZCBpZGVudGlm
+aWVyIGlzDQo+IHJlcG9ydGVkIG9ubHkgb25jZQ0KPiANCj4gYXJjaC94ODYveGVub21haS9oYWxf
+MzIuYzozNDE6IGVycm9yOiBmb3IgZWFjaCBmdW5jdGlvbiBpdCBhcHBlYXJzDQo+IGluLikNCj4g
+DQo+IGFyY2gveDg2L3hlbm9tYWkvaGFsXzMyLmM6MzQxOiBlcnJvcjogJ05NSV9JT19BUElDJyB1
+bmRlY2xhcmVkIChmaXJzdA0KPiB1c2UgaW4gdGhpcyBmdW5jdGlvbikNCj4gDQo+IEF0IHRvcCBs
+ZXZlbDoNCj4gDQo+IGNjMTogd2FybmluZzogdW5yZWNvZ25pemVkIGNvbW1hbmQgbGluZSBvcHRp
+b24NCj4gIi1Xbm8tdW51c2VkLWJ1dC1zZXQtdmFyaWFibGUiDQo+IA0KPiBtYWtlWzFdOiAqKiog
+W2FyY2gveDg2L3hlbm9tYWkvaGFsXzMyLm9dIEVycm9yIDENCj4gDQo+IG1ha2U6ICoqKiBbYXJj
+aC94ODYveGVub21haV0gRXJyb3IgMg0KPiANCj4gIA0KPiANCj4gIA0KPiANCj4gIA0KPiANCj4g
+Q2FuIHNvbWVvbmUgdGVsbCBtZSB3aGF0IHRvIGRvID8NCj4gDQo+ICANCj4gDQo+IFRoYW5rcy4N
+Cj4gDQo+ICANCj4gDQo+IFJlZ2FyZHMsDQo+IA0KPiAgDQo+IA0KPiAtLSANCj4gDQo+IE5pY29s
+YXMgVkVZU1NJRVJFDQo+IA0KPiAgDQo+IA0KPiANCj4gX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX18NCj4gWGVub21haS1oZWxwIG1haWxpbmcgbGlzdA0KPiBY
+ZW5vbWFpLWhlbHBAZ25hLm9yZw0KPiBodHRwczovL21haWwuZ25hLm9yZy9saXN0aW5mby94ZW5v
+bWFpLWhlbHANCg0KLS0gDQpQaGlsaXBwZS4NCg0KDQo=
 
