@@ -1,64 +1,60 @@
-Message-ID: <4DEA1D6E.7050000@domain.hid>
-Date: Sat, 04 Jun 2011 13:56:30 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <4E02162A.9060004@domain.hid>
+Date: Wed, 22 Jun 2011 09:19:54 -0700
+From: David Wiebe <dwiebe2@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-15
+References: <BANLkTi=qe3CqD9U_T3nF6xBN+nZNbxF7Gg@domain.hid>	
+	<4E00A476.2080006@domain.hid> <4E01977E.1080202@domain.hid>	
+	<4E01AB2C.4070409@domain.hid> <1308733051.2159.12.camel@domain.hid>
+In-Reply-To: <1308733051.2159.12.camel@domain.hid>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Sender: jan.kiszka@domain.hid
-Subject: [Adeos-main] [PATCH] ipipe: x86: Fix 64-bit IRQ exit path
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/options/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
+Subject: Re: [Xenomai-help] rt_dev_ioctl
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
 To: Philippe Gerum <rpm@xenomai.org>
-Cc: adeos-main <adeos-main@gna.org>
+Cc: xenomai@xenomai.org
 
-From: Jan Kiszka <jan.kiszka@domain.hid>
+On 11-06-22 01:57 AM, Philippe Gerum wrote:
+Still not compiling.
 
-We need to skip of rbp in return now as it is saved to the stack on
-entry.
+> On Wed, 2011-06-22 at 01:43 -0700, David Wiebe wrote:
+>> Hello,
+>>
+>> I'm re-writing my code to work with xenomai and I don't know how to get
+>> rt_dev_ioctl to compile in my program.
+>>
+>> #include<rtdk.h>  in my program doesn't help
+>
+> #include<rtdm/rtdm.h>
+>
+>> david@domain.hid$
+>> arm-none-linux-gnueabi-gcc -o xenomai-spi-eth-00002 $CFLAGS
+>> xenomai-spi-eth-00002.c $LDFLAGS -I
+>> /home/david/122720101858-beagleboard-working-set/kernel/linux/include/
+>> xenomai-spi-eth-00002.c: In function 'main':
+>> xenomai-spi-eth-00002.c:137: warning: implicit declaration of function
+>> 'rt_dev_open'
+>> xenomai-spi-eth-00002.c:145: warning: implicit declaration of function
+>> 'rt_dev_ioctl'
+>> /tmp/ccZErCuj.o: In function `main':
+>> xenomai-spi-eth-00002.c:(.text+0x2c4): undefined reference to `rt_dev_open'
+>> xenomai-spi-eth-00002.c:(.text+0x318): undefined reference to `rt_dev_ioctl'
+>> collect2: ld returned 1 exit status
+>>
+>>
+>> David
+>>
+>>
+>> _______________________________________________
+>> Xenomai-help mailing list
+>> Xenomai-help@domain.hid
+>> https://mail.gna.org/listinfo/xenomai-help
 
-Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
----
-
-FWIW, this makes 2.6.38+ useable with x86-64 (tested with 2.6.38.8 so
-far).
-
- arch/x86/kernel/entry_64.S |    6 ++++++
- 1 files changed, 6 insertions(+), 0 deletions(-)
-
-diff --git a/arch/x86/kernel/entry_64.S b/arch/x86/kernel/entry_64.S
-index ba709ff..ed0f408 100644
---- a/arch/x86/kernel/entry_64.S
-+++ b/arch/x86/kernel/entry_64.S
-@@ -870,8 +870,11 @@ common_interrupt:
- 	jnz ret_from_intr
- 	decl PER_CPU_VAR(irq_count)
- 	leaveq
-+	CFI_RESTORE		rbp
- 	CFI_DEF_CFA_REGISTER	rsp
- 	CFI_ADJUST_CFA_OFFSET	-8
-+	addq $8, %rsp
-+	CFI_ADJUST_CFA_OFFSET	-8
- 	testl $3,CS-ARGOFFSET(%rsp)
- 	jz restore_args
- 	jmp retint_swapgs_notrace
-@@ -1039,8 +1042,11 @@ ENTRY(\sym)
- 	jnz ret_from_intr
- 	decl PER_CPU_VAR(irq_count)
- 	leaveq
-+	CFI_RESTORE		rbp
- 	CFI_DEF_CFA_REGISTER	rsp
- 	CFI_ADJUST_CFA_OFFSET	-8
-+	addq $8, %rsp
-+	CFI_ADJUST_CFA_OFFSET	-8
- 	testl $3,CS-ARGOFFSET(%rsp)
- 	jz restore_args
- 	jmp retint_swapgs_notrace
--- 
-1.7.1
 
