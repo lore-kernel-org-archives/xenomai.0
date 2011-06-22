@@ -1,53 +1,57 @@
-From: Jan Kiszka <jan.kiszka@domain.hid>
-Date: Tue,  7 Jun 2011 16:17:51 +0200
-Message-Id: <1622352fd8c7fec68b8b2c687c7ea1483095d6ac.1307456217.git.jan.kiszka@domain.hid>
-In-Reply-To: <cover.1307456217.git.jan.kiszka@domain.hid>
-References: <cover.1307456217.git.jan.kiszka@domain.hid>
-In-Reply-To: <cover.1307456217.git.jan.kiszka@domain.hid>
-References: <cover.1307456217.git.jan.kiszka@domain.hid>
-Subject: [Adeos-main] [PATCH 1/5] ipipe: x86: Fix irq->vector lookup for
-	IRQ_MOVE_CLEANUP_VECTOR
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/options/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: adeos-main <adeos-main@gna.org>
+Message-ID: <4E0217CC.7000307@domain.hid>
+Date: Wed, 22 Jun 2011 18:26:52 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+References: <BANLkTimKq+oq5oG3d9H+TWs1S0HVCXaPLQ@mail.gmail.com>	<4E01E4D1.2090601@domain.hid>
+	<BANLkTim268o3835dTxxbCccf-vM1Z9=NYg@domain.hid>
+In-Reply-To: <BANLkTim268o3835dTxxbCccf-vM1Z9=NYg@domain.hid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] booting on pandaboard
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: suresh reddy <sureshreddy.balijepalli@domain.hid>
+Cc: Xenomai help <xenomai@xenomai.org>
 
-The IRQ migration IRQ has no irq_cfg and is outside of the range
-ipipe_apic_irq_vector can handle. This causes oopses when
-__ipipe_get_ioapic_irq_vector is processing it.
+On 06/22/2011 05:58 PM, suresh reddy wrote:
+> On 22 June 2011 14:49, Gilles Chanteperdrix <
+> gilles.chanteperdrix@xenomai.org> wrote:
+> 
+>> On 06/22/2011 02:33 PM, suresh reddy wrote:
+>>> console=ttyS2,115200n8
+>>
+>> console is ttyO2, not ttyS2.
+>>
+> 
+> 
+> Dear Giles ,
+> that is not problem because of ttys2 or O2 settings . I followed
+> http://omappedia.org/wiki/Minimal-FS_Booting
+> 
+> that and  the below bootargs
+> 
+> fatload mmc 0:1 0x80000000 uImage
+> setenv bootargs ro elevator=noop vram=32M
+> mem=460M@0x80000000mem=256M@0xA0000000root=/dev/mmcblk0p2
+> console=ttyO2,115200n8 fixrtc earlyprintk  bootm
+> 0x80000000
+> 
+> 
+> still i did not saw anything on my terminal . then only i sent a mail to
+> xenomai help mailing list .
 
-Reported-by: Franz Engel <franz_lambert_engel@domain.hid>
-Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
----
- arch/x86/kernel/apic/io_apic.c |    8 ++++++--
- 1 files changed, 6 insertions(+), 2 deletions(-)
+Then there is probably something wrong in your configuration. Please try
+the configuration I pointed you to.
 
-diff --git a/arch/x86/kernel/apic/io_apic.c b/arch/x86/kernel/apic/io_apic.c
-index 9b84f05..db1e9f3 100644
---- a/arch/x86/kernel/apic/io_apic.c
-+++ b/arch/x86/kernel/apic/io_apic.c
-@@ -3967,8 +3967,12 @@ int acpi_get_override_irq(u32 gsi, int *trigger, int *polarity)
- #ifdef CONFIG_IPIPE
- unsigned __ipipe_get_ioapic_irq_vector(int irq)
- {
--	return irq >= IPIPE_FIRST_APIC_IRQ && irq < IPIPE_NR_XIRQS ?
--		ipipe_apic_irq_vector(irq) : irq_cfg(irq)->vector;
-+	if (irq >= IPIPE_FIRST_APIC_IRQ && irq < IPIPE_NR_XIRQS)
-+		return ipipe_apic_irq_vector(irq);
-+	else if (irq == IRQ_MOVE_CLEANUP_VECTOR)
-+		return irq;
-+	else
-+		return irq_cfg(irq)->vector;
- }
- #endif /* CONFIG_IPIPE */
- 
+http://sisyphus.hd.free.fr/~gilles/omap4_panda_config
+
 -- 
-1.7.1
-
+					    Gilles.
 
