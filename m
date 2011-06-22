@@ -1,11 +1,12 @@
 From: Sambasiva Rao Manchili <sambasiva.manchili@domain.hid>
-Date: Wed, 22 Jun 2011 12:58:38 +0200
-Message-ID: <509DA52866E38F47878413CF102D751F70A7E43FFE@poseidon.nexus-ag.com>
+Date: Wed, 22 Jun 2011 13:09:22 +0200
+Message-ID: <509DA52866E38F47878413CF102D751F70A7E43FFF@poseidon.nexus-ag.com>
 References: <18303_1308739447_4E01C777_18303_558_1_ECB646CBB62FD044927FDEDF0252D3E701E388B3612E@THSONEA01CMS03P.one.grp>
-In-Reply-To: <18303_1308739447_4E01C777_18303_558_1_ECB646CBB62FD044927FDEDF0252D3E701E388B3612E@THSONEA01CMS03P.one.grp>
+	<509DA52866E38F47878413CF102D751F70A7E43FFE@poseidon.nexus-ag.com>
+In-Reply-To: <509DA52866E38F47878413CF102D751F70A7E43FFE@poseidon.nexus-ag.com>
 Content-Language: en-US
 Content-Type: multipart/alternative;
-	boundary="_000_509DA52866E38F47878413CF102D751F70A7E43FFEposeidonnexus_"
+	boundary="_000_509DA52866E38F47878413CF102D751F70A7E43FFFposeidonnexus_"
 MIME-Version: 1.0
 Subject: Re: [Xenomai-help] Kernel panic on boot with 2.5.6
 List-Id: Help regarding installation and common use of Xenomai
@@ -17,11 +18,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: VEYSSIERE Nicolas <nicolas.veyssiere@domain.hid>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Sambasiva Rao Manchili <sambasiva.manchili@domain.hid>, VEYSSIERE Nicolas <nicolas.veyssiere@domain.hid>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
---_000_509DA52866E38F47878413CF102D751F70A7E43FFEposeidonnexus_
+--_000_509DA52866E38F47878413CF102D751F70A7E43FFFposeidonnexus_
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+
+Hi Nicolas,
+The following link helped in my case....
+<http://ubuntuforums.org/archive/index.php/t-148761.html>
+
+Please have a look.
+Samba.
+
+________________________________
+From: xenomai-help-bounces@domain.hid [mailto:xenomai-help-bounces@domain.hid] On=
+ Behalf Of Sambasiva Rao Manchili
+Sent: Wednesday, 22. June, 2011 12:59
+To: VEYSSIERE Nicolas; xenomai@xenomai.org
+Subject: Re: [Xenomai-help] Kernel panic on boot with 2.5.6
 
 HI Nicolas,
 For me similar panic was solved by adding
@@ -85,7 +100,14 @@ s email by mistake, please notify the sender immediately, and delete the em=
 ail from your system. You are prohibited from copying, disseminating or oth=
 erwise using the email or any attachment.
 
---_000_509DA52866E38F47878413CF102D751F70A7E43FFEposeidonnexus_
+________________________________
+This email and any attachment may contain confidential information which is=
+ intended for use only by the addressee(s) named above. If you received thi=
+s email by mistake, please notify the sender immediately, and delete the em=
+ail from your system. You are prohibited from copying, disseminating or oth=
+erwise using the email or any attachment.
+
+--_000_509DA52866E38F47878413CF102D751F70A7E43FFFposeidonnexus_
 Content-Type: text/html; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 
@@ -145,6 +167,36 @@ DIV.Section1 {
  </o:shapelayout></xml><![endif]-->
 </head>
 <body lang=3D"FR" link=3D"blue" vlink=3D"purple">
+<div dir=3D"ltr" align=3D"left"><span class=3D"504530811-22062011"><font co=
+lor=3D"#0000ff" size=3D"2" face=3D"Arial">Hi Nicolas,</font></span></div>
+<div dir=3D"ltr" align=3D"left"><span class=3D"504530811-22062011"><font co=
+lor=3D"#0000ff" size=3D"2" face=3D"Arial">The following link helped in my c=
+ase....</font></span></div>
+<div dir=3D"ltr" align=3D"left"><span class=3D"504530811-22062011"><font co=
+lor=3D"#0000ff" size=3D"2" face=3D"Arial">&lt;<a href=3D"http://ubuntuforum=
+s.org/archive/index.php/t-148761.html"><font size=3D"3" face=3D"Times New R=
+oman">http://ubuntuforums.org/archive/index.php/t-148761.html</font></a>&gt=
+;</font></span></div>
+<div dir=3D"ltr" align=3D"left"><span class=3D"504530811-22062011"><font co=
+lor=3D"#0000ff" size=3D"2" face=3D"Arial"></font></span>&nbsp;</div>
+<div dir=3D"ltr" align=3D"left"><span class=3D"504530811-22062011"><font co=
+lor=3D"#0000ff" size=3D"2" face=3D"Arial">Please have a look.</font></span>=
+</div>
+<div dir=3D"ltr" align=3D"left"><span class=3D"504530811-22062011"><font co=
+lor=3D"#0000ff" size=3D"2" face=3D"Arial">Samba.</font></span></div>
+<br>
+<div dir=3D"ltr" lang=3D"en-us" class=3D"OutlookMessageHeader" align=3D"lef=
+t">
+<hr tabindex=3D"-1">
+<font size=3D"2" face=3D"Tahoma"><b>From:</b> xenomai-help-bounces@domain.hid =
+[mailto:xenomai-help-bounces@domain.hid]
+<b>On Behalf Of </b>Sambasiva Rao Manchili<br>
+<b>Sent:</b> Wednesday, 22. June, 2011 12:59<br>
+<b>To:</b> VEYSSIERE Nicolas; xenomai@xenomai.org<br>
+<b>Subject:</b> Re: [Xenomai-help] Kernel panic on boot with 2.5.6<br>
+</font><br>
+</div>
+<div></div>
 <div dir=3D"ltr" align=3D"left"><span class=3D"499055610-22062011"><font co=
 lor=3D"#0000ff" size=3D"2" face=3D"Arial">HI Nicolas,</font></span></div>
 <div dir=3D"ltr" align=3D"left"><span class=3D"499055610-22062011"><font co=
@@ -270,6 +322,14 @@ EYSSIERE</span><o:p></o:p></p>
 </div>
 <br>
 <hr>
+<font color=3D"gray" size=3D"1" face=3D"Arial">This email and any attachmen=
+t may contain confidential information which is intended for use only by th=
+e addressee(s) named above. If you received this email by mistake, please n=
+otify the sender immediately, and delete
+ the email from your system. You are prohibited from copying, disseminating=
+ or otherwise using the email or any attachment.<br>
+</font><br>
+<hr>
 <font face=3D"Arial" color=3D"Gray" size=3D"1">This email and any attachmen=
 t may contain confidential information which is intended for use only by th=
 e addressee(s) named above. If you received this email by mistake, please n=
@@ -280,6 +340,6 @@ otify the sender immediately, and delete
 </body>
 </html>
 
---_000_509DA52866E38F47878413CF102D751F70A7E43FFEposeidonnexus_--
+--_000_509DA52866E38F47878413CF102D751F70A7E43FFFposeidonnexus_--
 
 
