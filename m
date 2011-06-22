@@ -1,58 +1,70 @@
-MIME-Version: 1.0
-In-Reply-To: <4DF72535.8010700@domain.hid>
-References: <BANLkTi=4KnpNyzx73XqHErLT9_5bQWHnHg@domain.hid>
-	<4DF723D2.5080200@domain.hid> <4DF72535.8010700@domain.hid>
-Date: Tue, 14 Jun 2011 18:19:49 +0800
-Message-ID: <BANLkTi=2KAgzwrb-CZMYNHadUOU1Mi75Ew@domain.hid>
-From: AKS <aungkyas@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Subject: Re: [Adeos-main] xenomai-runtime package for Ubuntu (can we get
- 2.6.38 hard real time kernel with it?)
-Reply-To: aungkyas@domain.hid
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/options/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: adeos-main@gna.org
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <4E02162A.9060004@domain.hid>
+References: <BANLkTi=qe3CqD9U_T3nF6xBN+nZNbxF7Gg@domain.hid>
+	<4E00A476.2080006@domain.hid> <4E01977E.1080202@domain.hid>
+	<4E01AB2C.4070409@domain.hid> <1308733051.2159.12.camel@domain.hid>
+	<4E02162A.9060004@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Date: Wed, 22 Jun 2011 18:28:58 +0200
+Message-ID: <1308760138.2159.92.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] rt_dev_ioctl
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: David Wiebe <dwiebe2@domain.hid>
+Cc: xenomai@xenomai.org
 
-Hi Jan and Alex
+On Wed, 2011-06-22 at 09:19 -0700, David Wiebe wrote:
+> On 11-06-22 01:57 AM, Philippe Gerum wrote:
+> Still not compiling.
+> 
 
-Thanks for the pointers and appreciated. Cheers!
+Your build flags are likely wrong. Did you get them via xeno-config?
 
-On 6/14/11, Jan Kiszka <jan.kiszka@domain.hid> wrote:
-> On 2011-06-14 11:03, Alexey Galakhov wrote:
->>> My other question is that can I compile a 2.6.38 kernel, drivers and
->>> rootfile
->>> system with Ubuntu Natty, since that patch and xenomai-runtime do not
->>> limit the kernel number. Can it be possible to build an Ubuntu with
->>> 2.6.38
->>> real time kernel based on Xenomai. I will be glad if anyone can kindly
->>> share
->>> or point me to documentation for xenomai-runtime. Thanks!
->>
->> Maybe. You have to have an ipipe patch for this kernel version. If you
->> don't have one. you may use git version of ipipe and patch the kernel by
->> hand. It is much more complex but doable.
->
-> No need to patch if you clone the ipipe git:
->
-> git://git.denx.de/ipipe-2.6.git ipipe-2.6.38-x86
->
-> Some pending x86 fixes are in
->
-> git://git.kiszka.org/ipipe.git queues/2.6.38-x86
->
-> Just run prepare-kernel against such a checked out tree.
->
-> Jan
->
-> --
-> Siemens AG, Corporate Technology, CT T DE IT 1
-> Corporate Competence Center Embedded Linux
->
+> > On Wed, 2011-06-22 at 01:43 -0700, David Wiebe wrote:
+> >> Hello,
+> >>
+> >> I'm re-writing my code to work with xenomai and I don't know how to get
+> >> rt_dev_ioctl to compile in my program.
+> >>
+> >> #include<rtdk.h>  in my program doesn't help
+> >
+> > #include<rtdm/rtdm.h>
+> >
+> >> david@domain.hid$
+> >> arm-none-linux-gnueabi-gcc -o xenomai-spi-eth-00002 $CFLAGS
+> >> xenomai-spi-eth-00002.c $LDFLAGS -I
+> >> /home/david/122720101858-beagleboard-working-set/kernel/linux/include/
+> >> xenomai-spi-eth-00002.c: In function 'main':
+> >> xenomai-spi-eth-00002.c:137: warning: implicit declaration of function
+> >> 'rt_dev_open'
+> >> xenomai-spi-eth-00002.c:145: warning: implicit declaration of function
+> >> 'rt_dev_ioctl'
+> >> /tmp/ccZErCuj.o: In function `main':
+> >> xenomai-spi-eth-00002.c:(.text+0x2c4): undefined reference to `rt_dev_open'
+> >> xenomai-spi-eth-00002.c:(.text+0x318): undefined reference to `rt_dev_ioctl'
+> >> collect2: ld returned 1 exit status
+> >>
+> >>
+> >> David
+> >>
+> >>
+> >> _______________________________________________
+> >> Xenomai-help mailing list
+> >> Xenomai-help@domain.hid
+> >> https://mail.gna.org/listinfo/xenomai-help
+> 
+
+-- 
+Philippe.
+
+
 
