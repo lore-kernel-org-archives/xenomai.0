@@ -1,12 +1,12 @@
 From: VEYSSIERE Nicolas <nicolas.veyssiere@domain.hid>
-Date: Wed, 22 Jun 2011 13:10:06 +0200
-Message-ID: <17296_1308741006_4E01CD8E_17296_18611_1_ECB646CBB62FD044927FDEDF0252D3E701E388B361AA@THSONEA01CMS03P.one.grp>
+Date: Wed, 22 Jun 2011 13:11:42 +0200
+Message-ID: <2150_1308741102_4E01CDEE_2150_5994_1_ECB646CBB62FD044927FDEDF0252D3E701E388B361B0@domain.hid>
 References: <18303_1308739447_4E01C777_18303_558_1_ECB646CBB62FD044927FDEDF0252D3E701E388B3612E@THSONEA01CMS03P.one.grp>
-	<4E01CA9A.2040709@domain.hid>
-In-Reply-To: <4E01CA9A.2040709@domain.hid>
+	<509DA52866E38F47878413CF102D751F70A7E43FFE@poseidon.nexus-ag.com>
+In-Reply-To: <509DA52866E38F47878413CF102D751F70A7E43FFE@poseidon.nexus-ag.com>
 Content-Language: fr-FR
-Content-Type: multipart/mixed;
-	boundary="_002_ECB646CBB62FD044927FDEDF0252D3E701E388B361AATHSONEA01CM_"
+Content-Type: multipart/alternative;
+	boundary="_000_ECB646CBB62FD044927FDEDF0252D3E701E388B361B0THSONEA01CM_"
 MIME-Version: 1.0
 Subject: Re: [Xenomai-help] Kernel panic on boot with 2.5.6
 List-Id: Help regarding installation and common use of Xenomai
@@ -18,297 +18,456 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Sambasiva Rao Manchili <sambasiva.manchili@domain.hid>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
---_002_ECB646CBB62FD044927FDEDF0252D3E701E388B361AATHSONEA01CM_
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+--_000_ECB646CBB62FD044927FDEDF0252D3E701E388B361B0THSONEA01CM_
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 
-T2ssIEkgbWFuYWdlZCB0byBoYXZlIGEgZmV3IG1vcmUgdHJhY2UsIGlmIHlvdSB3YW50IG1vcmUs
-IEkgd2lsbCBoYXZlIHRvIGVuYWJsZSBmcmFtZWJ1ZmZlci4NCg0KQmVjYXVzZSBpdCBpcyBxdWl0
-ZSBsb25nLCBJIHdpbGwgbm90IGNvcHkgaXQsIEkgd2lsbCBzZW5kIGEgc2NyZWVuc2hvdC4NCg0K
-DQoNCi0tIA0KTmljb2xhcyBWRVlTU0lFUkUNCg0KDQotLS0tLU1lc3NhZ2UgZCdvcmlnaW5lLS0t
-LS0NCkRlwqA6IEdpbGxlcyBDaGFudGVwZXJkcml4IFttYWlsdG86Z2lsbGVzLmNoYW50ZXBlcmRy
-aXhAeGVub21haS5vcmddIA0KRW52b3nDqcKgOiBtZXJjcmVkaSAyMiBqdWluIDIwMTEgMTI6NTgN
-CsOAwqA6IFZFWVNTSUVSRSBOaWNvbGFzDQpDY8KgOiB4ZW5vbWFpLWhlbHBAZ25hLm9yZw0KT2Jq
-ZXTCoDogUmU6IFtYZW5vbWFpLWhlbHBdIEtlcm5lbCBwYW5pYyBvbiBib290IHdpdGggMi41LjYN
-Cg0KT24gMDYvMjIvMjAxMSAxMjo0NCBQTSwgVkVZU1NJRVJFIE5pY29sYXMgd3JvdGU6DQo+IEhl
-bGxvLA0KPiANCj4gSSBzdWNjZXNmdWxseSBidWlsZCBhIDIuNi4zOC44IGtlcm5lbCB3aXRoIHRo
-ZSBsYXRlc3QgYWRlb3MgcGF0Y2ggYW5kIFhlbm9tYWkgMi41LjYsIGJ1dCBpdCBrZXJuZWwgcGFu
-aWMgOg0KPiANCj4gWyAgICAxLjE5NTg3OF0gUGlkOiAxLCBjb21tOiBzd2FwcGVyIFRhaW50ZWQ6
-IEcgICAgICAgICBEIFcgICAgIDIuNi4zOC14ZW5vbWFpLXI2ICMxDQo+IFsgICAgMS4xOTY4Nzhd
-IENhbGwgVHJhY2U6DQo+IFsgICAgMS4xOTY4NzhdICBbPGMxNGFlOTc5Pl0gPyBwYW5pYysweDUw
-LzB4MTQ1DQo+IFsgICAgMS4xOTc4NzhdICBbPGMxMDMxMjUwPl0gPyBkb19leGl0KzB4NWMvMHg2
-YmUNCj4gWyAgICAxLjE5ODg3N10gIFs8YzE0YjA3MWM+XSA/IF9yYXdfc3Bpbl91bmxvY2tfaXJx
-cmVzdG9yZSsweGUvMHgxMA0KPiBbICAgIDEuMTk5ODc3XSAgWzxjMTAyZTQ4Nz5dID8ga21zZ19k
-dW1wKzB4MzUvMHhiNQ0KPiBbICAgIDEuMjAwODc3XSAgWzxjMTRiMWIzMj5dID8gb29wc19lbmQr
-MHhhMC8weGE4DQo+IFsgICAgMS4yMDE4NzddICBbPGMxMDFiNDQ4Pl0gPyBub19jb250ZXh0KzB4
-MTEwLzB4MTFhDQo+IFsgICAgMS4yMDE4NzddICBbPGMxMDFiNTcwPl0gPyBfX2JhZF9hcmVhX25v
-c2VtYXBob3JlKzB4MTFlLzB4MTI2DQo+IFsgICAgMS4yMDI4NzddICBbPGMxMDFiNTg1Pl0gPyBi
-YWRfYXJlYV9ub3NlbWFwaG9yZSsweGQvMHgxMA0KPiBbICAgIDEuMjAzODc3XSAgWzxjMTRiMzJj
-MT5dID8gZG9fcGFnZV9mYXVsdCsweDFjMC8weDM2Yg0KPiBbICAgIDEuMjAzODc3XSAgWzxjMTAx
-NDRkYT5dID8gX19pcGlwZV9oYW5kbGVfZXhjZXB0aW9uKzB4MjRmLzB4Mjg4DQo+IFsgICAgMS4y
-MDM4NzddICBbPGMxNGIxMWFmPl0gPyBlcnJvcl9jb2RlKzB4NWYvMHg3MA0KPiBbICAgIDEuMjA0
-ODc2XSAgWzxjMTA3MzZmZT5dID8gX194aXJxX2VuZCsweDEyLzB4MmUNCj4gWyAgICAxLjIwNTg3
-Nl0gIFs8YzEwNzQ3MmE+XSA/IGlwaXBlX3JlZ2lzdGVyX2RvbWFpbisweDFkOC8weDFlNA0KPiBb
-ICAgIDEuMjA1ODc2XSAgWzxjMTA4ZTQ2ZT5dID8gcnRoYWxfaW5pdCsweDE3ZC8weDIwYw0KPiBb
-ICAgIDEuMjA2ODc2XSAgWzxjMTM5ZTA5OD5dID8gcnRoYWxfZG9tYWluX2VudHJ5KzB4MC8weDM5
-DQo+IFsgICAgMS4yMDc4NzZdICBbPGMxNzA2YzNkPl0gPyBfX3hlbm9fc3lzX2luaXQrMHg0MS8w
-eDI2MQ0KPiBbICAgIDEuMjA4ODc2XSAgWzxjMTA4YTRhMj5dID8gcG11X2Rldl9hbGxvYysweDY0
-LzB4N2QNCj4gWyAgICAxLjIwODg3Nl0gIFs8YzEwMDEwNzY+XSA/IGRvX29uZV9pbml0Y2FsbCsw
-eDcxLzB4MTMzDQo+IFsgICAgMS4yMDk4NzZdICBbPGMxNzA2YmZjPl0gPyBfX3hlbm9fc3lzX2lu
-aXQrMHgwLzB4MjYxDQo+IFsgICAgMS4yMTA4NzZdICBbPGMxNmY0MzgyPl0gPyBrZXJuZWxfaW5p
-dCsweDEyOC8weDFhNA0KPiBbICAgIDEuMjExODc1XSAgWzxjMTZmNDI1YT5dID8ga2VybmVsX2lu
-aXQrMHgwLzB4MWE0DQo+IFsgICAgMS4yMTI4NzVdICBbPGMxMDAyZDA2Pl0gPyBrZXJuZWxfdGhy
-ZWFkX2hlbHBlcisweDYvMHgxMA0KPiANCj4gDQo+IENvdWxkIGl0IGJlIGEgcHJvYmxlbSB3aXRo
-IHRoZSBmYWN0IHRoYXQgdGhpcyBzeXN0ZW0gaXMgYSB2aXJ0dWFsIGJveCBWTSA/DQoNCkl0IGlz
-IGhhcmQgdG8gdGVsbCwgd2UgZG8gbm90IGhhdmUgdGhlIGVycm9yIG1lc3NhZ2UsIHdoaWNoIHNo
-b3VsZCBiZQ0KcmlnaHQgYWJvdmUgdGhpcyBzdGFjayB0cmFjZS4gUGxlYXNlIHBvc3QgdGhlIGZ1
-bGwgbG9ncywgYXMgdGhlcmUgbWF5IGJlDQpvdGhlciBpbnRlcmVzdGluZyBkZXRhaWxzIGluIHRo
-ZSBsb2dzLg0KDQo+IA0KPiANCj4gVGhhbmtzLg0KPiANCj4gLS0NCj4gTmljb2xhcyBWRVlTU0lF
-UkUNCj4gDQo+IA0KPiANCj4gDQo+IF9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fDQo+IFhlbm9tYWktaGVscCBtYWlsaW5nIGxpc3QNCj4gWGVub21haS1oZWxw
-QGduYS5vcmcNCj4gaHR0cHM6Ly9tYWlsLmduYS5vcmcvbGlzdGluZm8veGVub21haS1oZWxwDQoN
-Cg0KLS0gDQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgR2lsbGVzLg0K
+This doesn't seems to work for me :(
 
---_002_ECB646CBB62FD044927FDEDF0252D3E701E388B361AATHSONEA01CM_
-Content-Type: image/png; name="screenshot.80.png"
-Content-Description: screenshot.80.png
-Content-Disposition: attachment; filename="screenshot.80.png"; size=12972;
-	creation-date="Wed, 22 Jun 2011 13:13:54 GMT";
-	modification-date="Wed, 22 Jun 2011 13:13:55 GMT"
-Content-Transfer-Encoding: base64
 
-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
+thanks anyway.
 
---_002_ECB646CBB62FD044927FDEDF0252D3E701E388B361AATHSONEA01CM_--
+--
+Nicolas VEYSSIERE
+
+De : Sambasiva Rao Manchili [mailto:sambasiva.manchili@domain.hid]
+Envoy=E9 : mercredi 22 juin 2011 12:59
+=C0 : VEYSSIERE Nicolas; xenomai@xenomai.org
+Objet : RE: Kernel panic on boot with 2.5.6
+
+HI Nicolas,
+For me similar panic was solved by adding
+noapic and acpi=3Dnoirq options in Kernel Boot parameters while booting edi=
+t and add them and  please see if it helps.
+
+Samba
+
+
+________________________________
+From: xenomai-help-bounces@domain.hid [mailto:xenomai-help-bounces@domain.hid] On=
+ Behalf Of VEYSSIERE Nicolas
+Sent: Wednesday, 22. June, 2011 12:44
+To: xenomai@xenomai.org
+Subject: [Xenomai-help] Kernel panic on boot with 2.5.6
+Hello,
+
+I succesfully build a 2.6.38.8 kernel with the latest adeos patch and Xenom=
+ai 2.5.6, but it kernel panic :
+
+[    1.195878] Pid: 1, comm: swapper Tainted: G         D W     2.6.38-xeno=
+mai-r6 #1
+[    1.196878] Call Trace:
+[    1.196878]  [<c14ae979>] ? panic+0x50/0x145
+[    1.197878]  [<c1031250>] ? do_exit+0x5c/0x6be
+[    1.198877]  [<c14b071c>] ? _raw_spin_unlock_irqrestore+0xe/0x10
+[    1.199877]  [<c102e487>] ? kmsg_dump+0x35/0xb5
+[    1.200877]  [<c14b1b32>] ? oops_end+0xa0/0xa8
+[    1.201877]  [<c101b448>] ? no_context+0x110/0x11a
+[    1.201877]  [<c101b570>] ? __bad_area_nosemaphore+0x11e/0x126
+[    1.202877]  [<c101b585>] ? bad_area_nosemaphore+0xd/0x10
+[    1.203877]  [<c14b32c1>] ? do_page_fault+0x1c0/0x36b
+[    1.203877]  [<c10144da>] ? __ipipe_handle_exception+0x24f/0x288
+[    1.203877]  [<c14b11af>] ? error_code+0x5f/0x70
+[    1.204876]  [<c10736fe>] ? __xirq_end+0x12/0x2e
+[    1.205876]  [<c107472a>] ? ipipe_register_domain+0x1d8/0x1e4
+[    1.205876]  [<c108e46e>] ? rthal_init+0x17d/0x20c
+[    1.206876]  [<c139e098>] ? rthal_domain_entry+0x0/0x39
+[    1.207876]  [<c1706c3d>] ? __xeno_sys_init+0x41/0x261
+[    1.208876]  [<c108a4a2>] ? pmu_dev_alloc+0x64/0x7d
+[    1.208876]  [<c1001076>] ? do_one_initcall+0x71/0x133
+[    1.209876]  [<c1706bfc>] ? __xeno_sys_init+0x0/0x261
+[    1.210876]  [<c16f4382>] ? kernel_init+0x128/0x1a4
+[    1.211875]  [<c16f425a>] ? kernel_init+0x0/0x1a4
+[    1.212875]  [<c1002d06>] ? kernel_thread_helper+0x6/0x10
+
+
+Could it be a problem with the fact that this system is a virtual box VM ?
+
+
+Thanks.
+
+--
+Nicolas VEYSSIERE
+
+________________________________
+This email and any attachment may contain confidential information which is=
+ intended for use only by the addressee(s) named above. If you received thi=
+s email by mistake, please notify the sender immediately, and delete the em=
+ail from your system. You are prohibited from copying, disseminating or oth=
+erwise using the email or any attachment.
+
+--_000_ECB646CBB62FD044927FDEDF0252D3E701E388B361B0THSONEA01CM_
+Content-Type: text/html; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+
+<META HTTP-EQUIV=3D"Content-Type" CONTENT=3D"text/html; charset=3Diso-8859-=
+1">
+<html xmlns:v=3D"urn:schemas-microsoft-com:vml" xmlns:o=3D"urn:schemas-micr=
+osoft-com:office:office" xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
+xmlns:m=3D"http://schemas.microsoft.com/office/2004/12/omml" xmlns=3D"http:=
+//www.w3.org/TR/REC-html40">
+
+<head>
+
+<meta name=3DGenerator content=3D"Microsoft Word 12 (filtered medium)">
+<!--[if !mso]>
+<style>
+v\:* {behavior:url(#default#VML);}
+o\:* {behavior:url(#default#VML);}
+w\:* {behavior:url(#default#VML);}
+.shape {behavior:url(#default#VML);}
+</style>
+<![endif]-->
+<style>
+<!--
+ /* Font Definitions */
+ @font-face
+	{font-family:"Cambria Math";
+	panose-1:2 4 5 3 5 4 6 3 2 4;}
+@font-face
+	{font-family:Calibri;
+	panose-1:2 15 5 2 2 2 4 3 2 4;}
+@font-face
+	{font-family:Tahoma;
+	panose-1:2 11 6 4 3 5 4 4 2 4;}
+ /* Style Definitions */
+ p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin:0cm;
+	margin-bottom:.0001pt;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";}
+a:link, span.MsoHyperlink
+	{mso-style-priority:99;
+	color:blue;
+	text-decoration:underline;}
+a:visited, span.MsoHyperlinkFollowed
+	{mso-style-priority:99;
+	color:purple;
+	text-decoration:underline;}
+span.EmailStyle17
+	{mso-style-type:personal;
+	font-family:"Calibri","sans-serif";
+	color:windowtext;}
+span.EmailStyle18
+	{mso-style-type:personal-reply;
+	font-family:"Calibri","sans-serif";
+	color:#1F497D;}
+.MsoChpDefault
+	{mso-style-type:export-only;
+	font-size:10.0pt;}
+@page Section1
+	{size:612.0pt 792.0pt;
+	margin:70.85pt 70.85pt 70.85pt 70.85pt;}
+div.Section1
+	{page:Section1;}
+-->
+</style>
+<!--[if gte mso 9]><xml>
+ <o:shapedefaults v:ext=3D"edit" spidmax=3D"1026" />
+</xml><![endif]--><!--[if gte mso 9]><xml>
+ <o:shapelayout v:ext=3D"edit">
+  <o:idmap v:ext=3D"edit" data=3D"1" />
+ </o:shapelayout></xml><![endif]-->
+</head>
+
+<body lang=3DFR link=3Dblue vlink=3Dpurple>
+
+<div class=3DSection1>
+
+<p class=3DMsoNormal><span style=3D'color:#1F497D'>This doesn't seems to wo=
+rk for
+me :(<o:p></o:p></span></p>
+
+<p class=3DMsoNormal><span style=3D'color:#1F497D'><o:p>&nbsp;</o:p></span>=
+</p>
+
+<p class=3DMsoNormal><span style=3D'color:#1F497D'><o:p>&nbsp;</o:p></span>=
+</p>
+
+<p class=3DMsoNormal><span style=3D'color:#1F497D'>thanks anyway.<o:p></o:p=
+></span></p>
+
+<p class=3DMsoNormal><span style=3D'color:#1F497D'><o:p>&nbsp;</o:p></span>=
+</p>
+
+<div>
+
+<p class=3DMsoNormal style=3D'line-height:9.0pt;mso-line-height-rule:exactl=
+y'><span
+style=3D'font-size:10.0pt;font-family:"Courier New";color:#1F497D'>-- </spa=
+n><span
+style=3D'font-size:10.0pt;font-family:"Courier New";color:#1F497D'><o:p></o=
+:p></span></p>
+
+<p class=3DMsoNormal style=3D'line-height:9.0pt;mso-line-height-rule:exactl=
+y'><span
+style=3D'font-size:10.0pt;font-family:"Courier New";color:#1F497D'>Nicolas
+VEYSSIERE</span><span style=3D'color:#1F497D'><o:p></o:p></span></p>
+
+</div>
+
+<p class=3DMsoNormal><span style=3D'color:#1F497D'><o:p>&nbsp;</o:p></span>=
+</p>
+
+<div>
+
+<div style=3D'border:none;border-top:solid #B5C4DF 1.0pt;padding:3.0pt 0cm =
+0cm 0cm'>
+
+<p class=3DMsoNormal><b><span style=3D'font-size:10.0pt;font-family:"Tahoma=
+","sans-serif"'>De&nbsp;:</span></b><span
+style=3D'font-size:10.0pt;font-family:"Tahoma","sans-serif"'> Sambasiva Rao
+Manchili [mailto:sambasiva.manchili@domain.hid] <br>
+<b>Envoy=E9&nbsp;:</b> mercredi 22 juin 2011 12:59<br>
+<b>=C0&nbsp;:</b> VEYSSIERE Nicolas; xenomai@xenomai.org<br>
+<b>Objet&nbsp;:</b> RE: Kernel panic on boot with 2.5.6<o:p></o:p></span></=
+p>
+
+</div>
+
+</div>
+
+<p class=3DMsoNormal><o:p>&nbsp;</o:p></p>
+
+<p class=3DMsoNormal><span style=3D'font-size:10.0pt;font-family:"Arial","s=
+ans-serif";
+color:blue'>HI Nicolas,</span><span style=3D'font-size:12.0pt;font-family:"=
+Times New Roman","serif"'><o:p></o:p></span></p>
+
+<p class=3DMsoNormal><span style=3D'font-size:10.0pt;font-family:"Arial","s=
+ans-serif";
+color:blue'>For me similar panic was solved by adding </span><span
+style=3D'font-size:12.0pt;font-family:"Times New Roman","serif"'><o:p></o:p=
+></span></p>
+
+<p class=3DMsoNormal><span style=3D'font-size:10.0pt;font-family:"Arial","s=
+ans-serif";
+color:blue'>noapic and acpi=3Dnoirq options in Kernel Boot parameters while
+booting edit and add them and&nbsp; please see if it helps.</span><span
+style=3D'font-size:12.0pt;font-family:"Times New Roman","serif"'><o:p></o:p=
+></span></p>
+
+<p class=3DMsoNormal><span style=3D'font-size:12.0pt;font-family:"Times New=
+ Roman","serif"'>&nbsp;<o:p></o:p></span></p>
+
+<p class=3DMsoNormal><span style=3D'font-size:10.0pt;font-family:"Arial","s=
+ans-serif";
+color:blue'>Samba</span><span style=3D'font-size:12.0pt;font-family:"Times =
+New Roman","serif"'><o:p></o:p></span></p>
+
+<p class=3DMsoNormal><span style=3D'font-size:12.0pt;font-family:"Times New=
+ Roman","serif"'>&nbsp;<o:p></o:p></span></p>
+
+<p class=3DMsoNormal><span style=3D'font-size:12.0pt;font-family:"Times New=
+ Roman","serif"'><o:p>&nbsp;</o:p></span></p>
+
+<div class=3DMsoNormal align=3Dcenter style=3D'text-align:center'><span lan=
+g=3DEN-US
+style=3D'font-size:12.0pt;font-family:"Times New Roman","serif"'>
+
+<hr size=3D2 width=3D"100%" align=3Dcenter>
+
+</span></div>
+
+<p class=3DMsoNormal style=3D'margin-bottom:12.0pt'><b><span lang=3DEN-US
+style=3D'font-size:10.0pt;font-family:"Tahoma","sans-serif"'>From:</span></=
+b><span
+lang=3DEN-US style=3D'font-size:10.0pt;font-family:"Tahoma","sans-serif"'>
+xenomai-help-bounces@domain.hid [mailto:xenomai-help-bounces@domain.hid] <b>On Be=
+half
+Of </b>VEYSSIERE Nicolas<br>
+<b>Sent:</b> Wednesday, 22. June, 2011 12:44<br>
+<b>To:</b> xenomai@xenomai.org<br>
+<b>Subject:</b> [Xenomai-help] Kernel panic on boot with 2.5.6</span><span
+lang=3DEN-US style=3D'font-size:12.0pt;font-family:"Times New Roman","serif=
+"'><o:p></o:p></span></p>
+
+<p class=3DMsoNormal>Hello,<o:p></o:p></p>
+
+<p class=3DMsoNormal><o:p>&nbsp;</o:p></p>
+
+<p class=3DMsoNormal>I succesfully build a 2.6.38.8 kernel with the latest =
+adeos
+patch and Xenomai 2.5.6, but it kernel panic :<o:p></o:p></p>
+
+<p class=3DMsoNormal><o:p>&nbsp;</o:p></p>
+
+<p class=3DMsoNormal><span style=3D'font-family:"Courier New"'>[&nbsp;&nbsp=
+;&nbsp;
+1.195878] Pid: 1, comm: swapper Tainted:
+G&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; D W&nbsp;&nbsp;&nbsp;&nbs=
+p;
+2.6.38-xenomai-r6 #1<o:p></o:p></span></p>
+
+<p class=3DMsoNormal><span style=3D'font-family:"Courier New"'>[&nbsp;&nbsp=
+;&nbsp;
+1.196878] Call Trace:<o:p></o:p></span></p>
+
+<p class=3DMsoNormal><span style=3D'font-family:"Courier New"'>[&nbsp;&nbsp=
+;
+&nbsp;1.196878]&nbsp; [&lt;c14ae979&gt;] ? panic+0x50/0x145<o:p></o:p></spa=
+n></p>
+
+<p class=3DMsoNormal><span style=3D'font-family:"Courier New"'>[&nbsp;&nbsp=
+;
+&nbsp;1.197878]&nbsp; [&lt;c1031250&gt;] ? do_exit+0x5c/0x6be<o:p></o:p></s=
+pan></p>
+
+<p class=3DMsoNormal><span style=3D'font-family:"Courier New"'>[&nbsp;&nbsp=
+;
+&nbsp;1.198877]&nbsp; [&lt;c14b071c&gt;] ? _raw_spin_unlock_irqrestore+0xe/=
+0x10<o:p></o:p></span></p>
+
+<p class=3DMsoNormal><span style=3D'font-family:"Courier New"'>[&nbsp;&nbsp=
+;
+&nbsp;1.199877]&nbsp; [&lt;c102e487&gt;] ? kmsg_dump+0x35/0xb5<o:p></o:p></=
+span></p>
+
+<p class=3DMsoNormal><span style=3D'font-family:"Courier New"'>[&nbsp;&nbsp=
+;
+&nbsp;1.200877]&nbsp; [&lt;c14b1b32&gt;] ? oops_end+0xa0/0xa8<o:p></o:p></s=
+pan></p>
+
+<p class=3DMsoNormal><span style=3D'font-family:"Courier New"'>[&nbsp;&nbsp=
+;
+&nbsp;1.201877]&nbsp; [&lt;c101b448&gt;] ? no_context+0x110/0x11a<o:p></o:p=
+></span></p>
+
+<p class=3DMsoNormal><span style=3D'font-family:"Courier New"'>[&nbsp;&nbsp=
+;
+&nbsp;1.201877]&nbsp; [&lt;c101b570&gt;] ? __bad_area_nosemaphore+0x11e/0x1=
+26<o:p></o:p></span></p>
+
+<p class=3DMsoNormal><span style=3D'font-family:"Courier New"'>[&nbsp;&nbsp=
+;
+&nbsp;1.202877]&nbsp; [&lt;c101b585&gt;] ? bad_area_nosemaphore+0xd/0x10<o:=
+p></o:p></span></p>
+
+<p class=3DMsoNormal><span style=3D'font-family:"Courier New"'>[&nbsp;&nbsp=
+;
+&nbsp;1.203877]&nbsp; [&lt;c14b32c1&gt;] ? do_page_fault+0x1c0/0x36b<o:p></=
+o:p></span></p>
+
+<p class=3DMsoNormal><span style=3D'font-family:"Courier New"'>[&nbsp;&nbsp=
+;
+&nbsp;1.203877]&nbsp; [&lt;c10144da&gt;] ? __ipipe_handle_exception+0x24f/0=
+x288<o:p></o:p></span></p>
+
+<p class=3DMsoNormal><span style=3D'font-family:"Courier New"'>[&nbsp;&nbsp=
+;
+&nbsp;1.203877]&nbsp; [&lt;c14b11af&gt;] ? error_code+0x5f/0x70<o:p></o:p><=
+/span></p>
+
+<p class=3DMsoNormal><span style=3D'font-family:"Courier New"'>[&nbsp;&nbsp=
+;
+&nbsp;1.204876]&nbsp; [&lt;c10736fe&gt;] ? __xirq_end+0x12/0x2e<o:p></o:p><=
+/span></p>
+
+<p class=3DMsoNormal><span style=3D'font-family:"Courier New"'>[&nbsp;&nbsp=
+;
+&nbsp;1.205876]&nbsp; [&lt;c107472a&gt;] ? ipipe_register_domain+0x1d8/0x1e=
+4<o:p></o:p></span></p>
+
+<p class=3DMsoNormal><span style=3D'font-family:"Courier New"'>[&nbsp;&nbsp=
+;
+&nbsp;1.205876]&nbsp; [&lt;c108e46e&gt;] ? rthal_init+0x17d/0x20c<o:p></o:p=
+></span></p>
+
+<p class=3DMsoNormal><span style=3D'font-family:"Courier New"'>[&nbsp;&nbsp=
+;
+&nbsp;1.206876]&nbsp; [&lt;c139e098&gt;] ? rthal_domain_entry+0x0/0x39<o:p>=
+</o:p></span></p>
+
+<p class=3DMsoNormal><span style=3D'font-family:"Courier New"'>[&nbsp;&nbsp=
+;
+&nbsp;1.207876]&nbsp; [&lt;c1706c3d&gt;] ? __xeno_sys_init+0x41/0x261<o:p><=
+/o:p></span></p>
+
+<p class=3DMsoNormal><span style=3D'font-family:"Courier New"'>[&nbsp;&nbsp=
+;
+&nbsp;1.208876]&nbsp; [&lt;c108a4a2&gt;] ? pmu_dev_alloc+0x64/0x7d<o:p></o:=
+p></span></p>
+
+<p class=3DMsoNormal><span style=3D'font-family:"Courier New"'>[&nbsp;&nbsp=
+;
+&nbsp;1.208876]&nbsp; [&lt;c1001076&gt;] ? do_one_initcall+0x71/0x133<o:p><=
+/o:p></span></p>
+
+<p class=3DMsoNormal><span style=3D'font-family:"Courier New"'>[&nbsp;&nbsp=
+;
+&nbsp;1.209876]&nbsp; [&lt;c1706bfc&gt;] ? __xeno_sys_init+0x0/0x261<o:p></=
+o:p></span></p>
+
+<p class=3DMsoNormal><span style=3D'font-family:"Courier New"'>[&nbsp;&nbsp=
+;
+&nbsp;1.210876]&nbsp; [&lt;c16f4382&gt;] ? kernel_init+0x128/0x1a4<o:p></o:=
+p></span></p>
+
+<p class=3DMsoNormal><span style=3D'font-family:"Courier New"'>[&nbsp;&nbsp=
+;
+&nbsp;1.211875]&nbsp; [&lt;c16f425a&gt;] ? kernel_init+0x0/0x1a4<o:p></o:p>=
+</span></p>
+
+<p class=3DMsoNormal><span style=3D'font-family:"Courier New"'>[&nbsp;&nbsp=
+;
+&nbsp;1.212875]&nbsp; [&lt;c1002d06&gt;] ? kernel_thread_helper+0x6/0x10<o:=
+p></o:p></span></p>
+
+<p class=3DMsoNormal><o:p>&nbsp;</o:p></p>
+
+<p class=3DMsoNormal><o:p>&nbsp;</o:p></p>
+
+<p class=3DMsoNormal>Could it be a problem with the fact that this system i=
+s a
+virtual box VM ?<o:p></o:p></p>
+
+<p class=3DMsoNormal><o:p>&nbsp;</o:p></p>
+
+<p class=3DMsoNormal><o:p>&nbsp;</o:p></p>
+
+<p class=3DMsoNormal>Thanks.<o:p></o:p></p>
+
+<p class=3DMsoNormal><o:p>&nbsp;</o:p></p>
+
+<p class=3DMsoNormal style=3D'line-height:9.0pt;mso-line-height-rule:exactl=
+y'><span
+style=3D'font-size:10.0pt;font-family:"Courier New"'>-- <o:p></o:p></span><=
+/p>
+
+<p class=3DMsoNormal style=3D'line-height:9.0pt;mso-line-height-rule:exactl=
+y'><span
+style=3D'font-size:10.0pt;font-family:"Courier New"'>Nicolas VEYSSIERE</spa=
+n><o:p></o:p></p>
+
+<p class=3DMsoNormal><span style=3D'font-size:12.0pt;font-family:"Times New=
+ Roman","serif"'><o:p>&nbsp;</o:p></span></p>
+
+<div class=3DMsoNormal align=3Dcenter style=3D'text-align:center'><span
+style=3D'font-size:12.0pt;font-family:"Times New Roman","serif"'>
+
+<hr size=3D2 width=3D"100%" align=3Dcenter>
+
+</span></div>
+
+<p class=3DMsoNormal><span style=3D'font-size:7.5pt;font-family:"Arial","sa=
+ns-serif";
+color:gray'>This email and any attachment may contain confidential informat=
+ion
+which is intended for use only by the addressee(s) named above. If you rece=
+ived
+this email by mistake, please notify the sender immediately, and delete the
+email from your system. You are prohibited from copying, disseminating or
+otherwise using the email or any attachment.</span><span style=3D'font-size=
+:12.0pt;
+font-family:"Times New Roman","serif"'><o:p></o:p></span></p>
+
+</div>
+
+</body>
+
+</html>
+
+--_000_ECB646CBB62FD044927FDEDF0252D3E701E388B361B0THSONEA01CM_--
 
