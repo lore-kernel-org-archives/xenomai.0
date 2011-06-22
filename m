@@ -1,12 +1,9 @@
-Message-ID: <4E085FFF.9020300@domain.hid>
-Date: Mon, 27 Jun 2011 12:48:31 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <BANLkTi=tRb1bZ=ZSkzhvps62xt8PMzNb3A@mail.gmail.com>
-In-Reply-To: <BANLkTi=tRb1bZ=ZSkzhvps62xt8PMzNb3A@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Xenomai Unknown
+Date: Wed, 22 Jun 2011 15:45:52 +0200
+Message-ID: <BANLkTinOEhJtFVTL6DM5u+J4BJrkEyBqKA@mail.gmail.com>
+From: Adrien LEMAITRE <adrien.lemaitre@domain.hid>
+Content-Type: multipart/alternative; boundary=20cf3005db5add434404a64d2fb2
+Subject: [Xenomai-help] Problem during compilation
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -16,37 +13,67 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Ashish Budhiraja <ashishmach@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 06/27/2011 10:41 AM, Ashish Budhiraja wrote:
-> Hello Everyone,
-> 
-> I am Ashish, very new to this group, I don't know anything about Xenomai but
-> I want to have increased Real Time
-> support for my Roboard-100. So as per the tutorial on this
-> http://geonobot-wiki.toile-libre.org/doku.php?id=robotics:computing:xenomai_install_on_roboard
-> link I did everything right now when I boot I get this message saying udevd:
-> unknown 'Xenomai'  or something similar, and I can only boot to
-> text console i.e. if I try to go for my gui my keyboard gets jammed.
-> 
-> I just want to know is there a possible way to check if Xenomai is perfectly
-> installed or not though I looked carefully I didn't find any errors during
-> the installation
-> process but now it is showing 'Xenomai' unknown.
-> 
-> Please guide me how to proceed or tell me something to read.
+--20cf3005db5add434404a64d2fb2
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: quoted-printable
 
-In order to know whether Xenomai is working, try and run one of the
-tests which come with Xenomai, "latency", for instance.
+Hello,
 
-The issue with udev is probably that you miss a Xenomai group, and the
-udev rules need one, if you want to run applications as an unprivileged
-user as described here:
+i would like to install xenomai on x86 pc, but during compilation i have
+this error:
 
-http://www.xenomai.org/index.php/Non-root_RT
+arch/x86/xenomai/hal_32.c: In function =91rthal_arch_init=92:
+arch/x86/xenomai/hal_32.c:348: error: =91nmi_watchdog=92 undeclared (first =
+use
+in this function)
+arch/x86/xenomai/hal_32.c:348: error: (Each undeclared identifier is
+reported only once
+arch/x86/xenomai/hal_32.c:348: error: for each function it appears in.)
+arch/x86/xenomai/hal_32.c:348: error: =91NMI_IO_APIC=92 undeclared (first u=
+se in
+this function)
+make[1]: *** [arch/x86/xenomai/hal_32.o] Erreur 1
+make: *** [arch/x86/xenomai] Erreur 2
+
+I use for this compilation adeos-ipipe-2.6.38.8-x86-2.10-00.patch with
+linux-2.6.38.8 and xenomai-2.5.6.
+I tried with i386_defconfig configuration and with my computer's
+configuration (/boot/config-2.6.32-24-generic).
+In these cases always the same error.
+
+Is it an incompatibility of version between linux and xenomai or a problem
+with configuration?
+
+do you have an idea?
 
 
--- 
-                                                                Gilles.
+thanks,
+
+Adrien Lema=EEtre.
+
+--20cf3005db5add434404a64d2fb2
+Content-Type: text/html; charset=windows-1252
+Content-Transfer-Encoding: quoted-printable
+
+Hello,<br><br>i would like to install xenomai on x86 pc, but during compila=
+tion i have this error:<br><br><div style=3D"margin-left: 40px;">arch/x86/x=
+enomai/hal_32.c: In function =91rthal_arch_init=92:<br>arch/x86/xenomai/hal=
+_32.c:348: error: =91nmi_watchdog=92 undeclared (first use in this function=
+)<br>
+arch/x86/xenomai/hal_32.c:348: error: (Each undeclared identifier is report=
+ed only once<br>arch/x86/xenomai/hal_32.c:348: error: for each function it =
+appears in.)<br>arch/x86/xenomai/hal_32.c:348: error: =91NMI_IO_APIC=92 und=
+eclared (first use in this function)<br>
+make[1]: *** [arch/x86/xenomai/hal_32.o] Erreur 1<br>make: *** [arch/x86/xe=
+nomai] Erreur 2<br></div><br>I use for this compilation adeos-ipipe-2.6.38.=
+8-x86-2.10-00.patch with linux-2.6.38.8 and xenomai-2.5.6.<br>I tried with =
+i386_defconfig configuration and with my computer&#39;s configuration (/boo=
+t/config-2.6.32-24-generic).<br>
+In these cases always the same error. <br><br>Is it an incompatibility of v=
+ersion between linux and xenomai or a problem with configuration?<br><br>do=
+ you have an idea?<br><br><br>thanks,<br><br>Adrien Lema=EEtre.<br>
+
+--20cf3005db5add434404a64d2fb2--
 
