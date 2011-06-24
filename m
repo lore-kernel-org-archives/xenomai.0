@@ -1,5 +1,5 @@
-Message-ID: <4E038F1E.6010001@domain.hid>
-Date: Thu, 23 Jun 2011 21:08:14 +0200
+Message-ID: <4E04362C.2040800@domain.hid>
+Date: Fri, 24 Jun 2011 09:01:00 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <4DDA66CF.2010307@domain.hid>
@@ -156,21 +156,16 @@ On 06/23/2011 11:37 AM, Jan Kiszka wrote:
 > do_cleanup_event runs before do_task_exit_event when terminating the
 > last task. The former destroys the sem heap, the latter fires the delete
 > hook which then tries to free msendq.fastlock to an invalid heap.
-> 
-> Should be fixable by setting sem_heap NULL in the ppd on destroy and
-> skipping the fastlock release in __task_delete_hook if the heap pointer
-> is found like that.
 
-It will not work: the ppd is destroyed by the time we reach the taskexit
-event. And this order is not guaranteed either.
+Here is a proposed solution, we add a reference counter to the sys_ppd 
+structure, decrement it both in taskexit and cleanup events, and only 
+the last calls the destructors.
 
-One way to get the guaranteed order would be, when mapping a shadow, to
-increment the mm reference count, and dereference the mm when unmapping,
-this way, the cleanup event would be guaranteed to happen after the last
-shadow exits.
+http://git.xenomai.org/?p=xenomai-gch.git;a=commit;h=35a7cf786986816fba2da8e633da276819d952d7
 
-Or we can handle a reference count on the sys ppd, and when this count
-reaches zero, do the detach. We would no longer need the cleanup event.
+This relies on the patch which makes xnshadow_ppd_get working in these 
+contexts.
+
 
 -- 
                                                                 Gilles.
