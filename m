@@ -1,5 +1,5 @@
-Message-ID: <4E046C3A.2000306@domain.hid>
-Date: Fri, 24 Jun 2011 12:51:38 +0200
+Message-ID: <4E0478F7.40706@domain.hid>
+Date: Fri, 24 Jun 2011 13:45:59 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <BANLkTimFiO9JAdvYjpnx9bpvFo2W1zYX3g@domain.hid>
@@ -25,14 +25,44 @@ On 06/24/2011 11:57 AM, suresh reddy wrote:
 > my booting process getting freezed after the message
 > 
 > uncompressing the kernel.
-> 
-> the modules i moved on to the sd card are  modules.builtin , modules.order,
-> Module.symvers.
-> 
-> I used printk to display booting messages on console .
 
-According to these logs, this kernel boots fine. So, we do not have
-enough information to help you.
+Ah, you mean it freezes right after the message:
+ "[    0.645019] Xenomai: debug mode enabled."
+
+Ok. Let us start from the beginning. Please try to follow exactly this 
+procedure, and tell me if you get a working uImage:
+
+mkdir /tmp/xeno
+cd /tmp/xeno
+wget http://www.codesourcery.com/sgpp/lite/arm/portal/package7851/public/arm-none-linux-gnueabi/arm-2010.09-50-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2
+tar -xvjf arm-2010.09-50-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2
+export PATH=/tmp/xeno/arm-2010.09/bin:$PATH
+git clone --depth 1 git://git.xenomai.org/xenomai-2.5.git
+git clone --depth 1 --branch for-ipipe-2.6.37-arm git://git.xenomai.org/ipipe-gch.git
+cd ipipe-gch
+../xenomai-2.5/scripts/prepare-kernel.sh --arch=arm --linux=.
+wget -O .config http://sisyphus.hd.free.fr/~gilles/omap4_panda_config
+yes "" | make ARCH=arm oldconfig
+make -j 8 ARCH=arm CROSS_COMPILE=arm-none-linux-gnueabi- uImage
+
+The uImage will be found in /tmp/xeno/ipipe-gch/arch/arm/boot/uImage
+The result of this compilation works for me. If it does not work for
+you, please download it here:
+http://sisyphus.hd.free.fr/~gilles/uImage-panda
+
+And tell me if it still does not work.
+
+> (Sourcery G++ Lite 2009q1-203)
+
+I thought we found out that you could not compile with this version? 
+
+> [    0.000000] Kernel command line: ro elevator=noop vram=32M
+> mem=460M@0x80000000 mem=256M@0xA0000000 root=/dev/mmcblk0p2
+> console=ttyO2,115200n8 fixrtc earlyprintk bootm 0x80000000
+
+You have some problem here: bootm is a u-boot command it should not
+end up on the kernel command line. Also, in a first step, please remove
+the "mem" arguments.
 
 -- 
                                                                 Gilles.
