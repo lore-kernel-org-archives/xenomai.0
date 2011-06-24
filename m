@@ -1,15 +1,15 @@
-Message-ID: <4E04362C.2040800@domain.hid>
-Date: Fri, 24 Jun 2011 09:01:00 +0200
+Message-ID: <4E04EC53.3010305@domain.hid>
+Date: Fri, 24 Jun 2011 21:58:11 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4DDA66CF.2010307@domain.hid>
-	<4DFDCBEA.6010905@domain.hid>	<4DFDDAB8.4090709@domain.hid>
-	<4DFDF2E1.1060106@domain.hid> <4DFF7E4A.3070807@domain.hid>
-	<4E030956.5030702@domain.hid>
-In-Reply-To: <4E030956.5030702@domain.hid>
+References: <4E0264CE.9060508@domain.hid> <4E02ED7E.7040204@domain.hid>
+	<4E0301C4.8080605@domain.hid> <4E0302B3.3090201@domain.hid>
+	<4E0323A7.2040107@domain.hid> <4E03253C.6090208@domain.hid>
+In-Reply-To: <4E03253C.6090208@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [PULL] native: Fix msendq fastlock leakage
+Subject: Re: [Xenomai-core] RFC: use a pool of pre-allocated buffers in
+	rt_printf
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -21,151 +21,307 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: Xenomai core <Xenomai-core@domain.hid>
 
-On 06/23/2011 11:37 AM, Jan Kiszka wrote:
-> On 2011-06-20 19:07, Jan Kiszka wrote:
->> On 2011-06-19 15:00, Gilles Chanteperdrix wrote:
->>> On 06/19/2011 01:17 PM, Gilles Chanteperdrix wrote:
->>>> On 06/19/2011 12:14 PM, Gilles Chanteperdrix wrote:
->>>>> I am working on this ppd cleanup issue again, I am asking for help to
->>>>> find a fix in -head for all cases where the sys_ppd is needed during
->>>>> some cleanup.
+On 06/23/2011 01:36 PM, Jan Kiszka wrote:
+> On 2011-06-23 13:29, Gilles Chanteperdrix wrote:
+>> On 06/23/2011 11:09 AM, Jan Kiszka wrote:
+>>> On 2011-06-23 11:05, Gilles Chanteperdrix wrote:
+>>>> On 06/23/2011 09:38 AM, Jan Kiszka wrote:
+>>>>>> +#ifdef CONFIG_XENO_FASTSYNCH
+>>>>>> +	if (xeno_get_current() != XN_NO_HANDLE &&
+>>>>>> +	    !(xeno_get_current_mode() & XNRELAX) && buf_pool_get()) {
+>>>>>> +		struct print_buffer *old;
+>>>>>> +
+>>>>>> +		old = buf_pool_get();
+>>>>>> +		while (old != buffer) {
+>>>>>> +			buffer = old;
+>>>>>> +			old = buf_pool_cmpxchg(buffer, buffer->pool_next);
 >>>>>
->>>>> The problem is that when the ppd cleanup is invoked:
->>>>> - we have no guarantee that current is a thread from the Xenomai
->>>>> application;
->>>>> - if it is, current->mm is NULL.
->>>>>
->>>>> So, associating the sys_ppd to either current or current->mm does not
->>>>> work. What we could do is pass the sys_ppd to all the other ppds cleanup
->>>>> handlers, this would fix cases such as freeing mutexes fastlock, but
->>>>> that does not help when the sys_ppd is needed during a thread deletion hook.
->>>>>
->>>>> I would like to find a solution where simply calling xnsys_ppd_get()
->>>>> will work, where we do not have an xnsys_ppd_get for each context, such
->>>>> as for instance xnsys_ppd_get_by_mm/xnsys_ppd_get_by_task_struct,
->>>>> because it would be too error-prone.
->>>>>
->>>>> Any idea anyone?
+>>>>> Though unlikely, it's still possible: The buffer obtained in the last
+>>>>> round may have been dequeued meanwhile and then freed (in case a third
+>>>>> buffer was released to the pool, filling it up to pool_capacity).
 >>>>
->>>> The best I could come up with: use a ptd to store the mm currently 
->>>> being cleaned up, so that xnshadow_ppd_get continues to work, even
->>>> in the middle of a cleanup.
+>>>> I do not get it: it seems to me that if the current head (that is
+>>>> buf_pool_get()) is freed, then the cmpxchg will fail, so we will loop
+>>>> and try again.
 >>>
->>> In order to also get xnshadow_ppd_get to work in task deletion hooks 
->>> (which is needed to avoid the issue at the origin of this thread), we 
->>> also need to set this ptd upon shadow mapping, so it is still there 
->>> when reaching the task deletion hook (where current->mm may be NULL). 
->>> Hence the patch:
->>>
->>> diff --git a/ksrc/nucleus/shadow.c b/ksrc/nucleus/shadow.c
->>> index b243600..6bc4210 100644
->>> --- a/ksrc/nucleus/shadow.c
->>> +++ b/ksrc/nucleus/shadow.c
->>> @@ -65,6 +65,11 @@ int nkthrptd;
->>>  EXPORT_SYMBOL_GPL(nkthrptd);
->>>  int nkerrptd;
->>>  EXPORT_SYMBOL_GPL(nkerrptd);
->>> +int nkmmptd;
->>> +EXPORT_SYMBOL_GPL(nkmmptd);
->>> +
->>> +#define xnshadow_mmptd(t) ((t)->ptd[nkmmptd])
->>> +#define xnshadow_mm(t) ((struct mm_struct *)xnshadow_mmptd(t))
+>>> Problematic is the dereferencing of the stale buffer pointer obtained
+>>> during the last cmpxchg or via buf_pool_get. This happens before the new
+>>> cmpxchg.
 >>
->> xnshadow_mm() can now return a no longer existing mm. So no user of
->> xnshadow_mm should ever dereference that pointer. Thus we better change
->> all that user to treat the return value as a void pointer e.g.
->>
->>>  
->>>  struct xnskin_slot {
->>>  	struct xnskin_props *props;
->>> @@ -1304,6 +1309,8 @@ int xnshadow_map(xnthread_t *thread, xncompletion_t __user *u_completion,
->>>  	 * friends.
->>>  	 */
->>>  	xnshadow_thrptd(current) = thread;
->>> +	xnshadow_mmptd(current) = current->mm;
->>> +
->>>  	rthal_enable_notifier(current);
->>>  
->>>  	if (xnthread_base_priority(thread) == 0 &&
->>> @@ -2759,7 +2766,15 @@ static void detach_ppd(xnshadow_ppd_t * ppd)
->>>  
->>>  static inline void do_cleanup_event(struct mm_struct *mm)
->>>  {
->>> +	struct task_struct *p = current;
->>> +	struct mm_struct *old;
->>> +
->>> +	old = xnshadow_mm(p);
->>> +	xnshadow_mmptd(p) = mm;
->>> +
->>>  	ppd_remove_mm(mm, &detach_ppd);
->>> +
->>> +	xnshadow_mmptd(p) = old;
->>
->> I don't have the full picture yet, but that feels racy: If the context
->> over which we clean up that foreign mm is also using xnshadow_mmptd,
->> other threads in that process may dislike this temporary change.
->>
->>>  }
->>>  
->>>  RTHAL_DECLARE_CLEANUP_EVENT(cleanup_event);
->>> @@ -2925,7 +2940,7 @@ EXPORT_SYMBOL_GPL(xnshadow_unregister_interface);
->>>  xnshadow_ppd_t *xnshadow_ppd_get(unsigned muxid)
->>>  {
->>>  	if (xnpod_userspace_p())
->>> -		return ppd_lookup(muxid, current->mm);
->>> +		return ppd_lookup(muxid, xnshadow_mm(current) ?: current->mm);
->>>  
->>>  	return NULL;
->>>  }
->>> @@ -2960,8 +2975,9 @@ int xnshadow_mount(void)
->>>  	sema_init(&completion_mutex, 1);
->>>  	nkthrptd = rthal_alloc_ptdkey();
->>>  	nkerrptd = rthal_alloc_ptdkey();
->>> +	nkmmptd = rthal_alloc_ptdkey();
->>>  
->>> -	if (nkthrptd < 0 || nkerrptd < 0) {
->>> +	if (nkthrptd < 0 || nkerrptd < 0 || nkmmptd < 0) {
->>>  		printk(KERN_ERR "Xenomai: cannot allocate PTD slots\n");
->>>  		return -ENOMEM;
->>>  	}
->>> diff --git a/ksrc/skins/posix/mutex.c b/ksrc/skins/posix/mutex.c
->>> index 6ce75e5..cc86852 100644
->>> --- a/ksrc/skins/posix/mutex.c
->>> +++ b/ksrc/skins/posix/mutex.c
->>> @@ -219,10 +219,6 @@ void pse51_mutex_destroy_internal(pse51_mutex_t *mutex,
->>>  	xnlock_put_irqrestore(&nklock, s);
->>>  
->>>  #ifdef CONFIG_XENO_FASTSYNCH
->>> -	/* We call xnheap_free even if the mutex is not pshared; when
->>> -	   this function is called from pse51_mutexq_cleanup, the
->>> -	   sem_heap is destroyed, or not the one to which the fastlock
->>> -	   belongs, xnheap will simply return an error. */
->>
->> I think this comment is not completely obsolete. It still applies /wrt
->> shared/non-shared.
->>
->>>  	xnheap_free(&xnsys_ppd_get(mutex->attr.pshared)->sem_heap,
->>>  		    mutex->synchbase.fastlock);
->>>  #endif /* CONFIG_XENO_FASTSYNCH */
->>>
->>>
->>
->> If we can resolve that potential race, this looks like a nice solution.
+>> Ok. Got it, that would be a problem only if the stale pointer pointed to
+>> an unmapped area, but ok, better avoid freeing the buffers. I guess it
+>> would not be a problem as applications tend to have a fixed number of
+>> threads anyway.
 > 
-> We still have to address that ordering issue I almost forgot:
-> do_cleanup_event runs before do_task_exit_event when terminating the
-> last task. The former destroys the sem heap, the latter fires the delete
-> hook which then tries to free msendq.fastlock to an invalid heap.
+> That is a risky assumption, proven wrong e.g. by one of our
+> applications. Threads may always be created or destroyed depending on
+> the mode of an application, specifically if it is a larger one.
 
-Here is a proposed solution, we add a reference counter to the sys_ppd 
-structure, decrement it both in taskexit and cleanup events, and only 
-the last calls the destructors.
+Here is another attempt, based on a bitmap.
 
-http://git.xenomai.org/?p=xenomai-gch.git;a=commit;h=35a7cf786986816fba2da8e633da276819d952d7
-
-This relies on the patch which makes xnshadow_ppd_get working in these 
-contexts.
-
+diff --git a/src/rtdk/rt_print.c b/src/rtdk/rt_print.c
+index 93b711a..fb4820f 100644
+--- a/src/rtdk/rt_print.c
++++ b/src/rtdk/rt_print.c
+@@ -28,7 +28,9 @@
+ #include <syslog.h>
+ 
+ #include <rtdk.h>
++#include <nucleus/types.h>	/* For BITS_PER_LONG */
+ #include <asm/xenomai/system.h>
++#include <asm/xenomai/atomic.h>	/* For atomic_cmpxchg */
+ #include <asm-generic/stack.h>
+ 
+ #define RT_PRINT_BUFFER_ENV		"RT_PRINT_BUFFER"
+@@ -37,6 +39,9 @@
+ #define RT_PRINT_PERIOD_ENV		"RT_PRINT_PERIOD"
+ #define RT_PRINT_DEFAULT_PERIOD		100 /* ms */
+ 
++#define RT_PRINT_BUFFERS_COUNT_ENV      "RT_PRINT_BUFFERS_COUNT"
++#define RT_PRINT_DEFAULT_BUFFERS_COUNT  4
++
+ #define RT_PRINT_LINE_BREAK		256
+ 
+ #define RT_PRINT_SYSLOG_STREAM		NULL
+@@ -75,6 +80,12 @@ static pthread_mutex_t buffer_lock;
+ static pthread_cond_t printer_wakeup;
+ static pthread_key_t buffer_key;
+ static pthread_t printer_thread;
++#ifdef CONFIG_XENO_FASTSYNCH
++static xnarch_atomic_t *pool_bitmap;
++static unsigned pool_bitmap_len;
++static unsigned pool_buf_size;
++static unsigned long pool_start, pool_len;
++#endif /* CONFIG_XENO_FASTSYNCH */
+ 
+ static void cleanup_buffer(struct print_buffer *buffer);
+ static void print_buffers(void);
+@@ -243,10 +254,36 @@ static void set_buffer_name(struct print_buffer *buffer, const char *name)
+ 	}
+ }
+ 
++void rt_print_init_inner(struct print_buffer *buffer, size_t size)
++{
++	buffer->size = size;
++
++	memset(buffer->ring, 0, size);
++
++	buffer->read_pos  = 0;
++	buffer->write_pos = 0;
++
++	buffer->prev = NULL;
++
++	pthread_mutex_lock(&buffer_lock);
++
++	buffer->next = first_buffer;
++	if (first_buffer)
++		first_buffer->prev = buffer;
++	first_buffer = buffer;
++
++	buffers++;
++	pthread_cond_signal(&printer_wakeup);
++
++	pthread_mutex_unlock(&buffer_lock);
++}
++
+ int rt_print_init(size_t buffer_size, const char *buffer_name)
+ {
+ 	struct print_buffer *buffer = pthread_getspecific(buffer_key);
+ 	size_t size = buffer_size;
++	unsigned long old_bitmap;
++	unsigned j;
+ 
+ 	if (!size)
+ 		size = default_buffer_size;
+@@ -260,39 +297,56 @@ int rt_print_init(size_t buffer_size, const char *buffer_name)
+ 			return 0;
+ 		}
+ 		cleanup_buffer(buffer);
++		buffer = NULL;
+ 	}
+ 
+-	buffer = malloc(sizeof(*buffer));
+-	if (!buffer)
+-		return ENOMEM;
++#ifdef CONFIG_XENO_FASTSYNCH
++	/* Find a free buffer in the pool */
++	do {
++		unsigned long bitmap;
++		unsigned i;
+ 
+-	buffer->ring = malloc(size);
+-	if (!buffer->ring) {
+-		free(buffer);
+-		return ENOMEM;
+-	}
+-	memset(buffer->ring, 0, size);
++		for (i = 0; i < pool_bitmap_len; i++) {
++			old_bitmap = xnarch_atomic_get(&pool_bitmap[i]);
++			if (old_bitmap)
++				goto acquire;
++		}
+ 
+-	buffer->read_pos  = 0;
+-	buffer->write_pos = 0;
++		goto not_found;
+ 
+-	buffer->size = size;
++	  acquire:
++		do {
++			bitmap = old_bitmap;
++			j = __builtin_ffsl(bitmap) - 1;
++			old_bitmap = xnarch_atomic_cmpxchg(&pool_bitmap[i],
++							   bitmap,
++							   bitmap & ~(1UL << j));
++		} while (old_bitmap != bitmap && old_bitmap);
++		j += i * BITS_PER_LONG;
++	} while (!old_bitmap);
+ 
+-	set_buffer_name(buffer, buffer_name);
++	buffer = (struct print_buffer *)(pool_start + j * pool_buf_size);
+ 
+-	buffer->prev = NULL;
++  not_found:
++#endif /* CONFIG_XENO_FASTSYNCH */
+ 
+-	pthread_mutex_lock(&buffer_lock);
++	if (!buffer) {
++		assert_nrt();
+ 
+-	buffer->next = first_buffer;
+-	if (first_buffer)
+-		first_buffer->prev = buffer;
+-	first_buffer = buffer;
++		buffer = malloc(sizeof(*buffer));
++		if (!buffer)
++			return ENOMEM;
+ 
+-	buffers++;
+-	pthread_cond_signal(&printer_wakeup);
++		buffer->ring = malloc(size);
++		if (!buffer->ring) {
++			free(buffer);
++			return ENOMEM;
++		}
+ 
+-	pthread_mutex_unlock(&buffer_lock);
++		rt_print_init_inner(buffer, size);
++	}
++
++	set_buffer_name(buffer, buffer_name);
+ 
+ 	pthread_setspecific(buffer_key, buffer);
+ 
+@@ -346,12 +400,44 @@ static void cleanup_buffer(struct print_buffer *buffer)
+ {
+ 	struct print_buffer *prev, *next;
+ 
++	assert_nrt();
++
+ 	pthread_setspecific(buffer_key, NULL);
+ 
+ 	pthread_mutex_lock(&buffer_lock);
+ 
+ 	print_buffers();
+ 
++	pthread_mutex_unlock(&buffer_lock);
++
++#ifdef CONFIG_XENO_FASTSYNCH
++	/* Return the buffer to the pool */
++	{
++		unsigned long old_bitmap, bitmap;
++		unsigned i, j;
++
++		if ((unsigned long)buffer - pool_start >= pool_len)
++			goto dofree;
++
++		j = ((unsigned long)buffer - pool_start) / pool_buf_size;
++		i = j / BITS_PER_LONG;
++		j = j % BITS_PER_LONG;
++
++		old_bitmap = xnarch_atomic_get(&pool_bitmap[i]);
++		do {
++			bitmap = old_bitmap;
++			old_bitmap = xnarch_atomic_cmpxchg(&pool_bitmap[i],
++							   bitmap,
++							   bitmap | (1UL << j));
++		} while (old_bitmap != bitmap);
++
++		return;
++	}
++  dofree:
++#endif /* CONFIG_XENO_FASTSYNCH */
++
++	pthread_mutex_lock(&buffer_lock);
++
+ 	prev = buffer->prev;
+ 	next = buffer->next;
+ 
+@@ -523,6 +609,64 @@ void __rt_print_init(void)
+ 	print_period.tv_sec  = period / 1000;
+ 	print_period.tv_nsec = (period % 1000) * 1000000;
+ 
++#ifdef CONFIG_XENO_FASTSYNCH
++	/* Fill the buffer pool */
++	{
++		unsigned buffers_count, i;
++
++		buffers_count = RT_PRINT_DEFAULT_BUFFERS_COUNT;
++
++		value_str = getenv(RT_PRINT_BUFFERS_COUNT_ENV);
++		if (value_str) {
++			errno = 0;
++			buffers_count = strtoul(value_str, NULL, 0);
++			if (errno) {
++				fprintf(stderr, "Invalid %s\n",
++					RT_PRINT_BUFFERS_COUNT_ENV);
++				exit(1);
++			}
++		}
++
++		pool_bitmap_len = (buffers_count + BITS_PER_LONG - 1)
++			/ BITS_PER_LONG;
++		if (!pool_bitmap_len)
++			goto done;
++
++		pool_bitmap = malloc(pool_bitmap_len * sizeof(*pool_bitmap));
++		if (!pool_bitmap) {
++			fprintf(stderr, "Error allocating rt_printf "
++				"buffers\n");
++			exit(1);
++		}
++
++		pool_buf_size = sizeof(struct print_buffer) + default_buffer_size;
++		pool_len = buffers_count * pool_buf_size;
++		pool_start = (unsigned long)malloc(pool_len);
++		if (!pool_start) {
++			fprintf(stderr, "Error allocating rt_printf "
++				"buffers\n");
++			exit(1);
++		}
++
++		for (i = 0; i < buffers_count / BITS_PER_LONG; i++)
++			xnarch_atomic_set(&pool_bitmap[i], ~0UL);
++		if (buffers_count % BITS_PER_LONG)
++			xnarch_atomic_set(&pool_bitmap[i],
++					  (1UL << (buffers_count % BITS_PER_LONG))					  - 1);
++
++		for (i = 0; i < buffers_count; i++) {
++			struct print_buffer *buffer =
++				(struct print_buffer *)
++				(pool_start + i * pool_buf_size);
++
++			buffer->ring = (char *)(buffer + 1);
++
++			rt_print_init_inner(buffer, default_buffer_size);
++		}
++	}
++  done:
++#endif /* CONFIG_XENO_FASTSYNCH */
++
+ 	pthread_mutex_init(&buffer_lock, NULL);
+ 	pthread_key_create(&buffer_key, (void (*)(void*))cleanup_buffer);
+ 
 
 -- 
                                                                 Gilles.
