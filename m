@@ -1,11 +1,11 @@
-Message-ID: <4E074D6D.8070606@domain.hid>
-Date: Sun, 26 Jun 2011 17:17:01 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4E07DF44.1060204@domain.hid>
+Date: Sun, 26 Jun 2011 18:39:16 -0700
+From: David Wiebe <dwiebe2@domain.hid>
 MIME-Version: 1.0
 References: <BANLkTim0Maz-yjXtG90j-=RtLCesRE=hCg@domain.hid>	<4E04C614.6000101@domain.hid>
-	<4E06A4B7.2050906@domain.hid>
-In-Reply-To: <4E06A4B7.2050906@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+	<4E06A4B7.2050906@domain.hid> <4E074D6D.8070606@domain.hid>
+In-Reply-To: <4E074D6D.8070606@domain.hid>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] more questions
 List-Id: Help regarding installation and common use of Xenomai
@@ -17,60 +17,65 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: David Wiebe <dwiebe2@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On 06/26/2011 05:17 AM, David Wiebe wrote:
-> Hello,
-> 
-> I have kernel 2.6.35.9 patched with xenomai for arm(beagleboard xm).
-> 
-> #1. rt_dev_ioctl as replacement for ioctl. My test program compiles, 
-> runs but does not perform as it should. If I change rt_dev_ioctl back to 
-> ioctl, everything works fine. What might I be missing?
-
-Hi,
-
-We do not know
-- which ioctl you are trying to use
-- which driver you have written/loaded to implement this ioctl
-- what you mean by "my program does not perform as it should", what is
-the return value of this rt_dev_ioctl which is supposed to work?
-
-> 
-> #2. rtnet. I wrote a test snippet of code to test the ethernet part. 
-> Prepended the appropriate functions with rt_dev_ and same results as in #1.
-> 
-> I assume that if something wasn't in the library I would get compiler 
-> errors and if the code running on the beagleboard  was bad, I would get 
-> run time errors. I have seen neither.
-
-Again, what driver are you trying to use? What happens when you try and
-configure it?
-
-> 
-> Are there any books or more learning materials out there for me to 
-> study? Any and all feedback appreciated.
-
-I would suggest starting with "Linux device drivers", it would give you
-an idea of how things are divided between drivers and applications.
-xenomai follows the same division. Then you can read the documents
-listed here:
-http://www.xenomai.org/index.php/Included_documentation_summary
-and here:
-http://www.xenomai.org/index.php/Publications
-
-To have a better idea on how to work with xenomai.
-> 
-> David
-> 
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
-> 
-
-
--- 
-                                                                Gilles.
+On 11-06-26 08:17 AM, Gilles Chanteperdrix wrote:
+> On 06/26/2011 05:17 AM, David Wiebe wrote:
+>> Hello,
+>>
+>> I have kernel 2.6.35.9 patched with xenomai for arm(beagleboard xm).
+>>
+>> #1. rt_dev_ioctl as replacement for ioctl. My test program compiles,
+>> runs but does not perform as it should. If I change rt_dev_ioctl back to
+>> ioctl, everything works fine. What might I be missing?
+> Hi,
+>
+> We do not know
+> - which ioctl you are trying to use
+I'm trying to get an spi port on the beagleboard to work in realtime.
+I didn't know there were other ioctl's. I wrote a program with ioctl, 
+tested it to make sure it worked, which it did, then changed ioctl's to 
+rt_dev_ioctl's in hopes that doing so would enable real time behaviour. 
+The program with rt_dev_ioctl's did not run as desired(no spi). I guess 
+I can't simply change ioctl's with rt_dev_ioctl's to enable real time 
+functionality? Do I have to patch xenomai to enable spi or something?
+> - which driver you have written/loaded to implement this ioctl
+I thought changing ioctl for rt_dev_ioctl was all that was required to 
+implement this device in realtime mode. This device is an spi port.
+> - what you mean by "my program does not perform as it should", what is
+> the return value of this rt_dev_ioctl which is supposed to work?
+>
+I watch my oscilloscope for activity on the spi port. regular ioctl 
+worked, rt_dev_ioctl did not. Both programs ran but only one worked.
+>> #2. rtnet. I wrote a test snippet of code to test the ethernet part.
+>> Prepended the appropriate functions with rt_dev_ and same results as in #1.
+>>
+>> I assume that if something wasn't in the library I would get compiler
+>> errors and if the code running on the beagleboard  was bad, I would get
+>> run time errors. I have seen neither.
+> Again, what driver are you trying to use? What happens when you try and
+> configure it?
+>
+So I have to patch the ethernet driver in order for it to work? I though 
+that was taken care of when I patched the kernel with xenomai.
+>> Are there any books or more learning materials out there for me to
+>> study? Any and all feedback appreciated.
+> I would suggest starting with "Linux device drivers", it would give you
+> an idea of how things are divided between drivers and applications.
+> xenomai follows the same division. Then you can read the documents
+> listed here:
+> http://www.xenomai.org/index.php/Included_documentation_summary
+> and here:
+> http://www.xenomai.org/index.php/Publications
+>
+> To have a better idea on how to work with xenomai.
+>> David
+>>
+>> _______________________________________________
+>> Xenomai-help mailing list
+>> Xenomai-help@domain.hid
+>> https://mail.gna.org/listinfo/xenomai-help
+>>
+Thanks!
 
