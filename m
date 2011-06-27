@@ -1,13 +1,10 @@
-Message-ID: <4E07DF44.1060204@domain.hid>
-Date: Sun, 26 Jun 2011 18:39:16 -0700
-From: David Wiebe <dwiebe2@domain.hid>
 MIME-Version: 1.0
-References: <BANLkTim0Maz-yjXtG90j-=RtLCesRE=hCg@domain.hid>	<4E04C614.6000101@domain.hid>
-	<4E06A4B7.2050906@domain.hid> <4E074D6D.8070606@domain.hid>
-In-Reply-To: <4E074D6D.8070606@domain.hid>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] more questions
+Date: Mon, 27 Jun 2011 08:31:54 +0200
+Message-ID: <BANLkTi=2WnfLFC9DVQY81obGPO6_CG_PCA@mail.gmail.com>
+From: Adrien LEMAITRE <adrien.lemaitre@domain.hid>
+Content-Type: multipart/mixed; boundary=20cf307f30801c790404a6abb5d1
+Subject: [Xenomai-help] Program hangs using "rt_task_sleep" in a particular
+	way
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -17,65 +14,198 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 11-06-26 08:17 AM, Gilles Chanteperdrix wrote:
-> On 06/26/2011 05:17 AM, David Wiebe wrote:
->> Hello,
->>
->> I have kernel 2.6.35.9 patched with xenomai for arm(beagleboard xm).
->>
->> #1. rt_dev_ioctl as replacement for ioctl. My test program compiles,
->> runs but does not perform as it should. If I change rt_dev_ioctl back to
->> ioctl, everything works fine. What might I be missing?
-> Hi,
+--20cf307f30801c790404a6abb5d1
+Content-Type: multipart/alternative; boundary=20cf307f30801c78fe04a6abb5cf
+
+--20cf307f30801c78fe04a6abb5cf
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+Hello,
+
+I raise a problem encountered and always present. Before on this configurat=
+ion
+:
+
+- linux kernel : 2.6.29.6
+- adeos patch : adeos-ipipe-2.6.29-arm-1.13-00.patch
+- xenomai : 2.4.8
+- host linux distribution : ubuntu 10.04 (64 bits)
+- compiler : gcc 4.2.1 (buildroot's generated toolchain)
+
+And it is always present with this configuration :
+
+- Linux kernel : 2.6.37
+- Adeos patch : adeos-ipipe-2.6.37-x86-2.9-00.patch
+- Xenomai : 2.5.6
+- Host Linux distribution : Ubuntu 10.04
+- Compiler : gcc-4.4.3
+
+Configuration of kernel:
+
+I used the default configuration of Ubunut 10.04 and i change this:
+In "Power management and ACPI options" :
+- deactivate APM
+- deactivate CPU frequency scaling
+- deactivate ACPI
+- deactivate CPU idle PM support
+In "Device drivers/Input device support/Miscelaneous devices":
+- deactivate PC Speaker support
+In "Processor type and features":
+- deactivate HPET_TIMER
+- deactivate Enable -fstack-protector buffer overflow detection
+(EXPERIMENTAL)
+
+
+We encounter a problem in a particular situation. In the attached
+source, when we change the value passed to rt_task_sleep (line 36), the
+program never returns.
+
+This appears only with values greater or equal to 100000 (and maybe some
+other values between 10000 and 100000) and only when we use
+rt_task_sleep between the two rt_task_spawn calls.
+
+Is there something we've done wrong ? A problem with the kernel
+configuration? Or a bug of Xenomai ?
+
+
+Adrien Lema=EEtre.
+
+--20cf307f30801c78fe04a6abb5cf
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+Hello,<br><br><span id=3D"result_box" class=3D"" lang=3D"en"><span title=3D=
+"Cliquer ici pour voir d&#39;autres traductions" class=3D"hps">I raise</spa=
+n> <span title=3D"Cliquer ici pour voir d&#39;autres traductions" class=3D"=
+hps">a</span> <span title=3D"Cliquer ici pour voir d&#39;autres traductions=
+" class=3D"hps">problem</span> <span title=3D"Cliquer ici pour voir d&#39;a=
+utres traductions" class=3D"hps">encountered</span> <span title=3D"Cliquer =
+ici pour voir d&#39;autres traductions" class=3D"hps">and always present</s=
+pan></span><span id=3D"result_box" class=3D"" lang=3D"en"><span title=3D"Cl=
+iquer ici pour voir d&#39;autres traductions" class=3D"hps">. </span></span=
+><span id=3D"result_box" class=3D"" lang=3D"en"><span title=3D"Cliquer ici =
+pour voir d&#39;autres traductions" class=3D"hps">Before</span> on <span ti=
+tle=3D"Cliquer ici pour voir d&#39;autres traductions" class=3D"hps">this</=
+span> <span title=3D"Cliquer ici pour voir d&#39;autres traductions" class=
+=3D"hps">configuration </span></span>:<br>
+<br><div style=3D"margin-left: 40px;">- linux kernel : 2.6.29.6<br>
+- adeos patch : adeos-ipipe-2.6.29-arm-1.13-00.patch<br>
+- xenomai : 2.4.8<br>
+- host linux distribution : ubuntu 10.04 (64 bits)<br>
+- compiler : gcc 4.2.1 (buildroot&#39;s generated toolchain)<br></div><span=
+ id=3D"result_box" class=3D"" lang=3D"en"><span class=3D"" title=3D"Cliquer=
+ ici pour voir d&#39;autres traductions"></span><br><span title=3D"Cliquer =
+ici pour voir d&#39;autres traductions" class=3D"hps">And it</span> <span t=
+itle=3D"Cliquer ici pour voir d&#39;autres traductions" class=3D"hps">is al=
+ways present</span> <span title=3D"Cliquer ici pour voir d&#39;autres tradu=
+ctions" class=3D"hps">with this configuration</span></span> :<br>
+<br><div style=3D"margin-left: 40px;">- Linux kernel : 2.6.37<br>- Adeos pa=
+tch : adeos-ipipe-2.6.37-x86-2.9-00.patch<br>- Xenomai : 2.5.6<br>- Host Li=
+nux distribution : Ubuntu 10.04<br>- Compiler : gcc-4.4.3<br></div><br>Conf=
+iguration of kernel:<br>
+
+<br>I used the default configuration of Ubunut 10.04 and i change this:<br>=
+<div style=3D"margin-left: 40px;">In &quot;Power management and ACPI option=
+s&quot; :<br><div style=3D"margin-left: 40px;">- <span id=3D"result_box" cl=
+ass=3D"short_text" lang=3D"en"><span title=3D"Cliquer ici pour voir d&#39;a=
+utres traductions" class=3D"hps">deactivate APM</span></span><br>
+<span id=3D"result_box" class=3D"short_text" lang=3D"en"><span title=3D"Cli=
+quer ici pour voir d&#39;autres traductions" class=3D"hps">- </span></span>=
+<span id=3D"result_box" class=3D"short_text" lang=3D"en"><span title=3D"Cli=
+quer ici pour voir d&#39;autres traductions" class=3D"hps">deactivate CPU f=
+requency scaling</span></span><br>
+<span id=3D"result_box" class=3D"short_text" lang=3D"en"><span title=3D"Cli=
+quer ici pour voir d&#39;autres traductions" class=3D"hps">- </span></span>=
+<span id=3D"result_box" class=3D"short_text" lang=3D"en"><span title=3D"Cli=
+quer ici pour voir d&#39;autres traductions" class=3D"hps">deactivate ACPI<=
+/span></span><br>
+<span id=3D"result_box" class=3D"short_text" lang=3D"en"><span title=3D"Cli=
+quer ici pour voir d&#39;autres traductions" class=3D"hps">- </span></span>=
+<span id=3D"result_box" class=3D"short_text" lang=3D"en"><span title=3D"Cli=
+quer ici pour voir d&#39;autres traductions" class=3D"hps">deactivate CPU i=
+dle PM support</span></span><br>
+</div><span id=3D"result_box" class=3D"short_text" lang=3D"en"><span title=
+=3D"Cliquer ici pour voir d&#39;autres traductions" class=3D"hps">In &quot;=
+Device drivers/Input device support/Miscelaneous devices&quot;:</span></spa=
+n><br><div style=3D"margin-left: 40px;">
+<span id=3D"result_box" class=3D"short_text" lang=3D"en"><span title=3D"Cli=
+quer ici pour voir d&#39;autres traductions" class=3D"hps">- </span></span>=
+<span id=3D"result_box" class=3D"short_text" lang=3D"en"><span title=3D"Cli=
+quer ici pour voir d&#39;autres traductions" class=3D"hps">deactivate PC Sp=
+eaker support</span></span><br>
+</div><span id=3D"result_box" class=3D"short_text" lang=3D"en"><span title=
+=3D"Cliquer ici pour voir d&#39;autres traductions" class=3D"hps">In &quot;=
+Processor type and features&quot;:</span></span><br><div style=3D"margin-le=
+ft: 40px;">
+<span id=3D"result_box" class=3D"short_text" lang=3D"en"><span title=3D"Cli=
+quer ici pour voir d&#39;autres traductions" class=3D"hps">- </span></span>=
+<span id=3D"result_box" class=3D"short_text" lang=3D"en"><span title=3D"Cli=
+quer ici pour voir d&#39;autres traductions" class=3D"hps">deactivate HPET_=
+TIMER</span></span><br>
+<span id=3D"result_box" class=3D"short_text" lang=3D"en"><span title=3D"Cli=
+quer ici pour voir d&#39;autres traductions" class=3D"hps">- </span></span>=
+<span id=3D"result_box" class=3D"short_text" lang=3D"en"><span title=3D"Cli=
+quer ici pour voir d&#39;autres traductions" class=3D"hps">deactivate Enabl=
+e -fstack-protector buffer overflow detection (EXPERIMENTAL)</span></span><=
+br>
+</div></div><span id=3D"result_box" class=3D"short_text" lang=3D"en"><span =
+title=3D"Cliquer ici pour voir d&#39;autres traductions" class=3D"hps"><br>=
+<br></span></span>We encounter a problem in a particular situation. In the =
+attached<br>
+
+
+source, when we change the value passed to rt_task_sleep (line 36), the<br>
+
+program never returns.<br>
+
+<br>
+
+This appears only with values greater or equal to 100000 (and maybe some<br=
 >
-> We do not know
-> - which ioctl you are trying to use
-I'm trying to get an spi port on the beagleboard to work in realtime.
-I didn't know there were other ioctl's. I wrote a program with ioctl, 
-tested it to make sure it worked, which it did, then changed ioctl's to 
-rt_dev_ioctl's in hopes that doing so would enable real time behaviour. 
-The program with rt_dev_ioctl's did not run as desired(no spi). I guess 
-I can't simply change ioctl's with rt_dev_ioctl's to enable real time 
-functionality? Do I have to patch xenomai to enable spi or something?
-> - which driver you have written/loaded to implement this ioctl
-I thought changing ioctl for rt_dev_ioctl was all that was required to 
-implement this device in realtime mode. This device is an spi port.
-> - what you mean by "my program does not perform as it should", what is
-> the return value of this rt_dev_ioctl which is supposed to work?
->
-I watch my oscilloscope for activity on the spi port. regular ioctl 
-worked, rt_dev_ioctl did not. Both programs ran but only one worked.
->> #2. rtnet. I wrote a test snippet of code to test the ethernet part.
->> Prepended the appropriate functions with rt_dev_ and same results as in #1.
->>
->> I assume that if something wasn't in the library I would get compiler
->> errors and if the code running on the beagleboard  was bad, I would get
->> run time errors. I have seen neither.
-> Again, what driver are you trying to use? What happens when you try and
-> configure it?
->
-So I have to patch the ethernet driver in order for it to work? I though 
-that was taken care of when I patched the kernel with xenomai.
->> Are there any books or more learning materials out there for me to
->> study? Any and all feedback appreciated.
-> I would suggest starting with "Linux device drivers", it would give you
-> an idea of how things are divided between drivers and applications.
-> xenomai follows the same division. Then you can read the documents
-> listed here:
-> http://www.xenomai.org/index.php/Included_documentation_summary
-> and here:
-> http://www.xenomai.org/index.php/Publications
->
-> To have a better idea on how to work with xenomai.
->> David
->>
->> _______________________________________________
->> Xenomai-help mailing list
->> Xenomai-help@domain.hid
->> https://mail.gna.org/listinfo/xenomai-help
->>
-Thanks!
+
+other values between 10000 and 100000) and only when we use<br>
+
+rt_task_sleep between the two rt_task_spawn calls.<br><br>Is there somethin=
+g we&#39;ve done wrong ? <span id=3D"result_box" class=3D"short_text" lang=
+=3D"en"><span title=3D"Cliquer ici pour voir d&#39;autres traductions" clas=
+s=3D"hps">A</span> <span title=3D"Cliquer ici pour voir d&#39;autres traduc=
+tions" class=3D"hps">problem</span> <span title=3D"Cliquer ici pour voir d&=
+#39;autres traductions" class=3D"hps">with</span> <span title=3D"Cliquer ic=
+i pour voir d&#39;autres traductions" class=3D"hps">the kernel configuratio=
+n</span><span class=3D"" title=3D"Cliquer ici pour voir d&#39;autres traduc=
+tions">? Or a bug of Xenomai ?<br>
+<br><br>Adrien Lema=EEtre.<br></span></span>
+
+--20cf307f30801c78fe04a6abb5cf--
+
+--20cf307f30801c790404a6abb5d1
+Content-Type: text/x-csrc; charset=US-ASCII; name="projet_vierge.c"
+Content-Disposition: attachment; filename="projet_vierge.c"
+Content-Transfer-Encoding: base64
+X-Attachment-Id: f_gpf1qg6x0
+
+I2luY2x1ZGUgInV0aWxzLmgiCiNpbmNsdWRlIDxhc3NlcnQuaD4KI2luY2x1ZGUgPHN0ZGlvLmg+
+CiNpbmNsdWRlIDxuYXRpdmUvdGFzay5oPgojaW5jbHVkZSA8bmF0aXZlL3F1ZXVlLmg+CiNpbmNs
+dWRlIDxzeXMvbW1hbi5oPgoKaW50IENvdW50ZXIxPTA7CmludCBDb3VudGVyMj0wOwp2b2xhdGls
+ZSBpbnQgdGVzdDE9MDsKdm9sYXRpbGUgaW50IHRlc3QyPTA7Cgp2b2lkIFdvcmtpbmdUYXNrMSgp
+CnsKCXdoaWxlKHRlc3QxPT0wKQoJewoJCUNvdW50ZXIxKys7Cgl9Cn0KCnZvaWQgV29ya2luZ1Rh
+c2syKCkKeyAKCXdoaWxlKHRlc3QyPT0wKQoJewoJCUNvdW50ZXIyKys7Cgl9Cn0KCnZvaWQgZ28g
+KCkKewoJUlRfVEFTSyBSdF9Xb3JraW5nX3Rhc2sxOwoJUlRfVEFTSyBSdF9Xb3JraW5nX3Rhc2sy
+OwoKCXJ0X3Rhc2tfc3Bhd24gKCZSdF9Xb3JraW5nX3Rhc2sxLCAiV29ya2luZ1Rhc2sxIiwgREVG
+QVVMVF9TVEFDS19TSVpFLDEwLCBUX0ZQVXxUX0pPSU5BQkxFLCAmV29ya2luZ1Rhc2sxLCBOVUxM
+KTsKICAKICBydF90YXNrX3NsZWVwKDEwMDAwMCk7IC8vIGRvZXMgbm90IHdvcmsKICAvL3J0X3Rh
+c2tfc2xlZXAoMTAwMDApOyAgLy8gd29ya3MKCglydF90YXNrX3NwYXduICgmUnRfV29ya2luZ190
+YXNrMiwgIldvcmtpbmdUYXNrMiIsIERFRkFVTFRfU1RBQ0tfU0laRSwgMjAsIFRfRlBVfFRfSk9J
+TkFCTEUsICZXb3JraW5nVGFzazIsIE5VTEwpOwoKCXRlc3QxPTE7Cgl0ZXN0Mj0xOwp9CgppbnQg
+bWFpbiAodm9pZCkKewogIFJUX1RBU0sgUnRfbWFpbl90YXNrOwogIGludCBlcnJvcjsKCiAgZXJy
+b3IgPSBtbG9ja2FsbCggTUNMX0NVUlJFTlQgfCBNQ0xfRlVUVVJFICk7CiAgYXNzZXJ0IChlcnJv
+ciA9PSAwKTsKCiAgZXJyb3IgPSBydF90YXNrX3NwYXduICgmUnRfbWFpbl90YXNrLCAiZ28iLCBE
+RUZBVUxUX1NUQUNLX1NJWkUsIDUwLCBUX0ZQVSB8IFRfSk9JTkFCTEUsICZnbywgTlVMTCk7CiAg
+YXNzZXJ0IChlcnJvciA9PSAwKTsKCiAgZXJyb3IgPSBydF90YXNrX2pvaW4oJlJ0X21haW5fdGFz
+ayk7CiAgYXNzZXJ0IChlcnJvciA9PSAwKTsKICAKICBwcmludGYoIkVuZCBwcm9ncmFtXHJcbiIp
+OwogIAogIHJldHVybiAwOwp9Cg==
+--20cf307f30801c790404a6abb5d1--
 
