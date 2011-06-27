@@ -1,9 +1,13 @@
+Message-ID: <4E086122.7060405@domain.hid>
+Date: Mon, 27 Jun 2011 12:53:22 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Date: Wed, 22 Jun 2011 15:45:52 +0200
-Message-ID: <BANLkTinOEhJtFVTL6DM5u+J4BJrkEyBqKA@mail.gmail.com>
-From: Adrien LEMAITRE <adrien.lemaitre@domain.hid>
-Content-Type: multipart/alternative; boundary=20cf3005db5add434404a64d2fb2
-Subject: [Xenomai-help] Problem during compilation
+References: <BANLkTi=2WnfLFC9DVQY81obGPO6_CG_PCA@mail.gmail.com>
+In-Reply-To: <BANLkTi=2WnfLFC9DVQY81obGPO6_CG_PCA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] Program hangs using "rt_task_sleep" in a
+ particular way
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -13,67 +17,66 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Adrien LEMAITRE <adrien.lemaitre@domain.hid>
+Cc: xenomai@xenomai.org
 
---20cf3005db5add434404a64d2fb2
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: quoted-printable
+On 06/27/2011 08:31 AM, Adrien LEMAITRE wrote:
+> Hello,
+> 
+> I raise a problem encountered and always present. Before on this configuration
+> :
+> 
+> - linux kernel : 2.6.29.6
+> - adeos patch : adeos-ipipe-2.6.29-arm-1.13-00.patch
+> - xenomai : 2.4.8
+> - host linux distribution : ubuntu 10.04 (64 bits)
+> - compiler : gcc 4.2.1 (buildroot's generated toolchain)
+> 
+> And it is always present with this configuration :
+> 
+> - Linux kernel : 2.6.37
+> - Adeos patch : adeos-ipipe-2.6.37-x86-2.9-00.patch
+> - Xenomai : 2.5.6
+> - Host Linux distribution : Ubuntu 10.04
+> - Compiler : gcc-4.4.3
+> 
+> Configuration of kernel:
+> 
+> I used the default configuration of Ubunut 10.04 and i change this:
+> In "Power management and ACPI options" :
+> - deactivate ACPI
 
-Hello,
+This is a bad idea. Only ACPI_PROCESSOR is problematic. See:
+http://www.xenomai.org/index.php/Configuring_x86_kernels
 
-i would like to install xenomai on x86 pc, but during compilation i have
-this error:
+> - deactivate CPU idle PM support
+> In "Device drivers/Input device support/Miscelaneous devices":
+> - deactivate PC Speaker support
+> In "Processor type and features":
 
-arch/x86/xenomai/hal_32.c: In function =91rthal_arch_init=92:
-arch/x86/xenomai/hal_32.c:348: error: =91nmi_watchdog=92 undeclared (first =
-use
-in this function)
-arch/x86/xenomai/hal_32.c:348: error: (Each undeclared identifier is
-reported only once
-arch/x86/xenomai/hal_32.c:348: error: for each function it appears in.)
-arch/x86/xenomai/hal_32.c:348: error: =91NMI_IO_APIC=92 undeclared (first u=
-se in
-this function)
-make[1]: *** [arch/x86/xenomai/hal_32.o] Erreur 1
-make: *** [arch/x86/xenomai] Erreur 2
+You should only need this if you have mis-configured your kernel. Again,
+see the "Processor type" paragraph in the Configuring_x86_kernels page.
 
-I use for this compilation adeos-ipipe-2.6.38.8-x86-2.10-00.patch with
-linux-2.6.38.8 and xenomai-2.5.6.
-I tried with i386_defconfig configuration and with my computer's
-configuration (/boot/config-2.6.32-24-generic).
-In these cases always the same error.
+> - deactivate HPET_TIMER
+> - deactivate Enable -fstack-protector buffer overflow detection
+> (EXPERIMENTAL)
+> 
+> 
+> We encounter a problem in a particular situation. In the attached
+> source, when we change the value passed to rt_task_sleep (line 36), the
+> program never returns.
+> 
+> This appears only with values greater or equal to 100000 (and maybe some
+> other values between 10000 and 100000) and only when we use
+> rt_task_sleep between the two rt_task_spawn calls.
+> 
+> Is there something we've done wrong ? A problem with the kernel
+> configuration? Or a bug of Xenomai ?
 
-Is it an incompatibility of version between linux and xenomai or a problem
-with configuration?
+The real-time task are using 100% cpu time. You can not do that. A
+real-time task should suspend from time to time and let non real-time
+activities run.
 
-do you have an idea?
-
-
-thanks,
-
-Adrien Lema=EEtre.
-
---20cf3005db5add434404a64d2fb2
-Content-Type: text/html; charset=windows-1252
-Content-Transfer-Encoding: quoted-printable
-
-Hello,<br><br>i would like to install xenomai on x86 pc, but during compila=
-tion i have this error:<br><br><div style=3D"margin-left: 40px;">arch/x86/x=
-enomai/hal_32.c: In function =91rthal_arch_init=92:<br>arch/x86/xenomai/hal=
-_32.c:348: error: =91nmi_watchdog=92 undeclared (first use in this function=
-)<br>
-arch/x86/xenomai/hal_32.c:348: error: (Each undeclared identifier is report=
-ed only once<br>arch/x86/xenomai/hal_32.c:348: error: for each function it =
-appears in.)<br>arch/x86/xenomai/hal_32.c:348: error: =91NMI_IO_APIC=92 und=
-eclared (first use in this function)<br>
-make[1]: *** [arch/x86/xenomai/hal_32.o] Erreur 1<br>make: *** [arch/x86/xe=
-nomai] Erreur 2<br></div><br>I use for this compilation adeos-ipipe-2.6.38.=
-8-x86-2.10-00.patch with linux-2.6.38.8 and xenomai-2.5.6.<br>I tried with =
-i386_defconfig configuration and with my computer&#39;s configuration (/boo=
-t/config-2.6.32-24-generic).<br>
-In these cases always the same error. <br><br>Is it an incompatibility of v=
-ersion between linux and xenomai or a problem with configuration?<br><br>do=
- you have an idea?<br><br><br>thanks,<br><br>Adrien Lema=EEtre.<br>
-
---20cf3005db5add434404a64d2fb2--
+-- 
+                                                                Gilles.
 
