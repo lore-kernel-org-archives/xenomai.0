@@ -1,13 +1,14 @@
-Message-ID: <4E086122.7060405@domain.hid>
-Date: Mon, 27 Jun 2011 12:53:22 +0200
+Message-ID: <4E0863D8.2090402@domain.hid>
+Date: Mon, 27 Jun 2011 13:04:56 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <BANLkTi=2WnfLFC9DVQY81obGPO6_CG_PCA@mail.gmail.com>
-In-Reply-To: <BANLkTi=2WnfLFC9DVQY81obGPO6_CG_PCA@mail.gmail.com>
+References: <BANLkTim0Maz-yjXtG90j-=RtLCesRE=hCg@domain.hid>	<4E04C614.6000101@domain.hid>
+	<4E06A4B7.2050906@domain.hid> <4E074D6D.8070606@domain.hid>
+	<4E07DF44.1060204@domain.hid>
+In-Reply-To: <4E07DF44.1060204@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Program hangs using "rt_task_sleep" in a
- particular way
+Subject: Re: [Xenomai-help] more questions
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -17,65 +18,59 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Adrien LEMAITRE <adrien.lemaitre@domain.hid>
+To: David Wiebe <dwiebe2@domain.hid>
 Cc: xenomai@xenomai.org
 
-On 06/27/2011 08:31 AM, Adrien LEMAITRE wrote:
-> Hello,
-> 
-> I raise a problem encountered and always present. Before on this configuration
-> :
-> 
-> - linux kernel : 2.6.29.6
-> - adeos patch : adeos-ipipe-2.6.29-arm-1.13-00.patch
-> - xenomai : 2.4.8
-> - host linux distribution : ubuntu 10.04 (64 bits)
-> - compiler : gcc 4.2.1 (buildroot's generated toolchain)
-> 
-> And it is always present with this configuration :
-> 
-> - Linux kernel : 2.6.37
-> - Adeos patch : adeos-ipipe-2.6.37-x86-2.9-00.patch
-> - Xenomai : 2.5.6
-> - Host Linux distribution : Ubuntu 10.04
-> - Compiler : gcc-4.4.3
-> 
-> Configuration of kernel:
-> 
-> I used the default configuration of Ubunut 10.04 and i change this:
-> In "Power management and ACPI options" :
-> - deactivate ACPI
+On 06/27/2011 03:39 AM, David Wiebe wrote:
+> I'm trying to get an spi port on the beagleboard to work in realtime.
+> I didn't know there were other ioctl's. I wrote a program with ioctl, 
+> tested it to make sure it worked, which it did, then changed ioctl's to 
+> rt_dev_ioctl's in hopes that doing so would enable real time behaviour. 
+> The program with rt_dev_ioctl's did not run as desired(no spi). I guess 
+> I can't simply change ioctl's with rt_dev_ioctl's to enable real time 
+> functionality? Do I have to patch xenomai to enable spi or something?
 
-This is a bad idea. Only ACPI_PROCESSOR is problematic. See:
-http://www.xenomai.org/index.php/Configuring_x86_kernels
+Hi,
 
-> - deactivate CPU idle PM support
-> In "Device drivers/Input device support/Miscelaneous devices":
-> - deactivate PC Speaker support
-> In "Processor type and features":
+What you have to do is to write a driver for whatever SPI controller you
+are using, using the RTDM API.
 
-You should only need this if you have mis-configured your kernel. Again,
-see the "Processor type" paragraph in the Configuring_x86_kernels page.
+>> - which driver you have written/loaded to implement this ioctl
+> I thought changing ioctl for rt_dev_ioctl was all that was required to 
+> implement this device in realtime mode. This device is an spi port.
 
-> - deactivate HPET_TIMER
-> - deactivate Enable -fstack-protector buffer overflow detection
-> (EXPERIMENTAL)
-> 
-> 
-> We encounter a problem in a particular situation. In the attached
-> source, when we change the value passed to rt_task_sleep (line 36), the
-> program never returns.
-> 
-> This appears only with values greater or equal to 100000 (and maybe some
-> other values between 10000 and 100000) and only when we use
-> rt_task_sleep between the two rt_task_spawn calls.
-> 
-> Is there something we've done wrong ? A problem with the kernel
-> configuration? Or a bug of Xenomai ?
+No.
 
-The real-time task are using 100% cpu time. You can not do that. A
-real-time task should suspend from time to time and let non real-time
-activities run.
+>> - what you mean by "my program does not perform as it should", what is
+>> the return value of this rt_dev_ioctl which is supposed to work?
+>>
+> I watch my oscilloscope for activity on the spi port. regular ioctl 
+> worked, rt_dev_ioctl did not. Both programs ran but only one worked.
+
+There are other ways to debug software than an oscilloscope. Looking at
+the functions return values when they have one is a good start.
+
+>>> #2. rtnet. I wrote a test snippet of code to test the ethernet part.
+>>> Prepended the appropriate functions with rt_dev_ and same results as in #1.
+>>>
+>>> I assume that if something wasn't in the library I would get compiler
+>>> errors and if the code running on the beagleboard  was bad, I would get
+>>> run time errors. I have seen neither.
+>> Again, what driver are you trying to use? What happens when you try and
+>> configure it?
+>>
+> So I have to patch the ethernet driver in order for it to work? I though 
+> that was taken care of when I patched the kernel with xenomai.
+
+You do not have to patch anything. Again, what you lack is probably an
+ethernet driver, or simply to load and configure the rtnet driver for
+the hardware you have, exactly like you do with Linux.
+
+If you are going to write drivers, I really suggest you read "Linux
+device drivers", then read the RTDM skin documentation to understand the
+RTDM API. Note that most of the time, you can "port" a Linux driver to
+RTDM or Rtnet, there is even a guide on how to do so for network drivers
+in rtnet sources.
 
 -- 
                                                                 Gilles.
