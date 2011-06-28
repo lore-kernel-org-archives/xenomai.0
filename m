@@ -1,10 +1,12 @@
-Message-ID: <4E0A3E1C.70509@domain.hid>
-Date: Tue, 28 Jun 2011 22:48:28 +0200
+Message-ID: <4E0A3FF5.2000101@domain.hid>
+Date: Tue, 28 Jun 2011 22:56:21 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
+References: <4E0A3E1C.70509@domain.hid>
+In-Reply-To: <4E0A3E1C.70509@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enigE53E8193620416C6BAD0E3A0"
+	boundary="------------enig350B8CDD650B45040EF7BAB4"
 Sender: jan.kiszka@domain.hid
 Subject: Re: [Xenomai-core] posix: only use rt_printf when in primary mode
 List-Id: Xenomai life and development <xenomai.xenomai.org>
@@ -19,25 +21,29 @@ To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: Xenomai core <Xenomai-core@domain.hid>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigE53E8193620416C6BAD0E3A0
+--------------enig350B8CDD650B45040EF7BAB4
 Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: quoted-printable
 
-Hi Gilles,
+On 2011-06-28 22:48, Jan Kiszka wrote:
+> Hi Gilles,
+>=20
+> dynamic printf backend selection is a suboptimal idea when you want
+> chronological output (not that uncommon during debugging). The native
+> printf may actually hit the screen (or the log file) before some earlie=
+r
+> queued rt_printf message because the dump thread is busy or has a lower=
 
-dynamic printf backend selection is a suboptimal idea when you want
-chronological output (not that uncommon during debugging). The native
-printf may actually hit the screen (or the log file) before some earlier
-queued rt_printf message because the dump thread is busy or has a lower
-priority.
+> priority.
 
-It's ok to do native printf for non-shadows. But once a thread was
-mapped, printf needs to go through the rt queue, even in secondary mode.
+Oh, I missed the buffer flush - that should work.
+
+Sorry for the noise.
 
 Jan
 
 
---------------enigE53E8193620416C6BAD0E3A0
+--------------enig350B8CDD650B45040EF7BAB4
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -46,10 +52,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v2.0.15 (GNU/Linux)
 Comment: Using GnuPG with SUSE - http://enigmail.mozdev.org/
 
-iEYEARECAAYFAk4KPh8ACgkQitSsb3rl5xSAaACcDWtHtcT9rba3tYIcJPeK71tE
-8eUAoIOwYOcTqPJ9iUc6RknuAE1MHPiX
-=rz73
+iEYEARECAAYFAk4KP/UACgkQitSsb3rl5xTRTgCgtPedd49+n8buOMPC+c0PLALp
+1L8Anja6TFXw0KtcgWJlpN2O0xI+/PJU
+=ovSN
 -----END PGP SIGNATURE-----
 
---------------enigE53E8193620416C6BAD0E3A0--
+--------------enig350B8CDD650B45040EF7BAB4--
 
