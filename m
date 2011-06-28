@@ -1,14 +1,12 @@
-Message-ID: <4E09D243.4050706@domain.hid>
-Date: Tue, 28 Jun 2011 15:08:19 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <BANLkTi=2WnfLFC9DVQY81obGPO6_CG_PCA@mail.gmail.com>	<4E086122.7060405@domain.hid>
-	<BANLkTimCab2u0EOrJ6JtLTVLNAzktbvFQg@domain.hid>
-In-Reply-To: <BANLkTimCab2u0EOrJ6JtLTVLNAzktbvFQg@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Program hangs using "rt_task_sleep" in a
- particular way
+In-Reply-To: <4E0478F7.40706@domain.hid>
+References: <BANLkTimFiO9JAdvYjpnx9bpvFo2W1zYX3g@domain.hid>
+	<4E0478F7.40706@domain.hid>
+Date: Tue, 28 Jun 2011 15:08:30 +0200
+Message-ID: <BANLkTikFipPQVsa3tYPGSgEbQEzKEC7mEw@domain.hid>
+From: suresh reddy <sureshreddy.balijepalli@domain.hid>
+Content-Type: multipart/alternative; boundary=bcaec501673f404c0d04a6c55df3
+Subject: [Xenomai-help] Fwd:  Regarding booting
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -18,112 +16,140 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Adrien LEMAITRE <adrien.lemaitre@domain.hid>
-Cc: Xenomai help <xenomai@xenomai.org>
+To: Xenomai help <xenomai@xenomai.org>
 
-On 06/28/2011 02:20 PM, Adrien LEMAITRE wrote:
-> 2011/6/27 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-> 
->> On 06/27/2011 08:31 AM, Adrien LEMAITRE wrote:
->>> Hello,
->>>
->>> I raise a problem encountered and always present. Before on this
->> configuration
->>> :
->>>
->>> - linux kernel : 2.6.29.6
->>> - adeos patch : adeos-ipipe-2.6.29-arm-1.13-00.patch
->>> - xenomai : 2.4.8
->>> - host linux distribution : ubuntu 10.04 (64 bits)
->>> - compiler : gcc 4.2.1 (buildroot's generated toolchain)
->>>
->>> And it is always present with this configuration :
->>>
->>> - Linux kernel : 2.6.37
->>> - Adeos patch : adeos-ipipe-2.6.37-x86-2.9-00.patch
->>> - Xenomai : 2.5.6
->>> - Host Linux distribution : Ubuntu 10.04
->>> - Compiler : gcc-4.4.3
->>>
->>> Configuration of kernel:
->>>
->>> I used the default configuration of Ubunut 10.04 and i change this:
->>> In "Power management and ACPI options" :
->>> - deactivate ACPI
->>
->> This is a bad idea. Only ACPI_PROCESSOR is problematic. See:
->> http://www.xenomai.org/index.php/Configuring_x86_kernels
->>
->>> - deactivate CPU idle PM support
->>> In "Device drivers/Input device support/Miscelaneous devices":
->>> - deactivate PC Speaker support
->>> In "Processor type and features":
->>
->> You should only need this if you have mis-configured your kernel. Again,
->> see the "Processor type" paragraph in the Configuring_x86_kernels page.
->>
-> 
-> I applied these changes. In fact, i used the default configuration kernel
-> and i changed only the processor family. But I must desactivate  "Enable
-> -fstack-protector buffer overflow detection (EXPERIMENTAL)" otherwise i have
-> an error during the compilation.
-> But the problem is still here.
-> 
-> 
->>  > - deactivate HPET_TIMER
->>> - deactivate Enable -fstack-protector buffer overflow detection
->>> (EXPERIMENTAL)
->>>
->>>
->>> We encounter a problem in a particular situation. In the attached
->>> source, when we change the value passed to rt_task_sleep (line 36), the
->>> program never returns.
->>>
->>> This appears only with values greater or equal to 100000 (and maybe some
->>> other values between 10000 and 100000) and only when we use
->>> rt_task_sleep between the two rt_task_spawn calls.
->>>
->>> Is there something we've done wrong ? A problem with the kernel
->>> configuration? Or a bug of Xenomai ?
->>
->> The real-time task are using 100% cpu time. You can not do that. A
->> real-time task should suspend from time to time and let non real-time
->> activities run.
->>
-> 
-> I am supprised by this answer, we are supposed to think that real-time tasks
-> are before others tasks. And we made attention at used only functions in
-> real-time. And why this problem is only when value of rt_task_sleep is
-> greater or equal to 100000? the master tasker was supposed to take his turn
-> after, didn't it? And I don't understand why in a case no problems and in  a
-> other case the program never finishes.
-> 
-> Is it a problem with preemption of kernel?
+--bcaec501673f404c0d04a6c55df3
+Content-Type: text/plain; charset=ISO-8859-1
 
-The problem is that the "rt_task_spawn" service causes its caller to
-switch to secondary mode. This means, that the task is no longer real-time.
-If you do not have root priority coupling enabled, this means that the
-thread just created will have priority as long as it does not suspend.
+Hi all ,
 
-Normally, root thread priority coupling should allow to avoid that.
-Unfortunately, there is a small hole in this functionality which make it
-not work in some conditions (and fixing this hole would introduce a
-possibility of priority inversion).
+i have followed  through the below mentioned procedure  and i have strucked
+in the final step of boot process.
 
-As for the influence of the length of the call to rt_task_sleep, a short
-rt_task_sleep will cause the "go" task to switch to primary mode and
-preempt the task "WorkingTask1" before it is completely started.
+modprobe: FATAL: Could not load /lib/modules/2.6.37.6/modules.dep: No such
+file or directory
 
-Nevertheless, now that I give you the probable explanation, I have some
-doubts and will run your test case to confirm this explanation.
+wget
+http://www.codesourcery.com/sgpp/lite/arm/portal/package7851/public/arm-none-linux-gnueabi/arm-2010.09-50-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2
+tar -xvjf arm-2010.09-50-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2
+export PATH=/tmp/xeno/arm-2010.09/bin:$PATH
+git clone --depth 1 git://git.xenomai.org/xenomai-2.5.git
+git clone --depth 1 --branch for-ipipe-2.6.37-arm git://
+git.xenomai.org/ipipe-gch.git
+cd ipipe-gch
+../xenomai-2.5/scripts/prepare-kernel.sh --arch=arm --linux=.
+wget -O .config http://sisyphus.hd.free.fr/~gilles/omap4_panda_config
+yes "" | make ARCH=arm oldconfig
+make -j 8 ARCH=arm CROSS_COMPILE=arm-none-linux-gnueabi- uImage
 
-Nevertheless(2), xenomai needs linux to run in order to work correctly,
-so, the real-time tasks should always suspend to let linux run. I bet if
-you put an rt_task_sleep in WorkingTask1 and WorkingTask2 loop, the test
-will no longer hang.
+make ARCH=arm CROSS_COMPILE=arm-none-linux-gnueabi- modules_install
+INSTALL_MOD_PATH=<replace with your SD card fs path>
 
-Please no private mails.
+and in my sdcard in /lib/modules  I have 2.6.37.6 directory
 
--- 
-					    Gilles.
+I have the mentioned file modules.dep in my sd card  /lib/modules/2.6.37.6/
+
+i have tried some mentioned in web
+ update-initramfs
+editing the initramfs.confg (mod=replacing MOST with DEP)
+and all but the error remain unchanged . If someone passthrough this problem
+plase let me know.
+
+
+
+
+
+
+
+
+Thanks
+Suresh balijepalli
+Rosenehim,Baveria.
+
+--bcaec501673f404c0d04a6c55df3
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr">Hi all ,<div><br></div><div>i have followed =A0through the=
+ below mentioned procedure =A0and i have strucked in the final step of boot=
+ process.</div><div><br></div><div><font color=3D"#CC0000">modprobe: FATAL:=
+ Could not load /lib/modules/<a href=3D"http://2.6.37.6/modules.dep" target=
+=3D"_blank">2.6.37.6/modules.dep</a>: No such file or directory=A0=A0</font=
+><br>
+
+
+<div class=3D"gmail_quote"><div><br></div>
+wget <a href=3D"http://www.codesourcery.com/sgpp/lite/arm/portal/package785=
+1/public/arm-none-linux-gnueabi/arm-2010.09-50-arm-none-linux-gnueabi-i686-=
+pc-linux-gnu.tar.bz2" target=3D"_blank">http://www.codesourcery.com/sgpp/li=
+te/arm/portal/package7851/public/arm-none-linux-gnueabi/arm-2010.09-50-arm-=
+none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2</a><br>
+
+
+
+
+
+
+
+
+
+
+tar -xvjf arm-2010.09-50-arm-none-linux-gnueabi-i686-pc-linux-gnu.tar.bz2<b=
+r>
+export PATH=3D/tmp/xeno/arm-2010.09/bin:$PATH<br>
+git clone --depth 1 git://<a href=3D"http://git.xenomai.org/xenomai-2.5.git=
+" target=3D"_blank">git.xenomai.org/xenomai-2.5.git</a><br>
+git clone --depth 1 --branch for-ipipe-2.6.37-arm git://<a href=3D"http://g=
+it.xenomai.org/ipipe-gch.git" target=3D"_blank">git.xenomai.org/ipipe-gch.g=
+it</a><br>
+cd ipipe-gch<br>
+../xenomai-2.5/scripts/prepare-kernel.sh --arch=3Darm --linux=3D.<br>
+wget -O .config <a href=3D"http://sisyphus.hd.free.fr/%7Egilles/omap4_panda=
+_config" target=3D"_blank">http://sisyphus.hd.free.fr/~gilles/omap4_panda_c=
+onfig</a><br>
+yes &quot;&quot; | make ARCH=3Darm oldconfig<br>
+make -j 8 ARCH=3Darm CROSS_COMPILE=3Darm-none-linux-gnueabi- uImage<br><br>=
+<span style=3D"font-family:Consolas, Menlo, Monaco, &#39;Lucida Console&#39=
+;, &#39;Liberation Mono&#39;, &#39;DejaVu Sans Mono&#39;, &#39;Bitstream Ve=
+ra Sans Mono&#39;, &#39;Courier New&#39;, monospace, serif;font-size:12px;w=
+hite-space:pre-wrap">make ARCH=3Darm CROSS_COMPILE=3Darm-none-linux-gnueabi=
+- modules_install INSTALL_MOD_PATH=3D&lt;replace with your SD card fs path&=
+gt;</span><br>
+
+
+
+
+
+
+
+
+
+
+=A0=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
+=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0=A0<br>
+</div><div class=3D"gmail_quote">and in my sdcard in /lib/modules =A0I have=
+ 2.6.37.6 directory=A0</div><div class=3D"gmail_quote"><br></div><div class=
+=3D"gmail_quote">I have the mentioned file modules.dep in my sd card =A0/li=
+b/modules/<a href=3D"http://2.6.37.6/" target=3D"_blank">2.6.37.6/</a></div=
+>
+
+
+<div class=3D"gmail_quote"><br></div><div class=3D"gmail_quote">i have trie=
+d some mentioned in web =A0</div><div class=3D"gmail_quote">=A0update-initr=
+amfs=A0</div><div class=3D"gmail_quote">editing the initramfs.confg (mod=3D=
+replacing MOST with DEP)</div>
+<div class=3D"gmail_quote">
+and all but the error remain unchanged . If someone passthrough this proble=
+m plase let me know.</div>
+<div class=3D"gmail_quote"><br></div><div class=3D"gmail_quote"><br></div><=
+div class=3D"gmail_quote"><br></div><div class=3D"gmail_quote"><br></div><d=
+iv class=3D"gmail_quote"><font color=3D"#888888"><font face=3D"arial, sans-=
+serif"><span style=3D"font-size:12px"><br>
+
+
+</span></font></font></div><br><br clear=3D"all"><br>Thanks<br>Suresh balij=
+epalli<br>Rosenehim,Baveria.<br>
+</div></div>
+
+--bcaec501673f404c0d04a6c55df3--
 
