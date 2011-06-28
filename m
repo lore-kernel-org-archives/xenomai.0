@@ -1,10 +1,13 @@
-From: Henry Bausley <hbausley@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Tue, 28 Jun 2011 11:25:51 -0700
-Message-ID: <1309285551.669.35.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-help] Posix Memory Leak w/ sem_open
+MIME-Version: 1.0
+In-Reply-To: <1309280367.2101.83.camel@domain.hid>
+References: <4E09D058.10906@domain.hid> <4E09DBC0.30705@domain.hid>
+	<4E09E2F4.1000100@domain.hid> <1309271040.2101.76.camel@domain.hid>
+	<4E0A007A.8020401@domain.hid> <1309280367.2101.83.camel@domain.hid>
+Date: Tue, 28 Jun 2011 20:46:36 +0200
+Message-ID: <BANLkTikcCK2ZsYm39nCVSMjzLOydQ+CfxA@mail.gmail.com>
+From: Henri Roosen <henriroosen@domain.hid>
+Content-Type: multipart/mixed; boundary=90e6ba21221f70b5cf04a6ca169c
+Subject: Re: [Xenomai-help] Xenomai 2.6.5 with Linux 2.6.38.8 kernel
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -14,53 +17,65 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@xenomai.org
 
+--90e6ba21221f70b5cf04a6ca169c
+Content-Type: text/plain; charset=ISO-8859-1
 
-Using the program below the used main heap continues to grow forever. 
+Kernel 2.6.38.8 has also renamed current_cpu_data.
+See attached patch for fix.
 
-int  main(void)
-{
-  sem_t *mutex;
-  mutex = sem_open(SEM_NAME,O_CREAT,0644,1);
-  sem_close(mutex);
-  sem_unlink(SEM_NAME);
-  return 0;
-}
+On Tue, Jun 28, 2011 at 6:59 PM, Philippe Gerum <rpm@xenomai.org> wrote:
+> On Tue, 2011-06-28 at 18:25 +0200, Daniele Nicolodi wrote:
+>> On 28/06/11 16:24, Philippe Gerum wrote:
+>> >> Thanks Gilles for the quick answer, but that's not the problem, NMI
+>> >> watchdog option is already disabled (and looking at the source code
+>> >> looks like the error comes from a section of the code that is not
+>> >> affected by XENO_NMI_DEBUG_LATENCY.
+>> >>
+>> >> Cheers,
+>> >
+>> > https://mail.gna.org/public/xenomai-help/2011-06/msg00142.html
+>>
+>> Thank you Philippe. I should follow the mailing list more closely.
+>
+> Actually, I should have pushed the necessary bits way earlier to the
+> repo.
+>
+>>
+>> Cheers,
+>
+> --
+> Philippe.
+>
+>
+>
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
+>
 
-I am using xenomai 2.5.6 with the ipipe-2.6.35.9-powerpc-2.12-02
-kernel.  Below you can see the used heap continually grow when
-executing the above program.
+--90e6ba21221f70b5cf04a6ca169c
+Content-Type: text/x-diff; charset=US-ASCII; name="fix-current_cpu_data-rename.patch"
+Content-Disposition: attachment; 
+	filename="fix-current_cpu_data-rename.patch"
+Content-Transfer-Encoding: base64
+X-Attachment-Id: f_gph7igtx0
 
-root@domain.hid# uname -a
-Linux powerpmac 2.6.35.9 #4 Tue Jun 28 08:45:19 PDT 2011 ppc GNU/Linux
-root@domain.hid# cat /proc/xenomai/version 
-2.5.6
-root@domain.hid#  test/test && cat /proc/xenomai/heap | grep
-main
-size=520192:used=9600:pagesz=512  (main heap)
-root@domain.hid#  test/test && cat /proc/xenomai/heap | grep
-main
-size=520192:used=9632:pagesz=512  (main heap)
-root@domain.hid#  test/test && cat /proc/xenomai/heap | grep
-main
-size=520192:used=9664:pagesz=512  (main heap)
-root@domain.hid#  test/test && cat /proc/xenomai/heap | grep
-main
-size=520192:used=9696:pagesz=512  (main heap)
-root@domain.hid#  test/test && cat /proc/xenomai/heap | grep
-main
-size=520192:used=9728:pagesz=512  (main heap)
-root@domain.hid#  test/test && cat /proc/xenomai/heap | grep
-main
-size=520192:used=9760:pagesz=512  (main heap)
-
-
-
-
-
-
-
-Outbound scan for Spam or Virus by Barracuda at Delta Tau
-
+SW5kZXg6IHhlbm9tYWktMi41LjYvaW5jbHVkZS9hc20teDg2L2NhbGlicmF0aW9uLmgKPT09PT09
+PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
+PT09PQotLS0geGVub21haS0yLjUuNi5vcmlnL2luY2x1ZGUvYXNtLXg4Ni9jYWxpYnJhdGlvbi5o
+CTIwMTEtMDYtMjggMjA6MzE6MjMuMDAwMDAwMDAwICswMjAwCisrKyB4ZW5vbWFpLTIuNS42L2lu
+Y2x1ZGUvYXNtLXg4Ni9jYWxpYnJhdGlvbi5oCTIwMTEtMDYtMjggMjA6MzM6MDguMDAwMDAwMDAw
+ICswMjAwCkBAIC00NSw3ICs0NSwxMSBAQAogCSAqIHRoZSBhcHByb2FjaCBpcyBkZWZpbml0ZWx5
+IHNhbmVyIHRoYW4gcHJldmlvdXMgYXR0ZW1wdHMgdG8KIAkgKiBndWVzcyBzdWNoIHZhbHVlIGR5
+bmFtaWNhbGx5LgogCSAqLworI2lmIExJTlVYX1ZFUlNJT05fQ09ERSA8IEtFUk5FTF9WRVJTSU9O
+KDIsNiwzOCkKICNkZWZpbmUgX19ib2dvbWlwcyAoY3VycmVudF9jcHVfZGF0YS5sb29wc19wZXJf
+amlmZnkvKDUwMDAwMC9IWikpCisjZWxzZQorI2RlZmluZSBfX2JvZ29taXBzIChjcHVfaW5mby5s
+b29wc19wZXJfamlmZnkvKDUwMDAwMC9IWikpCisjZW5kaWYKIAlzY2hlZF9sYXRlbmN5ID0gKF9f
+Ym9nb21pcHMgPCAyNTAgPyAxNzAwMCA6CiAJCQkgX19ib2dvbWlwcyA8IDI1MDAgPyA0MjAwIDoK
+IAkJCSAzNTAwKTsK
+--90e6ba21221f70b5cf04a6ca169c--
 
