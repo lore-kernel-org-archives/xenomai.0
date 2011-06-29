@@ -1,13 +1,12 @@
-Message-ID: <4E0A3A0E.7090001@domain.hid>
-Date: Tue, 28 Jun 2011 22:31:10 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <4DF934BD.50505@domain.hid>	<4DFA1F3C.7090209@domain.hid>	<261CC64699FF40F2937C31EEF248B8E5@domain.hid>
-	<4E08C03D.9010407@domain.hid>
-In-Reply-To: <4E08C03D.9010407@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+From: Henry Bausley <hbausley@domain.hid>
+In-Reply-To: <4E0A24A0.5050203@domain.hid>
+References: <1309285551.669.35.camel@domain.hid> <4E0A24A0.5050203@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Date: Wed, 29 Jun 2011 07:53:31 -0700
+Message-ID: <1309359211.8316.965.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] rtcanrecv output line-buffering
+Subject: Re: [Xenomai-help] Posix Memory Leak w/ sem_open
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -17,66 +16,79 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Andrew Tannenbaum <trb@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On 06/27/2011 07:39 PM, Andrew Tannenbaum wrote:
-> Wolfgang Grandegger wrote:
->> On 06/16/2011 05:20 PM, Andrew Tannenbaum wrote:
->>> I was trying to use the Xenomai RT-Socket-CAN rtcanrecv in a Tcl/Tk
->>> script GUI wrapper.
->>>
->>> rtcanrecv uses printf to stdout, and it line-buffers when attached to a
->>> tty, but it uses larger buffers (so it is unusable) when run from a
->>> script with no tty.
->>>
->>> Tcl does stdio with pipes rather than ptys (that is, Tcl thinks it has
->>> no tty for stdio).  I think both bash and perl use ptys (and so don't
->>> have this problem).  I haven't done a more thorough survey, but that's
->>> not the point.
->>>
->>> I think it would be nice to modify rtcanrecv so it can write stdout in
->>> line-buffered mode.  If you think this is a good idea, please either set
->>> line buffering with
->>>
->>>      setvbuf(stdout, NULL, _IOLBF, 0);
->>>
->>> at the top of src/utils/can/rtcanrecv.c:rt_task() or
->>>
->>>      fflush(stdout);
->>>
->>> after the printf("\n") at the bottom of rt_task(), or you could add a
->>> command line getopt option for line-buffering that would do one of the
->>> above.
->>
->> I would prefer the latter, patches are welcome. Be aware that using
->> printf will switch to secondary mode which should be avoided if
->> real-time is required.
->>
->> Wolfgang.
->>
+Yes the patch solved the problem. Thanks for the rapid response.
+
+On Tue, 2011-06-28 at 20:59 +0200, Gilles Chanteperdrix wrote:
+> On 06/28/2011 08:25 PM, Henry Bausley wrote:
+> > 
+> > Using the program below the used main heap continues to grow forever. 
+> > 
+> > int  main(void)
+> > {
+> >   sem_t *mutex;
+> >   mutex = sem_open(SEM_NAME,O_CREAT,0644,1);
+> >   sem_close(mutex);
+> >   sem_unlink(SEM_NAME);
+> >   return 0;
+> > }
+> > 
+> > I am using xenomai 2.5.6 with the ipipe-2.6.35.9-powerpc-2.12-02
+> > kernel.  Below you can see the used heap continually grow when
+> > executing the above program.
+> > 
+> Should be fixed with the following patch:
 > 
-> Wolfgang,
+> diff --git a/ksrc/skins/posix/syscall.c b/ksrc/skins/posix/syscall.c
+> index 3c7f7ee..c9e84a6 100644
+> --- a/ksrc/skins/posix/syscall.c
+> +++ b/ksrc/skins/posix/syscall.c
+> @@ -718,17 +718,20 @@ static int __sem_close(struct pt_regs *regs)
+>  
+>  	usm = assoc2usem(assoc);
+>  
+> -	if ((closed = (--usm->refcnt == 0)))
+> +	err = sem_close(&sm.native_sem);
+> +
+> +	if (!err && (closed = (--usm->refcnt == 0)))
+>  		pse51_assoc_remove(&pse51_queues()->usems,
+>  				   (u_long)sm.shadow_sem.sem);
+>  
+> -	err = sem_close(&sm.native_sem);
+> -
+>  	xnlock_put_irqrestore(&pse51_assoc_lock, s);
+>  
+>  	if (err)
+>  		return -thread_get_errno();
+>  
+> +	if (usm->refcnt == 0)
+> +		xnfree(usm);
+> +
+>  	return __xn_safe_copy_to_user((void __user *)__xn_reg_arg2(regs),
+>  				      &closed, sizeof(int));
+>  }
 > 
-> rtcanrecv already exists using printf, I'm just changing the buffering. 
->   I added a -L (line-buffer) getopt switch (default=off), as you 
-> suggested.  I added it to the C source and the man page.
 > 
-> Attached are two diff patch files, one for rtcanrecv.c and one for 
-> rtcanrecv.man.in .  I see there is a generated version of the html man 
-> page in the tar file, I assume that is created automatically, so I 
-> didn't patch it.  I created the patches within the folders containing 
-> the source files, and I diffed from filenames foo.orig to foo.  I am not 
-> aware of the naming protocol for patches in the development tree, but 
-> these are simple patches so I hope they are sufficient.
+> > 
+> > 
+> > 
+> > 
+> > 
+> > 
+> > 
+> > Outbound scan for Spam or Virus by Barracuda at Delta Tau
+> > 
+> > 
+> > _______________________________________________
+> > Xenomai-help mailing list
+> > Xenomai-help@domain.hid
+> > https://mail.gna.org/listinfo/xenomai-help
+> > 
+> 
+> 
 
-Hi,
 
-These patches look fine though we prefer usually to generate them such
-that they can be applied with patch -p1. git makes them that way.
 
-Anyway, Wolfgang, if you are OK with the patches I will merge them.
-
--- 
-                                                                Gilles.
 
