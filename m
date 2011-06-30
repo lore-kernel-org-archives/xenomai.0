@@ -1,16 +1,9 @@
-Message-ID: <4E0B62EF.1080705@domain.hid>
-Date: Wed, 29 Jun 2011 19:37:51 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4E09D058.10906@domain.hid>
-	<4E09DBC0.30705@domain.hid>	<4E09E2F4.1000100@domain.hid>
-	<1309271040.2101.76.camel@domain.hid>	<4E0A007A.8020401@domain.hid>
-	<1309280367.2101.83.camel@domain.hid>
-	<BANLkTikcCK2ZsYm39nCVSMjzLOydQ+CfxA@mail.gmail.com>
-In-Reply-To: <BANLkTikcCK2ZsYm39nCVSMjzLOydQ+CfxA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Xenomai 2.6.5 with Linux 2.6.38.8 kernel
+Date: Thu, 30 Jun 2011 10:21:15 +0200
+Message-ID: <BANLkTikfwSDAR09BuF-Lut1xk3tJwaKdUQ@mail.gmail.com>
+From: suresh reddy <sureshreddy.balijepalli@domain.hid>
+Content-Type: multipart/alternative; boundary=20cf3079ba82a9f5a104a6e995b3
+Subject: [Xenomai-help] regd booting
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -20,15 +13,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Henri Roosen <henriroosen@domain.hid>
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Xenomai help <xenomai@xenomai.org>
 
-On 06/28/2011 08:46 PM, Henri Roosen wrote:
-> Kernel 2.6.38.8 has also renamed current_cpu_data.
-> See attached patch for fix.
+--20cf3079ba82a9f5a104a6e995b3
+Content-Type: text/plain; charset=ISO-8859-1
 
-Applied, thanks.
+Dear Giles,
 
--- 
-                                                                Gilles.
+I have tried booting the Pandaboard as mentioned in  omapwiki I mean uImage
+to boot partion and modules to install in ext partion as /lib/modules /
+2.6.37.6
+
+but still i found the error modprobe: FATAL: Could not load /lib/modules/
+2.6.37.6/modules.dep: No such file or directory     .
+
+from the web someone resolve this problem by disabling smp .
+
+Did you boot the board with smp enabled ?
+
+
+Thanks
+Suresh balijepalli
+Rosenehim,Baveria.
+
+--20cf3079ba82a9f5a104a6e995b3
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr">Dear Giles,<div><br></div><div>I have tried booting the Pa=
+ndaboard as mentioned in =A0omapwiki I mean uImage to boot partion and modu=
+les to install in ext partion as /lib/modules /<a href=3D"http://2.6.37.6">=
+2.6.37.6</a></div>
+<div><br></div><div>but still i found the error=A0modprobe: FATAL: Could no=
+t load /lib/modules/<a href=3D"http://2.6.37.6/modules.dep">2.6.37.6/module=
+s.dep</a>: No such file or directory =A0 =A0 .</div><div><br></div><div>fro=
+m the web someone resolve this problem by disabling smp .</div>
+<div><br></div><div>Did you boot the board with smp enabled ?</div><div><br=
+ clear=3D"all"><br>Thanks<br>Suresh balijepalli<br>Rosenehim,Baveria.<br>
+</div></div>
+
+--20cf3079ba82a9f5a104a6e995b3--
 
