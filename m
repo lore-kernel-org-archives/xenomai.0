@@ -1,13 +1,12 @@
-From: VEYSSIERE Nicolas <nicolas.veyssiere@domain.hid>
-Date: Thu, 30 Jun 2011 12:13:15 +0200
-Message-ID: <1454_1309428796_4E0C4C3C_1454_4301_1_ECB646CBB62FD044927FDEDF0252D3E701E388DDD4C1@domain.hid>
-References: <18837_1309425123_4E0C3DE3_18837_902_2_ECB646CBB62FD044927FDEDF0252D3E701E388DDD283@domain.hid>
-	<1309426397.2228.2.camel@domain.hid>
-In-Reply-To: <1309426397.2228.2.camel@domain.hid>
-Content-Language: fr-FR
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Message-ID: <4E0C5400.7060200@domain.hid>
+Date: Thu, 30 Jun 2011 12:46:24 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
+References: <18837_1309425123_4E0C3DE3_18837_902_2_ECB646CBB62FD044927FDEDF0252D3E701E388DDD283@domain.hid>	<1309426397.2228.2.camel@domain.hid>
+	<1454_1309428796_4E0C4C3C_1454_4301_1_ECB646CBB62FD044927FDEDF0252D3E701E388DDD4C1@domain.hid>
+In-Reply-To: <1454_1309428796_4E0C4C3C_1454_4301_1_ECB646CBB62FD044927FDEDF0252D3E701E388DDD4C1@domain.hid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] Xenomai 2.5.6 with Valgrind ?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -18,48 +17,17 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
+To: VEYSSIERE Nicolas <nicolas.veyssiere@domain.hid>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-T2ssIHNvIGlzIHRoZXJlIHNvbWV0aGluZyB0aGF0IGNhbiByZXBsYWNlIFZhbGdyaW5kIGFuZCB3
-b3JrcyB3aXRoIFhlbm9tYWkgPw0KDQpJIGFtIHVzaW5nIHRoZSBWeFdvcmtzIHNraW4uDQoNCi0t
-IA0KTmljb2xhcyBWRVlTU0lFUkUNCg0KDQotLS0tLU1lc3NhZ2UgZCdvcmlnaW5lLS0tLS0NCkRl
-wqA6IFBoaWxpcHBlIEdlcnVtIFttYWlsdG86cnBtQHhlbm9tYWkub3JnXSANCkVudm95w6nCoDog
-amV1ZGkgMzAganVpbiAyMDExIDExOjMzDQrDgMKgOiBWRVlTU0lFUkUgTmljb2xhcw0KQ2PCoDog
-eGVub21haS1oZWxwQGduYS5vcmcNCk9iamV0wqA6IFJlOiBbWGVub21haS1oZWxwXSBYZW5vbWFp
-IDIuNS42IHdpdGggVmFsZ3JpbmQgPw0KDQpPbiBUaHUsIDIwMTEtMDYtMzAgYXQgMTE6MTIgKzAy
-MDAsIFZFWVNTSUVSRSBOaWNvbGFzIHdyb3RlOg0KPiBIZWxsbywNCj4gDQo+ICANCj4gDQo+IEkg
-YW0gYXNraW5nIGZvciBhbiBhbHJlYWR5IGFuc3dlcmVkIHF1ZXN0aW9uIGZyb20gYSB2ZXJ5IGxv
-bmcgdGltZQ0KPiBhZ28uDQo+IA0KPiAgDQo+IA0KPiBIb3cgY2FuIEkgdXNlIHZhbGdyaW5kIHdp
-dGggWGVub21haSA/DQo+IA0KDQpZb3UgY2FuJ3QuDQoNCj4gIA0KPiANCj4gSGVyZSAoaHR0cHM6
-Ly9tYWlsLmduYS5vcmcvcHVibGljL3hlbm9tYWktaGVscC8yMDA2LTAzL21zZzAwMDcyLmh0bWwp
-DQo+IEdpbGxlcyBDLiB0ZWxscyB1cyB0byB1c2UgLS1lbmFibGUtYXRvbWljLWNvcmUNCj4gDQo+
-ICANCj4gDQo+IEJ1dCBJIGNhbid0IGZpbmQgdGhpcyBvcHRpb24uIE1heWJlIGl0IGhhcyBiZWVu
-IHJlbmFtZWQgPw0KPiANCj4gIA0KPiANCj4gIA0KPiANCj4gIyB2YWxncmluZCAuL3RyaXZpYWwt
-cGVyaW9kaWMNCj4gDQo+ID09MjczMDA9PSBNZW1jaGVjaywgYSBtZW1vcnkgZXJyb3IgZGV0ZWN0
-b3INCj4gDQo+ID09MjczMDA9PSBDb3B5cmlnaHQgKEMpIDIwMDItMjAxMCwgYW5kIEdOVSBHUEwn
-ZCwgYnkgSnVsaWFuIFNld2FyZCBldA0KPiBhbC4NCj4gDQo+ID09MjczMDA9PSBVc2luZyBWYWxn
-cmluZC0zLjYuMSBhbmQgTGliVkVYOyByZXJ1biB3aXRoIC1oIGZvciBjb3B5cmlnaHQNCj4gaW5m
-bw0KPiANCj4gPT0yNzMwMD09IENvbW1hbmQ6IC4vdHJpdmlhbC1wZXJpZGljDQo+IA0KPiA9PTI3
-MzAwPT0NCj4gDQo+IC0tMjczMDAtLSBXQVJOSU5HOiB1bmhhbmRsZWQgc3lzY2FsbDogNTU1DQo+
-IA0KPiAtLTI3MzAwLS0gWW91IG1heSBiZSBhYmxlIHRvIHdyaXRlIHlvdXIgb3duIGhhbmRsZXIu
-DQo+IA0KPiAtLTI3MzAwLS0gUmVhZCB0aGUgZmlsZSBSRUFETUVfTUlTU0lOR19TWVNDQUxMX09S
-X0lPQ1RMLg0KPiANCj4gLS0yNzMwMC0tIE5ldmVydGhlbGVzcyB3ZSBjb25zaWRlciB0aGlzIGEg
-YnVnLiAgUGxlYXNlIHJlcG9ydA0KPiANCj4gLS0yNzMwMC0tIGl0IGF0IGh0dHA6Ly92YWxncmlu
-ZC5vcmcvc3VwcG9ydC9idWdfcmVwb3J0cy5odG1sLg0KPiANCj4gWGVub21haTogbmF0aXZlIHNr
-aW4gb3IgQ09ORklHX1hFTk9fT1BUX1BFUlZBU0lWRSBkaXNhYmxlZC4NCj4gDQo+IChtb2Rwcm9i
-ZSB4ZW5vX25hdGl2ZT8pDQo+IA0KPiA9PTI3MzAwPT0NCj4gDQo+ID09MjczMDA9PSBIRUFQIFNV
-TU1BUlk6DQo+IA0KPiA9PTI3MzAwPT0gICAgIGluIHVzZSBhdCBleGl0OiAwIGJ5dGVzIGluIDAg
-YmxvY2tzDQo+IA0KPiA9PTI3MzAwPT0gICB0b3RhbCBoZWFwIHVzYWdlOiAwIGFsbG9jcywgMCBm
-cmVlcywgMCBieXRlcyBhbGxvY2F0ZWQNCj4gDQo+ID09MjczMDA9PQ0KPiANCj4gPT0yNzMwMD09
-IEFsbCBoZWFwIGJsb2NrcyB3ZXJlIGZyZWVkIC0tIG5vIGxlYWtzIGFyZSBwb3NzaWJsZQ0KPiAN
-Cj4gPT0yNzMwMD09DQo+IA0KPiA9PTI3MzAwPT0gRm9yIGNvdW50cyBvZiBkZXRlY3RlZCBhbmQg
-c3VwcHJlc3NlZCBlcnJvcnMsIHJlcnVuIHdpdGg6IC12DQo+IA0KPiA9PTI3MzAwPT0gRVJST1Ig
-U1VNTUFSWTogMCBlcnJvcnMgZnJvbSAwIGNvbnRleHRzIChzdXBwcmVzc2VkOiA3IGZyb20NCj4g
-NykNCj4gDQo+ICANCj4gDQo+ICANCj4gDQo+ICANCj4gDQo+IFRoYW5rcyBmb3IgYWxsLg0KPiAN
-Cj4gIA0KPiANCj4gLS0gDQo+IA0KPiBOaWNvbGFzIFZFWVNTSUVSRQ0KPiANCj4gIA0KPiANCj4g
-DQo+IF9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fDQo+IFhl
-bm9tYWktaGVscCBtYWlsaW5nIGxpc3QNCj4gWGVub21haS1oZWxwQGduYS5vcmcNCj4gaHR0cHM6
-Ly9tYWlsLmduYS5vcmcvbGlzdGluZm8veGVub21haS1oZWxwDQoNCi0tIA0KUGhpbGlwcGUuDQoN
-Cg0K
+On 06/30/2011 12:13 PM, VEYSSIERE Nicolas wrote:
+> Ok, so is there something that can replace Valgrind and works with Xenomai ?
+> 
+> I am using the VxWorks skin.
+> 
+You can use valgrind either with Xenomai simulator, but that will not be
+easy, or with Xenomai-solo. But not with the dual-kernel version.
+
+-- 
+                                                                Gilles.
 
