@@ -1,12 +1,14 @@
+From: VEYSSIERE Nicolas <nicolas.veyssiere@domain.hid>
+Date: Thu, 30 Jun 2011 12:13:15 +0200
+Message-ID: <1454_1309428796_4E0C4C3C_1454_4301_1_ECB646CBB62FD044927FDEDF0252D3E701E388DDD4C1@domain.hid>
+References: <18837_1309425123_4E0C3DE3_18837_902_2_ECB646CBB62FD044927FDEDF0252D3E701E388DDD283@domain.hid>
+	<1309426397.2228.2.camel@domain.hid>
+In-Reply-To: <1309426397.2228.2.camel@domain.hid>
+Content-Language: fr-FR
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-In-Reply-To: <4E01E4D1.2090601@domain.hid>
-References: <BANLkTimKq+oq5oG3d9H+TWs1S0HVCXaPLQ@mail.gmail.com>
-	<4E01E4D1.2090601@domain.hid>
-Date: Wed, 22 Jun 2011 17:58:32 +0200
-Message-ID: <BANLkTim268o3835dTxxbCccf-vM1Z9=NYg@domain.hid>
-From: suresh reddy <sureshreddy.balijepalli@domain.hid>
-Content-Type: multipart/alternative; boundary=20cf3079ba824b824e04a64f0ab2
-Subject: Re: [Xenomai-help] booting on pandaboard
+Subject: Re: [Xenomai-help] Xenomai 2.5.6 with Valgrind ?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -16,119 +18,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai help <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
---20cf3079ba824b824e04a64f0ab2
-Content-Type: text/plain; charset=ISO-8859-1
-
-On 22 June 2011 14:49, Gilles Chanteperdrix <
-gilles.chanteperdrix@xenomai.org> wrote:
-
-> On 06/22/2011 02:33 PM, suresh reddy wrote:
-> > console=ttyS2,115200n8
->
-> console is ttyO2, not ttyS2.
->
-
-
-Dear Giles ,
-that is not problem because of ttys2 or O2 settings . I followed
-http://omappedia.org/wiki/Minimal-FS_Booting
-
-that and  the below bootargs
-
-fatload mmc 0:1 0x80000000 uImage
-setenv bootargs ro elevator=noop vram=32M
-mem=460M@0x80000000mem=256M@0xA0000000root=/dev/mmcblk0p2
-console=ttyO2,115200n8 fixrtc earlyprintk  bootm
-0x80000000
-
-
-still i did not saw anything on my terminal . then only i sent a mail to
-xenomai help mailing list .
-
-
-
-> I have asked you this several time, but please stop using the Xenomai
-> mailing list instead of doing your homework. Everything about pandaboard
-> is documented on its wiki. Use the wiki first, then ask questions on
-> this list when you do not find them here.
->
-> Really, installing Xenomai takes five minutes when you know how to do
-> it, at most one day when you are a beginner.
->
-> You have been asking questions on this mailing list for weeks. And at
-> every step, we do your work in your stead, and you learn nothing.
->
-> Don't you see that there may be a problem?
->
-> --
->                                             Gilles.
->
-
-
-
--- 
-
-Suresh balijepalli
-Rosenehim,Baveria.
-
---20cf3079ba824b824e04a64f0ab2
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr"><br><br><div class=3D"gmail_quote">On 22 June 2011 14:49, =
-Gilles Chanteperdrix <span dir=3D"ltr">&lt;<a href=3D"mailto:gilles.chantep=
-erdrix@domain.hid" target=3D"_blank">gilles.chanteperdrix@xenomai.org</a>&=
-gt;</span> wrote:<br>
-
-
-<blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1p=
-x #ccc solid;padding-left:1ex">
-On 06/22/2011 02:33 PM, suresh reddy wrote:<br>
-&gt; console=3DttyS2,115200n8<br>
-<br>
-console is ttyO2, not ttyS2.<br></blockquote><div><br></div><div>=A0</div><=
-div>Dear Giles ,</div><div>that is not problem because of ttys2 or O2 setti=
-ngs . I followed =A0<a href=3D"http://omappedia.org/wiki/Minimal-FS_Booting=
-" target=3D"_blank">http://omappedia.org/wiki/Minimal-FS_Booting</a></div>
-
-<div><br></div><div>that and =A0the below bootargs</div><div><br></div><div=
-><meta http-equiv=3D"content-type" content=3D"text/html; charset=3Dutf-8"><=
-span class=3D"Apple-style-span" style=3D"font-family: Consolas, &#39;Lucida=
- Console&#39;, monospace, Verdana, sans-serif, &#39;sans serif&#39;; font-s=
-ize: 13px; "><div>
-<span>fatload mmc 0:1 0x80000000 uImage</span></div><div><span>setenv boota=
-rgs ro elevator=3Dnoop vram=3D32M mem=3D460M@0x80000000 mem=3D256M@0xA00000=
-00 root=3D/dev/mmcblk0p2 console=3DttyO2,115200n8 fixrtc earlyprintk=A0</sp=
-an>=A0bootm 0x80000000</div>
-<div><br></div><div><br></div><div>still i did not saw anything on my termi=
-nal . then only i sent a mail to xenomai help mailing list .</div><div><br>=
-</div></span></div><div>
-=A0</div><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;borde=
-r-left:1px #ccc solid;padding-left:1ex">
-
-I have asked you this several time, but please stop using the Xenomai<br>
-mailing list instead of doing your homework. Everything about pandaboard<br=
->
-is documented on its wiki. Use the wiki first, then ask questions on<br>
-this list when you do not find them here.<br>
-<br>
-Really, installing Xenomai takes five minutes when you know how to do<br>
-it, at most one day when you are a beginner.<br>
-<br>
-You have been asking questions on this mailing list for weeks. And at<br>
-every step, we do your work in your stead, and you learn nothing.<br>
-<br>
-Don&#39;t you see that there may be a problem?<br>
-<br>
---<br>
-<font color=3D"#888888"> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
-=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0Gilles.<br>
-</font></blockquote></div><br><br clear=3D"all"><br>-- <br><br>Suresh balij=
-epalli<br>Rosenehim,Baveria.<br>
-</div>
-
---20cf3079ba824b824e04a64f0ab2--
+T2ssIHNvIGlzIHRoZXJlIHNvbWV0aGluZyB0aGF0IGNhbiByZXBsYWNlIFZhbGdyaW5kIGFuZCB3
+b3JrcyB3aXRoIFhlbm9tYWkgPw0KDQpJIGFtIHVzaW5nIHRoZSBWeFdvcmtzIHNraW4uDQoNCi0t
+IA0KTmljb2xhcyBWRVlTU0lFUkUNCg0KDQotLS0tLU1lc3NhZ2UgZCdvcmlnaW5lLS0tLS0NCkRl
+wqA6IFBoaWxpcHBlIEdlcnVtIFttYWlsdG86cnBtQHhlbm9tYWkub3JnXSANCkVudm95w6nCoDog
+amV1ZGkgMzAganVpbiAyMDExIDExOjMzDQrDgMKgOiBWRVlTU0lFUkUgTmljb2xhcw0KQ2PCoDog
+eGVub21haS1oZWxwQGduYS5vcmcNCk9iamV0wqA6IFJlOiBbWGVub21haS1oZWxwXSBYZW5vbWFp
+IDIuNS42IHdpdGggVmFsZ3JpbmQgPw0KDQpPbiBUaHUsIDIwMTEtMDYtMzAgYXQgMTE6MTIgKzAy
+MDAsIFZFWVNTSUVSRSBOaWNvbGFzIHdyb3RlOg0KPiBIZWxsbywNCj4gDQo+ICANCj4gDQo+IEkg
+YW0gYXNraW5nIGZvciBhbiBhbHJlYWR5IGFuc3dlcmVkIHF1ZXN0aW9uIGZyb20gYSB2ZXJ5IGxv
+bmcgdGltZQ0KPiBhZ28uDQo+IA0KPiAgDQo+IA0KPiBIb3cgY2FuIEkgdXNlIHZhbGdyaW5kIHdp
+dGggWGVub21haSA/DQo+IA0KDQpZb3UgY2FuJ3QuDQoNCj4gIA0KPiANCj4gSGVyZSAoaHR0cHM6
+Ly9tYWlsLmduYS5vcmcvcHVibGljL3hlbm9tYWktaGVscC8yMDA2LTAzL21zZzAwMDcyLmh0bWwp
+DQo+IEdpbGxlcyBDLiB0ZWxscyB1cyB0byB1c2UgLS1lbmFibGUtYXRvbWljLWNvcmUNCj4gDQo+
+ICANCj4gDQo+IEJ1dCBJIGNhbid0IGZpbmQgdGhpcyBvcHRpb24uIE1heWJlIGl0IGhhcyBiZWVu
+IHJlbmFtZWQgPw0KPiANCj4gIA0KPiANCj4gIA0KPiANCj4gIyB2YWxncmluZCAuL3RyaXZpYWwt
+cGVyaW9kaWMNCj4gDQo+ID09MjczMDA9PSBNZW1jaGVjaywgYSBtZW1vcnkgZXJyb3IgZGV0ZWN0
+b3INCj4gDQo+ID09MjczMDA9PSBDb3B5cmlnaHQgKEMpIDIwMDItMjAxMCwgYW5kIEdOVSBHUEwn
+ZCwgYnkgSnVsaWFuIFNld2FyZCBldA0KPiBhbC4NCj4gDQo+ID09MjczMDA9PSBVc2luZyBWYWxn
+cmluZC0zLjYuMSBhbmQgTGliVkVYOyByZXJ1biB3aXRoIC1oIGZvciBjb3B5cmlnaHQNCj4gaW5m
+bw0KPiANCj4gPT0yNzMwMD09IENvbW1hbmQ6IC4vdHJpdmlhbC1wZXJpZGljDQo+IA0KPiA9PTI3
+MzAwPT0NCj4gDQo+IC0tMjczMDAtLSBXQVJOSU5HOiB1bmhhbmRsZWQgc3lzY2FsbDogNTU1DQo+
+IA0KPiAtLTI3MzAwLS0gWW91IG1heSBiZSBhYmxlIHRvIHdyaXRlIHlvdXIgb3duIGhhbmRsZXIu
+DQo+IA0KPiAtLTI3MzAwLS0gUmVhZCB0aGUgZmlsZSBSRUFETUVfTUlTU0lOR19TWVNDQUxMX09S
+X0lPQ1RMLg0KPiANCj4gLS0yNzMwMC0tIE5ldmVydGhlbGVzcyB3ZSBjb25zaWRlciB0aGlzIGEg
+YnVnLiAgUGxlYXNlIHJlcG9ydA0KPiANCj4gLS0yNzMwMC0tIGl0IGF0IGh0dHA6Ly92YWxncmlu
+ZC5vcmcvc3VwcG9ydC9idWdfcmVwb3J0cy5odG1sLg0KPiANCj4gWGVub21haTogbmF0aXZlIHNr
+aW4gb3IgQ09ORklHX1hFTk9fT1BUX1BFUlZBU0lWRSBkaXNhYmxlZC4NCj4gDQo+IChtb2Rwcm9i
+ZSB4ZW5vX25hdGl2ZT8pDQo+IA0KPiA9PTI3MzAwPT0NCj4gDQo+ID09MjczMDA9PSBIRUFQIFNV
+TU1BUlk6DQo+IA0KPiA9PTI3MzAwPT0gICAgIGluIHVzZSBhdCBleGl0OiAwIGJ5dGVzIGluIDAg
+YmxvY2tzDQo+IA0KPiA9PTI3MzAwPT0gICB0b3RhbCBoZWFwIHVzYWdlOiAwIGFsbG9jcywgMCBm
+cmVlcywgMCBieXRlcyBhbGxvY2F0ZWQNCj4gDQo+ID09MjczMDA9PQ0KPiANCj4gPT0yNzMwMD09
+IEFsbCBoZWFwIGJsb2NrcyB3ZXJlIGZyZWVkIC0tIG5vIGxlYWtzIGFyZSBwb3NzaWJsZQ0KPiAN
+Cj4gPT0yNzMwMD09DQo+IA0KPiA9PTI3MzAwPT0gRm9yIGNvdW50cyBvZiBkZXRlY3RlZCBhbmQg
+c3VwcHJlc3NlZCBlcnJvcnMsIHJlcnVuIHdpdGg6IC12DQo+IA0KPiA9PTI3MzAwPT0gRVJST1Ig
+U1VNTUFSWTogMCBlcnJvcnMgZnJvbSAwIGNvbnRleHRzIChzdXBwcmVzc2VkOiA3IGZyb20NCj4g
+NykNCj4gDQo+ICANCj4gDQo+ICANCj4gDQo+ICANCj4gDQo+IFRoYW5rcyBmb3IgYWxsLg0KPiAN
+Cj4gIA0KPiANCj4gLS0gDQo+IA0KPiBOaWNvbGFzIFZFWVNTSUVSRQ0KPiANCj4gIA0KPiANCj4g
+DQo+IF9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fDQo+IFhl
+bm9tYWktaGVscCBtYWlsaW5nIGxpc3QNCj4gWGVub21haS1oZWxwQGduYS5vcmcNCj4gaHR0cHM6
+Ly9tYWlsLmduYS5vcmcvbGlzdGluZm8veGVub21haS1oZWxwDQoNCi0tIA0KUGhpbGlwcGUuDQoN
+Cg0K
 
