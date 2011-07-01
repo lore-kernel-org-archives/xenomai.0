@@ -1,13 +1,9 @@
-Message-ID: <4E0D7DE7.50803@domain.hid>
-Date: Fri, 01 Jul 2011 09:57:27 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <201106301212.47433.carlosnov@domain.hid>
-In-Reply-To: <201106301212.47433.carlosnov@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Writing a new driver,
- shoud use message pipes or shared memory?
+Date: Fri, 1 Jul 2011 10:46:17 +0200
+Message-ID: <BANLkTikhZA6YGb95ryC1mO6m_RQgAe-PtA@mail.gmail.com>
+From: suresh reddy <sureshreddy.balijepalli@domain.hid>
+Content-Type: multipart/alternative; boundary=bcaec517a9ba0ce50804a6fe0d1b
+Subject: [Xenomai-help] regd booting
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -17,35 +13,56 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Carlos Eduardo de Brito Novaes <carlosnov@domain.hid>
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Xenomai help <xenomai@xenomai.org>
 
-On 06/30/2011 05:12 PM, Carlos Eduardo de Brito Novaes wrote:
-> Hello all!
-> Hope this question fits to the scope of the list.
-> 
-> I got a PCI acquisition board and wish to write a xenomai driver for it. I had 
-> did this before with an old ISA board and used memory heaps to exchange data 
-> from kernel (configuration and mainly acquisition routines) and the real time 
-> processing task.
-> 
-> Now, I would like to know if I can use only message pipes for this kind of 
-> application. I would like to use it so the entire proccess became more "unix 
-> like", using memory heaps I think that the internals of the driver are exposed 
-> and the any misfuncion can arise due to bad data passed from programmers. Is 
-> this right?
-> 
-> Can message pipes provide hard real time timings, about 1K/10K samples per 
-> second and about 100 bytes on each sample?
+--bcaec517a9ba0ce50804a6fe0d1b
+Content-Type: text/plain; charset=ISO-8859-1
 
-Hi,
+Dear Giles,
 
-you probably should use the RTDM skin to write a driver. So, use the
-"read" call to get data, or if there is a big volume, use some mmaped
-aread, using rtdm_mmap_to_user.
+sorry for repeated questions on boot procees but i want to make sure where
+my boot process going wrong.
 
-Regards.
+Now my uImage was correctly builded and modules were in right place
+(/lib/modules/2.6.37.6) .
 
--- 
-                                                                Gilles.
+i have used the MLO and Uboot.bin files from ubuntu package  which during
+1st step of  booting process generating a initramfs or initrd and this seems
+to be broken with my custom kernel and fails to recognise the 2nd partion  .
+I mean the ext partion of sd card is not mounting (in this partion modules
+were placed) .
+
+Did you builded MLO and Uboot.bin for this kernel or you just used already
+ builded ones of ubuntu or minimal fs .
+
+
+
+
+Thanks
+Suresh balijepalli
+Rosenehim,Baveria.
+
+--bcaec517a9ba0ce50804a6fe0d1b
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr">Dear Giles,<div><br></div><div>sorry for repeated question=
+s on boot procees but i want to make sure where my boot process going wrong=
+.</div><div><br></div><div>Now my uImage was correctly builded and modules =
+were in right place (/lib/modules/<a href=3D"http://2.6.37.6" target=3D"_bl=
+ank">2.6.37.6</a>) .=A0</div>
+<div><br></div><div>i have used the MLO and Uboot.bin files from ubuntu pac=
+kage =A0which during 1st step of =A0booting process generating a initramfs =
+or initrd and this seems to be broken with my custom kernel and fails to re=
+cognise the 2nd partion =A0. I mean the ext partion of sd card is not mount=
+ing (in this partion modules were placed) .</div>
+<div><br></div><div>Did you builded MLO and Uboot.bin for this kernel or yo=
+u just used already =A0builded ones of ubuntu or minimal fs .</div><div><br=
+></div><div><br clear=3D"all"><br><br>Thanks<br>Suresh balijepalli<br>Rosen=
+ehim,Baveria.<br>
+
+</div></div>
+
+--bcaec517a9ba0ce50804a6fe0d1b--
 
