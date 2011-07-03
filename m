@@ -1,53 +1,64 @@
-Message-ID: <4E1C3301.2030203@domain.hid>
-Date: Tue, 12 Jul 2011 13:41:53 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: Carlos Eduardo de Brito Novaes <carlosnov@domain.hid>
+Date: Sat, 2 Jul 2011 22:47:14 -0300
+References: <201106301212.47433.carlosnov@domain.hid>
+	<201107011423.18553.carlosnov@domain.hid>
+	<4E0F7C03.20304@domain.hid>
+In-Reply-To: <4E0F7C03.20304@domain.hid>
 MIME-Version: 1.0
-References: <E1QfDvt-0003TN-G7@domain.hid> <4E1B469A.8000703@domain.hid>
-	<4E1B4AC0.80506@domain.hid> <4E1B4C19.2070205@domain.hid>
-	<4E1B542B.2010906@domain.hid> <4E1B5638.1050005@domain.hid>
-	<4E1B56E0.20109@domain.hid> <4E1B57D1.1070401@domain.hid>
-	<4E1B5860.1000309@domain.hid> <4E1B5944.5030408@domain.hid>
-	<4E1BEC9F.1020404@domain.hid> <4E1BF619.6010609@domain.hid>
-	<4E1C2912.9050605@domain.hid> <4E1C2959.8080004@domain.hid>
-	<4E1C2A2D.9090602@domain.hid> <4E1C2AA5.6060208@domain.hid>
-	<4E1C2B44.5060907@domain.hid> <4E1C2B8F.5080700@domain.hid>
-	<4E1C2F56.8020103@domain.hid> <4E1C302A.8050309@domain.hid>
-In-Reply-To: <4E1C302A.8050309@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [Xenomai-git] Jan Kiszka : nucleus: Fix race
- between gatekeeper and	thread deletion
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Content-Type: Text/Plain;
+  charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <201107022247.15543.carlosnov@domain.hid>
+Subject: Re: [Xenomai-help] Writing a new driver, Skin differences.
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: Xenomai core <Xenomai-core@domain.hid>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: xenomai@xenomai.org
 
-On 07/12/2011 01:29 PM, Jan Kiszka wrote:
->> I find all this complicated for a very small corner-case, so, I keep
->> looking for a simpler solution. Let us try something else.
-> 
-> It's rather the contrary: this solution is straightforward IMHO.
-> 
->>
->> If the thread is woken up for whatever reason before the gatekeeper,
->> then we will hit the following "if" in xnshadow_harden, can we set the
->> target to NULL at this point if it is the current thread? With a cmpxchg
->> perhaps?
-> 
-> Gatekeeper and target task aren't synchronized, are they?
+Thank you very much, I got it now. I had found out those points on xenomai =
+3.x=20
+and rtdm, so I must be a little more carefull on reading before asking. Sor=
+ry=20
+for that.
 
-That is another reason why the solution to synchronize using the
-semaphore may not work. If the thread hits the call to down before the
-gatekeeper is woken up, then the gatekeeper test may see the target
-thread as suspended, and we may return from the call to "down" in
-xenomai domain.
+I am starting working on it, at first I think that using rt_dev_read shoud =
+do=20
+the work, its easy to set up and there are examples over the net, but I can=
+t=20
+find any (online) example on using rtdm_mmap_to_user and also could not fig=
+ure=20
+out the parameters to get it working. Can you point me any other resource o=
+r=20
+example on using it?
 
--- 
-                                                                Gilles.
+The rtdm skin sens to be well documented but its very poor on examples and=
+=20
+detailed description, at least I cant find any resource as informative as t=
+hose=20
+related to the native api.
+
+
+Thank you,
+
+Carlos Novaes
+
+Em s=C3=A1b 02 jul 2011, =C3=A0s 17:13:55, Gilles Chanteperdrix escreveu:
+> On 07/01/2011 07:23 PM, Carlos Eduardo de Brito Novaes wrote:
+> > Hello,
+> >=20
+> > I think I the question on using memory mapped are solved. Now I was
+> > wondering and cant find a big difference over the four skins, at least
+> > for a new project with no previous code written on the past. Is there
+> > any advantage in using the rtdm skin over the navive one?
+>=20
+> The RTDM is meant for writing drivers in kernel-space and continuity
+> will be ensured in Xenomai 3.x, whereas the other kernel-space skins
+> will no longer be available in Xenomai 3.x. Writing drivers in
+> kernel-space with either the native or the posix skin is deprecated.
 
