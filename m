@@ -1,15 +1,18 @@
-From: Carlos Eduardo de Brito Novaes <carlosnov@domain.hid>
-Date: Sat, 2 Jul 2011 22:47:14 -0300
-References: <201106301212.47433.carlosnov@domain.hid>
-	<201107011423.18553.carlosnov@domain.hid>
-	<4E0F7C03.20304@domain.hid>
-In-Reply-To: <4E0F7C03.20304@domain.hid>
-MIME-Version: 1.0
-Content-Type: Text/Plain;
-  charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <201107022247.15543.carlosnov@domain.hid>
-Subject: Re: [Xenomai-help] Writing a new driver, Skin differences.
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <1308652557.2125.45.camel@domain.hid>
+References: <3FF315C710820E47A04E55C6F7D9B0AD7FE9FF@AREXCH02.mra.roland-man.biz>
+	<1308044391.2699.2.camel@domain.hid>
+	<3FF315C710820E47A04E55C6F7D9B0AD7FEA2C@AREXCH02.mra.roland-man.biz>
+	<1308387052.2122.14.camel@domain.hid>  <4DFCABDA.6000702@domain.hid>
+	<1308406918.2122.24.camel@domain.hid>
+	<3FF315C710820E47A04E55C6F7D9B0AD7FECDA@AREXCH02.mra.roland-man.biz>
+	<1308652557.2125.45.camel@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Date: Sun, 03 Jul 2011 17:48:26 +0200
+Message-ID: <1309708106.2127.0.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] Xenomai 2.5.6 with PPC-Kernel 2.4.25
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -19,46 +22,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: roderik.wildenburg@domain.hid
+Cc: xenomai@xenomai.org
 
-Thank you very much, I got it now. I had found out those points on xenomai =
-3.x=20
-and rtdm, so I must be a little more carefull on reading before asking. Sor=
-ry=20
-for that.
+On Tue, 2011-06-21 at 12:35 +0200, Philippe Gerum wrote:
+> On Tue, 2011-06-21 at 12:04 +0200, roderik.wildenburg@domain.hid
+> wrote:
+> > I confirm that switchtest runs (nearly) perfectly on PPC-Kernel 2.6.34 with Xenomai 2.5.6. The only anomaly I could see is a "collapse" of the number of context switches exactly every 7 seconds by 2% (see below).  Is this worth to pay attention to? (No other Xenomai-Task is running except for a watchdog task with a period of 500ms)
+> 
+> 2% off seems a lot for a transient load, and this would not happen on a
+> periodic basis anyway. This needs to be investigated. Could you run
+> switchtest in nofpu mode?
+> 
+> >  
+> > On the opposite, switchtest runs erratic on PPC-2.4.25 with Xenomai 2.5.6 as you already mentioned: The number of context switches is much smaller then (only about 2%) with  PPC-2.6.34 and fluctuate very much (see below).
+> > Do you think you will find some spare time to fix this Problem?
+> > 
+> 
+> Spare time has become a luxury over the last months. I'll try to find a
+> time slot next week to have a look at this again.
 
-I am starting working on it, at first I think that using rt_dev_read shoud =
-do=20
-the work, its easy to set up and there are examples over the net, but I can=
-t=20
-find any (online) example on using rtdm_mmap_to_user and also could not fig=
-ure=20
-out the parameters to get it working. Can you point me any other resource o=
-r=20
-example on using it?
+This should help, no I-pipe update needed.
 
-The rtdm skin sens to be well documented but its very poor on examples and=
-=20
-detailed description, at least I cant find any resource as informative as t=
-hose=20
-related to the native api.
+http://git.xenomai.org/?p=xenomai-rpm.git;a=commit;h=35e9df567e19410526089e24fbbaf92c47de9c43
+
+-- 
+Philippe.
 
 
-Thank you,
-
-Carlos Novaes
-
-Em s=C3=A1b 02 jul 2011, =C3=A0s 17:13:55, Gilles Chanteperdrix escreveu:
-> On 07/01/2011 07:23 PM, Carlos Eduardo de Brito Novaes wrote:
-> > Hello,
-> >=20
-> > I think I the question on using memory mapped are solved. Now I was
-> > wondering and cant find a big difference over the four skins, at least
-> > for a new project with no previous code written on the past. Is there
-> > any advantage in using the rtdm skin over the navive one?
->=20
-> The RTDM is meant for writing drivers in kernel-space and continuity
-> will be ensured in Xenomai 3.x, whereas the other kernel-space skins
-> will no longer be available in Xenomai 3.x. Writing drivers in
-> kernel-space with either the native or the posix skin is deprecated.
 
