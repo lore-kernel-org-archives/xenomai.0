@@ -1,12 +1,13 @@
 From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <CAMJ=MEfVauUJG=YfQ2LiMqEwRWAyFrfdGMX1ZvR2x3xvkyCTAA@mail.gmail.com>
+In-Reply-To: <1309810164.2157.12.camel@domain.hid>
 References: <CAMJ=MEcTefZicuRNSv77kQB3XQTkvQDekHNeq04KPA86-yTEuw@domain.hid>
 	<CAMJ=MEcn1ZemK7XkW5F9MpJ9pWihm7UM-t-7HZP7LPD7QDLmcA@mail.gmail.com>
 	<1309767638.2157.7.camel@domain.hid> <4E11A71F.7040804@domain.hid>
 	<CAMJ=MEfVauUJG=YfQ2LiMqEwRWAyFrfdGMX1ZvR2x3xvkyCTAA@mail.gmail.com>
+	<1309810164.2157.12.camel@domain.hid>
 Content-Type: text/plain; charset="UTF-8"
-Date: Mon, 04 Jul 2011 22:09:24 +0200
-Message-ID: <1309810164.2157.12.camel@domain.hid>
+Date: Mon, 04 Jul 2011 22:13:29 +0200
+Message-ID: <1309810409.2157.13.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Adeos-main] Kernel blocked during send/receive raw ethernet
@@ -22,56 +23,63 @@ List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 To: Ronny Meeus <ronny.meeus@domain.hid>
 Cc: adeos-main@gna.org
 
-On Mon, 2011-07-04 at 22:04 +0200, Ronny Meeus wrote:
-> On Mon, Jul 4, 2011 at 1:42 PM, Gilles Chanteperdrix
-> <gilles.chanteperdrix@xenomai.org> wrote:
-> > On 07/04/2011 10:20 AM, Philippe Gerum wrote:
-> >> Could you try 2.6.36-ipipe as well in case 2.6.35.7 without pipeline
-> >> does not exhibit the issue? A number of changes went in the IRQ replay
-> >> code during this time frame, and 2.6.35 was in a state of flux regarding
-> >> this.
-> >
-> > And please try Xenomai 2.5.6.
-> >
-> > --
-> >                                            Gilles.
-> >
+On Mon, 2011-07-04 at 22:09 +0200, Philippe Gerum wrote:
+> On Mon, 2011-07-04 at 22:04 +0200, Ronny Meeus wrote:
+> > On Mon, Jul 4, 2011 at 1:42 PM, Gilles Chanteperdrix
+> > <gilles.chanteperdrix@xenomai.org> wrote:
+> > > On 07/04/2011 10:20 AM, Philippe Gerum wrote:
+> > >> Could you try 2.6.36-ipipe as well in case 2.6.35.7 without pipeline
+> > >> does not exhibit the issue? A number of changes went in the IRQ replay
+> > >> code during this time frame, and 2.6.35 was in a state of flux regarding
+> > >> this.
+> > >
+> > > And please try Xenomai 2.5.6.
+> > >
+> > > --
+> > >                                            Gilles.
+> > >
+> > 
+> > Hello
+> > 
+> > today we tested tested: "Running the same test on 2.6.35.7 without IPIPE".
+> > The result is also not OK. The problem can be reproduced on this
+> > kernel, so it looks like the issue has nothing to do with the I-PIPE.
+> > We are currently porting the FreeScale patches to the 2.6.36 kernel
+> > but it looks like this is going to take some effort (Thomas already
+> > spent half a day on it today).
+> > 
+> > Maybe a bit of history: we started with the 2.6.34 kernel with no SMP.
+> > Here we observed issue in some scenarios. By playing with the
+> > configuration we found that these issues were resolved by switching to
+> > SMP (even on one core).
+> > After the activation of SMP we started to see BADNESS issues once we
+> > started to run our Xenomai based applications.
+> > Thomas found a patch on the Xenomai mailing list to solve the badness
+> > issue but this was based on 2.6.35.7. We ported the FreeScale patches
+> > to that releases and we observed the blocking application issue
+> > described above.
+> > 
+> > We will try to port the FreeScale patches to 2.6.36 and see how the
+> > system behaves. More information on this later.
+> > Can you guys give us any hint of what would be the most stable version
+> > of Linux + Xenomai to base our application on?
 > 
-> Hello
-> 
-> today we tested tested: "Running the same test on 2.6.35.7 without IPIPE".
-> The result is also not OK. The problem can be reproduced on this
-> kernel, so it looks like the issue has nothing to do with the I-PIPE.
-> We are currently porting the FreeScale patches to the 2.6.36 kernel
-> but it looks like this is going to take some effort (Thomas already
-> spent half a day on it today).
-> 
-> Maybe a bit of history: we started with the 2.6.34 kernel with no SMP.
-> Here we observed issue in some scenarios. By playing with the
-> configuration we found that these issues were resolved by switching to
-> SMP (even on one core).
-> After the activation of SMP we started to see BADNESS issues once we
-> started to run our Xenomai based applications.
-> Thomas found a patch on the Xenomai mailing list to solve the badness
-> issue but this was based on 2.6.35.7. We ported the FreeScale patches
-> to that releases and we observed the blocking application issue
-> described above.
-> 
-> We will try to port the FreeScale patches to 2.6.36 and see how the
-> system behaves. More information on this later.
-> Can you guys give us any hint of what would be the most stable version
-> of Linux + Xenomai to base our application on?
+> SMP-wise for powerpc, 2.6.36 + upcoming 2.5.6
 
-SMP-wise for powerpc, 2.6.36 + upcoming 2.5.6
+s,upcoming,,
+
+I mean 2.5.6 stock.
 
 > 
-> Thanks
-> Ronny
+> > 
+> > Thanks
+> > Ronny
+> > 
+> > _______________________________________________
+> > Adeos-main mailing list
+> > Adeos-main@domain.hid
+> > https://mail.gna.org/listinfo/adeos-main
 > 
-> _______________________________________________
-> Adeos-main mailing list
-> Adeos-main@domain.hid
-> https://mail.gna.org/listinfo/adeos-main
 
 -- 
 Philippe.
