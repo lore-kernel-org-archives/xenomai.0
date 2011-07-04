@@ -1,39 +1,69 @@
-Message-ID: <4DF7C84F.2020408@domain.hid>
-Date: Tue, 14 Jun 2011 22:45:03 +0200
+Message-ID: <4E12148C.7050500@domain.hid>
+Date: Mon, 04 Jul 2011 21:29:16 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
+References: <4E0C439D.2030602@domain.hid> <4E0C5979.7020202@domain.hid>
+	<4E0C5EC4.9050900@domain.hid>
+In-Reply-To: <4E0C5EC4.9050900@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: [Adeos-main] Batch of ARM I-pipe updates.
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/options/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-To: Adeos <adeos-main@gna.org>
+Subject: Re: [Xenomai-core] [PATCH 2/2] native: Fix error cleanup of
+	rt_task_create
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: Xenomai core <Xenomai-core@domain.hid>
 
+On 06/30/2011 01:32 PM, Jan Kiszka wrote:
+> On 2011-06-30 13:09, Gilles Chanteperdrix wrote:
+>> On 06/30/2011 11:36 AM, Jan Kiszka wrote:
+>>> When creating of a shadow task fails, rt_task_create has to free the
+>>> task object consistently, not only on registry errors. Then we need to
+>>> delete the core thread when fastlock allocation failed. Moreover, fix a
+>>> double free of the fastlock object which is now released via the delete
+>>> hook. Finally, avoid a use-after-release of the fastlock object in
+>>> __task_delete_hook.
+>>>
+>>> This fixes heap corruptions when running out of resources.
+>>>
+>>> Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
+>>> ---
+>>> (...)
+>>> +
+>>> +      fail:
+>>> +	if (xnthread_test_state(&task->thread_base, XNSHADOW))
+>>> +		xnfree(task);
+>>> +
+>>> +	return err;
+>>>  }
+>>>  
+>>>  /**
+>>
+>> Is this needed? I mean, shadows are created in syscall.c, function
+>> __rt_task_create, and when rt_task_create returns an error, that
+>> function calls rt_task_delete. So, there should be no leak. And worse,
+>> here rt_task_delete will use an invalid pointer if we apply that patch.
+> 
+> The problem is that rt_task_create may both fail early without any
+> registration step performed yet and very late when everything (except
+> the the registry entry) is already set up. There is no chance for the
+> caller __rt_task_create to figure out the precise task registration
+> state and properly roll it back. That must be done by rt_task_create.
+> 
+> This patch ensures that shadow tasks are either successfully registered
+> or completely deleted on error. Among other bug scenarios, this avoids
+> deleting the task twice, first via xnpod_delete_thread+deletion hook and
+> then again via xnfree in the error path of __rt_task_create.
 
-Hi Philippe,
-
-the following branches on the git repository:
-git://git.xenomai.org/ipipe-gch.git
-
-Are available:
-for-ipipe-2.6.33-arm
-for-ipipe-2.6.35-noarch
-for-ipipe-2.6.35-arm
-for-ipipe-2.6.37-noarch
-for-ipipe-2.6.37-arm
-
-And allow to update to:
-adeos-ipipe-2.6.33-arm-1.18-03
-adeos-ipipe-2.6.35.9-arm-1.18-03
-adeos-ipipe-2.6.37.6-arm-1.18-03
-
-Thanks for merging them.
+I need to understand completely this issue. But I definitely prefer
+seeing the xnfree in the same function as xnmalloc in case of failure.
+This makes chasing leaks easier.
 
 -- 
                                                                 Gilles.
