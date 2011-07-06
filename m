@@ -1,74 +1,33 @@
-Message-ID: <4E022C64.3040805@domain.hid>
-Date: Wed, 22 Jun 2011 10:54:44 -0700
-From: David Wiebe <dwiebe2@domain.hid>
+Message-ID: <4E1460F9.7070202@domain.hid>
+Date: Wed, 06 Jul 2011 15:19:53 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <BANLkTi=qe3CqD9U_T3nF6xBN+nZNbxF7Gg@domain.hid>	
-	<4E00A476.2080006@domain.hid> <4E01977E.1080202@domain.hid>	
-	<4E01AB2C.4070409@domain.hid> <1308733051.2159.12.camel@domain.hid>	
-	<4E02162A.9060004@domain.hid> <1308760138.2159.92.camel@domain.hid>
-In-Reply-To: <1308760138.2159.92.camel@domain.hid>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+References: <4E00B9BA.2050306@domain.hid> <4E145376.8000402@domain.hid>
+	<4E145A2E.2080406@domain.hid> <4E145EAE.6000006@domain.hid>
+In-Reply-To: <4E145EAE.6000006@domain.hid>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] rt_dev_ioctl
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Subject: Re: [Xenomai-core] Implementation of skin Arinc653,
+ process don't return
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: zenati <omar.zenati@domain.hid>
+Cc: Xenomai-core@domain.hid
 
-On 11-06-22 09:28 AM, Philippe Gerum wrote:
-> On Wed, 2011-06-22 at 09:19 -0700, David Wiebe wrote:
->> On 11-06-22 01:57 AM, Philippe Gerum wrote:
->> Still not compiling.
->>
-> Your build flags are likely wrong. Did you get them via xeno-config?
+On 07/06/2011 03:10 PM, zenati wrote:
+> No I don't implement any handler, but there isn't a handler by default? 
+> I don't see any handler of signals in the sources of others skins. it 
+> means that I have to implement a handler in source of the test?
 
-Here are my build flags.
+We do not understand your issue, you do not understand our answers,
+please show us the code to avoid further misunderstandings.
 
-CFLAGS=`DESTDIR=/home/david/sdir 
-/home/david/sdir/usr/xenomai/bin/xenomai-config --skin native --cflags`
-
-LDFLAGS=`DESTDIR=/home/david/sdir 
-/home/david/sdir/usr/xenomai/bin/xenomai-config --skin native --ldflags`
-
-
-
->>> On Wed, 2011-06-22 at 01:43 -0700, David Wiebe wrote:
->>>> Hello,
->>>>
->>>> I'm re-writing my code to work with xenomai and I don't know how to get
->>>> rt_dev_ioctl to compile in my program.
->>>>
->>>> #include<rtdk.h>   in my program doesn't help
->>> #include<rtdm/rtdm.h>
->>>
->>>> david@domain.hid$
->>>> arm-none-linux-gnueabi-gcc -o xenomai-spi-eth-00002 $CFLAGS
->>>> xenomai-spi-eth-00002.c $LDFLAGS -I
->>>> /home/david/122720101858-beagleboard-working-set/kernel/linux/include/
->>>> xenomai-spi-eth-00002.c: In function 'main':
->>>> xenomai-spi-eth-00002.c:137: warning: implicit declaration of function
->>>> 'rt_dev_open'
->>>> xenomai-spi-eth-00002.c:145: warning: implicit declaration of function
->>>> 'rt_dev_ioctl'
->>>> /tmp/ccZErCuj.o: In function `main':
->>>> xenomai-spi-eth-00002.c:(.text+0x2c4): undefined reference to `rt_dev_open'
->>>> xenomai-spi-eth-00002.c:(.text+0x318): undefined reference to `rt_dev_ioctl'
->>>> collect2: ld returned 1 exit status
->>>>
->>>>
->>>> David
->>>>
->>>>
->>>> _______________________________________________
->>>> Xenomai-help mailing list
->>>> Xenomai-help@domain.hid
->>>> https://mail.gna.org/listinfo/xenomai-help
-
+-- 
+					    Gilles.
 
