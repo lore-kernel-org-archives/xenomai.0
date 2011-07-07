@@ -1,12 +1,15 @@
-Message-ID: <4E153BFA.601@domain.hid>
-Date: Thu, 07 Jul 2011 06:54:18 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Date: Thu, 7 Jul 2011 09:31:24 +0200
+From: Richard Cochran <richardcochran@domain.hid>
+Message-ID: <20110707073124.GC3467@domain.hid>
+References: <CAOiXNkDLimRNcf1xwnJoMCx=Q3a87Pp9=_bsuN5DizKoGs7Xzg@domain.hid>
+	<4E144591.6010906@domain.hid>
+	<CAOiXNkARoeBWpSRQtkh8OLye3AYGtX8qcD1-K-zNO8ooPW0sBA@mail.gmail.com>
+	<4E1452E3.4010107@domain.hid>
 MIME-Version: 1.0
-References: <C15B4995-28DC-403B-8117-B9F8062571D4@domain.hid>
-In-Reply-To: <C15B4995-28DC-403B-8117-B9F8062571D4@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Xenomai 2.5.3 vs gettimeofday() --> livelock?
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <4E1452E3.4010107@domain.hid>
+Subject: Re: [Xenomai-help] Communication between RT and non-RT thread
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -16,34 +19,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jeremy Friesner <jaf@domain.hid>
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Xenomai help <xenomai@xenomai.org>
 
-On 07/06/2011 10:38 PM, Jeremy Friesner wrote:
-> My first question is:  Am I right in suspecting that gettimeofday()
-> can occasionally spin/livelock, when called from a Xenomai 2.5.3
-> real-time thread?  FWIW, it gets called from the real-time thread
-> once every 333mS.
+On Wed, Jul 06, 2011 at 02:19:47PM +0200, Gilles Chanteperdrix wrote:
+> On 07/06/2011 01:42 PM, Andrey Nechypurenko wrote:
+> > 
+> > What makes me worry here is the IPC abbreviation - I have just one
+> > process with multiple threads. So would not real IPC mechanism be the
+> > overkill in this scenario? Or am I just misinterpret what IPC means
+> > here?
 
-Yes, this is a known issue.
+...
 
 > 
-> And if that is the case, my second question is:  Is there an
-> alternative "safe" way to call gettimeofday() (or something
-> equivalent) so that the real-time thread can find out the current PTP
-> system time?  Or do I need to re-write my code so that the real-time
-> thread never calls gettimeofday()?
-> 
-> Is there a recommended practice for using Xenomai threads in
-> conjunction with PTP?
+> I am talking about the ring buffer thing with head and tail pointers
+> where each thread (consumer, producer), moves only one pointer. I would
+> call this a "lockless fifo", though I do not know what the official name
+> is, but you get the idea. Again, you can send pointers through an IPC
+> instead of sending the data themselves, and you will benefit from the
+> fact that the two threads are running in the same memory space.
 
-There are several ways out:
-- the rtdk library provides a version of gettimeofday which switches to
-secondary mode before calling the real gettimeofday. In order to use it,
-you have to link your application with:
--Wl,--wrap,gettimeofday -lrtdk
-- you can forcibly emit the syscall like the clocktest application does.
+In Andrey's case, I would simply use a ring buffer (fifo) shared
+between one RT and one non-RT thread. No locking is needed, and it is
+easy to implement. You don't need a library for that.
 
--- 
-                                                                Gilles.
+HTH,
+
+Richard
 
