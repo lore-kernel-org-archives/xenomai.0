@@ -1,18 +1,11 @@
+Message-ID: <4E160578.5020405@domain.hid>
+Date: Thu, 07 Jul 2011 21:14:00 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-In-Reply-To: <CAMJ=MEcFSPn33STcfZ8-a8oDUYJX7sOvkMkSqtXi0Z3tHzSTUA@mail.gmail.com>
-References: <CAMJ=MEcTefZicuRNSv77kQB3XQTkvQDekHNeq04KPA86-yTEuw@domain.hid>
-	<CAMJ=MEcn1ZemK7XkW5F9MpJ9pWihm7UM-t-7HZP7LPD7QDLmcA@mail.gmail.com>
-	<1309767638.2157.7.camel@domain.hid> <4E11A71F.7040804@domain.hid>
-	<CAMJ=MEfVauUJG=YfQ2LiMqEwRWAyFrfdGMX1ZvR2x3xvkyCTAA@mail.gmail.com>
-	<1309810164.2157.12.camel@domain.hid> <1309810409.2157.13.camel@domain.hid>
-	<CAMJ=MEcFSPn33STcfZ8-a8oDUYJX7sOvkMkSqtXi0Z3tHzSTUA@mail.gmail.com>
-Date: Tue, 5 Jul 2011 22:11:22 +0200
-Message-ID: <CAMJ=MEdrcZ1wHKgBKS9dKjm_NWYFUt_QH4LR5vSrb_7VgKYmLw@domain.hid>
-From: Ronny Meeus <ronny.meeus@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Adeos-main] Kernel blocked during send/receive raw ethernet
-	packets.
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 7bit
+Sender: jan.kiszka@domain.hid
+Subject: [Adeos-main] [PATCH] ipipe: Prevent unwritable pages after mprotect
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/options/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -22,107 +15,51 @@ List-Help: <mailto:adeos-main-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
 To: Philippe Gerum <rpm@xenomai.org>
-Cc: adeos-main@gna.org
+Cc: adeos-main <adeos-main@gna.org>
 
-On Tue, Jul 5, 2011 at 10:45 AM, Ronny Meeus <ronny.meeus@domain.hid> wrote:
-> On Mon, Jul 4, 2011 at 10:13 PM, Philippe Gerum <rpm@xenomai.org> wrote:
->> On Mon, 2011-07-04 at 22:09 +0200, Philippe Gerum wrote:
->>> On Mon, 2011-07-04 at 22:04 +0200, Ronny Meeus wrote:
->>> > On Mon, Jul 4, 2011 at 1:42 PM, Gilles Chanteperdrix
->>> > <gilles.chanteperdrix@xenomai.org> wrote:
->>> > > On 07/04/2011 10:20 AM, Philippe Gerum wrote:
->>> > >> Could you try 2.6.36-ipipe as well in case 2.6.35.7 without pipeli=
-ne
->>> > >> does not exhibit the issue? A number of changes went in the IRQ re=
-play
->>> > >> code during this time frame, and 2.6.35 was in a state of flux reg=
-arding
->>> > >> this.
->>> > >
->>> > > And please try Xenomai 2.5.6.
->>> > >
->>> > > --
->>> > > =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0=
- =A0 =A0 =A0 =A0 =A0Gilles.
->>> > >
->>> >
->>> > Hello
->>> >
->>> > today we tested tested: "Running the same test on 2.6.35.7 without IP=
-IPE".
->>> > The result is also not OK. The problem can be reproduced on this
->>> > kernel, so it looks like the issue has nothing to do with the I-PIPE.
->>> > We are currently porting the FreeScale patches to the 2.6.36 kernel
->>> > but it looks like this is going to take some effort (Thomas already
->>> > spent half a day on it today).
->>> >
->>> > Maybe a bit of history: we started with the 2.6.34 kernel with no SMP=
-.
->>> > Here we observed issue in some scenarios. By playing with the
->>> > configuration we found that these issues were resolved by switching t=
-o
->>> > SMP (even on one core).
->>> > After the activation of SMP we started to see BADNESS issues once we
->>> > started to run our Xenomai based applications.
->>> > Thomas found a patch on the Xenomai mailing list to solve the badness
->>> > issue but this was based on 2.6.35.7. We ported the FreeScale patches
->>> > to that releases and we observed the blocking application issue
->>> > described above.
->>> >
->>> > We will try to port the FreeScale patches to 2.6.36 and see how the
->>> > system behaves. More information on this later.
->>> > Can you guys give us any hint of what would be the most stable versio=
-n
->>> > of Linux + Xenomai to base our application on?
->>>
->>> SMP-wise for powerpc, 2.6.36 + upcoming 2.5.6
->>
->> s,upcoming,,
->>
->> I mean 2.5.6 stock.
->>
->>>
->>> >
->>> > Thanks
->>> > Ronny
->>> >
->>> > _______________________________________________
->>> > Adeos-main mailing list
->>> > Adeos-main@domain.hid
->>> > https://mail.gna.org/listinfo/adeos-main
->>>
->>
->> --
->> Philippe.
->>
->>
->>
->
-> Hello
->
-> we have done the test on both 2.6.36 and 2.6.36.4 without I-PIPE.
-> In both cases the issue is seen.
->
-> Any hints to helps us debugging this issue would be appreciated.
->
-> Best regards
-> Ronny
->
+From: Jan Kiszka <jan.kiszka@domain.hid>
 
-Hello
+Page protection changes issued via mprotect, e.g. to enable executable
+stacks, cause spurious minor faults as they remove the write permission
+from the modified range again. Avoid this by faking shared pages so that
+vm_get_page_prot returns the desired page permissions.
 
-Today we have identified the issue.
-In the net/packet/af_packet.c file a spin_lock is used where a
-spin_lock_bh should be used. We observed that the spin_lock was
-entered recursively: by the application and also from the context of a
-softIRQ. Result was a deadlock.
+Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
+---
+ mm/mprotect.c |   12 +++++++++++-
+ 1 files changed, 11 insertions(+), 1 deletions(-)
 
-I will post a patch soon on the netdev mailing list.
-We will upgrade most probably to 2.6.36.4 and Xenomai 2.5.6 like you
-guys suggested.
-
-Thanks for your support.
-
-Best regards,
-Ronny
+diff --git a/mm/mprotect.c b/mm/mprotect.c
+index 5a688a2..3f234b3 100644
+--- a/mm/mprotect.c
++++ b/mm/mprotect.c
+@@ -147,6 +147,7 @@ mprotect_fixup(struct vm_area_struct *vma, struct vm_area_struct **pprev,
+ {
+ 	struct mm_struct *mm = vma->vm_mm;
+ 	unsigned long oldflags = vma->vm_flags;
++	unsigned long protflags;
+ 	long nrpages = (end - start) >> PAGE_SHIFT;
+ 	unsigned long charged = 0;
+ 	pgoff_t pgoff;
+@@ -205,8 +206,17 @@ success:
+ 	 * held in write mode.
+ 	 */
+ 	vma->vm_flags = newflags;
++	protflags = newflags;
++#ifdef CONFIG_IPIPE
++	/*
++	 * Enforce non-COW vm_page_prot by faking VM_SHARED on locked regions.
++	 */
++	if (test_bit(MMF_VM_PINNED, &mm->flags) &&
++	    ((vma->vm_flags | mm->def_flags) & VM_LOCKED))
++		protflags |= VM_SHARED;
++#endif
+ 	vma->vm_page_prot = pgprot_modify(vma->vm_page_prot,
+-					  vm_get_page_prot(newflags));
++					  vm_get_page_prot(protflags));
+ 
+ 	if (vma_wants_writenotify(vma)) {
+ 		vma->vm_page_prot = vm_get_page_prot(newflags & ~VM_SHARED);
+-- 
+1.7.1
 
