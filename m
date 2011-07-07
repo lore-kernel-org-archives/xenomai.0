@@ -1,13 +1,16 @@
-Message-ID: <4E1567DB.9020505@domain.hid>
-Date: Thu, 07 Jul 2011 10:01:31 +0200
-From: Uwe Fechner <u.fechner@domain.hid>
 MIME-Version: 1.0
-References: <C15B4995-28DC-403B-8117-B9F8062571D4@domain.hid>
-	<4E153BFA.601@domain.hid>
-In-Reply-To: <4E153BFA.601@domain.hid>
+In-Reply-To: <4E1566D0.3030203@domain.hid>
+References: <CAOiXNkDLimRNcf1xwnJoMCx=Q3a87Pp9=_bsuN5DizKoGs7Xzg@domain.hid>
+	<4E144591.6010906@domain.hid>
+	<CAOiXNkARoeBWpSRQtkh8OLye3AYGtX8qcD1-K-zNO8ooPW0sBA@mail.gmail.com>
+	<4E1452E3.4010107@domain.hid>
+	<20110707073124.GC3467@domain.hid>
+	<4E1566D0.3030203@domain.hid>
+Date: Thu, 7 Jul 2011 10:44:27 +0200
+Message-ID: <CAOiXNkDX8TP3zFi7LfW6EFRbUvZx+ciKiSj-9wr1SQODRaLepQ@mail.gmail.com>
+From: Andrey Nechypurenko <andreynech@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Xenomai 2.5.3 vs gettimeofday() --> livelock?
+Subject: Re: [Xenomai-help] Communication between RT and non-RT thread
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -17,21 +20,12 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Jeremy Friesner <jaf@domain.hid>, xenomai@xenomai.org
+To: Xenomai help <xenomai@xenomai.org>
 
- Hi,
+Thank you very much guys for suggestions!
+The idea with simple ring buffer looks promising and I will try to
+implement it this way.
 
-where can I find the documentation of the rtdk library?
-I googled it, but only found people talking about it, but no api
-documentation.
-
-Regards:
-
-Uwe Fechner
-
-On 07.07.2011 06:54, Gilles Chanteperdrix wrote:
-> rtdk library
-
-
+Once again thank you!
+Andrey.
 
