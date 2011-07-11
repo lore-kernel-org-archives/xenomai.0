@@ -1,14 +1,12 @@
+Message-ID: <4E1AF2AD.8070909@domain.hid>
+Date: Mon, 11 Jul 2011 14:55:09 +0200
+From: Kim Mathiassen <kimmat@domain.hid>
 MIME-Version: 1.0
-In-Reply-To: <4E1AE8AD.9060703@domain.hid>
-References: <CALiYb9uRfYeG4NTV7Oy1bMpxtJz0skKsxM9D2k_G5uOZsWWQBQ@mail.gmail.com>
-	<4E1AD8DD.3060904@domain.hid>
-	<CALiYb9t21ijjNnpU4dVjfaKF3V_8XxGypUiiOkVROQdVyx-u8g@domain.hid>
-	<4E1AE8AD.9060703@domain.hid>
-Date: Mon, 11 Jul 2011 14:20:29 +0200
-Message-ID: <CALiYb9tSjoDQhj+RPEVp-LgV+c7haTC-yh1SZ_ChXHVz1pPAUg@domain.hid>
-From: Adrien LEMAITRE <adrien.lemaitre@domain.hid>
-Content-Type: multipart/alternative; boundary=20cf305e2551815ba004a7ca356f
-Subject: Re: [Xenomai-help] Problems with gdb and rt_task_delete
+References: <4E157F1C.9060606@domain.hid> <4E1ADC25.5000800@domain.hid>
+In-Reply-To: <4E1ADC25.5000800@domain.hid>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] 32 bits libraries for x86_64 architecture
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -20,116 +18,43 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
---20cf305e2551815ba004a7ca356f
-Content-Type: text/plain; charset=ISO-8859-1
-
-2011/7/11 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-
-> On 07/11/2011 01:48 PM, Adrien LEMAITRE wrote:
-> > 2011/7/11 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-> >
-> >> On 07/11/2011 11:50 AM, Adrien LEMAITRE wrote:
-> >>> Hello,
-> >>>
-> >>> I have two problems. Just before explain my problems i would like to
-> >> clarify
-> >>> the context. This exercice is for student. In this exercice, they
-> program
-> >> a
-> >>> WorkingTask (infini loop)
-> >>
-> >> That is the problem, there should not busy inifinite loops.
-> >> rt_task_sleep(100) asks for 100ns sleep, which is equivalent to not
-> >> sleeping at all.
-> >>
-> >> I seem to remember that I already told you this in answer to your
-> >> previous post.
-> >>
-> >
-> > yes and thanks you, i have a better understanding now. So ok if i would
-> like
-> > to make an infini loop i must add a sleep of 5ms, otherwise i have
-> problems.
-> > That is why i had needed rt_task_suspend(). And the problem with gdb is
-> > gone.
-> >
-> > But i don't see information of this in the wiki, could you show me
-> exactly
-> > where i can find it?
-> >
+On 07/11/2011 01:19 PM, Gilles Chanteperdrix wrote:
+> On 07/07/2011 11:40 AM, Kim Mathiassen wrote:
+>> Hi
+>>
+>> I am doing a project where I am going to use Labview for linux.
+>> Unfortunately Labview only have a 32-bit version and I have a 64 bit
+>> system. I want to use Xenomai with Labview for DAQ, and therefor I need
+>> 32 bits libraries that Labview can call. I read a message in the
+>> mailing-list which where of a similar character:
+>>
+>> https://mail.gna.org/public/xenomai-help/2008-05/msg00294.html
+>>
+>> I have tried to compile the user-space Xenomai libraries with the m32
+>> option, but I only get -ENOSYS error which implies that the function is
+>> not implemented. Is there any plan to implement 32 bit wrappers for a 64
+>> bit system? Do I have to install a 32 bit kernel in order to use Xenomai
+>> with Labview? Does anyone have a suggestion on how to solve the problem?
+>>
+>> I the message the linked to above, it was suggested that I could
+>> implement the wrappers. Does anyone know about how much work this would
+>> be? If it isn't a lot of work, maybe someone could point me to where in
+>> the code I should start looking.
+>>
+>> I am also thinking of making a 64 bit deamon that a 32 bit library can
+>> communicate with. I am not sure if this will work, because I do not know
+>> if there are IPC (InterProcess Communication) that can handle both 32
+>> and 64 bit on Linux?
+> No Xenomai service is currently implemented in 32 bits mode. It is a ton
+> of work to do so, because you need to write wrappers for all the system
+> calls, and there are probably a handful of hundreds of them (a grep | wc
+> gives 433).
 >
-> You can probably sleep for shorter times than 5ms, 100us should be
-> enough. This is not documented, because it is an unwanted shortcoming,
-> which we hope to avoid one day, by implementing signals for xenomai,
-> working even for interrupting an infinite busy loop.
+> So, currently, it seems easier to use either a complete 64 bits or  to a
+> complete 32 bits system, not a mix of both.
 >
->
-Yes sorry it's not 5ms but 5us. Thanks a lot.
+Thanks for the reply. I have been implementing the deamon approach. It 
+seems to be working. Unix sockets can communicate between 32 and 64 bit 
+programs.
 
-
-> --
->                                             Gilles.
->
-
---20cf305e2551815ba004a7ca356f
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-
-<br><br><div class=3D"gmail_quote">2011/7/11 Gilles Chanteperdrix <span dir=
-=3D"ltr">&lt;<a href=3D"mailto:gilles.chanteperdrix@xenomai.org">gilles.cha=
-nteperdrix@domain.hid</a>&gt;</span><br><blockquote class=3D"gmail_quote" =
-style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex;">
-<div><div></div><div class=3D"h5">On 07/11/2011 01:48 PM, Adrien LEMAITRE w=
-rote:<br>
-&gt; 2011/7/11 Gilles Chanteperdrix &lt;<a href=3D"mailto:gilles.chanteperd=
-rix@domain.hid">gilles.chanteperdrix@xenomai.org</a>&gt;<br>
-&gt;<br>
-&gt;&gt; On 07/11/2011 11:50 AM, Adrien LEMAITRE wrote:<br>
-&gt;&gt;&gt; Hello,<br>
-&gt;&gt;&gt;<br>
-&gt;&gt;&gt; I have two problems. Just before explain my problems i would l=
-ike to<br>
-&gt;&gt; clarify<br>
-&gt;&gt;&gt; the context. This exercice is for student. In this exercice, t=
-hey program<br>
-&gt;&gt; a<br>
-&gt;&gt;&gt; WorkingTask (infini loop)<br>
-&gt;&gt;<br>
-&gt;&gt; That is the problem, there should not busy inifinite loops.<br>
-&gt;&gt; rt_task_sleep(100) asks for 100ns sleep, which is equivalent to no=
-t<br>
-&gt;&gt; sleeping at all.<br>
-&gt;&gt;<br>
-&gt;&gt; I seem to remember that I already told you this in answer to your<=
-br>
-&gt;&gt; previous post.<br>
-&gt;&gt;<br>
-&gt;<br>
-&gt; yes and thanks you, i have a better understanding now. So ok if i woul=
-d like<br>
-&gt; to make an infini loop i must add a sleep of 5ms, otherwise i have pro=
-blems.<br>
-&gt; That is why i had needed rt_task_suspend(). And the problem with gdb i=
-s<br>
-&gt; gone.<br>
-&gt;<br>
-&gt; But i don&#39;t see information of this in the wiki, could you show me=
- exactly<br>
-&gt; where i can find it?<br>
-&gt;<br>
-<br>
-</div></div>You can probably sleep for shorter times than 5ms, 100us should=
- be<br>
-enough. This is not documented, because it is an unwanted shortcoming,<br>
-which we hope to avoid one day, by implementing signals for xenomai,<br>
-working even for interrupting an infinite busy loop.<br>
-<br></blockquote><div><br></div><div>Yes sorry it&#39;s not 5ms but 5us. Th=
-anks a lot.</div><div>=A0</div><blockquote class=3D"gmail_quote" style=3D"m=
-argin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex;">
---<br>
-<font color=3D"#888888"> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
-=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0Gilles.<br>
-</font></blockquote></div><br>
-
---20cf305e2551815ba004a7ca356f--
 
