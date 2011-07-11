@@ -1,206 +1,204 @@
-Message-ID: <4E1C2AA5.6060208@domain.hid>
-Date: Tue, 12 Jul 2011 13:06:13 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <E1QfDvt-0003TN-G7@domain.hid> <4E1B469A.8000703@domain.hid>
-	<4E1B4AC0.80506@domain.hid> <4E1B4C19.2070205@domain.hid>
-	<4E1B542B.2010906@domain.hid> <4E1B5638.1050005@domain.hid>
-	<4E1B56E0.20109@domain.hid> <4E1B57D1.1070401@domain.hid>
-	<4E1B5860.1000309@domain.hid> <4E1B5944.5030408@domain.hid>
-	<4E1BEC9F.1020404@domain.hid> <4E1BF619.6010609@domain.hid>
-	<4E1C2912.9050605@domain.hid> <4E1C2959.8080004@domain.hid>
-	<4E1C2A2D.9090602@domain.hid>
-In-Reply-To: <4E1C2A2D.9090602@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig28AC0316A2313566A2AD4558"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-core] [Xenomai-git] Jan Kiszka : nucleus: Fix race
- between gatekeeper and	thread deletion
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Date: Mon, 11 Jul 2011 11:50:56 +0200
+Message-ID: <CALiYb9uRfYeG4NTV7Oy1bMpxtJz0skKsxM9D2k_G5uOZsWWQBQ@mail.gmail.com>
+From: Adrien LEMAITRE <adrien.lemaitre@domain.hid>
+Content-Type: multipart/mixed; boundary=90e6ba5bc25db30d7b04a7c81edb
+Subject: [Xenomai-help] Problems with gdb and rt_task_delete
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai core <Xenomai-core@domain.hid>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig28AC0316A2313566A2AD4558
-Content-Type: text/plain; charset=UTF-8
+--90e6ba5bc25db30d7b04a7c81edb
+Content-Type: multipart/alternative; boundary=90e6ba5bc25db30d7704a7c81ed9
+
+--90e6ba5bc25db30d7704a7c81ed9
+Content-Type: text/plain; charset=ISO-8859-1
+
+Hello,
+
+I have two problems. Just before explain my problems i would like to clarify
+the context. This exercice is for student. In this exercice, they program a
+WorkingTask (infini loop) and they pilot this task with an other (go task).
+
+The first problem is when i used rt_task_delete for stop and delete
+WorkingTask, the Xenomai program doesn't finish.
+But if i use rt_task_suspend before use rt_task_delete, the program stop
+correctly.
+Why i must use rt_task_suspend before? what is problem with rt_task_delete?
+
+
+The second problem: I would like to debug a Xenomai program. But in some
+situation, i have problems. Xenomai take all ressource, the simulateur
+doesn't respond and gdb is blocked in waiting.
+The code of this program is join in this email.
+
+I launched gdb and I used these gdb's commands :
+
+b main
+b WorkingTask
+b 34
+start
+continue
+next
+continue
+
+
+And after the simulateur doesn't respond and gdb is blocked.
+
+What is problem? do you have other problem with gdb?
+A solution of how can i used gdb for debug?
+
+
+The configuration :
+
+- Linux kernel : 2.6.37
+- Adeos patch : adeos-ipipe-2.6.37-x86-2.9-00.patch
+- Xenomai : 2.5.6
+- Host Linux distribution : Ubuntu 10.04
+- Compiler : gcc-4.4.3
+- GDB : 7.1
+
+Configuration of kernel:
+
+I used the default configuration of Ubunut 10.04 and i change this:
+In "Processor type and features":
+
+- change the processor familly : Ahtlon64
+
+- deactivate Enable -fstack-protector buffer overflow detection
+(EXPERIMENTAL)
+
+--90e6ba5bc25db30d7704a7c81ed9
+Content-Type: text/html; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
-On 2011-07-12 13:04, Gilles Chanteperdrix wrote:
-> On 07/12/2011 01:00 PM, Jan Kiszka wrote:
->> On 2011-07-12 12:59, Gilles Chanteperdrix wrote:
->>> On 07/12/2011 09:22 AM, Jan Kiszka wrote:
->>>> On 2011-07-12 08:41, Gilles Chanteperdrix wrote:
->>>>> On 07/11/2011 10:12 PM, Jan Kiszka wrote:
->>>>>> On 2011-07-11 22:09, Gilles Chanteperdrix wrote:
->>>>>>> On 07/11/2011 10:06 PM, Jan Kiszka wrote:
->>>>>>>> On 2011-07-11 22:02, Gilles Chanteperdrix wrote:
->>>>>>>>> On 07/11/2011 09:59 PM, Jan Kiszka wrote:
->>>>>>>>>> On 2011-07-11 21:51, Gilles Chanteperdrix wrote:
->>>>>>>>>>> On 07/11/2011 09:16 PM, Jan Kiszka wrote:
->>>>>>>>>>>> On 2011-07-11 21:10, Jan Kiszka wrote:
->>>>>>>>>>>>> On 2011-07-11 20:53, Gilles Chanteperdrix wrote:
->>>>>>>>>>>>>> On 07/08/2011 06:29 PM, GIT version control wrote:
->>>>>>>>>>>>>>> @@ -2528,6 +2534,22 @@ static inline void do_taskexit_eve=
-nt(struct task_struct *p)
->>>>>>>>>>>>>>>  	magic =3D xnthread_get_magic(thread);
->>>>>>>>>>>>>>> =20
->>>>>>>>>>>>>>>  	xnlock_get_irqsave(&nklock, s);
->>>>>>>>>>>>>>> +
->>>>>>>>>>>>>>> +	gksched =3D thread->gksched;
->>>>>>>>>>>>>>> +	if (gksched) {
->>>>>>>>>>>>>>> +		xnlock_put_irqrestore(&nklock, s);
->>>>>>>>>>>>>>
->>>>>>>>>>>>>> Are we sure irqs are on here? Are you sure that what is ne=
-eded is not an
->>>>>>>>>>>>>> xnlock_clear_irqon?
->>>>>>>>>>>>>
->>>>>>>>>>>>> We are in the context of do_exit. Not only IRQs are on, als=
-o preemption.
->>>>>>>>>>>>> And surely no nklock is held.
->>>>>>>>>>>>>
->>>>>>>>>>>>>> Furthermore, I do not understand how we
->>>>>>>>>>>>>> "synchronize" with the gatekeeper, how is the gatekeeper g=
-aranteed to
->>>>>>>>>>>>>> wait for this assignment?
->>>>>>>>>>>>>
->>>>>>>>>>>>> The gatekeeper holds the gksync token while it's active. We=
- request it,
->>>>>>>>>>>>> thus we wait for the gatekeeper to become idle again. While=
- it is idle,
->>>>>>>>>>>>> we reset the queued reference - but I just realized that th=
-is may tramp
->>>>>>>>>>>>> on other tasks' values. I need to add a check that the valu=
-e to be
->>>>>>>>>>>>> null'ified is actually still ours.
->>>>>>>>>>>>
->>>>>>>>>>>> Thinking again, that's actually not a problem: gktarget is o=
-nly needed
->>>>>>>>>>>> while gksync is zero - but then we won't get hold of it anyw=
-ay and,
->>>>>>>>>>>> thus, can't cause any damage.
->>>>>>>>>>>
->>>>>>>>>>> Well, you make it look like it does not work. From what I und=
-erstand,
->>>>>>>>>>> what you want is to set gktarget to null if a task being hard=
-ened is
->>>>>>>>>>> destroyed. But by waiting for the semaphore, you actually wai=
-t for the
->>>>>>>>>>> harden to be complete, so setting to NULL is useless. Or am I=
- missing
->>>>>>>>>>> something else?
->>>>>>>>>>
->>>>>>>>>> Setting to NULL is probably unneeded but still better than rel=
-y on the
->>>>>>>>>> gatekeeper never waking up spuriously and then dereferencing a=
- stale
->>>>>>>>>> pointer.
->>>>>>>>>>
->>>>>>>>>> The key element of this fix is waitng on gksync, thus on the c=
-ompletion
->>>>>>>>>> of the non-RT part of the hardening. Actually, this part usual=
-ly fails
->>>>>>>>>> as the target task received a termination signal at this point=
-=2E
->>>>>>>>>
->>>>>>>>> Yes, but since you wait on the completion of the hardening, the=
- test
->>>>>>>>> if (target &&...) in the gatekeeper code will always be true, b=
-ecause at
->>>>>>>>> this point the cleanup code will still be waiting for the semap=
-hore.
->>>>>>>>
->>>>>>>> Yes, except we will ever wake up the gatekeeper later on without=
- an
->>>>>>>> updated gktarget, ie. spuriously. Better safe than sorry, this i=
-s hairy
->>>>>>>> code anyway (hopefully obsolete one day).
->>>>>>>
->>>>>>> The gatekeeper is not woken up by posting the semaphore, the gate=
-keeper
->>>>>>> is woken up by the thread which is going to be hardened (and this=
- thread
->>>>>>> is the one which waits for the semaphore).
->>>>>>
->>>>>> All true. And what is the point?
->>>>>
->>>>> The point being, would not something like this patch be sufficient?=
+<span class=3D"Apple-style-span" style=3D"border-collapse: collapse; font-f=
+amily: arial, sans-serif; font-size: 13px; "><div><span class=3D"Apple-styl=
+e-span" style=3D"border-collapse: collapse; font-family: arial, sans-serif;=
+ font-size: 13px; ">Hello,</span></div>
+<div><span class=3D"Apple-style-span" style=3D"border-collapse: collapse; f=
+ont-family: arial, sans-serif; font-size: 13px; "><br></span></div><div>I h=
+ave two problems. Just before explain my problems i would like to clarify t=
+he context. This exercice is for student. In this exercice, they program a =
+WorkingTask (infini loop) and they pilot this task with an other (go task).=
+=A0</div>
+<div><span class=3D"Apple-style-span" style=3D"border-collapse: collapse; f=
+ont-family: arial, sans-serif; font-size: 13px; "><br></span></div><div><di=
+v>The first problem is when i used rt_task_delete for stop and delete Worki=
+ngTask, the Xenomai program doesn&#39;t finish.</div>
+<div>But if i use rt_task_suspend before use rt_task_delete, the program st=
+op correctly.</div><div>Why i must use rt_task_suspend before? what is prob=
+lem with rt_task_delete?</div></div><div><br></div><div><br></div><div>
+<div>The second problem: I would like to debug a Xenomai program. But in so=
+me situation, i have problems. Xenomai take all ressource, the simulateur d=
+oesn&#39;t respond and gdb is blocked in waiting.</div><div>The code of thi=
+s program is join in this email.=A0</div>
+</div><div><br></div><div>I launched gdb and I used these gdb&#39;s command=
+s :</div></span><blockquote class=3D"webkit-indent-blockquote" style=3D"mar=
+gin: 0 0 0 40px; border: none; padding: 0px;"><span class=3D"Apple-style-sp=
+an" style=3D"border-collapse: collapse; font-family: arial, sans-serif; fon=
+t-size: 13px; "><div>
+<span class=3D"Apple-style-span" style=3D"border-collapse: collapse; font-f=
+amily: arial, sans-serif; font-size: 13px; ">b main</span></div></span><spa=
+n class=3D"Apple-style-span" style=3D"border-collapse: collapse; font-famil=
+y: arial, sans-serif; font-size: 13px; "><div>
+<span class=3D"Apple-style-span" style=3D"border-collapse: collapse; font-f=
+amily: arial, sans-serif; font-size: 13px; ">b WorkingTask</span></div></sp=
+an><span class=3D"Apple-style-span" style=3D"border-collapse: collapse; fon=
+t-family: arial, sans-serif; font-size: 13px; "><div>
+<span class=3D"Apple-style-span" style=3D"border-collapse: collapse; font-f=
+amily: arial, sans-serif; font-size: 13px; ">b 34</span></div></span><span =
+class=3D"Apple-style-span" style=3D"border-collapse: collapse; font-family:=
+ arial, sans-serif; font-size: 13px; "><div>
+<span class=3D"Apple-style-span" style=3D"border-collapse: collapse; font-f=
+amily: arial, sans-serif; font-size: 13px; ">start</span></div></span><span=
+ class=3D"Apple-style-span" style=3D"border-collapse: collapse; font-family=
+: arial, sans-serif; font-size: 13px; "><div>
+<span class=3D"Apple-style-span" style=3D"border-collapse: collapse; font-f=
+amily: arial, sans-serif; font-size: 13px; ">continue</span></div></span><s=
+pan class=3D"Apple-style-span" style=3D"border-collapse: collapse; font-fam=
+ily: arial, sans-serif; font-size: 13px; "><div>
+<span class=3D"Apple-style-span" style=3D"border-collapse: collapse; font-f=
+amily: arial, sans-serif; font-size: 13px; ">next</span></div></span><span =
+class=3D"Apple-style-span" style=3D"border-collapse: collapse; font-family:=
+ arial, sans-serif; font-size: 13px; "><div>
+<span class=3D"Apple-style-span" style=3D"border-collapse: collapse; font-f=
+amily: arial, sans-serif; font-size: 13px; ">continue</span></div></span></=
+blockquote><font class=3D"Apple-style-span" face=3D"arial, sans-serif"><spa=
+n class=3D"Apple-style-span" style=3D"border-collapse: collapse;"><br>
+</span></font><span class=3D"Apple-style-span" style=3D"border-collapse: co=
+llapse; font-family: arial, sans-serif; font-size: 13px; "><div><span class=
+=3D"Apple-style-span" style=3D"border-collapse: collapse; font-family: aria=
+l, sans-serif; font-size: 13px; ">And after the simulateur doesn&#39;t resp=
+ond and gdb is blocked.</span></div>
+<div><span class=3D"Apple-style-span" style=3D"border-collapse: collapse; f=
+ont-family: arial, sans-serif; font-size: 13px; "><br></span></div><div><sp=
+an class=3D"Apple-style-span" style=3D"border-collapse: collapse; font-fami=
+ly: arial, sans-serif; font-size: 13px; ">What is problem? do you have othe=
+r problem with gdb?</span></div>
+<div>A solution of how can i used gdb for debug?</div><div><span class=3D"A=
+pple-style-span" style=3D"border-collapse: collapse; font-family: arial, sa=
+ns-serif; font-size: 13px; "><br></span></div><div><br></div>The configurat=
+ion=A0:<br>
+<br><div style=3D"margin-left: 40px; ">- Linux kernel : 2.6.37<br>- Adeos p=
+atch : adeos-ipipe-2.6.37-x86-2.9-00.patch<br>- Xenomai : 2.5.6<br>- Host L=
+inux distribution : Ubuntu 10.04<br>- Compiler : gcc-4.4.3<br></div><div st=
+yle=3D"margin-left: 40px; ">
+- GDB : 7.1</div><br>Configuration of kernel:<br><br>I used the default con=
+figuration of Ubunut 10.04 and i change this:<div style=3D"margin-left: 40p=
+x; "><span lang=3D"en"><span title=3D"Cliquer ici pour voir d&#39;autres tr=
+aductions">In &quot;Processor type and features&quot;:</span></span></div>
+</span><blockquote class=3D"webkit-indent-blockquote" style=3D"margin: 0 0 =
+0 40px; border: none; padding: 0px;"><span class=3D"Apple-style-span" style=
+=3D"border-collapse: collapse; font-family: arial, sans-serif; font-size: 1=
+3px; "><div style=3D"margin-left: 40px; ">
+- change the processor familly : Ahtlon64</div></span></blockquote><span cl=
+ass=3D"Apple-style-span" style=3D"border-collapse: collapse; font-family: a=
+rial, sans-serif; font-size: 13px; "><div style=3D"margin-left: 40px; "><di=
+v style=3D"margin-left: 40px; ">
+<span lang=3D"en"><span title=3D"Cliquer ici pour voir d&#39;autres traduct=
+ions">-=A0</span></span><span lang=3D"en"><span title=3D"Cliquer ici pour v=
+oir d&#39;autres traductions">deactivate Enable -fstack-protector buffer ov=
+erflow detection (EXPERIMENTAL)</span></span></div>
+</div></span>
 
->>>>>
->>>>> diff --git a/ksrc/nucleus/shadow.c b/ksrc/nucleus/shadow.c
->>>>> index 01f4200..4742c02 100644
->>>>> --- a/ksrc/nucleus/shadow.c
->>>>> +++ b/ksrc/nucleus/shadow.c
->>>>> @@ -2527,6 +2527,18 @@ static inline void do_taskexit_event(struct
->>>>> task_struct *p)
->>>>>  	magic =3D xnthread_get_magic(thread);
->>>>>
->>>>>  	xnlock_get_irqsave(&nklock, s);
->>>>> +	if (xnthread_test_info(thread, XNATOMIC)) {
->>>>> +		struct xnsched *gksched =3D xnpod_sched_slot(task_cpu(p));
->>>>
->>>> That's not reliable, the task might have been migrated by Linux in t=
-he
->>>> meantime. We must use the stored gksched.
->>>>
->>>>> +		xnlock_put_irqrestore(&nklock, s);
->>>>> +
->>>>> +		/* Thread is in flight to primary mode, wait for the
->>>>> +		   gatekeeper to be done with it. */
->>>>> +		down(&gksched->gksync);
->>>>> +		up(&gksched->gksync);
->>>>> +
->>>>> +		xnlock_get_irqsave(&nklock, s);
->>>>> +	}
->>>>> +
->>>>>  	/* Prevent wakeup call from xnshadow_unmap(). */
->>>>>  	xnshadow_thrptd(p) =3D NULL;
->>>>>  	xnthread_archtcb(thread)->user_task =3D NULL;
->>>>>
->>>>
->>>> Again, setting gktarget to NULL and testing for NULL is simply safer=
-,
->>>> and I see no gain in skipping that. But if you prefer the
->>>> micro-optimization, I'll drop it.
->>>
->>> Could not we use an info bit instead of adding a pointer?
->>>
->>
->> "That's not reliable, the task might have been migrated by Linux in th=
-e
->> meantime. We must use the stored gksched."
->=20
-> I mean add another info bit to mean that the task is queued for wakeup
-> by the gatekeeper.
->=20
-> XNGKQ, or something.
+--90e6ba5bc25db30d7704a7c81ed9--
 
-What additional value does it provide to gksched !=3D NULL? We need that
-pointer anyway to identify the gatekeeper that holds a reference.
+--90e6ba5bc25db30d7b04a7c81edb
+Content-Type: text/x-csrc; charset=US-ASCII; name="projet_vierge.c"
+Content-Disposition: attachment; filename="projet_vierge.c"
+Content-Transfer-Encoding: base64
+X-Attachment-Id: f_gpz7u00i0
 
-Jan
-
-
---------------enig28AC0316A2313566A2AD4558
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.16 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
-
-iEYEARECAAYFAk4cKqUACgkQitSsb3rl5xTjygCgjuj4xsLOe94UDoColgEAx5a1
-VP4AoLLiLVaOFhUoq3ZfW+vHkeNNBYUT
-=iJGa
------END PGP SIGNATURE-----
-
---------------enig28AC0316A2313566A2AD4558--
+I2luY2x1ZGUgPG5hdGl2ZS90YXNrLmg+CiNpbmNsdWRlIDxzeXMvbW1hbi5oPgojaW5jbHVkZSA8
+YXNzZXJ0Lmg+CiNpbmNsdWRlIDxzdGRpby5oPgojaW5jbHVkZSAidXRpbHMuaCIKCgpSVF9UQVNL
+IFJ0X3dvcmtpbmdfdGFzazsKCmludCBjb21wdGV1cjsKCgp2b2lkIFdvcmtpbmdUYXNrICgpewoJ
+Cgljb21wdGV1cj0wOwoJCgl3aGlsZSAoMSl7CgkJY29tcHRldXIrKzsKCQlydF90YXNrX3NsZWVw
+ICgxMDApOwoJfQp9CgoKdm9pZCBnbyAoKXsKCQoJaW50IGNvZGVFcnJldXI7CgkKCWNvZGVFcnJl
+dXIgPSBydF90YXNrX3N0YXJ0ICgmUnRfd29ya2luZ190YXNrLCAmV29ya2luZ1Rhc2ssIE5VTEwp
+OwoJYXNzZXJ0IChjb2RlRXJyZXVyID09IDApOwoJCgljb2RlRXJyZXVyID0gcnRfdGFza19zbGVl
+cCAoVElNRShNU18yX05TKDEwMCkpKTsKCWFzc2VydCAoY29kZUVycmV1ciA9PSAwKTsKCQoJY29k
+ZUVycmV1ciA9IHJ0X3Rhc2tfc3VzcGVuZCAoJlJ0X3dvcmtpbmdfdGFzayk7IC8vIGlmIHlvdSBk
+ZWxldGUgdGhpcyBsaWduZSwgdGhlIHByb2dyYW0gZG9lc24ndCBzdG9wCglhc3NlcnQgKGNvZGVF
+cnJldXIgPT0gMCk7CgkKCWNvZGVFcnJldXIgPSBydF90YXNrX2RlbGV0ZSAoJlJ0X3dvcmtpbmdf
+dGFzayk7Cglhc3NlcnQgKGNvZGVFcnJldXIgPT0gMCk7Cn0KCgppbnQgbWFpbiAodm9pZCl7CglS
+VF9UQVNLIFJ0X2dvX3Rhc2s7CglpbnQgY29kZUVycmV1cjsKCQoJY29kZUVycmV1ciA9IG1sb2Nr
+YWxsKCBNQ0xfQ1VSUkVOVCB8IE1DTF9GVVRVUkUgKTsKCWFzc2VydCAoY29kZUVycmV1ciA9PSAw
+KTsKCQoJY29kZUVycmV1ciA9IHJ0X3Rhc2tfY3JlYXRlICgmUnRfZ29fdGFzaywgImdvIiwgREVG
+QVVMVF9TVEFDS19TSVpFLCA1MCwgVF9GUFUgfCBUX0pPSU5BQkxFKTsKCWFzc2VydCAoY29kZUVy
+cmV1ciA9PSAwKTsKCQoJY29kZUVycmV1ciA9IHJ0X3Rhc2tfY3JlYXRlICgmUnRfd29ya2luZ190
+YXNrLCAid29ya2luZyIsIERFRkFVTFRfU1RBQ0tfU0laRSwgMzAsIFRfRlBVIHwgVF9KT0lOQUJM
+RSk7Cglhc3NlcnQgKGNvZGVFcnJldXIgPT0gMCk7CgkKCWNvZGVFcnJldXIgPSBydF90YXNrX3N0
+YXJ0ICgmUnRfZ29fdGFzaywgJmdvLCBOVUxMKTsKCWFzc2VydCAoY29kZUVycmV1ciA9PSAwKTsK
+CQoJY29kZUVycmV1ciA9IHJ0X3Rhc2tfam9pbigmUnRfZ29fdGFzayk7Cglhc3NlcnQgKGNvZGVF
+cnJldXIgPT0gMCk7CgkKCXByaW50ZigiRW5kIG9mIHByb2dyYW1cclxuIik7CgkKCXJldHVybiAw
+Owp9Cgo=
+--90e6ba5bc25db30d7b04a7c81edb--
 
