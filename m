@@ -1,13 +1,13 @@
-Message-ID: <4E1B4438.6030600@domain.hid>
-Date: Mon, 11 Jul 2011 20:43:04 +0200
+Message-ID: <4E1B469A.8000703@domain.hid>
+Date: Mon, 11 Jul 2011 20:53:14 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4E16296B.4080209@domain.hid>
-In-Reply-To: <4E16296B.4080209@domain.hid>
+References: <E1QfDvt-0003TN-G7@domain.hid>
+In-Reply-To: <E1QfDvt-0003TN-G7@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] Problems with gcc 4.6.0 (rt_task_shadow fails
- with	ENOSYS)
+Subject: Re: [Xenomai-core] [Xenomai-git] Jan Kiszka : nucleus: Fix race
+ between gatekeeper and	thread deletion
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -16,21 +16,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Anders Blomdell <anders.blomdell@domain.hid>
-Cc: xenomai@xenomai.org
+To: Xenomai core <Xenomai-core@domain.hid>, Jan Kiszka <jan.kiszka@domain.hid>
 
-On 07/07/2011 11:47 PM, Anders Blomdell wrote:
-> When compiling kernel 2.6.37.3 and xenomai 2.5.6 with "gcc version 4.6.0 
-> 20110530 (Red Hat 4.6.0-9) (GCC)", programs fail with -ENOSYS in 
-> rt_task_shadow. If compiled with "gcc version 4.5.1 20100924 (Red Hat 
-> 4.5.1-4) (GCC)" everything works as expected.
+On 07/08/2011 06:29 PM, GIT version control wrote:
+> @@ -2528,6 +2534,22 @@ static inline void do_taskexit_event(struct task_struct *p)
+>  	magic = xnthread_get_magic(thread);
+>  
+>  	xnlock_get_irqsave(&nklock, s);
+> +
+> +	gksched = thread->gksched;
+> +	if (gksched) {
+> +		xnlock_put_irqrestore(&nklock, s);
 
-I think it is due to the modifications of syscall.h I made to implement
-pseudo-signals handling, which implementation was never finished, and
-removed in xenomai-head. Could you try xenomai-head to see if you get
-the failure? I tried backporting it, but the code evolved too much in
-both repositories, the backport needs to spend some time on it, so, I
-would like to know whether it is really needed.
+Are we sure irqs are on here? Are you sure that what is needed is not an
+xnlock_clear_irqon? Furthermore, I do not understand how we
+"synchronize" with the gatekeeper, how is the gatekeeper garanteed to
+wait for this assignment?
+
 
 -- 
                                                                 Gilles.
