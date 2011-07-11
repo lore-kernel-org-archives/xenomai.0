@@ -1,12 +1,13 @@
-Message-ID: <4E1B4AC0.80506@domain.hid>
-Date: Mon, 11 Jul 2011 21:10:56 +0200
+Message-ID: <4E1B4C19.2070205@domain.hid>
+Date: Mon, 11 Jul 2011 21:16:41 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
 References: <E1QfDvt-0003TN-G7@domain.hid> <4E1B469A.8000703@domain.hid>
-In-Reply-To: <4E1B469A.8000703@domain.hid>
+	<4E1B4AC0.80506@domain.hid>
+In-Reply-To: <4E1B4AC0.80506@domain.hid>
 Content-Type: multipart/signed; micalg=pgp-sha1;
 	protocol="application/pgp-signature";
-	boundary="------------enig4585E1EF09D4A33A4FB84294"
+	boundary="------------enig1090E115C2927F49ADD86657"
 Sender: jan.kiszka@domain.hid
 Subject: Re: [Xenomai-core] [Xenomai-git] Jan Kiszka : nucleus: Fix race
  between gatekeeper and	thread deletion
@@ -22,43 +23,52 @@ To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: Xenomai core <Xenomai-core@domain.hid>
 
 This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig4585E1EF09D4A33A4FB84294
+--------------enig1090E115C2927F49ADD86657
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-On 2011-07-11 20:53, Gilles Chanteperdrix wrote:
-> On 07/08/2011 06:29 PM, GIT version control wrote:
->> @@ -2528,6 +2534,22 @@ static inline void do_taskexit_event(struct tas=
-k_struct *p)
->>  	magic =3D xnthread_get_magic(thread);
->> =20
->>  	xnlock_get_irqsave(&nklock, s);
->> +
->> +	gksched =3D thread->gksched;
->> +	if (gksched) {
->> +		xnlock_put_irqrestore(&nklock, s);
+On 2011-07-11 21:10, Jan Kiszka wrote:
+> On 2011-07-11 20:53, Gilles Chanteperdrix wrote:
+>> On 07/08/2011 06:29 PM, GIT version control wrote:
+>>> @@ -2528,6 +2534,22 @@ static inline void do_taskexit_event(struct ta=
+sk_struct *p)
+>>>  	magic =3D xnthread_get_magic(thread);
+>>> =20
+>>>  	xnlock_get_irqsave(&nklock, s);
+>>> +
+>>> +	gksched =3D thread->gksched;
+>>> +	if (gksched) {
+>>> +		xnlock_put_irqrestore(&nklock, s);
+>>
+>> Are we sure irqs are on here? Are you sure that what is needed is not =
+an
+>> xnlock_clear_irqon?
 >=20
-> Are we sure irqs are on here? Are you sure that what is needed is not a=
-n
-> xnlock_clear_irqon?
+> We are in the context of do_exit. Not only IRQs are on, also preemption=
+=2E
+> And surely no nklock is held.
+>=20
+>> Furthermore, I do not understand how we
+>> "synchronize" with the gatekeeper, how is the gatekeeper garanteed to
+>> wait for this assignment?
+>=20
+> The gatekeeper holds the gksync token while it's active. We request it,=
 
-We are in the context of do_exit. Not only IRQs are on, also preemption.
-And surely no nklock is held.
+> thus we wait for the gatekeeper to become idle again. While it is idle,=
 
-> Furthermore, I do not understand how we
-> "synchronize" with the gatekeeper, how is the gatekeeper garanteed to
-> wait for this assignment?
+> we reset the queued reference - but I just realized that this may tramp=
 
-The gatekeeper holds the gksync token while it's active. We request it,
-thus we wait for the gatekeeper to become idle again. While it is idle,
-we reset the queued reference - but I just realized that this may tramp
-on other tasks' values. I need to add a check that the value to be
-null'ified is actually still ours.
+> on other tasks' values. I need to add a check that the value to be
+> null'ified is actually still ours.
+
+Thinking again, that's actually not a problem: gktarget is only needed
+while gksync is zero - but then we won't get hold of it anyway and,
+thus, can't cause any damage.
 
 Jan
 
 
---------------enig4585E1EF09D4A33A4FB84294
+--------------enig1090E115C2927F49ADD86657
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
@@ -67,10 +77,10 @@ Content-Disposition: attachment; filename="signature.asc"
 Version: GnuPG v2.0.16 (GNU/Linux)
 Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
-iEYEARECAAYFAk4bSsAACgkQitSsb3rl5xR5GQCfcxbwZoXAMFluAPDpM3qRk0Gn
-DswAn1uMlGrzilsyQYTDlC8ELbckVCX6
-=kDlI
+iEYEARECAAYFAk4bTBkACgkQitSsb3rl5xSUuwCff9UFNwMF1acytfx6PfTmyOET
+7QUAoMF79B8iJCzQ3fCIcpbU60BSjldW
+=j5dd
 -----END PGP SIGNATURE-----
 
---------------enig4585E1EF09D4A33A4FB84294--
+--------------enig1090E115C2927F49ADD86657--
 
