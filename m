@@ -1,6 +1,6 @@
-Message-ID: <4E1C8508.5010400@domain.hid>
-Date: Tue, 12 Jul 2011 19:31:52 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4E1C858A.7070403@domain.hid>
+Date: Tue, 12 Jul 2011 19:34:02 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
 References: <E1QfDvt-0003TN-G7@domain.hid> <4E1B469A.8000703@domain.hid>
 	<4E1B4AC0.80506@domain.hid> <4E1B4C19.2070205@domain.hid>
@@ -15,9 +15,12 @@ References: <E1QfDvt-0003TN-G7@domain.hid> <4E1B469A.8000703@domain.hid>
 	<4E1C3301.2030203@domain.hid> <4E1C3672.1030104@domain.hid>
 	<4E1C36EE.70803@domain.hid> <4E1C38CE.7090202@domain.hid>
 	<4E1C3A5D.3020700@domain.hid> <4E1C44B4.50106@domain.hid>
-In-Reply-To: <4E1C44B4.50106@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+	<4E1C8508.5010400@domain.hid>
+In-Reply-To: <4E1C8508.5010400@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig8D28E980A1DEFB2949DBC39F"
+Sender: jan.kiszka@domain.hid
 Subject: Re: [Xenomai-core] [Xenomai-git] Jan Kiszka : nucleus: Fix race
  between gatekeeper and	thread deletion
 List-Id: Xenomai life and development <xenomai.xenomai.org>
@@ -28,46 +31,62 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: Xenomai core <Xenomai-core@domain.hid>
 
-On 07/12/2011 02:57 PM, Jan Kiszka wrote:
->  			xnlock_put_irqrestore(&nklock, s);
->  			xnpod_schedule();
->  		}
-> @@ -1036,6 +1043,7 @@ redo:
->  	 * to process this signal anyway.
->  	 */
->  	if (rthal_current_domain == rthal_root_domain) {
-> +		XENO_BUGON(NUCLEUS, xnthread_test_info(thread, XNATOMIC));
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig8D28E980A1DEFB2949DBC39F
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-Misleading dead code again, XNATOMIC is cleared not ten lines above.
+On 2011-07-12 19:31, Gilles Chanteperdrix wrote:
+> On 07/12/2011 02:57 PM, Jan Kiszka wrote:
+>>  			xnlock_put_irqrestore(&nklock, s);
+>>  			xnpod_schedule();
+>>  		}
+>> @@ -1036,6 +1043,7 @@ redo:
+>>  	 * to process this signal anyway.
+>>  	 */
+>>  	if (rthal_current_domain =3D=3D rthal_root_domain) {
+>> +		XENO_BUGON(NUCLEUS, xnthread_test_info(thread, XNATOMIC));
+>=20
+> Misleading dead code again, XNATOMIC is cleared not ten lines above.
 
->  		if (XENO_DEBUG(NUCLEUS) && (!signal_pending(this_task)
->  		    || this_task->state != TASK_RUNNING))
->  			xnpod_fatal
-> @@ -1044,6 +1052,8 @@ redo:
->  		return -ERESTARTSYS;
->  	}
->  
-> +	xnthread_clear_info(thread, XNATOMIC);
+Nope, I forgot to remove that line.
 
-Why this? I find the xnthread_clear_info(XNATOMIC) right at the right
-place at the point it currently is.
+>=20
+>>  		if (XENO_DEBUG(NUCLEUS) && (!signal_pending(this_task)
+>>  		    || this_task->state !=3D TASK_RUNNING))
+>>  			xnpod_fatal
+>> @@ -1044,6 +1052,8 @@ redo:
+>>  		return -ERESTARTSYS;
+>>  	}
+>> =20
+>> +	xnthread_clear_info(thread, XNATOMIC);
+>=20
+> Why this? I find the xnthread_clear_info(XNATOMIC) right at the right
+> place at the point it currently is.
 
-> +
->  	/* "current" is now running into the Xenomai domain. */
->  	thread->gksched = NULL;
->  	sched = xnsched_finish_unlocked_switch(thread->sched);
-> @@ -2650,6 +2660,8 @@ static inline void do_sigwake_event(struct task_struct *p)
->  
->  	xnlock_get_irqsave(&nklock, s);
->  
-> +	xnthread_clear_info(thread, XNATOMIC);
-> +
+Nope. Now we either clear XNATOMIC after successful migration or when
+the signal is about to be sent (ie. in the hook). That way we can test
+more reliably (TM) in the gatekeeper if the thread can be migrated.
 
-Ditto.
+Jan
 
--- 
-                                                                Gilles.
+
+--------------enig8D28E980A1DEFB2949DBC39F
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.16 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+
+iEYEARECAAYFAk4chY0ACgkQitSsb3rl5xQOTQCg7XCpzpzbQvn+Lz78NWLy523v
+eOMAn1GwDDu6s/dMTnFnhTZekchf4BUp
+=n8Q8
+-----END PGP SIGNATURE-----
+
+--------------enig8D28E980A1DEFB2949DBC39F--
 
