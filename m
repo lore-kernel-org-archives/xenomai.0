@@ -1,105 +1,141 @@
 MIME-Version: 1.0
-In-Reply-To: <1309810409.2157.13.camel@domain.hid>
-References: <CAMJ=MEcTefZicuRNSv77kQB3XQTkvQDekHNeq04KPA86-yTEuw@domain.hid>
-	<CAMJ=MEcn1ZemK7XkW5F9MpJ9pWihm7UM-t-7HZP7LPD7QDLmcA@mail.gmail.com>
-	<1309767638.2157.7.camel@domain.hid> <4E11A71F.7040804@domain.hid>
-	<CAMJ=MEfVauUJG=YfQ2LiMqEwRWAyFrfdGMX1ZvR2x3xvkyCTAA@mail.gmail.com>
-	<1309810164.2157.12.camel@domain.hid> <1309810409.2157.13.camel@domain.hid>
-Date: Tue, 5 Jul 2011 10:45:08 +0200
-Message-ID: <CAMJ=MEcFSPn33STcfZ8-a8oDUYJX7sOvkMkSqtXi0Z3tHzSTUA@mail.gmail.com>
-From: Ronny Meeus <ronny.meeus@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Adeos-main] Kernel blocked during send/receive raw ethernet
-	packets.
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/options/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: adeos-main@gna.org
+In-Reply-To: <4E1C28E1.3090906@domain.hid>
+References: <CAL+uwv-XzsN_+4MHXTo+SW7jAh98rf22ER4uGb5DV+HXktELOg@domain.hid>
+	<4E1B3988.9000907@domain.hid>
+	<CAL+uwv_pGnuuWir_qC+sHLn=Te6NFgrO4XUpaXjLpGZ=1-C_JQ@mail.gmail.com>
+	<4E1B48B8.4090007@domain.hid>
+	<CAL+uwv8yEu92kUAnyCq1Q3LQ9fB0EzFJQA0028nJ-hyWP0m03Q@mail.gmail.com>
+	<CAL+uwv90pAbaXS0KvUhzoMz9ns1bsUjx=-WJ_SJUTSBfAuVWpQ@mail.gmail.com>
+	<4E1C28E1.3090906@domain.hid>
+Date: Tue, 12 Jul 2011 14:12:21 +0200
+Message-ID: <CAL+uwv-U=MjdkQaosR72AdVAXY-+7FpU7Brts+_BgLCcC0bWsA@mail.gmail.com>
+From: suresh reddy <sureshreddy.balijepalli@domain.hid>
+Content-Type: multipart/alternative; boundary=bcaec5016419378e9404a7de36e4
+Subject: Re: [Xenomai-help] Fwd: Regarding xeno test (somethign died at 3150)
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 
-On Mon, Jul 4, 2011 at 10:13 PM, Philippe Gerum <rpm@xenomai.org> wrote:
-> On Mon, 2011-07-04 at 22:09 +0200, Philippe Gerum wrote:
->> On Mon, 2011-07-04 at 22:04 +0200, Ronny Meeus wrote:
->> > On Mon, Jul 4, 2011 at 1:42 PM, Gilles Chanteperdrix
->> > <gilles.chanteperdrix@xenomai.org> wrote:
->> > > On 07/04/2011 10:20 AM, Philippe Gerum wrote:
->> > >> Could you try 2.6.36-ipipe as well in case 2.6.35.7 without pipelin=
-e
->> > >> does not exhibit the issue? A number of changes went in the IRQ rep=
-lay
->> > >> code during this time frame, and 2.6.35 was in a state of flux rega=
-rding
->> > >> this.
->> > >
->> > > And please try Xenomai 2.5.6.
->> > >
->> > > --
->> > > =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
-=A0 =A0 =A0 =A0 =A0Gilles.
->> > >
->> >
->> > Hello
->> >
->> > today we tested tested: "Running the same test on 2.6.35.7 without IPI=
-PE".
->> > The result is also not OK. The problem can be reproduced on this
->> > kernel, so it looks like the issue has nothing to do with the I-PIPE.
->> > We are currently porting the FreeScale patches to the 2.6.36 kernel
->> > but it looks like this is going to take some effort (Thomas already
->> > spent half a day on it today).
->> >
->> > Maybe a bit of history: we started with the 2.6.34 kernel with no SMP.
->> > Here we observed issue in some scenarios. By playing with the
->> > configuration we found that these issues were resolved by switching to
->> > SMP (even on one core).
->> > After the activation of SMP we started to see BADNESS issues once we
->> > started to run our Xenomai based applications.
->> > Thomas found a patch on the Xenomai mailing list to solve the badness
->> > issue but this was based on 2.6.35.7. We ported the FreeScale patches
->> > to that releases and we observed the blocking application issue
->> > described above.
->> >
->> > We will try to port the FreeScale patches to 2.6.36 and see how the
->> > system behaves. More information on this later.
->> > Can you guys give us any hint of what would be the most stable version
->> > of Linux + Xenomai to base our application on?
->>
->> SMP-wise for powerpc, 2.6.36 + upcoming 2.5.6
+--bcaec5016419378e9404a7de36e4
+Content-Type: text/plain; charset=ISO-8859-1
+
+On 12 July 2011 12:58, Gilles Chanteperdrix <
+gilles.chanteperdrix@xenomai.org> wrote:
+
+> On 07/12/2011 11:24 AM, suresh reddy wrote:
+> > Dear Giles,
+> >
+> > /usr/bin/latency  results in command not found.
+> >
+> > ubuntu@domain.hid$ sudo ./clocktest
+> > [sudo] password for ubuntu:
+> > Xenomai or CONFIG_XENO_OPT_PERVASIVE disabled.
+> > (modprobe xeno_nucleus?)
+> > ubuntu@domain.hid$ sudo ./latency
+> > [sudo] password for ubuntu:
+> > Xenomai or CONFIG_XENO_OPT_PERVASIVE disabled.
+> > (modprobe xeno_nucleus?)
+> > ubuntu@domain.hid$ modprobe xeno_nucleus
+> > FATAL: Module xeno_nucleus not found.
+> > ubuntu@domain.hid$ cd
+> > ubuntu@domain.hid:~$ /usr/bin
+> > -bash: /usr/bin: Is a directory
+> > ubuntu@domain.hid:~$ cd /usr/bin
+> > ubuntu@domain.hid$ sudo ./latency
+> > [sudo] password for ubuntu:
+> > sudo: ./latency: command not found
+> > ubuntu@domain.hid$
+> >
+> >
+> > But the configuration has config_XENO_OPT_PERVASIVE=y
 >
-> s,upcoming,,
->
-> I mean 2.5.6 stock.
->
->>
->> >
->> > Thanks
->> > Ronny
->> >
->> > _______________________________________________
->> > Adeos-main mailing list
->> > Adeos-main@domain.hid
->> > https://mail.gna.org/listinfo/adeos-main
->>
+> Your user-space support is mis-compiled. See README.INSTALL for an
+> explanation of the ARM specific options to be passed to the configure
+> script.
 >
 > --
-> Philippe.
->
->
+>                                                                 Gilles.
 >
 
-Hello
+I have passed all the options even they were mentioned weak in documentation
+.
 
-we have done the test on both 2.6.36 and 2.6.36.4 without I-PIPE.
-In both cases the issue is seen.
+/media/disk-5/usr/bin# /home/balijepalli/omap4/xenomai-2.5.6/configure
+--build=i486-pc-linux-gnu --host=arm-none-linux-gnueabi
+--enable-arm-mach=omap3 --enable-arm-tsc --enable-arm-eabi
+--enable-arm-arch=armv7
 
-Any hints to helps us debugging this issue would be appreciated.
+does this have any error.
 
-Best regards
-Ronny
+
+
+-- 
+
+Suresh balijepalli
+Rosenehim,Baveria.
+
+--bcaec5016419378e9404a7de36e4
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><br><br><div class=3D"gmail_quote">On 12 July 2011 12:58, =
+Gilles Chanteperdrix <span dir=3D"ltr">&lt;<a href=3D"mailto:gilles.chantep=
+erdrix@domain.hid">gilles.chanteperdrix@xenomai.org</a>&gt;</span> wrote:<=
+br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left=
+:1px #ccc solid;padding-left:1ex;">
+<div class=3D"im">On 07/12/2011 11:24 AM, suresh reddy wrote:<br>
+&gt; Dear Giles,<br>
+&gt;<br>
+</div><div class=3D"im">&gt; /usr/bin/latency =A0results in command not fou=
+nd.<br>
+&gt;<br>
+&gt; ubuntu@domain.hid$ sudo ./clocktest<br>
+&gt; [sudo] password for ubuntu:<br>
+&gt; Xenomai or CONFIG_XENO_OPT_PERVASIVE disabled.<br>
+&gt; (modprobe xeno_nucleus?)<br>
+&gt; ubuntu@domain.hid$ sudo ./latency<br>
+&gt; [sudo] password for ubuntu:<br>
+&gt; Xenomai or CONFIG_XENO_OPT_PERVASIVE disabled.<br>
+&gt; (modprobe xeno_nucleus?)<br>
+&gt; ubuntu@domain.hid$ modprobe xeno_nucleus<br>
+&gt; FATAL: Module xeno_nucleus not found.<br>
+&gt; ubuntu@domain.hid$ cd<br>
+&gt; ubuntu@domain.hid:~$ /usr/bin<br>
+&gt; -bash: /usr/bin: Is a directory<br>
+&gt; ubuntu@domain.hid:~$ cd /usr/bin<br>
+&gt; ubuntu@domain.hid$ sudo ./latency<br>
+&gt; [sudo] password for ubuntu:<br>
+&gt; sudo: ./latency: command not found<br>
+&gt; ubuntu@domain.hid$<br>
+&gt;<br>
+&gt;<br>
+&gt; But the configuration has config_XENO_OPT_PERVASIVE=3Dy<br>
+<br>
+</div>Your user-space support is mis-compiled. See README.INSTALL for an<br=
+>
+explanation of the ARM specific options to be passed to the configure<br>
+script.<br>
+<br>
+--<br>
+<font color=3D"#888888"> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
+=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0=
+ =A0Gilles.<br>
+</font></blockquote></div><div><br></div><div>I have passed all the options=
+ even they were mentioned weak in documentation .</div><div><br></div><div>=
+<div>/media/disk-5/usr/bin# /home/balijepalli/omap4/xenomai-2.5.6/configure=
+ --build=3Di486-pc-linux-gnu --host=3Darm-none-linux-gnueabi --enable-arm-m=
+ach=3Domap3 --enable-arm-tsc --enable-arm-eabi --enable-arm-arch=3Darmv7</d=
+iv>
+</div><div><br></div><div>does this have any error.</div><br><br clear=3D"a=
+ll"><br>-- <br><br>Suresh balijepalli<br>Rosenehim,Baveria.<br>
+</div>
+
+--bcaec5016419378e9404a7de36e4--
 
