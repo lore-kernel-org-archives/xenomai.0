@@ -1,284 +1,191 @@
-Message-ID: <4E02B485.8040803@domain.hid>
-Date: Wed, 22 Jun 2011 20:35:33 -0700
-From: David Wiebe <dwiebe2@domain.hid>
+Message-ID: <4E1C2959.8080004@domain.hid>
+Date: Tue, 12 Jul 2011 13:00:41 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <BANLkTi=qe3CqD9U_T3nF6xBN+nZNbxF7Gg@domain.hid>		<4E00A476.2080006@domain.hid>	<4E01977E.1080202@domain.hid>		<4E01AB2C.4070409@domain.hid>	<1308733051.2159.12.camel@domain.hid>		<4E02162A.9060004@domain.hid>	<1308760138.2159.92.camel@domain.hid>
-	<4E022C64.3040805@domain.hid>	<4E022DB9.5020508@domain.hid>
-	<4E023966.1080603@domain.hid>
-In-Reply-To: <4E023966.1080603@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] rt_dev_ioctl
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+References: <E1QfDvt-0003TN-G7@domain.hid> <4E1B469A.8000703@domain.hid>
+	<4E1B4AC0.80506@domain.hid> <4E1B4C19.2070205@domain.hid>
+	<4E1B542B.2010906@domain.hid> <4E1B5638.1050005@domain.hid>
+	<4E1B56E0.20109@domain.hid> <4E1B57D1.1070401@domain.hid>
+	<4E1B5860.1000309@domain.hid> <4E1B5944.5030408@domain.hid>
+	<4E1BEC9F.1020404@domain.hid> <4E1BF619.6010609@domain.hid>
+	<4E1C2912.9050605@domain.hid>
+In-Reply-To: <4E1C2912.9050605@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enigC0E5F78D03277E562D495E9C"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-core] [Xenomai-git] Jan Kiszka : nucleus: Fix race
+ between gatekeeper and	thread deletion
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Xenomai core <Xenomai-core@domain.hid>
 
-Hello,
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enigC0E5F78D03277E562D495E9C
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-The program included in this email compiles and runs on my beagleboard 
-xm. The compiler gives no warnings or anything.
+On 2011-07-12 12:59, Gilles Chanteperdrix wrote:
+> On 07/12/2011 09:22 AM, Jan Kiszka wrote:
+>> On 2011-07-12 08:41, Gilles Chanteperdrix wrote:
+>>> On 07/11/2011 10:12 PM, Jan Kiszka wrote:
+>>>> On 2011-07-11 22:09, Gilles Chanteperdrix wrote:
+>>>>> On 07/11/2011 10:06 PM, Jan Kiszka wrote:
+>>>>>> On 2011-07-11 22:02, Gilles Chanteperdrix wrote:
+>>>>>>> On 07/11/2011 09:59 PM, Jan Kiszka wrote:
+>>>>>>>> On 2011-07-11 21:51, Gilles Chanteperdrix wrote:
+>>>>>>>>> On 07/11/2011 09:16 PM, Jan Kiszka wrote:
+>>>>>>>>>> On 2011-07-11 21:10, Jan Kiszka wrote:
+>>>>>>>>>>> On 2011-07-11 20:53, Gilles Chanteperdrix wrote:
+>>>>>>>>>>>> On 07/08/2011 06:29 PM, GIT version control wrote:
+>>>>>>>>>>>>> @@ -2528,6 +2534,22 @@ static inline void do_taskexit_event=
+(struct task_struct *p)
+>>>>>>>>>>>>>  	magic =3D xnthread_get_magic(thread);
+>>>>>>>>>>>>> =20
+>>>>>>>>>>>>>  	xnlock_get_irqsave(&nklock, s);
+>>>>>>>>>>>>> +
+>>>>>>>>>>>>> +	gksched =3D thread->gksched;
+>>>>>>>>>>>>> +	if (gksched) {
+>>>>>>>>>>>>> +		xnlock_put_irqrestore(&nklock, s);
+>>>>>>>>>>>>
+>>>>>>>>>>>> Are we sure irqs are on here? Are you sure that what is need=
+ed is not an
+>>>>>>>>>>>> xnlock_clear_irqon?
+>>>>>>>>>>>
+>>>>>>>>>>> We are in the context of do_exit. Not only IRQs are on, also =
+preemption.
+>>>>>>>>>>> And surely no nklock is held.
+>>>>>>>>>>>
+>>>>>>>>>>>> Furthermore, I do not understand how we
+>>>>>>>>>>>> "synchronize" with the gatekeeper, how is the gatekeeper gar=
+anteed to
+>>>>>>>>>>>> wait for this assignment?
+>>>>>>>>>>>
+>>>>>>>>>>> The gatekeeper holds the gksync token while it's active. We r=
+equest it,
+>>>>>>>>>>> thus we wait for the gatekeeper to become idle again. While i=
+t is idle,
+>>>>>>>>>>> we reset the queued reference - but I just realized that this=
+ may tramp
+>>>>>>>>>>> on other tasks' values. I need to add a check that the value =
+to be
+>>>>>>>>>>> null'ified is actually still ours.
+>>>>>>>>>>
+>>>>>>>>>> Thinking again, that's actually not a problem: gktarget is onl=
+y needed
+>>>>>>>>>> while gksync is zero - but then we won't get hold of it anyway=
+ and,
+>>>>>>>>>> thus, can't cause any damage.
+>>>>>>>>>
+>>>>>>>>> Well, you make it look like it does not work. From what I under=
+stand,
+>>>>>>>>> what you want is to set gktarget to null if a task being harden=
+ed is
+>>>>>>>>> destroyed. But by waiting for the semaphore, you actually wait =
+for the
+>>>>>>>>> harden to be complete, so setting to NULL is useless. Or am I m=
+issing
+>>>>>>>>> something else?
+>>>>>>>>
+>>>>>>>> Setting to NULL is probably unneeded but still better than rely =
+on the
+>>>>>>>> gatekeeper never waking up spuriously and then dereferencing a s=
+tale
+>>>>>>>> pointer.
+>>>>>>>>
+>>>>>>>> The key element of this fix is waitng on gksync, thus on the com=
+pletion
+>>>>>>>> of the non-RT part of the hardening. Actually, this part usually=
+ fails
+>>>>>>>> as the target task received a termination signal at this point.
+>>>>>>>
+>>>>>>> Yes, but since you wait on the completion of the hardening, the t=
+est
+>>>>>>> if (target &&...) in the gatekeeper code will always be true, bec=
+ause at
+>>>>>>> this point the cleanup code will still be waiting for the semapho=
+re.
+>>>>>>
+>>>>>> Yes, except we will ever wake up the gatekeeper later on without a=
+n
+>>>>>> updated gktarget, ie. spuriously. Better safe than sorry, this is =
+hairy
+>>>>>> code anyway (hopefully obsolete one day).
+>>>>>
+>>>>> The gatekeeper is not woken up by posting the semaphore, the gateke=
+eper
+>>>>> is woken up by the thread which is going to be hardened (and this t=
+hread
+>>>>> is the one which waits for the semaphore).
+>>>>
+>>>> All true. And what is the point?
+>>>
+>>> The point being, would not something like this patch be sufficient?
+>>>
+>>> diff --git a/ksrc/nucleus/shadow.c b/ksrc/nucleus/shadow.c
+>>> index 01f4200..4742c02 100644
+>>> --- a/ksrc/nucleus/shadow.c
+>>> +++ b/ksrc/nucleus/shadow.c
+>>> @@ -2527,6 +2527,18 @@ static inline void do_taskexit_event(struct
+>>> task_struct *p)
+>>>  	magic =3D xnthread_get_magic(thread);
+>>>
+>>>  	xnlock_get_irqsave(&nklock, s);
+>>> +	if (xnthread_test_info(thread, XNATOMIC)) {
+>>> +		struct xnsched *gksched =3D xnpod_sched_slot(task_cpu(p));
+>>
+>> That's not reliable, the task might have been migrated by Linux in the=
 
-Once I prepend an ioctl call with rt_dev_, I get the following
+>> meantime. We must use the stored gksched.
+>>
+>>> +		xnlock_put_irqrestore(&nklock, s);
+>>> +
+>>> +		/* Thread is in flight to primary mode, wait for the
+>>> +		   gatekeeper to be done with it. */
+>>> +		down(&gksched->gksync);
+>>> +		up(&gksched->gksync);
+>>> +
+>>> +		xnlock_get_irqsave(&nklock, s);
+>>> +	}
+>>> +
+>>>  	/* Prevent wakeup call from xnshadow_unmap(). */
+>>>  	xnshadow_thrptd(p) =3D NULL;
+>>>  	xnthread_archtcb(thread)->user_task =3D NULL;
+>>>
+>>
+>> Again, setting gktarget to NULL and testing for NULL is simply safer,
+>> and I see no gain in skipping that. But if you prefer the
+>> micro-optimization, I'll drop it.
+>=20
+> Could not we use an info bit instead of adding a pointer?
+>=20
 
-david@domain.hid$ 
-arm-none-linux-gnueabi-gcc -o xenomai-spi-eth-00002 $CFLAGS 
-xenomai-spi-eth-00002.c $LDFLAGS -I 
-/home/david/122720101858-beagleboard-working-set/kernel/linux/include/
-/tmp/cc9aLEWN.o: In function `main':
-xenomai-spi-eth-00002.c:(.text+0x334): undefined reference to `rt_dev_ioctl'
-collect2: ld returned 1 exit status
+"That's not reliable, the task might have been migrated by Linux in the
+meantime. We must use the stored gksched."
 
-I'm perplexed because as I understand it including rtdm/rtdm.h should 
-allow the function rt_dev_ioctl to be used.
-
-In a previous email I received, it was suggested I change the skin to 
-rtdm. I set both skin to rtdm. This gave me a different set of errors 
-referencing rt_task_set_periodic and the like.
-
-
-Thanks for reading this,
-
-Sincerely,
-
-David
-
-CFLAGS=`DESTDIR=/home/david/sdir 
-/home/david/sdir/usr/xenomai/bin/xeno-config --skin native --cflags`
-
-LDFLAGS=`DESTDIR=/home/david/sdir 
-/home/david/sdir/usr/xenomai/bin/xeno-config --skin native --ldflags`
-
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <sys/ioctl.h>
-#include <signal.h>
-#include <sys/mman.h>
-
-#include <getopt.h>
-#include <linux/types.h>
-#include <linux/spi/spidev.h>
-#include <string.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <netdb.h>
-
-#include <native/task.h>
-#include <native/timer.h>
-#include <native/pipe.h>
-#include <rtdk.h>
-#include <rtdm/rtipc.h>
-#include <rtdm/rtdm.h>
-#include <rtdm/rtcan.h>
-
-RT_TASK blink_task;
-
-#define TIMESLEEP 1000000 /* 1 msec(ns) */
-
-#define ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))
-#define PORT           8080
-#define HOST           "192.168.1.101"
-#define DIRSIZE        8192
-#define    HIGH        1
-#define    LOW        0
-
-#define HIGH_TIME    12
-#define    LOW_TIME    1
-#define    TIME_USEC    0
-
-static const char *device = "/dev/spidev3.0";
-static uint8_t mode;
-static uint8_t bits = 8;
-static uint32_t speed = 11000000;
-//static uint16_t delay=1;
-
-
-int fd;
-FILE    *fp;
-FILE    *fpx;
-char    set_value[4];
-int     state;
-int    ret = 0;
-//struct    sockaddr_in sin;
-struct    sockaddr_in pin;
-struct    hostent *hp;
-int    sd;
-char    hostname[100];
-char    return_array[400];
-int     i;
-void blink(void *arg __attribute__((__unused__)))
-{
-     uint8_t tx[] = {
-0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-     };
-     uint8_t rx[ARRAY_SIZE(tx)] = {0, };
-     struct spi_ioc_transfer tr = {
-         .tx_buf = (unsigned long)tx,
-         .rx_buf = (unsigned long)rx,
-         .len = ARRAY_SIZE(tx),
-         .delay_usecs = TIME_USEC,
-         .speed_hz = speed,
-         .bits_per_word = bits,
-     };
-      rt_task_set_periodic(NULL, TM_NOW, TIMESLEEP);
-     if (ret == -1)
-         printf("can't set spi mode");
-     while(1)
-     {
-         rt_task_wait_period(NULL);
-     ret = ioctl(fd, SPI_IOC_MESSAGE(1), &tr);
-     for(i = 0;i < 360;i++)
-         {
-         return_array[i] = 68;
-         }
-     return_array[359] = 0;
-
-     if (ret < 1)
-         printf("can't send spi message");
-
-     if (send(sd, return_array, strlen(return_array), 0) == -1)
-             {
-             perror("send");
-             exit(1);
-             }
-     }
-}
-
-void catch_signal() {}
-
-int main(void)
-{
-     signal(SIGTERM, catch_signal);
-     signal(SIGINT, catch_signal);
-
-     /* Avoids memory swapping for this program */
-     mlockall(MCL_CURRENT|MCL_FUTURE);
-
-        fd = open(device, O_RDWR);
-   //     fd = rt_dev_open(device, O_RDWR);
-     if (fd < 0)
-         printf("can't open device");
-
-     mode |= SPI_CPHA;
-/*
-      * spi mode
-      */
-     ret = ioctl(fd, SPI_IOC_WR_MODE, &mode);
-     if (ret == -1)
-         printf("can't set spi mode");
-
-     ret = ioctl(fd, SPI_IOC_RD_MODE, &mode);
-     if (ret == -1)
-         printf("can't get spi mode");
-
-     /*
-      * bits per word
-      */
-     ret = ioctl(fd, SPI_IOC_WR_BITS_PER_WORD, &bits);
-     if (ret == -1)
-         printf("can't set bits per word");
-
-     ret = ioctl(fd, SPI_IOC_RD_BITS_PER_WORD, &bits);
-     if (ret == -1)
-         printf("can't get bits per word");
-
-     /*
-      * max speed hz
-      */
-     ret = ioctl(fd, SPI_IOC_WR_MAX_SPEED_HZ, &speed);
-     if (ret == -1)
-         printf("can't set max speed hz");
-
-     ret = ioctl(fd, SPI_IOC_RD_MAX_SPEED_HZ, &speed);
-     if (ret == -1)
-         printf("can't get max speed hz");
-     /************************************************/
-     /*    Ethernet stuff                */
-     /************************************************/
-     strcpy(hostname,"192.168.0.101");//HOST);
+Jan
 
 
-     /* go find out about the desired host machine */
-     if ((hp = gethostbyname(hostname)) == 0)
-         {
-         perror("gethostbyname");
-         exit(1);
-         }
+--------------enigC0E5F78D03277E562D495E9C
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-     /* fill in the socket structure with host information */
-     memset(&pin, 0, sizeof(pin));
-     pin.sin_family = AF_INET;
-     pin.sin_addr.s_addr = ((struct in_addr *)(hp->h_addr))->s_addr;
-     pin.sin_port = htons(PORT);
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.16 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
-     /* grab an Internet domain socket */
-     if ((sd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
-         {
-         perror("socket");
-         exit(1);
-         }
+iEYEARECAAYFAk4cKWIACgkQitSsb3rl5xQazACg6aop9Z10wMuNjJmyzketdNp1
+oKIAn1B+a1uMuOnGa/eovxd/HEgG8bOO
+=r8LK
+-----END PGP SIGNATURE-----
 
-     /* connect to PORT on HOST */
-     if (connect(sd,(struct sockaddr *) &pin, sizeof(pin)) == -1)
-         {
-         perror("connect");
-         exit(1);
-         }
-
-     /* Task Creation */
-     rt_task_create(&blink_task, "blinkLed", 0, 99, 0);
-     rt_task_start(&blink_task, &blink, NULL);
-     getchar();
-     rt_task_delete(&blink_task);
-     close(fd);
-
-     return 0;
-}
-
+--------------enigC0E5F78D03277E562D495E9C--
 
