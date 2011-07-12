@@ -1,9 +1,20 @@
+Message-ID: <4E1BF619.6010609@domain.hid>
+Date: Tue, 12 Jul 2011 09:22:01 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Message-ID: <OF12D8D3EB.9E96F191-ONC12578CB.0027BCBF-C12578CB.00285710@domain.hid>
-From: julien.delange@domain.hid
-Date: Tue, 12 Jul 2011 09:20:38 +0200
-Content-Type: text/plain; charset="US-ASCII"
-Subject: [Xenomai-core] ESA SOCIS initiative
+References: <E1QfDvt-0003TN-G7@domain.hid> <4E1B469A.8000703@domain.hid>
+	<4E1B4AC0.80506@domain.hid> <4E1B4C19.2070205@domain.hid>
+	<4E1B542B.2010906@domain.hid> <4E1B5638.1050005@domain.hid>
+	<4E1B56E0.20109@domain.hid> <4E1B57D1.1070401@domain.hid>
+	<4E1B5860.1000309@domain.hid> <4E1B5944.5030408@domain.hid>
+	<4E1BEC9F.1020404@domain.hid>
+In-Reply-To: <4E1BEC9F.1020404@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig53AF49953FECC47A1EAA09C8"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-core] [Xenomai-git] Jan Kiszka : nucleus: Fix race
+ between gatekeeper and	thread deletion
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -12,35 +23,158 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Xenomai core <Xenomai-core@domain.hid>
 
-Dear all,
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig53AF49953FECC47A1EAA09C8
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+On 2011-07-12 08:41, Gilles Chanteperdrix wrote:
+> On 07/11/2011 10:12 PM, Jan Kiszka wrote:
+>> On 2011-07-11 22:09, Gilles Chanteperdrix wrote:
+>>> On 07/11/2011 10:06 PM, Jan Kiszka wrote:
+>>>> On 2011-07-11 22:02, Gilles Chanteperdrix wrote:
+>>>>> On 07/11/2011 09:59 PM, Jan Kiszka wrote:
+>>>>>> On 2011-07-11 21:51, Gilles Chanteperdrix wrote:
+>>>>>>> On 07/11/2011 09:16 PM, Jan Kiszka wrote:
+>>>>>>>> On 2011-07-11 21:10, Jan Kiszka wrote:
+>>>>>>>>> On 2011-07-11 20:53, Gilles Chanteperdrix wrote:
+>>>>>>>>>> On 07/08/2011 06:29 PM, GIT version control wrote:
+>>>>>>>>>>> @@ -2528,6 +2534,22 @@ static inline void do_taskexit_event(s=
+truct task_struct *p)
+>>>>>>>>>>>  	magic =3D xnthread_get_magic(thread);
+>>>>>>>>>>> =20
+>>>>>>>>>>>  	xnlock_get_irqsave(&nklock, s);
+>>>>>>>>>>> +
+>>>>>>>>>>> +	gksched =3D thread->gksched;
+>>>>>>>>>>> +	if (gksched) {
+>>>>>>>>>>> +		xnlock_put_irqrestore(&nklock, s);
+>>>>>>>>>>
+>>>>>>>>>> Are we sure irqs are on here? Are you sure that what is needed=
+ is not an
+>>>>>>>>>> xnlock_clear_irqon?
+>>>>>>>>>
+>>>>>>>>> We are in the context of do_exit. Not only IRQs are on, also pr=
+eemption.
+>>>>>>>>> And surely no nklock is held.
+>>>>>>>>>
+>>>>>>>>>> Furthermore, I do not understand how we
+>>>>>>>>>> "synchronize" with the gatekeeper, how is the gatekeeper garan=
+teed to
+>>>>>>>>>> wait for this assignment?
+>>>>>>>>>
+>>>>>>>>> The gatekeeper holds the gksync token while it's active. We req=
+uest it,
+>>>>>>>>> thus we wait for the gatekeeper to become idle again. While it =
+is idle,
+>>>>>>>>> we reset the queued reference - but I just realized that this m=
+ay tramp
+>>>>>>>>> on other tasks' values. I need to add a check that the value to=
+ be
+>>>>>>>>> null'ified is actually still ours.
+>>>>>>>>
+>>>>>>>> Thinking again, that's actually not a problem: gktarget is only =
+needed
+>>>>>>>> while gksync is zero - but then we won't get hold of it anyway a=
+nd,
+>>>>>>>> thus, can't cause any damage.
+>>>>>>>
+>>>>>>> Well, you make it look like it does not work. From what I underst=
+and,
+>>>>>>> what you want is to set gktarget to null if a task being hardened=
+ is
+>>>>>>> destroyed. But by waiting for the semaphore, you actually wait fo=
+r the
+>>>>>>> harden to be complete, so setting to NULL is useless. Or am I mis=
+sing
+>>>>>>> something else?
+>>>>>>
+>>>>>> Setting to NULL is probably unneeded but still better than rely on=
+ the
+>>>>>> gatekeeper never waking up spuriously and then dereferencing a sta=
+le
+>>>>>> pointer.
+>>>>>>
+>>>>>> The key element of this fix is waitng on gksync, thus on the compl=
+etion
+>>>>>> of the non-RT part of the hardening. Actually, this part usually f=
+ails
+>>>>>> as the target task received a termination signal at this point.
+>>>>>
+>>>>> Yes, but since you wait on the completion of the hardening, the tes=
+t
+>>>>> if (target &&...) in the gatekeeper code will always be true, becau=
+se at
+>>>>> this point the cleanup code will still be waiting for the semaphore=
+=2E
+>>>>
+>>>> Yes, except we will ever wake up the gatekeeper later on without an
+>>>> updated gktarget, ie. spuriously. Better safe than sorry, this is ha=
+iry
+>>>> code anyway (hopefully obsolete one day).
+>>>
+>>> The gatekeeper is not woken up by posting the semaphore, the gatekeep=
+er
+>>> is woken up by the thread which is going to be hardened (and this thr=
+ead
+>>> is the one which waits for the semaphore).
+>>
+>> All true. And what is the point?
+>=20
+> The point being, would not something like this patch be sufficient?
+>=20
+> diff --git a/ksrc/nucleus/shadow.c b/ksrc/nucleus/shadow.c
+> index 01f4200..4742c02 100644
+> --- a/ksrc/nucleus/shadow.c
+> +++ b/ksrc/nucleus/shadow.c
+> @@ -2527,6 +2527,18 @@ static inline void do_taskexit_event(struct
+> task_struct *p)
+>  	magic =3D xnthread_get_magic(thread);
+>=20
+>  	xnlock_get_irqsave(&nklock, s);
+> +	if (xnthread_test_info(thread, XNATOMIC)) {
+> +		struct xnsched *gksched =3D xnpod_sched_slot(task_cpu(p));
+
+That's not reliable, the task might have been migrated by Linux in the
+meantime. We must use the stored gksched.
+
+> +		xnlock_put_irqrestore(&nklock, s);
+> +
+> +		/* Thread is in flight to primary mode, wait for the
+> +		   gatekeeper to be done with it. */
+> +		down(&gksched->gksync);
+> +		up(&gksched->gksync);
+> +
+> +		xnlock_get_irqsave(&nklock, s);
+> +	}
+> +
+>  	/* Prevent wakeup call from xnshadow_unmap(). */
+>  	xnshadow_thrptd(p) =3D NULL;
+>  	xnthread_archtcb(thread)->user_task =3D NULL;
+>=20
+
+Again, setting gktarget to NULL and testing for NULL is simply safer,
+and I see no gain in skipping that. But if you prefer the
+micro-optimization, I'll drop it.
+
+Jan
 
 
-The European Space Agency started a program called SOCIS. It aims at 
-supporting free-software projects by providing funds to students that are 
-willing to contribute to free-software projects. It works like the summer 
-of code : mentoring organization subscribe to the program and propose 
-projects. Then, the SOCIS committee selects the projects that are 
-accepted. Finally, students apply to the selected projects, the mentoring 
-organization choose the students for each project and the student has to 
-complete the project in some weeks. Finally, if the projects is 
-successfully finished, the student receives money. It is a nice way to 
-improve free software and help some student !
+--------------enig53AF49953FECC47A1EAA09C8
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-As a Xenomai user, I was wondering if the project would like to apply to 
-SOCIS. I think Xenomai developers may have several ideas of projects for 
-students. I contacted Gilles Chanteperdrix to inform him about the 
-initiative, he told me to post on this list because more people could be 
-interested.
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.16 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
 
-You can have more information about the program on 
-http://sophia.estec.esa.int/socis2011/?q=about . Subscription deadline is 
-next Friday so that if you want to apply, you have to do that quickly. If 
-you have any question regarding the program, do not hesitate to post on 
-the SOCIS mailing list or to contact me.
+iEYEARECAAYFAk4b9hkACgkQitSsb3rl5xTFwgCg7dqfunNB4Cmd7UzeXOiQPPDm
+1mgAn1aj5TmXE5OPXjgR2iIUx7GhgY2+
+=kE+D
+-----END PGP SIGNATURE-----
 
-Best regards,
-
-
+--------------enig53AF49953FECC47A1EAA09C8--
 
