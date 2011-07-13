@@ -1,50 +1,46 @@
-Message-ID: <4E4411DB.80009@domain.hid>
-Date: Thu, 11 Aug 2011 19:31:07 +0200
+Message-ID: <4E1D84FD.7050307@domain.hid>
+Date: Wed, 13 Jul 2011 13:43:57 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4E43B5FE.4040402@domain.hid>	<4E43B7E8.5000302@domain.hid>	<4E43C056.9040007@domain.hid>	<4E43EBC6.10808@domain.hid>
-	<4E440FAC.5020107@domain.hid>
-In-Reply-To: <4E440FAC.5020107@domain.hid>
+References: <4E1D8389.7050305@domain.hid>
+In-Reply-To: <4E1D8389.7050305@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] gcc-4.6 issue
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Subject: Re: [Xenomai-help] Stack size of created task
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Roland Stigge <stigge@domain.hid>
-Cc: 637425@domain.hid, xenomai@xenomai.org
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Jakub Nowacki <j.s.nowacki@domain.hid>
+Cc: xenomai@xenomai.org
 
-On 08/11/2011 07:21 PM, Roland Stigge wrote:
+On 07/13/2011 01:37 PM, Jakub Nowacki wrote:
 > Hi,
 > 
-> On 08/11/2011 04:48 PM, Daniele Nicolodi wrote:
->> I compiled linux 2.6.38.8 and xenomai-head with gcc-4.6. The obtained
->> kernel boots fine but xenomai services do not: latency hangs right after
->> the sched_setscheduler system call. With the same kernel I compiled user
->> space with gcc-4.4 and xenomia services work just fine.
-> 
-> I can confirm this now for Debian. Sorry for the delay.
-> 
-> Will use gcc-4.4 for building the Debian package for now.
-> 
-> Attached is a patch you might like to integrate into the GIT repository
-> for the build environment. 
+> I had a slight problem with freezing tasks in RTXI using Xenomai. 
+> Namely, task was working normally for some time and then froze, but just 
+> RTXI/task not the whole system. I've found that it was caused by the 
+> stack size of a task set to 2000B during the creation. Changing it to 0, 
+> i.e., automatic stack size fixed the freezing. My question is what is a 
+> preferred value there? Before on the list I asked about a problem with 
+> the stack size in the kernel being to small for switchtest to run 
+> properly on i7 machine. There, one of the answers was that safe bet is 
+> 8kB for 64-bit machine. I'm not sure should I leave the stack size in 
+> rt_task_create to 0 or to some high value or it should be machine 
+> dependent? What is being put on this stack and how to determine it's 
+> size depending on the complexity of the task (number of vars?)?
 
-Thanks for the patch.
+The stack size of a task is highly dependent on what the task does, and
+a little bit less on the architecture. There is no generic answer.
 
-> BTW: You further don't need all the
-> Makefile.in's under revision control when there's also a Makefile.am.
-> Similarly regarding aclocal.m4 and configure.
-
-Old debate, we want users to avoid having to install the autotools in
-order to compile from git, so, we put these files under revision
-control. It becomes more and more the sanest solution, as versions of
-the autotools are released which break backward compatibility.
+The problem with switchtest was not the task size, but the number of
+kernel stacks which were available in the kernel threads stacks pool.
+That is an entirely different issue.
 
 -- 
                                                                 Gilles.
