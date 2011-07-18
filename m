@@ -1,16 +1,11 @@
-Message-ID: <4E1BF47F.3050406@domain.hid>
-Date: Tue, 12 Jul 2011 09:15:11 +0200
+Message-ID: <4E241A30.5060904@domain.hid>
+Date: Mon, 18 Jul 2011 13:34:08 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <4E160578.5020405@domain.hid> <4E16F032.1050905@domain.hid>
-	<4E16F4E0.8020900@domain.hid> <4E1BEE2C.7030800@domain.hid>
-In-Reply-To: <4E1BEE2C.7030800@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigDA4EC92BF4529DE002721F97"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Adeos-main] [PATCH] ipipe: Prevent unwritable pages after
-	mprotect
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 7bit
+Subject: [Adeos-main] [PULL] Critical x86-64 fix / mprotect page fault
+	avoidance
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/options/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -19,76 +14,83 @@ List-Post: <mailto:adeos-main@gna.org>
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: adeos-main <adeos-main@gna.org>, Philippe Gerum <rpm@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: adeos-main <adeos-main@gna.org>
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigDA4EC92BF4529DE002721F97
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+The following changes since commit ec31395b787f9d7d651920c1af3447bd563c6cf8:
 
-On 2011-07-12 08:48, Gilles Chanteperdrix wrote:
-> On 07/08/2011 02:15 PM, Jan Kiszka wrote:
->> On 2011-07-08 13:55, Gilles Chanteperdrix wrote:
->>> On 07/07/2011 09:14 PM, Jan Kiszka wrote:
->>>> From: Jan Kiszka <jan.kiszka@domain.hid>
->>>>
->>>> Page protection changes issued via mprotect, e.g. to enable executab=
-le
->>>> stacks, cause spurious minor faults as they remove the write permiss=
-ion
->>>> from the modified range again. Avoid this by faking shared pages so =
-that
->>>> vm_get_page_prot returns the desired page permissions.
->>>
->>> This looks dangerous to me. Have you checked that write to private he=
-aps
->>> will not end up corrupting shared data?
->>
->> Can't follow this yet.
->>
->> If you check the comment on protection_map in mm/mmap.c, the differenc=
-e
->> between private and shared is in real write vs. COW-able write. That's=
+  ipipe-2.6.38.8-x86-2.10-00 (2011-06-14 09:39:43 +0200)
 
->> what my patch is exploiting to get the proper arch-dependent page
->> protection bits.
->>
->> Are you aware of side effects or do you know a better way to inject
->> write permissions into the protection flags?
->=20
-> I would tend to think that shared and private mappings do not react the=
+are available in the git repository at:
+  git://git.kiszka.org/ipipe queues/2.6.38-x86
 
-> same way when we write to them.
+Jan Kiszka (3):
+      ipipe: Prevent unwritable pages after mprotect
+      Merge branch 'queues/2.6.38-noarch' into queues/2.6.38-x86
+      ipipe: x86-64: Disable interrupt stacks
 
-Yes, private mappings can undergo COW.
+ arch/x86/include/asm/page_64_types.h |    4 ++++
+ arch/x86/kernel/entry_64.S           |    2 ++
+ mm/mprotect.c                        |   12 +++++++++++-
+ 3 files changed, 17 insertions(+), 1 deletions(-)
 
->=20
-> In order to avoid the fault on first access, I would trigger a fault fo=
-r
-> each page of the mapping, the way we do it in __rthal_arm_fault_range
-> (in ksrc/arch/arm/hal.c), but in the I-pipe kernel.
+---
 
-That sounds like overkill, and it's potentially racy (mprotect may open
-a short window where the active PTEs do not allow writes for
-concurrently running threads).
+ipipe: x86-64: Disable interrupt stacks
 
-Jan
+x86-64 uses interrupt stacks by default. They are activated early on
+interrupt, i.e. before I-pipe and any non-root domain is called. If the
+non-root domain decides to schedule over this stack, taking it to a
+different CPU or leaving the interrupt nesting over a different task, we
+may end up using the interrupt stack more than once. Subtle stack
+corruptions, under Xenomai usually paired with system crashes, are the
+result.
 
+Fix this by raising the task kernel stack size from 8 to 16K (twice as
+much as x86-32 uses in the absence of interrupt stacks) and disabling
+stack switching in save_args.
 
---------------enigDA4EC92BF4529DE002721F97
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
+---
+ arch/x86/include/asm/page_64_types.h |    4 ++++
+ arch/x86/kernel/entry_64.S           |    2 ++
+ 2 files changed, 6 insertions(+), 0 deletions(-)
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.16 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
-
-iEYEARECAAYFAk4b9IIACgkQitSsb3rl5xS/xgCgqaYAvIbWe3fr9VkT/tlM+Ue/
-l00AoOHcDl0j0Wk2rSPpHA2aS9BTS2WB
-=ku2F
------END PGP SIGNATURE-----
-
---------------enigDA4EC92BF4529DE002721F97--
+diff --git a/arch/x86/include/asm/page_64_types.h b/arch/x86/include/asm/page_64_types.h
+index 7639dbf..e28697e 100644
+--- a/arch/x86/include/asm/page_64_types.h
++++ b/arch/x86/include/asm/page_64_types.h
+@@ -1,7 +1,11 @@
+ #ifndef _ASM_X86_PAGE_64_DEFS_H
+ #define _ASM_X86_PAGE_64_DEFS_H
+ 
++#ifdef CONFIG_IPIPE
++#define THREAD_ORDER	2
++#else
+ #define THREAD_ORDER	1
++#endif
+ #define THREAD_SIZE  (PAGE_SIZE << THREAD_ORDER)
+ #define CURRENT_MASK (~(THREAD_SIZE - 1))
+ 
+diff --git a/arch/x86/kernel/entry_64.S b/arch/x86/kernel/entry_64.S
+index ed0f408..4e177f3 100644
+--- a/arch/x86/kernel/entry_64.S
++++ b/arch/x86/kernel/entry_64.S
+@@ -334,12 +334,14 @@ ENTRY(save_args)
+ 	 * moving irq_enter into assembly, which would be too much work)
+ 	 */
+ 1:	incl PER_CPU_VAR(irq_count)
++#ifndef CONFIG_IPIPE
+ 	jne 2f
+ 	popq_cfi %rax			/* move return address... */
+ 	mov PER_CPU_VAR(irq_stack_ptr),%rsp
+ 	EMPTY_FRAME 0
+ 	pushq_cfi %rbp			/* backlink for unwinder */
+ 	pushq_cfi %rax			/* ... to the new stack */
++#endif
+ 	/*
+ 	 * We entered an interrupt context - irqs are off:
+ 	 */
+-- 
+1.7.3.4
 
