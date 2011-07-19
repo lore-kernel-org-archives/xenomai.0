@@ -1,9 +1,10 @@
-Message-ID: <1311085450.21897.YahooMailClassic@domain.hid>
-Date: Tue, 19 Jul 2011 07:24:10 -0700 (PDT)
-From: Philip Ha <philwman@domain.hid>
-MIME-Version: 1.0
-Content-Type: multipart/alternative; boundary="0-1192505103-1311085450=:21897"
-Subject: [Xenomai-help] clock problem
+Message-id: <OF5F5F8716.FADBDF2A-ONC12578D2.0050F2D0-C12578D2.00525819@domain.hid>
+From: rolf.magnus@domain.hid
+Date: Tue, 19 Jul 2011 16:59:24 +0200
+Content-type: multipart/alternative;
+	boundary="=_alternative 00525817C12578D2_="
+MIME-version: 1.0
+Subject: [Xenomai-help] Scheduling policy
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -15,85 +16,84 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
---0-1192505103-1311085450=:21897
-Content-Type: text/plain; charset=iso-8859-1
+
+--=_alternative 00525817C12578D2_=
+Content-Type: text/plain; charset="US-ASCII"
 Content-Transfer-Encoding: quoted-printable
 
-Dear all,
+Hi,
 
-I am running a serial port test in xenomai (xenomai-2.5.5.2) using 16550A d=
-river.
-In my program, I am calling
+the xenomai documentation says that you can specify scheduling policies:
 
-rt_dev_ioctl(dev_id, RTSER_RTIOC_WAIT_EVENT, & rx_event);
+"The Xenomai scheduler ensures that concurrent tasks are run according to=20
+one of the supported scheduling policies. Currently, the Xenomai scheduler =
 
-when an event happens, I use clock_gettime(CLOCK_MONOTONIC, & curr_time)
-to get the current time. The program runs continuosly in a while loop. In t=
-his way, I=20
-measure the elapsed time between the previous and current events.
+supports fixed priority-based FIFO and round-robin policies."
 
+The documentation of the function rt=5Ftask=5Fset=5Fmode says:
 
-For this test, I find something that I still cannot figure out. They are as=
- follows:
+"Each Xenomai task has a set of internal bits determining various=20
+operating conditions; the rt=5Ftask=5Fset=5Fmode() service allows to alter =
+three=20
+of them, respectively controlling:
 
-1st session running the program, elapsed time between events - 40 us=A0 (re=
-boot system)
-2nd session=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=
-=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=
-=A0=A0=A0 - 80 us=A0 (reboot system)
-3rd session=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=
-=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=
-=A0=A0=A0 - 150 us (reboot system)
-4th session=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=
-=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=
-=A0=A0=A0 - 100 us (reboot system)
+whether the task locks the rescheduling procedure,
+whether the task undergoes a round-robin scheduling,
+whether the task blocks the delivery of signals."
 
-and so on.
+but there is no way to actually set the scheduling policy. In Xenomai 2.4, =
 
-And I use clock_getres to see the resolution of the clock, tv_sec =3D 0, tv=
-_nsec =3D 1.
-
-My question is - why everytime I reboot the system, I get different elapsed=
- time=20
-measurement for the same program?
-
-Can someone please help ?
+there was the flag T=5FRRB, but in 2.5, that has been removed from the=20
+documentation, and also from the interface. So how do you set the policy=20
+in 2.5?
 
 
-Regards,
+Rolf Magnus
 
-Ph293
---0-1192505103-1311085450=:21897
-Content-Type: text/html; charset=iso-8859-1
+
+If you are not the intended addressee, please inform us immediately that yo=
+u have received this e-mail in error, and delete it. We thank you for your =
+cooperation.  =
+=
+
+--=_alternative 00525817C12578D2_=
+Content-Type: text/html; charset="US-ASCII"
 Content-Transfer-Encoding: quoted-printable
 
-<table cellspacing=3D"0" cellpadding=3D"0" border=3D"0" ><tr><td valign=3D"=
-top" style=3D"font: inherit;">Dear all,<br><br>I am running a serial port t=
-est in xenomai (xenomai-2.5.5.2) using 16550A driver.<br>In my program, I a=
-m calling<br><br>rt_dev_ioctl(dev_id, RTSER_RTIOC_WAIT_EVENT, &amp; rx_even=
-t);<br><br>when an event happens, I use clock_gettime(CLOCK_MONOTONIC, &amp=
-; curr_time)<br>to get the current time. The program runs continuosly in a =
-while loop. In this way, I <br>measure the elapsed time between the previou=
-s and current events.<br><br><br>For this test, I find something that I sti=
-ll cannot figure out. They are as follows:<br><br>1st session running the p=
-rogram, elapsed time between events - 40 us&nbsp; (reboot system)<br>2nd
- session&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
-nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
-p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
-nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
-p; - 80 us&nbsp; (reboot system)<br>3rd session&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
-p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
-nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
-p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
-nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; - 150 us (reboot system)<br>4th
- session&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
-nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
-p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&=
-nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
-p; - 100 us (reboot system)<br><br>and so on.<br><br>And I use clock_getres=
- to see the resolution of the clock, tv_sec =3D 0, tv_nsec =3D 1.<br><br>My=
- question is - why everytime I reboot the system, I get different elapsed t=
-ime <br>measurement for the same program?<br><br>Can someone please help ?<=
-br><br><br>Regards,<br><br>Ph293</td></tr></table>
---0-1192505103-1311085450=:21897--
+
+<br><font size=3D2 face=3D"sans-serif">Hi,</font><br><br><font size=3D2 fac=
+e=3D"sans-serif">the xenomai documentation says that
+you can specify scheduling policies:</font><br><br><font size=3D2 face=3D"s=
+ans-serif">&quot;The Xenomai scheduler ensures
+that concurrent tasks are run according to one of the supported scheduling
+policies. Currently, the Xenomai scheduler supports fixed priority-based
+FIFO and round-robin policies.&quot;</font><br><br><font size=3D2 face=3D"s=
+ans-serif">The documentation of the function rt=5Ftask=5Fset=5Fmode
+says:</font><br><br><font size=3D2 face=3D"sans-serif">&quot;Each Xenomai t=
+ask has a set of
+internal bits determining various operating conditions; the rt=5Ftask=5Fset=
+=5Fmode()
+service allows to alter three of them, respectively controlling:</font><br>=
+<br><font size=3D2 face=3D"sans-serif">whether the task locks the reschedul=
+ing
+procedure,</font><br><font size=3D2 face=3D"sans-serif">whether the task un=
+dergoes a round-robin
+scheduling,</font><br><font size=3D2 face=3D"sans-serif">whether the task b=
+locks the delivery
+of signals.&quot;</font><br><br><font size=3D2 face=3D"sans-serif">but ther=
+e is no way to actually set
+the scheduling policy. In Xenomai 2.4, there was the flag T=5FRRB, but in
+2.5, that has been removed from the documentation, and also from the interf=
+ace.
+So how do you set the policy in 2.5?</font><br><br><font size=3D2 face=3D"s=
+ans-serif"><br>Rolf Magnus</font><br><font face=3D"sans-serif"><font face=
+=3D"sans-serif, Arial, Helvetica" size=3D"-1" color=3D"#808080"><br>If you =
+are not the intended addressee, please inform us immediately that you have =
+received this e-mail in error, and delete it. We thank you for your coopera=
+tion.
+<br></br>=20
+                                                                         =20
+</font></font>
+=
+--=_alternative 00525817C12578D2_=--
 
