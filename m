@@ -1,10 +1,10 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <4E2801C1.90006@domain.hid>
-References: <4E2801C1.90006@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Thu, 21 Jul 2011 13:54:38 +0200
-Message-ID: <1311249278.2154.620.camel@domain.hid>
-Mime-Version: 1.0
+Message-ID: <4E281AA8.7050305@domain.hid>
+Date: Thu, 21 Jul 2011 14:25:12 +0200
+From: Roberto Bielli <roberto.bielli@domain.hid>
+MIME-Version: 1.0
+References: <4E2801C1.90006@domain.hid> <1311249278.2154.620.camel@domain.hid>
+In-Reply-To: <1311249278.2154.620.camel@domain.hid>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-core] HOW CAN I KNOW WHICH LINUX SYSTEM CALLS SWITCH
  TASK IN SECONDARY MODE ?
@@ -16,23 +16,64 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Roberto Bielli <roberto.bielli@domain.hid>
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On Thu, 2011-07-21 at 12:38 +0200, Roberto Bielli wrote:
-> Hi,
-> 
-> how can it know with assurance which linux system calls switch to 
-> secondary mode and which not ?
-> 
 
-And please, don't shout in the subject line, this is uselessly annoying.
+Hi philippe,
 
-> Thanks for all
-> 
+excuse me for the subject, i agree is annoying.
+
+
+Thanks for all.
+
+
+Il 21/07/2011 13:54, Philippe Gerum ha scritto:
+> On Thu, 2011-07-21 at 12:38 +0200, Roberto Bielli wrote:
+>> Hi,
+>>
+>> how can it know with assurance which linux system calls switch to
+>> secondary mode and which not ?
+>>
+> And please, don't shout in the subject line, this is uselessly annoying.
+>
+>> Thanks for all
+>>
+
 
 -- 
-Philippe.
++------------------------------------------------------------------------------------------------+
+							
+Roberto Bielli
+Sviluppo Software					
+Axel S.r.l.					
+							
+Via Del Cannino, 3 				
+21020 Crosio Della Valle			
+Varese - Italy					
+							
+Telefono: +39 0332 949600			
+Fax:      +39 0332 969315			
+							
+E-mail:   roberto.bielli@domain.hid	
+Web Site: www.axelsw.it
 
++------------------------------------------------------------------------------------------------+
+
+Si precisa che le informazioni contenute in questo messaggio sono riservate e ad uso esclusivo del destinatario.
+Qualora il messaggio in parola Le fosse pervenuto per errore, La preghiamo di eliminarlo senza copiarlo e di non inoltrarlo a terzi,
+dandocene gentilmente comunicazione. Grazie.
+Informativa sul trattamento dei dati personali (D. Lgs. 196/2003).
+I dati utilizzati per la spedizione del presente messaggio sono utilizzati da Axel S.r.l., titolare del trattamento,
+per l'invio delle comunicazioni dei diversi settori aziendali, non essendo autorizzata la divulgazione a terzi.
+Potrete rivolgere alla seguente mail richieste di verifica, rettifica o cancellazione dei Vostri dati: info@domain.hid
+
+This e-mail and any attachments is confidential and may contain privileged information
+intended for the addressee(s) only. Dissemination, copying, printing or use by anybody
+else is unauthorised. If you are not the intended recipient,
+please delete this message and any attachments and advise the sender
+by return e-mail.Thank you.  			
+							
++------------------------------------------------------------------------------------------------+
 
 
