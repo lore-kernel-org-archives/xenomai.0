@@ -1,9 +1,12 @@
-Message-ID: <1311186948.84516.YahooMailClassic@domain.hid>
-Date: Wed, 20 Jul 2011 11:35:48 -0700 (PDT)
-From: Philip Ha <philwman@domain.hid>
+Message-ID: <be312d912dcaef8867b47d2e8aaa546b.squirrel@domain.hid>
+In-Reply-To: <42ced071bc2bf4dbf2dc6f74746817be.squirrel@domain.hid>
+References: <42ced071bc2bf4dbf2dc6f74746817be.squirrel@domain.hid>
+Date: Thu, 21 Jul 2011 11:36:31 +0200
+From: "Wong Sheng Chao" <wong@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; boundary="0-1903409025-1311186948=:84516"
-Subject: [Xenomai-help] clock problem
+Content-Type: text/plain;charset=UTF-8
+Content-Transfer-Encoding: 8bit
+Subject: [Xenomai-help] Analogy Differential Mode
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -15,31 +18,49 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
---0-1903409025-1311186948=:84516
-Content-Type: text/plain; charset=us-ascii
+Hi all
+
+I'm still trying to figure out how to configure my NI card to read voltage
+signal in Differential Mode rather than single ended. I had been reading
+the API and it seems that I need to create a structure and define it's
+member accordingly
+
+struct a4l_channel {
+	unsigned long flags; /*!< Channel flags to define the reference. */
+	unsigned long nb_bits; /*!< Channel resolution. */
+};
+typedef struct a4l_channel a4l_chan_t;
+
+with the member flags being one of the following,
+
+A4L_CHAN_AREF_GROUND 0x1
+A4L_CHAN_AREF_COMMON 0x2
+A4L_CHAN_AREF_DIFF 0x4
+A4L_CHAN_AREF_OTHER 0x8
+
+and in my case A4L_CHAN_AREF_DIFF
+
+My question is which function should I use to send this structure to
+configure the reference mode and where? I'm thinking it should be between
+these two functions, but i'm still not sure how I can achieve this.
+
+a4l_open();
+
+//configure differential mode here.
+
+a4l_fill();
 
 
-Hi All,
+My current setup is as follow
+Distribution: Ubuntu 10.04
+Linux kernel: 2.6.37.3
+adeos patch: 2.9-00
+xenomai: 2.5.6
+DAQ card: National Instruments PCI_6034E
 
-I would like to add some more details for the message I posted on 19 July.
-
-The timing period for the testing is 1 second intervals. So every second, I will
-call clock_gettime to get the current time, and measures the elapsed time
-(or latency) between 2 events (messages).
-
-The event is triggered by the function generator, which send s a pulse signal 
-to the serial port at one second intervals.
-
-Can someone please advise me about the unstable elapsed time (latency)
-after the reboots.
-
-Regards,
-Philip Ha
+Thanks
+Chao
 
 
---0-1903409025-1311186948=:84516
-Content-Type: text/html; charset=us-ascii
 
-<table cellspacing="0" cellpadding="0" border="0" ><tr><td valign="top" style="font: inherit;"><br>Hi All,<br><br>I would like to add some more details for the message I posted on 19 July.<br><br>The timing period for the testing is 1 second intervals. So every second, I will<br>call clock_gettime to get the current time, and measures the elapsed time<br>(or latency) between 2 events (messages).<br><br>The event is triggered by the function generator, which send s a pulse signal <br>to the serial port at one second intervals.<br><br>Can someone please advise me about the unstable elapsed time (latency)<br>after the reboots.<br><br>Regards,<br>Philip Ha<br><pre><br></pre></td></tr></table>
---0-1903409025-1311186948=:84516--
 
