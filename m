@@ -1,13 +1,10 @@
-Message-ID: <4E281AA8.7050305@domain.hid>
-Date: Thu, 21 Jul 2011 14:25:12 +0200
-From: Roberto Bielli <roberto.bielli@domain.hid>
+Message-ID: <4E299162.8000309@domain.hid>
+Date: Fri, 22 Jul 2011 17:04:02 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <4E2801C1.90006@domain.hid> <1311249278.2154.620.camel@domain.hid>
-In-Reply-To: <1311249278.2154.620.camel@domain.hid>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=ISO-8859-15
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] HOW CAN I KNOW WHICH LINUX SYSTEM CALLS SWITCH
- TASK IN SECONDARY MODE ?
+Subject: [Xenomai-core] __wrap_clock_gettime
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -16,64 +13,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Xenomai core <Xenomai-core@domain.hid>
 
+Hi Gilles,
 
-Hi philippe,
+pulling assert_context.c into the common libxenomai created a problem
+around picking the right __wrap_clock_gettime. As libpthread_rt depends
+on libxenomai, the latter is loaded first and defines the debug version
+of __wrap_clock_gettime as the default. There is no chance to pull the
+posix skin implementation.
 
-excuse me for the subject, i agree is annoying.
+I don't have a nice idea yes how to resolve this. Options are:
+ - drop __wrap_clock_gettime from assert_context.c (affects any skin
+   user != posix)
+ - put assert_context stuff into separate library again
+ - put __wrap_clock_gettime in all skin libs != posix
 
+I'm favoring the simplest approach ATM, ie. the first one. Other ideas?
 
-Thanks for all.
-
-
-Il 21/07/2011 13:54, Philippe Gerum ha scritto:
-> On Thu, 2011-07-21 at 12:38 +0200, Roberto Bielli wrote:
->> Hi,
->>
->> how can it know with assurance which linux system calls switch to
->> secondary mode and which not ?
->>
-> And please, don't shout in the subject line, this is uselessly annoying.
->
->> Thanks for all
->>
-
+Jan
 
 -- 
-+------------------------------------------------------------------------------------------------+
-							
-Roberto Bielli
-Sviluppo Software					
-Axel S.r.l.					
-							
-Via Del Cannino, 3 				
-21020 Crosio Della Valle			
-Varese - Italy					
-							
-Telefono: +39 0332 949600			
-Fax:      +39 0332 969315			
-							
-E-mail:   roberto.bielli@domain.hid	
-Web Site: www.axelsw.it
-
-+------------------------------------------------------------------------------------------------+
-
-Si precisa che le informazioni contenute in questo messaggio sono riservate e ad uso esclusivo del destinatario.
-Qualora il messaggio in parola Le fosse pervenuto per errore, La preghiamo di eliminarlo senza copiarlo e di non inoltrarlo a terzi,
-dandocene gentilmente comunicazione. Grazie.
-Informativa sul trattamento dei dati personali (D. Lgs. 196/2003).
-I dati utilizzati per la spedizione del presente messaggio sono utilizzati da Axel S.r.l., titolare del trattamento,
-per l'invio delle comunicazioni dei diversi settori aziendali, non essendo autorizzata la divulgazione a terzi.
-Potrete rivolgere alla seguente mail richieste di verifica, rettifica o cancellazione dei Vostri dati: info@domain.hid
-
-This e-mail and any attachments is confidential and may contain privileged information
-intended for the addressee(s) only. Dissemination, copying, printing or use by anybody
-else is unauthorised. If you are not the intended recipient,
-please delete this message and any attachments and advise the sender
-by return e-mail.Thank you.  			
-							
-+------------------------------------------------------------------------------------------------+
-
+Siemens AG, Corporate Technology, CT T DE IT 1
+Corporate Competence Center Embedded Linux
 
