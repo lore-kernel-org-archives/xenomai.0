@@ -1,11 +1,10 @@
+Message-ID: <4E2C3A96.9090804@domain.hid>
+Date: Sun, 24 Jul 2011 08:30:30 -0700
+From: Thomas Lockhart <Thomas.Lockhart@domain.hid>
 MIME-Version: 1.0
-Sender: aboeing@domain.hid
-In-Reply-To: <003901cc4a03$6676f0d0$3364d270$@de>
 References: <003901cc4a03$6676f0d0$3364d270$@de>
-Date: Sun, 24 Jul 2011 22:32:45 +0800
-Message-ID: <CACsVodYAJfhqk42TrLGuyoDEkMrJwkNj5uVsmtPa5q8ug7fAUg@domain.hid>
-From: Adrian Boeing <me@domain.hid>
-Content-Type: text/plain; charset=windows-1252
+In-Reply-To: <003901cc4a03$6676f0d0$3364d270$@de>
+Content-Type: text/plain; charset=windows-1252; format=flowed
 Content-Transfer-Encoding: quoted-printable
 Subject: Re: [Xenomai-help] Process migrieren
 List-Id: Help regarding installation and common use of Xenomai
@@ -18,49 +17,34 @@ List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: Franz Engel <franz_lambert_engel@domain.hid>
-Cc: xenomai@xenomai.org
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi Franz,
 
-Try talking to the people at RCS/TUM or UniBW who do automotive work
-as they use Kognimobil:
-http://www.rcs.ei.tum.de/
-http://www.unibw.de/lrt8/front-page
+> I use a Api called =84KogniMobil RTDB=93. In the documentation the=20
+> programmer wrote that the Api runs with Xenomai. I read the make files=20
+> of the Api but there is nothing from Xenomai. Furthermore the=20
+> programmer wrote that I have to start the Tasks under the GPOS and=20
+> after the initialization I have to migrate the tasks to the RTOS and=20
+> let them run as a RT-Task. The migration should do by the methods of=20
+> Xenomai. Does somebody knows what methods the programmer means?
+>
+I'm sorry I don't have time to look up the details, but here is a code=20
+snippet from our RT app which transitions a Linux thread to a Xenomai RT=20
+thread.
 
-Cheers,
--Adrian
+hth
 
-2011/7/24 Franz Engel <franz_lambert_engel@domain.hid>:
-> Hello,
->
->
->
-> I use a Api called =84KogniMobil RTDB=93. In the documentation the progra=
-mmer
-> wrote that the Api runs with Xenomai. I read the make files of the Api bu=
-t
-> there is nothing from Xenomai. Furthermore the programmer wrote that I ha=
-ve
-> to start the Tasks under the GPOS and after the initialization I have to
-> migrate the tasks to the RTOS and let them run as a RT-Task. The migratio=
-n
-> should do by the methods of Xenomai. Does somebody knows what methods the
-> programmer means?
->
->
->
-> Regards,
->
-> =A0=A0=A0 franz
->
-> !DSPAM:4e2c1be4252901651910249!
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
->
->
-> !DSPAM:4e2c1be4252901651910249!
->
->
+                                - Tom
+
+  RT_TASK *mtsk;
+  mtsk =3D (RT_TASK*)malloc(sizeof(RT_TASK));
+  ...
+  int err =3D rt_task_shadow(mtsk, 0, pTask->mPriority, T_FPU);
+
+--=20
+Thomas Lockhart
+Supervisor, Distributed and Real-time Group
+Instrument Software and Science Data Systems
+Caltech/JPL
+
 
