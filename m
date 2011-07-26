@@ -1,10 +1,10 @@
-Message-ID: <4E299162.8000309@domain.hid>
-Date: Fri, 22 Jul 2011 17:04:02 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <4E2E6E73.8090401@domain.hid>
+Date: Tue, 26 Jul 2011 09:36:19 +0200
+From: zenati <omar.zenati@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] __wrap_clock_gettime
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai-core] Exception #14
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -13,28 +13,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai core <Xenomai-core@domain.hid>
+To: Xenomai core <Xenomai-core@domain.hid>
 
-Hi Gilles,
+Dear,
 
-pulling assert_context.c into the common libxenomai created a problem
-around picking the right __wrap_clock_gettime. As libpthread_rt depends
-on libxenomai, the latter is loaded first and defines the debug version
-of __wrap_clock_gettime as the default. There is no chance to pull the
-posix skin implementation.
+I'm developping the skin Arinc 653 for Xenomai. I'm trying to run=20
+process with my skin but I have an exception :
 
-I don't have a nice idea yes how to resolve this. Options are:
- - drop __wrap_clock_gettime from assert_context.c (affects any skin
-   user != posix)
- - put assert_context stuff into separate library again
- - put __wrap_clock_gettime in all skin libs != posix
+Xenomai: suspending kernel thread d8824c40 ('=EF=BF=BD') at 0xb76dbdfc af=
+ter=20
+exception #14
 
-I'm favoring the simplest approach ATM, ie. the first one. Other ideas?
+What is the exception 14 ? Have you an idea how can I solve them?
 
-Jan
+Thank you for your attention and for your help.
+Sincerely,
 
--- 
-Siemens AG, Corporate Technology, CT T DE IT 1
-Corporate Competence Center Embedded Linux
+Omar ZENATI
 
