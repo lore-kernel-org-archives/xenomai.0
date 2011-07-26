@@ -1,15 +1,15 @@
 MIME-Version: 1.0
-In-Reply-To: <CAL+uwv8yEu92kUAnyCq1Q3LQ9fB0EzFJQA0028nJ-hyWP0m03Q@mail.gmail.com>
-References: <CAL+uwv-XzsN_+4MHXTo+SW7jAh98rf22ER4uGb5DV+HXktELOg@domain.hid>
-	<4E1B3988.9000907@domain.hid>
-	<CAL+uwv_pGnuuWir_qC+sHLn=Te6NFgrO4XUpaXjLpGZ=1-C_JQ@mail.gmail.com>
-	<4E1B48B8.4090007@domain.hid>
-	<CAL+uwv8yEu92kUAnyCq1Q3LQ9fB0EzFJQA0028nJ-hyWP0m03Q@mail.gmail.com>
-Date: Tue, 12 Jul 2011 11:24:15 +0200
-Message-ID: <CAL+uwv90pAbaXS0KvUhzoMz9ns1bsUjx=-WJ_SJUTSBfAuVWpQ@mail.gmail.com>
-From: suresh reddy <sureshreddy.balijepalli@domain.hid>
-Content-Type: multipart/alternative; boundary=20cf3071c80416fb1004a7dbdd63
-Subject: [Xenomai-help] Fwd:  Regarding xeno test (somethign died at 3150)
+Content-Type: text/plain; charset=UTF-8;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date: Tue, 26 Jul 2011 11:17:34 +0200
+From: wong <wong@domain.hid>
+In-Reply-To: <20110721215420.GA2929@domain.hid>
+References: <42ced071bc2bf4dbf2dc6f74746817be.squirrel@domain.hid>
+	<be312d912dcaef8867b47d2e8aaa546b.squirrel@domain.hid>
+	<20110721215420.GA2929@domain.hid>
+Message-ID: <457bcb0b18e7b34f48e62890929464b5@domain.hid>
+Subject: Re: [Xenomai-help] Analogy Differential Mode
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -19,134 +19,195 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai help <xenomai@xenomai.org>
+To: Alexis Berlemont <alexis.berlemont@domain.hid>
+Cc: xenomai@xenomai.org
 
---20cf3071c80416fb1004a7dbdd63
-Content-Type: text/plain; charset=ISO-8859-1
+Hi Alexis
 
-Dear Giles,
+Thanks for the information, I followed your advice and tried out the 
+structure and the a4l_snd_command() but i received the error -EINVAL
 
-/usr/bin/latency  results in command not found.
+I figured i must had made a mistake in the a4l_cmd_t cmd structure, so 
+here's the specification of my card
 
-ubuntu@domain.hid$ sudo ./clocktest
-[sudo] password for ubuntu:
-Xenomai or CONFIG_XENO_OPT_PERVASIVE disabled.
-(modprobe xeno_nucleus?)
-ubuntu@domain.hid$ sudo ./latency
-[sudo] password for ubuntu:
-Xenomai or CONFIG_XENO_OPT_PERVASIVE disabled.
-(modprobe xeno_nucleus?)
-ubuntu@domain.hid$ modprobe xeno_nucleus
-FATAL: Module xeno_nucleus not found.
-ubuntu@domain.hid$ cd
-ubuntu@domain.hid:~$ /usr/bin
--bash: /usr/bin: Is a directory
-ubuntu@domain.hid:~$ cd /usr/bin
-ubuntu@domain.hid$ sudo ./latency
-[sudo] password for ubuntu:
-sudo: ./latency: command not found
-ubuntu@domain.hid$
+channels: 16 channels single ended 8 channel differential
+range: +10V -10V (range_number = 0)
+subdevice: 0 (analog input)
+
+I think the NI PCI-6034E supports differential mode as shown here in 
+the "Specifications" tab
+
+http://sine.ni.com/nips/cds/view/p/lang/en/nid/11916
+
+I need to read 6 differential signals and the 6034E has 8 so this 
+should be sufficient.
+
+  /* The channel descriptor table */
+  static unsigned int chans[MAX_NB_CHAN]; //The 6034E has 16 single 
+ended and 8 differential so MAX_NB_CHAN = 8?
 
 
-But the configuration has config_XENO_OPT_PERVASIVE=y
+  /* The command to send  */
+  a4l_cmd_t cmd = {
+  	.idx_subd = ID_SUBD, /*ID_SUBD = 0 for analog input*/
+  	.flags = 0,
+  	.start_src = TRIG_NOW,
+  	.start_arg = 0,
+  	.scan_begin_src = TRIG_TIMER,
+  	.scan_begin_arg = 8000000,	/* in ns */
+  	.convert_src = TRIG_TIMER,
+  	.convert_arg = 500000,	/* in ns */
+  	.scan_end_src = TRIG_COUNT,
+  	.scan_end_arg = 0,
+  	.stop_src = TRIG_COUNT,
+  	.stop_arg = NB_SCAN,
+  	.nb_chan = 0,
+  	.chan_descs = chans,
+  };
+
+
+I have some question regarding these members
+
+1) .stop_arg = NB_SCAN,
+Is this the number of scans to stop the acquisition? so theoretically a 
+scan count of 1 should be fine?
+
+2) .nb_chan = 0,
+According to the comedilib this is the number of channels to be 
+sampled, so in my case it should be 6? I noticed that if i put anything 
+other than 0, 'dmesg' gives an error of
+
+[ 4109.517562] Analogy: a4l_ioctl_cmd: driver's cmd_test failed
+
+
+3) .chan_descs = chans,
+I don't quite understand this, does this corresponds to the list of 
+channels to be sampled? if I have 6 differential inputs how should i set 
+the chans array with the following for loop
+
+
+  for (i = 0; i < MAX_NB_CHAN; i++)
+      chans[0] = PACK(0, 0, AREF(AREF_DIFF))
+            |         |  |  |_reference flags
+            |         |  |_range number
+            |         |_channel number, shouldn't this be i?
+            |___________ shouldn't this be i?
+
+
+
+I can't seemed to find the ni_load_channelgain_list() function and how 
+do you check whether the library supports diff mode or not?
+
+Thanks again for your help
+
+Regards
+Chao
 
 
 
 
 
 
-
-
-
-
-
-
-
-On 11 July 2011 21:02, Gilles Chanteperdrix <
-gilles.chanteperdrix@xenomai.org> wrote:
-
-> On 07/11/2011 08:59 PM, suresh reddy wrote:
-> > Dear Giles,
-> >
-> > i have another doubt regarding configuration of kernel.
-> >
-> > as far as i see you did not configure any pandaboard display options . i
-> > mean hdmi kind of optins . so we can acces only through console??
+On Thu, 21 Jul 2011 23:54:20 +0200, Alexis Berlemont wrote:
+> Hi,
 >
-> Configuring the kernel for your particular needs is your job. The
-> configuration I sent you is the one which suits my needs.
+> Wong Sheng Chao wrote:
+>> Hi all
+>>
+>> I'm still trying to figure out how to configure my NI card to read 
+>> voltage
+>> signal in Differential Mode rather than single ended.
+> Sorry. I skipped your mail without subject.
 >
-> --
->                                                                 Gilles.
+>>I had been reading
+>> the API and it seems that I need to create a structure and define 
+>> it's
+>> member accordingly
+>>
+>> struct a4l_channel {
+>> 	unsigned long flags; /*!< Channel flags to define the reference. */
+>> 	unsigned long nb_bits; /*!< Channel resolution. */
+>> };
+>> typedef struct a4l_channel a4l_chan_t;
+>>
+>> with the member flags being one of the following,
+>>
+>> A4L_CHAN_AREF_GROUND 0x1
+>> A4L_CHAN_AREF_COMMON 0x2
+>> A4L_CHAN_AREF_DIFF 0x4
+>> A4L_CHAN_AREF_OTHER 0x8
+>>
+>> and in my case A4L_CHAN_AREF_DIFF
+>>
+>> My question is which function should I use to send this structure to
+>> configure the reference mode and where? I'm thinking it should be 
+>> between
+>> these two functions, but i'm still not sure how I can achieve this.
+>>
 >
+> You should send a command structure thanks to a4l_snd_command().
+>
+> See 
+> http://www.xenomai.org/documentation/xenomai-2.5/html/api/index.html:
+>
+> /* The channel descriptor table */
+> static unsigned int chans[MAX_NB_CHAN];
+>
+> /* The command to send  */
+> a4l_cmd_t cmd = {
+> 	.idx_subd = ID_SUBD,
+> 	.flags = 0,
+> 	.start_src = TRIG_NOW,
+> 	.start_arg = 0,
+> 	.scan_begin_src = TRIG_TIMER,
+> 	.scan_begin_arg = 8000000,	/* in ns */
+> 	.convert_src = TRIG_TIMER,
+> 	.convert_arg = 500000,	/* in ns */
+> 	.scan_end_src = TRIG_COUNT,
+> 	.scan_end_arg = 0,
+> 	.stop_src = TRIG_COUNT,
+> 	.stop_arg = NB_SCAN,
+> 	.nb_chan = 0,
+> 	.chan_descs = chans,
+> };
+>
+> for (i = 0; i < ...; i++)
+>     chans[0] = PACK(0, 0, AREF(AREF_DIFF))
+>                     |  |  |_reference flags
+>                     |  |_range number
+>                     |_channel number
+>
+> By the way, I had a quick look into the pcimio driver and I am not
+> sure that the driver supports differential mode for your
+> card. According to the function ni_load_channelgain_list(), M series
+> boards are OK (which is not the case, I think) and 611x models.
+>
+> If the card PCI_6034E support "diff" mode, the driver should be
+> updated.
+>
+>> a4l_open();
+>>
+>> //configure differential mode here.
+>>
+>> a4l_fill();
+>>
+>>
+>> My current setup is as follow
+>> Distribution: Ubuntu 10.04
+>> Linux kernel: 2.6.37.3
+>> adeos patch: 2.9-00
+>> xenomai: 2.5.6
+>> DAQ card: National Instruments PCI_6034E
+>>
+>> Thanks
+>> Chao
+>>
+>>
+>>
+>>
+>> _______________________________________________
+>> Xenomai-help mailing list
+>> Xenomai-help@domain.hid
+>> https://mail.gna.org/listinfo/xenomai-help
 
-
-
--- 
-
-Suresh balijepalli
-Rosenehim,Baveria.
-
-
-
--- 
-
-Suresh balijepalli
-Rosenehim,Baveria.
-
---20cf3071c80416fb1004a7dbdd63
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr"><br><br><div class=3D"gmail_quote"><div dir=3D"ltr"><div>D=
-ear Giles,</div><div><br></div><div>/usr/bin/latency =A0results in command =
-not found.</div><div><br></div><div><div>ubuntu@domain.hid$ sudo=
- ./clocktest</div>
-<div>[sudo] password for ubuntu:</div><div>Xenomai or CONFIG_XENO_OPT_PERVA=
-SIVE disabled.</div><div>(modprobe xeno_nucleus?)</div><div>ubuntu@domain.hid=
-r/xenomai/bin$ sudo ./latency</div><div>[sudo] password for ubuntu:</div>
-<div>Xenomai or CONFIG_XENO_OPT_PERVASIVE disabled.</div><div>(modprobe xen=
-o_nucleus?)</div><div>ubuntu@domain.hid$ modprobe xeno_nucleus</=
-div><div>FATAL: Module xeno_nucleus not found.</div><div>ubuntu@domain.hid=
-enomai/bin$ cd</div>
-<div>ubuntu@domain.hid:~$ /usr/bin</div><div>-bash: /usr/bin: Is a directory</div=
-><div>ubuntu@domain.hid:~$ cd /usr/bin</div><div>ubuntu@domain.hid$ sudo ./lat=
-ency</div><div>[sudo] password for ubuntu:</div><div>sudo: ./latency: comma=
-nd not found</div>
-<div>ubuntu@domain.hid$</div></div><div><br></div><div><br></div><div>Bu=
-t the configuration has config_XENO_OPT_PERVASIVE=3Dy</div><div><br></div><=
-div><br></div><div><br></div><div><br></div><div><br></div><div><div><br>
-</div></div><div><div></div><div class=3D"h5"><div><br></div><div><br></div=
-><div><br></div><div><br></div><div><br></div><br><br>
-<div class=3D"gmail_quote">On 11 July 2011 21:02, Gilles Chanteperdrix <spa=
-n dir=3D"ltr">&lt;<a href=3D"mailto:gilles.chanteperdrix@xenomai.org" targe=
-t=3D"_blank">gilles.chanteperdrix@xenomai.org</a>&gt;</span> wrote:<br><blo=
-ckquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #c=
-cc solid;padding-left:1ex">
-
-<div>On 07/11/2011 08:59 PM, suresh reddy wrote:<br>
-&gt; Dear Giles,<br>
-&gt;<br>
-&gt; i have another doubt regarding configuration of kernel.<br>
-&gt;<br>
-&gt; as far as i see you did not configure any pandaboard display options .=
- i<br>
-&gt; mean hdmi kind of optins . so we can acces only through console??<br>
-<br>
-</div>Configuring the kernel for your particular needs is your job. The<br>
-configuration I sent you is the one which suits my needs.<br>
-<br>
---<br>
-<font color=3D"#888888"> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
-=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0=
- =A0Gilles.<br>
-</font></blockquote></div><br><br clear=3D"all"><br></div></div>-- <br><br>=
-Suresh balijepalli<br>Rosenehim,Baveria.<br>
-</div>
-</div><br><br clear=3D"all"><br>-- <br><br>Suresh balijepalli<br>Rosenehim,=
-Baveria.<br>
-</div>
-
---20cf3071c80416fb1004a7dbdd63--
 
