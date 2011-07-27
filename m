@@ -1,11 +1,15 @@
-Message-ID: <4E241A30.5060904@domain.hid>
-Date: Mon, 18 Jul 2011 13:34:08 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <4E305BE7.9090002@domain.hid>
+Date: Wed, 27 Jul 2011 20:41:43 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-15
+References: <4E160578.5020405@domain.hid> <4E16F032.1050905@domain.hid>
+	<4E16F4E0.8020900@domain.hid> <4E1BEE2C.7030800@domain.hid>
+	<4E1BF47F.3050406@domain.hid>
+In-Reply-To: <4E1BF47F.3050406@domain.hid>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: [Adeos-main] [PULL] Critical x86-64 fix / mprotect page fault
-	avoidance
+Subject: Re: [Adeos-main] [PATCH] ipipe: Prevent unwritable pages after
+	mprotect
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/options/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -14,83 +18,65 @@ List-Post: <mailto:adeos-main@gna.org>
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: adeos-main <adeos-main@gna.org>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: adeos-main <adeos-main@gna.org>, Philippe Gerum <rpm@xenomai.org>
 
-The following changes since commit ec31395b787f9d7d651920c1af3447bd563c6cf8:
+On 07/12/2011 09:15 AM, Jan Kiszka wrote:
+> On 2011-07-12 08:48, Gilles Chanteperdrix wrote:
+>> On 07/08/2011 02:15 PM, Jan Kiszka wrote:
+>>> On 2011-07-08 13:55, Gilles Chanteperdrix wrote:
+>>>> On 07/07/2011 09:14 PM, Jan Kiszka wrote:
+>>>>> From: Jan Kiszka <jan.kiszka@domain.hid>
+>>>>>
+>>>>> Page protection changes issued via mprotect, e.g. to enable executable
+>>>>> stacks, cause spurious minor faults as they remove the write permission
+>>>>> from the modified range again. Avoid this by faking shared pages so that
+>>>>> vm_get_page_prot returns the desired page permissions.
+>>>>
+>>>> This looks dangerous to me. Have you checked that write to private heaps
+>>>> will not end up corrupting shared data?
+>>>
+>>> Can't follow this yet.
+>>>
+>>> If you check the comment on protection_map in mm/mmap.c, the difference
+>>> between private and shared is in real write vs. COW-able write. That's
+>>> what my patch is exploiting to get the proper arch-dependent page
+>>> protection bits.
+>>>
+>>> Are you aware of side effects or do you know a better way to inject
+>>> write permissions into the protection flags?
+>>
+>> I would tend to think that shared and private mappings do not react the
+>> same way when we write to them.
+> 
+> Yes, private mappings can undergo COW.
 
-  ipipe-2.6.38.8-x86-2.10-00 (2011-06-14 09:39:43 +0200)
+My point exactly, so, say, if the mapping is an anonymous mapping with
+only the zero page mapped, you will allow writing to the zero page, this
+does not look like a sane thing to do. The same goes for private file
+mappings where the code need to be modified (for instance relocations
+when mixing non PIC code with PIC code).
 
-are available in the git repository at:
-  git://git.kiszka.org/ipipe queues/2.6.38-x86
+> 
+>>
+>> In order to avoid the fault on first access, I would trigger a fault for
+>> each page of the mapping, the way we do it in __rthal_arm_fault_range
+>> (in ksrc/arch/arm/hal.c), but in the I-pipe kernel.
+> 
+> That sounds like overkill, and it's potentially racy (mprotect may open
+> a short window where the active PTEs do not allow writes for
+> concurrently running threads).
 
-Jan Kiszka (3):
-      ipipe: Prevent unwritable pages after mprotect
-      Merge branch 'queues/2.6.38-noarch' into queues/2.6.38-x86
-      ipipe: x86-64: Disable interrupt stacks
+If a program starts writing to a mapping before mprotect returns, it is
+already bogus anyway (I am talking about triggering the fault in
+mprotect code of course).
 
- arch/x86/include/asm/page_64_types.h |    4 ++++
- arch/x86/kernel/entry_64.S           |    2 ++
- mm/mprotect.c                        |   12 +++++++++++-
- 3 files changed, 17 insertions(+), 1 deletions(-)
 
----
+> 
+> Jan
+> 
 
-ipipe: x86-64: Disable interrupt stacks
 
-x86-64 uses interrupt stacks by default. They are activated early on
-interrupt, i.e. before I-pipe and any non-root domain is called. If the
-non-root domain decides to schedule over this stack, taking it to a
-different CPU or leaving the interrupt nesting over a different task, we
-may end up using the interrupt stack more than once. Subtle stack
-corruptions, under Xenomai usually paired with system crashes, are the
-result.
-
-Fix this by raising the task kernel stack size from 8 to 16K (twice as
-much as x86-32 uses in the absence of interrupt stacks) and disabling
-stack switching in save_args.
-
-Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
----
- arch/x86/include/asm/page_64_types.h |    4 ++++
- arch/x86/kernel/entry_64.S           |    2 ++
- 2 files changed, 6 insertions(+), 0 deletions(-)
-
-diff --git a/arch/x86/include/asm/page_64_types.h b/arch/x86/include/asm/page_64_types.h
-index 7639dbf..e28697e 100644
---- a/arch/x86/include/asm/page_64_types.h
-+++ b/arch/x86/include/asm/page_64_types.h
-@@ -1,7 +1,11 @@
- #ifndef _ASM_X86_PAGE_64_DEFS_H
- #define _ASM_X86_PAGE_64_DEFS_H
- 
-+#ifdef CONFIG_IPIPE
-+#define THREAD_ORDER	2
-+#else
- #define THREAD_ORDER	1
-+#endif
- #define THREAD_SIZE  (PAGE_SIZE << THREAD_ORDER)
- #define CURRENT_MASK (~(THREAD_SIZE - 1))
- 
-diff --git a/arch/x86/kernel/entry_64.S b/arch/x86/kernel/entry_64.S
-index ed0f408..4e177f3 100644
---- a/arch/x86/kernel/entry_64.S
-+++ b/arch/x86/kernel/entry_64.S
-@@ -334,12 +334,14 @@ ENTRY(save_args)
- 	 * moving irq_enter into assembly, which would be too much work)
- 	 */
- 1:	incl PER_CPU_VAR(irq_count)
-+#ifndef CONFIG_IPIPE
- 	jne 2f
- 	popq_cfi %rax			/* move return address... */
- 	mov PER_CPU_VAR(irq_stack_ptr),%rsp
- 	EMPTY_FRAME 0
- 	pushq_cfi %rbp			/* backlink for unwinder */
- 	pushq_cfi %rax			/* ... to the new stack */
-+#endif
- 	/*
- 	 * We entered an interrupt context - irqs are off:
- 	 */
 -- 
-1.7.3.4
+                                                                Gilles.
 
