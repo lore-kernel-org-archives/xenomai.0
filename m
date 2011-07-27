@@ -1,12 +1,14 @@
-Message-ID: <4E305E73.5020903@domain.hid>
-Date: Wed, 27 Jul 2011 20:52:35 +0200
+Message-ID: <4E305F1C.9010608@domain.hid>
+Date: Wed, 27 Jul 2011 20:55:24 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4E2E6E73.8090401@domain.hid>
-In-Reply-To: <4E2E6E73.8090401@domain.hid>
+References: <4E16296B.4080209@domain.hid> <4E1B4438.6030600@domain.hid>
+	<4E2EAE69.7030008@domain.hid>
+In-Reply-To: <4E2EAE69.7030008@domain.hid>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-core] Exception #14
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-core] Problems with gcc 4.6.0 (rt_task_shadow fails
+ with	ENOSYS)
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -15,27 +17,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: zenati <omar.zenati@domain.hid>
-Cc: Xenomai core <Xenomai-core@domain.hid>
+To: Daniele Nicolodi <daniele@domain.hid>
+Cc: xenomai@xenomai.org
 
-On 07/26/2011 09:36 AM, zenati wrote:
-> Dear,
->=20
-> I'm developping the skin Arinc 653 for Xenomai. I'm trying to run=20
-> process with my skin but I have an exception :
->=20
-> Xenomai: suspending kernel thread d8824c40 ('=EF=BF=BD') at 0xb76dbdfc =
-after=20
-> exception #14
->=20
-> What is the exception 14 ? Have you an idea how can I solve them?
->=20
-> Thank you for your attention and for your help.
-> Sincerely,
+On 07/26/2011 02:09 PM, Daniele Nicolodi wrote:
+> On 11/07/11 20:43, Gilles Chanteperdrix wrote:
+>> On 07/07/2011 11:47 PM, Anders Blomdell wrote:
+>>> When compiling kernel 2.6.37.3 and xenomai 2.5.6 with "gcc version 4.6.0 
+>>> 20110530 (Red Hat 4.6.0-9) (GCC)", programs fail with -ENOSYS in 
+>>> rt_task_shadow. If compiled with "gcc version 4.5.1 20100924 (Red Hat 
+>>> 4.5.1-4) (GCC)" everything works as expected.
+>>
+>> I think it is due to the modifications of syscall.h I made to implement
+>> pseudo-signals handling, which implementation was never finished, and
+>> removed in xenomai-head. Could you try xenomai-head to see if you get
+>> the failure? I tried backporting it, but the code evolved too much in
+>> both repositories, the backport needs to spend some time on it, so, I
+>> would like to know whether it is really needed.
+> 
+> Has this issue been investigated further? I may have the occasion to try
+> again to compile a Xenomai kernel with gcc 4.6 this week and I would
+> like to know where to start to debug and solve this issue.
+> 
+> Thank you. Cheers,
 
-The meaning of the fault number depends on the platform you are using,
-see /proc/xenomai/faults for human readable messages for your platform.
---=20
+The issue has been investigated, as explained in the mail you are
+quoting, it seems to be due to the implementation of pseudo-signals
+which as in xenomai 2.5 code and no longer is in xenomai-head code.
+
+In order to get confirmation, I am still waiting for someone to test
+xenomai-head with gcc 4.6.
+
+-- 
                                                                 Gilles.
-
 
