@@ -1,12 +1,12 @@
-Message-ID: <4E3039EC.80109@domain.hid>
-Date: Wed, 27 Jul 2011 18:16:44 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <4E304278.1050608@domain.hid>
+Date: Wed, 27 Jul 2011 18:53:12 +0200
+From: zenati <omar.zenati@domain.hid>
 MIME-Version: 1.0
 References: <4E2EAB0F.6050109@domain.hid> <4E2FD923.2040003@domain.hid>
 	<4E2FFE1B.5010900@domain.hid> <4E3000A6.7080001@domain.hid>
-	<4E30391C.2070007@domain.hid>
-In-Reply-To: <4E30391C.2070007@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+	<4E30391C.2070007@domain.hid> <4E3039EC.80109@domain.hid>
+In-Reply-To: <4E3039EC.80109@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-core] Debugging Xenomai kernel
 List-Id: Xenomai life and development <xenomai.xenomai.org>
@@ -17,49 +17,51 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: zenati <omar.zenati@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: Xenomai core <Xenomai-core@domain.hid>
 
-On 2011-07-27 18:13, zenati wrote:
-> On 07/27/2011 02:12 PM, Jan Kiszka wrote:
->> On 2011-07-27 14:01, zenati wrote:
->>> On 07/27/2011 11:23 AM, Jan Kiszka wrote:
->>>> On 2011-07-26 13:54, zenati wrote:
->>>>> Dear,
+On 07/27/2011 06:16 PM, Jan Kiszka wrote:
+> On 2011-07-27 18:13, zenati wrote:
+>> On 07/27/2011 02:12 PM, Jan Kiszka wrote:
+>>> On 2011-07-27 14:01, zenati wrote:
+>>>> On 07/27/2011 11:23 AM, Jan Kiszka wrote:
+>>>>> On 2011-07-26 13:54, zenati wrote:
+>>>>>> Dear,
+>>>>>>
+>>>>>> I'm trying to debug Xenomai kernel with GDB and Qemu.
+>>>>> QEMU in emulation or KVM mode?
 >>>>>
->>>>> I'm trying to debug Xenomai kernel with GDB and Qemu.
->>>> QEMU in emulation or KVM mode?
->>>>
->>> I'm using Qemu in emulation mode.
->> What's your target arch? x84-64, x86-32, or some ARM or PPC etc.
-> x86-32
->>>>> So, I launch
->>>>> Xenomai in Qemu and make it waiting for GDB. Then I start GDB and
->>>>> connect them to Qemu, make breakpoint at the desired function to debug
->>>>> and start Xenomai. If the function belongs to the linux kernel, the
->>>>> execution stop at the breakpoint. But, if the function belongs to the
->>>>> Xenomai nucleus, GDB recognize the breakpoint at the execution but don't
->>>>> stop.
->>>> Is Xenomai built as module or part of the main kernel image? The latter
->>>> is simpler to handle as you don't have to deal with modules as symbol
->>>> sources, find out their addresses, and load them at the right location.
->>>>
->>> Xenomai is built as a part of the main kernel.
->> OK. Check during runtime of the guest if the disassembly at the desired
->> breakpoint address matches the compiled code. Maybe there is some
->> accidental discrepancy.
-> The breakpoints match correctly the compiled code. Anyway, it must stop 
-> at the breakpoint. No?
+>>>> I'm using Qemu in emulation mode.
+>>> What's your target arch? x84-64, x86-32, or some ARM or PPC etc.
+>> x86-32
+>>>>>> So, I launch
+>>>>>> Xenomai in Qemu and make it waiting for GDB. Then I start GDB and
+>>>>>> connect them to Qemu, make breakpoint at the desired function to debug
+>>>>>> and start Xenomai. If the function belongs to the linux kernel, the
+>>>>>> execution stop at the breakpoint. But, if the function belongs to the
+>>>>>> Xenomai nucleus, GDB recognize the breakpoint at the execution but don't
+>>>>>> stop.
+>>>>> Is Xenomai built as module or part of the main kernel image? The latter
+>>>>> is simpler to handle as you don't have to deal with modules as symbol
+>>>>> sources, find out their addresses, and load them at the right location.
+>>>>>
+>>>> Xenomai is built as a part of the main kernel.
+>>> OK. Check during runtime of the guest if the disassembly at the desired
+>>> breakpoint address matches the compiled code. Maybe there is some
+>>> accidental discrepancy.
+>> The breakpoints match correctly the compiled code. Anyway, it must stop
+>> at the breakpoint. No?
+> ...if the guest actually executes that address.
+>
+> I haven't used x86 QEMU in emulation mode for quite a while to debug
+> something. Maybe we have a regression there. What's your QEMU version?
+QEMU PC emulator version 0.12.3 (qemu-kvm-0.12.3), Copyright (c) 
+2003-2008 Fabrice Bellard
+> Do you have a chance to test with a KVM host? It's faster anyway.
+I never used it before... But I'm ready to test it if there is no others 
+ways to debug.
+> Jan
+>
 
-...if the guest actually executes that address.
-
-I haven't used x86 QEMU in emulation mode for quite a while to debug
-something. Maybe we have a regression there. What's your QEMU version?
-Do you have a chance to test with a KVM host? It's faster anyway.
-
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT T DE IT 1
-Corporate Competence Center Embedded Linux
+Omar ZENATi
 
