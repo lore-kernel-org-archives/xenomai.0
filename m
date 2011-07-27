@@ -1,12 +1,10 @@
-Message-ID: <4E30646D.1050005@domain.hid>
-Date: Wed, 27 Jul 2011 21:18:05 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4E3088A4.3010903@domain.hid>
+Date: Wed, 27 Jul 2011 23:52:36 +0200
+From: Roberto Bielli <roberto.bielli@domain.hid>
 MIME-Version: 1.0
-References: <4E27094D.5050306@domain.hid>
-In-Reply-To: <4E27094D.5050306@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] gdb and breakpoint
+Subject: [Xenomai-core] rt_task_delete or rt_task_suspend strange behavior
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -15,29 +13,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Roberto Bielli <roberto.bielli@domain.hid>
-Cc: xenomai@xenomai.org
-
-On 07/20/2011 06:58 PM, Roberto Bielli wrote:
-> Hi,
-> 
-> i have little questions.
-> 1 .A GDB breakpoint in a xenomai task switch to secodary mode the task 
-> or the entire application ?
-> 2. when i run the application that is halted on a breakpoint, when the 
-> xenomai scheduler enter to restore the task in primary mode, how does ?
->      (i can say with assurancethe any other task goes before me when i 
-> release the breakpoint )
+To: xenomai@xenomai.org
 
 Hi,
 
-I have read your post several times and failed to understand your
-question. Do you have a test code which behaves unexpectedly with gdb
-and which you would care to post?
+i'm using xenomai 2.5.6 stable implemented for Marvell mv78xx on Arm.
+I have a very strange behaviour.
 
-Regards.
+I have 60 tasks and some tasks delete other tasks. In the case that one 
+task delete/suspend a task that  is just deleted/suspended,
+the next delete/suspend kill the wrong task and if i print the sequence 
+i see that rt_task_delete or rt_task_suspend
+returned the value -3 (-ESRCH) that is NOT documented in the manual.
 
+Unfortunately i can't send the source code because it's very large and i 
+cannot see the problem with a small program.
 
--- 
-                                                                Gilles.
+Any ideas ?
+
+Thanks for all
 
