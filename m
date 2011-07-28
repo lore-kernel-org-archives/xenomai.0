@@ -1,13 +1,10 @@
-Message-ID: <4E3195FB.4040701@domain.hid>
-Date: Thu, 28 Jul 2011 19:01:47 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <4E31B695.5060506@domain.hid>
+Date: Thu, 28 Jul 2011 21:20:53 +0200
+From: Roberto Bielli <roberto.bielli@domain.hid>
 MIME-Version: 1.0
-References: <4E299162.8000309@domain.hid> <4E305DAB.80402@domain.hid>
-	<4E3194A5.5040709@domain.hid>
-In-Reply-To: <4E3194A5.5040709@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] __wrap_clock_gettime
+Subject: [Xenomai-core] gdb and lost priority
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -16,42 +13,18 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai core <Xenomai-core@domain.hid>
+To: xenomai@xenomai.org
 
-On 2011-07-28 18:56, Jan Kiszka wrote:
-> On 2011-07-27 20:49, Gilles Chanteperdrix wrote:
->> On 07/22/2011 05:04 PM, Jan Kiszka wrote:
->>> Hi Gilles,
->>>
->>> pulling assert_context.c into the common libxenomai created a problem
->>> around picking the right __wrap_clock_gettime. As libpthread_rt depends
->>> on libxenomai, the latter is loaded first and defines the debug version
->>> of __wrap_clock_gettime as the default. There is no chance to pull the
->>> posix skin implementation.
->>>
->>> I don't have a nice idea yes how to resolve this. Options are:
->>>  - drop __wrap_clock_gettime from assert_context.c (affects any skin
->>>    user != posix)
->>>  - put assert_context stuff into separate library again
->>>  - put __wrap_clock_gettime in all skin libs != posix
->>>
->>> I'm favoring the simplest approach ATM, ie. the first one. Other ideas?
->>
->> I agree, but I would have thought __attriibute__((weak)) takes care of
->> this issue.
-> 
-> The point is that once you have pulled in that weak symbol into a
-> process, the dynamic loader won't update it if a non-weak version is
-> pulled in via dlopen.
+Hi,
 
-Mmh, maybe we have a fourth option: disabling the weak version if
-CONFIG_XENO_LIBS_DLOPEN is set. OTOH, the correlation may not be obvious
-to users. So that result could be even more confusing.
+i know that debugging a user application with gdb can broke the task 
+priority but
+also if i insert no breakpoints ?
+I explain better, in the 2.5.6 version a see that if i launch an 
+application with gdbserver a task that has an inferior priority execute
+while another task with a high priority is running. It's possible or the 
+task has switched on secondary mode ?
 
-Jan
+Thanks for all
 
--- 
-Siemens AG, Corporate Technology, CT T DE IT 1
-Corporate Competence Center Embedded Linux
 
