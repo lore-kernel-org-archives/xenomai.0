@@ -1,15 +1,9 @@
-Message-ID: <4E1C2FAE.2060103@domain.hid>
-Date: Tue, 12 Jul 2011 13:27:42 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CAG1VJdr9-_WbBTg+L7tAT8+aGOM7oH844F3NfcRmQrHLcCvpAw@domain.hid>
-	<4E1ADEA7.30003@domain.hid>
-	<CAG1VJdoogk8gUPxct1LQ32mtK4ezBDnDpah45fhrUcm6W_JNyw@domain.hid>
-	<CAG1VJdqzY1d09hddO1-uRYuDYY2oVxMQpwzVpt6Yf-mWRYi9pA@mail.gmail.com>
-In-Reply-To: <CAG1VJdqzY1d09hddO1-uRYuDYY2oVxMQpwzVpt6Yf-mWRYi9pA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Compiling Library files over Xenomai
+Message-ID: <OF525F5E1C.0654BB8B-ONC12578DC.004AEEB3-C12578DC.004B73F2@domain.hid>
+From: julien.delange@domain.hid
+Date: Fri, 29 Jul 2011 15:44:09 +0200
+Content-Type: text/plain; charset="US-ASCII"
+Subject: [Xenomai-help] Use of a4l_dtoraw
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -19,20 +13,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Ashish Budhiraja <ashishmach@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 07/12/2011 01:10 PM, Ashish Budhiraja wrote:
-> Hello Again,
-> 
-> Thanks a lot. I figured out, actually somehow "inline" declaration were not
-> allowed and the library is really complex,
-> so I couldn't change it. The solution was to change it to static.
+Hello,
 
-inline declarations are allowed in C, simply, the inline functions must
-be static as well.
+I try to use the RTDM API to communicate with my boards. In fact, I 
+adapted a driver from comedi to RTDM ; the low-level aspects seem to work 
+(meaning : when I send something on a channel, I see an output on this 
+channel). However, now, I would like the analogy API to interact with my 
+device. So, I'm wondering how the conversion functions work.
 
+For example, for the a4l_dtoraw function, if some arguments are easy to 
+understand, some others need more explanations. In particular,what means 
+the cnt argument of this function and how should we use it ? Is there some 
+example of the usage of the level 2 API of the analogy level ? It would 
+really help in understanding how this API interacts with the boards.
 
--- 
-                                                                Gilles.
+Thanks in advance for any help regarding the use of this API.
+
+Best regards,
+
 
