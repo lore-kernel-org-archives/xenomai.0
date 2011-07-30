@@ -1,87 +1,57 @@
-Message-ID: <4E359B1D.7020508@domain.hid>
-Date: Sun, 31 Jul 2011 20:12:45 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+From: Wolfgang Denk <wd@domain.hid>
 MIME-Version: 1.0
-References: <E1QnZD3-00080U-DV@xenomai.org> <4E358F10.7070203@domain.hid>
-	<4E359412.4090309@domain.hid> <4E35950E.6000900@domain.hid>
-In-Reply-To: <4E35950E.6000900@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigAE2B91206B5948728E19D96A"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-core] [Xenomai-git] Jan Kiszka : rt_print: Provide
-	rt_puts
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Content-type: text/plain; charset=ISO-8859-1
+Content-transfer-encoding: 8bit
+In-reply-to: <4E34759D.40405@domain.hid>
+References: <4E34759D.40405@domain.hid>
+Date: Sun, 31 Jul 2011 01:49:05 +0200
+Message-Id: <20110730234906.023BF12B7AE4@domain.hid>
+Subject: Re: [Xenomai-help] AT91SAM9G45 support
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai core <Xenomai-core@domain.hid>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: at91_enthus <nwromania@domain.hid>
+Cc: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigAE2B91206B5948728E19D96A
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Dear at91_enthus,
 
-On 2011-07-31 19:46, Gilles Chanteperdrix wrote:
-> On 07/31/2011 07:42 PM, Jan Kiszka wrote:
->> On 2011-07-31 19:21, Gilles Chanteperdrix wrote:
->>> On 07/31/2011 06:49 PM, GIT version control wrote:
->>>> +int rt_puts(const char *s)
->>>> +{
->>>> +	return print_to_buffer(stdout, 0, RT_PRINT_MODE_PUTS, s, NULL);
->>>> +}
->>>
->>> gcc for ARM chokes here: it says that NULL can not be converted to a
->>> va_list, however I try it.
->>
->> Hmm. Does this work?
->>
->> diff --git a/src/skins/common/rt_print.c b/src/skins/common/rt_print.c=
+In message <4E34759D.40405@domain.hid> you wrote:
+> 
+> Is there's any chance that  AT91SAM9G45 will be supported in Xenomai?
 
->> index 186de48..52538d8 100644
->> --- a/src/skins/common/rt_print.c
->> +++ b/src/skins/common/rt_print.c
->> @@ -243,7 +243,9 @@ int rt_printf(const char *format, ...)
->>
->>  int rt_puts(const char *s)
->>  {
->> -	return print_to_buffer(stdout, 0, RT_PRINT_MODE_PUTS, s, NULL);
->> +	va_list dummy;
->> +
->> +	return print_to_buffer(stdout, 0, RT_PRINT_MODE_PUTS, s, dummy);
->>  }
->>
->>  void rt_syslog(int priority, const char *format, ...)
->>
->>
->> Not really beautiful as well, I know.
->=20
-> It seems to work now, but some later version of gcc may decide to warn
-> us that this argument is used without being initialized...
+There is always a chance.  Actually there are several options if a
+feature does not exist yet:
 
-Yes. I've pushed a cleaner version.
+1) Wait long enough until sombody else submits the needed code.
+   Problem: it might take longer than you can afford.
 
-Jan
+2) Hire an expert.
+   Problem: it might cost more than you can affort.
+
+3) Implement it yourself.
+   Problem: it might take longer and cost more than you can afford.
+
+That's a _very_ common situation - see signature below.
 
 
---------------enigAE2B91206B5948728E19D96A
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+Best regards,
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.16 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+Wolfgang Denk
 
-iEYEARECAAYFAk41mx8ACgkQitSsb3rl5xTZtwCgiab8Y0OkvKdFEEyROO0rTAZ0
-37YAoNXXRAllqUcJhv8KlPiMWQzQxl5G
-=+I1O
------END PGP SIGNATURE-----
-
---------------enigAE2B91206B5948728E19D96A--
+-- 
+DENX Software Engineering GmbH,     MD: Wolfgang Denk & Detlev Zundel
+HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
+Phone: (+49)-8142-66989-10 Fax: (+49)-8142-66989-80 Email: wd@domain.hid
+Everyone who comes in here wants three things:
+        1. They want it quick.
+        2. They want it good.
+        3. They want it cheap.
+I tell 'em to pick two and call me back.
+- sign on the back wall of a small printing company in Delaware
 
