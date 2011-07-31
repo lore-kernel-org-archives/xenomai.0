@@ -1,11 +1,12 @@
-From: Wolfgang Denk <wd@domain.hid>
+Message-ID: <4E34A253.5060502@domain.hid>
+Date: Sat, 30 Jul 2011 19:31:15 -0500
+From: at91_enthus <nwromania@domain.hid>
 MIME-Version: 1.0
-Content-type: text/plain; charset=ISO-8859-1
-Content-transfer-encoding: 8bit
-In-reply-to: <4E34759D.40405@domain.hid>
 References: <4E34759D.40405@domain.hid>
-Date: Sun, 31 Jul 2011 01:49:05 +0200
-Message-Id: <20110730234906.023BF12B7AE4@domain.hid>
+	<20110730234906.023BF12B7AE4@domain.hid>
+In-Reply-To: <20110730234906.023BF12B7AE4@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] AT91SAM9G45 support
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -16,42 +17,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: at91_enthus <nwromania@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Dear at91_enthus,
+On 07/30/2011 06:49 PM, Wolfgang Denk wrote:
+> Dear at91_enthus,
+>
+> In message <4E34759D.40405@domain.hid> you wrote:
+>> Is there's any chance that  AT91SAM9G45 will be supported in Xenomai?
+> There is always a chance.  Actually there are several options if a
+> feature does not exist yet:
+>
+> 1) Wait long enough until sombody else submits the needed code.
+>    Problem: it might take longer than you can afford.
+>
+> 2) Hire an expert.
+>    Problem: it might cost more than you can affort.
+>
+> 3) Implement it yourself.
+>    Problem: it might take longer and cost more than you can afford.
+>
+> That's a _very_ common situation - see signature below.
+>
+>
+> Best regards,
+>
+> Wolfgang Denk
+>
 
-In message <4E34759D.40405@domain.hid> you wrote:
-> 
-> Is there's any chance that  AT91SAM9G45 will be supported in Xenomai?
+Indeed. I knew it was a long shot.
 
-There is always a chance.  Actually there are several options if a
-feature does not exist yet:
+I already have a few boards for experimenting with Xenomai. AT91SAM9G45
+has some interesting features with respect to other AT91s.
 
-1) Wait long enough until sombody else submits the needed code.
-   Problem: it might take longer than you can afford.
-
-2) Hire an expert.
-   Problem: it might cost more than you can affort.
-
-3) Implement it yourself.
-   Problem: it might take longer and cost more than you can afford.
-
-That's a _very_ common situation - see signature below.
-
-
-Best regards,
-
-Wolfgang Denk
-
--- 
-DENX Software Engineering GmbH,     MD: Wolfgang Denk & Detlev Zundel
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
-Phone: (+49)-8142-66989-10 Fax: (+49)-8142-66989-80 Email: wd@domain.hid
-Everyone who comes in here wants three things:
-        1. They want it quick.
-        2. They want it good.
-        3. They want it cheap.
-I tell 'em to pick two and call me back.
-- sign on the back wall of a small printing company in Delaware
+Thanks,
+R.
 
