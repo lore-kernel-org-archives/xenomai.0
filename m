@@ -1,15 +1,10 @@
-Message-ID: <4E37EF2D.2000405@domain.hid>
-Date: Tue, 02 Aug 2011 14:35:57 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4E382D65.4040701@domain.hid>
+Date: Tue, 02 Aug 2011 19:01:25 +0200
+From: Daniele Nicolodi <daniele@domain.hid>
 MIME-Version: 1.0
-References: <OF525F5E1C.0654BB8B-ONC12578DC.004AEEB3-C12578DC.004B73F2@domain.hid>	<CAMesUR6mRhVJGAT=FFbfwj-C2bgj2J_6R40pn3_q76NXiztDDw@domain.hid>	<CAMesUR5fBt7svRvWeQT4ihunne+-vNH+z5bPUhty=E7Vxo7uKA@mail.gmail.com>
-	<OF62073E21.55EA79CB-ONC12578E0.002C71CB-C12578E0.002CD52B@esa.int>
-	<4E37B551.4020603@domain.hid>
-	<OFFE6271BD.4B88F20D-ONC12578E0.00435C13-C12578E0.00436E83@domain.hid>
-In-Reply-To: <OFFE6271BD.4B88F20D-ONC12578E0.00435C13-C12578E0.00436E83@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Use of a4l_dtoraw
+Subject: [Xenomai-help] Xenomai on x86 Asus P5LD2 mb Intel 945P chipset
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -19,20 +14,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: julien.delange@domain.hid
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 08/02/2011 02:16 PM, julien.delange@domain.hid wrote:
-> Dear all,
-> 
-> Unfortunately, I cannot use git since I have strong firewall policy on my 
-> connection. So, I think the best would be to send patch, no ?
+Hello,
 
-As you wish, but you can also clone the repository over http. Cloning
-for instance:
+I know this is an odd question, but I would like to save some testing
+time if possible, I'm in a too tight schedule.
 
-http://git.xenomai.org/xenomai-head.git
+I need to migrate one of my data acquisition system to more recent
+hardware to support a PCI-Express data acquisition board. The hardware I
+may use is an x86 box built on an Asus P5LD2 motherboard: Intel 945P
+chipset for Intel LGA775 Pentium 4 CPU.
 
+Can anyone give me an hint on what kind of latency performances I may be
+able to obtain from such hardware? The only reference I have been able
+to find in the archives is this
+
+https://mail.gna.org/public/xenomai-help/2007-02/msg00308.html
+
+where latency problems, probably related to SMI, are reported, but with
+an old version of Xenomai. Does someone have another data point that I
+may interpolate from?
+
+Thank you. Cheers,
 -- 
-					    Gilles.
+Daniele
 
