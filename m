@@ -1,16 +1,15 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <509DA52866E38F47878413CF102D751FD4207794FB@poseidon.nexus-ag.com>
-References: <509DA52866E38F47878413CF102D751FD4207794F0@domain.hid>
-	<1312370844.2135.10.camel@domain.hid>
+Message-ID: <4E3966ED.1030408@domain.hid>
+Date: Wed, 03 Aug 2011 17:19:09 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+References: <509DA52866E38F47878413CF102D751FD4207794F0@domain.hid>	<1312370844.2135.10.camel@domain.hid>
 	<509DA52866E38F47878413CF102D751FD4207794F2@domain.hid>
 	<4E394A78.7040408@domain.hid>
 	<509DA52866E38F47878413CF102D751FD4207794F8@domain.hid>
-	<1312379588.2135.12.camel@domain.hid>
-	<509DA52866E38F47878413CF102D751FD4207794FB@poseidon.nexus-ag.com>
-Content-Type: text/plain; charset="UTF-8"
-Date: Wed, 03 Aug 2011 16:40:11 +0200
-Message-ID: <1312382411.2135.16.camel@domain.hid>
-Mime-Version: 1.0
+	<4E395528.5090409@domain.hid>
+	<509DA52866E38F47878413CF102D751FD4207794FA@poseidon.nexus-ag.com>
+In-Reply-To: <509DA52866E38F47878413CF102D751FD4207794FA@poseidon.nexus-ag.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] Xenomai VxWorks Skin--->semTake
 List-Id: Help regarding installation and common use of Xenomai
@@ -25,115 +24,55 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: Sambasiva Rao Manchili <sambasiva.manchili@domain.hid>
 Cc: Antonio Gambin <antonio.gambin@domain.hid>, "Xenomai-help@domain.hid" <Xenomai-help@domain.hid>
 
-On Wed, 2011-08-03 at 16:30 +0200, Sambasiva Rao Manchili wrote:
-> Hi Philippe,
-> Why do you say that I try to grab the mutex from non-xenomai thread
-> context ?
-
-Because this is what you are very likely doing. Calling a Xenomai-only
-service over a non-Xenomai thread.
-
-> During porting we had written main() only this main function does
-> pthread_create to call the very first function of VxWorks code which
-> inturn does taskSpawn. All the taskSpawns has to go through Xenomai
-> thread context right ?
-
-Task created by taskSpawn() are valid Xenomai context for sure. main()
-is not by default.
-
-I can't check your code, but EPERM is typical of calling a resource
-grabbing service out of a valid Xenomai context. Xenomai can't move your
-calling context to primary mode before executing this service and fails
-early with EPERM. 
-
->  
-> Samba.
->  
->  
-> -----Original Message-----
-> From: Philippe Gerum [mailto:rpm@xenomai.org] 
-> Sent: Wednesday, 03. August, 2011 15:53
-> To: Sambasiva Rao Manchili
-> Cc: Gilles Chanteperdrix; Antonio Gambin; Xenomai-help@domain.hid
-> Subject: RE: [Xenomai-help] Xenomai VxWorks Skin--->semTake
->  
-> On Wed, 2011-08-03 at 15:31 +0200, Sambasiva Rao Manchili wrote:
-> > Hi Gilles,
-> > I had seen the code  in src\skins\vxworks\semLib.c it returns ERROR
-> which is -1.
-> > 
-> > The value that I sent earlier is the value that I got out of the
-> following statement.
-> > serrLog( serrErr,
-> >              "resu_getonline_1_svc: semTake for restab_access_smp
-> failed!!<%s>",
-> >               strerror(errnoGet()));
-> > 
-> > Is it right ?
-> > 
-> > 
-> > Now again I tried with
-> >  serrLog( serrErr,
-> >              "resu_getonline_1_svc: semTake for restab_access_smp
-> failed!!<%s> <%d>",
-> >               strerror(errnoGet()), errno);
-> > 
-> > Here I get value 1 for errno.
->  
-> You are trying to grab the mutex from a non-Xenomai thread context.
-> This is invalid.
->  
-> > 
-> > Samba.
-> > -----Original Message-----
-> > From: Gilles Chanteperdrix [mailto:gilles.chanteperdrix@xenomai.org]
-> > Sent: Wednesday, 03. August, 2011 15:18
-> > To: Sambasiva Rao Manchili
-> > Cc: Philippe Gerum; Antonio Gambin; Xenomai-help@domain.hid
-> > Subject: Re: [Xenomai-help] Xenomai VxWorks Skin--->semTake
-> > 
-> > On 08/03/2011 02:44 PM, Sambasiva Rao Manchili wrote:
-> > > Hi Philppe,
-> > > Failed and return with error code is  <Unknown error 4294967295>
-> and continues. I do not know the granularity of time  here, if it is
-> returning immediately or not.
-> > > We have about 15 tasks spawned in this whole system. Done very
-> very minimal changes to our VxWorks code to run on Linux over Xenomai
-> version 2.5.6.   Board does not crash.
-> > > CPU Platform is Intel x86 Arch 32 Bit.
-> > 
-> > semTake does not return error code directly, it returns ERROR (which
-> is -1, or 4294967295 if you cast to unsigned), and the real error is
-> in the errno variable.
-> > 
-> > --
-> >                                             Gilles.
-> > 
-> > 
-> > This email and any attachment may contain confidential information
-> which is intended for use only by the addressee(s) named above. If you
-> received this email by mistake, please notify the sender immediately,
-> and delete the email from your system. You are prohibited from
-> copying, disseminating or otherwise using the email or any attachment.
-> > 
->  
-> --
-> Philippe.
->  
->  
->  
+On 08/03/2011 04:24 PM, Sambasiva Rao Manchili wrote:
+> You want printErrno instead of strerror.
 > 
+>>> Samba: In the beginning days of our code porting from VxWorks to
+>>> Linux,  Xenomai failed to create message Queue  that was working
+>>> on VxWorks. When xenomai failed to create message queue it
+>>> returned 0x110001===>1114113. After reading the Xenomai code a
+>>> bit I understood it is S_memLib_NOT_ENOUGH_MEMORY. I therefore
+>>> reduced the Queue size by 5 times and it was then successful.
+>>> The way I extracted the errno in beginning days is same as I did
+>>> today. So I epxected a value which >>tells the actual reason of
+>>> semTake failure. But I got this huge value which is -1.  Am I
+>>> missing something ?
 > 
->   ________________________________  
-> This email and any attachment may contain confidential information
-> which is intended for use only by the addressee(s) named above. If you
-> received this email by mistake, please notify the sender immediately,
-> and delete the email from your system. You are prohibited from
-> copying, disseminating or otherwise using the email or any attachment.
+
+The thing is printErrno is a xenomai posix skin function which knows
+S_memlib_NOT_ENOUGH_MEMORY, strerror is an unrelated glibc function, and
+does not.
+
+What you are missing is this comment in ksrc/skins/vxworks/syscall.c
+/*
+ * By convention, error codes are passed back through the syscall
+ * return value:
+ * - negative codes stand for internal (i.e. nucleus) errors;
+ * - strictly positive values stand for genuine VxWorks errors.
+ * - zero means success.
+ *
+
+Looking at the code, I think after a service returns an error, it may be
+more reliable to use errno than to use errnoOfTaskGet.
+
+> 1 is EPERM. Is the thread issuing the call a thread created by
+> Xenomai?
 > 
+>>> Samba: Yes. I guess taskSpawn leads finally to Xenomai libraries
+>>> to create thread.  All  our VxWorks code(with minor changes) as
+>>> it is running on top of Xenomai. Please tell me,  What will you
+>>> suggest me then ?
+
+Trace the kernel code to know the reason for semTake to return -EPERM.
+Another reason documented in txt/vxworks/skin.txt maybe that you are
+calling semTake in a region where the scheduler has been locked (using
+taskLock).
+
+NOTE: it would be nice if you could formats your mails as everybody
+does: quote the mail you reply to by prepending " >" to the beginning of
+the lines you are quoting, and do not put ">" characters in front of the
+lines you add.
 
 -- 
-Philippe.
-
-
+					    Gilles.
 
