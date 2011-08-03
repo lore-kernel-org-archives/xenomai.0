@@ -1,13 +1,15 @@
-Message-ID: <4E1DDE43.3030000@domain.hid>
-Date: Wed, 13 Jul 2011 20:04:51 +0200
+Message-ID: <4E395528.5090409@domain.hid>
+Date: Wed, 03 Aug 2011 16:03:20 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4E1D8389.7050305@domain.hid> <4E1D84FD.7050307@domain.hid>
-	<4E1D9A14.5040901@domain.hid>
-In-Reply-To: <4E1D9A14.5040901@domain.hid>
+References: <509DA52866E38F47878413CF102D751FD4207794F0@domain.hid>	<1312370844.2135.10.camel@domain.hid>
+	<509DA52866E38F47878413CF102D751FD4207794F2@domain.hid>
+	<4E394A78.7040408@domain.hid>
+	<509DA52866E38F47878413CF102D751FD4207794F8@domain.hid>
+In-Reply-To: <509DA52866E38F47878413CF102D751FD4207794F8@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Stack size of created task
+Subject: Re: [Xenomai-help] Xenomai VxWorks Skin--->semTake
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -17,29 +19,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jakub Nowacki <j.s.nowacki@domain.hid>
-Cc: Xenomai help <xenomai@xenomai.org>
+To: Sambasiva Rao Manchili <sambasiva.manchili@domain.hid>
+Cc: Antonio Gambin <antonio.gambin@domain.hid>, "Xenomai-help@domain.hid" <Xenomai-help@domain.hid>
 
-On 07/13/2011 03:13 PM, Jakub Nowacki wrote:
-> As I understand it is related 
-> to the amounts of memory being used by a task, which is put on the stack 
-> during task switching, am I right?
+On 08/03/2011 03:31 PM, Sambasiva Rao Manchili wrote:
+> Hi Gilles,
+> I had seen the code  in src\skins\vxworks\semLib.c it returns ERROR which is -1.
+> 
+> The value that I sent earlier is the value that I got out of the following statement.
+> serrLog( serrErr,
+>              "resu_getonline_1_svc: semTake for restab_access_smp failed!!<%s>",
+>               strerror(errnoGet()));
+> 
+> Is it right ?
 
-Not really. When a function starts, it reserves some room on stack,
-mainly for local variables that can not be put in registers (because not
-enough registers are available, or for other reasons, such as the fact
-that the address of the variable needs to be passed to another function).
+You want printErrno instead of strerror.
 
-When this function calls another function, this other function reserves
-room on top of the first stack reserved room, hence the name "stack".
+> 
+> 
+> Now again I tried with
+>  serrLog( serrErr,
+>              "resu_getonline_1_svc: semTake for restab_access_smp failed!!<%s> <%d>",
+>               strerror(errnoGet()), errno);
+> 
+> Here I get value 1 for errno.
 
-The worst case is the highest level, it may be due to too many functions
-reserving little space on stack, or to one function reserving too much
-room on stack. For most functions, you can easily measure how much they
-reserve on stack by looking at their disassembly. I guess there are perl
-scripts around to edit a report of the stack usage of each function in a
-binary.
+1 is EPERM. Is the thread issuing the call a thread created by Xenomai?
 
 -- 
-                                                                Gilles.
+					    Gilles.
 
