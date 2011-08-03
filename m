@@ -1,12 +1,12 @@
-Message-ID: <4E3902E6.3080205@domain.hid>
-Date: Wed, 03 Aug 2011 10:12:22 +0200
-From: Daniele Nicolodi <daniele@domain.hid>
-MIME-Version: 1.0
-References: <4E382D65.4040701@domain.hid> <4E384EBF.5000707@domain.hid>
-In-Reply-To: <4E384EBF.5000707@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+From: ke zhou <zhou_ke2001@domain.hid>
+Date: Wed, 3 Aug 2011 08:39:25 +0000 (UTC)
+Message-ID: <loom.20110803T103809-89@domain.hid>
+References: <loom.20110803T060604-81@domain.hid>
+	<4E38F4CF.4030702@domain.hid>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Xenomai on x86 Asus P5LD2 mb Intel 945P chipset
+Subject: Re: [Xenomai-help] latency: failed to set periodic, code -110
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -16,24 +16,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Theo Veenker <T.J.G.Veenker@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 02/08/11 21:23, Theo Veenker wrote:
-> On 08/02/2011 07:01 PM, Daniele Nicolodi wrote:
->> I need to migrate one of my data acquisition system to more recent
->> hardware to support a PCI-Express data acquisition board. The hardware I
->> may use is an x86 box built on an Asus P5LD2 motherboard: Intel 945P
->> chipset for Intel LGA775 Pentium 4 CPU.
+Gilles Chanteperdrix <gilles.chanteperdrix <at> xenomai.org> writes:
+
 > 
-> The issues on that hardware at that time have been solved. We still
-> have a number of such machines. They run fine. I use Xenomai 2.5.? with
-> the appropriate kernel for it.
+> On 08/03/2011 06:09 AM, ke zhou wrote:
+> > hello ,everyone!
+> > I`m trying to patch the 2.6.25 kernel with Adeos Ipipe.And the xenomai
+> > version is xenomai-2.4.4.tar.gz.
+> > But when I execute " ./latency -t0 -T60 -p100 -h " on the s3c2440 
+board,there 
+> > are some errors : 
+> > == Sampling period: 100 us
+> > == Test mode: periodic user-mode task
+> > == All results in microseconds
+> > warming up...
+> > latency: failed to set periodic, code -110
+> > latency: failed to pend on semaphore, code -110
+> > 
+> > Any idea about that ?
+> 
+> The latencies on s3c24x will not allow you to run with a 100us period.
+> Also, you should use xenomai 2.5.6.
+> 
 
-Hello Theo, thank you for confirming that this kind of hardware plays
-nice with Xenomai. I'll tests my hardware ASAP.
 
-Cheers,
--- 
-Daniele
+I`d tried to run with a 100000000us period or 10000000us ,that`s the same 
+problem.Actually,the error was thrown out by rt_task_set_periodic
+().Especially,when  I use rt_task_set_periodic() or rt_task_wait_period() in 
+my program,they can`t return 0.
+But I`ll try to use xenomai.2.5.6.
+Thank you!
+
+
+
 
