@@ -1,9 +1,10 @@
-MIME-Version: 1.0
-Date: Wed, 13 Jul 2011 15:47:58 +0200
-Message-ID: <CAL+uwv_qceeWKU8CodM2U=CKhiY3SG0eiQzdyA7iQw9Tt0cZFw@domain.hid>
-From: suresh reddy <sureshreddy.balijepalli@domain.hid>
-Content-Type: multipart/alternative; boundary=bcaec50164191e6c6004a7f3aa8b
-Subject: [Xenomai-help] regarding compiling the xenomai program
+From: ke zhou <zhou_ke2001@domain.hid>
+Date: Wed, 3 Aug 2011 04:09:16 +0000 (UTC)
+Message-ID: <loom.20110803T060604-81@domain.hid>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-help] latency: failed to set periodic, code -110
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -13,43 +14,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Xenomai help <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
---bcaec50164191e6c6004a7f3aa8b
-Content-Type: text/plain; charset=ISO-8859-1
+hello ,everyone!
+I`m trying to patch the 2.6.25 kernel with Adeos Ipipe.And the xenomai
+version is xenomai-2.4.4.tar.gz.
+But when I execute " ./latency -t0 -T60 -p100 -h " on the s3c2440 board,there 
+are some errors : 
+== Sampling period: 100 us
+== Test mode: periodic user-mode task
+== All results in microseconds
+warming up...
+latency: failed to set periodic, code -110
+latency: failed to pend on semaphore, code -110
 
-Dear all,
-
-iam trying to compile the a program on host machine that uses xenomai native
-services.It is giving me the error.
-
-test06:/home/balijepalli/omap4/xenomai-2.5.6#
-CFLAGS=`DESTDIR=/home/balijepalli/omap4/root\/home/balijepalli/omap4/root/usr/xenomai/bin/bin/xeno-config
---skin native --cflags`
-DESTDIR=/home/balijepalli/omap4/root: Command not found.
-CFLAGS=: Command not found.
-
-
-
+Any idea about that ?
+Thank you!
 
 
-Suresh balijepalli
-Rosenehim,Baveria.
 
---bcaec50164191e6c6004a7f3aa8b
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr">Dear all,<div><br></div><div>iam trying to compile the a p=
-rogram on host machine that uses xenomai native services.It is giving me th=
-e error.</div><div><br></div><div><div><div>test06:/home/balijepalli/omap4/=
-xenomai-2.5.6# CFLAGS=3D`DESTDIR=3D/home/balijepalli/omap4/root\/home/balij=
-epalli/omap4/root/usr/xenomai/bin/bin/xeno-config --skin native --cflags`</=
-div>
-<div>DESTDIR=3D/home/balijepalli/omap4/root: Command not found.</div><div>C=
-FLAGS=3D: Command not found.</div></div><div><br></div><div><br><br></div><=
-div><br><br>Suresh balijepalli<br>Rosenehim,Baveria.<br>
-</div></div></div>
 
---bcaec50164191e6c6004a7f3aa8b--
 
