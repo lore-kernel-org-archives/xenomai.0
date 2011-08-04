@@ -1,17 +1,9 @@
-Message-ID: <4E3966ED.1030408@domain.hid>
-Date: Wed, 03 Aug 2011 17:19:09 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <1312473313.46577.YahooMailClassic@domain.hid>
+Date: Thu, 4 Aug 2011 08:55:13 -0700 (PDT)
+From: Philip Ha <philwman@domain.hid>
 MIME-Version: 1.0
-References: <509DA52866E38F47878413CF102D751FD4207794F0@domain.hid>	<1312370844.2135.10.camel@domain.hid>
-	<509DA52866E38F47878413CF102D751FD4207794F2@domain.hid>
-	<4E394A78.7040408@domain.hid>
-	<509DA52866E38F47878413CF102D751FD4207794F8@domain.hid>
-	<4E395528.5090409@domain.hid>
-	<509DA52866E38F47878413CF102D751FD4207794FA@poseidon.nexus-ag.com>
-In-Reply-To: <509DA52866E38F47878413CF102D751FD4207794FA@poseidon.nexus-ag.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Xenomai VxWorks Skin--->semTake
+Content-Type: multipart/alternative; boundary="0-27775092-1312473313=:46577"
+Subject: Re: [Xenomai-help] clock problem
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -21,58 +13,366 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Sambasiva Rao Manchili <sambasiva.manchili@domain.hid>
-Cc: Antonio Gambin <antonio.gambin@domain.hid>, "Xenomai-help@domain.hid" <Xenomai-help@domain.hid>
+To: xenomai@xenomai.org
 
-On 08/03/2011 04:24 PM, Sambasiva Rao Manchili wrote:
-> You want printErrno instead of strerror.
-> 
->>> Samba: In the beginning days of our code porting from VxWorks to
->>> Linux,  Xenomai failed to create message Queue  that was working
->>> on VxWorks. When xenomai failed to create message queue it
->>> returned 0x110001===>1114113. After reading the Xenomai code a
->>> bit I understood it is S_memLib_NOT_ENOUGH_MEMORY. I therefore
->>> reduced the Queue size by 5 times and it was then successful.
->>> The way I extracted the errno in beginning days is same as I did
->>> today. So I epxected a value which >>tells the actual reason of
->>> semTake failure. But I got this huge value which is -1.  Am I
->>> missing something ?
-> 
+--0-27775092-1312473313=:46577
+Content-Type: text/plain; charset=us-ascii
 
-The thing is printErrno is a xenomai posix skin function which knows
-S_memlib_NOT_ENOUGH_MEMORY, strerror is an unrelated glibc function, and
-does not.
 
-What you are missing is this comment in ksrc/skins/vxworks/syscall.c
-/*
- * By convention, error codes are passed back through the syscall
- * return value:
- * - negative codes stand for internal (i.e. nucleus) errors;
- * - strictly positive values stand for genuine VxWorks errors.
- * - zero means success.
- *
+> Hi Gilles,
+>
+> The following is some part of the code. It is receiving data at a period of
+> 1 second intervals. The variable "lat" prints similar latency values for
+> the current session, even though I stop the program and start again several
+> times. The latency values change everytime I reboot the PC. Please
+> advise.
 
-Looking at the code, I think after a service returns an error, it may be
-more reliable to use errno than to use errnoOfTaskGet.
-
-> 1 is EPERM. Is the thread issuing the call a thread created by
-> Xenomai?
-> 
->>> Samba: Yes. I guess taskSpawn leads finally to Xenomai libraries
->>> to create thread.  All  our VxWorks code(with minor changes) as
->>> it is running on top of Xenomai. Please tell me,  What will you
->>> suggest me then ?
-
-Trace the kernel code to know the reason for semTake to return -EPERM.
-Another reason documented in txt/vxworks/skin.txt maybe that you are
-calling semTake in a region where the scheduler has been locked (using
-taskLock).
-
-NOTE: it would be nice if you could formats your mails as everybody
-does: quote the mail you reply to by prepending " >" to the beginning of
-the lines you are quoting, and do not put ">" characters in front of the
-lines you add.
+I do not understand:
+- how the "latency" may be 40us while it should be around 1s, if you say
+that the periodic event happens every second;
+- whether you are compiling for the native skin or posix skin, could you
+show us the compilation arguments you pass?
+- on what platform you get this issue?
 
 -- 
-					    Gilles.
+Gilles.
+
+
+
+Hello Gilles,
+
+Sorry for any confusion, here are the responses to your questions:
+
+The
+ "latency" or time elapsed between events recieved on the serial port 
+should ideally be 1 second. However the system will have some
+ latency jitter, therefore I would expect the delay to be 1 second +- 
+some number of microseconds.
+
+Using the attached program running 
+on an x86 system I see a "latency" of 1 second + some variable number of
+ microseconds. Each time I reboot the system the variable number of 
+micro seconds changes anywhere from 40 to 100 microseconds. The total 
+latency is always greater than 1 second.
+
+I know that the pulse 
+generated by the function generator ( Agilent 33220A ) is acurrate to 1 
+microsecond. This unit has also been recently calibrated.
+
+How is 
+this possible? Is it possible that the clock I am using on the x86 
+system to capture timing is faster than the clock used on the function 
+generator?
+
+I am compiling using the POSIX skin. The compilation arguments are:
+
+CFLAGS+= -g $(shell $(XENOCONFIG) --skin=posix --cflags) $(APP_CFLAGS)
+
+LDFLAGS+= $(shell $(XENOCONFIG) --skin=posix --ldflags) $(APP_LDFLAGS)
+ \
+-L$(BUILD_ROOT)/usr/xenomai/lib -lrtdm -lrt
+
+
+The results have been repeated on two different systems:
+
+root@domain.hid# lscpu
+Architecture: i686
+CPU op-mode(s): 32-bit, 64-bit
+CPU(s): 2
+Thread(s) per core: 1
+Core(s) per socket: 2
+CPU socket(s): 1
+Vendor ID: GenuineIntel
+CPU family: 6
+Model: 15
+Stepping: 6
+CPU MHz: 1000.000
+Virtualization: VT-x
+L1d cache: 32K
+L1i cache: 32K
+L2 cache: 4096K
+
+root@domain.hid# lscpu
+Architecture: i686
+CPU op-mode(s): 32-bit
+CPU(s): 2
+Thread(s) per core: 2
+Core(s) per socket: 1
+CPU socket(s): 1
+Vendor ID: GenuineIntel
+CPU family: 6
+Model: 28
+Stepping: 2
+CPU MHz: 1599.820
+Virtualization: VT-x
+L1d cache: 24K
+L1i cache: 32K
+L2 cache: 512K
+
+
+Here is my complete program:
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include
+ <posix/time.h>
+#include <fcntl.h>
+#include <posix/posix.h>
+#include <rtdm/rtserial.h>
+
+
+//******************
+// Global defines
+//******************
+#define DEVICE_NAME "rtser0"
+
+//***********************
+// Global Structures
+//***********************
+struct rtser_config set_config =
+{
+.config_mask = 0xFFFF,
+.baud_rate = 9600,
+.parity = RTSER_DEF_PARITY,
+.data_bits = RTSER_DEF_BITS,
+.stop_bits = RTSER_DEF_STOPB,
+.handshake = RTSER_DEF_HAND,
+.fifo_depth = RTSER_FIFO_DEPTH_8,
+.rx_timeout = RTSER_DEF_TIMEOUT,
+.tx_timeout = RTSER_DEF_TIMEOUT,
+.event_timeout = 6000000000, /* 6 s */
+.timestamp_history = RTSER_RX_TIMESTAMP_HISTORY,
+.event_mask = RTSER_EVENT_MODEMHI,
+};
+
+static int device_fd = -1;
+
+
+//***********************************************************
+//
+// int open_serial_port(void)
+//
+// rt_dev_ioctl returns - Positive
+ value on success,
+// negative error code.
+//
+// rt_dev_open returns - Positive value on success,
+// negative error code
+//
+//***********************************************************
+static int open_serial_port(void)
+{
+int err = 0;
+
+// Open RT Serial Port
+device_fd = rt_dev_open(DEVICE_NAME, 0);
+if (device_fd < 0)
+{
+
+printf("\nopen_serial_port => can't open %s (write), %s\n", DEVICE_NAME,
+strerror(-device_fd));
+return device_fd;
+}
+
+printf("\nopen_serial_port => opened\n");
+
+
+// Setting port config
+err = rt_dev_ioctl(device_fd, RTSER_RTIOC_SET_CONFIG, &set_config);
+if (err < 0)
+{
+printf("open_serial_port => error while RTSER_RTIOC_SET_CONFIG, %s\n",
+strerror(-err));
+return err;
+}
+
+printf("open_serial_port => port config set\n");
+
+return
+ err;
+}
+
+
+
+/************************************************************
+*
+* int get_args(int argc, char *argv[])
+*
+************************************************************/
+int get_args(int argc, char *argv[])
+{
+int c = 0;
+int ok = -1;
+
+while (ok != 0)
+{
+if ( argc == 0 ) 
+{
+printf("usage: %s filename", argv[0]);
+}
+else
+{
+while ((c = getopt (argc, argv, "bd")) != -1)
+{
+switch (c)
+{
+case 'b':
+set_config.baud_rate = atoi(argv[2]);
+printf("get_args => baud_rate set to %d\n", atoi(argv[2]));
+break;
+
+case 'd':
+set_config.data_bits = atoi(argv[4]);
+printf("get_args => data bit set to %d\n", atoi(argv[4]));
+break;
+
+default:
+break;
+}
+}
+
+ok =0;
+}
+}
+return ok;
+}
+
+//***********************************************************
+//
+// void
+ cleanup_all(void)
+//
+//***********************************************************
+static void cleanup_all(void)
+{
+rt_dev_close(device_fd); // close serial port
+printf("cleanup_all => close port and/or cancel pthread\n");
+}
+
+
+//***********************************************************
+//
+// struct timespec calc_time(struct timespec start,
+// struct timespec end)
+//
+//
+//***********************************************************
+struct timespec calc_time(struct timespec start, struct timespec end)
+{
+struct timespec temp;
+
+if ((end.tv_nsec - start.tv_nsec) < 0) {
+temp.tv_sec = end.tv_sec - start.tv_sec - 1;
+temp.tv_nsec = 1000000000 + end.tv_nsec - start.tv_nsec;
+} else {
+temp.tv_sec = end.tv_sec - start.tv_sec;
+temp.tv_nsec = end.tv_nsec - start.tv_nsec;
+}
+return temp;
+}
+
+//***********************************************************
+//
+// int
+ main(void)
+//
+// clock_settime returns - 0 on success, -1 if failed.
+//***********************************************************
+
+int main (int argc, char *argv[])
+{
+int rtn_code = 0;
+struct timespec res;
+int stat = 0;
+int err = 0;
+struct rtser_event rx_event;
+
+struct timespec curr_time;
+struct timespec prev_time;
+struct timespec elapsed_time;
+double lat = 0.0;
+
+// Process arguments from command line
+rtn_code = get_args(argc, argv);
+
+// No memory-swapping for this program
+mlockall(MCL_CURRENT | MCL_FUTURE);
+
+// Open serial port
+rtn_code = open_serial_port();
+if (rtn_code < 0)
+goto error;
+
+stat = clock_getres(CLOCK_MONOTONIC, &res);
+printf("clock resolution => %d %ld\n", (int)res.tv_sec, res.tv_nsec);
+
+rx_event.events = RTSER_EVENT_MODEMHI;
+
+// part of code in main function
+
+while (1)
+{ 
+// waiting for event from the serial
+ driver
+err = rt_dev_ioctl(device_fd, RTSER_RTIOC_WAIT_EVENT, &rx_event);
+if (err < 0)
+{
+printf("serial_recv -> error on RTSER_RTIOC_WAIT_EVENT, %s\n",
+strerror(-err));
+} 
+else if (clock_gettime(CLOCK_MONOTONIC, &curr_time) == -1)
+perror("clock gettinme");
+
+// elapsed time between previous and current message
+elapsed_time = calc_time(prev_time, curr_time);
+
+// Convert to seconds
+lat = elapsed_time.tv_sec + elapsed_time.tv_nsec/1000000000.0;
+
+prev_time = curr_time;
+
+printf("%d", (int)curr_time.tv_sec);
+printf(" %ld", curr_time.tv_nsec);
+printf(" %lf\n", lat);
+}
+
+error:
+cleanup_all();
+return rtn_code;
+
+}
+
+
+Please advise.
+
+Thank you,
+
+Philip Ha
+
+--0-27775092-1312473313=:46577
+Content-Type: text/html; charset=us-ascii
+
+<table cellspacing="0" cellpadding="0" border="0" ><tr><td valign="top" style="font: inherit;"><br>&gt; Hi Gilles,<br>&gt;<br>&gt; The following is some part of the code. It is receiving data at a period of<br>&gt; 1 second intervals. The variable "lat" prints similar latency values for<br>&gt; the current session, even though I stop the program and start again several<br>&gt; times. The latency values change everytime I reboot the PC. Please<br>&gt; advise.<br><br>I do not understand:<br>- how the "latency" may be 40us while it should be around 1s, if you say<br>that the periodic event happens every second;<br>- whether you are compiling for the native skin or posix skin, could you<br>show us the compilation arguments you pass?<br>- on what platform you get this issue?<br><br>-- <br>Gilles.<br><br><br><br>Hello Gilles,<br><br>Sorry for any confusion, here are the responses to your questions:<br><br>The
+ "latency" or time elapsed between events recieved on the serial port 
+should ideally be 1 second. However the system will have some
+ latency jitter, therefore I would expect the delay to be 1 second +- 
+some number of microseconds.<br><br>Using the attached program running 
+on an x86 system I see a "latency" of 1 second + some variable number of
+ microseconds. Each time I reboot the system the variable number of 
+micro seconds changes anywhere from 40 to 100 microseconds. The total 
+latency is always greater than 1 second.<br><br>I know that the pulse 
+generated by the function generator ( Agilent 33220A ) is acurrate to 1 
+microsecond. This unit has also been recently calibrated.<br><br>How is 
+this possible? Is it possible that the clock I am using on the x86 
+system to capture timing is faster than the clock used on the function 
+generator?<br><br>I am compiling using the POSIX skin. The compilation arguments are:<br><br>CFLAGS+= -g $(shell $(XENOCONFIG) --skin=posix --cflags) $(APP_CFLAGS)<br><br>LDFLAGS+= $(shell $(XENOCONFIG) --skin=posix --ldflags) $(APP_LDFLAGS)
+ \<br>-L$(BUILD_ROOT)/usr/xenomai/lib -lrtdm -lrt<br><br><br>The results have been repeated on two different systems:<br><br>root@domain.hid# lscpu<br>Architecture: i686<br>CPU op-mode(s): 32-bit, 64-bit<br>CPU(s): 2<br>Thread(s) per core: 1<br>Core(s) per socket: 2<br>CPU socket(s): 1<br>Vendor ID: GenuineIntel<br>CPU family: 6<br>Model: 15<br>Stepping: 6<br>CPU MHz: 1000.000<br>Virtualization: VT-x<br>L1d cache: 32K<br>L1i cache: 32K<br>L2 cache: 4096K<br><br>root@domain.hid# lscpu<br>Architecture: i686<br>CPU op-mode(s): 32-bit<br>CPU(s): 2<br>Thread(s) per core: 2<br>Core(s) per socket: 1<br>CPU socket(s): 1<br>Vendor ID: GenuineIntel<br>CPU family: 6<br>Model: 28<br>Stepping: 2<br>CPU MHz: 1599.820<br>Virtualization: VT-x<br>L1d cache: 24K<br>L1i cache: 32K<br>L2 cache: 512K<br><br><br>Here is my complete program:<br><br>#include &lt;stdio.h&gt;<br>#include &lt;stdlib.h&gt;<br>#include &lt;string.h&gt;<br>#include
+ &lt;posix/time.h&gt;<br>#include &lt;fcntl.h&gt;<br>#include &lt;posix/posix.h&gt;<br>#include &lt;rtdm/rtserial.h&gt;<br><br><br>//******************<br>// Global defines<br>//******************<br>#define DEVICE_NAME "rtser0"<br><br>//***********************<br>// Global Structures<br>//***********************<br>struct rtser_config set_config =<br>{<br>.config_mask = 0xFFFF,<br>.baud_rate = 9600,<br>.parity = RTSER_DEF_PARITY,<br>.data_bits = RTSER_DEF_BITS,<br>.stop_bits = RTSER_DEF_STOPB,<br>.handshake = RTSER_DEF_HAND,<br>.fifo_depth = RTSER_FIFO_DEPTH_8,<br>.rx_timeout = RTSER_DEF_TIMEOUT,<br>.tx_timeout = RTSER_DEF_TIMEOUT,<br>.event_timeout = 6000000000, /* 6 s */<br>.timestamp_history = RTSER_RX_TIMESTAMP_HISTORY,<br>.event_mask = RTSER_EVENT_MODEMHI,<br>};<br><br>static int device_fd = -1;<br><br><br>//***********************************************************<br>//<br>// int open_serial_port(void)<br>//<br>// rt_dev_ioctl returns - Positive
+ value on success,<br>// negative error code.<br>//<br>// rt_dev_open returns - Positive value on success,<br>// negative error code<br>//<br>//***********************************************************<br>static int open_serial_port(void)<br>{<br>int err = 0;<br><br>// Open RT Serial Port<br>device_fd = rt_dev_open(DEVICE_NAME, 0);<br>if (device_fd &lt; 0)<br>{<br><br>printf("\nopen_serial_port =&gt; can't open %s (write), %s\n", DEVICE_NAME,<br>strerror(-device_fd));<br>return device_fd;<br>}<br><br>printf("\nopen_serial_port =&gt; opened\n");<br><br><br>// Setting port config<br>err = rt_dev_ioctl(device_fd, RTSER_RTIOC_SET_CONFIG, &amp;set_config);<br>if (err &lt; 0)<br>{<br>printf("open_serial_port =&gt; error while RTSER_RTIOC_SET_CONFIG, %s\n",<br>strerror(-err));<br>return err;<br>}<br><br>printf("open_serial_port =&gt; port config set\n");<br><br>return
+ err;<br>}<br><br><br><br>/************************************************************<br>*<br>* int get_args(int argc, char *argv[])<br>*<br>************************************************************/<br>int get_args(int argc, char *argv[])<br>{<br>int c = 0;<br>int ok = -1;<br><br>while (ok != 0)<br>{<br>if ( argc == 0 ) <br>{<br>printf("usage: %s filename", argv[0]);<br>}<br>else<br>{<br>while ((c = getopt (argc, argv, "bd")) != -1)<br>{<br>switch (c)<br>{<br>case 'b':<br>set_config.baud_rate = atoi(argv[2]);<br>printf("get_args =&gt; baud_rate set to %d\n", atoi(argv[2]));<br>break;<br><br>case 'd':<br>set_config.data_bits = atoi(argv[4]);<br>printf("get_args =&gt; data bit set to %d\n", atoi(argv[4]));<br>break;<br><br>default:<br>break;<br>}<br>}<br><br>ok =0;<br>}<br>}<br>return ok;<br>}<br><br>//***********************************************************<br>//<br>// void
+ cleanup_all(void)<br>//<br>//***********************************************************<br>static void cleanup_all(void)<br>{<br>rt_dev_close(device_fd); // close serial port<br>printf("cleanup_all =&gt; close port and/or cancel pthread\n");<br>}<br><br><br>//***********************************************************<br>//<br>// struct timespec calc_time(struct timespec start,<br>// struct timespec end)<br>//<br>//<br>//***********************************************************<br>struct timespec calc_time(struct timespec start, struct timespec end)<br>{<br>struct timespec temp;<br><br>if ((end.tv_nsec - start.tv_nsec) &lt; 0) {<br>temp.tv_sec = end.tv_sec - start.tv_sec - 1;<br>temp.tv_nsec = 1000000000 + end.tv_nsec - start.tv_nsec;<br>} else {<br>temp.tv_sec = end.tv_sec - start.tv_sec;<br>temp.tv_nsec = end.tv_nsec - start.tv_nsec;<br>}<br>return temp;<br>}<br><br>//***********************************************************<br>//<br>// int
+ main(void)<br>//<br>// clock_settime returns - 0 on success, -1 if failed.<br>//***********************************************************<br><br>int main (int argc, char *argv[])<br>{<br>int rtn_code = 0;<br>struct timespec res;<br>int stat = 0;<br>int err = 0;<br>struct rtser_event rx_event;<br><br>struct timespec curr_time;<br>struct timespec prev_time;<br>struct timespec elapsed_time;<br>double lat = 0.0;<br><br>// Process arguments from command line<br>rtn_code = get_args(argc, argv);<br><br>// No memory-swapping for this program<br>mlockall(MCL_CURRENT | MCL_FUTURE);<br><br>// Open serial port<br>rtn_code = open_serial_port();<br>if (rtn_code &lt; 0)<br>goto error;<br><br>stat = clock_getres(CLOCK_MONOTONIC, &amp;res);<br>printf("clock resolution =&gt; %d %ld\n", (int)res.tv_sec, res.tv_nsec);<br><br>rx_event.events = RTSER_EVENT_MODEMHI;<br><br>// part of code in main function<br><br>while (1)<br>{ <br>// waiting for event from the serial
+ driver<br>err = rt_dev_ioctl(device_fd, RTSER_RTIOC_WAIT_EVENT, &amp;rx_event);<br>if (err &lt; 0)<br>{<br>printf("serial_recv -&gt; error on RTSER_RTIOC_WAIT_EVENT, %s\n",<br>strerror(-err));<br>} <br>else if (clock_gettime(CLOCK_MONOTONIC, &amp;curr_time) == -1)<br>perror("clock gettinme");<br><br>// elapsed time between previous and current message<br>elapsed_time = calc_time(prev_time, curr_time);<br><br>// Convert to seconds<br>lat = elapsed_time.tv_sec + elapsed_time.tv_nsec/1000000000.0;<br><br>prev_time = curr_time;<br><br>printf("%d", (int)curr_time.tv_sec);<br>printf(" %ld", curr_time.tv_nsec);<br>printf(" %lf\n", lat);<br>}<br><br>error:<br>cleanup_all();<br>return rtn_code;<br><br>}<br><br><br>Please advise.<br><br>Thank you,<br><br>Philip Ha<br></td></tr></table>
+--0-27775092-1312473313=:46577--
 
