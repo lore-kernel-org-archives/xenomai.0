@@ -1,9 +1,11 @@
-Message-ID: <1312478766.54971.YahooMailClassic@domain.hid>
-Date: Thu, 4 Aug 2011 10:26:06 -0700 (PDT)
-From: Philip Ha <philwman@domain.hid>
-In-Reply-To: <4E3ACB44.7010801@domain.hid>
+Message-ID: <4E3AD80D.9080903@domain.hid>
+Date: Thu, 04 Aug 2011 19:34:05 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; boundary="0-1818406774-1312478766=:54971"
+References: <1312478766.54971.YahooMailClassic@domain.hid>
+In-Reply-To: <1312478766.54971.YahooMailClassic@domain.hid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] clock problem
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -14,33 +16,19 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
-
---0-1818406774-1312478766=:54971
-Content-Type: text/plain; charset=us-ascii
+To: Philip Ha <philwman@domain.hid>
+Cc: xenomai@xenomai.org
 
 
-Please run the latency test under the same load as your test and during
-the same time, and see the latencies it gives you.
+Would it be possible for you to send mails formatted correctly?
+
+Then the bug is somewhere in between the serial line and the test
+application, including possibly in the driver.
+
+In order to know where it is, you should compute the latency at each
+point on this path: when receiving the interrupt, when waking up the
+task, etc...
 
 -- 
-                                            Gilles.
-
-
-Hi Gilles,
-
-Running the latency test with the same load gives "lat worst" < 6 us for a period of 100us. 
-It also shows <6us for a period of 1000000us.
-
-Thanks,
-
-Philip Ha
-
-
-
---0-1818406774-1312478766=:54971
-Content-Type: text/html; charset=us-ascii
-
-<table cellspacing="0" cellpadding="0" border="0" ><tr><td valign="top" style="font: inherit;"><br><pre>Please run the latency test under the same load as your test and during<br>the same time, and see the latencies it gives you.<br><br>-- <br>                                            Gilles.<br><br><br>Hi Gilles,<br><br>Running the latency test with the same load gives "lat worst" &lt; 6 us for a period of 100us. <br>It also shows &lt;6us for a period of 1000000us.<br><br>Thanks,<br><br>Philip Ha<br><br></pre><br></td></tr></table>
---0-1818406774-1312478766=:54971--
+                                                                Gilles.
 
