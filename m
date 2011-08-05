@@ -1,9 +1,20 @@
-Message-ID: <1312486056.62780.YahooMailClassic@domain.hid>
-Date: Thu, 4 Aug 2011 12:27:36 -0700 (PDT)
-From: Philip Ha <philwman@domain.hid>
+From: Sambasiva Rao Manchili <sambasiva.manchili@domain.hid>
+Date: Fri, 5 Aug 2011 08:48:10 +0200
+Message-ID: <509DA52866E38F47878413CF102D751FD420779536@domain.hid>
+References: <509DA52866E38F47878413CF102D751FD4207794F0@domain.hid>
+	<1312370844.2135.10.camel@domain.hid>
+	<509DA52866E38F47878413CF102D751FD4207794F2@domain.hid>
+	<4E394A78.7040408@domain.hid>
+	<509DA52866E38F47878413CF102D751FD4207794F8@domain.hid>
+	<4E395528.5090409@domain.hid>
+	<509DA52866E38F47878413CF102D751FD4207794FA@poseidon.nexus-ag.com>
+	<4E3966ED.1030408@domain.hid>
+In-Reply-To: <4E3966ED.1030408@domain.hid>
+Content-Language: en-US
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: multipart/alternative; boundary="0-2032251139-1312486056=:62780"
-Subject: Re: [Xenomai-help] clock problem
+Subject: Re: [Xenomai-help] Xenomai VxWorks Skin--->semTake
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -13,50 +24,82 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Xenomai-help@domain.hid
-
---0-2032251139-1312486056=:62780
-Content-Type: text/plain; charset=us-ascii
-
-> Would it be possible for you to send mails formatted correctly?
->
-> Then the bug is somewhere in between the serial line and the test
-> application, including possibly in the driver.
->
-> In order to know where it is, you should compute the latency at each
-> point on this path: when receiving the interrupt, when waking up the
-> task, etc...
->
-> -- 
->                                                                Gilles.
-
-
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Antonio Gambin <antonio.gambin@domain.hid>, "Xenomai-help@domain.hid" <Xenomai-help@domain.hid>
 
 Hi Gilles,
+Thank you for hint. Apparently  hint (direction that I may have to look) on=
+ error that I receive -EPREM seems to be promising.
+To give a try I just removed all taskLock but still no luck yet.
+I am trying...
 
-Sorry for the formatting, I am new to mailing lists.
+I have taken your NOTE.
+Thank you.
+Samba.
 
-I have looked at the latency in the 16550A driver. The first thing 
-the driver does in its ISR is to call rtdm_clock_read and store the 
-resulting timestamp in a "struct rtser_event". The code I posted 
-grabs this structure. If I use this as my timestamp I get the exact
-same timing results.
+-----Original Message-----
+From: Gilles Chanteperdrix [mailto:gilles.chanteperdrix@xenomai.org]
+Sent: Wednesday, 03. August, 2011 17:19
+To: Sambasiva Rao Manchili
+Cc: Philippe Gerum; Antonio Gambin; Xenomai-help@domain.hid
+Subject: Re: [Xenomai-help] Xenomai VxWorks Skin--->semTake
 
-It seems like the clock used by rtdm_clock_read is fast. I don't
-see how I could get a delay according to rtdm_clock_read of 
-1000000us between interrupts that I know are being triggered by an 
-event coming in at 1000000 us.
+On 08/03/2011 04:24 PM, Sambasiva Rao Manchili wrote:
+> You want printErrno instead of strerror.
+>
+>>> Samba: In the beginning days of our code porting from VxWorks to
+>>> Linux,  Xenomai failed to create message Queue  that was working on
+>>> VxWorks. When xenomai failed to create message queue it returned
+>>> 0x110001=3D=3D=3D>1114113. After reading the Xenomai code a bit I
+>>> understood it is S_memLib_NOT_ENOUGH_MEMORY. I therefore reduced the
+>>> Queue size by 5 times and it was then successful.
+>>> The way I extracted the errno in beginning days is same as I did
+>>> today. So I epxected a value which >>tells the actual reason of
+>>> semTake failure. But I got this huge value which is -1.  Am I
+>>> missing something ?
+>
 
-Do you have any suggestions on what I can test?
+The thing is printErrno is a xenomai posix skin function which knows S_meml=
+ib_NOT_ENOUGH_MEMORY, strerror is an unrelated glibc function, and does not=
+.
 
-Thanks for all your help.
+What you are missing is this comment in ksrc/skins/vxworks/syscall.c
+/*
+ * By convention, error codes are passed back through the syscall
+ * return value:
+ * - negative codes stand for internal (i.e. nucleus) errors;
+ * - strictly positive values stand for genuine VxWorks errors.
+ * - zero means success.
+ *
 
-Philip Ha
+Looking at the code, I think after a service returns an error, it may be mo=
+re reliable to use errno than to use errnoOfTaskGet.
 
---0-2032251139-1312486056=:62780
-Content-Type: text/html; charset=us-ascii
+> 1 is EPERM. Is the thread issuing the call a thread created by
+> Xenomai?
+>
+>>> Samba: Yes. I guess taskSpawn leads finally to Xenomai libraries to
+>>> create thread.  All  our VxWorks code(with minor changes) as it is
+>>> running on top of Xenomai. Please tell me,  What will you suggest me
+>>> then ?
 
-<table cellspacing="0" cellpadding="0" border="0" ><tr><td valign="top" style="font: inherit;"><pre>&gt; Would it be possible for you to send mails formatted correctly?<br>&gt;<br>&gt; Then the bug is somewhere in between the serial line and the test<br>&gt; application, including possibly in the driver.<br>&gt;<br>&gt; In order to know where it is, you should compute the latency at each<br>&gt; point on this path: when receiving the interrupt, when waking up the<br>&gt; task, etc...<br>&gt;<br>&gt; -- <br>&gt;                                                                Gilles.<br></pre><br><br><br>Hi Gilles,<br><br>Sorry for the formatting, I am new to mailing lists.<br><br>I have looked at the latency in the 16550A driver. The first thing <br>the driver does in its ISR is to call rtdm_clock_read and store the <br>resulting timestamp in a "struct rtser_event". The code I posted <br>grabs this structure. If I use this as my timestamp I get the
- exact<br>same timing results.<br><br>It seems like the clock used by rtdm_clock_read is fast. I don't<br>see how I could get a delay according to rtdm_clock_read of <br>1000000us between interrupts that I know are being triggered by an <br>event coming in at 1000000 us.<br><br>Do you have any suggestions on what I can test?<br><br>Thanks for all your help.<br><br>Philip Ha<br></td></tr></table>
---0-2032251139-1312486056=:62780--
+Trace the kernel code to know the reason for semTake to return -EPERM.
+Another reason documented in txt/vxworks/skin.txt maybe that you are callin=
+g semTake in a region where the scheduler has been locked (using taskLock).
+
+NOTE: it would be nice if you could formats your mails as everybody
+does: quote the mail you reply to by prepending " >" to the beginning of th=
+e lines you are quoting, and do not put ">" characters in front of the line=
+s you add.
+
+--
+                                            Gilles.
+
+
+This email and any attachment may contain confidential information which is=
+ intended for use only by the addressee(s) named above. If you received thi=
+s email by mistake, please notify the sender immediately, and delete the em=
+ail from your system. You are prohibited from copying, disseminating or oth=
+erwise using the email or any attachment.
+
 
