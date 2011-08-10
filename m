@@ -1,12 +1,10 @@
-Message-ID: <4E417900.7040005@domain.hid>
-Date: Tue, 09 Aug 2011 20:14:24 +0200
+Message-ID: <4E42DAFF.10801@domain.hid>
+Date: Wed, 10 Aug 2011 21:24:47 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4E412D63.4080105@domain.hid>
-In-Reply-To: <4E412D63.4080105@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] xenomai-head compile failure
+Subject: [Xenomai-core] mutex torture broken with native skin
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -15,17 +13,16 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Daniele Nicolodi <daniele@domain.hid>
-Cc: xenomai@xenomai.org
+To: Xenomai core <Xenomai-core@domain.hid>
 
-On 08/09/2011 02:51 PM, Daniele Nicolodi wrote:
-> Hello,
-> 
-> I'm compiling xenomai-head on i386 debian/testing. I found that the file
-> src/skins/posix/wrappers.c is missing an include of signal.h for the
-> definition of pthread_kill().
 
-Fixed, thanks.
+Hi,
+
+the mutex-torture-native test is currently broken -head. The regression
+seems to be due to commit 167ad3c5f6d322d8e2cf310e837c3f54056d7ba6
+
+It means that condvars are probably currently broken on -head and it is
+probably better to revert that commit for the time being.
 
 -- 
                                                                 Gilles.
