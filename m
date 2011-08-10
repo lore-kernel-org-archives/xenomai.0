@@ -1,12 +1,9 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <20110809174031.7B1346B2@domain.hid>
-References: <20110809174031.7B1346B2@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Tue, 09 Aug 2011 18:03:55 +0200
-Message-ID: <1312905835.2112.106.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] rt_queue_bind() returns -EACCES
+Message-ID: <1312989511.75315.YahooMailClassic@domain.hid>
+Date: Wed, 10 Aug 2011 08:18:31 -0700 (PDT)
+From: Philip Ha <philwman@domain.hid>
+MIME-Version: 1.0
+Content-Type: multipart/alternative; boundary="0-62630010-1312989511=:75315"
+Subject: Re: [Xenomai-help] clock problem
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -16,34 +13,50 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Petr Cervenka <grugh@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: Xenomai-help@domain.hid
 
-On Tue, 2011-08-09 at 17:40 +0200, Petr Cervenka wrote:
-> Hello everyone.
-> 
-> I'm trying linux kernel 2.6.38.8 together with xenomai 2.5.6.
-> My application tries to reuse already created rt_queue shared between couple of similiar applications.
-> When I try to recreate already existing rt_queue by rt_queue_create i get -EEXIST error (as I expected).
-> But if I try to bind it immediately with rt_queue_bind(&queue, QUEUE_NAME, TM_NONBLOCK) I get -EACCES error.
-> This error code is not in documentation and with the previously used version (kernel 2.6.32.6, xenomai 2.4.10) it was working fine.
-> Do you have any advice or suggestion?
-
--EACCESS is returned in case an attempt is made to use a binding service
-which does not match the target object. E.g. using rt_queue_bind() for
-binding an existing task.
-
-> Thanks in advance.
-> 
-> Petr Cervenka
-> 
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
-
--- 
-Philippe.
+--0-62630010-1312989511=:75315
+Content-Type: text/plain; charset=us-ascii
 
 
+> The question remains: are you sure the UART does not introduce the
+> delay, have you checked the datasheet?
+>
+> -- 
+                                                                Gilles.
+Hi Gilles,
+
+I apologize for the delay in responding the last message.
+
+I measured the latency of the UART by pulsing the DTR pin on the 
+serial port as soon as the ISR is called. Using an oscilloscope 
+I monitored the DSR input signal from the function generator and 
+the DTR signal from the serial port. The time difference between 
+signals was 6-9 us. Therefore the latency of the UART is < 10 us 
+at all times.
+
+As long as the UART latency is consistent the size of it does not
+matter for the test I am performing. An input signal that comes in 
+every 1000000 us should result in the 16550 ISR being called every 
+1000000 us.
+
+The function generator is accurate to 1us, the UART ISR latency 
+jitter is approximately 3 us. Therefore I would not expect to see
+100 us of timing measurement inacurracy using OS time stamps. It 
+is also strange that this timing measurement inaccuracy changes 
+every time the system is rebooted.
+
+Any thoughts? 
+
+
+Thanks,
+
+Philip Ha
+
+--0-62630010-1312989511=:75315
+Content-Type: text/html; charset=us-ascii
+
+<table cellspacing="0" cellpadding="0" border="0" ><tr><td valign="top" style="font: inherit;"><pre><br>&gt; The question remains: are you sure the UART does not introduce the<br>&gt; delay, have you checked the datasheet?<br>&gt;<br>&gt; -- <br>                                                                Gilles.<br></pre>Hi Gilles,<br><br>I apologize for the delay in responding the last message.<br><br>I measured the latency of the UART by pulsing the DTR pin on the <br>serial port as soon as the ISR is called. Using an oscilloscope <br>I monitored the DSR input signal from the function generator and <br>the DTR signal from the serial port. The time difference between <br>signals was 6-9 us. Therefore the latency of the UART is &lt; 10 us <br>at all times.<br><br>As long as the UART latency is consistent the size of it does not<br>matter for the test I am performing. An input signal that comes in <br>every 1000000 us should result in the 16550 ISR
+ being called every <br>1000000 us.<br><br>The function generator is accurate to 1us, the UART ISR latency <br>jitter is approximately 3 us. Therefore I would not expect to see<br>100 us of timing measurement inacurracy using OS time stamps. It <br>is also strange that this timing measurement inaccuracy changes <br>every time the system is rebooted.<br><br>Any thoughts? <br><br><br>Thanks,<br><br>Philip Ha<br></td></tr></table>
+--0-62630010-1312989511=:75315--
 
