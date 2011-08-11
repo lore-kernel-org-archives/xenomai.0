@@ -1,9 +1,15 @@
+Message-ID: <4E4418EE.8000005@domain.hid>
+Date: Thu, 11 Aug 2011 20:01:18 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Date: Wed, 24 Aug 2011 12:51:22 +0200
-Message-ID: <CAL+uwv-D111pO40ZT=ipXU+V1Ss8Fi4L1DfXWj=o+f2UxFubaA@mail.gmail.com>
-From: suresh reddy <sureshreddy.balijepalli@domain.hid>
-Content-Type: multipart/mixed; boundary=bcaec51b9fc3c95f5c04ab3e17e9
-Subject: [Xenomai-help] Hanging
+References: <201108101449.54243.carlosnov@domain.hid>
+	<201108111131.11981.carlosnov@domain.hid>
+	<4E43EE80.8050406@domain.hid>
+	<201108111456.24208.carlosnov@domain.hid>
+In-Reply-To: <201108111456.24208.carlosnov@domain.hid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] Trouble with rtdm timers and events
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -13,128 +19,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Xenomai help <xenomai@xenomai.org>
+To: Carlos Eduardo de Brito Novaes <carlosnov@domain.hid>
+Cc: xenomai@xenomai.org
 
---bcaec51b9fc3c95f5c04ab3e17e9
-Content-Type: multipart/alternative; boundary=bcaec51b9fc3c95f5604ab3e17e7
+On 08/11/2011 07:56 PM, Carlos Eduardo de Brito Novaes wrote:
+> Hello again,
+> 
+> I did what you said, changed the open/close to non real time, removed every 
+> portion of code that is not related with the fault (the read_rt is still there 
+> since is where the problem arrises and also another ioctl to start timer since 
+> the open/close are moved out of real time context). There is also the wait 
+> ioctl to show that the code works when wait is done inside ioctl.
+> The problem persists, but no hangs perceived. Just the application returns too 
+> fast and there is the kernel message on NULL pointer derreference, so I also 
+> tried to recompile with another kernel version, the vanilla 2.6.38-8 from 
+> kernel.org and the adeos patch (on the previous tests I was using the same 
+> with additional ubuntu patches). Even now the app returns imediately after 
+> call read with rtdm_event_wait and there is the same kernel log.
+> I dont think there is any memory corruption due to the module code since there 
+> is no dynamic allocations, little pointer operations mainly related to the 
+> context hadler witch is allocated by xenomai on rtdm_dev_register.
+> I send you the new tarball.
+> 
+> Thanks for your support.
 
---bcaec51b9fc3c95f5604ab3e17e7
-Content-Type: text/plain; charset=ISO-8859-1
+The copy_to_user is still overflowing. And in fact, it is probably the
+cause of the bug you observe, I had not read your example carefully.
 
-Dear all,
-
-Iam trying to communicate two process using message . In one process i
-called a dummy function (doing nothing except printing something for 2000
-times) .
-
-Iam trying to calculate the time elapsed for this process to process
-communication .
-
-1. The program working fine if i print or execute something for once  like
-rt_printf("xenomai"); But if i used
-
-for (i=0; i<2000; i++)
-
-{
-
-rt_printf("xenomai");
-
-}
-
-if i used like this the execution stops after printing for some 100 times or
-so on my Pandaboard.  Please find the attached program.
-
-
-Thanks
-Suresh balijepalli
-Rosenehim,Baveria.
-
---bcaec51b9fc3c95f5604ab3e17e7
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr">Dear all,<div><br></div><div>Iam trying to communicate two=
- process using message . In one process i called a dummy function (doing no=
-thing except printing something for 2000 times) .</div><div><br></div><div>
-Iam trying to calculate the time elapsed for this process to process commun=
-ication .</div><div><br></div><div>1. The program working fine if i print o=
-r execute something for once =A0like rt_printf(&quot;xenomai&quot;); But if=
- i used=A0</div>
-<div><br></div><div>for (i=3D0; i&lt;2000; i++)</div><div><br></div><div>{<=
-/div><div><br></div><div>rt_printf(&quot;xenomai&quot;);</div><div><br></di=
-v><div>}</div><div><br></div><div>if i used like this the execution stops a=
-fter printing for some 100 times or so on my Pandaboard. =A0Please find the=
- attached program.<br clear=3D"all">
-<div><br></div><br>Thanks<br>Suresh balijepalli<br>Rosenehim,Baveria.<br>
-</div></div>
-
---bcaec51b9fc3c95f5604ab3e17e7--
-
---bcaec51b9fc3c95f5c04ab3e17e9
-Content-Type: text/x-csrc; charset=US-ASCII; name="inter1.c"
-Content-Disposition: attachment; filename="inter1.c"
-Content-Transfer-Encoding: base64
-X-Attachment-Id: f_grq6mrk50
-
-I2luY2x1ZGUgPHN0ZGlvLmg+CiNpbmNsdWRlIDxzaWduYWwuaD4KI2luY2x1ZGUgPHVuaXN0ZC5o
-PgojaW5jbHVkZSA8c3lzL21tYW4uaD4KI2luY2x1ZGUgPHN0ZGxpYi5oPgogCiNpbmNsdWRlIDxu
-YXRpdmUvdGFzay5oPgojaW5jbHVkZSA8bmF0aXZlL3RpbWVyLmg+CiNpbmNsdWRlIDxuYXRpdmUv
-c2VtLmg+CiNpbmNsdWRlIDxuYXRpdmUvbXV0ZXguaD4KI2luY2x1ZGUgPG5hdGl2ZS9xdWV1ZS5o
-PgogCiNpbmNsdWRlICA8cnRkay5oPgogCiNkZWZpbmUgTlRBU0tTIDIKIAojZGVmaW5lIFFVRVVF
-X1NJWkUgMjU1CiNkZWZpbmUgTUFYX01FU1NBR0VfTEVOR1RIIDQwCiAKUlRfVEFTSyB0YXNrX3N0
-cnVjdFtOVEFTS1NdOwogCiNkZWZpbmUgUVVFVUVfU0laRSAyNTUKUlRfUVVFVUUgbXlxdWV1ZTsK
-UlRfUVVFVUUgbXlxdWV1ZTE7CmRvdWJsZSB0aW1lZF9kZWxheSA9IDA7CgogaW50IHByb2Nlc3Np
-bmcodm9pZCkKIHsKICAgICBpbnQgaz0wOy8qaz0wLGk9MzAwMDsKICAgICBjaGFyICogYnVmZmVy
-OwogICAgIGNoYXIgYT0nYScgOwogZHVtbXkgb3BlcmF0aW9uKi8KcnRfcHJpbnRmKCJ4ZW5vbWFp
-Iik7CgpyZXR1cm4gazsKfQoKdm9pZCB0YXNrT25lKHZvaWQgKmFyZykKewogICAgaW50IHJldHZh
-bCxyZXR2YWwxLHQxOwogICAgY2hhciBtZXNzYWdlW10gPSAiTWVzc2FnZSBmcm9tIHRhc2tPbmUi
-OwogICAgY2hhciBtc2dCdWYxW01BWF9NRVNTQUdFX0xFTkdUSF07CiAgICBSVElNRSBzdGFydF90
-c2MgPSBydF90aW1lcl90c2MoKTsKICAgIHJ0X3ByaW50Zigic3RhcnRpbmcgdGljczogJS4zZlxu
-IiwKICAgIHJ0X3RpbWVyX3RzYzJucyhzdGFydF90c2MpKjFlLTYpOwogICAgLyogc2VuZCBtZXNz
-YWdlICovCiAgICAKICAgIHJldHZhbCA9IHJ0X3F1ZXVlX3dyaXRlKCZteXF1ZXVlLG1lc3NhZ2Us
-c2l6ZW9mKG1lc3NhZ2UpLFFfTk9STUFMKTsKIAogICAgaWYgKHJldHZhbCA8IDAgKSB7CiAgICAg
-ICBydF9wcmludGYoIlNlbmRpbmcgZXJyb3JcbiIpOwogICAgfSBlbHNlIHsKICAgICAgIHJ0X3By
-aW50ZigidGFza09uZSBzZW50IG1lc3NhZ2UgdG8gbWFpbGJveFxuIik7CiAgICB9IAoKLyogcmVj
-ZWl2ZSBtZXNzYWdlICovCgpyZXR2YWwxID1ydF9xdWV1ZV9yZWFkKCZteXF1ZXVlMSxtc2dCdWYx
-LHNpemVvZihtc2dCdWYxKSxUTV9JTkZJTklURSk7CiAgICBpZiAocmV0dmFsMSA8IDAgKSB7CiAg
-ICAgICAgICBydF9wcmludGYoIlJlY2VpdmluZyBlcnJvclxuIik7CiAgICB9IGVsc2UgewogICAg
-ICAgIHJ0X3ByaW50ZigidGFzazEgcmVjZWl2ZWQgbWVzc2FnZTogJXNcbiIsbXNnQnVmMSk7CiAg
-ICAgICAgcnRfcHJpbnRmKCJ3aXRoIGxlbmd0aCAlZFxuIixyZXR2YWwxKTsKICAgIH0KdDE9cHJv
-Y2Vzc2luZygpOwogICAgcnRfcHJpbnRmKCIlZCIsdDEpOwpSVElNRSB0c2M9cnRfdGltZXJfdHNj
-KCk7CnJ0X3ByaW50ZigiZW5kIHRpY3M6ICUuM2ZcbiIsCnJ0X3RpbWVyX3RzYzJucyh0c2MpKjFl
-LTYpOwovKnJ0X3ByaW50ZigiZW5kIHRpY3M6ICUuM2ZcbiIsCnJ0X3RpbWVyX3RzYzJucyh0c2Mp
-KjFlLTYpOwpydF9wcmludGYoIiB0aW1lIHRha2VuOiAlLjNmXG4iLApydF90aW1lcl9uczJ0c2Mo
-MC41NSkqMWUtNik7Ki8KdGltZWRfZGVsYXkgPSBydF90aW1lcl90c2MybnModHNjLXN0YXJ0X3Rz
-YykqMWUtOTsJCnJ0X3ByaW50ZigiICUuM2YgbXNcbiIsCiB0aW1lZF9kZWxheSAqIDFlMyk7CQp9
-CiAKdm9pZCB0YXNrVHdvKHZvaWQgKmFyZykKewogICAgCiAgICAgaW50IHJldHZhbCxyZXR2YWwx
-OwogICAgIGNoYXIgbXNnQnVmW01BWF9NRVNTQUdFX0xFTkdUSF07CiAgICAgY2hhciBtZXNzYWdl
-MVtdID0gIk1lc3NhZ2UgZnJvbSB0YXNrdHdvIjsKICAgICAKCi8qIHJlY2VpdmUgbWVzc2FnZSAq
-LwogICAgcmV0dmFsID0gcnRfcXVldWVfcmVhZCgmbXlxdWV1ZSxtc2dCdWYsc2l6ZW9mKG1zZ0J1
-ZiksVE1fSU5GSU5JVEUpOwogICAgaWYgKHJldHZhbCA8IDAgKSB7CiAgICAgICAgICBydF9wcmlu
-dGYoIlJlY2VpdmluZyBlcnJvclxuIik7CiAgICB9IGVsc2UgewogICAgICAgIHJ0X3ByaW50Zigi
-dGFza1R3byByZWNlaXZlZCBtZXNzYWdlOiAlc1xuIixtc2dCdWYpOwogICAgICAgIHJ0X3ByaW50
-Zigid2l0aCBsZW5ndGggJWRcbiIscmV0dmFsKTsKICAgIH0gCi8qIHNlbmQgbWVzc2FnZSAqLwog
-ICAgcmV0dmFsMSA9IHJ0X3F1ZXVlX3dyaXRlKCZteXF1ZXVlMSxtZXNzYWdlMSxzaXplb2YobWVz
-c2FnZTEpLFFfTk9STUFMKTsKCiAgICBpZiAocmV0dmFsMSA8IDAgKSB7CiAgICAgICBydF9wcmlu
-dGYoIlNlbmRpbmcgZXJyb3JcbiIpOwogICAgfSBlbHNlIHsKICAgICAgIHJ0X3ByaW50ZigidGFz
-a3R3byBzZW50IG1lc3NhZ2UgdG8gbWFpbGJveFxuIik7CiAgICAgICB9CgogICAgIAp9CiAKLy9z
-dGFydHVwIGNvZGUKdm9pZCBzdGFydHVwKCkKewogIGludCBpLHQxOwogIGNoYXIgIHN0clsxMF0g
-OwogCiAgdm9pZCAoKnRhc2tfZnVuY1tOVEFTS1NdKSAodm9pZCAqYXJnKTsKICB0YXNrX2Z1bmNb
-MF09dGFza09uZTsKICB0YXNrX2Z1bmNbMV09dGFza1R3bzsKIAogIHJ0X3F1ZXVlX2NyZWF0ZSgm
-bXlxdWV1ZSwibXlxdWV1ZSIsUVVFVUVfU0laRSwxMCxRX0ZJRk8pOwogIHJ0X3F1ZXVlX2NyZWF0
-ZSgmbXlxdWV1ZTEsIm15cXVldWUxIixRVUVVRV9TSVpFLDEwLFFfRklGTyk7IAogIHJ0X3RpbWVy
-X3NldF9tb2RlKDApOy8vIHNldCB0aW1lciB0byB0aWNrIGluIG5hbm9zZWNvbmRzIGFuZCBub3Qg
-aW4gamlmZmllcwogIGZvcihpPTA7IGkgPCBOVEFTS1M7IGkrKykgewogICAgcnRfcHJpbnRmKCJz
-dGFydCB0YXNrICA6ICVkXG4iLGkpOwogICAgc3ByaW50ZihzdHIsInRhc2slZCIsaSk7CiAgICBy
-dF90YXNrX2NyZWF0ZSgmdGFza19zdHJ1Y3RbaV0sIHN0ciwgMCwgNTAsIDApOwogICAgcnRfdGFz
-a19zdGFydCgmdGFza19zdHJ1Y3RbaV0sIHRhc2tfZnVuY1tpXSwgJmkpOwogICAgCiAgfQp9CiAK
-dm9pZCBpbml0X3hlbm9tYWkoKSB7CiAgLyogQXZvaWRzIG1lbW9yeSBzd2FwcGluZyBmb3IgdGhp
-cyBwcm9ncmFtICovCiAgbWxvY2thbGwoTUNMX0NVUlJFTlR8TUNMX0ZVVFVSRSk7CiAKICAvKiBQ
-ZXJmb3JtIGF1dG8taW5pdCBvZiBydF9wcmludCBidWZmZXJzIGlmIHRoZSB0YXNrIGRvZXNuJ3Qg
-ZG8gc28gKi8KICBydF9wcmludF9hdXRvX2luaXQoMSk7Cn0KIAppbnQgbWFpbihpbnQgYXJnYywg
-Y2hhciogYXJndltdKQp7CiAgcHJpbnRmKCJcblR5cGUgQ1RSTC1DIHRvIGVuZCB0aGlzIHByb2dy
-YW1cblxuIiApOwogCiAgLy8gY29kZSB0byBzZXQgdGhpbmdzIHRvIHJ1biB4ZW5vbWFpCiAgaW5p
-dF94ZW5vbWFpKCk7CiAKICAvL3N0YXJ0dXAgY29kZQogIHN0YXJ0dXAoKTsKIAogIHBhdXNlKCk7
-Cn0K
---bcaec51b9fc3c95f5c04ab3e17e9--
+-- 
+                                                                Gilles.
 
