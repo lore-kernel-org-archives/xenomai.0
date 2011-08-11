@@ -1,154 +1,214 @@
+From: Carlos Eduardo de Brito Novaes <carlosnov@domain.hid>
+Date: Thu, 11 Aug 2011 19:28:34 -0300
+References: <201108101449.54243.carlosnov@domain.hid>
+	<201108111512.40209.carlosnov@domain.hid>
+	<4E442EB0.7030909@domain.hid>
+In-Reply-To: <4E442EB0.7030909@domain.hid>
 MIME-Version: 1.0
-In-Reply-To: <4E61D028.3000702@domain.hid>
-References: <CAG0ejMHDxOXE-UTuO-iuE-ZcsN2-bLE+tx3ik6G=t_3HrsR0NA@mail.gmail.com>
-	<4E61D028.3000702@domain.hid>
-Date: Sun, 4 Sep 2011 13:10:40 +0800
-Message-ID: <CAG0ejMGVMUTCPWvAHGA+kH94M8v-taeeWbvGanCJ3yU_XmEN5g@domain.hid>
-From: rainbow <lvqq05@domain.hid>
-Content-Type: multipart/alternative; boundary=f46d043894b99d7e2804ac169da0
-Subject: Re: [Xenomai-core] xenomai-core ftrace
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Content-Type: Text/Plain;
+  charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <201108111928.34508.carlosnov@domain.hid>
+Subject: Re: [Xenomai-help] Trouble with rtdm timers and events
+Reply-To: Carlos Eduardo de Brito Novaes <carlosnov@domain.hid>
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: Xenomai-core@domain.hid
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
---f46d043894b99d7e2804ac169da0
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: quoted-printable
+Solved,
+It really was a bug on my code, in the read_rt. I was referring to device=20
+context before get it. Thank you very much for the help, for the code and f=
+or=20
+the time spent. Also, sorry for not being able to catch this stupid bug=20
+before.
 
-Sorry to reply so late, I did a test about install ftrace on xenomai. the
-following is my procedure:
-#git://git.xenomai.org/xenomai-jki.git queues/ftrace
-#git://git.kiszka.org/ipipe-2.6 queues/2.6.35-x86-trace
-#cd queues/ftrace
-#git checkout -b remotes/origin/queues/ftrace
- origin/queues/2.6.35-x86-trace  //change to the ftrace xenomai branch
-#cd ../2.6.35-x86-trace
-#git checkout
--b origin/queues/2.6.35-x86-trace origin/queues/2.6.35-x86-trace
-#cd ../ftrace
-#./scripts/prepare-kernel.sh  --arch=3Di386
---adeos=3Dksrc/arch/x86/patches/adeos-ipipe-2.6.35.9-x86-2.8-04.patch
---linux=3D../2.6.35-x86-trace/
-#cd /2.6.35-x86-trace/
+Thanks
 
-then I compile the kernel but I get the following error message:
-arch/x86/kernel/ipipe.c:851: error: conflicting types for =91update_vsyscal=
-l=92
-include/linux/clocksource.h:316: note: previous declaration of
-=91update_vsyscall=92 was here
-make[2]: *** [arch/x86/kernel/ipipe.o] Error 1
-make[1]: *** [arch/x86/kernel] Error 2
-make: *** [arch/x86] Error 2
-
-I am not sure the reason is that I get the wrong patch or the kernel
-configuration is wrong, Is the procedure above right? Thanks!
-
-2011/9/3 Jan Kiszka <jan.kiszka@domain.hid>
-
-> On 2011-09-03 04:52, rainbow wrote:
-> > hi,all,I want to use ftrace in xenomai-2.5.6,but when I use git://
-> > git.kiszka.org/ipipe.git queues/2.6.35-x86-trace to get the linux
-> > kernel,there is no option about xenomai or ipipe . If I want to patch t=
-he
-> > xenomai patch,there are some problem. How should I use ftrace on
-> > xenomai?Thanks!
->
-> First of all, make sure to read README.INSTALL in the Xenomai tree for
-> the basic installation procedure.
->
-> That git branch above replaces the installation step of picking a
-> vanilla Linux source tree and applying the ipipe patch to it (if there
-> is no ipipe option in the kernel config, you probably haven't check out
-> the right branch yet).
->
-> The next step would be running Xenomai's prepare-kernel.sh, in this case
-> using a Xenomai tree that has the required ftrace patches, see
->
-> http://permalink.gmane.org/gmane.linux.real-time.xenomai.devel/7966
->
-> Jan
->
->
+=2D-
+Carlos Novaes.
 
 
---=20
-Qingquan Lv
-School of Information Science & Engineering , Lanzhou University.
-mail: lvqq05@domain.hid
-Do what you like,
-Enjoy your life.
-
---f46d043894b99d7e2804ac169da0
-Content-Type: text/html; charset=windows-1252
-Content-Transfer-Encoding: quoted-printable
-
-<meta http-equiv=3D"content-type" content=3D"text/html; charset=3Dutf-8">So=
-rry to reply so late, I did a test about install ftrace on xenomai. the fol=
-lowing is my procedure:<div>#git://<a href=3D"http://git.xenomai.org/xenoma=
-i-jki.git">git.xenomai.org/xenomai-jki.git</a> queues/ftrace</div>
-<div>#git://<a href=3D"http://git.kiszka.org/ipipe-2.6">git.kiszka.org/ipip=
-e-2.6</a> queues/2.6.35-x86-trace</div><div>#cd queues/ftrace</div><div>#gi=
-t checkout -b=A0remotes/origin/queues/ftrace =A0 =A0origin/queues/2.6.35-x8=
-6-trace =A0//change to the ftrace xenomai branch</div>
-<div>#cd ../2.6.35-x86-trace</div><div>#git checkout -b=A0origin/queues/2.6=
-.35-x86-trace=A0origin/queues/2.6.35-x86-trace</div><div>#cd ../ftrace</div=
-><div>#./scripts/prepare-kernel.sh =A0--arch=3Di386 --adeos=3Dksrc/arch/x86=
-/patches/adeos-ipipe-2.6.35.9-x86-2.8-04.patch --linux=3D../2.6.35-x86-trac=
-e/</div>
-<div>#cd=A0/2.6.35-x86-trace/=A0</div><div><br></div><div>then I compile th=
-e kernel but I get the following error message:</div><div><div>arch/x86/ker=
-nel/ipipe.c:851: error: conflicting types for =91update_vsyscall=92</div><d=
-iv>include/linux/clocksource.h:316: note: previous declaration of =91update=
-_vsyscall=92 was here</div>
-<div>make[2]: *** [arch/x86/kernel/ipipe.o] Error 1</div><div>make[1]: *** =
-[arch/x86/kernel] Error 2</div><div>make: *** [arch/x86] Error 2</div></div=
-><div><br></div><div>I am not sure the reason is that I get the wrong patch=
- or the kernel configuration is wrong, Is the procedure above right? Thanks=
-!</div>
-<br><div class=3D"gmail_quote">2011/9/3 Jan Kiszka <span dir=3D"ltr">&lt;<a=
- href=3D"mailto:jan.kiszka@domain.hid">jan.kiszka@domain.hid</a>&gt;</span><br><blo=
-ckquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #c=
-cc solid;padding-left:1ex;">
-<div class=3D"im">On 2011-09-03 04:52, rainbow wrote:<br>
-&gt; hi,all,I want to use ftrace in xenomai-2.5.6,but when I use git://<br>
-&gt; <a href=3D"http://git.kiszka.org/ipipe.git" target=3D"_blank">git.kisz=
-ka.org/ipipe.git</a> queues/2.6.35-x86-trace to get the linux<br>
-&gt; kernel,there is no option about xenomai or ipipe . If I want to patch =
-the<br>
-&gt; xenomai patch,there are some problem. How should I use ftrace on<br>
-&gt; xenomai?Thanks!<br>
-<br>
-</div>First of all, make sure to read README.INSTALL in the Xenomai tree fo=
-r<br>
-the basic installation procedure.<br>
-<br>
-That git branch above replaces the installation step of picking a<br>
-vanilla Linux source tree and applying the ipipe patch to it (if there<br>
-is no ipipe option in the kernel config, you probably haven&#39;t check out=
-<br>
-the right branch yet).<br>
-<br>
-The next step would be running Xenomai&#39;s prepare-kernel.sh, in this cas=
-e<br>
-using a Xenomai tree that has the required ftrace patches, see<br>
-<br>
-<a href=3D"http://permalink.gmane.org/gmane.linux.real-time.xenomai.devel/7=
-966" target=3D"_blank">http://permalink.gmane.org/gmane.linux.real-time.xen=
-omai.devel/7966</a><br>
-<font color=3D"#888888"><br>
-Jan<br>
-<br>
-</font></blockquote></div><br><br clear=3D"all"><div><br></div>-- <br>Qingq=
-uan Lv<br>School of Information Science &amp; Engineering , Lanzhou Univers=
-ity.<br>mail: <a href=3D"mailto:lvqq05@domain.hid">lvqq05@domain.hid</a><br>
-Do what you like,<br>Enjoy your life.<br>
-
---f46d043894b99d7e2804ac169da0--
+Em qui 11 ago 2011, =C3=A0s 16:34:08, Gilles Chanteperdrix escreveu:
+> On 08/11/2011 08:12 PM, Carlos Eduardo de Brito Novaes wrote:
+> > I really did not understand why nor even what exactly it means to
+> > overflow the source area, but I forgot to mention that I commented it
+> > out, so the copy_to_user is not being called at all.
+>=20
+> It means that sizeof(sample_number) is 40, and neither the zone you are
+> copying from, neither the zone you are copying to is 40 bytes large
+> (except for the first call to read).
+>=20
+> Also, there is no problem starting a timer in open_nrt and close_nrt
+> handlers.
+>=20
+> So, here is a simple self-contained testcase which does what you are
+> trying to do. And which works. So, I insist, you should really inspect
+> your code carefully, the bugs you have do not seem to come from xenomai.
+>=20
+> Module code:
+> #include <rtdm/rtdm_driver.h>
+>=20
+> struct device_ctx {
+> 	rtdm_event_t event;
+> 	rtdm_timer_t timer;
+> };
+>=20
+> MODULE_LICENSE("GPL");
+> MODULE_AUTHOR("gch");
+>=20
+> static void test_timer(rtdm_timer_t *timer)
+> {
+> 	struct device_ctx *ctx =3D container_of(timer, struct device_ctx, timer);
+>=20
+> 	rtdm_event_pulse(&ctx->event);
+> 	rtdm_timer_start_in_handler(&ctx->timer,
+> 			      rtdm_clock_read_monotonic() + 100000000,
+> 			      0, RTDM_TIMERMODE_ABSOLUTE);
+> }
+>=20
+> static int test_open(struct rtdm_dev_context *context,
+> 		     rtdm_user_info_t *user_info,
+> 		     int oflags)
+> {
+> 	struct device_ctx *ctx =3D (struct device_ctx *)context->dev_private;
+> 	int rc;
+>=20
+> 	rc =3D rtdm_timer_init(&ctx->timer, test_timer, "timer");
+> 	if (rc < 0)
+> 		return rc;
+>=20
+> 	rtdm_event_init(&ctx->event, 0);
+>=20
+> 	rc =3D rtdm_timer_start(&ctx->timer,
+> 			      rtdm_clock_read_monotonic() + 100000000,
+> 			      0, RTDM_TIMERMODE_ABSOLUTE);
+> 	if (rc < 0) {
+> 		rtdm_timer_destroy(&ctx->timer);
+> 		rtdm_event_destroy(&ctx->event);
+> 		return rc;
+> 	}
+>=20
+> 	return 0;
+> }
+>=20
+> static int test_close(struct rtdm_dev_context *context,
+> 		      rtdm_user_info_t *user_info)
+> {
+> 	struct device_ctx *ctx =3D (struct device_ctx *)context->dev_private;
+>=20
+> 	rtdm_timer_destroy(&ctx->timer);
+> 	rtdm_event_destroy(&ctx->event);
+>=20
+> 	return 0;
+> }
+>=20
+> static ssize_t test_read(struct rtdm_dev_context *context,
+> 			 rtdm_user_info_t *user_info, void *buf, size_t size)
+> {
+> 	struct device_ctx *ctx =3D (struct device_ctx *)context->dev_private;
+> 	rtdm_toseq_t to;
+> 	ssize_t rc;
+>=20
+> 	rtdm_toseq_init(&to, 1000000000);
+>=20
+> 	rc =3D rtdm_event_timedwait(&ctx->event, 1000000000, &to);
+> 	printk("rtdm_event_timedwait: %d\n", rc);
+>=20
+> 	return rc;
+> }
+>=20
+> static struct rtdm_device device =3D {
+> 	struct_version: RTDM_DEVICE_STRUCT_VER,
+>=20
+> 	device_flags: RTDM_NAMED_DEVICE,
+> 	context_size: sizeof(struct device_ctx),
+> 	device_name:  "test",
+>=20
+> 	open_rt: NULL,
+> 	open_nrt: test_open,
+>=20
+> 	ops: {
+> 		close_rt: NULL,
+> 		close_nrt: test_close,
+>=20
+> 		ioctl_rt: NULL,
+> 		ioctl_nrt: NULL,
+>=20
+> 		read_rt: test_read,
+> 		read_nrt: NULL,
+>=20
+> 		write_rt: NULL,
+> 		write_nrt: NULL,
+>=20
+> 		recvmsg_rt: NULL,
+> 		recvmsg_nrt: NULL,
+>=20
+> 		sendmsg_rt: NULL,
+> 		sendmsg_nrt: NULL,
+> 	},
+>=20
+> 	device_class: RTDM_CLASS_EXPERIMENTAL,
+> 	device_sub_class: 0,
+> 	profile_version: 1,
+> 	driver_name: "xeno_switchtest",
+> 	driver_version: RTDM_DRIVER_VER(0, 1, 1),
+> 	peripheral_name: "Context Switch Test",
+> 	provider_name: "Gilles Chanteperdrix",
+> 	proc_name: device.device_name,
+> };
+>=20
+> int __init rtdm_test_init(void)
+> {
+> 	return rtdm_dev_register(&device);
+> }
+>=20
+> void rtdm_test_exit(void)
+> {
+> 	rtdm_dev_unregister(&device, 1000);
+> }
+>=20
+> module_init(rtdm_test_init);
+> module_exit(rtdm_test_exit);
+>=20
+> Application code:
+> #include <stdio.h>
+> #include <stdlib.h>
+>=20
+> #include <unistd.h>
+> #include <sys/fcntl.h>
+> #include <sys/mman.h>
+>=20
+> int main(void)
+> {
+> 	int i, rc, fd;
+>=20
+> 	mlockall(MCL_CURRENT | MCL_FUTURE);
+>=20
+> 	fd =3D open("/dev/test", O_RDONLY);
+> 	if (fd < 0) {
+> 		perror("open(rtdm_test)");
+> 		return EXIT_FAILURE;
+> 	}
+>=20
+> 	for (i =3D 0; i < 10; i++) {
+> 		char buf[40];
+>=20
+> 		rc =3D read(fd, buf, sizeof(buf));
+> 		if (rc < 0) {
+> 			perror("read");
+> 			pause();
+> 			return EXIT_FAILURE;
+> 		}
+> 	}
+>=20
+> 	return EXIT_SUCCESS;
+> }
 
