@@ -1,14 +1,12 @@
+Message-ID: <4E4456A1.6090704@domain.hid>
+Date: Fri, 12 Aug 2011 00:24:33 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <1314698841.22036.2.camel@domain.hid>
-References: <CAMk6uB=6aJmndwmU14zu3S9QBH=tFy0xrub7kznUyZBqsTTdiQ@mail.gmail.com>
-	<1314698841.22036.2.camel@domain.hid>
-Date: Tue, 30 Aug 2011 18:59:45 +0800
-Message-ID: <CAMk6uBnQQ54rBk2LZOSwws21EnfXVf2QZE7r66+iJWbcp6HKzw@domain.hid>
-From: realmz6 <realmz6@domain.hid>
+References: <1313097516.90873.YahooMailClassic@domain.hid>
+In-Reply-To: <1313097516.90873.YahooMailClassic@domain.hid>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] [Adeos-main] gpio irq always set to level
- sensitive with Xenomai on Blackfin
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] clock problem
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -18,61 +16,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org, adeos-main@gna.org, uclinux-dist-devel@domain.hid
+To: Philip Ha <philwman@domain.hid>
+Cc: Xenomai-help@domain.hid
 
-Hi Philippe,
+On 08/11/2011 11:18 PM, Philip Ha wrote:
+>> Could you try measuring the jitter in cpu cycles with rdtscll, in
+>> kernel-space? If the inaccuracy persists, check that cpufreq is not
+>> enabled, and that if running on a multicore system, tscs are
+>> synchronized. Apart from that no, no idea.
+>>
+>> -- 
+>>                                            Gilles.
+> 
+> 
+> Hi Gilles,
+> 
+> I measured the interval between input pulses using rdtsc to grab the 
+> cpu cycles. The number of clock cycles between my 1 second input 
+> pulses was quite consistent varying by less than 10,000 cycles. On 
+> my 1600 MHz system that works out to less than 6 us. This value was 
+> consistent between reboots. This indicates to me that the tsc clock 
+> is very stable between reboots.
+> 
+> Looking at /proc/cpuinfo showed that the "cpu MHz" value changes 
+> by a small amount during each reboot. It varies from 1600.131 MHz 
+> to 1599.628 MHz. The difference between 1600 and 1599.628 MHz 
+> accounts exactly for the unexpected latency I described in earlier 
+> emails.
+> 
+> So it would seem that the frequency used for clock time stamps is 
+> reported incorrectly when using my Xenomai build. If I boot the system 
+> with regular Ubuntu, /proc/cpuinfo consistently reports the frequency 
+> as 1600 MHz.
+> 
+> I do not have CPU scaling set. I am running an Atom dual CPU 
+> processor and /proc/cpuinfo shows both processors as having the 
+> same frequency. How can I ensure syncronization of the tscs?
+> 
+> The Xenomai build seems to produce an incorrect cpufreq, any ideas 
+> as to why?
 
-Thanks for your quick response. I have a few questions.
+The cpu frequency is obtained by the linux kernel calibration procedure.
+This same procedure returns the same imprecise results without xenomai.
+Now, something in the distro kernel must change the frequency to a nice
+round value (a good candidate would be the cpufreq module, except that
+the acpi_cpufreq module does not seem to load on my atom).
 
-On Tue, Aug 30, 2011 at 6:07 PM, Philippe Gerum <rpm@xenomai.org> wrote:
-> On Tue, 2011-08-30 at 16:40 +0800, realmz6 wrote:
->> Hi Guys,
->>
->> in adeos patch bfin_set_irq_handler(), this will set irq handle to
->> handle_level_irq even it is a edge gpio irq, is it true?
->>
->> =C2=A0#ifdef CONFIG_IPIPE
->> - =C2=A0 =C2=A0 =C2=A0 _set_irq_handler(irq, handle_level_irq);
->> -#else
->> - =C2=A0 =C2=A0 =C2=A0 struct irq_desc *desc =3D irq_desc + irq;
->> + =C2=A0 =C2=A0 =C2=A0 handle =3D __fixup_irq_handler(desc, handle_level=
-_irq, 0);
->> +#endif
->>
->> should it like the follows, it just fixup original handle and will not
->> always set it to handle_level_irq.
->
-> No, this code is correct Adeos-wise. See there for an explanation, and a
-> pending fix for a related issue:
-> https://mail.gna.org/public/xenomai-help/2011-08/msg00081.html
-why adeos is designed to use handle_level_irq for all interrupts even
-it is a edge interrupt in hardware?
-you means it should be fixed in the ipipe fixup_handler for
-handle_level_irq to deal with a edge interrupt.
-on blackfin edge irq need a ack to clear sticky but level irq needn't,
-if i fixed it in ipipe_ack_level_irq maybe
-the level irq will be broken.
+As a workaround, xenomai proposes kernel parameters to adjust the idea
+of the machine clock/cpu frequency. Try adding the following argument on
+the kernel command line:
 
->
->>
->> #ifdef CONFIG_IPIPE
->> - =C2=A0 =C2=A0 =C2=A0 _set_irq_handler(irq, handle_level_irq);
->> -#else
->> - =C2=A0 =C2=A0 =C2=A0 struct irq_desc *desc =3D irq_desc + irq;
->> + =C2=A0 =C2=A0 =C2=A0 handle =3D __fixup_irq_handler(desc, handle, 0);
->> +#endif
->>
->> -steven
->>
->> _______________________________________________
->> Adeos-main mailing list
->> Adeos-main@domain.hid
->> https://mail.gna.org/listinfo/adeos-main
->
-> --
-> Philippe.
->
->
->
+xeno_hal.clockfreq=1600000000 xeno_hal.cpufreq=1600000000
+
+-- 
+                                                                Gilles.
 
