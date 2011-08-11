@@ -1,11 +1,9 @@
-Message-ID: <4E4D60C9.1020409@domain.hid>
-Date: Thu, 18 Aug 2011 14:58:17 -0400
-From: Andrew Tannenbaum <trb@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-help] odd code for loopback option in
-	/src/utils/can/rtcansend.c
+Date: Thu, 11 Aug 2011 11:01:12 -0400
+Message-ID: <CAJZRki9OROwYG4_mqPdkHPr1f6U7bh8y7qNqfse28aGwHRiujA@mail.gmail.com>
+From: Phil Mitchell <p.mitch@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: [Xenomai-help] Any problems using pci_enable_msi_block on x86
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -17,44 +15,24 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
-In xenomai-2.5.5.2/src/utils/can/rtcansend.c, the code that handles 
-local loopback mode looks like this:
+Hello,
 
-static void print_usage(char *prg)
-{
-...
-             " -L, --loopback=0|1    switch local loopback off or on\n"
-...
-}
+I am writing an RTDM driver for a custom PCI Express card that will
+be used on an x86 system. The driver will be using multiple MSI
+interrupts.
 
-static int loopback=-1;
+I know that MSI is not officially supported but in practice works
+with some caveats ( see posts below ).
 
-         switch (opt) {
-	...
-         case 'L':
-             loopback = strtoul(optarg, NULL, 0);
-             break;
-	...
-	}
+http://www.mail-archive.com/xenomai@xenomai.org
+http://www.mail-archive.com/xenomai@xenomai.org
+http://thread.gmane.org/gmane.linux.real-time.xenomai.users/12135
 
-...
-     if (loopback >= 0) {
-         ret = rt_dev_setsockopt(s, SOL_CAN_RAW, CAN_RAW_LOOPBACK,
-                                 &loopback, sizeof(loopback));
-         if (ret < 0) {
-             fprintf(stderr, "rt_dev_setsockopt: %s\n", strerror(-ret));
-             goto failure;
-         }
-         if (verbose)
-             printf("Using loopback=%d\n", loopback);
-     }
+My question is does anyone know of any problems using
+pci_enable_msi_block to request multiple MSIs? I see a number of
+people have used pci_enable_msi but have not seen any references
+to the block enable on any of the mailing lists.
 
-It looks like the default value for loopback is -1, and if you set it to 
-0 or 1, it turns loopback on, which seems strange.  I don't understand 
-rt_dev_setsockopt() fully, so I'm not sure if it's a bug - I don't know 
-if -1 and 0 and 1 are three separate loopback states, but I think it 
-merits attention.  I think either the code is wrong or the help string 
-and man page are not clear.
-
--Andy
+Thanks,
+Phil
 
