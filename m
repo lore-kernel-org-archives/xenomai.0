@@ -1,12 +1,15 @@
-MIME-Version: 1.0
-In-Reply-To: <CAKvQZ_2rhR2O+anYcVQPOVc7HDk-1HxFYOOngF7cST40EViGmQ@mail.gmail.com>
-References: <CAKvQZ_1pNxqhW_6jXyzEgaq9foymv2UhLKj-1eOu_FvJdDi9rg@domain.hid>
-	<CAKvQZ_2rhR2O+anYcVQPOVc7HDk-1HxFYOOngF7cST40EViGmQ@mail.gmail.com>
-Date: Mon, 15 Aug 2011 11:12:59 +0200
-Message-ID: <CAKvQZ_3uFjPx63q-+Bgx3ru7B=TGFkNUDoEieSaqkPsT+UWHRA@mail.gmail.com>
-From: Willy Lambert <lambert.willy@domain.hid>
-Content-Type: multipart/alternative; boundary=20cf3074d69466b96804aa87ab76
-Subject: Re: [Xenomai-help] Difficulties with xeno_can_isa module
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <1313057016.2133.79.camel@domain.hid>
+References: <20110809174031.7B1346B2@domain.hid>
+	<1312905835.2112.106.camel@domain.hid> <20110811103352.902F5E9E@centrum.cz>
+	<1313053817.2133.71.camel@domain.hid>  <4E43A2BE.4080903@domain.hid>
+	<1313057016.2133.79.camel@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Date: Thu, 11 Aug 2011 12:06:18 +0200
+Message-ID: <1313057178.2133.80.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] rt_queue_bind() returns -EACCES
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -16,158 +19,57 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org, Wolfgang Grandegger <wg@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Petr Cervenka <grugh@domain.hid>, xenomai-help <xenomai@xenomai.org>
 
---20cf3074d69466b96804aa87ab76
-Content-Type: text/plain; charset=ISO-8859-1
+On Thu, 2011-08-11 at 12:03 +0200, Philippe Gerum wrote:
+> On Thu, 2011-08-11 at 11:37 +0200, Gilles Chanteperdrix wrote:
+> > On 08/11/2011 11:10 AM, Philippe Gerum wrote:
+> > > On Thu, 2011-08-11 at 10:33 +0200, Petr Cervenka wrote:
+> > >> Hello.
+> > >>
+> > >> I created a simple examples which describe my problem.
+> > >> It is some kind of server and client.
+> > >> At first run a qserver and then qclient.
+> > >> After that close the qserver and try to run it again.
+> > >> It disallows (in my configuratio) to create the queue because it already exists and also the binding to it fails with error -EACCES.
+> > >> This behavior continues till the qclient is closed. It's perhaps caused by the rt_queue_delete() at the end of qserver.
+> > > 
+> > > That is the intended behavior. When deleted, the queue is maintained
+> > > internally until the last client bound to it exits, which also disallows
+> > > creating another queue with the same name until the latter event
+> > > happens.
+> > > 
+> > > However, deleting the queue also makes it unreachable for further
+> > > bindings, until it is completely dismantled after the last client exits.
+> > > At which point you may re-create a queue with the same name and bind to
+> > > it. Logically speaking, that deleted queue does not exist anymore,
+> > > except for the currently bound client(s), for consistency reasons.
+> > 
+> > Maybe we could return -EIDRM instead of -EEXIST when in this case?
+> > 
+> 
+> Not sure. EIDRM is conventionally about telling the caller that some
+> previously valid identifier has been revoked while the operation was
+> ongoing, which does not match the case of trying to establish a fresh
+> binding to a zombie object.
 
-2011/8/14 Willy Lambert <lambert.willy@domain.hid>
+Or trying to create a new object, the same way.
 
->
->
-> 2011/8/14 Willy Lambert <lambert.willy@domain.hid>
->
->> Hi all,
->>
->> I was using sja1000_isa module on a PC 104 CPU+CAN stack under a normal
->> linux. For some reasons I would like to use xenomai instead of linux, so I
->> tried to switch from sja1000_isa to xeno_can_isa to have the equivalent rtdm
->> driver.
->>
->> The command line I used before was :
->> modprobe sja1000_isa irq=10,10 mem=0xD0000,0xD0200 ocr=0x5e,0x5e cdr=0,0
->> So I was accessing it via iomem.
->>
->> I had a quick look at xeno_can_isa, but it only support ioport access. I
->> think my board doesn't support this (
->> http://www.ixxat.com/pc_i_04_104_en.html for details), but I must admit
->> this mem vs port access are not very clear to me.
->>
->> Does this mean that I have no chance to find a rt driver for my isa board
->> ?
->> If so, Is it conceivable to extend the current driver ? (knowing that I am
->> really not at ease with this low level developement)
->> Do I a trick to use port instead of mem for my hardware ?
->>
->>
->>
-> From  "Wolfgang Grandegger" <wg@domain.hid> in private (my fault, I
-> contacted him in private first) :
->
->
-> I'm still puzzled what you intend to do. If you want to use
-> RT-Socket-CAN for your hardware (using mem= with Linux), then you should
-> use the driver xeno_can_mem with the same parameters:
->
->  insmod xeno_can_mem.ko irq=10,10 mem=0xD0000,0xD0200 ocr=0x5e,0x5e
->
-> The xeno_can_isa.ko is only for I/O port accesses.
->
-> Yes, that's it ! I'll try this. It's just that I could not find my way in
-> the middle of all xeno drivers and choosed isa because it's an ISA bus.
->
->
-It works now, I receive some messages from my hardware :
-root@domain.hid# rtcanrecv
-#0: (2) <0x085> [8] 00 30 01 c0 00 00 00 00
-#1: (2) <0x085> [8] 00 30 01 fe 00 00 00 00
-#2: (2) <0x085> [8] 00 30 01 ff 00 00 00 00
-#3: (2) <0x085> [8] 00 30 01 ff 00 00 00 00
-#4: (2) <0x733> [1] 00
-#5: (2) <0x732> [1] 00
-#6: (2) <0x705> [1] 00
-#7: (2) <0x085> [8] 00 30 01 00 00 00 00 00
+>  In the first case, we did have a valid
+> object on entry, in the second one, that object has never been valid
+> from the caller's standpoint.
+> 
+> I'm unsure that returning EIDRM would be trivial to implement anyway. We
+> would have to make the registry layer aware of the "magic" tags used by
+> the upstream interfaces, so that it could check atomically EIDRM vs
+> EEXIST when failing to hash the object key. Granted, we could move this
+> magic into the xnobject struct directly though and get rid of it
+> elsewhere. Some work ahead in such a case.
+> 
+
+-- 
+Philippe.
 
 
-
-I still have some questions :
-_ is it a way that my rtcan0 and rtcan1 interfaces shows up in "ifconfig"
-(it used to do it with sja1000_isa)
-_ is normal that /proc/interrupts doesn't shows my interrupt ? (it used to
-do it with sja1000_isa)
-
---20cf3074d69466b96804aa87ab76
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-
-<br><br><div class=3D"gmail_quote">2011/8/14 Willy Lambert <span dir=3D"ltr=
-">&lt;<a href=3D"mailto:lambert.willy@domain.hid">lambert.willy@domain.hid</a=
->&gt;</span><br><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8e=
-x;border-left:1px #ccc solid;padding-left:1ex;">
-<br><br><div class=3D"gmail_quote"><div><div></div><div class=3D"h5">2011/8=
-/14 Willy Lambert <span dir=3D"ltr">&lt;<a href=3D"mailto:lambert.willy@domain.hid=
-il.com" target=3D"_blank">lambert.willy@domain.hid</a>&gt;</span><br><blockq=
-uote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc =
-solid;padding-left:1ex">
-
-Hi all,<br><br>I was using sja1000_isa module on a PC 104 CPU+CAN stack und=
-er a normal linux. For some reasons I would like to use xenomai instead of =
-linux, so I tried to switch from sja1000_isa to xeno_can_isa to have the eq=
-uivalent rtdm driver.<br>
-
-
-<br>The command line I used before was :<br>modprobe sja1000_isa irq=3D10,1=
-0 mem=3D0xD0000,0xD0200 ocr=3D0x5e,0x5e cdr=3D0,0<br>So I was accessing it =
-via iomem.<br><br>I had a quick look at xeno_can_isa, but it only support i=
-oport access. I think my board doesn&#39;t support this (<a href=3D"http://=
-www.ixxat.com/pc_i_04_104_en.html" target=3D"_blank">http://www.ixxat.com/p=
-c_i_04_104_en.html</a> for details), but I must admit this mem vs port acce=
-ss are not very clear to me. <br>
-
-
-<br>Does this mean that I have no chance to find a rt driver for my isa boa=
-rd ?<br>If so, Is it conceivable to extend the current driver ? (knowing th=
-at I am really not at ease with this low level developement)<br>Do I a tric=
-k to use port instead of mem for my hardware ?<br>
-
-
-<br><br></blockquote></div></div><div><br>From=A0 &quot;Wolfgang Grandegger=
-&quot; &lt;<a href=3D"mailto:wg@domain.hid" target=3D"_blank">wg@domain.hid=
-gger.com</a>&gt; in private (my fault, I contacted him in private first) :<=
-br>
-<br><br><div style=3D"margin-left:40px">
-
-
-I&#39;m still puzzled what you intend to do. If you want to use<br>
-
-RT-Socket-CAN for your hardware (using mem=3D with Linux), then you should<=
-br>
-
-use the driver xeno_can_mem with the same parameters:<br>
-
-<br>
-
- =A0insmod xeno_can_mem.ko irq=3D10,10 mem=3D0xD0000,0xD0200 ocr=3D0x5e,0x5=
-e<br>
-
-<br>
-
-The xeno_can_isa.ko is only for I/O port accesses. <br></div></div></div><b=
-r>Yes, that&#39;s it ! I&#39;ll try this. It&#39;s just that I could not fi=
-nd my way in the middle of all xeno drivers and choosed isa because it&#39;=
-s an ISA bus.<br>
-
-<br><div style=3D"padding:0px;margin-left:0px;margin-top:0px;overflow:hidde=
-n;word-wrap:break-word;color:black;font-size:10px;text-align:left;line-heig=
-ht:130%">
-</div>
-</blockquote></div><br>It works now, I receive some messages from my hardwa=
-re :<br>root@domain.hid# rtcanrecv <br>#0: (2) &lt;0x085&gt; [8] 00 3=
-0 01 c0 00 00 00 00<br>#1: (2) &lt;0x085&gt; [8] 00 30 01 fe 00 00 00 00<br=
->
-#2: (2) &lt;0x085&gt; [8] 00 30 01 ff 00 00 00 00<br>#3: (2) &lt;0x085&gt; =
-[8] 00 30 01 ff 00 00 00 00<br>#4: (2) &lt;0x733&gt; [1] 00<br>#5: (2) &lt;=
-0x732&gt; [1] 00<br>#6: (2) &lt;0x705&gt; [1] 00<br>#7: (2) &lt;0x085&gt; [=
-8] 00 30 01 00 00 00 00 00<br>
-<br><br>=A0<br>I still have some questions :<br>_ is it a way that my rtcan=
-0 and rtcan1 interfaces shows up in &quot;ifconfig&quot; (it used to do it =
-with sja1000_isa)<br>_ is normal that /proc/interrupts doesn&#39;t shows my=
- interrupt ? (it used to do it with sja1000_isa)<br>
-<br><div style=3D"visibility: hidden; left: -5000px; position: absolute; z-=
-index: 9999; padding: 0px; margin-left: 0px; margin-top: 0px; overflow: hid=
-den; word-wrap: break-word; color: black; font-size: 10px; text-align: left=
-; line-height: 130%;" id=3D"avg_ls_inline_popup">
-</div>
-
---20cf3074d69466b96804aa87ab76--
 
