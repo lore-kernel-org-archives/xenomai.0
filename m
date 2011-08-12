@@ -1,99 +1,147 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <4E66779C.1090505@domain.hid>
-References: <4E63E503.8090206@domain.hid> <4E66049D.6000105@domain.hid>
-	<1315315628.20820.48.camel@domain.hid>	<4E662BD6.9080205@domain.hid>
-	<1315320786.20820.53.camel@domain.hid>	<1315320835.20820.54.camel@domain.hid>
-	<1315321820.20820.62.camel@domain.hid> <4E66643B.7050402@domain.hid>
-	<4E66779C.1090505@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Tue, 06 Sep 2011 22:52:46 +0200
-Message-ID: <1315342366.20820.75.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [Xenomai-help] Xenomai 2.6.0-rc1
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+MIME-Version: 1.0
+Date: Fri, 12 Aug 2011 12:33:21 +0200
+Message-ID: <CAKvQZ_201P0vHGH0QFyGGqmOHFugbEfcZ=-vspNJU+F9Z+1dqw@domain.hid>
+From: Willy Lambert <lambert.willy@domain.hid>
+Content-Type: multipart/alternative; boundary=000e0cd5f4aa45e7bd04aa4c714f
+Subject: [Xenomai-help] depracated use case of xeno-config, how to update ?
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai core <Xenomai-core@domain.hid>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: xenomai@xenomai.org, canfestival-devel@domain.hid
 
-On Tue, 2011-09-06 at 21:42 +0200, Gilles Chanteperdrix wrote:
-> On 09/06/2011 08:19 PM, Gilles Chanteperdrix wrote:
-> > On 09/06/2011 05:10 PM, Philippe Gerum wrote:
-> >> On Tue, 2011-09-06 at 16:53 +0200, Philippe Gerum wrote:
-> >>> On Tue, 2011-09-06 at 16:53 +0200, Philippe Gerum wrote:
-> >>>> On Tue, 2011-09-06 at 16:19 +0200, Gilles Chanteperdrix wrote:
-> >>>>> On 09/06/2011 03:27 PM, Philippe Gerum wrote:
-> >>>>>> On Tue, 2011-09-06 at 13:31 +0200, Gilles Chanteperdrix wrote:
-> >>>>>>> On 09/04/2011 10:52 PM, Gilles Chanteperdrix wrote:
-> >>>>>>>>
-> >>>>>>>> Hi,
-> >>>>>>>>
-> >>>>>>>> The first release candidate for the 2.6.0 version may be downloaded here:
-> >>>>>>>>
-> >>>>>>>> http://download.gna.org/xenomai/testing/xenomai-2.6.0-rc1.tar.bz2
-> >>>>>>>
-> >>>>>>> Hi,
-> >>>>>>>
-> >>>>>>> currently 2.6.0-rc1 fails to build on 2.4 kernel, with errors related to
-> >>>>>>> vfile support. Do we really want to still support 2.4 kernels?
-> >>>>>>>
-> >>>>>>
-> >>>>>> That would not be a massive loss, but removing linux 2.4 support is more
-> >>>>>> than a few hunks here and there, so this may not be the right thing to
-> >>>>>> do ATM. Besides, it would be better not to leave the few linux 2.4 users
-> >>>>>> out there without upgrade path to xenomai 2.6, since this will be the
-> >>>>>> last maintained version from the Xenomai 2.x architecture.
-> >>>>>>
-> >>>>>> That stuff does not compile likely because the Config.in bits are not up
-> >>>>>> to date, blame it on me. I'll make this build over linux 2.4 and commit
-> >>>>>> the result today.
-> >>>>>>
-> >>>>>
-> >>>>> No problem, I was not looking for someone to blame... Since you are at
-> >>>>> it, I have problems compiling the nios2 kernel too, but I am not sure I
-> >>>>> got the proper configuration file.
-> >>>>>
-> >>>>
-> >>>> HEAD builds fine based on the attached .config. 
-> >>>>
-> >>
-> >> Btw we now only support the MMU version (2.6.35.2) of this kernel over
-> >> Xenomai 2.6. Reference tree is available there:
-> >>
-> >> url = git://sopc.et.ntust.edu.tw/git/linux-2.6.git
-> >> branch = nios2mmu
-> >>
-> >> nommu support is discontinued for nios2 - people who depend on it should
-> >> stick with Xenomai 2.5.x.
-> >>
-> > 
-> > Ok, still not building, maybe the commit number mentioned in the README
-> > is not up-to-date?
-> > 
-> 
-> More build failures for kernel 3.0 and ppc...
-> 
-> http://sisyphus.hd.free.fr/~gilles/bx/index.html#powerpc
-> 
+--000e0cd5f4aa45e7bd04aa4c714f
+Content-Type: text/plain; charset=ISO-8859-1
 
-I've fixed most of these, however the platform driver interface changed
-once again circa 2.6.39, and AFAICT, picking the right approach to cope
-with this never ending mess for the mscan driver requires some thoughts
-from educated people. Since I don't qualify for the job, I'm shamelessly
-passing the buck to Wolfgang:
-http://sisyphus.hd.free.fr/~gilles/bx/lite5200/3.0.4-ppc_6xx-gcc-4.2.2/log.html#1
+Hi all,
 
-PS: I guess this fix can wait until 2.6.0 final, this is not critical
-for -rc2.
+I am running a 2.5.6 xenomai version (under a 2.5.32.7 Debian squeeze 64b
+linux). I used to have a can driven by CanFestival which is supported for
+both linux and xenomai. I had no problem with linux and i am now trying to
+use it with xenomai. The point is that the configuration of makefile uses
+old xeno-config commands that shows depracated use cases like :
+xeno-config  --xeno-ldflags
+--xeno-ldflags is deprecated, use --skin=name --ldflags instead
 
--- 
-Philippe.
+Here is the old code FYI :
+    RT_LIB_DIR=`$XENO_CONFIG --library-dir`\ -Wl,-rpath\ `$XENO_CONFIG
+--library-dir`
+    SUB_EXE_CFLAGS=$SUB_EXE_CFLAGS\ `$XENO_CONFIG --xeno-ldflags`\
+-L$RT_LIB_DIR\ -lnative\ -lrtdm
+    SUB_PROG_CFLAGS=$SUB_PROG_CFLAGS\ -DUSE_XENO\ `$XENO_CONFIG
+--xeno-cflags`
+
+which ended in :
+SUB_EXE_CFLAGS=... -L/usr/lib -lxenomai -lpthread -L/usr/lib -Wl,-rpath
+/usr/lib -lnative -lrtdm
+SUB_PROG_CFLAGS= ... -DUSE_XENO -I/usr/include/xenomai -D_GNU_SOURCE
+-D_REENTRANT -Wall -pipe -D__XENO__
+Note : I don't really know if those where correct for previous versions this
+xenomai case may be nroken.
+
+Now, as xeno-config depracated messages suggest I should not use "
+$XENO_CONFIG --xeno-ldflags" but "$XENO_CONFIG --skin=native --ldflags"
+without adding -lnative.
+My problem is that I have both -lnative and -lrtdm so I wonder why skin is
+only accepting one at a time.
+Is it forbidden now to do such mixes ?
+Did CanFestival code should be separated into 2 pieces one with skin=native
+the other with skin=rtdm ?
+Should I only add -lrtdm "brutally"
 
 
+BTW, the helper message of xeno-config is not very clear, it seems it is
+printed twice , one with an old message, and one with a new :
+xeno-config --verbose
+        --version="2.5.6"
+        --cc="gcc"
+        --arch="x86"
+        --prefix="/usr"
+        --xeno-cflags="-I/usr/include/xenomai -D_GNU_SOURCE -D_REENTRANT
+-Wall -pipe -D__XENO__"
+        --xeno-ldflags="-L/usr/lib -lxenomai -lpthread "
+        --posix-cflags=""
+        --posix-ldflags="-Wl,@/usr/lib/posix.wrappers -L/usr/lib
+-lpthread_rt -lxenomai -lpthread -lrt "
+        --library-dir="/usr/lib"
+Usage xeno-config --skin=skinname OPTIONS
+Options :
+    --help
+    --v,--verbose
+    --version
+    --cc
+    --arch
+    --prefix
+    --skin native|posix|psos|rtai|rtdm|uitron|vrtx|vxworks
+    --cflags
+    --ldflags
+    --lib*-dir,--libdir,--user-libdir
+
+Deprecated options:
+    --xeno-cflags
+    --xeno-ldflags
+    --posix-cflags
+    --posix-ldflags
+
+--000e0cd5f4aa45e7bd04aa4c714f
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+Hi all,<br><br>I am running a 2.5.6 xenomai version (under a 2.5.32.7 Debia=
+n squeeze 64b linux). I used to have a can driven by CanFestival which is s=
+upported for both linux and xenomai. I had no problem with linux and i am n=
+ow trying to use it with xenomai. The point is that the configuration of ma=
+kefile uses old xeno-config commands that shows depracated use cases like :=
+<br>
+xeno-config=A0 --xeno-ldflags<br>--xeno-ldflags is deprecated, use --skin=
+=3Dname --ldflags instead<br><br>Here is the old code FYI : <br>=A0=A0=A0 R=
+T_LIB_DIR=3D`$XENO_CONFIG --library-dir`\ -Wl,-rpath\ `$XENO_CONFIG --libra=
+ry-dir`<br>
+=A0=A0=A0 SUB_EXE_CFLAGS=3D$SUB_EXE_CFLAGS\ `$XENO_CONFIG --xeno-ldflags`\ =
+-L$RT_LIB_DIR\ -lnative\ -lrtdm<br>=A0=A0=A0 SUB_PROG_CFLAGS=3D$SUB_PROG_CF=
+LAGS\ -DUSE_XENO\ `$XENO_CONFIG --xeno-cflags`<br><br>which ended in :<br>S=
+UB_EXE_CFLAGS=3D... -L/usr/lib -lxenomai -lpthread -L/usr/lib -Wl,-rpath /u=
+sr/lib -lnative -lrtdm<br>
+SUB_PROG_CFLAGS=3D ... -DUSE_XENO -I/usr/include/xenomai -D_GNU_SOURCE -D_R=
+EENTRANT -Wall -pipe -D__XENO__<br>Note : I don&#39;t really know if those =
+where correct for previous versions this xenomai case may be nroken.<br><br=
+>
+Now, as xeno-config depracated messages suggest I should not use &quot; $XE=
+NO_CONFIG --xeno-ldflags&quot; but &quot;$XENO_CONFIG --skin=3Dnative --ldf=
+lags&quot; without adding -lnative.<br>My problem is that I have both -lnat=
+ive and -lrtdm so I wonder why skin is only accepting one at a time.<br>
+Is it forbidden now to do such mixes ?<br>Did CanFestival code should be se=
+parated into 2 pieces one with skin=3Dnative the other with skin=3Drtdm ?<b=
+r>Should I only add -lrtdm &quot;brutally&quot;<br><br><br>BTW, the helper =
+message of xeno-config is not very clear, it seems it is printed twice , on=
+e with an old message, and one with a new :<br>
+xeno-config --verbose<br>=A0=A0=A0=A0=A0=A0=A0 --version=3D&quot;2.5.6&quot=
+;<br>=A0=A0=A0=A0=A0=A0=A0 --cc=3D&quot;gcc&quot;<br>=A0=A0=A0=A0=A0=A0=A0 =
+--arch=3D&quot;x86&quot;<br>=A0=A0=A0=A0=A0=A0=A0 --prefix=3D&quot;/usr&quo=
+t;<br>=A0=A0=A0=A0=A0=A0=A0 --xeno-cflags=3D&quot;-I/usr/include/xenomai -D=
+_GNU_SOURCE -D_REENTRANT -Wall -pipe -D__XENO__&quot;<br>
+=A0=A0=A0=A0=A0=A0=A0 --xeno-ldflags=3D&quot;-L/usr/lib -lxenomai -lpthread=
+ &quot;<br>=A0=A0=A0=A0=A0=A0=A0 --posix-cflags=3D&quot;&quot;<br>=A0=A0=A0=
+=A0=A0=A0=A0 --posix-ldflags=3D&quot;-Wl,@/usr/lib/posix.wrappers -L/usr/li=
+b -lpthread_rt -lxenomai -lpthread -lrt &quot;<br>
+=A0=A0=A0=A0=A0=A0=A0 --library-dir=3D&quot;/usr/lib&quot;<br>Usage xeno-co=
+nfig --skin=3Dskinname OPTIONS<br>Options :<br>=A0=A0=A0 --help<br>=A0=A0=
+=A0 --v,--verbose<br>=A0=A0=A0 --version<br>=A0=A0=A0 --cc<br>=A0=A0=A0 --a=
+rch<br>=A0=A0=A0 --prefix<br>=A0=A0=A0 --skin native|posix|psos|rtai|rtdm|u=
+itron|vrtx|vxworks<br>
+=A0=A0=A0 --cflags<br>=A0=A0=A0 --ldflags<br>=A0=A0=A0 --lib*-dir,--libdir,=
+--user-libdir<br><br>Deprecated options:<br>=A0=A0=A0 --xeno-cflags<br>=A0=
+=A0=A0 --xeno-ldflags<br>=A0=A0=A0 --posix-cflags<br>=A0=A0=A0 --posix-ldfl=
+ags<br><div style=3D"visibility: hidden; left: -5000px; position: absolute;=
+ z-index: 9999; padding: 0px; margin-left: 0px; margin-top: 0px; overflow: =
+hidden; word-wrap: break-word; color: black; font-size: 10px; text-align: l=
+eft; line-height: 130%;" id=3D"avg_ls_inline_popup">
+</div>
+
+--000e0cd5f4aa45e7bd04aa4c714f--
 
