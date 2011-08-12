@@ -1,13 +1,16 @@
-Message-ID: <4E44E269.3030900@domain.hid>
-Date: Fri, 12 Aug 2011 10:20:57 +0200
-From: Roland Stigge <stigge@domain.hid>
-MIME-Version: 1.0
-References: <4E43B5FE.4040402@domain.hid>	<4E43B7E8.5000302@domain.hid>	<4E43C056.9040007@domain.hid>	<4E43EBC6.10808@domain.hid>	<4E440FAC.5020107@domain.hid>	<4E4411DB.80009@domain.hid>
+Message-ID: <d4a823590734a81ec4ef71cf6c26ef69.squirrel@domain.hid>
+In-Reply-To: <4E44E1C2.50800@domain.hid>
+References: <4E43B5FE.4040402@domain.hid> <4E43B7E8.5000302@domain.hid>
+	<4E43C056.9040007@domain.hid> <4E43EBC6.10808@domain.hid>
+	<4E440FAC.5020107@domain.hid> <4E4411DB.80009@domain.hid>
 	<4E444102.10206@domain.hid> <4E446345.9060705@domain.hid>
-In-Reply-To: <4E446345.9060705@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] Bug#637425:  gcc-4.6 issue
+	<4E44E1C2.50800@domain.hid>
+Date: Fri, 12 Aug 2011 10:46:51 +0200 (CEST)
+From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+Content-Type: text/plain;charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai-core] gcc-4.6 issue
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -16,25 +19,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: 637425@domain.hid
+To: Daniele Nicolodi <daniele@domain.hid>
 Cc: xenomai@xenomai.org
 
-Hi,
 
-On 08/12/2011 01:18 AM, Gilles Chanteperdrix wrote:
-> The following patch seems to do the trick. It makes the assumption that 
-> when compiling with -fomit-frame-pointer, we have one more register, so
-> the "R" constraint will always be able to avoid choosing eax, and eax 
-> will be free for the muxcode, so that the compiler will not choose the 
-> "m" alternative.
+Daniele Nicolodi wrote:
+> On 12/08/11 01:18, Gilles Chanteperdrix wrote:
+>> The following patch seems to do the trick. It makes the assumption that
+>> when compiling with -fomit-frame-pointer, we have one more register, so
+>> the "R" constraint will always be able to avoid choosing eax, and eax
+>> will be free for the muxcode, so that the compiler will not choose the
+>> "m" alternative.
+>
+> It works, indeed. Thank you Gilles.
+>
+> May this patch be backported to the stable branch?
 
-Thanks for the update!
+I do not think so, simply compile with -fno-omit-frame-pointer.
 
-I can confirm that both the patch for xenomai-head and
--fno-omit-frame-pointer fix the problem.
+-- 
+                    Gilles.
 
-For Debian's xenomai 2.5.6, I will just use -fno-omit-frame-pointer for now.
-
-bye,
-  Roland
 
