@@ -1,70 +1,43 @@
+Message-ID: <0418d479ba74e1d8c47f00d4477f82f2.squirrel@domain.hid>
+In-Reply-To: <CAKvQZ_201P0vHGH0QFyGGqmOHFugbEfcZ=-vspNJU+F9Z+1dqw@domain.hid>
+References: <CAKvQZ_201P0vHGH0QFyGGqmOHFugbEfcZ=-vspNJU+F9Z+1dqw@domain.hid>
+Date: Fri, 12 Aug 2011 13:32:22 +0200 (CEST)
+From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <4E65075C.4060502@domain.hid>
-References: <4E63E503.8090206@domain.hid>
-	<CANKLDmvQ-q6nBXSRWs_R4RC_c7kmzM0tMmFbCBw59cbyPdSyzA@mail.gmail.com>
-	<4E65075C.4060502@domain.hid>
-Date: Thu, 8 Sep 2011 11:10:54 +0200
-Message-ID: <CANKLDmtTucpa8sCFY7dPV_-ebRx1B_Ea9pde=217N33MX9q8Pg@domain.hid>
-From: Henri Roosen <henriroosen@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-core] [Xenomai-help] Xenomai 2.6.0-rc1
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Content-Type: text/plain;charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai-help] depracated use case of xeno-config,
+ how to update ?
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai help <xenomai@xenomai.org>, Xenomai core <Xenomai-core@domain.hid>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Willy Lambert <lambert.willy@domain.hid>
+Cc: xenomai@xenomai.org, canfestival-devel@domain.hid
 
-On Mon, Sep 5, 2011 at 7:31 PM, Gilles Chanteperdrix
-<gilles.chanteperdrix@xenomai.org> wrote:
-> On 09/05/2011 07:14 PM, Henri Roosen wrote:
->> Hi Gilles,
->>
->> Unfortunately I didn't find the time to test this release yet. I'm
->> just wondering if there is a fix for this problem in the 2.6.0
->> release: https://mail.gna.org/public/xenomai-core/2011-05/msg00028.html
->
-> This one is fixed, a bit differently, since we fixed the ppd handling so
-> that the ppd is valid up to the end of a process.
->
->>
->> We are using the auto-relax patches on top of 2.5.6 for a long time
->> now. We found issues with it regarding auto-relax tasks that were not
->> being auto-relaxed anymore. Philippe made patches for that, see
->> https://mail.gna.org/public/xenomai-help/2011-03/msg00161.html.
->
-> Philippe's patches for rt_task_send/receive/reply should have been
-> merged too.
->
->> However, locally I reverted those two patches because these introduced
->> a memory leak in xnheap; I could only do rt_task_create()
->> rt_task_delete() for 1024 times ;-). I thought that was the discussion
->> of
->> https://mail.gna.org/public/xenomai-core/2011-05/msg00028.html at that
->> time and I don't recall a proper fix for it was provided. But I might
->> have missed it...
->
-> This looks related to the ppd issue as well, in which case, it should
-> have been fixed too.
->
-> It would be nice if you could test the release and tell us whether you
-> still have these issues.
->
 
-I've now tested the issues on the Xenomai 2.6.0-rc1 release. Both
-issues don't occur.
+Willy Lambert wrote:
+> Now, as xeno-config depracated messages suggest I should not use "
+> $XENO_CONFIG --xeno-ldflags" but "$XENO_CONFIG --skin=native --ldflags"
+> without adding -lnative.
+> My problem is that I have both -lnative and -lrtdm so I wonder why skin is
+> only accepting one at a time.
+> Is it forbidden now to do such mixes ?
+> Did CanFestival code should be separated into 2 pieces one with
+> skin=native
+> the other with skin=rtdm ?
+> Should I only add -lrtdm "brutally"
 
-Thanks,
-Henri
+No, nothing is forbidden. You should call xeno-config twice. Once with
+--skin=native, once with --skin=rtdm. At least, this is the way it is
+supposed to be used.
 
->
-> --
-> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
-=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0Gilles.
->
+-- 
+                    Gilles.
+
 
