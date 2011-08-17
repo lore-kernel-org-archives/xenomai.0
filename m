@@ -1,15 +1,12 @@
-Message-ID: <4E43EE80.8050406@domain.hid>
-Date: Thu, 11 Aug 2011 17:00:16 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <201108101449.54243.carlosnov@domain.hid>
-	<201108101810.02640.carlosnov@domain.hid>
-	<4E438724.2070709@domain.hid>
-	<201108111131.11981.carlosnov@domain.hid>
-In-Reply-To: <201108111131.11981.carlosnov@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <alpine.DEB.1.10.1108171557300.25850@domain.hid>
+References: <alpine.DEB.1.10.1108171557300.25850@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Date: Wed, 17 Aug 2011 16:26:20 +0200
+Message-ID: <1313591180.18802.9.camel@domain.hid>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Trouble with rtdm timers and events
+Subject: Re: [Xenomai-help] Freeze with gpio-keys with Xenomai on Blackfin
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -19,37 +16,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Carlos Eduardo de Brito Novaes <carlosnov@domain.hid>
+To: xenoka09@domain.hid
 Cc: xenomai@xenomai.org
 
-On 08/11/2011 04:31 PM, Carlos Eduardo de Brito Novaes wrote:
-> Here it comes.
-> I found out that if wait is called inside an IOCTL, there is no hangs at all, 
-> everything work as expected, except from te fact that it seens a litle bit 
-> strange (to me) to use ioctl to read or write, I would expect to use the 
-> correspondent rad and write functions and ioctl to setup something.
-> I tried to reduce the code, in the tarball there are one Makefile, one c file 
-> for the module and one c file for the app. There is one define line on the 
-> module file, comment it ou to get the hangs. The app will simply open the 
-> device, issue an wait ioctl (dummy if the module is compiled to wait in 
-> read_rt) and the do the actual reading (it hangs on my system if i tell the 
-> module to wait on the read_rt function).
+On Wed, 2011-08-17 at 16:04 +0200, Kolja Waschk wrote:
+> Hi,
 > 
-> Here comes the kernel log from one run that does the error but fortunately
-> does not hang the entire system.
+> I was just trying to use the gpio-keys driver on a Blackfin BF537 in
+> uClinux environment with Xenomai integrated. However, whenever a key
+> is pressed (regardless whether anyone reads from input event dev),
+> the whole system freezes. No more communication, no network access.
+> Without Xenomai however, I was able to use the driver.
+> 
+> Before I set up my JTAG interface to get more details (need to make a new
+> cable...) I'd like to ask if anyone else has experienced this (and remedy..)?
 
-Yes, you can use rtdm_event_wait in read or write. The fact that it
-hangs or results in bugs is probably due to the fact that you are
-corrupting some memory. Your testcase contains too much code. If you
-want to test rtdm_event_wait / rtdm_event_pulse, simply do one driver,
-with one ioctl which does the rtdm_event_wait, and the timer which does
-the rtdm_event_pulse.
+Most likely the low level interrupt path for gpios is not ipipe-aware in
+this kernel, arch/blackfin/kernel/bfin_gpios.c might be at fault. You
+may want to check with 2.6.35.9 first, to make sure this has not been
+solved during the latest update, in which case you could backport the
+fixes.
 
-The copy_to_user in the read callback overflows the source area, but
-that is not your problem.
+The bottom line is that interrupts should always be handled according to
+the level policy (i.e. masked while pending handling), and
+hard_local_irq_disable/save should be in effect for code that might be
+traversed over both the linux and xenomai domains (typically anything
+triggered from __ipipe_grab_irq).
 
-Also, do not use open_rt and close_rt in new code as they are deprecated.
+> 
+> - Linux version 2.6.34.7-ADI-2010R1
+> - I-pipe 1.15-01
+> - Xenomai: real-time nucleus v2.5.5.2
+> 
+> Thanks,
+> Kolja
+> 
+> 
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
 
 -- 
-					    Gilles.
+Philippe.
+
+
 
