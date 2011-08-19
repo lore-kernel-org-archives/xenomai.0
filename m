@@ -1,9 +1,12 @@
+Message-ID: <4E4E29DB.3070904@domain.hid>
+Date: Fri, 19 Aug 2011 11:16:11 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Date: Fri, 19 Aug 2011 13:29:31 +0800
-Message-ID: <CAHoMn5rnGNWdfOCkdSX_E=v=3gxxZ+Mm8AM69J5Togg6-aSpXQ@mail.gmail.com>
-From: yi zheng <yizheng23@domain.hid>
-Content-Type: multipart/alternative; boundary=0016e68dec5098ae5d04aad5037c
-Subject: [Xenomai-help] building xenomai for AT91SAM9263
+References: <CAHoMn5rnGNWdfOCkdSX_E=v=3gxxZ+Mm8AM69J5Togg6-aSpXQ@mail.gmail.com>
+In-Reply-To: <CAHoMn5rnGNWdfOCkdSX_E=v=3gxxZ+Mm8AM69J5Togg6-aSpXQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-help] building xenomai for AT91SAM9263
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -13,27 +16,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: yi zheng <yizheng23@domain.hid>
+Cc: xenomai@xenomai.org
 
---0016e68dec5098ae5d04aad5037c
-Content-Type: text/plain; charset=GB2312
-Content-Transfer-Encoding: quoted-printable
+On 08/19/2011 07:29 AM, yi zheng wrote:
+> Hi,all
+>       i am a newer to xenomai.Now i want to build xenomai for my target=
 
-Hi,all
-      i am a newer to xenomai.Now i want to build xenomai for my target
-platform with AT91SAM9263 ARM and linux kernel vision 2.6.25.I use
-arm-linux-gcc 3.4.1 for compiler,is it suitable for build
-xenomai=A3=BFwhich xenomai vision is better for me?
+> platform with AT91SAM9263 ARM and linux kernel vision 2.6.25.I use
+> arm-linux-gcc 3.4.1 for compiler,
+> is it suitable for build
+> xenomai=EF=BC=9Fwhich xenomai vision is better for me?
 
---0016e68dec5098ae5d04aad5037c
-Content-Type: text/html; charset=GB2312
-Content-Transfer-Encoding: quoted-printable
+Xenomai 2.5.6 is the latest stable release, it should work. But I-pipe
+patches for later linux kernel releases have support for FCSE, which
+greatly improves latencies. As for the version of gcc, I have only been
+using gcc 4 for a long time.
 
-Hi,all<div>&nbsp; &nbsp; &nbsp; i am a newer to&nbsp;xenomai.Now i want to =
-build&nbsp;xenomai for my target platform with AT91SAM9263 ARM and linux ke=
-rnel vision 2.6.25.I use arm-linux-gcc 3.4.1 for&nbsp;compiler,is it suitab=
-le for build xenomai=A3=BFwhich&nbsp;xenomai vision is better for me?</div>
+--=20
+					    Gilles.
 
-
---0016e68dec5098ae5d04aad5037c--
 
