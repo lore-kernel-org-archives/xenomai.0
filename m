@@ -1,15 +1,12 @@
-Message-ID: <4E4418EE.8000005@domain.hid>
-Date: Thu, 11 Aug 2011 20:01:18 +0200
+Message-ID: <4E54EAE4.2060705@domain.hid>
+Date: Wed, 24 Aug 2011 14:13:24 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <201108101449.54243.carlosnov@domain.hid>
-	<201108111131.11981.carlosnov@domain.hid>
-	<4E43EE80.8050406@domain.hid>
-	<201108111456.24208.carlosnov@domain.hid>
-In-Reply-To: <201108111456.24208.carlosnov@domain.hid>
+References: <CAL+uwv-D111pO40ZT=ipXU+V1Ss8Fi4L1DfXWj=o+f2UxFubaA@mail.gmail.com>
+In-Reply-To: <CAL+uwv-D111pO40ZT=ipXU+V1Ss8Fi4L1DfXWj=o+f2UxFubaA@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Trouble with rtdm timers and events
+Subject: Re: [Xenomai-help] Hanging
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -19,33 +16,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Carlos Eduardo de Brito Novaes <carlosnov@domain.hid>
-Cc: xenomai@xenomai.org
+To: suresh reddy <sureshreddy.balijepalli@domain.hid>
+Cc: Xenomai help <xenomai@xenomai.org>
 
-On 08/11/2011 07:56 PM, Carlos Eduardo de Brito Novaes wrote:
-> Hello again,
+On 08/24/2011 12:51 PM, suresh reddy wrote:
+> Dear all,
 > 
-> I did what you said, changed the open/close to non real time, removed every 
-> portion of code that is not related with the fault (the read_rt is still there 
-> since is where the problem arrises and also another ioctl to start timer since 
-> the open/close are moved out of real time context). There is also the wait 
-> ioctl to show that the code works when wait is done inside ioctl.
-> The problem persists, but no hangs perceived. Just the application returns too 
-> fast and there is the kernel message on NULL pointer derreference, so I also 
-> tried to recompile with another kernel version, the vanilla 2.6.38-8 from 
-> kernel.org and the adeos patch (on the previous tests I was using the same 
-> with additional ubuntu patches). Even now the app returns imediately after 
-> call read with rtdm_event_wait and there is the same kernel log.
-> I dont think there is any memory corruption due to the module code since there 
-> is no dynamic allocations, little pointer operations mainly related to the 
-> context hadler witch is allocated by xenomai on rtdm_dev_register.
-> I send you the new tarball.
+> Iam trying to communicate two process using message . In one process i
+> called a dummy function (doing nothing except printing something for 2000
+> times) .
 > 
-> Thanks for your support.
+> Iam trying to calculate the time elapsed for this process to process
+> communication .
+> 
+> 1. The program working fine if i print or execute something for once  like
+> rt_printf("xenomai"); But if i used
+> 
+> for (i=0; i<2000; i++)
+> 
+> {
+> 
+> rt_printf("xenomai");
+> 
+> }
+> 
+> if i used like this the execution stops after printing for some 100 times or
+> so on my Pandaboard.  Please find the attached program.
 
-The copy_to_user is still overflowing. And in fact, it is probably the
-cause of the bug you observe, I had not read your example carefully.
+Are you sure you are not simply filling rt_printf buffer and never
+leaving primary mode?
 
 -- 
-                                                                Gilles.
+					    Gilles.
 
