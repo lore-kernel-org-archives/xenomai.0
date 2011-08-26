@@ -1,10 +1,10 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <4E5792CE.8080307@domain.hid>
-References: <4E5792CE.8080307@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Fri, 26 Aug 2011 17:34:26 +0200
-Message-ID: <1314372866.18838.23.camel@domain.hid>
-Mime-Version: 1.0
+Message-ID: <4E57E0C4.8070600@domain.hid>
+Date: Fri, 26 Aug 2011 20:07:00 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+References: <4E5792CE.8080307@domain.hid> <4E579A32.8040208@domain.hid>
+In-Reply-To: <4E579A32.8040208@domain.hid>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-core] Xenomai 2.6.0, or -rc1?
 List-Id: Xenomai life and development <xenomai.xenomai.org>
@@ -15,25 +15,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Fri, 2011-08-26 at 14:34 +0200, Gilles Chanteperdrix wrote:
-> Hi,
+On 08/26/2011 03:05 PM, Jan Kiszka wrote:
+> On 2011-08-26 14:34, Gilles Chanteperdrix wrote:
+>>
+>> Hi,
+>>
+>> I think it is about time we release Xenomai 2.6.0. Has anyone anything
+>> pending (maybe Alex)? Should we release an -rc first?
 > 
-> I think it is about time we release Xenomai 2.6.0. Has anyone anything
-> pending (maybe Alex)? Should we release an -rc first?
+> No patches ATM, but [1] is still an open bug - a bug that affects the ABI.
 > 
-> Thanks in advance for your input.
+> Jan
+> 
+> [1] http://thread.gmane.org/gmane.linux.real-time.xenomai.devel/8343
 > 
 
+I had forgotten about this one. So, the only real problem is if a
+SCHED_NOTOTHER thread switches to SCHED_OTHER, this appears to be a
+corner case, so, I wonder if you should not simply add a special
+treatment, only for this corner case.
 
-Nothing pending for 2.6, I'm focusing on 3.x now. However let's go for
--rc1 first, this is a major release anyway.
+What I have in mind is keeping a list of xnsynch in kernel-space (this
+basically means having an xnholder_t more in the xnsynch structure), and
+when we trip the corner case (thread with SCHED_FIFO switches to
+SCHED_OTHER), walk the list to find how many xnsynch the thread is the
+owner, we have that info in kernel-space, and set the refcnt accordingly.
+
+Or does it still sound overkill?
+
 
 -- 
-Philippe.
-
-
-
+                                                                Gilles.
 
