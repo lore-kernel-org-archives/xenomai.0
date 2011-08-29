@@ -1,13 +1,10 @@
-Message-ID: <4E5B3C2C.7000503@domain.hid>
-Date: Mon, 29 Aug 2011 09:13:48 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <OFF5A1868E.F6AC0BF7-ON882578F8.0076FF3F-882578F8.00784B5F@moog.com>
-In-Reply-To: <OFF5A1868E.F6AC0BF7-ON882578F8.0076FF3F-882578F8.00784B5F@moog.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] milli-second overruns under heavy load on x86,
- running Xenomai 2.5.6
+Date: Mon, 29 Aug 2011 15:43:01 +0800
+Message-ID: <CAHoMn5qyUPgGBk+gKQsLweYb1UixJKVk6si9P4YLiOAstL_2XQ@mail.gmail.com>
+From: yi zheng <yizheng23@domain.hid>
+Content-Type: multipart/alternative; boundary=0016e6464e3a6fd83204aba00b83
+Subject: [Xenomai-help] how to use rt_io_get_region function on AT91SAM9263
+	in user space
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -17,52 +14,64 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: George Broz <GBroz@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 08/26/2011 11:49 PM, George Broz wrote:
->> Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote on 
-> 08/26/2011 02:18:05 PM:
->> On 08/26/2011 10:42 PM, George Broz wrote:
->>> Hello,
->>>
->>> I'm experiencing very large overruns in the neighborhood of 10 to 50 
->>> *milli-seconds* as reported by the Xenomai latency tool in user-task 
-> mode 
->>> whenever the Linux OS is heavily loaded. Under lighter loads these are 
-> in 
->>> the 30 to 70 micro-second (normal) range. 
->>>
->>> My system is:
->>> - Linux 2.6.37.6 (32-bit), Ubuntu 10.10 distribution
->>> - Xenomai 2.5.6 using I-pipe patch adeos-ipipe-2.6.37.6-x86-2.9-02
->>> - Intel x86 Atom (dual-core) CPU D510 @ 1.66GHz 
->>> - Emb. dev board from Intel (ICH8M ctrlr, Ethernet h/w for e1000e)
->>> - Xenomai configured w&w/o --enable-smp --enable-x86-tsc options
->>> - gcc version 4.4.5
->>>
->>> I've followed all of the recommendations for kernel configuration and 
-> have 
->>> disabled CPU sleep features in the BIOS such as SpeedStep and 
-> C-States. 
->>> Legacy USB has been disabled in the BIOS. Hyperthreading has also been 
-> 
->>> disabled, although I don't think it matters.
->>
->> Have you tried to enable the SMI workaround?
->>
->> -- 
->>                                                                 Gilles.
->>
-> 
-> Yes - SMI workaround was enabled when the overruns were observed.
+--0016e6464e3a6fd83204aba00b83
+Content-Type: text/plain; charset=GB2312
+Content-Transfer-Encoding: quoted-printable
 
-Could you try disabling CONFIG_SMP to see if you get the same behaviour,
-and take a few traces?
-If you processor supports 64 bits mode, could you try running a 64 bits
-kernel?
+   Hi,all
+     I want to write a Xenomai application running in user space that can
+access the
+GPIO pins of my AT91SAM9263 ARM. To get the memory
+region I found the function rt_misc_get_io_region(). Unfortunately
+there is no discription of this function in the API documentation.
+Does this function work like request_mem_region()?
+Anybody knows how to use it,please tell me. It is best if there is a little
+example.IF there is another way to access memory for user space application
+on arm=A3=AC please let me  know.Thank you.
+regards
+yizheng
 
+--0016e6464e3a6fd83204aba00b83
+Content-Type: text/html; charset=GB2312
+Content-Transfer-Encoding: quoted-printable
 
--- 
-                                                                Gilles.
+&nbsp; &nbsp;Hi,all<div>&nbsp; &nbsp; &nbsp;<span class=3D"Apple-style-span=
+" style=3D"font-family: monospace; white-space: pre; background-color: rgb(=
+255, 255, 255); font-size: medium; ">I want to write a Xenomai application =
+running in user space that can access the</span></div>
+<div><span class=3D"Apple-style-span" style=3D"font-family: monospace; whit=
+e-space: pre; background-color: rgb(255, 255, 255); font-size: medium; ">  =
+ GPIO pins of my AT91SAM9263 ARM. To get the memory</span></div><div><span =
+class=3D"Apple-style-span" style=3D"font-family: monospace; white-space: pr=
+e; background-color: rgb(255, 255, 255); font-size: medium; ">   region I f=
+ound the function rt_misc_get_io_region(). Unfortunately</span></div>
+<div><span class=3D"Apple-style-span" style=3D"font-family: monospace; whit=
+e-space: pre; background-color: rgb(255, 255, 255); font-size: medium; ">  =
+ there is no discription of this function in the API documentation.</span><=
+/div>
+<div><span class=3D"Apple-style-span" style=3D"font-family: monospace; whit=
+e-space: pre; background-color: rgb(255, 255, 255); font-size: medium; ">  =
+ Does this function work like request_mem_region()?</span></div><div><span =
+class=3D"Apple-style-span" style=3D"font-family: monospace; white-space: pr=
+e; background-color: rgb(255, 255, 255); font-size: medium; ">   Anybody kn=
+ows how to use it,please tell me. It is best if there is a little example.I=
+F there is another way to access memory for user space application on arm=
+=A3=AC please let me&nbsp; </span><span class=3D"Apple-style-span" style=3D=
+"font-family: monospace; white-space: pre; background-color: rgb(255, 255, =
+255); font-size: medium; ">know.Thank you.</span></div>
+<div><font class=3D"Apple-style-span" face=3D"monospace" size=3D"3"><span c=
+lass=3D"Apple-style-span" style=3D"white-space: pre;">regards</span></font>=
+</div><div><font class=3D"Apple-style-span" face=3D"monospace" size=3D"3"><=
+span class=3D"Apple-style-span" style=3D"white-space: pre;">yizheng</span><=
+/font></div>
+<div><span class=3D"Apple-style-span" style=3D"font-family: monospace; whit=
+e-space: pre; background-color: rgb(255, 255, 255); font-size: medium; "><b=
+r></span></div><div><span class=3D"Apple-style-span" style=3D"font-family: =
+monospace; white-space: pre; background-color: rgb(255, 255, 255); font-siz=
+e: medium; "><br>
+</span></div>
+
+--0016e6464e3a6fd83204aba00b83--
 
