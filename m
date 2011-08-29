@@ -1,9 +1,12 @@
-Message-ID: <1313097516.90873.YahooMailClassic@domain.hid>
-Date: Thu, 11 Aug 2011 14:18:36 -0700 (PDT)
-From: Philip Ha <philwman@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative; boundary="0-224367224-1313097516=:90873"
-Subject: Re: [Xenomai-help] clock problem
+Sender: madjsw@domain.hid
+In-Reply-To: <CAAvA3H_9MbPT+QLgbmVAk-5ZzE2eu0TQo3rzS1mkBV0RtSPcXw@domain.hid>
+References: <CAAvA3H_9MbPT+QLgbmVAk-5ZzE2eu0TQo3rzS1mkBV0RtSPcXw@domain.hid>
+Date: Mon, 29 Aug 2011 08:26:37 -0500
+Message-ID: <CAAvA3H_rtX_Js5TVHHWDyK-J4vouEY4LxO9MsvdU-y8TjPVoNA@mail.gmail.com>
+From: Jeff Weber <jwamsc@domain.hid>
+Content-Type: multipart/alternative; boundary=00504502ac3c33ec1004aba4d803
+Subject: [Xenomai-help] Fwd: dynamic loader latencies
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -13,56 +16,73 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Xenomai-help@domain.hid
+To: Xenomai Help <xenomai@xenomai.org>
 
---0-224367224-1313097516=:90873
-Content-Type: text/plain; charset=us-ascii
+--00504502ac3c33ec1004aba4d803
+Content-Type: text/plain; charset=ISO-8859-1
 
-> Could you try measuring the jitter in cpu cycles with rdtscll, in
-> kernel-space? If the inaccuracy persists, check that cpufreq is not
-> enabled, and that if running on a multicore system, tscs are
-> synchronized. Apart from that no, no idea.
->
-> -- 
->                                            Gilles.
+Bumping this post again in hopes of eliciting comments ...
 
+Jeff
 
-Hi Gilles,
-
-I measured the interval between input pulses using rdtsc to grab the 
-cpu cycles. The number of clock cycles between my 1 second input 
-pulses was quite consistent varying by less than 10,000 cycles. On 
-my 1600 MHz system that works out to less than 6 us. This value was 
-consistent between reboots. This indicates to me that the tsc clock 
-is very stable between reboots.
-
-Looking at /proc/cpuinfo showed that the "cpu MHz" value changes 
-by a small amount during each reboot. It varies from 1600.131 MHz 
-to 1599.628 MHz. The difference between 1600 and 1599.628 MHz 
-accounts exactly for the unexpected latency I described in earlier 
-emails.
-
-So it would seem that the frequency used for clock time stamps is 
-reported incorrectly when using my Xenomai build. If I boot the system 
-with regular Ubuntu, /proc/cpuinfo consistently reports the frequency 
-as 1600 MHz.
-
-I do not have CPU scaling set. I am running an Atom dual CPU 
-processor and /proc/cpuinfo shows both processors as having the 
-same frequency. How can I ensure syncronization of the tscs?
-
-The Xenomai build seems to produce an incorrect cpufreq, any ideas 
-as to why?
-
-Thanks for all your help.
-
-Philip Ha
+---------- Forwarded message ----------
+From: Jeff Weber <jwamsc@domain.hid>
+Date: Fri, Aug 26, 2011 at 11:34 AM
+Subject: dynamic loader latencies
+To: Xenomai Help <xenomai@xenomai.org>
 
 
---0-224367224-1313097516=:90873
-Content-Type: text/html; charset=us-ascii
+The Linux ELF dynamic linker/loader ld-linux.so uses a "lazy" model by
+default, and defers symbol resolution, shared object resolution to the time
+when the symbol is first referenced.  This sounds like a large latency
+threat to dynamically linked RT applications running in primary mode. Can
+this happen, or is this unlikely?
 
-<table cellspacing="0" cellpadding="0" border="0" ><tr><td valign="top" style="font: inherit;"><pre>&gt; Could you try measuring the jitter in cpu cycles with rdtscll, in<br>&gt; kernel-space? If the inaccuracy persists, check that cpufreq is not<br>&gt; enabled, and that if running on a multicore system, tscs are<br>&gt; synchronized. Apart from that no, no idea.<br>&gt;<br>&gt; -- <br>&gt;                                            Gilles.<br><br><br>Hi Gilles,<br><br>I measured the interval between input pulses using rdtsc to grab the <br>cpu cycles. The number of clock cycles between my 1 second input <br>pulses was quite consistent varying by less than 10,000 cycles. On <br>my 1600 MHz system that works out to less than 6 us. This value was <br>consistent between reboots. This indicates to me that the tsc clock <br>is very stable between reboots.<br><br>Looking at /proc/cpuinfo showed that the "cpu MHz" value changes <br>by a small amount during
- each reboot. It varies from 1600.131 MHz <br>to 1599.628 MHz. The difference between 1600 and 1599.628 MHz <br>accounts exactly for the unexpected latency I described in earlier <br>emails.<br><br>So it would seem that the frequency used for clock time stamps is <br>reported incorrectly when using my Xenomai build. If I boot the system <br>with regular Ubuntu, /proc/cpuinfo consistently reports the frequency <br>as 1600 MHz.<br><br>I do not have CPU scaling set. I am running an Atom dual CPU <br>processor and /proc/cpuinfo shows both processors as having the <br>same frequency. How can I ensure syncronization of the tscs?<br><br>The Xenomai build seems to produce an incorrect cpufreq, any ideas <br>as to why?<br><br>Thanks for all your help.<br><br>Philip Ha<br><br></pre></td></tr></table>
---0-224367224-1313097516=:90873--
+If this is a latency risk, the only solutions I know of are:
+
+1) Statically link all RT applications
+
+2) Invoke all dynamically linked applications with LD_BIND_NOW=1 environment
+to force the dynamic loader to resolve all  symbols  at program startup
+
+3) Link dynamic applications with "-z now" GNU ld option to effect same as
+2) above.
+
+Comments?
+
+thanks,
+Jeff
+
+--00504502ac3c33ec1004aba4d803
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+Bumping this post again in hopes of eliciting comments ...<div><br></div><d=
+iv>Jeff<br><br><div class=3D"gmail_quote">---------- Forwarded message ----=
+------<br>From: <b class=3D"gmail_sendername">Jeff Weber</b> <span dir=3D"l=
+tr">&lt;<a href=3D"mailto:jwamsc@domain.hid">jwamsc@domain.hid</a>&gt;</span>=
+<br>
+Date: Fri, Aug 26, 2011 at 11:34 AM<br>Subject: dynamic loader latencies<br=
+>To: Xenomai Help &lt;<a href=3D"mailto:xenomai@xenomai.org">xenomai-help@=
+gna.org</a>&gt;<br><br><br>The Linux ELF=A0dynamic linker/loader=A0ld-linux=
+.so uses a &quot;lazy&quot; model by default, and defers symbol resolution,=
+ shared object resolution to the time when the symbol is first referenced. =
+=A0This sounds like a large latency threat to dynamically linked RT applica=
+tions running in primary mode.=A0Can this happen, or is this unlikely?<div>
+
+<div>
+<br></div><div>If this is a latency risk, the only solutions I know of are:=
+</div><div><br></div><div>1) Statically link all RT applications</div><div>=
+<br></div><div>2) Invoke all dynamically linked applications with=A0LD_BIND=
+_NOW=3D1 environment to force=A0the dynamic loader to resolve all =A0symbol=
+s =A0at program startup</div>
+
+<div><br></div><div>3) Link dynamic applications with &quot;-z now&quot; GN=
+U ld option to effect same as 2) above.<br>
+<div><br></div><div><div>Comments?</div></div><div><br></div><div>thanks,</=
+div><div>Jeff</div>
+</div></div>
+</div><br></div>
+
+--00504502ac3c33ec1004aba4d803--
 
