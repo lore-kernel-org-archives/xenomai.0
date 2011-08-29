@@ -1,13 +1,13 @@
-Message-ID: <4E5A61DA.7000006@domain.hid>
-Date: Sun, 28 Aug 2011 17:42:18 +0200
+Message-ID: <4E5B3C2C.7000503@domain.hid>
+Date: Mon, 29 Aug 2011 09:13:48 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CAKvQZ_06JKNPsiGeXOC1PEnc1Je5zSDSnX9AdOHT4eraggv7Eg@domain.hid>	<4E5A294C.1060205@domain.hid>
-	<CAKvQZ_0mw_WT4s29_1_BBvm0fpqAzw-gDNYj3Jk3UQKQbmc8yw@domain.hid>
-In-Reply-To: <CAKvQZ_0mw_WT4s29_1_BBvm0fpqAzw-gDNYj3Jk3UQKQbmc8yw@domain.hid>
+References: <OFF5A1868E.F6AC0BF7-ON882578F8.0076FF3F-882578F8.00784B5F@moog.com>
+In-Reply-To: <OFF5A1868E.F6AC0BF7-ON882578F8.0076FF3F-882578F8.00784B5F@moog.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] CPU frequency of 0 in a Vmware with Xenomai
+Subject: Re: [Xenomai-help] milli-second overruns under heavy load on x86,
+ running Xenomai 2.5.6
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -17,66 +17,51 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Willy Lambert <lambert.willy@domain.hid>
+To: George Broz <GBroz@domain.hid>
 Cc: xenomai@xenomai.org
 
-On 08/28/2011 05:00 PM, Willy Lambert wrote:
-> 2011/8/28 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+On 08/26/2011 11:49 PM, George Broz wrote:
+>> Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote on 
+> 08/26/2011 02:18:05 PM:
+>> On 08/26/2011 10:42 PM, George Broz wrote:
+>>> Hello,
+>>>
+>>> I'm experiencing very large overruns in the neighborhood of 10 to 50 
+>>> *milli-seconds* as reported by the Xenomai latency tool in user-task 
+> mode 
+>>> whenever the Linux OS is heavily loaded. Under lighter loads these are 
+> in 
+>>> the 30 to 70 micro-second (normal) range. 
+>>>
+>>> My system is:
+>>> - Linux 2.6.37.6 (32-bit), Ubuntu 10.10 distribution
+>>> - Xenomai 2.5.6 using I-pipe patch adeos-ipipe-2.6.37.6-x86-2.9-02
+>>> - Intel x86 Atom (dual-core) CPU D510 @ 1.66GHz 
+>>> - Emb. dev board from Intel (ICH8M ctrlr, Ethernet h/w for e1000e)
+>>> - Xenomai configured w&w/o --enable-smp --enable-x86-tsc options
+>>> - gcc version 4.4.5
+>>>
+>>> I've followed all of the recommendations for kernel configuration and 
+> have 
+>>> disabled CPU sleep features in the BIOS such as SpeedStep and 
+> C-States. 
+>>> Legacy USB has been disabled in the BIOS. Hyperthreading has also been 
 > 
->> On 08/28/2011 12:28 PM, Willy Lambert wrote:
->>> Hi all,
->>>
->>> I am trying to make xenomai running into a Debian Squeeze 32b with a
->> custom
->>> 2.6.38.8 kernel with xenomai among other things. I am running this into a
->>> Vmware for testing this before going on my real target.
->>>
->>> I have a "CPU frequency of 0" Error at boot, which I think is "classic"
->> with
->>> Vmwares :
->>> http://comments.gmane.org/gmane.linux.real-time.xenomai.devel/6632
->>>
->>> ard@domain.hid:~$ dmesg | grep Xenomai
->>> [    0.559923] Xenomai has detected a CPU frequency of 0. Aborting.
->>> [    0.560923] Xenomai: system init failed, code -19.
->>> [    0.560923] Xenomai: native skin init failed, code -19.
->>> [    0.560923] Xenomai: starting POSIX services.
->>> [    0.561923] Xenomai: POSIX skin init failed, code -19.
->>> [    0.561923] Xenomai: RTDM skin init failed, code -19.
->>>
->>> But search didn't help me for this. See inclosed my .config (sorry it's a
->>> default-full option with initrd because I am failing on the "allnoconfig"
->>> little kernel for now). See below some extra informations about my system
+>>> disabled, although I don't think it matters.
 >>
->> Well, there is not much we can do except telling you to use another
->> emulator than vmware. Such as qemu-kvm.
+>> Have you tried to enable the SMI workaround?
 >>
->> You can try passing hardcoded frequencies to xenomai too, for instance,
->> passing on the kernel command line:
+>> -- 
+>>                                                                 Gilles.
 >>
->> xeno_hal.clockfreq=1600000000 xeno_hal.cpufreq=1600000000
->>
->>
-> FYI, I tried this with 266666666 (my CPU is supposed to be 2.67 Ghz).  And
-> it seems to work :
 > 
-> ard@domain.hid:~$ dmesg | grep -i xenomai
-> [    0.551139] I-pipe: Domain Xenomai registered.
-> [    0.551925] Xenomai: hal/i386 started.
-> [    0.551925] Xenomai: scheduling class idle registered.
-> [    0.551925] Xenomai: scheduling class rt registered.
-> [    0.556205] Xenomai: real-time nucleus v2.5.6 (Wormhole Wizards) loaded.
-> [    0.556782] Xenomai: debug mode enabled.
-> [    0.557343] Xenomai: starting native API services.
-> [    0.557880] Xenomai: starting POSIX services.
-> [    0.557924] Xenomai: starting RTDM services.
-> 
-> then a latency test, seems very poor but I don't have crashes or freezes of
-> my vm, so it's maybe enougth for the little tests we do here
+> Yes - SMI workaround was enabled when the overruns were observed.
 
-No, it does not work. If it worked you would see large positive
-latencies. But large negative latencies are a sign that the frequence
-you chose is not correct.
+Could you try disabling CONFIG_SMP to see if you get the same behaviour,
+and take a few traces?
+If you processor supports 64 bits mode, could you try running a 64 bits
+kernel?
+
 
 -- 
                                                                 Gilles.
