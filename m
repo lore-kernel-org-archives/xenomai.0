@@ -1,10 +1,10 @@
-Message-ID: <4E5DDA3F.9090904@domain.hid>
-Date: Wed, 31 Aug 2011 08:52:47 +0200
+Message-ID: <4E5DDB3D.8020804@domain.hid>
+Date: Wed, 31 Aug 2011 08:57:01 +0200
 From: Roberto Bielli <roberto.bielli@domain.hid>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-15; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] rt_task handle status after delete
+Subject: [Xenomai-core] do rt_task_create after a deletion
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -17,11 +17,11 @@ To: xenomai@xenomai.org
 
 Hi,
 
-it's ok to call rt_task_inquire after the task is deleted or the rt_task 
-handle is invalid after a rt_task_delete ?
+if i don't want to use rt_task_join to wait termination on a task, is it 
+correct to use rt_task_create and wait until the return value is 
+different from -EEXIST after a deletion?
 
 Thanks for all
-
 
 -- 
 +------------------------------------------------------------------------------------------------+
