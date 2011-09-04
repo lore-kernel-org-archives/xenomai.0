@@ -1,106 +1,103 @@
 MIME-Version: 1.0
-Sender: alexandre.tuleu@domain.hid
-Date: Fri, 12 Aug 2011 10:14:35 +0200
-Message-ID: <CAMQsbyZMRUKaSnNREKjxHuJqop7LPH8Wdmty_inEMGCLRJxJHw@domain.hid>
-From: alexandre tuleu <alexandre.tuleu@domain.hid>
-Content-Type: multipart/alternative; boundary=20cf3071cc2cfb897204aa4a80c2
-Subject: [Xenomai-help] Cross-compilation of debian package of linux patched
-	kernel
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Date: Sun, 4 Sep 2011 23:43:59 +0200
+Message-ID: <CAMesUR6RGrw21=qDen2NXVDZTpBPfccDRH13YGzyZ8KdUjsvbg@domain.hid>
+From: Alexis Berlemont <alexis.berlemont@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: [Xenomai-core] PULL REQUEST: analogy
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: xenomai-core <xenomai@xenomai.org>
 
---20cf3071cc2cfb897204aa4a80c2
-Content-Type: text/plain; charset=UTF-8
+The following changes since commit fa167ed2f2d9ce569968d801796f7e760772e97b:
 
-Hi
+  doc: regenerate (2011-09-04 21:48:41 +0200)
 
+are available in the git repository at:
+  ssh+git://git.xenomai.org/xenomai-abe.git analogy
 
-For an embeded robotic project, I have to make package of xenomai for an
-ubuntu lucid distribution. Based on this how to (
-http://www.xenomai.org/index.php/Building_Debian_packages) I succeed to
-patch and install a linux 2.6.34.5 kernel. On the target  system, after
-installation of the package, Native skin is working fine like almost all
-other testsuite tools. However when I wanted to compile the RTDM examples, I
-remarked that all the link in /lib/module/2.6.34.5/build/xenomai are broken.
-actually they all point to /xxx/yyy/xenomai-2.5.6/include/ where /xxx/yyy/
-was the path from whom I cross-compiled my linux kernel on my amd64 desktop
-computer. Actually on this system both linux and xenomai source tree are
-under /xxx/yyy
+Alexis Berlemont (28):
+      analogy: add first version of waveform generation
+      analogy: rename waveform files
+      analogy: minor changes
+      analogy: add wf_generate tool
+      analogy: add verbose output in wf_generate tool
+      analogy: add a 1st version of wf_cmd_write
+      analogy: 1st rework of fake driver
+      analogy: [fake] minor fix in attach parameters handling
+      analogy: [fake] validate the looping feature
+      analogy: minor fix in wf_generate
+      analogy: [fake] add instruction callbacks for the loop subdevices
+      analogy: [loop] remove the driver
+      analogy: [fake] correctly manage EOA events for loop subdevices
+      analogy: minor change in cmd_read.c
+      analogy: various basic bug fixes in wf_cmd_write
+      analogy: minor cosmetic changes in wf_facilities.c
+      analogy: [fake] fix synchronization bugs at cancel time
+      analogy: minor change in the test program wf_cmd_write
+      analogy: add signal injection in the cmd_write tool
+      analogy: implement the configuration of a wake-up threshold
+      analogy: update cmd_read and cmd_write with a wake-count option
+      analogy: [ni_660x] replace spin_lock_* calls by al4_lock_* calls
+      analogy: [pcimio] minor cosmetic change
+      analogy: [ni_660x] review indentation
+      analogy: [ni_660x] review coding style and traces
+      analogy: [ni_670x] review coding style
+      analogy: [ni_660x] remove useless headers
+      analogy: [ni_670x] replace printk calls by a4l_[err,info] calls
 
-I also have this warning when installing my linux headers packages :
+Anders Blomdell (2):
+      analogy: fix duplicate symbols
+      analogy: [pcimio] fix wrong IRQ setup after reboot
 
- Hmm. There is a symbolic link /lib/modules/2.6.34.5-ipipe-vortex/build
- However, I can not read it: No such file or directory
- Therefore, I am deleting /lib/modules/2.6.34.5-ipipe-vortex/build
+Julien Delange (1):
+      analogy: integrate the drivers ni_660x and ni_670x.
 
-But apparently this was not the case since this directory is still there,
-but just all the xenomai's links are broken.
+ include/analogy/analogy.h                          |   80 +-
+ include/analogy/buffer.h                           |   23 +
+ include/analogy/channel_range.h                    |   16 +-
+ include/analogy/ioctl.h                            |    7 +-
+ ksrc/drivers/analogy/buffer.c                      |   86 +-
+ ksrc/drivers/analogy/driver_facilities.c           |   12 +-
+ ksrc/drivers/analogy/intel/8255.c                  |   10 +-
+ ksrc/drivers/analogy/intel/8255.h                  |    8 +-
+ ksrc/drivers/analogy/national_instruments/Kconfig  |   18 +
+ ksrc/drivers/analogy/national_instruments/Makefile |    6 +
+ .../analogy/national_instruments/mio_common.c      |  152 +-
+ ksrc/drivers/analogy/national_instruments/mite.c   |  164 ++-
+ ksrc/drivers/analogy/national_instruments/mite.h   |   51 +-
+ .../drivers/analogy/national_instruments/ni_660x.c | 1485 ++++++++++++++++++++
+ .../drivers/analogy/national_instruments/ni_670x.c |  446 ++++++
+ ksrc/drivers/analogy/national_instruments/ni_mio.h |   18 +-
+ ksrc/drivers/analogy/national_instruments/ni_tio.h |   28 +-
+ ksrc/drivers/analogy/national_instruments/pcimio.c |   70 +-
+ .../analogy/national_instruments/tio_common.c      |   82 +-
+ ksrc/drivers/analogy/rtdm_interface.c              |    8 +-
+ ksrc/drivers/analogy/sensoray/s526.c               |    4 +-
+ ksrc/drivers/analogy/subdevice.c                   |   14 +-
+ ksrc/drivers/analogy/testing/Config.in             |    1 -
+ ksrc/drivers/analogy/testing/Kconfig               |   11 +-
+ ksrc/drivers/analogy/testing/Makefile              |   11 +-
+ ksrc/drivers/analogy/testing/fake.c                |  427 +++++-
+ ksrc/drivers/analogy/testing/loop.c                |  287 ----
+ src/drvlib/analogy/async.c                         |   31 +
+ src/utils/analogy/Makefile.am                      |   18 +-
+ src/utils/analogy/cmd_read.c                       |   24 +-
+ src/utils/analogy/cmd_write.c                      |  721 ++++++----
+ src/utils/analogy/wf_facilities.c                  |  158 +++
+ src/utils/analogy/wf_facilities.h                  |   36 +
+ src/utils/analogy/wf_generate.c                    |  252 ++++
+ 34 files changed, 3719 insertions(+), 1046 deletions(-)
+ create mode 100644 ksrc/drivers/analogy/national_instruments/ni_660x.c
+ create mode 100644 ksrc/drivers/analogy/national_instruments/ni_670x.c
+ delete mode 100644 ksrc/drivers/analogy/testing/loop.c
+ create mode 100644 src/utils/analogy/wf_facilities.c
+ create mode 100644 src/utils/analogy/wf_facilities.h
 
-I used this command for make-kpkg :
-
-make-kpkg --cross-compile - -arch i386 buildpackage
-
-And then used deb-reversion to change all "Architecture: amd64" to
-"Architecture: i386" in control files of the generated packages.
-
-I'm sure I made some beginner's mistake here. Does anyone have any idea of
-what I would have done wrong. Or the idea to cross-compile form amd64 to
-i386 while generating debian packages is just a really bad one ? My target
-system is very limited in disk size and ressource, so its rather hard to
-cross-compile on it.
-
-best regards,
-
-Alexandre Tuleu
-
---20cf3071cc2cfb897204aa4a80c2
-Content-Type: text/html; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-
-<span class=3D"Apple-style-span" style=3D"font-family: arial, sans-serif; f=
-ont-size: 13px; background-color: rgb(255, 255, 255); ">Hi<div><br></div><d=
-iv><br></div><div>For an embeded robotic project, I have to make package of=
- xenomai for an ubuntu lucid distribution. Based on this how to (<a href=3D=
-"http://www.xenomai.org/index.php/Building_Debian_packages" target=3D"_blan=
-k" style=3D"color: rgb(0, 0, 0); ">http://www.xenomai.org/index.php/Buildin=
-g_Debian_packages</a>) I succeed to patch and install a linux 2.6.34.5 kern=
-el. On the target =C2=A0system, after installation of the package, Native s=
-kin is working fine like almost all other testsuite tools. However when I w=
-anted to compile the RTDM examples, I remarked that all the link in /lib/mo=
-dule/<a href=3D"http://2.6.34.5/build/xenomai" target=3D"_blank" style=3D"c=
-olor: rgb(0, 0, 0); ">2.6.34.5/build/xenomai</a>=C2=A0are broken. actually =
-they all point to /xxx/yyy/xenomai-2.5.6/include/ where /xxx/yyy/ was the p=
-ath from whom I cross-compiled my linux kernel on my amd64 desktop computer=
-. Actually on this system both linux and xenomai source tree are under /xxx=
-/yyy</div>
-<div><br></div><div>I also have this warning when installing my linux heade=
-rs packages :</div><div><br></div><div><div>=C2=A0Hmm. There is a symbolic =
-link /lib/modules/2.6.34.5-ipipe-vortex/build</div><div>=C2=A0However, I ca=
-n not read it: No such file or directory</div>
-<div>=C2=A0Therefore, I am deleting /lib/modules/2.6.34.5-ipipe-vortex/buil=
-d</div></div><div><br></div><div>But apparently this was not the case since=
- this directory is still there, but just all the xenomai&#39;s links are br=
-oken.</div>
-<div><br></div><div>I used this command for make-kpkg :</div><div><br></div=
-><div>make-kpkg --cross-compile - -arch i386 buildpackage</div><div><br></d=
-iv><div>And then used deb-reversion to change all &quot;Architecture: amd64=
-&quot; to &quot;Architecture: i386&quot; in control files of the generated =
-packages.</div>
-<div><br></div><div>I&#39;m sure I made some beginner&#39;s mistake here. D=
-oes anyone have any idea of what I would have done wrong. Or the idea to cr=
-oss-compile form amd64 to i386 while generating debian packages is just a r=
-eally bad one ? My target system is very limited in disk size and ressource=
-, so its rather hard to cross-compile on it.</div>
-<div><br></div><div>best regards,</div><div><br></div><div>Alexandre Tuleu<=
-/div><div><br></div></span>
-
---20cf3071cc2cfb897204aa4a80c2--
+Alexis.
 
