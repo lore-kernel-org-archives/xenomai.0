@@ -1,214 +1,79 @@
-From: Carlos Eduardo de Brito Novaes <carlosnov@domain.hid>
-Date: Thu, 11 Aug 2011 19:28:34 -0300
-References: <201108101449.54243.carlosnov@domain.hid>
-	<201108111512.40209.carlosnov@domain.hid>
-	<4E442EB0.7030909@domain.hid>
-In-Reply-To: <4E442EB0.7030909@domain.hid>
+Message-ID: <4E635FD3.3010704@domain.hid>
+Date: Sun, 04 Sep 2011 13:24:03 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: Text/Plain;
-  charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <201108111928.34508.carlosnov@domain.hid>
-Subject: Re: [Xenomai-help] Trouble with rtdm timers and events
-Reply-To: Carlos Eduardo de Brito Novaes <carlosnov@domain.hid>
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+References: <CAG0ejMHDxOXE-UTuO-iuE-ZcsN2-bLE+tx3ik6G=t_3HrsR0NA@mail.gmail.com>
+	<4E61D028.3000702@domain.hid>
+	<CAG0ejMGVMUTCPWvAHGA+kH94M8v-taeeWbvGanCJ3yU_XmEN5g@domain.hid>
+In-Reply-To: <CAG0ejMGVMUTCPWvAHGA+kH94M8v-taeeWbvGanCJ3yU_XmEN5g@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig8133F552CCC549FC5A821339"
+Sender: jan.kiszka@domain.hid
+Subject: Re: [Xenomai-core] xenomai-core ftrace
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: rainbow <lvqq05@domain.hid>
+Cc: Xenomai-core@domain.hid
 
-Solved,
-It really was a bug on my code, in the read_rt. I was referring to device=20
-context before get it. Thank you very much for the help, for the code and f=
-or=20
-the time spent. Also, sorry for not being able to catch this stupid bug=20
-before.
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig8133F552CCC549FC5A821339
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: quoted-printable
 
-Thanks
+On 2011-09-04 07:10, rainbow wrote:
+> Sorry to reply so late, I did a test about install ftrace on xenomai. t=
+he
+> following is my procedure:
+> #git://git.xenomai.org/xenomai-jki.git queues/ftrace
+> #git://git.kiszka.org/ipipe-2.6 queues/2.6.35-x86-trace
+> #cd queues/ftrace
+> #git checkout -b remotes/origin/queues/ftrace
+>  origin/queues/2.6.35-x86-trace  //change to the ftrace xenomai branch
+> #cd ../2.6.35-x86-trace
+> #git checkout
+> -b origin/queues/2.6.35-x86-trace origin/queues/2.6.35-x86-trace
+> #cd ../ftrace
+> #./scripts/prepare-kernel.sh  --arch=3Di386
+> --adeos=3Dksrc/arch/x86/patches/adeos-ipipe-2.6.35.9-x86-2.8-04.patch
+> --linux=3D../2.6.35-x86-trace/
+> #cd /2.6.35-x86-trace/
+>=20
+> then I compile the kernel but I get the following error message:
+> arch/x86/kernel/ipipe.c:851: error: conflicting types for =91update_vsy=
+scall=92
+> include/linux/clocksource.h:316: note: previous declaration of
+> =91update_vsyscall=92 was here
+> make[2]: *** [arch/x86/kernel/ipipe.o] Error 1
+> make[1]: *** [arch/x86/kernel] Error 2
+> make: *** [arch/x86] Error 2
 
-=2D-
-Carlos Novaes.
+That's a build issues of the underlying old ipipe patch. However, it's
+x86-32 only. And as the documentation stated, only x86-64 is supported
+by the ftrace patches. So build for 64 bit instead.
+
+Jan
 
 
-Em qui 11 ago 2011, =C3=A0s 16:34:08, Gilles Chanteperdrix escreveu:
-> On 08/11/2011 08:12 PM, Carlos Eduardo de Brito Novaes wrote:
-> > I really did not understand why nor even what exactly it means to
-> > overflow the source area, but I forgot to mention that I commented it
-> > out, so the copy_to_user is not being called at all.
->=20
-> It means that sizeof(sample_number) is 40, and neither the zone you are
-> copying from, neither the zone you are copying to is 40 bytes large
-> (except for the first call to read).
->=20
-> Also, there is no problem starting a timer in open_nrt and close_nrt
-> handlers.
->=20
-> So, here is a simple self-contained testcase which does what you are
-> trying to do. And which works. So, I insist, you should really inspect
-> your code carefully, the bugs you have do not seem to come from xenomai.
->=20
-> Module code:
-> #include <rtdm/rtdm_driver.h>
->=20
-> struct device_ctx {
-> 	rtdm_event_t event;
-> 	rtdm_timer_t timer;
-> };
->=20
-> MODULE_LICENSE("GPL");
-> MODULE_AUTHOR("gch");
->=20
-> static void test_timer(rtdm_timer_t *timer)
-> {
-> 	struct device_ctx *ctx =3D container_of(timer, struct device_ctx, timer);
->=20
-> 	rtdm_event_pulse(&ctx->event);
-> 	rtdm_timer_start_in_handler(&ctx->timer,
-> 			      rtdm_clock_read_monotonic() + 100000000,
-> 			      0, RTDM_TIMERMODE_ABSOLUTE);
-> }
->=20
-> static int test_open(struct rtdm_dev_context *context,
-> 		     rtdm_user_info_t *user_info,
-> 		     int oflags)
-> {
-> 	struct device_ctx *ctx =3D (struct device_ctx *)context->dev_private;
-> 	int rc;
->=20
-> 	rc =3D rtdm_timer_init(&ctx->timer, test_timer, "timer");
-> 	if (rc < 0)
-> 		return rc;
->=20
-> 	rtdm_event_init(&ctx->event, 0);
->=20
-> 	rc =3D rtdm_timer_start(&ctx->timer,
-> 			      rtdm_clock_read_monotonic() + 100000000,
-> 			      0, RTDM_TIMERMODE_ABSOLUTE);
-> 	if (rc < 0) {
-> 		rtdm_timer_destroy(&ctx->timer);
-> 		rtdm_event_destroy(&ctx->event);
-> 		return rc;
-> 	}
->=20
-> 	return 0;
-> }
->=20
-> static int test_close(struct rtdm_dev_context *context,
-> 		      rtdm_user_info_t *user_info)
-> {
-> 	struct device_ctx *ctx =3D (struct device_ctx *)context->dev_private;
->=20
-> 	rtdm_timer_destroy(&ctx->timer);
-> 	rtdm_event_destroy(&ctx->event);
->=20
-> 	return 0;
-> }
->=20
-> static ssize_t test_read(struct rtdm_dev_context *context,
-> 			 rtdm_user_info_t *user_info, void *buf, size_t size)
-> {
-> 	struct device_ctx *ctx =3D (struct device_ctx *)context->dev_private;
-> 	rtdm_toseq_t to;
-> 	ssize_t rc;
->=20
-> 	rtdm_toseq_init(&to, 1000000000);
->=20
-> 	rc =3D rtdm_event_timedwait(&ctx->event, 1000000000, &to);
-> 	printk("rtdm_event_timedwait: %d\n", rc);
->=20
-> 	return rc;
-> }
->=20
-> static struct rtdm_device device =3D {
-> 	struct_version: RTDM_DEVICE_STRUCT_VER,
->=20
-> 	device_flags: RTDM_NAMED_DEVICE,
-> 	context_size: sizeof(struct device_ctx),
-> 	device_name:  "test",
->=20
-> 	open_rt: NULL,
-> 	open_nrt: test_open,
->=20
-> 	ops: {
-> 		close_rt: NULL,
-> 		close_nrt: test_close,
->=20
-> 		ioctl_rt: NULL,
-> 		ioctl_nrt: NULL,
->=20
-> 		read_rt: test_read,
-> 		read_nrt: NULL,
->=20
-> 		write_rt: NULL,
-> 		write_nrt: NULL,
->=20
-> 		recvmsg_rt: NULL,
-> 		recvmsg_nrt: NULL,
->=20
-> 		sendmsg_rt: NULL,
-> 		sendmsg_nrt: NULL,
-> 	},
->=20
-> 	device_class: RTDM_CLASS_EXPERIMENTAL,
-> 	device_sub_class: 0,
-> 	profile_version: 1,
-> 	driver_name: "xeno_switchtest",
-> 	driver_version: RTDM_DRIVER_VER(0, 1, 1),
-> 	peripheral_name: "Context Switch Test",
-> 	provider_name: "Gilles Chanteperdrix",
-> 	proc_name: device.device_name,
-> };
->=20
-> int __init rtdm_test_init(void)
-> {
-> 	return rtdm_dev_register(&device);
-> }
->=20
-> void rtdm_test_exit(void)
-> {
-> 	rtdm_dev_unregister(&device, 1000);
-> }
->=20
-> module_init(rtdm_test_init);
-> module_exit(rtdm_test_exit);
->=20
-> Application code:
-> #include <stdio.h>
-> #include <stdlib.h>
->=20
-> #include <unistd.h>
-> #include <sys/fcntl.h>
-> #include <sys/mman.h>
->=20
-> int main(void)
-> {
-> 	int i, rc, fd;
->=20
-> 	mlockall(MCL_CURRENT | MCL_FUTURE);
->=20
-> 	fd =3D open("/dev/test", O_RDONLY);
-> 	if (fd < 0) {
-> 		perror("open(rtdm_test)");
-> 		return EXIT_FAILURE;
-> 	}
->=20
-> 	for (i =3D 0; i < 10; i++) {
-> 		char buf[40];
->=20
-> 		rc =3D read(fd, buf, sizeof(buf));
-> 		if (rc < 0) {
-> 			perror("read");
-> 			pause();
-> 			return EXIT_FAILURE;
-> 		}
-> 	}
->=20
-> 	return EXIT_SUCCESS;
-> }
+--------------enig8133F552CCC549FC5A821339
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.16 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+
+iEYEARECAAYFAk5jX9cACgkQitSsb3rl5xTCxgCeN2w3SJ0r4BMc6lUSvK4IUkad
+k84An3tpxcdqasJtJxmf5Rma1AXrdH56
+=b5Au
+-----END PGP SIGNATURE-----
+
+--------------enig8133F552CCC549FC5A821339--
 
