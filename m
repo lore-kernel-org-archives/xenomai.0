@@ -1,127 +1,61 @@
-MIME-Version: 1.0
-Date: Fri, 12 Aug 2011 11:03:41 +0200
-Message-ID: <CAL+uwv9sa5uxF8Tn4cAi=1UEY4NL3zvdfJck2wv=1b4jk43Pig@domain.hid>
-From: suresh reddy <sureshreddy.balijepalli@domain.hid>
-Content-Type: multipart/mixed; boundary=bcaec50165099bc5d504aa4b30da
-Subject: [Xenomai-help] Regarding TSC timer
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <4E662BD6.9080205@domain.hid>
+References: <4E63E503.8090206@domain.hid>  <4E66049D.6000105@domain.hid>
+	<1315315628.20820.48.camel@domain.hid>  <4E662BD6.9080205@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Date: Tue, 06 Sep 2011 16:31:55 +0200
+Message-ID: <1315319515.20820.50.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-core] [Xenomai-help] Xenomai 2.6.0-rc1
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Xenomai help <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Xenomai core <Xenomai-core@domain.hid>
 
---bcaec50165099bc5d504aa4b30da
-Content-Type: multipart/alternative; boundary=bcaec50165099bc5cf04aa4b30d8
+On Tue, 2011-09-06 at 16:19 +0200, Gilles Chanteperdrix wrote:
+> On 09/06/2011 03:27 PM, Philippe Gerum wrote:
+> > On Tue, 2011-09-06 at 13:31 +0200, Gilles Chanteperdrix wrote:
+> >> On 09/04/2011 10:52 PM, Gilles Chanteperdrix wrote:
+> >>>
+> >>> Hi,
+> >>>
+> >>> The first release candidate for the 2.6.0 version may be downloaded here:
+> >>>
+> >>> http://download.gna.org/xenomai/testing/xenomai-2.6.0-rc1.tar.bz2
+> >>
+> >> Hi,
+> >>
+> >> currently 2.6.0-rc1 fails to build on 2.4 kernel, with errors related to
+> >> vfile support. Do we really want to still support 2.4 kernels?
+> >>
+> > 
+> > That would not be a massive loss, but removing linux 2.4 support is more
+> > than a few hunks here and there, so this may not be the right thing to
+> > do ATM. Besides, it would be better not to leave the few linux 2.4 users
+> > out there without upgrade path to xenomai 2.6, since this will be the
+> > last maintained version from the Xenomai 2.x architecture.
+> > 
+> > That stuff does not compile likely because the Config.in bits are not up
+> > to date, blame it on me. I'll make this build over linux 2.4 and commit
+> > the result today.
+> > 
+> 
+> No problem, I was not looking for someone to blame... Since you are at
+> it, I have problems compiling the nios2 kernel too, but I am not sure I
+> got the proper configuration file.
+> 
 
---bcaec50165099bc5cf04aa4b30d8
-Content-Type: text/plain; charset=ISO-8859-1
+Ok, I'll check this.
 
-Dear All,
+-- 
+Philippe.
 
-Iam trying to find the time taken by thread1 from sending a message to
-receiving message from thread2.
 
-I used rt_timer_tsc to get the tics underlying hardware .
-Started the timer before thread1 sends message . (got the start tics)
-ended the timer when thread1 receives the message . (got the current tics)
-And i substracted  current tics - start tics
- and Iam getting some 0.9 to 1.5  after converting to nanoseconds and
-multiplying with 1e-6 . I would like to know that this process of getting
-time and the way i done
-is correct or not ?
-
-Thanks
-Suresh balijepalli
-Rosenehim,Baveria.
-
---bcaec50165099bc5cf04aa4b30d8
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr">Dear All,<div><br></div><div>Iam trying to find the time t=
-aken by thread1 from sending a message to receiving message from thread2.=
-=A0<br clear=3D"all"><br></div><div>I used rt_timer_tsc to get the tics und=
-erlying hardware .</div>
-<div>Started the timer before thread1 sends message . (got the start tics)<=
-/div><div>ended the timer when thread1 receives the message . (got the curr=
-ent tics)</div><div>And i substracted =A0current tics - start tics =A0</div=
->
-<div>=A0and Iam getting some 0.9 to 1.5 =A0after converting to nanoseconds =
-and multiplying with 1e-6 . I would like to know that this process of getti=
-ng time and the way i done=A0</div><div>is correct or not ?</div><div><br><=
-/div>
-<div>Thanks<br>Suresh balijepalli<br>Rosenehim,Baveria.<br>
-</div></div>
-
---bcaec50165099bc5cf04aa4b30d8--
-
---bcaec50165099bc5d504aa4b30da
-Content-Type: text/x-csrc; charset=US-ASCII; name="inter.c"
-Content-Disposition: attachment; filename="inter.c"
-Content-Transfer-Encoding: base64
-X-Attachment-Id: f_gr8x55x20
-
-I2luY2x1ZGUgPHN0ZGlvLmg+CiNpbmNsdWRlIDxzaWduYWwuaD4KI2luY2x1ZGUgPHVuaXN0ZC5o
-PgojaW5jbHVkZSA8c3lzL21tYW4uaD4KI2luY2x1ZGUgPHN0ZGxpYi5oPgogCiNpbmNsdWRlIDxu
-YXRpdmUvdGFzay5oPgojaW5jbHVkZSA8bmF0aXZlL3RpbWVyLmg+CiNpbmNsdWRlIDxuYXRpdmUv
-c2VtLmg+CiNpbmNsdWRlIDxuYXRpdmUvbXV0ZXguaD4KI2luY2x1ZGUgPG5hdGl2ZS9xdWV1ZS5o
-PgogCiNpbmNsdWRlICA8cnRkay5oPgogCiNkZWZpbmUgTlRBU0tTIDIKIAojZGVmaW5lIFFVRVVF
-X1NJWkUgMjU1CiNkZWZpbmUgTUFYX01FU1NBR0VfTEVOR1RIIDQwCiAKUlRfVEFTSyB0YXNrX3N0
-cnVjdFtOVEFTS1NdOwogCiNkZWZpbmUgUVVFVUVfU0laRSAyNTUKUlRfUVVFVUUgbXlxdWV1ZTsK
-UlRfUVVFVUUgbXlxdWV1ZTE7Cgp2b2lkIHRhc2tPbmUodm9pZCAqYXJnKQp7CiAgICBpbnQgcmV0
-dmFsLHJldHZhbDEsbjsKICAgIGludCBpPTEwMDA7CiAgICBjaGFyICogYnVmZmVyOwogICAgY2hh
-ciBhW109ImEiIDsKICAgIGNoYXIgbWVzc2FnZVtdID0gIk1lc3NhZ2UgZnJvbSB0YXNrT25lIjsK
-ICAgIGNoYXIgbXNnQnVmMVtNQVhfTUVTU0FHRV9MRU5HVEhdOwogICAgUlRJTUUgc3RhcnRfdHNj
-ID0gcnRfdGltZXJfdHNjKCk7CiAgICBydF9wcmludGYoInN0YXJ0aW5nIHRpY3M6ICUuM2ZcbiIs
-CiAgICBydF90aW1lcl90c2MybnMoc3RhcnRfdHNjKSoxZS02KTsKCiAgICBidWZmZXIgPSAoY2hh
-ciopIG1hbGxvYyAoaSsxKTsKCiAgICBpZiAoYnVmZmVyPT1OVUxMKSBleGl0ICgxKTsKIAogICAg
-Zm9yIChuPTA7IG48aTsgbisrKQogICAgeyAgIAogICAgIGJ1ZmZlcltuXT1hOwogICAgIHJ0X3By
-aW50ZigiYVxuIixidWZmZXJbbl0pOwogICAgfQoKICBmcmVlIChidWZmZXIpOwogIC8qIHNlbmQg
-bWVzc2FnZSAqLwogIHJldHZhbCA9IHJ0X3F1ZXVlX3dyaXRlKCZteXF1ZXVlLG1lc3NhZ2Usc2l6
-ZW9mKG1lc3NhZ2UpLFFfTk9STUFMKTsKIAogICBpZiAocmV0dmFsIDwgMCApIHsKICAgICAgIHJ0
-X3ByaW50ZigiU2VuZGluZyBlcnJvclxuIik7CiAgICB9IGVsc2UgewogICAgICAgcnRfcHJpbnRm
-KCJ0YXNrT25lIHNlbnQgbWVzc2FnZSB0byBtYWlsYm94XG4iKTsKICAgIH0gCgovKiByZWNlaXZl
-IG1lc3NhZ2UgKi8KCnJldHZhbDEgPXJ0X3F1ZXVlX3JlYWQoJm15cXVldWUxLG1zZ0J1ZjEsc2l6
-ZW9mKG1zZ0J1ZjEpLFRNX0lORklOSVRFKTsKICAgIGlmIChyZXR2YWwxIDwgMCApIHsKICAgICAg
-ICAgIHJ0X3ByaW50ZigiUmVjZWl2aW5nIGVycm9yXG4iKTsKICAgIH0gZWxzZSB7CiAgICAgICAg
-cnRfcHJpbnRmKCJ0YXNrMSByZWNlaXZlZCBtZXNzYWdlOiAlc1xuIixtc2dCdWYxKTsKICAgICAg
-ICBydF9wcmludGYoIndpdGggbGVuZ3RoICVkXG4iLHJldHZhbDEpOwogICAgfQpSVElNRSB0c2M9
-cnRfdGltZXJfdHNjKCk7CnJ0X3ByaW50ZigiZW5kIHRpY3M6ICUuM2ZcbiIsCnJ0X3RpbWVyX3Rz
-YzJucyh0c2MpKjFlLTYpOwoJCnJ0X3ByaW50Zigid2l0aCBsZW5ndGgiKTsKcnRfcHJpbnRmKCJU
-b3RhbCB0aW1lOiAlLjNmXG4iLApydF90aW1lcl90c2MybnModHNjLShzdGFydF90c2MpKSoxZS02
-KTsKCQp9CnZvaWQgdGFza1R3byh2b2lkICphcmcpCnsKICAgIGludCByZXR2YWwscmV0dmFsMTsK
-ICAgIGNoYXIgbXNnQnVmW01BWF9NRVNTQUdFX0xFTkdUSF07CiAgICBjaGFyIG1lc3NhZ2UxW10g
-PSAiTWVzc2FnZSBmcm9tIHRhc2t0d28iOwogICAgLyogcmVjZWl2ZSBtZXNzYWdlICovCiAgICBy
-ZXR2YWwgPSBydF9xdWV1ZV9yZWFkKCZteXF1ZXVlLG1zZ0J1ZixzaXplb2YobXNnQnVmKSxUTV9J
-TkZJTklURSk7CiAgICBpZiAocmV0dmFsIDwgMCApIHsKICAgICAgICAgIHJ0X3ByaW50ZigiUmVj
-ZWl2aW5nIGVycm9yXG4iKTsKICAgIH0gZWxzZSB7CiAgICAgICAgcnRfcHJpbnRmKCJ0YXNrVHdv
-IHJlY2VpdmVkIG1lc3NhZ2U6ICVzXG4iLG1zZ0J1Zik7CiAgICAgICAgcnRfcHJpbnRmKCJ3aXRo
-IGxlbmd0aCAlZFxuIixyZXR2YWwpOwogICAgfSAKLyogc2VuZCBtZXNzYWdlICovCiAgICByZXR2
-YWwxID0gcnRfcXVldWVfd3JpdGUoJm15cXVldWUxLG1lc3NhZ2UxLHNpemVvZihtZXNzYWdlMSks
-UV9OT1JNQUwpOwoKICAgIGlmIChyZXR2YWwxIDwgMCApIHsKICAgICAgIHJ0X3ByaW50ZigiU2Vu
-ZGluZyBlcnJvclxuIik7CiAgICB9IGVsc2UgewogICAgICAgcnRfcHJpbnRmKCJ0YXNrdHdvIHNl
-bnQgbWVzc2FnZSB0byBtYWlsYm94XG4iKTsKICAgIH0KCn0KIAovL3N0YXJ0dXAgY29kZQp2b2lk
-IHN0YXJ0dXAoKQp7CiAgaW50IGk7CiAgY2hhciAgc3RyWzEwXSA7CiAKICB2b2lkICgqdGFza19m
-dW5jW05UQVNLU10pICh2b2lkICphcmcpOwogIHRhc2tfZnVuY1swXT10YXNrT25lOwogIHRhc2tf
-ZnVuY1sxXT10YXNrVHdvOwogCiAgcnRfcXVldWVfY3JlYXRlKCZteXF1ZXVlLCJteXF1ZXVlIixR
-VUVVRV9TSVpFLDEwLFFfRklGTyk7CiAgcnRfcXVldWVfY3JlYXRlKCZteXF1ZXVlMSwibXlxdWV1
-ZTEiLFFVRVVFX1NJWkUsMTAsUV9GSUZPKTsgCiAgcnRfdGltZXJfc2V0X21vZGUoMCk7Ly8gc2V0
-IHRpbWVyIHRvIHRpY2sgaW4gbmFub3NlY29uZHMgYW5kIG5vdCBpbiBqaWZmaWVzCiAgZm9yKGk9
-MDsgaSA8IE5UQVNLUzsgaSsrKSB7CiAgICBydF9wcmludGYoInN0YXJ0IHRhc2sgIDogJWRcbiIs
-aSk7CiAgICBzcHJpbnRmKHN0ciwidGFzayVkIixpKTsKICAgIHJ0X3Rhc2tfY3JlYXRlKCZ0YXNr
-X3N0cnVjdFtpXSwgc3RyLCAwLCA1MCwgMCk7CiAgICBydF90YXNrX3N0YXJ0KCZ0YXNrX3N0cnVj
-dFtpXSwgdGFza19mdW5jW2ldLCAmaSk7CiAgfQp9CiAKdm9pZCBpbml0X3hlbm9tYWkoKSB7CiAg
-LyogQXZvaWRzIG1lbW9yeSBzd2FwcGluZyBmb3IgdGhpcyBwcm9ncmFtICovCiAgbWxvY2thbGwo
-TUNMX0NVUlJFTlR8TUNMX0ZVVFVSRSk7CiAKICAvKiBQZXJmb3JtIGF1dG8taW5pdCBvZiBydF9w
-cmludCBidWZmZXJzIGlmIHRoZSB0YXNrIGRvZXNuJ3QgZG8gc28gKi8KICBydF9wcmludF9hdXRv
-X2luaXQoMSk7Cn0KIAppbnQgbWFpbihpbnQgYXJnYywgY2hhciogYXJndltdKQp7CiAgcHJpbnRm
-KCJcblR5cGUgQ1RSTC1DIHRvIGVuZCB0aGlzIHByb2dyYW1cblxuIiApOwogCiAgLy8gY29kZSB0
-byBzZXQgdGhpbmdzIHRvIHJ1biB4ZW5vbWFpCiAgaW5pdF94ZW5vbWFpKCk7CiAKICAvL3N0YXJ0
-dXAgY29kZQogIHN0YXJ0dXAoKTsKIAogIHBhdXNlKCk7Cn0K
---bcaec50165099bc5d504aa4b30da--
 
