@@ -3,8 +3,8 @@ In-Reply-To: <4E662BD6.9080205@domain.hid>
 References: <4E63E503.8090206@domain.hid>  <4E66049D.6000105@domain.hid>
 	<1315315628.20820.48.camel@domain.hid>  <4E662BD6.9080205@domain.hid>
 Content-Type: text/plain; charset="UTF-8"
-Date: Tue, 06 Sep 2011 16:31:55 +0200
-Message-ID: <1315319515.20820.50.camel@domain.hid>
+Date: Tue, 06 Sep 2011 16:53:06 +0200
+Message-ID: <1315320786.20820.53.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-core] [Xenomai-help] Xenomai 2.6.0-rc1
@@ -52,7 +52,7 @@ On Tue, 2011-09-06 at 16:19 +0200, Gilles Chanteperdrix wrote:
 > got the proper configuration file.
 > 
 
-Ok, I'll check this.
+HEAD builds fine based on the attached .config. 
 
 -- 
 Philippe.
