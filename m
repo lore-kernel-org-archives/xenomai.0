@@ -1,20 +1,9 @@
-From: Sambasiva Rao Manchili <sambasiva.manchili@domain.hid>
-Date: Tue, 6 Sep 2011 13:13:38 +0200
-Message-ID: <509DA52866E38F47878413CF102D751FED236D78BB@poseidon.nexus-ag.com>
-References: <509DA52866E38F47878413CF102D751FED236D7830@domain.hid>
-	<4E5F6E41.1050606@domain.hid>
-	<509DA52866E38F47878413CF102D751FED236D7834@domain.hid>
-	<4E5F753C.8070904@domain.hid>
-	<509DA52866E38F47878413CF102D751FED236D783D@poseidon.nexus-ag.com>
-	<4E5F9FDB.5080702@domain.hid>
-	<509DA52866E38F47878413CF102D751FED236D783F@poseidon.nexus-ag.com>
-	<1314908857.18201.28.camel@domain.hid> <1314909331.18201.35.camel@domain.hid>
-In-Reply-To: <1314909331.18201.35.camel@domain.hid>
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] taskDelete(tid) on VxWorks Skin ?
+Date: Tue, 6 Sep 2011 20:38:10 +0200
+Message-ID: <CAL+uwv_iCwA9yQq9LdeOgOWg9Eje+WqRGLctauwP5dj5fWDVOg@domain.hid>
+From: suresh reddy <sureshreddy.balijepalli@domain.hid>
+Content-Type: multipart/mixed; boundary=20cf3071ca9c2d4e2c04ac4a2116
+Subject: [Xenomai-help] Message queue services
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -24,145 +13,120 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: "Xenomai-help@domain.hid" <Xenomai-help@domain.hid>
+To: Xenomai help <xenomai@xenomai.org>
 
+--20cf3071ca9c2d4e2c04ac4a2116
+Content-Type: multipart/alternative; boundary=20cf3071ca9c2d4e2804ac4a2114
 
-Philippe,
-There is one correction in the following patch. Though you told me uncompil=
-ed / untested, I just want to give a try and found minor compilation issue =
-which I want to bring to your notice.
+--20cf3071ca9c2d4e2804ac4a2114
+Content-Type: text/plain; charset=ISO-8859-1
 
-- tid =3D (pthread_t)desc->td_opaque;
-+ tid =3D (pthread_t)desc.td_opaque;
+Dear all,
 
-After this correction compilation went well. I also tested with  our ported=
- software. It works as expected with taskDelete from Xenomai.
+Iam using message queue services to communicate between two xenomai threads.
+Iam trying using while loop in each thread to loop that for some 100 or 1000
+iterations . But after 3 iterations it showing that the program ended. The
+attached file contains the program .  Its not hanging but terminating out of
+execution.
 
-One more observation that I remember now:-
-In legacy VxWorks code we create Queues of size 1000  to store each message=
- of size 384bytes while we have memory on our Boards upto 4GB, but with Xen=
-omai I **have to** reduce the queue size drastically otherwise msgQCreate f=
-ails(though we have memory) with error code S_memLib_NOT_ENOUGH_MEMORY.
+-- 
 
-Samba.
+Suresh balijepalli
+Rosenehim,Baveria.
 
------Original Message-----
-From: Philippe Gerum [mailto:rpm@xenomai.org]
-Sent: Thursday, 01. September, 2011 22:36
-To: Sambasiva Rao Manchili
-Cc: Xenomai-help@domain.hid
-Subject: Re: [Xenomai-help] taskDelete(tid) on VxWorks Skin ?
+--20cf3071ca9c2d4e2804ac4a2114
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-On Thu, 2011-09-01 at 22:27 +0200, Philippe Gerum wrote:
-> On Thu, 2011-09-01 at 17:25 +0200, Sambasiva Rao Manchili wrote:
-> > Hi,
-> > It is reduced piece which explains the problem.
-> > If it is much more then I will see what I can do.
->
-> User-space needs this, or something alike (not tested, not even
-> compiled actually):
+<div dir=3D"ltr">Dear all,<div><br></div><div>Iam using message queue servi=
+ces to communicate between two xenomai threads. Iam trying using while loop=
+ in each thread to loop that for some 100 or 1000 iterations . But after 3 =
+iterations it showing that the program ended. The attached file contains th=
+e program . =A0Its not hanging but terminating out of execution.</div>
+<div><div><br></div>-- <br><br>Suresh balijepalli<br>Rosenehim,Baveria.<br>
+</div></div>
 
-Keep in mind that the following hack bypasses the safe lock mechanism total=
-ly, a complete and sane fix would need a bit more thought, and maybe an ABI=
- breakage. Normally we should not throw pthread_cancel() at a task denying =
-deletion from within a taskSafe() section, unless we pair this with proper =
-cancellation deferral.
+--20cf3071ca9c2d4e2804ac4a2114--
 
->
-> diff --git a/src/skins/vxworks/taskLib.c b/src/skins/vxworks/taskLib.c
-> index f751788..70f33aa 100644
-> --- a/src/skins/vxworks/taskLib.c
-> +++ b/src/skins/vxworks/taskLib.c
-> @@ -267,10 +267,34 @@ STATUS taskDeleteForce(TASK_ID task_id)
->
->  STATUS taskDelete(TASK_ID task_id)
->  {
-> +     TASK_DESC desc;
-> +     pthread_t tid;
->       int err;
->
-> -     err =3D
-> -         XENOMAI_SKINCALL1(__vxworks_muxid, __vxworks_task_delete, task_=
-id);
-> +     err =3D XENOMAI_SKINCALL2(__vxworks_muxid,
-> +                             __vxworks_taskinfo_get, task_id, &desc);
-> +     if (err) {
-> +             errno =3D abs(err);
-> +             return ERROR;
-> +     }
-> +
-> +     tid =3D (pthread_t)desc->td_opaque;
-> +     if (tid =3D=3D pthread_self()) {
-> +             /* Silently migrate to avoid raising SIGXCPU. */
-> +             XENOMAI_SYSCALL1(__xn_sys_migrate, XENOMAI_LINUX_DOMAIN);
-> +             pthread_exit(NULL);
-> +     }
-> +
-> +     if (tid) {
-> +             err =3D pthread_cancel(tid);
-> +             if (err)
-> +                     return -err;
-> +     }
-> +
-> +     err =3D XENOMAI_SKINCALL1(__vxworks_muxid, __vxworks_task_delete, t=
-ask_id);
-> +     if (err =3D=3D S_objLib_OBJ_ID_ERROR)
-> +             return OK; /* Used to be valid, but has exited. */
-> +
->       if (err) {
->               errno =3D abs(err);
->               return ERROR;
->
-> > Samba.
-> >
-> > -----Original Message-----
-> > From: Gilles Chanteperdrix [mailto:gilles.chanteperdrix@xenomai.org]
-> > Sent: Thursday, 01. September, 2011 17:08
-> > To: Sambasiva Rao Manchili
-> > Cc: Xenomai-help@domain.hid
-> > Subject: Re: [Xenomai-help] taskDelete(tid) on VxWorks Skin ?
-> >
-> > On 09/01/2011 04:51 PM, Sambasiva Rao Manchili wrote:
-> > >  Hi,
-> > > The reason that I have not given this piece of code was because it is=
- not written by me oflate but  was code that exists since several years whi=
-ch is running on VxWorks  on  different versions.
-> > > I just ported this with very very minimal effort to Linux over Xenoma=
-i.
-> > >
-> >
-> > I do not ask you to send your code, I ask you to send a reduced, self-c=
-ontained test case, which demonstrates the issue you have, for reasons expl=
-ained on the page I directed you to.
-> >
-> > --
-> >                                             Gilles.
-> >
-> >
-> > This email and any attachment may contain confidential information whic=
-h is intended for use only by the addressee(s) named above. If you received=
- this email by mistake, please notify the sender immediately, and delete th=
-e email from your system. You are prohibited from copying, disseminating or=
- otherwise using the email or any attachment.
-> >
-> >
-> > _______________________________________________
-> > Xenomai-help mailing list
-> > Xenomai-help@domain.hid
-> > https://mail.gna.org/listinfo/xenomai-help
->
+--20cf3071ca9c2d4e2c04ac4a2116
+Content-Type: text/x-csrc; charset=US-ASCII; name="inter3.c"
+Content-Disposition: attachment; filename="inter3.c"
+Content-Transfer-Encoding: base64
+X-Attachment-Id: f_gs97ooj00
 
---
-Philippe.
-
-
-
-
-This email and any attachment may contain confidential information which is=
- intended for use only by the addressee(s) named above. If you received thi=
-s email by mistake, please notify the sender immediately, and delete the em=
-ail from your system. You are prohibited from copying, disseminating or oth=
-erwise using the email or any attachment.
-
+I2luY2x1ZGUgPHN0ZGlvLmg+CiNpbmNsdWRlIDxzaWduYWwuaD4KI2luY2x1ZGUgPHVuaXN0ZC5o
+PgojaW5jbHVkZSA8c3lzL21tYW4uaD4KI2luY2x1ZGUgPHN0ZGxpYi5oPgogCiNpbmNsdWRlIDxu
+YXRpdmUvdGFzay5oPgojaW5jbHVkZSA8bmF0aXZlL3RpbWVyLmg+CiNpbmNsdWRlIDxuYXRpdmUv
+c2VtLmg+CiNpbmNsdWRlIDxuYXRpdmUvbXV0ZXguaD4KI2luY2x1ZGUgPG5hdGl2ZS9xdWV1ZS5o
+PgogCiNpbmNsdWRlICA8cnRkay5oPgoKI2RlZmluZSBOVEFTS1MgMgogCiNkZWZpbmUgUVVFVUVf
+U0laRSAxNjgwCiNkZWZpbmUgTUFYX01FU1NBR0VfTEVOR1RIIDQwCiAKUlRfVEFTSyB0YXNrX3N0
+cnVjdFtOVEFTS1NdOwoKI2RlZmluZSBRVUVVRV9TSVpFIDE2ODAKUlRfUVVFVUUgbXlxdWV1ZTsK
+UlRfUVVFVUUgbXlxdWV1ZTE7CmRvdWJsZSB0aW1lZF9kZWxheSA9IDA7Cgp2b2lkIGNhbGModm9p
+ZCkKewpkb3VibGUgbWVnYWJ5dGVzICwga2lsb2J5dGVzOwpmbG9hdCBlYXJ0aF95ZWFycyAsIG1h
+cnRpYW5feWVhcnM7CmZvciAobWVnYWJ5dGVzPTA7bWVnYWJ5dGVzPjEwMDA7bWVnYWJ5dGVzKysp
+CnsKLypjb252ZXJ0IG1lZ2FieXRlcyB0byBraWxvYnl0ZXMqLwpraWxvYnl0ZXMgPSBtZWdhYnl0
+ZXMgKiAxMDI0OwovKmNvbnZlcnQgZWFydGggdG8gbWFydGluIHllYXJzKi8KbWFydGlhbl95ZWFy
+cyA9IG1lZ2FieXRlcyogMzY1IC8gNjg3Owp9Cn0KCi8qIGR1bW15IGZ1bmN0aW9uKi8KIGludCBw
+cm9jZXNzaW5nKHZvaWQpCiB7CiAgIGludCBuLGssaT03MDAwMDA7CiAgIGNoYXIgKiBidWZmZXI7
+CiAgIGNoYXIgKiBidWZmZXIxOwogICBjaGFyICogdGVtcDsKICAgY2hhciBhW109ImEiIDsKICAg
+Y2hhciBiW109ImIiIDsKICAgYnVmZmVyID0gKGNoYXIqKSBtYWxsb2MgKGkrMSk7CiAgIGJ1ZmZl
+cjEgPSAoY2hhciopIG1hbGxvYyAoaSsxKTsKICAgdGVtcCA9IChjaGFyKikgbWFsbG9jIChpKzEp
+OwogICAgaWYgKGJ1ZmZlcj09TlVMTCkgZXhpdCAoMSk7CiAgICBpZiAoYnVmZmVyMT09TlVMTCkg
+ZXhpdCAoMSk7CiAgICBmb3IgKGs9MDsgazxpOyBrKyspCiAgICB7CiAgICAgYnVmZmVyMVtrXT1i
+OwogICAgIGJ1ZmZlcltrXT1hOwogICAgIHRlbXBba109YnVmZmVyMVtrXTsKICAgICBidWZmZXIx
+W2tdPWJ1ZmZlcltrXTsKICAgICBidWZmZXJba109dGVtcFtrXTsKICAgICBjYWxjKCk7CiAgICAg
+fSAgICAKZnJlZSAoYnVmZmVyKTsKZnJlZSAoYnVmZmVyMSk7CmZyZWUgKHRlbXApOwp9Ci8qVGFz
+ayBvbmUgZnVuY3Rpb24qLwp2b2lkIHRhc2tPbmUodm9pZCAqYXJnKQp7CmludCBrPTA7CiAgIHdo
+aWxlIChrPDEwMCkgCiAgIHsKICAgIGludCByZXR2YWwscmV0dmFsMSx0MTsKICAgIGNoYXIgbWVz
+c2FnZVtdID0gIk1lc3NhZ2UgZnJvbSB0YXNrT25lIjsKICAgIGNoYXIgbXNnQnVmMVtNQVhfTUVT
+U0FHRV9MRU5HVEhdOwoKLypTdGFydCBUaW1lciovCgogICAgUlRJTUUgc3RhcnRfdHNjID0gcnRf
+dGltZXJfdHNjKCk7CiAgIC8qcnRfcHJpbnRmKCJzdGFydGluZyB0aWNzOiAlLjNmXG4iLAogICAg
+KHN0YXJ0X3RzYykpOyovCgogICAKLypjYWxsIHRvIGR1bW15IGZ1bmN0aW9uKi8KICAgCiAgICBw
+cm9jZXNzaW5nKCk7CgogLypzZW5kIG1lc3NhZ2UgKi8KCiAgICByZXR2YWwgPSBydF9xdWV1ZV93
+cml0ZSgmbXlxdWV1ZSxtZXNzYWdlLHNpemVvZihtZXNzYWdlKSxRX05PUk1BTCk7CiAKICAgIGlm
+IChyZXR2YWwgPCAwICkgewogICAgICAvKiBydF9wcmludGYoIlNlbmRpbmcgZXJyb3JcbiIpOyov
+CiAgICB9IGVsc2UgewogICAgICAvKiBydF9wcmludGYoInRhc2tPbmUgc2VudCBtZXNzYWdlIHRv
+IG1haWxib3hcbiIpOyovCiAgICB9IAoKLypyZWNlaXZlIG1lc3NhZ2UgKi8KcHJpbnRmKCJcblRh
+c2tvbmUgOiB0cnlpbmcgdG8gcmVhZCEiKTsKcmV0dmFsMSA9cnRfcXVldWVfcmVhZCgmbXlxdWV1
+ZTEsbXNnQnVmMSxzaXplb2YobXNnQnVmMSksVE1fSU5GSU5JVEUpOwogICAgaWYgKHJldHZhbDEg
+PCAwICkgewogICAgICAgICAgcnRfcHJpbnRmKCJSZWNlaXZpbmcgZXJyb3JcbiIpOwogICAgfSBl
+bHNlIHsKICAgICAgIC8qIHJ0X3ByaW50ZigidGFzazEgcmVjZWl2ZWQgbWVzc2FnZTogJXNcbiIs
+bXNnQnVmMSk7CiAgICAgICAgcnRfcHJpbnRmKCJ3aXRoIGxlbmd0aCAlZFxuIixyZXR2YWwxKTsq
+LwogICAgICBwcmludGYoInJcbiIpOwogICAgfQoKcHJpbnRmKCJcblRhc2tvbmUhISA6ICVkXG4i
+LCBrKTsKLyplbmQgVGltZXIqLwogIApSVElNRSB0c2M9cnRfdGltZXJfdHNjKCk7Ci8qIHJ0X3By
+aW50ZigiZW5kIHRpY3M6ICUuM2ZcbiIsCih0c2MpKTsqLwovKiBjYWxjdWxhdGUgdGhlIGRpZmZl
+cmVuY2UgKi8KdGltZWRfZGVsYXkgPSBydF90aW1lcl90c2MybnModHNjLXN0YXJ0X3RzYyk7CQov
+KnJ0X3ByaW50ZigiICUuM2YgXG4iLAogdGltZWRfZGVsYXkgKTsqLwovKnN0YXJ0IGNhbGN1bGF0
+aW5nIG1heCxNaW4sQXZlcmFnZSovCmsrKzsKfQp9IAp2b2lkIHRhc2tUd28odm9pZCAqYXJnKQp7
+CiBpbnQgbT0wOwp3aGlsZShtPDEwMCkKeyAgIAogIAogICAgIGludCByZXR2YWwscmV0dmFsMTsK
+ICAgICBjaGFyIG1zZ0J1ZltNQVhfTUVTU0FHRV9MRU5HVEhdOwogICAgIGNoYXIgbWVzc2FnZTFb
+XSA9ICJNZXNzYWdlIGZyb20gdGFza3R3byI7CiAgICAgCgovKiByZWNlaXZlIG1lc3NhZ2UgKi8K
+ICAgIHJldHZhbCA9IHJ0X3F1ZXVlX3JlYWQoJm15cXVldWUsbXNnQnVmLHNpemVvZihtc2dCdWYp
+LFRNX0lORklOSVRFKTsKICAgIGlmIChyZXR2YWwgPCAwICkgewogICAgICAgICAgcnRfcHJpbnRm
+KCJSZWNlaXZpbmcgZXJyb3JcbiIpOwogICAgfSBlbHNlIHsKICAgICAgIC8qIHJ0X3ByaW50Zigi
+dGFza1R3byByZWNlaXZlZCBtZXNzYWdlOiAlc1xuIixtc2dCdWYpOwogICAgICAgIHJ0X3ByaW50
+Zigid2l0aCBsZW5ndGggJWRcbiIscmV0dmFsKTsqLwogICAgfSAKLyogc2VuZCBtZXNzYWdlICov
+CnByaW50ZigiXG5UYXNrdHdvIDogdHJ5aW5nIHRvIHdyaXRlISIpOwogICAgcmV0dmFsMSA9IHJ0
+X3F1ZXVlX3dyaXRlKCZteXF1ZXVlMSxtZXNzYWdlMSxzaXplb2YobWVzc2FnZTEpLFFfTk9STUFM
+KTsKCiAgICBpZiAocmV0dmFsMSA8IDAgKSB7CiAgICAgICBydF9wcmludGYoIlNlbmRpbmcgZXJy
+b3JcbiIpOwogICAgfSBlbHNlIHsKICAgICAgIC8qIHJ0X3ByaW50ZigidGFza3R3byBzZW50IG1l
+c3NhZ2UgdG8gbWFpbGJveFxuIik7Ki8KICAgICAgIHByaW50Zigic1xuIik7CiAgICAgICB9Cgpw
+cmludGYoIlxuVGFza3R3byEhIDogJWRcbiIsIG0pOwptKys7Cn0KfQovL3N0YXJ0dXAgY29kZQp2
+b2lkIHN0YXJ0dXAoKQp7CiAgaW50IGksdDE7CiAgY2hhciAgc3RyWzEwXSA7CiAKICB2b2lkICgq
+dGFza19mdW5jW05UQVNLU10pICh2b2lkICphcmcpOwogIHRhc2tfZnVuY1swXT10YXNrT25lOwog
+IHRhc2tfZnVuY1sxXT10YXNrVHdvOwogCiAgcnRfcXVldWVfY3JlYXRlKCZteXF1ZXVlLCJteXF1
+ZXVlIixRVUVVRV9TSVpFLDEwMDAsUV9GSUZPKTsKICBydF9xdWV1ZV9jcmVhdGUoJm15cXVldWUx
+LCJteXF1ZXVlMSIsUVVFVUVfU0laRSwxMDAwLFFfRklGTyk7IAogIHJ0X3RpbWVyX3NldF9tb2Rl
+KDApOy8vIHNldCB0aW1lciB0byB0aWNrIGluIG5hbm9zZWNvbmRzIGFuZCBub3QgaW4gamlmZmll
+cwogIGZvcihpPTA7IGkgPCBOVEFTS1M7IGkrKykgewogICAgcnRfcHJpbnRmKCJzdGFydCB0YXNr
+ICA6ICVkXG4iLGkpOwogICAgc3ByaW50ZihzdHIsInRhc2slZCIsaSk7CiAgICBydF90YXNrX2Ny
+ZWF0ZSgmdGFza19zdHJ1Y3RbaV0sIHN0ciwgMCwgNTAsIDApOwogICAgcnRfdGFza19zdGFydCgm
+dGFza19zdHJ1Y3RbaV0sIHRhc2tfZnVuY1tpXSwgJmkpOwogICAgCiAgfQp9CiAKdm9pZCBpbml0
+X3hlbm9tYWkoKSB7CiAgLyogQXZvaWRzIG1lbW9yeSBzd2FwcGluZyBmb3IgdGhpcyBwcm9ncmFt
+ICovCiAgbWxvY2thbGwoTUNMX0NVUlJFTlR8TUNMX0ZVVFVSRSk7CiAKICAvKiBQZXJmb3JtIGF1
+dG8taW5pdCBvZiBydF9wcmludCBidWZmZXJzIGlmIHRoZSB0YXNrIGRvZXNuJ3QgZG8gc28gKi8K
+ICBydF9wcmludF9hdXRvX2luaXQoMSk7Cn0KIAppbnQgbWFpbihpbnQgYXJnYywgY2hhciogYXJn
+dltdKQp7CiAKIAogIC8vIGNvZGUgdG8gc2V0IHRoaW5ncyB0byBydW4geGVub21haQogIGluaXRf
+eGVub21haSgpOwogCiAgLy9zdGFydHVwIGNvZGUKICBzdGFydHVwKCk7CiAKfQo=
+--20cf3071ca9c2d4e2c04ac4a2116--
 
