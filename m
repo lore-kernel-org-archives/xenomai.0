@@ -1,9 +1,13 @@
 MIME-Version: 1.0
-Date: Tue, 6 Sep 2011 20:38:10 +0200
-Message-ID: <CAL+uwv_iCwA9yQq9LdeOgOWg9Eje+WqRGLctauwP5dj5fWDVOg@domain.hid>
-From: suresh reddy <sureshreddy.balijepalli@domain.hid>
-Content-Type: multipart/mixed; boundary=20cf3071ca9c2d4e2c04ac4a2116
-Subject: [Xenomai-help] Message queue services
+In-Reply-To: <CACRhLDksjAKdeR233NCXUG_9DrqsMmB+L=wjgudT2fZ1=XXBbg@domain.hid>
+References: <CACRhLDksjAKdeR233NCXUG_9DrqsMmB+L=wjgudT2fZ1=XXBbg@domain.hid>
+Date: Wed, 7 Sep 2011 21:37:24 +0200
+Message-ID: <CACRhLDmOWDMWht-qtA=wbLU+vFHOjKS4aRa0H96kpPDoELciVw@domain.hid>
+From: =?ISO-8859-1?Q?Thomas_Kr=FCger?= <thomas.krueger.home@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai-help] Analogy data aquisition - How to set up the range
+	correctly
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -13,120 +17,197 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Xenomai help <xenomai@xenomai.org>
-
---20cf3071ca9c2d4e2c04ac4a2116
-Content-Type: multipart/alternative; boundary=20cf3071ca9c2d4e2804ac4a2114
-
---20cf3071ca9c2d4e2804ac4a2114
-Content-Type: text/plain; charset=ISO-8859-1
+To: xenomai@xenomai.org
 
 Dear all,
 
-Iam using message queue services to communicate between two xenomai threads.
-Iam trying using while loop in each thread to loop that for some 100 or 1000
-iterations . But after 3 iterations it showing that the program ended. The
-attached file contains the program .  Its not hanging but terminating out of
-execution.
+I am using a DAQ card from national instruments 6071E to measure
+analog values. It works fine but I have some problems changing the
+range:
 
--- 
+I found the a4l_find_range function and it works well, seeing the
+range_info changes according to my wishes. But I realise that the only
+function that uses the range information is the a4l_rawtod. It works
+for the range conversion but technically the range is never changed on
+the card itself (switching to another internal gain) and so the value
+I coming out at the end is wrong (mismatch between the setting on the
+io-card and a4l_rawtod).
 
-Suresh balijepalli
-Rosenehim,Baveria.
+Which function do I have to use or how to pass this information to the card=
+?
 
---20cf3071ca9c2d4e2804ac4a2114
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Thanks for your answers in advance.
 
-<div dir=3D"ltr">Dear all,<div><br></div><div>Iam using message queue servi=
-ces to communicate between two xenomai threads. Iam trying using while loop=
- in each thread to loop that for some 100 or 1000 iterations . But after 3 =
-iterations it showing that the program ended. The attached file contains th=
-e program . =A0Its not hanging but terminating out of execution.</div>
-<div><div><br></div>-- <br><br>Suresh balijepalli<br>Rosenehim,Baveria.<br>
-</div></div>
+Cheers,
+Thomas
 
---20cf3071ca9c2d4e2804ac4a2114--
 
---20cf3071ca9c2d4e2c04ac4a2116
-Content-Type: text/x-csrc; charset=US-ASCII; name="inter3.c"
-Content-Disposition: attachment; filename="inter3.c"
-Content-Transfer-Encoding: base64
-X-Attachment-Id: f_gs97ooj00
+My test program:
 
-I2luY2x1ZGUgPHN0ZGlvLmg+CiNpbmNsdWRlIDxzaWduYWwuaD4KI2luY2x1ZGUgPHVuaXN0ZC5o
-PgojaW5jbHVkZSA8c3lzL21tYW4uaD4KI2luY2x1ZGUgPHN0ZGxpYi5oPgogCiNpbmNsdWRlIDxu
-YXRpdmUvdGFzay5oPgojaW5jbHVkZSA8bmF0aXZlL3RpbWVyLmg+CiNpbmNsdWRlIDxuYXRpdmUv
-c2VtLmg+CiNpbmNsdWRlIDxuYXRpdmUvbXV0ZXguaD4KI2luY2x1ZGUgPG5hdGl2ZS9xdWV1ZS5o
-PgogCiNpbmNsdWRlICA8cnRkay5oPgoKI2RlZmluZSBOVEFTS1MgMgogCiNkZWZpbmUgUVVFVUVf
-U0laRSAxNjgwCiNkZWZpbmUgTUFYX01FU1NBR0VfTEVOR1RIIDQwCiAKUlRfVEFTSyB0YXNrX3N0
-cnVjdFtOVEFTS1NdOwoKI2RlZmluZSBRVUVVRV9TSVpFIDE2ODAKUlRfUVVFVUUgbXlxdWV1ZTsK
-UlRfUVVFVUUgbXlxdWV1ZTE7CmRvdWJsZSB0aW1lZF9kZWxheSA9IDA7Cgp2b2lkIGNhbGModm9p
-ZCkKewpkb3VibGUgbWVnYWJ5dGVzICwga2lsb2J5dGVzOwpmbG9hdCBlYXJ0aF95ZWFycyAsIG1h
-cnRpYW5feWVhcnM7CmZvciAobWVnYWJ5dGVzPTA7bWVnYWJ5dGVzPjEwMDA7bWVnYWJ5dGVzKysp
-CnsKLypjb252ZXJ0IG1lZ2FieXRlcyB0byBraWxvYnl0ZXMqLwpraWxvYnl0ZXMgPSBtZWdhYnl0
-ZXMgKiAxMDI0OwovKmNvbnZlcnQgZWFydGggdG8gbWFydGluIHllYXJzKi8KbWFydGlhbl95ZWFy
-cyA9IG1lZ2FieXRlcyogMzY1IC8gNjg3Owp9Cn0KCi8qIGR1bW15IGZ1bmN0aW9uKi8KIGludCBw
-cm9jZXNzaW5nKHZvaWQpCiB7CiAgIGludCBuLGssaT03MDAwMDA7CiAgIGNoYXIgKiBidWZmZXI7
-CiAgIGNoYXIgKiBidWZmZXIxOwogICBjaGFyICogdGVtcDsKICAgY2hhciBhW109ImEiIDsKICAg
-Y2hhciBiW109ImIiIDsKICAgYnVmZmVyID0gKGNoYXIqKSBtYWxsb2MgKGkrMSk7CiAgIGJ1ZmZl
-cjEgPSAoY2hhciopIG1hbGxvYyAoaSsxKTsKICAgdGVtcCA9IChjaGFyKikgbWFsbG9jIChpKzEp
-OwogICAgaWYgKGJ1ZmZlcj09TlVMTCkgZXhpdCAoMSk7CiAgICBpZiAoYnVmZmVyMT09TlVMTCkg
-ZXhpdCAoMSk7CiAgICBmb3IgKGs9MDsgazxpOyBrKyspCiAgICB7CiAgICAgYnVmZmVyMVtrXT1i
-OwogICAgIGJ1ZmZlcltrXT1hOwogICAgIHRlbXBba109YnVmZmVyMVtrXTsKICAgICBidWZmZXIx
-W2tdPWJ1ZmZlcltrXTsKICAgICBidWZmZXJba109dGVtcFtrXTsKICAgICBjYWxjKCk7CiAgICAg
-fSAgICAKZnJlZSAoYnVmZmVyKTsKZnJlZSAoYnVmZmVyMSk7CmZyZWUgKHRlbXApOwp9Ci8qVGFz
-ayBvbmUgZnVuY3Rpb24qLwp2b2lkIHRhc2tPbmUodm9pZCAqYXJnKQp7CmludCBrPTA7CiAgIHdo
-aWxlIChrPDEwMCkgCiAgIHsKICAgIGludCByZXR2YWwscmV0dmFsMSx0MTsKICAgIGNoYXIgbWVz
-c2FnZVtdID0gIk1lc3NhZ2UgZnJvbSB0YXNrT25lIjsKICAgIGNoYXIgbXNnQnVmMVtNQVhfTUVT
-U0FHRV9MRU5HVEhdOwoKLypTdGFydCBUaW1lciovCgogICAgUlRJTUUgc3RhcnRfdHNjID0gcnRf
-dGltZXJfdHNjKCk7CiAgIC8qcnRfcHJpbnRmKCJzdGFydGluZyB0aWNzOiAlLjNmXG4iLAogICAg
-KHN0YXJ0X3RzYykpOyovCgogICAKLypjYWxsIHRvIGR1bW15IGZ1bmN0aW9uKi8KICAgCiAgICBw
-cm9jZXNzaW5nKCk7CgogLypzZW5kIG1lc3NhZ2UgKi8KCiAgICByZXR2YWwgPSBydF9xdWV1ZV93
-cml0ZSgmbXlxdWV1ZSxtZXNzYWdlLHNpemVvZihtZXNzYWdlKSxRX05PUk1BTCk7CiAKICAgIGlm
-IChyZXR2YWwgPCAwICkgewogICAgICAvKiBydF9wcmludGYoIlNlbmRpbmcgZXJyb3JcbiIpOyov
-CiAgICB9IGVsc2UgewogICAgICAvKiBydF9wcmludGYoInRhc2tPbmUgc2VudCBtZXNzYWdlIHRv
-IG1haWxib3hcbiIpOyovCiAgICB9IAoKLypyZWNlaXZlIG1lc3NhZ2UgKi8KcHJpbnRmKCJcblRh
-c2tvbmUgOiB0cnlpbmcgdG8gcmVhZCEiKTsKcmV0dmFsMSA9cnRfcXVldWVfcmVhZCgmbXlxdWV1
-ZTEsbXNnQnVmMSxzaXplb2YobXNnQnVmMSksVE1fSU5GSU5JVEUpOwogICAgaWYgKHJldHZhbDEg
-PCAwICkgewogICAgICAgICAgcnRfcHJpbnRmKCJSZWNlaXZpbmcgZXJyb3JcbiIpOwogICAgfSBl
-bHNlIHsKICAgICAgIC8qIHJ0X3ByaW50ZigidGFzazEgcmVjZWl2ZWQgbWVzc2FnZTogJXNcbiIs
-bXNnQnVmMSk7CiAgICAgICAgcnRfcHJpbnRmKCJ3aXRoIGxlbmd0aCAlZFxuIixyZXR2YWwxKTsq
-LwogICAgICBwcmludGYoInJcbiIpOwogICAgfQoKcHJpbnRmKCJcblRhc2tvbmUhISA6ICVkXG4i
-LCBrKTsKLyplbmQgVGltZXIqLwogIApSVElNRSB0c2M9cnRfdGltZXJfdHNjKCk7Ci8qIHJ0X3By
-aW50ZigiZW5kIHRpY3M6ICUuM2ZcbiIsCih0c2MpKTsqLwovKiBjYWxjdWxhdGUgdGhlIGRpZmZl
-cmVuY2UgKi8KdGltZWRfZGVsYXkgPSBydF90aW1lcl90c2MybnModHNjLXN0YXJ0X3RzYyk7CQov
-KnJ0X3ByaW50ZigiICUuM2YgXG4iLAogdGltZWRfZGVsYXkgKTsqLwovKnN0YXJ0IGNhbGN1bGF0
-aW5nIG1heCxNaW4sQXZlcmFnZSovCmsrKzsKfQp9IAp2b2lkIHRhc2tUd28odm9pZCAqYXJnKQp7
-CiBpbnQgbT0wOwp3aGlsZShtPDEwMCkKeyAgIAogIAogICAgIGludCByZXR2YWwscmV0dmFsMTsK
-ICAgICBjaGFyIG1zZ0J1ZltNQVhfTUVTU0FHRV9MRU5HVEhdOwogICAgIGNoYXIgbWVzc2FnZTFb
-XSA9ICJNZXNzYWdlIGZyb20gdGFza3R3byI7CiAgICAgCgovKiByZWNlaXZlIG1lc3NhZ2UgKi8K
-ICAgIHJldHZhbCA9IHJ0X3F1ZXVlX3JlYWQoJm15cXVldWUsbXNnQnVmLHNpemVvZihtc2dCdWYp
-LFRNX0lORklOSVRFKTsKICAgIGlmIChyZXR2YWwgPCAwICkgewogICAgICAgICAgcnRfcHJpbnRm
-KCJSZWNlaXZpbmcgZXJyb3JcbiIpOwogICAgfSBlbHNlIHsKICAgICAgIC8qIHJ0X3ByaW50Zigi
-dGFza1R3byByZWNlaXZlZCBtZXNzYWdlOiAlc1xuIixtc2dCdWYpOwogICAgICAgIHJ0X3ByaW50
-Zigid2l0aCBsZW5ndGggJWRcbiIscmV0dmFsKTsqLwogICAgfSAKLyogc2VuZCBtZXNzYWdlICov
-CnByaW50ZigiXG5UYXNrdHdvIDogdHJ5aW5nIHRvIHdyaXRlISIpOwogICAgcmV0dmFsMSA9IHJ0
-X3F1ZXVlX3dyaXRlKCZteXF1ZXVlMSxtZXNzYWdlMSxzaXplb2YobWVzc2FnZTEpLFFfTk9STUFM
-KTsKCiAgICBpZiAocmV0dmFsMSA8IDAgKSB7CiAgICAgICBydF9wcmludGYoIlNlbmRpbmcgZXJy
-b3JcbiIpOwogICAgfSBlbHNlIHsKICAgICAgIC8qIHJ0X3ByaW50ZigidGFza3R3byBzZW50IG1l
-c3NhZ2UgdG8gbWFpbGJveFxuIik7Ki8KICAgICAgIHByaW50Zigic1xuIik7CiAgICAgICB9Cgpw
-cmludGYoIlxuVGFza3R3byEhIDogJWRcbiIsIG0pOwptKys7Cn0KfQovL3N0YXJ0dXAgY29kZQp2
-b2lkIHN0YXJ0dXAoKQp7CiAgaW50IGksdDE7CiAgY2hhciAgc3RyWzEwXSA7CiAKICB2b2lkICgq
-dGFza19mdW5jW05UQVNLU10pICh2b2lkICphcmcpOwogIHRhc2tfZnVuY1swXT10YXNrT25lOwog
-IHRhc2tfZnVuY1sxXT10YXNrVHdvOwogCiAgcnRfcXVldWVfY3JlYXRlKCZteXF1ZXVlLCJteXF1
-ZXVlIixRVUVVRV9TSVpFLDEwMDAsUV9GSUZPKTsKICBydF9xdWV1ZV9jcmVhdGUoJm15cXVldWUx
-LCJteXF1ZXVlMSIsUVVFVUVfU0laRSwxMDAwLFFfRklGTyk7IAogIHJ0X3RpbWVyX3NldF9tb2Rl
-KDApOy8vIHNldCB0aW1lciB0byB0aWNrIGluIG5hbm9zZWNvbmRzIGFuZCBub3QgaW4gamlmZmll
-cwogIGZvcihpPTA7IGkgPCBOVEFTS1M7IGkrKykgewogICAgcnRfcHJpbnRmKCJzdGFydCB0YXNr
-ICA6ICVkXG4iLGkpOwogICAgc3ByaW50ZihzdHIsInRhc2slZCIsaSk7CiAgICBydF90YXNrX2Ny
-ZWF0ZSgmdGFza19zdHJ1Y3RbaV0sIHN0ciwgMCwgNTAsIDApOwogICAgcnRfdGFza19zdGFydCgm
-dGFza19zdHJ1Y3RbaV0sIHRhc2tfZnVuY1tpXSwgJmkpOwogICAgCiAgfQp9CiAKdm9pZCBpbml0
-X3hlbm9tYWkoKSB7CiAgLyogQXZvaWRzIG1lbW9yeSBzd2FwcGluZyBmb3IgdGhpcyBwcm9ncmFt
-ICovCiAgbWxvY2thbGwoTUNMX0NVUlJFTlR8TUNMX0ZVVFVSRSk7CiAKICAvKiBQZXJmb3JtIGF1
-dG8taW5pdCBvZiBydF9wcmludCBidWZmZXJzIGlmIHRoZSB0YXNrIGRvZXNuJ3QgZG8gc28gKi8K
-ICBydF9wcmludF9hdXRvX2luaXQoMSk7Cn0KIAppbnQgbWFpbihpbnQgYXJnYywgY2hhciogYXJn
-dltdKQp7CiAKIAogIC8vIGNvZGUgdG8gc2V0IHRoaW5ncyB0byBydW4geGVub21haQogIGluaXRf
-eGVub21haSgpOwogCiAgLy9zdGFydHVwIGNvZGUKICBzdGFydHVwKCk7CiAKfQo=
---20cf3071ca9c2d4e2c04ac4a2116--
+// simple build cmd: g++ test-pcimio.c -I/usr/xenomai/include/
+-lxenomai -lnative -lanalogy -lpthread -lrtdm -L/usr/xenomai/lib
+// execute #./a.out
+
+
+#include <time.h>
+#include <stdio.h>
+#include <string.h>
+#include <stdint.h>
+#include <stdlib.h>
+#include <errno.h>
+#include <xenomai/analogy/analogy.h>
+
+/*
+=A0* Initialization function, activated once by PolyORB (at startup)
+*/
+a4l_desc_t =A0 =A0 =A0arm_device;
+int =A0 =A0 =A0 =A0 =A0 =A0 ni_6071e_analog_channels[16] =3D
+{0,1,2,4,5,6,16,17,18,19,21,23,32,33,34,35};
+int =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 range_settings[=
+16] =3D {-5, -10, -10, 5,
+5, 5, 5, -5, -5, -5, -5,
+10, 10, 10, -0.5, 0.5};
+a4l_chinfo_t =A0 *ni_6071e_analog_channel_infos[16];
+a4l_rnginfo_t =A0*ni_6071e_analog_range_infos[16];
+
+int analog_init =3D 0;
+
+void init_arm()
+{
+=A0 int =A0 =A0 =A0 =A0 =A0i =3D 0;
+=A0 int =A0 =A0 =A0 =A0 =A0ret;
+=A0 double =A0 =A0 =A0 Range_Value;
+=A0 double =A0 =A0 =A0 Range_Max;
+=A0 double =A0 =A0 =A0 Range_Min;
+
+=A0 ret =3D a4l_open (&arm_device, "analogy0");
+
+=A0 if (ret !=3D 0)
+=A0 {
+=A0 =A0 =A0printf ("[EXOARM] Error while opening the arm device, return
+code=3D%d \n", ret);
+=A0 =A0 =A0return;
+=A0 }
+=A0 =A0 arm_device.sbdata =3D malloc(arm_device.sbsize);
+
+
+=A0 ret =3D a4l_fill_desc (&arm_device);
+
+=A0 if (ret !=3D 0)
+=A0 {
+=A0 =A0 =A0printf ("[EXOARM] Error while calling fill_desc(), return
+code=3D%d \n", ret);
+=A0 =A0 =A0return;
+=A0 }
+
+
+=A0 for (i=3D0; i<16; i ++)
+=A0 {
+=A0 =A0 =A0ret =3D a4l_get_chinfo (&arm_device, 0,
+ni_6071e_analog_channels[i], &ni_6071e_analog_channel_infos[i]);
+=A0 =A0 =A0if (ret !=3D 0)
+=A0 =A0 =A0{
+=A0 =A0 =A0 =A0 printf ("[EXOARM] Error invoking a4l_get_chinfo on channel
+%d, return code=3D%d \n", ni_6071e_analog_channels[i], ret);
+=A0 =A0 =A0}
+=A0 =A0 =A0ret =3D a4l_get_rnginfo (&arm_device, 0,
+ni_6071e_analog_channels[i], 0, &ni_6071e_analog_range_infos[i]);
+=A0 =A0 =A0if (ret !=3D 0)
+=A0 =A0 =A0{
+=A0 =A0 =A0 =A0 printf ("[EXOARM] Error invoking a4l_get_chinfo on channel
+%d, return code=3D%d \n", ni_6071e_analog_channels[i], ret);
+=A0 =A0 =A0}
+=A0 }
+
+=A0 //setting up the range
+=A0 for(i=3D0;i <16; i++)
+=A0 {
+=A0 =A0 =A0Range_Value =3D range_settings[i];
+=A0 =A0 =A0if (Range_Value < 0)
+=A0 =A0 =A0{
+=A0 =A0 =A0 =A0 Range_Min =3D Range_Value;
+=A0 =A0 =A0}
+=A0 =A0 =A0else
+=A0 =A0 =A0{
+=A0 =A0 =A0 =A0 Range_Min =3D 0.0;
+=A0 =A0 =A0}
+=A0 =A0 =A0Range_Max =3D abs(Range_Value);
+
+=A0 =A0 =A0ret =3D a4l_find_range
+=A0 =A0 =A0 =A0 =A0 =A0( =A0&arm_device, =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 //=
+device
+=A0 =A0 =A0 =A0 =A0 =A0 =A0 0, =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
+=A0 =A0 //subindex
+=A0 =A0 =A0 =A0 =A0 =A0 =A0 ni_6071e_analog_channels[i], //idx channel
+=A0 =A0 =A0 =A0 =A0 =A0 =A0 A4L_RNG_VOLT_UNIT, =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
+=A0 =A0 =A0 =A0 =A0 =A0 //unit
+=A0 =A0 =A0 =A0 =A0 =A0 =A0 Range_Min,
+=A0 =A0 =A0 =A0 =A0 =A0 =A0 Range_Max,
+=A0 =A0 =A0 =A0 =A0 =A0 =A0 &ni_6071e_analog_range_infos[i]
+=A0 =A0 =A0 =A0 =A0 =A0 =A0 );
+=A0 =A0 =A0if ((ret =3D=3D -ENOENT) || (ret =3D=3D -EINVAL))
+=A0 =A0 =A0{
+=A0 =A0 =A0 =A0 printf("Error while configuring ranges 6071\n");
+=A0 =A0 =A0}
+
+=A0 }//end for loop
+
+=A0 analog_init =3D 1;
+}
+
+void arm_poll_acquisition_board()
+{
+=A0 int i;
+=A0 double tmp;
+=A0 int ret;
+=A0 uint8_t raw[128];
+
+=A0 if (analog_init =3D=3D 0) {
+=A0 =A0 =A0printf("[arm] Runtime Error - Periodic task activated before
+proper initialization.\n");
+=A0 =A0 =A0return;
+=A0 }
+
+
+=A0 for (i=3D0; i<16; i++)
+=A0 {
+=A0 =A0 =A0ret =3D a4l_sync_read (&arm_device, 0,
+ni_6071e_analog_channels[i], 0, &raw, 128);
+=A0 =A0 =A0if (ret <=3D 0)
+=A0 =A0 =A0{
+=A0 =A0 =A0 =A0 =A0printf("[arm] Error while acquiring the data\n");
+=A0 =A0 =A0}
+
+=A0 =A0 =A0ret =3D a4l_rawtod (ni_6071e_analog_channel_infos[i],
+ni_6071e_analog_range_infos[i], &tmp, &raw, 1);
+
+=A0 =A0 =A0if (ret <=3D 0)
+=A0 =A0 =A0{
+=A0 =A0 =A0 =A0 =A0printf("[arm] Error while converting the data\n");
+=A0 =A0 =A0}
+=A0 =A0 =A0else
+=A0 =A0 =A0{
+=A0 =A0 =A0 =A0if(i !=3D 0)
+{
+printf(";");
+}
+=A0 =A0 =A0 =A0 =A0printf("%lf", tmp);
+
+=A0 =A0 =A0 =A0}
+=A0 }
+printf("]\n[");
+=A0 return;
+}
+
+
+
+int main ()
+{
+=A0 init_arm ();
+=A0 while (1)
+=A0 {
+=A0 =A0 =A0arm_poll_acquisition_board();
+=A0 =A0 =A0sleep (4);
+=A0 }
+}
 
