@@ -1,17 +1,13 @@
-Message-ID: <4E67AE36.9080608@domain.hid>
-Date: Wed, 07 Sep 2011 19:47:34 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4E63E503.8090206@domain.hid> <4E66049D.6000105@domain.hid>	
-	<1315315628.20820.48.camel@domain.hid>
-	<4E662BD6.9080205@domain.hid>	
-	<1315320786.20820.53.camel@domain.hid>
-	<1315320835.20820.54.camel@domain.hid>	
-	<1315321820.20820.62.camel@domain.hid> <4E66643B.7050402@domain.hid>
-	<1315343717.20820.87.camel@domain.hid>
-In-Reply-To: <1315343717.20820.87.camel@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <4E65075C.4060502@domain.hid>
+References: <4E63E503.8090206@domain.hid>
+	<CANKLDmvQ-q6nBXSRWs_R4RC_c7kmzM0tMmFbCBw59cbyPdSyzA@mail.gmail.com>
+	<4E65075C.4060502@domain.hid>
+Date: Thu, 8 Sep 2011 11:10:54 +0200
+Message-ID: <CANKLDmtTucpa8sCFY7dPV_-ebRx1B_Ea9pde=217N33MX9q8Pg@domain.hid>
+From: Henri Roosen <henriroosen@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 Subject: Re: [Xenomai-core] [Xenomai-help] Xenomai 2.6.0-rc1
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
@@ -21,84 +17,54 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Xenomai core <Xenomai-core@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Xenomai help <xenomai@xenomai.org>, Xenomai core <Xenomai-core@domain.hid>
 
-On 09/06/2011 11:15 PM, Philippe Gerum wrote:
-> On Tue, 2011-09-06 at 20:19 +0200, Gilles Chanteperdrix wrote:
->> On 09/06/2011 05:10 PM, Philippe Gerum wrote:
->>> On Tue, 2011-09-06 at 16:53 +0200, Philippe Gerum wrote:
->>>> On Tue, 2011-09-06 at 16:53 +0200, Philippe Gerum wrote:
->>>>> On Tue, 2011-09-06 at 16:19 +0200, Gilles Chanteperdrix wrote:
->>>>>> On 09/06/2011 03:27 PM, Philippe Gerum wrote:
->>>>>>> On Tue, 2011-09-06 at 13:31 +0200, Gilles Chanteperdrix wrote:
->>>>>>>> On 09/04/2011 10:52 PM, Gilles Chanteperdrix wrote:
->>>>>>>>>
->>>>>>>>> Hi,
->>>>>>>>>
->>>>>>>>> The first release candidate for the 2.6.0 version may be downloaded here:
->>>>>>>>>
->>>>>>>>> http://download.gna.org/xenomai/testing/xenomai-2.6.0-rc1.tar.bz2
->>>>>>>>
->>>>>>>> Hi,
->>>>>>>>
->>>>>>>> currently 2.6.0-rc1 fails to build on 2.4 kernel, with errors related to
->>>>>>>> vfile support. Do we really want to still support 2.4 kernels?
->>>>>>>>
->>>>>>>
->>>>>>> That would not be a massive loss, but removing linux 2.4 support is more
->>>>>>> than a few hunks here and there, so this may not be the right thing to
->>>>>>> do ATM. Besides, it would be better not to leave the few linux 2.4 users
->>>>>>> out there without upgrade path to xenomai 2.6, since this will be the
->>>>>>> last maintained version from the Xenomai 2.x architecture.
->>>>>>>
->>>>>>> That stuff does not compile likely because the Config.in bits are not up
->>>>>>> to date, blame it on me. I'll make this build over linux 2.4 and commit
->>>>>>> the result today.
->>>>>>>
->>>>>>
->>>>>> No problem, I was not looking for someone to blame... Since you are at
->>>>>> it, I have problems compiling the nios2 kernel too, but I am not sure I
->>>>>> got the proper configuration file.
->>>>>>
->>>>>
->>>>> HEAD builds fine based on the attached .config. 
->>>>>
->>>
->>> Btw we now only support the MMU version (2.6.35.2) of this kernel over
->>> Xenomai 2.6. Reference tree is available there:
->>>
->>> url = git://sopc.et.ntust.edu.tw/git/linux-2.6.git
->>> branch = nios2mmu
->>>
->>> nommu support is discontinued for nios2 - people who depend on it should
->>> stick with Xenomai 2.5.x.
->>>
+On Mon, Sep 5, 2011 at 7:31 PM, Gilles Chanteperdrix
+<gilles.chanteperdrix@xenomai.org> wrote:
+> On 09/05/2011 07:14 PM, Henri Roosen wrote:
+>> Hi Gilles,
 >>
->> Ok, still not building, maybe the commit number mentioned in the README
->> is not up-to-date?
+>> Unfortunately I didn't find the time to test this release yet. I'm
+>> just wondering if there is a fix for this problem in the 2.6.0
+>> release: https://mail.gna.org/public/xenomai-core/2011-05/msg00028.html
+>
+> This one is fixed, a bit differently, since we fixed the ppd handling so
+> that the ppd is valid up to the end of a process.
+>
 >>
-> 
-> The commit # is correct, but I suspect that your kernel tree does not
-> have the files normally created by the SOPC builder anymore, these can't
-> (may not actually) be included in the pipeline patch. In short, your
-> tree might be missing the bits corresponding to the fpga design your
-> build for, so basic symbols like HRCLOCK* and HRTIMER* are undefined.
-> 
-> I'm building for a cyclone 3c25 from the NEEK kit, with SOPC files
-> available from arch/nios2/boards/neek. Any valuable files in there on
-> your side? (typically, include/asm/custom_fpga.h should contain
-> definitions for our real-time clocks and timers)
-> 
+>> We are using the auto-relax patches on top of 2.5.6 for a long time
+>> now. We found issues with it regarding auto-relax tasks that were not
+>> being auto-relaxed anymore. Philippe made patches for that, see
+>> https://mail.gna.org/public/xenomai-help/2011-03/msg00161.html.
+>
+> Philippe's patches for rt_task_send/receive/reply should have been
+> merged too.
+>
+>> However, locally I reverted those two patches because these introduced
+>> a memory leak in xnheap; I could only do rt_task_create()
+>> rt_task_delete() for 1024 times ;-). I thought that was the discussion
+>> of
+>> https://mail.gna.org/public/xenomai-core/2011-05/msg00028.html at that
+>> time and I don't recall a proper fix for it was provided. But I might
+>> have missed it...
+>
+> This looks related to the ppd issue as well, in which case, it should
+> have been fixed too.
+>
+> It would be nice if you could test the release and tell us whether you
+> still have these issues.
+>
 
-I create a file arch/nios2/hardware.mk, which contains:
-SYSPTF = /path/to/std_1s10.ptf
-CPU = cpu
-EXEMEM = sdram
+I've now tested the issues on the Xenomai 2.6.0-rc1 release. Both
+issues don't occur.
 
-Then run the kernel compilation as for any other platform. Is it not
-sufficient? Perhaps my .ptf file is outdated?
+Thanks,
+Henri
 
--- 
-                                                                Gilles.
+>
+> --
+> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
+=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0Gilles.
+>
 
