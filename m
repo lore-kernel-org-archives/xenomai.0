@@ -1,13 +1,10 @@
+Message-ID: <4E68226E.2000208@domain.hid>
+Date: Wed, 07 Sep 2011 19:03:26 -0700
+From: Bob Feretich <bob.feretich@domain.hid>
 MIME-Version: 1.0
-In-Reply-To: <CACRhLDksjAKdeR233NCXUG_9DrqsMmB+L=wjgudT2fZ1=XXBbg@domain.hid>
-References: <CACRhLDksjAKdeR233NCXUG_9DrqsMmB+L=wjgudT2fZ1=XXBbg@domain.hid>
-Date: Wed, 7 Sep 2011 21:37:24 +0200
-Message-ID: <CACRhLDmOWDMWht-qtA=wbLU+vFHOjKS4aRa0H96kpPDoELciVw@domain.hid>
-From: =?ISO-8859-1?Q?Thomas_Kr=FCger?= <thomas.krueger.home@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai-help] Analogy data aquisition - How to set up the range
-	correctly
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] PWM generation with GPIO
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -17,197 +14,95 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Andrey Nechypurenko <andreynech@domain.hid>
+Cc: Xenomai help <xenomai@xenomai.org>
 
-Dear all,
+Is there a reason that your not using the BeagleBoard PWM Timer hardware?
+The OMAP3 ARM chip has 4 PWM hardware timers. They can generate rock 
+solid PWM pulse trains via the DMTIMER interface. The BeagleBoard 
+C2/C3/C4 brings out 3 of these timers to the expansion connector.
 
-I am using a DAQ card from national instruments 6071E to measure
-analog values. It works fine but I have some problems changing the
-range:
+Writing a RTDM driver to manipulate these timers is easy.
+I needed 4 PWM timer outputs, brought to the expansion connector. So I 
+wrote a RTDM driver to use the three that were pinned out,  and used 
+real time limit and overflow interrupts to to wiggle a GPIO for the 
+fourth PWM output.
 
-I found the a4l_find_range function and it works well, seeing the
-range_info changes according to my wishes. But I realise that the only
-function that uses the range information is the a4l_rawtod. It works
-for the range conversion but technically the range is never changed on
-the card itself (switching to another internal gain) and so the value
-I coming out at the end is wrong (mismatch between the setting on the
-io-card and a4l_rawtod).
+The Linux version of this driver made the 4th servomotor growl. There is 
+no growl using the RTDM version. I asked a lab technician to probe the 
+four servo PWM signals and tell me which was software GPIO generated. He 
+could not tell.
 
-Which function do I have to use or how to pass this information to the card=
-?
+The RTDM driver is open source. If you want it contact me off list and 
+I'll send you the source.
+Before you contact me for questions about the driver though...
+1) Know how to build a standard Linux driver.
+2) Read the OMAP technical reference manual 
+(http://www.ti.com/lit/ug/spruf98t/spruf98t.pdf) sections on the Timers 
+(Chapter 16).
 
-Thanks for your answers in advance.
+Regards,
+Bob Feretich
 
-Cheers,
-Thomas
+> From: Andrey Nechypurenko<andreynech@domain.hid>
+> Subject: [Xenomai-help] PWM generation with GPIO
+> To: Xenomai help<xenomai@xenomai.org>
+> Message-ID:
+> 	<CAOiXNkC=KgmuRFxNiGOqSGChpFQdv+fYRu8OgU0jMQc_dudShA@mail.gmail.com>
+> Content-Type: text/plain; charset=ISO-8859-1
+>
+> Hi Folks,
+>
+> Recently I was trying to control standard servo motor with PWMs. The
+> system is 600MHz BeagleBoard xM (ARM) running Linux kernel version
+> 2.6.35.9 with Xenomai version 2.5.6.
+>
+> Pulses needs to be generated with 20milliseconds interval (50Hz).
+> Pulse width defines servo position and is typically in the range of
+> 0.8milliseconds to 2.0milliseconds. To generate PWMs I am using GPIO
+> pin connected to the servo through TI's TXS0108E voltage-level
+> translator to translate +1.8V GPIO to required +5V. To trigger GPIO
+> state I am using direct memory writes (to mmapped area).
+>
+> The generation loop is running in the Xenomai thread with priority 99
+> and looks like this:
+>
+>    for(;;) {
+>        //set_data_out has offset 0x94
+>        gpio[OFFSET(0x6094)]=0x40000000;
+>        rt_task_sleep(up_period);
+>        //clear_data_out has offset 0x90
+>        gpio[OFFSET(0x6090)]=0x40000000;
+>        rt_task_wait_period(NULL); }
+>
+> where gpio array is a pointer to the memory area responsible for
+> controlling GPIO state. The complete code could be found here:
+> https://www.gitorious.org/veter/vehicle/blobs/master/src/xenopwm.c
+>
+> So now the question/problem I have. If the system load is low, then
+> everything is fine. However, if the system load goes beyound ~60%,
+> servos starts shaking which is a sign of not precise PWM timing. I
+> have written the blog post with more details and relevant videos:
+> http://veter-project.blogspot.com/2011/09/real-time-enough-about-pwms-and-shaky.html
+> . Just scroll down to the section named "Solution 2 - predictable
+> timing with Xenomai" since the rest is probably obvious for the folks
+> hanging around here  .
+>
+> Running the Xenomai's latency application in parallel with our test
+> program reveals the latency of around 40 microseconds. Based on what I
+> read in Internet, 40 microseconds is considered "normal/OK" latency
+> for Linux/Xenomai running on ARM at 600MHz. Taking in account typical
+> pulse width of about 1 millisecond, 40 microseconds is about 4%. Could
+> it be that this 4% is in fact what causes servos to shake? If yes,
+> does it mean that even with Xenomai it is not possible to control
+> servos reliably even under moderate system load on the mentioned
+> hardware?
+>
+> I am kind of hope that there are some tweeks could be done to make the
+> timing more precise and would really appreciate any hints.
+>
+> Thank you,
+> Andrey.
+>
 
-
-My test program:
-
-// simple build cmd: g++ test-pcimio.c -I/usr/xenomai/include/
--lxenomai -lnative -lanalogy -lpthread -lrtdm -L/usr/xenomai/lib
-// execute #./a.out
-
-
-#include <time.h>
-#include <stdio.h>
-#include <string.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <errno.h>
-#include <xenomai/analogy/analogy.h>
-
-/*
-=A0* Initialization function, activated once by PolyORB (at startup)
-*/
-a4l_desc_t =A0 =A0 =A0arm_device;
-int =A0 =A0 =A0 =A0 =A0 =A0 ni_6071e_analog_channels[16] =3D
-{0,1,2,4,5,6,16,17,18,19,21,23,32,33,34,35};
-int =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 range_settings[=
-16] =3D {-5, -10, -10, 5,
-5, 5, 5, -5, -5, -5, -5,
-10, 10, 10, -0.5, 0.5};
-a4l_chinfo_t =A0 *ni_6071e_analog_channel_infos[16];
-a4l_rnginfo_t =A0*ni_6071e_analog_range_infos[16];
-
-int analog_init =3D 0;
-
-void init_arm()
-{
-=A0 int =A0 =A0 =A0 =A0 =A0i =3D 0;
-=A0 int =A0 =A0 =A0 =A0 =A0ret;
-=A0 double =A0 =A0 =A0 Range_Value;
-=A0 double =A0 =A0 =A0 Range_Max;
-=A0 double =A0 =A0 =A0 Range_Min;
-
-=A0 ret =3D a4l_open (&arm_device, "analogy0");
-
-=A0 if (ret !=3D 0)
-=A0 {
-=A0 =A0 =A0printf ("[EXOARM] Error while opening the arm device, return
-code=3D%d \n", ret);
-=A0 =A0 =A0return;
-=A0 }
-=A0 =A0 arm_device.sbdata =3D malloc(arm_device.sbsize);
-
-
-=A0 ret =3D a4l_fill_desc (&arm_device);
-
-=A0 if (ret !=3D 0)
-=A0 {
-=A0 =A0 =A0printf ("[EXOARM] Error while calling fill_desc(), return
-code=3D%d \n", ret);
-=A0 =A0 =A0return;
-=A0 }
-
-
-=A0 for (i=3D0; i<16; i ++)
-=A0 {
-=A0 =A0 =A0ret =3D a4l_get_chinfo (&arm_device, 0,
-ni_6071e_analog_channels[i], &ni_6071e_analog_channel_infos[i]);
-=A0 =A0 =A0if (ret !=3D 0)
-=A0 =A0 =A0{
-=A0 =A0 =A0 =A0 printf ("[EXOARM] Error invoking a4l_get_chinfo on channel
-%d, return code=3D%d \n", ni_6071e_analog_channels[i], ret);
-=A0 =A0 =A0}
-=A0 =A0 =A0ret =3D a4l_get_rnginfo (&arm_device, 0,
-ni_6071e_analog_channels[i], 0, &ni_6071e_analog_range_infos[i]);
-=A0 =A0 =A0if (ret !=3D 0)
-=A0 =A0 =A0{
-=A0 =A0 =A0 =A0 printf ("[EXOARM] Error invoking a4l_get_chinfo on channel
-%d, return code=3D%d \n", ni_6071e_analog_channels[i], ret);
-=A0 =A0 =A0}
-=A0 }
-
-=A0 //setting up the range
-=A0 for(i=3D0;i <16; i++)
-=A0 {
-=A0 =A0 =A0Range_Value =3D range_settings[i];
-=A0 =A0 =A0if (Range_Value < 0)
-=A0 =A0 =A0{
-=A0 =A0 =A0 =A0 Range_Min =3D Range_Value;
-=A0 =A0 =A0}
-=A0 =A0 =A0else
-=A0 =A0 =A0{
-=A0 =A0 =A0 =A0 Range_Min =3D 0.0;
-=A0 =A0 =A0}
-=A0 =A0 =A0Range_Max =3D abs(Range_Value);
-
-=A0 =A0 =A0ret =3D a4l_find_range
-=A0 =A0 =A0 =A0 =A0 =A0( =A0&arm_device, =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 //=
-device
-=A0 =A0 =A0 =A0 =A0 =A0 =A0 0, =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
-=A0 =A0 //subindex
-=A0 =A0 =A0 =A0 =A0 =A0 =A0 ni_6071e_analog_channels[i], //idx channel
-=A0 =A0 =A0 =A0 =A0 =A0 =A0 A4L_RNG_VOLT_UNIT, =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
-=A0 =A0 =A0 =A0 =A0 =A0 //unit
-=A0 =A0 =A0 =A0 =A0 =A0 =A0 Range_Min,
-=A0 =A0 =A0 =A0 =A0 =A0 =A0 Range_Max,
-=A0 =A0 =A0 =A0 =A0 =A0 =A0 &ni_6071e_analog_range_infos[i]
-=A0 =A0 =A0 =A0 =A0 =A0 =A0 );
-=A0 =A0 =A0if ((ret =3D=3D -ENOENT) || (ret =3D=3D -EINVAL))
-=A0 =A0 =A0{
-=A0 =A0 =A0 =A0 printf("Error while configuring ranges 6071\n");
-=A0 =A0 =A0}
-
-=A0 }//end for loop
-
-=A0 analog_init =3D 1;
-}
-
-void arm_poll_acquisition_board()
-{
-=A0 int i;
-=A0 double tmp;
-=A0 int ret;
-=A0 uint8_t raw[128];
-
-=A0 if (analog_init =3D=3D 0) {
-=A0 =A0 =A0printf("[arm] Runtime Error - Periodic task activated before
-proper initialization.\n");
-=A0 =A0 =A0return;
-=A0 }
-
-
-=A0 for (i=3D0; i<16; i++)
-=A0 {
-=A0 =A0 =A0ret =3D a4l_sync_read (&arm_device, 0,
-ni_6071e_analog_channels[i], 0, &raw, 128);
-=A0 =A0 =A0if (ret <=3D 0)
-=A0 =A0 =A0{
-=A0 =A0 =A0 =A0 =A0printf("[arm] Error while acquiring the data\n");
-=A0 =A0 =A0}
-
-=A0 =A0 =A0ret =3D a4l_rawtod (ni_6071e_analog_channel_infos[i],
-ni_6071e_analog_range_infos[i], &tmp, &raw, 1);
-
-=A0 =A0 =A0if (ret <=3D 0)
-=A0 =A0 =A0{
-=A0 =A0 =A0 =A0 =A0printf("[arm] Error while converting the data\n");
-=A0 =A0 =A0}
-=A0 =A0 =A0else
-=A0 =A0 =A0{
-=A0 =A0 =A0 =A0if(i !=3D 0)
-{
-printf(";");
-}
-=A0 =A0 =A0 =A0 =A0printf("%lf", tmp);
-
-=A0 =A0 =A0 =A0}
-=A0 }
-printf("]\n[");
-=A0 return;
-}
-
-
-
-int main ()
-{
-=A0 init_arm ();
-=A0 while (1)
-=A0 {
-=A0 =A0 =A0arm_poll_acquisition_board();
-=A0 =A0 =A0sleep (4);
-=A0 }
-}
 
