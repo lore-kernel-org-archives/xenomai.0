@@ -1,14 +1,10 @@
-Message-ID: <4E6CC5CC.5020204@domain.hid>
-Date: Sun, 11 Sep 2011 16:29:32 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <4E6D0E73.2060405@domain.hid>
+Date: Sun, 11 Sep 2011 21:39:31 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4E6C927F.3070901@domain.hid> <4E6CC49C.1020403@domain.hid>
-In-Reply-To: <4E6CC49C.1020403@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enigA764E6BF28C6B0CF6145F3A6"
-Sender: jan.kiszka@domain.hid
-Subject: Re: [Xenomai-core] Policy switching and XNOTHER maintenance
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-core] Xenomai 2.6.0-rc2
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -17,53 +13,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai-core <xenomai@xenomai.org>
-
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enigA764E6BF28C6B0CF6145F3A6
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-
-On 2011-09-11 16:24, Gilles Chanteperdrix wrote:
-> On 09/11/2011 12:50 PM, Jan Kiszka wrote:
->> Hi all,
->>
->> just looked into the hrescnt issue again, specifically the corner case=
-
->> of a shadow thread switching from real-time policy to SCHED_OTHER.
->=20
-> Doing this while holding a mutex looks invalid.
-
-Looking at POSIX e.g., is there anything in the spec that makes this
-invalid? If the kernel preserves or established proper priority
-boosting, I do not see what could break in principle.
-
-It is nothing I would design into some app, but we should somehow handle
-it (doc update or code adjustments).
-
-> If we do not do it, the current code is valid.
-
-Except for its dependency on XNOTHER which is not updated on RT->NORMAL
-transitions.
-
-Jan
+To: Xenomai core <Xenomai-core@domain.hid>, Xenomai help <xenomai@xenomai.org>
 
 
+Hi,
 
---------------enigA764E6BF28C6B0CF6145F3A6
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+here comes xenomai v2.6.0-rc2:
+http://download.gna.org/xenomai/testing/xenomai-2.6.0-rc2.tar.bz2
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.16 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+New since -rc1 are:
+- the latest upgrades of analogy, including support for NI 660x and NI 670x
+- build and run-time fixes for powerpc
 
-iEYEARECAAYFAk5sxdAACgkQitSsb3rl5xTYqwCg1thcQ/IEripfT/N/hHfj5KX5
-UsIAmgKwBGqAn3wb1zJbT9vNJs9jI3x1
-=TuWj
------END PGP SIGNATURE-----
+Known remaining issues:
+- mscan driver not building on mpc5xxx with linux 3.0, see:
+http://sisyphus.hd.free.fr/~gilles/bx/lite5200/3.0.4-ppc_6xx-gcc-4.2.2/log.html#1
+- SCHED_FIFO threads switching to SCHED_OTHER policy while holding a mutex
 
---------------enigA764E6BF28C6B0CF6145F3A6--
+Regards.
+
+-- 
+                                                                Gilles.
 
