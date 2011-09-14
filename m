@@ -1,10 +1,11 @@
-Message-ID: <4E70E940.5010500@domain.hid>
-Date: Wed, 14 Sep 2011 19:49:52 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4E70EA11.6060502@domain.hid>
+Date: Wed, 14 Sep 2011 19:53:21 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <CANKLDms-kVpt6hk7adH880tK5xJL2=D9Y=M25Cn-0hBDueuUfQ@mail.gmail.com>	<4E70A876.3020009@domain.hid>
-	<CAAvA3H--++6D4MhP-EOcdV7mW8Dwje+OzhxRYxeNaPJY0d4ffA@mail.gmail.com>
-In-Reply-To: <CAAvA3H--++6D4MhP-EOcdV7mW8Dwje+OzhxRYxeNaPJY0d4ffA@mail.gmail.com>
+References: <CANKLDms-kVpt6hk7adH880tK5xJL2=D9Y=M25Cn-0hBDueuUfQ@mail.gmail.com>
+	<4E70A876.3020009@domain.hid> <4E70AADF.6010201@domain.hid>
+	<1316011174.8027.7.camel@domain.hid>
+In-Reply-To: <1316011174.8027.7.camel@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] multicore: reserving core(s) for Xenomai
@@ -17,48 +18,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jeff Weber <jwamsc@domain.hid>
-Cc: xenomai@xenomai.org
+To: Henry Bausley <hbausley@domain.hid>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 09/14/2011 05:00 PM, Jeff Weber wrote:
-> On Wed, Sep 14, 2011 at 8:13 AM, Gilles Chanteperdrix <
-> gilles.chanteperdrix@xenomai.org> wrote:
-> 
->> On 09/14/2011 02:18 PM, Henri Roosen wrote:
->> [snip]
->>>
->>> What I would like to do is to run the Xenomai realtime threads on one
->>> core of the multi-core CPU. And I would like to reserve this core only
->>> for the Xenomai realtime threads.
->>>
->> [snip]
->> The kernel has an "isolcpus" option, which allows to specify which cpus
->> should not be used by Linux.
->>
->> See Documentation/kernel-parameters.txt in the linux kernel sources for
->> an explanation.
->>
->>
-> I tried to do this a year ago with the kernel isolcpus option, but could not
-> get this to work:
-> 
->> Gilles Chanteperdrix to Jeff, xenomai-help
->> Jeff  wrote:
->>> What is the best method for segregating Xenomai and Linux by CPU?  I was
->>> unable to do this cleanly using /proc/xenomai/affinity for Xenomai,
->>> together with the Linux isolcpus boot option.  Details below.
->>
->> I have no definite answer, I have not checked. What I suspect, however,
->> is that when you try and force an affinity for a Xenomai thread, it
->> tries and apply this affinity in secondary mode, i.e. as a plain Linux
->> thread. So, will fail if the target thread is not in the "isolcpus"
->> mask. In other words, a Xenomai thread can not run on a CPU where Linux
->> threads can not run.
+On 2011-09-14 16:39, Henry Bausley wrote:
+> Jan does the lack of 100% isolation imply if a Xenomai kernel thread
+> running on the isolated CPU used to much duty cycle Linux would lock up
+> since it couldn't get a chance at the isolated cpu.
 
-This explanation sounds like crap: looking at the documentation, it
-seems that when using the "isolcpus" option, threads can run on an
-isolated cpu if they force their affinity.
+Yep - just like some plain Linux RT thread running as CPU hog on a
+vanilla kernel with highest prio and rt-group throttling disabled.
+
+Jan
 
 -- 
-                                                                Gilles.
+Siemens AG, Corporate Technology, CT T DE IT 1
+Corporate Competence Center Embedded Linux
 
