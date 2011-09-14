@@ -1,48 +1,74 @@
-Date: Tue, 27 Sep 2011 17:10:09 +0200
-From: Richard Cochran <richardcochran@domain.hid>
-Message-ID: <20110927151009.GA3345@domain.hid>
-References: <cover.1316774468.git.richard.cochran@domain.hid>
-	<4E7C8EB2.1020308@domain.hid>
-	<20110926114118.GA2213@domain.hid>
-	<4E8188CB.4040102@domain.hid>
-	<20110927120122.GA10155@domain.hid>
-	<4E81BF9B.1030401@domain.hid>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <4E81BF9B.1030401@domain.hid>
-Subject: Re: [Xenomai-core] [RFC 0/1] Class driver for raw Ethernet packets
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+From: Henry Bausley <hbausley@domain.hid>
+In-Reply-To: <4E70AADF.6010201@domain.hid>
+References: <CANKLDms-kVpt6hk7adH880tK5xJL2=D9Y=M25Cn-0hBDueuUfQ@mail.gmail.com>
+	<4E70A876.3020009@domain.hid>  <4E70AADF.6010201@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Date: Wed, 14 Sep 2011 07:39:34 -0700
+Message-ID: <1316011174.8027.7.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] multicore: reserving core(s) for Xenomai
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
 To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On Tue, Sep 27, 2011 at 02:20:43PM +0200, Jan Kiszka wrote:
-> On 2011-09-27 14:01, Richard Cochran wrote:
-> > Again, every MAC driver needs to be tastefully and wisely adapted. I
-> > don't necessarily need to avoid coalescing. The goal (for me) is *not*
-> > to provide deterministic Ethernet performance. Instead the RT packets
-> > should just be delivered ASAP.
+Jan does the lack of 100% isolation imply if a Xenomai kernel thread
+running on the isolated CPU used to much duty cycle Linux would lock up
+since it couldn't get a chance at the isolated cpu.
+
+On Wed, 2011-09-14 at 15:23 +0200, Jan Kiszka wrote:
+> On 2011-09-14 15:13, Gilles Chanteperdrix wrote:
+> > On 09/14/2011 02:18 PM, Henri Roosen wrote:
+> >> We'll start experiments running our Xenomai application on a
+> >> multi-core CPU (x86/ARM). I'm sure there are some Xenomai users who
+> >> already have experience with it.
+> >>
+> >> What I would like to do is to run the Xenomai realtime threads on one
+> >> core of the multi-core CPU. And I would like to reserve this core only
+> >> for the Xenomai realtime threads.
+> >>
+> >> I'm using the Native API, so I can pass the CPU affinity flags for the
+> >> Xenomai threads during task creation/shadow. But how can I make sure
+> >> other threads will not make use of the same processor? I cannot call
+> >> taskset for every task that is spawned... right?
+> >>
+> >> Are there any idea's on how this configuration could be made easier?
+> >> It would be nice if there was a kernel config option to reserve
+> >> core(s) for Xenomai that Linux will not use.
+> >>
+> >> Any ideas and help are welcome!
+> > 
+> > The kernel has an "isolcpus" option, which allows to specify which cpus
+> > should not be used by Linux.
 > 
-> This is obviously the point I completely missed. And it makes the whole
-> thing fairly uninteresting IMHO. If you want to do Ethercat, PowerLink
-> or Profinet (RT), you do need a certain level of determinism along the
-> *whole* packet path. And for the latter two, you definitely need RT IRQ
-> support, Ethercat can be OK to poll in fast setups.
+> ...or cgroups. isolcpus is much simpler to set up, but less strict (any
+> process tuning its affinity is able to circumvent this, but not cgroup
+> isolations).
 > 
-> From that POV, your approach is likely OK. But I doubt its of generic
-> use, specifically for industrial RT Ethernet.
+> > 
+> > See Documentation/kernel-parameters.txt in the linux kernel sources for
+> > an explanation.
+> 
+> ...but be warned that there is no 100% isolation. Quite a few Linux
+> kernel threads and IPIs are required to continue hitting any online CPU.
+> Things are improving to reduce those noise Linux-wise, but there is no
+> 100% in sight yet.
+> 
+> Jan
+> 
 
-So, how does rtnet support EtherCAT?
 
-Does it support PowerLink and Profinet?
 
-Thanks,
-Richard
+
+
+Outbound scan for Spam or Virus by Barracuda at Delta Tau
+
 
