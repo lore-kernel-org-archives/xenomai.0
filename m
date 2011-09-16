@@ -1,14 +1,11 @@
-Message-ID: <4E70EA11.6060502@domain.hid>
-Date: Wed, 14 Sep 2011 19:53:21 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <CANKLDms-kVpt6hk7adH880tK5xJL2=D9Y=M25Cn-0hBDueuUfQ@mail.gmail.com>
-	<4E70A876.3020009@domain.hid> <4E70AADF.6010201@domain.hid>
-	<1316011174.8027.7.camel@domain.hid>
-In-Reply-To: <1316011174.8027.7.camel@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] multicore: reserving core(s) for Xenomai
+Sender: patrickdepinguin@domain.hid
+Date: Fri, 16 Sep 2011 14:59:50 +0200
+Message-ID: <CAAXf6LVErpVae0HVcqv4Rc6p2wnJLje7He2NJC7S1aCSVnD9NQ@mail.gmail.com>
+From: Thomas De Schampheleire <patrickdepinguin+xenomai@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: [Xenomai-help] PSOS skin: mismatch in function signatures cause
+	buffer overflow
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -18,20 +15,79 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Henry Bausley <hbausley@domain.hid>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Xenomai-help@domain.hid
 
-On 2011-09-14 16:39, Henry Bausley wrote:
-> Jan does the lack of 100% isolation imply if a Xenomai kernel thread
-> running on the isolated CPU used to much duty cycle Linux would lock up
-> since it couldn't get a chance at the isolated cpu.
+Hi,
 
-Yep - just like some plain Linux RT thread running as CPU hog on a
-vanilla kernel with highest prio and rt-group throttling disabled.
+The original PSOS interfaces that take a name (like t_create,
+sm_create etc), expect a character array with length 4:
+unsigned long t_create(char name[4], unsigned long prio, unsigned long
+sstack, unsigned long ustack, unsigned long flags, unsigned long
+*tid);
+unsigned long sm_create(char name[4], unsigned long count, unsigned
+long flags, unsigned long *smid);
 
-Jan
+while the corresponding PSOS skin in Xenomai expects a null-terminated
+character array (a real string):
+u_long t_create(const char *name, u_long prio, u_long sstack, u_long
+ustack, u_long flags, u_long *tid_r);
+u_long sm_create(const char *name, u_long icount, u_long flags, u_long *smid_r);
 
--- 
-Siemens AG, Corporate Technology, CT T DE IT 1
-Corporate Competence Center Embedded Linux
+
+In certain situations, this difference gives rise to a buffer overflow
+on the name variable.
+For example:
+
+        unsigned long smid, err;
+        {
+                char id[4] = {'S','E','M','0'};
+                err = sm_create(id,0,SM_PRIOR,&smid);
+        }
+        {
+                char id[4] = "SEM";
+                id[3] = '1';
+                err = sm_create(id,0,SM_PRIOR,&smid);
+        }
+        {
+                char id[4] = "SEM2";
+                err = sm_create(id,0,SM_PRIOR,&smid);
+        }
+        {
+                char id[4] = "MySemaphore";
+                err = sm_create(id,0,SM_PRIOR,&smid);
+        }
+
+The first two examples are perfectly valid code. The third one (SEM2)
+is dubious because the end-of-string character will overflow the
+array, although the compiler does not complain. The fourth example
+(MySemaphore) obviously is an array-overflow and is indeed warned upon
+by the compiler.
+
+On target, this creates the following semaphores (taken from the registry):
+
+# ls /proc/xenomai/registry/psos/semaphores/SEM*
+/proc/xenomai/registry/psos/semaphores/My*
+/proc/xenomai/registry/psos/semaphores/MySeAB4abcaaaaaaaaaaaaaaaaaaaaa
+/proc/xenomai/registry/psos/semaphores/SEM0????p????_S22753
+/proc/xenomai/registry/psos/semaphores/SEM1p????_S22753
+/proc/xenomai/registry/psos/semaphores/SEM2?_S22753
+
+As you can see, in all cases there was an array overflow (the question
+marks correspond to non-ASCII characters), caused by the missing
+null-termination (in itself caused by a mismatch between the original
+PSOS interface and the Xenomai PSOS skin implementation of it).
+
+If you do not explicitly create a character array of length 4, e.g.
+(char id[] = "SEM1") then the Xenomai code obviously works fine: it
+receives a null-terminated string, as it expects.
+
+
+To fix this problem, the PSOS skin should treat incoming names as
+non-null-terminated character arrays of length 4, and explicitly add
+null-termination before passing it to the nucleus.
+
+What is your view on this?
+
+Thanks,
+Thomas
 
