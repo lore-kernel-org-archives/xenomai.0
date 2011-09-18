@@ -1,119 +1,167 @@
-Date: Fri, 12 Aug 2011 17:13:26 +0200
-From: "Petr Cervenka" <grugh@domain.hid>
-References: <20110809174031.7B1346B2@domain.hid>,
-	<1312905835.2112.106.camel@domain.hid>,
-	<20110811103352.902F5E9E@centrum.cz>,
-	<1313053817.2133.71.camel@domain.hid>, <4E43A2BE.4080903@domain.hid>,
-	<1313057016.2133.79.camel@domain.hid> <1313057178.2133.80.camel@domain.hid>
-In-Reply-To: <1313057178.2133.80.camel@domain.hid>
-MIME-Version: 1.0
-Message-Id: <20110812171326.7C74322E@centrum.cz>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] rt_queue_bind() returns -EACCES
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <4E73B403.1060706@domain.hid>
+References: <4E6C927F.3070901@domain.hid> <4E6CC49C.1020403@domain.hid>
+	<4E6CC5CC.5020204@domain.hid> <4E73AE00.3040002@domain.hid>
+	<4E73B403.1060706@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Date: Sun, 18 Sep 2011 16:02:45 +0200
+Message-ID: <1316354565.2169.20.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-core] Policy switching and XNOTHER maintenance
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai-help <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Jan Kiszka <jan.kiszka@domain.hid>, xenomai-core <xenomai@xenomai.org>
+
+On Fri, 2011-09-16 at 22:39 +0200, Gilles Chanteperdrix wrote:
+> On 09/16/2011 10:13 PM, Gilles Chanteperdrix wrote:
+> > On 09/11/2011 04:29 PM, Jan Kiszka wrote:
+> >> On 2011-09-11 16:24, Gilles Chanteperdrix wrote:
+> >>> On 09/11/2011 12:50 PM, Jan Kiszka wrote:
+> >>>> Hi all,
+> >>>>
+> >>>> just looked into the hrescnt issue again, specifically the corner case
+> >>>> of a shadow thread switching from real-time policy to SCHED_OTHER.
+> >>>
+> >>> Doing this while holding a mutex looks invalid.
+> >>
+> >> Looking at POSIX e.g., is there anything in the spec that makes this
+> >> invalid? If the kernel preserves or established proper priority
+> >> boosting, I do not see what could break in principle.
+> >>
+> >> It is nothing I would design into some app, but we should somehow handle
+> >> it (doc update or code adjustments).
+> >>
+> >>> If we do not do it, the current code is valid.
+> >>
+> >> Except for its dependency on XNOTHER which is not updated on RT->NORMAL
+> >> transitions.
+> > 
+> > The fact that this update did not take place made the code work. No 
+> > negative rescnt could happen with that code.
+> > 
+> > Anyway, here is a patch to allow switching back from RT to NORMAL, but 
+> > send a SIGDEBUG to a thread attempting to release a mutex while its 
+> > counter is already 0. We end up avoiding a big chunk of code that would 
+> > have been useful for a really strange corner case.
+> > 
+> 
+> Here comes version 2:
+> diff --git a/include/nucleus/sched-idle.h b/include/nucleus/sched-idle.h
+> index 6399a17..417170f 100644
+> --- a/include/nucleus/sched-idle.h
+> +++ b/include/nucleus/sched-idle.h
+> @@ -39,6 +39,8 @@ extern struct xnsched_class xnsched_class_idle;
+>  static inline void __xnsched_idle_setparam(struct xnthread *thread,
+>  					   const union xnsched_policy_param *p)
+>  {
+> +	if (xnthread_test_state(thread, XNSHADOW))
+> +		xnthread_clear_state(thread, XNOTHER);
+>  	thread->cprio = p->idle.prio;
+>  }
+>  
+> diff --git a/include/nucleus/sched-rt.h b/include/nucleus/sched-rt.h
+> index 71f655c..cc1cefa 100644
+> --- a/include/nucleus/sched-rt.h
+> +++ b/include/nucleus/sched-rt.h
+> @@ -86,6 +86,12 @@ static inline void __xnsched_rt_setparam(struct xnthread *thread,
+>  					 const union xnsched_policy_param *p)
+>  {
+>  	thread->cprio = p->rt.prio;
+> +	if (xnthread_test_state(thread, XNSHADOW)) {
+> +		if (thread->cprio)
+> +			xnthread_clear_state(thread, XNOTHER);
+> +		else
+> +			xnthread_set_state(thread, XNOTHER);
+> +	}
+>  }
+>  
+>  static inline void __xnsched_rt_getparam(struct xnthread *thread,
+> diff --git a/ksrc/nucleus/pod.c b/ksrc/nucleus/pod.c
+> index 9a02e80..d19999f 100644
+> --- a/ksrc/nucleus/pod.c
+> +++ b/ksrc/nucleus/pod.c
+> @@ -1896,16 +1896,6 @@ int __xnpod_set_thread_schedparam(struct xnthread *thread,
+>  		xnsched_putback(thread);
+>  
+>  #ifdef CONFIG_XENO_OPT_PERVASIVE
+> -	/*
+> -	 * A non-real-time shadow may upgrade to real-time FIFO
+> -	 * scheduling, but the latter may never downgrade to
+> -	 * SCHED_NORMAL Xenomai-wise. In the valid case, we clear
+> -	 * XNOTHER to reflect the change. Note that we keep handling
+> -	 * non real-time shadow specifics in higher code layers, not
+> -	 * to pollute the core scheduler with peculiarities.
+> -	 */
+> -	if (sched_class == &xnsched_class_rt && sched_param->rt.prio > 0)
+> -		xnthread_clear_state(thread, XNOTHER);
+>  	if (propagate) {
+>  		if (xnthread_test_state(thread, XNRELAX))
+>  			xnshadow_renice(thread);
+> diff --git a/ksrc/nucleus/sched-sporadic.c b/ksrc/nucleus/sched-sporadic.c
+> index fd37c21..ffc9bab 100644
+> --- a/ksrc/nucleus/sched-sporadic.c
+> +++ b/ksrc/nucleus/sched-sporadic.c
+> @@ -258,6 +258,8 @@ static void xnsched_sporadic_setparam(struct xnthread *thread,
+>  		}
+>  	}
+>  
+> +	if (xnthread_test_state(thread, XNSHADOW))
+> +		xnthread_clear_state(thread, XNOTHER);
+>  	thread->cprio = p->pss.current_prio;
+>  }
+>  
+> diff --git a/ksrc/nucleus/sched-tp.c b/ksrc/nucleus/sched-tp.c
+> index 43a548e..a2af1d3 100644
+> --- a/ksrc/nucleus/sched-tp.c
+> +++ b/ksrc/nucleus/sched-tp.c
+> @@ -100,6 +100,8 @@ static void xnsched_tp_setparam(struct xnthread *thread,
+>  {
+>  	struct xnsched *sched = thread->sched;
+>  
+> +	if (xnthread_test_state(thread, XNSHADOW))
+> +		xnthread_clear_state(thread, XNOTHER);
+>  	thread->tps = &sched->tp.partitions[p->tp.ptid];
+>  	thread->cprio = p->tp.prio;
+>  }
+> diff --git a/ksrc/nucleus/synch.c b/ksrc/nucleus/synch.c
+> index b956e46..47bc0c5 100644
+> --- a/ksrc/nucleus/synch.c
+> +++ b/ksrc/nucleus/synch.c
+> @@ -684,9 +684,13 @@ xnsynch_release_thread(struct xnsynch *synch, struct xnthread *lastowner)
+>  
+>  	XENO_BUGON(NUCLEUS, !testbits(synch->status, XNSYNCH_OWNER));
+>  
+> -	if (xnthread_test_state(lastowner, XNOTHER))
+> -		xnthread_dec_rescnt(lastowner);
+> -	XENO_BUGON(NUCLEUS, xnthread_get_rescnt(lastowner) < 0);
+> +	if (xnthread_test_state(lastowner, XNOTHER)) {
+> +		if (xnthread_get_rescnt(lastowner) == 0)
+> +			xnshadow_send_sig(lastowner, SIGDEBUG,
+> +					  SIGDEBUG_MIGRATE_PRIOINV, 1);
+> +		else
+> +			xnthread_dec_rescnt(lastowner);
+> +	}
+>  	lastownerh = xnthread_handle(lastowner);
+>  
+>  	if (use_fastlock &&
+> 
+> 
+> 
+
+Agreed, the logic of this patch sounds right. Switching from -rt to -nrt
+while holding a -rt mutex is pathological behavior. We don't have to
+support apps implementing voluntary priority inversion.
+
+-- 
+Philippe.
 
 
-Hello.
-
-I have couple of notices (or maybe errors) and questions
-1) rt_mutex_acquire(...) causes now segmentation fault, when the mutex is=
- not initialized with rt_mutex_create(...)
-
-2) rt_queue_bind(&queue, TM_INFINITE) is not possible to interrupt by rt_=
-task_unblock(...).=20
-See the qclient example from my previous message, where the signal handle=
-r is not able to unblock the main task.
-
-3) Do you have any advice or idea how to create following scheme (or some=
-thing similar):
-I have one server application which creates RT_QUEUE (and listens on it).
-Then I have couple of clients which binds to that queue (and possibly cou=
-ld send some request message to it from time to time).
-How to ensure the possibility to close the server and open it again?
-Because even if I don't call the rt_queue_delete(...) explicitly at the e=
-nd of server, the result is perhaps the same (when server process finishs=
-).
-Thanks in advance for any help.
-
-Best regards
-Petr Cervenka
-
-______________________________________________________________
-> Od: "Philippe Gerum" <rpm@xenomai.org>
-> Komu: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-> Datum: 11.08.2011 12:06
-> P=C5=99edm=C4=9Bt: Re: [Xenomai-help] rt_queue_bind() returns -EACCES
->
-> CC: "xenomai-help" <xenomai@xenomai.org>
->On Thu, 2011-08-11 at 12:03 +0200, Philippe Gerum wrote:
->> On Thu, 2011-08-11 at 11:37 +0200, Gilles Chanteperdrix wrote:
->> > On 08/11/2011 11:10 AM, Philippe Gerum wrote:
->> > > On Thu, 2011-08-11 at 10:33 +0200, Petr Cervenka wrote:
->> > >> Hello.
->> > >>
->> > >> I created a simple examples which describe my problem.
->> > >> It is some kind of server and client.
->> > >> At first run a qserver and then qclient.
->> > >> After that close the qserver and try to run it again.
->> > >> It disallows (in my configuratio) to create the queue because it =
-already exists and also the binding to it fails with error -EACCES.
->> > >> This behavior continues till the qclient is closed. It's perhaps =
-caused by the rt_queue_delete() at the end of qserver.
->> > >=20
->> > > That is the intended behavior. When deleted, the queue is maintain=
-ed
->> > > internally until the last client bound to it exits, which also dis=
-allows
->> > > creating another queue with the same name until the latter event
->> > > happens.
->> > >=20
->> > > However, deleting the queue also makes it unreachable for further
->> > > bindings, until it is completely dismantled after the last client =
-exits.
->> > > At which point you may re-create a queue with the same name and bi=
-nd to
->> > > it. Logically speaking, that deleted queue does not exist anymore,
->> > > except for the currently bound client(s), for consistency reasons.
->> >=20
->> > Maybe we could return -EIDRM instead of -EEXIST when in this case?
->> >=20
->>=20
->> Not sure. EIDRM is conventionally about telling the caller that some
->> previously valid identifier has been revoked while the operation was
->> ongoing, which does not match the case of trying to establish a fresh
->> binding to a zombie object.
->
->Or trying to create a new object, the same way.
->
->>  In the first case, we did have a valid
->> object on entry, in the second one, that object has never been valid
->> from the caller's standpoint.
->>=20
->> I'm unsure that returning EIDRM would be trivial to implement anyway. =
-We
->> would have to make the registry layer aware of the "magic" tags used b=
-y
->> the upstream interfaces, so that it could check atomically EIDRM vs
->> EEXIST when failing to hash the object key. Granted, we could move thi=
-s
->> magic into the xnobject struct directly though and get rid of it
->> elsewhere. Some work ahead in such a case.
->>=20
->
->--=20
->Philippe.
->
->
->
 
