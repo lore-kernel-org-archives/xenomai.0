@@ -1,15 +1,13 @@
-MIME-Version: 1.0
-In-Reply-To: <8236197CA3DA864F9EF20609D9887263B4D0@domain.hid>
-References: <CAAXf6LVErpVae0HVcqv4Rc6p2wnJLje7He2NJC7S1aCSVnD9NQ@mail.gmail.com>
-	<1316360236.2169.40.camel@domain.hid>
-	<8236197CA3DA864F9EF20609D9887263B4D0@domain.hid>
-Date: Mon, 19 Sep 2011 09:42:46 +0200
-Message-ID: <CAMJ=MEeOS2K09fm0hnvSmxn6CBbMjHaC-uhDr03qNoZTaEbWVA@mail.gmail.com>
-From: Ronny Meeus <ronny.meeus@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+From: VEYSSIERE Nicolas <nicolas.veyssiere@domain.hid>
+Date: Mon, 19 Sep 2011 09:49:33 +0200
+Message-ID: <21788_1316418497_4E76F3C1_21788_13255_1_ECB646CBB62FD044927FDEDF0252D3E701E39310098B@THSONEA01CMS03P.one.grp>
+References: <4E76DB36.5060203@domain.hid>
+In-Reply-To: <4E76DB36.5060203@domain.hid>
+Content-Language: fr-FR
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] PSOS skin: mismatch in function signatures cause
- buffer overflow
+MIME-Version: 1.0
+Subject: [Xenomai-help] Can a network freeze caused by Xenomai ?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -19,56 +17,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: dietmar.schindler@domain.hid
-Cc: Xenomai-help@domain.hid
+To: Xenomai help <xenomai@xenomai.org>
 
-On Mon, Sep 19, 2011 at 9:25 AM,  <dietmar.schindler@domain.hid> wrote:
->> From: xenomai-help-bounces@domain.hid [mailto:xenomai-help-bounces@domain.hid]
->> On Behalf Of Philippe Gerum
->> Sent: Sunday, September 18, 2011 5:37 PM
->> ...
->> Actually, we used to follow strictly the pSOS convention for this until
->> 2.4.x, at which point we moved to name strings precisely because
->> non-null terminated char[4] arrays would break the registry, the way you
->> described. This is one of the rare situations where mimicking a useless
->> limitation of the original API may be challenged by usability concerns
->> in the new environment, and usability won in that case. The problem
->> mostly comes from the fact that char[4] is automatically convertible to
->> const char *, so we have no warning/error leading us to check the
->> potentially problematic call sites.
->>
->> The concern about moving back to char[4] arrays - null-terminated if
->> shorter - is for people who currently assign strings longer than 4
->> characters to name their objects. What could be done, is providing a
->> build switch to select the accepted input, like
->> --disable-psos-long-names to turn on char[4] interpretation.
->
-> While I would prefer the switch --enable-psos-long-names, this sounds oka=
-y to me, the more so as it is more than people who use the pSOS skin withou=
-t obeying pSOS rules deserve.
-> --
-> Regards,
-> Dietmar
-> ________________________________________ manroland AG Vorsitzender des Au=
-fsichtsrates: Hanno C. Fiedler Vorstand: Gerd Finkbeiner (Vorsitzender), Dr=
-. Ingo Koch, Dr. Markus Rall, Paul Steidle Sitz der Gesellschaft: Offenbach=
- am Main, Registergericht: Amtsgericht Offenbach HRB-Nr. 42592 USt-Ident-Nr=
-. DE 250200933
->
->
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
->
+Hello,
 
-Another option would be to introduce a run-time switch.
-The default behavior could be that long names are supported and if the
-"enable_short_names()" function is called, all names will the cut at 4
-characters.
-The advantage of this dynamic switch is that different applications
-using the same library can use the mode they prefer.
+I would like to know if it is possible that a network freeze been caused by=
+ the use of Xenomai ?
+
+Here is my problem : we have 4 HP DL 360 G6 server. All are installed with =
+the last update of Redhat Entreprise Linux 5.6.
+
+All 4 have 4 physical ethernet interface (2 from intel chipset, 2 from broa=
+dcom chipset).
+
+They all have a virtual ethernet interface on eth0 (named eth0:1).
+
+2 of them have Xenomai installed (v2.5.5.2 with linux kernel v2.6.35.7).
+
+
+The problem is : on 1 with Xenomai installed, (the other one is not running=
+ for the moment), and we regularly have 'network freeze', we can't ping it,=
+ it can't reach other computers, and we have to restart the OS.
+
+
+Any help is welcome.
 
 Regards,
-Ronny
+--=20
+Nicolas VEYSSIERE
 
