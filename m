@@ -1,15 +1,15 @@
+From: VEYSSIERE Nicolas <nicolas.veyssiere@domain.hid>
+Date: Mon, 19 Sep 2011 10:42:05 +0200
+Message-ID: <30612_1316421640_4E770008_30612_2706_1_ECB646CBB62FD044927FDEDF0252D3E701E393100B67@domain.hid>
+References: <4E76DB36.5060203@domain.hid>
+	<21788_1316418497_4E76F3C1_21788_13255_1_ECB646CBB62FD044927FDEDF0252D3E701E39310098B@THSONEA01CMS03P.one.grp>
+	<4E76F6AD.5070501@domain.hid>
+In-Reply-To: <4E76F6AD.5070501@domain.hid>
+Content-Language: fr-FR
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Sender: patrickdepinguin@domain.hid
-In-Reply-To: <8236197CA3DA864F9EF20609D9887263B4AF@rrxchngmbx01.mro.roland-man.biz>
-References: <CAAXf6LVErpVae0HVcqv4Rc6p2wnJLje7He2NJC7S1aCSVnD9NQ@mail.gmail.com>
-	<8236197CA3DA864F9EF20609D9887263B4AF@rrxchngmbx01.mro.roland-man.biz>
-Date: Mon, 19 Sep 2011 10:39:04 +0200
-Message-ID: <CAAXf6LXEVeE1hX04wSb3E_Mmr9c5pi4=NvfSuG2iPCSn3fY_kQ@mail.gmail.com>
-From: Thomas De Schampheleire <patrickdepinguin+xenomai@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] PSOS skin: mismatch in function signatures cause
- buffer overflow
+Subject: Re: [Xenomai-help] Can a network freeze caused by Xenomai ?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -19,112 +19,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: dietmar.schindler@domain.hid
-Cc: Xenomai-help@domain.hid
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, Jan Kiszka <jan.kiszka@domain.hid>
+Cc: Xenomai help <xenomai@xenomai.org>
 
-Hi Dietmar,
-
-On Mon, Sep 19, 2011 at 8:59 AM,  <dietmar.schindler@domain.hid> wrote:
->> From: xenomai-help-bounces@domain.hid [mailto:xenomai-help-bounces@domain.hid]
->> On Behalf Of Thomas De Schampheleire
->> Sent: Friday, September 16, 2011 3:00 PM
->> ...
->> The original PSOS interfaces that take a name (like t_create,
->> sm_create etc), expect a character array with length 4:
->> ...
->> while the corresponding PSOS skin in Xenomai expects a null-terminated
->> character array (a real string):
->> ...
->>
->> In certain situations, this difference gives rise to a buffer overflow
->> on the name variable.
->> For example:
->>
->> =A0 =A0 =A0 =A0 unsigned long smid, err;
->> =A0 =A0 =A0 =A0 {
->> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 char id[4] =3D {'S','E','M','0'};
->> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 err =3D sm_create(id,0,SM_PRIOR,&smid);
->> =A0 =A0 =A0 =A0 }
->> =A0 =A0 =A0 =A0 {
->> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 char id[4] =3D "SEM";
->> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 id[3] =3D '1';
->> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 err =3D sm_create(id,0,SM_PRIOR,&smid);
->> =A0 =A0 =A0 =A0 }
->> =A0 =A0 =A0 =A0 {
->> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 char id[4] =3D "SEM2";
->> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 err =3D sm_create(id,0,SM_PRIOR,&smid);
->> =A0 =A0 =A0 =A0 }
->> ...
->>
->> ... The third one (SEM2)
->> is dubious because the end-of-string character will overflow the
->> array, ...
->
-> This is not true, according to ISO/IEC 9899:TC3 Programming languages - C=
-, =A76.7.8 Initialization:
-> ...
-> 14 An array of character type may be initialized by a character string li=
-teral, optionally enclosed in braces. Successive characters of the characte=
-r string literal (including the terminating null character if there is room=
- or if the array is of unknown size) initialize the elements of the array.
-> ...
-> 32 EXAMPLE 8 The declaration
-> =A0 =A0 =A0char s[] =3D "abc", t[3] =3D "abc";
-> defines ''plain'' char array objects s and t whose elements are initializ=
-ed with character string literals.
-> This declaration is identical to
-> =A0 =A0 =A0char s[] =3D { 'a', 'b', 'c', '\0' },
-> =A0 =A0 =A0 =A0 =A0 t[] =3D { 'a', 'b', 'c' };
-
-Thanks for clarifying this...
-
-Best regards,
-Thomas
-
->
->> On target, this creates the following semaphores (taken from the
->> registry):
->>
->> # ls /proc/xenomai/registry/psos/semaphores/SEM*
->> ...
->> /proc/xenomai/registry/psos/semaphores/SEM0????p????_S22753
->> /proc/xenomai/registry/psos/semaphores/SEM1p????_S22753
->> /proc/xenomai/registry/psos/semaphores/SEM2?_S22753
->>
->> As you can see, in all cases there was an array overflow (the question
->> marks correspond to non-ASCII characters), caused by the missing
->> null-termination (in itself caused by a mismatch between the original
->> PSOS interface and the Xenomai PSOS skin implementation of it).
->
-> I would prefer to call this an array overrun (to distinguish the reading =
-past the end of the array here from writing past the end), even though that=
- is not a generally accepted distinction.
->
->> If you do not explicitly create a character array of length 4, e.g.
->> (char id[] =3D "SEM1") then the Xenomai code obviously works fine: it
->> receives a null-terminated string, as it expects.
->>
->>
->> To fix this problem, the PSOS skin should treat incoming names as
->> non-null-terminated character arrays of length 4, and explicitly add
->> null-termination before passing it to the nucleus.
->>
->> What is your view on this?
->
-> I agree.
-> --
-> Regards,
-> Dietmar
-> ________________________________________ manroland AG Vorsitzender des Au=
-fsichtsrates: Hanno C. Fiedler Vorstand: Gerd Finkbeiner (Vorsitzender), Dr=
-. Ingo Koch, Dr. Markus Rall, Paul Steidle Sitz der Gesellschaft: Offenbach=
- am Main, Registergericht: Amtsgericht Offenbach HRB-Nr. 42592 USt-Ident-Nr=
-. DE 250200933
->
->
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
->
+R3JlYXQgISB0aGFuayB5b3UgYm90aCwgSSB3aWxsIHVwZGF0ZSB0aGUga2VybmVsIGFuZCBYZW5v
+bWFpLCBhbmQgcmV0cmVpdmUga2VybmVsIGxvZ3MuDQoNCg0KSWYgaXQgc3RpbGwgb2NjdXJzLCBJ
+IHdpbGwgY29tZSBiYWNrIGhlcmUgOykNCg0KDQpSZWdhcmRzLA0KDQotLSANCk5pY29sYXMgVkVZ
+U1NJRVJFDQoNCg0KDQotLS0tLU1lc3NhZ2UgZCdvcmlnaW5lLS0tLS0NCkRlIDogSmFuIEtpc3pr
+YSBbbWFpbHRvOmphbi5raXN6a2FAc2llbWVucy5jb21dIA0KRW52b3nDqSA6IGx1bmRpIDE5IHNl
+cHRlbWJyZSAyMDExIDEwOjE5DQrDgCA6IFZFWVNTSUVSRSBOaWNvbGFzDQpDYyA6IFhlbm9tYWkg
+aGVscA0KT2JqZXQgOiBSZTogQ2FuIGEgbmV0d29yayBmcmVlemUgY2F1c2VkIGJ5IFhlbm9tYWkg
+Pw0KDQpPbiAyMDExLTA5LTE5IDA5OjQ5LCBWRVlTU0lFUkUgTmljb2xhcyB3cm90ZToNCj4gSGVs
+bG8sDQo+IA0KPiBJIHdvdWxkIGxpa2UgdG8ga25vdyBpZiBpdCBpcyBwb3NzaWJsZSB0aGF0IGEg
+bmV0d29yayBmcmVlemUgYmVlbiBjYXVzZWQgYnkgdGhlIHVzZSBvZiBYZW5vbWFpID8NCj4gDQo+
+IEhlcmUgaXMgbXkgcHJvYmxlbSA6IHdlIGhhdmUgNCBIUCBETCAzNjAgRzYgc2VydmVyLiBBbGwg
+YXJlIGluc3RhbGxlZCB3aXRoIHRoZSBsYXN0IHVwZGF0ZSBvZiBSZWRoYXQgRW50cmVwcmlzZSBM
+aW51eCA1LjYuDQo+IA0KPiBBbGwgNCBoYXZlIDQgcGh5c2ljYWwgZXRoZXJuZXQgaW50ZXJmYWNl
+ICgyIGZyb20gaW50ZWwgY2hpcHNldCwgMiBmcm9tIGJyb2FkY29tIGNoaXBzZXQpLg0KPiANCj4g
+VGhleSBhbGwgaGF2ZSBhIHZpcnR1YWwgZXRoZXJuZXQgaW50ZXJmYWNlIG9uIGV0aDAgKG5hbWVk
+IGV0aDA6MSkuDQo+IA0KPiAyIG9mIHRoZW0gaGF2ZSBYZW5vbWFpIGluc3RhbGxlZCAodjIuNS41
+LjIgd2l0aCBsaW51eCBrZXJuZWwgdjIuNi4zNS43KS4NCg0KMi42LjM1IG1heSBsYWNrIGlwaXBl
+IGZpeGVzIHdlIGhhdmUgaW4gdGhlIGxhdGVzdCB2ZXJzaW9ucyBub3cuIFNvDQp1cGRhdGluZyB0
+aGlzIGFuZCB0aGUgWGVub21haSByZWxlYXNlIHNob3VsZCBiZSB0aGUgZmlyc3Qgc3RlcC4NCg0K
+SmFuDQoNCi0tIA0KU2llbWVucyBBRywgQ29ycG9yYXRlIFRlY2hub2xvZ3ksIENUIFQgREUgSVQg
+MQ0KQ29ycG9yYXRlIENvbXBldGVuY2UgQ2VudGVyIEVtYmVkZGVkIExpbnV4DQoNCg0KDQoNCg0K
+DQoNCi0tLS0tTWVzc2FnZSBkJ29yaWdpbmUtLS0tLQ0KRGXCoDogR2lsbGVzIENoYW50ZXBlcmRy
+aXggW21haWx0bzpnaWxsZXMuY2hhbnRlcGVyZHJpeEB4ZW5vbWFpLm9yZ10gDQpFbnZvecOpwqA6
+IGx1bmRpIDE5IHNlcHRlbWJyZSAyMDExIDEwOjAxDQrDgMKgOiBWRVlTU0lFUkUgTmljb2xhcw0K
+Q2PCoDogWGVub21haSBoZWxwDQpPYmpldMKgOiBSZTogW1hlbm9tYWktaGVscF0gQ2FuIGEgbmV0
+d29yayBmcmVlemUgY2F1c2VkIGJ5IFhlbm9tYWkgPw0KDQpPbiAwOS8xOS8yMDExIDA5OjQ5IEFN
+LCBWRVlTU0lFUkUgTmljb2xhcyB3cm90ZToNCj4gSGVsbG8sDQo+IA0KPiBJIHdvdWxkIGxpa2Ug
+dG8ga25vdyBpZiBpdCBpcyBwb3NzaWJsZSB0aGF0IGEgbmV0d29yayBmcmVlemUgYmVlbg0KPiBj
+YXVzZWQgYnkgdGhlIHVzZSBvZiBYZW5vbWFpID8NCj4gDQo+IEhlcmUgaXMgbXkgcHJvYmxlbSA6
+IHdlIGhhdmUgNCBIUCBETCAzNjAgRzYgc2VydmVyLiBBbGwgYXJlIGluc3RhbGxlZA0KPiB3aXRo
+IHRoZSBsYXN0IHVwZGF0ZSBvZiBSZWRoYXQgRW50cmVwcmlzZSBMaW51eCA1LjYuDQo+IA0KPiBB
+bGwgNCBoYXZlIDQgcGh5c2ljYWwgZXRoZXJuZXQgaW50ZXJmYWNlICgyIGZyb20gaW50ZWwgY2hp
+cHNldCwgMg0KPiBmcm9tIGJyb2FkY29tIGNoaXBzZXQpLg0KPiANCj4gVGhleSBhbGwgaGF2ZSBh
+IHZpcnR1YWwgZXRoZXJuZXQgaW50ZXJmYWNlIG9uIGV0aDAgKG5hbWVkIGV0aDA6MSkuDQo+IA0K
+PiAyIG9mIHRoZW0gaGF2ZSBYZW5vbWFpIGluc3RhbGxlZCAodjIuNS41LjIgd2l0aCBsaW51eCBr
+ZXJuZWwNCj4gdjIuNi4zNS43KS4NCj4gDQo+IA0KPiBUaGUgcHJvYmxlbSBpcyA6IG9uIDEgd2l0
+aCBYZW5vbWFpIGluc3RhbGxlZCwgKHRoZSBvdGhlciBvbmUgaXMgbm90DQo+IHJ1bm5pbmcgZm9y
+IHRoZSBtb21lbnQpLCBhbmQgd2UgcmVndWxhcmx5IGhhdmUgJ25ldHdvcmsgZnJlZXplJywgd2UN
+Cj4gY2FuJ3QgcGluZyBpdCwgaXQgY2FuJ3QgcmVhY2ggb3RoZXIgY29tcHV0ZXJzLCBhbmQgd2Ug
+aGF2ZSB0byByZXN0YXJ0DQo+IHRoZSBPUy4NCj4gDQo+IA0KPiBBbnkgaGVscCBpcyB3ZWxjb21l
+Lg0KDQpEbyB5b3UgaGF2ZSB0aGUgc2FtZSBpc3N1ZSB3aXRoIHRoZSBsYXRlc3Qgc3RhYmxlIHJl
+bGVhc2UgKHYyLjUuNik/IElmDQp5ZXMsIHBsZWFzZSB0cnkgYW5kIGNhcHR1cmUgdGhlIGtlcm5l
+bCBsb2dzIGZyb20gdGhlIGJvb3QsIHVwIHRvIHRoZQ0KYnVnLCB2aWEgc2VyaWFsIGNvbnNvbGUs
+IG9yIHZpYSBuZXRjb25zb2xlIChidXQgc2VlaW5nIHRoZSBidWcgeW91DQpkZXNjcmliZSwgc2Vy
+aWFsIGNvbnNvbGUgaXMgYSBiZXR0ZXIgaWRlYSkuDQoNCi0tIA0KCQkJCQkgICAgR2lsbGVzLg0K
 
