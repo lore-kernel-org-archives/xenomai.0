@@ -1,61 +1,74 @@
-Message-ID: <4E81E8B9.8000004@domain.hid>
-Date: Tue, 27 Sep 2011 17:16:09 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <cover.1316774468.git.richard.cochran@domain.hid>
-	<4E7C8EB2.1020308@domain.hid>
-	<20110926114118.GA2213@domain.hid>
-	<4E8188CB.4040102@domain.hid>
-	<20110927120122.GA10155@domain.hid>
-	<4E81BF9B.1030401@domain.hid>
-	<20110927151009.GA3345@domain.hid>
-In-Reply-To: <20110927151009.GA3345@domain.hid>
+In-Reply-To: <8236197CA3DA864F9EF20609D9887263B4D0@domain.hid>
+References: <CAAXf6LVErpVae0HVcqv4Rc6p2wnJLje7He2NJC7S1aCSVnD9NQ@mail.gmail.com>
+	<1316360236.2169.40.camel@domain.hid>
+	<8236197CA3DA864F9EF20609D9887263B4D0@domain.hid>
+Date: Mon, 19 Sep 2011 09:42:46 +0200
+Message-ID: <CAMJ=MEeOS2K09fm0hnvSmxn6CBbMjHaC-uhDr03qNoZTaEbWVA@mail.gmail.com>
+From: Ronny Meeus <ronny.meeus@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [RFC 0/1] Class driver for raw Ethernet packets
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-help] PSOS skin: mismatch in function signatures cause
+ buffer overflow
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Richard Cochran <richardcochran@domain.hid>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: dietmar.schindler@domain.hid
+Cc: Xenomai-help@domain.hid
 
-On 2011-09-27 17:10, Richard Cochran wrote:
-> On Tue, Sep 27, 2011 at 02:20:43PM +0200, Jan Kiszka wrote:
->> On 2011-09-27 14:01, Richard Cochran wrote:
->>> Again, every MAC driver needs to be tastefully and wisely adapted. I
->>> don't necessarily need to avoid coalescing. The goal (for me) is *not*
->>> to provide deterministic Ethernet performance. Instead the RT packets
->>> should just be delivered ASAP.
+On Mon, Sep 19, 2011 at 9:25 AM,  <dietmar.schindler@domain.hid> wrote:
+>> From: xenomai-help-bounces@domain.hid [mailto:xenomai-help-bounces@domain.hid]
+>> On Behalf Of Philippe Gerum
+>> Sent: Sunday, September 18, 2011 5:37 PM
+>> ...
+>> Actually, we used to follow strictly the pSOS convention for this until
+>> 2.4.x, at which point we moved to name strings precisely because
+>> non-null terminated char[4] arrays would break the registry, the way you
+>> described. This is one of the rare situations where mimicking a useless
+>> limitation of the original API may be challenged by usability concerns
+>> in the new environment, and usability won in that case. The problem
+>> mostly comes from the fact that char[4] is automatically convertible to
+>> const char *, so we have no warning/error leading us to check the
+>> potentially problematic call sites.
 >>
->> This is obviously the point I completely missed. And it makes the whole
->> thing fairly uninteresting IMHO. If you want to do Ethercat, PowerLink
->> or Profinet (RT), you do need a certain level of determinism along the
->> *whole* packet path. And for the latter two, you definitely need RT IRQ
->> support, Ethercat can be OK to poll in fast setups.
->>
->> From that POV, your approach is likely OK. But I doubt its of generic
->> use, specifically for industrial RT Ethernet.
-> 
-> So, how does rtnet support EtherCAT?
+>> The concern about moving back to char[4] arrays - null-terminated if
+>> shorter - is for people who currently assign strings longer than 4
+>> characters to name their objects. What could be done, is providing a
+>> build switch to select the accepted input, like
+>> --disable-psos-long-names to turn on char[4] interpretation.
+>
+> While I would prefer the switch --enable-psos-long-names, this sounds oka=
+y to me, the more so as it is more than people who use the pSOS skin withou=
+t obeying pSOS rules deserve.
+> --
+> Regards,
+> Dietmar
+> ________________________________________ manroland AG Vorsitzender des Au=
+fsichtsrates: Hanno C. Fiedler Vorstand: Gerd Finkbeiner (Vorsitzender), Dr=
+. Ingo Koch, Dr. Markus Rall, Paul Steidle Sitz der Gesellschaft: Offenbach=
+ am Main, Registergericht: Amtsgericht Offenbach HRB-Nr. 42592 USt-Ident-Nr=
+. DE 250200933
+>
+>
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
+>
 
-There was once the EtherCAT Master Library. IIRC, it was discontinued
-and removed from the web for non-technical reasons.
+Another option would be to introduce a run-time switch.
+The default behavior could be that long names are supported and if the
+"enable_short_names()" function is called, all names will the cut at 4
+characters.
+The advantage of this dynamic switch is that different applications
+using the same library can use the mode they prefer.
 
-> 
-> Does it support PowerLink and Profinet?
-
-Not that I know, but that's not the point. You said your approach could
-provide the technical foundation for such a class of use cases while I
-doubt it would work as is.
-
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT T DE IT 1
-Corporate Competence Center Embedded Linux
+Regards,
+Ronny
 
