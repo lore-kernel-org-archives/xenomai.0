@@ -1,15 +1,17 @@
-From: VEYSSIERE Nicolas <nicolas.veyssiere@domain.hid>
-Date: Mon, 19 Sep 2011 10:42:05 +0200
-Message-ID: <30612_1316421640_4E770008_30612_2706_1_ECB646CBB62FD044927FDEDF0252D3E701E393100B67@domain.hid>
-References: <4E76DB36.5060203@domain.hid>
-	<21788_1316418497_4E76F3C1_21788_13255_1_ECB646CBB62FD044927FDEDF0252D3E701E39310098B@THSONEA01CMS03P.one.grp>
-	<4E76F6AD.5070501@domain.hid>
-In-Reply-To: <4E76F6AD.5070501@domain.hid>
-Content-Language: fr-FR
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Can a network freeze caused by Xenomai ?
+Sender: patrickdepinguin@domain.hid
+In-Reply-To: <CAMJ=MEeOS2K09fm0hnvSmxn6CBbMjHaC-uhDr03qNoZTaEbWVA@mail.gmail.com>
+References: <CAAXf6LVErpVae0HVcqv4Rc6p2wnJLje7He2NJC7S1aCSVnD9NQ@mail.gmail.com>
+	<1316360236.2169.40.camel@domain.hid>
+	<8236197CA3DA864F9EF20609D9887263B4D0@domain.hid>
+	<CAMJ=MEeOS2K09fm0hnvSmxn6CBbMjHaC-uhDr03qNoZTaEbWVA@mail.gmail.com>
+Date: Mon, 19 Sep 2011 10:45:44 +0200
+Message-ID: <CAAXf6LX4gfVncvRo5UTyMrqWHhJ6K0ioksyTqvovAjpJyZWS3w@domain.hid>
+From: Thomas De Schampheleire <patrickdepinguin+xenomai@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-help] PSOS skin: mismatch in function signatures cause
+ buffer overflow
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -19,52 +21,56 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, Jan Kiszka <jan.kiszka@domain.hid>
-Cc: Xenomai help <xenomai@xenomai.org>
+To: Ronny Meeus <ronny.meeus@domain.hid>
+Cc: Xenomai-help@domain.hid, dietmar.schindler@domain.hid
 
-R3JlYXQgISB0aGFuayB5b3UgYm90aCwgSSB3aWxsIHVwZGF0ZSB0aGUga2VybmVsIGFuZCBYZW5v
-bWFpLCBhbmQgcmV0cmVpdmUga2VybmVsIGxvZ3MuDQoNCg0KSWYgaXQgc3RpbGwgb2NjdXJzLCBJ
-IHdpbGwgY29tZSBiYWNrIGhlcmUgOykNCg0KDQpSZWdhcmRzLA0KDQotLSANCk5pY29sYXMgVkVZ
-U1NJRVJFDQoNCg0KDQotLS0tLU1lc3NhZ2UgZCdvcmlnaW5lLS0tLS0NCkRlIDogSmFuIEtpc3pr
-YSBbbWFpbHRvOmphbi5raXN6a2FAc2llbWVucy5jb21dIA0KRW52b3nDqSA6IGx1bmRpIDE5IHNl
-cHRlbWJyZSAyMDExIDEwOjE5DQrDgCA6IFZFWVNTSUVSRSBOaWNvbGFzDQpDYyA6IFhlbm9tYWkg
-aGVscA0KT2JqZXQgOiBSZTogQ2FuIGEgbmV0d29yayBmcmVlemUgY2F1c2VkIGJ5IFhlbm9tYWkg
-Pw0KDQpPbiAyMDExLTA5LTE5IDA5OjQ5LCBWRVlTU0lFUkUgTmljb2xhcyB3cm90ZToNCj4gSGVs
-bG8sDQo+IA0KPiBJIHdvdWxkIGxpa2UgdG8ga25vdyBpZiBpdCBpcyBwb3NzaWJsZSB0aGF0IGEg
-bmV0d29yayBmcmVlemUgYmVlbiBjYXVzZWQgYnkgdGhlIHVzZSBvZiBYZW5vbWFpID8NCj4gDQo+
-IEhlcmUgaXMgbXkgcHJvYmxlbSA6IHdlIGhhdmUgNCBIUCBETCAzNjAgRzYgc2VydmVyLiBBbGwg
-YXJlIGluc3RhbGxlZCB3aXRoIHRoZSBsYXN0IHVwZGF0ZSBvZiBSZWRoYXQgRW50cmVwcmlzZSBM
-aW51eCA1LjYuDQo+IA0KPiBBbGwgNCBoYXZlIDQgcGh5c2ljYWwgZXRoZXJuZXQgaW50ZXJmYWNl
-ICgyIGZyb20gaW50ZWwgY2hpcHNldCwgMiBmcm9tIGJyb2FkY29tIGNoaXBzZXQpLg0KPiANCj4g
-VGhleSBhbGwgaGF2ZSBhIHZpcnR1YWwgZXRoZXJuZXQgaW50ZXJmYWNlIG9uIGV0aDAgKG5hbWVk
-IGV0aDA6MSkuDQo+IA0KPiAyIG9mIHRoZW0gaGF2ZSBYZW5vbWFpIGluc3RhbGxlZCAodjIuNS41
-LjIgd2l0aCBsaW51eCBrZXJuZWwgdjIuNi4zNS43KS4NCg0KMi42LjM1IG1heSBsYWNrIGlwaXBl
-IGZpeGVzIHdlIGhhdmUgaW4gdGhlIGxhdGVzdCB2ZXJzaW9ucyBub3cuIFNvDQp1cGRhdGluZyB0
-aGlzIGFuZCB0aGUgWGVub21haSByZWxlYXNlIHNob3VsZCBiZSB0aGUgZmlyc3Qgc3RlcC4NCg0K
-SmFuDQoNCi0tIA0KU2llbWVucyBBRywgQ29ycG9yYXRlIFRlY2hub2xvZ3ksIENUIFQgREUgSVQg
-MQ0KQ29ycG9yYXRlIENvbXBldGVuY2UgQ2VudGVyIEVtYmVkZGVkIExpbnV4DQoNCg0KDQoNCg0K
-DQoNCi0tLS0tTWVzc2FnZSBkJ29yaWdpbmUtLS0tLQ0KRGXCoDogR2lsbGVzIENoYW50ZXBlcmRy
-aXggW21haWx0bzpnaWxsZXMuY2hhbnRlcGVyZHJpeEB4ZW5vbWFpLm9yZ10gDQpFbnZvecOpwqA6
-IGx1bmRpIDE5IHNlcHRlbWJyZSAyMDExIDEwOjAxDQrDgMKgOiBWRVlTU0lFUkUgTmljb2xhcw0K
-Q2PCoDogWGVub21haSBoZWxwDQpPYmpldMKgOiBSZTogW1hlbm9tYWktaGVscF0gQ2FuIGEgbmV0
-d29yayBmcmVlemUgY2F1c2VkIGJ5IFhlbm9tYWkgPw0KDQpPbiAwOS8xOS8yMDExIDA5OjQ5IEFN
-LCBWRVlTU0lFUkUgTmljb2xhcyB3cm90ZToNCj4gSGVsbG8sDQo+IA0KPiBJIHdvdWxkIGxpa2Ug
-dG8ga25vdyBpZiBpdCBpcyBwb3NzaWJsZSB0aGF0IGEgbmV0d29yayBmcmVlemUgYmVlbg0KPiBj
-YXVzZWQgYnkgdGhlIHVzZSBvZiBYZW5vbWFpID8NCj4gDQo+IEhlcmUgaXMgbXkgcHJvYmxlbSA6
-IHdlIGhhdmUgNCBIUCBETCAzNjAgRzYgc2VydmVyLiBBbGwgYXJlIGluc3RhbGxlZA0KPiB3aXRo
-IHRoZSBsYXN0IHVwZGF0ZSBvZiBSZWRoYXQgRW50cmVwcmlzZSBMaW51eCA1LjYuDQo+IA0KPiBB
-bGwgNCBoYXZlIDQgcGh5c2ljYWwgZXRoZXJuZXQgaW50ZXJmYWNlICgyIGZyb20gaW50ZWwgY2hp
-cHNldCwgMg0KPiBmcm9tIGJyb2FkY29tIGNoaXBzZXQpLg0KPiANCj4gVGhleSBhbGwgaGF2ZSBh
-IHZpcnR1YWwgZXRoZXJuZXQgaW50ZXJmYWNlIG9uIGV0aDAgKG5hbWVkIGV0aDA6MSkuDQo+IA0K
-PiAyIG9mIHRoZW0gaGF2ZSBYZW5vbWFpIGluc3RhbGxlZCAodjIuNS41LjIgd2l0aCBsaW51eCBr
-ZXJuZWwNCj4gdjIuNi4zNS43KS4NCj4gDQo+IA0KPiBUaGUgcHJvYmxlbSBpcyA6IG9uIDEgd2l0
-aCBYZW5vbWFpIGluc3RhbGxlZCwgKHRoZSBvdGhlciBvbmUgaXMgbm90DQo+IHJ1bm5pbmcgZm9y
-IHRoZSBtb21lbnQpLCBhbmQgd2UgcmVndWxhcmx5IGhhdmUgJ25ldHdvcmsgZnJlZXplJywgd2UN
-Cj4gY2FuJ3QgcGluZyBpdCwgaXQgY2FuJ3QgcmVhY2ggb3RoZXIgY29tcHV0ZXJzLCBhbmQgd2Ug
-aGF2ZSB0byByZXN0YXJ0DQo+IHRoZSBPUy4NCj4gDQo+IA0KPiBBbnkgaGVscCBpcyB3ZWxjb21l
-Lg0KDQpEbyB5b3UgaGF2ZSB0aGUgc2FtZSBpc3N1ZSB3aXRoIHRoZSBsYXRlc3Qgc3RhYmxlIHJl
-bGVhc2UgKHYyLjUuNik/IElmDQp5ZXMsIHBsZWFzZSB0cnkgYW5kIGNhcHR1cmUgdGhlIGtlcm5l
-bCBsb2dzIGZyb20gdGhlIGJvb3QsIHVwIHRvIHRoZQ0KYnVnLCB2aWEgc2VyaWFsIGNvbnNvbGUs
-IG9yIHZpYSBuZXRjb25zb2xlIChidXQgc2VlaW5nIHRoZSBidWcgeW91DQpkZXNjcmliZSwgc2Vy
-aWFsIGNvbnNvbGUgaXMgYSBiZXR0ZXIgaWRlYSkuDQoNCi0tIA0KCQkJCQkgICAgR2lsbGVzLg0K
+Hi,
+
+On Mon, Sep 19, 2011 at 9:42 AM, Ronny Meeus <ronny.meeus@domain.hid> wrote:
+> On Mon, Sep 19, 2011 at 9:25 AM, =A0<dietmar.schindler@domain.hid> wro=
+te:
+>>> From: xenomai-help-bounces@domain.hid [mailto:xenomai-help-bounces@domain.hid=
+]
+>>> On Behalf Of Philippe Gerum
+>>> Sent: Sunday, September 18, 2011 5:37 PM
+>>> ...
+>>> Actually, we used to follow strictly the pSOS convention for this until
+>>> 2.4.x, at which point we moved to name strings precisely because
+>>> non-null terminated char[4] arrays would break the registry, the way yo=
+u
+>>> described. This is one of the rare situations where mimicking a useless
+>>> limitation of the original API may be challenged by usability concerns
+>>> in the new environment, and usability won in that case. The problem
+>>> mostly comes from the fact that char[4] is automatically convertible to
+>>> const char *, so we have no warning/error leading us to check the
+>>> potentially problematic call sites.
+>>>
+>>> The concern about moving back to char[4] arrays - null-terminated if
+>>> shorter - is for people who currently assign strings longer than 4
+>>> characters to name their objects. What could be done, is providing a
+>>> build switch to select the accepted input, like
+>>> --disable-psos-long-names to turn on char[4] interpretation.
+>>
+>> While I would prefer the switch --enable-psos-long-names, this sounds ok=
+ay to me, the more so as it is more than people who use the pSOS skin witho=
+ut obeying pSOS rules deserve.
+>> --
+[..]
+>>
+>
+> Another option would be to introduce a run-time switch.
+> The default behavior could be that long names are supported and if the
+> "enable_short_names()" function is called, all names will the cut at 4
+> characters.
+> The advantage of this dynamic switch is that different applications
+> using the same library can use the mode they prefer.
+
+I would also be in favor of a runtime setting, rather than a
+compile-time one. One cannot assume that all PSOS applications on a
+system follow the same rules, or that there cannot be a mix of
+'legacy' PSOS applications and 'xenomai-style' ones. According to me,
+a library should support all these uses.
+
+Best regards,
+Thomas
 
