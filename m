@@ -1,10 +1,12 @@
-From: =?UTF-8?Q?Robert?= <robert-km@domain.hid>
-Mime-Version: 1.0
-Message-ID: <584f2ab9.7f72956e.4e78ccaa.5171d@domain.hid>
-Date: Tue, 20 Sep 2011 19:26:02 +0200
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai-help] =?utf-8?q?installing_xenomai_on_pandaboard?=
+Message-ID: <4E78D7C0.2090108@domain.hid>
+Date: Tue, 20 Sep 2011 20:13:20 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+References: <584f2ab9.7f72956e.4e78ccaa.5171d@domain.hid>
+In-Reply-To: <584f2ab9.7f72956e.4e78ccaa.5171d@domain.hid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] installing xenomai on pandaboard
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -14,17 +16,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Robert <robert-km@domain.hid>
+Cc: xenomai@xenomai.org
 
-Can=20someone=20help=20me=20installing=20xenomai=20on=20panda?
+On 09/20/2011 07:26 PM, Robert wrote:
+> Can someone help me installing xenomai on panda?
+> 
+> What should I do, to install xenomai on ubuntu host?
+> Download kernel from kernel.org and patch it with xenomai and adeos-patch, or download kernel from git repository, or download ubuntu image-omap4 via apt-get source?
+> 
+> The last one would download 2.6.38 kernel, but there is no adeos patch for this version yet.
+> It is also possible to download 2.6.37-9, but the same problem.
 
-What=20should=20I=20do,=20to=20install=20xenomai=20on=20ubuntu=20host?
-Download=20kernel=20from=20kernel.org=20and=20patch=20it=20with=20xenomai=
-=20and=20adeos-patch,=20or=20download=20kernel=20from=20git=20repository,=
-=20or=20download=20ubuntu=20image-omap4=20via=20apt-get=20source?
+The upcoming xenomai 2.6.0 supports panda. It should be released real
+soon now, in the mean-time, you can try xenomai 2.6.0-rc3.
 
-The=20last=20one=20would=20download=202.6.38=20kernel,=20but=20there=20is=
-=20no=20adeos=20patch=20for=20this=20version=20yet.
-It=20is=20also=20possible=20to=20download=202.6.37-9,=20but=20the=20same=20=
-problem.
+-- 
+                                                                Gilles.
 
