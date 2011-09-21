@@ -1,11 +1,13 @@
-MIME-Version: 1.0
-In-Reply-To: <1316608865.2171.38.camel@domain.hid>
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <CAMJ=MEfqBJAL9_VPpqFG1kZ8GEfy-Zu0A51M8DC-n-p_-025LA@mail.gmail.com>
 References: <CAMJ=MEc8-hCQQS3mQFta02=sMtsHtN4BwRu9Lfof1c13RG1ZwA@mail.gmail.com>
 	<1316608553.2171.37.camel@domain.hid> <1316608865.2171.38.camel@domain.hid>
-Date: Wed, 21 Sep 2011 18:27:03 +0200
-Message-ID: <CAMJ=MEfqBJAL9_VPpqFG1kZ8GEfy-Zu0A51M8DC-n-p_-025LA@mail.gmail.com>
-From: Ronny Meeus <ronny.meeus@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+	<CAMJ=MEfqBJAL9_VPpqFG1kZ8GEfy-Zu0A51M8DC-n-p_-025LA@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Date: Wed, 21 Sep 2011 21:09:44 +0200
+Message-ID: <1316632184.2171.56.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] pSOS skin in xenomai-solo
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -16,71 +18,83 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
+To: Ronny Meeus <ronny.meeus@domain.hid>
 Cc: xenomai-help <xenomai@xenomai.org>
 
-On Wed, Sep 21, 2011 at 2:41 PM, Philippe Gerum <rpm@xenomai.org> wrote:
-> On Wed, 2011-09-21 at 14:35 +0200, Philippe Gerum wrote:
->> On Tue, 2011-09-20 at 13:10 +0200, Ronny Meeus wrote:
->> > Hello
->> >
->> > We have ported a large pSOS based application to an Embedded Linux
->> > environment using Xenomai.
->> > A more or less stable version is running at this moment.
->> >
->> > The application is not a real-time application at all, we basically
->> > selected Xenomai for its pSOS interface.
->> > Since our application uses also native Linux calls (for example socket
->> > communication), we start to see some strange behavior.
->> > Example: lower priority tasks are running in the xenomai domain while
->> > higher priority tasks, sending data on a socket for example, have to
->> > wait until all processing in the Xenomai domain is completed.
->> >
->> > My feeling is that the Solo project would be better for us.
->> > As far as I understand, this is just a thin layer on top of Linux,
->> > purely running in user space that also offers the pSOS interface.
->> > Is my understanding correct?
->>
->> Yes.
->>
->> >
->> > If it is, I would think that the socket issue described above will be
->> > automatically solved since there will only be 1 scheduler (the Linux
->> > one) and it will respect the thread/task priorities.
->> >
->>
->> True, but in purely Linux native mode, note that your app would be
->> restricted to use VxWorks priorities between 0 and 98 inclusive.
+On Wed, 2011-09-21 at 18:27 +0200, Ronny Meeus wrote:
+> On Wed, Sep 21, 2011 at 2:41 PM, Philippe Gerum <rpm@xenomai.org> wrote:
+> > On Wed, 2011-09-21 at 14:35 +0200, Philippe Gerum wrote:
+> >> On Tue, 2011-09-20 at 13:10 +0200, Ronny Meeus wrote:
+> >> > Hello
+> >> >
+> >> > We have ported a large pSOS based application to an Embedded Linux
+> >> > environment using Xenomai.
+> >> > A more or less stable version is running at this moment.
+> >> >
+> >> > The application is not a real-time application at all, we basically
+> >> > selected Xenomai for its pSOS interface.
+> >> > Since our application uses also native Linux calls (for example socket
+> >> > communication), we start to see some strange behavior.
+> >> > Example: lower priority tasks are running in the xenomai domain while
+> >> > higher priority tasks, sending data on a socket for example, have to
+> >> > wait until all processing in the Xenomai domain is completed.
+> >> >
+> >> > My feeling is that the Solo project would be better for us.
+> >> > As far as I understand, this is just a thin layer on top of Linux,
+> >> > purely running in user space that also offers the pSOS interface.
+> >> > Is my understanding correct?
+> >>
+> >> Yes.
+> >>
+> >> >
+> >> > If it is, I would think that the socket issue described above will be
+> >> > automatically solved since there will only be 1 scheduler (the Linux
+> >> > one) and it will respect the thread/task priorities.
+> >> >
+> >>
+> >> True, but in purely Linux native mode, note that your app would be
+> >> restricted to use VxWorks priorities between 0 and 98 inclusive.
+> 
+> pSOS you mean ...
 
-pSOS you mean ...
-I can live with that since we convert the priority.
+Yes, same issue.
 
-> 0 and 97 inclusive, the two highest priority levels are reserved for
-> internal use.
->
->>
->> > What is the status of this project?
->> >
->> > Regards,
->> > Ronny
->> >
->> > _______________________________________________
->> > Xenomai-help mailing list
->> > Xenomai-help@domain.hid
->> > https://mail.gna.org/listinfo/xenomai-help
->>
->
-> --
-> Philippe.
->
->
->
+> I can live with that since we convert the priority.
+> 
+> > 0 and 97 inclusive, the two highest priority levels are reserved for
+> > internal use.
+> >
+> >>
+> >> > What is the status of this project?
+> >> >
+> >> > Regards,
+> >> > Ronny
+> >> >
+> >> > _______________________________________________
+> >> > Xenomai-help mailing list
+> >> > Xenomai-help@domain.hid
+> >> > https://mail.gna.org/listinfo/xenomai-help
+> >>
+> >
+> > --
+> > Philippe.
+> >
+> >
+> >
+> 
+> I was playing with the xenomai solo in today and I found some issue.
+> It is also present in the -force repository.
+> If you pass in pSOS a 0 as name to the t_ident (lib/psos/task.c)
+> service call, it will return the taskId of the current running task.
+> In the current implementation this call crashes with a segmentation fault.
+> 
 
-I was playing with the xenomai solo in today and I found some issue.
-It is also present in the -force repository.
-If you pass in pSOS a 0 as name to the t_ident (lib/psos/task.c)
-service call, it will return the taskId of the current running task.
-In the current implementation this call crashes with a segmentation fault.
+This should be fixed in the repo now.
 
-Ronny
+> Ronny
+
+-- 
+Philippe.
+
+
 
