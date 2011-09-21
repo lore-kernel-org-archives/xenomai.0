@@ -2,8 +2,8 @@ From: Philippe Gerum <rpm@xenomai.org>
 In-Reply-To: <CAMJ=MEc8-hCQQS3mQFta02=sMtsHtN4BwRu9Lfof1c13RG1ZwA@mail.gmail.com>
 References: <CAMJ=MEc8-hCQQS3mQFta02=sMtsHtN4BwRu9Lfof1c13RG1ZwA@mail.gmail.com>
 Content-Type: text/plain; charset="UTF-8"
-Date: Wed, 21 Sep 2011 14:32:53 +0200
-Message-ID: <1316608373.2171.34.camel@domain.hid>
+Date: Wed, 21 Sep 2011 14:35:53 +0200
+Message-ID: <1316608553.2171.37.camel@domain.hid>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] pSOS skin in xenomai-solo
@@ -38,34 +38,20 @@ On Tue, 2011-09-20 at 13:10 +0200, Ronny Meeus wrote:
 > As far as I understand, this is just a thin layer on top of Linux,
 > purely running in user space that also offers the pSOS interface.
 > Is my understanding correct?
+
+Yes.
+
 > 
 > If it is, I would think that the socket issue described above will be
 > automatically solved since there will only be 1 scheduler (the Linux
 > one) and it will respect the thread/task priorities.
 > 
+
+True, but in purely Linux native mode, note that your app would be
+restricted to use VxWorks priorities between 0 and 98 inclusive.
+
 > What is the status of this project?
 > 
-
-https://mail.gna.org/public/xenomai-help/2011-06/msg00229.html
-
-Since this mail was posted, there has been a significant work on the
--forge tree, you may want to have a look at the README
-git://git.xenomai.org/xenomai-forge.git
-
-This is NOT production grade yet, current lack of documentation is
-blatant as well, but AFAICT, this meets my expectations design-wise, and
-runtime-wise. Lot of work ahead though.
-
-You may want to try running the psos testsuite from lib/psos/testsuite,
-over the so-called "Mercury" core. You could do this as follows:
-
-$ .../xenomai-forge/configure --with-core=mercury --prefix=/
-$ make install DESTDIR=/foo
-$ cd .../xenomai-forge/lib/psos/testsuite
-$ make DESTDIR=/foo test (*)
-
-(*) will require the current account to be sudoer
-
 > Regards,
 > Ronny
 > 
