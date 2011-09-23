@@ -1,13 +1,13 @@
-Message-ID: <4E7CBE2E.50603@domain.hid>
-Date: Fri, 23 Sep 2011 19:13:18 +0200
+Message-ID: <4E7CBFE0.1030202@domain.hid>
+Date: Fri, 23 Sep 2011 19:20:32 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4E76DB36.5060203@domain.hid>
-	<CAGc_wL2G2fA4E5+5a-urbLL744mxq5DwWALPNMPkSaNSAcgrHw@domain.hid>
-In-Reply-To: <CAGc_wL2G2fA4E5+5a-urbLL744mxq5DwWALPNMPkSaNSAcgrHw@domain.hid>
+References: <CAMJ=MEeOYUsNXMOUwLyxTo5kDcTTER90bXUpPiwao0YGZMpTeQ@mail.gmail.com>	<4E7C9020.3040204@domain.hid>
+	<CAMJ=MEfvWpKn=AhbX_cgX-fAvX-uU=iZ1cys+JjdcUcUL9CYiQ@mail.gmail.com>
+In-Reply-To: <CAMJ=MEfvWpKn=AhbX_cgX-fAvX-uU=iZ1cys+JjdcUcUL9CYiQ@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] [Xenomai-core] Xenomai 2.6.0-rc3
+Subject: Re: [Xenomai-help] Xenomai-forge: SEGFAULT is pSOS skin
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -17,23 +17,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Julien Delange <julien.delange@domain.hid>
-Cc: Xenomai help <xenomai@xenomai.org>
+To: Ronny Meeus <ronny.meeus@domain.hid>
+Cc: xenomai-help <xenomai@xenomai.org>
 
-On 09/23/2011 06:09 PM, Julien Delange wrote:
-> On Mon, Sep 19, 2011 at 2:03 AM, Gilles Chanteperdrix
+On 09/23/2011 07:05 PM, Ronny Meeus wrote:
+> On Fri, Sep 23, 2011 at 3:56 PM, Gilles Chanteperdrix
 > <gilles.chanteperdrix@xenomai.org> wrote:
->> [snip]
+>> On 09/22/2011 10:15 PM, Ronny Meeus wrote:
+>>> Hello
+>>>
+>>> I have created some time ago a test application for the PSOS interface
+>>> of Xenomai.
+>>
+>> If you agree, I would like to integrate this test in xenomai-head
+>> regression testsuite.
+>>
+>> --
+>>                                            Gilles.
+>>
 > 
-> Dear Gilles,
-> 
-> The problem also is that the linux kernel servers (and all mirrors)
-> seem down so that the vanilla kernel is difficult to get. Do you know
-> where you could try the 2.6.38.8 vanilla kernel so that I could try
-> this version of Xenomai ?
+> No problem, the test can be integrated.
+> Another option is to wait until the code is more clean and the
+> performance measurement is finished.
+> I'm planning to do this in the near future.
 
-This one does not seem to be down:
-ftp://ftp.proxad.net/pub/linux/kernel/v2.6/
+I am rather interested in a test (or several tests) whose exit status
+indicates whether the tests it contains worked, and which does not take
+a long time to execute. The simpler, the better, as this way the test
+has fewer chances to contain bugs.
 
 
 -- 
