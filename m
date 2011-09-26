@@ -1,46 +1,51 @@
-Date: Tue, 27 Sep 2011 19:04:00 +0200
-From: Richard Cochran <richardcochran@domain.hid>
-Message-ID: <20110927170358.GB6057@domain.hid>
-References: <4E7C8EB2.1020308@domain.hid>
-	<20110926114118.GA2213@domain.hid>
-	<4E8188CB.4040102@domain.hid>
-	<20110927120122.GA10155@domain.hid>
-	<4E81BF9B.1030401@domain.hid>
-	<20110927151009.GA3345@domain.hid>
-	<4E81E8B9.8000004@domain.hid>
-	<20110927160536.GA2425@domain.hid>
-	<4E81F944.3070200@domain.hid> <4E81FA08.4080106@domain.hid>
+Message-ID: <4E806651.7040204@domain.hid>
+Date: Mon, 26 Sep 2011 13:47:29 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <4E81FA08.4080106@domain.hid>
-Subject: Re: [Xenomai-core] [RFC 0/1] Class driver for raw Ethernet packets
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+References: <CAL7_A_VgBKS_dkzSTSE8M8d1TZQ+DLGoM-M7uM3OD4MW=aff9A@mail.gmail.com>
+In-Reply-To: <CAL7_A_VgBKS_dkzSTSE8M8d1TZQ+DLGoM-M7uM3OD4MW=aff9A@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-help] timestamping of events in a xenomai task?
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: =?UTF-8?B?SmVucyBLw7ZobGVy?= <jenskxxx@domain.hid>
+Cc: xenomai-help <xenomai@xenomai.org>
 
-On Tue, Sep 27, 2011 at 06:30:00PM +0200, Jan Kiszka wrote:
-> On 2011-09-27 18:26, Jan Kiszka wrote:
-> > I was simply hoping to collect some new ideas how to address the driver
-> > maintenance issue in a better way but without dropping key features
-> > needed for RT networking. Something like "let's add generic RT channels
-> > to Linux upstream drivers and then only patch them fit RTDM". Not sure
-> > if that works, but it would come with a vision how to keep things more
-> > maintainable.
-> 
-> +this could be useful for other scenarios - on PREEMPT-RT.
+On 09/26/2011 11:13 AM, Jens K=C3=B6hler wrote:
+> Hello,
+>=20
+> I have a computer where time is synchronized by ntp. In a xenomai task =
+I
+> like to time stamp external events. What is best way to read linux syst=
+em
+> time in a Xenomai task?
+>=20
+> Does function *int ftime(struct timeb ***tp**);* works?
 
-(But PREEMPT-RT will make the whole kernel deterministic, right? ;)
+ftime documentation says:
+This  function is obsolete.  Don't use it.  If the time in seconds suf=E2=
+=80=90
+fices,  time(2)  can  be  used;  gettimeofday(2)  gives   microseconds;
+clock_gettime(2) gives nanoseconds but is not as widely available.
 
-Adding low-latency channels (eg. working against coalescing) will be a
-very hard sell upstream.
+In order to solve this particular issue, a new clock was introduced in
+Xenomai 2.6.0: CLOCK_HOST_REALTIME to be used with Xenomai posix skin
+clock_gettime service. It requires a compatible I-pipe patch, currently
+only available for x86 and ARM. Note that CLOCK_HOST_REALTIME can only
+be used for timestamping, not for timers.
 
-Richard
+Xenomai 2.6.0 was not yet released, but you can try 2.6.0-rc3 in the
+mean time.
+
+--=20
+					    Gilles.
+
 
