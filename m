@@ -1,10 +1,9 @@
-Date: Mon, 26 Sep 2011 09:02:26 +0200
-From: "Petr Cervenka" <grugh@domain.hid>
 MIME-Version: 1.0
-Message-Id: <20110926090226.9C75AD68@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai-help] Frequency downscaling of new intel CPU
+Date: Mon, 26 Sep 2011 11:13:39 +0200
+Message-ID: <CAL7_A_VgBKS_dkzSTSE8M8d1TZQ+DLGoM-M7uM3OD4MW=aff9A@mail.gmail.com>
+From: =?ISO-8859-1?Q?Jens_K=F6hler?= <jenskxxx@domain.hid>
+Content-Type: multipart/alternative; boundary=485b392b172017b93e04add493e0
+Subject: [Xenomai-help] timestamping of events in a xenomai task?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -16,30 +15,39 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai-help <xenomai@xenomai.org>
 
+--485b392b172017b93e04add493e0
+Content-Type: text/plain; charset=ISO-8859-1
 
-Hello.
+Hello,
 
-I recently tried newer computer and I suprusingly realized that it is big=
-ger load than the old one with our xenomai application.
-The problem is in the frequency downscaling of the processor when the loa=
-d in under 100%.
-Of course I have disabled CPU_FREQ, ACPI_PROCESSOR and INTEL_IDLE as sugg=
-ested.
-Later I tried also to disable CPU_IDLE, 7300_IDLE (intel chipset idle mem=
-ory) and all power efficiency settings in the BIOS, but without success.
-The experienced behaviour is following:
-when the process is waiting for an event, the processor lowers its freque=
-ncy and when the event happens it tries to restore (slowly) its nominal f=
-requency.
+I have a computer where time is synchronized by ntp. In a xenomai task I
+like to time stamp external events. What is best way to read linux system
+time in a Xenomai task?
 
-Do you have any advice or tip what to try, because I'm really desperate?
+Does function *int ftime(struct timeb ***tp**);* works?
 
-Best regards
 
-Petr Cervenka
+Thanks and regards,
 
-configuration:
-Xeon E3-1220 (Sandy Bridge)
-linux-2.6.38.8
-xenomai-2.5.6
+Jens
+
+--485b392b172017b93e04add493e0
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+<div>Hello,</div>
+<div>=A0</div>
+<div>I have a computer where time is=A0synchronized by ntp. In a xenomai ta=
+sk I like to time stamp external events. What is best way=A0to read=A0linux=
+ system time in a Xenomai task?</div>
+<div>=A0</div>
+<div>Does function=A0<b>int ftime(struct timeb *</b><i>tp</i><b>);</b> work=
+s?</div>
+<div>=A0</div>
+<div>=A0</div>
+<div>Thanks and regards,</div>
+<div>=A0</div>
+<div>Jens</div>
+
+--485b392b172017b93e04add493e0--
 
