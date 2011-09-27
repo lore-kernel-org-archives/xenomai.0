@@ -1,45 +1,74 @@
+Date: Tue, 27 Sep 2011 18:05:37 +0200
+From: Richard Cochran <richardcochran@domain.hid>
+Message-ID: <20110927160536.GA2425@domain.hid>
+References: <cover.1316774468.git.richard.cochran@domain.hid>
+	<4E7C8EB2.1020308@domain.hid>
+	<20110926114118.GA2213@domain.hid>
+	<4E8188CB.4040102@domain.hid>
+	<20110927120122.GA10155@domain.hid>
+	<4E81BF9B.1030401@domain.hid>
+	<20110927151009.GA3345@domain.hid>
+	<4E81E8B9.8000004@domain.hid>
 MIME-Version: 1.0
-Date: Tue, 20 Sep 2011 13:10:45 +0200
-Message-ID: <CAMJ=MEc8-hCQQS3mQFta02=sMtsHtN4BwRu9Lfof1c13RG1ZwA@mail.gmail.com>
-From: Ronny Meeus <ronny.meeus@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Subject: [Xenomai-help] pSOS skin in xenomai-solo
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <4E81E8B9.8000004@domain.hid>
+Subject: Re: [Xenomai-core] [RFC 0/1] Class driver for raw Ethernet packets
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: xenomai-help <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hello
+On Tue, Sep 27, 2011 at 05:16:09PM +0200, Jan Kiszka wrote:
+> On 2011-09-27 17:10, Richard Cochran wrote:
+> > On Tue, Sep 27, 2011 at 02:20:43PM +0200, Jan Kiszka wrote:
+> >> On 2011-09-27 14:01, Richard Cochran wrote:
+> >>> Again, every MAC driver needs to be tastefully and wisely adapted. I
+> >>> don't necessarily need to avoid coalescing. The goal (for me) is *not*
+> >>> to provide deterministic Ethernet performance. Instead the RT packets
+> >>> should just be delivered ASAP.
+> >>
+> >> This is obviously the point I completely missed. And it makes the whole
+> >> thing fairly uninteresting IMHO. If you want to do Ethercat, PowerLink
+> >> or Profinet (RT), you do need a certain level of determinism along the
+> >> *whole* packet path. And for the latter two, you definitely need RT IRQ
+> >> support, Ethercat can be OK to poll in fast setups.
+> >>
+> >> From that POV, your approach is likely OK. But I doubt its of generic
+> >> use, specifically for industrial RT Ethernet.
+> > 
+> > So, how does rtnet support EtherCAT?
+> 
+> There was once the EtherCAT Master Library. IIRC, it was discontinued
+> and removed from the web for non-technical reasons.
+> 
+> > 
+> > Does it support PowerLink and Profinet?
+> 
+> Not that I know, but that's not the point. You said your approach could
+> provide the technical foundation for such a class of use cases while I
+> doubt it would work as is.
 
-We have ported a large pSOS based application to an Embedded Linux
-environment using Xenomai.
-A more or less stable version is running at this moment.
+But that is the point. Correct me please if I am wrong, but isn't
+rtnet a competitor or alternative to EtherCAT, PowerLink, and
+Profinet?
 
-The application is not a real-time application at all, we basically
-selected Xenomai for its pSOS interface.
-Since our application uses also native Linux calls (for example socket
-communication), we start to see some strange behavior.
-Example: lower priority tasks are running in the xenomai domain while
-higher priority tasks, sending data on a socket for example, have to
-wait until all processing in the Xenomai domain is completed.
+Unless rtnet implements (or helps to implement) these, it is kind of
+silly to say, "your way won't work, you should use rtnet instead."
 
-My feeling is that the Solo project would be better for us.
-As far as I understand, this is just a thin layer on top of Linux,
-purely running in user space that also offers the pSOS interface.
-Is my understanding correct?
+I don't know PowerLink or Profinet, but I do know EtherCAT and IEC
+61850, and those two can surely be implemented on the interface that I
+am talking about.
 
-If it is, I would think that the socket issue described above will be
-automatically solved since there will only be 1 scheduler (the Linux
-one) and it will respect the thread/task priorities.
+Also, the interface that I propose does not preclude the use of RTDM
+ISR in the driver, so I wonder what exactly bothers you about it?
 
-What is the status of this project?
-
-Regards,
-Ronny
+Thanks,
+Richard
 
