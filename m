@@ -1,174 +1,61 @@
-Message-ID: <1325fd9ad86.sdiani@domain.hid>
-Date: Tue, 13 Sep 2011 00:54:53 +0200 (CEST)
-From: "sdiani@domain.hid" <sdiani@domain.hid>
-Mime-Version: 1.0
-Content-Type: multipart/alternative; 
-	boundary="----=_Part_170817_21771034.1315868093834"
-Subject: [Adeos-main] Adeos for PowerPc 2.6.29.4-64 bit
-Reply-To: "sdiani@domain.hid" <sdiani@domain.hid>
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/options/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-To: adeos-main@gna.org
-Cc: rpm@xenomai.org
-
-------=_Part_170817_21771034.1315868093834
-Content-Type: text/plain; charset=UTF-8
+Message-ID: <4E820710.3030401@domain.hid>
+Date: Tue, 27 Sep 2011 19:25:36 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
+MIME-Version: 1.0
+References: <4E7C8EB2.1020308@domain.hid>
+	<20110926114118.GA2213@domain.hid>
+	<4E8188CB.4040102@domain.hid>
+	<20110927120122.GA10155@domain.hid>
+	<4E81BF9B.1030401@domain.hid>
+	<20110927151009.GA3345@domain.hid>
+	<4E81E8B9.8000004@domain.hid>
+	<20110927160536.GA2425@domain.hid>
+	<4E81F944.3070200@domain.hid> <4E81FA08.4080106@domain.hid>
+	<20110927170358.GB6057@domain.hid>
+In-Reply-To: <20110927170358.GB6057@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-core] [RFC 0/1] Class driver for raw Ethernet packets
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Richard Cochran <richardcochran@domain.hid>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi,
-
-  Is it possible to have an adeos 64-bit patch  for the 2.6.29.4-64-bit kernel, running on a G5 (PowerPc64)?
-  if not, how can I built one ?
-  The latest that I found is "adeos-ipipe-2.6.22-rc5-powerpc64-1.4-00.patch".
-
-Thanks 
-Sergio
-
-
-----Messaggio originale----
-
-Da: sdiani@domain.hid
-
-Data: 10-mag-2011 14.11
-
-A: <rpm@xenomai.org>
-
-Cc: <adeos-main@gna.org>
-
-Ogg: R: [Adeos-main] R: Re:  Adeos for PowerPc 2.6.29.4-64 bit
-
-
-
-It seems working, it worked for 1 hour without freezing
-Now i want to stress the kernel a bit.
-
-Thanks a lot
-
-Sergio
-
-----Messaggio originale----
-Da: sdiani@domain.hid
-Data: 9-mag-2011 17.16
-A: <rpm@xenomai.org>
-Cc: <adeos-main@gna.org>
-Ogg: [Adeos-main] R: Re: Adeos for PowerPc 2.6.29.4-64 bit
-
-Tonight I try it and I will tell You
-
-Thanks
-
-Sergio
-
-----Messaggio originale----
-Da: rpm@xenomai.org
-Data: 4-mag-2011 16.44
-A: "sdiani@domain.hid"<sdiani@domain.hid>
-Cc: <adeos-main@gna.org>
-Ogg: Re: [Adeos-main] Adeos for PowerPc 2.6.29.4-64 bit
-
-On Wed, 2011-05-04 at 14:57 +0200, sdiani@domain.hid wrote:
+On 2011-09-27 19:04, Richard Cochran wrote:
+> On Tue, Sep 27, 2011 at 06:30:00PM +0200, Jan Kiszka wrote:
+>> On 2011-09-27 18:26, Jan Kiszka wrote:
+>>> I was simply hoping to collect some new ideas how to address the driver
+>>> maintenance issue in a better way but without dropping key features
+>>> needed for RT networking. Something like "let's add generic RT channels
+>>> to Linux upstream drivers and then only patch them fit RTDM". Not sure
+>>> if that works, but it would come with a vision how to keep things more
+>>> maintainable.
+>>
+>> +this could be useful for other scenarios - on PREEMPT-RT.
 > 
-> Hi everyone,
-> i'm trying to compile the 2.6.29.4 64-bit Denx kernel for PowerPC
-> ( PPC 970 , G5 Desktop ).
-> I have applied the
-> patch  adeos-ipipe-2.6.29.4-powerpc-DENX-2.7-04.patch  and after
-> reboot i get this error:
-> 
->                         NIP [000001C968] .power4_idle+0x54/0x58 
->                         LR = (null)
->                             ....
->                         Exceptionn: 901 at power4_idle+0x54/0x58
->                                     LR = .cpu_idle +0x11c/0x1d4
-> 
-> It regards the idle_power4.S file and the only changes in it, are
-> about the CONFIG_SOFTDISABLE.
-> Can Anyone help me to solve it ?
+> (But PREEMPT-RT will make the whole kernel deterministic, right? ;)
 
-The power save code for powermac won't work as is with Adeos. Try
-booting with powersave=off.
+Yes. Except where not.
 
 > 
-> Thank you in advance
-> 
-> Sergio
-> _______________________________________________
-> Adeos-main mailing list
-> Adeos-main@domain.hid
-> https://mail.gna.org/listinfo/adeos-main
+> Adding low-latency channels (eg. working against coalescing) will be a
+> very hard sell upstream.
+
+That also depends on the invasiveness. Key requirements like separate
+packet pools slowly sneak in (for swap over net). Also, separate IRQs
+for separate channels on modern NICs may make the split-out smoother -
+you may no longer need to disable features that used to affect the same
+handler or shared some locks.
+
+Jan
 
 -- 
-Philippe.
-
-
-
-
-
-
-
-
-
-
-
-------=_Part_170817_21771034.1315868093834
-Content-Type: text/html;charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-Hi,<br><br>&nbsp; Is it possible to have an adeos 64-bit patch&nbsp; for th=
-e 2.6.29.4-64-bit kernel, running on a G5 (PowerPc64)?<br>&nbsp; if not, ho=
-w can I built one ?<br>&nbsp; The latest that I found is "adeos-ipipe-2.6.2=
-2-rc5-powerpc64-1.4-00.patch".<br><br>Thanks <br>Sergio<br>
-<blockquote>
-----Messaggio originale----<br>
-Da: sdiani@domain.hid<br>
-Data: 10-mag-2011 14.11<br>
-A: &lt;rpm@xenomai.org&gt;<br>
-Cc: &lt;adeos-main@gna.org&gt;<br>
-Ogg: R: [Adeos-main] R: Re:  Adeos for PowerPc 2.6.29.4-64 bit<br>
-<br>
-It seems working,&nbsp;it worked for 1 hour without freezing<br>Now i want =
-to stress the kernel a bit.<br><br>Thanks a lot<br><br>Sergio<br>
-<blockquote>----Messaggio originale----<br>Da: sdiani@domain.hid<br>Data: 9-m=
-ag-2011 17.16<br>A: &lt;rpm@xenomai.org&gt;<br>Cc: &lt;adeos-main@gna.org&g=
-t;<br>Ogg: [Adeos-main] R: Re: Adeos for PowerPc 2.6.29.4-64 bit<br><br>Ton=
-ight I try it and I will&nbsp;tell You<br><br>Thanks<br><br>Sergio<br>
-<blockquote>----Messaggio originale----<br>Da: rpm@xenomai.org<br>Data: 4-m=
-ag-2011 16.44<br>A: "sdiani@domain.hid"&lt;sdiani@domain.hid&gt;<br>Cc: &lt;ade=
-os-main@domain.hid&gt;<br>Ogg: Re: [Adeos-main] Adeos for PowerPc 2.6.29.4-64 =
-bit<br><br>On Wed, 2011-05-04 at 14:57 +0200, sdiani@domain.hid wrote:<br>&gt=
-; <br>&gt; Hi everyone,<br>&gt; i'm trying to compile the 2.6.29.4 64-bit D=
-enx kernel for PowerPC<br>&gt; ( PPC 970 , G5 Desktop ).<br>&gt; I have app=
-lied the<br>&gt; patch&nbsp; adeos-ipipe-2.6.29.4-powerpc-DENX-2.7-04.patch=
-&nbsp; and after<br>&gt; reboot i get this error:<br>&gt; <br>&gt;&nbsp;&nb=
-sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; NIP [000001C96=
-8] .power4_idle+0x54/0x58 <br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
-;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
-bsp;&nbsp;&nbsp;&nbsp;&nbsp; LR =3D (null)<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&=
-nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbs=
-p;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ....<b=
-r>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nb=
-sp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=
- Exceptionn: 901 at power4_idle+0x54/0x58<br>&gt;&nbsp;&nbsp;&nbsp;&nbsp;&n=
-bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp=
-;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&n=
-bsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; LR =3D .cpu_idle +0x11c/0x1d4<br>&=
-gt; <br>&gt; It regards the idle_power4.S file and the only changes in it, =
-are<br>&gt; about the CONFIG_SOFTDISABLE.<br>&gt; Can Anyone help me to sol=
-ve it ?<br><br>The power save code for powermac won't work as is with Adeos=
-. Try<br>booting with powersave=3Doff.<br><br>&gt; <br>&gt; Thank you in ad=
-vance<br>&gt; <br>&gt; Sergio<br>&gt; _____________________________________=
-__________<br>&gt; Adeos-main mailing list<br>&gt; Adeos-main@domain.hid<br>&g=
-t; https://mail.gna.org/listinfo/adeos-main<br><br>-- <br>Philippe.<br><br>=
-<br><br></blockquote><br><br></blockquote><br><br>
-</blockquote><br>
-
-------=_Part_170817_21771034.1315868093834--
-
+Siemens AG, Corporate Technology, CT T DE IT 1
+Corporate Competence Center Embedded Linux
 
