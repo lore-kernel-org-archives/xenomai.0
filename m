@@ -1,73 +1,48 @@
+Date: Tue, 27 Sep 2011 17:10:09 +0200
+From: Richard Cochran <richardcochran@domain.hid>
+Message-ID: <20110927151009.GA3345@domain.hid>
+References: <cover.1316774468.git.richard.cochran@domain.hid>
+	<4E7C8EB2.1020308@domain.hid>
+	<20110926114118.GA2213@domain.hid>
+	<4E8188CB.4040102@domain.hid>
+	<20110927120122.GA10155@domain.hid>
+	<4E81BF9B.1030401@domain.hid>
 MIME-Version: 1.0
-In-Reply-To: <CAPASGLp2NiLJNX3rSiN1GixXPKeyFqjJ950TVBnKZEc8qK2sag@domain.hid>
-References: <CANKLDms-kVpt6hk7adH880tK5xJL2=D9Y=M25Cn-0hBDueuUfQ@mail.gmail.com>
-	<4E70A876.3020009@domain.hid>
-	<CAPASGLp2NiLJNX3rSiN1GixXPKeyFqjJ950TVBnKZEc8qK2sag@domain.hid>
-Date: Wed, 14 Sep 2011 15:42:16 +0200
-Message-ID: <CANKLDmuDyAR8-YDyj1MZtsohxG0WwHCSqm6Oj+8GKKBpVhL=Lg@domain.hid>
-From: Henri Roosen <henriroosen@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] multicore: reserving core(s) for Xenomai
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <4E81BF9B.1030401@domain.hid>
+Subject: Re: [Xenomai-core] [RFC 0/1] Class driver for raw Ethernet packets
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Eric Noulard <eric.noulard@domain.hid>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Wed, Sep 14, 2011 at 3:24 PM, Eric Noulard <eric.noulard@domain.hid> wrot=
-e:
-> 2011/9/14 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>:
->> On 09/14/2011 02:18 PM, Henri Roosen wrote:
->>> We'll start experiments running our Xenomai application on a
->>> multi-core CPU (x86/ARM). I'm sure there are some Xenomai users who
->>> already have experience with it.
->>>
->>> What I would like to do is to run the Xenomai realtime threads on one
->>> core of the multi-core CPU. And I would like to reserve this core only
->>> for the Xenomai realtime threads.
->>>
->>> I'm using the Native API, so I can pass the CPU affinity flags for the
->>> Xenomai threads during task creation/shadow. But how can I make sure
->>> other threads will not make use of the same processor? I cannot call
->>> taskset for every task that is spawned... right?
->>>
->>> Are there any idea's on how this configuration could be made easier?
->>> It would be nice if there was a kernel config option to reserve
->>> core(s) for Xenomai that Linux will not use.
->>>
->>> Any ideas and help are welcome!
->>
->> The kernel has an "isolcpus" option, which allows to specify which cpus
->> should not be used by Linux.
->>
->> See Documentation/kernel-parameters.txt in the linux kernel sources for
->> an explanation.
->
-> Here is a direct link
-> http://lxr.linux.no/#linux+v2.6.39/Documentation/kernel-parameters.txt#L1=
-063
->
-> Would cpuset work with Xenomai as well?
-> http://lxr.linux.no/#linux+v2.6.39/Documentation/cgroups/cpusets.txt
->
-> Just curious,I did not tried.
->
->
-> --
-> Erk
-> Membre de l'April - =AB promouvoir et d=E9fendre le logiciel libre =BB -
-> http://www.april.org
->
+On Tue, Sep 27, 2011 at 02:20:43PM +0200, Jan Kiszka wrote:
+> On 2011-09-27 14:01, Richard Cochran wrote:
+> > Again, every MAC driver needs to be tastefully and wisely adapted. I
+> > don't necessarily need to avoid coalescing. The goal (for me) is *not*
+> > to provide deterministic Ethernet performance. Instead the RT packets
+> > should just be delivered ASAP.
+> 
+> This is obviously the point I completely missed. And it makes the whole
+> thing fairly uninteresting IMHO. If you want to do Ethercat, PowerLink
+> or Profinet (RT), you do need a certain level of determinism along the
+> *whole* packet path. And for the latter two, you definitely need RT IRQ
+> support, Ethercat can be OK to poll in fast setups.
+> 
+> From that POV, your approach is likely OK. But I doubt its of generic
+> use, specifically for industrial RT Ethernet.
 
-Thanks everyone for the quick and clear answers!
-Exactly what I was looking for.
+So, how does rtnet support EtherCAT?
 
-Henri.
+Does it support PowerLink and Profinet?
+
+Thanks,
+Richard
 
