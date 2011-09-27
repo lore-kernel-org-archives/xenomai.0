@@ -1,65 +1,48 @@
-Message-ID: <4E68873B.6080204@domain.hid>
-Date: Thu, 08 Sep 2011 11:13:31 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4E81BF9B.1030401@domain.hid>
+Date: Tue, 27 Sep 2011 14:20:43 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <4E68226E.2000208@domain.hid>
-	<CAOiXNkARu4YOd+K9YMqXbvQhUYEh38fVyNQi-mthMYjQe7mCYA@mail.gmail.com>
-In-Reply-To: <CAOiXNkARu4YOd+K9YMqXbvQhUYEh38fVyNQi-mthMYjQe7mCYA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
+References: <cover.1316774468.git.richard.cochran@domain.hid>
+	<4E7C8EB2.1020308@domain.hid>
+	<20110926114118.GA2213@domain.hid>
+	<4E8188CB.4040102@domain.hid>
+	<20110927120122.GA10155@domain.hid>
+In-Reply-To: <20110927120122.GA10155@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] PWM generation with GPIO
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Subject: Re: [Xenomai-core] [RFC 0/1] Class driver for raw Ethernet packets
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Andrey Nechypurenko <andreynech@domain.hid>
-Cc: Xenomai help <xenomai@xenomai.org>, Bob Feretich <bob.feretich@domain.hid>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Richard Cochran <richardcochran@domain.hid>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 09/08/2011 10:21 AM, Andrey Nechypurenko wrote:
->> So I wrote
->> a RTDM driver to use the three that were pinned out,  and used real time
->> limit and overflow interrupts to to wiggle a GPIO for the fourth PWM output.
-> 
-> It seams to me that you are using different implementation approach
-> then suggested by Gilles in this thread: "I was talking
-> about a Xenomai driver, using the RTDM skin using for instance two
-> timers, a periodic timer which handler would set the gpio to 1 and
-> launch the second timer, a one shot time which handler would set the
-> gpio to 0."
+On 2011-09-27 14:01, Richard Cochran wrote:
+> Again, every MAC driver needs to be tastefully and wisely adapted. I
+> don't necessarily need to avoid coalescing. The goal (for me) is *not*
+> to provide deterministic Ethernet performance. Instead the RT packets
+> should just be delivered ASAP.
 
-If I understand correctly, the difference is that Bob proposes you to
-dedicate a hardware timer to the PWM, whereas I propose you to use the
-software timers, which ultimately, also depend on a dmtimer. I would not
-expect big differences between the two approaches, neither in terms of
-jitter, nor in terms of code.
+This is obviously the point I completely missed. And it makes the whole
+thing fairly uninteresting IMHO. If you want to do Ethercat, PowerLink
+or Profinet (RT), you do need a certain level of determinism along the
+*whole* packet path. And for the latter two, you definitely need RT IRQ
+support, Ethercat can be OK to poll in fast setups.
 
-> 
-> Could you please say a few words about the reasons why you chose this
-> particular way?
-> 
->> The Linux version of this driver made the 4th servomotor growl. There is no
->> growl using the RTDM version. I asked a lab technician to probe the four
->> servo PWM signals and tell me which was software GPIO generated. He could
->> not tell.
-> 
-> timing. So there might be fundamental difference between periodic task
-> launched in user-space with rt_task_start/rt_task_set_periodic and
-> similar periodic task running as RTDM driver which I do not
-> understand. If this assumption is true, I would really appreciate any
-> pointers to the documentation which explains what are the differences
-> and why RTDM driver can deliver better rt performance then Xenomai
-> thread from user-space.
+>From that POV, your approach is likely OK. But I doubt its of generic
+use, specifically for industrial RT Ethernet.
 
-As suggested in the previous mail I sent you, compare the differences in
-latencies with latency -t 2 between user-space task and kernel-space
-timer. You will see that a timer handler has much less jitter. Switch to
-user-space, and context switch time explain the difference.
+Jan
+
+PS: You do have a stack, even if you don't like it: driver, packet
+layer, application. :)
 
 -- 
-					    Gilles.
+Siemens AG, Corporate Technology, CT T DE IT 1
+Corporate Competence Center Embedded Linux
 
