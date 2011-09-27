@@ -1,92 +1,106 @@
+Message-ID: <4E8206F3.8010802@domain.hid>
+Date: Tue, 27 Sep 2011 19:25:07 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-In-Reply-To: <CAGc_wL172OGHZ-8SG8e77Fp5qwHqKvTY610aQsr3WA_bp+3HRg@domain.hid>
-References: <CAMwkeZy-9Qw0LALq8rrJQKET_Bu7UHgu8YYoFw1z6jdS687fBg@domain.hid>
-	<CAGc_wL172OGHZ-8SG8e77Fp5qwHqKvTY610aQsr3WA_bp+3HRg@domain.hid>
-Date: Wed, 28 Sep 2011 12:37:57 -0300
-Message-ID: <CAMwkeZyweBUfU_b3+d2jmO-tEXDdEhvfWfNZ1HRt6O9vnxd3+w@domain.hid>
-From: =?UTF-8?Q?Fernando_Herrero_Carr=C3=B3n?= <elferdo@domain.hid>
-Content-Type: multipart/alternative; boundary=bcaec5215e5d2a6d4d04ae022d51
-Subject: Re: [Xenomai-help] Command code working with comedi not working
-	with analogy
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+References: <cover.1316774468.git.richard.cochran@domain.hid>
+	<4E7C8EB2.1020308@domain.hid>
+	<20110926114118.GA2213@domain.hid>
+	<4E8188CB.4040102@domain.hid>
+	<20110927120122.GA10155@domain.hid>
+	<4E81BF9B.1030401@domain.hid>
+	<20110927151009.GA3345@domain.hid>
+	<4E81E8B9.8000004@domain.hid>
+	<20110927160536.GA2425@domain.hid>
+	<4E81F944.3070200@domain.hid>
+	<20110927170012.GA6057@domain.hid>
+In-Reply-To: <20110927170012.GA6057@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-core] [RFC 0/1] Class driver for raw Ethernet packets
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Richard Cochran <richardcochran@domain.hid>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
---bcaec5215e5d2a6d4d04ae022d51
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+On 2011-09-27 19:00, Richard Cochran wrote:
+> On Tue, Sep 27, 2011 at 06:26:44PM +0200, Jan Kiszka wrote:
+>> On 2011-09-27 18:05, Richard Cochran wrote:
+>>
+>> That's a common misunderstanding: RTnet is a networking stack with many
+>> _optional_ components (like RTmac, RTcfg etc.). I would bet that it's
+>> more frequently used today in minimal setups, i.e. just the core, some
+>> driver, and either PF_PACKET or UDP/IP.
+> 
+> I understood about the modular design, but I really want to know if
+> rtnet will help me if I want to use of the industrial Ethernet
+> protocols. AFAICT, rtnet really doesn't offer these.
+> 
+> So I'll ask the direct question once again. Does rtnet help me with
+> industrial Ethernet (apart from the rtnet protocols), or not?
 
-2011/9/28 Julien Delange <julien.delange@domain.hid>
+It manages buffers for you, provides NIC drivers and interfaces to
+either build the higher protocol layers in the kernel or in user space.
+That's the mission, but I would not exclude that there is room for
+improvements (lacking safe copy-to/from user, unneeded RX thread for
+single-user scenarios and possibly more). Still, the Ethercat master
+library folks chose it back then as a platform, maybe you want to ask them.
 
-> 2011/9/27 Fernando Herrero Carr=C3=B3n <elferdo@domain.hid>:
-> > [snip]
->
-> Dear Fernando,
->
-> Would it be possible to provide more information about your bug, in
-> particular, the configuration of the board (which is analogy0, ...)
-> and the code you are trying to use ?
->
-> Also, as Gilles said, please also try the latest rc release, it might
-> solve your issues.
->
-> Thanks,
->
+> 
+>>> Unless rtnet implements (or helps to implement) these, it is kind of
+>>> silly to say, "your way won't work, you should use rtnet instead."
+>>>
+>>> I don't know PowerLink or Profinet, but I do know EtherCAT and IEC
+>>> 61850, and those two can surely be implemented on the interface that I
+>>> am talking about.
+>>
+>> It works, but it won't give you a deterministic control loop as you
+>> still have Linux in the game.
+> 
+> It really depends on how the driver is written. While my gianfar
+> example does make use of normal Linux driver interrupts, it would not
+> necessarily have to do so.
+> 
+>> I was simply hoping to collect some new ideas how to address the driver
+>> maintenance issue in a better way but without dropping key features
+>> needed for RT networking. Something like "let's add generic RT channels
+>> to Linux upstream drivers and then only patch them fit RTDM". Not sure
+>> if that works, but it would come with a vision how to keep things more
+>> maintainable.
+> 
+> Well, can you turn the issue around and convince me that writing a
+> rtnet driver is the best way to acheive raw Ethernet packet access?
 
-Ok guys, I was about to copy a minimal example when I realized that I was
-using:
+It would at least avoid having to reinvent user interfaces and buffer
+management layers. They may appear simple now, but that's how everything
+once started.
 
-a4l_open(&dev_output, "/dev/comedi1");
+> 
+> You talk about the rtnet driver model, but is it described anywhere?
+> 
+> (BTW rtnet/Documentation/README.drvporting is horrible. It is just a
+> random list of 40+ odd points without any sense. That document gave me
+> the impression that developing an rtnet driver is a kind of extended
+> "hack until it starts working.")
 
-instead of:
+I know best. It once worked well, allowed you to more or less
+mechanically convert a driver within a few hours, but that's quite a few
+years ago. Driver complexity almost exploded since then.
 
-a4l_open(&dev_output, "analogy1");
+But my goal is not necessarily convincing you to use current RTnet as
+is, but to make you think ahead, reusing the experience of this project
+if you start something new. That need not replace RTnet immediately, but
+it should not block a transition architecturally. The first step to this
+remains studying the legacy, even if not using it in the end.
 
-However, "cmd_read" is still not working, so I'll still give rc3 a try and
-let you know.
+Jan
 
-Sorry for the inconveniences. There's no better way to find a bug than
-explaining to others what you are doing ;)
-
-Thanks,
-Fernando
-
---bcaec5215e5d2a6d4d04ae022d51
-Content-Type: text/html; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-
-<div class=3D"gmail_quote">2011/9/28 Julien Delange <span dir=3D"ltr">&lt;<=
-a href=3D"mailto:julien.delange@domain.hid">julien.delange@domain.hid</a>&gt;=
-</span><br><blockquote class=3D"gmail_quote" style=3D"margin: 0pt 0pt 0pt 0=
-.8ex; border-left: 1px solid rgb(204, 204, 204); padding-left: 1ex;">
-2011/9/27 Fernando Herrero Carr=C3=B3n &lt;<a href=3D"mailto:elferdo@domain.hid.=
-com">elferdo@domain.hid</a>&gt;:<br>
-&gt; [snip]<br>
-<br>
-Dear Fernando,<br>
-<br>
-Would it be possible to provide more information about your bug, in<br>
-particular, the configuration of the board (which is analogy0, ...)<br>
-and the code you are trying to use ?<br>
-<br>
-Also, as Gilles said, please also try the latest rc release, it might<br>
-solve your issues.<br>
-<br>
-Thanks,<br></blockquote></div><br>Ok guys, I was about to copy a minimal ex=
-ample when I realized that I was using:<br><br><div style=3D"margin-left: 4=
-0px;">a4l_open(&amp;dev_output, &quot;/dev/comedi1&quot;);<br><br></div>
-instead of:<br><br><div style=3D"margin-left: 40px;">a4l_open(&amp;dev_outp=
-ut, &quot;analogy1&quot;);<br><br></div>However, &quot;cmd_read&quot; is st=
-ill not working, so I&#39;ll still give rc3 a try and let you know.<br><br>
-Sorry for the inconveniences. There&#39;s no better way to find a bug than =
-explaining to others what you are doing ;)<br><br>Thanks,<br>Fernando<br>
-
---bcaec5215e5d2a6d4d04ae022d51--
+-- 
+Siemens AG, Corporate Technology, CT T DE IT 1
+Corporate Competence Center Embedded Linux
 
