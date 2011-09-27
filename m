@@ -1,13 +1,10 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <CAMJ=MEeevXWzJg8O9jz5JxutNCj=EOHU=Xc93+NzjSFya4O5uA@mail.gmail.com>
-References: <CAMJ=MEeevXWzJg8O9jz5JxutNCj=EOHU=Xc93+NzjSFya4O5uA@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Date: Tue, 27 Sep 2011 10:09:09 +0200
-Message-ID: <1317110949.2155.9.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Xenomai-forge: tm_evafter without tm_cancel
- causes memory leaks.
+MIME-Version: 1.0
+Date: Tue, 27 Sep 2011 15:55:10 -0300
+Message-ID: <CAMwkeZy-9Qw0LALq8rrJQKET_Bu7UHgu8YYoFw1z6jdS687fBg@domain.hid>
+From: =?UTF-8?Q?Fernando_Herrero_Carr=C3=B3n?= <elferdo@domain.hid>
+Content-Type: multipart/alternative; boundary=bcaec5215e5d9fbc3904adf0d025
+Subject: [Xenomai-help] Command code working with comedi not working with
+	analogy
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -17,57 +14,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Ronny Meeus <ronny.meeus@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On Mon, 2011-09-26 at 23:28 +0200, Ronny Meeus wrote:
-> Hello
-> 
-> As for as I know it is not mandatory call tm_cancel on a one-shot
-> timer to cleanup the resources in the OS.
-> This means that if the timer expires, the event is sent and all
-> resources are released by pSOS at that time.
-> 
-> Since I did not see a test for this in the testsuite, I created one
-> myself (in fact 2, see attachments).
-> This time it is a small piece of code :-).
-> In this test I create a task that starts 100 events timers
-> (tm_evafter) but does not stop them (no tm_cancel is called).
-> 
-> In the first test (tm-10.c) I create a task that starts 100 timers,
-> sleeps some time and deletes itself.
-> This sleeping allows the timers to expire. This is the result if I run valgrind:
-> 
+--bcaec5215e5d9fbc3904adf0d025
+Content-Type: text/plain; charset=UTF-8
 
-[snip]
+Hi all,
 
-> So it looks like the contexts allocated in start_evtimer are at least
-> lost, but valgrind mentions another 100 blocks that are still
-> reachable but I think these are in fact also lost since these are
-> referenced by the timer contexs.
-> 
+This is my first post to the list. I have been playing around with
+RTAI+Comedi for a while and wanted to give Xenomai+Analogy a chance. I am
+running a linux 2.6.32.20 kernel on an AMD Phenom(tm) II X4 965, with
+Xenomai 2.5.5.2. Xenomai appears to be running fine, analogy recognizes my
+NI 6143 and NI 6713 cards, and "analogy-config" sets things properly up.
 
-[snip]
+Now I cannot succeed at running any of the "command" functions. The example
+programs "insn_read" and "insn_write" work fine, but "cmd_read" and
+"cmd_write" don't. They fail at "a4l_snd_command".
 
-Ack, it would not make sense to leave elapsed oneshot timers alive. The
-code is now fixed.
+I ported an application that is already working with comedi to analogy. My
+question is now whether the same values for the command structures that are
+working on Comedi should work directly with Analogy, because the
+corresponding "a4l_snd_command" is failing with those values, returning a
+value of -22.
 
+Thank you very much for your help,
+Fernando
 
-> 
-> I also have created a similar test application (tm-11), but in this
-> code the sleep is not there. This means the timers are still running
-> while killing the task. When running this test, I see an invalid read:
-> 
+--bcaec5215e5d9fbc3904adf0d025
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-Confirmed. Albeit the deletion code was there, it was badly broken. At
-this chance, the "invalid timer" error code returned by all timer
-routines has been fixed as well.
+Hi all,<br><br>This is my first post to the list. I have been playing aroun=
+d with RTAI+Comedi for a while and wanted to give Xenomai+Analogy a chance.=
+ I am running a linux 2.6.32.20 kernel on an AMD Phenom(tm) II X4 965, with=
+ Xenomai 2.5.5.2. Xenomai appears to be running fine, analogy recognizes my=
+ NI 6143 and NI 6713 cards, and &quot;analogy-config&quot; sets things prop=
+erly up.<br>
+<br>Now I cannot succeed at running any of the &quot;command&quot; function=
+s. The example programs &quot;insn_read&quot; and &quot;insn_write&quot; wo=
+rk fine, but &quot;cmd_read&quot; and &quot;cmd_write&quot; don&#39;t. They=
+ fail at &quot;a4l_snd_command&quot;.<br>
+<br>I ported an application that is already working with comedi to analogy.=
+ My question is now whether the same values for the command structures that=
+ are working on Comedi should work directly with Analogy, because the corre=
+sponding &quot;a4l_snd_command&quot; is failing with those values, returnin=
+g a value of -22.<br>
+<br>Thank you very much for your help,<br>Fernando<br>
 
-I merged a slightly adapted version of these tests as tm-6 and tm-7 in
-the psos testsuite. Thanks.
-
--- 
-Philippe.
-
-
+--bcaec5215e5d9fbc3904adf0d025--
 
