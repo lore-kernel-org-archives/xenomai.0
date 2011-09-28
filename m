@@ -1,14 +1,10 @@
+Message-ID: <4E8368A6.7010303@domain.hid>
+Date: Wed, 28 Sep 2011 20:34:14 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <4E8B0AC7.60508@domain.hid>
-References: <4E81D866.5000504@domain.hid>
-	<CAMesUR40qfwCK0HARML05E+1a3DwaiqZGmEJYY-Nn2pRsc4UyA@mail.gmail.com>
-	<4E8756EA.1060700@domain.hid> <4E8ABC9A.4070604@domain.hid>
-	<4E8AEB66.9030500@domain.hid> <4E8B0AC7.60508@domain.hid>
-Date: Wed, 5 Oct 2011 23:53:05 +0200
-Message-ID: <CAMesUR6N347aABN9aFg1nj+SARkYmkp9qzPaaRR==b+zD9LUtw@domain.hid>
-From: Alexis Berlemont <alexis.berlemont@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Subject: Re: [Xenomai-core] Analogy: idx_write_subd field in a4l_desc_t
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-core] Xenomai 2.6.0-rc4
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -17,25 +13,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Daniele Nicolodi <daniele@domain.hid>
-Cc: xenomai@xenomai.org
+To: Xenomai help <xenomai@xenomai.org>, Xenomai core <Xenomai-core@domain.hid>
 
-Hi,
 
-On Tue, Oct 4, 2011 at 3:31 PM, Daniele Nicolodi <daniele@domain.hid> wrote:
-> On 04/10/11 13:17, Gilles Chanteperdrix wrote:
->> If you want things merged, send the patches, they will reach
->> xenomai-head repository through Alex.
->
-> Of course. Here is my simple patch.
->
+Hi, 
 
-Thanks.
+here is the 4th release candidate for Xenomai 2.6.0:
+http://download.gna.org/xenomai/testing/xenomai-2.6.0-rc4.tar.bz2
 
-> Thank you. Cheers,
-> --
-> Daniele
->
+Novelties since -rc3 include:
+- a fix for the "long names" issue on psos+
+- a fix for the build issue of mscan on mpc52xx (please Wolfgang, have 
+a look at the patch, to see if you like it:)
+http://git.xenomai.org/?p=xenomai-head.git;a=commitdiff;h=d22fd231db7eb0af8e77ec570efb89e578e13781;hp=4a2188f049e96fc59aa7c4a7a9d058075f3d79e8
+- a new version of the I-pipe patch for linux 3.0 on ppc.
 
-Alexis.
+This should be the last release candidate.
+
+Regards.
+
+-- 
+                                                                Gilles.
 
