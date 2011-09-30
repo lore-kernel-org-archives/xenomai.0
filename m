@@ -1,13 +1,11 @@
-Message-ID: <4E820FC4.2080103@domain.hid>
-Date: Tue, 27 Sep 2011 20:02:44 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <cover.1316774468.git.richard.cochran@domain.hid>	<4E7C8EB2.1020308@domain.hid>	<20110926114118.GA2213@domain.hid>	<4E8188CB.4040102@domain.hid>	<20110927120122.GA10155@domain.hid>	<4E81BF9B.1030401@domain.hid>	<20110927151009.GA3345@domain.hid>	<4E81E8B9.8000004@domain.hid>	<20110927160536.GA2425@domain.hid>	<4E81F944.3070200@domain.hid>
-	<20110927170012.GA6057@domain.hid>
-In-Reply-To: <20110927170012.GA6057@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [RFC 0/1] Class driver for raw Ethernet packets
+In-Reply-To: <4E81D866.5000504@domain.hid>
+References: <4E81D866.5000504@domain.hid>
+Date: Sat, 1 Oct 2011 00:03:32 +0200
+Message-ID: <CAMesUR40qfwCK0HARML05E+1a3DwaiqZGmEJYY-Nn2pRsc4UyA@mail.gmail.com>
+From: Alexis Berlemont <alexis.berlemont@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: Re: [Xenomai-core] Analogy: idx_write_subd field in a4l_desc_t
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -16,83 +14,64 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Richard Cochran <richardcochran@domain.hid>
-Cc: Jan Kiszka <jan.kiszka@domain.hid>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Daniele Nicolodi <daniele@domain.hid>
+Cc: xenomai@xenomai.org
 
-On 09/27/2011 07:00 PM, Richard Cochran wrote:
-> On Tue, Sep 27, 2011 at 06:26:44PM +0200, Jan Kiszka wrote:
->> On 2011-09-27 18:05, Richard Cochran wrote:
->>
->> That's a common misunderstanding: RTnet is a networking stack with many
->> _optional_ components (like RTmac, RTcfg etc.). I would bet that it's
->> more frequently used today in minimal setups, i.e. just the core, some
->> driver, and either PF_PACKET or UDP/IP.
-> 
-> I understood about the modular design, but I really want to know if
-> rtnet will help me if I want to use of the industrial Ethernet
-> protocols. AFAICT, rtnet really doesn't offer these.
-> 
-> So I'll ask the direct question once again. Does rtnet help me with
-> industrial Ethernet (apart from the rtnet protocols), or not?
-> 
->>> Unless rtnet implements (or helps to implement) these, it is kind of
->>> silly to say, "your way won't work, you should use rtnet instead."
->>>
->>> I don't know PowerLink or Profinet, but I do know EtherCAT and IEC
->>> 61850, and those two can surely be implemented on the interface that I
->>> am talking about.
->>
->> It works, but it won't give you a deterministic control loop as you
->> still have Linux in the game.
-> 
-> It really depends on how the driver is written. While my gianfar
-> example does make use of normal Linux driver interrupts, it would not
-> necessarily have to do so.
-> 
->> I was simply hoping to collect some new ideas how to address the driver
->> maintenance issue in a better way but without dropping key features
->> needed for RT networking. Something like "let's add generic RT channels
->> to Linux upstream drivers and then only patch them fit RTDM". Not sure
->> if that works, but it would come with a vision how to keep things more
->> maintainable.
-> 
-> Well, can you turn the issue around and convince me that writing a
-> rtnet driver is the best way to acheive raw Ethernet packet access?
+Hi,
 
->From the point of view of someone a bit external to the rtnet project,
-rtnet is a TCP/IP stack, which contains the stack, useless for your
-purposes, but defines an interface between drivers and the stack. By
-following this interface to write a driver on one-side, and support for
-raw packets on the other side you get:
-- raw packets support for all drivers in rtnet repository
-- TCP/IP support for the NIC you wrote a driver for.
+On Tue, Sep 27, 2011 at 4:06 PM, Daniele Nicolodi <daniele@domain.hid> wrote:
+> Hello,
+>
+> I'm using xenomai-head on a 2.6.38.8 kernel on x86 with a NI-6251 DAQ
+> board. In this configuration the idx_write_subd field of the a4l_desc_t
+> structure filled by a4l_open() is not set to the proper value but is set
+> to NULL.
+>
+> In previous xanomai/analogy releases this was working properly. Has some
+> initialization code been removed in the latest analogy drivers refactoring?
 
-As for the in-kernel driver patch versus out-of-tree driver, in-kernel
-driver will have to be adapted for each release of the linux kernel,
-when porting the I-pipe patch, and that is quickly going to become a
-nightmare.
+Yes. Formerly, on both sides (kernel and user), we used some
+description fields (idx_read_subd and idx_write_subd) so as to quickly
+identify default asynchronous input and output subdevices and to link
+them with buffers (into which, input / output data are copied).
 
-> You talk about the rtnet driver model, but is it described anywhere?
-> 
-> (BTW rtnet/Documentation/README.drvporting is horrible. It is just a
-> random list of 40+ odd points without any sense. That document gave me
-> the impression that developing an rtnet driver is a kind of extended
-> "hack until it starts working.")
+Most of the time, there were only one asynchronous read / write
+subdevice per card; so, the original Comedi way was ok.
 
-README.drvporting is frightening at first, but in fact, the job to port
-a network driver to rtnet is not so hard.
+Unfortunately, some boards now display many asynchronous subdevices of
+the same type. To tackle this issue, I could have implemented the
+workaround proposed by Comedi (give the possibility to attach the
+driver a second time and select the proper subdevice). I tried
+something else: when the driver is opened an asynchronous buffer is
+instanciated; at init time, this buffer does not belong to any
+subdevice but when an asynchronous command is sent, the buffer is
+temporarily reserved by the targeted subdevice.
 
-> 
-> Thanks,
-> Richard
-> 
+Thus instead of re-attaching drivers with devices, the developer gets
+direct access on any subdevice; if he needs to perform two
+simultaneous asyncrhonous acquisitions on the same card, he just has
+to open the analogy device twice (a4l_open).
+
+For API / ABI compatibility reasons, I waited a major release before
+removing the fields idx_{read, write}_subd. I should have thought
+twice before removing their initializations. I will fix that soon,
+sorry.
+
+I implemented this change more than one year ago (here is on of the
+many related commits 58ebd5b7efe0cc0ac1e82991d12125ce34dfeee3). That
+was already present in 2.5. Which version were you formerly using?
+
+Best regards,
+
+Alexis.
+
+> Thank you. Cheers,
+> --
+> Daniele
+>
 > _______________________________________________
 > Xenomai-core mailing list
 > Xenomai-core@domain.hid
 > https://mail.gna.org/listinfo/xenomai-core
-> 
-
-
--- 
-                                                                Gilles.
+>
 
