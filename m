@@ -1,15 +1,13 @@
-MIME-Version: 1.0
-In-Reply-To: <CAMk6uBnQQ54rBk2LZOSwws21EnfXVf2QZE7r66+iJWbcp6HKzw@domain.hid>
-References: <CAMk6uB=6aJmndwmU14zu3S9QBH=tFy0xrub7kznUyZBqsTTdiQ@mail.gmail.com>
-	<1314698841.22036.2.camel@domain.hid>
-	<CAMk6uBnQQ54rBk2LZOSwws21EnfXVf2QZE7r66+iJWbcp6HKzw@domain.hid>
-Date: Thu, 1 Sep 2011 09:38:12 +0800
-Message-ID: <CAMk6uBn1AAiO8nPkytakoJ_MqGf2qbcDbHGPma_SsN5fee0E_Q@mail.gmail.com>
-From: realmz6 <realmz6@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] [Adeos-main] gpio irq always set to level
- sensitive with Xenomai on Blackfin
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <CAAXf6LXwqMUOrmHQX4O6hk2ar95Sym8A9vu9MSBtjE4G6Sq0ag@domain.hid>
+References: <CAAXf6LXwqMUOrmHQX4O6hk2ar95Sym8A9vu9MSBtjE4G6Sq0ag@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Date: Sat, 01 Oct 2011 11:53:39 +0200
+Message-ID: <1317462819.2190.1.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] xenomai-forge: cast to pointer from integer of
+ different size
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -19,65 +17,76 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org, adeos-main@gna.org, uclinux-dist-devel@domain.hid
+To: Thomas De Schampheleire <patrickdepinguin+xenomai@domain.hid>
+Cc: Xenomai-help@domain.hid
 
-any update?
+On Fri, 2011-09-30 at 21:53 +0200, Thomas De Schampheleire wrote:
+> Hi,
+> 
+> I'm trying to compile xenomai-forge on powerpc, but am facing
+> compilation problems:
+> 
+> libtool: compile:
+> /repo/tdescham/reborn/buildroot-08-eglibc-test-toolchain/output/host/usr/bin/powerpc-linux-gcc
+> -DHAVE_CONFIG_H -I. -I../../lib/include -O2 -D_GNU_SOURCE -D_REENTRANT
+> -Wall -pipe -Wstrict-prototypes -Wmissing-prototypes -Wno-long-long
+> -Wno-unused-parameter -Werror -D__XENO__ -D__IN_XENO__
+> -Wstrict-prototypes -I../../include -pipe -Os -D_LARGEFILE_SOURCE
+> -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -MT
+> libcopperplate_la-cluster.lo -MD -MP -MF
+> .deps/libcopperplate_la-cluster.Tpo -c cluster.c  -fPIC -DPIC -o
+> .libs/libcopperplate_la-cluster.o
+> cc1: warnings being treated as errors
+> In file included from cluster.c:89:
+> ../../include/copperplate/heapobj.h: In function 'mainheap_ptr':
+> ../../include/copperplate/heapobj.h:82: error: cast to pointer from
+> integer of different size
+> ../../include/copperplate/heapobj.h: In function 'mainheap_off':
+> ../../include/copperplate/heapobj.h:87: error: cast from pointer to
+> integer of different size
+> cc1: warnings being treated as errors
+> 
+> The C library we are using for this build is eglibc.
+> 
+> The offending code is:
+> static inline void *mainheap_ptr(off_t off)
+> {
+>         return off ? (void *)__memptr(__pshared_heap, off) : NULL;
+> }
+> 
+> static inline off_t mainheap_off(void *addr)
+> {
+>         return addr ? (off_t)__memoff(__pshared_heap, addr) : 0;
+> }
+> 
+> Since glibc/eglibc has large file support, the size of off_t is 8
+> bytes (I confirmed this from the preprocessor output).
+> However, on this 32-bit powerpc platform, a void pointer is only 4
+> bytes, hence the compiler error.
+> 
+> Is my assumption correct that you are developing xenomai-forge on a
+> 64-bit platform?
+> 
 
-On Tue, Aug 30, 2011 at 6:59 PM, realmz6 <realmz6@domain.hid> wrote:
-> Hi Philippe,
->
-> Thanks for your quick response. I have a few questions.
->
-> On Tue, Aug 30, 2011 at 6:07 PM, Philippe Gerum <rpm@xenomai.org> wrote:
->> On Tue, 2011-08-30 at 16:40 +0800, realmz6 wrote:
->>> Hi Guys,
->>>
->>> in adeos patch bfin_set_irq_handler(), this will set irq handle to
->>> handle_level_irq even it is a edge gpio irq, is it true?
->>>
->>> =C2=A0#ifdef CONFIG_IPIPE
->>> - =C2=A0 =C2=A0 =C2=A0 _set_irq_handler(irq, handle_level_irq);
->>> -#else
->>> - =C2=A0 =C2=A0 =C2=A0 struct irq_desc *desc =3D irq_desc + irq;
->>> + =C2=A0 =C2=A0 =C2=A0 handle =3D __fixup_irq_handler(desc, handle_leve=
-l_irq, 0);
->>> +#endif
->>>
->>> should it like the follows, it just fixup original handle and will not
->>> always set it to handle_level_irq.
->>
->> No, this code is correct Adeos-wise. See there for an explanation, and a
->> pending fix for a related issue:
->> https://mail.gna.org/public/xenomai-help/2011-08/msg00081.html
-> why adeos is designed to use handle_level_irq for all interrupts even
-> it is a edge interrupt in hardware?
-> you means it should be fixed in the ipipe fixup_handler for
-> handle_level_irq to deal with a edge interrupt.
-> on blackfin edge irq need a ack to clear sticky but level irq needn't,
-> if i fixed it in ipipe_ack_level_irq maybe
-> the level irq will be broken.
->
->>
->>>
->>> #ifdef CONFIG_IPIPE
->>> - =C2=A0 =C2=A0 =C2=A0 _set_irq_handler(irq, handle_level_irq);
->>> -#else
->>> - =C2=A0 =C2=A0 =C2=A0 struct irq_desc *desc =3D irq_desc + irq;
->>> + =C2=A0 =C2=A0 =C2=A0 handle =3D __fixup_irq_handler(desc, handle, 0);
->>> +#endif
->>>
->>> -steven
->>>
->>> _______________________________________________
->>> Adeos-main mailing list
->>> Adeos-main@domain.hid
->>> https://mail.gna.org/listinfo/adeos-main
->>
->> --
->> Philippe.
->>
->>
->>
->
+Both on ppc 32bit and x86_64, but my ppc toolchain does not enable large
+file support.
+
+> What is the proper solution here?
+
+Use a specific memory offset type would be the best approach. I have
+committed something along these lines to the repo.
+
+> 
+> Thanks,
+> Thomas
+> 
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
+
+-- 
+Philippe.
+
+
 
