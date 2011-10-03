@@ -1,14 +1,11 @@
-Message-ID: <4E89DF1E.7040608@domain.hid>
-Date: Mon, 03 Oct 2011 18:13:18 +0200
-From: =?UTF-8?B?UGV0ciDEjGVydmVua2E=?= <grugh@domain.hid>
+Message-ID: <1317667467.43274.YahooMailNeo@domain.hid>
+Date: Tue, 4 Oct 2011 00:14:27 +0530 (IST)
+From: Alex Martin <alex.martin92@domain.hid>
 MIME-Version: 1.0
-References: <20110926090226.9C75AD68@domain.hid>
-	<20111003103914.8A2B636C@centrum.cz>
-	<CAPASGLohhztGb0h97QAReSS1z3p++iPOEhNfEGXew3A9P5VmZw@domain.hid>
-In-Reply-To: <CAPASGLohhztGb0h97QAReSS1z3p++iPOEhNfEGXew3A9P5VmZw@domain.hid>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Frequency downscaling of new intel CPU
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai-help] xenomai 2.6.0-rc4 build debian
+Reply-To: Alex Martin <alex.martin92@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -18,46 +15,17 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Eric Noulard <eric.noulard@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-I'm sure that CPU_FREQ, ACPI_PROCESSOR, CPU_IDLE, INTEL_IDLE and 
-7300_IDLE were disabled in kernel configuration and no cpufreq module is 
-loaded (or even created).
-
-Later I tried (desperately) to enable most of these settings and 
-although I set performance governor to cpufreq, no measurable change 
-happened (using acpi_cpufreq module).
-But cpuidle (when compiled in kernel) shows that a lot of time is spent 
-in power saving states 
-(/sys/devices/system/cpu/cpu<n>/cpuidle/state<i>/..., where <i> is also 
-2 and 3).
-
-And on one of the mainboards I tried, the acpi_cpufreq was unable to 
-load, perhaps because of the disabled BIOS settings).
-
-I'm now working with windows, so the sysfs path is what I remember 
-(maybe not so well).
-
-Petr
-
-Dne 3.10.2011 10:47, Eric Noulard napsal(a):
-> 2011/10/3 Petr Cervenka<grugh@domain.hid>:
->> Hello again.
->> I know, that my problem is not so close related with the xenomai. But I think many of xenomai users with new intel CPUs have similar problem.
->> I tried it it with two different main boards and none of the BIOS settings helped. (C-states: disabled, Speedstep: disabled, CPU idle: high performance, TurboBoost: disabled, ...). My theory is that the linux kernel overrides BIOS settings, but I don't know how to prove it.
->> Any ideas that could help me?
-> Did you verify that you don't have any cpufred related module loaded?
->
-> What does
->
-> $ lsmod | grep cpu
->
-> indicate?
->
-> You can try that one too:
->
-> $ find /sys/devices/system -name "cpufreq"
->
->
+=0A=0AI am getting following error while compiling xenomai-2.6.0-rc4=0A=0Au=
+sing debuild -uc -us=0A=0Aa. xeno-config.1 no such file=0Ab. Also path not =
+correct. debian/libxenomai-dev//usr/share/man/man1/=A0=A0 '//usr/'=0A=0A=0A=
+Couple of other places also '//usr/share/'=A0 double '//' is appearing.=0A=
+=0A=0Adh_install --sourcedir=3D/home/alex/Dev/xenomai-2.6.0-rc4/debian/tmp=
+=0Acp: cannot stat `debian/tmp/usr/share/man/man1/xeno-config.1': No such f=
+ile or directory=0Adh_install: cp -a debian/tmp/usr/share/man/man1/xeno-con=
+fig.1 debian/libxenomai-dev//usr/share/man/man1/ returned exit code 1=0Amak=
+e: *** [install] Error 2=0Adpkg-buildpackage: error: fakeroot debian/rules =
+binary gave error exit status 2=0Adebuild: fatal error at line 1340:=0A=0A=
+=0AAlex.
 
