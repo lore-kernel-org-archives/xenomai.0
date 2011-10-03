@@ -1,12 +1,9 @@
-Date: Mon, 03 Oct 2011 10:39:14 +0200
-From: "Petr Cervenka" <grugh@domain.hid>
-References: <20110926090226.9C75AD68@domain.hid>
-In-Reply-To: <20110926090226.9C75AD68@domain.hid>
 MIME-Version: 1.0
-Message-Id: <20111003103914.8A2B636C@centrum.cz>
+Date: Mon, 3 Oct 2011 04:46:27 -0400
+Message-ID: <CAGc_wL01jfmJQTzLeC0i8TdBmrF+TyFrzea0Z+QVrDbqXFUUag@domain.hid>
+From: Julien Delange <julien.delange@domain.hid>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] Frequency downscaling of new intel CPU
+Subject: [Xenomai-help] Using -rc3 or -rc4 with the 2.6.38 kernel
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -16,50 +13,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai-help <xenomai@xenomai.org>
+To: Xenomai help <xenomai@xenomai.org>
 
+Dear all,
 
-Hello again.
-I know, that my problem is not so close related with the xenomai. But I t=
-hink many of xenomai users with new intel CPUs have similar problem.
-I tried it it with two different main boards and none of the BIOS setting=
-s helped. (C-states: disabled, Speedstep: disabled, CPU idle: high perfor=
-mance, TurboBoost: disabled, ...). My theory is that the linux kernel ove=
-rrides BIOS settings, but I don't know how to prove it.
-Any ideas that could help me?
+I currently try to use the latest Xenomai -rc version with the
+2.6.38.8. I am able to both compile and build my kernel. However, when
+trying to use it with QEMU, it seems it does not work.
+If I look at the errors, it seems that udev reports a timeout. After
+investigating a little bit, it seems this is related to a regression
+in the 2.6.38 kernel on the IDE ATA layer[1] and that the ide layer
+generates a lot of IRQ. As a result, the system (a stable debian)
+takes at least 5 minutes to boot, waiting for udev to timeout.
 
-Petr Cervenka
+Does anyone already experienced that kind of issue when testing the
+latest version of xenomai with this kernel version ? If so, how did
+you get rid of this error ?
 
-______________________________________________________________.
-> Od: "Petr Cervenka" <grugh@domain.hid>
-> Komu: "xenomai-help" <xenomai@xenomai.org>
-> Datum: 26.09.2011 09:02
-> P=C5=99edm=C4=9Bt: Frequency downscaling of new intel CPU
->
->Hello.
->
->I recently tried newer computer and I suprusingly realized that it has b=
-igger load than the old one with our xenomai application.
->The problem is in the frequency downscaling of the processor when the lo=
-ad in under 100%.
->Of course I have disabled CPU_FREQ, ACPI_PROCESSOR and INTEL_IDLE as sug=
-gested.
->Later I tried also to disable CPU_IDLE, 7300_IDLE (intel chipset idle me=
-mory) and all power efficiency settings in the BIOS, but without success.
->The experienced behaviour is following:
->when the process is waiting for an event, the processor lowers its frequ=
-ency and when the event happens it tries to restore (slowly) its nominal =
-frequency.
->
->Do you have any advice or tip what to try, because I'm really desperate?
->
->Best regards
->
->Petr Cervenka
->
->configuration:
->Xeon E3-1220 (Sandy Bridge)
->linux-2.6.38.8
->xenomai-2.5.6
->
+Thanks for any comment or suggestion regarding that problem.
+
+[1] : https://lkml.org/lkml/2011/4/12/538
 
