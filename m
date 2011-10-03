@@ -1,9 +1,12 @@
 MIME-Version: 1.0
-Date: Thu, 1 Sep 2011 09:49:55 +0800
-Message-ID: <CAHoMn5p1K5c=f-WWTsK6S3pTULtFVAbszUaqaDp-CGteu=6SDw@domain.hid>
-From: yi zheng <yizheng23@domain.hid>
-Content-Type: multipart/alternative; boundary=001636ed6c7121f53b04abd776f9
-Subject: [Xenomai-help] cann't find head file
+In-Reply-To: <CAMwkeZzYbE8DKnmDNMbU58Qi0HC4YWNKJRjxs-8n8Q75tY1j8w@domain.hid>
+References: <CAMwkeZzYbE8DKnmDNMbU58Qi0HC4YWNKJRjxs-8n8Q75tY1j8w@domain.hid>
+Date: Mon, 3 Oct 2011 23:09:29 +0200
+Message-ID: <CAMesUR5oL33XfP_BienmYeabgmL_0sea8UFnLFxJC5yZ-igEKw@domain.hid>
+From: Alexis Berlemont <alexis.berlemont@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-help] Module unloading and reloading does not work
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -13,136 +16,83 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: =?ISO-8859-1?Q?Fernando_Herrero_Carr=F3n?= <elferdo@domain.hid>
+Cc: Xenomai-help@domain.hid
 
---001636ed6c7121f53b04abd776f9
-Content-Type: text/plain; charset=GB2312
-Content-Transfer-Encoding: quoted-printable
+Hi,
 
-Hi all
-       I want to compile a kernel module.The source code file ,written by
-native skin, prepared to compile is named "kernel-test.c".The comment of
-makefile is described as follows=A3=BA
-       ifneq ($(KERNELRELEASE),)
-obj-m :=3Dkernel-test.o
-else
-KSRC ?=3D/usr/src/xenomai/linux-2.6.31.8
-PWD     :=3D$(shell pwd)
-default:
-$(MAKE) -C  $(KSRC)    M=3D$(PWD)        modules
-endif
-        I tried to compile kernel module.Then I got:
-make -I/usr/xenomai/include/  ARCH=3Darm CROSS_COMPILE=3Darm-linux-
-make -C  /usr/src/xenomai/linux-2.6.31.8
- M=3D/home/zhengyi/xenomai-program/kernel        modules
-make[1]: Entering directory `/usr/src/xenomai/linux-2.6.31.8'
-  CC [M]  /home/zhengyi/xenomai-program/kernel/kernel-test.o
-/home/zhengyi/xenomai-program/kernel/kernel-test.c:1:25: native/task.h: No
-such file or directory
-/home/zhengyi/xenomai-program/kernel/kernel-test.c:5: error: parse error
-before "task_desc"
-/home/zhengyi/xenomai-program/kernel/kernel-test.c:5: warning: type default=
-s
-to `int' in declaration of `task_desc'
-/home/zhengyi/xenomai-program/kernel/kernel-test.c:5: warning: data
-definition has no type or storage class
-/home/zhengyi/xenomai-program/kernel/kernel-test.c: In function `task_body'=
-:
-/home/zhengyi/xenomai-program/kernel/kernel-test.c:9: error: implicit
-declaration of function `printk'
-/home/zhengyi/xenomai-program/kernel/kernel-test.c: In function
-`init_module':
-/home/zhengyi/xenomai-program/kernel/kernel-test.c:17: error: implicit
-declaration of function `rt_task_create'
-/home/zhengyi/xenomai-program/kernel/kernel-test.c:21: error: `T_FPU'
-undeclared (first use in this function)
-/home/zhengyi/xenomai-program/kernel/kernel-test.c:21: error: (Each
-undeclared identifier is reported only once
-/home/zhengyi/xenomai-program/kernel/kernel-test.c:21: error: for each
-function it appears in.)
-/home/zhengyi/xenomai-program/kernel/kernel-test.c:21: error: implicit
-declaration of function `T_CPU'
-/home/zhengyi/xenomai-program/kernel/kernel-test.c:23: error: implicit
-declaration of function `rt_task_start'
-/home/zhengyi/xenomai-program/kernel/kernel-test.c:23: error: `NULL'
-undeclared (first use in this function)
-/home/zhengyi/xenomai-program/kernel/kernel-test.c:24: error: implicit
-declaration of function `pause'
-/home/zhengyi/xenomai-program/kernel/kernel-test.c: In function
-`cleanup_module':
-/home/zhengyi/xenomai-program/kernel/kernel-test.c:29: error: implicit
-declaration of function `rt_task_delete'
-make[2]: *** [/home/zhengyi/xenomai-program/kernel/kernel-test.o] error 1
-make[1]: *** [_module_/home/zhengyi/xenomai-program/kernel] error 2
-make[1]: Leaving directory `/usr/src/xenomai/linux-2.6.31.8'
-make: *** [default] error 2
+2011/9/30 Fernando Herrero Carr=F3n <elferdo@domain.hid>:
+> Dear list,
+>
+> I am testing Xenomai 2.6.0-rc4 on a 2.6.38.8 linux kernel. I have two car=
+ds,
+> one NI 6713 for AO and one NI 6143 for AI. I use the analogy_ni_pcimio fo=
+r
+> both, and it loads well. I can run the config program succesfully too.
+>
+> If I remove the devices using 'analogy_config -r ...', then unload the
+> modules with:
+>
+> rmmod analogy_ni_pcimio analogy_ni_mio analogy_ni_tio analogy_8255
+> analogy_ni_mite xeno_analogy
+>
+> then load them again and try to reconfigure, I get the following error on
+> dmesg (I include the boot messages and the execution of a "cmd_read"):
+>
+> [=A0=A0 55.735198] Analogy: analogy_ni_pcimio: pcimio_attach: found pci-6=
+713
+> board
+> [=A0=A0 55.735246] Analogy: analogy_ni_pcimio: pcimio_attach: found irq 2=
+1
+> [=A0=A0 60.143227] Analogy: analogy_ni_pcimio: pcimio_attach: found pci-6=
+143
+> board
+> [=A0=A0 60.143274] Analogy: analogy_ni_pcimio: pcimio_attach: found irq 2=
+0
+> [=A0=A0 79.772511] Analogy: a4l_ioctl_cancel: no acquisition to cancel on=
+ this
+> context
+> [=A0=A0 79.772517] Analogy: analogy_ni_pcimio: ni_ai_cmd: start
+> [=A0=A0 79.772525] Analogy: analogy_ni_pcimio: ni_ai_cmd:
+> Interrupt_A_Enable_Register =3D 0x0021
+> [=A0=A0 79.772531] Analogy: analogy_ni_pcimio: ni_ai_cmd: exit
+> [=A0=A0 80.572613] Analogy: analogy_ni_pcimio: ni_mio_common: interrupt:
+> a_status=3D90f0 ai_mite_status=3D00200000
+> [=A0=A0 80.572616] Analogy: analogy_ni_pcimio: ni_mio_common: SC_TC inter=
+rupt
+> [=A0 236.290044] Analogy: MITE: Available NI device IDs: 0x1870 0x70c0
+> [=A0 246.113821] Analogy: analogy_ni_pcimio: pcimio_attach: found pci-614=
+3
+> board
+> [=A0 246.113872] Analogy: analogy_ni_pcimio: pcimio_attach: found irq 20
+> [=A0 246.113876] Analogy: analogy_ni_pcimio: pcimio_attach: irq not avail=
+able
+> [=A0 246.113879] Analogy: a4l_request_irq: IRQ registration failed
+> [=A0 251.563782] Analogy: analogy_ni_pcimio: pcimio_attach: found pci-671=
+3
+> board
+> [=A0 251.563824] Analogy: analogy_ni_pcimio: pcimio_attach: found irq 21
+> [=A0 251.563828] Analogy: analogy_ni_pcimio: pcimio_attach: irq not avail=
+able
+> [=A0 251.563830] Analogy: a4l_request_irq: IRQ registration failed
+>
+> BTW, the analogy_config program does not report those errors.
+>
+> This is bothering because I'm fiddling with the drivers and everytime I
+> change something I have to reboot. Anyone experiencing the same problem?
 
-It seems that my problem is caused by  Xenomai head file directory.How to
-solve my proble?Thank you.
-regards
-yizheng
+Sorry. I will try to fix that as soon as possible.
 
---001636ed6c7121f53b04abd776f9
-Content-Type: text/html; charset=GB2312
-Content-Transfer-Encoding: quoted-printable
+>
+> Thanks for your help,
+> Fernando
+>
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
+>
+>
 
-Hi all<div>&nbsp; &nbsp; &nbsp; &nbsp;I want to compile a kernel module.The=
- source code file ,written by native skin, prepared to compile is named &qu=
-ot;kernel-test.c&quot;.The comment of makefile is described as follows=A3=
-=BA</div><div>&nbsp; &nbsp; &nbsp;&nbsp;<span class=3D"Apple-tab-span" styl=
-e=3D"white-space:pre">	</span>ifneq ($(KERNELRELEASE),)</div>
-<div><span class=3D"Apple-tab-span" style=3D"white-space:pre">	</span>obj-m=
- :=3Dkernel-test.o</div><div>else</div><div><span class=3D"Apple-tab-span" =
-style=3D"white-space:pre">	</span>KSRC ?=3D/usr/src/xenomai/linux-2.6.31.8<=
-/div><div>
-<span class=3D"Apple-tab-span" style=3D"white-space:pre">	</span>PWD &nbsp;=
- &nbsp; :=3D$(shell pwd)</div><div>default:</div><div><span class=3D"Apple-=
-tab-span" style=3D"white-space:pre">	</span>$(MAKE) -C &nbsp;$(KSRC) &nbsp;=
- &nbsp;M=3D$(PWD) &nbsp; &nbsp; &nbsp; &nbsp;modules</div>
-<div>endif</div><div>&nbsp; &nbsp; &nbsp; &nbsp; I tried to compile kernel =
-module.Then I got:</div><div><div>make -I/usr/xenomai/include/ &nbsp;ARCH=
-=3Darm CROSS_COMPILE=3Darm-linux-</div><div>make -C &nbsp;/usr/src/xenomai/=
-linux-2.6.31.8 &nbsp; &nbsp;M=3D/home/zhengyi/xenomai-program/kernel &nbsp;=
- &nbsp; &nbsp; &nbsp;modules</div>
-<div>make[1]: Entering directory `/usr/src/xenomai/linux-2.6.31.8&#39;</div=
-><div>&nbsp; CC [M] &nbsp;/home/zhengyi/xenomai-program/kernel/kernel-test.=
-o</div><div>/home/zhengyi/xenomai-program/kernel/kernel-test.c:1:25: native=
-/task.h: No such file or directory</div>
-<div>/home/zhengyi/xenomai-program/kernel/kernel-test.c:5: error: parse err=
-or before &quot;task_desc&quot;</div><div>/home/zhengyi/xenomai-program/ker=
-nel/kernel-test.c:5: warning: type defaults to `int&#39; in declaration of =
-`task_desc&#39;</div>
-<div>/home/zhengyi/xenomai-program/kernel/kernel-test.c:5: warning: data de=
-finition has no type or storage class</div><div>/home/zhengyi/xenomai-progr=
-am/kernel/kernel-test.c: In function `task_body&#39;:</div><div>/home/zheng=
-yi/xenomai-program/kernel/kernel-test.c:9: error: implicit declaration of f=
-unction `printk&#39;</div>
-<div>/home/zhengyi/xenomai-program/kernel/kernel-test.c: In function `init_=
-module&#39;:</div><div>/home/zhengyi/xenomai-program/kernel/kernel-test.c:1=
-7: error: implicit declaration of function `rt_task_create&#39;</div><div>
-/home/zhengyi/xenomai-program/kernel/kernel-test.c:21: error: `T_FPU&#39; u=
-ndeclared (first use in this function)</div><div>/home/zhengyi/xenomai-prog=
-ram/kernel/kernel-test.c:21: error: (Each undeclared identifier is reported=
- only once</div>
-<div>/home/zhengyi/xenomai-program/kernel/kernel-test.c:21: error: for each=
- function it appears in.)</div><div>/home/zhengyi/xenomai-program/kernel/ke=
-rnel-test.c:21: error: implicit declaration of function `T_CPU&#39;</div>
-<div>/home/zhengyi/xenomai-program/kernel/kernel-test.c:23: error: implicit=
- declaration of function `rt_task_start&#39;</div><div>/home/zhengyi/xenoma=
-i-program/kernel/kernel-test.c:23: error: `NULL&#39; undeclared (first use =
-in this function)</div>
-<div>/home/zhengyi/xenomai-program/kernel/kernel-test.c:24: error: implicit=
- declaration of function `pause&#39;</div><div>/home/zhengyi/xenomai-progra=
-m/kernel/kernel-test.c: In function `cleanup_module&#39;:</div><div>/home/z=
-hengyi/xenomai-program/kernel/kernel-test.c:29: error: implicit declaration=
- of function `rt_task_delete&#39;</div>
-<div>make[2]: *** [/home/zhengyi/xenomai-program/kernel/kernel-test.o] erro=
-r 1</div><div>make[1]: *** [_module_/home/zhengyi/xenomai-program/kernel] e=
-rror 2</div><div>make[1]: Leaving directory `/usr/src/xenomai/linux-2.6.31.=
-8&#39;</div>
-<div>make: *** [default] error 2</div></div><div><br></div><div>It seems th=
-at my problem is caused by &nbsp;Xenomai head file directory.How to solve m=
-y proble?Thank you.</div><div>regards</div><div>yizheng</div>
-
---001636ed6c7121f53b04abd776f9--
+Alexis.
 
