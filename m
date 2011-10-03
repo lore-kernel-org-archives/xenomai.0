@@ -1,12 +1,14 @@
+Message-ID: <4E897D4C.6080104@domain.hid>
+Date: Mon, 03 Oct 2011 11:15:56 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <20111003103914.8A2B636C@centrum.cz>
-References: <20110926090226.9C75AD68@domain.hid>
-	<20111003103914.8A2B636C@centrum.cz>
-Date: Mon, 3 Oct 2011 04:48:49 -0400
-Message-ID: <CAGc_wL1ERAj565_sfKAvKPxnXzBHwEfZVV+4RHMEmFmRqu5bkA@mail.gmail.com>
-From: Julien Delange <julien.delange@domain.hid>
+References: <4E89662E.9090104@domain.hid> <4E897039.30002@domain.hid>
+	<4E897394.5080304@domain.hid>
+In-Reply-To: <4E897394.5080304@domain.hid>
 Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai-help] Frequency downscaling of new intel CPU
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] Xenomai configure option --enable-arm-tsc
+	in	Xenomai-2.6
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -16,12 +18,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai-help <xenomai@xenomai.org>
+To: Michael Bernhard <michael.bernhard@domain.hid>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Mon, Oct 3, 2011 at 4:39 AM, Petr Cervenka <grugh@domain.hid> wrote:
-> Any ideas that could help me?
+On 10/03/2011 10:34 AM, Michael Bernhard wrote:
+> On 10/03/2011 10:20 AM, Gilles Chanteperdrix wrote:
+>> --enable-arm-tsc DOES NOT behave like the old option --enable-arm-arch.
+>> Hence the rename.
+> For me, doing the transition form Xenomai-2.5 to 2.6, it was just 
+> confusing that --enable-arm-tsc has exactly the same help text as the 
+> old --enable-arm-arch. It would be probably good to add an additional 
+> sentence to explain why one has to select the architecture for this 
+> option. Something like this:
+> 
+> "To enable the correct TSC user-space implementation, select for which ..."
 
-What about looking at /proc/cpuinfo while running your system ? If you
-see that the speed is not the maximal, indeed, the frequency scaling
-system changes the speed of the processor.
+Right. But --enable-arm-tsc does not enable the correct TSC user-space
+implementation. It is an option only useful for old I-pipe patches that
+did not support the "kuser" tsc implementation. So, using this option
+with Xenomai 2.6.0 is probably not what you want to do.
+
+-- 
+					    Gilles.
 
