@@ -1,5 +1,5 @@
-Message-ID: <4E896F56.8090708@domain.hid>
-Date: Mon, 03 Oct 2011 10:16:22 +0200
+Message-ID: <4E897039.30002@domain.hid>
+Date: Mon, 03 Oct 2011 10:20:09 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <4E89662E.9090104@domain.hid>
@@ -30,12 +30,9 @@ On 10/03/2011 09:37 AM, Michael Bernhard wrote:
 > step. In Xenomai-2.6 this options seems still to be present, however it 
 > behaves like the old option --enable-arm-arch. I think this behavior is 
 > wrong.
-> 
-> In addition I'd like to know if --enable-arm-tsc is selected 
-> automatically of if it is still necessary to use this option.
 
-You probably do not need --enable-arm-tsc. For more details, see
-README.INSTALL.
+--enable-arm-tsc DOES NOT behave like the old option --enable-arm-arch.
+Hence the rename.
 
 -- 
 					    Gilles.
