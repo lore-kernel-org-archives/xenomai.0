@@ -1,13 +1,14 @@
-From: =?UTF-8?Q?Robert?= <robert-km@domain.hid>
-In-Reply-To: <4EA828E2.1070400@domain.hid>
-References: <32d9b02a.29dd933a.4ea82693.8ffcf@domain.hid>
-	<4EA828E2.1070400@domain.hid>
+From: Michael Bernhard <michael.bernhard@domain.hid>
+Date: Tue, 4 Oct 2011 15:14:13 +0000 (UTC)
+Message-ID: <loom.20111004T165835-555@domain.hid>
+References: <4E8981F9.9090105@domain.hid> <4E89AA0F.8020104@domain.hid>
+	<4E89D5E7.8050106@domain.hid> <4E8AED21.7010709@domain.hid>
 Mime-Version: 1.0
-Message-ID: <168a0ee9.3d0d6b71.4ea84aa9.11249@domain.hid>
-Date: Wed, 26 Oct 2011 20:00:09 +0200
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] =?utf-8?q?installing_xenomai_on_pandaboard?=
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help]
+	=?utf-8?q?SIGILL_when_calling_pthread=5Fcleanup=5F?=
+	=?utf-8?b?cHVzaCgp?=
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -17,99 +18,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: =?UTF-8?Q?Gilles_Chanteperdrix?= <gilles.chanteperdrix@xenomai.org>
-Cc: =?UTF-8?Q?Xenomai_help?= <xenomai@xenomai.org>
+To: xenomai@xenomai.org
+
+Gilles Chanteperdrix <gilles.chanteperdrix <at> xenomai.org> writes:
+> 
+> On 10/03/2011 05:33 PM, Gilles Chanteperdrix wrote:
+> > On 10/03/2011 02:26 PM, Gilles Chanteperdrix wrote:
+> >> Ok. Thanks for testing xenomai 2.6 by the way. I will try the test
+> >> program on an ARMv5 I have tonight. However, could you tell us a bit
+> >> more about your setup? What toolchain do you use? What threading library?
+We use codesourcery toolchain arm-2010.09. The rootfs was built using PTXdist.
+I think, but have to verify, that NPTL is used as threading library.
+
+> > And also: is your libc built with iwmmxt support?
+I don't know, but will find out.
+
+> I can not reproduce this issue on another armv5 I have, but it does not
+> support iwmmxt. So, in order to see if the problem you have comes from
+> iwmmxt, you should try and build a root filesystem with a soft-float
+> toolchain, such as, for instance, the codesourcery toolchain.
+> 
+> Currently, iwmmxt floats are not supported with Xenomai, so, if you want
+> to get them working, something will have to be done.
+In the example I gave, no floats were used. Does Xenomai needs to support iwmmxt
+floats also in this case? And would compiling the application with -msoft-float
+do the trick?
+
+ATM, I'm busy with other things but have time to investigate tomorrow evening. 
+
+--
+Michael
 
 
-
-
-Dnia=2026=20pa=C5=BAdziernika=202011=2017:36=20Gilles=20Chanteperdrix=20<=
-gilles.chanteperdrix@xenomai.org>=20napisa=C5=82(a):
-
->=20On=2010/26/2011=2005:26=20PM,=20Robert=20wrote:
->=20>=20
->=20>=20Dnia=2024=20pa=C5=BAdziernika=202011=2022:58=20Gilles=20Chanteper=
-drix=20<gilles.chanteperdrix@xenomai.org>=20napisa=C5=82(a):
->=20>=20
->=20>>=20On=2010/24/2011=2001:11=20PM,=20Robert=20wrote:
->=20>>>
->=20>>>
->=20>>>
->=20>>>=20Dnia=2024=20pa=C5=BAdziernika=202011=2013:07=20Gilles=20Chantep=
-erdrix=20<gilles.chanteperdrix@xenomai.org>=20napisa=C5=82(a):
->=20>>>
->=20>>>>=20On=2010/24/2011=2012:59=20PM,=20Robert=20wrote:
->=20>>>>>=20Dnia=2024=20pa=C5=BAdziernika=202011=2012:37=20Gilles=20Chant=
-eperdrix=20<gilles.chanteperdrix@xenomai.org>=20napisa=C5=82(a):
->=20>>>>
->=20>>>>>>=20Ok.=20Try=20calling=20/usr/xenomai/bin/xeno-test=20instead=20=
-of=20cding=20to=20the
->=20>>>>>>=20directory=20and=20runing=20./xeno-test.
->=20>>>>>
->=20>>>>>=20No=20difference.
->=20>>>>
->=20>>>>=20I=20am=20unable=20to=20reproduce=20this=20issue,=20but=20I=20a=
-m=20using=20ash,=20not=20bash.=20last
->=20>>>>=20attempt:=20could=20you=20try=20adding=20/usr/xenomai/bin=20to=20=
-the=20PATH=20variable?
->=20>>>
->=20>>>=20The=20same.
->=20>>
->=20>>=20Could=20you=20try=20the=20following=20patch?=20
->=20>>
->=20>>=20http://git.xenomai.org/?p=3Dxenomai-head.git;a=3Dcommitdiff;h=3D=
-8f2fd0b49e51fb2547c4972f2cda9e32dfc5dca6;hp=3D82ab99a3a840dd78c3ed8e5a655=
-5f422420b7827
->=20>>
->=20>>=20The=20problem=20is=20due=20to=20dash,=20not=20bash,=20which=20is=
-=20linked=20to=20/bin/sh=20by=20
->=20>>=20default=20on=20ubuntu.=20
->=20>>
->=20>=20
->=20>=20I=20applied=20Yours=20patches,=20and=20now=20it=20compile=20and=20=
-almost=20run:
->=20>=20
->=20>=20root@domain.hid=
-=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20
->=20>=20Started=20child=201035:=20/bin/bash=20/usr/xenomai/bin/xeno-test-=
-run-wrapper=20/usr/xenoma
->=20>=20i/bin/xeno-test=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=
-=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=
-=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20=20
->=20>=20++=20echo=200=20
->=20>=20
->=20>=20After=20that,=20board=20is=20dead.
->=20>=20
->=20>=20And=20I=20have=20to=20build=20xenomai=20sources=20using=20'make=20=
-CFLAGS+=3D-Wa,mimplicit-it=3Dthumb'.
->=20>=20My=20gcc=20version=204.5.2-8ubuntu4
->=20
->=20Please=20send=20me=20your=20.config,=20but=20beware=20your=20mailer,=20=
-it=20wraps=20long=20line,
->=20which=20make=20the=20last=20.config=20you=20sent=20unusable.=20I=20ha=
-ve=20not=20tried=20building
->=20for=20thumb,=20if=20that=20is=20what=20you=20are=20doing.
->=20
->=20You=20can=20try=20running=20the=20"latency"=20command=20alone,=20to=20=
-see=20if=20it=20also
->=20hangs.=20You=20should=20also=20redirect=20the=20kernel=20console=20to=
-=20the=20serial=20port,
->=20and=20capture=20the=20serial=20port=20on=20another=20computer,=20in=20=
-case=20the=20hang=20is=20a
->=20kernel=20oops.
->=20
->=20Find=20attached=20the=20.config=20I=20use,=20and=20which=20works=20he=
-re.
-
-
-Xenomai:=20incompatible=20feature=20set
-(userland=20requires=20"kuser=5Ftsc=20fastsynch=20nosmp",=20kernel=20prov=
-ides=20"sa1100=20v6=20e
-abi=20kuser=5Ftsc=20fastsynch=20smp",=20missing=3D"nosmp").
-
-I=20still=20don't=20know=20how=20to=20boot=20pandaboard=20with=20smp=20su=
-pport.
-
-My=20config=20is=20here:=20http://www.copypastecode.com/88653/
 
 
