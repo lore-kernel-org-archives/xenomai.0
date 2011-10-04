@@ -1,14 +1,9 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <CAAXf6LW6pfjRhZgiaSHxs4DVK4_wQbGxHRwhZ9RsFYYrZDkACA@mail.gmail.com>
-References: <CAAXf6LXRVpaU6abddH5h9Kq4Z0fF5m5Ms3RpjiNVOOR8bLW9rQ@mail.gmail.com>
-	<1317714519.2082.10.camel@domain.hid>
-	<CAAXf6LW6pfjRhZgiaSHxs4DVK4_wQbGxHRwhZ9RsFYYrZDkACA@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Date: Tue, 04 Oct 2011 10:36:34 +0200
-Message-ID: <1317717394.2082.19.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] xenomai-forge: ELF symbol interposition problems
+MIME-Version: 1.0
+Date: Tue, 4 Oct 2011 04:42:22 -0400
+Message-ID: <CAGc_wL0GYwEPJVMOBR_niJCd9bz2VWoTA7-q-MLOAR_WW2vm2g@domain.hid>
+From: Julien Delange <julien.delange@domain.hid>
+Content-Type: text/plain; charset=UTF-8
+Subject: [Xenomai-help] Kernel configuration suggestions/hints
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -18,63 +13,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Thomas De Schampheleire <patrickdepinguin+xenomai@domain.hid>
-Cc: Xenomai-help@domain.hid
+To: Xenomai help <xenomai@xenomai.org>
 
-On Tue, 2011-10-04 at 10:28 +0200, Thomas De Schampheleire wrote:
-> Hi,
-> 
-> On Tue, Oct 4, 2011 at 9:48 AM, Philippe Gerum <rpm@xenomai.org> wrote:
-> > On Tue, 2011-10-04 at 09:40 +0200, Thomas De Schampheleire wrote:
-> >> Hi,
-> >>
-> >> We're experiencing problems with ELF symbol interposition with xenomai forge.
-> >> The symbol mem_alloc, declared in include/copperplate/heapobj.h and
-> >> defined in lib/copperplate/heapobj-malloc.c, is also present in our
-> >> own executable. When linking our objects with the xenomai-forge
-> >> libraries, the symbols from our objects take precedence.
-> >>
-> >> As a result, when heapobj_alloc() calls mem_alloc(), it calls the
-> >> mem_alloc from our application code, which of course is totally
-> >> incompatible.
-> >>
-> >> There isn't really a good solution to this problem. I think it will be
-> >> necessary to make sure that all exported functions from the
-> >> xenomai-forge libraries have a unique name. The name 'mem_alloc' (and
-> >> many of the functions in lib/copperplate/heapobj-malloc.c) is too
-> >> common.
-> >>
-> >> Another solution may be to mark certain symbols as hidden, provided
-> >> they do not need to be exported to applications. Some references to it
-> >> appear here:
-> >> http://www.airs.com/blog/archives/307
-> >>
-> >> What is your view on this?
-> >
-> > Restricted visibility won't work the way we want, since we have
-> > references to these symbols from static inlines callable from
-> > application code. We need a rename.
-> 
-> In the specific case I encountered, renaming the five mem_ functions
-> worked for me. I added 'heapobj_' as prefix for:
-> mem_destroy, mem_extend, mem_alloc, mem_free and mem_inquire.
-> 
-> I changed them in
-> include/copperplate/heapobj.h
-> lib/copperplate/heapobj-malloc.c
-> 
-> but I assume the same should be done in the other heapobj-* files.
+Dear all,
 
-Yes, this is what I'll commit I think, only adding double underscores
-prefix to clearly state the fact that these are internals and should not
-be called directly.
+I am currently building a customized kernel to build a real-time
+application. At this time, the requirement is very basic : I have one
+periodic task in userland that acquires data from an analogy card
+(ni6071e) with a 1ms period/deadline. At that time, the task miss one
+deadline at each period, meaning that the code is executed in 2ms
+instead of 1ms (and so, the deadline expires). So, I configured my
+kernel without power management and with a timer at 1000Hz and a
+tickless system (see variables below). However I would like to know if
+there are other relevant configuration parameters that may influence
+the scheduling of xenomai tasks so that I can make sure that my
+application meets its requirements. If anyone has a feedback about
+kernel configuration in that scope, it might be really useful ! In
+addition, depending on your answer, it may be also good to report good
+practices about the kernel configuration on the wiki, what do you
+think about it ?
 
-> 
-> Best regards,
-> Thomas
+Thanks for any suggestion,
 
--- 
-Philippe.
-
-
+Kernel configuration variables:
+CONFIG_NO_HZ=y
+CONFIG_HIGH_RES_TIMERS=y
+CONFIG_PREEMPT=y
+CONFIG_HZ_1000=y
+CONFIG_HZ=1000
+CONFIG_PM is not set
+CONFIG_SFI is not set
+CONFIG_CPU_FREQ is not set
+CONFIG_CPU_IDLE is not set
 
