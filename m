@@ -1,18 +1,16 @@
-MIME-Version: 1.0
-In-Reply-To: <4EAEA88E.3030500@domain.hid>
-References: <CAAeYjM=7aZPLifemq7v2QUzr9HxkU=GxDNFbxH6G+R6z2kQMUA@mail.gmail.com>
-	<CAAeYjMkmDOLgEdGYPBmyWSPOCaOqWhnC+exeAg6ERzhp8uWkdg@domain.hid>
-	<CAAeYjMn83FgbqTZRB7E_S4FHP11V-tzdP1eNcY6+n2DJ2SmrGw@domain.hid>
-	<4EAE9EDE.5030501@domain.hid> <4EAEA0AB.4010102@domain.hid>
-	<CAAeYjMkAwLgMMw9EG7b7CuywNe3OjFPiBkPQQvDOhyhf-coMnw@domain.hid>
-	<CAAeYjMkjq2yEqd+QeeU5R9N9m3HYWtsib+x7te0hPcd7Kw9SaA@mail.gmail.com>
-	<CAAeYjMmsda-t14LQ47HBu0Pv6rLKpp=1m3c2+3unKJfQdF9HMg@domain.hid>
-	<4EAEA88E.3030500@domain.hid>
-From: =?UTF-8?Q?=C5=81ukasz_Sacha?= <dragilla@domain.hid>
-Date: Mon, 31 Oct 2011 14:58:52 +0100
-Message-ID: <CAAeYjMnRJeah3bSL3zb-aq_LCzpcmc-fu-Zir-YbXEkm59NSWA@mail.gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Subject: Re: [Xenomai-help] configuring user-space xenomai 2.6
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <CAMJ=MEfuYjfYzsoWGL5YXoy4m-GCxd-6KbXj2pSdHxGB-KKh+g@domain.hid>
+References: <CAAXf6LW-HePfMj4F86s-dFoztWN5NLsGm9TxqpHN-EwxEdtiFA@mail.gmail.com>
+	<8236197CA3DA864F9EF20609D988726338B7553A@rrxchngmbx01.mro.roland-man.biz>
+	<1317729603.2082.59.camel@domain.hid>
+	<CAMJ=MEfuYjfYzsoWGL5YXoy4m-GCxd-6KbXj2pSdHxGB-KKh+g@domain.hid>
+Content-Type: text/plain; charset="UTF-8"
+Date: Tue, 04 Oct 2011 23:15:07 +0200
+Message-ID: <1317762907.2082.80.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] xenomai-forge [psos] t_start segmentation fault
+ when args == NULL
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -22,25 +20,83 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Ronny Meeus <ronny.meeus@domain.hid>
+Cc: Xenomai-help@domain.hid, dietmar.schindler@domain.hid
 
-On Mon, Oct 31, 2011 at 14:54, Gilles Chanteperdrix
-<gilles.chanteperdrix@xenomai.org> wrote:
-> To start using xenomai, you simply have to run make install, then copy
-> the installed file to the embedded root filesystem.
+On Tue, 2011-10-04 at 23:11 +0200, Ronny Meeus wrote:
+> On Tue, Oct 4, 2011 at 2:00 PM, Philippe Gerum <rpm@xenomai.org> wrote:
+> > On Tue, 2011-10-04 at 10:42 +0000, dietmar.schindler@domain.hid
+> > wrote:
+> >> > -----Original Message-----
+> >> > On Behalf Of Thomas De Schampheleire
+> >> > Sent: Tuesday, October 04, 2011 11:42 AM
+> >> > ...
+> >> > In the xenomai-forge psos library, t_start() does not allow a NULL
+> >> > args pointer, while I think this is allowed in PSOS.
+> >>
+> >> The "pSOSystem System Calls" manual doesn't state the permissibility of a NULL args pointer, as far as I can see:
+> >>
+> >> unsigned long t_start(
+> >>    unsigned long tid,      /* task identifier */
+> >>    unsigned long mode,     /* initial task attributes */
+> >>    void (*start_addr)(),   /* task address */
+> >>    unsigned long targs[4]  /* startup task arguments */
+> >>    )
+> >> ...
+> >> targs      Specifies four startup values passed to the task (see Startup Values under Target).
+> >>
+> >> Target
+> >> Startup Values
+> >> ...
+> >> A new task can receive up to four long words of input arguments. To facilitate retrieval of these arguments, they are passed to the task as if it is invoked as a highlevel language procedure or function. For example, if a C task nice has three input arguments, it can be declared as follows:
+> >>
+> >> nice (unsigned long a, unsigned long b, unsigned long c);
+> >>
+> >> where targs[0] is passed to a, targs[1] to b, and targs[2] to c. In this case, targs[3] is irrelevant and does not need the calling task to load it.
+> >>
+> >
+> > Accepting NULL was a Xenomai-specific convenience introduced in Xenomai
+> > 2.x IIRC, then I changed my mind for 3.x. Granted NULL args would not
+> > work when back on real pSOS, but that does not look like a hot issue. So
+> > we should probably just accept it anew, and be happy.
+> >
+> >> --
+> >> Regards,
+> >> Dietmar
+> >> ________________________________________ manroland AG Vorsitzender des Aufsichtsrates: Hanno C. Fiedler Vorstand: Gerd Finkbeiner (Vorsitzender), Dr. Ingo Koch, Dr. Markus Rall, Paul Steidle Sitz der Gesellschaft: Offenbach am Main, Registergericht: Amtsgericht Offenbach HRB-Nr. 42592 USt-Ident-Nr. DE 250200933
+> >>
+> >>
+> >> _______________________________________________
+> >> Xenomai-help mailing list
+> >> Xenomai-help@domain.hid
+> >> https://mail.gna.org/listinfo/xenomai-help
+> >
+> > --
+> > Philippe.
+> >
+> >
+> >
+> > _______________________________________________
+> > Xenomai-help mailing list
+> > Xenomai-help@domain.hid
+> > https://mail.gna.org/listinfo/xenomai-help
+> >
+> 
+> Hello
+> 
+> I think that it is supported since our application does pass a NULL
+> pointer as args argument.
+> The application is originally created in a real pSOS environment 12 years ago.
 
-So both skins are included in xenomai by default and which I chose
-depends on my lking only (assuming both are switched on in the
-kernel)?
+Ok. Was this running on MMU-enabled hw?
 
-> I already gave you URLs for documents giving a bit more details on how
-> to use the native and posix skins.
-yes, thank you.
+> 
+> Anyhow thanks for changing it.
+> 
+> Ronny
 
-> Also, could you avoid top-posting?
-Yes, of course. Sorry about that.
-
-regards,
 -- 
-LS
+Philippe.
+
+
 
