@@ -1,10 +1,16 @@
-MIME-Version: 1.0
-From: =?UTF-8?Q?=C5=81ukasz_Sacha?= <dragilla@domain.hid>
-Date: Sat, 29 Oct 2011 22:38:32 +0200
-Message-ID: <CAAeYjMmOjq5mrGJ2E5m9oz0HeCP+6UJ8f7aziXcACPuAKM4PzQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai-help] xenomai on em2440
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <CAMJ=MEf+bdds8Cv7vENTJLeVpYpR+ZGq1yP6TEFnFvTLy6iB3Q@mail.gmail.com>
+References: <CAMJ=MEeOYUsNXMOUwLyxTo5kDcTTER90bXUpPiwao0YGZMpTeQ@mail.gmail.com>
+	<1316782850.2050.8.camel@domain.hid>
+	<CAMJ=MEfe-EKe9V7N3c=udfq=YGz23HhFec9UqvfZ6LtT2R3bjw@domain.hid>
+	<1316809390.2050.11.camel@domain.hid> <1317034005.2174.6.camel@domain.hid>
+	<CAMJ=MEf+bdds8Cv7vENTJLeVpYpR+ZGq1yP6TEFnFvTLy6iB3Q@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Date: Tue, 04 Oct 2011 17:41:24 +0200
+Message-ID: <1317742884.2082.69.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] Xenomai-forge: SEGFAULT is pSOS skin
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -14,19 +20,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Ronny Meeus <ronny.meeus@domain.hid>
+Cc: xenomai-help <xenomai@xenomai.org>
 
-Hello!
+On Mon, 2011-09-26 at 22:01 +0200, Ronny Meeus wrote:
 
-I'm just starting to play with xenomai. My first goal is to install it
-on my em2440 (similar to mini2440) board.
-I could use some solid guidelines on where to start as there are many
-tutorials out there - on mini2440, on xenomai, on arm, on i-pipe and I
-don't even know which should I follow.
+<snip>
 
-So please be patient with me and please help me get started.
+> Next to this I also adapted the task priority automatically using
+> following algorithm:
+> static int check_task_priority(u_long *psos_prio)
+> {
+>         if (*psos_prio < 1 || *psos_prio > 255) /* In theory. */
+>                 return ERR_PRIOR;
+>         /* Do not change priorities <=10 and >= 240.
+>          * Priorities in between are divided by 4 */
+>         if (*psos_prio > 240)
+>                 *psos_prio = 70 + *psos_prio - 240;
+>         else if (*psos_prio > 10)
+>                 *psos_prio = 11 + ((*psos_prio-10)/4);
+> 
+>         if ((int)(*psos_prio) >= threadobj_max_prio - 1) /* In practice. */
+>                 panic("current implementation restricts pSOS "
+>                       "priority levels to range [1..%d]",
+>                       threadobj_max_prio - 2);
+> 
+>         return SUCCESS;
+> }
+> 
+> It also works well for our application.
+> Please share your thoughts.
 
-Regards,
---
-=C5=81ukasz Dragilla Sacha
+Since we cannot generalize the priority mapping rules, a better way may
+be to allow your own code to be called by the pSOS emulator when such
+mapping is required. So I have committed a tentative solution, defining
+psos_task_normalize_priority() as a weak function, which receives the
+pSOS priority, and should return the POSIX one.
+
+A default implementation is provided by the emulator which does a
+trivial 1:1 mapping.
+
+-- 
+Philippe.
+
+
 
