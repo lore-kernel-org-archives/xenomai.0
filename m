@@ -1,14 +1,12 @@
-Message-ID: <4E94C17C.2080702@domain.hid>
-Date: Wed, 12 Oct 2011 00:21:48 +0200
+Message-ID: <4E8AE5A6.6090306@domain.hid>
+Date: Tue, 04 Oct 2011 12:53:26 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CAMwkeZy-9Qw0LALq8rrJQKET_Bu7UHgu8YYoFw1z6jdS687fBg@domain.hid>	<CAMwkeZyvyhHPZTWz1LiaOhWA9TdrQaXMo833Ej5JRwJR3Da2xw@domain.hid>	<CAMwkeZxinGD8_yEYmo+ySHx9dzU6hEM4BFH4jejnTMd87f0M9Q@mail.gmail.com>	<CAMesUR4+G-Bx9tDUPajp4EcKP70zLvQuLyjLeyNpfyrmCpwBBw@domain.hid>	<CAMwkeZyQwtJbcMjOiSnmzoRDud+4=6Nt2NOcEdFG_+1QVSHoSQ@mail.gmail.com>	<CAMwkeZzajkK7gRYH5cnAW1-5HvgxQyUogDZKpms1FUyLtwxpdg@domain.hid>	<CAMesUR67RpFHRiNcd-yfR9WF2FRe1U3yBdXWP2dU30aQovCHKQ@mail.gmail.com>	<CAMwkeZxybKS+-B2C_yaYX3_XSYnAKcj8xfX_YOgQ6Kt=mNTzJQ@mail.gmail.com>	<CAMwkeZzrfuB1Uf7f1eqG8zEvgeYMXrRspzUANeOaJR2qQUmhOQ@mail.gmail.com>	<CAMesUR5AvmUDW8wq4e9EtOgnpRtMD_qe8rQe7acgFT6KzdeYAg@domain.hid>	<CAMwkeZxAvBeY=0c49N+QtUYCKCTiGo4yc9TAEQPLJAJmBXPn+A@mail.gmail.com>	<CAMesUR59KFH=hjpo=fr8DCHeg50driuitcikc5HfHTZWG5ct8A@mail.gmail.com>	<CAMwkeZyPorMx9n1Y8YAEJE4hUh49=u9Mr_tj7qzYAnquMa60rw@domain.hid>
-	<CAMesUR5PsVLb16ZR1bdcbDWdUfvPxViPng+rD7mjQqy1q+OGfA@mail.gmail.com>
-In-Reply-To: <CAMesUR5PsVLb16ZR1bdcbDWdUfvPxViPng+rD7mjQqy1q+OGfA@mail.gmail.com>
+References: <20110926090226.9C75AD68@domain.hid>
+In-Reply-To: <20110926090226.9C75AD68@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Command code working with comedi not
- working	with analogy
+Subject: Re: [Xenomai-help] Frequency downscaling of new intel CPU
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -18,20 +16,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Alexis Berlemont <alexis.berlemont@domain.hid>
-Cc: Xenomai help <xenomai@xenomai.org>
+To: Petr Cervenka <grugh@domain.hid>
+Cc: xenomai-help <xenomai@xenomai.org>
 
-On 10/12/2011 12:12 AM, Alexis Berlemont wrote:
-> The methods are not the same at that level:
-> - comedi: n * dma_alloc_coherent  + a vmap at the end
-> - analogy:  a big vmalloc + n * page_to_phys(vmalloc_to_page(vaddr)
+On 09/26/2011 09:02 AM, Petr Cervenka wrote:
+> 
+> Hello.
+> 
+> I recently tried newer computer and I suprusingly realized that it is bigger load than the old one with our xenomai application.
+> The problem is in the frequency downscaling of the processor when the load in under 100%.
+> Of course I have disabled CPU_FREQ, ACPI_PROCESSOR and INTEL_IDLE as suggested.
+> Later I tried also to disable CPU_IDLE, 7300_IDLE (intel chipset idle memory) and all power efficiency settings in the BIOS, but without success.
+> The experienced behaviour is following:
+> when the process is waiting for an event, the processor lowers its frequency and when the event happens it tries to restore (slowly) its nominal frequency.
+> 
+> Do you have any advice or tip what to try, because I'm really desperate?
 
-I do not know if that makes a difference, but the result of
-dma_alloc_coherent is memory physically contiguous, whereas it is not
-the case for memory returned by vmalloc.
-
-dma_alloc_coherent also allows the GFP_DMA32 flag if you want 32 bits
-memory.
+Have you tried:
+- enabling SMI workaround (and do not forget to check the boot logs to
+check that it actually works with the chipset you use);
+- if that fails, adding "idle=poll" to kernel arguments?
 
 -- 
                                                                 Gilles.
