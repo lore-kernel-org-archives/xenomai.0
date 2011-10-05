@@ -1,18 +1,16 @@
+Message-ID: <4E8C8EDE.6040303@domain.hid>
+Date: Wed, 5 Oct 2011 19:07:42 +0200
+From: Michael Bernhard <michael.bernhard@domain.hid>
 MIME-Version: 1.0
-In-Reply-To: <4E8C3AF9.7070604@domain.hid>
-References: <CAGc_wL0GYwEPJVMOBR_niJCd9bz2VWoTA7-q-MLOAR_WW2vm2g@domain.hid>
-	<4E8AEB1D.2060706@domain.hid>
-	<CAGc_wL11cKQhxRmgYB0wU-bFii3YaqjibjgWB+=Tob3tFjsfQQ@mail.gmail.com>
-	<4E8B0DEA.8030102@domain.hid>
-	<CAGc_wL2wb76-t7RBWJnKxgcvsrcKgnFgV4qkjvUgh5AvM7ie3g@domain.hid>
-	<4E8B3744.2030407@domain.hid>
-	<CAGc_wL2RgNKfMUyQURJ8G2ceaJtvnJL6LpFue3ekuwJ99vwPww@domain.hid>
-	<4E8C3AF9.7070604@domain.hid>
-Date: Wed, 5 Oct 2011 11:39:39 -0300
-Message-ID: <CAMwkeZyDjpqb11NoxUCTxwpmY5RV0bjRzAHG6HeeyW5RvXejDQ@mail.gmail.com>
-From: =?UTF-8?Q?Fernando_Herrero_Carr=C3=B3n?= <elferdo@domain.hid>
-Content-Type: multipart/alternative; boundary=bcaec53af23a8658d304ae8e2d9b
-Subject: Re: [Xenomai-help] Kernel configuration suggestions/hints
+References: <4E8981F9.9090105@domain.hid>
+	<4E89AA0F.8020104@domain.hid>	<4E89D5E7.8050106@domain.hid>
+	<4E8AED21.7010709@domain.hid>
+	<loom.20111004T165835-555@domain.hid>
+	<4E8B263E.4070300@domain.hid>
+In-Reply-To: <4E8B263E.4070300@domain.hid>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] SIGILL when calling pthread_cleanup_push()
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -22,92 +20,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Xenomai help <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
---bcaec53af23a8658d304ae8e2d9b
-Content-Type: text/plain; charset=UTF-8
-
-2011/10/5 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-
-> On 10/05/2011 09:48 AM, Julien Delange wrote:
-> > On Tue, Oct 4, 2011 at 12:41 PM, Gilles Chanteperdrix
-> > <gilles.chanteperdrix@xenomai.org> wrote:
-> >> Another mail in that thread seem to suggest that it could be long. Have
-> >> you tried timing the various parts of your loop to see where the time is
-> >> spent?
-> >
-> > No, sorry, my bad. Unfortunately, I cannot make more tests at this
-> > time because I don't have the hardware.
-> > I will do additional investigation soon, I would have access to the
-> > acquisition card soon. My intent was to know if there was an obvious
-> > error either in my code or in my kernel configuration. Apparently not,
-> > so, I will try to figure out the root causes of these issues.
+On 10/04/2011 05:29 PM, Gilles Chanteperdrix wrote:
+> On 10/04/2011 05:14 PM, Michael Bernhard wrote:
+>> Gilles Chanteperdrix<gilles.chanteperdrix<at>  xenomai.org>  writes:
+>>>
+>>> On 10/03/2011 05:33 PM, Gilles Chanteperdrix wrote:
+>>>> On 10/03/2011 02:26 PM, Gilles Chanteperdrix wrote:
+>>>>> Ok. Thanks for testing xenomai 2.6 by the way. I will try the test
+>>>>> program on an ARMv5 I have tonight. However, could you tell us a bit
+>>>>> more about your setup? What toolchain do you use? What threading library?
+>> We use codesourcery toolchain arm-2010.09. The rootfs was built using PTXdist.
+>> I think, but have to verify, that NPTL is used as threading library.
+>>
+>>>> And also: is your libc built with iwmmxt support?
+>> I don't know, but will find out.
+>>
+>>> I can not reproduce this issue on another armv5 I have, but it does not
+>>> support iwmmxt. So, in order to see if the problem you have comes from
+>>> iwmmxt, you should try and build a root filesystem with a soft-float
+>>> toolchain, such as, for instance, the codesourcery toolchain.
+>>>
+>>> Currently, iwmmxt floats are not supported with Xenomai, so, if you want
+>>> to get them working, something will have to be done.
+>> In the example I gave, no floats were used. Does Xenomai needs to support iwmmxt
+>> floats also in this case? And would compiling the application with -msoft-float
+>> do the trick?
+>>
+>> ATM, I'm busy with other things but have time to investigate tomorrow evening.
 >
-> It is my understaning when reading Fernando's answer to your mail that
-> you are not using the proper interface for what you are trying to do.
+> The bug happens inside sigsetjmp, which is a routine saving the current
+> context. So, if the libc is compiled with iwmmmxt support, and more
+> importantly, if the kernel is compiled with iwmmxt support, sigsetjmp
+> probably saves the floating point registers.
 >
->
-Yes, my suggestion is to use a different interface that will definitely
-provide higher acquisition speeds. However I am wondering if using the
-"instruction" interface the delay would be over the milliseconds. I'm
-recalling some tests that I did using comedi in linux user-space, that is
-without any real-time support software. I could acquire 8 channels and the
-board's internal timer using the instruction list technique at 120us
-(microseconds) intervals. However my board has 8 parallel ADCs (NI 6143), so
-check if yours has parallel or serial converters. If it has to serialize
-conversions then the overall acquisition period will increase.
+> So another simple thing to try is to disable iwmmxt support in kernel
+> configuration.
+I disabled iwmmxt support in the kernel my test is now working.
 
-Back to your code, are you sure about  "insn_tab[i].data_size     = 8;"? Try
-data_size = 1 instead.
+However what happens to applications/libraries that are compiled with 
+iwmmxt support when this feature is disabled in the kernel?
 
-Best,
-Fernando
+What has to be changed in Xenomai to have iwmmxt support?
 
---bcaec53af23a8658d304ae8e2d9b
-Content-Type: text/html; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-
-<br><br><div class=3D"gmail_quote">2011/10/5 Gilles Chanteperdrix <span dir=
-=3D"ltr">&lt;<a href=3D"mailto:gilles.chanteperdrix@xenomai.org">gilles.cha=
-nteperdrix@domain.hid</a>&gt;</span><br><blockquote class=3D"gmail_quote" =
-style=3D"margin: 0pt 0pt 0pt 0.8ex; border-left: 1px solid rgb(204, 204, 20=
-4); padding-left: 1ex;">
-<div class=3D"im">On 10/05/2011 09:48 AM, Julien Delange wrote:<br>
-&gt; On Tue, Oct 4, 2011 at 12:41 PM, Gilles Chanteperdrix<br>
-&gt; &lt;<a href=3D"mailto:gilles.chanteperdrix@xenomai.org">gilles.chantep=
-erdrix@domain.hid</a>&gt; wrote:<br>
-&gt;&gt; Another mail in that thread seem to suggest that it could be long.=
- Have<br>
-&gt;&gt; you tried timing the various parts of your loop to see where the t=
-ime is<br>
-&gt;&gt; spent?<br>
-&gt;<br>
-&gt; No, sorry, my bad. Unfortunately, I cannot make more tests at this<br>
-&gt; time because I don&#39;t have the hardware.<br>
-&gt; I will do additional investigation soon, I would have access to the<br=
->
-&gt; acquisition card soon. My intent was to know if there was an obvious<b=
-r>
-&gt; error either in my code or in my kernel configuration. Apparently not,=
-<br>
-&gt; so, I will try to figure out the root causes of these issues.<br>
-<br>
-</div>It is my understaning when reading Fernando&#39;s answer to your mail=
- that<br>
-you are not using the proper interface for what you are trying to do.<br>
-<br></blockquote></div><br>Yes, my suggestion is to use a different interfa=
-ce that will definitely provide higher acquisition speeds. However I am won=
-dering if using the &quot;instruction&quot; interface the delay would be ov=
-er the milliseconds. I&#39;m recalling some tests that I did using comedi i=
-n linux user-space, that is without any real-time support software. I could=
- acquire 8 channels and the board&#39;s internal timer using the instructio=
-n list technique at 120us (microseconds) intervals. However my board has 8 =
-parallel ADCs (NI 6143), so check if yours has parallel or serial converter=
-s. If it has to serialize conversions then the overall acquisition period w=
-ill increase.<br>
-<br>Back to your code, are you sure about=C2=A0 &quot;insn_tab[i].data_size=
- =C2=A0 =C2=A0 =3D 8;&quot;? Try data_size =3D 1 instead.<br><br>Best,<br>F=
-ernando<br>
-
---bcaec53af23a8658d304ae8e2d9b--
 
