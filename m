@@ -1,9 +1,13 @@
+Message-ID: <4E8C3AF9.7070604@domain.hid>
+Date: Wed, 05 Oct 2011 13:09:45 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Date: Tue, 4 Oct 2011 04:42:22 -0400
-Message-ID: <CAGc_wL0GYwEPJVMOBR_niJCd9bz2VWoTA7-q-MLOAR_WW2vm2g@domain.hid>
-From: Julien Delange <julien.delange@domain.hid>
+References: <CAGc_wL0GYwEPJVMOBR_niJCd9bz2VWoTA7-q-MLOAR_WW2vm2g@domain.hid>	<4E8AEB1D.2060706@domain.hid>	<CAGc_wL11cKQhxRmgYB0wU-bFii3YaqjibjgWB+=Tob3tFjsfQQ@mail.gmail.com>	<4E8B0DEA.8030102@domain.hid>	<CAGc_wL2wb76-t7RBWJnKxgcvsrcKgnFgV4qkjvUgh5AvM7ie3g@domain.hid>	<4E8B3744.2030407@domain.hid>
+	<CAGc_wL2RgNKfMUyQURJ8G2ceaJtvnJL6LpFue3ekuwJ99vwPww@domain.hid>
+In-Reply-To: <CAGc_wL2RgNKfMUyQURJ8G2ceaJtvnJL6LpFue3ekuwJ99vwPww@domain.hid>
 Content-Type: text/plain; charset=UTF-8
-Subject: [Xenomai-help] Kernel configuration suggestions/hints
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] Kernel configuration suggestions/hints
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -13,36 +17,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Xenomai help <xenomai@xenomai.org>
+To: Julien Delange <julien.delange@domain.hid>
+Cc: Xenomai help <xenomai@xenomai.org>
 
-Dear all,
+On 10/05/2011 09:48 AM, Julien Delange wrote:
+> On Tue, Oct 4, 2011 at 12:41 PM, Gilles Chanteperdrix
+> <gilles.chanteperdrix@xenomai.org> wrote:
+>> Another mail in that thread seem to suggest that it could be long. Have
+>> you tried timing the various parts of your loop to see where the time is
+>> spent?
+> 
+> No, sorry, my bad. Unfortunately, I cannot make more tests at this
+> time because I don't have the hardware.
+> I will do additional investigation soon, I would have access to the
+> acquisition card soon. My intent was to know if there was an obvious
+> error either in my code or in my kernel configuration. Apparently not,
+> so, I will try to figure out the root causes of these issues.
 
-I am currently building a customized kernel to build a real-time
-application. At this time, the requirement is very basic : I have one
-periodic task in userland that acquires data from an analogy card
-(ni6071e) with a 1ms period/deadline. At that time, the task miss one
-deadline at each period, meaning that the code is executed in 2ms
-instead of 1ms (and so, the deadline expires). So, I configured my
-kernel without power management and with a timer at 1000Hz and a
-tickless system (see variables below). However I would like to know if
-there are other relevant configuration parameters that may influence
-the scheduling of xenomai tasks so that I can make sure that my
-application meets its requirements. If anyone has a feedback about
-kernel configuration in that scope, it might be really useful ! In
-addition, depending on your answer, it may be also good to report good
-practices about the kernel configuration on the wiki, what do you
-think about it ?
+It is my understaning when reading Fernando's answer to your mail that
+you are not using the proper interface for what you are trying to do.
 
-Thanks for any suggestion,
-
-Kernel configuration variables:
-CONFIG_NO_HZ=y
-CONFIG_HIGH_RES_TIMERS=y
-CONFIG_PREEMPT=y
-CONFIG_HZ_1000=y
-CONFIG_HZ=1000
-CONFIG_PM is not set
-CONFIG_SFI is not set
-CONFIG_CPU_FREQ is not set
-CONFIG_CPU_IDLE is not set
+-- 
+                                                                Gilles.
 
