@@ -1,17 +1,19 @@
 MIME-Version: 1.0
-In-Reply-To: <1317762907.2082.80.camel@domain.hid>
-References: <CAAXf6LW-HePfMj4F86s-dFoztWN5NLsGm9TxqpHN-EwxEdtiFA@mail.gmail.com>
-	<8236197CA3DA864F9EF20609D988726338B7553A@rrxchngmbx01.mro.roland-man.biz>
-	<1317729603.2082.59.camel@domain.hid>
-	<CAMJ=MEfuYjfYzsoWGL5YXoy4m-GCxd-6KbXj2pSdHxGB-KKh+g@domain.hid>
-	<1317762907.2082.80.camel@domain.hid>
-Date: Wed, 5 Oct 2011 21:51:43 +0200
-Message-ID: <CAMJ=MEc7-CJjWRazye8JndQRvvzTsz4P=bxArHAXxga40j5ZLg@domain.hid>
-From: Ronny Meeus <ronny.meeus@domain.hid>
+In-Reply-To: <CAMwkeZzajkK7gRYH5cnAW1-5HvgxQyUogDZKpms1FUyLtwxpdg@domain.hid>
+References: <CAMwkeZy-9Qw0LALq8rrJQKET_Bu7UHgu8YYoFw1z6jdS687fBg@domain.hid>
+	<CAGc_wL172OGHZ-8SG8e77Fp5qwHqKvTY610aQsr3WA_bp+3HRg@domain.hid>
+	<CAMwkeZyvyhHPZTWz1LiaOhWA9TdrQaXMo833Ej5JRwJR3Da2xw@domain.hid>
+	<CAMwkeZxinGD8_yEYmo+ySHx9dzU6hEM4BFH4jejnTMd87f0M9Q@mail.gmail.com>
+	<CAMesUR4+G-Bx9tDUPajp4EcKP70zLvQuLyjLeyNpfyrmCpwBBw@domain.hid>
+	<CAMwkeZyQwtJbcMjOiSnmzoRDud+4=6Nt2NOcEdFG_+1QVSHoSQ@mail.gmail.com>
+	<CAMwkeZzajkK7gRYH5cnAW1-5HvgxQyUogDZKpms1FUyLtwxpdg@domain.hid>
+Date: Wed, 5 Oct 2011 23:16:00 +0200
+Message-ID: <CAMesUR67RpFHRiNcd-yfR9WF2FRe1U3yBdXWP2dU30aQovCHKQ@mail.gmail.com>
+From: Alexis Berlemont <alexis.berlemont@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] xenomai-forge [psos] t_start segmentation fault
- when args == NULL
+Subject: Re: [Xenomai-help] Command code working with comedi not working
+	with analogy
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -21,106 +23,114 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Xenomai-help@domain.hid, dietmar.schindler@domain.hid
+To: =?ISO-8859-1?Q?Fernando_Herrero_Carr=F3n?= <elferdo@domain.hid>
+Cc: xenomai@xenomai.org
 
-On Tue, Oct 4, 2011 at 11:15 PM, Philippe Gerum <rpm@xenomai.org> wrote:
-> On Tue, 2011-10-04 at 23:11 +0200, Ronny Meeus wrote:
->> On Tue, Oct 4, 2011 at 2:00 PM, Philippe Gerum <rpm@xenomai.org> wrote:
->> > On Tue, 2011-10-04 at 10:42 +0000, dietmar.schindler@domain.hid
->> > wrote:
->> >> > -----Original Message-----
->> >> > On Behalf Of Thomas De Schampheleire
->> >> > Sent: Tuesday, October 04, 2011 11:42 AM
->> >> > ...
->> >> > In the xenomai-forge psos library, t_start() does not allow a NULL
->> >> > args pointer, while I think this is allowed in PSOS.
->> >>
->> >> The "pSOSystem System Calls" manual doesn't state the permissibility =
-of a NULL args pointer, as far as I can see:
->> >>
->> >> unsigned long t_start(
->> >> =A0 =A0unsigned long tid, =A0 =A0 =A0/* task identifier */
->> >> =A0 =A0unsigned long mode, =A0 =A0 /* initial task attributes */
->> >> =A0 =A0void (*start_addr)(), =A0 /* task address */
->> >> =A0 =A0unsigned long targs[4] =A0/* startup task arguments */
->> >> =A0 =A0)
->> >> ...
->> >> targs =A0 =A0 =A0Specifies four startup values passed to the task (se=
-e Startup Values under Target).
->> >>
->> >> Target
->> >> Startup Values
->> >> ...
->> >> A new task can receive up to four long words of input arguments. To f=
-acilitate retrieval of these arguments, they are passed to the task as if i=
-t is invoked as a highlevel language procedure or function. For example, if=
- a C task nice has three input arguments, it can be declared as follows:
->> >>
->> >> nice (unsigned long a, unsigned long b, unsigned long c);
->> >>
->> >> where targs[0] is passed to a, targs[1] to b, and targs[2] to c. In t=
-his case, targs[3] is irrelevant and does not need the calling task to load=
- it.
->> >>
->> >
->> > Accepting NULL was a Xenomai-specific convenience introduced in Xenoma=
-i
->> > 2.x IIRC, then I changed my mind for 3.x. Granted NULL args would not
->> > work when back on real pSOS, but that does not look like a hot issue. =
-So
->> > we should probably just accept it anew, and be happy.
->> >
->> >> --
->> >> Regards,
->> >> Dietmar
->> >> ________________________________________ manroland AG Vorsitzender de=
-s Aufsichtsrates: Hanno C. Fiedler Vorstand: Gerd Finkbeiner (Vorsitzender)=
-, Dr. Ingo Koch, Dr. Markus Rall, Paul Steidle Sitz der Gesellschaft: Offen=
-bach am Main, Registergericht: Amtsgericht Offenbach HRB-Nr. 42592 USt-Iden=
-t-Nr. DE 250200933
->> >>
->> >>
->> >> _______________________________________________
->> >> Xenomai-help mailing list
->> >> Xenomai-help@domain.hid
->> >> https://mail.gna.org/listinfo/xenomai-help
->> >
->> > --
->> > Philippe.
->> >
->> >
->> >
->> > _______________________________________________
->> > Xenomai-help mailing list
->> > Xenomai-help@domain.hid
->> > https://mail.gna.org/listinfo/xenomai-help
->> >
+Hi,
+
+2011/10/4 Fernando Herrero Carr=F3n <elferdo@domain.hid>:
+> El 3 de octubre de 2011 18:41, Fernando Herrero Carr=F3n <elferdo@domain.hid=
+om>
+> escribi=F3:
 >>
->> Hello
+>> El 30 de septiembre de 2011 00:16, Alexis Berlemont
+>> <alexis.berlemont@domain.hid> escribi=F3:
+>>>
+>>> Hi,
+>>> [...]
+>>> With insn_read, did you manage to acquire correct values at least?
+>>>
 >>
->> I think that it is supported since our application does pass a NULL
->> pointer as args argument.
->> The application is originally created in a real pSOS environment 12 year=
-s ago.
->
-> Ok. Was this running on MMU-enabled hw?
->
+>> Dear Alexis,
+>> insn_read does indeed work. If I run "insn_read -S 1000" I get my input
+>> sampled at approx 125kHz. Running cmd_read with and without '-m' only
+>> returns 0x8000.
 >>
->> Anyhow thanks for changing it.
+>> I have been playing around with __a4l_info and the driver code to track
+>> down my problem. I am not familiar at all with low-level DAQ programming=
+, so
+>> I just followed my intuition.
 >>
->> Ronny
+>> I modified
+>> buffer.c:a4l_read_buf and buffer.h:__consume
+>>
+>> to dump the values that were being consumed from the internal buffer.
+>> There I found the infamous 0x8000, so my conclusion is that those values=
+ are
+>> traveling along the kernel side. I decided I would go the other way arou=
+nd
+>> and modified
+>>
+>> drivers/analogy/national_instruments/mio_common.c: handle_a_interrupt
+>> and drivers/analogy/buffer.c: a4l_buf_evt
+>>
+>> I guess that interrupt is being generated every time a DMA transfer has
+>> been completed from the DAQ to analogy's internal=A0 buffer. I dump vari=
+able
+>> "count" in a4l_buf_evt and it always reports the appropriate byte count =
+to
+>> be transferred, which is "number of channels" * 2.
+>>
+>> My guess is that the DMA transfers are being performed to the wrong plac=
+e,
+>> because the whole procedure seems to be working ok otherwise.
+>>
+>> All help is appreciated,
+>> Fernando
+>>
+>>
 >
-> --
-> Philippe.
+> Dear all,
 >
+> More updates on this. I just tested both the "cmd_read" example and my ow=
+n
+> code on the analogy_fake device. They're both working, I get a sawtooth
+> shape. So my guess is still that there is some error in the DMA transfer =
+in
+> the NI driver(s).
 >
+> Could anyone please help me indicating where DMA is setup in the NI drive=
+rs?
+> I'll try to have a look at it myself, but a more experienced advice would=
+ be
+> helpful.
 >
 
-I do not think the MMU was enabled at that time but we did have an
-access breakpoint on 0.
-We were running that SW on a i960 that has support for monitoring the
-access to 2 addresses.
+I think the problem might be located at two different places:
+1) Either the DMA controller is badly configured and it copies the
+properly acquired values to wrong places.
+2) Or the DAQ-STC module is badly configured; so, the  DMA controller
+copies the wrong values to right places.
 
-Ronny
+Concerning the alternative 1, I think it is not the most probable one.
+Why? Because, the DMA controller (the MITE) is configured the same way
+whatever the NI acquisition board holds it (or nearly).
+To check this idea: let's make a little test with cmd_read.
+
+If cmd_read is launched with the option -m (map), we get direct
+access, in user space, to the memory area the DMA controller is
+supposed to shot to.
+
+So, just after a4l_mmap (before the DMA controller shots anything):
+367:		/* Map the analog input subdevice buffer */
+368:		ret =3D a4l_mmap(&dsc, cmd.idx_subd, buf_size, &map);
+you can have a look at the values hold by the buffer:
+- If the values are already 0x8000, we might conclude that the DMA
+controller does not send anything there.
+- If the values are not 0x8000, then we are sure that the DMA
+controller does behave as expected. Consequently we can skip
+alternative 1) and focus on the second one.
+
+If the DAQ is not properly configured; things are getting a little bit
+simpler (if we have the documentation /. developer manual of your
+acquisition card). We just have to find which stuff was not properly
+configured.  A simple solution could be the monitoring of the status
+registers. In such a case, I can send you a patch which will dump the
+content of these registers.
+
+But before going that way, could you make the test with cmd_read + mmap?
+
+Regards,
+
+Alexis.
 
