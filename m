@@ -1,12 +1,11 @@
-Message-ID: <4E8F2BF9.5030408@domain.hid>
-Date: Fri, 07 Oct 2011 18:42:33 +0200
+Message-ID: <4E8F2CFA.1070306@domain.hid>
+Date: Fri, 07 Oct 2011 18:46:50 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <CACFV95JranppM+ZDoqsgjO5nJ-Th2fFAD0HowBSkL-t_wQ-t4w@domain.hid>
 	<4E8F1643.1050700@domain.hid>
 	<CACFV95LnySGuKP2NQ+BcYk-wuk+S9Gh2iu1Xmqh9VLNsH1Az0w@domain.hid>
-	<CACFV95+0bWjvQfotboZkHA-ynNWAdYLfqn3RYprr9gpY=hUSNg@domain.hid>
-In-Reply-To: <CACFV95+0bWjvQfotboZkHA-ynNWAdYLfqn3RYprr9gpY=hUSNg@domain.hid>
+In-Reply-To: <CACFV95LnySGuKP2NQ+BcYk-wuk+S9Gh2iu1Xmqh9VLNsH1Az0w@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] Xenomai: /dev/rtheap is missing (chardev,
@@ -23,18 +22,30 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: Siva kumar Balasubramanian <sivakumar.bs@domain.hid>
 Cc: xenomai@xenomai.org
 
-On 10/07/2011 06:27 PM, Siva kumar Balasubramanian wrote:
-> After running make Devices also ,
+On 10/07/2011 05:55 PM, Siva kumar Balasubramanian wrote:
+> Mini2440 is based on s3c2440,
 > 
-> i am getting error
+> I did the following steps to patch xenomai for Mini2440
 > 
-> /usr/xenomai/bin/xeno-load: line 180: 3347 Segmentation fault $suflag $*
-> $cmdargs
+> I patched the adeos-ipipe-2.6.37.6-arm-1.18-03.patch to linux
+> kernel-2.6.37.6
 > 
-> My log file link http://pastebin.com/PpnnmnuW
+> I used mini2440_defconfig as configuration file, i did  not made any changes
+> 
+> After sucessful compilation, i booted the mini2440 compiled kernel
+> 
+> I crosscompiled xenomai-2.5.6 using the following command
+> 
+> ./configure --build=x86_64-pc-linux-gnu --host=arm-linux
+> --enable-arm-mach=s3c2410 --enable-arm-tsc
 
-Please do not use xeno-test with xenomai 2.5 branch, launch the latency
-and generate load by hand.
+So, no porting involved finally.
+
+You are probably missing --enable-arm-eabi. Note that if you start with
+xenomai 2.6.0, the configuration is much easier (basically, you just run
+configure with no arguments and it works).
+
+And xenomai 2.6.0's xeno-test should work better.
 
 -- 
 					    Gilles.
