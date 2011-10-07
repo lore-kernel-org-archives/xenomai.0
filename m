@@ -1,22 +1,10 @@
 MIME-Version: 1.0
-In-Reply-To: <CAMesUR5AvmUDW8wq4e9EtOgnpRtMD_qe8rQe7acgFT6KzdeYAg@domain.hid>
-References: <CAMwkeZy-9Qw0LALq8rrJQKET_Bu7UHgu8YYoFw1z6jdS687fBg@domain.hid>
-	<CAGc_wL172OGHZ-8SG8e77Fp5qwHqKvTY610aQsr3WA_bp+3HRg@domain.hid>
-	<CAMwkeZyvyhHPZTWz1LiaOhWA9TdrQaXMo833Ej5JRwJR3Da2xw@domain.hid>
-	<CAMwkeZxinGD8_yEYmo+ySHx9dzU6hEM4BFH4jejnTMd87f0M9Q@mail.gmail.com>
-	<CAMesUR4+G-Bx9tDUPajp4EcKP70zLvQuLyjLeyNpfyrmCpwBBw@domain.hid>
-	<CAMwkeZyQwtJbcMjOiSnmzoRDud+4=6Nt2NOcEdFG_+1QVSHoSQ@mail.gmail.com>
-	<CAMwkeZzajkK7gRYH5cnAW1-5HvgxQyUogDZKpms1FUyLtwxpdg@domain.hid>
-	<CAMesUR67RpFHRiNcd-yfR9WF2FRe1U3yBdXWP2dU30aQovCHKQ@mail.gmail.com>
-	<CAMwkeZxybKS+-B2C_yaYX3_XSYnAKcj8xfX_YOgQ6Kt=mNTzJQ@mail.gmail.com>
-	<CAMwkeZzrfuB1Uf7f1eqG8zEvgeYMXrRspzUANeOaJR2qQUmhOQ@mail.gmail.com>
-	<CAMesUR5AvmUDW8wq4e9EtOgnpRtMD_qe8rQe7acgFT6KzdeYAg@domain.hid>
-Date: Thu, 6 Oct 2011 19:18:45 -0300
-Message-ID: <CAMwkeZxAvBeY=0c49N+QtUYCKCTiGo4yc9TAEQPLJAJmBXPn+A@mail.gmail.com>
-From: =?UTF-8?Q?Fernando_Herrero_Carr=C3=B3n?= <elferdo@domain.hid>
-Content-Type: multipart/alternative; boundary=bcaec53af23a3a8de404aea8b5dd
-Subject: Re: [Xenomai-help] Command code working with comedi not working
-	with analogy
+From: Siva kumar Balasubramanian <sivakumar.bs@domain.hid>
+Date: Fri, 7 Oct 2011 20:22:22 +0530
+Message-ID: <CACFV95JranppM+ZDoqsgjO5nJ-Th2fFAD0HowBSkL-t_wQ-t4w@domain.hid>
+Content-Type: multipart/alternative; boundary=20cf30434f54e9f4ec04aeb69741
+Subject: [Xenomai-help] Xenomai: /dev/rtheap is missing (chardev,
+	major=10 minor=254) in mini2440
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -26,558 +14,1685 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Xenomai help <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
---bcaec53af23a3a8de404aea8b5dd
-Content-Type: text/plain; charset=UTF-8
+--20cf30434f54e9f4ec04aeb69741
+Content-Type: text/plain; charset=ISO-8859-1
+
+Hi Experts,
+
+I compiled and ported linux kernel-2.6.37.6, adeos-ipipe-patch-2.6.37.6 and
+xenomai 2.5.6 in mini2440.
+After porting when i run xeno-test,
+
+I am getting following error
+
+Xenomai: /dev/rtheap is missing
+
+(chardev, major=10 minor=254)
+
+
+The complete log is
+
+ root@domain.hid# xeno-test
+
+xeno-test: started
+
+withBusybox is 0
+
+xeno-test: running tests
+
+Sat Jan 1 00:33:45 UTC 2000
+
+running: /xenomai/bin/xeno-config --verbose
+
+xeno-config --verbose
+
+--version="2.5.6"
+
+--cc="arm-linux-gcc"
+
+--arch="arm"
+
+--prefix="/usr/xenomai"
+
+--xeno-cflags="-I/usr/xenomai/include -D_GNU_SOURCE -D_REENTRANT -Wall -pipe
+-D__XENO__"
+
+--xeno-ldflags="-L/usr/xenomai/lib -lxenomai -lpthread "
+
+--posix-cflags=""
+
+--posix-ldflags="-Wl,@/usr/xenomai/lib/posix.wrappers -L/usr/xenomai/lib
+-lpthread_rt -lxenomai -lpthread -lrt "
+
+--library-dir="/usr/xenomai/lib"
+
+Sat Jan 1 00:33:46 UTC 2000
+
+running: /xenomai/bin/xeno-info
+
+If some fields are empty or look unusual you may have an old version.
+
+Compare to the current minimal requirements in Documentation/Changes.
+
+ Linux (none) 2.6.37.6-ipipe #2 Fri Oct 7 15:44:06 IST 2011 armv4tl
+GNU/Linux
+
+ util-linux ng 2.13.1.1)
+
+mount ng 2.13.1.1)
+
+module-init-tools 3.4
+
+e2fsprogs 1.41.3
+
+Linux C Library > libc.2.7
+
+Dynamic linker (ldd) 2.7
+
+Procps 3.2.7
+
+Net-tools 1.60
+
+Kbd 89:
+
+Sh-utils 6.10
+
+Modules Loaded
+
+Sat Jan 1 00:33:49 UTC 2000
+
+running: cat /proc/cpuinfo
+
+Processor\0x09: ARM920T rev 0 (v4l)
+
+BogoMIPS\0x09: 201.93
+
+Features\0x09: swp half thumb
+
+CPU implementer\0x09: 0x41
+
+CPU architecture: 4T
+
+CPU variant\0x09: 0x1
+
+CPU part\0x09: 0x920
+
+CPU revision\0x09: 0
+
+Hardware\0x09: MINI2440
+
+Revision\0x09: 0000
+
+Serial\0x09\0x09: 0000000000000000
+
+Sat Jan 1 00:33:49 UTC 2000
+
+running: md5sum /proc/cpuinfo # cpuinfo fingerprint
+
+72f59e533ef85a8821c3dfae14294205 /proc/cpuinfo
+
+Sat Jan 1 00:33:49 UTC 2000
+
+running: cat /proc/ipipe/Linux
+
++----- Handling ([A]ccepted, [G]rabbed, [W]ired, [D]iscarded)
+
+|+---- Sticky
+
+||+--- Locked
+
+|||+-- Exclusive
+
+||||+- Virtual
+
+[IRQ] |||||
+
+0: A....
+
+1: A....
+
+2: A....
+
+3: A....
+
+4: A....
+
+5: A....
+
+6: A....
+
+7: A....
+
+8: A....
+
+9: A....
+
+10: A....
+
+11: A....
+
+12: A....
+
+13: A....
+
+14: A....
+
+15: A....
+
+16: A....
+
+17: A....
+
+18: A....
+
+19: A....
+
+20: A....
+
+21: A....
+
+22: A....
+
+23: A....
+
+24: A....
+
+25: A....
+
+26: A....
+
+27: A....
+
+28: A....
+
+29: A....
+
+30: A....
+
+31: A....
+
+32: A....
+
+33: A....
+
+34: A....
+
+35: A....
+
+36: A....
+
+37: A....
+
+38: A....
+
+39: A....
+
+40: A....
+
+41: A....
+
+42: A....
+
+43: A....
+
+44: A....
+
+45: A....
+
+46: A....
+
+47: A....
+
+48: A....
+
+49: A....
+
+50: A....
+
+51: A....
+
+52: A....
+
+53: A....
+
+54: A....
+
+55: A....
+
+56: A....
+
+57: A....
+
+58: A....
+
+59: A....
+
+60: A....
+
+61: A....
+
+62: A....
+
+63: A....
+
+64: A....
+
+65: A....
+
+66: A....
+
+67: A....
+
+68: A....
+
+69: A....
+
+70: A....
+
+71: A....
+
+72: A....
+
+73: A....
+
+74: A....
+
+75: A....
+
+76: A....
+
+77: A....
+
+78: A....
+
+79: A....
+
+80: A....
+
+81: A....
+
+82: A....
+
+83: A....
+
+84: A....
+
+96: G...V
+
+[Domain info]
+
+id=0x00000000
+
+priority=100
+
+Sat Jan 1 00:33:49 UTC 2000
+
+running: cat /proc/ipipe/version
+
+1.18-03
+
+Sat Jan 1 00:33:49 UTC 2000
+
+running: generate_loads 1
+
+dd workload started, pids 1300 stored in /var/lock/xeno-test.1179.pids
+
+Sat Jan 1 00:33:49 UTC 2000
+
+running: cat /proc/interrupts
+
+CPU0
+
+30: 406280 s3c S3C2410 Timer Tick
+
+37: 785631 s3c s3c-mci
+
+41: 1 s3c s3c2410_udc
+
+43: 8 s3c s3c2440-i2c
+
+52: 0 s3c-ext Button 1
+
+55: 0 s3c-ext Button 2
+
+57: 0 s3c-ext Button 3
+
+58: 0 s3c-ext Power
+
+59: 0 s3c-ext Button 5
+
+60: 0 s3c-ext s3c-mci
+
+70: 3264 s3c-uart0 s3c2440-uart
+
+71: 2552 s3c-uart0 s3c2440-uart
+
+83: 0 - s3c2410-wdt
+
+Err: 0
+
+Sat Jan 1 00:33:49 UTC 2000
+
+running: cat /proc/loadavg
+
+0.15 0.09 0.07 2/39 1306
+
+Sat Jan 1 00:33:50 UTC 2000
+
+running: cat /proc/meminfo
+
+MemTotal: 60472 kB
+
+MemFree: 3812 kB
+
+Buffers: 2628 kB
+
+Cached: 47168 kB
+
+SwapCached: 0 kB
+
+Active: 5780 kB
+
+Inactive: 45432 kB
+
+Active(anon): 1416 kB
+
+Inactive(anon): 0 kB
+
+Active(file): 4364 kB
+
+Inactive(file): 45432 kB
+
+Unevictable: 0 kB
+
+Mlocked: 0 kB
+
+SwapTotal: 0 kB
+
+SwapFree: 0 kB
+
+Dirty: 128 kB
+
+Writeback: 0 kB
+
+AnonPages: 1432 kB
+
+Mapped: 1424 kB
+
+Shmem: 0 kB
+
+Slab: 4384 kB
+
+SReclaimable: 2832 kB
+
+SUnreclaim: 1552 kB
+
+KernelStack: 312 kB
+
+PageTables: 160 kB
+
+NFS_Unstable: 0 kB
+
+Bounce: 0 kB
+
+WritebackTmp: 0 kB
+
+CommitLimit: 30236 kB
+
+Committed_AS: 3200 kB
+
+VmallocTotal: 811008 kB
+
+VmallocUsed: 3500 kB
+
+VmallocChunk: 803836 kB
+
+Sat Jan 1 00:33:50 UTC 2000
+
+running: top -bn1c
+
+top - 00:33:51 up 33 min, 0 users, load average: 0.46, 0.16, 0.09
+
+Tasks: 41 total, 2 running, 39 sleeping, 0 stopped, 0 zombie
+
+Cpu(s): 0.4%us, 1.4%sy, 0.0%ni, 97.1%id, 0.6%wa, 0.0%hi, 0.5%si, 0.0%st
+
+Mem: 60472k total, 57292k used, 3180k free, 2636k buffers
+
+Swap: 0k total, 0k used, 0k free, 47268k cached
+
+ PID USER PR NI VIRT RES SHR S %CPU %MEM TIME+ COMMAND
+
+1300 root 20 0 1892 524 428 R 78.9 0.9 0:01.04 dd if /dev/zero of
+
+1314 root 20 0 2532 996 812 R 9.5 1.6 0:00.22 top -bn1c
+
+1 root 20 0 2996 1492 1168 S 0.0 2.5 0:01.73 /bin/sh
+
+Sat Jan 1 00:33:51 UTC 2000
+
+running: ./run -- -sh -T 120 -t0 # latency
+
+*
+
+*
+
+* Type ^C to stop this application.
+
+*
+
+*
+
+Xenomai: /dev/rtheap is missing
+
+(chardev, major=10 minor=254)
+
+Sat Jan 1 00:33:57 UTC 2000
+
+running: ./run -- -sh -T 120 -t1 # latency
+
+*
+
+*
+
+* Type ^C to stop this application.
+
+*
+
+*
+
+Xenomai: /dev/rtheap is missing
+
+(chardev, major=10 minor=254)
+
+Sat Jan 1 00:34:03 UTC 2000
+
+running: ./run -- -sh -T 120 -t2 # latency
+
+*
+
+*
+
+* Type ^C to stop this application.
+
+*
+
+*
+
+Xenomai: /dev/rtheap is missing
+
+(chardev, major=10 minor=254)
+
+Sat Jan 1 00:34:08 UTC 2000
+
+running: ./run -- -T 120 # switchtest
+
+*
+
+*
+
+* Type ^C to stop this application.
+
+*
+
+*
+
+Xenomai: /dev/rtheap is missing
+
+(chardev, major=10 minor=254)
+
+/xenomai/bin/xeno-test: line 235: cd:
+/usr/xenomai/share/xenomai/testsuite/switchbench: No such file or directory
+
+Sat Jan 1 00:34:14 UTC 2000
+
+running: ./run -- -h # switchbench
+
+*
+
+*
+
+* Type ^C to stop this application.
+
+*
+
+*
+
+Xenomai: /dev/rtheap is missing
+
+(chardev, major=10 minor=254)
+
+Sat Jan 1 00:34:19 UTC 2000
+
+running: ./run -- -p 10 -n -l 1000 # cyclictest
+
+*
+
+*
+
+* Type ^C to stop this application.
+
+*
+
+*
+
+Xenomai: /dev/rtheap is missing
+
+(chardev, major=10 minor=254)
+
+Sat Jan 1 00:34:24 UTC 2000
+
+running: cat /proc/interrupts
+
+CPU0
+
+30: 413186 s3c S3C2410 Timer Tick
+
+37: 847062 s3c s3c-mci
+
+41: 1 s3c s3c2410_udc
+
+43: 8 s3c s3c2440-i2c
+
+52: 0 s3c-ext Button 1
+
+55: 0 s3c-ext Button 2
+
+57: 0 s3c-ext Button 3
+
+58: 0 s3c-ext Power
+
+59: 0 s3c-ext Button 5
+
+60: 0 s3c-ext s3c-mci
+
+70: 3264 s3c-uart0 s3c2440-uart
+
+71: 2750 s3c-uart0 s3c2440-uart
+
+83: 0 - s3c2410-wdt
+
+Err: 0
+
+Sat Jan 1 00:34:24 UTC 2000
+
+running: cat /proc/loadavg
+
+1.13 0.35 0.15 2/39 1830
+
+Sat Jan 1 00:34:24 UTC 2000
+
+running: cat /proc/meminfo
+
+MemTotal: 60472 kB
+
+MemFree: 3552 kB
+
+Buffers: 2684 kB
+
+Cached: 47268 kB
+
+SwapCached: 0 kB
+
+Active: 5860 kB
+
+Inactive: 45508 kB
+
+Active(anon): 1416 kB
+
+Inactive(anon): 0 kB
+
+Active(file): 4444 kB
+
+Inactive(file): 45508 kB
+
+Unevictable: 0 kB
+
+Mlocked: 0 kB
+
+SwapTotal: 0 kB
+
+SwapFree: 0 kB
+
+Dirty: 4 kB
+
+Writeback: 0 kB
+
+AnonPages: 1432 kB
+
+Mapped: 1424 kB
+
+Shmem: 0 kB
+
+Slab: 4492 kB
+
+SReclaimable: 2912 kB
+
+SUnreclaim: 1580 kB
+
+KernelStack: 312 kB
+
+PageTables: 160 kB
+
+NFS_Unstable: 0 kB
+
+Bounce: 0 kB
+
+WritebackTmp: 0 kB
+
+CommitLimit: 30236 kB
+
+Committed_AS: 3200 kB
+
+VmallocTotal: 811008 kB
+
+VmallocUsed: 3500 kB
+
+VmallocChunk: 803836 kB
+
+Sat Jan 1 00:34:24 UTC 2000
+
+running: top -bn1c
+
+top - 00:34:25 up 34 min, 0 users, load average: 1.12, 0.36, 0.16
+
+Tasks: 41 total, 2 running, 39 sleeping, 0 stopped, 0 zombie
+
+Cpu(s): 1.0%us, 2.4%sy, 0.0%ni, 95.5%id, 0.6%wa, 0.0%hi, 0.6%si, 0.0%st
+
+Mem: 60472k total, 57340k used, 3132k free, 2684k buffers
+
+Swap: 0k total, 0k used, 0k free, 47272k cached
+
+ PID USER PR NI VIRT RES SHR S %CPU %MEM TIME+ COMMAND
+
+1300 root 20 0 1892 524 428 R 81.1 0.9 0:18.05 dd if /dev/zero of
+
+1838 root 20 0 2532 996 812 R 12.6 1.6 0:00.22 top -bn1c
+
+1 root 20 0 2996 1492 1168 S 0.0 2.5 0:01.73 /bin/sh
+
+1300 ? 00:00:18 dd
+
+xeno-test: finished
+-- 
+Regards
+sivakumar
+
+--20cf30434f54e9f4ec04aeb69741
+Content-Type: text/html; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
-El 6 de octubre de 2011 18:31, Alexis Berlemont
-<alexis.berlemont@domain.hid>escribi=C3=B3:
+<font face=3D"arial,helvetica,sans-serif">Hi Experts,</font><div><font face=
+=3D"arial,helvetica,sans-serif"><br></font></div><div><font face=3D"arial,h=
+elvetica,sans-serif">I compiled and ported linux kernel-2.6.37.6, adeos-ipi=
+pe-patch-2.6.37.6 and xenomai 2.5.6 in mini2440.</font></div>
 
-> Hi,
+<div><font class=3D"Apple-style-span" face=3D"arial, helvetica, sans-serif"=
+>After porting when i run xeno-test,</font></div><div><font class=3D"Apple-=
+style-span" face=3D"arial, helvetica, sans-serif"><br></font></div><div><fo=
+nt class=3D"Apple-style-span" face=3D"arial, helvetica, sans-serif">I am ge=
+tting following error</font></div>
+
+<div><font class=3D"Apple-style-span" face=3D"arial, helvetica, sans-serif"=
+><br></font></div><div><font class=3D"Apple-style-span" face=3D"arial, helv=
+etica, sans-serif">
+
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Xenomai: /dev/rtheap is missi=
+ng</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">(chardev, major=3D10 minor=3D=
+254)</p>
+<p style=3D"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; ma=
+rgin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"></p>=
+</font></div><div><div><br></div><div>The complete log is</div><div><br>
+
+</div><div>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">root@domain.hid=
+e/xenomai/testsuite/latency# xeno-test</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">xeno-test: started </p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">withBusybox is 0</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">xeno-test: running tests</p>
+<p style=3D"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; ma=
+rgin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"></p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Sat Jan  1 00:33:45 UTC 2000<=
+/p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">running: /xenomai/bin/xeno-co=
+nfig --verbose</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">xeno-config --verbose</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">        --version=3D&quot;2.5=
+.6&quot;</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">        --cc=3D&quot;arm-linu=
+x-gcc&quot;</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">        --arch=3D&quot;arm&qu=
+ot;</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">        --prefix=3D&quot;/usr=
+/xenomai&quot;</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">        --xeno-cflags=3D&quot=
+;-I/usr/xenomai/include -D_GNU_SOURCE -D_REENTRANT -Wall -pipe -D__XENO__&q=
+uot;</p>
+
+
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">        --xeno-ldflags=3D&quo=
+t;-L/usr/xenomai/lib -lxenomai -lpthread &quot;</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">        --posix-cflags=3D&quo=
+t;&quot;</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">        --posix-ldflags=3D&qu=
+ot;-Wl,@/usr/xenomai/lib/posix.wrappers -L/usr/xenomai/lib -lpthread_rt -lx=
+enomai -lpthread -lrt &quot;</p>
+
+
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">        --library-dir=3D&quot=
+;/usr/xenomai/lib&quot;</p>
+<p style=3D"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; ma=
+rgin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"></p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Sat Jan  1 00:33:46 UTC 2000<=
+/p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">running: /xenomai/bin/xeno-in=
+fo</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">If some fields are empty or l=
+ook unusual you may have an old version.</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Compare to the current minima=
+l requirements in Documentation/Changes.</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;"> </p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Linux (none) 2.6.37.6-ipipe #=
+2 Fri Oct 7 15:44:06 IST 2011 armv4tl GNU/Linux</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;"> </p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">util-linux             ng 2.1=
+3.1.1)</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">mount                  ng 2.1=
+3.1.1)</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">module-init-tools      3.4</p=
 >
-> 2011/10/6 Fernando Herrero Carr=C3=B3n <elferdo@domain.hid>:
-> >
-> >
-> > El 5 de octubre de 2011 20:06, Fernando Herrero Carr=C3=B3n <
-> elferdo@domain.hid>
-> > escribi=C3=B3:
-> >>
-> >> El 5 de octubre de 2011 18:16, Alexis Berlemont
-> >> <alexis.berlemont@domain.hid> escribi=C3=B3:
-> >>>
-> >>> I think the problem might be located at two different places:
-> >>> 1) Either the DMA controller is badly configured and it copies the
-> >>> properly acquired values to wrong places.
-> >>> 2) Or the DAQ-STC module is badly configured; so, the  DMA controller
-> >>> copies the wrong values to right places.
-> >>>
-> >>> Concerning the alternative 1, I think it is not the most probable one=
-.
-> >>> Why? Because, the DMA controller (the MITE) is configured the same wa=
-y
-> >>> whatever the NI acquisition board holds it (or nearly).
-> >>> To check this idea: let's make a little test with cmd_read.
-> >>>
-> >>> If cmd_read is launched with the option -m (map), we get direct
-> >>> access, in user space, to the memory area the DMA controller is
-> >>> supposed to shot to.
-> >>>
-> >>> So, just after a4l_mmap (before the DMA controller shots anything):
-> >>> 367:            /* Map the analog input subdevice buffer */
-> >>> 368:            ret =3D a4l_mmap(&dsc, cmd.idx_subd, buf_size, &map);
-> >>> you can have a look at the values hold by the buffer:
-> >>> - If the values are already 0x8000, we might conclude that the DMA
-> >>> controller does not send anything there.
-> >>> - If the values are not 0x8000, then we are sure that the DMA
-> >>> controller does behave as expected. Consequently we can skip
-> >>> alternative 1) and focus on the second one.
-> >>>
-> >>> If the DAQ is not properly configured; things are getting a little bi=
-t
-> >>> simpler (if we have the documentation /. developer manual of your
-> >>> acquisition card). We just have to find which stuff was not properly
-> >>> configured.  A simple solution could be the monitoring of the status
-> >>> registers. In such a case, I can send you a patch which will dump the
-> >>> content of these registers.
-> >>>
-> >>> But before going that way, could you make the test with cmd_read +
-> mmap?
-> >>>
-> >>> Regards,
-> >>>
-> >>> Alexis.
-> >>
-> >> Ok, I'll check those tomorrow. From what I recall, I checked cmd_read
-> just
-> >> passing the '-m' option and resulted in the same behaviour, but I'll
-> recheck
-> >> tomorrow.
-> >>
-> >> What I find somewhat surprising is that I got it working with comedi, =
-so
-> I
-> >> guess that the register programming should also be working with analog=
-y.
-> The
-> >> only difference I have managed to find so far between the analogy and
-> the
-> >> comedi drivers, besides generic buffer management, is that comedi
-> appears to
-> >> handle DMA through the "generic device" interface (as in
-> >> http://www.mjmwired.net/kernel/Documentation/DMA-API.txt) and analogy
-> >> handles DMA through the PCI interface (as in
-> >>
-> http://m8-android-kernel.googlecode.com/svn/trunk/Documentation/DMA-mappi=
-ng.txt
-> ).
-> >> But this is merely speculation.
-> >>
-> >> I'll look tomorrow at your two options in more detail.
-> >>
-> >> Thanks for your help!
-> >> Fernando
-> >
-> > Dear Alexis,
-> >
-> > I just repeated the tests with mmap.
-> >
-> > Running the provided example of "cmd_read" with either "-m" or "-m -r"
-> only
-> > dumps the 0x8000 value. _Sometimes_, very rarely, I can get to see
-> different
-> > values not far from that one, but if I get to plot it it just looks lik=
-e
-> > noise. I don't know what is causing those values and I cannot reproduce
-> the
-> > conditions for them.
-> >
-> > Now I used gdb to step through the process (with my own code) and here =
-is
-> > the sequence:
-> >
-> > -  I run up to the line where the "mmapping" happens. I check that map =
-=3D=3D
-> > NULL and after I run the "mmap()" it gets a different value and ret =3D=
-=3D 0,
-> > ok.
-> >
-> > - I do a
-> > print *(unsigned short *)map@domain.hid
-> >
-> >   to dump the contents of the buffer and it is all filled with zeroes a=
-t
-> > this point.
-> >
-> > - I setup my command structure like this:
-> >
-> >     cmd.idx_subd =3D 0;
-> >     cmd.start_src =3D TRIG_NOW;
-> >     cmd.start_arg =3D 0;
-> >     cmd.flags =3D TRIG_WAKE_EOS;
-> >     cmd.scan_begin_src =3D TRIG_TIMER;
-> >     cmd.scan_begin_arg =3D 1e9 / INPUT_FREQ;
-> >     cmd.convert_src =3D TRIG_NOW;
-> >     cmd.convert_arg =3D 0;
-> >     cmd.chan_descs =3D chanlist;
-> >     cmd.nb_chan =3D NICHAN;
-> >     cmd.scan_end_src =3D TRIG_COUNT;
-> >     cmd.scan_end_arg    =3D NICHAN;
-> >
-> >     cmd.stop_src =3D TRIG_COUNT;
-> >     cmd.stop_arg =3D SAMPLE_HISTORY;
-> >
-> > with
-> >
-> > INPUT_FREQ =3D 1000 (1kHz)
-> > NICHAN =3D 1   (I have also tried 4 and 8 with no difference in results=
-)
-> >
-> > and call the a4l_snd_command() function, which returns without errors.
-> >
-> > I dump the contents of the buffer and it is still filled with zeroes.
-> >
-> > - I declare
-> >
-> > unsigned long front =3D 0;
-> >
-> > and call
-> >
-> > ret =3D a4l_mark_bufrw(&dev_input, 0, front, &front);
-> >
-> > at this point the buffer gets filled with 0x8000:
-> >
-> >
-> > (gdb) print *(unsigned short *)map@domain.hid $1 =3D {0 <repeats 100 times>}
-> > (gdb) n     <------------------ calls a4l_mark_bufrw()
-> >
-> > 186            if (front =3D=3D 0) {
-> >
-> > (gdb) print /x*(unsigned short *)map@domain.hid
-> > $2 =3D {0x8000 <repeats 100 times>}
-> >
-> > Now I find it funny that the value read is always the same. Could it be
-> that
-> > everything is working fine and it is the board itself that is
-> transferring
-> > that value? Could it be an indicator for an error condition?
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">e2fsprogs              1.41.3=
+</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Linux C Library        &gt; l=
+ibc.2.7</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Dynamic linker (ldd)   2.7</p=
 >
-> I don't think it is an error indicator; errors are reported in
-> dedicated status registers.
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Procps                 3.2.7<=
+/p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Net-tools              1.60</=
+p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Kbd                    89:</p=
 >
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Sh-utils               6.10</=
+p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Modules Loaded         </p>
+<p style=3D"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; ma=
+rgin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"></p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Sat Jan  1 00:33:49 UTC 2000<=
+/p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">running: cat /proc/cpuinfo</p=
 >
-Yep, you're right on that one...
-
-
-> If I understand correctly, most of the times you acquire 0x8000 and a
-> few times other values. That could mean that 0x8000 values are really
-> produced by the ADC converter. By the way, 0x8000 is not a meaningless
-> value (0x0000 - 0xFFFF median). I don't know which range was selected
-> (-5V / 5V by default?) but it could mean that the card is acquiring a
-> continuous 0V signal.
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Processor\0x09: ARM920T rev 0=
+ (v4l)</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">BogoMIPS\0x09: 201.93</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Features\0x09: swp half thumb=
+ </p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">CPU implementer\0x09: 0x41</p=
 >
-
-
-> Which channel are you using?
-> Could you test each channel separately and all of them at once?
-> Could try another range? 0V / 5V could be a great candidate: with this
-> one the acquired values could be 0x0000 instead of 0x8000.
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">CPU architecture: 4T</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">CPU variant\0x09: 0x1</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">CPU part\0x09: 0x920</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">CPU revision\0x09: 0</p>
+<p style=3D"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; ma=
+rgin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"></p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Hardware\0x09: MINI2440</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Revision\0x09: 0000</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Serial\0x09\0x09: 00000000000=
+00000</p>
+<p style=3D"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; ma=
+rgin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"></p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Sat Jan  1 00:33:49 UTC 2000<=
+/p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">running: md5sum /proc/cpuinfo=
+ # cpuinfo fingerprint</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">72f59e533ef85a8821c3dfae14294=
+205  /proc/cpuinfo</p>
+<p style=3D"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; ma=
+rgin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"></p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Sat Jan  1 00:33:49 UTC 2000<=
+/p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">running: cat /proc/ipipe/Linu=
+x</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">       +----- Handling ([A]cc=
+epted, [G]rabbed, [W]ired, [D]iscarded)</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">       |+---- Sticky</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">       ||+--- Locked</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">       |||+-- Exclusive</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">       ||||+- Virtual</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">[IRQ]  |||||</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">   0:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">   1:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">   2:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">   3:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">   4:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">   5:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">   6:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">   7:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">   8:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">   9:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">  10:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">  11:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">  12:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">  13:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">  14:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">  15:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">  16:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">  17:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">  18:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">  19:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">  20:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">  21:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">  22:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">  23:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">  24:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">  25:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">  26:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">  27:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">  28:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">  29:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">  30:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">  31:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">  32:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">  33:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">  34:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">  35:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">  36:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">  37:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">  38:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">  39:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">  40:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">  41:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">  42:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">  43:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">  44:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">  45:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">  46:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">  47:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">  48:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">  49:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">  50:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">  51:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">  52:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">  53:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">  54:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">  55:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">  56:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">  57:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">  58:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">  59:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">  60:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">  61:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">  62:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">  63:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">  64:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">  65:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">  66:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">  67:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">  68:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">  69:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">  70:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">  71:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">  72:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">  73:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">  74:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">  75:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">  76:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">  77:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">  78:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">  79:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">  80:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">  81:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">  82:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">  83:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">  84:  A....</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">  96:  G...V</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">[Domain info]</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">id=3D0x00000000</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">priority=3D100</p>
+<p style=3D"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; ma=
+rgin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"></p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Sat Jan  1 00:33:49 UTC 2000<=
+/p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">running: cat /proc/ipipe/vers=
+ion</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">1.18-03</p>
+<p style=3D"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; ma=
+rgin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"></p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Sat Jan  1 00:33:49 UTC 2000<=
+/p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">running: generate_loads 1</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">dd workload started, pids 130=
+0 stored in /var/lock/xeno-test.1179.pids</p>
+<p style=3D"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; ma=
+rgin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"></p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Sat Jan  1 00:33:49 UTC 2000<=
+/p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">running: cat /proc/interrupts=
+</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">           CPU0</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;"> 30:     406280         s3c  =
+S3C2410 Timer Tick</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;"> 37:     785631         s3c  =
+s3c-mci</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;"> 41:          1         s3c  =
+s3c2410_udc</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;"> 43:          8         s3c  =
+s3c2440-i2c</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;"> 52:          0     s3c-ext  =
+Button 1</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;"> 55:          0     s3c-ext  =
+Button 2</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;"> 57:          0     s3c-ext  =
+Button 3</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;"> 58:          0     s3c-ext  =
+Power</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;"> 59:          0     s3c-ext  =
+Button 5</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;"> 60:          0     s3c-ext  =
+s3c-mci</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;"> 70:       3264   s3c-uart0  =
+s3c2440-uart</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;"> 71:       2552   s3c-uart0  =
+s3c2440-uart</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;"> 83:          0           -  =
+s3c2410-wdt</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Err:          0</p>
+<p style=3D"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; ma=
+rgin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"></p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Sat Jan  1 00:33:49 UTC 2000<=
+/p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">running: cat /proc/loadavg</p=
 >
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">0.15 0.09 0.07 2/39 1306</p>
+<p style=3D"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; ma=
+rgin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"></p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Sat Jan  1 00:33:50 UTC 2000<=
+/p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">running: cat /proc/meminfo</p=
 >
-That makes sense, but with insn_read I get the right waveshape, with the
-same setup. I am reading a 3Hz, 3V input signal. Unfortunately, this board
-reports only one possible range. The output of cmd_read -v reports:
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">MemTotal:          60472 kB</=
+p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">MemFree:            3812 kB</=
+p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Buffers:            2628 kB</=
+p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Cached:            47168 kB</=
+p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">SwapCached:            0 kB</=
+p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Active:             5780 kB</=
+p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Inactive:          45432 kB</=
+p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Active(anon):       1416 kB</=
+p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Inactive(anon):        0 kB</=
+p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Active(file):       4364 kB</=
+p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Inactive(file):    45432 kB</=
+p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Unevictable:           0 kB</=
+p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Mlocked:               0 kB</=
+p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">SwapTotal:             0 kB</=
+p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">SwapFree:              0 kB</=
+p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Dirty:               128 kB</=
+p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Writeback:             0 kB</=
+p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">AnonPages:          1432 kB</=
+p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Mapped:             1424 kB</=
+p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Shmem:                 0 kB</=
+p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Slab:               4384 kB</=
+p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">SReclaimable:       2832 kB</=
+p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">SUnreclaim:         1552 kB</=
+p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">KernelStack:         312 kB</=
+p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">PageTables:          160 kB</=
+p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">NFS_Unstable:          0 kB</=
+p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Bounce:                0 kB</=
+p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">WritebackTmp:          0 kB</=
+p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">CommitLimit:       30236 kB</=
+p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Committed_AS:       3200 kB</=
+p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">VmallocTotal:     811008 kB</=
+p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">VmallocUsed:        3500 kB</=
+p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">VmallocChunk:     803836 kB</=
+p>
+<p style=3D"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; ma=
+rgin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"></p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Sat Jan  1 00:33:50 UTC 2000<=
+/p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">running: top -bn1c</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">top - 00:33:51 up 33 min,  0 =
+users,  load average: 0.46, 0.16, 0.09</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Tasks:  41 total,   2 running=
+,  39 sleeping,   0 stopped,   0 zombie</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Cpu(s):  0.4%us,  1.4%sy,  0.=
+0%ni, 97.1%id,  0.6%wa,  0.0%hi,  0.5%si,  0.0%st</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Mem:     60472k total,    572=
+92k used,     3180k free,     2636k buffers</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Swap:        0k total,       =
+ 0k used,        0k free,    47268k cached</p>
+<p style=3D"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; ma=
+rgin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"></p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">  PID USER      PR  NI  VIRT =
+ RES  SHR S %CPU %MEM    TIME+  COMMAND            </p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;"> 1300 root      20   0  1892 =
+ 524  428 R 78.9  0.9   0:01.04 dd if /dev/zero of </p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;"> 1314 root      20   0  2532 =
+ 996  812 R  9.5  1.6   0:00.22 top -bn1c          </p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">    1 root      20   0  2996 =
+1492 1168 S  0.0  2.5   0:01.73 /bin/sh            </p>
+<p style=3D"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; ma=
+rgin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"></p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Sat Jan  1 00:33:51 UTC 2000<=
+/p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">running: ./run -- -sh -T 120 =
+-t0 # latency</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">*</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">*</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">* Type ^C to stop this applic=
+ation.</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">*</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">*</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Xenomai: /dev/rtheap is missi=
+ng</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">(chardev, major=3D10 minor=3D=
+254)</p>
+<p style=3D"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; ma=
+rgin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"></p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Sat Jan  1 00:33:57 UTC 2000<=
+/p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">running: ./run -- -sh -T 120 =
+-t1 # latency</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">*</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">*</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">* Type ^C to stop this applic=
+ation.</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">*</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">*</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Xenomai: /dev/rtheap is missi=
+ng</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">(chardev, major=3D10 minor=3D=
+254)</p>
+<p style=3D"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; ma=
+rgin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"></p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Sat Jan  1 00:34:03 UTC 2000<=
+/p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">running: ./run -- -sh -T 120 =
+-t2 # latency</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">*</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">*</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">* Type ^C to stop this applic=
+ation.</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">*</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">*</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Xenomai: /dev/rtheap is missi=
+ng</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">(chardev, major=3D10 minor=3D=
+254)</p>
+<p style=3D"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; ma=
+rgin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"></p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Sat Jan  1 00:34:08 UTC 2000<=
+/p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">running: ./run -- -T 120 # sw=
+itchtest</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">*</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">*</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">* Type ^C to stop this applic=
+ation.</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">*</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">*</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Xenomai: /dev/rtheap is missi=
+ng</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">(chardev, major=3D10 minor=3D=
+254)</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">/xenomai/bin/xeno-test: line =
+235: cd: /usr/xenomai/share/xenomai/testsuite/switchbench: No such file or =
+directory</p>
 
-cmd_read: device analogy0 opened (fd=3D0)
-cmd_read: basic descriptor retrieved
-     subdevices count =3D 14
-     read subdevice index =3D 0
-     write subdevice index =3D 0
-cmd_read: complex descriptor retrieved
-cmd_read: channel 0
-     ranges count =3D 1
-     bit width =3D 16 (bits)
 
-Now here goes a crazy thing. I modified
-ksrc/drivers/analogy/national_instruments/mio_common.c:ni_ai_cmd() so that
-every time a command is issued the buffer is filled with 0x0f. That is, I
-added the following line:
+<p style=3D"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; ma=
+rgin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"></p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Sat Jan  1 00:34:14 UTC 2000<=
+/p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">running: ./run -- -h # switch=
+bench</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">*</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">*</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">* Type ^C to stop this applic=
+ation.</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">*</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">*</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Xenomai: /dev/rtheap is missi=
+ng</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">(chardev, major=3D10 minor=3D=
+254)</p>
+<p style=3D"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; ma=
+rgin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"></p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Sat Jan  1 00:34:19 UTC 2000<=
+/p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">running: ./run -- -p 10 -n -l=
+ 1000 # cyclictest</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">*</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">*</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">* Type ^C to stop this applic=
+ation.</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">*</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">*</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Xenomai: /dev/rtheap is missi=
+ng</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">(chardev, major=3D10 minor=3D=
+254)</p>
+<p style=3D"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; ma=
+rgin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"></p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Sat Jan  1 00:34:24 UTC 2000<=
+/p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">running: cat /proc/interrupts=
+</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">           CPU0</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;"> 30:     413186         s3c  =
+S3C2410 Timer Tick</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;"> 37:     847062         s3c  =
+s3c-mci</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;"> 41:          1         s3c  =
+s3c2410_udc</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;"> 43:          8         s3c  =
+s3c2440-i2c</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;"> 52:          0     s3c-ext  =
+Button 1</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;"> 55:          0     s3c-ext  =
+Button 2</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;"> 57:          0     s3c-ext  =
+Button 3</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;"> 58:          0     s3c-ext  =
+Power</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;"> 59:          0     s3c-ext  =
+Button 5</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;"> 60:          0     s3c-ext  =
+s3c-mci</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;"> 70:       3264   s3c-uart0  =
+s3c2440-uart</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;"> 71:       2750   s3c-uart0  =
+s3c2440-uart</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;"> 83:          0           -  =
+s3c2410-wdt</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Err:          0</p>
+<p style=3D"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; ma=
+rgin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"></p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Sat Jan  1 00:34:24 UTC 2000<=
+/p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">running: cat /proc/loadavg</p=
+>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">1.13 0.35 0.15 2/39 1830</p>
+<p style=3D"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; ma=
+rgin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"></p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Sat Jan  1 00:34:24 UTC 2000<=
+/p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">running: cat /proc/meminfo</p=
+>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">MemTotal:          60472 kB</=
+p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">MemFree:            3552 kB</=
+p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Buffers:            2684 kB</=
+p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Cached:            47268 kB</=
+p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">SwapCached:            0 kB</=
+p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Active:             5860 kB</=
+p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Inactive:          45508 kB</=
+p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Active(anon):       1416 kB</=
+p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Inactive(anon):        0 kB</=
+p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Active(file):       4444 kB</=
+p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Inactive(file):    45508 kB</=
+p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Unevictable:           0 kB</=
+p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Mlocked:               0 kB</=
+p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">SwapTotal:             0 kB</=
+p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">SwapFree:              0 kB</=
+p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Dirty:                 4 kB</=
+p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Writeback:             0 kB</=
+p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">AnonPages:          1432 kB</=
+p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Mapped:             1424 kB</=
+p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Shmem:                 0 kB</=
+p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Slab:               4492 kB</=
+p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">SReclaimable:       2912 kB</=
+p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">SUnreclaim:         1580 kB</=
+p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">KernelStack:         312 kB</=
+p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">PageTables:          160 kB</=
+p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">NFS_Unstable:          0 kB</=
+p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Bounce:                0 kB</=
+p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">WritebackTmp:          0 kB</=
+p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">CommitLimit:       30236 kB</=
+p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Committed_AS:       3200 kB</=
+p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">VmallocTotal:     811008 kB</=
+p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">VmallocUsed:        3500 kB</=
+p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">VmallocChunk:     803836 kB</=
+p>
+<p style=3D"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; ma=
+rgin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"></p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Sat Jan  1 00:34:24 UTC 2000<=
+/p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">running: top -bn1c</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">top - 00:34:25 up 34 min,  0 =
+users,  load average: 1.12, 0.36, 0.16</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Tasks:  41 total,   2 running=
+,  39 sleeping,   0 stopped,   0 zombie</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Cpu(s):  1.0%us,  2.4%sy,  0.=
+0%ni, 95.5%id,  0.6%wa,  0.0%hi,  0.6%si,  0.0%st</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Mem:     60472k total,    573=
+40k used,     3132k free,     2684k buffers</p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">Swap:        0k total,       =
+ 0k used,        0k free,    47272k cached</p>
+<p style=3D"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; ma=
+rgin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"></p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">  PID USER      PR  NI  VIRT =
+ RES  SHR S %CPU %MEM    TIME+  COMMAND            </p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;"> 1300 root      20   0  1892 =
+ 524  428 R 81.1  0.9   0:18.05 dd if /dev/zero of </p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;"> 1838 root      20   0  2532 =
+ 996  812 R 12.6  1.6   0:00.22 top -bn1c          </p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">    1 root      20   0  2996 =
+1492 1168 S  0.0  2.5   0:01.73 /bin/sh            </p>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;"> 1300 ?        00:00:18 dd</p=
+>
+<p style=3D" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig=
+ht:0px; -qt-block-indent:0; text-indent:0px;">xeno-test: finished</p></div>=
+-- <br><div>Regards</div>sivakumar<br>
+</div>
 
-    memset(subd->buf->buf, 0x0f, subd->buf->size);
-
-Now I repeat the same sequence as in my previous mail with gdb:
-
-- Map the buffer, check address and content (buffer has some leftovers from
-previous runs)
-
-ret =3D a4l_mmap(&dev_input, 0, buf_size, &map);
-
-(gdb) print map
-$1 =3D (void *) 0x7ffff7fc8000
-(gdb) print /x*(unsigned short *)map@domain.hid
-$2 =3D {0x600, 0x5e04, 0x0 <repeats 98 times>}
-
-- Issue the command and recheck contents. Now the buffer is filled with
-0x0f0f
-
-(gdb) n
-173        setup_input_card(&dev_input);
-
-(gdb) n
-Channel 0 has 16 bits and 1 different ranges
-175        unsigned long front =3D 0;
-
-(gdb) print /x*(unsigned short *)map@domain.hid
-$3 =3D {0xf0f <repeats 100 times>}
-
-- Call a4l_mark_bufrw() and recheck contents. 70 samples have changed
-values, 30 remain the same. In those samples that changed value, only one
-bit changed!!
-
-(gdb) n
-177        for(int scan =3D 0; scan < SAMPLE_HISTORY; scan++)
-
-(gdb) n
-180            ret =3D a4l_mark_bufrw(&dev_input, 0, front, &front);
-
-(gdb) n
-186            if (front =3D=3D 0) {
-
-(gdb) print /x*(unsigned short *)map@domain.hid
-$4 =3D {0x8f0f <repeats 70 times>, 0xf0f <repeats 30 times>}
-
-So there is either an 'or' operation or an addition operation with 0x8000
-that is changing those values. As you said, 0x8000 is a very representative
-value. It represents zero on a 16 DAQ like mine, and it is also a value use=
-d
-as a mask in various places:
-
-./ksrc/drivers/analogy/national_instruments/ni_stc.h:#define
-_bit15             0x8000
-./ksrc/drivers/analogy/national_instruments/ni_stc.h:#define
-Calibration_Channel_6143_RelayOn   0x8000 (which happens to be my DAQ...)
-
-Running cmd_read only yields the 0x8f0f value now, by the way.
-
-I now it's hard to imagine what is happening without having the board
-yourself, so I really appreciate your help.
-
-Thanks!
-Fernando
-
---bcaec53af23a3a8de404aea8b5dd
-Content-Type: text/html; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-
-<div class=3D"gmail_quote">El 6 de octubre de 2011 18:31, Alexis Berlemont =
-<span dir=3D"ltr">&lt;<a href=3D"mailto:alexis.berlemont@domain.hid">alexis.=
-berlemont@domain.hid</a>&gt;</span> escribi=C3=B3:<br><blockquote class=3D"g=
-mail_quote" style=3D"margin: 0pt 0pt 0pt 0.8ex; border-left: 1px solid rgb(=
-204, 204, 204); padding-left: 1ex;">
-Hi,<br>
-<br>
-2011/10/6 Fernando Herrero Carr=C3=B3n &lt;<a href=3D"mailto:elferdo@domain.hid.=
-com">elferdo@domain.hid</a>&gt;:<br>
-<div><div></div><div class=3D"h5">&gt;<br>
-&gt;<br>
-&gt; El 5 de octubre de 2011 20:06, Fernando Herrero Carr=C3=B3n &lt;<a hre=
-f=3D"mailto:elferdo@domain.hid">elferdo@domain.hid</a>&gt;<br>
-&gt; escribi=C3=B3:<br>
-&gt;&gt;<br>
-&gt;&gt; El 5 de octubre de 2011 18:16, Alexis Berlemont<br>
-&gt;&gt; &lt;<a href=3D"mailto:alexis.berlemont@domain.hid">alexis.berlemont=
-@gmail.com</a>&gt; escribi=C3=B3:<br>
-&gt;&gt;&gt;<br>
-&gt;&gt;&gt; I think the problem might be located at two different places:<=
-br>
-&gt;&gt;&gt; 1) Either the DMA controller is badly configured and it copies=
- the<br>
-&gt;&gt;&gt; properly acquired values to wrong places.<br>
-&gt;&gt;&gt; 2) Or the DAQ-STC module is badly configured; so, the =C2=A0DM=
-A controller<br>
-&gt;&gt;&gt; copies the wrong values to right places.<br>
-&gt;&gt;&gt;<br>
-&gt;&gt;&gt; Concerning the alternative 1, I think it is not the most proba=
-ble one.<br>
-&gt;&gt;&gt; Why? Because, the DMA controller (the MITE) is configured the =
-same way<br>
-&gt;&gt;&gt; whatever the NI acquisition board holds it (or nearly).<br>
-&gt;&gt;&gt; To check this idea: let&#39;s make a little test with cmd_read=
-.<br>
-&gt;&gt;&gt;<br>
-&gt;&gt;&gt; If cmd_read is launched with the option -m (map), we get direc=
-t<br>
-&gt;&gt;&gt; access, in user space, to the memory area the DMA controller i=
-s<br>
-&gt;&gt;&gt; supposed to shot to.<br>
-&gt;&gt;&gt;<br>
-&gt;&gt;&gt; So, just after a4l_mmap (before the DMA controller shots anyth=
-ing):<br>
-&gt;&gt;&gt; 367: =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0/* Map the analo=
-g input subdevice buffer */<br>
-&gt;&gt;&gt; 368: =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0ret =3D a4l_mmap=
-(&amp;dsc, cmd.idx_subd, buf_size, &amp;map);<br>
-&gt;&gt;&gt; you can have a look at the values hold by the buffer:<br>
-&gt;&gt;&gt; - If the values are already 0x8000, we might conclude that the=
- DMA<br>
-&gt;&gt;&gt; controller does not send anything there.<br>
-&gt;&gt;&gt; - If the values are not 0x8000, then we are sure that the DMA<=
-br>
-&gt;&gt;&gt; controller does behave as expected. Consequently we can skip<b=
-r>
-&gt;&gt;&gt; alternative 1) and focus on the second one.<br>
-&gt;&gt;&gt;<br>
-&gt;&gt;&gt; If the DAQ is not properly configured; things are getting a li=
-ttle bit<br>
-&gt;&gt;&gt; simpler (if we have the documentation /. developer manual of y=
-our<br>
-&gt;&gt;&gt; acquisition card). We just have to find which stuff was not pr=
-operly<br>
-&gt;&gt;&gt; configured. =C2=A0A simple solution could be the monitoring of=
- the status<br>
-&gt;&gt;&gt; registers. In such a case, I can send you a patch which will d=
-ump the<br>
-&gt;&gt;&gt; content of these registers.<br>
-&gt;&gt;&gt;<br>
-&gt;&gt;&gt; But before going that way, could you make the test with cmd_re=
-ad + mmap?<br>
-&gt;&gt;&gt;<br>
-&gt;&gt;&gt; Regards,<br>
-&gt;&gt;&gt;<br>
-&gt;&gt;&gt; Alexis.<br>
-&gt;&gt;<br>
-&gt;&gt; Ok, I&#39;ll check those tomorrow. From what I recall, I checked c=
-md_read just<br>
-&gt;&gt; passing the &#39;-m&#39; option and resulted in the same behaviour=
-, but I&#39;ll recheck<br>
-&gt;&gt; tomorrow.<br>
-&gt;&gt;<br>
-&gt;&gt; What I find somewhat surprising is that I got it working with come=
-di, so I<br>
-&gt;&gt; guess that the register programming should also be working with an=
-alogy. The<br>
-&gt;&gt; only difference I have managed to find so far between the analogy =
-and the<br>
-&gt;&gt; comedi drivers, besides generic buffer management, is that comedi =
-appears to<br>
-&gt;&gt; handle DMA through the &quot;generic device&quot; interface (as in=
-<br>
-&gt;&gt; <a href=3D"http://www.mjmwired.net/kernel/Documentation/DMA-API.tx=
-t" target=3D"_blank">http://www.mjmwired.net/kernel/Documentation/DMA-API.t=
-xt</a>) and analogy<br>
-&gt;&gt; handles DMA through the PCI interface (as in<br>
-&gt;&gt; <a href=3D"http://m8-android-kernel.googlecode.com/svn/trunk/Docum=
-entation/DMA-mapping.txt" target=3D"_blank">http://m8-android-kernel.google=
-code.com/svn/trunk/Documentation/DMA-mapping.txt</a>).<br>
-&gt;&gt; But this is merely speculation.<br>
-&gt;&gt;<br>
-&gt;&gt; I&#39;ll look tomorrow at your two options in more detail.<br>
-&gt;&gt;<br>
-&gt;&gt; Thanks for your help!<br>
-&gt;&gt; Fernando<br>
-&gt;<br>
-&gt; Dear Alexis,<br>
-&gt;<br>
-&gt; I just repeated the tests with mmap.<br>
-&gt;<br>
-&gt; Running the provided example of &quot;cmd_read&quot; with either &quot=
-;-m&quot; or &quot;-m -r&quot; only<br>
-&gt; dumps the 0x8000 value. _Sometimes_, very rarely, I can get to see dif=
-ferent<br>
-&gt; values not far from that one, but if I get to plot it it just looks li=
-ke<br>
-&gt; noise. I don&#39;t know what is causing those values and I cannot repr=
-oduce the<br>
-&gt; conditions for them.<br>
-&gt;<br>
-&gt; Now I used gdb to step through the process (with my own code) and here=
- is<br>
-&gt; the sequence:<br>
-&gt;<br>
-&gt; -=C2=A0 I run up to the line where the &quot;mmapping&quot; happens. I=
- check that map =3D=3D<br>
-&gt; NULL and after I run the &quot;mmap()&quot; it gets a different value =
-and ret =3D=3D 0,<br>
-&gt; ok.<br>
-&gt;<br>
-&gt; - I do a<br>
-&gt; print *(unsigned short *)map@domain.hid<br>
-&gt;<br>
-&gt; =C2=A0 to dump the contents of the buffer and it is all filled with ze=
-roes at<br>
-&gt; this point.<br>
-&gt;<br>
-&gt; - I setup my command structure like this:<br>
-&gt;<br>
-&gt; =C2=A0=C2=A0=C2=A0 cmd.idx_subd =3D 0;<br>
-&gt; =C2=A0=C2=A0=C2=A0 cmd.start_src =3D TRIG_NOW;<br>
-&gt; =C2=A0=C2=A0=C2=A0 cmd.start_arg =3D 0;<br>
-&gt; =C2=A0=C2=A0=C2=A0 cmd.flags =3D TRIG_WAKE_EOS;<br>
-&gt; =C2=A0=C2=A0=C2=A0 cmd.scan_begin_src =3D TRIG_TIMER;<br>
-&gt; =C2=A0=C2=A0=C2=A0 cmd.scan_begin_arg =3D 1e9 / INPUT_FREQ;<br>
-&gt; =C2=A0=C2=A0=C2=A0 cmd.convert_src =3D TRIG_NOW;<br>
-&gt; =C2=A0=C2=A0=C2=A0 cmd.convert_arg =3D 0;<br>
-&gt; =C2=A0=C2=A0=C2=A0 cmd.chan_descs =3D chanlist;<br>
-&gt; =C2=A0=C2=A0=C2=A0 cmd.nb_chan =3D NICHAN;<br>
-&gt; =C2=A0=C2=A0=C2=A0 cmd.scan_end_src =3D TRIG_COUNT;<br>
-&gt; =C2=A0=C2=A0=C2=A0 cmd.scan_end_arg=C2=A0=C2=A0=C2=A0 =3D NICHAN;<br>
-&gt;<br>
-&gt; =C2=A0=C2=A0=C2=A0 cmd.stop_src =3D TRIG_COUNT;<br>
-&gt; =C2=A0=C2=A0=C2=A0 cmd.stop_arg =3D SAMPLE_HISTORY;<br>
-&gt;<br>
-&gt; with<br>
-&gt;<br>
-&gt; INPUT_FREQ =3D 1000 (1kHz)<br>
-&gt; NICHAN =3D 1=C2=A0=C2=A0 (I have also tried 4 and 8 with no difference=
- in results)<br>
-&gt;<br>
-&gt; and call the a4l_snd_command() function, which returns without errors.=
-<br>
-&gt;<br>
-&gt; I dump the contents of the buffer and it is still filled with zeroes.<=
-br>
-&gt;<br>
-&gt; - I declare<br>
-&gt;<br>
-&gt; unsigned long front =3D 0;<br>
-&gt;<br>
-&gt; and call<br>
-&gt;<br>
-&gt; ret =3D a4l_mark_bufrw(&amp;dev_input, 0, front, &amp;front);<br>
-&gt;<br>
-&gt; at this point the buffer gets filled with 0x8000:<br>
-&gt;<br>
-&gt;<br>
-&gt; (gdb) print *(unsigned short *)map@domain.hid $1 =3D {0 &lt;repeats 100 times=
-&gt;}<br>
-&gt; (gdb) n=C2=A0=C2=A0=C2=A0=C2=A0 &lt;------------------ calls a4l_mark_=
-bufrw()<br>
-&gt;<br>
-&gt; 186=C2=A0=C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0 if (front =
-=3D=3D 0) {<br>
-&gt;<br>
-&gt; (gdb) print /x*(unsigned short *)map@domain.hid<br>
-&gt; $2 =3D {0x8000 &lt;repeats 100 times&gt;}<br>
-&gt;<br>
-&gt; Now I find it funny that the value read is always the same. Could it b=
-e that<br>
-&gt; everything is working fine and it is the board itself that is transfer=
-ring<br>
-&gt; that value? Could it be an indicator for an error condition?<br>
-<br>
-</div></div>I don&#39;t think it is an error indicator; errors are reported=
- in<br>
-dedicated status registers.<br>
-<br></blockquote><div><br>Yep, you&#39;re right on that one...<br>=C2=A0</d=
-iv><blockquote class=3D"gmail_quote" style=3D"margin: 0pt 0pt 0pt 0.8ex; bo=
-rder-left: 1px solid rgb(204, 204, 204); padding-left: 1ex;">
-If I understand correctly, most of the times you acquire 0x8000 and a<br>
-few times other values. That could mean that 0x8000 values are really<br>
-produced by the ADC converter. By the way, 0x8000 is not a meaningless<br>
-value (0x0000 - 0xFFFF median). I don&#39;t know which range was selected<b=
-r>
-(-5V / 5V by default?) but it could mean that the card is acquiring a<br>
-continuous 0V signal.<br></blockquote><div>=C2=A0</div><blockquote class=3D=
-"gmail_quote" style=3D"margin: 0pt 0pt 0pt 0.8ex; border-left: 1px solid rg=
-b(204, 204, 204); padding-left: 1ex;">
-Which channel are you using?<br>
-Could you test each channel separately and all of them at once?<br>
-Could try another range? 0V / 5V could be a great candidate: with this<br>
-one the acquired values could be 0x0000 instead of 0x8000.<br>
-<br>
-</blockquote><div><br>That makes sense, but with insn_read I get the right =
-waveshape, with the same setup. I am reading a 3Hz, 3V input signal. Unfort=
-unately, this board reports only one possible range. The output of cmd_read=
- -v reports:<br>
-<br><div style=3D"margin-left: 40px;">cmd_read: device analogy0 opened (fd=
-=3D0)<br>cmd_read: basic descriptor retrieved<br>=C2=A0=C2=A0=C2=A0 =C2=A0s=
-ubdevices count =3D 14<br>=C2=A0=C2=A0=C2=A0 =C2=A0read subdevice index =3D=
- 0<br>=C2=A0=C2=A0=C2=A0 =C2=A0write subdevice index =3D 0<br>cmd_read: com=
-plex descriptor retrieved<br>
-cmd_read: channel 0<br>=C2=A0=C2=A0=C2=A0 =C2=A0ranges count =3D 1<br>=C2=
-=A0=C2=A0=C2=A0 =C2=A0bit width =3D 16 (bits)<br><br></div>Now here goes a =
-crazy thing. I modified ksrc/drivers/analogy/national_instruments/mio_commo=
-n.c:ni_ai_cmd() so that every time a command is issued the buffer is filled=
- with 0x0f. That is, I added the following line:<br>
-<br><div style=3D"margin-left: 40px;">=C2=A0=C2=A0=C2=A0 memset(subd-&gt;bu=
-f-&gt;buf, 0x0f, subd-&gt;buf-&gt;size);<br></div><br>Now I repeat the same=
- sequence as in my previous mail with gdb:<br><br>- Map the buffer, check a=
-ddress and content (buffer has some leftovers from previous runs)<br>
-<br><div style=3D"margin-left: 40px;">ret =3D a4l_mmap(&amp;dev_input, 0, b=
-uf_size, &amp;map);<br><br>(gdb) print map<br>$1 =3D (void *) 0x7ffff7fc800=
-0<br>(gdb) print /x*(unsigned short *)map@domain.hid<br>$2 =3D {0x600, 0x5e04, 0x0=
- &lt;repeats 98 times&gt;}<br>
-<br></div>- Issue the command and recheck contents. Now the buffer is fille=
-d with 0x0f0f<br><br><div style=3D"margin-left: 40px;">(gdb) n<br>173=C2=A0=
-=C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0 setup_input_card(&amp;dev_input);<br><br>(g=
-db) n<br>Channel 0 has 16 bits and 1 different ranges<br>
-175=C2=A0=C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0 unsigned long front =3D 0;<br><br>=
-(gdb) print /x*(unsigned short *)map@domain.hid<br>$3 =3D {0xf0f &lt;repeats 100 t=
-imes&gt;}<br></div><br>- Call a4l_mark_bufrw() and recheck contents. 70 sam=
-ples have changed values, 30 remain the same. In those samples that changed=
- value, only one bit changed!!<br>
-<br><div style=3D"margin-left: 40px;">(gdb) n<br>177=C2=A0=C2=A0=C2=A0 =C2=
-=A0=C2=A0=C2=A0 for(int scan =3D 0; scan &lt; SAMPLE_HISTORY; scan++)<br><b=
-r>(gdb) n<br>180=C2=A0=C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0 re=
-t =3D a4l_mark_bufrw(&amp;dev_input, 0, front, &amp;front);<br><br>(gdb) n<=
-br>
-186=C2=A0=C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0 if (front =3D=
-=3D 0) {<br><br>(gdb) print /x*(unsigned short *)map@domain.hid<br>$4 =3D {0x8f0f =
-&lt;repeats 70 times&gt;, 0xf0f &lt;repeats 30 times&gt;}<br></div><br></di=
-v></div>So there is either an &#39;or&#39; operation or an addition operati=
-on with 0x8000 that is changing those values. As you said, 0x8000 is a very=
- representative value. It represents zero on a 16 DAQ like mine, and it is =
-also a value used as a mask in various places:<br>
-<br>./ksrc/drivers/analogy/national_instruments/ni_stc.h:#define _bit15=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 0x800=
-0<br>./ksrc/drivers/analogy/national_instruments/ni_stc.h:#define Calibrati=
-on_Channel_6143_RelayOn=C2=A0=C2=A0 0x8000 (which happens to be my DAQ...)<=
-br>
-<br>Running cmd_read only yields the 0x8f0f value now, by the way.<br><br>I=
- now it&#39;s hard to imagine what is happening without having the board yo=
-urself, so I really appreciate your help.<br><br>Thanks!<br>Fernando<br>
-<br>
-
---bcaec53af23a3a8de404aea8b5dd--
+--20cf30434f54e9f4ec04aeb69741--
 
