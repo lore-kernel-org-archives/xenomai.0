@@ -1,9 +1,14 @@
+Message-ID: <4E94C17C.2080702@domain.hid>
+Date: Wed, 12 Oct 2011 00:21:48 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Date: Tue, 4 Oct 2011 04:48:50 -0400
-Message-ID: <CAGc_wL210UJCguth0cD-MOJFvzTqZXmoikQuaCE8Q5TJOWGg1w@domain.hid>
-From: Julien Delange <julien.delange@domain.hid>
+References: <CAMwkeZy-9Qw0LALq8rrJQKET_Bu7UHgu8YYoFw1z6jdS687fBg@domain.hid>	<CAMwkeZyvyhHPZTWz1LiaOhWA9TdrQaXMo833Ej5JRwJR3Da2xw@domain.hid>	<CAMwkeZxinGD8_yEYmo+ySHx9dzU6hEM4BFH4jejnTMd87f0M9Q@mail.gmail.com>	<CAMesUR4+G-Bx9tDUPajp4EcKP70zLvQuLyjLeyNpfyrmCpwBBw@domain.hid>	<CAMwkeZyQwtJbcMjOiSnmzoRDud+4=6Nt2NOcEdFG_+1QVSHoSQ@mail.gmail.com>	<CAMwkeZzajkK7gRYH5cnAW1-5HvgxQyUogDZKpms1FUyLtwxpdg@domain.hid>	<CAMesUR67RpFHRiNcd-yfR9WF2FRe1U3yBdXWP2dU30aQovCHKQ@mail.gmail.com>	<CAMwkeZxybKS+-B2C_yaYX3_XSYnAKcj8xfX_YOgQ6Kt=mNTzJQ@mail.gmail.com>	<CAMwkeZzrfuB1Uf7f1eqG8zEvgeYMXrRspzUANeOaJR2qQUmhOQ@mail.gmail.com>	<CAMesUR5AvmUDW8wq4e9EtOgnpRtMD_qe8rQe7acgFT6KzdeYAg@domain.hid>	<CAMwkeZxAvBeY=0c49N+QtUYCKCTiGo4yc9TAEQPLJAJmBXPn+A@mail.gmail.com>	<CAMesUR59KFH=hjpo=fr8DCHeg50driuitcikc5HfHTZWG5ct8A@mail.gmail.com>	<CAMwkeZyPorMx9n1Y8YAEJE4hUh49=u9Mr_tj7qzYAnquMa60rw@domain.hid>
+	<CAMesUR5PsVLb16ZR1bdcbDWdUfvPxViPng+rD7mjQqy1q+OGfA@mail.gmail.com>
+In-Reply-To: <CAMesUR5PsVLb16ZR1bdcbDWdUfvPxViPng+rD7mjQqy1q+OGfA@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Subject: [Xenomai-help] Using the analogy layer in kernel tasks
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] Command code working with comedi not
+ working	with analogy
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -13,44 +18,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Xenomai help <xenomai@xenomai.org>
+To: Alexis Berlemont <alexis.berlemont@domain.hid>
+Cc: Xenomai help <xenomai@xenomai.org>
 
-Dear all,
+On 10/12/2011 12:12 AM, Alexis Berlemont wrote:
+> The methods are not the same at that level:
+> - comedi: n * dma_alloc_coherent  + a vmap at the end
+> - analogy:  a big vmalloc + n * page_to_phys(vmalloc_to_page(vaddr)
 
-I would like to know if somebody already tried to migrate code of
-user-space tasks that use the analogy layer to the kernel. As kernel
-tasks may run faster than user-space, it might help to speed
-application execution. However, when trying to load the application, I
-encounter the following errors (see below). So, is the analogy layer
-designed to be used in kernel tasks ? If yes, which functions are
-allowed, which are forbidden (and in that case, it would be useful to
-disable functions in
-/lib/modules/KERNEL_VERSION/build/include/xenomai/analogy/ headers) ?
+I do not know if that makes a difference, but the result of
+dma_alloc_coherent is memory physically contiguous, whereas it is not
+the case for memory returned by vmalloc.
 
-Thanks you for any comment/help regarding that topic,
+dma_alloc_coherent also allows the GFP_DMA32 flag if you want 32 bits
+memory.
 
-Best regards,
-
-
-
-[ 1560.700937] test_pcimio: Unknown symbol a4l_open (err 0)
-[ 1560.701100] test_pcimio: Unknown symbol __floatsidf (err 0)
-[ 1560.701634] test_pcimio: Unknown symbol __ltdf2 (err 0)
-[ 1560.701863] test_pcimio: Unknown symbol a4l_get_chinfo (err 0)
-[ 1560.702501] test_pcimio: Unknown symbol __fixdfsi (err 0)
-[ 1560.702625] test_pcimio: Unknown symbol a4l_fill_desc (err 0)
-[ 1560.702855] test_pcimio: Unknown symbol a4l_snd_insnlist (err 0)
-[ 1560.702977] test_pcimio: Unknown symbol a4l_rawtod (err 0)
-[ 1560.703099] test_pcimio: Unknown symbol a4l_get_rnginfo (err 0)
-[ 1560.703682] test_pcimio: Unknown symbol a4l_find_range (err 0)
-[ 1615.399804] test_pcimio: Unknown symbol a4l_open (err 0)
-[ 1615.399944] test_pcimio: Unknown symbol __floatsidf (err 0)
-[ 1615.400073] test_pcimio: Unknown symbol __ltdf2 (err 0)
-[ 1615.400288] test_pcimio: Unknown symbol a4l_get_chinfo (err 0)
-[ 1615.400288] test_pcimio: Unknown symbol __fixdfsi (err 0)
-[ 1615.400288] test_pcimio: Unknown symbol a4l_fill_desc (err 0)
-[ 1615.400786] test_pcimio: Unknown symbol a4l_snd_insnlist (err 0)
-[ 1615.400910] test_pcimio: Unknown symbol a4l_rawtod (err 0)
-[ 1615.401032] test_pcimio: Unknown symbol a4l_get_rnginfo (err 0)
-[ 1615.401173] test_pcimio: Unknown symbol a4l_find_range (err 0)
+-- 
+                                                                Gilles.
 
