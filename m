@@ -1,21 +1,13 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <CAMJ=MEe1Rt_uMQSW_8WX6oSBZ3ppyY=+rV20kXWRMpELQ71TQQ@mail.gmail.com>
-References: <CAAXf6LVErpVae0HVcqv4Rc6p2wnJLje7He2NJC7S1aCSVnD9NQ@mail.gmail.com>
-	<1316360236.2169.40.camel@domain.hid>
-	<8236197CA3DA864F9EF20609D9887263B4D0@domain.hid>
-	<CAMJ=MEeOS2K09fm0hnvSmxn6CBbMjHaC-uhDr03qNoZTaEbWVA@mail.gmail.com>
-	<CAAXf6LX4gfVncvRo5UTyMrqWHhJ6K0ioksyTqvovAjpJyZWS3w@domain.hid>
-	<4E80F2A0.9030500@domain.hid>
-	<CAAXf6LXQ=Jq5E_JV_JSbqE1wgheaVLLLZQDyRn5TSmrET-PKVA@mail.gmail.com>
-	<4E95A28B.3060505@domain.hid> <1318435016.2112.73.camel@domain.hid>
-	<CAMJ=MEe1Rt_uMQSW_8WX6oSBZ3ppyY=+rV20kXWRMpELQ71TQQ@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Date: Wed, 12 Oct 2011 23:12:32 +0200
-Message-ID: <1318453952.2112.102.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] PSOS skin: mismatch in function signatures cause
- buffer overflow
+MIME-Version: 1.0
+In-Reply-To: <CAMwkeZxovug1Zws+NCvaU_6vhK2f3FbZqPg5kq2wVV-YvOkLSA@mail.gmail.com>
+References: <CAMwkeZxovug1Zws+NCvaU_6vhK2f3FbZqPg5kq2wVV-YvOkLSA@mail.gmail.com>
+Date: Wed, 12 Oct 2011 23:55:16 +0200
+Message-ID: <CAMesUR5=CA1aj=OH_6ZscsofPUShbFGkWdZoo1jcQQthVmx-Zg@domain.hid>
+From: Alexis Berlemont <alexis.berlemont@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-help] Command code working with comedi not working
+ with analogy [partially solved]
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -25,147 +17,150 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Ronny Meeus <ronny.meeus@domain.hid>
-Cc: Xenomai-help@domain.hid, dietmar.schindler@domain.hid
+To: =?ISO-8859-1?Q?Fernando_Herrero_Carr=F3n?= <elferdo@domain.hid>
+Cc: Xenomai help <xenomai@xenomai.org>
 
-On Wed, 2011-10-12 at 19:24 +0200, Ronny Meeus wrote:
-> On Wed, Oct 12, 2011 at 5:56 PM, Philippe Gerum <rpm@xenomai.org> wrote:
-> > On Wed, 2011-10-12 at 16:22 +0200, Gilles Chanteperdrix wrote:
-> >> On 10/12/2011 04:03 PM, Thomas De Schampheleire wrote:
-> >> > Hi,
-> >> >
-> >> > On Mon, Sep 26, 2011 at 11:46 PM, Gilles Chanteperdrix
-> >> > <gilles.chanteperdrix@xenomai.org> wrote:
-> >> >> On 09/19/2011 10:45 AM, Thomas De Schampheleire wrote:
-> >> >>> Hi,
-> >> >>>
-> >> >>> On Mon, Sep 19, 2011 at 9:42 AM, Ronny Meeus <ronny.meeus@domain.hid> wrote:
-> >> >>>> On Mon, Sep 19, 2011 at 9:25 AM,  <dietmar.schindler@domain.hid> wrote:
-> >> >>>>>> From: xenomai-help-bounces@domain.hid [mailto:xenomai-help-bounces@domain.hid]
-> >> >>>>>> On Behalf Of Philippe Gerum
-> >> >>>>>> Sent: Sunday, September 18, 2011 5:37 PM
-> >> >>>>>> ...
-> >> >>>>>> Actually, we used to follow strictly the pSOS convention for this until
-> >> >>>>>> 2.4.x, at which point we moved to name strings precisely because
-> >> >>>>>> non-null terminated char[4] arrays would break the registry, the way you
-> >> >>>>>> described. This is one of the rare situations where mimicking a useless
-> >> >>>>>> limitation of the original API may be challenged by usability concerns
-> >> >>>>>> in the new environment, and usability won in that case. The problem
-> >> >>>>>> mostly comes from the fact that char[4] is automatically convertible to
-> >> >>>>>> const char *, so we have no warning/error leading us to check the
-> >> >>>>>> potentially problematic call sites.
-> >> >>>>>>
-> >> >>>>>> The concern about moving back to char[4] arrays - null-terminated if
-> >> >>>>>> shorter - is for people who currently assign strings longer than 4
-> >> >>>>>> characters to name their objects. What could be done, is providing a
-> >> >>>>>> build switch to select the accepted input, like
-> >> >>>>>> --disable-psos-long-names to turn on char[4] interpretation.
-> >> >>>>>
-> >> >>>>> While I would prefer the switch --enable-psos-long-names, this sounds okay to me, the more so as it is more than people who use the pSOS skin without obeying pSOS rules deserve.
-> >> >>>>> --
-> >> >>> [..]
-> >> >>>>>
-> >> >>>>
-> >> >>>> Another option would be to introduce a run-time switch.
-> >> >>>> The default behavior could be that long names are supported and if the
-> >> >>>> "enable_short_names()" function is called, all names will the cut at 4
-> >> >>>> characters.
-> >> >>>> The advantage of this dynamic switch is that different applications
-> >> >>>> using the same library can use the mode they prefer.
-> >> >>>
-> >> >>> I would also be in favor of a runtime setting, rather than a
-> >> >>> compile-time one. One cannot assume that all PSOS applications on a
-> >> >>> system follow the same rules, or that there cannot be a mix of
-> >> >>> 'legacy' PSOS applications and 'xenomai-style' ones. According to me,
-> >> >>> a library should support all these uses.
-> >> >>
-> >> >> Hi,
-> >> >>
-> >> >> here is a patch which truncates identifiers to four characters and
-> >> >> terminates them by a '\0' character, in order to avoid the issues at
-> >> >> the origin of this thread. The patch also adds a variable
-> >> >> "psos_long_names", 0 by default, which may be set to a non-zero value
-> >> >> to enable the old behaviour (assume the identifier strings may be
-> >> >> longer than 4 characters and are already null terminated).
-> >> >>
-> >> >> Could someone with the issue test it?
-> >> >
-> >> > It seems this slipped through the cracks, my apologies. We already
-> >> > implemented this ourselves similarly, we didn't actually test your
-> >> > patch so far.
-> >> >
-> >> > Now that we're trying out xenomai-forge, I ported this patch and tested it.
-> >> > There are a few problems with it (also relevant to cobalt xenomai)
-> >> >
-> >> > * a bug in __psos_maybe_short_name so that only 3 characters are
-> >> > retained (see below)
-> >> > * the call to __psos_maybe_short_name also needs to be done in the
-> >> > _ident functions
-> >> > * although we don't use it, I think the pt_create and pt_ident
-> >> > functions also need to be adapted
-> >> >
-> >> > Moreover, I wonder why you have made psos_long_names an exported
-> >> > global variable. Sharing variables between two different pieces of
-> >> > software is not very clean. I think it would be nicer with a get/set
-> >> > function.
-> >>
-> >> Thanks for the review. The exported global variable is the simplest
-> >> possible and sufficient implementation of this feature. You risk having
-> >> a hard time convincing us otherwise.
-> >
-> > Ack.
-> >
-> >>
-> >> --
-> >>                                           Gilles.
-> >>
-> >> _______________________________________________
-> >> Xenomai-help mailing list
-> >> Xenomai-help@domain.hid
-> >> https://mail.gna.org/listinfo/xenomai-help
-> >
-> > --
-> > Philippe.
-> >
-> >
-> >
-> > _______________________________________________
-> > Xenomai-help mailing list
-> > Xenomai-help@domain.hid
-> > https://mail.gna.org/listinfo/xenomai-help
-> >
-> 
-> Another simple solution would be to have a function available to set
-> this mode. In that way the internal implementation can be changed
-> without impact on the applications. I think it is always good to use a
-> setter since this is more future safe.
+Hi
 
-That function would do nothing else than setting an internal variable
-with a global scope, be it a function pointer. In that case, a setter
-brings no value, but would clutter the public interface. The problem
-with the cleanliness argument raised earlier is that it vastly depends
-on where someone wants to put the dirt.
+2011/10/12 Fernando Herrero Carr=F3n <elferdo@domain.hid>:
+> El 12 de octubre de 2011 16:13, Fernando Herrero Carr=F3n <elferdo@domain.hid.=
+com>
+> escribi=F3:
+>>
+>> El 11 de octubre de 2011 19:12, Alexis Berlemont
+>> <alexis.berlemont@domain.hid> escribi=F3:
+>> [...]
+>>
+>>>
+>>> I took some time to compare both versions of code (comedi and
+>>> analogy). I did not find anything interesting in mite.c. I was about
+>>> to ask you to increase verbosity (debug + a specific patch) when I got
+>>> a glimpse on the allocation of the asynchronous buffer on the comedi
+>>> side.
+>>>
+>>> The methods are not the same at that level:
+>>> - comedi: n * dma_alloc_coherent =A0+ a vmap at the end
+>>> - analogy: =A0a big vmalloc + n * page_to_phys(vmalloc_to_page(vaddr)
+>>
+>> Hmmm, quoting
+>> http://www.mjmwired.net/kernel/Documentation/DMA-mapping.txt:
+>>
+>> If you acquired your memory via the page allocator
+>> (i.e. __get_free_page*()) or the generic memory allocators
+>>
+>> (i.e. kmalloc() or kmem_cache_alloc()) then you may DMA to/from
+>> that memory using the addresses returned from those routines.
+>>
+>> This means specifically that you may _not_ use the memory/addresses
+>>
+>>
+>>
+>>
+>> returned from vmalloc() for DMA.  It is possible to DMA to the
+>> _underlying_ memory mapped into a vmalloc() area, but this requires
+>> walking page tables to get the physical addresses, and then
+>>
+>>
+>>
+>>
+>> translating each of those pages back to a kernel address using
+>> something like __va().  [ EDIT: Update this when we integrate
+>> Gerd Knorr's generic code which does this. ]
+>>
+>> So, I guess analogy indeed took the walking approach mentioned there? If=
+ I
+>> understand it right, the following loop in "a4l_buf_alloc()":
+>>
+>> for (vaddr =3D vabase; vaddr < vabase + buf_desc->size;
+>> =A0=A0=A0 =A0=A0=A0=A0 vaddr +=3D PAGE_SIZE)
+>> =A0=A0=A0 =A0=A0=A0 buf_desc->pg_list[(vaddr - vabase) >> PAGE_SHIFT] =
+=3D
+>> =A0=A0=A0 =A0=A0=A0 =A0=A0=A0 (unsigned long) page_to_phys(vmalloc_to_pa=
+ge(vaddr));
+>>
+>> does exactly this, by holding a list of the physical addresses of all th=
+e
+>> logical pages of the buffer, even if they may be non-contiguous. Then, t=
+he
+>> MITE is able to scatter data across the ring descriptors calculated in
+>> a4l_mite_buf_change()? What is the benefit of using vmalloc? Copying fro=
+m/to
+>> user space is easier so?
+>>
+>> According to my previous test, the addresses calculated are all indeed
+>> larger than 2^32. This makes sense as well, since this machine appears t=
+o
+>> have 6GB of memory:
+>>
+>> [=A0=A0=A0 0.000000] Memory: 5992084k/7208960k available (5325k kernel c=
+ode,
+>> 919428k absent, 297448k reserved, 3285k data, 920k init)
+>>
+>> The comedi drivers and kernel were not installed by myself, so
+>> reinstalling them is somewhat more involved. If you still feel it would =
+be
+>> useful to check them out I will reinstall them, but this looks to me lik=
+e
+>> the possible source of the problem.
+>>
+>
+> I got it working!!! Simple test: remove two of the three RAM modules. Now
+> the machine is working with 2GB of memory:
 
-I don't think we should spent too much time on this anyway, I'd rather
-solve the issue of handling duplicate pSOS object names. It is possible
-to implement this in -forge, the last concern is about the complexity vs
-usefulness ratio which I still find a bit high, so I want to try a
-simpler implementation.
+OK.
 
-> 
-> We also implemented the function tm_getm to get a timestamp in an
-> efficient way. This function was available in the xenomai-2.5.6 (as a
-> kind of extension on the psos interface) but in missing in the force
-> version.
+> [=A0=A0=A0 0.000000] Memory: 1988808k/2095680k available (5325k kernel co=
+de, 452k
+> absent, 106420k reserved, 3285k data, 920k init)
+>
+> Now "cmd_read" is properly acquiring the input signal. Output of dmesg no=
+w:
+>
+> [=A0 109.389613] Analogy: sizeof(dma_addr_t) =3D 8
+> [=A0 109.389614] Analogy: ring->descriptors_dma_addr =3D 7a279000
+> [=A0 109.389615] Analogy: cpu_to_le32(ring->descriptors_dma_addr) =3D 7a2=
+79000
+> [=A0 109.389617] Analogy: buf->pg_list[0] =3D 79322000
+> [=A0 109.389618] Analogy: buf->pg_list[1] =3D 799bf000
+> [=A0 109.389619] Analogy: buf->pg_list[2] =3D 79b67000
+> [=A0 109.389620] Analogy: buf->pg_list[3] =3D 79303000
+> [=A0 109.389621] Analogy: buf->pg_list[4] =3D 79015000
+> [=A0 109.389622] Analogy: buf->pg_list[5] =3D 7997f000
+> [=A0 109.389623] Analogy: buf->pg_list[6] =3D 792c1000
+> [=A0 109.389625] Analogy: buf->pg_list[7] =3D 792a7000
+> [=A0 109.389626] Analogy: buf->pg_list[8] =3D 7a087000
+> [=A0 109.389627] Analogy: buf->pg_list[9] =3D 792c0000
+> [=A0 109.389628] Analogy: buf->pg_list[10] =3D 79b36000
+> [=A0 109.389629] Analogy: buf->pg_list[11] =3D 792b6000
+> [=A0 109.389630] Analogy: buf->pg_list[12] =3D 792d0000
+> [=A0 109.389631] Analogy: buf->pg_list[13] =3D 7999d000
+> [=A0 109.389632] Analogy: buf->pg_list[14] =3D 7a1f7000
+> [=A0 109.389634] Analogy: buf->pg_list[15] =3D 791e0000
+>
+> with all pg_list[] entries below 2^32!!
+>
+> Thus far this does it for us, since we can live with a 4GB machine. I thi=
+nk
+> the "vmalloc()" approach in analogy should be reworked, but my knowledge =
+of
+> linux's internals on memory handling is very limited. Please let me know =
+if
+> I can contribute testing any patches.
 
-Ok.
+I am modfiying the asynchronous buffer allocation stuff right now. I
+will provide a patch as soon as it is working on my side.
 
-> I hope this code will also be in the patch that Thomas will send.
-> 
-> Ronny
+> Thank you both for your interest and willingness to help!!
+>
+> Sincerely,
+> Fernando
+>
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
+>
+>
 
--- 
-Philippe.
-
-
+Alexis.
 
