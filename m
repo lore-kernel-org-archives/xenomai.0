@@ -1,10 +1,10 @@
-Message-ID: <4E957322.6090101@domain.hid>
-Date: Wed, 12 Oct 2011 12:59:46 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4E957434.4060406@domain.hid>
+Date: Wed, 12 Oct 2011 13:04:20 +0200
+From: Daniele Nicolodi <daniele@domain.hid>
 MIME-Version: 1.0
-References: <4E95618B.6010709@domain.hid>
-In-Reply-To: <4E95618B.6010709@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+References: <4E95618B.6010709@domain.hid> <4E957322.6090101@domain.hid>
+In-Reply-To: <4E957322.6090101@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-core] [PATCH xenomai-head] testsuite: fix compiler
  error 'SIGALRM, undeclared'
@@ -16,30 +16,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Wolfgang Grandegger <wg@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 10/12/2011 11:44 AM, Wolfgang Grandegger wrote:
-> Signed-off-by: Wolfgang Grandegger <wg@domain.hid>
-> ---
->  src/testsuite/regression/posix/leaks.c |    1 +
->  1 files changed, 1 insertions(+), 0 deletions(-)
+On 12/10/11 12:59, Gilles Chanteperdrix wrote:
+> On 10/12/2011 11:44 AM, Wolfgang Grandegger wrote:
+>> Signed-off-by: Wolfgang Grandegger <wg@domain.hid>
+>> ---
+>>  src/testsuite/regression/posix/leaks.c |    1 +
+>>  1 files changed, 1 insertions(+), 0 deletions(-)
+>>
+>> diff --git a/src/testsuite/regression/posix/leaks.c b/src/testsuite/regression/posix/leaks.c
+>> index 7326572..f9dd34d 100644
+>> --- a/src/testsuite/regression/posix/leaks.c
+>> +++ b/src/testsuite/regression/posix/leaks.c
+>> @@ -6,6 +6,7 @@
+>>  #include <fcntl.h>
+>>  #include <sys/mman.h>
+>>  #include <semaphore.h>
+>> +#include <signal.h>
+>>  #include <mqueue.h>
+>>  
+>>  #include <nucleus/heap.h>
 > 
-> diff --git a/src/testsuite/regression/posix/leaks.c b/src/testsuite/regression/posix/leaks.c
-> index 7326572..f9dd34d 100644
-> --- a/src/testsuite/regression/posix/leaks.c
-> +++ b/src/testsuite/regression/posix/leaks.c
-> @@ -6,6 +6,7 @@
->  #include <fcntl.h>
->  #include <sys/mman.h>
->  #include <semaphore.h>
-> +#include <signal.h>
->  #include <mqueue.h>
->  
->  #include <nucleus/heap.h>
+> Applied, thanks.
+> 
 
-Applied, thanks.
+Wans't that the same error fixed by commit
+aa44db3d5ee270c3b92a1017f7c136ffa1e2cc4d?
 
+Cheers,
 -- 
-                                                                Gilles.
+Daniele
+
 
