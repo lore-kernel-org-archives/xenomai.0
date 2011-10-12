@@ -1,10 +1,11 @@
-Message-ID: <4E8368A6.7010303@domain.hid>
-Date: Wed, 28 Sep 2011 20:34:14 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4E95618B.6010709@domain.hid>
+Date: Wed, 12 Oct 2011 11:44:43 +0200
+From: Wolfgang Grandegger <wg@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] Xenomai 2.6.0-rc4
+Subject: [Xenomai-core] [PATCH xenomai-head] testsuite: fix compiler error
+	'SIGALRM, undeclared'
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -13,25 +14,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Xenomai help <xenomai@xenomai.org>, Xenomai core <Xenomai-core@domain.hid>
+To: xenomai-core <xenomai@xenomai.org>
 
+Signed-off-by: Wolfgang Grandegger <wg@domain.hid>
+---
+ src/testsuite/regression/posix/leaks.c |    1 +
+ 1 files changed, 1 insertions(+), 0 deletions(-)
 
-Hi, 
-
-here is the 4th release candidate for Xenomai 2.6.0:
-http://download.gna.org/xenomai/testing/xenomai-2.6.0-rc4.tar.bz2
-
-Novelties since -rc3 include:
-- a fix for the "long names" issue on psos+
-- a fix for the build issue of mscan on mpc52xx (please Wolfgang, have 
-a look at the patch, to see if you like it:)
-http://git.xenomai.org/?p=xenomai-head.git;a=commitdiff;h=d22fd231db7eb0af8e77ec570efb89e578e13781;hp=4a2188f049e96fc59aa7c4a7a9d058075f3d79e8
-- a new version of the I-pipe patch for linux 3.0 on ppc.
-
-This should be the last release candidate.
-
-Regards.
-
+diff --git a/src/testsuite/regression/posix/leaks.c b/src/testsuite/regression/posix/leaks.c
+index 7326572..f9dd34d 100644
+--- a/src/testsuite/regression/posix/leaks.c
++++ b/src/testsuite/regression/posix/leaks.c
+@@ -6,6 +6,7 @@
+ #include <fcntl.h>
+ #include <sys/mman.h>
+ #include <semaphore.h>
++#include <signal.h>
+ #include <mqueue.h>
+ 
+ #include <nucleus/heap.h>
 -- 
-                                                                Gilles.
+1.7.6.2
+
 
