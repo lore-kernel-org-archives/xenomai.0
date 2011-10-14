@@ -1,13 +1,13 @@
-Message-ID: <4E8AED21.7010709@domain.hid>
-Date: Tue, 04 Oct 2011 13:25:21 +0200
+Message-ID: <4E986EEA.40303@domain.hid>
+Date: Fri, 14 Oct 2011 19:18:34 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4E8981F9.9090105@domain.hid> <4E89AA0F.8020104@domain.hid>
-	<4E89D5E7.8050106@domain.hid>
-In-Reply-To: <4E89D5E7.8050106@domain.hid>
+References: <2157_1308732935_4E01AE07_2157_14293_1_ECB646CBB62FD044927FDEDF0252D3E701E388AD6F15@domain.hid>
+	<loom.20111014T181950-390@domain.hid>
+In-Reply-To: <loom.20111014T181950-390@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] SIGILL when calling pthread_cleanup_push()
+Subject: Re: [Xenomai-help] Xenomai 2.5.6 and 2.6.38.8 kernel
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -17,40 +17,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Michael Bernhard <michael.bernhard@domain.hid>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Kunal Anand <erkunalanand@domain.hid>
+Cc: xenomai@xenomai.org
 
-On 10/03/2011 05:33 PM, Gilles Chanteperdrix wrote:
-> On 10/03/2011 02:26 PM, Gilles Chanteperdrix wrote:
->> On 10/03/2011 11:35 AM, Michael Bernhard wrote:
->>> Hi
->>>
->>> We are using Xenomai-2.5.6 together with Linux-2.6.35 on a PXA270 
->>> processor. Xenomai works fine so far. However we get SIGILL when using 
->>> pthread_cleanup_push() in a RT-thread. I now tried the same over 
->>> Xenomai-2.6 and the behavior is still the same.
->>>
->>> Here's a simple example which shows the problem (for Xenomai-2.6):
->>
->> Ok. Thanks for testing xenomai 2.6 by the way. I will try the test
->> program on an ARMv5 I have tonight. However, could you tell us a bit
->> more about your setup? What toolchain do you use? What threading library?
+On 10/14/2011 06:32 PM, Kunal Anand wrote:
+> Case I:
+> Linux kernel Src tree 2.6.38.8
+> Xenomai Patch 2.5.6
+> adeos-ipipe-2.6.38.8-x86-2.10-00.patch
 > 
-> And also: is your libc built with iwmmxt support?
+> I first faced the error faced above of the 
+> UNDECLARED VARIABLES
+> So i declared it myself as 
+> "int nmi_watchdog =0" and same for the other.
+
+You need to apply the patch which was posted in reply to Nicolas' mail.
+
 > 
+> [AS ABOVE]
+> 
+> It got compiled and installed but on boot-up it showed 
+> " system init fail, code -19
+> native skin init fail, code -19..." 
+> and same message for POSIX skin and RTDM skin.
+> 
+> NO IDEA HOW TO SOLVE THIS!!
 
-Hi Michael,
+Read the kernel logs. If you see "Xenomai: Local APIC absent or
+disabled", read the TROUBLESHOOTING guide, at the top of Xenomai kernel
+sources.
 
-I can not reproduce this issue on another armv5 I have, but it does not
-support iwmmxt. So, in order to see if the problem you have comes from
-iwmmxt, you should try and build a root filesystem with a soft-float
-toolchain, such as, for instance, the codesourcery toolchain.
+> 
+> CASE II:
+> 
+> I tried following Uwue and used a 
+> previous kernel and same xenomai patch with
+> the adeos patch for that particular
+>  kernel but now it is giving me error in the
+> same function but the error is 
+> concerning a ")" near the declaration of the
+> nmi_watchdog and NMI_IO_APIC.
 
-Currently, iwmmxt floats are not supported with Xenomai, so, if you want
-to get them working, something will have to be done.
-
-Regards.
+See first answer.
 
 -- 
-                                                                Gilles.
+					    Gilles.
 
