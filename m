@@ -1,79 +1,143 @@
+Message-ID: <4E981906.6020400@domain.hid>
+Date: Fri, 14 Oct 2011 13:12:06 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-In-Reply-To: <CAAeYjM=PCjeZ3UhXnGW87+EhPVezi+DrNdwmOUY_hZNmTuC55w@domain.hid>
-References: <CAAeYjMmOjq5mrGJ2E5m9oz0HeCP+6UJ8f7aziXcACPuAKM4PzQ@mail.gmail.com>
-	<4EAC8885.6070107@domain.hid>
-	<CAAeYjMnq-cai4m9=EnDh4bNtKXQw+kMj=JQ3JJ1nYhFb=zD-Nw@domain.hid>
-	<CAPASGLrv71uw9NYEjxwhYfrz2kHZsSUFANVAegGGU4RBPW3_Ow@domain.hid>
-	<CAAeYjM=PCjeZ3UhXnGW87+EhPVezi+DrNdwmOUY_hZNmTuC55w@domain.hid>
-From: =?UTF-8?Q?=C5=81ukasz_Sacha?= <dragilla@domain.hid>
-Date: Sun, 30 Oct 2011 21:13:45 +0100
-Message-ID: <CAAeYjMnFSwG0-Jcp+g2pBqVfm+x4_st5dwi6xTmJvd50UobHig@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] xenomai on em2440
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+Content-Type: text/plain; charset=ISO-8859-15
+Content-Transfer-Encoding: 7bit
+Subject: [Adeos-main] [PULL] 2.6.38-noarch: Re-add root preemption notifier
+List-Id: General discussion about Adeos <adeos-main.gna.org>
+List-Unsubscribe: <https://mail.gna.org/options/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+List-Archive: </public/adeos-main>
+List-Post: <mailto:adeos-main@gna.org>
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: adeos-main <adeos-main@gna.org>
 
-As I'm reading about xenomai and mini2440 I can see it's gonna be hard
-to use xenami 2.6 on my board. This is because I need to have a kernel
-that works on my board and such kernels are provided by
-friendlyarm.net (git://repo.or.cz/linux-2.6/mini2440.git ). The latest
-patched kernel is 2.6.32-rc8 and this one is not supported by xenomai.
-I found a kernel 2.6.35-9 patch made by one of the friendlyarm users
-but it includes all in one - xenoami 2.5.6 and mini2440 modyfications
-(http://www.friendlyarm.net/forum/topic/3299#15471). I think I should
-go with this one.
-If you can get me a better solution please let me know.
---
-=C5=81ukasz Dragilla Sacha
+The following changes since commit 641d8e87531c6367a6357335378194ea06a23701:
 
+  ipipe: Prevent unwritable pages after mprotect (2011-07-21 09:51:56 +0200)
 
+are available in the git repository at:
+  git://git.kiszka.org/ipipe queues/2.6.38-noarch
 
-On Sun, Oct 30, 2011 at 10:41, =C5=81ukasz Sacha <dragilla@domain.hid> wrote=
-:
->> A skin is an API on top of the "thin kernel (ADEOS + Xenomai Nucleus) "
->> which is offered to Real-Time tasks.
->> There is FAQ for that question
->> http://www.xenomai.org/index.php/FAQs#What_is_a_Xenomai_skin.3F
->> which part of this answer does you not understand?
->
-> For a beginner there are too many terms that mix in my head, adeos,
-> rtos... I'm starting to see the big picture now.
->
->>> My guess is it's the way "real time tasks" part looks like/acts like.
->>> Am I right?
->>> However there is another diagram shown in the Chameleon RTOS pdf -
->>> this does not include the user space.
->>> What is the user space?
->> Which diagram ? on which page of the document?
->
-> Page 5. But now when I know that xenomai is more like a nano kernel
-> approach than thin kernel approach it all makes sense.
->
->>> Can xenomai have multiple skins at the same time?
->> Yes Xenomai may have mulitple skins
->> (see slide 5 of =C2=A0http://www.xenomai.org/images/c/c6/Xenomai-OSMB-20=
-07-01.pdf)
->> but I don't know if a single application may use different skins at
->> the same time.
->> I never tried myself so I let other answer that one.
->> Why would you want to have/use multiple skin?
->
-> I don't. I just wanted to understand how it all works.
->
-> I guess for now it is enough questions. I mean I still have plenty but
-> I guess now I can start finding answers by myself. Thank you.
->
-> regards,
-> --
-> Luke
->
+Jan Kiszka (1):
+      ipipe: Re-add root preemption notifier
+
+ include/linux/ipipe.h      |   35 +++++++++++++++++++++++++++++++++++
+ include/linux/ipipe_base.h |    2 +-
+ kernel/ipipe/core.c        |    6 ++++++
+ 3 files changed, 42 insertions(+), 1 deletions(-)
+
+---
+
+ipipe: Re-add root preemption notifier
+
+Restore the original root preemption notifiers, once added for 2.6.35
+but then lost again on 2.6.36 merge. Unfortunately, the feature flag was
+not lost. So it became meaningless and we have to rename it to
+__IPIPE_FEATURE_ROOTPREEMPT_NOTIFIER.
+
+Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
+---
+ include/linux/ipipe.h      |   35 +++++++++++++++++++++++++++++++++++
+ include/linux/ipipe_base.h |    2 +-
+ kernel/ipipe/core.c        |    6 ++++++
+ 3 files changed, 42 insertions(+), 1 deletions(-)
+
+diff --git a/include/linux/ipipe.h b/include/linux/ipipe.h
+index aff6c3c..fb0789e 100644
+--- a/include/linux/ipipe.h
++++ b/include/linux/ipipe.h
+@@ -195,6 +195,11 @@ extern struct list_head __ipipe_pipeline;
+ 
+ extern int __ipipe_event_monitors[];
+ 
++typedef void (*ipipe_root_preempt_handler_t)(void *cookie);
++
++DECLARE_PER_CPU(ipipe_root_preempt_handler_t, __ipipe_root_preempt_handler);
++DECLARE_PER_CPU(void *, __ipipe_root_preempt_cookie);
++
+ /* Private interface */
+ 
+ void ipipe_init_early(void);
+@@ -689,6 +694,32 @@ static inline void ipipe_nmi_exit(void)
+ 
+ #define ipipe_clear_flags(p)		do { (p)->ipipe_flags = 0; } while (0)
+ 
++static inline void
++ipipe_register_root_preempt_handler(ipipe_root_preempt_handler_t handler,
++				    void *cookie)
++{
++	int cpu = ipipe_processor_id();
++
++	per_cpu(__ipipe_root_preempt_cookie, cpu) = cookie;
++	barrier();
++	per_cpu(__ipipe_root_preempt_handler, cpu) = handler;
++}
++
++static inline void ipipe_unregister_root_preempt_handler(void)
++{
++	per_cpu(__ipipe_root_preempt_handler, ipipe_processor_id()) = NULL;
++}
++
++static inline void ipipe_root_preempt_notify(void)
++{
++	ipipe_root_preempt_handler_t handler;
++	int cpu = ipipe_processor_id();
++
++	handler = per_cpu(__ipipe_root_preempt_handler, cpu);
++	if (unlikely(handler))
++		handler(per_cpu(__ipipe_root_preempt_cookie, cpu));
++}
++
+ #else	/* !CONFIG_IPIPE */
+ 
+ #define ipipe_init_early()		do { } while(0)
+@@ -702,6 +733,10 @@ static inline void ipipe_nmi_exit(void)
+ #define ipipe_trap_notify(t,r)		0
+ #define ipipe_init_proc()		do { } while(0)
+ 
++#define ipipe_register_root_preempt_handler(h, c)	do { } while (0)
++#define ipipe_unregister_root_preempt_handler()		do { } while (0)
++#define ipipe_root_preempt_notify()			do { } while (0)
++
+ static inline void __ipipe_pin_range_globally(unsigned long start,
+ 					      unsigned long end)
+ {
+diff --git a/include/linux/ipipe_base.h b/include/linux/ipipe_base.h
+index 3f43ba5..f725a66 100644
+--- a/include/linux/ipipe_base.h
++++ b/include/linux/ipipe_base.h
+@@ -108,8 +108,8 @@ static inline void ipipe_check_context(struct ipipe_domain *border_ipd) { }
+ #define __IPIPE_FEATURE_HOSTRT			1
+ #endif
+ #define __IPIPE_FEATURE_PREPARE_PANIC		1
+-#define __IPIPE_FEATURE_ROOT_PREEMPT_NOTIFIER	1
+ #define __IPIPE_FEATURE_CONTROL_IRQ		1
++#define __IPIPE_FEATURE_ROOTPREEMPT_NOTIFIER	1
+ 
+ #else /* !CONFIG_IPIPE */
+ 
+diff --git a/kernel/ipipe/core.c b/kernel/ipipe/core.c
+index 43faed2..51a8be6 100644
+--- a/kernel/ipipe/core.c
++++ b/kernel/ipipe/core.c
+@@ -114,6 +114,12 @@ unsigned __ipipe_printk_virq;
+ 
+ int __ipipe_event_monitors[IPIPE_NR_EVENTS];
+ 
++DEFINE_PER_CPU(ipipe_root_preempt_handler_t, __ipipe_root_preempt_handler);
++EXPORT_PER_CPU_SYMBOL_GPL(__ipipe_root_preempt_handler);
++
++DEFINE_PER_CPU(void *, __ipipe_root_preempt_cookie);
++EXPORT_PER_CPU_SYMBOL_GPL(__ipipe_root_preempt_cookie);
++
+ #ifdef CONFIG_GENERIC_CLOCKEVENTS
+ 
+ DECLARE_PER_CPU(struct tick_device, tick_cpu_device);
+-- 
+1.7.3.4
 
