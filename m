@@ -1,10 +1,10 @@
-Message-ID: <4E986EEA.40303@domain.hid>
-Date: Fri, 14 Oct 2011 19:18:34 +0200
+Message-ID: <4E99C02E.6040100@domain.hid>
+Date: Sat, 15 Oct 2011 19:17:34 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <2157_1308732935_4E01AE07_2157_14293_1_ECB646CBB62FD044927FDEDF0252D3E701E388AD6F15@domain.hid>
-	<loom.20111014T181950-390@domain.hid>
-In-Reply-To: <loom.20111014T181950-390@domain.hid>
+References: <2157_1308732935_4E01AE07_2157_14293_1_ECB646CBB62FD044927FDEDF0252D3E701E388AD6F15@domain.hid>	<loom.20111014T181950-390@domain.hid>	<4E986EEA.40303@domain.hid>
+	<CABLMfBWTB9+0xQkT-F+SfpsyjE9QYgGN2c8GKqB2Y4PKLbMi0A@mail.gmail.com>
+In-Reply-To: <CABLMfBWTB9+0xQkT-F+SfpsyjE9QYgGN2c8GKqB2Y4PKLbMi0A@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] Xenomai 2.5.6 and 2.6.38.8 kernel
@@ -20,46 +20,14 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: Kunal Anand <erkunalanand@domain.hid>
 Cc: xenomai@xenomai.org
 
-On 10/14/2011 06:32 PM, Kunal Anand wrote:
-> Case I:
-> Linux kernel Src tree 2.6.38.8
-> Xenomai Patch 2.5.6
-> adeos-ipipe-2.6.38.8-x86-2.10-00.patch
+On 10/15/2011 01:36 PM, Kunal Anand wrote:
+> I have downloaded the patch, it's a .bin file but how to use it I have NO IDEA!
 > 
-> I first faced the error faced above of the 
-> UNDECLARED VARIABLES
-> So i declared it myself as 
-> "int nmi_watchdog =0" and same for the other.
+> APIC(If it's the APIC FLAG) is present i checked my processor detail.
 
-You need to apply the patch which was posted in reply to Nicolas' mail.
-
-> 
-> [AS ABOVE]
-> 
-> It got compiled and installed but on boot-up it showed 
-> " system init fail, code -19
-> native skin init fail, code -19..." 
-> and same message for POSIX skin and RTDM skin.
-> 
-> NO IDEA HOW TO SOLVE THIS!!
-
-Read the kernel logs. If you see "Xenomai: Local APIC absent or
-disabled", read the TROUBLESHOOTING guide, at the top of Xenomai kernel
-sources.
-
-> 
-> CASE II:
-> 
-> I tried following Uwue and used a 
-> previous kernel and same xenomai patch with
-> the adeos patch for that particular
->  kernel but now it is giving me error in the
-> same function but the error is 
-> concerning a ")" near the declaration of the
-> nmi_watchdog and NMI_IO_APIC.
-
-See first answer.
+I bet you will have to spend some time on kernelnewbies.org before you
+try again using xenomai.
 
 -- 
-					    Gilles.
+                                                                Gilles.
 
