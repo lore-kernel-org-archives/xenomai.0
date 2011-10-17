@@ -1,12 +1,10 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <4E8368A6.7010303@domain.hid>
-References: <4E8368A6.7010303@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Thu, 29 Sep 2011 10:28:08 +0200
-Message-ID: <1317284888.2131.72.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [Xenomai-help] Xenomai 2.6.0-rc4
+MIME-Version: 1.0
+Sender: cenomail@domain.hid
+Date: Mon, 17 Oct 2011 11:15:22 +0100
+Message-ID: <CAADnnhW-NzAxC5sRTv1WS64KOTe_ywAr8Ko7U-TzviTuVBijEA@mail.gmail.com>
+From: Jorge Amado Azevedo <jorge.amado.azevedo@domain.hid>
+Content-Type: multipart/alternative; boundary=0015174c0f8c77a31c04af7be203
+Subject: [Xenomai-core] Usage of Xenomai name
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -15,34 +13,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai help <xenomai@xenomai.org>, Xenomai core <Xenomai-core@domain.hid>
+To: xenomai@xenomai.org
 
-On Wed, 2011-09-28 at 20:34 +0200, Gilles Chanteperdrix wrote:
-> Hi, 
-> 
-> here is the 4th release candidate for Xenomai 2.6.0:
-> http://download.gna.org/xenomai/testing/xenomai-2.6.0-rc4.tar.bz2
-> 
-> Novelties since -rc3 include:
-> - a fix for the "long names" issue on psos+
-> - a fix for the build issue of mscan on mpc52xx (please Wolfgang, have 
-> a look at the patch, to see if you like it:)
-> http://git.xenomai.org/?p=xenomai-head.git;a=commitdiff;h=d22fd231db7eb0af8e77ec570efb89e578e13781;hp=4a2188f049e96fc59aa7c4a7a9d058075f3d79e8
-> - a new version of the I-pipe patch for linux 3.0 on ppc.
+--0015174c0f8c77a31c04af7be203
+Content-Type: text/plain; charset=ISO-8859-1
 
-People running 2.13-02/powerpc over linux 3.0.4 should definitely
-upgrade to 2.13-03, or apply this:
-http://git.denx.de/?p=ipipe-2.6.git;a=commit;h=7c28eb2dea86366bf721663bb8d28ce89cf2806c
+Hello
 
-> 
-> This should be the last release candidate.
-> 
-> Regards.
-> 
+I'm currently finishing a small application that allows users to draw block
+diagrams of control systems and execute them in real-time using Xenomai.
+Technically, each block is a Xenomai task and users can easily make their
+own as long as they adhere to a specific interface. I'm a student at the
+university of Aveiro (Portugal) and this work is part of my master's thesis.
+My original idea was to call my application "Xenomai Lab" but I'm not sure
+if I can use the Xenomai name like that.
 
--- 
-Philippe.
+Am I violating any trademarks, copyrights or other legal restrictions by
+using the Xenomai name for my application?
 
+Regards,
+Jorge Azevedo
 
+--0015174c0f8c77a31c04af7be203
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+Hello<div><br></div><div>I&#39;m currently finishing a small application th=
+at allows users to draw block diagrams of control systems and execute them =
+in real-time using Xenomai. Technically, each block is a Xenomai task and u=
+sers can easily make their own as long as they adhere to a specific interfa=
+ce. I&#39;m a student at the university of Aveiro (Portugal) and this work =
+is part of my master&#39;s thesis. My original idea was to call my applicat=
+ion &quot;Xenomai Lab&quot; but I&#39;m not sure if I can use the Xenomai n=
+ame like that.</div>
+
+<div><br></div><div>Am I violating any trademarks, copyrights or other lega=
+l restrictions by using the Xenomai name for my application?</div><div><br>=
+</div><div>Regards,</div><div>Jorge Azevedo</div>
+
+--0015174c0f8c77a31c04af7be203--
 
