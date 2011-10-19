@@ -1,12 +1,12 @@
-Message-ID: <4E9ED877.7060802@domain.hid>
-Date: Wed, 19 Oct 2011 16:02:31 +0200
+Message-ID: <4E9F0E83.7080408@domain.hid>
+Date: Wed, 19 Oct 2011 19:53:07 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4E9ECF3A.40908@domain.hid>
-In-Reply-To: <4E9ECF3A.40908@domain.hid>
+References: <CACFV95+U15KiANkoO71oB-i92FrZfso95o0w5k0dtSDg0S92=g@domain.hid>
+In-Reply-To: <CACFV95+U15KiANkoO71oB-i92FrZfso95o0w5k0dtSDg0S92=g@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] ARM build instructions wrong?
+Subject: Re: [Xenomai-help] Driver for Rtserial
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -16,26 +16,19 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: hauptmech <hauptmech@domain.hid>
+To: Siva kumar Balasubramanian <sivakumar.bs@domain.hid>
 Cc: xenomai@xenomai.org
 
-On 10/19/2011 03:23 PM, hauptmech wrote:
->   One thing I found confusing about the arm section in README.INSTALL is 
-> that it uses the same $build_root for the kernel and xenomai. The first 
-> time through I followed the instructions and later ran into problems 
-> trying to rebuild some kernel modules. I'm guessing that the xenomai 
-> configure script trashed the kernel stuff since they are sharing a build 
-> directory?
+On 10/19/2011 01:24 PM, Siva kumar Balasubramanian wrote:
+> Hi all,
 > 
-> I found that using a $build_root_kernel for the kernel and a separate 
-> $build_root_xenomai for xenomai avoided this.
-> 
-> Can someone confirm I'm not missing something and that this is indeed an 
-> issue and maybe update the docs for the next hapless newb?
+> How to enable Rtserial for other than 16550A-Compatible Devices.
+> I am having mini2440 development board has 3232CBNZ RS-232
+> Transmitters/Receivers.
 
-
-You are right. This will be fixed in the next release.
+You need to write a driver for this device, using the RTDM skin,
+following the serial driver profile defined by the 16550A driver.
 
 -- 
-					    Gilles.
+                                                                Gilles.
 
