@@ -1,14 +1,9 @@
-Sender: Thomas De Schampheleire <patrickdepinguin@domain.hid>
-Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Message-Id: <c2a2a1a093ea9baee853.1318861193@domain.hid>
-In-Reply-To: <patchbomb.1318861189@domain.hid>
-References: <patchbomb.1318861189@domain.hid>
-Date: Wed, 19 Oct 2011 09:35:21 +0200
-From: Thomas De Schampheleire <patrickdepinguin+xenomai@domain.hid>
-Subject: [Xenomai-help] [PATCH 4 of 4] psos: fix compiler warning: cprio
- could be used uninitialized
+From: Siva kumar Balasubramanian <sivakumar.bs@domain.hid>
+Date: Wed, 19 Oct 2011 16:54:18 +0530
+Message-ID: <CACFV95+U15KiANkoO71oB-i92FrZfso95o0w5k0dtSDg0S92=g@domain.hid>
+Content-Type: multipart/alternative; boundary=20cf307f3b8adc3cab04afa51532
+Subject: [Xenomai-help] Driver for Rtserial
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -20,36 +15,38 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
-Assign default 1 to satisfy compiler (tested with gcc 4.4.3)
+--20cf307f3b8adc3cab04afa51532
+Content-Type: text/plain; charset=ISO-8859-1
 
-Signed-off-by: Thomas De Schampheleire <thomas.de.schampheleire@domain.hid>
-Signed-off-by: Ronny Meeus <ronny.meeus@domain.hid>
+Hi all,
 
----
- lib/psos/task.c |  4 ++--
- 1 files changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/lib/psos/task.c b/lib/psos/task.c
---- a/lib/psos/task.c
-+++ b/lib/psos/task.c
-@@ -247,7 +247,7 @@ u_long t_create(const char *name, u_long
- 	pthread_attr_t thattr;
- 	struct syncstate syns;
- 	struct service svc;
--	int ret, cprio;
-+	int ret, cprio = 1;
- 	char short_name[5];
- 
- 	ret = check_task_priority(prio, &cprio);
-@@ -414,7 +414,7 @@ u_long t_resume(u_long tid)
- u_long t_setpri(u_long tid, u_long newprio, u_long *oldprio_r)
- {
- 	struct psos_task *task;
--	int ret, cprio;
-+	int ret, cprio = 1;
- 
- 	task = get_psos_task_or_self(tid, &ret);
- 	if (task == NULL)
+How to enable Rtserial for other than 16550A-Compatible Devices.
+I am having mini2440 development board has 3232CBNZ RS-232
+Transmitters/Receivers.
 
 
+
+Thanks
+sivakumar
+
+--20cf307f3b8adc3cab04afa51532
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+<font face=3D"arial,helvetica,sans-serif">Hi all,</font><div><font face=3D"=
+arial,helvetica,sans-serif"><br></font></div><div><font face=3D"arial,helve=
+tica,sans-serif">How to enable Rtserial for other than=A016550A-Compatible =
+Devices.</font></div>
+
+<div><font face=3D"arial,helvetica,sans-serif">I am having mini2440 develop=
+ment board has=A0<span class=3D"Apple-style-span" style=3D"font-family: Tah=
+oma, dotum, arial, verdana; font-size: 12px; background-color: rgb(255, 255=
+, 255); ">3232CBNZ=A0RS-232 Transmitters/Receivers.</span></font></div>
+
+<div><font class=3D"Apple-style-span" face=3D"Tahoma, dotum, arial, verdana=
+"><span class=3D"Apple-style-span" style=3D"font-size: 12px;"><br clear=3D"=
+all"></span></font><div><br></div>=A0<br><div>Thanks</div>sivakumar<br>
+</div>
+
+--20cf307f3b8adc3cab04afa51532--
 
