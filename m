@@ -1,14 +1,13 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <8236197CA3DA864F9EF20609D988726338B7553A@rrxchngmbx01.mro.roland-man.biz>
-References: <CAAXf6LW-HePfMj4F86s-dFoztWN5NLsGm9TxqpHN-EwxEdtiFA@mail.gmail.com>
-	<8236197CA3DA864F9EF20609D988726338B7553A@rrxchngmbx01.mro.roland-man.biz>
-Content-Type: text/plain; charset="UTF-8"
-Date: Tue, 04 Oct 2011 14:00:03 +0200
-Message-ID: <1317729603.2082.59.camel@domain.hid>
-Mime-Version: 1.0
+Sender: Thomas De Schampheleire <patrickdepinguin@domain.hid>
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] xenomai-forge [psos] t_start segmentation fault
- when	args == NULL
+Message-Id: <8493adf46f985831fad1.1318861192@domain.hid>
+In-Reply-To: <patchbomb.1318861189@domain.hid>
+References: <patchbomb.1318861189@domain.hid>
+Date: Wed, 19 Oct 2011 09:35:18 +0200
+From: Thomas De Schampheleire <patrickdepinguin+xenomai@domain.hid>
+Subject: [Xenomai-help] [PATCH 3 of 4] psos: add tm_getm function
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -18,57 +17,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: dietmar.schindler@domain.hid
-Cc: Xenomai-help@domain.hid
+To: xenomai@xenomai.org
 
-On Tue, 2011-10-04 at 10:42 +0000, dietmar.schindler@domain.hid
-wrote:
-> > -----Original Message-----
-> > On Behalf Of Thomas De Schampheleire
-> > Sent: Tuesday, October 04, 2011 11:42 AM
-> > ...
-> > In the xenomai-forge psos library, t_start() does not allow a NULL
-> > args pointer, while I think this is allowed in PSOS.
-> 
-> The "pSOSystem System Calls" manual doesn't state the permissibility of a NULL args pointer, as far as I can see:
-> 
-> unsigned long t_start(
->    unsigned long tid,      /* task identifier */
->    unsigned long mode,     /* initial task attributes */
->    void (*start_addr)(),   /* task address */
->    unsigned long targs[4]  /* startup task arguments */
->    )
-> ...
-> targs      Specifies four startup values passed to the task (see Startup Values under Target).
-> 
-> Target
-> Startup Values
-> ...
-> A new task can receive up to four long words of input arguments. To facilitate retrieval of these arguments, they are passed to the task as if it is invoked as a highlevel language procedure or function. For example, if a C task nice has three input arguments, it can be declared as follows:
-> 
-> nice (unsigned long a, unsigned long b, unsigned long c);
-> 
-> where targs[0] is passed to a, targs[1] to b, and targs[2] to c. In this case, targs[3] is irrelevant and does not need the calling task to load it.
-> 
+Signed-off-by: Thomas De Schampheleire <thomas.de.schampheleire@domain.hid>
+Signed-off-by: Ronny Meeus <ronny.meeus@domain.hid>
 
-Accepting NULL was a Xenomai-specific convenience introduced in Xenomai
-2.x IIRC, then I changed my mind for 3.x. Granted NULL args would not
-work when back on real pSOS, but that does not look like a hot issue. So
-we should probably just accept it anew, and be happy.
+---
+ include/psos/psos.h |  2 ++
+ lib/psos/tm.c       |  7 +++++++
+ 2 files changed, 9 insertions(+), 0 deletions(-)
 
-> --
-> Regards,
-> Dietmar
-> ________________________________________ manroland AG Vorsitzender des Aufsichtsrates: Hanno C. Fiedler Vorstand: Gerd Finkbeiner (Vorsitzender), Dr. Ingo Koch, Dr. Markus Rall, Paul Steidle Sitz der Gesellschaft: Offenbach am Main, Registergericht: Amtsgericht Offenbach HRB-Nr. 42592 USt-Ident-Nr. DE 250200933
-> 
-> 
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
-
--- 
-Philippe.
-
+diff --git a/include/psos/psos.h b/include/psos/psos.h
+--- a/include/psos/psos.h
++++ b/include/psos/psos.h
+@@ -363,6 +363,8 @@ u_long tm_set(u_long date,
+ 	      u_long time,
+ 	      u_long ticks);
+ 
++u_long tm_getm(unsigned long long *ns);
++
+ u_long tm_wkafter(u_long ticks);
+ 
+ u_long tm_wkwhen(u_long date,
+diff --git a/lib/psos/tm.c b/lib/psos/tm.c
+--- a/lib/psos/tm.c
++++ b/lib/psos/tm.c
+@@ -309,3 +309,10 @@ u_long tm_get(u_long *date_r, u_long *ti
+ 
+ 	return SUCCESS;
+ }
++
++u_long tm_getm(unsigned long long *ns_r)
++{
++	*ns_r = clockobj_get_tsc();
++	return SUCCESS;
++}
++
 
 
