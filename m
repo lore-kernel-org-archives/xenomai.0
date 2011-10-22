@@ -1,10 +1,10 @@
+Message-ID: <4EA2B5B0.3060209@domain.hid>
+Date: Sat, 22 Oct 2011 14:23:12 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Sender: cenomail@domain.hid
-Date: Mon, 17 Oct 2011 11:15:22 +0100
-Message-ID: <CAADnnhW-NzAxC5sRTv1WS64KOTe_ywAr8Ko7U-TzviTuVBijEA@mail.gmail.com>
-From: Jorge Amado Azevedo <jorge.amado.azevedo@domain.hid>
-Content-Type: multipart/alternative; boundary=0015174c0f8c77a31c04af7be203
-Subject: [Xenomai-core] Usage of Xenomai name
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-core] Xenomai 2.6.0-rc5
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -13,43 +13,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai@xenomai.org
+To: Xenomai help <xenomai@xenomai.org>, Xenomai core <Xenomai-core@domain.hid>
 
---0015174c0f8c77a31c04af7be203
-Content-Type: text/plain; charset=ISO-8859-1
 
-Hello
+Hi,
 
-I'm currently finishing a small application that allows users to draw block
-diagrams of control systems and execute them in real-time using Xenomai.
-Technically, each block is a Xenomai task and users can easily make their
-own as long as they adhere to a specific interface. I'm a student at the
-university of Aveiro (Portugal) and this work is part of my master's thesis.
-My original idea was to call my application "Xenomai Lab" but I'm not sure
-if I can use the Xenomai name like that.
+Xenomai 2.6.0-rc5 is available at the usual place:
+http://download.gna.org/xenomai/testing/xenomai-2.6.0-rc5.tar.bz2
 
-Am I violating any trademarks, copyrights or other legal restrictions by
-using the Xenomai name for my application?
+The major change since 2.6.0-rc4 is in analogy drivers sources. A new
+patch for the ARM architecture was also added, for kernel 2.6.38,
+including patches for imx51 and imx53 using the freescale linux-2.6-imx
+git. And finally there are a few minor fixes and cosmetic changes here
+and there.
 
-Regards,
-Jorge Azevedo
+Here is the shortlog:
+Alexis Berlemont (1):
+      analogy: quick fix to keep the async buffer below 4GB
 
---0015174c0f8c77a31c04af7be203
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Daniele Nicolodi (3):
+      build: restore building of xeno-config man page
+      testsuite: add missing include
+      analogy: [ni_pcimio] replace noisy info messages by debug ones
 
-Hello<div><br></div><div>I&#39;m currently finishing a small application th=
-at allows users to draw block diagrams of control systems and execute them =
-in real-time using Xenomai. Technically, each block is a Xenomai task and u=
-sers can easily make their own as long as they adhere to a specific interfa=
-ce. I&#39;m a student at the university of Aveiro (Portugal) and this work =
-is part of my master&#39;s thesis. My original idea was to call my applicat=
-ion &quot;Xenomai Lab&quot; but I&#39;m not sure if I can use the Xenomai n=
-ame like that.</div>
+Gilles Chanteperdrix (15):
+      wrappers: fix compilation of HOSTRT without TICKDEV
+      arm: fix context switch for linux 2.6.38
+      testsuite: fix xeno-regression-test help string
+      native: free buffer outside critical section in rt_buffer_delete
+      arm: fix leftover from 392989f410f10ffc228b974ffe26787dff0734f2
+      arm: change help message for --enable-arm-tsc option
+      nucleus: change default configuration
+      testsuite: fix regression tests location
+      Merge remote branch 'alex/analogy'
+      arm: upgrade patches
+      psos: long/short names issue, take #2
+      doc: fix README.INSTALL
+      testsuite: various fixes
+      build: bootstrap
+      doc: regenerate
 
-<div><br></div><div>Am I violating any trademarks, copyrights or other lega=
-l restrictions by using the Xenomai name for my application?</div><div><br>=
-</div><div>Regards,</div><div>Jorge Azevedo</div>
+Regards.
 
---0015174c0f8c77a31c04af7be203--
+-- 
+                                                                Gilles.
 
