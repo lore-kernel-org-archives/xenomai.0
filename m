@@ -1,10 +1,12 @@
-Message-ID: <4EA2B5B0.3060209@domain.hid>
-Date: Sat, 22 Oct 2011 14:23:12 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Message-ID: <1319306088.3224.3.camel@domain.hid>
+From: Philippe Gerum <rpm@xenomai.org>
+In-Reply-To: <CAADnnhW-NzAxC5sRTv1WS64KOTe_ywAr8Ko7U-TzviTuVBijEA@mail.gmail.com>
+References: <CAADnnhW-NzAxC5sRTv1WS64KOTe_ywAr8Ko7U-TzviTuVBijEA@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Date: Sat, 22 Oct 2011 19:54:48 +0200
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] Xenomai 2.6.0-rc5
+Subject: Re: [Xenomai-core] Usage of Xenomai name
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -13,48 +15,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Xenomai help <xenomai@xenomai.org>, Xenomai core <Xenomai-core@domain.hid>
+To: Jorge Amado Azevedo <jorge.amado.azevedo@domain.hid>
+Cc: xenomai@xenomai.org
 
+On Mon, 2011-10-17 at 11:15 +0100, Jorge Amado Azevedo wrote:
+> Hello
+> 
+> 
+> I'm currently finishing a small application that allows users to draw
+> block diagrams of control systems and execute them in real-time using
+> Xenomai. Technically, each block is a Xenomai task and users can
+> easily make their own as long as they adhere to a specific interface.
+> I'm a student at the university of Aveiro (Portugal) and this work is
+> part of my master's thesis. My original idea was to call my
+> application "Xenomai Lab" but I'm not sure if I can use the Xenomai
+> name like that.
+> 
+> 
+> Am I violating any trademarks, copyrights or other legal restrictions
+> by using the Xenomai name for my application?
 
-Hi,
-
-Xenomai 2.6.0-rc5 is available at the usual place:
-http://download.gna.org/xenomai/testing/xenomai-2.6.0-rc5.tar.bz2
-
-The major change since 2.6.0-rc4 is in analogy drivers sources. A new
-patch for the ARM architecture was also added, for kernel 2.6.38,
-including patches for imx51 and imx53 using the freescale linux-2.6-imx
-git. And finally there are a few minor fixes and cosmetic changes here
-and there.
-
-Here is the shortlog:
-Alexis Berlemont (1):
-      analogy: quick fix to keep the async buffer below 4GB
-
-Daniele Nicolodi (3):
-      build: restore building of xeno-config man page
-      testsuite: add missing include
-      analogy: [ni_pcimio] replace noisy info messages by debug ones
-
-Gilles Chanteperdrix (15):
-      wrappers: fix compilation of HOSTRT without TICKDEV
-      arm: fix context switch for linux 2.6.38
-      testsuite: fix xeno-regression-test help string
-      native: free buffer outside critical section in rt_buffer_delete
-      arm: fix leftover from 392989f410f10ffc228b974ffe26787dff0734f2
-      arm: change help message for --enable-arm-tsc option
-      nucleus: change default configuration
-      testsuite: fix regression tests location
-      Merge remote branch 'alex/analogy'
-      arm: upgrade patches
-      psos: long/short names issue, take #2
-      doc: fix README.INSTALL
-      testsuite: various fixes
-      build: bootstrap
-      doc: regenerate
-
-Regards.
+There would be no objection from the Xenomai project, provided this is
+and remains LGPL/GPL software.
+> 
+> Regards,
+> Jorge Azevedo
+> _______________________________________________
+> Xenomai-core mailing list
+> Xenomai-core@domain.hid
+> https://mail.gna.org/listinfo/xenomai-core
 
 -- 
-                                                                Gilles.
+Philippe.
+
+
 
