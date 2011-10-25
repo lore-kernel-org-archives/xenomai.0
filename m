@@ -1,5 +1,5 @@
-Message-ID: <4EA66DF8.3050601@domain.hid>
-Date: Tue, 25 Oct 2011 10:06:16 +0200
+Message-ID: <4EA69486.4030106@domain.hid>
+Date: Tue, 25 Oct 2011 12:50:46 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <1319490255.1417.YahooMailNeo@domain.hid>
@@ -21,12 +21,11 @@ To: Tom Z <tomz30@domain.hid>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
 On 10/24/2011 11:04 PM, Tom Z wrote:
-> Any ideas or suggestions will be highly appreciated. TomZ
+>  8)     rt_task_create(&task_desc, "RealTimeImageProcessing", 4096, 99, T_FPU|T_CPU(0));
 
-Try gdb. If that fails, get the kernel to print the value of the
-registers when the fault happens, then disassemble and look at why the
-fault happens.
+4096 bytes is a really small stack size, are you sure that the
+segmentation fault is simply not a stack overflow?
 
 -- 
-                                                                Gilles.
+					    Gilles.
 
