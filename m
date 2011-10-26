@@ -1,14 +1,14 @@
+Message-ID: <4EA7DEC3.9010706@domain.hid>
+Date: Wed, 26 Oct 2011 12:19:47 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Sender: patrickdepinguin@domain.hid
-In-Reply-To: <patchbomb.1318861189@domain.hid>
 References: <patchbomb.1318861189@domain.hid>
-Date: Wed, 26 Oct 2011 11:44:12 +0200
-Message-ID: <CAAXf6LW+yy24Ks6RNOc4_5-Ltonx12SVOrGEKd-Aw4ATGTVaUg@domain.hid>
-From: Thomas De Schampheleire <patrickdepinguin+xenomai@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] [PATCH 0 of 4] xenomai-forge PSOS: miscellaneous
-	fixes
+	<0db9974c036abae53f74.1318861190@domain.hid>
+In-Reply-To: <0db9974c036abae53f74.1318861190@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] [PATCH 1 of 4] psos.h: add definition of
+	ERR_OBJTFULL
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -18,43 +18,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Thomas De Schampheleire <patrickdepinguin+xenomai@domain.hid>, xenomai@xenomai.org
 
-Hi,
-
-On Wed, Oct 19, 2011 at 5:02 PM, Thomas De Schampheleire
-<patrickdepinguin+xenomai@domain.hid> wrote:
-> This patch series includes some misc. fixes to xenomai-forge:
->
-> * definition of ERR_OBJTFULL (should also be added to Xenomai proper)
-> * port long_names feature to xenomai-forge and fix it
-> * add tm_getm() function (not present in pSOS but present in Xenomai prop=
-er)
-> * fix compiler warning in task.c
->
-> Signed-off-by: Thomas De Schampheleire <thomas.de.schampheleire@domain.hid=
->
-> Signed-off-by: Ronny Meeus <ronny.meeus@domain.hid>
+On 10/19/2011 09:35 AM, Thomas De Schampheleire wrote:
+> Signed-off-by: Thomas De Schampheleire<thomas.de.schampheleire@domain.hid>
+> Signed-off-by: Ronny Meeus<ronny.meeus@domain.hid>
 >
 > ---
-> =A0include/psos/Makefile.am =A0| =A0 2 +-
-> =A0include/psos/Makefile.in =A0| =A0 2 +-
-> =A0include/psos/long_names.h | =A014 ++++++++++++++
-> =A0include/psos/psos.h =A0 =A0 =A0 | =A0 5 +++++
-> =A0lib/psos/init.c =A0 =A0 =A0 =A0 =A0 | =A015 +++++++++++++++
-> =A0lib/psos/pt.c =A0 =A0 =A0 =A0 =A0 =A0 | =A0 6 ++++++
-> =A0lib/psos/queue.c =A0 =A0 =A0 =A0 =A0| =A0 6 ++++++
-> =A0lib/psos/rn.c =A0 =A0 =A0 =A0 =A0 =A0 | =A0 5 +++++
-> =A0lib/psos/sem.c =A0 =A0 =A0 =A0 =A0 =A0| =A0 6 ++++++
-> =A0lib/psos/task.c =A0 =A0 =A0 =A0 =A0 | =A0 9 +++++++--
-> =A0lib/psos/tm.c =A0 =A0 =A0 =A0 =A0 =A0 | =A0 7 +++++++
-> =A011 files changed, 73 insertions(+), 4 deletions(-)
+>   include/psos/psos.h |  1 +
+>   1 files changed, 1 insertions(+), 0 deletions(-)
 >
+> diff --git a/include/psos/psos.h b/include/psos/psos.h
+> --- a/include/psos/psos.h
+> +++ b/include/psos/psos.h
+> @@ -97,6 +97,7 @@
+>   #define ERR_OBJDEL   0x05
+>   #define ERR_OBJID    0x06
+>   #define ERR_OBJTYPE  0x07
+> +#define ERR_OBJTFULL 0x08
+>   #define ERR_OBJNF    0x09
 >
->
+>   #define ERR_NOTCB    0x0E
 
-Do you have any comments on this patch series?
+Where is this error code used in the Xenomai tree? Can't find it right now.
 
-Thanks,
-Thomas
+-- 
+Philippe.
 
