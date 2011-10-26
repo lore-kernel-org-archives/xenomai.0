@@ -1,16 +1,15 @@
 MIME-Version: 1.0
 Sender: patrickdepinguin@domain.hid
-In-Reply-To: <4EA7DF14.6050307@domain.hid>
+In-Reply-To: <4EA7DF4E.7030403@domain.hid>
 References: <patchbomb.1318861189@domain.hid>
-	<68d35b0c2502bcfcd82a.1318861191@domain.hid>
-	<4EA7DF14.6050307@domain.hid>
-Date: Wed, 26 Oct 2011 12:41:41 +0200
-Message-ID: <CAAXf6LWUBDNYe48Xk76yApTeJzf9bW0o8Y8reYur65dKMbH_Uw@domain.hid>
+	<8493adf46f985831fad1.1318861192@domain.hid>
+	<4EA7DF4E.7030403@domain.hid>
+Date: Wed, 26 Oct 2011 12:42:24 +0200
+Message-ID: <CAAXf6LV=LM0h2EVZse=oV0GE_3DJHb15SOSCBPNJwiBi4gH8=Q@mail.gmail.com>
 From: Thomas De Schampheleire <patrickdepinguin+xenomai@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] [PATCH 2 of 4] psos: port long_names feature to
-	xenomai-forge
+Subject: Re: [Xenomai-help] [PATCH 3 of 4] psos: add tm_getm function
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -23,30 +22,47 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: Philippe Gerum <rpm@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On Wed, Oct 26, 2011 at 12:21 PM, Philippe Gerum <rpm@xenomai.org> wrote:
+On Wed, Oct 26, 2011 at 12:22 PM, Philippe Gerum <rpm@xenomai.org> wrote:
 > On 10/19/2011 09:35 AM, Thomas De Schampheleire wrote:
 >>
->> While psos interface accepts 4 character ids, non null terminated,
->> xenomai uses longer ids which must be null terminated. Revert to
->> the behaviour of psos interface, while allowing long id strings if
->> the global variable psos_long_names is set to non-zero.
->>
->> This patch ports the original fix from xenomai to xenomai-forge,
->> fixing following problems:
->> * a bug in __psos_maybe_short_name so that only 3 characters are
->> =A0 retained
->> * the call to __psos_maybe_short_name also needs to be done in the
->> =A0 ident functions
->> * the pt_create and pt_ident functions also need to be adapted
->>
+>> Signed-off-by: Thomas De Schampheleire<thomas.de.schampheleire@domain.hid=
 >
-> Please merge long_names.h into psos.h, having a separate header for this =
-is
-> way overkill and brings nothing.
+>> Signed-off-by: Ronny Meeus<ronny.meeus@domain.hid>
+>>
+>> ---
+>> =A0include/psos/psos.h | =A02 ++
+>> =A0lib/psos/tm.c =A0 =A0 =A0 | =A07 +++++++
+>> =A02 files changed, 9 insertions(+), 0 deletions(-)
+>>
+>> diff --git a/include/psos/psos.h b/include/psos/psos.h
+>> --- a/include/psos/psos.h
+>> +++ b/include/psos/psos.h
+>> @@ -363,6 +363,8 @@ u_long tm_set(u_long date,
+>> =A0 =A0 =A0 =A0 =A0 =A0 =A0u_long time,
+>> =A0 =A0 =A0 =A0 =A0 =A0 =A0u_long ticks);
+>>
+>> +u_long tm_getm(unsigned long long *ns);
+>> +
+>> =A0u_long tm_wkafter(u_long ticks);
+>>
+>> =A0u_long tm_wkwhen(u_long date,
+>> diff --git a/lib/psos/tm.c b/lib/psos/tm.c
+>> --- a/lib/psos/tm.c
+>> +++ b/lib/psos/tm.c
+>> @@ -309,3 +309,10 @@ u_long tm_get(u_long *date_r, u_long *ti
+>>
+>> =A0 =A0 =A0 =A0return SUCCESS;
+>> =A0}
+>> +
+>> +u_long tm_getm(unsigned long long *ns_r)
+>> +{
+>> + =A0 =A0 =A0 *ns_r =3D clockobj_get_tsc();
+>> + =A0 =A0 =A0 return SUCCESS;
+>> +}
+>
+> - =A0 =A0 =A0 *ns_r =3D clockobj_get_tsc();
+> + =A0 =A0 =A0 *ns_r =3D clockobj_tsc_to_ns(clockobj_get_tsc());
+>
 
-It avoids exposing an internal interface to applications through psos.h.
-If anything, I think we should make a psos_internal.h or whatever,
-that can host __psos_maybe_short_name among others.
-
-~Thomas
+Ok, thanks.
 
