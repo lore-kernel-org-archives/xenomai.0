@@ -1,10 +1,10 @@
-Message-ID: <ba98230140e2190e763c418428e3198d.squirrel@domain.hid>
-Date: Thu, 27 Oct 2011 11:05:38 +0200 (CEST)
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+Date: Thu, 27 Oct 2011 20:59:51 +0800 (CST)
+From: =?GBK?B?sNez1dK7w84=?= <idiotdream@domain.hid>
+Message-ID: <5d59799b.ccfc.133457711d4.Coremail.idiotdream@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai-help] installing xenomai on pandaboard
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_160868_456487984.1319720391124"
+Subject: [Xenomai-help] for helping!
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -16,19 +16,42 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
+------=_Part_160868_456487984.1319720391124
+Content-Type: text/plain; charset=GBK
+Content-Transfer-Encoding: base64
 
+aGVsbG8gZXhwZXJ0czoKSSBhbSBhIG5ld2VyIG9mIHhlbm9tYWkudGhpcyBkYXlzIEkgdHJ5IHRv
+IGJ1aWxkIHhlbm9tYWkgaW4gYXJjaGxpbnV4IG9uIG15IHBjIChQRDMuNEcgY3B1KS5pIHVzZSB0
+aGUgdmVyc2lvbiBvZiAyLjYuMF9yYzQgYW5kIDIuNi4wLXJjNSBvbiBrZXJuZWwgMi42LjM4IGZv
+ciBtYW55IHRpbWVzLiBhbGwgbW9zdCBldmVyeSB0aW1lLCBpIGJ1aWx0IHRoZSBrZXJuZWwgYW5k
+IHVzZXIgc3BhY2Ugc3VjY2VzZnVsbHkuKGluIGRpZmZlcmVudCAvLmNvbmZpZyBmaWxlcyxmb3Ig
+dG90YWwgNDIgdGltZXMpLGJ1dCB3aGVuIGkgcnVuIHRoZSB0ZXN0cyBpbiAvdXNyL3hlbm9tYWkv
+YmluLGZvciBleGFtcGxlcyhsYXRlbmN5KSxpIGdvdCB0aGUgZXJyb3IgOgp4ZW5vbWFpOiAvZGV2
+L3J0aGVhcCBpcyBtaXNzaW5nCihjaGFyZGV2LCBtYWpvcj0xMCBtaW5vcj0yNTQpCmV2ZXJ5IHRp
+bWVzLgppIHJlYWx5IGRvIG5vdCBrbm93IGhvdyBhbmQgd2hhdCB0byBkbyx3aHkgdGh1cz8/IHRo
+YW5rIHlvdSEK
+------=_Part_160868_456487984.1319720391124
+Content-Type: text/html; charset=GBK
+Content-Transfer-Encoding: base64
 
-Robert wrote:
-> Ok, so now latency test looks good, but board still hangs up on xeno-test.
->
-
-Please try, as I suggested in a previous mail, to get the kernel console
-output on the serial port, and see if the hang is not due to a kernel
-oops.
-
-And I am also asking again: are you compiling user-space support for thumb?
-
--- 
-                    Gilles.
+PGRpdiBzdHlsZT0ibGluZS1oZWlnaHQ6MS43O2NvbG9yOiMwMDAwMDA7Zm9udC1zaXplOjE0cHg7
+Zm9udC1mYW1pbHk6YXJpYWwiPjxiPmhlbGxvIGV4cGVydHM6PGJyPkkgYW0gYSBuZXdlciBvZiB4
+ZW5vbWFpLnRoaXMgZGF5cyBJIHRyeSB0byBidWlsZCB4ZW5vbWFpIGluIGFyY2hsaW51eCBvbiBt
+eSBwYyAoUEQzLjRHIGNwdSkuaSB1c2UgdGhlIHZlcnNpb24gb2YgMi42LjBfcmM0IGFuZCAyLjYu
+MC1yYzUgb24ga2VybmVsIDIuNi4zOCBmb3IgbWFueSB0aW1lcy4gYWxsIG1vc3QgZXZlcnkgdGlt
+ZSwgaSBidWlsdCB0aGUga2VybmVsIGFuZCB1c2VyIHNwYWNlIHN1Y2Nlc2Z1bGx5LihpbiBkaWZm
+ZXJlbnQgLy5jb25maWcgZmlsZXMsZm9yIHRvdGFsIDQyIHRpbWVzKSxidXQgd2hlbiBpIHJ1biB0
+aGUgdGVzdHMgaW4gL3Vzci94ZW5vbWFpL2Jpbixmb3IgZXhhbXBsZXMobGF0ZW5jeSksaSBnb3Qg
+dGhlIGVycm9yIDo8YnI+PHU+PHNwYW4gc3R5bGU9ImNvbG9yOiByZ2IoMjU1LCAwLCAwKTsiPjxz
+cGFuIHN0eWxlPSJjb2xvcjogcmdiKDI1NSwgMCwgMCk7Ij54ZW5vbWFpOiAvZGV2L3J0aGVhcCBp
+cyBtaXNzaW5nPC9zcGFuPjxicj48c3BhbiBzdHlsZT0iY29sb3I6IHJnYigyNTUsIDAsIDApOyI+
+KGNoYXJkZXYsIG1ham9yPTEwIG1pbm9yPTI1NCk8L3NwYW4+PC9zcGFuPjwvdT48YnI+ZXZlcnkg
+dGltZXMuPGJyPmkgcmVhbHkgZG8gbm90IGtub3cgaG93IGFuZCB3aGF0IHRvIGRvLHdoeSB0aHVz
+Pz8gdGhhbmsgeW91ITwvYj48YnI+PC9kaXY+PGJyPjxicj48c3BhbiB0aXRsZT0ibmV0ZWFzZWZv
+b3RlciI+PHNwYW4gaWQ9Im5ldGVhc2VfbWFpbF9mb290ZXIiPjxoci8+CjxhIGhyZWY9Imh0dHA6
+Ly92LjE2My5jb20vc3BlY2lhbC9wb3NpdGl2ZXBzeWNob2xvZ3kvP2Zyb209bWFpbGZvb3RlciIg
+dGFyZ2V0PSJfYmxhbmsiPs340te5q7+qv87NxrP2uf638Nfuyty7ttOtobbQ0rijobe/zrPMo6yw
+78T60N7C+tDSuKPRp7fWITwvYT4KPC9zcGFuPjwvc3Bhbj4=
+------=_Part_160868_456487984.1319720391124--
 
 
