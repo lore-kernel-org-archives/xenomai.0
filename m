@@ -1,5 +1,5 @@
-Message-ID: <4EAAF731.4020409@domain.hid>
-Date: Fri, 28 Oct 2011 20:40:49 +0200
+Message-ID: <4EAAFA3C.2080902@domain.hid>
+Date: Fri, 28 Oct 2011 20:53:48 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <loom.20111028T160712-174@domain.hid>
@@ -22,28 +22,16 @@ To: manfred@domain.hid
 Cc: xenomai@xenomai.org
 
 On 10/28/2011 06:28 PM, Manfred Quack wrote:
-> However: is there a "clean" or "simple" way to apply the adeos-patches
-> to the omap3-<>-kernels?
+> I am using a modified version of the
+> adeos-ipipe-2.6.33-arm-1.16-01 patch
+> the modifications were made as described on this wiki:
+> http://www.lara.unb.br/wiki/index.php/Overo_Xenomai
+> and if I understand correctly, the modifications were necc.
+> because the omap3-2.6.33 kernel differs from the
+> vanilla 2.6.33 kernel.
 
-I do not think so. The only answer is: get the omap changes merged into
-the mainline kernel, and use the mainline kernel. Because from a
-maintenance point of view, maintaining one patch for each version of the
-kernel is enough work to want and avoid maintaining versions for several
-vendor-specific trees.
-
-That said, if there are not many differences:
-- we can arrange for the hunks to apply to both branches (we do this for
-the at91 patch);
-- we can provide two patches, a pre-patch applied before the adeos patch
-(basically reverting all the changes causing conflicts), and a
-post-patch applied after the adeos patch solving the conflicts (we did
-this for instance for the imx kernel for 2.6.38)
-
-I do not want to do this work for the omap branch, but if someone
-provides the patches, we could find a way to make them available in the
-tree, making it clear that it is not patches that we validated (for
-instance creating a "contrib" directory). I am afraid, however, that
-such patches would bitrot rapidly.
+Also note that around 1.18, latencies on omap3 were greatly improved,
+going down from around 90us to 55us at 1kHz, and 35us at 10kHz.
 
 -- 
 					    Gilles.
