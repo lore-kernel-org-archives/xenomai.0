@@ -1,16 +1,12 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <CAMJ=MEf+bdds8Cv7vENTJLeVpYpR+ZGq1yP6TEFnFvTLy6iB3Q@mail.gmail.com>
-References: <CAMJ=MEeOYUsNXMOUwLyxTo5kDcTTER90bXUpPiwao0YGZMpTeQ@mail.gmail.com>
-	<1316782850.2050.8.camel@domain.hid>
-	<CAMJ=MEfe-EKe9V7N3c=udfq=YGz23HhFec9UqvfZ6LtT2R3bjw@domain.hid>
-	<1316809390.2050.11.camel@domain.hid> <1317034005.2174.6.camel@domain.hid>
-	<CAMJ=MEf+bdds8Cv7vENTJLeVpYpR+ZGq1yP6TEFnFvTLy6iB3Q@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Date: Tue, 04 Oct 2011 17:41:24 +0200
-Message-ID: <1317742884.2082.69.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Xenomai-forge: SEGFAULT is pSOS skin
+Message-ID: <4EAC8885.6070107@domain.hid>
+Date: Sun, 30 Oct 2011 01:13:09 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+References: <CAAeYjMmOjq5mrGJ2E5m9oz0HeCP+6UJ8f7aziXcACPuAKM4PzQ@mail.gmail.com>
+In-Reply-To: <CAAeYjMmOjq5mrGJ2E5m9oz0HeCP+6UJ8f7aziXcACPuAKM4PzQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-help] xenomai on em2440
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -20,48 +16,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Ronny Meeus <ronny.meeus@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: =?UTF-8?B?xYF1a2FzeiBTYWNoYQ==?= <dragilla@domain.hid>
+Cc: xenomai@xenomai.org
 
-On Mon, 2011-09-26 at 22:01 +0200, Ronny Meeus wrote:
+On 10/29/2011 10:38 PM, =C5=81ukasz Sacha wrote:
+> Hello!
+>=20
+> I'm just starting to play with xenomai. My first goal is to install it
+> on my em2440 (similar to mini2440) board.
+> I could use some solid guidelines on where to start as there are many
+> tutorials out there - on mini2440, on xenomai, on arm, on i-pipe and I
+> don't even know which should I follow.
+>=20
+> So please be patient with me and please help me get started.
 
-<snip>
+I would recommend downloading xenomai 2.6.0-rc5 (soon to be release
+2.6.0), and follow the installation guidelines called README.INSTALL in
+the tarball. The instructions are for ARM in general, but there is not
+much specific to a board or SOC, except the kernel configuration.
 
-> Next to this I also adapted the task priority automatically using
-> following algorithm:
-> static int check_task_priority(u_long *psos_prio)
-> {
->         if (*psos_prio < 1 || *psos_prio > 255) /* In theory. */
->                 return ERR_PRIOR;
->         /* Do not change priorities <=10 and >= 240.
->          * Priorities in between are divided by 4 */
->         if (*psos_prio > 240)
->                 *psos_prio = 70 + *psos_prio - 240;
->         else if (*psos_prio > 10)
->                 *psos_prio = 11 + ((*psos_prio-10)/4);
-> 
->         if ((int)(*psos_prio) >= threadobj_max_prio - 1) /* In practice. */
->                 panic("current implementation restricts pSOS "
->                       "priority levels to range [1..%d]",
->                       threadobj_max_prio - 2);
-> 
->         return SUCCESS;
-> }
-> 
-> It also works well for our application.
-> Please share your thoughts.
+If you have some issue once xenomai is installed, you can try the
+TROUBLESHOOTING file contained in the tarball, or the FAQ, if that does
+not help you ask questions on the mailing list (you can also try to
+browse the mailing list archives for similar issues).
 
-Since we cannot generalize the priority mapping rules, a better way may
-be to allow your own code to be called by the pSOS emulator when such
-mapping is required. So I have committed a tentative solution, defining
-psos_task_normalize_priority() as a weak function, which receives the
-pSOS priority, and should return the POSIX one.
+Then, you will have to choose which skin you want to use, if it is
+posix, you may read the following document:
+http://www.xenomai.org/index.php/Porting_POSIX_applications_to_Xenomai
+If you choose the native skin, you may read the following document:
+http://www.xenomai.org/documentation/branches/v2.3.x/pdf/Native-API-Tour-=
+rev-C.pdf
 
-A default implementation is provided by the emulator which does a
-trivial 1:1 mapping.
+Finally, for detailed api documentation, try the doxygen API
+documentation available here:
+http://www.xenomai.org/documentation/xenomai-head/html/api/index.html
 
--- 
-Philippe.
+We keep links to all these documents when you click "Start here", on
+xenomai main page.
 
+Regards.
+
+--=20
+                                                                Gilles.
 
 
