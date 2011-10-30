@@ -1,10 +1,11 @@
 MIME-Version: 1.0
-In-Reply-To: <4EAC8885.6070107@domain.hid>
+In-Reply-To: <CAAeYjMnq-cai4m9=EnDh4bNtKXQw+kMj=JQ3JJ1nYhFb=zD-Nw@domain.hid>
 References: <CAAeYjMmOjq5mrGJ2E5m9oz0HeCP+6UJ8f7aziXcACPuAKM4PzQ@mail.gmail.com>
 	<4EAC8885.6070107@domain.hid>
-From: =?UTF-8?Q?=C5=81ukasz_Sacha?= <dragilla@domain.hid>
-Date: Sun, 30 Oct 2011 09:17:45 +0100
-Message-ID: <CAAeYjMnq-cai4m9=EnDh4bNtKXQw+kMj=JQ3JJ1nYhFb=zD-Nw@domain.hid>
+	<CAAeYjMnq-cai4m9=EnDh4bNtKXQw+kMj=JQ3JJ1nYhFb=zD-Nw@domain.hid>
+Date: Sun, 30 Oct 2011 10:21:27 +0100
+Message-ID: <CAPASGLrv71uw9NYEjxwhYfrz2kHZsSUFANVAegGGU4RBPW3_Ow@domain.hid>
+From: Eric Noulard <eric.noulard@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 Subject: Re: [Xenomai-help] xenomai on em2440
@@ -17,78 +18,74 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: =?UTF-8?Q?=C5=81ukasz_Sacha?= <dragilla@domain.hid>
 Cc: xenomai@xenomai.org
 
-Thank you for your answer.
-I'm starting to read. I just to to understand one more thing first
-because it not clear to me from the wikifaq/howtos.
-I've fount an overview of real time linux solutions here:
-http://www.ibm.com/developerworks/linux/library/l-real-time-linux/
-Xenomai is said to be a thin kernel approach. Is this right?
-If so, would you explain to me what is a skin on this picture?
-My guess is it's the way "real time tasks" part looks like/acts like.
-Am I right?
+2011/10/30 =C5=81ukasz Sacha <dragilla@domain.hid>:
+> Thank you for your answer.
+> I'm starting to read. I just to to understand one more thing first
+> because it not clear to me from the wikifaq/howtos.
+> I've fount an overview of real time linux solutions here:
+> http://www.ibm.com/developerworks/linux/library/l-real-time-linux/
+> Xenomai is said to be a thin kernel approach. Is this right?
 
-However there is another diagram shown in the Chameleon RTOS pdf -
-this does not include the user space.
-What is the user space? Is it or can it be a "regular linux", like
-emdebian for example?
+More or less.
+In the next drawing "Nano-kernel" approach you see a reference
+to ADEOS, ADEOS/I-pipe is the hardware abstraction layer used by Xenomai
+see: http://www.xenomai.org/documentation/branches/v2.3.x/pdf/Life-with-Ade=
+os-rev-B.pdf
 
-Can xenomai have multiple skins at the same time?
+So from the cited article point of view Xenomai is more like a
+nano-kernel approach than think kernel.
 
-Please help me understand.
+> If so, would you explain to me what is a skin on this picture?
 
-regards,
---
-=C5=81ukasz Dragilla Sacha
+A skin is an API on top of the "thin kernel (ADEOS + Xenomai Nucleus) "
+which is offered to Real-Time tasks.
+There is FAQ for that question
+http://www.xenomai.org/index.php/FAQs#What_is_a_Xenomai_skin.3F
 
+which part of this answer does you not understand?
 
+> My guess is it's the way "real time tasks" part looks like/acts like.
+> Am I right?
+> However there is another diagram shown in the Chameleon RTOS pdf -
+> this does not include the user space.
+> What is the user space?
 
-On Sun, Oct 30, 2011 at 01:13, Gilles Chanteperdrix
-<gilles.chanteperdrix@xenomai.org> wrote:
-> On 10/29/2011 10:38 PM, =C5=81ukasz Sacha wrote:
->> Hello!
->>
->> I'm just starting to play with xenomai. My first goal is to install it
->> on my em2440 (similar to mini2440) board.
->> I could use some solid guidelines on where to start as there are many
->> tutorials out there - on mini2440, on xenomai, on arm, on i-pipe and I
->> don't even know which should I follow.
->>
->> So please be patient with me and please help me get started.
->
-> I would recommend downloading xenomai 2.6.0-rc5 (soon to be release
-> 2.6.0), and follow the installation guidelines called README.INSTALL in
-> the tarball. The instructions are for ARM in general, but there is not
-> much specific to a board or SOC, except the kernel configuration.
->
-> If you have some issue once xenomai is installed, you can try the
-> TROUBLESHOOTING file contained in the tarball, or the FAQ, if that does
-> not help you ask questions on the mailing list (you can also try to
-> browse the mailing list archives for similar issues).
->
-> Then, you will have to choose which skin you want to use, if it is
-> posix, you may read the following document:
-> http://www.xenomai.org/index.php/Porting_POSIX_applications_to_Xenomai
-> If you choose the native skin, you may read the following document:
-> http://www.xenomai.org/documentation/branches/v2.3.x/pdf/Native-API-Tour-=
-rev-C.pdf
->
-> Finally, for detailed api documentation, try the doxygen API
-> documentation available here:
-> http://www.xenomai.org/documentation/xenomai-head/html/api/index.html
->
-> We keep links to all these documents when you click "Start here", on
-> xenomai main page.
->
-> Regards.
->
-> --
-> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0Gilles.
->
->
+Which diagram ? on which page of the document?
+
+User space vs Kernel Space is the usual privilege separation of
+operating systems:
+http://en.wikipedia.org/wiki/User_space
+
+> Is it or can it be a "regular linux", like emdebian for example?
+
+As far as I know Emdebian is more about stripping down a classical linux
+than making it real-time. Xenomai as a sub-kernel approach which runs
+one linux system instance (for which there may not be hard realtime guarant=
+ee).
+So Linux is not a Xenomai skin it's kind of low-priority task running along=
+ with
+Xenomai.
+
+That said may be it's possible to apply xenomai patch set to
+Emdebian, but I really don't know.
+
+> Can xenomai have multiple skins at the same time?
+
+Yes Xenomai may have mulitple skins
+(see slide 5 of  http://www.xenomai.org/images/c/c6/Xenomai-OSMB-2007-01.pd=
+f)
+but I don't know if a single application may use different skins at
+the same time.
+I never tried myself so I let other answer that one.
+
+Why would you want to have/use multiple skin?
+
+--=20
+Erk
+Membre de l'April - =C2=AB promouvoir et d=C3=A9fendre le logiciel libre =
+=C2=BB -
+http://www.april.org
 
