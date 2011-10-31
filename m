@@ -1,13 +1,10 @@
-Message-ID: <4EAE7152.70003@domain.hid>
-Date: Mon, 31 Oct 2011 10:58:42 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CAAeYjMmOjq5mrGJ2E5m9oz0HeCP+6UJ8f7aziXcACPuAKM4PzQ@mail.gmail.com>	<4EAC8885.6070107@domain.hid>	<CAAeYjMnq-cai4m9=EnDh4bNtKXQw+kMj=JQ3JJ1nYhFb=zD-Nw@domain.hid>
-	<CAPASGLrv71uw9NYEjxwhYfrz2kHZsSUFANVAegGGU4RBPW3_Ow@domain.hid>
-In-Reply-To: <CAPASGLrv71uw9NYEjxwhYfrz2kHZsSUFANVAegGGU4RBPW3_Ow@domain.hid>
+From: =?UTF-8?Q?=C5=81ukasz_Sacha?= <dragilla@domain.hid>
+Date: Mon, 31 Oct 2011 13:14:21 +0100
+Message-ID: <CAAeYjM=7aZPLifemq7v2QUzr9HxkU=GxDNFbxH6G+R6z2kQMUA@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] xenomai on em2440
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai-help] configuring user-space xenomai 2.6
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -17,23 +14,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Eric Noulard <eric.noulard@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 10/30/2011 10:21 AM, Eric Noulard wrote:
-.>> Can xenomai have multiple skins at the same time?
-> 
-> Yes Xenomai may have mulitple skins
-> (see slide 5 of  http://www.xenomai.org/images/c/c6/Xenomai-OSMB-2007-01.pdf)
-> but I don't know if a single application may use different skins at
-> the same time.
-> I never tried myself so I let other answer that one.
-> 
-> Why would you want to have/use multiple skin?
-> 
+Hey,
 
-An application may use multiple skins at the same time.
+I'm following README_INSTALL from the xenoami 2.6 tree. I successfully
+patched and built the kernel 2.6.38.8 and modules. Now I'm trying to
+configure the user-space.
+I'm running the configure command as given in the example:
+./configure CFLAGS=3D"-march=3Darmv4t" LDFLAGS=3D"-march=3Darmv4t"
+--host=3Darm-none-linux-gnueabi- --build=3Di686-pc-linux-gnu
+I get the following error:
+checking build system type... i686-pc-linux-gnu
+checking host system type... Invalid configuration
+`arm-none-linux-gnueabi-': machine `arm-none-linux-gnueabi' not
+recognized
+configure: error: /bin/bash config/config.sub arm-none-linux-gnueabi- faile=
+d
 
--- 
-                                                                Gilles.
+This is how my environment is setup:
+luke@domain.hid$ which
+arm-none-linux-gnueabi-gcc
+/home/luke/Desktop/moje/mini2440/arm-2008q3/bin/arm-none-linux-gnueabi-gcc
+luke@domain.hid$ echo $PATH
+/home/luke/Desktop/moje/mini2440/arm-2008q3/bin:/usr/lib/lightdm/lightdm:/u=
+sr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games
+
+No adequate info in the TROUBLESHOOTING.
+
+Am doing something wrong? Help me out please.
+
+regards,
+--
+=C5=81ukasz Dragilla Sacha
 
