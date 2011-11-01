@@ -1,20 +1,13 @@
-Message-ID: <4EE8717B.3010500@domain.hid>
-Date: Wed, 14 Dec 2011 10:50:51 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <4EB02A05.4050506@domain.hid>
+Date: Tue, 01 Nov 2011 18:19:01 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <1320342817.94951.YahooMailNeo@domain.hid>
-	<1320705884.27846.YahooMailNeo@domain.hid>
-	<4EB889C1.6020500@domain.hid>
-	<990B36E792F1A4488D3E2B1C46FD62D68954BC2EB6@domain.hid>
-	<4EB941C8.4010306@domain.hid>
-	<1320764897.5719.YahooMailNeo@domain.hid>
-	<4EB9572F.3020205@domain.hid>
-	<20111203095253.GA2163@domain.hid>
-In-Reply-To: <20111203095253.GA2163@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Is there Xenomai support for the Freescale P1020
- processor?
+References: <CAAeYjMko1nqaFX4xvL_j9GoS_wT5SxOFtCjfLgN8T=CGrL2Cvw@domain.hid>
+	<CAAeYjMkVuQLzq-B+Nh1xOXFSHR4K74cwGGCVsZoJaT3GP2mHFA@mail.gmail.com>
+In-Reply-To: <CAAeYjMkVuQLzq-B+Nh1xOXFSHR4K74cwGGCVsZoJaT3GP2mHFA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-help] kernel compilation error
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -24,30 +17,53 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Richard Cochran <richardcochran@domain.hid>
-Cc: xenomai@xenomai.org, MichaelPustylnik@domain.hid
+To: =?UTF-8?B?xYF1a2FzeiBTYWNoYQ==?= <dragilla@domain.hid>
+Cc: xenomai@xenomai.org
 
-On 12/03/2011 10:52 AM, Richard Cochran wrote:
-> On Tue, Nov 08, 2011 at 05:22:07PM +0100, Philippe Gerum wrote:
->> So, the answer is maybe, maybe.
+On 11/01/2011 01:42 PM, =C5=81ukasz Sacha wrote:
+> On Tue, Nov 1, 2011 at 12:34, =C5=81ukasz Sacha <dragilla@domain.hid> wr=
+ote:
+>> Hello again:
 >>
->> Maybe it already works, given that P2020 is supported and I don't
->> see much changes in P1020 wrt what the interrupt pipeline needs to
->> know. I won't know before I put my hands on such a beast.
->
-> BTW, Philippe, about six weeks ago I tried to run the 3.0 powerpc
-> ipipe kernel on the P2020, but it won't compile.  The various irq_
-> functions have changed names and signatures, and so the ipipe
-> interrupt #ifdef code is out of date.
->
+>> luke@domain.hid$ make ARCH=3Darm
+>> CROSS_COMPILE=3Darm-none-linux-gnueabi-
+>> ...
+>>  CC      arch/arm/kernel/fiq.o
+>> arch/arm/kernel/fiq.c: In function 'set_fiq_handler':
+>> arch/arm/kernel/fiq.c:87: error: dereferencing pointer to incomplete t=
+ype
+>> arch/arm/kernel/fiq.c:87: error: dereferencing pointer to incomplete t=
+ype
+>> arch/arm/kernel/fiq.c:89: error: dereferencing pointer to incomplete t=
+ype
+>> arch/arm/kernel/fiq.c:89: error: dereferencing pointer to incomplete t=
+ype
+>> make[1]: *** [arch/arm/kernel/fiq.o] Error 1
+>> make: *** [arch/arm/kernel] Error 2
+>> luke@domain.hid$
+>>
+>> This is how it looks like
+>> 80:void set_fiq_handler(void *start, unsigned int length)
+>> 81:{
+>> 82:#if defined(CONFIG_CPU_USE_DOMAINS)
+>> 83:        memcpy((void *)0xffff001c, start, length);
+>> 84:#else
+>> 85:        memcpy(vectors_page + 0x1c, start, length);
+>> 86:#endif
+>> 87:        flush_icache_range(0xffff001c, 0xffff001c + length);
+>> 88:        if (!vectors_high())
+>> 89:                flush_icache_range(0x1c, 0x1c + length);
+>> 90:}
+>>
+>> Any ideas?
+>=20
+> Please take a look at this as this is piece of code the adeos i-pipe
+> patch (./ksrc/arch/arm/patches/adeos-ipipe-2.6.38.8-arm-1.18-03.patch)
+> modifies : in line 819.
 
-Ok, thanks for the heads up. That should be better now,
-http://download.gna.org/adeos/patches/v3.x/powerpc/
+Please post your .config.
 
-> Richard
->
+--=20
+                                                                Gilles.
 
-
--- 
-Philippe.
 
