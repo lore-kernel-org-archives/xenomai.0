@@ -1,33 +1,61 @@
-From: Wolfgang Mauerer <wolfgang.mauerer@domain.hid>
-Date: Wed, 30 Nov 2011 12:58:02 +0100
-Message-Id: <1322654284-6867-1-git-send-email-wolfgang.mauerer@domain.hid>
-Subject: [Adeos-main] [PATCH 0/2] Fasteoi fixes
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/options/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-To: rpm@xenomai.org
-Cc: jan.kiszka@domain.hid, adeos-main@gna.org, gernot.hillier@domain.hid
+Message-ID: <4EAFC7DB.1070400@domain.hid>
+Date: Tue, 01 Nov 2011 11:20:11 +0100
+From: Philippe Gerum <rpm@xenomai.org>
+MIME-Version: 1.0
+References: <CAAeYjM=YwjH0SsVDLaxt0v1HzzR5rM5N1pZW0K+yHq7KDeg9PA@mail.gmail.com>
+In-Reply-To: <CAAeYjM=YwjH0SsVDLaxt0v1HzzR5rM5N1pZW0K+yHq7KDeg9PA@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai-help] patching a kernel
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: xenomai@xenomai.org
 
-Dear all,
+On 11/01/2011 10:55 AM, Łukasz Sacha wrote:
+> Hi,
+>
+> I'having problems with patching the 2.6.38.8 kernel.
+> I prepare my kernel first to work on my device (mini2440). I configure
+> it to use arm processor, etc.
+> Then I patch from xenomai:
+>
+> scripts/prepare-kernel.sh --arch=arm
+> --adeos=ksrc/arch/arm/patches/adeos-ipipe-2.6.38.8-arm-1.18-03.patch
+> --linux=../linux-2.6.38.8
+>
+> Now when I enter the ../linux-2.6.38.8 and run make xconfig (or
+> menuconfig) I don't even see my processor there - it's set to Pentium
+> PRO.
+>
+> What should I do now?
 
-following Jan's considerations, I found that we lack a generic
-bug fix for the fasteoi handler in 2.6.38, which is backported
-in the first patch. The second patch makes ipipe agree with
-threaded one-shot handlers.
+Check the README.INSTALL file, section 2.4, Building for ARM.
 
-Pending adaption to the latest API, this part is also relevant
-for the ipipe-3.0-noarch. Philippe, do you agree with the
-approach?
+$ make ARCH=arm xconfig
+        ^^^^^^^^
 
-Cheers, Wolfgang
+Your .config file for your 2440 board is probably broken by now if you 
+saved your previous configuration attempt (i.e. switched to x86 
+settings). You may want to check this as well.
 
---
-Siemens AG, Open Source Platforms,
-Corporate Competence Centre Embedded Linux
+>
+> regards,
+> --
+> Łukasz Dragilla Sacha
+>
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
 
+
+-- 
+Philippe.
 
