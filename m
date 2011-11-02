@@ -1,67 +1,116 @@
-Message-ID: <4EB55759.2020404@domain.hid>
-Date: Sat, 05 Nov 2011 16:33:45 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
+In-Reply-To: <CAAeYjM=gbnctwNXzxhZd8+wGHMtwRh4RUNOMFuriZaXp1wzKFA@mail.gmail.com>
+References: <CAAeYjMko1nqaFX4xvL_j9GoS_wT5SxOFtCjfLgN8T=CGrL2Cvw@domain.hid>
+	<CAAeYjMkVuQLzq-B+Nh1xOXFSHR4K74cwGGCVsZoJaT3GP2mHFA@mail.gmail.com>
+	<4EB16266.5090704@domain.hid> <4EB163C5.9000302@domain.hid>
+	<CAAeYjMk6hguN557FBgFMwi2VnVgpBT6dy8Nyhf_OD0q38OHarA@mail.gmail.com>
+	<CAAeYjM=gbnctwNXzxhZd8+wGHMtwRh4RUNOMFuriZaXp1wzKFA@mail.gmail.com>
+From: =?UTF-8?Q?=C5=81ukasz_Sacha?= <dragilla@domain.hid>
+Date: Thu, 3 Nov 2011 00:31:49 +0100
+Message-ID: <CAAeYjMnjo8dsARF887bZT4sz9R5Ye6kz9uf2C9ydwkGLOcLKXg@domain.hid>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] Xenomai v2.6.0
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-help] kernel compilation error
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Xenomai help <xenomai@xenomai.org>, Xenomai core <Xenomai-core@domain.hid>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
+On Thu, Nov 3, 2011 at 00:24, =C5=81ukasz Sacha <dragilla@domain.hid> wrote:
+> On Thu, Nov 3, 2011 at 00:15, =C5=81ukasz Sacha <dragilla@domain.hid> wrot=
+e:
+>> On Wed, Nov 2, 2011 at 16:37, Gilles Chanteperdrix
+>> <gilles.chanteperdrix@xenomai.org> wrote:
+>>> On 11/02/2011 04:31 PM, Gilles Chanteperdrix wrote:
+>>>> On 11/01/2011 01:42 PM, =C5=81ukasz Sacha wrote:
+>>>>> On Tue, Nov 1, 2011 at 12:34, =C5=81ukasz Sacha <dragilla@domain.hid> =
+wrote:
+>>>>>> Hello again:
+>>>>>>
+>>>>>> luke@domain.hid$ make ARCH=3Dar=
+m
+>>>>>> CROSS_COMPILE=3Darm-none-linux-gnueabi-
+>>>>>> ...
+>>>>>> =C2=A0CC =C2=A0 =C2=A0 =C2=A0arch/arm/kernel/fiq.o
+>>>>>> arch/arm/kernel/fiq.c: In function 'set_fiq_handler':
+>>>>>> arch/arm/kernel/fiq.c:87: error: dereferencing pointer to incomplete=
+ type
+>>>>>> arch/arm/kernel/fiq.c:87: error: dereferencing pointer to incomplete=
+ type
+>>>>>> arch/arm/kernel/fiq.c:89: error: dereferencing pointer to incomplete=
+ type
+>>>>>> arch/arm/kernel/fiq.c:89: error: dereferencing pointer to incomplete=
+ type
+>>>>>> make[1]: *** [arch/arm/kernel/fiq.o] Error 1
+>>>>>> make: *** [arch/arm/kernel] Error 2
+>>>>>> luke@domain.hid$
+>>>>>>
+>>>>>> This is how it looks like
+>>>>>> 80:void set_fiq_handler(void *start, unsigned int length)
+>>>>>> 81:{
+>>>>>> 82:#if defined(CONFIG_CPU_USE_DOMAINS)
+>>>>>> 83: =C2=A0 =C2=A0 =C2=A0 =C2=A0memcpy((void *)0xffff001c, start, len=
+gth);
+>>>>>> 84:#else
+>>>>>> 85: =C2=A0 =C2=A0 =C2=A0 =C2=A0memcpy(vectors_page + 0x1c, start, le=
+ngth);
+>>>>>> 86:#endif
+>>>>>> 87: =C2=A0 =C2=A0 =C2=A0 =C2=A0flush_icache_range(0xffff001c, 0xffff=
+001c + length);
+>>>>>> 88: =C2=A0 =C2=A0 =C2=A0 =C2=A0if (!vectors_high())
+>>>>>> 89: =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0flush_ica=
+che_range(0x1c, 0x1c + length);
+>>>>>> 90:}
+>>>>>>
+>>>>>> Any ideas?
+>>>>>
+>>>>> Please take a look at this as this is piece of code the adeos i-pipe
+>>>>> patch (./ksrc/arch/arm/patches/adeos-ipipe-2.6.38.8-arm-1.18-03.patch=
+)
+>>>>> modifies : in line 819.
+>>>>
+>>>> Indeed, we need the definition of struct task_struct in
+>>>> asm/cacheflush.h, the following patch should help:
+>>>> http://git.xenomai.org/?p=3Dipipe-gch.git;a=3Dcommitdiff;h=3Dca2793e18=
+d538d07a648583c47d40fff405c4778;hp=3De68e48bebdc551a534ecd6fdbd839eb9ee2637=
+f7
+>>>>
+>>>> A new patch will be out soon.
+>
+> I get two section mismatches compiling the kernel.
+> --- cut here ---
+>
+> WARNING: arch/arm/mach-s3c2440/built-in.o(.text+0x8e0): Section
+> mismatch in reference from the function
+> mini2440_parse_features.clone.0() to the (unknown reference)
+> .init.data:(unknown)
+> The function mini2440_parse_features.clone.0() references
+> the (unknown reference) __initdata (unknown).
+> This is often because mini2440_parse_features.clone.0 lacks a __initdata
+> annotation or the annotation of (unknown) is wrong.
+>
+> WARNING: arch/arm/mach-s3c2440/built-in.o(.data+0x184): Section
+> mismatch in reference from the variable s3c2440_dma_driver to the
+> function .init.text:s3c2440_dma_add()
+> The variable s3c2440_dma_driver references
+> the function __init s3c2440_dma_add()
+> If the reference is valid then annotate the
+> variable with __init* or __refdata (see linux/init.h) or name the variabl=
+e:
+> *_template, *_timer, *_sht, *_ops, *_probe, *_probe_one, *_console,
+> --- cut here ---
+>
+> Is this something to worry about?
+Actually there's more of this. Let me know if I should paste it here.
 
-Hi,
-
-please find Xenomai 2.6.0 at the usual place:
-http://download.gna.org/xenomai/stable/xenomai-2.6.0.tar.bz2
-
-This new branch started as a reboot of the v2.5 branch, for changes
-which needed breaking the ABI, said changes being:
-* a correct handling of signals when waiting for condition variables;
-
-* a change in the way thread mode is accessed in user-space, to fix
-possible leaks depending on the libc;
-
-* the automatic switch back to secondary mode after a primary mode
-system call, for threads running with SCHED_OTHER scheduling policy,
-except when they hold a mutex.
-
-
-However, at this chance, we also included some new features to this release:
-* support for a new architecture: sh4;
-
-* CLOCK_HOST_REALTIME, a clock synchronized with Linux CLOCK_REALTIME
-clock, safe to be read when in primary mode;
-
-* new analogy drivers for NI 660x and NI 670x boards;
-
-* a simplified user-space configuration for the ARM architecture, where
-the default user-space libraries generated are no longer generated for
-only one SOC, without any loss of performance;
-
-* a simplified xeno-test script, which should now work more reliably,
-and is based on a "xeno-test-run" interpreter, which will allow to write
-different test scenarios;
-
-* the beginnings of a regression test suite;
-
-* a move of the rtdk library to the common "libxenomai" library,
-allowing to have printf being rt-safe when using the posix skin;
-
-* pkg-config support, each skin library is available as
-"libxenomai_skin" pkg-config package;
-
-* and the usual amount of upgrades and adeos patches to follow the linux
-kernel changes.
-
-Enjoy.
-
--- 
-                                                                Gilles.
+regards,
+--=20
+LS
 
