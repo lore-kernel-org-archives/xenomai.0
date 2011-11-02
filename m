@@ -1,39 +1,38 @@
+Message-ID: <4EB14AEC.1080203@domain.hid>
+Date: Wed, 02 Nov 2011 14:51:40 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <4E8B3744.2030407@domain.hid>
-References: <CAGc_wL0GYwEPJVMOBR_niJCd9bz2VWoTA7-q-MLOAR_WW2vm2g@domain.hid>
-	<4E8AEB1D.2060706@domain.hid>
-	<CAGc_wL11cKQhxRmgYB0wU-bFii3YaqjibjgWB+=Tob3tFjsfQQ@mail.gmail.com>
-	<4E8B0DEA.8030102@domain.hid>
-	<CAGc_wL2wb76-t7RBWJnKxgcvsrcKgnFgV4qkjvUgh5AvM7ie3g@domain.hid>
-	<4E8B3744.2030407@domain.hid>
-Date: Wed, 5 Oct 2011 03:48:59 -0400
-Message-ID: <CAGc_wL2RgNKfMUyQURJ8G2ceaJtvnJL6LpFue3ekuwJ99vwPww@domain.hid>
-From: Julien Delange <julien.delange@domain.hid>
+References: <4EB14817.7010108@domain.hid>
+In-Reply-To: <4EB14817.7010108@domain.hid>
 Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai-help] Kernel configuration suggestions/hints
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-core] iMX25 problem with gpio and xenomai
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Xenomai help <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Roberto Bielli <roberto.bielli@domain.hid>
+Cc: xenomai@xenomai.org
 
-On Tue, Oct 4, 2011 at 12:41 PM, Gilles Chanteperdrix
-<gilles.chanteperdrix@xenomai.org> wrote:
-> Another mail in that thread seem to suggest that it could be long. Have
-> you tried timing the various parts of your loop to see where the time is
-> spent?
+On 11/02/2011 02:39 PM, Roberto Bielli wrote:
+> Hi,
+> 
+> i'm doing the porting of xenomai version 2.5.6 on imx25 board and i'm 
+> looking to start from imx27.
+> I have some problem with gpio. It seems there are spurious interrupts.
+> I would know what xenomai want to know about interrupts (i see 
+> ipipe_handle_irq_cond in gpio handler, is it needed ?) and registry save 
+> (spin_lock_irqsave .... in mxc_gpio_set etc...)
 
-No, sorry, my bad. Unfortunately, I cannot make more tests at this
-time because I don't have the hardware.
-I will do additional investigation soon, I would have access to the
-acquisition card soon. My intent was to know if there was an obvious
-error either in my code or in my kernel configuration. Apparently not,
-so, I will try to figure out the root causes of these issues.
+Please start from
+http://download.gna.org/adeos/patches/v2.6/arm/adeos-ipipe-2.6.38.8-arm-1.18-03.patch
 
-Best regards,
+And tell us if you have problems with this patch.
+
+-- 
+                                                                Gilles.
 
