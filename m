@@ -1,102 +1,64 @@
-From: Philippe Gerum <rpm@xenomai.org>
-In-Reply-To: <CAMJ=MEfuYjfYzsoWGL5YXoy4m-GCxd-6KbXj2pSdHxGB-KKh+g@domain.hid>
-References: <CAAXf6LW-HePfMj4F86s-dFoztWN5NLsGm9TxqpHN-EwxEdtiFA@mail.gmail.com>
-	<8236197CA3DA864F9EF20609D988726338B7553A@rrxchngmbx01.mro.roland-man.biz>
-	<1317729603.2082.59.camel@domain.hid>
-	<CAMJ=MEfuYjfYzsoWGL5YXoy4m-GCxd-6KbXj2pSdHxGB-KKh+g@domain.hid>
-Content-Type: text/plain; charset="UTF-8"
-Date: Tue, 04 Oct 2011 23:15:07 +0200
-Message-ID: <1317762907.2082.80.camel@domain.hid>
-Mime-Version: 1.0
+Message-ID: <4EB14817.7010108@domain.hid>
+Date: Wed, 02 Nov 2011 14:39:35 +0100
+From: Roberto Bielli <roberto.bielli@domain.hid>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] xenomai-forge [psos] t_start segmentation fault
- when args == NULL
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Subject: [Xenomai-core] iMX25 problem with gpio and xenomai
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Ronny Meeus <ronny.meeus@domain.hid>
-Cc: Xenomai-help@domain.hid, dietmar.schindler@domain.hid
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: xenomai@xenomai.org
 
-On Tue, 2011-10-04 at 23:11 +0200, Ronny Meeus wrote:
-> On Tue, Oct 4, 2011 at 2:00 PM, Philippe Gerum <rpm@xenomai.org> wrote:
-> > On Tue, 2011-10-04 at 10:42 +0000, dietmar.schindler@domain.hid
-> > wrote:
-> >> > -----Original Message-----
-> >> > On Behalf Of Thomas De Schampheleire
-> >> > Sent: Tuesday, October 04, 2011 11:42 AM
-> >> > ...
-> >> > In the xenomai-forge psos library, t_start() does not allow a NULL
-> >> > args pointer, while I think this is allowed in PSOS.
-> >>
-> >> The "pSOSystem System Calls" manual doesn't state the permissibility of a NULL args pointer, as far as I can see:
-> >>
-> >> unsigned long t_start(
-> >>    unsigned long tid,      /* task identifier */
-> >>    unsigned long mode,     /* initial task attributes */
-> >>    void (*start_addr)(),   /* task address */
-> >>    unsigned long targs[4]  /* startup task arguments */
-> >>    )
-> >> ...
-> >> targs      Specifies four startup values passed to the task (see Startup Values under Target).
-> >>
-> >> Target
-> >> Startup Values
-> >> ...
-> >> A new task can receive up to four long words of input arguments. To facilitate retrieval of these arguments, they are passed to the task as if it is invoked as a highlevel language procedure or function. For example, if a C task nice has three input arguments, it can be declared as follows:
-> >>
-> >> nice (unsigned long a, unsigned long b, unsigned long c);
-> >>
-> >> where targs[0] is passed to a, targs[1] to b, and targs[2] to c. In this case, targs[3] is irrelevant and does not need the calling task to load it.
-> >>
-> >
-> > Accepting NULL was a Xenomai-specific convenience introduced in Xenomai
-> > 2.x IIRC, then I changed my mind for 3.x. Granted NULL args would not
-> > work when back on real pSOS, but that does not look like a hot issue. So
-> > we should probably just accept it anew, and be happy.
-> >
-> >> --
-> >> Regards,
-> >> Dietmar
-> >> ________________________________________ manroland AG Vorsitzender des Aufsichtsrates: Hanno C. Fiedler Vorstand: Gerd Finkbeiner (Vorsitzender), Dr. Ingo Koch, Dr. Markus Rall, Paul Steidle Sitz der Gesellschaft: Offenbach am Main, Registergericht: Amtsgericht Offenbach HRB-Nr. 42592 USt-Ident-Nr. DE 250200933
-> >>
-> >>
-> >> _______________________________________________
-> >> Xenomai-help mailing list
-> >> Xenomai-help@domain.hid
-> >> https://mail.gna.org/listinfo/xenomai-help
-> >
-> > --
-> > Philippe.
-> >
-> >
-> >
-> > _______________________________________________
-> > Xenomai-help mailing list
-> > Xenomai-help@domain.hid
-> > https://mail.gna.org/listinfo/xenomai-help
-> >
-> 
-> Hello
-> 
-> I think that it is supported since our application does pass a NULL
-> pointer as args argument.
-> The application is originally created in a real pSOS environment 12 years ago.
+Hi,
 
-Ok. Was this running on MMU-enabled hw?
+i'm doing the porting of xenomai version 2.5.6 on imx25 board and i'm 
+looking to start from imx27.
+I have some problem with gpio. It seems there are spurious interrupts.
+I would know what xenomai want to know about interrupts (i see 
+ipipe_handle_irq_cond in gpio handler, is it needed ?) and registry save 
+(spin_lock_irqsave .... in mxc_gpio_set etc...)
 
-> 
-> Anyhow thanks for changing it.
-> 
-> Ronny
+Thanks a lot
 
 -- 
-Philippe.
++------------------------------------------------------------------------------------------------+
+							
+Roberto Bielli
+Sviluppo Software					
+Axel S.r.l.					
+							
+Via Del Cannino, 3 				
+21020 Crosio Della Valle			
+Varese - Italy					
+							
+Telefono: +39 0332 949600			
+Fax:      +39 0332 969315			
+							
+E-mail:   roberto.bielli@domain.hid	
+Web Site: www.axelsw.it
 
++------------------------------------------------------------------------------------------------+
+
+Si precisa che le informazioni contenute in questo messaggio sono riservate e ad uso esclusivo del destinatario.
+Qualora il messaggio in parola Le fosse pervenuto per errore, La preghiamo di eliminarlo senza copiarlo e di non inoltrarlo a terzi,
+dandocene gentilmente comunicazione. Grazie.
+Informativa sul trattamento dei dati personali (D. Lgs. 196/2003).
+I dati utilizzati per la spedizione del presente messaggio sono utilizzati da Axel S.r.l., titolare del trattamento,
+per l'invio delle comunicazioni dei diversi settori aziendali, non essendo autorizzata la divulgazione a terzi.
+Potrete rivolgere alla seguente mail richieste di verifica, rettifica o cancellazione dei Vostri dati: info@domain.hid
+
+This e-mail and any attachments is confidential and may contain privileged information
+intended for the addressee(s) only. Dissemination, copying, printing or use by anybody
+else is unauthorised. If you are not the intended recipient,
+please delete this message and any attachments and advise the sender
+by return e-mail.Thank you.  			
+							
++------------------------------------------------------------------------------------------------+
 
 
