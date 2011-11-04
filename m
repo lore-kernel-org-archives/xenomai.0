@@ -1,6 +1,6 @@
 MIME-Version: 1.0
-Date: Fri, 4 Nov 2011 10:42:15 +0800
-Message-ID: <CAEcCJg_RWVBVzF5S=K+fdSvO1cQph7Haf2L8jkSxRsf+-g-Mkg@domain.hid>
+Date: Fri, 4 Nov 2011 11:01:13 +0800
+Message-ID: <CAEcCJg8a=qDPkn1pdPz5Jy=J_HrkrimiqMy2iP=saE4L1OYEkA@mail.gmail.com>
 From: yibo dai <strlcopy@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Subject: [Xenomai-help] xenomai thread crash
@@ -13,7 +13,8 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Xenomai-help@domain.hid
+To: Xenomai-help <Xenomai-help@domain.hid>
+Cc: Xenomai-core@domain.hid
 
 In my current project, there is a xenomai thread in the user space,It
 doing the following things:
@@ -41,5 +42,13 @@ thread crash.
 is my usage wrong?why the current domain become linux when executing
 xenomai syscall?by the way,what is the reason to remove
 CONFIG_XENO_OPT_ISHIELD?
+
+system info:
+Xenomai version:2.5.3/2.5.6
+RTNet version:0.9.12
+Linux version:2.6.28
+Adeos patch:adeos-ipipe-2.6.28.10-arm-1.12-07.patch
+processor:at91sam9260
+
 Thanks very much!!
 
