@@ -1,10 +1,9 @@
-Message-ID: <4EB32945.6090001@domain.hid>
-Date: Thu, 03 Nov 2011 17:52:37 -0600
-From: Victor Alvidrez <v.alvidrez@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-help] Question about the TSC and how it is used by Xenomai.
+Date: Fri, 4 Nov 2011 10:42:15 +0800
+Message-ID: <CAEcCJg_RWVBVzF5S=K+fdSvO1cQph7Haf2L8jkSxRsf+-g-Mkg@domain.hid>
+From: yibo dai <strlcopy@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: [Xenomai-help] xenomai thread crash
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -14,44 +13,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Xenomai-help@domain.hid
 
-I have been doing a lot of research regarding time and how it is 
-measured in Linux.
+In my current project, there is a xenomai thread in the user space,It
+doing the following things:
+1.recieve the TIPC message from other services then handle it
+2.recieve the packet from RTNet then handle it
+Program is probably as follows:
+while(1) {
+	select(...); /*block and waiting for TIPC messages */
+	/*do something*/
+	
+	do {
+		ret = rt_dev_recvmsg(...,MSG_DONTWAIT); /*recieve packets from RTNet*/
+		/* do something */
+	} while(ret > 0);
+}
 
-The book "Understanding the Linux Kernel" by Bovet and Cesati was 
-essential in figuring out how time is handled at the kernel level.
-
-Here is what I gather so far (that is relevant to my question):
-
-The RTC is used by the system to initialize the 'struct timeval xtime' 
-variable with a UTC time.  After this occurs the PIT is programmed so 
-that it issues timer interrupts at a fixed frequency.  The book states 
-that this defines a 'tick'.  At each tick occurrence, a interrupt is 
-triggered and is handled by the TIMER_BH handler.  This handler adds 
-1/HZ microseconds to the 'xtime.tv_usec' value (where HZ is the kernel 
-configuration value).  If NTP is being used, the adjtimex() function 
-adjusts the 1/HZ value to slowly synchronize the time with a reference 
-time.
-
-My issue is in understanding how the TSC (timer stamp counter register) 
-is used.  I know that this register counts the number of clock ticks.  I 
-am pretty sure that clock ticks refer to ticks produced by the CPU 
-clock, which runs at completely different frequency than HZ.
-
-This is where my confusion with Xenomai comes in.  The native skin lets 
-me set the timer mode to be oneshot using TM_ONESHOT so that timer ticks 
-are in nanoseconds and so that the timer is rescheduled every tick (not 
-sure if rescheduled is the right word here).  This explanation makes me 
-think that 'timer' refers to the PIT?
-
-However, the native skin lets me set intervals (for alarms/timers) down 
-to nanoseconds.  How can this be accomplished if the HZ value only goes 
-up to 1000 in the kernel configuration?  Somehow I think the TSC must be 
-used separately, independent of the PIT?
-
-I realize this isn't really a Xenomai programming issue, but I thought I 
-would go ahead and ask to see if you could provide some help.
-
-Thanks
+the RTNet stack will trigger a virtual interrupt(use the
+rtdm_nrtsig_pend) when recieved a packet,then the virtual interrupt
+handler will send a SIGUSR2 to the xenomai thread,...,at last the
+xenomai thread wake up.the problem is the xenomai thread will crash
+when calling rt_dev_recvmsg sometimes.i found that
+ops->operation##_nrt(i.e. ops->recvmsg_nrt) will be call(in the
+MAJOR_FUNCTION_WRAPPER_TH),but ops->recvmsg_nrt is NULL,so the xenomai
+thread crash.
+is my usage wrong?why the current domain become linux when executing
+xenomai syscall?by the way,what is the reason to remove
+CONFIG_XENO_OPT_ISHIELD?
+Thanks very much!!
 
