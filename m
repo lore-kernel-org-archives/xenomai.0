@@ -1,9 +1,13 @@
+Message-ID: <4EB3F18F.5080805@domain.hid>
+Date: Fri, 04 Nov 2011 15:07:11 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Date: Fri, 4 Nov 2011 11:01:13 +0800
-Message-ID: <CAEcCJg8a=qDPkn1pdPz5Jy=J_HrkrimiqMy2iP=saE4L1OYEkA@mail.gmail.com>
-From: yibo dai <strlcopy@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Subject: [Xenomai-help] xenomai thread crash
+References: <4EB32945.6090001@domain.hid>
+In-Reply-To: <4EB32945.6090001@domain.hid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] Question about the TSC and how it is used by
+	Xenomai.
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -13,42 +17,73 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Xenomai-help <Xenomai-help@domain.hid>
-Cc: Xenomai-core@domain.hid
+To: Victor Alvidrez <v.alvidrez@domain.hid>
+Cc: xenomai@xenomai.org
 
-In my current project, there is a xenomai thread in the user space,It
-doing the following things:
-1.recieve the TIPC message from other services then handle it
-2.recieve the packet from RTNet then handle it
-Program is probably as follows:
-while(1) {
-	select(...); /*block and waiting for TIPC messages */
-	/*do something*/
-	
-	do {
-		ret = rt_dev_recvmsg(...,MSG_DONTWAIT); /*recieve packets from RTNet*/
-		/* do something */
-	} while(ret > 0);
-}
+On 11/04/2011 12:52 AM, Victor Alvidrez wrote:
+> I have been doing a lot of research regarding time and how it is 
+> measured in Linux.
+> 
+> The book "Understanding the Linux Kernel" by Bovet and Cesati was 
+> essential in figuring out how time is handled at the kernel level.
+> 
+> Here is what I gather so far (that is relevant to my question):
+> 
+> The RTC is used by the system to initialize the 'struct timeval xtime' 
+> variable with a UTC time.  After this occurs the PIT is programmed so 
+> that it issues timer interrupts at a fixed frequency.  The book states 
+> that this defines a 'tick'.  At each tick occurrence, a interrupt is 
+> triggered and is handled by the TIMER_BH handler.  This handler adds 
+> 1/HZ microseconds to the 'xtime.tv_usec' value (where HZ is the kernel 
+> configuration value).  If NTP is being used, the adjtimex() function 
+> adjusts the 1/HZ value to slowly synchronize the time with a reference 
+> time.
 
-the RTNet stack will trigger a virtual interrupt(use the
-rtdm_nrtsig_pend) when recieved a packet,then the virtual interrupt
-handler will send a SIGUSR2 to the xenomai thread,...,at last the
-xenomai thread wake up.the problem is the xenomai thread will crash
-when calling rt_dev_recvmsg sometimes.i found that
-ops->operation##_nrt(i.e. ops->recvmsg_nrt) will be call(in the
-MAJOR_FUNCTION_WRAPPER_TH),but ops->recvmsg_nrt is NULL,so the xenomai
-thread crash.
-is my usage wrong?why the current domain become linux when executing
-xenomai syscall?by the way,what is the reason to remove
-CONFIG_XENO_OPT_ISHIELD?
+This understanding is outdated. Search for "high resolution timers" and
+"dynamic ticks" for a more current understanding.
 
-system info:
-Xenomai version:2.5.3/2.5.6
-RTNet version:0.9.12
-Linux version:2.6.28
-Adeos patch:adeos-ipipe-2.6.28.10-arm-1.12-07.patch
-processor:at91sam9260
+> 
+> My issue is in understanding how the TSC (timer stamp counter register) 
+> is used.  I know that this register counts the number of clock ticks.  I 
+> am pretty sure that clock ticks refer to ticks produced by the CPU 
+> clock, which runs at completely different frequency than HZ.
+> 
+> This is where my confusion with Xenomai comes in.  The native skin lets 
+> me set the timer mode to be oneshot using TM_ONESHOT so that timer ticks 
+> are in nanoseconds and so that the timer is rescheduled every tick (not 
+> sure if rescheduled is the right word here).  This explanation makes me 
+> think that 'timer' refers to the PIT?
 
-Thanks very much!!
+the timer (usually the APIC, but it can be the PIT on very old
+processors) is programmed to tick at the next timer event. The TSC is
+used as a clock source, all the time keeping is done using the TSC unit,
+durations are converted to the timer frequency when programming the timer.
+
+> 
+> However, the native skin lets me set intervals (for alarms/timers) down 
+> to nanoseconds.  How can this be accomplished if the HZ value only goes 
+> up to 1000 in the kernel configuration?  Somehow I think the TSC must be 
+> used separately, independent of the PIT?
+> 
+> I realize this isn't really a Xenomai programming issue, but I thought I 
+> would go ahead and ask to see if you could provide some help.
+
+Xenomai does not use HZ, it uses a timer (either APIC, or PIT) in
+one-shot mode, it means programming it to tick only for the next event.
+Using the TSC as clock source is a completely different issue and has
+nothing to do with the timer chosen. The difference in frequencies only
+cause a conversion between the two.
+
+> 
+> Thanks
+> 
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
+> 
+
+
+-- 
+                                                                Gilles.
 
