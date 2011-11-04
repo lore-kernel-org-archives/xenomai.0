@@ -1,12 +1,11 @@
-Message-ID: <4EB3F297.2090403@domain.hid>
-Date: Fri, 04 Nov 2011 15:11:35 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: "Lyons, Brendon N" <lyonsb@domain.hid>
+Date: Fri, 4 Nov 2011 18:09:06 +0000
+Message-ID: <768BACF5E8359A48BAF0059F2E3E1A430A86A3AF@SN2PRD0202MB152.namprd02.prod.outlook.com>
+Content-Language: en-US
+Content-Type: multipart/alternative;
+	boundary="_000_768BACF5E8359A48BAF0059F2E3E1A430A86A3AFSN2PRD0202MB152_"
 MIME-Version: 1.0
-References: <CAEcCJg_RWVBVzF5S=K+fdSvO1cQph7Haf2L8jkSxRsf+-g-Mkg@domain.hid>
-In-Reply-To: <CAEcCJg_RWVBVzF5S=K+fdSvO1cQph7Haf2L8jkSxRsf+-g-Mkg@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] xenomai thread crash
+Subject: [Xenomai-help] (no subject)
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -16,56 +15,140 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: yibo dai <strlcopy@domain.hid>
-Cc: Xenomai-help@domain.hid
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 11/04/2011 03:42 AM, yibo dai wrote:
-> In my current project, there is a xenomai thread in the user space,It
-> doing the following things:
-> 1.recieve the TIPC message from other services then handle it
-> 2.recieve the packet from RTNet then handle it
-> Program is probably as follows:
-> while(1) {
-> 	select(...); /*block and waiting for TIPC messages */
-> 	/*do something*/
-> 	
-> 	do {
-> 		ret = rt_dev_recvmsg(...,MSG_DONTWAIT); /*recieve packets from RTNet*/
-> 		/* do something */
-> 	} while(ret > 0);
-> }
-> 
-> the RTNet stack will trigger a virtual interrupt(use the
-> rtdm_nrtsig_pend) when recieved a packet,then the virtual interrupt
-> handler will send a SIGUSR2 to the xenomai thread,...,at last the
+--_000_768BACF5E8359A48BAF0059F2E3E1A430A86A3AFSN2PRD0202MB152_
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 
-When you do that, you cause the real-time thread to switch to secondary
-mode, it means, it is no longer real-time, and using RTnet is in fact
-pointless.
+Hello,
 
-> xenomai thread wake up.the problem is the xenomai thread will crash
-> when calling rt_dev_recvmsg sometimes.i found that
-> ops->operation##_nrt(i.e. ops->recvmsg_nrt) will be call(in the
-> MAJOR_FUNCTION_WRAPPER_TH),but ops->recvmsg_nrt is NULL,so the xenomai
-> thread crash.
+I am currently working on a project which requires realtime use of a beagle=
+board. I know that Xenomai is a realtime kernel however, our setup calls fo=
+r the use of Mathworks' Simulink support for RTAI. I have been doing some r=
+esearch and have found that Xenomai incorporates RTAI as a skin? I am not e=
+ntirely sure what that means but it sounds like I can simply copy and paste=
+ RTAI headers in the designated ../rtai folder within Xenomai and have my r=
+tai programs compile and run on Xenomai.
 
-It is hard to say anything without seeing any code.
+Here is an outline of the goals I would like to achieve:
 
-> is my usage wrong?
 
-Yes.
+  *   Have Xenomai running on a beagleboard with an RTAI skin
+  *   Generate realtime programs with the Simulink support for RTAI
+  *   Upload the program and run it on the beagleboard
 
-why the current domain become linux when executing
-> xenomai syscall?
+I have a few questions regarding this approach:
 
-Because you are executing a syscall which does so, not all syscalls do that.
+First of all is this even feasible?
+Secondly if it is, what would be the consequences of running an RTAI execut=
+able built on say <ubuntu 9.04 kernel 2.6.28.7 with gcc 4.3.3> on <Xenomai =
+2.5.2 Kernel 2.6.28.10 (adeos-ipipe-2.6.28.10-arm-1.12-07) patch  with gcc =
+4.3.3> (this is the closest kernel match I could find)
 
-by the way,what is the reason to remove
-> CONFIG_XENO_OPT_ISHIELD?
+Or if I wanted to run a later Xenomai such as <Xenomai 2.5.6 Kernel 2.6.33 =
+(adeos-ipipe-2.6.33-arm-1.18-02) patch with gcc 4.3.3>
 
-It had problems of its own. Beside, it gave the false impression that
-thread could have some real-time guarantees in secondary mode.
+Which leads me to my next question, what is the earliest kernel + Xenomai c=
+ombination supported on the beagleboard?
 
--- 
-                                                                Gilles.
+I hope my questions were clear and made sense, I am new to Xenomai.
+
+
+Regards,
+--
+Brendon Lyons
+B.Sc Aerospace Engineering
+Graduate Research Assistant
+Eagle Flight Research Center
+Embry-Riddle Aeronautical University
+
+--_000_768BACF5E8359A48BAF0059F2E3E1A430A86A3AFSN2PRD0202MB152_
+Content-Type: text/html; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+
+<html dir=3D"ltr">
+<head>
+<meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3Diso-8859-=
+1">
+<style type=3D"text/css" id=3D"owaParaStyle"></style>
+</head>
+<body fpstyle=3D"1" ocsi=3D"0">
+<div style=3D"direction: ltr;font-family: Tahoma;color: #000000;font-size: =
+10pt;"><span class=3D"Apple-style-span" style=3D"font-family: arial, sans-s=
+erif; background-color: rgb(255, 255, 255); ">Hello,</span>
+<div style=3D"font-family: arial, sans-serif; background-color: rgb(255, 25=
+5, 255); ">
+<br>
+</div>
+<div style=3D"font-family: arial, sans-serif; background-color: rgb(255, 25=
+5, 255); ">
+I am currently working on a project which requires realtime use of a beagle=
+board. I know that Xenomai is a realtime kernel however, our setup calls fo=
+r the use of Mathworks' Simulink support for RTAI. I have been doing some r=
+esearch and have found that Xenomai
+ incorporates RTAI as a skin? I am not entirely sure what that means but it=
+ sounds like I can simply copy and paste RTAI headers in the designated ../=
+rtai folder within Xenomai and have my rtai programs compile and run on Xen=
+omai.</div>
+<div style=3D"font-family: arial, sans-serif; background-color: rgb(255, 25=
+5, 255); ">
+<br>
+</div>
+<div style=3D"font-family: arial, sans-serif; background-color: rgb(255, 25=
+5, 255); ">
+Here is an outline of the goals I would like to achieve:</div>
+<div style=3D"font-family: arial, sans-serif; background-color: rgb(255, 25=
+5, 255); ">
+<br>
+</div>
+<div style=3D"font-family: arial, sans-serif; background-color: rgb(255, 25=
+5, 255); ">
+<ul>
+<li style=3D"margin-left: 15px; ">Have Xenomai running on a beagleboard wit=
+h an RTAI skin</li><li style=3D"margin-left: 15px; ">Generate realtime prog=
+rams with the Simulink support for RTAI</li><li style=3D"margin-left: 15px;=
+ ">Upload the program and run it on the beagleboard</li></ul>
+<div>
+<div>I have a few questions regarding this approach:</div>
+<div><br>
+</div>
+<div>First of all is this even feasible?</div>
+<div>Secondly if it is, what would be the consequences of running an RTAI e=
+xecutable built on say &lt;ubuntu 9.04&nbsp;kernel 2.6.28.7 with gcc 4.3.3&=
+gt;&nbsp;on &lt;Xenomai 2.5.2 Kernel 2.6.28.10&nbsp;(adeos-ipipe-2.6.28.<wb=
+r>10-arm-1.12-07) patch&nbsp;&nbsp;with gcc 4.3.3&gt; (this is the closest
+ kernel match I could find)</div>
+<div><br>
+</div>
+<div>Or if I wanted to run a later Xenomai such as &lt;Xenomai 2.5.6 Kernel=
+ 2.6.33 (adeos-ipipe-2.6.33-arm-1.18-<wbr>02) patch with&nbsp;gcc 4.3.3&gt;=
+</div>
+<div><br>
+</div>
+<div>Which leads me to my next question, what is the earliest kernel &#43; =
+Xenomai combination supported on the beagleboard?</div>
+<div><br>
+</div>
+<div>I hope my questions were clear and made sense, I am new to Xenomai.</d=
+iv>
+<div><br>
+</div>
+<div><br>
+</div>
+<div>Regards,</div>
+--&nbsp;<br>
+<font color=3D"#888888">
+<div>Brendon Lyons</div>
+<div>B.Sc Aerospace Engineering</div>
+<div>Graduate Research Assistant</div>
+<div>Eagle Flight Research Center</div>
+<div>Embry-Riddle Aeronautical University</div>
+</font></div>
+</div>
+</div>
+</body>
+</html>
+
+--_000_768BACF5E8359A48BAF0059F2E3E1A430A86A3AFSN2PRD0202MB152_--
 
