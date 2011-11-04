@@ -1,11 +1,11 @@
 From: "Lyons, Brendon N" <lyonsb@domain.hid>
-Date: Fri, 4 Nov 2011 18:09:06 +0000
-Message-ID: <768BACF5E8359A48BAF0059F2E3E1A430A86A3AF@SN2PRD0202MB152.namprd02.prod.outlook.com>
+Date: Fri, 4 Nov 2011 18:15:40 +0000
+Message-ID: <768BACF5E8359A48BAF0059F2E3E1A430A86C3C7@domain.hid>
 Content-Language: en-US
 Content-Type: multipart/alternative;
-	boundary="_000_768BACF5E8359A48BAF0059F2E3E1A430A86A3AFSN2PRD0202MB152_"
+	boundary="_000_768BACF5E8359A48BAF0059F2E3E1A430A86C3C7SN2PRD0202MB152_"
 MIME-Version: 1.0
-Subject: [Xenomai-help] (no subject)
+Subject: [Xenomai-help] Xenomai, Beagleboard and RTAI
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -17,9 +17,14 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
---_000_768BACF5E8359A48BAF0059F2E3E1A430A86A3AFSN2PRD0202MB152_
+--_000_768BACF5E8359A48BAF0059F2E3E1A430A86C3C7SN2PRD0202MB152_
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
+
+I am sorry for the previous message with no subject. I am resending this so=
+ that it can be properly tagged.
+
+______________________________________
 
 Hello,
 
@@ -63,7 +68,7 @@ Graduate Research Assistant
 Eagle Flight Research Center
 Embry-Riddle Aeronautical University
 
---_000_768BACF5E8359A48BAF0059F2E3E1A430A86A3AFSN2PRD0202MB152_
+--_000_768BACF5E8359A48BAF0059F2E3E1A430A86C3C7SN2PRD0202MB152_
 Content-Type: text/html; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 
@@ -75,40 +80,51 @@ Content-Transfer-Encoding: quoted-printable
 </head>
 <body fpstyle=3D"1" ocsi=3D"0">
 <div style=3D"direction: ltr;font-family: Tahoma;color: #000000;font-size: =
-10pt;"><span class=3D"Apple-style-span" style=3D"font-family: arial, sans-s=
-erif; background-color: rgb(255, 255, 255); ">Hello,</span>
-<div style=3D"font-family: arial, sans-serif; background-color: rgb(255, 25=
-5, 255); ">
-<br>
+10pt;">
+<div style=3D"font-family: Times New Roman; color: #000000; font-size: 16px=
+">
+<div id=3D"divRpF134309" style=3D"direction: ltr; "><font face=3D"Tahoma" s=
+ize=3D"2" color=3D"#000000">I am sorry for the previous message with no sub=
+ject. I am resending this so that it can be properly tagged.</font></div>
+<div id=3D"divRpF134309" style=3D"direction: ltr; "><font face=3D"Tahoma" s=
+ize=3D"2" color=3D"#000000"><br>
+</font></div>
+<div id=3D"divRpF134309" style=3D"direction: ltr; "><font face=3D"Tahoma" s=
+ize=3D"2" color=3D"#000000">______________________________________<br>
+</font><br>
 </div>
-<div style=3D"font-family: arial, sans-serif; background-color: rgb(255, 25=
-5, 255); ">
-I am currently working on a project which requires realtime use of a beagle=
-board. I know that Xenomai is a realtime kernel however, our setup calls fo=
-r the use of Mathworks' Simulink support for RTAI. I have been doing some r=
-esearch and have found that Xenomai
- incorporates RTAI as a skin? I am not entirely sure what that means but it=
- sounds like I can simply copy and paste RTAI headers in the designated ../=
-rtai folder within Xenomai and have my rtai programs compile and run on Xen=
-omai.</div>
-<div style=3D"font-family: arial, sans-serif; background-color: rgb(255, 25=
-5, 255); ">
-<br>
+<div></div>
+<div>
+<div style=3D"direction:ltr; font-family:Tahoma; color:#000000; font-size:1=
+0pt"><span class=3D"Apple-style-span" style=3D"font-family:arial,sans-serif=
+; background-color:rgb(255,255,255)">Hello,</span>
+<div style=3D"font-family:arial,sans-serif; background-color:rgb(255,255,25=
+5)"><br>
 </div>
-<div style=3D"font-family: arial, sans-serif; background-color: rgb(255, 25=
-5, 255); ">
-Here is an outline of the goals I would like to achieve:</div>
-<div style=3D"font-family: arial, sans-serif; background-color: rgb(255, 25=
-5, 255); ">
-<br>
+<div style=3D"font-family:arial,sans-serif; background-color:rgb(255,255,25=
+5)">I am currently working on a project which requires realtime use of a be=
+agleboard. I know that Xenomai is a realtime kernel however, our setup call=
+s for the use of Mathworks' Simulink
+ support for RTAI. I have been doing some research and have found that Xeno=
+mai incorporates RTAI as a skin? I am not entirely sure what that means but=
+ it sounds like I can simply copy and paste RTAI headers in the designated =
+../rtai folder within Xenomai and
+ have my rtai programs compile and run on Xenomai.</div>
+<div style=3D"font-family:arial,sans-serif; background-color:rgb(255,255,25=
+5)"><br>
 </div>
-<div style=3D"font-family: arial, sans-serif; background-color: rgb(255, 25=
-5, 255); ">
+<div style=3D"font-family:arial,sans-serif; background-color:rgb(255,255,25=
+5)">Here is an outline of the goals I would like to achieve:</div>
+<div style=3D"font-family:arial,sans-serif; background-color:rgb(255,255,25=
+5)"><br>
+</div>
+<div style=3D"font-family:arial,sans-serif; background-color:rgb(255,255,25=
+5)">
 <ul>
-<li style=3D"margin-left: 15px; ">Have Xenomai running on a beagleboard wit=
-h an RTAI skin</li><li style=3D"margin-left: 15px; ">Generate realtime prog=
-rams with the Simulink support for RTAI</li><li style=3D"margin-left: 15px;=
- ">Upload the program and run it on the beagleboard</li></ul>
+<li style=3D"margin-left:15px">Have Xenomai running on a beagleboard with a=
+n RTAI skin</li><li style=3D"margin-left:15px">Generate realtime programs w=
+ith the Simulink support for RTAI</li><li style=3D"margin-left:15px">Upload=
+ the program and run it on the beagleboard</li></ul>
 <div>
 <div>I have a few questions regarding this approach:</div>
 <div><br>
@@ -147,8 +163,11 @@ iv>
 </font></div>
 </div>
 </div>
+</div>
+</div>
+</div>
 </body>
 </html>
 
---_000_768BACF5E8359A48BAF0059F2E3E1A430A86A3AFSN2PRD0202MB152_--
+--_000_768BACF5E8359A48BAF0059F2E3E1A430A86C3C7SN2PRD0202MB152_--
 
