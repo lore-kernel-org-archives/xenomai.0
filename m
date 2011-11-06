@@ -1,11 +1,13 @@
-Message-ID: <4EB6D11A.6070008@domain.hid>
-Date: Sun, 06 Nov 2011 12:25:30 -0600
-From: at91_enthus <nwromania@domain.hid>
+Message-ID: <4EB6D2A4.2020102@domain.hid>
+Date: Sun, 06 Nov 2011 19:32:04 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4EB6CA3B.1040608@domain.hid> <4EB6CB8A.2020303@domain.hid>
-	<4EB6CDB0.6070306@domain.hid>
-In-Reply-To: <4EB6CDB0.6070306@domain.hid>
-Content-Type: multipart/mixed; boundary="------------060101070409030901080304"
+References: <4EB6CA3B.1040608@domain.hid>
+	<4EB6CB8A.2020303@domain.hid>	<4EB6CDB0.6070306@domain.hid>
+	<4EB6D11A.6070008@domain.hid>
+In-Reply-To: <4EB6D11A.6070008@domain.hid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] Xenomai 2.6.0 - kernel seg faults on AT91
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -16,185 +18,55 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: at91_enthus <nwromania@domain.hid>
+Cc: xenomai@xenomai.org
 
-This is a multi-part message in MIME format.
---------------060101070409030901080304
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-
-On 11/06/2011 12:10 PM, at91_enthus wrote:
-> On 11/06/2011 12:01 PM, Gilles Chanteperdrix wrote:
->> On 11/06/2011 06:56 PM, at91_enthus wrote:
->>> Hi.
+On 11/06/2011 07:25 PM, at91_enthus wrote:
+> On 11/06/2011 12:10 PM, at91_enthus wrote:
+>> On 11/06/2011 12:01 PM, Gilles Chanteperdrix wrote:
+>>> On 11/06/2011 06:56 PM, at91_enthus wrote:
+>>>> Hi.
+>>>>
+>>>> I gave Xenomai 2.6.0 a try and installed a newly patched kernel on my
+>>>> AT91SAM9G20 board.
+>>>>
+>>>> Here is my setup:
+>>>>
+>>>> proc:   AT91SAM9G20
+>>>> kernel: 2.6.35.9
+>>>> OS: embedded Debian Squeeze
+>>>>
+>>>> The board boots fine up to stage 2 (user terminal). Sometimes, I am able
+>>>> to get a login terminal, despite seg fault messages.
+>>>>
+>>>> A similar behavior occurs in a Xenomai capable 2.6.37 kernel, only
+>>>> without the fault messages. In this case the board simply freezes.
+>>>>
+>>>> I included the files (.config and fault messages) in the attachments.
+>>>>
+>>> You enabled CONFIG_FCSE_GUARANTEED, I do not think Debian squeeze can
+>>> boot with that, you need a real embedded filesystem, or use
+>>> CONFIG_FCSE_BEST_EFFORT.
 >>>
->>> I gave Xenomai 2.6.0 a try and installed a newly patched kernel on my
->>> AT91SAM9G20 board.
 >>>
->>> Here is my setup:
->>>
->>> proc:   AT91SAM9G20
->>> kernel: 2.6.35.9
->>> OS: embedded Debian Squeeze
->>>
->>> The board boots fine up to stage 2 (user terminal). Sometimes, I am able
->>> to get a login terminal, despite seg fault messages.
->>>
->>> A similar behavior occurs in a Xenomai capable 2.6.37 kernel, only
->>> without the fault messages. In this case the board simply freezes.
->>>
->>> I included the files (.config and fault messages) in the attachments.
->>>
->> You enabled CONFIG_FCSE_GUARANTEED, I do not think Debian squeeze can
->> boot with that, you need a real embedded filesystem, or use
->> CONFIG_FCSE_BEST_EFFORT.
+>> Since I've started looking in to Xenomai, I have been using FCSE
+>> "guaranteed" and "best efort"  along with both Debian Squeeze and Lenny
+>> (Xenomai 2.5 series) without any issues.
 >>
+>> I'll change the FCSE setting to see if I get a different behavior.
 >>
-> Since I've started looking in to Xenomai, I have been using FCSE
-> "guaranteed" and "best efort"  along with both Debian Squeeze and Lenny
-> (Xenomai 2.5 series) without any issues.
->
-> I'll change the FCSE setting to see if I get a different behavior.
->
-> Regards.
+>> Regards.
+> 
+> I put the results for CONFIG_FCSE_BEST_EFFORT in the attachment.
 
-I put the results for CONFIG_FCSE_BEST_EFFORT in the attachment.
+Unusable. To make it usable, the following options are lacking:
+CONFIG_FCSE_MESSAGES
+CONFIG_FRAME_POINTER
+CONFIG_DEBUG_USER
+CONFIG_DEBUG_ERRORS
 
-thanks
+And add debug_user=29 on the command line.
 
---------------060101070409030901080304
-Content-Type: text/plain;
- name="messages-2.6.0-FCSE_BEST_EFFORT"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment;
- filename="messages-2.6.0-FCSE_BEST_EFFORT"
-
-TG9hZGluZyBmaWxlICJ1SW1hZ2UteGVuIiBmcm9tIG1tYyBkZXZpY2UgMDoxICh4eGExKQox
-NTAzMDM2IGJ5dGVzIHJlYWQKIyMgQm9vdGluZyBrZXJuZWwgZnJvbSBMZWdhY3kgSW1hZ2Ug
-YXQgMjAxMDAwMDAgLi4uCiAgIEltYWdlIE5hbWU6ICAgTGludXgtMi42LjM1LjkteGVub21h
-aQogICBJbWFnZSBUeXBlOiAgIEFSTSBMaW51eCBLZXJuZWwgSW1hZ2UgKHVuY29tcHJlc3Nl
-ZCkKICAgRGF0YSBTaXplOiAgICAxNTAyOTcyIEJ5dGVzID0gMS40IE1pQgogICBMb2FkIEFk
-ZHJlc3M6IDIwMDA4MDAwCiAgIEVudHJ5IFBvaW50OiAgMjAwMDgwMDAKICAgVmVyaWZ5aW5n
-IENoZWNrc3VtIC4uLiBPSwogICBMb2FkaW5nIEtlcm5lbCBJbWFnZSAuLi4gT0sKT0sKClN0
-YXJ0aW5nIGtlcm5lbCAuLi4KClVuY29tcHJlc3NpbmcgTGludXguLi4gZG9uZSwgYm9vdGlu
-ZyB0aGUga2VybmVsLgpMaW51eCB2ZXJzaW9uIDIuNi4zNS45LXhlbm9tYWkgKHVzZXJAaGl2
-ZTY0KSAoZ2NjIHZlcnNpb24gNC4zLjIgKERlYmlhbiA0LjMuMi0xLjEpICkgIzMgU3VuIE5v
-diA2IDEyOjE3OjI1IENTVCAyMDExCkNQVTogQVJNOTI2RUotUyBbNDEwNjkyNjVdIHJldmlz
-aW9uIDUgKEFSTXY1VEVKKSwgY3I9MDAwNTcxNzcKQ1BVOiBWSVZUIGRhdGEgY2FjaGUsIFZJ
-VlQgaW5zdHJ1Y3Rpb24gY2FjaGUKTWFjaGluZTogTWljcm9taW50IEVsZWN0cnVtIDEwMApN
-ZW1vcnkgcG9saWN5OiBFQ0MgZGlzYWJsZWQsIERhdGEgY2FjaGUgd3JpdGViYWNrCkNsb2Nr
-czogQ1BVIDM5NiBNSHosIG1hc3RlciAxMzIgTUh6LCBtYWluIDE4LjQzMiBNSHoKQnVpbHQg
-MSB6b25lbGlzdHMgaW4gWm9uZSBvcmRlciwgbW9iaWxpdHkgZ3JvdXBpbmcgb24uICBUb3Rh
-bCBwYWdlczogMTYyNTYKS2VybmVsIGNvbW1hbmQgbGluZTogY29uc29sZT10dHlTMCwxMTUy
-MDAgcm9vdD0vZGV2L21tY2JsazBwMiByb290d2FpdCBscGo9OTgzMDQgbm9zd2FwClBJRCBo
-YXNoIHRhYmxlIGVudHJpZXM6IDI1NiAob3JkZXI6IC0yLCAxMDI0IGJ5dGVzKQpEZW50cnkg
-Y2FjaGUgaGFzaCB0YWJsZSBlbnRyaWVzOiA4MTkyIChvcmRlcjogMywgMzI3NjggYnl0ZXMp
-Cklub2RlLWNhY2hlIGhhc2ggdGFibGUgZW50cmllczogNDA5NiAob3JkZXI6IDIsIDE2Mzg0
-IGJ5dGVzKQpNZW1vcnk6IDY0TUIgPSA2NE1CIHRvdGFsCk1lbW9yeTogNjE4NDBrLzYxODQw
-ayBhdmFpbGFibGUsIDM2OTZrIHJlc2VydmVkLCAwSyBoaWdobWVtClZpcnR1YWwga2VybmVs
-IG1lbW9yeSBsYXlvdXQ6CiAgICB2ZWN0b3IgIDogMHhmZmZmMDAwMCAtIDB4ZmZmZjEwMDAg
-ICAoICAgNCBrQikKICAgIGZpeG1hcCAgOiAweGZmZjAwMDAwIC0gMHhmZmZlMDAwMCAgICgg
-ODk2IGtCKQogICAgRE1BICAgICA6IDB4ZmZjMDAwMDAgLSAweGZmZTAwMDAwICAgKCAgIDIg
-TUIpCiAgICB2bWFsbG9jIDogMHhjNDgwMDAwMCAtIDB4ZmVlMDAwMDAgICAoIDkzNCBNQikK
-ICAgIGxvd21lbSAgOiAweGMwMDAwMDAwIC0gMHhjNDAwMDAwMCAgICggIDY0IE1CKQogICAg
-bW9kdWxlcyA6IDB4YmYwMDAwMDAgLSAweGMwMDAwMDAwICAgKCAgMTYgTUIpCiAgICAgIC5p
-bml0IDogMHhjMDAwODAwMCAtIDB4YzAwMjAwMDAgICAoICA5NiBrQikKICAgICAgLnRleHQg
-OiAweGMwMDIwMDAwIC0gMHhjMDJiNzAwMCAgICgyNjUyIGtCKQogICAgICAuZGF0YSA6IDB4
-YzAyY2MwMDAgLSAweGMwMmU1Y2EwICAgKCAxMDQga0IpCkhpZXJhcmNoaWNhbCBSQ1UgaW1w
-bGVtZW50YXRpb24uCglSQ1UtYmFzZWQgZGV0ZWN0aW9uIG9mIHN0YWxsZWQgQ1BVcyBpcyBk
-aXNhYmxlZC4KCVZlcmJvc2Ugc3RhbGxlZC1DUFVzIGRldGVjdGlvbiBpcyBkaXNhYmxlZC4K
-TlJfSVJRUzoxOTIKQVQ5MTogOTYgZ3BpbyBpcnFzIGluIDMgYmFua3MKQVQ5MSBJLXBpcGUg
-dGltZXI6IGRpdjogMTI4LCBmcmVxOiAxLjAzMjAwMCBNSHosIHdyYXA6IDYzLjUwMzg3NSBt
-cwpJLXBpcGUsIDEuMDMyIE1IeiBjbG9ja3NvdXJjZQpJLXBpcGUgMS4xOC0wMzogcGlwZWxp
-bmUgZW5hYmxlZC4KQ29uc29sZTogY29sb3VyIGR1bW15IGRldmljZSA4MHgzMApDYWxpYnJh
-dGluZyBkZWxheSBsb29wIChza2lwcGVkKSBwcmVzZXQgdmFsdWUuLiAxOTYuNjAgQm9nb01J
-UFMgKGxwaj05ODMwNCkKcGlkX21heDogZGVmYXVsdDogMzI3NjggbWluaW11bTogMzAxCk1v
-dW50LWNhY2hlIGhhc2ggdGFibGUgZW50cmllczogNTEyCkNQVTogVGVzdGluZyB3cml0ZSBi
-dWZmZXIgY29oZXJlbmN5OiBvawpORVQ6IFJlZ2lzdGVyZWQgcHJvdG9jb2wgZmFtaWx5IDE2
-CkFUOTE6IFBvd2VyIE1hbmFnZW1lbnQKQVQ5MTogU3RhcnRpbmcgYWZ0ZXIgdXNlciByZXNl
-dApiaW86IGNyZWF0ZSBzbGFiIDxiaW8tMD4gYXQgMAp1c2Jjb3JlOiByZWdpc3RlcmVkIG5l
-dyBpbnRlcmZhY2UgZHJpdmVyIHVzYmZzCnVzYmNvcmU6IHJlZ2lzdGVyZWQgbmV3IGludGVy
-ZmFjZSBkcml2ZXIgaHViCnVzYmNvcmU6IHJlZ2lzdGVyZWQgbmV3IGRldmljZSBkcml2ZXIg
-dXNiClN3aXRjaGluZyB0byBjbG9ja3NvdXJjZSBpcGlwZV90c2MKTkVUOiBSZWdpc3RlcmVk
-IHByb3RvY29sIGZhbWlseSAyCklQIHJvdXRlIGNhY2hlIGhhc2ggdGFibGUgZW50cmllczog
-MTAyNCAob3JkZXI6IDAsIDQwOTYgYnl0ZXMpClRDUCBlc3RhYmxpc2hlZCBoYXNoIHRhYmxl
-IGVudHJpZXM6IDIwNDggKG9yZGVyOiAyLCAxNjM4NCBieXRlcykKVENQIGJpbmQgaGFzaCB0
-YWJsZSBlbnRyaWVzOiAyMDQ4IChvcmRlcjogMSwgODE5MiBieXRlcykKVENQOiBIYXNoIHRh
-YmxlcyBjb25maWd1cmVkIChlc3RhYmxpc2hlZCAyMDQ4IGJpbmQgMjA0OCkKVENQIHJlbm8g
-cmVnaXN0ZXJlZApVRFAgaGFzaCB0YWJsZSBlbnRyaWVzOiAyNTYgKG9yZGVyOiAwLCA0MDk2
-IGJ5dGVzKQpVRFAtTGl0ZSBoYXNoIHRhYmxlIGVudHJpZXM6IDI1NiAob3JkZXI6IDAsIDQw
-OTYgYnl0ZXMpCk5FVDogUmVnaXN0ZXJlZCBwcm90b2NvbCBmYW1pbHkgMQpOZXRXaW5kZXIg
-RmxvYXRpbmcgUG9pbnQgRW11bGF0b3IgVjAuOTcgKGRvdWJsZSBwcmVjaXNpb24pCkktcGlw
-ZTogRG9tYWluIFhlbm9tYWkgcmVnaXN0ZXJlZC4KWGVub21haTogaGFsL2FybSBzdGFydGVk
-LgpYZW5vbWFpOiBzY2hlZHVsaW5nIGNsYXNzIGlkbGUgcmVnaXN0ZXJlZC4KWGVub21haTog
-c2NoZWR1bGluZyBjbGFzcyBydCByZWdpc3RlcmVkLgpYZW5vbWFpOiByZWFsLXRpbWUgbnVj
-bGV1cyB2Mi42LjAgKE1vdmluJyBPbikgbG9hZGVkLgpYZW5vbWFpOiBkZWJ1ZyBtb2RlIGVu
-YWJsZWQuClhlbm9tYWk6IHN0YXJ0aW5nIG5hdGl2ZSBBUEkgc2VydmljZXMuClhlbm9tYWk6
-IHN0YXJ0aW5nIFBPU0lYIHNlcnZpY2VzLgpYZW5vbWFpOiBzdGFydGluZyBSVERNIHNlcnZp
-Y2VzLgptc2dtbmkgaGFzIGJlZW4gc2V0IHRvIDEyMApCbG9jayBsYXllciBTQ1NJIGdlbmVy
-aWMgKGJzZykgZHJpdmVyIHZlcnNpb24gMC40IGxvYWRlZCAobWFqb3IgMjUzKQppbyBzY2hl
-ZHVsZXIgbm9vcCByZWdpc3RlcmVkIChkZWZhdWx0KQphdG1lbF91c2FydC4wOiB0dHlTMCBh
-dCBNTUlPIDB4ZmZmYjAwMDAgKGlycSA9IDYpIGlzIGEgQVRNRUxfU0VSSUFMCmNvbnNvbGUg
-W3R0eVMwXSBlbmFibGVkCmF0bWVsX3VzYXJ0LjE6IHR0eVMxIGF0IE1NSU8gMHhmZWZmZjIw
-MCAoaXJxID0gMSkgaXMgYSBBVE1FTF9TRVJJQUwKYnJkOiBtb2R1bGUgbG9hZGVkCmxvb3A6
-IG1vZHVsZSBsb2FkZWQKYXRtZWxfc3BpIGF0bWVsX3NwaS4wOiBBdG1lbCBTUEkgQ29udHJv
-bGxlciBhdCAweGZmZmM4MDAwIChpcnEgMTIpCmF0bWVsX3NwaSBhdG1lbF9zcGkuMTogQXRt
-ZWwgU1BJIENvbnRyb2xsZXIgYXQgMHhmZmZjYzAwMCAoaXJxIDEzKQpNQUNCX21paV9idXM6
-IHByb2JlZApldGgwOiBBdG1lbCBNQUNCIGF0IDB4ZmZmYzQwMDAgaXJxIDIxICgwMDoyMTph
-MzowMDowMjo4OSkKZXRoMDogYXR0YWNoZWQgUEhZIGRyaXZlciBbR2VuZXJpYyBQSFldICht
-aWlfYnVzOnBoeV9hZGRyPWZmZmZmZmZmOjAwLCBpcnE9LTEpCm9oY2lfaGNkOiBVU0IgMS4x
-ICdPcGVuJyBIb3N0IENvbnRyb2xsZXIgKE9IQ0kpIERyaXZlcgphdDkxX29oY2kgYXQ5MV9v
-aGNpOiBBVDkxIE9IQ0kKYXQ5MV9vaGNpIGF0OTFfb2hjaTogbmV3IFVTQiBidXMgcmVnaXN0
-ZXJlZCwgYXNzaWduZWQgYnVzIG51bWJlciAxCmF0OTFfb2hjaSBhdDkxX29oY2k6IGlycSAy
-MCwgaW8gbWVtIDB4MDA1MDAwMDAKaHViIDEtMDoxLjA6IFVTQiBodWIgZm91bmQKaHViIDEt
-MDoxLjA6IDIgcG9ydHMgZGV0ZWN0ZWQKdWRjOiBhdDkxX3VkYyB2ZXJzaW9uIDMgTWF5IDIw
-MDYKbWljZTogUFMvMiBtb3VzZSBkZXZpY2UgY29tbW9uIGZvciBhbGwgbWljZQpydGMtYXQ5
-MXNhbTkgYXQ5MV9ydHQuMDogcnRjIGNvcmU6IHJlZ2lzdGVyZWQgYXQ5MV9ydHQgYXMgcnRj
-MAppMmMgL2RldiBlbnRyaWVzIGRyaXZlcgpjcHVpZGxlOiB1c2luZyBnb3Zlcm5vciBsYWRk
-ZXIKVENQIGN1YmljIHJlZ2lzdGVyZWQKTkVUOiBSZWdpc3RlcmVkIHByb3RvY29sIGZhbWls
-eSAxNwpydGMtYXQ5MXNhbTkgYXQ5MV9ydHQuMDogc2V0dGluZyBzeXN0ZW0gY2xvY2sgdG8g
-MjAxMS0xMS0wNiAxMzoxODoxNSBVVEMgKDEzMjA1ODU0OTUpCldhaXRpbmcgZm9yIHJvb3Qg
-ZGV2aWNlIC9kZXYvbW1jYmxrMHAyLi4uCm1tYzA6IGhvc3QgZG9lcyBub3Qgc3VwcG9ydCBy
-ZWFkaW5nIHJlYWQtb25seSBzd2l0Y2guIGFzc3VtaW5nIHdyaXRlLWVuYWJsZS4KbW1jMDog
-bmV3IFNEIGNhcmQgYXQgYWRkcmVzcyAzMzc1Cm1tY2JsazA6IG1tYzA6MzM3NSBTRDAyRyAx
-LjgzIEdpQiAKIG1tY2JsazA6IHAxIHAyIHAzIHA0CkVYVDQtZnMgKG1tY2JsazBwMik6IHdh
-cm5pbmc6IG1heGltYWwgbW91bnQgY291bnQgcmVhY2hlZCwgcnVubmluZyBlMmZzY2sgaXMg
-cmVjb21tZW5kZWQKRVhUNC1mcyAobW1jYmxrMHAyKTogcmVjb3ZlcnkgY29tcGxldGUKRVhU
-NC1mcyAobW1jYmxrMHAyKTogbW91bnRlZCBmaWxlc3lzdGVtIHdpdGggb3JkZXJlZCBkYXRh
-IG1vZGUuIE9wdHM6IChudWxsKQpWRlM6IE1vdW50ZWQgcm9vdCAoZXh0MiBmaWxlc3lzdGVt
-KSBvbiBkZXZpY2UgMTc5OjIuCkZyZWVpbmcgaW5pdCBtZW1vcnk6IDk2SwpJTklUOiB2ZXJz
-aW9uIDIuODggYm9vdGluZwpJTklUOiBFbnRlcmluZyBydW5sZXZlbDogMgpVbmFibGUgdG8g
-aGFuZGxlIGtlcm5lbCBwYWdpbmcgcmVxdWVzdCBhdCB2aXJ0dWFsIGFkZHJlc3MgYzQwMDAw
-MDAKZmNzZSBwaWQ6IDUsIDB4MGEwMDAwMDAKcGdkID0gYzNkYjAwMDAKW2M0MDAwMDAwXSAq
-cGdkPTAwMDAwMDAwCkludGVybmFsIGVycm9yOiBPb3BzOiA4MDUgWyMxXQpsYXN0IHN5c2Zz
-IGZpbGU6IApNb2R1bGVzIGxpbmtlZCBpbjoKQ1BVOiAwICAgIE5vdCB0YWludGVkICAoMi42
-LjM1LjkteGVub21haSAjMykKUEMgaXMgYXQgX19tZW16ZXJvKzB4MzAvMHg4MApMUiBpcyBh
-dCAweDAKcGMgOiBbPGMwMTUzYmYwPl0gICAgbHIgOiBbPDAwMDAwMDAwPl0gICAgcHNyOiAy
-MDAwMDAxMwpzcCA6IGMzZGMzZWM4ICBpcCA6IDAwMDAwMDAwICBmcCA6IDAwMDFjNTBjCnIx
-MDogMDAwMDAwMDAgIHI5IDogYzNkYzIwMDAgIHI4IDogN2ZmZmYwMDAKcjcgOiAwMDAyODI0
-OCAgcjYgOiBjM2RjM2YxYyAgcjUgOiBjM2RjM2VlNCAgcjQgOiAwMDAwMDAwMApyMyA6IDAw
-MDAwMDAwICByMiA6IDAwMDAwMDAwICByMSA6IDdmZGMyZWUwICByMCA6IGMzZmZmZmY0CkZs
-YWdzOiBuekN2ICBJUlFzIG9uICBGSVFzIG9uICBNb2RlIFNWQ18zMiAgSVNBIEFSTSAgU2Vn
-bWVudCB1c2VyCkNvbnRyb2w6IDAwMDU3MTdmICBUYWJsZTogMjNkYjAwMDAgIERBQzogMDAw
-MDAwMTUKUHJvY2VzcyByYy5sb2NhbCAocGlkOiA0MzIsIHN0YWNrIGxpbWl0ID0gMHhjM2Rj
-MjI3MCkKU3RhY2s6ICgweGMzZGMzZWM4IHRvIDB4YzNkYzQwMDApCjNlYzA6ICAgICAgICAg
-ICAgICAgICAgIGMwMjI4ZDU0IDdmZmRlMjYwIDdmZmZmMDAwIGMwMDdhM2MwIGMwMmQ5YTc4
-IGMwMDdhM2YwCjNlZTA6IGZmZmZmZjljIDAwMDAwMDAwIDAwMDAwMDAwIDAwMDAwMDAwIDAw
-MDAwMDAwIDAwMDAwMDAwIDAwMDAwMDAwIDAwMDAwMDAwCjNmMDA6IDAwMDAwMDAwIDAwMDAw
-MDAwIDAwMDAwMDAwIDAwMDAwMDAwIDAwMDAwMDAwIDAwMDAwMDAwIDAwMDAwMDAwIDAwMDAw
-MDAwCjNmMjA6IDAwMDAwMDAwIDAwMDAwMDAwIDAwMDAwMDAwIDAwMDAwMDAwIDAwMDAwMDAw
-IDAwMDAwMDAwIDAwMDAwMDAwIDAwMDAwMDAwCjNmNDA6IDAwMDAwMDAwIDAwMDAwMDAwIDAw
-MDAwMDAwIDAwMDAwMDAwIDAwMDAwMDAwIDAwMDAwMDAwIDAwMDAwMDAwIDAwMDAwMDAwCjNm
-NjA6IDAwMDAwMDAwIDAwMDAwMDAwIDAwMDAwMDAwIDAwMDAwMDAwIDAwMDAwMDAwIDAwMDAw
-MDAwIDAwMDAwMDAwIDAwMDAwMDAwCjNmODA6IDAwMDAwMDAwIDAwMDAwMDAwIDAwMDAwMDAw
-IDAwMDAwMDAwIDAwMDAwMDAwIDAwMDAwMDAwIDAwMDAwMDAwIDAwMDAwMDAwCjNmYTA6IDAw
-MDAwMDAwIDAwMDAwMDAwIDAwMDAwMDAwIDAwMDAwMDAwIDAwMDAwMDAwIDAwMDAwMDAwIDAw
-MDAwMDAwIDAwMDAwMDAwCjNmYzA6IDAwMDAwMDAwIDAwMDAwMDAwIDAwMDAwMDAwIDAwMDAw
-MDAwIDAwMDAwMDAwIDAwMDAwMDAwIDAwMDAwMDAwIDAwMDAwMDAwCjNmZTA6IDAwMDAwMDAw
-IDAwMDAwMDAwIDAwMDAwMDAwIDAwMDAwMDAwIDAwMDAwMDAwIDAwMDAwMDAwIDAwMDAwMDAw
-IDAwMDAwMDAwCls8YzAxNTNiZjA+XSAoX19tZW16ZXJvKzB4MzAvMHg4MCkgZnJvbSBbPDdm
-ZmRlMjYwPl0gKDB4N2ZmZGUyNjApCkNvZGU6IGUyNTExMDQwIGE4YTA1MDBjIGE4YTA1MDBj
-IGE4YTA1MDBjIChhOGEwNTAwYykgCi0tLVsgZW5kIHRyYWNlIDYzMzdmZmU0YWFiMGFhZjAg
-XS0tLQoK
---------------060101070409030901080304--
+-- 
+                                                                Gilles.
 
