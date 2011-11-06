@@ -1,72 +1,90 @@
-Message-ID: <4EB51D8E.9020609@domain.hid>
-Date: Sat, 05 Nov 2011 12:27:10 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <4EB705FB.1090008@domain.hid>
+Date: Sun, 06 Nov 2011 23:11:07 +0100
+From: Roland Stigge <stigge@domain.hid>
 MIME-Version: 1.0
-References: <1320433713.81220.YahooMailNeo@domain.hid>	<4EB43B3E.806@domain.hid>	<1320440601.64091.YahooMailNeo@domain.hid>
-	<4EB45AF6.60304@domain.hid>
-In-Reply-To: <4EB45AF6.60304@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] 0 CPU time problem
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Content-Type: multipart/mixed; boundary="------------030405050601050201090306"
+Subject: [Xenomai-core] Xenomai 2.6.0 in Debian
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org, tomz30@domain.hid
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Xenomai core <Xenomai-core@domain.hid>
 
-On 11/04/2011 10:36 PM, Gilles Chanteperdrix wrote:
-> On 11/04/2011 10:03 PM, Tom Z wrote:
->>> We do not know what skin you use, we will assume that you use
->>> Xenomai posix skin, so, compile with the right flags.
->>
->> Here is how I
->> build my program, say, fooTest: gcc -I/usr/xenomai/include
->> -D_GNU_SOURCE -D_REENTRANT -Wall -pipe -D__XENO__ -lnative
->> -L/usr/xenomai/lib -lxenomai -lpthread -lnative -lrtdk fooTest.c -o
->> fooTest
->
-> You are using the native skin then.
->
->>> CLOCK_PROCESS_CPUTIME_ID is not implemented for xenomai posix skin,
->>> so, clock_gettime probably returns an error, and the struct timespec
->>> is unchanged. If somehow the glibc clock_gettime is used, and this
->>> call does not cause a system call, then all bets are off, and even a
->>> lockup could happen.
->>
->> Thanks for explaining this. So can I trust the
->> CPU time I obtained with my method when the function is running in
->> the primary mode? It seems you explanation implies that the results I
->> obtained are not reliable, if so, are there other reliable ways to
->> obtain the CPU time?
->
-> No, CLOCK_PROCESS_CPUTIME is a clock implemented by the Linux kernel,
-> so, it does not see the time spent in primary mode. If the foo function
-> does not suspend, you can use rt_timer_tsc(), but the answer is no,
-> there is currently no way to get the cpu time used when in primary mode.
->
+This is a multi-part message in MIME format.
+--------------030405050601050201090306
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-There is one, but deeply buried in the API basement, via rt_task_inquire():
+Hi,
 
-RT_TASK_INFO info;
-RTIME start;
+thanks for Xenomai 2.6.0!
 
-ret = rt_task_inquire(NULL, &info); /* NULL means current task */
-if (ret)
-	goto Houston_handles_the_problem;
-start = info.exectime;
-... do work ....
-ret = rt_task_inquire(NULL, &info);
-delta = info.exectime - start; /* elapsed CPU time in ns */
+I'm attaching a patch that's helpful for the integration of Xenomai in
+Debian (and FHS compliant systems in general), moving the architecture
+dependent test programs from /usr/share to /usr/lib.
 
-rt_task_inquire() will beget a syscall each time invoked though, so it 
-does have some overhead. You need CONFIG_XENO_OPT_STATS enabled in your 
-Kconfig for this feature (defaults to on).
+Thanks in advance,
 
--- 
-Philippe.
+Roland
+
+--------------030405050601050201090306
+Content-Type: text/x-patch;
+ name="xenomai.patch"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+ filename="xenomai.patch"
+
+--- xenomai-2.6.0.orig/src/testsuite/regression/xeno-regression-test.in
++++ xenomai-2.6.0/src/testsuite/regression/xeno-regression-test.in
+@@ -46,13 +46,13 @@ echo 0 > /proc/xenomai/latency || :
+ @testdir@domain.hid
+ 
+ # the tests in this tree
+-@domain.hid
+-@domain.hid
+-@domain.hid
+-@domain.hid
+-@domain.hid
+-@domain.hid
+-@domain.hid
++@testdir@domain.hid
++@testdir@domain.hid
++@testdir@domain.hid
++@testdir@domain.hid
++@testdir@domain.hid
++@testdir@domain.hid
++@testdir@domain.hid
+ 
+ start_load
+ 
+--- xenomai-2.6.0.orig/src/testsuite/regression/native/Makefile.am
++++ xenomai-2.6.0/src/testsuite/regression/native/Makefile.am
+@@ -1,4 +1,4 @@
+-tstdir = $(pkgdatadir)/regression/native
++tstdir = @XENO_TEST_DIR@/regression/native
+ 
+ noinst_HEADERS = check.h
+ 
+--- xenomai-2.6.0.orig/src/testsuite/regression/posix/Makefile.am
++++ xenomai-2.6.0/src/testsuite/regression/posix/Makefile.am
+@@ -1,4 +1,4 @@
+-tstdir = $(pkgdatadir)/regression/posix
++tstdir = @XENO_TEST_DIR@/regression/posix
+ 
+ noinst_HEADERS = check.h
+ 
+--- xenomai-2.6.0.orig/src/testsuite/regression/native+posix/Makefile.am
++++ xenomai-2.6.0/src/testsuite/regression/native+posix/Makefile.am
+@@ -1,4 +1,4 @@
+-tstdir = $(pkgdatadir)/regression/native+posix
++tstdir = @XENO_TEST_DIR@/regression/native+posix
+ 
+ tst_PROGRAMS = mq_select
+ 
+
+--------------030405050601050201090306--
 
