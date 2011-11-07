@@ -1,5 +1,5 @@
-Message-ID: <4EB78D15.4040506@domain.hid>
-Date: Mon, 07 Nov 2011 08:47:33 +0100
+Message-ID: <4EB78EC1.9030001@domain.hid>
+Date: Mon, 07 Nov 2011 08:54:41 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <CAHr1+-YibUz1S57TT0f-2RNqHvnV1t87AWSEOUd2YAe=EDfsmQ@mail.gmail.com>
@@ -24,15 +24,9 @@ Cc: Xenomai-help@domain.hid
 On 11/07/2011 07:52 AM, Aaron Wu wrote:
 > Hi Gilles,
 > 
-> As in last email, do we have plan
+> As in last email,
 
-Yes it is planned.
-
-> and a detailed schedule to support
-> Linux kernel 3.0 on ARCH arch?
-
-No detailed schedule.
-
+And by the way, the last email did not make it to the list.
 
 -- 
                                                                 Gilles.
