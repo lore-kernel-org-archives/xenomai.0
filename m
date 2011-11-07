@@ -1,14 +1,10 @@
-Message-ID: <4EB78EC1.9030001@domain.hid>
-Date: Mon, 07 Nov 2011 08:54:41 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CAHr1+-YibUz1S57TT0f-2RNqHvnV1t87AWSEOUd2YAe=EDfsmQ@mail.gmail.com>
-	<CAHr1+-aWytdw_WzRZhaazVQ13A1OYqBacUgOttnOgwuk0DWV=w@domain.hid>
-In-Reply-To: <CAHr1+-aWytdw_WzRZhaazVQ13A1OYqBacUgOttnOgwuk0DWV=w@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Is there a plan to support Kernel 3.0 for the
-	ARM arch
+Sender: patrickdepinguin@domain.hid
+Date: Mon, 7 Nov 2011 14:38:19 +0100
+Message-ID: <CAAXf6LWx0TdgzmdhZMMxKFWTxzZUP3FXgigmBh-iE78SrMC0eg@domain.hid>
+From: Thomas De Schampheleire <patrickdepinguin+xenomai@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: [Xenomai-help] xenomai-forge git woes
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -18,16 +14,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Aaron Wu <aaronwu06@domain.hid>
-Cc: Xenomai-help@domain.hid
+To: Xenomai-help@domain.hid
 
-On 11/07/2011 07:52 AM, Aaron Wu wrote:
-> Hi Gilles,
-> 
-> As in last email,
+Hi,
 
-And by the way, the last email did not make it to the list.
+It seems something was up with the Xenomai-forge git repository. On
+the web interface, I see many old commits being recommitted today.
 
--- 
-                                                                Gilles.
+Can you give some background information as to why this happened?
+And more importantly, not being an experienced git user, how to
+recover from it? 'git status' shows:
+
+# On branch master
+# Your branch and 'origin/master' have diverged,
+# and have 177 and 360 different commit(s) each, respectively.
+
+and a 'git pull' shows tons of conflicts on files I did not touch.
+
+Thanks,
+Thomas
 
