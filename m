@@ -1,163 +1,51 @@
-Message-ID: <4EC4F67F.50401@domain.hid>
-Date: Thu, 17 Nov 2011 12:56:47 +0100
-From: Wolfgang Grandegger <wg@domain.hid>
+References: <1320342817.94951.YahooMailNeo@domain.hid>
+Message-ID: <1320705884.27846.YahooMailNeo@domain.hid>
+Date: Mon, 7 Nov 2011 14:44:44 -0800 (PST)
+From: makarand pradhan <makarand_u_pradhan@domain.hid>
+In-Reply-To: <1320342817.94951.YahooMailNeo@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-core] [PATCH] rtdm: add rtdm_printk_ratelimited
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Content-Type: multipart/alternative;
+	boundary="-916455410-748457046-1320705884=:27846"
+Subject: [Xenomai-help] Is there Xenomai support for the Freescale P1020
+	processor?
+Reply-To: makarand pradhan <makarand_u_pradhan@domain.hid>
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-This patch implements a real-time safe rate-limited message printing
-on kernel console similar to Linux's printk_ratelimited.
+---916455410-748457046-1320705884=:27846
+Content-Type: text/plain; charset=us-ascii
 
-Signed-off-by: Wolfgang Grandegger <wg@domain.hid>
----
- include/rtdm/rtdm_driver.h |   31 +++++++++++++++++
- ksrc/skins/rtdm/drvlib.c   |   77 ++++++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 108 insertions(+), 0 deletions(-)
+Greetings All,
 
-diff --git a/include/rtdm/rtdm_driver.h b/include/rtdm/rtdm_driver.h
-index 85624ed..4267bd7 100644
---- a/include/rtdm/rtdm_driver.h
-+++ b/include/rtdm/rtdm_driver.h
-@@ -1241,6 +1241,37 @@ static inline void rtdm_mutex_destroy(rtdm_mutex_t *mutex)
- 
- #define rtdm_printk(format, ...)	printk(format, ##__VA_ARGS__)
- 
-+struct rtdm_ratelimit_state {
-+	rtdm_lock_t	lock;		/* protect the state */
-+	nanosecs_abs_t  interval;
-+	int		burst;
-+	int		printed;
-+	int		missed;
-+	nanosecs_abs_t	begin;
-+};
-+
-+int rtdm_ratelimit(struct rtdm_ratelimit_state *rs, const char *func);
-+
-+#define DEFINE_RTDM_RATELIMIT_STATE(name, interval_init, burst_init)	\
-+	struct rtdm_ratelimit_state name = {				\
-+		.lock		= RTDM_LOCK_UNLOCKED,			\
-+		.interval	= interval_init,			\
-+		.burst		= burst_init,				\
-+	}
-+
-+/* We use the Linux defaults */
-+#define DEF_RTDM_RATELIMIT_INTERVAL	5000000000LL
-+#define DEF_RTDM_RATELIMIT_BURST	10
-+
-+#define rtdm_printk_ratelimited(fmt, ...)  ({				\
-+	static DEFINE_RTDM_RATELIMIT_STATE(_rs,				\
-+					   DEF_RTDM_RATELIMIT_INTERVAL,	\
-+					   DEF_RTDM_RATELIMIT_BURST);	\
-+									\
-+	if (rtdm_ratelimit(&_rs, __func__))				\
-+		printk(fmt, ##__VA_ARGS__);				\
-+})
-+
- #ifndef DOXYGEN_CPP /* Avoid static inline tags for RTDM in doxygen */
- static inline void *rtdm_malloc(size_t size)
- {
-diff --git a/ksrc/skins/rtdm/drvlib.c b/ksrc/skins/rtdm/drvlib.c
-index 8c86705..06fa772 100644
---- a/ksrc/skins/rtdm/drvlib.c
-+++ b/ksrc/skins/rtdm/drvlib.c
-@@ -2111,9 +2111,86 @@ int rtdm_munmap(rtdm_user_info_t *user_info, void *ptr, size_t len)
- EXPORT_SYMBOL_GPL(rtdm_munmap);
- #endif /* CONFIG_XENO_OPT_PERVASIVE || DOXYGEN_CPP */
- 
-+/**
-+ * @brief Enforces a rate limit
-+ *
-+ * This function enforces a rate limit: not more than @rs->burst callbacks
-+ * in every @rs->interval.
-+ *
-+ * @param[in,out] rtdm_ratelimit_state data
-+ * @param[in] name of calling function
-+ *
-+ * @return 0 means callback will be suppressed and 1 means go ahead and do it
-+ *
-+ * Environments:
-+ *
-+ * This service can be called from:
-+ *
-+ * - Kernel module initialization/cleanup code
-+ * - Kernel-based task
-+ * - User-space task (RT, non-RT)
-+ *
-+ * Rescheduling: possible.
-+ */
-+int rtdm_ratelimit(struct rtdm_ratelimit_state *rs, const char *func)
-+{
-+	rtdm_lockctx_t lock_ctx;
-+	int ret;
-+
-+	if (!rs->interval)
-+		return 1;
-+
-+	rtdm_lock_get_irqsave(&rs->lock, lock_ctx);
-+
-+	if (!rs->begin)
-+		rs->begin = rtdm_clock_read();
-+	if (rtdm_clock_read() >= rs->begin + rs->interval) {
-+		if (rs->missed)
-+			printk(KERN_WARNING "%s: %d callbacks suppressed\n",
-+			       func, rs->missed);
-+		rs->begin   = 0;
-+		rs->printed = 0;
-+		rs->missed  = 0;
-+	}
-+	if (rs->burst && rs->burst > rs->printed) {
-+		rs->printed++;
-+		ret = 1;
-+	} else {
-+		rs->missed++;
-+		ret = 0;
-+	}
-+	rtdm_lock_put_irqrestore(&rs->lock, lock_ctx);
-+
-+	return ret;
-+}
-+EXPORT_SYMBOL(rtdm_ratelimit);
-+
- #ifdef DOXYGEN_CPP /* Only used for doxygen doc generation */
- 
- /**
-+ * Real-time safe rate-limited message printing on kernel console
-+ *
-+ * @param[in] format Format string (conforming standard @c printf())
-+ * @param ... Arguments referred by @a format
-+ *
-+ * @return On success, this service returns the number of characters printed.
-+ * Otherwise, a negative error code is returned.
-+ *
-+ * Environments:
-+ *
-+ * This service can be called from:
-+ *
-+ * - Kernel module initialization/cleanup code
-+ * - Interrupt service routine (consider the overhead!)
-+ * - Kernel-based task
-+ * - User-space task (RT, non-RT)
-+ *
-+ * Rescheduling: never in real-time context, possible in non-real-time
-+ * environments.
-+ */
-+void rtdm_printk_ratelimited(const char *format, ...);
-+
-+/**
-  * Real-time safe message printing on kernel console
-  *
-  * @param[in] format Format string (conforming standard @c printf())
--- 
-1.7.4.1
 
+
+We note the QorlQ processors, and the Freescale e500 PowerPC architecture
+is not on the list of Supported Architectures at
+http://www.xenomai.org/index.php/Embedded_Device_Support.
+On the other hand, that document states that the QorIQ P2020
+is supported under "Supported Evaluation Boards". 
+Can anyone pl comment if the P1020 is supported or is going to be supported?
+Thanks and Rgds,
+
+Makarand. 
+---916455410-748457046-1320705884=:27846
+Content-Type: text/html; charset=us-ascii
+
+<html><body><div style="color:#000; background-color:#fff; font-family:times new roman, new york, times, serif;font-size:12pt"><div>Greetings All,<br></div><div style="font-size: 12pt; font-family: 'times new roman', 'new york', times, serif; "><div style="font-size: 12pt; font-family: 'times new roman', 'new york', times, serif; "><div id="yiv707671468"><div><div style="color: rgb(0, 0, 0); background-color: rgb(255, 255, 255); font-size: 12pt; font-family: 'times new roman', 'new york', times, serif; "><div><br></div><div><pre>We note the QorlQ processors, and the Freescale e500 PowerPC architecture
+is not on the list of Supported Architectures at
+http://www.xenomai.org/index.php/Embedded_Device_Support.
+On the other hand, that document states that the QorIQ P2020
+is supported under "Supported Evaluation Boards".
+</pre></div><div><pre>Can anyone pl comment if the P1020 is supported or is going to be supported?</pre><pre>Thanks and Rgds,<br></pre><pre>Makarand.
+
+</pre></div></div></div></div><br><br></div></div></div></body></html>
+---916455410-748457046-1320705884=:27846--
 
