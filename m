@@ -1,15 +1,11 @@
-Message-ID: <4EB941C8.4010306@domain.hid>
-Date: Tue, 08 Nov 2011 15:50:48 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: "Leopold Palomo-Avellaneda" <leo@domain.hid>
+Date: Tue, 8 Nov 2011 16:06:52 +0100
 MIME-Version: 1.0
-References: <1320342817.94951.YahooMailNeo@domain.hid>	<1320705884.27846.YahooMailNeo@domain.hid>
-	<4EB889C1.6020500@domain.hid>
-	<990B36E792F1A4488D3E2B1C46FD62D68954BC2EB6@domain.hid>
-In-Reply-To: <990B36E792F1A4488D3E2B1C46FD62D68954BC2EB6@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain;
+  charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Is there Xenomai support for the Freescale P1020
- processor?
+Message-Id: <201111081606.52859.leo@domain.hid>
+Subject: [Xenomai-help] rtdm driver
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -19,18 +15,22 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Michael Pustylnik <MichaelPustylnik@domain.hid>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 11/08/2011 03:22 PM, Michael Pustylnik wrote:
-> Hi Gilles,
-> 
-> It is not a pressure and it is sad it looked that way to you.
-> We don't have any intentions but figuring out whether or not the P1020 is supported. We have been using Xenomai for a few years already and we are looking at P1020 as a potential platform for our new project, so knowing if we can use Xenomai with it is very important.
+Hi,
 
-That accounts for the first post.
-I was answering the second.
+sorry if the question is simple stupid but I have downloaded some code from 
+[1] and I have realized that they have develop some drivers using rtdm model, 
+but developed for rtai.
 
--- 
-					    Gilles.
+Looking the code, it seems that there's no rtai includes (just ones for the 
+examples with creation of tasks, etc).
+
+So, use this code in xenomai should be straightforward, no?
+
+
+[1] http://www.orchestracontrol.com
+--
+Linux User 152692
+Catalonia
 
