@@ -1,13 +1,10 @@
-Message-ID: <4EBAA089.2050607@domain.hid>
-Date: Wed, 09 Nov 2011 16:47:21 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: "Terry Fryar" <terry.fryar@domain.hid>
+Date: Wed, 9 Nov 2011 17:37:05 -0600
+Message-ID: <2AB71B0EA2424A6C953F1BA9E4D51A79@domain.hid>
 MIME-Version: 1.0
-References: <CAEhuWcW0RS=r-U1W3Ciyw7Wmpvdp3A4GBJzvxa_qV7xmyNPgDw@domain.hid>
-	<CAEhuWcWJ39Zqk-BvUT0ix5qxVRa-K=bSmJS=7CVVORMEFf4DYg@domain.hid>
-In-Reply-To: <CAEhuWcWJ39Zqk-BvUT0ix5qxVRa-K=bSmJS=7CVVORMEFf4DYg@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Fwd: problem in installing xenomai on arm
+Content-Type: multipart/alternative;
+	boundary="----=_NextPart_000_0011_01CC9F06.33DD19D0"
+Subject: [Xenomai-help] Xenomai test progs segfault
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -17,35 +14,105 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xinxin wei <weixinxin63@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 11/09/2011 03:07 PM, xinxin wei wrote:
-> ./configure     --build=i686-pc-linux-gnu  --host=arm-linux 
-> --enable-arm-mach=omap4430
-> 
-> it can  configure  successfull
-> but  when  i make  install
-> 
-> make DESTDIR=/opt/nfs/angstrom_minimal-fs/usr/xenomai  install
->   
-> 
-> the  result is  error:
-> 
-> In file included from ../../../src/include/asm/xenomai/atomic.h:26,
->                  from ../../../include/nucleus/system.h:26,
->                  from ../../../src/include/asm/xenomai/system.h:247,
->                  from ../../../include/nucleus/types.h:36,
->                  from ../../../include/nucleus/thread.h:25,
->                  from assert_context.c:24:
-> ../../../src/include/asm/xenomai/features.h:73:2: error: #error "Could
-> not find current ARM architecture"
+This is a multi-part message in MIME format.
 
-I missed that.
+------=_NextPart_000_0011_01CC9F06.33DD19D0
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 
-Please show us the result of the following command on your system:
-arm-none-linux-gnueabi-gcc -dM -x c -E /dev/null | grep ARCH
+Using 2.6.38 omap kernel on beagleboard xm-c, with 2.5.6 Xenomai and 2.6.38
+adeos patch.  Adeos patches went through with no errors.  I do have a
+"tweaked" omap3 board file (gpio's and such), but this is a pretty
+straightforward kernel (PREEMPT, no power mgmt, no SMP).  Using Codesourcery
+2010.09-50 as tool chain on host.
+ 
+Looks like the kernel is ok on boot:
+ 
+[    0.969854] I-pipe: Domain Xenomai registered.
+[    0.969900] Xenomai: hal/arm started.
+[    0.971906] Xenomai: scheduling class idle registered.
+[    0.971937] Xenomai: scheduling class rt registered.
+[    1.026001] Xenomai: real-time nucleus v2.5.6 (Wormhole Wizards) loaded.
+[    1.026763] Xenomai: starting native API services.
+[    1.027046] Xenomai: starting RTDM services.
 
--- 
-					    Gilles.
+ 
+If I try to run "latency", or some of the other test programs I get a
+segfault.  GDB says it's getting a signal SIGXCPU??
+ 
+Been through the kernel .config many, many times!  Not sure where to go from
+here?   Any suggestions?
+ 
+Thanks!
+ 
+
+------=_NextPart_000_0011_01CC9F06.33DD19D0
+Content-Type: text/html;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML><HEAD>
+<META content=3D"text/html; charset=3Dus-ascii" =
+http-equiv=3DContent-Type>
+<META name=3DGENERATOR content=3D"MSHTML 8.00.7601.17655"></HEAD>
+<BODY>
+<DIV><FONT size=3D2 face=3DArial><SPAN class=3D253060623-09112011>Using =
+2.6.38 omap=20
+kernel on beagleboard xm-c, with 2.5.6 Xenomai and 2.6.38 adeos =
+patch.&nbsp;=20
+Adeos patches went through with no errors.&nbsp; I do have a "tweaked" =
+omap3=20
+board file (gpio's and such), but this is a pretty straightforward =
+kernel=20
+(PREEMPT, no power mgmt, no SMP).&nbsp; Using Codesourcery 2010.09-50 as =
+tool=20
+chain on host.</SPAN></FONT></DIV>
+<DIV><FONT size=3D2 face=3DArial><SPAN=20
+class=3D253060623-09112011></SPAN></FONT>&nbsp;</DIV>
+<DIV><FONT size=3D2 face=3DArial><SPAN class=3D253060623-09112011>Looks =
+like the=20
+kernel is ok on boot:</SPAN></FONT></DIV>
+<DIV><FONT size=3D2 face=3DArial><SPAN=20
+class=3D253060623-09112011></SPAN></FONT>&nbsp;</DIV>
+<DIV><FONT size=3D2 face=3DArial><SPAN =
+class=3D253060623-09112011>[&nbsp;&nbsp;&nbsp;=20
+0.969854] I-pipe: Domain Xenomai registered.<BR>[&nbsp;&nbsp;&nbsp; =
+0.969900]=20
+Xenomai: hal/arm started.<BR>[&nbsp;&nbsp;&nbsp; 0.971906] Xenomai: =
+scheduling=20
+class idle registered.<BR>[&nbsp;&nbsp;&nbsp; 0.971937] Xenomai: =
+scheduling=20
+class rt registered.<BR>[&nbsp;&nbsp;&nbsp; 1.026001] Xenomai: real-time =
+nucleus=20
+v2.5.6 (Wormhole Wizards) loaded.<BR>[&nbsp;&nbsp;&nbsp; 1.026763] =
+Xenomai:=20
+starting native API services.<BR>[&nbsp;&nbsp;&nbsp; 1.027046] Xenomai: =
+starting=20
+RTDM services.</SPAN></FONT></DIV>
+<DIV><FONT size=3D2 face=3DArial><SPAN=20
+class=3D253060623-09112011><BR>&nbsp;</DIV></SPAN></FONT>
+<DIV><FONT size=3D2 face=3DArial><SPAN class=3D253060623-09112011>If I =
+try to run=20
+"latency", or some of&nbsp;the other test programs&nbsp;I get a =
+segfault.&nbsp;=20
+GDB says it's getting a signal SIGXCPU??</SPAN></FONT></DIV>
+<DIV><FONT size=3D2 face=3DArial><SPAN=20
+class=3D253060623-09112011></SPAN></FONT>&nbsp;</DIV>
+<DIV><FONT size=3D2 face=3DArial><SPAN class=3D253060623-09112011>Been =
+through the=20
+kernel .config many, many&nbsp;times!&nbsp; Not sure where to go from=20
+here?&nbsp;&nbsp; Any suggestions?</SPAN></FONT></DIV>
+<DIV><FONT size=3D2 face=3DArial><SPAN=20
+class=3D253060623-09112011></SPAN></FONT>&nbsp;</DIV>
+<DIV><FONT size=3D2 face=3DArial><SPAN=20
+class=3D253060623-09112011>Thanks!</SPAN></FONT></DIV>
+<DIV align=3Dleft><FONT size=3D2 =
+face=3DArial></FONT>&nbsp;</DIV></BODY></HTML>
+
+------=_NextPart_000_0011_01CC9F06.33DD19D0--
+
 
