@@ -1,29 +1,32 @@
-Message-ID: <4EC92E4E.6080708@domain.hid>
-Date: Sun, 20 Nov 2011 17:43:58 +0100
+Message-ID: <4EBA5DE2.3060307@domain.hid>
+Date: Wed, 09 Nov 2011 12:02:58 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4EC4F67F.50401@domain.hid>
-In-Reply-To: <4EC4F67F.50401@domain.hid>
+References: <51962.81.220.196.189.1320786408.squirrel@domain.hid>
+	<4EB9C562.9040107@domain.hid> <4EBA5585.8050807@domain.hid>
+In-Reply-To: <4EBA5585.8050807@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [PATCH] rtdm: add rtdm_printk_ratelimited
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Subject: Re: [Xenomai-help] Xenomai 2.5.6 and Round Robin
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Wolfgang Grandegger <wg@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Olivier Reynet <olivier.reynet@domain.hid>
+Cc: xenomai@xenomai.org
 
-On 11/17/2011 12:56 PM, Wolfgang Grandegger wrote:
-> This patch implements a real-time safe rate-limited message printing
-> on kernel console similar to Linux's printk_ratelimited.
+On 11/09/2011 11:27 AM, Olivier Reynet wrote:
+>      RTIME quantum=rt_timer_ns2tsc(3*SPINTIME);
+>      int err=rt_task_slice(&demo_task[i],quantum);
 
-Applied, thanks.
+You are misunderstanding the time unit of rt_task_slice. Refer to
+documentation.
 
 -- 
-                                                                Gilles.
+					    Gilles.
 
