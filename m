@@ -1,14 +1,11 @@
-Message-ID: <4EBA66DE.5020307@domain.hid>
-Date: Wed, 09 Nov 2011 12:41:18 +0100
-From: Olivier Reynet <olivier.reynet@domain.hid>
 MIME-Version: 1.0
-References: <51962.81.220.196.189.1320786408.squirrel@domain.hid>
-	<4EB9C562.9040107@domain.hid> <4EBA5585.8050807@domain.hid>
-	<4EBA5DE2.3060307@domain.hid>
-In-Reply-To: <4EBA5DE2.3060307@domain.hid>
-Content-Type: multipart/alternative;
-	boundary="------------000400070005020608080003"
-Subject: Re: [Xenomai-help] Xenomai 2.5.6 and Round Robin
+In-Reply-To: <CAEhuWcW0RS=r-U1W3Ciyw7Wmpvdp3A4GBJzvxa_qV7xmyNPgDw@domain.hid>
+References: <CAEhuWcW0RS=r-U1W3Ciyw7Wmpvdp3A4GBJzvxa_qV7xmyNPgDw@domain.hid>
+Date: Wed, 9 Nov 2011 22:07:44 +0800
+Message-ID: <CAEhuWcWJ39Zqk-BvUT0ix5qxVRa-K=bSmJS=7CVVORMEFf4DYg@domain.hid>
+From: xinxin wei <weixinxin63@domain.hid>
+Content-Type: multipart/alternative; boundary=20cf307f3296de547304b14dcfad
+Subject: [Xenomai-help] Fwd: problem in installing xenomai on arm
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -18,86 +15,116 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-This is a multi-part message in MIME format.
---------------000400070005020608080003
-Content-Type: text/plain; charset=UTF-8; format=flowed
+--20cf307f3296de547304b14dcfad
+Content-Type: text/plain; charset=ISO-8859-1
+
+---------- Forwarded message ----------
+From: xinxin wei <weixinxin63@domain.hid>
+Date: 2011/11/9
+Subject: problem in installing xenomai on arm
+To: gilles.chanteperdrix@xenomai.org
+
+
+now i have a new  problem
+i compile xenomai-2.6.0 for arm
+
+cross compile toolchain is arm-none-linux-gnueabi-gcc   and
+
+./configure CC="arm-none-linux-gnueabi-gcc"    --build=i686-pc-linux-gnu
+--host=arm-none-linux-gnueabi  --enable-arm-mach=omap4430 --enable-arm-tsc
+
+but the result is
+
+configure: WARNING: unrecognized options: --enable-arm-mach
+checking build system type... i686-pc-linux-gnu
+checking host system type... arm-none-linux-gnueabi
+checking for a BSD-compatible install... /usr/bin/install -c
+checking for arm-none-linux-gnueabi-gcc... arm-none-linux-gnueabi-gcc
+checking whether the C compiler works... no
+configure: error: in `/root/xenomai-2.6.0':
+configure: error: C compiler cannot create executables
+See `config.log' for more details
+
+
+and  i change the  configure
+
+
+./configure     --build=i686-pc-linux-gnu  --host=arm-linux
+--enable-arm-mach=omap4430
+
+it can  configure  successfull
+but  when  i make  install
+
+make DESTDIR=/opt/nfs/angstrom_minimal-fs/usr/xenomai  install
+
+
+the  result is  error:
+
+In file included from ../../../src/include/asm/xenomai/atomic.h:26,
+                 from ../../../include/nucleus/system.h:26,
+                 from ../../../src/include/asm/xenomai/system.h:247,
+                 from ../../../include/nucleus/types.h:36,
+                 from ../../../include/nucleus/thread.h:25,
+                 from assert_context.c:24:
+../../../src/include/asm/xenomai/features.h:73:2: error: #error "Could not
+find current ARM architecture"
+
+
+who can resolve  this problem  ?
+
+--20cf307f3296de547304b14dcfad
+Content-Type: text/html; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
-ok, sorry for misunderstanding.
+<br><br><div class=3D"gmail_quote">---------- Forwarded message ----------<=
+br>From: <b class=3D"gmail_sendername">xinxin wei</b> <span dir=3D"ltr">&lt=
+;<a href=3D"mailto:weixinxin63@domain.hid">weixinxin63@domain.hid</a>&gt;</sp=
+an><br>
+Date: 2011/11/9<br>Subject: problem in installing xenomai on arm<br>To: <a =
+href=3D"mailto:gilles.chanteperdrix@xenomai.org">gilles.chanteperdrix@xenomai.org=
+ai.org</a><br><br><br><span style=3D"font-family:arial, sans-serif;font-siz=
+e:13px;background-color:rgb(255, 255, 255)">now i have a new =A0problem<div=
+>
+<span style=3D"font-family:arial, sans-serif;font-size:13px;background-colo=
+r:rgb(255, 255, 255)">i compile xenomai-2.6.0 for arm<br>
+<br>cross compile toolchain is arm-none-linux-gnueabi-gcc=A0=A0 and=A0<br><=
+br>./configure CC=3D&quot;arm-none-linux-gnueabi-gcc&quot;=A0=A0=A0 --build=
+=3Di686-pc-linux-gnu=A0 --host=3Darm-none-linux-gnueabi=A0 --enable-arm-mac=
+h=3Domap4430 --enable-arm-tsc<br>
 
-RTIME quantum=3D3;
-is working.
+<br>but the result is=A0=A0<br><br>configure: WARNING: unrecognized options=
+: --enable-arm-mach<br>checking build system type... i686-pc-linux-gnu<br>c=
+hecking host system type... arm-none-linux-gnueabi<br>checking for a BSD-co=
+mpatible install... /usr/bin/install -c<br>
 
-/quantum/ 	The round-robin quantum for the task expressed in ticks (see=20
-note).
+checking for arm-none-linux-gnueabi-gcc... arm-none-linux-gnueabi-gcc<br>ch=
+ecking whether the C compiler works... no<br>configure: error: in `/root/xe=
+nomai-2.6.0&#39;:<br>configure: error: C compiler cannot create executables=
+<br>
 
-Howewer, there is no link to the mentioned note. It will help to understa=
-nd the tick concept.
+See `config.log&#39; for more details<br><br><br>and=A0 i change the=A0 con=
+figure=A0=A0=A0<br><br><br>./configure=A0=A0=A0=A0 --build=3Di686-pc-linux-=
+gnu=A0 --host=3Darm-linux=A0 --enable-arm-mach=3Domap4430<br><br>it can=A0 =
+configure=A0 successfull<br>
 
-Best regards,
-Olivier
+but=A0 when=A0 i make=A0 install<br><br>make DESTDIR=3D/opt/nfs/angstrom_mi=
+nimal-fs/usr/xenomai=A0 install<br>=A0=A0<br><br>the=A0 result is=A0 error:=
+<br><br>In file included from ../../../src/include/asm/xenomai/atomic.h:26,=
+<br>=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 from ../../../include/=
+nucleus/system.h:26,<br>
 
+=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 from ../../../src/include/=
+asm/xenomai/system.h:247,<br>=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=
+=A0 from ../../../include/nucleus/types.h:36,<br>=A0=A0=A0=A0=A0=A0=A0=A0=
+=A0=A0=A0=A0=A0=A0=A0=A0 from ../../../include/nucleus/thread.h:25,<br>=A0=
+=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 from assert_context.c:24:<br>
 
-Le 09/11/2011 12:02, Gilles Chanteperdrix a =C3=A9crit :
-> RTIME quantum=3Drt_timer_ns2tsc(3*SPINTIME);
+../../../src/include/asm/xenomai/features.h:73:2: error: #error &quot;Could=
+ not find current ARM architecture&quot;<br><br><br>who can resolve=A0 this=
+ problem=A0 ?</span></div></span>
+</div><br>
 
-
---------------000400070005020608080003
-Content-Type: text/html; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-
-<html>
-  <head>
-    <meta content=3D"text/html; charset=3DUTF-8" http-equiv=3D"Content-Ty=
-pe">
-  </head>
-  <body bgcolor=3D"#FFFFFF" text=3D"#000000">
-    ok, sorry for misunderstanding. <br>
-    <pre wrap=3D"">RTIME quantum=3D3;=20
-is working.=20
-</pre>
-    <table style=3D"font-family: Geneva, Arial, Helvetica, sans-serif;
-      letter-spacing: normal; orphans: 2; text-indent: 0px;
-      text-transform: none; widows: 2; word-spacing: 0px;
-      -webkit-text-size-adjust: auto; -webkit-text-stroke-width: 0px;
-      background-color: rgb(238, 243, 245); " border=3D"0" cellpadding=3D=
-"0"
-      cellspacing=3D"2">
-      <tbody>
-        <tr>
-          <td style=3D"font-family: Geneva, Arial, Helvetica, sans-serif;
-            font-size: 15px; " valign=3D"top"><em>quantum</em>=C2=A0</td>
-          <td style=3D"font-family: Geneva, Arial, Helvetica, sans-serif;
-            font-size: 15px; ">The round-robin quantum for the task
-            expressed in ticks (see note).</td>
-        </tr>
-      </tbody>
-    </table>
-    <pre wrap=3D""><span class=3D"Apple-style-span" style=3D"color: rgb(0=
-, 0, 0); font-family: 'Lucida Grande', Verdana, Geneva, Arial, sans-serif=
-; font-size: 12px; font-style: normal; font-variant: normal; font-weight:=
- normal; letter-spacing: normal; line-height: normal; orphans: 2; text-al=
-ign: -webkit-auto; text-indent: 0px; text-transform: none; white-space: n=
-ormal; widows: 2; word-spacing: 0px; -webkit-text-size-adjust: auto; -web=
-kit-text-stroke-width: 0px; background-color: rgb(255, 255, 255); display=
-: inline !important; float: none; ">Howewer, there is no link to the ment=
-ioned note. It will help to understand the tick concept.=20
-=C2=A0
-</span>Best regards,
-Olivier
-</pre>
-    <br>
-    Le 09/11/2011 12:02, Gilles Chanteperdrix a =C3=A9crit=C2=A0:
-    <blockquote cite=3D"mid:4EBA5DE2.3060307@domain.hid" type=3D"cite">
-      <pre wrap=3D"">RTIME quantum=3Drt_timer_ns2tsc(3*SPINTIME);</pre>
-    </blockquote>
-    <br>
-  </body>
-</html>
-
---------------000400070005020608080003--
-
+--20cf307f3296de547304b14dcfad--
 
