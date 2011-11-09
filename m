@@ -1,10 +1,11 @@
-Message-ID: <4EBA8A7C.5030604@domain.hid>
-Date: Wed, 09 Nov 2011 15:13:16 +0100
+Message-ID: <4EBA8B03.1050202@domain.hid>
+Date: Wed, 09 Nov 2011 15:15:31 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <CAEhuWcW0RS=r-U1W3Ciyw7Wmpvdp3A4GBJzvxa_qV7xmyNPgDw@domain.hid>
 	<CAEhuWcWJ39Zqk-BvUT0ix5qxVRa-K=bSmJS=7CVVORMEFf4DYg@domain.hid>
-In-Reply-To: <CAEhuWcWJ39Zqk-BvUT0ix5qxVRa-K=bSmJS=7CVVORMEFf4DYg@domain.hid>
+	<4EBA8A7C.5030604@domain.hid>
+In-Reply-To: <4EBA8A7C.5030604@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] Fwd: problem in installing xenomai on arm
@@ -20,23 +21,16 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: xinxin wei <weixinxin63@domain.hid>
 Cc: xenomai@xenomai.org
 
-On 11/09/2011 03:07 PM, xinxin wei wrote:
-> ---------- Forwarded message ----------
-> From: xinxin wei <weixinxin63@domain.hid>
-> Date: 2011/11/9
-> Subject: problem in installing xenomai on arm
-> To: gilles.chanteperdrix@xenomai.org
+On 11/09/2011 03:13 PM, Gilles Chanteperdrix wrote:
+> On 11/09/2011 03:07 PM, xinxin wei wrote:
+>> ---------- Forwarded message ----------
+>> From: xinxin wei <weixinxin63@domain.hid>
+>> ./configure CC="arm-none-linux-gnueabi-gcc"    --build=i686-pc-linux-gnu
+>> --host=arm-none-linux-gnueabi  --enable-arm-mach=omap4430 --enable-arm-tsc
 > 
+> Try ./configure --help
 > 
-> now i have a new  problem
-> i compile xenomai-2.6.0 for arm
-> 
-> cross compile toolchain is arm-none-linux-gnueabi-gcc   and
-> 
-> ./configure CC="arm-none-linux-gnueabi-gcc"    --build=i686-pc-linux-gnu
-> --host=arm-none-linux-gnueabi  --enable-arm-mach=omap4430 --enable-arm-tsc
-
-Try ./configure --help
+and README.INSTALL
 
 -- 
 					    Gilles.
