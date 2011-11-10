@@ -1,5 +1,5 @@
-Message-ID: <4EBB90C1.7050309@domain.hid>
-Date: Thu, 10 Nov 2011 09:52:17 +0100
+Message-ID: <4EBB9104.2040203@domain.hid>
+Date: Thu, 10 Nov 2011 09:53:24 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <2AB71B0EA2424A6C953F1BA9E4D51A79@domain.hid>
@@ -43,7 +43,22 @@ On 11/10/2011 12:37 AM, Terry Fryar wrote:
 > Been through the kernel .config many, many times!  Not sure where to go from
 > here?   Any suggestions?
 
-Please post your .config.
+Ah, sorry, xenomai 2.5.6 does not support linux 2.6.38 on arm. You need
+xenomai 2.6.0. In case 2.5.6 was a typo and you were already using
+2.6.0, please post your .config.
+
+>  
+> Thanks!
+>  
+> 
+> 
+> 
+> 
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
+
 
 -- 
                                                                 Gilles.
