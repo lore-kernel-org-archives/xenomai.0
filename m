@@ -1,13 +1,11 @@
-Message-ID: <4EBC3D9A.5050508@domain.hid>
-Date: Thu, 10 Nov 2011 22:09:46 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <1320995056.19430.YahooMailNeo@domain.hid>
+Date: Thu, 10 Nov 2011 23:04:16 -0800 (PST)
+From: Guvenc Gulce <gulceg@domain.hid>
 MIME-Version: 1.0
-References: <2AB71B0EA2424A6C953F1BA9E4D51A79@domain.hid>	<4EBB9104.2040203@domain.hid>	<11B729797A9E4CD7AF3075EF6A450D57@domain.hid>
-	<4EBC3043.7080001@domain.hid>
-In-Reply-To: <4EBC3043.7080001@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Xenomai test progs segfault
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai-help] IDDP send-receive example emits SIGXCPU signal
+Reply-To: Guvenc Gulce <gulceg@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -17,43 +15,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Terry Fryar <terry.fryar@domain.hid>
-Cc: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 11/10/2011 09:12 PM, Gilles Chanteperdrix wrote:
-> On 11/10/2011 09:09 PM, Terry Fryar wrote:
->> 2.6.0 worked fine with 2.6.38, although I did get this:
->>
->> [    4.900113] WARNING: at kernel/lockdep.c:2321 omap3_pm_idle+0x78/0x84()
->> [    4.907076] Modules linked in:
->> [    4.910532] [<c00572ac>] (unwind_backtrace+0x0/0xe0) from [<c0081164>]
->> (warn_slowpath_common+0x4c/0x64)
->> [    4.920564] [<c0081164>] (warn_slowpath_common+0x4c/0x64) from
->> [<c0081194>] (warn_slowpath_null+0x18/0x1c)
->> [    4.930865] [<c0081194>] (warn_slowpath_null+0x18/0x1c) from [<c0064268>]
->> (omap3_pm_idle+0x78/0x84)
->> [    4.940508] [<c0064268>] (omap3_pm_idle+0x78/0x84) from [<c005241c>]
->> (cpu_idle+0x6c/0xe4)
->> [    4.949116] [<c005241c>] (cpu_idle+0x6c/0xe4) from [<c00088bc>]
->> (start_kernel+0x2b0/0x30c)
->> [    4.957941] [<c00088bc>] (start_kernel+0x2b0/0x30c) from [<80008034>]
->> (0x80008034) 
->>
->> Not sure what's up here, but the xenomai kernel stuff loaded and the xenomai
->> test programs work just fine now.  I'm partially wondering if there were
->> mis-matched floating point compiler flags involved as well (2.6.0 doesn't
->> force any flags now).
->>
->> Thanks Gilles...your help is MUCH appreciated!
-> 
-> You should disable whatever option causes omap3_pm_idle to be called, as
-> this will give bad latencies.
-> 
-
-You can not avoid omap3_pm_idle with a configuration option.
-Fortunately, it does not enter deep sleep states, if you do not mount
-debugfs and do not set sleep_while_idle to 1.
-
--- 
-                                                                Gilles.
+Hi=0AMy environment looks like the following:=0AXenomai 2.5.6=A0=0AUsed ski=
+n: Posix=0A=0AKernel 2.6.35.3=0ATarget Environment: ARM=0A=0A=0AI have comp=
+iled the example iddp-sendrecv which can be found under /examples/rtdm/prof=
+iles/ipc=A0=0A(http://www.xenomai.org/documentation/xenomai-head/html/api/i=
+ddp-sendrecv_8c-example.html )=0A=0Awith the existing makefile under the sa=
+me directory. The binary seems to be linking ok with the =0A=0Axenomai libr=
+aries as you can also see here:=0A=0A=0Aarm-linux-readelf -d iddp-sendrecv=
+=0A=0ADynamic section at offset 0x1ed8 contains 32 entries:=0A=A0 Tag=A0=A0=
+=A0=A0=A0=A0=A0 Type=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=
+=A0=A0=A0=A0=A0=A0 Name/Value=0A=A00x00000001 (NEEDED)=A0=A0=A0=A0=A0=A0=A0=
+=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 Shared library: [libpthread_rt.so.1=
+]=0A=A00x00000001 (NEEDED)=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=
+=A0=A0=A0=A0 Shared library: [libxenomai.so.0]=0A=A00x00000001 (NEEDED)=A0=
+=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 Shared library: [=
+libpthread.so.0]=0A=A00x00000001 (NEEDED)=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=
+=A0=A0=A0=A0=A0=A0=A0=A0=A0 Shared library: [librt.so.1]=0A=A00x00000001 (N=
+EEDED)=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 Shared l=
+ibrary: [librtdm.so.1]=0A=A00x00000001 (NEEDED)=A0=A0=A0=A0=A0=A0=A0=A0=A0=
+=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 Shared library: [librtdk.so.0]=0A=A00x000=
+00001 (NEEDED)=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 =
+Shared library: [libc.so.6]=0A=0A=0A=0AIn order to test the real-timeliness=
+ of this piece of binary, I have added =0A=0Aone line of code to the beginn=
+ing of the each thread (client and server)=0A=0A=A0=A0=A0=A0=A0=A0=A0 pthre=
+ad_set_mode_np(0, PTHREAD_WARNSW);=0A=0A=0Aso that any switch from Primary =
+to Secondary will be reported with a =0A=0ASIGXCPU. My expectation was that=
+ I wouldnt see any switch to secondary =0A=0Amode as IDDP is supposed to wo=
+rk between real time threads without hurting =0A=0Atheir real-timeliness.=
+=0A=0ABut I do get the SIGXCPU after adding the PTHREAD_WARNSW and the =0A=
+=0Agdb output says=0A=0AProgram received signal SIGXCPU, CPU time limit exc=
+eeded.=0A[Switching to Thread 0x2bc83470 (LWP 3401)]=0A0x2aad9894 in __wrap=
+_socket () from /usr/xenomai/lib/libpthread_rt.so.1=0A=0A=0Aso it looks lik=
+e the __wrap_socket call in the posix skin hurts the realtimeliness =0A=0Ao=
+f the threads when using IDDP. Do you have any idea why this may be =0A=0Ah=
+appening ?=0A=0AIf we look deeper in the posix skin where __wrap_socket is =
+implemented=0A=0A=A0=A0=A0=A0=A0=A0=A0 ret =3D XENOMAI_SKINCALL3(__rtdm_mux=
+id,=0A=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=
+=A0=A0=A0=A0=A0=A0=A0=A0 __rtdm_socket,=0A=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=
+=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 protocol_famil=
+y, socket_type, protocol);=0A=A0=A0=A0=A0=A0=A0=A0 if (ret >=3D 0)=0A=A0=A0=
+=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 ret +=3D __rtdm_fd_start;=0A=A0=A0=
+=A0=A0=A0=A0=A0 else if (ret =3D=3D -EAFNOSUPPORT || ret =3D=3D -ENOSYS) {=
+=0A=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 ret =3D __real_socket(prot=
+ocol_family, socket_type, protocol);=0A=0A=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=
+=A0=A0=A0=A0 if (ret >=3D __rtdm_fd_start) {=0A=A0=A0=A0=A0=A0=A0=A0=A0=A0=
+=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 __real_close(ret);=0A=A0=A0=A0=
+=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 errno =3D -EMF=
+ILE;=0A=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=
+=A0 ret =3D -1;=0A=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 }=0A=0A=0Al=
+ooks like XENOMAI_SKINCALL3 macro is failing for some reason but I can't =
+=0A=0Aexplain this behavior as I am using the example code linked with the =
+correct =0A=0Axenomai libraries. Any help would be highly appreciated.=0A=
+=0AThanks in advance=0A=0AGuvenc
 
