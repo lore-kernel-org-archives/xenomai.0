@@ -1,19 +1,14 @@
-Message-ID: <4ECC9B54.8050904@domain.hid>
-Date: Wed, 23 Nov 2011 08:05:56 +0100
-From: Anders Blomdell <anders.blomdell@domain.hid>
+References: <1320995056.19430.YahooMailNeo@domain.hid>
+	<4EBD0A71.7090409@domain.hid>
+Message-ID: <1322037104.76183.YahooMailNeo@domain.hid>
+Date: Wed, 23 Nov 2011 00:31:44 -0800 (PST)
+From: Guvenc Gulce <gulceg@domain.hid>
+In-Reply-To: <4EBD0A71.7090409@domain.hid>
 MIME-Version: 1.0
-References: <CA+eKTkZ_ymqXx_Nc_9v1HRtYTqSjYqzdN56HCjzO+x14zcUwcg@domain.hid>
-	<4ECA2FF8.7040406@domain.hid>
-	<CA+eKTkZuNknobLhsgqU8jjkKboL3jNLhMPoG82fkjD6sZfyXgA@mail.gmail.com>
-	<4ECA5E12.5040907@domain.hid>
-	<CAMesUR7edxnPvpLu0kajLWGtVBwK65m27kssOjh=JViVhPeXJQ@mail.gmail.com>
-	<4ECB967C.70509@domain.hid>
-	<CA+eKTkbcBYnoRnBZrrBQ-Br2h2HPrVdyVLs2V3F4WOvcvhpDxA@mail.gmail.com>
-	<CAMesUR6Jx7WuZNsY6WmomD-ExoJ9hhKovKiekrr71Kbrk7Jb_A@mail.gmail.com>
-In-Reply-To: <CAMesUR6Jx7WuZNsY6WmomD-ExoJ9hhKovKiekrr71Kbrk7Jb_A@mail.gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] [xenomai-help] Error return with a4l_sync_write
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-help] IDDP send-receive example emits SIGXCPU signal
+Reply-To: Guvenc Gulce <gulceg@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -23,73 +18,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Alexis Berlemont <alexis.berlemont@domain.hid>
-Cc: xenomai@xenomai.org, Hadrien Caron <hadrien.caron@domain.hid>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 11/22/2011 11:33 PM, Alexis Berlemont wrote:
-> On Tue, Nov 22, 2011 at 2:43 PM, Hadrien Caron<hadrien.caron@domain.hid>  wrote:
->> Alexis : yes I am using the Analogy drivers . . . Would that mean that
->> analog output is implemented but not digital output for National Instrument
->> acquisition cards ? Has someone tried this already ? Seems strange that
->> analog output would be implemented but not digital.
->>
->> Anders : Ok ! I will look into rebulding my xenomai installation then !
->
-> According to the thread:
-> [Xenomai-core] Problems with gcc 4.6.0 (rt_task_shadow fails with ENOSYS)
-> https://mail.gna.org/public/xenomai-core/2011-07/msg00010.html
-> The problem related by Anders Blomdell is supposed to be fixed with
-> the 2.6 release, isn't it?
-Well, I recently had problems with analogy (2.6 release, 4.6 compiler), 
-but my problems were with analog sync input. Had too much to do at that 
-time to investigate further, so I recompiled my old 2.5.x xenomai with 
--fno-omit-frame-pointer just to get that machine shipped shipped away to 
-the physics department to do some quantum dot experiments.
->
-> Could you tell us which version of Xenomai and which driver
-> (ni_pcimio, ...) you are using?
->
-> Regards,
->
-> Alexis.
->>
->> Many thanks to both of you for your ideas !
->>
->> Hadrien
->>
->> On Tue, Nov 22, 2011 at 1:33 PM, Anders Blomdell
->> <anders.blomdell@domain.hid>  wrote:
->>>
->>> On 11/22/2011 01:06 PM, Alexis Berlemont wrote:
->>>>
->>>> Hi,
->>>>
->>>> On Mon, Nov 21, 2011 at 3:20 PM, Gilles Chanteperdrix
->>>> <gilles.chanteperdrix@xenomai.org>    wrote:
->>>>>
->>>>> On 11/21/2011 12:10 PM, Hadrien Caron wrote:
->>>>>>
->>>>>> Thanks very much Wolfang !
->>>>>> Cool script, I didn't know about it :)
->>>>>> I'll try to correct my code with that information !
->>>>>>
->>>>>> Thanks again,
->>>>>
->>>>> ENOSYS usually means that you have not enabled the relevant support in
->>>>> kernel configuration.
->>>>>
->>>>
->>>> Which driver are you using? I think analogy returns ENOSYS if the
->>>> driver does not implement the related instruction.
->>>
->>> It can also happen with xenomai compiled with gcc-4.6.x, but without
->>> -fno-omit-frame-pointer :-(
-
->>>
->>> Regards
->>>
->>> Anders
->>
->>
-
+Yes.. I have enabled the support for iddp sockets in the kernel configurati=
+on. It looks like that =0A=0Ait works with xenomai 2.6.0 when I enable the =
+=0A=0Apthread_set_mode_np(0, PTHREAD_WARNSW);=0Aafter the socket() and bind=
+() calls. (tested again with the example code from xenomai)=0A=0AMy questio=
+n is:=0A=0AIs it designed that way that the calls socket() and bind() for I=
+DDP cause a switch to =0A=0Asecondary mode and the calls recvfrom() and sen=
+dto() do not ? In other words =0A=0Adoes the real-timeliness guarantee exis=
+t only for recvfrom() and sendto() ?=0A=0A=0AThanks & Regards=0A=0AGuvenc=
+=0A=0A=0A=0A=0A----- Original Message -----=0AFrom: Gilles Chanteperdrix <g=
+illes.chanteperdrix@domain.hid>=0ATo: Guvenc Gulce <gulceg@domain.hid>=0ACc=
+: "xenomai@xenomai.org" <xenomai@xenomai.org>=0ASent: Friday, November 11=
+, 2011 12:43 PM=0ASubject: Re: [Xenomai-help] IDDP send-receive example emi=
+ts SIGXCPU signal=0A=0AOn 11/11/2011 08:04 AM, Guvenc Gulce wrote:=0A> look=
+s like XENOMAI_SKINCALL3 macro is failing for some reason but I can't =0A> =
+=0A> explain this behavior as I am using the example code linked with the c=
+orrect =0A> =0A> xenomai libraries. Any help would be highly appreciated.=
+=0A=0ADo you have support for iddp sockets enabled in kernel configuration?=
+ If=0Ayes, do you have the same issue with xenomai 2.6.0?=0A=0A-- =0A=A0 =
+=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0=
+ =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 Gilles.=0A
 
