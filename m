@@ -1,13 +1,10 @@
-Message-ID: <4ECCB27F.3040903@domain.hid>
-Date: Wed, 23 Nov 2011 09:44:47 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <CA+eKTkZ_ymqXx_Nc_9v1HRtYTqSjYqzdN56HCjzO+x14zcUwcg@domain.hid>	<4ECA2FF8.7040406@domain.hid>	<CA+eKTkZuNknobLhsgqU8jjkKboL3jNLhMPoG82fkjD6sZfyXgA@mail.gmail.com>	<4ECA5E12.5040907@domain.hid>	<CAMesUR7edxnPvpLu0kajLWGtVBwK65m27kssOjh=JViVhPeXJQ@mail.gmail.com>	<4ECB967C.70509@domain.hid>	<CA+eKTkbcBYnoRnBZrrBQ-Br2h2HPrVdyVLs2V3F4WOvcvhpDxA@mail.gmail.com>
-	<CAMesUR6Jx7WuZNsY6WmomD-ExoJ9hhKovKiekrr71Kbrk7Jb_A@mail.gmail.com>
-In-Reply-To: <CAMesUR6Jx7WuZNsY6WmomD-ExoJ9hhKovKiekrr71Kbrk7Jb_A@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] [xenomai-help] Error return with a4l_sync_write
+From: Erik Sommer <erik.sommer@domain.hid>
+Content-Type: text/plain; charset="utf-8"
+Date: Wed, 23 Nov 2011 10:38:49 +0100
+Message-Id: <1322041129.15019.7.camel@domain.hid>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Subject: [Xenomai-help] can't link math.h in a userspace programm
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -17,31 +14,81 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Alexis Berlemont <alexis.berlemont@domain.hid>
-Cc: xenomai@xenomai.org, Hadrien Caron <hadrien.caron@domain.hid>
+To: xenomai@xenomai.org
 
-On 11/22/2011 11:33 PM, Alexis Berlemont wrote:
-> On Tue, Nov 22, 2011 at 2:43 PM, Hadrien Caron <hadrien.caron@domain.hid> wrote:
->> Alexis : yes I am using the Analogy drivers . . . Would that mean that
->> analog output is implemented but not digital output for National Instrument
->> acquisition cards ? Has someone tried this already ? Seems strange that
->> analog output would be implemented but not digital.
->>
->> Anders : Ok ! I will look into rebulding my xenomai installation then !
-> 
-> According to the thread:
-> [Xenomai-core] Problems with gcc 4.6.0 (rt_task_shadow fails with ENOSYS)
-> https://mail.gna.org/public/xenomai-core/2011-07/msg00010.html
-> The problem related by Anders Blomdell is supposed to be fixed with
-> the 2.6 release, isn't it?
-> 
-> Could you tell us which version of Xenomai and which driver
-> (ni_pcimio, ...) you are using?
+Hello,
 
-Hi,
+I'm programming a userspace Xenomai-Programm für a Xilinx PowerPC
+(additional Information without FPU). I include the math.h because I
+have to use arcustangens and arcuscosinus. When compiling the programm
+it seems so like the linker can't do his job for math.h.
 
-the problem is not fixed, we can not compile xenomai without frame pointers.
+minimal example:
 
--- 
-                                                                Gilles.
+"
+#include <stdbool.h>// boolescher Datentyp
+#include <native/task.h>
+#include <native/timer.h>
+#include <rtdm/rtdm.h>
+#include <sys/mman.h>
+#include <stdio.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <math.h>
+
+void user_task(void *cookie){
+...
+Vektor.y_w=0.5*atan(Vektor.y/reg->l_O);
+...
+}
+"
+
+the Makefile:
+
+"
+# Name der zu erstellenden Programmdatei
+PROG=pu10_Las_Vek
+
+# Liste der C-Dateien im Verzeichnis
+C_DAT=$(wildcard *.c)
+
+
+# Variablen für die Benutzung des ELDK-Compilers
+ARCH=powerpc
+
+#Xenomai Installations Pfad
+DESTDIR=../usersupport/root
+#DESTDIR=/mnt/albatros_projekte/PU10/pu10_sw/PU10_Xenomai/xenomai_build/root
+XENO := $(DESTDIR)/usr/xenomai
+
+XENOCONFIG=$(shell PATH=$(XENO):$(XENO)/bin:$(PATH) which xeno-config
+2>/dev/null)
+
+CC=$(shell $(XENOCONFIG) --cc)
+
+CFLAGS=$(shell export DESTDIR="$(DESTDIR)"; $(XENOCONFIG) --skin native
+--cflags) $(MY_CFLAGS)
+
+LDFLAGS=$(shell export DESTDIR="$(DESTDIR)"; $(XENOCONFIG) --skin native
+--ldflags) $(MY_LDFLAGS) -lnative -lrtdm
+
+#Xenomai Library Pfad in binary hinzufügen
+LPATH=/usr/xenomai/lib
+#LDFLAGS+=-Xlinker -rpath -Xlinker $(shell $(XENOCONFIG) --libdir)
+LDFLAGS+=-Xlinker -rpath -Xlinker $(LPATH) 
+
+$(PROG):: 
+	$(CC) -Wall $(CFLAGS) $(LDFLAGS) -L/usr/lib -I/usr/include
+$(C_DAT) ../defines.h ../regbank.h -o $(PROG)	
+
+clean::
+	$(RM) $(PROG) *.o
+"
+
+I hope for some hints.
+
+Erik 
+
+
+
 
