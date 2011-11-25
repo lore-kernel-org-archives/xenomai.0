@@ -1,20 +1,14 @@
-MIME-Version: 1.0
-Sender: hadrienstegosaure@domain.hid
-In-Reply-To: <4ECCB27F.3040903@domain.hid>
-References: <CA+eKTkZ_ymqXx_Nc_9v1HRtYTqSjYqzdN56HCjzO+x14zcUwcg@domain.hid>
-	<4ECA2FF8.7040406@domain.hid>
-	<CA+eKTkZuNknobLhsgqU8jjkKboL3jNLhMPoG82fkjD6sZfyXgA@mail.gmail.com>
-	<4ECA5E12.5040907@domain.hid>
-	<CAMesUR7edxnPvpLu0kajLWGtVBwK65m27kssOjh=JViVhPeXJQ@mail.gmail.com>
-	<4ECB967C.70509@domain.hid>
-	<CA+eKTkbcBYnoRnBZrrBQ-Br2h2HPrVdyVLs2V3F4WOvcvhpDxA@mail.gmail.com>
-	<CAMesUR6Jx7WuZNsY6WmomD-ExoJ9hhKovKiekrr71Kbrk7Jb_A@mail.gmail.com>
-	<4ECCB27F.3040903@domain.hid>
-Date: Wed, 23 Nov 2011 10:53:35 +0100
-Message-ID: <CA+eKTkZp5M8OTHyLBBM=S5=5C-WaVrLgSsWOtzA1_y=z4ujTJw@domain.hid>
-From: Hadrien Caron <hadrien.caron@domain.hid>
-Content-Type: multipart/alternative; boundary=20cf3071cff8b72ec304b263e440
-Subject: Re: [Xenomai-help] [xenomai-help] Error return with a4l_sync_write
+From: =?UTF-8?Q?Robert?= <robert-km@domain.hid>
+In-Reply-To: <1322041129.15019.7.camel@domain.hid>
+References: <1322041129.15019.7.camel@domain.hid>
+Mime-Version: 1.0
+Message-ID: <414be62.7ed9feda.4ecf92ea.afbae@domain.hid>
+Date: Fri, 25 Nov 2011 14:06:50 +0100
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-help]
+	=?utf-8?q?can=27t_link_math=2Eh_in_a_userspace_pro?=
+	=?utf-8?q?gramm?=
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -24,99 +18,106 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org, =?UTF-8?Q?Erik_Sommer?= <erik.sommer@domain.hid>
 
---20cf3071cff8b72ec304b263e440
-Content-Type: text/plain; charset=ISO-8859-1
+Hi,
+have=20You=20tried=20to=20add=20'-lm'=20to=20LDFLAGS?
+It=20adds=20math=20library=20while=20linking=20program.
 
-I use Xenomai 2.5.6 with drivers nipcimio. Should I try it with the latest
-2.6 version ?
 
-Thanks again for all your ideas !
+Dnia=2023=20listopada=202011=2010:38=20Erik=20Sommer=20<erik.sommer@domain.hid=
+r.de>=20napisa=C5=82(a):
 
-Hadrien
-
-On Wed, Nov 23, 2011 at 9:44 AM, Gilles Chanteperdrix <
-gilles.chanteperdrix@xenomai.org> wrote:
-
-> On 11/22/2011 11:33 PM, Alexis Berlemont wrote:
-> > On Tue, Nov 22, 2011 at 2:43 PM, Hadrien Caron <hadrien.caron@domain.hid>
-> wrote:
-> >> Alexis : yes I am using the Analogy drivers . . . Would that mean that
-> >> analog output is implemented but not digital output for National
-> Instrument
-> >> acquisition cards ? Has someone tried this already ? Seems strange that
-> >> analog output would be implemented but not digital.
-> >>
-> >> Anders : Ok ! I will look into rebulding my xenomai installation then !
-> >
-> > According to the thread:
-> > [Xenomai-core] Problems with gcc 4.6.0 (rt_task_shadow fails with ENOSYS)
-> > https://mail.gna.org/public/xenomai-core/2011-07/msg00010.html
-> > The problem related by Anders Blomdell is supposed to be fixed with
-> > the 2.6 release, isn't it?
-> >
-> > Could you tell us which version of Xenomai and which driver
-> > (ni_pcimio, ...) you are using?
->
-> Hi,
->
-> the problem is not fixed, we can not compile xenomai without frame
-> pointers.
->
-> --
->                                                                Gilles.
->
-
---20cf3071cff8b72ec304b263e440
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-
-I use Xenomai 2.5.6 with drivers nipcimio. Should I try it with the latest =
-2.6 version ?<br><br>Thanks again for all your ideas !<br><br>Hadrien<br><b=
-r><div class=3D"gmail_quote">On Wed, Nov 23, 2011 at 9:44 AM, Gilles Chante=
-perdrix <span dir=3D"ltr">&lt;<a href=3D"mailto:gilles.chanteperdrix@xenomai.org=
-i.org">gilles.chanteperdrix@xenomai.org</a>&gt;</span> wrote:<br>
-<blockquote class=3D"gmail_quote" style=3D"margin: 0pt 0pt 0pt 0.8ex; borde=
-r-left: 1px solid rgb(204, 204, 204); padding-left: 1ex;"><div class=3D"im"=
->On 11/22/2011 11:33 PM, Alexis Berlemont wrote:<br>
-</div><div class=3D"im">&gt; On Tue, Nov 22, 2011 at 2:43 PM, Hadrien Caron=
- &lt;<a href=3D"mailto:hadrien.caron@domain.hid">hadrien.caron@domain.hid</a>=
-&gt; wrote:<br>
-&gt;&gt; Alexis : yes I am using the Analogy drivers . . . Would that mean =
-that<br>
-&gt;&gt; analog output is implemented but not digital output for National I=
-nstrument<br>
-&gt;&gt; acquisition cards ? Has someone tried this already ? Seems strange=
- that<br>
-&gt;&gt; analog output would be implemented but not digital.<br>
-&gt;&gt;<br>
-&gt;&gt; Anders : Ok ! I will look into rebulding my xenomai installation t=
-hen !<br>
-&gt;<br>
-&gt; According to the thread:<br>
-&gt; [Xenomai-core] Problems with gcc 4.6.0 (rt_task_shadow fails with ENOS=
-YS)<br>
-&gt; <a href=3D"https://mail.gna.org/public/xenomai-core/2011-07/msg00010.h=
-tml" target=3D"_blank">https://mail.gna.org/public/xenomai-core/2011-07/msg=
-00010.html</a><br>
-&gt; The problem related by Anders Blomdell is supposed to be fixed with<br=
->
-&gt; the 2.6 release, isn&#39;t it?<br>
-&gt;<br>
-&gt; Could you tell us which version of Xenomai and which driver<br>
-&gt; (ni_pcimio, ...) you are using?<br>
-<br>
-</div>Hi,<br>
-<br>
-the problem is not fixed, we can not compile xenomai without frame pointers=
-.<br>
-<font color=3D"#888888"><br>
---<br>
- =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
-=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0Gilles.<br>
-</font></blockquote></div><br>
-
---20cf3071cff8b72ec304b263e440--
+>=20Hello,
+>=20
+>=20I'm=20programming=20a=20userspace=20Xenomai-Programm=20f=C3=BCr=20a=20=
+Xilinx=20PowerPC
+>=20(additional=20Information=20without=20FPU).=20I=20include=20the=20mat=
+h.h=20because=20I
+>=20have=20to=20use=20arcustangens=20and=20arcuscosinus.=20When=20compili=
+ng=20the=20programm
+>=20it=20seems=20so=20like=20the=20linker=20can't=20do=20his=20job=20for=20=
+math.h.
+>=20
+>=20minimal=20example:
+>=20
+>=20"
+>=20#include=20<stdbool.h>//=20boolescher=20Datentyp
+>=20#include=20<native/task.h>
+>=20#include=20<native/timer.h>
+>=20#include=20<rtdm/rtdm.h>
+>=20#include=20<sys/mman.h>
+>=20#include=20<stdio.h>
+>=20#include=20<fcntl.h>
+>=20#include=20<unistd.h>
+>=20#include=20<math.h>
+>=20
+>=20void=20user=5Ftask(void=20*cookie){
+>=20...
+>=20Vektor.y=5Fw=3D0.5*atan(Vektor.y/reg->l=5FO);
+>=20...
+>=20}
+>=20"
+>=20
+>=20the=20Makefile:
+>=20
+>=20"
+>=20#=20Name=20der=20zu=20erstellenden=20Programmdatei
+>=20PROG=3Dpu10=5FLas=5FVek
+>=20
+>=20#=20Liste=20der=20C-Dateien=20im=20Verzeichnis
+>=20C=5FDAT=3D$(wildcard=20*.c)
+>=20
+>=20
+>=20#=20Variablen=20f=C3=BCr=20die=20Benutzung=20des=20ELDK-Compilers
+>=20ARCH=3Dpowerpc
+>=20
+>=20#Xenomai=20Installations=20Pfad
+>=20DESTDIR=3D../usersupport/root
+>=20#DESTDIR=3D/mnt/albatros=5Fprojekte/PU10/pu10=5Fsw/PU10=5FXenomai/xen=
+omai=5Fbuild/root
+>=20XENO=20:=3D=20$(DESTDIR)/usr/xenomai
+>=20
+>=20XENOCONFIG=3D$(shell=20PATH=3D$(XENO):$(XENO)/bin:$(PATH)=20which=20x=
+eno-config
+>=202>/dev/null)
+>=20
+>=20CC=3D$(shell=20$(XENOCONFIG)=20--cc)
+>=20
+>=20CFLAGS=3D$(shell=20export=20DESTDIR=3D"$(DESTDIR)";=20$(XENOCONFIG)=20=
+--skin=20native
+>=20--cflags)=20$(MY=5FCFLAGS)
+>=20
+>=20LDFLAGS=3D$(shell=20export=20DESTDIR=3D"$(DESTDIR)";=20$(XENOCONFIG)=20=
+--skin=20native
+>=20--ldflags)=20$(MY=5FLDFLAGS)=20-lnative=20-lrtdm
+>=20
+>=20#Xenomai=20Library=20Pfad=20in=20binary=20hinzuf=C3=BCgen
+>=20LPATH=3D/usr/xenomai/lib
+>=20#LDFLAGS+=3D-Xlinker=20-rpath=20-Xlinker=20$(shell=20$(XENOCONFIG)=20=
+--libdir)
+>=20LDFLAGS+=3D-Xlinker=20-rpath=20-Xlinker=20$(LPATH)=20
+>=20
+>=20$(PROG)::=20
+>=20=09$(CC)=20-Wall=20$(CFLAGS)=20$(LDFLAGS)=20-L/usr/lib=20-I/usr/inclu=
+de
+>=20$(C=5FDAT)=20../defines.h=20../regbank.h=20-o=20$(PROG)=09
+>=20
+>=20clean::
+>=20=09$(RM)=20$(PROG)=20*.o
+>=20"
+>=20
+>=20I=20hope=20for=20some=20hints.
+>=20
+>=20Erik=20
+>=20
+>=20
+>=20
+>=20
+>=20=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=
+=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F
+>=20Xenomai-help=20mailing=20list
+>=20Xenomai-help@domain.hid
+>=20https://mail.gna.org/listinfo/xenomai-help
+>=20
 
