@@ -1,13 +1,10 @@
-From: Erik Sommer <erik.sommer@domain.hid>
-In-Reply-To: <414be62.7ed9feda.4ecf92ea.afbae@domain.hid>
-References: <1322041129.15019.7.camel@domain.hid>
-	<414be62.7ed9feda.4ecf92ea.afbae@domain.hid>
-Content-Type: text/plain; charset="utf-8"
-Date: Fri, 25 Nov 2011 14:33:30 +0100
-Message-Id: <1322228010.14462.1.camel@domain.hid>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai-help] can't link math.h in a userspace programm
+MIME-Version: 1.0
+Date: Tue, 29 Nov 2011 20:02:11 +0000
+Message-ID: <CAOiFVFtm0DPpuo2uopycHAZ1i-CKJKwxcwMpXHw-BvSY_mKZNA@mail.gmail.com>
+From: Adriano Campos <adrianoribeirocampos@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai-help] =?iso-8859-1?q?=AB_help_with_xenomai_in_QEMU?=
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -17,103 +14,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Robert <robert-km@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Hello,
+hello,
 
-thanks for the help. This was only one of the faults. But I have fixed
-it now.
+First question: is there something wrong with the mail-list of
+Xenomai? I send messages but they do not appear in the list.
 
-Erik
-Am Freitag, den 25.11.2011, 14:06 +0100 schrieb Robert:
-> Hi,
-> have You tried to add '-lm' to LDFLAGS?
-> It adds math library while linking program.
-> 
-> 
-> Dnia 23 listopada 2011 10:38 Erik Sommer <erik.sommer@domain.hid> napisał(a):
-> 
-> > Hello,
-> > 
-> > I'm programming a userspace Xenomai-Programm für a Xilinx PowerPC
-> > (additional Information without FPU). I include the math.h because I
-> > have to use arcustangens and arcuscosinus. When compiling the programm
-> > it seems so like the linker can't do his job for math.h.
-> > 
-> > minimal example:
-> > 
-> > "
-> > #include <stdbool.h>// boolescher Datentyp
-> > #include <native/task.h>
-> > #include <native/timer.h>
-> > #include <rtdm/rtdm.h>
-> > #include <sys/mman.h>
-> > #include <stdio.h>
-> > #include <fcntl.h>
-> > #include <unistd.h>
-> > #include <math.h>
-> > 
-> > void user_task(void *cookie){
-> > ...
-> > Vektor.y_w=0.5*atan(Vektor.y/reg->l_O);
-> > ...
-> > }
-> > "
-> > 
-> > the Makefile:
-> > 
-> > "
-> > # Name der zu erstellenden Programmdatei
-> > PROG=pu10_Las_Vek
-> > 
-> > # Liste der C-Dateien im Verzeichnis
-> > C_DAT=$(wildcard *.c)
-> > 
-> > 
-> > # Variablen für die Benutzung des ELDK-Compilers
-> > ARCH=powerpc
-> > 
-> > #Xenomai Installations Pfad
-> > DESTDIR=../usersupport/root
-> > #DESTDIR=/mnt/albatros_projekte/PU10/pu10_sw/PU10_Xenomai/xenomai_build/root
-> > XENO := $(DESTDIR)/usr/xenomai
-> > 
-> > XENOCONFIG=$(shell PATH=$(XENO):$(XENO)/bin:$(PATH) which xeno-config
-> > 2>/dev/null)
-> > 
-> > CC=$(shell $(XENOCONFIG) --cc)
-> > 
-> > CFLAGS=$(shell export DESTDIR="$(DESTDIR)"; $(XENOCONFIG) --skin native
-> > --cflags) $(MY_CFLAGS)
-> > 
-> > LDFLAGS=$(shell export DESTDIR="$(DESTDIR)"; $(XENOCONFIG) --skin native
-> > --ldflags) $(MY_LDFLAGS) -lnative -lrtdm
-> > 
-> > #Xenomai Library Pfad in binary hinzufügen
-> > LPATH=/usr/xenomai/lib
-> > #LDFLAGS+=-Xlinker -rpath -Xlinker $(shell $(XENOCONFIG) --libdir)
-> > LDFLAGS+=-Xlinker -rpath -Xlinker $(LPATH) 
-> > 
-> > $(PROG):: 
-> > 	$(CC) -Wall $(CFLAGS) $(LDFLAGS) -L/usr/lib -I/usr/include
-> > $(C_DAT) ../defines.h ../regbank.h -o $(PROG)	
-> > 
-> > clean::
-> > 	$(RM) $(PROG) *.o
-> > "
-> > 
-> > I hope for some hints.
-> > 
-> > Erik 
-> > 
-> > 
-> > 
-> > 
-> > _______________________________________________
-> > Xenomai-help mailing list
-> > Xenomai-help@domain.hid
-> > https://mail.gna.org/listinfo/xenomai-help
-> > 
+My question:I am developing a project with Xenomai, ADEOS and ARM.
+=A0 In this first phase want to simulate the platform in the QEMU
+=A0 emulator. Can you tell me if you already did something like that or
+=A0 think it's possible.
+=A0 I am using buildroot to build the system and I'm in trouble because
+=A0 QEMU to work I have to choose "arm926t" in the "target arquitecture
+=A0 variant" and "menu Xenomai ARM CPU TYPE" I do not know what to choose.
+=A0 If I choose "GENERIC ARM" gives the following error when compiling.
+=A0 hal.h: 91:2: error: # error "Unsupported ARM machine"
+=A0 If I choose in the menu "Xenomai ARM CPU TYPE" another option QEMU
+=A0 crash when booting.
 
+
+=A0 Best Regards,
+Adriano Campos
 
