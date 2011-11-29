@@ -1,13 +1,12 @@
-Message-ID: <4ED4E3C3.1080803@domain.hid>
-Date: Tue, 29 Nov 2011 14:53:07 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4ED4E86C.3080902@domain.hid>
+Date: Tue, 29 Nov 2011 15:13:00 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <mailman.61.1322564420.6727.adeos-main@gna.org>
-	<CAOiFVFtS6y727K5vhEXX2v9TU9saJpGA2=ww_5Eb_dS4K3aeQw@domain.hid>
-In-Reply-To: <CAOiFVFtS6y727K5vhEXX2v9TU9saJpGA2=ww_5Eb_dS4K3aeQw@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+References: <4ED38714.2000207@domain.hid>
+In-Reply-To: <4ED38714.2000207@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Adeos-main] Adeos-main Digest, Vol 74, Issue 4
+Subject: Re: [Adeos-main] Fasteoi unmasking issue
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/options/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -16,33 +15,95 @@ List-Post: <mailto:adeos-main@gna.org>
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-To: Adriano Campos <adrianoribeirocampos@domain.hid>
-Cc: adeos-main@gna.org
+To: Wolfgang Mauerer <wolfgang.mauerer@domain.hid>
+Cc: "Kiszka, Jan" <jan.kiszka@domain.hid>, adeos-main <adeos-main@gna.org>, "Hillier, Gernot" <gernot.hillier@domain.hid>
 
-On 11/29/2011 02:20 PM, Adriano Campos wrote:
-> hello all,
-> 
-> I am developing a project with Xenomai, ADEOS and ARM.
-> 
-> In this first phase want to simulate the platform in the QEMU emulator. Can
-> you tell me if you already did something like that or think it's possible.
-> 
-> I am using buildroot to build the system and I'm in trouble because QEMU to
-> work I have to choose "arm926t" in the "target arquitecture variant" and
-> "menu Xenomai ARM CPU TYPE" I do not know what to choose. If I choose "
-> GENERIC ARM" gives the following error when compiling.
-> 
-> hal.h: 91:2: error: # error "Unsupported ARM machine"
-> 
-> If I choose in the menu "Xenomai ARM CPU TYPE" another option QEMU crash
-> when booting.
+On 11/28/2011 02:05 PM, Wolfgang Mauerer wrote:
+> Dear all,
+>
+> we are facing some difficulties with GSI interrupt storms
+> originating from a PCI card that seem to be caused by
+> ipipe: The card is passed through to qemu-kvm (the setup
+> is based on the patches sent by Jan some time ago). Once
+> the card becomes active, we are hit by a tremendous amount
+> of interrupts (>  100000/s) that keep ipipe fully occupied.
+> The observed pattern is (excerpt from the ipipe tracer)
+>
+> :| common_interrupt+0x20 (__ipipe_spin_unlock_irqrestore+0x62)
+> :| __ipipe_handle_irq+0x11 (common_interrupt+0x27)
+> (...)
+> :  handle_irq+0x9 (do_IRQ+0x66)
+> :  irq_to_desc+0x4 (handle_irq+0x15)
+> :  handle_fasteoi_irq+0x14 (handle_irq+0x22)
+> (...)
+> :  unmask_ioapic_irq+0x4 (handle_fasteoi_irq+0x94)
+> :  unmask_ioapic+0xd (unmask_ioapic_irq+0x14)
+> :  __ipipe_spin_lock_irqsave+0x7 (unmask_ioapic+0x23)
+> :| __ipipe_spin_lock_irqsave+0x93 (unmask_ioapic+0x23)
+> :| __io_apic_modify_irq+0x4 (unmask_ioapic+0x41)
+> :| __ipipe_unlock_irq+0x11 (unmask_ioapic+0x66)
+> :| __ipipe_spin_unlock_irqrestore+0x9 (unmask_ioapic+0x75)
+> :| __ipipe_spin_unlock_irqrestore+0x60 (unmask_ioapic+0x75)
+> :| common_interrupt+0x20 (__ipipe_spin_unlock_irqrestore+0x62)
+>
+> That is, as soon as the IRQ in question is unmasked, the
+> next one is immediately received, and the interrupt handler
+> in non-RT context never gets a chance to actually service
+> the interrupt.
+>
+> The problem seems to be caused by unmasking the IRQ in
+> handle_fasteoi_irq(), and with a hack along the lines of
+>
+> --- a/kernel/irq/chip.c
+> +++ b/kernel/irq/chip.c
+> @@ -586,7 +586,8 @@ handle_fasteoi_irq(unsigned int irq, struct irq_desc
+> *desc)
+>          raw_spin_lock(&desc->lock);
+>          desc->status&= ~IRQ_INPROGRESS;
+>   #ifdef CONFIG_IPIPE
+> -       desc->irq_data.chip->irq_unmask(&desc->irq_data);
+> +       if (irq != WHICHEVER_IRQ_CAUSES_THE_STORM)
+> +               desc->irq_data.chip->irq_unmask(&desc->irq_data);
+>   out:
+>   #else
+>   out:
+>
+> the issue is solved.
+>
+> So the question is: Why is it okay to unconditionally unmask
+> all interrupts in the fasteoi handler? All cards that re-send
+> interrupts at high frequencies unless they are properly handled
+> by their device driver should cause the same problem.
+> I take the early unmasking is an optimisation, or are there any
+> further reasons for the unconditional unmasking in
+> handle_fasteoi_irq()?
 
-You may find the list of ARM SOCs supported by Xenomai here:
-http://www.xenomai.org/index.php/Embedded_Device_Support#ARM
+This is not an optimization, the flow for which this code was designed 
+for is:
 
-You have to select one of these processors to have a system running
-correctly with Xenomai.
+hw IRQ receipt
+chip->eoi()
+	must mask the IRQ line
+...
+real-time or Linux handling, clear device interrupt
+...
+handle_fasteoi()
+	unmask previous masking
+
+It does not cope well with the recent threaded interrupt model addition 
+in the vanilla kernel. So it will likely break for any device with 
+threaded level IRQ handling.
+
+>
+> Thanks&  best regards, Wolfgang
+>
+> --
+> Siemens AG, Open Source Platforms,
+> Corporate Competence Centre Embedded Linux
+>
+>
+
 
 -- 
-					    Gilles.
+Philippe.
 
