@@ -1,10 +1,11 @@
-Date: Tue, 29 Nov 2011 14:09:05 +0100 (CET)
-From: "Jan Kiszka" <Jan.Kiszka@domain.hid>
-Message-ID: <1042929394.26817.1322572145480.JavaMail.fmail@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Adeos-main] Fasteoi unmasking issue
+In-Reply-To: <mailman.61.1322564420.6727.adeos-main@gna.org>
+References: <mailman.61.1322564420.6727.adeos-main@gna.org>
+Date: Tue, 29 Nov 2011 13:20:52 +0000
+Message-ID: <CAOiFVFtS6y727K5vhEXX2v9TU9saJpGA2=ww_5Eb_dS4K3aeQw@domain.hid>
+From: Adriano Campos <adrianoribeirocampos@domain.hid>
+Content-Type: multipart/alternative; boundary=20cf307f325415313c04b2df7d06
+Subject: Re: [Adeos-main] Adeos-main Digest, Vol 74, Issue 4
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/options/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -13,47 +14,75 @@ List-Post: <mailto:adeos-main@gna.org>
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-To: Wolfgang Mauerer <wolfgang.mauerer@domain.hid>, adeos-main <adeos-main@gna.org>
-Cc: "Kiszka, Jan" <jan.kiszka@domain.hid>, Philippe Gerum <rpm@xenomai.org>, "Hillier, Gernot" <gernot.hillier@domain.hid>
+To: adeos-main@gna.org
 
-[ Sorry in advance, only have webmail access ATM. ]
+--20cf307f325415313c04b2df7d06
+Content-Type: text/plain; charset=ISO-8859-1
 
-> The problem seems to be caused by unmasking the IRQ in
-> handle_fasteoi_irq(), and with a hack along the lines of
->
-> --- a/kernel/irq/chip.c
-> +++ b/kernel/irq/chip.c
-> @@ -586,7 +586,8 @@ handle_fasteoi_irq(unsigned int irq, struct irq_desc
-> *desc)
-> raw_spin_lock(&desc->lock);
-> desc->status &= ~IRQ_INPROGRESS;
-> #ifdef CONFIG_IPIPE
-> - desc->irq_data.chip->irq_unmask(&desc->irq_data);
-> + if (irq != WHICHEVER_IRQ_CAUSES_THE_STORM)
-> + desc->irq_data.chip->irq_unmask(&desc->irq_data);
-> out:
-> #else
-> out:
->
-> the issue is solved.
->
-> So the question is: Why is it okay to unconditionally unmask
-> all interrupts in the fasteoi handler? All cards that re-send
-> interrupts at high frequencies unless they are properly handled
-> by their device driver should cause the same problem.
-> I take the early unmasking is an optimisation, or are there any
-> further reasons for the unconditional unmasking in
-> handle_fasteoi_irq()?
->
+hello all,
 
-It think the proper fix is to check for IRQD_IRQ_MASKED and only unmask the line if it isn't masked from Linux' perspective. That should be a long pending i-pipe bug, surfaced by the IRQ thread mask flow that (not only) KVM's device assignment code depends on. Can you give this a try as well?
+I am developing a project with Xenomai, ADEOS and ARM.
 
-Thanks for digging out the reason!
+In this first phase want to simulate the platform in the QEMU emulator. Can
+you tell me if you already did something like that or think it's possible.
 
-Cheers from Schiphol,
-Jan
+I am using buildroot to build the system and I'm in trouble because QEMU to
+work I have to choose "arm926t" in the "target arquitecture variant" and
+"menu Xenomai ARM CPU TYPE" I do not know what to choose. If I choose "
+GENERIC ARM" gives the following error when compiling.
 
-___________________________________________________________
-SMS schreiben mit WEB.DE FreeMail - einfach, schnell und
-kostenguenstig. Jetzt gleich testen! http://f.web.de/?mc=021192
+hal.h: 91:2: error: # error "Unsupported ARM machine"
+
+If I choose in the menu "Xenomai ARM CPU TYPE" another option QEMU crash
+when booting.
+
+Best Regards,
+Adriano Campos
+
+--20cf307f325415313c04b2df7d06
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+<span id=3D"result_box" class=3D"" lang=3D"en"><span class=3D"hps">hello</s=
+pan> <span class=3D"hps">all</span><span class=3D"">,<br><br></span> <span =
+class=3D"hps">I am developing</span> <span class=3D"hps">a</span> <span cla=
+ss=3D"hps">project with</span> <span class=3D"hps">Xenomai</span><span clas=
+s=3D"">,</span> <span class=3D"hps">ADEOS</span> <span class=3D"hps">and AR=
+M</span><span class=3D"">.</span><br>
+<br> <span class=3D"hps">In this first phase</span> <span class=3D"hps">wan=
+t to simulate</span> <span class=3D"hps">the platform in the</span> <span c=
+lass=3D"hps">QEMU emulator</span><span class=3D"">.</span> <span class=3D"h=
+ps">Can you tell me</span> <span class=3D"hps">if you already</span> <span =
+class=3D"hps">did</span> <span class=3D"hps">something like that</span> <sp=
+an class=3D"hps">or</span> <span class=3D"hps">think it&#39;s</span> <span =
+class=3D"hps">possible.</span><br>
+<br> <span class=3D"hps">I am</span> <span class=3D"hps">using</span> <span=
+ class=3D"hps">buildroot</span> <span class=3D"hps">to build the system</sp=
+an> <span class=3D"hps">and I&#39;m</span> <span class=3D"hps">in trouble b=
+ecause</span> <span class=3D"hps">QEMU</span> <span class=3D"hps">to</span>=
+ <span class=3D"hps">work</span> <span class=3D"hps">I have to choose</span=
+> <span class=3D"hps atn">&quot;</span><span class=3D"">arm926t</span><span=
+ class=3D"atn">&quot; in the &quot;</span><span class=3D"">target</span> <s=
+pan class=3D"hps">arquitecture</span> <span class=3D"hps">variant&quot;</sp=
+an> <span class=3D"hps">and</span> <span class=3D"hps">&quot;menu</span> <s=
+pan class=3D"hps">Xenomai</span> <span class=3D"hps">ARM</span> <span class=
+=3D"hps">CPU</span> <span class=3D"hps">TYPE&quot;</span> <span class=3D"hp=
+s">I do not know</span> <span class=3D"hps">what to choose.</span> <span cl=
+ass=3D"hps">If I</span> <span class=3D"hps atn">choose &quot;</span><span c=
+lass=3D"">GENERIC</span> <span class=3D"hps">ARM</span><span class=3D"">&qu=
+ot; gives</span> <span class=3D"hps">the following error</span> <span class=
+=3D"hps">when compiling</span><span class=3D"">.</span><br>
+<br> <span class=3D"hps">hal.h</span><span class=3D"">:</span> <span class=
+=3D"hps">91:2</span><span class=3D"">: error:</span> <span class=3D"hps"># =
+error</span> <span class=3D"hps">&quot;Unsupported</span> <span class=3D"hp=
+s">ARM</span> <span class=3D"hps">machine&quot;</span><br>
+<br> <span class=3D"hps">If I choose</span> <span class=3D"hps atn">in the =
+menu &quot;</span><span class=3D"">Xenomai</span> <span class=3D"hps">ARM</=
+span> <span class=3D"hps">CPU</span> <span class=3D"hps">TYPE&quot;</span> =
+<span class=3D"hps">another option</span> <span class=3D"hps">QEMU</span> <=
+span class=3D"hps">crash when</span> <span class=3D"hps">booting.</span></s=
+pan><br>
+<br>Best Regards,<br>Adriano Campos<br>
+
+--20cf307f325415313c04b2df7d06--
 
