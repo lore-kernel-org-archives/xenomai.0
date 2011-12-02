@@ -1,79 +1,56 @@
-Message-ID: <4EFC7AD7.2030202@domain.hid>
-Date: Thu, 29 Dec 2011 15:36:07 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <4ED8EEB1.1040904@domain.hid>
+Date: Fri, 02 Dec 2011 16:28:49 +0100
+From: Kurt Geebelen <kurt.geebelen@domain.hid>
 MIME-Version: 1.0
-References: <BLU166-W4963DB0BDCBFDED1A1EF5CC4AD0@domain.hid>
-In-Reply-To: <BLU166-W4963DB0BDCBFDED1A1EF5CC4AD0@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] general questions
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai-help] Xenomai installation: high latencies
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Jan-Erik Lange <jan0385@domain.hid>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: xenomai@xenomai.org
 
-On 12/29/2011 01:04 PM, Jan-Erik Lange wrote:
-> Hello,
-> I'm new in the topic about the Xenomai co-kernel approach and I have
-> some questions to the primary mode and secondary mode.
->
-> I have trouble with the imagination of the fact in general, that one
-> task (process oder thread) can be processed by two kernels (Xenomai
-> nucleus and standard kernel), and treated by the one in real time and by
-> the other in non real-time.
->
-> 1. So far I understood this approach, the primary and secondary mode is
-> an abstract description of the fact, that threads or processes can be
-> scheduled by the Xenomai nucleus or by the standard Linux kernel
-> scheduler. Is this correct?
+Dear all,
 
-Yes. A Xenomai thread in user-space is attached a "shadow" control area 
-in addition to the regular linux context data, which enables both linux 
-and the nucleus to schedule it in a mutually exclusive manner.
+I've tried installing Xenomai, following these instructions:
 
->
-> 2. Now supose, that I have chosen the VxWork-skin and I started a task
-> in the primary mode. Is it correct that when this task is calling a non
-> VxWork-API-funtion, there will a change of the context from primary to
-> the secondary mode? Or what is the exact condition of the switching of
-> the context?
->
+http://www.xenomai.org/index.php/Building_Debian_packages
 
-- invoking a regular linux syscall
-- receiving a linux signal (e.g. kill(2) and GDB)
-- causing a CPU trap (e.g. invalid memory access), hitting a breakpoint 
-(e.g. GDB)
+but then for the latest version (xenomai 2.6.0, and kernel 2.6.38.8 and=20
+for 64 bit) .
 
-all these situations cause the switch from primary to secondary mode. We 
-say that such thread "relaxes" in Xenomai parlance.
+For configuring the kernel, I followed these instructions:
 
-A common caveat is to call a glibc routine, which eventually issues a 
-linux syscall under the hood. Think of malloc() detecting a process 
-memory shortage, which then calls mmap or sbrk to extend the process 
-data. Or, running into a mutex contention once in a while, forcing the 
-calling thread to issue a syscall for sleeping on the mutex. 
-Fortunately, we have a tool to detect these situations.
+http://www.xenomai.org/index.php/Configuring_x86_kernels
 
-> It would be very nice, if you could tell me a little bit about these
-> questions?
->
-> Best regards
-> Jan
->
->
->
-> _______________________________________________
-> Xenomai-core mailing list
-> Xenomai-core@domain.hid
-> https://mail.gna.org/listinfo/xenomai-core
+All that is stated on these websites works without problems, and I am=20
+able to boot in the installed xenomai kernel. However, when I perform=20
+the latency-test (latency in /usr/lib/xenomai), I get latencies of more=20
+than 1400 microseconds.
 
+The system I have is the following:
 
--- 
-Philippe.
+Dell=99 Precision=99 T1500
+One=AE Intel=99 Core i7-860 (2.8GHz, 8MB L3, 95W, Quad Core)
+6GB DDR3 non-ECC Memory (1333MHz, 3x2GB)
+512MB PCIe x16 NVIDIA Quadro FX 580 Graphics Card
+Intel Solid-State Drive 320 Series 120GB
+
+I have tried reinstalling the kernel several times, but I always end up=20
+with high latencies.
+I also have consulted with others, who followed the same guidelines as I=20
+did, and their latencies are about 100 times lower.
+
+Is there somebody who knows what the problem might be? Might it be a=20
+hardware-related problem?
+
+Many thanks in advance,
+Best regards,
+Kurt Geebelen
 
