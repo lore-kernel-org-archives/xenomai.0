@@ -1,19 +1,12 @@
-Date: Sat, 3 Dec 2011 10:52:53 +0100
-From: Richard Cochran <richardcochran@domain.hid>
-Message-ID: <20111203095253.GA2163@domain.hid>
-References: <1320342817.94951.YahooMailNeo@domain.hid>
-	<1320705884.27846.YahooMailNeo@domain.hid>
-	<4EB889C1.6020500@domain.hid>
-	<990B36E792F1A4488D3E2B1C46FD62D68954BC2EB6@domain.hid>
-	<4EB941C8.4010306@domain.hid>
-	<1320764897.5719.YahooMailNeo@domain.hid>
-	<4EB9572F.3020205@domain.hid>
+Message-ID: <4EDE5AFA.2050503@domain.hid>
+Date: Tue, 06 Dec 2011 19:12:10 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <4EB9572F.3020205@domain.hid>
-Subject: Re: [Xenomai-help] Is there Xenomai support for the Freescale P1020
- processor?
+References: <4ED8EEB1.1040904@domain.hid>
+In-Reply-To: <4ED8EEB1.1040904@domain.hid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-help] Xenomai installation: high latencies
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -23,20 +16,53 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org, MichaelPustylnik@domain.hid
+To: Kurt Geebelen <kurt.geebelen@domain.hid>
+Cc: xenomai@xenomai.org
 
-On Tue, Nov 08, 2011 at 05:22:07PM +0100, Philippe Gerum wrote:
-> So, the answer is maybe, maybe.
-> 
-> Maybe it already works, given that P2020 is supported and I don't
-> see much changes in P1020 wrt what the interrupt pipeline needs to
-> know. I won't know before I put my hands on such a beast.
+On 12/02/2011 04:28 PM, Kurt Geebelen wrote:
+> Dear all,
+>=20
+> I've tried installing Xenomai, following these instructions:
+>=20
+> http://www.xenomai.org/index.php/Building_Debian_packages
+>=20
+> but then for the latest version (xenomai 2.6.0, and kernel 2.6.38.8 and=
+=20
+> for 64 bit) .
+>=20
+> For configuring the kernel, I followed these instructions:
+>=20
+> http://www.xenomai.org/index.php/Configuring_x86_kernels
+>=20
+> All that is stated on these websites works without problems, and I am=20
+> able to boot in the installed xenomai kernel. However, when I perform=20
+> the latency-test (latency in /usr/lib/xenomai), I get latencies of more=
+=20
+> than 1400 microseconds.
+>=20
+> The system I have is the following:
+>=20
+> Dell=E2=84=A2 Precision=E2=84=A2 T1500
+> One=C2=AE Intel=E2=84=A2 Core i7-860 (2.8GHz, 8MB L3, 95W, Quad Core)
+> 6GB DDR3 non-ECC Memory (1333MHz, 3x2GB)
+> 512MB PCIe x16 NVIDIA Quadro FX 580 Graphics Card
+> Intel Solid-State Drive 320 Series 120GB
+>=20
+> I have tried reinstalling the kernel several times, but I always end up=
+=20
+> with high latencies.
+> I also have consulted with others, who followed the same guidelines as =
+I=20
+> did, and their latencies are about 100 times lower.
+>=20
+> Is there somebody who knows what the problem might be? Might it be a=20
+> hardware-related problem?
 
-BTW, Philippe, about six weeks ago I tried to run the 3.0 powerpc
-ipipe kernel on the P2020, but it won't compile.  The various irq_
-functions have changed names and signatures, and so the ipipe
-interrupt #ifdef code is out of date.
+It is already written in the URL you mention, but I will repeat it
+nevertheless, if enabling SMI workaround, have you checked the kernel
+logs to see whether the SMI workaround actually works?
 
-Richard
+--=20
+					    Gilles.
+
 
