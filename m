@@ -1,10 +1,11 @@
-Message-ID: <4EE1C949.2030404@domain.hid>
-Date: Fri, 09 Dec 2011 09:39:37 +0100
-From: Damir Anicic <Damir.Anicic@domain.hid>
+Message-ID: <18027126.1353391323438107409.JavaMail.defaultUser@domain.hid>
+Date: Fri, 9 Dec 2011 14:41:47 +0100 (CET)
+From: "ediboscio@domain.hid" <ediboscio@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-help] Novice - help needed
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_104033_24727177.1323438107409"
+Subject: [Xenomai-help] (no subject)
+Reply-To: "ediboscio@domain.hid" <ediboscio@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -16,160 +17,110 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
-Hi!
+------=_Part_104033_24727177.1323438107409
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-(Sorry for a long mail)
-
-This is my first xenomai instalation.
-
-Xenomai 2.6.0
-linux kernel 2.6.38.8
-on Ubuntu 11.10
-on (normal) desktop intel PC ( Core(TM)2 Duo CPU )
-
-All compiled and booted (it does boot xemonai-kernel):
-
-xeno config:
-$xenomai_root/configure --enable-x86-sep --enable-x86-tsc --enable-smp
-
-kernel config(xeno):
- >>> grep XENO .config | grep =y
-CONFIG_XENOMAI=y
-CONFIG_XENO_GENERIC_STACKPOOL=y
-CONFIG_XENO_FASTSYNCH=y
-CONFIG_XENO_OPT_NUCLEUS=y
-CONFIG_XENO_OPT_PERVASIVE=y
-CONFIG_XENO_OPT_PRIOCPL=y
-CONFIG_XENO_OPT_PIPELINE_HEAD=y
-CONFIG_XENO_OPT_PIPE=y
-CONFIG_XENO_OPT_VFILE=y
-CONFIG_XENO_OPT_STATS=y
-CONFIG_XENO_OPT_DEBUG=y
-CONFIG_XENO_OPT_DEBUG_XNLOCK=y
-CONFIG_XENO_OPT_WATCHDOG=y
-CONFIG_XENO_OPT_SHIRQ=y
-CONFIG_XENO_OPT_SELECT=y
-CONFIG_XENO_OPT_HOSTRT=y
-CONFIG_XENO_OPT_TIMING_PERIODIC=y
-CONFIG_XENO_OPT_TIMER_LIST=y
-CONFIG_XENO_HW_FPU=y
-CONFIG_XENO_HW_SMI_DETECT=y
-CONFIG_XENO_HW_SMI_WORKAROUND=y
-CONFIG_XENO_HW_SMI_ALL=y
-CONFIG_XENO_SKIN_NATIVE=y
-CONFIG_XENO_OPT_NATIVE_PIPE=y
-CONFIG_XENO_OPT_NATIVE_SEM=y
-CONFIG_XENO_OPT_NATIVE_EVENT=y
-CONFIG_XENO_OPT_NATIVE_MUTEX=y
-CONFIG_XENO_OPT_NATIVE_COND=y
-CONFIG_XENO_OPT_NATIVE_QUEUE=y
-CONFIG_XENO_OPT_NATIVE_BUFFER=y
-CONFIG_XENO_OPT_NATIVE_HEAP=y
-CONFIG_XENO_OPT_NATIVE_ALARM=y
-CONFIG_XENO_OPT_NATIVE_MPS=y
-CONFIG_XENO_OPT_DEBUG_NATIVE=y
-CONFIG_XENO_SKIN_POSIX=y
-CONFIG_XENO_OPT_POSIX_SELECT=y
-CONFIG_XENO_OPT_DEBUG_POSIX=y
-CONFIG_XENO_SKIN_VXWORKS=y
-CONFIG_XENO_OPT_DEBUG_VXWORKS=y
-CONFIG_XENO_SKIN_RTDM=y
-CONFIG_XENO_OPT_RTDM_SELECT=y
-CONFIG_XENO_OPT_DEBUG_RTDM_APPL=y
-CONFIG_XENO_DRIVERS_TIMERBENCH=y
-CONFIG_XENO_DRIVERS_IRQBENCH=y
-CONFIG_XENO_DRIVERS_SWITCHTEST=y
-
- >>> uname -a
-Linux pc8084 2.6.38.8-xenomai #6 SMP PREEMPT Thu Dec 8 15:51:53 CET 2011 
-i686 i686 i386 GNU/Linux
-
- >>> dmesg | grep -i i-pipe
-[    0.000000] I-pipe 2.10-01: pipeline enabled.
-[    0.321045] I-pipe: Domain Xenomai registered.
-
- >>> dmesg | grep -i xeno
-[    0.321045] Xenomai: hal/i386 started.
-[    0.321045] Xenomai: scheduling class idle registered.
-[    0.321045] Xenomai: scheduling class rt registered.
-[    0.321045] Xenomai: real-time nucleus v2.6.0 (Movin' On) loaded.
-[    0.321045] Xenomai: debug mode enabled.
-[    0.321045] Xenomai: starting native API services.
-[    0.321045] Xenomai: starting POSIX services.
-[    0.321045] Xenomai: starting RTDM services.
-[    0.321045] Xenomai: starting VxWorks services.
-
- >>> ls -R /proc/xenomai
-/proc/xenomai:
-acct  affinity  apc  faults  heap  interfaces  irq  latency  lock  
-registry  rtdm  sched  schedclasses  stat  timebases  timer  timerstat  
-version
-
-/proc/xenomai/interfaces:
-native  posix  rtdm  sys  vxworks
-
-/proc/xenomai/registry:
-usage
-
-/proc/xenomai/rtdm:
-fildes  named_devices  open_fildes  protocol_devices  rttest-irqbench0  
-rttest-switchtest0  rttest-timerbench0
-
-/proc/xenomai/rtdm/rttest-irqbench0:
-information
-
-/proc/xenomai/rtdm/rttest-switchtest0:
-information
-
-/proc/xenomai/rtdm/rttest-timerbench0:
-information
-
-/proc/xenomai/schedclasses:
-rt
-
-/proc/xenomai/schedclasses/rt:
-threads
-
-/proc/xenomai/timerstat:
-master  vxworks
-
- >>> ls /dev/rt*
-/dev/rtc     /dev/rtp0   /dev/rtp11  /dev/rtp14  /dev/rtp17  /dev/rtp2   
-/dev/rtp22  /dev/rtp25  /dev/rtp28  /dev/rtp30  /dev/rtp5  /dev/rtp8
-/dev/rtc0    /dev/rtp1   /dev/rtp12  /dev/rtp15  /dev/rtp18  /dev/rtp20  
-/dev/rtp23  /dev/rtp26  /dev/rtp29  /dev/rtp31  /dev/rtp6  /dev/rtp9
-/dev/rtheap  /dev/rtp10  /dev/rtp13  /dev/rtp16  /dev/rtp19  /dev/rtp21  
-/dev/rtp24  /dev/rtp27  /dev/rtp3   /dev/rtp4   /dev/rtp7
+Dear Sirs,I'm working with an Ubuntu (10.04) system with Xenomai (2.5.6), with kernel 2.6.37.6 and with a Peak-System PC/104 can interface (isa), with two channels.
 
 
 
-
-But:
-
- >>> cd /usr/xenomai/bin
-
- >>> sudo ./mutex-torture-native
-simple_wait
-FAILURE: simple mutex_lock 1: 1 (Operation not permitted) instead of 0
+I connected the two channels of the can interface with a cable (with the two 120Ohms resistor connected at each side) and did the following two tests:
 
 
- >>> sudo ./mutex-torture-posix
-Xenomai Posix skin init: pthread_setschedparam: Function not implemented
+1)
+...
+
+rtcanconfig rtcan0 --baudrate=1000000 start
+
+rtcanconfig rtcan1 --baudrate=1000000 start
 
 
- >>> sudo ./clocktest
-Xenomai Posix skin init: pthread_setschedparam: Function not implemented
+
+then, in one terminal:
+
+rtcanrecv rtcan0
 
 
- >>> sudo ./wakeup-time
-== Sampling period: 100 us
-== Do not interrupt this program
+
+in another one:
+
+rtcansend rtcan1 0xA 0xB 0xC 0xD 0xE 0xF 0x01 0x02
 
 
-Please help,
 
-Damir
+Everything seems to work: I can see the message on the receiving terminal. I 
+
+also tried changing rtcansend options, and it works as well.
 
 
+2)
+Then I used the rtcan_rtt xenomai example program.In one terminal:./rtcan_rtt rtcan0 rtcan1 -r -c 250000
+And in another one:./rtcan_rtt rtcan1 rtcan0 -c 250000
+I also modified the rtcan_rtt to print some additional debug messages, and I found that for each can message sent
+ from the transmitter channel I receive ~356 
+messages on the other channel, with lot of overruns and huge times. Maybee I have some problems with the 
+interrupts?Note that with the rtcanrecv/rtcansend test, for each message sent with rtcansend, rtcanrecv receives one message.
+Thanks in advanceEttore
+ 
+------=_Part_104033_24727177.1323438107409
+Content-Type: text/html;charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+<p style=3D"margin: 0px; padding: 0px;" mce_style=3D"margin: 0px; padding: =
+0px;">Dear Sirs,</p><p style=3D"margin: 0px; padding: 0px;" mce_style=3D"ma=
+rgin: 0px; padding: 0px;">I'm working with an Ubuntu (10.04) system with Xe=
+nomai (2.5.6), with kernel 2.6.37.6 and with a Peak-System PC/104 can inter=
+face (isa), with two channels.<br>
+<br>
+I connected the two channels of the can interface with a cable (with the tw=
+o 120Ohms resistor connected at each side) and did the following two tests:=
+<br>
+</p><p style=3D"margin: 0px; padding: 0px;" mce_style=3D"margin: 0px; paddi=
+ng: 0px;"><br>1)</p><p style=3D"margin: 0px; padding: 0px;" mce_style=3D"ma=
+rgin: 0px; padding: 0px;"><br></p><p style=3D"margin: 0px; padding: 0px;" m=
+ce_style=3D"margin: 0px; padding: 0px;">...<br>
+rtcanconfig rtcan0 --baudrate=3D1000000 start<br>
+rtcanconfig rtcan1 --baudrate=3D1000000 start<br>
+<br>
+then, in one terminal:<br>
+rtcanrecv rtcan0<br>
+<br>
+in another one:<br>
+rtcansend rtcan1 0xA 0xB 0xC 0xD 0xE 0xF 0x01 0x02<br>
+<br>
+Everything seems to work: I can see the message on the receiving terminal. =
+I <br>
+also tried changing rtcansend options, and it works as well.<br>
+</p><p style=3D"margin: 0px; padding: 0px;" mce_style=3D"margin: 0px; paddi=
+ng: 0px;"><br></p><p style=3D"margin: 0px; padding: 0px;" mce_style=3D"marg=
+in: 0px; padding: 0px;">2)<br></p><p style=3D"margin: 0px; padding: 0px;" m=
+ce_style=3D"margin: 0px; padding: 0px;">Then I used the rtcan_rtt xenomai e=
+xample program.</p><p style=3D"margin: 0px; padding: 0px;" mce_style=3D"mar=
+gin: 0px; padding: 0px;">In one terminal:</p><p style=3D"margin: 0px; paddi=
+ng: 0px;" mce_style=3D"margin: 0px; padding: 0px;">./rtcan_rtt rtcan0 rtcan=
+1 -r -c 250000</p><p style=3D"margin: 0px; padding: 0px;" mce_style=3D"marg=
+in: 0px; padding: 0px;"><br></p><p style=3D"margin: 0px; padding: 0px;" mce=
+_style=3D"margin: 0px; padding: 0px;">And in another one:</p><p style=3D"ma=
+rgin: 0px; padding: 0px;" mce_style=3D"margin: 0px; padding: 0px;">./rtcan_=
+rtt rtcan1 rtcan0 -c 250000</p><p style=3D"margin: 0px; padding: 0px;" mce_=
+style=3D"margin: 0px; padding: 0px;"><br></p><p style=3D"margin: 0px; paddi=
+ng: 0px;" mce_style=3D"margin: 0px; padding: 0px;">I also modified the rtca=
+n_rtt to print some additional debug messages, and I found that for each ca=
+n message sent
+ from the transmitter channel I receive ~356=20
+messages on the other channel, with lot of overruns and huge times. Maybee =
+I have some problems with the=20
+interrupts?</p><p style=3D"margin: 0px; padding: 0px;" mce_style=3D"margin:=
+ 0px; padding: 0px;">Note that with the rtcanrecv/rtcansend test, for each =
+message sent with rtcansend, rtcanrecv receives one message.</p><p style=3D=
+"margin: 0px; padding: 0px;" mce_style=3D"margin: 0px; padding: 0px;"><br><=
+/p><p style=3D"margin: 0px; padding: 0px;" mce_style=3D"margin: 0px; paddin=
+g: 0px;">Thanks in advance</p><p style=3D"margin: 0px; padding: 0px;" mce_s=
+tyle=3D"margin: 0px; padding: 0px;">Ettore</p><p style=3D"margin: 0px; padd=
+ing: 0px;" mce_style=3D"margin: 0px; padding: 0px;"><br></p><div style=3D"p=
+osition: absolute; left: -10000px; top: 0px; width: 1px; height: 1px; overf=
+low: hidden;" id=3D"_mcePaste">&nbsp;</div>
+------=_Part_104033_24727177.1323438107409--
 
 
