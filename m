@@ -1,67 +1,98 @@
+Message-ID: <4EE1E283.709@domain.hid>
+Date: Fri, 09 Dec 2011 11:27:15 +0100
+From: Anders Blomdell <anders.blomdell@domain.hid>
 MIME-Version: 1.0
-In-Reply-To: <CAAeYjMn-3iCucDRtHaOPNK2ijuq0LVFptqsKzKm85jc697Hv1A@mail.gmail.com>
-References: <CAAeYjM=YwjH0SsVDLaxt0v1HzzR5rM5N1pZW0K+yHq7KDeg9PA@mail.gmail.com>
-	<4EAFC7DB.1070400@domain.hid>
-	<CAAeYjMn-3iCucDRtHaOPNK2ijuq0LVFptqsKzKm85jc697Hv1A@mail.gmail.com>
-From: =?UTF-8?Q?=C5=81ukasz_Sacha?= <dragilla@domain.hid>
-Date: Tue, 1 Nov 2011 11:45:49 +0100
-Message-ID: <CAAeYjMmWCBJXJY6LYd3rvE6ZsZ5F2Z_w4Btkos=5K0EG6tftMQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] patching a kernel
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+References: <4ED66FD7.4010403@domain.hid> <4ED79747.10809@domain.hid>
+	<CAMesUR5gouRy88TV3YZqnuZ-OFVpO5uTSFergNuuvQaC=1MGVQ@mail.gmail.com>
+	<4EDF1C8D.90704@domain.hid> <4EE0E3A2.2070302@domain.hid>
+In-Reply-To: <4EE0E3A2.2070302@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-core] Analogy/mite
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Alexis Berlemont <alexis.berlemont@domain.hid>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Tue, Nov 1, 2011 at 11:25, =C5=81ukasz Sacha <dragilla@domain.hid> wrote:
-> On Tue, Nov 1, 2011 at 11:20, Philippe Gerum <rpm@xenomai.org> wrote:
->> On 11/01/2011 10:55 AM, =C5=81ukasz Sacha wrote:
+On 12/08/2011 05:19 PM, Anders Blomdell wrote:
+> On 12/07/2011 08:58 AM, Anders Blomdell wrote:
+>> On 12/06/2011 11:47 PM, Alexis Berlemont wrote:
+>>> Hi
 >>>
->>> Hi,
+>>> On Thu, Dec 1, 2011 at 4:03 PM, Anders Blomdell
+>>> <anders.blomdell@domain.hid> wrote:
+>>>> On 11/30/2011 07:03 PM, Anders Blomdell wrote:
+>>>>>
+>>>>> Hi, just found that
+>>>>>
+>>>>> echo 0000:06:01.0> /sys/bus/pci/drivers/analogy_mite/unbind
+>>>>>
+>>>>> does not do the same thing as
+>>>>>
+>>>>> analogy_config -r analogyN
+>>>>>
+>>>>> in fact it leaves the system in a state where using the driver results
+>>>>> in a kernel OOPS.
+>>>>>
+>>>>> Will try to look into it further tomorrow...
+>>>>
+>>>> OK seems like we have some interrupt cleanup problem, the following
+>>>> command
+>>>> sequence:
+>>>>
 >>>
->>> I'having problems with patching the 2.6.38.8 kernel.
->>> I prepare my kernel first to work on my device (mini2440). I configure
->>> it to use arm processor, etc.
->>> Then I patch from xenomai:
+>>> OK thank you for the report. I did not have time to look at it yet but
+>>> that will be done soon.
 >>>
->>> scripts/prepare-kernel.sh --arch=3Darm
->>> --adeos=3Dksrc/arch/arm/patches/adeos-ipipe-2.6.38.8-arm-1.18-03.patch
->>> --linux=3D../linux-2.6.38.8
->>>
->>> Now when I enter the ../linux-2.6.38.8 and run make xconfig (or
->>> menuconfig) I don't even see my processor there - it's set to Pentium
->>> PRO.
->>>
->>> What should I do now?
+>>> Is it blocking for you?
+>> Yes, and even worse is this problem:
 >>
->> Check the README.INSTALL file, section 2.4, Building for ARM.
+>> # /usr/local/sbin/analogy_config analogy0 analogy_ni_pcimio 6,1
+>> # /usr/local/sbin/analogy_config -r analogy0
+>> # cat /proc/xenomai/irq
+>> Killed
 >>
->> $ make ARCH=3Darm xconfig
->> =C2=A0 =C2=A0 =C2=A0 ^^^^^^^^
->>
->> Your .config file for your 2440 board is probably broken by now if you s=
-aved
->> your previous configuration attempt (i.e. switched to x86 settings). You=
- may
->> want to check this as well.
->
-> I didn't get to the make part yet. The situation I describe is after
-> prepare-kernel.sh.
-> And i'm using README.INSTALL of course. the line in 2.4 for
-> prepare-kernel.sh is:
-> $ $xenomai_root/scripts/prepare-kernel.sh --arch=3Darm \
-> =C2=A0--adeos=3D$xenomai_root/ksrc/arch/arm/patches/adeos-ipipe-2.6.20-ar=
-m-* \
-> =C2=A0--linux=3D$linux_tree
->
-> small "--arch=3Darm"
-Oops, sorry, didnd't read carefully. Thank you for the advice.
+>> I was looking into it last week, but is a workshop since monday, will
+>> get back at this tomorrow.
+> Seems like somebody is stomping out
+> dev->transfer.irq_desc.rtdm_desc.flags between attach and detach (flags
+> and all fields in its vicinity is zeroed out), hence the interrupt is
+> never removed from the interrupt handler tables wreaking havoc with the
+> entire kernel.
+
+Found the guilty party: a4l_cleanup_transfer, which zeroes out all the 
+interrupt data, just before the interrupt should be detached. Somebody 
+is being overzealous about keeping memory shiningly clean. We need to 
+keep the useful dirt.
+
+--- xenomai-2.6.0/ksrc/drivers/analogy/transfer.c.orig	2011-12-09 
+11:22:06.961999598 +0100
++++ xenomai-2.6.0/ksrc/drivers/analogy/transfer.c	2011-12-09 
+11:22:29.723999243 +0100
+@@ -92,8 +92,6 @@
+  		rtdm_free(tsf->subds);
+  	}
+
+-	memset(tsf, 0, sizeof(a4l_trf_t));
+-
+  	return 0;
+  }
+
+
+/Anders
+
+
+-- 
+Anders Blomdell                  Email: anders.blomdell@domain.hid
+Department of Automatic Control
+Lund University                  Phone:    +46 46 222 4625
+P.O. Box 118                     Fax:      +46 46 138118
+SE-221 00 Lund, Sweden
+
 
