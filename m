@@ -1,10 +1,10 @@
-Message-ID: <18027126.1353391323438107409.JavaMail.defaultUser@domain.hid>
-Date: Fri, 9 Dec 2011 14:41:47 +0100 (CET)
+Message-ID: <2674553.1357191323438743606.JavaMail.defaultUser@domain.hid>
+Date: Fri, 9 Dec 2011 14:52:23 +0100 (CET)
 From: "ediboscio@domain.hid" <ediboscio@domain.hid>
 MIME-Version: 1.0
 Content-Type: multipart/alternative; 
-	boundary="----=_Part_104033_24727177.1323438107409"
-Subject: [Xenomai-help] (no subject)
+	boundary="----=_Part_104316_13777700.1323438743605"
+Subject: [Xenomai-help] Interrupt issue on a PC/104 can interface?
 Reply-To: "ediboscio@domain.hid" <ediboscio@domain.hid>
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -17,7 +17,7 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
-------=_Part_104033_24727177.1323438107409
+------=_Part_104316_13777700.1323438743605
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
@@ -63,7 +63,11 @@ messages on the other channel, with lot of overruns and huge times. Maybee I hav
 interrupts?Note that with the rtcanrecv/rtcansend test, for each message sent with rtcansend, rtcanrecv receives one message.
 Thanks in advanceEttore
  
-------=_Part_104033_24727177.1323438107409
+
+
+
+
+------=_Part_104316_13777700.1323438743605
 Content-Type: text/html;charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
@@ -76,10 +80,10 @@ face (isa), with two channels.<br>
 I connected the two channels of the can interface with a cable (with the tw=
 o 120Ohms resistor connected at each side) and did the following two tests:=
 <br>
-</p><p style=3D"margin: 0px; padding: 0px;" mce_style=3D"margin: 0px; paddi=
-ng: 0px;"><br>1)</p><p style=3D"margin: 0px; padding: 0px;" mce_style=3D"ma=
-rgin: 0px; padding: 0px;"><br></p><p style=3D"margin: 0px; padding: 0px;" m=
-ce_style=3D"margin: 0px; padding: 0px;">...<br>
+</p><blockquote><p style=3D"margin: 0px; padding: 0px;" mce_style=3D"margin=
+: 0px; padding: 0px;"><br>1)</p><p style=3D"margin: 0px; padding: 0px;" mce=
+_style=3D"margin: 0px; padding: 0px;"><br></p><p style=3D"margin: 0px; padd=
+ing: 0px;" mce_style=3D"margin: 0px; padding: 0px;">...<br>
 rtcanconfig rtcan0 --baudrate=3D1000000 start<br>
 rtcanconfig rtcan1 --baudrate=3D1000000 start<br>
 <br>
@@ -120,7 +124,8 @@ g: 0px;">Thanks in advance</p><p style=3D"margin: 0px; padding: 0px;" mce_s=
 tyle=3D"margin: 0px; padding: 0px;">Ettore</p><p style=3D"margin: 0px; padd=
 ing: 0px;" mce_style=3D"margin: 0px; padding: 0px;"><br></p><div style=3D"p=
 osition: absolute; left: -10000px; top: 0px; width: 1px; height: 1px; overf=
-low: hidden;" id=3D"_mcePaste">&nbsp;</div>
-------=_Part_104033_24727177.1323438107409--
+low: hidden;" id=3D"_mcePaste">&nbsp;</div><br>
+</blockquote><p><br></p>
+------=_Part_104316_13777700.1323438743605--
 
 
