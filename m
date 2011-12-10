@@ -1,13 +1,13 @@
-Message-ID: <4EE26B2A.1040702@domain.hid>
-Date: Fri, 09 Dec 2011 21:10:18 +0100
-From: Anders Blomdell <anders.blomdell@domain.hid>
+Message-ID: <4EE343DA.6050703@domain.hid>
+Date: Sat, 10 Dec 2011 12:34:50 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <4ED66FD7.4010403@domain.hid> <4EE20EA4.6080305@domain.hid>
-	<4EE22E83.6050406@domain.hid>
-In-Reply-To: <4EE22E83.6050406@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] Analogy/mite
+References: <4E981AFB.40106@domain.hid>
+In-Reply-To: <4E981AFB.40106@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig130866644318FDF830CFD298"
+Subject: Re: [Xenomai-core] [PULL] KVM awareness / tiny cleanup
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -16,41 +16,62 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai-core <xenomai@xenomai.org>
 
-On 12/09/2011 04:51 PM, Anders Blomdell wrote:
-> On 12/09/2011 02:35 PM, Anders Blomdell wrote:
->> On 11/30/2011 07:03 PM, Anders Blomdell wrote:
->>> Hi, just found that
->>>
->>> echo 0000:06:01.0 > /sys/bus/pci/drivers/analogy_mite/unbind
->>>
->>> does not do the same thing as
->>>
->>> analogy_config -r analogyN
->>>
->>> in fact it leaves the system in a state where using the driver results
->>> in a kernel OOPS.
->>>
->>> Will try to look into it further tomorrow...
->> Well, took quite some time to track down the 'analogy_config -r' bug
->> (which was responsible for the kernel OOPS [i.e. after fixing it I have
->> not got any OOPSes]).
->>
->> So back to the original problem, does anybody foresee that a call to
->> a4l_ioctl_devcfg(cxt, NULL) from the mite driver would give any problems
->> (apart from getting the context pointer from the data structures the
->> mite driver has handy)? It is probably not kosher to do ioctl on a
->> driver that is not open, but...
-> Attached is a hack (as can be gleaned from the EXPORT_SYMBOL_GPL), if
-> the basic assumption that it's ok to do a a4l_ioctl_devcfg(...) during
-> unbind, I could rewrite the logic to pass down a pointer to
-> a4l_ioctl_devcfg to avoid this.
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig130866644318FDF830CFD298
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-Sloppy me, should of course be:
- >+	if (mite->a4ldev) {
-	if (mite->a4ldev && mite->a4ldev->cxt) {
- >+		a4l_ioctl_devcfg(mite->a4ldev->cxt, NULL);
- >+			}
+On 2011-10-14 13:20, Jan Kiszka wrote:
+> The following changes since commit 31bdadef9018de586bc3fe8de0f37b62b250=
+7785:
+>=20
+>   testsuite: fix regression tests location (2011-10-14 01:46:08 +0200)
+>=20
+> are available in the git repository at:
+>   git://git.xenomai.org/xenomai-jki.git for-upstream
+>=20
+> Jan Kiszka (2):
+>       nucleus: Privatize __xnpod_reset_thread
+>       x86: Fire root preemption notifier
+>=20
+>  include/asm-generic/hal.h     |    5 +++++
+>  include/asm-x86/bits/pod_32.h |    2 ++
+>  include/asm-x86/bits/pod_64.h |    2 ++
+>  include/nucleus/pod.h         |    2 --
+>  ksrc/nucleus/pod.c            |    8 ++++----
+>  5 files changed, 13 insertions(+), 6 deletions(-)
+>=20
+> Two trivial changes, though the second one actually adds a noteworthy
+> feature to Xenomai: co-location of KVM guests on x86. That feature
+> depends on I-pipe changes posted in [1].
+>=20
+> Jan
+>=20
+> [1] http://thread.gmane.org/gmane.linux.kernel.adeos.general/1898
+>=20
 
+Ping?
+
+I've just pushed a trivial rebase.
+
+Jan
+
+
+--------------enig130866644318FDF830CFD298
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.16 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+
+iEYEARECAAYFAk7jQ9sACgkQitSsb3rl5xRbIwCfcbh3wwAzikL2MTrdFYa7CaPi
+8CgAoL/sHQvbyHIDx4mq0AFI561X60VO
+=EYBh
+-----END PGP SIGNATURE-----
+
+--------------enig130866644318FDF830CFD298--
 
