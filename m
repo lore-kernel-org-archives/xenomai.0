@@ -1,64 +1,47 @@
-Message-ID: <4EFD910F.3080404@domain.hid>
-Date: Fri, 30 Dec 2011 11:23:11 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4EE4D43D.9080709@domain.hid>
+Date: Sun, 11 Dec 2011 17:03:09 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <C3860BCA25804175ABD53E2F2B1A942A@TerryHP>
-	<4EFCFF53.7040508@domain.hid>
-In-Reply-To: <4EFCFF53.7040508@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+References: <1322654284-6867-1-git-send-email-wolfgang.mauerer@domain.hid>
+In-Reply-To: <1322654284-6867-1-git-send-email-wolfgang.mauerer@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Mode switches??
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Terry Fryar <terry.fryar@domain.hid>
-Cc: xenomai@xenomai.org
+Subject: Re: [Adeos-main] [PATCH 0/2] Fasteoi fixes
+List-Id: General discussion about Adeos <adeos-main.gna.org>
+List-Unsubscribe: <https://mail.gna.org/options/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+List-Archive: </public/adeos-main>
+List-Post: <mailto:adeos-main@gna.org>
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+To: Wolfgang Mauerer <wolfgang.mauerer@domain.hid>
+Cc: jan.kiszka@domain.hid, adeos-main@gna.org, gernot.hillier@domain.hid
 
-On 12/30/2011 01:01 AM, Gilles Chanteperdrix wrote:
-> On 12/29/2011 10:43 PM, Terry Fryar wrote:
->> Using 2.6.0, I am have trouble understanding the results of the
->> rt_task_info() call?
->>  
->> Have a very simple kernel module that fires off an ISR routine and a xenomai
->> task.  The IRQ is not firing for these tests, so it's not doing anything.
->> Here's the xenomai rt task created using rt_create_task():
->>  
->> void irqdrv_task(void *args)
->> {
->>     while (!irqdrv_terminated)
->>      {
->>           rt_task_sleep(10000000);
->>      }
->> }
->>  
->> So, in the driver "exit" code, right before I delete this task I do a
->> rt_task_info() and I see no context switches and very little exec time for
->> this task.  However, it's showing 1,000,000 mode switches in just 5 or 10
->> seconds of exec time??
->>  
->> The info.modeswitches is the number of times the task switches between
->> primary and secondary mode, yes??  Why in the world are there so many for a
->> small task doing nothing but call a xenomai function, and in a kernel driver
->> to boot!!
->>  
->> Am I missing something here....shouldn't mode switches be zero???  I'm not
->> calling any linux kernel functions...it shouldn't have switched ever??
-> 
-> mode switches do not exist for kernel-space tasks. So, reading the
-> modeswitch member of the task info structure for a kernel space task
-> does not really make sense. Which is why probably nobody else noticed
-> (that, and the fact that the native API in kernel-space is not very much
-> in use, these days).
-> 
-the mode switches count should still be zero. Could you show us the full
-test code?
+On 11/30/2011 12:58 PM, Wolfgang Mauerer wrote:
+> Dear all,
+>
+> following Jan's considerations, I found that we lack a generic
+> bug fix for the fasteoi handler in 2.6.38, which is backported
+> in the first patch. The second patch makes ipipe agree with
+> threaded one-shot handlers.
+>
+> Pending adaption to the latest API, this part is also relevant
+> for the ipipe-3.0-noarch. Philippe, do you agree with the
+> approach?
+>
+
+Fine with me. Merged, thanks.
+
+> Cheers, Wolfgang
+>
+> --
+> Siemens AG, Open Source Platforms,
+> Corporate Competence Centre Embedded Linux
+>
+>
+
 
 -- 
-                                                                Gilles.
+Philippe.
 
