@@ -1,14 +1,9 @@
-Message-ID: <4EEB5ABF.8020201@domain.hid>
-Date: Fri, 16 Dec 2011 15:50:39 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CA+eKTkZ_ymqXx_Nc_9v1HRtYTqSjYqzdN56HCjzO+x14zcUwcg@domain.hid>	<4ECA2FF8.7040406@domain.hid>	<CA+eKTkZuNknobLhsgqU8jjkKboL3jNLhMPoG82fkjD6sZfyXgA@mail.gmail.com>	<4ECA5E12.5040907@domain.hid>	<CAMesUR7edxnPvpLu0kajLWGtVBwK65m27kssOjh=JViVhPeXJQ@mail.gmail.com>	<4ECB967C.70509@domain.hid>	<CA+eKTkbcBYnoRnBZrrBQ-Br2h2HPrVdyVLs2V3F4WOvcvhpDxA@mail.gmail.com>	<CAMesUR6Jx7WuZNsY6WmomD-ExoJ9hhKovKiekrr71Kbrk7Jb_A@mail.gmail.com>	<4ECCB27F.3040903@domain.hid>	<CA+eKTkZp5M8OTHyLBBM=S5=5C-WaVrLgSsWOtzA1_y=z4ujTJw@domain.hid>	<CA+eKTkZFiMTFZe4jyhhD3b064bQDQMMcgVW+YMU5SJKeVnCiZA@mail.gmail.com>
-	<CA+eKTkbcuv6GkD1mwz_p++F7144fF3Eq0gisg69yAdH9KneD3w@domain.hid>
-	<4EEB4599.3030707@domain.hid> <4EEB590A.2090108@domain.hid>
-In-Reply-To: <4EEB590A.2090108@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] [xenomai-help] Error return with a4l_sync_write
+Date: Mon, 19 Dec 2011 09:38:22 +0800
+Message-ID: <CADwQ9Q49sG+7tDDaEMV0gOGBEYEuzN9y7mH5UV6MYeHpwfMgTQ@mail.gmail.com>
+From: =?GB2312?B?s8LP/g==?= <chenzl92@domain.hid>
+Content-Type: multipart/alternative; boundary=f46d04088f518e9ac504b4680154
+Subject: [Xenomai-help] How to Adapt ARM I-pipe patch to S3C6410
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -18,24 +13,22 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Anders Blomdell <anders.blomdell@domain.hid>
-Cc: xenomai@xenomai.org, Hadrien Caron <hadrien.caron@domain.hid>
+To: xenomai@xenomai.org
 
-On 12/16/2011 03:43 PM, Anders Blomdell wrote:
-> On 12/16/2011 02:20 PM, Gilles Chanteperdrix wrote:
->> On 12/16/2011 01:39 PM, Hadrien Caron wrote:
->>> Hello again !
->>> I am kind of stuck right now, anybody has an idea regarding my post ?
->>> Anyone able to help ?
->>>
->>> Thanks in advance,
->>
->> Have you tried compiling with -fno-omit-frame-pointer (like Anders told
->> you)?
-> How about adding this to be automatically done?
+--f46d04088f518e9ac504b4680154
+Content-Type: text/plain; charset=ISO-8859-1
 
-It is on the todo list for 2.6.1.
+I want to get the  ARM I-pipe patch  Adapt to S3C6410,but when I start up
+the board,it stopped at the head.s,with no warning and notice.I find It
+even not go to the start_kernel() function.what can I do??
 
--- 
-					    Gilles.
+--f46d04088f518e9ac504b4680154
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+I want to get the =A0ARM I-pipe patch=A0=A0Adapt=A0to S3C6410,but when I st=
+art up the board,it stopped at the head.s,with no warning and notice.I find=
+ It even not go to the start_kernel() function.what can I do??
+
+--f46d04088f518e9ac504b4680154--
 
