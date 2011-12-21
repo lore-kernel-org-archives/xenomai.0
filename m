@@ -1,10 +1,12 @@
-Message-ID: <4EF1231E.3070008@domain.hid>
-Date: Tue, 20 Dec 2011 16:06:54 -0800
-From: Bob Feretich <bob.feretich@domain.hid>
+Message-ID: <4EF1A98D.9020101@domain.hid>
+Date: Wed, 21 Dec 2011 10:40:29 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+References: <4EF1231E.3070008@domain.hid>
+In-Reply-To: <4EF1231E.3070008@domain.hid>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-help] Support for OMAP-2.6.39?
+Subject: Re: [Xenomai-help] Support for OMAP-2.6.39?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -14,18 +16,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Xenomai help <xenomai@xenomai.org>
+To: Bob Feretich <bob.feretich@domain.hid>
+Cc: Xenomai help <xenomai@xenomai.org>
 
-With the Linux kernel change from 2.6 to 3.0, many device communities 
-seem to be declaring "long term maintenance support" for the Linux 
-2.6.39 kernel (supposedly the last of the 2.6 kernels). I have heard 
-this from both the BeagleBoard and Overo communities. It seems logical 
-that other communities will also do this to be able to advertise a "more 
-stable 2.6 branch". BeagleBoard is targeting 2.6.39 to be a "validation 
-suite" level.
+On 12/21/2011 01:06 AM, Bob Feretich wrote:
+> With the Linux kernel change from 2.6 to 3.0, many device communities 
+> seem to be declaring "long term maintenance support" for the Linux 
+> 2.6.39 kernel (supposedly the last of the 2.6 kernels). I have heard 
+> this from both the BeagleBoard and Overo communities. It seems logical 
+> that other communities will also do this to be able to advertise a "more 
+> stable 2.6 branch". BeagleBoard is targeting 2.6.39 to be a "validation 
+> suite" level.
+> 
+> Will Xenomai support OMAP-2.6.39?
 
-Will Xenomai support OMAP-2.6.39?
+The plan was to skip 2.6.39 and support 3.0. However, as already
+proposed, if someone wants to provide this patch, we would be happy to
+put it in a "contrib" directory, somewhere in Xenomai sources.
 
-Regards,
-Bob Feretich
+-- 
+					    Gilles.
 
