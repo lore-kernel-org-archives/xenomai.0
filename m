@@ -1,10 +1,14 @@
-From: "Terry Fryar" <terry.fryar@domain.hid>
-Date: Thu, 5 Jan 2012 16:12:15 -0600
-Message-ID: <F71AC02934794B77BC6691D3173A980B@TerryHP>
+Message-ID: <4EF37DF8.1060807@domain.hid>
+Date: Thu, 22 Dec 2011 13:59:04 -0500
+From: Andrew Tannenbaum <trb@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/alternative;
-	boundary="----=_NextPart_000_000C_01CCCBC4.CC0DB260"
-Subject: [Xenomai-help] RTDM and spi
+References: <4EF27CD5.4060603@domain.hid>	<4EF2FCD9.5010105@domain.hid>
+	<CAKvQZ_323WScmgq748=rfnVwq534Ln56VMgb9hDt=R4O19=TLQ@mail.gmail.com>
+	<4EF34E86.2020606@domain.hid>
+In-Reply-To: <4EF34E86.2020606@domain.hid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] hang in rtcansend
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -14,145 +18,141 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-This is a multi-part message in MIME format.
+Gilles,
 
-------=_NextPart_000_000C_01CCCBC4.CC0DB260
-Content-Type: text/plain;
-	charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+The virtual driver gives me the same hang problem.  It loaded fine:
 
-Using the RTDM api with Xen 2.6 to develop a linux driver. =20
-=20
-Basically have an ISR registered using rtdm_irq_request() that is =
-triggered
-from a gpio pin.  ISR works fine.  Inside ISR, the only thing done is a
-rtdm_event_signal() on an event.
-=20
-Then, I have a task created using rtdm_task_init() that is waiting on =
-the
-event using rtdm_event_timedwait().
-=20
-So far, so good...all works.  But, in the task I am making an SPI call =
-after
-the event is signaled using spi_message_add_tail() and spi_sync() and =
-that's
-where I get this:
-=20
-BUG: sleeping function called from invalid context at kernel/mutex.c:278
-[   98.449178] in_atomic(): 1, irqs_disabled(): 0, pid: -555875760, =
-name:
-v=FF=FF=FD=FF=BF=B7=BD=FF=A7=FF=FF=F5>=FF=FF=FDw=BF@=DE=DEP=DE=DE
-[   98.458686] INFO: lockdep is turned off.
-[   98.462811] [<c00572ac>] (unwind_backtrace+0x0/0xe0) from =
-[<c04639bc>]
-(mutex_lock_nested+0x24/0x384)
-[   98.472501] [<c04639bc>] (mutex_lock_nested+0x24/0x384) from =
-[<c033ca48>]
-(__spi_sync+0x88/0xd8)
-[   98.481730] [<c033ca48>] (__spi_sync+0x88/0xd8) from [<bf007180>]
-(irqdrv_task+0x44/0xd4 [irqdrv])
-[   98.491149] [<bf007180>] (irqdrv_task+0x44/0xd4 [irqdrv]) from
-[<c00e93d0>] (xnarch_thread_trampoline+0x20/0x2c)
-[   98.501845] [<c00e93d0>] (xnarch_thread_trampoline+0x20/0x2c) from
-[<c00e5adc>] (__xnpod_schedule+0x5cc/0xa54)
-[   98.512355] [<c00e5adc>] (__xnpod_schedule+0x5cc/0xa54) from =
-[<fff7febf>]
-(0xfff7febf)
-[   98.520674] Xenomai: suspending kernel thread bf008180 ('irqdrvTask') =
-at
-0xc00a92f8 after exception #0x0
+Dec 22 12:04:18 atom1 kernel: [ 2457.833703] rtcan: registered rtcan2
+Dec 22 12:04:18 atom1 kernel: [ 2457.833721] rtcan2: VIRT driver loaded
+Dec 22 12:04:18 atom1 kernel: [ 2457.833775] rtcan: registered rtcan3
+Dec 22 12:04:18 atom1 kernel: [ 2457.833789] rtcan3: VIRT driver loaded
 
-I have tried this inside a kthread and it works fine.  I can also try =
-the
-spi stuff without being triggered by an IRQ, and I get the same error.  =
-I
-know this is something simple???
+All notes below operate on the virtual device rtcan2.
 
-------=_NextPart_000_000C_01CCCBC4.CC0DB260
-Content-Type: text/html;
-	charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+I get:
 
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML><HEAD>
-<META content=3D"text/html; charset=3Diso-8859-1" =
-http-equiv=3DContent-Type>
-<META name=3DGENERATOR content=3D"MSHTML 8.00.7601.17699"></HEAD>
-<BODY>
-<DIV><SPAN class=3D963211418-05012012><FONT size=3D2 face=3DArial>Using =
-the RTDM api=20
-with Xen 2.6 to develop a linux driver.&nbsp; </FONT></SPAN></DIV>
-<DIV><SPAN class=3D963211418-05012012><FONT size=3D2=20
-face=3DArial></FONT></SPAN>&nbsp;</DIV>
-<DIV><SPAN class=3D963211418-05012012><FONT size=3D2 =
-face=3DArial>Basically have an=20
-ISR registered using <B><FONT color=3D#642880 size=3D2><FONT =
-color=3D#642880=20
-size=3D2>rtdm_irq_request</B></FONT></FONT><FONT size=3D2>()</FONT><SPAN =
+$ rtcansend rtcan2 -v -i 0x0 0x82 0x1
+interface rtcan2
+s=0, ifr_name=rtcan2
+<0x000> [2] 82 01
+Cleaning up...
+^CSignal 2 received
+Cleaning up...
+$
 
-class=3D963211418-05012012><FONT size=3D2 face=3DArial> that is =
-triggered from a gpio=20
-pin.&nbsp; ISR works fine.&nbsp; Inside ISR, the only thing done is a =
-<B><FONT=20
-color=3D#642880 size=3D2><FONT color=3D#642880=20
-size=3D2>rtdm_event_signal</B></FONT></FONT><FONT size=3D2>() on an=20
-event.</FONT></FONT></SPAN></FONT></SPAN></DIV>
-<DIV><SPAN class=3D963211418-05012012><FONT size=3D2 face=3DArial><SPAN=20
-class=3D963211418-05012012></SPAN></FONT></SPAN>&nbsp;</DIV>
-<DIV><SPAN class=3D963211418-05012012><FONT size=3D2 face=3DArial><SPAN=20
-class=3D963211418-05012012>Then, I have a task created using <B><FONT=20
-color=3D#642880 size=3D2><FONT color=3D#642880=20
-size=3D2>rtdm_task_init</B></FONT></FONT><FONT size=3D2>() that is =
-waiting on the=20
-event using <B><FONT color=3D#642880 size=3D2><FONT color=3D#642880=20
-size=3D2>rtdm_event_timedwait</B></FONT></FONT><FONT=20
-size=3D2>().</FONT></FONT></SPAN></FONT></SPAN></DIV>
-<DIV><SPAN class=3D963211418-05012012><FONT size=3D2 face=3DArial><SPAN=20
-class=3D963211418-05012012></SPAN></FONT></SPAN>&nbsp;</DIV>
-<DIV><SPAN class=3D963211418-05012012><FONT size=3D2 face=3DArial><SPAN=20
-class=3D963211418-05012012>So far, so good...all works.&nbsp; But, in =
-the task I=20
-am making an SPI call after the event is signaled using =
-spi_message_add_tail()=20
-and spi_sync() and that's where I get this:</SPAN></FONT></SPAN></DIV>
-<DIV><SPAN class=3D963211418-05012012><FONT size=3D2=20
-face=3DArial></FONT></SPAN>&nbsp;</DIV>
-<DIV><SPAN class=3D963211418-05012012><FONT size=3D2 face=3DArial>BUG: =
-sleeping=20
-function called from invalid context at =
-kernel/mutex.c:278<BR>[&nbsp;&nbsp;=20
-98.449178] in_atomic(): 1, irqs_disabled(): 0, pid: -555875760, name:=20
-v=FF=FF=FD=FF=BF=B7=BD=FF=A7=FF=FF=F5&gt;=FF=FF=FDw=BF@=DE=DEP=DE=DE<BR>[=
-&nbsp;&nbsp; 98.458686] INFO: lockdep is turned=20
-off.<BR>[&nbsp;&nbsp; 98.462811] [&lt;c00572ac&gt;] =
-(unwind_backtrace+0x0/0xe0)=20
-from [&lt;c04639bc&gt;] (mutex_lock_nested+0x24/0x384)<BR>[&nbsp;&nbsp;=20
-98.472501] [&lt;c04639bc&gt;] (mutex_lock_nested+0x24/0x384) from=20
-[&lt;c033ca48&gt;] (__spi_sync+0x88/0xd8)<BR>[&nbsp;&nbsp; 98.481730]=20
-[&lt;c033ca48&gt;] (__spi_sync+0x88/0xd8) from [&lt;bf007180&gt;]=20
-(irqdrv_task+0x44/0xd4 [irqdrv])<BR>[&nbsp;&nbsp; 98.491149] =
-[&lt;bf007180&gt;]=20
-(irqdrv_task+0x44/0xd4 [irqdrv]) from [&lt;c00e93d0&gt;]=20
-(xnarch_thread_trampoline+0x20/0x2c)<BR>[&nbsp;&nbsp; 98.501845]=20
-[&lt;c00e93d0&gt;] (xnarch_thread_trampoline+0x20/0x2c) from =
-[&lt;c00e5adc&gt;]=20
-(__xnpod_schedule+0x5cc/0xa54)<BR>[&nbsp;&nbsp; 98.512355] =
-[&lt;c00e5adc&gt;]=20
-(__xnpod_schedule+0x5cc/0xa54) from [&lt;fff7febf&gt;]=20
-(0xfff7febf)<BR>[&nbsp;&nbsp; 98.520674] Xenomai: suspending kernel =
-thread=20
-bf008180 ('irqdrvTask') at 0xc00a92f8 after exception=20
-#0x0<BR></FONT></SPAN></DIV>
-<DIV><SPAN class=3D963211418-05012012><FONT size=3D2 face=3DArial>I have =
-tried this=20
-inside a kthread and it works fine.&nbsp; I can also try the spi stuff =
-without=20
-being triggered by an IRQ, and I get the same error.&nbsp; I know this =
-is=20
-something simple???</DIV></FONT></SPAN></BODY></HTML>
+So it's the same behavior - it hangs, I hit ^C, and it exits.
 
-------=_NextPart_000_000C_01CCCBC4.CC0DB260--
+Here's what I get with gdb:
+
+first on /usr/bin/rtcansend with no breakpoints:
+
+$ gdb rtcansend
+GNU gdb (GDB) 7.1-ubuntu
+...
+Reading symbols from /usr/bin/rtcansend...(no debugging symbols
+found)...done.
+(gdb) run rtcan2 -v -i 0x0 0x82 0x1
+Starting program: /usr/bin/rtcansend rtcan2 -v -i 0x0 0x82 0x1
+[Thread debugging using libthread_db enabled]
+[New Thread 0xb7fdfb70 (LWP 1850)]
+interface rtcan2
+s=0, ifr_name=rtcan2
+<0x000> [2] 82 01
+Cleaning up...
+
+And it hangs here and I can't ^C, though a kill -9 killed it.
+
+
+Here's gdb with breakpoints on the suspect functions (here I cd into
+src/utils/can/.libs):
+
+(gdb) b rt_dev_close
+Breakpoint 1 at 0x8048900
+(gdb) b rt_task_delete
+Breakpoint 2 at 0x8048960
+(gdb) run rtcan2  -v -i 0x0 0x82 0x1
+Starting program:
+/home/imt/src/xenomai-2.5.5.2/src/utils/can/.libs/rtcansend rtcan2  -v
+-i 0x0 0x82 0x1
+[Thread debugging using libthread_db enabled]
+[New Thread 0xb7fdfb70 (LWP 2326)]
+interface rtcan2
+s=0, ifr_name=rtcan2
+<0x000> [2] 82 01
+Cleaning up...
+
+Breakpoint 1, 0xb7fc46f0 in rt_dev_close () from /usr/lib/librtdm.so.1
+(gdb) c
+Continuing.
+
+Breakpoint 2, 0xb7fcbeb5 in rt_task_delete () from /usr/lib/libnative.so.3
+(gdb) bt
+#0  0xb7fcbeb5 in rt_task_delete () from /usr/lib/libnative.so.3
+#1  0x08048d36 in cleanup () at rtcansend.c:65
+#2  0x08049268 in main (argc=7, argv=0xbffff754) at rtcansend.c:303
+(gdb) info threads
+  2 Thread 0xb7fdfb70 (LWP 2326)  0xb7fe2424 in __kernel_vsyscall ()
+* 1 Thread 0xb7e3e6d0 (LWP 2323)  0xb7fcbeb5 in rt_task_delete ()
+   from /usr/lib/libnative.so.3
+(gdb) thread 2
+[Switching to thread 2 (Thread 0xb7fdfb70 (LWP 2326))]#0  0xb7fe2424 in
+__kernel_vsyscall ()
+(gdb) bt
+#0  0xb7fe2424 in __kernel_vsyscall ()
+#1  0xb7fb0736 in nanosleep () from /lib/tls/i686/cmov/libpthread.so.0
+#2  0xb7fbe8de in ?? () from /usr/lib/libxenomai.so.0
+#3  0xb7fa896e in start_thread () from /lib/tls/i686/cmov/libpthread.so.0
+#4  0xb7f16a4e in clone () from /lib/tls/i686/cmov/libc.so.6
+(gdb) c
+Continuing.
+
+And it hangs (before I kill -9).  I don't know the gdb commands to
+investigate more deeply.  The rtcansend is a zombie at this point.
+
+$ ps -ef (edited)
+imt       2321  1227  0 13:51 pts/1    00:00:00 gdb rtcansend
+imt       2323  2321  0 13:51 pts/1    00:00:00 [rtcansend-2323] <defunct>
+
+
+Re "narrowing down" the problem, note in the
+strace outputs in my post at the beginning
+of the thread that I think it's hanging in
+cleanup(), and the straces show that 2.5.5.2
+calls exit_group(0) (and closes correctly)
+where 2.6.0 calls _exit(0) (and hangs). I assume
+that exit_group() is cleaning up threads where
+_exit() is probably doing less cleanup work,
+or none.  I'm curious about why one has
+exit_group() and the other has _exit().
+
+
+-Andy
+
+
+On 12/22/2011 10:36 AM, Gilles Chanteperdrix wrote:
+> On 12/22/2011 02:33 PM, Willy Lambert wrote:
+>> 2011/12/22 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>:
+>>> On 12/22/2011 01:41 AM, Andrew Tannenbaum wrote:
+>>>> If I just run rtcansend with no args (so it prints a help message), it
+>>>> exits ok on 2.6.0 with no hang.  But if I run rtcansend or rtcanrecv
+>>>> with any CAN i/o, they hang in the cleanup function, though they do
+>>>> their processing before then correctly.
+>>>>
+>>>> Any idea why rtcansend/recv would hang for me here on 2.6.0?
+>>>
+>>> Is this behaviour reproducible with the virtual rtcan driver?
+>>>
+>>>
+>>
+>> For your information, I have a similar behavior with the same Linux
+>> 2.5.38.8 and Xenomai 2.6.0 config. As I did not used the CAN before I
+>> didn't reported it.
+> 
+> Have you tried attaching gdb when rtcansend is locked to see where the
+> bug happens?
+> 
 
 
