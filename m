@@ -1,73 +1,58 @@
-Message-ID: <4F1435A9.6030609@domain.hid>
-Date: Mon, 16 Jan 2012 15:35:21 +0100
-From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <BLU166-W49F600F976B754BCA60E03C4820@domain.hid>	<4F130ED3.3030902@domain.hid>
-	<4F143351.6050406@domain.hid>
-In-Reply-To: <4F143351.6050406@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] realtime pipes
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+In-Reply-To: <4EF34E86.2020606@domain.hid>
+References: <4EF27CD5.4060603@domain.hid>
+	<4EF2FCD9.5010105@domain.hid>
+	<CAKvQZ_323WScmgq748=rfnVwq534Ln56VMgb9hDt=R4O19=TLQ@mail.gmail.com>
+	<4EF34E86.2020606@domain.hid>
+Date: Thu, 22 Dec 2011 16:47:14 +0100
+Message-ID: <CAKvQZ_3LHPV-Y67MU19atHAwB1kdMCt=9faGsOGDAWrwzJ8ZBw@domain.hid>
+From: Willy Lambert <lambert.willy@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-help] hang in rtcansend
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Makarand Pradhan <makarandpradhan@domain.hid>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Andrew Tannenbaum <trb@domain.hid>, xenomai@xenomai.org
 
-On 01/16/2012 03:25 PM, Makarand Pradhan wrote:
-> Hi,
+2011/12/22 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>:
+> On 12/22/2011 02:33 PM, Willy Lambert wrote:
+>> 2011/12/22 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>:
+>>> On 12/22/2011 01:41 AM, Andrew Tannenbaum wrote:
+>>>> If I just run rtcansend with no args (so it prints a help message), it
+>>>> exits ok on 2.6.0 with no hang. =A0But if I run rtcansend or rtcanrecv
+>>>> with any CAN i/o, they hang in the cleanup function, though they do
+>>>> their processing before then correctly.
+>>>>
+>>>> Any idea why rtcansend/recv would hang for me here on 2.6.0?
+>>>
+>>> Is this behaviour reproducible with the virtual rtcan driver?
+>>>
+>>>
+>>
+>> For your information, I have a similar behavior with the same Linux
+>> 2.5.38.8 and Xenomai 2.6.0 config. As I did not used the CAN before I
+>> didn't reported it.
 >
-> "Real-time pipes are deprecated."
->
-> We use a lot of rt pipes. So, can you pl elaborate on this? I would
-> highly appreciate if you can comment on the following.
->
-> 1. When will the rt pipe interface be removed? Any time frame?
-
-Xenomai 3. Xenomai 2.x will keep them forever.
-
-> 2. Would like to understand the reason for deprecating the interface.
->
-
-- Because there is a better socket-based API implemented by the RTIPC 
-driver w/ the XDDP protocol, which does not require running application 
-level code in kernel space (RT_PIPE is definitely an application level 
-API). This new interface is available since Xenomai 2.5.x. It is 
-functionally 100% equivalent to the legacy RT_PIPE API.
-
-- Because no support will be provided in Xenomai 3 for running 
-application level code in kernel space, so RT_PIPE have to go from 
-kernel space. However, RT_PIPE are still part of the user-space API of 
-Xenomai 3, interfacing with XDDP endpoints in kernel space.
-
-I'm really referring to application level code, by contrast to RTDM 
-driver level code which will obviously remain a first-class citizen in 
-kernel space.
-
-See:
-
-o http://www.xenomai.org/index.php/Xenomai:Roadmap
-
-o 
-http://www.xenomai.org/documentation/xenomai-2.6/html/api/group__rtipc.html
-
-o examples/rtdm/profiles/ipc in the Xenomai distro
-
-> Thanks and Rgds,
-> Mak.
->
->
-> On 15/01/12 12:37 PM, Gilles Chanteperdrix wrote:
->> Real-time pipes are deprecated.
->
+> Have you tried attaching gdb when rtcansend is locked to see where the
+> bug happens?
 >
 
+No, it was just a test to see if xenomai was a possible part of my
+design. As something is not supporting xenomai in my framework, I
+decided to stay with gnulinux for the present time. So I can't test it
+for now. I'm sorry, it was just to say that the problem was not
+localized to Andrew's one.
 
--- 
-Philippe.
+
+> --
+> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
+=A0 =A0 =A0 =A0Gilles.
 
