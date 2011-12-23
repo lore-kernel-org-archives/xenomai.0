@@ -1,55 +1,51 @@
-Message-ID: <4F0ADAAF.70504@domain.hid>
-Date: Mon, 09 Jan 2012 13:16:47 +0100
+Message-ID: <4EF4A3E2.9030709@domain.hid>
+Date: Fri, 23 Dec 2011 16:53:06 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <BLU166-W368BD6DC25E9423818DC75C49A0@domain.hid>
-	<BLU166-W50364F5FF2956D7D3F6F78C49B0@domain.hid>
-In-Reply-To: <BLU166-W50364F5FF2956D7D3F6F78C49B0@domain.hid>
+References: <56F449AE83D74177BAC5887692E0EF55@domain.hid>	<4EF44DB9.9000609@domain.hid>
+	<4EF49DA3.8070904@domain.hid>
+In-Reply-To: <4EF49DA3.8070904@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] Questio about the Xenomai Scheduler
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Subject: Re: [Xenomai-help] Interrupt numbers
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Jan-Erik Lange <jan0385@domain.hid>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Makarand Pradhan <makarandpradhan@domain.hid>
 Cc: xenomai@xenomai.org
 
-On 01/08/2012 01:06 PM, Jan-Erik Lange wrote:
+On 12/23/2011 04:26 PM, Makarand Pradhan wrote:
+> On 23/12/11 04:45 AM, Gilles Chanteperdrix wrote:
+>>
+>> Xenomai uses the same interrupt numbers as linux. But rt_intr_create is
+>> deprecated in user-space, you should instead write a driver using the
+>> rtdm skin. The enable bit is handled by xenomai when you request the irq
+>> at xenomai level.
+>>
+> Hi Gilles,
 > 
-> Is it perhaps this way?:
+> We use rt_intr_create in our code. So I am trying to understand the 
+> reasons for it being deprecated. So far, I have not been able to see any 
+> comments in the code regarding the deprecation or anything in the git log.
+
+Splitting your code between driver and application enforces a clean
+separation between the two, which helps maintenance, so is good on the
+long run.
+
 > 
-> When the RT-Task migrated into the secondary domain, it is scheduled
-> by the Linux-Scheduler:
-> 
-> -> It inherits the RT-priority from her life in the primary domain
-> and is timely priviliged compared to other tasks scheduled by the
-> linux scheduler, which have a lower priority.
+> Can you pl comment on the reasons for deprecating rt_intr_create? Will 
+> it be removed in the next release?
 
-No, a linux task with a higher priority than the RT task running in
-secondary mode may preempt the RT task running in secondary mode.
+We never change ABI in a branch, so, all releases in the 2.6 branch are
+guaranteed to support the same services as xenomai 2.6.0.
 
-> -> But it can always be
-> preempted by an RT-Task, that runs in the primary domain and that is
-> scheduled by the Xenomai Scheduler, because this scheduler can
-> preempt all standard linux kernel activities. 
-
-Yes if root priority inheritance is disabled, not if it is enabled (the
-default).
-
-> -> Still it is
-> protected from preempting by an Linux interrupt handler, because the
-> I-Pipe is block the interrupts.
-
-No, this used to be true a long time ago, but is no longer the case.
-
-You have to consider that an RT task running in secondary mode is an
-ordinary linux task. Only tasks remaining in primary mode are deterministic.
-
+But in xenomai 3.0, rt_intr_create will certainly no longer be available.
 -- 
-                                                                Gilles.
+					    Gilles.
 
