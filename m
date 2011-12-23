@@ -1,34 +1,52 @@
-Message-ID: <4F0341CA.9080101@domain.hid>
-Date: Tue, 03 Jan 2012 18:58:34 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4EF49DA3.8070904@domain.hid>
+Date: Fri, 23 Dec 2011 10:26:27 -0500
+From: Makarand Pradhan <makarandpradhan@domain.hid>
 MIME-Version: 1.0
-References: <CAL8zT=h3+AYe56fWhbKr3nY8VhYcNjx=sPRe0cak5hvF+aM6yA@mail.gmail.com>
-In-Reply-To: <CAL8zT=h3+AYe56fWhbKr3nY8VhYcNjx=sPRe0cak5hvF+aM6yA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
+References: <56F449AE83D74177BAC5887692E0EF55@domain.hid>
+	<4EF44DB9.9000609@domain.hid>
+In-Reply-To: <4EF44DB9.9000609@domain.hid>
+Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] Ipipe breaks my MPC8541 board boot
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Subject: Re: [Xenomai-help] Interrupt numbers
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Jean-Michel Hautbois <jhautbois@domain.hid>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: xenomai@xenomai.org
 
-On 01/03/2012 06:49 PM, Jean-Michel Hautbois wrote:
-> cpm2_cascade is dedicated to my board, but has nothing impressive :
-> static void cpm2_cascade(unsigned int irq, struct irq_desc *desc)
-> {
->         int cascade_irq;
-> 
->         while ((cascade_irq = cpm2_get_irq()) >= 0)
->                 generic_handle_irq(cascade_irq);
+On 23/12/11 04:45 AM, Gilles Chanteperdrix wrote:
+>
+> Xenomai uses the same interrupt numbers as linux. But rt_intr_create is
+> deprecated in user-space, you should instead write a driver using the
+> rtdm skin. The enable bit is handled by xenomai when you request the irq
+> at xenomai level.
+>
+Hi Gilles,
 
-Replace generic_handle_irq with ipipe_handle_chained_irq.
+We use rt_intr_create in our code. So I am trying to understand the 
+reasons for it being deprecated. So far, I have not been able to see any 
+comments in the code regarding the deprecation or anything in the git log.
+
+Can you pl comment on the reasons for deprecating rt_intr_create? Will 
+it be removed in the next release?
+
+Rgds,
+Makarand.
 
 -- 
-					    Gilles.
+___________________________________________________________________________
+NOTICE OF CONFIDENTIALITY:
+This e-mail and any attachments may contain confidential and privileged information.  If you are
+not the intended recipient, please notify the sender immediately by return e-mail and delete this
+e-mail and any copies.  Any dissemination or use of this information by a person other than the
+intended recipient is unauthorized and may be illegal.
+_____________________________________________________________________
+
+  
+
 
