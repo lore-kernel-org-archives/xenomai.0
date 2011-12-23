@@ -1,137 +1,84 @@
-Message-ID: <4EFEC15B.4040807@domain.hid>
-Date: Sat, 31 Dec 2011 09:01:31 +0100
-From: Christophe Blaess <mailist@domain.hid>
+From: "Terry Fryar" <terry.fryar@domain.hid>
+Date: Thu, 22 Dec 2011 18:38:37 -0600
+Message-ID: <56F449AE83D74177BAC5887692E0EF55@domain.hid>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="------------000000090302000304080809"
-Subject: [Xenomai-core] [PATCH] Threads without names confuse rtps
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Content-Type: multipart/alternative;
+	boundary="----=_NextPart_000_00AB_01CCC0D8.ECA8DBE0"
+Subject: [Xenomai-help] Interrupt numbers
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
 This is a multi-part message in MIME format.
---------------000000090302000304080809
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+
+------=_NextPart_000_00AB_01CCC0D8.ECA8DBE0
+Content-Type: text/plain;
+	charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 
-If a Xenomai thread is created with a NULL name parameter, this way:
-
-
-// no-name.c
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/mman.h>
-
-#include <rtdk.h>
-#include <native/task.h>
-
-int main(void)
-{
-       int err;
-       RT_TASK task;
-
-       mlockall(MCL_CURRENT|MCL_FUTURE);
-       rt_print_auto_init(1);
-
-       if ((err = rt_task_shadow(& task, NULL, 50, T_JOINABLE)) != 0) {
-           fprintf(stderr, "rt_task_shadow: %s\n", strerror(-err));
-           exit(EXIT_FAILURE);
-       }
-
-       while (1)
-           rt_task_sleep(1000000000);
-       return 0;
-}
-
-
-
-Then, the rtps display is wrong, because the "name" field in /proc/acct 
-is empty:
-
-[Panda]# /usr/xenomai/sbin/rtps
-PID    TIME                THREAD                   CMD
-
-0      002:40:47.105,569   ROOT/0                   -
-0      002:41:08.762,505   ROOT/1                   -
-31267  000:00:00.007,737   1 0 0 40038203 0 00000000 672522999738 
-1901211134 27510920737 IR/proc/31267/cmdline ./no-name
-[Panda]#
-
-
-Here is a small patch to correct the reading of /proc/acct in case the 
-name is missing. And now:
-
-[Panda]# /root/rtps
-PID    TIME                THREAD                   CMD
-
-0      002:46:17.807,037   ROOT/0                   -
-0      002:46:39.469,616   ROOT/1                   -
-31267  000:00:00.011,491                            ./no-name
-0      000:00:28.439,650   IRQ29: [timer]           -
-[Panda]#
-
-
-
-
-
-
---------------000000090302000304080809
-Content-Type: text/x-patch;
- name="rtps-no-name.patch"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: attachment;
- filename="rtps-no-name.patch"
-
-diff -Nru xenomai-2.6.0-orig//src/utils/ps/rtps.c xenomai-2.6.0/src/utils/ps/rtps.c
---- xenomai-2.6.0-orig//src/utils/ps/rtps.c	2011-10-18 20:17:18.000000000 +0200
-+++ xenomai-2.6.0/src/utils/ps/rtps.c	2011-12-31 08:23:17.435303214 +0100
-@@ -7,12 +7,14 @@
- #define PROC_ACCT  "/proc/xenomai/acct"
- #define PROC_PID  "/proc/%d/cmdline"
+Using Xenomai 2.60 with 2.6.38 omap kernel on beagleboard xm.  
  
--#define ACCT_FMT   "%u %d %lu %lu %lu %lx %Lu %Lu %Lu %[^\n]"
--#define ACCT_NFMT  10
-+#define ACCT_FMT_1  "%u %d %lu %lu %lu %lx %Lu %Lu %Lu"
-+#define ACCT_FMT_2  ACCT_FMT_1 " %[^\n]"
-+#define ACCT_NFMT_1 9
-+#define ACCT_NFMT_2 10
+Trying to use a GPIO pin as an interrupt and catch this in a xenomai
+userspace program.  Got the GPIO132 pin set as an input and is working fine.
+I guess I'll need to set the irq enable register on the omap cpu to enable
+it to generate irqs.  Now...what irq number do I use in the xenomai
+rt_intr_create() function call??  I'm not sure how the omap gpio interrupts
+are mapped to the linux kernel/xenomai stuff??  Can I use what's in the
+arch/arm/plat-omap/include/plat/irqs.h header file?  It appears that each
+bank of GPIO pins has it's own interrupt number??
  
- int main(int argc, char *argv[])
- {
--	char cmdpath[sizeof(PROC_PID) + 32], cmdbuf[BUFSIZ], name[64];
-+	char cmdpath[sizeof(PROC_PID) + 32], cmdbuf[BUFSIZ], acctbuf[BUFSIZ], name[64];
- 	unsigned long ssw, csw, pf, state, sec;
- 	unsigned long long account_period,
- 		exectime_period, exectime_total, v;
-@@ -27,10 +29,19 @@
- 	printf("%-6s %-17s   %-24s %s\n\n",
- 	       "PID", "TIME", "THREAD", "CMD");
+Thanks!
  
--	while (fscanf(acctfp, ACCT_FMT,
-+	while (fgets(acctbuf, sizeof(acctbuf), acctfp) != NULL) {
-+		if (sscanf(acctbuf, ACCT_FMT_2,
- 		      &cpu, &pid, &ssw, &csw, &pf, &state,
- 		      &account_period, &exectime_period,
--		      &exectime_total, name) == ACCT_NFMT) {
-+		      &exectime_total, name) != ACCT_NFMT_2) {
-+			strcpy(name, "");
-+			if (sscanf(acctbuf, ACCT_FMT_1,
-+			      &cpu, &pid, &ssw, &csw, &pf, &state,
-+			     &account_period, &exectime_period,
-+			     &exectime_total) != ACCT_NFMT_1) {
-+				break;
-+			}
-+		}
- 
- 		snprintf(cmdpath, sizeof(cmdpath), PROC_PID, pid);
- 		cmdfp = fopen(cmdpath, "r");
 
+------=_NextPart_000_00AB_01CCC0D8.ECA8DBE0
+Content-Type: text/html;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML><HEAD>
+<META content=3D"text/html; charset=3Dus-ascii" =
+http-equiv=3DContent-Type>
+<META name=3DGENERATOR content=3D"MSHTML 8.00.7601.17699"></HEAD>
+<BODY>
+<DIV><SPAN class=3D143493200-23122011><FONT size=3D2 face=3DArial>Using =
+Xenomai 2.60=20
+with 2.6.38 omap kernel on beagleboard xm.&nbsp; </FONT></SPAN></DIV>
+<DIV><SPAN class=3D143493200-23122011><FONT size=3D2=20
+face=3DArial></FONT></SPAN>&nbsp;</DIV>
+<DIV><SPAN class=3D143493200-23122011><FONT size=3D2 face=3DArial>Trying =
+to use a GPIO=20
+pin as an interrupt and catch this in a xenomai userspace program.&nbsp; =
+Got the=20
+GPIO132 pin set as an input and is working fine.&nbsp; I guess I'll need =
+to set=20
+the irq enable register on the omap cpu to enable it to generate =
+irqs.&nbsp;=20
+</FONT></SPAN><SPAN class=3D143493200-23122011><FONT size=3D2 =
+face=3DArial>Now...what=20
+irq number do I use in the xenomai&nbsp;<FONT color=3D#642880 =
+size=3D2><FONT=20
+color=3D#000000 size=3D2>rt_intr_create() function call??&nbsp; I'm not =
+sure how the=20
+omap gpio interrupts are mapped to the linux kernel/xenomai =
+stuff??&nbsp; Can I=20
+use what's in the arch/arm/plat-omap/include/plat/irqs.h header =
+file?&nbsp; It=20
+appears that each bank of GPIO pins has it's own interrupt=20
+number??</FONT></FONT></FONT></SPAN></DIV>
+<DIV><SPAN class=3D143493200-23122011><FONT size=3D2=20
+face=3DArial></FONT></SPAN>&nbsp;</DIV>
+<DIV><SPAN class=3D143493200-23122011><FONT size=3D2=20
+face=3DArial>Thanks!</FONT></SPAN></DIV>
+<DIV><FONT size=3D2 face=3DArial></FONT>&nbsp;</DIV></BODY></HTML>
 
---------------000000090302000304080809--
+------=_NextPart_000_00AB_01CCC0D8.ECA8DBE0--
+
 
