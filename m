@@ -1,13 +1,11 @@
-Message-ID: <4EE343DA.6050703@domain.hid>
-Date: Sat, 10 Dec 2011 12:34:50 +0100
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Date: Fri, 23 Dec 2011 12:33:09 -0500
+Message-ID: <20111223173309.GM27742@domain.hid>
 MIME-Version: 1.0
-References: <4E981AFB.40106@domain.hid>
-In-Reply-To: <4E981AFB.40106@domain.hid>
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature";
-	boundary="------------enig130866644318FDF830CFD298"
-Subject: Re: [Xenomai-core] [PULL] KVM awareness / tiny cleanup
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+From: lsorense@domain.hid (Lennart Sorensen)
+Subject: [Xenomai-core] CONFIG_XENO_HW_UNLOCKED_SWITCH=y causes random
+ process corruption in xenomai 2.6.0 on powerpc.
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -16,62 +14,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: xenomai-core <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
---------------enig130866644318FDF830CFD298
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+After spending quite a while trying to explain how things like /bin/echo
+could possibly segfault, I finally discovered that the new feature in
+xenomai 2.6.0 (new when moving from 2.4.10 that is) of having preemptible
+context switches is what is corrupting the state of random linux processes
+once in a while.
 
-On 2011-10-14 13:20, Jan Kiszka wrote:
-> The following changes since commit 31bdadef9018de586bc3fe8de0f37b62b250=
-7785:
->=20
->   testsuite: fix regression tests location (2011-10-14 01:46:08 +0200)
->=20
-> are available in the git repository at:
->   git://git.xenomai.org/xenomai-jki.git for-upstream
->=20
-> Jan Kiszka (2):
->       nucleus: Privatize __xnpod_reset_thread
->       x86: Fire root preemption notifier
->=20
->  include/asm-generic/hal.h     |    5 +++++
->  include/asm-x86/bits/pod_32.h |    2 ++
->  include/asm-x86/bits/pod_64.h |    2 ++
->  include/nucleus/pod.h         |    2 --
->  ksrc/nucleus/pod.c            |    8 ++++----
->  5 files changed, 13 insertions(+), 6 deletions(-)
->=20
-> Two trivial changes, though the second one actually adds a noteworthy
-> feature to Xenomai: co-location of KVM guests on x86. That feature
-> depends on I-pipe changes posted in [1].
->=20
-> Jan
->=20
-> [1] http://thread.gmane.org/gmane.linux.kernel.adeos.general/1898
->=20
+After turning the option off, I haven't seen a single crash just like 2.4.10.
 
-Ping?
+So something subtle is wrong with this option.
 
-I've just pushed a trivial rebase.
+It appears to be most likely to occour (possibly only likely) when
+xenomai is handling interrupts.
 
-Jan
+It seems that getting an interrupt in the middle of a context switch at
+the wrong time corrupts the process that is being switched to or from
+(no idea which it is).
 
+Unless someone can think of a way to track down and fix this I would
+certainly suggest making the option off by default instead of on.
 
---------------enig130866644318FDF830CFD298
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+With CONFIG_XENO_HW_UNLOCKED_SWITCH=n I don't have any problems anymore.
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.16 (GNU/Linux)
-Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
-
-iEYEARECAAYFAk7jQ9sACgkQitSsb3rl5xRbIwCfcbh3wwAzikL2MTrdFYa7CaPi
-8CgAoL/sHQvbyHIDx4mq0AFI561X60VO
-=EYBh
------END PGP SIGNATURE-----
-
---------------enig130866644318FDF830CFD298--
+-- 
+Len Sorensen
 
