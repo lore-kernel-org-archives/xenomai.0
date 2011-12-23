@@ -1,75 +1,122 @@
-Message-ID: <4F203F7F.70509@domain.hid>
-Date: Wed, 25 Jan 2012 18:44:31 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: "Terry Fryar" <terry.fryar@domain.hid>
+References: <56F449AE83D74177BAC5887692E0EF55@domain.hid>	<4EF44DB9.9000609@domain.hid><4EF49DA3.8070904@domain.hid>	<4EF4A3E2.9030709@domain.hid>
+	<E9F947B915764962864D7E7291CA601F@TerryHP>
+	<4EF4C4C0.9010100@domain.hid>
+In-Reply-To: <4EF4C4C0.9010100@domain.hid>
+Date: Fri, 23 Dec 2011 17:06:08 -0600
+Message-ID: <8D114AE9A7CD44D99ADA5550179EA36C@TerryHP>
 MIME-Version: 1.0
-References: <4F202C11.70908@domain.hid> <4F202F4E.6000708@domain.hid>
-	<4F203237.2010102@domain.hid> <4F203353.8030302@domain.hid>
-	<4F2035B6.6090105@domain.hid> <4F203771.6070708@domain.hid>
-In-Reply-To: <4F203771.6070708@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain;
+	charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [PATCH] Add sigdebug unit test
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Subject: Re: [Xenomai-help] Interrupt numbers
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: 'Philippe Gerum' <rpm@xenomai.org>, xenomai@xenomai.org
 
-On 01/25/2012 06:10 PM, Jan Kiszka wrote:
-> On 2012-01-25 18:02, Gilles Chanteperdrix wrote:
->> On 01/25/2012 05:52 PM, Jan Kiszka wrote:
->>> On 2012-01-25 17:47, Jan Kiszka wrote:
->>>> On 2012-01-25 17:35, Gilles Chanteperdrix wrote:
->>>>> On 01/25/2012 05:21 PM, Jan Kiszka wrote:
->>>>>> We had two regressions in this code recently. So test all 6 possible
->>>>>> SIGDEBUG reasons, or 5 if the watchdog is not available.
->>>>>
->>>>> Ok for this test, with a few remarks:
->>>>> - this is a regression test, so should go to
->>>>> src/testsuite/regression(/native), and should be added to the
->>>>> xeno-regression-test
->>>>
->>>> What are unit test for (as they are defined here)? Looks a bit inconsistent.
->>
->> I put under "regression" all the tests I have which corresponded to
->> things that failed one time or another in xenomai past. Maybe we could
->> move unit tests under regression.
->>
->>>>
->>>>> - we already have a regression test for the watchdog called mayday.c,
->>>>> which tests the second watchdog action, please merge mayday.c with
->>>>> sigdebug.c (mayday.c also allows checking the disassembly of the code in
->>>>> the mayday page, a nice feature)
->>>>
->>>> It seems to have failed in that important last discipline. Need to check
->>>> why.
+Yeh, this is the direction we were going anyways, as I really only need the
+irq to trigger an unblock in userland.  I've already got a kernel driver
+written using xenomai, so moving the irq code into a driver won't be a
+stretch!!
+
+
+-----Original Message-----
+From: Philippe Gerum [mailto:rpm@xenomai.org] 
+Sent: Friday, December 23, 2011 12:13 PM
+To: xenomai@xenomai.org
+Cc: terry.fryar@domain.hid
+Subject: Re: [Xenomai-help] Interrupt numbers
+
+On 12/23/2011 05:16 PM, Terry Fryar wrote:
+> I would imagine it was nice, however, to have a userspace interrupt 
+> ISR so that flaky code could be debugged in userspace before making it 
+> into a driver?
+>
+
+Most interrupts are level sensitive these days, which means that you cannot
+safely step into the code which is supposed to ack the source device using a
+debugger, your kernel would be stormed by IRQs before you reach the point
+where the device request is acked. Remember that userland always runs with
+hw interrupts enabled, regardless of the domain. Even edge triggered IRQs
+would not give you any guarantee with respect to device timing requirements.
+
+GDB aside, also think about a transition to secondary mode for whatever
+reason while running in userland prior to acking the device: this would be
+another source of unexpected delays in the acknowledge path.
+
+Debugging work is likely to introduce these issues, unless one refrains from
+using anything else than rt_printf() for logging/observing the runtime
+state, but that would not help with level sensitive IRQs anyway.
+
+You may want to handle the main application logic that responds to an
+interrupt in userland through, in which case you need some RTDM driver
+handling the bottom half of real-time interrupts, which would in turn
+unblock a task sleeping on some read() or ioctl(), to process the event in
+userland (i.e. UIO-like for real-time IRQs).
+
+The bottom line is that you want the IRQ to be acknowledged at device level
+from kernel space. Keeping it masked in the PIC while transitioning to
+user-space would be another option, assuming it is not shared with the
+regular kernel (sharing between rt and non-rt would be just wrong anyway),
+if the device permits (infinitely) delayed acknowledges, but I would not
+recommend this. Typically, a user-space code can be wiped off at any time,
+leaving the device in a weird state.
+
+These are the reasons why I have killed the rt_intr_* API in 3.x, it was way
+too easy to shoot oneself in the foot (and believe me, I saw quite a few
+damaged feet in the past years due to this issue). What was missing in this
+API is a clear hint that some user-provided code should live in kernel space
+to ack each particular device controlled from userland. 
+Using RTDM to implement such code and synchronize with the application logic
+in userland is a safe, sane and simple solution.
+
+> -----Original Message-----
+> From: xenomai-help-bounces@domain.hid 
+> [mailto:xenomai-help-bounces@domain.hid] On Behalf Of Gilles 
+> Chanteperdrix
+> Sent: Friday, December 23, 2011 9:53 AM
+> To: Makarand Pradhan
+> Cc: xenomai@xenomai.org
+> Subject: Re: [Xenomai-help] Interrupt numbers
+>
+> On 12/23/2011 04:26 PM, Makarand Pradhan wrote:
+>> On 23/12/11 04:45 AM, Gilles Chanteperdrix wrote:
 >>>
->>> Because it didn't check the page content for correctness. But that's now
->>> done via the new watchdog test. I can keep the debug output, but the
->>> watchdog test of mayday looks obsolete to me. Am I missing something?
+>>> Xenomai uses the same interrupt numbers as linux. But rt_intr_create 
+>>> is deprecated in user-space, you should instead write a driver using 
+>>> the rtdm skin. The enable bit is handled by xenomai when you request 
+>>> the irq at xenomai level.
+>>>
+>> Hi Gilles,
 >>
->> The watchdog does two things: it first sends a SIGDEBUG, then if the
->> application is still spinning, it sends a SIGSEGV. As far as I
->> understood, you test tests the first case, and mayday tests the second
->> case, so, I agree that mayday should be removed, but whatever it tests
->> should be integrated in the sigdebug test.
+>> We use rt_intr_create in our code. So I am trying to understand the 
+>> reasons for it being deprecated. So far, I have not been able to see 
+>> any comments in the code regarding the deprecation or anything in the 
+>> git
+> log.
+>
+> Splitting your code between driver and application enforces a clean 
+> separation between the two, which helps maintenance, so is good on the 
+> long run.
+>
 >>
-> 
-> Err... SIGSEGV is not a feature, it was the bug I fixed today. :) So the
-> test case actually specified a bug as correct behavior.
-> 
-> The fallback case is in fact killing the RT task as before. But I'm
-> unsure right now: will this leave the system always in a clean state
-> behind?
+>> Can you pl comment on the reasons for deprecating rt_intr_create? 
+>> Will it be removed in the next release?
+>
+> We never change ABI in a branch, so, all releases in the 2.6 branch 
+> are guaranteed to support the same services as xenomai 2.6.0.
+>
+> But in xenomai 3.0, rt_intr_create will certainly no longer be available.
 
-The test case being a test case and doing nothing particular, I do not
-see what could go wrong. And if something goes wrong, then it needs fixing.
 
--- 
-					    Gilles.
+--
+Philippe.
+
 
