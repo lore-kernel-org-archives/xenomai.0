@@ -1,15 +1,12 @@
-Message-ID: <4F04466B.2000609@domain.hid>
-Date: Wed, 04 Jan 2012 13:30:35 +0100
-From: Wolfgang Grandegger <wg@domain.hid>
+Message-ID: <4EF8FBB6.4060107@domain.hid>
+Date: Mon, 26 Dec 2011 23:56:54 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4EF1C18C.3020407@domain.hid>
-	<4EF8B4E8.8060003@domain.hid>	<4F02C0A8.5020908@domain.hid>
-	<4F036D27.6050800@domain.hid> <4F0424A0.3010206@domain.hid>
-In-Reply-To: <4F0424A0.3010206@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+References: <4EF27CD5.4060603@domain.hid>
+In-Reply-To: <4EF27CD5.4060603@domain.hid>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Xenomai rtcan build issue on MPC5121 (kernel >=
- 2.6.35)
+Subject: Re: [Xenomai-help] hang in rtcansend
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -19,36 +16,61 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Fabrice Gasnier <fabrice.gasnier@domain.hid>
+To: Andrew Tannenbaum <trb@domain.hid>
 Cc: xenomai@xenomai.org
 
-Hi Fabrice,
-
-On 01/04/2012 11:06 AM, Fabrice Gasnier wrote:
-> Thanks Gilles.
+On 12/22/2011 01:41 AM, Andrew Tannenbaum wrote:
+> Summary: I am having a problem running rtcansend/recv on Xenomai 2.6.0,
+> with the processes hanging in their cleanup code.
 > 
-> I posted some time ago another question that is somehow related to rtcan
-> and mpc5121:
-> insmod xeno_rtcan_mscan gets stuck on MPC5121
-> https://mail.gna.org/public/xenomai-core/2011-09/msg00032.html
+> I had been running Xenomai on an Intel Atom system with a PEAK PCI
+> SJA1000 CAN adapter.
 > 
-> I still have this issue and prepared a re-worked patch that you can find
-> attached to this email.
-> Can this also be applied?
+> I was running Linux 2.5.35.7 with Xenomai 2.5.5.2.  I connected a servo
+> and motor to the PEAK adapter, and I was able to talk with it using
+> rtcansend and rtcanrecv.
+> 
+> After working on other things for a few months, I need to return to this
+> project, so I downloaded the latest Linux/Xenomai pair, which I think is
+> Linux 2.5.38.8 and Xenomai 2.6.0.
+> 
+> I was able to compile these (using the Debian build advice, generating
+> .deb files for Linux and Xenomai, which I install with dpkg -i).  I used
+> a Linux .config derived from my older build.
+> 
+> With both the new and old installs, I am able to run xeno-test and get
+> decent latencies and such, though some of the tests fail depending on
+> what I have configured in Realtime/Drivers/Testing Drivers.  That is not
+> what I'm asking about.
+> 
+> 
+> 
+> I am having a problem running rtcansend/recv on Xenomai 2.6.0:
+> 
+> I can run rtcanconfig and it sets up my rtcan0 properly so I can see and
+> configure the servo.  The data in /proc/rtcan looks ok.
+> 
+> But when I try to talk with the servo using rtcansend, the rtcansend
+> process fails during the close phase, it looks like this:
+> 
+> $ rtcansend rtcan0 -v -i 0x0 0x82 0x1
+> interface rtcan0
+> s=0, ifr_name=rtcan0
+> <0x000> [2] 82 01
+> Cleaning up...
+> ^CSignal 2 received
+> Cleaning up...
+> $
+> 
+> So it hangs after the first "Cleaning up..." and I hit Control-C and
+> then it catches the ^C and exits.  The code at the bottom of
 
-Looks good. This patch is obviously derived from the MSCAN driver of the
-Linux kernel where we know that it works:
+After various attempts, the bug happens when the main thread exits with
+pthread_exit while other threads exist in the process. It was already
+there in 2.5.6 at least, but we did not see it with rtcansend because
+there was no other thread than the main thread, while in 2.6.0, there is
+now the rt_print thread running.
 
-  http://lxr.linux.no/#linux+v3.1.7/drivers/net/can/mscan/mscan.c#L62
-
-Just a minor issue:
-
-s/rinit=0/rinit = 0/
-
-Could please send a separate patch inline. I will do some testing on my
-MPC5200 and MPC5121 boards later this week.
-
-Thanks,
-
-Wolfgang.
+-- 
+                                                                Gilles.
 
