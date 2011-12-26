@@ -1,13 +1,13 @@
-Message-ID: <4F0475E5.5030301@domain.hid>
-Date: Wed, 04 Jan 2012 16:53:09 +0100
-From: Wolfgang Grandegger <wg@domain.hid>
+Message-ID: <4EF8FD8D.2090306@domain.hid>
+Date: Tue, 27 Dec 2011 00:04:45 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4F04589A.5090404@domain.hid>
-In-Reply-To: <4F04589A.5090404@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+References: <4EF27CD5.4060603@domain.hid>
+	<4EF8FBB6.4060107@domain.hid>
+In-Reply-To: <4EF8FBB6.4060107@domain.hid>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Xenomai rtcan build issue on MPC5121 (kernel >=
- 2.6.35)
+Subject: Re: [Xenomai-help] hang in rtcansend
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -17,35 +17,97 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Fabrice Gasnier <fabrice.gasnier@domain.hid>
+To: Andrew Tannenbaum <trb@domain.hid>
 Cc: xenomai@xenomai.org
 
-On 01/04/2012 02:48 PM, Fabrice Gasnier wrote:
-> ---
->  ksrc/drivers/can/mscan/rtcan_mscan.c |   38
-> ++++++++++++++++++++++++++++++++-
->  1 files changed, 36 insertions(+), 2 deletions(-)
+On 12/26/2011 11:56 PM, Gilles Chanteperdrix wrote:
+> On 12/22/2011 01:41 AM, Andrew Tannenbaum wrote:
+>> Summary: I am having a problem running rtcansend/recv on Xenomai 2.6.0,
+>> with the processes hanging in their cleanup code.
+>>
+>> I had been running Xenomai on an Intel Atom system with a PEAK PCI
+>> SJA1000 CAN adapter.
+>>
+>> I was running Linux 2.5.35.7 with Xenomai 2.5.5.2.  I connected a servo
+>> and motor to the PEAK adapter, and I was able to talk with it using
+>> rtcansend and rtcanrecv.
+>>
+>> After working on other things for a few months, I need to return to this
+>> project, so I downloaded the latest Linux/Xenomai pair, which I think is
+>> Linux 2.5.38.8 and Xenomai 2.6.0.
+>>
+>> I was able to compile these (using the Debian build advice, generating
+>> .deb files for Linux and Xenomai, which I install with dpkg -i).  I used
+>> a Linux .config derived from my older build.
+>>
+>> With both the new and old installs, I am able to run xeno-test and get
+>> decent latencies and such, though some of the tests fail depending on
+>> what I have configured in Realtime/Drivers/Testing Drivers.  That is not
+>> what I'm asking about.
+>>
+>>
+>>
+>> I am having a problem running rtcansend/recv on Xenomai 2.6.0:
+>>
+>> I can run rtcanconfig and it sets up my rtcan0 properly so I can see and
+>> configure the servo.  The data in /proc/rtcan looks ok.
+>>
+>> But when I try to talk with the servo using rtcansend, the rtcansend
+>> process fails during the close phase, it looks like this:
+>>
+>> $ rtcansend rtcan0 -v -i 0x0 0x82 0x1
+>> interface rtcan0
+>> s=0, ifr_name=rtcan0
+>> <0x000> [2] 82 01
+>> Cleaning up...
+>> ^CSignal 2 received
+>> Cleaning up...
+>> $
+>>
+>> So it hangs after the first "Cleaning up..." and I hit Control-C and
+>> then it catches the ^C and exits.  The code at the bottom of
+> 
+> After various attempts, the bug happens when the main thread exits with
+> pthread_exit while other threads exist in the process. It was already
+> there in 2.5.6 at least, but we did not see it with rtcansend because
+> there was no other thread than the main thread, while in 2.6.0, there is
+> now the rt_print thread running.
 > 
 
-Unfortunately, this is not a proper patch. It should have:
+And it is in fact a linux/glibc behaviour. A test program compiled
+without xenomai exhibits the same behaviour. Here is the test program,
+simplified to the max:
 
-- a descriptive subject line, e.g.:
+#include <pthread.h>
+#include <sys/mman.h>
+#include <time.h>
 
-  [PATCH] fix mscan init on mpc5121
+void *loop(void *cookie)
+{
+	struct timespec ts;
 
-- a short description of the patch. Why? What does it fix?
+	ts.tv_sec = 0;
+	ts.tv_nsec = 100000000;
 
-- your signed-off-by line.
+	pthread_detach(pthread_self());
 
-Furthermore, the patch should be send *inline* (and not as attachment).
-The best is to setup and use "git send-email" for that purpose.
-Otherwise you need to tweak you mail clients somehow to avoid
-white-space mangling.
+	for(;;)
+		nanosleep(&ts, NULL);
+}
 
-Thanks,
+int main(void)
+{
+	pthread_t tid;
 
-Wolfgang.
+	mlockall(MCL_CURRENT | MCL_FUTURE);
 
+	pthread_create(&tid, NULL, loop, NULL);
 
+	pthread_exit(NULL);
+}
 
+So, rtcansend should call exit.
+
+-- 
+                                                                Gilles.
 
