@@ -1,12 +1,10 @@
-Message-ID: <4EE4D43D.9080709@domain.hid>
-Date: Sun, 11 Dec 2011 17:03:09 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <4EF9D886.5040807@domain.hid>
+Date: Tue, 27 Dec 2011 15:39:02 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <1322654284-6867-1-git-send-email-wolfgang.mauerer@domain.hid>
-In-Reply-To: <1322654284-6867-1-git-send-email-wolfgang.mauerer@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Adeos-main] [PATCH 0/2] Fasteoi fixes
+Subject: [Adeos-main] pull request for adeos-ipipe-2.6.37.6-arm-1.18-04
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/options/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -15,33 +13,26 @@ List-Post: <mailto:adeos-main@gna.org>
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-To: Wolfgang Mauerer <wolfgang.mauerer@domain.hid>
-Cc: jan.kiszka@domain.hid, adeos-main@gna.org, gernot.hillier@domain.hid
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Adeos <adeos-main@gna.org>
 
-On 11/30/2011 12:58 PM, Wolfgang Mauerer wrote:
-> Dear all,
->
-> following Jan's considerations, I found that we lack a generic
-> bug fix for the fasteoi handler in 2.6.38, which is backported
-> in the first patch. The second patch makes ipipe agree with
-> threaded one-shot handlers.
->
-> Pending adaption to the latest API, this part is also relevant
-> for the ipipe-3.0-noarch. Philippe, do you agree with the
-> approach?
->
+The following changes since commit 2d8a5c9eddbb7f9ee8d3931e82854fe6af395dde:
 
-Fine with me. Merged, thanks.
+  adeos-ipipe-2.6.37.6-arm-1.18-03 (2011-06-21 21:19:13 +0200)
 
-> Cheers, Wolfgang
->
-> --
-> Siemens AG, Open Source Platforms,
-> Corporate Competence Centre Embedded Linux
->
->
+are available in the git repository at:
+  git://git.xenomai.org/ipipe-gch.git for-ipipe-2.6.37-arm
 
+Gilles Chanteperdrix (3):
+      fcse: fix compilation error
+      ipipe-arm: fix compilation with I-pipe tracer
+      adeos-ipipe-2.6.37.6-arm-1.18-04
+
+ arch/arm/include/asm/cacheflush.h |    1 +
+ arch/arm/include/asm/ipipe.h      |    4 ++--
+ arch/arm/include/asm/irqflags.h   |    4 ++--
+ 3 files changed, 5 insertions(+), 4 deletions(-)
 
 -- 
-Philippe.
+                                                                Gilles.
 
