@@ -1,19 +1,10 @@
-Message-ID: <4EF4F97B.30209@domain.hid>
-Date: Fri, 23 Dec 2011 22:58:19 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <BLU166-W4963DB0BDCBFDED1A1EF5CC4AD0@domain.hid>
+Content-Type: multipart/alternative;
+	boundary="_fe66b6e9-d001-48aa-9eff-3f8fdc7afec1_"
+From: Jan-Erik Lange <jan0385@domain.hid>
+Date: Thu, 29 Dec 2011 13:04:25 +0100
 MIME-Version: 1.0
-References: <20111223173309.GM27742@domain.hid>
-	<4EF4C5A5.6000105@domain.hid>
-	<20111223183246.GN27742@domain.hid>
-	<4EF4DFAB.9040406@domain.hid>
-	<20111223202530.GO27742@domain.hid>
-	<4EF4F72D.5010007@domain.hid>
-	<20111223215547.GP27742@domain.hid>
-In-Reply-To: <20111223215547.GP27742@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] CONFIG_XENO_HW_UNLOCKED_SWITCH=y causes random
- process corruption in xenomai 2.6.0 on powerpc.
+Subject: [Xenomai-core] general questions
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -22,22 +13,82 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Lennart Sorensen <lsorense@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 12/23/2011 10:55 PM, Lennart Sorensen wrote:
-> On Fri, Dec 23, 2011 at 10:48:29PM +0100, Philippe Gerum wrote:
->> Is it reproducible with the basic latency or cyclic tests if waiting
->> for long enough? Running ltp in parallel would trigger a decent
->> load, but sometimes two shell loops forking commands in the
->> background are enough to trigger a variety of issues when something
->> fragile exists in the mmu layer as modified by the I-Pipe.
->
-> Well we can try after I come back from vacation in a couple of weeks.
->
+--_fe66b6e9-d001-48aa-9eff-3f8fdc7afec1_
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 
-Ok. I will try to reproduce on my side as well.
 
--- 
-Philippe.
+Hello=2C
+I'm new in the topic about the Xenomai co-kernel approach and I have some q=
+uestions to the primary mode and secondary mode.=20
+=20
+I have trouble with the imagination of the fact in general=2C that one task=
+ (process oder thread) can be processed by two kernels (Xenomai nucleus and=
+ standard kernel)=2C and treated by the one in real time and by the other i=
+n non real-time.
+=20
+1. So far I understood this approach=2C the primary and secondary mode is a=
+n abstract description of the fact=2C that threads or processes can be sche=
+duled by the Xenomai nucleus or by the standard Linux kernel scheduler. Is =
+this correct?
+=20
+2. Now supose=2C that I have chosen the VxWork-skin and I started a task in=
+ the primary mode. Is it correct that when this task is calling a non VxWor=
+k-API-funtion=2C there will a change of the context from primary to the sec=
+ondary mode? Or what is the exact condition of the switching of the context=
+?
+=20
+It would be very nice=2C if you could tell me a little bit about these ques=
+tions?
+=20
+Best regards=20
+Jan 		 	   		  =
+
+--_fe66b6e9-d001-48aa-9eff-3f8fdc7afec1_
+Content-Type: text/html; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+
+<html>
+<head>
+<style><!--
+.hmmessage P
+{
+margin:0px=3B
+padding:0px
+}
+body.hmmessage
+{
+font-size: 10pt=3B
+font-family:Tahoma
+}
+--></style></head>
+<body class=3D'hmmessage'><div dir=3D'ltr'>
+Hello=2C<BR>I'm new in the topic about the Xenomai co-kernel approach and&n=
+bsp=3BI have some questions to the primary mode and secondary mode. <BR>
+&nbsp=3B<BR>
+I have trouble with the imagination of the fact in general=2C that one task=
+ (process oder thread) can be processed by two kernels (Xenomai nucleus and=
+ standard kernel)=2C and treated by the one in real time and by the other i=
+n non real-time.<BR>
+&nbsp=3B<BR>
+1. So far I understood this approach=2C the primary and secondary mode is a=
+n abstract description of the fact=2C that threads or processes can be sche=
+duled by the Xenomai nucleus or by the standard Linux kernel scheduler. Is =
+this correct?<BR>
+&nbsp=3B<BR>
+2. Now supose=2C that I have chosen the VxWork-skin and I started a task in=
+ the primary mode. Is it correct that when this task is calling a non VxWor=
+k-API-funtion=2C there will a change of the context from primary to the sec=
+ondary mode? Or what is the exact condition of the switching of the context=
+?<BR>
+&nbsp=3B<BR>
+It would be very nice=2C if you could tell me a little bit about these ques=
+tions?<BR>
+&nbsp=3B<BR>
+Best regards <BR>Jan<BR> 		 	   		  </div></body>
+</html>=
+
+--_fe66b6e9-d001-48aa-9eff-3f8fdc7afec1_--
 
