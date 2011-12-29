@@ -1,4 +1,7 @@
-From: "Gregory Gosse" <gregory.gosse@domain.hid>
+Message-ID: <4EFC7EC8.2040805@domain.hid>
+Date: Thu, 29 Dec 2011 15:52:56 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
 References: <000101ccc4b8$74856eb0$5d904c10$@soterem.fr>	<4EF9F949.5000708@domain.hid>
 	<000001ccc541$7fa8d960$7efa8c20$@soterem.fr>
 	<4EFAE1BF.4090203@domain.hid>
@@ -10,14 +13,10 @@ References: <000101ccc4b8$74856eb0$5d904c10$@soterem.fr>	<4EF9F949.5000708@domai
 	<4EFB4BC9.4050903@domain.hid>
 	<000001ccc632$da3d80f0$8eb882d0$@soterem.fr>
 	<4EFC753D.90005@domain.hid>
-In-Reply-To: <4EFC753D.90005@domain.hid>
-Date: Thu, 29 Dec 2011 15:45:16 +0100
-Message-ID: <000101ccc638$7aff1f30$70fd5d90$@soterem.fr>
-MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-Content-Language: fr
+	<000101ccc638$7aff1f30$70fd5d90$@soterem.fr>
+In-Reply-To: <000101ccc638$7aff1f30$70fd5d90$@soterem.fr>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] problem following 'xenomai quick build guide'
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -28,32 +27,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: 'Gilles Chanteperdrix' <gilles.chanteperdrix@xenomai.org>
+To: Gregory Gosse <gregory.gosse@domain.hid>
 Cc: 'xenomai-help' <xenomai@xenomai.org>
 
-No . What i wanted to do , starting from the examples, is write rapidly =
-a simple program that perform periodically a task like writing on the =
-serial port . And verify physically what happens.
+On 12/29/2011 03:45 PM, Gregory Gosse wrote:
+> No . What i wanted to do , starting from the examples, is write
+> rapidly a simple program that perform periodically a task like
+> writing on the serial port . And verify physically what happens.
 
-Gregory
+Running the latency test under load an hour or two is recommended, to 
+check if your platform has no issues.
 
------Message d'origine-----
-De : Gilles Chanteperdrix [mailto:gilles.chanteperdrix@xenomai.org
-Envoy=C3=A9 : jeudi 29 d=C3=A9cembre 2011 15:12
-=C3=80 : Gregory Gosse
-Cc : 'Philippe Gerum'; 'xenomai-help'
-Objet : Re: [Xenomai-help] problem following 'xenomai quick build guide'
+Other than that, in order to compile the examples, you should read
+this page:
+http://www.xenomai.org/index.php/Examples
 
-On 12/29/2011 03:04 PM, Gregory Gosse wrote:
-> Hi,
->=20
->> Examples are broken in 2.6.0, will be fixed in 2.6.1.
->=20
-> Is there just a way to avoid these 'undefined reference' errors ?=20
+The following patch fixes some compilation issues, but even without 
+this patch some of the examples do compile. The "unresolved references" 
+you get are probably due to some missing arguments on make command line.
 
-Before trying the examples, have you tried latency, switchtest, =
-switchbench, etc... or xeno-test?
---=20
+http://git.xenomai.org/?p=xenomai-2.6.git;a=commitdiff_plain;h=87ac1c1f32181b5bcf4961aea30b9df34ba8a7ce;hp=472c85b997a5ab72355dd831af3a61183d371a83
+
+-- 
                                                                 Gilles.
-
 
