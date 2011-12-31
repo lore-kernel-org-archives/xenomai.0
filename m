@@ -1,78 +1,137 @@
-Message-ID: <4EFCF37F.6030603@domain.hid>
-Date: Fri, 30 Dec 2011 00:10:55 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <4EFEC15B.4040807@domain.hid>
+Date: Sat, 31 Dec 2011 09:01:31 +0100
+From: Christophe Blaess <mailist@domain.hid>
 MIME-Version: 1.0
-References: <4E981906.6020400@domain.hid> <4E982C40.4040704@domain.hid>
-	<4E982D79.7040308@domain.hid>
-In-Reply-To: <4E982D79.7040308@domain.hid>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: multipart/mixed; boundary="------------000000090302000304080809"
+Subject: [Xenomai-core] [PATCH] Threads without names confuse rtps
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: xenomai@xenomai.org
+
+This is a multi-part message in MIME format.
+--------------000000090302000304080809
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Adeos-main] [PULL] 2.6.38-noarch: Re-add root preemption
-	notifier
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/options/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: adeos-main <adeos-main@gna.org>
 
-On 10/14/2011 02:39 PM, Jan Kiszka wrote:
-> On 2011-10-14 14:34, Gilles Chanteperdrix wrote:
->> On 10/14/2011 01:12 PM, Jan Kiszka wrote:
->>> The following changes since commit 641d8e87531c6367a6357335378194ea06a23701:
->>>
->>>    ipipe: Prevent unwritable pages after mprotect (2011-07-21 09:51:56 +0200)
->>>
->>> are available in the git repository at:
->>>    git://git.kiszka.org/ipipe queues/2.6.38-noarch
->>>
->>> Jan Kiszka (1):
->>>        ipipe: Re-add root preemption notifier
->>>
->>>   include/linux/ipipe.h      |   35 +++++++++++++++++++++++++++++++++++
->>>   include/linux/ipipe_base.h |    2 +-
->>>   kernel/ipipe/core.c        |    6 ++++++
->>>   3 files changed, 42 insertions(+), 1 deletions(-)
->>>
->>> ---
->>>
->>> ipipe: Re-add root preemption notifier
->>>
->>> Restore the original root preemption notifiers, once added for 2.6.35
->>> but then lost again on 2.6.36 merge. Unfortunately, the feature flag was
->>> not lost. So it became meaningless and we have to rename it to
->>> __IPIPE_FEATURE_ROOTPREEMPT_NOTIFIER.
->>
->> The I-pipe defines a generic infrastructure for events, why bypassing it?
->>
->
-> Because
->   - this is no kernel-to-ipipe event, but an ipipe-to-kernel (kvm) one
->   - there is no relation to domains here
->   - there is no relation to a shadow task here (the event is fired over
->     a pure Linux task)
->
-> Jan
->
+If a Xenomai thread is created with a NULL name parameter, this way:
 
-IIUC, this is a primary domain to KVM event, at least the way the 
-Xenomai nucleus is supposed to trigger it, so we could have used a 
-pipeline event hooked by the head domain as Gilles suggested. This said, 
-there is no event propagation or domain migration to handle here, so 
-this would likely be overkill.
 
-I've picked both patches (Xenomai + pipeline) in my queue for 2.6.1 and 
-2.6.38.8/x86. I'm not that happy with adding yet another per-cpu global 
-variable to hold information the pipeline does not really care about 
-(it's just a conveyor here), but as I'm refactoring the pipeline core, 
-I'll work with you for a better integration if we can find one.
+// no-name.c
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/mman.h>
 
-Thanks,
+#include <rtdk.h>
+#include <native/task.h>
 
--- 
-Philippe.
+int main(void)
+{
+       int err;
+       RT_TASK task;
+
+       mlockall(MCL_CURRENT|MCL_FUTURE);
+       rt_print_auto_init(1);
+
+       if ((err = rt_task_shadow(& task, NULL, 50, T_JOINABLE)) != 0) {
+           fprintf(stderr, "rt_task_shadow: %s\n", strerror(-err));
+           exit(EXIT_FAILURE);
+       }
+
+       while (1)
+           rt_task_sleep(1000000000);
+       return 0;
+}
+
+
+
+Then, the rtps display is wrong, because the "name" field in /proc/acct 
+is empty:
+
+[Panda]# /usr/xenomai/sbin/rtps
+PID    TIME                THREAD                   CMD
+
+0      002:40:47.105,569   ROOT/0                   -
+0      002:41:08.762,505   ROOT/1                   -
+31267  000:00:00.007,737   1 0 0 40038203 0 00000000 672522999738 
+1901211134 27510920737 IR/proc/31267/cmdline ./no-name
+[Panda]#
+
+
+Here is a small patch to correct the reading of /proc/acct in case the 
+name is missing. And now:
+
+[Panda]# /root/rtps
+PID    TIME                THREAD                   CMD
+
+0      002:46:17.807,037   ROOT/0                   -
+0      002:46:39.469,616   ROOT/1                   -
+31267  000:00:00.011,491                            ./no-name
+0      000:00:28.439,650   IRQ29: [timer]           -
+[Panda]#
+
+
+
+
+
+
+--------------000000090302000304080809
+Content-Type: text/x-patch;
+ name="rtps-no-name.patch"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+ filename="rtps-no-name.patch"
+
+diff -Nru xenomai-2.6.0-orig//src/utils/ps/rtps.c xenomai-2.6.0/src/utils/ps/rtps.c
+--- xenomai-2.6.0-orig//src/utils/ps/rtps.c	2011-10-18 20:17:18.000000000 +0200
++++ xenomai-2.6.0/src/utils/ps/rtps.c	2011-12-31 08:23:17.435303214 +0100
+@@ -7,12 +7,14 @@
+ #define PROC_ACCT  "/proc/xenomai/acct"
+ #define PROC_PID  "/proc/%d/cmdline"
+ 
+-#define ACCT_FMT   "%u %d %lu %lu %lu %lx %Lu %Lu %Lu %[^\n]"
+-#define ACCT_NFMT  10
++#define ACCT_FMT_1  "%u %d %lu %lu %lu %lx %Lu %Lu %Lu"
++#define ACCT_FMT_2  ACCT_FMT_1 " %[^\n]"
++#define ACCT_NFMT_1 9
++#define ACCT_NFMT_2 10
+ 
+ int main(int argc, char *argv[])
+ {
+-	char cmdpath[sizeof(PROC_PID) + 32], cmdbuf[BUFSIZ], name[64];
++	char cmdpath[sizeof(PROC_PID) + 32], cmdbuf[BUFSIZ], acctbuf[BUFSIZ], name[64];
+ 	unsigned long ssw, csw, pf, state, sec;
+ 	unsigned long long account_period,
+ 		exectime_period, exectime_total, v;
+@@ -27,10 +29,19 @@
+ 	printf("%-6s %-17s   %-24s %s\n\n",
+ 	       "PID", "TIME", "THREAD", "CMD");
+ 
+-	while (fscanf(acctfp, ACCT_FMT,
++	while (fgets(acctbuf, sizeof(acctbuf), acctfp) != NULL) {
++		if (sscanf(acctbuf, ACCT_FMT_2,
+ 		      &cpu, &pid, &ssw, &csw, &pf, &state,
+ 		      &account_period, &exectime_period,
+-		      &exectime_total, name) == ACCT_NFMT) {
++		      &exectime_total, name) != ACCT_NFMT_2) {
++			strcpy(name, "");
++			if (sscanf(acctbuf, ACCT_FMT_1,
++			      &cpu, &pid, &ssw, &csw, &pf, &state,
++			     &account_period, &exectime_period,
++			     &exectime_total) != ACCT_NFMT_1) {
++				break;
++			}
++		}
+ 
+ 		snprintf(cmdpath, sizeof(cmdpath), PROC_PID, pid);
+ 		cmdfp = fopen(cmdpath, "r");
+
+
+
+--------------000000090302000304080809--
 
