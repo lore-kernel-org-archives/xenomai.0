@@ -1,84 +1,76 @@
-From: "Terry Fryar" <terry.fryar@domain.hid>
-Date: Thu, 22 Dec 2011 18:38:37 -0600
-Message-ID: <56F449AE83D74177BAC5887692E0EF55@domain.hid>
-MIME-Version: 1.0
+Message-ID: <BLU166-W39C682E7E76684CC152F0C4930@domain.hid>
 Content-Type: multipart/alternative;
-	boundary="----=_NextPart_000_00AB_01CCC0D8.ECA8DBE0"
-Subject: [Xenomai-help] Interrupt numbers
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+	boundary="_9a602344-f5fd-4f8e-b803-0de8a2082d33_"
+From: Jan-Erik Lange <jan0385@domain.hid>
+Date: Sat, 31 Dec 2011 12:18:53 +0100
+MIME-Version: 1.0
+Subject: [Xenomai-core] user and kernel space
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
 To: xenomai@xenomai.org
 
-This is a multi-part message in MIME format.
-
-------=_NextPart_000_00AB_01CCC0D8.ECA8DBE0
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-
-Using Xenomai 2.60 with 2.6.38 omap kernel on beagleboard xm.  
- 
-Trying to use a GPIO pin as an interrupt and catch this in a xenomai
-userspace program.  Got the GPIO132 pin set as an input and is working fine.
-I guess I'll need to set the irq enable register on the omap cpu to enable
-it to generate irqs.  Now...what irq number do I use in the xenomai
-rt_intr_create() function call??  I'm not sure how the omap gpio interrupts
-are mapped to the linux kernel/xenomai stuff??  Can I use what's in the
-arch/arm/plat-omap/include/plat/irqs.h header file?  It appears that each
-bank of GPIO pins has it's own interrupt number??
- 
-Thanks!
- 
-
-------=_NextPart_000_00AB_01CCC0D8.ECA8DBE0
-Content-Type: text/html;
-	charset="us-ascii"
+--_9a602344-f5fd-4f8e-b803-0de8a2082d33_
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML><HEAD>
-<META content=3D"text/html; charset=3Dus-ascii" =
-http-equiv=3DContent-Type>
-<META name=3DGENERATOR content=3D"MSHTML 8.00.7601.17699"></HEAD>
-<BODY>
-<DIV><SPAN class=3D143493200-23122011><FONT size=3D2 face=3DArial>Using =
-Xenomai 2.60=20
-with 2.6.38 omap kernel on beagleboard xm.&nbsp; </FONT></SPAN></DIV>
-<DIV><SPAN class=3D143493200-23122011><FONT size=3D2=20
-face=3DArial></FONT></SPAN>&nbsp;</DIV>
-<DIV><SPAN class=3D143493200-23122011><FONT size=3D2 face=3DArial>Trying =
-to use a GPIO=20
-pin as an interrupt and catch this in a xenomai userspace program.&nbsp; =
-Got the=20
-GPIO132 pin set as an input and is working fine.&nbsp; I guess I'll need =
-to set=20
-the irq enable register on the omap cpu to enable it to generate =
-irqs.&nbsp;=20
-</FONT></SPAN><SPAN class=3D143493200-23122011><FONT size=3D2 =
-face=3DArial>Now...what=20
-irq number do I use in the xenomai&nbsp;<FONT color=3D#642880 =
-size=3D2><FONT=20
-color=3D#000000 size=3D2>rt_intr_create() function call??&nbsp; I'm not =
-sure how the=20
-omap gpio interrupts are mapped to the linux kernel/xenomai =
-stuff??&nbsp; Can I=20
-use what's in the arch/arm/plat-omap/include/plat/irqs.h header =
-file?&nbsp; It=20
-appears that each bank of GPIO pins has it's own interrupt=20
-number??</FONT></FONT></FONT></SPAN></DIV>
-<DIV><SPAN class=3D143493200-23122011><FONT size=3D2=20
-face=3DArial></FONT></SPAN>&nbsp;</DIV>
-<DIV><SPAN class=3D143493200-23122011><FONT size=3D2=20
-face=3DArial>Thanks!</FONT></SPAN></DIV>
-<DIV><FONT size=3D2 face=3DArial></FONT>&nbsp;</DIV></BODY></HTML>
 
-------=_NextPart_000_00AB_01CCC0D8.ECA8DBE0--
+Hello=2C
+=20
+I have a question concerning user space and kernel space. I'm dealing with =
+the native API and I read=2C that this API provides the same funtkions for =
+both kernel and user space.=20
+=20
+When looking at the sourcecode of buffer.h for example=2C there I find a se=
+ction called public interface. When looking at the function rt_buffer_creat=
+e()=3B for example=2C how does the Implementation von this function in user=
+space differs to the implementation for this function kernel space? Or is i=
+t the same implementation for user and kernel space.
+=20
+Best regards
+=20
+Jan 		 	   		  =
 
+--_9a602344-f5fd-4f8e-b803-0de8a2082d33_
+Content-Type: text/html; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+
+<html>
+<head>
+<style><!--
+.hmmessage P
+{
+margin:0px=3B
+padding:0px
+}
+body.hmmessage
+{
+font-size: 10pt=3B
+font-family:Tahoma
+}
+--></style></head>
+<body class=3D'hmmessage'><div dir=3D'ltr'>
+Hello=2C<BR>
+&nbsp=3B<BR>
+I have a question concerning user space and kernel space. I'm dealing with =
+the native API and I read=2C that this API provides the same funtkions for =
+both kernel and user space. <BR>
+&nbsp=3B<BR>
+When looking at the sourcecode of buffer.h for example=2C there I find a se=
+ction called public interface. When looking at the function rt_buffer_creat=
+e()=3B for example=2C how does the Implementation von this function in user=
+space differs to the implementation for this function&nbsp=3Bkernel space? =
+Or is it the same implementation for user and kernel space.<BR>
+&nbsp=3B<BR>
+Best regards<BR>
+&nbsp=3B<BR>
+Jan<BR> 		 	   		  </div></body>
+</html>=
+
+--_9a602344-f5fd-4f8e-b803-0de8a2082d33_--
 
