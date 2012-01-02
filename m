@@ -1,16 +1,10 @@
 From: "Terry Fryar" <terry.fryar@domain.hid>
-References: <C3860BCA25804175ABD53E2F2B1A942A@TerryHP>
-	<4EFCFF53.7040508@domain.hid> <4EFD910F.3080404@domain.hid>
-	<3DFE8CE1F70D48ECB3CDD7F7795FCE8B@TerryHP>
-	<4F01C6FF.7090905@domain.hid>
-In-Reply-To: <4F01C6FF.7090905@domain.hid>
-Date: Mon, 2 Jan 2012 11:58:20 -0600
-Message-ID: <CC925A00F8E0417DA50EFA3A453B8695@domain.hid>
+Date: Mon, 2 Jan 2012 15:44:00 -0600
+Message-ID: <F3D8CA1275B8457E8D7AA98A26D47860@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Mode switches??
+Content-Type: multipart/alternative;
+	boundary="----=_NextPart_000_005F_01CCC965.5A7727A0"
+Subject: [Xenomai-help] Arm support for 3.x kernel?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -20,28 +14,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: 'Gilles Chanteperdrix' <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Whoops...that was supposed to be a capital 'l'....
+This is a multi-part message in MIME format.
 
+------=_NextPart_000_005F_01CCC965.5A7727A0
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 
------Original Message-----
-From: Gilles Chanteperdrix [mailto:gilles.chanteperdrix@xenomai.org] 
-Sent: Monday, January 02, 2012 9:02 AM
-To: Terry Fryar
-Cc: xenomai@xenomai.org
-Subject: Re: [Xenomai-help] Mode switches??
+Guys, any plans for 3.x kernel support for arm?  I noticed the latest arm
+adeos patch is still 2.6.x.......
+ 
+Thanks!
+ 
 
-On 01/02/2012 03:27 PM, Terry Fryar wrote:
->     printk("<1>irqdrv: BASEPRIOR: %d  CURPRIOR: %d  EXECTIME: %ld  MODESW:
-> %d  CTXSW:
-> %d",info.bprio,info.cprio,info.exectime,info.modeswitches,info.ctxswit
-> ches);
+------=_NextPart_000_005F_01CCC965.5A7727A0
+Content-Type: text/html;
+	charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 
-exectime is a 64 bits variable, so, EXECTIME should use %lld or %Ld
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML><HEAD>
+<META content=3D"text/html; charset=3Dus-ascii" =
+http-equiv=3DContent-Type>
+<META name=3DGENERATOR content=3D"MSHTML 8.00.7601.17699"></HEAD>
+<BODY>
+<DIV><SPAN class=3D503114221-02012012><FONT size=3D2 face=3DArial>Guys, =
+any plans for=20
+3.x kernel support for arm?&nbsp; I noticed the latest arm adeos patch =
+is still=20
+2.6.x.......</FONT></SPAN></DIV>
+<DIV><SPAN class=3D503114221-02012012><FONT size=3D2=20
+face=3DArial></FONT></SPAN>&nbsp;</DIV>
+<DIV><SPAN class=3D503114221-02012012><FONT size=3D2=20
+face=3DArial>Thanks!</FONT></SPAN></DIV>
+<DIV><SPAN class=3D503114221-02012012></SPAN>&nbsp;</DIV></BODY></HTML>
 
--- 
-					    Gilles.
+------=_NextPart_000_005F_01CCC965.5A7727A0--
 
 
