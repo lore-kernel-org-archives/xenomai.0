@@ -1,13 +1,16 @@
-Message-ID: <4EF8B4E8.8060003@domain.hid>
-Date: Mon, 26 Dec 2011 18:54:48 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: "Terry Fryar" <terry.fryar@domain.hid>
+References: <C3860BCA25804175ABD53E2F2B1A942A@TerryHP>
+	<4EFCFF53.7040508@domain.hid> <4EFD910F.3080404@domain.hid>
+	<3DFE8CE1F70D48ECB3CDD7F7795FCE8B@TerryHP>
+	<4F01C6FF.7090905@domain.hid>
+In-Reply-To: <4F01C6FF.7090905@domain.hid>
+Date: Mon, 2 Jan 2012 11:58:20 -0600
+Message-ID: <CC925A00F8E0417DA50EFA3A453B8695@domain.hid>
 MIME-Version: 1.0
-References: <4EF1C18C.3020407@domain.hid>
-In-Reply-To: <4EF1C18C.3020407@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain;
+	charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Xenomai rtcan build issue on MPC5121 (kernel >=
- 2.6.35)
+Subject: Re: [Xenomai-help] Mode switches??
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -17,16 +20,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Fabrice Gasnier <fabrice.gasnier@domain.hid>
+To: 'Gilles Chanteperdrix' <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On 12/21/2011 12:22 PM, Fabrice Gasnier wrote:
-> If it's ok, can it be integrated into xenomai-head?
+Whoops...that was supposed to be a capital 'l'....
 
-It is not OK, your patch fails to apply. But if you send a properly
-formatted patch, it will be applied. If you do not know how to properly
-format a patch, use "git format-patch".
+
+-----Original Message-----
+From: Gilles Chanteperdrix [mailto:gilles.chanteperdrix@xenomai.org] 
+Sent: Monday, January 02, 2012 9:02 AM
+To: Terry Fryar
+Cc: xenomai@xenomai.org
+Subject: Re: [Xenomai-help] Mode switches??
+
+On 01/02/2012 03:27 PM, Terry Fryar wrote:
+>     printk("<1>irqdrv: BASEPRIOR: %d  CURPRIOR: %d  EXECTIME: %ld  MODESW:
+> %d  CTXSW:
+> %d",info.bprio,info.cprio,info.exectime,info.modeswitches,info.ctxswit
+> ches);
+
+exectime is a 64 bits variable, so, EXECTIME should use %lld or %Ld
 
 -- 
-                                                                Gilles.
+					    Gilles.
+
 
