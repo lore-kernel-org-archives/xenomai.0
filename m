@@ -1,14 +1,27 @@
-Message-ID: <4F01C6FF.7090905@domain.hid>
-Date: Mon, 02 Jan 2012 16:02:23 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <C3860BCA25804175ABD53E2F2B1A942A@TerryHP>
-	<4EFCFF53.7040508@domain.hid> <4EFD910F.3080404@domain.hid>
-	<3DFE8CE1F70D48ECB3CDD7F7795FCE8B@TerryHP>
-In-Reply-To: <3DFE8CE1F70D48ECB3CDD7F7795FCE8B@TerryHP>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Mode switches??
+Sender: hadrienstegosaure@domain.hid
+In-Reply-To: <4EFCA9DC.4060509@domain.hid>
+References: <CA+eKTkZ_ymqXx_Nc_9v1HRtYTqSjYqzdN56HCjzO+x14zcUwcg@domain.hid>
+	<4ECA2FF8.7040406@domain.hid>
+	<CA+eKTkZuNknobLhsgqU8jjkKboL3jNLhMPoG82fkjD6sZfyXgA@mail.gmail.com>
+	<4ECA5E12.5040907@domain.hid>
+	<CAMesUR7edxnPvpLu0kajLWGtVBwK65m27kssOjh=JViVhPeXJQ@mail.gmail.com>
+	<4ECB967C.70509@domain.hid>
+	<CA+eKTkbcBYnoRnBZrrBQ-Br2h2HPrVdyVLs2V3F4WOvcvhpDxA@mail.gmail.com>
+	<CAMesUR6Jx7WuZNsY6WmomD-ExoJ9hhKovKiekrr71Kbrk7Jb_A@mail.gmail.com>
+	<4ECCB27F.3040903@domain.hid>
+	<CA+eKTkZp5M8OTHyLBBM=S5=5C-WaVrLgSsWOtzA1_y=z4ujTJw@domain.hid>
+	<CA+eKTkZFiMTFZe4jyhhD3b064bQDQMMcgVW+YMU5SJKeVnCiZA@mail.gmail.com>
+	<CA+eKTkbcuv6GkD1mwz_p++F7144fF3Eq0gisg69yAdH9KneD3w@domain.hid>
+	<4EEB4599.3030707@domain.hid> <4EEB590A.2090108@domain.hid>
+	<4EEB5ABF.8020201@domain.hid>
+	<CA+eKTkanSObCHedoDfLEJAJrpxB-8AoO_Q-RosTNykxOhqCM-A@mail.gmail.com>
+	<4EFCA9DC.4060509@domain.hid>
+Date: Mon, 2 Jan 2012 16:26:00 +0100
+Message-ID: <CA+eKTkZJDF2ic0Vys0E4J8xQukYEGuTB0yzU0eX=awKHsCFcxg@domain.hid>
+From: Hadrien Caron <hadrien.caron@domain.hid>
+Content-Type: multipart/alternative; boundary=f46d043c7c942fdafa04b58d339a
+Subject: Re: [Xenomai-help] [xenomai-help] Error return with a4l_sync_write
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -18,16 +31,106 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Terry Fryar <terry.fryar@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On 01/02/2012 03:27 PM, Terry Fryar wrote:
->     printk("<1>irqdrv: BASEPRIOR: %d  CURPRIOR: %d  EXECTIME: %ld  MODESW:
-> %d  CTXSW:
-> %d",info.bprio,info.cprio,info.exectime,info.modeswitches,info.ctxswitches);
+--f46d043c7c942fdafa04b58d339a
+Content-Type: text/plain; charset=ISO-8859-1
 
-exectime is a 64 bits variable, so, EXECTIME should use %lld or %Ld
+Thanks, I compiled using the configure as you adviced, it didn't make any
+change though :(
 
--- 
-					    Gilles.
+For now I need to focus on other developments, I will come back to this
+later. Thanks you
+very much for the help though !
+
+Happy new year to everybody ;)
+
+Hadrien
+
+On Thu, Dec 29, 2011 at 6:56 PM, Gilles Chanteperdrix <
+gilles.chanteperdrix@xenomai.org> wrote:
+
+> On 12/29/2011 06:22 PM, Hadrien Caron wrote:
+> > Hello !
+> >
+> > Sorry for the delay, I was out of town for the week.
+> > Hope you all had a nice christmas.
+> > Thanks for the input. In fact I am sorry but I didn't find what it means
+> to
+> > compile with -fno-omit-frame-pointer
+> >
+> > I found a SCHED_OMIT_FRAME_POINTER option in the kernel but it was
+> already
+> > enabled so I doubt you were talking about that.
+> >
+> > Is it an option to pass to the compiler ? I found -fomit-frame-pointer in
+> > the gcc manual . . . Should I modify xenomai's Makefile to add this
+> option
+> > to the compilation ?
+> >
+> > Thanks again ! And happy new year ;)
+>
+> It is an option to pass to gcc (every time there is -ffoo there is also
+> the -fno-foo). You can pass additional flags to gcc using configure
+> CFLAGS variable.
+>
+> Using for instance:
+> /path/to/xenomai/configure CFLAGS="-fno-omit-frame-pointer -g -O2"
+>
+> --
+>                                                                Gilles.
+>
+
+--f46d043c7c942fdafa04b58d339a
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+Thanks, I compiled using the configure as you adviced, it didn&#39;t make a=
+ny change though :(<br><br>For now I need to focus on other developments, I=
+ will come back to this later. Thanks you<br>very much for the help though =
+! <br>
+<br>Happy new year to everybody ;)<br><br>Hadrien<br><br><div class=3D"gmai=
+l_quote">On Thu, Dec 29, 2011 at 6:56 PM, Gilles Chanteperdrix <span dir=3D=
+"ltr">&lt;<a href=3D"mailto:gilles.chanteperdrix@xenomai.org" target=3D"_bl=
+ank">gilles.chanteperdrix@xenomai.org</a>&gt;</span> wrote:<br>
+
+<blockquote class=3D"gmail_quote" style=3D"margin:0pt 0pt 0pt 0.8ex;border-=
+left:1px solid rgb(204,204,204);padding-left:1ex"><div>On 12/29/2011 06:22 =
+PM, Hadrien Caron wrote:<br>
+&gt; Hello !<br>
+&gt;<br>
+&gt; Sorry for the delay, I was out of town for the week.<br>
+&gt; Hope you all had a nice christmas.<br>
+&gt; Thanks for the input. In fact I am sorry but I didn&#39;t find what it=
+ means to<br>
+&gt; compile with -fno-omit-frame-pointer<br>
+&gt;<br>
+&gt; I found a SCHED_OMIT_FRAME_POINTER option in the kernel but it was alr=
+eady<br>
+&gt; enabled so I doubt you were talking about that.<br>
+&gt;<br>
+&gt; Is it an option to pass to the compiler ? I found -fomit-frame-pointer=
+ in<br>
+&gt; the gcc manual . . . Should I modify xenomai&#39;s Makefile to add thi=
+s option<br>
+&gt; to the compilation ?<br>
+&gt;<br>
+&gt; Thanks again ! And happy new year ;)<br>
+<br>
+</div>It is an option to pass to gcc (every time there is -ffoo there is al=
+so<br>
+the -fno-foo). You can pass additional flags to gcc using configure<br>
+CFLAGS variable.<br>
+<br>
+Using for instance:<br>
+/path/to/xenomai/configure CFLAGS=3D&quot;-fno-omit-frame-pointer -g -O2&qu=
+ot;<br>
+<font color=3D"#888888"><br>
+--<br>
+ =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
+=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0Gilles.<br>
+</font></blockquote></div><br>
+
+--f46d043c7c942fdafa04b58d339a--
 
