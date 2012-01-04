@@ -1,13 +1,13 @@
+Message-ID: <4F045578.7090405@domain.hid>
+Date: Wed, 04 Jan 2012 14:34:48 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <4F034332.3040708@domain.hid>
-References: <CAL8zT=h3+AYe56fWhbKr3nY8VhYcNjx=sPRe0cak5hvF+aM6yA@mail.gmail.com>
-	<4F0341CA.9080101@domain.hid> <4F034332.3040708@domain.hid>
-From: Jean-Michel Hautbois <jhautbois@domain.hid>
-Date: Tue, 3 Jan 2012 19:13:20 +0100
-Message-ID: <CAL8zT=g0-6UhMku5suh8tUXYzR9eJ4knFY=TOmYC2Ug4MzJrrw@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-core] Ipipe breaks my MPC8541 board boot
+References: <20111223173309.GM27742@domain.hid>
+In-Reply-To: <20111223173309.GM27742@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-core] CONFIG_XENO_HW_UNLOCKED_SWITCH=y causes random
+ process corruption in xenomai 2.6.0 on powerpc.
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -16,36 +16,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
+To: Lennart Sorensen <lsorense@domain.hid>
 Cc: xenomai@xenomai.org
 
-2012/1/3 Philippe Gerum <rpm@xenomai.org>:
-> On 01/03/2012 06:58 PM, Gilles Chanteperdrix wrote:
->>
->> On 01/03/2012 06:49 PM, Jean-Michel Hautbois wrote:
->>>
->>> cpm2_cascade is dedicated to my board, but has nothing impressive :
->>> static void cpm2_cascade(unsigned int irq, struct irq_desc *desc)
->>> {
->>> =C2=A0 =C2=A0 =C2=A0 =C2=A0 int cascade_irq;
->>>
->>> =C2=A0 =C2=A0 =C2=A0 =C2=A0 while ((cascade_irq =3D cpm2_get_irq())>=3D=
- 0)
->>> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 generic_handle_=
-irq(cascade_irq);
->>
->>
->> Replace generic_handle_irq with ipipe_handle_chained_irq.
->>
+On 12/23/2011 06:33 PM, Lennart Sorensen wrote:
+> After spending quite a while trying to explain how things like /bin/echo
+> could possibly segfault, I finally discovered that the new feature in
+> xenomai 2.6.0 (new when moving from 2.4.10 that is) of having preemptible
+> context switches is what is corrupting the state of random linux processes
+> once in a while.
+> 
+> After turning the option off, I haven't seen a single crash just like 2.4.10.
+> 
+> So something subtle is wrong with this option.
+> 
+> It appears to be most likely to occour (possibly only likely) when
+> xenomai is handling interrupts.
+> 
+> It seems that getting an interrupt in the middle of a context switch at
+> the wrong time corrupts the process that is being switched to or from
+> (no idea which it is).
+> 
+> Unless someone can think of a way to track down and fix this I would
+> certainly suggest making the option off by default instead of on.
+> 
+> With CONFIG_XENO_HW_UNLOCKED_SWITCH=n I don't have any problems anymore.
+> 
 
-Argh ! I didn't see it :) !
-Thanks, it works.
+Does the patch below help?
+http://git.xenomai.org/?p=xenomai-2.6.git;a=commit;h=f38d0b2a820104411c5a33636f6dab634a9bffc1
 
-> You have to fixup the eoi handling as well, check how this is done in
-> arch/powerpc/platforms/85xx/sbc8560.c.
 
-OK, I will check it, but didn't need to do it for making it work... :).
-
-Thanks again !
-JM
+-- 
+Philippe.
 
