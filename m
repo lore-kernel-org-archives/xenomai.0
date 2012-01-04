@@ -1,10 +1,15 @@
+Message-ID: <4F04466B.2000609@domain.hid>
+Date: Wed, 04 Jan 2012 13:30:35 +0100
+From: Wolfgang Grandegger <wg@domain.hid>
 MIME-Version: 1.0
-Date: Wed, 4 Jan 2012 13:22:06 +0100
-Message-ID: <CA+fRa6dugu69gLWA4fRTZbbiXr2gyCN8SKb2fQaJhOx8AG+B7w@domain.hid>
-From: Daniele <danielegottfried@domain.hid>
-Content-Type: multipart/alternative; boundary=0016e6de14fb2e35b404b5b2dddd
-Subject: [Xenomai-help] compilation problems
-Reply-To: daniele.gottfried@domain.hid
+References: <4EF1C18C.3020407@domain.hid>
+	<4EF8B4E8.8060003@domain.hid>	<4F02C0A8.5020908@domain.hid>
+	<4F036D27.6050800@domain.hid> <4F0424A0.3010206@domain.hid>
+In-Reply-To: <4F0424A0.3010206@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] Xenomai rtcan build issue on MPC5121 (kernel >=
+ 2.6.35)
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -14,51 +19,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Fabrice Gasnier <fabrice.gasnier@domain.hid>
+Cc: xenomai@xenomai.org
 
---0016e6de14fb2e35b404b5b2dddd
-Content-Type: text/plain; charset=ISO-8859-1
+Hi Fabrice,
 
-I'm trying to compile an example of Xenomai, but gives me this error:
+On 01/04/2012 11:06 AM, Fabrice Gasnier wrote:
+> Thanks Gilles.
+> 
+> I posted some time ago another question that is somehow related to rtcan
+> and mpc5121:
+> insmod xeno_rtcan_mscan gets stuck on MPC5121
+> https://mail.gna.org/public/xenomai-core/2011-09/msg00032.html
+> 
+> I still have this issue and prepared a re-worked patch that you can find
+> attached to this email.
+> Can this also be applied?
 
-/usr/bin/ld : cannot find -lrtdk
+Looks good. This patch is obviously derived from the MSCAN driver of the
+Linux kernel where we know that it works:
 
-thanks
+  http://lxr.linux.no/#linux+v3.1.7/drivers/net/can/mscan/mscan.c#L62
 
---0016e6de14fb2e35b404b5b2dddd
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Just a minor issue:
 
-<span style=3D"font-family:arial,sans-serif;background-color:rgb(245,245,24=
-5);color:rgb(51,51,51);font-size:16px">I&#39;m</span><span style=3D"font-fa=
-mily:arial,sans-serif;background-color:rgb(245,245,245);color:rgb(51,51,51)=
-;font-size:16px">=A0</span><span style=3D"font-family:arial,sans-serif;back=
-ground-color:rgb(245,245,245);color:rgb(51,51,51);font-size:16px">trying to=
- compile</span><span style=3D"font-family:arial,sans-serif;background-color=
-:rgb(245,245,245);color:rgb(51,51,51);font-size:16px">=A0</span><span style=
-=3D"font-family:arial,sans-serif;background-color:rgb(245,245,245);color:rg=
-b(51,51,51);font-size:16px">an example of</span><span style=3D"font-family:=
-arial,sans-serif;background-color:rgb(245,245,245);color:rgb(51,51,51);font=
--size:16px">=A0</span><span style=3D"font-family:arial,sans-serif;backgroun=
-d-color:rgb(245,245,245);color:rgb(51,51,51);font-size:16px">Xenomai</span>=
-<span style=3D"font-family:arial,sans-serif;background-color:rgb(245,245,24=
-5);color:rgb(51,51,51);font-size:16px">, but</span><span style=3D"font-fami=
-ly:arial,sans-serif;background-color:rgb(245,245,245);color:rgb(51,51,51);f=
-ont-size:16px">=A0</span><span style=3D"font-family:arial,sans-serif;backgr=
-ound-color:rgb(245,245,245);color:rgb(51,51,51);font-size:16px">gives me</s=
-pan><span style=3D"font-family:arial,sans-serif;background-color:rgb(245,24=
-5,245);color:rgb(51,51,51);font-size:16px">=A0</span><span style=3D"font-fa=
-mily:arial,sans-serif;background-color:rgb(245,245,245);color:rgb(51,51,51)=
-;font-size:16px">this error:</span><div style>
-<span style=3D"color:rgb(51,51,51);font-size:16px;background-color:rgb(245,=
-245,245)"><br></span></div><div style><span style=3D"color:rgb(51,51,51);fo=
-nt-size:16px;background-color:rgb(245,245,245)">/usr/bin/ld : cannot find -=
-lrtdk</span></div>
-<div style><span style=3D"color:rgb(51,51,51);font-size:16px;background-col=
-or:rgb(245,245,245)"><br></span></div><div style><span style=3D"color:rgb(5=
-1,51,51);font-size:16px;background-color:rgb(245,245,245)">thanks</span></d=
-iv>
+s/rinit=0/rinit = 0/
 
+Could please send a separate patch inline. I will do some testing on my
+MPC5200 and MPC5121 boards later this week.
 
---0016e6de14fb2e35b404b5b2dddd--
+Thanks,
+
+Wolfgang.
 
