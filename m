@@ -1,5 +1,5 @@
-Message-ID: <4F0C7A97.5070407@domain.hid>
-Date: Tue, 10 Jan 2012 18:51:19 +0100
+Message-ID: <4F0C7EAE.8080209@domain.hid>
+Date: Tue, 10 Jan 2012 19:08:46 +0100
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 References: <4F0B530A.80905@domain.hid>
@@ -7,7 +7,7 @@ References: <4F0B530A.80905@domain.hid>
 	<4F0C5C00.3060508@domain.hid> <4F0C5C02.50308@domain.hid>
 	<4F0C5C63.40105@domain.hid> <4F0C5E85.5080004@domain.hid>
 In-Reply-To: <4F0C5E85.5080004@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] Issue with Auto relax and nested mutexes
 List-Id: Help regarding installation and common use of Xenomai
@@ -23,27 +23,39 @@ To: Makarand Pradhan <makarandpradhan@domain.hid>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
 On 01/10/2012 04:51 PM, Makarand Pradhan wrote:
-> Based on my testing, it is noted that the rescnt is not released when
-> task1 gets a priority boost and starts running with priority 1. That's
+> Based on my testing, it is noted that the rescnt is not released when 
+> task1 gets a priority boost and starts running with priority 1. That's 
 > when the rescnt is not decremented.
->
-
-Ah, bad side effect of __xnsched_rt_setparam likely. Ok, I need to have 
-a deeper look, but this would make sense.
-
-> It would imply that we may be checking the current priority while
-> testing if we want to invoke rt_mutex_release in kernel. Will try to
+> 
+> It would imply that we may be checking the current priority while 
+> testing if we want to invoke rt_mutex_release in kernel. Will try to 
 > check it out.
->
+
+Does this help in your case?
+
+diff --git a/include/nucleus/sched-rt.h b/include/nucleus/sched-rt.h
+index cc1cefa..6ac8fd7 100644
+--- a/include/nucleus/sched-rt.h
++++ b/include/nucleus/sched-rt.h
+@@ -87,7 +87,7 @@ static inline void __xnsched_rt_setparam(struct xnthread *thread,
+ {
+ 	thread->cprio = p->rt.prio;
+ 	if (xnthread_test_state(thread, XNSHADOW)) {
+-		if (thread->cprio)
++		if (thread->bprio || !xnthread_test_state(thread, XNBOOST))
+ 			xnthread_clear_state(thread, XNOTHER);
+ 		else
+ 			xnthread_set_state(thread, XNOTHER);
+> 
 > Rgds,
 > Mak.
->
+> 
 > On 10/01/12 10:42 AM, Philippe Gerum wrote:
 >> On 01/10/2012 04:40 PM, Philippe Gerum wrote:
 >>> On 01/10/2012 04:40 PM, Makarand Pradhan wrote:
 >>>> Another point:
 >>>>
->>>> "These are fast mutexes, the thread does not have to jump to kernel
+>>>> "These are fast mutexes, the thread does not have to jump to kernel 
 >>>> space
 >>>> unless the released mutex was actually contented."
 >>>>
@@ -127,11 +139,11 @@ a deeper look, but this would make sense.
 >>>> On 10/01/12 10:26 AM, Makarand Pradhan wrote:
 >>>>> Hi Phillippe,
 >>>>>
->>>>> You are right. Task 1 requires to be started with prio 0. I start
+>>>>> You are right. Task 1 requires to be started with prio 0. I start 
 >>>>> seeing
 >>>>> the problem after task2 grabs the mutex and releases them. The first
 >>>>> task never jumps back to seconodary. Here is my output. The mode never
->>>>> goes back to 0 after "Grabbing mux in HP" and the rescnt stays
+>>>>> goes back to 0 after "Grabbing mux in HP" and the rescnt stays 
 >>>>> stuck at
 >>>>> 1 in the kernel.
 >>>>>
@@ -175,7 +187,7 @@ a deeper look, but this would make sense.
 >>>>>>> releases a mutex. On further investigation, it was noted that the
 >>>>>>> rescnt
 >>>>>>> is not going down to 0.
->>>>>> From your code, task1 would auto-relax only if started with
+>>>>>> From your code, task1 would auto-relax only if started with 
 >>>>>> priority 0,
 >>>>>> which is what I get here:
 >>>>>>
@@ -192,7 +204,7 @@ a deeper look, but this would make sense.
 >>>>>> Release complete
 >>>>>> ...
 >>>>>>
->>>>>> Conversely, I get the right behavior if setting a non-zero
+>>>>>> Conversely, I get the right behavior if setting a non-zero 
 >>>>>> priority to
 >>>>>> task1:
 >>>>>>
@@ -208,21 +220,21 @@ a deeper look, but this would make sense.
 >>>>>> Acquire complete
 >>>>>> ...
 >>>>>>
->>>>>> In any case, the priority of task2 should have no impact on the
+>>>>>> In any case, the priority of task2 should have no impact on the 
 >>>>>> result.
 >>>>>>
->>>>>> I'm running current 2.6 HEAD commit (168da46de), kernel
+>>>>>> I'm running current 2.6 HEAD commit (168da46de), kernel 
 >>>>>> 3.1.5/powerpc32
 >>>>>> (52xx), pipeline 2.13-06.
 >>>>>>
 >>>>>> Which priority arguments are you passing to your test program?
 >>>>>>
 >>>>>>> Another observation is that I do not hit
->>>>>>> rt_mutex_release in the kernel in the problem scenario, I believe
+>>>>>>> rt_mutex_release in the kernel in the problem scenario, I believe 
 >>>>>>> when
->>>>>>> the thread undergoes a priority inversion.This may be a problem
+>>>>>>> the thread undergoes a priority inversion.This may be a problem 
 >>>>>>> as the
->>>>>>> rescnt would not get decremented. Not sure how the mutex is
+>>>>>>> rescnt would not get decremented. Not sure how the mutex is 
 >>>>>>> releasing
 >>>>>>> wiithout hitting rt_mutex_relase or am I missing anything?
 >>>>>>>
@@ -257,8 +269,8 @@ a deeper look, but this would make sense.
 >>>>
 >>>
 >>
->
->
+> 
+> 
 
 
 -- 
