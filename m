@@ -1,11 +1,11 @@
-Message-ID: <4F0C5C00.3060508@domain.hid>
-Date: Tue, 10 Jan 2012 10:40:48 -0500
-From: Makarand Pradhan <makarandpradhan@domain.hid>
+Message-ID: <4F0C5B88.7070104@domain.hid>
+Date: Tue, 10 Jan 2012 16:38:48 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 References: <4F0B530A.80905@domain.hid> <4F0C5524.9020501@domain.hid>
 	<4F0C58B7.1080602@domain.hid>
 In-Reply-To: <4F0C58B7.1080602@domain.hid>
-Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] Issue with Auto relax and nested mutexes
 List-Id: Help regarding installation and common use of Xenomai
@@ -17,82 +17,10 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Makarand Pradhan <makarandpradhan@domain.hid>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Another point:
-
-"These are fast mutexes, the thread does not have to jump to kernel space
-unless the released mutex was actually contented."
-
-When the first task is started with prio 0, I always see that rt_mutex_release is invoked in the kernel. even when there is no contention.
-
-I have an instrumented kernel. The kernel trace is given below. In this trace only task1 is running at prio 0. It should be easy to follow:
-
-Jan 10 10:36:59 ruggedcom kernel: lo: rescnt: 0, switched: 0
-Jan 10 10:36:59 ruggedcom kernel: hi: rescnt: 0, switched: 0
-Jan 10 10:36:59 ruggedcom kernel: lo: rescnt: 1, switched: 1
-Jan 10 10:36:59 ruggedcom kernel: hi: rescnt: 2, switched: 0
-Jan 10 10:36:59 ruggedcom kernel: hi: rescnt: 3, switched: 0
-Jan 10 10:37:01 ruggedcom kernel: hi: rescnt: 3, switched: 0
-Jan 10 10:37:01 ruggedcom kernel: __rt_mutex_release
-Jan 10 10:37:01 ruggedcom kernel: RML
-Jan 10 10:37:01 ruggedcom kernel: rt_mutex_release: lockcnt: 1
-Jan 10 10:37:01 ruggedcom kernel: xnsynch_release_thread: BP: 0
-Jan 10 10:37:01 ruggedcom kernel: hi: rescnt: 2, switched: 0
-Jan 10 10:37:01 ruggedcom kernel: __rt_mutex_release
-Jan 10 10:37:01 ruggedcom kernel: RML
-Jan 10 10:37:01 ruggedcom kernel: rt_mutex_release: lockcnt: 1
-Jan 10 10:37:01 ruggedcom kernel: xnsynch_release_thread: BP: 0
-Jan 10 10:37:01 ruggedcom kernel: hi: rescnt: 1, switched: 0
-Jan 10 10:37:01 ruggedcom kernel: __rt_mutex_release
-Jan 10 10:37:01 ruggedcom kernel: RML
-Jan 10 10:37:01 ruggedcom kernel: rt_mutex_release: lockcnt: 1
-Jan 10 10:37:01 ruggedcom kernel: xnsynch_release_thread: BP: 0
-Jan 10 10:37:01 ruggedcom kernel: hi: rescnt: 0, switched: 0
-Jan 10 10:37:01 ruggedcom kernel: lo: rescnt: 1, switched: 1
-Jan 10 10:37:01 ruggedcom kernel: hi: rescnt: 2, switched: 0
-Jan 10 10:37:01 ruggedcom kernel: hi: rescnt: 3, switched: 0
-Jan 10 10:37:03 ruggedcom kernel: hi: rescnt: 3, switched: 0
-Jan 10 10:37:03 ruggedcom kernel: __rt_mutex_release
-Jan 10 10:37:03 ruggedcom kernel: RML
-Jan 10 10:37:03 ruggedcom kernel: rt_mutex_release: lockcnt: 1
-Jan 10 10:37:03 ruggedcom kernel: xnsynch_release_thread: BP: 0
-Jan 10 10:37:03 ruggedcom kernel: hi: rescnt: 2, switched: 0
-Jan 10 10:37:03 ruggedcom kernel: __rt_mutex_release
-Jan 10 10:37:03 ruggedcom kernel: RML
-Jan 10 10:37:03 ruggedcom kernel: rt_mutex_release: lockcnt: 1
-Jan 10 10:37:03 ruggedcom kernel: xnsynch_release_thread: BP: 0
-Jan 10 10:37:03 ruggedcom kernel: hi: rescnt: 1, switched: 0
-Jan 10 10:37:03 ruggedcom kernel: __rt_mutex_release
-Jan 10 10:37:03 ruggedcom kernel: RML
-Jan 10 10:37:03 ruggedcom kernel: rt_mutex_release: lockcnt: 1
-Jan 10 10:37:03 ruggedcom kernel: xnsynch_release_thread: BP: 0
-Jan 10 10:37:03 ruggedcom kernel: hi: rescnt: 0, switched: 0
-Jan 10 10:37:03 ruggedcom kernel: lo: rescnt: 1, switched: 1
-Jan 10 10:37:03 ruggedcom kernel: hi: rescnt: 2, switched: 0
-Jan 10 10:37:03 ruggedcom kernel: hi: rescnt: 3, switched: 0
-Jan 10 10:37:04 ruggedcom kernel: hi: rescnt: 3, switched: 0
-
-
-root@domain.hid:~# ./a.out 0 1
-Spawning: tasks
-bP: 0, cp: 0, mode: 0
-Acquire complete
-Release complete
-bP: 0, cp: 0, mode: 0
-Acquire complete
-Release complete
-bP: 0, cp: 0, mode: 0
-Acquire complete
-^C
-
-
-Rgds,
-Mak.
-
-
-
-On 10/01/12 10:26 AM, Makarand Pradhan wrote:
+On 01/10/2012 04:26 PM, Makarand Pradhan wrote:
 > Hi Phillippe,
 >
 > You are right. Task 1 requires to be started with prio 0. I start seeing
@@ -100,6 +28,10 @@ On 10/01/12 10:26 AM, Makarand Pradhan wrote:
 > task never jumps back to seconodary. Here is my output. The mode never
 > goes back to 0 after "Grabbing mux in HP" and the rescnt stays stuck at
 > 1 in the kernel.
+
+Eeek. Ok, I definitely need to reproduce this. I'm slightly buried alive 
+in Xenomai 3 stuff right now, but I'll have a look at this asap.
+
 >
 > root@domain.hid:~# ./relax 0 1
 > Spawning: tasks
@@ -139,7 +71,7 @@ On 10/01/12 10:26 AM, Makarand Pradhan wrote:
 >>> The problem is that I am not relaxing after a RT thread grabs and
 >>> releases a mutex. On further investigation, it was noted that the rescnt
 >>> is not going down to 0.
->>      From your code, task1 would auto-relax only if started with priority 0,
+>> From your code, task1 would auto-relax only if started with priority 0,
 >> which is what I get here:
 >>
 >> -bash-3.2# ./relax 0 1
@@ -208,18 +140,11 @@ On 10/01/12 10:26 AM, Makarand Pradhan wrote:
 >>> Xenomai-help mailing list
 >>> Xenomai-help@domain.hid
 >>> https://mail.gna.org/listinfo/xenomai-help
+>>
+>
 >
 
 
 -- 
-___________________________________________________________________________
-NOTICE OF CONFIDENTIALITY:
-This e-mail and any attachments may contain confidential and privileged information.  If you are
-not the intended recipient, please notify the sender immediately by return e-mail and delete this
-e-mail and any copies.  Any dissemination or use of this information by a person other than the
-intended recipient is unauthorized and may be illegal.
-_____________________________________________________________________
-
-  
-
+Philippe.
 
