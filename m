@@ -1,15 +1,12 @@
-Message-ID: <4F0F379A.5030604@domain.hid>
-Date: Thu, 12 Jan 2012 20:42:18 +0100
+Message-ID: <4F0F3913.8080205@domain.hid>
+Date: Thu, 12 Jan 2012 20:48:35 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <BLU166-W4379BD842C749BADC78DE7C49E0@domain.hid>,
-	<4F0DDCFD.3070902@domain.hid>,
-	<BLU166-W11229BDE02887632739145C49E0@domain.hid>
-	<BLU166-W26172D3A52D00FCD9AA3C8C49F0@domain.hid>
-In-Reply-To: <BLU166-W26172D3A52D00FCD9AA3C8C49F0@domain.hid>
+References: <BLU166-W26DCAEABA1B068354C2E0AC49F0@domain.hid>
+In-Reply-To: <BLU166-W26DCAEABA1B068354C2E0AC49F0@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] FW:  Question about context switching
+Subject: Re: [Xenomai-core] Question on preempting a linux task
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -21,59 +18,22 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 To: Jan-Erik Lange <jan0385@domain.hid>
 Cc: xenomai@xenomai.org
 
-On 01/12/2012 02:36 PM, Jan-Erik Lange wrote:
+On 01/12/2012 04:58 PM, Jan-Erik Lange wrote:
 > 
+> Hello,
 > 
+> Does the Xenomai scheduler has to interact with the Linux sheduler in
+> order to preempt the tasks which are managed by it? Or is the Xenomai
+> scheduler repealing the whole linux scheduler when it wants to run a
+> task and and linux is running a task?
 > 
-> 
-> 
-> 
->> Date: Wed, 11 Jan 2012 20:03:25 +0100 From:
->> gilles.chanteperdrix@xenomai.org To: jan0385@domain.hid CC:
->> xenomai@xenomai.org Subject: Re: [Xenomai-core] Question about
->> context switching
->> 
->> On 01/11/2012 07:12 PM, Jan-Erik Lange wrote:
->>> 
->>> Hello,
->>> 
->>> I have a question about the context switching:
->>> 
->>> Unless that there a rtdm_copy_to_user() available in the rtdm
->>> API. Would cause the function copy_to_user() in an xenomai kernel
->>> based rt task a switch into the secondary domain? Because
->>> copy_to_user() not actually a syscall right?
->> 
->> Absolutely no function in kernel-space causes an automatic switch
->> to secondary mode. As Philippe answered to the very first mail you
->> posted to this list, the only events which cause a switch to
->> secondary mode are:
->> 
->> - invoking a regular linux syscall - receiving a linux signal (e.g.
->> kill(2) and GDB) - causing a CPU trap (e.g. invalid memory access),
->> hitting a breakpoint (e.g. GDB)
->> 
->> All these events only happen for threads in user-space.
-> 
-> Sorry I'm new in Xenomai.
-> 
-> But is it generaly possible that the xenomai kernel-space task can
-> interact with a common Linux task over this way? I mean is it
-> possible to get data with the standard copy_to_user()-function from
-> the Xenomai kernel-space into the Linux user space? Aren't the adress
-> spaces strictly seperated and you have to need the rt-pipe service to
-> interact between the xenomai kernel space and the linux userspace?
+> Best regards Jan
 
-drivers should use rtdm_copy_to_user. As most linux kernel services,
-copy_to_user/copy_from_user may not be safe to be used in primary mode
-(depending on the architecture). A xenomai kernel-space task has no
-user-space mapping, so it has no reason to use these services.
-
-Whether the address space are strictly separated depend on the
-architecture and implementation of linux on that archietcture. On some
-architectures (think uclinux for instance), the user-space/kernel-space
-division is simply the division between the addresses below 0xC0000000
-and the adresses above.
+No, xenomai may preempt linux in the middle of almost anything, that is
+the whole point of being based on the adeos patch. However, when a task
+needs to change scheduler, the two schedulers have to cooperate. If you
+are interested in the details, see xnshadow_relax and xnshadow_harden in
+ksrc/nucleus/shadow.c in xenomai sources.
 
 -- 
 					    Gilles.
