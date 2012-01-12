@@ -1,61 +1,80 @@
-Message-ID: <4EF4A9A7.2070308@domain.hid>
-Date: Fri, 23 Dec 2011 11:17:43 -0500
-From: Makarand Pradhan <makarandpradhan@domain.hid>
+Message-ID: <4F0F379A.5030604@domain.hid>
+Date: Thu, 12 Jan 2012 20:42:18 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <56F449AE83D74177BAC5887692E0EF55@domain.hid>	<4EF44DB9.9000609@domain.hid>
-	<4EF49DA3.8070904@domain.hid> <4EF4A3E2.9030709@domain.hid>
-In-Reply-To: <4EF4A3E2.9030709@domain.hid>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+References: <BLU166-W4379BD842C749BADC78DE7C49E0@domain.hid>,
+	<4F0DDCFD.3070902@domain.hid>,
+	<BLU166-W11229BDE02887632739145C49E0@domain.hid>
+	<BLU166-W26172D3A52D00FCD9AA3C8C49F0@domain.hid>
+In-Reply-To: <BLU166-W26172D3A52D00FCD9AA3C8C49F0@domain.hid>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Interrupt numbers
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Subject: Re: [Xenomai-core] FW:  Question about context switching
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Jan-Erik Lange <jan0385@domain.hid>
+Cc: xenomai@xenomai.org
 
-Thanks.
+On 01/12/2012 02:36 PM, Jan-Erik Lange wrote:
+> 
+> 
+> 
+> 
+> 
+> 
+>> Date: Wed, 11 Jan 2012 20:03:25 +0100 From:
+>> gilles.chanteperdrix@xenomai.org To: jan0385@domain.hid CC:
+>> xenomai@xenomai.org Subject: Re: [Xenomai-core] Question about
+>> context switching
+>> 
+>> On 01/11/2012 07:12 PM, Jan-Erik Lange wrote:
+>>> 
+>>> Hello,
+>>> 
+>>> I have a question about the context switching:
+>>> 
+>>> Unless that there a rtdm_copy_to_user() available in the rtdm
+>>> API. Would cause the function copy_to_user() in an xenomai kernel
+>>> based rt task a switch into the secondary domain? Because
+>>> copy_to_user() not actually a syscall right?
+>> 
+>> Absolutely no function in kernel-space causes an automatic switch
+>> to secondary mode. As Philippe answered to the very first mail you
+>> posted to this list, the only events which cause a switch to
+>> secondary mode are:
+>> 
+>> - invoking a regular linux syscall - receiving a linux signal (e.g.
+>> kill(2) and GDB) - causing a CPU trap (e.g. invalid memory access),
+>> hitting a breakpoint (e.g. GDB)
+>> 
+>> All these events only happen for threads in user-space.
+> 
+> Sorry I'm new in Xenomai.
+> 
+> But is it generaly possible that the xenomai kernel-space task can
+> interact with a common Linux task over this way? I mean is it
+> possible to get data with the standard copy_to_user()-function from
+> the Xenomai kernel-space into the Linux user space? Aren't the adress
+> spaces strictly seperated and you have to need the rt-pipe service to
+> interact between the xenomai kernel space and the linux userspace?
 
-On 23/12/11 10:53 AM, Gilles Chanteperdrix wrote:
-> On 12/23/2011 04:26 PM, Makarand Pradhan wrote:
->> On 23/12/11 04:45 AM, Gilles Chanteperdrix wrote:
->>> Xenomai uses the same interrupt numbers as linux. But rt_intr_create is
->>> deprecated in user-space, you should instead write a driver using the
->>> rtdm skin. The enable bit is handled by xenomai when you request the irq
->>> at xenomai level.
->>>
->> Hi Gilles,
->>
->> We use rt_intr_create in our code. So I am trying to understand the
->> reasons for it being deprecated. So far, I have not been able to see any
->> comments in the code regarding the deprecation or anything in the git log.
-> Splitting your code between driver and application enforces a clean
-> separation between the two, which helps maintenance, so is good on the
-> long run.
->
->> Can you pl comment on the reasons for deprecating rt_intr_create? Will
->> it be removed in the next release?
-> We never change ABI in a branch, so, all releases in the 2.6 branch are
-> guaranteed to support the same services as xenomai 2.6.0.
->
-> But in xenomai 3.0, rt_intr_create will certainly no longer be available.
+drivers should use rtdm_copy_to_user. As most linux kernel services,
+copy_to_user/copy_from_user may not be safe to be used in primary mode
+(depending on the architecture). A xenomai kernel-space task has no
+user-space mapping, so it has no reason to use these services.
 
+Whether the address space are strictly separated depend on the
+architecture and implementation of linux on that archietcture. On some
+architectures (think uclinux for instance), the user-space/kernel-space
+division is simply the division between the addresses below 0xC0000000
+and the adresses above.
 
 -- 
-___________________________________________________________________________
-NOTICE OF CONFIDENTIALITY:
-This e-mail and any attachments may contain confidential and privileged information.  If you are
-not the intended recipient, please notify the sender immediately by return e-mail and delete this
-e-mail and any copies.  Any dissemination or use of this information by a person other than the
-intended recipient is unauthorized and may be illegal.
-_____________________________________________________________________
-
-  
-
+					    Gilles.
 
