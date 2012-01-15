@@ -1,12 +1,10 @@
-Message-ID: <4F0F3913.8080205@domain.hid>
-Date: Thu, 12 Jan 2012 20:48:35 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <BLU166-W49F600F976B754BCA60E03C4820@domain.hid>
+Content-Type: multipart/alternative;
+	boundary="_a2fe10f2-f6b3-4d53-937e-da90d6f75496_"
+From: Jan-Erik Lange <jan0385@domain.hid>
+Date: Sun, 15 Jan 2012 13:36:36 +0100
 MIME-Version: 1.0
-References: <BLU166-W26DCAEABA1B068354C2E0AC49F0@domain.hid>
-In-Reply-To: <BLU166-W26DCAEABA1B068354C2E0AC49F0@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] Question on preempting a linux task
+Subject: [Xenomai-core] realtime pipes
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -15,26 +13,56 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Jan-Erik Lange <jan0385@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 01/12/2012 04:58 PM, Jan-Erik Lange wrote:
-> 
-> Hello,
-> 
-> Does the Xenomai scheduler has to interact with the Linux sheduler in
-> order to preempt the tasks which are managed by it? Or is the Xenomai
-> scheduler repealing the whole linux scheduler when it wants to run a
-> task and and linux is running a task?
-> 
-> Best regards Jan
+--_a2fe10f2-f6b3-4d53-937e-da90d6f75496_
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 
-No, xenomai may preempt linux in the middle of almost anything, that is
-the whole point of being based on the adeos patch. However, when a task
-needs to change scheduler, the two schedulers have to cooperate. If you
-are interested in the details, see xnshadow_relax and xnshadow_harden in
-ksrc/nucleus/shadow.c in xenomai sources.
 
--- 
-					    Gilles.
+Hello=2C
+=20
+it is possible to access a real-time pipe /dev/rtpx within the kernel space=
+ of Linux? Since there is no open function?=20
+=20
+Is it therefore possible to communicate between the Xenomai Kernel space an=
+d the Linux Kernel space?
+=20
+Best regards
+=20
+Jan 		 	   		  =
+
+--_a2fe10f2-f6b3-4d53-937e-da90d6f75496_
+Content-Type: text/html; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+
+<html>
+<head>
+<style><!--
+.hmmessage P
+{
+margin:0px=3B
+padding:0px
+}
+body.hmmessage
+{
+font-size: 10pt=3B
+font-family:Tahoma
+}
+--></style></head>
+<body class=3D'hmmessage'><div dir=3D'ltr'>
+Hello=2C<BR>
+&nbsp=3B<BR>
+it is possible to access a real-time pipe /dev/rtpx within the kernel space=
+ of Linux? Since there is no open function? <BR>
+&nbsp=3B<BR>
+Is it therefore&nbsp=3Bpossible to communicate between the Xenomai Kernel s=
+pace and the Linux Kernel space?<BR>
+&nbsp=3B<BR>
+Best regards<BR>
+&nbsp=3B<BR>
+Jan<BR> 		 	   		  </div></body>
+</html>=
+
+--_a2fe10f2-f6b3-4d53-937e-da90d6f75496_--
 
