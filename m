@@ -1,13 +1,9 @@
-Message-ID: <4F132A7E.4000000@domain.hid>
-Date: Sun, 15 Jan 2012 20:35:26 +0100
-From: Wolfgang Grandegger <wg@domain.hid>
 MIME-Version: 1.0
-References: <4F1080E8.6020408@domain.hid>
-	<4F1082E5.8000501@domain.hid>
-In-Reply-To: <4F1082E5.8000501@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Omap3630, rtserial, xeno_16550A: crash on insmod
+Date: Mon, 16 Jan 2012 21:03:07 +0100
+Message-ID: <CAP1XtZzB34=+B+fwWpswhqfFVMd3YmU4etoYOSxXFOMbEH7myg@domain.hid>
+From: Santiago Focke <focke.85@domain.hid>
+Content-Type: multipart/alternative; boundary=f46d04478c17fc222f04b6aab34e
+Subject: [Xenomai-help] Processor type for installation
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -17,128 +13,157 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Manfred <manfred@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 01/13/2012 08:15 PM, Manfred wrote:
-> (In reply to Wolfgangs Respond)
-> 
-> Thank you for the explanations.
-> So I managed to recompile the kernel module with a lot of "printk"
-> 
-> commands. And I could track the problem to the following:
-> it fails in:[1]
-> int __init rt_16550_init(void)
-> 
-> When calling these lines:
-> rt_16550_reg_out(mode, base, IER, 0);
-> DEBUGPRINT("after reg_out IER \n");
-> rt_16550_reg_in(mode, base, IIR);
-> DEBUGPRINT("after reg_in IIR \n");
-> 
-> So it seems to fail the first time when it tries to call:
-> rt_16550_reg_in(mode, base, IIR);
-> where
-> mode=1
-> rt_16550_reg_in is defined in:
-> 16550A_io.h:161:
-> static RT_16550_IO_INLINE u8
-> rt_16550_reg_in(io_mode_t io_mode, unsigned long base, int off)
-> {
->     switch (io_mode) {
->     case MODE_PIO:
->         return inb(base + off);
->     default: /* MODE_MMIO */
->         return readb((void *)base + off);
->     }
-> }
-> 
-> --> where is MODE_PIO defined?: is it 1 or 0?
-> (could not find it in any .c or .h file)
+--f46d04478c17fc222f04b6aab34e
+Content-Type: text/plain; charset=ISO-8859-1
 
-Well, it's in :
+Dear all
 
-http://www.rts.uni-hannover.de/xenomai/lxr/source/ksrc/drivers/serial/16550A_io.h
+I've been trying to install Xenomai but I haven't been able to do it
+right.  After being able of building and installin the kernel and Xenomai,
+I tried to run the example program trivial-periodic, I got the following
+error
 
-and depends on some Kconfig options. Also another prinkt can give you
-the required information.
+/usr/src/xenomai-2.6/examples/native$ ./trivial-periodic
+Xenomai: incompatible feature set
+(userland requires "tsc fastsynch", kernel provides "sep fastsynch smp",
+missing="tsc").
 
-> So anyway, it either fails in inb(base+off)
-> or (more probably:) in read(void*)base+off
+I read that the reason for this is that I didn't configure correctly the
+processor family (with xconfig). Is that the reason? Also, I've been trying
+to know which option should I choose (I chose CONFIG_M586 at the
+beggining), but I don't know were to get that information. The CPU info
+goes as follows:
 
-Yes, most likely it's an unaligned access.
+/proc/cpuinfo
 
-> -->
-> Is this consistent with your assumption that we need a regshift?
+processor    : 0
+vendor_id    : GenuineIntel
+cpu family    : 6
+model        : 37
+model name    : Intel(R) Core(TM) i7 CPU       M 620  @ 2.67GHz
+stepping    : 5
+cpu MHz        : 2666.417
+cache size    : 4096 KB
+physical id    : 0
+siblings    : 4
+core id        : 0
+cpu cores    : 2
+apicid        : 0
+initial apicid    : 0
+fdiv_bug    : no
+hlt_bug        : no
+f00f_bug    : no
+coma_bug    : no
+fpu        : yes
+fpu_exception    : yes
+cpuid level    : 11
+wp        : yes
+flags        : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca
+cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe nx rdtscp lm
+constant_tsc arch_perfmon pebs bts xtopology nonstop_tsc aperfmperf pni
+pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 cx16 xtpr pdcm sse4_1
+sse4_2 popcnt aes lahf_lm ida arat dts tpr_shadow vnmi flexpriority ept vpid
+bogomips    : 5332.83
+clflush size    : 64
+cache_alignment    : 64
+address sizes    : 36 bits physical, 48 bits virtual
+power management:
 
-Yes. I was suggesting to put some printks in the Linux serial device
-setup code first to see how the registers are accessed.
 
-> If yes, which function calls need to be fixed?
-> -->
-> I tried to look in 8250.c [2]:
-> regshift seems to be mostly used when using map_8250_in_reg and
-> map_8250_out_reg:
-> offset = map_8250_in_reg(p, offset) << p->regshift;
-> offset = map_8250_in_reg(p, offset) << p->regshift;
-> but also elsewhere:
-> 2498 static unsigned int serial8250_port_size(struct uart_8250_port *pt)
-> 2499 {
-> 2500         if (pt->port.iotype == UPIO_AU)
-> 2501                 return 0x1000;
-> 2502 #ifdef CONFIG_ARCH_OMAP
-> 2503         if (is_omap_port(pt))
-> 2504                 return 0x16 << pt->port.regshift;
-> 2505 #endif
-> 2506         return 8 << pt->port.regshift;
-> 2507 }
-> or:
-> 2600 static void serial8250_release_rsa_resource(struct uart_8250_port *up)
-> 2601 {
-> 2602         unsigned long offset = UART_RSA_BASE << up->port.regshift;
-> 2603         unsigned int size = 8 << up->port.regshift;
-> 2604
-> 2605         switch (up->port.iotype) {
-> 2606         case UPIO_HUB6:
-> 2607         case UPIO_PORT:
-> 2608                 release_region(up->port.iobase + offset, size);
-> 2609                 break;
-> 2610         }
-> 2611 }
+sudo dmidecode -t 4
+# dmidecode 2.9
+SMBIOS 2.6 present.
 
-This is the driver. The devices are setup and configured in
+Handle 0x0004, DMI type 4, 42 bytes
+Processor Information
+    Socket Designation: CPU 1
+    Type: Central Processor
+    Family: <OUT OF SPEC>
+    Manufacturer: Intel
+    ID: 55 06 02 00 FF FB EB BF
+    Version: Intel(R) Core(TM) i7 CPU M 620 @ 2.67GHz
+    Voltage: 0.0 V
+    External Clock: 532 MHz
+    Max Speed: 4000 MHz
+    Current Speed: 2660 MHz
+    Status: Populated, Enabled
+    Upgrade: Other
+    L1 Cache Handle: 0x0005
+    L2 Cache Handle: 0x0006
+    L3 Cache Handle: 0x0007
+    Serial Number: To Be Filled By O.E.M.
+    Asset Tag: To Be Filled By O.E.M.
+    Part Number: To Be Filled By O.E.M.
+    Core Count: 2
+    Core Enabled: 1
+    Thread Count: 2
+    Characteristics:
+        64-bit capable
 
-http://lxr.linux.no/#linux+v3.2.1/arch/arm/mach-omap2/serial.c
+Which one of the list should I select?? Thanks in advance
 
-IIRC. Check what regshift is used for your hardware (by putting further
-printk's).
+BR
 
-> -->
-> So can I just change the function in 16550A.c like this?:
-> rt_16550_reg_in(io_mode_t io_mode, unsigned long base, int off, int
-> regshift)
-> {
->      switch (io_mode) {
->     case MODE_PIO:
->         return inb(base + off);
->     default: /* MODE_MMIO */
->          /* ADD REGSHIFT for MMIO Mode: */
->          unsigned long paddr=((void*)base+off)<< regshift;
->          return readb((void *)base + off);
+-- 
+Ing. Santiago Focke
 
-You need to shift just the *offset* at the beginning of the function:
+--f46d04478c17fc222f04b6aab34e
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-	off <<= regshift;
+Dear all<br><br>I&#39;ve been trying to install Xenomai but I haven&#39;t b=
+een able to do it right.=A0 After being able of building and installin the =
+kernel and Xenomai, I tried to run the example program trivial-periodic, I =
+got the following error<br>
+<br><div style=3D"margin-left:40px">/usr/src/xenomai-2.6/examples/native$ .=
+/trivial-periodic <br>Xenomai: incompatible feature set<br>(userland requir=
+es &quot;tsc fastsynch&quot;, kernel provides &quot;sep fastsynch smp&quot;=
+, missing=3D&quot;tsc&quot;).<br>
+<br></div>I read that the reason for this is that I didn&#39;t configure co=
+rrectly the processor family (with xconfig). Is that the reason? Also, I&#3=
+9;ve been trying to know which option should I choose (I chose CONFIG_M586 =
+at the beggining), but I don&#39;t know were to get that information. The C=
+PU info goes as follows:<br>
+<br><div style=3D"margin-left:40px">/proc/cpuinfo<br><br>processor=A0=A0=A0=
+ : 0<br>vendor_id=A0=A0=A0 : GenuineIntel<br>cpu family=A0=A0=A0 : 6<br>mod=
+el=A0=A0=A0 =A0=A0=A0 : 37<br>model name=A0=A0=A0 : Intel(R) Core(TM) i7 CP=
+U=A0=A0=A0=A0=A0=A0 M 620=A0 @ 2.67GHz<br>stepping=A0=A0=A0 : 5<br>
+cpu MHz=A0=A0=A0 =A0=A0=A0 : 2666.417<br>cache size=A0=A0=A0 : 4096 KB<br>p=
+hysical id=A0=A0=A0 : 0<br>siblings=A0=A0=A0 : 4<br>core id=A0=A0=A0 =A0=A0=
+=A0 : 0<br>cpu cores=A0=A0=A0 : 2<br>apicid=A0=A0=A0 =A0=A0=A0 : 0<br>initi=
+al apicid=A0=A0=A0 : 0<br>fdiv_bug=A0=A0=A0 : no<br>hlt_bug=A0=A0=A0 =A0=A0=
+=A0 : no<br>
+f00f_bug=A0=A0=A0 : no<br>coma_bug=A0=A0=A0 : no<br>fpu=A0=A0=A0 =A0=A0=A0 =
+: yes<br>fpu_exception=A0=A0=A0 : yes<br>cpuid level=A0=A0=A0 : 11<br>wp=A0=
+=A0=A0 =A0=A0=A0 : yes<br>flags=A0=A0=A0 =A0=A0=A0 : fpu vme de pse tsc msr=
+ pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr=
+ sse sse2 ss ht tm pbe nx rdtscp lm constant_tsc arch_perfmon pebs bts xtop=
+ology nonstop_tsc aperfmperf pni pclmulqdq dtes64 monitor ds_cpl vmx smx es=
+t tm2 ssse3 cx16 xtpr pdcm sse4_1 sse4_2 popcnt aes lahf_lm ida arat dts tp=
+r_shadow vnmi flexpriority ept vpid<br>
+bogomips=A0=A0=A0 : 5332.83<br>clflush size=A0=A0=A0 : 64<br>cache_alignmen=
+t=A0=A0=A0 : 64<br>address sizes=A0=A0=A0 : 36 bits physical, 48 bits virtu=
+al<br>power management:<br><br><br>sudo dmidecode -t 4 <br># dmidecode 2.9<=
+br>SMBIOS 2.6 present.<br>
+<br>Handle 0x0004, DMI type 4, 42 bytes<br>Processor Information<br>=A0=A0=
+=A0 Socket Designation: CPU 1<br>=A0=A0=A0 Type: Central Processor<br>=A0=
+=A0=A0 Family: &lt;OUT OF SPEC&gt;<br>=A0=A0=A0 Manufacturer: Intel=A0=A0=
+=A0=A0=A0=A0=A0=A0=A0=A0=A0 <br>=A0=A0=A0 ID: 55 06 02 00 FF FB EB BF<br>
+=A0=A0=A0 Version: Intel(R) Core(TM) i7 CPU M 620 @ 2.67GHz=A0=A0=A0=A0=A0=
+=A0 <br>=A0=A0=A0 Voltage: 0.0 V<br>=A0=A0=A0 External Clock: 532 MHz<br>=
+=A0=A0=A0 Max Speed: 4000 MHz<br>=A0=A0=A0 Current Speed: 2660 MHz<br>=A0=
+=A0=A0 Status: Populated, Enabled<br>=A0=A0=A0 Upgrade: Other<br>
+=A0=A0=A0 L1 Cache Handle: 0x0005<br>=A0=A0=A0 L2 Cache Handle: 0x0006<br>=
+=A0=A0=A0 L3 Cache Handle: 0x0007<br>=A0=A0=A0 Serial Number: To Be Filled =
+By O.E.M.<br>=A0=A0=A0 Asset Tag: To Be Filled By O.E.M.<br>=A0=A0=A0 Part =
+Number: To Be Filled By O.E.M.<br>
+=A0=A0=A0 Core Count: 2<br>=A0=A0=A0 Core Enabled: 1<br>=A0=A0=A0 Thread Co=
+unt: 2<br>=A0=A0=A0 Characteristics:<br>=A0=A0=A0 =A0=A0=A0 64-bit capable<=
+br clear=3D"all"></div><br>Which one of the list should I select?? Thanks i=
+n advance<br><br>BR<br><br>-- <br>
+Ing. Santiago Focke<br>
 
-You also need to adjust the region for request_region() or ioremap().
-
-> }
-> 
-> Thanks for the help.
-> Please note, this is really my first try on kernel modules and drivers,
-> So sorry, in case I got it all wrong.
-
-No problem, you are welcome.
-
-Wolfgang.
+--f46d04478c17fc222f04b6aab34e--
 
