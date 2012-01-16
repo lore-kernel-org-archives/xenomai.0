@@ -1,71 +1,73 @@
-From: "Terry Fryar" <terry.fryar@domain.hid>
-References: <56F449AE83D74177BAC5887692E0EF55@domain.hid>	<4EF44DB9.9000609@domain.hid><4EF49DA3.8070904@domain.hid>
-	<4EF4A3E2.9030709@domain.hid>
-In-Reply-To: <4EF4A3E2.9030709@domain.hid>
-Date: Fri, 23 Dec 2011 10:16:39 -0600
-Message-ID: <E9F947B915764962864D7E7291CA601F@TerryHP>
+Message-ID: <4F1435A9.6030609@domain.hid>
+Date: Mon, 16 Jan 2012 15:35:21 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
+References: <BLU166-W49F600F976B754BCA60E03C4820@domain.hid>	<4F130ED3.3030902@domain.hid>
+	<4F143351.6050406@domain.hid>
+In-Reply-To: <4F143351.6050406@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Interrupt numbers
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Subject: Re: [Xenomai-core] realtime pipes
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: 'Gilles Chanteperdrix' <gilles.chanteperdrix@xenomai.org>, 'Makarand Pradhan' <makarandpradhan@domain.hid>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Makarand Pradhan <makarandpradhan@domain.hid>
 Cc: xenomai@xenomai.org
 
-I would imagine it was nice, however, to have a userspace interrupt ISR so
-that flaky code could be debugged in userspace before making it into a
-driver?
+On 01/16/2012 03:25 PM, Makarand Pradhan wrote:
+> Hi,
+>
+> "Real-time pipes are deprecated."
+>
+> We use a lot of rt pipes. So, can you pl elaborate on this? I would
+> highly appreciate if you can comment on the following.
+>
+> 1. When will the rt pipe interface be removed? Any time frame?
 
------Original Message-----
-From: xenomai-help-bounces@domain.hid [mailto:xenomai-help-bounces@domain.hid] On
-Behalf Of Gilles Chanteperdrix
-Sent: Friday, December 23, 2011 9:53 AM
-To: Makarand Pradhan
-Cc: xenomai@xenomai.org
-Subject: Re: [Xenomai-help] Interrupt numbers
+Xenomai 3. Xenomai 2.x will keep them forever.
 
-On 12/23/2011 04:26 PM, Makarand Pradhan wrote:
-> On 23/12/11 04:45 AM, Gilles Chanteperdrix wrote:
->>
->> Xenomai uses the same interrupt numbers as linux. But rt_intr_create 
->> is deprecated in user-space, you should instead write a driver using 
->> the rtdm skin. The enable bit is handled by xenomai when you request 
->> the irq at xenomai level.
->>
-> Hi Gilles,
-> 
-> We use rt_intr_create in our code. So I am trying to understand the 
-> reasons for it being deprecated. So far, I have not been able to see 
-> any comments in the code regarding the deprecation or anything in the git
-log.
+> 2. Would like to understand the reason for deprecating the interface.
+>
 
-Splitting your code between driver and application enforces a clean
-separation between the two, which helps maintenance, so is good on the long
-run.
+- Because there is a better socket-based API implemented by the RTIPC 
+driver w/ the XDDP protocol, which does not require running application 
+level code in kernel space (RT_PIPE is definitely an application level 
+API). This new interface is available since Xenomai 2.5.x. It is 
+functionally 100% equivalent to the legacy RT_PIPE API.
 
-> 
-> Can you pl comment on the reasons for deprecating rt_intr_create? Will 
-> it be removed in the next release?
+- Because no support will be provided in Xenomai 3 for running 
+application level code in kernel space, so RT_PIPE have to go from 
+kernel space. However, RT_PIPE are still part of the user-space API of 
+Xenomai 3, interfacing with XDDP endpoints in kernel space.
 
-We never change ABI in a branch, so, all releases in the 2.6 branch are
-guaranteed to support the same services as xenomai 2.6.0.
+I'm really referring to application level code, by contrast to RTDM 
+driver level code which will obviously remain a first-class citizen in 
+kernel space.
 
-But in xenomai 3.0, rt_intr_create will certainly no longer be available.
+See:
+
+o http://www.xenomai.org/index.php/Xenomai:Roadmap
+
+o 
+http://www.xenomai.org/documentation/xenomai-2.6/html/api/group__rtipc.html
+
+o examples/rtdm/profiles/ipc in the Xenomai distro
+
+> Thanks and Rgds,
+> Mak.
+>
+>
+> On 15/01/12 12:37 PM, Gilles Chanteperdrix wrote:
+>> Real-time pipes are deprecated.
+>
+>
+
+
 -- 
-					    Gilles.
-
-_______________________________________________
-Xenomai-help mailing list
-Xenomai-help@domain.hid
-https://mail.gna.org/listinfo/xenomai-help
-
+Philippe.
 
