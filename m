@@ -1,9 +1,10 @@
+From: "Terry Fryar" <terry.fryar@domain.hid>
+Date: Mon, 16 Jan 2012 17:36:51 -0600
+Message-ID: <9BF63BF19AC3441EB4E1567EB07B78A0@domain.hid>
 MIME-Version: 1.0
-Date: Fri, 17 Feb 2012 10:29:55 +0530
-Message-ID: <CAOx7Giq4tKYk-5KgKAUJ7CPCx5KtRO_fDfEQZ+KBLHLZtPaSZA@mail.gmail.com>
-From: ramarao mundru <ramarao.mundru@domain.hid>
-Content-Type: multipart/alternative; boundary=14dae934052bd038d404b921d03f
-Subject: [Xenomai-help] porting of xenomai on on arm board(pandaomap4430)
+Content-Type: multipart/alternative;
+	boundary="----=_NextPart_000_00BB_01CCD475.6EFB5910"
+Subject: [Xenomai-help] Xenomai IRQ question
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -15,57 +16,47 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
---14dae934052bd038d404b921d03f
-Content-Type: text/plain; charset=ISO-8859-1
+This is a multi-part message in MIME format.
 
-hi can any one  can help me,here i want to make uImage for pandaboard
-omap4430 while i am executing comand for uImage i am getting the error ,i
-am using the linux-2.6.37.6 with xenomai 2.6.0
+------=_NextPart_000_00BB_01CCD475.6EFB5910
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 
+Using xenomai irq's in user mode on a beaglexm.  It appears that irq latency
+is around 44 microseconds from the edge until the isr is executed.  Is there
+any way to reduce the latency?  Already using 99 as the priority for the isr
+task.
+ 
+Thanks!
+ 
 
- CC      kernel/xenomai/arch/generic/hal.o
-In file included from kernel/xenomai/arch/generic/hal.c:45:
-/usr/local/arm/linux-2.6.37.6/arch/arm/include/asm/xenomai/hal.h:91: error:
-#error "Unsupported ARM machine"
-make[4]: *** [kernel/xenomai/arch/generic/hal.o] Error 1
-make[3]: *** [kernel/xenomai/arch/generic] Error 2
-make[2]: *** [kernel/xenomai/arch] Error 2
-make[1]: *** [kernel/xenomai] Error 2
-make: *** [kernel] Error 2
-
--- 
-*   THANKS & REGARDS
-*
-
-ramarao mundru
-
-     8123725868
-
---14dae934052bd038d404b921d03f
-Content-Type: text/html; charset=ISO-8859-1
+------=_NextPart_000_00BB_01CCD475.6EFB5910
+Content-Type: text/html;
+	charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 
-<br><div class=3D"gmail_quote">hi can any one=A0 can help me,here i want to=
- make uImage for pandaboard omap4430 while i am executing comand for uImage=
- i am getting the error ,i am using the linux-2.6.37.6 with xenomai 2.6.0 <=
-br>
-<br><br>=A0CC=A0=A0=A0=A0=A0 kernel/xenomai/arch/generic/hal.o<br>
-In file included from kernel/xenomai/arch/generic/hal.c:45:<br>/usr/local/a=
-rm/linux-2.6.37.6/arch/arm/include/asm/xenomai/hal.h:91: error: #error &quo=
-t;Unsupported ARM machine&quot;<br>make[4]: *** [kernel/xenomai/arch/generi=
-c/hal.o] Error 1<br>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML><HEAD>
+<META content=3D"text/html; charset=3Dus-ascii" =
+http-equiv=3DContent-Type>
+<META name=3DGENERATOR content=3D"MSHTML 8.00.7601.17699"></HEAD>
+<BODY>
+<DIV><SPAN class=3D528163523-16012012><FONT size=3D2 face=3DArial>Using =
+xenomai irq's=20
+in user mode on a beaglexm.&nbsp; It appears that irq latency is around =
+44=20
+microseconds from the edge until the isr is executed.&nbsp; Is there any =
+way to=20
+reduce the latency?&nbsp; Already using 99 as the priority for the isr=20
+task.</FONT></SPAN></DIV>
+<DIV><SPAN class=3D528163523-16012012><FONT size=3D2=20
+face=3DArial></FONT></SPAN>&nbsp;</DIV>
+<DIV><SPAN class=3D528163523-16012012><FONT size=3D2=20
+face=3DArial>Thanks!</FONT></SPAN></DIV>
+<DIV><SPAN class=3D528163523-16012012><FONT size=3D2=20
+face=3DArial></FONT></SPAN>&nbsp;</DIV></BODY></HTML>
 
-make[3]: *** [kernel/xenomai/arch/generic] Error 2<br>make[2]: *** [kernel/=
-xenomai/arch] Error 2<br>make[1]: *** [kernel/xenomai] Error 2<br>make: ***=
- [kernel] Error 2<br></div><br>-- <br><div style=3D"color:rgb(255,0,0)">
-<b>=A0=A0 <span style=3D"color:rgb(0,0,153)">THANKS &amp; REGARDS</span><br=
-></b></div><font face=3D"arial black,sans-serif">
-<blockquote style=3D"border-left:#ccc 1px solid;margin:0px 0px 0px 0.8ex;pa=
-dding-left:1ex">
-<div><font face=3D"arial black,sans-serif" color=3D"#000099">ramarao mundru=
-</font></div></blockquote>
-<div><font color=3D"#000099">=A0=A0=A0=A0 8123725868</font></div></font><br=
->
+------=_NextPart_000_00BB_01CCD475.6EFB5910--
 
---14dae934052bd038d404b921d03f--
 
