@@ -1,15 +1,9 @@
-Message-ID: <4F184742.1000905@domain.hid>
-Date: Thu, 19 Jan 2012 11:39:30 -0500
-From: Makarand Pradhan <makarandpradhan@domain.hid>
 MIME-Version: 1.0
-References: <4F0B530A.80905@domain.hid>	<4F0C5524.9020501@domain.hid>	<4F0C58B7.1080602@domain.hid>	<4F0C5C00.3060508@domain.hid>	<4F0C5C02.50308@domain.hid>	<4F0C5C63.40105@domain.hid>	<4F0C5E85.5080004@domain.hid>	<4F0C7EAE.8080209@domain.hid>	<4F0C85E2.1070109@domain.hid>
-	<4F0C8D0F.3080207@domain.hid>
-	<4F174AA3.7030309@domain.hid> <4F17FD9E.6040007@domain.hid>
-	<4F183535.4000609@domain.hid> <4F183B7C.3090002@domain.hid>
-	<4F18435A.2080203@domain.hid>
-In-Reply-To: <4F18435A.2080203@domain.hid>
-Content-Type: multipart/mixed; boundary="------------040503090907010706020104"
-Subject: Re: [Xenomai-help] Issue with Auto relax and nested mutexes
+Date: Mon, 16 Jan 2012 20:14:28 -0500
+Message-ID: <CAMak2D-C8E3GVhymyOUEF6hztdgnXnczNzEMNoO9sHqemxL9Zg@domain.hid>
+From: Eric Eric <ericrebates@domain.hid>
+Content-Type: multipart/alternative; boundary=f46d0447f2a676adb704b6af0d01
+Subject: [Xenomai-help] gatekeeper using 90% CPU...
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -19,606 +13,82 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
---------------040503090907010706020104
-Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
-Content-Transfer-Encoding: 7bit
+--f46d0447f2a676adb704b6af0d01
+Content-Type: text/plain; charset=ISO-8859-1
 
-The attached c file should get you a SIGXCPU/SIGDEBUG revealing the bug 
-that I am talking about.
+Hi, I've added several benchmarks to the benchmark suite and seem to have a
+problem with some of them causing the gatekeeper process to show high cpu
+load.  A few things -don't- cause this problem.  The first is the standard
+benchmarks shipped with Xenomai.  Another example of something that doesn't
+peg gatekeeper is a synthetic workload I added that spawns a Xenomai kernel
+thread that spins for a certain period then sleeps for a certain period,
+cycling until terminated (an example of these periods may be spin fpr 800mS
+sleep for 200mS).  What -does- seem to be causing this problem is another
+benchmark I added that spawns a producer and consumer thread, with the
+consumer waiting on a semaphore and the producer incrementing the
+semaphore.  I suspect a cause for the excessive gatekeeper usage may be the
+way I've structured the benchmark.  The user-mode program starts a
+real-time user-mode thread that runs in a loop and does a real-time
+initialization ioctl to create two POSIX threads (I originally had this as
+a nrt ioctl but made it rt to avoid a mode switch).  Both threads wait on a
+semaphore, then the user-mode thread does another real-time ioctl to cause
+the module to broadcast on the semaphore and wake both kernel threads.  The
+ioctl then blocks on a pthread_join while the producer and consumer threads
+do 100,000 iterations (takes about a second or two on my hardware).  The
+user mode program then prints the results to date, loops back around and
+restarts the process.  My suspicion is that this act of starting and
+stopping of the kernel threads may be causing the CPU utilization with
+gatekeeper.  What do you think?  Also, I have registered a handler for
+SIGXCPU and seem to see no mode switches at all, which seems strange
+considering /proc/xenomai/stat indicates MSW is occuring.
 
-Rgds,
-Mak.
+/proc/xenomai/stat shows about double the number of mode switches for my
+benchmark versus in-kernel periodic task.  While this may not be optimal,
+it doesn't seem like it should bring gatekeeper from 1% CPU to 90% CPU
+usage.  My system is a beagleboard XM running Xenomai 2.6.0 with the TI
+2.6.37 kernel with beagle board patches applied.
 
+As always, thanks for any assistance.
 
+- Eric
 
-On 19/01/12 11:22 AM, Makarand Pradhan wrote:
-> Hi,
->
-> The scenario is:
->
-> Start task prio 0
-> <Task is running>
-> Set priority 85
-> <Do something>
-> Set priority 0
-> get_mutex<-- rescnt not incremented as XNOTHER is not set.
-> <Do something>  <-- XNOTHER gets set somewhere
-> Release mutex<-- Sends a SIGDEBUG/SIGXCPU
->
-> Am trying to write a simple app that will reveal the issue. Will send it
-> out shortly.
->
-> Rgds,
-> Mak
->
-> On 19/01/12 10:49 AM, Philippe Gerum wrote:
->> On 01/19/2012 04:22 PM, Makarand Pradhan wrote:
->>> Hi Philippe,
->>>
->>> I think I may have not communicated the scenario properly. I am not
->>> trying to control the priorities from user space during resource
->>> contention. That is left to the kernel. Let me try again.
->>>
->>> At some point, my application which was relaxed has to run with a real
->>> time priority. That's when I invoke rt_task_set_priority to change the
->>> base priority. After the critical section is past, the thread has to
->>> relax again where the priority is set to 0 again.
->>>
->>> The rt_task_set_priority API allows me to change the task priority on
->>> the fly, so I think that the operation is supported and legal. Pl feel
->>> free to correct me if that is not true.
->> What is not supported is:
->>
->> get_mutex
->> set_priority(current)
->> release_mutex
->>
->> This can't be a valid operation, because of the reason I mentioned
->> earlier. So, regardless of the reason why you call
->> rt_set_task_priority(), you may not call it while holding a mutex.
->>
->> What happens afterward, e.g. not getting the auto-relax feature back is
->> irrelevant in this case.
->>
->> So, if your app does:
->>
->> set_priority(current,>   0)
->> get_mutex
->> release_mutex
->> set_priority(current, 0)
->>
->> then fine, and not getting back the auto-relax after switching to
->> priority 0 would indeed reveal a kernel issue. But the former scenario
->> is wrong.
->>
->>> This change of priorities does introduce the race condition that was
->>> encountered which can be handled properly in the kernel using any of the
->>> 2 approaches that were mentioned.
->>>
->>> Your comments are highly valued and I look forward to your opinions.
->>>
->>> Rgds,
->>> Mak.
->>>
->>> On 19/01/12 06:25 AM, Philippe Gerum wrote:
->>>> On 01/18/2012 11:41 PM, Makarand Pradhan wrote:
->>>>> Hi,
->>>>>
->>>>> Another problem was encountered with rescnt related to nested mutexes.
->>>>>
->>>>> This time the rescnt is not incrementing because the XNOTHER bit is not
->>>>> set, causing a SIGDEBUG or SIGXCPU to be delivered to the thread causing
->>>>> my application to crash.
->>>>>
->>>>> The scenario is as follows:
->>>>>
->>>>> 1. Thread started with priority 0. (Relaxed)
->>>>> 2. This thread uses mutexes which causes Priority Inversions.
->>>>> 3. At some point, a rt_task_set_priority is done to change the priority.
->>>>> (RT 85).
->>>>> 4. Some time later the priority is set back to 0.
->>>> If I understand it properly, your runtime scenario is badly broken I'm
->>>> afraid. By contrast to priority ceiling, priority inheritance is about
->>>> leaving the responsibility to the _kernel_ to pick the best dynamic
->>>> priority for your thread to solve a priority inversion.
->>>>
->>>> Therefore, by changing your dynamic priority while holding a mutex, your
->>>> application is preventing the kernel to do the job you previously
->>>> assigned to it. Worst, you could be causing unexpected latencies to
->>>> other threads your application has no clue about, or just can't tell
->>>> whether they compete with your thread for accessing the resource at that
->>>> specific time.
->>>>
->>>> After all, this is your application that defined the contented mutex,
->>>> and as such the fact that priority inheritance might be involved at some
->>>> point. If you don't trust the kernel and want to deal with priorities
->>>> manually during resource contention, then maybe you should use a
->>>> different mutual exclusion mechanism not implementing priority
->>>> inheritance, e.g. a plain binary semaphore.
->>>>
->>>>> The problem again revolves around setting XNOTHER. In the problem
->>>>> scenario, the XNOTHER bit is not set in xnsynch_acquire. Hence the
->>>>> rescnt is not incremented.
->>>>>
->>>>> The reason for that is, while doing a rt_task_set_priority,
->>>>> __xnsched_rt_setparam is invoked before the thread is reniced.
->>>>>
->>>>> To resolve this issue, I had to set the XNOTHER bit in
->>>>> __xnpod_set_thread_schedparam after the thread was reniced or in
->>>>> rt_task_set_priority. Both the code changes are given below:
->>>>>
->>>>>
->>>>> rt_task_set_priority(....
->>>>>
->>>>> + if (0==prio)
->>>>> + {
->>>>> + xnthread_set_state(&task->thread_base, XNOTHER);
->>>>> + }
->>>>>
->>>>>
->>>>> xnpod_set_thread_schedparam(...
->>>>>
->>>>> #ifdef CONFIG_XENO_OPT_PERVASIVE
->>>>> if (propagate) {
->>>>> if (xnthread_test_state(thread, XNRELAX))
->>>>> xnshadow_renice(thread);
->>>>> else if (xnthread_test_state(thread, XNSHADOW))
->>>>> xnthread_set_info(thread, XNPRIOSET);
->>>>> }
->>>>>
->>>>> + if (xnthread_test_state(thread, XNSHADOW)) {
->>>>> + // if (thread->bprio || !xnthread_test_state(thread, XNBOOST))
->>>>> + if (thread->bprio)
->>>>> + xnthread_clear_state(thread, XNOTHER);
->>>>> + else
->>>>> + xnthread_set_state(thread, XNOTHER);
->>>>> + }
->>>>>
->>>>>
->>>>> Setting XNOTHER in rt_task_set_priority does not look appropriate. I
->>>>> believe the right place is in the xnpod_set_thread_schedparam.
->>>>>
->>>>> Would highly appreciate your views.
->>>>>
->>>>> Rgds,
->>>>> Mak
->>>>>
->>>>>
->>>>> On 10/01/12 02:10 PM, Makarand Pradhan wrote:
->>>>>> The patch does work. Thanks.
->>>>>>
->>>>>> Will it be available in the next release of xenomai?
->>>>>>
->>>>>> Rgds,
->>>>>> Mak
->>>>>>
->>>>>> root@domain.hid:~# ./relax 0 1
->>>>>> Spawning: tasks
->>>>>> bP: 0, cp: 0, mode: 0
->>>>>> Acquire complete
->>>>>> Release complete
->>>>>> bP: 0, cp: 0, mode: 0
->>>>>> Acquire complete
->>>>>> Release complete
->>>>>> bP: 0, cp: 0, mode: 0
->>>>>> Acquire complete
->>>>>> Release complete
->>>>>> bP: 0, cp: 0, mode: 0
->>>>>> Acquire complete
->>>>>> Grabbing mux in HP
->>>>>> Mux held by Task2
->>>>>> Release complete
->>>>>> bP: 0, cp: 0, mode: 0
->>>>>> Acquire complete
->>>>>> Release complete
->>>>>> bP: 0, cp: 0, mode: 0
->>>>>> Acquire complete
->>>>>> ^C
->>>>>> root@domain.hid:~#
->>>>>>
->>>>>>
->>>>>> On 10/01/12 01:39 PM, Makarand Pradhan wrote:
->>>>>>> Hi Phillipe,
->>>>>>>
->>>>>>> A bit surprised to see a change in sched-rt.h. I had another problem
->>>>>>> earlier where the XNOTHER was not getting set after a priority
->>>>>>> change. I
->>>>>>> had to look at the code that you have modified. Although I had
->>>>>>> temporarily worked around it by setting the XNOTHER in
->>>>>>> rt_task_set_priority. I think this would fix that problem as well.
->>>>>>>
->>>>>>> Will test the patch and get back with the results.
->>>>>>>
->>>>>>> Thanks and Rgds,
->>>>>>> Mak.
->>>>>>>
->>>>>>> On 10/01/12 01:08 PM, Philippe Gerum wrote:
->>>>>>>> On 01/10/2012 04:51 PM, Makarand Pradhan wrote:
->>>>>>>>> Based on my testing, it is noted that the rescnt is not released
->>>>>>>>> when
->>>>>>>>> task1 gets a priority boost and starts running with priority 1.
->>>>>>>>> That's
->>>>>>>>> when the rescnt is not decremented.
->>>>>>>>>
->>>>>>>>> It would imply that we may be checking the current priority while
->>>>>>>>> testing if we want to invoke rt_mutex_release in kernel. Will try to
->>>>>>>>> check it out.
->>>>>>>> Does this help in your case?
->>>>>>>>
->>>>>>>> diff --git a/include/nucleus/sched-rt.h b/include/nucleus/sched-rt.h
->>>>>>>> index cc1cefa..6ac8fd7 100644
->>>>>>>> --- a/include/nucleus/sched-rt.h
->>>>>>>> +++ b/include/nucleus/sched-rt.h
->>>>>>>> @@ -87,7 +87,7 @@ static inline void __xnsched_rt_setparam(struct
->>>>>>>> xnthread *thread,
->>>>>>>> {
->>>>>>>> thread->cprio = p->rt.prio;
->>>>>>>> if (xnthread_test_state(thread, XNSHADOW)) {
->>>>>>>> - if (thread->cprio)
->>>>>>>> + if (thread->bprio || !xnthread_test_state(thread, XNBOOST))
->>>>>>>> xnthread_clear_state(thread, XNOTHER);
->>>>>>>> else
->>>>>>>> xnthread_set_state(thread, XNOTHER);
->>>>>>>>> Rgds,
->>>>>>>>> Mak.
->>>>>>>>>
->>>>>>>>> On 10/01/12 10:42 AM, Philippe Gerum wrote:
->>>>>>>>>> On 01/10/2012 04:40 PM, Philippe Gerum wrote:
->>>>>>>>>>> On 01/10/2012 04:40 PM, Makarand Pradhan wrote:
->>>>>>>>>>>> Another point:
->>>>>>>>>>>>
->>>>>>>>>>>> "These are fast mutexes, the thread does not have to jump to
->>>>>>>>>>>> kernel
->>>>>>>>>>>> space
->>>>>>>>>>>> unless the released mutex was actually contented."
->>>>>>>>>>>>
->>>>>>>>>>>> When the first task is started with prio 0, I always see that
->>>>>>>>>>>> rt_mutex_release is invoked in the kernel. even when there is no
->>>>>>>>>>>> contention.
->>>>>>>>>>> I should have added: "unless there is no contention ... or the
->>>>>>>>>>> caller is
->>>>>>>>>>> a non-rt thread". This is because we have to jump to kernel
->>>>>>>>>>> space to
->>>>>>>>>>> track rescnt.
->>>>>>>>>>>
->>>>>>>>>> Ok, next try: "unless the mutex was contented ... or the caller is
->>>>>>>>>> a non-rt thread".
->>>>>>>>>>
->>>>>>>>>>>> I have an instrumented kernel. The kernel trace is given below.
->>>>>>>>>>>> In this
->>>>>>>>>>>> trace only task1 is running at prio 0. It should be easy to
->>>>>>>>>>>> follow:
->>>>>>>>>>>>
->>>>>>>>>>>> Jan 10 10:36:59 ruggedcom kernel: lo: rescnt: 0, switched: 0
->>>>>>>>>>>> Jan 10 10:36:59 ruggedcom kernel: hi: rescnt: 0, switched: 0
->>>>>>>>>>>> Jan 10 10:36:59 ruggedcom kernel: lo: rescnt: 1, switched: 1
->>>>>>>>>>>> Jan 10 10:36:59 ruggedcom kernel: hi: rescnt: 2, switched: 0
->>>>>>>>>>>> Jan 10 10:36:59 ruggedcom kernel: hi: rescnt: 3, switched: 0
->>>>>>>>>>>> Jan 10 10:37:01 ruggedcom kernel: hi: rescnt: 3, switched: 0
->>>>>>>>>>>> Jan 10 10:37:01 ruggedcom kernel: __rt_mutex_release
->>>>>>>>>>>> Jan 10 10:37:01 ruggedcom kernel: RML
->>>>>>>>>>>> Jan 10 10:37:01 ruggedcom kernel: rt_mutex_release: lockcnt: 1
->>>>>>>>>>>> Jan 10 10:37:01 ruggedcom kernel: xnsynch_release_thread: BP: 0
->>>>>>>>>>>> Jan 10 10:37:01 ruggedcom kernel: hi: rescnt: 2, switched: 0
->>>>>>>>>>>> Jan 10 10:37:01 ruggedcom kernel: __rt_mutex_release
->>>>>>>>>>>> Jan 10 10:37:01 ruggedcom kernel: RML
->>>>>>>>>>>> Jan 10 10:37:01 ruggedcom kernel: rt_mutex_release: lockcnt: 1
->>>>>>>>>>>> Jan 10 10:37:01 ruggedcom kernel: xnsynch_release_thread: BP: 0
->>>>>>>>>>>> Jan 10 10:37:01 ruggedcom kernel: hi: rescnt: 1, switched: 0
->>>>>>>>>>>> Jan 10 10:37:01 ruggedcom kernel: __rt_mutex_release
->>>>>>>>>>>> Jan 10 10:37:01 ruggedcom kernel: RML
->>>>>>>>>>>> Jan 10 10:37:01 ruggedcom kernel: rt_mutex_release: lockcnt: 1
->>>>>>>>>>>> Jan 10 10:37:01 ruggedcom kernel: xnsynch_release_thread: BP: 0
->>>>>>>>>>>> Jan 10 10:37:01 ruggedcom kernel: hi: rescnt: 0, switched: 0
->>>>>>>>>>>> Jan 10 10:37:01 ruggedcom kernel: lo: rescnt: 1, switched: 1
->>>>>>>>>>>> Jan 10 10:37:01 ruggedcom kernel: hi: rescnt: 2, switched: 0
->>>>>>>>>>>> Jan 10 10:37:01 ruggedcom kernel: hi: rescnt: 3, switched: 0
->>>>>>>>>>>> Jan 10 10:37:03 ruggedcom kernel: hi: rescnt: 3, switched: 0
->>>>>>>>>>>> Jan 10 10:37:03 ruggedcom kernel: __rt_mutex_release
->>>>>>>>>>>> Jan 10 10:37:03 ruggedcom kernel: RML
->>>>>>>>>>>> Jan 10 10:37:03 ruggedcom kernel: rt_mutex_release: lockcnt: 1
->>>>>>>>>>>> Jan 10 10:37:03 ruggedcom kernel: xnsynch_release_thread: BP: 0
->>>>>>>>>>>> Jan 10 10:37:03 ruggedcom kernel: hi: rescnt: 2, switched: 0
->>>>>>>>>>>> Jan 10 10:37:03 ruggedcom kernel: __rt_mutex_release
->>>>>>>>>>>> Jan 10 10:37:03 ruggedcom kernel: RML
->>>>>>>>>>>> Jan 10 10:37:03 ruggedcom kernel: rt_mutex_release: lockcnt: 1
->>>>>>>>>>>> Jan 10 10:37:03 ruggedcom kernel: xnsynch_release_thread: BP: 0
->>>>>>>>>>>> Jan 10 10:37:03 ruggedcom kernel: hi: rescnt: 1, switched: 0
->>>>>>>>>>>> Jan 10 10:37:03 ruggedcom kernel: __rt_mutex_release
->>>>>>>>>>>> Jan 10 10:37:03 ruggedcom kernel: RML
->>>>>>>>>>>> Jan 10 10:37:03 ruggedcom kernel: rt_mutex_release: lockcnt: 1
->>>>>>>>>>>> Jan 10 10:37:03 ruggedcom kernel: xnsynch_release_thread: BP: 0
->>>>>>>>>>>> Jan 10 10:37:03 ruggedcom kernel: hi: rescnt: 0, switched: 0
->>>>>>>>>>>> Jan 10 10:37:03 ruggedcom kernel: lo: rescnt: 1, switched: 1
->>>>>>>>>>>> Jan 10 10:37:03 ruggedcom kernel: hi: rescnt: 2, switched: 0
->>>>>>>>>>>> Jan 10 10:37:03 ruggedcom kernel: hi: rescnt: 3, switched: 0
->>>>>>>>>>>> Jan 10 10:37:04 ruggedcom kernel: hi: rescnt: 3, switched: 0
->>>>>>>>>>>>
->>>>>>>>>>>>
->>>>>>>>>>>> root@domain.hid:~# ./a.out 0 1
->>>>>>>>>>>> Spawning: tasks
->>>>>>>>>>>> bP: 0, cp: 0, mode: 0
->>>>>>>>>>>> Acquire complete
->>>>>>>>>>>> Release complete
->>>>>>>>>>>> bP: 0, cp: 0, mode: 0
->>>>>>>>>>>> Acquire complete
->>>>>>>>>>>> Release complete
->>>>>>>>>>>> bP: 0, cp: 0, mode: 0
->>>>>>>>>>>> Acquire complete
->>>>>>>>>>>> ^C
->>>>>>>>>>>>
->>>>>>>>>>>>
->>>>>>>>>>>> Rgds,
->>>>>>>>>>>> Mak.
->>>>>>>>>>>>
->>>>>>>>>>>>
->>>>>>>>>>>>
->>>>>>>>>>>> On 10/01/12 10:26 AM, Makarand Pradhan wrote:
->>>>>>>>>>>>> Hi Phillippe,
->>>>>>>>>>>>>
->>>>>>>>>>>>> You are right. Task 1 requires to be started with prio 0. I
->>>>>>>>>>>>> start
->>>>>>>>>>>>> seeing
->>>>>>>>>>>>> the problem after task2 grabs the mutex and releases them. The
->>>>>>>>>>>>> first
->>>>>>>>>>>>> task never jumps back to seconodary. Here is my output. The
->>>>>>>>>>>>> mode never
->>>>>>>>>>>>> goes back to 0 after "Grabbing mux in HP" and the rescnt stays
->>>>>>>>>>>>> stuck at
->>>>>>>>>>>>> 1 in the kernel.
->>>>>>>>>>>>>
->>>>>>>>>>>>> root@domain.hid:~# ./relax 0 1
->>>>>>>>>>>>> Spawning: tasks
->>>>>>>>>>>>> bP: 0, cp: 0, mode: 0
->>>>>>>>>>>>> Acquire complete
->>>>>>>>>>>>> Release complete
->>>>>>>>>>>>> bP: 0, cp: 0, mode: 0
->>>>>>>>>>>>> Acquire complete
->>>>>>>>>>>>> Release complete
->>>>>>>>>>>>> bP: 0, cp: 0, mode: 0
->>>>>>>>>>>>> Acquire complete
->>>>>>>>>>>>> Release complete
->>>>>>>>>>>>> bP: 0, cp: 0, mode: 0
->>>>>>>>>>>>> Acquire complete
->>>>>>>>>>>>> Grabbing mux in HP
->>>>>>>>>>>>> Mux held by Task2
->>>>>>>>>>>>> Release complete
->>>>>>>>>>>>> bP: 0, cp: 0, mode: 1
->>>>>>>>>>>>> Acquire complete
->>>>>>>>>>>>> Release complete
->>>>>>>>>>>>> bP: 0, cp: 0, mode: 1
->>>>>>>>>>>>> Acquire complete
->>>>>>>>>>>>>
->>>>>>>>>>>>> Rgds,
->>>>>>>>>>>>> Mak.
->>>>>>>>>>>>>
->>>>>>>>>>>>>
->>>>>>>>>>>>> On 10/01/12 10:11 AM, Philippe Gerum wrote:
->>>>>>>>>>>>>> On 01/09/2012 09:50 PM, Makarand Pradhan wrote:
->>>>>>>>>>>>>>> Hi,
->>>>>>>>>>>>>>>
->>>>>>>>>>>>>>> I am running kernel 3.0.0, xenomai: 2.6, powerpc 8360.
->>>>>>>>>>>>>>>
->>>>>>>>>>>>>>> I am noticing an issue while using the auto relax feature
->>>>>>>>>>>>>>> related to
->>>>>>>>>>>>>>> mutexes. I am using nested mutexes. The code is attached to
->>>>>>>>>>>>>>> this
->>>>>>>>>>>>>>> email.
->>>>>>>>>>>>>>>
->>>>>>>>>>>>>>> The problem is that I am not relaxing after a RT thread grabs
->>>>>>>>>>>>>>> and
->>>>>>>>>>>>>>> releases a mutex. On further investigation, it was noted that
->>>>>>>>>>>>>>> the
->>>>>>>>>>>>>>> rescnt
->>>>>>>>>>>>>>> is not going down to 0.
->>>>>>>>>>>>>>    From your code, task1 would auto-relax only if started with
->>>>>>>>>>>>>> priority 0,
->>>>>>>>>>>>>> which is what I get here:
->>>>>>>>>>>>>>
->>>>>>>>>>>>>> -bash-3.2# ./relax 0 1
->>>>>>>>>>>>>> Spawning: tasks
->>>>>>>>>>>>>> bP: 0, cp: 0, mode: 0
->>>>>>>>>>>>>> Acquire complete
->>>>>>>>>>>>>> Release complete
->>>>>>>>>>>>>> bP: 0, cp: 0, mode: 0
->>>>>>>>>>>>>> Acquire complete
->>>>>>>>>>>>>> Release complete
->>>>>>>>>>>>>> bP: 0, cp: 0, mode: 0
->>>>>>>>>>>>>> Acquire complete
->>>>>>>>>>>>>> Release complete
->>>>>>>>>>>>>> ...
->>>>>>>>>>>>>>
->>>>>>>>>>>>>> Conversely, I get the right behavior if setting a non-zero
->>>>>>>>>>>>>> priority to
->>>>>>>>>>>>>> task1:
->>>>>>>>>>>>>>
->>>>>>>>>>>>>> -bash-3.2# ./relax 1 0
->>>>>>>>>>>>>> Spawning: tasks
->>>>>>>>>>>>>> bP: 1, cp: 1, mode: 1
->>>>>>>>>>>>>> Acquire complete
->>>>>>>>>>>>>> Release complete
->>>>>>>>>>>>>> bP: 1, cp: 1, mode: 1
->>>>>>>>>>>>>> Acquire complete
->>>>>>>>>>>>>> Release complete
->>>>>>>>>>>>>> bP: 1, cp: 1, mode: 1
->>>>>>>>>>>>>> Acquire complete
->>>>>>>>>>>>>> ...
->>>>>>>>>>>>>>
->>>>>>>>>>>>>> In any case, the priority of task2 should have no impact on the
->>>>>>>>>>>>>> result.
->>>>>>>>>>>>>>
->>>>>>>>>>>>>> I'm running current 2.6 HEAD commit (168da46de), kernel
->>>>>>>>>>>>>> 3.1.5/powerpc32
->>>>>>>>>>>>>> (52xx), pipeline 2.13-06.
->>>>>>>>>>>>>>
->>>>>>>>>>>>>> Which priority arguments are you passing to your test program?
->>>>>>>>>>>>>>
->>>>>>>>>>>>>>> Another observation is that I do not hit
->>>>>>>>>>>>>>> rt_mutex_release in the kernel in the problem scenario, I
->>>>>>>>>>>>>>> believe
->>>>>>>>>>>>>>> when
->>>>>>>>>>>>>>> the thread undergoes a priority inversion.This may be a
->>>>>>>>>>>>>>> problem
->>>>>>>>>>>>>>> as the
->>>>>>>>>>>>>>> rescnt would not get decremented. Not sure how the mutex is
->>>>>>>>>>>>>>> releasing
->>>>>>>>>>>>>>> wiithout hitting rt_mutex_relase or am I missing anything?
->>>>>>>>>>>>>>>
->>>>>>>>>>>>>> These are fast mutexes, the thread does not have to jump to
->>>>>>>>>>>>>> kernel
->>>>>>>>>>>>>> space
->>>>>>>>>>>>>> unless the released mutex was actually contented.
->>>>>>>>>>>>>>
->>>>>>>>>>>>>>> If I have both the tasks running at priority 0, I stay in the
->>>>>>>>>>>>>>> secondary
->>>>>>>>>>>>>>> domain, rt_mutex_release is invoked as expected, the rescnt
->>>>>>>>>>>>>>> goes
->>>>>>>>>>>>>>> down to
->>>>>>>>>>>>>>> 0 when all the mutexes are released.
->>>>>>>>>>>>>>>
->>>>>>>>>>>>>>> Has anyone faced this problem?
->>>>>>>>>>>>>>>
->>>>>>>>>>>>>> I'm unsure there is any yet. Auto-relax applies to non -rt
->>>>>>>>>>>>>> Xenomai
->>>>>>>>>>>>>> threads only (i.e. prio == 0).
->>>>>>>>>>>>>>
->>>>>>>>>>>>>>> Rgds,
->>>>>>>>>>>>>>> Makarand
->>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>
->>>>>>>>>>>>>>> _______________________________________________
->>>>>>>>>>>>>>> Xenomai-help mailing list
->>>>>>>>>>>>>>> Xenomai-help@domain.hid
->>>>>>>>>>>>>>> https://mail.gna.org/listinfo/xenomai-help
->>>>>>> --
->>>>>>> ___________________________________________________________________________
->>>>>>>
->>>>>>>
->>>>>>> NOTICE OF CONFIDENTIALITY:
->>>>>>> This e-mail and any attachments may contain confidential and
->>>>>>> privileged information. If you are
->>>>>>> not the intended recipient, please notify the sender immediately by
->>>>>>> return e-mail and delete this
->>>>>>> e-mail and any copies. Any dissemination or use of this information
->>>>>>> by a person other than the
->>>>>>> intended recipient is unauthorized and may be illegal.
->>>>>>> _____________________________________________________________________
->>>>>>>
->>>>>>>
->>>>>>>
->>>>>>>
->>>>>>> _______________________________________________
->>>>>>> Xenomai-help mailing list
->>>>>>> Xenomai-help@domain.hid
->>>>>>> https://mail.gna.org/listinfo/xenomai-help
->>>> --
->>>> Philippe.
->> --
->> Philippe.
->
-> --
-> ___________________________________________________________________________
-> NOTICE OF CONFIDENTIALITY:
-> This e-mail and any attachments may contain confidential and privileged information.  If you are
-> not the intended recipient, please notify the sender immediately by return e-mail and delete this
-> e-mail and any copies.  Any dissemination or use of this information by a person other than the
-> intended recipient is unauthorized and may be illegal.
-> _____________________________________________________________________
->
->
->
+--f46d0447f2a676adb704b6af0d01
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
+Hi, I&#39;ve added several benchmarks to the benchmark suite and seem to ha=
+ve a problem with some of them causing the gatekeeper process to show high =
+cpu load.=A0 A few things -don&#39;t- cause this problem.=A0 The first is t=
+he standard benchmarks shipped with Xenomai.=A0 Another example of somethin=
+g that doesn&#39;t peg gatekeeper is a synthetic workload I added that spaw=
+ns a Xenomai kernel thread that spins for a certain period then sleeps for =
+a certain period, cycling until terminated (an example of these periods may=
+ be spin fpr 800mS sleep for 200mS).=A0 What -does- seem to be causing this=
+ problem is another benchmark I added that spawns a producer and consumer t=
+hread, with the consumer waiting on a semaphore and the producer incrementi=
+ng the semaphore.=A0 I suspect a cause for the excessive gatekeeper usage m=
+ay be the way I&#39;ve structured the benchmark.=A0 The user-mode program s=
+tarts a real-time user-mode thread that runs in a loop and does a real-time=
+ initialization ioctl to create two POSIX threads (I originally had this as=
+ a nrt ioctl but made it rt to avoid a mode switch).=A0 Both threads wait o=
+n a semaphore, then the user-mode thread does another real-time ioctl to ca=
+use the module to broadcast on the semaphore and wake both kernel threads.=
+=A0 The ioctl then blocks on a pthread_join while the producer and consumer=
+ threads do 100,000 iterations (takes about a second or two on my hardware)=
+.=A0 The user mode program then prints the results to date, loops back arou=
+nd and restarts the process.=A0 My suspicion is that this act of starting a=
+nd stopping of the kernel threads may be causing the CPU utilization with g=
+atekeeper.=A0 What do you think?=A0 Also, I have registered a handler for S=
+IGXCPU and seem to see no mode switches at all, which seems strange conside=
+ring /proc/xenomai/stat indicates MSW is occuring.<br>
+<br>/proc/xenomai/stat shows about double the number of mode switches for m=
+y benchmark versus in-kernel periodic task.=A0 While this may not be optima=
+l, it doesn&#39;t seem like it should bring gatekeeper from 1% CPU to 90% C=
+PU usage.=A0 My system is a beagleboard XM running Xenomai 2.6.0 with the T=
+I 2.6.37 kernel with beagle board patches applied.<br>
+<br>As always, thanks for any assistance.<br><br>- Eric<br>
 
--- 
-___________________________________________________________________________
-NOTICE OF CONFIDENTIALITY:
-This e-mail and any attachments may contain confidential and privileged information.  If you are
-not the intended recipient, please notify the sender immediately by return e-mail and delete this
-e-mail and any copies.  Any dissemination or use of this information by a person other than the
-intended recipient is unauthorized and may be illegal.
-_____________________________________________________________________
-
-  
-
-
---------------040503090907010706020104
-Content-Type: text/x-csrc; name="set_prio_bug.c"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: attachment; filename="set_prio_bug.c"
-
-#include <xenomai/asm-generic/bits/current.h>
-#include <sys/syscall.h>
-#include <sys/mman.h>
-#include <stdio.h>
-#include <native/task.h>
-#include <native/mutex.h>
-#include <native/timer.h>
-#include <nucleus/thread.h>
-#include <rtdk.h>
-#include <stdlib.h>
-#include <unistd.h>
-
-RT_TASK task0, task1, task2; 
-RT_MUTEX mux1, mux2, mux3, mux4;
-char buff[8192];
-
-void task1_func(void *arg)
-{
-	RT_TASK_INFO info;
-	int current_in_primary = 0;
-	int i = 0;
-	RTIME st, en;
-	int iterations = 10000;
-
-	rt_task_set_priority(&task1, 85);
-	rt_task_set_priority(&task1, 0);
-        rt_mutex_acquire(&mux1, TM_INFINITE);
-	rt_task_sleep(2222222222LL);
-	rt_mutex_release(&mux1);
-
-	rt_printf("Should get a SIGDEBUG/SIGXCPU now\n");
-
-}
-
-int main(int argc, char **argv)
-{
-	int prio1, prio2;
-
-	if (argc == 1)
-	{
-		printf("Pl enter prio1 prio1\n");
-		exit (0);
-	}
-
-	prio1 = atoi(argv[1]);
-	prio2 = atoi(argv[2]);
-
-	mlockall(MCL_CURRENT|MCL_FUTURE);
-
-	rt_print_auto_init(1);
-
-	rt_task_shadow(&task0, "Task 0", 10, 0);
-
-	rt_mutex_create(&mux1, "test_mux1");
-	rt_mutex_create(&mux2, "test_mux2");
-	rt_mutex_create(&mux3, "test_mux3");
-	rt_mutex_create(&mux4, "test_mux4");
-
-	printf("Spawning: tasks %x\n", XNTHREAD_STATE_SPARE0);
-	rt_task_spawn(&task1, "PRIO_BUG", 0, prio1, 0, task1_func, NULL);
-
-	while (1) {
-		rt_task_sleep(5000000LL);
-	}
-}
-
---------------040503090907010706020104--
+--f46d0447f2a676adb704b6af0d01--
 
