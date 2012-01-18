@@ -1,11 +1,14 @@
-Date: Wed, 29 Feb 2012 15:14:59 +0800 
-From: xgdlrh@domain.hid
+Message-ID: <4F17487C.8080508@domain.hid>
+Date: Wed, 18 Jan 2012 23:32:28 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: multipart/alternative;
-	boundary="=-sinamail_alt_621047167f81f8c2aeb79071bccab452"
-Message-Id: <20120229071500.159E93AF04F@mail3-245.sinamail.sina.com.cn>
-Subject: [Xenomai-help] How can I use xenomai with the linux kernel of
-	2.6.32 on the plarform of omap3530?
+References: <28CCC3D1EEE841E184D8E5663EBDCCBE@TerryHP>
+	<4F171C09.8010908@domain.hid>
+	<E80344556EFF403586E4B8CAE727382F@TerryHP>
+In-Reply-To: <E80344556EFF403586E4B8CAE727382F@TerryHP>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] Compile error
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -15,50 +18,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai-help <xenomai@xenomai.org>
+To: Terry Fryar <terry.fryar@domain.hid>
+Cc: xenomai@xenomai.org
 
---=-sinamail_alt_621047167f81f8c2aeb79071bccab452
-Content-Type: text/plain;
-	charset=GBK
-Content-Transfer-Encoding: base64
-Content-Disposition: inline
+On 01/18/2012 10:44 PM, Terry Fryar wrote:
+> I knew I wouldn't get enough...but I have other projects in between those
+> timing requirements and I wanted to see how little latency I could get.
+> Using an RTDM driver we wrote, I am measuring about 2us (not 20us) by
+> triggering an irq off a gpio and pulsing another gpio line and measuring the
+> difference between the irq edge and the pulsed edge using a logic analyzer.
 
-IERlYXIgc2lyLCAgICAgIHNvcnJ5IHRvIHRyb3VibGUgdSxidXQgaSBoYXZlIGEgcHJvYmxlbSBp
-ICBjYW4ndCBzb2x2ZS4gICAgICBOb3cgaSB1c2UgYW4gb21hcDM1MzAgRXZhbHVhdGlvbiBCb2Fy
-ZHMgYW5kIHRoZSBsaW51eCBrZXJuZWwgIHdoaWNoIG1hbnVmYWN0dXJlcnMgcHJvdmlkZXMgaXMg
-Mi42LjMyIC4gaSBoYXZlIHRvIHVzZSB0aGlzIGtlcm5lbC53aGVuIGkgdHJ5IHRoZSBzdGVwOiAk
-IHNjcmlwdHMvcHJlcGFyZS1rZXJuZWwuc2ggLS1saW51eD08bGludXgtc3JjdHJlZT4NClstLWFk
-ZW9zPTxhZGVvcy1wYXRjaD5dIFstLWFyY2g9PHRhcmdldC1hcmNoPl0saSBjYW4ndCBmaW5kIHRo
-ZSBhZGVvcy1wYXRjaCB3aGljaCBtYXRjaGVzIHRoZSBrZXJuZWwgLHNvIEkgbmVlZCB1ciBoZWxw
-IGFuZCBob3cgY2FuIGkgdXNlIHhlbm9tYWkgd2l0aCB0aGUgbGludXgga2VybmVsIG9mIDIuNi4z
-MiBvbiB0aGUgcGxhdGZvcm0gb2Ygb21hcDM1MzA/IHRoYW5rcyBmb3IgdXIgaGVscC5CZXN0IHdp
-c2hlcyB0byB5b3UhICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgIFNpbmNlcmVseSB5b3VycywgTGlhbmcgUnVuaGFuICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgIA==
+That is probably because you are not measuring latency under load. So,
+you do not see the worst case.
 
+> I have a board that runs a suhdol linux sbc that is somehow handling gpio
+> interactions within nanosecond ranges, and I have no idea how that is being
+> done.  Even flipping a gpio pin with direct register access inside a KLM is
+> around 62ns.  I just don't know how they are managing to detect a gpio pin
+> state change and respond to several things all within a couple hundred ns??
+> 
+> I've looked at their app files and it's just a gpio driver and what appears
+> to be a single userspace app.  A mystery I guess.....
 
---=-sinamail_alt_621047167f81f8c2aeb79071bccab452
-Content-Type: text/html; 
-	charset=GBK
-Content-Transfer-Encoding: base64
-Content-Disposition: inline
+I am talking about worst case here, not about average case.
 
-IERlYXIgc2lyLDxkaXY+ICAgICAgc29ycnkgdG8gdHJvdWJsZSB1LGJ1dCBpIGhhdmUgYSBwcm9i
-bGVtIGkgIGNhbid0IHNvbHZlLjwvZGl2PjxkaXY+ICAgICAgTm93IGkgdXNlIGFuIG9tYXAzNTMw
-IEV2YWx1YXRpb24gQm9hcmRzIGFuZCB0aGUgbGludXgga2VybmVsICB3aGljaCBtYW51ZmFjdHVy
-ZXJzIHByb3ZpZGVzIGlzIDIuNi4zMiAuIGkgaGF2ZSB0byB1c2UgdGhpcyBrZXJuZWwud2hlbiBp
-IHRyeSB0aGUgc3RlcDogJCBzY3JpcHRzL3ByZXBhcmUta2VybmVsLnNoIC0tbGludXg9Jmx0O2xp
-bnV4LXNyY3RyZWUmZ3Q7DQpbLS1hZGVvcz0mbHQ7YWRlb3MtcGF0Y2gmZ3Q7XSBbLS1hcmNoPSZs
-dDt0YXJnZXQtYXJjaCZndDtdLGkgY2FuJ3QgZmluZCB0aGUgYWRlb3MtcGF0Y2ggd2hpY2ggbWF0
-Y2hlcyB0aGUga2VybmVsICxzbyBJIG5lZWQgdXIgaGVscCBhbmQgaG93IGNhbiBpIHVzZSB4ZW5v
-bWFpIHdpdGggdGhlIGxpbnV4IGtlcm5lbCBvZiAyLjYuMzIgb24gdGhlIHBsYXRmb3JtIG9mIG9t
-YXAzNTMwPyB0aGFua3MgZm9yIHVyIGhlbHAuQmVzdCB3aXNoZXMgdG8geW91ISA8L2Rpdj48ZGl2
-PiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-IFNpbmNlcmVseSB5b3VycywgTGlhbmcgUnVuaGFuPC9kaXY+PGRpdj4gICAgICAgICAgICAgICAg
-ICAgICA8L2Rpdj48ZGl2PiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICA8L2Rpdj4=
-
-
---=-sinamail_alt_621047167f81f8c2aeb79071bccab452--
+-- 
+                                                                Gilles.
 
