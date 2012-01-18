@@ -1,12 +1,12 @@
-Message-ID: <4F3BDC1E.9090707@domain.hid>
-Date: Wed, 15 Feb 2012 17:23:58 +0100
+Message-ID: <4F171C09.8010908@domain.hid>
+Date: Wed, 18 Jan 2012 20:22:49 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4F3BD76C.1040703@domain.hid>
-In-Reply-To: <4F3BD76C.1040703@domain.hid>
+References: <28CCC3D1EEE841E184D8E5663EBDCCBE@TerryHP>
+In-Reply-To: <28CCC3D1EEE841E184D8E5663EBDCCBE@TerryHP>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] signal handling in Xenomai 2.6.0
+Subject: Re: [Xenomai-help] Compile error
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -16,62 +16,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Jeff Webb <jeff.webb@domain.hid>
-Cc: Xenomai help <xenomai@xenomai.org>
+To: Terry Fryar <terry.fryar@domain.hid>
+Cc: xenomai@xenomai.org
 
-On 02/15/2012 05:03 PM, Jeff Webb wrote:
-> I am not able to block signals using pthread_sigmask or sigprocmask
-> on my Xenomai 2.6.0 system.  If I compile my test program without
-> Xenomai, it works as I intended and blocks the requested signals.  If
-> I compile it for Xenomai, the requested signals are not blocked.
-> After scratching my head for some time, I tried running the program
-> on an older machine running Xenomai 2.5.5.2, and it worked as I
-> intended and blocked the requested signals.  I have not tried
-> upgrading the Xenomai 2.5.5.2 machine to 2.6.0 to see if the problem
-> is somehow related to the hardware on the newer machine.  I haven't
-> noticed any other problems with Xenomai 2.6.0 on the newer machine;
-> the latency and performance appear to be what I would expect.
+On 01/18/2012 04:12 PM, Terry Fryar wrote:
+> Using xenomai 2.6.0 with 2.6.38 kernel.  Turned off
+> CONFIG_XENO_OPT_PERVASIVE, and now I can't compile kernel:
+>  
+> CC      kernel/xenomai/nucleus/synch.o
+> kernel/xenomai/nucleus/synch.c: In function 'xnsynch_release_thread':
+> kernel/xenomai/nucleus/synch.c:688:3: error: implicit declaration of
+> function 'xnthread_get_rescnt'
+> kernel/xenomai/nucleus/synch.c:689:4: error: implicit declaration of
+> function 'xnshadow_send_sig'
 > 
-> My test program is attached.  I printed the current thread in the
-> signal handler, and thought that the output might be of interest.
-> This is output from the program running under Xenomai 2.6.0:
-> 
-> $ ./sigtest main thread: 7f6ff32c8700 mlockall returned 0 sigaction
-> returned 0 pthread_sigmask returned 0 ^Csignal handled in:
-> 7f6ff32f2700 end of main $
-> 
-> If I comment out the call topthread_sigmask, I get this output:
-> 
-> $ ./sigtest main thread: 7f446ba09700 mlockall returned 0 sigaction
-> returned 0 pthread_sigmask returned 0 ^Csignal handled in:
-> 7f446ba09700 end of main $
-> 
-> It appears to me that in the first case, the signal is being blocked
-> in the main thread, but is being handled in another (shadow?)
-> thread.
-> 
-> Can someone confirm that this code works on Xenomai 2.6.0?
+> There are some ifdef's for this flag....how to compile xenomai kernel
+> without pervasive user support?  Only using kernel modules with xenomai at
+> this point, and I'm trying to optimize the kernel performance....
 
-Please try the following patch:
-
-diff --git a/src/skins/common/rt_print.c b/src/skins/common/rt_print.c
-index 5533e29..78dcda8 100644
---- a/src/skins/common/rt_print.c
-+++ b/src/skins/common/rt_print.c
-@@ -612,6 +612,11 @@ static void unlock(void *cookie)
-
- static void *printer_loop(void *arg)
- {
-+	sigset_t mask;
-+
-+	sigfillset(&mask);
-+	pthread_sigmask(SIG_BLOCK, &mask, NULL);
-+
- 	while (1) {
- 		pthread_cleanup_push(unlock, &buffer_lock);
- 		pthread_mutex_lock(&buffer_lock);
-
+I am afraid nobody has tried compiling without pervasive support for a
+long time. Anyway, you will not gain enough that way: you will not
+reduce the interrupt latency from 20us to 500ns. As I said, you can not
+have a 500ns latency on any processor where xenomai is available.
 
 -- 
-					    Gilles.
+                                                                Gilles.
 
