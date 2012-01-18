@@ -1,48 +1,45 @@
-Message-ID: <4F314970.5040904@domain.hid>
-Date: Tue, 07 Feb 2012 16:55:28 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4F167BD2.306@domain.hid>
+Date: Wed, 18 Jan 2012 08:59:14 +0100
+From: RT <rwatollenaar@domain.hid>
 MIME-Version: 1.0
-References: <4F312091.5080001@domain.hid>
-In-Reply-To: <4F312091.5080001@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [RFC] Port to AT91SAM9G45
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Subject: [Xenomai-help] ensuring code running in kernel modules has realtime
+	priority
+Reply-To: rolandtollenaar@domain.hid
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Gregory CLEMENT <gregory.clement@domain.hid>
-Cc: Thomas Petazzoni <thomas.petazzoni@domain.hid>, Maxime Ripard <maxime.ripard@domain.hid>, Nicolas Ferre <nicolas.ferre@domain.hid>, xenomai@xenomai.org
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Xenomai-help@domain.hid
 
-On 02/07/2012 02:01 PM, Gregory CLEMENT wrote:
-> Hello,
-> 
-> I've done the port for AT91SAM9G45 on a AT91SAM9M10G45-EK board. The
-> following patch have to be applied on top of the
-> adeos-ipipe-2.6.38.8-arm-1.18-04.patch patch.
-> 
-> I also ran latency test under heavy stress using:
-> - hackbench to stress the scheduler
-> - netcat to stress the Ethernet interface and generate a lot of interrupts
-> - ls and dd( reading a /dev/mtdblock and writing on a tmpfs) for global stress
-> 
-> I join the results I had after running each latency test during 10 hours.
-> 
-> If the results I get seem the correct could you apply this patch in
-> Xenomai?
-> 
-> Should I also submit this patch to adeos project?
+Hi all,
 
-We will merge this patch in the adeos patch, yes. Thanks. Note that
-xenomai-2.6.0 provides a "dohell" command in order to generate some
-load, and a "xeno-test" script which runs latency under dohell load.
+we have an interesting situation. We are using a module to do communication 
+over a network (ethercat master module) to some remote IO.
 
-Are the results obtained with or without the FCSE option enabled?
+The ethercat module is loaded against the kernel in the normal manner.
 
--- 
-                                                                Gilles.
+Now we possibly have overlooked that even though the call to the ethercat 
+module (ioctl call) from our real-time application takes place in a xenomai 
+real time task, the code of the ethercatmodule may be interrupted by other 
+processes running on the machine. Due to the fact that the modules code is 
+not running in any real-time prioritized space.
+
+If this is indeed the case, what would be the best or easiest manner to 
+ensure that the module does not get interrupted, ie. to encapsulate it into 
+the xenomai real-time priority sphere?
+
+Hope someone can point us in the right direction here. Its pretty urgent 
+because the system is already running live and we are intermittently 
+encountering this problem.
+
+Kind regards,
+
+Roland.
 
