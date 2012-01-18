@@ -1,9 +1,10 @@
+From: "Terry Fryar" <terry.fryar@domain.hid>
+Date: Wed, 18 Jan 2012 09:12:42 -0600
+Message-ID: <28CCC3D1EEE841E184D8E5663EBDCCBE@TerryHP>
 MIME-Version: 1.0
-Date: Mon, 6 Feb 2012 19:01:57 -0500
-Message-ID: <CAMak2D-YfDCvjbZiLFYGntYdDCJVPiYtwt5z8k=PPT-9yj3S5A@mail.gmail.com>
-From: Eric Eric <ericrebates@domain.hid>
-Content-Type: multipart/alternative; boundary=f46d04447efdc83ce504b8547c8d
-Subject: [Xenomai-help] in-kernel periodic task latencies caused by dohell
+Content-Type: multipart/alternative;
+	boundary="----=_NextPart_000_00F9_01CCD5C1.56FAC060"
+Subject: [Xenomai-help] Compile error
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -15,64 +16,68 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
---f46d04447efdc83ce504b8547c8d
-Content-Type: text/plain; charset=ISO-8859-1
+This is a multi-part message in MIME format.
 
-Hello, I've been doing some more Xenomai benchmarking lately and have come
-across what seems to be strange behavior.  I'm running Xenomai 2.6.0 on a
-Beagleboard XM with kernel 2.6.37.  Just running the in-kernel periodic
-task benchmark (./latency -t1) alone results in an average of 2.7uS
-latency.  What is interesting is the effect of various parts of dohell:
+------=_NextPart_000_00F9_01CCD5C1.56FAC060
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 
-1) If I just run unmodified dohell with only the seconds argument, the
-latency goes to about 17uS.
+Using xenomai 2.6.0 with 2.6.38 kernel.  Turned off
+CONFIG_XENO_OPT_PERVASIVE, and now I can't compile kernel:
+ 
+CC      kernel/xenomai/nucleus/synch.o
+kernel/xenomai/nucleus/synch.c: In function 'xnsynch_release_thread':
+kernel/xenomai/nucleus/synch.c:688:3: error: implicit declaration of
+function 'xnthread_get_rescnt'
+kernel/xenomai/nucleus/synch.c:689:4: error: implicit declaration of
+function 'xnshadow_send_sig'
 
-2) If I comment out all tests in dohell except for "dd if=/dev/zero
-of=/dev/null &", average latency goes to 3.3uS (with top indicating about
-98% CPU usage by dd).
+There are some ifdef's for this flag....how to compile xenomai kernel
+without pervasive user support?  Only using kernel modules with xenomai at
+this point, and I'm trying to optimize the kernel performance....
+ 
+Thanks!
 
-3) If I comment out all tests in dohell except for "while :; do cat
-/proc/interrupts; done > /dev/null 2>&1 &", average latency goes to about
-24uS.
-
-So it seems that trapping into the Linux kernel can have a drastic effect
-on Xenomai real-time kernel latencies.  Why is this?  Shouldn't a
-timer-driven runnable real-time Xenomai kernel task require the same
-preemption latency regardless of whether Linux is busy or not?  And it's
-not just that Linux processes are loading the CPU (this happens in case 2
-with relatively little effect on latency), but that it's the act of
-trapping into the kernel that causes the latency.  Any ideas why this is
-the case?
-
-Thank you very much.
-
-- Eric
-
---f46d04447efdc83ce504b8547c8d
-Content-Type: text/html; charset=ISO-8859-1
+------=_NextPart_000_00F9_01CCD5C1.56FAC060
+Content-Type: text/html;
+	charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 
-Hello, I&#39;ve been doing some more Xenomai benchmarking lately and have c=
-ome across what seems to be strange behavior.=A0 I&#39;m running Xenomai 2.=
-6.0 on a Beagleboard XM with kernel 2.6.37.=A0 Just running the in-kernel p=
-eriodic task benchmark (./latency -t1) alone results in an average of 2.7uS=
- latency.=A0 What is interesting is the effect of various parts of dohell:<=
-br>
-<br>1) If I just run unmodified dohell with only the seconds argument, the =
-latency goes to about 17uS.<br><br>2) If I comment out all tests in dohell =
-except for &quot;dd if=3D/dev/zero of=3D/dev/null &amp;&quot;, average late=
-ncy goes to 3.3uS (with top indicating about 98% CPU usage by dd).<br>
-<br>3) If I comment out all tests in dohell except for &quot;while :; do ca=
-t /proc/interrupts; done &gt; /dev/null 2&gt;&amp;1 &amp;&quot;, average la=
-tency goes to about 24uS.<br><br>So it seems that trapping into the Linux k=
-ernel can have a drastic effect on Xenomai real-time kernel latencies.=A0 W=
-hy is this?=A0 Shouldn&#39;t a timer-driven runnable real-time Xenomai kern=
-el task require the same preemption latency regardless of whether Linux is =
-busy or not?=A0 And it&#39;s not just that Linux processes are loading the =
-CPU (this happens in case 2 with relatively little effect on latency), but =
-that it&#39;s the act of trapping into the kernel that causes the latency.=
-=A0 Any ideas why this is the case?<br>
-<br>Thank you very much.<br><br>- Eric<br><br>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML><HEAD>
+<META content=3D"text/html; charset=3Dus-ascii" =
+http-equiv=3DContent-Type>
+<META name=3DGENERATOR content=3D"MSHTML 8.00.7601.17699"></HEAD>
+<BODY>
+<DIV><FONT size=3D2 face=3DArial><SPAN class=3D917160815-18012012>Using =
+xenomai 2.6.0=20
+with 2.6.38 kernel.&nbsp; Turned off CONFIG_XENO_OPT_PERVASIVE, and now =
+I can't=20
+compile kernel:</SPAN></FONT></DIV>
+<DIV><FONT size=3D2 face=3DArial><SPAN=20
+class=3D917160815-18012012></SPAN></FONT>&nbsp;</DIV>
+<DIV><FONT size=3D2 face=3DArial>CC&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=20
+kernel/xenomai/nucleus/synch.o<BR>kernel/xenomai/nucleus/synch.c: In =
+function=20
+'xnsynch_release_thread':<BR>kernel/xenomai/nucleus/synch.c:688:3: =
+error:=20
+implicit declaration of function=20
+'xnthread_get_rescnt'<BR>kernel/xenomai/nucleus/synch.c:689:4: error: =
+implicit=20
+declaration of function 'xnshadow_send_sig'<BR></FONT></DIV>
+<DIV><SPAN class=3D917160815-18012012><FONT size=3D2 face=3DArial>There =
+are some=20
+ifdef's for this flag....how to compile xenomai kernel without pervasive =
+user=20
+support?&nbsp; Only using kernel modules with xenomai at this point, and =
+I'm=20
+trying to optimize the kernel performance....</FONT></SPAN></DIV>
+<DIV><SPAN class=3D917160815-18012012><FONT size=3D2=20
+face=3DArial></FONT></SPAN>&nbsp;</DIV>
+<DIV><SPAN class=3D917160815-18012012><FONT size=3D2=20
+face=3DArial>Thanks!</FONT></SPAN></DIV></BODY></HTML>
 
---f46d04447efdc83ce504b8547c8d--
+------=_NextPart_000_00F9_01CCD5C1.56FAC060--
+
 
