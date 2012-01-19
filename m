@@ -1,9 +1,14 @@
+From: "Terry Fryar" <terry.fryar@domain.hid>
+References: <4F0B90C6.8040007@domain.hid>
+	<4F0C9C25.5080401@domain.hid><4F17631A.6010106@domain.hid>
+	<8CEA4D12D68967C-DB8-14FF@Webmail-m116.sysops.aol.com>
+In-Reply-To: <8CEA4D12D68967C-DB8-14FF@Webmail-m116.sysops.aol.com>
+Date: Thu, 19 Jan 2012 10:43:34 -0600
+Message-ID: <80A79EDED75A4BD58EE65ACF6771D871@domain.hid>
 MIME-Version: 1.0
-Date: Mon, 16 Jan 2012 20:14:28 -0500
-Message-ID: <CAMak2D-C8E3GVhymyOUEF6hztdgnXnczNzEMNoO9sHqemxL9Zg@domain.hid>
-From: Eric Eric <ericrebates@domain.hid>
-Content-Type: multipart/alternative; boundary=f46d0447f2a676adb704b6af0d01
-Subject: [Xenomai-help] gatekeeper using 90% CPU...
+Content-Type: multipart/alternative;
+	boundary="----=_NextPart_000_012F_01CCD697.332E2650"
+Subject: Re: [Xenomai-help] Arm support for 3.2 kernel?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -13,82 +18,173 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
+To: babbittner@domain.hid, xenomai@xenomai.org
+
+This is a multi-part message in MIME format.
+
+------=_NextPart_000_012F_01CCD697.332E2650
+Content-Type: text/plain;
+	charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+
+I second the vote for 3.1...in fact for beaglebone xenomai support as
+well.....
+
+  _____  
+
+From: xenomai-help-bounces@domain.hid [mailto:xenomai-help-bounces@domain.hid] On
+Behalf Of babbittner@domain.hid
+Sent: Thursday, January 19, 2012 8:53 AM
 To: xenomai@xenomai.org
+Subject: Re: [Xenomai-help] Arm support for 3.2 kernel?
 
---f46d0447f2a676adb704b6af0d01
-Content-Type: text/plain; charset=ISO-8859-1
 
-Hi, I've added several benchmarks to the benchmark suite and seem to have a
-problem with some of them causing the gatekeeper process to show high cpu
-load.  A few things -don't- cause this problem.  The first is the standard
-benchmarks shipped with Xenomai.  Another example of something that doesn't
-peg gatekeeper is a synthetic workload I added that spawns a Xenomai kernel
-thread that spins for a certain period then sleeps for a certain period,
-cycling until terminated (an example of these periods may be spin fpr 800mS
-sleep for 200mS).  What -does- seem to be causing this problem is another
-benchmark I added that spawns a producer and consumer thread, with the
-consumer waiting on a semaphore and the producer incrementing the
-semaphore.  I suspect a cause for the excessive gatekeeper usage may be the
-way I've structured the benchmark.  The user-mode program starts a
-real-time user-mode thread that runs in a loop and does a real-time
-initialization ioctl to create two POSIX threads (I originally had this as
-a nrt ioctl but made it rt to avoid a mode switch).  Both threads wait on a
-semaphore, then the user-mode thread does another real-time ioctl to cause
-the module to broadcast on the semaphore and wake both kernel threads.  The
-ioctl then blocks on a pthread_join while the producer and consumer threads
-do 100,000 iterations (takes about a second or two on my hardware).  The
-user mode program then prints the results to date, loops back around and
-restarts the process.  My suspicion is that this act of starting and
-stopping of the kernel threads may be causing the CPU utilization with
-gatekeeper.  What do you think?  Also, I have registered a handler for
-SIGXCPU and seem to see no mode switches at all, which seems strange
-considering /proc/xenomai/stat indicates MSW is occuring.
+I vote for 3.1 support.  There is no 3.1 realtime alternative at this point.
+It would be nice to get some realtime support for the BeagleBone which is on
+3.1, probably for several months.
 
-/proc/xenomai/stat shows about double the number of mode switches for my
-benchmark versus in-kernel periodic task.  While this may not be optimal,
-it doesn't seem like it should bring gatekeeper from 1% CPU to 90% CPU
-usage.  My system is a beagleboard XM running Xenomai 2.6.0 with the TI
-2.6.37 kernel with beagle board patches applied.
 
-As always, thanks for any assistance.
+<I apologize for the aol email, some day I'll get some real email.>
 
-- Eric
 
---f46d0447f2a676adb704b6af0d01
-Content-Type: text/html; charset=ISO-8859-1
+-----Original Message-----
+From: Mitchell Tasman <tasman@domain.hid>
+Cc: xenomai-help <xenomai@xenomai.org>
+Sent: Wed, Jan 18, 2012 6:28 pm
+Subject: Re: [Xenomai-help] Arm support for 3.2 kernel?
+
+
+On 01/10/2012 03:14 PM, Gilles Chanteperdrix wrote:
+
+> On 01/10/2012 02:13 AM, Mitchell Tasman wrote (in part):
+
+>> Hi.  I saw the recent discussion regarding ARM I-pipe and 3.x, and am
+
+>> wondering if anyone can hazard a guess as to a timetable for 3.2 support?
+
+>
+
+> 3.0 is on its way. 3.1 will be next because it is the first version to
+
+> support a new I-pipe architecture, so I was hoping to be able to skip
+3.2...
+
+
+
+Thank you for your response to my question(s).  I noticed that an arm 
+
+I-pipe patchset for 3.0.13 recently landed in git.
+
+
+
+Might you consider making 3.2 the next target for arm I-pipe support 
+
+rather than 3.1?  It seems that 3.1 is already being end-of-lifed, and 
+
+e.g., that the RT-Preempt community has jumped directly from 3.0 to 3.2.
+
+
+
+Thanks again and best regards.
+
+
+
+
+
+_______________________________________________
+
+Xenomai-help mailing list
+
+Xenomai-help@domain.hid
+
+https://mail.gna.org/listinfo/xenomai-help
+
+
+
+------=_NextPart_000_012F_01CCD697.332E2650
+Content-Type: text/html;
+	charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 
-Hi, I&#39;ve added several benchmarks to the benchmark suite and seem to ha=
-ve a problem with some of them causing the gatekeeper process to show high =
-cpu load.=A0 A few things -don&#39;t- cause this problem.=A0 The first is t=
-he standard benchmarks shipped with Xenomai.=A0 Another example of somethin=
-g that doesn&#39;t peg gatekeeper is a synthetic workload I added that spaw=
-ns a Xenomai kernel thread that spins for a certain period then sleeps for =
-a certain period, cycling until terminated (an example of these periods may=
- be spin fpr 800mS sleep for 200mS).=A0 What -does- seem to be causing this=
- problem is another benchmark I added that spawns a producer and consumer t=
-hread, with the consumer waiting on a semaphore and the producer incrementi=
-ng the semaphore.=A0 I suspect a cause for the excessive gatekeeper usage m=
-ay be the way I&#39;ve structured the benchmark.=A0 The user-mode program s=
-tarts a real-time user-mode thread that runs in a loop and does a real-time=
- initialization ioctl to create two POSIX threads (I originally had this as=
- a nrt ioctl but made it rt to avoid a mode switch).=A0 Both threads wait o=
-n a semaphore, then the user-mode thread does another real-time ioctl to ca=
-use the module to broadcast on the semaphore and wake both kernel threads.=
-=A0 The ioctl then blocks on a pthread_join while the producer and consumer=
- threads do 100,000 iterations (takes about a second or two on my hardware)=
-.=A0 The user mode program then prints the results to date, loops back arou=
-nd and restarts the process.=A0 My suspicion is that this act of starting a=
-nd stopping of the kernel threads may be causing the CPU utilization with g=
-atekeeper.=A0 What do you think?=A0 Also, I have registered a handler for S=
-IGXCPU and seem to see no mode switches at all, which seems strange conside=
-ring /proc/xenomai/stat indicates MSW is occuring.<br>
-<br>/proc/xenomai/stat shows about double the number of mode switches for m=
-y benchmark versus in-kernel periodic task.=A0 While this may not be optima=
-l, it doesn&#39;t seem like it should bring gatekeeper from 1% CPU to 90% C=
-PU usage.=A0 My system is a beagleboard XM running Xenomai 2.6.0 with the T=
-I 2.6.37 kernel with beagle board patches applied.<br>
-<br>As always, thanks for any assistance.<br><br>- Eric<br>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML><HEAD>
+<META content=3D"text/html; charset=3Dus-ascii" =
+http-equiv=3DContent-Type>
+<META name=3DGENERATOR content=3D"MSHTML 8.00.7601.17699"></HEAD>
+<BODY>
+<DIV dir=3Dltr align=3Dleft><SPAN class=3D638054316-19012012><FONT =
+color=3D#0000ff=20
+size=3D2 face=3DArial>I second the vote for 3.1...in fact for beaglebone =
+xenomai=20
+support as well.....</FONT></SPAN></DIV><BR>
+<DIV dir=3Dltr lang=3Den-us class=3DOutlookMessageHeader align=3Dleft>
+<HR tabIndex=3D-1>
+<FONT size=3D2 face=3DTahoma><B>From:</B> xenomai-help-bounces@domain.hid
+[mailto:xenomai-help-bounces@domain.hid] <B>On Behalf Of=20
+</B>babbittner@domain.hid<BR><B>Sent:</B> Thursday, January 19, 2012 8:53=20
+AM<BR><B>To:</B> xenomai@xenomai.org<BR><B>Subject:</B> Re: =
+[Xenomai-help] Arm=20
+support for 3.2 kernel?<BR></FONT><BR></DIV>
+<DIV></DIV><FONT color=3Dblack size=3D2 face=3Darial><FONT color=3Dblack =
+size=3D2=20
+face=3Darial>
+<DIV><FONT face=3D"Arial, Helvetica, sans-serif">I vote for 3.1 =
+support.&nbsp;=20
+There is no 3.1 realtime alternative at this point.&nbsp; It would be =
+nice to=20
+get some realtime support for the BeagleBone which is on 3.1, probably =
+for=20
+several months.<BR></FONT></DIV>
+<DIV><BR></DIV>
+<DIV>&lt;I apologize for the aol email, some day I'll get some real=20
+email.&gt;<BR><BR></DIV>
+<DIV=20
+style=3D"FONT-FAMILY: arial,helvetica; COLOR: black; FONT-SIZE: =
+10pt">-----Original=20
+Message-----<BR>From: Mitchell Tasman &lt;tasman@domain.hid&gt;<BR>Cc: =
+xenomai-help=20
+&lt;xenomai@xenomai.org&gt;<BR>Sent: Wed, Jan 18, 2012 6:28 =
+pm<BR>Subject: Re:=20
+[Xenomai-help] Arm support for 3.2 kernel?<BR><BR>
+<DIV=20
+style=3D"BACKGROUND-COLOR: #fff; MARGIN: 0px; FONT-FAMILY: Tahoma, =
+Verdana, Arial, Sans-Serif; COLOR: #000; FONT-SIZE: 12px"=20
+id=3DAOLMsgPart_0_79ab23ee-cca2-4d8c-bf22-ef2ec0e62759><PRE =
+style=3D"FONT-SIZE: 9pt"><TT>On 01/10/2012 03:14 PM, Gilles =
+Chanteperdrix wrote:
+&gt; On 01/10/2012 02:13 AM, Mitchell Tasman wrote (in part):
+&gt;&gt; Hi.  I saw the recent discussion regarding ARM I-pipe and 3.x, =
+and am
+&gt;&gt; wondering if anyone can hazard a guess as to a timetable for =
+3.2 support?
+&gt;
+&gt; 3.0 is on its way. 3.1 will be next because it is the first version =
+to
+&gt; support a new I-pipe architecture, so I was hoping to be able to =
+skip 3.2...
 
---f46d0447f2a676adb704b6af0d01--
+Thank you for your response to my question(s).  I noticed that an arm=20
+I-pipe patchset for 3.0.13 recently landed in git.
+
+Might you consider making 3.2 the next target for arm I-pipe support=20
+rather than 3.1?  It seems that 3.1 is already being end-of-lifed, and=20
+e.g., that the RT-Preempt community has jumped directly from 3.0 to 3.2.
+
+Thanks again and best regards.
+
+
+_______________________________________________
+Xenomai-help mailing list
+<A =
+__removedlink__1693193547__href=3D"mailto:Xenomai-help@domain.hid">Xenomai-h=
+elp@domain.hid</A>
+<A target=3D_blank =
+__removedlink__1693193547__href=3D"https://mail.gna.org/listinfo/xenomai-=
+help">https://mail.gna.org/listinfo/xenomai-help</A>
+</TT></PRE></DIV><!-- end of =
+AOLMsgPart_0_79ab23ee-cca2-4d8c-bf22-ef2ec0e62759 =
+--></DIV></FONT></FONT></BODY></HTML>
+
+------=_NextPart_000_012F_01CCD697.332E2650--
+
 
