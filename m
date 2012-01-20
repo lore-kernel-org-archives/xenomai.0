@@ -3,13 +3,13 @@ References: <C65BAE4E2DF04BD68697066C4075EC78@domain.hid>	<4F19B046.6090504@doma
 	<DE531AD0193E45018B21711AD3A8DB03@domain.hid>
 	<4F19D2D6.2020501@domain.hid>
 In-Reply-To: <4F19D2D6.2020501@domain.hid>
-Date: Fri, 20 Jan 2012 15:05:17 -0600
-Message-ID: <DAC416FE83244B259FE4E7F1174228B3@domain.hid>
+Date: Fri, 20 Jan 2012 15:12:37 -0600
+Message-ID: <BEDC33647FDC40B8B2C7FCDFA84AAFA7@domain.hid>
 MIME-Version: 1.0
 Content-Type: text/plain;
 	charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] rtdm difficulties..fixed...
+Subject: Re: [Xenomai-help] rtdm difficulties...not fixed....
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -22,21 +22,25 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 To: 'Philippe Gerum' <rpm@xenomai.org>
 Cc: xenomai@xenomai.org
 
-Well, nevermind!  I found out I did have code to clear out the irq status
-register, and I'm using ioremap, but I was missing the "/4" in my ulong
-array dereference...argggg...so the irq status register flags never got
-cleared as I was referencing the wrong memory.  When I started going
-backwards, I didn't copy this back into the blank handler either, so I had
-the same problem.  I also had a global var scope conflict with the kernel
-that was affecting my spinlock in the original isr.  What a mess!
+Spoke too soon...after about 20 minutes, I got:
 
-With it all fixed, all the interrupts seem to be working fine now, and with
-little load I actually am down to about 1.8us latency...which is great!
-Sorry for all the fuss....
+[ 1870.675437] WARNING: at kernel/softirq.c:137
+__local_bh_enable+0x44/0xac()
+[ 1870.682629] Modules linked in: vme_pd_drv [last unloaded: vme_pd_drv]
+[ 1870.689415] [<c00566fc>] (unwind_backtrace+0x0/0xe0) from [<c007db0c>]
+(warn_slowpath_common+0x4c/0x64)
+[ 1870.871240] [<c007db0c>] (warn_slowpath_common+0x4c/0x64) from
+[<c007db3c>] (warn_slowpath_null+0x18/0x1c)
+[ 1870.881352] [<c007db3c>] (warn_slowpath_null+0x18/0x1c) from [<c0083138>]
+(__local_bh_enable+0x44/0xac)
+[ 1871.271582] [<c0083138>] (__local_bh_enable+0x44/0xac) from [<c008481c>]
+(irq_enter+0x44/0x60)
+[ 1871.280600] [<c008481c>] (irq_enter+0x44/0x60) from [<c0046018>]
+(asm_do_IRQ+0x18/0x98)
+[ 1871.288987] [<c0046018>] (asm_do_IRQ+0x18/0x98) from [<c00b9af0>]
+(__ipipe_sync_stage+0x154/0x188)
 
-Now in the bare metal micro world, you always have to clear the irq flags.
-I assume this is always true in a klm isr as well??
-
+Guess I'll turn on all the debugging and see what pops....dang..... 
 
 -----Original Message-----
 From: Philippe Gerum [mailto:rpm@xenomai.org] 
