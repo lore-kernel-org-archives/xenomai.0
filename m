@@ -1,22 +1,14 @@
-Message-ID: <4F14B067.8010601@domain.hid>
-Date: Mon, 16 Jan 2012 18:19:03 -0500
-From: Andrew Tannenbaum <trb@domain.hid>
+Message-ID: <4F19AC80.5010106@domain.hid>
+Date: Fri, 20 Jan 2012 19:03:44 +0100
+From: Wolfgang Grandegger <wg@domain.hid>
 MIME-Version: 1.0
-References: <4EF27CD5.4060603@domain.hid>
-	<4EF8FBB6.4060107@domain.hid> <4EF8FD8D.2090306@domain.hid>
-	<4EFB696E.8000508@domain.hid>
-	<4EFC4E21.3000804@domain.hid> <4EFC677B.20500@domain.hid>
-	<CAJPpvENavHPfvhuS-Ugsje738V=3kko+7dnvv6_AS3F09pbF4w@domain.hid>
-	<4EFC887D.3070205@domain.hid>
-	<4F0393A2.2000703@domain.hid>
-	<4F0C7A60.10203@domain.hid>
-	<4F0C7F68.1060402@domain.hid>
-	<4F0DB7C0.3040405@domain.hid>
-In-Reply-To: <4F0DB7C0.3040405@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+References: <4F1080E8.6020408@domain.hid>	<4F1082E5.8000501@domain.hid>	<4F132A7E.4000000@domain.hid>
+	<4F16F028.6020507@domain.hid> <4F16F401.2090308@domain.hid>
+	<4F184E42.6060300@domain.hid>
+In-Reply-To: <4F184E42.6060300@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai-help] problem with Debian Xenomai build,
- was Re:  hang in rtcansend
+Subject: Re: [Xenomai-help] Omap3630, rtserial, xeno_16550A: crash on insmod
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -26,32 +18,67 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Fabrice Gasnier <fabrice.gasnier@domain.hid>
+Cc: xenomai@xenomai.org
 
-I found a problem with 2.6.0 and Gilles Chanteperdrix posted some fixes
-to the Git tree, and I want to test them.  These are discussed in the
-thread:  [Xenomai-help] hang in rtcansend
+Hi Fabrice and Manfred,
 
-I have been having trouble building 2.6.0 with latest git tree.  I'm
-trying to follow the instructions here:
+On 01/19/2012 06:09 PM, Fabrice Gasnier wrote:
+> On 18/01/2012 17:32, Wolfgang Grandegger wrote:
+>>> Further investigation indicates that when writing, tx interrupt is not asserted as expected (rt_16550_write):
+>>>> /* unmask tx interrupt */
+>>>> ctx->ier_status |= IER_TX;
+>>>> rt_16550_reg_out(rt_16550_io_mode_from_ctx(ctx),
+>>>> 		 ctx->base_addr, IER,
+>>>> 		 ctx->ier_status,
+>>>> 		 ctx->regshift);
+>>>>
+>>>> >From my understanding this should trigger an irq for data to be put in rt_16550_tx_interrupt().
+>>>> It seems this is not always the case. Moreover, TX interrupt seem to be triggered by a new RX interrupt.
+>> The TX interrupt will be enabled as long as there are chars to send,
+>> IIRC. The isr the puts the chars into the FIFO and triggers the xfer.
+> Finally, I find out that UART was in sleep mode.
+> According to omap's reference manual, it enters this mode when conditions are met:
+> rx line is idle,
+> tx fifo and shift register are empty,
+> rx fifo is empty
+> no interrupts pending
+> 
+> One solution that i've tested successfully is to disable sleep mode in rt_16550_open(). TX interrupts are then being triggered as expected.
+>>
+>>>>
+>>>> Would you have an explanation for such a behavior?
+>>>> I'm not sure how to solve this.
+>> Depending on the hardware/uart revision, you may need to take care of
+>> other quirks, see:
+>>
+>> http://lxr.linux.no/#linux+v3.2.1/arch/arm/mach-omap2/serial.c#L742
+> Thank you for this link! It helps handle the fifo full condition.
+> However, I noticed a strange value regarding version register. My omap3530 reports 0x46?
+> Linux serial driver assume this bug is present on revision >= 0x52 ...
+> But my target freeze when I send more than 16 chars at once (Fifo full without errata handling).
+> It works when using errata handling.
 
-http://www.xenomai.org/index.php/Building_Debian_packages
+It seems the 16550-compatible UARTs on the OMAP processor are special
+and also buggy requiring more or less heavy workarounds, unfortunately.
+I can't comment on that as I do not have experience with OMAP processors.
 
-I am building 2.6.0 rather than 2.5.0.  When I try to build, the base
-2.6.0 build from the git tree builds correctly.  But when I merge the
-latest changes with
+> You'll find attached a patch that works for me.
+> Please advise. Maybe we can enhance it and push it?
 
-git merge origin/master
+To handle hardware-specific initialization I/O properly, I think we need
+first a more flexible interface using callback functions. The existing
+interface with
 
-I get build errors.  I posted notes about this here:
+	base = ctx->base_addr;
+	mode = rt_16550_io_mode_from_ctx(ctx);
+	regshift = ctx->regshift;
+	rt_16550_reg_in(mode, base, regshift, offset)",
 
-https://mail.gna.org/public/xenomai-help/2012-01/msg00057.html
+#ifdef's and switch statements in the I/O functions is really horrible.
+A more elegant solution would make integration of the OMAP specialities
+much easier.
 
-but I have received no solution.  Gilles helped me with the Xenomai
-problem I found, but he is not familiar with the Debian build system, so
-he suggested that I re-post with Debian in the subject line.
+Wolfgang.
 
-So I would like help building the latest 2.6.0 from the git repository.
-
--Andy
 
