@@ -1,15 +1,10 @@
+From: "Terry Fryar" <terry.fryar@domain.hid>
+Date: Fri, 20 Jan 2012 10:17:54 -0600
+Message-ID: <C65BAE4E2DF04BD68697066C4075EC78@domain.hid>
 MIME-Version: 1.0
-In-Reply-To: <4F197D0C.4060407@domain.hid>
-References: <4F1080E8.6020408@domain.hid>
-	<4F1082E5.8000501@domain.hid>
-	<4F132A7E.4000000@domain.hid> <4F16F028.6020507@domain.hid>
-	<4F16F401.2090308@domain.hid> <4F184E42.6060300@domain.hid>
-	<4F19581A.8070300@domain.hid> <4F197D0C.4060407@domain.hid>
-From: =?ISO-8859-1?Q?Felipe_Brand=E3o_Cavalcanti?= <cavalkaf@domain.hid>
-Date: Fri, 20 Jan 2012 13:58:36 -0200
-Message-ID: <CAAsfwtOz741xviMT1ONvjjE=uwaA4aNvjiGW2NzcQmwPwuq63A@mail.gmail.com>
-Content-Type: multipart/alternative; boundary=00235429c8242471fd04b6f7c21c
-Subject: Re: [Xenomai-help] Omap3630, rtserial, xeno_16550A: crash on insmod
+Content-Type: multipart/alternative;
+	boundary="----=_NextPart_000_0187_01CCD75C.C78866B0"
+Subject: [Xenomai-help] rtdm difficulties
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -19,299 +14,173 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Fabrice Gasnier <fabrice.gasnier@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
---00235429c8242471fd04b6f7c21c
-Content-Type: text/plain; charset=ISO-8859-1
+This is a multi-part message in MIME format.
+
+------=_NextPart_000_0187_01CCD75C.C78866B0
+Content-Type: text/plain;
+	charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 
-Dear All,
+Using xenomai 2.6.0 with 2.6.38 kernel and rtdm.  Been working on a rtdm
+driver for awhile and all of a sudden I've lost stability.  So, I've =
+backed
+off all code except for registering an empty realtime irq handler using
+rtdm_irq_request().  I'm getting kernel oops, and I don't know why?  The =
+irq
+handler simply returns RTDM_IRQ_HANDLED and that's it.  I've rebuilt my
+kernel several times, and I'm wondering if I'm missing a .config entry =
+for
+something related to xenomai??  If I take out the irq handler =
+registration,
+all is fine.  This driver's been working for about 2 weeks, but all of a
+sudden I'm getting kernel faults.  Here's what I'm getting from my =
+driver
+(vme_pd_drv):
+=20
+[  795.986316] Unable to handle kernel paging request at virtual address
+80b112d6
+[  795.993905] Unable to handle kernel paging request at virtual address
+e28cca55
+[  796.001475] Unable to handle kernel paging request at virtual address
+e5bcf074
+[  796.009045] Unable to handle kernel paging request at virtual address
+e5bcf074
+[  796.016615] Unable to handle kernel paging request at virtual address
+e5bcf074
+[  796.044130] Unable to handle kernel paging request at virtual address
+e5bcf074
+[  796.051696] Unable to handle kernel paging request at virtual address
+e5bcf074
+[  796.059262] Unable to handle kernel paging request at virtual address
+e5bcf074
+[  796.106868] Unable to handle kernel paging request at virtual address
+e5bcf074
+[  796.124353] Unable to handle kernel paging request at virtual address
+e5bcf074
+[  796.131920] Unable to handle kernel paging request at virtual address
+e5bcf074
+[  796.139484] Unable to handle kernel paging request at virtual address
+e5bcf074
+[  796.207081] Unable to handle kernel paging request at virtual address
+e5bcf074
+[  796.214711] pgd =3D c0004000
+[  796.217544] [e5bcf074] *pgd=3D00000000
+[  796.221294] Internal error: Oops: 5 [#1] PREEMPT
+[  796.266149] last sysfs file: =
+/sys/devices/virtual/irqdrv/irqdrv0/uevent
+[  796.273082] Modules linked in: vme_pd_drv [last unloaded: vme_pd_drv]
+[  796.279846] CPU: 0    Not tainted  (2.6.38-ipipe-dirty #53)
+[  796.315847] PC is at show_pte+0x18/0xb0
+[  796.319868] LR is at __do_kernel_fault+0x54/0x84
+[  796.384733] pc : [<c0059170>]    lr : [<c00592f8>]    psr: a0000113
+[  796.384740] sp : c058f1c8  ip : fb020000  fp : 0000031b
+[  796.396765] r10: 00000005  r9 : 20000113  r8 : 00000000
+[  796.402237] r7 : c058f2a8  r6 : e5bcf050  r5 : e5bcf050  r4 : =
+e5bcf074
+[  796.449104] r3 : c058f1cc  r2 : c04fbb6f  r1 : e5bcf074  r0 : =
+c04fbac9
+[  796.455945] Flags: NzCv  IRQs on  FIQs on  Mode SVC_32  ISA ARM  =
+Segment
+kernel
+[  796.463604] Control: 10c5387d  Table: 9e52c019  DAC: 00000017
+[  796.519769] Process =FC (pid: -598785, stack limit =3D 0xc058e2f0)
+=20
+=20
 
-Any chance you guys could make a Gumstix Overo image with Xenomai and the
-RTDM drivers working? I was actually going to start working on this very
-issue (RTDM drivers for the OMAP) next week, but you seem to have had a
-head start on that.
-
-Many thanks!
-       -Felipe Brand=E3o Cavalcanti
-       LARA - Automation and Robotics Laboratory
-       Department of Electrical Engineering
-       UnB - University of Bras=EDlia, Brazil
-       http://www.lara.unb.br/~fbcavalcanti/
-
-On Fri, Jan 20, 2012 at 12:41 PM, Fabrice Gasnier <
-fabrice.gasnier@domain.hid> wrote:
-
-> Dear all, Manfred,
->
-> Please find interleaved answers/questions.
->
-> On 20/01/2012 13:03, Manfred wrote:
-> > Hi All,
-> >
-> > I tested the patch on my omap3630 and I ran the cross-link test.
-> > It works. I want to thank Fabrice Gasnier from my side.
-> you're welcome.
-> >
-> > I have, however, the following suggestions/questions to the patch:
-> > - If I got it right, the errata only affects the RX_fifo (not the
-> tx_fifo), so I suggest to handle those cases separately and usually call
-> the normal reg_in, and put the cases were we access RHR in "#ifdef
-> omap"-clauses
-> It also cares about tx fifo full condition: in rt_16550_reg_out():
-> lsr =3D rt_16550_omap_raw_reg_in(io_mode, base, rshift, LSR);
-> while (!(lsr & RTSER_LSR_THR_EMTPY)) {
->        /* Wait up to 10ms for the character(s) to be sent. */
->        if(--tmout =3D=3D 0)
->                break;
->        rtdm_task_sleep(1000);
->        lsr =3D rt_16550_omap_raw_reg_in(io_mode, base, rshift, LSR);
-> }
->
-> > - There is however another errata (or 'quirk') about the mdr1 register
-> > http://www.ti.com/pdfs/wtbu/SWPZ017B_4460_Public_SE.pdf
-> > but I don't think that this register is ever touched by the xeno_16550A
-> driver. (If we would touch it in the future, one would have to add #ifdef
-> clauses and use omapsafe_reg_out)
-> > - in the mach-omap2/serial.c  in function "serial_out_override" there i=
-s
-> this 10ms timeout-value, which should probably be avoided at any cost (it
-> will increase the latency). I actually don't see why we should wait for t=
-he
-> transmit_fifo to empty. Why is this necc.? Is there still another errata
-> about the tx_fifo?
-> I think you're right it adds latencies, but what can we do about this?
-> e.g. I've made some testing without such a handling: trying to write "lot=
-s
-> of" bytes (I assume more than fifo size) freezes target. It has to be
-> handled somehow. Maybe it's wrong to do this way?
-> Maybe it would be better to write up to fifo full and then return...
-> - an error ?
-> - or just the number of written bytes with no error?
-> This way responsibility would be let to the caller (writting to much byte=
-s
-> will cause a lantency in the end, no ?)
-> I'm not sure of expected behavior on other platforms such as x86 ?
->
-> >
-> > So I suggest to usually call the normal reg_out (formerly
-> omap_raw_reg_out) and only call the modified one when necc. (now renamed =
-to
-> omapsafe_reg_out)
-> >
-> > I have made the changes along these lines and attached them in a patch.
-> (this patch is to be applied after the patch from Fabrice Gasnier)
-> >
-> > When I compare the timings between the original patch and with my lates=
-t
-> changes (using cross-link and creating load with dohell -s <wlanhost>) I
-> get about 25% better timings under load. (I only ran each test once for
-> 3min each, though). Without load, there is of course no big change in the
-> latencies.
-> >
-> > @Fabrice: Can you check with cross-link.c on your platform? I get
-> worst-case timings of 150micros with your patch, and 115micros with my
-> additional changes. (I think these are round-trip timings, but I am not
-> sure)
-> I shall try these, but I own a PhyCARD-L that only has one serial port...
-> Cannot run cross-link.
-> >
-> > Let me know, what you think.
-> > Regards
-> > Manfred
-> >
-> > On 1/19/12 6:09 PM, Fabrice Gasnier wrote:
-> >> Finally, I find out that UART was in sleep mode.
-> >> According to omap's reference manual, it enters this mode when
-> conditions are met:
-> >> rx line is idle,
-> >> tx fifo and shift register are empty,
-> >> rx fifo is empty
-> >> no interrupts pending
-> >>
-> >> One solution that i've tested successfully is to disable sleep mode in
-> rt_16550_open().
-> >> TX interrupts are then being triggered as expected.
-> >
-> >>> other quirks, see:
-> >>>
-> >>> http://lxr.linux.no/#linux+v3.2.1/arch/arm/mach-omap2/serial.c#L742
-> >> Thank you for this link! It helps handle the fifo full condition.
-> >> However, I noticed a strange value regarding version register. My
-> omap3530 reports 0x46?
-> >> Linux serial driver assume this bug is present on revision>=3D 0x52 ..=
-.
-> >> But my target freeze when I send more than 16 chars at once (Fifo full
-> without errata handling).
-> >> It works when using errata handling.
-> >
-> >>
-> >> You'll find attached a patch that works for me.
-> >> Please advise. Maybe we can enhance it and push it?
-> >>
-> >> Thanks!
-> >> Regards,
-> >>
-> >> Fabrice
->
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
->
-
---00235429c8242471fd04b6f7c21c
-Content-Type: text/html; charset=ISO-8859-1
+------=_NextPart_000_0187_01CCD75C.C78866B0
+Content-Type: text/html;
+	charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 
-Dear All,<div><br></div><div>Any chance you guys could make a Gumstix Overo=
- image with Xenomai and the RTDM drivers working? I was actually going to s=
-tart working on this very issue (RTDM drivers for the OMAP) next week, but =
-you seem to have had a head start on that.</div>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML><HEAD>
+<META content=3D"text/html; charset=3Diso-8859-1" =
+http-equiv=3DContent-Type>
+<META name=3DGENERATOR content=3D"MSHTML 8.00.7601.17699"></HEAD>
+<BODY>
+<DIV><FONT size=3D2 face=3DArial><SPAN class=3D001431116-20012012>Using =
+xenomai 2.6.0=20
+with 2.6.38 kernel and rtdm.&nbsp; Been working on a rtdm driver for =
+awhile and=20
+all of a sudden I've lost stability.&nbsp; So, I've backed off all code =
+except=20
+for registering an empty realtime irq handler using <FONT=20
+size=3D2>rtdm_irq_request().&nbsp; I'm getting kernel oops, and I don't =
+know=20
+why?&nbsp; The irq handler simply returns <FONT =
+size=3D2>RTDM_IRQ_HANDLED and=20
+that's it.&nbsp; I've rebuilt my kernel several times, and I'm wondering =
+if I'm=20
+missing a .config entry for something related to xenomai??&nbsp; If I =
+take out=20
+the irq handler registration, all is fine.&nbsp; This driver's =
+been&nbsp;working=20
+for&nbsp;about&nbsp;2 weeks, but all of a sudden I'm getting kernel=20
+faults.&nbsp; Here's what I'm getting from my driver=20
+(vme_pd_drv):</FONT></FONT></SPAN></FONT></DIV>
+<DIV><FONT size=3D2 face=3DArial><SPAN=20
+class=3D001431116-20012012></SPAN></FONT>&nbsp;</DIV>
+<DIV><FONT size=3D2 face=3DArial>[&nbsp; 795.986316] Unable to handle =
+kernel paging=20
+request at virtual address 80b112d6<BR>[&nbsp; 795.993905] Unable to =
+handle=20
+kernel paging request at virtual address e28cca55<BR>[&nbsp; 796.001475] =
+Unable=20
+to handle kernel paging request at virtual address e5bcf074<BR>[&nbsp;=20
+796.009045] Unable to handle kernel paging request at virtual address=20
+e5bcf074<BR>[&nbsp; 796.016615] Unable to handle kernel paging request =
+at=20
+virtual address e5bcf074<BR>[&nbsp; 796.044130] Unable to handle kernel =
+paging=20
+request at virtual address e5bcf074<BR>[&nbsp; 796.051696] Unable to =
+handle=20
+kernel paging request at virtual address e5bcf074<BR>[&nbsp; 796.059262] =
+Unable=20
+to handle kernel paging request at virtual address e5bcf074<BR>[&nbsp;=20
+796.106868] Unable to handle kernel paging request at virtual address=20
+e5bcf074<BR>[&nbsp; 796.124353] Unable to handle kernel paging request =
+at=20
+virtual address e5bcf074<BR>[&nbsp; 796.131920] Unable to handle kernel =
+paging=20
+request at virtual address e5bcf074<BR>[&nbsp; 796.139484] Unable to =
+handle=20
+kernel paging request at virtual address e5bcf074<BR>[&nbsp; 796.207081] =
+Unable=20
+to handle kernel paging request at virtual address e5bcf074<BR>[&nbsp;=20
+796.214711] pgd =3D c0004000<BR>[&nbsp; 796.217544] [e5bcf074]=20
+*pgd=3D00000000<BR>[&nbsp; 796.221294] Internal error: Oops: 5 [#1]=20
+PREEMPT<BR>[&nbsp; 796.266149] last sysfs file:=20
+/sys/devices/virtual/irqdrv/irqdrv0/uevent<BR>[&nbsp; 796.273082] =
+Modules linked=20
+in: vme_pd_drv [last unloaded: vme_pd_drv]<BR>[&nbsp; 796.279846] CPU:=20
+0&nbsp;&nbsp;&nbsp; Not tainted&nbsp; (2.6.38-ipipe-dirty =
+#53)<BR>[&nbsp;=20
+796.315847] PC is at show_pte+0x18/0xb0<BR>[&nbsp; 796.319868] LR is at=20
+__do_kernel_fault+0x54/0x84<BR>[&nbsp; 796.384733] pc :=20
+[&lt;c0059170&gt;]&nbsp;&nbsp;&nbsp; lr : =
+[&lt;c00592f8&gt;]&nbsp;&nbsp;&nbsp;=20
+psr: a0000113<BR>[&nbsp; 796.384740] sp : c058f1c8&nbsp; ip : =
+fb020000&nbsp; fp=20
+: 0000031b<BR>[&nbsp; 796.396765] r10: 00000005&nbsp; r9 : =
+20000113&nbsp; r8 :=20
+00000000<BR>[&nbsp; 796.402237] r7 : c058f2a8&nbsp; r6 : e5bcf050&nbsp; =
+r5 :=20
+e5bcf050&nbsp; r4 : e5bcf074<BR>[&nbsp; 796.449104] r3 : c058f1cc&nbsp; =
+r2 :=20
+c04fbb6f&nbsp; r1 : e5bcf074&nbsp; r0 : c04fbac9<BR>[&nbsp; 796.455945] =
+Flags:=20
+NzCv&nbsp; IRQs on&nbsp; FIQs on&nbsp; Mode SVC_32&nbsp; ISA ARM&nbsp; =
+Segment=20
+kernel<BR>[&nbsp; 796.463604] Control: 10c5387d&nbsp; Table: =
+9e52c019&nbsp; DAC:=20
+00000017<BR>[&nbsp; 796.519769] Process =FC (pid: -598785, stack limit =
+=3D=20
+0xc058e2f0)</FONT></DIV>
+<DIV>&nbsp;</DIV>
+<DIV><FONT size=3D2 face=3DArial></FONT>&nbsp;</DIV></BODY></HTML>
 
-<div><br></div><div>Many thanks!</div><div>=A0 =A0 =A0=A0 -Felipe Brand=E3o=
- Cavalcanti<div>=A0 =A0 =A0 =A0LARA - Automation and Robotics Laboratory</d=
-iv><div>=A0 =A0 =A0 =A0Department of Electrical Engineering<br>=A0 =A0 =A0=
-=A0 UnB - University of Bras=EDlia, Brazil<br>
+------=_NextPart_000_0187_01CCD75C.C78866B0--
 
-=A0 =A0 =A0=A0=A0<a href=3D"http://www.lara.unb.br/~fbcavalcanti/" target=
-=3D"_blank">http://www.lara.unb.br/~fbcavalcanti/</a></div><br><div class=
-=3D"gmail_quote">On Fri, Jan 20, 2012 at 12:41 PM, Fabrice Gasnier <span di=
-r=3D"ltr">&lt;<a href=3D"mailto:fabrice.gasnier@domain.hid">fabrice.gasnie=
-r@domain.hid</a>&gt;</span> wrote:<br>
-
-<blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1p=
-x #ccc solid;padding-left:1ex">Dear all, Manfred,<br>
-<br>
-Please find interleaved answers/questions.<br>
-<div class=3D"im"><br>
-On 20/01/2012 13:03, Manfred wrote:<br>
-&gt; Hi All,<br>
-&gt;<br>
-&gt; I tested the patch on my omap3630 and I ran the cross-link test.<br>
-&gt; It works. I want to thank Fabrice Gasnier from my side.<br>
-</div>you&#39;re welcome.<br>
-<div class=3D"im">&gt;<br>
-&gt; I have, however, the following suggestions/questions to the patch:<br>
-&gt; - If I got it right, the errata only affects the RX_fifo (not the tx_f=
-ifo), so I suggest to handle those cases separately and usually call the no=
-rmal reg_in, and put the cases were we access RHR in &quot;#ifdef omap&quot=
-;-clauses<br>
-
-
-</div>It also cares about tx fifo full condition: in rt_16550_reg_out():<br=
->
-lsr =3D rt_16550_omap_raw_reg_in(io_mode, base, rshift, LSR);<br>
-while (!(lsr &amp; RTSER_LSR_THR_EMTPY)) {<br>
- =A0 =A0 =A0 =A0/* Wait up to 10ms for the character(s) to be sent. */<br>
- =A0 =A0 =A0 =A0if(--tmout =3D=3D 0)<br>
- =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0break;<br>
- =A0 =A0 =A0 =A0rtdm_task_sleep(1000);<br>
- =A0 =A0 =A0 =A0lsr =3D rt_16550_omap_raw_reg_in(io_mode, base, rshift, LSR=
-);<br>
-<div class=3D"im">}<br>
-<br>
-&gt; - There is however another errata (or &#39;quirk&#39;) about the mdr1 =
-register<br>
-&gt; <a href=3D"http://www.ti.com/pdfs/wtbu/SWPZ017B_4460_Public_SE.pdf" ta=
-rget=3D"_blank">http://www.ti.com/pdfs/wtbu/SWPZ017B_4460_Public_SE.pdf</a>=
-<br>
-&gt; but I don&#39;t think that this register is ever touched by the xeno_1=
-6550A driver. (If we would touch it in the future, one would have to add #i=
-fdef clauses and use omapsafe_reg_out)<br>
-&gt; - in the mach-omap2/serial.c =A0in function &quot;serial_out_override&=
-quot; there is this 10ms timeout-value, which should probably be avoided at=
- any cost (it will increase the latency). I actually don&#39;t see why we s=
-hould wait for the transmit_fifo to empty. Why is this necc.? Is there stil=
-l another errata about the tx_fifo?<br>
-
-
-</div>I think you&#39;re right it adds latencies, but what can we do about =
-this?<br>
-e.g. I&#39;ve made some testing without such a handling: trying to write &q=
-uot;lots of&quot; bytes (I assume more than fifo size) freezes target. It h=
-as to be handled somehow. Maybe it&#39;s wrong to do this way?<br>
-Maybe it would be better to write up to fifo full and then return...<br>
-- an error ?<br>
-- or just the number of written bytes with no error?<br>
-This way responsibility would be let to the caller (writting to much bytes =
-will cause a lantency in the end, no ?)<br>
-I&#39;m not sure of expected behavior on other platforms such as x86 ?<br>
-<div class=3D"im"><br>
-&gt;<br>
-&gt; So I suggest to usually call the normal reg_out (formerly omap_raw_reg=
-_out) and only call the modified one when necc. (now renamed to omapsafe_re=
-g_out)<br>
-&gt;<br>
-&gt; I have made the changes along these lines and attached them in a patch=
-. (this patch is to be applied after the patch from Fabrice Gasnier)<br>
-&gt;<br>
-&gt; When I compare the timings between the original patch and with my late=
-st changes (using cross-link and creating load with dohell -s &lt;wlanhost&=
-gt;) I get about 25% better timings under load. (I only ran each test once =
-for 3min each, though). Without load, there is of course no big change in t=
-he latencies.<br>
-
-
-&gt;<br>
-&gt; @Fabrice: Can you check with cross-link.c on your platform? I get wors=
-t-case timings of 150micros with your patch, and 115micros with my addition=
-al changes. (I think these are round-trip timings, but I am not sure)<br>
-
-
-</div>I shall try these, but I own a PhyCARD-L that only has one serial por=
-t... Cannot run cross-link.<br>
-<div class=3D"im HOEnZb">&gt;<br>
-&gt; Let me know, what you think.<br>
-&gt; Regards<br>
-&gt; Manfred<br>
-&gt;<br>
-&gt; On 1/19/12 6:09 PM, Fabrice Gasnier wrote:<br>
-&gt;&gt; Finally, I find out that UART was in sleep mode.<br>
-&gt;&gt; According to omap&#39;s reference manual, it enters this mode when=
- conditions are met:<br>
-&gt;&gt; rx line is idle,<br>
-&gt;&gt; tx fifo and shift register are empty,<br>
-&gt;&gt; rx fifo is empty<br>
-&gt;&gt; no interrupts pending<br>
-&gt;&gt;<br>
-&gt;&gt; One solution that i&#39;ve tested successfully is to disable sleep=
- mode in rt_16550_open().<br>
-&gt;&gt; TX interrupts are then being triggered as expected.<br>
-&gt;<br>
-&gt;&gt;&gt; other quirks, see:<br>
-&gt;&gt;&gt;<br>
-&gt;&gt;&gt; <a href=3D"http://lxr.linux.no/#linux+v3.2.1/arch/arm/mach-oma=
-p2/serial.c#L742" target=3D"_blank">http://lxr.linux.no/#linux+v3.2.1/arch/=
-arm/mach-omap2/serial.c#L742</a><br>
-&gt;&gt; Thank you for this link! It helps handle the fifo full condition.<=
-br>
-&gt;&gt; However, I noticed a strange value regarding version register. My =
-omap3530 reports 0x46?<br>
-&gt;&gt; Linux serial driver assume this bug is present on revision&gt;=3D =
-0x52 ...<br>
-&gt;&gt; But my target freeze when I send more than 16 chars at once (Fifo =
-full without errata handling).<br>
-&gt;&gt; It works when using errata handling.<br>
-&gt;<br>
-&gt;&gt;<br>
-&gt;&gt; You&#39;ll find attached a patch that works for me.<br>
-&gt;&gt; Please advise. Maybe we can enhance it and push it?<br>
-&gt;&gt;<br>
-&gt;&gt; Thanks!<br>
-&gt;&gt; Regards,<br>
-&gt;&gt;<br>
-&gt;&gt; Fabrice<br>
-<br>
-</div><div class=3D"HOEnZb"><div class=3D"h5">_____________________________=
-__________________<br>
-Xenomai-help mailing list<br>
-<a href=3D"mailto:Xenomai-help@domain.hid">Xenomai-help@domain.hid</a><br>
-<a href=3D"https://mail.gna.org/listinfo/xenomai-help" target=3D"_blank">ht=
-tps://mail.gna.org/listinfo/xenomai-help</a></div></div></blockquote></div>=
-<br>
-</div>
-
---00235429c8242471fd04b6f7c21c--
 
