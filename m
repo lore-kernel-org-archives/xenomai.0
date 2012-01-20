@@ -1,12 +1,14 @@
-Message-ID: <4F19B046.6090504@domain.hid>
-Date: Fri, 20 Jan 2012 19:19:50 +0100
+Message-ID: <4F19B0E2.6060209@domain.hid>
+Date: Fri, 20 Jan 2012 19:22:26 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <C65BAE4E2DF04BD68697066C4075EC78@domain.hid>
-In-Reply-To: <C65BAE4E2DF04BD68697066C4075EC78@domain.hid>
+References: <CA+fRa6cOs0iz37X8VKFPawXLDV4cDb5=u21FgS7JSP3dSmc+FQ@mail.gmail.com>
+	<4F0E12FA.8030606@domain.hid>
+	<1B09CB90-7C04-4595-B7D4-19BFA9DF10AD@gmail.com>
+In-Reply-To: <1B09CB90-7C04-4595-B7D4-19BFA9DF10AD@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] rtdm difficulties
+Subject: Re: [Xenomai-help] troubles with library inclusion
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -16,24 +18,59 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Terry Fryar <terry.fryar@domain.hid>
+To: Jakub Nowacki <j.s.nowacki@domain.hid>
 Cc: xenomai@xenomai.org
 
-On 01/20/2012 05:17 PM, Terry Fryar wrote:
-> Using xenomai 2.6.0 with 2.6.38 kernel and rtdm.  Been working on a rtdm
-> driver for awhile and all of a sudden I've lost stability.  So, I've backed
-> off all code except for registering an empty realtime irq handler using
-> rtdm_irq_request().  I'm getting kernel oops, and I don't know why?  The irq
-> handler simply returns RTDM_IRQ_HANDLED and that's it.  I've rebuilt my
-> kernel several times, and I'm wondering if I'm missing a .config entry for
-> something related to xenomai??  If I take out the irq handler registration,
-> all is fine.  This driver's been working for about 2 weeks, but all of a
-> sudden I'm getting kernel faults.  Here's what I'm getting from my driver
-> (vme_pd_drv):
+On 01/20/2012 06:18 PM, Jakub Nowacki wrote:
+> 
+> On 11 Jan 2012, at 22:53, Gilles Chanteperdrix wrote:
+> 
+>> On 01/11/2012 11:49 PM, Daniele wrote:
+>>> Hello,
+>>> 
+>>> We are trying to use xenomai with analogy library
+>>> 
+>>> [xenomai 2.6.0, kernel 2.6.38.8]
+>>> 
+>>> Compiling the program  we got the following error:
+>>> 
+>>> 
+>>> "undefined reference to 
+>>> a4l_open<http://www.xenomai.org/documentation/trunk/html/api/group__descriptor1__lib.html#ga810401871fe8005ee0157c6910f94466>
+>>>
+>>> 
+"
+>>> 
+>>> The compiler detects correctly the function prototypes but it
+>>> can't found their complete definition.
+>>> 
+>>> taking care of our MakeFile we also have read this:
+>>> 
+>>> https://mail.gna.org/public/xenomai-help/2011-07/msg00036.html
+>>> 
+>>> but we noticed that our makefile already contains this
+>>> instructions for our skin, native.
+>>> 
+>>> How could we get rid of this?
+>> 
+>> You need to link with the libanalogy driver, so, simply add
+>> "-lanalogy" on the compiler command line.
+>> 
+> 
+> I had a similar problem. Namely, it was complaining about having
+> undefined reference. I added the -lanalogy to the flags generated
+> with 'xeno-config --skin=native --ldflags' and everything compiled
+> and linked correctly, but when I start my application I get error:
+> 
+> /usr/xenomai/lib/libanalogy.so.1: undefined symbol: rt_dev_ioctl
+> 
+> I after adding -lrtdm after -lanalogy everything, again, complied and
+> linked correctly, but I get new error:
+> 
+> librtdm.so.1: shared object cannot be dlopen()ed
 
-Are you working on omap ? Is the irq coming from a gpio ? Are you
-returning IRQ_HANDLED without acknowledging the interrupt at device
-level (I am talking about the device on the other end of the irq line).
+If you need to dlopen librtdm, please reconfigure xenomai passing:
+--enable-dlopen-skins
 
 -- 
                                                                 Gilles.
