@@ -1,14 +1,16 @@
-Message-ID: <4F19BAB4.5050204@domain.hid>
-Date: Fri, 20 Jan 2012 20:04:20 +0100
-From: Wolfgang Grandegger <wg@domain.hid>
+From: "Terry Fryar" <terry.fryar@domain.hid>
+References: <C65BAE4E2DF04BD68697066C4075EC78@domain.hid>
+	<4F19B046.6090504@domain.hid>
+	<D2F2766145E048789E0063D6F386E760@domain.hid>
+	<4F19B324.8080001@domain.hid>
+In-Reply-To: <4F19B324.8080001@domain.hid>
+Date: Fri, 20 Jan 2012 13:37:21 -0600
+Message-ID: <DE531AD0193E45018B21711AD3A8DB03@domain.hid>
 MIME-Version: 1.0
-References: <4F1080E8.6020408@domain.hid>	<4F1082E5.8000501@domain.hid>	<4F132A7E.4000000@domain.hid>	<4F16F028.6020507@domain.hid>
-	<4F16F401.2090308@domain.hid>	<4F184E42.6060300@domain.hid>
-	<4F19AC80.5010106@domain.hid> <4F19B676.5020403@domain.hid>
-In-Reply-To: <4F19B676.5020403@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain;
+	charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Omap3630, rtserial, xeno_16550A: crash on insmod
+Subject: Re: [Xenomai-help] rtdm difficulties
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -18,74 +20,77 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: 'Gilles Chanteperdrix' <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On 01/20/2012 07:46 PM, Gilles Chanteperdrix wrote:
-> On 01/20/2012 07:03 PM, Wolfgang Grandegger wrote:
->> Hi Fabrice and Manfred,
->>
->> On 01/19/2012 06:09 PM, Fabrice Gasnier wrote:
->>> On 18/01/2012 17:32, Wolfgang Grandegger wrote:
->>>>> Further investigation indicates that when writing, tx interrupt is not asserted as expected (rt_16550_write):
->>>>>> /* unmask tx interrupt */
->>>>>> ctx->ier_status |= IER_TX;
->>>>>> rt_16550_reg_out(rt_16550_io_mode_from_ctx(ctx),
->>>>>> 		 ctx->base_addr, IER,
->>>>>> 		 ctx->ier_status,
->>>>>> 		 ctx->regshift);
->>>>>>
->>>>>> >From my understanding this should trigger an irq for data to be put in rt_16550_tx_interrupt().
->>>>>> It seems this is not always the case. Moreover, TX interrupt seem to be triggered by a new RX interrupt.
->>>> The TX interrupt will be enabled as long as there are chars to send,
->>>> IIRC. The isr the puts the chars into the FIFO and triggers the xfer.
->>> Finally, I find out that UART was in sleep mode.
->>> According to omap's reference manual, it enters this mode when conditions are met:
->>> rx line is idle,
->>> tx fifo and shift register are empty,
->>> rx fifo is empty
->>> no interrupts pending
->>>
->>> One solution that i've tested successfully is to disable sleep mode in rt_16550_open(). TX interrupts are then being triggered as expected.
->>>>
->>>>>>
->>>>>> Would you have an explanation for such a behavior?
->>>>>> I'm not sure how to solve this.
->>>> Depending on the hardware/uart revision, you may need to take care of
->>>> other quirks, see:
->>>>
->>>> http://lxr.linux.no/#linux+v3.2.1/arch/arm/mach-omap2/serial.c#L742
->>> Thank you for this link! It helps handle the fifo full condition.
->>> However, I noticed a strange value regarding version register. My omap3530 reports 0x46?
->>> Linux serial driver assume this bug is present on revision >= 0x52 ...
->>> But my target freeze when I send more than 16 chars at once (Fifo full without errata handling).
->>> It works when using errata handling.
->>
->> It seems the 16550-compatible UARTs on the OMAP processor are special
->> and also buggy requiring more or less heavy workarounds, unfortunately.
->> I can't comment on that as I do not have experience with OMAP processors.
->>
->>> You'll find attached a patch that works for me.
->>> Please advise. Maybe we can enhance it and push it?
->>
->> To handle hardware-specific initialization I/O properly, I think we need
->> first a more flexible interface using callback functions. The existing
->> interface with
->>
->> 	base = ctx->base_addr;
->> 	mode = rt_16550_io_mode_from_ctx(ctx);
->> 	regshift = ctx->regshift;
->> 	rt_16550_reg_in(mode, base, regshift, offset)",
->>
->> #ifdef's and switch statements in the I/O functions is really horrible.
->> A more elegant solution would make integration of the OMAP specialities
->> much easier.
-> 
-> I will wait for Wolfgang's ack before merging anything, then.
+Ok, I'll try the patch.  A question though...on the beagle, there is a OMAP
+register GPIO_IRQSTATUSx that I am not manually clearing out.  This is the
+only place to ack an irq I know of...I assumed that was being handled by the
+kernel?  Or is this what the patch is adding??  I'm very new to writing irq
+handlers, as you can tell!
 
-Well, I'm actually not the maintainer. Jan?
+Honestly, all that's in my current handler is this:
 
-Wolfgang.
+int irqdrv_rtdm_isr(rtdm_irq_t* handle)
+{
+	return(RTDM_IRQ_HANDLED);
+}
 
+And here's the register func:
+
+if ((err = rtdm_irq_request(&irqdrv_isr_handle, irqno, irqdrv_rtdm_isr,
+RTDM_IRQTYPE_EDGE, IRQDRV_NAME, NULL)) == 0)
+   rtdm_irq_enable(&irqdrv_isr_handle);
+
+And I'm running against a square waveform and getting this:
+
+[   56.522948] WARNING: at kernel/softirq.c:137
+__local_bh_enable+0x44/0xac()
+[   56.530153] Modules linked in: vme_pd_drv
+[   56.534399] [<c00566fc>] (unwind_backtrace+0x0/0xe0) from [<c007db0c>]
+(warn_slowpath_common+0x4c/0x64)
+[   56.574419] [<c007db0c>] (warn_slowpath_common+0x4c/0x64) from
+[<c007db3c>] (warn_slowpath_null+0x18/0x1c)
+[   56.584568] [<c007db3c>] (warn_slowpath_null+0x18/0x1c) from [<c0083138>]
+(__local_bh_enable+0x44/0xac)
+[   56.594425] [<c0083138>] (__local_bh_enable+0x44/0xac) from [<c008481c>]
+(irq_enter+0x44/0x60)
+[   56.623476] [<c008481c>] (irq_enter+0x44/0x60) from [<c0046018>]
+(asm_do_IRQ+0x18/0x98)
+[   56.631880] [<c0046018>] (asm_do_IRQ+0x18/0x98) from [<c00b9af0>]
+(__ipipe_sync_stage+0x154/0x188)
+
+
+ 
+
+-----Original Message-----
+From: Gilles Chanteperdrix [mailto:gilles.chanteperdrix@xenomai.org] 
+Sent: Friday, January 20, 2012 12:32 PM
+To: Terry Fryar
+Cc: xenomai@xenomai.org
+Subject: Re: [Xenomai-help] rtdm difficulties
+
+On 01/20/2012 07:24 PM, Terry Fryar wrote:
+> Yeh, omap and gpio.....edge irq from a square wave pulse.... 
+
+Try this patch:
+
+diff --git a/arch/arm/plat-omap/gpio.c b/arch/arm/plat-omap/gpio.c index
+30cb7d4..114ccf0 100644
+--- a/arch/arm/plat-omap/gpio.c
++++ b/arch/arm/plat-omap/gpio.c
+@@ -1272,7 +1272,7 @@ static void gpio_irq_handler(unsigned int irq, struct
+irq_desc *desc)
+ 	u32 retrigger = 0;
+ 	int unmasked = 0;
+
+-	desc->irq_data.chip->irq_ack(&desc->irq_data);
++	desc->irq_data.chip->irq_mask_ack(&desc->irq_data);
+
+ 	bank = get_irq_data(irq);
+ #ifdef CONFIG_ARCH_OMAP1
+
+-- 
+                                                                Gilles.
 
 
