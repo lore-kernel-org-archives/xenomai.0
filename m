@@ -1,14 +1,14 @@
-From: "Terry Fryar" <terry.fryar@domain.hid>
-References: <9BF63BF19AC3441EB4E1567EB07B78A0@domain.hid>
-	<4F14BF9B.6030706@domain.hid>
-In-Reply-To: <4F14BF9B.6030706@domain.hid>
-Date: Tue, 17 Jan 2012 10:25:31 -0600
-Message-ID: <2F9F10CEA75644AA8CF542029C058C57@domain.hid>
+From: "Benner Bernd (MH/EES)" <B.Benner@domain.hid>
+Date: Fri, 20 Jan 2012 16:31:50 +0100
+Message-ID: <294B28951EBE8146839AF99A61CB5FCE6C916508C7@domain.hid>
+References: <4F167BD2.306@domain.hid> <4F16A454.5010602@domain.hid>
+In-Reply-To: <4F16A454.5010602@domain.hid>
+Content-Language: de-DE
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Xenomai IRQ question
+Subject: Re: [Xenomai-help] ensuring code running in kernel modules has
+ realtime priority
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -18,36 +18,91 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: 'Gilles Chanteperdrix' <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: "rolandtollenaar@domain.hid" <rolandtollenaar@domain.hid>
+Cc: "Xenomai-help@domain.hid" <Xenomai-help@domain.hid>
 
-Ok, on a falling edge irq, I'm using an RTDM driver and I'm down to 2.3uS,
-which is quite an improvement.  However, it's still not fast enough...I need
-to hit a window of about 500nS.  Any other suggestions?
+Hi Roland,
 
-I use the rtdm_irq_request to hook the ISR, and I set up the irq by hand
-using mem mapping to directly access the registers on the beagle.  At this
-point, I'm not sure where else to try and speed things up?
+  i think that there is a commercial ethercat master with a xenomai rtdm in=
+terface available
+from koenig ( https://koenig-pa.com )
 
-Thanks!
+  We are using a open source linux ethercat master ( http://www.etherlab.or=
+g/de/ethercat/index.php )
+from IGH.
+
+  I have developed a xenomai rtdm realtime interface for this igh ethercat =
+master. All sources of this interface are now part of the development tree =
+of the IGH- ethercat Master and can be downloaded from the IGH- website.
+
+  My way was to do all initializations and slow non realtime stuff ( SDO et=
+c.) with the linux device interface and attach the rtdm driver to the runni=
+ng master and port only the "send","receive" and "process domain" ioctrl to=
+ rtdm. But this will only work if your master will not use the linux networ=
+k layer.
+
+   The IGH master works, because special patched network drivers are part o=
+f the project and there is no other linux interfacing in the real time path=
+ . ( The Igh Master is designed for RTAI )
 
 
------Original Message-----
-From: Gilles Chanteperdrix [mailto:gilles.chanteperdrix@xenomai.org] 
-Sent: Monday, January 16, 2012 6:24 PM
-To: Terry Fryar
-Cc: xenomai@xenomai.org
-Subject: Re: [Xenomai-help] Xenomai IRQ question
+Mit freundlichen Gr=FC=DFen / Best Regards
+Bernd Benner
+MH/SGT3
+moehwald
+Bosch Group
+Moehwald GmbH
+Michelinstra=DFe 21
+66424 Homburg
+GERMANY
+www.moehwald.de
+Tel.: +49 (0)6841 707-229
+b.benner@domain.hid
+Moehwald GmbH, Sitz/Registered Office: Homburg/Saar, Zentrales Handelsregis=
+ter/Registered Court: Saarbr=FCcken HRB 2812
+Gesch=E4ftsf=FChrung/Managing Directors: Christian Artmann, Wolfgang Geenen
 
-On 01/17/2012 12:36 AM, Terry Fryar wrote:
-> Using xenomai irq's in user mode on a beaglexm.  It appears that irq 
-> latency is around 44 microseconds from the edge until the isr is 
-> executed.  Is there any way to reduce the latency?  Already using 99 
-> as the priority for the isr task.
 
-Handle the irq in kernel mode using an RTDM driver.
+-----Urspr=FCngliche Nachricht-----
+Von: xenomai-help-bounces@domain.hid [mailto:xenomai-help-bounces@domain.hid] Im =
+Auftrag von Gilles Chanteperdrix
+Gesendet: Mittwoch, 18. Januar 2012 11:52
+An: rolandtollenaar@domain.hid
+Cc: RT; Xenomai-help@domain.hid
+Betreff: Re: [Xenomai-help] ensuring code running in kernel modules has rea=
+ltime priority
 
--- 
-                                                                Gilles.
+On 01/18/2012 08:59 AM, RT wrote:
+> Hi all,
+>
+> we have an interesting situation. We are using a module to do
+> communication over a network (ethercat master module) to some remote IO.
+>
+> The ethercat module is loaded against the kernel in the normal manner.
+>
+> Now we possibly have overlooked that even though the call to the
+> ethercat module (ioctl call) from our real-time application takes
+> place in a xenomai real time task, the code of the ethercatmodule may
+> be interrupted by other processes running on the machine. Due to the
+> fact that the modules code is not running in any real-time prioritized sp=
+ace.
+>
+> If this is indeed the case, what would be the best or easiest manner
+> to ensure that the module does not get interrupted, ie. to encapsulate
+> it into the xenomai real-time priority sphere?
+>
+> Hope someone can point us in the right direction here. Its pretty
+> urgent because the system is already running live and we are
+> intermittently encountering this problem.
 
+If I understand correctly, what you need is to rewrite the ethercat driver =
+as a real-time driver using the RTDM skin.
+
+--
+                                            Gilles.
+
+_______________________________________________
+Xenomai-help mailing list
+Xenomai-help@domain.hid
+https://mail.gna.org/listinfo/xenomai-help
 
