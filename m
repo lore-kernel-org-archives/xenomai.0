@@ -1,15 +1,18 @@
-Message-ID: <4F1C5DB8.1080001@domain.hid>
-Date: Sun, 22 Jan 2012 20:04:24 +0100
-From: Manfred <manfred@domain.hid>
+From: "Terry Fryar" <terry.fryar@domain.hid>
+References: <C65BAE4E2DF04BD68697066C4075EC78@domain.hid>
+	<4F19B046.6090504@domain.hid>
+	<D2F2766145E048789E0063D6F386E760@domain.hid>
+	<4F19B324.8080001@domain.hid>
+	<DE531AD0193E45018B21711AD3A8DB03@domain.hid>
+	<4F1AE22D.4070509@domain.hid>
+In-Reply-To: <4F1AE22D.4070509@domain.hid>
+Date: Sun, 22 Jan 2012 17:32:46 -0600
+Message-ID: <132E775E779D4C6A821C8E2C461DA578@domain.hid>
 MIME-Version: 1.0
-References: <4F1080E8.6020408@domain.hid>	<4F1082E5.8000501@domain.hid>	<4F132A7E.4000000@domain.hid>
-	<4F16F028.6020507@domain.hid> <4F16F401.2090308@domain.hid>
-	<4F184E42.6060300@domain.hid> <4F19581A.8070300@domain.hid>
-	<4F197D0C.4060407@domain.hid>
-In-Reply-To: <4F197D0C.4060407@domain.hid>
-Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
+Content-Type: text/plain;
+	charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Omap3630, rtserial, xeno_16550A: crash on insmod
+Subject: Re: [Xenomai-help] rtdm difficulties
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -19,110 +22,90 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Fabrice Gasnier <fabrice.gasnier@domain.hid>
+To: 'Gilles Chanteperdrix' <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
+I think the irq ticking to fast is correct....these are firing very, very
+quickly, and if I clear out the irq flag register myself in the isr, it
+works for quite a while.  If I don't, the stack overflows pretty fast.  I'll
+try both patches and report back.
 
-On 1/20/12 3:41 PM, Fabrice Gasnier wrote:
-> Dear all, Manfred,
->
-> Please find interleaved answers/questions.
->
-> On 20/01/2012 13:03, Manfred wrote:
->> Hi All,
->>
->> I tested the patch on my omap3630 and I ran the cross-link test.
->> It works. I want to thank Fabrice Gasnier from my side.
-> you're welcome.
->>
->> I have, however, the following suggestions/questions to the patch:
->> - If I got it right, the errata only affects the RX_fifo (not the tx_fifo),
->> so I suggest to handle those cases separately and usually call the normal reg_in,
- >> and put the cases were we access RHR in "#ifdef omap"-clauses
-> It also cares about tx fifo full condition: in rt_16550_reg_out():
-> lsr = rt_16550_omap_raw_reg_in(io_mode, base, rshift, LSR);
-> while (!(lsr&  RTSER_LSR_THR_EMTPY)) {
-> 	/* Wait up to 10ms for the character(s) to be sent. */
-> 	if(--tmout == 0)
-> 		break;
-> 	rtdm_task_sleep(1000);
-> 	lsr = rt_16550_omap_raw_reg_in(io_mode, base, rshift, LSR);
-> }
->
+I'm not sure what the kernel does with the irq status register in the omap
+code, but if this was a microprocessor binary, I'd have to reset the
+register flags in my isr myself, since there's no o/s to do it.  I wasn't
+sure in the linux world if this was required...I assumed it was not, as you
+said, but clearing it out in the middle of the isr does help prevent so many
+irq's from ticking and greatly improves the odds against a stack overflow.
+I have noticed I am now (with little load) able to have irq latency around
+1.8us....pretty fast!
 
+I'll let you know how the patches fare......
 
-Ok, I could reproduce the tx fifo full condition (I could not find the 
-precise errata, but it is indeed mentioned in the omap-serial.c )
-Nevertheless, I would prefer any solution that avoids timeouts and keeps 
-the if-statements to a minimum in these performance-critical parts.
+Thanks Gilles & Philippe!!  Your help is always much appreciated!!
 
-For the tx_fifo full errata I would suggest the following:
-(The idea is to read the current tx_fifo_level before writing, and make 
-sure we don't fill it)
---------
+-----Original Message-----
+From: Gilles Chanteperdrix [mailto:gilles.chanteperdrix@xenomai.org] 
+Sent: Saturday, January 21, 2012 10:05 AM
+To: Terry Fryar
+Cc: xenomai@xenomai.org
+Subject: Re: [Xenomai-help] rtdm difficulties
 
-static inline void rt_16550_tx_interrupt(struct rt_16550_context *ctx)
-{
-	int c;
-	int count;
-	unsigned long base = ctx->base_addr;
-	unsigned char regshift = ctx->regshift;
-	int mode = rt_16550_io_mode_from_ctx(ctx);
+On 01/20/2012 08:37 PM, Terry Fryar wrote:
+> Ok, I'll try the patch.  A question though...on the beagle, there is a 
+> OMAP register GPIO_IRQSTATUSx that I am not manually clearing out.  
+> This is the only place to ack an irq I know of...I assumed that was 
+> being handled by the kernel?  Or is this what the patch is adding??  
+> I'm very new to writing irq handlers, as you can tell!
 
-	unsigned char tx_fifo_level=0;
-#if defined (CONFIG_ARCH_OMAP3) || \
-defined (CONFIG_ARCH_OMAP4)
-	/*Make sure we don't overrun the txfifo*/
-      tx_fifo_level=rt_16550_reg_in(io_mode,base,rshift,TXFIFO_LVL_REG);
-#endif
+I am not sure what you are talking about, but I guess you do not have to
+clear anything on the omap side, the irq demuxing side should take care
+about it.
 
-/*	if (uart->modem & MSR_CTS)*/
-	{
-		for (count = ctx->tx_fifo-tx_fifo_level;
-		     (count > 0) && (ctx->out_npend > 0);
-		     count--, ctx->out_npend--) {
-			c = ctx->out_buf[ctx->out_head++];
-			rt_16550_reg_out(mode, base, regshift, THR, c);
-			ctx->out_head &= (OUT_BUFFER_SIZE - 1);
-		}
-	}
-}
--------
+The problem you have look like the edge irq is ticking to fast, and causing
+an overflow because we are re-enabling irqs in the middle of the irq
+demuxing code. So, if the patch I sent does not solve the issue, please try
+the following one. Note that if the irq is indeed ticking to fast, you are
+going to replace the stack overflow with a complete lock-up.
 
-I tested the code with long writes on my platform (250 bytes) (fifo is 
-64) at 9600Baud (slow on purpose) with the periodic task at 10Hz 
-(standard) and it seems to work.
+diff --git a/arch/arm/plat-omap/gpio.c b/arch/arm/plat-omap/gpio.c index
+30cb7d4..9c9b6d7 100644
+--- a/arch/arm/plat-omap/gpio.c
++++ b/arch/arm/plat-omap/gpio.c
+@@ -1229,13 +1229,14 @@ static void gpio_demux_inner(struct gpio_bank *bank,
+u32 isr, int nonroot)
+ 	for (; isr != 0; isr >>= 1, gpio_irq++) {
+ 		if (!(isr & 1))
+ 			continue;
+-
++#if 0
+ #ifdef CONFIG_IPIPE
+ 		if (nonroot) {
+ 			local_irq_enable_hw();
+ 			local_irq_disable_hw();
+ 		}
+ #endif /* CONFIG_IPIPE */
++#endif
+ 
+ #ifdef CONFIG_ARCH_OMAP1
+ 		gpio_index = get_gpio_index(irq_to_gpio(gpio_irq));
+@@ -1308,12 +1309,14 @@ static void gpio_irq_handler(unsigned int irq,
+struct irq_desc *desc)
+ 		u32 isr_saved, level_mask = 0;
+ 		u32 enabled;
+ 
++#if 0
+ #ifdef CONFIG_IPIPE
+ 		if (!bank->nonroot_gpios) {
+ 			local_irq_enable_hw();
+ 			local_irq_disable_hw();
+ 		}
+ #endif /* CONFIG_IPIPE */
++#endif
+ 
+ 		enabled = _get_gpio_irqbank_mask(bank);
+ 		isr_saved = isr = __raw_readl(isr_reg) & enabled;
 
-I have however some more issues (which appear also with your original 
-patch):
-- when I try to push the cross-link.c example to the limit , by 
-increasing the frequency of the periodic tasks to 500Hz (was 10Hz). I 
-get corrupt data after some 1000 iterations. (The timestamp suddenly 
-jumps from 70000 to a very high value). If I interrupt the code then and 
-want to start it again, the machine freezes (If I first unload and 
-reload the kernel module, the machine does not freeze). So my guess is, 
-that the write function is being interrupted by a read-interrupt before 
-finishing the write. But somehow this seems not to be catched by the 
-corresponding error-handler (number of bytes written <size)
-
-- Is there a debug-tool for xenomai to see where the code has been 
-interrupted, or which interrupts have been handled recently. Or can I 
-prevent the write-routine from being interrupted?
-
-- Has anyone tried to push the cross-link example on a different 
-platform to the limit, and seen similar effects?
-
-- I would also like to enable parity bits on the serial link, but if I 
-set the config_flags (for write and read device) like this:
-.parity            = RTSER_ODD_PARITY,
-cross-link hangs before the first read ... and freezes the machine..
-Has anyone tried using Parity bits with xeno_16550A ? Do I have to 
-change other flags to make it work?
-
-Regards,
-Manfred
-
-
-
+-- 
+                                                                Gilles.
 
 
