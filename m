@@ -1,16 +1,15 @@
-From: Josh Karch <JKarch@domain.hid>
-Date: Sat, 21 Jan 2012 10:03:38 -0800
-Message-ID: <843773D242212C4882D4EDFFBF665F7F68D61329E2@domain.hid>
-References: <4F0B90C6.8040007@domain.hid>
-	<4F0C9C25.5080401@domain.hid><4F17631A.6010106@domain.hid>
-	<8CEA4D12D68967C-DB8-14FF@Webmail-m116.sysops.aol.com>,
-	<80A79EDED75A4BD58EE65ACF6771D871@domain.hid>
-In-Reply-To: <80A79EDED75A4BD58EE65ACF6771D871@domain.hid>
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+Message-ID: <4F1C5DB8.1080001@domain.hid>
+Date: Sun, 22 Jan 2012 20:04:24 +0100
+From: Manfred <manfred@domain.hid>
 MIME-Version: 1.0
-Subject: Re: [Xenomai-help] Arm support for 3.2 kernel?
+References: <4F1080E8.6020408@domain.hid>	<4F1082E5.8000501@domain.hid>	<4F132A7E.4000000@domain.hid>
+	<4F16F028.6020507@domain.hid> <4F16F401.2090308@domain.hid>
+	<4F184E42.6060300@domain.hid> <4F19581A.8070300@domain.hid>
+	<4F197D0C.4060407@domain.hid>
+In-Reply-To: <4F197D0C.4060407@domain.hid>
+Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] Omap3630, rtserial, xeno_16550A: crash on insmod
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -20,74 +19,110 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Terry Fryar <terry.fryar@domain.hid>, "babbittner@domain.hid" <babbittner@domain.hid>, "xenomai@xenomai.org" <xenomai@xenomai.org>
-
-I just picked up a Beaglebone and third the vote for Xenomai.  It would be =
-great to get access to the PRUSS modules and generate hardware PWM as well =
-from a real time perspective.
-________________________________________
-From: xenomai-help-bounces@domain.hid [xenomai-help-bounces@domain.hid] On Behalf=
- Of Terry Fryar [terry.fryar@domain.hid]
-Sent: Thursday, January 19, 2012 8:43 AM
-To: babbittner@domain.hid; xenomai@xenomai.org
-Subject: Re: [Xenomai-help] Arm support for 3.2 kernel?
-
-I second the vote for 3.1...in fact for beaglebone xenomai support as well.=
-....
-
-________________________________
-From: xenomai-help-bounces@domain.hid [mailto:xenomai-help-bounces@domain.hid] On=
- Behalf Of babbittner@domain.hid
-Sent: Thursday, January 19, 2012 8:53 AM
-To: xenomai@xenomai.org
-Subject: Re: [Xenomai-help] Arm support for 3.2 kernel?
-
-I vote for 3.1 support.  There is no 3.1 realtime alternative at this point=
-.  It would be nice to get some realtime support for the BeagleBone which i=
-s on 3.1, probably for several months.
-
-<I apologize for the aol email, some day I'll get some real email.>
-
------Original Message-----
-From: Mitchell Tasman <tasman@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
-Sent: Wed, Jan 18, 2012 6:28 pm
-Subject: Re: [Xenomai-help] Arm support for 3.2 kernel?
+To: Fabrice Gasnier <fabrice.gasnier@domain.hid>
+Cc: xenomai@xenomai.org
 
 
-On 01/10/2012 03:14 PM, Gilles Chanteperdrix wrote:
-> On 01/10/2012 02:13 AM, Mitchell Tasman wrote (in part):
->> Hi.  I saw the recent discussion regarding ARM I-pipe and 3.x, and am
->> wondering if anyone can hazard a guess as to a timetable for 3.2 support=
-?
+On 1/20/12 3:41 PM, Fabrice Gasnier wrote:
+> Dear all, Manfred,
 >
-> 3.0 is on its way. 3.1 will be next because it is the first version to
-> support a new I-pipe architecture, so I was hoping to be able to skip 3.2=
-...
+> Please find interleaved answers/questions.
+>
+> On 20/01/2012 13:03, Manfred wrote:
+>> Hi All,
+>>
+>> I tested the patch on my omap3630 and I ran the cross-link test.
+>> It works. I want to thank Fabrice Gasnier from my side.
+> you're welcome.
+>>
+>> I have, however, the following suggestions/questions to the patch:
+>> - If I got it right, the errata only affects the RX_fifo (not the tx_fifo),
+>> so I suggest to handle those cases separately and usually call the normal reg_in,
+ >> and put the cases were we access RHR in "#ifdef omap"-clauses
+> It also cares about tx fifo full condition: in rt_16550_reg_out():
+> lsr = rt_16550_omap_raw_reg_in(io_mode, base, rshift, LSR);
+> while (!(lsr&  RTSER_LSR_THR_EMTPY)) {
+> 	/* Wait up to 10ms for the character(s) to be sent. */
+> 	if(--tmout == 0)
+> 		break;
+> 	rtdm_task_sleep(1000);
+> 	lsr = rt_16550_omap_raw_reg_in(io_mode, base, rshift, LSR);
+> }
+>
 
-Thank you for your response to my question(s).  I noticed that an arm
-I-pipe patchset for 3.0.13 recently landed in git.
 
-Might you consider making 3.2 the next target for arm I-pipe support
-rather than 3.1?  It seems that 3.1 is already being end-of-lifed, and
-e.g., that the RT-Preempt community has jumped directly from 3.0 to 3.2.
+Ok, I could reproduce the tx fifo full condition (I could not find the 
+precise errata, but it is indeed mentioned in the omap-serial.c )
+Nevertheless, I would prefer any solution that avoids timeouts and keeps 
+the if-statements to a minimum in these performance-critical parts.
 
-Thanks again and best regards.
+For the tx_fifo full errata I would suggest the following:
+(The idea is to read the current tx_fifo_level before writing, and make 
+sure we don't fill it)
+--------
+
+static inline void rt_16550_tx_interrupt(struct rt_16550_context *ctx)
+{
+	int c;
+	int count;
+	unsigned long base = ctx->base_addr;
+	unsigned char regshift = ctx->regshift;
+	int mode = rt_16550_io_mode_from_ctx(ctx);
+
+	unsigned char tx_fifo_level=0;
+#if defined (CONFIG_ARCH_OMAP3) || \
+defined (CONFIG_ARCH_OMAP4)
+	/*Make sure we don't overrun the txfifo*/
+      tx_fifo_level=rt_16550_reg_in(io_mode,base,rshift,TXFIFO_LVL_REG);
+#endif
+
+/*	if (uart->modem & MSR_CTS)*/
+	{
+		for (count = ctx->tx_fifo-tx_fifo_level;
+		     (count > 0) && (ctx->out_npend > 0);
+		     count--, ctx->out_npend--) {
+			c = ctx->out_buf[ctx->out_head++];
+			rt_16550_reg_out(mode, base, regshift, THR, c);
+			ctx->out_head &= (OUT_BUFFER_SIZE - 1);
+		}
+	}
+}
+-------
+
+I tested the code with long writes on my platform (250 bytes) (fifo is 
+64) at 9600Baud (slow on purpose) with the periodic task at 10Hz 
+(standard) and it seems to work.
+
+I have however some more issues (which appear also with your original 
+patch):
+- when I try to push the cross-link.c example to the limit , by 
+increasing the frequency of the periodic tasks to 500Hz (was 10Hz). I 
+get corrupt data after some 1000 iterations. (The timestamp suddenly 
+jumps from 70000 to a very high value). If I interrupt the code then and 
+want to start it again, the machine freezes (If I first unload and 
+reload the kernel module, the machine does not freeze). So my guess is, 
+that the write function is being interrupted by a read-interrupt before 
+finishing the write. But somehow this seems not to be catched by the 
+corresponding error-handler (number of bytes written <size)
+
+- Is there a debug-tool for xenomai to see where the code has been 
+interrupted, or which interrupts have been handled recently. Or can I 
+prevent the write-routine from being interrupted?
+
+- Has anyone tried to push the cross-link example on a different 
+platform to the limit, and seen similar effects?
+
+- I would also like to enable parity bits on the serial link, but if I 
+set the config_flags (for write and read device) like this:
+.parity            = RTSER_ODD_PARITY,
+cross-link hangs before the first read ... and freezes the machine..
+Has anyone tried using Parity bits with xeno_16550A ? Do I have to 
+change other flags to make it work?
+
+Regards,
+Manfred
 
 
-_______________________________________________
-Xenomai-help mailing list
-Xenomai-help@domain.hid
-https://mail.gna.org/listinfo/xenomai-help
 
 
-
-IMPORTANT/CONFIDENTIAL: This message contains information from Frontier Win=
-d LLC which may be privileged, confidential, or exempt from disclosure unde=
-r applicable law. If the reader of this message is not the intended recipie=
-nt, or the employee or agent responsible for delivering the message to the =
-intended recipient, you are hereby notified that any dissemination, distrib=
-ution, retention, archiving, or copying the communication is strictly prohi=
-bited. If you have received this communication in error, please notify us i=
-mmediately by return e-mail.
 
