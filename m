@@ -1,18 +1,9 @@
 MIME-Version: 1.0
-Sender: manuel.vonthron@domain.hid
-In-Reply-To: <4F1DBC6B.3070502@domain.hid>
-References: <CA+vRzyJBZswywEyhG8JUXZRr3j7tKwhOaT1nKJti4ScLn7sZLg@domain.hid>
-	<4F173B1C.3000300@domain.hid>
-	<CA+vRzy+ezWaWjp3mnGgD5VGaHqzcrK7MN47sww48y6xqT1NT9A@mail.gmail.com>
-	<4F187F9B.4070203@domain.hid>
-	<CA+vRzyLS2gMFBWCVZqv2oeSENvxacUugVViMXN+yGAMz5ubrxg@domain.hid>
-	<4F1DBC6B.3070502@domain.hid>
-From: Manuel Vonthron <manuel.vonthron@domain.hid>
-Date: Mon, 23 Jan 2012 15:19:18 -0500
-Message-ID: <CA+vRzy+X7ufmgKpveu+mRUCj6CYfB=WWZ0XbnKP8aXQZLN-tnQ@mail.gmail.com>
-Content-Type: multipart/alternative; boundary=bcaec50160cfff315704b737bf88
-Subject: Re: [Xenomai-help] "Inappropriate ioctl for device" with
- xeno_16550A on Xenomai 2.6, not Xenomai 2.5
+Date: Wed, 25 Jan 2012 09:42:52 -0600
+Message-ID: <CAL0cVRD26O9Z+afvp0NGQp3qHaAKk-2Cz+dwygZXcD_30HVyDQ@mail.gmail.com>
+From: Christopher Roberts <adrath@domain.hid>
+Content-Type: multipart/alternative; boundary=f46d0401fc57dfe54804b75c1d36
+Subject: [Xenomai-help] Xenomai and Pandaboard
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -22,95 +13,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
---bcaec50160cfff315704b737bf88
+--f46d0401fc57dfe54804b75c1d36
 Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
 
-> I guess you would get some error message if the driver was not working,
-> did you check the kernel logs?
->
+I've been trying to build a working kernel with Xenomai librarys for the
+last couple of days, and keep running into snags. Its the first time I've
+ever tried to build a kernel before, though I do have some experience with
+Linux and embedded systems.
 
-There isn't  even a warning. Here is what I get when running my app (from
-syslog):
-  Jan 23 15:14:38 mrsub kernel: [445923.280301] Xenomai: RTDM: closing file
-descriptor 0.
-  Jan 23 15:14:38 mrsub kernel: [445923.301782] Xenomai: native: cleaning
-up heap "" (ret=3D0).
-  Jan 23 15:14:38 mrsub kernel: [445923.323247] Xenomai: native: cleaning
-up mutex "ctrl-mutex" (ret=3D0).
+So far, I've tried using a cross toolchchain built using Buildroot 2011.8,
+which I used to make x-loader and u-loader, both of which appear to work,
+then the 2.6.38.8 kernel with xenomai 2.6.0, which seems to compile
+correctly, but on boot up the board halts after unpacking the kernel (both
+front lights stay on and it never tries to actually start up the hardware).
+So next I tried building it on a working Ubunutu 11.10 image running on the
+pandaboard, but I was never able to successfully build the kernel that way.
 
-(on a separate note, in this log, the RT heap name isn't found while it
-actually exists in /proc/xenomai/heap)
+Any advice I could get on what I'm doing wrong would be
+greatly appreciated.
 
-I have no message when "modprobing" the driver.
+Thanks,
+Chris
 
-
-
-
-> >
-> > Thanks
-> >
-> >
-> >
->
->
-> --
->                                                                Gilles.
->
-
-
-
---=20
-Manuel Vonthron
-Laboratoire de Nanorobotique
-=C9cole Polytechnique de Montr=E9al
-Montr=E9al, QC
-http://nano.polymtl.ca/
-
---bcaec50160cfff315704b737bf88
+--f46d0401fc57dfe54804b75c1d36
 Content-Type: text/html; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
-<br>
-<div class=3D"gmail_quote"><blockquote class=3D"gmail_quote" style=3D"margi=
-n:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">I guess you would=
- get some error message if the driver was not working,<br>
-did you check the kernel logs?<br></blockquote><div><br>There isn&#39;t=A0 =
-even a warning. Here is what I get when running my app (from syslog):<br>=
-=A0 Jan 23 15:14:38 mrsub kernel: [445923.280301] Xenomai: RTDM: closing fi=
-le descriptor 0.<br>
+<div>I&#39;ve been trying to build a working=A0kernel=A0with Xenomai librar=
+ys for the last couple of days, and keep running into snags. Its the first =
+time I&#39;ve ever tried to build a kernel before, though I do have some ex=
+perience with Linux and=A0embedded=A0systems.=A0</div>
+<div><br></div><div>So far,=A0I&#39;ve=A0tried using a cross toolchchain=A0=
+built=A0using Buildroot 2011.8, which I used to make x-loader and u-loader,=
+ both of which appear to work, then the 2.6.38.8 kernel with xenomai 2.6.0,=
+ which seems to compile correctly, but on boot up the board halts after unp=
+acking the kernel (both front lights stay on and it never tries to actually=
+ start up the hardware). So next I tried building it on a working Ubunutu 1=
+1.10 image running on the pandaboard, but I was never able to=A0successfull=
+y=A0build the kernel that way.</div>
+<div><br></div><div>Any advice I could get on what I&#39;m doing wrong woul=
+d be greatly=A0appreciated.=A0</div><div><br></div><div>Thanks,</div><div>C=
+hris</div>
 
-=A0 Jan 23 15:14:38 mrsub kernel: [445923.301782] Xenomai: native: cleaning=
- up heap &quot;&quot; (ret=3D0).<br>=A0 Jan 23 15:14:38 mrsub kernel: [4459=
-23.323247] Xenomai: native: cleaning up mutex &quot;ctrl-mutex&quot; (ret=
-=3D0).<br>
-
-<br>(on a separate note, in this log, the RT heap name isn&#39;t found whil=
-e it actually exists in /proc/xenomai/heap)<br><br>I have no message when &=
-quot;modprobing&quot; the driver.<br><br><br>=A0</div><blockquote class=3D"=
-gmail_quote" style=3D"margin:0pt 0pt 0pt 0.8ex;border-left:1px solid rgb(20=
-4,204,204);padding-left:1ex">
-
-
-&gt;<br>
-&gt; Thanks<br>
-&gt;<br>
-&gt;<br>
-&gt;<br>
-<span class=3D"HOEnZb"><font color=3D"#888888"><br>
-<br>
---<br>
- =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
-=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0Gilles.<br>
-</font></span></blockquote></div><br><br clear=3D"all"><br>-- <br>Manuel Vo=
-nthron<br>Laboratoire de Nanorobotique<br>=C9cole Polytechnique de Montr=E9=
-al<br>Montr=E9al, QC<br><a href=3D"http://nano.polymtl.ca/" target=3D"_blan=
-k">http://nano.polymtl.ca/</a><br>
-
-
-
---bcaec50160cfff315704b737bf88--
+--f46d0401fc57dfe54804b75c1d36--
 
