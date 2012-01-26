@@ -1,59 +1,117 @@
-Message-ID: <4EF5D57B.2080305@domain.hid>
-Date: Sat, 24 Dec 2011 14:36:59 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4F217B48.5050905@domain.hid>
+Date: Thu, 26 Jan 2012 17:11:52 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <CADwQ9Q51ze5gtxU9ObHqGxW8nJpM--eQhWvzmf5y2MhcxN0xXQ@mail.gmail.com>
-In-Reply-To: <CADwQ9Q51ze5gtxU9ObHqGxW8nJpM--eQhWvzmf5y2MhcxN0xXQ@mail.gmail.com>
+References: <4F202C11.70908@domain.hid> <4F202F4E.6000708@domain.hid>
+	<4F203237.2010102@domain.hid> <4F203353.8030302@domain.hid>
+	<4F2035B6.6090105@domain.hid> <4F203771.6070708@domain.hid>
+	<4F203F7F.70509@domain.hid> <4F204466.1040603@domain.hid>
+	<4F212CC4.6060001@domain.hid> <4F216952.7010009@domain.hid>
+	<4F216C09.5040809@domain.hid> <4F2176BF.5070900@domain.hid>
+In-Reply-To: <4F2176BF.5070900@domain.hid>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] How to Adapt ARM I-pipe patch to S3C6410
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-core] [PATCH] Add sigdebug unit test
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: =?UTF-8?B?6ZmI5pmT?= <chenzl92@domain.hid>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-On 12/24/2011 03:10 AM, =E9=99=88=E6=99=93 wrote:
-> sorry for the mistake,my ipipe-patch is
-> adeos-ipipe-2.6.37.6-arm-1.18-03   ,and where can I get the new
-> "HowTo" as it maybe out of date.
-> As I said,I add the printascii function in the begin of
-> start_kernel(),but it didn't print out ,so I believe it didn't go to
-> the start_kernel. I also add the printascii function to the
-> arch/arm/kernel/head.S,I found when it run to "enable the mmu" it
-> stopped. I believe the .config file works well before I patch the
-> xenomai .I also believe the xenomai has nothing to do with the setup
-> of hardware before the kernel startup.
->=20
+On 2012-01-26 16:52, Gilles Chanteperdrix wrote:
+> On 01/26/2012 04:06 PM, Jan Kiszka wrote:
+>> On 2012-01-26 15:55, Gilles Chanteperdrix wrote:
+>>> On 01/26/2012 11:36 AM, Jan Kiszka wrote:
+>>>> On 2012-01-25 19:05, Jan Kiszka wrote:
+>>>>> On 2012-01-25 18:44, Gilles Chanteperdrix wrote:
+>>>>>> On 01/25/2012 06:10 PM, Jan Kiszka wrote:
+>>>>>>> On 2012-01-25 18:02, Gilles Chanteperdrix wrote:
+>>>>>>>> On 01/25/2012 05:52 PM, Jan Kiszka wrote:
+>>>>>>>>> On 2012-01-25 17:47, Jan Kiszka wrote:
+>>>>>>>>>> On 2012-01-25 17:35, Gilles Chanteperdrix wrote:
+>>>>>>>>>>> On 01/25/2012 05:21 PM, Jan Kiszka wrote:
+>>>>>>>>>>>> We had two regressions in this code recently. So test all 6 possible
+>>>>>>>>>>>> SIGDEBUG reasons, or 5 if the watchdog is not available.
+>>>>>>>>>>>
+>>>>>>>>>>> Ok for this test, with a few remarks:
+>>>>>>>>>>> - this is a regression test, so should go to
+>>>>>>>>>>> src/testsuite/regression(/native), and should be added to the
+>>>>>>>>>>> xeno-regression-test
+>>>>>>>>>>
+>>>>>>>>>> What are unit test for (as they are defined here)? Looks a bit inconsistent.
+>>>>>>>>
+>>>>>>>> I put under "regression" all the tests I have which corresponded to
+>>>>>>>> things that failed one time or another in xenomai past. Maybe we could
+>>>>>>>> move unit tests under regression.
+>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>>> - we already have a regression test for the watchdog called mayday.c,
+>>>>>>>>>>> which tests the second watchdog action, please merge mayday.c with
+>>>>>>>>>>> sigdebug.c (mayday.c also allows checking the disassembly of the code in
+>>>>>>>>>>> the mayday page, a nice feature)
+>>>>>>>>>>
+>>>>>>>>>> It seems to have failed in that important last discipline. Need to check
+>>>>>>>>>> why.
+>>>>>>>>>
+>>>>>>>>> Because it didn't check the page content for correctness. But that's now
+>>>>>>>>> done via the new watchdog test. I can keep the debug output, but the
+>>>>>>>>> watchdog test of mayday looks obsolete to me. Am I missing something?
+>>>>>>>>
+>>>>>>>> The watchdog does two things: it first sends a SIGDEBUG, then if the
+>>>>>>>> application is still spinning, it sends a SIGSEGV. As far as I
+>>>>>>>> understood, you test tests the first case, and mayday tests the second
+>>>>>>>> case, so, I agree that mayday should be removed, but whatever it tests
+>>>>>>>> should be integrated in the sigdebug test.
+>>>>>>>>
+>>>>>>>
+>>>>>>> Err... SIGSEGV is not a feature, it was the bug I fixed today. :) So the
+>>>>>>> test case actually specified a bug as correct behavior.
+>>>>>>>
+>>>>>>> The fallback case is in fact killing the RT task as before. But I'm
+>>>>>>> unsure right now: will this leave the system always in a clean state
+>>>>>>> behind?
+>>>>>>
+>>>>>> The test case being a test case and doing nothing particular, I do not
+>>>>>> see what could go wrong. And if something goes wrong, then it needs fixing.
+>>>>>
+>>>>> Well, if you kill a RT task while it's running in the kernel, you risk
+>>>>> inconsistent system states (held mutexex etc.). In this case the task is
+>>>>> supposed to spin in user space. If that is always safe, let's implement
+>>>>> the test.
+>>>>
+>>>> Had a closer look: These days the two-stage killing is only useful to
+>>>> catch endless loops in the kernel. User space tasks can't get around
+>>>> being migrated on watchdog events, even when SIGDEBUG is ignored.
+>>>>
+>>>> To trigger the enforced task termination without leaving any broken
+>>>> states behind, there is one option: rt_task_spin. Surprisingly for me,
+>>>> it actually spins in the kernel, thus triggers the second level if
+>>>> waiting long enough. I wonder, though, if that behavior shouldn't be
+>>>> improved, ie. the spinning loop be closed in user space - which would
+>>>> take away that option again.
+>>>>
+>>>> Thoughts?
+>>>
+>>> You can also call in an infinite loop, a xenomais syscall which causes a
+>>> switch to primary mode, but fails.
+>>
+>> Nope, we would be migrated to secondary on xnthread_amok_p when
+>> returning to user mode. We need a true kernel loop.
+> 
+> But the loop will continue, and the next call to the syscall will cause
+> the thread to re-switch to primary mode.
 
-There is no updated version of the howto. But the only wrong thing is
-the part about multiplexed interrupts.
+But the "watchdog signal pending" flag will be cleared on each
+migration, thus the watchdog will never enter the second stage.
 
-You should try printascii with a non-patched kernel to verify that
-printascii works for the board you use.
+Jan
 
-As for using printascii around the place where the mmu is enabled, have
-you read the following comment in the kernel sources:
-
-/*
- * Enable the MMU.  This completely changes the structure of the visible
- * memory space.  You will not be able to trace execution through this.
- * If you have an enquiry about this, *please* check the linux-arm-kernel=
-
- * mailing list archives BEFORE sending another post to the list.
-
-Anyway, as early in the boot process the I-pipe patch does not change
-anything, so, your problem does not come from the I-pipe patch. Have you
-tried the exact same config you use with the patched kernel with an
-unpatched kernel?
-
---=20
-                                                                Gilles.
-
+-- 
+Siemens AG, Corporate Technology, CT T DE IT 1
+Corporate Competence Center Embedded Linux
 
