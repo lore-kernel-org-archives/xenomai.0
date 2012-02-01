@@ -1,98 +1,97 @@
-Message-ID: <4F15E2B3.1080502@domain.hid>
-Date: Tue, 17 Jan 2012 22:05:55 +0100
+Message-ID: <4F295C71.6090503@domain.hid>
+Date: Wed, 01 Feb 2012 16:38:25 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CAP1XtZzB34=+B+fwWpswhqfFVMd3YmU4etoYOSxXFOMbEH7myg@domain.hid>	<4F1493B5.1000501@domain.hid>
-	<CAP1XtZyPdegxcce3Xv4mKCbrjspQPQKCL4jeqrVRzubadqX_vg@domain.hid>
-In-Reply-To: <CAP1XtZyPdegxcce3Xv4mKCbrjspQPQKCL4jeqrVRzubadqX_vg@domain.hid>
+References: <4F294E43.7060102@domain.hid> <4F2957A0.6040806@domain.hid>
+	<4F29597F.8050500@domain.hid>
+In-Reply-To: <4F29597F.8050500@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Processor type for installation
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Subject: Re: [Xenomai-core] Built-in libxenomai dependency
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Santiago Focke <focke.85@domain.hid>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Jan Kiszka <jan.kiszka@domain.hid>
+Cc: xenomai-core <xenomai@xenomai.org>
 
-On 01/17/2012 09:19 PM, Santiago Focke wrote:
-> Thanks Gilles for the replay
-> 
-> 2012/1/16 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
->>
->> On 01/16/2012 09:03 PM, Santiago Focke wrote:
->>> Dear all
+On 02/01/2012 04:25 PM, Jan Kiszka wrote:
+> On 2012-02-01 16:17, Gilles Chanteperdrix wrote:
+>> On 02/01/2012 03:37 PM, Jan Kiszka wrote:
+>>> Hi,
 >>>
->>> I've been trying to install Xenomai but I haven't been able to do it
->>> right.  After being able of building and installin the kernel and
-> Xenomai,
->>> I tried to run the example program trivial-periodic, I got the following
->>> error
->>
->> We do not know which kernel version, which xenomai version, which adeos
->> I-pipe version.
->>
-> 
-> Sorry I didn't write the kernel + xenomai specifications. I'm using
-> linux-2.6.38.8 and xenomai 2.6. About Adeos and I-pipe, should I do any
-> kind of installation of the before installing Xenomai??
-> 
+>>> don't remember anymore: Is there any subtle reason that prevent a
+>>> change like
 >>>
->>> /usr/src/xenomai-2.6/examples/native$ ./trivial-periodic
->>> Xenomai: incompatible feature set
->>> (userland requires "tsc fastsynch", kernel provides "sep fastsynch smp",
->>> missing="tsc").
+>>> diff --git a/src/skins/native/Makefile.am b/src/skins/native/Makefile.am
+>>> index 39eaaed..4cc8859 100644
+>>> --- a/src/skins/native/Makefile.am
+>>> +++ b/src/skins/native/Makefile.am
+>>> @@ -22,6 +22,9 @@ libnative_la_SOURCES = \
+>>>  	wrappers.c \
+>>>  	wrappers.h
+>>>  
+>>> +libnative_la_LIBADD = \
+>>> +	../common/libxenomai.la
+>>> +
+>>>  libnative_la_CPPFLAGS = \
+>>>  	@XENO_USER_CFLAGS@ \
+>>>  	-I$(top_srcdir)/include
+>>> diff --git a/src/skins/rtdm/Makefile.am b/src/skins/rtdm/Makefile.am
+>>> index 8ad74be..2dc0a90 100644
+>>> --- a/src/skins/rtdm/Makefile.am
+>>> +++ b/src/skins/rtdm/Makefile.am
+>>> @@ -8,6 +8,9 @@ librtdm_la_SOURCES = \
+>>>  	core.c \
+>>>  	init.c
+>>>  
+>>> +librtdm_la_LIBADD = \
+>>> +	../common/libxenomai.la
+>>> +
+>>>  librtdm_la_CPPFLAGS = \
+>>>  	@XENO_USER_CFLAGS@ \
+>>>  	-I$(top_srcdir)/include
+>>> diff --git a/src/testsuite/latency/Makefile.am b/src/testsuite/latency/Makefile.am
+>>> index c772c26..6534df5 100644
+>>> --- a/src/testsuite/latency/Makefile.am
+>>> +++ b/src/testsuite/latency/Makefile.am
+>>> @@ -14,5 +14,4 @@ latency_LDFLAGS = @XENO_USER_LDFLAGS@
+>>>  latency_LDADD = \
+>>>  	../../skins/native/libnative.la \
+>>>  	../../skins/rtdm/librtdm.la \
+>>> -	../../skins/common/libxenomai.la \
+>>>  	-lpthread -lm
 >>>
->>> I read that the reason for this is that I didn't configure correctly the
->>> processor family (with xconfig). Is that the reason? Also, I've been
-> trying
->>> to know which option should I choose (I chose CONFIG_M586 at the
->>> beggining), but I don't know were to get that information. The CPU info
->>> goes as follows:
+>>> i.e. that we let the skin libraries depend on libxenomai and then remove
+>>> the explicit dependency from our binaries and the xeno-config output?
+>>> Is there some ordering issue again (we have -l<skin> before -lxenomai
+>>> in the ldflags).
 >>>
->>> /proc/cpuinfo
->>>
->>> processor    : 0
->>> vendor_id    : GenuineIntel
->>> cpu family    : 6
->>> model        : 37
->>> model name    : Intel(R) Core(TM) i7 CPU       M 620  @ 2.67GHz
+>>> If possible, this would allow for things like dlopen("libnative.so").
 >>
->> So, you have a core i7, anything newer than "pentium pro" (an older than
->> ten years old architecture) should do, but better select the processor
->> you actually have or the nearest substitute: so, assuming you are
->> compiling a 2.6.38 kernel, "core 2/newer xeon" should do. Also note that
->> a core i7 is able to run in 64 bits mode, so running it in 32 bits mode
->> is a bit a pity.
+>> It allows xeno-config result to work both with dynamic and static
+>> libraries. Static libraries have no dependency system, so, when linking
+>> a program whith libnative.a for instance, without libtool, you still
+>> have to link it with libxenomai.a.
+> 
+> OK, part two could stay, but the dependencies should still be added to
+> the skin libs - if possible.
+> 
 >>
-> Regarding the processor family, i selected 'core 2/newer xeon', and tried
-> to build a 64-bits kernel. But when I tried to boot the new patched kernel,
-> I got the following error and get stacked in the booting:
+>> How come you can not dlopen libnative.so, dlopening libxenomai.so before
+>> does not work?
 > 
-> [     0.051013] ..MP_BIOS bug: 8254 timer not conncted to IO-APIC
-> [     2.338200] EXT3-fs (sda1) error: couldn't mount because of unsupported
-> optional features (240)
-> [     2.362370] EXT3-fs (sda1) error: couldn't mount because of unsupported
-> optional features (240)
-> [     2.400400] request_module: runaway loop modprobebinfmt-464c
-> [     2.400449] request_module: runaway loop modprobebinfmt-464c
-> [     2.400570] request_module: runaway loop modprobebinfmt-464c
-> [     2.400612] request_module: runaway loop modprobebinfmt-464c
-> [     2.400755] request_module: runaway loop modprobebinfmt-464c
-> 
-> I don't know if I did something wrong in the installation process. These
-> were my steps:
+> Dependencies of libnative on libxenomai are not resolved when you open
+> the former even if the latter is already loaded. Maybe you can do this
+> by pulling in all required symbols one by one manually, haven't tried
+> yet. But that would at least be unhandy.
 
-Your kernel is probably not configured correctly. Something is missing
-in the filesystems configuration such as ext4 support.
+What about RTLD_GLOBAL ?
 
-Also note that you need to have a 64 bits root filesystem if you want to
-run xenomai on a 64 bits kernel.
 -- 
-                                                                Gilles.
+					    Gilles.
 
