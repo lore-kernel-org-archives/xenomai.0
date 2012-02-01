@@ -1,54 +1,74 @@
-From: "Terry Fryar" <terry.fryar@domain.hid>
-References: <9BF63BF19AC3441EB4E1567EB07B78A0@domain.hid>
-	<4F14BF9B.6030706@domain.hid>
-	<2F9F10CEA75644AA8CF542029C058C57@domain.hid>
-	<4F15CBB8.1070406@domain.hid>
-In-Reply-To: <4F15CBB8.1070406@domain.hid>
-Date: Tue, 17 Jan 2012 15:01:13 -0600
-Message-ID: <BEBFD9DF7F00405A9DCB6C791E00E3D5@domain.hid>
+Message-ID: <4F294E43.7060102@domain.hid>
+Date: Wed, 01 Feb 2012 15:37:55 +0100
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Xenomai IRQ question
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Subject: [Xenomai-core] Built-in libxenomai dependency
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: 'Gilles Chanteperdrix' <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: xenomai-core <xenomai@xenomai.org>
 
-Ok, thanks Gilles!! 
+Hi,
 
------Original Message-----
-From: Gilles Chanteperdrix [mailto:gilles.chanteperdrix@xenomai.org] 
-Sent: Tuesday, January 17, 2012 1:28 PM
-To: Terry Fryar
-Cc: xenomai@xenomai.org
-Subject: Re: [Xenomai-help] Xenomai IRQ question
+don't remember anymore: Is there any subtle reason that prevent a
+change like
 
-On 01/17/2012 05:25 PM, Terry Fryar wrote:
-> Ok, on a falling edge irq, I'm using an RTDM driver and I'm down to 
-> 2.3uS, which is quite an improvement.  However, it's still not fast 
-> enough...I need to hit a window of about 500nS.  Any other suggestions?
+diff --git a/src/skins/native/Makefile.am b/src/skins/native/Makefile.am
+index 39eaaed..4cc8859 100644
+--- a/src/skins/native/Makefile.am
++++ b/src/skins/native/Makefile.am
+@@ -22,6 +22,9 @@ libnative_la_SOURCES = \
+ 	wrappers.c \
+ 	wrappers.h
+ 
++libnative_la_LIBADD = \
++	../common/libxenomai.la
++
+ libnative_la_CPPFLAGS = \
+ 	@XENO_USER_CFLAGS@ \
+ 	-I$(top_srcdir)/include
+diff --git a/src/skins/rtdm/Makefile.am b/src/skins/rtdm/Makefile.am
+index 8ad74be..2dc0a90 100644
+--- a/src/skins/rtdm/Makefile.am
++++ b/src/skins/rtdm/Makefile.am
+@@ -8,6 +8,9 @@ librtdm_la_SOURCES = \
+ 	core.c \
+ 	init.c
+ 
++librtdm_la_LIBADD = \
++	../common/libxenomai.la
++
+ librtdm_la_CPPFLAGS = \
+ 	@XENO_USER_CFLAGS@ \
+ 	-I$(top_srcdir)/include
+diff --git a/src/testsuite/latency/Makefile.am b/src/testsuite/latency/Makefile.am
+index c772c26..6534df5 100644
+--- a/src/testsuite/latency/Makefile.am
++++ b/src/testsuite/latency/Makefile.am
+@@ -14,5 +14,4 @@ latency_LDFLAGS = @XENO_USER_LDFLAGS@
+ latency_LDADD = \
+ 	../../skins/native/libnative.la \
+ 	../../skins/rtdm/librtdm.la \
+-	../../skins/common/libxenomai.la \
+ 	-lpthread -lm
 
->From what I recall, irq latency under load on a 720 MHz OMAP3 is more around
-20us.
+i.e. that we let the skin libraries depend on libxenomai and then remove
+the explicit dependency from our binaries and the xeno-config output?
+Is there some ordering issue again (we have -l<skin> before -lxenomai
+in the ldflags).
 
-> 
-> I use the rtdm_irq_request to hook the ISR, and I set up the irq by 
-> hand using mem mapping to directly access the registers on the beagle.  
-> At this point, I'm not sure where else to try and speed things up?
+If possible, this would allow for things like dlopen("libnative.so").
 
-500ns is not much. I do not think we support this kind of latency on any
-processor.
+Jan
 
 -- 
-                                                                Gilles.
-
+Siemens AG, Corporate Technology, CT T DE IT 1
+Corporate Competence Center Embedded Linux
 
