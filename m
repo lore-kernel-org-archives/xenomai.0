@@ -1,50 +1,59 @@
-Message-ID: <4F41144E.1020004@domain.hid>
-Date: Sun, 19 Feb 2012 16:25:02 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <4F29DE8A.3080009@domain.hid>
+Date: Wed, 01 Feb 2012 19:53:30 -0500
+From: Mitchell Tasman <tasman@domain.hid>
 MIME-Version: 1.0
-References: <4F3146AA.5070902@domain.hid>
-In-Reply-To: <4F3146AA.5070902@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [PATCH forge] Fix build for relative invocations
- of	configure
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Subject: [Xenomai-help] Handler executed on behalf of rtdm_nrtsig_pend()
+ appears to be running in Linux hardirq, rather than softirq, context
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: xenomai-core <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: xenomai@xenomai.org
 
-On 02/07/2012 04:43 PM, Jan Kiszka wrote:
-> This fixes build setups like '../configure'.
->
+Xenomai documents rtdm_nrtsig_pend() as follows:
 
-Merged, thanks.
+> The signal handler will run in soft-IRQ context of the non-real-time subsystem. Note the implications of this context, e.g. no invocation of blocking operations.
 
-> Signed-off-by: Jan Kiszka<jan.kiszka@domain.hid>
-> ---
->   configure.in |    2 +-
->   1 files changed, 1 insertions(+), 1 deletions(-)
->
-> diff --git a/configure.in b/configure.in
-> index c0a7d17..0bdced8 100644
-> --- a/configure.in
-> +++ b/configure.in
-> @@ -547,7 +547,7 @@ LD_FILE_OPTION=$ac_cv_ld_file_option
->   AC_SUBST(LD_FILE_OPTION)
->
->   if test x$rtcore_type = xcobalt; then
-> -   XENO_USER_CFLAGS="-I$srcdir/include/cobalt $XENO_USER_CFLAGS"
-> +   XENO_USER_CFLAGS="-I`cd $srcdir&&  pwd`/include/cobalt $XENO_USER_CFLAGS"
->      if [[ $ac_cv_ld_file_option = yes ]]; then
->   	XENO_POSIX_WRAPPERS="-Wl,@`cd $srcdir&&  pwd`/lib/cobalt/posix.wrappers"
->      else
+As a result, I would have anticipated that when invoked from within the 
+signal handler, in_irq() would return 0, while in_softirq() would return 
+non-zero.
+
+Instead, I've found that in_irq() returns the value 0x10000, which 
+(digging around in include/linux/hardirq.h) indicates that the hardirq 
+count is 1.
+
+A partial Linux kernel stack backtrace, leading up to execution of the 
+signal handler, is as follows:
+
+> [  217.844177] [<bf031838>] (my_signalClient+0x24/0x48 [my_rtdm_driver]) from [<c00df42c>] (__ipipe_sync_stage+0x164/0x198)
+> [  217.844207] [<c00df42c>] (__ipipe_sync_stage+0x164/0x198) from [<c0058960>] (ipipe_trigger_irq+0x14/0x20)
+> [  217.844238] [<c0058960>] (ipipe_trigger_irq+0x14/0x20) from [<c011ca78>] (gatekeeper_thread+0x1ac/0x398)
+
+It seems that there are at least several possibilities:
+
+1.  I've misunderstood the documentation, and the signal handler is 
+intended to run in Linux hardirq context.  If so, and I need softirq 
+context, I'd need to schedule a tasklet from within the signal handler.
+
+2.  There's something broken about my specific environment.  I am 
+presently using a Beagleboard xM Rev C, running a TI 2.6.37-derived OMAP 
+kernel from the staging tree on Arago, with a tailored (by me) version 
+of the ARM I-pipe patchset for 2.6.37.6 that ships with Xenomai-2.6.0. 
+The Xenomai version is also the as-released 2.6.0.
+
+3.  I've discovered a bug (or feature) in the rtdm_nrtsig_pend() 
+implementation and/or in the underlying plumbing.
+
+Perhaps someone from the Xenomai community can comment.
+
+Thanks much.
 
 
--- 
-Philippe.
 
