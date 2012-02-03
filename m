@@ -1,11 +1,12 @@
-Date: Fri, 03 Feb 2012 15:19:51 -0500
-From: Glen Wernersbach <glen@domain.hid>
-Mime-version: 1.0
-Content-type: multipart/alternative;
-	boundary="B_3411130759_5764"
-Resent-To: <xenomai@xenomai.org>
-Resent-Message-ID: <CB51AB97.1DCEC%glen@domain.hid>
-Subject: [Xenomai-help] Arm922T -  Micrel KSZ8695P
+Message-ID: <4F2C5031.2080409@domain.hid>
+Date: Fri, 03 Feb 2012 22:22:57 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+References: <CAF_dkJCxiyMmQaK9w_udT-pR2vR8-rzEJDtzFD80bMh=U+entw@domain.hid>
+In-Reply-To: <CAF_dkJCxiyMmQaK9w_udT-pR2vR8-rzEJDtzFD80bMh=U+entw@domain.hid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] Get current wallclock time from RT task
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -15,95 +16,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "rtai@domain.hid" <rtai@domain.hid>
-Message-ID: <20120203201951.dMXCmRhPGrmNKl4EyxtQye5QfISJ5zWG5rq0vbV68SY@z>
+To: Patrick Doyle <wpdster@domain.hid>
+Cc: xenomai@xenomai.org
 
-> This message is in MIME format. Since your mail reader does not understand
-this format, some or all of this message may not be legible.
+On 02/03/2012 09:07 PM, Patrick Doyle wrote:
+> What is the easiest way to determine the current wallclock time from
+> within an RT task?
+> 
+> I see that I can call rt_timer_inquire() and get back an RT_TIMER_INFO
+> structure containing an RTIME type field labeled "date" and a very
+> promising comment "Current wallclock time".
+> 
+> But how do I convert that to e.g. something I could pass to ctime() to
+> get something reasonably close to the current wallclock time?
 
---B_3411130759_5764
-Content-type: text/plain;
-	charset="ISO-8859-1"
-Content-transfer-encoding: quoted-printable
+You need to divide it by one billion. But for the result to be
+reasonably accurate, you should either:
+- compile xenomai as module
+- or having synchronized xenomai clock with linux clock at some earlier
+point in time by calling timer_settime(CLOCK_REALTIME) (from posix skin).
 
-Hi All,
+If your architecture supports it you may also use
+clock_gettime(CLOCK_HOST_REALTIME) then you will get a result with very
+good accuracy possibly without even a syscall.
 
-Just wondering if anyone has ever successfully use RTAI on a Arm922T type
-chip?
-
-Or have an idea on how hard to port.
-
-Glen
---=20
-Glen Wernersbach
-President & CTO
-
-Jetsoft Development Co.
-629 Old St Rt. 74 =AD Suite 210
-Cincinnati, Oh 45244
-Custom Programming Web Site: www.jetsoftdev.com
-Retail Products Web Site: www.scanhelp.com
-Phone:   513-528-6660
-Fax: 513-528-3470
-Cell 513-240-9929
-----
-Partner for Software Technology
-Jacobs Automation
-2365 Progress Drive
-Hebron, KY 41048=20
-(513) 297-7550
-----
-"Support Dyslexia Research"
-
-
---B_3411130759_5764
-Content-type: text/html;
-	charset="ISO-8859-1"
-Content-transfer-encoding: quoted-printable
-
-<HTML>
-<HEAD>
-<TITLE>Arm922T - &nbsp;Micrel KSZ8695P</TITLE>
-</HEAD>
-<BODY>
-<FONT FACE=3D"Calibri, Verdana, Helvetica, Arial"><SPAN STYLE=3D'font-size:11pt=
-'>Hi All,<BR>
-<BR>
-Just wondering if anyone has ever successfully use RTAI on a Arm922T type c=
-hip?<BR>
-<BR>
-Or have an idea on how hard to port.<BR>
-<BR>
-Glen<BR>
--- <BR>
-Glen Wernersbach<BR>
-President &amp; CTO<BR>
-<BR>
-Jetsoft Development Co.<BR>
-629 Old St Rt. 74 &#8211; Suite 210<BR>
-Cincinnati, Oh 45244<BR>
-Custom Programming Web Site: www.jetsoftdev.com<BR>
-Retail Products Web Site: www.scanhelp.com<BR>
-Phone: &nbsp;&nbsp;513-528-6660<BR>
-Fax: 513-528-3470<BR>
-Cell 513-240-9929<BR>
-----<BR>
-Partner for Software Technology<BR>
-Jacobs Automation<BR>
-</SPAN></FONT><FONT COLOR=3D"#323232"><FONT SIZE=3D"2"><FONT FACE=3D"Arial"><SPAN=
- STYLE=3D'font-size:10pt'>2365 Progress Drive <BR>
-Hebron, KY 41048 <BR>
-(513) 297-7550<BR>
-----<BR>
-</SPAN></FONT></FONT></FONT><FONT FACE=3D"Calibri, Verdana, Helvetica, Arial"=
-><SPAN STYLE=3D'font-size:11pt'>&quot;Support Dyslexia Research&quot;<BR>
-</SPAN></FONT>
-</BODY>
-</HTML>
-
-
---B_3411130759_5764--
-
-
-
+-- 
+                                                                Gilles.
 
