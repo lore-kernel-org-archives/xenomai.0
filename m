@@ -1,14 +1,10 @@
-Message-ID: <4F2C5406.8020907@domain.hid>
-Date: Fri, 03 Feb 2012 22:39:18 +0100
+Message-ID: <4F2C54E4.1090204@domain.hid>
+Date: Fri, 03 Feb 2012 22:43:00 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CAF_dkJCxiyMmQaK9w_udT-pR2vR8-rzEJDtzFD80bMh=U+entw@domain.hid>
-	<4F2C5031.2080409@domain.hid>
-	<CAF_dkJB+NeaX5QK=xHhNU7Oe0TYM8im_XFwzym22UxJBJ2KWrA@mail.gmail.com>
-In-Reply-To: <CAF_dkJB+NeaX5QK=xHhNU7Oe0TYM8im_XFwzym22UxJBJ2KWrA@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Get current wallclock time from RT task
+Subject: Re: [Xenomai-help] Arm922T -  Micrel KSZ8695P
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -18,63 +14,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Patrick Doyle <wpdster@domain.hid>
-Cc: Xenomai help <xenomai@xenomai.org>
+To: Glen Wernersbach <glen@domain.hid>
+Cc: Xenomai help <xenomai@xenomai.org>, rtai@domain.hid
 
-On 02/03/2012 10:33 PM, Patrick Doyle wrote:
-> On Fri, Feb 3, 2012 at 4:22 PM, Gilles Chanteperdrix
-> <gilles.chanteperdrix@xenomai.org> wrote:
->> On 02/03/2012 09:07 PM, Patrick Doyle wrote:
->>> What is the easiest way to determine the current wallclock time from
->>> within an RT task?
->>>
->>> I see that I can call rt_timer_inquire() and get back an RT_TIMER_INFO
->>> structure containing an RTIME type field labeled "date" and a very
->>> promising comment "Current wallclock time".
->>>
->>> But how do I convert that to e.g. something I could pass to ctime() to
->>> get something reasonably close to the current wallclock time?
->>
->> You need to divide it by one billion. But for the result to be
->> reasonably accurate, you should either:
->> - compile xenomai as module
->> - or having synchronized xenomai clock with linux clock at some earlier
->> point in time by calling timer_settime(CLOCK_REALTIME) (from posix skin).
->>
->> If your architecture supports it you may also use
->> clock_gettime(CLOCK_HOST_REALTIME) then you will get a result with very
->> good accuracy possibly without even a syscall.
+On 02/03/2012 09:19 PM, Glen Wernersbach wrote:
+> Hi All,
 > 
-> Hmmm...
-> Is there any way to do this without using the posix skin?
-> We are currently using the native skin quite happily, and I'm somewhat
-> concerned that pulling in the posix skin (if it's even possible to mix
-> and match skins) will lead to more problems than it will solve.
-
-There is should be no problem mixing the skins.
-
+> Just wondering if anyone has ever successfully use RTAI on a Arm922T type
+> chip?
 > 
-> How accurate is "unreasonably" accurate?  Accurate to within a second
-> or so since we last booted should be plenty accurate for what I need
-> this for.
+> Or have an idea on how hard to port.
 
-The problem is that xenomai clock is synchronized with linux clock when
-xenomai starts. When xenomai is build statically with the kernel, this
-happens before linux clock is set with hwclock or ntp, so, xenomai clock
-is completely off.
+Well, the xenomai mailing list is not the best place to ask for an RTAI
+port. However, we can answer the question for a xenomai port.
 
-Anyway, you can create a binary using the posix skin which does just:
+First, the arm core is irrelevant, what matters is what SOC exactly you
+want to port to (that is because except starting with cortex a9, the arm
+core does not contain a hardware timer, the timer is specific to the
+SOC). Second, the port involved is more a port of adeos than a port of
+xenomai, there is nothing SOC specific in xenomai. The adeos patch for
+ARM already supports several SOC families, so we have some experience
+doing this, it usually takes a few days to port adeos to a new ARM SOC.
+If you are ready to do it yourself, we even propose an howto:
 
-__real_clock_gettime(CLOCK_REALTIME, &ts);
-clock_settime(CLOCK_REALTIME, &ts);
+http://www.xenomai.org/index.php/I-pipe:ArmPorting
 
-and launch it in an init script after Linux clock has been synchronized
-with whatever clock you use.
+but it is starting to be seriously outdated, so, you probably have
+better chances looking at how it is done for supported SOCs in an
+existing patch. adeos patches for arm are available here:
 
-> 
-> --wpd
-> 
+http://download.gna.org/adeos/patches/v2.6/arm/
+or here
+http://download.gna.org/adeos/patches/v3.x/arm/
 
+The list of SOCs currently supported:
+http://www.xenomai.org/index.php/Embedded_Device_Support#ARM
 
 -- 
                                                                 Gilles.
