@@ -1,10 +1,9 @@
-Message-ID: <4F2C54E4.1090204@domain.hid>
-Date: Fri, 03 Feb 2012 22:43:00 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Arm922T -  Micrel KSZ8695P
+Date: Mon, 6 Feb 2012 19:01:57 -0500
+Message-ID: <CAMak2D-YfDCvjbZiLFYGntYdDCJVPiYtwt5z8k=PPT-9yj3S5A@mail.gmail.com>
+From: Eric Eric <ericrebates@domain.hid>
+Content-Type: multipart/alternative; boundary=f46d04447efdc83ce504b8547c8d
+Subject: [Xenomai-help] in-kernel periodic task latencies caused by dohell
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -14,42 +13,66 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Glen Wernersbach <glen@domain.hid>
-Cc: Xenomai help <xenomai@xenomai.org>, rtai@domain.hid
+To: xenomai@xenomai.org
 
-On 02/03/2012 09:19 PM, Glen Wernersbach wrote:
-> Hi All,
-> 
-> Just wondering if anyone has ever successfully use RTAI on a Arm922T type
-> chip?
-> 
-> Or have an idea on how hard to port.
+--f46d04447efdc83ce504b8547c8d
+Content-Type: text/plain; charset=ISO-8859-1
 
-Well, the xenomai mailing list is not the best place to ask for an RTAI
-port. However, we can answer the question for a xenomai port.
+Hello, I've been doing some more Xenomai benchmarking lately and have come
+across what seems to be strange behavior.  I'm running Xenomai 2.6.0 on a
+Beagleboard XM with kernel 2.6.37.  Just running the in-kernel periodic
+task benchmark (./latency -t1) alone results in an average of 2.7uS
+latency.  What is interesting is the effect of various parts of dohell:
 
-First, the arm core is irrelevant, what matters is what SOC exactly you
-want to port to (that is because except starting with cortex a9, the arm
-core does not contain a hardware timer, the timer is specific to the
-SOC). Second, the port involved is more a port of adeos than a port of
-xenomai, there is nothing SOC specific in xenomai. The adeos patch for
-ARM already supports several SOC families, so we have some experience
-doing this, it usually takes a few days to port adeos to a new ARM SOC.
-If you are ready to do it yourself, we even propose an howto:
+1) If I just run unmodified dohell with only the seconds argument, the
+latency goes to about 17uS.
 
-http://www.xenomai.org/index.php/I-pipe:ArmPorting
+2) If I comment out all tests in dohell except for "dd if=/dev/zero
+of=/dev/null &", average latency goes to 3.3uS (with top indicating about
+98% CPU usage by dd).
 
-but it is starting to be seriously outdated, so, you probably have
-better chances looking at how it is done for supported SOCs in an
-existing patch. adeos patches for arm are available here:
+3) If I comment out all tests in dohell except for "while :; do cat
+/proc/interrupts; done > /dev/null 2>&1 &", average latency goes to about
+24uS.
 
-http://download.gna.org/adeos/patches/v2.6/arm/
-or here
-http://download.gna.org/adeos/patches/v3.x/arm/
+So it seems that trapping into the Linux kernel can have a drastic effect
+on Xenomai real-time kernel latencies.  Why is this?  Shouldn't a
+timer-driven runnable real-time Xenomai kernel task require the same
+preemption latency regardless of whether Linux is busy or not?  And it's
+not just that Linux processes are loading the CPU (this happens in case 2
+with relatively little effect on latency), but that it's the act of
+trapping into the kernel that causes the latency.  Any ideas why this is
+the case?
 
-The list of SOCs currently supported:
-http://www.xenomai.org/index.php/Embedded_Device_Support#ARM
+Thank you very much.
 
--- 
-                                                                Gilles.
+- Eric
+
+--f46d04447efdc83ce504b8547c8d
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+Hello, I&#39;ve been doing some more Xenomai benchmarking lately and have c=
+ome across what seems to be strange behavior.=A0 I&#39;m running Xenomai 2.=
+6.0 on a Beagleboard XM with kernel 2.6.37.=A0 Just running the in-kernel p=
+eriodic task benchmark (./latency -t1) alone results in an average of 2.7uS=
+ latency.=A0 What is interesting is the effect of various parts of dohell:<=
+br>
+<br>1) If I just run unmodified dohell with only the seconds argument, the =
+latency goes to about 17uS.<br><br>2) If I comment out all tests in dohell =
+except for &quot;dd if=3D/dev/zero of=3D/dev/null &amp;&quot;, average late=
+ncy goes to 3.3uS (with top indicating about 98% CPU usage by dd).<br>
+<br>3) If I comment out all tests in dohell except for &quot;while :; do ca=
+t /proc/interrupts; done &gt; /dev/null 2&gt;&amp;1 &amp;&quot;, average la=
+tency goes to about 24uS.<br><br>So it seems that trapping into the Linux k=
+ernel can have a drastic effect on Xenomai real-time kernel latencies.=A0 W=
+hy is this?=A0 Shouldn&#39;t a timer-driven runnable real-time Xenomai kern=
+el task require the same preemption latency regardless of whether Linux is =
+busy or not?=A0 And it&#39;s not just that Linux processes are loading the =
+CPU (this happens in case 2 with relatively little effect on latency), but =
+that it&#39;s the act of trapping into the kernel that causes the latency.=
+=A0 Any ideas why this is the case?<br>
+<br>Thank you very much.<br><br>- Eric<br><br>
+
+--f46d04447efdc83ce504b8547c8d--
 
