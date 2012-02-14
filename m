@@ -1,13 +1,13 @@
-Message-ID: <4F16F401.2090308@domain.hid>
-Date: Wed, 18 Jan 2012 17:32:01 +0100
-From: Wolfgang Grandegger <wg@domain.hid>
+Message-ID: <4F3AAA52.6060802@domain.hid>
+Date: Tue, 14 Feb 2012 19:39:14 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4F1080E8.6020408@domain.hid>	<4F1082E5.8000501@domain.hid>	<4F132A7E.4000000@domain.hid>
-	<4F16F028.6020507@domain.hid>
-In-Reply-To: <4F16F028.6020507@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Omap3630, rtserial, xeno_16550A: crash on insmod
+References: <CAHOEnGfih5tin7NAnf-qU6tKxVtnb=LjuBFE5QxFQpxfA=EBkg@domain.hid>
+	<CAHOEnGdKstVsBUKnQcCm3NK4BfngnGOAKfimXA5VL=ujUzR2ig@domain.hid>
+In-Reply-To: <CAHOEnGdKstVsBUKnQcCm3NK4BfngnGOAKfimXA5VL=ujUzR2ig@domain.hid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-help] Freeze while running examples
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -17,69 +17,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Fabrice Gasnier <fabrice.gasnier@domain.hid>
+To: =?UTF-8?B?T3NjYXIgRMOhdmlsYQ==?= <odavilar@domain.hid>
 Cc: xenomai@xenomai.org
 
-On 01/18/2012 05:15 PM, Fabrice Gasnier wrote:
-> Dear all,
-> 
-> On 15/01/2012 20:35, Wolfgang Grandegger wrote:
->>> -->
->>>> So can I just change the function in 16550A.c like this?:
->>>> rt_16550_reg_in(io_mode_t io_mode, unsigned long base, int off, int
->>>> regshift)
->>>> {
->>>>      switch (io_mode) {
->>>>     case MODE_PIO:
->>>>         return inb(base + off);
->>>>     default: /* MODE_MMIO */
->>>>          /* ADD REGSHIFT for MMIO Mode: */
->>>>          unsigned long paddr=((void*)base+off)<< regshift;
->>>>          return readb((void *)base + off);
->> You need to shift just the *offset* at the beginning of the function:
->>
->> 	off <<= regshift;
->>
->> You also need to adjust the region for request_region() or ioremap().
->>
-> 
-> 
-> I've done similar modifications and try to run it on an omap3530 (PHYCARD-L) board.
-> I'm able to receive data correctly. But tx data gives a strange behavior.
-> Writting a little example that basically do rt_dev_write(fd, data_string, data_len) reports no error but no data is being output.
-> 
-> Another example that basically echo received chars:
-> while (1){
-> 	rt_dev_read(fd, rx_buf, 1);
-> 	rt_dev_write(fd, rx_buf, 1);
-> 	printf("%c", rx_buf[0]);
-> }
-> This one displays data when received but transmit is more random.
-> When a first character has been received, it is only transmitted back when a second one is received.
-> But second char is transmitted back immediately, without waiting for a third one ...
-> 
-> Further investigation indicates that when writing, tx interrupt is not asserted as expected (rt_16550_write):
-> /* unmask tx interrupt */
-> ctx->ier_status |= IER_TX;
-> rt_16550_reg_out(rt_16550_io_mode_from_ctx(ctx),
-> 		 ctx->base_addr, IER,
-> 		 ctx->ier_status,
-> 		 ctx->regshift);
-> 
->>From my understanding this should trigger an irq for data to be put in rt_16550_tx_interrupt().
-> It seems this is not always the case. Moreover, TX interrupt seem to be triggered by a new RX interrupt.
+On 02/14/2012 06:54 PM, Oscar D=C3=A1vila wrote:
+> I compiled Xenomai succesfully, but when i try to run an example it fre=
+ezes
+> / machine look up, any help will be apreciated, thanks.
+>=20
+> Here is some info about the system, its a Debian 6.0 with a
+> kernel 2.6.35.9, xenomai-2.6.0, the adeos
+> patch adeos-ipipe-2.6.35.9-x86-2.8-04.patch and Im also using the
+> nmi_watchdog=3D2 in the boot kernel options.
 
-The TX interrupt will be enabled as long as there are chars to send,
-IIRC. The isr the puts the chars into the FIFO and triggers the xfer.
+Please reproduce the bug:
+- in text mode, so as to have the full bug trace;
+- with frame pointers enabled;
+- with highest kernel verbosity for BUGs and backtraces.
 
-> 
-> Would you have an explanation for such a behavior?
-> I'm not sure how to solve this.
+And post the full bug text here.
 
-Depending on the hardware/uart revision, you may need to take care of
-other quirks, see:
+Alternatively, if you have another computer, you can redirect the
+console on a serial port (see Documentation/serial-console.txt in the
+kernel sources) or via network (see
+Documentation/networking/netconsole.txt in the kernel sources). This
+will allow handling traces which are larger than a screen.
 
-http://lxr.linux.no/#linux+v3.2.1/arch/arm/mach-omap2/serial.c#L742
+--=20
+					    Gilles.
 
-Wolfgang.
 
