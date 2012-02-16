@@ -1,9 +1,12 @@
+Message-ID: <4F3CD3A6.1090502@domain.hid>
+Date: Thu, 16 Feb 2012 11:00:06 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Date: Thu, 16 Feb 2012 11:38:59 +0200
-Message-ID: <CAJp2OCM=MPSPHR1=ypDLTsRTSFAO0vmATqarw6H3ZyXoNKQ3MA@mail.gmail.com>
-From: Alex Nikitenko <alexzoidbergnikitenko@domain.hid>
-Content-Type: multipart/mixed; boundary=e0cb4efe28e805186604b91199ff
-Subject: [Xenomai-help] High latencies on ARM
+References: <CAJp2OCM=MPSPHR1=ypDLTsRTSFAO0vmATqarw6H3ZyXoNKQ3MA@mail.gmail.com>
+In-Reply-To: <CAJp2OCM=MPSPHR1=ypDLTsRTSFAO0vmATqarw6H3ZyXoNKQ3MA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] High latencies on ARM
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -13,406 +16,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Alex Nikitenko <alexzoidbergnikitenko@domain.hid>
+Cc: xenomai@xenomai.org
 
---e0cb4efe28e805186604b91199ff
-Content-Type: multipart/alternative; boundary=e0cb4efe28e805185e04b91199fd
+On 02/16/2012 10:38 AM, Alex Nikitenko wrote:
+> Hi all,
+> 
+> I continue my struggling with xenomai on Tiny6410 board. Kernel version -
+> 2.6.36. Xenomai version is 2.6.0. The problem is actually in very high
+> latencies (see log at the end).
+> In kernel config I disabled all the stuff I'm not planing to use at the
+> moment (touchscreen, video, audio, usb, networking).  I also disabled
+> CONFIG_SYS_SUPPORTS_APM_EMULATION.
+> 
+> Xenomai related configs attached. Just in case I made some mistakes in
+> configuring it.
+> 
+> Please, help me with the ideas what it could be.
 
---e0cb4efe28e805185e04b91199fd
-Content-Type: text/plain; charset=ISO-8859-1
+Possible reasons:
+- look for issues in the timer programming: the timer and clock
+frequency may not be what you think they are, or may be too low, the
+I-pipe for ARM is mostly tested with clock and timer using the same
+frequency, so, there may be an undiscovered issue if timer and clock do
+not use the same frequency.
+- make sure that __ipipe_tsc_update() is called often enough (at least
+once before the hardware counter wraps), if for instance you are using a
+16 bits counter at 1 MHz, the wrap time is around 65 ms so, calling
+__ipipe_tsc_update() in linux irq handler may not be enough, especially
+if dynamic ticks are enabled, you need to call it in __ipipe_mach_acktimer.
+- make sure that the idle loop does not enter in a deep sleep state.
 
-Hi all,
+Regards.
 
-I continue my struggling with xenomai on Tiny6410 board. Kernel version -
-2.6.36. Xenomai version is 2.6.0. The problem is actually in very high
-latencies (see log at the end).
-In kernel config I disabled all the stuff I'm not planing to use at the
-moment (touchscreen, video, audio, usb, networking).  I also disabled
-CONFIG_SYS_SUPPORTS_APM_EMULATION.
-
-Xenomai related configs attached. Just in case I made some mistakes in
-configuring it.
-
-Please, help me with the ideas what it could be.
-
-Thanks,
-Alex
-
-
-[root@domain.hid /]# cd usr/xenomai/bin/
-[root@domain.hid bin]# ./latency -t 0
-== Sampling period: 1000 us
-== Test mode: periodic user-mode task
-== All results in microseconds
-warming up...
-RTT|  00:00:01  (periodic user-mode task, 1000 us period, priority 99)
-RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat best|--lat
-worst
-RTD|    186.226|   3441.303|   6762.877|       0|     0|    186.226|
-6762.877
-RTD|    215.098|   3481.814|   6715.779|       0|     0|    186.226|
-6762.877
-RTD|    240.361|   3451.228|   6654.245|       0|     0|    186.226|
-6762.877
-RTD|    265.624|   3456.281|   6679.508|       0|     0|    186.226|
-6762.877
-RTD|    294.497|   3467.108|   6621.583|       0|     0|    186.226|
-6762.877
-RTD|    319.760|   3460.251|   6632.410|       0|     0|    186.226|
-6762.877
-RTD|    345.023|   3453.393|   6585.313|       0|     0|    186.226|
-6762.877
-RTD|    373.895|   3470.175|   6592.531|       0|     0|    186.226|
-6762.877
-RTD|    399.159|   3463.408|   6545.433|       0|     0|    186.226|
-6762.877
-RTD|    424.422|   3456.551|   6491.117|       0|     0|    186.226|
-6762.877
-RTD|    453.294|   3455.559|   6498.335|       0|     0|    186.226|
-6762.877
-RTD|    478.557|   3454.657|   6454.846|       0|     0|    186.226|
-6762.877
-RTD|    503.821|   3459.619|   6462.064|       0|     0|    186.226|
-6762.877
-RTD|    505.535|   3458.626|   6414.966|       0|     0|    186.226|
-6762.877
-RTD|    516.362|   3457.724|   6405.853|       0|     0|    186.226|
-6762.877
-RTD|    458.437|   3456.732|   6434.726|       0|     0|    186.226|
-6762.877
-RTD|    414.948|   3455.829|   6459.989|       0|     0|    186.226|
-6762.877
-RTD|    422.166|   3454.927|   6488.861|       0|     0|    186.226|
-6762.877
-RTD|    371.459|   3465.754|   6514.124|       0|     0|    186.226|
-6762.877
-RTD|    320.752|   3447.078|   6539.388|       0|     0|    186.226|
-6762.877
-RTD|    327.970|   3452.040|   6568.260|       0|     0|    186.226|
-6762.877
-RTT|  00:00:22  (periodic user-mode task, 1000 us period, priority 99)
-RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat best|--lat
-worst
-RTD|    277.263|   3468.912|   6593.523|       0|     0|    186.226|
-6762.877
-RTD|    291.700|   3438.326|   6618.786|       0|     0|    186.226|
-6762.877
-^C---|-----------|-----------|-----------|--------|------|-------------------------
-RTS|    186.226|   3457.634|   6762.877|       0|     0|
-00:00:23/00:00:23
-[root@domain.hid bin]# ./latency -t 1
-== Sampling period: 1000 us
-== Test mode: in-kernel periodic task
-== All results in microseconds
-warming up...
-RTT|  00:00:01  (in-kernel periodic task, 1000 us period, priority 99)
-RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat best|--lat
-worst
-RTD|      1.480|    501.766|   1015.357|      12|     0|      1.480|
-1015.357
-RTD|      0.451|    501.820|   1013.913|      24|     0|      0.451|
-1015.357
-RTD|      1.083|    500.804|   1016.529|      35|     0|      0.451|
-1016.529
-RTD|      1.119|    498.760|   1017.522|      40|     0|      0.451|
-1017.522
-RTD|      1.714|    501.697|   1023.928|      52|     0|      0.451|
-1023.928
-RTD|      0.451|    500.682|   1019.056|      63|     0|      0.451|
-1023.928
-RTD|      1.209|    500.773|   1014.003|      73|     0|      0.451|
-1023.928
-RTD|      1.389|    498.794|   1016.620|      79|     0|      0.451|
-1023.928
-RTD|      2.165|    500.795|   1021.672|      89|     0|      0.451|
-1023.928
-RTD|      1.804|    502.780|   1021.943|     103|     0|      0.451|
-1023.928
-RTD|      1.877|    500.677|   1015.627|     113|     0|      0.451|
-1023.928
-RTD|      1.913|    500.626|   1023.206|     123|     0|      0.451|
-1023.928
-RTD|      2.147|    499.681|   1021.131|     130|     0|      0.451|
-1023.928
-RTD|      2.310|    499.657|   1018.334|     138|     0|      0.451|
-1023.928
-RTD|      1.985|    528.075|   1024.379|     200|     0|      0.451|
-1024.379
-RTD|      1.606|    501.711|   1021.185|     212|     0|      0.451|
-1024.379
-RTD|      1.209|    500.779|   1016.258|     222|     0|      0.451|
-1024.379
-RTD|      1.696|    502.834|   1013.642|     237|     0|      0.451|
-1024.379
-RTD|      1.750|    501.732|   1023.116|     248|     0|      0.451|
-1024.379
-RTD|      1.876|    501.743|   1021.401|     260|     0|      0.451|
-1024.379
-RTD|      0.902|    499.871|   1014.995|     269|     0|      0.451|
-1024.379
-RTT|  00:00:23  (in-kernel periodic task, 1000 us period, priority 99)
-RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat best|--lat
-worst
-RTD|      1.443|    499.834|   1012.469|     277|     0|      0.451|
-1024.379
-RTD|      1.299|    501.788|   1018.063|     288|     0|      0.451|
-1024.379
-^C---|-----------|-----------|-----------|--------|------|-------------------------
-RTS|      0.451|    502.073|   1024.379|     288|     0|
-00:00:25/00:00:25
-[root@domain.hid bin]# ./latency -t 2
-== Sampling period: 1000 us
-== Test mode: in-kernel timer handler
-== All results in microseconds
-warming up...
-RTT|  00:00:01  (in-kernel timer handler, 1000 us period, priority 99)
-RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat best|--lat
-worst
-RTD|    -15.934|    490.442|   1000.830|       2|     0|    -15.934|
-1000.830
-RTD|    -16.006|    490.552|   1013.461|       4|     0|    -16.006|
-1013.461
-RTD|    -15.844|    490.457|   1004.619|       6|     0|    -16.006|
-1013.461
-RTD|    -16.151|    490.493|   1002.995|       8|     0|    -16.151|
-1013.461
-RTD|    -15.736|    490.448|   1001.822|       9|     0|    -16.151|
-1013.461
-RTD|    -16.205|    489.447|   1000.559|      10|     0|    -16.205|
-1013.461
-RTD|    -16.025|    491.427|   1011.386|      14|     0|    -16.205|
-1013.461
-RTD|    -16.097|    490.469|   1004.348|      15|     0|    -16.205|
-1013.461
-RTD|    -15.971|    490.493|   1004.096|      17|     0|    -16.205|
-1013.461
-RTD|    -15.952|    489.481|   1006.063|      18|     0|    -16.205|
-1013.461
-RTD|    -16.061|    490.486|   1004.439|      19|     0|    -16.205|
-1013.461
-RTD|    -16.115|    490.451|   1006.423|      21|     0|    -16.205|
-1013.461
-RTD|    -16.115|    491.411|   1003.987|      26|     0|    -16.205|
-1013.461
-RTD|    -16.187|    489.493|    999.837|      26|     0|    -16.205|
-1013.461
-RTD|    -15.862|    490.445|   1004.890|      28|     0|    -16.205|
-1013.461
-RTD|    -16.115|    490.491|   1000.198|      29|     0|    -16.205|
-1013.461
-RTD|    -16.205|    491.453|   1008.047|      34|     0|    -16.205|
-1013.461
-RTD|    -16.025|    490.457|   1004.799|      36|     0|    -16.205|
-1013.461
-RTD|    -16.115|    490.476|   1002.544|      38|     0|    -16.205|
-1013.461
-RTD|    -16.115|    490.469|   1002.453|      40|     0|    -16.205|
-1013.461
-RTD|    -16.025|    490.447|   1004.980|      42|     0|    -16.205|
-1013.461
-RTT|  00:00:22  (in-kernel timer handler, 1000 us period, priority 99)
-RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat best|--lat
-worst
-RTD|    -16.187|    490.494|   1002.814|      43|     0|    -16.205|
-1013.461
-
---e0cb4efe28e805185e04b91199fd
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: base64
-
-SGkgYWxsLDxicj48YnI+SSBjb250aW51ZSBteSBzdHJ1Z2dsaW5nIHdpdGggeGVub21haSBvbiBU
-aW55NjQxMCBib2FyZC4gS2VybmVsIHZlcnNpb24gLSAyLjYuMzYuIFhlbm9tYWkgdmVyc2lvbiBp
-cyAyLjYuMC4gVGhlIHByb2JsZW0gaXMgYWN0dWFsbHkgaW4gdmVyeSBoaWdoIGxhdGVuY2llcyAo
-c2VlIGxvZyBhdCB0aGUgZW5kKS48YnI+SW4ga2VybmVsIGNvbmZpZyBJIGRpc2FibGVkIGFsbCB0
-aGUgc3R1ZmYgSSYjMzk7bSBub3QgcGxhbmluZyB0byB1c2UgYXQgdGhlIG1vbWVudCAodG91Y2hz
-Y3JlZW4sIHZpZGVvLCBhdWRpbywgdXNiLCBuZXR3b3JraW5nKS6gIEkgYWxzbyBkaXNhYmxlZCBD
-T05GSUdfU1lTX1NVUFBPUlRTX0FQTV9FTVVMQVRJT04uIDxicj4KPGJyPlhlbm9tYWkgcmVsYXRl
-ZCBjb25maWdzIGF0dGFjaGVkLiBKdXN0IGluIGNhc2UgSSBtYWRlIHNvbWUgbWlzdGFrZXMgaW4g
-Y29uZmlndXJpbmcgaXQuPGJyPjxicj5QbGVhc2UsIGhlbHAgbWUgd2l0aCB0aGUgaWRlYXMgd2hh
-dCBpdCBjb3VsZCBiZS48YnI+PGJyPlRoYW5rcyw8YnI+QWxleDxicj48YnI+PGJyPltyb290QEZy
-aWVuZGx5QVJNIC9dIyBjZCB1c3IveGVub21haS9iaW4vPGJyPgpbcm9vdEBGcmllbmRseUFSTSBi
-aW5dIyAuL2xhdGVuY3kgLXQgMDxicj49PSBTYW1wbGluZyBwZXJpb2Q6IDEwMDAgdXM8YnI+PT0g
-VGVzdCBtb2RlOiBwZXJpb2RpYyB1c2VyLW1vZGUgdGFzazxicj49PSBBbGwgcmVzdWx0cyBpbiBt
-aWNyb3NlY29uZHM8YnI+d2FybWluZyB1cC4uLjxicj5SVFR8oCAwMDowMDowMaAgKHBlcmlvZGlj
-IHVzZXItbW9kZSB0YXNrLCAxMDAwIHVzIHBlcmlvZCwgcHJpb3JpdHkgOTkpPGJyPgpSVEh8LS0t
-LWxhdCBtaW58LS0tLWxhdCBhdmd8LS0tLWxhdCBtYXh8LW92ZXJydW58LS0tbXN3fC0tLWxhdCBi
-ZXN0fC0tbGF0IHdvcnN0PGJyPlJURHygoKAgMTg2LjIyNnygoCAzNDQxLjMwM3ygoCA2NzYyLjg3
-N3ygoKCgoKAgMHygoKCgIDB8oKCgIDE4Ni4yMjZ8oKAgNjc2Mi44Nzc8YnI+UlREfKCgoCAyMTUu
-MDk4fKCgIDM0ODEuODE0fKCgIDY3MTUuNzc5fKCgoKCgoCAwfKCgoKAgMHygoKAgMTg2LjIyNnyg
-oCA2NzYyLjg3Nzxicj4KUlREfKCgoCAyNDAuMzYxfKCgIDM0NTEuMjI4fKCgIDY2NTQuMjQ1fKCg
-oKCgoCAwfKCgoKAgMHygoKAgMTg2LjIyNnygoCA2NzYyLjg3Nzxicj5SVER8oKCgIDI2NS42MjR8
-oKAgMzQ1Ni4yODF8oKAgNjY3OS41MDh8oKCgoKCgIDB8oKCgoCAwfKCgoCAxODYuMjI2fKCgIDY3
-NjIuODc3PGJyPlJURHygoKAgMjk0LjQ5N3ygoCAzNDY3LjEwOHygoCA2NjIxLjU4M3ygoKCgoKAg
-MHygoKCgIDB8oKCgIDE4Ni4yMjZ8oKAgNjc2Mi44Nzc8YnI+ClJURHygoKAgMzE5Ljc2MHygoCAz
-NDYwLjI1MXygoCA2NjMyLjQxMHygoKCgoKAgMHygoKCgIDB8oKCgIDE4Ni4yMjZ8oKAgNjc2Mi44
-Nzc8YnI+UlREfKCgoCAzNDUuMDIzfKCgIDM0NTMuMzkzfKCgIDY1ODUuMzEzfKCgoKCgoCAwfKCg
-oKAgMHygoKAgMTg2LjIyNnygoCA2NzYyLjg3Nzxicj5SVER8oKCgIDM3My44OTV8oKAgMzQ3MC4x
-NzV8oKAgNjU5Mi41MzF8oKCgoKCgIDB8oKCgoCAwfKCgoCAxODYuMjI2fKCgIDY3NjIuODc3PGJy
-PgpSVER8oKCgIDM5OS4xNTl8oKAgMzQ2My40MDh8oKAgNjU0NS40MzN8oKCgoKCgIDB8oKCgoCAw
-fKCgoCAxODYuMjI2fKCgIDY3NjIuODc3PGJyPlJURHygoKAgNDI0LjQyMnygoCAzNDU2LjU1MXyg
-oCA2NDkxLjExN3ygoKCgoKAgMHygoKCgIDB8oKCgIDE4Ni4yMjZ8oKAgNjc2Mi44Nzc8YnI+UlRE
-fKCgoCA0NTMuMjk0fKCgIDM0NTUuNTU5fKCgIDY0OTguMzM1fKCgoKCgoCAwfKCgoKAgMHygoKAg
-MTg2LjIyNnygoCA2NzYyLjg3Nzxicj4KUlREfKCgoCA0NzguNTU3fKCgIDM0NTQuNjU3fKCgIDY0
-NTQuODQ2fKCgoKCgoCAwfKCgoKAgMHygoKAgMTg2LjIyNnygoCA2NzYyLjg3Nzxicj5SVER8oKCg
-IDUwMy44MjF8oKAgMzQ1OS42MTl8oKAgNjQ2Mi4wNjR8oKCgoKCgIDB8oKCgoCAwfKCgoCAxODYu
-MjI2fKCgIDY3NjIuODc3PGJyPlJURHygoKAgNTA1LjUzNXygoCAzNDU4LjYyNnygoCA2NDE0Ljk2
-NnygoKCgoKAgMHygoKCgIDB8oKCgIDE4Ni4yMjZ8oKAgNjc2Mi44Nzc8YnI+ClJURHygoKAgNTE2
-LjM2MnygoCAzNDU3LjcyNHygoCA2NDA1Ljg1M3ygoKCgoKAgMHygoKCgIDB8oKCgIDE4Ni4yMjZ8
-oKAgNjc2Mi44Nzc8YnI+UlREfKCgoCA0NTguNDM3fKCgIDM0NTYuNzMyfKCgIDY0MzQuNzI2fKCg
-oKCgoCAwfKCgoKAgMHygoKAgMTg2LjIyNnygoCA2NzYyLjg3Nzxicj5SVER8oKCgIDQxNC45NDh8
-oKAgMzQ1NS44Mjl8oKAgNjQ1OS45ODl8oKCgoKCgIDB8oKCgoCAwfKCgoCAxODYuMjI2fKCgIDY3
-NjIuODc3PGJyPgpSVER8oKCgIDQyMi4xNjZ8oKAgMzQ1NC45Mjd8oKAgNjQ4OC44NjF8oKCgoKCg
-IDB8oKCgoCAwfKCgoCAxODYuMjI2fKCgIDY3NjIuODc3PGJyPlJURHygoKAgMzcxLjQ1OXygoCAz
-NDY1Ljc1NHygoCA2NTE0LjEyNHygoKCgoKAgMHygoKCgIDB8oKCgIDE4Ni4yMjZ8oKAgNjc2Mi44
-Nzc8YnI+UlREfKCgoCAzMjAuNzUyfKCgIDM0NDcuMDc4fKCgIDY1MzkuMzg4fKCgoKCgoCAwfKCg
-oKAgMHygoKAgMTg2LjIyNnygoCA2NzYyLjg3Nzxicj4KUlREfKCgoCAzMjcuOTcwfKCgIDM0NTIu
-MDQwfKCgIDY1NjguMjYwfKCgoKCgoCAwfKCgoKAgMHygoKAgMTg2LjIyNnygoCA2NzYyLjg3Nzxi
-cj5SVFR8oCAwMDowMDoyMqAgKHBlcmlvZGljIHVzZXItbW9kZSB0YXNrLCAxMDAwIHVzIHBlcmlv
-ZCwgcHJpb3JpdHkgOTkpPGJyPlJUSHwtLS0tbGF0IG1pbnwtLS0tbGF0IGF2Z3wtLS0tbGF0IG1h
-eHwtb3ZlcnJ1bnwtLS1tc3d8LS0tbGF0IGJlc3R8LS1sYXQgd29yc3Q8YnI+ClJURHygoKAgMjc3
-LjI2M3ygoCAzNDY4LjkxMnygoCA2NTkzLjUyM3ygoKCgoKAgMHygoKCgIDB8oKCgIDE4Ni4yMjZ8
-oKAgNjc2Mi44Nzc8YnI+UlREfKCgoCAyOTEuNzAwfKCgIDM0MzguMzI2fKCgIDY2MTguNzg2fKCg
-oKCgoCAwfKCgoKAgMHygoKAgMTg2LjIyNnygoCA2NzYyLjg3Nzxicj5eQy0tLXwtLS0tLS0tLS0t
-LXwtLS0tLS0tLS0tLXwtLS0tLS0tLS0tLXwtLS0tLS0tLXwtLS0tLS18LS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLTxicj4KUlRTfKCgoCAxODYuMjI2fKCgIDM0NTcuNjM0fKCgIDY3NjIuODc3fKCg
-oKCgoCAwfKCgoKAgMHygoKAgMDA6MDA6MjMvMDA6MDA6MjM8YnI+W3Jvb3RARnJpZW5kbHlBUk0g
-YmluXSMgLi9sYXRlbmN5IC10IDE8YnI+PT0gU2FtcGxpbmcgcGVyaW9kOiAxMDAwIHVzPGJyPj09
-IFRlc3QgbW9kZTogaW4ta2VybmVsIHBlcmlvZGljIHRhc2s8YnI+PT0gQWxsIHJlc3VsdHMgaW4g
-bWljcm9zZWNvbmRzPGJyPgp3YXJtaW5nIHVwLi4uPGJyPlJUVHygIDAwOjAwOjAxoCAoaW4ta2Vy
-bmVsIHBlcmlvZGljIHRhc2ssIDEwMDAgdXMgcGVyaW9kLCBwcmlvcml0eSA5OSk8YnI+UlRIfC0t
-LS1sYXQgbWlufC0tLS1sYXQgYXZnfC0tLS1sYXQgbWF4fC1vdmVycnVufC0tLW1zd3wtLS1sYXQg
-YmVzdHwtLWxhdCB3b3JzdDxicj5SVER8oKCgoKAgMS40ODB8oKCgIDUwMS43NjZ8oKAgMTAxNS4z
-NTd8oKCgoKAgMTJ8oKCgoCAwfKCgoKCgIDEuNDgwfKCgIDEwMTUuMzU3PGJyPgpSVER8oKCgoKAg
-MC40NTF8oKCgIDUwMS44MjB8oKAgMTAxMy45MTN8oKCgoKAgMjR8oKCgoCAwfKCgoKCgIDAuNDUx
-fKCgIDEwMTUuMzU3PGJyPlJURHygoKCgoCAxLjA4M3ygoKAgNTAwLjgwNHygoCAxMDE2LjUyOXyg
-oKCgoCAzNXygoKCgIDB8oKCgoKAgMC40NTF8oKAgMTAxNi41Mjk8YnI+UlREfKCgoKCgIDEuMTE5
-fKCgoCA0OTguNzYwfKCgIDEwMTcuNTIyfKCgoKCgIDQwfKCgoKAgMHygoKCgoCAwLjQ1MXygoCAx
-MDE3LjUyMjxicj4KUlREfKCgoKCgIDEuNzE0fKCgoCA1MDEuNjk3fKCgIDEwMjMuOTI4fKCgoKCg
-IDUyfKCgoKAgMHygoKCgoCAwLjQ1MXygoCAxMDIzLjkyODxicj5SVER8oKCgoKAgMC40NTF8oKCg
-IDUwMC42ODJ8oKAgMTAxOS4wNTZ8oKCgoKAgNjN8oKCgoCAwfKCgoKCgIDAuNDUxfKCgIDEwMjMu
-OTI4PGJyPlJURHygoKCgoCAxLjIwOXygoKAgNTAwLjc3M3ygoCAxMDE0LjAwM3ygoKCgoCA3M3yg
-oKCgIDB8oKCgoKAgMC40NTF8oKAgMTAyMy45Mjg8YnI+ClJURHygoKCgoCAxLjM4OXygoKAgNDk4
-Ljc5NHygoCAxMDE2LjYyMHygoKCgoCA3OXygoKCgIDB8oKCgoKAgMC40NTF8oKAgMTAyMy45Mjg8
-YnI+UlREfKCgoKCgIDIuMTY1fKCgoCA1MDAuNzk1fKCgIDEwMjEuNjcyfKCgoKCgIDg5fKCgoKAg
-MHygoKCgoCAwLjQ1MXygoCAxMDIzLjkyODxicj5SVER8oKCgoKAgMS44MDR8oKCgIDUwMi43ODB8
-oKAgMTAyMS45NDN8oKCgoCAxMDN8oKCgoCAwfKCgoKCgIDAuNDUxfKCgIDEwMjMuOTI4PGJyPgpS
-VER8oKCgoKAgMS44Nzd8oKCgIDUwMC42Nzd8oKAgMTAxNS42Mjd8oKCgoCAxMTN8oKCgoCAwfKCg
-oKCgIDAuNDUxfKCgIDEwMjMuOTI4PGJyPlJURHygoKCgoCAxLjkxM3ygoKAgNTAwLjYyNnygoCAx
-MDIzLjIwNnygoKCgIDEyM3ygoKCgIDB8oKCgoKAgMC40NTF8oKAgMTAyMy45Mjg8YnI+UlREfKCg
-oKCgIDIuMTQ3fKCgoCA0OTkuNjgxfKCgIDEwMjEuMTMxfKCgoKAgMTMwfKCgoKAgMHygoKCgoCAw
-LjQ1MXygoCAxMDIzLjkyODxicj4KUlREfKCgoKCgIDIuMzEwfKCgoCA0OTkuNjU3fKCgIDEwMTgu
-MzM0fKCgoKAgMTM4fKCgoKAgMHygoKCgoCAwLjQ1MXygoCAxMDIzLjkyODxicj5SVER8oKCgoKAg
-MS45ODV8oKCgIDUyOC4wNzV8oKAgMTAyNC4zNzl8oKCgoCAyMDB8oKCgoCAwfKCgoKCgIDAuNDUx
-fKCgIDEwMjQuMzc5PGJyPlJURHygoKCgoCAxLjYwNnygoKAgNTAxLjcxMXygoCAxMDIxLjE4NXyg
-oKCgIDIxMnygoKCgIDB8oKCgoKAgMC40NTF8oKAgMTAyNC4zNzk8YnI+ClJURHygoKCgoCAxLjIw
-OXygoKAgNTAwLjc3OXygoCAxMDE2LjI1OHygoKCgIDIyMnygoKCgIDB8oKCgoKAgMC40NTF8oKAg
-MTAyNC4zNzk8YnI+UlREfKCgoKCgIDEuNjk2fKCgoCA1MDIuODM0fKCgIDEwMTMuNjQyfKCgoKAg
-MjM3fKCgoKAgMHygoKCgoCAwLjQ1MXygoCAxMDI0LjM3OTxicj5SVER8oKCgoKAgMS43NTB8oKCg
-IDUwMS43MzJ8oKAgMTAyMy4xMTZ8oKCgoCAyNDh8oKCgoCAwfKCgoKCgIDAuNDUxfKCgIDEwMjQu
-Mzc5PGJyPgpSVER8oKCgoKAgMS44NzZ8oKCgIDUwMS43NDN8oKAgMTAyMS40MDF8oKCgoCAyNjB8
-oKCgoCAwfKCgoKCgIDAuNDUxfKCgIDEwMjQuMzc5PGJyPlJURHygoKCgoCAwLjkwMnygoKAgNDk5
-Ljg3MXygoCAxMDE0Ljk5NXygoKCgIDI2OXygoKCgIDB8oKCgoKAgMC40NTF8oKAgMTAyNC4zNzk8
-YnI+UlRUfKAgMDA6MDA6MjOgIChpbi1rZXJuZWwgcGVyaW9kaWMgdGFzaywgMTAwMCB1cyBwZXJp
-b2QsIHByaW9yaXR5IDk5KTxicj4KUlRIfC0tLS1sYXQgbWlufC0tLS1sYXQgYXZnfC0tLS1sYXQg
-bWF4fC1vdmVycnVufC0tLW1zd3wtLS1sYXQgYmVzdHwtLWxhdCB3b3JzdDxicj5SVER8oKCgoKAg
-MS40NDN8oKCgIDQ5OS44MzR8oKAgMTAxMi40Njl8oKCgoCAyNzd8oKCgoCAwfKCgoKCgIDAuNDUx
-fKCgIDEwMjQuMzc5PGJyPlJURHygoKCgoCAxLjI5OXygoKAgNTAxLjc4OHygoCAxMDE4LjA2M3yg
-oKCgIDI4OHygoKCgIDB8oKCgoKAgMC40NTF8oKAgMTAyNC4zNzk8YnI+Cl5DLS0tfC0tLS0tLS0t
-LS0tfC0tLS0tLS0tLS0tfC0tLS0tLS0tLS0tfC0tLS0tLS0tfC0tLS0tLXwtLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tPGJyPlJUU3ygoKCgoCAwLjQ1MXygoKAgNTAyLjA3M3ygoCAxMDI0LjM3OXyg
-oKCgIDI4OHygoKCgIDB8oKCgIDAwOjAwOjI1LzAwOjAwOjI1PGJyPltyb290QEZyaWVuZGx5QVJN
-IGJpbl0jIC4vbGF0ZW5jeSAtdCAyPGJyPj09IFNhbXBsaW5nIHBlcmlvZDogMTAwMCB1czxicj4K
-PT0gVGVzdCBtb2RlOiBpbi1rZXJuZWwgdGltZXIgaGFuZGxlcjxicj49PSBBbGwgcmVzdWx0cyBp
-biBtaWNyb3NlY29uZHM8YnI+d2FybWluZyB1cC4uLjxicj5SVFR8oCAwMDowMDowMaAgKGluLWtl
-cm5lbCB0aW1lciBoYW5kbGVyLCAxMDAwIHVzIHBlcmlvZCwgcHJpb3JpdHkgOTkpPGJyPlJUSHwt
-LS0tbGF0IG1pbnwtLS0tbGF0IGF2Z3wtLS0tbGF0IG1heHwtb3ZlcnJ1bnwtLS1tc3d8LS0tbGF0
-IGJlc3R8LS1sYXQgd29yc3Q8YnI+ClJURHygoKAgLTE1LjkzNHygoKAgNDkwLjQ0MnygoCAxMDAw
-LjgzMHygoKCgoKAgMnygoKCgIDB8oKCgIC0xNS45MzR8oKAgMTAwMC44MzA8YnI+UlREfKCgoCAt
-MTYuMDA2fKCgoCA0OTAuNTUyfKCgIDEwMTMuNDYxfKCgoKCgoCA0fKCgoKAgMHygoKAgLTE2LjAw
-NnygoCAxMDEzLjQ2MTxicj5SVER8oKCgIC0xNS44NDR8oKCgIDQ5MC40NTd8oKAgMTAwNC42MTl8
-oKCgoKCgIDZ8oKCgoCAwfKCgoCAtMTYuMDA2fKCgIDEwMTMuNDYxPGJyPgpSVER8oKCgIC0xNi4x
-NTF8oKCgIDQ5MC40OTN8oKAgMTAwMi45OTV8oKCgoKCgIDh8oKCgoCAwfKCgoCAtMTYuMTUxfKCg
-IDEwMTMuNDYxPGJyPlJURHygoKAgLTE1LjczNnygoKAgNDkwLjQ0OHygoCAxMDAxLjgyMnygoKCg
-oKAgOXygoKCgIDB8oKCgIC0xNi4xNTF8oKAgMTAxMy40NjE8YnI+UlREfKCgoCAtMTYuMjA1fKCg
-oCA0ODkuNDQ3fKCgIDEwMDAuNTU5fKCgoKCgIDEwfKCgoKAgMHygoKAgLTE2LjIwNXygoCAxMDEz
-LjQ2MTxicj4KUlREfKCgoCAtMTYuMDI1fKCgoCA0OTEuNDI3fKCgIDEwMTEuMzg2fKCgoKCgIDE0
-fKCgoKAgMHygoKAgLTE2LjIwNXygoCAxMDEzLjQ2MTxicj5SVER8oKCgIC0xNi4wOTd8oKCgIDQ5
-MC40Njl8oKAgMTAwNC4zNDh8oKCgoKAgMTV8oKCgoCAwfKCgoCAtMTYuMjA1fKCgIDEwMTMuNDYx
-PGJyPlJURHygoKAgLTE1Ljk3MXygoKAgNDkwLjQ5M3ygoCAxMDA0LjA5NnygoKCgoCAxN3ygoKCg
-IDB8oKCgIC0xNi4yMDV8oKAgMTAxMy40NjE8YnI+ClJURHygoKAgLTE1Ljk1MnygoKAgNDg5LjQ4
-MXygoCAxMDA2LjA2M3ygoKCgoCAxOHygoKCgIDB8oKCgIC0xNi4yMDV8oKAgMTAxMy40NjE8YnI+
-UlREfKCgoCAtMTYuMDYxfKCgoCA0OTAuNDg2fKCgIDEwMDQuNDM5fKCgoKCgIDE5fKCgoKAgMHyg
-oKAgLTE2LjIwNXygoCAxMDEzLjQ2MTxicj5SVER8oKCgIC0xNi4xMTV8oKCgIDQ5MC40NTF8oKAg
-MTAwNi40MjN8oKCgoKAgMjF8oKCgoCAwfKCgoCAtMTYuMjA1fKCgIDEwMTMuNDYxPGJyPgpSVER8
-oKCgIC0xNi4xMTV8oKCgIDQ5MS40MTF8oKAgMTAwMy45ODd8oKCgoKAgMjZ8oKCgoCAwfKCgoCAt
-MTYuMjA1fKCgIDEwMTMuNDYxPGJyPlJURHygoKAgLTE2LjE4N3ygoKAgNDg5LjQ5M3ygoKAgOTk5
-LjgzN3ygoKCgoCAyNnygoKCgIDB8oKCgIC0xNi4yMDV8oKAgMTAxMy40NjE8YnI+UlREfKCgoCAt
-MTUuODYyfKCgoCA0OTAuNDQ1fKCgIDEwMDQuODkwfKCgoKCgIDI4fKCgoKAgMHygoKAgLTE2LjIw
-NXygoCAxMDEzLjQ2MTxicj4KUlREfKCgoCAtMTYuMTE1fKCgoCA0OTAuNDkxfKCgIDEwMDAuMTk4
-fKCgoKCgIDI5fKCgoKAgMHygoKAgLTE2LjIwNXygoCAxMDEzLjQ2MTxicj5SVER8oKCgIC0xNi4y
-MDV8oKCgIDQ5MS40NTN8oKAgMTAwOC4wNDd8oKCgoKAgMzR8oKCgoCAwfKCgoCAtMTYuMjA1fKCg
-IDEwMTMuNDYxPGJyPlJURHygoKAgLTE2LjAyNXygoKAgNDkwLjQ1N3ygoCAxMDA0Ljc5OXygoKCg
-oCAzNnygoKCgIDB8oKCgIC0xNi4yMDV8oKAgMTAxMy40NjE8YnI+ClJURHygoKAgLTE2LjExNXyg
-oKAgNDkwLjQ3NnygoCAxMDAyLjU0NHygoKCgoCAzOHygoKCgIDB8oKCgIC0xNi4yMDV8oKAgMTAx
-My40NjE8YnI+UlREfKCgoCAtMTYuMTE1fKCgoCA0OTAuNDY5fKCgIDEwMDIuNDUzfKCgoKCgIDQw
-fKCgoKAgMHygoKAgLTE2LjIwNXygoCAxMDEzLjQ2MTxicj5SVER8oKCgIC0xNi4wMjV8oKCgIDQ5
-MC40NDd8oKAgMTAwNC45ODB8oKCgoKAgNDJ8oKCgoCAwfKCgoCAtMTYuMjA1fKCgIDEwMTMuNDYx
-PGJyPgpSVFR8oCAwMDowMDoyMqAgKGluLWtlcm5lbCB0aW1lciBoYW5kbGVyLCAxMDAwIHVzIHBl
-cmlvZCwgcHJpb3JpdHkgOTkpPGJyPlJUSHwtLS0tbGF0IG1pbnwtLS0tbGF0IGF2Z3wtLS0tbGF0
-IG1heHwtb3ZlcnJ1bnwtLS1tc3d8LS0tbGF0IGJlc3R8LS1sYXQgd29yc3Q8YnI+UlREfKCgoCAt
-MTYuMTg3fKCgoCA0OTAuNDk0fKCgIDEwMDIuODE0fKCgoKCgIDQzfKCgoKAgMHygoKAgLTE2LjIw
-NXygoCAxMDEzLjQ2MTxicj4KPGJyPjxicj4K
---e0cb4efe28e805185e04b91199fd--
-
---e0cb4efe28e805186604b91199ff
-Content-Type: application/octet-stream; name=xeno configs
-Content-Disposition: attachment; filename=xeno configs
-Content-Transfer-Encoding: base64
-X-Attachment-Id: f_gypldk4n0
-
-IENPTkZJR19YRU5PTUFJPXkKQ09ORklHX1hFTk9fR0VORVJJQ19TVEFDS1BPT0w9eQpDT05GSUdf
-WEVOT19GQVNUU1lOQ0hfREVQPXkKQ09ORklHX1hFTk9fRkFTVFNZTkNIPXkKQ09ORklHX1hFTk9f
-T1BUX05VQ0xFVVM9eQpDT05GSUdfWEVOT19PUFRfUEVSVkFTSVZFPXkKQ09ORklHX1hFTk9fT1BU
-X1BSSU9DUEw9eQpDT05GSUdfWEVOT19PUFRfUElQRUxJTkVfSEVBRD15CiMgQ09ORklHX1hFTk9f
-T1BUX1NDSEVEX0NMQVNTRVMgaXMgbm90IHNldApDT05GSUdfWEVOT19PUFRfVkZJTEU9eQpDT05G
-SUdfWEVOT19PUFRfUkVHSVNUUllfTlJTTE9UUz01MTIKQ09ORklHX1hFTk9fT1BUX1NZU19IRUFQ
-U1o9MjU2CkNPTkZJR19YRU5PX09QVF9TWVNfU1RBQ0tQT09MU1o9MTI4CkNPTkZJR19YRU5PX09Q
-VF9TRU1fSEVBUFNaPTEyCkNPTkZJR19YRU5PX09QVF9HTE9CQUxfU0VNX0hFQVBTWj0xMgpDT05G
-SUdfWEVOT19PUFRfU1RBVFM9eQojIENPTkZJR19YRU5PX09QVF9ERUJVRyBpcyBub3Qgc2V0CiMg
-Q09ORklHX1hFTk9fT1BUX1NISVJRIGlzIG5vdCBzZXQKQ09ORklHX1hFTk9fT1BUX0hPU1RSVD15
-CgojCiMgVGltaW5nCiMKIyBDT05GSUdfWEVOT19PUFRfVElNSU5HX1BFUklPRElDIGlzIG5vdCBz
-ZXQKQ09ORklHX1hFTk9fT1BUX1RJTUlOR19WSVJUSUNLPTEwMDAKQ09ORklHX1hFTk9fT1BUX1RJ
-TUlOR19TQ0hFRExBVD0wCgojCiMgU2NhbGFiaWxpdHkKIwojIENPTkZJR19YRU5PX09QVF9TQ0FM
-QUJMRV9TQ0hFRCBpcyBub3Qgc2V0CkNPTkZJR19YRU5PX09QVF9USU1FUl9MSVNUPXkKIyBDT05G
-SUdfWEVOT19PUFRfVElNRVJfSEVBUCBpcyBub3Qgc2V0CiMgQ09ORklHX1hFTk9fT1BUX1RJTUVS
-X1dIRUVMIGlzIG5vdCBzZXQKCiMKIyBNYWNoaW5lCiMKQ09ORklHX0lQSVBFX1dBTlRfUFJFRU1Q
-VElCTEVfU1dJVENIPXkKQ09ORklHX1hFTk9fSFdfRlBVPXkKQ09ORklHX1hFTk9fSFdfVU5MT0NL
-RURfU1dJVENIPXkKCiMKIyBJbnRlcmZhY2VzCiMKQ09ORklHX1hFTk9fU0tJTl9OQVRJVkU9eQpD
-T05GSUdfWEVOT19PUFRfTkFUSVZFX1BFUklPRD0wCiMgQ09ORklHX1hFTk9fT1BUX05BVElWRV9Q
-SVBFIGlzIG5vdCBzZXQKQ09ORklHX1hFTk9fT1BUX05BVElWRV9TRU09eQpDT05GSUdfWEVOT19P
-UFRfTkFUSVZFX0VWRU5UPXkKQ09ORklHX1hFTk9fT1BUX05BVElWRV9NVVRFWD15CkNPTkZJR19Y
-RU5PX09QVF9OQVRJVkVfQ09ORD15CkNPTkZJR19YRU5PX09QVF9OQVRJVkVfUVVFVUU9eQpDT05G
-SUdfWEVOT19PUFRfTkFUSVZFX0JVRkZFUj15CkNPTkZJR19YRU5PX09QVF9OQVRJVkVfSEVBUD15
-CkNPTkZJR19YRU5PX09QVF9OQVRJVkVfQUxBUk09eQpDT05GSUdfWEVOT19PUFRfTkFUSVZFX01Q
-Uz15CiMgQ09ORklHX1hFTk9fT1BUX05BVElWRV9JTlRSIGlzIG5vdCBzZXQKQ09ORklHX1hFTk9f
-U0tJTl9QT1NJWD15CkNPTkZJR19YRU5PX09QVF9QT1NJWF9QRVJJT0Q9MAojIENPTkZJR19YRU5P
-X09QVF9QT1NJWF9TSE0gaXMgbm90IHNldAojIENPTkZJR19YRU5PX09QVF9QT1NJWF9JTlRSIGlz
-IG5vdCBzZXQKIyBDT05GSUdfWEVOT19PUFRfUE9TSVhfU0VMRUNUIGlzIG5vdCBzZXQKIyBDT05G
-SUdfWEVOT19PUFRfREVCVUdfUE9TSVggaXMgbm90IHNldAojIENPTkZJR19YRU5PX1NLSU5fUFNP
-UyBpcyBub3Qgc2V0CiMgQ09ORklHX1hFTk9fU0tJTl9VSVRST04gaXMgbm90IHNldAojIENPTkZJ
-R19YRU5PX1NLSU5fVlJUWCBpcyBub3Qgc2V0CiMgQ09ORklHX1hFTk9fU0tJTl9WWFdPUktTIGlz
-IG5vdCBzZXQKIyBDT05GSUdfWEVOT19PUFRfTk9XQVJOX0RFUFJFQ0FURUQgaXMgbm90IHNldApD
-T05GSUdfWEVOT19TS0lOX1JURE09eQpDT05GSUdfWEVOT19PUFRfUlRETV9QRVJJT0Q9MApDT05G
-SUdfWEVOT19PUFRfUlRETV9GSUxERVM9MTI4CiMgQ09ORklHX1hFTk9fT1BUX1JURE1fU0VMRUNU
-IGlzIG5vdCBzZXQKCiMKIyBEcml2ZXJzCiMKCiMKIyBTZXJpYWwgZHJpdmVycwojCiMgQ09ORklH
-X1hFTk9fRFJJVkVSU18xNjU1MEEgaXMgbm90IHNldAoKIwojIFRlc3RpbmcgZHJpdmVycwojCkNP
-TkZJR19YRU5PX0RSSVZFUlNfVElNRVJCRU5DSD15CiMgQ09ORklHX1hFTk9fRFJJVkVSU19LTEFU
-RU5DWSBpcyBub3Qgc2V0CiMgQ09ORklHX1hFTk9fRFJJVkVSU19JUlFCRU5DSCBpcyBub3Qgc2V0
-CkNPTkZJR19YRU5PX0RSSVZFUlNfU1dJVENIVEVTVD15CiMgQ09ORklHX1hFTk9fRFJJVkVSU19S
-VERNVEVTVCBpcyBub3Qgc2V0CgojCiMgQ0FOIGRyaXZlcnMKIwojIENPTkZJR19YRU5PX0RSSVZF
-UlNfQ0FOIGlzIG5vdCBzZXQKCiMKIyBBTkFMT0dZIGRyaXZlcnMKIwojIENPTkZJR19YRU5PX0RS
-SVZFUlNfQU5BTE9HWSBpcyBub3Qgc2V0CgojCiMgUmVhbC10aW1lIElQQyBkcml2ZXJzCiMKIyBD
-T05GSUdfWEVOT19EUklWRVJTX1JUSVBDIGlzIG5vdCBzZXQKIyBDT05GSUdfRlJFRVpFUiBpcyBu
-b3Qgc2V0Cg==
---e0cb4efe28e805186604b91199ff--
+-- 
+					    Gilles.
 
