@@ -1,12 +1,9 @@
-Message-ID: <4F3CD3A6.1090502@domain.hid>
-Date: Thu, 16 Feb 2012 11:00:06 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CAJp2OCM=MPSPHR1=ypDLTsRTSFAO0vmATqarw6H3ZyXoNKQ3MA@mail.gmail.com>
-In-Reply-To: <CAJp2OCM=MPSPHR1=ypDLTsRTSFAO0vmATqarw6H3ZyXoNKQ3MA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] High latencies on ARM
+Date: Fri, 17 Feb 2012 10:29:55 +0530
+Message-ID: <CAOx7Giq4tKYk-5KgKAUJ7CPCx5KtRO_fDfEQZ+KBLHLZtPaSZA@mail.gmail.com>
+From: ramarao mundru <ramarao.mundru@domain.hid>
+Content-Type: multipart/alternative; boundary=14dae934052bd038d404b921d03f
+Subject: [Xenomai-help] porting of xenomai on on arm board(pandaomap4430)
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -16,39 +13,59 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Alex Nikitenko <alexzoidbergnikitenko@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 02/16/2012 10:38 AM, Alex Nikitenko wrote:
-> Hi all,
-> 
-> I continue my struggling with xenomai on Tiny6410 board. Kernel version -
-> 2.6.36. Xenomai version is 2.6.0. The problem is actually in very high
-> latencies (see log at the end).
-> In kernel config I disabled all the stuff I'm not planing to use at the
-> moment (touchscreen, video, audio, usb, networking).  I also disabled
-> CONFIG_SYS_SUPPORTS_APM_EMULATION.
-> 
-> Xenomai related configs attached. Just in case I made some mistakes in
-> configuring it.
-> 
-> Please, help me with the ideas what it could be.
+--14dae934052bd038d404b921d03f
+Content-Type: text/plain; charset=ISO-8859-1
 
-Possible reasons:
-- look for issues in the timer programming: the timer and clock
-frequency may not be what you think they are, or may be too low, the
-I-pipe for ARM is mostly tested with clock and timer using the same
-frequency, so, there may be an undiscovered issue if timer and clock do
-not use the same frequency.
-- make sure that __ipipe_tsc_update() is called often enough (at least
-once before the hardware counter wraps), if for instance you are using a
-16 bits counter at 1 MHz, the wrap time is around 65 ms so, calling
-__ipipe_tsc_update() in linux irq handler may not be enough, especially
-if dynamic ticks are enabled, you need to call it in __ipipe_mach_acktimer.
-- make sure that the idle loop does not enter in a deep sleep state.
+hi can any one  can help me,here i want to make uImage for pandaboard
+omap4430 while i am executing comand for uImage i am getting the error ,i
+am using the linux-2.6.37.6 with xenomai 2.6.0
 
-Regards.
+
+ CC      kernel/xenomai/arch/generic/hal.o
+In file included from kernel/xenomai/arch/generic/hal.c:45:
+/usr/local/arm/linux-2.6.37.6/arch/arm/include/asm/xenomai/hal.h:91: error:
+#error "Unsupported ARM machine"
+make[4]: *** [kernel/xenomai/arch/generic/hal.o] Error 1
+make[3]: *** [kernel/xenomai/arch/generic] Error 2
+make[2]: *** [kernel/xenomai/arch] Error 2
+make[1]: *** [kernel/xenomai] Error 2
+make: *** [kernel] Error 2
 
 -- 
-					    Gilles.
+*   THANKS & REGARDS
+*
+
+ramarao mundru
+
+     8123725868
+
+--14dae934052bd038d404b921d03f
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+<br><div class=3D"gmail_quote">hi can any one=A0 can help me,here i want to=
+ make uImage for pandaboard omap4430 while i am executing comand for uImage=
+ i am getting the error ,i am using the linux-2.6.37.6 with xenomai 2.6.0 <=
+br>
+<br><br>=A0CC=A0=A0=A0=A0=A0 kernel/xenomai/arch/generic/hal.o<br>
+In file included from kernel/xenomai/arch/generic/hal.c:45:<br>/usr/local/a=
+rm/linux-2.6.37.6/arch/arm/include/asm/xenomai/hal.h:91: error: #error &quo=
+t;Unsupported ARM machine&quot;<br>make[4]: *** [kernel/xenomai/arch/generi=
+c/hal.o] Error 1<br>
+
+make[3]: *** [kernel/xenomai/arch/generic] Error 2<br>make[2]: *** [kernel/=
+xenomai/arch] Error 2<br>make[1]: *** [kernel/xenomai] Error 2<br>make: ***=
+ [kernel] Error 2<br></div><br>-- <br><div style=3D"color:rgb(255,0,0)">
+<b>=A0=A0 <span style=3D"color:rgb(0,0,153)">THANKS &amp; REGARDS</span><br=
+></b></div><font face=3D"arial black,sans-serif">
+<blockquote style=3D"border-left:#ccc 1px solid;margin:0px 0px 0px 0.8ex;pa=
+dding-left:1ex">
+<div><font face=3D"arial black,sans-serif" color=3D"#000099">ramarao mundru=
+</font></div></blockquote>
+<div><font color=3D"#000099">=A0=A0=A0=A0 8123725868</font></div></font><br=
+>
+
+--14dae934052bd038d404b921d03f--
 
