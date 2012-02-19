@@ -1,38 +1,63 @@
-Message-ID: <4F17631A.6010106@domain.hid>
-Date: Wed, 18 Jan 2012 19:26:02 -0500
-From: Mitchell Tasman <tasman@domain.hid>
+Message-ID: <4F4150C8.7040104@domain.hid>
+Date: Sun, 19 Feb 2012 20:43:04 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4F0B90C6.8040007@domain.hid> <4F0C9C25.5080401@domain.hid>
-In-Reply-To: <4F0C9C25.5080401@domain.hid>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Arm support for 3.2 kernel?
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-Cc: xenomai@xenomai.org
+Subject: [Adeos-main] Reworking ipipe timer subsystem,
+List-Id: General discussion about Adeos <adeos-main.gna.org>
+List-Unsubscribe: <https://mail.gna.org/options/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+List-Archive: </public/adeos-main>
+List-Post: <mailto:adeos-main@gna.org>
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+To: Adeos <adeos-main@gna.org>
 
-On 01/10/2012 03:14 PM, Gilles Chanteperdrix wrote:
-> On 01/10/2012 02:13 AM, Mitchell Tasman wrote (in part):
->> Hi.  I saw the recent discussion regarding ARM I-pipe and 3.x, and am
->> wondering if anyone can hazard a guess as to a timetable for 3.2 support?
->
-> 3.0 is on its way. 3.1 will be next because it is the first version to
-> support a new I-pipe architecture, so I was hoping to be able to skip 3.2...
 
-Thank you for your response to my question(s).  I noticed that an arm 
-I-pipe patchset for 3.0.13 recently landed in git.
+Hi,
 
-Might you consider making 3.2 the next target for arm I-pipe support 
-rather than 3.1?  It seems that 3.1 is already being end-of-lifed, and 
-e.g., that the RT-Preempt community has jumped directly from 3.0 to 3.2.
+restarting the ipipe-core is the good opportunity to look a bit at our
+current state and think about what we could improve. On ARM, at least,
+the thing we could improve is the timer subsystem. A long time ago,
+linux has switched to a system allowing to select at run-time which
+timer to use, and we do not really benefit from this, what timer we use
+is selected at compile time, resulting in a massive ifdefery on arm, and
+even on x86, we have to select at compile time whether using the 8254 or
+APIC, whereas we could decide to use whatever linux is using, even say
+HPET, without any compilation option. That is assuming we want to move
+the x86 timer-specific code from xenomai to I-pipe.
 
-Thanks again and best regards.
+The idea to reach this goal would be to add some ipipe specific members
+to the struct clock_event_device, the way we do for the interrupt
+controller:
+- a CLOCK_EVT_FEAT_IPIPE would signal that the clockevent device is
+ipipe capable, meaning that it implements the following callback
+- ipipe_steal would be called when stealing the timer, we could decide
+to call this callback either as part of ipipe_request_timer, or with a
+specific ipipe_steal_timer call, currently we simply set
+__ipipe_mach_timerstolen to 1, but it is pure luck that we never needed
+something more complicated, besides, we may want to start a timer that
+was not started by linux so, we would put its initialization here;
+- ipipe_stolen would record whether the timer is stolen
+- ipipe_min_delta_ticks, ipipe_max_delta_ticks would be used by the
+ipipe_set_next_event callback
+- ipipe_ack would be called to ack the timer interrupt the way we
+currently do it currently on arm with __ipipe_mach_acktimer
+- ipipe_set_next_event would program the next timer shot, the way it is
+currently done in __ipipe_mach_set_dec.
 
+All this is pretty straightforward, but there is still a question: how
+does ipipe_request_timer select a timer. The idea is that on platform
+without PIC muting, it is probably more efficient to use the same timer
+for linux and xenomai. But on platforms with PIC muting, we could want
+to select a different timer for linux and xenomai, but how do we find
+it, what if linux has not selected a timer because it is unusable on
+that platform?
+
+Please feel free to comment these sketchy ideas.
+
+-- 
+                                                                Gilles.
 
