@@ -1,12 +1,12 @@
-Message-ID: <4F427796.60400@domain.hid>
-Date: Mon, 20 Feb 2012 17:40:54 +0100
+Message-ID: <4F4278ED.9090802@domain.hid>
+Date: Mon, 20 Feb 2012 17:46:37 +0100
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <4F36B4A5.8080202@domain.hid>
-In-Reply-To: <4F36B4A5.8080202@domain.hid>
+References: <4F4150C8.7040104@domain.hid>
+In-Reply-To: <4F4150C8.7040104@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Adeos-main] ipipe_request_tickdev issue
+Subject: Re: [Adeos-main] Reworking ipipe timer subsystem,
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/options/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -18,30 +18,53 @@ List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: Adeos <adeos-main@gna.org>
 
-On 02/11/2012 07:34 PM, Gilles Chanteperdrix wrote:
+On 02/19/2012 08:43 PM, Gilles Chanteperdrix wrote:
 >
 > Hi,
 >
-> I found this out a long time ago on AT91 and worked around it but am
-> starting to see the same issue on hardware which hardware timer does not
-> wrap as fast: when xenomai calls ipipe_request_tickdev, the clockevent
-> structure max_delta_ns member is set to ULONG_MAX, but on most ARM
-> platforms, the reason for max_delta_ns is not only the timer hardware
-> limit, it is also necessary to call eg. update_sched_clock at least once
-> every max_delta_ns in order to avoid the hardware counter wrapping
-> without the system noticing it.
+> restarting the ipipe-core is the good opportunity to look a bit at our
+> current state and think about what we could improve. On ARM, at least,
+> the thing we could improve is the timer subsystem. A long time ago,
+> linux has switched to a system allowing to select at run-time which
+> timer to use, and we do not really benefit from this, what timer we use
+> is selected at compile time, resulting in a massive ifdefery on arm, and
+> even on x86, we have to select at compile time whether using the 8254 or
+> APIC, whereas we could decide to use whatever linux is using, even say
+> HPET, without any compilation option. That is assuming we want to move
+> the x86 timer-specific code from xenomai to I-pipe.
 >
-> What do you think is the best way to avoid this issue? I would propose
-> simply removing the line which does:
-> 	evtdev->max_delta_ns = ULONG_MAX;
+> The idea to reach this goal would be to add some ipipe specific members
+> to the struct clock_event_device, the way we do for the interrupt
+> controller:
+> - a CLOCK_EVT_FEAT_IPIPE would signal that the clockevent device is
+> ipipe capable, meaning that it implements the following callback
+> - ipipe_steal would be called when stealing the timer, we could decide
+> to call this callback either as part of ipipe_request_timer, or with a
+> specific ipipe_steal_timer call, currently we simply set
+> __ipipe_mach_timerstolen to 1, but it is pure luck that we never needed
+> something more complicated, besides, we may want to start a timer that
+> was not started by linux so, we would put its initialization here;
+> - ipipe_stolen would record whether the timer is stolen
+> - ipipe_min_delta_ticks, ipipe_max_delta_ticks would be used by the
+> ipipe_set_next_event callback
+> - ipipe_ack would be called to ack the timer interrupt the way we
+> currently do it currently on arm with __ipipe_mach_acktimer
+> - ipipe_set_next_event would program the next timer shot, the way it is
+> currently done in __ipipe_mach_set_dec.
+>
+> All this is pretty straightforward, but there is still a question: how
+> does ipipe_request_timer select a timer. The idea is that on platform
+> without PIC muting, it is probably more efficient to use the same timer
+> for linux and xenomai. But on platforms with PIC muting, we could want
+> to select a different timer for linux and xenomai, but how do we find
+> it, what if linux has not selected a timer because it is unusable on
+> that platform?
 
-Assuming we never go through clockevents_program_event() to program the 
-next real-time shot, I don't see any issue killing this line in the 
-current pipeline implementation. This said, it is unlikely that we would 
-want to program delays larger than what the kernel defined as the 
-maximum for the clock chip anyway.
+Checking the clock device mode for CLOCK_EVT_MODE_SHUTDOWN, and falling 
+back to sharing the active kernel tick device + disabling PIC muting?
 
-> in ipipe_request_tickdev, but maybe someone else sees a better solution.
+>
+> Please feel free to comment these sketchy ideas.
 >
 
 
