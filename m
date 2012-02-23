@@ -1,13 +1,15 @@
-Message-ID: <4F46C6A2.5060905@domain.hid>
-Date: Thu, 23 Feb 2012 17:07:14 -0600
-From: Jeff Webb <jeff.webb@domain.hid>
+Message-ID: <4F46C7CD.1070509@domain.hid>
+Date: Fri, 24 Feb 2012 00:12:13 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4F3BD76C.1040703@domain.hid> <4F3BDC1E.9090707@domain.hid>
-	<4F46B792.8070204@domain.hid> <4F46BD22.60404@domain.hid>
-In-Reply-To: <4F46BD22.60404@domain.hid>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Real-time printf in Xenomai 2.6.0
+References: <CAHOEnGfih5tin7NAnf-qU6tKxVtnb=LjuBFE5QxFQpxfA=EBkg@domain.hid>
+	<CAHOEnGdKstVsBUKnQcCm3NK4BfngnGOAKfimXA5VL=ujUzR2ig@domain.hid>
+	<4F3AAA52.6060802@domain.hid>
+	<CAHOEnGdzwe3gj5c_PAkqBHsYCz=-+McZkDTz7kSOLUQyVDVDyg@domain.hid>
+In-Reply-To: <CAHOEnGdzwe3gj5c_PAkqBHsYCz=-+McZkDTz7kSOLUQyVDVDyg@domain.hid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-help] Freeze while running examples
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -17,51 +19,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai help <xenomai@xenomai.org>
+To: =?UTF-8?B?T3NjYXIgRMOhdmlsYQ==?= <odavilar@domain.hid>
+Cc: xenomai@xenomai.org
 
-On 02/23/2012 04:26 PM, Gilles Chanteperdrix wrote:
-> On 02/23/2012 11:02 PM, Jeff Webb wrote:
->> I was happy to see that printf now works from real-time POSIX threads in Xenomai 2.6.0.  Unfortunately, I'm seeing some strange behavior that surfaces when I try to print the string "\n" by itself.  When I run the attached example program, I get:
+On 02/23/2012 11:43 PM, Oscar D=C3=A1vila wrote:
+> 2012/2/14 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+>=20
+>> On 02/14/2012 06:54 PM, Oscar D=C3=A1vila wrote:
+>>> I compiled Xenomai succesfully, but when i try to run an example it
+>> freezes
+>>> / machine look up, any help will be apreciated, thanks.
+>>>
+>>> Here is some info about the system, its a Debian 6.0 with a
+>>> kernel 2.6.35.9, xenomai-2.6.0, the adeos
+>>> patch adeos-ipipe-2.6.35.9-x86-2.8-04.patch and Im also using the
+>>> nmi_watchdog=3D2 in the boot kernel options.
 >>
->>     $ ./printf_test
->>     start
->>     CPU time limit exceeded
->>     $
+>> Please reproduce the bug:
+>> - in text mode, so as to have the full bug trace;
+>> - with frame pointers enabled;
+>> - with highest kernel verbosity for BUGs and backtraces.
 >>
->> IfI replace the two printf calls with rt_printf calls and #include<rtdk.h>,I get the expected result:
->>
->>     $ ./rt_printf_test
->>     start
->>     1
->>     2
->>     3
->>     4
->>     ^C
->>     $
->>
->> The original example also works if these two lines:
->>
->>           printf("%d", count);
->>           printf("\n");
->>
->> are replaced with:
->>
->>           printf("%d\n", count);
->>
->> Can someone confirm if this a bug in Xenomai 2.6.0, something specific to my HW/SW installation, or some mistake in my test program?
->
-> I would bet the call to printf is replaced with something else (such as
-> putchar). Could you disassemble the test to check this?
+>=20
+> How do i do this last point? i mean, i already compile kernel with fram=
+e
+> pointers enabled, also i already ran it in text mode, and i active all =
+the
+> xenomai debug kernel options. i saw some other debug options in kernel
+> hacking, do i have to active those ones too?
 
-Yes, it appears that putchar is called indeed.
+The stack trace looks fine. Could you show us the disassembly of the
+__ipipe_sync_stage function?
 
-> Note that I have fixed similar issues in xenomai-2.6 current repository,
-> so you could give it a try.
+--=20
+                                                                Gilles.
 
-I may give that a try.  Now that I have confirmed that putchar is the issue, do you think xenomai-2.6 current will fix the problem?  Is putchar now wrapped as well?  I noticed that puts appears to be wrapped from the disassembly output.
-
-Thanks again for all the help,
-
-Jeff
 
