@@ -1,14 +1,11 @@
-Message-ID: <4F437B28.7090402@domain.hid>
-Date: Tue, 21 Feb 2012 12:08:24 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4F461E69.3080602@domain.hid>
+Date: Thu, 23 Feb 2012 12:09:29 +0100
+From: Thierry Bultel <thierry.bultel@domain.hid>
 MIME-Version: 1.0
-References: <CAOx7GirBO15Gn-hzS+HpCAPysCVHMAnX5HUmNzMtSanM8O2gZQ@mail.gmail.com>
-	<CAOx7Gir2S_B50Wx68bRCL-k32+k9PW5vnUu1-CJ+MP_6qkY2ZA@mail.gmail.com>
-In-Reply-To: <CAOx7Gir2S_B50Wx68bRCL-k32+k9PW5vnUu1-CJ+MP_6qkY2ZA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Fwd: xenomai config file for pandaboardomap4430
- (linux kernel is 2.6.38.8)
+Content-Type: multipart/alternative;
+	boundary="------------040509090607000207000709"
+Subject: [Xenomai-help] Will ipipe-serial-debug work with a serial port on a
+	PCI board ?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -18,20 +15,51 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: ramarao mundru <ramarao.mundru@domain.hid>
-Cc: xenomai-commits@domain.hid, xenomai@xenomai.org
+To: xenomai@xenomai.org, Jean-Baptiste Tredez <jean-baptiste.tredez@domain.hid>
 
-On 02/21/2012 11:23 AM, ramarao mundru wrote:
-> ---------- Forwarded message ----------
-> From: ramarao mundru <ramarao.mundru@domain.hid>
-> Date: Tue, Feb 21, 2012 at 3:47 PM
-> Subject: xenomai config file for pandaboardomap4430 (linux kernel is
-> 2.6.38.8)
-> To: pandaboard@domain.hid
-> 
+This is a multi-part message in MIME format.
+--------------040509090607000207000709
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Linux 2.6.38 + Xenomai 2.6.0 builds just fine with this .config.
+Hello,
 
--- 
-					    Gilles.
+I am working on a board that does not have genuine UARTs on it (only 
+soldered USBtoSerial converters) :-(
+But it has a free minPci slot, and I was wondering if it would be 
+possible to perform serial debug
+with serial ports on a PCI board.
+
+Thanks for your advice
+Regards,
+Thierry Bultel
+
+--------------040509090607000207000709
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+
+    <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+  </head>
+  <body bgcolor="#ffffff" text="#000000">
+    <font size="-1">Hello,<br>
+      <br>
+      I am working on a board that does not have genuine UARTs on it
+      (only soldered USBtoSerial converters) <span
+        class="moz-smiley-s2"><span> :-( </span></span><br>
+      But it has a free minPci slot, and I was wondering if it would be
+      possible to perform serial debug <br>
+      with serial ports on a PCI board.<br>
+      <br>
+      Thanks for your advice<br>
+      Regards,<br>
+      Thierry Bultel<br>
+    </font>
+  </body>
+</html>
+
+--------------040509090607000207000709--
 
