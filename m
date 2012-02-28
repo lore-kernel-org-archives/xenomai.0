@@ -1,17 +1,9 @@
-Message-ID: <4F4920DE.40600@domain.hid>
-Date: Sat, 25 Feb 2012 18:56:46 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CAHOEnGfih5tin7NAnf-qU6tKxVtnb=LjuBFE5QxFQpxfA=EBkg@domain.hid>
-	<CAHOEnGdKstVsBUKnQcCm3NK4BfngnGOAKfimXA5VL=ujUzR2ig@domain.hid>
-	<4F3AAA52.6060802@domain.hid>
-	<CAHOEnGdzwe3gj5c_PAkqBHsYCz=-+McZkDTz7kSOLUQyVDVDyg@domain.hid>
-	<4F46C7CD.1070509@domain.hid>
-	<CAHOEnGfV3f6aKwzvU+cAkofDXhoHXKQU4YRexUatB85KtTYiDg@domain.hid>
-In-Reply-To: <CAHOEnGfV3f6aKwzvU+cAkofDXhoHXKQU4YRexUatB85KtTYiDg@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] Freeze while running examples
+Date: Tue, 28 Feb 2012 13:39:06 +0100
+Message-ID: <CANzShzdE4aA=ap80TfJ-aWaoHY76UKgi9ZFfZ74wrOdzbVKY0A@mail.gmail.com>
+From: Moustapha Bikienga <mbikienga@domain.hid>
+Content-Type: multipart/alternative; boundary=f46d04016ca947936a04ba058399
+Subject: [Xenomai-help] Xenomai framework/RTOS
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -21,55 +13,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: =?UTF-8?B?T3NjYXIgRMOhdmlsYQ==?= <odavilar@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 02/24/2012 11:55 PM, Oscar D=C3=A1vila wrote:
-> 2012/2/23 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
->=20
->> On 02/23/2012 11:43 PM, Oscar D=C3=A1vila wrote:
->>> 2012/2/14 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
->>>
->>>> On 02/14/2012 06:54 PM, Oscar D=C3=A1vila wrote:
->>>>> I compiled Xenomai succesfully, but when i try to run an example it=
+--f46d04016ca947936a04ba058399
+Content-Type: text/plain; charset=ISO-8859-1
 
->>>> freezes
->>>>> / machine look up, any help will be apreciated, thanks.
->>>>>
->>>>> Here is some info about the system, its a Debian 6.0 with a
->>>>> kernel 2.6.35.9, xenomai-2.6.0, the adeos
->>>>> patch adeos-ipipe-2.6.35.9-x86-2.8-04.patch and Im also using the
->>>>> nmi_watchdog=3D2 in the boot kernel options.
->>>>
->>>> Please reproduce the bug:
->>>> - in text mode, so as to have the full bug trace;
->>>> - with frame pointers enabled;
->>>> - with highest kernel verbosity for BUGs and backtraces.
->>>>
->>>
->>> How do i do this last point? i mean, i already compile kernel with fr=
-ame
->>> pointers enabled, also i already ran it in text mode, and i active al=
-l
->> the
->>> xenomai debug kernel options. i saw some other debug options in kerne=
-l
->>> hacking, do i have to active those ones too?
->>
->> The stack trace looks fine. Could you show us the disassembly of the
->> __ipipe_sync_stage function?
->>
->>
-> Here is what i think is the disassembly of the __ipipe_sync_stage funct=
-ion,
-> the full disassembly of the core.c file is in
-> http://odavilar.0x1fee3.org/xenomai/__ipipe_sync_stage
+Hello.
 
-Please obtain the disassembly with objdump -d vmlinx, so that we get the
-addresses corresponding with the instructions. Without the addresses, we
-do not know where to look.
+At the main page "http://www.xenomai.org/index.php/Main_Page"
+it is said that xenomai is a "framework", and I want know if xenomai can
+also
+be considered as a "RTOS"(real time operating system) like QNX, VxWorks,
+...
 
---=20
-                                                                Gilles.
+--f46d04016ca947936a04ba058399
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
+<div>Hello.</div><div><br></div><div>At the main page &quot;<a href=3D"http=
+://www.xenomai.org/index.php/Main_Page">http://www.xenomai.org/index.php/Ma=
+in_Page</a>&quot;=A0</div><div>it is said that xenomai is a &quot;framework=
+&quot;, and I want know if xenomai can also=A0</div>
+<div>be considered as a &quot;RTOS&quot;(real time operating system) like Q=
+NX, VxWorks, ...=A0</div>
+
+--f46d04016ca947936a04ba058399--
 
