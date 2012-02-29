@@ -1,12 +1,11 @@
-Message-ID: <4F4D140E.9000009@domain.hid>
-Date: Tue, 28 Feb 2012 18:51:10 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Date: Wed, 29 Feb 2012 11:00:38 +0800 
+From: xgdlrh@domain.hid
 MIME-Version: 1.0
-References: <4F4D0F1B.9020804@domain.hid>
-In-Reply-To: <4F4D0F1B.9020804@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Next stable release?
+Content-Type: multipart/alternative;
+	boundary="=-sinamail_alt_c2f7c4fbfe690216147be2847a30b8cd"
+Message-Id: <20120229030038.79AC63AF04F@mail3-245.sinamail.sina.com.cn>
+Subject: [Xenomai-help] How can I use xenomai with the linux kernel of
+	2.6.32?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -16,21 +15,56 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Bob Feretich <bob.feretich@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai-help <xenomai@xenomai.org>
 
-On 02/28/2012 06:30 PM, Bob Feretich wrote:
-> When is the target date for the next "stable release" of Xenomai?
-> I expected that we would have started seeing release candidate versions 
-> of it by now.
-> (according to Xenomai.org the last stable release was 2011-11-05)
+--=-sinamail_alt_c2f7c4fbfe690216147be2847a30b8cd
+Content-Type: text/plain;
+	charset=GBK
+Content-Transfer-Encoding: base64
+Content-Disposition: inline
 
-We do not publish release candidates for other releases than the first
-in the branch (so this is why release candidates were published for
-2.6.0). The release is waiting for the new I-pipe patches to be
-finished. But you can test a pre-release by using the current contents
-of the git repository.
+IERlYXIgc2lyLCZuYnNwOyAmbmJzcDsgJm5ic3A7IHNvcnJ5IHRvIHRyb3VibGUgdSxidXQgaSBo
+YXZlIGEgcHJvYmxlbSBpICBjYW4ndCBzb2x2ZS4mbmJzcDsgJm5ic3A7ICZuYnNwOyBOb3cgaSB1
+c2UgYW4gb21hcDM1MzAgRXZhbHVhdGlvbiBCb2FyZHMgYW5kIHRoZSBsaW51eCBrZXJuZWwgIHdo
+aWNoIG1hbnVmYWN0dXJlcnMgcHJvdmlkZXMgaXMgMi42LjMyIC4gaSBoYXZlIHRvIHVzZSB0aGlz
+IGtlcm5lbC53aGVuIGkgdHJ5IHRoZSBzdGVwOiAkIHNjcmlwdHMvcHJlcGFyZS1rZXJuZWwuc2gg
+LS1saW51eD08bGludXgtc3JjdHJlZT4NClstLWFkZW9zPTxhZGVvcy1wYXRjaD5dIFstLWFyY2g9
+PHRhcmdldC1hcmNoPl0saSBjYW4ndCBmaW5kIHRoZSBhZGVvcy1wYXRjaCB3aGljaCBtYXRjaGVz
+IHRoZSBrZXJuZWwgLHNvIEkgbmVlZCB1ciBoZWxwIGFuZCBob3cgY2FuIGkgdXNlIHhlbm9tYWkg
+d2l0aCB0aGUgbGludXgga2VybmVsIG9mIDIuNi4zMiBvbiB0aGUgcGxhdGZvcm0gb2Ygb21hcDM1
+MzA/IHRoYW5rcyBmb3IgdXIgaGVscC5CZXN0IHdpc2hlcyB0byB5b3UhICZuYnNwOyAmbmJzcDsg
+Jm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAm
+bmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZu
+YnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5i
+c3A7ICZuYnNwOyAmbmJzcDtTaW5jZXJlbHkgeW91cnMsIExpYW5nIFJ1bmhhbiAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICA=
 
--- 
-					    Gilles.
+
+--=-sinamail_alt_c2f7c4fbfe690216147be2847a30b8cd
+Content-Type: text/html; 
+	charset=GBK
+Content-Transfer-Encoding: base64
+Content-Disposition: inline
+
+IERlYXIgc2lyLDxkaXY+Jm5ic3A7ICZuYnNwOyAmbmJzcDsgc29ycnkgdG8gdHJvdWJsZSB1LGJ1
+dCBpIGhhdmUgYSBwcm9ibGVtIGkgIGNhbid0IHNvbHZlLjwvZGl2PjxkaXY+Jm5ic3A7ICZuYnNw
+OyAmbmJzcDsgTm93IGkgdXNlIGFuIG9tYXAzNTMwIEV2YWx1YXRpb24gQm9hcmRzIGFuZCB0aGUg
+bGludXgga2VybmVsICB3aGljaCBtYW51ZmFjdHVyZXJzIHByb3ZpZGVzIGlzIDIuNi4zMiAuIGkg
+aGF2ZSB0byB1c2UgdGhpcyBrZXJuZWwud2hlbiBpIHRyeSB0aGUgc3RlcDogJCBzY3JpcHRzL3By
+ZXBhcmUta2VybmVsLnNoIC0tbGludXg9Jmx0O2xpbnV4LXNyY3RyZWUmZ3Q7DQpbLS1hZGVvcz0m
+bHQ7YWRlb3MtcGF0Y2gmZ3Q7XSBbLS1hcmNoPSZsdDt0YXJnZXQtYXJjaCZndDtdLGkgY2FuJ3Qg
+ZmluZCB0aGUgYWRlb3MtcGF0Y2ggd2hpY2ggbWF0Y2hlcyB0aGUga2VybmVsICxzbyBJIG5lZWQg
+dXIgaGVscCBhbmQgaG93IGNhbiBpIHVzZSB4ZW5vbWFpIHdpdGggdGhlIGxpbnV4IGtlcm5lbCBv
+ZiAyLjYuMzIgb24gdGhlIHBsYXRmb3JtIG9mIG9tYXAzNTMwPyB0aGFua3MgZm9yIHVyIGhlbHAu
+QmVzdCB3aXNoZXMgdG8geW91ISA8L2Rpdj48ZGl2PiZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNw
+OyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7
+ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsg
+Jm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAmbmJzcDsgJm5ic3A7ICZuYnNwOyAm
+bmJzcDtTaW5jZXJlbHkgeW91cnMsIExpYW5nIFJ1bmhhbjwvZGl2PjxkaXY+ICAgICAgICAgICAg
+ICAgICAgICAgPC9kaXY+PGRpdj4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgPC9kaXY+
+
+
+--=-sinamail_alt_c2f7c4fbfe690216147be2847a30b8cd--
 
