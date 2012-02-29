@@ -1,12 +1,13 @@
-Message-ID: <4F4E6603.7060209@domain.hid>
-Date: Wed, 29 Feb 2012 18:53:07 +0100
+Message-ID: <4F4E680C.1000602@domain.hid>
+Date: Wed, 29 Feb 2012 19:01:48 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CAH=ipMDXKUmjn87Tw-bwUShQQv5SLgi1sohYKrwDkAQW9wJSLQ@mail.gmail.com>
-In-Reply-To: <CAH=ipMDXKUmjn87Tw-bwUShQQv5SLgi1sohYKrwDkAQW9wJSLQ@mail.gmail.com>
+References: <CAEc6OSwfGvfwXM3vqtAXd7o_XeMhSmuvj8mkd8ziLXQSMyK0aA@mail.gmail.com>	<4F4E630C.8020301@domain.hid>
+	<CAEc6OSypUWu3PmMy0HKzTipyrQsU-PDoQYAdH7BeMo+5gCh0uA@mail.gmail.com>
+In-Reply-To: <CAEc6OSypUWu3PmMy0HKzTipyrQsU-PDoQYAdH7BeMo+5gCh0uA@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] xenomai 2.6.0:Linkage Error.
+Subject: Re: [Xenomai-help] Execution time profiling
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -16,56 +17,64 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: teoman cengiz <teoman.ondin@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: Charles Lesire-Cabaniols <charles.lesire@domain.hid>
+Cc: xenomai@xenomai.org
 
-On 02/29/2012 05:16 PM, teoman cengiz wrote:
-> Hello;
+On 02/29/2012 06:52 PM, Charles Lesire-Cabaniols wrote:
+> 2012/2/29 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 > 
->    I was using Xenomai 2.4.8 .  My applications were running and I had no
-> linkage or run time errors.
+>> On 02/29/2012 06:29 PM, Charles Lesire-Cabaniols wrote:
+>>> Hi guys,
+>>>
+>>> I have installed a Debian+Xenomai (2.6.0) OS on my Gumstix Overo.
+>>>
+>>> I want to evaluate the execution time of a simple program, executed as a
+>>> real-time thread.
+>>>
+>>> I definitely wonder about which functions to use, as I have completely
+>>> inconsistent measures.
+>>> I have tried using rt_timer_read, rt_timer_tsc, clock_gettime.
+>>> I also directly read the CNNT register with ARM instructions (which is
+>> the
+>>> only one I think correct) in order to have a (good?) reference.
+>>> (...)
+>>> What am I doing wrong?
+>>
+>> So, you should printf("%Lu %Lu\n", rt_timer_read(), rt_timer_tsc());
+>>
+>> Not printf("%lu", ...)
+>>
+>> --
+>>                                            Gilles.
+>>
 > 
->    Due to some necessities ,xenomai 2.6.0. But I can even not  run
-> xenomai-2.6.0 default examples such as latency:
+> Effectively, that looks cleaner, thanks:
 > 
-> robotlab@domain.hid$ sudo
-> ./latency
-> /usr/src/xenomai-2.6.0/src/testsuite/latency/.libs/lt-latency: symbol
-> lookup error: /usr/src/xenomai-2.6.0/src/skins/native/.libs/libnative.so.3:
-> undefined symbol: xeno_current
+> ----- Xenomai rt_timer_read -----
+> start: 49166276042 ; end: 49166432273 ; (s-e): 156231 ; CET: 156231
+> ----- Xenomai rt_timer_tsc -----
+> start: 639161547 ; end: 639163539 ; (s-e): 1992 ; CET: 1992
+> ----- Xenomai clock_gettime -----
+> [ s] start: 946684855 ; end: 946684855 ; (s-e): 0 ; CET: 0
+> [ns] start: 275520245 ; end: 275677089 ; (s-e): 156844 ; CET: 156844
+> 
+> My ARM instruction reads 110554.
+> 
+> Which Xenomai function should I use?
+> Which one is supposed to be the more accurate?
+> Does rt_timer_read return nsecs?
+> What is the unit of rt_timer_tsc?
 
-Do you have the same problem if you run make install and run the
-installed latency?
+rt_timer_tsc uses whatever hardware counter is available, you need 
+rt_timer_tsc2ns or rt_timer_ns2tsc to convert between this unit to and 
+from nanoseconds.
 
-> Also I get errors in rtdm in xenomai-head examples  :
-> 
-> robotlab@domain.hid$
-> ./tut01-skeleton-app
-> ./tut01-skeleton-app: symbol lookup error: /usr/xenomai/lib/librtdm.so.1:
-> undefined symbol: xeno_bind_skin_opt
+For more details, see: 
 
-You are trying to compile xenomai-head examples with xenomai 2.6. This
-will not work. You should try and compile xenomai 2.6 examples. Please
-pick them from the git repository as the makefiles were broken in
-xenomai 2.6.0 as well. Alternatively, you can apply the following patch:
-http://git.xenomai.org/?p=xenomai-2.6.git;a=commitdiff;h=689e0433ab907958f162181d9b8c3b49012dd67a;hp=b10443b256dcc57a6a200572def4adda567d473a
+http://www.xenomai.org/documentation/xenomai-2.6/html/api/group__native__timer.html
 
-> 
-> I get same error from my own application too,
-> 
-> *I am sure, my flags are correct !
-> 
-> The makefiles finds all rtdm and native *libraries or what else required..
-> 
-> So it is not a xeno-config fault. I also tried by hand and edited makefiles
-> properly.
-
-It is the makefiles fault: the xeno-config usage has changed in xenomai
-2.6. So, you should, as I already told you in three separate mails,
-some of which even private, run xeno-config --help to understand the syntax.
-
-The next time you ask the same question, you will either be flamed, or
-simply ignored, depending on my mood at the time.
+Depending on how xenomai user-space was compiled, rt_timer_tsc should
+have the lowest overhead.
 
 -- 
 					    Gilles.
