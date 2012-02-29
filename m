@@ -1,14 +1,13 @@
-Message-ID: <4F17487C.8080508@domain.hid>
-Date: Wed, 18 Jan 2012 23:32:28 +0100
+Message-ID: <4F4DEAF5.4050308@domain.hid>
+Date: Wed, 29 Feb 2012 10:08:05 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <28CCC3D1EEE841E184D8E5663EBDCCBE@TerryHP>
-	<4F171C09.8010908@domain.hid>
-	<E80344556EFF403586E4B8CAE727382F@TerryHP>
-In-Reply-To: <E80344556EFF403586E4B8CAE727382F@TerryHP>
+References: <20120229071500.159E93AF04F@mail3-245.sinamail.sina.com.cn>
+In-Reply-To: <20120229071500.159E93AF04F@mail3-245.sinamail.sina.com.cn>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Compile error
+Subject: Re: [Xenomai-help] How can I use xenomai with the linux kernel of
+ 2.6.32 on the plarform of omap3530?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -18,29 +17,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Terry Fryar <terry.fryar@domain.hid>
-Cc: xenomai@xenomai.org
+To: xgdlrh@domain.hid
+Cc: xenomai-help <xenomai@xenomai.org>
 
-On 01/18/2012 10:44 PM, Terry Fryar wrote:
-> I knew I wouldn't get enough...but I have other projects in between those
-> timing requirements and I wanted to see how little latency I could get.
-> Using an RTDM driver we wrote, I am measuring about 2us (not 20us) by
-> triggering an irq off a gpio and pulsing another gpio line and measuring the
-> difference between the irq edge and the pulsed edge using a logic analyzer.
+On 02/29/2012 08:14 AM, xgdlrh@domain.hid wrote:
+> Dear sir,      sorry to trouble u,but i have a problem i  can't
+> solve.      Now i use an omap3530 Evaluation Boards and the linux
+> kernel  which manufacturers provides is 2.6.32 . i have to use this
+> kernel.when i try the step: $ scripts/prepare-kernel.sh
+> --linux=<linux-srctree> [--adeos=<adeos-patch>]
+> [--arch=<target-arch>],i can't find the adeos-patch which matches the
+> kernel ,so I need ur help and how can i use xenomai with the linux
+> kernel of 2.6.32 on the platform of omap3530? thanks for ur help.Best
+> wishes to you!
+> Sincerely yours, Liang Runhan
 
-That is probably because you are not measuring latency under load. So,
-you do not see the worst case.
+You have two soilutions:
+- either you adapt the patches for linux 2.6.31 or 2.6.33 to linux 2.6.32
+- or you adapt a more recent linux kernel version for which an Adeos
+patch exists to your board.
 
-> I have a board that runs a suhdol linux sbc that is somehow handling gpio
-> interactions within nanosecond ranges, and I have no idea how that is being
-> done.  Even flipping a gpio pin with direct register access inside a KLM is
-> around 62ns.  I just don't know how they are managing to detect a gpio pin
-> state change and respond to several things all within a couple hundred ns??
-> 
-> I've looked at their app files and it's just a gpio driver and what appears
-> to be a single userspace app.  A mystery I guess.....
-
-I am talking about worst case here, not about average case.
+If you know more linux than xenomai, the second solution is easier.
+Besides 2.6.32 is seriously outdated now.
 
 -- 
                                                                 Gilles.
