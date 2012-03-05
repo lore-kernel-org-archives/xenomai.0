@@ -1,9 +1,9 @@
 MIME-Version: 1.0
-Date: Mon, 5 Mar 2012 11:22:15 -0800
-Message-ID: <CAOmRMTdMUFJk==znC=FRkMufSSfHr=sz5NmuUzfqB=qKz25_Qw@domain.hid>
-From: Peter Pastor <peter.pastor@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Subject: [Xenomai-help] real-time usb2.0 for xenomai ?
+Date: Tue, 6 Mar 2012 01:25:06 +0530
+Message-ID: <CADAaWNUQbHDzUMb6F3SP8qgxJbq5Yc58=OT8psFiDXUcCd=Dzg@domain.hid>
+From: SUBRAMANIAN NATESAN <yenyes88@domain.hid>
+Content-Type: multipart/alternative; boundary=e89a8fb1ffa48f2d1804ba844df6
+Subject: [Xenomai-help] Difference between threads and tasks in Xenomai: -reg
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -15,18 +15,42 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: xenomai@xenomai.org
 
-Hello,
+--e89a8fb1ffa48f2d1804ba844df6
+Content-Type: text/plain; charset=UTF-8
 
-I am using linux 2.6.35.9 and xenomai 2.5.6. I am wondering whether
-anyone managed to get a real-time stack for usb2.0 working.
-Unfortunately, usb4rt does not support usb2.0. I have been trying
-http://download.gna.org/usb20rt/testing/usb20rt.tar.bz2 ...but I could
-not get it to work. I could fix the compilation issues, but I may have
-introduced bugs because inserting the kernel modules is freezing my
-system. I also have seen that the project is no longer continued.
+Hi,
 
-My question is, is there any usb real-time stack for xenomai I could try out ?
+What is the difference between the threads and tasks in Xenomai. Tasks are
+defined in skins and threads in kernel. rt_task_info and xnthread_info
+structures have the similar variables, which have information regarding
+corresponding task or thread.
 
-THANKS,
- peter
+Also, during context switch, whether thread control block or task control
+block is used? Where would be the program counter and all the necessary
+details stored?
+
+-- 
+Regards,
+Subramanian.
+
+--e89a8fb1ffa48f2d1804ba844df6
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr">Hi,<br><br>What is the difference between the threads and =
+tasks in Xenomai. Tasks are defined in skins and threads in kernel. rt_task=
+_info and xnthread_info structures have the similar variables, which have i=
+nformation regarding corresponding task or thread.<br>
+
+<br>Also, during context switch, whether thread control block or task contr=
+ol block is used? Where would be the program counter and all the necessary =
+details stored?<br clear=3D"all"><br>-- <br><span style=3D"color:rgb(0,0,15=
+3);font-family:verdana,sans-serif">Regards,</span><br style=3D"color:rgb(0,=
+0,153);font-family:verdana,sans-serif">
+
+<span style=3D"color:rgb(0,0,153);font-family:verdana,sans-serif">Subramani=
+an.</span><span style=3D"font-family:verdana,sans-serif"></span><br><br>
+</div>
+
+--e89a8fb1ffa48f2d1804ba844df6--
 
