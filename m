@@ -1,13 +1,10 @@
-Message-ID: <4F55FE81.6000904@domain.hid>
-Date: Tue, 06 Mar 2012 13:09:37 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Date: Tue, 06 Mar 2012 16:15:19 +0100 (CET)
+From: Mauro Salvini <mauro.salvini@domain.hid>
+Message-ID: <d51e8547-f8fb-466f-8571-454abef96dc6@domain.hid>
+Content-Type: multipart/alternative;
+	boundary="=_31f8ae21-bdeb-44d8-bfe7-b083bfc3978c"
 MIME-Version: 1.0
-References: <4F50A422.50208@domain.hid> <4F55C306.8020307@domain.hid>
-	<4F55D765.7040705@domain.hid> <4F55E390.8090706@domain.hid>
-In-Reply-To: <4F55E390.8090706@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] [Xenomai-core] preemptive doesn't work
+Subject: [Xenomai-help] Xenomai main heap size
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -17,23 +14,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Roberto Bielli <roberto.bielli@domain.hid>
-Cc: Xenomai help <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 03/06/2012 11:14 AM, Roberto Bielli wrote:
-> Hi,
-> 
-> here is the trace.
+--=_31f8ae21-bdeb-44d8-bfe7-b083bfc3978c
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
 
-Please try to capture the xntimer_next_local_shot which happens before
-the bug to see if the timer ticks when expected.
+Hi, 
 
-Also note that if we are going through __ipipe_preempt_schedule_irq, it
-means that the task eating the cpu is running in secondary mode. So, you
-should use T_WARNSW to see.
+in Xenomai kernel configuration section there is CONFIG_XENO_OPT_SYS_HEAPSZ to configure Xenomai internal heap size. 
+Is it possible to change the main heap size using kernel boot parameters? or this can be done only with a kernel re-compile? 
 
-Please keep the discussion on the mailing list.	
+Thanks in advance, regards 
 
--- 
-                                                                Gilles.
+Mauro 
+
+
+--=_31f8ae21-bdeb-44d8-bfe7-b083bfc3978c
+Content-Type: text/html; charset=utf-8
+Content-Transfer-Encoding: 7bit
+
+<html><head><style type='text/css'>p { margin: 0; }</style></head><body><div style='font-family: Times New Roman; font-size: 12pt; color: #000000'>Hi,<br><br>in Xenomai kernel configuration section there is <span class="605233311-10112006"><font face="Arial" size="2"><span class="605233311-10112006">CONFIG_XENO_OPT_SYS_HEAPSZ to configure Xenomai internal heap size.<br>Is it possible to change the main heap size using kernel boot parameters? or this can be done only with a kernel re-compile?<br><br>Thanks in advance, regards<br><br>Mauro</span></font></span><span></span><span name="x"></span><br><br></div></body></html>
+--=_31f8ae21-bdeb-44d8-bfe7-b083bfc3978c--
 
