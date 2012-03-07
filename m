@@ -1,12 +1,12 @@
-Message-ID: <4F574E11.7050209@domain.hid>
-Date: Wed, 07 Mar 2012 13:01:21 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <4F576B54.3020009@domain.hid>
+Date: Wed, 07 Mar 2012 15:06:12 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <59395C11A1D1C44ABE7AD0566C50F68BCC15A49EDD@mary.at.omicron.at>
-In-Reply-To: <59395C11A1D1C44ABE7AD0566C50F68BCC15A49EDD@mary.at.omicron.at>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+References: <dc4519dd-dfdf-46b0-8195-0161ad6cde2a@domain.hid>
+In-Reply-To: <dc4519dd-dfdf-46b0-8195-0161ad6cde2a@domain.hid>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Cast a double value fails
+Subject: Re: [Xenomai-help] Xenomai main heap size
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -16,48 +16,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Bertram Stemer <bertram.stemer@domain.hid>
-Cc: "'xenomai@xenomai.org'" <xenomai@xenomai.org>
+To: Mauro Salvini <mauro.salvini@domain.hid>
+Cc: xenomai@xenomai.org
 
-On 03/07/2012 12:46 PM, Bertram Stemer wrote:
-> Hi,
-> I'm using Xenomai 2.5.6 with Linux 2.6.36 on a PowerPC and
-> have written a real-time application that runs on an isolated
-> CPU (Kernel option isolcpus). When I start this application on
-> another core, where a plain Linux application runs I get
-> sporadically unexpected results in the non real-time application,
-> when casting a double to an integer?!
->
-> To reproduce this behavior I have a small non real-time test
-> application that runs in parallel to the RT application:
-> ...
-> while (1) {
-> 	int z = 4.0;
-> 	if (z != 4)
-> 		printf("cast error detected!");
-> 	/* sleep some microseconds */
-> }
-> ...
->
-> Does anyone know how this can happen? Is there a CPU utilization
-> bound for real-time applications that run on the same CPU with
-> plain Linux tasks?
+On 03/07/2012 10:37 AM, Mauro Salvini wrote:
+>> On 03/06/2012 04:15 PM, Mauro Salvini wrote: 
+>>> Hi, 
+>>>
+>>> in Xenomai kernel configuration section there is CONFIG_XENO_OPT_SYS_HEAPSZ to configure Xenomai internal heap size. 
+>>> Is it possible to change the main heap size using kernel boot parameters? or this can be done only with a kernel re-compile? 
+>>
+>> How is this question related to the "preemptive doesn't work" thread ? 
+>>
+>> -- 
+>> Gilles. 
+> 
+> It isn't related, I suppose. Why this question? My thread has "Xenomai main heap size" title...
+> 
+Sorry. My e-mail client put your mail in that thread, as if you had
+replied to it, so I assumed you did.
 
-isolcpus does not actually fully isolates CPU from non-rt activity. What 
-you see is likely a bug in the Xenomai core, leaking fpu context bits 
-spuriously between -rt and non-rt. Adding this to the todo list.
-
->
-> Thanks in advance,
-> Bertram
->
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
->
-
+No, the heap size can only be changed by using the kernel configuration.
 
 -- 
-Philippe.
+					    Gilles.
 
