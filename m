@@ -1,12 +1,17 @@
-Message-ID: <4F5E51E2.1020802@domain.hid>
-Date: Mon, 12 Mar 2012 20:43:30 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+From: =?utf-8?B?6ams5by6?= <ma.q@domain.hid>
+References: <001501ccfcd9$67d9ede0$378dc9a0$@q@domain.hid>
+	<4F58788F.5070103@domain.hid>
+	<000601ccfdba$c36b8650$4a4292f0$@q@domain.hid>
+	<4F59C92B.5080705@domain.hid>
+In-Reply-To: <4F59C92B.5080705@domain.hid>
+Date: Tue, 13 Mar 2012 14:32:07 +0800
+Message-ID: <001001cd00e3$03565c60$0a031520$@q@domain.hid>
 MIME-Version: 1.0
-References: <1331579565.394426122@domain.hid>
-In-Reply-To: <1331579565.394426122@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Intermixing native and POSIX skins
+Content-Type: text/plain;
+	charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+Content-Language: zh-cn
+Subject: Re: [Xenomai-help] Xenomai stop working
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -16,31 +21,57 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Doug Brunner <dbrunner@domain.hid>
+To: 'Gilles Chanteperdrix' <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On 03/12/2012 08:12 PM, Doug Brunner wrote:
-> I'd like to be able to use native skin communications services (most importantly real time pipes) from a thread created with the POSIX skin. Is this safe?
+Hi, Gilles.
 
-Yes, that's fine. You could also use the XDDP protocol (cross-domain 
-datagram) implemented by the RTIPC Xenomai driver for exactly the same 
-purpose, with a socket-based interface as a bonus.
+I could not find "mxc_min_delay =3D 0xff" in linux source tree=20
+and xenomai directory. mxc_min_delay comes from ipipe,=20
+there is also no such statement in latest patch downloaded=20
+from website.
 
->
-> I'm doing this because I'm building a C++ library that can use either real-time communications services, when used with a real-time application, or regular Linux pipe I/O, when used with a Linux application; these services are called by tasks that need to exist in both cases. I'd like to make the tasks always POSIX threads to eliminate the need for a bunch of wrappers and preprocessor ugliness that I put there to support either skin, depending on which version of the library is being built.
->
-> Thanks,
->      Doug Brunner
->
->
->
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
->
+If mxc_min_delay is 0xff, in my system this means 32us for 8MHz=20
+ipipe tsc. For a real time system, It seems a little bit longer.
+
+I used mxc_min_delay=3D16(2us) to do a test during last weekend,=20
+until now and no stall have happened again. So mxc_min_delay =3D 0x10=20
+maybe enough for my test CPU, I can't decide which value should be used.
+
+The following code copy from the time.c file that patched by xenomai.
+void __ipipe_mach_set_dec(unsigned long delay)
+{
+	if (delay > mxc_min_delay) {
+		unsigned long tcmp;
+
+		if (!timer_is_v2()) {
+			tcmp =3D __raw_readl(timer_base + MX1_2_TCN) + delay;
+			__raw_writel(tcmp, timer_base + MX1_2_TCMP);
+		} else {
+			tcmp =3D __raw_readl(timer_base + V2_TCN) + delay;
+			__raw_writel(tcmp, timer_base + V2_TCMP);
+		}
+	} else
+		ipipe_trigger_irq(__ipipe_mach_timerint);
+}
+
+My question is whether this function will be interrupted by other high =
+priority interrupts.
+
+--
+																Ma.
+-----Original Message-----
+From: Gilles Chanteperdrix [mailto:gilles.chanteperdrix@xenomai.org
+Sent: 2012=E5=B9=B43=E6=9C=889=E6=97=A5 17:11
+To: =E9=A9=AC=E5=BC=BA
+Cc: xenomai@xenomai.org
+Subject: Re: [Xenomai-help] Xenomai stop working
+
+You can try mxc_min_delay =3D 0xff, since it is what linux does in the
+latest release.
+
+--=20
+                                                                Gilles.
 
 
--- 
-Philippe.
 
