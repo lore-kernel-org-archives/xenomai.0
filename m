@@ -1,11 +1,13 @@
-Message-ID: <4F5F9077.8000700@domain.hid>
-Date: Tue, 13 Mar 2012 19:22:47 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
+From: "Herrera-Bendezu, Luis" <lherrera@domain.hid>
+Date: Tue, 13 Mar 2012 18:35:49 +0000
+Message-ID: <584FFDF8F96BB74593285A7D65886EC008B91F50@domain.hid>
 References: <584FFDF8F96BB74593285A7D65886EC008B91F25@domain.hid>
-In-Reply-To: <584FFDF8F96BB74593285A7D65886EC008B91F25@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+	<4F5F9077.8000700@domain.hid>
+In-Reply-To: <4F5F9077.8000700@domain.hid>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 Subject: Re: [Xenomai-help] system locks when calling Linux clock_gettime
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -16,32 +18,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "Herrera-Bendezu, Luis" <lherrera@domain.hid>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 03/13/2012 07:06 PM, Herrera-Bendezu, Luis wrote:
-> Hello,
-> 
-> Xenomai version 2.4.10, Linux version 2.6.30.3, CPU PPC.
-> 
-> I am trying to work around an issue where the Linux and Xenomai realtime clocks
-> drifts when Linux clock is updated by NTP. It was suggested in the mail exchange:
-> http://www.mail-archive.com/xenomai@xenomai.org
-> 
-> to use clock_gettime()/clock_settime() to keep both clocks in sync.
-> 
-> However, calling linux clock_gettime() from a Xenomai  thread is causing system to
-> freeze after a few minutes as shown in the following test program where the interval
-> to re-sync clocks is small, 50 msec, to force error faster:
-
-Yes, this is a known issue too. You can only call __real_clock_gettime
-when in secondary mode. So, preferably from a thread created with
-__real_pthread_create.
-
-Any chance of updating xenomai? Xenomai 2.6 allows accessing a clock
-synchronized with Linux clock from xenomai threads, without even
-emitting a system call depending on the architecture.
-
--- 
-                                                                Gilles.
+Pk9uIDAzLzEzLzIwMTIgMDc6MDYgUE0sIEhlcnJlcmEtQmVuZGV6dSwgTHVpcyB3cm90ZToNCj4+
+IEhlbGxvLA0KPj4gDQo+PiBYZW5vbWFpIHZlcnNpb24gMi40LjEwLCBMaW51eCB2ZXJzaW9uIDIu
+Ni4zMC4zLCBDUFUgUFBDLg0KPj4gDQo+PiBJIGFtIHRyeWluZyB0byB3b3JrIGFyb3VuZCBhbiBp
+c3N1ZSB3aGVyZSB0aGUgTGludXggYW5kIFhlbm9tYWkgcmVhbHRpbWUgY2xvY2tzDQo+PiBkcmlm
+dHMgd2hlbiBMaW51eCBjbG9jayBpcyB1cGRhdGVkIGJ5IE5UUC4gSXQgd2FzIHN1Z2dlc3RlZCBp
+biB0aGUgbWFpbCBleGNoYW5nZToNCj4+IGh0dHA6Ly93d3cubWFpbC1hcmNoaXZlLmNvbS94ZW5v
+bWFpLWNvcmVAZ25hLm9yZy9tc2cwNzY0Ni5odG1sDQo+PiANCj4+IHRvIHVzZSBjbG9ja19nZXR0
+aW1lKCkvY2xvY2tfc2V0dGltZSgpIHRvIGtlZXAgYm90aCBjbG9ja3MgaW4gc3luYy4NCj4+IA0K
+Pj4gSG93ZXZlciwgY2FsbGluZyBsaW51eCBjbG9ja19nZXR0aW1lKCkgZnJvbSBhIFhlbm9tYWkg
+IHRocmVhZCBpcyBjYXVzaW5nIHN5c3RlbSB0bw0KPj4gZnJlZXplIGFmdGVyIGEgZmV3IG1pbnV0
+ZXMgYXMgc2hvd24gaW4gdGhlIGZvbGxvd2luZyB0ZXN0IHByb2dyYW0gd2hlcmUgdGhlIGludGVy
+dmFsDQo+PiB0byByZS1zeW5jIGNsb2NrcyBpcyBzbWFsbCwgNTAgbXNlYywgdG8gZm9yY2UgZXJy
+b3IgZmFzdGVyOg0KPg0KPiBZZXMsIHRoaXMgaXMgYSBrbm93biBpc3N1ZSB0b28uIFlvdSBjYW4g
+b25seSBjYWxsIF9fcmVhbF9jbG9ja19nZXR0aW1lDQo+IHdoZW4gaW4gc2Vjb25kYXJ5IG1vZGUu
+IFNvLCBwcmVmZXJhYmx5IGZyb20gYSB0aHJlYWQgY3JlYXRlZCB3aXRoDQo+IF9fcmVhbF9wdGhy
+ZWFkX2NyZWF0ZS4NCj4NCj4gQW55IGNoYW5jZSBvZiB1cGRhdGluZyB4ZW5vbWFpPyBYZW5vbWFp
+IDIuNiBhbGxvd3MgYWNjZXNzaW5nIGEgY2xvY2sNCj4gc3luY2hyb25pemVkIHdpdGggTGludXgg
+Y2xvY2sgZnJvbSB4ZW5vbWFpIHRocmVhZHMsIHdpdGhvdXQgZXZlbg0KPiBlbWl0dGluZyBhIHN5
+c3RlbSBjYWxsIGRlcGVuZGluZyBvbiB0aGUgYXJjaGl0ZWN0dXJlLg0KPg0KPiAtLSANCj4gICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+IEdpbGxlcy4NCg0KVXBkYXRpbmcgdG8gMi42IGlzIG5vdCBwb3NzaWJsZSBhdCB0aGlzIHRpbWUu
+IERpZCBub3RpY2UgdGhhdA0KQ0xPQ0tfSE9TVF9SRUFMVElNRSBpcyBhdmFpbGFibGUuIE9uZSBt
+b3JlIHJlYXNvbiB0byB1cGRhdGUuDQoNClRoYW5rcywNCkx1aXMNCg==
 
