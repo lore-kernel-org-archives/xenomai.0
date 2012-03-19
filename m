@@ -1,11 +1,9 @@
-Date: Sun, 18 Mar 2012 20:14:52 -0400
-From: Glen Wernersbach <glen@domain.hid>
-Mime-version: 1.0
-Content-type: multipart/alternative;
-	boundary="B_3414946495_20530614"
-Resent-To: <xenomai@xenomai.org>
-Resent-Message-ID: <CB8BF2BC.1EDBD%glen@domain.hid>
-Subject: [Xenomai-help] AT91SAM9G20 latency
+MIME-Version: 1.0
+Date: Mon, 19 Mar 2012 14:42:04 +0100
+Message-ID: <CAGq8jPjV_Y2c_SjP+1QFrf1GwK_YR_KXJDqNxpxspoFAKBn7fQ@mail.gmail.com>
+From: Minh GIANG <giang.hminh@domain.hid>
+Content-Type: multipart/alternative; boundary=bcaec52be53749603704bb98b90a
+Subject: [Xenomai-help] rtai-lab on Xenomai
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -15,100 +13,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Glen Wernersbach <glen@domain.hid>
-Message-ID: <20120319001452.FO6Yt-k7muiBKGquO_y4mciO-00Li4oiIJwW-xqJ_wk@z>
+To: xenomai@xenomai.org
 
-> This message is in MIME format. Since your mail reader does not understand
-this format, some or all of this message may not be legible.
+--bcaec52be53749603704bb98b90a
+Content-Type: text/plain; charset=ISO-8859-1
 
---B_3414946495_20530614
-Content-type: text/plain;
-	charset="ISO-8859-1"
-Content-transfer-encoding: quoted-printable
+Hello everybody,
 
-Hi All,
+i want to install rtai-lab on Xenomai in order to combine with Scilab/Xcos.
+My project is to build one toolchain for code generator on xenomai. if you
+know how do it, don't hesitate to inform me.
 
-Just checking if to a avg latency of 67us is about normal for the AT91SAMG2=
-0
-SOC on Linux 2.6.29?
+Thanks in advance
 
-Also, does it matter if the Preemtive Kernel (Experimental) is clicked or
-not?
+Have a good day.
 
-Glen
---=20
-Glen Wernersbach
-President & CTO
+--bcaec52be53749603704bb98b90a
+Content-Type: text/html; charset=ISO-8859-1
 
-Jetsoft Development Co.
-629 Old St Rt. 74 =AD Suite 210
-Cincinnati, Oh 45244
-Custom Programming Web Site: www.jetsoftdev.com
-Retail Products Web Site: www.scanhelp.com
-Phone:   513-528-6660
-Fax: 513-528-3470
-Cell 513-240-9929
-----
-Partner for Software Technology
-Jacobs Automation
-2365 Progress Drive
-Hebron, KY 41048=20
-(513) 297-7550
-----
-"Support Dyslexia Research"
+Hello everybody,<div><br></div><div>i want to install rtai-lab on Xenomai in order to combine with Scilab/Xcos. My project is to build one toolchain for code generator on xenomai. if you know how do it, don&#39;t hesitate to inform me.</div>
+<div><br></div><div>Thanks in advance</div><div><br></div><div>Have a good day.</div>
 
-
---B_3414946495_20530614
-Content-type: text/html;
-	charset="ISO-8859-1"
-Content-transfer-encoding: quoted-printable
-
-<HTML>
-<HEAD>
-<TITLE>AT91SAM9G20 latency</TITLE>
-</HEAD>
-<BODY>
-<FONT FACE=3D"Calibri, Verdana, Helvetica, Arial"><SPAN STYLE=3D'font-size:11pt=
-'>Hi All,<BR>
-<BR>
-Just checking if to a avg latency of 67us is about normal for the AT91SAMG2=
-0 SOC on Linux 2.6.29?<BR>
-<BR>
-Also, does it matter if the Preemtive Kernel (Experimental) is clicked or n=
-ot?<BR>
-<BR>
-Glen<BR>
--- <BR>
-Glen Wernersbach<BR>
-President &amp; CTO<BR>
-<BR>
-Jetsoft Development Co.<BR>
-629 Old St Rt. 74 &#8211; Suite 210<BR>
-Cincinnati, Oh 45244<BR>
-Custom Programming Web Site: www.jetsoftdev.com<BR>
-Retail Products Web Site: www.scanhelp.com<BR>
-Phone: &nbsp;&nbsp;513-528-6660<BR>
-Fax: 513-528-3470<BR>
-Cell 513-240-9929<BR>
-----<BR>
-Partner for Software Technology<BR>
-Jacobs Automation<BR>
-</SPAN></FONT><FONT COLOR=3D"#323232"><FONT SIZE=3D"2"><FONT FACE=3D"Arial"><SPAN=
- STYLE=3D'font-size:10pt'>2365 Progress Drive <BR>
-Hebron, KY 41048 <BR>
-(513) 297-7550<BR>
-----<BR>
-</SPAN></FONT></FONT></FONT><FONT FACE=3D"Calibri, Verdana, Helvetica, Arial"=
-><SPAN STYLE=3D'font-size:11pt'>&quot;Support Dyslexia Research&quot;<BR>
-</SPAN></FONT>
-</BODY>
-</HTML>
-
-
---B_3414946495_20530614--
-
-
-
-
-
+--bcaec52be53749603704bb98b90a--
 
