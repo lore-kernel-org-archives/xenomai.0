@@ -1,13 +1,11 @@
-Date: Tue, 20 Mar 2012 10:07:51 -0400
-From: Glen Wernersbach <glen@domain.hid>
-Message-ID: <CB8E0777.1EE23%glen@domain.hid>
-In-Reply-To: <4F688CBA.5070509@domain.hid>
-Mime-version: 1.0
-Content-type: text/plain;
-	charset="ISO-8859-1"
-Content-transfer-encoding: quoted-printable
-Subject: Re: [Xenomai-help] Linux Serial Does not work with
- CONFIG_XENO_OPT_PERVASIVE enabled
+From: Chris Stone <chris.stone@domain.hid>
+Date: Tue, 20 Mar 2012 14:09:26 +0000
+Message-ID: <623784B6C75D274389918D358E89E8BB0B78F111@domain.hid>
+Content-Language: en-US
+Content-Type: multipart/alternative;
+	boundary="_000_623784B6C75D274389918D358E89E8BB0B78F111OPTELIAN5opteli_"
+MIME-Version: 1.0
+Subject: [Xenomai-help] How do I increase CPU time limit.
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -17,145 +15,120 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-I went through and disabled everything in xeno except
-CONFIG_XENO_OPT_PERVASIVE, did not work. Take that option out and it works.
+--_000_623784B6C75D274389918D358E89E8BB0B78F111OPTELIAN5opteli_
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 
-Take that option out at anytime it works.
+I have a thread which uses a lot of CPU and it is receiving a SIGXCPU: Cpu =
+time limit exceeded. Does this message really mean I have exceeded some CPU=
+ time limit? If so, how do I increase or disable the CPU time limit? The co=
+de that I am running has been working for quite some time under regular Lin=
+ux and I have just ported it to Xenomai, so I doubt there are any infinite =
+loops in it.
 
-My program basic writes a few characters a serial port and then reads them
-back in from the same port. I have a loop back cable connected to the port.
+Chris Stone
+Senior Software Engineer
+Optelian
+1 Brewer Hunt Way
+Ottawa, Ontario K2K 2B5
 
-It writes the data but waits forever to read them back in
+Phone: 613-287-2000 x2106
 
->From my tests, it appears that the termois tcsetaddr settings is not gettin=
-g
-set when I call it when this option is on.
-
-
-
-
-
-
-On 3/20/12 9:57 AM, "Philippe Gerum" <rpm@xenomai.org> wrote:
-
-> On 03/20/2012 02:48 PM, Glen Wernersbach wrote:
->> I don't think this is it directly.
->>=20
->> This program was made on the same kernel prior to patching it with Xeno.
->>=20
->> It should still run like any other linux program.
->=20
-> - what does "program not working" mean in your case? Any errno return we
-> could interpret? Any strace output?
->=20
-> - what if you disable CONFIG_XENO_OPT_SKIN_RTDM, leaving PERVASIVE on?
->=20
->=20
->>=20
->>=20
->>=20
->>=20
->> On 3/20/12 9:44 AM, "Philippe Gerum"<rpm@xenomai.org>  wrote:
->>=20
->>> On 03/20/2012 02:28 PM, Glen Wernersbach wrote:
->>>> Hi All,
->>>>=20
->>>> I install Xenomai 2.6.0 on AT91SAM9G20 system and have found that when
->>>> CONFIG_XENO_OPT_PERVASIVE is enabled my standard non real time linux
->>>> serial write then read serial program does not work.
->>>>=20
->>>> If I turn off CONFIG_XENO_OPT_PERVASIVE, my serial program does work.
->>>>=20
->>>> Any ideas why?????
->>>>=20
->>>=20
->>> A possible explanation would be that your application links with the
->>> Xenomai POSIX lib (libpthread_rt), albeit it should not.
->>>=20
->>> With pervasive support disabled, any routing from the overloaded POSIX
->>> I/O calls to the Xenomai kernel would then fail.
->>>=20
->>> If so, you should not link against the Xenomai libs if you need no -rt
->>> service, or prevent symbol wrapping only for the POSIX I/O calls by
->>> prefixing them by __real_* if you want Xenomai-enabled POSIX services
->>> except the I/O support.
->>>=20
->>> See http://xenomai.org/index.php/Porting_POSIX_applications_to_Xenomai
->>>=20
->>>>=20
->>>> Also, when you turn CONFIG_XENO_OPT_PERVASIVE you get this error:
->>>> CC kernel/xenomai/nucleus/synch.o
->>>> kernel/xenomai/nucleus/synch.c: In function 'xnsynch_release_thread':
->>>> kernel/xenomai/nucleus/synch.c:688:3: error: implicit declaration of
->>>> function 'xnthread_get_rescnt'
->>>> kernel/xenomai/nucleus/synch.c:689:4: error: implicit declaration of
->>>> function 'xnshadow_send_sig'
->>>>=20
->>>> I had to go in and make the code for that option befor it always false=
-.
->>>>=20
->>>=20
->>> http://git.xenomai.org/?p=3Dxenomai-2.6.git;a=3Dcommit;h=3D41b4f9c0f4bdf06107=
-a788b
->>> 76
->>> 2b5cf662b1d4108
->>>=20
->>>=20
->>>> Glen
->>>> --
->>>> Glen Wernersbach
->>>> President&  CTO
->>>>=20
->>>> Jetsoft Development Co.
->>>> 629 Old St Rt. 74 =AD Suite 210
->>>> Cincinnati, Oh 45244
->>>> Custom Programming Web Site: www.jetsoftdev.com
->>>> Retail Products Web Site: www.scanhelp.com
->>>> Phone: 513-528-6660
->>>> Fax: 513-528-3470
->>>> Cell 513-240-9929
->>>> ----
->>>> Partner for Software Technology
->>>> Jacobs Automation
->>>> 2365 Progress Drive
->>>> Hebron, KY 41048
->>>> (513) 297-7550
->>>> ----
->>>> "Support Dyslexia Research"
->>>>=20
->>>>=20
->>>> _______________________________________________
->>>> Xenomai-help mailing list
->>>> Xenomai-help@domain.hid
->>>> https://mail.gna.org/listinfo/xenomai-help
->>>=20
->>=20
->=20
-
---=20
-Glen Wernersbach
-President & CTO
-
-Jetsoft Development Co.
-629 Old St Rt. 74 =AD Suite 210
-Cincinnati, Oh 45244
-Custom Programming Web Site: www.jetsoftdev.com
-Retail Products Web Site: www.scanhelp.com
-Phone:   513-528-6660
-Fax: 513-528-3470
-Cell 513-240-9929
-----
-Partner for Software Technology
-Jacobs Automation
-2365 Progress Drive
-Hebron, KY 41048=20
-(513) 297-7550
-----
-"Support Dyslexia Research"
+www.optelian.com<http://www.optelian.com>
 
 
+--_000_623784B6C75D274389918D358E89E8BB0B78F111OPTELIAN5opteli_
+Content-Type: text/html; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 
+<html xmlns:v=3D"urn:schemas-microsoft-com:vml" xmlns:o=3D"urn:schemas-micr=
+osoft-com:office:office" xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
+xmlns:m=3D"http://schemas.microsoft.com/office/2004/12/omml" xmlns=3D"http:=
+//www.w3.org/TR/REC-html40">
+<head>
+<meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3Dus-ascii"=
+>
+<meta name=3D"Generator" content=3D"Microsoft Word 12 (filtered medium)">
+<style><!--
+/* Font Definitions */
+@font-face
+	{font-family:Calibri;
+	panose-1:2 15 5 2 2 2 4 3 2 4;}
+@font-face
+	{font-family:Verdana;
+	panose-1:2 11 6 4 3 5 4 4 2 4;}
+/* Style Definitions */
+p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin:0cm;
+	margin-bottom:.0001pt;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";}
+a:link, span.MsoHyperlink
+	{mso-style-priority:99;
+	color:blue;
+	text-decoration:underline;}
+a:visited, span.MsoHyperlinkFollowed
+	{mso-style-priority:99;
+	color:purple;
+	text-decoration:underline;}
+span.EmailStyle17
+	{mso-style-type:personal-compose;
+	font-family:"Calibri","sans-serif";
+	color:windowtext;}
+.MsoChpDefault
+	{mso-style-type:export-only;}
+@page WordSection1
+	{size:612.0pt 792.0pt;
+	margin:72.0pt 72.0pt 72.0pt 72.0pt;}
+div.WordSection1
+	{page:WordSection1;}
+--></style><!--[if gte mso 9]><xml>
+<o:shapedefaults v:ext=3D"edit" spidmax=3D"1026" />
+</xml><![endif]--><!--[if gte mso 9]><xml>
+<o:shapelayout v:ext=3D"edit">
+<o:idmap v:ext=3D"edit" data=3D"1" />
+</o:shapelayout></xml><![endif]-->
+</head>
+<body lang=3D"EN-US" link=3D"blue" vlink=3D"purple">
+<div class=3D"WordSection1">
+<p class=3D"MsoNormal">I have a thread which uses a lot of CPU and it is re=
+ceiving a SIGXCPU: Cpu time limit exceeded. Does this message really mean I=
+ have exceeded some CPU time limit? If so, how do I increase or disable the=
+ CPU time limit? The code that I am
+ running has been working for quite some time under regular Linux and I hav=
+e just ported it to Xenomai, so I doubt there are any infinite loops in it.=
+<o:p></o:p></p>
+<p class=3D"MsoNormal"><o:p>&nbsp;</o:p></p>
+<p class=3D"MsoNormal"><b><span style=3D"font-size:10.0pt;font-family:&quot=
+;Verdana&quot;,&quot;sans-serif&quot;;color:#00568D">Chris Stone<o:p></o:p>=
+</span></b></p>
+<p class=3D"MsoNormal"><span style=3D"font-size:8.0pt;font-family:&quot;Ver=
+dana&quot;,&quot;sans-serif&quot;">Senior Software Engineer<o:p></o:p></spa=
+n></p>
+<p class=3D"MsoNormal"><span style=3D"font-size:8.0pt;font-family:&quot;Ver=
+dana&quot;,&quot;sans-serif&quot;">Optelian<o:p></o:p></span></p>
+<p class=3D"MsoNormal"><span style=3D"font-size:8.0pt;font-family:&quot;Ver=
+dana&quot;,&quot;sans-serif&quot;">1 Brewer Hunt Way<o:p></o:p></span></p>
+<p class=3D"MsoNormal"><span style=3D"font-size:8.0pt;font-family:&quot;Ver=
+dana&quot;,&quot;sans-serif&quot;">Ottawa, Ontario K2K 2B5<o:p></o:p></span=
+></p>
+<p class=3D"MsoNormal"><span style=3D"font-size:8.0pt;font-family:&quot;Ver=
+dana&quot;,&quot;sans-serif&quot;"><o:p>&nbsp;</o:p></span></p>
+<p class=3D"MsoNormal"><span style=3D"font-size:8.0pt;font-family:&quot;Ver=
+dana&quot;,&quot;sans-serif&quot;">Phone: 613-287-2000 x2106<o:p></o:p></sp=
+an></p>
+<p class=3D"MsoNormal"><span style=3D"font-size:8.0pt;font-family:&quot;Ver=
+dana&quot;,&quot;sans-serif&quot;"><o:p>&nbsp;</o:p></span></p>
+<p class=3D"MsoNormal"><u><span style=3D"font-size:8.0pt;font-family:&quot;=
+Verdana&quot;,&quot;sans-serif&quot;;color:#00568D"><a href=3D"http://www.o=
+ptelian.com"><span style=3D"color:blue">www.optelian.com</span></a></span><=
+/u><o:p></o:p></p>
+<p class=3D"MsoNormal"><o:p>&nbsp;</o:p></p>
+</div>
+</body>
+</html>
+
+--_000_623784B6C75D274389918D358E89E8BB0B78F111OPTELIAN5opteli_--
 
