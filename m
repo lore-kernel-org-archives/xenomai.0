@@ -1,13 +1,11 @@
-Message-ID: <4F6894AE.2060204@domain.hid>
-Date: Tue, 20 Mar 2012 15:31:10 +0100
-From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <CB8E0777.1EE23%glen@domain.hid> <4F68916F.6060006@domain.hid>
-In-Reply-To: <4F68916F.6060006@domain.hid>
-Content-Type: text/plain; charset="iso-8859-1"; format="flowed"
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] Linux Serial Does not work with
- CONFIG_XENO_OPT_PERVASIVE enabled
+In-Reply-To: <623784B6C75D274389918D358E89E8BB0B78F111@domain.hid>
+References: <623784B6C75D274389918D358E89E8BB0B78F111@domain.hid>
+From: =?ISO-8859-1?Q?Mustafa_=C7AMURLI?= <mustafacamurli@domain.hid>
+Date: Tue, 20 Mar 2012 16:31:26 +0200
+Message-ID: <CABaqoOMY_R7rzPB6-6CvPYBebXMATK7E9n60y0-vw0kntDEx+A@mail.gmail.com>
+Content-Type: multipart/alternative; boundary=14dae934040be1a03a04bbad8817
+Subject: Re: [Xenomai-help] How do I increase CPU time limit.
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -17,143 +15,126 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Glen Wernersbach <glen@domain.hid>
-Cc: xenomai@xenomai.org
+To: Chris Stone <chris.stone@domain.hid>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 03/20/2012 03:17 PM, Philippe Gerum wrote:
-> On 03/20/2012 03:07 PM, Glen Wernersbach wrote:
->> I went through and disabled everything in xeno except
->> CONFIG_XENO_OPT_PERVASIVE, did not work. Take that option out and it
->> works.
->>
->> Take that option out at anytime it works.
->>
->> My program basic writes a few characters a serial port and then reads
->> them
->> back in from the same port. I have a loop back cable connected to the
->> port.
->>
->> It writes the data but waits forever to read them back in
->>
->>> From my tests, it appears that the termois tcsetaddr settings is not
->>> getting
->> set when I call it when this option is on.
+--14dae934040be1a03a04bbad8817
+Content-Type: text/plain; charset=ISO-8859-1
+
+make sure that "cpu time" is unlimited. You can check and change it with
+"ulimit" util. Use  "limit -a" to list all about limitations.
+
+
+On Tue, Mar 20, 2012 at 4:09 PM, Chris Stone <chris.stone@domain.hid>wrote:
+
+>  I have a thread which uses a lot of CPU and it is receiving a SIGXCPU:
+> Cpu time limit exceeded. Does this message really mean I have exceeded some
+> CPU time limit? If so, how do I increase or disable the CPU time limit? The
+> code that I am running has been working for quite some time under regular
+> Linux and I have just ported it to Xenomai, so I doubt there are any
+> infinite loops in it.****
 >
-> Can you strace your app when it runs, please?
-
-The interrupt pipeline release number would help as well=20
-(/proc/xenomai/hal).
-
+> ** **
 >
->>
->>
->>
->>
->>
->>
->> On 3/20/12 9:57 AM, "Philippe Gerum"<rpm@xenomai.org> wrote:
->>
->>> On 03/20/2012 02:48 PM, Glen Wernersbach wrote:
->>>> I don't think this is it directly.
->>>>
->>>> This program was made on the same kernel prior to patching it with
->>>> Xeno.
->>>>
->>>> It should still run like any other linux program.
->>>
->>> - what does "program not working" mean in your case? Any errno return we
->>> could interpret? Any strace output?
->>>
->>> - what if you disable CONFIG_XENO_OPT_SKIN_RTDM, leaving PERVASIVE on?
->>>
->>>
->>>>
->>>>
->>>>
->>>>
->>>> On 3/20/12 9:44 AM, "Philippe Gerum"<rpm@xenomai.org> wrote:
->>>>
->>>>> On 03/20/2012 02:28 PM, Glen Wernersbach wrote:
->>>>>> Hi All,
->>>>>>
->>>>>> I install Xenomai 2.6.0 on AT91SAM9G20 system and have found that
->>>>>> when
->>>>>> CONFIG_XENO_OPT_PERVASIVE is enabled my standard non real time linux
->>>>>> serial write then read serial program does not work.
->>>>>>
->>>>>> If I turn off CONFIG_XENO_OPT_PERVASIVE, my serial program does work.
->>>>>>
->>>>>> Any ideas why?????
->>>>>>
->>>>>
->>>>> A possible explanation would be that your application links with the
->>>>> Xenomai POSIX lib (libpthread_rt), albeit it should not.
->>>>>
->>>>> With pervasive support disabled, any routing from the overloaded POSIX
->>>>> I/O calls to the Xenomai kernel would then fail.
->>>>>
->>>>> If so, you should not link against the Xenomai libs if you need no -rt
->>>>> service, or prevent symbol wrapping only for the POSIX I/O calls by
->>>>> prefixing them by __real_* if you want Xenomai-enabled POSIX services
->>>>> except the I/O support.
->>>>>
->>>>> See http://xenomai.org/index.php/Porting_POSIX_applications_to_Xenomai
->>>>>
->>>>>>
->>>>>> Also, when you turn CONFIG_XENO_OPT_PERVASIVE you get this error:
->>>>>> CC kernel/xenomai/nucleus/synch.o
->>>>>> kernel/xenomai/nucleus/synch.c: In function 'xnsynch_release_thread':
->>>>>> kernel/xenomai/nucleus/synch.c:688:3: error: implicit declaration of
->>>>>> function 'xnthread_get_rescnt'
->>>>>> kernel/xenomai/nucleus/synch.c:689:4: error: implicit declaration of
->>>>>> function 'xnshadow_send_sig'
->>>>>>
->>>>>> I had to go in and make the code for that option befor it always
->>>>>> false.
->>>>>>
->>>>>
->>>>> http://git.xenomai.org/?p=3Dxenomai-2.6.git;a=3Dcommit;h=3D41b4f9c0f4=
-bdf06107a788b
->>>>>
->>>>> 76
->>>>> 2b5cf662b1d4108
->>>>>
->>>>>
->>>>>> Glen
->>>>>> --
->>>>>> Glen Wernersbach
->>>>>> President& CTO
->>>>>>
->>>>>> Jetsoft Development Co.
->>>>>> 629 Old St Rt. 74 =AD Suite 210
->>>>>> Cincinnati, Oh 45244
->>>>>> Custom Programming Web Site: www.jetsoftdev.com
->>>>>> Retail Products Web Site: www.scanhelp.com
->>>>>> Phone: 513-528-6660
->>>>>> Fax: 513-528-3470
->>>>>> Cell 513-240-9929
->>>>>> ----
->>>>>> Partner for Software Technology
->>>>>> Jacobs Automation
->>>>>> 2365 Progress Drive
->>>>>> Hebron, KY 41048
->>>>>> (513) 297-7550
->>>>>> ----
->>>>>> "Support Dyslexia Research"
->>>>>>
->>>>>>
->>>>>> _______________________________________________
->>>>>> Xenomai-help mailing list
->>>>>> Xenomai-help@domain.hid
->>>>>> https://mail.gna.org/listinfo/xenomai-help
->>>>>
->>>>
->>>
->>
+> *Chris Stone*
+>
+> Senior Software Engineer****
+>
+> Optelian****
+>
+> 1 Brewer Hunt Way****
+>
+> Ottawa, Ontario K2K 2B5****
+>
+> ** **
+>
+> Phone: 613-287-2000 x2106****
+>
+> ** **
+>
+> *www.optelian.com*****
+>
+> ** **
+>
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
 >
 >
 
 
---=20
-Philippe.
+-- 
+MC
+
+--14dae934040be1a03a04bbad8817
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+make sure that &quot;cpu time&quot; is unlimited. You can check and change =
+it with &quot;ulimit&quot; util. Use=A0
+&quot;limit -a&quot; to=A0list all about limitations.<br><br><div class=3D"=
+gmail_quote"><br></div><div class=3D"gmail_quote">On Tue, Mar 20, 2012 at 4=
+:09 PM, Chris Stone <span dir=3D"ltr">&lt;<a href=3D"mailto:chris.stone@domain.hid=
+elian.com">chris.stone@domain.hid</a>&gt;</span> wrote:<br>
+
+<blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1p=
+x #ccc solid;padding-left:1ex">
+
+
+
+
+
+<div lang=3D"EN-US" link=3D"blue" vlink=3D"purple">
+<div>
+<p class=3D"MsoNormal">I have a thread which uses a lot of CPU and it is re=
+ceiving a SIGXCPU: Cpu time limit exceeded. Does this message really mean I=
+ have exceeded some CPU time limit? If so, how do I increase or disable the=
+ CPU time limit? The code that I am
+ running has been working for quite some time under regular Linux and I hav=
+e just ported it to Xenomai, so I doubt there are any infinite loops in it.=
+<u></u><u></u></p>
+<p class=3D"MsoNormal"><u></u>=A0<u></u></p>
+<p class=3D"MsoNormal"><b><span style=3D"font-size:10.0pt;font-family:&quot=
+;Verdana&quot;,&quot;sans-serif&quot;;color:#00568d">Chris Stone<u></u><u><=
+/u></span></b></p>
+<p class=3D"MsoNormal"><span style=3D"font-size:8.0pt;font-family:&quot;Ver=
+dana&quot;,&quot;sans-serif&quot;">Senior Software Engineer<u></u><u></u></=
+span></p>
+<p class=3D"MsoNormal"><span style=3D"font-size:8.0pt;font-family:&quot;Ver=
+dana&quot;,&quot;sans-serif&quot;">Optelian<u></u><u></u></span></p>
+<p class=3D"MsoNormal"><span style=3D"font-size:8.0pt;font-family:&quot;Ver=
+dana&quot;,&quot;sans-serif&quot;">1 Brewer Hunt Way<u></u><u></u></span></=
+p>
+<p class=3D"MsoNormal"><span style=3D"font-size:8.0pt;font-family:&quot;Ver=
+dana&quot;,&quot;sans-serif&quot;">Ottawa, Ontario K2K 2B5<u></u><u></u></s=
+pan></p>
+<p class=3D"MsoNormal"><span style=3D"font-size:8.0pt;font-family:&quot;Ver=
+dana&quot;,&quot;sans-serif&quot;"><u></u>=A0<u></u></span></p>
+<p class=3D"MsoNormal"><span style=3D"font-size:8.0pt;font-family:&quot;Ver=
+dana&quot;,&quot;sans-serif&quot;">Phone: <a href=3D"tel:613-287-2000%20x21=
+06" value=3D"+16132872000" target=3D"_blank">613-287-2000 x2106</a><u></u><=
+u></u></span></p>
+
+
+<p class=3D"MsoNormal"><span style=3D"font-size:8.0pt;font-family:&quot;Ver=
+dana&quot;,&quot;sans-serif&quot;"><u></u>=A0<u></u></span></p>
+<p class=3D"MsoNormal"><u><span style=3D"font-size:8.0pt;font-family:&quot;=
+Verdana&quot;,&quot;sans-serif&quot;;color:#00568d"><a href=3D"http://www.o=
+ptelian.com" target=3D"_blank"><span style=3D"color:blue">www.optelian.com<=
+/span></a></span></u><u></u><u></u></p>
+
+
+<p class=3D"MsoNormal"><u></u>=A0<u></u></p>
+</div>
+</div>
+
+<br>_______________________________________________<br>
+Xenomai-help mailing list<br>
+<a href=3D"mailto:Xenomai-help@domain.hid">Xenomai-help@domain.hid</a><br>
+<a href=3D"https://mail.gna.org/listinfo/xenomai-help" target=3D"_blank">ht=
+tps://mail.gna.org/listinfo/xenomai-help</a><br>
+<br></blockquote></div><br><br clear=3D"all"><div><br></div>-- <br>MC<br>
+
+--14dae934040be1a03a04bbad8817--
 
