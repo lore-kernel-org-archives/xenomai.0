@@ -1,14 +1,14 @@
+Message-ID: <4F68EA11.30109@domain.hid>
+Date: Tue, 20 Mar 2012 21:35:29 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
 References: <CB8E2B24.1EE49%glen@domain.hid> <4F68DCBE.407@domain.hid>
-In-Reply-To: <4F68DCBE.407@domain.hid>
-Mime-Version: 1.0 (1.0)
-Content-Type: text/plain;
-	charset=us-ascii
-Message-Id: <97158F69-0343-4FA2-846B-7DE2563595A8@domain.hid>
-Content-Transfer-Encoding: quoted-printable
-From: Glen Wernersbach <glen@domain.hid>
-Date: Tue, 20 Mar 2012 16:19:17 -0400
+	<97158F69-0343-4FA2-846B-7DE2563595A8@domain.hid>
+In-Reply-To: <97158F69-0343-4FA2-846B-7DE2563595A8@domain.hid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] Linux Serial Does not work with
-	CONFIG_XENO_OPT_PERVASIVE enabled
+ CONFIG_XENO_OPT_PERVASIVE enabled
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -18,47 +18,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Glen Wernersbach <glen@domain.hid>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-I actually think in is in the settings because if run just the setup part of=
- the code without reading and writing, on the kernel that works my activity L=
-ED turns off.=20
+On 03/20/2012 09:19 PM, Glen Wernersbach wrote:
+> I actually think in is in the settings because if run just the setup part of the code without reading and writing, on the kernel that works my activity LED turns off. 
+> 
+> On the xeno kernel the LED never changes.
 
-On the xeno kernel the LED never changes.
+I actually think that CONFIG_XENO_OPT_PERVASIVE does not make any
+difference which could cause a difference of hardware behaviour. So, it
+must be another option triggered by this config change. So, if you want
+us to help you, please post the .configs.
 
---
-Glen Wernersbach
-President & CTO
-Jetsoft Development Co
-629 Old St. Rt. 74 - Suite 210
-Cincinnati Ohio 45244
-Custom Programming Web Site: www.JetsoftDev.com
-Retail Product Web Site: www.ScanHelp.com
-Phone: 513-528-6660
-Fax: 513-528-3470
 
-On Mar 20, 2012, at 3:38 PM, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org=
-mai.org> wrote:
-
-> On 03/20/2012 05:40 PM, Glen Wernersbach wrote:
->> Here it is. Just a simple modification of the atmel_serial.
->>=20
->> The define for it is CONFIG_MACH_MATRIX518
->=20
-> =46rom a quick glance, I do not see anything conflicting with xenomai.
-> Note that this driver has the same issue as the vanilla atmel serial: it
-> may loose characters in case of high irq latencies.
->=20
-> Anyway, could you post the two kernel configurations, the one which
-> works, the one which does not work?
->=20
-> Other than that, I guess all you can do is try and debug the driver,
-> starting with the serial irq and trying and understanding how it gets lost=
-.
->=20
-> --=20
->                                                                Gilles.
->=20
-
+-- 
+                                                                Gilles.
 
