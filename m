@@ -1,5 +1,5 @@
-Message-ID: <4F6890D9.1080506@domain.hid>
-Date: Tue, 20 Mar 2012 15:14:49 +0100
+Message-ID: <4F68916F.6060006@domain.hid>
+Date: Tue, 20 Mar 2012 15:17:19 +0100
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 References: <CB8E0777.1EE23%glen@domain.hid>
@@ -32,13 +32,13 @@ s.
 t.
 >
 > It writes the data but waits forever to read them back in
-
-Ok, so what about answering the questions below?
-
 >
 >> From my tests, it appears that the termois tcsetaddr settings is not get=
 ting
 > set when I call it when this option is on.
+
+Can you strace your app when it runs, please?
+
 >
 >
 >
