@@ -1,11 +1,13 @@
-Message-ID: <4F68BDBF.2030002@domain.hid>
-Date: Tue, 20 Mar 2012 18:26:23 +0100
-From: Thierry Bultel <thierry.bultel@domain.hid>
+Message-ID: <4F68DCBE.407@domain.hid>
+Date: Tue, 20 Mar 2012 20:38:38 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: multipart/alternative;
-	boundary="------------040008030205030602020205"
-Subject: [Xenomai-help] CAN: Locked in rtdm_sem_timeddown of tx_sem;
-	Lost TX IRQ ?
+References: <CB8E2B24.1EE49%glen@domain.hid>
+In-Reply-To: <CB8E2B24.1EE49%glen@domain.hid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] Linux Serial Does not work with
+ CONFIG_XENO_OPT_PERVASIVE enabled
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -15,113 +17,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org, Jean-Baptiste Tredez <jean-baptiste.tredez@domain.hid>
+To: Glen Wernersbach <glen@domain.hid>
+Cc: xenomai@xenomai.org
 
-This is a multi-part message in MIME format.
---------------040008030205030602020205
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+On 03/20/2012 05:40 PM, Glen Wernersbach wrote:
+> Here it is. Just a simple modification of the atmel_serial.
+> 
+> The define for it is CONFIG_MACH_MATRIX518
 
-Hello,
+>From a quick glance, I do not see anything conflicting with xenomai.
+Note that this driver has the same issue as the vanilla atmel serial: it
+may loose characters in case of high irq latencies.
 
-the issue I am describing here happens on a dual-core Atom (without 
-hyperthreading)
+Anyway, could you post the two kernel configurations, the one which
+works, the one which does not work?
 
-It is easy to reproduce with 2.6.32.7+xenomai 2.5.2, which was my 
-initial configuration until
-I remembered that Philippe told us that SMP was correctly supported from 
-2.6.38.8
+Other than that, I guess all you can do is try and debug the driver,
+starting with the serial irq and trying and understanding how it gets lost.
 
-The fact is that I have been able to reproduce it with 
-2.6.38.8+xenomai-2.6 as well. Only once, but I did.
-
-I am using CAN with a IXXAT PCI-04 board .
-There is a single thread per bus.
-
-With the old kernel, after about 400-500 seconds, and heavy load the 
-communication stops, and after some
-analysis, I found out that my process was stuck at :
-
-rtcan_raw.c
-
-   /* Try to pass the guard in order to access the controller */
-*  ret = rtdm_sem_timeddown(&dev->tx_sem, timeout, NULL);*
-
-
-The Refcount shown in /proc/rtcan/rtcan0/info is 1.
-
-The workaround I found was to set the timeout to a non-zero value with 
-the appropriate ioctl,
-and when a timeout issues, to stop and restart the bus, with the effect 
-to destroy and re-recreate the semaphore and
-thus to communicate again.
-
-By reading the code, the only reason I can see is that a TX interrupt is 
-lost.
-
-I do not have much more ways to analyze deeper, so any advice would be 
-greatly appreciated
-
-Cheers,
-Thierry
-
---------------040008030205030602020205
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
-  <head>
-
-    <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
-  </head>
-  <body bgcolor="#ffffff" text="#000000">
-    <font size="-1">Hello, <br>
-      <br>
-      the issue I am describing here happens on a dual-core Atom
-      (without hyperthreading)<br>
-      <br>
-      It is easy to reproduce with 2.6.32.7+xenomai 2.5.2, which was my
-      initial configuration until<br>
-      I remembered that Philippe told us that SMP was correctly
-      supported from 2.6.38.8<br>
-      <br>
-      The fact is that I have been able to reproduce it with
-      2.6.38.8+xenomai-2.6 as well. Only once, but I did.<br>
-      <br>
-      I am using CAN with a IXXAT PCI-04 board .<br>
-      There is a single thread per bus.<br>
-      <br>
-      With the old kernel, after about 400-500 seconds, and heavy load
-      the communication stops, and after some<br>
-      analysis, I found out that my process was stuck at :<br>
-      <br>
-      <small>rtcan_raw.c<br>
-        <br>
-        &nbsp; /* Try to pass the guard in order to access the controller */<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>&nbsp; ret = rtdm_sem_timeddown(&amp;dev-&gt;tx_sem,
-          timeout, NULL);</b><br>
-        <br>
-      </small><br>
-      The Refcount shown in /proc/rtcan/rtcan0/info is 1.<br>
-      <br>
-      The workaround I found was to set the timeout to a non-zero value
-      with the appropriate ioctl,<br>
-      and when a timeout issues, to stop and restart the bus, with the
-      effect to destroy and re-recreate the semaphore and <br>
-      thus to communicate again.<br>
-      <br>
-      By reading the code, the only reason I can see is that a TX
-      interrupt is lost.<br>
-      <br>
-      I do not have much more ways to analyze deeper, so any advice
-      would be greatly appreciated<br>
-      <br>
-      Cheers,<br>
-      Thierry<br>
-    </font>
-  </body>
-</html>
-
---------------040008030205030602020205--
+-- 
+                                                                Gilles.
 
