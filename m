@@ -1,9 +1,10 @@
+Message-ID: <4F6A065E.9030309@domain.hid>
+Date: Wed, 21 Mar 2012 17:48:30 +0100
+From: Roberto Bielli <roberto.bielli@domain.hid>
 MIME-Version: 1.0
-Date: Mon, 19 Mar 2012 15:02:41 +0100
-Message-ID: <CAGq8jPh8KNONHFRX6uWeb-yHyQc=5e5VdeCJ8yEJ+U71GVj7Uw@domain.hid>
-From: Minh GIANG <giang.hminh@domain.hid>
-Content-Type: multipart/alternative; boundary=bcaec5215c91f8e9fc04bb9902dc
-Subject: [Xenomai-core] rtai-lab on Xenomai
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-core] Using xenomai with standard ethernet driver
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -12,31 +13,51 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Xenomai-core@domain.hid
+To: xenomai@xenomai.org
 
---bcaec5215c91f8e9fc04bb9902dc
-Content-Type: text/plain; charset=ISO-8859-1
+Hi,
 
-Hello everybody,
+i want to use xenomai for sending standard tcp/ip packets.
+Is it possible to rewrite the ethernet driver for xenomai without using 
+rtnet ?
+Or if i use rtnet is there a way to send standard tcp packet instead 
+rtnet packets ?
 
-i want to install rtai-lab on Xenomai in order to combine with Scilab/Xcos.
-My project is to build one toolchain for code generator on xenomai. if you
-know how do it, don't hesitate to inform me.
+Thanks for all.
 
-Thanks in advance
+-- 
++------------------------------------------------------------------------------------------------+
+							
+Roberto Bielli
+Sviluppo Software					
+Axel S.r.l.					
+							
+Via Del Cannino, 3 				
+21020 Crosio Della Valle			
+Varese - Italy					
+							
+Telefono: +39 0332 949600			
+Fax:      +39 0332 969315			
+							
+E-mail:   roberto.bielli@domain.hid	
+Web Site: www.axelsw.it
 
-Have a good day.
++------------------------------------------------------------------------------------------------+
 
---bcaec5215c91f8e9fc04bb9902dc
-Content-Type: text/html; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+Si precisa che le informazioni contenute in questo messaggio sono riservate e ad uso esclusivo del destinatario.
+Qualora il messaggio in parola Le fosse pervenuto per errore, La preghiamo di eliminarlo senza copiarlo e di non inoltrarlo a terzi,
+dandocene gentilmente comunicazione. Grazie.
+Informativa sul trattamento dei dati personali (D. Lgs. 196/2003).
+I dati utilizzati per la spedizione del presente messaggio sono utilizzati da Axel S.r.l., titolare del trattamento,
+per l'invio delle comunicazioni dei diversi settori aziendali, non essendo autorizzata la divulgazione a terzi.
+Potrete rivolgere alla seguente mail richieste di verifica, rettifica o cancellazione dei Vostri dati: info@domain.hid
 
-<span style>Hello everybody,</span><div style><br></div><div style>i want t=
-o install rtai-lab on Xenomai in order to combine with Scilab/Xcos. My proj=
-ect is to build one toolchain for code generator on xenomai. if you know ho=
-w do it, don&#39;t hesitate to inform me.</div>
-<div style><br></div><div style>Thanks in advance</div><div style><br></div=
-><div style>Have a good day.</div>
+This e-mail and any attachments is confidential and may contain privileged information
+intended for the addressee(s) only. Dissemination, copying, printing or use by anybody
+else is unauthorised. If you are not the intended recipient,
+please delete this message and any attachments and advise the sender
+by return e-mail.Thank you.  			
+							
++------------------------------------------------------------------------------------------------+
 
---bcaec5215c91f8e9fc04bb9902dc--
 
