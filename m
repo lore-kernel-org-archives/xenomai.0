@@ -1,13 +1,13 @@
-Message-ID: <4F69156D.3060005@domain.hid>
-Date: Wed, 21 Mar 2012 00:40:29 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <623784B6C75D274389918D358E89E8BB0B78F111@domain.hid>
-	<4F6897A5.70601@domain.hid>
-In-Reply-To: <4F6897A5.70601@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] How do I increase CPU time limit.
+Date: Wed, 21 Mar 2012 00:46:44 -0400
+From: Glen Wernersbach <glen@domain.hid>
+Message-ID: <CB8ED574.1EE7C%glen@domain.hid>
+In-Reply-To: <4F68EA11.30109@domain.hid>
+Mime-version: 1.0
+Content-type: text/plain;
+	charset="ISO-8859-1"
+Content-transfer-encoding: quoted-printable
+Subject: Re: [Xenomai-help] Linux Serial Does not work with
+ CONFIG_XENO_OPT_PERVASIVE enabled
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -17,37 +17,57 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Philippe Gerum <rpm@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 03/20/2012 03:43 PM, Philippe Gerum wrote:
-> On 03/20/2012 03:09 PM, Chris Stone wrote:
->> I have a thread which uses a lot of CPU and it is receiving a SIGXCPU:
->> Cpu time limit exceeded. Does this message really mean I have exceeded
->> some CPU time limit? If so, how do I increase or disable the CPU time
->> limit? The code that I am running has been working for quite some time
->> under regular Linux and I have just ported it to Xenomai, so I doubt
->> there are any infinite loops in it.
-> 
-> This could be the runaway thread detector triggering, after 4s of 
-> uninterrupted runtime (which is huge, is this intended?). This is a 
-> debug mechanism Xenomai implements to recover from a runaway thread 
-> chewing CPU in primary mode, without having to resort to the reset button.
-> You can either extend the grace period above the default 4s, using 
-> CONFIG_XENO_OPT_WATCHDOG_TIMEOUT, or disable the watchdog entirely by 
-> switching off CONFIG_XENO_OPT_WATCHDOG. This said, 4s is really long 
-> already, so the regular kernel might not cope with even more starvation 
-> from normal interrupts.
-> 
-> Other explanation would be not time-related. If 
-> CONFIG_XENO_OPT_DEBUG_SYNCH_RELAX is enabled, any attempt to switch to 
-> secondary mode while holding a real-time (Xenomai created) mutex in the 
-> code would trigger such signal, as a warning to point out a priority 
-> inversion.
+I am going to start trying to see if I can figure out what is not getting
+set.
 
-You may find an example of how to install a SIGXCPU handler and decode
-signals sent by xenomai in examples/native/sigdebug.c
+By the way. This board also has 4 other serial ports on a 8250.c driver. It
+also fails under the xeno build.
 
--- 
-                                                                Gilles.
+
+
+
+On 3/20/12 4:35 PM, "Gilles Chanteperdrix"
+<gilles.chanteperdrix@xenomai.org> wrote:
+
+> On 03/20/2012 09:19 PM, Glen Wernersbach wrote:
+>> I actually think in is in the settings because if run just the setup par=
+t of
+>> the code without reading and writing, on the kernel that works my activi=
+ty
+>> LED turns off.=20
+>>=20
+>> On the xeno kernel the LED never changes.
+>=20
+> I actually think that CONFIG_XENO_OPT_PERVASIVE does not make any
+> difference which could cause a difference of hardware behaviour. So, it
+> must be another option triggered by this config change. So, if you want
+> us to help you, please post the .configs.
+>=20
+
+--=20
+Glen Wernersbach
+President & CTO
+
+Jetsoft Development Co.
+629 Old St Rt. 74 =AD Suite 210
+Cincinnati, Oh 45244
+Custom Programming Web Site: www.jetsoftdev.com
+Retail Products Web Site: www.scanhelp.com
+Phone:   513-528-6660
+Fax: 513-528-3470
+Cell 513-240-9929
+----
+Partner for Software Technology
+Jacobs Automation
+2365 Progress Drive
+Hebron, KY 41048=20
+(513) 297-7550
+----
+"Support Dyslexia Research"
+
+
+
 
