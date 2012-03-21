@@ -1,11 +1,11 @@
-Date: Wed, 21 Mar 2012 00:46:44 -0400
-From: Glen Wernersbach <glen@domain.hid>
-Message-ID: <CB8ED574.1EE7C%glen@domain.hid>
-In-Reply-To: <4F68EA11.30109@domain.hid>
-Mime-version: 1.0
-Content-type: text/plain;
-	charset="ISO-8859-1"
-Content-transfer-encoding: quoted-printable
+Message-ID: <4F6986AD.9050201@domain.hid>
+Date: Wed, 21 Mar 2012 08:43:41 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+References: <CB8ED574.1EE7C%glen@domain.hid>
+In-Reply-To: <CB8ED574.1EE7C%glen@domain.hid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] Linux Serial Does not work with
  CONFIG_XENO_OPT_PERVASIVE enabled
 List-Id: Help regarding installation and common use of Xenomai
@@ -17,57 +17,19 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Glen Wernersbach <glen@domain.hid>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-I am going to start trying to see if I can figure out what is not getting
-set.
+On 03/21/2012 05:46 AM, Glen Wernersbach wrote:
+> I am going to start trying to see if I can figure out what is not getting
+> set.
+> 
+> By the way. This board also has 4 other serial ports on a 8250.c driver. It
+> also fails under the xeno build.
 
-By the way. This board also has 4 other serial ports on a 8250.c driver. It
-also fails under the xeno build.
+But the serial console works, right? So there is at least on serial port
+working.
 
-
-
-
-On 3/20/12 4:35 PM, "Gilles Chanteperdrix"
-<gilles.chanteperdrix@xenomai.org> wrote:
-
-> On 03/20/2012 09:19 PM, Glen Wernersbach wrote:
->> I actually think in is in the settings because if run just the setup par=
-t of
->> the code without reading and writing, on the kernel that works my activi=
-ty
->> LED turns off.=20
->>=20
->> On the xeno kernel the LED never changes.
->=20
-> I actually think that CONFIG_XENO_OPT_PERVASIVE does not make any
-> difference which could cause a difference of hardware behaviour. So, it
-> must be another option triggered by this config change. So, if you want
-> us to help you, please post the .configs.
->=20
-
---=20
-Glen Wernersbach
-President & CTO
-
-Jetsoft Development Co.
-629 Old St Rt. 74 =AD Suite 210
-Cincinnati, Oh 45244
-Custom Programming Web Site: www.jetsoftdev.com
-Retail Products Web Site: www.scanhelp.com
-Phone:   513-528-6660
-Fax: 513-528-3470
-Cell 513-240-9929
-----
-Partner for Software Technology
-Jacobs Automation
-2365 Progress Drive
-Hebron, KY 41048=20
-(513) 297-7550
-----
-"Support Dyslexia Research"
-
-
-
+-- 
+                                                                Gilles.
 
