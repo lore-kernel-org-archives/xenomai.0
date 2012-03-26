@@ -1,16 +1,15 @@
-Message-ID: <4F7042EC.5040109@domain.hid>
-Date: Mon, 26 Mar 2012 12:20:28 +0200
-From: Wolfgang Grandegger <wg@domain.hid>
+Date: Mon, 26 Mar 2012 09:14:17 -0700 (PDT)
+From: "Doug Brunner" <dbrunner@domain.hid>
 MIME-Version: 1.0
-References: <4F6C35CA.8010506@domain.hid>
-	<4F6C4978.6060108@domain.hid>	<4F6C7722.2080609@domain.hid>
-	<4F7038FF.3050203@domain.hid> <4F703B8A.7060307@domain.hid>
-	<4F703CB6.7050907@domain.hid>
-In-Reply-To: <4F703CB6.7050907@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] rt_pipe does not support POLLHUP on the Linux
- side
+Content-Type: text/plain;charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <4F63867D.7060204@domain.hid>
+References: <1331579565.394426122@domain.hid>
+	<4F5E51E2.1020802@domain.hid> 
+	<1331829045.814121867@domain.hid>
+	<4F63867D.7060204@domain.hid>
+Message-ID: <1332778457.241521523@domain.hid>
+Subject: Re: [Xenomai-help] Intermixing native and POSIX skins
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -20,51 +19,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On 03/26/2012 11:53 AM, Gilles Chanteperdrix wrote:
-> On 03/26/2012 11:48 AM, Wolfgang Grandegger wrote:
->> On 03/26/2012 11:38 AM, Wolfgang Grandegger wrote:
->>> Hi Gilles,
->>>
->>> On 03/23/2012 02:14 PM, Gilles Chanteperdrix wrote:
->>>> On 03/23/2012 10:59 AM, Gilles Chanteperdrix wrote:
->>>>> On 03/23/2012 09:35 AM, Wolfgang Grandegger wrote:
->>>>>> Hello,
->>>>>>
->>>>>> while playing with rt_pipe, I realized that a select()/poll() function
->>>>>> does not unblock when the rt_pipe is deleted (via rt_pipe_delete) on the
->>>>>> other end. I think this is because the poll callback does not support
->>>>>> POLLHUP:
->>>>>>
->>>>>> http://www.rts.uni-hannover.de/xenomai/lxr/source/ksrc/nucleus/pipe.c#1024
->>>>>>
->>>>>> Is this by purpose? At least a blocking read() works as expected. It
->>>>>> does unblock and return 0 in that case.
->>>>>
->>>>> rt_pipes are deprecated, we are not going to add new features to them
->>>>> now. Please do not use them for new developments. We now have socket
->>>>> based RTIPCs. See examples/rtdm/profiles/ipc.
->>>
->>> Ah, I was not aware of that. This solution does also work for any skin
->>> (and does not require to misuse the native skin any more).
-
-At a closer look to the RTIPC interfaces I realized, that they are also
-based on "xnpipe", like "rt_pipe". Therefore a patch for the "EOF issue"
-is also here required.
-
->> BTW, is there another interface (whith less overhead) to signal Linux
->> thread from RT threads to trigger some work, e.g. for reading from shmem?
-> 
-> The simplest thing to do in such a case is to make the "Linux" thread a
-> Xenomai thread but running with the SCHED_OTHER policy, you can then use
-> simpler IPCs such as semaphores. Starting with Xenomai 2.6.0, such a
-> thread is guaranteed to return to secondary mode as soon as possible.
-
-OK.
-
-Wolfgang.
-
+Thanks for the information--the issue is not about picking a free port on t=
+he server side, but rather about communicating the information on which por=
+ts are "free" to the clients (server has connected its end, but no other cl=
+ient is using the port). The semaphore mechanism isn't that much of a probl=
+em, though; I've been able to build a satisfactory implementation.=0A=0AOne=
+ other question: although I know in-order delivery isn't necessarily a feat=
+ure of datagram based protocols, would I get that with an IDDP socket conne=
+ction between just two processes, and/or an XDDP connection to a /dev/rtpN?=
+=0A=0A    Doug Brunner=0A=0A-----Original Message-----=0AFrom: "Philippe Ge=
+rum" <rpm@xenomai.org>=0ASent: Friday, March 16, 2012 11:29am=0ATo: "Doug B=
+runner" <dbrunner@domain.hid>=0ACc: xenomai@xenomai.org: Re: [Xeno=
+mai-help] Intermixing native and POSIX skins=0A=0AOn 03/15/2012 05:30 PM, D=
+oug Brunner wrote:=0A> Thanks Philippe. I hadn't even known about the exist=
+ence of the RTIPC driver, and I definitely like the idea.=0A>=0A> I've been=
+ experimenting with it a bit today, and found that it seems to be allowed f=
+or more than two sockets to connect to the same port. I modified iddp-sendr=
+ecv.c to have two client processes, both of which now connect to the same p=
+ort as the server, then did the same thing with iddp-label.c (two clients b=
+oth connect()ing to the same label).=0A>=0A> This would cause havoc with th=
+e communications that go on between my processes--they need a one-to-one ch=
+annel. I could implement semaphores to enforce this, but it would be nice t=
+o avoid that complication. Is there a way to make it happen using just the =
+socket interface?=0A=0AThe RTIPC protocols are fundamentally datagram-based=
+, so allowing N:1 =0Adata paths is wanted. If the issue is about picking a =
+different port =0Aeach time you bind a server socket in the AF_RTIPC domain=
+, then I would =0Asuggest to set sipc_port to -1 when binding the server-si=
+de socket: a =0Afree port will be picked automatically. You could then use =
+getsockname() =0Ato retrieve the actual port #, and pass it to the clients.=
+=0A=0A-- =0APhilippe.=0A
 
 
