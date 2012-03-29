@@ -1,13 +1,10 @@
-Message-ID: <4F6463BB.7040607@domain.hid>
-Date: Sat, 17 Mar 2012 11:13:15 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <4F749006.8060804@domain.hid>
+Date: Thu, 29 Mar 2012 18:38:30 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <4F6209FD.5080808@domain.hid>
-In-Reply-To: <4F6209FD.5080808@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Adeos-main] [PATCH 2.6.38+] ipipe: x86: Fix user land
- detection on unhandled non-root faults
+Subject: [Adeos-main] [PATCH 1/2] ipipe: Factor out ipipe_pin_vma
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/options/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -16,36 +13,99 @@ List-Post: <mailto:adeos-main@gna.org>
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: adeos-main <adeos-main@gna.org>
+To: adeos-main <adeos-main@gna.org>
 
-On 03/15/2012 04:25 PM, Jan Kiszka wrote:
-> Not only page faults are processed by __ipipe_handle_exception, so the
-> validity and encoding of error_code varies. Use user_mode_vm instead to
-> detect if the fault was raised over a user context.
->
-> Signed-off-by: Jan Kiszka<jan.kiszka@domain.hid>
-> ---
->   arch/x86/kernel/ipipe.c |    3 ++-
->   1 files changed, 2 insertions(+), 1 deletions(-)
->
-> diff --git a/arch/x86/kernel/ipipe.c b/arch/x86/kernel/ipipe.c
-> index 5be7005..b2e2a5b 100644
-> --- a/arch/x86/kernel/ipipe.c
-> +++ b/arch/x86/kernel/ipipe.c
-> @@ -560,7 +560,8 @@ int __ipipe_handle_exception(struct pt_regs *regs, long error_code, int vector)
->   		ipipe_trace_panic_freeze();
->
->   		/* Always warn about user land and unfixable faults. */
-> -		if ((error_code&  4) || !search_exception_tables(instruction_pointer(regs))) {
-> +		if (user_mode_vm(regs) ||
-> +		    !search_exception_tables(instruction_pointer(regs))) {
->   			printk(KERN_ERR "BUG: Unhandled exception over domain"
->   			       " %s at 0x%lx - switching to ROOT\n",
->   			       ipd->name, instruction_pointer(regs));
+Will be used for pinning during mprotect as well.
 
-Merged, thanks.
+Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
+---
 
+This applies on core-3.2, but should be backported to maintained
+versions as well (just leave out the "__").
+
+ include/linux/ipipe.h |    1 +
+ mm/memory.c           |   43 +++++++++++++++++++++++++------------------
+ 2 files changed, 26 insertions(+), 18 deletions(-)
+
+diff --git a/include/linux/ipipe.h b/include/linux/ipipe.h
+index 9f07346..29051c7 100644
+--- a/include/linux/ipipe.h
++++ b/include/linux/ipipe.h
+@@ -68,6 +68,7 @@ int __ipipe_migrate_head(void);
+ void __ipipe_reenter_root(void);
+ 
+ int __ipipe_disable_ondemand_mappings(struct task_struct *p);
++int __ipipe_pin_vma(struct mm_struct *mm, struct vm_area_struct *vma);
+ 
+ #ifdef CONFIG_IPIPE_WANT_PREEMPTIBLE_SWITCH
+ 
+diff --git a/mm/memory.c b/mm/memory.c
+index ef04820..d251268 100644
+--- a/mm/memory.c
++++ b/mm/memory.c
+@@ -4092,13 +4092,31 @@ static inline int ipipe_pin_pud_range(struct mm_struct *mm, pgd_t *pgd,
+ 	return 0;
+ }
+ 
+-int __ipipe_disable_ondemand_mappings(struct task_struct *tsk)
++int __ipipe_pin_vma(struct mm_struct *mm, struct vm_area_struct *vma)
+ {
+ 	unsigned long addr, next, end;
++	pgd_t *pgd;
++
++	addr = vma->vm_start;
++	end = vma->vm_end;
++
++	pgd = pgd_offset(mm, addr);
++	do {
++		next = pgd_addr_end(addr, end);
++		if (pgd_none_or_clear_bad(pgd))
++			continue;
++		if (ipipe_pin_pud_range(mm, pgd, vma, addr, next))
++			return -ENOMEM;
++	} while (pgd++, addr = next, addr != end);
++
++	return 0;
++}
++
++int __ipipe_disable_ondemand_mappings(struct task_struct *tsk)
++{
+ 	struct vm_area_struct *vma;
+ 	struct mm_struct *mm;
+ 	int result = 0;
+-	pgd_t *pgd;
+ 
+ 	mm = get_task_mm(tsk);
+ 	if (!mm)
+@@ -4109,23 +4127,12 @@ int __ipipe_disable_ondemand_mappings(struct task_struct *tsk)
+ 		goto done_mm;
+ 
+ 	for (vma = mm->mmap; vma; vma = vma->vm_next) {
+-		if (!is_cow_mapping(vma->vm_flags)
+-		    || !(vma->vm_flags & VM_WRITE))
+-			continue;
+-
+-		addr = vma->vm_start;
+-		end = vma->vm_end;
+-
+-		pgd = pgd_offset(mm, addr);
+-		do {
+-			next = pgd_addr_end(addr, end);
+-			if (pgd_none_or_clear_bad(pgd))
+-				continue;
+-			if (ipipe_pin_pud_range(mm, pgd, vma, addr, next)) {
+-				result = -ENOMEM;
++		if (is_cow_mapping(vma->vm_flags) &&
++		    (vma->vm_flags & VM_WRITE)) {
++			result = __ipipe_pin_vma(mm, vma);
++			if (result < 0)
+ 				goto done_mm;
+-			}
+-		} while (pgd++, addr = next, addr != end);
++		}
+ 	}
+ 	set_bit(MMF_VM_PINNED, &mm->flags);
+ 
 -- 
-Philippe.
+1.7.3.4
 
