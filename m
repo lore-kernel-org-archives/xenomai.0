@@ -1,10 +1,11 @@
-Message-ID: <4F749006.8060804@domain.hid>
-Date: Thu, 29 Mar 2012 18:38:30 +0200
+Message-ID: <4F74900F.6030707@domain.hid>
+Date: Thu, 29 Mar 2012 18:38:39 +0200
 From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: [Adeos-main] [PATCH 1/2] ipipe: Factor out ipipe_pin_vma
+Subject: [Adeos-main] [PATCH 2/2] ipipe: Pin potential COW pages before
+ applying mprotect changes
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/options/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -15,7 +16,11 @@ List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
 To: adeos-main <adeos-main@gna.org>
 
-Will be used for pinning during mprotect as well.
+mprotect may make a region writable that wasn't so far. But non-writable
+regions are not subject to COW resolution done via
+ipipe_disable_ondemand_mappings. Thus, enabling write may make pages
+writable that are not supposed to (e.g. the zero page) as we enforce
+write access for writable regions to avoid minor faults.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
 ---
@@ -23,89 +28,38 @@ Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
 This applies on core-3.2, but should be backported to maintained
 versions as well (just leave out the "__").
 
- include/linux/ipipe.h |    1 +
- mm/memory.c           |   43 +++++++++++++++++++++++++------------------
- 2 files changed, 26 insertions(+), 18 deletions(-)
+ mm/mprotect.c |   18 ++++++++++++++++++
+ 1 files changed, 18 insertions(+), 0 deletions(-)
 
-diff --git a/include/linux/ipipe.h b/include/linux/ipipe.h
-index 9f07346..29051c7 100644
---- a/include/linux/ipipe.h
-+++ b/include/linux/ipipe.h
-@@ -68,6 +68,7 @@ int __ipipe_migrate_head(void);
- void __ipipe_reenter_root(void);
- 
- int __ipipe_disable_ondemand_mappings(struct task_struct *p);
-+int __ipipe_pin_vma(struct mm_struct *mm, struct vm_area_struct *vma);
- 
- #ifdef CONFIG_IPIPE_WANT_PREEMPTIBLE_SWITCH
- 
-diff --git a/mm/memory.c b/mm/memory.c
-index ef04820..d251268 100644
---- a/mm/memory.c
-+++ b/mm/memory.c
-@@ -4092,13 +4092,31 @@ static inline int ipipe_pin_pud_range(struct mm_struct *mm, pgd_t *pgd,
- 	return 0;
- }
- 
--int __ipipe_disable_ondemand_mappings(struct task_struct *tsk)
-+int __ipipe_pin_vma(struct mm_struct *mm, struct vm_area_struct *vma)
- {
- 	unsigned long addr, next, end;
-+	pgd_t *pgd;
-+
-+	addr = vma->vm_start;
-+	end = vma->vm_end;
-+
-+	pgd = pgd_offset(mm, addr);
-+	do {
-+		next = pgd_addr_end(addr, end);
-+		if (pgd_none_or_clear_bad(pgd))
-+			continue;
-+		if (ipipe_pin_pud_range(mm, pgd, vma, addr, next))
-+			return -ENOMEM;
-+	} while (pgd++, addr = next, addr != end);
-+
-+	return 0;
-+}
-+
-+int __ipipe_disable_ondemand_mappings(struct task_struct *tsk)
-+{
- 	struct vm_area_struct *vma;
- 	struct mm_struct *mm;
- 	int result = 0;
--	pgd_t *pgd;
- 
- 	mm = get_task_mm(tsk);
- 	if (!mm)
-@@ -4109,23 +4127,12 @@ int __ipipe_disable_ondemand_mappings(struct task_struct *tsk)
- 		goto done_mm;
- 
- 	for (vma = mm->mmap; vma; vma = vma->vm_next) {
--		if (!is_cow_mapping(vma->vm_flags)
--		    || !(vma->vm_flags & VM_WRITE))
--			continue;
--
--		addr = vma->vm_start;
--		end = vma->vm_end;
--
--		pgd = pgd_offset(mm, addr);
--		do {
--			next = pgd_addr_end(addr, end);
--			if (pgd_none_or_clear_bad(pgd))
--				continue;
--			if (ipipe_pin_pud_range(mm, pgd, vma, addr, next)) {
--				result = -ENOMEM;
-+		if (is_cow_mapping(vma->vm_flags) &&
-+		    (vma->vm_flags & VM_WRITE)) {
-+			result = __ipipe_pin_vma(mm, vma);
-+			if (result < 0)
- 				goto done_mm;
--			}
--		} while (pgd++, addr = next, addr != end);
-+		}
+diff --git a/mm/mprotect.c b/mm/mprotect.c
+index 3f234b3..9981d19 100644
+--- a/mm/mprotect.c
++++ b/mm/mprotect.c
+@@ -224,6 +224,24 @@ success:
  	}
- 	set_bit(MMF_VM_PINNED, &mm->flags);
  
+ 	mmu_notifier_invalidate_range_start(mm, start, end);
++#ifdef CONFIG_IPIPE
++	/*
++	 * Privatize potential COW pages
++	 */
++	if (test_bit(MMF_VM_PINNED, &mm->flags) &&
++	    (((vma->vm_flags | mm->def_flags) & (VM_LOCKED | VM_WRITE)) ==
++	     (VM_LOCKED | VM_WRITE))) {
++		error = __ipipe_pin_vma(mm, vma);
++		if (error)
++			/*
++			 * OOM. Just revert the fake VM_SHARED so that the
++			 * zero page cannot be overwritten.
++			 */
++			vma->vm_page_prot =
++				pgprot_modify(vma->vm_page_prot,
++					      vm_get_page_prot(newflags));
++	}
++#endif
+ 	if (is_vm_hugetlb_page(vma))
+ 		hugetlb_change_protection(vma, start, end, vma->vm_page_prot);
+ 	else
 -- 
 1.7.3.4
 
