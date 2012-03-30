@@ -1,65 +1,67 @@
-Message-ID: <4F74900F.6030707@domain.hid>
-Date: Thu, 29 Mar 2012 18:38:39 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <4F7555F7.6010102@domain.hid>
+Date: Fri, 30 Mar 2012 08:43:03 +0200
+From: Wolfgang Grandegger <wg@domain.hid>
 MIME-Version: 1.0
+References: <CAGq8jPhOy=v8Lccb+hddH9W_u8p-Ayi+XfEcFC+rHVzsSp-ghg@domain.hid>
+In-Reply-To: <CAGq8jPhOy=v8Lccb+hddH9W_u8p-Ayi+XfEcFC+rHVzsSp-ghg@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: [Adeos-main] [PATCH 2/2] ipipe: Pin potential COW pages before
- applying mprotect changes
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/options/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-To: adeos-main <adeos-main@gna.org>
+Subject: Re: [Xenomai-help] Cross-link.c ---RTSER_RTIOC_WAIT_EVENT
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Minh GIANG <giang.hminh@domain.hid>
+Cc: Xenomai-help@domain.hid
 
-mprotect may make a region writable that wasn't so far. But non-writable
-regions are not subject to COW resolution done via
-ipipe_disable_ondemand_mappings. Thus, enabling write may make pages
-writable that are not supposed to (e.g. the zero page) as we enforce
-write access for writable regions to avoid minor faults.
+On 03/29/2012 05:26 PM, Minh GIANG wrote:
+> i want to revive the topic over the problem RTSER_RTIOC_WAIT_EVENT
+> while compiling cross-link.c program. I cann't resolve my problem
+> after doing some solution given by the others
+> 
+> Loading module:
+> 
+> insmod ./xeno_16550A.ko io=0x3f8,0x2f8 irq=4,3 tx_fifo=10,20
 
-Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
----
+Hm, is a FIFO size of 20 supported by the hardware? For a first try I
+would drop "tx_fifo=10,20" (using the default of 16 for both uarts).
 
-This applies on core-3.2, but should be backported to maintained
-versions as well (just leave out the "__").
+> start_index=0 (i have two serial ports on my pc)
+> 
+> running crosslink test:
+> 
+> main : write-file opened
+> main : write-config written
+> main : read-file opened
+> main : read-config written
+> main : write-task created
+> main : read-task created
+> main : starting write-task
+> main : starting read-task
+>  Nr |   write->irq    |    irq->read    |   write->read   |
+> -----------------------------------------------------------
+> read_task: error on RTSER_RTIOC_WAIT_EVENT, Connection timed out
+> read_task: error on RTSER_RTIOC_WAIT_EVENT, Connection timed out
+> 
+> ...
+> 
+> 
+> 
+> running test:
+> 
+> cat /proc/xenomai/irq
+> 
+> IRQ         CPU0
+>   3:        1089         rtser1
+>   4:        5155         rtser0
 
- mm/mprotect.c |   18 ++++++++++++++++++
- 1 files changed, 18 insertions(+), 0 deletions(-)
+You get interrupts, at least, but not the same amount, strange. What
+cross-link command options do you use?
 
-diff --git a/mm/mprotect.c b/mm/mprotect.c
-index 3f234b3..9981d19 100644
---- a/mm/mprotect.c
-+++ b/mm/mprotect.c
-@@ -224,6 +224,24 @@ success:
- 	}
- 
- 	mmu_notifier_invalidate_range_start(mm, start, end);
-+#ifdef CONFIG_IPIPE
-+	/*
-+	 * Privatize potential COW pages
-+	 */
-+	if (test_bit(MMF_VM_PINNED, &mm->flags) &&
-+	    (((vma->vm_flags | mm->def_flags) & (VM_LOCKED | VM_WRITE)) ==
-+	     (VM_LOCKED | VM_WRITE))) {
-+		error = __ipipe_pin_vma(mm, vma);
-+		if (error)
-+			/*
-+			 * OOM. Just revert the fake VM_SHARED so that the
-+			 * zero page cannot be overwritten.
-+			 */
-+			vma->vm_page_prot =
-+				pgprot_modify(vma->vm_page_prot,
-+					      vm_get_page_prot(newflags));
-+	}
-+#endif
- 	if (is_vm_hugetlb_page(vma))
- 		hugetlb_change_protection(vma, start, end, vma->vm_page_prot);
- 	else
--- 
-1.7.3.4
+Wolfgang.
 
