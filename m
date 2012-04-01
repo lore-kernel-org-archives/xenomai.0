@@ -1,48 +1,68 @@
-Message-ID: <4F9000E0.1030205@domain.hid>
-Date: Thu, 19 Apr 2012 14:11:12 +0200
+Message-ID: <4F78D378.6000501@domain.hid>
+Date: Mon, 02 Apr 2012 00:15:20 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4F50A422.50208@domain.hid>
-	<4F7C1484.5090406@domain.hid>	<4F7C183F.5040009@domain.hid>	<4F7F0D4E.8080906@domain.hid>	<4F7F0E8A.70702@domain.hid>	<4F7F20F0.9070007@domain.hid>	<4F80BD10.2060200@domain.hid>	<4F83F2C3.50704@domain.hid>	<4F83F321.2030300@domain.hid>	<4F83F645.7040402@domain.hid>
-	<4F83F828.4000508@domain.hid>	<4F83F929.5000300@domain.hid>
-	<4F83FBAB.7040301@domain.hid>	<4F83FF49.90608@domain.hid>
-	<4F840DD8.2030407@domain.hid>	<4F841E32.50101@domain.hid>
-	<4F8428AA.1040404@domain.hid>	<4F842A4B.8040106@domain.hid>
-	<4F852BBB.5050400@domain.hid>	<4F85749C.808@domain.hid>
-	<4F86AA98.6010805@domain.hid>	<4F87099F.2020707@domain.hid>
-	<4F87139E.6050805@domain.hid>	<4F87E781.8020801@domain.hid>
-	<4F882E7B.7010909@domain.hid>	<4F8E7EF1.4070205@domain.hid>
-	<4F8E871D.8030207@domain.hid>	<4F8E9746.8060209@domain.hid>
-	<4F8EAAAE.4050603@domain.hid>	<4F8FD255.2000206@domain.hid>
-	<4F8FD2CE.60606@domain.hid>	<4F8FD471.1090103@domain.hid>
-	<4F8FD4B1.3050000@domain.hid>
-In-Reply-To: <4F8FD4B1.3050000@domain.hid>
+References: <4F68BDBF.2030002@domain.hid>
+In-Reply-To: <4F68BDBF.2030002@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] porting xenomai on imx25
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Subject: Re: [Xenomai-help] CAN: Locked in rtdm_sem_timeddown of tx_sem;
+ Lost TX IRQ ?
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Roberto Bielli <roberto.bielli@domain.hid>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Thierry Bultel <thierry.bultel@domain.hid>
+Cc: xenomai@xenomai.org, Jean-Baptiste Tredez <jean-baptiste.tredez@domain.hid>
 
-On 04/19/2012 11:02 AM, Gilles Chanteperdrix wrote:
-> On 04/19/2012 11:01 AM, Roberto Bielli wrote:
->> have you a .config for imx31 to give me so i can compare them?
+On 03/20/2012 06:26 PM, Thierry Bultel wrote:
+> Hello,
 > 
-> http://sisyphus.hd.free.fr/~gilles/config-mx31ads-2.6.33
+> the issue I am describing here happens on a dual-core Atom (without 
+> hyperthreading)
 > 
-> This said, looking at the code, I do not understand how it can break irq
-> delivery.
+> It is easy to reproduce with 2.6.32.7+xenomai 2.5.2, which was my 
+> initial configuration until
+> I remembered that Philippe told us that SMP was correctly supported from 
+> 2.6.38.8
+> 
+> The fact is that I have been able to reproduce it with 
+> 2.6.38.8+xenomai-2.6 as well. Only once, but I did.
+> 
+> I am using CAN with a IXXAT PCI-04 board .
+> There is a single thread per bus.
+> 
+> With the old kernel, after about 400-500 seconds, and heavy load the 
+> communication stops, and after some
+> analysis, I found out that my process was stuck at :
+> 
+> rtcan_raw.c
+> 
+>    /* Try to pass the guard in order to access the controller */
+> *  ret = rtdm_sem_timeddown(&dev->tx_sem, timeout, NULL);*
+> 
+> 
+> The Refcount shown in /proc/rtcan/rtcan0/info is 1.
+> 
+> The workaround I found was to set the timeout to a non-zero value with 
+> the appropriate ioctl,
+> and when a timeout issues, to stop and restart the bus, with the effect 
+> to destroy and re-recreate the semaphore and
+> thus to communicate again.
+> 
+> By reading the code, the only reason I can see is that a TX interrupt is 
+> lost.
+> 
+> I do not have much more ways to analyze deeper, so any advice would be 
+> greatly appreciated
 
-I understand it now, yes, CONFIG_IMX_IRQ_PRIOR can not work with
-CONFIG_IPIPE.
+Have you tried xenomai 2.5.6 ?
 
 -- 
-					    Gilles.
+                                                                Gilles.
 
