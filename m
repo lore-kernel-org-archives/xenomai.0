@@ -1,13 +1,12 @@
-Message-ID: <4F78D378.6000501@domain.hid>
-Date: Mon, 02 Apr 2012 00:15:20 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4F68BDBF.2030002@domain.hid>
-In-Reply-To: <4F68BDBF.2030002@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] CAN: Locked in rtdm_sem_timeddown of tx_sem;
- Lost TX IRQ ?
+In-Reply-To: <4F7756AF.5000602@domain.hid>
+References: <CAGq8jPgJUWE2YrhUMCshCtSsRyTWPqx5zV5vPnVzpF2ctN0edg@domain.hid>
+	<4F7756AF.5000602@domain.hid>
+Date: Mon, 2 Apr 2012 01:30:04 +0200
+Message-ID: <CAGq8jPgjgm-nHW1Y6k8ea-Cdb24rE2PAqcsa9UHk8p6eePijtA@mail.gmail.com>
+From: Minh GIANG <giang.hminh@domain.hid>
+Content-Type: multipart/alternative; boundary=20cf3040e37a0fdfd404bca67474
+Subject: Re: [Xenomai-help] difference Analogy API et rtdm API in xenomai
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -17,52 +16,85 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Thierry Bultel <thierry.bultel@domain.hid>
-Cc: xenomai@xenomai.org, Jean-Baptiste Tredez <jean-baptiste.tredez@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On 03/20/2012 06:26 PM, Thierry Bultel wrote:
-> Hello,
-> 
-> the issue I am describing here happens on a dual-core Atom (without 
-> hyperthreading)
-> 
-> It is easy to reproduce with 2.6.32.7+xenomai 2.5.2, which was my 
-> initial configuration until
-> I remembered that Philippe told us that SMP was correctly supported from 
-> 2.6.38.8
-> 
-> The fact is that I have been able to reproduce it with 
-> 2.6.38.8+xenomai-2.6 as well. Only once, but I did.
-> 
-> I am using CAN with a IXXAT PCI-04 board .
-> There is a single thread per bus.
-> 
-> With the old kernel, after about 400-500 seconds, and heavy load the 
-> communication stops, and after some
-> analysis, I found out that my process was stuck at :
-> 
-> rtcan_raw.c
-> 
->    /* Try to pass the guard in order to access the controller */
-> *  ret = rtdm_sem_timeddown(&dev->tx_sem, timeout, NULL);*
-> 
-> 
-> The Refcount shown in /proc/rtcan/rtcan0/info is 1.
-> 
-> The workaround I found was to set the timeout to a non-zero value with 
-> the appropriate ioctl,
-> and when a timeout issues, to stop and restart the bus, with the effect 
-> to destroy and re-recreate the semaphore and
-> thus to communicate again.
-> 
-> By reading the code, the only reason I can see is that a TX interrupt is 
-> lost.
-> 
-> I do not have much more ways to analyze deeper, so any advice would be 
-> greatly appreciated
+--20cf3040e37a0fdfd404bca67474
+Content-Type: text/plain; charset=ISO-8859-1
 
-Have you tried xenomai 2.5.6 ?
+Hello,
 
--- 
-                                                                Gilles.
+thank for your advice, my other question is that i should use the POSIX API
+instead of Native API in Xenomai for my application because it will be more
+portable, but it seems easier with Native API for development,  i'm wrong?
+In conclusion, it will be better that i develop my project (data acquision
+for example) with Analogy and POSIX API.
+
+
+
+On Sat, Mar 31, 2012 at 9:10 PM, Gilles Chanteperdrix <
+gilles.chanteperdrix@xenomai.org> wrote:
+
+> On 03/30/2012 03:45 PM, Minh GIANG wrote:
+> > hello everybody,
+> >
+> > i have a small question, which is the difference between the analogy API
+> > and rtdm API in xenomai. for exemple, i think that i can open a port for
+> > data transmission in the two api.
+>
+> The RTDM API is an API allowing to implement drivers for xenomai using
+> the usual POSIX open/close/ioctl/etc... API.
+>
+> Analogy is a driver implemented using the RTDM API. So, you can access
+> it using either the usual POSIX open/close/ioctl/etc... API, or using
+> the analogy library provided.
+>
+> So, yes, you can use the two APIs, but using the analogy library is
+> probably simpler.
+>
+> --
+>                                                                Gilles.
+>
+
+--20cf3040e37a0fdfd404bca67474
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+Hello,<br><br>thank for your advice, my other question is that i should use=
+ the POSIX API instead of Native API in Xenomai for my application because =
+it will be more portable, but it seems easier with Native API for developme=
+nt,=A0  i&#39;m wrong?=A0 <br>
+In conclusion, it will be better that i develop my project (data acquision =
+for example) with Analogy and POSIX API.<br><br><br><br><div class=3D"gmail=
+_quote">On Sat, Mar 31, 2012 at 9:10 PM, Gilles Chanteperdrix <span dir=3D"=
+ltr">&lt;<a href=3D"mailto:gilles.chanteperdrix@xenomai.org">gilles.chantep=
+erdrix@domain.hid</a>&gt;</span> wrote:<br>
+<blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1p=
+x #ccc solid;padding-left:1ex"><div class=3D"HOEnZb"><div class=3D"h5">On 0=
+3/30/2012 03:45 PM, Minh GIANG wrote:<br>
+&gt; hello everybody,<br>
+&gt;<br>
+&gt; i have a small question, which is the difference between the analogy A=
+PI<br>
+&gt; and rtdm API in xenomai. for exemple, i think that i can open a port f=
+or<br>
+&gt; data transmission in the two api.<br>
+<br>
+</div></div>The RTDM API is an API allowing to implement drivers for xenoma=
+i using<br>
+the usual POSIX open/close/ioctl/etc... API.<br>
+<br>
+Analogy is a driver implemented using the RTDM API. So, you can access<br>
+it using either the usual POSIX open/close/ioctl/etc... API, or using<br>
+the analogy library provided.<br>
+<br>
+So, yes, you can use the two APIs, but using the analogy library is<br>
+probably simpler.<br>
+<span class=3D"HOEnZb"><font color=3D"#888888"><br>
+--<br>
+ =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
+=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0Gilles.<br>
+</font></span></blockquote></div><br>
+
+--20cf3040e37a0fdfd404bca67474--
 
