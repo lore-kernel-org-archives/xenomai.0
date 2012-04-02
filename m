@@ -1,9 +1,11 @@
+Message-ID: <4F79B863.1010108@domain.hid>
+Date: Mon, 02 Apr 2012 16:32:03 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-Date: Thu, 8 Mar 2012 15:30:47 +0100
-Message-ID: <CAMJ=MEcVJCdP4wukwhqL83Ejorprnz32PB3vbpOK584GT1mkvg@domain.hid>
-From: Ronny Meeus <ronny.meeus@domain.hid>
-Content-Type: multipart/mixed; boundary=f46d0444e9a349a8f304babc1ff2
-Subject: [Xenomai-core] xenomai-forge: round-robin scheduling in pSOS skin
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai-core] [PATCH 2.6] Add regression test for mprotect on
+	pinned memory
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -12,95 +14,221 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Xenomai-core@domain.hid
+To: xenomai-core <xenomai@xenomai.org>
 
---f46d0444e9a349a8f304babc1ff2
-Content-Type: text/plain; charset=ISO-8859-1
+This tests both the original issue of mprotect reintroducing COW pages
+to Xenomai processes as well as the recently fixed zero page corruption.
 
-Hello
-
-I'm are using the xenomai-forge pSOS skin (Mercury).
-My application is running on a P4040 (Freescale PPC with 4 cores).
-Some code snippets are put in this mail but the complete testcode is
-also attached.
-
-I have a test task that just consumes the CPU:
-
-int run_test = 1;
-static void perform_work(u_long counter,u_long b,u_long c,u_long d)
-{
-  int i;
-  while (run_test) {
-    for (i=0;i<100000;i++);
-    (*(unsigned long*)counter)++;
-  }
-  while (1) tm_wkafter(1000);
-}
-
-If I create 2 instances of this task with the T_SLICE option set:
-
-    t_create("WORK",10,0,0,0,&tid);
-    t_start(tid,T_TSLICE, perform_work, args);
-
-
-I see that only 1 task is consuming CPU.
-
-# taskset 1 ./roundrobin.exe &
-#    0"000.543| [main] SCHED_RT priorities => [1 .. 99]
-   0"000.656| [main] SCHED_RT.99 reserved for IRQ emulation
-   0"000.692| [main] SCHED_RT.98 reserved for scheduler-lock emulation
-0 -> 6602
-1 -> 0
-
-If I adapt the code so that I call in my init the threadobj_start_rr
-function, I see that the load is equally distributed over the 2
-threads:
-
-# taskset 1 ./roundrobin.exe &
-#    0"000.557| [main] SCHED_RT priorities => [1 .. 99]
-   0"000.672| [main] SCHED_RT.99 reserved for IRQ emulation
-   0"000.708| [main] SCHED_RT.98 reserved for scheduler-lock emulation
-0 -> 3290
-1 -> 3291
-
-Here are the questions:
-- why is the threadobj_start_rr function not called from the context
-of the init of the psos layer.
-- why is the roundrobin implemented in this way? If the tasks would be
-mapped on the SCHED_RR instead of the SCHED_FF the Linux scheduler
-would take care of this.
-On the other hand, once the threadobj_start_rr function is called from
-my init, and I create the tasks in T_NOTSLICE mode, the time-slicing
-is still done.
-
-Thanks.
-
+Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
 ---
-Ronny
+ src/testsuite/regression/native/Makefile.am |    2 +-
+ src/testsuite/regression/native/Makefile.in |   16 +++-
+ src/testsuite/regression/native/mprotect.c  |  128 +++++++++++++++++++++++++++
+ 3 files changed, 142 insertions(+), 4 deletions(-)
+ create mode 100644 src/testsuite/regression/native/mprotect.c
 
---f46d0444e9a349a8f304babc1ff2
-Content-Type: text/x-csrc; charset=US-ASCII; name="roundrobin.c"
-Content-Disposition: attachment; filename="roundrobin.c"
-Content-Transfer-Encoding: base64
-X-Attachment-Id: f_gzjvwvbo0
-
-I2luY2x1ZGUgPHN0ZGlvLmg+CiNpbmNsdWRlIDxzeXMvdHlwZXMuaD4KI2luY2x1ZGUgPHN5cy9t
-bWFuLmg+CiNpbmNsdWRlIDxwc29zL3Bzb3MuaD4KCmludCBydW5fdGVzdCA9IDE7CnN0YXRpYyB2
-b2lkIHBlcmZvcm1fd29yayh1X2xvbmcgY291bnRlcix1X2xvbmcgYix1X2xvbmcgYyx1X2xvbmcg
-ZCkKewogIGludCBpOwogIHdoaWxlIChydW5fdGVzdCkgewogICAgZm9yIChpPTA7aTwxMDAwMDA7
-aSsrKTsKICAgICgqKHVuc2lnbmVkIGxvbmcqKWNvdW50ZXIpKys7CiAgfQogIHdoaWxlICgxKSB0
-bV93a2FmdGVyKDEwMDApOwp9CgpzdGF0aWMgdW5zaWduZWQgbG9uZyBjb3VudGVyWzJdOwoKc3Rh
-dGljIHZvaWQgdGVzdCgpCnsKICB1X2xvbmcgdGlkLGFyZ3NbNF0gPSB7MCwwLDAsMH07CiAgaW50
-IGk7CgogIGZvciAoaT0wO2k8MjtpKyspIHsKICAgIGFyZ3NbMF0gPSAodV9sb25nKSYoY291bnRl
-cltpXSk7CiAgICB0X2NyZWF0ZSgiV09SSyIsMTAsMCwwLDAsJnRpZCk7CiAgICB0X3N0YXJ0KHRp
-ZCxUX1RTTElDRSwgcGVyZm9ybV93b3JrLCBhcmdzKTsKICB9CiAgdG1fd2thZnRlcigxMDAwMCk7
-CiAgcnVuX3Rlc3QgPSAwOwoKICBmb3IgKGk9MDtpPDI7aSsrKSB7CiAgICBwcmludGYoIiVpIC0+
-ICVsdVxuIixpLGNvdW50ZXJbaV0pOwogIH0KICB3aGlsZSAoMSkgdG1fd2thZnRlcigxMDAwKTsK
-fQoKaW50IG1haW4oaW50IGFyZ2MsY2hhciAqYXJndltdLCBjaGFyKiplbnZwKQp7CiAgdV9sb25n
-IG9sZHByaW87CiAgc3RydWN0IHRpbWVzcGVjIHF1YW50dW07CgogIG1sb2NrYWxsKE1DTF9DVVJS
-RU5UIHwgTUNMX0ZVVFVSRSk7CiAgY29wcGVycGxhdGVfaW5pdChhcmdjLGFyZ3YpOwoKICBxdWFu
-dHVtLnR2X3NlYyA9IDA7CiAgcXVhbnR1bS50dl9uc2VjID0gNSAqIDEwMDAgKiAxMDAwOyAvLyB1
-c2UgNW1zCiAgdGhyZWFkb2JqX3N0YXJ0X3JyKCZxdWFudHVtKTsKICB0X3NldHByaSgwLDUwLCZv
-bGRwcmlvKTsKICB0ZXN0KCk7CiAgcmV0dXJuIDA7Cn0KCg==
---f46d0444e9a349a8f304babc1ff2--
+diff --git a/src/testsuite/regression/native/Makefile.am b/src/testsuite/regression/native/Makefile.am
+index ce53834..afd2f43 100644
+--- a/src/testsuite/regression/native/Makefile.am
++++ b/src/testsuite/regression/native/Makefile.am
+@@ -2,7 +2,7 @@ tstdir = @XENO_TEST_DIR@/regression/native
+ 
+ noinst_HEADERS = check.h
+ 
+-tst_PROGRAMS = leaks tsc heap sigdebug
++tst_PROGRAMS = leaks tsc heap sigdebug mprotect
+ 
+ CPPFLAGS = $(XENO_USER_CFLAGS) \
+ 	-I$(top_srcdir)/include
+diff --git a/src/testsuite/regression/native/Makefile.in b/src/testsuite/regression/native/Makefile.in
+index 3d5a0ce..b2ae93a 100644
+--- a/src/testsuite/regression/native/Makefile.in
++++ b/src/testsuite/regression/native/Makefile.in
+@@ -37,7 +37,7 @@ build_triplet = @build@
+ host_triplet = @host@
+ target_triplet = @target@
+ tst_PROGRAMS = leaks$(EXEEXT) tsc$(EXEEXT) heap$(EXEEXT) \
+-	sigdebug$(EXEEXT)
++	sigdebug$(EXEEXT) mprotect$(EXEEXT)
+ subdir = src/testsuite/regression/native
+ DIST_COMMON = $(noinst_HEADERS) $(srcdir)/Makefile.am \
+ 	$(srcdir)/Makefile.in
+@@ -70,6 +70,12 @@ leaks_LDADD = $(LDADD)
+ leaks_DEPENDENCIES = ../../../skins/native/libnative.la \
+ 	../../../skins/rtdm/librtdm.la \
+ 	../../../skins/common/libxenomai.la
++mprotect_SOURCES = mprotect.c
++mprotect_OBJECTS = mprotect.$(OBJEXT)
++mprotect_LDADD = $(LDADD)
++mprotect_DEPENDENCIES = ../../../skins/native/libnative.la \
++	../../../skins/rtdm/librtdm.la \
++	../../../skins/common/libxenomai.la
+ sigdebug_SOURCES = sigdebug.c
+ sigdebug_OBJECTS = sigdebug.$(OBJEXT)
+ sigdebug_LDADD = $(LDADD)
+@@ -95,8 +101,8 @@ CCLD = $(CC)
+ LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+ 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
+ 	$(LDFLAGS) -o $@
+-SOURCES = heap.c leaks.c sigdebug.c tsc.c
+-DIST_SOURCES = heap.c leaks.c sigdebug.c tsc.c
++SOURCES = heap.c leaks.c mprotect.c sigdebug.c tsc.c
++DIST_SOURCES = heap.c leaks.c mprotect.c sigdebug.c tsc.c
+ HEADERS = $(noinst_HEADERS)
+ ETAGS = etags
+ CTAGS = ctags
+@@ -348,6 +354,9 @@ heap$(EXEEXT): $(heap_OBJECTS) $(heap_DEPENDENCIES)
+ leaks$(EXEEXT): $(leaks_OBJECTS) $(leaks_DEPENDENCIES) 
+ 	@rm -f leaks$(EXEEXT)
+ 	$(LINK) $(leaks_OBJECTS) $(leaks_LDADD) $(LIBS)
++mprotect$(EXEEXT): $(mprotect_OBJECTS) $(mprotect_DEPENDENCIES) 
++	@rm -f mprotect$(EXEEXT)
++	$(LINK) $(mprotect_OBJECTS) $(mprotect_LDADD) $(LIBS)
+ sigdebug$(EXEEXT): $(sigdebug_OBJECTS) $(sigdebug_DEPENDENCIES) 
+ 	@rm -f sigdebug$(EXEEXT)
+ 	$(LINK) $(sigdebug_OBJECTS) $(sigdebug_LDADD) $(LIBS)
+@@ -363,6 +372,7 @@ distclean-compile:
+ 
+ @AMDEP_TRUE@@am__include@ @am__quote@domain.hid@
+ @AMDEP_TRUE@@am__include@ @am__quote@domain.hid@
++@AMDEP_TRUE@@am__include@ @am__quote@domain.hid@
+ @AMDEP_TRUE@@am__include@ @am__quote@domain.hid@
+ @AMDEP_TRUE@@am__include@ @am__quote@domain.hid@
+ 
+diff --git a/src/testsuite/regression/native/mprotect.c b/src/testsuite/regression/native/mprotect.c
+new file mode 100644
+index 0000000..7d66e34
+--- /dev/null
++++ b/src/testsuite/regression/native/mprotect.c
+@@ -0,0 +1,128 @@
++/*
++ * Test if implicit pinning of memory via mprotect works.
++ *
++ * Copyright (C) Jan Kiszka  <jan.kiszka@domain.hid>
++ *
++ * Released under the terms of GPLv2.
++ */
++
++#include <stdlib.h>
++#include <stdio.h>
++#include <signal.h>
++#include <sys/mman.h>
++#include <rtdk.h>
++#include <native/task.h>
++
++#define MEMSIZE 0x10000
++
++static void check_inner(const char *fn, int line, const char *msg,
++			int status, int expected)
++{
++	if (status == expected)
++		return;
++
++	rt_task_set_mode(T_WARNSW, 0, NULL);
++	rt_print_flush_buffers();
++	fprintf(stderr, "FAILURE %s:%d: %s returned %d instead of %d - %s\n",
++		fn, line, msg, status, expected, strerror(-status));
++	exit(EXIT_FAILURE);
++}
++
++#define check_no_error(msg, status) ({					\
++	int __status = status;						\
++	check_inner(__FUNCTION__, __LINE__, msg,			\
++		    __status < 0 ? __status : 0, 0);			\
++	__status;							\
++})
++
++static void check_value_inner(const char *fn, int line, const char *msg,
++			      int value, int expected)
++{
++	if (value == expected)
++		return;
++
++	rt_task_set_mode(T_WARNSW, 0, NULL);
++	rt_print_flush_buffers();
++	fprintf(stderr,
++		"FAILURE %s:%d: %s returned %u instead of %u\n",
++		fn, line, msg, value, expected);
++	exit(EXIT_FAILURE);
++}
++
++#define check_value(msg, value, expected) do {				\
++	int __value = value;						\
++	check_value_inner(__FUNCTION__, __LINE__, msg, __value, 	\
++			  expected);					\
++} while (0)
++
++void sigdebug_handler(int sig, siginfo_t *si, void *context)
++{
++	unsigned int reason = si->si_value.sival_int;
++
++	rt_print_flush_buffers();
++	fprintf(stderr, "FAILURE: sigdebug_handler triggered, reason %d\n",
++		reason);
++	exit(EXIT_FAILURE);
++}
++
++int main(int argc, char **argv)
++{
++	unsigned char *zero_mem, *test1_mem, *test2_mem;
++	RT_TASK main_task;
++	struct sigaction sa;
++	int err;
++
++	rt_print_auto_init(1);
++
++	errno = 0;
++	zero_mem = mmap(0, MEMSIZE, PROT_READ,
++			MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
++	check_no_error("mmap", -errno);
++	test1_mem = mmap(0, MEMSIZE, PROT_READ,
++			 MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
++	check_no_error("mmap", -errno);
++
++	sigemptyset(&sa.sa_mask);
++	sa.sa_sigaction = sigdebug_handler;
++	sa.sa_flags = SA_SIGINFO;
++	sigaction(SIGDEBUG, &sa, NULL);
++
++	mlockall(MCL_CURRENT | MCL_FUTURE);
++
++	err = rt_task_shadow(&main_task, "main_task", 1, T_WARNSW);
++	check_no_error("rt_task_shadow", err);
++
++	rt_printf("memory read\n");
++	check_value("read mem", test1_mem[0], 0);
++
++	rt_task_set_mode(T_WARNSW, 0, NULL);
++	errno = 0;
++	test2_mem = mmap(0, MEMSIZE, PROT_READ | PROT_WRITE,
++			 MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
++	check_no_error("mmap", -errno);
++	mprotect(test2_mem, MEMSIZE, PROT_READ | PROT_WRITE | PROT_EXEC);
++	check_no_error("mprotect", -errno);
++
++	rt_task_sleep(0);
++	rt_task_set_mode(0, T_WARNSW, NULL);
++
++	rt_printf("memory write after exec enable\n");
++	test2_mem[0] = 0xff;
++
++	rt_task_set_mode(T_WARNSW, 0, NULL);
++	err = mprotect(test1_mem, MEMSIZE, PROT_READ | PROT_WRITE);
++	check_no_error("mprotect", err);
++
++	rt_task_sleep(0);
++	rt_task_set_mode(0, T_WARNSW, NULL);
++
++	rt_printf("memory write after write enable\n");
++	test1_mem[0] = 0xff;
++	check_value("read zero", zero_mem[0], 0);
++
++	rt_task_set_mode(T_WARNSW, 0, NULL);
++	rt_print_flush_buffers();
++	fprintf(stderr, "Test OK\n");
++
++	return 0;
++}
+-- 
+1.7.3.4
 
