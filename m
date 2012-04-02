@@ -1,18 +1,12 @@
-Message-ID: <4F79CADD.9020704@domain.hid>
-Date: Mon, 02 Apr 2012 17:50:53 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <4F79D5EA.3010501@domain.hid>
+Date: Mon, 02 Apr 2012 18:38:02 +0200
+From: Wolfgang Grandegger <wg@domain.hid>
 MIME-Version: 1.0
-References: <1331579565.394426122@domain.hid>
-	<4F5E51E2.1020802@domain.hid>
-	<1331829045.814121867@domain.hid>
-	<4F63867D.7060204@domain.hid>
-	<1332778457.241521523@domain.hid>
-	<4F71EA1B.4080001@domain.hid>
-	<1332884156.408323832@domain.hid>
-In-Reply-To: <1332884156.408323832@domain.hid>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Intermixing native and POSIX skins
+References: <CAGq8jPhOy=v8Lccb+hddH9W_u8p-Ayi+XfEcFC+rHVzsSp-ghg@domain.hid>	<4F7555F7.6010102@domain.hid>	<CAGq8jPioLnu+ehj+LA5dL6OWUpxQnUH+Nh01kB088FtsLsSrGA@mail.gmail.com>	<CAGq8jPi4S4TTBy9dLYYnWuWQdX_awhXxu0C93okgFO5vWv_20A@mail.gmail.com>	<4F75B5BF.8030401@domain.hid>	<CAGq8jPgY6fTw0ufdj=pvc+Q1jrrQkYptSHTzFOQK=qSiJJU32Q@mail.gmail.com>	<4F75C7D1.4020808@domain.hid>
+	<CAGq8jPhqv16jgPQh631x8S2MmDhm1F4HtnrQA0xsGPe4bTo6eA@mail.gmail.com>
+In-Reply-To: <CAGq8jPhqv16jgPQh631x8S2MmDhm1F4HtnrQA0xsGPe4bTo6eA@mail.gmail.com>
+Content-Type: multipart/mixed; boundary="------------060208080302000809040805"
+Subject: Re: [Xenomai-help] Cross-link.c ---RTSER_RTIOC_WAIT_EVENT
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -22,79 +16,118 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Doug Brunner <dbrunner@domain.hid>
-Cc: xenomai@xenomai.org
+To: Minh GIANG <giang.hminh@domain.hid>
+Cc: xenomai-help <xenomai@xenomai.org>
 
-On 03/27/2012 11:35 PM, Doug Brunner wrote:
-> The usage pattern would be a bit like BSD ptys--the server maintains a few ports, say named "server0" through "server15" and clients that need a port try "server0", if it's busy then try "server1", etc..
+This is a multi-part message in MIME format.
+--------------060208080302000809040805
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 
-An option to mimic this partially might be to define a fixed port number 
-clients would use to ask the server for a free port to connect to later 
-on? The server would let the RTIPC layer pick a free port when binding, 
-then return it to the client via a converse message to the fixed port.
+On 04/02/2012 10:25 AM, Minh GIANG wrote:
+> hello,
+> 
+> i don't know how call the function rt_dev_ioctl() after the timeout
+> happened, this function is called in the begining of "while" loop
+> (cross-link program).
+> I get the value of struct  rtser_status,
+> line status = 96
+> modem status = 176
+> to be honest, i don't know why cross-line program works without the
+> function  rt_dev_ioctl() with  RTSER_RTIOC_WAIT_EVENT in  option.
+> 
+> main : write-file opened
+> main : write-config written
+> main : read-file opened
+> main : read-config written
+> main : write-task created
+> main : read-task created
+> main : starting write-task
+> main : starting read-task
+>  Nr |   write->irq    |    irq->read    |   write->read   |
+> -----------------------------------------------------------
+>   0 |17113389816533987823 |1333354257183912191 |         8348398
+>   1 |17113389815533997483 |1333354258183885264 |         8331131
+>   2 |17113389814533998100 |1333354259183882033 |         8328517
+>   3 |17113389813534000420 |1333354260183884535 |         8333339
+>   4 |17113389812533998430 |1333354261183888665 |         8335479
+> ......
+> 
+> i tried to send a character table, and it also worked.
 
->
-> I suppose the problem here is really that the application running over these sockets is stateful, the configuration of the nodes (processes) that are communicating is not known until run time, and nodes may appear and disappear as the server runs, so the transport needs to be connection-oriented rather than message-oriented. The semaphore is still a bit of a kludge, since it doesn't notify a thread blocked on recv() that the remote has hung up, but it works well enough in conjunction with a message that says "I'm a client that's newly connected to this server" to reset the state associated with the connection. I suppose I could implement a sort of TCP handshake on top of the IDDP socket layer and use that to provide true connection-oriented behavior.
+Hm, maybe you receive something, but the numbers are bogous. To
+understand better what's going on, coud you please apply the attached
+patch to your Xenomai tree, rebuild the kernel and send the dmesg output
+while running cross-link.
 
-Yep, RTIPC won't help that much by default in that area, it only 
-exhibits connectionless semantics.
+BTW: what Xenomai version are you using?
 
->
-> Good to know about in-order delivery; a quick glance at the source code seemed to suggest that, but I wasn't sure.
->
->      Doug Brunner
->
-> -----Original Message-----
-> From: "Philippe Gerum"<rpm@xenomai.org>
-> Sent: Tuesday, March 27, 2012 9:26am
-> To: "Doug Brunner"<dbrunner@domain.hid>
-> Cc: xenomai@xenomai.org
-> Subject: Re: [Xenomai-help] Intermixing native and POSIX skins
->
-> On 03/26/2012 06:14 PM, Doug Brunner wrote:
->> Thanks for the information--the issue is not about picking a free port on the server side, but rather about communicating the information on which ports are "free" to the clients (server has connected its end, but no other client is using the port). The semaphore mechanism isn't that much of a problem, though; I've been able to build a satisfactory implementation.
->
-> Mm, still scratching my head to understand the issue. Both the client
-> and server side accept -1 as the port spec, telling the kernel to draw a
-> free port. I understand the issue is not on the server side, so is it on
-> the client side?
->
-> Could you sketch the usage pattern?
->
->>
->> One other question: although I know in-order delivery isn't necessarily a feature of datagram based protocols, would I get that with an IDDP socket connection between just two processes, and/or an XDDP connection to a /dev/rtpN?
->
-> Yes, in-order delivery is guaranteed with all RTIPC protocols. This is
-> written in stone.
->
->>
->>       Doug Brunner
->>
->> -----Original Message-----
->> From: "Philippe Gerum"<rpm@xenomai.org>
->> Sent: Friday, March 16, 2012 11:29am
->> To: "Doug Brunner"<dbrunner@domain.hid>
->> Cc: xenomai@xenomai.org
->> Subject: Re: [Xenomai-help] Intermixing native and POSIX skins
->>
->> On 03/15/2012 05:30 PM, Doug Brunner wrote:
->>> Thanks Philippe. I hadn't even known about the existence of the RTIPC driver, and I definitely like the idea.
+Wolfgang.
+
+> On Fri, Mar 30, 2012 at 4:48 PM, Wolfgang Grandegger <wg@domain.hid>wrote:
+> 
+>> On 03/30/2012 04:34 PM, Minh GIANG wrote:
+>>> hi,
 >>>
->>> I've been experimenting with it a bit today, and found that it seems to be allowed for more than two sockets to connect to the same port. I modified iddp-sendrecv.c to have two client processes, both of which now connect to the same port as the server, then did the same thing with iddp-label.c (two clients both connect()ing to the same label).
+>>> with option RTSER_RTIOC_WAIT_EVENT in rt_dev_ioctl(), this function
+>> returns
+>>> un number -110 (Connection timed out)
+>>> with option RTSER_RTIOC_GET_STATUS in rt_dev_ioctl(), this function
+>> returns
+>>> un number 0 (not message)
+>>
+>> You should call this function *after* the timeout happened. What does
+>> the "struct rtser_status"  contain? Especially the "line_status" is of
+>> interest.
+>>
 >>>
->>> This would cause havoc with the communications that go on between my processes--they need a one-to-one channel. I could implement semaphores to enforce this, but it would be nice to avoid that complication. Is there a way to make it happen using just the socket interface?
+>>> Anyway, currently it works without  rt_dev_ioctl(), i can see
+>> rt_dev_read()
+>>> wait data event (with debug mode) while giving the period of write
+>>> task,  for exemple  = two seconds.
+>>>
+>>> so can i remove the funtion rt_dev_ioctl?
 >>
->> The RTIPC protocols are fundamentally datagram-based, so allowing N:1
->> data paths is wanted. If the issue is about picking a different port
->> each time you bind a server socket in the AF_RTIPC domain, then I would
->> suggest to set sipc_port to -1 when binding the server-side socket: a
->> free port will be picked automatically. You could then use getsockname()
->> to retrieve the actual port #, and pass it to the clients.
+>> The rt_dev_ioctl should work. You can remove it, but the problem will
+>> remain. To debug the problem you could also add some printk's here:
 >>
->
->
+>>
+>> http://www.rts.uni-hannover.de/xenomai/lxr/source/ksrc/drivers/serial/16550A.c#223
+>>
+>> Especially the value of "iir" might be interesting.
+>>
+>> Wolfgang.
+>>
+> 
 
 
--- 
-Philippe.
+--------------060208080302000809040805
+Content-Type: text/x-diff;
+ name="16550A-irq-debug.patch"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+ filename="16550A-irq-debug.patch"
+
+diff --git a/ksrc/drivers/serial/16550A.c b/ksrc/drivers/serial/16550A.c
+index 3672539..392c4f7 100644
+--- a/ksrc/drivers/serial/16550A.c
++++ b/ksrc/drivers/serial/16550A.c
+@@ -240,6 +240,7 @@ static int rt_16550_interrupt(rtdm_irq_t * irq_context)
+ 
+ 	while (1) {
+ 		iir = rt_16550_reg_in(mode, base, IIR) & IIR_MASK;
++		printk("base=%#lx iir=%#x\n", base, iir);
+ 		if (testbits(iir, IIR_PIRQ))
+ 			break;
+ 
+@@ -258,6 +259,7 @@ static int rt_16550_interrupt(rtdm_irq_t * irq_context)
+ 				events |= RTSER_EVENT_MODEMLO;
+ 		}
+ 
++		printk("base=%#lx status=%#x\n", base, ctx->status);
+ 		ret = RTDM_IRQ_HANDLED;
+ 	}
+ 
+
+--------------060208080302000809040805--
 
