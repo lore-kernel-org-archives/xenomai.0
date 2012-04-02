@@ -1,48 +1,123 @@
-Message-ID: <4F841E32.50101@domain.hid>
-Date: Tue, 10 Apr 2012 13:49:06 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4F7A211F.1080809@domain.hid>
+Date: Mon, 02 Apr 2012 23:58:55 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <4F50A422.50208@domain.hid>
-	<4F55C306.8020307@domain.hid>	<4F55D765.7040705@domain.hid>
-	<4F55E390.8090706@domain.hid>	<4F55FE81.6000904@domain.hid>
-	<4F560A6C.2080306@domain.hid>	<4F560B76.5080606@domain.hid>
-	<4F5629D2.50304@domain.hid>	<4F562B53.7070400@domain.hid>
-	<4F562EC2.6040604@domain.hid>	<4F56387B.40702@domain.hid>
-	<4F575BA3.7060404@domain.hid>	<4F576622.1030509@domain.hid>
-	<4F57A567.7030008@domain.hid>	<4F7C127D.2010400@domain.hid>
-	<4F7C1484.5090406@domain.hid>	<4F7C183F.5040009@domain.hid>
-	<4F7F0D4E.8080906@domain.hid>	<4F7F0E8A.70702@domain.hid>
-	<4F7F20F0.9070007@domain.hid>	<4F80BD10.2060200@domain.hid>
-	<4F83F2C3.50704@domain.hid>	<4F83F321.2030300@domain.hid>
-	<4F83F645.7040402@domain.hid> <4F83F828.4000508@domain.hid>
-	<4F83F929.5000300@domain.hid> <4F83FBAB.7040301@domain.hid>
-	<4F83FF49.90608@domain.hid> <4F840DD8.2030407@domain.hid>
-In-Reply-To: <4F840DD8.2030407@domain.hid>
+References: <4F4150C8.7040104@domain.hid> <4F4278ED.9090802@domain.hid>
+	<4F478285.8020105@domain.hid> <4F47A161.9010704@domain.hid>
+	<4F79C838.2070609@domain.hid> <4F79CBAA.6040107@domain.hid>
+	<4F7A0F11.3080504@domain.hid> <4F7A128C.4040706@domain.hid>
+	<4F7A133E.7000505@domain.hid> <4F7A2039.2040409@domain.hid>
+In-Reply-To: <4F7A2039.2040409@domain.hid>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature";
+	boundary="------------enig4B748C5B297F31CE03042C18"
+Subject: Re: [Adeos-main] Reworking ipipe timer subsystem,
+List-Id: General discussion about Adeos <adeos-main.gna.org>
+List-Unsubscribe: <https://mail.gna.org/options/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+List-Archive: </public/adeos-main>
+List-Post: <mailto:adeos-main@gna.org>
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Adeos <adeos-main@gna.org>, Philippe Gerum <rpm@xenomai.org>
+
+This is an OpenPGP/MIME signed message (RFC 2440 and 3156)
+--------------enig4B748C5B297F31CE03042C18
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] preemptive doesn't work
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Roberto Bielli <roberto.bielli@domain.hid>
-Cc: xenomai@xenomai.org
+Content-Transfer-Encoding: quoted-printable
 
-On 04/10/2012 12:39 PM, Roberto Bielli wrote:
-> Hi Gilles,
-> 
-> i tried your code but th behavior is the same.
-> 
-> Then i tried a linux base app and works correctly.
+On 2012-04-02 23:55, Gilles Chanteperdrix wrote:
+> On 04/02/2012 10:59 PM, Jan Kiszka wrote:
+>> On 2012-04-02 22:56, Jan Kiszka wrote:
+>>>> No luck, I am using qemu 0.12.5, there is no -global option document=
+ed,
+>>>
+>>> Err, that's prehistoric. Use stable 1.0.x at least to receive proper
+>>> HPET support.
+>>
+>> Oh, and there is one further pitfall: You need to provide
+>> -no-kvm-irqchip to use the HPET with MSI support because qemu-kvm does=
 
-In the exact same conditions? With the crunching task running with
-SCHED_FIFO, priority 1, and the periodic task running with SCHED_FIFO,
-priority 99, and the linux real-time throttling disabled?
+>> not forward those MSIs to the kernel irqchip model. I'm sitting on
+>> patches...
+>=20
+> Yes, I needed that. It works now, except that I could not find how to
+> use an NFS root filesystem. But with an ext3 file-backed filesystem, I
+> could get that:
 
--- 
-                                                                Gilles.
+If your NFS server runs on the host and you use userspace networking
+(default without additional parameters), the guest should be able to
+reach the server under 10.0.2.2 and use an IP like 10.0.2.15 (or dhcp).
+However, I recently failed to get this working as well but didn't dig
+deeper.
+
+>=20
+> # cat /proc/interrupts
+>            CPU0       CPU1
+>   0:       2235          0   IO-APIC-edge      timer
+>   1:          8          0   IO-APIC-edge      i8042
+>   4:        983          0   IO-APIC-edge      serial
+>   8:          1          0   IO-APIC-edge      rtc0
+>   9:          0          0   IO-APIC-fasteoi   acpi
+>  12:        111          0   IO-APIC-edge      i8042
+>  14:        146          0   IO-APIC-edge      ata_piix
+>  15:          9          0   IO-APIC-edge      ata_piix
+>  40:        996          0  HPET_MSI-edge      hpet2
+>  41:          0        466  HPET_MSI-edge      hpet3
+> NMI:          0          0   Non-maskable interrupts
+> LOC:         38         14   Local timer interrupts
+> SPU:          0          0   Spurious interrupts
+> PMI:          0          0   Performance monitoring interrupts
+> IWI:          0          0   IRQ work interrupts
+> RES:        798        828   Rescheduling interrupts
+> CAL:          1        168   Function call interrupts
+> TLB:         11         19   TLB shootdowns
+> TRM:          0          0   Thermal event interrupts
+> THR:          0          0   Threshold APIC interrupts
+> MCE:          0          0   Machine check exceptions
+> MCP:          1          1   Machine check polls
+> ERR:          0
+> MIS:          0
+> # cat /proc/xenomai/timer
+> status=3Don+watchdog:setup=3D10630:clock=3D771280539422:timerdev=3Dhpet=
+2:clockdev=3Dtsc
+> # cat /proc/xenomai/irq
+>   IRQ         CPU0        CPU1
+>    40:       44976           0         [timer0]
+>    41:           0        7828         [timer1]
+>  4355:           6           3         [reschedule]
+>  4356:           0           1         [timer-ipi]
+>  4357:           0           0         [sync]
+>  4419:         118           2         [virtual]
+>=20
+> And the latency test runs on both processor (albeit with "simulated"
+> latencies).
+>=20
+> So, this also allows verifying that Xenomai now support different timer=
+
+> irqs on different cpus.
+>=20
+
+Great to hear!
+
+Jan
+
+
+--------------enig4B748C5B297F31CE03042C18
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.16 (GNU/Linux)
+Comment: Using GnuPG with Mozilla - http://enigmail.mozdev.org/
+
+iEYEARECAAYFAk96IR8ACgkQitSsb3rl5xTGHQCgqLA+6WPswd8GNFTpdVRTPRXe
+lg8AoIYAQ7gCXfXSv7hCix6oc/+TLBSM
+=kPUp
+-----END PGP SIGNATURE-----
+
+--------------enig4B748C5B297F31CE03042C18--
 
