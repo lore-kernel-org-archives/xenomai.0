@@ -1,17 +1,9 @@
 MIME-Version: 1.0
-In-Reply-To: <4F75C7D1.4020808@domain.hid>
-References: <CAGq8jPhOy=v8Lccb+hddH9W_u8p-Ayi+XfEcFC+rHVzsSp-ghg@domain.hid>
-	<4F7555F7.6010102@domain.hid>
-	<CAGq8jPioLnu+ehj+LA5dL6OWUpxQnUH+Nh01kB088FtsLsSrGA@mail.gmail.com>
-	<CAGq8jPi4S4TTBy9dLYYnWuWQdX_awhXxu0C93okgFO5vWv_20A@mail.gmail.com>
-	<4F75B5BF.8030401@domain.hid>
-	<CAGq8jPgY6fTw0ufdj=pvc+Q1jrrQkYptSHTzFOQK=qSiJJU32Q@mail.gmail.com>
-	<4F75C7D1.4020808@domain.hid>
-Date: Mon, 2 Apr 2012 10:25:24 +0200
-Message-ID: <CAGq8jPhqv16jgPQh631x8S2MmDhm1F4HtnrQA0xsGPe4bTo6eA@mail.gmail.com>
+Date: Mon, 2 Apr 2012 16:12:09 +0200
+Message-ID: <CAGq8jPjvtxSjKW+RpiUX5u02mnXv7q2K2PLgfF2E6CT1Eaw6Mg@domain.hid>
 From: Minh GIANG <giang.hminh@domain.hid>
-Content-Type: multipart/alternative; boundary=001636c5bf8f8c18ad04bcadeec8
-Subject: Re: [Xenomai-help] Cross-link.c ---RTSER_RTIOC_WAIT_EVENT
+Content-Type: multipart/alternative; boundary=14dae93403dba340a204bcb2c6e2
+Subject: [Xenomai-help] analogy - serial port
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -21,149 +13,100 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Wolfgang Grandegger <wg@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
---001636c5bf8f8c18ad04bcadeec8
+--14dae93403dba340a204bcb2c6e2
 Content-Type: text/plain; charset=ISO-8859-1
 
-hello,
+Hello everybody,
 
-i don't know how call the function rt_dev_ioctl() after the timeout
-happened, this function is called in the begining of "while" loop
-(cross-link program).
-I get the value of struct  rtser_status,
-line status = 96
-modem status = 176
-to be honest, i don't know why cross-line program works without the
-function  rt_dev_ioctl() with  RTSER_RTIOC_WAIT_EVENT in  option.
+Do the Analogy driver support the serial port. I can attach the serial
+port(ttyS0) to rtser0 with xeno_16550A.ko as mentionned in Xenomai
+Documentation
 
-main : write-file opened
-main : write-config written
-main : read-file opened
-main : read-config written
-main : write-task created
-main : read-task created
-main : starting write-task
-main : starting read-task
- Nr |   write->irq    |    irq->read    |   write->read   |
------------------------------------------------------------
-  0 |17113389816533987823 |1333354257183912191 |         8348398
-  1 |17113389815533997483 |1333354258183885264 |         8331131
-  2 |17113389814533998100 |1333354259183882033 |         8328517
-  3 |17113389813534000420 |1333354260183884535 |         8333339
-  4 |17113389812533998430 |1333354261183888665 |         8335479
-......
+modprobe xeno_16550A io=<io1>[,<io2>...] irq=<irq1>[,<irq2>...]
+                     [baud_base=<base1>[,<base2>...]]
+                     [tx_fifo=<len1>[,<len2>...]] [start_index=<index>]
 
-i tried to send a character table, and it also worked.
+
+How can i tell to  the Analogy driver to recognize the serial port in order
+to use the Analogy API. i have seen the command
+
+/xeno_install/sbin/analogy_config analogy0 analogy_ni_pcimio
+
+i think that analogy_ni_pcimio is the drivers suppors of National
+Instruments PCI / PXI cards. But i don't have the DAQ card yet, currently i
+test with two serial ports on my computer while connecting them by one
+cable. the first aim is to test the api analogy.
+
+Thanks,
 
 
 
-On Fri, Mar 30, 2012 at 4:48 PM, Wolfgang Grandegger <wg@domain.hid>wrote:
+when i try to add the analogy_ni_pcimio module over terminal linux. i get
+one message error
 
-> On 03/30/2012 04:34 PM, Minh GIANG wrote:
-> > hi,
-> >
-> > with option RTSER_RTIOC_WAIT_EVENT in rt_dev_ioctl(), this function
-> returns
-> > un number -110 (Connection timed out)
-> > with option RTSER_RTIOC_GET_STATUS in rt_dev_ioctl(), this function
-> returns
-> > un number 0 (not message)
->
-> You should call this function *after* the timeout happened. What does
-> the "struct rtser_status"  contain? Especially the "line_status" is of
-> interest.
->
-> >
-> > Anyway, currently it works without  rt_dev_ioctl(), i can see
-> rt_dev_read()
-> > wait data event (with debug mode) while giving the period of write
-> > task,  for exemple  = two seconds.
-> >
-> > so can i remove the funtion rt_dev_ioctl?
->
-> The rt_dev_ioctl should work. You can remove it, but the problem will
-> remain. To debug the problem you could also add some printk's here:
->
->
-> http://www.rts.uni-hannover.de/xenomai/lxr/source/ksrc/drivers/serial/16550A.c#223
->
-> Especially the value of "iir" might be interesting.
->
-> Wolfgang.
->
+insmod analogy_ni_pcimio.ko
 
---001636c5bf8f8c18ad04bcadeec8
+analogy_ni_pcimio.ko : -1 Unknown symbol in module
+
+--14dae93403dba340a204bcb2c6e2
 Content-Type: text/html; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
 
-hello,=A0<div><br></div><div>i don&#39;t know how call the function rt_dev_=
-ioctl() after the timeout happened, this function is called in the begining=
- of &quot;while&quot; loop (cross-link program).</div><div>I get the value =
-of struct=A0
-rtser_status,=A0</div><div>line status =3D 96</div><div>modem status =3D 17=
-6</div><div>to be honest, i don&#39;t know why cross-line program works wit=
-hout the function=A0
-rt_dev_ioctl() with =A0RTSER_RTIOC_WAIT_EVENT=A0in =A0option.</div><div><br=
-></div><div><div>main : write-file opened</div><div>main : write-config wri=
-tten</div><div>main : read-file opened</div><div>main : read-config written=
-</div>
-<div>main : write-task created</div><div>main : read-task created</div><div=
->main : starting write-task</div><div>main : starting read-task</div><div>=
-=A0Nr | =A0 write-&gt;irq =A0 =A0| =A0 =A0irq-&gt;read =A0 =A0| =A0 write-&=
-gt;read =A0 |</div>
-<div>-----------------------------------------------------------</div><div>=
-=A0 0 |17113389816533987823 |1333354257183912191 | =A0 =A0 =A0 =A0 8348398<=
-/div><div>=A0 1 |17113389815533997483 |1333354258183885264 | =A0 =A0 =A0 =
-=A0 8331131</div><div>
-=A0 2 |17113389814533998100 |1333354259183882033 | =A0 =A0 =A0 =A0 8328517<=
-/div><div>=A0 3 |17113389813534000420 |1333354260183884535 | =A0 =A0 =A0 =
-=A0 8333339</div><div>=A0 4 |17113389812533998430 |1333354261183888665 | =
-=A0 =A0 =A0 =A0 8335479</div><div>
-......</div><div><br></div><div>i tried to send a character table, and it=
-=A0also=A0worked.</div><div><br></div><div><br></div><br><div class=3D"gmai=
-l_quote">On Fri, Mar 30, 2012 at 4:48 PM, Wolfgang Grandegger <span dir=3D"=
-ltr">&lt;<a href=3D"mailto:wg@domain.hid">wg@domain.hid</a>&gt;</sp=
-an> wrote:<br>
-<blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1p=
-x #ccc solid;padding-left:1ex"><div class=3D"im">On 03/30/2012 04:34 PM, Mi=
-nh GIANG wrote:<br>
-&gt; hi,<br>
-&gt;<br>
-&gt; with option RTSER_RTIOC_WAIT_EVENT in rt_dev_ioctl(), this function re=
-turns<br>
-&gt; un number -110 (Connection timed out)<br>
-&gt; with option RTSER_RTIOC_GET_STATUS in rt_dev_ioctl(), this function re=
-turns<br>
-&gt; un number 0 (not message)<br>
-<br>
-</div>You should call this function *after* the timeout happened. What does=
-<br>
-the &quot;struct rtser_status&quot; =A0contain? Especially the &quot;line_s=
-tatus&quot; is of<br>
-interest.<br>
-<div class=3D"im"><br>
-&gt;<br>
-&gt; Anyway, currently it works without =A0rt_dev_ioctl(), i can see rt_dev=
-_read()<br>
-&gt; wait data event (with debug mode) while giving the period of write<br>
-&gt; task, =A0for exemple =A0=3D two seconds.<br>
-&gt;<br>
-&gt; so can i remove the funtion rt_dev_ioctl?<br>
-<br>
-</div>The rt_dev_ioctl should work. You can remove it, but the problem will=
-<br>
-remain. To debug the problem you could also add some printk&#39;s here:<br>
-<br>
-<a href=3D"http://www.rts.uni-hannover.de/xenomai/lxr/source/ksrc/drivers/s=
-erial/16550A.c#223" target=3D"_blank">http://www.rts.uni-hannover.de/xenoma=
-i/lxr/source/ksrc/drivers/serial/16550A.c#223</a><br>
-<br>
-Especially the value of &quot;iir&quot; might be interesting.<br>
-<span class=3D"HOEnZb"><font color=3D"#888888"><br>
-Wolfgang.<br>
-</font></span></blockquote></div><br></div>
+<div style>Hello everybody,</div><div style><br></div><div style>Do the Ana=
+logy driver support the serial port. I can attach the serial port(ttyS0) to=
+ rtser0 with xeno_16550A.ko as mentionned in Xenomai Documentation</div>
+<div style><pre style=3D"white-space:pre-wrap;padding-top:1em;padding-right=
+:1em;padding-bottom:1em;padding-left:1em;border-top-width:1px;border-right-=
+width:1px;border-bottom-width:1px;border-left-width:1px;border-top-style:da=
+shed;border-right-style:dashed;border-bottom-style:dashed;border-left-style=
+:dashed;border-top-color:rgb(47,111,171);border-right-color:rgb(47,111,171)=
+;border-bottom-color:rgb(47,111,171);border-left-color:rgb(47,111,171);back=
+ground-color:rgb(249,249,249);line-height:1.1em">
+modprobe xeno_16550A io=3D&lt;io1&gt;[,&lt;io2&gt;...] irq=3D&lt;irq1&gt;[,=
+&lt;irq2&gt;...]
+                     [baud_base=3D&lt;base1&gt;[,&lt;base2&gt;...]]
+                     [tx_fifo=3D&lt;len1&gt;[,&lt;len2&gt;...]] [start_inde=
+x=3D&lt;index&gt;]</pre></div><div style><br></div><div style>How can i tel=
+l to =A0the Analogy=A0driver=A0to recognize the serial port in order to use=
+ the Analogy API. i have seen the command</div>
+<div style><pre style=3D"padding-top:1em;padding-right:1em;padding-bottom:1=
+em;padding-left:1em;border-top-width:1px;border-right-width:1px;border-bott=
+om-width:1px;border-left-width:1px;border-top-style:dashed;border-right-sty=
+le:dashed;border-bottom-style:dashed;border-left-style:dashed;border-top-co=
+lor:rgb(47,111,171);border-right-color:rgb(47,111,171);border-bottom-color:=
+rgb(47,111,171);border-left-color:rgb(47,111,171);color:rgb(0,0,0);backgrou=
+nd-color:rgb(249,249,249);line-height:1.1em">
+/xeno_install/sbin/analogy_config analogy0 analogy_ni_pcimio </pre></div><d=
+iv style><span style=3D"background-color:rgb(249,249,249)">i think that ana=
+logy_ni_pcimio is the</span><span style=3D"background-color:rgb(255,255,255=
+);font-family:sans-serif;line-height:19px">=A0drivers suppors of National I=
+nstruments PCI / PXI cards. B</span>ut i don&#39;t have the DAQ card yet, c=
+urrently i test with two serial ports on my computer while connecting them =
+by one cable. the first aim is to test the api analogy.</div>
+<div style><br></div><div style>Thanks,</div><div style><br></div><div styl=
+e><br></div><div style><br></div><div style>when i try to add the=A0<span s=
+tyle=3D"background-color:rgb(249,249,249);line-height:1.1em">analogy_ni_pci=
+mio module over terminal linux. i get one message error</span></div>
+<div style><span style=3D"background-color:rgb(249,249,249);line-height:1.1=
+em"><br></span></div><div style><pre style=3D"padding-top:1em;padding-right=
+:1em;padding-bottom:1em;padding-left:1em;border-top-width:1px;border-right-=
+width:1px;border-bottom-width:1px;border-left-width:1px;border-top-style:da=
+shed;border-right-style:dashed;border-bottom-style:dashed;border-left-style=
+:dashed;border-top-color:rgb(47,111,171);border-right-color:rgb(47,111,171)=
+;border-bottom-color:rgb(47,111,171);border-left-color:rgb(47,111,171);colo=
+r:rgb(0,0,0);background-color:rgb(249,249,249);line-height:1.1em">
+insmod <span style=3D"line-height:1.1em;font-family:arial,sans-serif">analo=
+gy_ni_pcimio.ko</span></pre><pre style=3D"padding-top:1em;padding-right:1em=
+;padding-bottom:1em;padding-left:1em;border-top-width:1px;border-right-widt=
+h:1px;border-bottom-width:1px;border-left-width:1px;border-top-style:dashed=
+;border-right-style:dashed;border-bottom-style:dashed;border-left-style:das=
+hed;border-top-color:rgb(47,111,171);border-right-color:rgb(47,111,171);bor=
+der-bottom-color:rgb(47,111,171);border-left-color:rgb(47,111,171);color:rg=
+b(0,0,0);background-color:rgb(249,249,249);line-height:1.1em">
+analogy_ni_pcimio.ko : -1 Unknown symbol in module</pre></div><div style><b=
+r></div><br class=3D"Apple-interchange-newline">
 
---001636c5bf8f8c18ad04bcadeec8--
+--14dae93403dba340a204bcb2c6e2--
 
