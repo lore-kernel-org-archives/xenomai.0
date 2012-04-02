@@ -1,91 +1,102 @@
-Message-ID: <4F840DD8.2030407@domain.hid>
-Date: Tue, 10 Apr 2012 12:39:20 +0200
-From: Roberto Bielli <roberto.bielli@domain.hid>
+Message-ID: <4F79C838.2070609@domain.hid>
+Date: Mon, 02 Apr 2012 17:39:36 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4F50A422.50208@domain.hid>
-	<4F55C306.8020307@domain.hid>	<4F55D765.7040705@domain.hid>
-	<4F55E390.8090706@domain.hid>	<4F55FE81.6000904@domain.hid>
-	<4F560A6C.2080306@domain.hid>	<4F560B76.5080606@domain.hid>
-	<4F5629D2.50304@domain.hid>	<4F562B53.7070400@domain.hid>
-	<4F562EC2.6040604@domain.hid>	<4F56387B.40702@domain.hid>
-	<4F575BA3.7060404@domain.hid>	<4F576622.1030509@domain.hid>
-	<4F57A567.7030008@domain.hid>	<4F7C127D.2010400@domain.hid>
-	<4F7C1484.5090406@domain.hid>	<4F7C183F.5040009@domain.hid>
-	<4F7F0D4E.8080906@domain.hid>	<4F7F0E8A.70702@domain.hid>
-	<4F7F20F0.9070007@domain.hid>	<4F80BD10.2060200@domain.hid>
-	<4F83F2C3.50704@domain.hid>	<4F83F321.2030300@domain.hid>
-	<4F83F645.7040402@domain.hid> <4F83F828.4000508@domain.hid>
-	<4F83F929.5000300@domain.hid> <4F83FBAB.7040301@domain.hid>
-	<4F83FF49.90608@domain.hid>
-In-Reply-To: <4F83FF49.90608@domain.hid>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+References: <4F4150C8.7040104@domain.hid> <4F4278ED.9090802@domain.hid>
+	<4F478285.8020105@domain.hid> <4F47A161.9010704@domain.hid>
+In-Reply-To: <4F47A161.9010704@domain.hid>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] preemptive doesn't work
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+Subject: Re: [Adeos-main] Reworking ipipe timer subsystem,
+List-Id: General discussion about Adeos <adeos-main.gna.org>
+List-Unsubscribe: <https://mail.gna.org/options/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+List-Archive: </public/adeos-main>
+List-Post: <mailto:adeos-main@gna.org>
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Adeos <adeos-main@gna.org>
 
-Hi Gilles,
-
-i tried your code but th behavior is the same.
-
-Then i tried a linux base app and works correctly.
-
-
-
-
-
-
-Il 10/04/2012 11:37, Gilles Chanteperdrix ha scritto:
-> On 04/10/2012 11:21 AM, Roberto Bielli wrote:
->> Hi Gilles,
+On 02/24/2012 03:40 PM, Philippe Gerum wrote:
+> On 02/24/2012 01:28 PM, Gilles Chanteperdrix wrote:
+>> On 02/20/2012 05:46 PM, Philippe Gerum wrote:
+>>> On 02/19/2012 08:43 PM, Gilles Chanteperdrix wrote:
+>>>>
+>>>> Hi,
+>>>>
+>>>> restarting the ipipe-core is the good opportunity to look a bit at our
+>>>> current state and think about what we could improve. On ARM, at least,
+>>>> the thing we could improve is the timer subsystem. A long time ago,
+>>>> linux has switched to a system allowing to select at run-time which
+>>>> timer to use, and we do not really benefit from this, what timer we use
+>>>> is selected at compile time, resulting in a massive ifdefery on arm, and
+>>>> even on x86, we have to select at compile time whether using the 8254 or
+>>>> APIC, whereas we could decide to use whatever linux is using, even say
+>>>> HPET, without any compilation option. That is assuming we want to move
+>>>> the x86 timer-specific code from xenomai to I-pipe.
+>>>>
+>>>> The idea to reach this goal would be to add some ipipe specific members
+>>>> to the struct clock_event_device, the way we do for the interrupt
+>>>> controller:
+>>>> - a CLOCK_EVT_FEAT_IPIPE would signal that the clockevent device is
+>>>> ipipe capable, meaning that it implements the following callback
+>>>> - ipipe_steal would be called when stealing the timer, we could decide
+>>>> to call this callback either as part of ipipe_request_timer, or with a
+>>>> specific ipipe_steal_timer call, currently we simply set
+>>>> __ipipe_mach_timerstolen to 1, but it is pure luck that we never needed
+>>>> something more complicated, besides, we may want to start a timer that
+>>>> was not started by linux so, we would put its initialization here;
+>>>> - ipipe_stolen would record whether the timer is stolen
+>>>> - ipipe_min_delta_ticks, ipipe_max_delta_ticks would be used by the
+>>>> ipipe_set_next_event callback
+>>>> - ipipe_ack would be called to ack the timer interrupt the way we
+>>>> currently do it currently on arm with __ipipe_mach_acktimer
+>>>> - ipipe_set_next_event would program the next timer shot, the way it is
+>>>> currently done in __ipipe_mach_set_dec.
+>>>>
+>>>> All this is pretty straightforward, but there is still a question: how
+>>>> does ipipe_request_timer select a timer. The idea is that on platform
+>>>> without PIC muting, it is probably more efficient to use the same timer
+>>>> for linux and xenomai. But on platforms with PIC muting, we could want
+>>>> to select a different timer for linux and xenomai, but how do we find
+>>>> it, what if linux has not selected a timer because it is unusable on
+>>>> that platform?
+>>>
+>>> Checking the clock device mode for CLOCK_EVT_MODE_SHUTDOWN, and falling
+>>> back to sharing the active kernel tick device + disabling PIC muting?
 >>
->> here is my time.c
-> Though you have not made all the changes I suggested. Here is the time.c
-> I would use.
->
+>> OK. Another question is: do we want to move x86 timer handling from
+>> xenomai to ipipe. If not, we have to find a way to support the two
+>> possible configurations. What we could do is using the timer name in
+>> ipipe_request_tickdev: if a timer name is supplied, we keep the old
+>> implementation, if no timer name is supplied, we use the newho
+>> implementation which looks for the best candidate with the
+>> CLOCK_EVT_FEAT_IPIPE bit.
+>>
+>>
+> 
+> Yes, makes sense. At any rate, handling the real-time timer the way we 
+> want for Xenomai directly from the pipeline is the only sane option. We 
+> only have to be careful about backward compatibility of the newest core 
+> pipelines with 2.6.x, until we stop maintaining this branch in favor of 
+> 3.x. We may also move ipipe_request_tckdev() to the compat module fully, 
+> removing it from the current API if that makes sense.
+> 
 
+For those who would like to follow, the result, a bit different from what
+was originally planned is the interface implemented by this file:
+http://git.xenomai.org/?p=ipipe-gch.git;a=blob;f=kernel/ipipe/timer.c;h=b9936469652d8fe998157d155fda77df81f0425a;hb=52d36aa86d5c5d463d86d384ad717f26ec96ef8c
+
+And ARM and x86 architectures were re-factored over this interface. As 
+an example, the implementation of x86 timers is in this patch:
+http://git.xenomai.org/?p=ipipe-gch.git;a=commitdiff;h=52d36aa86d5c5d463d86d384ad717f26ec96ef8c;hp=675a8ed4365eb1f23b098f913caf40e4dc792b80
+
+8254, local APIC and HPET in legacy mode were tested, even selected 
+at run-time. Only per-cpu HPET remains to be tested (the hardware 
+I have does not support it).
 
 -- 
-+------------------------------------------------------------------------------------------------+
-							
-Roberto Bielli
-Sviluppo Software					
-Axel S.r.l.					
-							
-Via Del Cannino, 3 				
-21020 Crosio Della Valle			
-Varese - Italy					
-							
-Telefono: +39 0332 949600			
-Fax:      +39 0332 969315			
-							
-E-mail:   roberto.bielli@domain.hid	
-Web Site: www.axelsw.it
-
-+------------------------------------------------------------------------------------------------+
-
-Si precisa che le informazioni contenute in questo messaggio sono riservate e ad uso esclusivo del destinatario.
-Qualora il messaggio in parola Le fosse pervenuto per errore, La preghiamo di eliminarlo senza copiarlo e di non inoltrarlo a terzi,
-dandocene gentilmente comunicazione. Grazie.
-Informativa sul trattamento dei dati personali (D. Lgs. 196/2003).
-I dati utilizzati per la spedizione del presente messaggio sono utilizzati da Axel S.r.l., titolare del trattamento,
-per l'invio delle comunicazioni dei diversi settori aziendali, non essendo autorizzata la divulgazione a terzi.
-Potrete rivolgere alla seguente mail richieste di verifica, rettifica o cancellazione dei Vostri dati: info@domain.hid
-
-This e-mail and any attachments is confidential and may contain privileged information
-intended for the addressee(s) only. Dissemination, copying, printing or use by anybody
-else is unauthorised. If you are not the intended recipient,
-please delete this message and any attachments and advise the sender
-by return e-mail.Thank you.  			
-							
-+------------------------------------------------------------------------------------------------+
-
+					    Gilles.
 
