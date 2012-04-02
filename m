@@ -1,5 +1,5 @@
-Message-ID: <4F79B7B2.1010004@domain.hid>
-Date: Mon, 02 Apr 2012 16:29:06 +0200
+Message-ID: <4F79B7EF.8020104@domain.hid>
+Date: Mon, 02 Apr 2012 16:30:07 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <CAGq8jPjvtxSjKW+RpiUX5u02mnXv7q2K2PLgfF2E6CT1Eaw6Mg@domain.hid>
@@ -40,12 +40,6 @@ On 04/02/2012 04:12 PM, Minh GIANG wrote:
 > Instruments PCI / PXI cards. But i don't have the DAQ card yet,
 > currently i test with two serial ports on my computer while connecting
 > them by one cable. the first aim is to test the api analogy.
-
-Sorry, I did not make myself clear: the RTDM API is a general API for
-making drivers, Analogy is a class of drivers for acquisition boards
-written using RTDM. The analogy library allow access to this class of
-driver, so, you can not use the analogy library with a serial port driver.
-
 > 
 > Thanks,
 > 
@@ -58,8 +52,8 @@ driver, so, you can not use the analogy library with a serial port driver.
 > 
 > analogy_ni_pcimio.ko : -1 Unknown symbol in module
 
-See dmesg to understand what symbol is missing.
-
+And I forgot. Please stick to plain text mails, do not waste everyone's
+bandwidth with HTML.
 
 -- 
 					    Gilles.
