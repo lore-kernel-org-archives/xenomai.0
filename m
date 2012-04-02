@@ -1,87 +1,71 @@
-Message-ID: <4F83ECD2.9090108@domain.hid>
-Date: Tue, 10 Apr 2012 10:18:26 +0200
-From: Roberto Bielli <roberto.bielli@domain.hid>
+Message-ID: <4F79C007.9080700@domain.hid>
+Date: Mon, 02 Apr 2012 17:04:39 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <4F50A422.50208@domain.hid> <4F55C306.8020307@domain.hid>
-	<4F55D765.7040705@domain.hid> <4F55E390.8090706@domain.hid>
-	<4F55FE81.6000904@domain.hid> <4F560A6C.2080306@domain.hid>
-	<4F560B76.5080606@domain.hid> <4F5629D2.50304@domain.hid>
-	<4F562B53.7070400@domain.hid> <4F562EC2.6040604@domain.hid>
-	<4F56387B.40702@domain.hid> <4F575BA3.7060404@domain.hid>
-	<4F576622.1030509@domain.hid> <4F57A567.7030008@domain.hid>
-	<4F7C127D.2010400@domain.hid> <4F7C1484.5090406@domain.hid>
-	<4F7C183F.5040009@domain.hid> <4F7F0D4E.8080906@domain.hid>
-	<4F7F0E8A.70702@domain.hid> <4F7F20F0.9070007@domain.hid>
-	<4F80BD10.2060200@domain.hid>
-In-Reply-To: <4F80BD10.2060200@domain.hid>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+References: <4F7333E7.7030608@domain.hid> <4F7339A8.6060701@domain.hid>
+	<4F735716.4020508@domain.hid>
+In-Reply-To: <4F735716.4020508@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] preemptive doesn't work
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Subject: Re: [Xenomai-help] Interrupt latency greater than 250ms. Question.
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Makarand Pradhan <makarandpradhan@domain.hid>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi Gilles,
+On 03/28/2012 08:23 PM, Makarand Pradhan wrote:
+> Hi Philippe,
+>
+> On 28/03/12 12:17 PM, Philippe Gerum wrote:
+>> The log says your code wants to control when the IRQ is enabled again,
+>> by calling rt_intr_enable() from userland. I guess you are setting
+>> I_NOAUTOENA too. Correct?
+>
+> That is correct. I_NOAUTOENA is used in rt_intr_create. Otherwise the
+> level trigerred interrupt will not allow the userland processing of the
+> int. The userland handler is very small and it unconditionally
+> rt_intr_enables the intr.
+>
+> Testing indicates that the interrupt is always enabled from user space
+> within 250 usec after kernel gets the interrupt.
+>
+> I have noted that unless I see "#end 0x0000002b" and a hit to the
+> ipic_unmask_irq, the next interrupt is not processed.
+>
+> And this is getting delayed once in a while which causes a delay in
+> processing the next interrupt.
+>
+> So the sequence of events leading to the problem is:
+>
+> 1. Get interrupt: #begin 0x0000002b noted in ipipe trace
+> 2. Intr enabled from user space. Always happens roughly within 250usec.
+> 3. #end 0x0000002b noted in ipipe trace where the int is unmasked by ipipe.
+>
+> When I see the problem, step 3 is delayed. I am trying to capture a
+> trace where the begin, int enable and end are captured.
+>
+> Your thoughts on what might cause this delay would be appreciated.
+>
 
-i learned the ipipe trace that i send you but i don't unserstand why i 
-have three timer reprogramming in few useconds.
+Which IRQ are you re-enabling from user-space, the multiplexed IRQ 33, 
+or the cascaded one you receive?
 
-Can you explain me the behaviour ?
-
-
-
-Il 08/04/2012 00:17, Gilles Chanteperdrix ha scritto:
-> On 04/06/2012 06:59 PM, Roberto Bielli wrote:
->> Hi Gilles,
->>
->> i made all your modifies and re-read all corect register but the problem
->> is the same.
-> Ok. What I would do at this point is check whether linux has the same
-> issue. You can also check the processor errata to see if there is no
-> issue with the timer.
+> Rgds,
+> Mak.
+>
+>
+>
+>
 >
 
 
 -- 
-+------------------------------------------------------------------------------------------------+
-							
-Roberto Bielli
-Sviluppo Software					
-Axel S.r.l.					
-							
-Via Del Cannino, 3 				
-21020 Crosio Della Valle			
-Varese - Italy					
-							
-Telefono: +39 0332 949600			
-Fax:      +39 0332 969315			
-							
-E-mail:   roberto.bielli@domain.hid	
-Web Site: www.axelsw.it
-
-+------------------------------------------------------------------------------------------------+
-
-Si precisa che le informazioni contenute in questo messaggio sono riservate e ad uso esclusivo del destinatario.
-Qualora il messaggio in parola Le fosse pervenuto per errore, La preghiamo di eliminarlo senza copiarlo e di non inoltrarlo a terzi,
-dandocene gentilmente comunicazione. Grazie.
-Informativa sul trattamento dei dati personali (D. Lgs. 196/2003).
-I dati utilizzati per la spedizione del presente messaggio sono utilizzati da Axel S.r.l., titolare del trattamento,
-per l'invio delle comunicazioni dei diversi settori aziendali, non essendo autorizzata la divulgazione a terzi.
-Potrete rivolgere alla seguente mail richieste di verifica, rettifica o cancellazione dei Vostri dati: info@domain.hid
-
-This e-mail and any attachments is confidential and may contain privileged information
-intended for the addressee(s) only. Dissemination, copying, printing or use by anybody
-else is unauthorised. If you are not the intended recipient,
-please delete this message and any attachments and advise the sender
-by return e-mail.Thank you.  			
-							
-+------------------------------------------------------------------------------------------------+
-
+Philippe.
 
