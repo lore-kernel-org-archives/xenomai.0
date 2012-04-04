@@ -1,19 +1,10 @@
-Message-ID: <4F7C183F.5040009@domain.hid>
-Date: Wed, 04 Apr 2012 11:45:35 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4F7C44FD.2040406@domain.hid>
+Date: Wed, 04 Apr 2012 14:56:29 +0200
+From: Jan Kiszka <jan.kiszka@domain.hid>
 MIME-Version: 1.0
-References: <4F50A422.50208@domain.hid> <4F55C306.8020307@domain.hid>
-	<4F55D765.7040705@domain.hid> <4F55E390.8090706@domain.hid>
-	<4F55FE81.6000904@domain.hid> <4F560A6C.2080306@domain.hid>
-	<4F560B76.5080606@domain.hid> <4F5629D2.50304@domain.hid>
-	<4F562B53.7070400@domain.hid> <4F562EC2.6040604@domain.hid>
-	<4F56387B.40702@domain.hid> <4F575BA3.7060404@domain.hid>
-	<4F576622.1030509@domain.hid> <4F57A567.7030008@domain.hid>
-	<4F7C127D.2010400@domain.hid> <4F7C1484.5090406@domain.hid>
-In-Reply-To: <4F7C1484.5090406@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] preemptive doesn't work
+Subject: [Xenomai-core] [PULL] rt-puts fix, mprotect testsuite
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -22,62 +13,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Roberto Bielli <roberto.bielli@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai-core <xenomai@xenomai.org>
 
-On 04/04/2012 11:29 AM, Roberto Bielli wrote:
-> Hi Gilles,
-> 
-> i have always this big problem but the timer and the avic are programmed 
-> correctly.
-> There is something else but i don't know what.
-> In this moment i'm doing another work but soon i want to debug that error.
+The following changes since commit 0ef2410a2c9cf7102dead861241bd2d9957e4433:
 
-It is undoubtly a timer ack/program issue. There is no other problem,
-the trace is quite clear: the timer is programmed, should tick, but
-does not.
+  Mask signals in rt_print:printer_loop() (2012-04-02 00:16:41 +0200)
 
-I had a look at the imx code again for other reasons, what may be also
-missing in __ipipe_mach_acktimer function is a read of the timer status
-register. As in:
+are available in the git repository at:
+  git://git.xenomai.org/xenomai-jki.git for-upstream
 
-void __ipipe_mach_acktimer(void)
-{
-        uint32_t tstat;
+Jan Kiszka (3):
+      Append missing newline to rt_[f]puts output
+      testsuite: Add rt-print buffer flushes to native error paths
+      Add regression test for mprotect on pinned memory
 
-        if (timer_is_v2())
-                tstat = __raw_readl(timer_base + V2_TSTAT);
-        else
-                tstat = __raw_readl(timer_base + MX1_2_TSTAT);
-
-        gpt_irq_acknowledge();
-}
-
-And put that piece of code in mxc_timer_interrupt in the #ifndef
-CONFIG_IPIPE section.
-
-You may also want to issue a register read after programming the
-compare register. As in:
-
-
-void __ipipe_mach_set_dec(unsigned long delay)
-{
-         if (delay > mxc_min_delay) {
-                 unsigned long tcmp;
- 
-                 if (!timer_is_v2()) {
-                         tcmp = __raw_readl(timer_base + MX1_2_TCN) + delay;
-                         __raw_writel(tcmp, timer_base + MX1_2_TCMP);
-                         __raw_readl(timer_base + MX1_2_TCN);
-                 } else {
-                         tcmp = __raw_readl(timer_base + V2_TCN) + delay;
-                         __raw_writel(tcmp, timer_base + V2_TCMP);
-                         __raw_readl(timer_base + V2_TCN);
-                 }
-         } else
-                 ipipe_trigger_irq(__ipipe_mach_timerint);
-}
-
--- 
-					    Gilles.
+ src/skins/common/rt_print.c                |    7 ++-
+ src/testsuite/regression/native/check.h    |    2 +
+ src/testsuite/regression/native/leaks.c    |    1 +
+ src/testsuite/regression/posix/Makefile.am |    2 +-
+ src/testsuite/regression/posix/Makefile.in |   15 ++++-
+ src/testsuite/regression/posix/check.h     |   10 +++
+ src/testsuite/regression/posix/mprotect.c  |   97 ++++++++++++++++++++++++++++
+ 7 files changed, 129 insertions(+), 5 deletions(-)
+ create mode 100644 src/testsuite/regression/posix/mprotect.c
 
