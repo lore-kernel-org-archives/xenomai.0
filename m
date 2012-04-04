@@ -1,47 +1,113 @@
-Message-ID: <4F83EDCD.7050909@domain.hid>
-Date: Tue, 10 Apr 2012 10:22:37 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4F50A422.50208@domain.hid> <4F55C306.8020307@domain.hid>
-	<4F55D765.7040705@domain.hid> <4F55E390.8090706@domain.hid>
-	<4F55FE81.6000904@domain.hid> <4F560A6C.2080306@domain.hid>
-	<4F560B76.5080606@domain.hid> <4F5629D2.50304@domain.hid>
-	<4F562B53.7070400@domain.hid> <4F562EC2.6040604@domain.hid>
-	<4F56387B.40702@domain.hid> <4F575BA3.7060404@domain.hid>
-	<4F576622.1030509@domain.hid> <4F57A567.7030008@domain.hid>
-	<4F7C127D.2010400@domain.hid> <4F7C1484.5090406@domain.hid>
-	<4F7C183F.5040009@domain.hid> <4F7F0D4E.8080906@domain.hid>
-	<4F7F0E8A.70702@domain.hid> <4F7F20F0.9070007@domain.hid>
-	<4F80BD10.2060200@domain.hid> <4F83ECD2.9090108@domain.hid>
-In-Reply-To: <4F83ECD2.9090108@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] preemptive doesn't work
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+In-Reply-To: <4F79D5EA.3010501@domain.hid>
+References: <CAGq8jPhOy=v8Lccb+hddH9W_u8p-Ayi+XfEcFC+rHVzsSp-ghg@domain.hid>
+	<4F7555F7.6010102@domain.hid>
+	<CAGq8jPioLnu+ehj+LA5dL6OWUpxQnUH+Nh01kB088FtsLsSrGA@mail.gmail.com>
+	<CAGq8jPi4S4TTBy9dLYYnWuWQdX_awhXxu0C93okgFO5vWv_20A@mail.gmail.com>
+	<4F75B5BF.8030401@domain.hid>
+	<CAGq8jPgY6fTw0ufdj=pvc+Q1jrrQkYptSHTzFOQK=qSiJJU32Q@mail.gmail.com>
+	<4F75C7D1.4020808@domain.hid>
+	<CAGq8jPhqv16jgPQh631x8S2MmDhm1F4HtnrQA0xsGPe4bTo6eA@mail.gmail.com>
+	<4F79D5EA.3010501@domain.hid>
+Date: Wed, 4 Apr 2012 11:18:18 +0200
+Message-ID: <CAGq8jPjq79CdBbNys1=ccV-CKSyNfG9nX-1L31Ar6WShuNE=HQ@mail.gmail.com>
+From: Minh GIANG <giang.hminh@domain.hid>
+Content-Type: multipart/alternative; boundary=20cf305643216a9eb704bcd6e737
+Subject: Re: [Xenomai-help] Cross-link.c ---RTSER_RTIOC_WAIT_EVENT
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Roberto Bielli <roberto.bielli@domain.hid>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Wolfgang Grandegger <wg@domain.hid>
+Cc: xenomai-help <xenomai@xenomai.org>
 
-On 04/10/2012 10:18 AM, Roberto Bielli wrote:
-> Hi Gilles,
-> 
-> i learned the ipipe trace that i send you but i don't unserstand why i 
-> have three timer reprogramming in few useconds.
-> 
-> Can you explain me the behaviour ?
+--20cf305643216a9eb704bcd6e737
+Content-Type: text/plain; charset=ISO-8859-1
 
-Can you resend the trace and give us the time where this happens?
-Anyway, the timer function must work even if the timer has already been
-programmed, it is normal to reprogram the timer while it has been
-programmed for instance when adding or removing a timer.
+hello,
 
+i did what you told me, i compiled the kernet with patch which you send me,
+and the result of dmesg
 
--- 
-                                                                Gilles.
+[ 1636.156641] base=0x2f8 iir=0x1
+[ 1636.157672] base=0x2f8 iir=0x4
+[ 1636.157675] base=0x2f8 status=0x100
+[ 1636.157677] base=0x2f8 iir=0x1
+[ 1636.158713] base=0x2f8 iir=0x4
+[ 1636.158715] base=0x2f8 status=0x100
+[ 1636.158717] base=0x2f8 iir=0x1
+[ 1636.250404] base=0x3f8 iir=0x2
+[ 1636.250407] base=0x3f8 status=0x0
+[ 1636.250410] base=0x3f8 iir=0x1
+[ 1636.251425] base=0x2f8 iir=0x4
+[ 1636.251427] base=0x2f8 status=0x100
+[ 1636.251429] base=0x2f8 iir=0x1
+[ 1636.252016] base=0x2f8 iir=0x4
+[ 1636.252016] base=0x2f8 status=0x100
+[ 1636.252016] base=0x2f8 iir=0x1
+[ 1636.252016] base=0x2f8 iir=0x4
+[ 1636.252016] base=0x2f8 status=0x100
+[ 1636.252016] base=0x2f8 iir=0x1
+[ 1636.252016] base=0x2f8 iir=0x4
+[ 1636.252016] base=0x2f8 status=0x100
+[ 1636.252016] base=0x2f8 iir=0x1
+[ 1636.252016] base=0x2f8 iir=0x4
+[ 1636.252016] base=0x2f8 status=0x100
+[ 1636.252016] base=0x2f8 iir=0x1
+[ 1636.256619] base=0x2f8 iir=0x4
+[ 1636.256621] base=0x2f8 status=0x100
+[ 1636.256623] base=0x2f8 iir=0x1
+[ 1636.257665] base=0x2f8 iir=0x4
+[ 1636.257668] base=0x2f8 status=0x100
+[ 1636.257670] base=0x2f8 iir=0x1
+[ 1636.258693] base=0x2f8 iir=0x4
+[ 1636.258696] base=0x2f8 status=0x100
+[ 1636.258698] base=0x2f8 iir=0x1
+
+i wait your response
+
+thanks,
+
+--20cf305643216a9eb704bcd6e737
+Content-Type: text/html; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+
+<div>hello,</div><div><br></div><div>i did what you told me, i compiled the=
+ kernet with patch which you send me, and the result of dmesg</div><div><br=
+></div><div><div>[ 1636.156641] base=3D0x2f8 iir=3D0x1</div><div>[ 1636.157=
+672] base=3D0x2f8 iir=3D0x4</div>
+<div>[ 1636.157675] base=3D0x2f8 status=3D0x100</div><div>[ 1636.157677] ba=
+se=3D0x2f8 iir=3D0x1</div><div>[ 1636.158713] base=3D0x2f8 iir=3D0x4</div><=
+div>[ 1636.158715] base=3D0x2f8 status=3D0x100</div><div>[ 1636.158717] bas=
+e=3D0x2f8 iir=3D0x1</div>
+<div>[ 1636.250404] base=3D0x3f8 iir=3D0x2</div><div>[ 1636.250407] base=3D=
+0x3f8 status=3D0x0</div><div>[ 1636.250410] base=3D0x3f8 iir=3D0x1</div><di=
+v>[ 1636.251425] base=3D0x2f8 iir=3D0x4</div><div>[ 1636.251427] base=3D0x2=
+f8 status=3D0x100</div>
+<div>[ 1636.251429] base=3D0x2f8 iir=3D0x1</div><div>[ 1636.252016] base=3D=
+0x2f8 iir=3D0x4</div><div>[ 1636.252016] base=3D0x2f8 status=3D0x100</div><=
+div>[ 1636.252016] base=3D0x2f8 iir=3D0x1</div><div>[ 1636.252016] base=3D0=
+x2f8 iir=3D0x4</div>
+<div>[ 1636.252016] base=3D0x2f8 status=3D0x100</div><div>[ 1636.252016] ba=
+se=3D0x2f8 iir=3D0x1</div><div>[ 1636.252016] base=3D0x2f8 iir=3D0x4</div><=
+div>[ 1636.252016] base=3D0x2f8 status=3D0x100</div><div>[ 1636.252016] bas=
+e=3D0x2f8 iir=3D0x1</div>
+<div>[ 1636.252016] base=3D0x2f8 iir=3D0x4</div><div>[ 1636.252016] base=3D=
+0x2f8 status=3D0x100</div><div>[ 1636.252016] base=3D0x2f8 iir=3D0x1</div><=
+div>[ 1636.256619] base=3D0x2f8 iir=3D0x4</div><div>[ 1636.256621] base=3D0=
+x2f8 status=3D0x100</div>
+<div>[ 1636.256623] base=3D0x2f8 iir=3D0x1</div><div>[ 1636.257665] base=3D=
+0x2f8 iir=3D0x4</div><div>[ 1636.257668] base=3D0x2f8 status=3D0x100</div><=
+div>[ 1636.257670] base=3D0x2f8 iir=3D0x1</div><div>[ 1636.258693] base=3D0=
+x2f8 iir=3D0x4</div>
+<div>[ 1636.258696] base=3D0x2f8 status=3D0x100</div><div>[ 1636.258698] ba=
+se=3D0x2f8 iir=3D0x1</div><div><br></div></div><div>i wait your response</d=
+iv><div><br></div><div>thanks,=A0</div>
+
+--20cf305643216a9eb704bcd6e737--
 
