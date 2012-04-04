@@ -1,13 +1,18 @@
-Message-ID: <4F7AB6B8.6040501@domain.hid>
-Date: Tue, 03 Apr 2012 10:37:12 +0200
-From: Jan Kiszka <jan.kiszka@domain.hid>
+Message-ID: <4F7C127D.2010400@domain.hid>
+Date: Wed, 04 Apr 2012 11:21:01 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <E1SEhxD-0007Jo-Tb@domain.hid> <4F79B925.2060303@domain.hid>
-In-Reply-To: <4F79B925.2060303@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
+References: <4F50A422.50208@domain.hid> <4F55C306.8020307@domain.hid>
+	<4F55D765.7040705@domain.hid> <4F55E390.8090706@domain.hid>
+	<4F55FE81.6000904@domain.hid> <4F560A6C.2080306@domain.hid>
+	<4F560B76.5080606@domain.hid> <4F5629D2.50304@domain.hid>
+	<4F562B53.7070400@domain.hid> <4F562EC2.6040604@domain.hid>
+	<4F56387B.40702@domain.hid> <4F575BA3.7060404@domain.hid>
+	<4F576622.1030509@domain.hid> <4F57A567.7030008@domain.hid>
+In-Reply-To: <4F57A567.7030008@domain.hid>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] [Xenomai-git] Jan Kiszka : Add regression test
- for mprotect on pinned memory
+Subject: Re: [Xenomai-core] preemptive doesn't work
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -16,67 +21,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai core <Xenomai-core@domain.hid>
+To: Roberto Bielli <roberto.bielli@domain.hid>
+Cc: xenomai@xenomai.org
 
-On 2012-04-02 16:35, Gilles Chanteperdrix wrote:
-> On 04/02/2012 04:09 PM, GIT version control wrote:
->> Module: xenomai-jki
->> Branch: for-upstream
->> Commit: 410e90d085d21dc913f8724efafe6ae75bd3c952
->> URL:    http://git.xenomai.org/?p=xenomai-jki.git;a=commit;h=410e90d085d21dc913f8724efafe6ae75bd3c952
->>
->> Author: Jan Kiszka <jan.kiszka@domain.hid>
->> Date:   Fri Mar 30 18:06:27 2012 +0200
->>
->> Add regression test for mprotect on pinned memory
->>
->> This tests both the original issue of mprotect reintroducing COW pages
->> to Xenomai processes as well as the recently fixed zero page corruption.
->>
->> Signed-off-by: Jan Kiszka <jan.kiszka@domain.hid>
->> +static void check_inner(const char *fn, int line, const char *msg,
->> +			int status, int expected)
->> +{
->> +	if (status == expected)
->> +		return;
->> +
->> +	rt_task_set_mode(T_WARNSW, 0, NULL);
->> +	rt_print_flush_buffers();
->> (...)
->> +static void check_value_inner(const char *fn, int line, const char *msg,
->> +			      int value, int expected)
->> +{
->> +	if (value == expected)
->> +		return;
->> +
->> +	rt_task_set_mode(T_WARNSW, 0, NULL);
->> +	rt_print_flush_buffers();
->> (...)
->> +void sigdebug_handler(int sig, siginfo_t *si, void *context)
->> +{
->> +	unsigned int reason = si->si_value.sival_int;
->> +
->> +	rt_print_flush_buffers();
->> (...)
->> +
->> +	rt_task_set_mode(T_WARNSW, 0, NULL);
->> +	rt_print_flush_buffers();
+On 03/07/2012 07:13 PM, Roberto Bielli wrote:
+> Hi Gilles,
 > 
-> Maybe you could use posix skin's printf instead of putting calls to
-> rt_print_flush_buffers all over the place? I did not mean for this call
-> to be exported, I only added it for internal use by the posix skin.
+> this is the trace and the test.
 > 
+> It seems that '__ipipe_dispatch_event' last about ~84 milliseconds with 
+> disable interrupts.
+> 
+> 
+> Thanks a lot for your time.
 
-Could be done, likely together with a complete switch to posix.
+Hi Roberto,
 
-I could also start to use the check_* wrappers that I just discovered.
-BTW, the native version lacks that flush unless it's used in
-native+posix context. I will write a fix.
+any news about this issue?
 
-Jan
+Regards.
 
 -- 
-Siemens AG, Corporate Technology, CT T DE IT 1
-Corporate Competence Center Embedded Linux
+					    Gilles.
 
