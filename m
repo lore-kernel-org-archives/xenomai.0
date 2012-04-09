@@ -1,83 +1,47 @@
-Message-ID: <4F83F2C3.50704@domain.hid>
-Date: Tue, 10 Apr 2012 10:43:47 +0200
-From: Roberto Bielli <roberto.bielli@domain.hid>
 MIME-Version: 1.0
-References: <4F50A422.50208@domain.hid> <4F55C306.8020307@domain.hid>
-	<4F55D765.7040705@domain.hid> <4F55E390.8090706@domain.hid>
-	<4F55FE81.6000904@domain.hid> <4F560A6C.2080306@domain.hid>
-	<4F560B76.5080606@domain.hid> <4F5629D2.50304@domain.hid>
-	<4F562B53.7070400@domain.hid> <4F562EC2.6040604@domain.hid>
-	<4F56387B.40702@domain.hid> <4F575BA3.7060404@domain.hid>
-	<4F576622.1030509@domain.hid> <4F57A567.7030008@domain.hid>
-	<4F7C127D.2010400@domain.hid> <4F7C1484.5090406@domain.hid>
-	<4F7C183F.5040009@domain.hid> <4F7F0D4E.8080906@domain.hid>
-	<4F7F0E8A.70702@domain.hid> <4F7F20F0.9070007@domain.hid>
-	<4F80BD10.2060200@domain.hid>
-In-Reply-To: <4F80BD10.2060200@domain.hid>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] preemptive doesn't work
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+In-Reply-To: <4F80C10E.1000804@domain.hid>
+References: <CAM1yFZ9eQND3KX-1D1zL4TxcUTSFaw7k4Xd_nuN_6ByGRCRKYA@mail.gmail.com>
+	<4F80C10E.1000804@domain.hid>
+Date: Mon, 9 Apr 2012 16:41:54 +0530
+Message-ID: <CAM1yFZ_u0DzFNTe1zM2bOjB3ZwwKKgvRoS8U2=yLmv_3gPOt+A@mail.gmail.com>
+From: Anisha Kaul <born.rebel.83@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: Re: [Xenomai-help] Disadvantages of preempt_rt
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-Hi Gilles,
-
-I don't find the end of last __ipipe_grab_irq in the trace that i send you.
-Is it correct ?
-
-Il 08/04/2012 00:17, Gilles Chanteperdrix ha scritto:
-> On 04/06/2012 06:59 PM, Roberto Bielli wrote:
->> Hi Gilles,
->>
->> i made all your modifies and re-read all corect register but the problem
->> is the same.
-> Ok. What I would do at this point is check whether linux has the same
-> issue. You can also check the processor errata to see if there is no
-> issue with the timer.
+> I think you are misunderstanding what preempt_rt is, preempt_rt does
+> not preempt linux, preempt_rt is simply linux modified, when a linux
+> kernel patched with preempt_rt runs, nothing else than linux runs, so
+> nothing preempts the whole linux. This is achieved by means which have
+> a global overhead on the whole system. The exact means are described on
+> the rt wiki FAQ:
+> https://rt.wiki.kernel.org/articles/f/r/e/Frequently_Asked_Questions_7407.html
 >
+> Note the answer to FAQ 3, which explains that improving latencies is a
+> trade off, and means degrading the average performances of the system.
+> That is the overhead we are talking about.
 
 
--- 
-+------------------------------------------------------------------------------------------------+
-							
-Roberto Bielli
-Sviluppo Software					
-Axel S.r.l.					
-							
-Via Del Cannino, 3 				
-21020 Crosio Della Valle			
-Varese - Italy					
-							
-Telefono: +39 0332 949600			
-Fax:      +39 0332 969315			
-							
-E-mail:   roberto.bielli@domain.hid	
-Web Site: www.axelsw.it
+Thanks much for the hints.
 
-+------------------------------------------------------------------------------------------------+
+What I have understood now is:
+CONFIG_PREEMPT_RT patch is bound to cause a reduction in the overall
+throughput of the system
+***because there will be several context switches and also the lower
+priority tasks won't be getting much a chance to get through***.
 
-Si precisa che le informazioni contenute in questo messaggio sono riservate e ad uso esclusivo del destinatario.
-Qualora il messaggio in parola Le fosse pervenuto per errore, La preghiamo di eliminarlo senza copiarlo e di non inoltrarlo a terzi,
-dandocene gentilmente comunicazione. Grazie.
-Informativa sul trattamento dei dati personali (D. Lgs. 196/2003).
-I dati utilizzati per la spedizione del presente messaggio sono utilizzati da Axel S.r.l., titolare del trattamento,
-per l'invio delle comunicazioni dei diversi settori aziendali, non essendo autorizzata la divulgazione a terzi.
-Potrete rivolgere alla seguente mail richieste di verifica, rettifica o cancellazione dei Vostri dati: info@domain.hid
+The reason I have understood is quoted within  ***.
+Is this all correct or I am still missing a point?
 
-This e-mail and any attachments is confidential and may contain privileged information
-intended for the addressee(s) only. Dissemination, copying, printing or use by anybody
-else is unauthorised. If you are not the intended recipient,
-please delete this message and any attachments and advise the sender
-by return e-mail.Thank you.  			
-							
-+------------------------------------------------------------------------------------------------+
-
+-Anisha
 
