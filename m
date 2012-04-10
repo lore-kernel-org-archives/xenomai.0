@@ -1,8 +1,9 @@
-Message-ID: <4F84250F.60401@domain.hid>
-Date: Tue, 10 Apr 2012 14:18:23 +0200
+Message-ID: <4F8428AA.1040404@domain.hid>
+Date: Tue, 10 Apr 2012 14:33:46 +0200
 From: Roberto Bielli <roberto.bielli@domain.hid>
 MIME-Version: 1.0
-References: <4F50A422.50208@domain.hid> <4F55D765.7040705@domain.hid>
+References: <4F50A422.50208@domain.hid>
+	<4F55C306.8020307@domain.hid>	<4F55D765.7040705@domain.hid>
 	<4F55E390.8090706@domain.hid>	<4F55FE81.6000904@domain.hid>
 	<4F560A6C.2080306@domain.hid>	<4F560B76.5080606@domain.hid>
 	<4F5629D2.50304@domain.hid>	<4F562B53.7070400@domain.hid>
@@ -16,10 +17,8 @@ References: <4F50A422.50208@domain.hid> <4F55D765.7040705@domain.hid>
 	<4F83F645.7040402@domain.hid> <4F83F828.4000508@domain.hid>
 	<4F83F929.5000300@domain.hid> <4F83FBAB.7040301@domain.hid>
 	<4F83FF49.90608@domain.hid> <4F840DD8.2030407@domain.hid>
-	<4F8418C4.400@domain.hid> <4F8421F7.50807@domain.hid>
-	<4F84222D.7080808@domain.hid> <4F842369.2020504@domain.hid>
-	<4F842395.4060108@domain.hid>
-In-Reply-To: <4F842395.4060108@domain.hid>
+	<4F841E32.50101@domain.hid>
+In-Reply-To: <4F841E32.50101@domain.hid>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-core] preemptive doesn't work
@@ -34,66 +33,21 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-here is some logs.
-
-status=on:setup=616:clock=509343446344:timerdev=mxc_timer1:clockdev=mxc_timer1
-root@domain.hid# cat /proc/xenomai/timer
-status=on:setup=616:clock=509413956366:timerdev=mxc_timer1:clockdev=mxc_timer1
-root@domain.hid# cat /proc/xenomai/timer
-status=on:setup=616:clock=509461811116:timerdev=mxc_timer1:clockdev=mxc_timer1
-root@domain.hid# cat /proc/xenomai/timer
-status=on:setup=616:clock=509493738137:timerdev=mxc_timer1:clockdev=mxc_timer1
-root@domain.hid# cat /proc/xenomai/timer
-status=on:setup=616:clock=509642692217:timerdev=mxc_timer1:clockdev=mxc_timer1
-root@domain.hid# cat /proc/xenomai/timer
-status=on:setup=616:clock=509889401336:timerdev=mxc_timer1:clockdev=mxc_timer1
-root@domain.hid# cat /proc/xenomai/timer
-status=on:setup=616:clock=509959233537:timerdev=mxc_timer1:clockdev=mxc_timer1
-root@domain.hid# cat /proc/xenomai/timer
-status=on:setup=616:clock=510033716418:timerdev=mxc_timer1:clockdev=mxc_timer1
-root@domain.hid# cat /proc/xenomai/timer
-status=on:setup=616:clock=510083589650:timerdev=mxc_timer1:clockdev=mxc_timer1
-root@domain.hid# cat /proc/xenomai/timer
-status=on:setup=616:clock=510145433674:timerdev=mxc_timer1:clockdev=mxc_timer1
-
-Il 10/04/2012 14:12, Gilles Chanteperdrix ha scritto:
-> On 04/10/2012 02:11 PM, Roberto Bielli wrote:
->> Il 10/04/2012 14:06, Gilles Chanteperdrix ha scritto:
->>> On 04/10/2012 02:05 PM, Roberto Bielli wrote:
->>>> Hi Gilles,
->>>>
->>>> i added this in configure of xenomai so i pass --enable-arm-mach=imx25
->>>>
->>>> imx25)        arch=5
->>>>                tsc_type=__XN_TSC_TYPE_FREERUNNING;;
->>>>
->>>> Furthermore in plat-mxc/include/mach/mxc.h explain which are cpumx2 and
->>>> imx25 is NOT mx2
->>>> #define cpu_is_mx2()    (cpu_is_mx21() || cpu_is_mx27())
->>>>
->>>> i don't understand a things.
->>>> Does the tsc necessary to calculate correct timer period, or can i
->>>> disable tsc and xenomai continue work correctly ?
->>> Xenomai needs the tsc in kernel-space. Obviously, if you do not use the
->>> tsc in user-space, you will not see that it is wrong. Correct physical
->>> address is only needed for user-space.
->>>
->>>> However i cannot use tsc in my simple application. I resend the simple C
->>>> application that doesn't work.
->>> What do you mean you can not use the tsc in your application? What
->>> happens if you use it?
->>>
->> If i use tsc i have no error and i read a correct value.
+Il 10/04/2012 13:49, Gilles Chanteperdrix ha scritto:
+> On 04/10/2012 12:39 PM, Roberto Bielli wrote:
+>> Hi Gilles,
 >>
-> So, it works. Good news. To know if it works as expected, you can try
-> the "latency" test.
+>> i tried your code but th behavior is the same.
+>>
+>> Then i tried a linux base app and works correctly.
+> In the exact same conditions? With the crunching task running with
+> SCHED_FIFO, priority 1, and the periodic task running with SCHED_FIFO,
+> priority 99, and the linux real-time throttling disabled?
 >
-> Something I have not asked, could you type:
-> cat /proc/xenomai/timer
->
-> on the mx25 board?
->
-
+Yes, and i see that every LATCH ( about ~10ms ) period the task with 
+higher priority is wakeup.
+So a task with lower priority is interrupted by timer interrupt and 
+reschedule the task with higher priority.
 
 -- 
 +------------------------------------------------------------------------------------------------+
