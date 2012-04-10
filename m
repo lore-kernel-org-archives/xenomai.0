@@ -1,46 +1,52 @@
-Message-ID: <4F8D5458.6070603@domain.hid>
-Date: Tue, 17 Apr 2012 13:30:32 +0200
+Message-ID: <4F83F929.5000300@domain.hid>
+Date: Tue, 10 Apr 2012 11:11:05 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CAM1yFZ_VhjCVxTBBo9a-6w-2g6xiiGTkuQ6CQ1nJquR0xZCC+g@domain.hid>
-In-Reply-To: <CAM1yFZ_VhjCVxTBBo9a-6w-2g6xiiGTkuQ6CQ1nJquR0xZCC+g@domain.hid>
+References: <4F50A422.50208@domain.hid>
+	<4F55C306.8020307@domain.hid>	<4F55D765.7040705@domain.hid>
+	<4F55E390.8090706@domain.hid>	<4F55FE81.6000904@domain.hid>
+	<4F560A6C.2080306@domain.hid>	<4F560B76.5080606@domain.hid>
+	<4F5629D2.50304@domain.hid>	<4F562B53.7070400@domain.hid>
+	<4F562EC2.6040604@domain.hid>	<4F56387B.40702@domain.hid>
+	<4F575BA3.7060404@domain.hid>	<4F576622.1030509@domain.hid>
+	<4F57A567.7030008@domain.hid>	<4F7C127D.2010400@domain.hid>
+	<4F7C1484.5090406@domain.hid>	<4F7C183F.5040009@domain.hid>
+	<4F7F0D4E.8080906@domain.hid>	<4F7F0E8A.70702@domain.hid>
+	<4F7F20F0.9070007@domain.hid>	<4F80BD10.2060200@domain.hid>
+	<4F83F2C3.50704@domain.hid>	<4F83F321.2030300@domain.hid>
+	<4F83F645.7040402@domain.hid> <4F83F828.4000508@domain.hid>
+In-Reply-To: <4F83F828.4000508@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Understanding the output of hackbench when run
- together with xeno-test
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Subject: Re: [Xenomai-core] preemptive doesn't work
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Anisha Kaul <born.rebel.83@domain.hid>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Roberto Bielli <roberto.bielli@domain.hid>
 Cc: xenomai@xenomai.org
 
-On 04/17/2012 01:11 PM, Anisha Kaul wrote:
-> Greetings,
+On 04/10/2012 11:06 AM, Gilles Chanteperdrix wrote:
+> On 04/10/2012 10:58 AM, Roberto Bielli wrote:
+>> Hi Gilles,
+>>
+>> i look at the processor errata but for the imx25 there are no errata 
+>> elements on timer.
 > 
-> The hackbench command I issued is as follows: _______________________________
+> It is strange that you use linux 2.6.31 on imx25: linux 2.6.31 does not
+> support imx25.
 > 
-> /usr/xenomai/bin/xeno-test -l "dohell -b ./hackbench -pipe 100 process 100"
-
-You do not use dohell properly. The syntax for running dohell is
-detailed below
-
-> /usr/xenomai/bin/dohell [ -b path ] [ -s server ] [ -p port ] [ -m
-> mntpoint ] [ -l path | seconds ]
+> The I-pipe support has not been written for imx25, so, it is entirely
+> possible that you have to adapt it. See:
+> http://www.xenomai.org/index.php/I-pipe:ArmPorting
 > 
-> Generate load, using an assorted set of commands and optionnaly:
-> - hackbench if the path to the hackbench binary is specified with -b;
-> - nc to send TCP data to "server" port "port" if -s is specified (if -p
-> is not specified, the port 9, aka discard is used);
-> - dd to write data under "mntpoint" if -m is specified.
-> 
-> during the runtime of the LTP test if the path to the LTP installation
-> directory is specifed with -l or during "seconds" seconds.
+Latest kernels support imx25, and imx25 works like an mx3, not an mx2,
+can you show me arch/arm/plat-mxc/time.c for your (undoubtedly) patched
+kernel?
 
 -- 
                                                                 Gilles.
