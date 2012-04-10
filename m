@@ -1,10 +1,10 @@
-Message-ID: <4F840934.1030208@domain.hid>
-Date: Tue, 10 Apr 2012 12:19:32 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4F840B91.3080306@domain.hid>
+Date: Tue, 10 Apr 2012 12:29:37 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 References: <CAM1yFZ_sUtSOoJD=hy5W8f9sYTxFu-K+e8MemDFgQYd4JSVhWw@domain.hid>
 In-Reply-To: <CAM1yFZ_sUtSOoJD=hy5W8f9sYTxFu-K+e8MemDFgQYd4JSVhWw@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] Information on license of Xenomai
 List-Id: Help regarding installation and common use of Xenomai
@@ -21,27 +21,38 @@ Cc: xenomai@xenomai.org
 
 On 04/10/2012 12:07 PM, Anisha Kaul wrote:
 > Greetings,
-> 
+>
 > I found this quote:
 >> Xenomai libraries are licensed under the terms of the LGPL.
-> From here: http://www.xenomai.org/index.php/Xenomai:Roadmap#Xenomai_3_FAQ
-> 
-> Does that apply to Xenomai 2 also? 
-
-Yes.
-
-> And are there no issues of having
+>> From here: http://www.xenomai.org/index.php/Xenomai:Roadmap#Xenomai_3_FAQ
+>
+> Does that apply to Xenomai 2 also? And are there no issues of having
 > different licenses of user space and kernel space (like RTAI) in
 > Xenomai 2?
-
-No. The linux kernel is GPL, the glibc is LGPL.
-
 > I couldn't find any /explicit topic/ w.r.t the license, on the
 > Xenomai's website.
+>
 
-That is maybe because there is nothing more about it than what is
-documented in the sources.
+Probably because we expect you to read the information provided in the 
+sources, on a per-component basis (see these obscure COPYING files).
+
+- kernel space is GPL
+- userland is LGPL
+
+Quite common licensing scheme.
+
+> Please help.
+>
+> Regards,
+> Anisha
+>
+> _______________________________________________
+> Xenomai-help mailing list
+> Xenomai-help@domain.hid
+> https://mail.gna.org/listinfo/xenomai-help
+>
+
 
 -- 
-                                                                Gilles.
+Philippe.
 
