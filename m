@@ -1,48 +1,586 @@
-Message-ID: <4F97C395.4080306@domain.hid>
-Date: Wed, 25 Apr 2012 11:27:49 +0200
-From: Wolfgang Grandegger <wg@domain.hid>
+Message-ID: <4F83FF49.90608@domain.hid>
+Date: Tue, 10 Apr 2012 11:37:13 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CAGq8jPhOy=v8Lccb+hddH9W_u8p-Ayi+XfEcFC+rHVzsSp-ghg@domain.hid>	<4F75B5BF.8030401@domain.hid>	<CAGq8jPgY6fTw0ufdj=pvc+Q1jrrQkYptSHTzFOQK=qSiJJU32Q@mail.gmail.com>	<4F75C7D1.4020808@domain.hid>	<CAGq8jPhqv16jgPQh631x8S2MmDhm1F4HtnrQA0xsGPe4bTo6eA@mail.gmail.com>	<4F79D5EA.3010501@domain.hid>	<CAGq8jPjq79CdBbNys1=ccV-CKSyNfG9nX-1L31Ar6WShuNE=HQ@mail.gmail.com>	<4F7D7A43.4060502@domain.hid>	<CAGq8jPhqRN0WTKHC1uJXbHyecX_tKOB6zFnDJ4=DbKtzU3mmcA@mail.gmail.com>	<CAGq8jPgON96yy7_wOCSs83QwxVrfSsTn-fe1P+EBZ8-KLMfj0A@mail.gmail.com>	<4F8592F3.6070907@domain.hid>	<4F85B7BE.9080706@domain.hid>	<4F85B869.2060102@domain.hid>	<4F85D505.6080002@domain.hid>	<CAGq8jPj4dNaukTMZXo6+C=UA-TfpP5h9FOU07FUTnX0TTDsqCA@mail.gmail.com>	<4F8689BD.4050508@domain.hid>	<CAGq8jPgV3aQrz6-Y0LqrjT1HA2udHG887o1EFd4bS5eFvp6gkw@domain.hid>	<4F87036D.1050605@domain.hid>
-	<CAGq8jPi17=r6=k0Zayfky-Z7_7gtopf=ManFBp+9_v0nGe301w@domain.hid>
-In-Reply-To: <CAGq8jPi17=r6=k0Zayfky-Z7_7gtopf=ManFBp+9_v0nGe301w@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Cross-link.c ---RTSER_RTIOC_WAIT_EVENT
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+References: <4F50A422.50208@domain.hid>
+	<4F55C306.8020307@domain.hid>	<4F55D765.7040705@domain.hid>
+	<4F55E390.8090706@domain.hid>	<4F55FE81.6000904@domain.hid>
+	<4F560A6C.2080306@domain.hid>	<4F560B76.5080606@domain.hid>
+	<4F5629D2.50304@domain.hid>	<4F562B53.7070400@domain.hid>
+	<4F562EC2.6040604@domain.hid>	<4F56387B.40702@domain.hid>
+	<4F575BA3.7060404@domain.hid>	<4F576622.1030509@domain.hid>
+	<4F57A567.7030008@domain.hid>	<4F7C127D.2010400@domain.hid>
+	<4F7C1484.5090406@domain.hid>	<4F7C183F.5040009@domain.hid>
+	<4F7F0D4E.8080906@domain.hid>	<4F7F0E8A.70702@domain.hid>
+	<4F7F20F0.9070007@domain.hid>	<4F80BD10.2060200@domain.hid>
+	<4F83F2C3.50704@domain.hid>	<4F83F321.2030300@domain.hid>
+	<4F83F645.7040402@domain.hid> <4F83F828.4000508@domain.hid>
+	<4F83F929.5000300@domain.hid> <4F83FBAB.7040301@domain.hid>
+In-Reply-To: <4F83FBAB.7040301@domain.hid>
+Content-Type: multipart/mixed; boundary="------------010309020104060406070603"
+Subject: Re: [Xenomai-core] preemptive doesn't work
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Minh GIANG <giang.hminh@domain.hid>
-Cc: xenomai-help <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+To: Roberto Bielli <roberto.bielli@domain.hid>
+Cc: xenomai@xenomai.org
 
-On 04/25/2012 11:11 AM, Minh GIANG wrote:
-> hello,
+This is a multi-part message in MIME format.
+--------------010309020104060406070603
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+On 04/10/2012 11:21 AM, Roberto Bielli wrote:
+> Hi Gilles,
 > 
-> Thank you for helping me solve my problem.
-> 
-> You recommend me to update to a more recent version. But I think the
-> xenomai version 2.6.0 is the lastest version over http://www.xenomai.org
->  site.
+> here is my time.c
 
-You are right. The latest fixes are in the git repository, which you can
-get with the following command:
+Though you have not made all the changes I suggested. Here is the time.c
+I would use.
 
-  $ git clone git://git.xenomai.org/xenomai-2.6.git
+-- 
+                                                                Gilles.
 
-> By the way, i have a short question. When i make run cross-link program, i
-> don't understand why there is a leak memory. Even if, i try to remove all
-> parasite in while loop, but the leak memory is always constant. i think the
-> problem comes from rt_dev_write() or rt_dev_read() which don't release the
-> memory buffer. im wrong?
+--------------010309020104060406070603
+Content-Type: text/x-csrc;
+ name="time.c"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+ filename="time.c"
 
-What makes you think that there is a memory leak? How do you observe it
-and what is running while your are testing with cross-link?
+/*
+ *  linux/arch/arm/plat-mxc/time.c
+ *
+ *  Copyright (C) 2000-2001 Deep Blue Solutions
+ *  Copyright (C) 2002 Shane Nay (shane@domain.hid)
+ *  Copyright (C) 2006-2007 Pavel Pisa (ppisa@domain.hid)
+ *  Copyright (C) 2008 Juergen Beisert (kernel@domain.hid)
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
+ * MA 02110-1301, USA.
+ */
 
-Wolfgang.
+#include <linux/interrupt.h>
+#include <linux/irq.h>
+#include <linux/clockchips.h>
+#include <linux/clk.h>
 
+#include <mach/hardware.h>
+#include <asm/mach/time.h>
+#include <mach/common.h>
+
+/* defines common for all i.MX */
+#define MXC_TCTL		0x00
+#define MXC_TCTL_TEN		(1 << 0)
+#define MXC_TPRER		0x04
+
+/* MX1, MX21, MX27 */
+#define MX1_2_TCTL_CLK_PCLK1	(1 << 1)
+#define MX1_2_TCTL_IRQEN	(1 << 4)
+#define MX1_2_TCTL_FRR		(1 << 8)
+#define MX1_2_TCMP		0x08
+#define MX1_2_TCN		0x10
+#define MX1_2_TSTAT		0x14
+
+/* MX21, MX27 */
+#define MX2_TSTAT_CAPT		(1 << 1)
+#define MX2_TSTAT_COMP		(1 << 0)
+
+/* MX31, MX35, MX25 */
+#define MX3_TCTL_WAITEN		(1 << 3)
+#define MX3_TCTL_CLK_IPG	(1 << 6)
+#define MX3_TCTL_CLK_PER	(2 << 6)
+#define MX3_TCTL_FRR		(1 << 9)
+#define MX3_IR			0x0c
+#define MX3_TSTAT		0x08
+#define MX3_TSTAT_OF1		(1 << 0)
+#define MX3_TCN			0x24
+#define MX3_TCMP		0x10
+
+#ifdef CONFIG_IPIPE
+#ifdef CONFIG_NO_IDLE_HZ
+#error "dynamic tick timer not yet supported with IPIPE"
+#endif /* CONFIG_NO_IDLE_HZ */
+int __ipipe_mach_timerint;
+EXPORT_SYMBOL(__ipipe_mach_timerint);
+
+int __ipipe_mach_timerstolen = 0;
+EXPORT_SYMBOL(__ipipe_mach_timerstolen);
+
+unsigned int __ipipe_mach_ticks_per_jiffy = LATCH;
+EXPORT_SYMBOL(__ipipe_mach_ticks_per_jiffy);
+
+static int mxc_timer_initialized;
+static unsigned mxc_min_delay;
+
+union tsc_reg {
+#ifdef __BIG_ENDIAN
+	struct {
+		unsigned long high;
+		unsigned long low;
+	};
+#else /* __LITTLE_ENDIAN */
+	struct {
+		unsigned long low;
+		unsigned long high;
+	};
+#endif /* __LITTLE_ENDIAN */
+	unsigned long long full;
+};
+
+#ifdef CONFIG_SMP
+static union tsc_reg tsc[NR_CPUS];
+
+void __ipipe_mach_get_tscinfo(struct __ipipe_tscinfo *info)
+{
+	info->type = IPIPE_TSC_TYPE_NONE;
+}
+
+#else /* !CONFIG_SMP */
+static union tsc_reg *tsc;
+
+void __ipipe_mach_get_tscinfo(struct __ipipe_tscinfo *info)
+{
+	info->type = IPIPE_TSC_TYPE_FREERUNNING;
+	if (cpu_is_mx1()) {
+#ifdef CONFIG_ARCH_MX1
+		info->u.fr.counter = (unsigned *) (TIM1_BASE_ADDR + MX1_2_TCN);
+#endif
+	} else if (cpu_is_mx2()) {
+#ifdef CONFIG_ARCH_MX2
+		info->u.fr.counter = (unsigned *) (GPT1_BASE_ADDR + MX1_2_TCN);
+#endif
+	} else if (cpu_is_mx3() || cpu_is_mx25() ) {
+#if defined CONFIG_ARCH_MX3 || defined CONFIG_ARCH_MX25
+		info->u.fr.counter = (unsigned *) (GPT1_BASE_ADDR + MX3_TCN);
+#endif
+	}
+	info->u.fr.mask = 0xffffffff;
+	info->u.fr.tsc = &tsc->full;
+}
+#endif /* !CONFIG_SMP */
+
+static void ipipe_mach_update_tsc(void);
+#endif /* CONFIG_IPIPE */
+
+#define timer_is_v2()	(cpu_is_mx3() || cpu_is_mx25() || cpu_is_mx5())
+
+static struct clock_event_device clockevent_mxc;
+static enum clock_event_mode clockevent_mode = CLOCK_EVT_MODE_UNUSED;
+
+static void __iomem *timer_base;
+
+static inline void gpt_irq_disable(void)
+{
+	unsigned int tmp;
+
+	if (timer_is_v2())
+		__raw_writel(0, timer_base + MX3_IR);
+	else {
+		tmp = __raw_readl(timer_base + MXC_TCTL);
+		__raw_writel(tmp & ~MX1_2_TCTL_IRQEN, timer_base + MXC_TCTL);
+	}
+}
+
+static inline void gpt_irq_enable(void)
+{
+	if (timer_is_v2())
+		__raw_writel(1<<0, timer_base + MX3_IR);
+	else {
+		__raw_writel(__raw_readl(timer_base + MXC_TCTL) | MX1_2_TCTL_IRQEN,
+			timer_base + MXC_TCTL);
+	}
+}
+
+static void gpt_irq_acknowledge(void)
+{
+	if (!timer_is_v2()) {
+		if (cpu_is_mx1())
+			__raw_writel(0, timer_base + MX1_2_TSTAT);
+		else
+			__raw_writel(MX2_TSTAT_CAPT | MX2_TSTAT_COMP, timer_base + MX1_2_TSTAT);
+	} else
+		__raw_writel(MX3_TSTAT_OF1, timer_base + MX3_TSTAT);
+}
+
+static cycle_t timer_v1_get_cycles(struct clocksource *cs)
+{
+	return __raw_readl(timer_base + MX1_2_TCN);
+}
+
+static cycle_t timer_v2_get_cycles(struct clocksource *cs)
+{
+	return __raw_readl(timer_base + MX3_TCN);
+}
+
+static struct clocksource clocksource_mxc = {
+	.name		= "mxc_timer1",
+	.rating		= 200,
+	.read		= timer_v1_get_cycles,
+	.mask		= CLOCKSOURCE_MASK(32),
+	.shift		= 20,
+	.flags		= CLOCK_SOURCE_IS_CONTINUOUS,
+};
+
+static int __init mxc_clocksource_init(struct clk *timer_clk)
+{
+	unsigned int c = clk_get_rate(timer_clk);
+
+	if (timer_is_v2())
+		clocksource_mxc.read = timer_v2_get_cycles;
+
+#ifdef CONFIG_IPIPE
+	__ipipe_mach_ticks_per_jiffy = (c + HZ/2) / HZ;
+#endif /* CONFIG_IPIPE */
+	clocksource_mxc.mult = clocksource_hz2mult(c,
+					clocksource_mxc.shift);
+	clocksource_register(&clocksource_mxc);
+
+	return 0;
+}
+
+/* clock event */
+
+static int timer_v1_set_next_event(unsigned long evt,
+			      struct clock_event_device *unused)
+{
+	unsigned long tcmp;
+
+	tcmp = __raw_readl(timer_base + MX1_2_TCN) + evt;
+
+	__raw_writel(tcmp, timer_base + MX1_2_TCMP);
+
+	return (int)(tcmp - __raw_readl(timer_base + MX1_2_TCN)) < 0 ?
+				-ETIME : 0;
+}
+
+static int timer_v2_set_next_event(unsigned long evt,
+			      struct clock_event_device *unused)
+{
+	unsigned long tcmp;
+
+	tcmp = __raw_readl(timer_base + MX3_TCN) + evt;
+
+	__raw_writel(tcmp, timer_base + MX3_TCMP);
+
+	return (int)(tcmp - __raw_readl(timer_base + MX3_TCN)) < 0 ? -ETIME : 0;
+}
+
+#ifdef DEBUG
+static inline const char *clock_event_mode_label(enum clock_event_mode mode)
+{
+	switch (mode) {
+	case CLOCK_EVT_MODE_PERIODIC:
+		return "CLOCK_EVT_MODE_PERIODIC";
+	case CLOCK_EVT_MODE_ONESHOT:
+		return "CLOCK_EVT_MODE_ONESHOT";
+	case CLOCK_EVT_MODE_SHUTDOWN:
+		return "CLOCK_EVT_MODE_SHUTDOWN";
+	case CLOCK_EVT_MODE_UNUSED:
+		return "CLOCK_EVT_MODE_UNUSED";
+	case CLOCK_EVT_MODE_RESUME:
+		return "CLOCK_EVT_MODE_RESUME";
+	}
+	return "UNKNOWN";
+};
+#endif /* DEBUG */
+
+static void mxc_set_mode(enum clock_event_mode mode,
+				struct clock_event_device *evt)
+{
+	unsigned long flags;
+
+	/*
+	 * The timer interrupt generation is disabled at least
+	 * for enough time to call mxc_set_next_event()
+	 */
+	local_irq_save(flags);
+
+	/* Disable interrupt in GPT module */
+	gpt_irq_disable();
+
+	if (mode != clockevent_mode) {
+		/* Set event time into far-far future */
+		if (timer_is_v2())
+			__raw_writel(__raw_readl(timer_base + MX3_TCN) - 3,
+					timer_base + MX3_TCMP);
+		else
+			__raw_writel(__raw_readl(timer_base + MX1_2_TCN) - 3,
+					timer_base + MX1_2_TCMP);
+
+		/* Clear pending interrupt */
+		gpt_irq_acknowledge();
+	}
+
+#ifdef DEBUG
+	printk(KERN_INFO "mxc_set_mode: changing mode from %s[%d] to %s[%d]\n",
+		clock_event_mode_label(clockevent_mode), clockevent_mode,
+		clock_event_mode_label(mode), mode);
+#endif /* DEBUG */
+
+	/* Remember timer mode */
+	clockevent_mode = mode;
+	local_irq_restore(flags);
+	switch (mode)
+	{
+	case CLOCK_EVT_MODE_PERIODIC:
+		printk(KERN_ERR "mxc_set_mode: Periodic mode is not supported for i.MX\n");
+		break;
+	case CLOCK_EVT_MODE_ONESHOT:
+	/*
+	 * Do not put overhead of interrupt enable/disable into
+	 * mxc_set_next_event(), the core has about 4 minutes
+	 * to call mxc_set_next_event() or shutdown clock after
+	 * mode switching
+	 */
+		local_irq_save(flags);
+		gpt_irq_enable();
+		local_irq_restore(flags);
+		break;
+	case CLOCK_EVT_MODE_SHUTDOWN:
+	case CLOCK_EVT_MODE_UNUSED:
+	case CLOCK_EVT_MODE_RESUME:
+		/* Left event sources disabled, no more interrupts appear */
+		break;
+	}
+}
+
+/*
+ * IRQ handler for the timer
+ */
+static irqreturn_t mxc_timer_interrupt(int irq, void *dev_id)
+{
+	struct clock_event_device *evt = &clockevent_mxc;
+	uint32_t tstat;
+	unsigned long reg;
+
+#ifndef CONFIG_IPIPE
+	if (timer_is_v2())
+		tstat = __raw_readl(timer_base + MX3_TSTAT);
+	else
+		tstat = __raw_readl(timer_base + MX1_2_TSTAT);
+
+	gpt_irq_acknowledge();
+#else /* !CONFIG_IPIPE */
+
+	ipipe_mach_update_tsc();
+
+#endif /* !CONFIG_IPIPE */
+
+	evt->event_handler(evt);
+
+	return IRQ_HANDLED;
+}
+
+static struct irqaction mxc_timer_irq = {
+	.name		= "i.MX Timer Tick",
+	.flags		= IRQF_DISABLED | IRQF_TIMER | IRQF_IRQPOLL,
+	.handler	= mxc_timer_interrupt,
+};
+
+static struct clock_event_device clockevent_mxc = {
+	.name		= "mxc_timer1",
+	.features	= CLOCK_EVT_FEAT_ONESHOT,
+	.shift		= 32,
+	.set_mode	= mxc_set_mode,
+	.set_next_event	= timer_v1_set_next_event,
+	.rating		= 200,
+};
+
+static int __init mxc_clockevent_init(struct clk *timer_clk)
+{
+	unsigned long c = clk_get_rate(timer_clk);
+
+	printk(KERN_DEBUG "%s: timer clk rate is %lu.%03luMHz\n", __FUNCTION__,
+		c / 1000000, c / 1000 % 1000);
+
+	if (timer_is_v2())
+		clockevent_mxc.set_next_event = timer_v2_set_next_event;
+
+	clockevent_mxc.mult = div_sc(c, NSEC_PER_SEC,
+					clockevent_mxc.shift);
+	clockevent_mxc.max_delta_ns =
+			clockevent_delta2ns(0xfffffffe, &clockevent_mxc);
+	clockevent_mxc.min_delta_ns =
+			clockevent_delta2ns(0xff, &clockevent_mxc);
+
+	clockevent_mxc.cpumask = cpumask_of(0);
+
+	clockevents_register_device(&clockevent_mxc);
+
+	return 0;
+}
+
+void __init mxc_timer_init(struct clk *timer_clk, void __iomem *base, int irq)
+{
+	uint32_t tctl_val;
+
+	clk_enable(timer_clk);
+
+	timer_base = base;
+
+	/*
+	 * Initialise to a known state (all timers off, and timing reset)
+	 */
+
+	__raw_writel(0, timer_base + MXC_TCTL);
+	__raw_writel(0, timer_base + MXC_TPRER); /* see datasheet note */
+
+	if (timer_is_v2())
+		tctl_val = MX3_TCTL_CLK_IPG | MX3_TCTL_FRR | MX3_TCTL_WAITEN | MXC_TCTL_TEN;
+	else
+		tctl_val = MX1_2_TCTL_FRR | MX1_2_TCTL_CLK_PCLK1 | MXC_TCTL_TEN;
+
+	__raw_writel(tctl_val, timer_base + MXC_TCTL);
+
+	/* init and register the timer to the framework */
+	mxc_clocksource_init(timer_clk);
+	mxc_clockevent_init(timer_clk);
+
+	/* Make irqs happen */
+	setup_irq(irq, &mxc_timer_irq);
+
+#ifdef CONFIG_IPIPE
+	__ipipe_mach_timerint = irq;
+#ifndef CONFIG_SMP
+	tsc = (union tsc_reg *) __ipipe_tsc_area;
+	barrier();
+#endif /* CONFIG_SMP */
+
+	mxc_min_delay = 2 * ((ipipe_cpu_freq() + 500000) / 1000000) ?: 1;
+	if (mxc_min_delay == 0)
+	{
+		mxc_min_delay = 1;
+	}
+
+	printk(  KERN_INFO "mxc_min_delay = %d\n", mxc_min_delay );
+	mxc_timer_initialized = 1;
+#endif /* CONFIG_IPIPE */
+}
+
+#ifdef CONFIG_IPIPE
+int __ipipe_check_tickdev(const char *devname)
+{
+	return !strcmp(devname, clockevent_mxc.name);
+}
+
+void __ipipe_mach_acktimer(void)
+{
+	uint32_t tstat;
+
+	if (timer_is_v2())
+		tstat = __raw_readl(timer_base + MX3_TSTAT);
+	else
+		tstat = __raw_readl(timer_base + MX1_2_TSTAT);
+
+	gpt_irq_acknowledge();
+}
+
+static void ipipe_mach_update_tsc(void)
+{
+	union tsc_reg *local_tsc;
+	unsigned long stamp, flags;
+
+	local_irq_save_hw(flags);
+	local_tsc = &tsc[ipipe_processor_id()];
+	if (!timer_is_v2())
+		stamp = __raw_readl(timer_base + MX1_2_TCN);
+	else
+		stamp = __raw_readl(timer_base + MX3_TCN);
+	if (unlikely(stamp < local_tsc->low))
+		/* 32 bit counter wrapped, increment high word. */
+		local_tsc->high++;
+	local_tsc->low = stamp;
+	local_irq_restore_hw(flags);
+}
+
+notrace unsigned long long __ipipe_mach_get_tsc(void)
+{
+	if (likely(mxc_timer_initialized)) {
+		union tsc_reg *local_tsc, result;
+		unsigned long stamp;
+
+		local_tsc = &tsc[ipipe_processor_id()];
+
+		if (!timer_is_v2())  {
+			__asm__ ("ldmia %1, %M0\n"
+				 : "=r"(result.full), "+&r"(local_tsc)
+				 : "m"(*local_tsc));
+			barrier();
+			stamp = __raw_readl(timer_base + MX1_2_TCN);
+		} else {
+			__asm__ ("ldmia %1, %M0\n"
+				 : "=r"(result.full), "+&r"(local_tsc)
+				 : "m"(*local_tsc));
+			barrier();
+			stamp = __raw_readl(timer_base + MX3_TCN);
+		}
+		if (unlikely(stamp < result.low))
+			/* 32 bit counter wrapped, increment high word. */
+			result.high++;
+		result.low = stamp;
+
+		return result.full;
+	}
+
+	return 0;
+}
+EXPORT_SYMBOL(__ipipe_mach_get_tsc);
+
+/*
+ * Reprogram the timer
+ */
+
+void __ipipe_mach_set_dec(unsigned long delay)
+{
+	if (delay > mxc_min_delay) {
+		unsigned long flags;
+
+		local_irq_save_hw(flags);
+		if (!time_is_v2())
+			timer_v1_set_next_event(delay, NULL);
+		else
+			timer_v2_set_next_event(delay, NULL);
+		local_irq_restore_hw(flags);
+	} else
+		ipipe_trigger_irq(__ipipe_mach_timerint);
+}
+EXPORT_SYMBOL(__ipipe_mach_set_dec);
+
+void __ipipe_mach_release_timer(void)
+{
+	mxc_set_mode(clockevent_mxc.mode, &clockevent_mxc);
+	if (clockevent_mxc.mode == CLOCK_EVT_MODE_ONESHOT)
+		clockevent_mxc.set_next_event(LATCH, &clockevent_mxc);
+}
+EXPORT_SYMBOL(__ipipe_mach_release_timer);
+
+unsigned long __ipipe_mach_get_dec(void)
+{
+	if (!time_is_v2())
+		return __raw_readl(timer_base + MX1_2_TCMP)
+			- __raw_readl(timer_base + MX1_2_TCN);
+	else
+		return __raw_readl(timer_base + MX3_TCMP)
+			- __raw_readl(timer_base + MX3_TCN);
+}
+#endif /* CONFIG_IPIPE */
+
+--------------010309020104060406070603--
 
