@@ -1,6 +1,6 @@
-Message-ID: <4F8428AA.1040404@domain.hid>
-Date: Tue, 10 Apr 2012 14:33:46 +0200
-From: Roberto Bielli <roberto.bielli@domain.hid>
+Message-ID: <4F842934.8090503@domain.hid>
+Date: Tue, 10 Apr 2012 14:36:04 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <4F50A422.50208@domain.hid>
 	<4F55C306.8020307@domain.hid>	<4F55D765.7040705@domain.hid>
@@ -17,9 +17,9 @@ References: <4F50A422.50208@domain.hid>
 	<4F83F645.7040402@domain.hid> <4F83F828.4000508@domain.hid>
 	<4F83F929.5000300@domain.hid> <4F83FBAB.7040301@domain.hid>
 	<4F83FF49.90608@domain.hid> <4F840DD8.2030407@domain.hid>
-	<4F841E32.50101@domain.hid>
-In-Reply-To: <4F841E32.50101@domain.hid>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+	<4F841E32.50101@domain.hid> <4F8428AA.1040404@domain.hid>
+In-Reply-To: <4F8428AA.1040404@domain.hid>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-core] preemptive doesn't work
 List-Id: Xenomai life and development <xenomai.xenomai.org>
@@ -30,58 +30,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Roberto Bielli <roberto.bielli@domain.hid>
 Cc: xenomai@xenomai.org
 
-Il 10/04/2012 13:49, Gilles Chanteperdrix ha scritto:
-> On 04/10/2012 12:39 PM, Roberto Bielli wrote:
->> Hi Gilles,
+On 04/10/2012 02:33 PM, Roberto Bielli wrote:
+> Il 10/04/2012 13:49, Gilles Chanteperdrix ha scritto:
+>> On 04/10/2012 12:39 PM, Roberto Bielli wrote:
+>>> Hi Gilles,
+>>>
+>>> i tried your code but th behavior is the same.
+>>>
+>>> Then i tried a linux base app and works correctly.
+>> In the exact same conditions? With the crunching task running with
+>> SCHED_FIFO, priority 1, and the periodic task running with SCHED_FIFO,
+>> priority 99, and the linux real-time throttling disabled?
 >>
->> i tried your code but th behavior is the same.
->>
->> Then i tried a linux base app and works correctly.
-> In the exact same conditions? With the crunching task running with
-> SCHED_FIFO, priority 1, and the periodic task running with SCHED_FIFO,
-> priority 99, and the linux real-time throttling disabled?
->
-Yes, and i see that every LATCH ( about ~10ms ) period the task with 
-higher priority is wakeup.
-So a task with lower priority is interrupted by timer interrupt and 
-reschedule the task with higher priority.
+> Yes, and i see that every LATCH ( about ~10ms ) period the task with 
+> higher priority is wakeup.
+
+In the example you sent the periodic task was running with a 200us
+period, not 10ms.
 
 -- 
-+------------------------------------------------------------------------------------------------+
-							
-Roberto Bielli
-Sviluppo Software					
-Axel S.r.l.					
-							
-Via Del Cannino, 3 				
-21020 Crosio Della Valle			
-Varese - Italy					
-							
-Telefono: +39 0332 949600			
-Fax:      +39 0332 969315			
-							
-E-mail:   roberto.bielli@domain.hid	
-Web Site: www.axelsw.it
-
-+------------------------------------------------------------------------------------------------+
-
-Si precisa che le informazioni contenute in questo messaggio sono riservate e ad uso esclusivo del destinatario.
-Qualora il messaggio in parola Le fosse pervenuto per errore, La preghiamo di eliminarlo senza copiarlo e di non inoltrarlo a terzi,
-dandocene gentilmente comunicazione. Grazie.
-Informativa sul trattamento dei dati personali (D. Lgs. 196/2003).
-I dati utilizzati per la spedizione del presente messaggio sono utilizzati da Axel S.r.l., titolare del trattamento,
-per l'invio delle comunicazioni dei diversi settori aziendali, non essendo autorizzata la divulgazione a terzi.
-Potrete rivolgere alla seguente mail richieste di verifica, rettifica o cancellazione dei Vostri dati: info@domain.hid
-
-This e-mail and any attachments is confidential and may contain privileged information
-intended for the addressee(s) only. Dissemination, copying, printing or use by anybody
-else is unauthorised. If you are not the intended recipient,
-please delete this message and any attachments and advise the sender
-by return e-mail.Thank you.  			
-							
-+------------------------------------------------------------------------------------------------+
-
+                                                                Gilles.
 
