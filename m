@@ -1,5 +1,5 @@
-Message-ID: <4F842934.8090503@domain.hid>
-Date: Tue, 10 Apr 2012 14:36:04 +0200
+Message-ID: <4F842A4B.8040106@domain.hid>
+Date: Tue, 10 Apr 2012 14:40:43 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <4F50A422.50208@domain.hid>
@@ -47,9 +47,41 @@ On 04/10/2012 02:33 PM, Roberto Bielli wrote:
 >>
 > Yes, and i see that every LATCH ( about ~10ms ) period the task with 
 > higher priority is wakeup.
+> So a task with lower priority is interrupted by timer interrupt and 
+> reschedule the task with higher priority.
+> 
+The only thing I can think is that the timer interrupt in fact stays 
+masked. You can try the following patch:
 
-In the example you sent the periodic task was running with a 200us
-period, not 10ms.
+diff --git a/arch/arm/plat-mxc/irq.c b/arch/arm/plat-mxc/irq.c                  
+index 8aee763..7e4cc2e 100644                                                   
+--- a/arch/arm/plat-mxc/irq.c                                                   
++++ b/arch/arm/plat-mxc/irq.c                                                   
+@@ -94,12 +94,14 @@ EXPORT_SYMBOL(mxc_set_irq_fiq);                             
+ static void mxc_mask_irq(unsigned int irq)                                     
+ {                                                                              
+        __raw_writel(irq, avic_base + AVIC_INTDISNUM);                          
++       __raw_readl(avic_base + AVIC_INTDISNUM);                                
+ }                                                                              
+                                                                                
+ /* Enable interrupt number "irq" in the AVIC */                                
+ static void mxc_unmask_irq(unsigned int irq)                                   
+ {                                                                              
+        __raw_writel(irq, avic_base + AVIC_INTENNUM);                           
++       __raw_readl(avic_base + AVIC_INTENNUM);                                 
+ }                                                                              
+                                                                                
+ static struct irq_chip mxc_avic_chip = {                                       
+
+
+If I had to debug this issue, I would look at all the timer and 
+interrupt controller registers value, to see what is wrong.
+
+You can also try the plain linux example with CONFIG_IPIPE on, but 
+without CONFIG_XENOMAI.
+
+Other than that, without access to the board, it is hard for me to 
+debug further, so I am afraid you are on your own.
 
 -- 
                                                                 Gilles.
