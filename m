@@ -1,6 +1,6 @@
-Message-ID: <4F84222D.7080808@domain.hid>
-Date: Tue, 10 Apr 2012 14:06:05 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4F842369.2020504@domain.hid>
+Date: Tue, 10 Apr 2012 14:11:21 +0200
+From: Roberto Bielli <roberto.bielli@domain.hid>
 MIME-Version: 1.0
 References: <4F50A422.50208@domain.hid>
 	<4F55C306.8020307@domain.hid>	<4F55D765.7040705@domain.hid>
@@ -18,8 +18,9 @@ References: <4F50A422.50208@domain.hid>
 	<4F83F929.5000300@domain.hid> <4F83FBAB.7040301@domain.hid>
 	<4F83FF49.90608@domain.hid> <4F840DD8.2030407@domain.hid>
 	<4F8418C4.400@domain.hid> <4F8421F7.50807@domain.hid>
-In-Reply-To: <4F8421F7.50807@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+	<4F84222D.7080808@domain.hid>
+In-Reply-To: <4F84222D.7080808@domain.hid>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-core] preemptive doesn't work
 List-Id: Xenomai life and development <xenomai.xenomai.org>
@@ -30,36 +31,69 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Roberto Bielli <roberto.bielli@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On 04/10/2012 02:05 PM, Roberto Bielli wrote:
-> Hi Gilles,
-> 
-> i added this in configure of xenomai so i pass --enable-arm-mach=imx25
-> 
-> imx25)        arch=5
->              tsc_type=__XN_TSC_TYPE_FREERUNNING;;
-> 
-> Furthermore in plat-mxc/include/mach/mxc.h explain which are cpumx2 and 
-> imx25 is NOT mx2
-> #define cpu_is_mx2()    (cpu_is_mx21() || cpu_is_mx27())
-> 
-> i don't understand a things.
-> Does the tsc necessary to calculate correct timer period, or can i 
-> disable tsc and xenomai continue work correctly ?
-
-Xenomai needs the tsc in kernel-space. Obviously, if you do not use the
-tsc in user-space, you will not see that it is wrong. Correct physical
-address is only needed for user-space.
-
-> 
-> However i cannot use tsc in my simple application. I resend the simple C 
-> application that doesn't work.
-
-What do you mean you can not use the tsc in your application? What
-happens if you use it?
+Il 10/04/2012 14:06, Gilles Chanteperdrix ha scritto:
+> On 04/10/2012 02:05 PM, Roberto Bielli wrote:
+>> Hi Gilles,
+>>
+>> i added this in configure of xenomai so i pass --enable-arm-mach=imx25
+>>
+>> imx25)        arch=5
+>>               tsc_type=__XN_TSC_TYPE_FREERUNNING;;
+>>
+>> Furthermore in plat-mxc/include/mach/mxc.h explain which are cpumx2 and
+>> imx25 is NOT mx2
+>> #define cpu_is_mx2()    (cpu_is_mx21() || cpu_is_mx27())
+>>
+>> i don't understand a things.
+>> Does the tsc necessary to calculate correct timer period, or can i
+>> disable tsc and xenomai continue work correctly ?
+> Xenomai needs the tsc in kernel-space. Obviously, if you do not use the
+> tsc in user-space, you will not see that it is wrong. Correct physical
+> address is only needed for user-space.
+>
+>> However i cannot use tsc in my simple application. I resend the simple C
+>> application that doesn't work.
+> What do you mean you can not use the tsc in your application? What
+> happens if you use it?
+>
+If i use tsc i have no error and i read a correct value.
 
 -- 
-                                                                Gilles.
++------------------------------------------------------------------------------------------------+
+							
+Roberto Bielli
+Sviluppo Software					
+Axel S.r.l.					
+							
+Via Del Cannino, 3 				
+21020 Crosio Della Valle			
+Varese - Italy					
+							
+Telefono: +39 0332 949600			
+Fax:      +39 0332 969315			
+							
+E-mail:   roberto.bielli@domain.hid	
+Web Site: www.axelsw.it
+
++------------------------------------------------------------------------------------------------+
+
+Si precisa che le informazioni contenute in questo messaggio sono riservate e ad uso esclusivo del destinatario.
+Qualora il messaggio in parola Le fosse pervenuto per errore, La preghiamo di eliminarlo senza copiarlo e di non inoltrarlo a terzi,
+dandocene gentilmente comunicazione. Grazie.
+Informativa sul trattamento dei dati personali (D. Lgs. 196/2003).
+I dati utilizzati per la spedizione del presente messaggio sono utilizzati da Axel S.r.l., titolare del trattamento,
+per l'invio delle comunicazioni dei diversi settori aziendali, non essendo autorizzata la divulgazione a terzi.
+Potrete rivolgere alla seguente mail richieste di verifica, rettifica o cancellazione dei Vostri dati: info@domain.hid
+
+This e-mail and any attachments is confidential and may contain privileged information
+intended for the addressee(s) only. Dissemination, copying, printing or use by anybody
+else is unauthorised. If you are not the intended recipient,
+please delete this message and any attachments and advise the sender
+by return e-mail.Thank you.  			
+							
++------------------------------------------------------------------------------------------------+
+
 
