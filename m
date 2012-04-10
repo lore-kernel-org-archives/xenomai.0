@@ -1,125 +1,174 @@
-Message-ID: <4F918990.7060200@domain.hid>
-Date: Fri, 20 Apr 2012 18:06:40 +0200
-From: Michael Trimarchi <michael@domain.hid>
+Message-ID: <4F8421F7.50807@domain.hid>
+Date: Tue, 10 Apr 2012 14:05:11 +0200
+From: Roberto Bielli <roberto.bielli@domain.hid>
 MIME-Version: 1.0
-References: <4F8FE2A9.8080303@domain.hid> <4F8FEF3C.5010905@domain.hid>
-	<4F917BA4.1090804@domain.hid>
-	<4F9181A3.9070306@domain.hid>
-In-Reply-To: <4F9181A3.9070306@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Adeos-main] IMX25 timer access patch
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/options/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
+References: <4F50A422.50208@domain.hid>
+	<4F55C306.8020307@domain.hid>	<4F55D765.7040705@domain.hid>
+	<4F55E390.8090706@domain.hid>	<4F55FE81.6000904@domain.hid>
+	<4F560A6C.2080306@domain.hid>	<4F560B76.5080606@domain.hid>
+	<4F5629D2.50304@domain.hid>	<4F562B53.7070400@domain.hid>
+	<4F562EC2.6040604@domain.hid>	<4F56387B.40702@domain.hid>
+	<4F575BA3.7060404@domain.hid>	<4F576622.1030509@domain.hid>
+	<4F57A567.7030008@domain.hid>	<4F7C127D.2010400@domain.hid>
+	<4F7C1484.5090406@domain.hid>	<4F7C183F.5040009@domain.hid>
+	<4F7F0D4E.8080906@domain.hid>	<4F7F0E8A.70702@domain.hid>
+	<4F7F20F0.9070007@domain.hid>	<4F80BD10.2060200@domain.hid>
+	<4F83F2C3.50704@domain.hid>	<4F83F321.2030300@domain.hid>
+	<4F83F645.7040402@domain.hid> <4F83F828.4000508@domain.hid>
+	<4F83F929.5000300@domain.hid> <4F83FBAB.7040301@domain.hid>
+	<4F83FF49.90608@domain.hid> <4F840DD8.2030407@domain.hid>
+	<4F8418C4.400@domain.hid>
+In-Reply-To: <4F8418C4.400@domain.hid>
+Content-Type: multipart/mixed; boundary="------------080608070001090107000302"
+Subject: Re: [Xenomai-core] preemptive doesn't work
+List-Id: Xenomai life and development <xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
+List-Archive: </public/xenomai-core>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-core-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
+	<mailto:xenomai-core-request@domain.hid>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Adeos <adeos-main@gna.org>, Michael Trimarchi <trimarchi@domain.hid>
+Cc: xenomai@xenomai.org
 
-Hi
+This is a multi-part message in MIME format.
+--------------080608070001090107000302
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On 04/20/2012 05:32 PM, Gilles Chanteperdrix wrote:
-> On 04/20/2012 05:07 PM, Michael Trimarchi wrote:
->> Hi Gilles
->>
->> This is my version:
->>
->> commit be8ccd4a39708cef6e67e4e00432d0207e596a76
->> Author: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
->> Date:   Wed Feb 23 01:38:09 2011 +0100
->>
->>     forward port, rebase on 3.0-noarch, adeos-ipipe-3.0.13-arm-1.18-05
->>
->>
->> on top of it I have my board patches and this commit for an error of the timer precision
->>
->> commit fff6198ec1033e55d42cc24914b6b958365d7495
->> Author: Mehnert, Torsten <T.Mehnert@domain.hid>
->> Date:   Mon Aug 1 08:02:07 2011 +0000
->>
->>     i.MX25 GPT clock fix: ensure correct the clock source
->>     
->>     Request for comment and commit.
->>     
->>     From: T. Mehnert <t.mehnert@domain.hid>
->>     Date: Mon, 4 Jul 2011 15:53:30 +0200
->>     Subject: [PATCH] i.MX25 GPT clock fix: ensure correct the clock source
->>     
->>     This patch ensures, that Linux will take the correct clock source (AHB_DIV)
->>     for gpt in the ARM i.MX25 implementation. The currect code depends on the re
->>     defaults of the CCM_MCR register. So on some boards it could happen that the
->>     UPLL is used for clock source, which results in faulty time behavior in Linu
->>     In this case all delays or sleeps will will be faktor 1.8 too long.
->>     
->>     Signed-off-by: Torsten Mehnert <t.mehnert@domain.hid>
->>     Signed-off-by: Sascha Hauer <s.hauer@domain.hid>
->>
->>
->> On 04/19/2012 12:55 PM, Gilles Chanteperdrix wrote:
->>> On 04/19/2012 12:02 PM, Michael Trimarchi wrote:
->>>> Hi,
->>>>
->>>> I will send a proper patch. Is it possible to include in the ipipe-arm branch?
->>>>
->>>> Michael
->>>
->>> Yes, OK. Please resend the patch to the xenomai-core, or adeos-main
->>> mailing list, I see ipipe-arm is broken since at least 2.6.33. It
->>> compiles but probably does not work.
->>>
->>
->> I'm still debugging my imx25 board, and I have problem with the timer. If I execute
->> clocktest for xenomai after some while I have:
->>
->>
->> now at 2897236425903 nsecs
->>
->> cpu: 0
->>  clock 0:
->>   .base:       c04f26a8
->>   .index:      0
->>   .resolution: 1 nsecs
->>   .get_time:   ktime_get
->>   .offset:     0 nsecs
->> active timers:
->>  #0: <c04f2c00>, tick_sched_timer, S:01
->>  # expires at 2889380000000-2889380000000 nsecs [in -7856425903 to -7856425903 nsecs]
->>  #1: <c3aa1f38>, hrtimer_wakeup, S:01
->>  # expires at 2889470961229-2889471011229 nsecs [in -7765464674 to -7765414674 nsecs]
->>  #2: <c3a97f38>, hrtimer_wakeup, S:01
->>  # expires at 2889508847229-2889508897229 nsecs [in -7727578674 to -7727528674 nsecs]
->>  #3: <c0510648>, sched_rt_period_timer, S:01
->>  # expires at 2890000000000-2890000000000 nsecs [in -7236425903 to -7236425903 nsecs]
->>  #4: <c04f2d68>, watchdog_timer_fn, S:01
->>  # expires at 2892070000002-2892070000002 nsecs [in -5166425901 to -5166425901 nsecs]
->>
->>
->> And I don't have any tick from the i.Mx timer until they wrap again to be positive.
->> Can you suggest some way to debug? Do you know what it can happen?
-> 
-> If you have CONFIG_MXC_IRQ_PRIO enabled, disable it, this option is
-> incompatible with xenomai.
-> 
+Hi Gilles,
 
-It's already disable. 
+i added this in configure of xenomai so i pass --enable-arm-mach=imx25
 
-# CONFIG_MACH_EUKREA_CPUIMX25 is not set
-# CONFIG_MXC_IRQ_PRIOR is not set
-CONFIG_MXC_AVIC=y
-CONFIG_MXC_PWM=y
+imx25)        arch=5
+             tsc_type=__XN_TSC_TYPE_FREERUNNING;;
+
+Furthermore in plat-mxc/include/mach/mxc.h explain which are cpumx2 and 
+imx25 is NOT mx2
+#define cpu_is_mx2()    (cpu_is_mx21() || cpu_is_mx27())
+
+i don't understand a things.
+Does the tsc necessary to calculate correct timer period, or can i 
+disable tsc and xenomai continue work correctly ?
+
+However i cannot use tsc in my simple application. I resend the simple C 
+application that doesn't work.
 
 
-During clock test it stuck for a while and then start again 
+Il 10/04/2012 13:25, Gilles Chanteperdrix ha scritto:
+> On 04/10/2012 12:39 PM, Roberto Bielli wrote:
+>> Hi Gilles,
+>>
+>> i tried your code but th behavior is the same.
+>>
+>> Then i tried a linux base app and works correctly.
+> The tsc physical address passed to user-space looks wrong.
+>
+> void __ipipe_mach_get_tscinfo(struct __ipipe_tscinfo *info)
+> {
+> 	info->type = IPIPE_TSC_TYPE_FREERUNNING;
+> 	if (cpu_is_mx1()) {
+> #ifdef CONFIG_ARCH_MX1
+> 		info->u.fr.counter = (unsigned *) (TIM1_BASE_ADDR + MX1_2_TCN);
+> #endif
+> 	} else if (cpu_is_mx2()) {
+> #ifdef CONFIG_ARCH_MX2
+> 		info->u.fr.counter = (unsigned *) (GPT1_BASE_ADDR + MX1_2_TCN);
+> #endif
+> 	} else if (cpu_is_mx3() || cpu_is_mx25() ) {
+> #if defined CONFIG_ARCH_MX3 || defined CONFIG_ARCH_MX25
+> 		info->u.fr.counter = (unsigned *) (GPT1_BASE_ADDR + MX3_TCN);
+> #endif
+> 	}
+> 	info->u.fr.mask = 0xffffffff;
+> 	info->u.fr.tsc =&tsc->full;
+> }
+>
+> Here cpu_is_mx2() will return true, and we will not go to cpu_is_mx25().
+>
+> Are you using the tsc in user-space?
+>
+> If you are passing --enable-arm-mach=mx2 to xenomai configure
+> script, you are using the tsc in user-space, and it is a wonder
+> how it works.
+>
 
-# /usr/bin/clocktest 
-== Tested clock: 0 (CLOCK_REALTIME)
-CPU      ToD offset [us] ToD drift [us/s]      warps max delta [us]
---- -------------------- ---------------- ---------- --------------
-  0             662480.6           -0.033          0            0.0
 
-Michael
+-- 
++------------------------------------------------------------------------------------------------+
+							
+Roberto Bielli
+Sviluppo Software					
+Axel S.r.l.					
+							
+Via Del Cannino, 3 				
+21020 Crosio Della Valle			
+Varese - Italy					
+							
+Telefono: +39 0332 949600			
+Fax:      +39 0332 969315			
+							
+E-mail:   roberto.bielli@domain.hid	
+Web Site: www.axelsw.it
+
++------------------------------------------------------------------------------------------------+
+
+Si precisa che le informazioni contenute in questo messaggio sono riservate e ad uso esclusivo del destinatario.
+Qualora il messaggio in parola Le fosse pervenuto per errore, La preghiamo di eliminarlo senza copiarlo e di non inoltrarlo a terzi,
+dandocene gentilmente comunicazione. Grazie.
+Informativa sul trattamento dei dati personali (D. Lgs. 196/2003).
+I dati utilizzati per la spedizione del presente messaggio sono utilizzati da Axel S.r.l., titolare del trattamento,
+per l'invio delle comunicazioni dei diversi settori aziendali, non essendo autorizzata la divulgazione a terzi.
+Potrete rivolgere alla seguente mail richieste di verifica, rettifica o cancellazione dei Vostri dati: info@domain.hid
+
+This e-mail and any attachments is confidential and may contain privileged information
+intended for the addressee(s) only. Dissemination, copying, printing or use by anybody
+else is unauthorised. If you are not the intended recipient,
+please delete this message and any attachments and advise the sender
+by return e-mail.Thank you.  			
+							
++------------------------------------------------------------------------------------------------+
+
+
+--------------080608070001090107000302
+Content-Type: text/plain; charset=windows-1252;
+ name="testpreempt.c"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment;
+ filename="testpreempt.c"
+
+I2luY2x1ZGUgPHN0ZGlvLmg+DQojaW5jbHVkZSA8c3RkaW50Lmg+DQojaW5jbHVkZSA8ZmNu
+dGwuaD4NCiNpbmNsdWRlIDxzeXMvaW9jdGwuaD4NCiNpbmNsdWRlIDxzdHJpbmcuaD4NCg0K
+I2luY2x1ZGUgPHN0ZGxpYi5oPg0KI2luY2x1ZGUgPHN0ZGlvLmg+DQojaW5jbHVkZSA8c3lz
+L21tYW4uaD4JLyogZm9yIE1DTF9DVVJSRU5UIGFuZCBNQ0xfRlVUVVJFICovDQojaW5jbHVk
+ZSA8cnRkbS9ydGRtLmg+DQojaW5jbHVkZSA8bmF0aXZlL3Rhc2suaD4NCiNpbmNsdWRlIDxu
+dWNsZXVzL3RyYWNlLmg+DQoNCiNkZWZpbmUgR1BJTzZfT04gCQkqR3BpbzJWYWxBZGRyIHw9
+IDEgPDwgNg0KI2RlZmluZSBHUElPNl9PRkYJCSpHcGlvMlZhbEFkZHIgJj0gfigxIDw8IDYp
+Ow0KDQpzdGF0aWMgUlRfVEFTSyBydF90YXNrX2Rlc2M7DQpzdGF0aWMgUlRfVEFTSyB0c2sy
+bXM7DQoNCgkvL2RhdGkgcGVyIGxhIGdlc3Rpb25lIG1lbW9yaWEgbWFwcGF0YQ0Kc3RhdGlj
+IHVuc2lnbmVkIGxvbmcgKiBHcGlvMlZhbEFkZHIgPSBOVUxMOw0KDQp2b2xhdGlsZSBpbnQg
+Y250Mm1zID0gMDsNCnZvbGF0aWxlIGludCBjbnRtYWluID0gMDsNCnZvbGF0aWxlIGludCB4
+Ow0KDQp2b2lkIGZ1bmN0Mm1zKCB2b2lkICogcGFyYW1zICkNCnsNCglmb3IoOzspDQoJew0K
+CQlHUElPNl9PTjsNCgkJcnRfdGFza19zbGVlcCggMjAwMDAwMCApOw0KCQkrKyBjbnQybXM7
+DQoJCUdQSU82X09GRjsNCgl9DQp9DQoNCmludCBtYWluKGludCBhcmdjLCBjaGFyICphcmd2
+W10pDQp7DQoJaW50IGNvdW50ID0gMDsNCglpbnQgdHJhY2VPbiA9IDA7DQoJaW50IGZkLCBy
+ZXQ7DQoNCgkvLyBubyBtZW1vcnktc3dhcHBpbmcgZm9yIHRoaXMgcHJvZ3JhbW0NCglyZXQg
+PSBtbG9ja2FsbChNQ0xfQ1VSUkVOVCB8IE1DTF9GVVRVUkUpOw0KCWlmKCByZXQgKQ0KCXsN
+CgkJcGVycm9yKCJFUlJPUiA6IG1sb2NrYWxsIGhhcyBmYWlsbGVkIik7DQoJCWV4aXQoMSk7
+DQoJfQ0KDQoNCglmZCA9IG9wZW4oICIvZGV2L21lbSIsIE9fUkRXUiB8IE9fU1lOQyApOw0K
+CXByaW50ZiggIkZEPSVkIiwgZmQgKTsNCglmZmx1c2goIHN0ZG91dCApOw0KDQoJR3BpbzJW
+YWxBZGRyID0gKHVuc2lnbmVkIGxvbmcgICopbW1hcCggIE5VTEwsIDB4MTAwMCwgUFJPVF9S
+RUFEIHwgUFJPVF9XUklURSwgIE1BUF9TSEFSRUQsIGZkLCAweDUzRkQwMDAwICk7DQoJR1BJ
+TzZfT047DQoJR1BJTzZfT0ZGOw0KDQoJcnRfdGFza19jcmVhdGUoICZ0c2sybXMsICJ0YXNr
+Mm1zIiwwLCA5OSwgMCApOw0KCXJ0X3Rhc2tfc3RhcnQoICZ0c2sybXMsIGZ1bmN0Mm1zLCBO
+VUxMICk7DQoJDQoJcmV0ID0gcnRfdGFza19zaGFkb3coJnJ0X3Rhc2tfZGVzYywgTlVMTCwg
+MSwgMCk7DQoJaWYoIHJldCAhPSAwICkNCgl7DQoJCWZwcmludGYoc3RkZXJyLCAiRVJST1Ig
+OiBydF90YXNrX3NoYWRvdzogJXNcbiIsIHN0cmVycm9yKC1yZXQpKTsNCgkJZXhpdCggMSAp
+Ow0KCX0NCg0KCWZvcig7OykNCgl7DQoJCWZvciggeD0wOyB4IDwgMTAwMDAwMDsgeCsrICk7
+DQoJCWZvciggeD0wOyB4IDwgMTAwMDAwMDsgeCsrICk7DQoJCS8veG50cmFjZV91c2VyX2Zy
+ZWV6ZSgwLCAwKTsNCgkJZm9yKCB4PTA7IHggPCAxMDAwMDAwOyB4KysgKTsNCgkJZm9yKCB4
+PTA7IHggPCAxMDAwMDAwOyB4KysgKTsNCgkJcnRfdGFza19zbGVlcCggMTAwMDAwMDAgKTsN
+Cgl9DQoNCglyZXR1cm4gMDsNCn0NCg==
+--------------080608070001090107000302--
 
