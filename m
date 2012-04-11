@@ -1,5 +1,5 @@
-Message-ID: <4F854ED1.8010102@domain.hid>
-Date: Wed, 11 Apr 2012 11:28:49 +0200
+Message-ID: <4F854F3D.9020007@domain.hid>
+Date: Wed, 11 Apr 2012 11:30:37 +0200
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 References: <4F85479F.1060305@domain.hid> <4F854B8E.7050803@domain.hid>
@@ -49,7 +49,10 @@ I.
 > after boot the only thing I do is load nucleus and unload it, no other
 > xenomai modules are loaded
 
-Ok, so this must be a Xenomai bug.
+Btw, you should try with the latest Xenomai code from the 2.6.x=20
+maintenance branch, to make sure this has not been fixed already.
+
+git://git.xenomai.org/xenomai-2.6.git
 
 >>
 > Thanks
