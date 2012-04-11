@@ -1,13 +1,13 @@
-Message-ID: <4F854F3D.9020007@domain.hid>
-Date: Wed, 11 Apr 2012 11:30:37 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <4F8592F3.6070907@domain.hid>
+Date: Wed, 11 Apr 2012 16:19:31 +0200
+From: Wolfgang Grandegger <wg@domain.hid>
 MIME-Version: 1.0
-References: <4F85479F.1060305@domain.hid> <4F854B8E.7050803@domain.hid>
-	<4F854D1E.7010200@domain.hid>
-In-Reply-To: <4F854D1E.7010200@domain.hid>
-Content-Type: text/plain; charset="windows-1252"; format="flowed"
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] kernel panic unload xeno_nucleus module
+References: <CAGq8jPhOy=v8Lccb+hddH9W_u8p-Ayi+XfEcFC+rHVzsSp-ghg@domain.hid>	<4F7555F7.6010102@domain.hid>	<CAGq8jPioLnu+ehj+LA5dL6OWUpxQnUH+Nh01kB088FtsLsSrGA@mail.gmail.com>	<CAGq8jPi4S4TTBy9dLYYnWuWQdX_awhXxu0C93okgFO5vWv_20A@mail.gmail.com>	<4F75B5BF.8030401@domain.hid>	<CAGq8jPgY6fTw0ufdj=pvc+Q1jrrQkYptSHTzFOQK=qSiJJU32Q@mail.gmail.com>	<4F75C7D1.4020808@domain.hid>	<CAGq8jPhqv16jgPQh631x8S2MmDhm1F4HtnrQA0xsGPe4bTo6eA@mail.gmail.com>	<4F79D5EA.3010501@domain.hid>	<CAGq8jPjq79CdBbNys1=ccV-CKSyNfG9nX-1L31Ar6WShuNE=HQ@mail.gmail.com>	<4F7D7A43.4060502@domain.hid>	<CAGq8jPhqRN0WTKHC1uJXbHyecX_tKOB6zFnDJ4=DbKtzU3mmcA@mail.gmail.com>
+	<CAGq8jPgON96yy7_wOCSs83QwxVrfSsTn-fe1P+EBZ8-KLMfj0A@mail.gmail.com>
+In-Reply-To: <CAGq8jPgON96yy7_wOCSs83QwxVrfSsTn-fe1P+EBZ8-KLMfj0A@mail.gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] Cross-link.c ---RTSER_RTIOC_WAIT_EVENT
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -17,94 +17,82 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: "Alessio Margan @ IIT" <alessio.margan@domain.hid>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Minh GIANG <giang.hminh@domain.hid>
+Cc: xenomai-help <xenomai@xenomai.org>
 
-On 04/11/2012 11:21 AM, Alessio Margan @ IIT wrote:
-> On 04/11/2012 11:14 AM, Philippe Gerum wrote:
->> On 04/11/2012 10:58 AM, Alessio Margan @ IIT wrote:
->>> Hi all,
->>>
->>> when I try to unload xeno_nucleus module I get a kernel panic and on the
->>> next power on the bios system date is reset.
->>> when configure xenomai nucleus built into the kernel I can reboot corre=
-ctly.
->>>
->> Kernel panic log would help.
->>
-> I'll try to get it
->>> In the bios I disabled HPET and most of the things regarding PM and ACP=
-I.
->>>
->>> Here attached same info about system and kernel config.
->>>
->>> If possible, I prefer have xenomai configured as modules, is there
->>> anything wrong about my system configuration ?
->>>
->> This should not be a configuration issue. Either some kernel-based
->> Xenomai threads (e.g. RTDM driver thread) are still running when
->> attempting to unload the nucleus, or a real-time IRQ is still hooked to
->> a handler being unmapped, or there is a nucleus bug.
->>
-> after boot the only thing I do is load nucleus and unload it, no other
-> xenomai modules are loaded
+Hi,
 
-Btw, you should try with the latest Xenomai code from the 2.6.x=20
-maintenance branch, to make sure this has not been fixed already.
+On 04/05/2012 02:46 PM, Minh GIANG wrote:
+> i'm sorry sir, what i displayed just in the last mail, isn't good, because
+> i removed rt_dev_ioctl(...) in cross-link program
+> And then, with  rt_dev_ioctl( RTSER_RTIOC_WAIT_EVENT ).
+> 
+> [93076.465077] base=0x2f8 iir=0x4
+> [93076.465082] base=0x2f8 status=0x0
+> [93076.465084] base=0x2f8 iir=0x1
 
-git://git.xenomai.org/xenomai-2.6.git
+TX on rtser0:
 
->>
-> Thanks
-> Alessio
->
-> --
->
-> ISTITUTO ITALIANO
-> DI TECNOLOGIA
->
-> Alessio Margan
-> /Senior Technician/
-> mail me <mailto:alessio.margan@domain.hid>
->
-> Via Morego, 30 16163 Genova
-> <http://maps.google.com/maps?f=3Dq&hl=3Den&geocode=3D&q=3Dvia+morego,+30+=
-genova&sll=3D37.0625,-95.677068&sspn=3D85.420533,191.601563&ie=3DUTF8&ll=3D=
-44.474913,8.907037&spn=3D0.004685,0.011652&t=3Dh&z=3D17&iwloc=3Daddr>
->
-> www.iit.it <http://www.iit.it>
->
-> *Legal Disclaimer*
-> This electronic message contains information that is confidential. The
-> information is intended for the use of the addressee only. If you are
-> not the addressee we would appreciate your notification in this respect.
-> Please note that any disclosure, copy, distribution or use of the
-> contents of this message is prohibited and may be unlawful. We have
-> taken every reasonable precaution to ensure that any kind of attachment
-> to this e-mail has been swept for viruses. However, we cannot accept
-> liability for any damage sustained as a result of software viruses and
-> would advise you to carry out your own virus checks before opening any
-> attachment.
-> *Avvertenza legale*
-> Questo messaggio Email contiene informazioni confidenziali riservate ai
-> soli destinatari. Qualora  veniate in possesso di tali informazioni
-> senza essere definito come destinatario vi reghiamo di leggere le
-> seguenti note. Ogni apertura, copia, distribuzione del contenuto del
-> messaggio e dei suoi allegati =E8 proibito e potrebbe violare le presenti
-> leggi. Abbiamo attivato ogni possibile e ragionevole precauzione per
-> assicurare che gli allegati non contengano virus. Comunque non
-> assumeremo alcuna responsabilit=E0 per ogni eventuale danno causato da
-> virus software e simili in quanto =E8 onere del destinatario verificarne
-> l=92assenza in ogni allegato attuando propri indipendenti controlli.
->
->
->
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
+> [93076.556794] base=0x3f8 iir=0x2
+> [93076.556799] base=0x3f8 status=0x0
+> [93076.556801] base=0x3f8 iir=0x1
 
+RX of 8 chars on rtser1:
 
---=20
-Philippe.
+> [93076.557819] base=0x2f8 iir=0x4
+> [93076.557823] base=0x2f8 status=0x0
+> [93076.557825] base=0x2f8 iir=0x1
+
+> [93076.558860] base=0x2f8 iir=0x4
+> [93076.558865] base=0x2f8 status=0x0
+> [93076.558867] base=0x2f8 iir=0x1
+
+> [93076.559898] base=0x2f8 iir=0x4
+> [93076.559901] base=0x2f8 status=0x0
+> [93076.559903] base=0x2f8 iir=0x1
+
+> [93076.560943] base=0x2f8 iir=0x4
+> [93076.560946] base=0x2f8 status=0x0
+> [93076.560948] base=0x2f8 iir=0x1
+
+> [93076.561969] base=0x2f8 iir=0x4
+> [93076.561971] base=0x2f8 status=0x0
+> [93076.561973] base=0x2f8 iir=0x1
+
+> [93076.563006] base=0x2f8 iir=0x4
+> [93076.563009] base=0x2f8 status=0x0
+> [93076.563011] base=0x2f8 iir=0x1
+
+> [93076.564012] base=0x2f8 iir=0x4
+> [93076.564012] base=0x2f8 status=0x0
+> [93076.564012] base=0x2f8 iir=0x1
+
+> [93076.564012] base=0x2f8 iir=0x4
+> [93076.564012] base=0x2f8 status=0x0
+> [93076.564012] base=0x2f8 iir=0x1
+
+TX on rtser0:
+
+> [93076.656766] base=0x3f8 iir=0x2
+> [93076.656770] base=0x3f8 status=0x0
+> [93076.656772] base=0x3f8 iir=0x1
+
+RX on rtser1:
+
+> [93076.657793] base=0x2f8 iir=0x4
+> [93076.657795] base=0x2f8 status=0x0
+> [93076.657797] base=0x2f8 iir=0x1
+
+... and so on.
+
+This looks completely normal and I'm really puzzled why the
+rt_dev_ioctl(RTSER_RTIOC_WAIT_EVENT) does not work as expected. Ah, I
+just realized that the following patch was not yet applied:
+
+https://mail.gna.org/public/xenomai-core/2011-11/msg00009.html
+
+I think it will fix your problem.
+
+Wolfgang.
+
 
