@@ -1,5 +1,5 @@
-Message-ID: <4F857209.7060403@domain.hid>
-Date: Wed, 11 Apr 2012 13:59:05 +0200
+Message-ID: <4F85749C.808@domain.hid>
+Date: Wed, 11 Apr 2012 14:10:04 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <4F50A422.50208@domain.hid>
@@ -44,13 +44,12 @@ On 04/11/2012 08:59 AM, Roberto Bielli wrote:
 > why it doesn't write in the processor manual)
 > Do you know if there is a code over the mxc_mask_irq that disable the 
 > interrupts ?
+> 
+> About interrupt gpio it should be a link with this behaviour ? ( i don't 
+> want gpio as interrupts )
 
-mxc_mask_irq disables the interrupt at interrupt controller level.
-Generally, you can not avoid to do that.
-
-Have you tried reproducing the problem with linux configured with
-CONFIG_HIGH_RES_TIMERS?
-
+No,  I do not think it is possible. You do not get to decide whether you
+want gpio as interrupts or not, the design of the board you use does.
 
 -- 
                                                                 Gilles.
