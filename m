@@ -1,9 +1,8 @@
-Message-ID: <4F8711BF.4020608@domain.hid>
-Date: Thu, 12 Apr 2012 19:32:47 +0200
+Message-ID: <4F87139E.6050805@domain.hid>
+Date: Thu, 12 Apr 2012 19:40:46 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4F50A422.50208@domain.hid>
-	<4F55E390.8090706@domain.hid>	<4F55FE81.6000904@domain.hid>
+References: <4F50A422.50208@domain.hid> <4F55FE81.6000904@domain.hid>
 	<4F560A6C.2080306@domain.hid>	<4F560B76.5080606@domain.hid>
 	<4F5629D2.50304@domain.hid>	<4F562B53.7070400@domain.hid>
 	<4F562EC2.6040604@domain.hid>	<4F56387B.40702@domain.hid>
@@ -19,10 +18,11 @@ References: <4F50A422.50208@domain.hid>
 	<4F841E32.50101@domain.hid> <4F8428AA.1040404@domain.hid>
 	<4F842A4B.8040106@domain.hid> <4F852BBB.5050400@domain.hid>
 	<4F85749C.808@domain.hid> <4F86AA98.6010805@domain.hid>
-In-Reply-To: <4F86AA98.6010805@domain.hid>
+	<4F87099F.2020707@domain.hid>
+In-Reply-To: <4F87099F.2020707@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] preemptive doesn't work
+Subject: Re: [Xenomai-core] porting xenomai on imx25
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -34,18 +34,27 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 To: Roberto Bielli <roberto.bielli@domain.hid>
 Cc: xenomai@xenomai.org
 
-On 04/12/2012 12:12 PM, Roberto Bielli wrote:
+On 04/12/2012 06:58 PM, Roberto Bielli wrote:
 > Hi Gilles,
 > 
-> i found in my trace the function 'xnthread_timeout_handler' that is 
-> called in the code where there is the problem.
-> In xenomai there is a topic about that function. ( [Xenomai-core] [BUG?] 
-> stalled xeno domain 
-> <http://www.opensubscriber.com/messages/xenomai@xenomai.org> )
-> 
-> Do you think that can be a similar problem ?
+> you tell me that you are working on imx.
+> Do you know if there is a working xenomai on imx (any kernel or imx 
+> version) ?
 
-No.
+I have tested Xenomai  on imx31, imx51, imx53, imx6q. It works on these
+platforms. Now, what you are doing is in fact porting xenomai on imx25,
+nobody did that before you, and you are faced with a peculiarity of the
+timer on this platform. What you should do is:
+- try to reproduce the problem with an unpatched linux with
+CONFIG_HIGH_RES_TIMERS
+- or try and look at the timers registers value at the time when the bug
+happens to see what is going wrong.
+
+Also, the first thing to do when running xenomai on a new platform is to
+run the "latency" test. Have you run this test?
+
+I feel like I am starting to repeat myself, I do not know if I should
+continue trying and answering you.
 
 -- 
                                                                 Gilles.
