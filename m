@@ -1,10 +1,9 @@
-Message-ID: <4F7C4B53.3000309@domain.hid>
-Date: Wed, 04 Apr 2012 15:23:31 +0200
+Message-ID: <4F8B00E5.3080905@domain.hid>
+Date: Sun, 15 Apr 2012 19:09:57 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4F7C44FD.2040406@domain.hid> <4F7C4667.7010609@domain.hid>
-	<4F7C48B4.8080006@domain.hid>
-In-Reply-To: <4F7C48B4.8080006@domain.hid>
+References: <4F7C44FD.2040406@domain.hid>
+In-Reply-To: <4F7C44FD.2040406@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-core] [PULL] rt-puts fix, mprotect testsuite
@@ -19,38 +18,19 @@ List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 To: Jan Kiszka <jan.kiszka@domain.hid>
 Cc: xenomai-core <xenomai@xenomai.org>
 
-On 04/04/2012 03:12 PM, Jan Kiszka wrote:
-> On 2012-04-04 15:02, Gilles Chanteperdrix wrote:
->> On 04/04/2012 02:56 PM, Jan Kiszka wrote:
->>> The following changes since commit 0ef2410a2c9cf7102dead861241bd2d9957e4433:
->>>
->>>   Mask signals in rt_print:printer_loop() (2012-04-02 00:16:41 +0200)
->>>
->>> are available in the git repository at:
->>>   git://git.xenomai.org/xenomai-jki.git for-upstream
->>>
->>> Jan Kiszka (3):
->>>       Append missing newline to rt_[f]puts output
->>>       testsuite: Add rt-print buffer flushes to native error paths
->>
->> As I said, I do not agree with calling rt_print_flush_buffers outside of
->> xenomai libs.
+On 04/04/2012 02:56 PM, Jan Kiszka wrote:
+> The following changes since commit 0ef2410a2c9cf7102dead861241bd2d9957e4433:
 > 
-> rt_print_flush_buffers is a Xenomai API function that we export for
-> quite a while now. The rt_* functions are about explicit control when
-> what is invoked, both in the native skin and in what used to be rtdk.
-> Also, you can't avoid this function when you interact with libraries
-> that are unwrapped.
+>   Mask signals in rt_print:printer_loop() (2012-04-02 00:16:41 +0200)
 > 
-> That said, I can fix that minor issue in leaks differently if you insist.
+> are available in the git repository at:
+>   git://git.xenomai.org/xenomai-jki.git for-upstream
+> 
+> Jan Kiszka (3):
+>       Append missing newline to rt_[f]puts output
 
-I added rt_print_flush_buffers for xenomai 2.6.0, in order to implement
-systematic wrapping of printf by the posix skin, my intent was not to
-really export it. From my point of view, having to call this flush
-function all over the place reveals a problem in the application. If you
-use always printf or always rt_printf, you do not need to call this
-function.
+Actually, only puts requires an additional newline, not fputs.
 
 -- 
-					    Gilles.
+                                                                Gilles.
 
