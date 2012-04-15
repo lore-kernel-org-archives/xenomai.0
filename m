@@ -1,11 +1,11 @@
-Message-ID: <4F8B4B4E.7000202@domain.hid>
-Date: Mon, 16 Apr 2012 00:27:26 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
+In-Reply-To: <4F8B4B4E.7000202@domain.hid>
 References: <CAOiXNkC0xXveRSBe-YR1OV_2ZF7qZ-xPzWLjKa5b2PP5MaufLg@domain.hid>
-In-Reply-To: <CAOiXNkC0xXveRSBe-YR1OV_2ZF7qZ-xPzWLjKa5b2PP5MaufLg@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+	<4F8B4B4E.7000202@domain.hid>
+Date: Mon, 16 Apr 2012 00:53:30 +0200
+Message-ID: <CAOiXNkDXL94Y17EghAZAOLh4PFSFfFoJNnEbguLxFY054reUhA@mail.gmail.com>
+From: Andrey Nechypurenko <andreynech@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Subject: Re: [Xenomai-help] RTDM or native Xenomai API
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -16,45 +16,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Andrey Nechypurenko <andreynech@domain.hid>
-Cc: Xenomai help <xenomai@xenomai.org>
+To: Xenomai help <xenomai@xenomai.org>
 
-On 04/15/2012 11:24 PM, Andrey Nechypurenko wrote:
-> Hi Folks,
-> 
-> In our hobby robotics project [1] we start using Xenomai for RT tasks.
-> The first application was PWM generation with GPIO to control servo
-> motors [2] (the next would be dealing with interrupts from wheel
-> encoders). We have made it from the user space and result was not as
-> good as we would like it to be so I decide to write kernel module to
-> reduce the jitter. And here comes the question whether to use RTDM or
-> just plain Xenomai API?
-> 
-> I was never using RTDM in the past. Based on what I have read, the
-> main intent of the RTDM is to make driver code portable across
-> different RT solutions for Linux. I understand it and it makes sense.
-> However, looking around and asking myself what are these different
-> solutions, I just can name Xenomai and preempt_rt patch. AFAIK, all
-> the rest are either dead (or almost dead) or not relevant for hobby
-> open-source development. So my question is what are the practical
-> advantages of using RTDM instead of Xenomai API? I would be very glad
-> to hear the opinion of experienced Linux RT developers about it.
+Hi Gilles,
 
-RTDM is the API of choice for developing drivers for real-time
-applications using xenomai. We aim at the same separation as you have
-with Linux: driver code in kernel-space (using RTDM in the case of
-Xenomai), application code resides in user-space, using any other skin,
-though what probably makes sense to a new project is to use the native
-or posix skin. Both skins have bindings to access RTDM drivers.
+Thank you very much for such low-latency reply! :-)
 
-So, in particular, it means that writing driver code (meaning code which
-interacts with hardware) in user-space is not what we would recommend.
-And handling interrupts in user-space is even less recommended.
+> RTDM is the API of choice for developing drivers for real-time
+> applications using xenomai.
 
-Also note that in the case of omap3, gptimers may be used to generate
-PWM without software assistance. And that the gpio kernel functions are
-safe to be used in real-time context.
+Please correct me if I just misunderstand something here, but as I
+understand, RTDM is an abstraction layer with concrete implementation
+using xenomai API. As stated in the referenced paper from Jan Kiszka,
+the original reason for introducing this layer was to achieve
+portability across different RT solutions for Linux. Since that time,
+a lot of considered RT solutions becomes irrelevant. In fact, I would
+say, there are only Xenomai and preempt_rt. If this assumption is
+true, then I can not see the advantages of the additional layer unless
+it is more then just an abstraction layer. Does RTDM API makes certain
+tasks easier/better compared to the similar native xenomai API? Just
+to give concrete example - what is the advantage of using
+rtdm_task_init() vs. rt_task_create or xnintr_init() vs.
+rtdm_irq_request()?
 
--- 
-                                                                Gilles.
+> Also note that in the case of omap3, gptimers may be used to generate
+> PWM without software assistance. And that the gpio kernel functions are
+> safe to be used in real-time context.
+
+We already using 2 available hardware PWM generators. The experiment
+with GPIO was mainly to start collecting experience with Xenomai and
+see how far the one can go in user space. Now, I want to make the next
+step and write kernel module which is doing the same. That is why the
+question about RTDM.
+
+Thank you very much!
+Andrey.
 
