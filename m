@@ -1,16 +1,10 @@
-MIME-Version: 1.0
-In-Reply-To: <4F8BC3FB.1040709@domain.hid>
-References: <CAOiXNkC0xXveRSBe-YR1OV_2ZF7qZ-xPzWLjKa5b2PP5MaufLg@domain.hid>
-	<4F8B4B4E.7000202@domain.hid>
-	<CAOiXNkDXL94Y17EghAZAOLh4PFSFfFoJNnEbguLxFY054reUhA@mail.gmail.com>
-	<4F8B5DFD.8050502@domain.hid> <4F8B5F57.9040608@domain.hid>
-	<CAOiXNkC1_rrtmTSit4XYjXqj1RxQFbb9yEko-Mw9-5KRDqw1WQ@mail.gmail.com>
-	<4F8BC3FB.1040709@domain.hid>
-Date: Mon, 16 Apr 2012 09:28:02 +0200
-Message-ID: <CAOiXNkDH9o=mX64pF1Hy6M21nf6vpa1UUH9EJYtp-0Jw6nXaOg@domain.hid>
-From: Andrey Nechypurenko <andreynech@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Subject: Re: [Xenomai-help] RTDM or native Xenomai API
+From: =?UTF-8?Q?Robert?= <robert-km@domain.hid>
+Mime-Version: 1.0
+Message-ID: <678ad05c.532e06e0.4f8c141b.45b16@domain.hid>
+Date: Mon, 16 Apr 2012 14:44:11 +0200
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai-help] =?utf-8?q?Pandaboard=2C_Xenomai_and_Wifi_drivers?=
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -20,14 +14,12 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Xenomai help <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-> - they will both be gone in xenomai 3.0, only the RTDM API will be
-> available in kernel-space.
-
-I think you convinced me to start with RTDM API with the statement above :-)
-
-
-Thanks,
-Andrey.
+Hello,
+I=20have=20a=20pandaboard=20with=20Xenomai=20compilled=20with=20vanilla=20=
+kernel=20source=202.6.38-8,=20but=20with=20this=20kernel=20tree=20there=20=
+is=20no=20wifi=20support=20for=20panda.
+How=20and=20which=20kernel=20should=20I=20compile=20to=20remain=20a=20wif=
+i=20usability?
 
