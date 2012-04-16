@@ -1,14 +1,12 @@
+Message-ID: <4F8BC3FB.1040709@domain.hid>
+Date: Mon, 16 Apr 2012 09:02:19 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <4F8B5F57.9040608@domain.hid>
-References: <CAOiXNkC0xXveRSBe-YR1OV_2ZF7qZ-xPzWLjKa5b2PP5MaufLg@domain.hid>
-	<4F8B4B4E.7000202@domain.hid>
-	<CAOiXNkDXL94Y17EghAZAOLh4PFSFfFoJNnEbguLxFY054reUhA@mail.gmail.com>
-	<4F8B5DFD.8050502@domain.hid> <4F8B5F57.9040608@domain.hid>
-Date: Mon, 16 Apr 2012 08:55:39 +0200
-Message-ID: <CAOiXNkC1_rrtmTSit4XYjXqj1RxQFbb9yEko-Mw9-5KRDqw1WQ@mail.gmail.com>
-From: Andrey Nechypurenko <andreynech@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
+References: <CAOiXNkC0xXveRSBe-YR1OV_2ZF7qZ-xPzWLjKa5b2PP5MaufLg@domain.hid>	<4F8B4B4E.7000202@domain.hid>	<CAOiXNkDXL94Y17EghAZAOLh4PFSFfFoJNnEbguLxFY054reUhA@mail.gmail.com>	<4F8B5DFD.8050502@domain.hid>	<4F8B5F57.9040608@domain.hid>
+	<CAOiXNkC1_rrtmTSit4XYjXqj1RxQFbb9yEko-Mw9-5KRDqw1WQ@mail.gmail.com>
+In-Reply-To: <CAOiXNkC1_rrtmTSit4XYjXqj1RxQFbb9yEko-Mw9-5KRDqw1WQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] RTDM or native Xenomai API
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
@@ -19,48 +17,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Xenomai help <xenomai@xenomai.org>
+To: Andrey Nechypurenko <andreynech@domain.hid>
+Cc: Xenomai help <xenomai@xenomai.org>
 
-Thank you very much Gilles for the explanations!
-I think I understand the overall picture better now.
+On 04/16/2012 08:55 AM, Andrey Nechypurenko wrote:
+> Thank you very much Gilles for the explanations!
+> I think I understand the overall picture better now.
+> 
+> Thank you,
+> Andrey.
 
-Thank you,
-Andrey.
+To summarize again:
+- the native API and posix API were made available in kernel-space at
+the beginning of the xenomai project as a mean to help porting
+applications from rtai and rtlinux to xenomai, they could also be used
+to write drivers, but it started to no longer make sense as soon as the
+RTDM API appeared;
+- they will both be gone in xenomai 3.0, only the RTDM API will be
+available in kernel-space. native and posix will still be available in
+user-space of course.
 
-On 16 April 2012 01:52, Gilles Chanteperdrix
-<gilles.chanteperdrix@xenomai.org> wrote:
-> On 04/16/2012 01:47 AM, Gilles Chanteperdrix wrote:
->> On 04/16/2012 12:53 AM, Andrey Nechypurenko wrote:
->>> Hi Gilles,
->>>
->>> Thank you very much for such low-latency reply! :-)
->>>
->>>> RTDM is the API of choice for developing drivers for real-time
->>>> applications using xenomai.
->>>
->>> Please correct me if I just misunderstand something here, but as I
->>> understand, RTDM is an abstraction layer with concrete implementation
->>> using xenomai API. As stated in the referenced paper from Jan Kiszka,
->>> the original reason for introducing this layer was to achieve
->>> portability across different RT solutions for Linux. Since that time,
->>> a lot of considered RT solutions becomes irrelevant. In fact, I would
->>> say, there are only Xenomai and preempt_rt. If this assumption is
->>> true, then I can not see the advantages of the additional layer unless
->>> it is more then just an abstraction layer. Does RTDM API makes certain
->>> tasks easier/better compared to the similar native xenomai API? Just
->>> to give concrete example - what is the advantage of using
->>> rtdm_task_init() vs. rt_task_create or xnintr_init() vs.
->>> rtdm_irq_request()?
->>
->> The native API is designed to write applications, not drivers. The RTDM
->> API is designed to write drivers. Using the native API in user-space is
->> deprecated, the native API is made for user-space.
->
-> Using the native API in *kernel-space* is deprecated, the native API is
-> made for user-space. Writing applications in kernel-space is not what we
-> recommend, as much as writing drivers in user-space.
->
-> --
-> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
-=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0Gilles.
+-- 
+                                                                Gilles.
 
