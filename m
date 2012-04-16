@@ -1,47 +1,66 @@
-Message-ID: <4F83F828.4000508@domain.hid>
-Date: Tue, 10 Apr 2012 11:06:48 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4F50A422.50208@domain.hid> <4F55C306.8020307@domain.hid>
-	<4F55D765.7040705@domain.hid> <4F55E390.8090706@domain.hid>
-	<4F55FE81.6000904@domain.hid> <4F560A6C.2080306@domain.hid>
-	<4F560B76.5080606@domain.hid> <4F5629D2.50304@domain.hid>
-	<4F562B53.7070400@domain.hid> <4F562EC2.6040604@domain.hid>
-	<4F56387B.40702@domain.hid> <4F575BA3.7060404@domain.hid>
-	<4F576622.1030509@domain.hid> <4F57A567.7030008@domain.hid>
-	<4F7C127D.2010400@domain.hid> <4F7C1484.5090406@domain.hid>
-	<4F7C183F.5040009@domain.hid> <4F7F0D4E.8080906@domain.hid>
-	<4F7F0E8A.70702@domain.hid> <4F7F20F0.9070007@domain.hid>
-	<4F80BD10.2060200@domain.hid> <4F83F2C3.50704@domain.hid>
-	<4F83F321.2030300@domain.hid> <4F83F645.7040402@domain.hid>
-In-Reply-To: <4F83F645.7040402@domain.hid>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] preemptive doesn't work
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+In-Reply-To: <4F8B5F57.9040608@domain.hid>
+References: <CAOiXNkC0xXveRSBe-YR1OV_2ZF7qZ-xPzWLjKa5b2PP5MaufLg@domain.hid>
+	<4F8B4B4E.7000202@domain.hid>
+	<CAOiXNkDXL94Y17EghAZAOLh4PFSFfFoJNnEbguLxFY054reUhA@mail.gmail.com>
+	<4F8B5DFD.8050502@domain.hid> <4F8B5F57.9040608@domain.hid>
+Date: Mon, 16 Apr 2012 08:55:39 +0200
+Message-ID: <CAOiXNkC1_rrtmTSit4XYjXqj1RxQFbb9yEko-Mw9-5KRDqw1WQ@mail.gmail.com>
+From: Andrey Nechypurenko <andreynech@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-help] RTDM or native Xenomai API
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Roberto Bielli <roberto.bielli@domain.hid>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Xenomai help <xenomai@xenomai.org>
 
-On 04/10/2012 10:58 AM, Roberto Bielli wrote:
-> Hi Gilles,
-> 
-> i look at the processor errata but for the imx25 there are no errata 
-> elements on timer.
+Thank you very much Gilles for the explanations!
+I think I understand the overall picture better now.
 
-It is strange that you use linux 2.6.31 on imx25: linux 2.6.31 does not
-support imx25.
+Thank you,
+Andrey.
 
-The I-pipe support has not been written for imx25, so, it is entirely
-possible that you have to adapt it. See:
-http://www.xenomai.org/index.php/I-pipe:ArmPorting
-
--- 
-                                                                Gilles.
+On 16 April 2012 01:52, Gilles Chanteperdrix
+<gilles.chanteperdrix@xenomai.org> wrote:
+> On 04/16/2012 01:47 AM, Gilles Chanteperdrix wrote:
+>> On 04/16/2012 12:53 AM, Andrey Nechypurenko wrote:
+>>> Hi Gilles,
+>>>
+>>> Thank you very much for such low-latency reply! :-)
+>>>
+>>>> RTDM is the API of choice for developing drivers for real-time
+>>>> applications using xenomai.
+>>>
+>>> Please correct me if I just misunderstand something here, but as I
+>>> understand, RTDM is an abstraction layer with concrete implementation
+>>> using xenomai API. As stated in the referenced paper from Jan Kiszka,
+>>> the original reason for introducing this layer was to achieve
+>>> portability across different RT solutions for Linux. Since that time,
+>>> a lot of considered RT solutions becomes irrelevant. In fact, I would
+>>> say, there are only Xenomai and preempt_rt. If this assumption is
+>>> true, then I can not see the advantages of the additional layer unless
+>>> it is more then just an abstraction layer. Does RTDM API makes certain
+>>> tasks easier/better compared to the similar native xenomai API? Just
+>>> to give concrete example - what is the advantage of using
+>>> rtdm_task_init() vs. rt_task_create or xnintr_init() vs.
+>>> rtdm_irq_request()?
+>>
+>> The native API is designed to write applications, not drivers. The RTDM
+>> API is designed to write drivers. Using the native API in user-space is
+>> deprecated, the native API is made for user-space.
+>
+> Using the native API in *kernel-space* is deprecated, the native API is
+> made for user-space. Writing applications in kernel-space is not what we
+> recommend, as much as writing drivers in user-space.
+>
+> --
+> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
+=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0Gilles.
 
