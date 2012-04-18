@@ -1,11 +1,15 @@
-Date: Wed, 18 Apr 2012 10:24:23 +0800
-From: hustgongchen <hustgongchen@domain.hid>
-Mime-Version: 1.0
-Message-ID: <201204181024206179330@domain.hid>
-Content-Type: multipart/alternative;
-	boundary="----=_001_NextPart417268186576_=----"
-Subject: [Xenomai-help] Can't use interrupt after adeos patch
-Reply-To: hustgongchen <hustgongchen@domain.hid>
+MIME-Version: 1.0
+In-Reply-To: <CAM1yFZ_kvvh019OMe-_BCf_qqyuDAumL0mw4XdMx5TSRGRAWAw@domain.hid>
+References: <CAM1yFZ_VhjCVxTBBo9a-6w-2g6xiiGTkuQ6CQ1nJquR0xZCC+g@domain.hid>
+	<4F8D5458.6070603@domain.hid> <4F8D553B.6010101@domain.hid>
+	<CAM1yFZ_kvvh019OMe-_BCf_qqyuDAumL0mw4XdMx5TSRGRAWAw@domain.hid>
+Date: Wed, 18 Apr 2012 12:55:43 +0530
+Message-ID: <CAM1yFZ-emKxt2D2x7DCS4mNzbD5x-9_W-Z0w4AhtMBo1P9kTeQ@mail.gmail.com>
+From: Anisha Kaul <born.rebel.83@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai-help] Understanding the output of hackbench when run
+ together with xeno-test
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -15,115 +19,103 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai-help <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-This is a multi-part message in MIME format.
+On 17 April 2012 17:04, Gilles Chanteperdrix
+<gilles.chanteperdrix@xenomai.org> wrote:
+> Ok, it is not clear: but you need to pass a duration if you do not pass
+> the patch to LTP, which means either the "-l path" or "seconds" argument
+> is mandatory.
 
-------=_001_NextPart417268186576_=----
-Content-Type: text/plain;
-	charset="gb2312"
-Content-Transfer-Encoding: base64
+ Thanks for replying. I couldn't have made it out myself that the last
+ argument is compulsory.
+ The problem isn't solved yet, actually.
 
-SGkgZXZlcnlvbmU6DQogICAgSSB1c2UgbGludXgga2VybmVsIDIuNi4zMyBhbmQgeGVub21haSAy
-LjUuMyB0byBidWlsZCBteSBydC1lbWJlZGRlZCBzeXN0ZW0gYmFzZWQgb24gUzNjMjQ0MCwNCmJ1
-dCBpIGZvdW5kIEkgY2FuJ3QgdXNlIGludGVycnVwdCBhZnRlciBwdXQgdGhlIGFkZW9zIHBhdGNo
-IHRvIGxpbnV4IGtlcm5lbC5UaGUgc3lzdGVtIGNyYXNoZXMgb25jZQ0KIEkgaW5zZXJ0IGEgVVNC
-IGRldmljZSB0byBpdCBvciByZWNlaXZlIGEgZXRoZXJuZXQgcGFja2V0KHRoZSBuZXQgY2FyZCBp
-IHVzZSBpcyBDUzg5MDApLg0KICAgIEJlY2F1c2UgZXZlbiBpIGRpZG4ndCBidWlsZCB4ZW5vbWFp
-IGludG8ga2VybmVsICwgdGhlIHN5c3RlbSBzdGlsbCBjcmFzaGVkIG9uY2UgcmVjZWl2ZWQgYSAN
-CmhhcmR3YXJlIGludGVycnVwdCBzbyBpIGd1ZXNzIHRoZSBwcm9ibGVtIGlzIGFib3V0IGFkZW9z
-IHBhdGNoLklzIHRoZXJlIGFueSBidWcgd2l0aCANCmFkZW9zLWlwaXBlLTIuNi4zMy1hcm0tMS4x
-Ni0wMS5wYXRjaD8NCiAgICBUaGFuayB5b3UgdmVyeSBtdWNoICENCiAgICAgZ29uZ2NoZW4NCg0K
-DQoNCg0KaHVzdGdvbmdjaGVu
+ I tried `dohell` separately with `hackbench` and `seconds` parameter
+ as follows (and it worked properly):
+ _____________________________________________________________
+ linux-dopx:~ # /usr/xenomai/bin/dohell -b
+ "/home/anisha/Desktop/RealTime/downloadedPages/hackbench -pipe 100
+ process 100 seconds" 2
+ Running with 100*40 (=3D=3D 4000) tasks.
+ Time: 2.198
+ /usr/xenomai/bin/dohell: line 94: 17276 Terminated =A0 =A0 =A0 =A0 =A0 =A0=
+ =A0while :; do
+ =A0 =A0$hackbench 1;
+ done
+ /usr/xenomai/bin/dohell: line 94: 17277 Terminated =A0 =A0 =A0 =A0 =A0 =A0=
+ =A0while :; do
+ =A0 =A0cat /proc/interrupts;
+ done > /dev/null 2>&1
+ /usr/xenomai/bin/dohell: line 94: 17279 Terminated =A0 =A0 =A0 =A0 =A0 =A0=
+ =A0while :; do
+ =A0 =A0ps w;
+ done > /dev/null 2>&1
+ /usr/xenomai/bin/dohell: line 94: 17280 Terminated =A0 =A0 =A0 =A0 =A0 =A0=
+ =A0dd
+ if=3D/dev/zero of=3D/dev/null
+ /usr/xenomai/bin/dohell: line 94: 17281 Terminated =A0 =A0 =A0 =A0 =A0 =A0=
+ =A0while :; do
+ =A0 =A0ls -lR / > /dev/null 2>&1;
+ done
+ Killed
+ _____________________________________________________________
 
-------=_001_NextPart417268186576_=----
-Content-Type: text/html;
-	charset="gb2312"
-Content-Transfer-Encoding: quoted-printable
+ Then I tried the same with `xeno-test` as follows:
 
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<HTML><HEAD>
-<META content=3D"text/html; charset=3Dgb2312" http-equiv=3DContent-Type>
-<STYLE>
-BLOCKQUOTE {
-	MARGIN-TOP: 0px; MARGIN-BOTTOM: 0px; MARGIN-LEFT: 2em
-}
-OL {
-	MARGIN-TOP: 0px; MARGIN-BOTTOM: 0px
-}
-UL {
-	MARGIN-TOP: 0px; MARGIN-BOTTOM: 0px
-}
-P {
-	MARGIN-TOP: 0px; MARGIN-BOTTOM: 0px
-}
-DIV.FoxDiv20120418102346325503 {
-	LINE-HEIGHT: 1.5; MARGIN: 10px; FONT-FAMILY: =CE=A2=C8=ED=D1=C5=BA=DA; CO=
-LOR: #000000; FONT-SIZE: 10.5pt
-}
-BODY {
-	LINE-HEIGHT: 1.5; FONT-FAMILY: =CE=A2=C8=ED=D1=C5=BA=DA; COLOR: #000080; =
-FONT-SIZE: 10.5pt
-}
-</STYLE>
+ _____________________________________________________________
+> /usr/xenomai/bin/xeno-test -l "dohell -b
+> "/home/anisha/Desktop/RealTime/downloadedPages/hackbench -pipe 100
+> process 100 seconds" 2"
+> and
+> /usr/xenomai/bin/xeno-test -l "dohell -b
+> /home/anisha/Desktop/RealTime/downloadedPages/hackbench -pipe 100
+> process 100 seconds 2"
+> and
+> /usr/xenomai/bin/xeno-test -l dohell -b
+> /home/anisha/Desktop/RealTime/downloadedPages/hackbench -pipe 100
+> process 100 seconds 2
+> and also,
+> /usr/xenomai/bin/xeno-test -l "dohell -b
+> /home/anisha/Desktop/RealTime/downloadedPages/hackbench -pipe 100
+> process 100" -T 2
+> and
+> /usr/xenomai/bin/xeno-test -l "dohell -b
+> /home/anisha/Desktop/RealTime/downloadedPages/hackbench -pipe 100
+> process 100" -t 2
+> _____________________________________________________________
 
-<META name=3DGENERATOR content=3D"MSHTML 8.00.7601.17699">
-<STYLE>BLOCKQUOTE {
-	MARGIN-TOP: 0px
-}
-OL {
-	MARGIN-TOP: 0px
-}
-UL {
-	MARGIN-TOP: 0px
-}
-</STYLE>
-</HEAD>
-<BODY style=3D"MARGIN: 10px">
-<DIV>
-<DIV class=3DFoxDiv20120418102346325503>
-<STYLE>BLOCKQUOTE {
-	MARGIN-TOP: 0px; MARGIN-BOTTOM: 0px; MARGIN-LEFT: 2em
-}
-OL {
-	MARGIN-TOP: 0px; MARGIN-BOTTOM: 0px
-}
-UL {
-	MARGIN-TOP: 0px; MARGIN-BOTTOM: 0px
-}
-P {
-	MARGIN-TOP: 0px; MARGIN-BOTTOM: 0px
-}
-</STYLE>
 
-<META name=3DGENERATOR content=3D"MSHTML 8.00.7601.17699">
-<DIV>
-<DIV>Hi&nbsp;everyone:</DIV>
-<DIV>&nbsp;&nbsp;&nbsp;&nbsp;I&nbsp;use&nbsp;linux&nbsp;kernel&nbsp;2.6.33=
-&nbsp;and&nbsp;xenomai&nbsp;2.5.3&nbsp;to&nbsp;build&nbsp;my&nbsp;rt-embed=
-ded&nbsp;system&nbsp;based&nbsp;on&nbsp;S3c2440,</DIV>
-<DIV>but&nbsp;i&nbsp;found&nbsp;I&nbsp;can't&nbsp;use&nbsp;interrupt&nbsp;=
-after&nbsp;put&nbsp;the&nbsp;adeos&nbsp;patch&nbsp;to&nbsp;linux&nbsp;kern=
-el.The&nbsp;system&nbsp;crashes&nbsp;once</DIV>
-<DIV>&nbsp;I&nbsp;insert&nbsp;a&nbsp;USB&nbsp;device&nbsp;to&nbsp;it&nbsp;=
-or&nbsp;receive&nbsp;a&nbsp;ethernet&nbsp;packet(the&nbsp;net&nbsp;card&nb=
-sp;i&nbsp;use&nbsp;is&nbsp;CS8900).</DIV>
-<DIV>&nbsp;&nbsp;&nbsp;&nbsp;Because&nbsp;even&nbsp;i&nbsp;didn't&nbsp;bui=
-ld&nbsp;xenomai&nbsp;into&nbsp;kernel&nbsp;,&nbsp;the&nbsp;system&nbsp;sti=
-ll&nbsp;crashed&nbsp;once&nbsp;received&nbsp;a&nbsp;</DIV>
-<DIV>hardware&nbsp;interrupt&nbsp;so&nbsp;i&nbsp;guess&nbsp;the&nbsp;probl=
-em&nbsp;is&nbsp;about&nbsp;adeos&nbsp;patch.Is&nbsp;there&nbsp;any&nbsp;bu=
-g&nbsp;with&nbsp;</DIV>
-<DIV>adeos-ipipe-2.6.33-arm-1.16-01.patch?</DIV>
-<DIV>&nbsp;&nbsp;&nbsp;&nbsp;Thank&nbsp;you&nbsp;very&nbsp;much&nbsp;!</DI=
-V>
-<DIV>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;gongchen</DIV></DIV>
-<DIV>&nbsp;</DIV>
-<HR style=3D"WIDTH: 210px; HEIGHT: 1px" align=3Dleft color=3D#b5c4df SIZE=
-=3D1>
 
-<DIV><SPAN>hustgongchen</SPAN></DIV></DIV></DIV></BODY></HTML>
+ All of them resulted in the following end results:
+ What is the way to run this? Please help.
 
-------=_001_NextPart417268186576_=------
 
+ _____________________________________________________________
+ Started child 21470: /usr/xenomai/bin/latency
+ /usr/xenomai/bin/dohell [ -b path ] [ -s server ] [ -p port ] [ -m
+ mntpoint ] [ -l path | seconds ]
+
+ Generate load, using an assorted set of commands and optionnaly:
+ - hackbench if the path to the hackbench binary is specified with -b;
+ - nc to send TCP data to "server" port "port" if -s is specified (if -p
+ is not specified, the port 9, aka discard is used);
+ - dd to write data under "mntpoint" if -m is specified.
+
+ during the runtime of the LTP test if the path to the LTP installation
+ directory is specifed with -l or during "seconds" seconds.
+ =3D=3D Sampling period: 100 us
+ =3D=3D Test mode: periodic user-mode task
+ =3D=3D All results in microseconds
+ warming up...
+ Load script terminated, terminating checked scripts
+ ---|-----------|-----------|-----------|--------|------|------------------=
+-------
+ RTS| =A0 3574.296| =A0 =A0 =A00.000| =A0-3574.297| =A0 =A0 =A0 0| =A0 =A0 =
+0| =A0 =A000:00:-01/00:00:-01
+ _____________________________________________________________
+
+
+
+ -Anisha
 
