@@ -1,21 +1,12 @@
-Message-ID: <4F7B49E1.8010106@domain.hid>
-Date: Tue, 03 Apr 2012 21:05:05 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4F917BA4.1090804@domain.hid>
+Date: Fri, 20 Apr 2012 17:07:16 +0200
+From: Michael Trimarchi <michael@domain.hid>
 MIME-Version: 1.0
-References: <4F4150C8.7040104@domain.hid> <4F4278ED.9090802@domain.hid>
-	<4F478285.8020105@domain.hid> <4F47A161.9010704@domain.hid>
-	<4F79C838.2070609@domain.hid> <4F79CBAA.6040107@domain.hid>
-	<4F7A0F11.3080504@domain.hid> <4F7A128C.4040706@domain.hid>
-	<4F7A133E.7000505@domain.hid> <4F7A2039.2040409@domain.hid>
-	<4F7A211F.1080809@domain.hid> <4F7AACC1.6080500@domain.hid>
-	<4F7AADFD.3060506@domain.hid> <4F7AD9BD.1070201@domain.hid>
-	<4F7B35AA.3020604@domain.hid> <4F7B3ED4.3080003@domain.hid>
-	<4F7B40DD.2030904@domain.hid> <4F7B429C.8020009@domain.hid>
-	<4F7B43D4.9070800@domain.hid>
-In-Reply-To: <4F7B43D4.9070800@domain.hid>
+References: <4F8FE2A9.8080303@domain.hid> <4F8FEF3C.5010905@domain.hid>
+In-Reply-To: <4F8FEF3C.5010905@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Adeos-main] Reworking ipipe timer subsystem,
+Subject: Re: [Adeos-main] IMX25 timer access patch
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/options/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -24,45 +15,85 @@ List-Post: <mailto:adeos-main@gna.org>
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-To: Jan Kiszka <jan.kiszka@domain.hid>
-Cc: Adeos <adeos-main@gna.org>, Philippe Gerum <rpm@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Adeos <adeos-main@gna.org>, Michael Trimarchi <trimarchi@domain.hid>
 
-On 04/03/2012 08:39 PM, Jan Kiszka wrote:
-> On 2012-04-03 20:34, Gilles Chanteperdrix wrote:
->> On 04/03/2012 08:26 PM, Jan Kiszka wrote:
->>> On 2012-04-03 20:17, Gilles Chanteperdrix wrote:
->>>> Ok, I get it, I need -net nic -net user. The first is for the nic in the
->>>> guest, the second configures by what means the physical network will be
->>>> emulated. I would have liked the qemu guest to appear on my LAN, but
->>>> that will do.
->>>
->>> That requires a bridge on the host and a tap device backend. Upcoming
->>> qemu-1.1 will even have a helper daemon to create those tap devices with
->>> raised privileges and allow unprivileged QEMU instances to use them.
+Hi Gilles
+
+This is my version:
+
+commit be8ccd4a39708cef6e67e4e00432d0207e596a76
+Author: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Date:   Wed Feb 23 01:38:09 2011 +0100
+
+    forward port, rebase on 3.0-noarch, adeos-ipipe-3.0.13-arm-1.18-05
+
+
+on top of it I have my board patches and this commit for an error of the timer precision
+
+commit fff6198ec1033e55d42cc24914b6b958365d7495
+Author: Mehnert, Torsten <T.Mehnert@domain.hid>
+Date:   Mon Aug 1 08:02:07 2011 +0000
+
+    i.MX25 GPT clock fix: ensure correct the clock source
+    
+    Request for comment and commit.
+    
+    From: T. Mehnert <t.mehnert@domain.hid>
+    Date: Mon, 4 Jul 2011 15:53:30 +0200
+    Subject: [PATCH] i.MX25 GPT clock fix: ensure correct the clock source
+    
+    This patch ensures, that Linux will take the correct clock source (AHB_DIV)
+    for gpt in the ARM i.MX25 implementation. The currect code depends on the re
+    defaults of the CCM_MCR register. So on some boards it could happen that the
+    UPLL is used for clock source, which results in faulty time behavior in Linu
+    In this case all delays or sleeps will will be faktor 1.8 too long.
+    
+    Signed-off-by: Torsten Mehnert <t.mehnert@domain.hid>
+    Signed-off-by: Sascha Hauer <s.hauer@domain.hid>
+
+
+On 04/19/2012 12:55 PM, Gilles Chanteperdrix wrote:
+> On 04/19/2012 12:02 PM, Michael Trimarchi wrote:
+>> Hi,
 >>
->> ... Or you can put the interface in promiscuous mode and send raw
->> ethernet packets using the emulated NIC mac address. No bridge, no tap
->> device, no helper daemon required.
-> 
-> ...but still root privileges, otherwise you are unable to send/receive
-> arbitrary frames over the interface.
-
-
-
-> 
+>> I will send a proper patch. Is it possible to include in the ipipe-arm branch?
 >>
->> In any case with -net user, I can not use the virtual network to mount
->> the rootfs using NFS, so, it still does not work.
+>> Michael
 > 
-> That could be a bug. You happen to talk to the maintainer of this ugly
-> subsystem (sigh...), and as such I would be glad if you could take a
-> dump with "-net user -net nic -net dump" of the failing interaction
-> between guest and host. Output will be in qemu-vlan0.pcap in your
-> working directory.
+> Yes, OK. Please resend the patch to the xenomai-core, or adeos-main
+> mailing list, I see ipipe-arm is broken since at least 2.6.33. It
+> compiles but probably does not work.
+> 
 
-No bug, it was a configuration issue (missing "insecure" in /etc/exports).
+I'm still debugging my imx25 board, and I have problem with the timer. If I execute
+clocktest for xenomai after some while I have:
 
 
--- 
-                                                                Gilles.
+now at 2897236425903 nsecs
+
+cpu: 0
+ clock 0:
+  .base:       c04f26a8
+  .index:      0
+  .resolution: 1 nsecs
+  .get_time:   ktime_get
+  .offset:     0 nsecs
+active timers:
+ #0: <c04f2c00>, tick_sched_timer, S:01
+ # expires at 2889380000000-2889380000000 nsecs [in -7856425903 to -7856425903 nsecs]
+ #1: <c3aa1f38>, hrtimer_wakeup, S:01
+ # expires at 2889470961229-2889471011229 nsecs [in -7765464674 to -7765414674 nsecs]
+ #2: <c3a97f38>, hrtimer_wakeup, S:01
+ # expires at 2889508847229-2889508897229 nsecs [in -7727578674 to -7727528674 nsecs]
+ #3: <c0510648>, sched_rt_period_timer, S:01
+ # expires at 2890000000000-2890000000000 nsecs [in -7236425903 to -7236425903 nsecs]
+ #4: <c04f2d68>, watchdog_timer_fn, S:01
+ # expires at 2892070000002-2892070000002 nsecs [in -5166425901 to -5166425901 nsecs]
+
+
+And I don't have any tick from the i.Mx timer until they wrap again to be positive.
+Can you suggest some way to debug? Do you know what it can happen?
+
+Michael
 
