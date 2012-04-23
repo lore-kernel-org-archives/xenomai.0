@@ -1,17 +1,13 @@
-Message-ID: <4F9555EB.4040705@domain.hid>
-Date: Mon, 23 Apr 2012 15:15:23 +0200
-From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
+In-Reply-To: <4F9555C5.3070300@domain.hid>
 References: <CAOiXNkD+-yANz15W_cnD9QLjyGH7LUT-Pf8LEJHqx4Kh24pL+g@domain.hid>
-	<4F954ABE.20508@domain.hid>
-	<CAOiXNkDKRpQKjtvC-H1YsJtHkNWYcWTUEKPqfYv0HQ_=SRHGCw@domain.hid>
-	<4F955058.6080004@domain.hid>
-	<CAOiXNkAGMH+CEQkp3rS0tSZbKQbu9BKrs8SDaFiyY-YFvAdcPA@mail.gmail.com>
-In-Reply-To: <CAOiXNkAGMH+CEQkp3rS0tSZbKQbu9BKrs8SDaFiyY-YFvAdcPA@mail.gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+	<4F9555C5.3070300@domain.hid>
+Date: Mon, 23 Apr 2012 15:25:43 +0200
+Message-ID: <CAOiXNkDRQ3tnooUWwx=spxS-=v2aktovrwnf447buCpOjb1iJw@domain.hid>
+From: Andrey Nechypurenko <andreynech@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
 Subject: Re: [Xenomai-help] Jitter while generating PWMs with GPIO from RTDM
- driver
+	driver
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -21,61 +17,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Andrey Nechypurenko <andreynech@domain.hid>
+To: Wolfgang Grandegger <wg@domain.hid>
 Cc: Xenomai help <xenomai@xenomai.org>
 
-On 04/23/2012 02:57 PM, Andrey Nechypurenko wrote:
->>>>> retval = rtdm_task_init(&pwm_task[i], // there is currently only one
->>>>> element in this array
->>>>>                        "pwm-task",
->>>>>                        pwm_task_proc,
->>>>>                        0,
->>>>>                        RTDM_TASK_HIGHEST_PRIORITY,
->>>>>                        20000000); // 20ms period
->>>>
->>>> Do not use a thread, use a timer.
->>>
->>> So you mean instead of starting periodic task with rtdm_task_init() it
->>> is better use timer functions to trigger pin toggling piece of code?
->>> Could you please elaborate on it a little? I thought that
->>> rtdm_task_sleep() and rtdm_task_wait_period() are using timers
->>> internally to wake up the thread at the right moment. Is not they?
->>
->> Yes, but once the timer is woken up, a context switch is needed to wake
->> up the thread, this adds time.
+>> Following my tests with PWM generation using GPIO in user space [1],
+>> I've made the RTDM module [2] to further reduce the jitter. As a
+>> result, jitter was improved, but still under heavy system load the
+>> servo motor I am trying to control starts shaking. Now, I fill stuck
+>> and hope to get some help here.
 >
-> I see... Nevertheless, I am surprised that context switch is so expensive.
+> What jitters in micro-seconds are you speaking about? What are you
+> requirements? I have not found that information yet in this thread.
 
-Keep in mind that in a dual kernel system, the RTOS part is competing 
-with the linux kernel on core resources such as CPU caches. So each time 
-your code sleeps for the next period, it leaves a 20 ms time window to 
-linux to run and happily trash all I/D caches, which is a lot.
+The short answer is - I do not know exactly :-) .
 
-Now, if you have to schedule a thread, you have to traverse the Xenomai 
-scheduling core to do the switch, in addition to the timer interrupt 
-handling, which translates into significantly more code and data being 
-accessed.
+The long answer is - my goal is to keep servo motor stable under the
+high system load. I was unable to find any concrete numbers regarding
+the tolerance level of the no-name servo motor. So I am just
+experimenting. My recent observations, presented in the blog I've
+mentioned in the original post, suggest that 20-30micro-seconds jitter
+will force my concrete servo to start the movements.
 
-You can check this effect using the latency test: the faster the 
-sampling period, the shorter the latencies, and conversely.
+I was unable to further reduce jitter, so maybe this number is
+actually lower. I will try to implement what Gilles suggested (using
+timer api) and see if I can a) further reduce jitter; and b) if this
+jitter will be small enough to prevent servo from shaking.
 
->
->> The other alternative I describe in my last mail, that is, using a
->> dedicated hardware timer with its own irq handler, is a bit more of a
->> workaround, but still not uncommon in the RTOS world.
->
-> Well, if nothing else would help, I'll try this way :-) .
->
-> Thank you!
-> Andrey.
->
-> _______________________________________________
-> Xenomai-help mailing list
-> Xenomai-help@domain.hid
-> https://mail.gna.org/listinfo/xenomai-help
->
-
-
--- 
-Philippe.
+Andrey.
 
