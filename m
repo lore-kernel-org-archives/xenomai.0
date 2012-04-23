@@ -1,54 +1,61 @@
-Message-ID: <4F83FB2B.8040502@domain.hid>
-Date: Tue, 10 Apr 2012 11:19:39 +0200
+Message-ID: <4F950E77.1030606@domain.hid>
+Date: Mon, 23 Apr 2012 10:10:31 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4F50A422.50208@domain.hid> <4F55C306.8020307@domain.hid>
-	<4F55D765.7040705@domain.hid> <4F55E390.8090706@domain.hid>
-	<4F55FE81.6000904@domain.hid> <4F560A6C.2080306@domain.hid>
-	<4F560B76.5080606@domain.hid> <4F5629D2.50304@domain.hid>
-	<4F562B53.7070400@domain.hid> <4F562EC2.6040604@domain.hid>
-	<4F56387B.40702@domain.hid> <4F575BA3.7060404@domain.hid>
-	<4F576622.1030509@domain.hid> <4F57A567.7030008@domain.hid>
-	<4F7C127D.2010400@domain.hid> <4F7C1484.5090406@domain.hid>
-	<4F7C183F.5040009@domain.hid> <4F7F0D4E.8080906@domain.hid>
-	<4F7F0E8A.70702@domain.hid> <4F7F20F0.9070007@domain.hid>
-	<4F80BD10.2060200@domain.hid> <4F83F2C3.50704@domain.hid>
-	<4F83F321.2030300@domain.hid> <4F83F645.7040402@domain.hid>
-	<4F83F828.4000508@domain.hid> <4F83FB24.9070104@domain.hid>
-In-Reply-To: <4F83FB24.9070104@domain.hid>
+References: <CAKvQZ_2OhLoG4_rGJ1LgFnbdkK4X3zFV+4o-GnhSer8oS5U9Tw@domain.hid>	<4F949BBF.6020008@domain.hid>
+	<CAKvQZ_3gVgY4QPDa5Q7khu2Mm7eUWQnVUYJbwhfxGsTQPyVaSA@mail.gmail.com>
+In-Reply-To: <CAKvQZ_3gVgY4QPDa5Q7khu2Mm7eUWQnVUYJbwhfxGsTQPyVaSA@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] preemptive doesn't work
-List-Id: Xenomai life and development <xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-List-Archive: </public/xenomai-core>
+Subject: Re: [Xenomai-help] libnative and libxenomai dependy problem
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-core-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
-	<mailto:xenomai-core-request@domain.hid>
-To: Roberto Bielli <roberto.bielli@domain.hid>
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: Willy Lambert <lambert.willy@domain.hid>
 Cc: xenomai@xenomai.org
 
-On 04/10/2012 11:19 AM, Roberto Bielli wrote:
-> Hi Gilles,
+On 04/23/2012 03:57 AM, Willy Lambert wrote:
+> 2012/4/23 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>:
+>> On 04/23/2012 01:57 AM, Willy Lambert wrote:
+>>> Hi,
+>>>
+>>> I just run into the same kind of problem of a one year old discussion :
+>>> http://www.mail-archive.com/xenomai@xenomai.org
+>>>
+>>> having such kind of errors :
+>>> /usr/lib/libnative.so.3: undefined symbol: xeno_current_mode_key
+>>> I have a xenomai 2.6.0 recompiled from sources with the --dl-open
+>>> option enabled.
+>>> root@domain.hid):~# cat /proc/xenomai/version
+>>> 2.6.0
+>>>
+>>>
+>>> I re-post something because I'm not sure it is up to date and as I
+>>> have the next version I am suprised the problem still arises
+>>>
+>>> I have 2 question :
+>>> _ did I missconfigured something in my compiller flags or linking ?
+>>> _ are the solutions of last thread still up to date ?
+>>>
+>>
+>> You need to dlopen libxenomai in order for dlopen(libnative) to succeed.
+>>
+>> --
+>>                                                                Gilles.
 > 
-> the steps for supporting imx25 have been:
-> 1. We buy a board with imx25
-> 2. Our supplier made the porting of linux 2.6.31 freescale with  imx25
-> 3. we put a xenomai  2.5.6 and we have adapted for imx25. The only 
-> changes is this (because imx25 registers are identical to mx3 ):
+> In fact I never called dlopen(libnative) myself. It is done in a
+> library to which I am linked. Do I have a to dlopen it in my personnal
+> code ?
 > 
-> old:
-> #define timer_is_v2()    (cpu_is_mx3() || cpu_is_mx5())
-> 
-> new:
-> #define timer_is_v2()    (cpu_is_mx3() || cpu_is_mx25() || cpu_is_mx5())
-> 
-
-Yes, but if you use the unchanged adeos patch, it uses if (cpu_is_mx3())
-in tsc and timer code, whereas it should use if (timer_is_v2()),
-timer_is_v2 is not present in vanilla linux code.
+you have to manage for dlopen(libxenomai) to be called before
+dlopen(libnative), and with the RTDL_GLOBAL flag so that libnative will
+find the symbols defined by libxenomai.
 
 -- 
                                                                 Gilles.
