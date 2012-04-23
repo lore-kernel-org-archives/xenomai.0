@@ -1,13 +1,10 @@
-Message-ID: <4F953CD7.6030207@domain.hid>
-Date: Mon, 23 Apr 2012 13:28:23 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CAKvQZ_2H38BtL++2LMhnh_1YOFcia4tR-5FyuQ1SskO3er2RrA@mail.gmail.com>	<4F951555.2070403@domain.hid>
-	<CAKvQZ_3H8b_V0qvTJAQZ7xzwvLWrVGT2VaCh2A7RCpRsuXgC=A@mail.gmail.com>
-In-Reply-To: <CAKvQZ_3H8b_V0qvTJAQZ7xzwvLWrVGT2VaCh2A7RCpRsuXgC=A@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Smi workaround on ICH8M
+Date: Mon, 23 Apr 2012 13:56:47 +0200
+Message-ID: <CAOiXNkD+-yANz15W_cnD9QLjyGH7LUT-Pf8LEJHqx4Kh24pL+g@domain.hid>
+From: Andrey Nechypurenko <andreynech@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: [Xenomai-help] Jitter while generating PWMs with GPIO from RTDM
+	driver
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -17,71 +14,71 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Willy Lambert <lambert.willy@domain.hid>
-Cc: xenomai@xenomai.org
+To: Xenomai help <xenomai@xenomai.org>
 
-On 04/23/2012 01:05 PM, Willy Lambert wrote:
-> 2012/4/23 Philippe Gerum <rpm@xenomai.org>:
->> On 04/23/2012 03:51 AM, Willy Lambert wrote:
->>>
->>> Hi,
->>>
->>> I have a message  in dmesg about SMI workaround :
->>> Xenomai: SMI-enabled chipset found, but SMI workaround disabled
->>>          (check CONFIG_XENO_HW_SMI_WORKAROUND). You may encounter
->>>          high interrupt latencies!
->>>
->>> My kernel should be configured properly and following the "In case of
->>> high latencies" of
->>> http://www.xenomai.org/index.php/Configuring_x86_kernels thread, I did
->>> some tests.
->>>
->>> Latency test is here (if it is us it should be ok no ?):
->>>
->>
->> Yes, this looks ok, but you need to run this test longer, and try a few
->> usual suspects like plugging in/out USB devices while doing so (e.g. mouse,
->> netdev).
->>
->> The point of this message is to tell you that your chipset is known to
->> create latency issues in some cases (like most Intel chipset these days),
->> but you did not enable the Xenomai code which works around such issues by
->> shutting down problematic SMI sources. That may be right, or even required
->> to leave all the SMI sources enabled (e.g. thermal control), but this might
->> also lead to unacceptable latency spots. YMMV.
->>
->> This is basically a heads up message.
->>
->> --
->> Philippe.
-> 
-> Ok, thanks for answers.
-> 
-> I did the test again , playing with usb and using the stress program
-> to generate CPU load. The max latency for now is 15us in 4 mins. So I
-> think it will be ok to keep SMI on for the time. Please let me know if
-> this test is still stoo short.
-> ^C---|-----------|-----------|-----------|--------|------|-------------------------
-> RTS|      0.604|      2.332|     15.161|       0|     0|    00:03:59/00:03:59
-> 
-> Do you know by chance where I can found infos about SMI sources ? I
-> suppose it is not in the ICH8M docs, it would be in my board doc ? Or
-> have I a soft way to do this check so that I don't have to spend time
-> with my vendor which will obviously have hard time to answer that ?
+Hi Folks,
 
-The list of potential SMI sources IS in the ICH8M docs. Whether these
-sources are used by your board essentially depends on the BIOS
-implementation (an SMI traps into BIOS code). So the theoretical answer
-to this question is to disassemble the the BIOS blob.
+Following my tests with PWM generation using GPIO in user space [1],
+I've made the RTDM module [2] to further reduce the jitter. As a
+result, jitter was improved, but still under heavy system load the
+servo motor I am trying to control starts shaking. Now, I fill stuck
+and hope to get some help here.
 
-The practical answer is to run latency during a few hours, under stress
-using all the hardware which will be used in your target project
-(network card, disk I/Os, USB key I/Os, etc...). If an SMI is used but
-latencies remain acceptable with regard to your goals, no reason to bother.
+At one hand, I can not imaging that 800MHz ARM (BeagleBoard xM) could
+not manage to generate 20mS PWMs from RTDM driver precise enough to
+avoid sporadic servo movements. So probably I am doing something
+wrong. On the other hand, I do not see where the possible mistake can
+happen and hope that someone experienced in with Xenomai could help.
 
-If you find unacceptable latencies, see the TROUBLESHOOTING guide, to
-see how to enable SMI workaround.
+There is an article about observed behavior [3] with more details, but
+the core problem, I guess, boils down to the following code fragment:
 
--- 
-                                                                Gilles.
+void pwm_task_proc(void *arg) {
+  const int which = (int)arg;
+
+  // Toggling GPIO pin
+  for(;;) {
+      //set_data_out has offset 0x94 . Set gpio pin to 1 (up)
+      iowrite32(0x40000000, gpio + 0x6094);
+
+      // wait requested pulse width time (duty)
+      if(0 != rtdm_task_sleep(up_period[which]))
+        rtdm_printk("PWM: rtdm_task_sleep() returns error\n");
+
+      //clear_data_out has offset 0x90 . Set gpio pin to 0 (down)
+      iowrite32(0x40000000, gpio + 0x6090);
+
+      // wait until the next pulse should start (20mS interval)
+      if(0 != rtdm_task_wait_period())
+        rtdm_printk("PWM: rtdm_task_wait_period() returns error\n");
+  }
+
+This is the function running as a periodic task started with the following call:
+
+retval = rtdm_task_init(&pwm_task[i], // there is currently only one
+element in this array
+			"pwm-task",
+			pwm_task_proc,
+			0,
+			RTDM_TASK_HIGHEST_PRIORITY,
+			20000000); // 20ms period
+
+It works fine until I put the system under about 95% load (just by
+running tar jcf f.tbz2 /usr/lib). After that, the jitter of the
+generated PWMs increasing to the level where it is not only observable
+on the scope (as presented in [3]) but also servo motor starts
+shaking, so it is clearly visible even without any measurements.
+
+Honesly, I am failing to see any ways to improve this code. It is
+already running in the kernel space and there are only memory writes
+and RTDM wati functions involved. So I am wondering whether I hit the
+limit of what is possible with Xenomai+Linux? I hope I am not and
+would highly appreciate any hints or suggestions.
+
+Thank you,
+Andrey.
+
+[1] http://veter-project.blogspot.com/2011/09/real-time-enough-about-pwms-and-shaky.html
+[2] https://github.com/andreynech/rtdm-pwm
+[3] http://veter-project.blogspot.com/2012/04/precise-pwms-with-gpio-using-xenomai.html
 
