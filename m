@@ -1,67 +1,65 @@
-From: Chris Stone <chris.stone@optelian.com>
-Date: Wed, 23 May 2012 15:43:49 +0000
-Message-ID: <623784B6C75D274389918D358E89E8BB0B7FD420@OPTELIAN5.optelian.local>
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+Message-ID: <4F9665A5.3010902@domain.hid>
+Date: Tue, 24 Apr 2012 10:34:45 +0200
+From: Michael Trimarchi <michael@domain.hid>
 MIME-Version: 1.0
-Subject: [Xenomai] MDIO on Freescale MX35.
-List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
-List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
-	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
-List-Archive: <http://www.xenomai.org/pipermail/xenomai>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
-List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
-	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+References: <4F965F04.3060403@domain.hid>
+	<4F965FB0.7030609@domain.hid>
+In-Reply-To: <4F965FB0.7030609@domain.hid>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Adeos-main] [PATCH 1/3] Fix hwtimer_uaccess in IMX architecture
+List-Id: General discussion about Adeos <adeos-main.gna.org>
+List-Unsubscribe: <https://mail.gna.org/options/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+List-Archive: </public/adeos-main>
+List-Post: <mailto:adeos-main@gna.org>
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Adeos <adeos-main@gna.org>, b.morelli@domain.hid
 
-I am using Xenomai 2.6.0. We wish to run Xenomai on two different target bo=
-ards, one uses the Freescale MPC8378 CPU,
-which is powerpc, the other uses the Freescale MX35 which is arm11. This is=
- for real products that are under development,=20
-so there are some factors that affect our choices. For instance, to simplif=
-y maintenance of these cards for many=20
-years to come, we want to use the same kernel version on the MPC8378 as we =
-do on the MX35. For this reason, we=20
-chose to use kernel 3.0.13, because there are Adeos patches against kernel =
-3.0.13 for both arm and powerpc. However,=20
-I know that the Adeos patches and kernel 3.0.13 are not really supported by=
- Xenomai 2.6.0 because they are only in the=20
-Git tree and not in the official tarball download. Nonetheless, the powerpc=
- target has been running with no problem=20
-for some time now, and the card is actually in product verification now, wh=
-ich means that testing has not discovered=20
-any problems with Xenomai 2.6.0 on that target. I am now attempting bring X=
-enomai up on the mx35 card.
+On 04/24/2012 10:09 AM, Gilles Chanteperdrix wrote:
+> On 04/24/2012 10:06 AM, Michael Trimarchi wrote:
+>> Fix the code for IMX architectures in order to call the software
+>> workaround to clear the off platform peripheral modules Supervisor
+>> Protect clear the off platform peripheral modules Supervisor Protect
+>> bit for the SDMA to access them.
+>>
+>> Signed-off-by: Michael Trimarchi <michael@domain.hid>
+>> Signed-off-by: Bruno Morelli <b.morelli@domain.hid>
+>> ---
+>>  arch/arm/plat-mxc/devices.c |   14 +++++++-------
+>>  1 files changed, 7 insertions(+), 7 deletions(-)
+>>
+>> diff --git a/arch/arm/plat-mxc/devices.c b/arch/arm/plat-mxc/devices.c
+>> index 253b711..a2c0e66 100644
+>> --- a/arch/arm/plat-mxc/devices.c
+>> +++ b/arch/arm/plat-mxc/devices.c
+>> @@ -93,19 +93,19 @@ err:
+>>  
+>>  static int post_cpu_init(void)
+>>  {
+>> -#ifdef CONFIG_MACH_MX27
+>> +#ifdef CONFIG_ARCH_MX27
+> 
+> What kernel version are we talking about? In version 3.2.1, MACH_MX27 is
+> still there and has not been replacced with ARCH_MX27
+> 
 
-I am using the adeos patch adeos-ipipe-3.0.13-arm-1.18.08.patch. I tried fo=
-llowing the README for the MXC, but the=20
-Freescale IMX git has no tag rel_imx_3.0.15_12.03.00. The denx tree has the=
- tag, but the mxc patches as described in=20
-the README do not apply without errors. Even after fixing the patch rejects=
-, I ended up with compilation errors, so I=20
-lost confidence in that approach. So, I applied the adeos-ipipe-3.0.13-arm-=
-1.18.08.patch to the kernel.org 3.0.13=20
-kernel, without the pre and post patches, which went without error. The ker=
-nel boots, and many things work, but the=20
-FEC Ethernet is broken with an MDIO read timeout.=20
+Yes, it is strange. In linux 3.4.0
 
-I would like to debug this issue and provide whatever fixes back to the com=
-munity. I don't really know where to=20
-start. I am looking for some guidance on what I should do to debug the issu=
-e.
+git grep ARCH_MX25 arch/arm/
+arch/arm/mach-imx/Kconfig:config ARCH_MX25
+arch/arm/mach-imx/Kconfig:      select ARCH_MX25
+arch/arm/plat-mxc/devices/Kconfig:      default y if ARCH_MX25 || SOC_IMX27 || SOC_IMX35 || SOC_IMX50 || SOC_IMX51 || SOC_IMX53
 
-Cheers,
+But it is different for the MX27
 
-Chris Stone
-Embedded Linux Architect
-Optelian
-1 Brewer Hunt Way
-Ottawa, Ontario K2K 2B5
+arch/arm/mach-imx/Kconfig:config MACH_MX27
+arch/arm/mach-imx/Kconfig:      select MACH_MX27
 
-Phone: 613-287-2000 x2106
+I will fix
 
-www.optelian.com
-
+Michael
 
