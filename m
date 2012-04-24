@@ -1,31 +1,85 @@
+Message-ID: <4F96753C.8060608@domain.hid>
+Date: Tue, 24 Apr 2012 11:41:16 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Date: Wed, 30 May 2012 12:41:07 +0530
-Message-ID: <CAM1yFZ-1YCqe6NdGKWtCSEAwqCnRqn1=1-5GrGWy-qEmPOZCHg@mail.gmail.com>
-From: Anisha Kaul <born.rebel.83@gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Subject: [Xenomai] ARM9 TS-7800 Xenomai support
-List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
-List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
-	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
-List-Archive: <http://www.xenomai.org/pipermail/xenomai>
-List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
-List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
-	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+References: <4F965FA6.2070009@domain.hid>
+	<4F966094.9070709@domain.hid>
+	<4F96652D.1080401@domain.hid>
+	<4F966A00.8090307@domain.hid>
+	<4F9672FA.4050003@domain.hid>
+In-Reply-To: <4F9672FA.4050003@domain.hid>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Adeos-main] [PATCH 3/3] Fix imx time reprogramming issue
+List-Id: General discussion about Adeos <adeos-main.gna.org>
+List-Unsubscribe: <https://mail.gna.org/options/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+List-Archive: </public/adeos-main>
+List-Post: <mailto:adeos-main@gna.org>
+List-Help: <mailto:adeos-main-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
+	<mailto:adeos-main-request@domain.hid>
+To: Michael Trimarchi <michael@domain.hid>
+Cc: Adeos <adeos-main@gna.org>, b.morelli@domain.hid
 
-Greetings,
+On 04/24/2012 11:31 AM, Michael Trimarchi wrote:
+> Hi
+> 
+> On 04/24/2012 10:53 AM, Gilles Chanteperdrix wrote:
+>> On 04/24/2012 10:32 AM, Michael Trimarchi wrote:
+>>> On 04/24/2012 10:13 AM, Gilles Chanteperdrix wrote:
+>>>> On 04/24/2012 10:09 AM, Michael Trimarchi wrote:
+>>>>> This patch includes:
+>>>>> 
+>>>>> * Fix invalid virtual address base of MX1_2_TCM * Fix the
+>>>>> minimum delay below which the hardware timer can not be
+>>>>> reprogrammed. The value is the same of that one that is used
+>>>>> to calculate the min_delta_ns
+>>>>> 
+>>>>> arch/arm/plat-mxc/time.c 414: clockevent_mxc.min_delta_ns =
+>>>>> clockevent_delta2ns(0xff, &clockevent_mxc);
+>>>> 
+>>>> I do not think we can use this value, it is way to high for
+>>>> xenomai needs. In latest releases we use 2us instead of 1us,
+>>>> and according to what a user posted recently, this should be
+>>>> enough, could you test with 2us? And 2us is already what we
+>>>> have in the 3.2 repository.
+>>>> 
+>>> As I understood the min delays is in tick and not depend on the
+>>> clock rate.
+>>> 
+>>> This is from atmel at91_ipipe_time
+>>> 
+>>> min_delta_ticks = ((unsigned long long) clkevt.min_delta_ns *
+>>> clkevt.mult) >> clkevt.shift;
+>>> 
+>>> this is exaclty the reverse calculation of
+>>> clockevent_mxc.min_delta_ns
+>>> 
+>>> I have already the result in the previous calculation: 0xff is
+>>> the minimun in ticks
+>> 
+>> 0xff is too large, it corresponds to 30us on some platforms, could
+>> you please try with 2us? The delay is given as a count of ticks or
+>> as a duration in ns depending on the architecture, it does not
+>> really matter.
+>> 
+> 
+> Ok, with 0x85 is working (2 uS). I don't find in the documentation
+> the min_delta_ns for this architecture. I will rebase the patch on
+> core-3.2
 
-I looked for the ARM9 board titled TS-7800 in the Embedded hardware
-list of Xenomai here:
-http://www.xenomai.org/index.php/Embedded_Device_Support#ARM
-but couldn't find it.
+This is not really a specified constant, finding this minimum value is
+more of a hit and miss. Anyway, on core 3.2, the timers have been
+substantially reworked, and we are able to reuse the clockevent callback
+which has a safety mechanism in addition to the minimum value to avoid
+loosing ticks (in short, the timer is re-read after programming it, and
+if the delay has already passed, the callback returns a negative value,
+which the timer subsystem uses to trigger the irq).
 
-I am talking about this ARM9 board:
-http://www.embeddedarm.com/products/arm-sbc.php#ts-7800-500mhz-series
+Core-3.2 is not yet supported on ARM for xenomai 2.6. I will do the
+changes and keep you informed.
 
-Is it there under some other name which I probably missed?
-
-Regards,
--Anisha
+-- 
+					    Gilles.
 
