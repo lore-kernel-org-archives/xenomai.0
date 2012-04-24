@@ -1,18 +1,10 @@
-Message-ID: <4F9197B4.5060507@domain.hid>
-Date: Fri, 20 Apr 2012 19:07:00 +0200
+Message-ID: <4F965F04.3060403@domain.hid>
+Date: Tue, 24 Apr 2012 10:06:28 +0200
 From: Michael Trimarchi <michael@domain.hid>
 MIME-Version: 1.0
-References: <4F8FE2A9.8080303@domain.hid> <4F8FEF3C.5010905@domain.hid>
-	<4F917BA4.1090804@domain.hid>
-	<4F9181A3.9070306@domain.hid>
-	<4F918990.7060200@domain.hid>
-	<4F918C17.2090200@domain.hid>
-	<4F91921C.3010501@domain.hid>
-	<4F9192A5.4030803@domain.hid>
-In-Reply-To: <4F9192A5.4030803@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Adeos-main] IMX25 timer access patch
+Subject: [Adeos-main] [PATCH 1/3] Fix hwtimer_uaccess in IMX architecture
 List-Id: General discussion about Adeos <adeos-main.gna.org>
 List-Unsubscribe: <https://mail.gna.org/options/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
@@ -21,37 +13,52 @@ List-Post: <mailto:adeos-main@gna.org>
 List-Help: <mailto:adeos-main-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
 	<mailto:adeos-main-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Adeos <adeos-main@gna.org>, Michael Trimarchi <trimarchi@domain.hid>
+To: Adeos <adeos-main@gna.org>
+Cc: b.morelli@domain.hid
 
-Hi
+Fix the code for IMX architectures in order to call the software
+workaround to clear the off platform peripheral modules Supervisor
+Protect clear the off platform peripheral modules Supervisor Protect
+bit for the SDMA to access them.
 
-On 04/20/2012 06:45 PM, Gilles Chanteperdrix wrote:
-> On 04/20/2012 06:43 PM, Michael Trimarchi wrote:
->> On 04/20/2012 06:17 PM, Gilles Chanteperdrix wrote:
->>> On 04/20/2012 06:06 PM, Michael Trimarchi wrote:
->>>> During clock test it stuck for a while and then start again 
->>>
->>> Have you read tip #4 in the "Tips and tricks" section of the porting
->>> I-pipe to ARM linux document?
->>>
->>
->> gettimeoffset?
-> 
-> No. RTFL
-> 
+Signed-off-by: Michael Trimarchi <michael@domain.hid>
+Signed-off-by: Bruno Morelli <b.morelli@domain.hid>
+---
+ arch/arm/plat-mxc/devices.c |   14 +++++++-------
+ 1 files changed, 7 insertions(+), 7 deletions(-)
 
-Thank you
-
-Ok I think that I have fixed this too. Let me do some tests and the I will
-post all the patches
-
-Michael
-
+diff --git a/arch/arm/plat-mxc/devices.c b/arch/arm/plat-mxc/devices.c
+index 253b711..a2c0e66 100644
+--- a/arch/arm/plat-mxc/devices.c
++++ b/arch/arm/plat-mxc/devices.c
+@@ -93,19 +93,19 @@ err:
+ 
+ static int post_cpu_init(void)
+ {
+-#ifdef CONFIG_MACH_MX27
++#ifdef CONFIG_ARCH_MX27
+ 	if (cpu_is_mx27())
+ 		ipipe_mach_allow_hwtimer_uaccess(MX27_IO_P2V(MX27_AIPI_BASE_ADDR), 3);
+ #endif /* CONFIG_MACH_MX27 */
+-#ifdef CONFIG_MACH_MX25
++#ifdef CONFIG_ARCH_MX25
+ 	if (cpu_is_mx25())
+-		ipipe_mach_allow_hwtimer_uaccess(MX25_AIPS1_BASE_ADDR_VIRT,
+-						 MX25_AIPS2_BASE_ADDR_VIRT);
++		ipipe_mach_allow_hwtimer_uaccess(MX25_IO_P2V(MX25_AIPS1_BASE_ADDR),
++						 MX25_IO_P2V(MX25_AIPS2_BASE_ADDR));
+ #endif /* CONFIG_MACH_MX25 */
+-#ifdef CONFIG_MACH_MX31
++#ifdef CONFIG_ARCH_MX31
+ 	if (cpu_is_mx31())
+-		ipipe_mach_allow_hwtimer_uaccess(AIPS1_BASE_ADDR_VIRT,
+-						 AIPS2_BASE_ADDR_VIRT);
++		ipipe_mach_allow_hwtimer_uaccess(MX31_IO_P2V(MX31_AIPS1_BASE_ADDR_VIRT),
++						 MX31_IO_P2V(MX31_AIPS2_BASE_ADDR_VIRT));
+ #endif /* CONFIG_MACH_MX31 */
+ 	return 0;
+ }
 -- 
-| Michael Nazzareno Trimarchi                     Amarula Solutions BV |
-| COO  -  Founder                                      Cruquiuskade 47 |
-| +31(0)851119172                                 Amsterdam 1018 AM NL |
-
+1.7.5.4
 
 
