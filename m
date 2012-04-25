@@ -1,15 +1,15 @@
 MIME-Version: 1.0
-In-Reply-To: <4F950E77.1030606@domain.hid>
-References: <CAKvQZ_2OhLoG4_rGJ1LgFnbdkK4X3zFV+4o-GnhSer8oS5U9Tw@domain.hid>
-	<4F949BBF.6020008@domain.hid>
-	<CAKvQZ_3gVgY4QPDa5Q7khu2Mm7eUWQnVUYJbwhfxGsTQPyVaSA@mail.gmail.com>
-	<4F950E77.1030606@domain.hid>
-Date: Wed, 25 Apr 2012 12:05:23 +0200
-Message-ID: <CAKvQZ_1cohZPZ==AUG+QfMJ0-8VYcYLLLWSg7w8xtYp6dwXsJA@mail.gmail.com>
+In-Reply-To: <4F953CD7.6030207@domain.hid>
+References: <CAKvQZ_2H38BtL++2LMhnh_1YOFcia4tR-5FyuQ1SskO3er2RrA@mail.gmail.com>
+	<4F951555.2070403@domain.hid>
+	<CAKvQZ_3H8b_V0qvTJAQZ7xzwvLWrVGT2VaCh2A7RCpRsuXgC=A@mail.gmail.com>
+	<4F953CD7.6030207@domain.hid>
+Date: Wed, 25 Apr 2012 12:07:49 +0200
+Message-ID: <CAKvQZ_3ZhrDO4adK_h8bQfbT7BJYt3WkMtyoi3fq8_7n6RVH4Q@mail.gmail.com>
 From: Willy Lambert <lambert.willy@domain.hid>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] libnative and libxenomai dependy problem
+Subject: Re: [Xenomai-help] Smi workaround on ICH8M
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -23,54 +23,82 @@ To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
 2012/4/23 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>:
-> On 04/23/2012 03:57 AM, Willy Lambert wrote:
->> 2012/4/23 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>:
->>> On 04/23/2012 01:57 AM, Willy Lambert wrote:
+> On 04/23/2012 01:05 PM, Willy Lambert wrote:
+>> 2012/4/23 Philippe Gerum <rpm@xenomai.org>:
+>>> On 04/23/2012 03:51 AM, Willy Lambert wrote:
+>>>>
 >>>> Hi,
 >>>>
->>>> I just run into the same kind of problem of a one year old discussion =
-:
->>>> http://www.mail-archive.com/xenomai@xenomai.org
+>>>> I have a message =A0in dmesg about SMI workaround :
+>>>> Xenomai: SMI-enabled chipset found, but SMI workaround disabled
+>>>> =A0 =A0 =A0 =A0 =A0(check CONFIG_XENO_HW_SMI_WORKAROUND). You may enco=
+unter
+>>>> =A0 =A0 =A0 =A0 =A0high interrupt latencies!
 >>>>
->>>> having such kind of errors :
->>>> /usr/lib/libnative.so.3: undefined symbol: xeno_current_mode_key
->>>> I have a xenomai 2.6.0 recompiled from sources with the --dl-open
->>>> option enabled.
->>>> root@domain.hid):~# cat /proc/xenomai/version
->>>> 2.6.0
+>>>> My kernel should be configured properly and following the "In case of
+>>>> high latencies" of
+>>>> http://www.xenomai.org/index.php/Configuring_x86_kernels thread, I did
+>>>> some tests.
 >>>>
->>>>
->>>> I re-post something because I'm not sure it is up to date and as I
->>>> have the next version I am suprised the problem still arises
->>>>
->>>> I have 2 question :
->>>> _ did I missconfigured something in my compiller flags or linking ?
->>>> _ are the solutions of last thread still up to date ?
+>>>> Latency test is here (if it is us it should be ok no ?):
 >>>>
 >>>
->>> You need to dlopen libxenomai in order for dlopen(libnative) to succeed=
-.
+>>> Yes, this looks ok, but you need to run this test longer, and try a few
+>>> usual suspects like plugging in/out USB devices while doing so (e.g. mo=
+use,
+>>> netdev).
+>>>
+>>> The point of this message is to tell you that your chipset is known to
+>>> create latency issues in some cases (like most Intel chipset these days=
+),
+>>> but you did not enable the Xenomai code which works around such issues =
+by
+>>> shutting down problematic SMI sources. That may be right, or even requi=
+red
+>>> to leave all the SMI sources enabled (e.g. thermal control), but this m=
+ight
+>>> also lead to unacceptable latency spots. YMMV.
+>>>
+>>> This is basically a heads up message.
 >>>
 >>> --
->>> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0=
- =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0Gilles.
+>>> Philippe.
 >>
->> In fact I never called dlopen(libnative) myself. It is done in a
->> library to which I am linked. Do I have a to dlopen it in my personnal
->> code ?
+>> Ok, thanks for answers.
 >>
-> you have to manage for dlopen(libxenomai) to be called before
-> dlopen(libnative), and with the RTDL_GLOBAL flag so that libnative will
-> find the symbols defined by libxenomai.
+>> I did the test again , playing with usb and using the stress program
+>> to generate CPU load. The max latency for now is 15us in 4 mins. So I
+>> think it will be ok to keep SMI on for the time. Please let me know if
+>> this test is still stoo short.
+>> ^C---|-----------|-----------|-----------|--------|------|--------------=
+-----------
+>> RTS| =A0 =A0 =A00.604| =A0 =A0 =A02.332| =A0 =A0 15.161| =A0 =A0 =A0 0| =
+=A0 =A0 0| =A0 =A000:03:59/00:03:59
+>>
+>> Do you know by chance where I can found infos about SMI sources ? I
+>> suppose it is not in the ICH8M docs, it would be in my board doc ? Or
+>> have I a soft way to do this check so that I don't have to spend time
+>> with my vendor which will obviously have hard time to answer that ?
+>
+> The list of potential SMI sources IS in the ICH8M docs. Whether these
+> sources are used by your board essentially depends on the BIOS
+> implementation (an SMI traps into BIOS code). So the theoretical answer
+> to this question is to disassemble the the BIOS blob.
+>
+
+ok, I think I won't do this for now as it's quite tricky, but I have
+the path in mind in case of problem. Thx for lighting up the way
+
+> The practical answer is to run latency during a few hours, under stress
+> using all the hardware which will be used in your target project
+> (network card, disk I/Os, USB key I/Os, etc...). If an SMI is used but
+> latencies remain acceptable with regard to your goals, no reason to bothe=
+r.
+>
+> If you find unacceptable latencies, see the TROUBLESHOOTING guide, to
+> see how to enable SMI workaround.
 >
 > --
 > =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0Gilles.
-
-Thanks for support. In fact I am not using dlopen directly (dynamic
-linking) but in ordering the linking I got it working (without having
-to set the flag which might be set underneath).
-I'm quite surprised thougth that is is a "soft" dependency. Is it my
-bad not having used --xeno-config directly ? (I use a shortcut because
-all the stuff is under CMake and I am not an expert with it).
 
