@@ -1,14 +1,14 @@
-Message-ID: <4F96FB2F.5050007@domain.hid>
-Date: Tue, 24 Apr 2012 15:12:47 -0400
-From: Andrew Tannenbaum <trb@domain.hid>
+Message-ID: <4F97A862.9050902@domain.hid>
+Date: Wed, 25 Apr 2012 09:31:46 +0200
+From: Wolfgang Grandegger <wg@domain.hid>
 MIME-Version: 1.0
 References: <4F96F53C.2070204@domain.hid>
 	<4F96F786.8050700@domain.hid>
 In-Reply-To: <4F96F786.8050700@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] rtcan I/O hang bug with
-	/proc/rtcan/rtcan0/registers
+Subject: Re: [Xenomai-help] rtcan I/O hang bug
+	with	/proc/rtcan/rtcan0/registers
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -19,9 +19,9 @@ List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+Cc: Andrew Tannenbaum <trb@domain.hid>, xenomai@xenomai.org
 
-On 04/24/2012 02:57 PM, Gilles Chanteperdrix wrote:
+On 04/24/2012 08:57 PM, Gilles Chanteperdrix wrote:
 > On 04/24/2012 08:47 PM, Andrew Tannenbaum wrote:
 >> I'm running
 >>
@@ -72,20 +72,11 @@ On 04/24/2012 02:57 PM, Gilles Chanteperdrix wrote:
 > know nothing about CAN hardware. What I know however is that some
 > hardware registers, when read, have side effects. For instance reading
 > an interrupt status may deassert the hardware interrupt.
-> 
-> The code for /proc/rtcan/rtcan0/registers is compiled if
-> CONFIG_XENO_DRIVERS_CAN_DEBUG is #defined.
-> 
-> This would seem to indicate that perhaps some registers have side
-> effects, and so this /proc file more a debug tool than something which
-> should be used on a regular basis.
-> 
-> Regards.
-> 
 
-Thanks, Gilles, I see.
+Yes, reading the registers while running is not a good idea. The
+"register" proc file is for debugging and should not be use under normal
+operation.
 
-It seems that the registers are the only member of /proc/rtcan that is
-#ifdef CONFIG_XENO_DRIVERS_CAN_DEBUG so it looks like the rest should be
-safe.
+Wolfgang.
+
 
