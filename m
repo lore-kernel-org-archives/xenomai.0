@@ -1,9 +1,10 @@
-Message-ID: <4F9D64C1.8070505@domain.hid>
-Date: Sun, 29 Apr 2012 17:56:49 +0200
+Message-ID: <4F9D64AF.20906@domain.hid>
+Date: Sun, 29 Apr 2012 17:56:31 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CALH4WdZ3zVeXeapCjUc_usPb4AreGjecPXaLjL_SWZzJ_mo0eQ@mail.gmail.com>
-In-Reply-To: <CALH4WdZ3zVeXeapCjUc_usPb4AreGjecPXaLjL_SWZzJ_mo0eQ@mail.gmail.com>
+References: <CALH4WdZ3zVeXeapCjUc_usPb4AreGjecPXaLjL_SWZzJ_mo0eQ@mail.gmail.com>	<4F97E4AA.8090502@domain.hid>
+	<CALH4WdbEZL9f=ikyEezZwUwpgKaFPaf=YqbCXzNe97dt0J643w@domain.hid>
+In-Reply-To: <CALH4WdbEZL9f=ikyEezZwUwpgKaFPaf=YqbCXzNe97dt0J643w@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-help] Xenomai: binding failed: Operation not permitted.
@@ -16,41 +17,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: xenomai@xenomai.org
+To: Frederik Bayart <frederik.bayart@domain.hid>
+Cc: xenomai@xenomai.org
 
-On 04/25/2012 12:28 PM, Frederik Bayart wrote:
-> Hallo,
+On 04/25/2012 04:00 PM, Frederik Bayart wrote:
+> Migration to squeeze is the next step planned.
+> In attachment a small test program to reproduce the problem and a makefile.
+> The program is running as root but we want e.g. the command executed
+> by the popen command running as user 'triphase'
 > 
-> We are switching from linux 2.6.30.8 with xenomai 2.4.10  to linux 2.6.38.8
-> with xenomai 2.6.0 (stable release) on debian lenny.
+> if you run the program and press CTRL-C, you get Xenomai: binding
+> failed on 2.6.0 and output (of part of the output) from 'ls' on
+> 2.4.10.
 
-If you are concerned with security (which seems to be the case since you
-want to avoid running real-time programs as root):
-- you should note that debian lenny is no longer maintained for security
-update (since february actually), so, an upgrade to squeeze is
-recommended. Chances are that it is possible to become root when running
-as an ordinary user on a lenny system without too much trouble.
-- it is entirely possible that it is possible to become root abusing
-xenomai interfaces, xenomai interfaces are not implemented with security
-in mind.
+I am afraid you will have to add the triphase user to the xenomai group
+and pass the xeno_nucleus.xenomai_gid option to the kernel. Or else
+rewrite the vfork + exec yourself dropping root privileges after the fork.
 
-> 
-> In our daemon (with real pid root), we are setting effective pid and gid to
-> 1000 and are calling popen to execute a shell command.
-> The popen succeeds, but when I try to read the output with fgets, I get the
-> error :
-> 
-> Xenomai: binding failed: Operation not permitted.
-> 
-> I verified that the effective user for both commands is the same.
-> 
-> This was working on xenomai 2.4.10
-> I added the user with pid 1000 already to the xenomai group but this
-> doesn't work.
-
-That is not enough, you should also do what is said here:
-http://www.xenomai.org/index.php/Non-root_RT
-
+The reason is that the native api assumes that if you fork in a xenomai
+program, chances are you will want to use the native api in the child
+program.
 -- 
-                                                                Gilles.
+					    Gilles.
 
