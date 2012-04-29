@@ -1,5 +1,5 @@
-Message-ID: <4F97D550.7080800@domain.hid>
-Date: Wed, 25 Apr 2012 12:43:28 +0200
+Message-ID: <4F9D64C1.8070505@domain.hid>
+Date: Sun, 29 Apr 2012 17:56:49 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <CALH4WdZ3zVeXeapCjUc_usPb4AreGjecPXaLjL_SWZzJ_mo0eQ@mail.gmail.com>
@@ -16,14 +16,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: Frederik Bayart <frederik.bayart@domain.hid>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
 On 04/25/2012 12:28 PM, Frederik Bayart wrote:
 > Hallo,
 > 
 > We are switching from linux 2.6.30.8 with xenomai 2.4.10  to linux 2.6.38.8
 > with xenomai 2.6.0 (stable release) on debian lenny.
+
+If you are concerned with security (which seems to be the case since you
+want to avoid running real-time programs as root):
+- you should note that debian lenny is no longer maintained for security
+update (since february actually), so, an upgrade to squeeze is
+recommended. Chances are that it is possible to become root when running
+as an ordinary user on a lenny system without too much trouble.
+- it is entirely possible that it is possible to become root abusing
+xenomai interfaces, xenomai interfaces are not implemented with security
+in mind.
+
 > 
 > In our daemon (with real pid root), we are setting effective pid and gid to
 > 1000 and are calling popen to execute a shell command.
@@ -37,16 +47,9 @@ On 04/25/2012 12:28 PM, Frederik Bayart wrote:
 > This was working on xenomai 2.4.10
 > I added the user with pid 1000 already to the xenomai group but this
 > doesn't work.
-> 
-> Does anyone know what the problem could be ?
 
-Quite frankly, the description is a bit vague. For instance, the
-"binding failed: operation not permitted" message should happens as a
-result of starting a program, or as a result of popen, not when calling
-fgets. Anyway, please try and reduce the bug to a simple and minimal
-test case which still causes the bug, and post the code here. A piece of
-code is worth a thousand words, and this exercise may help you identify
-which piece of the puzzle causes the bug.
+That is not enough, you should also do what is said here:
+http://www.xenomai.org/index.php/Non-root_RT
 
 -- 
                                                                 Gilles.
