@@ -1,5 +1,5 @@
-Message-ID: <4FA959A4.9000103@domain.hid>
-Date: Tue, 08 May 2012 19:36:36 +0200
+Message-ID: <4FA95A88.40801@domain.hid>
+Date: Tue, 08 May 2012 19:40:24 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <CAJ7NaH-mLaPVMGJS9cUM3XwAGay_SwygXBmK7VZQMoYcO1=EaA@mail.gmail.com>	<4FA93CA8.3040305@domain.hid>	<CAJ7NaH_V9WpcAJnjcHXNVOc8UZGVfZxQ7zLkQSvW68J4y+nCEA@mail.gmail.com>	<4FA95514.40407@domain.hid>
@@ -77,7 +77,12 @@ On 05/08/2012 07:34 PM, Vikram Dhillon wrote:
 > I have a 32-bit machine. Even after removing the debian package for
 > xeno-config, I have the same error.
 
-You should remove all xenomai debian packages.
+Things you can try:
+- try and compile a simple example not using xenomai, calling
+pthread_cancel and linking it with -lpthread, passing -Wl,-t on gcc
+command line to see what libpthread.so is used.
+- when you compile xenomai, look at how for instance cyclictest is
+compiled, and see if the flags used to compile your examples are the same.
 
 -- 
                                                                 Gilles.
