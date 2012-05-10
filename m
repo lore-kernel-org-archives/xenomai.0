@@ -1,7 +1,7 @@
-Date: Thu, 10 May 2012 19:29:26 +0200 (CEST)
+Date: Thu, 10 May 2012 19:38:36 +0200 (CEST)
 From: aubin.rebillat@domain.hid
-Message-ID: <479588872.145094722.1336670966752.JavaMail.root@domain.hid>
-In-Reply-To: <4FABEE1E.9000200@domain.hid>
+Message-ID: <1019836294.145115940.1336671516044.JavaMail.root@domain.hid>
+In-Reply-To: <4FABFACE.7030904@domain.hid>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
@@ -21,168 +21,43 @@ Cc: xenomai@xenomai.org
 > De: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
 > =C3=80: "aubin rebillat" <aubin.rebillat@domain.hid>
 > Cc: xenomai@xenomai.org
-> Envoy=C3=A9: Jeudi 10 Mai 2012 18:34:38
+> Envoy=C3=A9: Jeudi 10 Mai 2012 19:28:46
 > Objet: Re: [Xenomai-help] Xenomai on the TS-7553 ARM SBC
 >=20
-> On 05/10/2012 06:04 PM, aubin.rebillat@domain.hid wrote:
-> > I'm not that experienced with initrd/initramfs and that was what
-> > the
-> > manufacturer recommended and i followed it so i can have support
-> > from
-> > them. But yes, at first, i think it can boot from another device.
->=20
-> Could you wrap your lines around 72 characters ? I have to do it for
-> you
-> when I want to reply your posts.
-
-I will, sorry for the inconvenience.
-
->=20
+> On 05/10/2012 03:26 PM, aubin.rebillat@domain.hid wrote:
+> > Hello,
 > >=20
-> >>
-> >>> I will look into the OABI and EABI settings then. I will also set
-> >>> up
-> >>> an NFS file system to mount debian from and see what is
-> >>> happening.
-> >>>
-> >>> Thank you Gilles for your reply. I will keep posting about my
-> >>> progresses.
-> >>
-> >> The issue may simply well be that your timer code does not work.
-> >> Could
-> >> you post the code for your port? That is, the code you added to
-> >> get
-> >> it
-> >> work with the I-pipe patch.
-> >> Have you checked that linux timer is
-> >> still
-> >> ticking after Xenomai has been started?
-> >=20
-> > No, i did not check that the linux timer is still ticking.
-> > But i think it is because parts of the init script are executed and
-> > it is a shell script calling several sub-processes.
+> > I am trying to port Xenomai on the TS-7553 SBC from Technologic
+> > systems, based on the ECONA CNS2132 (STAR8132) from Cavium
+> > networks (250 MHz arm922t).
+> > A Linux kernel is available for this board, version 2.6.24.4, which
+> > is running fine.
+> > I patched this kernel with adeos-ipipe-2.6.24-arm-1.9-01.patch and
+> > I implemented all the IPIPE code for the CNS2132 and everything is
+> > compiling and booting fine.
 >=20
-> If subprocesses were an issue, nobody would be able to run xenomai.
+> Note that the following page:
+> http://www.openembedded.org/wiki/TS-7500
 >=20
->
-> > Nevertheless, I will put some printk in the linux timer handler to
-> > be sure.
-> >=20
-> >>
-> >> You can also try to boot with CONFIG_IPIPE but without
-> >> CONFIG_XENOMAI.
-> >=20
-> > I did, and it's booting just fine.
+> Proposes patches for linux 2.6.35, which is really, really, really
+> more
+> current than 2.6.24, and for which an I-pipe patch also exists.
 >=20
-> Ok. Then it is really likely the timer code which is broken. As the
-> only
-> difference when xenomai is started is that linux timer is handled by
-> xenomai.
+> I mean, with 2.6.24, you may find bugs we do not even remember,
+> because
+> they were fixed such a long time ago.
 >=20
->=20
-> > void ipipe_mach_update_tsc(void)
-> > {
-> >   union tsc_reg *local_tsc;
-> >   unsigned long stamp;
-> >   unsigned long flags;
-> >=20
-> >   local_irq_save_hw(flags);
-> >   local_tsc =3D &tsc[ipipe_processor_id()];
-> >   stamp =3D str8100_read_timer_counter();
-> >   if (stamp < local_tsc->low)
-> >     local_tsc->high++;
-> >   local_tsc->low =3D stamp;
-> >   local_irq_restore_hw(flags);
-> > }
->=20
-> Since this code is called from the timer ack routine, the interrupts
-> are
-> already off, so, you should not need local_irq_save_hw. On the other
-> hand, calling ipipe_mach_update_tsc in the timer ack routine adds to
-> the
-> timer interrupt latency, so, should be done only if the time source
-> is
-> wrapping really fast. As your timesource is a 32 bits timesource
-> (according to what you wrote in __ipipe_mach_get_tscinfo), it is
-> probably not wrapping fast, and you can call ipipe_mach_update_tsc
-> from
-> linux timer interrupt.
->=20
-> >=20
-> > void __ipipe_mach_acktimer(void)
-> > {
-> > #ifndef CONFIG_VIC_INTERRUPT
-> >   write_seqlock(&xtime_lock);
-> >   str8100_clear_timer_interrupt_status(__ipipe_mach_timerint);
-> >   write_sequnlock(&xtime_lock);
-> > #endif
-> >=20
-> >   ipipe_mach_update_tsc();
-> > }
->=20
-> Wrong: you can not call write_seqlock from the acktimer routine. The
-> seqlock are reserved to usage by Linux. Also note that you should
-> remove
-> the call to str8100_clear_timer_interrupt_status from Linux timer
-> interrupt.
 
-Actually, it's only if the Vector Interrupt Controller from the CNS2132
-is not enabled, which is not my case. But at least i should erase this.
+I preferred to use the version 2.6.24  which is shipped with the board=20
+because the manufacturer can provide support in case of trouble.
+But, I compiled and tested the version 2.6.35 and it's running fine at=20
+first but the dmesg output is corrupted with a lot of "BAD IRQ".
+I thought that this version was not really stable yet and I don't have
+enough time in my project to ensure it. That's why I preferred to use
+the version 2.6.24.
 
->=20
->=20
-> > void __ipipe_mach_set_dec(unsigned long delay)
-> > {
-> >   unsigned long flags;
-> >=20
-> >   if (delay > 8)
-> >   {
-> >     local_irq_save_hw(flags);
-> >     TIMER1_MATCH_VALUE1_REG =3D TIMER1_COUNTER_REG + delay;
-> >     local_irq_restore_hw(flags);
-> >   }
-> >   else
-> >     ipipe_trigger_irq(__ipipe_mach_timerint);
-> > }
->=20
-> ipipe_mach_set_dec is called with interrupts already off, so there is
-> no
-> need to call local_irq_save_hw/local_irq_restore_hw.
->=20
-> Also, from the sources I could gather (snakeos-sdk), the hardware
-> timer
-> for str8100 is programmed in periodic, auto-reload mode. Obviously,
-> when
-> CONFIG_IPIPE is on, you have to change this to make the timer run in
-> one-shot mode, as required by Xenomai.
-
-I did not know that it was required, i thought it was handy not to reprogra=
-m=20
-the timer each time.
-
->=20
-> > #ifdef CONFIG_IPIPE
-> > void __ipipe_mach_demux_irq(unsigned irq, struct pt_regs *regs)
-> > {
-> >   // No cascaded interrupt using the VIC
-> > }
-> > #endif /* CONFIG_IPIPE */
->=20
-> You probably do not need to define this function if you #define
-> ipipe_mach_irq_mux_p to always be 0.
->
-
-I do, to avoid an undefined reference.
-
-Nevertheless, thank you very much for all this.
-
-When i developped the IPIPE code for this board i followed the
-HOWTO but it's quite vague so I mostly read what has been done=20
-with other boards and what has been done with linux for this board=20
-to implement it.
-Therefore, I'm clearly not aware of the interactions between Linux=20
-and Xenomai. I will definitely read the publications available on=20
-the Xenomai website.
+If a bug is happening with our application, I will definitely move
+to the most recent one.
 
 Best regards,
 
