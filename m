@@ -1,12 +1,12 @@
-Message-ID: <4FABFF51.2030209@domain.hid>
-Date: Thu, 10 May 2012 19:48:01 +0200
+Message-ID: <4FACCC46.6050001@domain.hid>
+Date: Fri, 11 May 2012 10:22:30 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <1019836294.145115940.1336671516044.JavaMail.root@domain.hid>
-In-Reply-To: <1019836294.145115940.1336671516044.JavaMail.root@domain.hid>
+References: <CANKLDmvnyqTJ-0poJHYWDtsrkrVdwsYGpw0uR3vfvJZg+hDYtQ@mail.gmail.com>
+In-Reply-To: <CANKLDmvnyqTJ-0poJHYWDtsrkrVdwsYGpw0uR3vfvJZg+hDYtQ@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai-help] Xenomai on the TS-7553 ARM SBC
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai-help] Does qemu-kvm impact realtime performance?
 List-Id: Help regarding installation and common use of Xenomai
 	<xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
@@ -16,64 +16,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-help-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
 	<mailto:xenomai-help-request@domain.hid>
-To: aubin.rebillat@domain.hid
-Cc: xenomai@xenomai.org
+To: Henri Roosen <henriroosen@domain.hid>
+Cc: xenomai-help <xenomai@xenomai.org>
 
-On 05/10/2012 07:38 PM, aubin.rebillat@domain.hid wrote:
->> De: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
->> =C3=80: "aubin rebillat" <aubin.rebillat@domain.hid>
->> Cc: xenomai@xenomai.org
->> Envoy=C3=A9: Jeudi 10 Mai 2012 19:28:46
->> Objet: Re: [Xenomai-help] Xenomai on the TS-7553 ARM SBC
->>
->> On 05/10/2012 03:26 PM, aubin.rebillat@domain.hid wrote:
->>> Hello,
->>>
->>> I am trying to port Xenomai on the TS-7553 SBC from Technologic
->>> systems, based on the ECONA CNS2132 (STAR8132) from Cavium
->>> networks (250 MHz arm922t).
->>> A Linux kernel is available for this board, version 2.6.24.4, which
->>> is running fine.
->>> I patched this kernel with adeos-ipipe-2.6.24-arm-1.9-01.patch and
->>> I implemented all the IPIPE code for the CNS2132 and everything is
->>> compiling and booting fine.
->>
->> Note that the following page:
->> http://www.openembedded.org/wiki/TS-7500
->>
->> Proposes patches for linux 2.6.35, which is really, really, really
->> more
->> current than 2.6.24, and for which an I-pipe patch also exists.
->>
->> I mean, with 2.6.24, you may find bugs we do not even remember,
->> because
->> they were fixed such a long time ago.
->>
->=20
-> I preferred to use the version 2.6.24  which is shipped with the board =
+On 05/10/2012 04:26 PM, Henri Roosen wrote:
+> Hi all,
+> 
+> Does anyone know if running qemu-kvm impacts the realtime Xenomai
+> performance of the host system?
+> 
+> I have a multicore x86 target that runs a Xenomai enabled kernel and a
+> realtime application. Next to the realtime application I would like to
+> run qemu-kvm (on one of the cores) that runs some non-realtime guest
+> os. So I would like to know if qemu-kvm have impact on the
+> latencies/jitter of the realtime threads?
 
-> because the manufacturer can provide support in case of trouble.
+I would say it should have no direct impact, we should not expect kvm to
+create hard irqs masking sections. However, as usual, running a whole OS
+and applications inside another OS probably has a huge impact on cache,
+and so should cause more jitter than running xenomai on an idle system.
 
-As soon as you patch with the I-pipe patch, the manufacturer can answer
-to your support requests that you are not using its kernel.
-
-> But, I compiled and tested the version 2.6.35 and it's running fine at =
-
-> first but the dmesg output is corrupted with a lot of "BAD IRQ".
-> I thought that this version was not really stable yet and I don't have
-> enough time in my project to ensure it. That's why I preferred to use
-> the version 2.6.24.
->=20
-> If a bug is happening with our application, I will definitely move
-> to the most recent one.
-
-Well, I had a look at the patches for 2.6.35, and they really mess with
-things with which they should not (cache and TLB handling for instance).
-If you intend to do some serious work with this platform, you should
-really consider doing a clean linux port, or get some specialist to do
-it. Otherwise this will byte you sooner or later.
-
---=20
+-- 
 					    Gilles.
-
 
