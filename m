@@ -1,13 +1,13 @@
-Message-ID: <4FB0BF2F.1060108@domain.hid>
-Date: Mon, 14 May 2012 10:15:43 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <4FB0CD9A.2090702@domain.hid>
+Date: Mon, 14 May 2012 11:17:14 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <4FB0BA7C.6070704@domain.hid>
 In-Reply-To: <4FB0BA7C.6070704@domain.hid>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai-core] rt_task_create and rt_task delete re-scheduling
- calling task
+	calling task
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -20,27 +20,14 @@ To: Roberto Bielli <roberto.bielli@domain.hid>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
 On 05/14/2012 09:55 AM, Roberto Bielli wrote:
-> Hi,
->
-> i saw in the documentation that rt_task_create and rt_task_delete should
-> re-scheduling the calling task.
-> So i lost the priority if in a task try to call rt_task_create or
-> rt_task create. Do i understand correctly ?
-> Is there a way to avoid this behaviour ? Or which are all the case of
-> re-scheduling whne calling rt_task_create/rt_task_delete ?
+> P.S.  the imx25 now it's perfect. Was only the reentrant interrupt.
 
-There is no way to avoid rescheduling (assuming you are currently using 
-the user-space API). Creating and deleting tasks involves switching to 
-secondary mode to get/release linux resources it's impossible to access 
-from a primary context.
-
->
-> Thanks of all
->
-> P.S. the imx25 now it's perfect. Was only the reentrant interrupt.
->
-
+By the way, now that Linux runs all interrupt handlers with hardware irq
+disabled, this option is completely useless: it will prevent a low
+priority irq to interrupt a low priority irq while the high priority
+interrupt handler is running, but since that handler is already running
+with hardware interrupts off, this does not add anything.
 
 -- 
-Philippe.
+					    Gilles.
 
