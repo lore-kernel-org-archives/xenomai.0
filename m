@@ -1,13 +1,10 @@
-Message-ID: <4FB0CD9A.2090702@domain.hid>
-Date: Mon, 14 May 2012 11:17:14 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4FB1529A.3040903@domain.hid>
+Date: Mon, 14 May 2012 20:44:42 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <4FB0BA7C.6070704@domain.hid>
-In-Reply-To: <4FB0BA7C.6070704@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-core] rt_task_create and rt_task delete re-scheduling
-	calling task
+Subject: [Xenomai-core] Migrating Xenomai mailing lists
 List-Id: Xenomai life and development <xenomai.xenomai.org>
 List-Unsubscribe: <https://mail.gna.org/options/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
@@ -16,18 +13,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-core-request@domain.hid>
 List-Subscribe: <https://mail.gna.org/listinfo/xenomai-core>,
 	<mailto:xenomai-core-request@domain.hid>
-To: Roberto Bielli <roberto.bielli@domain.hid>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Xenomai-help@domain.hid, Xenomai-core@domain.hid, adeos-main <adeos-main@gna.org>
 
-On 05/14/2012 09:55 AM, Roberto Bielli wrote:
-> P.S.  the imx25 now it's perfect. Was only the reentrant interrupt.
 
-By the way, now that Linux runs all interrupt handlers with hardware irq
-disabled, this option is completely useless: it will prevent a low
-priority irq to interrupt a low priority irq while the high priority
-interrupt handler is running, but since that handler is already running
-with hardware interrupts off, this does not add anything.
+We will soon be moving all our mailing lists out of gna.org to host them 
+on xenomai.org instead.
+
+At this chance, xenomai@xenomai.org, xenomai@xenomai.org and 
+adeos-main@gna.org will be merged into a single list named 
+xenomai@domain.hid. These are low traffic lists, so we want to group 
+all Xenomai-related discussions in one place.
+
+Commits to the development trees will be sent to
+xenomai-git@xenomai.org.
+
+The migration is scheduled for May 19, all current subscribers of the 
+former lists will be automatically subscribed to xenomai@domain.hid.
+You will receive an automated mail from our Mailman when this happens.
+
+The Mailman interface to the new lists is available at: 
+http://www.xenomai.org/mailman/listinfo/xenomai.
+
+Please drop a mail to mailman@domain.hid in case of issue.
+
+Thanks,
 
 -- 
-					    Gilles.
+Philippe.
 
