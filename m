@@ -1,54 +1,39 @@
-Message-ID: <4FB7AF4C.90601@xenomai.org>
-Date: Sat, 19 May 2012 16:33:48 +0200
+Message-ID: <4FB57899.7080704@domain.hid>
+Date: Fri, 18 May 2012 00:15:53 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4FB60635.5010208@xenomai.org>
-In-Reply-To: <4FB60635.5010208@xenomai.org>
+References: <E2AB2206BF591546A1931EA4E7A9FBC841502023@domain.hid>
+In-Reply-To: <E2AB2206BF591546A1931EA4E7A9FBC841502023@domain.hid>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [Xenomai-help] [REMINDER] Migrating Xenomai mailing
-	lists
-List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
-List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
-	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
-List-Archive: <http://www.xenomai.org/pipermail/xenomai>
+Subject: Re: [Xenomai-help] Xenomai Periodic Latency Spikes
+List-Id: Help regarding installation and common use of Xenomai
+	<xenomai.xenomai.org>
+List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+List-Archive: </public/xenomai-help>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
-List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
-	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+List-Help: <mailto:xenomai-help-request@domain.hid>
+List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
+	<mailto:xenomai-help-request@domain.hid>
+To: "Wolz, Troy" <Troy.Wolz@domain.hid>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 05/18/2012 10:20 AM, Philippe Gerum wrote:
+On 05/17/2012 09:12 PM, Wolz, Troy wrote:
+> Hello,
 > 
-> We will soon be moving all our mailing lists out of gna.org to host them 
-> on xenomai.org instead.
-> 
-> At this chance, xenomai-help@gna.org, xenomai-core@gna.org and 
-> adeos-main@gna.org will be merged into a single list named 
-> xenomai@xenomai.org. These are low traffic lists, so we want to group 
-> all Xenomai-related discussions in one place.
-> 
-> Commits to the development trees will be sent to
-> xenomai-git@xenomai.org.
-> 
-> The migration is scheduled for May 19, all current subscribers of the 
-> former lists will be automatically subscribed to xenomai@xenomai.org.
-> You will receive an automated mail from our Mailman when this happens.
-> 
-> The Mailman interface to the new lists is available at: 
-> http://www.xenomai.org/mailman/listinfo/xenomai.
-> 
-> Please drop a mail to mailman@xenomai.org in case of issue.
+> When running the latency program provided in the Xenomai source, my
+> latency numbers for 'max latency' is consistently over 30 us. I have
+> installed Xenomai 2.6.0 using Linux kernel 2.6.38.8. I have attached
+> my config for my linux kernel. SMI is disabled, legacy USB support is
+> disabled in the BIOS, and the other obvious latency killers provided
+> in the troubleshooting guide have been checked.
 
-Hi,
+Oly CONFIG_ACPI_PROCESSOR should be turned off. It is recommended to
+keep CONFIG_ACPI on.
 
-this should be done now. Everyone should have been subscribed to the new
-mailing lists, and the old mailing lists have been disabled (every post
-to them gets a rejection notice). In case of issue with the new mailing
-list, we keep you subscribed to the old for now.
-
-Regards.
+CONFIG_XENO_OPT_DEBUG_XNLOCK has some impact on latencies, if you want
+to reduce latencies, you should turn it off.
 
 -- 
                                                                 Gilles.
