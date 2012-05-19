@@ -1,66 +1,54 @@
-Message-ID: <4FB557A5.5020202@domain.hid>
-Date: Thu, 17 May 2012 21:55:17 +0200
+Message-ID: <4FB7AF4C.90601@xenomai.org>
+Date: Sat, 19 May 2012 16:33:48 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <E2AB2206BF591546A1931EA4E7A9FBC841502023@domain.hid>,
-	<4FB54E89.3070505@domain.hid>
-	<E2AB2206BF591546A1931EA4E7A9FBC841502090@domain.hid>
-In-Reply-To: <E2AB2206BF591546A1931EA4E7A9FBC841502090@domain.hid>
+References: <4FB60635.5010208@xenomai.org>
+In-Reply-To: <4FB60635.5010208@xenomai.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] Xenomai Periodic Latency Spikes
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Subject: Re: [Xenomai] [Xenomai-help] [REMINDER] Migrating Xenomai mailing
+	lists
+List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
+List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
+	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
+List-Archive: <http://www.xenomai.org/pipermail/xenomai>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: "Wolz, Troy" <Troy.Wolz@domain.hid>
-Cc: Xenomai help <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
+List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
+	<mailto:xenomai-request@xenomai.org?subject=subscribe>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On 05/17/2012 09:35 PM, Wolz, Troy wrote:
-> In the attached plots, there appear to be very periodic spikes in
-> latency. In the time between these spikes, the worst case latency is
-> around 5 us. Is this to be expected? Is worst case latency typically
-> periodic in nature?
+On 05/18/2012 10:20 AM, Philippe Gerum wrote:
+> 
+> We will soon be moving all our mailing lists out of gna.org to host them 
+> on xenomai.org instead.
+> 
+> At this chance, xenomai-help@gna.org, xenomai-core@gna.org and 
+> adeos-main@gna.org will be merged into a single list named 
+> xenomai@xenomai.org. These are low traffic lists, so we want to group 
+> all Xenomai-related discussions in one place.
+> 
+> Commits to the development trees will be sent to
+> xenomai-git@xenomai.org.
+> 
+> The migration is scheduled for May 19, all current subscribers of the 
+> former lists will be automatically subscribed to xenomai@xenomai.org.
+> You will receive an automated mail from our Mailman when this happens.
+> 
+> The Mailman interface to the new lists is available at: 
+> http://www.xenomai.org/mailman/listinfo/xenomai.
+> 
+> Please drop a mail to mailman@xenomai.org in case of issue.
 
->From the measurements I posted recently:
-http://sisyphus.hd.free.fr/~gilles/core-3.2-latencies
+Hi,
 
-It seems on higher-end machines, the probability decreases approximately
-exponentially from the average latency to the max latency. So, every
-latency smaller than the worst case latency has some probability to
-happen, and happens from time to time.
+this should be done now. Everyone should have been subscribed to the new
+mailing lists, and the old mailing lists have been disabled (every post
+to them gets a rejection notice). In case of issue with the new mailing
+list, we keep you subscribed to the old for now.
 
-On an atom 230 (which admittedly is not a such high end machine), the
-average latency is less than 10us, but the maximum latency reaches 70us
-when running with CONFIG_SMP.
-
-The worst case latency you obtain on a machine without load, or over a
-short period of time does not mean anything. If you are serious about
-measuring the worst case latency, you have to do it over a long period
-of time while running under load. We provide the "xeno-test" and
-"dohell" scripts for that.
-
-If your kernel is running with CONFIG_HZ set to 1000, the thing which
-happens once every 1ms is the 8254 timer interrupt, on cpu 0 at least.
-
-If you want to know what happens when the worst case latency is reached
-you have to enable the I-pipe tracer and run the latency test with the
-"-f" argument.
-
-I am not saying that there is not a problem with your setup, but there
-is nothing proving that in what you posted.
-
-Please no:
-- private mails
-- html mails
-- un-wrapped lines
-- top-posting.
-
+Regards.
 
 -- 
                                                                 Gilles.
