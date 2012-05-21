@@ -1,12 +1,13 @@
-Message-ID: <4FCDFB35.1050705@xenomai.org>
-Date: Tue, 05 Jun 2012 14:27:33 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4FBA2876.8050207@siemens.com>
+Date: Mon, 21 May 2012 08:35:18 -0300
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-References: <CAHue_TXhjY-74oUNzuuS=ygCEhcVFeiAB+4ZesjKX19B9WobaA@mail.gmail.com>
-In-Reply-To: <CAHue_TXhjY-74oUNzuuS=ygCEhcVFeiAB+4ZesjKX19B9WobaA@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] unsupported ARM9 machine
+References: <CANKLDmvnyqTJ-0poJHYWDtsrkrVdwsYGpw0uR3vfvJZg+hDYtQ@mail.gmail.com>
+	<4FACCC46.6050001@xenomai.org>
+In-Reply-To: <4FACCC46.6050001@xenomai.org>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Does qemu-kvm impact realtime performance?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,96 +16,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?B?TWFyY2luIEt1xZtrYQ==?= <marckuska@gmail.com>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On 06/05/2012 02:20 PM, Marcin Kuśka wrote:
-> Hi,
+On 2012-05-11 05:22, Gilles Chanteperdrix wrote:
+> On 05/10/2012 04:26 PM, Henri Roosen wrote:
+>> Hi all,
+>>
+>> Does anyone know if running qemu-kvm impacts the realtime Xenomai
+>> performance of the host system?
+>>
+>> I have a multicore x86 target that runs a Xenomai enabled kernel and a
+>> realtime application. Next to the realtime application I would like to
+>> run qemu-kvm (on one of the cores) that runs some non-realtime guest
+>> os. So I would like to know if qemu-kvm have impact on the
+>> latencies/jitter of the realtime threads?
 > 
-> My name is Marcin Kuska and I'm new to this list.
-> 
-> Recently i have been trying to compile linux kernel v. 3.0.13 with a
-> Xenomai real time subsystem extension on ARM versatile express board. I'm
-> using buildroot-2012.05 to cross-compile the kernel. I patched linux source
-> tree with adeos-ipipe-3.0.13-arm-1.18-09.patch. The problem is that
-> buildroot cannot finish compilation and returns following errors:*
-> 
-> make[1]: Entering directory
-> `/home/marcin/Documents/buildroot-2012.05/output/build/linux-3.0.13'
->   CHK     include/linux/version.h
->   CHK     include/generated/utsrelease.h
-> make[2]: `include/generated/mach-types.h' is up to date.
->   CALL    scripts/checksyscalls.sh
->   CHK     include/generated/compile.h
->   LD      vmlinux.o
-> arch/arm/common/built-in.o: In function `gic_unmask_irq':
-> /home/marcin/Documents/buildroot-2012.05/output/build/linux-3.0.13/arch/arm/common/gic.c:106:
-> multiple definition of `__ipipe_mach_ticks_per_jiffy'
-> arch/arm/kernel/built-in.o:/home/marcin/Documents/buildroot-2012.05/output/build/linux-3.0.13/arch/arm/kernel/entry-armv.S:104:
-> first defined here
-> arch/arm/common/built-in.o: In function `__ipipe_mach_set_dec':
-> /home/marcin/Documents/buildroot-2012.05/output/build/linux-3.0.13/arch/arm/common/timer-sp.c:230:
-> multiple definition of `__ipipe_mach_set_dec'
-> arch/arm/kernel/built-in.o:/home/marcin/Documents/buildroot-2012.05/output/build/linux-3.0.13/arch/arm/kernel/smp_twd.c:59:
-> first defined here
-> arch/arm/common/built-in.o: In function `__ipipe_mach_release_timer':
-> /home/marcin/Documents/buildroot-2012.05/output/build/linux-3.0.13/arch/arm/common/timer-sp.c:239:
-> multiple definition of `__ipipe_mach_release_timer'
-> arch/arm/kernel/built-in.o:/home/marcin/Documents/buildroot-2012.05/output/build/linux-3.0.13/arch/arm/kernel/smp.c:509:
-> first defined here
-> arch/arm/common/built-in.o: In function `gic_unmask_irq':
-> /home/marcin/Documents/buildroot-2012.05/output/build/linux-3.0.13/arch/arm/common/gic.c:102:
-> multiple definition of `__ipipe_mach_timerstolen'
-> arch/arm/kernel/built-in.o:/home/marcin/Documents/buildroot-2012.05/output/build/linux-3.0.13/arch/arm/kernel/entry-armv.S:104:
-> first defined here
-> arch/arm/common/built-in.o: In function `__ipipe_mach_get_dec':
-> /home/marcin/Documents/buildroot-2012.05/output/build/linux-3.0.13/arch/arm/common/timer-sp.c:248:
-> multiple definition of `__ipipe_mach_get_dec'
-> arch/arm/kernel/built-in.o:/home/marcin/Documents/buildroot-2012.05/output/build/linux-3.0.13/arch/arm/kernel/smp_twd.c:70:
-> first defined here
-> arch/arm/common/built-in.o: In function `__ipipe_check_tickdev':
-> /home/marcin/Documents/buildroot-2012.05/output/build/linux-3.0.13/arch/arm/common/timer-sp.c:215:
-> multiple definition of `__ipipe_check_tickdev'
-> arch/arm/kernel/built-in.o:/home/marcin/Documents/buildroot-2012.05/output/build/linux-3.0.13/arch/arm/kernel/smp_twd.c:75:
-> first defined here
-> make[1]: *** [vmlinux.o] Error 1
-> make[1]: Leaving directory
-> `/home/marcin/Documents/buildroot-2012.05/output/build/linux-3.0.13'
-> make: ***
-> [/home/marcin/Documents/buildroot-2012.05/output/build/linux-3.0.13/.stamp_built]
-> Error 2
-> *
-> and also:
-> 
-> "unsupported ARM machine"
-> 
-> I have read that xenomai only supports integrator/cp board and any other
-> board like versatile express have to be adapted by myself. So i went to:
-> 
-> http://www.xenomai.org/index.php/I-pipe:ArmPorting
-> 
-> and started adapting and cannot find files like time.c and irq.c. Moreover
+> I would say it should have no direct impact, we should not expect kvm to
+> create hard irqs masking sections. However, as usual, running a whole OS
+> and applications inside another OS probably has a huge impact on cache,
+> and so should cause more jitter than running xenomai on an idle system.
 
-As said in the following document, time.c and irq.c are just indicative
-names, it is the files where the timer and irq controller are
-implemented for your platform, you have to find the corresponding files
-for your platform.
+On a modern VT-x or AMD-V system, the impact is not different from
+running some cache hungry application on the host besides a Xenomai
+load. Recent processors can track which cache entry belongs to which
+memory mapping and optimize the eviction regarding this. But if your RT
+frequency is sufficiently low and you share the caches, you will still
+see impact - with or without virtualization.
 
-> I cannot find errors in file gic.c, timer-sp.c and so on (e.g. *gic.c:106:
-> multiple definition of `__ipipe_mach_ticks_per_jiffy'* i cannot find any
-> definition of __ipipe_mach_ticks_per_jiffy so even if I would want to
-> comment one of the definitions to eliminate multipling it's impossible
-> cause it's not there).
-> 
-> My description of the problem is very blurred i suppose, so if anybody may
-> be knowing the solution, please ask for more specific details and i will
-> post them.
-
-This version of the I-pipe patch does not support kernels compiled for
-multiple platforms. In the kernel configuration, you should only keep
-configuration enabled for the only platform/board you use. Then you will
-not get multiple definitions.
+Jan
 
 -- 
-					    Gilles.
+Siemens AG, Corporate Technology, CT T DE IT 1
+Corporate Competence Center Embedded Linux
 
