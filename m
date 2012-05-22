@@ -1,12 +1,10 @@
-From: Jean-Pascal JULIEN <jean-pascal.julien@insiteo.com>
-Date: Tue, 22 May 2012 17:50:31 +0200
-Message-ID: <C7408997F5B0784C970ED53C11855FAE011112339166@INSITEOSBS01.insiteo.local>
-Content-Language: fr-FR
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Message-ID: <4FBBBA25.5010308@mind.be>
+Date: Tue, 22 May 2012 18:09:09 +0200
+From: Arnout Vandecappelle <arnout@mind.be>
 MIME-Version: 1.0
-Subject: [Xenomai] A possible mis-interaction between CONFIG_PREEMPT and
- GPIO IRQ handling for ARM, leading to extreme latency
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai] CPU occupation without context switches?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,35 +13,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Gilles,
+  Hoi,
 
-I added this last patch, its seem to be working fine.
-I will run endurance testing all night long and give you the result tomorro=
-w..
-Thanks for your help.
+  After a few minutes of running my application, I see this:
 
-JP
-________________________________________
-De : Gilles Chanteperdrix [gilles.chanteperdrix@xenomai.org]
-Date d'envoi : mardi 22 mai 2012 15:33
-=C0 : Jean-Pascal JULIEN
-Cc : xenomai@xenomai.org
-Objet : Re: RE : RE : RE : [Xenomai] A possible mis-interaction between CON=
-FIG_PREEMPT and GPIO IRQ handling for ARM, leading to extreme latency
+# cat /proc/xenomai/stat
+CPU  PID    MSW        CSW        PF    STAT       %CPU  NAME
+   1  828    22         65         0     00300182    9.8  bench_RTnet_scope_thread_loop
+   1  839    2          46627538   0     00300186   53.8  bench_RTnet
+...
 
-On 05/22/2012 03:23 PM, Jean-Pascal JULIEN wrote:
-> Gilles,
->
-> In the adeos-ipipe-2.6.38.2-arm-1.18-04.patch this piece of code is not p=
-resent :
+  i.e. the bench_RTnet_scope_thread_loop takes 10% CPU but no
+context switches.  How is this possible?  I've looked at the
+source code and can't find an explanation: when the exectime
+accounting is updated, the csw is incremented as well (in
+__xnpod_schedule()).
 
-Just look at what the patch does: it replaces what the current I-pipe
-patch has, with what you already have. If you want the patch I sent to
-apply correctly, please use the latest I-pipe patch.
+  I'm asking because I can't find a reason why this thread should
+occupy 10% of the CPU, so I'm wondering if there's something wrong
+with the accounting instead.
 
---
-                                            Gilles.
+  BTW this is on Xenomai 2.5.6, on an SMP x86 with affinity=0x01.
+
+  Regards,
+  Arnout
+
+-- 
+Arnout Vandecappelle                               arnout at mind be
+Senior Embedded Software Architect                 +32-16-286540
+Essensium/Mind                                     http://www.mind.be
+G.Geenslaan 9, 3001 Leuven, Belgium                BE 872 984 063 RPR Leuven
+LinkedIn profile: http://www.linkedin.com/in/arnoutvandecappelle
+GPG fingerprint:  7CB5 E4CC 6C2E EFD4 6E3D A754 F963 ECAB 2450 2F1F
+
 
