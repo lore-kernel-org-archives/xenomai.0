@@ -1,16 +1,12 @@
-From: Jean-Pascal JULIEN <jean-pascal.julien@insiteo.com>
-Date: Tue, 22 May 2012 13:52:27 +0200
-Message-ID: <C7408997F5B0784C970ED53C11855FAE011112339161@INSITEOSBS01.insiteo.local>
-References: <4FBADE7D.5030609@bbn.com>,<4FBB4951.5070803@xenomai.org>
-	<C7408997F5B0784C970ED53C11855FAE01111233915D@INSITEOSBS01.insiteo.local>,
-	<4FBB5393.5040003@xenomai.org>
-In-Reply-To: <4FBB5393.5040003@xenomai.org>
-Content-Language: fr-FR
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+Message-ID: <4FBB7FE1.8060604@xenomai.org>
+Date: Tue, 22 May 2012 14:00:33 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Subject: [Xenomai] RE : RE : A possible mis-interaction between
- CONFIG_PREEMPT and GPIO IRQ handling for ARM, leading to extreme latency
+References: <CAHyVJyzrg8gAmvc3XDDrHzrpXu926pz9FSXwuDrDsSNn3qxUUw@mail.gmail.com>
+In-Reply-To: <CAHyVJyzrg8gAmvc3XDDrHzrpXu926pz9FSXwuDrDsSNn3qxUUw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Help : Xenomai on ODROID-PC
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,64 +15,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Mohit Jandwani <mohitjandwani@gmail.com>
+Cc: xenomai@xenomai.org
 
-Gilles,
+On 05/22/2012 06:27 AM, Mohit Jandwani wrote:
+> Hey I am a noob in development.I want to install xenomai on Odroid-PC
+> which is based on exynos420 and has arm architecture.Now they have a
+> page which gives the instructions on how to apply it to new boards on
+> arm architecture but its way out of my league.Someone please tell me
+> what do I do ?(I am ready to give lots of hours to studying )Just tell
+> me what to study to make sense of it.
+> 
 
-I have tested the new patch but i have the same result.
-i have a logic analyzer who monitored the irq and the answer to the irq.
-Below two  acquisitions with response latency higher than 1ms :
+On xenomai website, click on "Start here", and read the documentation
+you find there. Then reading the "Porting I-pipe to new ARM board"
+should make more sense. That is the best we can do with regard to
+documentation. But if it is not enough for you, we also provide the
+sources, which you can read to understand how it works.
 
-       ******       ******       ******       ******       ******       ***=
-***
-******       ******       ******       ******       ******       ******    =
-   ****** the irq input on GPIO (2KHz)
+Exynos being an SMP architecture, the porting may be a little harder
+than what is described in the document. The ARM SMP SOCs we support are
+TI OMAP4 and Freescale mx6q, both being cortex-A9 based, they use the
+same timer and the same interrupt controller, so, you can look at how
+things are done for these two processors.
 
-       *****************        ***********               ************     =
-           first acquisition
-******                      ******              ************               =
-*********** the toggle of the output GPIO on IRQ
+As I said in another mail, I recommend starting from I-pipe core branch,
+which you can find here:
+http://git.denx.de/?p=ipipe.git;a=shortlog;h=refs/heads/core-3.2
 
-
-       ***********************        ***********               ***********=
-*        second acquisition
-******                             ******              ************        =
-       ****** the toggle of the output GPIO on IRQ
-
-My irq on the linux space is : (cat /proc/interrupts).
-         CPU0
-  7:       6005        INTC  TWL4030-PIH
- 11:          0        INTC  prcm
- 12:      84772        INTC  DMA
- 25:          4        INTC  OMAP DSS
- 38:     589982        INTC  gp timer
- 56:     138661        INTC  omap_i2c
- 61:       1015        INTC  omap_i2c
- 72:          3        INTC  serial idle
- 73:          0        INTC  serial idle
- 74:        280        INTC  serial idle, OMAP UART2
- 77:          0        INTC  ehci_hcd:usb2
- 83:      31139        INTC  mmc0
- 86:         26        INTC  mmc1
- 92:          0        INTC  musb-hdrc
- 93:          0        INTC  musb-hdrc
-336:     291209        GPIO  eth0
-371:          0     twl4030  twl4030_madc
-378:          0     twl4030  twl4030_usb
-379:       6005     twl4030  rtc0
-
-My irq in the xenomai space are: (cat /proc/xenomai/irq).
-IRQ         CPU0
- 38:      603343         [timer]
-307:     2956569         XENO_IRQ_RECEIVE
-418:           0         [virtual]
-
-
-What kind of test do you need, for help me to solve my problem?
-
-Thanks.
-
-JP
-
+-- 
+                                                                Gilles.
 
