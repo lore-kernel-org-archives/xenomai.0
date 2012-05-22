@@ -1,61 +1,138 @@
-Message-ID: <4F965FA6.2070009@domain.hid>
-Date: Tue, 24 Apr 2012 10:09:10 +0200
-From: Michael Trimarchi <michael@domain.hid>
+Message-ID: <4FBB4951.5070803@xenomai.org>
+Date: Tue, 22 May 2012 10:07:45 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+References: <4FBADE7D.5030609@bbn.com>
+In-Reply-To: <4FBADE7D.5030609@bbn.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: [Adeos-main] [PATCH 3/3] Fix imx time reprogramming issue
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/options/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-To: Adeos <adeos-main@gna.org>
-Cc: b.morelli@domain.hid
+Subject: Re: [Xenomai] A possible mis-interaction between CONFIG_PREEMPT and
+ GPIO IRQ handling for ARM, leading to extreme latency
+List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
+List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
+	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
+List-Archive: <http://www.xenomai.org/pipermail/xenomai>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
+List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
+	<mailto:xenomai-request@xenomai.org?subject=subscribe>
+To: Mitchell Tasman <tasman@bbn.com>
+Cc: xenomai@xenomai.org
 
-This patch includes:
+On 05/22/2012 02:31 AM, Mitchell Tasman wrote:
+> Hi.  I'm running an OMAP DM3725-based board with a 2.6.38.8 kernel, a 
+> mid-May 2012 git snapshot of xenomai-2.6, and a backport (really just 
+> application) of the patch that Gilles referenced in the "IRQ latency" 
+> thread last week:
+> 
+> http://git.xenomai.org/?p=ipipe-gch.git;a=commit;h=81bfc05c4716b76e79f5e486baf4c52015a3b92c
 
-* Fix invalid virtual address base of MX1_2_TCM
-* Fix the minimum delay below which the hardware timer can not be reprogrammed.
-  The value is the same of that one that is used to calculate the min_delta_ns
+Please try the following patch instead:
 
-arch/arm/plat-mxc/time.c
-414: clockevent_mxc.min_delta_ns = clockevent_delta2ns(0xff, &clockevent_mxc);
-
-Signed-off-by: Michael Trimarchi <michael@domain.hid>
-Signed-off-by: Bruno Morelli <b.morelli@domain.hid>
----
- arch/arm/plat-mxc/time.c |    4 ++--
- 1 files changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/arch/arm/plat-mxc/time.c b/arch/arm/plat-mxc/time.c
-index aae2717..30916f8 100644
---- a/arch/arm/plat-mxc/time.c
-+++ b/arch/arm/plat-mxc/time.c
-@@ -400,11 +400,11 @@ mxc_timer_init(struct clk *timer_clk,
- 	__ipipe_mach_timerint = irq;
- 	__ipipe_mach_ticks_per_jiffy = (clk_get_rate(timer_clk) + HZ/2) / HZ;
- 	tsc_info.freq = clk_get_rate(timer_clk);
--	mxc_min_delay = ((__ipipe_cpu_freq + 500000) / 1000000) ?: 1;
-+	mxc_min_delay = 0xff;
+diff --git a/arch/arm/include/asm/ipipe.h b/arch/arm/include/asm/ipipe.h
+index 9b17c06..a510b09 100644
+--- a/arch/arm/include/asm/ipipe.h
++++ b/arch/arm/include/asm/ipipe.h
+@@ -285,14 +285,15 @@ void __ipipe_grab_irq(int irq, struct pt_regs *regs);
  
- 	if (timer_is_v1()) {
- 		tsc_info.u.counter_paddr = phys + MX1_2_TCN;
--		tsc_info.counter_vaddr =(unsigned long)(phys + MX1_2_TCN);
-+		tsc_info.counter_vaddr = (unsigned long)(timer_base + MX1_2_TCN);
- 	} else {
- 		tsc_info.u.counter_paddr = phys + V2_TCN;
- 		tsc_info.counter_vaddr = (unsigned long)(timer_base + V2_TCN);
--- 
-1.7.5.4
+ void __ipipe_exit_irq(struct pt_regs *regs);
+ 
+-void __ipipe_handle_irq(int irq, struct pt_regs *regs);
++#define IPIPE_IRQF_NOACK    0x1
++#define IPIPE_IRQF_NOSYNC   0x2
++
++void __ipipe_handle_irq(int irq, int flags);
+ 
+ static inline void ipipe_handle_chained_irq(unsigned int irq)
+ {
+-	struct pt_regs regs;    /* dummy */
+-
+ 	ipipe_trace_irq_entry(irq);
+-	__ipipe_handle_irq(irq, &regs);
++	__ipipe_handle_irq(irq, IPIPE_IRQF_NOSYNC);
+ 	ipipe_trace_irq_exit(irq);
+ }
+ 
+diff --git a/arch/arm/include/asm/smp_twd.h b/arch/arm/include/asm/smp_twd.h
+index b49c8ac..f655b27 100644
+--- a/arch/arm/include/asm/smp_twd.h
++++ b/arch/arm/include/asm/smp_twd.h
+@@ -55,7 +55,7 @@ extern void __iomem *twd_base;
+ #define __ipipe_mach_relay_ipi(ipi, thiscpu)	\
+ 	({					\
+ 		(void)(thiscpu);		\
+-		__ipipe_handle_irq(ipi, NULL);	\
++		__ipipe_handle_irq(ipi, IPIPE_IRQF_NOACK);	\
+ 	})
+ 
+ struct irq_desc;
+diff --git a/arch/arm/kernel/ipipe.c b/arch/arm/kernel/ipipe.c
+index f2f618c..ff93fa9 100644
+--- a/arch/arm/kernel/ipipe.c
++++ b/arch/arm/kernel/ipipe.c
+@@ -254,7 +254,7 @@ int ipipe_trigger_irq(unsigned irq)
+ 		return -EINVAL;
+ #endif
+ 	local_irq_save_hw(flags);
+-	__ipipe_handle_irq(irq, NULL);
++	__ipipe_handle_irq(irq, IPIPE_IRQF_NOACK);
+ 	local_irq_restore_hw(flags);
+ 
+ 	return 1;
+@@ -462,7 +462,7 @@ out:
+  * interrupt protection log is maintained here for each domain. Hw
+  * interrupts are off on entry.
+  */
+-void __ipipe_handle_irq(int irq, struct pt_regs *regs)
++void __ipipe_handle_irq(int irq, int flags)
+ {
+ 	struct ipipe_domain *this_domain, *next_domain;
+ 	struct list_head *head, *pos;
+@@ -470,7 +470,7 @@ void __ipipe_handle_irq(int irq, struct pt_regs *regs)
+ 	int m_ack;
+ 
+ 	/* Software-triggered IRQs do not need any ack. */
+-	m_ack = (regs == NULL);
++	m_ack = (flags & IPIPE_IRQF_NOACK) != 0;
+ 
+ #ifdef CONFIG_IPIPE_DEBUG
+ 	if (unlikely(irq >= IPIPE_NR_IRQS) ||
+@@ -490,7 +490,11 @@ void __ipipe_handle_irq(int irq, struct pt_regs *regs)
+ 				desc = ipipe_virtual_irq_p(irq) ? NULL : irq_to_desc(irq);
+ 				next_domain->irqs[irq].acknowledge(irq, desc);
+ 			}
+-			__ipipe_dispatch_wired(next_domain, irq);
++			if ((flags & IPIPE_IRQF_NOSYNC) == 0)
++				__ipipe_dispatch_wired(next_domain, irq);
++			else
++				__ipipe_set_irq_pending(next_domain, irq);
++
+ 			return;
+ 		}
+ 	}
+@@ -604,7 +608,7 @@ asmlinkage void __ipipe_grab_irq(int irq, struct pt_regs *regs)
+ 	ipipe_trace_begin(regs->ARM_ORIG_r0);
+ #endif
+ 
+-	__ipipe_handle_irq(irq, regs);
++	__ipipe_handle_irq(irq, 0);
+ 
+ #ifdef CONFIG_IPIPE_TRACE_IRQSOFF
+ 	ipipe_trace_end(regs->ARM_ORIG_r0);
+diff --git a/arch/arm/kernel/smp.c b/arch/arm/kernel/smp.c
+index 9ea207d..af02caa 100644
+--- a/arch/arm/kernel/smp.c
++++ b/arch/arm/kernel/smp.c
+@@ -527,7 +527,7 @@ __ipipe_grab_ipi(unsigned svc, struct pt_regs *regs) /* hw IRQs off */
+ 		__ipipe_do_vnmi(IPIPE_SERVICE_VNMI, NULL);
+ 	else if ((1 << svc) & IPI_IPIPE_ALL) {
+ 		virq = svc - IPI_IPIPE_CRITICAL + IPIPE_FIRST_IPI;
+-		__ipipe_handle_irq(virq, NULL);
++		__ipipe_handle_irq(virq, IPIPE_IRQF_NOACK);
+ 	} else
+ 		__ipipe_mach_relay_ipi(svc, cpu);
+ 
 
 -- 
-| Michael Nazzareno Trimarchi                     Amarula Solutions BV |
-| COO  -  Founder                                      Cruquiuskade 47 |
-| +31(0)851119172                                 Amsterdam 1018 AM NL |
-
-
+                                                                Gilles.
 
