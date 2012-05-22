@@ -1,12 +1,13 @@
-Message-ID: <4FBBECA0.4020502@xenomai.org>
-Date: Tue, 22 May 2012 21:44:32 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <4FBC0383.3020608@bbn.com>
+Date: Tue, 22 May 2012 17:22:11 -0400
+From: Mitchell Tasman <tasman@bbn.com>
 MIME-Version: 1.0
-References: <4FBBBA25.5010308@mind.be>
-In-Reply-To: <4FBBBA25.5010308@mind.be>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+References: <4FBADE7D.5030609@bbn.com> <4FBB4951.5070803@xenomai.org>
+In-Reply-To: <4FBB4951.5070803@xenomai.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] CPU occupation without context switches?
+Subject: Re: [Xenomai] A possible mis-interaction between CONFIG_PREEMPT and
+ GPIO IRQ handling for ARM, leading to extreme latency
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,43 +16,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Arnout Vandecappelle <arnout@mind.be>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On 05/22/2012 06:09 PM, Arnout Vandecappelle wrote:
-> Hoi,
->
-> After a few minutes of running my application, I see this:
->
-> # cat /proc/xenomai/stat
-> CPU PID MSW CSW PF STAT %CPU NAME
-> 1 828 22 65 0 00300182 9.8 bench_RTnet_scope_thread_loop
-> 1 839 2 46627538 0 00300186 53.8 bench_RTnet
-> ...
->
-> i.e. the bench_RTnet_scope_thread_loop takes 10% CPU but no
-> context switches. How is this possible? I've looked at the
-> source code and can't find an explanation: when the exectime
-> accounting is updated, the csw is incremented as well (in
-> __xnpod_schedule()).
->
+Gilles,
 
-Unless your thread which seems to repeatedly attempt to pend on some 
-sync object has its wait condition satisfied on entry to the syscall 
-most of the time, which may cause __xnpod_schedule() to leave it running 
-without incrementing the switch count.
-
-> I'm asking because I can't find a reason why this thread should
-> occupy 10% of the CPU, so I'm wondering if there's something wrong
-> with the accounting instead.
+On 05/22/2012 04:07 AM, Gilles Chanteperdrix wrote:
+> On 05/22/2012 02:31 AM, Mitchell Tasman wrote:
+>> Hi.  I'm running an OMAP DM3725-based board with a 2.6.38.8 kernel, a
+>> mid-May 2012 git snapshot of xenomai-2.6, and a backport (really just
+>> application) of the patch that Gilles referenced in the "IRQ latency"
+>> thread last week:
+>>
+>> http://git.xenomai.org/?p=ipipe-gch.git;a=commit;h=81bfc05c4716b76e79f5e486baf4c52015a3b92c
 >
-> BTW this is on Xenomai 2.5.6, on an SMP x86 with affinity=0x01.
->
-> Regards,
-> Arnout
->
+> Please try the following patch instead:
+
+Thank you very much for your prompt and most helpful response.
+
+I have applied the patch that you supplied, and find a dramatic 
+reduction in the maximum latency experienced in servicing edge-triggered 
+GPIO interrupts.  In testing so far today with the new patch, I have not 
+encountered a single instance of the sort of extreme latency that 
+prompted my query to the mailing list.
+
+Might you consider applying the new patch to I-Pipe for ARM 2.6.38.8, 
+and publishing a new revision of that patch set?  This could be of 
+significant benefit to those members of the Xenomai community that are 
+presently using a 2.6.38.8 kernel on ARM platforms.
+
+You might also consider addressing/replacing the original "ipipe/arm: 
+defer chained interrupts handling" patch that was applied to I-Pipe for 
+ARM 3.0.13, if the new patch is relevant to that kernel as well.
+
+Thanks again and Best Regards,
+Mitch
 
 
--- 
-Philippe.
 
