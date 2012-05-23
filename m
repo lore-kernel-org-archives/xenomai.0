@@ -1,13 +1,11 @@
-Message-ID: <4FBCD8EC.60305@xenomai.org>
-Date: Wed, 23 May 2012 14:32:44 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: Chris Stone <chris.stone@optelian.com>
+Date: Wed, 23 May 2012 15:43:49 +0000
+Message-ID: <623784B6C75D274389918D358E89E8BB0B7FD420@OPTELIAN5.optelian.local>
+Content-Language: en-US
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <4FBCB442.5030208@wanadoo.fr> <4FBCB64E.6090209@xenomai.org>
-	<4FBCB89A.9090801@wanadoo.fr>
-In-Reply-To: <4FBCB89A.9090801@wanadoo.fr>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] iMX6 support
+Subject: [Xenomai] MDIO on Freescale MX35.
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,45 +14,54 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Thierry Bultel <thierry.bultel@wanadoo.fr>
-Cc: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 05/23/2012 12:14 PM, Thierry Bultel wrote:
-> Le 23/05/2012 12:05, Gilles Chanteperdrix a écrit :
->> On 05/23/2012 11:56 AM, Thierry Bultel wrote:
->>> Hi,
->>>
->>> We are looking in a replacement solution for our obsolete
->>> pentium-Celeron calculator.
->>> For many reasons, we would like to switch to the ARM architecture.
->>> The aimed CPU is the iMX6 Quadcore.
->>>
->>> Freescale provides a patched 2.6.35 and 2.6.38 kernel that do not have
->>> all the peripherals (the CAN seems to be missing)
->>> and Emtrion, a CPU module manufacturer, say they provide the additional
->>> patches to have the complete BSP.
->>> It is likely a 2.6.35 only, though.
->> Xenomai for mx6q does not exist for linux 2.6.35. It only exists for
->> freescale branch for 2.6.38, or 3.0, as a separate set of patches to
->> apply before and after the Adeos patches for the vanilla kernel. For
->> further details, see ksrc/arch/arm/patches/README in xenomai 2.6 sources.
-> Thanks, yes, as I said, I am aware that the very first work for me will 
-> be to get
-> the non-xenomai 2.6.38 kernel fully working
->> Furthermore, we have some stability issues with Xenomai for mx6q with
->> 3.0, the issues looking a lot like an issue with cache. We would ned to
->> recheck 2.6.38 to see if it had the same issues, but I would bet it does.
->>
-> Actually my concern was to know if there were currently developments
-> on that CPU. The fact that they are remaining bugs is not a concern,
-> as long as they would be likely be corrected in the coming months.
-> Do these bugs also exist on the mx6 single core ?
+I am using Xenomai 2.6.0. We wish to run Xenomai on two different target bo=
+ards, one uses the Freescale MPC8378 CPU,
+which is powerpc, the other uses the Freescale MX35 which is arm11. This is=
+ for real products that are under development,=20
+so there are some factors that affect our choices. For instance, to simplif=
+y maintenance of these cards for many=20
+years to come, we want to use the same kernel version on the MPC8378 as we =
+do on the MX35. For this reason, we=20
+chose to use kernel 3.0.13, because there are Adeos patches against kernel =
+3.0.13 for both arm and powerpc. However,=20
+I know that the Adeos patches and kernel 3.0.13 are not really supported by=
+ Xenomai 2.6.0 because they are only in the=20
+Git tree and not in the official tarball download. Nonetheless, the powerpc=
+ target has been running with no problem=20
+for some time now, and the card is actually in product verification now, wh=
+ich means that testing has not discovered=20
+any problems with Xenomai 2.6.0 on that target. I am now attempting bring X=
+enomai up on the mx35 card.
 
-I was unable to reproduce the cache issue on single core, but I have not
-tested enough to be absolutely sure that we do not have it. The issue is
-sufficiently rare that it may go unnoticed during one test, and appear
-during the next.
+I am using the adeos patch adeos-ipipe-3.0.13-arm-1.18.08.patch. I tried fo=
+llowing the README for the MXC, but the=20
+Freescale IMX git has no tag rel_imx_3.0.15_12.03.00. The denx tree has the=
+ tag, but the mxc patches as described in=20
+the README do not apply without errors. Even after fixing the patch rejects=
+, I ended up with compilation errors, so I=20
+lost confidence in that approach. So, I applied the adeos-ipipe-3.0.13-arm-=
+1.18.08.patch to the kernel.org 3.0.13=20
+kernel, without the pre and post patches, which went without error. The ker=
+nel boots, and many things work, but the=20
+FEC Ethernet is broken with an MDIO read timeout.=20
 
--- 
-					    Gilles.
+I would like to debug this issue and provide whatever fixes back to the com=
+munity. I don't really know where to=20
+start. I am looking for some guidance on what I should do to debug the issu=
+e.
+
+Cheers,
+
+Chris Stone
+Embedded Linux Architect
+Optelian
+1 Brewer Hunt Way
+Ottawa, Ontario K2K 2B5
+
+Phone: 613-287-2000 x2106
+
+www.optelian.com
+
 
