@@ -1,13 +1,12 @@
-Message-ID: <4FBCA398.7030705@xenomai.org>
-Date: Wed, 23 May 2012 10:45:12 +0200
-From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <4FBBBA25.5010308@mind.be> <4FBBECA0.4020502@xenomai.org>
-	<4FBCA055.9060607@mind.be>
-In-Reply-To: <4FBCA055.9060607@mind.be>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] CPU occupation without context switches?
+In-Reply-To: <4FBA2876.8050207@siemens.com>
+References: <CANKLDmvnyqTJ-0poJHYWDtsrkrVdwsYGpw0uR3vfvJZg+hDYtQ@mail.gmail.com>
+	<4FACCC46.6050001@xenomai.org> <4FBA2876.8050207@siemens.com>
+Date: Wed, 23 May 2012 11:00:03 +0200
+Message-ID: <CANKLDmtnXxamDLTB5-6TthpCRXGQSfPF77fR+edx3Jz2XT_7XQ@mail.gmail.com>
+From: Henri Roosen <henriroosen@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: Re: [Xenomai] Does qemu-kvm impact realtime performance?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,57 +15,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Arnout Vandecappelle <arnout@mind.be>
+To: Jan Kiszka <jan.kiszka@siemens.com>
 Cc: xenomai@xenomai.org
 
-On 05/23/2012 10:31 AM, Arnout Vandecappelle wrote:
-> On 05/22/12 21:44, Philippe Gerum wrote:
->> On 05/22/2012 06:09 PM, Arnout Vandecappelle wrote:
->>> Hoi,
+On Mon, May 21, 2012 at 1:35 PM, Jan Kiszka <jan.kiszka@siemens.com> wrote:
+> On 2012-05-11 05:22, Gilles Chanteperdrix wrote:
+>> On 05/10/2012 04:26 PM, Henri Roosen wrote:
+>>> Hi all,
 >>>
->>> After a few minutes of running my application, I see this:
+>>> Does anyone know if running qemu-kvm impacts the realtime Xenomai
+>>> performance of the host system?
 >>>
->>> # cat /proc/xenomai/stat
->>> CPU PID MSW CSW PF STAT %CPU NAME
->>> 1 828 22 65 0 00300182 9.8 bench_RTnet_scope_thread_loop
->>> 1 839 2 46627538 0 00300186 53.8 bench_RTnet
->>> ...
->>>
->>> i.e. the bench_RTnet_scope_thread_loop takes 10% CPU but no
->>> context switches. How is this possible? I've looked at the
->>> source code and can't find an explanation: when the exectime
->>> accounting is updated, the csw is incremented as well (in
->>> __xnpod_schedule()).
->>>
+>>> I have a multicore x86 target that runs a Xenomai enabled kernel and a
+>>> realtime application. Next to the realtime application I would like to
+>>> run qemu-kvm (on one of the cores) that runs some non-realtime guest
+>>> os. So I would like to know if qemu-kvm have impact on the
+>>> latencies/jitter of the realtime threads?
 >>
->> Unless your thread which seems to repeatedly attempt to pend on some
->> sync object has its wait condition satisfied on
->> entry to the syscall most of the time, which may cause
->> __xnpod_schedule() to leave it running without incrementing the
->> switch count.
+>> I would say it should have no direct impact, we should not expect kvm to
+>> create hard irqs masking sections. However, as usual, running a whole OS
+>> and applications inside another OS probably has a huge impact on cache,
+>> and so should cause more jitter than running xenomai on an idle system.
 >
-> It is indeed possible that my application does something like that. But
-> wouldn't the switch count be incremented every time the bench_RTnet thread
-> is executed? That thread runs at 20kHz and at higher priority so it should
-> pre-empt the other one, which should lead to context switches in the _loop
-> thread.
+> On a modern VT-x or AMD-V system, the impact is not different from
+> running some cache hungry application on the host besides a Xenomai
+> load. Recent processors can track which cache entry belongs to which
+> memory mapping and optimize the eviction regarding this. But if your RT
+> frequency is sufficiently low and you share the caches, you will still
+> see impact - with or without virtualization.
+>
+Thanks Jan and Gilles for your replies!
+We will do some testing and measurements on this in a later project
+and I will post some results then.
 
-20Khz does not put much pressure on mid/high end x86, so I believe 
-bench_RTnet does not preempt the loop thread that much actually, but the 
-latter does consume most of the 500 us time slot without suspending, 
-with the former switching in in the remaining quantum most of the time 
-(i.e. not preempting any other RT thread).
-
+Thanks,
+Henri.
+> Jan
 >
-> Unfortunately, I can't reproduce the situation anymore... If I can I'll
-> try with Xenomai 2.6.0.
->
->
-> Regards,
-> Arnout
->
-
-
--- 
-Philippe.
+> --
+> Siemens AG, Corporate Technology, CT T DE IT 1
+> Corporate Competence Center Embedded Linux
 
