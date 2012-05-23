@@ -1,11 +1,13 @@
-Message-ID: <4FBD105E.7070204@xenomai.org>
-Date: Wed, 23 May 2012 18:29:18 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
+From: Chris Stone <chris.stone@optelian.com>
+Date: Wed, 23 May 2012 16:34:28 +0000
+Message-ID: <623784B6C75D274389918D358E89E8BB0B7FD43D@OPTELIAN5.optelian.local>
 References: <623784B6C75D274389918D358E89E8BB0B7FD420@OPTELIAN5.optelian.local>
-In-Reply-To: <623784B6C75D274389918D358E89E8BB0B7FD420@OPTELIAN5.optelian.local>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+	<4FBD105E.7070204@xenomai.org>
+In-Reply-To: <4FBD105E.7070204@xenomai.org>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 Subject: Re: [Xenomai] MDIO on Freescale MX35.
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -15,48 +17,54 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Chris Stone <chris.stone@optelian.com>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 05/23/2012 05:43 PM, Chris Stone wrote:
-> I am using Xenomai 2.6.0. We wish to run Xenomai on two different
-> target boards, one uses the Freescale MPC8378 CPU, which is powerpc,
-> the other uses the Freescale MX35 which is arm11. This is for real
-> products that are under development, so there are some factors that
-> affect our choices. For instance, to simplify maintenance of these
-> cards for many years to come, we want to use the same kernel version
-> on the MPC8378 as we do on the MX35. For this reason, we chose to use
-> kernel 3.0.13, because there are Adeos patches against kernel 3.0.13
-> for both arm and powerpc. However, I know that the Adeos patches and
-> kernel 3.0.13 are not really supported by Xenomai 2.6.0 because they
-> are only in the Git tree and not in the official tarball download.
-> Nonetheless, the powerpc target has been running with no problem for
-> some time now, and the card is actually in product verification now,
-> which means that testing has not discovered any problems with Xenomai
-> 2.6.0 on that target. I am now attempting bring Xenomai up on the
-> mx35 card.
-> 
-> I am using the adeos patch adeos-ipipe-3.0.13-arm-1.18.08.patch. I
-> tried following the README for the MXC, but the Freescale IMX git has
-> no tag rel_imx_3.0.15_12.03.00. The denx tree has the tag, but the
-> mxc patches as described in the README do not apply without errors.
-> Even after fixing the patch rejects, I ended up with compilation
-> errors, so I lost confidence in that approach.
-
-This should not happen. This combination has been extensively tested on
-imx51, imx53 and imx6. It should compile and you should get no rejects.
-I will look into it.
-
-> So, I applied the
-> adeos-ipipe-3.0.13-arm-1.18.08.patch to the kernel.org 3.0.13 kernel,
-> without the pre and post patches, which went without error. The
-> kernel boots, and many things work, but the FEC Ethernet is broken
-> with an MDIO read timeout.
-
-Do you also get the MDIO timeout without the I-pipe and Xenomai patches?
-If no, try applying the patch but not enabling CONFIG_IPIPE, then
-enabling CONFIG_IPIPE without CONFIG_XENOMAI.
-
--- 
-					    Gilles.
+V2l0aCBDT05GSUdfWEVOT01BSSBkaXNhYmxlZCwgYW5kIENPTkZJR19JUElQRSBlbmFibGVkIHRo
+ZSB0aW1lb3V0IHN0aWxsIGhhcHBlbnMuIFdpdGggYm90aCBDT05GSUdfWEVOT01BSSBhbmQgQ09O
+RklHX0lQSVBFIGRpc2FibGVkIHRoZSBNRElPIHRpbWVvdXQgZ29lcyBhd2F5LiBUaHVzIHRoZSBp
+c3N1ZSBhcHBlYXJzIHRvIGJlIGludHJvZHVjZWQgYnkgZW5hYmxpbmcgaXBpcGUuDQoNCkNoZWVy
+cywNCiAgIENocmlzLg0KDQotLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KRnJvbTogR2lsbGVz
+IENoYW50ZXBlcmRyaXggW21haWx0bzpnaWxsZXMuY2hhbnRlcGVyZHJpeEB4ZW5vbWFpLm9yZ10g
+DQpTZW50OiBXZWRuZXNkYXksIE1heSAyMywgMjAxMiAxMjoyOSBQTQ0KVG86IENocmlzIFN0b25l
+DQpDYzogeGVub21haUB4ZW5vbWFpLm9yZw0KU3ViamVjdDogUmU6IFtYZW5vbWFpXSBNRElPIG9u
+IEZyZWVzY2FsZSBNWDM1Lg0KDQpPbiAwNS8yMy8yMDEyIDA1OjQzIFBNLCBDaHJpcyBTdG9uZSB3
+cm90ZToNCj4gSSBhbSB1c2luZyBYZW5vbWFpIDIuNi4wLiBXZSB3aXNoIHRvIHJ1biBYZW5vbWFp
+IG9uIHR3byBkaWZmZXJlbnQgDQo+IHRhcmdldCBib2FyZHMsIG9uZSB1c2VzIHRoZSBGcmVlc2Nh
+bGUgTVBDODM3OCBDUFUsIHdoaWNoIGlzIHBvd2VycGMsIA0KPiB0aGUgb3RoZXIgdXNlcyB0aGUg
+RnJlZXNjYWxlIE1YMzUgd2hpY2ggaXMgYXJtMTEuIFRoaXMgaXMgZm9yIHJlYWwgDQo+IHByb2R1
+Y3RzIHRoYXQgYXJlIHVuZGVyIGRldmVsb3BtZW50LCBzbyB0aGVyZSBhcmUgc29tZSBmYWN0b3Jz
+IHRoYXQgDQo+IGFmZmVjdCBvdXIgY2hvaWNlcy4gRm9yIGluc3RhbmNlLCB0byBzaW1wbGlmeSBt
+YWludGVuYW5jZSBvZiB0aGVzZSANCj4gY2FyZHMgZm9yIG1hbnkgeWVhcnMgdG8gY29tZSwgd2Ug
+d2FudCB0byB1c2UgdGhlIHNhbWUga2VybmVsIHZlcnNpb24gDQo+IG9uIHRoZSBNUEM4Mzc4IGFz
+IHdlIGRvIG9uIHRoZSBNWDM1LiBGb3IgdGhpcyByZWFzb24sIHdlIGNob3NlIHRvIHVzZSANCj4g
+a2VybmVsIDMuMC4xMywgYmVjYXVzZSB0aGVyZSBhcmUgQWRlb3MgcGF0Y2hlcyBhZ2FpbnN0IGtl
+cm5lbCAzLjAuMTMgDQo+IGZvciBib3RoIGFybSBhbmQgcG93ZXJwYy4gSG93ZXZlciwgSSBrbm93
+IHRoYXQgdGhlIEFkZW9zIHBhdGNoZXMgYW5kIA0KPiBrZXJuZWwgMy4wLjEzIGFyZSBub3QgcmVh
+bGx5IHN1cHBvcnRlZCBieSBYZW5vbWFpIDIuNi4wIGJlY2F1c2UgdGhleSANCj4gYXJlIG9ubHkg
+aW4gdGhlIEdpdCB0cmVlIGFuZCBub3QgaW4gdGhlIG9mZmljaWFsIHRhcmJhbGwgZG93bmxvYWQu
+DQo+IE5vbmV0aGVsZXNzLCB0aGUgcG93ZXJwYyB0YXJnZXQgaGFzIGJlZW4gcnVubmluZyB3aXRo
+IG5vIHByb2JsZW0gZm9yIA0KPiBzb21lIHRpbWUgbm93LCBhbmQgdGhlIGNhcmQgaXMgYWN0dWFs
+bHkgaW4gcHJvZHVjdCB2ZXJpZmljYXRpb24gbm93LCANCj4gd2hpY2ggbWVhbnMgdGhhdCB0ZXN0
+aW5nIGhhcyBub3QgZGlzY292ZXJlZCBhbnkgcHJvYmxlbXMgd2l0aCBYZW5vbWFpDQo+IDIuNi4w
+IG9uIHRoYXQgdGFyZ2V0LiBJIGFtIG5vdyBhdHRlbXB0aW5nIGJyaW5nIFhlbm9tYWkgdXAgb24g
+dGhlDQo+IG14MzUgY2FyZC4NCj4gDQo+IEkgYW0gdXNpbmcgdGhlIGFkZW9zIHBhdGNoIGFkZW9z
+LWlwaXBlLTMuMC4xMy1hcm0tMS4xOC4wOC5wYXRjaC4gSSANCj4gdHJpZWQgZm9sbG93aW5nIHRo
+ZSBSRUFETUUgZm9yIHRoZSBNWEMsIGJ1dCB0aGUgRnJlZXNjYWxlIElNWCBnaXQgaGFzIA0KPiBu
+byB0YWcgcmVsX2lteF8zLjAuMTVfMTIuMDMuMDAuIFRoZSBkZW54IHRyZWUgaGFzIHRoZSB0YWcs
+IGJ1dCB0aGUgbXhjIA0KPiBwYXRjaGVzIGFzIGRlc2NyaWJlZCBpbiB0aGUgUkVBRE1FIGRvIG5v
+dCBhcHBseSB3aXRob3V0IGVycm9ycy4NCj4gRXZlbiBhZnRlciBmaXhpbmcgdGhlIHBhdGNoIHJl
+amVjdHMsIEkgZW5kZWQgdXAgd2l0aCBjb21waWxhdGlvbiANCj4gZXJyb3JzLCBzbyBJIGxvc3Qg
+Y29uZmlkZW5jZSBpbiB0aGF0IGFwcHJvYWNoLg0KDQpUaGlzIHNob3VsZCBub3QgaGFwcGVuLiBU
+aGlzIGNvbWJpbmF0aW9uIGhhcyBiZWVuIGV4dGVuc2l2ZWx5IHRlc3RlZCBvbiBpbXg1MSwgaW14
+NTMgYW5kIGlteDYuIEl0IHNob3VsZCBjb21waWxlIGFuZCB5b3Ugc2hvdWxkIGdldCBubyByZWpl
+Y3RzLg0KSSB3aWxsIGxvb2sgaW50byBpdC4NCg0KPiBTbywgSSBhcHBsaWVkIHRoZQ0KPiBhZGVv
+cy1pcGlwZS0zLjAuMTMtYXJtLTEuMTguMDgucGF0Y2ggdG8gdGhlIGtlcm5lbC5vcmcgMy4wLjEz
+IGtlcm5lbCwgDQo+IHdpdGhvdXQgdGhlIHByZSBhbmQgcG9zdCBwYXRjaGVzLCB3aGljaCB3ZW50
+IHdpdGhvdXQgZXJyb3IuIFRoZSBrZXJuZWwgDQo+IGJvb3RzLCBhbmQgbWFueSB0aGluZ3Mgd29y
+aywgYnV0IHRoZSBGRUMgRXRoZXJuZXQgaXMgYnJva2VuIHdpdGggYW4gDQo+IE1ESU8gcmVhZCB0
+aW1lb3V0Lg0KDQpEbyB5b3UgYWxzbyBnZXQgdGhlIE1ESU8gdGltZW91dCB3aXRob3V0IHRoZSBJ
+LXBpcGUgYW5kIFhlbm9tYWkgcGF0Y2hlcz8NCklmIG5vLCB0cnkgYXBwbHlpbmcgdGhlIHBhdGNo
+IGJ1dCBub3QgZW5hYmxpbmcgQ09ORklHX0lQSVBFLCB0aGVuIGVuYWJsaW5nIENPTkZJR19JUElQ
+RSB3aXRob3V0IENPTkZJR19YRU5PTUFJLg0KDQotLSANCgkJCQkJICAgIEdpbGxlcy4NCg==
 
