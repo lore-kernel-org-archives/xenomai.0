@@ -1,62 +1,38 @@
-Message-ID: <4F966A00.8090307@domain.hid>
-Date: Tue, 24 Apr 2012 10:53:20 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4FBE6641.1070205@xenomai.org>
+Date: Thu, 24 May 2012 18:48:01 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <4F965FA6.2070009@domain.hid>
-	<4F966094.9070709@domain.hid>
-	<4F96652D.1080401@domain.hid>
-In-Reply-To: <4F96652D.1080401@domain.hid>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Adeos-main] [PATCH 3/3] Fix imx time reprogramming issue
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/options/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-To: Michael Trimarchi <michael@domain.hid>
-Cc: Adeos <adeos-main@gna.org>, b.morelli@domain.hid
+Subject: [Xenomai] Testers wanted for 3.2.1/powerpc, P2020, any e500v2
+List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
+List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
+	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
+List-Archive: <http://www.xenomai.org/pipermail/xenomai>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
+List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
+	<mailto:xenomai-request@xenomai.org?subject=subscribe>
+To: xenomai MailingList <xenomai@xenomai.org>
 
-On 04/24/2012 10:32 AM, Michael Trimarchi wrote:
-> On 04/24/2012 10:13 AM, Gilles Chanteperdrix wrote:
->> On 04/24/2012 10:09 AM, Michael Trimarchi wrote:
->>> This patch includes:
->>>
->>> * Fix invalid virtual address base of MX1_2_TCM
->>> * Fix the minimum delay below which the hardware timer can not be reprogrammed.
->>>   The value is the same of that one that is used to calculate the min_delta_ns
->>>
->>> arch/arm/plat-mxc/time.c
->>> 414: clockevent_mxc.min_delta_ns = clockevent_delta2ns(0xff, &clockevent_mxc);
->>
->> I do not think we can use this value, it is way to high for xenomai
->> needs. In latest releases we use 2us instead of 1us, and according to
->> what a user posted recently, this should be enough, could you test with
->> 2us? And 2us is already what we have in the 3.2 repository.
->>
-> As I understood the min delays is in tick and not depend on the clock rate. 
-> 
-> This is from atmel at91_ipipe_time
-> 
-> min_delta_ticks = ((unsigned long long) clkevt.min_delta_ns
->                            * clkevt.mult) >> clkevt.shift;
-> 
-> this is exaclty the reverse calculation of clockevent_mxc.min_delta_ns
-> 
-> I have already the result in the previous calculation: 0xff is the minimun in ticks
 
-0xff is too large, it corresponds to 30us on some platforms, could you
-please try with 2us? The delay is given as a count of ticks or as a
-duration in ns depending on the architecture, it does not really matter.
+We need someone to checkout out the latest pipeline "core" series on a 
+Freescale P2020 board. I ported the Xenomai core to P1022 over this 
+significantly revised pipeline architecture lately, so we should not be 
+that far from having this working on P2020.
 
-> 
-> Michael
-> 
+More generally, if you have any result with other e500v2-based 
+platforms, don't hesitate to let us know. Specifically, finding out the 
+best default latency calibration figure to set in /proc/xenomai/latency 
+for them would help.
 
+If you can and want to help, please pull from this branch, and let me 
+know how it goes.
+
+git://git.denx.de/ipipe-2.6.git, branch core-3.2
+
+TIA,
 
 -- 
-                                                                Gilles.
+Philippe.
 
