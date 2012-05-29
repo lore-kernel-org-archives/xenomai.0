@@ -1,12 +1,11 @@
-Message-ID: <4FC4E086.8090702@xenomai.org>
-Date: Tue, 29 May 2012 16:43:18 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+From: Chris Stone <chris.stone@optelian.com>
+Date: Tue, 29 May 2012 14:51:46 +0000
+Message-ID: <623784B6C75D274389918D358E89E8BB0B7FDF5C@OPTELIAN5.optelian.local>
+Content-Language: en-US
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <CAKKWdtcDaTBSc5mr1MWEhvDyx45r-D-2rOxA_BE+aVdR595GaA@mail.gmail.com>
-In-Reply-To: <CAKKWdtcDaTBSc5mr1MWEhvDyx45r-D-2rOxA_BE+aVdR595GaA@mail.gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] What is the Xenomai time limit?
+Subject: [Xenomai] ARM MX35 MDIO read timeout.
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,56 +14,85 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: ali hagigat <hagigatali@gmail.com>
-Cc: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 05/29/2012 02:38 PM, ali hagigat wrote:
-> We know that Xenomai can create hard real time tasks and it means that
-> the real time tasks will be executed up to a specific time. My
-> question is about that time. How much is that time?(100 micro seconds,
-> 150 usec, or...)
+I am trying to debug a problem with ipipe. I am using 3.0.13 kernel with ad=
+eos-ipipe-3.0.13-arm-1.18-09.patch=20
+applied. The CPU is a Freescale MX35, which is an ARM11 architecture. The i=
+ssue is that I get an MDIO read timeout=20
+from the FEC driver. I have tried using the ipipe trace, but when I turn it=
+ on, the problem goes away. I have=20
+managed to discover that if I put a 300 microsecond delay into the transmit=
+ path of the FEC interrupt handler,=20
+the problem goes away. Thus drivers/net/fec.c has a udelay(300) in the tran=
+smit interrupt handling path as follows:
 
-Do you mean maximum latency? If so, you only have to run the "latency" 
-test program on your board (/usr/xenomai/bin/latency for a default install).
+static irqreturn_t
+fec_enet_interrupt(int irq, void *dev_id)
+{
+	struct net_device *ndev =3D dev_id;
+	struct fec_enet_private *fep =3D netdev_priv(ndev);
+	uint int_events;
+	irqreturn_t ret =3D IRQ_NONE;
 
-With modern hardware, 100 us on x86 is considered a bug.
+	do {
+		int_events =3D readl(fep->hwp + FEC_IEVENT);
+		writel(int_events, fep->hwp + FEC_IEVENT);
 
-> I know that it may depend on the architecture and the software platform.
-> I want to know how can i determine that time for my x86 32-bit PC
-> system? and besides what major factors are effecting the time?
+		if (int_events & FEC_ENET_RXF) {
+			ret =3D IRQ_HANDLED;
+			fec_enet_rx(ndev);
+		}
 
-Assuming time == latency, major arch-independent factors include bus 
-locking, MMU handling (e.g. see issues with VIVT caches on ARM), cache 
-artifacts caused by concurrent linux activity in general (which may 
-cause real-time code to be evicted during idle phases by non-rt code).
+		/* Transmit OK, or non-fatal error. Update the buffer
+		 * descriptors. FEC handles all errors, we just discover
+		 * them as part of the transmit process.
+		 */
+		if (int_events & FEC_ENET_TXF) {
+			ret =3D IRQ_HANDLED;
+			fec_enet_tx(ndev);
+			udelay(300);
+		}
 
-x86-wise, there is some more issues to keep an eye on:
+		if (int_events & FEC_ENET_MII) {
+			ret =3D IRQ_HANDLED;
+			complete(&fep->mdio_done);
+		}
+	} while (int_events);
 
-- Hyperthreading (not nice to -rt requirements)
-- SMI sources (causing IRQ-disabling BIOS code to be invoked directly by 
-special interrupts not going through the programmable interrupt 
-controller, so we can't block them, and don't know when they happen).
-- Some graphic card adapters (causing hw stalls to favor their own 
-throughput)
-- Some graphic card drivers, most often proprietary, disabling 
-interrupts for too long.
-- Some cycle-hungry x86 cache invalidation instructions (wbinv).
-- The legacy x86 PIT (i8254) when used, which goes through a legacy ISA 
-bus, as expensive as ~1.5-2.5 us for each I/O access (you need at least 
-two of them to program the next clock tick). Fortunately, you won't need 
-it on a modern x86 platform, unless really unlucky.
+	return ret;
+}
 
-Oh well, other that that, x86 is almost fine for -rt stuff.
+A diff would be as follows:
 
-> Any answer will be much appreciated.
->
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> http://www.xenomai.org/mailman/listinfo/xenomai
->
+diff -r d5a7342d6e47 drivers/net/fec.c
+--- a/drivers/net/fec.c Tue May 29 09:58:21 2012 -0400
++++ b/drivers/net/fec.c Tue May 29 10:49:24 2012 -0400
+@@ -703,6 +703,7 @@
+                if (int_events & FEC_ENET_TXF) {
+                        ret =3D IRQ_HANDLED;
+                        fec_enet_tx(ndev);
++                       udelay(300);
+                }
+=20
+                if (int_events & FEC_ENET_MII) {
+
+Smaller delays don't work. I know this isn't a fix. My question is, does th=
+is information give the=20
+experts any ideas on what the real problem might be?
+
+Cheers,
+    Chris.
+
+Chris Stone
+Embedded Linux Architect
+Optelian
+1 Brewer Hunt Way
+Ottawa, Ontario K2K 2B5
+
+Phone: 613-287-2000 x2106
+
+www.optelian.com
 
 
--- 
-Philippe.
 
