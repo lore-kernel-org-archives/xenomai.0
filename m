@@ -1,12 +1,12 @@
+Message-ID: <4FC5C5A2.6060402@xenomai.org>
+Date: Wed, 30 May 2012 09:00:50 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <4F96DD7F.2080101@xenomai.org>
-References: <CAM1yFZ9dQ_P0GveqQspNV6TJX3WQO4wwyqj5GJ+-oWZ7D=FXnw@mail.gmail.com>
-	<4F96DD7F.2080101@xenomai.org>
-Date: Wed, 30 May 2012 11:52:44 +0530
-Message-ID: <CAM1yFZ_YnvKCd1AZZH6UOLUVH_GmGx6HG_fL2ev1ShgEGZ42-Q@mail.gmail.com>
-From: Anisha Kaul <born.rebel.83@gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Subject: Re: [Xenomai] [Xenomai-help] Adeos patch for x86_64
+References: <20120530011159.A963337011B@webmail.sinamail.sina.com.cn>
+In-Reply-To: <20120530011159.A963337011B@webmail.sinamail.sina.com.cn>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] How to port xenomai to s3c6410
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,22 +15,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: wonder_code@sina.com
+Cc: Xenomai <Xenomai@xenomai.org>
 
-On 24 April 2012 22:36, Gilles Chanteperdrix
-<gilles.chanteperdrix@xenomai.org> wrote:
->
-> Architectures for the adeos patch have the same meaning as for the Linux
-> kernel. So your question boils down to: "does Linux x86 architecture
-> support x86_64"? Googling for this question leads to this article:
->
-> http://lwn.net/Articles/243704/
->
+On 05/30/2012 03:11 AM, wonder_code@sina.com wrote:
+> 
+> hello,Iam recently trying to port the xenomai-2.6.0 to s3c6410 with
+> the linux-2.6.38,But the system can't bootup at all,Have any ever
+> success to boot up that,Can any one give me some help.With my Best
+> Appreciate Thanks
 
-Thanks, and they have mentioned the x64 support here:
-http://www.xenomai.org/index.php/Xenomai:News#2008-01-01_Xenomai_2.4.1
+Have you read this howto?
 
+http://www.xenomai.org/index.php/I-pipe:ArmPorting
 
--Anisha
+-- 
+                                                                Gilles.
 
