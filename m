@@ -1,12 +1,9 @@
-Message-ID: <4FC5C5A2.6060402@xenomai.org>
-Date: Wed, 30 May 2012 09:00:50 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <20120530011159.A963337011B@webmail.sinamail.sina.com.cn>
-In-Reply-To: <20120530011159.A963337011B@webmail.sinamail.sina.com.cn>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] How to port xenomai to s3c6410
+Date: Wed, 30 May 2012 12:41:07 +0530
+Message-ID: <CAM1yFZ-1YCqe6NdGKWtCSEAwqCnRqn1=1-5GrGWy-qEmPOZCHg@mail.gmail.com>
+From: Anisha Kaul <born.rebel.83@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: [Xenomai] ARM9 TS-7800 Xenomai support
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,20 +12,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: wonder_code@sina.com
-Cc: Xenomai <Xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 05/30/2012 03:11 AM, wonder_code@sina.com wrote:
-> 
-> hello,Iam recently trying to port the xenomai-2.6.0 to s3c6410 with
-> the linux-2.6.38,But the system can't bootup at all,Have any ever
-> success to boot up that,Can any one give me some help.With my Best
-> Appreciate Thanks
+Greetings,
 
-Have you read this howto?
+I looked for the ARM9 board titled TS-7800 in the Embedded hardware
+list of Xenomai here:
+http://www.xenomai.org/index.php/Embedded_Device_Support#ARM
+but couldn't find it.
 
-http://www.xenomai.org/index.php/I-pipe:ArmPorting
+I am talking about this ARM9 board:
+http://www.embeddedarm.com/products/arm-sbc.php#ts-7800-500mhz-series
 
--- 
-                                                                Gilles.
+Is it there under some other name which I probably missed?
+
+Regards,
+-Anisha
 
