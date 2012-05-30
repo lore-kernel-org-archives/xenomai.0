@@ -1,5 +1,5 @@
-Message-ID: <4FC5E768.5010302@xenomai.org>
-Date: Wed, 30 May 2012 11:24:56 +0200
+Message-ID: <4FC5F13C.7030201@xenomai.org>
+Date: Wed, 30 May 2012 12:06:52 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <35191140.199124743.1338368888649.JavaMail.root@spooler3-g27.priv.proxad.net>
@@ -30,43 +30,10 @@ On 05/30/2012 11:08 AM, aubin.rebillat@free.fr wrote:
 > Xenomai : incompatible feature set
 > (userland requires "fastsynch nosmp", kernel provides "sa1100 eabi tsc 
 > nofastsynch", missing="fastsynch").
-> 
-> I compiled the kernel and user-space following exactly the procedure for 
-> ARM in the README.INSTALL.
-> In the kernel configuration for the CPU (arch/arm/mm/Kconfig), CPU_32v4 is 
-> selected which disables XENO_FASTSYNCH_DEP. 
-> Therefore the kernel configuration has correct features but in the log of 
-> the user-space configure script CONFIG_XENO_FASTSYNCH_TRUE is set.
-> 
-> I understood that the user-space configuration is based on the kernel 
-> .config but in my case the .config does not contain any line with 
-> CONFIG_XENO_FASTSYNCH (not even a commented one), it contains only
-> CONFIG_CPU_32v4 set to y.
-> 
-> Does anybody have an idea about what i missed ?
 
-You are probably the first person to have ever tried Xenomai on processors
-with CPU_32v4, only CPU_32v4T was tested. What you are missing is probably 
-simply this patch:
-
-diff --git a/ksrc/arch/arm/Kconfig b/ksrc/arch/arm/Kconfig
-index 25ee469..f529210 100644
---- a/ksrc/arch/arm/Kconfig
-+++ b/ksrc/arch/arm/Kconfig
-@@ -4,7 +4,7 @@ config XENO_GENERIC_STACKPOOL
- 
- config XENO_FASTSYNCH_DEP
-        bool
--       default y if (CPU_32v3 || CPU_32v4T || CPU_32v5) && !SMP || CPU_32v6 || CPU_32v7
-+       default y if (CPU_32v3 || CPU_32v4 || CPU_32v4T || CPU_32v5) && !SMP || CPU_32v6 || CPU_32v7
- 
- config XENO_FASTSYNCH
-        bool
-
-
-> By the way, what is this FASTSYNCH feature and what does it provide ?
-
-fast user-space mutexes (and condvars if using xenomai-forge).
+By the way, if you want user-space tsc emulation, you should add support
+for your processor to configure.in, so that you can enable tsc in
+user-space with --enable-arm-tsc=str8132.
 
 -- 
 					    Gilles.
