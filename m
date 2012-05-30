@@ -1,14 +1,13 @@
-Message-ID: <4FC6338B.8080101@xenomai.org>
-Date: Wed, 30 May 2012 16:49:47 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+From: Chris Stone <chris.stone@optelian.com>
+Date: Wed, 30 May 2012 14:57:01 +0000
+Message-ID: <623784B6C75D274389918D358E89E8BB0B7FE254@OPTELIAN5.optelian.local>
+References: <CAKKWdtc6Py7A9YuJ1nNzwmq0SiEcrP_D8pztoo_eNWsp9EAsFg@mail.gmail.com>
+In-Reply-To: <CAKKWdtc6Py7A9YuJ1nNzwmq0SiEcrP_D8pztoo_eNWsp9EAsFg@mail.gmail.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <CAKKWdtcDaTBSc5mr1MWEhvDyx45r-D-2rOxA_BE+aVdR595GaA@mail.gmail.com>
-	<4FC4E086.8090702@xenomai.org>
-	<CAKKWdtcFrw8XnwZhg2e9ixXE2Uh8PuRd6Xy=ysAHcvi-Pp0=ZA@mail.gmail.com>
-In-Reply-To: <CAKKWdtcFrw8XnwZhg2e9ixXE2Uh8PuRd6Xy=ysAHcvi-Pp0=ZA@mail.gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] What is the Xenomai time limit?
+Subject: Re: [Xenomai] a question about ADEOS
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,89 +16,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: ali hagigat <hagigatali@gmail.com>
-Cc: xenomai@xenomai.org
+To: ali hagigat <hagigatali@gmail.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 05/30/2012 03:39 PM, ali hagigat wrote:
-> Dear Philippe,
->
-> Much appreciate for the reply.
->
-> Latency test seems to give some statistics about the system at the
-> time of the test.
->
-> I was looking for an exact maximum time so that scheduling latency is
-> always below that time.
+There is an excellent article explaining ADEOS at:
 
-See "lat worst" column of that test, after a significant run time under 
-meaningful load. This system offers experimental values, nothing more.
+http://www.xenomai.org/documentation/branches/v2.3.x/pdf/Life-with-Adeos-re=
+v-B.pdf=20
 
->
-> I figured it out that even adding a new hardware may effect the
-> maximum scheduling latency. Is that true? If I add a new hardware and
-> its driver, it can mask the interrupts for example. Can it make the
-> xenomai system non real-time?
+Cheers,
+   Chris.
 
-It's unlikely that a driver by itself would introduce latency unless it 
-deliberately attempts to bypass the interrupt virtualization mechanism 
-implemented by Xenomai, and does it wrongly.
+-----Original Message-----
+From: xenomai-bounces@xenomai.org [mailto:xenomai-bounces@xenomai.org] On B=
+ehalf Of ali hagigat
+Sent: Wednesday, May 30, 2012 10:36 AM
+To: xenomai@xenomai.org
+Subject: [Xenomai] a question about ADEOS
 
-Generally speaking, a real-time system is in essence a specific 
-combination of hw and sw which happen to cope well together with respect 
-to meeting deadlines, so I don't believe there is a definite answer to 
-your question. In theory, that answer would be yes. In practice, this 
-happens rarely.
+I know that adeos project presents an API set. It means some functions most=
+ly which start with adeos_.
+Why adeos patch does not add them to the linux kernel? Those functions are =
+used for creating domains as far as I know.
+So maybe they are not needed for xenomai, is that true? So in Xenomain proj=
+ect all the software components have the same domain?
 
->
-> Regards
->
->> On 05/29/2012 02:38 PM, ali hagigat wrote:
->>>
->>> We know that Xenomai can create hard real time tasks and it means that
->>> the real time tasks will be executed up to a specific time. My
->>> question is about that time. How much is that time?(100 micro seconds,
->>> 150 usec, or...)
->>
->>
->> Do you mean maximum latency? If so, you only have to run the "latency" test
->> program on your board (/usr/xenomai/bin/latency for a default install).
->>
->> With modern hardware, 100 us on x86 is considered a bug.
->>
->>
->>> I know that it may depend on the architecture and the software platform.
->>> I want to know how can i determine that time for my x86 32-bit PC
->>> system? and besides what major factors are effecting the time?
->>
->>
->> Assuming time == latency, major arch-independent factors include bus
->> locking, MMU handling (e.g. see issues with VIVT caches on ARM), cache
->> artifacts caused by concurrent linux activity in general (which may cause
->> real-time code to be evicted during idle phases by non-rt code).
->>
->> x86-wise, there is some more issues to keep an eye on:
->>
->> - Hyperthreading (not nice to -rt requirements)
->> - SMI sources (causing IRQ-disabling BIOS code to be invoked directly by
->> special interrupts not going through the programmable interrupt controller,
->> so we can't block them, and don't know when they happen).
->> - Some graphic card adapters (causing hw stalls to favor their own
->> throughput)
->> - Some graphic card drivers, most often proprietary, disabling interrupts
->> for too long.
->> - Some cycle-hungry x86 cache invalidation instructions (wbinv).
->> - The legacy x86 PIT (i8254) when used, which goes through a legacy ISA bus,
->> as expensive as ~1.5-2.5 us for each I/O access (you need at least two of
->> them to program the next clock tick). Fortunately, you won't need it on a
->> modern x86 platform, unless really unlucky.
->>
->> Oh well, other that that, x86 is almost fine for -rt stuff.
->>
->>> Any answer will be much appreciated.
->>>
->
+My another question is about i-pipe concept of ADEOS. What is that?
+can any one explain it? Is it a queue?
 
+Thank you all for reading this message.
 
--- 
-Philippe.
+_______________________________________________
+Xenomai mailing list
+Xenomai@xenomai.org
+http://www.xenomai.org/mailman/listinfo/xenomai
 
