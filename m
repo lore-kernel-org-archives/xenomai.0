@@ -1,13 +1,11 @@
+Date: Wed, 30 May 2012 11:08:08 +0200 (CEST)
+From: aubin.rebillat@free.fr
+Message-ID: <35191140.199124743.1338368888649.JavaMail.root@spooler3-g27.priv.proxad.net>
+In-Reply-To: <2129974902.198997874.1338366582292.JavaMail.root@spooler3-g27.priv.proxad.net>
 MIME-Version: 1.0
-In-Reply-To: <20120530073233.92A6A2064A6@gemini.denx.de>
-References: <CAM1yFZ-1YCqe6NdGKWtCSEAwqCnRqn1=1-5GrGWy-qEmPOZCHg@mail.gmail.com>
-	<20120530073233.92A6A2064A6@gemini.denx.de>
-Date: Wed, 30 May 2012 13:16:29 +0530
-Message-ID: <CAM1yFZ-9xLrXEUnz_p1DD5kSdYPzQBy33dRD5W326iTgaSa7FQ@mail.gmail.com>
-From: Anisha Kaul <born.rebel.83@gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] ARM9 TS-7800 Xenomai support
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai] Feature synchronisation with FASTSYNCH on TS-7553
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,35 +14,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Wolfgang Denk <wd@denx.de>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-> It is difficult or even impossible to make any statement about if a
-> specific system is supported, or how much work would be needed to add
-> such support, when there is no information available about such
-> fundamental things like which exact SoC it uses, and which exact Linux
-> kernel version it is running.
->
-> The link you quote provides only very vague information like "using a
-> Marvell 500MHz ARM9 SoC" (which can be anything) or "use a recent
-> Linux kernel 2.6" (which means they are plain OLD - recent means v3.4
-> or later). =A0This may be sufficient for marketing material, but not for
-> answering technical questions.
->
-> Do you have more details?
->
-> Also, is it correct to assume that support for this board has never
-> been pushed upstream, i. e. it is unsupported in mainline and all you
-> can get is an out-of-tree vendor port? =A0[eventually also with a
-> non-standard vendor tool chain?]
->
-> Best regards,
->
-> Wolfgang Denk
+Hello,
 
-Firstly, here is a thanks for the very polite reply.
-I'll figure out the information you mentioned and then get back if needed.
+I made a Xenomai 2.6 port on the TS-7553 SBC based on the cns2132/str8132 
+SoC (armv4 CPU) with a kernel 2.6.24. I wanted to test the port using the 
+Xenomai tests binaries (switchtest, clocktest, latency,...) but I'm having 
+configuration issues in the feature synchronisation between user-space 
+and kernel-space:        
+$ /usr/xenomai/bin/switchtest
+Xenomai : incompatible feature set
+(userland requires "fastsynch nosmp", kernel provides "sa1100 eabi tsc 
+nofastsynch", missing="fastsynch").
 
-Thanks for tolerating the newbies.
--Anisha
+I compiled the kernel and user-space following exactly the procedure for 
+ARM in the README.INSTALL.
+In the kernel configuration for the CPU (arch/arm/mm/Kconfig), CPU_32v4 is 
+selected which disables XENO_FASTSYNCH_DEP. 
+Therefore the kernel configuration has correct features but in the log of 
+the user-space configure script CONFIG_XENO_FASTSYNCH_TRUE is set.
+
+I understood that the user-space configuration is based on the kernel 
+.config but in my case the .config does not contain any line with 
+CONFIG_XENO_FASTSYNCH (not even a commented one), it contains only
+CONFIG_CPU_32v4 set to y.
+
+Does anybody have an idea about what i missed ?
+By the way, what is this FASTSYNCH feature and what does it provide ?
+
+Thank you,
+
+-- 
+REBILLAT Aubin
 
