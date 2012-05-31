@@ -1,17 +1,12 @@
-From: Chris Stone <chris.stone@optelian.com>
-Date: Thu, 31 May 2012 15:10:45 +0000
-Message-ID: <623784B6C75D274389918D358E89E8BB0B7FE4A6@OPTELIAN5.optelian.local>
-References: <CAKKWdtc6Py7A9YuJ1nNzwmq0SiEcrP_D8pztoo_eNWsp9EAsFg@mail.gmail.com>
-	<4FC637EB.90908@xenomai.org> <4FC63C53.3020805@xenomai.org>
-	<20120530155743.GK32727@csclub.uwaterloo.ca>
-	<623784B6C75D274389918D358E89E8BB0B7FE2DD@OPTELIAN5.optelian.local>
-	<4FC693D4.1090108@xenomai.org>
-In-Reply-To: <4FC693D4.1090108@xenomai.org>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Message-ID: <4FC7A46F.1030706@xenomai.org>
+Date: Thu, 31 May 2012 19:03:43 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai] a question about ADEOS
+References: <623784B6C75D274389918D358E89E8BB0B7FDF5C@OPTELIAN5.optelian.local>
+In-Reply-To: <623784B6C75D274389918D358E89E8BB0B7FDF5C@OPTELIAN5.optelian.local>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] ARM MX35 MDIO read timeout.
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,50 +15,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Chris Stone <chris.stone@optelian.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-PiBEbyBub3QgZ2V0IG1lIHdyb25nLCBJIGhhdmUgbm8gaXNzdWUgd2l0aCBwcmVlbXB0X3J0IGJl
-aW5nIHRoZSBzb2x1dGlvbg0KPiBjaG9zZW4gYnkgdGhlIGtlcm5lbCBjb21tdW5pdHkgYXMgdGhl
-IHNvbHV0aW9uIGZvciByZWFsLXRpbWUuIEkgd291bGQNCj4gZXZlbiB0ZW5kIHRvIGJlIGEgYml0
-IGxlc3MgZXh0cmVtZSB0aGFuIHlvdSwgY2FsbGluZyByb29tIGZvcg0KPiBpbXByb3ZlbWVudCB0
-aGUgIm1hbW1vdGggYmVhc3QiIGFuZCB0aGUgc2xvdyBrZXJuZWwuDQoNCkFncmVlZCwgdGhlIExp
-bnV4IHNjaGVkdWxlciBpcyBwcmV0dHkgZ29vZC4gTXkgcG9pbnQgd2FzIHNpbXBseSB0aGF0IGlu
-IGhhcmQNCnJlYWwgdGltZSwgdGhlIHNpbXBsZXIgdGhlIHNjaGVkdWxlciB0aGUgYmV0dGVyLiBJ
-IGhhdmUgYSBmdW5kYW1lbnRhbCBpc3N1ZQ0Kd2l0aCB0cnlpbmcgdG8gbWFrZSB0aGUgTGludXgg
-c2NoZWR1bGVyIGludG8gb25lIHNpemUgZml0cyBhbGwuIFRoaXMgaXMgd2h5DQpJIGJlbGlldmUg
-WGVub21haSB0byBiZSBhIGJldHRlciBzb2x1dGlvbi4gSSBhbSBydW5uaW5nIGEgMW1zIHBlcmlv
-ZGljIHRhc2sNCm9uIFhlbm9tYWksIHdoaWNoIHdhcyBpbXBvc3NpYmxlIG9uIFBSRUVNUFQtUlQg
-YmVjYXVzZSB0aGUgc2NoZWR1bGVyIGF0ZSBhDQpzaWduaWZpY2FudCBwb3J0aW9uIG9mIHRoZSAx
-bXMgaW50ZXJ2YWwuDQoNCj4gDQo+IEFzIGZvciB0aGUgc3RhYmlsaXR5LCB0aGUgT1NBREwgcHVi
-bGlzaGVkIHNvbWUgcmVzdWx0czoNCj4gaHR0cHM6Ly93d3cub3NhZGwub3JnL1NpbmdsZS1WaWV3
-LjExMStNNTllMzQ4MWNkZmUuMC5odG1sDQoNClRoZSBwcm9ibGVtIHdpdGggdGhlc2Uga2luZHMg
-b2Ygc3RhYmlsaXR5IHRlc3RzIGlzIHRoYXQgdGhleSBhcmUgYXJ0aWZpY2lhbC4gVGhleQ0KZG9u
-J3QgcmVmbGVjdCByZWFsIHdvcmxkIGFwcGxpY2F0aW9ucywgd2hpY2ggYXJlIG9yZGVycyBvZiBt
-YWduaXR1ZGUgbW9yZSBjb21wbGljYXRlZC4NCkl0IGlzIHRoZSBjb21wbGljYXRlZCBhcHBsaWNh
-dGlvbnMgdGhhdCB0dXJuIHVwIHRoZSBwcm9ibGVtcy4gV2UgaGF2ZSBoYWQgDQpzdGFiaWxpdHkg
-aXNzdWVzIHdpdGggUFJFRU1QVC1SVCBvbiB0aGUgTVgzNSBwbGF0Zm9ybSB0aGF0IGRvbid0IHR1
-cm4gdXAgaW4gdGhlIA0KT1NBREwgdGVzdHMuIFdoZW4gSSB0dXJuIG9mZiBQUkVFTVBULVJUIHRo
-ZSBhcHBsaWNhdGlvbiBydW5zIGZpbmUsIHdoZW4gSSB0dXJuIGl0IG9uLCANCnRoZSBrZXJuZWwg
-aGFuZ3Mgd2l0aGluIDggaG91cnMuIFRoZSBYZW5vbWFpIHNvbHV0aW9uIGlzIGFjdHVhbGx5IGEg
-bG90IG9sZGVyIHRoYW4gDQpQUkVFTVBUX1JUIGFuZCBpcyB0aGVyZWZvcmUsIG11Y2ggbW9yZSB0
-ZXN0ZWQgYW5kIHN0YWJsZS4gQ29kZSBpcyBsaWtlIHdpbmUsIGl0IGdldHMNCmJldHRlciB3aXRo
-IGFnZSwgYWx0aG91Z2ggaXQgY2FuIGV2ZW50dWFsbHkgdHVybiBpbnRvIHZpbmVnYXIsIHNvIHlv
-dSBoYXZlIHRvIHVzZSBpdA0Kd2hpbGUgaXQgaXMgc3RpbGwgZ29vZC4gWGVub21haSBpcyBhIHBy
-ZXR0eSBmaW5lIHdpbmUgcmlnaHQgbm93LiBJIHNvbHZlZCBteSBzdGFiaWxpdHkgcHJvYmxlbXMg
-DQp3aXRoIFBSRUVNUFQtUlQgYnkgc3dpdGNoaW5nIHRvIFhlbm9tYWkuDQoNCkFzIHdpdGggeW91
-LCBJIGFtIG5vdCB0cnlpbmcgdG8gYmUgcG9saXRpY2FsIGJ5IHNheWluZyBQUkVFTVBULVJUIGlz
-IGJhZCBhbmQgWGVub21haSBpcw0KZ29vZC4gSSBoYXZlIG5vIHByb2JsZW0gd2l0aCBQUkVFTVBU
-LVJUIGFzIHRoZSBjaG9zZW4ga2VybmVsIHJlYWwgdGltZSBzb2x1dGlvbiwgYW5kIEkgYW0gDQpz
-dXJlLCB3aXRoIGEgbGl0dGxlIG1vcmUgdGltZSBpbiB0aGUgYmFycmVsLCBpdCB3aWxsIGltcHJv
-dmUuIFRoZSBncmVhdCB0aGluZyBhYm91dCBMaW51eCBpcyANCnRoYXQgdGhlcmUgYXJlIGFsd2F5
-cyBtdWx0aXBsZSBzb2x1dGlvbnMsIHNvIHdlIGFyZSBub3QgdGllZCB0byB3aGF0IHRoZSBvZmZp
-Y2lhbCBrZXJuZWwgaXMgDQpjYXBhYmxlIG9mLiBUaGVyZSBpcyBubyB2ZW5kb3IgbG9jayBpbi4g
-SSBhbSBhIHNvZnR3YXJlIGVuZ2luZWVyIGRvaW5nIHJlYWwgd29yayBvbiByZWFsIA0Kd29ybGQg
-YXBwbGljYXRpb25zIHRoYXQgYXJlIHNoaXBwaW5nIHRvIGN1c3RvbWVycy4gU28sIEkgaGF2ZSB0
-byBiZSBwcmFjdGljYWwsIHdoaWNoIGxlYWRzIA0KbWUgdG8gY2hvb3NlIHNlYXNvbmVkIHNvbHV0
-aW9ucy4gUFJFRU1QVC1SVCB3aWxsIGJlIG1vcmUgc2Vhc29uZWQgaW4gYWJvdXQgZml2ZSB5ZWFy
-cy4gRGVzcGl0ZQ0KdGhlIHZhbHVlIHRoYXQgUFJFRU1QVC1SVCBhZGRzIHRvIHRoZSBrZXJuZWwg
-dGhlcmUgd2lsbCBhbHdheXMgYmUgYSBuaWNoZSBmb3IgWGVub21haSwgc3VjaA0KYXMgc3BlY2lh
-bCBzaXR1YXRpb25zIHdoZXJlIHlvdSB3YW50IHRvIG92ZXJyaWRlIHRoZSBjb21wbGV4aXR5IG9m
-IHRoZSBMaW51eCBrZXJuZWwuDQoNCkNoZWVycywNCiAgIENocmlzLg0K
+On 05/29/2012 04:51 PM, Chris Stone wrote:
+> diff -r d5a7342d6e47 drivers/net/fec.c
+> --- a/drivers/net/fec.c Tue May 29 09:58:21 2012 -0400
+> +++ b/drivers/net/fec.c Tue May 29 10:49:24 2012 -0400
+> @@ -703,6 +703,7 @@
+>                 if (int_events & FEC_ENET_TXF) {
+>                         ret = IRQ_HANDLED;
+>                         fec_enet_tx(ndev);
+> +                       udelay(300);
+>                 }
+>  
+>                 if (int_events & FEC_ENET_MII) {
+> 
+> Smaller delays don't work. I know this isn't a fix. My question is, does this information give the 
+> experts any ideas on what the real problem might be?
+
+This does not ring any bell. The important code is the code which does
+the MDIO read. Some code may simply not like being interrupted by
+Xenomai, so, you may have to simply increase the timeout.
+
+-- 
+					    Gilles.
 
