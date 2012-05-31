@@ -1,98 +1,135 @@
-Message-ID: <4F97B202.8020609@domain.hid>
-Date: Wed, 25 Apr 2012 10:12:50 +0200
-From: Michael Trimarchi <michael@domain.hid>
+Message-ID: <4FC716C1.2030701@xenomai.org>
+Date: Thu, 31 May 2012 08:59:13 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4F965FA6.2070009@domain.hid>	<4F966094.9070709@domain.hid>	<4F96652D.1080401@domain.hid>	<4F966A00.8090307@domain.hid>	<4F9672FA.4050003@domain.hid>
-	<4F96753C.8060608@domain.hid> <4F970E3F.7000907@domain.hid>
-In-Reply-To: <4F970E3F.7000907@domain.hid>
+References: <4FA87007.1040105@ebus.com> <4FA875BF.7040103@xenomai.org>
+	<4FC6ADD6.8000509@ebus.com>
+In-Reply-To: <4FC6ADD6.8000509@ebus.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Adeos-main] [PATCH 3/3] Fix imx time reprogramming issue
-List-Id: General discussion about Adeos <adeos-main.gna.org>
-List-Unsubscribe: <https://mail.gna.org/options/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-List-Archive: </public/adeos-main>
-List-Post: <mailto:adeos-main@gna.org>
-List-Help: <mailto:adeos-main-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/adeos-main>,
-	<mailto:adeos-main-request@domain.hid>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Adeos <adeos-main@gna.org>, b.morelli@domain.hid
+Subject: Re: [Xenomai] [Xenomai-help] Debugging oops in xnheap_init
+List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
+List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
+	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
+List-Archive: <http://www.xenomai.org/pipermail/xenomai>
+List-Post: <mailto:xenomai@xenomai.org>
+List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
+List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
+	<mailto:xenomai-request@xenomai.org?subject=subscribe>
+To: Doug Brunner <dbrunner@ebus.com>
+Cc: xenomai@xenomai.org
 
-Hi Gilles
-
-On 04/24/2012 10:34 PM, Gilles Chanteperdrix wrote:
-> On 04/24/2012 11:41 AM, Gilles Chanteperdrix wrote:
->> On 04/24/2012 11:31 AM, Michael Trimarchi wrote:
->>> Hi
+On 05/31/2012 01:31 AM, Doug Brunner wrote:
+> On 05/07/2012 06:24 PM, Gilles Chanteperdrix wrote:
+>> On 05/08/2012 02:59 AM, Doug Brunner wrote:
+>>> I just got an oops from running one of my POSIX skin RT applications:
 >>>
->>> On 04/24/2012 10:53 AM, Gilles Chanteperdrix wrote:
->>>> On 04/24/2012 10:32 AM, Michael Trimarchi wrote:
->>>>> On 04/24/2012 10:13 AM, Gilles Chanteperdrix wrote:
->>>>>> On 04/24/2012 10:09 AM, Michael Trimarchi wrote:
->>>>>>> This patch includes:
->>>>>>>
->>>>>>> * Fix invalid virtual address base of MX1_2_TCM * Fix the
->>>>>>> minimum delay below which the hardware timer can not be
->>>>>>> reprogrammed. The value is the same of that one that is used
->>>>>>> to calculate the min_delta_ns
->>>>>>>
->>>>>>> arch/arm/plat-mxc/time.c 414: clockevent_mxc.min_delta_ns =
->>>>>>> clockevent_delta2ns(0xff, &clockevent_mxc);
->>>>>>
->>>>>> I do not think we can use this value, it is way to high for
->>>>>> xenomai needs. In latest releases we use 2us instead of 1us,
->>>>>> and according to what a user posted recently, this should be
->>>>>> enough, could you test with 2us? And 2us is already what we
->>>>>> have in the 3.2 repository.
->>>>>>
->>>>> As I understood the min delays is in tick and not depend on the
->>>>> clock rate.
->>>>>
->>>>> This is from atmel at91_ipipe_time
->>>>>
->>>>> min_delta_ticks = ((unsigned long long) clkevt.min_delta_ns *
->>>>> clkevt.mult) >> clkevt.shift;
->>>>>
->>>>> this is exaclty the reverse calculation of
->>>>> clockevent_mxc.min_delta_ns
->>>>>
->>>>> I have already the result in the previous calculation: 0xff is
->>>>> the minimun in ticks
->>>>
->>>> 0xff is too large, it corresponds to 30us on some platforms, could
->>>> you please try with 2us? The delay is given as a count of ticks or
->>>> as a duration in ns depending on the architecture, it does not
->>>> really matter.
->>>>
+>>>      [183168.735823] BUG: unable to handle kernel paging request at 00700bf5
+>>>      [183168.737436] IP: [<c10c091f>] xnheap_init+0x1cf/0x210
+>>>      [183168.738604] *pde = 00000000
+>>>      [183168.739406] Oops: 0002 [#1] PREEMPT
+>>>      [183168.740173] last sysfs file: /sys/devices/virtual/bdi/0:19/uevent
+>>>      [183168.740173] Modules linked in: e1000 xeno_rtipc lxfb cfbcopyarea
+>>> cfbimgblt cfbfillrect binfmt_misc psmouse usbhid serio_raw hid ata_piix
+>>> [last unloaded: e1000]
+>>>      [183168.740173]
+>>>      [183168.740173] Pid: 2557, comm: eve_dal Not tainted 2.6.37 #1 /Bochs
+>>>      [183168.740173] EIP: 0060:[<c10c091f>] EFLAGS: 00010246 CPU: 0
+>>>      [183168.740173] EIP is at xnheap_init+0x1cf/0x210
+>>>      [183168.740173] EAX: 00700bf1 EBX: eed0e210 ECX: eed0e730 EDX: eed0e2fc
+>>>      [183168.740173] ESI: 00000000 EDI: 00000000 EBP: eed27da4 ESP: eed27d7c
+>>>      [183168.740173]  DS: 007b ES: 007b FS: 0000 GS: 0033 SS: 0068
+>>>      [183168.740173] Process eve_dal (pid: 2557, ti=eed26000
+>>> task=f5773280 task.ti=eed26000)
+>>>      [183168.740173] I-pipe domain Linux
+>>>      [183168.740173] Stack:
+>>>      [183168.740173]  eed0e304 00000030 c157d4a9 eed0e210 eed0e2fc
+>>> eed0e2fc 0000003e 00000000
+>>>      [183168.740173]  f85ea000 eed0e210 eed27dc8 c10c0c44 00001000
+>>> 00000000 f85aa000 00040000
+>>>      [183168.740173]  eed0e200 fffffff4 eed0e210 eed27df0 c10cf198
+>>> eed27de4 c1058b86 eed27f20
+>>>      [183168.740173] Call Trace:
+>>>      [183168.740173]  [<c10c0c44>] ? xnheap_init_mapped+0xd4/0x210
+>>>      [183168.740173]  [<c10cf198>] ? xnshadow_sys_event+0x68/0x210
+>>>      [183168.740173]  [<c1058b86>] ? commit_creds+0xe6/0x190
+>>>      [183168.740173]  [<c10cefa3>] ? xnshadow_sys_bind+0x293/0x420
+>>>      [183168.740173]  [<c114b22e>] ? __d_lookup+0x12e/0x160
+>>>      [183168.740173]  [<c114bf96>] ? dput+0x66/0x1b0
+>>>      [183168.740173]  [<c1141b9e>] ? path_to_nameidata+0x1e/0x50
+>>>      [183168.740173]  [<c1143e02>] ? link_path_walk+0x422/0x7c0
+>>>      [183168.740173]  [<c11425f5>] ? path_put+0x25/0x30
+>>>      [183168.740173]  [<c109559d>] ? __ipipe_restore_root+0x1d/0x30
+>>>      [183168.740173]  [<c112d537>] ? kmem_cache_free+0xa7/0x100
+>>>      [183168.740173]  [<c11423ea>] ? putname+0x2a/0x40
+>>>      [183168.740173]  [<c1144cfa>] ? user_path_at+0x4a/0x80
+>>>      [183168.740173]  [<c10cd82d>] ? losyscall_event+0xad/0x200
+>>>      [183168.740173]  [<c1095035>] ? __ipipe_dispatch_event+0xb5/0x170
+>>>      [183168.740173]  [<c10cd780>] ? losyscall_event+0x0/0x200
+>>>      [183168.740173]  [<c10166d5>] ? __ipipe_syscall_root+0x45/0xd0
+>>>      [183168.740173]  [<c145526d>] ? system_call+0x2d/0x53
+>>>      [183168.740173] Code: 24 e8 a6 cc 19 00 fa 8b 0d 28 36 61 c1 0f ba
+>>> 2d c0 1b 61 c1 00 19 f6 8b 55 e8 83 e6 01 89 8b f0 00 00 00 8b 01 89 83
+>>> ec 00 00 00<89>   50 04 31 c0 89 11 8b 15 c0 1b 61 c1 83 05 2c 36 61 c1 01 83
+>>>      [183168.740173] EIP: [<c10c091f>] xnheap_init+0x1cf/0x210 SS:ESP
+>>> 0068:eed27d7c
+>>>      [183168.740173] CR2: 0000000000700bf5
 >>>
->>> Ok, with 0x85 is working (2 uS). I don't find in the documentation
->>> the min_delta_ns for this architecture. I will rebase the patch on
->>> core-3.2
+>>> As you can see, this happened with kernel 2.6.37, and I built it with
+>>> Xenomai 2.6.0. The offending instruction was at xnheap_init + 463:
+>>>
+>>>      0xc10c090b<xnheap_init+443>:	mov    -0x18(%ebp),%edx
+>>>      0xc10c090e<xnheap_init+446>:	and    $0x1,%esi
+>>>      0xc10c0911<xnheap_init+449>:	mov    %ecx,0xf0(%ebx)
+>>>      0xc10c0917<xnheap_init+455>:	mov    (%ecx),%eax
+>>>      0xc10c0919<xnheap_init+457>:	mov    %eax,0xec(%ebx)
+>>>      0xc10c091f<xnheap_init+463>:	mov    %edx,0x4(%eax)
+>>>      0xc10c0922<xnheap_init+466>:	xor    %eax,%eax
+>>>      0xc10c0924<xnheap_init+468>:	mov    %edx,(%ecx)
+>>>      0xc10c0926<xnheap_init+470>:	mov    0xc1611bc0,%edx
+>>>      0xc10c092c<xnheap_init+476>:	addl   $0x1,0xc161362c
+>>>      0xc10c0933<xnheap_init+483>:	addl   $0x1,0xc17c83e4
+>>>
+>>> This corresponds to ath(xnholder_t *, xnholder_t *) in
+>>> include/xenomai/nucleus/queue.h, line 48:
+>>>
+>>>      43	static inline void ath(xnholder_t *head, xnholder_t *holder)
+>>>      44	{
+>>>      45		/* Inserts the new element right after the heading one  */
+>>>      46		holder->last = head;
+>>>      47		holder->next = head->next;
+>>>      48		holder->next->last = holder;
+>>>      49		head->next = holder;
+>>>      50	}
+>>>
+>>> It's apparently the call to appendq() at
+>>> kernel/xenomai/nucleus/heap.c:332 that does this, with a junk pointer
+>>> dereference. So, heap->stat_link.next is not valid at the time of this
+>>> call, yet it's initialized by the call to inith() on line 319. I don't
+>>> know what would have changed that, unless it's a bad pointer elsewhere
+>>> that caused overwriting of this data. Any ideas where to go from here?
+>>>
+>> If the bug is reproducible, two things you can try:
+>> - enable CONFIG_XENO_OPT_DEBUG_QUEUES
+>> - enable the I-pipe tracer and panic freezes, you should get a trace
+>> when the bug happens.
 >>
->> This is not really a specified constant, finding this minimum value is
->> more of a hit and miss. Anyway, on core 3.2, the timers have been
->> substantially reworked, and we are able to reuse the clockevent callback
->> which has a safety mechanism in addition to the minimum value to avoid
->> loosing ticks (in short, the timer is re-read after programming it, and
->> if the delay has already passed, the callback returns a negative value,
->> which the timer subsystem uses to trigger the irq).
->>
->> Core-3.2 is not yet supported on ARM for xenomai 2.6. I will do the
->> changes and keep you informed.
->>
-> Ok, I have just pushed the changes to the 2.6 branch repository to
-> support I-pipe core on ARM.
+> Hi Gilles,
 > 
-> So, the repository for xenomai is:
-> git://git.xenomai.org/xenoami-2.6.git branch master
-> and the repository for the core-3.2 ipipe series is:
-> git://git.denx.de/ipipe.git branch core-3.2
-> 
+> I finally got a bit more information. The crash occurred again today on 
+> my testing hardware, so I installed a kernel with I-pipe trace and queue 
+> debugging and tried to reproduce. I didn't get the same error, and the 
+> kernel didn't oops, but I did get some interesting-looking information 
+> in the log. It looks like something bad was happening with XDDP, but I 
+> can't figure out what. Hopefully the attached log file will get through.
 
-Thanks
-I will rebase the the embedded board on top of the ipipe core-3.2 so I can
-test again the ipipe layer.
+Nothing seems obvious from the trace. Also, you may want to increase the
+trace to 10000 points for instance, in order to have more history. But
+if the issue is a memory corruption, chances are that it may not be enough.
 
-Michael
+What version of xenomai and the I-pipe patch are you using?
+
+
+-- 
+                                                                Gilles.
 
