@@ -1,13 +1,9 @@
-Message-ID: <4FC71FF6.4020103@xenomai.org>
-Date: Thu, 31 May 2012 09:38:30 +0200
-From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <4FA87007.1040105@ebus.com> <4FA875BF.7040103@xenomai.org>
-	<4FC6ADD6.8000509@ebus.com> <4FC716C1.2030701@xenomai.org>
-In-Reply-To: <4FC716C1.2030701@xenomai.org>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [Xenomai-help] Debugging oops in xnheap_init
+Date: Thu, 31 May 2012 10:08:18 +0200
+Message-ID: <CALH4WdbGSKTfoLS013KW4aoO=vs9qBwMWE5RhW5FVi=FmhAs_w@mail.gmail.com>
+From: Frederik Bayart <frederik.bayart@triphase.com>
+Content-Type: multipart/mixed; boundary=047d7b15a8af06edf504c15092cd
+Subject: [Xenomai] TCP communication problem
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,139 +12,160 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Doug Brunner <dbrunner@ebus.com>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 05/31/2012 08:59 AM, Gilles Chanteperdrix wrote:
-> On 05/31/2012 01:31 AM, Doug Brunner wrote:
->> On 05/07/2012 06:24 PM, Gilles Chanteperdrix wrote:
->>> On 05/08/2012 02:59 AM, Doug Brunner wrote:
->>>> I just got an oops from running one of my POSIX skin RT applications:
->>>>
->>>>       [183168.735823] BUG: unable to handle kernel paging request at 00700bf5
->>>>       [183168.737436] IP: [<c10c091f>] xnheap_init+0x1cf/0x210
->>>>       [183168.738604] *pde = 00000000
->>>>       [183168.739406] Oops: 0002 [#1] PREEMPT
->>>>       [183168.740173] last sysfs file: /sys/devices/virtual/bdi/0:19/uevent
->>>>       [183168.740173] Modules linked in: e1000 xeno_rtipc lxfb cfbcopyarea
->>>> cfbimgblt cfbfillrect binfmt_misc psmouse usbhid serio_raw hid ata_piix
->>>> [last unloaded: e1000]
->>>>       [183168.740173]
->>>>       [183168.740173] Pid: 2557, comm: eve_dal Not tainted 2.6.37 #1 /Bochs
->>>>       [183168.740173] EIP: 0060:[<c10c091f>] EFLAGS: 00010246 CPU: 0
->>>>       [183168.740173] EIP is at xnheap_init+0x1cf/0x210
->>>>       [183168.740173] EAX: 00700bf1 EBX: eed0e210 ECX: eed0e730 EDX: eed0e2fc
->>>>       [183168.740173] ESI: 00000000 EDI: 00000000 EBP: eed27da4 ESP: eed27d7c
->>>>       [183168.740173]  DS: 007b ES: 007b FS: 0000 GS: 0033 SS: 0068
->>>>       [183168.740173] Process eve_dal (pid: 2557, ti=eed26000
->>>> task=f5773280 task.ti=eed26000)
->>>>       [183168.740173] I-pipe domain Linux
->>>>       [183168.740173] Stack:
->>>>       [183168.740173]  eed0e304 00000030 c157d4a9 eed0e210 eed0e2fc
->>>> eed0e2fc 0000003e 00000000
->>>>       [183168.740173]  f85ea000 eed0e210 eed27dc8 c10c0c44 00001000
->>>> 00000000 f85aa000 00040000
->>>>       [183168.740173]  eed0e200 fffffff4 eed0e210 eed27df0 c10cf198
->>>> eed27de4 c1058b86 eed27f20
->>>>       [183168.740173] Call Trace:
->>>>       [183168.740173]  [<c10c0c44>] ? xnheap_init_mapped+0xd4/0x210
->>>>       [183168.740173]  [<c10cf198>] ? xnshadow_sys_event+0x68/0x210
->>>>       [183168.740173]  [<c1058b86>] ? commit_creds+0xe6/0x190
->>>>       [183168.740173]  [<c10cefa3>] ? xnshadow_sys_bind+0x293/0x420
->>>>       [183168.740173]  [<c114b22e>] ? __d_lookup+0x12e/0x160
->>>>       [183168.740173]  [<c114bf96>] ? dput+0x66/0x1b0
->>>>       [183168.740173]  [<c1141b9e>] ? path_to_nameidata+0x1e/0x50
->>>>       [183168.740173]  [<c1143e02>] ? link_path_walk+0x422/0x7c0
->>>>       [183168.740173]  [<c11425f5>] ? path_put+0x25/0x30
->>>>       [183168.740173]  [<c109559d>] ? __ipipe_restore_root+0x1d/0x30
->>>>       [183168.740173]  [<c112d537>] ? kmem_cache_free+0xa7/0x100
->>>>       [183168.740173]  [<c11423ea>] ? putname+0x2a/0x40
->>>>       [183168.740173]  [<c1144cfa>] ? user_path_at+0x4a/0x80
->>>>       [183168.740173]  [<c10cd82d>] ? losyscall_event+0xad/0x200
->>>>       [183168.740173]  [<c1095035>] ? __ipipe_dispatch_event+0xb5/0x170
->>>>       [183168.740173]  [<c10cd780>] ? losyscall_event+0x0/0x200
->>>>       [183168.740173]  [<c10166d5>] ? __ipipe_syscall_root+0x45/0xd0
->>>>       [183168.740173]  [<c145526d>] ? system_call+0x2d/0x53
->>>>       [183168.740173] Code: 24 e8 a6 cc 19 00 fa 8b 0d 28 36 61 c1 0f ba
->>>> 2d c0 1b 61 c1 00 19 f6 8b 55 e8 83 e6 01 89 8b f0 00 00 00 8b 01 89 83
->>>> ec 00 00 00<89>    50 04 31 c0 89 11 8b 15 c0 1b 61 c1 83 05 2c 36 61 c1 01 83
->>>>       [183168.740173] EIP: [<c10c091f>] xnheap_init+0x1cf/0x210 SS:ESP
->>>> 0068:eed27d7c
->>>>       [183168.740173] CR2: 0000000000700bf5
->>>>
->>>> As you can see, this happened with kernel 2.6.37, and I built it with
->>>> Xenomai 2.6.0. The offending instruction was at xnheap_init + 463:
->>>>
->>>>       0xc10c090b<xnheap_init+443>:	mov    -0x18(%ebp),%edx
->>>>       0xc10c090e<xnheap_init+446>:	and    $0x1,%esi
->>>>       0xc10c0911<xnheap_init+449>:	mov    %ecx,0xf0(%ebx)
->>>>       0xc10c0917<xnheap_init+455>:	mov    (%ecx),%eax
->>>>       0xc10c0919<xnheap_init+457>:	mov    %eax,0xec(%ebx)
->>>>       0xc10c091f<xnheap_init+463>:	mov    %edx,0x4(%eax)
->>>>       0xc10c0922<xnheap_init+466>:	xor    %eax,%eax
->>>>       0xc10c0924<xnheap_init+468>:	mov    %edx,(%ecx)
->>>>       0xc10c0926<xnheap_init+470>:	mov    0xc1611bc0,%edx
->>>>       0xc10c092c<xnheap_init+476>:	addl   $0x1,0xc161362c
->>>>       0xc10c0933<xnheap_init+483>:	addl   $0x1,0xc17c83e4
->>>>
->>>> This corresponds to ath(xnholder_t *, xnholder_t *) in
->>>> include/xenomai/nucleus/queue.h, line 48:
->>>>
->>>>       43	static inline void ath(xnholder_t *head, xnholder_t *holder)
->>>>       44	{
->>>>       45		/* Inserts the new element right after the heading one  */
->>>>       46		holder->last = head;
->>>>       47		holder->next = head->next;
->>>>       48		holder->next->last = holder;
->>>>       49		head->next = holder;
->>>>       50	}
->>>>
->>>> It's apparently the call to appendq() at
->>>> kernel/xenomai/nucleus/heap.c:332 that does this, with a junk pointer
->>>> dereference. So, heap->stat_link.next is not valid at the time of this
->>>> call, yet it's initialized by the call to inith() on line 319. I don't
->>>> know what would have changed that, unless it's a bad pointer elsewhere
->>>> that caused overwriting of this data. Any ideas where to go from here?
->>>>
->>> If the bug is reproducible, two things you can try:
->>> - enable CONFIG_XENO_OPT_DEBUG_QUEUES
->>> - enable the I-pipe tracer and panic freezes, you should get a trace
->>> when the bug happens.
->>>
->> Hi Gilles,
->>
->> I finally got a bit more information. The crash occurred again today on
->> my testing hardware, so I installed a kernel with I-pipe trace and queue
->> debugging and tried to reproduce. I didn't get the same error, and the
->> kernel didn't oops, but I did get some interesting-looking information
->> in the log. It looks like something bad was happening with XDDP, but I
->> can't figure out what. Hopefully the attached log file will get through.
-> 
-> Nothing seems obvious from the trace. Also, you may want to increase the
-> trace to 10000 points for instance, in order to have more history. But
-> if the issue is a memory corruption, chances are that it may not be enough.
-> 
+--047d7b15a8af06edf504c15092cd
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 
-nklock is leaking in the traces, we should not be holding the superlock on
-entry to xnbufd_copy_to_kmem. Doug, please apply the patch below, with
-CONFIG_XENO_OPT_DEBUG_XNLOCK enabled. This may tell us which routine on the
-current code path grabbed that lock.
+Hallo,
 
-diff --git a/ksrc/nucleus/bufd.c b/ksrc/nucleus/bufd.c
-index c482b9d..8fd2ec5 100644
---- a/ksrc/nucleus/bufd.c
-+++ b/ksrc/nucleus/bufd.c
-@@ -371,6 +371,9 @@ ssize_t xnbufd_copy_to_kmem(void *to, struct xnbufd *bufd, size_t len)
- 
- 	if (xnpod_userspace_p() && !xnpod_asynch_p() &&
- 	    current->mm == bufd->b_mm) {
-+		if (xnlock_is_owner(&nklock))
-+			printk(KERN_ERR "Xenomai: nklock held: %s:%u (%s())\n",
-+			       nklock.file, nklock.line, nklock.function);
- 		XENO_BUGON(NUCLEUS, xnlock_is_owner(&nklock) || spltest());
- 		if (__xn_safe_copy_from_user(to, (void __user *)from, len))
- 			return -EFAULT;
+When switching from xenomai 2.4.10 on linux 2.6.30.8 (x86) to xenomai
+2.6.0 (stable) on linux 2.6.38.8, we noticed some TCP communication
+problem between client and server in our application. We wrote a test
+program and think this reproduces the problem.
 
--- 
-Philippe.
+First a short description of the test program :
+
+When the client (rtest.c attached) connects to the server (rtestd.c
+attached), the server starts sending packets to the client. Packets
+are paired : first a header and then a corresponding data packet. The
+payload of each packet starts with a sequence number (to match network
+traces and logging), followed with hdr[A..Z])2222222...222hdr[A..Z]
+for header and dat[A..Z]77777777...777dat[A..Z] for data packets.
+
+The client can also sent request to server (using the same
+connection). The server echoes these packets back.
+Client requests are also paired : first a header and then a
+corresponding data packet. The payload of each packet starts with a
+sequence number (to match network traces and logging), followed with
+fre[A..Z])3333333...333fre[A..Z] for header and
+rik[A..Z]88888888...888rik[A..Z] for data packets.
+
+Header and data packets have to arrive one after the oter. For that
+reason, sending is protected by a mutex.
+The send command used in the server is the normal send, so tasks are
+switching from primary to secondary domain, but I think sending should
+be protected by the mutex.
+Also the task that echoes client requests has higher priority.
+
+Client requests can be initiated to the client sending the TRAP signal, e.g
+
+for i in {0..9000} ; do kill -TRAP <pid>; =A0done
+
+where <pid> is the process id of the client process.
+
+If you execute this some times after each other, we noticed that we
+have lost some data.
+
+In attached rtest.log, rule 6 , the tail of the packet
+(...22222222hdrE) is lost.
+
+This can also be seen in the network trace : packet 4 contains the
+first part of the header, but packet 6 contains the start of the data
+packet
+
+Client and server are run on different hosts. The ip adress of the
+server is given as argument to the client, so e.g. =A0 ./rtest
+192.168.0.40
+
+At the moment it's not clear to us whether the problem is caused by
+the new xenomai, or by the new kernel, so my question is :
+
+Can the problem be caused by different behaviour of the new xenomai :
+new scheduler, no mutex protection in the secondary domain, =A0... ?
+
+Frederik
+
+--047d7b15a8af06edf504c15092cd
+Content-Type: application/zip; name="rtest.zip"
+Content-Disposition: attachment; filename="rtest.zip"
+Content-Transfer-Encoding: base64
+X-Attachment-Id: f_h2vjg1u10
+
+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
+--047d7b15a8af06edf504c15092cd--
 
