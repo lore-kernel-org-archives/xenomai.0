@@ -1,80 +1,182 @@
-Message-ID: <4FB5FF19.2080209@domain.hid>
-Date: Fri, 18 May 2012 09:49:45 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <C7408997F5B0784C970ED53C11855FAE011112339155@domain.hid>,
-	<C7408997F5B0784C970ED53C11855FAE01111232AFE7@domain.hid>
-	<C7408997F5B0784C970ED53C11855FAE011112339156@domain.hid>,
-	<30154f906372933f78eb6a9f4c632782.squirrel@domain.hid>
-	<C7408997F5B0784C970ED53C11855FAE011112339157@domain.hid>
-In-Reply-To: <C7408997F5B0784C970ED53C11855FAE011112339157@domain.hid>
+Date: Fri, 1 Jun 2012 11:24:50 +0530
+Message-ID: <CAM1yFZ9tDsgAYo1dJOc7CxoAEnLLkFqnQBL8QbO8Wb=K2yY4wg@mail.gmail.com>
+From: Anisha Kaul <born.rebel.83@gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai-help] RE :  IRQ latency
-List-Id: Help regarding installation and common use of Xenomai
-	<xenomai.xenomai.org>
-List-Unsubscribe: <https://mail.gna.org/options/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-List-Archive: </public/xenomai-help>
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] CONFIG_CPU_FREQ, CONFIG_APM. kernel - 2.6.38.8
+List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
+List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
+	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
+List-Archive: <http://www.xenomai.org/pipermail/xenomai>
 List-Post: <mailto:xenomai@xenomai.org>
-List-Help: <mailto:xenomai-help-request@domain.hid>
-List-Subscribe: <https://mail.gna.org/listinfo/xenomai-help>,
-	<mailto:xenomai-help-request@domain.hid>
-To: Jean-Pascal JULIEN <jean-pascal.julien@domain.hid>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
+List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
+	<mailto:xenomai-request@xenomai.org?subject=subscribe>
+To: xenomai@xenomai.org
 
-On 05/18/2012 09:06 AM, Jean-Pascal JULIEN wrote:
->>> Hi,
->>>
->>> I installed xenomai on an overo water board (cortex A8) and performed
->>> latency tests.
-> 
->> What version of Xenomai?
-> 
->>> I tested two modules.
->>> The first module is based on an internal timer. It toggles a GPIO each
->>> 1ms.
->>> The second module waits for an external interrupt from an input GPIO
->>> (square signal at 1KHz). When that happens, the module toggles a GPIO pin.
->>>
->>> When i load the system and do a transfer from Ethernet to the sd card the
->>> first module works fine with a maximum latency less than 50us.
->>> But the second module, in the same context, have a maximum latency of
->>> several milliseconds.
->>>
->>> As the first module works fine i think i have a problem with the hardware
->>> configuration like the hardware irq priority.
->>> In the irq.c file, the irq priority level is not set for the linux domain.
->>>
->>> Should i configure the irq level at the initialization of the board ? What
->>> else could cause this issue ?
-> 
->> The error is more likely in the code of your driver. Show us the code.
-> 
-> Hi Gilles,
-> 
-> 
-> Sorry, i forgot the essential.
-> My linux kernel version is the 2.6.38 from sakoman. 
-> My xenomai version is xenomai-2.6.0
-> The adeos patch is : adeos-ipipe-2.6.38.8-arm-1.18-04.patch ( ./prepare-kernel.sh --linux=${WORKDIR}/git --arch=arm --adeos=${WORKDIR}/xenomai-2.6.0/ksrc/arch/arm/patches/adeos-ipipe-2.6.38.8-arm-1.18-04.patch).
-> The xenomai user space is make with the next configuration : 
->  ./configure --build=arm-ti-linux --host=arm-none-linux-gnueabi --prefix=/usr --includedir=/usr/include/xenomai  --enable-arm-tsc=omap3   --disable-dox-doc --disable-dbx LDFLAGS="-Wl,-O1 -Wl,--hash-style=gnu"
+Greetings,
 
-You do not need --enable-arm-tsc.
+W.r.t kernel - 2.6.38.8
 
-I see nothing wrong with your code. However this version of the I-pipe
-patch has a bug with gpio irqs. You can try backporting this patch:
+This page http://www.xenomai.org/documentation/xenomai-2.6/TROUBLESHOOTING
+asks us to disable "CONFIG_CPU_FREQ".
 
-http://git.xenomai.org/?p=ipipe-gch.git;a=commit;h=81bfc05c4716b76e79f5e486baf4c52015a3b92c
+Power management and ACPI options
+-->CPU Frequency scaling
+-->-->CPU_FREQ_GOV_CONSERVATIVE
+-->-->CPU_FREQ_GOV_ONDEMAND
+-->-->CPU_FREQ_PMAC64
+-->-->CPU_FREQ_DEFAULT_GOV_PERFORMANCE
+-->-->CPU_FREQ_GOV_PERFORMANCE
+-->-->CPU_FREQ_GOV_USERSPACE
 
-To fix it. If that is the cause of your problem, then you should only
-see the bug if you are running some other real-time program which
-triggers a user-space task wakeup based in an interrupt, such as for
-instance the timer interrupt. Running the "latency" test for instance
-would do that.
+There isn't any particular option named "CONFIG_CPU_FREQ".
+Does this mean that we have to disable whole bunch of all these above optio=
+ns?
 
 
--- 
-                                                                Gilles.
+Same is the case with "CONFIG_APM". It also has various variants as follows=
+:
+APM_CPU_IDLE
+APM_IGNORE_USER_SUSPEND
+APM_DO_ENABLE
+
+Location is said to be in:
+--> Power management and ACPI options
+-->--> APM (Advanced Power Management) BIOS support (APM [=3Dn])
+
+But in kernel 2.6.38.8 there isn't any option called "APM (Advanced
+Power Management) BIOS support" anywhere.
+"Power management and ACPI options" results in the following menu.
+
+  [*] Power Management support
+  [*]   Power Management Debug Support
+  [*]     Extra PM attributes in sysfs for low-level debugging/testing
+  [ ]     Verbose Power Management debugging
+  [*] Suspend/resume event tracing
+  [*] Suspend to RAM and standby
+  [ ]   Test suspend/resume and wakealarm during bootup
+  [*] Hibernation (aka 'suspend to disk')
+  ()    Default resume partition
+  [*] Run-time PM core functionality
+  [*] ACPI (Advanced Configuration and Power Interface) Support  --->
+  [*] SFI (Simple Firmware Interface) Support  --->
+  CPU Frequency scaling  --->
+  -*- CPU idle PM support
+  [ ]   Cpuidle Driver for Intel Processors (NEW)
+  Memory power savings  --->
+
+
+  "ACPI (Advanced Configuration and Power Interface) Support"  results
+in the following menu:
+
+  --- ACPI (Advanced Configuration and Power Interface) Support
+                                                  =E2=94=82 =E2=94=82
+  =E2=94=82 =E2=94=82                                                [*]   =
+Deprecated
+/proc/acpi files
+                               =E2=94=82 =E2=94=82
+  =E2=94=82 =E2=94=82                                                [*]   =
+Deprecated
+power /proc/acpi directories
+                               =E2=94=82 =E2=94=82
+  =E2=94=82 =E2=94=82                                                <M>   =
+ACPI 4.0
+power meter
+                                 =E2=94=82 =E2=94=82
+  =E2=94=82 =E2=94=82                                                < >   =
+EC
+read/write access through /sys/kernel/debug/ec (NEW)
+                                       =E2=94=82 =E2=94=82
+  =E2=94=82 =E2=94=82                                                [*]   =
+Deprecated
+/proc/acpi/event support
+                               =E2=94=82 =E2=94=82
+  =E2=94=82 =E2=94=82                                                <M>   =
+AC Adapter
+
+                              =E2=94=82 =E2=94=82
+  =E2=94=82 =E2=94=82                                                <M>   =
+Battery
+
+                              =E2=94=82 =E2=94=82
+  =E2=94=82 =E2=94=82                                                {M}   =
+Button
+
+                              =E2=94=82 =E2=94=82
+  =E2=94=82 =E2=94=82                                                {M}   =
+Video
+
+                              =E2=94=82 =E2=94=82
+  =E2=94=82 =E2=94=82                                                <M>   =
+Fan
+
+                              =E2=94=82 =E2=94=82
+  =E2=94=82 =E2=94=82                                                [*]   =
+Dock
+
+                              =E2=94=82 =E2=94=82
+  =E2=94=82 =E2=94=82                                                <M>   =
+Processor
+
+                              =E2=94=82 =E2=94=82
+  =E2=94=82 =E2=94=82                                                < >   =
+IPMI (NEW)
+
+                              =E2=94=82 =E2=94=82
+  =E2=94=82 =E2=94=82                                                <M>   =
+Processor
+Aggregator
+                                =E2=94=82 =E2=94=82
+  =E2=94=82 =E2=94=82                                                <M>   =
+Thermal
+Zone
+                                  =E2=94=82 =E2=94=82
+  =E2=94=82 =E2=94=82                                                -*-   =
+NUMA
+support
+                                     =E2=94=82 =E2=94=82
+  =E2=94=82 =E2=94=82                                                ()    =
+Custom DSDT
+Table file to include
+                              =E2=94=82 =E2=94=82
+  =E2=94=82 =E2=94=82                                                [*]   =
+Debug
+Statements
+                                    =E2=94=82 =E2=94=82
+  =E2=94=82 =E2=94=82                                                [ ]
+Additionally enable ACPI function tracing
+                                        =E2=94=82 =E2=94=82
+  =E2=94=82 =E2=94=82                                                <M>   =
+PCI slot
+detection driver
+                                 =E2=94=82 =E2=94=82
+  =E2=94=82 =E2=94=82                                                {M}   =
+Container
+and Module Devices (EXPERIMENTAL)
+                                =E2=94=82 =E2=94=82
+  =E2=94=82 =E2=94=82                                                <M>   =
+Memory
+Hotplug
+                                   =E2=94=82 =E2=94=82
+  =E2=94=82 =E2=94=82                                                <M>   =
+Smart
+Battery System
+                                    =E2=94=82 =E2=94=82
+  =E2=94=82 =E2=94=82                                                < >   =
+Hardware
+Error Device (NEW)
+                                 =E2=94=82 =E2=94=82
+  =E2=94=82 =E2=94=82                                                [ ]   =
+ACPI
+Platform Error Interface (APEI) (NEW)
+                                     =E2=94=82 =E2=94=82
+  =E2=94=82 =E2=94=82
+
+  Has some names been changed or I am simply missing some point?
+  Please guide.
+
+Regards,
+-Anisha
 
