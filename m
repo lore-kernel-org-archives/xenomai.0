@@ -1,13 +1,13 @@
-Message-ID: <4FC875FB.1070805@xenomai.org>
-Date: Fri, 01 Jun 2012 09:57:47 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <4FC8CCC2.9010103@xenomai.org>
+Date: Fri, 01 Jun 2012 16:08:02 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <DUB114-W7121A0DDCD5D2E2B7CD801AF3B0@phx.gbl>
-In-Reply-To: <DUB114-W7121A0DDCD5D2E2B7CD801AF3B0@phx.gbl>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+References: <CAM1yFZ9tDsgAYo1dJOc7CxoAEnLLkFqnQBL8QbO8Wb=K2yY4wg@mail.gmail.com>	<4FC86B6E.6050705@xenomai.org>
+	<CAM1yFZ-KEO3Z7K+YXDBZdZExrYe3jffd6jfS-FM7W=8Zu2jdsA@mail.gmail.com>
+In-Reply-To: <CAM1yFZ-KEO3Z7K+YXDBZdZExrYe3jffd6jfS-FM7W=8Zu2jdsA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] rt_event_wait makes linux crash if executed while
- debugging with gdbserver
+Subject: Re: [Xenomai] CONFIG_CPU_FREQ, CONFIG_APM. kernel - 2.6.38.8
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,96 +16,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Fabio Visona <fabioviso@hotmail.com>
-Cc: Xenomai@xenomai.org
+To: Anisha Kaul <born.rebel.83@gmail.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 04/13/2012 04:49 PM, Fabio Visona wrote:
-> Hello,
->
-> I am trying to debug a Xenomai task through gdbserver over ethernet, with:
->
-> gdbserver host:12345 --attach 240
->
-> where 240 is the PID of the Xenomai real-time task I want to debug.
->
-> After connecting with the gdb client, running continuosly is fine, but
-> if I put a breakpoint and afterwards make the software execute an
-> rt_event_wait call, the system crashes (gdb client stuck, no more
-> ethernet connection, no panic message on the debug console serial port).
->
+On 06/01/2012 10:39 AM, Anisha Kaul wrote:
+> On 1 June 2012 12:42, Gilles Chanteperdrix
+> <gilles.chanteperdrix@xenomai.org> wrote:
+> 
+>> I am a bit surprised that given the time you have spent been asking questions on
+>> this list you still have not built and run Xenomai.
+> 
+> I did install Xenomai quite a time back, even ran "hello world" and
+> xeno-test on it, but with a different kernel version.
+> Then I had to format the harddisk and all over again.
+> Now, I don't know why I am having a hard time configuring the things
+> on this new kernel. :(
+> 
+>> Forgot that:
+>> $ find linux -name '*Kconfig*' | xargs grep 'config \(APM$\|CPU_FREQ$\|ACPI_PROCESSOR$\)'
+>> linux/drivers/cpufreq/Kconfig:config CPU_FREQ
+>> linux/drivers/acpi/Kconfig:config ACPI_PROCESSOR
+>> linux/arch/x86/Kconfig:menuconfig APM
+> 
+> Thankful to you for the hint.
+> The problem was that I am configuring the kernel through the "make
+> menuconfig" command.
+> That command presents a "GUI". The APM option is simply not visible in
+> that GUI. I looked again.
 
-[...]
+The GUI has a "research" function. I believe in make menuconfig it is
+the '/' character.
 
-> Xenomai version is 2.5.3, Linux 2.6.34.7, running on a Blackfin BF518
-> processor.
+> 
+> Now, I'll figure out the modification of those Kconfig files directly.
 
-Several issues with GDB support on the blackfin:
+The Kconfig are the data used by make menuconfig to build the menu. You
+do not want to modify them.
 
-- Xenomai 2.5.3 -> 2.5.6 (included) have a leaking SIGTRAP when 
-debugging, which is fishy, and may lead to the issue you described. This 
-has been fixed in the 2.6.x maintenance tree as a side-effect of 
-plugging races in signal management.
+This said, this list may not be the best place to ask questions about
+configuration/compilation of the Linux kernel.
 
-- I-pipe 2.6.34.7/blackfin and later do not always handle return from 
-exception properly when the current task is being ptraced. The patch 
-below for 2.6.34.7-1.15-01 fixes this.
-
-- The blackfin support for the newest pipeline core architecture 
-(core-3.2) had an additional bug making the debuggee crash badly, this 
-is now fixed by
-http://git.denx.de/?p=ipipe-2.6.git;a=commit;h=92dd9aa478f72ed32610d23f943bbfb008a8fb60
-
-I would recommend to try one of the options below that best fits your 
-requirements:
-
-- moving to Xenomai 2.6.x HEAD (upcoming 2.6.1), applying the patch 
-below to your 2.6.34.7 kernel. At any rate, Xenomai 2.5.3 has a number 
-of nasty issues you don't want to live with.
-
-- moving to Xenomai 2.6.x HEAD, kernel 3.2.18, using the newest pipeline 
-core at git://git.denx.de/ipipe.git, branch core-3.2.
-
-HTH,
-
-diff --git a/arch/blackfin/mach-common/entry.S 
-b/arch/blackfin/mach-common/entry.S
-index a5847f5..4cf49a6 100644
---- a/arch/blackfin/mach-common/entry.S
-+++ b/arch/blackfin/mach-common/entry.S
-@@ -824,15 +824,6 @@ _new_old_task:
-  ENDPROC(_resume)
-
-  ENTRY(_ret_from_exception)
--#ifdef CONFIG_IPIPE
--	p2.l = _ipipe_percpu_domain;
--	p2.h = _ipipe_percpu_domain;
--	r0.l = _ipipe_root;
--	r0.h = _ipipe_root;
--	r2 = [p2];
--	cc = r0 == r2;
--	if !cc jump 4f;  /* not on behalf of the root domain, get out */
--#endif /* CONFIG_IPIPE */
-  	p2.l = lo(IPEND);
-  	p2.h = hi(IPEND);
-
-@@ -861,6 +852,16 @@ ENTRY(_ret_from_exception)
-  	cc = r0 == 0;
-  	if !cc jump 5f;
-
-+#ifdef CONFIG_IPIPE
-+	p2.l = _ipipe_percpu_domain;
-+	p2.h = _ipipe_percpu_domain;
-+	r0.l = _ipipe_root;
-+	r0.h = _ipipe_root;
-+	r2 = [p2];
-+	cc = r0 == r2;
-+	if !cc jump 5f;  /* not on behalf of the root domain, get out */
-+#endif /* CONFIG_IPIPE */
-+
-  	/* Set the stack for the current process */
-  	r7 = sp;
-  	r4.l = lo(ALIGN_PAGE_MASK);
+Please no private mails.
 
 -- 
-Philippe.
+					    Gilles.
 
