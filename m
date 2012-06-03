@@ -1,12 +1,10 @@
-Message-ID: <4FC90486.4010308@xenomai.org>
-Date: Fri, 01 Jun 2012 20:05:58 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4FC8F8EE.4010901@xenomai.org> <4FC8FBD0.3020206@siemens.com>
-In-Reply-To: <4FC8FBD0.3020206@siemens.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] x86_32 mayday
+Date: Sun, 3 Jun 2012 22:19:24 +0530
+Message-ID: <CACPB503JOt6DV1GP_gt0xcR_fz2owgiQow1O2uYKRpn_udDghA@mail.gmail.com>
+From: Parthasarathy S <ask.partha@gmail.com>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] error while compiling trivial-periodic.c
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,31 +13,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 06/01/2012 07:28 PM, Jan Kiszka wrote:
-> On 2012-06-01 19:16, Gilles Chanteperdrix wrote:
->>
->> Hi,
->>
->> with the current tip of xenomai 2.6 branch, the "sigdebug" test testing
->> the "mayday" code ends up with a segfault on x86_32. I tried to have a
->> look at it, but could not really understand what happens: the register
->> on return from the syscall are ok, but the segfault happens after return
->> from the signal handler, when returning from the interrupted function.
->> It looks like either ebp, or the function return adress are wrong.
->>
->> If anyone wants to have a look at it... Jan maybe?
-> 
-> Can't promise, but will try to find a slot.
-> 
-> I think I didn't test on x86-32 so far. Is this a regression or did you
-> run the test for the first time as well?
+Hello,
 
-First time since 2.6.0, and with 2.6.0, mayday was segfaulting
-everywhere anyway.
+Recently I installed xenomai on a board with Intel Atom D525 processor.
+After completing the installation, as suggested by the Quick Install Guide,
+I ran 'make' from the xenomai-2.6.0/examples/native folder. I see the
+following error message. Can any one help.
 
--- 
-                                                                Gilles.
+--xeno-cflags is deprecated, use --skin=3Dname --cflags instead
+--xeno-ldflags is deprecated, use --skin=3Dname --ldflags instead
+gcc -I/usr/xenomai/include -D_GNU_SOURCE -D_REENTRANT -Wall
+-Werror-implicit-function-declaration -pipe -D__XENO__   -L/usr/xenomai/lib
+-lxenomai -lpthread -lrt  -lnative -Xlinker -rpath -Xlinker
+/usr/xenomai/lib  trivial-periodic.c   -o trivial-periodic
+trivial-periodic.c: In function =91main=92:
+trivial-periodic.c:72:1: warning: control reaches end of non-void function
+[-Wreturn-type]
+/tmp/ccvb7ii0.o: In function `demo':
+trivial-periodic.c:(.text+0x2f): undefined reference to
+`rt_task_set_periodic'
+trivial-periodic.c:(.text+0x34): undefined reference to `rt_timer_read'
+trivial-periodic.c:(.text+0x46): undefined reference to
+`rt_task_wait_period'
+trivial-periodic.c:(.text+0x4b): undefined reference to `rt_timer_read'
+/tmp/ccvb7ii0.o: In function `main':
+trivial-periodic.c:(.text+0x133): undefined reference to `rt_task_create'
+trivial-periodic.c:(.text+0x14f): undefined reference to `rt_task_start'
+trivial-periodic.c:(.text+0x160): undefined reference to `rt_task_delete'
+collect2: ld returned 1 exit status
+make: *** [trivial-periodic] Error 1
 
+--=20
+Parthasarathy S
+C612 Sena Vihar
+Kammanahalli Main Road
+Bangalore 560043 India
