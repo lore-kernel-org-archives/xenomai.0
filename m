@@ -1,12 +1,15 @@
-Message-ID: <4FCB97A0.2020400@xenomai.org>
-Date: Sun, 03 Jun 2012 18:58:08 +0200
-From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <4FC8F8EE.4010901@xenomai.org> <4FC8FBD0.3020206@siemens.com>
-In-Reply-To: <4FC8FBD0.3020206@siemens.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] x86_32 mayday
+In-Reply-To: <CAM1yFZ8ecwqQ5C2s8Wunv-jxvwYV+AqfsHoZYVsQcBu2ZovADg@mail.gmail.com>
+References: <CAM1yFZ9tDsgAYo1dJOc7CxoAEnLLkFqnQBL8QbO8Wb=K2yY4wg@mail.gmail.com>
+	<4FC86B6E.6050705@xenomai.org>
+	<CAM1yFZ-KEO3Z7K+YXDBZdZExrYe3jffd6jfS-FM7W=8Zu2jdsA@mail.gmail.com>
+	<4FC8CCC2.9010103@xenomai.org>
+	<CAM1yFZ8ecwqQ5C2s8Wunv-jxvwYV+AqfsHoZYVsQcBu2ZovADg@mail.gmail.com>
+Date: Mon, 4 Jun 2012 10:16:15 +0530
+Message-ID: <CAM1yFZ_6fkpLEYpUEMKhrefgGBKpMS9N2o0LM=Z8C_1kKizfKA@mail.gmail.com>
+From: Anisha Kaul <born.rebel.83@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: Re: [Xenomai] CONFIG_CPU_FREQ, CONFIG_APM. kernel - 2.6.38.8
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,32 +18,15 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: Xenomai <xenomai@xenomai.org>
 
-On 06/01/2012 07:28 PM, Jan Kiszka wrote:
-> On 2012-06-01 19:16, Gilles Chanteperdrix wrote:
->>
->> Hi,
->>
->> with the current tip of xenomai 2.6 branch, the "sigdebug" test testing
->> the "mayday" code ends up with a segfault on x86_32. I tried to have a
->> look at it, but could not really understand what happens: the register
->> on return from the syscall are ok, but the segfault happens after return
->> from the signal handler, when returning from the interrupted function.
->> It looks like either ebp, or the function return adress are wrong.
->>
->> If anyone wants to have a look at it... Jan maybe?
->
-> Can't promise, but will try to find a slot.
->
-> I think I didn't test on x86-32 so far. Is this a regression or did you
-> run the test for the first time as well?
+>> The GUI has a "research" function. I believe in make menuconfig it is
+>> the '/' character.
 
-This could not have worked reliably on x86_32, my bad. We must save 
-ss:esp across the mayday transition to return to userland sanely.
-I'll be pushing a patch shortly.
+It is solved now. The problem was that APM depends on X86_32.
+Mine machine is 64bit. That's why APM isn't there.
 
--- 
-Philippe.
+--
+Anisha
 
