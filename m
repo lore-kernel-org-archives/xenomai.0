@@ -1,11 +1,11 @@
-Message-ID: <4FCC9AC5.3090805@siemens.com>
-Date: Mon, 04 Jun 2012 13:23:49 +0200
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <4FCCA9C7.2010009@xenomai.org>
+Date: Mon, 04 Jun 2012 14:27:51 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <4FC8F8EE.4010901@xenomai.org> <4FC8FBD0.3020206@siemens.com>
 	<4FC90486.4010308@xenomai.org> <4FCC98F7.9060103@xenomai.org>
 In-Reply-To: <4FCC98F7.9060103@xenomai.org>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] x86_32 mayday
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -19,7 +19,7 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: Philippe Gerum <rpm@xenomai.org>
 Cc: Xenomai <xenomai@xenomai.org>
 
-On 2012-06-04 13:16, Philippe Gerum wrote:
+On 06/04/2012 01:16 PM, Philippe Gerum wrote:
 > On 06/01/2012 08:05 PM, Gilles Chanteperdrix wrote:
 >> On 06/01/2012 07:28 PM, Jan Kiszka wrote:
 >>> On 2012-06-01 19:16, Gilles Chanteperdrix wrote:
@@ -47,9 +47,6 @@ On 2012-06-04 13:16, Philippe Gerum wrote:
 > Silly nasty bug. This is fixed now:
 > http://git.xenomai.org/?p=xenomai-2.6.git;a=commit;h=3bd460bd22295e87a9850fd8439e94557f094904
 > 
-
-Great!
-
 > Basically, mayday over x86_32 never worked properly with SEP enabled.
 > 
 > This is quite weird that this went unnoticed for such a long time. So 
@@ -58,6 +55,15 @@ Great!
 > they call exit() from within that handler. The net effect of this bug 
 > was that returning from any routine in user-space after the mayday fixup 
 > happened, would pop an invalid IP off the stack.
+
+My turn to say "my bad", I tested mayday on all platforms for 2.6.0, it
+segfaulted on all platforms, I simply thought it was the intended
+effect. See:
+
+http://www.xenomai.org/pipermail/xenomai-core/2012-01/msg00041.html
+
+Everything got fixed around january, I guess I skipped the test on x86_32.
+
 > 
 > Btw, I don't think it makes sense to keep sysentry/sysexit support 
 > disabled by default for x86 anymore. The same way we already assume 
@@ -66,16 +72,9 @@ Great!
 > off explicitly via --disable-x86-sep.
 > 
 > If nobody freaks out badly contemplating this idea, I'll push a patch.
-> 
 
-I think this makes a lot of sense. Those few users on older or special
-CPUs can still switch it off. Maybe we can add some detection code for
-this CPU feature to the library init function so that a proper error
-message is generated.
-
-Jan
+Fine by me.
 
 -- 
-Siemens AG, Corporate Technology, CT T DE IT 1
-Corporate Competence Center Embedded Linux
+					    Gilles.
 
