@@ -1,5 +1,5 @@
-Message-ID: <4FCD0C4D.6000004@xenomai.org>
-Date: Mon, 04 Jun 2012 21:28:13 +0200
+Message-ID: <4FCD1154.2050008@xenomai.org>
+Date: Mon, 04 Jun 2012 21:49:40 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <4FCD0BD8.70103@laposte.net>
@@ -60,9 +60,32 @@ On 06/04/2012 09:26 PM, Marc Le Douarain wrote:
 > (at start thinking on the fpu missing, but seems not to be used !? no 
 > libm dependance)
 
-It may be due to the omit-frame-pointer option, please try adding
--fno-omit-frame-pointer to the CFLAGS
+The program may use fpu instructions without linking to libm. If you
+want to be sure that there will be no fpu instructions, you should pass
+-msoft-float. But I do not think the x86 compiler will generate fpu
+instructions if you do not use floating point variables (but that
+remains to be proved, the simpler way to know is to look at the
+disassembly).
 
+
+> void catch_signal( int sig )
+> {
+> }
+> 
+> int main (void)
+> {
+>      int err;
+> 
+> printf("starting...\n");
+> 
+>    signal( SIGTERM,catch_signal );
+>    signal( SIGINT,catch_signal );
+
+This looks like a bad idea. It means that if the user presses ctrl-C or
+send a SIGTERM, nothing will happens. As a user, how much do you like
+programs which do not react to ctrl-C? And anyway, you can not prevent
+the user from sending a SIGKILL. So, catching SIGTERM and SIGINT this
+way seems pointless.
 
 -- 
                                                                 Gilles.
