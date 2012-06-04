@@ -1,12 +1,12 @@
-Message-ID: <4FCCBD07.5000707@xenomai.org>
-Date: Mon, 04 Jun 2012 15:49:59 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <4FCCC307.4050803@xenomai.org>
+Date: Mon, 04 Jun 2012 16:15:35 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4FCCBA86.7040803@texband.net>
-In-Reply-To: <4FCCBA86.7040803@texband.net>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+References: <4FCCB885.60802@gmail.com>
+In-Reply-To: <4FCCB885.60802@gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] hal patch for 3.2 kernel
+Subject: Re: [Xenomai] question on host tick processing
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,33 +15,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Moses McKnight <moses@texband.net>
+To: abhri <abhri.datta@gmail.com>
 Cc: xenomai@xenomai.org
 
-On 06/04/2012 03:39 PM, Moses McKnight wrote:
+On 06/04/2012 03:30 PM, abhri wrote:
 > Hi,
->
-> I am looking at trying to port the latest x86 ipipe patch to kernel
-> version 3.2.18, but before I get too far, has any work been done on that
-> or a kernel newer than 2.6.38.8? If so is it about to be released? I
-> don't want or have time to duplicate someone else's work.
->
+> I have a doubt regarding host tick propagation. I understand that host 
+> tick will be relayed when XNHTICK bit is set and there is a domain 
+> migration to root. In case there is large delay to change domain from 
+> primary to secondary how is the host tick corrected when relayed next. 
 
-git://git.denx.de/ipipe-2.6.git, branch core-3.2
+If this happens, then there is a problem in your application. Part of
+the things required of your application when writing an application for
+a dual-kernel solution is to let the other kernel run from time to time.
 
-Requires git://git.xenomai.org/xenomai-2.6.git, master HEAD (upcoming 
-2.6.1).
+> Is there any correction mechanism in nucleus for keeping linux time correct?
 
-> Thanks,
-> Moses
->
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> http://www.xenomai.org/mailman/listinfo/xenomai
->
-
+AFAIK, there is one in the linux kernel itself. The linux kernel uses
+separate objects (clocksource and clockevents) for hardware clocks and
+timers.
 
 -- 
-Philippe.
+					    Gilles.
 
