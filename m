@@ -1,14 +1,13 @@
-Message-ID: <4FCDB330.4010402@xenomai.org>
-Date: Tue, 05 Jun 2012 09:20:16 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Date: Tue, 05 Jun 2012 15:31:37 +0800 
+From: <wonder_code@sina.com>
 MIME-Version: 1.0
-References: <CAKKWdtc6Py7A9YuJ1nNzwmq0SiEcrP_D8pztoo_eNWsp9EAsFg@mail.gmail.com>
-	<4FC637EB.90908@xenomai.org>
-	<CAKKWdte3jE_kW8esz25=gYeYU_M1cmOmftgbfMs9RqyfBCr9Kw@mail.gmail.com>
-In-Reply-To: <CAKKWdte3jE_kW8esz25=gYeYU_M1cmOmftgbfMs9RqyfBCr9Kw@mail.gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] a question about ADEOS
+Message-Id: <20120605073137.BFC60728009@webmail.sinamail.sina.com.cn>
+Content-Type: text/plain;
+	charset=GBK
+Content-Transfer-Encoding: base64
+Content-Disposition: inline
+Subject: [Xenomai] How to build user_space
+Reply-To: wonder_code@sina.com
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,54 +16,13 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: ali hagigat <hagigatali@gmail.com>
-Cc: Xenomai@xenomai.org
+To: Xenomai <Xenomai@xenomai.org>
 
-On 06/05/2012 08:26 AM, ali hagigat wrote:
-> Much appreciates for the replies.
->
-> if you look at the following page:
->
-> http://home.gna.org/adeos/doc/api/globals.html
-
-Btw, that homepage is dead as well. Access to it has been disabled from 
-gna.org/projects/adeos some time ago. All info there is at best of 
-archaeological interest.
-
-The current information about Xenomai and the interrupt pipeline is 
-available from xenomai.org.
-
->
-> You can see some functions like adeos_alloc_irq() or adeos_alloc_ptdkey().
->
-> But if you patch the linux kernel with the adeos patch, these
-> functions do not exist.
->
->
->
-> On Wed, May 30, 2012 at 7:38 PM, Philippe Gerum<rpm@xenomai.org>  wrote:
->> On 05/30/2012 04:35 PM, ali hagigat wrote:
->>>
->>> I know that adeos project presents an API set. It means some functions
->>> mostly which start with adeos_.
->>> Why adeos patch does not add them to the linux kernel?
->>
->>
->> I don't understand your question.
->>
->>
->> Those functions
->>>
->>> are used for creating domains as far as I know.
->>> So maybe they are not needed for xenomai, is that true?
->>
->>
->> No, we do use them to create a real-time domain where Xenomai lives.
->>
->>
->
-
-
--- 
-Philippe.
+CkkgZm9sbG93IHRoZSBzdGVwcyBvZiB0aGUgUkVBRE1FX0lOU1RBTEwgdG8gYnVpbGQgdGhlIHVz
+ZXJfc3BhY2UsYnV0IHRoZSBwcm9ncmFtcyBpbiAvdXNyL3hlbm9tYWkvYmluIGNhbid0IHJ1bihj
+bG9ja3Rlc3QsY3ljbGljdGVzdCkuaXQgc2F5czoNCi1hc2g6Li9jbG9ja3Rlc3Q6bm90IGZvdW5k
+DQoNCk15IGNvbW1vbWxpbmUgYXMgZm9sbG93Og0KL3Vzci9sb2NhbC94ZW5vbWFpLTIuNi4wL2Nv
+bmZpZ3VyZSBDRkxBR1M9Ii1tYXJjaD1hcm12NiIgTERGTEFHUz0iLW1hcmNoPWFybXY2IiAtLWJ1
+aWxkPWk2ODYtcGMtbGludXgtZ251IC0taG9zdD1hcm0tbGludXgKDQpJcyB0aGVyZSBhbnl0aGlu
+ZyB3cm9uZyx3YWl0aW5nIGZvciByZXBseSA=
 
