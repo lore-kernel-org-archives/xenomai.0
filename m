@@ -1,16 +1,16 @@
-From: <dietmar.schindler@manroland.com>
-Date: Tue, 5 Jun 2012 08:06:59 +0000
-Message-ID: <8236197CA3DA864F9EF20609D9887263B7F87D1A@rrxchngmbx01.mro.roland-man.biz>
+Message-ID: <4FCDC08E.9030101@xenomai.org>
+Date: Tue, 05 Jun 2012 10:17:18 +0200
+From: Philippe Gerum <rpm@xenomai.org>
+MIME-Version: 1.0
 References: <CAKKWdtc6Py7A9YuJ1nNzwmq0SiEcrP_D8pztoo_eNWsp9EAsFg@mail.gmail.com>
 	<4FC637EB.90908@xenomai.org>
 	<CAKKWdte3jE_kW8esz25=gYeYU_M1cmOmftgbfMs9RqyfBCr9Kw@mail.gmail.com>
 	<4FCDB0FD.1080309@xenomai.org>
-In-Reply-To: <4FCDB0FD.1080309@xenomai.org>
-Content-Language: de-DE
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
-Subject: [Xenomai] ftrace
+	<8236197CA3DA864F9EF20609D9887263B7F87D1A@rrxchngmbx01.mro.roland-man.biz>
+In-Reply-To: <8236197CA3DA864F9EF20609D9887263B7F87D1A@rrxchngmbx01.mro.roland-man.biz>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] ftrace
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,27 +19,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
+To: dietmar.schindler@manroland.com
 Cc: Xenomai@xenomai.org
 
-QSBYZW5vbWFpLXBhdGNoZWQgMi42LjM0IGtlcm5lbCAocHBjIEdOVS9MaW51eCkgY3Jhc2hlcyB3
-aGVuIGlzc3VpbmcgdGhlIGNvbW1hbmQNCg0KZWNobyBmdW5jdGlvbiA+L3N5cy9rZXJuZWwvZGVi
-dWcvdHJhY2luZy9jdXJyZW50X3RyYWNlcg0KDQooc29tZXRpbWVzIGRpc3BsYXlpbmcgTklQIGlu
-IGEgZnVuY3Rpb24gZnJvbSAic291cmNlL2tlcm5lbC90cmFjZS9yaW5nX2J1ZmZlci5jIiwgc29t
-ZXRpbWVzIHdpdGggbm8gbWVzc2FnZSkuDQoNCkFyZSBYZW5vbWFpIGFuZCBmdHJhY2UgaW5jb21w
-YXRpYmxlPw0KDQotLQ0KQmVzdCBSZWdhcmRzLA0KRGlldG1hcg0KX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fXw0KbWFucm9sYW5kIHdlYiBzeXN0ZW1zIEdtYkggLS0gTWFu
-YWdpbmcgRGlyZWN0b3I6IFV3ZSBMw7xkZXJzDQpSZWdpc3RlcmVkIE9mZmljZTogQXVnc2J1cmcg
-LS0gVHJhZGUgUmVnaXN0ZXI6IEFHIEF1Z3NidXJnIC0tIEhSQi1Oby4gMjY4MTYgLS0gVkFUOiBE
-RTI4MTM4OTg0MA0KDQpDb25maWRlbnRpYWxpdHkgbm90ZToNClRoaXMgZU1haWwgYW5kIGFueSBm
-aWxlcyB0cmFuc21pdHRlZCB3aXRoIGl0IGFyZSBjb25maWRlbnRpYWwgYW5kIGludGVuZGVkIHNv
-bGVseSBmb3IgdGhlIHVzZSBvZiB0aGUgaW5kaXZpZHVhbCBvciBlbnRpdHkgdG8gd2hvbSB0aGV5
-IGFyZSBhZGRyZXNzZWQuIElmIHlvdSBhcmUgbm90IHRoZSBpbnRlbmRlZCByZWNpcGllbnQsIHlv
-dSBhcmUgaGVyZWJ5IG5vdGlmaWVkIHRoYXQgYW55IHVzZSBvciBkaXNzZW1pbmF0aW9uIG9mIHRo
-aXMgY29tbXVuaWNhdGlvbiBpcyBzdHJpY3RseSBwcm9oaWJpdGVkLiBJZiB5b3UgaGF2ZSByZWNl
-aXZlZCB0aGlzIGVNYWlsIGluIGVycm9yLCBwbGVhc2Ugbm90aWZ5IHVzIGltbWVkaWF0ZWx5IHZp
-YSBpbmZvQG1hbnJvbGFuZC13ZWIuY29tLCB0aGVuIGRlbGV0ZSB0aGlzIGVNYWlsLg0KDQotIFBs
-ZWFzZSBjb25zaWRlciB5b3VyIGVudmlyb25tZW50YWwgcmVzcG9uc2liaWxpdHkgYmVmb3JlIHBy
-aW50aW5nIHRoaXMgZU1haWwNCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X18NCg==
+On 06/05/2012 10:06 AM, dietmar.schindler@manroland.com wrote:
+> A Xenomai-patched 2.6.34 kernel (ppc GNU/Linux) crashes when issuing the command
+>
+> echo function>/sys/kernel/debug/tracing/current_tracer
+>
+> (sometimes displaying NIP in a function from "source/kernel/trace/ring_buffer.c", sometimes with no message).
+>
+> Are Xenomai and ftrace incompatible?
+>
 
+No, but some ftrace bits have to be made pipeline-aware. The generic 
+ones should be, but some powerpc-specific fix ups might be missing. I'm 
+not using/testing ftrace routinely when upgrading patches. Also, 2.6.34 
+is fairly old.
+
+> --
+> Best Regards,
+> Dietmar
+> ________________________________________
+> manroland web systems GmbH -- Managing Director: Uwe Lüders
+> Registered Office: Augsburg -- Trade Register: AG Augsburg -- HRB-No. 26816 -- VAT: DE281389840
+>
+> Confidentiality note:
+> This eMail and any files transmitted with it are confidential and intended solely for the use of the individual or entity to whom they are addressed. If you are not the intended recipient, you are hereby notified that any use or dissemination of this communication is strictly prohibited. If you have received this eMail in error, please notify us immediately via info@manroland-web.com, then delete this eMail.
+>
+> - Please consider your environmental responsibility before printing this eMail
+> ________________________________________
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> http://www.xenomai.org/mailman/listinfo/xenomai
+
+
+-- 
+Philippe.
 
