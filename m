@@ -1,5 +1,5 @@
-Message-ID: <4FCDB0FD.1080309@xenomai.org>
-Date: Tue, 05 Jun 2012 09:10:53 +0200
+Message-ID: <4FCDB330.4010402@xenomai.org>
+Date: Tue, 05 Jun 2012 09:20:16 +0200
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 References: <CAKKWdtc6Py7A9YuJ1nNzwmq0SiEcrP_D8pztoo_eNWsp9EAsFg@mail.gmail.com>
@@ -26,15 +26,20 @@ On 06/05/2012 08:26 AM, ali hagigat wrote:
 > if you look at the following page:
 >
 > http://home.gna.org/adeos/doc/api/globals.html
+
+Btw, that homepage is dead as well. Access to it has been disabled from 
+gna.org/projects/adeos some time ago. All info there is at best of 
+archaeological interest.
+
+The current information about Xenomai and the interrupt pipeline is 
+available from xenomai.org.
+
 >
 > You can see some functions like adeos_alloc_irq() or adeos_alloc_ptdkey().
 >
 > But if you patch the linux kernel with the adeos patch, these
 > functions do not exist.
 >
-
-This doc is out of date. There is no doc on the current API.
-
 >
 >
 > On Wed, May 30, 2012 at 7:38 PM, Philippe Gerum<rpm@xenomai.org>  wrote:
