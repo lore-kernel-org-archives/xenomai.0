@@ -1,13 +1,12 @@
-Message-ID: <4FCD250C.4060401@piments.com>
-Date: Mon, 04 Jun 2012 23:13:48 +0200
-From: xenophile <xenophile@piments.com>
+From: "George Pontis" <GPontis@z9.com>
+Date: Mon, 4 Jun 2012 18:35:10 -0700
+Message-ID: <008b01cd42bb$724478e0$56cd6aa0$@com>
 MIME-Version: 1.0
-References: <4FCD0BD8.70103@laposte.net> <4FCD0C4D.6000004@xenomai.org>
-In-Reply-To: <4FCD0C4D.6000004@xenomai.org>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain;
+	charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] "illegal instruction",
- then "rt_task_start()" error -38 (on a 486/no fpu)
+Content-Language: en-us
+Subject: [Xenomai] adeos-ipipe-3.0.13-arm-1.18-09.patch broken
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,60 +17,35 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-On 06/04/12 21:28, Gilles Chanteperdrix wrote:
-> On 06/04/2012 09:26 PM, Marc Le Douarain wrote:
->> Hello,
->>
->> I've some difficulties to run Xenomai with a little 'hello' example
->> (that create/start a task)
->> on a target 486 processor (without fpu).
->>
->> I successfully compiled the Linux kernel 2.6.38.8 with
->> adeos-ipipe-2.6.38.8-x86-2.11-02.patch (Xenomai version is 2.5.6)
->> (modify file xenomai-2.5.6/include/asm-x86/calibration.h
->> "current_cpu_data"->"cpu_info" were required)
->>
->> dmesg extract:
->> [    0.000000] I-pipe 2.11-02: pipeline enabled.
->> ...
->> [    0.140008] CPU: Cyrix Cx486SLC
->> ...
->> [    1.440804] Xenomai: hal/i386 started.
->> [    1.448804] Xenomai: scheduling class idle registered.
->> [    1.452804] Xenomai: scheduling class rt registered.
->> [    1.488806] Xenomai: real-time nucleus v2.5.6 (Wormhole Wizards) loaded.
->> [    1.496807] Xenomai: starting native API services.
->> [    1.500807] Xenomai: starting POSIX services.
->> [    1.504807] Xenomai: starting RTDM services.
->>
->> After compiling user-space Xenomai part with
->> ./configure --disable-x86-sep --disable-x86-tsc / make / sudo make install
->> and copy /usr/xenomai/lib on the target
->> I've got "illegal instruction" with my little 'hello test' example that
->> create/start a task.
->>
->> Then I've tried to add flag to set 486 instruction set to gcc...
->> For that, to compile user-space this time I used :
->> ./configure CFLAGS="-march=i486" LDFLAGS="-march=i486" --disable-x86-sep
->> --disable-x86-tsc / make / sudo make install
->> Now, at rt_task_start, I've got an error code -38 !
->>
->> Any one have an idea on the trouble ?
->> (at start thinking on the fpu missing, but seems not to be used !? no
->> libm dependance)
->
-> It may be due to the omit-frame-pointer option, please try adding
-> -fno-omit-frame-pointer to the CFLAGS
->
->
+This recently released patch appears to be broken with regard to patching
+arch/arm/mach-at91/at91sam9g45.c.
 
+The first section of the patch should be applied to around line 32 in
+similar fashion to the patch for the other micros in the family. However, it
+is being applied to an entirely different structure around line 320. The
+resulting file fails to compile. I doctored up this section of the patch so
+it would be applied in the correct place, and the kernel builds. The
+incorrect section of the patch is at line 5146. The following edit can be a
+useful patch to the patch, until officially re-released:
 
-It's a long way back now but I seem to recall some minor oddities on 
-some Cyrix/IBM chips.
+--- a/arch/arm/mach-at91/at91sam9g45.c
++++ b/arch/arm/mach-at91/at91sam9g45.c
+@@ -32,6 +32,13 @@ .pfn		= __phys_to_pfn(AT91_BASE_SYS),
+		.length		= SZ_16K,
+		.type		= MT_DEVICE,
+ 	}, {
++#ifdef CONFIG_IPIPE
++		.virtual	= AT91_VA_BASE_TCB0,
++		.pfn		= __phys_to_pfn(AT91_BASE_TCB0),
++		.length		= SZ_16K,
++		.type		= MT_DEVICE,
++	}, {
++#endif /* CONFIG_IPIPE */
+		.virtual	= AT91_IO_VIRT_BASE - AT91SAM9G45_SRAM_SIZE,
+		.pfn		= __phys_to_pfn(AT91SAM9G45_SRAM_BASE),
+		.length		= AT91SAM9G45_SRAM_SIZE,
 
-Try building for 386 and see if it clears the problem.
-
-HTH
+George
 
 
 
