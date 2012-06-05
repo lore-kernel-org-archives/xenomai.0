@@ -1,12 +1,12 @@
-From: "George Pontis" <GPontis@z9.com>
-Date: Mon, 4 Jun 2012 18:35:10 -0700
-Message-ID: <008b01cd42bb$724478e0$56cd6aa0$@com>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Content-Language: en-us
-Subject: [Xenomai] adeos-ipipe-3.0.13-arm-1.18-09.patch broken
+In-Reply-To: <4FC637EB.90908@xenomai.org>
+References: <CAKKWdtc6Py7A9YuJ1nNzwmq0SiEcrP_D8pztoo_eNWsp9EAsFg@mail.gmail.com>
+	<4FC637EB.90908@xenomai.org>
+Date: Tue, 5 Jun 2012 10:56:04 +0430
+Message-ID: <CAKKWdte3jE_kW8esz25=gYeYU_M1cmOmftgbfMs9RqyfBCr9Kw@mail.gmail.com>
+From: ali hagigat <hagigatali@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: Re: [Xenomai] a question about ADEOS
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,37 +15,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Xenomai@xenomai.org
 
-This recently released patch appears to be broken with regard to patching
-arch/arm/mach-at91/at91sam9g45.c.
+Much appreciates for the replies.
 
-The first section of the patch should be applied to around line 32 in
-similar fashion to the patch for the other micros in the family. However, it
-is being applied to an entirely different structure around line 320. The
-resulting file fails to compile. I doctored up this section of the patch so
-it would be applied in the correct place, and the kernel builds. The
-incorrect section of the patch is at line 5146. The following edit can be a
-useful patch to the patch, until officially re-released:
+if you look at the following page:
 
---- a/arch/arm/mach-at91/at91sam9g45.c
-+++ b/arch/arm/mach-at91/at91sam9g45.c
-@@ -32,6 +32,13 @@ .pfn		= __phys_to_pfn(AT91_BASE_SYS),
-		.length		= SZ_16K,
-		.type		= MT_DEVICE,
- 	}, {
-+#ifdef CONFIG_IPIPE
-+		.virtual	= AT91_VA_BASE_TCB0,
-+		.pfn		= __phys_to_pfn(AT91_BASE_TCB0),
-+		.length		= SZ_16K,
-+		.type		= MT_DEVICE,
-+	}, {
-+#endif /* CONFIG_IPIPE */
-		.virtual	= AT91_IO_VIRT_BASE - AT91SAM9G45_SRAM_SIZE,
-		.pfn		= __phys_to_pfn(AT91SAM9G45_SRAM_BASE),
-		.length		= AT91SAM9G45_SRAM_SIZE,
+http://home.gna.org/adeos/doc/api/globals.html
 
-George
+You can see some functions like adeos_alloc_irq() or adeos_alloc_ptdkey().
+
+But if you patch the linux kernel with the adeos patch, these
+functions do not exist.
 
 
+
+On Wed, May 30, 2012 at 7:38 PM, Philippe Gerum <rpm@xenomai.org> wrote:
+> On 05/30/2012 04:35 PM, ali hagigat wrote:
+>>
+>> I know that adeos project presents an API set. It means some functions
+>> mostly which start with adeos_.
+>> Why adeos patch does not add them to the linux kernel?
+>
+>
+> I don't understand your question.
+>
+>
+> Those functions
+>>
+>> are used for creating domains as far as I know.
+>> So maybe they are not needed for xenomai, is that true?
+>
+>
+> No, we do use them to create a real-time domain where Xenomai lives.
+>
+>
 
