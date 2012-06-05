@@ -1,10 +1,10 @@
 MIME-Version: 1.0
-Date: Tue, 5 Jun 2012 17:13:05 +0530
-Message-ID: <CAM1yFZ9ndx+EDWAig-nkYmcc-jgirwm6N0UYbK1g-8roQTMMYQ@mail.gmail.com>
-From: Anisha Kaul <born.rebel.83@gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Subject: [Xenomai] ./rtnet start rteth0-mac: unknown interface: No such
- device ioctl: No such device
+Date: Tue, 5 Jun 2012 14:20:15 +0200
+Message-ID: <CAHue_TXhjY-74oUNzuuS=ygCEhcVFeiAB+4ZesjKX19B9WobaA@mail.gmail.com>
+From: =?ISO-8859-2?Q?Marcin_Ku=B6ka?= <marckuska@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-2
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] [Xenomai -help] unsupported ARM9 machine
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,38 +13,98 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Greetings,
+Hi,
 
-I have installed the RTnet over Xenomai without examples.
-RTnet compiled well, and I also tested loopback on the single machine
-and was able to ping.
+My name is Marcin Kuska and I'm new to this list.
 
-However I noticed `./rtnet start` showing the following output:
-What should I interpret when all it says is "no such device"?
+Recently i have been trying to compile linux kernel v. 3.0.13 with a
+Xenomai real time subsystem extension on ARM versatile express board. I'm
+using buildroot-2012.05 to cross-compile the kernel. I patched linux source
+tree with adeos-ipipe-3.0.13-arm-1.18-09.patch. The problem is that
+buildroot cannot finish compilation and returns following errors:*
 
-`
-linux-y3pi:/usr/local/rtnet/sbin # ./rtnet start
+make[1]: Entering directory
+`/home/marcin/Documents/buildroot-2012.05/output/build/linux-3.0.13'
+  CHK     include/linux/version.h
+  CHK     include/generated/utsrelease.h
+make[2]: `include/generated/mach-types.h' is up to date.
+  CALL    scripts/checksyscalls.sh
+  CHK     include/generated/compile.h
+  LD      vmlinux.o
+arch/arm/common/built-in.o: In function `gic_unmask_irq':
+/home/marcin/Documents/buildroot-2012.05/output/build/linux-3.0.13/arch/arm=
+/common/gic.c:106:
+multiple definition of `__ipipe_mach_ticks_per_jiffy'
+arch/arm/kernel/built-in.o:/home/marcin/Documents/buildroot-2012.05/output/=
+build/linux-3.0.13/arch/arm/kernel/entry-armv.S:104:
+first defined here
+arch/arm/common/built-in.o: In function `__ipipe_mach_set_dec':
+/home/marcin/Documents/buildroot-2012.05/output/build/linux-3.0.13/arch/arm=
+/common/timer-sp.c:230:
+multiple definition of `__ipipe_mach_set_dec'
+arch/arm/kernel/built-in.o:/home/marcin/Documents/buildroot-2012.05/output/=
+build/linux-3.0.13/arch/arm/kernel/smp_twd.c:59:
+first defined here
+arch/arm/common/built-in.o: In function `__ipipe_mach_release_timer':
+/home/marcin/Documents/buildroot-2012.05/output/build/linux-3.0.13/arch/arm=
+/common/timer-sp.c:239:
+multiple definition of `__ipipe_mach_release_timer'
+arch/arm/kernel/built-in.o:/home/marcin/Documents/buildroot-2012.05/output/=
+build/linux-3.0.13/arch/arm/kernel/smp.c:509:
+first defined here
+arch/arm/common/built-in.o: In function `gic_unmask_irq':
+/home/marcin/Documents/buildroot-2012.05/output/build/linux-3.0.13/arch/arm=
+/common/gic.c:102:
+multiple definition of `__ipipe_mach_timerstolen'
+arch/arm/kernel/built-in.o:/home/marcin/Documents/buildroot-2012.05/output/=
+build/linux-3.0.13/arch/arm/kernel/entry-armv.S:104:
+first defined here
+arch/arm/common/built-in.o: In function `__ipipe_mach_get_dec':
+/home/marcin/Documents/buildroot-2012.05/output/build/linux-3.0.13/arch/arm=
+/common/timer-sp.c:248:
+multiple definition of `__ipipe_mach_get_dec'
+arch/arm/kernel/built-in.o:/home/marcin/Documents/buildroot-2012.05/output/=
+build/linux-3.0.13/arch/arm/kernel/smp_twd.c:70:
+first defined here
+arch/arm/common/built-in.o: In function `__ipipe_check_tickdev':
+/home/marcin/Documents/buildroot-2012.05/output/build/linux-3.0.13/arch/arm=
+/common/timer-sp.c:215:
+multiple definition of `__ipipe_check_tickdev'
+arch/arm/kernel/built-in.o:/home/marcin/Documents/buildroot-2012.05/output/=
+build/linux-3.0.13/arch/arm/kernel/smp_twd.c:75:
+first defined here
+make[1]: *** [vmlinux.o] Error 1
+make[1]: Leaving directory
+`/home/marcin/Documents/buildroot-2012.05/output/build/linux-3.0.13'
+make: ***
+[/home/marcin/Documents/buildroot-2012.05/output/build/linux-3.0.13/.stamp_=
+built]
+Error 2
+*
+and also:
 
-rteth0: unknown interface: No such device
-rteth0-mac: unknown interface: No such device
-ioctl: No such device
-ioctl: No such device
-ioctl: No such device
-ioctl: No such device
-ioctl (add): No such device
-vnic0: unknown interface: No such device
-SIOCSIFADDR: No such device
-vnic0: unknown interface: No such device
-SIOCSIFNETMASK: No such device
-Waiting for all slaves...ioctl: No such device
-ioctl: No such device
+"unsupported ARM machine"
 
-linux-y3pi:/usr/local/rtnet/sbin #
-`
+I have read that xenomai only supports integrator/cp board and any other
+board like versatile express have to be adapted by myself. So i went to:
 
--- 
-Regards,
-Anisha
+http://www.xenomai.org/index.php/I-pipe:ArmPorting
 
+and started adapting and cannot find files like time.c and irq.c. Moreover
+I cannot find errors in file gic.c, timer-sp.c and so on (e.g. *gic.c:106:
+multiple definition of `__ipipe_mach_ticks_per_jiffy'* i cannot find any
+definition of __ipipe_mach_ticks_per_jiffy so even if I would want to
+comment one of the definitions to eliminate multipling it's impossible
+cause it's not there).
+
+My description of the problem is very blurred i suppose, so if anybody may
+be knowing the solution, please ask for more specific details and i will
+post them.
+
+
+Thank you all for reading this message
+--=20
+Regards
+Marcin Ku=B6ka
