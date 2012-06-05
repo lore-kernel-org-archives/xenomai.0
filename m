@@ -1,13 +1,16 @@
-Message-ID: <4FB9379D.1090409@xenomai.org>
-Date: Sun, 20 May 2012 20:27:41 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: <dietmar.schindler@manroland.com>
+Date: Tue, 5 Jun 2012 08:06:59 +0000
+Message-ID: <8236197CA3DA864F9EF20609D9887263B7F87D1A@rrxchngmbx01.mro.roland-man.biz>
+References: <CAKKWdtc6Py7A9YuJ1nNzwmq0SiEcrP_D8pztoo_eNWsp9EAsFg@mail.gmail.com>
+	<4FC637EB.90908@xenomai.org>
+	<CAKKWdte3jE_kW8esz25=gYeYU_M1cmOmftgbfMs9RqyfBCr9Kw@mail.gmail.com>
+	<4FCDB0FD.1080309@xenomai.org>
+In-Reply-To: <4FCDB0FD.1080309@xenomai.org>
+Content-Language: de-DE
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <4FB60635.5010208@xenomai.org> <4FB7AF4C.90601@xenomai.org>
-In-Reply-To: <4FB7AF4C.90601@xenomai.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [Xenomai-help] [REMINDER] Migrating Xenomai mailing
- lists
+Subject: [Xenomai] ftrace
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,46 +19,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+Cc: Xenomai@xenomai.org
 
-On 05/19/2012 04:33 PM, Gilles Chanteperdrix wrote:
-> On 05/18/2012 10:20 AM, Philippe Gerum wrote:
->>
->> We will soon be moving all our mailing lists out of gna.org to host them 
->> on xenomai.org instead.
->>
->> At this chance, xenomai-help@gna.org, xenomai-core@gna.org and 
->> adeos-main@gna.org will be merged into a single list named 
->> xenomai@xenomai.org. These are low traffic lists, so we want to group 
->> all Xenomai-related discussions in one place.
->>
->> Commits to the development trees will be sent to
->> xenomai-git@xenomai.org.
->>
->> The migration is scheduled for May 19, all current subscribers of the 
->> former lists will be automatically subscribed to xenomai@xenomai.org.
->> You will receive an automated mail from our Mailman when this happens.
->>
->> The Mailman interface to the new lists is available at: 
->> http://www.xenomai.org/mailman/listinfo/xenomai.
->>
->> Please drop a mail to mailman@xenomai.org in case of issue.
-> 
-> Hi,
-> 
-> this should be done now. Everyone should have been subscribed to the new
-> mailing lists, and the old mailing lists have been disabled (every post
-> to them gets a rejection notice). In case of issue with the new mailing
-> list, we keep you subscribed to the old for now.
+QSBYZW5vbWFpLXBhdGNoZWQgMi42LjM0IGtlcm5lbCAocHBjIEdOVS9MaW51eCkgY3Jhc2hlcyB3
+aGVuIGlzc3VpbmcgdGhlIGNvbW1hbmQNCg0KZWNobyBmdW5jdGlvbiA+L3N5cy9rZXJuZWwvZGVi
+dWcvdHJhY2luZy9jdXJyZW50X3RyYWNlcg0KDQooc29tZXRpbWVzIGRpc3BsYXlpbmcgTklQIGlu
+IGEgZnVuY3Rpb24gZnJvbSAic291cmNlL2tlcm5lbC90cmFjZS9yaW5nX2J1ZmZlci5jIiwgc29t
+ZXRpbWVzIHdpdGggbm8gbWVzc2FnZSkuDQoNCkFyZSBYZW5vbWFpIGFuZCBmdHJhY2UgaW5jb21w
+YXRpYmxlPw0KDQotLQ0KQmVzdCBSZWdhcmRzLA0KRGlldG1hcg0KX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fXw0KbWFucm9sYW5kIHdlYiBzeXN0ZW1zIEdtYkggLS0gTWFu
+YWdpbmcgRGlyZWN0b3I6IFV3ZSBMw7xkZXJzDQpSZWdpc3RlcmVkIE9mZmljZTogQXVnc2J1cmcg
+LS0gVHJhZGUgUmVnaXN0ZXI6IEFHIEF1Z3NidXJnIC0tIEhSQi1Oby4gMjY4MTYgLS0gVkFUOiBE
+RTI4MTM4OTg0MA0KDQpDb25maWRlbnRpYWxpdHkgbm90ZToNClRoaXMgZU1haWwgYW5kIGFueSBm
+aWxlcyB0cmFuc21pdHRlZCB3aXRoIGl0IGFyZSBjb25maWRlbnRpYWwgYW5kIGludGVuZGVkIHNv
+bGVseSBmb3IgdGhlIHVzZSBvZiB0aGUgaW5kaXZpZHVhbCBvciBlbnRpdHkgdG8gd2hvbSB0aGV5
+IGFyZSBhZGRyZXNzZWQuIElmIHlvdSBhcmUgbm90IHRoZSBpbnRlbmRlZCByZWNpcGllbnQsIHlv
+dSBhcmUgaGVyZWJ5IG5vdGlmaWVkIHRoYXQgYW55IHVzZSBvciBkaXNzZW1pbmF0aW9uIG9mIHRo
+aXMgY29tbXVuaWNhdGlvbiBpcyBzdHJpY3RseSBwcm9oaWJpdGVkLiBJZiB5b3UgaGF2ZSByZWNl
+aXZlZCB0aGlzIGVNYWlsIGluIGVycm9yLCBwbGVhc2Ugbm90aWZ5IHVzIGltbWVkaWF0ZWx5IHZp
+YSBpbmZvQG1hbnJvbGFuZC13ZWIuY29tLCB0aGVuIGRlbGV0ZSB0aGlzIGVNYWlsLg0KDQotIFBs
+ZWFzZSBjb25zaWRlciB5b3VyIGVudmlyb25tZW50YWwgcmVzcG9uc2liaWxpdHkgYmVmb3JlIHBy
+aW50aW5nIHRoaXMgZU1haWwNCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X18NCg==
 
-Since the gna mailing lists are going to disappear soon, I made a copy
-on xenomai server of gna.org archives:
-http://www.xenomai.org/pipermail/xenomai-help/
-http://www.xenomai.org/pipermail/xenomai-core/
-http://www.xenomai.org/pipermail/adeos-main/
-
-
--- 
-                                                                Gilles.
 
