@@ -1,13 +1,15 @@
-Message-ID: <4FE46F5F.1060500@xenomai.org>
-Date: Fri, 22 Jun 2012 15:13:03 +0200
+Message-ID: <4FCF62DD.10102@xenomai.org>
+Date: Wed, 06 Jun 2012 16:02:05 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CAHue_TXhjY-74oUNzuuS=ygCEhcVFeiAB+4ZesjKX19B9WobaA@mail.gmail.com>	<4FCDFB35.1050705@xenomai.org>	<CAHue_TUB-6nufH_O-PRojDPVfpDom+DCv1-_ERV4-xOfEzu2Dg@mail.gmail.com>	<4FCE28F8.9040001@xenomai.org>	<CAHue_TW1ntMpOxwACiawgtm67nYq_e7i11CDxz=CfpGGwRes_A@mail.gmail.com>	<4FD8F4B5.7000001@xenomai.org>
-	<CAHue_TXMiLTxiK2ZORVccov2wqd+ML-H0zwhLoDYh+7+8_56xw@mail.gmail.com>
-In-Reply-To: <CAHue_TXMiLTxiK2ZORVccov2wqd+ML-H0zwhLoDYh+7+8_56xw@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] unsupported ARM9 machine
+References: <CAKKWdtfz7+pRjjbE6Ev4zJNZpa45axMePyVar+3MyRyMvcp8aA@mail.gmail.com>	<4FCF1517.3010904@xenomai.org>	<CAKKWdtfRyuhDzmvCC-WM66+=ncs+ocbdUuop2TRNThsj6ZAy6g@mail.gmail.com>	<4FCF1ED5.5000403@xenomai.org>	<CAKKWdtd6p2-xHH1FdjVzbX-raNtDkvMemALrQBJMgoTb1dScnw@mail.gmail.com>	<4FCF2751.5070700@xenomai.org>	<4FCF4D05.3070502@xenomai.org>
+	<4FCF58AF.5040106@xenomai.org>	<4FCF5A4C.60704@xenomai.org>
+	<4FCF5DED.8060007@xenomai.org>	<4FCF60CD.8000709@xenomai.org>
+	<4FCF6152.7010002@xenomai.org>
+In-Reply-To: <4FCF6152.7010002@xenomai.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] xenomai-2.6.0 instrumentation commands not executing
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,52 +18,74 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?B?TWFyY2luIEt1xZtrYQ==?= <marckuska@gmail.com>
-Cc: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Xenomai@xenomai.org
 
-On 06/22/2012 03:07 PM, Marcin Kuśka wrote:
-> 2012/6/13 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+On 06/06/2012 03:55 PM, Gilles Chanteperdrix wrote:
+> On 06/06/2012 03:53 PM, Philippe Gerum wrote:
+>> On 06/06/2012 03:41 PM, Gilles Chanteperdrix wrote:
+>>> On 06/06/2012 03:25 PM, Philippe Gerum wrote:
+>>>> On 06/06/2012 03:18 PM, Gilles Chanteperdrix wrote:
+>>>>> On 06/06/2012 02:28 PM, Philippe Gerum wrote:
+>>>>>> On 06/06/2012 11:48 AM, Philippe Gerum wrote:
+>>>>>>> On 06/06/2012 11:18 AM, ali hagigat wrote:
+>>>>>>>> Much appreciate for the reply, Mr. Gerum. Here is the result of ldd
+>>>>>>>> command:
+>>>>>>>>
+>>>>>>>
+>>>>>>> http://www.xenomai.org/pipermail/xenomai-help/2011-12/msg00012.html
+>>>>>>
+>>>>>> Alternatively, this patch may work as well (not tested, but this
+>>>>>> looks like a former issue we had with aggressive optimizers):
+>>>>>>
+>>>>>> diff --git a/src/skins/posix/init.c b/src/skins/posix/init.c
+>>>>>> index 7a338a0..9c7849e 100644
+>>>>>> --- a/src/skins/posix/init.c
+>>>>>> +++ b/src/skins/posix/init.c
+>>>>>> @@ -43,6 +43,7 @@ void pse51_clock_init(int);
+>>>>>>    static __attribute__ ((constructor))
+>>>>>>    void __init_posix_interface(void)
+>>>>>>    {
+>>>>>> +	volatile pthread_t tid = pthread_self();
+>>>>>>    #ifndef CONFIG_XENO_LIBS_DLOPEN
+>>>>>>    	struct sched_param parm;
+>>>>>>    	int policy;
+>>>>>> @@ -80,14 +81,14 @@ void __init_posix_interface(void)
+>>>>>>
+>>>>>>    	/* Don't use auto-shadowing if we are likely invoked from dlopen. */
+>>>>>>    #ifndef CONFIG_XENO_LIBS_DLOPEN
+>>>>>> -	err = __real_pthread_getschedparam(pthread_self(),&policy,&parm);
+>>>>>> +	err = __real_pthread_getschedparam(tid,&policy,&parm);
+>>>>>>    	if (err) {
+>>>>>>    		fprintf(stderr, "Xenomai Posix skin init: "
+>>>>>>    			"pthread_getschedparam: %s\n", strerror(err));
+>>>>>>    		exit(EXIT_FAILURE);
+>>>>>>    	}
+>>>>>>
+>>>>>> -	err = __wrap_pthread_setschedparam(pthread_self(), policy,&parm);
+>>>>>> +	err = __wrap_pthread_setschedparam(tid, policy,&parm);
+>>>>>>    	if (err) {
+>>>>>>    		fprintf(stderr, "Xenomai Posix skin init: "
+>>>>>>    			"pthread_setschedparam: %s\n", strerror(err));
+>>>>>
+>>>>> There should not be any issue here, as the pthread_self() is passed as
+>>>>> an argument to the called functions, the syscall is not inlined directly.
+>>>>>
+>>>>
+>>>> Did you get any disassembly of the faulty code when suggesting
+>>>> -fno-omit-frame-pointer last time you did?
+>>>>
+>>> No, but I had experienced the problem first hand.
+>>>
+>>
+>> It would be interesting to know why we have to force a frame pointer in 
+>> there. I'm not comfortable with voodoo fixing, that bug might bite later 
+>> on as gcc's optimizer is unlikely to become less aggressive over time.
+>>
+> Ah this, I know. I have posted a mail where I explained the problem. I
+> am a bit in a short schedule here, will post the link tonight.
 > 
->>
->> For instance, the fact that you are compiling both
->> arch/arm/common/timer-sp.c and smp_twd.c will lead to a conflict the way
->> timer-sp.c is currently made. omap4 has the same problem since for
->> instance arch/arm/mach-omap2/timer.c is compiled both in the omap3 and
->> the omap4 case. So, just look at how it is done, and do it the same way.
->>
->> Another simpler solution is to start from the ipipe core-3.2 branch,
->> which supports being built for several SOCs. However, it will require
->> upgrading to xenomai 2.6 branch head.
->>
->> --
->>                                                                Gilles.
->>
->>
-> Ok I checked the arch/arm/common/timer-sp.c (i assume this file implements
-> the timer for vexpress) and all the__ipipe_mach_timerint;
-> __ipipe_mach_timerstolen; and so on, are there and there is nothing to be
-> done there. I don't know if i understand you right. Which part should I do
-> the same as with omap4?
-
-The problem is that if you are compiling with CONFIG_SMP for a cortex
-a9, there is also an __ipipe_mach_timerint, __ipipe_mach_timerstolen,
-etc... in the generic code for cortex a9. So, you get multiple definitions.
-
-omap4 has exactly the same problem, because it compiles some code which
-is common with omap3, already modified for CONFIG_IPIPE.
-
-So what you have to do is solve the multiple definitions for vexpress
-the way they are solved for the omap4/omap3.
-
-> 
-> 
-> About that simpler solution using ipipe core-3.2 branch. There is no ipipe
-> core-3.2 at the http://download.gna.org/adeos/patches/v3.x/arm/ site or am
-> I looking for wrong site?
-
-Yes, I am talking about a branch in the adeos ipipe git repository. The
-patch is not released yet. But anyway, for what you have to do, working
-with git is much simpler than working with patches.
+http://xenomai.org/pipermail/xenomai-core/2011-08/msg00029.html
 
 -- 
 					    Gilles.
