@@ -1,10 +1,12 @@
-Message-ID: <4FCF0FD5.1050201@mail.polimi.it>
-Date: Wed, 06 Jun 2012 10:07:49 +0200
-From: Danilo De Lorenzo <danilo.delorenzo@mail.polimi.it>
+Message-ID: <4FCF1517.3010904@xenomai.org>
+Date: Wed, 06 Jun 2012 10:30:15 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
+References: <CAKKWdtfz7+pRjjbE6Ev4zJNZpa45axMePyVar+3MyRyMvcp8aA@mail.gmail.com>
+In-Reply-To: <CAKKWdtfz7+pRjjbE6Ev4zJNZpa45axMePyVar+3MyRyMvcp8aA@mail.gmail.com>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] analogy attach failed NI-6220
+Subject: Re: [Xenomai] xenomai-2.6.0 instrumentation commands not executing
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,33 +15,73 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai@xenomai.org
+To: ali hagigat <hagigatali@gmail.com>
+Cc: Xenomai@xenomai.org
 
-Hi,
-I'm trying to make a NI-6220 acquisition board working with xenomai on a 
-x86_64 patched kernel, but I'm getting the following error when I try to 
-attach the device with the command:
+On 06/06/2012 09:40 AM, ali hagigat wrote:
+> I have installed xenomai-2.6.0. None of the instrumentation commands
+> work except latency. What can i do?
+>
 
-/usr/xenomai/sbin/analogy_config analogy0 analogy_ni_pcimio 0xc,5
+Likely fix your Kconfig. Enable the Xenomai POSIX skin.
 
-The error is:
-analogy_config: attach failed err=-2
+> /root>  switchbench
+> bash: switchbench: command not found
+> /root>  switchtest
+> Xenomai Posix skin init: pthread_setschedparam: Function not implemented
+> /root>  cyclictest
+> Xenomai Posix skin init: pthread_setschedparam: Function not implemented
+> /root>  latency
+> == Sampling period: 100 us
+> == Test mode: periodic user-mode task
+> == All results in microseconds
+>
+> /root>  xeno-test
+> Started child 7172: /bin/bash /usr/xenomai/bin/xeno-test-run-wrapper
+> /usr/xenomai/bin/xeno-test
+> ++ echo 0
+> ++ /usr/xenomai/bin/arith
+> mul: 0x79364d93, shft: 26
+> integ: 30, frac: 0x4d9364d9364d9364
+>
+> signed positive operation: 0x03ffffffffffffff * 1000000000 / 33000000
+> inline calibration: 0x0000000000000000: 28.751 ns, rejected 1/10000
+> inlined llimd: 0x79364d9364d9362f: 41.292 ns, rejected 1/10000
+> inlined llmulshft: 0x79364d92ffffffe1: 5.007 ns, rejected 0/10000
+> inlined nodiv_llimd: 0x79364d9364d9362f: 11.323 ns, rejected 1/10000
+> out of line calibration: 0x0000000000000000: 30.003 ns, rejected 0/10000
+> out of line llimd: 0x79364d9364d9362f: 46.075 ns, rejected 1/10000
+> out of line llmulshft: 0x79364d92ffffffe1: 7.800 ns, rejected 1/10000
+> out of line nodiv_llimd: 0x79364d9364d9362f: 16.683 ns, rejected 1/10000
+>
+> signed negative operation: 0xfc00000000000001 * 1000000000 / 33000000
+> inline calibration: 0x0000000000000000: 29.298 ns, rejected 1/10000
+> inlined llimd: 0x86c9b26c9b26c9d1: 39.658 ns, rejected 1/10000
+> inlined llmulshft: 0x86c9b26d0000001e: 4.059 ns, rejected 0/10000
+> inlined nodiv_llimd: 0x86c9b26c9b26c9d1: 16.976 ns, rejected 0/10000
+> out of line calibration: 0x0000000000000000: 30.002 ns, rejected 1/10000
+> out of line llimd: 0x86c9b26c9b26c9d1: 48.757 ns, rejected 0/10000
+> out of line llmulshft: 0x86c9b26d0000001e: 11.085 ns, rejected 1/10000
+> out of line nodiv_llimd: 0x86c9b26c9b26c9d1: 17.770 ns, rejected 1/10000
+>
+> unsigned operation: 0x03ffffffffffffff * 1000000000 / 33000000
+> inline calibration: 0x0000000000000000: 28.749 ns, rejected 1/10000
+> inlined nodiv_ullimd: 0x79364d9364d9362f: 16.264 ns, rejected 0/10000
+> out of line calibration: 0x0000000000000000: 30.001 ns, rejected 0/10000
+> out of line nodiv_ullimd: 0x79364d9364d9362f: 20.463 ns, rejected 1/10000
+> ++ /usr/xenomai/bin/clocktest -T 30
+> Xenomai Posix skin init: pthread_setschedparam: Function not implemented
+>
+>
+> Only latency seems working.
+>
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> http://www.xenomai.org/mailman/listinfo/xenomai
+>
 
-I know that Xenomai is working well since I can run all the examples 
-(latency, etc...).
 
-The dmesg command gave me only this error:
-[   69.926138] Analogy: a4l_assign_driver: call(drv->attach) failed (ret=-2)
-
-
-Thi is the lspci output for the board:
-
-0c:05.0 Unassigned class [ff00]: National Instruments PCI-6220
-
-I also checked for shared IRQ, it seems there is no IRQ sharing with 
-other devices and I also tried to change the PCI slot without success.
-
-Any help is appreciated
-
-
+-- 
+Philippe.
 
