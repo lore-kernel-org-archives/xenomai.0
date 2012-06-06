@@ -1,13 +1,12 @@
-Date: Wed, 06 Jun 2012 09:26:40 +0800 
-From: <wonder_code@sina.com>
+Message-ID: <4FCEF71D.7050704@xenomai.org>
+Date: Wed, 06 Jun 2012 08:22:21 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Message-Id: <20120606012640.3058C728001@webmail.sinamail.sina.com.cn>
-Content-Type: text/plain;
-	charset=GBK
-Content-Transfer-Encoding: base64
-Content-Disposition: inline
+References: <20120606012640.3058C728001@webmail.sinamail.sina.com.cn>
+In-Reply-To: <20120606012640.3058C728001@webmail.sinamail.sina.com.cn>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] How to build user_space
-Reply-To: wonder_code@sina.com
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,8 +15,18 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <Xenomai@xenomai.org>
+To: wonder_code@sina.com
+Cc: Xenomai <Xenomai@xenomai.org>
 
-SSBoYXZlIGZvbGxvd2VkIHlvdXIgc3RlcHMgdG8gbGRkIGNsb2NrdGVzdCxhbmQgdGhlIHJlc3Vs
-dCBhcyBmb2xsb3c6DQokICAgICAgICAgICBub3QgYSBkeW1hbWljIGV4ZWN1dGFibGUK
+On 06/06/2012 03:26 AM, wonder_code@sina.com wrote:
+> I have followed your steps to ldd clocktest,and the result as follow:
+> $           not a dymamic executable
+
+Ok. You probably picked the wrong ldd. You should have used the
+toolchain ldd. Try that instead:
+
+LD_TRACE_LOADED_OBJECTS=1 /usr/bin/clocktest
+
+-- 
+                                                                Gilles.
 
