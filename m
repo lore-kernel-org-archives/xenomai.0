@@ -1,13 +1,14 @@
-Message-ID: <4FDDE5DC.4030608@xenomai.org>
-Date: Sun, 17 Jun 2012 16:12:44 +0200
+Message-ID: <4FCF5DED.8060007@xenomai.org>
+Date: Wed, 06 Jun 2012 15:41:01 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CAKKWdtcnn+EYfEQ=j4by6YtBRWn4nsFRMaCK=uWvKA1ubZ=EeA@mail.gmail.com>	<20120611141444.GU32727@csclub.uwaterloo.ca>
-	<CAKKWdtdvPGDsz3fJz0b64bPELR9RH92B3a=nPCCPtga7ZVUwNg@mail.gmail.com>
-In-Reply-To: <CAKKWdtdvPGDsz3fJz0b64bPELR9RH92B3a=nPCCPtga7ZVUwNg@mail.gmail.com>
+References: <CAKKWdtfz7+pRjjbE6Ev4zJNZpa45axMePyVar+3MyRyMvcp8aA@mail.gmail.com>	<4FCF1517.3010904@xenomai.org>	<CAKKWdtfRyuhDzmvCC-WM66+=ncs+ocbdUuop2TRNThsj6ZAy6g@mail.gmail.com>	<4FCF1ED5.5000403@xenomai.org>	<CAKKWdtd6p2-xHH1FdjVzbX-raNtDkvMemALrQBJMgoTb1dScnw@mail.gmail.com>	<4FCF2751.5070700@xenomai.org>
+	<4FCF4D05.3070502@xenomai.org> <4FCF58AF.5040106@xenomai.org>
+	<4FCF5A4C.60704@xenomai.org>
+In-Reply-To: <4FCF5A4C.60704@xenomai.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] the Linux kernel and operating system
+Subject: Re: [Xenomai] xenomai-2.6.0 instrumentation commands not executing
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,32 +17,62 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: ali hagigat <hagigatali@gmail.com>
-Cc: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Xenomai@xenomai.org
 
-On 06/17/2012 02:55 PM, ali hagigat wrote:
-> I think SMI needs some initialization from BIOS and then Linux kernel.
-> The Linux kernel has some CONFIG_ variables to disable/enable SMI.
-
-Last time I checked, the linux kernel did not have such CONFIG_
-variables, which is why xenomai adds them.
-
-> In theory a motherboard can be built to generate SMI without the
-> software help. But I think OEMs do not build such a board. So I think
-> an x86 PC hard real time system is possible for today's PCs.
+On 06/06/2012 03:25 PM, Philippe Gerum wrote:
+> On 06/06/2012 03:18 PM, Gilles Chanteperdrix wrote:
+>> On 06/06/2012 02:28 PM, Philippe Gerum wrote:
+>>> On 06/06/2012 11:48 AM, Philippe Gerum wrote:
+>>>> On 06/06/2012 11:18 AM, ali hagigat wrote:
+>>>>> Much appreciate for the reply, Mr. Gerum. Here is the result of ldd
+>>>>> command:
+>>>>>
+>>>>
+>>>> http://www.xenomai.org/pipermail/xenomai-help/2011-12/msg00012.html
+>>>
+>>> Alternatively, this patch may work as well (not tested, but this
+>>> looks like a former issue we had with aggressive optimizers):
+>>>
+>>> diff --git a/src/skins/posix/init.c b/src/skins/posix/init.c
+>>> index 7a338a0..9c7849e 100644
+>>> --- a/src/skins/posix/init.c
+>>> +++ b/src/skins/posix/init.c
+>>> @@ -43,6 +43,7 @@ void pse51_clock_init(int);
+>>>   static __attribute__ ((constructor))
+>>>   void __init_posix_interface(void)
+>>>   {
+>>> +	volatile pthread_t tid = pthread_self();
+>>>   #ifndef CONFIG_XENO_LIBS_DLOPEN
+>>>   	struct sched_param parm;
+>>>   	int policy;
+>>> @@ -80,14 +81,14 @@ void __init_posix_interface(void)
+>>>
+>>>   	/* Don't use auto-shadowing if we are likely invoked from dlopen. */
+>>>   #ifndef CONFIG_XENO_LIBS_DLOPEN
+>>> -	err = __real_pthread_getschedparam(pthread_self(),&policy,&parm);
+>>> +	err = __real_pthread_getschedparam(tid,&policy,&parm);
+>>>   	if (err) {
+>>>   		fprintf(stderr, "Xenomai Posix skin init: "
+>>>   			"pthread_getschedparam: %s\n", strerror(err));
+>>>   		exit(EXIT_FAILURE);
+>>>   	}
+>>>
+>>> -	err = __wrap_pthread_setschedparam(pthread_self(), policy,&parm);
+>>> +	err = __wrap_pthread_setschedparam(tid, policy,&parm);
+>>>   	if (err) {
+>>>   		fprintf(stderr, "Xenomai Posix skin init: "
+>>>   			"pthread_setschedparam: %s\n", strerror(err));
+>>
+>> There should not be any issue here, as the pthread_self() is passed as
+>> an argument to the called functions, the syscall is not inlined directly.
+>>
 > 
-> Please correct me if I am wrong.
-
-An SMI is an interrupt, so, there must be software to handle the SMI,
-so, no, a motherboard can not be built to generate SMI without software
-help.
-
-Intel chipsets provide a register to disable SMIs, but also provide a
-register to lock usage of the first register. So yes, there are some PC
-today that you can not use for real-time. Unless, of course, you are
-ready to use your own BIOS instead of the one provided by the hardware
-vendor, or your hardware vendor is willing to change the BIOS.
+> Did you get any disassembly of the faulty code when suggesting 
+> -fno-omit-frame-pointer last time you did?
+> 
+No, but I had experienced the problem first hand.
 
 -- 
-                                                                Gilles.
+					    Gilles.
 
