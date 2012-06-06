@@ -1,15 +1,14 @@
-Message-ID: <4FD1C751.5070501@xenomai.org>
-Date: Fri, 08 Jun 2012 11:35:13 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4FCF2751.5070700@xenomai.org>
+Date: Wed, 06 Jun 2012 11:48:01 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <CAKKWdtfz7+pRjjbE6Ev4zJNZpa45axMePyVar+3MyRyMvcp8aA@mail.gmail.com>	<4FCF1517.3010904@xenomai.org>	<CAKKWdtfRyuhDzmvCC-WM66+=ncs+ocbdUuop2TRNThsj6ZAy6g@mail.gmail.com>	<4FCF1ED5.5000403@xenomai.org>	<CAKKWdtd6p2-xHH1FdjVzbX-raNtDkvMemALrQBJMgoTb1dScnw@mail.gmail.com>	<4FCF2751.5070700@xenomai.org>	<4FCF4D05.3070502@xenomai.org>	<4FCF58AF.5040106@xenomai.org>	<4FCF5A4C.60704@xenomai.org>	<4FCF5DED.8060007@xenomai.org>	<4FCF60CD.8000709@xenomai.org>	<4FCF6152.7010002@xenomai.org>	<4FCF62DD.10102@xenomai.org>
-	<4FCF68CA.8010206@xenomai.org>	<4FCF713F.1030603@xenomai.org>
-	<4FCF7418.4020805@xenomai.org>	<4FCF7576.8030201@xenomai.org>
-	<4FCF9A1E.6090706@xenomai.org> <4FCF9AAD.7020707@xenomai.org>
-	<4FD1C3EE.1000005@xenomai.org> <4FD1C50D.5010906@xenomai.org>
-	<4FD1C60D.401@xenomai.org> <4FD1C67E.5010600@xenomai.org>
-In-Reply-To: <4FD1C67E.5010600@xenomai.org>
-Content-Type: text/plain; charset=UTF-8
+References: <CAKKWdtfz7+pRjjbE6Ev4zJNZpa45axMePyVar+3MyRyMvcp8aA@mail.gmail.com>
+	<4FCF1517.3010904@xenomai.org>
+	<CAKKWdtfRyuhDzmvCC-WM66+=ncs+ocbdUuop2TRNThsj6ZAy6g@mail.gmail.com>
+	<4FCF1ED5.5000403@xenomai.org>
+	<CAKKWdtd6p2-xHH1FdjVzbX-raNtDkvMemALrQBJMgoTb1dScnw@mail.gmail.com>
+In-Reply-To: <CAKKWdtd6p2-xHH1FdjVzbX-raNtDkvMemALrQBJMgoTb1dScnw@mail.gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] xenomai-2.6.0 instrumentation commands not executing
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -20,173 +19,190 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
+To: ali hagigat <hagigatali@gmail.com>
 Cc: Xenomai@xenomai.org
 
-On 06/08/2012 11:31 AM, Philippe Gerum wrote:
-> On 06/08/2012 11:29 AM, Philippe Gerum wrote:
->> On 06/08/2012 11:25 AM, Gilles Chanteperdrix wrote:
->>> On 06/08/2012 11:20 AM, Philippe Gerum wrote:
->>>> On 06/06/2012 08:00 PM, Gilles Chanteperdrix wrote:
->>>>> On 06/06/2012 07:57 PM, Gilles Chanteperdrix wrote:
->>>>>> On 06/06/2012 05:21 PM, Philippe Gerum wrote:
->>>>>>> On 06/06/2012 05:15 PM, Gilles Chanteperdrix wrote:
->>>>>>>> On 06/06/2012 05:03 PM, Philippe Gerum wrote:
->>>>>>>>> On 06/06/2012 04:27 PM, Gilles Chanteperdrix wrote:
->>>>>>>>>> On 06/06/2012 04:02 PM, Gilles Chanteperdrix wrote:
->>>>>>>>>>> On 06/06/2012 03:55 PM, Gilles Chanteperdrix wrote:
->>>>>>>>>>>> On 06/06/2012 03:53 PM, Philippe Gerum wrote:
->>>>>>>>>>>>> On 06/06/2012 03:41 PM, Gilles Chanteperdrix wrote:
->>>>>>>>>>>>>> On 06/06/2012 03:25 PM, Philippe Gerum wrote:
->>>>>>>>>>>>>>> On 06/06/2012 03:18 PM, Gilles Chanteperdrix wrote:
->>>>>>>>>>>>>>>> On 06/06/2012 02:28 PM, Philippe Gerum wrote:
->>>>>>>>>>>>>>>>> On 06/06/2012 11:48 AM, Philippe Gerum wrote:
->>>>>>>>>>>>>>>>>> On 06/06/2012 11:18 AM, ali hagigat wrote:
->>>>>>>>>>>>>>>>>>> Much appreciate for the reply, Mr. Gerum. Here is the
->>>>>>>>>>>>>>>>>>> result of ldd
->>>>>>>>>>>>>>>>>>> command:
->>>>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>>> http://www.xenomai.org/pipermail/xenomai-help/2011-12/msg00012.html
->>>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>> Alternatively, this patch may work as well (not tested,
->>>>>>>>>>>>>>>>> but this
->>>>>>>>>>>>>>>>> looks like a former issue we had with aggressive
->>>>>>>>>>>>>>>>> optimizers):
->>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>> diff --git a/src/skins/posix/init.c
->>>>>>>>>>>>>>>>> b/src/skins/posix/init.c
->>>>>>>>>>>>>>>>> index 7a338a0..9c7849e 100644
->>>>>>>>>>>>>>>>> --- a/src/skins/posix/init.c
->>>>>>>>>>>>>>>>> +++ b/src/skins/posix/init.c
->>>>>>>>>>>>>>>>> @@ -43,6 +43,7 @@ void pse51_clock_init(int);
->>>>>>>>>>>>>>>>> static __attribute__ ((constructor))
->>>>>>>>>>>>>>>>> void __init_posix_interface(void)
->>>>>>>>>>>>>>>>> {
->>>>>>>>>>>>>>>>> + volatile pthread_t tid = pthread_self();
->>>>>>>>>>>>>>>>> #ifndef CONFIG_XENO_LIBS_DLOPEN
->>>>>>>>>>>>>>>>> struct sched_param parm;
->>>>>>>>>>>>>>>>> int policy;
->>>>>>>>>>>>>>>>> @@ -80,14 +81,14 @@ void __init_posix_interface(void)
->>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>> /* Don't use auto-shadowing if we are likely invoked
->>>>>>>>>>>>>>>>> from dlopen. */
->>>>>>>>>>>>>>>>> #ifndef CONFIG_XENO_LIBS_DLOPEN
->>>>>>>>>>>>>>>>> - err =
->>>>>>>>>>>>>>>>> __real_pthread_getschedparam(pthread_self(),&policy,&parm);
->>>>>>>>>>>>>>>>> + err = __real_pthread_getschedparam(tid,&policy,&parm);
->>>>>>>>>>>>>>>>> if (err) {
->>>>>>>>>>>>>>>>> fprintf(stderr, "Xenomai Posix skin init: "
->>>>>>>>>>>>>>>>> "pthread_getschedparam: %s\n", strerror(err));
->>>>>>>>>>>>>>>>> exit(EXIT_FAILURE);
->>>>>>>>>>>>>>>>> }
->>>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>>> - err = __wrap_pthread_setschedparam(pthread_self(),
->>>>>>>>>>>>>>>>> policy,&parm);
->>>>>>>>>>>>>>>>> + err = __wrap_pthread_setschedparam(tid, policy,&parm);
->>>>>>>>>>>>>>>>> if (err) {
->>>>>>>>>>>>>>>>> fprintf(stderr, "Xenomai Posix skin init: "
->>>>>>>>>>>>>>>>> "pthread_setschedparam: %s\n", strerror(err));
->>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>> There should not be any issue here, as the pthread_self()
->>>>>>>>>>>>>>>> is passed as
->>>>>>>>>>>>>>>> an argument to the called functions, the syscall is not
->>>>>>>>>>>>>>>> inlined directly.
->>>>>>>>>>>>>>>>
->>>>>>>>>>>>>>>
->>>>>>>>>>>>>>> Did you get any disassembly of the faulty code when
->>>>>>>>>>>>>>> suggesting
->>>>>>>>>>>>>>> -fno-omit-frame-pointer last time you did?
->>>>>>>>>>>>>>>
->>>>>>>>>>>>>> No, but I had experienced the problem first hand.
->>>>>>>>>>>>>>
->>>>>>>>>>>>>
->>>>>>>>>>>>> It would be interesting to know why we have to force a frame
->>>>>>>>>>>>> pointer in
->>>>>>>>>>>>> there. I'm not comfortable with voodoo fixing, that bug
->>>>>>>>>>>>> might bite later
->>>>>>>>>>>>> on as gcc's optimizer is unlikely to become less aggressive
->>>>>>>>>>>>> over time.
->>>>>>>>>>>>>
->>>>>>>>>>>> Ah this, I know. I have posted a mail where I explained the
->>>>>>>>>>>> problem. I
->>>>>>>>>>>> am a bit in a short schedule here, will post the link tonight.
->>>>>>>>>>>>
->>>>>>>>>>> http://xenomai.org/pipermail/xenomai-core/2011-08/msg00029.html
->>>>>>>>>>>
->>>>>>>>>>
->>>>>>>>>> In the mails following this one, I found how to fix the
->>>>>>>>>> assembly to work
->>>>>>>>>> in the omit-frame-pointer case. The real problem is that, at
->>>>>>>>>> compilation
->>>>>>>>>> time, we have no command-line #defined variable telling us whether
->>>>>>>>>> compiling with frame pointers enabled. And it does not seem
->>>>>>>>>> easy to
->>>>>>>>>> write a configure test script, which tests whether frame
->>>>>>>>>> pointers are
->>>>>>>>>> enabled or not.
->>>>>>>>>>
->>>>>>>>>
->>>>>>>>> I'd suggest that at some point, we move all the syscall
->>>>>>>>> trampolines out
->>>>>>>>> of line, and specifically build the resulting file forcing
->>>>>>>>> -fno-omit-frame-pointer. Such inlining will always be fragile
->>>>>>>>> until we
->>>>>>>>> actually control the way that compilation unit is built,
->>>>>>>>> regardless of
->>>>>>>>> the general settings for CFLAGS.
->>>>>>>>>
->>>>>>>> In the current 2.6 repository, we force -fno-omit-frame-pointer
->>>>>>>> on x86_32.
->>>>>>>>
->>>>>>>
->>>>>>> Yes, but that is crappy. The point is that we don't want to force
->>>>>>> this
->>>>>>> for all userland bits. We'd only need this for syscall trampolines.
->>>>>>>
->>>>>> We currently have different flags for compiling xenomai than for
->>>>>> passing
->>>>>> to the applications (via xeno-config). The problem is that I am not
->>>>>> sure
->>>>>> it will not break for instance calling "backtrace" in gdb when
->>>>>> breaking
->>>>>> inside a xenomai function.
->>>>>>
->>>>> (mixing code compiled without frame pointers with code compiled with
->>>>> frame pointers I mean).
+On 06/06/2012 11:18 AM, ali hagigat wrote:
+> Much appreciate for the reply, Mr. Gerum. Here is the result of ldd command:
+>
+
+http://www.xenomai.org/pipermail/xenomai-help/2011-12/msg00012.html
+
+> /usr/xenomai/bin>  ldd switchtest
+> 	linux-gate.so.1 =>   (0xb786c000)
+> 	libpthread_rt.so.1 =>  /usr/xenomai/lib/libpthread_rt.so.1 (0xb785f000)
+> 	libxenomai.so.0 =>  /usr/xenomai/lib/libxenomai.so.0 (0xb7859000)
+> 	libpthread.so.0 =>  /lib/libpthread.so.0 (0x0058e000)
+> 	librt.so.1 =>  /lib/librt.so.1 (0x005c3000)
+> 	libc.so.6 =>  /lib/libc.so.6 (0x003cd000)
+> 	/lib/ld-linux.so.2 (0x003a7000)
+> /usr/xenomai/bin>  ldd switchbench
+> ldd: ./switchbench: No such file or directory
+> /usr/xenomai/bin>  cd /root
+> /root>  ldd switchtest
+> ldd: ./switchtest: No such file or directory
+>
+>
+> On Wed, Jun 6, 2012 at 1:41 PM, Philippe Gerum<rpm@xenomai.org>  wrote:
+>> On 06/06/2012 11:06 AM, ali hagigat wrote:
+>>>
+>>> Thank you, Philippe, for the reply.
+>>>
+>>> How can i enable posix skin? should i do , make menuconfig, for the
+>>> kernel? Or i should change scripts/defconfig.frag?
+>>>
+>>> It seems that both places have the correct values already but i still
+>>> have the error:
+>>
+>>
+>> The POSIX skin is indeed enabled. What is the output of the command below?
+>>
+>> # ldd<your-executable>
+>>
+>>
+>>>
+>>> defconfig.frag:
+>>> #
+>>> # Interfaces
+>>> #
+>>> CONFIG_XENO_SKIN_NATIVE=y
+>>>
+>>> #
+>>> # Native interface options
+>>> #
+>>> CONFIG_XENO_OPT_NATIVE_PERIOD=0
+>>> CONFIG_XENO_OPT_NATIVE_PIPE=y
+>>> CONFIG_XENO_OPT_NATIVE_PIPE_BUFSZ=4096
+>>> CONFIG_XENO_OPT_NATIVE_SEM=y
+>>> CONFIG_XENO_OPT_NATIVE_EVENT=y
+>>> CONFIG_XENO_OPT_NATIVE_MUTEX=y
+>>> CONFIG_XENO_OPT_NATIVE_COND=y
+>>> CONFIG_XENO_OPT_NATIVE_QUEUE=y
+>>> CONFIG_XENO_OPT_NATIVE_HEAP=y
+>>> CONFIG_XENO_OPT_NATIVE_ALARM=y
+>>> CONFIG_XENO_OPT_NATIVE_MPS=y
+>>> # CONFIG_XENO_OPT_NATIVE_INTR is not set
+>>> CONFIG_XENO_SKIN_POSIX=y
+>>>
+>>> and in the kernel:
+>>> # Interfaces
+>>> #
+>>> CONFIG_XENO_SKIN_NATIVE=y
+>>> CONFIG_XENO_OPT_NATIVE_PERIOD=0
+>>> CONFIG_XENO_OPT_NATIVE_PIPE=y
+>>> CONFIG_XENO_OPT_NATIVE_PIPE_BUFSZ=1024
+>>> CONFIG_XENO_OPT_NATIVE_SEM=y
+>>> CONFIG_XENO_OPT_NATIVE_EVENT=y
+>>> CONFIG_XENO_OPT_NATIVE_MUTEX=y
+>>> CONFIG_XENO_OPT_NATIVE_COND=y
+>>> CONFIG_XENO_OPT_NATIVE_QUEUE=y
+>>> CONFIG_XENO_OPT_NATIVE_BUFFER=y
+>>> CONFIG_XENO_OPT_NATIVE_HEAP=y
+>>> CONFIG_XENO_OPT_NATIVE_ALARM=y
+>>> CONFIG_XENO_OPT_NATIVE_MPS=y
+>>> CONFIG_XENO_OPT_NATIVE_INTR=y
+>>> CONFIG_XENO_OPT_DEBUG_NATIVE=y
+>>> CONFIG_XENO_SKIN_POSIX=y
+>>> CONFIG_XENO_OPT_POSIX_PERIOD=0
+>>> CONFIG_XENO_OPT_POSIX_SHM=y
+>>> CONFIG_XENO_OPT_POSIX_INTR=y
+>>> CONFIG_XENO_OPT_POSIX_SELECT=y
+>>> CONFIG_XENO_OPT_DEBUG_POSIX=y
+>>> # CONFIG_XENO_SKIN_PSOS is not set
+>>> # CONFIG_XENO_SKIN_UITRON is not set
+>>> # CONFIG_XENO_SKIN_VRTX is not set
+>>> CONFIG_XENO_SKIN_VXWORKS=y
+>>> CONFIG_XENO_OPT_VXWORKS_PERIOD=1000
+>>> CONFIG_XENO_OPT_DEBUG_VXWORKS=y
+>>> # CONFIG_XENO_OPT_NOWARN_DEPRECATED is not set
+>>> CONFIG_XENO_SKIN_RTDM=y
+>>> CONFIG_XENO_OPT_RTDM_PERIOD=0
+>>> CONFIG_XENO_OPT_RTDM_FILDES=128
+>>> CONFIG_XENO_OPT_RTDM_SELECT=y
+>>> # CONFIG_XENO_OPT_DEBUG_RTDM is not set
+>>> CONFIG_XENO_OPT_DEBUG_RTDM_APPL=y
+>>>
+>>>
+>>> On Wed, Jun 6, 2012 at 1:00 PM, Philippe Gerum<rpm@xenomai.org>    wrote:
+>>>>
+>>>> On 06/06/2012 09:40 AM, ali hagigat wrote:
+>>>>>
+>>>>>
+>>>>> I have installed xenomai-2.6.0. None of the instrumentation commands
+>>>>> work except latency. What can i do?
 >>>>>
 >>>>
->>>> The only issue is with frame elimination starting with -O2 and above,
->>>> otherwise the backtraces are clean over gdb (just checked), at least
->>>> there does not seem to be any additional problem introduced by mixing bp
->>>> and no-bp. At any rate, -O0 -g is recommended to get clean and detailed
->>>> (back)traces anyway, and this is what we pick when --enable-debug is
->>>> given.
+>>>> Likely fix your Kconfig. Enable the Xenomai POSIX skin.
 >>>>
->>>> We should move each existing inline XENOMAI_SYS/SKINCALL macro into its
->>>> own C trampoline, group all trampolines into separate compilation units,
->>>> and build each of these units with -fno-omit-frame-pointer
->>>> unconditionally.
+>>>>> /root>      switchbench
+>>>>> bash: switchbench: command not found
+>>>>> /root>      switchtest
+>>>>> Xenomai Posix skin init: pthread_setschedparam: Function not implemented
+>>>>> /root>      cyclictest
+>>>>> Xenomai Posix skin init: pthread_setschedparam: Function not implemented
+>>>>> /root>      latency
+>>>>> == Sampling period: 100 us
+>>>>> == Test mode: periodic user-mode task
+>>>>> == All results in microseconds
+>>>>>
+>>>>> /root>      xeno-test
+>>>>> Started child 7172: /bin/bash /usr/xenomai/bin/xeno-test-run-wrapper
+>>>>> /usr/xenomai/bin/xeno-test
+>>>>> ++ echo 0
+>>>>> ++ /usr/xenomai/bin/arith
+>>>>> mul: 0x79364d93, shft: 26
+>>>>> integ: 30, frac: 0x4d9364d9364d9364
+>>>>>
+>>>>> signed positive operation: 0x03ffffffffffffff * 1000000000 / 33000000
+>>>>> inline calibration: 0x0000000000000000: 28.751 ns, rejected 1/10000
+>>>>> inlined llimd: 0x79364d9364d9362f: 41.292 ns, rejected 1/10000
+>>>>> inlined llmulshft: 0x79364d92ffffffe1: 5.007 ns, rejected 0/10000
+>>>>> inlined nodiv_llimd: 0x79364d9364d9362f: 11.323 ns, rejected 1/10000
+>>>>> out of line calibration: 0x0000000000000000: 30.003 ns, rejected 0/10000
+>>>>> out of line llimd: 0x79364d9364d9362f: 46.075 ns, rejected 1/10000
+>>>>> out of line llmulshft: 0x79364d92ffffffe1: 7.800 ns, rejected 1/10000
+>>>>> out of line nodiv_llimd: 0x79364d9364d9362f: 16.683 ns, rejected 1/10000
+>>>>>
+>>>>> signed negative operation: 0xfc00000000000001 * 1000000000 / 33000000
+>>>>> inline calibration: 0x0000000000000000: 29.298 ns, rejected 1/10000
+>>>>> inlined llimd: 0x86c9b26c9b26c9d1: 39.658 ns, rejected 1/10000
+>>>>> inlined llmulshft: 0x86c9b26d0000001e: 4.059 ns, rejected 0/10000
+>>>>> inlined nodiv_llimd: 0x86c9b26c9b26c9d1: 16.976 ns, rejected 0/10000
+>>>>> out of line calibration: 0x0000000000000000: 30.002 ns, rejected 1/10000
+>>>>> out of line llimd: 0x86c9b26c9b26c9d1: 48.757 ns, rejected 0/10000
+>>>>> out of line llmulshft: 0x86c9b26d0000001e: 11.085 ns, rejected 1/10000
+>>>>> out of line nodiv_llimd: 0x86c9b26c9b26c9d1: 17.770 ns, rejected 1/10000
+>>>>>
+>>>>> unsigned operation: 0x03ffffffffffffff * 1000000000 / 33000000
+>>>>> inline calibration: 0x0000000000000000: 28.749 ns, rejected 1/10000
+>>>>> inlined nodiv_ullimd: 0x79364d9364d9362f: 16.264 ns, rejected 0/10000
+>>>>> out of line calibration: 0x0000000000000000: 30.001 ns, rejected 0/10000
+>>>>> out of line nodiv_ullimd: 0x79364d9364d9362f: 20.463 ns, rejected
+>>>>> 1/10000
+>>>>> ++ /usr/xenomai/bin/clocktest -T 30
+>>>>> Xenomai Posix skin init: pthread_setschedparam: Function not implemented
+>>>>>
+>>>>>
+>>>>> Only latency seems working.
+>>>>>
+>>>>> _______________________________________________
+>>>>> Xenomai mailing list
+>>>>> Xenomai@xenomai.org
+>>>>> http://www.xenomai.org/mailman/listinfo/xenomai
+>>>>>
 >>>>
->>>> -forge is a good candidate for this, since the number of syscall
->>>> trampolines shrunk dramatically compared to 2.x. If any issue would be
->>>> easily detected based on the output of the new "slackspot" tracer we
->>>> have there.
 >>>>
->>> It looks to me like we can simply build xenomai libraries with
->>> -fno-omit-frame-pointer, and compile the rest without this option. After
->>> all, implementation of xenomai services are little more than syscall
->>> trampolines.
+>>>> --
+>>>> Philippe.
+>>>
 >>>
 >>
->> This is true for 2.x, however -forge will need the other approach.
 >>
-> 
-> Unless you only mean lib/cobalt for 3.x, in which case I would agree.
-> 
-I was thinking 2.x. But yes, we can do the same with lib/cobalt.
+>> --
+>> Philippe.
+>
+
 
 -- 
-					    Gilles.
+Philippe.
 
