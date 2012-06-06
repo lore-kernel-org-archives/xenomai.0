@@ -1,11 +1,11 @@
-Message-ID: <4FCF17D8.2040308@xenomai.org>
-Date: Wed, 06 Jun 2012 10:42:00 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
+In-Reply-To: <4FCF17D8.2040308@xenomai.org>
 References: <CAM1yFZ9ndx+EDWAig-nkYmcc-jgirwm6N0UYbK1g-8roQTMMYQ@mail.gmail.com>
-In-Reply-To: <CAM1yFZ9ndx+EDWAig-nkYmcc-jgirwm6N0UYbK1g-8roQTMMYQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+	<4FCF17D8.2040308@xenomai.org>
+Date: Wed, 6 Jun 2012 14:13:47 +0530
+Message-ID: <CAM1yFZ-Hk17qTMn=GJUrO0SmNXPgXDTH5_AT4a=0iyaxLXqi4Q@mail.gmail.com>
+From: Anisha Kaul <born.rebel.83@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
 Subject: Re: [Xenomai] ./rtnet start rteth0-mac: unknown interface: No such
  device ioctl: No such device
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -16,21 +16,16 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Anisha Kaul <born.rebel.83@gmail.com>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: Xenomai <xenomai@xenomai.org>
 
-On 06/05/2012 01:43 PM, Anisha Kaul wrote:
-> Greetings,
-> 
-> I have installed the RTnet over Xenomai without examples.
-> RTnet compiled well, and I also tested loopback on the single machine
-> and was able to ping.
-> 
-> However I noticed `./rtnet start` showing the following output:
-> What should I interpret when all it says is "no such device"?
+On 6 June 2012 14:12, Gilles Chanteperdrix
+<gilles.chanteperdrix@xenomai.org> wrote:
+> OT on xenomai mailing list.
 
-OT on xenomai mailing list.
+Ah, since it was from the Xenomai website that's why I posted it here.
+Will post this on rtnet mailinglist now.
+Thanks for telling.
 
--- 
-					    Gilles.
+-Anisha
 
