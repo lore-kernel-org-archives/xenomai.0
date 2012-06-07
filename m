@@ -1,14 +1,15 @@
 MIME-Version: 1.0
-Sender: danilo.delorenzo@gmail.com
-In-Reply-To: <4FCF1F22.2030203@mail.polimi.it>
-References: <4FCF0FD5.1050201@mail.polimi.it>
-	<CA+eKTkb6m22yqmckZusuG+zdzx8pSn1To_hOcgXdEF7ini48sw@mail.gmail.com>
-	<4FCF1F22.2030203@mail.polimi.it>
-Date: Wed, 6 Jun 2012 20:25:48 +0200
-Message-ID: <CAHpmwf-gF92nsxqYzxQROcW5CRqs9=X5OSFDo3EhRBF4WEMNHA@mail.gmail.com>
-From: Danilo De Lorenzo <danilo.delorenzo@mail.polimi.it>
+In-Reply-To: <4FBF78FE.3020300@xenomai.org>
+References: <4FBADE7D.5030609@bbn.com> <4FBB4951.5070803@xenomai.org>
+	<4FBC0383.3020608@bbn.com> <4FBC0582.2060707@xenomai.org>
+	<4FBF4E69.1010200@bbn.com> <4FBF78FE.3020300@xenomai.org>
+Date: Thu, 7 Jun 2012 03:44:57 -0400
+Message-ID: <CAMak2D8rWO6zbJhawMr43vg4=qhJ0fUBT3z-1bUYn=shcUFfAA@mail.gmail.com>
+From: Eric Eric <ericrebates@gmail.com>
 Content-Type: text/plain; charset=ISO-8859-1
-Subject: Re: [Xenomai] analogy attach failed NI-6220
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] A possible mis-interaction between CONFIG_PREEMPT and
+ GPIO IRQ handling for ARM, leading to extreme latency
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,76 +18,68 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-Anyone else has any suggestions? At least a hint on how to find where is
-the problem?
+Hi Gilles, I believe the problems I was having several months ago with
+erratic timing on the Beagleboard when running dohell may be related
+to this.  I'm wondering if there are still plans to formally wrap the
+patch into the official Xenomai tree?
 
-Thanks
-Il giorno 06/giu/2012 11:13, "Danilo De Lorenzo" <
-danilo.delorenzo@mail.polimi.it> ha scritto:
+Thanks!
 
->  Thanks Hadrien,
-> I've already enabled the analogy driver in the kernel configuration and
-> this is confirmed since I have all the analogy and ni modules loaded...
+- Eric
+
+On Fri, May 25, 2012 at 8:20 AM, Gilles Chanteperdrix
+<gilles.chanteperdrix@xenomai.org> wrote:
+> On 05/25/2012 11:18 AM, Mitchell Tasman wrote:
+>> Gilles,
+>>
+>> On 05/22/2012 05:30 PM, Gilles Chanteperdrix wrote:
+>>> On 05/22/2012 11:22 PM, Mitchell Tasman wrote:
+>>>> I have applied the patch that you supplied, and find a dramatic
+>>>> reduction in the maximum latency experienced in servicing edge-trigger=
+ed
+>>>> GPIO interrupts. =A0In testing so far today with the new patch, I have=
+ not
+>>>> encountered a single instance of the sort of extreme latency that
+>>>> prompted my query to the mailing list.
+>>>>
+>>>> Might you consider applying the new patch to I-Pipe for ARM 2.6.38.8,
+>>>> and publishing a new revision of that patch set? =A0This could be of
+>>>> significant benefit to those members of the Xenomai community that are
+>>>> presently using a 2.6.38.8 kernel on ARM platforms.
+>>>>
+>>>> You might also consider addressing/replacing the original "ipipe/arm:
+>>>> defer chained interrupts handling" patch that was applied to I-Pipe fo=
+r
+>>>> ARM 3.0.13, if the new patch is relevant to that kernel as well.
+>>
+>>> Yes, that's the plan. I am just waiting for Jean-Pascal's result to
+>>> confirm that everything is fine.
+>>
+>> I thought I'd report that testing of
+>> adeos-ipipe-2.6.38.8-arm-1.18-06.patch plus the revised "IRQ Chaining"
+>> patch that you e-mailed continues to show a dramatic reduction in the
+>> maximum latency in servicing edge-triggered GPIO interrupts. =A0Good new=
+s
+>> as well is that the load on the Linux domain (e.g. dohell vs. idle)
+>> appears to have much less effect on the latency in servicing such
+>> interrupts than was previously the case.
+>>
+>> I noticed that Jean-Pascal reported success as well, on 23 May.
+>>
+>> Thank you once again for your excellent support, and I very much look
+>> forward to the updated I-Pipe for ARM 2.6.38.8 patch set.
 >
-> Danilo De Lorenzo, PhD
-> NearLab - Bioengineering Department
-> Politecnico di Milano, via Colombo 40, 20133 Milan, Italywww.nearlab.polimi.it
+> You are welcome. The patch should be done during the week-end.
 >
-> email: danilo.delorenzo@mail.polimi.it
-> phone: +39 02-2399-9013
-> fax: +39 02-2399-9003
+> --
+> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
+=A0 =A0 =A0 =A0Gilles.
 >
->
-> On 06/06/2012 10:51 AM, Hadrien Caron wrote:
->
-> Hello Danilo,
->
-> I am no expert, but I had a similar issue when I forgot to enable the
-> analogy driver
-> in the kernel configuration (through menuconfig for example).
->
-> hope it helps,
->
-> Hadrien
->
->  On Wed, Jun 6, 2012 at 10:07 AM, Danilo De Lorenzo <
-> danilo.delorenzo@mail.polimi.it> wrote:
->
->> Hi,
->> I'm trying to make a NI-6220 acquisition board working with xenomai on a
->> x86_64 patched kernel, but I'm getting the following error when I try to
->> attach the device with the command:
->>
->> /usr/xenomai/sbin/analogy_config analogy0 analogy_ni_pcimio 0xc,5
->>
->> The error is:
->> analogy_config: attach failed err=-2
->>
->> I know that Xenomai is working well since I can run all the examples
->> (latency, etc...).
->>
->> The dmesg command gave me only this error:
->> [   69.926138] Analogy: a4l_assign_driver: call(drv->attach) failed
->> (ret=-2)
->>
->>
->> Thi is the lspci output for the board:
->>
->> 0c:05.0 Unassigned class [ff00]: National Instruments PCI-6220
->>
->> I also checked for shared IRQ, it seems there is no IRQ sharing with
->> other devices and I also tried to change the PCI slot without success.
->>
->> Any help is appreciated
->>
->>
->>
->> _______________________________________________
->> Xenomai mailing list
->> Xenomai@xenomai.org
->> http://www.xenomai.org/mailman/listinfo/xenomai
->>
->
->
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> http://www.xenomai.org/mailman/listinfo/xenomai
+
