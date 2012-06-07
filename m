@@ -1,5 +1,5 @@
-Message-ID: <4FD0646C.208@xenomai.org>
-Date: Thu, 07 Jun 2012 10:21:00 +0200
+Message-ID: <4FD0679F.3020904@xenomai.org>
+Date: Thu, 07 Jun 2012 10:34:39 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <4FBADE7D.5030609@bbn.com>	<4FBB4951.5070803@xenomai.org>	<4FBC0383.3020608@bbn.com>	<4FBC0582.2060707@xenomai.org>	<4FBF4E69.1010200@bbn.com>	<4FBF78FE.3020300@xenomai.org>
@@ -26,10 +26,17 @@ On 06/07/2012 09:44 AM, Eric Eric wrote:
 > to this.  I'm wondering if there are still plans to formally wrap the
 > patch into the official Xenomai tree?
 
-Yes, the patches are not yet available in the xenomai tree, but are 
-available on the gna download area:
-http://download.gna.org/adeos/patches/v2.6/arm/adeos-ipipe-2.6.38.8-arm-1.18-08.patch
-http://download.gna.org/adeos/patches/v3.x/arm/adeos-ipipe-3.0.13-arm-1.18-09.patch
+The erratic timing you are talking about were variations in the
+microsecond range. What this patch avoids are latencies in the
+millisecond range involving GPIO interrupts. So, definitely no, this
+patch will not change anything with your situation.
+
+But anyway, I do not believe what you described was really a problem.
+Yes, some things have more influence on latencies than other. This is
+inherent to the dual kernel solution. And anyway, as I told you at the
+time, if you want to know what cause the worst case latency of a latency
+run, run latency -f with the I-pipe tracer enabled. If you post us a
+latency trace, we may help you find if anything is wrong.
 
 -- 
 					    Gilles.
