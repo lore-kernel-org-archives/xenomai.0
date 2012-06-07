@@ -1,15 +1,11 @@
+From: Chris Stone <chris.stone@optelian.com>
+Date: Thu, 7 Jun 2012 21:16:09 +0000
+Message-ID: <623784B6C75D274389918D358E89E8BB0B7FF136@OPTELIAN5.optelian.local>
+Content-Language: en-US
 MIME-Version: 1.0
-In-Reply-To: <4FCF1ED5.5000403@xenomai.org>
-References: <CAKKWdtfz7+pRjjbE6Ev4zJNZpa45axMePyVar+3MyRyMvcp8aA@mail.gmail.com>
-	<4FCF1517.3010904@xenomai.org>
-	<CAKKWdtfRyuhDzmvCC-WM66+=ncs+ocbdUuop2TRNThsj6ZAy6g@mail.gmail.com>
-	<4FCF1ED5.5000403@xenomai.org>
-Date: Wed, 6 Jun 2012 13:48:48 +0430
-Message-ID: <CAKKWdtd6p2-xHH1FdjVzbX-raNtDkvMemALrQBJMgoTb1dScnw@mail.gmail.com>
-From: ali hagigat <hagigatali@gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] xenomai-2.6.0 instrumentation commands not executing
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai] GPIO irq handler on powerpc.
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,191 +14,63 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, Xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Much appreciate for the reply, Mr. Gerum. Here is the result of ldd command=
-:
+I am using Xenomai 2.6.0 on kernel 3.0.13, with adeos-ipipe-3.0.13-powerpc-2.13-06 applied. My target CPU 
+is Freescale MPC8378.
 
-/usr/xenomai/bin> ldd switchtest
-	linux-gate.so.1 =3D>  (0xb786c000)
-	libpthread_rt.so.1 =3D> /usr/xenomai/lib/libpthread_rt.so.1 (0xb785f000)
-	libxenomai.so.0 =3D> /usr/xenomai/lib/libxenomai.so.0 (0xb7859000)
-	libpthread.so.0 =3D> /lib/libpthread.so.0 (0x0058e000)
-	librt.so.1 =3D> /lib/librt.so.1 (0x005c3000)
-	libc.so.6 =3D> /lib/libc.so.6 (0x003cd000)
-	/lib/ld-linux.so.2 (0x003a7000)
-/usr/xenomai/bin> ldd switchbench
-ldd: ./switchbench: No such file or directory
-/usr/xenomai/bin> cd /root
-/root> ldd switchtest
-ldd: ./switchtest: No such file or directory
+On a powerpc, GPIO's are mapped to virtual irqs. Thus, in order to install an irq handler for a gpio 
+interrupt, one must do the following in the kernel:
 
+	err = gpio_request(HYPHY_IRQ_GPIO, NULL);
+	if (err<0) {
+		printk(KERN_ERR "%s: could not request gpio %d, rc %d\n", __func__, HYPHY_IRQ_GPIO, err);
+		return err;
+	}
+	err = gpio_direction_input(HYPHY_IRQ_GPIO);
+	if (err<0) {
+		printk(KERN_ERR "%s: could not set gpio %d to input, rc %d\n", __func__, HYPHY_IRQ_GPIO, err);
+		return err;
+	}
 
-On Wed, Jun 6, 2012 at 1:41 PM, Philippe Gerum <rpm@xenomai.org> wrote:
-> On 06/06/2012 11:06 AM, ali hagigat wrote:
->>
->> Thank you, Philippe, for the reply.
->>
->> How can i enable posix skin? should i do , make menuconfig, for the
->> kernel? Or i should change scripts/defconfig.frag?
->>
->> It seems that both places have the correct values already but i still
->> have the error:
->
->
-> The POSIX skin is indeed enabled. What is the output of the command below=
-?
->
-> # ldd <your-executable>
->
->
->>
->> defconfig.frag:
->> #
->> # Interfaces
->> #
->> CONFIG_XENO_SKIN_NATIVE=3Dy
->>
->> #
->> # Native interface options
->> #
->> CONFIG_XENO_OPT_NATIVE_PERIOD=3D0
->> CONFIG_XENO_OPT_NATIVE_PIPE=3Dy
->> CONFIG_XENO_OPT_NATIVE_PIPE_BUFSZ=3D4096
->> CONFIG_XENO_OPT_NATIVE_SEM=3Dy
->> CONFIG_XENO_OPT_NATIVE_EVENT=3Dy
->> CONFIG_XENO_OPT_NATIVE_MUTEX=3Dy
->> CONFIG_XENO_OPT_NATIVE_COND=3Dy
->> CONFIG_XENO_OPT_NATIVE_QUEUE=3Dy
->> CONFIG_XENO_OPT_NATIVE_HEAP=3Dy
->> CONFIG_XENO_OPT_NATIVE_ALARM=3Dy
->> CONFIG_XENO_OPT_NATIVE_MPS=3Dy
->> # CONFIG_XENO_OPT_NATIVE_INTR is not set
->> CONFIG_XENO_SKIN_POSIX=3Dy
->>
->> and in the kernel:
->> # Interfaces
->> #
->> CONFIG_XENO_SKIN_NATIVE=3Dy
->> CONFIG_XENO_OPT_NATIVE_PERIOD=3D0
->> CONFIG_XENO_OPT_NATIVE_PIPE=3Dy
->> CONFIG_XENO_OPT_NATIVE_PIPE_BUFSZ=3D1024
->> CONFIG_XENO_OPT_NATIVE_SEM=3Dy
->> CONFIG_XENO_OPT_NATIVE_EVENT=3Dy
->> CONFIG_XENO_OPT_NATIVE_MUTEX=3Dy
->> CONFIG_XENO_OPT_NATIVE_COND=3Dy
->> CONFIG_XENO_OPT_NATIVE_QUEUE=3Dy
->> CONFIG_XENO_OPT_NATIVE_BUFFER=3Dy
->> CONFIG_XENO_OPT_NATIVE_HEAP=3Dy
->> CONFIG_XENO_OPT_NATIVE_ALARM=3Dy
->> CONFIG_XENO_OPT_NATIVE_MPS=3Dy
->> CONFIG_XENO_OPT_NATIVE_INTR=3Dy
->> CONFIG_XENO_OPT_DEBUG_NATIVE=3Dy
->> CONFIG_XENO_SKIN_POSIX=3Dy
->> CONFIG_XENO_OPT_POSIX_PERIOD=3D0
->> CONFIG_XENO_OPT_POSIX_SHM=3Dy
->> CONFIG_XENO_OPT_POSIX_INTR=3Dy
->> CONFIG_XENO_OPT_POSIX_SELECT=3Dy
->> CONFIG_XENO_OPT_DEBUG_POSIX=3Dy
->> # CONFIG_XENO_SKIN_PSOS is not set
->> # CONFIG_XENO_SKIN_UITRON is not set
->> # CONFIG_XENO_SKIN_VRTX is not set
->> CONFIG_XENO_SKIN_VXWORKS=3Dy
->> CONFIG_XENO_OPT_VXWORKS_PERIOD=3D1000
->> CONFIG_XENO_OPT_DEBUG_VXWORKS=3Dy
->> # CONFIG_XENO_OPT_NOWARN_DEPRECATED is not set
->> CONFIG_XENO_SKIN_RTDM=3Dy
->> CONFIG_XENO_OPT_RTDM_PERIOD=3D0
->> CONFIG_XENO_OPT_RTDM_FILDES=3D128
->> CONFIG_XENO_OPT_RTDM_SELECT=3Dy
->> # CONFIG_XENO_OPT_DEBUG_RTDM is not set
->> CONFIG_XENO_OPT_DEBUG_RTDM_APPL=3Dy
->>
->>
->> On Wed, Jun 6, 2012 at 1:00 PM, Philippe Gerum<rpm@xenomai.org> =A0wrote=
-:
->>>
->>> On 06/06/2012 09:40 AM, ali hagigat wrote:
->>>>
->>>>
->>>> I have installed xenomai-2.6.0. None of the instrumentation commands
->>>> work except latency. What can i do?
->>>>
->>>
->>> Likely fix your Kconfig. Enable the Xenomai POSIX skin.
->>>
->>>> /root> =A0 =A0switchbench
->>>> bash: switchbench: command not found
->>>> /root> =A0 =A0switchtest
->>>> Xenomai Posix skin init: pthread_setschedparam: Function not implement=
-ed
->>>> /root> =A0 =A0cyclictest
->>>> Xenomai Posix skin init: pthread_setschedparam: Function not implement=
-ed
->>>> /root> =A0 =A0latency
->>>> =3D=3D Sampling period: 100 us
->>>> =3D=3D Test mode: periodic user-mode task
->>>> =3D=3D All results in microseconds
->>>>
->>>> /root> =A0 =A0xeno-test
->>>> Started child 7172: /bin/bash /usr/xenomai/bin/xeno-test-run-wrapper
->>>> /usr/xenomai/bin/xeno-test
->>>> ++ echo 0
->>>> ++ /usr/xenomai/bin/arith
->>>> mul: 0x79364d93, shft: 26
->>>> integ: 30, frac: 0x4d9364d9364d9364
->>>>
->>>> signed positive operation: 0x03ffffffffffffff * 1000000000 / 33000000
->>>> inline calibration: 0x0000000000000000: 28.751 ns, rejected 1/10000
->>>> inlined llimd: 0x79364d9364d9362f: 41.292 ns, rejected 1/10000
->>>> inlined llmulshft: 0x79364d92ffffffe1: 5.007 ns, rejected 0/10000
->>>> inlined nodiv_llimd: 0x79364d9364d9362f: 11.323 ns, rejected 1/10000
->>>> out of line calibration: 0x0000000000000000: 30.003 ns, rejected 0/100=
-00
->>>> out of line llimd: 0x79364d9364d9362f: 46.075 ns, rejected 1/10000
->>>> out of line llmulshft: 0x79364d92ffffffe1: 7.800 ns, rejected 1/10000
->>>> out of line nodiv_llimd: 0x79364d9364d9362f: 16.683 ns, rejected 1/100=
-00
->>>>
->>>> signed negative operation: 0xfc00000000000001 * 1000000000 / 33000000
->>>> inline calibration: 0x0000000000000000: 29.298 ns, rejected 1/10000
->>>> inlined llimd: 0x86c9b26c9b26c9d1: 39.658 ns, rejected 1/10000
->>>> inlined llmulshft: 0x86c9b26d0000001e: 4.059 ns, rejected 0/10000
->>>> inlined nodiv_llimd: 0x86c9b26c9b26c9d1: 16.976 ns, rejected 0/10000
->>>> out of line calibration: 0x0000000000000000: 30.002 ns, rejected 1/100=
-00
->>>> out of line llimd: 0x86c9b26c9b26c9d1: 48.757 ns, rejected 0/10000
->>>> out of line llmulshft: 0x86c9b26d0000001e: 11.085 ns, rejected 1/10000
->>>> out of line nodiv_llimd: 0x86c9b26c9b26c9d1: 17.770 ns, rejected 1/100=
-00
->>>>
->>>> unsigned operation: 0x03ffffffffffffff * 1000000000 / 33000000
->>>> inline calibration: 0x0000000000000000: 28.749 ns, rejected 1/10000
->>>> inlined nodiv_ullimd: 0x79364d9364d9362f: 16.264 ns, rejected 0/10000
->>>> out of line calibration: 0x0000000000000000: 30.001 ns, rejected 0/100=
-00
->>>> out of line nodiv_ullimd: 0x79364d9364d9362f: 20.463 ns, rejected
->>>> 1/10000
->>>> ++ /usr/xenomai/bin/clocktest -T 30
->>>> Xenomai Posix skin init: pthread_setschedparam: Function not implement=
-ed
->>>>
->>>>
->>>> Only latency seems working.
->>>>
->>>> _______________________________________________
->>>> Xenomai mailing list
->>>> Xenomai@xenomai.org
->>>> http://www.xenomai.org/mailman/listinfo/xenomai
->>>>
->>>
->>>
->>> --
->>> Philippe.
->>
->>
->
->
-> --
-> Philippe.
+	virq = __gpio_to_irq(HYPHY_IRQ_GPIO);
+	if (virq < 0) {
+		printk(KERN_ERR "%s: could not map gpio %d to virq \n", __func__, HYPHY_IRQ_GPIO);
+		return virq;
+	}
+      err = request_irq(virq, hyphy20G_irq, 0, hyphy20G_dev.name, &hyphy20G_dev);
 
+In other words, you install the irq handler on the virtual irq number returned from __gpio_to_irq. The above 
+code works in my system, i.e., the hyphy20G_irq handler is called on an interrupt.
+
+However, if I use:
+
+err = rt_intr_create(intrObj, "HyPhyIRQ", virq, hyphy20G_irq, NULL, 0);
+rt_intr_enable(intrObj);
+
+then the hyphy20G_irq handler is not called on an interrupt. I realize that interrupt handlers are 
+recommended to be implemented in user space, but a user space implementation does not work either, 
+so I moved into the kernel to see if I could get something to work.
+
+Is it possible to install an Xenomai ISR on a powerpc virtual irq? 
+
+I have attached the full driver code.
+
+Chris Stone
+Embedded Linux Architect
+Optelian
+1 Brewer Hunt Way
+Ottawa, Ontario K2K 2B5
+
+Phone: 613-287-2000 x2106
+
+www.optelian.com
+
+-------------- next part --------------
+An embedded and charset-unspecified text was scrubbed...
+Name: hyphypcie.c
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20120607/b899a195/attachment.c>
+-------------- next part --------------
+An embedded and charset-unspecified text was scrubbed...
+Name: hyphypcie.h
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20120607/b899a195/attachment.h>
