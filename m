@@ -1,12 +1,13 @@
-From: Chris Stone <chris.stone@optelian.com>
-Date: Fri, 8 Jun 2012 15:00:50 +0000
-Message-ID: <623784B6C75D274389918D358E89E8BB0B7FF29D@OPTELIAN5.optelian.local>
-References: <623784B6C75D274389918D358E89E8BB0B7FF136@OPTELIAN5.optelian.local>
-	<4FD1A689.8050107@xenomai.org> 
-Content-Language: en-US
+Message-ID: <4FD216BD.3080409@xenomai.org>
+Date: Fri, 08 Jun 2012 17:14:05 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+References: <623784B6C75D274389918D358E89E8BB0B7FF136@OPTELIAN5.optelian.local>
+	<4FD1A689.8050107@xenomai.org>
+	<623784B6C75D274389918D358E89E8BB0B7FF282@OPTELIAN5.optelian.local>
+In-Reply-To: <623784B6C75D274389918D358E89E8BB0B7FF282@OPTELIAN5.optelian.local>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] GPIO irq handler on powerpc.
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -16,14 +17,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Chris Stone <chris.stone@optelian.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-SSBzaG91bGRuJ3QgYmUgZW1iZWRkaW5nIGRpZmZzIGludG8gZW1haWwsIGVzcGVjaWFsbHkgd2hl
-biB3ZSB1c2UgT3V0bG9vay4gU28sDQphdHRhY2hlZCBpcyBhIHBhdGNoIGZvciB0aGUgY2hhbmdl
-IEkgbWFkZS4gSG9wZWZ1bGx5LCB0aGF0IGlzIG1vcmUgdXNlZnVsLg0KDQpDaGVlcnMsDQogICBD
-aHJpcy4NCg0KDQotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24t
-dGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBpcGlwZS1tcGM4eHh4LWdwaW8u
-cGF0Y2gKVHlwZTogYXBwbGljYXRpb24vb2N0ZXQtc3RyZWFtClNpemU6IDQ1OSBieXRlcwpEZXNj
-OiBpcGlwZS1tcGM4eHh4LWdwaW8ucGF0Y2gKVVJMOiA8aHR0cDovL3d3dy54ZW5vbWFpLm9yZy9w
-aXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDEyMDYwOC9iNDM3Mzg5Zi9hdHRhY2htZW50
-Lm9iaj4K
+On 06/08/2012 04:50 PM, Chris Stone wrote:
+
+> There was a call to generic_handle_irq that should have been calling
+> ipipe_handle_chained_irq so I have a fix for the problem. Here is a
+> diff:
+>
+> diff -r 0f7a4ec77dc0 arch/powerpc/sysdev/mpc8xxx_gpio.c
+> --- a/arch/powerpc/sysdev/mpc8xxx_gpio.c        Mon Jun 04 11:04:14 2012 -0400
+> +++ b/arch/powerpc/sysdev/mpc8xxx_gpio.c        Fri Jun 08 10:39:40 2012 -0400
+> @@ -151,7 +151,7 @@
+>
+>          mask = in_be32(mm->regs + GPIO_IER)&  in_be32(mm->regs + GPIO_IMR);
+>          if (mask)
+> -               generic_handle_irq(irq_linear_revmap(mpc8xxx_gc->irq,
+> +               ipipe_handle_chained_irq(irq_linear_revmap(mpc8xxx_gc->irq,
+>                                                       32 - ffs(mask)));
+>   }
+>
+> I did not see this in the core-3.2 branch of the ipipe git, so you may need to
+> merge this in. Let me know if I should be providing this fix in another form.
+>
+
+This won't apply to a mainline 3.2.x kernel. Are these bits part of a 
+vendor-specific tree?
+
+-- 
+Philippe.
+
