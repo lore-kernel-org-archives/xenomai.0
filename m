@@ -1,12 +1,15 @@
-Message-ID: <4FD1AA3F.2000607@xenomai.org>
-Date: Fri, 08 Jun 2012 09:31:11 +0200
+Message-ID: <4FD1C3EE.1000005@xenomai.org>
+Date: Fri, 08 Jun 2012 11:20:46 +0200
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <623784B6C75D274389918D358E89E8BB0B7FF136@OPTELIAN5.optelian.local>
-In-Reply-To: <623784B6C75D274389918D358E89E8BB0B7FF136@OPTELIAN5.optelian.local>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+References: <CAKKWdtfz7+pRjjbE6Ev4zJNZpa45axMePyVar+3MyRyMvcp8aA@mail.gmail.com>	<4FCF1517.3010904@xenomai.org>	<CAKKWdtfRyuhDzmvCC-WM66+=ncs+ocbdUuop2TRNThsj6ZAy6g@mail.gmail.com>	<4FCF1ED5.5000403@xenomai.org>	<CAKKWdtd6p2-xHH1FdjVzbX-raNtDkvMemALrQBJMgoTb1dScnw@mail.gmail.com>	<4FCF2751.5070700@xenomai.org>	<4FCF4D05.3070502@xenomai.org>	<4FCF58AF.5040106@xenomai.org>	<4FCF5A4C.60704@xenomai.org>	<4FCF5DED.8060007@xenomai.org>	<4FCF60CD.8000709@xenomai.org>	<4FCF6152.7010002@xenomai.org>	<4FCF62DD.10102@xenomai.org>
+	<4FCF68CA.8010206@xenomai.org>	<4FCF713F.1030603@xenomai.org>
+	<4FCF7418.4020805@xenomai.org>	<4FCF7576.8030201@xenomai.org>
+	<4FCF9A1E.6090706@xenomai.org> <4FCF9AAD.7020707@xenomai.org>
+In-Reply-To: <4FCF9AAD.7020707@xenomai.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] GPIO irq handler on powerpc.
+Subject: Re: [Xenomai] xenomai-2.6.0 instrumentation commands not executing
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,59 +18,126 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Chris Stone <chris.stone@optelian.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Xenomai@xenomai.org
 
-On 06/07/2012 11:16 PM, Chris Stone wrote:
-> I am using Xenomai 2.6.0 on kernel 3.0.13, with adeos-ipipe-3.0.13-powerpc-2.13-06 applied. My target CPU
-> is Freescale MPC8378.
+On 06/06/2012 08:00 PM, Gilles Chanteperdrix wrote:
+> On 06/06/2012 07:57 PM, Gilles Chanteperdrix wrote:
+>> On 06/06/2012 05:21 PM, Philippe Gerum wrote:
+>>> On 06/06/2012 05:15 PM, Gilles Chanteperdrix wrote:
+>>>> On 06/06/2012 05:03 PM, Philippe Gerum wrote:
+>>>>> On 06/06/2012 04:27 PM, Gilles Chanteperdrix wrote:
+>>>>>> On 06/06/2012 04:02 PM, Gilles Chanteperdrix wrote:
+>>>>>>> On 06/06/2012 03:55 PM, Gilles Chanteperdrix wrote:
+>>>>>>>> On 06/06/2012 03:53 PM, Philippe Gerum wrote:
+>>>>>>>>> On 06/06/2012 03:41 PM, Gilles Chanteperdrix wrote:
+>>>>>>>>>> On 06/06/2012 03:25 PM, Philippe Gerum wrote:
+>>>>>>>>>>> On 06/06/2012 03:18 PM, Gilles Chanteperdrix wrote:
+>>>>>>>>>>>> On 06/06/2012 02:28 PM, Philippe Gerum wrote:
+>>>>>>>>>>>>> On 06/06/2012 11:48 AM, Philippe Gerum wrote:
+>>>>>>>>>>>>>> On 06/06/2012 11:18 AM, ali hagigat wrote:
+>>>>>>>>>>>>>>> Much appreciate for the reply, Mr. Gerum. Here is the result of ldd
+>>>>>>>>>>>>>>> command:
+>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>
+>>>>>>>>>>>>>> http://www.xenomai.org/pipermail/xenomai-help/2011-12/msg00012.html
+>>>>>>>>>>>>>
+>>>>>>>>>>>>> Alternatively, this patch may work as well (not tested, but this
+>>>>>>>>>>>>> looks like a former issue we had with aggressive optimizers):
+>>>>>>>>>>>>>
+>>>>>>>>>>>>> diff --git a/src/skins/posix/init.c b/src/skins/posix/init.c
+>>>>>>>>>>>>> index 7a338a0..9c7849e 100644
+>>>>>>>>>>>>> --- a/src/skins/posix/init.c
+>>>>>>>>>>>>> +++ b/src/skins/posix/init.c
+>>>>>>>>>>>>> @@ -43,6 +43,7 @@ void pse51_clock_init(int);
+>>>>>>>>>>>>>       static __attribute__ ((constructor))
+>>>>>>>>>>>>>       void __init_posix_interface(void)
+>>>>>>>>>>>>>       {
+>>>>>>>>>>>>> +	volatile pthread_t tid = pthread_self();
+>>>>>>>>>>>>>       #ifndef CONFIG_XENO_LIBS_DLOPEN
+>>>>>>>>>>>>>       	struct sched_param parm;
+>>>>>>>>>>>>>       	int policy;
+>>>>>>>>>>>>> @@ -80,14 +81,14 @@ void __init_posix_interface(void)
+>>>>>>>>>>>>>
+>>>>>>>>>>>>>       	/* Don't use auto-shadowing if we are likely invoked from dlopen. */
+>>>>>>>>>>>>>       #ifndef CONFIG_XENO_LIBS_DLOPEN
+>>>>>>>>>>>>> -	err = __real_pthread_getschedparam(pthread_self(),&policy,&parm);
+>>>>>>>>>>>>> +	err = __real_pthread_getschedparam(tid,&policy,&parm);
+>>>>>>>>>>>>>       	if (err) {
+>>>>>>>>>>>>>       		fprintf(stderr, "Xenomai Posix skin init: "
+>>>>>>>>>>>>>       			"pthread_getschedparam: %s\n", strerror(err));
+>>>>>>>>>>>>>       		exit(EXIT_FAILURE);
+>>>>>>>>>>>>>       	}
+>>>>>>>>>>>>>
+>>>>>>>>>>>>> -	err = __wrap_pthread_setschedparam(pthread_self(), policy,&parm);
+>>>>>>>>>>>>> +	err = __wrap_pthread_setschedparam(tid, policy,&parm);
+>>>>>>>>>>>>>       	if (err) {
+>>>>>>>>>>>>>       		fprintf(stderr, "Xenomai Posix skin init: "
+>>>>>>>>>>>>>       			"pthread_setschedparam: %s\n", strerror(err));
+>>>>>>>>>>>>
+>>>>>>>>>>>> There should not be any issue here, as the pthread_self() is passed as
+>>>>>>>>>>>> an argument to the called functions, the syscall is not inlined directly.
+>>>>>>>>>>>>
+>>>>>>>>>>>
+>>>>>>>>>>> Did you get any disassembly of the faulty code when suggesting
+>>>>>>>>>>> -fno-omit-frame-pointer last time you did?
+>>>>>>>>>>>
+>>>>>>>>>> No, but I had experienced the problem first hand.
+>>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>> It would be interesting to know why we have to force a frame pointer in
+>>>>>>>>> there. I'm not comfortable with voodoo fixing, that bug might bite later
+>>>>>>>>> on as gcc's optimizer is unlikely to become less aggressive over time.
+>>>>>>>>>
+>>>>>>>> Ah this, I know. I have posted a mail where I explained the problem. I
+>>>>>>>> am a bit in a short schedule here, will post the link tonight.
+>>>>>>>>
+>>>>>>> http://xenomai.org/pipermail/xenomai-core/2011-08/msg00029.html
+>>>>>>>
+>>>>>>
+>>>>>> In the mails following this one, I found how to fix the assembly to work
+>>>>>> in the omit-frame-pointer case. The real problem is that, at compilation
+>>>>>> time, we have no command-line #defined variable telling us whether
+>>>>>> compiling with frame pointers enabled. And it does not seem easy to
+>>>>>> write a configure test script, which tests whether frame pointers are
+>>>>>> enabled or not.
+>>>>>>
+>>>>>
+>>>>> I'd suggest that at some point, we move all the syscall trampolines out
+>>>>> of line, and specifically build the resulting file forcing
+>>>>> -fno-omit-frame-pointer. Such inlining will always be fragile until we
+>>>>> actually control the way that compilation unit is built, regardless of
+>>>>> the general settings for CFLAGS.
+>>>>>
+>>>> In the current 2.6 repository, we force -fno-omit-frame-pointer on x86_32.
+>>>>
+>>>
+>>> Yes, but that is crappy. The point is that we don't want to force this
+>>> for all userland bits. We'd only need this for syscall trampolines.
+>>>
+>> We currently have different flags for compiling xenomai than for passing
+>> to the applications (via xeno-config). The problem is that I am not sure
+>> it will not break for instance calling "backtrace" in gdb when breaking
+>> inside a xenomai function.
+>>
+> (mixing code compiled without frame pointers with code compiled with
+> frame pointers I mean).
 >
-> On a powerpc, GPIO's are mapped to virtual irqs. Thus, in order to install an irq handler for a gpio
-> interrupt, one must do the following in the kernel:
->
-> 	err = gpio_request(HYPHY_IRQ_GPIO, NULL);
-> 	if (err<0) {
-> 		printk(KERN_ERR "%s: could not request gpio %d, rc %d\n", __func__, HYPHY_IRQ_GPIO, err);
-> 		return err;
-> 	}
-> 	err = gpio_direction_input(HYPHY_IRQ_GPIO);
-> 	if (err<0) {
-> 		printk(KERN_ERR "%s: could not set gpio %d to input, rc %d\n", __func__, HYPHY_IRQ_GPIO, err);
-> 		return err;
-> 	}
->
-> 	virq = __gpio_to_irq(HYPHY_IRQ_GPIO);
-> 	if (virq<  0) {
-> 		printk(KERN_ERR "%s: could not map gpio %d to virq \n", __func__, HYPHY_IRQ_GPIO);
-> 		return virq;
-> 	}
->        err = request_irq(virq, hyphy20G_irq, 0, hyphy20G_dev.name,&hyphy20G_dev);
->
-> In other words, you install the irq handler on the virtual irq number returned from __gpio_to_irq. The above
-> code works in my system, i.e., the hyphy20G_irq handler is called on an interrupt.
->
-> However, if I use:
->
-> err = rt_intr_create(intrObj, "HyPhyIRQ", virq, hyphy20G_irq, NULL, 0);
-> rt_intr_enable(intrObj);
->
-> then the hyphy20G_irq handler is not called on an interrupt. I realize that interrupt handlers are
-> recommended to be implemented in user space, but a user space implementation does not work either,
 
-I believe this is a typo, but just for the record: the rt_intr* API is 
-deprecated, and interrupt handlers in user-space over Xenomai are NOT 
-recommended.
+The only issue is with frame elimination starting with -O2 and above, 
+otherwise the backtraces are clean over gdb (just checked), at least 
+there does not seem to be any additional problem introduced by mixing bp 
+and no-bp. At any rate, -O0 -g is recommended to get clean and detailed 
+(back)traces anyway, and this is what we pick when --enable-debug is given.
 
-> so I moved into the kernel to see if I could get something to work.
->
-> Is it possible to install an Xenomai ISR on a powerpc virtual irq?
+We should move each existing inline XENOMAI_SYS/SKINCALL macro into its 
+own C trampoline, group all trampolines into separate compilation units, 
+and build each of these units with -fno-omit-frame-pointer unconditionally.
 
-Xenomai, and more specifically the I-pipe does interface with irq 
-numbers defined in the kernel namespace, so yes, virqs is what we always 
-use internally for powerpc.
-
-You may want to check whether that GPIO is actually chained from a 
-multiplex parent IRQ.
+-forge is a good candidate for this, since the number of syscall 
+trampolines shrunk dramatically compared to 2.x. If any issue would be 
+easily detected based on the output of the new "slackspot" tracer we 
+have there.
 
 -- 
 Philippe.
