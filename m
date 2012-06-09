@@ -1,5 +1,5 @@
-Message-ID: <4FD2EB49.1030105@xenomai.org>
-Date: Sat, 09 Jun 2012 08:20:57 +0200
+Message-ID: <4FD2FA2D.40407@xenomai.org>
+Date: Sat, 09 Jun 2012 09:24:29 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <CAGTNcBt+DrdbxnewSxFi3gJjnHKrgE_rB8OJaRvMQWe8uX8ORg@mail.gmail.com>
@@ -25,45 +25,9 @@ On 06/09/2012 03:42 AM, Josh Bowman wrote:
 > 
 > Sorry about the horrible formatting on that. Hoping this is
 > easier to read:
-> 
-> I'm trying to update our systems to use a new kernel and
-> Xenomai 2.6.0, with ipipe 2.6.38.8-x86-2.11-02. (Previously,
-> I've tested 2.5.6 with ipipe 2.6.37-x86-2.9.00; there was no
-> ipipe log with that version.)
-> 
-> Everything seems to be running fine, but I get an error
-> message and a call trace in the kernel logs. The message
-> is "I-pipe: Detected illicit call from domain 'Xenomai'".
-> This happens pretty much as soon as our first Xenomai
-> tasks start running, and it doesn't appear to be hurting
-> anything.
-> 
-> The tasks mentioned in the tracer log are both low-priority
-> native-skin tasks that use Xenomai services to communicate
-> with our realtime tasks, but also use Linux services.  The
-> configClient task uses rt_mutex and condition variables to
-> receive requests from another Xenomai task in the same
-> process. Its job is to talk on a tcp socket with a java
-> server. It expects to go into secondary mode when doing that,
->  and is careful not to hold the rt_mutex when blocking. (But
-> I mention that, because I'm not sure if the ipipe message
-> could be caused by a mistake of that sort in userspace.)
-> 
-> configClient sometimes also sends rt_queue messages to the
-> loggingTask, which is also mentioned in the tracer log. (It
-> looks like the loggingTask had recently received a message
-> from somewhere, but I don't understand the trace well enough
-> to say for certain whether that message came from the
-> configClient.) When loggingTask receives a message, it will
-> write() it to disk; again, it expects to go to secondary
-> mode for that.
-> 
-> We're building Xenomai for 32-bit x86, with --enable-x86-sep
-> and CFLAGS="-fno-omit-frame-pointer".
-> 
-> The trace follows.
 
-Could you try disabling kgdb support in kernel configuration?
+Was the original mail sent in html? If yes could you send me the
+original mail privately?
 
 -- 
                                                                 Gilles.
