@@ -1,17 +1,17 @@
-From: <dietmar.schindler@manroland.com>
-Date: Wed, 13 Jun 2012 09:32:19 +0000
-Message-ID: <8236197CA3DA864F9EF20609D9887263B7F88212@rrxchngmbx01.mro.roland-man.biz>
+Message-ID: <4FD8622F.2050006@grandegger.com>
+Date: Wed, 13 Jun 2012 11:49:35 +0200
+From: Wolfgang Grandegger <wg@grandegger.com>
+MIME-Version: 1.0
 References: <CAKKWdtc6Py7A9YuJ1nNzwmq0SiEcrP_D8pztoo_eNWsp9EAsFg@mail.gmail.com>
 	<4FC637EB.90908@xenomai.org>
 	<CAKKWdte3jE_kW8esz25=gYeYU_M1cmOmftgbfMs9RqyfBCr9Kw@mail.gmail.com>
 	<4FCDB0FD.1080309@xenomai.org>
 	<8236197CA3DA864F9EF20609D9887263B7F87D1A@rrxchngmbx01.mro.roland-man.biz>
 	<4FCDC08E.9030101@xenomai.org>
-In-Reply-To: <4FCDC08E.9030101@xenomai.org>
-Content-Language: de-DE
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
+	<8236197CA3DA864F9EF20609D9887263B7F88212@rrxchngmbx01.mro.roland-man.biz>
+In-Reply-To: <8236197CA3DA864F9EF20609D9887263B7F88212@rrxchngmbx01.mro.roland-man.biz>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Subject: Re: [Xenomai] ftrace
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -21,40 +21,61 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
+To: dietmar.schindler@manroland.com
 Cc: Xenomai@xenomai.org
 
-PiBGcm9tOiBQaGlsaXBwZSBHZXJ1bSBbbWFpbHRvOnJwbUB4ZW5vbWFpLm9yZ10NCj4gU2VudDog
-VHVlc2RheSwgSnVuZSAwNSwgMjAxMiAxMDoxNyBBTQ0KPg0KPiBPbiAwNi8wNS8yMDEyIDEwOjA2
-IEFNLCBkaWV0bWFyLnNjaGluZGxlckBtYW5yb2xhbmQuY29tIHdyb3RlOg0KPiA+IEEgWGVub21h
-aS1wYXRjaGVkIDIuNi4zNCBrZXJuZWwgKHBwYyBHTlUvTGludXgpIGNyYXNoZXMgd2hlbiBpc3N1
-aW5nIHRoZQ0KPiBjb21tYW5kDQo+ID4NCj4gPiBlY2hvIGZ1bmN0aW9uPi9zeXMva2VybmVsL2Rl
-YnVnL3RyYWNpbmcvY3VycmVudF90cmFjZXINCj4gPg0KPiA+IChzb21ldGltZXMgZGlzcGxheWlu
-ZyBOSVAgaW4gYSBmdW5jdGlvbiBmcm9tDQo+ICJzb3VyY2Uva2VybmVsL3RyYWNlL3JpbmdfYnVm
-ZmVyLmMiLCBzb21ldGltZXMgd2l0aCBubyBtZXNzYWdlKS4NCj4gPg0KPiA+IEFyZSBYZW5vbWFp
-IGFuZCBmdHJhY2UgaW5jb21wYXRpYmxlPw0KPiA+DQo+DQo+IE5vLCBidXQgc29tZSBmdHJhY2Ug
-Yml0cyBoYXZlIHRvIGJlIG1hZGUgcGlwZWxpbmUtYXdhcmUuIFRoZSBnZW5lcmljDQo+IG9uZXMg
-c2hvdWxkIGJlLCBidXQgc29tZSBwb3dlcnBjLXNwZWNpZmljIGZpeCB1cHMgbWlnaHQgYmUgbWlz
-c2luZy4gSSdtDQo+IG5vdCB1c2luZy90ZXN0aW5nIGZ0cmFjZSByb3V0aW5lbHkgd2hlbiB1cGdy
-YWRpbmcgcGF0Y2hlcy4gQWxzbywgMi42LjM0DQo+IGlzIGZhaXJseSBvbGQuDQoNCmh0dHA6Ly93
-d3cueGVub21haS5vcmcvaW5kZXgucGhwL0ktcGlwZTpUcmFjZXIjQ29uZmlndXJhdGlvbiBzYXlz
-OiAiRnRyYWNlJ3MgZnVuY3Rpb24gYW5kIGdyYXBoIHRyYWNlcnMgdGhlbXNlbHZlcyBhcmUgc3Rp
-bGwgbm90IHVzYWJsZSBvdmVyIEktcGlwZSBrZXJuZWxzLCBsYXRlc3QgSS1waXBlIHdpbGwgcHJl
-dmVudCBjb25mbGljdGluZyB1c2UuIg0KDQpJJ20gY29uZnVzZWQgLSBJIGNhbid0IGdhdGhlciBm
-cm9tIHRoaXMgd2hldGhlciB0aGUgRnVuY3Rpb24gVHJhY2VyIG1pZ2h0IHdvcmsgb3IgY2FuJ3Qg
-cG9zc2libHkgd29yay4NCg0KLS0NCkJlc3QgUmVnYXJkcywNCkRpZXRtYXINCl9fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX18NCm1hbnJvbGFuZCB3ZWIgc3lzdGVtcyBHbWJI
-IC0tIE1hbmFnaW5nIERpcmVjdG9yOiBVd2UgTMO8ZGVycw0KUmVnaXN0ZXJlZCBPZmZpY2U6IEF1
-Z3NidXJnIC0tIFRyYWRlIFJlZ2lzdGVyOiBBRyBBdWdzYnVyZyAtLSBIUkItTm8uIDI2ODE2IC0t
-IFZBVDogREUyODEzODk4NDANCg0KQ29uZmlkZW50aWFsaXR5IG5vdGU6DQpUaGlzIGVNYWlsIGFu
-ZCBhbnkgZmlsZXMgdHJhbnNtaXR0ZWQgd2l0aCBpdCBhcmUgY29uZmlkZW50aWFsIGFuZCBpbnRl
-bmRlZCBzb2xlbHkgZm9yIHRoZSB1c2Ugb2YgdGhlIGluZGl2aWR1YWwgb3IgZW50aXR5IHRvIHdo
-b20gdGhleSBhcmUgYWRkcmVzc2VkLiBJZiB5b3UgYXJlIG5vdCB0aGUgaW50ZW5kZWQgcmVjaXBp
-ZW50LCB5b3UgYXJlIGhlcmVieSBub3RpZmllZCB0aGF0IGFueSB1c2Ugb3IgZGlzc2VtaW5hdGlv
-biBvZiB0aGlzIGNvbW11bmljYXRpb24gaXMgc3RyaWN0bHkgcHJvaGliaXRlZC4gSWYgeW91IGhh
-dmUgcmVjZWl2ZWQgdGhpcyBlTWFpbCBpbiBlcnJvciwgcGxlYXNlIG5vdGlmeSB1cyBpbW1lZGlh
-dGVseSB2aWEgaW5mb0BtYW5yb2xhbmQtd2ViLmNvbSwgdGhlbiBkZWxldGUgdGhpcyBlTWFpbC4N
-Cg0KLSBQbGVhc2UgY29uc2lkZXIgeW91ciBlbnZpcm9ubWVudGFsIHJlc3BvbnNpYmlsaXR5IGJl
-Zm9yZSBwcmludGluZyB0aGlzIGVNYWlsDQpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fDQo=
+Hi Dietmar,
 
+On 06/13/2012 11:32 AM, dietmar.schindler@manroland.com wrote:
+>> From: Philippe Gerum [mailto:rpm@xenomai.org]
+>> Sent: Tuesday, June 05, 2012 10:17 AM
+>>
+>> On 06/05/2012 10:06 AM, dietmar.schindler@manroland.com wrote:
+>>> A Xenomai-patched 2.6.34 kernel (ppc GNU/Linux) crashes when issuing the
+>> command
+>>>
+>>> echo function>/sys/kernel/debug/tracing/current_tracer
+>>>
+>>> (sometimes displaying NIP in a function from
+>> "source/kernel/trace/ring_buffer.c", sometimes with no message).
+>>>
+>>> Are Xenomai and ftrace incompatible?
+>>>
+>>
+>> No, but some ftrace bits have to be made pipeline-aware. The generic
+>> ones should be, but some powerpc-specific fix ups might be missing. I'm
+>> not using/testing ftrace routinely when upgrading patches. Also, 2.6.34
+>> is fairly old.
+> =
 
+> http://www.xenomai.org/index.php/I-pipe:Tracer#Configuration says: "Ftrac=
+e's function and graph tracers themselves are still not usable over I-pipe =
+kernels, latest I-pipe will prevent conflicting use."
+> =
+
+> I'm confused - I can't gather from this whether the Function Tracer might=
+ work or can't possibly work.
+
+If the iPipe-Tracer is enabled in the Kernel, you can't use Linux ftrace
+via "/sys/kernel/debug/tracing" any more. I checked that for PowerPC up
+to Linux 3.2.1. In contrast, the iPipe-Tracer is controlled by files in
+/proc/ipipe/trace and that works. For your kernel version you need the
+attached two patches, though.
+
+Wolfgang.
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: adeos-ipipe-2.6.34.4-powerpc-2.10-05-tracer.patch
+Type: text/x-diff
+Size: 592 bytes
+Desc: not available
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20120613/c8f1054=
+2/attachment.patch>
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: adeos-ipipe-2.6.34.4-powerpc-2.10-05-tsc2us.patch
+Type: text/x-diff
+Size: 1279 bytes
+Desc: not available
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20120613/c8f1054=
+2/attachment-0001.patch>
