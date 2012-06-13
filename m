@@ -1,13 +1,18 @@
-Message-ID: <4FD853FC.4080009@xenomai.org>
-Date: Wed, 13 Jun 2012 10:49:00 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: <dietmar.schindler@manroland.com>
+Date: Wed, 13 Jun 2012 09:32:19 +0000
+Message-ID: <8236197CA3DA864F9EF20609D9887263B7F88212@rrxchngmbx01.mro.roland-man.biz>
+References: <CAKKWdtc6Py7A9YuJ1nNzwmq0SiEcrP_D8pztoo_eNWsp9EAsFg@mail.gmail.com>
+	<4FC637EB.90908@xenomai.org>
+	<CAKKWdte3jE_kW8esz25=gYeYU_M1cmOmftgbfMs9RqyfBCr9Kw@mail.gmail.com>
+	<4FCDB0FD.1080309@xenomai.org>
+	<8236197CA3DA864F9EF20609D9887263B7F87D1A@rrxchngmbx01.mro.roland-man.biz>
+	<4FCDC08E.9030101@xenomai.org>
+In-Reply-To: <4FCDC08E.9030101@xenomai.org>
+Content-Language: de-DE
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <CADULeAbdKdwKp_3kvHkAc9YYKFFUo7mr2qqmLJ5Ok3XeeiTQAQ@mail.gmail.com>	<CADULeAYv_UfY0PTHX3kA7e7OL7KqKRz=aKGpTUi2SoWwx6qMMg@mail.gmail.com>	<4FD78C87.5020000@xenomai.org>
-	<CADULeAZWWSwv=jnw3ozAn8LRhP6+6fR5UsuPzQED6-S6KGJ53w@mail.gmail.com>
-In-Reply-To: <CADULeAZWWSwv=jnw3ozAn8LRhP6+6fR5UsuPzQED6-S6KGJ53w@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Rtdm driver debugging techniques.
+Subject: Re: [Xenomai] ftrace
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,19 +21,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: mohammad khalid shaik <khalid.eee@gmail.com>
-Cc: xenomai@xenomai.org
+Cc: Xenomai@xenomai.org
 
-On 06/13/2012 10:32 AM, mohammad khalid shaik wrote:
-> Thanks for your quick reply. I have one more question. whether kgdb setup
-> which is handy to debug the linux kernel can be used to debug xenomai?
-> 
+PiBGcm9tOiBQaGlsaXBwZSBHZXJ1bSBbbWFpbHRvOnJwbUB4ZW5vbWFpLm9yZ10NCj4gU2VudDog
+VHVlc2RheSwgSnVuZSAwNSwgMjAxMiAxMDoxNyBBTQ0KPg0KPiBPbiAwNi8wNS8yMDEyIDEwOjA2
+IEFNLCBkaWV0bWFyLnNjaGluZGxlckBtYW5yb2xhbmQuY29tIHdyb3RlOg0KPiA+IEEgWGVub21h
+aS1wYXRjaGVkIDIuNi4zNCBrZXJuZWwgKHBwYyBHTlUvTGludXgpIGNyYXNoZXMgd2hlbiBpc3N1
+aW5nIHRoZQ0KPiBjb21tYW5kDQo+ID4NCj4gPiBlY2hvIGZ1bmN0aW9uPi9zeXMva2VybmVsL2Rl
+YnVnL3RyYWNpbmcvY3VycmVudF90cmFjZXINCj4gPg0KPiA+IChzb21ldGltZXMgZGlzcGxheWlu
+ZyBOSVAgaW4gYSBmdW5jdGlvbiBmcm9tDQo+ICJzb3VyY2Uva2VybmVsL3RyYWNlL3JpbmdfYnVm
+ZmVyLmMiLCBzb21ldGltZXMgd2l0aCBubyBtZXNzYWdlKS4NCj4gPg0KPiA+IEFyZSBYZW5vbWFp
+IGFuZCBmdHJhY2UgaW5jb21wYXRpYmxlPw0KPiA+DQo+DQo+IE5vLCBidXQgc29tZSBmdHJhY2Ug
+Yml0cyBoYXZlIHRvIGJlIG1hZGUgcGlwZWxpbmUtYXdhcmUuIFRoZSBnZW5lcmljDQo+IG9uZXMg
+c2hvdWxkIGJlLCBidXQgc29tZSBwb3dlcnBjLXNwZWNpZmljIGZpeCB1cHMgbWlnaHQgYmUgbWlz
+c2luZy4gSSdtDQo+IG5vdCB1c2luZy90ZXN0aW5nIGZ0cmFjZSByb3V0aW5lbHkgd2hlbiB1cGdy
+YWRpbmcgcGF0Y2hlcy4gQWxzbywgMi42LjM0DQo+IGlzIGZhaXJseSBvbGQuDQoNCmh0dHA6Ly93
+d3cueGVub21haS5vcmcvaW5kZXgucGhwL0ktcGlwZTpUcmFjZXIjQ29uZmlndXJhdGlvbiBzYXlz
+OiAiRnRyYWNlJ3MgZnVuY3Rpb24gYW5kIGdyYXBoIHRyYWNlcnMgdGhlbXNlbHZlcyBhcmUgc3Rp
+bGwgbm90IHVzYWJsZSBvdmVyIEktcGlwZSBrZXJuZWxzLCBsYXRlc3QgSS1waXBlIHdpbGwgcHJl
+dmVudCBjb25mbGljdGluZyB1c2UuIg0KDQpJJ20gY29uZnVzZWQgLSBJIGNhbid0IGdhdGhlciBm
+cm9tIHRoaXMgd2hldGhlciB0aGUgRnVuY3Rpb24gVHJhY2VyIG1pZ2h0IHdvcmsgb3IgY2FuJ3Qg
+cG9zc2libHkgd29yay4NCg0KLS0NCkJlc3QgUmVnYXJkcywNCkRpZXRtYXINCl9fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX18NCm1hbnJvbGFuZCB3ZWIgc3lzdGVtcyBHbWJI
+IC0tIE1hbmFnaW5nIERpcmVjdG9yOiBVd2UgTMO8ZGVycw0KUmVnaXN0ZXJlZCBPZmZpY2U6IEF1
+Z3NidXJnIC0tIFRyYWRlIFJlZ2lzdGVyOiBBRyBBdWdzYnVyZyAtLSBIUkItTm8uIDI2ODE2IC0t
+IFZBVDogREUyODEzODk4NDANCg0KQ29uZmlkZW50aWFsaXR5IG5vdGU6DQpUaGlzIGVNYWlsIGFu
+ZCBhbnkgZmlsZXMgdHJhbnNtaXR0ZWQgd2l0aCBpdCBhcmUgY29uZmlkZW50aWFsIGFuZCBpbnRl
+bmRlZCBzb2xlbHkgZm9yIHRoZSB1c2Ugb2YgdGhlIGluZGl2aWR1YWwgb3IgZW50aXR5IHRvIHdo
+b20gdGhleSBhcmUgYWRkcmVzc2VkLiBJZiB5b3UgYXJlIG5vdCB0aGUgaW50ZW5kZWQgcmVjaXBp
+ZW50LCB5b3UgYXJlIGhlcmVieSBub3RpZmllZCB0aGF0IGFueSB1c2Ugb3IgZGlzc2VtaW5hdGlv
+biBvZiB0aGlzIGNvbW11bmljYXRpb24gaXMgc3RyaWN0bHkgcHJvaGliaXRlZC4gSWYgeW91IGhh
+dmUgcmVjZWl2ZWQgdGhpcyBlTWFpbCBpbiBlcnJvciwgcGxlYXNlIG5vdGlmeSB1cyBpbW1lZGlh
+dGVseSB2aWEgaW5mb0BtYW5yb2xhbmQtd2ViLmNvbSwgdGhlbiBkZWxldGUgdGhpcyBlTWFpbC4N
+Cg0KLSBQbGVhc2UgY29uc2lkZXIgeW91ciBlbnZpcm9ubWVudGFsIHJlc3BvbnNpYmlsaXR5IGJl
+Zm9yZSBwcmludGluZyB0aGlzIGVNYWlsDQpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fDQo=
 
->From recent posts:
-http://www.xenomai.org/pipermail/xenomai/2012-June/000199.html
-
-It appears the I-pipe patch does not work with kgdb.
-
--- 
-					    Gilles.
 
