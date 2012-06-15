@@ -1,10 +1,9 @@
-Message-ID: <4FDB8C87.2020904@xenomai.org>
-Date: Fri, 15 Jun 2012 21:27:03 +0200
+Message-ID: <4FDB8E52.6000005@xenomai.org>
+Date: Fri, 15 Jun 2012 21:34:42 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CAAvA3H-J-RudJ43bDTu0PfgWZ5mx5Hp7QUq_TizrZ+7NLBBzww@mail.gmail.com>	<4FDB8A07.7080303@xenomai.org>
-	<CAAvA3H9_sdBg-m8FwtGLrEAgnhJ7+2wRM6WUnGHxsyAsSZ0oEQ@mail.gmail.com>
-In-Reply-To: <CAAvA3H9_sdBg-m8FwtGLrEAgnhJ7+2wRM6WUnGHxsyAsSZ0oEQ@mail.gmail.com>
+References: <CAAvA3H-J-RudJ43bDTu0PfgWZ5mx5Hp7QUq_TizrZ+7NLBBzww@mail.gmail.com>
+In-Reply-To: <CAAvA3H-J-RudJ43bDTu0PfgWZ5mx5Hp7QUq_TizrZ+7NLBBzww@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] pre-fault Xenomai thread stacks
@@ -19,37 +18,13 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: Jeff Weber <jwamsc@gmail.com>
 Cc: Xenomai Mailing List <xenomai@xenomai.org>
 
-On 06/15/2012 09:22 PM, Jeff Weber wrote:
-> On Fri, Jun 15, 2012 at 2:16 PM, Gilles Chanteperdrix <
-> gilles.chanteperdrix@xenomai.org> wrote:
-> 
->> On 06/15/2012 09:12 PM, Jeff Weber wrote:
->>> I occasionally run across net lore which recommends "pre-faulting" a
->> stack.
->>>  For example:
->>>
->> https://rt.wiki.kernel.org/index.php/RT_PREEMPT_HOWTO#A_Realtime_.22Hello_World.22_Example
->>>
->>> From my understanding of mlockall(MCL_CURRENT|MCL_FUTURE), all process
->>> memory is paged and locked in.  Thus, a pre-faulting exercise appears
->>> useless.
->>> (I don't care about the main() thread.)  Can you confirm?
->>
->> Last time I checked, only the main thread stack was grown on demand, so
->> required pre-faulting the stack, which is why xenomai takes care of
->> pre-faulting the main thread stack.
->>
->> To verify this, you have to check /proc/self/maps. If the thread stack
->> belongs to a mapping of a size you would not expect, try writing below
->> the limit, to see if you get a fault, or if the mapping grows in
->> /proc/self/maps.
-> 
-> 
-> Shouldn't those cases be covered by MCL_FUTURE?
+On 06/15/2012 09:12 PM, Jeff Weber wrote:
+> I occasionally run across net lore which recommends "pre-faulting" a stack.
+>  For example:
+> https://rt.wiki.kernel.org/index.php/RT_PREEMPT_HOWTO#A_Realtime_.22Hello_World.22_Example
 
-MCL_FUTURE will prevent the memory from being swapped out as soon as the
-stack is grown, but the stack is grown upon page fault. How else would
-you detect that the stack needs to be grown ?
+Note that in order to pre-fault a stack, you do not need to memset the
+whole stack, you can only write a few bytes per stack page.
 
 -- 
                                                                 Gilles.
