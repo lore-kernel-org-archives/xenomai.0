@@ -1,13 +1,12 @@
-Message-ID: <4FDBA50D.6060605@xenomai.org>
-Date: Fri, 15 Jun 2012 23:11:41 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4FDBABEB.90300@xenomai.org>
+Date: Fri, 15 Jun 2012 23:40:59 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <4FDB96AE.4090008@antcom.de>
-In-Reply-To: <4FDB96AE.4090008@antcom.de>
-Content-Type: text/plain; charset=UTF-8
+References: <CAAvA3H9r3kdS-ayZRP-Je==d_ditwyXj43v=6XVB4rSPLiOHtA@mail.gmail.com>
+In-Reply-To: <CAAvA3H9r3kdS-ayZRP-Je==d_ditwyXj43v=6XVB4rSPLiOHtA@mail.gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Debian bug report #677633: Xenomai posix skin : bug
- with nanosleep function
+Subject: Re: [Xenomai] x86 MSI support
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,50 +15,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Roland Stigge <stigge@antcom.de>
-Cc: 677633@bugs.debian.org, Xenomai@xenomai.org
+To: Jeff Weber <jwamsc@gmail.com>
+Cc: Xenomai Mailing List <xenomai@xenomai.org>
 
-On 06/15/2012 10:10 PM, Roland Stigge wrote:
-> 
-> Hi,
-> 
-> The nanosleep_test.c code shows a malfunction of the nanosleep function
-> when a timer periodically triggering a signal.
-> When nanosleep is interrupted the variable holding the rest of the time
-> to sleep is immediately zero.
-> 
-> 
-> 
-> However, no bug is reported without the xenomai's posix skin.
+On 06/15/2012 08:44 PM, Jeff Weber wrote:
+> Is the FAQ line:
+>
+> "The I-pipe patch currently does not support MSI interrupts."
+>
+> still true?  This FAQ is dated to 2008.
+>
 
-The following patch should fix the bug:
-diff --git a/ksrc/skins/posix/clock.c b/ksrc/skins/posix/clock.c
-index 024260d..107ebb0 100644
---- a/ksrc/skins/posix/clock.c
-+++ b/ksrc/skins/posix/clock.c
-@@ -336,15 +336,12 @@ int clock_nanosleep(clockid_t clock_id,
-        if (xnthread_test_info(cur, XNBREAK)) {
+In retrospect, this FAQ entry is somewhat misleading. As Jan pointed out 
+a couple of times already, the I-pipe does handle MSI interrupts 
+properly, but doesn't allow non-root domains to call the IRQ 
+masking/unmasking code for MSI. Since unmasking is usually paired with 
+requesting an IRQ, and masking is paired with releasing it, the 
+restriction should include the request/free calls as well.
 
-                if (flags == 0 && rmtp) {
--                       xnticks_t now, expiry;
-                        xnsticks_t rem;
+There is no reason to mask MSI in the pre-handling code due to their 
+semantics, and therefore no reason to unmask them upon return from the 
+handler, so the restriction turns out to be a non-issue for most use 
+cases. If a primary domain handler really wants to prevent more MSI to 
+come from a given source, then it should quiesce the issuing device.
 
--                       now = clock_get_ticks(clock_id);
--                       expiry = xntimer_get_date(&cur->rtimer);
-+                       rem = xntimer_get_timeout_stopped(&cur->rtimer);
-                        xnlock_put_irqrestore(&nklock, s);
--                       rem = expiry - now;
-
--                       ticks2ts(rmtp, rem > 0 ? rem : 0);
-+                       ticks2ts(rmtp, rem > 1 ? rem : 0);
-                } else
-                        xnlock_put_irqrestore(&nklock, s);
-
-Note however that with xenomai, a signal received during nanosleep will
-trigger a switch to secondary mode. So, this usage is only possible for
-a real-time thread in exceptional conditions (to handle an error for
-instance), not when latency matters.
+> I've been using MSIs and adeos-ipipe-2.6.38.8-x86-2.10-01.patch and haven't
+> seen a problem yet.
+>
 
 -- 
-                                                                Gilles.
+Philippe.
 
