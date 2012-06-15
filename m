@@ -1,13 +1,11 @@
-Message-ID: <4FCF5A4C.60704@xenomai.org>
-Date: Wed, 06 Jun 2012 15:25:32 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <4FDB96AE.4090008@antcom.de>
+Date: Fri, 15 Jun 2012 22:10:22 +0200
+From: Roland Stigge <stigge@antcom.de>
 MIME-Version: 1.0
-References: <CAKKWdtfz7+pRjjbE6Ev4zJNZpa45axMePyVar+3MyRyMvcp8aA@mail.gmail.com>	<4FCF1517.3010904@xenomai.org>	<CAKKWdtfRyuhDzmvCC-WM66+=ncs+ocbdUuop2TRNThsj6ZAy6g@mail.gmail.com>	<4FCF1ED5.5000403@xenomai.org>	<CAKKWdtd6p2-xHH1FdjVzbX-raNtDkvMemALrQBJMgoTb1dScnw@mail.gmail.com>	<4FCF2751.5070700@xenomai.org>
-	<4FCF4D05.3070502@xenomai.org> <4FCF58AF.5040106@xenomai.org>
-In-Reply-To: <4FCF58AF.5040106@xenomai.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] xenomai-2.6.0 instrumentation commands not executing
+Subject: [Xenomai] Debian bug report #677633: Xenomai posix skin : bug with
+ nanosleep function
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,59 +14,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai@xenomai.org
+To: Xenomai@xenomai.org
 
-On 06/06/2012 03:18 PM, Gilles Chanteperdrix wrote:
-> On 06/06/2012 02:28 PM, Philippe Gerum wrote:
->> On 06/06/2012 11:48 AM, Philippe Gerum wrote:
->>> On 06/06/2012 11:18 AM, ali hagigat wrote:
->>>> Much appreciate for the reply, Mr. Gerum. Here is the result of ldd
->>>> command:
->>>>
->>>
->>> http://www.xenomai.org/pipermail/xenomai-help/2011-12/msg00012.html
->>
->> Alternatively, this patch may work as well (not tested, but this
->> looks like a former issue we had with aggressive optimizers):
->>
->> diff --git a/src/skins/posix/init.c b/src/skins/posix/init.c
->> index 7a338a0..9c7849e 100644
->> --- a/src/skins/posix/init.c
->> +++ b/src/skins/posix/init.c
->> @@ -43,6 +43,7 @@ void pse51_clock_init(int);
->>   static __attribute__ ((constructor))
->>   void __init_posix_interface(void)
->>   {
->> +	volatile pthread_t tid = pthread_self();
->>   #ifndef CONFIG_XENO_LIBS_DLOPEN
->>   	struct sched_param parm;
->>   	int policy;
->> @@ -80,14 +81,14 @@ void __init_posix_interface(void)
->>
->>   	/* Don't use auto-shadowing if we are likely invoked from dlopen. */
->>   #ifndef CONFIG_XENO_LIBS_DLOPEN
->> -	err = __real_pthread_getschedparam(pthread_self(),&policy,&parm);
->> +	err = __real_pthread_getschedparam(tid,&policy,&parm);
->>   	if (err) {
->>   		fprintf(stderr, "Xenomai Posix skin init: "
->>   			"pthread_getschedparam: %s\n", strerror(err));
->>   		exit(EXIT_FAILURE);
->>   	}
->>
->> -	err = __wrap_pthread_setschedparam(pthread_self(), policy,&parm);
->> +	err = __wrap_pthread_setschedparam(tid, policy,&parm);
->>   	if (err) {
->>   		fprintf(stderr, "Xenomai Posix skin init: "
->>   			"pthread_setschedparam: %s\n", strerror(err));
->
-> There should not be any issue here, as the pthread_self() is passed as
-> an argument to the called functions, the syscall is not inlined directly.
->
+Hi,
 
-Did you get any disassembly of the faulty code when suggesting 
--fno-omit-frame-pointer last time you did?
+may I present the below bug report from Debian to the noble ranks of
+Xenomai developers.
 
--- 
-Philippe.
+See also http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=677633
+
+Bug or feature? ;-)
+
+Thanks in advance,
+
+Roland
+
+=========================================================================
+Package: xenomai
+Version: 2.6.0
+
+Kernel:2.6.38.8 - Xenomai:2.6.0
+arch:i686 i386 GNU/Linux
+
+Hi,
+
+The nanosleep_test.c code shows a malfunction of the nanosleep function
+when a timer periodically triggering a signal.
+When nanosleep is interrupted the variable holding the rest of the time
+to sleep is immediately zero.
+
+
+
+However, no bug is reported without the xenomai's posix skin.
+
+
+Duchesne Alexandre
+duch.alexandre@gmail.com
 
