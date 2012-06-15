@@ -1,13 +1,10 @@
-Message-ID: <4FDAD6C9.5030001@xenomai.org>
-Date: Fri, 15 Jun 2012 08:31:37 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <DUB116-W720717CF2FC03455E3FC46AFFB0@phx.gbl>
+From: Fabio Visona <fabioviso@hotmail.com>
+Date: Fri, 15 Jun 2012 16:11:44 +0200
 MIME-Version: 1.0
-References: <CAHyVJywDajR-Mwn27kB5mcX8SGeZqwCUWPUVE_v-oCkNg5U8wA@mail.gmail.com>	<4FD9A8BF.6040404@xenomai.org>
-	<CAHyVJyzgeygWe6DszhJR1V7Q0aNu3DEnVewzUJ1o4XwbD3vz+A@mail.gmail.com>
-In-Reply-To: <CAHyVJyzgeygWe6DszhJR1V7Q0aNu3DEnVewzUJ1o4XwbD3vz+A@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Help??
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] Illegal use of supervisor resource
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,50 +13,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Mohit Jandwani <mohitjandwani@gmail.com>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 06/15/2012 03:36 AM, Mohit Jandwani wrote:
-> Hey is it possible to patch linux3.0.15(with arm config) with the help
-> of adeos?
 
-The adeos patch is made for 3.0.13, it may apply, or not, to 3.0.15, you
-have to try it to know.
+>>
+>> Not sure if this issue is related to Xenomai or not=2C however I hope so=
+mebody can give me an hint:
+>> we are getting an error of the following form from time to time:
+>>
+>
+>This is a I-pipe bug=2C caused by a spurious rescheduling over an IRQ=20
+>context (blackfin is a bit special regarding this=2C to say the least).=20
+>You may want to check whether 2.6.35.9-1.16-01 fixes the issue.
+>
+>> Example 1:
+>>
+>> Illegal use of supervisor resource
+>> <5>  - Attempted to use a Supervisor register or instruction from User m=
+ode.
+>> <5>    Supervisor resources are registers and instructions that are rese=
+rved
+>> <5>    for Supervisor use: Supervisor only registers=2C all MMRs=2C and =
+Supervisor
+> <5>    only instructions.
 
-> The kernel code that I have is 3.0.15 and has been patched to make it
-> run on my board(exynos4210).This is the reason why there is no time.c
-> file in my mach-exynos folder because the patch changed it (I am trying
-> to figure out how).
+Thank you! Tests done up to now tell Adeos 2.6.35.9-1.16-01 fixes the issue=
+. We applied it to kernel 2.6.35.13.
 
-For the second time: the name of the file is irrelevant. What you need
-to find is the file which handles the hardware timer. You do not care
-how it is called. time.c in the guide is a shorthand for "the file which
-contains the code handling the hardware timer".
-
-> I can't find the patch for 3.0.13 (but I am searching).
-
-The patch is in gna download area:
-http://download.gna.org/adeos/patches/
-
-However, for what you are trying to do it may make more sense to use git.
-
-You will find the current development of I-pipe on ARM in this repository:
-git://git.xenomai.org/ipipe-gch.git
-
-The branch is named for-ipipe-3.0-arm
-
-> If I have to use Ipipe core, then do I just download the source code and
-> make it to get my patch?
-
-The I-pipe core currently exists only as a git repository. It is the branch
-for-ipipe-3.2-arm in the same repository, or the branche core-3.2, in
-the following repository:
-
-git://git.denx.de/ipipe.git
-
-The address of xenomai mailing list is xenomai@xenomai.org, the other
-addresses are now invalid.
-
--- 
-                                                                Gilles.
-
+Should we want to try upgrading to kernel 3.0 or later (like in official Bl=
+ackfin distributions) in future=2C could you clarify how to patch with Adeo=
+s=2C since the latest official patch in Adeos website for Blackfin is 2.6.3=
+5.9-1.16-01?
+I tried checking your http://git.denx.de/?p=3Dipipe.git=3Ba=3Dsummary but I=
+ do not understand if there are patches in there or  kernel sources already=
+ patched.
+  		 	   		  =
