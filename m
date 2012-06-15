@@ -1,12 +1,12 @@
-Message-ID: <4FD9CA01.4040104@xenomai.org>
-Date: Thu, 14 Jun 2012 13:24:49 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <008b01cd42bb$724478e0$56cd6aa0$@com>
-In-Reply-To: <008b01cd42bb$724478e0$56cd6aa0$@com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] adeos-ipipe-3.0.13-arm-1.18-09.patch broken
+In-Reply-To: <4FD9A8BF.6040404@xenomai.org>
+References: <CAHyVJywDajR-Mwn27kB5mcX8SGeZqwCUWPUVE_v-oCkNg5U8wA@mail.gmail.com>
+	<4FD9A8BF.6040404@xenomai.org>
+Date: Fri, 15 Jun 2012 03:36:29 +0200
+Message-ID: <CAHyVJyzgeygWe6DszhJR1V7Q0aNu3DEnVewzUJ1o4XwbD3vz+A@mail.gmail.com>
+From: Mohit Jandwani <mohitjandwani@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: Re: [Xenomai] Help??
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,24 +15,13 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: George Pontis <GPontis@z9.com>
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, xenomai-help-request@gna.org, xenomai-help@gna.org, xenomai@xenomai.org
 
-On 06/05/2012 03:35 AM, George Pontis wrote:
-> This recently released patch appears to be broken with regard to patching
-> arch/arm/mach-at91/at91sam9g45.c.
-> 
-> The first section of the patch should be applied to around line 32 in
-> similar fashion to the patch for the other micros in the family. However, it
-> is being applied to an entirely different structure around line 320. The
-> resulting file fails to compile. I doctored up this section of the patch so
-> it would be applied in the correct place, and the kernel builds. The
-> incorrect section of the patch is at line 5146. The following edit can be a
-> useful patch to the patch, until officially re-released:
-
-Fixed, thanks. The problem is that I do not compile test at91sam9g45,
-apart from this bug, does xenomai work on this processor?
-
--- 
-                                                                Gilles.
-
+Hey is it possible to patch linux3.0.15(with arm config) with the help of
+adeos?
+The kernel code that I have is 3.0.15 and has been patched to make it run
+on my board(exynos4210).This is the reason why there is no time.c file in
+my mach-exynos folder because the patch changed it (I am trying to figure
+out how). I can't find the patch for 3.0.13 (but I am searching).
+If I have to use Ipipe core, then do I just download the source code and
+make it to get my patch?
