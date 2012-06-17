@@ -1,13 +1,12 @@
+Message-ID: <4FDDE3F5.3020606@xenomai.org>
+Date: Sun, 17 Jun 2012 16:04:37 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <20120611141444.GU32727@csclub.uwaterloo.ca>
-References: <CAKKWdtcnn+EYfEQ=j4by6YtBRWn4nsFRMaCK=uWvKA1ubZ=EeA@mail.gmail.com>
-	<20120611141444.GU32727@csclub.uwaterloo.ca>
-Date: Sun, 17 Jun 2012 17:25:08 +0430
-Message-ID: <CAKKWdtdvPGDsz3fJz0b64bPELR9RH92B3a=nPCCPtga7ZVUwNg@mail.gmail.com>
-From: ali hagigat <hagigatali@gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] the Linux kernel and operating system
+References: <CAKKWdtcYW8ci7Y=XG2KODyMikF3H0p-JKZeCgU7duPQc+xz9PQ@mail.gmail.com>
+In-Reply-To: <CAKKWdtcYW8ci7Y=XG2KODyMikF3H0p-JKZeCgU7duPQc+xz9PQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] some questions about Xenomai documents
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,37 +15,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lennart Sorensen <lsorense@csclub.uwaterloo.ca>
+To: ali hagigat <hagigatali@gmail.com>
 Cc: xenomai@xenomai.org
 
-I think SMI needs some initialization from BIOS and then Linux kernel.
-The Linux kernel has some CONFIG_ variables to disable/enable SMI.
-In theory a motherboard can be built to generate SMI without the
-software help. But I think OEMs do not build such a board. So I think
-an x86 PC hard real time system is possible for today's PCs.
+On 06/17/2012 02:04 PM, ali hagigat wrote:
+> I have downloaded "xenomai-api.pdf". It mentions "kernel-based tasks"
+> and "user-space context (conforming call)".
 
-Please correct me if I am wrong.
+You do not need to download it, it is included in xenomai sources. Also
+note that you have an html version which you may find easier to browse,
+also available online here:
+http://www.xenomai.org/documentation/xenomai-2.6/html/api/index.html
 
-On Mon, Jun 11, 2012 at 6:44 PM, Lennart Sorensen
-<lsorense@csclub.uwaterloo.ca> wrote:
-> On Sat, Jun 09, 2012 at 01:43:37PM +0430, ali hagigat wrote:
->> What kernel subsystems are effecting the real time functionality of an
->> x86 PC system? Is there a complete list of the CONFIG_ variables
->> regarding that for 2.6.38.8?
->
-> Well in general I would say that using an x86 PC to do real time can't
-> be done. =A0Most x86 PCs use SMI, which destroys any hope of actually
-> getting real time to provide any real response time promises.
->
-> Now if you happen to have a PC that doesn't use SMI, or can have it
-> disabled, then you can get real time.
->
-> On things that are not PCs this is pretty much never a problem.
->
-> There are some server vendors that provide information on turning off
-> SMI because they have customers that want to run real time software on
-> the machine.
->
-> --
-> Len Sorensen
+> 
+> What does "kernel-based task" mean? It is like when i create a task in
+> a kernel context (inside the kernel)?
+> I heard "kernel thread" before, can it be different with a kernel task?
+
+No it is the same thing.
+
+> 
+> Can i use rt_task_create() function in any place of the Linux kernel code?
+
+Check rt_task_create documentation for an answer to this question. But
+be warned: using rt_task_create in kernel context is deprecated and will
+no longer be supported in xenomai 3.x.
+
+> 
+> What is the meaning of "user-space context" ? Is it different with
+> "user-space task"?! What is  "conforming call"?
+
+A conforming call is a system call (so, for user-space threads only)
+which will be executed in xenomai domain for xenomai threads, and in
+linux domain for plain linux threads.
+
+> 
+> I wonder if some lines can be added to clarify these expressions in
+> the documentation.
+
+Patches are always welcome. But note that reading the API documentation
+alone is probably not sufficient. You should first read the documents
+"Life with Adeos" and "Native API tour" for a general overview.
+
+-- 
+                                                                Gilles.
 
