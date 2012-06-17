@@ -1,12 +1,13 @@
-Message-ID: <4FDDE3F5.3020606@xenomai.org>
-Date: Sun, 17 Jun 2012 16:04:37 +0200
+Message-ID: <4FDDE5DC.4030608@xenomai.org>
+Date: Sun, 17 Jun 2012 16:12:44 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CAKKWdtcYW8ci7Y=XG2KODyMikF3H0p-JKZeCgU7duPQc+xz9PQ@mail.gmail.com>
-In-Reply-To: <CAKKWdtcYW8ci7Y=XG2KODyMikF3H0p-JKZeCgU7duPQc+xz9PQ@mail.gmail.com>
+References: <CAKKWdtcnn+EYfEQ=j4by6YtBRWn4nsFRMaCK=uWvKA1ubZ=EeA@mail.gmail.com>	<20120611141444.GU32727@csclub.uwaterloo.ca>
+	<CAKKWdtdvPGDsz3fJz0b64bPELR9RH92B3a=nPCCPtga7ZVUwNg@mail.gmail.com>
+In-Reply-To: <CAKKWdtdvPGDsz3fJz0b64bPELR9RH92B3a=nPCCPtga7ZVUwNg@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] some questions about Xenomai documents
+Subject: Re: [Xenomai] the Linux kernel and operating system
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,44 +19,28 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: ali hagigat <hagigatali@gmail.com>
 Cc: xenomai@xenomai.org
 
-On 06/17/2012 02:04 PM, ali hagigat wrote:
-> I have downloaded "xenomai-api.pdf". It mentions "kernel-based tasks"
-> and "user-space context (conforming call)".
+On 06/17/2012 02:55 PM, ali hagigat wrote:
+> I think SMI needs some initialization from BIOS and then Linux kernel.
+> The Linux kernel has some CONFIG_ variables to disable/enable SMI.
 
-You do not need to download it, it is included in xenomai sources. Also
-note that you have an html version which you may find easier to browse,
-also available online here:
-http://www.xenomai.org/documentation/xenomai-2.6/html/api/index.html
+Last time I checked, the linux kernel did not have such CONFIG_
+variables, which is why xenomai adds them.
 
+> In theory a motherboard can be built to generate SMI without the
+> software help. But I think OEMs do not build such a board. So I think
+> an x86 PC hard real time system is possible for today's PCs.
 > 
-> What does "kernel-based task" mean? It is like when i create a task in
-> a kernel context (inside the kernel)?
-> I heard "kernel thread" before, can it be different with a kernel task?
+> Please correct me if I am wrong.
 
-No it is the same thing.
+An SMI is an interrupt, so, there must be software to handle the SMI,
+so, no, a motherboard can not be built to generate SMI without software
+help.
 
-> 
-> Can i use rt_task_create() function in any place of the Linux kernel code?
-
-Check rt_task_create documentation for an answer to this question. But
-be warned: using rt_task_create in kernel context is deprecated and will
-no longer be supported in xenomai 3.x.
-
-> 
-> What is the meaning of "user-space context" ? Is it different with
-> "user-space task"?! What is  "conforming call"?
-
-A conforming call is a system call (so, for user-space threads only)
-which will be executed in xenomai domain for xenomai threads, and in
-linux domain for plain linux threads.
-
-> 
-> I wonder if some lines can be added to clarify these expressions in
-> the documentation.
-
-Patches are always welcome. But note that reading the API documentation
-alone is probably not sufficient. You should first read the documents
-"Life with Adeos" and "Native API tour" for a general overview.
+Intel chipsets provide a register to disable SMIs, but also provide a
+register to lock usage of the first register. So yes, there are some PC
+today that you can not use for real-time. Unless, of course, you are
+ready to use your own BIOS instead of the one provided by the hardware
+vendor, or your hardware vendor is willing to change the BIOS.
 
 -- 
                                                                 Gilles.
