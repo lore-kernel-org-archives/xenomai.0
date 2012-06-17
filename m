@@ -1,12 +1,9 @@
-Message-ID: <4FDBABEB.90300@xenomai.org>
-Date: Fri, 15 Jun 2012 23:40:59 +0200
-From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <CAAvA3H9r3kdS-ayZRP-Je==d_ditwyXj43v=6XVB4rSPLiOHtA@mail.gmail.com>
-In-Reply-To: <CAAvA3H9r3kdS-ayZRP-Je==d_ditwyXj43v=6XVB4rSPLiOHtA@mail.gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] x86 MSI support
+Date: Sun, 17 Jun 2012 16:34:06 +0430
+Message-ID: <CAKKWdtcYW8ci7Y=XG2KODyMikF3H0p-JKZeCgU7duPQc+xz9PQ@mail.gmail.com>
+From: ali hagigat <hagigatali@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: [Xenomai] some questions about Xenomai documents
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,34 +12,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jeff Weber <jwamsc@gmail.com>
-Cc: Xenomai Mailing List <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 06/15/2012 08:44 PM, Jeff Weber wrote:
-> Is the FAQ line:
->
-> "The I-pipe patch currently does not support MSI interrupts."
->
-> still true?  This FAQ is dated to 2008.
->
+I have downloaded "xenomai-api.pdf". It mentions "kernel-based tasks"
+and "user-space context (conforming call)".
 
-In retrospect, this FAQ entry is somewhat misleading. As Jan pointed out 
-a couple of times already, the I-pipe does handle MSI interrupts 
-properly, but doesn't allow non-root domains to call the IRQ 
-masking/unmasking code for MSI. Since unmasking is usually paired with 
-requesting an IRQ, and masking is paired with releasing it, the 
-restriction should include the request/free calls as well.
+What does "kernel-based task" mean? It is like when i create a task in
+a kernel context (inside the kernel)?
+I heard "kernel thread" before, can it be different with a kernel task?
 
-There is no reason to mask MSI in the pre-handling code due to their 
-semantics, and therefore no reason to unmask them upon return from the 
-handler, so the restriction turns out to be a non-issue for most use 
-cases. If a primary domain handler really wants to prevent more MSI to 
-come from a given source, then it should quiesce the issuing device.
+Can i use rt_task_create() function in any place of the Linux kernel code?
 
-> I've been using MSIs and adeos-ipipe-2.6.38.8-x86-2.10-01.patch and haven't
-> seen a problem yet.
->
+What is the meaning of "user-space context" ? Is it different with
+"user-space task"?! What is  "conforming call"?
 
--- 
-Philippe.
+I wonder if some lines can be added to clarify these expressions in
+the documentation.
 
