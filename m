@@ -1,10 +1,13 @@
-Message-ID: <4FE03797.7000408@grandegger.com>
-Date: Tue, 19 Jun 2012 10:25:59 +0200
-From: Wolfgang Grandegger <wg@grandegger.com>
+Message-ID: <4FE03955.60108@xenomai.org>
+Date: Tue, 19 Jun 2012 10:33:25 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+References: <4FE03797.7000408@grandegger.com>
+In-Reply-To: <4FE03797.7000408@grandegger.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] Sharing memory between rt-posix and standard-posix apps
+Subject: Re: [Xenomai] Sharing memory between rt-posix and standard-posix
+ apps
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,15 +16,19 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai@xenomai.org
+To: Wolfgang Grandegger <wg@grandegger.com>
+Cc: Xenomai@xenomai.org
 
-Hello,
+On 06/19/2012 10:25 AM, Wolfgang Grandegger wrote:
+> Hello,
+> 
+> the shared memory support of Xenomai's POSIX skin currently only support
+> shared memory between rt processes.
 
-the shared memory support of Xenomai's POSIX skin currently only support
-shared memory between rt processes. I mean, all apps must be linked
-against Xenomai's POSIX library. Shared memory created by apps linked
-against the standard POSIX library will not be found. Is/was there a
-good reason for that limitation?
+These services are for sharing memory between user-space and
+kernel-space. In order to share memory between user-space processes, you
+can use plain linux shared memories.
 
-Wolfgang.
+-- 
+					    Gilles.
 
