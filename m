@@ -1,17 +1,10 @@
-Message-ID: <4FE19564.6020502@xenomai.org>
-Date: Wed, 20 Jun 2012 11:18:28 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4FE03797.7000408@grandegger.com> <4FE03955.60108@xenomai.org>
-	<4FE03D17.3040408@grandegger.com> <4FE03D5D.7050806@xenomai.org>
-	<4FE03DE4.5050301@grandegger.com> <4FE040A1.80400@xenomai.org>
-	<4FE04695.4020609@grandegger.com> <4FE04880.7060009@xenomai.org>
-	<4FE17CD4.2060108@grandegger.com>
-In-Reply-To: <4FE17CD4.2060108@grandegger.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Sharing memory between rt-posix and standard-posix
- apps
+Date: Wed, 20 Jun 2012 17:20:54 +0530
+Message-ID: <CAM1yFZ_+KHJ6BaWf_mxMHteROa1=PEsW5a5Mnpb7hRnNgzig+w@mail.gmail.com>
+From: Anisha Kaul <born.rebel.83@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: [Xenomai] No options visible in the "Real-time sub-system" tab in
+ the "make menuconfig" screen of kernel-2.6.38.8
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,63 +13,50 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Wolfgang Grandegger <wg@grandegger.com>
-Cc: Xenomai@xenomai.org
+To: Xenomai <xenomai@xenomai.org>
 
-On 06/20/2012 09:33 AM, Wolfgang Grandegger wrote:
-> On 06/19/2012 11:38 AM, Gilles Chanteperdrix wrote:
->> On 06/19/2012 11:29 AM, Wolfgang Grandegger wrote:
->>> On 06/19/2012 11:04 AM, Gilles Chanteperdrix wrote:
->>>> On 06/19/2012 10:52 AM, Wolfgang Grandegger wrote:
->>>>> On 06/19/2012 10:50 AM, Gilles Chanteperdrix wrote:
->>>>>> On 06/19/2012 10:49 AM, Wolfgang Grandegger wrote:
->>>>>>> On 06/19/2012 10:33 AM, Gilles Chanteperdrix wrote:
->>>>>>>> On 06/19/2012 10:25 AM, Wolfgang Grandegger wrote:
->>>>>>>>> Hello,
->>>>>>>>>
->>>>>>>>> the shared memory support of Xenomai's POSIX skin currently only support
->>>>>>>>> shared memory between rt processes.
->>>>>>>>
->>>>>>>> These services are for sharing memory between user-space and
->>>>>>>> kernel-space. In order to share memory between user-space processes, you
->>>>>>>> can use plain linux shared memories.
->>>>>>>
->>>>>>> But then I will get mode switches due to page faults, right?
->>>>>>
->>>>>> No, there should not be any page fault.
->>>>>
->>>>> But that's what we observe on a i.MX53 and i.MX6Q board. IIRC, the first
->>>>> access usually results in a page fault.
->>>>
->>>> And you do not get the same behaviour with posix skin shared memories ?
->>>
->>> Right, and that's because do_pagefault() is called somewhere in the
->>> initialization, IIRC. But I will redo my tests now.
->>
->> Yes, I forgot about that, we pre-fault shared memory on ARM, in order to
->> avoid the page fault on first access.
->>
->>>
->>> Anyway, if I use the POSIX skin the shared memory functions in there
->>> will be used automatically. But I could use  __real_shm_open and
->>> __real_mmap, right?
->>
->> Or you can used the wrapped version, but without enabling support for
->> xenomai posix shared memories in the kernel configuration.
->>
->>
->>  ... and access the page once per page in the
->>> initialization phase. Then no more page faults should happen.
->>
->> Yes. It is a bit ugly, but should work.
-> 
-> I forgot. The problem was not the read but the first write to a page
-> triggering the page fault. Therefore it would make sense to wrap just
-> mmap and doing the pre-faulting if XENO_OPT_POSIX_SHM is not set.
+Greetings,
 
-Yes, when we prefault in kernel-space, we prefault write faults. We can
-do that, yes.
+Since my PCI card wasn't too compatible with the RTnet's real time
+experimental driver, I fetched RTL-8139 card, and put it on another
+machine with older version of openSUSE.
+
+anisha@linux-2gbt:~> uname -a && cat /etc/issue
+Linux linux-2gbt 2.6.22.5-31-default #1 SMP 2007/09/21 22:29:00 UTC
+i686 i686 i386 GNU/Linux
+Welcome to openSUSE 10.3 (i586) - Kernel \r (\l).
+
+--------------------------------------------
+
+Now,
+- I installed xenomai-2.6.0
+- downloaded kernel version "linux-2.6.38.8".
+
+Ran:
+linux-2gbt:/usr/src/xenomai-2.6.0 # scripts/prepare-kernel.sh
+--linux=/usr/src/linux-2.6.38.8/
+--adeos=ksrc/arch/x86/patches/adeos-ipipe-2.6.38.8-x86-2.10-01.patch
+
+This went on smoothly.
+
+--------------------------------------------
+
+Then I did a make menuconfig in the source tree of 2.6.38.8 and jumped
+on the tab "Real-time sub-system".
+
+That resulted in a screen containing ___"nothing more than"___ the follows:
+
+*** WARNING! You enabled APM, CPU Frequency scaling, ACPI 'processor' ***
+*** or Intel cpuidle option. These options are known to cause troubles ***
+*** with Xenomai, disable them. ***
+*** NOTE: Xenomai needs either X86_LOCAL_APIC enabled or HPET_TIMER
+disabled. ***
+*** (menu Processor type and features) ***
+
+There are "not" any options present in that screen. It is blank.
+
+What could have gone wrong? Please help,
 
 -- 
-					    Gilles.
+Anisha Kaul
 
