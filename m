@@ -1,13 +1,14 @@
-Message-ID: <4FE17CD4.2060108@grandegger.com>
-Date: Wed, 20 Jun 2012 09:33:40 +0200
-From: Wolfgang Grandegger <wg@grandegger.com>
+Message-ID: <4FE19564.6020502@xenomai.org>
+Date: Wed, 20 Jun 2012 11:18:28 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <4FE03797.7000408@grandegger.com> <4FE03955.60108@xenomai.org>
 	<4FE03D17.3040408@grandegger.com> <4FE03D5D.7050806@xenomai.org>
 	<4FE03DE4.5050301@grandegger.com> <4FE040A1.80400@xenomai.org>
 	<4FE04695.4020609@grandegger.com> <4FE04880.7060009@xenomai.org>
-In-Reply-To: <4FE04880.7060009@xenomai.org>
-Content-Type: text/plain; charset=ISO-8859-1
+	<4FE17CD4.2060108@grandegger.com>
+In-Reply-To: <4FE17CD4.2060108@grandegger.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] Sharing memory between rt-posix and standard-posix
  apps
@@ -19,60 +20,63 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Wolfgang Grandegger <wg@grandegger.com>
 Cc: Xenomai@xenomai.org
 
-On 06/19/2012 11:38 AM, Gilles Chanteperdrix wrote:
-> On 06/19/2012 11:29 AM, Wolfgang Grandegger wrote:
->> On 06/19/2012 11:04 AM, Gilles Chanteperdrix wrote:
->>> On 06/19/2012 10:52 AM, Wolfgang Grandegger wrote:
->>>> On 06/19/2012 10:50 AM, Gilles Chanteperdrix wrote:
->>>>> On 06/19/2012 10:49 AM, Wolfgang Grandegger wrote:
->>>>>> On 06/19/2012 10:33 AM, Gilles Chanteperdrix wrote:
->>>>>>> On 06/19/2012 10:25 AM, Wolfgang Grandegger wrote:
->>>>>>>> Hello,
+On 06/20/2012 09:33 AM, Wolfgang Grandegger wrote:
+> On 06/19/2012 11:38 AM, Gilles Chanteperdrix wrote:
+>> On 06/19/2012 11:29 AM, Wolfgang Grandegger wrote:
+>>> On 06/19/2012 11:04 AM, Gilles Chanteperdrix wrote:
+>>>> On 06/19/2012 10:52 AM, Wolfgang Grandegger wrote:
+>>>>> On 06/19/2012 10:50 AM, Gilles Chanteperdrix wrote:
+>>>>>> On 06/19/2012 10:49 AM, Wolfgang Grandegger wrote:
+>>>>>>> On 06/19/2012 10:33 AM, Gilles Chanteperdrix wrote:
+>>>>>>>> On 06/19/2012 10:25 AM, Wolfgang Grandegger wrote:
+>>>>>>>>> Hello,
+>>>>>>>>>
+>>>>>>>>> the shared memory support of Xenomai's POSIX skin currently only support
+>>>>>>>>> shared memory between rt processes.
 >>>>>>>>
->>>>>>>> the shared memory support of Xenomai's POSIX skin currently only support
->>>>>>>> shared memory between rt processes.
+>>>>>>>> These services are for sharing memory between user-space and
+>>>>>>>> kernel-space. In order to share memory between user-space processes, you
+>>>>>>>> can use plain linux shared memories.
 >>>>>>>
->>>>>>> These services are for sharing memory between user-space and
->>>>>>> kernel-space. In order to share memory between user-space processes, you
->>>>>>> can use plain linux shared memories.
+>>>>>>> But then I will get mode switches due to page faults, right?
 >>>>>>
->>>>>> But then I will get mode switches due to page faults, right?
+>>>>>> No, there should not be any page fault.
 >>>>>
->>>>> No, there should not be any page fault.
+>>>>> But that's what we observe on a i.MX53 and i.MX6Q board. IIRC, the first
+>>>>> access usually results in a page fault.
 >>>>
->>>> But that's what we observe on a i.MX53 and i.MX6Q board. IIRC, the first
->>>> access usually results in a page fault.
+>>>> And you do not get the same behaviour with posix skin shared memories ?
 >>>
->>> And you do not get the same behaviour with posix skin shared memories ?
+>>> Right, and that's because do_pagefault() is called somewhere in the
+>>> initialization, IIRC. But I will redo my tests now.
 >>
->> Right, and that's because do_pagefault() is called somewhere in the
->> initialization, IIRC. But I will redo my tests now.
-> 
-> Yes, I forgot about that, we pre-fault shared memory on ARM, in order to
-> avoid the page fault on first access.
-> 
+>> Yes, I forgot about that, we pre-fault shared memory on ARM, in order to
+>> avoid the page fault on first access.
 >>
->> Anyway, if I use the POSIX skin the shared memory functions in there
->> will be used automatically. But I could use  __real_shm_open and
->> __real_mmap, right?
+>>>
+>>> Anyway, if I use the POSIX skin the shared memory functions in there
+>>> will be used automatically. But I could use  __real_shm_open and
+>>> __real_mmap, right?
+>>
+>> Or you can used the wrapped version, but without enabling support for
+>> xenomai posix shared memories in the kernel configuration.
+>>
+>>
+>>  ... and access the page once per page in the
+>>> initialization phase. Then no more page faults should happen.
+>>
+>> Yes. It is a bit ugly, but should work.
 > 
-> Or you can used the wrapped version, but without enabling support for
-> xenomai posix shared memories in the kernel configuration.
-> 
-> 
->  ... and access the page once per page in the
->> initialization phase. Then no more page faults should happen.
-> 
-> Yes. It is a bit ugly, but should work.
+> I forgot. The problem was not the read but the first write to a page
+> triggering the page fault. Therefore it would make sense to wrap just
+> mmap and doing the pre-faulting if XENO_OPT_POSIX_SHM is not set.
 
-I forgot. The problem was not the read but the first write to a page
-triggering the page fault. Therefore it would make sense to wrap just
-mmap and doing the pre-faulting if XENO_OPT_POSIX_SHM is not set.
+Yes, when we prefault in kernel-space, we prefault write faults. We can
+do that, yes.
 
-Wolfgang.
-
-
+-- 
+					    Gilles.
 
