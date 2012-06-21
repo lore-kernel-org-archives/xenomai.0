@@ -1,14 +1,12 @@
-Message-ID: <4FCF1ED5.5000403@xenomai.org>
-Date: Wed, 06 Jun 2012 11:11:49 +0200
+Message-ID: <4FE384CE.8050600@xenomai.org>
+Date: Thu, 21 Jun 2012 22:32:14 +0200
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <CAKKWdtfz7+pRjjbE6Ev4zJNZpa45axMePyVar+3MyRyMvcp8aA@mail.gmail.com>
-	<4FCF1517.3010904@xenomai.org>
-	<CAKKWdtfRyuhDzmvCC-WM66+=ncs+ocbdUuop2TRNThsj6ZAy6g@mail.gmail.com>
-In-Reply-To: <CAKKWdtfRyuhDzmvCC-WM66+=ncs+ocbdUuop2TRNThsj6ZAy6g@mail.gmail.com>
+References: <CA+K6ZL0db_K0NsuEcKrQO9rcJ4myrx6QVge6i7HyMEkDhkwWww@mail.gmail.com>
+In-Reply-To: <CA+K6ZL0db_K0NsuEcKrQO9rcJ4myrx6QVge6i7HyMEkDhkwWww@mail.gmail.com>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] xenomai-2.6.0 instrumentation commands not executing
+Subject: Re: [Xenomai] ARM I-pipe patch for 3.1+ kernels
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,153 +15,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: ali hagigat <hagigatali@gmail.com>
-Cc: Xenomai@xenomai.org
+To: Remco den Breeje <remco@vioco.nl>
+Cc: xenomai@xenomai.org
 
-On 06/06/2012 11:06 AM, ali hagigat wrote:
-> Thank you, Philippe, for the reply.
+On 06/21/2012 10:14 PM, Remco den Breeje wrote:
+> Hi Gilles et.al.,
 >
-> How can i enable posix skin? should i do , make menuconfig, for the
-> kernel? Or i should change scripts/defconfig.frag?
+> I'm interested in running a Xenomai patched system on a Raspberry Pi
+> computer[1] that compromises a ARM11 CPU (ARMv6 architecture). The Linux
+> kernels supported on the Raspberry are either Linux 3.1 or 3.2 [2,3], while
+> the most recent ARM ipipe patch is written for a 3.0 kernel. Looking at
+> your ipipe git[4], there hasn't been ARM related work for more recent
+> kernels.
+> What are the changes of a forward port, rebased on 3.1 or 3.2 kernels? Are
+> there underlying technical difficulties?
 >
-> It seems that both places have the correct values already but i still
-> have the error:
+> I'm aware that even if there was a>3.0 ARM patch available, the Raspberry
+> specific code needs to be ported. However, being a ARM-newby, porting board
+> specific code together with porting the ipipe code is one step too far ;)
+>
 
-The POSIX skin is indeed enabled. What is the output of the command below?
+http://git.denx.de/?p=ipipe-2.6.git;a=shortlog;h=refs/heads/core-3.2
 
-# ldd <your-executable>
 
+> Many thanks,
 >
-> defconfig.frag:
-> #
-> # Interfaces
-> #
-> CONFIG_XENO_SKIN_NATIVE=y
+> Remco den Breeje
 >
-> #
-> # Native interface options
-> #
-> CONFIG_XENO_OPT_NATIVE_PERIOD=0
-> CONFIG_XENO_OPT_NATIVE_PIPE=y
-> CONFIG_XENO_OPT_NATIVE_PIPE_BUFSZ=4096
-> CONFIG_XENO_OPT_NATIVE_SEM=y
-> CONFIG_XENO_OPT_NATIVE_EVENT=y
-> CONFIG_XENO_OPT_NATIVE_MUTEX=y
-> CONFIG_XENO_OPT_NATIVE_COND=y
-> CONFIG_XENO_OPT_NATIVE_QUEUE=y
-> CONFIG_XENO_OPT_NATIVE_HEAP=y
-> CONFIG_XENO_OPT_NATIVE_ALARM=y
-> CONFIG_XENO_OPT_NATIVE_MPS=y
-> # CONFIG_XENO_OPT_NATIVE_INTR is not set
-> CONFIG_XENO_SKIN_POSIX=y
->
-> and in the kernel:
-> # Interfaces
-> #
-> CONFIG_XENO_SKIN_NATIVE=y
-> CONFIG_XENO_OPT_NATIVE_PERIOD=0
-> CONFIG_XENO_OPT_NATIVE_PIPE=y
-> CONFIG_XENO_OPT_NATIVE_PIPE_BUFSZ=1024
-> CONFIG_XENO_OPT_NATIVE_SEM=y
-> CONFIG_XENO_OPT_NATIVE_EVENT=y
-> CONFIG_XENO_OPT_NATIVE_MUTEX=y
-> CONFIG_XENO_OPT_NATIVE_COND=y
-> CONFIG_XENO_OPT_NATIVE_QUEUE=y
-> CONFIG_XENO_OPT_NATIVE_BUFFER=y
-> CONFIG_XENO_OPT_NATIVE_HEAP=y
-> CONFIG_XENO_OPT_NATIVE_ALARM=y
-> CONFIG_XENO_OPT_NATIVE_MPS=y
-> CONFIG_XENO_OPT_NATIVE_INTR=y
-> CONFIG_XENO_OPT_DEBUG_NATIVE=y
-> CONFIG_XENO_SKIN_POSIX=y
-> CONFIG_XENO_OPT_POSIX_PERIOD=0
-> CONFIG_XENO_OPT_POSIX_SHM=y
-> CONFIG_XENO_OPT_POSIX_INTR=y
-> CONFIG_XENO_OPT_POSIX_SELECT=y
-> CONFIG_XENO_OPT_DEBUG_POSIX=y
-> # CONFIG_XENO_SKIN_PSOS is not set
-> # CONFIG_XENO_SKIN_UITRON is not set
-> # CONFIG_XENO_SKIN_VRTX is not set
-> CONFIG_XENO_SKIN_VXWORKS=y
-> CONFIG_XENO_OPT_VXWORKS_PERIOD=1000
-> CONFIG_XENO_OPT_DEBUG_VXWORKS=y
-> # CONFIG_XENO_OPT_NOWARN_DEPRECATED is not set
-> CONFIG_XENO_SKIN_RTDM=y
-> CONFIG_XENO_OPT_RTDM_PERIOD=0
-> CONFIG_XENO_OPT_RTDM_FILDES=128
-> CONFIG_XENO_OPT_RTDM_SELECT=y
-> # CONFIG_XENO_OPT_DEBUG_RTDM is not set
-> CONFIG_XENO_OPT_DEBUG_RTDM_APPL=y
->
->
-> On Wed, Jun 6, 2012 at 1:00 PM, Philippe Gerum<rpm@xenomai.org>  wrote:
->> On 06/06/2012 09:40 AM, ali hagigat wrote:
->>>
->>> I have installed xenomai-2.6.0. None of the instrumentation commands
->>> work except latency. What can i do?
->>>
->>
->> Likely fix your Kconfig. Enable the Xenomai POSIX skin.
->>
->>> /root>    switchbench
->>> bash: switchbench: command not found
->>> /root>    switchtest
->>> Xenomai Posix skin init: pthread_setschedparam: Function not implemented
->>> /root>    cyclictest
->>> Xenomai Posix skin init: pthread_setschedparam: Function not implemented
->>> /root>    latency
->>> == Sampling period: 100 us
->>> == Test mode: periodic user-mode task
->>> == All results in microseconds
->>>
->>> /root>    xeno-test
->>> Started child 7172: /bin/bash /usr/xenomai/bin/xeno-test-run-wrapper
->>> /usr/xenomai/bin/xeno-test
->>> ++ echo 0
->>> ++ /usr/xenomai/bin/arith
->>> mul: 0x79364d93, shft: 26
->>> integ: 30, frac: 0x4d9364d9364d9364
->>>
->>> signed positive operation: 0x03ffffffffffffff * 1000000000 / 33000000
->>> inline calibration: 0x0000000000000000: 28.751 ns, rejected 1/10000
->>> inlined llimd: 0x79364d9364d9362f: 41.292 ns, rejected 1/10000
->>> inlined llmulshft: 0x79364d92ffffffe1: 5.007 ns, rejected 0/10000
->>> inlined nodiv_llimd: 0x79364d9364d9362f: 11.323 ns, rejected 1/10000
->>> out of line calibration: 0x0000000000000000: 30.003 ns, rejected 0/10000
->>> out of line llimd: 0x79364d9364d9362f: 46.075 ns, rejected 1/10000
->>> out of line llmulshft: 0x79364d92ffffffe1: 7.800 ns, rejected 1/10000
->>> out of line nodiv_llimd: 0x79364d9364d9362f: 16.683 ns, rejected 1/10000
->>>
->>> signed negative operation: 0xfc00000000000001 * 1000000000 / 33000000
->>> inline calibration: 0x0000000000000000: 29.298 ns, rejected 1/10000
->>> inlined llimd: 0x86c9b26c9b26c9d1: 39.658 ns, rejected 1/10000
->>> inlined llmulshft: 0x86c9b26d0000001e: 4.059 ns, rejected 0/10000
->>> inlined nodiv_llimd: 0x86c9b26c9b26c9d1: 16.976 ns, rejected 0/10000
->>> out of line calibration: 0x0000000000000000: 30.002 ns, rejected 1/10000
->>> out of line llimd: 0x86c9b26c9b26c9d1: 48.757 ns, rejected 0/10000
->>> out of line llmulshft: 0x86c9b26d0000001e: 11.085 ns, rejected 1/10000
->>> out of line nodiv_llimd: 0x86c9b26c9b26c9d1: 17.770 ns, rejected 1/10000
->>>
->>> unsigned operation: 0x03ffffffffffffff * 1000000000 / 33000000
->>> inline calibration: 0x0000000000000000: 28.749 ns, rejected 1/10000
->>> inlined nodiv_ullimd: 0x79364d9364d9362f: 16.264 ns, rejected 0/10000
->>> out of line calibration: 0x0000000000000000: 30.001 ns, rejected 0/10000
->>> out of line nodiv_ullimd: 0x79364d9364d9362f: 20.463 ns, rejected 1/10000
->>> ++ /usr/xenomai/bin/clocktest -T 30
->>> Xenomai Posix skin init: pthread_setschedparam: Function not implemented
->>>
->>>
->>> Only latency seems working.
->>>
->>> _______________________________________________
->>> Xenomai mailing list
->>> Xenomai@xenomai.org
->>> http://www.xenomai.org/mailman/listinfo/xenomai
->>>
->>
->>
->> --
->> Philippe.
+> [1] http://en.wikipedia.org/wiki/Raspberry_Pi
+> [2] https://github.com/raspberrypi/linux
+> [3] https://github.com/bootc/linux
+> [4] http://git.denx.de/?p=ipipe.git;a=summary
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> http://www.xenomai.org/mailman/listinfo/xenomai
 >
 
 
