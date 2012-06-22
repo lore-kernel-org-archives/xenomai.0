@@ -1,5 +1,5 @@
-Message-ID: <4FE41B17.7030604@xenomai.org>
-Date: Fri, 22 Jun 2012 09:13:27 +0200
+Message-ID: <4FE41E45.1070406@xenomai.org>
+Date: Fri, 22 Jun 2012 09:27:01 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <CAHyVJyz4B9Z1nCLEg3G9u-r5d5iHdGwiA78w_enRc--MuVrgMQ@mail.gmail.com>
@@ -28,32 +28,13 @@ On 06/22/2012 03:57 AM, Mohit Jandwani wrote:
 > and socket functions) simply because of portability and the fact that I
 > don't have to install it(I can build it while building the kernel).What I
 > want to ask is:
-> If I use the sockets in posix skin , does that still guarantee real-time ?
-> Why is the socket interface not listed in the Posix API pdf ?
->  If my code is still real-time does that means I can do file handling in
-> real time too?(because I can use local protocol family for reading files
-> through sockets)
 
-The sockets call in xenomai posix skin are implemented by the RTDM 
-skin, you need an RTDM driver to implement them if you want real-time 
-sockets. For instance, for real-time UDP or TCP sockets, you have to 
-install RTnet, .
-
-> 
-> 
-> Also I tried using the pthread file in the posix skin folder, I was unable
-> to include the functions
-> .Everytime I used pthread_mutex_init it gave me a implicit declaration of
-> function error
-> .I even tried using #include "posix/pthread" but it didn't work although my
-> eclipse clearly shows that the header file has been included.
-> (PS: I can include almost all other header files including the
-> posix/socket.h  without a problem).
-> Is this a bug? or am I doing something wrong?
-> 
-
-In order to compile applications using xenomai posix skin, see:
-http://www.xenomai.org/index.php/Porting_POSIX_applications_to_Xenomai#Compilation_for_the_Xenomai_POSIX_skin
+Whatever skin you use, you have to enable it in xenomai kernel
+configuration, and you have to install xenomai user-space support by
+running "make DESTDIR=/some/dir", which installs headers and libraries
+for all skins. Then you can start building applications using this skin
+by getting flags with xeno-config. So, the posix skin is not different
+from any other skin.
 
 -- 
                                                                 Gilles.
