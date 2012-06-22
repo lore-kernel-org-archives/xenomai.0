@@ -1,13 +1,17 @@
-Message-ID: <4FE43065.5060801@xenomai.org>
-Date: Fri, 22 Jun 2012 10:44:21 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CAHyVJyz4B9Z1nCLEg3G9u-r5d5iHdGwiA78w_enRc--MuVrgMQ@mail.gmail.com>	<4FE41B17.7030604@xenomai.org>
-	<CAHyVJywmT80V8WK=2ERmqfj+OXdjLjv4Hatu+8sonvZn0KJ+mA@mail.gmail.com>
-In-Reply-To: <CAHyVJywmT80V8WK=2ERmqfj+OXdjLjv4Hatu+8sonvZn0KJ+mA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Xenomai RT user application- POSIX interface
+In-Reply-To: <4FD8F4B5.7000001@xenomai.org>
+References: <CAHue_TXhjY-74oUNzuuS=ygCEhcVFeiAB+4ZesjKX19B9WobaA@mail.gmail.com>
+	<4FCDFB35.1050705@xenomai.org>
+	<CAHue_TUB-6nufH_O-PRojDPVfpDom+DCv1-_ERV4-xOfEzu2Dg@mail.gmail.com>
+	<4FCE28F8.9040001@xenomai.org>
+	<CAHue_TW1ntMpOxwACiawgtm67nYq_e7i11CDxz=CfpGGwRes_A@mail.gmail.com>
+	<4FD8F4B5.7000001@xenomai.org>
+Date: Fri, 22 Jun 2012 15:07:38 +0200
+Message-ID: <CAHue_TXMiLTxiK2ZORVccov2wqd+ML-H0zwhLoDYh+7+8_56xw@mail.gmail.com>
+From: =?ISO-8859-2?Q?Marcin_Ku=B6ka?= <marckuska@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-2
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] unsupported ARM9 machine
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,46 +20,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Mohit Jandwani <mohitjandwani@gmail.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On 06/22/2012 09:33 AM, Mohit Jandwani wrote:
-> I am not able to install the rtnet because of the posix skin, I saw one of
-> your posts on which you looked at the problem and in the end some person
-> named jan gave a patch
-> 
-> http://www.mail-archive.com/rtnet-users@lists.sourceforge.net/msg02981.html
+2012/6/13 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 
-I do not see any relation in this message with xenomai posix skin.
+>
+> For instance, the fact that you are compiling both
+> arch/arm/common/timer-sp.c and smp_twd.c will lead to a conflict the way
+> timer-sp.c is currently made. omap4 has the same problem since for
+> instance arch/arm/mach-omap2/timer.c is compiled both in the omap3 and
+> the omap4 case. So, just look at how it is done, and do it the same way.
+>
+> Another simpler solution is to start from the ipipe core-3.2 branch,
+> which supports being built for several SOCs. However, it will require
+> upgrading to xenomai 2.6 branch head.
+>
+> --
+>                                                                Gilles.
+>
+>
+Ok I checked the arch/arm/common/timer-sp.c (i assume this file implements
+the timer for vexpress) and all the__ipipe_mach_timerint;
+__ipipe_mach_timerstolen; and so on, are there and there is nothing to be
+done there. I don't know if i understand you right. Which part should I do
+the same as with omap4?
 
-> 
-> but it is not working.Anyways I need a simple solution as I will have to
-> reproduce this on my exynos board.I am using the makefile they gave for
-> compiling the examples.It works fine in native skin.I have already tested a
-> few simple example codes and my own code on that.
-> I have read that rtnet has socket interface of its own.I just want to
-> implement a raw socket(n need only socket and ioctl).Do you recommend I
-> reinstall xenomai with posix skin as module
-> Also is there any support for function like memcpy or memset(in string.h)
-> or will I have to write my own functions?
-> Thanks a lot for your continued help..you are a life saver!
-> 
 
-When writing applications for xenomai posix skin, the whole glibc is
-avaiable. Only a few functions are substituted with xenomai specific
-real-time services.
+About that simpler solution using ipipe core-3.2 branch. There is no ipipe
+core-3.2 at the http://download.gna.org/adeos/patches/v3.x/arm/ site or am
+I looking for wrong site?
 
-Anyway, I do not understand what you are trying to do and what fails.
+thank you in advance!
 
-Could you show us the code using the posix skin you are trying to
-compile, with the makefile you use, so that we are able to investigate
-the issue you face? Have you read the "porting posix applications to
-xenomai" guide, in order to understand how to use xenomai posix skin?
-
-Please no private mails.
-
-Regards.
-
--- 
-					    Gilles.
-
+--=20
+Marcin Ku=B6ka
