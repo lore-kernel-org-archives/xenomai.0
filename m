@@ -1,12 +1,11 @@
-Message-ID: <4FE595D7.2080006@xenomai.org>
-Date: Sat, 23 Jun 2012 12:09:27 +0200
-From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <CAKKWdte32SZLW-RT=8PLXJfWYqN3ErG_W1oywjCmHVgU27Uzbg@mail.gmail.com>
-In-Reply-To: <CAKKWdte32SZLW-RT=8PLXJfWYqN3ErG_W1oywjCmHVgU27Uzbg@mail.gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] some questions about the architecture of Xenomai
+Date: Sat, 23 Jun 2012 03:31:13 -0700
+Message-ID: <CACKGRaU=LSM8HYOQAeZvLzGuMPsn+juQKrEHCZbfz=hZOKP_sg@mail.gmail.com>
+From: AKS <aungkyas@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: [Xenomai] How to fix error "incompatible ABI revision levels on
+ Ubuntu Linux 3.6.38 on ARM?
+Reply-To: aungkyas@gmail.com
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,42 +14,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: ali hagigat <hagigatali@gmail.com>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 06/23/2012 11:46 AM, ali hagigat wrote:
-> 1) Does (ADEOS and) Xenomai project changes and extends the Linux
-> kernel sys_call_table?
+Hi
 
-Strictly speaking, no. They extend the syscall namespace  by interposing 
-on the linux syscall mechanism, without altering the original table.
+I am trying to use Xenomai after patching 2.6.rc5 onto Linux 2.6.38 kernel
+based on ARM based TI OMAP processor and Ubuntu 11.10 OS. After the
+Xenomai patched kernel is booted, I tried to install Xenomai using the apt
+utility by sudo apt-get install xenomai-runtime. However, when I tried to
+run example applications such as /usr/lib/xenomai/clocktest and latency,
+I got the following error
+"Xenomai: incompatible ABI revision level
+(user space requires '3' and kernel provides '4')
 
-> 2) Considering i have used a VxWorks API function, will it be
-> translated to a new Linux kernel system call?
+I have cross compiled once but I still want to learn easier ways to fix it.
+I will be glad if you can share insights and pointers. Thanks!
 
-Syscalls will be routed to the emulators through the nucleus.
+Rgds
 
-> If no,  why there are some emulators and interfaces for VxWorks, pSOS
-> and so on inside kernel?
-
-Because in 2.x they implement the VxWorks, pSOS services and so on in 
-kernel space. With the upcoming 3.x, these emulators are purely 
-user-space based.
-
-> 3) Does all the real time services and API functions will be
-> translated to the nucleus API calls at last?
->
-
-Yes, for most part.
-
-
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> http://www.xenomai.org/mailman/listinfo/xenomai
->
-
-
--- 
-Philippe.
+Aung
 
