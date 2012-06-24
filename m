@@ -1,13 +1,9 @@
-Message-ID: <4FCF68CA.8010206@xenomai.org>
-Date: Wed, 06 Jun 2012 16:27:22 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CAKKWdtfz7+pRjjbE6Ev4zJNZpa45axMePyVar+3MyRyMvcp8aA@mail.gmail.com>	<4FCF1517.3010904@xenomai.org>	<CAKKWdtfRyuhDzmvCC-WM66+=ncs+ocbdUuop2TRNThsj6ZAy6g@mail.gmail.com>	<4FCF1ED5.5000403@xenomai.org>	<CAKKWdtd6p2-xHH1FdjVzbX-raNtDkvMemALrQBJMgoTb1dScnw@mail.gmail.com>	<4FCF2751.5070700@xenomai.org>	<4FCF4D05.3070502@xenomai.org>	<4FCF58AF.5040106@xenomai.org>	<4FCF5A4C.60704@xenomai.org>	<4FCF5DED.8060007@xenomai.org>	<4FCF60CD.8000709@xenomai.org>	<4FCF6152.7010002@xenomai.org>
-	<4FCF62DD.10102@xenomai.org>
-In-Reply-To: <4FCF62DD.10102@xenomai.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] xenomai-2.6.0 instrumentation commands not executing
+Date: Sun, 24 Jun 2012 15:29:43 +0430
+Message-ID: <CAKKWdtf6_qRDcGs762F=9WGc7BNnHoq4-07x37sY8kPvZRS07A@mail.gmail.com>
+From: ali hagigat <hagigatali@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: [Xenomai] a question:deadline for the real devices
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,84 +12,17 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 06/06/2012 04:02 PM, Gilles Chanteperdrix wrote:
-> On 06/06/2012 03:55 PM, Gilles Chanteperdrix wrote:
->> On 06/06/2012 03:53 PM, Philippe Gerum wrote:
->>> On 06/06/2012 03:41 PM, Gilles Chanteperdrix wrote:
->>>> On 06/06/2012 03:25 PM, Philippe Gerum wrote:
->>>>> On 06/06/2012 03:18 PM, Gilles Chanteperdrix wrote:
->>>>>> On 06/06/2012 02:28 PM, Philippe Gerum wrote:
->>>>>>> On 06/06/2012 11:48 AM, Philippe Gerum wrote:
->>>>>>>> On 06/06/2012 11:18 AM, ali hagigat wrote:
->>>>>>>>> Much appreciate for the reply, Mr. Gerum. Here is the result of ldd
->>>>>>>>> command:
->>>>>>>>>
->>>>>>>>
->>>>>>>> http://www.xenomai.org/pipermail/xenomai-help/2011-12/msg00012.html
->>>>>>>
->>>>>>> Alternatively, this patch may work as well (not tested, but this
->>>>>>> looks like a former issue we had with aggressive optimizers):
->>>>>>>
->>>>>>> diff --git a/src/skins/posix/init.c b/src/skins/posix/init.c
->>>>>>> index 7a338a0..9c7849e 100644
->>>>>>> --- a/src/skins/posix/init.c
->>>>>>> +++ b/src/skins/posix/init.c
->>>>>>> @@ -43,6 +43,7 @@ void pse51_clock_init(int);
->>>>>>>    static __attribute__ ((constructor))
->>>>>>>    void __init_posix_interface(void)
->>>>>>>    {
->>>>>>> +	volatile pthread_t tid = pthread_self();
->>>>>>>    #ifndef CONFIG_XENO_LIBS_DLOPEN
->>>>>>>    	struct sched_param parm;
->>>>>>>    	int policy;
->>>>>>> @@ -80,14 +81,14 @@ void __init_posix_interface(void)
->>>>>>>
->>>>>>>    	/* Don't use auto-shadowing if we are likely invoked from dlopen. */
->>>>>>>    #ifndef CONFIG_XENO_LIBS_DLOPEN
->>>>>>> -	err = __real_pthread_getschedparam(pthread_self(),&policy,&parm);
->>>>>>> +	err = __real_pthread_getschedparam(tid,&policy,&parm);
->>>>>>>    	if (err) {
->>>>>>>    		fprintf(stderr, "Xenomai Posix skin init: "
->>>>>>>    			"pthread_getschedparam: %s\n", strerror(err));
->>>>>>>    		exit(EXIT_FAILURE);
->>>>>>>    	}
->>>>>>>
->>>>>>> -	err = __wrap_pthread_setschedparam(pthread_self(), policy,&parm);
->>>>>>> +	err = __wrap_pthread_setschedparam(tid, policy,&parm);
->>>>>>>    	if (err) {
->>>>>>>    		fprintf(stderr, "Xenomai Posix skin init: "
->>>>>>>    			"pthread_setschedparam: %s\n", strerror(err));
->>>>>>
->>>>>> There should not be any issue here, as the pthread_self() is passed as
->>>>>> an argument to the called functions, the syscall is not inlined directly.
->>>>>>
->>>>>
->>>>> Did you get any disassembly of the faulty code when suggesting
->>>>> -fno-omit-frame-pointer last time you did?
->>>>>
->>>> No, but I had experienced the problem first hand.
->>>>
->>>
->>> It would be interesting to know why we have to force a frame pointer in 
->>> there. I'm not comfortable with voodoo fixing, that bug might bite later 
->>> on as gcc's optimizer is unlikely to become less aggressive over time.
->>>
->> Ah this, I know. I have posted a mail where I explained the problem. I
->> am a bit in a short schedule here, will post the link tonight.
->>
-> http://xenomai.org/pipermail/xenomai-core/2011-08/msg00029.html
-> 
+When we talk about Xenomai and a hard real time system, every thing
+seems OK regarding to tasks and the CPU code, what about the
+functionality of I/O devices?
 
-In the mails following this one, I found how to fix the assembly to work
-in the omit-frame-pointer case. The real problem is that, at compilation
-time, we have no command-line #defined variable telling us whether
-compiling with frame pointers enabled. And it does not seem easy to
-write a configure test script, which tests whether frame pointers are
-enabled or not.
+Like there is no guarantee for writing a sector on a hard disk below a
+specified time. Or reading/writing a USB device.
 
--- 
-					    Gilles.
+I mean doing a real input/output action seems not to have a specific
+deadline. While sometimes it seems we need to have it.
+
+Any comment and direction will be appreciated much.
 
