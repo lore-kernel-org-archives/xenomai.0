@@ -1,13 +1,12 @@
-Message-ID: <4FE76778.1000006@control.lth.se>
-Date: Sun, 24 Jun 2012 21:16:08 +0200
-From: Anders Blomdell <anders.blomdell@control.lth.se>
+Message-ID: <4FE80E4E.6060709@siemens.com>
+Date: Mon, 25 Jun 2012 09:07:58 +0200
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-References: <CAKKWdtf6_qRDcGs762F=9WGc7BNnHoq4-07x37sY8kPvZRS07A@mail.gmail.com>
-	<4FE6F7C4.7030500@tudelft.nl>
-In-Reply-To: <4FE6F7C4.7030500@tudelft.nl>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+References: <CC0C8DD9.206BE%glen@jetsoftdev.com> <4FE718A3.7030102@xenomai.org>
+In-Reply-To: <4FE718A3.7030102@xenomai.org>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] a question:deadline for the real devices
+Subject: Re: [Xenomai] USB for Xeno
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,16 +15,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Uwe Fechner <u.fechner@tudelft.nl>
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Glen Wernersbach <glen@jetsoftdev.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 06/24/2012 01:19 PM, Uwe Fechner wrote:
->   Hi,
->
-> for realtime I/O you need drivers that support Xenomai. They are available for serial I/O,
-> CAN bus, Ethercat and probably more.
-Ethercat is most probaly not there since its licensing is incompatible 
-with GPL (and most other open source licenses AFAICT).
+On 2012-06-24 15:39, Gilles Chanteperdrix wrote:
+> On 06/24/2012 03:26 PM, Glen Wernersbach wrote:
+>> Hello,
+>> Has anyone successfully incorporated USB into RTDM for Xeno?
+>>
+>> I need to have two xeno boxes talk to each other real time over usb. One as
+>> host and one responding as a device.
+>>
+>> Glen
+> 
+> Hi,
+> 
+> a project exists providing USB drivers for xenomai:
+> http://developer.berlios.de/projects/usb4rt
+> 
+> However, I do not know what its current status is.
+> 
 
-/Anders
+Dead ATM, but we are planning a reanimation. Note that this is only
+addressing USB 1.1 so far and EHCI is not yet on our agenda.
+
+Jan
+
+-- 
+Siemens AG, Corporate Technology, CT T DE IT 1
+Corporate Competence Center Embedded Linux
+
+
 
