@@ -1,9 +1,9 @@
 MIME-Version: 1.0
-Date: Mon, 25 Jun 2012 13:47:55 +0430
-Message-ID: <CAKKWdtfmd-EbtNro=nueK81gY6HUDJ-X1Qc54LTPXJ13HegQ1Q@mail.gmail.com>
+Date: Mon, 25 Jun 2012 18:51:53 +0430
+Message-ID: <CAKKWdtczsEk=XA+7J5z-8N1AKMh223dr3tTkh2-prK1QPLb7SQ@mail.gmail.com>
 From: ali hagigat <hagigatali@gmail.com>
 Content-Type: text/plain; charset=ISO-8859-1
-Subject: [Xenomai] question: scheduling latency
+Subject: [Xenomai] memory size
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,10 +14,33 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-What is the meaning of the scheduling latency in Xenomai and Xenomai
-tests like the latency test by the latency utility?
+My computer has 3G bytes RAM. I have disabled "high memory", PAE and
+64-bit memory and I/O resources for the Xenomai kernel and the memory
+size is nearly 900M (Why the memory size became smaller than 1G? By
+disabling those options the size should be still 3G!) :
 
-Is it the time after finishing an interrupt and executing the first
-instruction of a real time task? Or it is the time that each real time
-task is executed below that?
+/root> cat /proc/meminfo
+MemTotal:         894660 kB
+MemFree:           56472 kB
+Buffers:          110264 kB
+Cached:           329584 kB
+SwapCached:        47844 kB
+Active:           327936 kB
+Inactive:         417484 kB
+Active(anon):     142080 kB
+Inactive(anon):   166236 kB
+Active(file):     185856 kB
+Inactive(file):   251248 kB
+Unevictable:           0 kB
+Mlocked:               0 kB
+SwapTotal:       5144572 kB
+SwapFree:        5014556 kB
+
+I did it according to an Intel white paper for Xenomai. Why is it
+necessary? The total memory is below 1G bytes now. Does it make the
+scheduling latency higher in general? (Because I think bigger size of
+the memory makes the latencies smaller. Is that right?)
+
+
+Regards
 
