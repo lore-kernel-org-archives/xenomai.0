@@ -1,12 +1,12 @@
-Message-ID: <4FE88BF9.10400@xenomai.org>
-Date: Mon, 25 Jun 2012 18:04:09 +0200
+Message-ID: <4FE88C80.9050002@xenomai.org>
+Date: Mon, 25 Jun 2012 18:06:24 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CAKKWdtfmd-EbtNro=nueK81gY6HUDJ-X1Qc54LTPXJ13HegQ1Q@mail.gmail.com>
-In-Reply-To: <CAKKWdtfmd-EbtNro=nueK81gY6HUDJ-X1Qc54LTPXJ13HegQ1Q@mail.gmail.com>
+References: <CAKKWdtczsEk=XA+7J5z-8N1AKMh223dr3tTkh2-prK1QPLb7SQ@mail.gmail.com>
+In-Reply-To: <CAKKWdtczsEk=XA+7J5z-8N1AKMh223dr3tTkh2-prK1QPLb7SQ@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] question: scheduling latency
+Subject: Re: [Xenomai] memory size
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,16 +18,51 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: ali hagigat <hagigatali@gmail.com>
 Cc: xenomai@xenomai.org
 
-On 06/25/2012 11:17 AM, ali hagigat wrote:
-> What is the meaning of the scheduling latency in Xenomai and Xenomai
-> tests like the latency test by the latency utility?
-> 
-> Is it the time after finishing an interrupt and executing the first
-> instruction of a real time task? Or it is the time that each real time
-> task is executed below that?
+On 06/25/2012 04:21 PM, ali hagigat wrote:
+> My computer has 3G bytes RAM. I have disabled "high memory", PAE and
+> 64-bit memory and I/O resources for the Xenomai kernel and the memory
+> size is nearly 900M (Why the memory size became smaller than 1G? By
+> disabling those options the size should be still 3G!) :
 
-Read the source, what the test does it obvious, it is the time from the
-timer interrupt, to the time we return to the measurement thread.
+This question is not related at all to Xenomai. You will find better
+answers on other mailing lists than this one.
+
+> 
+> /root> cat /proc/meminfo
+> MemTotal:         894660 kB
+> MemFree:           56472 kB
+> Buffers:          110264 kB
+> Cached:           329584 kB
+> SwapCached:        47844 kB
+> Active:           327936 kB
+> Inactive:         417484 kB
+> Active(anon):     142080 kB
+> Inactive(anon):   166236 kB
+> Active(file):     185856 kB
+> Inactive(file):   251248 kB
+> Unevictable:           0 kB
+> Mlocked:               0 kB
+> SwapTotal:       5144572 kB
+> SwapFree:        5014556 kB
+> 
+> I did it according to an Intel white paper for Xenomai. Why is it
+> necessary? The total memory is below 1G bytes now. Does it make the
+> scheduling latency higher in general? (Because I think bigger size of
+> the memory makes the latencies smaller. Is that right?)
+
+It is not necessary. And since we did not write the intel white paper,
+we have no idea why this paper gives this advice.
+
+> 
+> 
+> Regards
+> 
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> http://www.xenomai.org/mailman/listinfo/xenomai
+> 
+
 
 -- 
 					    Gilles.
