@@ -1,12 +1,12 @@
-Message-ID: <4FE9B6C7.4040702@xenomai.org>
-Date: Tue, 26 Jun 2012 15:19:03 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: "George Pontis" <GPontis@z9.com>
+Date: Tue, 26 Jun 2012 06:23:45 -0700
+Message-ID: <009c01cd539e$e9f81420$bde83c60$@com>
 MIME-Version: 1.0
-References: <CAM1yFZ-CZ8qkTS1MqFMiQJtg85UVM5QiDUcPKSGBWDMDj4LdLQ@mail.gmail.com>
-In-Reply-To: <CAM1yFZ-CZ8qkTS1MqFMiQJtg85UVM5QiDUcPKSGBWDMDj4LdLQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain;
+	charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] RT_TASK isn't needed for every program, is it?
+Content-Language: en-us
+Subject: [Xenomai] ARM, exception #0 ?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,30 +15,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Anisha Kaul <born.rebel.83@gmail.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 06/26/2012 10:21 AM, Anisha Kaul wrote:
-> From what I've read here:
-> http://www.cs.ru.nl/lab/xenomai/exercises/ex01/Exercise-1.html
-> I could figure out that `RT_TASK`  is a kind of real time "thread" concept.
+Running Xenomai 2.6.0 on an ARM at91sam9g45. I recently updated from Adeos
+patch adeos-ipipe-3.0.13-arm-1.18-05 to adeos-ipipe-3.0.13-arm-1.18-09. Then
+built a new kernel and gave it to the application developers for a test.
+There were other changes in the root FS and a few tweaks in the kernel, but
+none that looked (to me) like they would affect Xenomai. They report this
+new error:
 
-It is an id for a xenomai thread, very much like pthread_t.
+> Xenomai: Switching ADC Task to secondary mode after exception #0 from 
+> user-space at 0xffff0fbc (pid 723)
 
-> 
-> But in the cases where I don't need threads, can I simply write the
-> program in main() using Xenomai/RTnet API? Creating RT_TASK isn't
-> necessary for every program, is it?
+And then nothing about the app works any more. What does this mean ?
 
-A xenomai thread is needed to access some of the xenomai services (most
-of them actually). By default, the main thread, when using xenomai
-native API is not a xenomai thread.
+George
 
-If you want to turn the main thread into a xenomai native skin thread,
-you should use rt_task_shadow.
 
-xenomai sources distribution contains many examples of that.
-
--- 
-					    Gilles.
 
