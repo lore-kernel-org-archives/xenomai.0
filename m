@@ -1,11 +1,12 @@
-From: Kronander Klas <klas.kronander@epfl.ch>
-Date: Wed, 27 Jun 2012 10:22:57 +0000
-Message-ID: <D1DC5191D5CF3A45A867CD95644B92392162B41F@REXMF.intranet.epfl.ch>
-Content-Language: en-GB
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] integrated drivers not built?
+In-Reply-To: <4FE9B6C7.4040702@xenomai.org>
+References: <CAM1yFZ-CZ8qkTS1MqFMiQJtg85UVM5QiDUcPKSGBWDMDj4LdLQ@mail.gmail.com>
+	<4FE9B6C7.4040702@xenomai.org>
+Date: Wed, 27 Jun 2012 17:29:56 +0530
+Message-ID: <CAM1yFZ8Z+K_p=uooS4OE0qXENK51jgGsCsyiC9L3OxcEK3XdHg@mail.gmail.com>
+From: Anisha Kaul <born.rebel.83@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: Re: [Xenomai] RT_TASK isn't needed for every program, is it?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,41 +15,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Xenomai <xenomai@xenomai.org>
 
-Hello,
+> By default, the main thread, when using xenomai native API is not a xenomai thread. If you want to turn the main thread into a xenomai native skin thread, you should use rt_task_shadow.
 
-Is there some special configuration that must be set in order to build the =
-integrated drivers (specifically the can-related ones)?
+This information is utterly helpful and enlightening. I was puzzled
+that why that `hello world` program needs to create a "thread"!
 
-I built xenomai, but I am not able to load any of the drivers. When looking=
- in /lib/modules/[MYKERNEL]/ folder, I find the drivers listed in modules.b=
-uiltin:
+Anyway, I have just now tested the UDP client server program with the
+Xenomai RT_TASK and the RTnet's socket API. That's running all well.
 
-cat /lib/modules/[MYKERNEL]/modules.builtin | grep xeno
+Thanks for your help.
+-Anisha
 
-kernel/kernel/xenomai/nucleus/xeno_nucleus.ko
-kernel/kernel/xenomai/skins/native/xeno_native.ko
-kernel/kernel/xenomai/skins/posix/xeno_posix.ko
-kernel/kernel/xenomai/skins/rtdm/xeno_rtdm.ko
-kernel/drivers/xenomai/can/xeno_can.ko
-kernel/drivers/xenomai/can/sja1000/xeno_can_sja1000.ko
-kernel/drivers/xenomai/can/sja1000/xeno_can_peak_pci.ko
-kernel/drivers/xenomai/serial/xeno_16550A.ko
-kernel/drivers/xenomai/testing/xeno_timerbench.ko
-kernel/drivers/xenomai/testing/xeno_switchtest.ko
+On 26/06/2012, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote:
+> On 06/26/2012 10:21 AM, Anisha Kaul wrote:
+>> From what I've read here:
+>> http://www.cs.ru.nl/lab/xenomai/exercises/ex01/Exercise-1.html
+>> I could figure out that `RT_TASK`  is a kind of real time "thread"
+>> concept.
+>
+> It is an id for a xenomai thread, very much like pthread_t.
+>
+>>
+>> But in the cases where I don't need threads, can I simply write the
+>> program in main() using Xenomai/RTnet API? Creating RT_TASK isn't
+>> necessary for every program, is it?
+>
+> A xenomai thread is needed to access some of the xenomai services (most
+> of them actually). By default, the main thread, when using xenomai
+> native API is not a xenomai thread.
+>
+> If you want to turn the main thread into a xenomai native skin thread,
+> you should use rt_task_shadow.
+>
+> xenomai sources distribution contains many examples of that.
+>
+> --
+> 					    Gilles.
+>
 
-but I can't find any of these object files on the paths specified in the mo=
-duels.builtin file.  There is no xenomai directory in /lib/modules/[MYKERNE=
-L]/kernel/drivers, which I believe there should be?
 
-Are the modules even built, and if so, where are they? I built xenomai usin=
-g:
-cd /usr/src/xenomai-2.5.5.2
-sudo ./configure --enable-dlopen-skins
-sudo make
-sudo make install
-
-I hope someone can clarify this, thanks in advance
-Klas Kronander
+-- 
+Anisha Kaul
 
