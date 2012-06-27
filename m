@@ -1,13 +1,13 @@
-Message-ID: <4FEB324B.7020800@xenomai.org>
-Date: Wed, 27 Jun 2012 18:18:19 +0200
+Message-ID: <4FEB32B2.6080700@xenomai.org>
+Date: Wed, 27 Jun 2012 18:20:02 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CAHue_TXhjY-74oUNzuuS=ygCEhcVFeiAB+4ZesjKX19B9WobaA@mail.gmail.com>	<4FCDFB35.1050705@xenomai.org>	<CAHue_TUB-6nufH_O-PRojDPVfpDom+DCv1-_ERV4-xOfEzu2Dg@mail.gmail.com>	<4FCE28F8.9040001@xenomai.org>	<CAHue_TW1ntMpOxwACiawgtm67nYq_e7i11CDxz=CfpGGwRes_A@mail.gmail.com>	<4FD8F4B5.7000001@xenomai.org>	<CAHue_TXMiLTxiK2ZORVccov2wqd+ML-H0zwhLoDYh+7+8_56xw@mail.gmail.com>	<4FE46F5F.1060500@xenomai.org>	<CAHue_TX3UmeMbu9mU_YSKdHeN8oUYFhaeA=mUGgpvJzjnaEdxw@mail.gmail.com>	<4FEB242B.5080306@xenomai.org>
-	<CAHue_TXXqYsod32WGRzgC9wsnuKkVWX=4vyA9oEi9c_rP276qQ@mail.gmail.com>
-In-Reply-To: <CAHue_TXXqYsod32WGRzgC9wsnuKkVWX=4vyA9oEi9c_rP276qQ@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] unsupported ARM9 machine
+References: <009c01cd539e$e9f81420$bde83c60$@com>	<4FE9BDA9.3000209@xenomai.org>
+	<013901cd547a$50179b00$f046d100$@com>
+In-Reply-To: <013901cd547a$50179b00$f046d100$@com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] ARM, exception #0 ?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,21 +16,70 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?B?TWFyY2luIEt1xZtrYQ==?= <marckuska@gmail.com>
+To: George Pontis <GPontis@z9.com>
 Cc: xenomai@xenomai.org
 
-On 06/27/2012 05:45 PM, Marcin Kuśka wrote:
-> Ahh ok my mistake. I applied the adeos-3.0.13-arm-1.18-09.patch to kernel
-> by myself that is why i uncheck xenomai kernel extension (but not "Package
-> Selection for the target->Real-Time"! That one have to remain checked!) in
-> buildroot setup. Anyway it works and xeno-test works fine also ;)
-> For now I don't want to change anything as long as everything is ok since I
-> have to carry on with the project but later on, I will find out the exact
-> way how did I manage to do this (compile xenomai on versatile express
-> machine).
+On 06/27/2012 05:34 PM, George Pontis wrote:
+> 
+>> On 06/26/2012 03:23 PM, George Pontis wrote:
+>>> Running Xenomai 2.6.0 on an ARM at91sam9g45. I recently updated
+>>> from
+>> Adeos
+>>> patch adeos-ipipe-3.0.13-arm-1.18-05 to
+>>> adeos-ipipe-3.0.13-arm-1.18-
+>> 09. Then
+>>> built a new kernel and gave it to the application developers for
+>>> a
+>> test.
+>>> There were other changes in the root FS and a few tweaks in the
+>> kernel, but
+>>> none that looked (to me) like they would affect Xenomai. They
+>>> report
+>> this
+>>> new error:
+>>> 
+>>>> Xenomai: Switching ADC Task to secondary mode after exception
+>>>> #0
+>> from
+>>>> user-space at 0xffff0fbc (pid 723)
+>>> 
+>>> And then nothing about the app works any more. What does this
+>>> mean ?
+>> 
+>> It means there is a fault, when the PC is around 0xffff0fbc, that
+>> is in the tsc emulation kernel helper. Could you try reverting this
+>> commit ?
+>> 
+> 
+> I tried reverting to adeos-ipipe-3.0.13-arm-1.18-05 without any other
+> changes, and this error still occurs. The address of the exception is
+> exactly the same. So I did some experiments to try to narrow this
+> down. First thing, it does not happen with any Xenomai user app. I
+> wrote a different app some time ago that runs without error on all
+> the Xenomai-enabled kernels.
+> 
+> I also went back to a previous kernel where this app runs without
+> causing the error. That kernel was the same 3.0.13 with
+> adeos-ipipe-3.0.13-arm-1.18-05.patch and the same Xenomai 2.6.0. The
+> root FS was identical. Everything was built with the same GCC 4.5.3.
+> What was different about it were some other features that were
+> enabled or disabled in the kernel. Possibly it is one or more of
+> these changes that is aggravating the problem with this one app:
+> 
+> 1) Turned off JFFS2, IDE 2) Turned on ext4 support 3) Enabled Atmel
+> FB and SPI-based touchscreen controller 4) Disabled shmem 5) Disabled
+> UID16 and "sysctl syscall"
+> 
+> Do any of these seem like they could be a factor ? I should emphasize
+> that we are still pretty new to Xenomai. It is more likely that we
+> have made a mistake in the app than that there is a Xenomai bug that
+> nobody else has caught yet. Any suggestions where to go next to get
+> to the bottom of this ?
 
-It would be interesting if you could post the patch for vexpress, so
-that we can include it in future ipipe patches.
+Try enabling CONFIG_DEBUG_USER, and adding user_debug=29 to the boot
+arguments. This way, you will get a kernel trace when the fault happens
+giving you more details (registers values and binary code). It would
+also help if you could send me your vmlinux.
 
 -- 
 					    Gilles.
