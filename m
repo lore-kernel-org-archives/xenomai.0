@@ -1,5 +1,5 @@
-Message-ID: <4FECBAC5.5070900@xenomai.org>
-Date: Thu, 28 Jun 2012 22:12:53 +0200
+Message-ID: <4FECBB01.6060207@xenomai.org>
+Date: Thu, 28 Jun 2012 22:13:53 +0200
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 References: <CAKSrRNzAi1=U2CyycYxZYVwY_AzwnJZE=R-uuCx=AVP=bWkveQ@mail.gmail.com>
@@ -7,7 +7,8 @@ References: <CAKSrRNzAi1=U2CyycYxZYVwY_AzwnJZE=R-uuCx=AVP=bWkveQ@mail.gmail.com>
 	<76D24F53-B746-4979-8B6E-EEC2CD4ED8BA@gmail.com>
 	<4FECA670.6030805@xenomai.org>
 	<26B5F54F-0FA5-433C-A884-3C406ED36FE9@gmail.com>
-In-Reply-To: <26B5F54F-0FA5-433C-A884-3C406ED36FE9@gmail.com>
+	<4FECBAC5.5070900@xenomai.org>
+In-Reply-To: <4FECBAC5.5070900@xenomai.org>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] Linux - Xenomai Kernel Space Communication
@@ -22,38 +23,48 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: Snmgmt <snmgmt19@gmail.com>
 Cc: xenomai@xenomai.org
 
-On 06/28/2012 09:15 PM, Snmgmt wrote:
+On 06/28/2012 10:12 PM, Philippe Gerum wrote:
+> On 06/28/2012 09:15 PM, Snmgmt wrote:
+>>
+>> Thank you, could someone else please point me to them?
+>>
 >
-> Thank you, could someone else please point me to them?
->
+> http://www.xenomai.org/documentation/xenomai-2.6/html/api/index.html
 
-http://www.xenomai.org/documentation/xenomai-2.6/html/api/index.html
+Specifically:
+http://www.xenomai.org/documentation/xenomai-2.6/html/api/group__interdrv.html
 
-> My question to be more specific would be, are the real time IPC protocols applicable to inter kernel communication or are they meant only for user space communication between xenomai and Linux threads?
 >
-> I read that rt_pipe api would be deprecated soon, is that true?
->
-> Thanks
->
->
->
-> On Jun 28, 2012, at 2:46 PM, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote:
->
->> On 06/28/2012 08:44 PM, Snmgmt wrote:
->>> Thanks. Could you please tell me what they are?
+>> My question to be more specific would be, are the real time IPC
+>> protocols applicable to inter kernel communication or are they meant
+>> only for user space communication between xenomai and Linux threads?
 >>
->> No. You do not need me to find them in the API documentation, provided
->> with xenomai sources as well as on the website.
+>> I read that rt_pipe api would be deprecated soon, is that true?
 >>
->> --
->>                                                                 Gilles.
->
->
+>> Thanks
 >>
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> http://www.xenomai.org/mailman/listinfo/xenomai
+>>
+>>
+>> On Jun 28, 2012, at 2:46 PM, Gilles Chanteperdrix
+>> <gilles.chanteperdrix@xenomai.org> wrote:
+>>
+>>> On 06/28/2012 08:44 PM, Snmgmt wrote:
+>>>> Thanks. Could you please tell me what they are?
+>>>
+>>> No. You do not need me to find them in the API documentation, provided
+>>> with xenomai sources as well as on the website.
+>>>
+>>> --
+>>>                                                                 Gilles.
+>>
+>>
+>>>
+>> _______________________________________________
+>> Xenomai mailing list
+>> Xenomai@xenomai.org
+>> http://www.xenomai.org/mailman/listinfo/xenomai
+>>
+>
 >
 
 
