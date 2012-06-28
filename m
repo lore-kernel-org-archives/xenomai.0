@@ -1,12 +1,14 @@
-Message-ID: <4FECA5AE.2010903@xenomai.org>
-Date: Thu, 28 Jun 2012 20:42:54 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <4FEC9EA4.7020102@wanadoo.fr>
-In-Reply-To: <4FEC9EA4.7020102@wanadoo.fr>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] rtser_xxx API availability on ARM iMX6 ?
+References: <CAKSrRNzAi1=U2CyycYxZYVwY_AzwnJZE=R-uuCx=AVP=bWkveQ@mail.gmail.com>
+	<4FECA44F.4030208@xenomai.org>
+In-Reply-To: <4FECA44F.4030208@xenomai.org>
+Mime-Version: 1.0 (1.0)
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain;
+	charset=us-ascii
+Message-Id: <76D24F53-B746-4979-8B6E-EEC2CD4ED8BA@gmail.com>
+From: Snmgmt <snmgmt19@gmail.com>
+Date: Thu, 28 Jun 2012 14:44:33 -0400
+Subject: Re: [Xenomai] Linux - Xenomai Kernel Space Communication
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,21 +17,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Thierry Bultel <thierry.bultel@wanadoo.fr>
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 06/28/2012 08:12 PM, Thierry Bultel wrote:
-> Hi,
-> 
-> Are these serial services supported on the named platform ?
+Thanks. Could you please tell me what they are?
 
-No. The IMX serial driver is specific to this family of SOCs, and
-xenomai does not currently have a driver for it.
 
-> Is ipipe_serial_debug usable, too ?
+On Jun 28, 2012, at 2:37 PM, Gilles Chanteperdrix <gilles.chanteperdrix@xeno=
+mai.org> wrote:
 
-ipipe_serial_debug works, yes.
-
--- 
-                                                                Gilles.
+> On 06/28/2012 08:09 PM, Sunetra Sashi wrote:
+>> Hi,
+>>=20
+>> I have an Linux kernel module that runs in native linux environment that
+>> needs to communicate (function calls/memory usage etc) with another kerne=
+l
+>> module that runs in Xenomai space.
+>>=20
+>> Does Xenomai offer mechanisms for such back and forth Linux - Xenomai
+>> communication?
+>=20
+> Yes.
+>=20
+> --=20
+>                                                                Gilles.
 
