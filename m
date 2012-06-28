@@ -1,15 +1,12 @@
-Message-ID: <4FEC46B5.7060700@grandegger.com>
-Date: Thu, 28 Jun 2012 13:57:41 +0200
-From: Wolfgang Grandegger <wg@grandegger.com>
+Message-ID: <4FEC51DE.406@xenomai.org>
+Date: Thu, 28 Jun 2012 14:45:18 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <D1DC5191D5CF3A45A867CD95644B923921629A6D@REXMF.intranet.epfl.ch>,
 	<4FE60190.5000108@xenomai.org>
 	<D1DC5191D5CF3A45A867CD95644B92392162B98F@REXMF.intranet.epfl.ch>
-	<4FEC3FF0.1050307@grandegger.com>,
-	<4FEC4245.9090804@grandegger.com>
-	<D1DC5191D5CF3A45A867CD95644B92392162BA13@REXMF.intranet.epfl.ch>
-In-Reply-To: <D1DC5191D5CF3A45A867CD95644B92392162BA13@REXMF.intranet.epfl.ch>
-Content-Type: text/plain; charset=ISO-8859-1
+In-Reply-To: <D1DC5191D5CF3A45A867CD95644B92392162B98F@REXMF.intranet.epfl.ch>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] Peak PCI CAN card RTCAN problem
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -23,26 +20,21 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: Kronander Klas <klas.kronander@epfl.ch>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hello,
+On 06/28/2012 01:11 PM, Kronander Klas wrote:
+> Jun 28 11:58:14 wam-desktop kernel: [   13.017820] Xenomai:
+> xnintr_shirq_handler: IRQ17 not handled. Disabling IRQ line.
+> 
+> I don't know exactly what happens there or why, but it seems that IRQ
+> 17 is disabled? Why and when does this happen?
+> 
+> On IRQ 17 there is the CAN card and two usb controllers. In the
+> rc.local we try to disable the conflicting devices using:
 
-On 06/28/2012 01:45 PM, Kronander Klas wrote:
-> Hi,
-> 
-> I still get the same error:
-> 
-> mode: start(0x1)
-> Cannot open RTDM CAN Socket. Maybe Driver not loaded? 
-> 
-> I guess this error message is related to this line in my syslog (?) :
-> 
-> Jun 28 11:58:14 wam-desktop kernel: [   13.017820] Xenomai: xnintr_shirq_handler: IRQ17 not handled. Disabling IRQ line. 
-> 
-> the CAN card is on IRQ 17. 
+That is a problem (maybe not what causes the issues you have, but 
+something you will have to deal with eventually), see:
 
-I don't think so. It's an unrelated issue. There is a problem with the
-protocol in the first place. Could you please hack "rtcanconfig.c" to
-print the return value of rt_dev_socket? Most likely it will return
--EPROTONOSUPPORT.
+http://xenomai.org/index.php/FAQs#What_can_I_do_if_Xenomai_and_Linux_devices_share_the_same_IRQ.3F
 
-Wolfgang.
+-- 
+					    Gilles.
 
