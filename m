@@ -1,9 +1,10 @@
+Message-ID: <4FEC9EA4.7020102@wanadoo.fr>
+Date: Thu, 28 Jun 2012 20:12:52 +0200
+From: Thierry Bultel <thierry.bultel@wanadoo.fr>
 MIME-Version: 1.0
-Date: Thu, 28 Jun 2012 14:09:09 -0400
-Message-ID: <CAKSrRNzAi1=U2CyycYxZYVwY_AzwnJZE=R-uuCx=AVP=bWkveQ@mail.gmail.com>
-From: Sunetra Sashi <snmgmt19@gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Subject: [Xenomai] Linux - Xenomai Kernel Space Communication
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai] rtser_xxx API availability on ARM iMX6 ?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,11 +17,8 @@ To: xenomai@xenomai.org
 
 Hi,
 
-I have an Linux kernel module that runs in native linux environment that
-needs to communicate (function calls/memory usage etc) with another kernel
-module that runs in Xenomai space.
-
-Does Xenomai offer mechanisms for such back and forth Linux - Xenomai
-communication?
+Are these serial services supported on the named platform ?
+Is ipipe_serial_debug usable, too ?
 
 Thanks
+Thierry
