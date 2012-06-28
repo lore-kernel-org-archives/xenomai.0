@@ -1,5 +1,5 @@
-Message-ID: <4FECBA66.8010300@xenomai.org>
-Date: Thu, 28 Jun 2012 22:11:18 +0200
+Message-ID: <4FECBAC5.5070900@xenomai.org>
+Date: Thu, 28 Jun 2012 22:12:53 +0200
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 References: <CAKSrRNzAi1=U2CyycYxZYVwY_AzwnJZE=R-uuCx=AVP=bWkveQ@mail.gmail.com>
@@ -26,20 +26,13 @@ On 06/28/2012 09:15 PM, Snmgmt wrote:
 >
 > Thank you, could someone else please point me to them?
 >
-> My question to be more specific would be, are the real time IPC protocols applicable to inter kernel communication
 
-Yes, via the regular module-to-module RTDM API they expose.
+http://www.xenomai.org/documentation/xenomai-2.6/html/api/index.html
 
-  or are they meant only for user space communication between xenomai 
-and Linux threads?
+> My question to be more specific would be, are the real time IPC protocols applicable to inter kernel communication or are they meant only for user space communication between xenomai and Linux threads?
 >
 > I read that rt_pipe api would be deprecated soon, is that true?
 >
-
-Yes, for most part. The in-kernel API disappeared from the Xenomai 3 
-code base already, what remains is a wrapper of the former user-space 
-RT_PIPE API rebased over XDDP.
-
 > Thanks
 >
 >
