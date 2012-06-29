@@ -1,17 +1,12 @@
-Message-ID: <4FECBB01.6060207@xenomai.org>
-Date: Thu, 28 Jun 2012 22:13:53 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <4FED4B42.6000808@wanadoo.fr>
+Date: Fri, 29 Jun 2012 08:29:22 +0200
+From: Thierry Bultel <thierry.bultel@wanadoo.fr>
 MIME-Version: 1.0
-References: <CAKSrRNzAi1=U2CyycYxZYVwY_AzwnJZE=R-uuCx=AVP=bWkveQ@mail.gmail.com>
-	<4FECA44F.4030208@xenomai.org>
-	<76D24F53-B746-4979-8B6E-EEC2CD4ED8BA@gmail.com>
-	<4FECA670.6030805@xenomai.org>
-	<26B5F54F-0FA5-433C-A884-3C406ED36FE9@gmail.com>
-	<4FECBAC5.5070900@xenomai.org>
-In-Reply-To: <4FECBAC5.5070900@xenomai.org>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Linux - Xenomai Kernel Space Communication
+References: <4FED4948.8080906@basystemes.fr>
+In-Reply-To: <4FED4948.8080906@basystemes.fr>
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="iso-8859-1"; Format="flowed"
+Subject: [Xenomai] RTDM driver for the Advantech 1680U CANbus Adapter
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,56 +15,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Snmgmt <snmgmt19@gmail.com>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 06/28/2012 10:12 PM, Philippe Gerum wrote:
-> On 06/28/2012 09:15 PM, Snmgmt wrote:
->>
->> Thank you, could someone else please point me to them?
->>
->
-> http://www.xenomai.org/documentation/xenomai-2.6/html/api/index.html
+Hi,
 
-Specifically:
-http://www.xenomai.org/documentation/xenomai-2.6/html/api/group__interdrv.html
+I have ported the adv_pci driver from =
 
->
->> My question to be more specific would be, are the real time IPC
->> protocols applicable to inter kernel communication or are they meant
->> only for user space communication between xenomai and Linux threads?
->>
->> I read that rt_pipe api would be deprecated soon, is that true?
->>
->> Thanks
->>
->>
->>
->> On Jun 28, 2012, at 2:46 PM, Gilles Chanteperdrix
->> <gilles.chanteperdrix@xenomai.org> wrote:
->>
->>> On 06/28/2012 08:44 PM, Snmgmt wrote:
->>>> Thanks. Could you please tell me what they are?
->>>
->>> No. You do not need me to find them in the API documentation, provided
->>> with xenomai sources as well as on the website.
->>>
->>> --
->>>                                                                 Gilles.
->>
->>
->>>
->> _______________________________________________
->> Xenomai mailing list
->> Xenomai@xenomai.org
->> http://www.xenomai.org/mailman/listinfo/xenomai
->>
->
->
+http://git.toiit.sgu.ru/people/samarkinpa/public/?p=3Dadv_pci.git;a=3Dtree;=
+h=3Da57c5d22415f8dbf92eeae0e05ff482839d8c2f3;hb=3Da57c5d22415f8dbf92eeae0e0=
+5ff482839d8c2f3
 
+I has been quite intensively been tested and cycled for several days in =
 
--- 
-Philippe.
+real industrial conditions.
 
+The patch for 2.6.38-8 is attached to this mail.
 
+Is it of interest and does is have a chance to be integrated in the =
 
+xenomai mainline ?
+
+Thanks
+Thierry
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: sja1000_adv_pci_driver.patch
+Type: text/x-patch
+Size: 13390 bytes
+Desc: not available
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20120629/e7b587e=
+d/attachment.bin>
