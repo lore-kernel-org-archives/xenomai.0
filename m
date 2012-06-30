@@ -1,13 +1,13 @@
-Message-ID: <4FEEEB00.6050602@xenomai.org>
-Date: Sat, 30 Jun 2012 14:03:12 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4FEF2EB1.3050600@logilin.fr>
+Date: Sat, 30 Jun 2012 18:52:01 +0200
+From: Christophe Blaess <mailist@logilin.fr>
 MIME-Version: 1.0
-References: <CAKKWdtd6kB_FAzwPmC+Cxnc2tjSnZOLkqw5aoeDPwBa=dq1gNw@mail.gmail.com>	<4FEEDAD0.4050701@xenomai.org>	<CAKKWdtdEAxLQ9Px4uTbVWbCtw7DVNLwQpV9JghgvCjo4XiNq5Q@mail.gmail.com>	<4FEEDF6E.4060300@xenomai.org>
-	<CAKKWdtfhekncHTjBgsFq_yF8Fhg=YM6Kt8HaOvpLGrPGWKHEuw@mail.gmail.com>
-In-Reply-To: <CAKKWdtfhekncHTjBgsFq_yF8Fhg=YM6Kt8HaOvpLGrPGWKHEuw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
+References: <CAKKWdte1Yg5fEUN=jqVgyTkRTHwY62WrMdw99ZgqOZZdAnAm+w@mail.gmail.com>
+	<4FEED882.9070307@xenomai.org>
+In-Reply-To: <4FEED882.9070307@xenomai.org>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] question: scheduling latency
+Subject: Re: [Xenomai] question: XENO_OPT_TIMING_SCHEDLAT
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,17 +16,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: ali hagigat <hagigatali@gmail.com>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 06/30/2012 02:01 PM, ali hagigat wrote:
-> Thank you so much for the reply. So how the worst/best case latencies
-> are computed?
+On 30/06/2012 12:44, Gilles Chanteperdrix wrote:
+>
+>> /proc/xenomai/latency is an estimation of the minimum scheduling latency
+>> on your system. In order to know what to put there you should do:
+>>
+>> echo 0 > /proc/xenomai/latency
+>>
+>> Run latency under load for several hour
 
-I already answered that, you run the latency test under heavy load, for
-a long time, and the measured minimum and maximum latencies should be a
-good approximation of the worst and best case latencies.
+Is it necessary to run the test under heavy load?
+We're looking for the minimal latency, not the worst.
 
--- 
-                                                                Gilles.
+I thought that in this case a normal, even light load would be sufficient.
+
+>>
+>> echo minimum_latency > /proc/xenomai/latency
+>>
+>> The value put there is then subtracted to timers deadline, so that
+>> timers wake up a little bit early to compensate for the time it takes to
+>> return to user-space.
+>>
+
+
 
