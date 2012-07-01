@@ -1,10 +1,13 @@
-Date: Mon, 2 Jul 2012 21:01:18 +0200
-From: Nicholas Mc Guire <der.herr@hofr.at>
-Message-ID: <20120702190118.GB8171@opentech.at>
+Message-ID: <4FF09E30.5050400@logilin.fr>
+Date: Sun, 01 Jul 2012 20:59:59 +0159
+From: Christophe Blaess <mailist@logilin.fr>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Subject: [Xenomai] RTLWS 14 2nd Call for Papers
+References: <CAKKWdte1Yg5fEUN=jqVgyTkRTHwY62WrMdw99ZgqOZZdAnAm+w@mail.gmail.com>	<4FEED882.9070307@xenomai.org>
+	<4FEF2EB1.3050600@logilin.fr> <4FEF31AC.2000403@xenomai.org>
+In-Reply-To: <4FEF31AC.2000403@xenomai.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] question: XENO_OPT_TIMING_SCHEDLAT
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,155 +16,94 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+Cc: xenomai@xenomai.org
+
+On 30/06/2012 19:04, Gilles Chanteperdrix wrote:
+> On 06/30/2012 06:52 PM, Christophe Blaess wrote:
+>> On 30/06/2012 12:44, Gilles Chanteperdrix wrote:
+>>>
+>>>> /proc/xenomai/latency is an estimation of the minimum scheduling latency
+>>>> on your system. In order to know what to put there you should do:
+>>>>
+>>>> echo 0 > /proc/xenomai/latency
+>>>>
+>>>> Run latency under load for several hour
+>> Is it necessary to run the test under heavy load?
+>> We're looking for the minimal latency, not the worst.
+>>
+>> I thought that in this case a normal, even light load would be sufficient.
+> It is not obvious which path is the shortest. For instance, having to
+> wake up from a "wait for interrupt" state to handle the timer interrupt
+> may induce a certain latency, and so may not be the shortest path. So,
+> running the test for a long time, and with a lot of different activities
+> is an empiric way to try many paths so that extreme paths have more
+> chances to be closest to the extrema paths.
+>
+> And anyway, you usually want to know the worst case latency for your
+> system as well.
+>
+
+I ran two 6-hours latency tests on a Pandaboard. After echoing 0 in 
+/proc/xenomai/latency
+
+For the first one the system load was very weak. I ran the test on the 
+second core because most of the interrupts are processed on the first 
+core. So the latency process was almost alone.
+
+#*/usr/xenomai/bin/latency -p 100 -c 1 -T 21600*
+[...]
+RTS|      2.388|      3.134|     18.706|       0|     0|    06:00:00/06:00:00
 
 
-HI All !
+For the second test, the system was under a very high load. I used a 
+shell script very close to dohell and sent a lot of external interrupts 
+(ping flood, GPIO interrupt...). This time latency ran on the first 
+core, and was subject to a lot of preemptions from interrupt requests.
 
- RTLWS 14 deadline for abstracts is approaching (July 23) - hope to hear 
- some news on Xenomai this year at RTLWS !
+#*/usr/xenomai/bin/latency -p 100 -c 0 -T 21600*
+[...]
+RTS|      2.908|      7.797|     51.579|       0|     0|    06:00:00/06:00:00
 
-thx!
-hofrat
+I would recommend, as you said, for long time tests to alternate high 
+and low pressure stages to get the min and max values.
 
 
-                      14th Real Time Linux Workshop
-                            2nd Call for Papers
+Apart from that, on my board (Panda with Xenomai 2.6.0), I note that 
+writing in /proc/xenomai/latency such as
 
-                           October 18-20, 2012
-                      Department of Computer Science
-                University of North Carolina at Chapel Hill
-                               Chapel Hill
-                                   USA
+# echo 2388 > /proc/xenomai/latency
 
-Following the meetings of academics, developers and users of real-time
-and embedded Linux at the previous 13 Real Time Linux Workshops held
-world-wide (Vienna, Orlando, Milano, Boston, Valencia, Singapore, Lille,
-Lanzhou, Linz, Guadalajara, Dresden, Nairobi and Prague) - the Real Time
-Linux Workshop for 2012 will come to the University of North Carolina at
-Chapel Hill in the US. It will be held from October 18 to 20, 2012.
 
-Rationale
-Real-time systems have evolved over the past decades in a relatively
-calm manner - performance has increased, one can say dramatically, but
-the main paradigms were pretty stable since the mid 80s. This has
-changed now. The big change that is moving into the embedded field is
-multicore - and that is not an adaptation of our current methods but a
-re-design from scratch in quite a few cases - notably of our way of
-thinking about real-time. Precisely this area of real-time embedded
-multicore has been a long-time focus of James Anderson's Real-Time
-Systems Group from the Department of Computer Science, University of
-North Carolina at Chapel Hill, covering a wide range from multicore RT,
-embedded applications, testing to certification issues. OSADL and the
-Real Time Linux Foundation Working Group gratefully acknowledge Prof.
-Anderson's offer to host this year's workshop at the University of North
-Carolina at Chapel Hill.
+gives a segmentation fault, even if the value is indeed written. Here is 
+the dmesg log :
 
-Linux in embedded systems is well established, ranging from consumer
-electronics to network devices and increasingly industrial applications
-including safety related systems. The technological resources suitable
-for high-availability, real-time, and safety critical systems have been
-continuously expanding and improving - allowing to cover the entire
-development life cycle of industrial projects based on open-source
-tools. At the core of this development is the availability of stable
-operating systems with reliable real-time properties. Extending and
-improving these real-time properties of Open Source RTOS is continuous
-research and development effort that OSADL documents in the form of the
-annual Real-Time Linux Workshop.
+[65108.190551] Unable to handle kernel paging request at virtual address 00004a5a
+[65108.190551] pgd = ef138000
+[65108.190551] [00004a5a] *pgd=af101831, *pte=00000000, *ppte=00000000
+[65108.190582] Internal error: Oops: 80000007 [#1] PREEMPT SMP
+[65108.190582] last sysfs file: /sys/devices/virtual/vc/vcs2/dev
+[65108.190612] CPU: 0    Not tainted  (2.6.38.8-xenomai-cpb #2)
+[65108.190612] PC is at 0x4a5a
+[65108.190643] LR is at simple_strtoul+0x8/0xc
+[65108.190643] pc : [<00004a5a>]    lr : [<c024ebf4>]    psr: 60000033
+[65108.190643] sp : ef06df08  ip : 00000002  fp : 00000100
+[65108.190673] r10: 401ae600  r9 : efbffe48  r8 : 00000fff
+[65108.190673] r7 : 00000fff  r6 : 1b207478  r5 : 742e4a5b  r4 : 1b262074
+[65108.190673] r3 : 00000002  r2 : c0456918  r1 : 00000000  r0 : ffffffea
+[65108.190704] Flags: nZCv  IRQs on  FIQs on  Mode SVC_32  ISA Thumb  Segment user
+[65108.190704] Control: 10c53c7d  Table: af13804a  DAC: 00000015
+[65108.190704] Process sh (pid: 86, stack limit = 0xef06c2f8)
+[65108.190734] Stack: (0xef06df08 to 0xef06e000)
+[65108.190734] df00:                   00000000 00000000 00000000 00000000 00000000 00000000
+[65108.190734] df20: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+[65108.190765] df40: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+[65108.190765] df60: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+[65108.190795] df80: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+[65108.190795] dfa0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+[65108.190795] dfc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+[65108.190826] dfe0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+[65108.190826] [<c024ebf4>] (simple_strtoul+0x8/0xc) from [<00000000>] (  (null))
+[65108.190856] Code: bad PC value
+[65108.190979] ---[ end trace 29e0859033dc848c ]---
 
-Call for papers
-Authors from regulatory bodies, academics, industry as well as the
-user-community are invited to submit original work dealing with general
-topics related to Open Source and Free Software based real-time systems
-research, experiments and case studies, as well as issues of integration
-of open-source real-time and embedded OS. A special focus will be on
-industrial case studies and safety related systems. Topics of interest
-include, but are not limited to:
- - Modifications and variants of the GNU/Linux operating system
-   extending its real-time capabilities,
- - Contributions to real-time Linux variants, drivers and extensions,
- - Tools for the verification and validation of real-time properties,
- - User-mode real-time concepts, implementation and experience,
- - Real-time Linux applications, in academia, research and industry,
- - Safety related FLOSS systems
- - Work in progress reports, covering recent developments,
- - Educational material on real-time Linux,
- - RTOS core concepts, RT-safe synchronization mechanisms,
- - RT-safe IPC mechanisms for RT and non RT components,
- - Analysis and Benchmarking methods and results of real-time
-   GNU/Linux variants,
- - Debugging techniques and tools, both for code and temporal
-   debugging of core RTOS components, drivers and real-time
-   applications,
- - Real-time related extensions to development environments,
- - Linux platform concepts and design.
-
-Abstract submission
-If you wish to present a paper at the workshop, please submit an
-abstract using the submission page at
-https://www.osadl.org/RTLWS14-Abstract.submission-form.0.html.
-
-Final paper to be included into the RTLWS14 Proceedings
-Upon acceptance of an abstract by the RTLWS14 Program Committee, the
-author will be invited to submit a full paper in a form defined by
-https://www.osadl.org/paper.tgz. A detailed description of the editing
-and formatting process will be provided along with the notification
-email.
-
-Further information: http://www.osadl.org/RTLWS
-
-Important dates
-July 23, 2012 - Abstract submission deadline
-August 31, 2012 - Notification of acceptance
-September 28, 2012 - Submission of final paper
-October 18-20, 2012 - Workshop
-
-Organization committee:
-
-Local organizers:
- - James H. Anderson, University of North Carolina at Chapel Hill, USA
-
-OSADL/RTLF
- - Carsten Emde, OSADL
- - Nicholas Mc Guire, OSADL
- - Andreas Platschek, Vienna Inst. for System Safety Engineering, Austria
-
-Program committee:
- - Alexey Khoroshilov, ISPRAS, Russia
- - Alfons Crespo, University Valencia, Spain
- - Andrea Bastoni, MBDA, Italy
- - Andreas Platschek, VISSE, Austria
- - Bernhard Noelte, IQSE TueV SueD Rail, Germany
- - Bernhard Zagar, Johannes Keppler Universitaet, Austria
- - Bjoern B. Brandenburg, MPI, Germany
- - Carsten Emde, OSADL, Germany
- - Frank Mueller, NCSU, USA
- - Georg Schiesser, OpenTech, Austria
- - Herman Haertig, Technische Universitaet Dresden, Germany
- - James H. Anderson, University of North Carolina at Chapel Hill, USA
- - Julia Lawall, Laboratory of Computer Sciences, Paris 6, France
- - Klaus Reichl, Base Systems Technology Thales, Austria
- - Michael Friess, AdaCore, France
- - Nicholas Mc Guire, OpenTech EDV Research GmbH, Austria
- - Paul E. McKenney, Linux Technology Center IBM, USA
- - Peter Okech, University of Nairobi, Kenya
- - Peter Zijlstra, RedHat, Netherlands
- - Roberto Bucher, SUSPI, Switzerland
- - Shawn Choo, Weslab, Singapur
- - Shinpei Kato, Systems Research Lab UCSC, USA
- - Stefan Schoenegger, B&R, Austria
- - Thomas Gleixner, Linutronix, Germany
- - Tommaso Cucinotta, Scuola Superiore Sant'Anna, Italy
- - Wolfgang Kuechlin, Informatik Symbolisches Rechnen, Uni Tuebingen, Germany
- - Yutaka Matsuno, ITC University of Tokyo, Japan
- - Zhou Qingguo, DSLab, Lanzhou University, China
-
-Workshop organizers:
- - Department of Computer Science, University of North Carolina at Chapel Hill
- - Open Source Automation Development Lab (OSADL)
-
-Jim Anderson
-Carsten Emde
-Nicholas Mc Guire
-Andreas Platschek
 
