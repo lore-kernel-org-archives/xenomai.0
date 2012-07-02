@@ -1,14 +1,13 @@
-Message-ID: <4FF1602A.5040909@xenomai.org>
-Date: Mon, 02 Jul 2012 10:47:38 +0200
+Message-ID: <4FF16086.1030903@xenomai.org>
+Date: Mon, 02 Jul 2012 10:49:10 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CAKKWdte1Yg5fEUN=jqVgyTkRTHwY62WrMdw99ZgqOZZdAnAm+w@mail.gmail.com>	<4FEED882.9070307@xenomai.org>	<4FEF2EB1.3050600@logilin.fr>	<4FEF31AC.2000403@xenomai.org>
-	<4FF09E30.5050400@logilin.fr>	<4FF0A625.7070408@xenomai.org>
-	<4FF13B93.1040302@logilin.fr> <4FF1497F.8080909@logilin.fr>
-In-Reply-To: <4FF1497F.8080909@logilin.fr>
+References: <009c01cd539e$e9f81420$bde83c60$@com>	<4FF057F2.7040109@xenomai.org>
+	<03de01cd580a$f9016d70$eb044850$@com>
+In-Reply-To: <03de01cd580a$f9016d70$eb044850$@com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] question: XENO_OPT_TIMING_SCHEDLAT
+Subject: Re: [Xenomai] ARM, exception #0 ?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,38 +16,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Christophe Blaess <mailist@logilin.fr>
+To: George Pontis <GPontis@z9.com>
 Cc: xenomai@xenomai.org
 
-On 07/02/2012 09:11 AM, Christophe Blaess wrote:
-> On 02/07/2012 08:12, Christophe Blaess wrote:
->>
->> But, there's still something weird (I run on a stock xenomai 2.6.0 
->> with adeos-ipipe-2.6.38.8-arm-1.18-04.patch, I'll try on a 2.6 git 
->> kernel)
->>
->> [Panda]#*echo 2388 > /proc/xenomai/latency*
->> [Panda]#*cat /proc/xenomai/latency*
->> 2386
->> [Panda]#*echo 2386 > /proc/xenomai/latency*
->> [Panda]#*cat /proc/xenomai/latency*
->> 2384
->> [Panda]#*echo 2384 > /proc/xenomai/latency*
->> [Panda]#*cat /proc/xenomai/latency*
->> 2382
->> [Panda]#
->>
->> I suspect something wrong in xnarch_tsc_to_ns()/xnarch_ns_to_tsc() 
->> maybe in xnarch_llimd(). I'll investigate more this afternoon.
->>
->>
-> 
-> I see the same behaviour with xenomai 2.6 from git source, using 
-> adeos-ipipe-2.6.38.8-arm-1.18-08.patch
+On 07/02/2012 06:27 AM, George Pontis wrote:
+> on the host. And I _still_ have not been able to coax any detailed
+> output from the kernel with CONFIG_DEBUG_USER and user_debug=29. I
+> know that this is declared because an added printk shows that it is
+> executing the function user_debug_setup in arch/arm/kernel/traps.c
+> which is dependent on CONFIG_DEBUG_USER. But no additional info shows
+> after the fault, including the fault from your test application.
 
-This is because xnarch_tsc_to_ns and xnarch_ns_to_tsc both round toward
-0, and the tsc frequency is not a round number of ticks. I do not think
-trying to fix an issue for a difference of 2ns is worth the trouble.
+That is supposed to work. What does /proc/sys/kernel/printk say?
+On my side, I get:
+# cat /proc/sys/kernel/printk
+7       4       1       7
 
 -- 
 					    Gilles.
