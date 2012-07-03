@@ -1,13 +1,13 @@
-Message-ID: <4FF367D7.1080102@xenomai.org>
-Date: Tue, 03 Jul 2012 23:44:55 +0200
+Message-ID: <4FF369E5.5040007@xenomai.org>
+Date: Tue, 03 Jul 2012 23:53:41 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CANKLDmuw2sM5PD0G1YvObij1dZvdm743hEMMP=6Ljg+k2ZSOQQ@mail.gmail.com>	<4FEC13B1.3040609@xenomai.org>
-	<CANKLDmttLXBxdtXss9cWyYtXayBvZeZ74sO6r6KEshMxmLM+kQ@mail.gmail.com>
-In-Reply-To: <CANKLDmttLXBxdtXss9cWyYtXayBvZeZ74sO6r6KEshMxmLM+kQ@mail.gmail.com>
+References: <CAL7_A_WEXhEBQr+LFb_mfaqLxBh=hsHJg6WiY08cmkgb=Y2TNA@mail.gmail.com>
+In-Reply-To: <CAL7_A_WEXhEBQr+LFb_mfaqLxBh=hsHJg6WiY08cmkgb=Y2TNA@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] How setup receive-timeout for rt_dev_recvfrom?
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] Xenomai and normal linux application - Wait time with
+ select() not reliable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,48 +16,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Henri Roosen <henriroosen@gmail.com>
+To: =?UTF-8?B?SmVucyBLw7ZobGVy?= <jenskxxx@googlemail.com>
 Cc: xenomai@xenomai.org
 
-On 07/03/2012 08:08 PM, Henri Roosen wrote:
-> On Thu, Jun 28, 2012 at 10:20 AM, Gilles Chanteperdrix
-> <gilles.chanteperdrix@xenomai.org> wrote:
->> On 06/28/2012 10:05 AM, Henri Roosen wrote:
->>> Hi Xenomai-list,
->>>
->>> I am using the native API and RTDM to read from a RTNet realtime interface.
->>> This all works, however, I need a timeout on the rt_dev_recvfrom.
->>>
->>> As there is no rt_dev_select function, I tried to setup a receive
->>> timeout, similar to how the XDDP examples do:
->>
->> The posix skin has select, which can be used by native skin threads. You
->> have to use the result of socket, and not rt_dev_socket as the fd to put
->> in the fd_set, but apart from that, it should work.
-> 
-> Thanks Gilles for your reply! However, I didn't try your suggestion,
-> because we cannot easily bind the posix skin to our application.
-> 
-> But I found out that RTNet supports setting a timeout on a socket that
-> is used by rt_dev_recvfrom(). So for the case that anyone is looking
-> for how to setup a receive timeout, here is what worked for me:
-> 
-> 		#include <rtnet.h>
-> 		nanosecs_rel_t timeout = 1000000000LL;
-> 		...
-> 		ret = rt_dev_ioctl(s, RTNET_RTIOC_TIMEOUT, &timeout);
+On 07/03/2012 03:30 PM, Jens K=C3=B6hler wrote:
+> Hello all,
+>=20
+> I have a normal linux application running. Application waits in
+> following loop normally about 8 ms. Delay time of 8ms is reliable.
+>=20
+> do
+>    {
+>       remain(&remainTime);
+>=20
+>       if ((remainTime.tv_sec !=3D 0L) || (remainTime.tv_usec !=3D 0L))
+>          result =3D select(0, NULL, NULL, NULL, &remainTime);
+>       else
+>          break;
+>    }
+>    while ((result =3D=3D -1) && (errno =3D=3D EINTR));
+>=20
+> If there is running in parallel a Xenomai application the wait time
+> could be up to 40 ms accidentally. What could be the reason?
 
-I agree that it is simpler than using select.
+Are you sure the "select" service guarantees delays with the version of
+the linux kernel you use? Is the thread running with SCHED_FIFO policy?
+If yes, what happens if you replace with nanosleep?
 
-But just to answer your remark about the posix skin, you can actually
-use xenomai posix skin without the "--wrap" trick, and so avoid the
-posix skin functions called without wanting it.
-
-What you have to do is use the xenomai posix skin services you want to
-use with the __wrap_ prefix. For instance __wrap_socket, __wrap_select.
-The simply link with libpthread_rt.so, and do not use the --wrap flag
-provided by xeno-config.
-
--- 
+--=20
                                                                 Gilles.
+
 
