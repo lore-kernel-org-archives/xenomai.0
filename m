@@ -1,14 +1,10 @@
-Message-ID: <4FF43DBF.4070501@xenomai.org>
-Date: Wed, 04 Jul 2012 14:57:35 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CAL7_A_WEXhEBQr+LFb_mfaqLxBh=hsHJg6WiY08cmkgb=Y2TNA@mail.gmail.com>	<4FF369E5.5040007@xenomai.org>	<CAL7_A_WYVjFhh9RuxAm1jtVp7HqakB5gEzkSt8i7XsWJNJrh=Q@mail.gmail.com>	<4FF402AD.3020601@xenomai.org>	<4FF415AB.2030503@xenomai.org>	<CAL7_A_Xr432pEEEiG4D5xsD-2yqWdgSd0tD26aEi4q0FzeWD_w@mail.gmail.com>	<4FF43164.8010304@xenomai.org>
-	<CAL7_A_VQe-KGBoYq034hT=6CdJJPpwEQTs1EgDQ=325WjOfUzw@mail.gmail.com>
-In-Reply-To: <CAL7_A_VQe-KGBoYq034hT=6CdJJPpwEQTs1EgDQ=325WjOfUzw@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] Xenomai and normal linux application - Wait time with
- select() not reliable
+Date: Tue, 3 Jul 2012 15:30:31 +0200
+Message-ID: <CAL7_A_WEXhEBQr+LFb_mfaqLxBh=hsHJg6WiY08cmkgb=Y2TNA@mail.gmail.com>
+From: =?ISO-8859-1?Q?Jens_K=F6hler?= <jenskxxx@googlemail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: [Xenomai] Xenomai and normal linux application - Wait time with
+	select() not reliable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,16 +13,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?B?SmVucyBLw7ZobGVy?= <jenskxxx@googlemail.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 07/04/2012 02:49 PM, Jens Köhler wrote:
-> Linux: 2.6.26.
-> Xenomai:	2.4.10
-> adeos-i-pipe: 2.6.26.7
+Hello all,
 
-Last question: are you compiling for the posix skin?
+I have a normal linux application running. Application waits in
+following loop normally about 8 ms. Delay time of 8ms is reliable.
 
--- 
-					    Gilles.
+do
+   {
+      remain(&remainTime);
+
+      if ((remainTime.tv_sec != 0L) || (remainTime.tv_usec != 0L))
+         result = select(0, NULL, NULL, NULL, &remainTime);
+      else
+         break;
+   }
+   while ((result == -1) && (errno == EINTR));
+
+If there is running in parallel a Xenomai application the wait time
+could be up to 40 ms accidentally. What could be the reason?
+
+Thanks and regards,
+Jens
 
