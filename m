@@ -1,14 +1,13 @@
-Message-ID: <4FF3562B.7020902@grandegger.com>
-Date: Tue, 03 Jul 2012 22:29:31 +0200
-From: Wolfgang Grandegger <wg@grandegger.com>
+Message-ID: <4FF367D7.1080102@xenomai.org>
+Date: Tue, 03 Jul 2012 23:44:55 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4FED4948.8080906@basystemes.fr> <4FED4B42.6000808@wanadoo.fr>
-	<4FEDF65A.50401@grandegger.com>
-	<1012208988.15650.1341343674156.JavaMail.www@wwinf1m30>
-In-Reply-To: <1012208988.15650.1341343674156.JavaMail.www@wwinf1m30>
-Content-Type: text/plain; charset=ISO-8859-1
+References: <CANKLDmuw2sM5PD0G1YvObij1dZvdm743hEMMP=6Ljg+k2ZSOQQ@mail.gmail.com>	<4FEC13B1.3040609@xenomai.org>
+	<CANKLDmttLXBxdtXss9cWyYtXayBvZeZ74sO6r6KEshMxmLM+kQ@mail.gmail.com>
+In-Reply-To: <CANKLDmttLXBxdtXss9cWyYtXayBvZeZ74sO6r6KEshMxmLM+kQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] RTDM driver for the Advantech 1680U CANbus Adapter
+Subject: Re: [Xenomai] How setup receive-timeout for rt_dev_recvfrom?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,67 +16,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Thierry BULTEL <thierry.bultel@wanadoo.fr>
-Cc: Linux-CAN <linux-can@vger.kernel.org>, xenomai@xenomai.org
+To: Henri Roosen <henriroosen@gmail.com>
+Cc: xenomai@xenomai.org
 
-Hi Thierry,
-
-On 07/03/2012 09:27 PM, Thierry BULTEL wrote:
-> Hi Wolfgang,
+On 07/03/2012 08:08 PM, Henri Roosen wrote:
+> On Thu, Jun 28, 2012 at 10:20 AM, Gilles Chanteperdrix
+> <gilles.chanteperdrix@xenomai.org> wrote:
+>> On 06/28/2012 10:05 AM, Henri Roosen wrote:
+>>> Hi Xenomai-list,
+>>>
+>>> I am using the native API and RTDM to read from a RTNet realtime interface.
+>>> This all works, however, I need a timeout on the rt_dev_recvfrom.
+>>>
+>>> As there is no rt_dev_select function, I tried to setup a receive
+>>> timeout, similar to how the XDDP examples do:
+>>
+>> The posix skin has select, which can be used by native skin threads. You
+>> have to use the result of socket, and not rt_dev_socket as the fd to put
+>> in the fd_set, but apart from that, it should work.
 > 
->  
+> Thanks Gilles for your reply! However, I didn't try your suggestion,
+> because we cannot easily bind the posix skin to our application.
 > 
-> Thanks for your feedback.
+> But I found out that RTNet supports setting a timeout on a socket that
+> is used by rt_dev_recvfrom(). So for the case that anyone is looking
+> for how to setup a receive timeout, here is what worked for me:
 > 
->  
-> 
-> The issue is that I did not realize that the patch would not have been accepted as such, so I will have to invest more time on than expected ...
-> 
-> so I will not be able to do so immediately.
+> 		#include <rtnet.h>
+> 		nanosecs_rel_t timeout = 1000000000LL;
+> 		...
+> 		ret = rt_dev_ioctl(s, RTNET_RTIOC_TIMEOUT, &timeout);
 
-No problem.
+I agree that it is simpler than using select.
 
-> Several comments, to your comments
-> 
-> 
-> - I agree for the multiple devices, theoretically supported by the original Linux driver. I intentionnally removed them, since I do not have the appropriate hardware to test.
+But just to answer your remark about the posix skin, you can actually
+use xenomai posix skin without the "--wrap" trick, and so avoid the
+posix skin functions called without wanting it.
 
-Well, your patch should just add *your* new driver. It should *not*
-change unrelated things.
+What you have to do is use the xenomai posix skin services you want to
+use with the __wrap_ prefix. For instance __wrap_socket, __wrap_select.
+The simply link with libpthread_rt.so, and do not use the --wrap flag
+provided by xeno-config.
 
-> - Linux code style. I really thought I had respected it, furthermore I took another (ixxat) RTDM driver as a model. Ok, I can doublecheck ...
-
-Well, checkplatch.pl does report:
-
-  total: 45 errors, 138 warnings, 427 lines checked
-
-For further information please have a look to
-
-http://lxr.linux.no/#linux+v3.4.4/Documentation/CodingStyle
-
-> - patch high-check vs plx. I do no see what you mean. If I made something wrong it is not intentional. Can you be more specific please ?
-
--config XENO_DRIVERS_CAN_SJA1000_PLX_PCI
-+config XENO_DRIVERS_CAN_SJA1000_ADV_PCI
- 	depends on XENO_DRIVERS_CAN_SJA1000 && PCI
--	tristate "PLX90xx PCI-bridge based Cards"
-+	tristate "ADVANTECH PCI 168x Card"
-
-
-I mean "high-check" in the sense of "replacing".
-
-> - Avantech specific ... not much but the classical vendor ID, and also, PCI banks mapping. Again, it is just like the ixxat one, all the driver intelligence is in the generic sja1000 code
-
-It would be nice if the driver could also support other advantec and
-non-advantec devices. This could be achieved by by a generic driver, I
-believe.
-
-> - patches inline ... Really ??? In the mail content ? But that makes huge mails. I can do so of course, but I do not see the point.
-
-Yes, it makes reviewing the patches much easier. For further information
-please read:
-
-http://lxr.linux.no/#linux+v3.4.4/Documentation/SubmittingPatches
-
-Wolfgang.
+-- 
+                                                                Gilles.
 
