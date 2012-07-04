@@ -1,12 +1,19 @@
+Message-ID: <4FF42271.20602@xenomai.org>
+Date: Wed, 04 Jul 2012 13:01:05 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <CAN_aGuVxhFh+Dd0OOd0LS9eiMj_JQj2j38peEVCMVedAxvFcfg@mail.gmail.com>
-References: <CAN_aGuXSLRdWQdoJjZXqChobTe6v=qVadAmz2zq6ZLzSLRRvbA@mail.gmail.com>
-	<CAN_aGuVxhFh+Dd0OOd0LS9eiMj_JQj2j38peEVCMVedAxvFcfg@mail.gmail.com>
-Date: Tue, 3 Jul 2012 16:24:12 +0300
-Message-ID: <CAN_aGuVDovxTMbG0CZE3eq_16jRcpZ6ZRFn-=pJ15rHYPfy5MQ@mail.gmail.com>
-From: Canku Alp Calargun <cankualp@gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Subject: [Xenomai] Igep Xenomai problem
+References: <D1DC5191D5CF3A45A867CD95644B923921629A6D@REXMF.intranet.epfl.ch>,
+	<4FE60190.5000108@xenomai.org>	<D1DC5191D5CF3A45A867CD95644B92392162B98F@REXMF.intranet.epfl.ch>	<4FEC3FF0.1050307@grandegger.com>,
+	<4FEC4245.9090804@grandegger.com>	<D1DC5191D5CF3A45A867CD95644B92392162BA13@REXMF.intranet.epfl.ch>	<4FEC46B5.7060700@grandegger.com>
+	<4FEC5381.9040804@epfl.ch>	<4FEC570A.8040406@grandegger.com>
+	<4FEC5BD9.4060105@grandegger.com> <4FEC819D.2080804@epfl.ch>
+	<4FEC8259.2090300@xenomai.org> <4FEC8A85.4050506@epfl.ch>,
+	<4FEC8AFB.5070002@xenomai.org>
+	<D1DC5191D5CF3A45A867CD95644B92392162E0C5@REXMF.intranet.epfl.ch>
+In-Reply-To: <D1DC5191D5CF3A45A867CD95644B92392162E0C5@REXMF.intranet.epfl.ch>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Peak PCI CAN card RTCAN problem
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,26 +22,17 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Kronander Klas <klas.kronander@epfl.ch>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hello All,
+On 07/04/2012 12:59 PM, Kronander Klas wrote:
+> If run the xenomai ./configure script without any arguments and then
+> build and install, I get the following message when running
+> ./usr/xenomai/bin/clocktest:
 
-We are trying to develop a real time system which has a DM3730 processor on
-a custom board which is similar to IGEP v2 board. We were able to run the
-kernel 2.6.35 which is a xenomai patched version by igep and we were also
-able to run our application on this kernel. Because of our real time
-requirements, we want to use rt APIs of xenomai. The application is being
-developed using Code composer Studio v5 and all related configuration for
-cross compiling the system is working properly.
+Have you tried to run ./configure CFLAGS="-fno-omit-frame-pointer" as I
+already suggested?
 
-For reading serial data we tried to use rt_dev_read and included the header
-rtdm/rtdm.h. However, We got the error "undefined reference to
-`rt_dev_read". In the mailing list, it is suggested to add -lrtdm and
--llxrt as linker flags. This time compiler could not find these libraries.
-Also when we search the kernel tree that IGEP provided(2.6.35-rt) we could
-not see those libraries. Can you please help solving this issue or suggest
-us a way?
+-- 
+                                                                Gilles.
 
-We would really appreciate your help :)
-
-Canku
