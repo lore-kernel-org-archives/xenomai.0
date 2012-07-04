@@ -1,16 +1,14 @@
-Message-ID: <4FF3E894.70100@grandegger.com>
-Date: Wed, 04 Jul 2012 08:54:12 +0200
-From: Wolfgang Grandegger <wg@grandegger.com>
 MIME-Version: 1.0
-References: <4FED4948.8080906@basystemes.fr> <4FED4B42.6000808@wanadoo.fr>
-	<4FEDF65A.50401@grandegger.com>
-	<1012208988.15650.1341343674156.JavaMail.www@wwinf1m30>
-	<4FF3562B.7020902@grandegger.com>
-	<8236197CA3DA864F9EF20609D9887263B7F88C7A@rrxchngmbx01.mro.roland-man.biz>
-In-Reply-To: <8236197CA3DA864F9EF20609D9887263B7F88C7A@rrxchngmbx01.mro.roland-man.biz>
+In-Reply-To: <4FF369E5.5040007@xenomai.org>
+References: <CAL7_A_WEXhEBQr+LFb_mfaqLxBh=hsHJg6WiY08cmkgb=Y2TNA@mail.gmail.com>
+	<4FF369E5.5040007@xenomai.org>
+Date: Wed, 4 Jul 2012 10:36:37 +0200
+Message-ID: <CAL7_A_WYVjFhh9RuxAm1jtVp7HqakB5gEzkSt8i7XsWJNJrh=Q@mail.gmail.com>
+From: =?ISO-8859-1?Q?Jens_K=F6hler?= <jenskxxx@googlemail.com>
 Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] RTDM driver for the Advantech 1680U CANbus Adapter
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] Xenomai and normal linux application - Wait time with
+ select() not reliable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,19 +17,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: dietmar.schindler@manroland.com
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On 07/04/2012 08:24 AM, dietmar.schindler@manroland.com wrote:
->> From: xenomai-bounces@xenomai.org [mailto:xenomai-bounces@xenomai.org] On
->> Behalf Of Wolfgang Grandegger
->> Sent: Tuesday, July 03, 2012 10:30 PM
->> ...
->> I mean "high-check" in the sense of "replacing".
-> 
-> So, you mean "high-jack" (to prevent future incomprehension).
+Thank you for your response Gilles. I set thread to SCHED_FIFO policy
+with chrt command, Prio 99. But there is no improvement. Also
+nanosleep do not help. The kernel is 2.6.26. What could be reason that
+kernel is not restart thread when time is over?
 
-Puh, of course. Thanks for clarification and sorry for the confusion.
+Jens
 
-Wolfgang.
+2012/7/3, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>:
+> On 07/03/2012 03:30 PM, Jens K=F6hler wrote:
+>> Hello all,
+>>
+>> I have a normal linux application running. Application waits in
+>> following loop normally about 8 ms. Delay time of 8ms is reliable.
+>>
+>> do
+>>    {
+>>       remain(&remainTime);
+>>
+>>       if ((remainTime.tv_sec !=3D 0L) || (remainTime.tv_usec !=3D 0L))
+>>          result =3D select(0, NULL, NULL, NULL, &remainTime);
+>>       else
+>>          break;
+>>    }
+>>    while ((result =3D=3D -1) && (errno =3D=3D EINTR));
+>>
+>> If there is running in parallel a Xenomai application the wait time
+>> could be up to 40 ms accidentally. What could be the reason?
+>
+> Are you sure the "select" service guarantees delays with the version of
+> the linux kernel you use? Is the thread running with SCHED_FIFO policy?
+> If yes, what happens if you replace with nanosleep?
+>
+> --
+>                                                                 Gilles.
+>
+>
 
