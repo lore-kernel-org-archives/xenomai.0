@@ -1,15 +1,15 @@
-From: <dietmar.schindler@manroland.com>
-Date: Wed, 4 Jul 2012 06:24:33 +0000
-Message-ID: <8236197CA3DA864F9EF20609D9887263B7F88C7A@rrxchngmbx01.mro.roland-man.biz>
+Message-ID: <4FF3E894.70100@grandegger.com>
+Date: Wed, 04 Jul 2012 08:54:12 +0200
+From: Wolfgang Grandegger <wg@grandegger.com>
+MIME-Version: 1.0
 References: <4FED4948.8080906@basystemes.fr> <4FED4B42.6000808@wanadoo.fr>
 	<4FEDF65A.50401@grandegger.com>
 	<1012208988.15650.1341343674156.JavaMail.www@wwinf1m30>
 	<4FF3562B.7020902@grandegger.com>
-In-Reply-To: <4FF3562B.7020902@grandegger.com>
-Content-Language: de-DE
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
+	<8236197CA3DA864F9EF20609D9887263B7F88C7A@rrxchngmbx01.mro.roland-man.biz>
+In-Reply-To: <8236197CA3DA864F9EF20609D9887263B7F88C7A@rrxchngmbx01.mro.roland-man.biz>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] RTDM driver for the Advantech 1680U CANbus Adapter
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -19,28 +19,19 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
+To: dietmar.schindler@manroland.com
 Cc: xenomai@xenomai.org
 
-PiBGcm9tOiB4ZW5vbWFpLWJvdW5jZXNAeGVub21haS5vcmcgW21haWx0bzp4ZW5vbWFpLWJvdW5j
-ZXNAeGVub21haS5vcmddIE9uDQo+IEJlaGFsZiBPZiBXb2xmZ2FuZyBHcmFuZGVnZ2VyDQo+IFNl
-bnQ6IFR1ZXNkYXksIEp1bHkgMDMsIDIwMTIgMTA6MzAgUE0NCj4gLi4uDQo+IEkgbWVhbiAiaGln
-aC1jaGVjayIgaW4gdGhlIHNlbnNlIG9mICJyZXBsYWNpbmciLg0KDQpTbywgeW91IG1lYW4gImhp
-Z2gtamFjayIgKHRvIHByZXZlbnQgZnV0dXJlIGluY29tcHJlaGVuc2lvbikuDQoNCi0tDQpEaWV0
-bWFyDQoNCnAuIHMuOiBJdCBpcyBub3Qgd2l0aGluIG15IHBvd2VyIHRvIHByZXZlbnQgbXkgZW1w
-bG95ZXIncyBub3RlIGZyb20gYmVpbmcgYWRkZWQgdG8gdGhpcyBtZXNzYWdlLg0KX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXw0KbWFucm9sYW5kIHdlYiBzeXN0ZW1zIEdt
-YkggLS0gTWFuYWdpbmcgRGlyZWN0b3I6IFV3ZSBMw7xkZXJzDQpSZWdpc3RlcmVkIE9mZmljZTog
-QXVnc2J1cmcgLS0gVHJhZGUgUmVnaXN0ZXI6IEFHIEF1Z3NidXJnIC0tIEhSQi1Oby4gMjY4MTYg
-LS0gVkFUOiBERTI4MTM4OTg0MA0KDQpDb25maWRlbnRpYWxpdHkgbm90ZToNClRoaXMgZU1haWwg
-YW5kIGFueSBmaWxlcyB0cmFuc21pdHRlZCB3aXRoIGl0IGFyZSBjb25maWRlbnRpYWwgYW5kIGlu
-dGVuZGVkIHNvbGVseSBmb3IgdGhlIHVzZSBvZiB0aGUgaW5kaXZpZHVhbCBvciBlbnRpdHkgdG8g
-d2hvbSB0aGV5IGFyZSBhZGRyZXNzZWQuIElmIHlvdSBhcmUgbm90IHRoZSBpbnRlbmRlZCByZWNp
-cGllbnQsIHlvdSBhcmUgaGVyZWJ5IG5vdGlmaWVkIHRoYXQgYW55IHVzZSBvciBkaXNzZW1pbmF0
-aW9uIG9mIHRoaXMgY29tbXVuaWNhdGlvbiBpcyBzdHJpY3RseSBwcm9oaWJpdGVkLiBJZiB5b3Ug
-aGF2ZSByZWNlaXZlZCB0aGlzIGVNYWlsIGluIGVycm9yLCBwbGVhc2Ugbm90aWZ5IHVzIGltbWVk
-aWF0ZWx5IHZpYSBpbmZvQG1hbnJvbGFuZC13ZWIuY29tLCB0aGVuIGRlbGV0ZSB0aGlzIGVNYWls
-Lg0KDQotIFBsZWFzZSBjb25zaWRlciB5b3VyIGVudmlyb25tZW50YWwgcmVzcG9uc2liaWxpdHkg
-YmVmb3JlIHByaW50aW5nIHRoaXMgZU1haWwNCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX18NCg==
+On 07/04/2012 08:24 AM, dietmar.schindler@manroland.com wrote:
+>> From: xenomai-bounces@xenomai.org [mailto:xenomai-bounces@xenomai.org] On
+>> Behalf Of Wolfgang Grandegger
+>> Sent: Tuesday, July 03, 2012 10:30 PM
+>> ...
+>> I mean "high-check" in the sense of "replacing".
+> 
+> So, you mean "high-jack" (to prevent future incomprehension).
 
+Puh, of course. Thanks for clarification and sorry for the confusion.
+
+Wolfgang.
 
