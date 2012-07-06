@@ -1,17 +1,25 @@
-Message-ID: <4FF44621.5020609@xenomai.org>
-Date: Wed, 04 Jul 2012 15:33:21 +0200
-From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <CAL7_A_WEXhEBQr+LFb_mfaqLxBh=hsHJg6WiY08cmkgb=Y2TNA@mail.gmail.com>
-	<4FF369E5.5040007@xenomai.org>
-	<CAL7_A_WYVjFhh9RuxAm1jtVp7HqakB5gEzkSt8i7XsWJNJrh=Q@mail.gmail.com>
-	<4FF402AD.3020601@xenomai.org> <4FF415AB.2030503@xenomai.org>
-	<CAL7_A_Xr432pEEEiG4D5xsD-2yqWdgSd0tD26aEi4q0FzeWD_w@mail.gmail.com>
-In-Reply-To: <CAL7_A_Xr432pEEEiG4D5xsD-2yqWdgSd0tD26aEi4q0FzeWD_w@mail.gmail.com>
-Content-Type: text/plain; charset="iso-8859-1"; format="flowed"
+In-Reply-To: <4FF3240B.3090401@xenomai.org>
+References: <CAHue_TXhjY-74oUNzuuS=ygCEhcVFeiAB+4ZesjKX19B9WobaA@mail.gmail.com>
+	<4FCDFB35.1050705@xenomai.org>
+	<CAHue_TUB-6nufH_O-PRojDPVfpDom+DCv1-_ERV4-xOfEzu2Dg@mail.gmail.com>
+	<4FCE28F8.9040001@xenomai.org>
+	<CAHue_TW1ntMpOxwACiawgtm67nYq_e7i11CDxz=CfpGGwRes_A@mail.gmail.com>
+	<4FD8F4B5.7000001@xenomai.org>
+	<CAHue_TXMiLTxiK2ZORVccov2wqd+ML-H0zwhLoDYh+7+8_56xw@mail.gmail.com>
+	<4FE46F5F.1060500@xenomai.org>
+	<CAHue_TX3UmeMbu9mU_YSKdHeN8oUYFhaeA=mUGgpvJzjnaEdxw@mail.gmail.com>
+	<4FEB242B.5080306@xenomai.org>
+	<CAHue_TXXqYsod32WGRzgC9wsnuKkVWX=4vyA9oEi9c_rP276qQ@mail.gmail.com>
+	<4FEB324B.7020800@xenomai.org>
+	<CAHue_TUVeQaxd4hUbT4ok6xprD9WHnj5qw9hcp-W6WK2ZcSwxQ@mail.gmail.com>
+	<4FF3240B.3090401@xenomai.org>
+Date: Fri, 6 Jul 2012 14:06:31 +0200
+Message-ID: <CAHue_TWTebF+H4azkFaWQWWyfUUcdQbuz6Og7xWSsGcz-AMLaA@mail.gmail.com>
+From: =?ISO-8859-2?Q?Marcin_Ku=B6ka?= <marckuska@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-2
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] Xenomai and normal linux application - Wait time with
- select() not reliable
+Subject: Re: [Xenomai] unsupported ARM9 machine
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,65 +28,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?ISO-8859-1?Q?Jens_K=F6hler?= <jenskxxx@googlemail.com>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On 07/04/2012 01:45 PM, Jens K=F6hler wrote:
-> The Xenomai application runs every 2ms for about 150 us and sends/
-> receives an udp packet.Rtnet socket is used for udp communication.
->
-> /proc/xenomai/stat:
->
-> CPU	PID	MSW	CSW	PF	STAT		%CPU  NAME
->    0	0	0	272362	0	00500080	93.8  ROOT
->    0	0	0	13475	0	00000082	0.0  rtnet-stack
->    0	0	0	1	0	00000082	0.0  rtnet-rtpc
->    0	1843	1	11677	0	00300182	0.1  SgbmReceive
->    0	1844	1	67501	0	00300184	4.7  SgbmSend
->    0	1845	63111	63304	0	00300380	0.3  SgbmUserSpaceComm
+So what you mean is, run prepare-kernel.sh without option
+--adeos=3Dpath/to/adeos/patch?
 
-This thread seems to be switching modes a lot. Does it do this=20
-frequently? Each mode switch involves a task switch linux-wise.
 
->    0	1846	1	134963	0	00300184	0.5  SgbmTimer
->    0	0	0	67500	0	00000000	0.3  IRQ19: rteth0
->    0	0	0	298425	0	00000000	0.3  IRQ233: [timer]
->
-> Application was ported from RTAI to Xenomai. With Rtai was never a
-> problem with select.
+2012/7/3 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 
-Is it supposed to give us any hint?
+> On 07/03/2012 06:49 PM, Marcin Ku=B6ka wrote:
+> > All I did was applying standard adeos-3.0.13-arm-1.18-09.patch to kerne=
+l
+> > ipipe core-3.2 from your repository and used xenomai upgraded to head
+> > branch as you suggested.
+>
+> No, you have to either use adeos-3.0.13 patch with a 3.0 kernel, or use
+> the ipipe core-3.2 patch with no further patch. You can not mix the two.
+>
+> --
+>                                             Gilles.
+>
 
->
-> Jens
->
->
-> 2012/7/4, Philippe Gerum <rpm@xenomai.org>:
->> On 07/04/2012 10:45 AM, Gilles Chanteperdrix wrote:
->>> On 07/04/2012 10:36 AM, Jens K=F6hler wrote:
->>>> Thank you for your response Gilles. I set thread to SCHED_FIFO policy
->>>> with chrt command, Prio 99. But there is no improvement. Also
->>>> nanosleep do not help. The kernel is 2.6.26. What could be reason that
->>>> kernel is not restart thread when time is over?
->>>
->>> It could be that the xenomai activity, if any, is running for long
->>> periods of time and causing linux ticks to be delayed. As usual, it
->>> would help if you could provide a self-contained test-case allowing us
->>> to reproduce the issue.
->>>
->>
->> /proc/xenomai/stat as well, in case the rt activity changes mode a lot.
->>
->> --
->> Philippe.
->>
->>
->>
->
 
 
 --=20
-Philippe.
-
-
-
+Marcin Ku=B6ka
