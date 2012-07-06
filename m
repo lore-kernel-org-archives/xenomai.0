@@ -1,13 +1,28 @@
-Message-ID: <4FF6D79F.8030901@xenomai.org>
-Date: Fri, 06 Jul 2012 14:18:39 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CAHue_TXhjY-74oUNzuuS=ygCEhcVFeiAB+4ZesjKX19B9WobaA@mail.gmail.com>	<4FCDFB35.1050705@xenomai.org>	<CAHue_TUB-6nufH_O-PRojDPVfpDom+DCv1-_ERV4-xOfEzu2Dg@mail.gmail.com>	<4FCE28F8.9040001@xenomai.org>	<CAHue_TW1ntMpOxwACiawgtm67nYq_e7i11CDxz=CfpGGwRes_A@mail.gmail.com>	<4FD8F4B5.7000001@xenomai.org>	<CAHue_TXMiLTxiK2ZORVccov2wqd+ML-H0zwhLoDYh+7+8_56xw@mail.gmail.com>	<4FE46F5F.1060500@xenomai.org>	<CAHue_TX3UmeMbu9mU_YSKdHeN8oUYFhaeA=mUGgpvJzjnaEdxw@mail.gmail.com>	<4FEB242B.5080306@xenomai.org>	<CAHue_TXXqYsod32WGRzgC9wsnuKkVWX=4vyA9oEi9c_rP276qQ@mail.gmail.com>	<4FEB324B.7020800@xenomai.org>	<CAHue_TUVeQaxd4hUbT4ok6xprD9WHnj5qw9hcp-W6WK2ZcSwxQ@mail.gmail.com>	<4FF3240B.3090401@xenomai.org>
-	<CAHue_TWTebF+H4azkFaWQWWyfUUcdQbuz6Og7xWSsGcz-AMLaA@mail.gmail.com>
-In-Reply-To: <CAHue_TWTebF+H4azkFaWQWWyfUUcdQbuz6Og7xWSsGcz-AMLaA@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] unsupported ARM9 machine
+In-Reply-To: <4FF3232E.3050605@xenomai.org>
+References: <CAKKWdtfz7+pRjjbE6Ev4zJNZpa45axMePyVar+3MyRyMvcp8aA@mail.gmail.com>
+	<CAKKWdtfRyuhDzmvCC-WM66+=ncs+ocbdUuop2TRNThsj6ZAy6g@mail.gmail.com>
+	<4FCF1ED5.5000403@xenomai.org>
+	<CAKKWdtd6p2-xHH1FdjVzbX-raNtDkvMemALrQBJMgoTb1dScnw@mail.gmail.com>
+	<4FCF2751.5070700@xenomai.org> <4FCF4D05.3070502@xenomai.org>
+	<4FCF58AF.5040106@xenomai.org> <4FCF5A4C.60704@xenomai.org>
+	<4FCF5DED.8060007@xenomai.org> <4FCF60CD.8000709@xenomai.org>
+	<4FCF6152.7010002@xenomai.org> <4FCF62DD.10102@xenomai.org>
+	<4FCF68CA.8010206@xenomai.org> <4FCF713F.1030603@xenomai.org>
+	<4FCF7418.4020805@xenomai.org> <4FCF7576.8030201@xenomai.org>
+	<4FCF9A1E.6090706@xenomai.org> <4FCF9AAD.7020707@xenomai.org>
+	<4FD1C3EE.1000005@xenomai.org> <4FD1C50D.5010906@xenomai.org>
+	<4FD1C60D.401@xenomai.org> <4FD1C67E.5010600@xenomai.org>
+	<4FD1C751.5070501@xenomai.org>
+	<CAKKWdtdebEv14pJhTvr1qc7u3zTzjCPgZZu6h8k1nnrGnpHNdw@mail.gmail.com>
+	<CAHue_TUHtzKZ6g1__=jB-y08TRnnZ93t2zY8+C-MAWy7QhH=Pg@mail.gmail.com>
+	<4FF3232E.3050605@xenomai.org>
+Date: Fri, 6 Jul 2012 17:42:50 +0200
+Message-ID: <CAHue_TVfw+HxX4uPOQU_j766ApjBHAOPPOzxOaXvX_p5NvR=Gw@mail.gmail.com>
+From: =?ISO-8859-2?Q?Marcin_Ku=B6ka?= <marckuska@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-2
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] xenomai-2.6.0 instrumentation commands not executing
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,17 +31,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?B?TWFyY2luIEt1xZtrYQ==?= <marckuska@gmail.com>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On 07/06/2012 02:06 PM, Marcin Kuśka wrote:
-> So what you mean is, run prepare-kernel.sh without option
-> --adeos=path/to/adeos/patch?
+>
+> You are compiling with -march=3Darmv7-a and linking with
+> -march=3Darmv4t, are you sure this is supposed to work?
+>
+> I guess compiling for armv7 and linking for armv4 is not supported...
+> Anyway, to understand what happens, you can do what is written,
+> look at config.log.
+>
+>
+Yes that was the problem. Many thanks!
 
-You can pass whatever you like to --adeos, right, even not pass it at
-all. prepare-kernel should not even try to apply an adeos patch.
+Now i face another problem. I put the CFLAGS and LDFLAGS in busybox to
+xeno-config --skin=3Dnative --cflags and xeno-config --skin=3Dnative --cfla=
+gs
+and imported NEEDED libraries to my/rootfilesystem/path/lib and got xenomai
+error:
 
+*Xenomai: /dev/rtheap is missing
+*
+*(chardev, major=3D10 minor=3D254)
 
--- 
-					    Gilles.
+*
+I was surprised that i have to copy those devices by myself but I did it.
+Now the problem sounds following:
 
+*Xenomai init: open(/dev/mem): No such file or directory
+Kernel panic - not syncing: Attempted to kill init!*
+
+Seems to me I have omitted some important thing that's why errors are
+occuring one after another?
+Any suggestions?
+
+Thank you in advantage!
+--=20
+Marcin Ku=B6ka
