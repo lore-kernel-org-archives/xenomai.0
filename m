@@ -1,12 +1,9 @@
-Message-ID: <4FF9709E.9090703@xenomai.org>
-Date: Sun, 08 Jul 2012 13:35:58 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CAKKWdteYpbU5y65GXtS6j6aHQ_ESDk0C41B-MjC93cVzfW8mvg@mail.gmail.com>
-In-Reply-To: <CAKKWdteYpbU5y65GXtS6j6aHQ_ESDk0C41B-MjC93cVzfW8mvg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] questions: Linux/Xenomai domains
+Date: Sun, 8 Jul 2012 16:43:14 +0430
+Message-ID: <CAKKWdteig4R7+RLTsSxQrjrb=+0GsUWxFoRXASWE2ZznJJCTyw@mail.gmail.com>
+From: ali hagigat <hagigatali@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: [Xenomai] questions: real-time scheduler
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,44 +12,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: ali hagigat <hagigatali@gmail.com>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 07/07/2012 03:06 PM, ali hagigat wrote:
-> 1) Suppose an interrupt happens in a real time task. How that
-> interrupt detects the execution context of that task?(Linux domain or
-> Xenomai domain), is there any flag in relation with each task set by
-> the user space libraries?
+I have some questions as follows:
 
-No, there is a "current domain". But anyway, the interrupt handler does
-not need to detect which domain is current, because each domain has its
-own handlers, so, which handler is executed already depends on the
-current domain. In order to understand how the interrupt pipeline
-interacts with xenomai, you should probably read the "Life with Adeos"
-document:
+1) If i have one real time task and that task is big and does not
+finish soon or it has an infinite loop at the end like:
+here:  goto here;
 
-http://www.xenomai.org/documentation/branches/v2.3.x/pdf/Life-with-Adeos-rev-B.pdf
+Will other non real-time tasks be scheduled? or a real time task will
+run to completion.
 
-> 
-> 2) Is there "interrupt shield" mechanics for Xenomai, 2.6.0? (It seems
-> there is no CONFIG_XENO_OPT_ISHIELD)
+2) If I have an infinite loop like the above at the end of a real time task:
+here:  goto here;
 
-No, the interrupt shield no longer exists.
+Does the scheduler recognizes this situation to not to schedule this
+task, because it does nothing virtually or it assigns a time slot to
+that task?
 
-> 
-> 3) I call a Linux service in a real time task and that service
-> finishes and CPU returns to the real time task again to execute next
-> instruction, is it in primary mode or secondary mode upon returning?
+3) What factors effect the length of the time slot assigned to each
+real time task? I mean how long CPU continues to stay inside the code
+of a real time task?
 
-In secondary mode. Some xenomai services getting their caller to switch
-to secondary mode, get it to switch again to primary mode when the
-service has been executed in secondary mode. An example of such service
-is rt_timer_set_mode.
+4) I have a multi-core CPU, can i assign one CPU to a specific task?
 
-Asking questions before starting to use xenomai is fine, but you should
-really consider installing it and starting to write applications,
-because it is only then that the real problems and questions will arise.
+5) I want a specific code to be executed (and completed) like every 1
+ms (or n ms) on a x86 PC computer. Is it possible with Xenomai?
 
--- 
-                                                                Gilles.
+6) is there any document to explain the architecture of the Xenomai
+real time scheduler?
+
+Regards
 
