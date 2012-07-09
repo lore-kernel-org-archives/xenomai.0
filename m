@@ -1,23 +1,16 @@
+From: "Jorge Ramirez Ortiz,  HCL Europe" <Jorge.Ramirez-Ortiz@hcl.com>
+Date: Mon, 9 Jul 2012 19:19:44 +0100
+Message-ID: <4F534D1A615F544D95E57BFD8460658301CBE39C@GEO-HCLT-UKEVS1.GEO.CORP.HCL.IN>
+References: <4F534D1A615F544D95E57BFD8460658302ED62BD@GEO-HCLT-UKEVS1.GEO.CORP.HCL.IN>,
+	<4FFB18F7.4070002@xenomai.org>
+	<4F534D1A615F544D95E57BFD8460658301CBE39A@GEO-HCLT-UKEVS1.GEO.CORP.HCL.IN>,
+	<4FFB1CB7.7020209@xenomai.org>
+In-Reply-To: <4FFB1CB7.7020209@xenomai.org>
+Content-Language: en-GB
+Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
-In-Reply-To: <4FEB324B.7020800@xenomai.org>
-References: <CAHue_TXhjY-74oUNzuuS=ygCEhcVFeiAB+4ZesjKX19B9WobaA@mail.gmail.com>
-	<4FCDFB35.1050705@xenomai.org>
-	<CAHue_TUB-6nufH_O-PRojDPVfpDom+DCv1-_ERV4-xOfEzu2Dg@mail.gmail.com>
-	<4FCE28F8.9040001@xenomai.org>
-	<CAHue_TW1ntMpOxwACiawgtm67nYq_e7i11CDxz=CfpGGwRes_A@mail.gmail.com>
-	<4FD8F4B5.7000001@xenomai.org>
-	<CAHue_TXMiLTxiK2ZORVccov2wqd+ML-H0zwhLoDYh+7+8_56xw@mail.gmail.com>
-	<4FE46F5F.1060500@xenomai.org>
-	<CAHue_TX3UmeMbu9mU_YSKdHeN8oUYFhaeA=mUGgpvJzjnaEdxw@mail.gmail.com>
-	<4FEB242B.5080306@xenomai.org>
-	<CAHue_TXXqYsod32WGRzgC9wsnuKkVWX=4vyA9oEi9c_rP276qQ@mail.gmail.com>
-	<4FEB324B.7020800@xenomai.org>
-Date: Tue, 3 Jul 2012 18:49:36 +0200
-Message-ID: <CAHue_TUVeQaxd4hUbT4ok6xprD9WHnj5qw9hcp-W6WK2ZcSwxQ@mail.gmail.com>
-From: =?ISO-8859-2?Q?Marcin_Ku=B6ka?= <marckuska@gmail.com>
-Content-Type: text/plain; charset=ISO-8859-2
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] unsupported ARM9 machine
+Subject: Re: [Xenomai] shared memory segments
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -27,65 +20,58 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+
+I can create an extra shared region in the library of sizeof(int) opened wi=
+th exclusive access to behave as a lock to the mutex initialization I suppo=
+se.
+ah another question, will I have to mlock_all the library?
+________________________________________
+From: Gilles Chanteperdrix [gilles.chanteperdrix@xenomai.org]
+Sent: 09 July 2012 19:02
+To: Jorge Ramirez Ortiz,  HCL Europe
 Cc: xenomai@xenomai.org
+Subject: Re: [Xenomai] shared memory segments
 
-All I did was applying standard adeos-3.0.13-arm-1.18-09.patch to kernel
-ipipe core-3.2 from your repository and used xenomai upgraded to head
-branch as you suggested. All done in buildroot-2012.05 using buildroot's
-toolchain. Unfortunately I did not manage to compile it under buildroot
-environment with an external toolchain such as crosstool-ng or
-CodeSourcery. The reason why I'm trying to compile the linuxXenomaiOnBoard
-kernel with an external toolchain is that any application (even hello
-world) cross-compiled with e.g. crosstool-ng cannot be run on linux with
-Xenomai on board cross-compiled with a buildroot toolchain (the working
-one).
+On 07/09/2012 07:55 PM, Jorge Ramirez Ortiz, HCL Europe wrote:
+> hi Gilles Not sure I understand now. Let's say that I also need to
+> place a mutex on that shared region to be shared between other
+> Xenomai applications. The mutex would obviusly be wrapped by the
+> posix skin but not the system5 shared request. Would that work??
+> thanks for all the help
 
-So again I tried cross-compile linux with xenomai with a crosstool-ng and
-at first hand xenomai works fine cause i received this in dmesg:
-*
-*
-*I-pipe: head domain Xenomai registered.*
-*Xenomai: hal/arm started.*
-*Xenomai: scheduling class idle registered.*
-*Xenomai: scheduling class rt registered.*
-*Xenomai: real-time nucleus v2.6.0 (Movin' On) loaded.*
-*Xenomai: debug mode enabled.*
-*Xenomai: starting native API services.*
-*Xenomai: starting POSIX services.*
-*Xenomai: starting RTDM services.*
+Yes, it should work. What is hard to get right however is synchronizing
+the various processes accessing the shared region so that
+pthread_mutex_init is called once and only once.
 
-but, latency test doesn't work. Not even xeno-test. Is there in the linux
-kernel config any option which enables those?
+--
+                                                                Gilles.
 
 
-Thanks and regards
-Marcin Ku=B6ka
+::DISCLAIMER::
+---------------------------------------------------------------------------=
+-------------------------------------------------------------------------
 
-2012/6/27 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+The contents of this e-mail and any attachment(s) are confidential and inte=
+nded for the named recipient(s) only.
+E-mail transmission is not guaranteed to be secure or error-free as informa=
+tion could be intercepted, corrupted,
+lost, destroyed, arrive late or incomplete, or may contain viruses in trans=
+mission. The e mail and its contents
+(with or without referred errors) shall therefore not attach any liability =
+on the originator or HCL or its affiliates.
+Views or opinions, if any, presented in this email are solely those of the =
+author and may not necessarily reflect the
+views or opinions of HCL or its affiliates. Any form of reproduction, disse=
+mination, copying, disclosure, modification,
+distribution and / or publication of this message without the prior written=
+ consent of authorized representative of
+HCL is strictly prohibited. If you have received this email in error please=
+ delete it and notify the sender immediately.
+Before opening any email and/or attachments, please check them for viruses =
+and other defects.
 
-> On 06/27/2012 05:45 PM, Marcin Ku=B6ka wrote:
-> > Ahh ok my mistake. I applied the adeos-3.0.13-arm-1.18-09.patch to kern=
-el
-> > by myself that is why i uncheck xenomai kernel extension (but not
-> "Package
-> > Selection for the target->Real-Time"! That one have to remain checked!)
-> in
-> > buildroot setup. Anyway it works and xeno-test works fine also ;)
-> > For now I don't want to change anything as long as everything is ok
-> since I
-> > have to carry on with the project but later on, I will find out the exa=
-ct
-> > way how did I manage to do this (compile xenomai on versatile express
-> > machine).
->
-> It would be interesting if you could post the patch for vexpress, so
-> that we can include it in future ipipe patches.
->
-> --
->                                             Gilles.
->
-
+---------------------------------------------------------------------------=
+-------------------------------------------------------------------------
 
 
---=20
-Marcin Ku=B6ka
