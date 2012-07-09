@@ -1,11 +1,12 @@
-From: "Jorge Ramirez Ortiz,  HCL Europe" <Jorge.Ramirez-Ortiz@hcl.com>
-Date: Mon, 9 Jul 2012 11:26:32 +0100
-Message-ID: <4F534D1A615F544D95E57BFD8460658302ED62BD@GEO-HCLT-UKEVS1.GEO.CORP.HCL.IN>
-Content-Language: es-ES
+Message-ID: <4FFAD0DA.10306@xenomai.org>
+Date: Mon, 09 Jul 2012 14:38:50 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] shared memory segments
+References: <4F534D1A615F544D95E57BFD8460658302ED62BD@GEO-HCLT-UKEVS1.GEO.CORP.HCL.IN>
+In-Reply-To: <4F534D1A615F544D95E57BFD8460658302ED62BD@GEO-HCLT-UKEVS1.GEO.CORP.HCL.IN>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] shared memory segments
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,42 +15,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "Jorge Ramirez Ortiz, HCL Europe" <Jorge.Ramirez-Ortiz@hcl.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi all,
-I am doing a port of a  shared library; in this library , a shared memory s=
-egment is being mapped (now using the Xenomai POSIX skin.)
-Some semaphores and data are placed on that shared segment.
+On 07/09/2012 12:26 PM, Jorge Ramirez Ortiz, HCL Europe wrote:
+> Hi all, I am doing a port of a  shared library; in this library , a
+> shared memory segment is being mapped (now using the Xenomai POSIX
+> skin.) Some semaphores and data are placed on that shared segment.
+> 
+> Is there a way to mark the shared memory segment for deletion
+> (unlink) after the last process detaches it (basically what
+> shmctl(shmid, IPC_RMID, &shmInfo) does) cheers Jorge
 
-Is there a way to mark the shared memory segment for deletion (unlink) afte=
-r the last process detaches it (basically what shmctl(shmid, IPC_RMID, &shm=
-Info) does)
-cheers
-Jorge
+No, but you can "shm_unlink" it when the last process has attached, this
+will make it inaccessible to new processes, but still usable by
+processes already attached. And the shared memory segment will be
+destroyed when the last process detaches.
 
+-- 
+					    Gilles.
 
-::DISCLAIMER::
----------------------------------------------------------------------------=
--------------------------------------------------------------------------
-
-The contents of this e-mail and any attachment(s) are confidential and inte=
-nded for the named recipient(s) only.
-E-mail transmission is not guaranteed to be secure or error-free as informa=
-tion could be intercepted, corrupted,
-lost, destroyed, arrive late or incomplete, or may contain viruses in trans=
-mission. The e mail and its contents
-(with or without referred errors) shall therefore not attach any liability =
-on the originator or HCL or its affiliates.
-Views or opinions, if any, presented in this email are solely those of the =
-author and may not necessarily reflect the
-views or opinions of HCL or its affiliates. Any form of reproduction, disse=
-mination, copying, disclosure, modification,
-distribution and / or publication of this message without the prior written=
- consent of authorized representative of
-HCL is strictly prohibited. If you have received this email in error please=
- delete it and notify the sender immediately.
-Before opening any email and/or attachments, please check them for viruses =
-and other defects.
-
----------------------------------------------------------------------------=
--------------------------------------------------------------------------
