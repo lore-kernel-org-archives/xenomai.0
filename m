@@ -1,15 +1,15 @@
-From: "Jorge Ramirez Ortiz,  HCL Europe" <Jorge.Ramirez-Ortiz@hcl.com>
-Date: Mon, 9 Jul 2012 19:19:44 +0100
-Message-ID: <4F534D1A615F544D95E57BFD8460658301CBE39C@GEO-HCLT-UKEVS1.GEO.CORP.HCL.IN>
+Message-ID: <4FFB2320.2050506@xenomai.org>
+Date: Mon, 09 Jul 2012 20:29:52 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
 References: <4F534D1A615F544D95E57BFD8460658302ED62BD@GEO-HCLT-UKEVS1.GEO.CORP.HCL.IN>,
 	<4FFB18F7.4070002@xenomai.org>
 	<4F534D1A615F544D95E57BFD8460658301CBE39A@GEO-HCLT-UKEVS1.GEO.CORP.HCL.IN>,
 	<4FFB1CB7.7020209@xenomai.org>
-In-Reply-To: <4FFB1CB7.7020209@xenomai.org>
-Content-Language: en-GB
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
+	<4F534D1A615F544D95E57BFD8460658301CBE39C@GEO-HCLT-UKEVS1.GEO.CORP.HCL.IN>
+In-Reply-To: <4F534D1A615F544D95E57BFD8460658301CBE39C@GEO-HCLT-UKEVS1.GEO.CORP.HCL.IN>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] shared memory segments
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -19,59 +19,18 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: "Jorge Ramirez Ortiz, HCL Europe" <Jorge.Ramirez-Ortiz@hcl.com>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-I can create an extra shared region in the library of sizeof(int) opened wi=
-th exclusive access to behave as a lock to the mutex initialization I suppo=
-se.
-ah another question, will I have to mlock_all the library?
-________________________________________
-From: Gilles Chanteperdrix [gilles.chanteperdrix@xenomai.org]
-Sent: 09 July 2012 19:02
-To: Jorge Ramirez Ortiz,  HCL Europe
-Cc: xenomai@xenomai.org
-Subject: Re: [Xenomai] shared memory segments
+On 07/09/2012 08:19 PM, Jorge Ramirez Ortiz, HCL Europe wrote:
+> I can create an extra shared region in the library of sizeof(int)
+> opened with exclusive access to behave as a lock to the mutex
+> initialization I suppose. ah another question, will I have to
+> mlock_all the library?
 
-On 07/09/2012 07:55 PM, Jorge Ramirez Ortiz, HCL Europe wrote:
-> hi Gilles Not sure I understand now. Let's say that I also need to
-> place a mutex on that shared region to be shared between other
-> Xenomai applications. The mutex would obviusly be wrapped by the
-> posix skin but not the system5 shared request. Would that work??
-> thanks for all the help
+You have to mlockall the process memory before calling xenomai services,
+yes.
 
-Yes, it should work. What is hard to get right however is synchronizing
-the various processes accessing the shared region so that
-pthread_mutex_init is called once and only once.
-
---
+-- 
                                                                 Gilles.
-
-
-::DISCLAIMER::
----------------------------------------------------------------------------=
--------------------------------------------------------------------------
-
-The contents of this e-mail and any attachment(s) are confidential and inte=
-nded for the named recipient(s) only.
-E-mail transmission is not guaranteed to be secure or error-free as informa=
-tion could be intercepted, corrupted,
-lost, destroyed, arrive late or incomplete, or may contain viruses in trans=
-mission. The e mail and its contents
-(with or without referred errors) shall therefore not attach any liability =
-on the originator or HCL or its affiliates.
-Views or opinions, if any, presented in this email are solely those of the =
-author and may not necessarily reflect the
-views or opinions of HCL or its affiliates. Any form of reproduction, disse=
-mination, copying, disclosure, modification,
-distribution and / or publication of this message without the prior written=
- consent of authorized representative of
-HCL is strictly prohibited. If you have received this email in error please=
- delete it and notify the sender immediately.
-Before opening any email and/or attachments, please check them for viruses =
-and other defects.
-
----------------------------------------------------------------------------=
--------------------------------------------------------------------------
-
 
