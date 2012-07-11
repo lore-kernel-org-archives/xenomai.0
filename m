@@ -1,12 +1,9 @@
-MIME-version: 1.0
-From: Tomasz Guszkowski <tomasz.guszkowski@pwr.wroc.pl>
-Message-id: <fd35ecb7304a.4ffd9779@pwr.wroc.pl>
-Date: Wed, 11 Jul 2012 15:10:49 +0200
-Content-language: pl
-Content-Type: text/plain; CHARSET=US-ASCII
-Content-Transfer-Encoding: 7BIT
-Content-Disposition: inline
-Subject: [Xenomai] Xenomai FlexCAN driver - where to start?
+MIME-Version: 1.0
+Date: Wed, 11 Jul 2012 18:32:03 +0430
+Message-ID: <CAKKWdteZWSdH2dywoj6Ro8BTfYmV0HOC6-Gt6jjjVH_UV9VUKg@mail.gmail.com>
+From: ali hagigat <hagigatali@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: [Xenomai] questions: system timer
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,24 +12,17 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Xenomai@xenomai.org
 
-Hello!
+1) How the system clock is set, i mean weather it is
+periodic/aperiodic and the period? It is done by the extra code which
+is added by Xenomai? or it is done by mainline kernel after boot-up
+first time.
 
-I am to write a MPC8309 (powerpc made by Freescale) FlexCAN driver for Xenomai. I have a working non-RT driver for this machine. Xenomai 2.6.0 works flawlessly as far I can assess it.
+2) Can rt_timer_set_mode() set the period to one nano second?!
 
-I have started converting a non-RT version of the driver to rtdm (rtcan) API and after some time spent on it I have an impression it will last a good while. (I am new to Xenomai driver development.)
+3) Native-API_Tour manual is not updated. It talks about one variable
+CONFIG_XENO_OPT_TIMING_PERIOD which can be 0 or a number.
 
-I have also analyzed mscan and sja1000 drivers and the conclusion is that RT and non-RT versions have almost no common parts, at least meld can't easily point them.
+4) Why each skin has a different period? Which one is used after boot-up?
 
-So the questions are:
-
-What is the preferrable starting point for writing Xenomai CAN driver? 
-Is my path (non-RT driver -> rtdm/rtcan driver) optimal? 
-Does there exist a better way, for example a kind of a "template" for filling up with some HW-specific code?
-Now I think about trying to use a crippled mscan version as a template, despite the fact that mscan and FlexCAN have no common parts besides using Flattened Device Tree for HW description.Is this a good idea?
-
-Any hints are welcomed.
-
---
-Tomek
