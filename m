@@ -1,12 +1,12 @@
-Message-ID: <4FFD950A.8090700@xenomai.org>
-Date: Wed, 11 Jul 2012 17:00:26 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4FFDA171.3010201@nta-inc.net>
+Date: Wed, 11 Jul 2012 10:53:21 -0500
+From: Jeff Webb <jeff.webb@nta-inc.net>
 MIME-Version: 1.0
-References: <CAKKWdteZWSdH2dywoj6Ro8BTfYmV0HOC6-Gt6jjjVH_UV9VUKg@mail.gmail.com>
-In-Reply-To: <CAKKWdteZWSdH2dywoj6Ro8BTfYmV0HOC6-Gt6jjjVH_UV9VUKg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
+References: <4FFC89CA.70809@xenomai.org>
+In-Reply-To: <4FFC89CA.70809@xenomai.org>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] questions: system timer
+Subject: [Xenomai] Debian packaging bug in Xenomai v2.6.1
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,38 +15,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: ali hagigat <hagigatali@gmail.com>
-Cc: Xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 07/11/2012 04:02 PM, ali hagigat wrote:
-> 1) How the system clock is set, i mean weather it is
-> periodic/aperiodic and the period? It is done by the extra code which
-> is added by Xenomai? or it is done by mainline kernel after boot-up
-> first time.
+On 07/10/2012 03:00 PM, Gilles Chanteperdrix wrote:
+> At long last, please find Xenomai 2.6.1 at the following URL:
+> http://download.gna.org/xenomai/stable/xenomai-2.6.1.tar.bz2
 
-The hardware timer is taken over by xenomai, when xenomai is started. It
-is set to aperiodic mode, whatever the configuration options.
+Wonderful!  I have been looking forward to this release.  I have been 
+using a version I checked out from the Xenomai-2.6 git repository around 
+April 20th.
 
-> 
-> 2) Can rt_timer_set_mode() set the period to one nano second?!
+In the process of building a new set of debian packages for 2.6.1, I was 
+painfully reminded of an issue I discovered back in April, but failed to 
+report.  When I issue the 'debuild -uc -us' command in the xenomai-2.6.1 
+directory, I eventually get an error that says:
 
-Yes, but that means that xenomai will try to reprogram the timer every
-nano second, which will probably lock-up, on most machines I run Xenomai
-on, at least. Anyway, with the hardware timer set to aperiodic mode,
-decreasing the tick period to increase the resolution is rather silly:
-simply use an aperiodic timer and you will get the maximum resolution.
+cp: cannot stat `debian/tmp/usr/share/xenomai': No such file or directory
+dh_install: cp -a debian/tmp/usr/share/xenomai 
+debian/xenomai-runtime//usr/share/ returned exit code 1
+make: *** [install] Error 2
+dpkg-buildpackage: error: fakeroot debian/rules binary gave error exit 
+status 2
 
-> 
-> 3) Native-API_Tour manual is not updated. It talks about one variable
-> CONFIG_XENO_OPT_TIMING_PERIOD which can be 0 or a number.
-> 
-> 4) Why each skin has a different period? Which one is used after boot-up?
+If I remove the 'usr/share/xenomai' line from 
+xenomai-2.6.1/debian/xenomai-runtime.install, the error goes away.
 
-Since xenomai 2.6, the time management is layered: the hardware timer is
-set to aperiodic mode, and if a skin request periodic mode, a software
-timer is started to provide the skin timebase. So, if each skin has a
-different period, each skin will get a tick at the period it requested.
+I am building on ubuntu-12.04, if that makes any difference.  I 
+apologize for not reporting this earlier, so a fix could be included in 
+this point release.  Let me know if there is any more information I can 
+provide to help this get fixed for future releases.
 
--- 
-					    Gilles.
+Thanks,
+
+-Jeff
 
