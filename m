@@ -1,13 +1,14 @@
-Message-ID: <4FFDE322.2090003@xenomai.org>
-Date: Wed, 11 Jul 2012 22:33:38 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <4FFE1841.1070409@xenomai.org>
+Date: Thu, 12 Jul 2012 02:20:17 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4FFDC6A2.8050706@siemens.com>
-In-Reply-To: <4FFDC6A2.8050706@siemens.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+References: <4FFC89CA.70809@xenomai.org> <4FFDA171.3010201@nta-inc.net>
+	<4FFDAF59.9010000@xenomai.org>
+	<20120711174844.GG19565@csclub.uwaterloo.ca>
+In-Reply-To: <20120711174844.GG19565@csclub.uwaterloo.ca>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PATCH,
-	forge] x86: Fix build breakage in 64-bit xnarch_leave_root
+Subject: Re: [Xenomai] Debian packaging bug in Xenomai v2.6.1
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,34 +17,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Lennart Sorensen <lsorense@csclub.uwaterloo.ca>
+Cc: xenomai@xenomai.org
 
-On 07/11/2012 08:32 PM, Jan Kiszka wrote:
-> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
-> ---
->   include/asm-x86/bits/pod_64.h |    2 +-
->   1 files changed, 1 insertions(+), 1 deletions(-)
->
-> diff --git a/include/asm-x86/bits/pod_64.h b/include/asm-x86/bits/pod_64.h
-> index 00b2438..546a4fa 100644
-> --- a/include/asm-x86/bits/pod_64.h
-> +++ b/include/asm-x86/bits/pod_64.h
-> @@ -42,7 +42,7 @@ static inline void xnarch_leave_root(xnarchtcb_t *rootcb)
->   	rootcb->user_task = rootcb->active_task = current;
->   	rootcb->rspp = &current->thread.sp;
->   	rootcb->ripp = &current->thread.rip;
-> -	rootcb->ts_usedfpu = !!wrap_test_fpu_used(current)
-> +	rootcb->ts_usedfpu = !!wrap_test_fpu_used(current);
->   	rootcb->cr0_ts = (read_cr0() & 8) != 0;
->   	/* So that xnarch_save_fpu() will operate on the right FPU area. */
->   	if (rootcb->cr0_ts || rootcb->ts_usedfpu)
->
+On 07/11/2012 07:48 PM, Lennart Sorensen wrote:
+> On Wed, Jul 11, 2012 at 06:52:41PM +0200, Gilles Chanteperdrix wrote:
+>> Well, maybe we should, from time to time, import the changes which are
+>> done by the debian maintainers. Or forget the debian directory
+>> altogether, as there is one correctly maintained by the debian
+>> maintainer. I do not really know what to think of this as I do not use
+>> the debian packaging. As a user of debian packaging, what do you think?
+> 
+> Perhaps it is a question of occationally testing that 'make install'
+> with DESTDIR set to some /tmp/ place that doesn't exist actually works.
+> Very easy to have a makefile assume /usr/share exists and forget to
+> create it before copying files to it.
 
-Merged, thanks.
+We run "make distcheck" as part of what is done when releasing xenomai,
+so, the sort of error you mention should not exist. In particular, since
+we use the autotools, these things are being taken care of automatically.
+
+The problem is that we use to have files in the /usr/share/xenomai
+directory, the debian files were written with this assumption, we now no
+longer install any file in /usr/share/xenomai, and we did not change the
+debian files, simply because nobody tested the debian package
+generation, or more accurately someone did but forgot to report the bug.
 
 -- 
-Philippe.
-
-
+                                                                Gilles.
 
