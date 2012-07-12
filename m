@@ -1,14 +1,14 @@
-Message-ID: <4FFEE9E8.2040008@nta-inc.net>
-Date: Thu, 12 Jul 2012 10:14:48 -0500
-From: Jeff Webb <jeff.webb@nta-inc.net>
+Message-ID: <4FFEF029.1090901@antcom.de>
+Date: Thu, 12 Jul 2012 17:41:29 +0200
+From: Roland Stigge <stigge@antcom.de>
 MIME-Version: 1.0
 References: <4FFC89CA.70809@xenomai.org> <4FFDA171.3010201@nta-inc.net>
 	<4FFDAF59.9010000@xenomai.org>
 	<20120711174844.GG19565@csclub.uwaterloo.ca>
 	<4FFE1841.1070409@xenomai.org> <4FFE8B7C.6090101@antcom.de>
-	<4FFE9477.5070002@xenomai.org>
-In-Reply-To: <4FFE9477.5070002@xenomai.org>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+	<4FFE9477.5070002@xenomai.org> <4FFEE9E8.2040008@nta-inc.net>
+In-Reply-To: <4FFEE9E8.2040008@nta-inc.net>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] Debian packaging bug in Xenomai v2.6.1
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -19,56 +19,59 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Jeff Webb <jeff.webb@nta-inc.net>
+Cc: xenomai@xenomai.org
 
-On 07/12/2012 04:10 AM, Gilles Chanteperdrix wrote:
-> On 07/12/2012 10:31 AM, Roland Stigge wrote:
->> On 07/12/2012 02:20 AM, Gilles Chanteperdrix wrote:
->>> The problem is that we use to have files in the /usr/share/xenomai
->>> directory, the debian files were written with this assumption, we now no
->>> longer install any file in /usr/share/xenomai, and we did not change the
->>> debian files, simply because nobody tested the debian package
->>> generation, or more accurately someone did but forgot to report the bug.
->>
->>  From the Debian perspective, the debian/ directory in "upstream" Xenomai
->> is a bit confusing. At Debian, this one is ignored anyway and replaced
->> with Debian's up-to-date variant.
->
-> We maintain our own debian directory for convenience, because we like
-> the idea of a self-contained package. But obviously this only makes
-> sense if this debian directory is maintained.
->
->>
->> I unfortunately don't have the ressources to regularly sync/update
->> debian/* in the xenomai.org dev repository.
+On 07/12/2012 05:14 PM, Jeff Webb wrote:
+>>> I unfortunately don't have the ressources to regularly sync/update
+>>> debian/* in the xenomai.org dev repository.
+> 
+> Do you have the resources to update debian/* on xenomai.org just before
+> each release is made?  I don't think it's necessary to update it any
+> more often than that.  I'm assuming that you eventually package each
+> release anyway, so it would be nice to do it before a release is made
+> official.  Of course, if you don't have time for that or your
+> availability doesn't line up with the timeframe for a release, that is
+> understandable.  I am just asking if the problem is trying to keep the
+> git repository up to date all the time, or if you don't even have time
+> to do it for each release.
 
-Do you have the resources to update debian/* on xenomai.org just before 
-each release is made?  I don't think it's necessary to update it any 
-more often than that.  I'm assuming that you eventually package each 
-release anyway, so it would be nice to do it before a release is made 
-official.  Of course, if you don't have time for that or your 
-availability doesn't line up with the timeframe for a release, that is 
-understandable.  I am just asking if the problem is trying to keep the 
-git repository up to date all the time, or if you don't even have time 
-to do it for each release.
+It would be possible for me if I get ~2 weeks notice before a Xenomai
+release to already do _before_ the Xenomai release what I would normally
+do _afterwards_ anyway (for Debian). Gilles, is this possible?
 
-> I understand that. You already maintain a debian directory on your side,
-> you have absolutely no reason to maintain the debian directory of the
-> xenomai project.
->
-> Anyway, what I would like to know if people find useful the "feature" of
-> shipping with a debian directory.
+But keep in mind that from time to time Debian does intermitted
+revisions and it would be necessary to synchronize with xenomai.org.
+Much duplicated work that I would like to prevent.
 
-I find it useful, and have not had any trouble with it not working 
-before.  That being said, I wouldn't object to getting the debian 
-directory from another location, as long as the information at:
+Looks like this feature is more popular than I was thinking, so I'll try
+my best.
 
-  http://www.xenomai.org/index.php/Building_Debian_packages
+BTW: There is the patch tracker at
 
-is updated with detailed instructions on exactly how to download, 
-extract, and graft the appropriate debian directory into a xenomai 
-source tree that was created from a release tarball or git repository.
+	http://packages.qa.debian.org/x/xenomai.html
 
-Thank you for providing a mechanism to easily build debian packages.  I 
-find it very valuable for many reasons.
+(see down on the right)
+
+which could be used for automating or helping with sync with incremental
+Debian revisions?
+
+Gilles? Philippe?
+
+> I find it useful, and have not had any trouble with it not working
+> before.  That being said, I wouldn't object to getting the debian
+> directory from another location, as long as the information at:
+> 
+>  http://www.xenomai.org/index.php/Building_Debian_packages
+> 
+> is updated with detailed instructions on exactly how to download,
+> extract, and graft the appropriate debian directory into a xenomai
+> source tree that was created from a release tarball or git repository.
+
+I remember having updated one of those pages, but the current version
+quite deviated. Hope everything works fine?
+
+Thanks,
+
+Roland
 
