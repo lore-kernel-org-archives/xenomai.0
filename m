@@ -1,12 +1,16 @@
-Message-ID: <4FFED404.4030703@grandegger.com>
-Date: Thu, 12 Jul 2012 15:41:24 +0200
-From: Wolfgang Grandegger <wg@grandegger.com>
+Message-ID: <4FFEE9E8.2040008@nta-inc.net>
+Date: Thu, 12 Jul 2012 10:14:48 -0500
+From: Jeff Webb <jeff.webb@nta-inc.net>
 MIME-Version: 1.0
-References: <fd35ecb7304a.4ffd9779@pwr.wroc.pl>
-In-Reply-To: <fd35ecb7304a.4ffd9779@pwr.wroc.pl>
-Content-Type: text/plain; charset=ISO-8859-1
+References: <4FFC89CA.70809@xenomai.org> <4FFDA171.3010201@nta-inc.net>
+	<4FFDAF59.9010000@xenomai.org>
+	<20120711174844.GG19565@csclub.uwaterloo.ca>
+	<4FFE1841.1070409@xenomai.org> <4FFE8B7C.6090101@antcom.de>
+	<4FFE9477.5070002@xenomai.org>
+In-Reply-To: <4FFE9477.5070002@xenomai.org>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Xenomai FlexCAN driver - where to start?
+Subject: Re: [Xenomai] Debian packaging bug in Xenomai v2.6.1
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,39 +19,56 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Tomasz Guszkowski <tomasz.guszkowski@pwr.wroc.pl>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 07/11/2012 03:10 PM, Tomasz Guszkowski wrote:
-> Hello!
-> 
-> I am to write a MPC8309 (powerpc made by Freescale) FlexCAN driver for Xenomai. I have a working non-RT driver for this machine. Xenomai 2.6.0 works flawlessly as far I can assess it.
-> 
-> I have started converting a non-RT version of the driver to rtdm (rtcan) API and after some time spent on it I have an impression it will last a good while. (I am new to Xenomai driver development.)
-> 
-> I have also analyzed mscan and sja1000 drivers and the conclusion is that RT and non-RT versions have almost no common parts, at least meld can't easily point them.
-> 
-> So the questions are:
-> 
-> What is the preferrable starting point for writing Xenomai CAN driver? 
-> Is my path (non-RT driver -> rtdm/rtcan driver) optimal? 
-> Does there exist a better way, for example a kind of a "template" for filling up with some HW-specific code?
-> Now I think about trying to use a crippled mscan version as a template, despite the fact that mscan and FlexCAN have no common parts besides using Flattened Device Tree for HW description.Is this a good idea?
-> 
-> Any hints are welcomed.
+On 07/12/2012 04:10 AM, Gilles Chanteperdrix wrote:
+> On 07/12/2012 10:31 AM, Roland Stigge wrote:
+>> On 07/12/2012 02:20 AM, Gilles Chanteperdrix wrote:
+>>> The problem is that we use to have files in the /usr/share/xenomai
+>>> directory, the debian files were written with this assumption, we now no
+>>> longer install any file in /usr/share/xenomai, and we did not change the
+>>> debian files, simply because nobody tested the debian package
+>>> generation, or more accurately someone did but forgot to report the bug.
+>>
+>>  From the Debian perspective, the debian/ directory in "upstream" Xenomai
+>> is a bit confusing. At Debian, this one is ignored anyway and replaced
+>> with Debian's up-to-date variant.
+>
+> We maintain our own debian directory for convenience, because we like
+> the idea of a self-contained package. But obviously this only makes
+> sense if this debian directory is maintained.
+>
+>>
+>> I unfortunately don't have the ressources to regularly sync/update
+>> debian/* in the xenomai.org dev repository.
 
-You need to use bit and pieces out of both driver sources. From the
-SJA1000 or MSCAN RTCAN driver we take the RTDM framework and RTCAN API
-calls and from Linux's flexcan.c we take the platform code and the init,
-config tx and rx code. But there are some distinct differences:
+Do you have the resources to update debian/* on xenomai.org just before 
+each release is made?  I don't think it's necessary to update it any 
+more often than that.  I'm assuming that you eventually package each 
+release anyway, so it would be nice to do it before a release is made 
+official.  Of course, if you don't have time for that or your 
+availability doesn't line up with the timeframe for a release, that is 
+understandable.  I am just asking if the problem is trying to keep the 
+git repository up to date all the time, or if you don't even have time 
+to do it for each release.
 
-- The RTDM driver does not use deferred interrupt handling (napi)
-- The API for mode and bitrate setting is different including bittime
-  calculation.
-- and even more ...
+> I understand that. You already maintain a debian directory on your side,
+> you have absolutely no reason to maintain the debian directory of the
+> xenomai project.
+>
+> Anyway, what I would like to know if people find useful the "feature" of
+> shipping with a debian directory.
 
-Today and tomorrow I'm out of office. I will have a closer look next
-week. Maybe I find the time to implement a first test version.
+I find it useful, and have not had any trouble with it not working 
+before.  That being said, I wouldn't object to getting the debian 
+directory from another location, as long as the information at:
 
-Wolfgang.
+  http://www.xenomai.org/index.php/Building_Debian_packages
+
+is updated with detailed instructions on exactly how to download, 
+extract, and graft the appropriate debian directory into a xenomai 
+source tree that was created from a release tarball or git repository.
+
+Thank you for providing a mechanism to easily build debian packages.  I 
+find it very valuable for many reasons.
 
