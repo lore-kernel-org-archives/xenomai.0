@@ -1,13 +1,12 @@
-Message-ID: <4FF326BB.8010700@xenomai.org>
-Date: Tue, 03 Jul 2012 19:07:07 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <4FFED404.4030703@grandegger.com>
+Date: Thu, 12 Jul 2012 15:41:24 +0200
+From: Wolfgang Grandegger <wg@grandegger.com>
 MIME-Version: 1.0
-References: <CAN_aGuXSLRdWQdoJjZXqChobTe6v=qVadAmz2zq6ZLzSLRRvbA@mail.gmail.com>	<CAN_aGuVxhFh+Dd0OOd0LS9eiMj_JQj2j38peEVCMVedAxvFcfg@mail.gmail.com>
-	<CAN_aGuVDovxTMbG0CZE3eq_16jRcpZ6ZRFn-=pJ15rHYPfy5MQ@mail.gmail.com>
-In-Reply-To: <CAN_aGuVDovxTMbG0CZE3eq_16jRcpZ6ZRFn-=pJ15rHYPfy5MQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
+References: <fd35ecb7304a.4ffd9779@pwr.wroc.pl>
+In-Reply-To: <fd35ecb7304a.4ffd9779@pwr.wroc.pl>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Igep Xenomai problem
+Subject: Re: [Xenomai] Xenomai FlexCAN driver - where to start?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,39 +15,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Canku Alp Calargun <cankualp@gmail.com>
+To: Tomasz Guszkowski <tomasz.guszkowski@pwr.wroc.pl>
 Cc: xenomai@xenomai.org
 
-On 07/03/2012 03:24 PM, Canku Alp Calargun wrote:
-> Hello All,
+On 07/11/2012 03:10 PM, Tomasz Guszkowski wrote:
+> Hello!
 > 
-> We are trying to develop a real time system which has a DM3730 processor on
-> a custom board which is similar to IGEP v2 board. We were able to run the
-> kernel 2.6.35 which is a xenomai patched version by igep and we were also
-> able to run our application on this kernel. Because of our real time
-> requirements, we want to use rt APIs of xenomai. The application is being
-> developed using Code composer Studio v5 and all related configuration for
-> cross compiling the system is working properly.
+> I am to write a MPC8309 (powerpc made by Freescale) FlexCAN driver for Xenomai. I have a working non-RT driver for this machine. Xenomai 2.6.0 works flawlessly as far I can assess it.
 > 
-> For reading serial data we tried to use rt_dev_read and included the header
-> rtdm/rtdm.h. However, We got the error "undefined reference to
-> `rt_dev_read". In the mailing list, it is suggested to add -lrtdm and
-> -llxrt as linker flags. This time compiler could not find these libraries.
+> I have started converting a non-RT version of the driver to rtdm (rtcan) API and after some time spent on it I have an impression it will last a good while. (I am new to Xenomai driver development.)
+> 
+> I have also analyzed mscan and sja1000 drivers and the conclusion is that RT and non-RT versions have almost no common parts, at least meld can't easily point them.
+> 
+> So the questions are:
+> 
+> What is the preferrable starting point for writing Xenomai CAN driver? 
+> Is my path (non-RT driver -> rtdm/rtcan driver) optimal? 
+> Does there exist a better way, for example a kind of a "template" for filling up with some HW-specific code?
+> Now I think about trying to use a crippled mscan version as a template, despite the fact that mscan and FlexCAN have no common parts besides using Flattened Device Tree for HW description.Is this a good idea?
+> 
+> Any hints are welcomed.
 
-you will not find liblxrt, liblxrt is an RTAI thing, so I doubt you read
-on the xenomai mailing list any mail telling any user to add this option.
+You need to use bit and pieces out of both driver sources. From the
+SJA1000 or MSCAN RTCAN driver we take the RTDM framework and RTCAN API
+calls and from Linux's flexcan.c we take the platform code and the init,
+config tx and rx code. But there are some distinct differences:
 
-In order to obtain the right set of options, you should use the
-xeno-config tool.
+- The RTDM driver does not use deferred interrupt handling (napi)
+- The API for mode and bitrate setting is different including bittime
+  calculation.
+- and even more ...
 
-In order for xeno-config to work, you have to compile xenomai user-space
-support and install it with "make install". See README.INSTALL in
-xenomai sources for more complete instructions.
+Today and tomorrow I'm out of office. I will have a closer look next
+week. Maybe I find the time to implement a first test version.
 
-If you wish to install in a subdirectory where the root filesystem of
-the igep will be found, you have to pass a DESTDIR variable to make
-install, then pass the same DESTDIR variable to the xeno-config tool.
-
--- 
-					    Gilles.
+Wolfgang.
 
