@@ -1,21 +1,14 @@
-From: "Jorge Ramirez Ortiz,  HCL Europe" <Jorge.Ramirez-Ortiz@hcl.com>
-Date: Fri, 13 Jul 2012 17:39:32 +0100
-Message-ID: <4F534D1A615F544D95E57BFD8460658302FEC03E@GEO-HCLT-UKEVS1.GEO.CORP.HCL.IN>
-References: <4F534D1A615F544D95E57BFD8460658301CBE3B9@GEO-HCLT-UKEVS1.GEO.CORP.HCL.IN>,
-	<4FFE189C.7060504@xenomai.org>
-	<4F534D1A615F544D95E57BFD8460658301CBE3BD@GEO-HCLT-UKEVS1.GEO.CORP.HCL.IN>,
-	<4FFE8B7C.60506@xenomai.org>
-	<4F534D1A615F544D95E57BFD8460658301CBE3C2@GEO-HCLT-UKEVS1.GEO.CORP.HCL.IN>
-	<4FFFEB98.7060106@xenomai.org>
-	<4F534D1A615F544D95E57BFD8460658302FEBCEB@GEO-HCLT-UKEVS1.GEO.CORP.HCL.IN>
-	<500001AC.5040706@xenomai.org>
-	<4F534D1A615F544D95E57BFD8460658302FEBD85@GEO-HCLT-UKEVS1.GEO.CORP.HCL.IN>
-	<50001532.60406@xenomai.org>
-In-Reply-To: <50001532.60406@xenomai.org>
-Content-Language: es-ES
-Content-Type: text/plain; charset="utf-8"
+Message-ID: <50005F43.20206@xenomai.org>
+Date: Fri, 13 Jul 2012 19:47:47 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: base64
+References: <4F534D1A615F544D95E57BFD8460658301CBE3B9@GEO-HCLT-UKEVS1.GEO.CORP.HCL.IN>,
+	<4FFE189C.7060504@xenomai.org>	<4F534D1A615F544D95E57BFD8460658301CBE3BD@GEO-HCLT-UKEVS1.GEO.CORP.HCL.IN>,
+	<4FFE8B7C.60506@xenomai.org>	<4F534D1A615F544D95E57BFD8460658301CBE3C2@GEO-HCLT-UKEVS1.GEO.CORP.HCL.IN>	<4FFFEB98.7060106@xenomai.org>	<4F534D1A615F544D95E57BFD8460658302FEBCEB@GEO-HCLT-UKEVS1.GEO.CORP.HCL.IN>	<500001AC.5040706@xenomai.org>	<4F534D1A615F544D95E57BFD8460658302FEBD85@GEO-HCLT-UKEVS1.GEO.CORP.HCL.IN>	<50000D7C.2010809@siemens.com>
+	<4F534D1A615F544D95E57BFD8460658302FEC034@GEO-HCLT-UKEVS1.GEO.CORP.HCL.IN>
+In-Reply-To: <4F534D1A615F544D95E57BFD8460658302FEC034@GEO-HCLT-UKEVS1.GEO.CORP.HCL.IN>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] BUG: Unhandled exception over domain Xenomai -
  switching to ROOT
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -26,56 +19,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: "Jorge Ramirez Ortiz, HCL Europe" <Jorge.Ramirez-Ortiz@hcl.com>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-T24gMDcvMTMvMjAxMiAwMToyNCBQTSwgSm9yZ2UgUmFtaXJleiBPcnRpeiwgSENMIEV1cm9wZSB3
-cm90ZToNCj4gWWVzIGl0IGRvZXM6IHRoZSBjYWxsZXIgaWdub3JlcyB1cGZyb250IHdoZXRoZXIg
-dGhlIGNhbGwgd2lsbCBiZQ0KPiBoYW5kbGVkIGluIHJlYWx0aW1lIG9yIG5vbi1yZWFsdGltZSBj
-b250ZXh0IGJ5IHRoZSBkcml2ZXIuIFRoZSBjbGllbnQNCj4gKG9mIGNvdXJzZSEpIGNhbi9zaG91
-bGQgKGl0IGRvZXNuJ3QgcmVhbGx5IG1hdHRlciBmb3IgdGhlIHNha2Ugb2YgdGhlDQo+IGFyZ3Vt
-ZW50KSB0YWtlIHRoZSBhZGVxdWF0ZSBtZWFzdXJlcyB0byBtYWtlIHN1cmUgaXQgd2lsbCBnZXQg
-aW50bw0KPiB0aGUgYWRlcXVhdGUgcGF0aC4gQnV0IHRoZSBfaW50ZXJmYWNlXyBkb2VzIG5vdCBn
-dWFyYW50ZWUgd2hpY2ggcGF0aA0KPiBpdCB3aWxsIHRha2UuIFRoaXMgaXMgYSBmYWN0IHRoYXQg
-eW91IGNhbid0IGRpc2FncmVlIHdpdGguDQo+IA0KPiBCdXQgcGxlYXNlIGFsbG93IG1lIHRvIHJl
-LWZyYW1lIHRoZSBkaXNjdXNzaW9uOiBJIGFtIG5vdCBkaXNjdXNzaW5nDQo+IGhlcmUgYWJvdXQg
-cmVhbHRpbWUgZGVzaWduIHByYWN0aXNlcyBvciBhYm91dCBob3cgdG8gdXNlIHRoZQ0KPiBmcmFt
-ZXdvcmsgcHJvcGVybHkuIEkgYW0gbWVyZWx5IGNvbW1lbnRpbmcgb24gIHRoZSBfaW50ZXJmYWNl
-c18gdG8NCj4gdGhlIHJlYWx0aW1lIGZyYW1ld29yayBhbmQgdGhlaXIgY29uc2lzdGVuY3kuDQoN
-ClBoaWxpcHBlIGFuZCBKYW4gaGF2ZSBhbnN3ZXJlZCBhbHJlYWR5LCBzbyBJIGFtIGdvaW5nIHRv
-IG1ha2UgaXQgcmVhbGx5DQpzaG9ydC4NCg0KVGhlIExpbnV4IGtlcm5lbCBBUEkgaGFzIGh1bmRy
-ZWRzIG9mIHNlcnZpY2VzLCBtdWNoIG9mIHdoaWNoIGNhbiBub3QgYmUNCnJlLWVudGVyZWQgZnJv
-bSBhbiBSVCBjb250ZXh0LCB0aGF0IGlzIGEgY29uc2VxdWVuY2Ugb2YgdGhlICJkdWFsDQprZXJu
-ZWwiIG1vZGVsLiBJdCB3b3VsZCBzaW1wbHkgYmUgc2lsbHkgdG8gYXNzdW1lIHRoYXQgd2UgaGF2
-ZSBwdXQgTEFSVHMNCmluIHRoZXNlIGh1bmRyZWRzIG9mIHNlcnZpY2VzLiBLbm93aW5nIHRoYXQg
-eW91IGNhbiBub3QgY2FsbCBsaW51eA0Kc2VydmljZXMgd2hlbiBpbiBSVCBjb250ZXh0IGluIGRy
-aXZlciBjb2RlIGlzIHNpbXBseSBwYXJ0IG9mIHRoZSB0aGluZ3MNCnlvdSBzaG91bGQga25vdyB3
-aGVuIGRldmVsb3BpbmcgYW4gUlRETSBkcml2ZXIuDQoNCllvdSBmb3Jnb3QgdGhhdCwgeW91IGdv
-dCBiaXR0ZW4sIG5vdyBnZXQgb3ZlciBpdC4NCg0KLS0gDQoJCQkJCSAgICBHaWxsZXMuDQoNCg0K
-DQpPSy4gQnllIG5vdy4NCg0KSm9yZ2UNCg0KDQoKCjo6RElTQ0xBSU1FUjo6Ci0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KClRoZSBjb250ZW50cyBvZiB0aGlzIGUtbWFpbCBhbmQg
-YW55IGF0dGFjaG1lbnQocykgYXJlIGNvbmZpZGVudGlhbCBhbmQgaW50ZW5kZWQgZm9yIHRoZSBu
-YW1lZCByZWNpcGllbnQocykgb25seS4KRS1tYWlsIHRyYW5zbWlzc2lvbiBpcyBub3QgZ3VhcmFu
-dGVlZCB0byBiZSBzZWN1cmUgb3IgZXJyb3ItZnJlZSBhcyBpbmZvcm1hdGlvbiBjb3VsZCBiZSBp
-bnRlcmNlcHRlZCwgY29ycnVwdGVkLApsb3N0LCBkZXN0cm95ZWQsIGFycml2ZSBsYXRlIG9yIGlu
-Y29tcGxldGUsIG9yIG1heSBjb250YWluIHZpcnVzZXMgaW4gdHJhbnNtaXNzaW9uLiBUaGUgZSBt
-YWlsIGFuZCBpdHMgY29udGVudHMKKHdpdGggb3Igd2l0aG91dCByZWZlcnJlZCBlcnJvcnMpIHNo
-YWxsIHRoZXJlZm9yZSBub3QgYXR0YWNoIGFueSBsaWFiaWxpdHkgb24gdGhlIG9yaWdpbmF0b3Ig
-b3IgSENMIG9yIGl0cyBhZmZpbGlhdGVzLgpWaWV3cyBvciBvcGluaW9ucywgaWYgYW55LCBwcmVz
-ZW50ZWQgaW4gdGhpcyBlbWFpbCBhcmUgc29sZWx5IHRob3NlIG9mIHRoZSBhdXRob3IgYW5kIG1h
-eSBub3QgbmVjZXNzYXJpbHkgcmVmbGVjdCB0aGUKdmlld3Mgb3Igb3BpbmlvbnMgb2YgSENMIG9y
-IGl0cyBhZmZpbGlhdGVzLiBBbnkgZm9ybSBvZiByZXByb2R1Y3Rpb24sIGRpc3NlbWluYXRpb24s
-IGNvcHlpbmcsIGRpc2Nsb3N1cmUsIG1vZGlmaWNhdGlvbiwKZGlzdHJpYnV0aW9uIGFuZCAvIG9y
-IHB1YmxpY2F0aW9uIG9mIHRoaXMgbWVzc2FnZSB3aXRob3V0IHRoZSBwcmlvciB3cml0dGVuIGNv
-bnNlbnQgb2YgYXV0aG9yaXplZCByZXByZXNlbnRhdGl2ZSBvZgpIQ0wgaXMgc3RyaWN0bHkgcHJv
-aGliaXRlZC4gSWYgeW91IGhhdmUgcmVjZWl2ZWQgdGhpcyBlbWFpbCBpbiBlcnJvciBwbGVhc2Ug
-ZGVsZXRlIGl0IGFuZCBub3RpZnkgdGhlIHNlbmRlciBpbW1lZGlhdGVseS4KQmVmb3JlIG9wZW5p
-bmcgYW55IGVtYWlsIGFuZC9vciBhdHRhY2htZW50cywgcGxlYXNlIGNoZWNrIHRoZW0gZm9yIHZp
-cnVzZXMgYW5kIG90aGVyIGRlZmVjdHMuCgotLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tCg==
+On 07/13/2012 06:27 PM, Jorge Ramirez Ortiz, HCL Europe wrote:
+> Please can we go back and reframe the discussion?
+> 
+> But first I'll reiterate: do ignore the marginal issue I had with the
+> framework (I ported and went over 44,785 lines of ANSI-C(kernel/user)
+> and 1995 lines of C++ code  in just a few days -this one was a big
+> pci driver-....I am not really losing my sleep over it) . Besides It
+> is not really relevant to the point I am trying to make and the
+> reason why I am posting here.
+> 
+> My point is: yes, absolutely, I would expect the framework to allow
+> wakeup calls to linux services from interrupt context. Why not? Why
+> is this the wrong expectation to have?
 
+Because waking up a task means interacting with Linux scheduler, which,
+in turn, means interacting with the scheduler data structures. But the
+reason why xenomai has low latencies is because its interrupts may
+interrupt linux anywhere, including in the middle of a critical section
+where the scheduler data structures are in an inconsistent state. So,
+you see, it can not work.
+
+
+> And anyhow, failing that, I would have expected the real-time driver
+> model to give the user the option to chose the back door context he
+> wants to register to (which is my whole point and what  PREEMPT_RT
+> actually does in the linux domain). And I would expect an rtdm
+> interface for that.
+
+rtdm has an interface for that, it is called rtdm_nrtsig.
+
+-- 
+					    Gilles.
 
