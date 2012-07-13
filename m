@@ -1,13 +1,17 @@
-Message-ID: <4FFFD02B.7020202@xenomai.org>
-Date: Fri, 13 Jul 2012 09:37:15 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <1342097120.22964.YahooMailNeo@web120604.mail.ne1.yahoo.com>	<4FFED232.60506@xenomai.org>
-	<CAAEqEhH_TKjC0wRtx8uT2kQWbRESHrJkYrxPg095FZ1bvi-+6A@mail.gmail.com>
-In-Reply-To: <CAAEqEhH_TKjC0wRtx8uT2kQWbRESHrJkYrxPg095FZ1bvi-+6A@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Xenomai 2.6.0 installation Error
+In-Reply-To: <4FFEF51B.6000307@antcom.de>
+References: <4FFC89CA.70809@xenomai.org> <4FFDA171.3010201@nta-inc.net>
+	<4FFDAF59.9010000@xenomai.org>
+	<20120711174844.GG19565@csclub.uwaterloo.ca>
+	<4FFE1841.1070409@xenomai.org> <4FFE8B7C.6090101@antcom.de>
+	<4FFE9477.5070002@xenomai.org> <4FFEE9E8.2040008@nta-inc.net>
+	<4FFEF029.1090901@antcom.de> <4FFEF20D.6030709@xenomai.org>
+	<4FFEF51B.6000307@antcom.de>
+Date: Fri, 13 Jul 2012 09:54:00 +0200
+Message-ID: <CAKvQZ_1K1iWhMj7A_EV534SK84B2wwNbPDtUiTmVN9ETVN66iw@mail.gmail.com>
+From: Willy Lambert <lambert.willy@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: Re: [Xenomai] Debian packaging bug in Xenomai v2.6.1
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,37 +20,57 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Ilesh patel <patelilesh32@gmail.com>
+To: Roland Stigge <stigge@antcom.de>
 Cc: xenomai@xenomai.org
 
-On 07/13/2012 07:51 AM, Ilesh patel wrote:
-> Hello,
-> 
-> Thank you for your kind reply
-> 
-> I understand the error.
-> 
-> I read the README file in /arch/x86/patches/  The README file shows
-> "Xenomai supports the x86_64,x86 architecture starting with the v2.6
-> Linux kernel series." and my krenel is V2.6.32-generic.
+2012/7/12 Roland Stigge <stigge@antcom.de>
 
-Ok, even if the README file is short, you seem not patient enough to
-read it. Some I am going to quote the relevant parts:
+> On 07/12/2012 05:49 PM, Gilles Chanteperdrix wrote:
+> > On 07/12/2012 05:41 PM, Roland Stigge wrote:
+> >> On 07/12/2012 05:14 PM, Jeff Webb wrote:
+> >>>>> I unfortunately don't have the ressources to regularly sync/update
+> >>>>> debian/* in the xenomai.org dev repository.
+> >>>
+> >>> Do you have the resources to update debian/* on xenomai.org just
+> before
+> >>> each release is made?  I don't think it's necessary to update it any
+> >>> more often than that.  I'm assuming that you eventually package each
+> >>> release anyway, so it would be nice to do it before a release is made
+> >>> official.  Of course, if you don't have time for that or your
+> >>> availability doesn't line up with the timeframe for a release, that is
+> >>> understandable.  I am just asking if the problem is trying to keep the
+> >>> git repository up to date all the time, or if you don't even have time
+> >>> to do it for each release.
+> >>
+> >> It would be possible for me if I get ~2 weeks notice before a Xenomai
+> >> release to already do _before_ the Xenomai release what I would normally
+> >> do _afterwards_ anyway (for Debian). Gilles, is this possible?
+> >
+> > Yes, it is possible, of course.
+> >
+> > Next question: the current debian directory is (I believe), compatible
+> > with Debian stable. The rationale being that it allows people to install
+> > the latest xenomai revision on Debian stable.
+>
+> Yes, that makes sense. All other targets are moving too quickly. ;-)
+>
+>
++1, especially since last year when unstable squeeze switched to stable.
 
-"This support is provided by the interrupt pipeline (aka I-pipe) in the
-form of a kernel patch you have to apply against a VANILLA kernel
-tree, before you attempt to compile the Xenomai codebase against the
-latter kernel.
 
-Apply one of the patches found into this directory against the
-CORRESPONDING kernel release."
-
-So: for a vanilla 2.6.32 kernel, you have to use a patch with 2.6.32 in
-the name. And the patch will apply only to a vanilla kernel, for any
-other kernels, it will not necessarily apply.
-
-Please no private mail.
-
--- 
-                                                                Gilles.
-
+> A build using this debian/* will also most often work (but not
+> guaranteed to be working always) on Debian testing/unstable. (In
+> contrast to testing/unstable's debian/* which will often break on Debian
+> stable systems.)
+>
+> Responsible users would either use Debian stable, or be proficient
+> enough to know the differences between stable/testing/unstable and be
+> able to tweak things.
+>
+> Roland
+>
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> http://www.xenomai.org/mailman/listinfo/xenomai
+>
