@@ -1,14 +1,21 @@
-Date: Tue, 3 Jul 2012 21:27:54 +0200 (CEST)
-From: Thierry BULTEL <thierry.bultel@wanadoo.fr>
-Message-ID: <1012208988.15650.1341343674156.JavaMail.www@wwinf1m30>
-In-Reply-To: <4FEDF65A.50401@grandegger.com>
-References: <4FED4948.8080906@basystemes.fr> <4FED4B42.6000808@wanadoo.fr>
-	<4FEDF65A.50401@grandegger.com>
+Message-ID: <50000D7C.2010809@siemens.com>
+Date: Fri, 13 Jul 2012 13:58:52 +0200
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] RTDM driver for the Advantech 1680U CANbus Adapter
-Reply-To: Thierry BULTEL <thierry.bultel@wanadoo.fr>
+References: <4F534D1A615F544D95E57BFD8460658301CBE3B9@GEO-HCLT-UKEVS1.GEO.CORP.HCL.IN>,
+	<4FFE189C.7060504@xenomai.org>
+	<4F534D1A615F544D95E57BFD8460658301CBE3BD@GEO-HCLT-UKEVS1.GEO.CORP.HCL.IN>,
+	<4FFE8B7C.60506@xenomai.org>
+	<4F534D1A615F544D95E57BFD8460658301CBE3C2@GEO-HCLT-UKEVS1.GEO.CORP.HCL.IN>
+	<4FFFEB98.7060106@xenomai.org>
+	<4F534D1A615F544D95E57BFD8460658302FEBCEB@GEO-HCLT-UKEVS1.GEO.CORP.HCL.IN>
+	<500001AC.5040706@xenomai.org>
+	<4F534D1A615F544D95E57BFD8460658302FEBD85@GEO-HCLT-UKEVS1.GEO.CORP.HCL.IN>
+In-Reply-To: <4F534D1A615F544D95E57BFD8460658302FEBD85@GEO-HCLT-UKEVS1.GEO.CORP.HCL.IN>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] BUG: Unhandled exception over domain Xenomai -
+ switching to ROOT
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,96 +24,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Wolfgang Grandegger <wg@grandegger.com>
-Cc: Linux-CAN <linux-can@vger.kernel.org>, xenomai@xenomai.org
+To: "Jorge Ramirez Ortiz, HCL Europe" <Jorge.Ramirez-Ortiz@hcl.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi Wolfgang,
+[please don't top-post]
 
-=C2=A0
+On 2012-07-13 13:24, Jorge Ramirez Ortiz, HCL Europe wrote:
+> Yes it does: the caller ignores upfront whether the call will be handled in realtime or non-realtime context by the driver.
+> The client (of course!) can/should (it doesn't really matter for the sake of the argument) take the adequate measures to make sure it will get into the adequate path.
+> But the _interface_ does not guarantee which path it will take. This is a fact that you can't disagree with.
+> 
+> But please allow me to re-frame the discussion: I am not discussing here about realtime design practises or about how to use the framework properly.
+> I am merely commenting on  the _interfaces_ to the realtime framework and their consistency.
 
-Thanks for your feedback.
+As far as I understood, you were using interfaces outside of the scope
+of the RTDM framework. Sorry, we can change the Linux kernel to
+gracefully handle all types of improper RT designs. We already have
+quite some infrastructure to detect such scenarios, and if there are
+holes, we are happy for suggestions (bug reports, patches etc.) to plug
+them. But, e.g., failing a call like wake_up from wrong contexts is
+impractical (there are too many spots to patch). Or what is your
+expectation?
 
-=C2=A0
+BTW, if you call wake_up under PREEMPT-RT from a hard IRQ handler, you
+will get similar results: at best lockdep will bark at you, at worst
+your box locks up hard. Different architecture, similar problem.
 
-The issue is that I did not realize that the patch would not have been acce=
-pted as such, so I will have to invest more time on than expected ...
+Jan
 
-so I will not be able to do so immediately.
+-- 
+Siemens AG, Corporate Technology, CT RTC ITP SDP-DE
+Corporate Competence Center Embedded Linux
 
-=C2=A0
-
-Several comments, to your comments
-
-
-- I agree for the multiple devices, theoretically supported by the original=
- Linux driver. I intentionnally removed them, since I do not have the appro=
-priate hardware to test.
-
-- Linux code style. I really thought I had respected it, furthermore I took=
- another (ixxat) RTDM driver as a model. Ok, I can doublecheck ...
-
-- patch high-check vs plx. I do no see what you mean. If I made something w=
-rong it is not intentional. Can you be more specific please ?
-
-- Avantech specific ... not much but the classical vendor ID, and also, PCI=
- banks mapping. Again, it is just like the ixxat one, all the driver intell=
-igence is in the generic sja1000 code
-- patches inline ... Really ??? In the mail content ? But that makes huge m=
-ails. I can do so of course, but I do not see the point.
-
-=C2=A0
-
-Cheers
-
-Thierry
-
-
-
-> Message du 29/06/12 20:39
-> De : "Wolfgang Grandegger"=20
-> A : "Thierry Bultel"=20
-> Copie =C3=A0 : xenomai@xenomai.org, "Linux-CAN"=20
-> Objet : Re: [Xenomai] RTDM driver for the Advantech 1680U CANbus Adapter
->=20
-> Hi Thierry,
->=20
-> On 06/29/2012 08:29 AM, Thierry Bultel wrote:
-> > Hi,
-> >=20
-> > I have ported the adv_pci driver from
-> > http://git.toiit.sgu.ru/people/samarkinpa/public/?p=3Dadv_pci.git;a=3Dt=
-ree;h=3Da57c5d22415f8dbf92eeae0e05ff482839d8c2f3;hb=3Da57c5d22415f8dbf92eea=
-e0e05ff482839d8c2f3
->=20
-> Thanks for your contribution. This driver is not yet mainline and it's
-> the first time that I see it. I added the Linux-CAN ML to the CC as it
-> might be of general interest.
->=20
-> > I has been quite intensively been tested and cycled for several days in
-> > real industrial conditions.
-> >=20
-> > The patch for 2.6.38-8 is attached to this mail.
-> >=20
-> > Is it of interest and does is have a chance to be integrated in the
-> > xenomai mainline ?
->=20
-> There is interest, of course. But we need a proper patch against the git
-> head of xenomai-2.6. At a first glance I realized the following issues:
->=20
-> - The patch does high-check and remove the plx_pci driver, please fix.
->=20
-> - What is Advantech specific in that driver? It looks pretty generic to
-> me and it could easily support other similar devices.
->=20
-> - The Linux driver mentioned above does support much more Advantech
-> devices. Any chance to support them in your driver as well.
->=20
-> - Please send patches *inline*.
->=20
-> - Please respect the Linux coding style (check CodingStyle and use
-> checkpatch.pl).
->=20
-> Thanks in advance.
->=20
-> Wolfgang.
->
