@@ -1,14 +1,13 @@
-Message-ID: <4FFFCEF6.3010300@xenomai.org>
-Date: Fri, 13 Jul 2012 09:32:06 +0200
+Message-ID: <4FFFD02B.7020202@xenomai.org>
+Date: Fri, 13 Jul 2012 09:37:15 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <B8BB1834-3B77-49F2-8F40-C4801E858698@kabelmail.de>	<4FFF33F9.9020000@xenomai.org>
-	<4FFF37FF.9080406@xenomai.org>
-	<8A91EB22-F549-4065-A21E-043AA6DD9BC1@kabelmail.de>
-In-Reply-To: <8A91EB22-F549-4065-A21E-043AA6DD9BC1@kabelmail.de>
+References: <1342097120.22964.YahooMailNeo@web120604.mail.ne1.yahoo.com>	<4FFED232.60506@xenomai.org>
+	<CAAEqEhH_TKjC0wRtx8uT2kQWbRESHrJkYrxPg095FZ1bvi-+6A@mail.gmail.com>
+In-Reply-To: <CAAEqEhH_TKjC0wRtx8uT2kQWbRESHrJkYrxPg095FZ1bvi-+6A@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Xenomai 2.6.1 on beaglebone (TI AM3359 SoC)
+Subject: Re: [Xenomai] Xenomai 2.6.0 installation Error
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,85 +16,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Stephan Kappertz <stephan.kappertz@kabelmail.de>
+To: Ilesh patel <patelilesh32@gmail.com>
 Cc: xenomai@xenomai.org
 
-On 07/13/2012 09:09 AM, Stephan Kappertz wrote:
-> Hi Gilles,
+On 07/13/2012 07:51 AM, Ilesh patel wrote:
+> Hello,
 > 
-> the problem was not the .config file but the fact that CONFIG_OMAP_32K_TIMER was ignored for the AM3359 implementation.
+> Thank you for your kind reply
 > 
-> So in arch/arm/mach_omap2/timer.c I changed 
+> I understand the error.
 > 
-> --------------------------------------------
-> #ifdef CONFIG_ARCH_OMAP3
-> #ifndef CONFIG_IPIPE
-> OMAP_SYS_TIMER_INIT(3, 1, OMAP3_CLKEV_SOURCE, 2, OMAP3_MPU_SOURCE)
-> #else
-> OMAP_SYS_TIMER_INIT(3, 2, OMAP3_CLKEV_SOURCE, 3, OMAP3_MPU_SOURCE)
-> #endif
-> OMAP_SYS_TIMER(3)
-> OMAP_SYS_TIMER_INIT(3_secure, OMAP3_SECURE_TIMER, OMAP3_CLKEV_SOURCE,
-> 			2, OMAP3_MPU_SOURCE)
-> OMAP_SYS_TIMER(3_secure)
-> OMAP_SYS_TIMER_INIT(3_am33xx, 2, OMAP4_MPU_SOURCE, 1, AM33XX_RTC32K_SOURCE) <--- ignoring CONFIG_OMAP_32K_TIMER here
-> OMAP_SYS_TIMER(3_am33xx)
-> 
-> #endif
-> --------------------------------------------
-> 
-> to
-> 
-> --------------------------------------------
-> #ifdef CONFIG_ARCH_OMAP3
-> 
-> #ifndef CONFIG_SOC_OMAPAM33XX
-> 
-> #ifndef CONFIG_IPIPE
-> OMAP_SYS_TIMER_INIT(3, 1, OMAP3_CLKEV_SOURCE, 2, OMAP3_MPU_SOURCE)
-> #else
-> OMAP_SYS_TIMER_INIT(3, 2, OMAP3_CLKEV_SOURCE, 3, OMAP3_MPU_SOURCE)
-> #endif
-> OMAP_SYS_TIMER(3)
-> OMAP_SYS_TIMER_INIT(3_secure, OMAP3_SECURE_TIMER, OMAP3_CLKEV_SOURCE,
-> 			2, OMAP3_MPU_SOURCE)
-> OMAP_SYS_TIMER(3_secure)
-> 
-> #else // #ifdef CONFIG_SOC_OMAPAM33XX
-> 
-> #ifndef CONFIG_IPIPE
-> OMAP_SYS_TIMER_INIT(3_am33xx, 2, AM33XX_CLKEV_SOURCE, 1, AM33XX_MPU_SOURCE)
-> #else
-> OMAP_SYS_TIMER_INIT(3_am33xx, 2, AM33XX_CLKEV_SOURCE, 3, AM33XX_MPU_SOURCE)
-> #endif
-> OMAP_SYS_TIMER(3_am33xx)
-> 
-> #endif
-> 
-> #endif
-> --------------------------------------------
-> 
-> With the AM33XX_CLKEV_SOURCE and AM33XX_MPU_SOURCE defined as 
-> 
-> --------------------------------------------
-> #define OMAP4_MPU_SOURCE	"sys_clkin_ck"
-> #define AM33XX_MPU_SOURCE	OMAP4_MPU_SOURCE
-> #define AM33XX_RTC32K_SOURCE	"clk_32768_ck"
-> 
-> #ifdef CONFIG_OMAP_32K_TIMER
-> #define AM33XX_CLKEV_SOURCE	AM33XX_RTC32K_SOURCE
-> #define OMAP3_SECURE_TIMER	12
-> #else
-> #define AM33XX_CLKEV_SOURCE	OMAP4_MPU_SOURCE
-> #define OMAP3_SECURE_TIMER	1
-> #endif
-> --------------------------------------------
-> 
-> That fixes the clock rate but otherwise does not change the fact that I'm stuck in a non ack'd interrupt at boot: 
+> I read the README file in /arch/x86/patches/  The README file shows
+> "Xenomai supports the x86_64,x86 architecture starting with the v2.6
+> Linux kernel series." and my krenel is V2.6.32-generic.
 
-The problem comes from the flow handler change. The simplest fix is to
-use the default flow handler. Is there any place I can download the
-patch to have a look at it?
+Ok, even if the README file is short, you seem not patient enough to
+read it. Some I am going to quote the relevant parts:
+
+"This support is provided by the interrupt pipeline (aka I-pipe) in the
+form of a kernel patch you have to apply against a VANILLA kernel
+tree, before you attempt to compile the Xenomai codebase against the
+latter kernel.
+
+Apply one of the patches found into this directory against the
+CORRESPONDING kernel release."
+
+So: for a vanilla 2.6.32 kernel, you have to use a patch with 2.6.32 in
+the name. And the patch will apply only to a vanilla kernel, for any
+other kernels, it will not necessarily apply.
+
+Please no private mail.
 
 -- 
                                                                 Gilles.
