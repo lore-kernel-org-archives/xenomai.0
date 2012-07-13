@@ -1,14 +1,21 @@
-Message-ID: <5000133E.7060501@xenomai.org>
-Date: Fri, 13 Jul 2012 14:23:26 +0200
+Message-ID: <50001532.60406@xenomai.org>
+Date: Fri, 13 Jul 2012 14:31:46 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <4FFC89CA.70809@xenomai.org> <4FFEF029.1090901@antcom.de>
-	<4FFEF20D.6030709@xenomai.org>
-	<201207131321.53227.leo@alaxarxa.net>
-In-Reply-To: <201207131321.53227.leo@alaxarxa.net>
+References: <4F534D1A615F544D95E57BFD8460658301CBE3B9@GEO-HCLT-UKEVS1.GEO.CORP.HCL.IN>,
+	<4FFE189C.7060504@xenomai.org>
+	<4F534D1A615F544D95E57BFD8460658301CBE3BD@GEO-HCLT-UKEVS1.GEO.CORP.HCL.IN>,
+	<4FFE8B7C.60506@xenomai.org>
+	<4F534D1A615F544D95E57BFD8460658301CBE3C2@GEO-HCLT-UKEVS1.GEO.CORP.HCL.IN>
+	<4FFFEB98.7060106@xenomai.org>
+	<4F534D1A615F544D95E57BFD8460658302FEBCEB@GEO-HCLT-UKEVS1.GEO.CORP.HCL.IN>
+	<500001AC.5040706@xenomai.org>
+	<4F534D1A615F544D95E57BFD8460658302FEBD85@GEO-HCLT-UKEVS1.GEO.CORP.HCL.IN>
+In-Reply-To: <4F534D1A615F544D95E57BFD8460658302FEBD85@GEO-HCLT-UKEVS1.GEO.CORP.HCL.IN>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Debian packaging bug in Xenomai v2.6.1
+Subject: Re: [Xenomai] BUG: Unhandled exception over domain Xenomai -
+ switching to ROOT
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,65 +24,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
-Cc: xenomai@xenomai.org
+To: "Jorge Ramirez Ortiz, HCL Europe" <Jorge.Ramirez-Ortiz@hcl.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 07/13/2012 01:21 PM, Leopold Palomo-Avellaneda wrote:
-> A Dijous 12 Juliol 2012, Gilles Chanteperdrix va escriure:
->> On 07/12/2012 05:41 PM, Roland Stigge wrote:
->>> On 07/12/2012 05:14 PM, Jeff Webb wrote:
->>>>>> I unfortunately don't have the ressources to regularly sync/update
->>>>>> debian/* in the xenomai.org dev repository.
->>>>
->>>> Do you have the resources to update debian/* on xenomai.org just before
->>>> each release is made?  I don't think it's necessary to update it any
->>>> more often than that.  I'm assuming that you eventually package each
->>>> release anyway, so it would be nice to do it before a release is made
->>>> official.  Of course, if you don't have time for that or your
->>>> availability doesn't line up with the timeframe for a release, that is
->>>> understandable.  I am just asking if the problem is trying to keep the
->>>> git repository up to date all the time, or if you don't even have time
->>>> to do it for each release.
->>>
->>> It would be possible for me if I get ~2 weeks notice before a Xenomai
->>> release to already do _before_ the Xenomai release what I would normally
->>> do _afterwards_ anyway (for Debian). Gilles, is this possible?
->>
->> Yes, it is possible, of course.
->>
->> Next question: the current debian directory is (I believe), compatible
->> with Debian stable. The rationale being that it allows people to install
->> the latest xenomai revision on Debian stable.
->>
->> Is this "feature" useful, or simply something that nobody does (I feel
->> few people are using Debian stable these days)?
->>
+On 07/13/2012 01:24 PM, Jorge Ramirez Ortiz, HCL Europe wrote:
+> Yes it does: the caller ignores upfront whether the call will be
+> handled in realtime or non-realtime context by the driver. The client
+> (of course!) can/should (it doesn't really matter for the sake of the
+> argument) take the adequate measures to make sure it will get into
+> the adequate path. But the _interface_ does not guarantee which path
+> it will take. This is a fact that you can't disagree with.
 > 
-> well, I'm now trying to compile 2.6.1 in a Debian stable. Now there's another 
-> bug, in the package of the patches (linux-patch-xenomai_2.6.1_all.deb). The 
-> rules script call to prepare-patch.sh, and this script has this line:
-> 
-> find $xenomai_root/ksrc/ -name "adeos-ipipe-2.6.*-$supported_arch-*.patch"
-> 
-> that changed to 
-> 
-> find $xenomai_root/ksrc/ -name "*ipipe*$supported_arch-*.patch" |
-> 
-> make the package filled with all patches. However, I don't know the pre patch 
-> i post patch question, and how will be affected in the debian package.
+> But please allow me to re-frame the discussion: I am not discussing
+> here about realtime design practises or about how to use the
+> framework properly. I am merely commenting on  the _interfaces_ to
+> the realtime framework and their consistency.
 
-That is the problem, we have not had someone really dedicated to the
-maintenance of xenomai package debian directory. So, it bitrots. But now
-Roland has agreed to maintain it.
+Philippe and Jan have answered already, so I am going to make it really
+short.
 
-> 
-> About the Gilles question did .... YES!!! it's useful. I'm maintaining a group 
-> of boxes with stable and I would like to use the latest version of xenomai. 
-> 
-> And, not a few people are using Debian stable ....
+The Linux kernel API has hundreds of services, much of which can not be
+re-entered from an RT context, that is a consequence of the "dual
+kernel" model. It would simply be silly to assume that we have put LARTs
+in these hundreds of services. Knowing that you can not call linux
+services when in RT context in driver code is simply part of the things
+you should know when developing an RTDM driver.
 
-I am a Debian stable user too... but it has become a common troll
-subject these days.
+You forgot that, you got bitten, now get over it.
 
 -- 
 					    Gilles.
