@@ -1,14 +1,12 @@
-Message-ID: <500C0E33.3060409@xenomai.org>
-Date: Sun, 22 Jul 2012 16:29:07 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <500475f8.42da440a.5c6c.00d1@mx.google.com>
+From: "=?utf-8?B?ZXZlcnRlcUBnbWFpbC5jb20=?=" <everteq@gmail.com>
+Date: Mon, 16 Jul 2012 13:13:40 -0700
 MIME-Version: 1.0
-References: <E2AB2206BF591546A1931EA4E7A9FBC859BAFA22@Maui.in.dynetics.com>
-	<500AF14A.30703@xenomai.org> <500B014B.6080206@xenomai.org>
-	<500C0B16.1040607@xenomai.org>
-In-Reply-To: <500C0B16.1040607@xenomai.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] RT_TASK affinity on more than 8 CPU's
+Content-Type: text/plain;
+	charset=utf-8
+Content-Transfer-Encoding: base64
+Content-Disposition: inline
+Subject: Re: [Xenomai] =?utf-8?q?Xenomai_2=2E6=2E1_compiler_error?=
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,72 +15,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: jigneshj.patel@yahoo.com, =?utf-8?B?eGVub21haUB4ZW5vbWFpLm9yZw==?= <xenomai@xenomai.org>
+Cc: =?utf-8?B?cmd1cHRhMTA4QGdtYWlsLmNvbQ==?= <rgupta108@gmail.com>, =?utf-8?B?cGF0ZWxpbGVzaDMyQGdtYWlsLmNvbQ==?= <patelilesh32@gmail.com>
 
-On 07/22/2012 04:15 PM, Philippe Gerum wrote:
-> On 07/21/2012 09:21 PM, Gilles Chanteperdrix wrote:
->> On 07/21/2012 08:13 PM, Philippe Gerum wrote:
->>> On 07/16/2012 10:16 PM, Wolz, Troy wrote:
->>>> Hello,
->>>>
->>>> I'm working on a project where I'd like to start more than 8 RT_TASKs each affined to their own CPU. From looking at the documentation, using the native API it appears to be possible to set affinity to a CPU from 0 to RTHAL_NR_CPUS-1. On my machine, RTHAL_NR_CPUS is 255, but when setting affinity above 7, overflow occurs and only the lower 8 CPU's are used.
->>>>
->>>> Looking into this, the T_CPU macro appears to only use the lower 3 bits of the value passed to it, implying that T_CPU only allows up to 8 CPU's to be used.
->>>    Tracing through the use of this mask, it appears that the mode mask
->>> passed into rt_task_create uses the top 8 bits of the word as the cpu
->>> mask. The bits following the top 8 are used for other flags, so there is
->>> no room to expand the cpu mask.
->>>>
->>>> I see 2 solutions to this limitation for using Xenomai and affinity on more than 8 cpus.
->>>> 1. Expand the 'mode' argument from a 32 bit int to a 64 bit long. With the extra bits, the top 32 bits could be used as a CPU mask, allowing for up to 32 cpu's to be masked simultaneously. This change would affect several files, but it should be backwards compatible with applications currently written using a 32 bit mode.
->>>>
->>>> 2. Pass an additional 64 bit long argument to rt_task_create that only contains the affinity mask. In this case, the mode argument would be used the same as previously, except the affinity would be ignored. This option has the disadvantage of being incompatible with existing Xenomai applications, but it is very easy to set affinity for up to 64 cpu's. We could add a preprocessor define that selects whether the existing rt_task_create method is available or whether the new method is available.
->>>>
->>>> We are willing to develop a patch that adds this functionality, but I wanted to talk it over with the group to determine if this would be accepted as a patch or if there's a better way to do it. Thanks.
->>>>
->>>
->>> The reason not to provide for more than 8 CPUs stems from our locking
->>> model, based on a single big lock to protect the system data structures.
->>> This is a design decision to keep the real-time kernel simple and
->>> robust, at the expense of scalability limited to few CPUs.
->>> Our embedded bias, and the fact that CPU proliferation is not the norm
->>> there yet, particularly for dual kernel configurations, explains this.
->>>
->>> Note that this setting relates to CPUs used in real-time mode, not
->>> necessarily to the overall number of CPUs available. E.g. you may pin
->>> your tasks on 4 CPUs dedicated to real-time processing, over a 64 CPUs
->>> system.
->>
->> I am afraid for the system to scale poorly, only timer interrupt are
->> needed: the timer interrupt handler takes the big lock whether it does
->> anything else than handling the linux timer or not. So, if timer
->> interrupts happen at the same time on all cpus, we are going to observe
->> big latencies, without the help of real-time tasks running on more than
->> one cpu.
->>
-> 
-> You are assuming that the Xenomai clock event device must be common to 
-> the linux one, based on our host timer relay mechanism, I'm not. For 
-> these high end configurations, we'd have to pick a dedicated timer 
-> hardware for Xenomai.
-
-It does not work for the current implementations of the I-pipe core and
-Xenomai:
-- the I-pipe core assumes that it uses the same timer on all CPUS, or at
-least timers with the same frequency, changing this means changing
-Xenomai code.
-- we have no way of saying that we want to grab timers only for some
-CPUS, we grab them from 0 to num_online_cpus()
-- we use the timer with the highest Linux rating, which is not in the
-CLOCK_EVT_MODE_SHUTDOWN state, so we end up using the same timer as Linux.
-
-The only way I could see this working on x86 is if Linux is using HPET
-as clock event device on some CPUS, and APIC on others, and Xenomai APIC
-on all cpus. But since APIC and HPET have different frequencies, we need
-to change xenomai code.
-
-
--- 
-                                                                Gilles.
+ZG8gaXQgdXNlIG1ha2UgbWVudWNvbmZpZwpmaW5kIGl0IHVuZGVyIHByb2Nlc3NvciBzZWxlY3Rp
+b25zCgpTZW50IGZyb20gbXkgSFRDCgotLS0tLSBSZXBseSBtZXNzYWdlIC0tLS0tCkZyb206ICJK
+aWduZXNoIFBhdGVsIiA8amlnbmVzaGoucGF0ZWxAeWFob28uY29tPgpUbzogInhlbm9tYWlAeGVu
+b21haS5vcmciIDx4ZW5vbWFpQHhlbm9tYWkub3JnPgpDYzogInJndXB0YTEwOEBnbWFpbC5jb20i
+IDxyZ3VwdGExMDhAZ21haWwuY29tPiwgInBhdGVsaWxlc2gzMkBnbWFpbC5jb20iIDxwYXRlbGls
+ZXNoMzJAZ21haWwuY29tPgpTdWJqZWN0OiBbWGVub21haV0gWGVub21haSAyLjYuMSBjb21waWxl
+ciBlcnJvcgpEYXRlOiBNb24sIEp1bCAxNiwgMjAxMiAwMjoxNgoKCmhpLAoKSSdtIHRyeWluZyB0
+byBjb21waWxlIFhlbm9tYWkgMi42LjEgd2l0aCBrZXJuZWwgMy4yLjIxIHRoYXQgdGltZSBpdCBn
+ZW5lcmF0ZSBmb2xsb3dpbmcgZXJyb3IuLi4gCgoKQ0MgwqAgwqAgwqBrZXJuZWwveGVub21haS9u
+dWNsZXVzL2hlYXAubwrCoENDIMKgIMKgCiDCoGtlcm5lbC94ZW5vbWFpL251Y2xldXMvaW50ci5v
+CsKgQ0MgwqAgwqAgwqBrZXJuZWwveGVub21haS9udWNsZXVzL3BvZC5vCkluCiBmaWxlIGluY2x1
+ZGVkIGZyb20gL3Vzci9zcmMvbGludXgtMy4yLjIxL2FyY2gveDg2L2luY2x1ZGUvYXNtL3hlbm9t
+YWkvc3dpdGNoLmg6MjowLArCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCBmcm9tIC91c3Ivc3JjL2xp
+bnV4LTMuMi4yMS9hcmNoL3g4Ni9pbmNsdWRlL2FzbS94ZW5vbWFpL2JpdHMvcG9kXzMyLmg6Mjcs
+CsKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIGZyb20gL3Vzci9zcmMvbGludXgtMy4yLjIxL2FyY2gv
+eDg2L2luY2x1ZGUvYXNtL3hlbm9tYWkvYml0cy9wb2QuaDoyLArCoCDCoCDCoCDCoCDCoCDCoCDC
+oCDCoCBmcm9tIGtlcm5lbC94ZW5vbWFpL251Y2xldXMvcG9kLmM6NDc6Ci91c3Ivc3JjL2xpbnV4
+LTMuMi4yMS9hcmNoL3g4Ni9pbmNsdWRlL2FzbS94ZW5vbWFpL3N3aXRjaF8zMi5oOjMwOjI6IHdh
+cm5pbmc6ICN3YXJuaW5nICJCdWZmZXIgb3ZlcmZsb3cgZGV0ZWN0aW9uIG5vdCBzdXBwb3J0ZWQg
+aW4gMzJiaXQgCm1vZGUiIFstV2NwcF0KL3Vzci9zcmMvbGludXgtMy4yLjIxL2FyY2gveDg2L2lu
+Y2x1ZGUvYXNtL3hlbm9tYWkvc3dpdGNoXzMyLmg6MzE6MjogZXJyb3I6ICNlcnJvciAiRGlzYWJs
+ZSBDT05GSUdfQ0NfU1RBQ0tQUk9URUNUT1IgaW4geW91ciBrZXJuZWwgCmNvbmZpZ3VyYXRpb24i
+Cm1ha2VbM106ICogW2tlcm5lbC94ZW5vbWFpL251Y2xldXMvcG9kLm9dIApFcnJvciAxCm1ha2Vb
+Ml06ICogW2tlcm5lbC94ZW5vbWFpL251Y2xldXNdIEVycm9yIDIKbWFrZVsxXTogKiBba2VybmVs
+L3hlbm9tYWldIEVycm9yIDIKbWFrZTogKiBba2VybmVsXSBFcnJvciAyCgoKaG93IGkgY2FuIGVu
+YWJsZSBDT05GSUdfQ0NfU1RBQ0tQUk9URUNUT1IgaW4gbXkga2VybmVsIGNvbmZpZ3VyYXRpb24/
+Pz8KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KWGVub21h
+aSBtYWlsaW5nIGxpc3QKWGVub21haUB4ZW5vbWFpLm9yZwpodHRwOi8vd3d3Lnhlbm9tYWkub3Jn
+L21haWxtYW4vbGlzdGluZm8veGVub21haQo=
 
