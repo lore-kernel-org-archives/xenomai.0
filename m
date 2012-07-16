@@ -1,9 +1,13 @@
+Message-ID: <50042A60.7000006@grandegger.com>
+Date: Mon, 16 Jul 2012 16:51:12 +0200
+From: Wolfgang Grandegger <wg@grandegger.com>
 MIME-Version: 1.0
-Date: Mon, 16 Jul 2012 14:36:02 +0300
-Message-ID: <CADFJ0Sob8CJ_MByvBYf_MBeLga_eMwHRorPNPJhjHnnXeUNmAg@mail.gmail.com>
-From: Eralp Bayraktar <bayraktar.eralp@gmail.com>
+References: <fd35ecb7304a.4ffd9779@pwr.wroc.pl>
+	<4FFED404.4030703@grandegger.com>
+In-Reply-To: <4FFED404.4030703@grandegger.com>
 Content-Type: text/plain; charset=ISO-8859-1
-Subject: [Xenomai] Xenomai 2.6.1 hangs at boot
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Xenomai FlexCAN driver - where to start?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,15 +16,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Tomasz Guszkowski <tomasz.guszkowski@pwr.wroc.pl>
+Cc: xenomai@xenomai.org
 
-When I build Nucleus into the kernel, booting process hangs at the line:
+On 07/12/2012 03:41 PM, Wolfgang Grandegger wrote:
+> On 07/11/2012 03:10 PM, Tomasz Guszkowski wrote:
+>> Hello!
+>>
+>> I am to write a MPC8309 (powerpc made by Freescale) FlexCAN driver for Xenomai. I have a working non-RT driver for this machine. Xenomai 2.6.0 works flawlessly as far I can assess it.
+>>
+>> I have started converting a non-RT version of the driver to rtdm (rtcan) API and after some time spent on it I have an impression it will last a good while. (I am new to Xenomai driver development.)
+>>
+>> I have also analyzed mscan and sja1000 drivers and the conclusion is that RT and non-RT versions have almost no common parts, at least meld can't easily point them.
+>>
+>> So the questions are:
+>>
+>> What is the preferrable starting point for writing Xenomai CAN driver? 
+>> Is my path (non-RT driver -> rtdm/rtcan driver) optimal? 
+>> Does there exist a better way, for example a kind of a "template" for filling up with some HW-specific code?
+>> Now I think about trying to use a crippled mscan version as a template, despite the fact that mscan and FlexCAN have no common parts besides using Flattened Device Tree for HW description.Is this a good idea?
+>>
+>> Any hints are welcomed.
+> 
+> You need to use bit and pieces out of both driver sources. From the
+> SJA1000 or MSCAN RTCAN driver we take the RTDM framework and RTCAN API
+> calls and from Linux's flexcan.c we take the platform code and the init,
+> config tx and rx code. But there are some distinct differences:
+> 
+> - The RTDM driver does not use deferred interrupt handling (napi)
+> - The API for mode and bitrate setting is different including bittime
+>   calculation.
+> - and even more ...
+> 
+> Today and tomorrow I'm out of office. I will have a closer look next
+> week. Maybe I find the time to implement a first test version.
 
-I-pipe: Domain Xenomai registered.
-Xenomai: hal/i386 started.
+I started implementing rtcan_flexcan.c... Now I'm looking for a board
+with Flexcan hardware for testing. I have a mx35pdk at hand, which
+should be fine, but it does not boot yet with Linux 3.2.21 :(. Would you
+be ready for testing on your MPC hardware? What kernel version would you
+like to use? Does Xenomai already work on it?
 
-I am using Xenomai 2.6.1 and linux kernel 2.6.35.13. I am compiling for an
-i686 intel atom machine from a 64 bit intel machine. I don't have any
-xenomai specific files (libs etc) on the root. It is a virgin linux root.
+Wolfgang.
 
-Is this a known issue? I can't seem to find a clue for my mistake.
+
+
