@@ -1,11 +1,11 @@
-From: Michael Lausch <michael.lausch@omicron.at>
-Date: Thu, 19 Jul 2012 13:27:51 +0200
-Message-ID: <6B3AC2788014DD49B43AF9611365BBAA21B0B94DE9@mary.at.omicron.at>
+From: "Wolz, Troy" <Troy.Wolz@dynetics.com>
+Date: Mon, 16 Jul 2012 20:16:17 +0000
+Message-ID: <E2AB2206BF591546A1931EA4E7A9FBC859BAFA22@Maui.in.dynetics.com>
 Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Subject: [Xenomai] xenomai 2.6.1 on ixp4xx hangs on boot
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] RT_TASK affinity on more than 8 CPU's
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,35 +16,39 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi,
-I'm trying to get xenomai-2.6.1 running on an ixp4xx board
-with kernel 3.2.21.
+Hello,
 
-The kernel boots with Xenomai and IPIPE disabled in the kernel configuratio=
-n.
+I'm working on a project where I'd like to start more than 8 RT_TASKs each =
+affined to their own CPU. From looking at the documentation, using the nati=
+ve API it appears to be possible to set affinity to a CPU from 0 to RTHAL_N=
+R_CPUS-1. On my machine, RTHAL_NR_CPUS is 255, but when setting affinity ab=
+ove 7, overflow occurs and only the lower 8 CPU's are used.
 
-The kernel also boots with Xenmai disabled and IPIPE enabled.
+Looking into this, the T_CPU macro appears to only use the lower 3 bits of =
+the value passed to it, implying that T_CPU only allows up to 8 CPU's to be=
+ used. Tracing through the use of this mask, it appears that the mode mask =
+passed into rt_task_create uses the top 8 bits of the word as the cpu mask.=
+ The bits following the top 8 are used for other flags, so there is no room=
+ to expand the cpu mask.
 
-But the kernel does not boot correctly with both, Xenomai and IPIPE enabled=
-.
+I see 2 solutions to this limitation for using Xenomai and affinity on more=
+ than 8 cpus.
+1. Expand the 'mode' argument from a 32 bit int to a 64 bit long. With the =
+extra bits, the top 32 bits could be used as a CPU mask, allowing for up to=
+ 32 cpu's to be masked simultaneously. This change would affect several fil=
+es, but it should be backwards compatible with applications currently writt=
+en using a 32 bit mode.
 
-Using a JTAG debugger i found that the kernel always hits a breakpoint
-On xnintr_clock_handler() with this backtrace:
+2. Pass an additional 64 bit long argument to rt_task_create that only cont=
+ains the affinity mask. In this case, the mode argument would be used the s=
+ame as previously, except the affinity would be ignored. This option has th=
+e disadvantage of being incompatible with existing Xenomai applications, bu=
+t it is very easy to set affinity for up to 64 cpu's. We could add a prepro=
+cessor define that selects whether the existing rt_task_create method is av=
+ailable or whether the new method is available.
 
- #1  0xc00516b8 in __ipipe_dispatch_irq_fast (irq=3D5) at kernel/ipipe/core=
-.c:1272
-#2  0xc00083b0 in __ipipe_grab_irq (irq=3D<optimized out>, regs=3D0xc381ff3=
-0) at arch/arm/kernel/ipipe.c:458
-#3  0xc0008db0 in __irq_svc () at arch/arm/kernel/entry-armv.S:216
+We are willing to develop a patch that adds this functionality, but I wante=
+d to talk it over with the group to determine if this would be accepted as =
+a patch or if there's a better way to do it. Thanks.
 
-The last line is repeated very often, but i think this is just a gdb artefa=
-ct.
-The kernel seems to loop in __irq_svc->__ipipe_grab_irq->__irq_svc.
-Maybe the timer interrupt is not cleared and therefore executed as soon as =
-the
-IRQ service function finishes?
-
-
-
-
-
+Troy
