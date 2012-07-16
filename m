@@ -1,25 +1,11 @@
-From: "Jorge Ramirez Ortiz,  HCL Europe" <Jorge.Ramirez-Ortiz@hcl.com>
-Date: Mon, 16 Jul 2012 10:10:08 +0100
-Message-ID: <4F534D1A615F544D95E57BFD8460658302FEC412@GEO-HCLT-UKEVS1.GEO.CORP.HCL.IN>
-References: <4F534D1A615F544D95E57BFD8460658301CBE3B9@GEO-HCLT-UKEVS1.GEO.CORP.HCL.IN>,
-	<4FFE189C.7060504@xenomai.org>
-	<4F534D1A615F544D95E57BFD8460658301CBE3BD@GEO-HCLT-UKEVS1.GEO.CORP.HCL.IN>,
-	<4FFE8B7C.60506@xenomai.org>
-	<4F534D1A615F544D95E57BFD8460658301CBE3C2@GEO-HCLT-UKEVS1.GEO.CORP.HCL.IN>
-	<4FFFEB98.7060106@xenomai.org>
-	<4F534D1A615F544D95E57BFD8460658302FEBCEB@GEO-HCLT-UKEVS1.GEO.CORP.HCL.IN>
-	<500001AC.5040706@xenomai.org>
-	<4F534D1A615F544D95E57BFD8460658302FEBD85@GEO-HCLT-UKEVS1.GEO.CORP.HCL.IN>
-	<50000D7C.2010809@siemens.com>
-	<4F534D1A615F544D95E57BFD8460658302FEC034@GEO-HCLT-UKEVS1.GEO.CORP.HCL.IN>
-	<50005F43.20206@xenomai.org>
-In-Reply-To: <50005F43.20206@xenomai.org>
-Content-Language: es-ES
-Content-Type: text/plain; charset="utf-8"
+Message-ID: <1342430162.7582.YahooMailNeo@web120606.mail.ne1.yahoo.com>
+Date: Mon, 16 Jul 2012 02:16:02 -0700 (PDT)
+From: Jignesh Patel <jigneshj.patel@yahoo.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] BUG: Unhandled exception over domain Xenomai -
- switching to ROOT
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] Xenomai 2.6.1 compiler error
+Reply-To: Jignesh Patel <jigneshj.patel@yahoo.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -28,67 +14,22 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+Cc: "rgupta108@gmail.com" <rgupta108@gmail.com>, "patelilesh32@gmail.com" <patelilesh32@gmail.com>
 
-VGhhbmtzLiBJIGFwcHJlY2lhdGUgdGhlIHRpbWUgeW91IHRvb2sgdG8gdG8gcmVtaW5kIG1lIChh
-Z2Fpbikgb2YgdGhpcyBpbnRlcmZhY2UgYW5kIHRoZSBpc3N1ZXMgd2hlbiBub3RpZnlpbmcgbGlu
-dXggZnJvbSB0aGUgcmVhbHRpbWUgZG9tYWluLiANCkkgYWxzbyBzaG91bGQgaGF2ZSByZWFkIHRo
-ZSBkb3h5Z2VuIGRvY3MgbW9yZSBjYXJlZnVsbHkgKCEpDQpjaGVlcnMNCmpvcmdlDQoNCg0KDQot
-LS0tLU1lbnNhamUgb3JpZ2luYWwtLS0tLQ0KRGU6IEdpbGxlcyBDaGFudGVwZXJkcml4IFttYWls
-dG86Z2lsbGVzLmNoYW50ZXBlcmRyaXhAeGVub21haS5vcmddIA0KRW52aWFkbyBlbDogMTMgSnVs
-eSAyMDEyIDE4OjQ4DQpQYXJhOiBKb3JnZSBSYW1pcmV6IE9ydGl6LCBIQ0wgRXVyb3BlDQpDQzog
-SmFuIEtpc3prYTsgeGVub21haUB4ZW5vbWFpLm9yZw0KQXN1bnRvOiBSZTogW1hlbm9tYWldIEJV
-RzogVW5oYW5kbGVkIGV4Y2VwdGlvbiBvdmVyIGRvbWFpbiBYZW5vbWFpIC0gc3dpdGNoaW5nIHRv
-IFJPT1QNCg0KT24gMDcvMTMvMjAxMiAwNjoyNyBQTSwgSm9yZ2UgUmFtaXJleiBPcnRpeiwgSENM
-IEV1cm9wZSB3cm90ZToNCj4gUGxlYXNlIGNhbiB3ZSBnbyBiYWNrIGFuZCByZWZyYW1lIHRoZSBk
-aXNjdXNzaW9uPw0KPiANCj4gQnV0IGZpcnN0IEknbGwgcmVpdGVyYXRlOiBkbyBpZ25vcmUgdGhl
-IG1hcmdpbmFsIGlzc3VlIEkgaGFkIHdpdGggdGhlDQo+IGZyYW1ld29yayAoSSBwb3J0ZWQgYW5k
-IHdlbnQgb3ZlciA0NCw3ODUgbGluZXMgb2YgQU5TSS1DKGtlcm5lbC91c2VyKQ0KPiBhbmQgMTk5
-NSBsaW5lcyBvZiBDKysgY29kZSAgaW4ganVzdCBhIGZldyBkYXlzIC10aGlzIG9uZSB3YXMgYSBi
-aWcNCj4gcGNpIGRyaXZlci0uLi4uSSBhbSBub3QgcmVhbGx5IGxvc2luZyBteSBzbGVlcCBvdmVy
-IGl0KSAuIEJlc2lkZXMgSXQNCj4gaXMgbm90IHJlYWxseSByZWxldmFudCB0byB0aGUgcG9pbnQg
-SSBhbSB0cnlpbmcgdG8gbWFrZSBhbmQgdGhlDQo+IHJlYXNvbiB3aHkgSSBhbSBwb3N0aW5nIGhl
-cmUuDQo+IA0KPiBNeSBwb2ludCBpczogeWVzLCBhYnNvbHV0ZWx5LCBJIHdvdWxkIGV4cGVjdCB0
-aGUgZnJhbWV3b3JrIHRvIGFsbG93DQo+IHdha2V1cCBjYWxscyB0byBsaW51eCBzZXJ2aWNlcyBm
-cm9tIGludGVycnVwdCBjb250ZXh0LiBXaHkgbm90PyBXaHkNCj4gaXMgdGhpcyB0aGUgd3Jvbmcg
-ZXhwZWN0YXRpb24gdG8gaGF2ZT8NCg0KQmVjYXVzZSB3YWtpbmcgdXAgYSB0YXNrIG1lYW5zIGlu
-dGVyYWN0aW5nIHdpdGggTGludXggc2NoZWR1bGVyLCB3aGljaCwNCmluIHR1cm4sIG1lYW5zIGlu
-dGVyYWN0aW5nIHdpdGggdGhlIHNjaGVkdWxlciBkYXRhIHN0cnVjdHVyZXMuIEJ1dCB0aGUNCnJl
-YXNvbiB3aHkgeGVub21haSBoYXMgbG93IGxhdGVuY2llcyBpcyBiZWNhdXNlIGl0cyBpbnRlcnJ1
-cHRzIG1heQ0KaW50ZXJydXB0IGxpbnV4IGFueXdoZXJlLCBpbmNsdWRpbmcgaW4gdGhlIG1pZGRs
-ZSBvZiBhIGNyaXRpY2FsIHNlY3Rpb24NCndoZXJlIHRoZSBzY2hlZHVsZXIgZGF0YSBzdHJ1Y3R1
-cmVzIGFyZSBpbiBhbiBpbmNvbnNpc3RlbnQgc3RhdGUuIFNvLA0KeW91IHNlZSwgaXQgY2FuIG5v
-dCB3b3JrLg0KDQoNCj4gQW5kIGFueWhvdywgZmFpbGluZyB0aGF0LCBJIHdvdWxkIGhhdmUgZXhw
-ZWN0ZWQgdGhlIHJlYWwtdGltZSBkcml2ZXINCj4gbW9kZWwgdG8gZ2l2ZSB0aGUgdXNlciB0aGUg
-b3B0aW9uIHRvIGNob3NlIHRoZSBiYWNrIGRvb3IgY29udGV4dCBoZQ0KPiB3YW50cyB0byByZWdp
-c3RlciB0byAod2hpY2ggaXMgbXkgd2hvbGUgcG9pbnQgYW5kIHdoYXQgIFBSRUVNUFRfUlQNCj4g
-YWN0dWFsbHkgZG9lcyBpbiB0aGUgbGludXggZG9tYWluKS4gQW5kIEkgd291bGQgZXhwZWN0IGFu
-IHJ0ZG0NCj4gaW50ZXJmYWNlIGZvciB0aGF0Lg0KDQpydGRtIGhhcyBhbiBpbnRlcmZhY2UgZm9y
-IHRoYXQsIGl0IGlzIGNhbGxlZCBydGRtX25ydHNpZy4NCg0KLS0gDQoJCQkJCSAgICBHaWxsZXMu
-DQoKCjo6RElTQ0xBSU1FUjo6Ci0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KClRo
-ZSBjb250ZW50cyBvZiB0aGlzIGUtbWFpbCBhbmQgYW55IGF0dGFjaG1lbnQocykgYXJlIGNvbmZp
-ZGVudGlhbCBhbmQgaW50ZW5kZWQgZm9yIHRoZSBuYW1lZCByZWNpcGllbnQocykgb25seS4KRS1t
-YWlsIHRyYW5zbWlzc2lvbiBpcyBub3QgZ3VhcmFudGVlZCB0byBiZSBzZWN1cmUgb3IgZXJyb3It
-ZnJlZSBhcyBpbmZvcm1hdGlvbiBjb3VsZCBiZSBpbnRlcmNlcHRlZCwgY29ycnVwdGVkLApsb3N0
-LCBkZXN0cm95ZWQsIGFycml2ZSBsYXRlIG9yIGluY29tcGxldGUsIG9yIG1heSBjb250YWluIHZp
-cnVzZXMgaW4gdHJhbnNtaXNzaW9uLiBUaGUgZSBtYWlsIGFuZCBpdHMgY29udGVudHMKKHdpdGgg
-b3Igd2l0aG91dCByZWZlcnJlZCBlcnJvcnMpIHNoYWxsIHRoZXJlZm9yZSBub3QgYXR0YWNoIGFu
-eSBsaWFiaWxpdHkgb24gdGhlIG9yaWdpbmF0b3Igb3IgSENMIG9yIGl0cyBhZmZpbGlhdGVzLgpW
-aWV3cyBvciBvcGluaW9ucywgaWYgYW55LCBwcmVzZW50ZWQgaW4gdGhpcyBlbWFpbCBhcmUgc29s
-ZWx5IHRob3NlIG9mIHRoZSBhdXRob3IgYW5kIG1heSBub3QgbmVjZXNzYXJpbHkgcmVmbGVjdCB0
-aGUKdmlld3Mgb3Igb3BpbmlvbnMgb2YgSENMIG9yIGl0cyBhZmZpbGlhdGVzLiBBbnkgZm9ybSBv
-ZiByZXByb2R1Y3Rpb24sIGRpc3NlbWluYXRpb24sIGNvcHlpbmcsIGRpc2Nsb3N1cmUsIG1vZGlm
-aWNhdGlvbiwKZGlzdHJpYnV0aW9uIGFuZCAvIG9yIHB1YmxpY2F0aW9uIG9mIHRoaXMgbWVzc2Fn
-ZSB3aXRob3V0IHRoZSBwcmlvciB3cml0dGVuIGNvbnNlbnQgb2YgYXV0aG9yaXplZCByZXByZXNl
-bnRhdGl2ZSBvZgpIQ0wgaXMgc3RyaWN0bHkgcHJvaGliaXRlZC4gSWYgeW91IGhhdmUgcmVjZWl2
-ZWQgdGhpcyBlbWFpbCBpbiBlcnJvciBwbGVhc2UgZGVsZXRlIGl0IGFuZCBub3RpZnkgdGhlIHNl
-bmRlciBpbW1lZGlhdGVseS4KQmVmb3JlIG9wZW5pbmcgYW55IGVtYWlsIGFuZC9vciBhdHRhY2ht
-ZW50cywgcGxlYXNlIGNoZWNrIHRoZW0gZm9yIHZpcnVzZXMgYW5kIG90aGVyIGRlZmVjdHMuCgot
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCg==
-
-
+hi,=0A=0AI'm trying to compile Xenomai 2.6.1 with kernel 3.2.21 that time i=
+t generate following error... =0A=0A=0ACC =A0 =A0 =A0kernel/xenomai/nucleus=
+/heap.o=0A=A0CC =A0 =A0=0A =A0kernel/xenomai/nucleus/intr.o=0A=A0CC =A0 =A0=
+ =A0kernel/xenomai/nucleus/pod.o=0AIn=0A file included from /usr/src/linux-=
+3.2.21/arch/x86/include/asm/xenomai/switch.h:2:0,=0A=A0 =A0 =A0 =A0 =A0 =A0=
+ =A0 =A0 from /usr/src/linux-3.2.21/arch/x86/include/asm/xenomai/bits/pod_3=
+2.h:27,=0A=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 from /usr/src/linux-3.2.21/arch/x=
+86/include/asm/xenomai/bits/pod.h:2,=0A=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 from=
+ kernel/xenomai/nucleus/pod.c:47:=0A/usr/src/linux-3.2.21/arch/x86/include/=
+asm/xenomai/switch_32.h:30:2: warning: #warning "Buffer overflow detection =
+not supported in 32bit =0Amode" [-Wcpp]=0A/usr/src/linux-3.2.21/arch/x86/in=
+clude/asm/xenomai/switch_32.h:31:2: error: #error "Disable CONFIG_CC_STACKP=
+ROTECTOR in your kernel =0Aconfiguration"=0Amake[3]: * [kernel/xenomai/nucl=
+eus/pod.o] =0AError 1=0Amake[2]: * [kernel/xenomai/nucleus] Error 2=0Amake[=
+1]: * [kernel/xenomai] Error 2=0Amake: * [kernel] Error 2=0A=0A=0Ahow i can=
+ enable CONFIG_CC_STACKPROTECTOR in my kernel configuration???=0A
