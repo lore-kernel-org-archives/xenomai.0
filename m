@@ -1,13 +1,11 @@
-Message-ID: <502E5D04.70002@xenomai.org>
-Date: Fri, 17 Aug 2012 17:02:28 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <1342503849.55858.YahooMailNeo@web120606.mail.ne1.yahoo.com>
+Date: Mon, 16 Jul 2012 22:44:09 -0700 (PDT)
+From: Jignesh Patel <jigneshj.patel@yahoo.com>
 MIME-Version: 1.0
-References: <502D040F.2010906@axesseurope.com>	<20120816144617.GD1237@csclub.uwaterloo.ca>
-	<502E541F.7090801@axesseurope.com> <502E5830.4080205@xenomai.org>
-In-Reply-To: <502E5830.4080205@xenomai.org>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Trying to get Xenomai on P1010RDB
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] Xenomai 2.6.1 examlpe error
+Reply-To: Jignesh Patel <jigneshj.patel@yahoo.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,44 +14,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Charles Retailleau <charles.retailleau@axesseurope.com>
-Cc: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+Cc: "rgupta108@gmail.com" <rgupta108@gmail.com>, "patelilesh32@gmail.com" <patelilesh32@gmail.com>
 
-On 08/17/2012 04:41 PM, Gilles Chanteperdrix wrote:
-> On 08/17/2012 04:24 PM, Charles Retailleau wrote:
->> Thanks Lennart that was very useful, it now works.
->> Here is the little patch I made, yet I couldn't find a switch to force
->> it for core e500/e500xx only...
->>
->>
->> --- ./xenomai-2.6.1.orig/include/asm-powerpc/syscall.h	2011-11-09
->> 13:21:36.000000000 +0100
->> +++ ./xenomai-2.6.1.mine/./include/asm-powerpc/syscall.h	2012-08-17
->> 15:47:28.387435909 +0200
->> @@ -167,9 +167,9 @@
->>   	} u;
->>   	unsigned long __tbu;
->>
->> -	__asm__ __volatile__("1: mftbu %0\n"
->> -			     "mftb %1\n"
->> -			     "mftbu %2\n"
->> +	__asm__ __volatile__("1: mfspr %0,269\n"
->> +			     "mfspr %1,268\n"
->> +			     "mfspr %2,269\n"
->>   			     "cmpw %2,%0\n"
->>   			     "bne- 1b\n":"=r"(u.v[0]),
->>   			     "=r"(u.v[1]), "=r"(__tbu));
->> Thanks to all for your help
->> Charles,
->
-> If I understand correctly, this patch breaks old powerpcs. So, do we
-> have a compilation constant allowing to know whether we are compiling
-> for an old or new powerpc?
->
-
-For the sake of completeness, we could condition mftb to CONFIG_POWER3, 
-all others we care for (i.e. >= ISA 2.01) do support mfspr 268.
-
--- 
-Philippe.
-
+Hi,=0A=0AThanks to Francois & everteq for your kind suggestion.=0A=0AI foun=
+d CC_STACKPROTECTOR and i disable it so my kernel is compiled successfully.=
+=0ANow I trying to execute example/native=0A=0AWhen i enter make command "X=
+enomai =0A2.6.1/example/native # make" i found below error..=0A=0A =0A=0A=
+=0Aroot@PC:/usr/src/xenomai-2.6.1/examples/native# make=0A=0Agcc -I/usr/xen=
+omai/include -D_GNU_SOURCE -D_REENTRANT =0A-D_XENO_ =A0 -lnative -L/usr/xen=
+omai/lib -lxenomai -lpthread =0A-lrt =A0-Xlinker -rpath -Xlinker /usr/xenom=
+ai/lib =A0trivial-periodic.c =A0 -o trivial-periodic=0A=0A/tmp/ccHeeGhD.o: =
+In function =0A`demo':=0A=0Atrivial-periodic.c:(.text+0x2f): undefined =0Ar=
+eference to `rt_task_set_periodic'=0A=0Atrivial-periodic.c:(.text+0x34): un=
+defined reference to `rt_timer_read'=0A=0Atrivial-periodic.c:(.text+0x46): =
+undefined reference to `rt_task_wait_period'=0A=0Atrivial-periodic.c:(.text=
++0x4b): undefined reference to `rt_timer_read'=0A=0A/tmp/ccHeeGhD.o: In =0A=
+function `main':=0A=0Atrivial-periodic.c:(.text+0x133): =0Aundefined refere=
+nce to `rt_task_create'=0A=0Atrivial-periodic.c:(.text+0x14f): undefined re=
+ference to `rt_task_start'=0A=0Atrivial-periodic.c:(.text+0x160): undefined=
+ reference to `rt_task_delete'=0A=0Acollect2: ld =0Areturned 1 exit status=
+=0A=0Amake: * [trivial-periodic] =0AError 1=0A=0A=0A=0AThanks,=0AJignesh Pa=
+tel
