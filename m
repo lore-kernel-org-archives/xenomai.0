@@ -1,12 +1,15 @@
-Message-ID: <5009A292.4060508@grandegger.com>
-Date: Fri, 20 Jul 2012 20:25:22 +0200
+Message-ID: <500524A7.3070907@grandegger.com>
+Date: Tue, 17 Jul 2012 10:39:03 +0200
 From: Wolfgang Grandegger <wg@grandegger.com>
 MIME-Version: 1.0
-References: <CE2E43470FE5444A811B580382FE5EDF2113D8D95A@KEMPMAIL2.woodward.com>
-In-Reply-To: <CE2E43470FE5444A811B580382FE5EDF2113D8D95A@KEMPMAIL2.woodward.com>
-Content-Type: text/plain; charset=UTF-8
+References: <4FED4948.8080906@basystemes.fr> <4FED4B42.6000808@wanadoo.fr>
+	<4FEDF65A.50401@grandegger.com>
+	<1012208988.15650.1341343674156.JavaMail.www@wwinf1m30>
+	<4FF3562B.7020902@grandegger.com> <50042E37.8040205@wanadoo.fr>
+In-Reply-To: <50042E37.8040205@wanadoo.fr>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Xenomai installation on P1020RDB
+Subject: Re: [Xenomai] RTDM driver for the Advantech 1680U CANbus Adapter
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,163 +18,55 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lukasz Zemla <Lukasz.Zemla@woodward.com>
-Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: Thierry Bultel <thierry.bultel@wanadoo.fr>
+Cc: Linux-CAN <linux-can@vger.kernel.org>, xenomai@xenomai.org
 
-Hi Lukasz,
+Hi Thierry,
 
-On 07/20/2012 04:31 PM, Lukasz Zemla wrote:
-> Hello,
-> 
-> Has anyone some experience with installing Xenomai on P1020RDB board? I'd like to perform some benchmarks on this board.
-> I'm trying to install it using the latest Freescale SDK 1.2 based on Yocto. But hints for SDK 1.0.3 would be also fine. Finally every way for getting it working... ;-)
-> 
-> What I'm doing is getting Freescale kernel (3.0.34):
+thanks for your cleanup...
 
-If you can, use a *mainline* kernel. The latest Xenomai patch is for
-Linux 3.2.21 and that version does well support the P1020RDB, IIRC.
+On 07/16/2012 05:07 PM, Thierry Bultel wrote:
+> Hi Wolfgang,
+> 
+> How are you ?
+> 
+> I have taken some time, to take (almost) all your remarks into account
+> about my candidate patch.
+> Please see below, the new version, inline.
 
->                bitbake -c unpack virtual/kernel
-> and then trying manually to run prepare-kernel.sh pointing to directory where sources where unpacked. I tried all i-pipe 3.x patches - but all of them returned error.
-> 
-> Is it true that i-pipe can be applied _only_ to the _vanilla_ kernel with version which _exactly_ matches i-pipe patch version?
+Unfortunately, the patch is white space mangled. Please use
+git-send-email or tune your mail client not to break lines, etc.
 
-If you are lucky it will apply to other (rather close) versions as
-well, but it is no surprise if it fails. 
+> - code style / checkpatch : all ERRORs fixed, it remains a spurious "80
+> lines" WARNING that I do not agree with.
 
-> Next I tried to install Xenomai on vanilla 3.1.10 kernel. I got compilation error:
-> 
->         arch/powerpc/sysdev/fsl_lbc.c: In function 'fsl_lbc_ctrl_irq':
->         arch/powerpc/sysdev/fsl_lbc.c:247:3: error: 'TASK_NORMAL' undeclared (first use in this function)
+I think the preferred coding style for Xenomai nowadays is the Linux
+one. Therefore please use *tabs*" for indention (even if old RTCAN code
+doesn't). This should also make checkpatch.pl even more happier.
 
-That has nothing to do with Xenomai. Did you try to build the vanilla
-kernel first?
+> - multiple devices: The driver now (theoretically) supports as many
+> devices as its original linux version
 
-> I fixed it by adding '#include <linux/sched.h>' in arch/powerpc/sysdev/fsl_lbc.c file. After successful build the kernel hung just after loading DTB.
-> 
-> 
-> 
-> Filename 'p1020rdb-pc.dtb'.
-> 
-> Load address: 0xc00000
-> 
-> Loading: ###
-> 
-> done
-> 
-> Bytes transferred = 12888 (3258 hex)
-> 
-> WARNING: adjusting available memory to 30000000
-> 
-> ## Booting kernel from Legacy Image at 01000000 ...
-> 
->    Image Name:   Linux-3.1.10
-> 
->    Created:      2012-07-20  13:54:54 UTC
-> 
->    Image Type:   PowerPC Linux Kernel Image (gzip compressed)
-> 
->    Data Size:    3757211 Bytes = 3.6 MiB
-> 
->    Load Address: 00000000
-> 
->    Entry Point:  00000000
-> 
->    Verifying Checksum ... OK
-> 
-> ## Loading init Ramdisk from Legacy Image at 02000000 ...
-> 
->    Image Name:   fsl-image-minimal-ww-p1020rdb-20
-> 
->    Created:      2012-07-18   9:30:13 UTC
-> 
->    Image Type:   PowerPC Linux RAMDisk Image (gzip compressed)
-> 
->    Data Size:    4596585 Bytes = 4.4 MiB
-> 
->    Load Address: 00000000
-> 
->    Entry Point:  00000000
-> 
->    Verifying Checksum ... OK
-> 
-> ## Flattened Device Tree blob at 00c00000
-> 
->    Booting using the fdt blob at 0xc00000
-> 
->    Uncompressing Kernel Image ... OK
-> 
->    Loading Ramdisk to 2fb9d000, end 2ffff369 ... OK
-> 
->    Loading Device Tree to 00ff9000, end 00fff257 ... OK
+Could you mention them in the Kconfig help? Just in case you know the
+names of these devices.
 
-This is also not related to Xenomai. Did you set the console properly?
-You may be able to list the kernel log buffer after a soft-reset at
-address "grep __log_buf System.map | cut -d" " -f1" - 0xc0000000
-using the U-Boot command "md".
+> - plx highjack: fixed, this was a bug, actually.
+> 
+> The patch is generated vs xenomai-2.6.0, because it is my testing
+> environnement. I will unfortunately and
+> unlikely not have time to perform some tests with a more recent version.
+> I hope this is not a blocking issue and that you will be able to
+> integrate it anyway.
 
-I tested Xenomai recently on a P2020 with mainline Linux 3.2.x with the
-new iPipe-Patch and got very good latency results, especially with CPU
-isolation: 65 us without and *8* us with CPU isolation. [I'm still puzzled
-about the good results with CPU isolation. Maybe that's due to the new
-iPipe-Patch. Need to re-test when time permits). I have listed the results
-below.
+Should not be a real problem.
 
-Hope this info is useful.
+> Another topic, please, I would like to know if you have an estimate date
+> for the availability of the RTDM
+> drivers for Flexcan, and the IMX6 serial as well ?
+
+As you might have realized, there is some interest on a RTCAN Flexcan
+driver, which I'm currently working on. Hope to have something ready
+this or next week. The same for publishing my rt_imx_uart driver.
 
 Wolfgang.
-
-
-Latency-Test *without* CPU isolation:
-=====================================
-
-- After 4 hours and concurrent load generation via
-
-  # while sleep 5; do ./hackbench 50; done
-  # while true; do ./calibrator 1200 256M calib.dat; done
-
-in two separate ssh sessions I got:
-
-  RTT|  04:15:31  (periodic user-mode task, 10000 us period, priority 99)
-  RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat best|--lat worst
-  RTD|     16.360|     20.640|     29.146|       0|     0|      0.666|     65.986
-  RTD|     16.733|     21.093|     27.333|       0|     0|      0.666|     65.986
-  ...
-  ^C
-  ---|-----------|-----------|-----------|--------|------|-------------------------
-  RTS|      0.666|     14.493|     65.986|       0|     0|    04:15:43/04:15:43
-
-
-Latency-Test *with* CPU isolation:
-==================================
-
-- Boot Linux with bootargs "isolcpus=1".
-
-- Set smp_affinity for all interrupts:
-
-  # echo 1 > /proc/irq/default_smp_affinity
-  # for f in `ls /proc/irq/[0-9]*/smp_affinity`; do echo 1 > $f; done
-
-- Generate load in two separate ssh sessions:
-
-  # while sleep 5; do ./hackbench 50; done
-  # while true; do ./calibrator 1200 256M calib.dat; done
-
-- Run latency test on the second CPU:
-
-  # cat /proc/xenomai/latency
-  1986
-  # latency -p10000 -c1
-  ...
-  RTT|  04:13:46  (periodic user-mode task, 10000 us period, priority 99)
-  RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat best|--lat worst
-  RTD|      0.946|      1.546|      2.280|       0|     0|      0.466|      7.386
-  RTD|      1.013|      1.746|      3.053|       0|     0|      0.466|      7.386
-  ...
-  ^C
-  ---|-----------|-----------|-----------|--------|------|-------------------------
-  RTS|      0.466|      1.480|      7.386|       0|     0|    04:13:50/04:13:50
-
-
-
 
