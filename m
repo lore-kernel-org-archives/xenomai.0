@@ -1,13 +1,13 @@
-Message-ID: <502E541F.7090801@axesseurope.com>
-Date: Fri, 17 Aug 2012 16:24:31 +0200
-From: Charles Retailleau <charles.retailleau@axesseurope.com>
 MIME-Version: 1.0
-References: <502D040F.2010906@axesseurope.com>
-	<20120816144617.GD1237@csclub.uwaterloo.ca>
-In-Reply-To: <20120816144617.GD1237@csclub.uwaterloo.ca>
+Sender: danilo.delorenzo@gmail.com
+In-Reply-To: <CAHpmwf_XO1G=6fMiddivbG+ud0FZqjh6_sp0V=zEv+mstOKorQ@mail.gmail.com>
+References: <CAHpmwf8eKDCN-4mzSpsgu64H+Kez_A+NPaqDCWOD8qHnU0oTmw@mail.gmail.com>
+	<CAHpmwf_XO1G=6fMiddivbG+ud0FZqjh6_sp0V=zEv+mstOKorQ@mail.gmail.com>
+Date: Thu, 19 Jul 2012 19:37:18 +0200
+Message-ID: <CAHpmwf_m-1HyEhFJ3H+yzS3xUXOG7F_ey4ZA+T+9jp1LZD4y4w@mail.gmail.com>
+From: Danilo De Lorenzo <danilo.delorenzo@mail.polimi.it>
 Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] Trying to get Xenomai on P1010RDB
+Subject: Re: [Xenomai] error on building xddp-echo example
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,70 +16,122 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lennart Sorensen <lsorense@csclub.uwaterloo.ca>
-Cc: xenomai@xenomai.org
+To: Xenomai@xenomai.org
 
-Thanks Lennart that was very useful, it now works.
-Here is the little patch I made, yet I couldn't find a switch to force
-it for core e500/e500xx only...
+Also,
+if I remove the -lpthread flag the example compile successfully, but then
+when I run it I get:
 
+socket: Address family not supported by protocol
 
---- ./xenomai-2.6.1.orig/include/asm-powerpc/syscall.h	2011-11-09
-13:21:36.000000000 +0100
-+++ ./xenomai-2.6.1.mine/./include/asm-powerpc/syscall.h	2012-08-17
-15:47:28.387435909 +0200
-@@ -167,9 +167,9 @@
- 	} u;
- 	unsigned long __tbu;
+and this is the output of
 
--	__asm__ __volatile__("1: mftbu %0\n"
--			     "mftb %1\n"
--			     "mftbu %2\n"
-+	__asm__ __volatile__("1: mfspr %0,269\n"
-+			     "mfspr %1,268\n"
-+			     "mfspr %2,269\n"
- 			     "cmpw %2,%0\n"
- 			     "bne- 1b\n":"=3Dr"(u.v[0]),
- 			     "=3Dr"(u.v[1]), "=3Dr"(__tbu));
-Thanks to all for your help
-Charles,
+nm -s ./xddp-echo
 
-Le 16/08/2012 16:46, Lennart Sorensen a =E9crit :
-> On Thu, Aug 16, 2012 at 04:30:39PM +0200, Charles Retailleau
-> wrote:
->> Hi all, The patching/compilation/installation steps seem fine.=20
->> But at the end I cannot have any Xenomai software running on the=20
->> P1010RDB (I tried most of the provided test SW).
->>=20
->> I focused on latency and tried to debug it. I get that:
->>=20
->> Program received signal SIGILL, Illegal instruction. 0x0ffde120
->> in __xn_rdtsc () from ....xenomai/lib/libnative.so.3
->>=20
->> It appears that the 'mftb/mftbu' instructions are in cause (cf.
->> the small test in attachment, the 1st part works but not the mftb
->> test). Furthermore when I check the core e500 ref manual=20
->> http://cache.freescale.com/files/32bit/doc/ref_manual/E500CORERM.pdf
->>
->>=20
-MFTB appears has NOT being part of the instruction list.
->>=20
->> Yet, Xenomai seems to work on P1020RDB which has the same core,
->> so I'm confused... What did I do wrong ?
->>=20
->> I'm using Xenomai 2.6.1, linux 3.2.21 configured with
->> mpc85xx_defconfig (default options for the rest of it),=20
->> Freescale's SDK 1.1.2 (that's the main difference between me and=20
->> Lukasz Zemla's config on P1020RDB, so I'm trying to get the
->> latest 1.2)
->=20
-> mftb is a phased out instruction according to the powerpc 2.06 rev=20
-> B documentation.  mfspr is the prefered instruction to use instead
-> on everything other than the old 603 and POWER3 CPUs.
->=20
-> It is quite possible the e500 hence doesn't support it.  According
-> to http://cache.freescale.com/files/32bit/doc/app_note/AN3445.pdf
-> it specificly does NOT have mftb.  Neither does the e300 core which
-> is what we are using with xenomai (MPC8360e specificly).
->=20
+0000000000601e10 d _DYNAMIC
+0000000000601fe8 d _GLOBAL_OFFSET_TABLE_
+0000000000401710 R _IO_stdin_used
+                 w _Jv_RegisterClasses
+0000000000601df0 d __CTOR_END__
+0000000000601de8 d __CTOR_LIST__
+0000000000601e00 D __DTOR_END__
+0000000000601df8 d __DTOR_LIST__
+0000000000401a48 r __FRAME_END__
+00000000004018c0 r __FUNCTION__.5821
+0000000000601e08 d __JCR_END__
+0000000000601e08 d __JCR_LIST__
+00000000006021a0 A __bss_start
+0000000000602100 D __data_start
+00000000004016c0 t __do_global_ctors_aux
+0000000000400f60 t __do_global_dtors_aux
+0000000000602108 D __dso_handle
+                 U __errno_location@@GLIBC_2.2.5
+                 w __gmon_start__
+0000000000601de4 d __init_array_end
+0000000000601de4 d __init_array_start
+00000000004016b0 T __libc_csu_fini
+0000000000401620 T __libc_csu_init
+                 U __libc_start_main@@GLIBC_2.2.5
+                 U __stack_chk_fail@@GLIBC_2.4
+                 U __wrap_bind
+                 U __wrap_clock_nanosleep
+                 U __wrap_free
+                 U __wrap_open
+                 U __wrap_pthread_create
+                 U __wrap_read
+                 U __wrap_recvfrom
+                 U __wrap_sendto
+                 U __wrap_setsockopt
+                 U __wrap_socket
+                 U __wrap_write
+00000000006021a0 A _edata
+00000000006021c0 A _end
+00000000004016f8 T _fini
+0000000000400ce0 T _init
+0000000000400f10 T _start
+                 U asprintf@@GLIBC_2.2.5
+0000000000400f3c t call_gmon_start
+0000000000401399 T cleanup_upon_sig
+00000000006021a0 b completed.6458
+0000000000602100 W data_start
+00000000006021a8 b dtor_idx.6460
+                 U exit@@GLIBC_2.2.5
+0000000000400ff4 t fail
+0000000000400fd0 t frame_dummy
+00000000004013fb T main
+                 U mlockall@@GLIBC_2.2.5
+0000000000602120 d msg
+00000000006021b8 B nrt
+                 U perror@@GLIBC_2.2.5
+                 U pthread_attr_init@@GLIBC_2.2.5
+                 U pthread_attr_setdetachstate@@GLIBC_2.2.5
+                 U pthread_attr_setinheritsched@@GLIBC_2.2.5
+                 U pthread_attr_setschedparam@@GLIBC_2.2.5
+                 U pthread_attr_setschedpolicy@@GLIBC_2.2.5
+                 U pthread_cancel@@GLIBC_2.2.5
+                 U pthread_join@@GLIBC_2.2.5
+                 U pthread_sigmask@@GLIBC_2.2.5
+0000000000401016 T realtime_thread
+0000000000401295 T regular_thread
+00000000006021b0 B rt
+                 U rt_print_auto_init
+                 U rt_printf
+                 U sigaddset@@GLIBC_2.2.5
+                 U sigemptyset@@GLIBC_2.2.5
+                 U signal@@GLIBC_2.2.5
+                 U sigsuspend@@GLIBC_2.2.5
 
+Any suggestions is much appreciated...
+
+Thank you,
+
+Danilo
+
+On Thu, Jul 19, 2012 at 7:18 PM, Danilo De Lorenzo <
+danilo.delorenzo@mail.polimi.it> wrote:
+
+> I'm getting this error when compiling the examples in the ipc folder
+>
+> gcc -I/usr/xenomai/include -D_GNU_SOURCE -D_REENTRANT -Wall
+> -Werror-implicit-function-
+> declaration -pipe -D__XENO__ -I/usr/xenomai/include/posix
+> -Wl,@/usr/xenomai/lib/posix.wrappers -L/usr/xenomai/lib -lpthread_rt
+> -lxenomai -lpthread -lrt   -lrtdm -Xlinker -rpath -Xlinker
+> /usr/xenomai/lib  xddp-echo.c   -o xddp-echo
+>
+> /usr/bin/ld: /tmp/cc4VCXFp.o: undefined reference to symbol
+> 'pthread_sigmask@@GLIBC_2.2.5'
+> /usr/bin/ld: note: 'pthread_sigmask@@GLIBC_2.2.5' is defined in DSO
+> /lib/x86_64-linux-gnu/libpthread.so.0 so try adding it to the linker
+> command line
+> /lib/x86_64-linux-gnu/libpthread.so.0: could not read symbols: Invalid
+> operation
+> collect2: ld returned 1 exit status
+> make: *** [xddp-echo] Error 1
+>
+> Is this a xenomai bug or glibc library bug?
+>
+> Thanks
+>
+> Danilo
+>
