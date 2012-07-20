@@ -1,12 +1,12 @@
-Message-ID: <500438EF.2050306@univ-amu.fr>
-Date: Mon, 16 Jul 2012 17:53:19 +0200
-From: Francois Touchard <francois.touchard@univ-amu.fr>
+From: Lukasz Zemla <Lukasz.Zemla@woodward.com>
+Date: Fri, 20 Jul 2012 16:31:10 +0200
+Message-ID: <CE2E43470FE5444A811B580382FE5EDF2113D8D95A@KEMPMAIL2.woodward.com>
+Content-Language: en-US
 MIME-Version: 1.0
-References: <1342430162.7582.YahooMailNeo@web120606.mail.ne1.yahoo.com>
-In-Reply-To: <1342430162.7582.YahooMailNeo@web120606.mail.ne1.yahoo.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] Xenomai 2.6.1 compiler error
+Content-Type: text/plain;
+  charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: [Xenomai] Xenomai installation on P1020RDB
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,61 +15,51 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jignesh Patel <jigneshj.patel@yahoo.com>
-Cc: "rgupta108@gmail.com" <rgupta108@gmail.com>, "patelilesh32@gmail.com" <patelilesh32@gmail.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-  Le 16/07/2012 11:16, Jignesh Patel a =E9crit :
-> hi,
->
-> I'm trying to compile Xenomai 2.6.1 with kernel 3.2.21 that time it gen=
-erate following error...
->
->
-> CC      kernel/xenomai/nucleus/heap.o
->   CC   =20
->    kernel/xenomai/nucleus/intr.o
->   CC      kernel/xenomai/nucleus/pod.o
-> In
->   file included from /usr/src/linux-3.2.21/arch/x86/include/asm/xenomai=
-/switch.h:2:0,
->                  from /usr/src/linux-3.2.21/arch/x86/include/asm/xenoma=
-i/bits/pod_32.h:27,
->                  from /usr/src/linux-3.2.21/arch/x86/include/asm/xenoma=
-i/bits/pod.h:2,
->                  from kernel/xenomai/nucleus/pod.c:47:
-> /usr/src/linux-3.2.21/arch/x86/include/asm/xenomai/switch_32.h:30:2: wa=
-rning: #warning "Buffer overflow detection not supported in 32bit
-> mode" [-Wcpp]
-> /usr/src/linux-3.2.21/arch/x86/include/asm/xenomai/switch_32.h:31:2: er=
-ror: #error "Disable CONFIG_CC_STACKPROTECTOR in your kernel
-> configuration"
-> make[3]: * [kernel/xenomai/nucleus/pod.o]
-> Error 1
-> make[2]: * [kernel/xenomai/nucleus] Error 2
-> make[1]: * [kernel/xenomai] Error 2
-> make: * [kernel] Error 2
->
->
-> how i can enable CONFIG_CC_STACKPROTECTOR in my kernel configuration???
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> http://www.xenomai.org/mailman/listinfo/xenomai
-while in menuconfig:
-
-Processor type and features
-    Enable -fstack-protector buffer overflow detection
-
-and *disable* the option
-
-Remember that typing  "/ STACKPROTECTOR" (or any symbol) will give you=20
-the path in the menu
-
---=20
-Fran=E7ois TOUCHARD
-mailto:francois.touchard@in2p3.fr
-Polytech Marseille/CPPM
-http://francois.touchard.perso.luminy.univmed.fr/
-
-
-
+SGVsbG8sCgpIYXMgYW55b25lIHNvbWUgZXhwZXJpZW5jZSB3aXRoIGluc3RhbGxpbmcgWGVub21h
+aSBvbiBQMTAyMFJEQiBib2FyZD8gSSdkIGxpa2UgdG8gcGVyZm9ybSBzb21lIGJlbmNobWFya3Mg
+b24gdGhpcyBib2FyZC4KSSdtIHRyeWluZyB0byBpbnN0YWxsIGl0IHVzaW5nIHRoZSBsYXRlc3Qg
+RnJlZXNjYWxlIFNESyAxLjIgYmFzZWQgb24gWW9jdG8uIEJ1dCBoaW50cyBmb3IgU0RLIDEuMC4z
+IHdvdWxkIGJlIGFsc28gZmluZS4gRmluYWxseSBldmVyeSB3YXkgZm9yIGdldHRpbmcgaXQgd29y
+a2luZy4uLiA7LSkKCldoYXQgSSdtIGRvaW5nIGlzIGdldHRpbmcgRnJlZXNjYWxlIGtlcm5lbCAo
+My4wLjM0KToKICAgICAgICAgICAgICAgYml0YmFrZSAtYyB1bnBhY2sgdmlydHVhbC9rZXJuZWwK
+YW5kIHRoZW4gdHJ5aW5nIG1hbnVhbGx5IHRvIHJ1biBwcmVwYXJlLWtlcm5lbC5zaCBwb2ludGlu
+ZyB0byBkaXJlY3Rvcnkgd2hlcmUgc291cmNlcyB3aGVyZSB1bnBhY2tlZC4gSSB0cmllZCBhbGwg
+aS1waXBlIDMueCBwYXRjaGVzIC0gYnV0IGFsbCBvZiB0aGVtIHJldHVybmVkIGVycm9yLgoKSXMg
+aXQgdHJ1ZSB0aGF0IGktcGlwZSBjYW4gYmUgYXBwbGllZCBfb25seV8gdG8gdGhlIF92YW5pbGxh
+XyBrZXJuZWwgd2l0aCB2ZXJzaW9uIHdoaWNoIF9leGFjdGx5XyBtYXRjaGVzIGktcGlwZSBwYXRj
+aCB2ZXJzaW9uPwoKTmV4dCBJIHRyaWVkIHRvIGluc3RhbGwgWGVub21haSBvbiB2YW5pbGxhIDMu
+MS4xMCBrZXJuZWwuIEkgZ290IGNvbXBpbGF0aW9uIGVycm9yOgoKICAgICAgICBhcmNoL3Bvd2Vy
+cGMvc3lzZGV2L2ZzbF9sYmMuYzogSW4gZnVuY3Rpb24gJ2ZzbF9sYmNfY3RybF9pcnEnOgogICAg
+ICAgIGFyY2gvcG93ZXJwYy9zeXNkZXYvZnNsX2xiYy5jOjI0NzozOiBlcnJvcjogJ1RBU0tfTk9S
+TUFMJyB1bmRlY2xhcmVkIChmaXJzdCB1c2UgaW4gdGhpcyBmdW5jdGlvbikKCgpJIGZpeGVkIGl0
+IGJ5IGFkZGluZyAnI2luY2x1ZGUgPGxpbnV4L3NjaGVkLmg+JyBpbiBhcmNoL3Bvd2VycGMvc3lz
+ZGV2L2ZzbF9sYmMuYyBmaWxlLiBBZnRlciBzdWNjZXNzZnVsIGJ1aWxkIHRoZSBrZXJuZWwgaHVu
+ZyBqdXN0IGFmdGVyIGxvYWRpbmcgRFRCLgoKCgpGaWxlbmFtZSAncDEwMjByZGItcGMuZHRiJy4K
+CkxvYWQgYWRkcmVzczogMHhjMDAwMDAKCkxvYWRpbmc6ICMjIwoKZG9uZQoKQnl0ZXMgdHJhbnNm
+ZXJyZWQgPSAxMjg4OCAoMzI1OCBoZXgpCgpXQVJOSU5HOiBhZGp1c3RpbmcgYXZhaWxhYmxlIG1l
+bW9yeSB0byAzMDAwMDAwMAoKIyMgQm9vdGluZyBrZXJuZWwgZnJvbSBMZWdhY3kgSW1hZ2UgYXQg
+MDEwMDAwMDAgLi4uCgogICBJbWFnZSBOYW1lOiAgIExpbnV4LTMuMS4xMAoKICAgQ3JlYXRlZDog
+ICAgICAyMDEyLTA3LTIwICAxMzo1NDo1NCBVVEMKCiAgIEltYWdlIFR5cGU6ICAgUG93ZXJQQyBM
+aW51eCBLZXJuZWwgSW1hZ2UgKGd6aXAgY29tcHJlc3NlZCkKCiAgIERhdGEgU2l6ZTogICAgMzc1
+NzIxMSBCeXRlcyA9IDMuNiBNaUIKCiAgIExvYWQgQWRkcmVzczogMDAwMDAwMDAKCiAgIEVudHJ5
+IFBvaW50OiAgMDAwMDAwMDAKCiAgIFZlcmlmeWluZyBDaGVja3N1bSAuLi4gT0sKCiMjIExvYWRp
+bmcgaW5pdCBSYW1kaXNrIGZyb20gTGVnYWN5IEltYWdlIGF0IDAyMDAwMDAwIC4uLgoKICAgSW1h
+Z2UgTmFtZTogICBmc2wtaW1hZ2UtbWluaW1hbC13dy1wMTAyMHJkYi0yMAoKICAgQ3JlYXRlZDog
+ICAgICAyMDEyLTA3LTE4ICAgOTozMDoxMyBVVEMKCiAgIEltYWdlIFR5cGU6ICAgUG93ZXJQQyBM
+aW51eCBSQU1EaXNrIEltYWdlIChnemlwIGNvbXByZXNzZWQpCgogICBEYXRhIFNpemU6ICAgIDQ1
+OTY1ODUgQnl0ZXMgPSA0LjQgTWlCCgogICBMb2FkIEFkZHJlc3M6IDAwMDAwMDAwCgogICBFbnRy
+eSBQb2ludDogIDAwMDAwMDAwCgogICBWZXJpZnlpbmcgQ2hlY2tzdW0gLi4uIE9LCgojIyBGbGF0
+dGVuZWQgRGV2aWNlIFRyZWUgYmxvYiBhdCAwMGMwMDAwMAoKICAgQm9vdGluZyB1c2luZyB0aGUg
+ZmR0IGJsb2IgYXQgMHhjMDAwMDAKCiAgIFVuY29tcHJlc3NpbmcgS2VybmVsIEltYWdlIC4uLiBP
+SwoKICAgTG9hZGluZyBSYW1kaXNrIHRvIDJmYjlkMDAwLCBlbmQgMmZmZmYzNjkgLi4uIE9LCgog
+ICBMb2FkaW5nIERldmljZSBUcmVlIHRvIDAwZmY5MDAwLCBlbmQgMDBmZmYyNTcgLi4uIE9LCgoK
+VGhhbmsgeW91IGluIGFkdmFuY2UgZm9yIGFueSBoaW50cy4KClBvemRyYXdpYW0gLyBCZXN0IFJl
+Z2FyZHMgLyBNaXQgZnJldW5kbGljaGVuIEdyw7zDn2VuCsWBdWthc3ogWmVtxYJhCgoKCioqKg0K
+VGhlIGluZm9ybWF0aW9uIGluIHRoaXMgZW1haWwgaXMgY29uZmlkZW50aWFsIGFuZCBpbnRlbmRl
+ZCBzb2xlbHkgZm9yIHRoZSBpbmRpdmlkdWFsIG9yIGVudGl0eSB0byB3aG9tIGl0IGlzIGFkZHJl
+c3NlZC4gSWYgeW91IGhhdmUgcmVjZWl2ZWQgdGhpcyBlbWFpbCBpbiBlcnJvciBwbGVhc2Ugbm90
+aWZ5IHRoZSBzZW5kZXIgYnkgcmV0dXJuIGUtbWFpbCwgZGVsZXRlIHRoaXMgZW1haWwsIGFuZCBy
+ZWZyYWluIGZyb20gYW55IGRpc2Nsb3N1cmUgb3IgYWN0aW9uIGJhc2VkIG9uIHRoZSBpbmZvcm1h
+dGlvbi4NCioqKgo=
