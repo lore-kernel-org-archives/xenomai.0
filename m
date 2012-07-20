@@ -1,12 +1,12 @@
-Message-ID: <5009A696.7020006@xenomai.org>
-Date: Fri, 20 Jul 2012 20:42:30 +0200
+Message-ID: <5009A7DA.3010101@xenomai.org>
+Date: Fri, 20 Jul 2012 20:47:54 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CADFJ0Sob8CJ_MByvBYf_MBeLga_eMwHRorPNPJhjHnnXeUNmAg@mail.gmail.com>
-In-Reply-To: <CADFJ0Sob8CJ_MByvBYf_MBeLga_eMwHRorPNPJhjHnnXeUNmAg@mail.gmail.com>
+References: <CAKKWdtfdsiPqa_eV8fbMM9oZmNmwdvOpRs+eSXE1LPLCy0eg+Q@mail.gmail.com>
+In-Reply-To: <CAKKWdtfdsiPqa_eV8fbMM9oZmNmwdvOpRs+eSXE1LPLCy0eg+Q@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Xenomai 2.6.1 hangs at boot
+Subject: Re: [Xenomai] question: rescheduling a blocked task
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,22 +15,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Eralp Bayraktar <bayraktar.eralp@gmail.com>
+To: ali hagigat <hagigatali@gmail.com>
 Cc: xenomai@xenomai.org
 
-On 07/16/2012 01:36 PM, Eralp Bayraktar wrote:
-> When I build Nucleus into the kernel, booting process hangs at the line:
-> 
-> I-pipe: Domain Xenomai registered.
-> Xenomai: hal/i386 started.
-> 
-> I am using Xenomai 2.6.1 and linux kernel 2.6.35.13. I am compiling for an
-> i686 intel atom machine from a 64 bit intel machine. I don't have any
-> xenomai specific files (libs etc) on the root. It is a virgin linux root.
-> 
-> Is this a known issue? I can't seem to find a clue for my mistake.
+On 07/17/2012 11:26 AM, ali hagigat wrote:
+> If a real time task is blocked for some real time object, does Xenomai
+> guarantee the (re-)scheduling latency to be lower than a specific
+> number?
 
-Please post your .config.
+As we already answered, I believe, Xenomai does not guarantee anything,
+it just provides you with the tools to measure an empiric estimate of
+the worst case scheduling latency. And the worst case scheduling latency
+only make sense when the woken up task is the highest priority runnable
+task, otherwise your task may be delayed for some time by higher
+priority tasks.
+
+> Does the task enter the Linux domain when it is blocked?
+
+No, of course not.
+
+> or when it is blocked it may be in the blocked state for arbitrary time lengths?
+
+That just depends on what the unblocking does.
+
+What about what I proposed you? Installing xenomai for real and asking
+real questions about real issues you get when porting real applications?
+Instead of asking questions in the void which you will find stupid when
+you have got your feet wet with xenomai?
 
 -- 
                                                                 Gilles.
