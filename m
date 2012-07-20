@@ -1,12 +1,12 @@
-Message-ID: <5009A5EF.70308@xenomai.org>
-Date: Fri, 20 Jul 2012 20:39:43 +0200
+Message-ID: <5009A63A.3090100@xenomai.org>
+Date: Fri, 20 Jul 2012 20:40:58 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <1342306481.94440.YahooMailNeo@web193905.mail.sg3.yahoo.com>
-In-Reply-To: <1342306481.94440.YahooMailNeo@web193905.mail.sg3.yahoo.com>
+References: <CAKKWdtdjPVbTmUMRgXYuH_9y0Gjrcqa-KvLQWPzo2EA+x0t13Q@mail.gmail.com>
+In-Reply-To: <CAKKWdtdjPVbTmUMRgXYuH_9y0Gjrcqa-KvLQWPzo2EA+x0t13Q@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Jitter-test
+Subject: Re: [Xenomai] question: periodic system timer
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,36 +15,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Uttamkumar Sinojia <uttamkumarsinojia@yahoo.in>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: ali hagigat <hagigatali@gmail.com>
+Cc: Xenomai@xenomai.org
 
-On 07/15/2012 12:54 AM, Uttamkumar Sinojia wrote:
-> 
-> 
-> Respected sir,
-> 
-> I have prepared a setup for checking the scheduling jitter
-> values(current time - expected wake-up time) among five periodic task
-> having same priority.
-> 
-> I have created 5 periodic real-time tasks with equal priority(say, 5)
-> and wake them at the same time. Choosen task periods of 100us, 200us,
-> 300us, 400us and 500us , respectively. Here in this case when more
-> than one tasks are going to wake-up at same expected time, which
-> process will be scheduled should be non-deterministic and i was
-> getting it.
-> 
-> In another case, I have created 5 periodic real-time tasks with equal
-> priority(say, 5) and wake them at the same time. Choosen task periods
-> of 1ms, 2ms, 3ms, 4ms and 5ms , respectively. In this case i was
-> getting the deterministic behavior in scheduling of the task(When
-> expected time for more than one task was same, task with larger
-> period was woken-up first). So, i was not getting the reason for this
-> deterministic behavior.
+On 07/16/2012 11:41 AM, ali hagigat wrote:
+> When the system clock is set as periodic for a skin, does this mean
+> that the timer interrupt happens for the period and for any function
+> of that skin? or only some functions? This interrupt rate happens
+> after the skin API function is called?
+> So after returning the function and before executing any other
+> instruction, the timer mode gets back to one-shot?
 
-Please post the test code, tell us which version of xenomai you use, and
-post the kernel configuration. And explain with the code what you would
-expect and what you get.
+This is gibberish. Please try and read again my answer to your question
+about skin timers, and tell us what you do not understand in that answer.
+
+> 
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> http://www.xenomai.org/mailman/listinfo/xenomai
+> 
+
 
 -- 
                                                                 Gilles.
