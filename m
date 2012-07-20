@@ -1,12 +1,12 @@
-From: Lukasz Zemla <Lukasz.Zemla@woodward.com>
-Date: Fri, 20 Jul 2012 16:31:10 +0200
-Message-ID: <CE2E43470FE5444A811B580382FE5EDF2113D8D95A@KEMPMAIL2.woodward.com>
-Content-Language: en-US
+Message-ID: <5009902B.7070705@xenomai.org>
+Date: Fri, 20 Jul 2012 19:06:51 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
-  charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: [Xenomai] Xenomai installation on P1020RDB
+References: <6B3AC2788014DD49B43AF9611365BBAA21B0B94DE9@mary.at.omicron.at>
+In-Reply-To: <6B3AC2788014DD49B43AF9611365BBAA21B0B94DE9@mary.at.omicron.at>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] xenomai 2.6.1 on ixp4xx hangs on boot
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,51 +15,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: Michael Lausch <michael.lausch@omicron.at>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-SGVsbG8sCgpIYXMgYW55b25lIHNvbWUgZXhwZXJpZW5jZSB3aXRoIGluc3RhbGxpbmcgWGVub21h
-aSBvbiBQMTAyMFJEQiBib2FyZD8gSSdkIGxpa2UgdG8gcGVyZm9ybSBzb21lIGJlbmNobWFya3Mg
-b24gdGhpcyBib2FyZC4KSSdtIHRyeWluZyB0byBpbnN0YWxsIGl0IHVzaW5nIHRoZSBsYXRlc3Qg
-RnJlZXNjYWxlIFNESyAxLjIgYmFzZWQgb24gWW9jdG8uIEJ1dCBoaW50cyBmb3IgU0RLIDEuMC4z
-IHdvdWxkIGJlIGFsc28gZmluZS4gRmluYWxseSBldmVyeSB3YXkgZm9yIGdldHRpbmcgaXQgd29y
-a2luZy4uLiA7LSkKCldoYXQgSSdtIGRvaW5nIGlzIGdldHRpbmcgRnJlZXNjYWxlIGtlcm5lbCAo
-My4wLjM0KToKICAgICAgICAgICAgICAgYml0YmFrZSAtYyB1bnBhY2sgdmlydHVhbC9rZXJuZWwK
-YW5kIHRoZW4gdHJ5aW5nIG1hbnVhbGx5IHRvIHJ1biBwcmVwYXJlLWtlcm5lbC5zaCBwb2ludGlu
-ZyB0byBkaXJlY3Rvcnkgd2hlcmUgc291cmNlcyB3aGVyZSB1bnBhY2tlZC4gSSB0cmllZCBhbGwg
-aS1waXBlIDMueCBwYXRjaGVzIC0gYnV0IGFsbCBvZiB0aGVtIHJldHVybmVkIGVycm9yLgoKSXMg
-aXQgdHJ1ZSB0aGF0IGktcGlwZSBjYW4gYmUgYXBwbGllZCBfb25seV8gdG8gdGhlIF92YW5pbGxh
-XyBrZXJuZWwgd2l0aCB2ZXJzaW9uIHdoaWNoIF9leGFjdGx5XyBtYXRjaGVzIGktcGlwZSBwYXRj
-aCB2ZXJzaW9uPwoKTmV4dCBJIHRyaWVkIHRvIGluc3RhbGwgWGVub21haSBvbiB2YW5pbGxhIDMu
-MS4xMCBrZXJuZWwuIEkgZ290IGNvbXBpbGF0aW9uIGVycm9yOgoKICAgICAgICBhcmNoL3Bvd2Vy
-cGMvc3lzZGV2L2ZzbF9sYmMuYzogSW4gZnVuY3Rpb24gJ2ZzbF9sYmNfY3RybF9pcnEnOgogICAg
-ICAgIGFyY2gvcG93ZXJwYy9zeXNkZXYvZnNsX2xiYy5jOjI0NzozOiBlcnJvcjogJ1RBU0tfTk9S
-TUFMJyB1bmRlY2xhcmVkIChmaXJzdCB1c2UgaW4gdGhpcyBmdW5jdGlvbikKCgpJIGZpeGVkIGl0
-IGJ5IGFkZGluZyAnI2luY2x1ZGUgPGxpbnV4L3NjaGVkLmg+JyBpbiBhcmNoL3Bvd2VycGMvc3lz
-ZGV2L2ZzbF9sYmMuYyBmaWxlLiBBZnRlciBzdWNjZXNzZnVsIGJ1aWxkIHRoZSBrZXJuZWwgaHVu
-ZyBqdXN0IGFmdGVyIGxvYWRpbmcgRFRCLgoKCgpGaWxlbmFtZSAncDEwMjByZGItcGMuZHRiJy4K
-CkxvYWQgYWRkcmVzczogMHhjMDAwMDAKCkxvYWRpbmc6ICMjIwoKZG9uZQoKQnl0ZXMgdHJhbnNm
-ZXJyZWQgPSAxMjg4OCAoMzI1OCBoZXgpCgpXQVJOSU5HOiBhZGp1c3RpbmcgYXZhaWxhYmxlIG1l
-bW9yeSB0byAzMDAwMDAwMAoKIyMgQm9vdGluZyBrZXJuZWwgZnJvbSBMZWdhY3kgSW1hZ2UgYXQg
-MDEwMDAwMDAgLi4uCgogICBJbWFnZSBOYW1lOiAgIExpbnV4LTMuMS4xMAoKICAgQ3JlYXRlZDog
-ICAgICAyMDEyLTA3LTIwICAxMzo1NDo1NCBVVEMKCiAgIEltYWdlIFR5cGU6ICAgUG93ZXJQQyBM
-aW51eCBLZXJuZWwgSW1hZ2UgKGd6aXAgY29tcHJlc3NlZCkKCiAgIERhdGEgU2l6ZTogICAgMzc1
-NzIxMSBCeXRlcyA9IDMuNiBNaUIKCiAgIExvYWQgQWRkcmVzczogMDAwMDAwMDAKCiAgIEVudHJ5
-IFBvaW50OiAgMDAwMDAwMDAKCiAgIFZlcmlmeWluZyBDaGVja3N1bSAuLi4gT0sKCiMjIExvYWRp
-bmcgaW5pdCBSYW1kaXNrIGZyb20gTGVnYWN5IEltYWdlIGF0IDAyMDAwMDAwIC4uLgoKICAgSW1h
-Z2UgTmFtZTogICBmc2wtaW1hZ2UtbWluaW1hbC13dy1wMTAyMHJkYi0yMAoKICAgQ3JlYXRlZDog
-ICAgICAyMDEyLTA3LTE4ICAgOTozMDoxMyBVVEMKCiAgIEltYWdlIFR5cGU6ICAgUG93ZXJQQyBM
-aW51eCBSQU1EaXNrIEltYWdlIChnemlwIGNvbXByZXNzZWQpCgogICBEYXRhIFNpemU6ICAgIDQ1
-OTY1ODUgQnl0ZXMgPSA0LjQgTWlCCgogICBMb2FkIEFkZHJlc3M6IDAwMDAwMDAwCgogICBFbnRy
-eSBQb2ludDogIDAwMDAwMDAwCgogICBWZXJpZnlpbmcgQ2hlY2tzdW0gLi4uIE9LCgojIyBGbGF0
-dGVuZWQgRGV2aWNlIFRyZWUgYmxvYiBhdCAwMGMwMDAwMAoKICAgQm9vdGluZyB1c2luZyB0aGUg
-ZmR0IGJsb2IgYXQgMHhjMDAwMDAKCiAgIFVuY29tcHJlc3NpbmcgS2VybmVsIEltYWdlIC4uLiBP
-SwoKICAgTG9hZGluZyBSYW1kaXNrIHRvIDJmYjlkMDAwLCBlbmQgMmZmZmYzNjkgLi4uIE9LCgog
-ICBMb2FkaW5nIERldmljZSBUcmVlIHRvIDAwZmY5MDAwLCBlbmQgMDBmZmYyNTcgLi4uIE9LCgoK
-VGhhbmsgeW91IGluIGFkdmFuY2UgZm9yIGFueSBoaW50cy4KClBvemRyYXdpYW0gLyBCZXN0IFJl
-Z2FyZHMgLyBNaXQgZnJldW5kbGljaGVuIEdyw7zDn2VuCsWBdWthc3ogWmVtxYJhCgoKCioqKg0K
-VGhlIGluZm9ybWF0aW9uIGluIHRoaXMgZW1haWwgaXMgY29uZmlkZW50aWFsIGFuZCBpbnRlbmRl
-ZCBzb2xlbHkgZm9yIHRoZSBpbmRpdmlkdWFsIG9yIGVudGl0eSB0byB3aG9tIGl0IGlzIGFkZHJl
-c3NlZC4gSWYgeW91IGhhdmUgcmVjZWl2ZWQgdGhpcyBlbWFpbCBpbiBlcnJvciBwbGVhc2Ugbm90
-aWZ5IHRoZSBzZW5kZXIgYnkgcmV0dXJuIGUtbWFpbCwgZGVsZXRlIHRoaXMgZW1haWwsIGFuZCBy
-ZWZyYWluIGZyb20gYW55IGRpc2Nsb3N1cmUgb3IgYWN0aW9uIGJhc2VkIG9uIHRoZSBpbmZvcm1h
-dGlvbi4NCioqKgo=
+On 07/19/2012 01:27 PM, Michael Lausch wrote:
+> Hi,
+> I'm trying to get xenomai-2.6.1 running on an ixp4xx board
+> with kernel 3.2.21.
+> 
+> The kernel boots with Xenomai and IPIPE disabled in the kernel configuration.
+> 
+> The kernel also boots with Xenmai disabled and IPIPE enabled.
+> 
+> But the kernel does not boot correctly with both, Xenomai and IPIPE enabled.
+> 
+> Using a JTAG debugger i found that the kernel always hits a breakpoint
+> On xnintr_clock_handler() with this backtrace:
+> 
+>  #1  0xc00516b8 in __ipipe_dispatch_irq_fast (irq=5) at kernel/ipipe/core.c:1272
+> #2  0xc00083b0 in __ipipe_grab_irq (irq=<optimized out>, regs=0xc381ff30) at arch/arm/kernel/ipipe.c:458
+> #3  0xc0008db0 in __irq_svc () at arch/arm/kernel/entry-armv.S:216
+> 
+> The last line is repeated very often, but i think this is just a gdb artefact.
+> The kernel seems to loop in __irq_svc->__ipipe_grab_irq->__irq_svc.
+> Maybe the timer interrupt is not cleared and therefore executed as soon as the
+> IRQ service function finishes?
+
+Please try the following patch:
+
+diff --git a/arch/arm/mach-ixp4xx/common.c b/arch/arm/mach-ixp4xx/common.c
+index f4b878e..cafa9fa 100644
+--- a/arch/arm/mach-ixp4xx/common.c
++++ b/arch/arm/mach-ixp4xx/common.c
+@@ -593,6 +593,7 @@ static void ixp4xx_set_mode(enum clock_event_mode mode,
+ static struct ipipe_timer ixp4xx_itimer = {
+        .irq = IRQ_IXP4XX_TIMER1,
+        .min_delay_ticks = 333, /* 5 usec with the 66.66 MHz system clock */
++       .ack = ixp4xx_timer_ack,
+ };
+ #endif /* CONFIG_IPIPE */
+
+
+
+-- 
+                                                                Gilles.
+
