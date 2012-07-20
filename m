@@ -1,15 +1,15 @@
-Message-ID: <500524A7.3070907@grandegger.com>
-Date: Tue, 17 Jul 2012 10:39:03 +0200
-From: Wolfgang Grandegger <wg@grandegger.com>
+From: Bruce Director <bruce@vytronus.com>
+Date: Fri, 20 Jul 2012 18:31:58 +0000
+Message-ID: <C1A3774592D24248BC23BD4FA9550B9AB181FA@VYTRONUS-SBS.vytronus.local>
+References: <C1A3774592D24248BC23BD4FA9550B9AB1811C@VYTRONUS-SBS.vytronus.local>
+	<50099556.50807@xenomai.org>
+In-Reply-To: <50099556.50807@xenomai.org>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <4FED4948.8080906@basystemes.fr> <4FED4B42.6000808@wanadoo.fr>
-	<4FEDF65A.50401@grandegger.com>
-	<1012208988.15650.1341343674156.JavaMail.www@wwinf1m30>
-	<4FF3562B.7020902@grandegger.com> <50042E37.8040205@wanadoo.fr>
-In-Reply-To: <50042E37.8040205@wanadoo.fr>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] RTDM driver for the Advantech 1680U CANbus Adapter
+Subject: Re: [Xenomai] Intel MKL library fault when running as a xenomai
+ task.
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,55 +18,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Thierry Bultel <thierry.bultel@wanadoo.fr>
-Cc: Linux-CAN <linux-can@vger.kernel.org>, xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi Thierry,
-
-thanks for your cleanup...
-
-On 07/16/2012 05:07 PM, Thierry Bultel wrote:
-> Hi Wolfgang,
-> 
-> How are you ?
-> 
-> I have taken some time, to take (almost) all your remarks into account
-> about my candidate patch.
-> Please see below, the new version, inline.
-
-Unfortunately, the patch is white space mangled. Please use
-git-send-email or tune your mail client not to break lines, etc.
-
-> - code style / checkpatch : all ERRORs fixed, it remains a spurious "80
-> lines" WARNING that I do not agree with.
-
-I think the preferred coding style for Xenomai nowadays is the Linux
-one. Therefore please use *tabs*" for indention (even if old RTCAN code
-doesn't). This should also make checkpatch.pl even more happier.
-
-> - multiple devices: The driver now (theoretically) supports as many
-> devices as its original linux version
-
-Could you mention them in the Kconfig help? Just in case you know the
-names of these devices.
-
-> - plx highjack: fixed, this was a bug, actually.
-> 
-> The patch is generated vs xenomai-2.6.0, because it is my testing
-> environnement. I will unfortunately and
-> unlikely not have time to perform some tests with a more recent version.
-> I hope this is not a blocking issue and that you will be able to
-> integrate it anyway.
-
-Should not be a real problem.
-
-> Another topic, please, I would like to know if you have an estimate date
-> for the availability of the RTDM
-> drivers for Flexcan, and the IMX6 serial as well ?
-
-As you might have realized, there is some interest on a RTCAN Flexcan
-driver, which I'm currently working on. Hope to have something ready
-this or next week. The same for publishing my rt_imx_uart driver.
-
-Wolfgang.
+U29ycnksICBJIGRvbid0IGhhdmUgdGhlIGNvZGUuICAgSW50ZWwgZG9lc24ndCBzdXBwbHkgc291
+cmNlIGNvZGUgZm9yIHRoaXMgbGlicmFyeS4gIFRoZSByZWFzb24gSSBrbm93IHRoZSBzZWdtZW50
+YXRpb24gIGZhdWx0IG9jY3VycyBpbiBnZXRfTl9jb3JlcyBpcyB0aGF0IHRoZSBkZWJ1Z2dlciBn
+aXZlcyBtZSBhIHN0YWNrIHRyYWNlLiAgSWYgeW91IGNvdWxkIHRlbGwgbWUgd2hpY2ggQ1BVIHBh
+cmFtZXRlcnMgeGVub21haSBkb2VzIGNoYW5nZSwgSSBjb3VsZCBwYXNzIHRoYXQgaW5mbyB0byBJ
+bnRlbCBhbmQgc2VlIHdoYXQgdGhleSBzYXkuDQoNClJlZ2FyZHMsDQoNCkJydWNlDQoNCi0tLS0t
+T3JpZ2luYWwgTWVzc2FnZS0tLS0tDQpGcm9tOiBHaWxsZXMgQ2hhbnRlcGVyZHJpeCBbbWFpbHRv
+OmdpbGxlcy5jaGFudGVwZXJkcml4QHhlbm9tYWkub3JnXSANClNlbnQ6IEZyaWRheSwgSnVseSAy
+MCwgMjAxMiAxMDoyOSBBTQ0KVG86IEJydWNlIERpcmVjdG9yDQpDYzogeGVub21haUB4ZW5vbWFp
+Lm9yZw0KU3ViamVjdDogUmU6IFtYZW5vbWFpXSBJbnRlbCBNS0wgbGlicmFyeSBmYXVsdCB3aGVu
+IHJ1bm5pbmcgYXMgYSB4ZW5vbWFpIHRhc2suDQoNCk9uIDA3LzIwLzIwMTIgMTI6MzYgQU0sIEJy
+dWNlIERpcmVjdG9yIHdyb3RlOg0KPiBJJ20gdHJ5aW5nIHRvIGdldCBhIGxpYnJhcnkgSSB3cm90
+ZSB0byBydW4gYXMgcGFydCBvZiBhIHhlbm9tYWkgdGFzay4NCj4gVGhlIGxpYnJhcnkgIHVzZXMg
+dGhlIEludGVsIE1LTCAobWF0aCBrZXJuZWwpIGxpYnJhcnkuICBNS0wgIHVzZXMgdGhlIA0KPiBT
+U0UgaW5zdHJ1Y3Rpb24gc2V0LiAgV2hlbmV2ZXIgYW4gTUtMIGZ1bmN0aW9uIGlzIGNhbGxlZCwg
+IEkgZ2V0IGEgDQo+IHNlZ21lbnRhdGlvbiBmYXVsdC4gIFRoZSBmYXVsdCBhbHdheXMgb2NjdXJz
+IGluIHRoZSBNS0wgZnVuY3Rpb24sIA0KPiBnZXRfTl9Db3Jlcy4gIEkgY3JlYXRlZCBhIHNtYWxs
+IHRlc3QgcHJvZ3JhbSB0aGF0IGNvbnNpc3RzIG9mIGEgbWFpbg0KPiBhbmQgb25lIGZ1bmN0aW9u
+LiAgVGhlIGZ1bmN0aW9uIG1ha2VzIG9uZSBNS0wgY2FsbC4gICBJdCBydW5zIHdpdGhvdXQNCj4g
+Y3Jhc2hpbmcgYXMgYSBsaW51eCBwcm9ncmFtIChjYWxsIHRoZSBmdW5jdGlvbiBkaXJlY3RseSks
+IGFuZCBjcmFzaGVzIA0KPiBpbiBnZXRfTl9jb3JlcyB3aGVuIHJ1biBhcyBhIHhlbm9tYWkgdGFz
+ayAoZnVuY3Rpb24gY2FsbGVkIHZpYSANCj4gcnRfdGFza19zdGFydCkuICBUaGUgeGVub21haSB0
+YXNrIGlzIHJ1bm5pbmcgaW4gdXNlciBzcGFjZS4NCj4gDQo+IEludGVsIHN1cHBvcnQgc2FpZCAi
+SnVzdCBteSBndWVzcyBob3dldmVyLCBNS0xfZ2V0X05fQ29yZXMgZnVuY3Rpb24gDQo+IHRyaWVz
+IHRvIHJlY29nbml6ZSBDUFUgdG9wb2xvZ3ksIGJ1dCBpZiBYZW5vbWFpIGZyYW1ld29yayBjaGFu
+Z2VzIGl0IA0KPiB2aWEgc2hhZG93aW5nIHNvbWUgQ1BVIHBhcmFtZXRlcnMgKGZvciBleGFtcGxl
+LCBDUFUgYWZmaW5pdHkpIHRoZW4gTUtMIA0KPiBtaWdodCBiZSBjb25mdXNlZCIuICBJcyBoaXMg
+Z3Vlc3MgY29ycmVjdD8gIElzIHRoZXJlIGEgZml4IHRvIHRoaXMgDQo+IHByb2JsZW0/DQoNClRo
+aXMgZXhwbGFuYXRpb24gZG9lcyBub3Qgc2VlbSB0byBiZSBsaWtlbHksIHhlbm9tYWkgZG9lcyBu
+b3Qgc2hhZG93IHRoZSBjcHUgYWZmaW5pdHkuIFBsZWFzZSBzaG93IHVzZSB0aGUgY29kZSBvZiB0
+aGUgTUtMX2dldF9OX2NvcmVzIGZ1bmN0aW9uLCBiZWNhdXNlIHdpdGhvdXQgaXQsIGl0IGlzIGhh
+cmQgdG8gc2F5IGFueXRoaW5nLg0KDQotLSANCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBHaWxsZXMuDQo=
 
