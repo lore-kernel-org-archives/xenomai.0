@@ -1,13 +1,12 @@
-Message-ID: <50099556.50807@xenomai.org>
-Date: Fri, 20 Jul 2012 19:28:54 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <5009A292.4060508@grandegger.com>
+Date: Fri, 20 Jul 2012 20:25:22 +0200
+From: Wolfgang Grandegger <wg@grandegger.com>
 MIME-Version: 1.0
-References: <C1A3774592D24248BC23BD4FA9550B9AB1811C@VYTRONUS-SBS.vytronus.local>
-In-Reply-To: <C1A3774592D24248BC23BD4FA9550B9AB1811C@VYTRONUS-SBS.vytronus.local>
+References: <CE2E43470FE5444A811B580382FE5EDF2113D8D95A@KEMPMAIL2.woodward.com>
+In-Reply-To: <CE2E43470FE5444A811B580382FE5EDF2113D8D95A@KEMPMAIL2.woodward.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Intel MKL library fault when running as a xenomai
-	task.
+Subject: Re: [Xenomai] Xenomai installation on P1020RDB
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,30 +15,163 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Bruce Director <bruce@vytronus.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Lukasz Zemla <Lukasz.Zemla@woodward.com>
+Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-On 07/20/2012 12:36 AM, Bruce Director wrote:
-> I'm trying to get a library I wrote to run as part of a xenomai task.
-> The library  uses the Intel MKL (math kernel) library.  MKL  uses the
-> SSE instruction set.  Whenever an MKL function is called,  I get a
-> segmentation fault.  The fault always occurs in the MKL function,
-> get_N_Cores.  I created a small test program that consists of a main
-> and one function.  The function makes one MKL call.   It runs without
-> crashing as a linux program (call the function directly), and crashes
-> in get_N_cores when run as a xenomai task (function called via
-> rt_task_start).  The xenomai task is running in user space.
+Hi Lukasz,
+
+On 07/20/2012 04:31 PM, Lukasz Zemla wrote:
+> Hello,
 > 
-> Intel support said "Just my guess however, MKL_get_N_Cores function
-> tries to recognize CPU topology, but if Xenomai framework changes it
-> via shadowing some CPU parameters (for example, CPU affinity) then
-> MKL might be confused".  Is his guess correct?  Is there a fix to
-> this problem?
+> Has anyone some experience with installing Xenomai on P1020RDB board? I'd like to perform some benchmarks on this board.
+> I'm trying to install it using the latest Freescale SDK 1.2 based on Yocto. But hints for SDK 1.0.3 would be also fine. Finally every way for getting it working... ;-)
+> 
+> What I'm doing is getting Freescale kernel (3.0.34):
 
-This explanation does not seem to be likely, xenomai does not shadow the
-cpu affinity. Please show use the code of the MKL_get_N_cores function,
-because without it, it is hard to say anything.
+If you can, use a *mainline* kernel. The latest Xenomai patch is for
+Linux 3.2.21 and that version does well support the P1020RDB, IIRC.
 
--- 
-                                                                Gilles.
+>                bitbake -c unpack virtual/kernel
+> and then trying manually to run prepare-kernel.sh pointing to directory where sources where unpacked. I tried all i-pipe 3.x patches - but all of them returned error.
+> 
+> Is it true that i-pipe can be applied _only_ to the _vanilla_ kernel with version which _exactly_ matches i-pipe patch version?
+
+If you are lucky it will apply to other (rather close) versions as
+well, but it is no surprise if it fails. 
+
+> Next I tried to install Xenomai on vanilla 3.1.10 kernel. I got compilation error:
+> 
+>         arch/powerpc/sysdev/fsl_lbc.c: In function 'fsl_lbc_ctrl_irq':
+>         arch/powerpc/sysdev/fsl_lbc.c:247:3: error: 'TASK_NORMAL' undeclared (first use in this function)
+
+That has nothing to do with Xenomai. Did you try to build the vanilla
+kernel first?
+
+> I fixed it by adding '#include <linux/sched.h>' in arch/powerpc/sysdev/fsl_lbc.c file. After successful build the kernel hung just after loading DTB.
+> 
+> 
+> 
+> Filename 'p1020rdb-pc.dtb'.
+> 
+> Load address: 0xc00000
+> 
+> Loading: ###
+> 
+> done
+> 
+> Bytes transferred = 12888 (3258 hex)
+> 
+> WARNING: adjusting available memory to 30000000
+> 
+> ## Booting kernel from Legacy Image at 01000000 ...
+> 
+>    Image Name:   Linux-3.1.10
+> 
+>    Created:      2012-07-20  13:54:54 UTC
+> 
+>    Image Type:   PowerPC Linux Kernel Image (gzip compressed)
+> 
+>    Data Size:    3757211 Bytes = 3.6 MiB
+> 
+>    Load Address: 00000000
+> 
+>    Entry Point:  00000000
+> 
+>    Verifying Checksum ... OK
+> 
+> ## Loading init Ramdisk from Legacy Image at 02000000 ...
+> 
+>    Image Name:   fsl-image-minimal-ww-p1020rdb-20
+> 
+>    Created:      2012-07-18   9:30:13 UTC
+> 
+>    Image Type:   PowerPC Linux RAMDisk Image (gzip compressed)
+> 
+>    Data Size:    4596585 Bytes = 4.4 MiB
+> 
+>    Load Address: 00000000
+> 
+>    Entry Point:  00000000
+> 
+>    Verifying Checksum ... OK
+> 
+> ## Flattened Device Tree blob at 00c00000
+> 
+>    Booting using the fdt blob at 0xc00000
+> 
+>    Uncompressing Kernel Image ... OK
+> 
+>    Loading Ramdisk to 2fb9d000, end 2ffff369 ... OK
+> 
+>    Loading Device Tree to 00ff9000, end 00fff257 ... OK
+
+This is also not related to Xenomai. Did you set the console properly?
+You may be able to list the kernel log buffer after a soft-reset at
+address "grep __log_buf System.map | cut -d" " -f1" - 0xc0000000
+using the U-Boot command "md".
+
+I tested Xenomai recently on a P2020 with mainline Linux 3.2.x with the
+new iPipe-Patch and got very good latency results, especially with CPU
+isolation: 65 us without and *8* us with CPU isolation. [I'm still puzzled
+about the good results with CPU isolation. Maybe that's due to the new
+iPipe-Patch. Need to re-test when time permits). I have listed the results
+below.
+
+Hope this info is useful.
+
+Wolfgang.
+
+
+Latency-Test *without* CPU isolation:
+=====================================
+
+- After 4 hours and concurrent load generation via
+
+  # while sleep 5; do ./hackbench 50; done
+  # while true; do ./calibrator 1200 256M calib.dat; done
+
+in two separate ssh sessions I got:
+
+  RTT|  04:15:31  (periodic user-mode task, 10000 us period, priority 99)
+  RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat best|--lat worst
+  RTD|     16.360|     20.640|     29.146|       0|     0|      0.666|     65.986
+  RTD|     16.733|     21.093|     27.333|       0|     0|      0.666|     65.986
+  ...
+  ^C
+  ---|-----------|-----------|-----------|--------|------|-------------------------
+  RTS|      0.666|     14.493|     65.986|       0|     0|    04:15:43/04:15:43
+
+
+Latency-Test *with* CPU isolation:
+==================================
+
+- Boot Linux with bootargs "isolcpus=1".
+
+- Set smp_affinity for all interrupts:
+
+  # echo 1 > /proc/irq/default_smp_affinity
+  # for f in `ls /proc/irq/[0-9]*/smp_affinity`; do echo 1 > $f; done
+
+- Generate load in two separate ssh sessions:
+
+  # while sleep 5; do ./hackbench 50; done
+  # while true; do ./calibrator 1200 256M calib.dat; done
+
+- Run latency test on the second CPU:
+
+  # cat /proc/xenomai/latency
+  1986
+  # latency -p10000 -c1
+  ...
+  RTT|  04:13:46  (periodic user-mode task, 10000 us period, priority 99)
+  RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat best|--lat worst
+  RTD|      0.946|      1.546|      2.280|       0|     0|      0.466|      7.386
+  RTD|      1.013|      1.746|      3.053|       0|     0|      0.466|      7.386
+  ...
+  ^C
+  ---|-----------|-----------|-----------|--------|------|-------------------------
+  RTS|      0.466|      1.480|      7.386|       0|     0|    04:13:50/04:13:50
+
+
+
 
