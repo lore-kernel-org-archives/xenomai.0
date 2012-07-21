@@ -1,13 +1,11 @@
-Message-ID: <500B014B.6080206@xenomai.org>
-Date: Sat, 21 Jul 2012 21:21:47 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: "Jorge Ramirez Ortiz,  HCL Europe" <Jorge.Ramirez-Ortiz@hcl.com>
+Date: Sat, 21 Jul 2012 21:59:05 +0100
+Message-ID: <4F534D1A615F544D95E57BFD8460658301CBE3DF@GEO-HCLT-UKEVS1.GEO.CORP.HCL.IN>
+Content-Language: en-GB
+Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
-References: <E2AB2206BF591546A1931EA4E7A9FBC859BAFA22@Maui.in.dynetics.com>
-	<500AF14A.30703@xenomai.org>
-In-Reply-To: <500AF14A.30703@xenomai.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] RT_TASK affinity on more than 8 CPU's
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] switching domains at will
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,48 +14,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 07/21/2012 08:13 PM, Philippe Gerum wrote:
-> On 07/16/2012 10:16 PM, Wolz, Troy wrote:
->> Hello,
->>
->> I'm working on a project where I'd like to start more than 8 RT_TASKs each affined to their own CPU. From looking at the documentation, using the native API it appears to be possible to set affinity to a CPU from 0 to RTHAL_NR_CPUS-1. On my machine, RTHAL_NR_CPUS is 255, but when setting affinity above 7, overflow occurs and only the lower 8 CPU's are used.
->>
->> Looking into this, the T_CPU macro appears to only use the lower 3 bits of the value passed to it, implying that T_CPU only allows up to 8 CPU's to be used.
->   Tracing through the use of this mask, it appears that the mode mask 
-> passed into rt_task_create uses the top 8 bits of the word as the cpu 
-> mask. The bits following the top 8 are used for other flags, so there is 
-> no room to expand the cpu mask.
->>
->> I see 2 solutions to this limitation for using Xenomai and affinity on more than 8 cpus.
->> 1. Expand the 'mode' argument from a 32 bit int to a 64 bit long. With the extra bits, the top 32 bits could be used as a CPU mask, allowing for up to 32 cpu's to be masked simultaneously. This change would affect several files, but it should be backwards compatible with applications currently written using a 32 bit mode.
->>
->> 2. Pass an additional 64 bit long argument to rt_task_create that only contains the affinity mask. In this case, the mode argument would be used the same as previously, except the affinity would be ignored. This option has the disadvantage of being incompatible with existing Xenomai applications, but it is very easy to set affinity for up to 64 cpu's. We could add a preprocessor define that selects whether the existing rt_task_create method is available or whether the new method is available.
->>
->> We are willing to develop a patch that adds this functionality, but I wanted to talk it over with the group to determine if this would be accepted as a patch or if there's a better way to do it. Thanks.
->>
-> 
-> The reason not to provide for more than 8 CPUs stems from our locking 
-> model, based on a single big lock to protect the system data structures. 
-> This is a design decision to keep the real-time kernel simple and 
-> robust, at the expense of scalability limited to few CPUs.
-> Our embedded bias, and the fact that CPU proliferation is not the norm 
-> there yet, particularly for dual kernel configurations, explains this.
-> 
-> Note that this setting relates to CPUs used in real-time mode, not 
-> necessarily to the overall number of CPUs available. E.g. you may pin 
-> your tasks on 4 CPUs dedicated to real-time processing, over a 64 CPUs 
-> system.
 
-I am afraid for the system to scale poorly, only timer interrupt are
-needed: the timer interrupt handler takes the big lock whether it does
-anything else than handling the linux timer or not. So, if timer
-interrupts happen at the same time on all cpus, we are going to observe
-big latencies, without the help of real-time tasks running on more than
-one cpu.
+Is there an API to switch domains  from a user RT task and  a kernel based =
+task?
 
--- 
-                                                                Gilles.
+
+
+
+::DISCLAIMER::
+---------------------------------------------------------------------------=
+-------------------------------------------------------------------------
+
+The contents of this e-mail and any attachment(s) are confidential and inte=
+nded for the named recipient(s) only.
+E-mail transmission is not guaranteed to be secure or error-free as informa=
+tion could be intercepted, corrupted,
+lost, destroyed, arrive late or incomplete, or may contain viruses in trans=
+mission. The e mail and its contents
+(with or without referred errors) shall therefore not attach any liability =
+on the originator or HCL or its affiliates.
+Views or opinions, if any, presented in this email are solely those of the =
+author and may not necessarily reflect the
+views or opinions of HCL or its affiliates. Any form of reproduction, disse=
+mination, copying, disclosure, modification,
+distribution and / or publication of this message without the prior written=
+ consent of authorized representative of
+HCL is strictly prohibited. If you have received this email in error please=
+ delete it and notify the sender immediately.
+Before opening any email and/or attachments, please check them for viruses =
+and other defects.
+
+---------------------------------------------------------------------------=
+-------------------------------------------------------------------------
+
 
