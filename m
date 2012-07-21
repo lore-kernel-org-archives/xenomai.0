@@ -1,12 +1,12 @@
+Message-ID: <500A6516.10703@xenomai.org>
+Date: Sat, 21 Jul 2012 10:15:18 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <5009A7DA.3010101@xenomai.org>
-References: <CAKKWdtfdsiPqa_eV8fbMM9oZmNmwdvOpRs+eSXE1LPLCy0eg+Q@mail.gmail.com>
-	<5009A7DA.3010101@xenomai.org>
-Date: Sat, 21 Jul 2012 12:24:16 +0430
-Message-ID: <CAKKWdtda5A6HxCk4VVg-34z1nWKY=zWMc4XRo30RymVfaVz4qA@mail.gmail.com>
-From: ali hagigat <hagigatali@gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Subject: Re: [Xenomai] question: rescheduling a blocked task
+References: <5009DF76.5010306@nta-inc.net>
+In-Reply-To: <5009DF76.5010306@nta-inc.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Issue with Xenomai 2.6.1 / Linux 2.6.38.8 on logout
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,51 +15,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, xenomai@xenomai.org
+To: Jeff Webb <jeff.webb@nta-inc.net>
+Cc: xenomai@xenomai.org
 
-Dear Gilles,
+On 07/21/2012 12:45 AM, Jeff Webb wrote:
+> I have built and installed Xenomai 2.6.1 with a Linux 2.6.38.8 kernel on an Intel X5650 machine running Ubuntu 10.04.  It seems to boot and run fine.  If I try to log out of my GUI session, the monitors go into power save mode and never come back.  I can SSH into the machine to reboot it.  I get the following in /var/log/syslog:
+> 
+> irq 16: nobody cared (try booting with the "irqpoll" option)
+> Pid: 2694, comm: Xorg Tainted: P            2.6.38.8-xenomai-2.6.1 #1
+> Call Trace:
+>   [<ffffffff8109da26>] ? __report_bad_irq+0x26/0xa0
+>   [<ffffffff8109dc2c>] ? note_interrupt+0x18c/0x1d0
+>   [<ffffffff8109e89d>] ? handle_fasteoi_irq+0xed/0x120
+>   [<ffffffff81005bdd>] ? handle_irq+0x1d/0x30
+>   [<ffffffff81005091>] ? do_IRQ+0x61/0xf0
+>   [<ffffffff810a4790>] ? __ipipe_sync_stage+0x1f0/0x1f6
+>   [<ffffffff81005030>] ? do_IRQ+0x0/0xf0
+>   [<ffffffff810a4796>] ? __xirq_end+0x0/0xa
+>   [<ffffffff81005030>] ? do_IRQ+0x0/0xf0
+>   [<ffffffff810a4c0e>] ? __ipipe_walk_pipeline+0x10e/0x120
+>   [<ffffffff8101c587>] ? __ipipe_handle_irq+0x137/0x300
+>   [<ffffffff8109e0b0>] ? __ipipe_ack_fasteoi_irq+0x0/0x20
+>   [<ffffffff81555ad3>] ? common_interrupt+0x13/0x30
+> handlers:
+> [<ffffffff813e2990>] (usb_hcd_irq+0x0/0xb0)
+> Disabling IRQ #16
+> 
+> I have tried changing some kernel config option to no avail.  I have attached the .config that goes with the information above.  Any help in debugging would be appreciated.
 
-I have already installed Xenomai, 2.6.0 under Fedora 13 and x86 and 32
-bits system and every thing seems OK.
+fasteoi irqs have been reworked in the I-pipe core patch (for linux
+3.2). It would be nice if you could check whether 3.2 solves the issue
+you have.
 
-I believe that my questions and your answers has cleared many dark
-sides of the issue and may be useful for others too on a bet that they
-can read them some how.
-
-Before writing any real time application i needed a deep understanding
-of the whole logic and a general picture. Sorry to ask questions and
-take up your valuable time and other people, please forgive me, but
-what is recorded can be very useful for beginners.
-
-Regards
-
-On Fri, Jul 20, 2012 at 11:17 PM, Gilles Chanteperdrix
-<gilles.chanteperdrix@xenomai.org> wrote:
-> On 07/17/2012 11:26 AM, ali hagigat wrote:
->> If a real time task is blocked for some real time object, does Xenomai
->> guarantee the (re-)scheduling latency to be lower than a specific
->> number?
->
-> As we already answered, I believe, Xenomai does not guarantee anything,
-> it just provides you with the tools to measure an empiric estimate of
-> the worst case scheduling latency. And the worst case scheduling latency
-> only make sense when the woken up task is the highest priority runnable
-> task, otherwise your task may be delayed for some time by higher
-> priority tasks.
->
->> Does the task enter the Linux domain when it is blocked?
->
-> No, of course not.
->
->> or when it is blocked it may be in the blocked state for arbitrary time lengths?
->
-> That just depends on what the unblocking does.
->
-> What about what I proposed you? Installing xenomai for real and asking
-> real questions about real issues you get when porting real applications?
-> Instead of asking questions in the void which you will find stupid when
-> you have got your feet wet with xenomai?
->
-> --
->                                                                 Gilles.
+-- 
+                                                                Gilles.
 
