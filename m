@@ -1,12 +1,12 @@
-Message-ID: <500A6516.10703@xenomai.org>
-Date: Sat, 21 Jul 2012 10:15:18 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <5009DF76.5010306@nta-inc.net>
-In-Reply-To: <5009DF76.5010306@nta-inc.net>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Issue with Xenomai 2.6.1 / Linux 2.6.38.8 on logout
+In-Reply-To: <5009A63A.3090100@xenomai.org>
+References: <CAKKWdtdjPVbTmUMRgXYuH_9y0Gjrcqa-KvLQWPzo2EA+x0t13Q@mail.gmail.com>
+	<5009A63A.3090100@xenomai.org>
+Date: Sat, 21 Jul 2012 15:31:00 +0430
+Message-ID: <CAKKWdteQafmdxO0=GKnJQJog3YibNxo5_Uequ7VVL3b3cK6Scw@mail.gmail.com>
+From: ali hagigat <hagigatali@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: Re: [Xenomai] question: periodic system timer
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,38 +15,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jeff Webb <jeff.webb@nta-inc.net>
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, Xenomai@xenomai.org
 
-On 07/21/2012 12:45 AM, Jeff Webb wrote:
-> I have built and installed Xenomai 2.6.1 with a Linux 2.6.38.8 kernel on an Intel X5650 machine running Ubuntu 10.04.  It seems to boot and run fine.  If I try to log out of my GUI session, the monitors go into power save mode and never come back.  I can SSH into the machine to reboot it.  I get the following in /var/log/syslog:
-> 
-> irq 16: nobody cared (try booting with the "irqpoll" option)
-> Pid: 2694, comm: Xorg Tainted: P            2.6.38.8-xenomai-2.6.1 #1
-> Call Trace:
->   [<ffffffff8109da26>] ? __report_bad_irq+0x26/0xa0
->   [<ffffffff8109dc2c>] ? note_interrupt+0x18c/0x1d0
->   [<ffffffff8109e89d>] ? handle_fasteoi_irq+0xed/0x120
->   [<ffffffff81005bdd>] ? handle_irq+0x1d/0x30
->   [<ffffffff81005091>] ? do_IRQ+0x61/0xf0
->   [<ffffffff810a4790>] ? __ipipe_sync_stage+0x1f0/0x1f6
->   [<ffffffff81005030>] ? do_IRQ+0x0/0xf0
->   [<ffffffff810a4796>] ? __xirq_end+0x0/0xa
->   [<ffffffff81005030>] ? do_IRQ+0x0/0xf0
->   [<ffffffff810a4c0e>] ? __ipipe_walk_pipeline+0x10e/0x120
->   [<ffffffff8101c587>] ? __ipipe_handle_irq+0x137/0x300
->   [<ffffffff8109e0b0>] ? __ipipe_ack_fasteoi_irq+0x0/0x20
->   [<ffffffff81555ad3>] ? common_interrupt+0x13/0x30
-> handlers:
-> [<ffffffff813e2990>] (usb_hcd_irq+0x0/0xb0)
-> Disabling IRQ #16
-> 
-> I have tried changing some kernel config option to no avail.  I have attached the .config that goes with the information above.  Any help in debugging would be appreciated.
+1) Can i use native-skin functions and POSIX-skin functions together
+in one user space program?
 
-fasteoi irqs have been reworked in the I-pipe core patch (for linux
-3.2). It would be nice if you could check whether 3.2 solves the issue
-you have.
+2) I had a questions about skin timers and you answered it:
 
--- 
-                                                                Gilles.
+"and if a skin request periodic mode, a software
+timer is started to provide the skin timebase. So, if each skin has a
+different period, each skin will get a tick at the period it
+requested."
+
+What does it mean when you say each skin will get a tick? Getting a
+tick means that a hardware timer interrupt happens? Each skin gets a
+tick means when a function of that skin is called? So when that
+function returns it will not get that tick?
+As far as i understood the effect of these soft timers are seen for
+some functions of a skin and the effect is based on that function. Is
+a soft timer able to effect and change the next shot time of the
+underlying hardware timer?( I think the answer is yes!)
+
+On Fri, Jul 20, 2012 at 11:10 PM, Gilles Chanteperdrix
+<gilles.chanteperdrix@xenomai.org> wrote:
+> On 07/16/2012 11:41 AM, ali hagigat wrote:
+>> When the system clock is set as periodic for a skin, does this mean
+>> that the timer interrupt happens for the period and for any function
+>> of that skin? or only some functions? This interrupt rate happens
+>> after the skin API function is called?
+>> So after returning the function and before executing any other
+>> instruction, the timer mode gets back to one-shot?
+>
+> This is gibberish. Please try and read again my answer to your question
+> about skin timers, and tell us what you do not understand in that answer.
+>
+>>
+>> _______________________________________________
+>> Xenomai mailing list
+>> Xenomai@xenomai.org
+>> http://www.xenomai.org/mailman/listinfo/xenomai
+>>
+>
+>
+> --
+>                                                                 Gilles.
 
