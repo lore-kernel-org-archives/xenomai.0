@@ -1,15 +1,13 @@
-Message-ID: <500AF674.8020705@xenomai.org>
-Date: Sat, 21 Jul 2012 20:35:32 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <500B014B.6080206@xenomai.org>
+Date: Sat, 21 Jul 2012 21:21:47 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CAHpmwf8eKDCN-4mzSpsgu64H+Kez_A+NPaqDCWOD8qHnU0oTmw@mail.gmail.com>
-	<CAHpmwf_XO1G=6fMiddivbG+ud0FZqjh6_sp0V=zEv+mstOKorQ@mail.gmail.com>
-	<50085E4A.3090306@xenomai.org>
-	<CAHpmwf8_5wUQcLvv2jrU0+CK5ujjOiV4seWWOKNh1WO0ehrikg@mail.gmail.com>
-In-Reply-To: <CAHpmwf8_5wUQcLvv2jrU0+CK5ujjOiV4seWWOKNh1WO0ehrikg@mail.gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+References: <E2AB2206BF591546A1931EA4E7A9FBC859BAFA22@Maui.in.dynetics.com>
+	<500AF14A.30703@xenomai.org>
+In-Reply-To: <500AF14A.30703@xenomai.org>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] error on building xddp-echo example
+Subject: Re: [Xenomai] RT_TASK affinity on more than 8 CPU's
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,167 +16,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Danilo De Lorenzo <danilo.delorenzo@mail.polimi.it>
-Cc: Xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 07/20/2012 11:19 AM, Danilo De Lorenzo wrote:
-> Thanks! now I can build the examples successfully, but at runtime I
-> still get the error:
->
-> socket: Address family not supported by protocol
->
-> and this is the output of:
->
-> nm -s ./xddp-echo
->
+On 07/21/2012 08:13 PM, Philippe Gerum wrote:
+> On 07/16/2012 10:16 PM, Wolz, Troy wrote:
+>> Hello,
+>>
+>> I'm working on a project where I'd like to start more than 8 RT_TASKs each affined to their own CPU. From looking at the documentation, using the native API it appears to be possible to set affinity to a CPU from 0 to RTHAL_NR_CPUS-1. On my machine, RTHAL_NR_CPUS is 255, but when setting affinity above 7, overflow occurs and only the lower 8 CPU's are used.
+>>
+>> Looking into this, the T_CPU macro appears to only use the lower 3 bits of the value passed to it, implying that T_CPU only allows up to 8 CPU's to be used.
+>   Tracing through the use of this mask, it appears that the mode mask 
+> passed into rt_task_create uses the top 8 bits of the word as the cpu 
+> mask. The bits following the top 8 are used for other flags, so there is 
+> no room to expand the cpu mask.
+>>
+>> I see 2 solutions to this limitation for using Xenomai and affinity on more than 8 cpus.
+>> 1. Expand the 'mode' argument from a 32 bit int to a 64 bit long. With the extra bits, the top 32 bits could be used as a CPU mask, allowing for up to 32 cpu's to be masked simultaneously. This change would affect several files, but it should be backwards compatible with applications currently written using a 32 bit mode.
+>>
+>> 2. Pass an additional 64 bit long argument to rt_task_create that only contains the affinity mask. In this case, the mode argument would be used the same as previously, except the affinity would be ignored. This option has the disadvantage of being incompatible with existing Xenomai applications, but it is very easy to set affinity for up to 64 cpu's. We could add a preprocessor define that selects whether the existing rt_task_create method is available or whether the new method is available.
+>>
+>> We are willing to develop a patch that adds this functionality, but I wanted to talk it over with the group to determine if this would be accepted as a patch or if there's a better way to do it. Thanks.
+>>
+> 
+> The reason not to provide for more than 8 CPUs stems from our locking 
+> model, based on a single big lock to protect the system data structures. 
+> This is a design decision to keep the real-time kernel simple and 
+> robust, at the expense of scalability limited to few CPUs.
+> Our embedded bias, and the fact that CPU proliferation is not the norm 
+> there yet, particularly for dual kernel configurations, explains this.
+> 
+> Note that this setting relates to CPUs used in real-time mode, not 
+> necessarily to the overall number of CPUs available. E.g. you may pin 
+> your tasks on 4 CPUs dedicated to real-time processing, over a 64 CPUs 
+> system.
 
-You need to enable CONFIG_XENO_DRIVERS_RTIPC options in your kernel 
-configuration, specifically CONFIG_XENO_DRIVERS_RTIPC_XDDP. If you 
-enable them as modules, don't forget to load xeno_rtipc.ko.
-
-> 0000000000601e10 d _DYNAMIC
-> 0000000000601fe8 d _GLOBAL_OFFSET_TABLE_
-> 0000000000401710 R _IO_stdin_used
->                   w _Jv_RegisterClasses
-> 0000000000601df0 d __CTOR_END__
-> 0000000000601de8 d __CTOR_LIST__
-> 0000000000601e00 D __DTOR_END__
-> 0000000000601df8 d __DTOR_LIST__
-> 0000000000401a48 r __FRAME_END__
-> 00000000004018c0 r __FUNCTION__.5821
-> 0000000000601e08 d __JCR_END__
-> 0000000000601e08 d __JCR_LIST__
-> 00000000006021a0 A __bss_start
-> 0000000000602100 D __data_start
-> 00000000004016c0 t __do_global_ctors_aux
-> 0000000000400f60 t __do_global_dtors_aux
-> 0000000000602108 D __dso_handle
->                   U __errno_location@@GLIBC_2.2.5
->                   w __gmon_start__
-> 0000000000601de4 d __init_array_end
-> 0000000000601de4 d __init_array_start
-> 00000000004016b0 T __libc_csu_fini
-> 0000000000401620 T __libc_csu_init
->                   U __libc_start_main@@GLIBC_2.2.5
->                   U __stack_chk_fail@@GLIBC_2.4
->                   U __wrap_bind
->                   U __wrap_clock_nanosleep
->                   U __wrap_free
->                   U __wrap_open
->                   U __wrap_pthread_create
->                   U __wrap_read
->                   U __wrap_recvfrom
->                   U __wrap_sendto
->                   U __wrap_setsockopt
->                   U __wrap_socket
->                   U __wrap_write
-> 00000000006021a0 A _edata
-> 00000000006021c0 A _end
-> 00000000004016f8 T _fini
-> 0000000000400ce0 T _init
-> 0000000000400f10 T _start
->                   U asprintf@@GLIBC_2.2.5
-> 0000000000400f3c t call_gmon_start
-> 0000000000401399 T cleanup_upon_sig
-> 00000000006021a0 b completed.6458
-> 0000000000602100 W data_start
-> 00000000006021a8 b dtor_idx.6460
->                   U exit@@GLIBC_2.2.5
-> 0000000000400ff4 t fail
-> 0000000000400fd0 t frame_dummy
-> 00000000004013fb T main
->                   U mlockall@@GLIBC_2.2.5
-> 0000000000602120 d msg
-> 00000000006021b8 B nrt
->                   U perror@@GLIBC_2.2.5
->                   U pthread_attr_init@@GLIBC_2.2.5
->                   U pthread_attr_setdetachstate@@GLIBC_2.2.5
->                   U pthread_attr_setinheritsched@@GLIBC_2.2.5
->                   U pthread_attr_setschedparam@@GLIBC_2.2.5
->                   U pthread_attr_setschedpolicy@@GLIBC_2.2.5
->                   U pthread_cancel@@GLIBC_2.2.5
->                   U pthread_join@@GLIBC_2.2.5
->                   U pthread_sigmask@@GLIBC_2.2.5
-> 0000000000401016 T realtime_thread
-> 0000000000401295 T regular_thread
-> 00000000006021b0 B rt
->                   U rt_print_auto_init
->                   U rt_printf
->                   U sigaddset@@GLIBC_2.2.5
->                   U sigemptyset@@GLIBC_2.2.5
->                   U signal@@GLIBC_2.2.5
->                   U sigsuspend@@GLIBC_2.2.5
->
->
-> Danilo
->
-> On Thu, Jul 19, 2012 at 9:21 PM, Philippe Gerum <rpm@xenomai.org
-> <mailto:rpm@xenomai.org>> wrote:
->
->     On 07/19/2012 07:18 PM, Danilo De Lorenzo wrote:
->      > I'm getting this error when compiling the examples in the ipc folder
->      >
->      > gcc -I/usr/xenomai/include -D_GNU_SOURCE -D_REENTRANT -Wall
->      > -Werror-implicit-function-
->      > declaration -pipe -D__XENO__ -I/usr/xenomai/include/posix
->      > -Wl,@/usr/xenomai/lib/posix.wrappers -L/usr/xenomai/lib -lpthread_rt
->      > -lxenomai -lpthread -lrt   -lrtdm -Xlinker -rpath -Xlinker
->      > /usr/xenomai/lib  xddp-echo.c   -o xddp-echo
->      >
->      > /usr/bin/ld: /tmp/cc4VCXFp.o: undefined reference to symbol
->      > 'pthread_sigmask@@GLIBC_2.2.5'
->      > /usr/bin/ld: note: 'pthread_sigmask@@GLIBC_2.2.5' is defined in DSO
->      > /lib/x86_64-linux-gnu/libpthread.so.0 so try adding it to the linker
->      > command line
->      > /lib/x86_64-linux-gnu/libpthread.so.0: could not read symbols:
->     Invalid
->      > operation
->      > collect2: ld returned 1 exit status
->      > make: *** [xddp-echo] Error 1
->      >
->      > Is this a xenomai bug or glibc library bug?
->
->     Linker wants to see references first, for pulling symbols. Does this
->     help?
->
->     diff --git a/examples/rtdm/profiles/ipc/Makefile
->     b/examples/rtdm/profiles/ipc/Makefile
->     index 15da135..4ea38f0 100644
->     --- a/examples/rtdm/profiles/ipc/Makefile
->     +++ b/examples/rtdm/profiles/ipc/Makefile
->     @@ -39,6 +39,9 @@ CFLAGS=$(shell $(XENOCONFIG) --skin=posix
->     --cflags) $(MY_CFLAGS)
->
->       LDFLAGS=$(shell $(XENOCONFIG) --skin=posix --ldflags)
->     $(MY_LDFLAGS) -lrtdm
->
->     +%: %.c
->     +       $(CC) -o $@ $< $(CFLAGS) $(LDFLAGS)
->     +
->       # Add the Xenomai libdir to the runtime library search path for the
->       # binary, to make life easier for beginners if Xenomai's libs are not
->       # in any default search path.
->
->      >
->      > Thanks
->      >
->      > Danilo
->      > _______________________________________________
->      > Xenomai mailing list
->      > Xenomai@xenomai.org <mailto:Xenomai@xenomai.org>
->      > http://www.xenomai.org/mailman/listinfo/xenomai
->      >
->
->
->     --
->     Philippe.
->
->
->
-
+I am afraid for the system to scale poorly, only timer interrupt are
+needed: the timer interrupt handler takes the big lock whether it does
+anything else than handling the linux timer or not. So, if timer
+interrupts happen at the same time on all cpus, we are going to observe
+big latencies, without the help of real-time tasks running on more than
+one cpu.
 
 -- 
-Philippe.
-
-
+                                                                Gilles.
 
