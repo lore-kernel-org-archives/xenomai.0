@@ -1,13 +1,13 @@
-Message-ID: <500CF868.70208@xenomai.org>
-Date: Mon, 23 Jul 2012 09:08:24 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <500D01AE.2090801@siemens.com>
+Date: Mon, 23 Jul 2012 09:47:58 +0200
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-References: <5009DF76.5010306@nta-inc.net> <500A6516.10703@xenomai.org>
-	<bc8da858918a991cb436fa7f40576b87.squirrel@www.nta-inc.net>
-In-Reply-To: <bc8da858918a991cb436fa7f40576b87.squirrel@www.nta-inc.net>
-Content-Type: text/plain; charset=UTF-8
+References: <E2AB2206BF591546A1931EA4E7A9FBC859BAFA22@Maui.in.dynetics.com>
+	<500AF14A.30703@xenomai.org> <500B014B.6080206@xenomai.org>
+In-Reply-To: <500B014B.6080206@xenomai.org>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Issue with Xenomai 2.6.1 / Linux 2.6.38.8 on logout
+Subject: Re: [Xenomai] RT_TASK affinity on more than 8 CPU's
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,59 +16,57 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: webb-ja@nta-inc.net
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 07/23/2012 03:42 AM, webb-ja@nta-inc.net wrote:
-
->> On 07/21/2012 12:45 AM, Jeff Webb wrote:
->>> I have built and installed Xenomai 2.6.1 with a Linux 2.6.38.8 kernel on
->>> an Intel X5650 machine running Ubuntu 10.04.  It seems to boot and run
->>> fine.  If I try to log out of my GUI session, the monitors go into power
->>> save mode and never come back.  I can SSH into the machine to reboot it.
->>>  I get the following in /var/log/syslog:
+On 2012-07-21 21:21, Gilles Chanteperdrix wrote:
+> On 07/21/2012 08:13 PM, Philippe Gerum wrote:
+>> On 07/16/2012 10:16 PM, Wolz, Troy wrote:
+>>> Hello,
 >>>
->>> irq 16: nobody cared (try booting with the "irqpoll" option)
->>> Pid: 2694, comm: Xorg Tainted: P            2.6.38.8-xenomai-2.6.1 #1
->>> Call Trace:
->>>   [<ffffffff8109da26>] ? __report_bad_irq+0x26/0xa0
->>>   [<ffffffff8109dc2c>] ? note_interrupt+0x18c/0x1d0
->>>   [<ffffffff8109e89d>] ? handle_fasteoi_irq+0xed/0x120
->>>   [<ffffffff81005bdd>] ? handle_irq+0x1d/0x30
->>>   [<ffffffff81005091>] ? do_IRQ+0x61/0xf0
->>>   [<ffffffff810a4790>] ? __ipipe_sync_stage+0x1f0/0x1f6
->>>   [<ffffffff81005030>] ? do_IRQ+0x0/0xf0
->>>   [<ffffffff810a4796>] ? __xirq_end+0x0/0xa
->>>   [<ffffffff81005030>] ? do_IRQ+0x0/0xf0
->>>   [<ffffffff810a4c0e>] ? __ipipe_walk_pipeline+0x10e/0x120
->>>   [<ffffffff8101c587>] ? __ipipe_handle_irq+0x137/0x300
->>>   [<ffffffff8109e0b0>] ? __ipipe_ack_fasteoi_irq+0x0/0x20
->>>   [<ffffffff81555ad3>] ? common_interrupt+0x13/0x30
->>> handlers:
->>> [<ffffffff813e2990>] (usb_hcd_irq+0x0/0xb0)
->>> Disabling IRQ #16
+>>> I'm working on a project where I'd like to start more than 8 RT_TASKs each affined to their own CPU. From looking at the documentation, using the native API it appears to be possible to set affinity to a CPU from 0 to RTHAL_NR_CPUS-1. On my machine, RTHAL_NR_CPUS is 255, but when setting affinity above 7, overflow occurs and only the lower 8 CPU's are used.
 >>>
->>> I have tried changing some kernel config option to no avail.  I have
->>> attached the .config that goes with the information above.  Any help in
->>> debugging would be appreciated.
+>>> Looking into this, the T_CPU macro appears to only use the lower 3 bits of the value passed to it, implying that T_CPU only allows up to 8 CPU's to be used.
+>>   Tracing through the use of this mask, it appears that the mode mask 
+>> passed into rt_task_create uses the top 8 bits of the word as the cpu 
+>> mask. The bits following the top 8 are used for other flags, so there is 
+>> no room to expand the cpu mask.
+>>>
+>>> I see 2 solutions to this limitation for using Xenomai and affinity on more than 8 cpus.
+>>> 1. Expand the 'mode' argument from a 32 bit int to a 64 bit long. With the extra bits, the top 32 bits could be used as a CPU mask, allowing for up to 32 cpu's to be masked simultaneously. This change would affect several files, but it should be backwards compatible with applications currently written using a 32 bit mode.
+>>>
+>>> 2. Pass an additional 64 bit long argument to rt_task_create that only contains the affinity mask. In this case, the mode argument would be used the same as previously, except the affinity would be ignored. This option has the disadvantage of being incompatible with existing Xenomai applications, but it is very easy to set affinity for up to 64 cpu's. We could add a preprocessor define that selects whether the existing rt_task_create method is available or whether the new method is available.
+>>>
+>>> We are willing to develop a patch that adds this functionality, but I wanted to talk it over with the group to determine if this would be accepted as a patch or if there's a better way to do it. Thanks.
+>>>
 >>
->> fasteoi irqs have been reworked in the I-pipe core patch (for linux
->> 3.2). It would be nice if you could check whether 3.2 solves the issue
->> you have.
+>> The reason not to provide for more than 8 CPUs stems from our locking 
+>> model, based on a single big lock to protect the system data structures. 
+>> This is a design decision to keep the real-time kernel simple and 
+>> robust, at the expense of scalability limited to few CPUs.
+>> Our embedded bias, and the fact that CPU proliferation is not the norm 
+>> there yet, particularly for dual kernel configurations, explains this.
+>>
+>> Note that this setting relates to CPUs used in real-time mode, not 
+>> necessarily to the overall number of CPUs available. E.g. you may pin 
+>> your tasks on 4 CPUs dedicated to real-time processing, over a 64 CPUs 
+>> system.
 > 
-> I did try using linux 3.2.21 (?) with the I-pipe core patch, but the
-> system locks up shortly after the login prompt appears.  I didn't have an
-> easy way to post the stack trace, so I haven't reported that issue yet.  I
-> was going to look through the mailing list archives to see how you
-> recommend collecting useful information to report in this situation, but I
-> haven't had a chance to do that yet.  What's the next step in debugging
-> the problem?
+> I am afraid for the system to scale poorly, only timer interrupt are
+> needed: the timer interrupt handler takes the big lock whether it does
+> anything else than handling the linux timer or not. So, if timer
+> interrupts happen at the same time on all cpus, we are going to observe
+> big latencies, without the help of real-time tasks running on more than
+> one cpu.
 
+We have xeno_hal.supported_cpus to address this issue.
 
-If there is a stack trace, it is the best lead. In order to collect it,
-you need another computer, and either use the serial console or
-netconsole. In the past, we have already received photos of a stack trace.
+We are running Xenomai on boxes >= 8 cores for quite a while. RT load is
+mostly confined to a single core then.
+
+Jan
 
 -- 
-                                                                Gilles.
+Siemens AG, Corporate Technology, CT RTC ITP SDP-DE
+Corporate Competence Center Embedded Linux
 
