@@ -1,17 +1,14 @@
-Message-ID: <500D318D.5000307@xenomai.org>
-Date: Mon, 23 Jul 2012 13:12:13 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <500D3D2D.2010107@grandegger.com>
+Date: Mon, 23 Jul 2012 14:01:49 +0200
+From: Wolfgang Grandegger <wg@grandegger.com>
 MIME-Version: 1.0
-References: <E2AB2206BF591546A1931EA4E7A9FBC859BAFA22@Maui.in.dynetics.com>
-	<500AF14A.30703@xenomai.org> <500B014B.6080206@xenomai.org>
-	<500D01AE.2090801@siemens.com> <500D0666.2000700@xenomai.org>
-	<500D0E10.1040707@xenomai.org> <500D11DE.5010203@xenomai.org>
-	<500D211C.4000808@xenomai.org> <500D2A69.5030505@xenomai.org>
-	<500D2E14.5000905@xenomai.org>
-In-Reply-To: <500D2E14.5000905@xenomai.org>
-Content-Type: text/plain; charset=UTF-8
+References: <CE2E43470FE5444A811B580382FE5EDF2113D8D95A@KEMPMAIL2.woodward.com>
+	<5009A292.4060508@grandegger.com>
+	<20120723084817.GA30335@localhost.localdomain>
+In-Reply-To: <20120723084817.GA30335@localhost.localdomain>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] RT_TASK affinity on more than 8 CPU's
+Subject: Re: [Xenomai] Xenomai installation on P1020RDB
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,36 +17,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Richard Cochran <richardcochran@gmail.com>
+Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-On 07/23/2012 12:57 PM, Philippe Gerum wrote:
-
->> There is a possible fix without breaking the interface, but we still get
->> the silly common frequency requirement.
+On 07/23/2012 10:48 AM, Richard Cochran wrote:
+> On Fri, Jul 20, 2012 at 08:25:22PM +0200, Wolfgang Grandegger wrote:
 >>
+>> I tested Xenomai recently on a P2020 with mainline Linux 3.2.x with the
+>> new iPipe-Patch and got very good latency results, especially with CPU
+>> isolation: 65 us without and *8* us with CPU isolation. [I'm still puzzled
+>> about the good results with CPU isolation. Maybe that's due to the new
+>> iPipe-Patch. Need to re-test when time permits). I have listed the results
+>> below.
 > 
-> 3.x, really. Let's break it.
+> Almost a year ago, around Linux 2.6.38 or so, I measured 13 us maximum
+> latency on the P2020 RBD when using CPU isolation.
 
+OK. Tests with FSL 2.6.35 on a P1025 showed latencies up to 40 us with
+CPU isolation (an 65 us without). Similar results I measured with an ARM
+i.MX6Q board.
 
-Ok. Will work on that. We do not really need asm/arith.h to implement
-ipipe_timer_set the way you see it, if we restrict to 32 bits delays (as
-we currently do in Xenomai), and this can be written without support
-from arch-dep code.
+Wolfgang.
 
-
-> 
->> I am also working on the core-3.4 branch right now.
->>
-> 
-> Do you have fixes to the generic core pending? If so, I'd like to merge 
-> them, so that I can eventually send out an updated patch to the blackfin 
-> folks.
-
-
-I have modified a bit the genpatches.sh script, but I do not think this
-goes outside the I-pipe git.
-
--- 
-                                                                Gilles.
 
