@@ -1,13 +1,14 @@
-Message-ID: <50057E9C.8080508@siemens.com>
-Date: Tue, 17 Jul 2012 17:02:52 +0200
-From: Jan Kiszka <jan.kiszka@siemens.com>
+From: Michael Lausch <michael.lausch@omicron.at>
+Date: Mon, 23 Jul 2012 12:28:42 +0200
+Message-ID: <6B3AC2788014DD49B43AF9611365BBAA21B0B954F3@mary.at.omicron.at>
+References: <6B3AC2788014DD49B43AF9611365BBAA21B0B94DE9@mary.at.omicron.at>
+	<5009902B.7070705@xenomai.org>
+In-Reply-To: <5009902B.7070705@xenomai.org>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <4F534D1A615F544D95E57BFD8460658301CBE3D1@GEO-HCLT-UKEVS1.GEO.CORP.HCL.IN>
-	<50057E14.3080904@grandegger.com>
-In-Reply-To: <50057E14.3080904@grandegger.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Edge interrupts on PCI drivers
+Subject: Re: [Xenomai] xenomai 2.6.1 on ixp4xx hangs on boot
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,23 +17,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Wolfgang Grandegger <wg@grandegger.com>, "Jorge Ramirez Ortiz, HCL Europe" <Jorge.Ramirez-Ortiz@hcl.com>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 2012-07-17 17:00, Wolfgang Grandegger wrote:
-> On 07/17/2012 04:57 PM, Jorge Ramirez Ortiz, HCL Europe wrote:
->> Typical PCI devices have many sources of interrupts (some level, some edge triggered) normally all routed through PIN A.
-> 
-> AFAIC, PCI interrupts are *always* level sensitive.
-
-More precisely, legacy INTx are level triggered, MSI/MSI-X interrupts
-are edge. About which type are we talking here?
-
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RTC ITP SDP-DE
-Corporate Competence Center Embedded Linux
-
-
+SGksDQpZZXAgdGhpcyBmaXhlcyB0aGUgYm9vdCBlcnJvci4NCg0KLS0tLS1PcmlnaW5hbCBNZXNz
+YWdlLS0tLS0NCkZyb206IEdpbGxlcyBDaGFudGVwZXJkcml4IFttYWlsdG86Z2lsbGVzLmNoYW50
+ZXBlcmRyaXhAeGVub21haS5vcmddIA0KU2VudDogRnJpZGF5LCBKdWx5IDIwLCAyMDEyIDc6MDcg
+UE0NClRvOiBNaWNoYWVsIExhdXNjaA0KQ2M6IHhlbm9tYWlAeGVub21haS5vcmcNClN1YmplY3Q6
+IFJlOiBbWGVub21haV0geGVub21haSAyLjYuMSBvbiBpeHA0eHggaGFuZ3Mgb24gYm9vdA0KDQpP
+biAwNy8xOS8yMDEyIDAxOjI3IFBNLCBNaWNoYWVsIExhdXNjaCB3cm90ZToNCj4gSGksDQo+IEkn
+bSB0cnlpbmcgdG8gZ2V0IHhlbm9tYWktMi42LjEgcnVubmluZyBvbiBhbiBpeHA0eHggYm9hcmQN
+Cj4gd2l0aCBrZXJuZWwgMy4yLjIxLg0KPiANCj4gVGhlIGtlcm5lbCBib290cyB3aXRoIFhlbm9t
+YWkgYW5kIElQSVBFIGRpc2FibGVkIGluIHRoZSBrZXJuZWwgY29uZmlndXJhdGlvbi4NCj4gDQo+
+IFRoZSBrZXJuZWwgYWxzbyBib290cyB3aXRoIFhlbm1haSBkaXNhYmxlZCBhbmQgSVBJUEUgZW5h
+YmxlZC4NCj4gDQo+IEJ1dCB0aGUga2VybmVsIGRvZXMgbm90IGJvb3QgY29ycmVjdGx5IHdpdGgg
+Ym90aCwgWGVub21haSBhbmQgSVBJUEUgZW5hYmxlZC4NCj4gDQo+IFVzaW5nIGEgSlRBRyBkZWJ1
+Z2dlciBpIGZvdW5kIHRoYXQgdGhlIGtlcm5lbCBhbHdheXMgaGl0cyBhIGJyZWFrcG9pbnQNCj4g
+T24geG5pbnRyX2Nsb2NrX2hhbmRsZXIoKSB3aXRoIHRoaXMgYmFja3RyYWNlOg0KPiANCj4gICMx
+ICAweGMwMDUxNmI4IGluIF9faXBpcGVfZGlzcGF0Y2hfaXJxX2Zhc3QgKGlycT01KSBhdCBrZXJu
+ZWwvaXBpcGUvY29yZS5jOjEyNzINCj4gIzIgIDB4YzAwMDgzYjAgaW4gX19pcGlwZV9ncmFiX2ly
+cSAoaXJxPTxvcHRpbWl6ZWQgb3V0PiwgcmVncz0weGMzODFmZjMwKSBhdCBhcmNoL2FybS9rZXJu
+ZWwvaXBpcGUuYzo0NTgNCj4gIzMgIDB4YzAwMDhkYjAgaW4gX19pcnFfc3ZjICgpIGF0IGFyY2gv
+YXJtL2tlcm5lbC9lbnRyeS1hcm12LlM6MjE2DQo+IA0KPiBUaGUgbGFzdCBsaW5lIGlzIHJlcGVh
+dGVkIHZlcnkgb2Z0ZW4sIGJ1dCBpIHRoaW5rIHRoaXMgaXMganVzdCBhIGdkYiBhcnRlZmFjdC4N
+Cj4gVGhlIGtlcm5lbCBzZWVtcyB0byBsb29wIGluIF9faXJxX3N2Yy0+X19pcGlwZV9ncmFiX2ly
+cS0+X19pcnFfc3ZjLg0KPiBNYXliZSB0aGUgdGltZXIgaW50ZXJydXB0IGlzIG5vdCBjbGVhcmVk
+IGFuZCB0aGVyZWZvcmUgZXhlY3V0ZWQgYXMgc29vbiBhcyB0aGUNCj4gSVJRIHNlcnZpY2UgZnVu
+Y3Rpb24gZmluaXNoZXM/DQoNClBsZWFzZSB0cnkgdGhlIGZvbGxvd2luZyBwYXRjaDoNCg0KZGlm
+ZiAtLWdpdCBhL2FyY2gvYXJtL21hY2gtaXhwNHh4L2NvbW1vbi5jIGIvYXJjaC9hcm0vbWFjaC1p
+eHA0eHgvY29tbW9uLmMNCmluZGV4IGY0Yjg3OGUuLmNhZmE5ZmEgMTAwNjQ0DQotLS0gYS9hcmNo
+L2FybS9tYWNoLWl4cDR4eC9jb21tb24uYw0KKysrIGIvYXJjaC9hcm0vbWFjaC1peHA0eHgvY29t
+bW9uLmMNCkBAIC01OTMsNiArNTkzLDcgQEAgc3RhdGljIHZvaWQgaXhwNHh4X3NldF9tb2RlKGVu
+dW0gY2xvY2tfZXZlbnRfbW9kZSBtb2RlLA0KIHN0YXRpYyBzdHJ1Y3QgaXBpcGVfdGltZXIgaXhw
+NHh4X2l0aW1lciA9IHsNCiAgICAgICAgLmlycSA9IElSUV9JWFA0WFhfVElNRVIxLA0KICAgICAg
+ICAubWluX2RlbGF5X3RpY2tzID0gMzMzLCAvKiA1IHVzZWMgd2l0aCB0aGUgNjYuNjYgTUh6IHN5
+c3RlbSBjbG9jayAqLw0KKyAgICAgICAuYWNrID0gaXhwNHh4X3RpbWVyX2FjaywNCiB9Ow0KICNl
+bmRpZiAvKiBDT05GSUdfSVBJUEUgKi8NCg0KDQoNCi0tIA0KICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIEdpbGxlcy4NCg==
 
