@@ -1,11 +1,12 @@
-From: "Jorge Ramirez Ortiz,  HCL Europe" <Jorge.Ramirez-Ortiz@hcl.com>
-Date: Tue, 24 Jul 2012 20:48:32 +0100
-Message-ID: <4F534D1A615F544D95E57BFD8460658301CBE3E3@GEO-HCLT-UKEVS1.GEO.CORP.HCL.IN>
-Content-Language: en-GB
-Content-Type: text/plain; charset="us-ascii"
+Message-ID: <500F0137.2020202@xenomai.org>
+Date: Tue, 24 Jul 2012 22:10:31 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] accessing process' virtual memory areas from driver
+References: <500808DC.1050800@barrett.com> <50080CB0.8030400@siemens.com>
+In-Reply-To: <50080CB0.8030400@siemens.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Xenomai 2.6.1 x86 Boot Hanging
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,44 +15,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Kyle Maroney <km@barrett.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On a Xenomai multi-threaded application,  I need to access the process list=
- of virtual memory areas in an rtdm driver. =
+On 07/19/2012 03:33 PM, Jan Kiszka wrote:
 
-Since this region is protected by mmap_sem, I am unsure how to perform the =
-access. =
+> On 2012-07-19 15:17, Kyle Maroney wrote:
+>> Congratulations on the recent release of Xenomai 2.6.1. We are excited
+>> about the recent move to the ipipe core series and 3.x kernel patches
+>> becoming available for the x86 architecture.
+>>
+>> I have been able to successfully patch the vanilla kernel (3.2.19) with
+>> a slightly modified ipipe-core-3.2.21-x86-1 patch, and tested that
+>> working with a generic configuration. I also successfully patched
+>> vanilla + ubuntu diff + adeos, and tested this working as well.
+>>
+>> My problem is when I apply the xenomai configuration options after
+>> running the prepare kernel script.  The kernel compiles successfully
+>> with no problems, however upon reboot I am met with the boot hanging at
+>> the purple boot screen of Ubuntu (no images).
+>>
+>> I have experimented with many config options for the past few days, and
+>> come to you for guidance. Please find attached my .config file.
+>>
+> 
+> There are obviously several issues remaining in the new x86 3.2 patch. I
+> just recently ran into some of them as well while updating RTnet.
 
-Any guidance will be appreciated.
-thanks
-Jorge =
 
+Any chance for a patch? I am currently running 3.4 on x86, so, it would
+be nice to merge any fix you made.
 
-
-::DISCLAIMER::
----------------------------------------------------------------------------=
--------------------------------------------------------------------------
-
-The contents of this e-mail and any attachment(s) are confidential and inte=
-nded for the named recipient(s) only.
-E-mail transmission is not guaranteed to be secure or error-free as informa=
-tion could be intercepted, corrupted,
-lost, destroyed, arrive late or incomplete, or may contain viruses in trans=
-mission. The e mail and its contents
-(with or without referred errors) shall therefore not attach any liability =
-on the originator or HCL or its affiliates.
-Views or opinions, if any, presented in this email are solely those of the =
-author and may not necessarily reflect the
-views or opinions of HCL or its affiliates. Any form of reproduction, disse=
-mination, copying, disclosure, modification,
-distribution and / or publication of this message without the prior written=
- consent of authorized representative of
-HCL is strictly prohibited. If you have received this email in error please=
- delete it and notify the sender immediately.
-Before opening any email and/or attachments, please check them for viruses =
-and other defects.
-
----------------------------------------------------------------------------=
--------------------------------------------------------------------------
-
+-- 
+                                                                Gilles.
 
