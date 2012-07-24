@@ -1,14 +1,17 @@
-Message-ID: <500DA033.9090901@xenomai.org>
-Date: Mon, 23 Jul 2012 21:04:19 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+From: Bruce Director <bruce@vytronus.com>
+Date: Tue, 24 Jul 2012 00:10:30 +0000
+Message-ID: <C1A3774592D24248BC23BD4FA9550B9AB1848E@VYTRONUS-SBS.vytronus.local>
+References: <C1A3774592D24248BC23BD4FA9550B9AB1811C@VYTRONUS-SBS.vytronus.local>
+	<50099556.50807@xenomai.org>
+	<C1A3774592D24248BC23BD4FA9550B9AB181FA@VYTRONUS-SBS.vytronus.local>
+	<5009A598.3090706@xenomai.org>
+In-Reply-To: <5009A598.3090706@xenomai.org>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <5009DF76.5010306@nta-inc.net> <500A6516.10703@xenomai.org>
-	<bc8da858918a991cb436fa7f40576b87.squirrel@www.nta-inc.net>
-	<500CF868.70208@xenomai.org> <500D86BC.3050507@nta-inc.net>
-In-Reply-To: <500D86BC.3050507@nta-inc.net>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Lockup with Xenomai 2.6.1 / Linux 3.2.21 after bootup
+Subject: Re: [Xenomai] Intel MKL library fault when running as a xenomai
+ task.
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,62 +20,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jeff Webb <jeff.webb@nta-inc.net>
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 07/23/2012 07:15 PM, Jeff Webb wrote:
-> On 07/23/2012 02:08 AM, Gilles Chanteperdrix wrote:
->>>> fasteoi irqs have been reworked in the I-pipe core patch (for linux
->>>> 3.2). It would be nice if you could check whether 3.2 solves the issue
->>>> you have.
->>>
->>> I did try using linux 3.2.21 (?) with the I-pipe core patch, but the
->>> system locks up shortly after the login prompt appears.  I didn't
->>> have an
->>> easy way to post the stack trace, so I haven't reported that issue
->>> yet.  I
->>> was going to look through the mailing list archives to see how you
->>> recommend collecting useful information to report in this situation,
->>> but I
->>> haven't had a chance to do that yet.  What's the next step in debugging
->>> the problem?
->>
->>
->> If there is a stack trace, it is the best lead. In order to collect it,
->> you need another computer, and either use the serial console or
->> netconsole. In the past, we have already received photos of a stack
->> trace.
->>
->
-> I changed the subject line to something more appropriate to avoid
-> confusion, since we're talking about the 3.x series now.  Thanks for the
-> advice -- I was able to get a stack trace using the serial console.  It
-> seems like moving the mouse may have triggered the lockup.  Here is the
-> stack trace:
->
-
-Actually, the pipeline reports the same issue than the regular irq 
-subsystem did earlier, in its own way though, via a BUG() assertion. We 
-have a seemingly unassigned vector triggering an IRQ. Weird.
-
-> ------------[ cut here ]------------
-> kernel BUG at arch/x86/kernel/ipipe.c:592!
-
-...
-
-> do_IRQ: 30 callbacks suppressed
-> do_IRQ: 0.153 No irq handler for vector (irq -1)
->
->
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> http://www.xenomai.org/mailman/listinfo/xenomai
->
-
-
--- 
-Philippe.
-
-
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogR2lsbGVzIENoYW50ZXBl
+cmRyaXggW21haWx0bzpnaWxsZXMuY2hhbnRlcGVyZHJpeEB4ZW5vbWFpLm9yZ10NCj4gU2VudDog
+RnJpZGF5LCBKdWx5IDIwLCAyMDEyIDExOjM4IEFNDQo+IFRvOiBCcnVjZSBEaXJlY3Rvcg0KPiBD
+YzogeGVub21haUB4ZW5vbWFpLm9yZw0KPiBTdWJqZWN0OiBSZTogW1hlbm9tYWldIEludGVsIE1L
+TCBsaWJyYXJ5IGZhdWx0IHdoZW4gcnVubmluZyBhcyBhIHhlbm9tYWkNCj4gdGFzay4NCj4gDQo+
+IE9uIDA3LzIwLzIwMTIgMDg6MzEgUE0sIEJydWNlIERpcmVjdG9yIHdyb3RlOg0KPiA+IFNvcnJ5
+LCAgSSBkb24ndCBoYXZlIHRoZSBjb2RlLiAgIEludGVsIGRvZXNuJ3Qgc3VwcGx5IHNvdXJjZSBj
+b2RlIGZvcg0KPiA+IHRoaXMgbGlicmFyeS4gIFRoZSByZWFzb24gSSBrbm93IHRoZSBzZWdtZW50
+YXRpb24gIGZhdWx0IG9jY3VycyBpbg0KPiA+IGdldF9OX2NvcmVzIGlzIHRoYXQgdGhlIGRlYnVn
+Z2VyIGdpdmVzIG1lIGEgc3RhY2sgdHJhY2UuICBJZiB5b3UgY291bGQNCj4gPiB0ZWxsIG1lIHdo
+aWNoIENQVSBwYXJhbWV0ZXJzIHhlbm9tYWkgZG9lcyBjaGFuZ2UsIEkgY291bGQgcGFzcyB0aGF0
+DQo+ID4gaW5mbyB0byBJbnRlbCBhbmQgc2VlIHdoYXQgdGhleSBzYXkuDQo+IA0KPiBYZW5vbWFp
+IGRvZXMgbm90IGNoYW5nZSBhbnl0aGluZywgbm90IHRoYXQgSSBrbm93IG9mLiBCdXQgdGhlcmUg
+YXJlIGEgbG90IG9mDQo+IHBvc3NpYmxlIGlzc3Vlcy4NCj4gDQo+IEZpcnN0IGlzc3VlIHRvIGNo
+ZWNrIGlzIHRvIHNlZSBpZiB0aGUgc2VnbWVudGF0aW9uIGZhdWx0IGlzIGR1ZSB0byBhIHN0YWNr
+DQo+IG92ZXJmbG93LiBJbiB3aGljaCBjYXNlIHRoZSBzdGFjayBvZiB0aGUgdGhyZWFkIGNhbGxp
+bmcgdGhhdCBmdW5jdGlvbiBpcyB0b28NCj4gc21hbGwgZm9yIHRoYXQgZnVuY3Rpb24sIHNpbXBs
+eSBpbmNyZWFzZSB0aGUgdGhyZWFkIHN0YWNrIHNpemUuIFlvdSBjYW4gYWxzbw0KPiBjaGVjayB0
+aGUgZGlzYXNzZW1ibHkgb2YgdGhlIGZhdWx0aW5nIGZ1bmN0aW9uIHRvIHNlZSBob3cgbXVjaCBy
+b29tIGl0DQo+IGFsbG9jYXRlcyBvbiBzdGFjay4NCj4gDQo+IEFub3RoZXIgcmVhc29uIGZvciBz
+dGFjayBvdmVyZmxvdyBjb3VsZCBiZSBsaW5raW5nIHdpdGggdGhlIGxpYmMgaW4gaXRzIHN0YXRp
+Yw0KPiB2ZXJzaW9uIChsaWJjLmEpLCB1c2luZyB4ZW5vbWFpIHBvc2l4IHNraW4sIGFuZCBub3Qg
+bGlua2luZyB3aXRoIHRoZSB3cmFwLQ0KPiBsaW5rLnNoIHNjcmlwdC4NCj4gDQo+IFBsZWFzZSBu
+byB0b3AtcG9zdGluZy4NCj4gDQo+IC0tDQo+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBHaWxsZXMuDQoNCkluY3JlYXNpbmcg
+dGhlIHN0YWNrIHNpemUgZml4ZWQgdGhlIHByb2JsZW0uICAgcnRfdGFza19jcmVhdGUoKSB3YXMg
+Y2FsbGVkIHdpdGggMCBhcyB0aGUgc3RhY2sgc2l6ZS4gIEkgaW5jcmVhc2VkIGl0IHRvIDFNQi4N
+Cg0KVGhhbmsgeW91IGZvciB0aGUgaGVscCwNCg0KQnJ1Y2UNCg==
 
