@@ -1,5 +1,5 @@
-Message-ID: <500F0669.8030801@xenomai.org>
-Date: Tue, 24 Jul 2012 22:32:41 +0200
+Message-ID: <500F0BC1.1030002@xenomai.org>
+Date: Tue, 24 Jul 2012 22:55:29 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <500808DC.1050800@barrett.com> <50080CB0.8030400@siemens.com>
@@ -53,9 +53,14 @@ On 07/24/2012 10:31 PM, Kyle Maroney wrote:
 > patches.
 
 
->From the .config you sent, there are two options obviously wrong:
-you have CONFIG_KGDB_enabled, and CONFIG_ACPI disabled.
+For the screen not to remain black, remove the "quiet" on the kernel
+command line in the bootloader configuration.
 
+You can try earlyprintk, if the failure happens early.
+
+Also, in the kernel, try disabling any feature you do not use, such as
+profiling, tracing, kgdb, perf system, syscall auditing, as much as
+possible.
 
 -- 
                                                                 Gilles.
