@@ -1,14 +1,9 @@
-Message-ID: <500E4603.2000002@xenomai.org>
-Date: Tue, 24 Jul 2012 08:51:47 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <6B3AC2788014DD49B43AF9611365BBAA21B0B94DE9@mary.at.omicron.at>	<5009902B.7070705@xenomai.org>	<6B3AC2788014DD49B43AF9611365BBAA21B0B954F3@mary.at.omicron.at>	<500D298C.6080601@xenomai.org>
-	<6B3AC2788014DD49B43AF9611365BBAA21B0B9550A@mary.at.omicron.at>
-	<6B3AC2788014DD49B43AF9611365BBAA21B0B95718@mary.at.omicron.at>
-In-Reply-To: <6B3AC2788014DD49B43AF9611365BBAA21B0B95718@mary.at.omicron.at>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] xenomai 2.6.1 on ixp4xx hangs on boot
+Date: Tue, 24 Jul 2012 16:16:34 +0300
+Message-ID: <CADFJ0SqtXayf5pBXPc_DDakb84FPus94AHFRZ9rVdOg+HrpwSA@mail.gmail.com>
+From: Eralp Bayraktar <bayraktar.eralp@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: [Xenomai] Running Xenomai on Intel Atom z510p
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,24 +12,51 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Michael Lausch <michael.lausch@omicron.at>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 07/24/2012 08:49 AM, Michael Lausch wrote:
+I have an embedded system which's root is on my machine as nfs directory. I
+couldn't do a cross-compile so to eliminate problems I am compiling my
+kernel and xenomai on the embedded Atom machine.
 
-> Hi,
-> I've some patches lying around against linux 3.0.x and xenomai 2.6 which compile and 
-> the "No kuser TSC emulation" (sp?)  message when starting a xenomai application is not printed any more.
-> I will merge them with the ipipe patch mentioned  in your post. (have i mentioned, i don't like outlook?). 
-> 
-> Can you point me to an acid test which i can use to verify if kuser TSC emulation is working correctly?
+Here is my kernel configuration http://pastebin.com/w9uRyUPm
 
+I am using xenomai 2.6.0, and the machine boots properly. After booting I
+went to xenomai directory and runned ./configure and *make install,* after
+that I also had to run the command *mknod -m 666 /dev/rtheap c 10 254.*
 
-The "tsc" test in xenomai regression testsuite. Run it with "-w" and it
-will try and read the tsc for as long as it takes for the hardware
-counter to wrap.
+Here is the output of *dmesg | grep -i I-pipe
+*
+I-pipe 2.8-04: pipeline enabled.
+I-pipe: Domain Xenomai registered.
 
+And here is the output of *dmesg | grep -i Xenomai*
 
--- 
-                                                                Gilles.
+Xenomai: hal/i386 started.
+Xenomai: scheduling class idle registered.
+Xenomai: scheduling class rt registered.
+Xenomai: real-time nucleus v2.6.0 (Movin' On) loaded.
+Xenomai: debug mode enabled.
+Xenomai: starting native API services.
+Xenomai: starting POSIX services.
+Xenomai: starting RTDM services.
 
+But when I try to run sigdebug or trivialperiodic computer hangs and I need
+to restart it. Cursor goes one line below and blinks there, accepting no
+input.
+
+I am able to compile and run this
+
+*#include  <rtdk.h>
+int main(int argc, char* argv[])
+{
+  rt_print_auto_init(1);
+  rt_printf("start task\n");
+}*
+
+This prints start task and exits, I am not sure if this gives any insight
+about xenomai though.
+
+When I try to run xeno-test, it again hangs like this
+http://imageshack.us/photo/my-images/840/img0011uk.jpg/
+
+What should I do to prevent that hanging?
