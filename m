@@ -1,17 +1,11 @@
-Message-ID: <500EBD59.6090400@xenomai.org>
-Date: Tue, 24 Jul 2012 17:20:57 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: "Jorge Ramirez Ortiz,  HCL Europe" <Jorge.Ramirez-Ortiz@hcl.com>
+Date: Tue, 24 Jul 2012 20:48:32 +0100
+Message-ID: <4F534D1A615F544D95E57BFD8460658301CBE3E3@GEO-HCLT-UKEVS1.GEO.CORP.HCL.IN>
+Content-Language: en-GB
+Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
-References: <E2AB2206BF591546A1931EA4E7A9FBC859BAFA22@Maui.in.dynetics.com>	<500AF14A.30703@xenomai.org>
-	<500B014B.6080206@xenomai.org>	<500D01AE.2090801@siemens.com>
-	<500D0666.2000700@xenomai.org>	<500D0E10.1040707@xenomai.org>
-	<500D11DE.5010203@xenomai.org>	<500D211C.4000808@xenomai.org>
-	<500D2A69.5030505@xenomai.org>	<500D2E14.5000905@xenomai.org>
-	<500EBD23.4060902@xenomai.org>
-In-Reply-To: <500EBD23.4060902@xenomai.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] RT_TASK affinity on more than 8 CPU's
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] accessing process' virtual memory areas from driver
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,23 +14,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 07/24/2012 05:20 PM, Gilles Chanteperdrix wrote:
+On a Xenomai multi-threaded application,  I need to access the process list=
+ of virtual memory areas in an rtdm driver. =
 
-> On 07/23/2012 12:57 PM, Philippe Gerum wrote:
-> 
->> Do you have fixes to the generic core pending? If so, I'd like to merge 
->> them, so that I can eventually send out an updated patch to the blackfin 
->> folks.
-> 
-> 
-> I just pushed my branch (for-core-3.4 in the usual repository), I made 
+Since this region is protected by mmap_sem, I am unsure how to perform the =
+access. =
+
+Any guidance will be appreciated.
+thanks
+Jorge =
 
 
-It includes the work for the ARM architecture, but not yet x86
 
--- 
-                                                                Gilles.
+::DISCLAIMER::
+---------------------------------------------------------------------------=
+-------------------------------------------------------------------------
+
+The contents of this e-mail and any attachment(s) are confidential and inte=
+nded for the named recipient(s) only.
+E-mail transmission is not guaranteed to be secure or error-free as informa=
+tion could be intercepted, corrupted,
+lost, destroyed, arrive late or incomplete, or may contain viruses in trans=
+mission. The e mail and its contents
+(with or without referred errors) shall therefore not attach any liability =
+on the originator or HCL or its affiliates.
+Views or opinions, if any, presented in this email are solely those of the =
+author and may not necessarily reflect the
+views or opinions of HCL or its affiliates. Any form of reproduction, disse=
+mination, copying, disclosure, modification,
+distribution and / or publication of this message without the prior written=
+ consent of authorized representative of
+HCL is strictly prohibited. If you have received this email in error please=
+ delete it and notify the sender immediately.
+Before opening any email and/or attachments, please check them for viruses =
+and other defects.
+
+---------------------------------------------------------------------------=
+-------------------------------------------------------------------------
+
 
