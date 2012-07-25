@@ -1,13 +1,16 @@
-Message-ID: <50104878.8030300@grandegger.com>
-Date: Wed, 25 Jul 2012 21:26:48 +0200
-From: Wolfgang Grandegger <wg@grandegger.com>
-MIME-Version: 1.0
+From: Lukasz Zemla <Lukasz.Zemla@woodward.com>
+Date: Wed, 25 Jul 2012 22:15:11 +0200
+Message-ID: <CE2E43470FE5444A811B580382FE5EDF2113EA8E07@KEMPMAIL2.woodward.com>
 References: <CE2E43470FE5444A811B580382FE5EDF2113D8D95A@KEMPMAIL2.woodward.com>
 	<5009A292.4060508@grandegger.com>
 	<CE2E43470FE5444A811B580382FE5EDF2113EA8DE7@KEMPMAIL2.woodward.com>
-In-Reply-To: <CE2E43470FE5444A811B580382FE5EDF2113EA8DE7@KEMPMAIL2.woodward.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+	<501028DC.8000803@xenomai.org> <50102E8D.1040004@xenomai.org>
+In-Reply-To: <50102E8D.1040004@xenomai.org>
+Content-Language: en-US
+Content-Type: text/plain;
+  charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
 Subject: Re: [Xenomai] Xenomai installation on P1020RDB
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -17,78 +20,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lukasz Zemla <Lukasz.Zemla@woodward.com>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-Hi Lukasz,
-
-On 07/25/2012 06:18 PM, Lukasz Zemla wrote:
-> Hi Wolfgang,
-> 
-> Thank you for your mail, especially for sharing detailed latency results. 
-> Find my answers below.
-> 
->> -----Original Message-----
->> From: Wolfgang Grandegger [mailto:wg@grandegger.com]
->> Sent: Friday, July 20, 2012 8:25 PM
->> To: Lukasz Zemla
->> Cc: Xenomai@xenomai.org
->> Subject: Re: [Xenomai] Xenomai installation on P1020RDB
->>
->> Hi Lukasz,
->>
->> On 07/20/2012 04:31 PM, Lukasz Zemla wrote:
->>> Hello,
->>>
->>> Has anyone some experience with installing Xenomai on P1020RDB board?
->> I'd like to perform some benchmarks on this board.
->>> I'm trying to install it using the latest Freescale SDK 1.2 based on
->>> Yocto. But hints for SDK 1.0.3 would be also fine. Finally every way
->>> for getting it working... ;-)
->>>
->>> What I'm doing is getting Freescale kernel (3.0.34):
->>
->> If you can, use a *mainline* kernel. The latest Xenomai patch is for
->> Linux 3.2.21 and that version does well support the P1020RDB, IIRC.
-> 
-> I tried to install Xenomai on 3.2.21 - it boots, but waits about 76 seconds after initialization of first eth0 controller: 
-> 
-> 	[    0.905820] fsl-gianfar ethernet.1: eth0: TX BD ring size for Q[7]: 256
-> 	[   77.451135] fsl-gianfar ethernet.2: eth1: mac: 00:04:9f:02:2d:11
-> 
-> There is no delay between eth1 and eth2. 
-> 
-> The vanilla 3.2.21 does not have any delays - it initializes eth0, eth1, eth2 immediately.
-
-Strange. Could you please show us your .config. Is SMP enabled?
-
-> [...]
-> 
->>> Next I tried to install Xenomai on vanilla 3.1.10 kernel. I got
->> compilation error:
->>>
->>>         arch/powerpc/sysdev/fsl_lbc.c: In function
->> 'fsl_lbc_ctrl_irq':
->>>         arch/powerpc/sysdev/fsl_lbc.c:247:3: error: 'TASK_NORMAL'
->>> undeclared (first use in this function)
->>
->> That has nothing to do with Xenomai. Did you try to build the vanilla
->> kernel first?
-> 
-> The vanilla 3.1.10 kernel builds and boots properly.
-> I double checked and confirm that 3.1.10 vanilla kernel after patching using adeos-ipipe-3.1.10-powerpc-2.13-08.patch has problem with compilation presented above.
-> After fsl_lbc.c file correction I can compile it and boot (what I forgot last time was rebuilding DTB file ('make ARCH=powerpc CROSS_COMPILE=powerpc-fsl-linux-gnuspe- p1020rdb.dtb'). With the new DTB system goes further but hangs for some time rises exception:
-
-I'm unable to reproduce that issue. What defconfig did you use? Could
-you show use your .config. I used mpx85xx_smp_defconfig abd it compiled
-fine.
-
-> ***
-> The information in this email is confidential and intended solely for the individual or entity to whom it is addressed. If you have received this email in error please notify the sender by return e-mail, delete this email, and refrain from any disclosure or action based on the information.
-> ***
-
-This note does not make sense when sending to a public mailing list.
-
-Wolfgang.
-
+DQo+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+IEZyb206IEdpbGxlcyBDaGFudGVwZXJk
+cml4IFttYWlsdG86Z2lsbGVzLmNoYW50ZXBlcmRyaXhAeGVub21haS5vcmddDQo+IFNlbnQ6IFdl
+ZG5lc2RheSwgSnVseSAyNSwgMjAxMiA3OjM2IFBNDQo+IFRvOiBMdWthc3ogWmVtbGENCj4gQ2M6
+IFhlbm9tYWlAeGVub21haS5vcmcNCj4gU3ViamVjdDogUmU6IFtYZW5vbWFpXSBYZW5vbWFpIGlu
+c3RhbGxhdGlvbiBvbiBQMTAyMFJEQg0KPiANCj4gT24gMDcvMjUvMjAxMiAwNzoxMSBQTSwgR2ls
+bGVzIENoYW50ZXBlcmRyaXggd3JvdGU6DQo+IA0KPiA+IE9uIDA3LzI1LzIwMTIgMDY6MTggUE0s
+IEx1a2FzeiBaZW1sYSB3cm90ZToNCj4gPg0KPiA+PiBJIHRyaWVkIHRvIGluc3RhbGwgWGVub21h
+aSBvbiAzLjIuMjEgLSBpdCBib290cywgYnV0IHdhaXRzIGFib3V0IDc2DQo+IHNlY29uZHMgYWZ0
+ZXIgaW5pdGlhbGl6YXRpb24gb2YgZmlyc3QgZXRoMCBjb250cm9sbGVyOg0KPiA+Pg0KPiA+PiAJ
+WyAgICAwLjkwNTgyMF0gZnNsLWdpYW5mYXIgZXRoZXJuZXQuMTogZXRoMDogVFggQkQgcmluZyBz
+aXplIGZvcg0KPiBRWzddOiAyNTYNCj4gPj4gCVsgICA3Ny40NTExMzVdIGZzbC1naWFuZmFyIGV0
+aGVybmV0LjI6IGV0aDE6IG1hYzoNCj4gMDA6MDQ6OWY6MDI6MmQ6MTENCj4gPj4NCj4gPj4gVGhl
+cmUgaXMgbm8gZGVsYXkgYmV0d2VlbiBldGgxIGFuZCBldGgyLg0KPiA+Pg0KPiA+PiBUaGUgdmFu
+aWxsYSAzLjIuMjEgZG9lcyBub3QgaGF2ZSBhbnkgZGVsYXlzIC0gaXQgaW5pdGlhbGl6ZXMgZXRo
+MCwNCj4gZXRoMSwgZXRoMiBpbW1lZGlhdGVseS4NCj4gPj4NCj4gPj4gWy4uLl0NCj4gPg0KPiA+
+DQo+ID4gSXQgaXMgdmVyeSBtdWNoIGxpa2VseSBhIHRpbWVyIGlzc3VlLiBBdCB0aGUgdGltZSBp
+dCBoYXBwZW5zLCBpcw0KPiA+IHhlbm9tYWkgc3RhcnRlZCA/DQo+ID4NCj4gDQo+IA0KPiBBbHNv
+LCBpdCB3b3VsZCBiZSBpbnRlcmVzdGluZyB0byBrbm93IGEgYml0IG1vcmUgYWJvdXQgeW91ciBr
+ZXJuZWwNCj4gY29uZmlndXJhdGlvbiwgYXQgbGVhc3Qgd2hldGhlciB0aGUgZm9sbG93aW5nIG9w
+dGlvbnMgYXJlIGVuYWJsZWQ6DQo+IENPTkZJR19ISUdIX1JFU19USU1FUlMNCj4gQ09ORklHX05P
+X0haDQo+IENPTkZJR19YRU5PX09QVF9XQVRDSERPRw0KPiANCj4gSWYgdGhlIGZpcnN0IHR3byBh
+cmUgb24gYW5kIHRoZSB0aGlyZCBpcyBvZmYsIHRyeSB0aGUgZm9sbG93aW5nIHBhdGNoOg0KDQpU
+aGUgWGVub21haSBpcyBydW5uaW5nIGF0IHRoYXQgdGltZS4gDQpbICAgIDAuMzg1MDIzXSB0eXBl
+PTIwMDAgYXVkaXQoMC4zMjQ6MSk6IGluaXRpYWxpemVkDQpbICAgIDAuMzg5OTAyXSBJLXBpcGU6
+IGhlYWQgZG9tYWluIFhlbm9tYWkgcmVnaXN0ZXJlZC4NClsgICAgMC4zOTQ3OTVdIFhlbm9tYWk6
+IGhhbC9wb3dlcnBjIHN0YXJ0ZWQuDQpbICAgIDAuMzk4NzYyXSBYZW5vbWFpOiBzY2hlZHVsaW5n
+IGNsYXNzIGlkbGUgcmVnaXN0ZXJlZC4NClsgICAgMC40MDM4NDhdIFhlbm9tYWk6IHNjaGVkdWxp
+bmcgY2xhc3MgcnQgcmVnaXN0ZXJlZC4NClsgICAgMC40MTU1NjddIFhlbm9tYWk6IHJlYWwtdGlt
+ZSBudWNsZXVzIHYyLjYuMSAoTGlnaHQgWWVhcnMgQXdheSkgbG9hZGVkLg0KWyAgICAwLjQyMjIx
+N10gWGVub21haTogZGVidWcgbW9kZSBlbmFibGVkLg0KWyAgICAwLjQyNjQzNF0gWGVub21haTog
+c3RhcnRpbmcgbmF0aXZlIEFQSSBzZXJ2aWNlcy4NClsgICAgMC40MzExNjBdIFhlbm9tYWk6IHN0
+YXJ0aW5nIFBPU0lYIHNlcnZpY2VzLg0KWyAgICAwLjQzNTYwOV0gWGVub21haTogc3RhcnRpbmcg
+UlRETSBzZXJ2aWNlcy4NClsgICAgMC40NDg5NjRdIEluc3RhbGxpbmcga25mc2QgKGNvcHlyaWdo
+dCAoQykgMTk5NiBva2lyQG1vbmFkLnN3Yi5kZSkuDQoNCkhlcmUgYXJlIHRoZSB2YWx1ZXMgb2Yg
+bWVudGlvbmVkIHBhcmFtZXRlcnM6DQoJQ09ORklHX0hJR0hfUkVTX1RJTUVSUz15DQoJQ09ORklH
+X05PX0haPXkNCglDT05GSUdfWEVOT19PUFRfV0FUQ0hET0c9eQ0KCUNPTkZJR19YRU5PX09QVF9X
+QVRDSERPR19USU1FT1VUPTQNCg0KVGhlIHRoaXJkIG9uZSBpcyBvbiwgZXZlbnR1YWxseSBJIGNv
+dWxkIHRyeSBwYXRjaCwgYnV0IEknbGwgaGF2ZSBhY2Nlc3MgdG8gaGFyZHdhcmUgaW4gdGhlIG1v
+cm5pbmcgKEknbSB3b3JraW5nIGluIEV1cm9wZSkuDQoNCkJlc3QgcmVnYXJkcywNCiBMdWthc3oN
+CgoKKioqDQpUaGUgaW5mb3JtYXRpb24gaW4gdGhpcyBlbWFpbCBpcyBjb25maWRlbnRpYWwgYW5k
+IGludGVuZGVkIHNvbGVseSBmb3IgdGhlIGluZGl2aWR1YWwgb3IgZW50aXR5IHRvIHdob20gaXQg
+aXMgYWRkcmVzc2VkLiBJZiB5b3UgaGF2ZSByZWNlaXZlZCB0aGlzIGVtYWlsIGluIGVycm9yIHBs
+ZWFzZSBub3RpZnkgdGhlIHNlbmRlciBieSByZXR1cm4gZS1tYWlsLCBkZWxldGUgdGhpcyBlbWFp
+bCwgYW5kIHJlZnJhaW4gZnJvbSBhbnkgZGlzY2xvc3VyZSBvciBhY3Rpb24gYmFzZWQgb24gdGhl
+IGluZm9ybWF0aW9uLg0KKioqCg==
 
