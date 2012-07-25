@@ -1,16 +1,14 @@
-Message-ID: <50105D5C.7050908@grandegger.com>
-Date: Wed, 25 Jul 2012 22:55:56 +0200
-From: Wolfgang Grandegger <wg@grandegger.com>
+Message-ID: <501062C2.4040308@barrett.com>
+Date: Wed, 25 Jul 2012 17:18:58 -0400
+From: Kyle Maroney <km@barrett.com>
 MIME-Version: 1.0
-References: <CE2E43470FE5444A811B580382FE5EDF2113D8D95A@KEMPMAIL2.woodward.com>
-	<5009A292.4060508@grandegger.com>
-	<CE2E43470FE5444A811B580382FE5EDF2113EA8DE7@KEMPMAIL2.woodward.com>
-	<50104878.8030300@grandegger.com>
-	<CE2E43470FE5444A811B580382FE5EDF2113EA8E08@KEMPMAIL2.woodward.com>
-In-Reply-To: <CE2E43470FE5444A811B580382FE5EDF2113EA8E08@KEMPMAIL2.woodward.com>
-Content-Type: text/plain; charset=ISO-8859-1
+References: <500808DC.1050800@barrett.com> <50080CB0.8030400@siemens.com>
+	<500F0137.2020202@xenomai.org> <500F060D.7000806@barrett.com>
+	<500F0BC1.1030002@xenomai.org>
+In-Reply-To: <500F0BC1.1030002@xenomai.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Xenomai installation on P1020RDB
+Subject: Re: [Xenomai] Xenomai 2.6.1 x86 Boot Hanging
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,103 +17,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lukasz Zemla <Lukasz.Zemla@woodward.com>
-Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 07/25/2012 10:26 PM, Lukasz Zemla wrote:
-> 
->> -----Original Message-----
->> From: Wolfgang Grandegger [mailto:wg@grandegger.com]
->> Sent: Wednesday, July 25, 2012 9:27 PM
->> To: Lukasz Zemla
->> Cc: Xenomai@xenomai.org
->> Subject: Re: [Xenomai] Xenomai installation on P1020RDB
->>
->> Hi Lukasz,
->>
->> On 07/25/2012 06:18 PM, Lukasz Zemla wrote:
->>> Hi Wolfgang,
+On 07/24/2012 04:55 PM, Gilles Chanteperdrix wrote:
+> On 07/24/2012 10:31 PM, Kyle Maroney wrote:
+>
+>> On 07/24/2012 04:10 PM, Gilles Chanteperdrix wrote:
+>>> On 07/19/2012 03:33 PM, Jan Kiszka wrote:
 >>>
->>> Thank you for your mail, especially for sharing detailed latency
->> results.
->>> Find my answers below.
->>>
->>>> -----Original Message-----
->>>> From: Wolfgang Grandegger [mailto:wg@grandegger.com]
->>>> Sent: Friday, July 20, 2012 8:25 PM
->>>> To: Lukasz Zemla
->>>> Cc: Xenomai@xenomai.org
->>>> Subject: Re: [Xenomai] Xenomai installation on P1020RDB
->>>>
->>>> Hi Lukasz,
->>>>
->>>> On 07/20/2012 04:31 PM, Lukasz Zemla wrote:
->>>>> Hello,
+>>>> On 2012-07-19 15:17, Kyle Maroney wrote:
+>>>>> Congratulations on the recent release of Xenomai 2.6.1. We are excited
+>>>>> about the recent move to the ipipe core series and 3.x kernel patches
+>>>>> becoming available for the x86 architecture.
 >>>>>
->>>>> Has anyone some experience with installing Xenomai on P1020RDB
->> board?
->>>> I'd like to perform some benchmarks on this board.
->>>>> I'm trying to install it using the latest Freescale SDK 1.2 based
->> on
->>>>> Yocto. But hints for SDK 1.0.3 would be also fine. Finally every
->> way
->>>>> for getting it working... ;-)
+>>>>> I have been able to successfully patch the vanilla kernel (3.2.19) with
+>>>>> a slightly modified ipipe-core-3.2.21-x86-1 patch, and tested that
+>>>>> working with a generic configuration. I also successfully patched
+>>>>> vanilla + ubuntu diff + adeos, and tested this working as well.
 >>>>>
->>>>> What I'm doing is getting Freescale kernel (3.0.34):
->>>>
->>>> If you can, use a *mainline* kernel. The latest Xenomai patch is for
->>>> Linux 3.2.21 and that version does well support the P1020RDB, IIRC.
->>>
->>> I tried to install Xenomai on 3.2.21 - it boots, but waits about 76
->> seconds after initialization of first eth0 controller:
->>>
->>> 	[    0.905820] fsl-gianfar ethernet.1: eth0: TX BD ring size for
->> Q[7]: 256
->>> 	[   77.451135] fsl-gianfar ethernet.2: eth1: mac:
->> 00:04:9f:02:2d:11
->>>
->>> There is no delay between eth1 and eth2.
->>>
->>> The vanilla 3.2.21 does not have any delays - it initializes eth0,
->> eth1, eth2 immediately.
->>
->> Strange. Could you please show us your .config. Is SMP enabled?
-> 
-> Yes, SMP is enabled. I attached the .config.
->  
-> 
->>> [...]
->>>
->>>>> Next I tried to install Xenomai on vanilla 3.1.10 kernel. I got
->>>> compilation error:
+>>>>> My problem is when I apply the xenomai configuration options after
+>>>>> running the prepare kernel script.  The kernel compiles successfully
+>>>>> with no problems, however upon reboot I am met with the boot hanging at
+>>>>> the purple boot screen of Ubuntu (no images).
 >>>>>
->>>>>         arch/powerpc/sysdev/fsl_lbc.c: In function
->>>> 'fsl_lbc_ctrl_irq':
->>>>>         arch/powerpc/sysdev/fsl_lbc.c:247:3: error: 'TASK_NORMAL'
->>>>> undeclared (first use in this function)
->>>>
->>>> That has nothing to do with Xenomai. Did you try to build the
->> vanilla
->>>> kernel first?
+>>>>> I have experimented with many config options for the past few days, and
+>>>>> come to you for guidance. Please find attached my .config file.
+>>>>>
+>>>> There are obviously several issues remaining in the new x86 3.2 patch. I
+>>>> just recently ran into some of them as well while updating RTnet.
+>>> Any chance for a patch? I am currently running 3.4 on x86, so, it would
+>>> be nice to merge any fix you made.
 >>>
->>> The vanilla 3.1.10 kernel builds and boots properly.
->>> I double checked and confirm that 3.1.10 vanilla kernel after
->> patching using adeos-ipipe-3.1.10-powerpc-2.13-08.patch has problem
->> with compilation presented above.
->>> After fsl_lbc.c file correction I can compile it and boot (what I
->> forgot last time was rebuilding DTB file ('make ARCH=powerpc
->> CROSS_COMPILE=powerpc-fsl-linux-gnuspe- p1020rdb.dtb'). With the new
->> DTB system goes further but hangs for some time rises exception:
->>
->> I'm unable to reproduce that issue. What defconfig did you use? Could
->> you show use your .config. I used mpx85xx_smp_defconfig abd it compiled
->> fine.
-> 
-> I'm using defconfig delivered by Freescale in their first SDK 1.0.3. It was designed for kernel 2.6.35 or 2.6.37. It was migrated to the current stage by using mainly default settings in 'make oldconfig' + additional modifications (mainly removal of not necessary features). I'll try use defconfig in the morning.
+>> Still no luck creating a configuration allowing me to boot on x86 w/
+>> Precise. If anyone else has been successful on x86 we would love to see
+>> patches.
+>
+> For the screen not to remain black, remove the "quiet" on the kernel
+> command line in the bootloader configuration.
+>
+> You can try earlyprintk, if the failure happens early.
+>
+> Also, in the kernel, try disabling any feature you do not use, such as
+> profiling, tracing, kgdb, perf system, syscall auditing, as much as
+> possible.
+Thank you all for your continued support (esp. Jan and Gilles). I am 
+happy to report that I was successful in my compilation and testing!
 
-I can reproduce your build problem with your config. You may want to try
-the mpc85xx_smp_defconfig instead (which did work for me).
-
-Wolfgang.
-
+Kyle
 
