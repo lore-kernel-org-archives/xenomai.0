@@ -1,10 +1,15 @@
-Message-ID: <500FEB0F.9000308@xenomai.org>
-Date: Wed, 25 Jul 2012 14:48:15 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: Lukasz Zemla <Lukasz.Zemla@woodward.com>
+Date: Wed, 25 Jul 2012 18:18:28 +0200
+Message-ID: <CE2E43470FE5444A811B580382FE5EDF2113EA8DE7@KEMPMAIL2.woodward.com>
+References: <CE2E43470FE5444A811B580382FE5EDF2113D8D95A@KEMPMAIL2.woodward.com>
+	<5009A292.4060508@grandegger.com>
+In-Reply-To: <5009A292.4060508@grandegger.com>
+Content-Language: en-US
+Content-Type: text/plain;
+  charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] Heads up: I-pipe patch status on ARM
+Subject: Re: [Xenomai] Xenomai installation on P1020RDB
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,112 +18,112 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Wolfgang Grandegger <wg@grandegger.com>
+Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-Hi,
-
-Short version: good news, we are able to compile a Linux 3.4 "all-in-one
-kernel" with Xenomai support.
-
-Long version:
-As you may know, the direction followed by the Linux kernel on ARM is to
-allow, as much as possible, to compile a single kernel to run on many
-ARM SOCs. This basically means the systematic elimination of
-SOC-specific piece of codes which were chosen at compilation time.
-Historically, Xenomai SOC support code fell into that category, with
-everything SOC specific being called __ipipe_mach_something, and being
-selected at compilation time, this was not a bad choice at the time it
-was made: Linux kernel code was not able to be compiled for several SOCs
-at a time anyway.
-
-Changing this started with the I-pipe patch for Linux 2.6.33, with the
-implementation of the "kuser" tsc emulation, whose side effect was to
-make the tsc emulation registered at run-time. The tsc emulation code is
-provided in the "vector page", at the same place as other helpers
-provided by the Linux kernel (the ARM user-space atomic_cmpxchg is
-implemented this way for instance). The aim of putting the helper there
-is to avoid having to compile a SOC specific code in user-space. This
-has been exploited by Xenomai 2.6.0 which removed the --enable-arm-mach
-option and uses the "kuser" helper by default (but allows to fallback to
-the old way in order to remain compatible with old patches). This
-allows, for instance, a Debian "xenomai-runtime" package which runs with
-any SOC, whatever the implementation of their tsc. Incidentally, tests
-have also showed that implementing the tsc emulation code that way,
-actually reduced the average tsc latency despite the fact that reading
-the tsc is a function call and no longer a piece of inlined C code, that
-is probably because the helpers are implemented in assembly. To the
-point where the latency of the (software) tsc is lower on a Cortex A9
-based processor than the (hardware) tsc on an Intel Atom 230.
-
-The I-pipe core patch for Linux 3.2 provided another occasion to move in
-the same direction:
-- the I-pipe timer factorization effort allowed to get the hardware
-timer support code registered at run-time and no longer hard-coded at
-compilation time. Again, this was not the original aim, the aim was to
-have a hardware timer support uniform across all architectures to reduce
-the Xenomai arch-specific cruft, and a secondary aim on ARM was to allow
-sharing more code with the clockevent infrastructure, by simply reusing
-the clockevent timer call-backs when the hardware timer is shared
-between Xenomai and Linux. It turns out that we also reused the
-clockevent call-backs on other architectures, and in fact, it also
-simplified compiling a Linux kernel on x86, because we no longer need a
-kernel compiled differently to use the local APIC timer or the PIT timer.
-- we also get the PIC muting functions on ARM to be registered at
-run-time, this time on purpose.
-
-While writing a documentation on how to port the I-pipe core patch to a
-new ARM board [1], I realized that we still had some "__ipipe_mach" code
-in the I-pipe core patch: the IPI handling code on SMP systems.
-
-So, I took the chance of working on the I-pipe patch for Linux 3.4 to
-remedy this situation. The idea is simple: in the Linux kernel on ARM
-the IPIs live in a different numbering space as the IRQs, but the
-interrupt pipeline wants to mix them with irqs, to have a common
-pipeline for both types of interrupts. Some __ipipe_mach macros made
-that work. For instance, on Cortex A9, the IPIs are actually in the same
-numbering space as the IRQs at the interrupt controller level, they
-simply are irqs from 2 to 16, so, in the I-pipe patch before Linux 3.4,
-we simply used the hardware IPI numbers as irq numbers. But this has two
-disadvantages:
-- starting with Linux 3.4, hardware irq numbers are remapped to Linux
-virtual irq numbers, with the advent of "irq domains", so the fact that
-there is room for the IPIs is no longer guaranteed;
-- more importantly, on a cortex A9 kernel, this means that Linux domain
-irq handlers for irqs 2 to 16 were redirecting these irqs to Linux IPI
-handler, which is the wrong thing to do on non cortex A9 processor.
-So, the cure was to systematically remap the IPIs to I-pipe virqs, (and
-remove the __ipipe_mach macros), this does not change anything with
-regard to the path followed for handling IPIs except for the particular
-number they use along the interrupt pipeline, but this avoids the two
-issues mentioned above:
-- however Linux irqs are remapped, they do not conflict with I-pipe virqs
-- a cortex A9 enabled kernel running on another SOC (a uniprocessor SOC
-for instance), reserve virqs for IPIs which are simply never used, the
-other SOC irqs are handled as irqs, as should be.
-
-So, the net result of all this is that I have been able to run a Linux
-kernel compiled with Xenomai support both for OMAP3 and OMAP4 at the
-same time, both on an OMAP3 and on OMAP4, and to compile test a Xenomai
-kernel for the two imx_v4_v4_defconfig and imx_v6_v7 kernel
-configurations which cover about every Freescale IMX processors around
-(including the cortex A9 based IMX6Q).
-
-Whether the multi-SOC feature will really be used by Xenomai users on
-ARM remains to be seen (but why not a Debian kernel or two with all ARM
-marchines around?), but in any case, it is a net win for simply compile
-testing the I-pipe patch on ARM. The only remaining problem is with
-AT91s, which still have to be compiled separately on Linux 3.4, but I
-see the 3.5 kernel allows compiling them all at once.
-
-The bad news is that in order to achieve the goal of a kernel runnable
-on multiple SOC, the Linux kernel has increased the path followed to
-handle hardware interrupts (notably with CONFIG_MULTI_IRQ_HANDLER, irq
-domains), and that is probably the reason why we get slightly worse
-latencies with Xenomai for Linux 3.4 on ARM [2].
-
-[1] http://www.xenomai.org/index.php/I-pipe-core:ArmPorting
-[2] http://sisyphus.hd.free.fr/~gilles/core-3.4-latencies/
-
--- 
-                                                                Gilles.
+SGkgV29sZmdhbmcsDQoNClRoYW5rIHlvdSBmb3IgeW91ciBtYWlsLCBlc3BlY2lhbGx5IGZvciBz
+aGFyaW5nIGRldGFpbGVkIGxhdGVuY3kgcmVzdWx0cy4gDQpGaW5kIG15IGFuc3dlcnMgYmVsb3cu
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogV29sZmdhbmcgR3JhbmRl
+Z2dlciBbbWFpbHRvOndnQGdyYW5kZWdnZXIuY29tXQ0KPiBTZW50OiBGcmlkYXksIEp1bHkgMjAs
+IDIwMTIgODoyNSBQTQ0KPiBUbzogTHVrYXN6IFplbWxhDQo+IENjOiBYZW5vbWFpQHhlbm9tYWku
+b3JnDQo+IFN1YmplY3Q6IFJlOiBbWGVub21haV0gWGVub21haSBpbnN0YWxsYXRpb24gb24gUDEw
+MjBSREINCj4gDQo+IEhpIEx1a2FzeiwNCj4gDQo+IE9uIDA3LzIwLzIwMTIgMDQ6MzEgUE0sIEx1
+a2FzeiBaZW1sYSB3cm90ZToNCj4gPiBIZWxsbywNCj4gPg0KPiA+IEhhcyBhbnlvbmUgc29tZSBl
+eHBlcmllbmNlIHdpdGggaW5zdGFsbGluZyBYZW5vbWFpIG9uIFAxMDIwUkRCIGJvYXJkPw0KPiBJ
+J2QgbGlrZSB0byBwZXJmb3JtIHNvbWUgYmVuY2htYXJrcyBvbiB0aGlzIGJvYXJkLg0KPiA+IEkn
+bSB0cnlpbmcgdG8gaW5zdGFsbCBpdCB1c2luZyB0aGUgbGF0ZXN0IEZyZWVzY2FsZSBTREsgMS4y
+IGJhc2VkIG9uDQo+ID4gWW9jdG8uIEJ1dCBoaW50cyBmb3IgU0RLIDEuMC4zIHdvdWxkIGJlIGFs
+c28gZmluZS4gRmluYWxseSBldmVyeSB3YXkNCj4gPiBmb3IgZ2V0dGluZyBpdCB3b3JraW5nLi4u
+IDstKQ0KPiA+DQo+ID4gV2hhdCBJJ20gZG9pbmcgaXMgZ2V0dGluZyBGcmVlc2NhbGUga2VybmVs
+ICgzLjAuMzQpOg0KPiANCj4gSWYgeW91IGNhbiwgdXNlIGEgKm1haW5saW5lKiBrZXJuZWwuIFRo
+ZSBsYXRlc3QgWGVub21haSBwYXRjaCBpcyBmb3INCj4gTGludXggMy4yLjIxIGFuZCB0aGF0IHZl
+cnNpb24gZG9lcyB3ZWxsIHN1cHBvcnQgdGhlIFAxMDIwUkRCLCBJSVJDLg0KDQpJIHRyaWVkIHRv
+IGluc3RhbGwgWGVub21haSBvbiAzLjIuMjEgLSBpdCBib290cywgYnV0IHdhaXRzIGFib3V0IDc2
+IHNlY29uZHMgYWZ0ZXIgaW5pdGlhbGl6YXRpb24gb2YgZmlyc3QgZXRoMCBjb250cm9sbGVyOiAN
+Cg0KCVsgICAgMC45MDU4MjBdIGZzbC1naWFuZmFyIGV0aGVybmV0LjE6IGV0aDA6IFRYIEJEIHJp
+bmcgc2l6ZSBmb3IgUVs3XTogMjU2DQoJWyAgIDc3LjQ1MTEzNV0gZnNsLWdpYW5mYXIgZXRoZXJu
+ZXQuMjogZXRoMTogbWFjOiAwMDowNDo5ZjowMjoyZDoxMQ0KDQpUaGVyZSBpcyBubyBkZWxheSBi
+ZXR3ZWVuIGV0aDEgYW5kIGV0aDIuIA0KDQpUaGUgdmFuaWxsYSAzLjIuMjEgZG9lcyBub3QgaGF2
+ZSBhbnkgZGVsYXlzIC0gaXQgaW5pdGlhbGl6ZXMgZXRoMCwgZXRoMSwgZXRoMiBpbW1lZGlhdGVs
+eS4NCg0KWy4uLl0NCg0KPiA+IE5leHQgSSB0cmllZCB0byBpbnN0YWxsIFhlbm9tYWkgb24gdmFu
+aWxsYSAzLjEuMTAga2VybmVsLiBJIGdvdA0KPiBjb21waWxhdGlvbiBlcnJvcjoNCj4gPg0KPiA+
+ICAgICAgICAgYXJjaC9wb3dlcnBjL3N5c2Rldi9mc2xfbGJjLmM6IEluIGZ1bmN0aW9uDQo+ICdm
+c2xfbGJjX2N0cmxfaXJxJzoNCj4gPiAgICAgICAgIGFyY2gvcG93ZXJwYy9zeXNkZXYvZnNsX2xi
+Yy5jOjI0NzozOiBlcnJvcjogJ1RBU0tfTk9STUFMJw0KPiA+IHVuZGVjbGFyZWQgKGZpcnN0IHVz
+ZSBpbiB0aGlzIGZ1bmN0aW9uKQ0KPiANCj4gVGhhdCBoYXMgbm90aGluZyB0byBkbyB3aXRoIFhl
+bm9tYWkuIERpZCB5b3UgdHJ5IHRvIGJ1aWxkIHRoZSB2YW5pbGxhDQo+IGtlcm5lbCBmaXJzdD8N
+Cg0KVGhlIHZhbmlsbGEgMy4xLjEwIGtlcm5lbCBidWlsZHMgYW5kIGJvb3RzIHByb3Blcmx5Lg0K
+SSBkb3VibGUgY2hlY2tlZCBhbmQgY29uZmlybSB0aGF0IDMuMS4xMCB2YW5pbGxhIGtlcm5lbCBh
+ZnRlciBwYXRjaGluZyB1c2luZyBhZGVvcy1pcGlwZS0zLjEuMTAtcG93ZXJwYy0yLjEzLTA4LnBh
+dGNoIGhhcyBwcm9ibGVtIHdpdGggY29tcGlsYXRpb24gcHJlc2VudGVkIGFib3ZlLg0KQWZ0ZXIg
+ZnNsX2xiYy5jIGZpbGUgY29ycmVjdGlvbiBJIGNhbiBjb21waWxlIGl0IGFuZCBib290ICh3aGF0
+IEkgZm9yZ290IGxhc3QgdGltZSB3YXMgcmVidWlsZGluZyBEVEIgZmlsZSAoJ21ha2UgQVJDSD1w
+b3dlcnBjIENST1NTX0NPTVBJTEU9cG93ZXJwYy1mc2wtbGludXgtZ251c3BlLSBwMTAyMHJkYi5k
+dGInKS4gV2l0aCB0aGUgbmV3IERUQiBzeXN0ZW0gZ29lcyBmdXJ0aGVyIGJ1dCBoYW5ncyBmb3Ig
+c29tZSB0aW1lIHJpc2VzIGV4Y2VwdGlvbjoNCg0KWyAgICAwLjM4ODE4OF0gYXVkaXQ6IGluaXRp
+YWxpemluZyBuZXRsaW5rIHNvY2tldCAoZGlzYWJsZWQpDQpbICAgIDAuMzkzNTM4XSB0eXBlPTIw
+MDAgYXVkaXQoMC4zMzI6MSk6IGluaXRpYWxpemVkDQpbICAyNDAuMzk1MzE2XSBJTkZPOiB0YXNr
+IGt3b3JrZXIvMTowOjggYmxvY2tlZCBmb3IgbW9yZSB0aGFuIDEyMCBzZWNvbmRzLg0KWyAgMjQw
+LjQwMTg1OF0gImVjaG8gMCA+IC9wcm9jL3N5cy9rZXJuZWwvaHVuZ190YXNrX3RpbWVvdXRfc2Vj
+cyIgZGlzYWJsZXMgdGhpcyBtZXNzYWdlLg0KWyAgMjQwLjQwOTY2NV0ga3dvcmtlci8xOjAgICAg
+IEQgMDAwMDAwMDAgICAgIDAgICAgIDggICAgICAyIDB4MDAwMDAwMDANClsgIDI0MC40MTYwMDBd
+IENhbGwgVHJhY2U6DQpbICAyNDAuNDE4NDIxXSBbZWYwNjVjYzBdIFs0MjAyMjAyNF0gMHg0MjAy
+MjAyNCAodW5yZWxpYWJsZSkNClsgIDI0MC40MjM4MDldIFtlZjA2NWQ4MF0gW2MwMDA3OTQ4XSBf
+X3N3aXRjaF90bysweGE0LzB4ZjQNClsgIDI0MC40MjkwMTddIFtlZjA2NWRhMF0gW2MwNTFhOWFj
+XSBfX3NjaGVkdWxlKzB4MmMwLzB4ODEwDQpbICAyNDAuNDM0MzA2XSBbZWYwNjVlMjBdIFtjMDUx
+YjVkOF0gc2NoZWR1bGVfdGltZW91dCsweDFjOC8weDIyOA0KWyAgMjQwLjQ0MDEyMV0gW2VmMDY1
+ZTcwXSBbYzA1MWE0N2NdIHdhaXRfZm9yX2NvbW1vbisweGFjLzB4MTg0DQpbICAyNDAuNDQ1Nzcw
+XSBbZWYwNjVlYjBdIFtjMDA2N2I3Y10ga3RocmVhZF9jcmVhdGVfb25fbm9kZSsweDkwLzB4MTBj
+DQpbICAyNDAuNDUyMDEyXSBbZWYwNjVmMjBdIFtjMDA2MDU4OF0gY3JlYXRlX3dvcmtlcisweDE0
+MC8weDFkYw0KWyAgMjQwLjQ1NzU2N10gW2VmMDY1ZjUwXSBbYzAwNjJiNzhdIG1hbmFnZV93b3Jr
+ZXJzLmlzcmEuMjQrMHgxMTgvMHgyMDgNClsgIDI0MC40NjM5MDRdIFtlZjA2NWY3MF0gW2MwMDYy
+ZjU4XSB3b3JrZXJfdGhyZWFkKzB4MmYwLzB4MzVjDQpbICAyNDAuNDY5NDU5XSBbZWYwNjVmYjBd
+IFtjMDA2N2E1OF0ga3RocmVhZCsweDdjLzB4ODANClsgIDI0MC40NzQzMjBdIFtlZjA2NWZmMF0g
+W2MwMDBlNjljXSBrZXJuZWxfdGhyZWFkKzB4NGMvMHg2OA0KDQpUaGUgcHJlc2VudGVkIGV4Y2Vw
+dGlvbiBpcyByZXBlYXRlZCBldmVyeSAxMjBzLiBUaGUgc3lzdGVtIGRvZXMgbm90IHBlcmZvcm0g
+YW55IG90aGVyIGFjdGlvbnMgKGZ1cnRoZXIgYm9vdCBzdGVwcykuDQoNCg0KPiA+IEkgZml4ZWQg
+aXQgYnkgYWRkaW5nICcjaW5jbHVkZSA8bGludXgvc2NoZWQuaD4nIGluDQo+IGFyY2gvcG93ZXJw
+Yy9zeXNkZXYvZnNsX2xiYy5jIGZpbGUuIEFmdGVyIHN1Y2Nlc3NmdWwgYnVpbGQgdGhlIGtlcm5l
+bA0KPiBodW5nIGp1c3QgYWZ0ZXIgbG9hZGluZyBEVEIuDQo+ID4NCj4gPg0KPiA+DQo+ID4gRmls
+ZW5hbWUgJ3AxMDIwcmRiLXBjLmR0YicuDQo+ID4NCj4gPiBMb2FkIGFkZHJlc3M6IDB4YzAwMDAw
+DQo+ID4NCj4gPiBMb2FkaW5nOiAjIyMNCj4gPg0KPiA+IGRvbmUNCj4gPg0KPiA+IEJ5dGVzIHRy
+YW5zZmVycmVkID0gMTI4ODggKDMyNTggaGV4KQ0KPiA+DQo+ID4gV0FSTklORzogYWRqdXN0aW5n
+IGF2YWlsYWJsZSBtZW1vcnkgdG8gMzAwMDAwMDANCj4gPg0KPiA+ICMjIEJvb3Rpbmcga2VybmVs
+IGZyb20gTGVnYWN5IEltYWdlIGF0IDAxMDAwMDAwIC4uLg0KPiA+DQo+ID4gICAgSW1hZ2UgTmFt
+ZTogICBMaW51eC0zLjEuMTANCj4gPg0KPiA+ICAgIENyZWF0ZWQ6ICAgICAgMjAxMi0wNy0yMCAg
+MTM6NTQ6NTQgVVRDDQo+ID4NCj4gPiAgICBJbWFnZSBUeXBlOiAgIFBvd2VyUEMgTGludXggS2Vy
+bmVsIEltYWdlIChnemlwIGNvbXByZXNzZWQpDQo+ID4NCj4gPiAgICBEYXRhIFNpemU6ICAgIDM3
+NTcyMTEgQnl0ZXMgPSAzLjYgTWlCDQo+ID4NCj4gPiAgICBMb2FkIEFkZHJlc3M6IDAwMDAwMDAw
+DQo+ID4NCj4gPiAgICBFbnRyeSBQb2ludDogIDAwMDAwMDAwDQo+ID4NCj4gPiAgICBWZXJpZnlp
+bmcgQ2hlY2tzdW0gLi4uIE9LDQo+ID4NCj4gPiAjIyBMb2FkaW5nIGluaXQgUmFtZGlzayBmcm9t
+IExlZ2FjeSBJbWFnZSBhdCAwMjAwMDAwMCAuLi4NCj4gPg0KPiA+ICAgIEltYWdlIE5hbWU6ICAg
+ZnNsLWltYWdlLW1pbmltYWwtd3ctcDEwMjByZGItMjANCj4gPg0KPiA+ICAgIENyZWF0ZWQ6ICAg
+ICAgMjAxMi0wNy0xOCAgIDk6MzA6MTMgVVRDDQo+ID4NCj4gPiAgICBJbWFnZSBUeXBlOiAgIFBv
+d2VyUEMgTGludXggUkFNRGlzayBJbWFnZSAoZ3ppcCBjb21wcmVzc2VkKQ0KPiA+DQo+ID4gICAg
+RGF0YSBTaXplOiAgICA0NTk2NTg1IEJ5dGVzID0gNC40IE1pQg0KPiA+DQo+ID4gICAgTG9hZCBB
+ZGRyZXNzOiAwMDAwMDAwMA0KPiA+DQo+ID4gICAgRW50cnkgUG9pbnQ6ICAwMDAwMDAwMA0KPiA+
+DQo+ID4gICAgVmVyaWZ5aW5nIENoZWNrc3VtIC4uLiBPSw0KPiA+DQo+ID4gIyMgRmxhdHRlbmVk
+IERldmljZSBUcmVlIGJsb2IgYXQgMDBjMDAwMDANCj4gPg0KPiA+ICAgIEJvb3RpbmcgdXNpbmcg
+dGhlIGZkdCBibG9iIGF0IDB4YzAwMDAwDQo+ID4NCj4gPiAgICBVbmNvbXByZXNzaW5nIEtlcm5l
+bCBJbWFnZSAuLi4gT0sNCj4gPg0KPiA+ICAgIExvYWRpbmcgUmFtZGlzayB0byAyZmI5ZDAwMCwg
+ZW5kIDJmZmZmMzY5IC4uLiBPSw0KPiA+DQo+ID4gICAgTG9hZGluZyBEZXZpY2UgVHJlZSB0byAw
+MGZmOTAwMCwgZW5kIDAwZmZmMjU3IC4uLiBPSw0KPiANCj4gVGhpcyBpcyBhbHNvIG5vdCByZWxh
+dGVkIHRvIFhlbm9tYWkuIERpZCB5b3Ugc2V0IHRoZSBjb25zb2xlIHByb3Blcmx5Pw0KPiBZb3Ug
+bWF5IGJlIGFibGUgdG8gbGlzdCB0aGUga2VybmVsIGxvZyBidWZmZXIgYWZ0ZXIgYSBzb2Z0LXJl
+c2V0IGF0DQo+IGFkZHJlc3MgImdyZXAgX19sb2dfYnVmIFN5c3RlbS5tYXAgfCBjdXQgLWQiICIg
+LWYxIiAtIDB4YzAwMDAwMDAgdXNpbmcNCj4gdGhlIFUtQm9vdCBjb21tYW5kICJtZCIuDQo+IA0K
+PiBJIHRlc3RlZCBYZW5vbWFpIHJlY2VudGx5IG9uIGEgUDIwMjAgd2l0aCBtYWlubGluZSBMaW51
+eCAzLjIueCB3aXRoIHRoZQ0KPiBuZXcgaVBpcGUtUGF0Y2ggYW5kIGdvdCB2ZXJ5IGdvb2QgbGF0
+ZW5jeSByZXN1bHRzLCBlc3BlY2lhbGx5IHdpdGggQ1BVDQo+IGlzb2xhdGlvbjogNjUgdXMgd2l0
+aG91dCBhbmQgKjgqIHVzIHdpdGggQ1BVIGlzb2xhdGlvbi4gW0knbSBzdGlsbA0KPiBwdXp6bGVk
+IGFib3V0IHRoZSBnb29kIHJlc3VsdHMgd2l0aCBDUFUgaXNvbGF0aW9uLiBNYXliZSB0aGF0J3Mg
+ZHVlIHRvDQo+IHRoZSBuZXcgaVBpcGUtUGF0Y2guIE5lZWQgdG8gcmUtdGVzdCB3aGVuIHRpbWUg
+cGVybWl0cykuIEkgaGF2ZSBsaXN0ZWQNCj4gdGhlIHJlc3VsdHMgYmVsb3cuDQo+IA0KPiBIb3Bl
+IHRoaXMgaW5mbyBpcyB1c2VmdWwuDQo+IA0KPiBXb2xmZ2FuZy4NCg0KW2xhdGVuY3kgcmVzdWx0
+c10gDQoKCioqKg0KVGhlIGluZm9ybWF0aW9uIGluIHRoaXMgZW1haWwgaXMgY29uZmlkZW50aWFs
+IGFuZCBpbnRlbmRlZCBzb2xlbHkgZm9yIHRoZSBpbmRpdmlkdWFsIG9yIGVudGl0eSB0byB3aG9t
+IGl0IGlzIGFkZHJlc3NlZC4gSWYgeW91IGhhdmUgcmVjZWl2ZWQgdGhpcyBlbWFpbCBpbiBlcnJv
+ciBwbGVhc2Ugbm90aWZ5IHRoZSBzZW5kZXIgYnkgcmV0dXJuIGUtbWFpbCwgZGVsZXRlIHRoaXMg
+ZW1haWwsIGFuZCByZWZyYWluIGZyb20gYW55IGRpc2Nsb3N1cmUgb3IgYWN0aW9uIGJhc2VkIG9u
+IHRoZSBpbmZvcm1hdGlvbi4NCioqKgo=
 
