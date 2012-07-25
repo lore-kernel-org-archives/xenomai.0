@@ -1,13 +1,12 @@
-Message-ID: <500FBC87.3040802@siemens.com>
-Date: Wed, 25 Jul 2012 11:29:43 +0200
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <500FC093.4070905@xenomai.org>
+Date: Wed, 25 Jul 2012 11:46:59 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <500808DC.1050800@barrett.com> <50080CB0.8030400@siemens.com>
-	<500F0137.2020202@xenomai.org>
-In-Reply-To: <500F0137.2020202@xenomai.org>
+References: <4F534D1A615F544D95E57BFD8460658301CBE3E3@GEO-HCLT-UKEVS1.GEO.CORP.HCL.IN>
+In-Reply-To: <4F534D1A615F544D95E57BFD8460658301CBE3E3@GEO-HCLT-UKEVS1.GEO.CORP.HCL.IN>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Xenomai 2.6.1 x86 Boot Hanging
+Subject: Re: [Xenomai] accessing process' virtual memory areas from driver
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,46 +15,22 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Kyle Maroney <km@barrett.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "Jorge Ramirez Ortiz, HCL Europe" <Jorge.Ramirez-Ortiz@hcl.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 2012-07-24 22:10, Gilles Chanteperdrix wrote:
-> On 07/19/2012 03:33 PM, Jan Kiszka wrote:
-> 
->> On 2012-07-19 15:17, Kyle Maroney wrote:
->>> Congratulations on the recent release of Xenomai 2.6.1. We are excited
->>> about the recent move to the ipipe core series and 3.x kernel patches
->>> becoming available for the x86 architecture.
->>>
->>> I have been able to successfully patch the vanilla kernel (3.2.19) with
->>> a slightly modified ipipe-core-3.2.21-x86-1 patch, and tested that
->>> working with a generic configuration. I also successfully patched
->>> vanilla + ubuntu diff + adeos, and tested this working as well.
->>>
->>> My problem is when I apply the xenomai configuration options after
->>> running the prepare kernel script.  The kernel compiles successfully
->>> with no problems, however upon reboot I am met with the boot hanging at
->>> the purple boot screen of Ubuntu (no images).
->>>
->>> I have experimented with many config options for the past few days, and
->>> come to you for guidance. Please find attached my .config file.
->>>
->>
->> There are obviously several issues remaining in the new x86 3.2 patch. I
->> just recently ran into some of them as well while updating RTnet.
-> 
-> 
-> Any chance for a patch? I am currently running 3.4 on x86, so, it would
-> be nice to merge any fix you made.
+On 07/24/2012 09:48 PM, Jorge Ramirez Ortiz, HCL Europe wrote:
 
-There are chances once we find the time to debug the crashes. I'll
-discuss it internally today.
+> On a Xenomai multi-threaded application,  I need to access the
+> process list of virtual memory areas in an rtdm driver. Since this
+> region is protected by mmap_sem, I am unsure how to perform the
+> access. Any guidance will be appreciated. thanks Jorge
 
-Jan
+
+>From real-time domain, you can not do it: the mmap_sem data may not be
+in a coherent state, so do the vma list.
+
+>From Linux domain, no problem, just take the mmap_sem.
 
 -- 
-Siemens AG, Corporate Technology, CT RTC ITP SDP-DE
-Corporate Competence Center Embedded Linux
-
-
+                                                                Gilles.
 
