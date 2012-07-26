@@ -1,17 +1,19 @@
-Message-ID: <50069E14.3040200@grandegger.com>
-Date: Wed, 18 Jul 2012 13:29:24 +0200
-From: Wolfgang Grandegger <wg@grandegger.com>
+From: Lukasz Zemla <Lukasz.Zemla@woodward.com>
+Date: Thu, 26 Jul 2012 13:20:06 +0200
+Message-ID: <CE2E43470FE5444A811B580382FE5EDF2113EA8FD2@KEMPMAIL2.woodward.com>
+References: <CE2E43470FE5444A811B580382FE5EDF2113D8D95A@KEMPMAIL2.woodward.com>
+	<5009A292.4060508@grandegger.com>
+	<CE2E43470FE5444A811B580382FE5EDF2113EA8DE7@KEMPMAIL2.woodward.com>
+	<501028DC.8000803@xenomai.org> <50102E8D.1040004@xenomai.org>
+	<CE2E43470FE5444A811B580382FE5EDF2113EA8E07@KEMPMAIL2.woodward.com>
+	<50105A22.3090704@xenomai.org>
+In-Reply-To: <50105A22.3090704@xenomai.org>
+Content-Language: en-US
+Content-Type: text/plain;
+  charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <4FED4948.8080906@basystemes.fr> <4FED4B42.6000808@wanadoo.fr>
-	<4FEDF65A.50401@grandegger.com>
-	<1012208988.15650.1341343674156.JavaMail.www@wwinf1m30>
-	<4FF3562B.7020902@grandegger.com> <50042E37.8040205@wanadoo.fr>
-	<500524A7.3070907@grandegger.com> <5006892D.1020401@wanadoo.fr>
-	<50069BD3.5060905@grandegger.com>
-In-Reply-To: <50069BD3.5060905@grandegger.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] RTDM driver for the Advantech 1680U CANbus Adapter
+Subject: Re: [Xenomai] Xenomai installation on P1020RDB
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,525 +22,72 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Thierry Bultel <thierry.bultel@wanadoo.fr>
-Cc: Xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-On 07/18/2012 01:19 PM, Wolfgang Grandegger wrote:
-> Hi Thierry,
-> 
-> I removed the Xenomai ML as it is off-topic there...
-
-Oops, it's the other way round. Swapping mailing lists...
-
-> On 07/18/2012 12:00 PM, Thierry Bultel wrote:
->> Hi Wolfgang,
->>
->> After some tuning of thunderbird things should get better now.
-> 
-> Yes, you are close... just a few coding style issues remaining.
-> 
-> [FYI: for Thunderbird I use the add-on "Toggle Word Wrap".]
-> 
->> As you required, I have added a comment in Kconfig, about the 1680U which
->> is the only board I now about. 
->>
->> Regarding the "80 chars" stuff, what I meant is that it remains a single
->> location where checkpatch complains, but I do not know how to fix it;
->> line is actually only 64 chars long at most so that is a little puzzling. 
->>
->> WARNING: line over 80 characters
->> #361: FILE: ksrc/drivers/can/sja1000/rtcan_adv_pci.c:293:
->> +									 CHANNEL_SLAVE,
-> 
-> Here I count 9 tabs plus 15 chars = 87 chars! A tab is 8 chars for Linux!
-> 
->> All the idents are done with tabs (it was the case in the previous mail as well but thunderbird broke it).
->> so checkpatch is happy for everything else.
-> 
-> The tabs still look wired...
-> 
->> Thanks in advance for the integration;
->> Cheers
->> Thierry
->>
->>
->> diff -pruN xenomai-2.6.0-orig/ksrc/drivers/can/sja1000/Kconfig xenomai-2.6.0/ksrc/drivers/can/sja1000/Kconfig
->> --- xenomai-2.6.0-orig/ksrc/drivers/can/sja1000/Kconfig	2011-10-18 20:17:18.000000000 +0200
->> +++ xenomai-2.6.0/ksrc/drivers/can/sja1000/Kconfig	2012-07-18 11:46:44.578890869 +0200
->> @@ -41,6 +41,15 @@ config XENO_DRIVERS_CAN_SJA1000_IXXAT_PC
->>  	the second channel working, Xenomai's shared interrupt support
->>  	must be enabled.
->>  
->> +config XENO_DRIVERS_CAN_SJA1000_ADV_PCI
->> +	depends on XENO_DRIVERS_CAN_SJA1000 && PCI
->> +	tristate "ADVANTECH PCI Card"
->> +	help
->> +
->> +	This driver is for the ADVANTECH PCI cards (1 or more channels)
->> +	It supports the 1680U and some other ones.
->> +
->> +
->>  config XENO_DRIVERS_CAN_SJA1000_PLX_PCI
->>  	depends on XENO_DRIVERS_CAN_SJA1000 && PCI
->>  	tristate "PLX90xx PCI-bridge based Cards"
->> diff -pruN xenomai-2.6.0-orig/ksrc/drivers/can/sja1000/Makefile xenomai-2.6.0/ksrc/drivers/can/sja1000/Makefile
->> --- xenomai-2.6.0-orig/ksrc/drivers/can/sja1000/Makefile	2011-10-18 20:17:18.000000000 +0200
->> +++ xenomai-2.6.0/ksrc/drivers/can/sja1000/Makefile	2012-07-16 14:00:38.682836737 +0200
->> @@ -9,6 +9,7 @@ obj-$(CONFIG_XENO_DRIVERS_CAN_SJA1000_PE
->>  obj-$(CONFIG_XENO_DRIVERS_CAN_SJA1000_PEAK_DNG) += xeno_can_peak_dng.o
->>  obj-$(CONFIG_XENO_DRIVERS_CAN_SJA1000_PLX_PCI) += xeno_can_plx_pci.o
->>  obj-$(CONFIG_XENO_DRIVERS_CAN_SJA1000_IXXAT_PCI) += xeno_can_ixxat_pci.o
->> +obj-$(CONFIG_XENO_DRIVERS_CAN_SJA1000_ADV_PCI) += xeno_can_adv_pci.o
->>  obj-$(CONFIG_XENO_DRIVERS_CAN_SJA1000_EMS_PCI) += xeno_can_ems_pci.o
->>  obj-$(CONFIG_XENO_DRIVERS_CAN_SJA1000_ESD_PCI) += xeno_can_esd_pci.o
->>  obj-$(CONFIG_XENO_DRIVERS_CAN_SJA1000_ISA) += xeno_can_isa.o
->> @@ -19,6 +20,7 @@ xeno_can_peak_pci-y := rtcan_peak_pci.o
->>  xeno_can_peak_dng-y := rtcan_peak_dng.o
->>  xeno_can_plx_pci-y := rtcan_plx_pci.o
->>  xeno_can_ixxat_pci-y := rtcan_ixxat_pci.o
->> +xeno_can_adv_pci-y := rtcan_adv_pci.o
->>  xeno_can_ems_pci-y := rtcan_ems_pci.o
->>  xeno_can_esd_pci-y := rtcan_esd_pci.o
->>  xeno_can_isa-y := rtcan_isa.o
->> @@ -35,6 +37,7 @@ obj-$(CONFIG_XENO_DRIVERS_CAN_SJA1000_PE
->>  obj-$(CONFIG_XENO_DRIVERS_CAN_SJA1000_PEAK_DNG) += xeno_can_peak_dng.o 
->>  obj-$(CONFIG_XENO_DRIVERS_CAN_SJA1000_PLX_PCI) += xeno_can_plx_pci.o
->>  obj-$(CONFIG_XENO_DRIVERS_CAN_SJA1000_IXXAT_PCI) += xeno_can_ixxat_pci.o
->> +obj-$(CONFIG_XENO_DRIVERS_CAN_SJA1000_ADV_PCI) += xeno_can_adv_pci.o
->>  obj-$(CONFIG_XENO_DRIVERS_CAN_SJA1000_EMS_PCI) += xeno_can_ems_pci.o
->>  obj-$(CONFIG_XENO_DRIVERS_CAN_SJA1000_ESD_PCI) += xeno_can_esd_pci.o
->>  obj-$(CONFIG_XENO_DRIVERS_CAN_SJA1000_ISA) += xeno_can_isa.o 
->> @@ -47,6 +50,7 @@ xeno_can_peak_pci-objs := rtcan_peak_pci
->>  xeno_can_peak_dng-objs := rtcan_peak_dng.o
->>  xeno_can_plx_pci-objs := rtcan_plx_pci.o
->>  xeno_can_ixxat_pci-objs := rtcan_ixxat_pci.o
->> +xeno_can_adv_pci-objs := rtcan_adv_pci.o
->>  xeno_can_ems_pci-objs := rtcan_ems_pci.o
->>  xeno_can_esd_pci-objs := rtcan_esd_pci.o
->>  xeno_can_isa-objs := rtcan_isa.o
->> @@ -73,6 +77,9 @@ xeno_can_plx_pci.o: $(xeno_can_plx_pci-o
->>  xeno_can_ixxat_pci.o: $(xeno_can_ixxat_pci-objs)
->>  	$(LD) -r -o $@ $(xeno_can_ixxat_pci-objs)
->>  
->> +xeno_can_adv_pci.o: $(xeno_can_adv_pci-objs)
->> +	$(LD) -r -o $@ $(xeno_can_adv_pci-objs)
->> +
->>  xeno_can_ems_pci.o: $(xeno_can_ems_pci-objs)
->>  	$(LD) -r -o $@ $(xeno_can_ems_pci-objs)
->>  
->> diff -pruN xenomai-2.6.0-orig/ksrc/drivers/can/sja1000/rtcan_adv_pci.c xenomai-2.6.0/ksrc/drivers/can/sja1000/rtcan_adv_pci.c
->> --- xenomai-2.6.0-orig/ksrc/drivers/can/sja1000/rtcan_adv_pci.c	1970-01-01 01:00:00.000000000 +0100
->> +++ xenomai-2.6.0/ksrc/drivers/can/sja1000/rtcan_adv_pci.c	2012-07-16 16:58:14.175087435 +0200
->> @@ -0,0 +1,351 @@
->> +/*
->> + * Copyright (C) 2006 Wolfgang Grandegger <wg@grandegger.com>
-> 
-> Your copyright seems to be missing.
-> 
->> + *
->> + * This program is free software; you can redistribute it and/or modify it
->> + * under the terms of the GNU General Public License as published by
->> + * the Free Software Foundation; either version 2 of the License, or
->> + * (at your option) any later version.
->> + *
->> + * This program is distributed in the hope that it will be useful, but
->> + * WITHOUT ANY WARRANTY; without even the implied warranty of
->> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
->> + * General Public License for more details.
->> + *
->> + * You should have received a copy of the GNU General Public License
->> + * along with this program; if not, write to the Free Software Foundation,
->> + * Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
->> + */
->> +
->> +#include <linux/module.h>
->> +#include <linux/ioport.h>
->> +#include <linux/delay.h>
->> +#include <linux/pci.h>
->> +#include <linux/io.h>
->> +
->> +#include <rtdm/rtdm_driver.h>
->> +
->> +#define ADV_PCI_BASE_SIZE	0x80
->> +
->> +/* CAN device profile */
->> +#include <rtdm/rtcan.h>
->> +#include <rtcan_dev.h>
->> +#include <rtcan_raw.h>
->> +#include <rtcan_internal.h>
->> +#include <rtcan_sja1000.h>
->> +#include <rtcan_sja1000_regs.h>
->> +
->> +#define RTCAN_DEV_NAME "rtcan%d"
->> +#define RTCAN_DRV_NAME "ADV-PCI-CAN"
->> +
->> +static char *adv_pci_board_name = "ADV-PCI";
->> +
->> +MODULE_AUTHOR("Thierry Bultel <thierry.bultel@basystemes.fr>");
->> +MODULE_DESCRIPTION("RTCAN board driver for Advantech PCI cards");
->> +MODULE_SUPPORTED_DEVICE("ADV-PCI card CAN controller");
->> +MODULE_LICENSE("GPL");
->> +
->> +struct rtcan_adv_pci {
->> +	struct pci_dev *pci_dev;
->> +	struct rtcan_device *slave_dev;
->> +	void __iomem *conf_addr;
->> +	void __iomem *base_addr;
->> +};
->> +
->> +/*
->> + * According to the datasheet,
->> + * internal clock is 1/2 of the external oscillator frequency
->> + * which is 16 MHz
->> + */
->> +#define ADV_PCI_CAN_CLOCK (16000000 / 2)
->> +
->> +/*
->> + * Output control register
->> +  Depends on the board configuration
->> + */
->> +
->> +#define ADV_PCI_OCR (SJA_OCR_MODE_NORMAL	|	\
->> +					 SJA_OCR_TX0_PUSHPULL	|	\
->> +					 SJA_OCR_TX1_PUSHPULL	|	\
->> +					 SJA_OCR_TX1_INVERT)
->> +
-> 
-> Less tabs please...
-> 
->> +/*
->> + * In the CDR register, you should set CBP to 1.
->> + */
->> +#define ADV_PCI_CDR (SJA_CDR_CBP | SJA_CDR_CAN_MODE)
->> +
->> +
->> +#define ADV_PCI_VENDOR_ID 0x13fe
->> +
->> +#define CHANNEL_SINGLE 0 /* this is a single channel device */
->> +#define CHANNEL_MASTER 1 /* multi channel device, this device is master */
->> +#define CHANNEL_SLAVE  2 /* multi channel device, this is slave */
->> +
->> +#define ADV_PCI_DEVICE(device_id)\
->> +	{ ADV_PCI_VENDOR_ID, device_id, PCI_ANY_ID, PCI_ANY_ID, 0, 0, 0 }
->> +
->> +static DEFINE_PCI_DEVICE_TABLE(adv_pci_tbl) = {
->> +	ADV_PCI_DEVICE(0x1680),
->> +	ADV_PCI_DEVICE(0x3680),
->> +	ADV_PCI_DEVICE(0x2052),
->> +	ADV_PCI_DEVICE(0x1681),
->> +	ADV_PCI_DEVICE(0xc001),
->> +	ADV_PCI_DEVICE(0xc002),
->> +	ADV_PCI_DEVICE(0xc004),
->> +	ADV_PCI_DEVICE(0xc101),
->> +	ADV_PCI_DEVICE(0xc102),
->> +	ADV_PCI_DEVICE(0xc104),
->> +	/* required last entry */
->> +	{ }
->> +};
->> +
->> +MODULE_DEVICE_TABLE(pci, adv_pci_tbl);
->> +
->> +static u8 rtcan_adv_pci_read_reg(struct rtcan_device *dev, int port)
->> +{
->> +	struct rtcan_adv_pci *board = (struct rtcan_adv_pci *)dev->board_priv;
->> +	return ioread8(board->base_addr + port);
->> +}
->> +
->> +static void rtcan_adv_pci_write_reg(struct rtcan_device *dev, int port, u8 data)
->> +{
->> +	struct rtcan_adv_pci *board = (struct rtcan_adv_pci *)dev->board_priv;
-> 
-> Add an empty line here please.
-> 
->> +	iowrite8(data, board->base_addr + port);
->> +}
->> +
->> +static void rtcan_adv_pci_del_chan(
->> +	struct pci_dev *pdev,
->> +	struct rtcan_device *dev)
->> +{
->> +	struct rtcan_adv_pci *board;
->> +
->> +	if (!dev)
->> +		return;
->> +
->> +	board = (struct rtcan_adv_pci *)dev->board_priv;
->> +
->> +	rtcan_sja1000_unregister(dev);
->> +
->> +	pci_iounmap(pdev, board->base_addr);
->> +
->> +	rtcan_dev_free(dev);
->> +}
->> +
->> +
->> +static int rtcan_adv_pci_add_chan(
->> +	struct pci_dev *pdev,
->> +	int	channel,
-> 
-> Please don't use tabs for alignment. Just one space if fine.
-> 
->> +	unsigned int bar,
->> +	unsigned int offset,
->> +	struct rtcan_device **master_dev)
->> +{
->> +	struct rtcan_device *dev;
->> +	struct rtcan_sja1000 *chip;
->> +	struct rtcan_adv_pci *board;
->> +	void __iomem *base_addr;
->> +	int ret;
->> +
->> +	dev = rtcan_dev_alloc(sizeof(struct rtcan_sja1000),
->> +						  sizeof(struct rtcan_adv_pci));
-> 
-> Less tabs!
-> 
->> +	if (dev == NULL)
->> +		return -ENOMEM;
->> +
->> +	chip  = (struct rtcan_sja1000 *)dev->priv;
->> +	board = (struct rtcan_adv_pci *)dev->board_priv;
->> +
->> +	base_addr = pci_iomap(pdev, bar, ADV_PCI_BASE_SIZE) + offset;
->> +
->> +	board->pci_dev = pdev;
->> +	board->conf_addr = NULL;
->> +	board->base_addr = base_addr;
->> +
->> +	if (channel == CHANNEL_SLAVE) {
->> +		struct rtcan_adv_pci *master_board = \
->> +			(struct rtcan_adv_pci *)(*master_dev)->board_priv;
->> +		master_board->slave_dev = dev;
->> +	}
->> +
->> +	dev->board_name = adv_pci_board_name;
->> +
->> +	chip->read_reg  = rtcan_adv_pci_read_reg;
->> +	chip->write_reg = rtcan_adv_pci_write_reg;
->> +
->> +	/* Clock frequency in Hz */
->> +	dev->can_sys_clock = ADV_PCI_CAN_CLOCK;
->> +
->> +	/* Output control register */
->> +	chip->ocr = ADV_PCI_OCR;
->> +
->> +	/* Clock divider register */
->> +	chip->cdr = ADV_PCI_CDR;
->> +
->> +	strncpy(dev->name, RTCAN_DEV_NAME, IFNAMSIZ);
->> +
->> +    /* Make sure SJA1000 is in reset mode */
-> 
-> Tabs, please!
-> 
->> +	chip->write_reg(dev, SJA_MOD, SJA_MOD_RM);
->> +	/* Set PeliCAN mode */
->> +	chip->write_reg(dev, SJA_CDR, SJA_CDR_CAN_MODE);
->> +
->> +	/* check if mode is set */
->> +	ret = chip->read_reg(dev, SJA_CDR);
->> +
->> +	if (ret != SJA_CDR_CAN_MODE)
->> +		return -EIO;
->> +
->> +	/* Register and setup interrupt handling */
->> +	chip->irq_flags = RTDM_IRQTYPE_SHARED;
->> +	chip->irq_num   = pdev->irq;
-> 
-> See my comment about alignment above.
-> 
->> +
->> +	RTCAN_DBG("%s: base_addr=%p conf_addr=%p irq=%d ocr=%#x cdr=%#x\n",
->> +			  RTCAN_DRV_NAME, board->base_addr, board->conf_addr,
->> +			  chip->irq_num, chip->ocr, chip->cdr);
-> 
-> Tabs plus spaces? Please use a consistant indention style.
-> 
->> +
->> +	/* Register SJA1000 device */
->> +	ret = rtcan_sja1000_register(dev);
->> +
-> 
-> Remove this empty line please!
-> 
->> +	if (ret) {
->> +		printk(KERN_ERR "ERROR %d while trying to register SJA1000 device!\n",
->> +			   ret);
->> +		goto failure;
->> +	}
->> +
->> +	if (channel != CHANNEL_SLAVE)
->> +		*master_dev = dev;
->> +
->> +	return 0;
->> +
->> +failure:
->> +	rtcan_dev_free(dev);
->> +
->> +	return ret;
->> +}
->> +
->> +static int __devinit adv_pci_init_one(
->> +	struct pci_dev *pdev,
-> 
-> Should go one line up. This style is not used in Linux! Also true for
-> the functions above.
-> 
->> +	const struct pci_device_id *ent)
->> +{
->> +	int ret, channel;
->> +	unsigned int nb_ports = 0;
->> +	unsigned int bar = 0;
->> +	unsigned int bar_flag = 0;
->> +	unsigned int offset = 0;
->> +	unsigned int ix;
->> +
->> +	struct rtcan_device *master_dev = NULL;
->> +
->> +	dev_info(&pdev->dev, "RTCAN Registering card");
->> +
->> +	ret = pci_enable_device(pdev);
->> +	if (ret)
->> +		goto failure;
->> +
->> +	dev_info(&pdev->dev, "RTCAN Detected Advantech PCI card at slot #%i\n",
->> +			 PCI_SLOT(pdev->devfn));
->> +
->> +	ret = pci_request_regions(pdev, RTCAN_DRV_NAME);
->> +	if (ret)
->> +		goto failure;
->> +
->> +	switch (pdev->device) {
->> +	case 0xc001:
->> +	case 0xc002:
->> +	case 0xc004:
->> +	case 0xc101:
->> +	case 0xc102:
->> +	case 0xc104:
->> +		nb_ports = pdev->device & 0x7;
->> +		offset   = 0x100;
->> +		bar      = 0;
->> +		break;
->> +	case 0x1680:
->> +	case 0x2052:
->> +		nb_ports = 2;
->> +		bar		 = 2;
-> 
-> No tabs. Just one space before and after "="!
-> 
->> +		bar_flag = 1;
->> +		break;
->> +	case 0x1681:
->> +		nb_ports = 1;
->> +		bar      = 2;
->> +		bar_flag = 1;
->> +		break;
->> +	default:
-> 
-> Is this an error case?
-> 
->> +		break;
->> +	}
->> +
->> +	if (nb_ports > 1)
->> +		channel = CHANNEL_MASTER;
->> +	else
->> +		channel = CHANNEL_SINGLE;
->> +
->> +	RTCAN_DBG("%s: Initializing device %04x:%04x:%04x\n",\
->> +			  RTCAN_DRV_NAME, \
->> +			  pdev->vendor, \
->> +			  pdev->device, \
->> +			  pdev->subsystem_device);
-> 
-> You do not need the backslashes!
-> 
->> +	ret = rtcan_adv_pci_add_chan(pdev, channel, bar, offset, &master_dev);
->> +	if (ret)
->> +		goto failure_iounmap;
->> +
->> +	/* register slave channel, if any	*/
->> +
->> +	for (ix = 1; ix < nb_ports; ix++) {
->> +		ret = rtcan_adv_pci_add_chan(pdev,
->> +									 CHANNEL_SLAVE,
->> +									 bar + (bar_flag ? ix : 0),
->> +									 offset*ix,
->> +									 &master_dev);
-> 
-> Too much tabs! Spaces before and after "*"!
-> 
->> +		if (ret)
->> +			goto failure_iounmap;
->> +	}
->> +
->> +	pci_set_drvdata(pdev, master_dev);
->> +
->> +	return 0;
->> +
->> +failure_iounmap:
->> +
->> +	if (master_dev)
->> +		rtcan_adv_pci_del_chan(pdev, master_dev);
->> +
->> +	pci_release_regions(pdev);
->> +
->> +failure:
->> +	return ret;
->> +}
->> +
->> +static void __devexit adv_pci_remove_one(struct pci_dev *pdev)
->> +{
->> +	struct rtcan_device *dev = pci_get_drvdata(pdev);
->> +	struct rtcan_adv_pci *board = (struct rtcan_adv_pci *)dev->board_priv;
->> +
->> +	if (board->slave_dev)
->> +		rtcan_adv_pci_del_chan(pdev, board->slave_dev);
->> +
->> +	rtcan_adv_pci_del_chan(pdev, dev);
->> +
->> +	pci_release_regions(pdev);
->> +	pci_disable_device(pdev);
->> +	pci_set_drvdata(pdev, NULL);
->> +}
->> +
->> +static struct pci_driver rtcan_adv_pci_driver = {
->> +	.name		= RTCAN_DRV_NAME,
->> +	.id_table	= adv_pci_tbl,
->> +	.probe		= adv_pci_init_one,
->> +	.remove		= __devexit_p(adv_pci_remove_one),
-> 
-> Don't align with tabs, just use one space before and after "=".
-> 
->> +};
->> +
->> +static int __init rtcan_adv_pci_init(void)
->> +{
->> +	return pci_register_driver(&rtcan_adv_pci_driver);
->> +}
->> +
->> +
-> 
-> Remove one empty line.
-> 
->> +static void __exit rtcan_adv_pci_exit(void)
->> +{
->> +	pci_unregister_driver(&rtcan_adv_pci_driver);
->> +}
->> +
->> +
-> Ditto.
-> 
->> +module_init(rtcan_adv_pci_init);
->> +module_exit(rtcan_adv_pci_exit);
-> 
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-can" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
-> 
-
-
+PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBHaWxsZXMgQ2hhbnRlcGVyZHJp
+eCBbbWFpbHRvOmdpbGxlcy5jaGFudGVwZXJkcml4QHhlbm9tYWkub3JnXQ0KPiBTZW50OiBXZWRu
+ZXNkYXksIEp1bHkgMjUsIDIwMTIgMTA6NDIgUE0NCj4gVG86IEx1a2FzeiBaZW1sYQ0KPiBDYzog
+WGVub21haUB4ZW5vbWFpLm9yZw0KPiBTdWJqZWN0OiBSZTogW1hlbm9tYWldIFhlbm9tYWkgaW5z
+dGFsbGF0aW9uIG9uIFAxMDIwUkRCDQo+IA0KPiBPbiAwNy8yNS8yMDEyIDEwOjE1IFBNLCBMdWth
+c3ogWmVtbGEgd3JvdGU6DQo+IA0KPiA+DQo+ID4+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0t
+DQo+ID4+IEZyb206IEdpbGxlcyBDaGFudGVwZXJkcml4IFttYWlsdG86Z2lsbGVzLmNoYW50ZXBl
+cmRyaXhAeGVub21haS5vcmddDQo+ID4+IFNlbnQ6IFdlZG5lc2RheSwgSnVseSAyNSwgMjAxMiA3
+OjM2IFBNDQo+ID4+IFRvOiBMdWthc3ogWmVtbGENCj4gPj4gQ2M6IFhlbm9tYWlAeGVub21haS5v
+cmcNCj4gPj4gU3ViamVjdDogUmU6IFtYZW5vbWFpXSBYZW5vbWFpIGluc3RhbGxhdGlvbiBvbiBQ
+MTAyMFJEQg0KPiA+Pg0KPiA+PiBPbiAwNy8yNS8yMDEyIDA3OjExIFBNLCBHaWxsZXMgQ2hhbnRl
+cGVyZHJpeCB3cm90ZToNCj4gPj4NCj4gPj4+IE9uIDA3LzI1LzIwMTIgMDY6MTggUE0sIEx1a2Fz
+eiBaZW1sYSB3cm90ZToNCj4gPj4+DQo+ID4+Pj4gSSB0cmllZCB0byBpbnN0YWxsIFhlbm9tYWkg
+b24gMy4yLjIxIC0gaXQgYm9vdHMsIGJ1dCB3YWl0cyBhYm91dA0KPiA3Ng0KPiA+PiBzZWNvbmRz
+IGFmdGVyIGluaXRpYWxpemF0aW9uIG9mIGZpcnN0IGV0aDAgY29udHJvbGxlcjoNCj4gPj4+Pg0K
+PiA+Pj4+IAlbICAgIDAuOTA1ODIwXSBmc2wtZ2lhbmZhciBldGhlcm5ldC4xOiBldGgwOiBUWCBC
+RCByaW5nIHNpemUgZm9yDQo+ID4+IFFbN106IDI1Ng0KPiA+Pj4+IAlbICAgNzcuNDUxMTM1XSBm
+c2wtZ2lhbmZhciBldGhlcm5ldC4yOiBldGgxOiBtYWM6DQo+ID4+IDAwOjA0OjlmOjAyOjJkOjEx
+DQo+ID4+Pj4NCj4gPj4+PiBUaGVyZSBpcyBubyBkZWxheSBiZXR3ZWVuIGV0aDEgYW5kIGV0aDIu
+DQo+ID4+Pj4NCj4gPj4+PiBUaGUgdmFuaWxsYSAzLjIuMjEgZG9lcyBub3QgaGF2ZSBhbnkgZGVs
+YXlzIC0gaXQgaW5pdGlhbGl6ZXMgZXRoMCwNCj4gPj4gZXRoMSwgZXRoMiBpbW1lZGlhdGVseS4N
+Cj4gPj4+Pg0KPiA+Pj4+IFsuLi5dDQo+ID4+Pg0KPiA+Pj4NCj4gPj4+IEl0IGlzIHZlcnkgbXVj
+aCBsaWtlbHkgYSB0aW1lciBpc3N1ZS4gQXQgdGhlIHRpbWUgaXQgaGFwcGVucywgaXMNCj4gPj4+
+IHhlbm9tYWkgc3RhcnRlZCA/DQo+ID4+Pg0KPiA+Pg0KPiA+Pg0KPiA+PiBBbHNvLCBpdCB3b3Vs
+ZCBiZSBpbnRlcmVzdGluZyB0byBrbm93IGEgYml0IG1vcmUgYWJvdXQgeW91ciBrZXJuZWwNCj4g
+Pj4gY29uZmlndXJhdGlvbiwgYXQgbGVhc3Qgd2hldGhlciB0aGUgZm9sbG93aW5nIG9wdGlvbnMg
+YXJlIGVuYWJsZWQ6DQo+ID4+IENPTkZJR19ISUdIX1JFU19USU1FUlMNCj4gPj4gQ09ORklHX05P
+X0haDQo+ID4+IENPTkZJR19YRU5PX09QVF9XQVRDSERPRw0KPiA+Pg0KPiA+PiBJZiB0aGUgZmly
+c3QgdHdvIGFyZSBvbiBhbmQgdGhlIHRoaXJkIGlzIG9mZiwgdHJ5IHRoZSBmb2xsb3dpbmcNCj4g
+cGF0Y2g6DQo+ID4NCj4gPiBUaGUgWGVub21haSBpcyBydW5uaW5nIGF0IHRoYXQgdGltZS4NCj4g
+PiBbICAgIDAuMzg1MDIzXSB0eXBlPTIwMDAgYXVkaXQoMC4zMjQ6MSk6IGluaXRpYWxpemVkDQo+
+ID4gWyAgICAwLjM4OTkwMl0gSS1waXBlOiBoZWFkIGRvbWFpbiBYZW5vbWFpIHJlZ2lzdGVyZWQu
+DQo+ID4gWyAgICAwLjM5NDc5NV0gWGVub21haTogaGFsL3Bvd2VycGMgc3RhcnRlZC4NCj4gPiBb
+ICAgIDAuMzk4NzYyXSBYZW5vbWFpOiBzY2hlZHVsaW5nIGNsYXNzIGlkbGUgcmVnaXN0ZXJlZC4N
+Cj4gPiBbICAgIDAuNDAzODQ4XSBYZW5vbWFpOiBzY2hlZHVsaW5nIGNsYXNzIHJ0IHJlZ2lzdGVy
+ZWQuDQo+ID4gWyAgICAwLjQxNTU2N10gWGVub21haTogcmVhbC10aW1lIG51Y2xldXMgdjIuNi4x
+IChMaWdodCBZZWFycyBBd2F5KQ0KPiBsb2FkZWQuDQo+ID4gWyAgICAwLjQyMjIxN10gWGVub21h
+aTogZGVidWcgbW9kZSBlbmFibGVkLg0KPiA+IFsgICAgMC40MjY0MzRdIFhlbm9tYWk6IHN0YXJ0
+aW5nIG5hdGl2ZSBBUEkgc2VydmljZXMuDQo+ID4gWyAgICAwLjQzMTE2MF0gWGVub21haTogc3Rh
+cnRpbmcgUE9TSVggc2VydmljZXMuDQo+ID4gWyAgICAwLjQzNTYwOV0gWGVub21haTogc3RhcnRp
+bmcgUlRETSBzZXJ2aWNlcy4NCj4gPiBbICAgIDAuNDQ4OTY0XSBJbnN0YWxsaW5nIGtuZnNkIChj
+b3B5cmlnaHQgKEMpIDE5OTYNCj4gb2tpckBtb25hZC5zd2IuZGUpLg0KPiA+DQo+ID4gSGVyZSBh
+cmUgdGhlIHZhbHVlcyBvZiBtZW50aW9uZWQgcGFyYW1ldGVyczoNCj4gPiAJQ09ORklHX0hJR0hf
+UkVTX1RJTUVSUz15DQo+ID4gCUNPTkZJR19OT19IWj15DQo+ID4gCUNPTkZJR19YRU5PX09QVF9X
+QVRDSERPRz15DQo+ID4gCUNPTkZJR19YRU5PX09QVF9XQVRDSERPR19USU1FT1VUPTQNCj4gPg0K
+PiANCj4gPiBUaGUgdGhpcmQgb25lIGlzIG9uLCBldmVudHVhbGx5IEkgY291bGQgdHJ5IHBhdGNo
+LCBidXQgSSdsbCBoYXZlDQo+IA0KPiA+IGFjY2VzcyB0byBoYXJkd2FyZSBpbiB0aGUgbW9ybmlu
+ZyAoSSdtIHdvcmtpbmcgaW4gRXVyb3BlKS4NCj4gDQo+IA0KPiBObywgdGhlIHBhdGNoIGlzIHBy
+b2JhYmx5IG5lZWRlZCBmb3IgY29ycmVjdG5lc3MsIGJ1dCB3aWxsIG5vdCBzb2x2ZQ0KPiB0aGUg
+aXNzdWUgeW91IG9ic2VydmUgKHdpdGggdGhlIHdhdGNoZG9nIG9uLCB0aGVyZSBpcyBhbHdheXMg
+YSB0aW1lcg0KPiBydW5uaW5nLCBzbywgdGhlIGRlY3JlbWVudGVyIGlzIGFsd2F5cyBwcm9ncmFt
+bWVkIGJ5IHhlbm9tYWkpLg0KPiANCj4gV2hhdCB5b3UgY2FuIHRyeSBpczoNCj4gLSBwdXR0aW5n
+IGEgcHJpbnRrIGluIF9faXBpcGVfZ3JhYl90aW1lciAoc2F5LCBwcmludCBhIGRvdCBldmVyeSBI
+Wg0KPiB0aWNrcykNCj4gLSBhbmQgYSBzaW1pbGFyIHByaW50ayBpbiB0aGUgInRpbWVyX2ludGVy
+cnVwdCIgaW4NCj4gYXJjaC9wb3dlcnBjL2tlcm5lbC90aW1lLmMNCj4gDQo+IE5vdyBydW4gdGhl
+IGtlcm5lbCBhbmQgc2VlIGlmIHRoZSB0d28gb2YgdGhlbSBhcmUgdGlja2luZyBkdXJpbmcgdGhl
+DQo+IDc2cyBwZXJpb2QuDQoNCl9faXBpcGVfZ3JhYl90aW1lciBzZWVtcyB0byBiZSBub3QgY2Fs
+bGVkIGR1cmluZyB0aGF0IDc2cyBwZXJpb2QuIEl04oCZcyBjYWxsZWQgYmVmb3JlIGFuZCBhZnRl
+ci4NClRoZSB0aW1lcl9pbnRlcnJ1cHQgaXMgd29ya2luZyBhbGwgdGhlIHRpbWUuDQoNCkJlc3Qg
+cmVnYXJkcywNCiBMdWthc3oNCg0KCgoqKioNClRoZSBpbmZvcm1hdGlvbiBpbiB0aGlzIGVtYWls
+IGlzIGNvbmZpZGVudGlhbCBhbmQgaW50ZW5kZWQgc29sZWx5IGZvciB0aGUgaW5kaXZpZHVhbCBv
+ciBlbnRpdHkgdG8gd2hvbSBpdCBpcyBhZGRyZXNzZWQuIElmIHlvdSBoYXZlIHJlY2VpdmVkIHRo
+aXMgZW1haWwgaW4gZXJyb3IgcGxlYXNlIG5vdGlmeSB0aGUgc2VuZGVyIGJ5IHJldHVybiBlLW1h
+aWwsIGRlbGV0ZSB0aGlzIGVtYWlsLCBhbmQgcmVmcmFpbiBmcm9tIGFueSBkaXNjbG9zdXJlIG9y
+IGFjdGlvbiBiYXNlZCBvbiB0aGUgaW5mb3JtYXRpb24uDQoqKioK
 
