@@ -1,16 +1,13 @@
-Message-ID: <50113143.50101@xenomai.org>
-Date: Thu, 26 Jul 2012 14:00:03 +0200
+Message-ID: <5011A6ED.2080303@xenomai.org>
+Date: Thu, 26 Jul 2012 22:22:05 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CE2E43470FE5444A811B580382FE5EDF2113D8D95A@KEMPMAIL2.woodward.com>	<5009A292.4060508@grandegger.com>	<CE2E43470FE5444A811B580382FE5EDF2113EA8DE7@KEMPMAIL2.woodward.com>
-	<501028DC.8000803@xenomai.org> <50102E8D.1040004@xenomai.org>
-	<CE2E43470FE5444A811B580382FE5EDF2113EA8E07@KEMPMAIL2.woodward.com>
-	<50105A22.3090704@xenomai.org>
-	<CE2E43470FE5444A811B580382FE5EDF2113EA8FD2@KEMPMAIL2.woodward.com>
-In-Reply-To: <CE2E43470FE5444A811B580382FE5EDF2113EA8FD2@KEMPMAIL2.woodward.com>
+References: <6B3AC2788014DD49B43AF9611365BBAA21B0B94DE9@mary.at.omicron.at>	<5009902B.7070705@xenomai.org>	<6B3AC2788014DD49B43AF9611365BBAA21B0B954F3@mary.at.omicron.at>	<500D298C.6080601@xenomai.org>	<6B3AC2788014DD49B43AF9611365BBAA21B0B9550A@mary.at.omicron.at>	<6B3AC2788014DD49B43AF9611365BBAA21B0B95718@mary.at.omicron.at>
+	<500E4603.2000002@xenomai.org>
+In-Reply-To: <500E4603.2000002@xenomai.org>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] Xenomai installation on P1020RDB
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] xenomai 2.6.1 on ixp4xx hangs on boot
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,114 +16,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lukasz Zemla <Lukasz.Zemla@woodward.com>
-Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: Michael Lausch <michael.lausch@omicron.at>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 07/26/2012 01:20 PM, Lukasz Zemla wrote:
+On 07/24/2012 08:51 AM, Gilles Chanteperdrix wrote:
 
->> -----Original Message-----
->> From: Gilles Chanteperdrix [mailto:gilles.chanteperdrix@xenomai.org]
->> Sent: Wednesday, July 25, 2012 10:42 PM
->> To: Lukasz Zemla
->> Cc: Xenomai@xenomai.org
->> Subject: Re: [Xenomai] Xenomai installation on P1020RDB
+> On 07/24/2012 08:49 AM, Michael Lausch wrote:
+> 
+>> Hi,
+>> I've some patches lying around against linux 3.0.x and xenomai 2.6 which compile and 
+>> the "No kuser TSC emulation" (sp?)  message when starting a xenomai application is not printed any more.
+>> I will merge them with the ipipe patch mentioned  in your post. (have i mentioned, i don't like outlook?). 
 >>
->> On 07/25/2012 10:15 PM, Lukasz Zemla wrote:
->>
->>>
->>>> -----Original Message-----
->>>> From: Gilles Chanteperdrix [mailto:gilles.chanteperdrix@xenomai.org]=
-
->>>> Sent: Wednesday, July 25, 2012 7:36 PM
->>>> To: Lukasz Zemla
->>>> Cc: Xenomai@xenomai.org
->>>> Subject: Re: [Xenomai] Xenomai installation on P1020RDB
->>>>
->>>> On 07/25/2012 07:11 PM, Gilles Chanteperdrix wrote:
->>>>
->>>>> On 07/25/2012 06:18 PM, Lukasz Zemla wrote:
->>>>>
->>>>>> I tried to install Xenomai on 3.2.21 - it boots, but waits about
->> 76
->>>> seconds after initialization of first eth0 controller:
->>>>>>
->>>>>> 	[    0.905820] fsl-gianfar ethernet.1: eth0: TX BD ring size for
->>>> Q[7]: 256
->>>>>> 	[   77.451135] fsl-gianfar ethernet.2: eth1: mac:
->>>> 00:04:9f:02:2d:11
->>>>>>
->>>>>> There is no delay between eth1 and eth2.
->>>>>>
->>>>>> The vanilla 3.2.21 does not have any delays - it initializes eth0,=
-
->>>> eth1, eth2 immediately.
->>>>>>
->>>>>> [...]
->>>>>
->>>>>
->>>>> It is very much likely a timer issue. At the time it happens, is
->>>>> xenomai started ?
->>>>>
->>>>
->>>>
->>>> Also, it would be interesting to know a bit more about your kernel
->>>> configuration, at least whether the following options are enabled:
->>>> CONFIG_HIGH_RES_TIMERS
->>>> CONFIG_NO_HZ
->>>> CONFIG_XENO_OPT_WATCHDOG
->>>>
->>>> If the first two are on and the third is off, try the following
->> patch:
->>>
->>> The Xenomai is running at that time.
->>> [    0.385023] type=3D2000 audit(0.324:1): initialized
->>> [    0.389902] I-pipe: head domain Xenomai registered.
->>> [    0.394795] Xenomai: hal/powerpc started.
->>> [    0.398762] Xenomai: scheduling class idle registered.
->>> [    0.403848] Xenomai: scheduling class rt registered.
->>> [    0.415567] Xenomai: real-time nucleus v2.6.1 (Light Years Away)
->> loaded.
->>> [    0.422217] Xenomai: debug mode enabled.
->>> [    0.426434] Xenomai: starting native API services.
->>> [    0.431160] Xenomai: starting POSIX services.
->>> [    0.435609] Xenomai: starting RTDM services.
->>> [    0.448964] Installing knfsd (copyright (C) 1996
->> okir@monad.swb.de).
->>>
->>> Here are the values of mentioned parameters:
->>> 	CONFIG_HIGH_RES_TIMERS=3Dy
->>> 	CONFIG_NO_HZ=3Dy
->>> 	CONFIG_XENO_OPT_WATCHDOG=3Dy
->>> 	CONFIG_XENO_OPT_WATCHDOG_TIMEOUT=3D4
->>>
->>
->>> The third one is on, eventually I could try patch, but I'll have
->>
->>> access to hardware in the morning (I'm working in Europe).
->>
->>
->> No, the patch is probably needed for correctness, but will not solve
->> the issue you observe (with the watchdog on, there is always a timer
->> running, so, the decrementer is always programmed by xenomai).
->>
->> What you can try is:
->> - putting a printk in __ipipe_grab_timer (say, print a dot every HZ
->> ticks)
->> - and a similar printk in the "timer_interrupt" in
->> arch/powerpc/kernel/time.c
->>
->> Now run the kernel and see if the two of them are ticking during the
->> 76s period.
->=20
-> __ipipe_grab_timer seems to be not called during that 76s period. It=E2=
-=80=99s called before and after.
-> The timer_interrupt is working all the time.
+>> Can you point me to an acid test which i can use to verify if kuser TSC emulation is working correctly?
+> 
+> 
+> The "tsc" test in xenomai regression testsuite. Run it with "-w" and it
+> will try and read the tsc for as long as it takes for the hardware
+> counter to wrap.
 
 
-That is strange, whether xenomai intercepts the timer or not, the timer
-interrupt normally always go through __ipipe_grab_timer first.
+ping, any news about these patches?
 
---=20
+-- 
                                                                 Gilles.
-
 
