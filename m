@@ -1,18 +1,15 @@
-From: Lukasz Zemla <Lukasz.Zemla@woodward.com>
-Date: Thu, 26 Jul 2012 13:20:06 +0200
-Message-ID: <CE2E43470FE5444A811B580382FE5EDF2113EA8FD2@KEMPMAIL2.woodward.com>
-References: <CE2E43470FE5444A811B580382FE5EDF2113D8D95A@KEMPMAIL2.woodward.com>
-	<5009A292.4060508@grandegger.com>
-	<CE2E43470FE5444A811B580382FE5EDF2113EA8DE7@KEMPMAIL2.woodward.com>
+Message-ID: <50113143.50101@xenomai.org>
+Date: Thu, 26 Jul 2012 14:00:03 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+References: <CE2E43470FE5444A811B580382FE5EDF2113D8D95A@KEMPMAIL2.woodward.com>	<5009A292.4060508@grandegger.com>	<CE2E43470FE5444A811B580382FE5EDF2113EA8DE7@KEMPMAIL2.woodward.com>
 	<501028DC.8000803@xenomai.org> <50102E8D.1040004@xenomai.org>
 	<CE2E43470FE5444A811B580382FE5EDF2113EA8E07@KEMPMAIL2.woodward.com>
 	<50105A22.3090704@xenomai.org>
-In-Reply-To: <50105A22.3090704@xenomai.org>
-Content-Language: en-US
-Content-Type: text/plain;
-  charset="utf-8"
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
+	<CE2E43470FE5444A811B580382FE5EDF2113EA8FD2@KEMPMAIL2.woodward.com>
+In-Reply-To: <CE2E43470FE5444A811B580382FE5EDF2113EA8FD2@KEMPMAIL2.woodward.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Subject: Re: [Xenomai] Xenomai installation on P1020RDB
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -22,72 +19,114 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Lukasz Zemla <Lukasz.Zemla@woodward.com>
 Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBHaWxsZXMgQ2hhbnRlcGVyZHJp
-eCBbbWFpbHRvOmdpbGxlcy5jaGFudGVwZXJkcml4QHhlbm9tYWkub3JnXQ0KPiBTZW50OiBXZWRu
-ZXNkYXksIEp1bHkgMjUsIDIwMTIgMTA6NDIgUE0NCj4gVG86IEx1a2FzeiBaZW1sYQ0KPiBDYzog
-WGVub21haUB4ZW5vbWFpLm9yZw0KPiBTdWJqZWN0OiBSZTogW1hlbm9tYWldIFhlbm9tYWkgaW5z
-dGFsbGF0aW9uIG9uIFAxMDIwUkRCDQo+IA0KPiBPbiAwNy8yNS8yMDEyIDEwOjE1IFBNLCBMdWth
-c3ogWmVtbGEgd3JvdGU6DQo+IA0KPiA+DQo+ID4+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0t
-DQo+ID4+IEZyb206IEdpbGxlcyBDaGFudGVwZXJkcml4IFttYWlsdG86Z2lsbGVzLmNoYW50ZXBl
-cmRyaXhAeGVub21haS5vcmddDQo+ID4+IFNlbnQ6IFdlZG5lc2RheSwgSnVseSAyNSwgMjAxMiA3
-OjM2IFBNDQo+ID4+IFRvOiBMdWthc3ogWmVtbGENCj4gPj4gQ2M6IFhlbm9tYWlAeGVub21haS5v
-cmcNCj4gPj4gU3ViamVjdDogUmU6IFtYZW5vbWFpXSBYZW5vbWFpIGluc3RhbGxhdGlvbiBvbiBQ
-MTAyMFJEQg0KPiA+Pg0KPiA+PiBPbiAwNy8yNS8yMDEyIDA3OjExIFBNLCBHaWxsZXMgQ2hhbnRl
-cGVyZHJpeCB3cm90ZToNCj4gPj4NCj4gPj4+IE9uIDA3LzI1LzIwMTIgMDY6MTggUE0sIEx1a2Fz
-eiBaZW1sYSB3cm90ZToNCj4gPj4+DQo+ID4+Pj4gSSB0cmllZCB0byBpbnN0YWxsIFhlbm9tYWkg
-b24gMy4yLjIxIC0gaXQgYm9vdHMsIGJ1dCB3YWl0cyBhYm91dA0KPiA3Ng0KPiA+PiBzZWNvbmRz
-IGFmdGVyIGluaXRpYWxpemF0aW9uIG9mIGZpcnN0IGV0aDAgY29udHJvbGxlcjoNCj4gPj4+Pg0K
-PiA+Pj4+IAlbICAgIDAuOTA1ODIwXSBmc2wtZ2lhbmZhciBldGhlcm5ldC4xOiBldGgwOiBUWCBC
-RCByaW5nIHNpemUgZm9yDQo+ID4+IFFbN106IDI1Ng0KPiA+Pj4+IAlbICAgNzcuNDUxMTM1XSBm
-c2wtZ2lhbmZhciBldGhlcm5ldC4yOiBldGgxOiBtYWM6DQo+ID4+IDAwOjA0OjlmOjAyOjJkOjEx
-DQo+ID4+Pj4NCj4gPj4+PiBUaGVyZSBpcyBubyBkZWxheSBiZXR3ZWVuIGV0aDEgYW5kIGV0aDIu
-DQo+ID4+Pj4NCj4gPj4+PiBUaGUgdmFuaWxsYSAzLjIuMjEgZG9lcyBub3QgaGF2ZSBhbnkgZGVs
-YXlzIC0gaXQgaW5pdGlhbGl6ZXMgZXRoMCwNCj4gPj4gZXRoMSwgZXRoMiBpbW1lZGlhdGVseS4N
-Cj4gPj4+Pg0KPiA+Pj4+IFsuLi5dDQo+ID4+Pg0KPiA+Pj4NCj4gPj4+IEl0IGlzIHZlcnkgbXVj
-aCBsaWtlbHkgYSB0aW1lciBpc3N1ZS4gQXQgdGhlIHRpbWUgaXQgaGFwcGVucywgaXMNCj4gPj4+
-IHhlbm9tYWkgc3RhcnRlZCA/DQo+ID4+Pg0KPiA+Pg0KPiA+Pg0KPiA+PiBBbHNvLCBpdCB3b3Vs
-ZCBiZSBpbnRlcmVzdGluZyB0byBrbm93IGEgYml0IG1vcmUgYWJvdXQgeW91ciBrZXJuZWwNCj4g
-Pj4gY29uZmlndXJhdGlvbiwgYXQgbGVhc3Qgd2hldGhlciB0aGUgZm9sbG93aW5nIG9wdGlvbnMg
-YXJlIGVuYWJsZWQ6DQo+ID4+IENPTkZJR19ISUdIX1JFU19USU1FUlMNCj4gPj4gQ09ORklHX05P
-X0haDQo+ID4+IENPTkZJR19YRU5PX09QVF9XQVRDSERPRw0KPiA+Pg0KPiA+PiBJZiB0aGUgZmly
-c3QgdHdvIGFyZSBvbiBhbmQgdGhlIHRoaXJkIGlzIG9mZiwgdHJ5IHRoZSBmb2xsb3dpbmcNCj4g
-cGF0Y2g6DQo+ID4NCj4gPiBUaGUgWGVub21haSBpcyBydW5uaW5nIGF0IHRoYXQgdGltZS4NCj4g
-PiBbICAgIDAuMzg1MDIzXSB0eXBlPTIwMDAgYXVkaXQoMC4zMjQ6MSk6IGluaXRpYWxpemVkDQo+
-ID4gWyAgICAwLjM4OTkwMl0gSS1waXBlOiBoZWFkIGRvbWFpbiBYZW5vbWFpIHJlZ2lzdGVyZWQu
-DQo+ID4gWyAgICAwLjM5NDc5NV0gWGVub21haTogaGFsL3Bvd2VycGMgc3RhcnRlZC4NCj4gPiBb
-ICAgIDAuMzk4NzYyXSBYZW5vbWFpOiBzY2hlZHVsaW5nIGNsYXNzIGlkbGUgcmVnaXN0ZXJlZC4N
-Cj4gPiBbICAgIDAuNDAzODQ4XSBYZW5vbWFpOiBzY2hlZHVsaW5nIGNsYXNzIHJ0IHJlZ2lzdGVy
-ZWQuDQo+ID4gWyAgICAwLjQxNTU2N10gWGVub21haTogcmVhbC10aW1lIG51Y2xldXMgdjIuNi4x
-IChMaWdodCBZZWFycyBBd2F5KQ0KPiBsb2FkZWQuDQo+ID4gWyAgICAwLjQyMjIxN10gWGVub21h
-aTogZGVidWcgbW9kZSBlbmFibGVkLg0KPiA+IFsgICAgMC40MjY0MzRdIFhlbm9tYWk6IHN0YXJ0
-aW5nIG5hdGl2ZSBBUEkgc2VydmljZXMuDQo+ID4gWyAgICAwLjQzMTE2MF0gWGVub21haTogc3Rh
-cnRpbmcgUE9TSVggc2VydmljZXMuDQo+ID4gWyAgICAwLjQzNTYwOV0gWGVub21haTogc3RhcnRp
-bmcgUlRETSBzZXJ2aWNlcy4NCj4gPiBbICAgIDAuNDQ4OTY0XSBJbnN0YWxsaW5nIGtuZnNkIChj
-b3B5cmlnaHQgKEMpIDE5OTYNCj4gb2tpckBtb25hZC5zd2IuZGUpLg0KPiA+DQo+ID4gSGVyZSBh
-cmUgdGhlIHZhbHVlcyBvZiBtZW50aW9uZWQgcGFyYW1ldGVyczoNCj4gPiAJQ09ORklHX0hJR0hf
-UkVTX1RJTUVSUz15DQo+ID4gCUNPTkZJR19OT19IWj15DQo+ID4gCUNPTkZJR19YRU5PX09QVF9X
-QVRDSERPRz15DQo+ID4gCUNPTkZJR19YRU5PX09QVF9XQVRDSERPR19USU1FT1VUPTQNCj4gPg0K
-PiANCj4gPiBUaGUgdGhpcmQgb25lIGlzIG9uLCBldmVudHVhbGx5IEkgY291bGQgdHJ5IHBhdGNo
-LCBidXQgSSdsbCBoYXZlDQo+IA0KPiA+IGFjY2VzcyB0byBoYXJkd2FyZSBpbiB0aGUgbW9ybmlu
-ZyAoSSdtIHdvcmtpbmcgaW4gRXVyb3BlKS4NCj4gDQo+IA0KPiBObywgdGhlIHBhdGNoIGlzIHBy
-b2JhYmx5IG5lZWRlZCBmb3IgY29ycmVjdG5lc3MsIGJ1dCB3aWxsIG5vdCBzb2x2ZQ0KPiB0aGUg
-aXNzdWUgeW91IG9ic2VydmUgKHdpdGggdGhlIHdhdGNoZG9nIG9uLCB0aGVyZSBpcyBhbHdheXMg
-YSB0aW1lcg0KPiBydW5uaW5nLCBzbywgdGhlIGRlY3JlbWVudGVyIGlzIGFsd2F5cyBwcm9ncmFt
-bWVkIGJ5IHhlbm9tYWkpLg0KPiANCj4gV2hhdCB5b3UgY2FuIHRyeSBpczoNCj4gLSBwdXR0aW5n
-IGEgcHJpbnRrIGluIF9faXBpcGVfZ3JhYl90aW1lciAoc2F5LCBwcmludCBhIGRvdCBldmVyeSBI
-Wg0KPiB0aWNrcykNCj4gLSBhbmQgYSBzaW1pbGFyIHByaW50ayBpbiB0aGUgInRpbWVyX2ludGVy
-cnVwdCIgaW4NCj4gYXJjaC9wb3dlcnBjL2tlcm5lbC90aW1lLmMNCj4gDQo+IE5vdyBydW4gdGhl
-IGtlcm5lbCBhbmQgc2VlIGlmIHRoZSB0d28gb2YgdGhlbSBhcmUgdGlja2luZyBkdXJpbmcgdGhl
-DQo+IDc2cyBwZXJpb2QuDQoNCl9faXBpcGVfZ3JhYl90aW1lciBzZWVtcyB0byBiZSBub3QgY2Fs
-bGVkIGR1cmluZyB0aGF0IDc2cyBwZXJpb2QuIEl04oCZcyBjYWxsZWQgYmVmb3JlIGFuZCBhZnRl
-ci4NClRoZSB0aW1lcl9pbnRlcnJ1cHQgaXMgd29ya2luZyBhbGwgdGhlIHRpbWUuDQoNCkJlc3Qg
-cmVnYXJkcywNCiBMdWthc3oNCg0KCgoqKioNClRoZSBpbmZvcm1hdGlvbiBpbiB0aGlzIGVtYWls
-IGlzIGNvbmZpZGVudGlhbCBhbmQgaW50ZW5kZWQgc29sZWx5IGZvciB0aGUgaW5kaXZpZHVhbCBv
-ciBlbnRpdHkgdG8gd2hvbSBpdCBpcyBhZGRyZXNzZWQuIElmIHlvdSBoYXZlIHJlY2VpdmVkIHRo
-aXMgZW1haWwgaW4gZXJyb3IgcGxlYXNlIG5vdGlmeSB0aGUgc2VuZGVyIGJ5IHJldHVybiBlLW1h
-aWwsIGRlbGV0ZSB0aGlzIGVtYWlsLCBhbmQgcmVmcmFpbiBmcm9tIGFueSBkaXNjbG9zdXJlIG9y
-IGFjdGlvbiBiYXNlZCBvbiB0aGUgaW5mb3JtYXRpb24uDQoqKioK
+On 07/26/2012 01:20 PM, Lukasz Zemla wrote:
+
+>> -----Original Message-----
+>> From: Gilles Chanteperdrix [mailto:gilles.chanteperdrix@xenomai.org]
+>> Sent: Wednesday, July 25, 2012 10:42 PM
+>> To: Lukasz Zemla
+>> Cc: Xenomai@xenomai.org
+>> Subject: Re: [Xenomai] Xenomai installation on P1020RDB
+>>
+>> On 07/25/2012 10:15 PM, Lukasz Zemla wrote:
+>>
+>>>
+>>>> -----Original Message-----
+>>>> From: Gilles Chanteperdrix [mailto:gilles.chanteperdrix@xenomai.org]=
+
+>>>> Sent: Wednesday, July 25, 2012 7:36 PM
+>>>> To: Lukasz Zemla
+>>>> Cc: Xenomai@xenomai.org
+>>>> Subject: Re: [Xenomai] Xenomai installation on P1020RDB
+>>>>
+>>>> On 07/25/2012 07:11 PM, Gilles Chanteperdrix wrote:
+>>>>
+>>>>> On 07/25/2012 06:18 PM, Lukasz Zemla wrote:
+>>>>>
+>>>>>> I tried to install Xenomai on 3.2.21 - it boots, but waits about
+>> 76
+>>>> seconds after initialization of first eth0 controller:
+>>>>>>
+>>>>>> 	[    0.905820] fsl-gianfar ethernet.1: eth0: TX BD ring size for
+>>>> Q[7]: 256
+>>>>>> 	[   77.451135] fsl-gianfar ethernet.2: eth1: mac:
+>>>> 00:04:9f:02:2d:11
+>>>>>>
+>>>>>> There is no delay between eth1 and eth2.
+>>>>>>
+>>>>>> The vanilla 3.2.21 does not have any delays - it initializes eth0,=
+
+>>>> eth1, eth2 immediately.
+>>>>>>
+>>>>>> [...]
+>>>>>
+>>>>>
+>>>>> It is very much likely a timer issue. At the time it happens, is
+>>>>> xenomai started ?
+>>>>>
+>>>>
+>>>>
+>>>> Also, it would be interesting to know a bit more about your kernel
+>>>> configuration, at least whether the following options are enabled:
+>>>> CONFIG_HIGH_RES_TIMERS
+>>>> CONFIG_NO_HZ
+>>>> CONFIG_XENO_OPT_WATCHDOG
+>>>>
+>>>> If the first two are on and the third is off, try the following
+>> patch:
+>>>
+>>> The Xenomai is running at that time.
+>>> [    0.385023] type=3D2000 audit(0.324:1): initialized
+>>> [    0.389902] I-pipe: head domain Xenomai registered.
+>>> [    0.394795] Xenomai: hal/powerpc started.
+>>> [    0.398762] Xenomai: scheduling class idle registered.
+>>> [    0.403848] Xenomai: scheduling class rt registered.
+>>> [    0.415567] Xenomai: real-time nucleus v2.6.1 (Light Years Away)
+>> loaded.
+>>> [    0.422217] Xenomai: debug mode enabled.
+>>> [    0.426434] Xenomai: starting native API services.
+>>> [    0.431160] Xenomai: starting POSIX services.
+>>> [    0.435609] Xenomai: starting RTDM services.
+>>> [    0.448964] Installing knfsd (copyright (C) 1996
+>> okir@monad.swb.de).
+>>>
+>>> Here are the values of mentioned parameters:
+>>> 	CONFIG_HIGH_RES_TIMERS=3Dy
+>>> 	CONFIG_NO_HZ=3Dy
+>>> 	CONFIG_XENO_OPT_WATCHDOG=3Dy
+>>> 	CONFIG_XENO_OPT_WATCHDOG_TIMEOUT=3D4
+>>>
+>>
+>>> The third one is on, eventually I could try patch, but I'll have
+>>
+>>> access to hardware in the morning (I'm working in Europe).
+>>
+>>
+>> No, the patch is probably needed for correctness, but will not solve
+>> the issue you observe (with the watchdog on, there is always a timer
+>> running, so, the decrementer is always programmed by xenomai).
+>>
+>> What you can try is:
+>> - putting a printk in __ipipe_grab_timer (say, print a dot every HZ
+>> ticks)
+>> - and a similar printk in the "timer_interrupt" in
+>> arch/powerpc/kernel/time.c
+>>
+>> Now run the kernel and see if the two of them are ticking during the
+>> 76s period.
+>=20
+> __ipipe_grab_timer seems to be not called during that 76s period. It=E2=
+=80=99s called before and after.
+> The timer_interrupt is working all the time.
+
+
+That is strange, whether xenomai intercepts the timer or not, the timer
+interrupt normally always go through __ipipe_grab_timer first.
+
+--=20
+                                                                Gilles.
+
 
