@@ -1,13 +1,11 @@
-Message-ID: <5011A6ED.2080303@xenomai.org>
-Date: Thu, 26 Jul 2012 22:22:05 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: <dietmar.schindler@manroland-web.com>
+Date: Fri, 27 Jul 2012 12:45:25 +0000
+Message-ID: <208C6975C932E94F86239FEA59CCA632068318D3@AUSMXMBX02.mrws.biz>
+Content-Language: de-DE
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <6B3AC2788014DD49B43AF9611365BBAA21B0B94DE9@mary.at.omicron.at>	<5009902B.7070705@xenomai.org>	<6B3AC2788014DD49B43AF9611365BBAA21B0B954F3@mary.at.omicron.at>	<500D298C.6080601@xenomai.org>	<6B3AC2788014DD49B43AF9611365BBAA21B0B9550A@mary.at.omicron.at>	<6B3AC2788014DD49B43AF9611365BBAA21B0B95718@mary.at.omicron.at>
-	<500E4603.2000002@xenomai.org>
-In-Reply-To: <500E4603.2000002@xenomai.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] xenomai 2.6.1 on ixp4xx hangs on boot
+Subject: [Xenomai] [PATCH, Xenomai 2.5.6]
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,28 +14,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Michael Lausch <michael.lausch@omicron.at>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 07/24/2012 08:51 AM, Gilles Chanteperdrix wrote:
+VGhlc2UgYXJlIHBhdGNoZXMgZm9yIHR3byBmaWxlcyBpbiBrc3JjL251Y2xldXMgb2YgWGVub21h
+aSAyLjUuNiB0byBjdXJlIGFuIGluY29tcGF0aWJpbGl0eSB3aXRoIExpbnV4IDIuNDsgaWYgdGhl
+eSBhcmUgYmFkIGluIGZvcm0sIHBsZWFzZSBsZXQgbWUga25vdy4NCg0KSW5kZXg6IGhlYXAuYw0K
+PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
+PT09PT09PT09PQ0KLS0tIGhlYXAuYyAgICAgIChyZXZpc2lvbiAzNTg3KQ0KKysrIGhlYXAuYyAg
+ICAgIChyZXZpc2lvbiA0Mjc2KQ0KQEAgLTExMjcsNyArMTEyNywxMiBAQA0KICAgICAgICByZXR1
+cm4gTlVMTDsNCiB9DQoNCisjaWYgSEFWRV9VTkxPQ0tFRF9JT0NUTA0KIHN0YXRpYyBsb25nIHhu
+aGVhcF9pb2N0bChzdHJ1Y3QgZmlsZSAqZmlsZSwgdW5zaWduZWQgaW50IGNtZCwgdW5zaWduZWQg
+bG9uZyBhcmcpDQorI2Vsc2UNCitzdGF0aWMgaW50IHhuaGVhcF9pb2N0bChzdHJ1Y3QgaW5vZGUg
+Kmlub2RlLA0KKyAgICAgICAgICAgICAgICAgICAgICAgc3RydWN0IGZpbGUgKmZpbGUsIHVuc2ln
+bmVkIGludCBjbWQsIHVuc2lnbmVkIGxvbmcgYXJnKQ0KKyNlbmRpZg0KIHsNCiAgICAgICAgZmls
+ZS0+cHJpdmF0ZV9kYXRhID0gKHZvaWQgKilhcmc7DQogICAgICAgIHJldHVybiAwOw0KDQpJbmRl
+eDogcGlwZS5jDQo9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
+PT09PT09PT09PT09PT09PT09PT09DQotLS0gcGlwZS5jICAgICAgKHJldmlzaW9uIDM1ODcpDQor
+KysgcGlwZS5jICAgICAgKHJldmlzaW9uIDQyNzYpDQpAQCAtOTIzLDcgKzkyMywxMiBAQA0KICAg
+ICAgICByZXR1cm4gKHNzaXplX3QpY291bnQ7DQogfQ0KDQorI2lmIEhBVkVfVU5MT0NLRURfSU9D
+VEwNCiBzdGF0aWMgbG9uZyB4bnBpcGVfaW9jdGwoc3RydWN0IGZpbGUgKmZpbGUsIHVuc2lnbmVk
+IGludCBjbWQsIHVuc2lnbmVkIGxvbmcgYXJnKQ0KKyNlbHNlDQorc3RhdGljIGludCB4bnBpcGVf
+aW9jdGwoc3RydWN0IGlub2RlICppbm9kZSwNCisgICAgICAgICAgICAgICAgICAgICAgIHN0cnVj
+dCBmaWxlICpmaWxlLCB1bnNpZ25lZCBpbnQgY21kLCB1bnNpZ25lZCBsb25nIGFyZykNCisjZW5k
+aWYNCiB7DQogICAgICAgIHN0cnVjdCB4bnBpcGVfc3RhdGUgKnN0YXRlID0gZmlsZS0+cHJpdmF0
+ZV9kYXRhOw0KICAgICAgICBpbnQgcmV0ID0gMDsNCg0KLS0NCkJlc3QgcmVnYXJkcywNCkRpZXRt
+YXIgU2NoaW5kbGVyDQpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fDQpt
+YW5yb2xhbmQgd2ViIHN5c3RlbXMgR21iSCAtLSBNYW5hZ2luZyBEaXJlY3RvcjogVXdlIEzDvGRl
+cnMNClJlZ2lzdGVyZWQgT2ZmaWNlOiBBdWdzYnVyZyAtLSBUcmFkZSBSZWdpc3RlcjogQUcgQXVn
+c2J1cmcgLS0gSFJCLU5vLiAyNjgxNiAtLSBWQVQ6IERFMjgxMzg5ODQwDQoNCkNvbmZpZGVudGlh
+bGl0eSBub3RlOg0KVGhpcyBlTWFpbCBhbmQgYW55IGZpbGVzIHRyYW5zbWl0dGVkIHdpdGggaXQg
+YXJlIGNvbmZpZGVudGlhbCBhbmQgaW50ZW5kZWQgc29sZWx5IGZvciB0aGUgdXNlIG9mIHRoZSBp
+bmRpdmlkdWFsIG9yIGVudGl0eSB0byB3aG9tIHRoZXkgYXJlIGFkZHJlc3NlZC4gSWYgeW91IGFy
+ZSBub3QgdGhlIGludGVuZGVkIHJlY2lwaWVudCwgeW91IGFyZSBoZXJlYnkgbm90aWZpZWQgdGhh
+dCBhbnkgdXNlIG9yIGRpc3NlbWluYXRpb24gb2YgdGhpcyBjb21tdW5pY2F0aW9uIGlzIHN0cmlj
+dGx5IHByb2hpYml0ZWQuIElmIHlvdSBoYXZlIHJlY2VpdmVkIHRoaXMgZU1haWwgaW4gZXJyb3Is
+IHRoZW4gcGxlYXNlIGRlbGV0ZSB0aGlzIGVNYWlsLg0KDQotIFBsZWFzZSBjb25zaWRlciB5b3Vy
+IGVudmlyb25tZW50YWwgcmVzcG9uc2liaWxpdHkgYmVmb3JlIHByaW50aW5nIHRoaXMgZU1haWwN
+Cl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18NCg==
 
-> On 07/24/2012 08:49 AM, Michael Lausch wrote:
-> 
->> Hi,
->> I've some patches lying around against linux 3.0.x and xenomai 2.6 which compile and 
->> the "No kuser TSC emulation" (sp?)  message when starting a xenomai application is not printed any more.
->> I will merge them with the ipipe patch mentioned  in your post. (have i mentioned, i don't like outlook?). 
->>
->> Can you point me to an acid test which i can use to verify if kuser TSC emulation is working correctly?
-> 
-> 
-> The "tsc" test in xenomai regression testsuite. Run it with "-w" and it
-> will try and read the tsc for as long as it takes for the hardware
-> counter to wrap.
-
-
-ping, any news about these patches?
-
--- 
-                                                                Gilles.
 
