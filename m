@@ -1,11 +1,12 @@
-From: <dietmar.schindler@manroland-web.com>
-Date: Fri, 27 Jul 2012 12:45:25 +0000
-Message-ID: <208C6975C932E94F86239FEA59CCA632068318D3@AUSMXMBX02.mrws.biz>
-Content-Language: de-DE
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Message-ID: <50128EE5.3090904@xenomai.org>
+Date: Fri, 27 Jul 2012 14:51:49 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Subject: [Xenomai] [PATCH, Xenomai 2.5.6]
+References: <208C6975C932E94F86239FEA59CCA632068318D3@AUSMXMBX02.mrws.biz>
+In-Reply-To: <208C6975C932E94F86239FEA59CCA632068318D3@AUSMXMBX02.mrws.biz>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] [PATCH, Xenomai 2.5.6]
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,42 +15,73 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: dietmar.schindler@manroland-web.com
+Cc: xenomai@xenomai.org
 
-VGhlc2UgYXJlIHBhdGNoZXMgZm9yIHR3byBmaWxlcyBpbiBrc3JjL251Y2xldXMgb2YgWGVub21h
-aSAyLjUuNiB0byBjdXJlIGFuIGluY29tcGF0aWJpbGl0eSB3aXRoIExpbnV4IDIuNDsgaWYgdGhl
-eSBhcmUgYmFkIGluIGZvcm0sIHBsZWFzZSBsZXQgbWUga25vdy4NCg0KSW5kZXg6IGhlYXAuYw0K
-PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
-PT09PT09PT09PQ0KLS0tIGhlYXAuYyAgICAgIChyZXZpc2lvbiAzNTg3KQ0KKysrIGhlYXAuYyAg
-ICAgIChyZXZpc2lvbiA0Mjc2KQ0KQEAgLTExMjcsNyArMTEyNywxMiBAQA0KICAgICAgICByZXR1
-cm4gTlVMTDsNCiB9DQoNCisjaWYgSEFWRV9VTkxPQ0tFRF9JT0NUTA0KIHN0YXRpYyBsb25nIHhu
-aGVhcF9pb2N0bChzdHJ1Y3QgZmlsZSAqZmlsZSwgdW5zaWduZWQgaW50IGNtZCwgdW5zaWduZWQg
-bG9uZyBhcmcpDQorI2Vsc2UNCitzdGF0aWMgaW50IHhuaGVhcF9pb2N0bChzdHJ1Y3QgaW5vZGUg
-Kmlub2RlLA0KKyAgICAgICAgICAgICAgICAgICAgICAgc3RydWN0IGZpbGUgKmZpbGUsIHVuc2ln
-bmVkIGludCBjbWQsIHVuc2lnbmVkIGxvbmcgYXJnKQ0KKyNlbmRpZg0KIHsNCiAgICAgICAgZmls
-ZS0+cHJpdmF0ZV9kYXRhID0gKHZvaWQgKilhcmc7DQogICAgICAgIHJldHVybiAwOw0KDQpJbmRl
-eDogcGlwZS5jDQo9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
-PT09PT09PT09PT09PT09PT09PT09DQotLS0gcGlwZS5jICAgICAgKHJldmlzaW9uIDM1ODcpDQor
-KysgcGlwZS5jICAgICAgKHJldmlzaW9uIDQyNzYpDQpAQCAtOTIzLDcgKzkyMywxMiBAQA0KICAg
-ICAgICByZXR1cm4gKHNzaXplX3QpY291bnQ7DQogfQ0KDQorI2lmIEhBVkVfVU5MT0NLRURfSU9D
-VEwNCiBzdGF0aWMgbG9uZyB4bnBpcGVfaW9jdGwoc3RydWN0IGZpbGUgKmZpbGUsIHVuc2lnbmVk
-IGludCBjbWQsIHVuc2lnbmVkIGxvbmcgYXJnKQ0KKyNlbHNlDQorc3RhdGljIGludCB4bnBpcGVf
-aW9jdGwoc3RydWN0IGlub2RlICppbm9kZSwNCisgICAgICAgICAgICAgICAgICAgICAgIHN0cnVj
-dCBmaWxlICpmaWxlLCB1bnNpZ25lZCBpbnQgY21kLCB1bnNpZ25lZCBsb25nIGFyZykNCisjZW5k
-aWYNCiB7DQogICAgICAgIHN0cnVjdCB4bnBpcGVfc3RhdGUgKnN0YXRlID0gZmlsZS0+cHJpdmF0
-ZV9kYXRhOw0KICAgICAgICBpbnQgcmV0ID0gMDsNCg0KLS0NCkJlc3QgcmVnYXJkcywNCkRpZXRt
-YXIgU2NoaW5kbGVyDQpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fDQpt
-YW5yb2xhbmQgd2ViIHN5c3RlbXMgR21iSCAtLSBNYW5hZ2luZyBEaXJlY3RvcjogVXdlIEzDvGRl
-cnMNClJlZ2lzdGVyZWQgT2ZmaWNlOiBBdWdzYnVyZyAtLSBUcmFkZSBSZWdpc3RlcjogQUcgQXVn
-c2J1cmcgLS0gSFJCLU5vLiAyNjgxNiAtLSBWQVQ6IERFMjgxMzg5ODQwDQoNCkNvbmZpZGVudGlh
-bGl0eSBub3RlOg0KVGhpcyBlTWFpbCBhbmQgYW55IGZpbGVzIHRyYW5zbWl0dGVkIHdpdGggaXQg
-YXJlIGNvbmZpZGVudGlhbCBhbmQgaW50ZW5kZWQgc29sZWx5IGZvciB0aGUgdXNlIG9mIHRoZSBp
-bmRpdmlkdWFsIG9yIGVudGl0eSB0byB3aG9tIHRoZXkgYXJlIGFkZHJlc3NlZC4gSWYgeW91IGFy
-ZSBub3QgdGhlIGludGVuZGVkIHJlY2lwaWVudCwgeW91IGFyZSBoZXJlYnkgbm90aWZpZWQgdGhh
-dCBhbnkgdXNlIG9yIGRpc3NlbWluYXRpb24gb2YgdGhpcyBjb21tdW5pY2F0aW9uIGlzIHN0cmlj
-dGx5IHByb2hpYml0ZWQuIElmIHlvdSBoYXZlIHJlY2VpdmVkIHRoaXMgZU1haWwgaW4gZXJyb3Is
-IHRoZW4gcGxlYXNlIGRlbGV0ZSB0aGlzIGVNYWlsLg0KDQotIFBsZWFzZSBjb25zaWRlciB5b3Vy
-IGVudmlyb25tZW50YWwgcmVzcG9uc2liaWxpdHkgYmVmb3JlIHByaW50aW5nIHRoaXMgZU1haWwN
-Cl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18NCg==
+On 07/27/2012 02:45 PM, dietmar.schindler@manroland-web.com wrote:
+> These are patches for two files in ksrc/nucleus of Xenomai 2.5.6 to cure an incompatibility with Linux 2.4; if they are bad in form, please let me know.
+>
+
+You should backport this patch from the 2.6 tree instead:
+e3c13f0685c2edf2a2ce30cd239b3f
+
+> Index: heap.c
+> ===================================================================
+> --- heap.c      (revision 3587)
+> +++ heap.c      (revision 4276)
+> @@ -1127,7 +1127,12 @@
+>          return NULL;
+>   }
+>
+> +#if HAVE_UNLOCKED_IOCTL
+>   static long xnheap_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
+> +#else
+> +static int xnheap_ioctl(struct inode *inode,
+> +                       struct file *file, unsigned int cmd, unsigned long arg)
+> +#endif
+>   {
+>          file->private_data = (void *)arg;
+>          return 0;
+>
+> Index: pipe.c
+> ===================================================================
+> --- pipe.c      (revision 3587)
+> +++ pipe.c      (revision 4276)
+> @@ -923,7 +923,12 @@
+>          return (ssize_t)count;
+>   }
+>
+> +#if HAVE_UNLOCKED_IOCTL
+>   static long xnpipe_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
+> +#else
+> +static int xnpipe_ioctl(struct inode *inode,
+> +                       struct file *file, unsigned int cmd, unsigned long arg)
+> +#endif
+>   {
+>          struct xnpipe_state *state = file->private_data;
+>          int ret = 0;
+>
+> --
+> Best regards,
+> Dietmar Schindler
+> ________________________________________
+> manroland web systems GmbH -- Managing Director: Uwe Lüders
+> Registered Office: Augsburg -- Trade Register: AG Augsburg -- HRB-No. 26816 -- VAT: DE281389840
+>
+> Confidentiality note:
+> This eMail and any files transmitted with it are confidential and intended solely for the use of the individual or entity to whom they are addressed. If you are not the intended recipient, you are hereby notified that any use or dissemination of this communication is strictly prohibited. If you have received this eMail in error, then please delete this eMail.
+>
+> - Please consider your environmental responsibility before printing this eMail
+> ________________________________________
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> http://www.xenomai.org/mailman/listinfo/xenomai
+>
+
+
+-- 
+Philippe.
+
 
 
