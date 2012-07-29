@@ -1,5 +1,5 @@
-Message-ID: <50151B8D.10307@xenomai.org>
-Date: Sun, 29 Jul 2012 13:16:29 +0200
+Message-ID: <50151CDC.6010400@xenomai.org>
+Date: Sun, 29 Jul 2012 13:22:04 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <500FEB0F.9000308@xenomai.org>	<201207282127.33575.paul_c@tuxcnc.org>	<50144E93.5050109@xenomai.org>	<201207291044.22418.paul_c@tuxcnc.org>
@@ -24,9 +24,10 @@ On 07/29/2012 01:09 PM, xenophile wrote:
 > bitmap rendered graphs should be a relic of  the 1990's ;)
 
 
-On the other hand, a bitmap is rendered once and only once, which really
-makes sense for a static page, will appear the same in all navigators,
-including those which do not support svg.
+... but still look much better without getting to much in gnuplot
+configuration:
+http://sisyphus.hd.free.fr/~gilles/core-3.4-latencies/atom.png
+http://sisyphus.hd.free.fr/~gilles/core-3.4-latencies/atom.svg
 
 -- 
                                                                 Gilles.
