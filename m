@@ -1,15 +1,23 @@
-Message-ID: <501545CB.20002@piments.com>
-Date: Sun, 29 Jul 2012 16:16:43 +0200
-From: xenophile <xenophile@piments.com>
+Message-ID: <5015491D.80907@xenomai.org>
+Date: Sun, 29 Jul 2012 16:30:53 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <500FEB0F.9000308@xenomai.org>	<201207282127.33575.paul_c@tuxcnc.org>	<50144E93.5050109@xenomai.org>	<201207291044.22418.paul_c@tuxcnc.org>
-	<501519E8.3040509@piments.com> <50151CDC.6010400@xenomai.org>
-	<50152378.3070409@piments.com> <5015264D.6070300@xenomai.org>
-	<50153143.9020302@piments.com> <50153BEB.2010207@xenomai.org>
-In-Reply-To: <50153BEB.2010207@xenomai.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] Heads up: I-pipe patch status on ARM
+References: <CE2E43470FE5444A811B580382FE5EDF2113D8D95A@KEMPMAIL2.woodward.com>
+	<5009A292.4060508@grandegger.com>
+	<CE2E43470FE5444A811B580382FE5EDF2113EA8DE7@KEMPMAIL2.woodward.com>
+	<501028DC.8000803@xenomai.org> <50102E8D.1040004@xenomai.org>
+	<CE2E43470FE5444A811B580382FE5EDF2113EA8E07@KEMPMAIL2.woodward.com>
+	<50105A22.3090704@xenomai.org>
+	<CE2E43470FE5444A811B580382FE5EDF2113EA8FD2@KEMPMAIL2.woodward.com>
+	<50113143.50101@xenomai.org>
+	<CE2E43470FE5444A811B580382FE5EDF2113EA9383@KEMPMAIL2.woodward.com>
+	<5012BB11.9000407@xenomai.org> <5012BD08.8030305@xenomai.org>
+	<CE2E43470FE5444A811B580382FE5EDF2113EA9385@KEMPMAIL2.woodward.com>
+	<5012BF81.90404@xenomai.org>
+In-Reply-To: <5012BF81.90404@xenomai.org>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Xenomai installation on P1020RDB
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,58 +26,88 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Lukasz Zemla <Lukasz.Zemla@woodward.com>
+Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-On 07/29/12 15:34, Gilles Chanteperdrix wrote:
-> The script and data I use to build the graph are all in
-> http://sisyphus.hd.free.fr/~gilles/core-3.4-latencies
-> starting from
-> http://sisyphus.hd.free.fr/~gilles/core-3.4-latencies/histo.gp
+On 07/27/2012 06:19 PM, Philippe Gerum wrote:
+> On 07/27/2012 06:12 PM, Lukasz Zemla wrote:
+>>
+>>> -----Original Message-----
+>>> From: Philippe Gerum [mailto:rpm@xenomai.org]
+>>> Sent: Friday, July 27, 2012 6:09 PM
+>>> To: Gilles Chanteperdrix
+>>> Cc: Lukasz Zemla; Xenomai@xenomai.org
+>>> Subject: Re: [Xenomai] Xenomai installation on P1020RDB
+>>>
+>>> On 07/27/2012 06:00 PM, Gilles Chanteperdrix wrote:
+>>>> On 07/27/2012 05:53 PM, Lukasz Zemla wrote:
+>>>>
+>>>>> What I discovered, the source of the '76s problem' could be
+>>> preemption model. Now, when I set:
+>>>>>    - CONFIG_PREEMPT - the lag exists exactly after eth0
+>>> initialization.
+>>>>>    - CONFIG_PREEMPT_VOLUNTARY - the boot process stops for a while
+>>> (about 50-70s) in different places.
+>>>>>    - CONFIG_PREEMPT_NONE then all is fine, I cannot observe any
+>>> described problems.
+>>>>
+>>>>
+>>>> CONFIG_PREEMPT or PREEMPT_VOLUNTARY. Try this patch:
+>>>>
+>>>> diff --git a/arch/powerpc/kernel/ipipe.c
+>>> b/arch/powerpc/kernel/ipipe.c
+>>>> index 45302c1..5b706da 100644
+>>>> --- a/arch/powerpc/kernel/ipipe.c
+>>>> +++ b/arch/powerpc/kernel/ipipe.c
+>>>> @@ -344,8 +344,10 @@ static void __ipipe_do_IRQ(unsigned int irq,
+>>> void
+>>>> *cookie)
+>>>>
+>>>>    static void __ipipe_do_timer(unsigned int irq, void *cookie)
+>>>>    {
+>>>> +    irq_enter();
+>>>>        check_stack_overflow();
+>>>>        timer_interrupt(__this_cpu_ptr(&ipipe_percpu.tick_regs));
+>>>> +    irq_exit();
+>>>>    }
+>>>>
+>>>>    asmlinkage int __ipipe_grab_timer(struct pt_regs *regs)
+>>>>
+>>>> Or to remove the #ifdef CONFIG_IPIPE / #endif around the calls to
+>>>> irq_enter/irq_exit in arch/powerpc/kernel/time.c
+>>>>
+>>>
+>>> Mm, no. On ppc, we use a virtual irq to map the decrementer, so the
+>>> pipeline core already took care of marking the irq entry before calling
+>>> the __ipipe_do_timer handler. The issue may be in the log syncer
+>>> instead.
+>>
+>> Maybe I have some symptom which I forgot to write. When the system
+>> with CONFIG_PREEMPT stayed unused for last night I saw following errors:
+>
+> I should be able to reproduce this issue on some hw I have access to.
+> I'll have a look and let you know. Thanks.
+>
 
+Unlucky. I can't reproduce this issue, enabling preemption on a P1022 
+board. So we'll need to chase this bug differently.
 
-I just tested that with gnuplot 4.6  CVS from April 17th. Output looks=20
-nice and clean, no font issues, nice fine lines. Ariel is a pretty safe=20
-bet on all platforms, it's also the default.
+Did you try disabling CONFIG_XENOMAI, while leaving CONFIG_IPIPE 
+enabled? This would tells us whether the issue is triggered by having a 
+high priority domain stacked.
 
-current 4.6 release was on March 8th 2012 so it will virtually=20
-identical. Strongly suggest an update, lots of change and bug fixes=20
-since 4.4
+Also, if you intend to debug further, I'd suggest that you enable 
+CONFIG_IPIPE_DEBUG_CONTEXT and CONFIG_IPIPE_DEBUG_INTERNAL. Since you 
+have CONFIG_SERIAL_8250_CONSOLE enabled already, you would have access 
+to the __ipipe_serial_debug() service, which is a replacement for 
+printk() in desperate cases, which does brute force output to the uart, 
+and therefore does not suffer from any delay/buffering (*).
 
-Mouse interaction may not have been included that far back. Equally=20
-inclusion of the js inside the svg using the standalone option was=20
-fairly recent, though IIRC it did get included in the March release. (I=20
-was mistaken seeing "standalone" in the markup, that predates this=20
-option's effect on js)
+TIA,
 
+(*) caution: this service only works after the 16650 MMIO area has been 
+mapped in, so don't try it before the early serial devices have initialized.
 
-The font syntax you use if still supported. gnuplot is pretty hardcore=20
-about backwards compatibility.
-
-You should add a final line to close the output file. Gnuplot does not=20
-close the file since there could be follow on output to the same file.
-
-unset output
-
-
-
-I removed "dynamic" and it scales as expected.
-
-In resum=C3=A9, removing dynamic should fix a few defects ; update to 4.6=
-=20
-recommended unless that are blocking issues with doing so.
-
-Add the missing line to script.
-
-
-set terminal svg mouse standalone fname "Arial" fsize 8 linewidth 0.6 but=
-t
-....
-unset output
-
-Hardly merits a patch.
-
-HTH
-
-
+-- 
+Philippe.
 
