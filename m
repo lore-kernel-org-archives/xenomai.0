@@ -1,11 +1,16 @@
-From: "Wolz, Troy" <Troy.Wolz@dynetics.com>
-Date: Mon, 16 Jul 2012 20:16:17 +0000
-Message-ID: <E2AB2206BF591546A1931EA4E7A9FBC859BAFA22@Maui.in.dynetics.com>
-Content-Language: en-US
+From: Paul <paul_c@tuxcnc.org>
+Date: Sun, 29 Jul 2012 10:44:22 +0100
+References: <500FEB0F.9000308@xenomai.org>
+	<201207282127.33575.paul_c@tuxcnc.org>
+	<50144E93.5050109@xenomai.org>
+In-Reply-To: <50144E93.5050109@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] RT_TASK affinity on more than 8 CPU's
+Content-Type: text/plain;
+  charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Message-Id: <201207291044.22418.paul_c@tuxcnc.org>
+Subject: Re: [Xenomai] Heads up: I-pipe patch status on ARM
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,39 +21,25 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hello,
+On Saturday 28 July 2012, Gilles Chanteperdrix wrote:
+> It does not look that bad. However, "dohell 3600" does not do much.
+> If you want to improve the latencies, use "-p 100" instead of "-p
+> 1000" ;-)
 
-I'm working on a project where I'd like to start more than 8 RT_TASKs each =
-affined to their own CPU. From looking at the documentation, using the nati=
-ve API it appears to be possible to set affinity to a CPU from 0 to RTHAL_N=
-R_CPUS-1. On my machine, RTHAL_NR_CPUS is 255, but when setting affinity ab=
-ove 7, overflow occurs and only the lower 8 CPU's are used.
+Could try running a 'make j8 Image' in the kernel source tree. That 
+would give the system a good run for my money.. However, dohell gives a 
+baseline load that others could repeat (my excuse, and I'm sticking to 
+it ;-p )
 
-Looking into this, the T_CPU macro appears to only use the lower 3 bits of =
-the value passed to it, implying that T_CPU only allows up to 8 CPU's to be=
- used. Tracing through the use of this mask, it appears that the mode mask =
-passed into rt_task_create uses the top 8 bits of the word as the cpu mask.=
- The bits following the top 8 are used for other flags, so there is no room=
- to expand the cpu mask.
+> How do you get the fancy grid with gnuplot? We could add the option
+> to scripts/histo.gp. Note that I prefer to draw graphs with a log
+> scale, I find they are more meaningful, otherwise, you do not really
+> see how the graph ends.
 
-I see 2 solutions to this limitation for using Xenomai and affinity on more=
- than 8 cpus.
-1. Expand the 'mode' argument from a 32 bit int to a 64 bit long. With the =
-extra bits, the top 32 bits could be used as a CPU mask, allowing for up to=
- 32 cpu's to be masked simultaneously. This change would affect several fil=
-es, but it should be backwards compatible with applications currently writt=
-en using a 32 bit mode.
+gnuplot> set grid
 
-2. Pass an additional 64 bit long argument to rt_task_create that only cont=
-ains the affinity mask. In this case, the mode argument would be used the s=
-ame as previously, except the affinity would be ignored. This option has th=
-e disadvantage of being incompatible with existing Xenomai applications, bu=
-t it is very easy to set affinity for up to 64 cpu's. We could add a prepro=
-cessor define that selects whether the existing rt_task_create method is av=
-ailable or whether the new method is available.
+The next set of plots, I'll use a log scale as you suggest.
 
-We are willing to develop a patch that adds this functionality, but I wante=
-d to talk it over with the group to determine if this would be accepted as =
-a patch or if there's a better way to do it. Thanks.
 
-Troy
+Regards, Paul.
+
