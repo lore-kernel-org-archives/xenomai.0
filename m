@@ -1,18 +1,13 @@
-From: Michael Lausch <michael.lausch@omicron.at>
-Date: Mon, 30 Jul 2012 18:03:21 +0200
-Message-ID: <6B3AC2788014DD49B43AF9611365BBAA21B0C0D253@mary.at.omicron.at>
-References: <6B3AC2788014DD49B43AF9611365BBAA21B0B94DE9@mary.at.omicron.at>
-	<5009902B.7070705@xenomai.org>
-	<6B3AC2788014DD49B43AF9611365BBAA21B0B954F3@mary.at.omicron.at>
-	<500D298C.6080601@xenomai.org>
-	<6B3AC2788014DD49B43AF9611365BBAA21B0B9550A@mary.at.omicron.at>
-	<6B3AC2788014DD49B43AF9611365BBAA21B0B95718@mary.at.omicron.at>
-	<500E4603.2000002@xenomai.org> <5011A6ED.2080303@xenomai.org>
-In-Reply-To: <5011A6ED.2080303@xenomai.org>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Message-ID: <5016B61F.5050702@xenomai.org>
+Date: Mon, 30 Jul 2012 18:28:15 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
+References: <6B3AC2788014DD49B43AF9611365BBAA21B0B94DE9@mary.at.omicron.at>	<5009902B.7070705@xenomai.org>	<6B3AC2788014DD49B43AF9611365BBAA21B0B954F3@mary.at.omicron.at>	<500D298C.6080601@xenomai.org>	<6B3AC2788014DD49B43AF9611365BBAA21B0B9550A@mary.at.omicron.at>	<6B3AC2788014DD49B43AF9611365BBAA21B0B95718@mary.at.omicron.at>
+	<500E4603.2000002@xenomai.org> <5011A6ED.2080303@xenomai.org>
+	<6B3AC2788014DD49B43AF9611365BBAA21B0C0D253@mary.at.omicron.at>
+In-Reply-To: <6B3AC2788014DD49B43AF9611365BBAA21B0C0D253@mary.at.omicron.at>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] xenomai 2.6.1 on ixp4xx hangs on boot
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -22,40 +17,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Michael Lausch <michael.lausch@omicron.at>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-U29ycnkgZm9yIHRoZSBkZWxheSwgYnV0IGhvbGlkYXkgc2Vhc29uIHRha2VzIGl0cyB0b2xsIChu
-ZWVkZWQgdG8gY292ZXIgYSAybmQgcHJvamVjdCBhcyB3ZWxsKS4gDQpJJ3ZlIHN1Y2Nlc3NmdWxs
-eSBib290ZWQgYSBrZXJuZWwgd2l0aCB1c2Vyc3BhY2UgdHNjIGVtdWxhdGlvbiBlbmFibGVkLg0K
-VGhlIG91dHB1dCBmcm9tIHRoZSAidHNjIiB0ZXN0cHJvZ3JhbSBsb29rcyBsaWtlOg0KCQ0KCW1p
-bjogMTIsIG1heDogMjEsIGF2ZzogMTINCgltaW46IDEyLCBtYXg6IDIxLCBhdmc6IDEyDQoJbWlu
-OiAxMiwgbWF4OiAxOCwgYXZnOiAxMg0KCW1pbjogMTIsIG1heDogMjEsIGF2ZzogMTINCgltaW46
-IDEyLCBtYXg6IDIxLCBhdmc6IDEyDQoJbWluOiAxMiwgbWF4OiAyMSwgYXZnOiAxMg0KCS4uLi4u
-Lg0KCU1pbjogMTIsIG1heDogMjYsIGF2ZzogMTIgLT4wLjE4MDAwMiB1cw0KDQpEb2VzIHRoaXMg
-bG9vayBjb3JyZWN0IHRvIHlvdT8NCg0KSSBoYXZlIG9uZSBxdWVzdGlvbiB0aG91Z2g6DQpXaGF0
-IGlzIHRoZSBtZWFuaW5nIG9mIHRoZSBtaW5fZGVsYXlfdGljayBlbGVtZW50IG9mIHRoZSBpcGlw
-ZV90aW1lciBzdHJ1Y3Q/IGkganVzdA0KVXNlZCBhIHJhbmRvbSB2YWx1ZSBoZXJlLiANCg0KSWYg
-dGhlIHJlc3VsdCBvZiB0aGUgdGVzdCBwcm9ncmFtIGxvb2tzIGdvb2QgdG8geW91LCBpJ20gZ29p
-bmcgdG8gY2xlYW4gdXAgdGhlIHBhdGNoIGFuZCBpIGNhbiBwb3N0IGl0IGFnYWluc3QgYSANCnhl
-bm9tYWkgMi42LjEgcGF0Y2hlZCAzLjIuMjMgdmFuaWxsYSBsaW51eCBrZXJuZWwuDQoNCg0KDQot
-LS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KRnJvbTogR2lsbGVzIENoYW50ZXBlcmRyaXggW21h
-aWx0bzpnaWxsZXMuY2hhbnRlcGVyZHJpeEB4ZW5vbWFpLm9yZ10gDQpTZW50OiBUaHVyc2RheSwg
-SnVseSAyNiwgMjAxMiAxMDoyMiBQTQ0KVG86IE1pY2hhZWwgTGF1c2NoDQpDYzogeGVub21haUB4
-ZW5vbWFpLm9yZw0KU3ViamVjdDogUmU6IFtYZW5vbWFpXSB4ZW5vbWFpIDIuNi4xIG9uIGl4cDR4
-eCBoYW5ncyBvbiBib290DQoNCk9uIDA3LzI0LzIwMTIgMDg6NTEgQU0sIEdpbGxlcyBDaGFudGVw
-ZXJkcml4IHdyb3RlOg0KDQo+IE9uIDA3LzI0LzIwMTIgMDg6NDkgQU0sIE1pY2hhZWwgTGF1c2No
-IHdyb3RlOg0KPiANCj4+IEhpLA0KPj4gSSd2ZSBzb21lIHBhdGNoZXMgbHlpbmcgYXJvdW5kIGFn
-YWluc3QgbGludXggMy4wLnggYW5kIHhlbm9tYWkgMi42IHdoaWNoIGNvbXBpbGUgYW5kIA0KPj4g
-dGhlICJObyBrdXNlciBUU0MgZW11bGF0aW9uIiAoc3A/KSAgbWVzc2FnZSB3aGVuIHN0YXJ0aW5n
-IGEgeGVub21haSBhcHBsaWNhdGlvbiBpcyBub3QgcHJpbnRlZCBhbnkgbW9yZS4NCj4+IEkgd2ls
-bCBtZXJnZSB0aGVtIHdpdGggdGhlIGlwaXBlIHBhdGNoIG1lbnRpb25lZCAgaW4geW91ciBwb3N0
-LiAoaGF2ZSBpIG1lbnRpb25lZCwgaSBkb24ndCBsaWtlIG91dGxvb2s/KS4gDQo+Pg0KPj4gQ2Fu
-IHlvdSBwb2ludCBtZSB0byBhbiBhY2lkIHRlc3Qgd2hpY2ggaSBjYW4gdXNlIHRvIHZlcmlmeSBp
-ZiBrdXNlciBUU0MgZW11bGF0aW9uIGlzIHdvcmtpbmcgY29ycmVjdGx5Pw0KPiANCj4gDQo+IFRo
-ZSAidHNjIiB0ZXN0IGluIHhlbm9tYWkgcmVncmVzc2lvbiB0ZXN0c3VpdGUuIFJ1biBpdCB3aXRo
-ICItdyIgYW5kIGl0DQo+IHdpbGwgdHJ5IGFuZCByZWFkIHRoZSB0c2MgZm9yIGFzIGxvbmcgYXMg
-aXQgdGFrZXMgZm9yIHRoZSBoYXJkd2FyZQ0KPiBjb3VudGVyIHRvIHdyYXAuDQoNCg0KcGluZywg
-YW55IG5ld3MgYWJvdXQgdGhlc2UgcGF0Y2hlcz8NCg0KLS0gDQogICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgR2lsbGVzLg0K
+On 07/30/2012 06:03 PM, Michael Lausch wrote:
+> Sorry for the delay, but holiday season takes its toll (needed to cover a 2nd project as well). 
+> I've successfully booted a kernel with userspace tsc emulation enabled.
+> The output from the "tsc" testprogram looks like:
+> 	
+> 	min: 12, max: 21, avg: 12
+> 	min: 12, max: 21, avg: 12
+> 	min: 12, max: 18, avg: 12
+> 	min: 12, max: 21, avg: 12
+> 	min: 12, max: 21, avg: 12
+> 	min: 12, max: 21, avg: 12
+> 	......
+> 	Min: 12, max: 26, avg: 12 ->0.180002 us
+> 
+> Does this look correct to you?
+
+Yes, it means that there were no problems when the counter wrapped (if
+you ran the tsc program with the "-w" argument). A 180ns latency does
+not look bad.
+
+> 
+> I have one question though:
+> What is the meaning of the min_delay_tick element of the ipipe_timer struct? i just
+> Used a random value here. 
+
+It is not related with the tsc. It is the ipipe_timer implementation,
+and it is normally already set. For ixp4xx, there is normally:
+
+#ifdef CONFIG_IPIPE
+static struct ipipe_timer ixp4xx_itimer = {
+        .irq = IRQ_IXP4XX_TIMER1,
+        .min_delay_ticks = 333, /* 5 usec with the 66.66 MHz system clock */
+};
+#endif /* CONFIG_IPIPE */
+
+min_delay_ticks is explained here:
+http://www.xenomai.org/index.php/I-pipe-core:ArmPorting#The_general_case
+
+It is the delay below which the timer can not be programmed successfully
+(this happens for timers based on free-running counters and match
+registers, but also as a documented limitation of some other hardware
+timers).
+
+> 
+> If the result of the test program looks good to you, i'm going to clean up the patch and i can post it against a 
+> xenomai 2.6.1 patched 3.2.23 vanilla linux kernel.
+
+Please stay with 3.2.21, as the update to 3.2.23 may bring new conflicts.
+
+-- 
+					    Gilles.
 
