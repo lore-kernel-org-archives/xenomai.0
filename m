@@ -1,13 +1,12 @@
-From: <dietmar.schindler@manroland-web.com>
-Date: Mon, 30 Jul 2012 06:42:53 +0000
-Message-ID: <208C6975C932E94F86239FEA59CCA632068319E7@AUSMXMBX02.mrws.biz>
-References: <208C6975C932E94F86239FEA59CCA632068318D3@AUSMXMBX02.mrws.biz>
-	<5012B995.8080909@xenomai.org>
-In-Reply-To: <5012B995.8080909@xenomai.org>
-Content-Language: de-DE
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Message-ID: <50162F5D.2050706@xenomai.org>
+Date: Mon, 30 Jul 2012 08:53:17 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
+References: <208C6975C932E94F86239FEA59CCA632068318D3@AUSMXMBX02.mrws.biz>	<5012B995.8080909@xenomai.org>
+	<208C6975C932E94F86239FEA59CCA632068319E7@AUSMXMBX02.mrws.biz>
+In-Reply-To: <208C6975C932E94F86239FEA59CCA632068319E7@AUSMXMBX02.mrws.biz>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] [PATCH, Xenomai 2.5.6]
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -17,39 +16,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
+To: dietmar.schindler@manroland-web.com
 Cc: xenomai@xenomai.org
 
-PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBHaWxsZXMgQ2hhbnRlcGVyZHJp
-eCBbbWFpbHRvOmdpbGxlcy5jaGFudGVwZXJkcml4QHhlbm9tYWkub3JnXQ0KPiBTZW50OiBGcmlk
-YXksIEp1bHkgMjcsIDIwMTIgNTo1NCBQTQ0KPg0KPiBPbiAwNy8yNy8yMDEyIDAyOjQ1IFBNLCBk
-aWV0bWFyLnNjaGluZGxlckBtYW5yb2xhbmQtd2ViLmNvbSB3cm90ZToNCj4NCj4gPiBUaGVzZSBh
-cmUgcGF0Y2hlcyBmb3IgdHdvIGZpbGVzIGluIGtzcmMvbnVjbGV1cyBvZiBYZW5vbWFpIDIuNS42
-IHRvDQo+ID4gY3VyZSBhbiBpbmNvbXBhdGliaWxpdHkgd2l0aCBMaW51eCAyLjQ7IGlmIHRoZXkg
-YXJlIGJhZCBpbiBmb3JtLA0KPiA+IHBsZWFzZSBsZXQgbWUga25vdy4NCj4NCj4NCj4gVGhpcyBp
-cyBraW5kIG9mIHlvdSB0byBwcm92aWRlIHRoZSBwYXRjaCwgYnV0IEkgZG8gbm90IHRoaW5rIHdl
-IGFyZQ0KPiBnb2luZyB0byBpc3N1ZSBhbnkgbmV3IHJlbGVhc2UgaW4gdGhlIDIuNSBicmFuY2gu
-DQo+DQo+IEV2ZW4gdGhvdWdoIDIuNiBpcyB0ZWNobmljYWxseSBhIG5ldyBicmFuY2gsIHdpdGgg
-YSBkaWZmZXJlbnQgQUJJLCB2ZXJ5DQo+IGZldyB0aGluZ3MgKGFjdHVhbGx5LCBub25lIHRoYXQg
-Y29tZSB0byBteSBtaW5kKSBoYXZlIGNoYW5nZWQgaW4gdGhlDQo+IEFQSSwgc28sIHRoZSB1cGRh
-dGUgc2hvdWxkIGJlIHBhaW5sZXNzLg0KDQpBdCBodHRwOi8vd3d3Lnhlbm9tYWkub3JnL2luZGV4
-LnBocC9YZW5vbWFpOk5ld3MjMjAxMC0xMC0wNl9YZW5vbWFpXzIuNS41LjEgSSByZWFkOiAiTm90
-ZTogWGVub21haSAyLjUuNSBpcyB0aGUgbGFzdCByZWxlYXNlIHRvIGNvbnRhaW4gYSBwYXRjaCBm
-b3IgTGludXggMi40IG9uIHg4NiAuLi4iOyB0aGVuY2UgSSBibGluZGx5IGFzc3VtZWQgdGhhdCBY
-ZW5vbWFpIDIuNiB3b3VsZCBub3Qgd29yayB3aXRoIExpbnV4IDIuNCAtIGRpZCBJIGdvIGFzdHJh
-eT8NCkJlc2lkZXMgdGhhdCwgd2l0aCB0aGlyZC1wYXJ0eSBzb2Z0d2FyZSBhcyBlLiBnLiBQcm9D
-b25PUywgaXQgbWlnaHQgbm90IGJlIGVhc2lseSBwb3NzaWJsZSB0byB1cGRhdGUgdGhlIFhlbm9t
-YWkgYnJhbmNoLg0KDQotLQ0KRGlldG1hcg0KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fXw0KbWFucm9sYW5kIHdlYiBzeXN0ZW1zIEdtYkggLS0gTWFuYWdpbmcgRGlyZWN0
-b3I6IFV3ZSBMw7xkZXJzDQpSZWdpc3RlcmVkIE9mZmljZTogQXVnc2J1cmcgLS0gVHJhZGUgUmVn
-aXN0ZXI6IEFHIEF1Z3NidXJnIC0tIEhSQi1Oby4gMjY4MTYgLS0gVkFUOiBERTI4MTM4OTg0MA0K
-DQpDb25maWRlbnRpYWxpdHkgbm90ZToNClRoaXMgZU1haWwgYW5kIGFueSBmaWxlcyB0cmFuc21p
-dHRlZCB3aXRoIGl0IGFyZSBjb25maWRlbnRpYWwgYW5kIGludGVuZGVkIHNvbGVseSBmb3IgdGhl
-IHVzZSBvZiB0aGUgaW5kaXZpZHVhbCBvciBlbnRpdHkgdG8gd2hvbSB0aGV5IGFyZSBhZGRyZXNz
-ZWQuIElmIHlvdSBhcmUgbm90IHRoZSBpbnRlbmRlZCByZWNpcGllbnQsIHlvdSBhcmUgaGVyZWJ5
-IG5vdGlmaWVkIHRoYXQgYW55IHVzZSBvciBkaXNzZW1pbmF0aW9uIG9mIHRoaXMgY29tbXVuaWNh
-dGlvbiBpcyBzdHJpY3RseSBwcm9oaWJpdGVkLiBJZiB5b3UgaGF2ZSByZWNlaXZlZCB0aGlzIGVN
-YWlsIGluIGVycm9yLCB0aGVuIHBsZWFzZSBkZWxldGUgdGhpcyBlTWFpbC4NCg0KLSBQbGVhc2Ug
-Y29uc2lkZXIgeW91ciBlbnZpcm9ubWVudGFsIHJlc3BvbnNpYmlsaXR5IGJlZm9yZSBwcmludGlu
-ZyB0aGlzIGVNYWlsDQpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fDQo=
+On 07/30/2012 08:42 AM, dietmar.schindler@manroland-web.com wrote:
 
+>> -----Original Message----- From: Gilles Chanteperdrix
+>> [mailto:gilles.chanteperdrix@xenomai.org] Sent: Friday, July 27,
+>> 2012 5:54 PM
+>> 
+>> On 07/27/2012 02:45 PM, dietmar.schindler@manroland-web.com wrote:
+>> 
+>>> These are patches for two files in ksrc/nucleus of Xenomai 2.5.6
+>>> to cure an incompatibility with Linux 2.4; if they are bad in
+>>> form, please let me know.
+>> 
+>> 
+>> This is kind of you to provide the patch, but I do not think we
+>> are going to issue any new release in the 2.5 branch.
+>> 
+>> Even though 2.6 is technically a new branch, with a different ABI,
+>> very few things (actually, none that come to my mind) have changed
+>> in the API, so, the update should be painless.
+> 
+> At
+> http://www.xenomai.org/index.php/Xenomai:News#2010-10-06_Xenomai_2.5.5.1
+> I read: "Note: Xenomai 2.5.5 is the last release to contain a patch
+> for Linux 2.4 on x86 ..."; thence I blindly assumed that Xenomai 2.6
+> would not work with Linux 2.4 - did I go astray?
+
+
+Yes, xenomai 2.6 still works with Linux 2.4 (or is supposed to, we just
+compile-test) even though it does not include the patch.
+
+> Besides that, with
+> third-party software as e. g. ProConOS, it might not be easily
+> possible to update the Xenomai branch.
+
+
+Unfortunately, there is nothing we can do about that. We let 6 months
+between the 2.6.0 and 2.6.1 release, it can not be said that we release
+to often.
+
+
+-- 
+                                                                Gilles.
 
