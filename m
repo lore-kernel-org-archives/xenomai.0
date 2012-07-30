@@ -1,23 +1,14 @@
-Message-ID: <5015491D.80907@xenomai.org>
-Date: Sun, 29 Jul 2012 16:30:53 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+From: <dietmar.schindler@manroland-web.com>
+Date: Mon, 30 Jul 2012 06:42:53 +0000
+Message-ID: <208C6975C932E94F86239FEA59CCA632068319E7@AUSMXMBX02.mrws.biz>
+References: <208C6975C932E94F86239FEA59CCA632068318D3@AUSMXMBX02.mrws.biz>
+	<5012B995.8080909@xenomai.org>
+In-Reply-To: <5012B995.8080909@xenomai.org>
+Content-Language: de-DE
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <CE2E43470FE5444A811B580382FE5EDF2113D8D95A@KEMPMAIL2.woodward.com>
-	<5009A292.4060508@grandegger.com>
-	<CE2E43470FE5444A811B580382FE5EDF2113EA8DE7@KEMPMAIL2.woodward.com>
-	<501028DC.8000803@xenomai.org> <50102E8D.1040004@xenomai.org>
-	<CE2E43470FE5444A811B580382FE5EDF2113EA8E07@KEMPMAIL2.woodward.com>
-	<50105A22.3090704@xenomai.org>
-	<CE2E43470FE5444A811B580382FE5EDF2113EA8FD2@KEMPMAIL2.woodward.com>
-	<50113143.50101@xenomai.org>
-	<CE2E43470FE5444A811B580382FE5EDF2113EA9383@KEMPMAIL2.woodward.com>
-	<5012BB11.9000407@xenomai.org> <5012BD08.8030305@xenomai.org>
-	<CE2E43470FE5444A811B580382FE5EDF2113EA9385@KEMPMAIL2.woodward.com>
-	<5012BF81.90404@xenomai.org>
-In-Reply-To: <5012BF81.90404@xenomai.org>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Xenomai installation on P1020RDB
+Subject: Re: [Xenomai] [PATCH, Xenomai 2.5.6]
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -26,88 +17,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lukasz Zemla <Lukasz.Zemla@woodward.com>
-Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On 07/27/2012 06:19 PM, Philippe Gerum wrote:
-> On 07/27/2012 06:12 PM, Lukasz Zemla wrote:
->>
->>> -----Original Message-----
->>> From: Philippe Gerum [mailto:rpm@xenomai.org]
->>> Sent: Friday, July 27, 2012 6:09 PM
->>> To: Gilles Chanteperdrix
->>> Cc: Lukasz Zemla; Xenomai@xenomai.org
->>> Subject: Re: [Xenomai] Xenomai installation on P1020RDB
->>>
->>> On 07/27/2012 06:00 PM, Gilles Chanteperdrix wrote:
->>>> On 07/27/2012 05:53 PM, Lukasz Zemla wrote:
->>>>
->>>>> What I discovered, the source of the '76s problem' could be
->>> preemption model. Now, when I set:
->>>>>    - CONFIG_PREEMPT - the lag exists exactly after eth0
->>> initialization.
->>>>>    - CONFIG_PREEMPT_VOLUNTARY - the boot process stops for a while
->>> (about 50-70s) in different places.
->>>>>    - CONFIG_PREEMPT_NONE then all is fine, I cannot observe any
->>> described problems.
->>>>
->>>>
->>>> CONFIG_PREEMPT or PREEMPT_VOLUNTARY. Try this patch:
->>>>
->>>> diff --git a/arch/powerpc/kernel/ipipe.c
->>> b/arch/powerpc/kernel/ipipe.c
->>>> index 45302c1..5b706da 100644
->>>> --- a/arch/powerpc/kernel/ipipe.c
->>>> +++ b/arch/powerpc/kernel/ipipe.c
->>>> @@ -344,8 +344,10 @@ static void __ipipe_do_IRQ(unsigned int irq,
->>> void
->>>> *cookie)
->>>>
->>>>    static void __ipipe_do_timer(unsigned int irq, void *cookie)
->>>>    {
->>>> +    irq_enter();
->>>>        check_stack_overflow();
->>>>        timer_interrupt(__this_cpu_ptr(&ipipe_percpu.tick_regs));
->>>> +    irq_exit();
->>>>    }
->>>>
->>>>    asmlinkage int __ipipe_grab_timer(struct pt_regs *regs)
->>>>
->>>> Or to remove the #ifdef CONFIG_IPIPE / #endif around the calls to
->>>> irq_enter/irq_exit in arch/powerpc/kernel/time.c
->>>>
->>>
->>> Mm, no. On ppc, we use a virtual irq to map the decrementer, so the
->>> pipeline core already took care of marking the irq entry before calling
->>> the __ipipe_do_timer handler. The issue may be in the log syncer
->>> instead.
->>
->> Maybe I have some symptom which I forgot to write. When the system
->> with CONFIG_PREEMPT stayed unused for last night I saw following errors:
->
-> I should be able to reproduce this issue on some hw I have access to.
-> I'll have a look and let you know. Thanks.
->
+PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBHaWxsZXMgQ2hhbnRlcGVyZHJp
+eCBbbWFpbHRvOmdpbGxlcy5jaGFudGVwZXJkcml4QHhlbm9tYWkub3JnXQ0KPiBTZW50OiBGcmlk
+YXksIEp1bHkgMjcsIDIwMTIgNTo1NCBQTQ0KPg0KPiBPbiAwNy8yNy8yMDEyIDAyOjQ1IFBNLCBk
+aWV0bWFyLnNjaGluZGxlckBtYW5yb2xhbmQtd2ViLmNvbSB3cm90ZToNCj4NCj4gPiBUaGVzZSBh
+cmUgcGF0Y2hlcyBmb3IgdHdvIGZpbGVzIGluIGtzcmMvbnVjbGV1cyBvZiBYZW5vbWFpIDIuNS42
+IHRvDQo+ID4gY3VyZSBhbiBpbmNvbXBhdGliaWxpdHkgd2l0aCBMaW51eCAyLjQ7IGlmIHRoZXkg
+YXJlIGJhZCBpbiBmb3JtLA0KPiA+IHBsZWFzZSBsZXQgbWUga25vdy4NCj4NCj4NCj4gVGhpcyBp
+cyBraW5kIG9mIHlvdSB0byBwcm92aWRlIHRoZSBwYXRjaCwgYnV0IEkgZG8gbm90IHRoaW5rIHdl
+IGFyZQ0KPiBnb2luZyB0byBpc3N1ZSBhbnkgbmV3IHJlbGVhc2UgaW4gdGhlIDIuNSBicmFuY2gu
+DQo+DQo+IEV2ZW4gdGhvdWdoIDIuNiBpcyB0ZWNobmljYWxseSBhIG5ldyBicmFuY2gsIHdpdGgg
+YSBkaWZmZXJlbnQgQUJJLCB2ZXJ5DQo+IGZldyB0aGluZ3MgKGFjdHVhbGx5LCBub25lIHRoYXQg
+Y29tZSB0byBteSBtaW5kKSBoYXZlIGNoYW5nZWQgaW4gdGhlDQo+IEFQSSwgc28sIHRoZSB1cGRh
+dGUgc2hvdWxkIGJlIHBhaW5sZXNzLg0KDQpBdCBodHRwOi8vd3d3Lnhlbm9tYWkub3JnL2luZGV4
+LnBocC9YZW5vbWFpOk5ld3MjMjAxMC0xMC0wNl9YZW5vbWFpXzIuNS41LjEgSSByZWFkOiAiTm90
+ZTogWGVub21haSAyLjUuNSBpcyB0aGUgbGFzdCByZWxlYXNlIHRvIGNvbnRhaW4gYSBwYXRjaCBm
+b3IgTGludXggMi40IG9uIHg4NiAuLi4iOyB0aGVuY2UgSSBibGluZGx5IGFzc3VtZWQgdGhhdCBY
+ZW5vbWFpIDIuNiB3b3VsZCBub3Qgd29yayB3aXRoIExpbnV4IDIuNCAtIGRpZCBJIGdvIGFzdHJh
+eT8NCkJlc2lkZXMgdGhhdCwgd2l0aCB0aGlyZC1wYXJ0eSBzb2Z0d2FyZSBhcyBlLiBnLiBQcm9D
+b25PUywgaXQgbWlnaHQgbm90IGJlIGVhc2lseSBwb3NzaWJsZSB0byB1cGRhdGUgdGhlIFhlbm9t
+YWkgYnJhbmNoLg0KDQotLQ0KRGlldG1hcg0KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fXw0KbWFucm9sYW5kIHdlYiBzeXN0ZW1zIEdtYkggLS0gTWFuYWdpbmcgRGlyZWN0
+b3I6IFV3ZSBMw7xkZXJzDQpSZWdpc3RlcmVkIE9mZmljZTogQXVnc2J1cmcgLS0gVHJhZGUgUmVn
+aXN0ZXI6IEFHIEF1Z3NidXJnIC0tIEhSQi1Oby4gMjY4MTYgLS0gVkFUOiBERTI4MTM4OTg0MA0K
+DQpDb25maWRlbnRpYWxpdHkgbm90ZToNClRoaXMgZU1haWwgYW5kIGFueSBmaWxlcyB0cmFuc21p
+dHRlZCB3aXRoIGl0IGFyZSBjb25maWRlbnRpYWwgYW5kIGludGVuZGVkIHNvbGVseSBmb3IgdGhl
+IHVzZSBvZiB0aGUgaW5kaXZpZHVhbCBvciBlbnRpdHkgdG8gd2hvbSB0aGV5IGFyZSBhZGRyZXNz
+ZWQuIElmIHlvdSBhcmUgbm90IHRoZSBpbnRlbmRlZCByZWNpcGllbnQsIHlvdSBhcmUgaGVyZWJ5
+IG5vdGlmaWVkIHRoYXQgYW55IHVzZSBvciBkaXNzZW1pbmF0aW9uIG9mIHRoaXMgY29tbXVuaWNh
+dGlvbiBpcyBzdHJpY3RseSBwcm9oaWJpdGVkLiBJZiB5b3UgaGF2ZSByZWNlaXZlZCB0aGlzIGVN
+YWlsIGluIGVycm9yLCB0aGVuIHBsZWFzZSBkZWxldGUgdGhpcyBlTWFpbC4NCg0KLSBQbGVhc2Ug
+Y29uc2lkZXIgeW91ciBlbnZpcm9ubWVudGFsIHJlc3BvbnNpYmlsaXR5IGJlZm9yZSBwcmludGlu
+ZyB0aGlzIGVNYWlsDQpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fDQo=
 
-Unlucky. I can't reproduce this issue, enabling preemption on a P1022 
-board. So we'll need to chase this bug differently.
-
-Did you try disabling CONFIG_XENOMAI, while leaving CONFIG_IPIPE 
-enabled? This would tells us whether the issue is triggered by having a 
-high priority domain stacked.
-
-Also, if you intend to debug further, I'd suggest that you enable 
-CONFIG_IPIPE_DEBUG_CONTEXT and CONFIG_IPIPE_DEBUG_INTERNAL. Since you 
-have CONFIG_SERIAL_8250_CONSOLE enabled already, you would have access 
-to the __ipipe_serial_debug() service, which is a replacement for 
-printk() in desperate cases, which does brute force output to the uart, 
-and therefore does not suffer from any delay/buffering (*).
-
-TIA,
-
-(*) caution: this service only works after the 16650 MMIO area has been 
-mapped in, so don't try it before the early serial devices have initialized.
-
--- 
-Philippe.
 
