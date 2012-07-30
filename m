@@ -1,13 +1,19 @@
-Message-ID: <5016AAA7.4070502@xenomai.org>
-Date: Mon, 30 Jul 2012 17:39:19 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: Michael Lausch <michael.lausch@omicron.at>
+Date: Mon, 30 Jul 2012 18:03:21 +0200
+Message-ID: <6B3AC2788014DD49B43AF9611365BBAA21B0C0D253@mary.at.omicron.at>
+References: <6B3AC2788014DD49B43AF9611365BBAA21B0B94DE9@mary.at.omicron.at>
+	<5009902B.7070705@xenomai.org>
+	<6B3AC2788014DD49B43AF9611365BBAA21B0B954F3@mary.at.omicron.at>
+	<500D298C.6080601@xenomai.org>
+	<6B3AC2788014DD49B43AF9611365BBAA21B0B9550A@mary.at.omicron.at>
+	<6B3AC2788014DD49B43AF9611365BBAA21B0B95718@mary.at.omicron.at>
+	<500E4603.2000002@xenomai.org> <5011A6ED.2080303@xenomai.org>
+In-Reply-To: <5011A6ED.2080303@xenomai.org>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <500FEB0F.9000308@xenomai.org>
-	<201207282127.33575.paul_c@tuxcnc.org>
-In-Reply-To: <201207282127.33575.paul_c@tuxcnc.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Heads up: I-pipe patch status on ARM
+Subject: Re: [Xenomai] xenomai 2.6.1 on ixp4xx hangs on boot
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,18 +22,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Paul <paul_c@tuxcnc.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 07/28/2012 10:27 PM, Paul wrote:
-> 
-> Thanks for the timely update Gilles - Just finished work on an 
-> (unsupported) ARM1176 SoC running at 700MHz and the documents came in 
-> handy. Only a rough draft at the moment and some of the kernel options 
-> need tuning, but as a starting point, it looks quite reasonable.
-
-Btw, any chance for a publication of this patch?
-
--- 
-					    Gilles.
+U29ycnkgZm9yIHRoZSBkZWxheSwgYnV0IGhvbGlkYXkgc2Vhc29uIHRha2VzIGl0cyB0b2xsIChu
+ZWVkZWQgdG8gY292ZXIgYSAybmQgcHJvamVjdCBhcyB3ZWxsKS4gDQpJJ3ZlIHN1Y2Nlc3NmdWxs
+eSBib290ZWQgYSBrZXJuZWwgd2l0aCB1c2Vyc3BhY2UgdHNjIGVtdWxhdGlvbiBlbmFibGVkLg0K
+VGhlIG91dHB1dCBmcm9tIHRoZSAidHNjIiB0ZXN0cHJvZ3JhbSBsb29rcyBsaWtlOg0KCQ0KCW1p
+bjogMTIsIG1heDogMjEsIGF2ZzogMTINCgltaW46IDEyLCBtYXg6IDIxLCBhdmc6IDEyDQoJbWlu
+OiAxMiwgbWF4OiAxOCwgYXZnOiAxMg0KCW1pbjogMTIsIG1heDogMjEsIGF2ZzogMTINCgltaW46
+IDEyLCBtYXg6IDIxLCBhdmc6IDEyDQoJbWluOiAxMiwgbWF4OiAyMSwgYXZnOiAxMg0KCS4uLi4u
+Lg0KCU1pbjogMTIsIG1heDogMjYsIGF2ZzogMTIgLT4wLjE4MDAwMiB1cw0KDQpEb2VzIHRoaXMg
+bG9vayBjb3JyZWN0IHRvIHlvdT8NCg0KSSBoYXZlIG9uZSBxdWVzdGlvbiB0aG91Z2g6DQpXaGF0
+IGlzIHRoZSBtZWFuaW5nIG9mIHRoZSBtaW5fZGVsYXlfdGljayBlbGVtZW50IG9mIHRoZSBpcGlw
+ZV90aW1lciBzdHJ1Y3Q/IGkganVzdA0KVXNlZCBhIHJhbmRvbSB2YWx1ZSBoZXJlLiANCg0KSWYg
+dGhlIHJlc3VsdCBvZiB0aGUgdGVzdCBwcm9ncmFtIGxvb2tzIGdvb2QgdG8geW91LCBpJ20gZ29p
+bmcgdG8gY2xlYW4gdXAgdGhlIHBhdGNoIGFuZCBpIGNhbiBwb3N0IGl0IGFnYWluc3QgYSANCnhl
+bm9tYWkgMi42LjEgcGF0Y2hlZCAzLjIuMjMgdmFuaWxsYSBsaW51eCBrZXJuZWwuDQoNCg0KDQot
+LS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KRnJvbTogR2lsbGVzIENoYW50ZXBlcmRyaXggW21h
+aWx0bzpnaWxsZXMuY2hhbnRlcGVyZHJpeEB4ZW5vbWFpLm9yZ10gDQpTZW50OiBUaHVyc2RheSwg
+SnVseSAyNiwgMjAxMiAxMDoyMiBQTQ0KVG86IE1pY2hhZWwgTGF1c2NoDQpDYzogeGVub21haUB4
+ZW5vbWFpLm9yZw0KU3ViamVjdDogUmU6IFtYZW5vbWFpXSB4ZW5vbWFpIDIuNi4xIG9uIGl4cDR4
+eCBoYW5ncyBvbiBib290DQoNCk9uIDA3LzI0LzIwMTIgMDg6NTEgQU0sIEdpbGxlcyBDaGFudGVw
+ZXJkcml4IHdyb3RlOg0KDQo+IE9uIDA3LzI0LzIwMTIgMDg6NDkgQU0sIE1pY2hhZWwgTGF1c2No
+IHdyb3RlOg0KPiANCj4+IEhpLA0KPj4gSSd2ZSBzb21lIHBhdGNoZXMgbHlpbmcgYXJvdW5kIGFn
+YWluc3QgbGludXggMy4wLnggYW5kIHhlbm9tYWkgMi42IHdoaWNoIGNvbXBpbGUgYW5kIA0KPj4g
+dGhlICJObyBrdXNlciBUU0MgZW11bGF0aW9uIiAoc3A/KSAgbWVzc2FnZSB3aGVuIHN0YXJ0aW5n
+IGEgeGVub21haSBhcHBsaWNhdGlvbiBpcyBub3QgcHJpbnRlZCBhbnkgbW9yZS4NCj4+IEkgd2ls
+bCBtZXJnZSB0aGVtIHdpdGggdGhlIGlwaXBlIHBhdGNoIG1lbnRpb25lZCAgaW4geW91ciBwb3N0
+LiAoaGF2ZSBpIG1lbnRpb25lZCwgaSBkb24ndCBsaWtlIG91dGxvb2s/KS4gDQo+Pg0KPj4gQ2Fu
+IHlvdSBwb2ludCBtZSB0byBhbiBhY2lkIHRlc3Qgd2hpY2ggaSBjYW4gdXNlIHRvIHZlcmlmeSBp
+ZiBrdXNlciBUU0MgZW11bGF0aW9uIGlzIHdvcmtpbmcgY29ycmVjdGx5Pw0KPiANCj4gDQo+IFRo
+ZSAidHNjIiB0ZXN0IGluIHhlbm9tYWkgcmVncmVzc2lvbiB0ZXN0c3VpdGUuIFJ1biBpdCB3aXRo
+ICItdyIgYW5kIGl0DQo+IHdpbGwgdHJ5IGFuZCByZWFkIHRoZSB0c2MgZm9yIGFzIGxvbmcgYXMg
+aXQgdGFrZXMgZm9yIHRoZSBoYXJkd2FyZQ0KPiBjb3VudGVyIHRvIHdyYXAuDQoNCg0KcGluZywg
+YW55IG5ld3MgYWJvdXQgdGhlc2UgcGF0Y2hlcz8NCg0KLS0gDQogICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgR2lsbGVzLg0K
 
