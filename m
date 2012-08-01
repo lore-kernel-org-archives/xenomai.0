@@ -1,11 +1,11 @@
-Message-ID: <5018FC7B.8080103@xenomai.org>
-Date: Wed, 01 Aug 2012 11:52:59 +0200
+Message-ID: <50191A21.5020400@xenomai.org>
+Date: Wed, 01 Aug 2012 13:59:29 +0200
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 References: <208C6975C932E94F86239FEA59CCA632068318D3@AUSMXMBX02.mrws.biz>	<50128EE5.3090904@xenomai.org>	<208C6975C932E94F86239FEA59CCA63206831B5C@AUSMXMBX02.mrws.biz>
 	<5018F130.40301@xenomai.org> <5018F534.6000503@xenomai.org>
-	<5018FC50.80207@xenomai.org>
-In-Reply-To: <5018FC50.80207@xenomai.org>
+	<5018FC50.80207@xenomai.org> <5018FC7B.8080103@xenomai.org>
+In-Reply-To: <5018FC7B.8080103@xenomai.org>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] [PATCH, Xenomai 2.5.6]
@@ -21,51 +21,57 @@ To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
 On 08/01/2012 11:52 AM, Philippe Gerum wrote:
-> On 08/01/2012 11:21 AM, Gilles Chanteperdrix wrote:
->> On 08/01/2012 11:04 AM, Philippe Gerum wrote:
->>> On 08/01/2012 08:58 AM, dietmar.schindler@manroland-web.com wrote:
->>>>> -----Original Message-----
->>>>> From: Philippe Gerum [mailto:rpm@xenomai.org]
->>>>> Sent: Friday, July 27, 2012 2:52 PM
->>>>> To: Schindler, Dietmar RAEK1 MRA
->>>>> Cc: xenomai@xenomai.org
->>>>> Subject: Re: [Xenomai] [PATCH, Xenomai 2.5.6]
->>>>>
->>>>> On 07/27/2012 02:45 PM, dietmar.schindler@manroland-web.com wrote:
->>>>>> These are patches for two files in ksrc/nucleus of Xenomai 2.5.6
->>>>>> to cure
->>>>> an incompatibility with Linux 2.4; if they are bad in form, please
->>>>> let me
->>>>> know.
+> On 08/01/2012 11:52 AM, Philippe Gerum wrote:
+>> On 08/01/2012 11:21 AM, Gilles Chanteperdrix wrote:
+>>> On 08/01/2012 11:04 AM, Philippe Gerum wrote:
+>>>> On 08/01/2012 08:58 AM, dietmar.schindler@manroland-web.com wrote:
+>>>>>> -----Original Message-----
+>>>>>> From: Philippe Gerum [mailto:rpm@xenomai.org]
+>>>>>> Sent: Friday, July 27, 2012 2:52 PM
+>>>>>> To: Schindler, Dietmar RAEK1 MRA
+>>>>>> Cc: xenomai@xenomai.org
+>>>>>> Subject: Re: [Xenomai] [PATCH, Xenomai 2.5.6]
 >>>>>>
+>>>>>> On 07/27/2012 02:45 PM, dietmar.schindler@manroland-web.com wrote:
+>>>>>>> These are patches for two files in ksrc/nucleus of Xenomai 2.5.6
+>>>>>>> to cure
+>>>>>> an incompatibility with Linux 2.4; if they are bad in form, please
+>>>>>> let me
+>>>>>> know.
+>>>>>>>
+>>>>>>
+>>>>>> You should backport this patch from the 2.6 tree instead:
+>>>>>> e3c13f0685c2edf2a2ce30cd239b3f
 >>>>>
->>>>> You should backport this patch from the 2.6 tree instead:
->>>>> e3c13f0685c2edf2a2ce30cd239b3f
+>>>>> I'm sorry, I can't figure out how to locate this patch.
 >>>>
->>>> I'm sorry, I can't figure out how to locate this patch.
+>>>>   From this tree:
+>>>> git://git.xenomai.org/xenomai-2.6.git
+>>>>
+>>>>    However, I found the attached message where you pointed to another
+>>>> patch, just for Xenomai 2.5.6, so I'll use that one, and let's
+>>>> forget my
+>>>> surplus duplication of work.
 >>>
->>>   From this tree:
->>> git://git.xenomai.org/xenomai-2.6.git
+>>> I wonder if the 2.5 git does not already contain the fix:
 >>>
->>>    However, I found the attached message where you pointed to another
->>> patch, just for Xenomai 2.5.6, so I'll use that one, and let's forget my
->>> surplus duplication of work.
+>>> http://git.xenomai.org/?p=xenomai-2.5.git;a=commit;h=c208eda73e263207fe32a01e35931e82e4a18321
+>>>
+>>>
+>>>
 >>
->> I wonder if the 2.5 git does not already contain the fix:
->>
->> http://git.xenomai.org/?p=xenomai-2.5.git;a=commit;h=c208eda73e263207fe32a01e35931e82e4a18321
->>
+>> Yes, but non released, since this is on top of 2.5.6. It is part of the
+>> set of pending commits I mentioned lately, that should lead to 2.5.7,
+>> because
+>
+> s,because,before,
+>
+>   we close that branch for good.
 >>
 >
-> Yes, but non released, since this is on top of 2.5.6. It is part of the
-> set of pending commits I mentioned lately, that should lead to 2.5.7,
-> because
-
-s,because,before,
-
-  we close that branch for good.
 >
 
+Actually, 2.5.6.1 instead of 2.5.7 would make more sense.
 
 -- 
 Philippe.
