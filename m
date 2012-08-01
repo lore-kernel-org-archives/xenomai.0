@@ -1,21 +1,9 @@
-From: Michael Lausch <michael.lausch@omicron.at>
-Date: Tue, 31 Jul 2012 08:15:12 +0200
-Message-ID: <6B3AC2788014DD49B43AF9611365BBAA21B0C0D2C5@mary.at.omicron.at>
-References: <6B3AC2788014DD49B43AF9611365BBAA21B0B94DE9@mary.at.omicron.at>
-	<5009902B.7070705@xenomai.org>
-	<6B3AC2788014DD49B43AF9611365BBAA21B0B954F3@mary.at.omicron.at>
-	<500D298C.6080601@xenomai.org>
-	<6B3AC2788014DD49B43AF9611365BBAA21B0B9550A@mary.at.omicron.at>
-	<6B3AC2788014DD49B43AF9611365BBAA21B0B95718@mary.at.omicron.at>
-	<500E4603.2000002@xenomai.org> <5011A6ED.2080303@xenomai.org>
-	<6B3AC2788014DD49B43AF9611365BBAA21B0C0D253@mary.at.omicron.at>
-	<5016B61F.5050702@xenomai.org>
-In-Reply-To: <5016B61F.5050702@xenomai.org>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Subject: Re: [Xenomai] xenomai 2.6.1 on ixp4xx hangs on boot
+Date: Wed, 1 Aug 2012 10:58:42 +0430
+Message-ID: <CAKKWdtcVT9s9FfTf5fHd=z=Cg9iBS4NCbd+aqD-53iXbHUjqOA@mail.gmail.com>
+From: ali hagigat <hagigatali@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: [Xenomai] question: scheduling2
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -24,50 +12,11 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Xenomai@xenomai.org
 
-T2suDQpXaWxsIHByZXBhcmUgdGhlIHBhdGNoIGZvciAzLjIuMjEsIGJ1dCBJJ2xsIGJlIHVzaW5n
-IDMuMi5tYXggdW50aWwgSSBoYXZlIHRvIGZyZWV6ZSB0aGUga2VybmVsIHZlcnNpb24uDQpBcyBh
-bHdheXMgSSByZWFkIHlvdXIgZW1haWwgd2l0aCB0aGUgcG9pbnRlciB0byB0aGUgdmVyeSBuaWNl
-IGlwaXBlIHBvcnRpbmcgZ3VpZGUgKmFmdGVyKiBJIHByZXNzZWQgdGhlDQpTZW5kIGJ1dHRvbi4g
-VGhlcmUncyBhbHNvIHRoZSBleGFwbGFuYXRpb24gb2YgdGhlIGlwaXBlX3RpbWVyIHN0cnVjdCBh
-bmQgSSdsbCB1c2UgdGhlIGluZm8gaW4gdGhlcmUgdG8gDQpjbGVhbiB1cCBteSBwYXRjaC4gDQoN
-Ci0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQpGcm9tOiBHaWxsZXMgQ2hhbnRlcGVyZHJpeCBb
-bWFpbHRvOmdpbGxlcy5jaGFudGVwZXJkcml4QHhlbm9tYWkub3JnXSANClNlbnQ6IE1vbmRheSwg
-SnVseSAzMCwgMjAxMiA2OjI4IFBNDQpUbzogTWljaGFlbCBMYXVzY2gNCkNjOiB4ZW5vbWFpQHhl
-bm9tYWkub3JnDQpTdWJqZWN0OiBSZTogW1hlbm9tYWldIHhlbm9tYWkgMi42LjEgb24gaXhwNHh4
-IGhhbmdzIG9uIGJvb3QNCg0KT24gMDcvMzAvMjAxMiAwNjowMyBQTSwgTWljaGFlbCBMYXVzY2gg
-d3JvdGU6DQo+IFNvcnJ5IGZvciB0aGUgZGVsYXksIGJ1dCBob2xpZGF5IHNlYXNvbiB0YWtlcyBp
-dHMgdG9sbCAobmVlZGVkIHRvIGNvdmVyIGEgMm5kIHByb2plY3QgYXMgd2VsbCkuIA0KPiBJJ3Zl
-IHN1Y2Nlc3NmdWxseSBib290ZWQgYSBrZXJuZWwgd2l0aCB1c2Vyc3BhY2UgdHNjIGVtdWxhdGlv
-biBlbmFibGVkLg0KPiBUaGUgb3V0cHV0IGZyb20gdGhlICJ0c2MiIHRlc3Rwcm9ncmFtIGxvb2tz
-IGxpa2U6DQo+IAkNCj4gCW1pbjogMTIsIG1heDogMjEsIGF2ZzogMTINCj4gCW1pbjogMTIsIG1h
-eDogMjEsIGF2ZzogMTINCj4gCW1pbjogMTIsIG1heDogMTgsIGF2ZzogMTINCj4gCW1pbjogMTIs
-IG1heDogMjEsIGF2ZzogMTINCj4gCW1pbjogMTIsIG1heDogMjEsIGF2ZzogMTINCj4gCW1pbjog
-MTIsIG1heDogMjEsIGF2ZzogMTINCj4gCS4uLi4uLg0KPiAJTWluOiAxMiwgbWF4OiAyNiwgYXZn
-OiAxMiAtPjAuMTgwMDAyIHVzDQo+IA0KPiBEb2VzIHRoaXMgbG9vayBjb3JyZWN0IHRvIHlvdT8N
-Cg0KWWVzLCBpdCBtZWFucyB0aGF0IHRoZXJlIHdlcmUgbm8gcHJvYmxlbXMgd2hlbiB0aGUgY291
-bnRlciB3cmFwcGVkIChpZg0KeW91IHJhbiB0aGUgdHNjIHByb2dyYW0gd2l0aCB0aGUgIi13IiBh
-cmd1bWVudCkuIEEgMTgwbnMgbGF0ZW5jeSBkb2VzDQpub3QgbG9vayBiYWQuDQoNCj4gDQo+IEkg
-aGF2ZSBvbmUgcXVlc3Rpb24gdGhvdWdoOg0KPiBXaGF0IGlzIHRoZSBtZWFuaW5nIG9mIHRoZSBt
-aW5fZGVsYXlfdGljayBlbGVtZW50IG9mIHRoZSBpcGlwZV90aW1lciBzdHJ1Y3Q/IGkganVzdA0K
-PiBVc2VkIGEgcmFuZG9tIHZhbHVlIGhlcmUuIA0KDQpJdCBpcyBub3QgcmVsYXRlZCB3aXRoIHRo
-ZSB0c2MuIEl0IGlzIHRoZSBpcGlwZV90aW1lciBpbXBsZW1lbnRhdGlvbiwNCmFuZCBpdCBpcyBu
-b3JtYWxseSBhbHJlYWR5IHNldC4gRm9yIGl4cDR4eCwgdGhlcmUgaXMgbm9ybWFsbHk6DQoNCiNp
-ZmRlZiBDT05GSUdfSVBJUEUNCnN0YXRpYyBzdHJ1Y3QgaXBpcGVfdGltZXIgaXhwNHh4X2l0aW1l
-ciA9IHsNCiAgICAgICAgLmlycSA9IElSUV9JWFA0WFhfVElNRVIxLA0KICAgICAgICAubWluX2Rl
-bGF5X3RpY2tzID0gMzMzLCAvKiA1IHVzZWMgd2l0aCB0aGUgNjYuNjYgTUh6IHN5c3RlbSBjbG9j
-ayAqLw0KfTsNCiNlbmRpZiAvKiBDT05GSUdfSVBJUEUgKi8NCg0KbWluX2RlbGF5X3RpY2tzIGlz
-IGV4cGxhaW5lZCBoZXJlOg0KaHR0cDovL3d3dy54ZW5vbWFpLm9yZy9pbmRleC5waHAvSS1waXBl
-LWNvcmU6QXJtUG9ydGluZyNUaGVfZ2VuZXJhbF9jYXNlDQoNCkl0IGlzIHRoZSBkZWxheSBiZWxv
-dyB3aGljaCB0aGUgdGltZXIgY2FuIG5vdCBiZSBwcm9ncmFtbWVkIHN1Y2Nlc3NmdWxseQ0KKHRo
-aXMgaGFwcGVucyBmb3IgdGltZXJzIGJhc2VkIG9uIGZyZWUtcnVubmluZyBjb3VudGVycyBhbmQg
-bWF0Y2gNCnJlZ2lzdGVycywgYnV0IGFsc28gYXMgYSBkb2N1bWVudGVkIGxpbWl0YXRpb24gb2Yg
-c29tZSBvdGhlciBoYXJkd2FyZQ0KdGltZXJzKS4NCg0KPiANCj4gSWYgdGhlIHJlc3VsdCBvZiB0
-aGUgdGVzdCBwcm9ncmFtIGxvb2tzIGdvb2QgdG8geW91LCBpJ20gZ29pbmcgdG8gY2xlYW4gdXAg
-dGhlIHBhdGNoIGFuZCBpIGNhbiBwb3N0IGl0IGFnYWluc3QgYSANCj4geGVub21haSAyLjYuMSBw
-YXRjaGVkIDMuMi4yMyB2YW5pbGxhIGxpbnV4IGtlcm5lbC4NCg0KUGxlYXNlIHN0YXkgd2l0aCAz
-LjIuMjEsIGFzIHRoZSB1cGRhdGUgdG8gMy4yLjIzIG1heSBicmluZyBuZXcgY29uZmxpY3RzLg0K
-DQotLSANCgkJCQkJICAgIEdpbGxlcy4NCg==
+If I have only one logical CPU and there is a real time Xenomai task
+(SCHED_RR or SCHED_FIFO) and the task is infinite , never leaves the
+Xenomai domain and never blocks. Does it mean that Linux, its
+scheduler and the Linux interrupt handling routines will never be
+executed?
 
