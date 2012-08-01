@@ -1,12 +1,14 @@
-Message-ID: <5018D02E.9010003@xenomai.org>
-Date: Wed, 01 Aug 2012 08:43:58 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: <dietmar.schindler@manroland-web.com>
+Date: Wed, 1 Aug 2012 06:58:20 +0000
+Message-ID: <208C6975C932E94F86239FEA59CCA63206831B5C@AUSMXMBX02.mrws.biz>
+References: <208C6975C932E94F86239FEA59CCA632068318D3@AUSMXMBX02.mrws.biz>
+	<50128EE5.3090904@xenomai.org>
+In-Reply-To: <50128EE5.3090904@xenomai.org>
+Content-Language: de-DE
 MIME-Version: 1.0
-References: <CAKKWdtcVT9s9FfTf5fHd=z=Cg9iBS4NCbd+aqD-53iXbHUjqOA@mail.gmail.com>
-In-Reply-To: <CAKKWdtcVT9s9FfTf5fHd=z=Cg9iBS4NCbd+aqD-53iXbHUjqOA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] question: scheduling2
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai] [PATCH, Xenomai 2.5.6]
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,23 +17,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: ali hagigat <hagigatali@gmail.com>
-Cc: Xenomai@xenomai.org
+Cc: xenomai@xenomai.org
 
-On 08/01/2012 08:28 AM, ali hagigat wrote:
-
-> If I have only one logical CPU and there is a real time Xenomai task
-> (SCHED_RR or SCHED_FIFO) and the task is infinite , never leaves the
-> Xenomai domain and never blocks. Does it mean that Linux, its
-> scheduler and the Linux interrupt handling routines will never be
-> executed?
-
-
-In the context of xenomai, this is a bug, a real-time task should never
-do that. Thus, if you have CONFIG_XENO_OPT_WATCHDOG enabled, the task
-gets killed, you can find where the problem is, and resume working on
-more interesting issues.
-
--- 
-                                                                Gilles.
-
+PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBQaGlsaXBwZSBHZXJ1bSBbbWFp
+bHRvOnJwbUB4ZW5vbWFpLm9yZ10NCj4gU2VudDogRnJpZGF5LCBKdWx5IDI3LCAyMDEyIDI6NTIg
+UE0NCj4gVG86IFNjaGluZGxlciwgRGlldG1hciBSQUVLMSBNUkENCj4gQ2M6IHhlbm9tYWlAeGVu
+b21haS5vcmcNCj4gU3ViamVjdDogUmU6IFtYZW5vbWFpXSBbUEFUQ0gsIFhlbm9tYWkgMi41LjZd
+DQo+DQo+IE9uIDA3LzI3LzIwMTIgMDI6NDUgUE0sIGRpZXRtYXIuc2NoaW5kbGVyQG1hbnJvbGFu
+ZC13ZWIuY29tIHdyb3RlOg0KPiA+IFRoZXNlIGFyZSBwYXRjaGVzIGZvciB0d28gZmlsZXMgaW4g
+a3NyYy9udWNsZXVzIG9mIFhlbm9tYWkgMi41LjYgdG8gY3VyZQ0KPiBhbiBpbmNvbXBhdGliaWxp
+dHkgd2l0aCBMaW51eCAyLjQ7IGlmIHRoZXkgYXJlIGJhZCBpbiBmb3JtLCBwbGVhc2UgbGV0IG1l
+DQo+IGtub3cuDQo+ID4NCj4NCj4gWW91IHNob3VsZCBiYWNrcG9ydCB0aGlzIHBhdGNoIGZyb20g
+dGhlIDIuNiB0cmVlIGluc3RlYWQ6DQo+IGUzYzEzZjA2ODVjMmVkZjJhMmNlMzBjZDIzOWIzZg0K
+DQpJJ20gc29ycnksIEkgY2FuJ3QgZmlndXJlIG91dCBob3cgdG8gbG9jYXRlIHRoaXMgcGF0Y2gu
+IEhvd2V2ZXIsIEkgZm91bmQgdGhlIGF0dGFjaGVkIG1lc3NhZ2Ugd2hlcmUgeW91IHBvaW50ZWQg
+dG8gYW5vdGhlciBwYXRjaCwganVzdCBmb3IgWGVub21haSAyLjUuNiwgc28gSSdsbCB1c2UgdGhh
+dCBvbmUsIGFuZCBsZXQncyBmb3JnZXQgbXkgc3VycGx1cyBkdXBsaWNhdGlvbiBvZiB3b3JrLg0K
+DQotLQ0KRGlldG1hcg0KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXw0K
+bWFucm9sYW5kIHdlYiBzeXN0ZW1zIEdtYkggLS0gTWFuYWdpbmcgRGlyZWN0b3I6IFV3ZSBMw7xk
+ZXJzDQpSZWdpc3RlcmVkIE9mZmljZTogQXVnc2J1cmcgLS0gVHJhZGUgUmVnaXN0ZXI6IEFHIEF1
+Z3NidXJnIC0tIEhSQi1Oby4gMjY4MTYgLS0gVkFUOiBERTI4MTM4OTg0MA0KDQpDb25maWRlbnRp
+YWxpdHkgbm90ZToNClRoaXMgZU1haWwgYW5kIGFueSBmaWxlcyB0cmFuc21pdHRlZCB3aXRoIGl0
+IGFyZSBjb25maWRlbnRpYWwgYW5kIGludGVuZGVkIHNvbGVseSBmb3IgdGhlIHVzZSBvZiB0aGUg
+aW5kaXZpZHVhbCBvciBlbnRpdHkgdG8gd2hvbSB0aGV5IGFyZSBhZGRyZXNzZWQuIElmIHlvdSBh
+cmUgbm90IHRoZSBpbnRlbmRlZCByZWNpcGllbnQsIHlvdSBhcmUgaGVyZWJ5IG5vdGlmaWVkIHRo
+YXQgYW55IHVzZSBvciBkaXNzZW1pbmF0aW9uIG9mIHRoaXMgY29tbXVuaWNhdGlvbiBpcyBzdHJp
+Y3RseSBwcm9oaWJpdGVkLiBJZiB5b3UgaGF2ZSByZWNlaXZlZCB0aGlzIGVNYWlsIGluIGVycm9y
+LCB0aGVuIHBsZWFzZSBkZWxldGUgdGhpcyBlTWFpbC4NCg0KLSBQbGVhc2UgY29uc2lkZXIgeW91
+ciBlbnZpcm9ubWVudGFsIHJlc3BvbnNpYmlsaXR5IGJlZm9yZSBwcmludGluZyB0aGlzIGVNYWls
+DQpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fDQotLS0tLS0tLS0tLS0t
+LSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQW4gZW1iZWRkZWQgbWVzc2FnZSB3YXMgc2NydWJi
+ZWQuLi4KRnJvbTogPHJwbUB4ZW5vbWFpLm9yZz4KU3ViamVjdDogUmU6IFtYZW5vbWFpLWhlbHBd
+IFhlbm9tYWkgMi41LjYgd2l0aCBQUEMtS2VybmVsIDIuNC4yNQpEYXRlOiBTYXQsIDE4IEp1biAy
+MDExIDA4OjUwOjUyICswMDAwClNpemU6IDEwNzUyClVSTDogPGh0dHA6Ly93d3cueGVub21haS5v
+cmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxMjA4MDEvOGQ4N2E2MTQvYXR0YWNo
+bWVudC5taHQ+Cg==
