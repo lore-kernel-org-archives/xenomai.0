@@ -1,13 +1,11 @@
-Message-ID: <5018D721.20606@xenomai.org>
-Date: Wed, 01 Aug 2012 09:13:37 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: "Leopold Palomo-Avellaneda" <leo@alaxarxa.net>
+Date: Wed, 1 Aug 2012 09:57:20 +0200
 MIME-Version: 1.0
-References: <CAKKWdtcVT9s9FfTf5fHd=z=Cg9iBS4NCbd+aqD-53iXbHUjqOA@mail.gmail.com>	<5018D02E.9010003@xenomai.org>
-	<CAKKWdtcnhD5tNU3UKTsBUfn00fwtQvS-Yj3u=s38EKWCJxdPWA@mail.gmail.com>
-In-Reply-To: <CAKKWdtcnhD5tNU3UKTsBUfn00fwtQvS-Yj3u=s38EKWCJxdPWA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain;
+  charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] question: scheduling2
+Message-Id: <201208010957.20988.leo@alaxarxa.net>
+Subject: [Xenomai] libusb devices with a xenomai kernel
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,23 +14,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: ali hagigat <hagigatali@gmail.com>
-Cc: Xenomai@xenomai.org
+To: Xenomai@xenomai.org
 
-On 08/01/2012 09:11 AM, ali hagigat wrote:
+Hi,
 
-> I appreciate for the answer. Does it contradict the general concept of
-> the fixed priority pre-emptive scheduling of Xenomai?
-> Because when there is a higher fixed priority task , it will be
-> executed so Linux never be executed because its fixed priority is 0!
+we have a box that is running Xenomai 2.6.1 in a amd4 cpu. We have a usb 
+camera with a program that reads an image as fast it cans. It's executed as a 
+normal Linux task. 
 
+We have also some tasks that use libxenomai within a realtime context. We have 
+realized that the usb device has some kind of strange behavior and it's 
+disconnected or simple sometimes spend too much time to acquire a image.
 
-What is your point? This is exactly the behaviour expected from a fixed
-priority pre-emptive scheduler.
+The question is, someone of you have experienced similar problems? or have we 
+have to implement any special protection when we want to use a usb device 
+(with libusb) using a Xenomai kernel? 
 
-PLEASE NO TOP POSTING
+We don't pretend to have a realtime usb, just a "similar" use that if we use 
+the same code in a normal Linux kernel.
 
+Thanks in advance,
+
+Leo
 
 -- 
-                                                                Gilles.
+--
+Linux User 152692
+Catalonia
 
