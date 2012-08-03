@@ -1,10 +1,12 @@
-Message-ID: <501BDC7D.3@antcom.de>
-Date: Fri, 03 Aug 2012 16:13:17 +0200
-From: Roland Stigge <stigge@antcom.de>
+Message-ID: <501BDD0F.20109@xenomai.org>
+Date: Fri, 03 Aug 2012 16:15:43 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+References: <501B08FA.5090909@xenomai.org>
+In-Reply-To: <501B08FA.5090909@xenomai.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] [GIT PULL] Updates from Debian
+Subject: Re: [Xenomai] I-pipe core 3.4
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,58 +15,60 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Xenomai <Xenomai@xenomai.org>
 
-Hi,
+On 08/03/2012 01:10 AM, Gilles Chanteperdrix wrote:
+>
+> Hi Philippe,
+>
+> please find at the usual place:
+>
+> git://git.xenomai.org/ipipe-gch.git, branch for-core-3.4
+>
+> The current state of the I-pipe core patch for Linux 3.4 running on x86
+> and ARM. Compared to the last mail:
+> * several issues were fixed on ARM (with a severe one in switch_mm)
+> * some optimizations were made on x86 reducing drastically the latencies
+> on atom N230:
+> - the irq_hold handler for ioapic masks the irq line before sending the
+> eoi, avoiding the irq to be retriggered when the irq is of the level type
 
-as promised, I'm providing updates of debian/* files (see pull request below).
-It deviates a bit from what I just uploaded as Debian's xenomai 2.6.1-1 since
-at xenomai.org, we maintain a "native" Debian package (2.6.1).
+Gasp. This is a regression which sneaked in with the introduction of the 
+irq_hold handler in the 3.2 series.
 
-There is also an adjustment to scripts/prepare-patch.sh, fixing a Debian
-specific issue (obsolete dh-kpatches).
+> - the fpu is never restored during linux context switches, as it
+> increases the context switch irq masking time. I tried to further
+> decrease the context switch critical section by splitting the context
+> switch in three parts, and even by trying to run the context switch with
+> irqs on, to no avail.
+> * the I-pipe core API was changed, so the API revision was incremented
+> from 1 to 2:
+> - ipipe_timers_request now takes a cpumask argument specifying on which
+> cpus the timers should be requested
+> - the delay passed to ipipe_timer_set is now converted from clock
+> frequency to timer frequency, without a division, by the I-pipe.
+>
+> Issues observed:
+> - when running with the I-pipe tracer on on x86, and
+> CONFIG_IPIPE_TRACE_IRQSOFF is enabled, we get a kernel oops. That is
+> because the definition of the "interrupt" macros makes use of the "rbp"
+> register to restore some other registers values after the call to the
+> interrupt function, but rbp is set to 0 on irq entry starting with linux 3.4
 
-The tree is based on git://git.xenomai.org/xenomai-head.git
+Jan, would you have a fix for that one already in your local patch queue?
 
-Also, feel free to compare to the Debian patches provided as a tarball at
+> - pic muting has an issue with unlocked context switches: when a context
+> swich from xenomai domain to root domain happens, low priorities irqs
+> are unmasked before the unmasked context switch, so may trigger, with a
+> timer interrupt at the same time triggering in fact a re-switch to the
+> xenomai domain. The cure seems to be, in __xnpod_schedule, to only call
+> xnarch_reenter_root after the test at the end of the unlocked switch, I
+> tried that, but got lockups on AT91. So, I must be missing something.
+>
 
-http://packages.qa.debian.org/x/xenomai.html
+Can't be a missing unmute in the shadow epilogue?
 
-(See below right on this webpage, "patch tracker" - the "experimental"
-patches for 2.6.1-1 should appear soon.)
-
-Thanks,
-
-Roland
-
-
-
-The following changes since commit b6d3eb52335850e42bfcf9390194ac5a3e29f8b2:
-
-  hal: pass to ipipe_timer_set a delay in hrclock ticks (2012-08-03 00:51:49 +0200)
-
-are available in the git repository at:
-
-  git://git.antcom.de/xenomai.git debian
-
-for you to fetch changes up to 4725c6c8680c7b9337b791eb82f75ffd3c1bfbe5:
-
-  Removal of dh-kpatches support (2012-08-03 15:40:21 +0200)
-
-----------------------------------------------------------------
-Roland Stigge (2):
-      Updated debian/*
-      Removal of dh-kpatches support
-
- debian/changelog                         |    6 ++++++
- debian/compat                            |    2 +-
- debian/control                           |    6 +++---
- debian/linux-patch-xenomai.README.Debian |    4 +++-
- debian/linux-patch-xenomai.kpatches.in   |    3 ---
- debian/rules                             |   33 +++++++++++++++++----------------
- debian/xenomai-runtime.install           |    1 -
- scripts/prepare-patch.sh                 |   19 -------------------
- 8 files changed, 30 insertions(+), 44 deletions(-)
- delete mode 100644 debian/linux-patch-xenomai.kpatches.in
-
+-- 
+Philippe.
 
