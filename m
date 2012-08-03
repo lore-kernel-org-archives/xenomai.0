@@ -1,14 +1,10 @@
-Message-ID: <501BC31A.6090702@xenomai.org>
-Date: Fri, 03 Aug 2012 14:24:58 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <501BDC7D.3@antcom.de>
+Date: Fri, 03 Aug 2012 16:13:17 +0200
+From: Roland Stigge <stigge@antcom.de>
 MIME-Version: 1.0
-References: <CAGVaUoE6O+Hi1DwCjfHZne0BD5R0z1ErobrP-CVtz2XgjtQKDg@mail.gmail.com>	<501B9009.2040406@xenomai.org>
-	<CAGVaUoHQk2y2WaEk-+zzuTawGF8JkMkHPgUVMqLoHOMo8n8q9Q@mail.gmail.com>
-In-Reply-To: <CAGVaUoHQk2y2WaEk-+zzuTawGF8JkMkHPgUVMqLoHOMo8n8q9Q@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Link error for the Xenomai 2.6.1 example
-	"trivial-periodic.c"
+Subject: [Xenomai] [GIT PULL] Updates from Debian
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,24 +13,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Bao Rui <rbaocug@gmail.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Xenomai <xenomai@xenomai.org>
 
-On 08/03/2012 01:39 PM, Bao Rui wrote:
-> Hi Gilles,
-> 
-> Thanks for your reply! I think it is not the same issue. I installed
-> xenomai already, and them I want to compile the example\native. Here is my
-> compile command:
-> gcc -I/usr/xenomai/include -D_GNU_SOURCE -D_REENTRANT -D__XENO__   -lnative
-> -L/usr/xenomai/lib -lxenomai -lpthread -lrt  -Xlinker -rpath -Xlinker
-> /usr/xenomai/lib  trivial-periodic.c   -o trivial-periodic
+Hi,
 
-When link-editing, the link order is important, so, -lnative should come
-after trivial-periodic.c
+as promised, I'm providing updates of debian/* files (see pull request below).
+It deviates a bit from what I just uploaded as Debian's xenomai 2.6.1-1 since
+at xenomai.org, we maintain a "native" Debian package (2.6.1).
 
-Please no private mails.
+There is also an adjustment to scripts/prepare-patch.sh, fixing a Debian
+specific issue (obsolete dh-kpatches).
 
--- 
-					    Gilles.
+The tree is based on git://git.xenomai.org/xenomai-head.git
+
+Also, feel free to compare to the Debian patches provided as a tarball at
+
+http://packages.qa.debian.org/x/xenomai.html
+
+(See below right on this webpage, "patch tracker" - the "experimental"
+patches for 2.6.1-1 should appear soon.)
+
+Thanks,
+
+Roland
+
+
+
+The following changes since commit b6d3eb52335850e42bfcf9390194ac5a3e29f8b2:
+
+  hal: pass to ipipe_timer_set a delay in hrclock ticks (2012-08-03 00:51:49 +0200)
+
+are available in the git repository at:
+
+  git://git.antcom.de/xenomai.git debian
+
+for you to fetch changes up to 4725c6c8680c7b9337b791eb82f75ffd3c1bfbe5:
+
+  Removal of dh-kpatches support (2012-08-03 15:40:21 +0200)
+
+----------------------------------------------------------------
+Roland Stigge (2):
+      Updated debian/*
+      Removal of dh-kpatches support
+
+ debian/changelog                         |    6 ++++++
+ debian/compat                            |    2 +-
+ debian/control                           |    6 +++---
+ debian/linux-patch-xenomai.README.Debian |    4 +++-
+ debian/linux-patch-xenomai.kpatches.in   |    3 ---
+ debian/rules                             |   33 +++++++++++++++++----------------
+ debian/xenomai-runtime.install           |    1 -
+ scripts/prepare-patch.sh                 |   19 -------------------
+ 8 files changed, 30 insertions(+), 44 deletions(-)
+ delete mode 100644 debian/linux-patch-xenomai.kpatches.in
+
 
