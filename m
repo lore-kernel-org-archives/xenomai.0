@@ -1,11 +1,10 @@
 MIME-Version: 1.0
-Date: Wed, 8 Aug 2012 12:00:20 +0100
-Message-ID: <CAFjfccCyg_nbnNB3UGxEbWy3+SV+wp9T5iuj87DBN1Do08C7DQ@mail.gmail.com>
-From: Stephen Bryant <sbxenomai@googlemail.com>
-Content-Type: text/plain; charset=windows-1252
+Date: Wed, 8 Aug 2012 16:43:53 +0200
+Message-ID: <CAHue_TVRdTsre3E7NxHtb=6XfxkL7_36nsLLxSkiF3kUJAJ5Vw@mail.gmail.com>
+From: =?ISO-8859-2?Q?Marcin_Ku=B6ka?= <marckuska@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-2
 Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] Kernel compilation error due to Adeos patch error in
-	'io_apic.c'
+Subject: [Xenomai]  Cortex-a9 - please fix xenomai-fix-lfs-issue.patch
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,62 +15,39 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
- Hello,
+Hi
 
-I have searched the mailing lists to find out if this has already been
-raised and have not found anything, so apologies if this is a known issue.
+I'm compiling ipipe-linux (v 3.2.21) with xenomai 2.6.1 for versatile
+express cortex-a9 using buildroot and the following message appears:
 
-Vanilla Kernel: 3.2.21
-Adeos Patch: ipipe-core-3.2.21-x86-1.patch
-gcc --version: 4.7.0
-Xenomai Version: 2.6.1
+>>> xenomai 2.6.1 Extracting
+bzcat /home/marcin/buildroot-2012.08-rc1/dl/xenomai-2.6.1.tar.bz2 | tar
+--strip-components=3D1 -C
+/home/marcin/buildroot-2012.08-rc1/output/build/xenomai-2.6.1  -xf -
+>>> xenomai 2.6.1 Patching package//xenomai
 
-Patch applies itself cleanly.
+Applying xenomai-do-not-install-devices.patch using patch:
+patching file Makefile.in
+Hunk #1 succeeded at 796 (offset 77 lines).
 
-Compilation error during initial kernel 'make':
-arch/x86/kernel/apic/io_apic.c: In function
-=91irq_remap_modify_chip_defaults=92:
-arch/x86/kernel/apic/io_apic.c:2763:1: error: expected expression before
-=91}=92 token
+Applying xenomai-fix-lfs-issue.patch using patch:
+patching file include/posix/sys/mman.h
+Hunk #1 FAILED at 63.
+Hunk #2 succeeded at 84 with fuzz 1 (offset 2 lines).
+1 out of 2 hunks FAILED -- saving rejects to file
+include/posix/sys/mman.h.rej
+patching file include/posix/unistd.h
+Hunk #1 FAILED at 54.
+1 out of 1 hunk FAILED -- saving rejects to file include/posix/unistd.h.rej
+Patch failed!  Please fix xenomai-fix-lfs-issue.patch!
+make: ***
+[/home/marcin/buildroot-2012.08-rc1/output/build/xenomai-2.6.1/.stamp_patch=
+ed]
+Error 1
 
-Problem:
-Commas instead of semi-colons at the end of lines inside CONFIG_IPIPE 'if'
-directives in 'io_apic.c'.
+What is that problem with lfs?
 
-Solution:
-Update the ipipe patch to replace commas with semi-colons (please let me
-know if you want this diff in a different format):
+many thanks in advantage.
 
-*** ksrc/arch/x86/patches/ipipe-core-3.2.21-x86-1.patch    2012-07-10
-19:42:46.000000000 +0100
---- ksrc/arch/x86/patches/ipipe-core-3.2.21-x86-1-new.patch    2012-08-08
-11:44:48.472207969 +0100
-*************** index 6d939d7..9bbe781 100644
-*** 1751,1762 ****
-   #ifdef CONFIG_SMP
-          chip->irq_set_affinity =3D ir_ioapic_set_affinity;
-  +#ifdef CONFIG_IPIPE
-! +       chip->irq_move =3D move_xxapic_irq,
-  +#endif
-  +#endif
-  +#ifdef CONFIG_IPIPE
-! +       chip->irq_hold =3D hold_ioapic_irq,
-! +       chip->irq_release =3D release_ioapic_irq,
-   #endif
-   }
-   #endif /* CONFIG_IRQ_REMAP */
---- 1751,1762 ----
-   #ifdef CONFIG_SMP
-          chip->irq_set_affinity =3D ir_ioapic_set_affinity;
-  +#ifdef CONFIG_IPIPE
-! +       chip->irq_move =3D move_xxapic_irq;
-  +#endif
-  +#endif
-  +#ifdef CONFIG_IPIPE
-! +       chip->irq_hold =3D hold_ioapic_irq;
-! +       chip->irq_release =3D release_ioapic_irq;
-   #endif
-   }
-   #endif /* CONFIG_IRQ_REMAP */
-
-Steve
+--=20
+Marcin Ku=B6ka
