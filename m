@@ -1,13 +1,10 @@
-Message-ID: <502BC4A7.9090205@xenomai.org>
-Date: Wed, 15 Aug 2012 17:47:51 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <502D040F.2010906@axesseurope.com>
+Date: Thu, 16 Aug 2012 16:30:39 +0200
+From: Charles Retailleau <charles.retailleau@axesseurope.com>
 MIME-Version: 1.0
-References: <502BB311.6000303@ifak.eu>
-In-Reply-To: <502BB311.6000303@ifak.eu>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Xenomai: native skin or CONFIG_XENO_OPT_PERVASIVE
-	disabled.
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] Trying to get Xenomai on P1010RDB
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,56 +13,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Marco Meier <marco.meier@ifak.eu>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 08/15/2012 04:32 PM, Marco Meier wrote:
-> Hi,
->
-> i tried to install xenomai-2.6.1 with a linux-3.2.21 kernel. patching
-> and installing the kernel was successful according to the following
-> dmesg output:
->
-> [    1.704456] I-pipe: head domain Xenomai registered.
-> [    1.704499] Xenomai: hal/x86_64 started.
-> [    1.704517] Xenomai: scheduling class idle registered.
-> [    1.704519] Xenomai: scheduling class rt registered.
-> [    1.706145] Xenomai: real-time nucleus v2.6.1 (Light Years Away) loaded.
-> [    1.706147] Xenomai: debug mode enabled.
-> [    1.706319] Xenomai: starting native API services.
-> [    1.706322] Xenomai: starting POSIX services.
-> [    1.706356] Xenomai: starting RTDM services.
->
-> i cross compiled the userspace tools with
-> ./configure --enable-x86-sep --host=i686-linux --enable-smp
-> CFLAGS='-m32 -O2' LDFLAGS='-m32'
->
-> after installing the tools on the target machine, i tried to link a
-> simple test program which actually does nothing against the xenomai libs
->
-> gcc $(xeno-config --skin native --cflags ) $(xeno-config --skin native
-> --ldflags) -Wl,-rpath=/usr/xenomai/lib test.c
->
-> running ./a.out gives the following output:
-> Xenomai: native skin or CONFIG_XENO_OPT_PERVASIVE disabled.
-> (modprobe xeno_native?)
->
-> xeno_native is built into the kernel:
->
-> zcat /proc/config.gz  | grep XENO_SKIN
-> CONFIG_XENO_SKIN_NATIVE=y
-> CONFIG_XENO_SKIN_POSIX=y
->
-> as well as CONFIG_XENO_OPT_PERVASIVE:
->
-> zcat /proc/config.gz  | grep XENO_OPT_PERVASIVE CONFIG_XENO_OPT_PERVASIVE=y
->
-> what am i missing?
->
+Hi all,
+The patching/compilation/installation steps seem fine.
+But at the end I cannot have any Xenomai software running on the
+P1010RDB (I tried most of the provided test SW).
 
-You can't run 32bit Xenomai apps over a 64bit kernel, we don't support 
-dual mode for x86.
+I focused on latency and tried to debug it. I get that:
 
--- 
-Philippe.
+Program received signal SIGILL, Illegal instruction.
+0x0ffde120 in __xn_rdtsc () from ....xenomai/lib/libnative.so.3
 
+It appears that the 'mftb/mftbu' instructions
+are in cause (cf. the small test in attachment, the 1st part works but
+not the mftb test).
+Furthermore when I check the core e500 ref manual
+http://cache.freescale.com/files/32bit/doc/ref_manual/E500CORERM.pdf
+MFTB appears has NOT being part of the instruction list.
+
+Yet, Xenomai seems to work on P1020RDB which has the same core, so I'm
+confused...
+What did I do wrong ?
+
+I'm using
+   Xenomai 2.6.1,
+   linux 3.2.21 configured with mpc85xx_defconfig (default options for
+the rest of it),
+   Freescale's SDK 1.1.2 (that's the main difference between me and
+Lukasz Zemla's config on P1020RDB, so I'm trying to get the latest 1.2)
+
+Thanks for your help.
+Charles,
+-------------- next part --------------
+An embedded and charset-unspecified text was scrubbed...
+Name: testMFTB.c
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20120816/d22f48c=
+2/attachment.c>
