@@ -1,13 +1,12 @@
-Message-ID: <50085E4A.3090306@xenomai.org>
-Date: Thu, 19 Jul 2012 21:21:46 +0200
+Message-ID: <50335C18.1090202@xenomai.org>
+Date: Tue, 21 Aug 2012 11:59:52 +0200
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <CAHpmwf8eKDCN-4mzSpsgu64H+Kez_A+NPaqDCWOD8qHnU0oTmw@mail.gmail.com>
-	<CAHpmwf_XO1G=6fMiddivbG+ud0FZqjh6_sp0V=zEv+mstOKorQ@mail.gmail.com>
-In-Reply-To: <CAHpmwf_XO1G=6fMiddivbG+ud0FZqjh6_sp0V=zEv+mstOKorQ@mail.gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] error on building xddp-echo example
+References: <CAKKWdtfX7f-c7ZK5JXcPGFxK=cJDGK10sMz7JXY_AgO2qkxETQ@mail.gmail.com>
+In-Reply-To: <CAKKWdtfX7f-c7ZK5JXcPGFxK=cJDGK10sMz7JXY_AgO2qkxETQ@mail.gmail.com>
+Content-Type: text/plain; charset="iso-8859-1"; format="flowed"
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] a question about "life-with-adeos" manual
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,61 +15,56 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Danilo De Lorenzo <danilo.delorenzo@mail.polimi.it>
-Cc: Xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 07/19/2012 07:18 PM, Danilo De Lorenzo wrote:
-> I'm getting this error when compiling the examples in the ipc folder
-> 
-> gcc -I/usr/xenomai/include -D_GNU_SOURCE -D_REENTRANT -Wall
-> -Werror-implicit-function-
-> declaration -pipe -D__XENO__ -I/usr/xenomai/include/posix
-> -Wl,@/usr/xenomai/lib/posix.wrappers -L/usr/xenomai/lib -lpthread_rt
-> -lxenomai -lpthread -lrt   -lrtdm -Xlinker -rpath -Xlinker
-> /usr/xenomai/lib  xddp-echo.c   -o xddp-echo
-> 
-> /usr/bin/ld: /tmp/cc4VCXFp.o: undefined reference to symbol
-> 'pthread_sigmask@@GLIBC_2.2.5'
-> /usr/bin/ld: note: 'pthread_sigmask@@GLIBC_2.2.5' is defined in DSO
-> /lib/x86_64-linux-gnu/libpthread.so.0 so try adding it to the linker
-> command line
-> /lib/x86_64-linux-gnu/libpthread.so.0: could not read symbols: Invalid
-> operation
-> collect2: ld returned 1 exit status
-> make: *** [xddp-echo] Error 1
-> 
-> Is this a xenomai bug or glibc library bug?
+On 08/21/2012 11:28 AM, ali hagigat wrote:
+> I have copied part of  "life-with-adeos"  document:
+>
+> ------------------------------
+> Sharing interrupts between domains
+> void realtime_eth_handler (unsigned irq, void *cookie)
+> {
+> /*
+> This interrupt handler has been installed using
+> rthal_irq_request(), so it will always be invoked on behalf of
+> the Xenomai (primary) domain.
+> */
+> rthal_irq_disable(irq);
+> /* The Xenomai domain won't receive this irq anymore */
+> rthal_irq_host_pend(irq);
+> /* This irq has been marked as pending for Linux */
+> }
+>
+> In the non=ADworking example above, since Xenomai always uses the
+> explicit propagation
+> mode for all interrupts it intercepts, the next ethernet interrupt
+> will be marked as pending
+> in the Xenomai log only, waiting for the Xenomai handler to possibly
+> propagate it
+> manually down to Linux.
+> ------------------------------
+>
+> We know that calling rthal_irq_disable(irq), makes that interrupt
+> disabled at PIC level and also stops enabling to propagate it.
 
-Linker wants to see references first, for pulling symbols. Does this help?
+No, this does not stop propagation. It stops internal delivery by the=20
+log syncer to the target domain, which is different.
 
-diff --git a/examples/rtdm/profiles/ipc/Makefile b/examples/rtdm/profiles/ipc/Makefile
-index 15da135..4ea38f0 100644
---- a/examples/rtdm/profiles/ipc/Makefile
-+++ b/examples/rtdm/profiles/ipc/Makefile
-@@ -39,6 +39,9 @@ CFLAGS=$(shell $(XENOCONFIG) --skin=posix --cflags) $(MY_CFLAGS)
- 
- LDFLAGS=$(shell $(XENOCONFIG) --skin=posix --ldflags) $(MY_LDFLAGS) -lrtdm
- 
-+%: %.c
-+	$(CC) -o $@ $< $(CFLAGS) $(LDFLAGS)
-+
- # Add the Xenomai libdir to the runtime library search path for the
- # binary, to make life easier for beginners if Xenomai's libs are not
- # in any default search path.
+> If that interrupt is disabled in hardware, how the manual says that
+> the next ethernet interrupt will be marked in the interrupt xenomai
+> log only?
 
-> 
-> Thanks
-> 
-> Danilo
+"next" in this context means the "after you read this code", not "after=20
+this code has run".
+
+>
 > _______________________________________________
 > Xenomai mailing list
 > Xenomai@xenomai.org
 > http://www.xenomai.org/mailman/listinfo/xenomai
-> 
+>
 
 
--- 
+--=20
 Philippe.
-
-
 
