@@ -1,12 +1,13 @@
-Message-ID: <503365D9.3050900@xenomai.org>
-Date: Tue, 21 Aug 2012 12:41:29 +0200
-From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <CAKKWdtew6wmwf_HydBbSDN9+FatOL9DSsSkR2VTYFmDk9-urTA@mail.gmail.com>
-In-Reply-To: <CAKKWdtew6wmwf_HydBbSDN9+FatOL9DSsSkR2VTYFmDk9-urTA@mail.gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] stall/unstall
+In-Reply-To: <5022B5E4.7040101@xenomai.org>
+References: <CAHue_TVRdTsre3E7NxHtb=6XfxkL7_36nsLLxSkiF3kUJAJ5Vw@mail.gmail.com>
+	<5022B5E4.7040101@xenomai.org>
+Date: Tue, 21 Aug 2012 16:05:07 +0200
+Message-ID: <CAHue_TWodrVNxhsxXZ6_xcOGWHDqVGe41qbY0=R3RhFjBedG+g@mail.gmail.com>
+From: =?ISO-8859-2?Q?Marcin_Ku=B6ka?= <marckuska@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-2
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] Cortex-a9 - please fix xenomai-fix-lfs-issue.patch
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,21 +16,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On 08/21/2012 12:32 PM, ali hagigat wrote:
-> Dose rthal_irq_enable(irq) unstalls the domain stage?
+Sorry for no response.
 
-No, these operations cannot be related by definition.
+I'm still struggling with running xenomai-patched-kernel image on versatile
+express. As soon as i understand how i managed to make it working i will
+post a solution.
 
+regards,
+Marcin Ku=B6ka
+
+2012/8/8 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+
+> On 08/08/2012 04:43 PM, Marcin Ku=B6ka wrote:
 >
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> http://www.xenomai.org/mailman/listinfo/xenomai
+> > Hi
+> >
+> > I'm compiling ipipe-linux (v 3.2.21) with xenomai 2.6.1 for versatile
+> > express cortex-a9 using buildroot and the following message appears:
+>
+>
+> BTW, have you considered contributing the patches you made for versatile
+> express cortex a9 ?
+>
+> --
+>                                                                 Gilles.
+>
 >
 
 
--- 
-Philippe.
-
+--=20
+Marcin Ku=B6ka
