@@ -1,11 +1,13 @@
-From: Bruce Director <bruce@vytronus.com>
-Date: Thu, 19 Jul 2012 22:36:09 +0000
-Message-ID: <C1A3774592D24248BC23BD4FA9550B9AB1811C@VYTRONUS-SBS.vytronus.local>
-Content-Language: en-US
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+In-Reply-To: <50335C18.1090202@xenomai.org>
+References: <CAKKWdtfX7f-c7ZK5JXcPGFxK=cJDGK10sMz7JXY_AgO2qkxETQ@mail.gmail.com>
+	<50335C18.1090202@xenomai.org>
+Date: Wed, 22 Aug 2012 09:36:39 +0430
+Message-ID: <CAKKWdtdin4Dbr9K1BkdV+H7KW+N=2c=eFQSsqfoHdnrLz4-wog@mail.gmail.com>
+From: ali hagigat <hagigatali@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] Intel MKL library fault when running as a xenomai task.
+Subject: Re: [Xenomai] a question about "life-with-adeos" manual
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,23 +16,91 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, xenomai@xenomai.org
 
-I'm trying to get a library I wrote to run as part of a xenomai task.  The =
-library  uses the Intel MKL (math kernel) library.  MKL  uses the SSE instr=
-uction set.  Whenever an MKL function is called,  I get a segmentation faul=
-t.  The fault always occurs in the MKL function, get_N_Cores.  I created a =
-small test program that consists of a main and one function.  The function =
-makes one MKL call.   It runs without crashing as a linux program (call the=
- function directly), and crashes in get_N_cores when run as a xenomai task =
-(function called via rt_task_start).  The xenomai task is running in user s=
-pace.
+Dear Philippe,
 
-Intel support said "Just my guess however, MKL_get_N_Cores function tries t=
-o recognize CPU topology, but if Xenomai framework changes it via shadowing=
- some CPU parameters (for example, CPU affinity) then MKL might be confused=
-".  Is his guess correct?  Is there a fix to this problem?
+I do not understand the function of interrupt enable/disable and also
+the domain stage stall/unstall!!!
 
-Thanks,
+If xenomai domain uses =A0rthal_irq_disable()  and then i switch to
+Linux domain, will that irq be disabled for Linux domain too?
 
-Bruce
+in your document in the section of "Sharing=A0interrupts=A0between=A0domain=
+s":
+the fuction, realtime_eth_handler() does rthal_irq_disable(irq);
+It seems that this function does two things: 1) it disables the
+interrupt physically 2) it stalls xenomai pipeline stage
+So when we go to Linux domain and  linux_eth_handler() is executed and
+rthal_irq_enable(irq); is run, when we get back to xenomai again, that
+interrupt is enabled physically.
+But xenomai pipeline stage is stalled so if that interrupt happens, it
+will be logged only in xenoimai domain.
+Is that correct? It is what i understand from your words. Can you
+please explain disabling/enabling the interrupts and also
+stalling/unstalling the pipeline stages more easily?
+It seems difficult to understand.
+
+
+On Tue, Aug 21, 2012 at 2:29 PM, Philippe Gerum <rpm@xenomai.org> wrote:
+> On 08/21/2012 11:28 AM, ali hagigat wrote:
+>>
+>> I have copied part of  "life-with-adeos"  document:
+>>
+>> ------------------------------
+>> Sharing interrupts between domains
+>> void realtime_eth_handler (unsigned irq, void *cookie)
+>> {
+>> /*
+>> This interrupt handler has been installed using
+>> rthal_irq_request(), so it will always be invoked on behalf of
+>> the Xenomai (primary) domain.
+>> */
+>> rthal_irq_disable(irq);
+>> /* The Xenomai domain won't receive this irq anymore */
+>> rthal_irq_host_pend(irq);
+>> /* This irq has been marked as pending for Linux */
+>> }
+>>
+>> In the non=ADworking example above, since Xenomai always uses the
+>> explicit propagation
+>> mode for all interrupts it intercepts, the next ethernet interrupt
+>> will be marked as pending
+>> in the Xenomai log only, waiting for the Xenomai handler to possibly
+>> propagate it
+>> manually down to Linux.
+>> ------------------------------
+>>
+>> We know that calling rthal_irq_disable(irq), makes that interrupt
+>> disabled at PIC level and also stops enabling to propagate it.
+>
+>
+> No, this does not stop propagation. It stops internal delivery by the log
+> syncer to the target domain, which is different.
+>
+>
+>> If that interrupt is disabled in hardware, how the manual says that
+>> the next ethernet interrupt will be marked in the interrupt xenomai
+>> log only?
+>
+>
+> "next" in this context means the "after you read this code", not "after t=
+his
+> code has run".
+>
+>>
+>> _______________________________________________
+>> Xenomai mailing list
+>> Xenomai@xenomai.org
+>> http://www.xenomai.org/mailman/listinfo/xenomai
+>>
+>
+>
+> --
+> Philippe.
+>
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> http://www.xenomai.org/mailman/listinfo/xenomai
+
