@@ -1,13 +1,9 @@
-Message-ID: <50339840.1070202@xenomai.org>
-Date: Tue, 21 Aug 2012 16:16:32 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CAHue_TVRdTsre3E7NxHtb=6XfxkL7_36nsLLxSkiF3kUJAJ5Vw@mail.gmail.com>	<5022B5E4.7040101@xenomai.org>
-	<CAHue_TWodrVNxhsxXZ6_xcOGWHDqVGe41qbY0=R3RhFjBedG+g@mail.gmail.com>
-In-Reply-To: <CAHue_TWodrVNxhsxXZ6_xcOGWHDqVGe41qbY0=R3RhFjBedG+g@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] Cortex-a9 - please fix xenomai-fix-lfs-issue.patch
+Date: Wed, 22 Aug 2012 08:58:34 +0430
+Message-ID: <CAKKWdtei-4S1A_AyhAifj+HxuGcVCuNRsDUeytX=21=bB9UwbQ@mail.gmail.com>
+From: ali hagigat <hagigatali@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: [Xenomai] Can we have nested interrupt handling in Xenomai?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,18 +12,16 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?B?TWFyY2luIEt1xZtrYQ==?= <marckuska@gmail.com>
-Cc: xenomai@xenomai.org
+To: Xenomai@xenomai.org
 
-On 08/21/2012 04:05 PM, Marcin Kuśka wrote:
-> Sorry for no response.
-> 
-> I'm still struggling with running xenomai-patched-kernel image on versatile
-> express. As soon as i understand how i managed to make it working i will
-> post a solution.
+Can we have nested interrupt handling in Xenomai? Suppose we are in
+the middle of an interrupt handler and a new interrupt comes in, CPU
+will start executing the handler of the new interrupt completely? or
+that interrupt is logged only for that domain to be serviced later?
 
-Maybe a patch review would help?
-
--- 
-					    Gilles.
+As far as I understood, when an interrupt comes, that interrupt is
+disabled and the domain pipeline is stalled and then the interrupt
+handler is called.
+When the interrupt handler returns, the domain pipeline is unstalled.
+Is that correct?
 
