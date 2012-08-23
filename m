@@ -1,10 +1,14 @@
+Message-ID: <50366E2A.5030006@xenomai.org>
+Date: Thu, 23 Aug 2012 19:53:46 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Date: Fri, 31 Aug 2012 11:28:38 +0200
-Message-ID: <CAGq8jPis8oxRvBfKY5uVkMtcLvfyXzTK4NMJnNQ2TDE6K49ysA@mail.gmail.com>
-From: Minh GIANG <giang.hminh@gmail.com>
-Content-Type: text/plain; charset=windows-1252
+References: <50350308.8010405@openwide.fr> <50350712.4020704@xenomai.org>
+	<5035E4CD.9080302@xenomai.org> <50364114.9090804@openwide.fr>
+	<503641EA.2020201@xenomai.org> <503658B3.9060401@openwide.fr>
+In-Reply-To: <503658B3.9060401@openwide.fr>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] script analog for DAQ card
+Subject: Re: [Xenomai] s3c24xx: Priority rotate enable !?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,134 +17,72 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Romain Naour <romain.naour@openwide.fr>
+Cc: xenomai@xenomai.org
 
-I would like to ask you a question, i am working in analogy interface and I
-have used the script* insn_read* which are located in */usr/xenomai/bin*,
-to test I/O operations with my DAQ card *NI PCI-6221**. *My NI card is not
-connected to any equipment
+On 08/23/2012 06:22 PM, Romain Naour wrote:
 
-My problem is when i run the script in terminal linux, for example
+> Le 23/08/2012 16:44, Gilles Chanteperdrix a =C3=A9crit :
+>> On 08/23/2012 04:41 PM, Romain Naour wrote:
+>>> Le 23/08/2012 10:07, Gilles Chanteperdrix a =C3=A9crit :
+>>>> On 08/22/2012 06:21 PM, Gilles Chanteperdrix wrote:
+>>>>> On 08/22/2012 06:04 PM, Romain Naour wrote:
+>>>>>> Hello,
+>>>>>>
+>>>>>> On s3c24xx processors the interrupt source priority isn't fixed by=
+ Adeos
+>>>>>> patch (ARB_SEL bits in PRIORITY register).
+>>>>>> Is it intentional ?
+>>>>>> It may be possible to give priority to an interrupt simultaneously=
 
-*/usr/xenomai/bin/insn_read  -v  -d  analogy0   -s 0   S 10  -c 2 *
+>>>>>> arrived that the interruption IRQ_TIMER4 (before being grabbed by
+>>>>>> Adeos). Therefore, we can have more jitter for real time applicati=
+ons.
+>>>>> This can always happen even with interrupt priorities: imagine that=
+ the
+>>>>> first interrupt happens 1 microsecond before the timer interrupt, e=
+ven
+>>>>> with the priority, the handler for first interrupt will be executed=
+ and
+>>>>> the timer interrupt will have to wait for the end of this handler b=
+efore
+>>>>> it is serviced.
+>>>>>
+>>>>>> Do we need to fix the priority at this level ?
+>>>>> I do not think so. However, what can be done is implement interrupt=
 
-to get the values in the sub-device number 0 and chanel number 2. So I get
-the values following:
+>>>>> controller muting using the priority register, see:
+>>>>> http://www.xenomai.org/index.php/I-pipe-core:ArmPorting#Priority_ba=
+sed_interrupt_controller_muting
+>>> The priority register can't be used for implement interrupt controlle=
+r
+>>> muting using this method .
+>>> The PIC hardware can't be configured with only two priority levels.
+>>> We are obligated to choose between fixed or "rotation fashion" priori=
+ty
+>>> with 32 levels...
+>> What prevents us from using the "fixed" priorities, with one level for=
 
+>> real-time interrupts and another for non real-time interrupts ?
+> The priority register is used to configure the arbitration procedure=20
+> when multiple interrupts occur.
+> But some interrupt sources always have higher priority than other.
+>=20
+> For example, EINT0 is always takes priority regardless INT_RTC, when=20
+> arrive at the same time.
+> Whatever the configuration of priority register.
+>=20
+> When INT_TIMER4 is trigged, the value of priority register is modified.=
 
-*root@debianrt:/home/giang# '/usr/xenomai/bin/insn_read' -v -d analogy0 -s
-0 -S 5 -c 2*
-
-*insn_read: device analogy0 opened (fd=3D0)*
-
-*insn_read: basic descriptor retrieved*
-
-*                 subdevices count =3D 14*
-
-*                 read subdevice index =3D 0*
-
-*                 write subdevice index =3D 0*
-
-*insn_read: complex descriptor retrieved*
-
-*insn_read: selected subdevice index =3D 0*
-
-*insn_read: channel width is 16 bits*
-
-*insn_read: global scan size is 10*
-
-*0x0fc4*
-
-*0x0fd2*
-
-*0x0fd8*
-
-*0x0fda*
-
-*0x0fdd*
-
-*insn_read: 10 bytes successfully received*
-
-* *
-
-*root@debianrt:/home/giang# '/usr/xenomai/bin/insn_read' -v -d analogy0 -s
-0 -S 5 -c 2*
-
-*insn_read: device analogy0 opened (fd=3D0)*
-
-*insn_read: basic descriptor retrieved*
-
-*                 subdevices count =3D 14*
-
-*                 read subdevice index =3D 0*
-
-*                 write subdevice index =3D 0*
-
-*insn_read: complex descriptor retrieved*
-
-*insn_read: selected subdevice index =3D 0*
-
-*insn_read: channel width is 16 bits*
-
-*insn_read: global scan size is 10*
-
-*0x0000*
-
-*0x0000*
-
-*0x0000*
-
-*0x0000*
-
-*0x0000*
-
-*insn_read: 10 bytes successfully received*
-
-* *
-
-*root@debianrt:/home/giang# '/usr/xenomai/bin/insn_read' -v -d analogy0 -s
-0 -S 5 -c 2*
-
-*insn_read: device analogy0 opened (fd=3D0)*
-
-*insn_read: basic descriptor retrieved*
-
-*                 subdevices count =3D 14*
-
-*                 read subdevice index =3D 0*
-
-*                 write subdevice index =3D 0*
-
-*insn_read: complex descriptor retrieved*
-
-*insn_read: selected subdevice index =3D 0*
-
-*insn_read: channel width is 16 bits*
-
-*insn_read: global scan size is 10*
-
-*0x0000*
-
-*0x0000*
-
-*0x0000*
-
-*0x0000*
-
-*0x0000*
-
-*insn_read: 10 bytes successfully received*
-
-* *
-
-* *
-
-The values of the first acquisition are normal, because it was the noise of
-analog signal. But for the next acquisition, I don=92t know why the whole
-values become zero.
+> Thus, INT_TIMER4 loses its priority for arbitration procedure.
+> That is why I wonder if it is better to fix the priority for arbitratio=
+n=20
+> procedure.
 
 
-Thanks
+I don't get it, could you point me to the datasheet?
+
+--=20
+                                                                Gilles.
 
 
-my configuration: Debian Squeez 6.0, Xenomai 2.6.0, kernel linux 2.6.38
