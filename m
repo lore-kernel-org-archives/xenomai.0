@@ -1,11 +1,14 @@
-Message-ID: <504F5F1B.4020806@siemens.com>
-Date: Tue, 11 Sep 2012 17:56:11 +0200
-From: Gernot Hillier <gernot.hillier@siemens.com>
+Message-ID: <50379442.1050009@xenomai.org>
+Date: Fri, 24 Aug 2012 16:48:34 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-15
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] ipipe/x86: kernel BUG due to missing
- IRQ_MOVE_CLEANUP_VECTOR entry in ipipe-core3.2
+References: <50375208.5090209@wanadoo.fr> <50375EAC.9000206@xenomai.org>
+	<50377868.10406@wanadoo.fr> <50378527.1080708@grandegger.com>
+In-Reply-To: <50378527.1080708@grandegger.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] Availability of ARM adeos patch for 3.5 kernel,
+ and RTDM SPI for iMX6 ?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,106 +17,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: rpm@xenomai.org, xenomai@xenomai.org
+To: Wolfgang Grandegger <wg@grandegger.com>
+Cc: Thierry Bultel <thierry.bultel@wanadoo.fr>, xenomai@xenomai.org
 
-Hi there!
+On 08/24/2012 03:44 PM, Wolfgang Grandegger wrote:
+> On 08/24/2012 02:49 PM, Thierry Bultel wrote:
+>> Le 24/08/2012 12:59, Gilles Chanteperdrix a écrit :
+>>> On 08/24/2012 12:06 PM, Thierry Bultel wrote:
+>>>
+>>>> Hi,
+>>>>
+>>>> I noticed on git that the latest available patch for ARM is
+>>>> ipipe-core-3.2.21-arm-1.patch,
+>>>> that I assume, replaces the mxc pre+std+post mecanism, please tell me if
+>>>> I am wrong.
+>>>
+>>> The pre+std+post mechanism is used to apply a patch for mainline kernel
+>>> to the Freescale linux tree. If you want to use that tree, you always
+>>> need that mechanism. ipipe-core-3.2.21-arm-1.patch is a patch for the
+>>> mainline kernel.
+>> Thanks for the clarification.
+>> When you refer to Freescale linux tree, are you talking about
+>>
+>> https://github.com/Freescale/linux-imx* *?
+>>
+>> If yes, the latest version there is 3.5-rc7. 
+> 
+> No, but "http://git.freescale.com/git/cgit.cgi/imx/linux-2.6-imx.git/"
+> 
+>> The CPU module vendor is likely to base its BSP on a Freescale kernel, probably that one, so I am 
+>> concerned about finding a matching patch to apply on.
+>> What would you advise ? Taking in account what you mention below, is the backport from Freescale
+>> 3.5-rc7 to mainline 3.4 the most suitable solution, or a port of the adeos patch in the opposite way ?
+> 
+> There is resonable support for the i.MX6Q Sabrelite board in the
+> mainline kernel. In principle, you would need to backport it to 3.4.x or
+> push the iPipe patches forward to 3.6-rcX.
 
-While testing ipipe-core3.2 on an SMP x86 machine, I found a reproducible
-kernel BUG after some seconds after starting irqbalance:
-
-------------[ cut here ]------------
-kernel BUG at arch/x86/kernel/ipipe.c:592!
-invalid opcode: 0000 [#1] SMP
-CPU 0
-Modules linked in: des_generic md4 i7core_edac psmouse nls_cp437 edac_core cifs serio_raw joydev raid10 raid456 async_pq async_xor xor async_memcpy async_raid6_recov usbhid hid mpt2sas scsi_transport_sas raid_class igb raid6_pq async_tx raid1 raid0 multipath linear
-
-Pid: 0, comm: swapper/0 Not tainted 3.2.21-9-xenomai #3 Siemens AG Healthcare Sector MARS 2.1/X8DTH
-RIP: 0010:[<ffffffff8101edec>]  [<ffffffff8101edec>] __ipipe_handle_irq+0x1bc/0x1d0
-RSP: 0018:ffffffff8177bbe0  EFLAGS: 00010086
-RAX: 000000000000d880 RBX: 00000000ffffffff RCX: 0000000000000092
-RDX: ffffffffffffffdf RSI: ffffffff8177bc18 RDI: ffffffff8177bbf8
-RBP: ffffffff8177bc00 R08: 0000000000000001 R09: 0000000000000000
-R10: ffff880624ebaef8 R11: 000000000029fbc4 R12: 000000000000d880
-R13: ffffffff8177bbf8 R14: ffff880624e00000 R15: ffff880624e0d880
-FS:  0000000000000000(0000) GS:ffff880624e00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 000000008005003b
-CR2: 00007f452a2efb80 CR3: 0000000c114d3000 CR4: 00000000000006f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000ffff0ff0 DR7: 0000000000000400
-Process swapper/0 (pid: 0, threadinfo ffffffff81778000, task ffffffff81787020)
-Stack:
- 0000000000000000 ffffffff8177bfd8 0000000000000063 ffff880624e1f9a8
- ffffffff8177bca8 ffffffff815a44dd ffffffff8177bc18 ffffffff8177bca8
- 00000000815a373b 000000000029fbc4 ffff880624eba570 0000000000000000
-Call Trace:
- [<ffffffff815a44dd>] irq_move_cleanup_interrupt+0x5d/0x90
- [<ffffffff815a6649>] ? call_softirq+0x19/0x30
- [<ffffffff810043d5>] do_softirq+0xc5/0x100
- [<ffffffff81050955>] irq_exit+0xd5/0xf0
- [<ffffffff815a6e1f>] do_IRQ+0x6f/0x100
- [<ffffffff815a6db0>] ? __entry_text_end+0x5/0x5
- [<ffffffff8101f4d3>] __ipipe_do_IRQ+0x83/0xa0
- [<ffffffff8101f4d9>] ? __ipipe_do_IRQ+0x89/0xa0
- [<ffffffff810b7aaa>] __ipipe_dispatch_irq_fast+0x16a/0x170
- [<ffffffff810b87b9>] __ipipe_dispatch_irq+0xe9/0x210
- [<ffffffff8101eca1>] __ipipe_handle_irq+0x71/0x1d0
- [<ffffffff8159bae0>] common_interrupt+0x60/0x81
- [<ffffffff8101f3c4>] ? __ipipe_halt_root+0x34/0x50
- [<ffffffff8101f3b7>] ? __ipipe_halt_root+0x27/0x50
- [<ffffffff8100b146>] default_idle+0x66/0x1a0
- [<ffffffff810020cf>] cpu_idle+0xaf/0x100
- [<ffffffff8157ec22>] rest_init+0x72/0x80
- [<ffffffff81aeacca>] start_kernel+0x3b4/0x3bf
- [<ffffffff81aea321>] x86_64_start_reservations+0x131/0x135
- [<ffffffff81aea456>] x86_64_start_kernel+0x131/0x138
-Code: ff ff 0f 1f 44 00 00 48 83 a0 98 06 00 00 fe 4c 89 ee bf 20 00 00 00 e8 63 83 09 00 e9 f6 fe ff ff be 01 00 00 00 e9 ab fe ff ff <0f> 0b 66 90 eb fc 66 66 66 66 66 2e 0f 1f 84 00 00 00 00 00 55
-RIP  [<ffffffff8101edec>] __ipipe_handle_irq+0x1bc/0x1d0
- RSP <ffffffff8177bbe0> 
-
-This seems to be caused by a missing entry for IRQ_MOVE_CLEANUP_VECTOR
-in the per_cpu array vector_irq[].
-
-I found that ipipe_init_vector_irq() (which used to add the needed
-entry) was factored out from arch/x86/kernel/ipipe.c. This likely
-happened when porting from 2.6.38 to 3.1 - at least I can still see the
-code in ipipe-2.6.38-x86 and missed it in ipipe-core3.1 (and didn't find
-any x86-branch in-between).
-
-The following sample patch fixes the issue for me:
-
---- a/arch/x86/kernel/apic/io_apic.c
-+++ b/arch/x86/kernel/apic/io_apic.c
-@@ -1287,6 +1287,7 @@ void __setup_vector_irq(int cpu)
-                if (!cpumask_test_cpu(cpu, cfg->domain))
-                        per_cpu(vector_irq, cpu)[vector] = -1;
-        }
-+       per_cpu(vector_irq, cpu)[IRQ_MOVE_CLEANUP_VECTOR] = IRQ_MOVE_CLEANUP_VECTOR;
-        raw_spin_unlock(&vector_lock);
- }
-
---- a/arch/x86/kernel/irqinit.c
-+++ b/arch/x86/kernel/irqinit.c
-@@ -295,7 +295,8 @@ static void __init apic_intr_init(void)
- # ifdef CONFIG_IRQ_WORK
-        alloc_intr_gate(IRQ_WORK_VECTOR, irq_work_interrupt);
- # endif
--
-+       per_cpu(vector_irq, 0)[IRQ_MOVE_CLEANUP_VECTOR] =
-+                IRQ_MOVE_CLEANUP_VECTOR;
- #endif
- }
-
-However, this doesn't seem the way to go, so after a short discussion
-with Jan Kiszka, we wondered if there was a special reason for the
-removal of ipipe_init_vector_irq() or if it simply got lost and should
-be re-added.
-
-Thanks in advance!
+Finally, we will have a patch for 3.5. But in any case I would not
+recommend working with an -rc kernel.
 
 -- 
-With kind regards,
-Gernot Hillier
-
-Siemens AG, Corporate Technology, CT RTC ITP SDP-DE
-Corporate Competence Center Embedded Linux
+					    Gilles.
 
