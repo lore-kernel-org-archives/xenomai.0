@@ -1,13 +1,15 @@
-Message-ID: <5047A68D.3020001@xenomai.org>
-Date: Wed, 05 Sep 2012 21:22:53 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <503778DC.3040201@openwide.fr>
+Date: Fri, 24 Aug 2012 14:51:40 +0200
+From: Romain Naour <romain.naour@openwide.fr>
 MIME-Version: 1.0
-References: <CANKLDmsO-1E7+d9X6-t532RJ=CWY4P4x30nCNCwgHffJjAFkDA@mail.gmail.com>	<50460BCE.8010505@xenomai.org>	<CANKLDmtmnbAb7PM4URTjxYtaH5WnvGjVcEPOpSNr2A6gPwLLaA@mail.gmail.com>	<50464969.2000902@xenomai.org>	<5046549C.7030008@xenomai.org>	<CANKLDmufv25Bngqb3CapS6ybHG9DH76DUq1q6dinzJ5ai7TowA@mail.gmail.com>	<5046FF0A.9000208@xenomai.org>	<CANKLDmverDgL3c2BEtXAwkGhq7KLRopGnM3q9Z_TQiAAeMponw@mail.gmail.com>	<50470D2D.8020004@xenomai.org>	<CANKLDmudbBw5gyWVe_nPSLkQTopaH0ajs3FXgJottn84Cm6anQ@mail.gmail.com>	<5047318D.8060106@xenomai.org>	<504735A6.5040800@xenomai.org>	<CANKLDmtbOPWG_bc3=pcbSpgbEvSj=5ZsiXm3CWgBCwBx=yQ8Pw@mail.gmail.com>
-	<5047449C.2040308@xenomai.org>
-In-Reply-To: <5047449C.2040308@xenomai.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] kernel NULL pointer dereference
+References: <50350308.8010405@openwide.fr> <50350712.4020704@xenomai.org>
+	<5035E4CD.9080302@xenomai.org> <50364114.9090804@openwide.fr>
+	<503641EA.2020201@xenomai.org> <503658B3.9060401@openwide.fr>
+	<50366E2A.5030006@xenomai.org>
+In-Reply-To: <50366E2A.5030006@xenomai.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] s3c24xx: Priority rotate enable !?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,103 +18,93 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Henri Roosen <henriroosen@gmail.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On 09/05/2012 02:25 PM, Gilles Chanteperdrix wrote:
+Le 23/08/2012 19:53, Gilles Chanteperdrix a =C3=A9crit :
+> On 08/23/2012 06:22 PM, Romain Naour wrote:
+>
+>> Le 23/08/2012 16:44, Gilles Chanteperdrix a =C3=A9crit :
+>>> On 08/23/2012 04:41 PM, Romain Naour wrote:
+>>>> Le 23/08/2012 10:07, Gilles Chanteperdrix a =C3=A9crit :
+>>>>> On 08/22/2012 06:21 PM, Gilles Chanteperdrix wrote:
+>>>>>> On 08/22/2012 06:04 PM, Romain Naour wrote:
+>>>>>>> Hello,
+>>>>>>>
+>>>>>>> On s3c24xx processors the interrupt source priority isn't fixed b=
+y Adeos
+>>>>>>> patch (ARB_SEL bits in PRIORITY register).
+>>>>>>> Is it intentional ?
+>>>>>>> It may be possible to give priority to an interrupt simultaneousl=
+y
+>>>>>>> arrived that the interruption IRQ_TIMER4 (before being grabbed by
+>>>>>>> Adeos). Therefore, we can have more jitter for real time applicat=
+ions.
+>>>>>> This can always happen even with interrupt priorities: imagine tha=
+t the
+>>>>>> first interrupt happens 1 microsecond before the timer interrupt, =
+even
+>>>>>> with the priority, the handler for first interrupt will be execute=
+d and
+>>>>>> the timer interrupt will have to wait for the end of this handler =
+before
+>>>>>> it is serviced.
+>>>>>>
+>>>>>>> Do we need to fix the priority at this level ?
+>>>>>> I do not think so. However, what can be done is implement interrup=
+t
+>>>>>> controller muting using the priority register, see:
+>>>>>> http://www.xenomai.org/index.php/I-pipe-core:ArmPorting#Priority_b=
+ased_interrupt_controller_muting
+>>>> The priority register can't be used for implement interrupt controll=
+er
+>>>> muting using this method .
+>>>> The PIC hardware can't be configured with only two priority levels.
+>>>> We are obligated to choose between fixed or "rotation fashion" prior=
+ity
+>>>> with 32 levels...
+>>> What prevents us from using the "fixed" priorities, with one level fo=
+r
+>>> real-time interrupts and another for non real-time interrupts ?
+>> The priority register is used to configure the arbitration procedure
+>> when multiple interrupts occur.
+>> But some interrupt sources always have higher priority than other.
+>>
+>> For example, EINT0 is always takes priority regardless INT_RTC, when
+>> arrive at the same time.
+>> Whatever the configuration of priority register.
+>>
+>> When INT_TIMER4 is trigged, the value of priority register is modified=
+.
+>> Thus, INT_TIMER4 loses its priority for arbitration procedure.
+>> That is why I wonder if it is better to fix the priority for arbitrati=
+on
+>> procedure.
+> I don't get it, could you point me to the datasheet?
+>
+In the figure 14-1, there is the Priority Generating Block (priority)=20
+between IRQ mask and INTPND register.
+It is detailed in figure 14-2 and its functional principle is explained=20
+on the next page.
+The priority of interrupt source is determined by the configuration of=20
+each arbiter.
+This configuration is set by the priority register (P 14-13) which is=20
+left on initial state by Linux (0x7F).
+(ARB_MODE =3D 1 for all arbiter)
 
-> On 09/05/2012 02:10 PM, Henri Roosen wrote:
->> I will find out why the application is doing a sys_exit. However I'm
->> not sure how this is related to the thread affinity; when not setting
->> the affinity, the problem is not reproducable.
-> 
-> Thanks for the trace. When we find the bug we will say, of course, that
-> is the reason! Anyway, at first sight, the bug does not seem related to
-> multi-processor, I would say the difference with affinity is a
-> difference in how the cleanup happens in your application (namely the
-> case where a mutex holder is destroyed while another thread which is
-> waiting for the mutex is still alive).
+"ARB_MODE bit is 1, ARB_SEL bits are changed in rotation fashion, e.g.,=20
+if REQ1 is serviced, ARB_SEL bits are changed to 01b automatically so as=20
+to put REQ1 into the lowest priority"
 
+"Note that REQ0 of an arbiter always has the highest priority, and REQ5=20
+has the lowest one."
+For example, EINT0 always has the highest priority and INT_ADC has the=20
+lowest one.
 
-Indeed, the bug is reproducible on any UP board with the following 
-test case. With RPI enabled, the NULL user_task pointer is a problem in
-RPI handling functions, but with RPI disabled, I get the same backtrace
-as you.
+I suggest to reset ARB_MODE for all arbiter and modify ARB6 (01b) and=20
+ARB2 (11b), in order to increase and fix INT_TIMER4's priority'.
+This is all what we can do with this register. Tell me if I'm wrong.
 
-#include <stdio.h>
-#include <string.h>
-
-#include <unistd.h>
-#include <sys/mman.h>
-#include <pthread.h>
-#include <semaphore.h>
-
-pthread_mutex_t mutex;
-sem_t ready;
-
-void locker(void)
-{
-	pthread_set_name_np(pthread_self(), "locker");
-	pthread_mutex_lock(&mutex);
-	sem_post(&ready);
-}
-
-void waiter(void)
-{
-	pthread_set_name_np(pthread_self(), "waiter");
-	sem_wait(&ready);
-	pthread_mutex_lock(&mutex);
-}
-
-void *thread(void *cookie)
-{
-	locker();
-	sleep(1);
-}
-
-int main(void)
-{
-	pthread_mutexattr_t mattr;
-	struct sched_param sp;
-	pthread_t tid;
-	pid_t p;
-	int rc;
-
-	mlockall(MCL_CURRENT | MCL_FUTURE);
-
-	pthread_mutexattr_init(&mattr);
-	pthread_mutexattr_setprotocol(&mattr, PTHREAD_PRIO_INHERIT);
-
-	rc = pthread_mutex_init(&mutex, &mattr);
-	pthread_mutexattr_destroy(&mattr);
-	if (rc) {
-		fprintf(stderr, "pthread_mutex_init: %s\n", strerror(rc));
-		return 1;
-	}
-
-	rc = sem_init(&ready, 0, 0);
-	if (rc) {
-		perror("sem_init");
-		return 1;
-	}
-
-	sp.sched_priority = 99;
-	pthread_setschedparam(pthread_self(), SCHED_FIFO, &sp);
-
-	rc = pthread_create(&tid, NULL, thread, NULL);
-	pthread_attr_destroy(&tattr);
-	if (rc) {
-		fprintf(stderr, "pthread_create: %s\n", strerror(rc));
-		return 1;
-	}
-
-	waiter();
-
-	return 0;
-}
-
-Regards.
-
--- 
-                                                                Gilles.
+Regards,
+Romain
 
