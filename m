@@ -1,5 +1,5 @@
-Message-ID: <50406421.6040804@xenomai.org>
-Date: Fri, 31 Aug 2012 09:13:37 +0200
+Message-ID: <50406A3D.4080801@xenomai.org>
+Date: Fri, 31 Aug 2012 09:39:41 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <50405C4F.5030301@ebus.com>
@@ -32,36 +32,15 @@ On 08/31/2012 08:40 AM, Doug Brunner wrote:
 > (Winsystems PPM-LX800-G, which has a Geode LX800 CPU). It immediately 
 > resets after "Loading initial ramdisk", without even any early printk 
 > output. I have no idea what could be causing that :(
-> 
-> I can't use CONFIG_MGEODE_LX because I get the following error building 
-> with the I-pipe patch:
-> 
-> arch/x86/lib/mmx_32.c: In function '_mmx_memcpy':
-> arch/x86/lib/mmx_32.c:33: error: 'ipipe_root_domain_p' undeclared (first 
-> use in this function)
-> arch/x86/lib/mmx_32.c:33: error: (Each undeclared identifier is reported 
-> only once
-> arch/x86/lib/mmx_32.c:33: error: for each function it appears in.)
-> 
-> and including <linux/ipipe.h> in mmx_32.c does not help.
-> 
-> I did see an email on the list suggesting that 3.4 is now supported, but 
-> if it is still in git and not released I'm guessing it hasn't undergone 
-> much testing yet. For a production environment, would I be better off 
-> just using 2.6.38.8?
-> 
-> I'd really like to get 2.6.1 running so I can see if it fixes the kernel 
-> oops I reported a few months ago.
 
 
-You probably know that, but any version of Xenomai is supposed to work
-with any I-pipe patch released before.
+Ok. I have just booted my geode with 3.4, both with 586 cpu type without
+tsc and with geode cpu type with tsc. The kernel boots and the latency
+test starts. So, I guess you selected a kernel configuration option we
+do not support (such as CONFIG_KGDB).
 
-But we should also try to get 3.2 working for Geode. 3.4 probably has
-the same issues as 3.2. ipipe_root_domain_p has been replaced with
-ipipe_root_p in the new I-pipe core patches. I have a geode here, I will
-try, please post your kernel configuration so that I can try and
-reproduce the issue you have.
+You can download the configuration which works for me here:
+http://xenomai.org/~gch/config-geode
 
 -- 
                                                                 Gilles.
