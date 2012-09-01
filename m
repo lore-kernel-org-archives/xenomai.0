@@ -1,10 +1,13 @@
-From: Henry Bausley <hbausley@deltatau.com>
-Content-Type: text/plain; charset="UTF-8"
-Date: Thu, 23 Aug 2012 11:18:21 -0700
-Message-ID: <1345745901.24823.36.camel@lx-henry>
-Mime-Version: 1.0
+Message-ID: <50421382.90608@xenomai.org>
+Date: Sat, 01 Sep 2012 15:54:10 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+References: <20120901153825.3f232f97@dell>	<504210A3.2080402@xenomai.org>
+	<20120901155011.70dcc825@dell>
+In-Reply-To: <20120901155011.70dcc825@dell>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] nanosleep returns -1 unless using SCHED_FIFO.
+Subject: Re: [Xenomai] imx1 and imx27 boot problem with __ipipe_tsc_get()
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,40 +16,77 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: "gwenhael.goavec" <gwenj@trabucayre.com>
+Cc: xenomai@xenomai.org
+
+On 09/01/2012 03:50 PM, gwenhael.goavec wrote:
+
+> On Sat, 01 Sep 2012 15:41:55 +0200
+> Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote:
+> 
+>> On 09/01/2012 03:38 PM, gwenhael.goavec wrote:
+>>
+>>> Hi,
+>>>
+>>> I have 2 boards, the first is based on imx1 and the second on imx27.
+>>> With this 2 boards, I'm unable to boot a 2.6.38.8 kernel.
+>>> For the imx1 with 3.2.21 the result is the same.
+>>>
+>>> I have enabled early_printk. On every boards the boot stop with a kernel panic.
+>>> The message start with : "Unable to handle kernel paging request at virtual
+>>> address 10003010" on imx27.
+>>>
+>>> This is due to the call of __ipipe_tsc_get() in __ipipe_tsc_update()
+>>>
+>>> To verify my toolchain I have tested 2.6.38.8 with at91 successfully.
+>>>
+>>> If someone has a idea?
+>>
+>>
+>> Not enough information, to understand what happens we need the kernel
+>> oops (at least the register values).
+>>
+>> -- 
+>>                                                                 Gilles.
+> 
+> Sorry,
+> 
+> Unable to handle kernel paging request at virtual address 10003010
+> pgd = c0004000
+> [10003010] *pgd=00000000
+> Internal error: Oops: 5 [#1] PREEMPT
+> last sysfs file: 
+> Modules linked in:
+> CPU: 0    Not tainted  (2.6.38.8-ipipe #34)
+> PC is at 0xffff0f48
+> LR is at __ipipe_tsc_update+0xfc/0x1c0
+> pc : [<ffff0f48>]    lr : [<c0032cd4>]    psr: 600000d3
+> sp : c049fe80  ip : c04af0b0  fp : c04af040
+> r10: c04af0b0  r9 : c04d5300  r8 : c04d5300
+> r7 : 0000001a  r6 : c04c99f8  r5 : ffff0f40  r4 : ffff0f20
+> r3 : 00000000  r2 : 00000000  r1 : c04d5300  r0 : 10003010
 
 
+Ok. In the mean time I remembered someone signalled this bug and I 
+fixed it in the patch for 3.4. r0 is supposed to be the address of the 
+hardware timer, 10003010 is a physical address instead of being a 
+virtual address. Please try the following patch:
 
-With xenomai 2.5.6 nanosleep no longer works unless the application is
-using SCHED_FIFO.  Previously we used xenomai 2.4.10 and the code would
-nanosleep.
-
-
-int main(void) 
-{
-  struct timespec SecSleeper = {0};
-  SecSleeper.tv_sec = 1;
-  SecSleeper.tv_nsec = 0;
-  int P[3];
-
-  // param.__sched_priority = 1;
-  // pthread_setschedparam(pthread_self(),  SCHED_FIFO, &param);    
-  while (1)
-  {
-        printf("Dummy\n");
-        P[1]++;
-        P[2] = nanosleep(&SecSleeper, NULL);
-        P[3] = errno;
-  }  
-  return 0;
-}
+diff --git a/arch/arm/plat-mxc/time.c b/arch/arm/plat-mxc/time.c
+index 255e759..7a3d6b9 100644
+--- a/arch/arm/plat-mxc/time.c
++++ b/arch/arm/plat-mxc/time.c
+@@ -352,7 +352,7 @@ mxc_timer_init(struct clk *timer_clk,
+ 
+ 	if (timer_is_v1()) {
+ 		tsc_info.u.counter_paddr = phys + MX1_2_TCN;
+-		tsc_info.counter_vaddr =(unsigned long)(phys + MX1_2_TCN);
++		tsc_info.counter_vaddr = (unsigned long)(timer_base + MX1_2_TCN);
+ 	} else {
+ 		tsc_info.u.counter_paddr = phys + V2_TCN;
+ 		tsc_info.counter_vaddr = (unsigned long)(timer_base + V2_TCN);
 
 
-Is this behavior expected?
-
-
-
-
-Outbound scan for Spam or Virus by Barracuda at Delta Tau
-
+-- 
+                                                                Gilles.
 
