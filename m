@@ -1,5 +1,5 @@
-Message-ID: <50421ECF.1020403@xenomai.org>
-Date: Sat, 01 Sep 2012 16:42:23 +0200
+Message-ID: <50422697.9020600@xenomai.org>
+Date: Sat, 01 Sep 2012 17:15:35 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <20120901153825.3f232f97@dell> <504210A3.2080402@xenomai.org>
@@ -122,10 +122,16 @@ On 09/01/2012 04:33 PM, Michael Trimarchi wrote:
 > Sorry ,  I was thinking that you only need some test on it,
 > 
 > Execuse me for it
+> 
+> Michael
 
 
-No problem, I am just explaining why the fix did not make it into 3.2. I
-forgot about the issue, and remembered it when doing the port to 3.4.
+The point is: I can not test the patch for imx27 or imx25 because I do
+not have access to such hardware, so I simply compile-test. Could you
+check whether the 3.2 branch still has the issues you fixed, and send
+patches please? I swear they will be merged this time.
+
+Last time your patch had issues, I told you that and we never got further.
 
 -- 
                                                                 Gilles.
