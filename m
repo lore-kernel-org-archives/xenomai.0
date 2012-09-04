@@ -1,12 +1,13 @@
-Message-ID: <5045AD78.3090904@ebus.com>
-Date: Tue, 04 Sep 2012 00:27:52 -0700
-From: Doug Brunner <dbrunner@ebus.com>
+Message-ID: <5045B732.8040104@xenomai.org>
+Date: Tue, 04 Sep 2012 10:09:22 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <50405C4F.5030301@ebus.com> <50406A3D.4080801@xenomai.org>
 	<5043F063.2020302@ebus.com> <50444008.4000109@xenomai.org>
-In-Reply-To: <50444008.4000109@xenomai.org>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+	<5045AD78.3090904@ebus.com>
+In-Reply-To: <5045AD78.3090904@ebus.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] Upgrading to Xenomai 2.6.1
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -16,84 +17,81 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Doug Brunner <dbrunner@ebus.com>
 Cc: xenomai@xenomai.org
 
-T24gMDkvMDIvMjAxMiAxMDoyOCBQTSwgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4gT24g
-MDkvMDMvMjAxMiAwMTo0OCBBTSwgRG91ZyBCcnVubmVyIHdyb3RlOgo+Cj4+IE9uIDA4LzMxLzIw
-MTIgMTI6MzkgQU0sIEdpbGxlcyBDaGFudGVwZXJkcml4IHdyb3RlOgo+Pj4gT24gMDgvMzEvMjAx
-MiAwODo0MCBBTSwgRG91ZyBCcnVubmVyIHdyb3RlOgo+Pj4KPj4+PiBJJ3ZlIGJlZW4gaGF2aW5n
-IGEgdmVyeSBoYXJkIHRpbWUgd2l0aCB0aGUgdXBncmFkZSBmcm9tIFhlbm9tYWkgMi42LjAgdG8K
-Pj4+PiAyLjYuMS0taG9waW5nIHNvbWVvbmUgbWlnaHQgaGF2ZSBhIHN1Z2dlc3Rpb24gZm9yIG1l
-LiBNeSB0aGlua2luZyB3YXMKPj4+PiB0aGF0LCB0byBnZXQgdGhlIG1vc3QgcG9zc2libGUgYnVn
-IGZpeGVzLCBJIHNob3VsZCBhbHNvIHVwZ3JhZGUgdG8gdGhlCj4+Pj4gbGF0ZXN0IGtlcm5lbCBm
-b3Igd2hpY2ggdGhlcmUgaXMgYSBzdGFibGUgSS1waXBlIHBhdGNoLCB3aGljaCBhcHBlYXJzIHRv
-Cj4+Pj4gYmUgMy4yLjIxIGZyb20gZXhhbWluaW5nIHRoZSBsaXN0IG9mIGF2YWlsYWJsZSBwYXRj
-aGVzIGRpc3RyaWJ1dGVkIHdpdGgKPj4+PiBYZW5vbWFpLgo+Pj4+Cj4+Pj4gVW5mb3J0dW5hdGVs
-eSwgMy4yLjIxIChldmVuIHVubW9kaWZpZWQsIHVzaW5nIGEgdmFuaWxsYSBEZWJpYW4ga2VybmVs
-Cj4+Pj4gY29uZmlnLCBzZXQgZm9yIDU4NiBjcHUgdHlwZSkgd2lsbCBub3QgYm9vdCBvbiBteSB0
-YXJnZXQgcGxhdGZvcm0KPj4+PiAoV2luc3lzdGVtcyBQUE0tTFg4MDAtRywgd2hpY2ggaGFzIGEg
-R2VvZGUgTFg4MDAgQ1BVKS4gSXQgaW1tZWRpYXRlbHkKPj4+PiByZXNldHMgYWZ0ZXIgIkxvYWRp
-bmcgaW5pdGlhbCByYW1kaXNrIiwgd2l0aG91dCBldmVuIGFueSBlYXJseSBwcmludGsKPj4+PiBv
-dXRwdXQuIEkgaGF2ZSBubyBpZGVhIHdoYXQgY291bGQgYmUgY2F1c2luZyB0aGF0IDooCj4+PiBP
-ay4gSSBoYXZlIGp1c3QgYm9vdGVkIG15IGdlb2RlIHdpdGggMy40LCBib3RoIHdpdGggNTg2IGNw
-dSB0eXBlIHdpdGhvdXQKPj4+IHRzYyBhbmQgd2l0aCBnZW9kZSBjcHUgdHlwZSB3aXRoIHRzYy4g
-VGhlIGtlcm5lbCBib290cyBhbmQgdGhlIGxhdGVuY3kKPj4+IHRlc3Qgc3RhcnRzLiBTbywgSSBn
-dWVzcyB5b3Ugc2VsZWN0ZWQgYSBrZXJuZWwgY29uZmlndXJhdGlvbiBvcHRpb24gd2UKPj4+IGRv
-IG5vdCBzdXBwb3J0IChzdWNoIGFzIENPTkZJR19LR0RCKS4KPj4+Cj4+PiBZb3UgY2FuIGRvd25s
-b2FkIHRoZSBjb25maWd1cmF0aW9uIHdoaWNoIHdvcmtzIGZvciBtZSBoZXJlOgo+Pj4gaHR0cDov
-L3hlbm9tYWkub3JnL35nY2gvY29uZmlnLWdlb2RlCj4+Pgo+PiBBcmdoLi4udGhlIHByb2JsZW0g
-d2FzIGFwcGFyZW50bHkgdGhhdCBJJ2QgbGVmdCBTTVAgc3VwcG9ydCBzZWxlY3RlZC4KPj4gVGhh
-bmtzIGZvciB5b3VyIGNvbmZpZyEgSXQncyBhIG5pY2UgYmFyZS1ib25lcyBrZXJuZWwgYW5kIGJv
-b3RzIG15IEdlb2RlCj4+IGFzIHdlbGwgc28gSSdtIHVzaW5nIGl0IGFzIGEgbmV3IHN0YXJ0aW5n
-IHBvaW50Lgo+PiBJIHNhdyBhbiBlbWFpbCBmcm9tIHlvdSBvbiA4LzMgcmVmZXJyaW5nIHRvIGEg
-cmVncmVzc2lvbiBjb25uZWN0ZWQgdG8KPj4gaXJxX2hvbGQgdGhhdCB3YXMgZml4ZWQgaW4geW91
-ciBnaXQuIFNob3VsZCBJIGdldCBhbiBJLXBpcGUgcGF0Y2ggZnJvbQo+PiB0aGVyZSwgb3IgZnJv
-bSBnaXQuZGVueC5kZS9pcGlwZS5naXQgaW5zdGVhZCBvZiB1c2luZyB0aGUgb25lCj4+IGRpc3Ry
-aWJ1dGVkIHdpdGggMi42LjE/Cj4gUHJvYmFibHkgbm90LCB0aGF0IGlzIGEgZml4IGZvciBJTy1B
-UElDIGludGVycnVwdCBjb250cm9sbGVyLCB0aGUgZ2VvZGUKPiBkb2VzIG5vdCBoYXZlIGFuIElP
-LUFQSUMuIE1ha2luZyBhIGZldyB0ZXN0cyB3aXRoIGdlb2RlIHdpdGhvdXQgdHNjIEkKPiBmb3Vu
-ZCBvdXQgc29tZXRoaW5nIG9idmlvdXM6ICJzdGF0aXN0aWNzIGNvbGxlY3Rpb24iIHNob3VsZCBi
-ZSBkaXNhYmxlZAo+IGFzIGl0IGNhdXNlcyB0aGUgdHNjIHJlYWQgZnVuY3Rpb24gdG8gYmUgY2Fs
-bGVkIG9mdGVuLCBhbmQgZWFjaCByZWFkIG9mCj4gdGhlIGVtdWxhdGVkIHRzYyBjb3N0cyA0dXMu
-CklmIEkgdW5kZXJzdGFuZCB5b3UgY29ycmVjdGx5IHlvdSBhcmUgcmVjb21tZW5kaW5nIEkgdXNl
-IDMuMi4yMSB3aXRoIHRoZSAKaXBpcGUgcGF0Y2ggc3VwcGxpZWQgd2l0aCBYZW5vIDIuNi4xIChj
-aGFuZ2luZyBpcGlwZV9yb290X2RvbWFpbl9wIHRvIAppcGlwZV9yb290X3AgaW4gYXJjaC94ODYv
-bGliL21teF8zMi5jKS4KClVuZm9ydHVuYXRlbHkgaXQgc2VlbXMgbmVpdGhlciB0aGF0IDMuMi4y
-MSBub3IgdGhlIGFscmVhZHkgaXBpcGUtZW5hYmxlZCAKMy40LjYgZnJvbSBnaXQuZGVueC5kZS9p
-cGlwZS5naXQgCigyOWU2NTZhOTUwMTY2MzM2NjI4N2E4OTNkNWY2ZDYyYmZmOWY0MGY2KSB3b3Jr
-cyB3aXRoIG15IHRhcmdldCAKV2luc3lzdGVtcyBQUE0tTFg4MDAtRy4gV2hldGhlciBJIHVzZSB0
-aGUgY29uZmlnIHlvdSBwb3N0ZWQgYXQgCmh0dHA6Ly94ZW5vbWFpLm9yZy9+Z2NoL2NvbmZpZy1n
-ZW9kZSBvciBtaW5lIChkZXJpdmVkIGZyb20geW91cnMsIGp1c3QgCmRyb3BzIHNvbWUgZXRoZXJu
-ZXQgZGV2aWNlcyBJIGRvbid0IHVzZSBhbmQgYWRkcyB0aGUgR2VvZGUgZnJhbWVidWZmZXIgCmFu
-ZCBJUHY2KSwgdGhlIHN5c3RlbSBleHBlcmllbmNlcyBBVEEgZmF1bHRzIHN1Y2ggYXMgdGhlIGZv
-bGxvd2luZyAKaW1tZWRpYXRlbHkgdXBvbiB0cnlpbmcgdG8gYm9vdDoKCmF0YTEuMDA6IGV4Y2Vw
-dGlvbiBFbWFzayAweDAgU0FjdCAweDAgU0VyciAweDAgYWN0aW9uIDB4NiBmcm96ZW4KYXRhMS4w
-MDogZmFpbGVkIGNvbW1hbmQ6IFJFQUQgRE1BCmF0YTEuMDA6IGNtZCBjOC8wMDowODowMDowMDow
-MC8wMDowMDowMDowMDowMC9lMCB0YWcgMCBkbWEgNDA5NiBpbgogICAgICAgICAgcmVzIDQwLzAw
-OjAwOjAwOjAwOjAwLzAwOjAwOjAwOjAwOjAwLzAwIEVtYXNrIDB4NCAodGltZW91dCkKYXRhMS4w
-MDogc3RhdHVzOiB7IERSRFkgfQoKRmluYWxseSwgYWZ0ZXIgc2V2ZXJhbCBvZiB0aGVzZSB3aXRo
-IGxvbmcgZGVsYXlzIGluIGJldHdlZW4sIGl0IHBhbmljcyAKYmVjYXVzZSBpdCBjYW4ndCBmaW5k
-IHRoZSByb290IGZpbGVzeXN0ZW0gb24gdGhlIEFUQSBkZXZpY2UgaXQncyB0cnlpbmcgCnRvIGFj
-Y2VzcyAoQ0YgY2FyZCB2aWEgdGhlIENTNTUzNiBjb250cm9sbGVyKS4KClRoZSBzYW1lIGNvbmZp
-ZyBtaW51cyB0aGUgaXBpcGUgc3R1ZmYsIGZlZCB0byBhbiB1bnBhdGNoZWQga2VybmVsIHRyZWUs
-IApwcm9kdWNlcyBhIGJpbmFyeSB0aGF0IHdpbGwgYm9vdCB0aGUgc3lzdGVtIHdpdGggbm8gZXJy
-b3IgbWVzc2FnZXM7IHRoaXMgCmlzIHRydWUgZm9yIGJvdGggMy4yLjIxIGFuZCAzLjQuNi4gQW55
-IGlkZWEgd2hhdCBjb3VsZCBiZSBkb2luZyB0aGlzLCBvciAKd2hhdCBlbHNlIEkgY2FuIGRvIHRv
-IGRlYnVnPyBJJ3ZlIGF0dGFjaGVkIG15IGNvbmZpZ3MgZm9yIHJlZmVyZW5jZSwgCmV4Y2VwdCB0
-aGUgMy40LjYgaXBpcGUgd2hpY2ggSSBmb3Jnb3QgdG8gc2F2ZS4KClRoYW5rcywKICAgICAtLURv
-dWcgQnJ1bm5lcgotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24t
-dGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBjb25maWctMy4yLjIxLWlwaXBl
-LXNtYWxsLTEuZ3oKVHlwZTogYXBwbGljYXRpb24veC1nemlwClNpemU6IDEzMjIyIGJ5dGVzCkRl
-c2M6IG5vdCBhdmFpbGFibGUKVVJMOiA8aHR0cDovL3d3dy54ZW5vbWFpLm9yZy9waXBlcm1haWwv
-eGVub21haS9hdHRhY2htZW50cy8yMDEyMDkwNC8wZGQ0ODM3YS9hdHRhY2htZW50LmJpbj4KLS0t
-LS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVu
-dCB3YXMgc2NydWJiZWQuLi4KTmFtZTogY29uZmlnLTMuMi4yMS1zbWFsbC0xLmd6ClR5cGU6IGFw
-cGxpY2F0aW9uL3gtZ3ppcApTaXplOiAxMjM0NCBieXRlcwpEZXNjOiBub3QgYXZhaWxhYmxlClVS
-TDogPGh0dHA6Ly93d3cueGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMv
-MjAxMjA5MDQvMGRkNDgzN2EvYXR0YWNobWVudC0wMDAxLmJpbj4KLS0tLS0tLS0tLS0tLS0gbmV4
-dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQu
-Li4KTmFtZTogY29uZmlnLTMuNC42LXNtYWxsLTEuZ3oKVHlwZTogYXBwbGljYXRpb24veC1nemlw
-ClNpemU6IDEyNzcyIGJ5dGVzCkRlc2M6IG5vdCBhdmFpbGFibGUKVVJMOiA8aHR0cDovL3d3dy54
-ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDEyMDkwNC8wZGQ0ODM3
-YS9hdHRhY2htZW50LTAwMDIuYmluPgo=
+On 09/04/2012 09:27 AM, Doug Brunner wrote:
+> On 09/02/2012 10:28 PM, Gilles Chanteperdrix wrote:
+>> On 09/03/2012 01:48 AM, Doug Brunner wrote:
+>>
+>>> On 08/31/2012 12:39 AM, Gilles Chanteperdrix wrote:
+>>>> On 08/31/2012 08:40 AM, Doug Brunner wrote:
+>>>>
+>>>>> I've been having a very hard time with the upgrade from Xenomai 2.6.0 to
+>>>>> 2.6.1--hoping someone might have a suggestion for me. My thinking was
+>>>>> that, to get the most possible bug fixes, I should also upgrade to the
+>>>>> latest kernel for which there is a stable I-pipe patch, which appears to
+>>>>> be 3.2.21 from examining the list of available patches distributed with
+>>>>> Xenomai.
+>>>>>
+>>>>> Unfortunately, 3.2.21 (even unmodified, using a vanilla Debian kernel
+>>>>> config, set for 586 cpu type) will not boot on my target platform
+>>>>> (Winsystems PPM-LX800-G, which has a Geode LX800 CPU). It immediately
+>>>>> resets after "Loading initial ramdisk", without even any early printk
+>>>>> output. I have no idea what could be causing that :(
+>>>> Ok. I have just booted my geode with 3.4, both with 586 cpu type without
+>>>> tsc and with geode cpu type with tsc. The kernel boots and the latency
+>>>> test starts. So, I guess you selected a kernel configuration option we
+>>>> do not support (such as CONFIG_KGDB).
+>>>>
+>>>> You can download the configuration which works for me here:
+>>>> http://xenomai.org/~gch/config-geode
+>>>>
+>>> Argh...the problem was apparently that I'd left SMP support selected.
+>>> Thanks for your config! It's a nice bare-bones kernel and boots my Geode
+>>> as well so I'm using it as a new starting point.
+>>> I saw an email from you on 8/3 referring to a regression connected to
+>>> irq_hold that was fixed in your git. Should I get an I-pipe patch from
+>>> there, or from git.denx.de/ipipe.git instead of using the one
+>>> distributed with 2.6.1?
+>> Probably not, that is a fix for IO-APIC interrupt controller, the geode
+>> does not have an IO-APIC. Making a few tests with geode without tsc I
+>> found out something obvious: "statistics collection" should be disabled
+>> as it causes the tsc read function to be called often, and each read of
+>> the emulated tsc costs 4us.
+> If I understand you correctly you are recommending I use 3.2.21 with the 
+> ipipe patch supplied with Xeno 2.6.1 (changing ipipe_root_domain_p to 
+> ipipe_root_p in arch/x86/lib/mmx_32.c).
+> 
+> Unfortunately it seems neither that 3.2.21 nor the already ipipe-enabled 
+> 3.4.6 from git.denx.de/ipipe.git 
+> (29e656a9501663366287a893d5f6d62bff9f40f6) works with my target 
+> Winsystems PPM-LX800-G. Whether I use the config you posted at 
+> http://xenomai.org/~gch/config-geode or mine (derived from yours, just 
+> drops some ethernet devices I don't use and adds the Geode framebuffer 
+> and IPv6), the system experiences ATA faults such as the following 
+> immediately upon trying to boot:
+> 
+> ata1.00: exception Emask 0x0 SAct 0x0 SErr 0x0 action 0x6 frozen
+> ata1.00: failed command: READ DMA
+> ata1.00: cmd c8/00:08:00:00:00/00:00:00:00:00/e0 tag 0 dma 4096 in
+>           res 40/00:00:00:00:00/00:00:00:00:00/00 Emask 0x4 (timeout)
+> ata1.00: status: { DRDY }
+> 
+> Finally, after several of these with long delays in between, it panics 
+> because it can't find the root filesystem on the ATA device it's trying 
+> to access (CF card via the CS5536 controller).
+> 
+> The same config minus the ipipe stuff, fed to an unpatched kernel tree, 
+> produces a binary that will boot the system with no error messages; this 
+> is true for both 3.2.21 and 3.4.6. Any idea what could be doing this, or 
+> what else I can do to debug? I've attached my configs for reference, 
+> except the 3.4.6 ipipe which I forgot to save.
+
+The cs5536 SATA driver does not work for me either, even without I-pipe,
+whereas the legacy IDE driver (option CONFIG_BLK_DEV_CS5536) works,
+could you test whether it works for you?
+
+-- 
+					    Gilles.
+
