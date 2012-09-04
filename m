@@ -1,14 +1,13 @@
-Message-ID: <504646E6.4080901@ruggedcom.com>
-Date: Tue, 4 Sep 2012 14:22:30 -0400
-From: Makarand Pradhan <makarandpradhan@ruggedcom.com>
+Message-ID: <50464969.2000902@xenomai.org>
+Date: Tue, 04 Sep 2012 20:33:13 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <50461A66.6070805@ruggedcom.com>
-	<504621AB.3000402@xenomai.org>	<20120904155339.GZ1237@csclub.uwaterloo.ca>	<504627A4.90505@xenomai.org>
-	<5046294C.7070102@xenomai.org>
-In-Reply-To: <5046294C.7070102@xenomai.org>
-Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
+References: <CANKLDmsO-1E7+d9X6-t532RJ=CWY4P4x30nCNCwgHffJjAFkDA@mail.gmail.com>	<50460BCE.8010505@xenomai.org>
+	<CANKLDmtmnbAb7PM4URTjxYtaH5WnvGjVcEPOpSNr2A6gPwLLaA@mail.gmail.com>
+In-Reply-To: <CANKLDmtmnbAb7PM4URTjxYtaH5WnvGjVcEPOpSNr2A6gPwLLaA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Powepc 8360 interrupt timing question
+Subject: Re: [Xenomai] kernel NULL pointer dereference
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,64 +16,72 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Henri Roosen <henriroosen@gmail.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-Tx Philippe and Gilles for your inputs.
+On 09/04/2012 04:28 PM, Henri Roosen wrote:
 
-I'm going to try the new ipipe-core(ipipe-core-3.2.21) patch and check 
-out the timings.
-
-Rgds,
-Makarand.
-
-On 04/09/12 12:16 PM, Philippe Gerum wrote:
-> On 09/04/2012 06:09 PM, Philippe Gerum wrote:
->> On 09/04/2012 05:53 PM, Lennart Sorensen wrote:
->>> On Tue, Sep 04, 2012 at 05:43:39PM +0200, Philippe Gerum wrote:
->>>> - which I-pipe version exactly? Seven different patches were released
->>>> for 3.0.x/powerpc over time.
->>>>
->>>> - which Xenomai release? 2.6.0, 2.6.1, current HEAD?
->>> xenomai 2.6.0, kernel 3.0.22, ipipe 3.0.8-powerpc-2.13-04
+> On Tue, Sep 4, 2012 at 4:10 PM, Gilles Chanteperdrix
+> <gilles.chanteperdrix@xenomai.org> wrote:
+>> On 09/04/2012 03:42 PM, Henri Roosen wrote:
+>>> Hi,
 >>>
->>>> You seem to be rehashing an old question. The answer at that time was:
->>>>
->>>> - there was an issue with processing cascaded interrupts in the former
->>>> pipeline architecture. This has been solved in recent patches with the
->>>> introduction of the pipeline "core" series (core-3.2 and above, commit
->>>> a4b909ccf80c5a).
->>> Hmm, I wonder if that would apply reasonably cleanly on top of the
->>> 3.0.8 patch.  Might be worth a try.
->> I see no showstopper in doing this, many if not most issues will be
->> related to name changes. However, the implementation of the low level
->> IRQ dispatcher is different between the core series and the former one.
->> So there will be some glue logic to provide. Understanding the way
->> __ipipe_dispatch_irq works with respect to handling cascaded IRQs should
->> provide enough insight to match the related code in
->> arch/powerpc/include/asm/qe_ic.h.
-> You will need these too:
-> eb3ce2324618
-> f2ca3c2baf58b
->
->>>> - handling level IRQs in userland is generally a bad idea.
->>> Unfortunately edge IRQs don't really share well.
+>>> I'm using the bleeding edge of Xenomai (0590cb45adce468f619) and Ipipe
+>>> (d21e8cdbdcf21ade) on a x86 multicore system and kernel 3.4.6.
+>>> I reserved one cpu (kernel param isolcpus=1).
 >>>
->> No, but if the level IRQ is shared between the two domains, the
->> situation is even worse with handling the RT one in userland.
+>>> Our application triggers the following NULL pointer dereference when I
+>>> set the affinity of some tasks to cpu 0 and other tasks to cpu 1.
+>>> The application does not trigger this when all tasks have the same
+>>> affinity (set via /proc/xenomai/affinity).
+>>>
+>>> I was able to reproduce this also under QEMU and will do some
+>>> debugging, but maybe someone knows what is wrong already by seeing the
+>>> stacktrace below:
 >>
->
+>> Could you try to reduce the bug to a simple testcase which we would try
+>> and run to reproduce?
+>>
+>>> [  108.013023] BUG: unable to handle kernel NULL pointer dereference
+>> at 00000294
+>>> [  108.013550] IP: [<c0126a91>] __lock_task_sighand+0x53/0xc3
+>>
+>> Or send us a disassembly of the function __lock_task_sighand?
+
+
+Looks like someone is calling send_sig_info with an invalid pointer. 
+There is something seriously wrong.
+
+On the other hand, now that I think about it, you need at least the 
+following patch:
+
+diff --git a/ksrc/nucleus/intr.c b/ksrc/nucleus/intr.c
+index c75fcac..0f37bb2 100644
+--- a/ksrc/nucleus/intr.c
++++ b/ksrc/nucleus/intr.c
+@@ -93,8 +93,18 @@ void xnintr_host_tick(struct xnsched *sched) /* Interrupts off. */
+ 
+ void xnintr_clock_handler(void)
+ {
+-	struct xnsched *sched = xnpod_current_sched();
+ 	xnstat_exectime_t *prev;
++	struct xnsched *sched;
++	unsigned cpu;
++
++	cpu = xnarch_current_cpu();
++
++	if (!cpumask_test_cpu(cpu, &xnarch_supported_cpus)) {
++		xnarch_relay_tick();
++		return;
++	}
++
++	sched = xnpod_sched_slot(cpu);
+ 
+ 	prev = xnstat_exectime_switch(sched,
+ 		&nkclock.stat[xnsched_cpu(sched)].account);
+
 
 
 -- 
-___________________________________________________________________________
-NOTICE OF CONFIDENTIALITY:
-This e-mail and any attachments may contain confidential and privileged information.  If you are
-not the intended recipient, please notify the sender immediately by return e-mail and delete this
-e-mail and any copies.  Any dissemination or use of this information by a person other than the
-intended recipient is unauthorized and may be illegal.
-_____________________________________________________________________
-
-  
-
+                                                                Gilles.
 
