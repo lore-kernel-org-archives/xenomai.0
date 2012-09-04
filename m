@@ -1,13 +1,13 @@
-Message-ID: <50375EAC.9000206@xenomai.org>
-Date: Fri, 24 Aug 2012 12:59:56 +0200
+Message-ID: <50464BED.7020209@xenomai.org>
+Date: Tue, 04 Sep 2012 20:43:57 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <50375208.5090209@wanadoo.fr>
-In-Reply-To: <50375208.5090209@wanadoo.fr>
+References: <CANKLDmsO-1E7+d9X6-t532RJ=CWY4P4x30nCNCwgHffJjAFkDA@mail.gmail.com>	<50460BCE.8010505@xenomai.org>	<CANKLDmtmnbAb7PM4URTjxYtaH5WnvGjVcEPOpSNr2A6gPwLLaA@mail.gmail.com>
+	<50464969.2000902@xenomai.org>
+In-Reply-To: <50464969.2000902@xenomai.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Availability of ARM adeos patch for 3.5 kernel,
- and RTDM SPI for iMX6 ?
+Subject: Re: [Xenomai] kernel NULL pointer dereference
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,55 +16,77 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Thierry Bultel <thierry.bultel@wanadoo.fr>
-Cc: xenomai@xenomai.org
+To: Henri Roosen <henriroosen@gmail.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 08/24/2012 12:06 PM, Thierry Bultel wrote:
+On 09/04/2012 08:33 PM, Gilles Chanteperdrix wrote:
 
-> Hi,
+> On 09/04/2012 04:28 PM, Henri Roosen wrote:
 > 
-> I noticed on git that the latest available patch for ARM is
-> ipipe-core-3.2.21-arm-1.patch,
-> that I assume, replaces the mxc pre+std+post mecanism, please tell me if
-> I am wrong.
-
-
-The pre+std+post mechanism is used to apply a patch for mainline kernel
-to the Freescale linux tree. If you want to use that tree, you always
-need that mechanism. ipipe-core-3.2.21-arm-1.patch is a patch for the
-mainline kernel.
-
+>> On Tue, Sep 4, 2012 at 4:10 PM, Gilles Chanteperdrix
+>> <gilles.chanteperdrix@xenomai.org> wrote:
+>>> On 09/04/2012 03:42 PM, Henri Roosen wrote:
+>>>> Hi,
+>>>>
+>>>> I'm using the bleeding edge of Xenomai (0590cb45adce468f619) and Ipipe
+>>>> (d21e8cdbdcf21ade) on a x86 multicore system and kernel 3.4.6.
+>>>> I reserved one cpu (kernel param isolcpus=1).
+>>>>
+>>>> Our application triggers the following NULL pointer dereference when I
+>>>> set the affinity of some tasks to cpu 0 and other tasks to cpu 1.
+>>>> The application does not trigger this when all tasks have the same
+>>>> affinity (set via /proc/xenomai/affinity).
+>>>>
+>>>> I was able to reproduce this also under QEMU and will do some
+>>>> debugging, but maybe someone knows what is wrong already by seeing the
+>>>> stacktrace below:
+>>>
+>>> Could you try to reduce the bug to a simple testcase which we would try
+>>> and run to reproduce?
+>>>
+>>>> [  108.013023] BUG: unable to handle kernel NULL pointer dereference
+>>> at 00000294
+>>>> [  108.013550] IP: [<c0126a91>] __lock_task_sighand+0x53/0xc3
+>>>
+>>> Or send us a disassembly of the function __lock_task_sighand?
 > 
-> I would like to know is there is an estimated date for the availability
-> of the patch for the 3.5 kernel ?
-
-
-Due to lack of time, the next patch will probably be for 3.6. We already
-have support for 3.4 kernel, which you can use checking out:
-git://git.denx.de/ipipe.git
-for the kernel, and
-git://git.xenomai.org/xenomai-2.6.git
-for xenomai.
-
-Note that 3.4 is probably a good choice as it has been announced that it
-will be maintained for one year.
-
-Note that we have some unfinished business on imx6:
-- we have some random crashes, which I think are probably solved in 3.4
-(and need backporting in 3.2 and 3.0, either way)
-- we have some high latencies, I think they may be due to the bug
-discovered in this thread:
-http://lists.infradead.org/pipermail/linux-arm-kernel/2012-August/113087.html
-
-But I need to spend some time on the actual hardware to validate these
-hypotheses.
-
 > 
-> My last question is about SPI, will an RTDM driver for the SPI of the
-> iMX6 be available ?
+> Looks like someone is calling send_sig_info with an invalid pointer. 
+> There is something seriously wrong.
+> 
+> On the other hand, now that I think about it, you need at least the 
+> following patch:
+> 
+> diff --git a/ksrc/nucleus/intr.c b/ksrc/nucleus/intr.c
+> index c75fcac..0f37bb2 100644
+> --- a/ksrc/nucleus/intr.c
+> +++ b/ksrc/nucleus/intr.c
+> @@ -93,8 +93,18 @@ void xnintr_host_tick(struct xnsched *sched) /* Interrupts off. */
+>  
+>  void xnintr_clock_handler(void)
+>  {
+> -	struct xnsched *sched = xnpod_current_sched();
+>  	xnstat_exectime_t *prev;
+> +	struct xnsched *sched;
+> +	unsigned cpu;
+> +
+> +	cpu = xnarch_current_cpu();
+> +
+> +	if (!cpumask_test_cpu(cpu, &xnarch_supported_cpus)) {
+> +		xnarch_relay_tick();
+> +		return;
+> +	}
+> +
+> +	sched = xnpod_sched_slot(cpu);
+>  
+>  	prev = xnstat_exectime_switch(sched,
+>  		&nkclock.stat[xnsched_cpu(sched)].account);
 
 
-Sure, if someone writes it, we will be happy to merge it in xenomai sources.
+No, it will not work. I do not understand how it supposed to work, actually.
+
+When the local timer interrupt happens for a non supported cpus, how
+does it get propagated to the root domain?
 
 -- 
                                                                 Gilles.
