@@ -1,12 +1,12 @@
-Message-ID: <504628E2.3020502@xenomai.org>
-Date: Tue, 04 Sep 2012 18:14:26 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <5046294C.7070102@xenomai.org>
+Date: Tue, 04 Sep 2012 18:16:12 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <50461A66.6070805@ruggedcom.com>
-	<504621AB.3000402@xenomai.org>	<20120904155339.GZ1237@csclub.uwaterloo.ca>
+References: <50461A66.6070805@ruggedcom.com> <504621AB.3000402@xenomai.org>
+	<20120904155339.GZ1237@csclub.uwaterloo.ca>
 	<504627A4.90505@xenomai.org>
 In-Reply-To: <504627A4.90505@xenomai.org>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] Powepc 8360 interrupt timing question
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -17,8 +17,7 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
 On 09/04/2012 06:09 PM, Philippe Gerum wrote:
 > On 09/04/2012 05:53 PM, Lennart Sorensen wrote:
@@ -48,11 +47,22 @@ On 09/04/2012 06:09 PM, Philippe Gerum wrote:
 > provide enough insight to match the related code in
 > arch/powerpc/include/asm/qe_ic.h.
 
-I have done a backport on a 2.6.38 for ARM, I do not guarantee that I
-did not messed it up though:
+You will need these too:
+eb3ce2324618
+f2ca3c2baf58b
 
-http://git.xenomai.org/?p=ipipe-gch.git;a=commitdiff;h=3cc9d04bc3ec4b576bc6bba33ab7f6f87044897f;hp=5db89e7755817a3bd080235427ae9a1de8ba1cbf
+> 
+>>
+>>> - handling level IRQs in userland is generally a bad idea.
+>>
+>> Unfortunately edge IRQs don't really share well.
+>>
+> 
+> No, but if the level IRQ is shared between the two domains, the
+> situation is even worse with handling the RT one in userland.
+> 
+
 
 -- 
-					    Gilles.
+Philippe.
 
