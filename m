@@ -1,13 +1,13 @@
-Message-ID: <50453DCE.5020601@xenomai.org>
-Date: Tue, 04 Sep 2012 01:31:26 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <5045AD78.3090904@ebus.com>
+Date: Tue, 04 Sep 2012 00:27:52 -0700
+From: Doug Brunner <dbrunner@ebus.com>
 MIME-Version: 1.0
-References: <CAHue_TVRdTsre3E7NxHtb=6XfxkL7_36nsLLxSkiF3kUJAJ5Vw@mail.gmail.com>	<5022B5E4.7040101@xenomai.org>	<CAHue_TWodrVNxhsxXZ6_xcOGWHDqVGe41qbY0=R3RhFjBedG+g@mail.gmail.com>	<50339840.1070202@xenomai.org>	<CAHue_TVSGuatTqL4fRFoOABo4KTm8dFPmRFp7QJNmpk=ZU7NtQ@mail.gmail.com>	<CAHue_TUKTiusLqfXK59O+PVoxONKAE2xQyBYOgjDh=dZZ2-b3w@mail.gmail.com>	<504503DC.4040908@xenomai.org>
-	<CAHue_TX3+pr39Mso1SXA83NWVRNoeocD-zDcLPk5mKn-XCkQKQ@mail.gmail.com>
-In-Reply-To: <CAHue_TX3+pr39Mso1SXA83NWVRNoeocD-zDcLPk5mKn-XCkQKQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] Cortex-a9 - please fix xenomai-fix-lfs-issue.patch
+References: <50405C4F.5030301@ebus.com> <50406A3D.4080801@xenomai.org>
+	<5043F063.2020302@ebus.com> <50444008.4000109@xenomai.org>
+In-Reply-To: <50444008.4000109@xenomai.org>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Subject: Re: [Xenomai] Upgrading to Xenomai 2.6.1
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,253 +16,84 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?B?TWFyY2luIEt1xZtrYQ==?= <marckuska@gmail.com>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On 09/04/2012 01:04 AM, Marcin Ku=C5=9Bka wrote:
-
->> (...)
->=20
->>
->>> I-pipe, 1.000 MHz clocksource\
->>
->=20
-> I was so concentrated on making work kernel on hardware that I somehow
-> ignored it.
->=20
->=20
->> A Cortex-A9 (in MP mode) should use the "global timer" clock source,
->>
->=20
-> That's good news because I decided to switch off SMP option and systems=
-
-> works only with one CPU
-
->
-
->=20
->>
->>> smsc911x smsc911x: eth0: MAC Address: 00:02:f7:00:40:9c
->>> ------------[ cut here ]------------
->>> WARNING: at mm/slab.c:2264 kmem_cache_create+0x690/0x6dc()
->>
->=20
->> I would investigate this first. This looks scary.
->>
->=20
-> What do you mean by investigate - try other options? SLUB e.g.?
-
-
-I mean look at mm/slab.c line 2264 what the warning means, understanding
-how this can happen and fix it.
-
->> High latencies for a cortex-A9. Maybe you enabled all xenomai debug
->> options?
->=20
->=20
-> That's right - all debug options are on.
-
-
-Well, maybe some kernel debug option causes an issue.
-
->=20
->=20
->>> Xenomai: RTDM: closing file descriptor 0.
->>> Segmentation fault
->>
->> Well without a disassembly of the faulting code and the values of the
->> the registers, we have no idea. Could you post your kernel configurati=
-on?
->>
->=20
-> I attached my kernel config with my previous mail, but here it is:
-
-
-"attached" is the key word, simply paste the configuration in the mail
-body, this make it possible to reply quoting contents of the file. And
-in plain text (it is useless to post HTML to the xenomai mailing list,
-since the mails got converted to plain text anyway).
-
-> *#*
-
-> *# Kernel Performance Events And Counters*
-> *#*
-> *CONFIG_PERF_EVENTS=3Dy*
-> *# CONFIG_PERF_COUNTERS is not set*
-> *# CONFIG_DEBUG_PERF_USE_VMALLOC is not set*
-> *CONFIG_VM_EVENT_COUNTERS=3Dy*
-> *CONFIG_COMPAT_BRK=3Dy*
-> *CONFIG_SLAB=3Dy*
-> *# CONFIG_SLUB is not set*
-> *# CONFIG_SLOB is not set*
-> *CONFIG_PROFILING=3Dy*
-> *CONFIG_TRACEPOINTS=3Dy*
-> *CONFIG_OPROFILE=3Dy*
-> *CONFIG_HAVE_OPROFILE=3Dy*
-> *# CONFIG_KPROBES is not set*
-> *CONFIG_HAVE_KPROBES=3Dy*
-> *CONFIG_HAVE_KRETPROBES=3Dy*
-> *CONFIG_HAVE_REGS_AND_STACK_ACCESS_API=3Dy*
-> *CONFIG_HAVE_CLK=3Dy*
-> *CONFIG_HAVE_DMA_API_DEBUG=3Dy*
-> *CONFIG_HAVE_HW_BREAKPOINT=3Dy*
-
-
-Please try disabling oprofile, tracepoints and profiling.
-
-
-> *# CONFIG_XENO_OPT_DEBUG_NUCLEUS is not set*
-> *CONFIG_XENO_OPT_DEBUG_XNLOCK=3Dy*
-
-
-You do not need that without SMP.
-
-> *# CONFIG_XENO_OPT_DEBUG_QUEUES is not set*
-> *# CONFIG_XENO_OPT_DEBUG_REGISTRY is not set*
-> *# CONFIG_XENO_OPT_DEBUG_TIMERS is not set*
-> *CONFIG_XENO_OPT_DEBUG_SYNCH_RELAX=3Dy*
-> *CONFIG_XENO_OPT_WATCHDOG=3Dy*
-> *CONFIG_XENO_OPT_WATCHDOG_TIMEOUT=3D4*
-> *# CONFIG_XENO_OPT_SHIRQ is not set*
-> *CONFIG_XENO_OPT_SELECT=3Dy*
-> *CONFIG_XENO_OPT_HOSTRT=3Dy*
-
-
-> *#*
-> *# Kernel Features*
-> *#*
-> *CONFIG_TICK_ONESHOT=3Dy*
-> *# CONFIG_NO_HZ is not set*
-> *CONFIG_HIGH_RES_TIMERS=3Dy*
-> *CONFIG_GENERIC_CLOCKEVENTS_BUILD=3Dy*
-> *# CONFIG_SMP is not set*
-> *# CONFIG_VMSPLIT_3G is not set*
-> *CONFIG_VMSPLIT_2G=3Dy*
-
-
-Never tested that on ARM, always run with VMSPLIT_3G.
-
-> *CONFIG_IPIPE_DEBUG=3Dy*
-> *CONFIG_IPIPE_DEBUG_CONTEXT=3Dy*
-> *CONFIG_IPIPE_DEBUG_INTERNAL=3Dy*
-> *CONFIG_IPIPE_TRACE=3Dy*
-> *CONFIG_IPIPE_TRACE_ENABLE=3Dy*
-> *CONFIG_IPIPE_TRACE_MCOUNT=3Dy*
-> *CONFIG_IPIPE_TRACE_IRQSOFF=3Dy*
-> *CONFIG_IPIPE_TRACE_SHIFT=3D14*
-> *CONFIG_IPIPE_TRACE_VMALLOC=3Dy*
-> *CONFIG_IPIPE_TRACE_PANIC=3Dy*
-
-
-Disable all that.
-
-
-> *CONFIG_DEBUG_OBJECTS=3Dy*
-> *CONFIG_DEBUG_OBJECTS_SELFTEST=3Dy*
-> *CONFIG_DEBUG_OBJECTS_FREE=3Dy*
-> *CONFIG_DEBUG_OBJECTS_TIMERS=3Dy*
-> *CONFIG_DEBUG_OBJECTS_WORK=3Dy*
-> *CONFIG_DEBUG_OBJECTS_RCU_HEAD=3Dy*
-> *CONFIG_DEBUG_OBJECTS_PERCPU_COUNTER=3Dy*
-> *CONFIG_DEBUG_OBJECTS_ENABLE_DEFAULT=3D1*
-> *CONFIG_DEBUG_SLAB=3Dy*
-> *CONFIG_DEBUG_SLAB_LEAK=3Dy*
-> *CONFIG_DEBUG_KMEMLEAK=3Dy*
-> *CONFIG_DEBUG_KMEMLEAK_EARLY_LOG_SIZE=3D400*
-> *# CONFIG_DEBUG_KMEMLEAK_TEST is not set*
-> *# CONFIG_DEBUG_KMEMLEAK_DEFAULT_OFF is not set*
-> *CONFIG_DEBUG_RT_MUTEXES=3Dy*
-> *CONFIG_DEBUG_PI_LIST=3Dy*
-> *# CONFIG_RT_MUTEX_TESTER is not set*
-> *CONFIG_DEBUG_SPINLOCK=3Dy*
-> *CONFIG_DEBUG_MUTEXES=3Dy*
-> *CONFIG_DEBUG_LOCK_ALLOC=3Dy*
-> *CONFIG_PROVE_LOCKING=3Dy*
-> *CONFIG_PROVE_RCU=3Dy*
-> *CONFIG_PROVE_RCU_REPEATEDLY=3Dy*
-> *CONFIG_SPARSE_RCU_POINTER=3Dy*
-> *CONFIG_LOCKDEP=3Dy*
-> *# CONFIG_LOCK_STAT is not set*
-> *# CONFIG_DEBUG_LOCKDEP is not set*
-> *CONFIG_TRACE_IRQFLAGS=3Dy*
-> *# CONFIG_DEBUG_ATOMIC_SLEEP is not set*
-> *# CONFIG_DEBUG_LOCKING_API_SELFTESTS is not set*
-> *CONFIG_STACKTRACE=3Dy*
-> *# CONFIG_DEBUG_STACK_USAGE is not set*
-> *# CONFIG_DEBUG_KOBJECT is not set*
-> *CONFIG_DEBUG_BUGVERBOSE=3Dy*
-> *CONFIG_DEBUG_INFO=3Dy*
-> *# CONFIG_DEBUG_INFO_REDUCED is not set*
-> *CONFIG_DEBUG_VM=3Dy*
-> *CONFIG_DEBUG_WRITECOUNT=3Dy*
-> *CONFIG_DEBUG_MEMORY_INIT=3Dy*
-> *CONFIG_DEBUG_LIST=3Dy*
-> *# CONFIG_TEST_LIST_SORT is not set*
-> *CONFIG_DEBUG_SG=3Dy*
-> *CONFIG_DEBUG_NOTIFIERS=3Dy*
-> *CONFIG_DEBUG_CREDENTIALS=3Dy*
-> *CONFIG_ARCH_WANT_FRAME_POINTERS=3Dy*
-> *CONFIG_FRAME_POINTER=3Dy*
-> *# CONFIG_BOOT_PRINTK_DELAY is not set*
-> *# CONFIG_RCU_TORTURE_TEST is not set*
-> *# CONFIG_BACKTRACE_SELF_TEST is not set*
-> *# CONFIG_DEBUG_BLOCK_EXT_DEVT is not set*
-> *# CONFIG_DEBUG_FORCE_WEAK_PER_CPU is not set*
-> *# CONFIG_LKDTM is not set*
-> *# CONFIG_FAULT_INJECTION is not set*
-> *# CONFIG_LATENCYTOP is not set*
-> *# CONFIG_SYSCTL_SYSCALL_CHECK is not set*
-> *CONFIG_DEBUG_PAGEALLOC=3Dy*
-> *CONFIG_WANT_PAGE_DEBUG_FLAGS=3Dy*
-> *CONFIG_PAGE_POISONING=3Dy*
-> *CONFIG_NOP_TRACER=3Dy*
-> *CONFIG_HAVE_FUNCTION_TRACER=3Dy*
-> *CONFIG_HAVE_FUNCTION_GRAPH_TRACER=3Dy*
-> *CONFIG_HAVE_DYNAMIC_FTRACE=3Dy*
-> *CONFIG_HAVE_FTRACE_MCOUNT_RECORD=3Dy*
-> *CONFIG_HAVE_C_RECORDMCOUNT=3Dy*
-> *CONFIG_RING_BUFFER=3Dy*
-> *CONFIG_EVENT_TRACING=3Dy*
-> *CONFIG_EVENT_POWER_TRACING_DEPRECATED=3Dy*
-> *CONFIG_CONTEXT_SWITCH_TRACER=3Dy*
-> *CONFIG_RING_BUFFER_ALLOW_SWAP=3Dy*
-> *CONFIG_TRACING=3Dy*
-> *CONFIG_GENERIC_TRACER=3Dy*
-> *CONFIG_TRACING_SUPPORT=3Dy*
-> *CONFIG_FTRACE=3Dy*
-
-
-Disable FTRACE. You should also remove all these kernel debugging
-options, they probably have nothing to do with the issue you are seeing.
-
->> Also, if you have all Xenomai and I-pipe debug options enabled, could
->> you try disabling them?
->>
->> I will, first thing in the morning.
->=20
->> Xenomai: suspending kernel thread 82922908 ('rtk5/0') at 0x8005bbc8
->> after exception #0x0
->>
->> This looks like the same bug as in the previous mail. We desperately
->> would like to know what is at 0x8005bbc8
->>
->=20
-> But I don't have j-tag available to use - at least for now.
-> KGDB as far as I know doesn't correspond to xenomai 2.6.1, am I right? =
-Or
-> maybe it is worth trying to use kgdb to specify the value of those
-> addresses?
-
-
-You do not need a JTAG to know what is at a given address: simply use
-objdump on the kernel image. You can add some printks in Xenomai to
-print the register values. I am afraid porting the I-pipe patch to a new
-board requires a minimum of knowledge in kernel development, and this is
-usually a job done in less than a week, so, I advise you to ask someone
-around with some knowledge in kernel development to help you.
-
-
---=20
-                                                                Gilles.
-
-
+T24gMDkvMDIvMjAxMiAxMDoyOCBQTSwgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4gT24g
+MDkvMDMvMjAxMiAwMTo0OCBBTSwgRG91ZyBCcnVubmVyIHdyb3RlOgo+Cj4+IE9uIDA4LzMxLzIw
+MTIgMTI6MzkgQU0sIEdpbGxlcyBDaGFudGVwZXJkcml4IHdyb3RlOgo+Pj4gT24gMDgvMzEvMjAx
+MiAwODo0MCBBTSwgRG91ZyBCcnVubmVyIHdyb3RlOgo+Pj4KPj4+PiBJJ3ZlIGJlZW4gaGF2aW5n
+IGEgdmVyeSBoYXJkIHRpbWUgd2l0aCB0aGUgdXBncmFkZSBmcm9tIFhlbm9tYWkgMi42LjAgdG8K
+Pj4+PiAyLjYuMS0taG9waW5nIHNvbWVvbmUgbWlnaHQgaGF2ZSBhIHN1Z2dlc3Rpb24gZm9yIG1l
+LiBNeSB0aGlua2luZyB3YXMKPj4+PiB0aGF0LCB0byBnZXQgdGhlIG1vc3QgcG9zc2libGUgYnVn
+IGZpeGVzLCBJIHNob3VsZCBhbHNvIHVwZ3JhZGUgdG8gdGhlCj4+Pj4gbGF0ZXN0IGtlcm5lbCBm
+b3Igd2hpY2ggdGhlcmUgaXMgYSBzdGFibGUgSS1waXBlIHBhdGNoLCB3aGljaCBhcHBlYXJzIHRv
+Cj4+Pj4gYmUgMy4yLjIxIGZyb20gZXhhbWluaW5nIHRoZSBsaXN0IG9mIGF2YWlsYWJsZSBwYXRj
+aGVzIGRpc3RyaWJ1dGVkIHdpdGgKPj4+PiBYZW5vbWFpLgo+Pj4+Cj4+Pj4gVW5mb3J0dW5hdGVs
+eSwgMy4yLjIxIChldmVuIHVubW9kaWZpZWQsIHVzaW5nIGEgdmFuaWxsYSBEZWJpYW4ga2VybmVs
+Cj4+Pj4gY29uZmlnLCBzZXQgZm9yIDU4NiBjcHUgdHlwZSkgd2lsbCBub3QgYm9vdCBvbiBteSB0
+YXJnZXQgcGxhdGZvcm0KPj4+PiAoV2luc3lzdGVtcyBQUE0tTFg4MDAtRywgd2hpY2ggaGFzIGEg
+R2VvZGUgTFg4MDAgQ1BVKS4gSXQgaW1tZWRpYXRlbHkKPj4+PiByZXNldHMgYWZ0ZXIgIkxvYWRp
+bmcgaW5pdGlhbCByYW1kaXNrIiwgd2l0aG91dCBldmVuIGFueSBlYXJseSBwcmludGsKPj4+PiBv
+dXRwdXQuIEkgaGF2ZSBubyBpZGVhIHdoYXQgY291bGQgYmUgY2F1c2luZyB0aGF0IDooCj4+PiBP
+ay4gSSBoYXZlIGp1c3QgYm9vdGVkIG15IGdlb2RlIHdpdGggMy40LCBib3RoIHdpdGggNTg2IGNw
+dSB0eXBlIHdpdGhvdXQKPj4+IHRzYyBhbmQgd2l0aCBnZW9kZSBjcHUgdHlwZSB3aXRoIHRzYy4g
+VGhlIGtlcm5lbCBib290cyBhbmQgdGhlIGxhdGVuY3kKPj4+IHRlc3Qgc3RhcnRzLiBTbywgSSBn
+dWVzcyB5b3Ugc2VsZWN0ZWQgYSBrZXJuZWwgY29uZmlndXJhdGlvbiBvcHRpb24gd2UKPj4+IGRv
+IG5vdCBzdXBwb3J0IChzdWNoIGFzIENPTkZJR19LR0RCKS4KPj4+Cj4+PiBZb3UgY2FuIGRvd25s
+b2FkIHRoZSBjb25maWd1cmF0aW9uIHdoaWNoIHdvcmtzIGZvciBtZSBoZXJlOgo+Pj4gaHR0cDov
+L3hlbm9tYWkub3JnL35nY2gvY29uZmlnLWdlb2RlCj4+Pgo+PiBBcmdoLi4udGhlIHByb2JsZW0g
+d2FzIGFwcGFyZW50bHkgdGhhdCBJJ2QgbGVmdCBTTVAgc3VwcG9ydCBzZWxlY3RlZC4KPj4gVGhh
+bmtzIGZvciB5b3VyIGNvbmZpZyEgSXQncyBhIG5pY2UgYmFyZS1ib25lcyBrZXJuZWwgYW5kIGJv
+b3RzIG15IEdlb2RlCj4+IGFzIHdlbGwgc28gSSdtIHVzaW5nIGl0IGFzIGEgbmV3IHN0YXJ0aW5n
+IHBvaW50Lgo+PiBJIHNhdyBhbiBlbWFpbCBmcm9tIHlvdSBvbiA4LzMgcmVmZXJyaW5nIHRvIGEg
+cmVncmVzc2lvbiBjb25uZWN0ZWQgdG8KPj4gaXJxX2hvbGQgdGhhdCB3YXMgZml4ZWQgaW4geW91
+ciBnaXQuIFNob3VsZCBJIGdldCBhbiBJLXBpcGUgcGF0Y2ggZnJvbQo+PiB0aGVyZSwgb3IgZnJv
+bSBnaXQuZGVueC5kZS9pcGlwZS5naXQgaW5zdGVhZCBvZiB1c2luZyB0aGUgb25lCj4+IGRpc3Ry
+aWJ1dGVkIHdpdGggMi42LjE/Cj4gUHJvYmFibHkgbm90LCB0aGF0IGlzIGEgZml4IGZvciBJTy1B
+UElDIGludGVycnVwdCBjb250cm9sbGVyLCB0aGUgZ2VvZGUKPiBkb2VzIG5vdCBoYXZlIGFuIElP
+LUFQSUMuIE1ha2luZyBhIGZldyB0ZXN0cyB3aXRoIGdlb2RlIHdpdGhvdXQgdHNjIEkKPiBmb3Vu
+ZCBvdXQgc29tZXRoaW5nIG9idmlvdXM6ICJzdGF0aXN0aWNzIGNvbGxlY3Rpb24iIHNob3VsZCBi
+ZSBkaXNhYmxlZAo+IGFzIGl0IGNhdXNlcyB0aGUgdHNjIHJlYWQgZnVuY3Rpb24gdG8gYmUgY2Fs
+bGVkIG9mdGVuLCBhbmQgZWFjaCByZWFkIG9mCj4gdGhlIGVtdWxhdGVkIHRzYyBjb3N0cyA0dXMu
+CklmIEkgdW5kZXJzdGFuZCB5b3UgY29ycmVjdGx5IHlvdSBhcmUgcmVjb21tZW5kaW5nIEkgdXNl
+IDMuMi4yMSB3aXRoIHRoZSAKaXBpcGUgcGF0Y2ggc3VwcGxpZWQgd2l0aCBYZW5vIDIuNi4xIChj
+aGFuZ2luZyBpcGlwZV9yb290X2RvbWFpbl9wIHRvIAppcGlwZV9yb290X3AgaW4gYXJjaC94ODYv
+bGliL21teF8zMi5jKS4KClVuZm9ydHVuYXRlbHkgaXQgc2VlbXMgbmVpdGhlciB0aGF0IDMuMi4y
+MSBub3IgdGhlIGFscmVhZHkgaXBpcGUtZW5hYmxlZCAKMy40LjYgZnJvbSBnaXQuZGVueC5kZS9p
+cGlwZS5naXQgCigyOWU2NTZhOTUwMTY2MzM2NjI4N2E4OTNkNWY2ZDYyYmZmOWY0MGY2KSB3b3Jr
+cyB3aXRoIG15IHRhcmdldCAKV2luc3lzdGVtcyBQUE0tTFg4MDAtRy4gV2hldGhlciBJIHVzZSB0
+aGUgY29uZmlnIHlvdSBwb3N0ZWQgYXQgCmh0dHA6Ly94ZW5vbWFpLm9yZy9+Z2NoL2NvbmZpZy1n
+ZW9kZSBvciBtaW5lIChkZXJpdmVkIGZyb20geW91cnMsIGp1c3QgCmRyb3BzIHNvbWUgZXRoZXJu
+ZXQgZGV2aWNlcyBJIGRvbid0IHVzZSBhbmQgYWRkcyB0aGUgR2VvZGUgZnJhbWVidWZmZXIgCmFu
+ZCBJUHY2KSwgdGhlIHN5c3RlbSBleHBlcmllbmNlcyBBVEEgZmF1bHRzIHN1Y2ggYXMgdGhlIGZv
+bGxvd2luZyAKaW1tZWRpYXRlbHkgdXBvbiB0cnlpbmcgdG8gYm9vdDoKCmF0YTEuMDA6IGV4Y2Vw
+dGlvbiBFbWFzayAweDAgU0FjdCAweDAgU0VyciAweDAgYWN0aW9uIDB4NiBmcm96ZW4KYXRhMS4w
+MDogZmFpbGVkIGNvbW1hbmQ6IFJFQUQgRE1BCmF0YTEuMDA6IGNtZCBjOC8wMDowODowMDowMDow
+MC8wMDowMDowMDowMDowMC9lMCB0YWcgMCBkbWEgNDA5NiBpbgogICAgICAgICAgcmVzIDQwLzAw
+OjAwOjAwOjAwOjAwLzAwOjAwOjAwOjAwOjAwLzAwIEVtYXNrIDB4NCAodGltZW91dCkKYXRhMS4w
+MDogc3RhdHVzOiB7IERSRFkgfQoKRmluYWxseSwgYWZ0ZXIgc2V2ZXJhbCBvZiB0aGVzZSB3aXRo
+IGxvbmcgZGVsYXlzIGluIGJldHdlZW4sIGl0IHBhbmljcyAKYmVjYXVzZSBpdCBjYW4ndCBmaW5k
+IHRoZSByb290IGZpbGVzeXN0ZW0gb24gdGhlIEFUQSBkZXZpY2UgaXQncyB0cnlpbmcgCnRvIGFj
+Y2VzcyAoQ0YgY2FyZCB2aWEgdGhlIENTNTUzNiBjb250cm9sbGVyKS4KClRoZSBzYW1lIGNvbmZp
+ZyBtaW51cyB0aGUgaXBpcGUgc3R1ZmYsIGZlZCB0byBhbiB1bnBhdGNoZWQga2VybmVsIHRyZWUs
+IApwcm9kdWNlcyBhIGJpbmFyeSB0aGF0IHdpbGwgYm9vdCB0aGUgc3lzdGVtIHdpdGggbm8gZXJy
+b3IgbWVzc2FnZXM7IHRoaXMgCmlzIHRydWUgZm9yIGJvdGggMy4yLjIxIGFuZCAzLjQuNi4gQW55
+IGlkZWEgd2hhdCBjb3VsZCBiZSBkb2luZyB0aGlzLCBvciAKd2hhdCBlbHNlIEkgY2FuIGRvIHRv
+IGRlYnVnPyBJJ3ZlIGF0dGFjaGVkIG15IGNvbmZpZ3MgZm9yIHJlZmVyZW5jZSwgCmV4Y2VwdCB0
+aGUgMy40LjYgaXBpcGUgd2hpY2ggSSBmb3Jnb3QgdG8gc2F2ZS4KClRoYW5rcywKICAgICAtLURv
+dWcgQnJ1bm5lcgotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24t
+dGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBjb25maWctMy4yLjIxLWlwaXBl
+LXNtYWxsLTEuZ3oKVHlwZTogYXBwbGljYXRpb24veC1nemlwClNpemU6IDEzMjIyIGJ5dGVzCkRl
+c2M6IG5vdCBhdmFpbGFibGUKVVJMOiA8aHR0cDovL3d3dy54ZW5vbWFpLm9yZy9waXBlcm1haWwv
+eGVub21haS9hdHRhY2htZW50cy8yMDEyMDkwNC8wZGQ0ODM3YS9hdHRhY2htZW50LmJpbj4KLS0t
+LS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVu
+dCB3YXMgc2NydWJiZWQuLi4KTmFtZTogY29uZmlnLTMuMi4yMS1zbWFsbC0xLmd6ClR5cGU6IGFw
+cGxpY2F0aW9uL3gtZ3ppcApTaXplOiAxMjM0NCBieXRlcwpEZXNjOiBub3QgYXZhaWxhYmxlClVS
+TDogPGh0dHA6Ly93d3cueGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMv
+MjAxMjA5MDQvMGRkNDgzN2EvYXR0YWNobWVudC0wMDAxLmJpbj4KLS0tLS0tLS0tLS0tLS0gbmV4
+dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQu
+Li4KTmFtZTogY29uZmlnLTMuNC42LXNtYWxsLTEuZ3oKVHlwZTogYXBwbGljYXRpb24veC1nemlw
+ClNpemU6IDEyNzcyIGJ5dGVzCkRlc2M6IG5vdCBhdmFpbGFibGUKVVJMOiA8aHR0cDovL3d3dy54
+ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDEyMDkwNC8wZGQ0ODM3
+YS9hdHRhY2htZW50LTAwMDIuYmluPgo=
