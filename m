@@ -1,5 +1,5 @@
-Message-ID: <50464BED.7020209@xenomai.org>
-Date: Tue, 04 Sep 2012 20:43:57 +0200
+Message-ID: <5046549C.7030008@xenomai.org>
+Date: Tue, 04 Sep 2012 21:21:00 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <CANKLDmsO-1E7+d9X6-t532RJ=CWY4P4x30nCNCwgHffJjAFkDA@mail.gmail.com>	<50460BCE.8010505@xenomai.org>	<CANKLDmtmnbAb7PM4URTjxYtaH5WnvGjVcEPOpSNr2A6gPwLLaA@mail.gmail.com>
@@ -83,10 +83,50 @@ On 09/04/2012 08:33 PM, Gilles Chanteperdrix wrote:
 >  		&nkclock.stat[xnsched_cpu(sched)].account);
 
 
-No, it will not work. I do not understand how it supposed to work, actually.
+It should work (I did not test it), with the following patch on the 
+I-pipe:
 
-When the local timer interrupt happens for a non supported cpus, how
-does it get propagated to the root domain?
+diff --git a/kernel/ipipe/timer.c b/kernel/ipipe/timer.c
+index d51fa62..301cdc0 100644
+--- a/kernel/ipipe/timer.c
++++ b/kernel/ipipe/timer.c
+@@ -176,11 +176,17 @@ int ipipe_select_timers(const struct cpumask *mask)
+ 		hrclock_freq = __ipipe_hrclock_freq;
+ 
+ 	spin_lock_irqsave(&lock, flags);
+-	for_each_cpu(cpu, mask) {
++	for_each_cpu(cpu, cpu_online_mask) {
+ 		list_for_each_entry(t, &timers, link) {
+ 			if (!cpumask_test_cpu(cpu, t->cpumask))
+ 				continue;
+ 
++			if (!cpumask_test_cpu(cpu, mask)
++			    && t->irq == per_cpu(ipipe_percpu.hrtimer_irq, 0)) {
++				per_cpu(ipipe_percpu.hrtimer_irq, cpu) = t->irq;
++				goto found;
++			}
++
+ 			evtdev = t->host_timer;
+ #ifdef CONFIG_GENERIC_CLOCKEVENTS
+ 			if (!evtdev
+@@ -188,10 +194,16 @@ int ipipe_select_timers(const struct cpumask *mask)
+ #endif /* CONFIG_GENERIC_CLOCKEVENTS */
+ 				goto found;
+ 		}
++		if (!cpumask_test_cpu(cpu, mask))
++			continue;
++
+ 		printk("I-pipe: could not find timer for cpu #%d\n", cpu);
+ 		goto err_remove_all;
+ 
+ 	  found:
++		if (!cpumask_test_cpu(cpu, mask))
++			continue;
++
+ 		if (__ipipe_hrtimer_freq == 0)
+ 			__ipipe_hrtimer_freq = t->freq;
+ 		per_cpu(ipipe_percpu.hrtimer_irq, cpu) = t->irq;
+
 
 -- 
                                                                 Gilles.
