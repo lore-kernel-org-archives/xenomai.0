@@ -1,10 +1,10 @@
-Message-ID: <5047449C.2040308@xenomai.org>
-Date: Wed, 05 Sep 2012 14:25:00 +0200
+Message-ID: <5047A68D.3020001@xenomai.org>
+Date: Wed, 05 Sep 2012 21:22:53 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CANKLDmsO-1E7+d9X6-t532RJ=CWY4P4x30nCNCwgHffJjAFkDA@mail.gmail.com>	<50460BCE.8010505@xenomai.org>	<CANKLDmtmnbAb7PM4URTjxYtaH5WnvGjVcEPOpSNr2A6gPwLLaA@mail.gmail.com>	<50464969.2000902@xenomai.org>	<5046549C.7030008@xenomai.org>	<CANKLDmufv25Bngqb3CapS6ybHG9DH76DUq1q6dinzJ5ai7TowA@mail.gmail.com>	<5046FF0A.9000208@xenomai.org>	<CANKLDmverDgL3c2BEtXAwkGhq7KLRopGnM3q9Z_TQiAAeMponw@mail.gmail.com>	<50470D2D.8020004@xenomai.org>	<CANKLDmudbBw5gyWVe_nPSLkQTopaH0ajs3FXgJottn84Cm6anQ@mail.gmail.com>	<5047318D.8060106@xenomai.org>	<504735A6.5040800@xenomai.org>
-	<CANKLDmtbOPWG_bc3=pcbSpgbEvSj=5ZsiXm3CWgBCwBx=yQ8Pw@mail.gmail.com>
-In-Reply-To: <CANKLDmtbOPWG_bc3=pcbSpgbEvSj=5ZsiXm3CWgBCwBx=yQ8Pw@mail.gmail.com>
+References: <CANKLDmsO-1E7+d9X6-t532RJ=CWY4P4x30nCNCwgHffJjAFkDA@mail.gmail.com>	<50460BCE.8010505@xenomai.org>	<CANKLDmtmnbAb7PM4URTjxYtaH5WnvGjVcEPOpSNr2A6gPwLLaA@mail.gmail.com>	<50464969.2000902@xenomai.org>	<5046549C.7030008@xenomai.org>	<CANKLDmufv25Bngqb3CapS6ybHG9DH76DUq1q6dinzJ5ai7TowA@mail.gmail.com>	<5046FF0A.9000208@xenomai.org>	<CANKLDmverDgL3c2BEtXAwkGhq7KLRopGnM3q9Z_TQiAAeMponw@mail.gmail.com>	<50470D2D.8020004@xenomai.org>	<CANKLDmudbBw5gyWVe_nPSLkQTopaH0ajs3FXgJottn84Cm6anQ@mail.gmail.com>	<5047318D.8060106@xenomai.org>	<504735A6.5040800@xenomai.org>	<CANKLDmtbOPWG_bc3=pcbSpgbEvSj=5ZsiXm3CWgBCwBx=yQ8Pw@mail.gmail.com>
+	<5047449C.2040308@xenomai.org>
+In-Reply-To: <5047449C.2040308@xenomai.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] kernel NULL pointer dereference
@@ -19,196 +19,100 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: Henri Roosen <henriroosen@gmail.com>
 Cc: Xenomai <xenomai@xenomai.org>
 
-On 09/05/2012 02:10 PM, Henri Roosen wrote:
-> On Wed, Sep 5, 2012 at 1:21 PM, Gilles Chanteperdrix
-> <gilles.chanteperdrix@xenomai.org> wrote:
->> On 09/05/2012 01:03 PM, Gilles Chanteperdrix wrote:
->>
->>> On 09/05/2012 11:29 AM, Henri Roosen wrote:
->>>
->>>> On Wed, Sep 5, 2012 at 10:28 AM, Gilles Chanteperdrix
->>>> <gilles.chanteperdrix@xenomai.org> wrote:
->>>>> On 09/05/2012 09:42 AM, Henri Roosen wrote:
->>>>>> On Wed, Sep 5, 2012 at 9:28 AM, Gilles Chanteperdrix
->>>>>> <gilles.chanteperdrix@xenomai.org> wrote:
->>>>>>> On 09/05/2012 09:26 AM, Henri Roosen wrote:
->>>>>>>
->>>>>>>> On Tue, Sep 4, 2012 at 9:21 PM, Gilles Chanteperdrix
->>>>>>>> <gilles.chanteperdrix@xenomai.org> wrote:
->>>>>>>>> On 09/04/2012 08:33 PM, Gilles Chanteperdrix wrote:
->>>>>>>>>
->>>>>>>>>> On 09/04/2012 04:28 PM, Henri Roosen wrote:
->>>>>>>>>>
->>>>>>>>>>> On Tue, Sep 4, 2012 at 4:10 PM, Gilles Chanteperdrix
->>>>>>>>>>> <gilles.chanteperdrix@xenomai.org> wrote:
->>>>>>>>>>>> On 09/04/2012 03:42 PM, Henri Roosen wrote:
->>>>>>>>>>>>> Hi,
->>>>>>>>>>>>>
->>>>>>>>>>>>> I'm using the bleeding edge of Xenomai (0590cb45adce468f619) and Ipipe
->>>>>>>>>>>>> (d21e8cdbdcf21ade) on a x86 multicore system and kernel 3.4.6.
->>>>>>>>>>>>> I reserved one cpu (kernel param isolcpus=1).
->>>>>>>>>>>>>
->>>>>>>>>>>>> Our application triggers the following NULL pointer dereference when I
->>>>>>>>>>>>> set the affinity of some tasks to cpu 0 and other tasks to cpu 1.
->>>>>>>>>>>>> The application does not trigger this when all tasks have the same
->>>>>>>>>>>>> affinity (set via /proc/xenomai/affinity).
->>>>>>>>>>>>>
->>>>>>>>>>>>> I was able to reproduce this also under QEMU and will do some
->>>>>>>>>>>>> debugging, but maybe someone knows what is wrong already by seeing the
->>>>>>>>>>>>> stacktrace below:
->>>>>>>>>>>>
->>>>>>>>>>>> Could you try to reduce the bug to a simple testcase which we would try
->>>>>>>>>>>> and run to reproduce?
->>>>>>>>>>>>
->>>>>>>>>>>>> [  108.013023] BUG: unable to handle kernel NULL pointer dereference
->>>>>>>>>>>> at 00000294
->>>>>>>>>>>>> [  108.013550] IP: [<c0126a91>] __lock_task_sighand+0x53/0xc3
->>>>>>>>>>>>
->>>>>>>>>>>> Or send us a disassembly of the function __lock_task_sighand?
->>>>>>>>>>
->>>>>>>>>>
->>>>>>>>>> Looks like someone is calling send_sig_info with an invalid pointer.
->>>>>>>>>> There is something seriously wrong.
->>>>>>>>>>
->>>>>>>>>> On the other hand, now that I think about it, you need at least the
->>>>>>>>>> following patch:
->>>>>>>>>>
->>>>>>>>>> diff --git a/ksrc/nucleus/intr.c b/ksrc/nucleus/intr.c
->>>>>>>>>> index c75fcac..0f37bb2 100644
->>>>>>>>>> --- a/ksrc/nucleus/intr.c
->>>>>>>>>> +++ b/ksrc/nucleus/intr.c
->>>>>>>>>> @@ -93,8 +93,18 @@ void xnintr_host_tick(struct xnsched *sched) /* Interrupts off. */
->>>>>>>>>>
->>>>>>>>>>  void xnintr_clock_handler(void)
->>>>>>>>>>  {
->>>>>>>>>> -     struct xnsched *sched = xnpod_current_sched();
->>>>>>>>>>       xnstat_exectime_t *prev;
->>>>>>>>>> +     struct xnsched *sched;
->>>>>>>>>> +     unsigned cpu;
->>>>>>>>>> +
->>>>>>>>>> +     cpu = xnarch_current_cpu();
->>>>>>>>>> +
->>>>>>>>>> +     if (!cpumask_test_cpu(cpu, &xnarch_supported_cpus)) {
->>>>>>>>>> +             xnarch_relay_tick();
->>>>>>>>>> +             return;
->>>>>>>>>> +     }
->>>>>>>>>> +
->>>>>>>>>> +     sched = xnpod_sched_slot(cpu);
->>>>>>>>>>
->>>>>>>>>>       prev = xnstat_exectime_switch(sched,
->>>>>>>>>>               &nkclock.stat[xnsched_cpu(sched)].account);
->>>>>>>>>
->>>>>>>>>
->>>>>>>>> It should work (I did not test it), with the following patch on the
->>>>>>>>> I-pipe:
->>>>>>>>>
->>>>>>>>> diff --git a/kernel/ipipe/timer.c b/kernel/ipipe/timer.c
->>>>>>>>> index d51fa62..301cdc0 100644
->>>>>>>>> --- a/kernel/ipipe/timer.c
->>>>>>>>> +++ b/kernel/ipipe/timer.c
->>>>>>>>> @@ -176,11 +176,17 @@ int ipipe_select_timers(const struct cpumask *mask)
->>>>>>>>>                 hrclock_freq = __ipipe_hrclock_freq;
->>>>>>>>>
->>>>>>>>>         spin_lock_irqsave(&lock, flags);
->>>>>>>>> -       for_each_cpu(cpu, mask) {
->>>>>>>>> +       for_each_cpu(cpu, cpu_online_mask) {
->>>>>>>>>                 list_for_each_entry(t, &timers, link) {
->>>>>>>>>                         if (!cpumask_test_cpu(cpu, t->cpumask))
->>>>>>>>>                                 continue;
->>>>>>>>>
->>>>>>>>> +                       if (!cpumask_test_cpu(cpu, mask)
->>>>>>>>> +                           && t->irq == per_cpu(ipipe_percpu.hrtimer_irq, 0)) {
->>>>>>>>> +                               per_cpu(ipipe_percpu.hrtimer_irq, cpu) = t->irq;
->>>>>>>>> +                               goto found;
->>>>>>>>> +                       }
->>>>>>>>> +
->>>>>>>>>                         evtdev = t->host_timer;
->>>>>>>>>  #ifdef CONFIG_GENERIC_CLOCKEVENTS
->>>>>>>>>                         if (!evtdev
->>>>>>>>> @@ -188,10 +194,16 @@ int ipipe_select_timers(const struct cpumask *mask)
->>>>>>>>>  #endif /* CONFIG_GENERIC_CLOCKEVENTS */
->>>>>>>>>                                 goto found;
->>>>>>>>>                 }
->>>>>>>>> +               if (!cpumask_test_cpu(cpu, mask))
->>>>>>>>> +                       continue;
->>>>>>>>> +
->>>>>>>>>                 printk("I-pipe: could not find timer for cpu #%d\n", cpu);
->>>>>>>>>                 goto err_remove_all;
->>>>>>>>>
->>>>>>>>>           found:
->>>>>>>>> +               if (!cpumask_test_cpu(cpu, mask))
->>>>>>>>> +                       continue;
->>>>>>>>> +
->>>>>>>>>                 if (__ipipe_hrtimer_freq == 0)
->>>>>>>>>                         __ipipe_hrtimer_freq = t->freq;
->>>>>>>>>                 per_cpu(ipipe_percpu.hrtimer_irq, cpu) = t->irq;
->>>>>>>>>
->>>>>>>> Thanks for looking into this Gilles!
->>>>>>>> I tried your second patch only and unfortunately I was still able to
->>>>>>>> reproduce the same kernel NULL pointer dereference.
->>>>>>>
->>>>>>>
->>>>>>> Sorry, I meant the first xenomai patch needs the second I-pipe patch to
->>>>>>> work.
->>>>>>
->>>>>> I applied both patches now, but still able to reproduce the same problem.
->>>>>
->>>>> Ok, to debug this, you can add:
->>>>> BUG_ON((unsigned long)xnthread_user_task(thread) < 0xc0000000);
->>>>> in xnshadow_send_sig. Add:
->>>>> BUG_ON((unsigned long)p < 0xc0000000)
->>>>> in lostage_handler, in the LO_SIGTHR_REQ case.
->>>>>
->>>>> Enable the I-pipe tracer, panic back traces, then set the number of
->>>>> points to a reasonably high value before running your test.
->>>>
->>>> Please find attached the trace ipipe_trace.txt
->>>>
->>>> Note that in order to compile the ipipe-tracer for x86 I had to remove
->>>> the call to hard_irqs_disabled_flags. I changed that to 0.. hope that
->>>> doesn't affect the trace log.
->>>
->>>
->>> It does affect the trace, we do not see whether the irqs are off, but it
->>> is not very important for the issue you have. You can replace with
->>> arch_irqs_disable_flags, I have a fix for this in my tree, not pushed
->>> yet, but should be in the I-pipe repository soon.
->>>
->>> Anyway, what seems to happen is that your application calls exit, while
->>> some thread was waiting for a a PI mutex, the nucleus tries to send a
->>> signal to the mutex holder. However, something gets wrong, and the mutex
->>> holder task pointer is invalid.
->>>
->>> What is strange, also, is how a task can be waiting for a mutex and
->>> calling exit at the same time. Could you try to increase the number of
->>> trace points to say 1000 points?
->>
->>
->> Answering myself. The thread killed is the one holding the mutex. The
->> signal is sent to this precise thread, so this may fail because the
->> thread is in the process of being destroyed, and its user_task pointer
->> is no longer valid.
+On 09/05/2012 02:25 PM, Gilles Chanteperdrix wrote:
+
+> On 09/05/2012 02:10 PM, Henri Roosen wrote:
+>> I will find out why the application is doing a sys_exit. However I'm
+>> not sure how this is related to the thread affinity; when not setting
+>> the affinity, the problem is not reproducable.
 > 
-> Please find attached ipipe_trace_2.txt that has the number of
-> tracepoints to 1000. Note that this log also doesn't trace whether
-> irqs are off (arch_irqs_disable_flags is not in the current ipipe tree
-> yet either).
+> Thanks for the trace. When we find the bug we will say, of course, that
+> is the reason! Anyway, at first sight, the bug does not seem related to
+> multi-processor, I would say the difference with affinity is a
+> difference in how the cleanup happens in your application (namely the
+> case where a mutex holder is destroyed while another thread which is
+> waiting for the mutex is still alive).
 
-it is arch_irqs_disableD_flags()... But no problem the trace is
-sufficient. I am trying to reproduce the bug.
 
-> 
-> I will find out why the application is doing a sys_exit. However I'm
-> not sure how this is related to the thread affinity; when not setting
-> the affinity, the problem is not reproducable.
+Indeed, the bug is reproducible on any UP board with the following 
+test case. With RPI enabled, the NULL user_task pointer is a problem in
+RPI handling functions, but with RPI disabled, I get the same backtrace
+as you.
 
-Thanks for the trace. When we find the bug we will say, of course, that
-is the reason! Anyway, at first sight, the bug does not seem related to
-multi-processor, I would say the difference with affinity is a
-difference in how the cleanup happens in your application (namely the
-case where a mutex holder is destroyed while another thread which is
-waiting for the mutex is still alive).
+#include <stdio.h>
+#include <string.h>
+
+#include <unistd.h>
+#include <sys/mman.h>
+#include <pthread.h>
+#include <semaphore.h>
+
+pthread_mutex_t mutex;
+sem_t ready;
+
+void locker(void)
+{
+	pthread_set_name_np(pthread_self(), "locker");
+	pthread_mutex_lock(&mutex);
+	sem_post(&ready);
+}
+
+void waiter(void)
+{
+	pthread_set_name_np(pthread_self(), "waiter");
+	sem_wait(&ready);
+	pthread_mutex_lock(&mutex);
+}
+
+void *thread(void *cookie)
+{
+	locker();
+	sleep(1);
+}
+
+int main(void)
+{
+	pthread_mutexattr_t mattr;
+	struct sched_param sp;
+	pthread_t tid;
+	pid_t p;
+	int rc;
+
+	mlockall(MCL_CURRENT | MCL_FUTURE);
+
+	pthread_mutexattr_init(&mattr);
+	pthread_mutexattr_setprotocol(&mattr, PTHREAD_PRIO_INHERIT);
+
+	rc = pthread_mutex_init(&mutex, &mattr);
+	pthread_mutexattr_destroy(&mattr);
+	if (rc) {
+		fprintf(stderr, "pthread_mutex_init: %s\n", strerror(rc));
+		return 1;
+	}
+
+	rc = sem_init(&ready, 0, 0);
+	if (rc) {
+		perror("sem_init");
+		return 1;
+	}
+
+	sp.sched_priority = 99;
+	pthread_setschedparam(pthread_self(), SCHED_FIFO, &sp);
+
+	rc = pthread_create(&tid, NULL, thread, NULL);
+	pthread_attr_destroy(&tattr);
+	if (rc) {
+		fprintf(stderr, "pthread_create: %s\n", strerror(rc));
+		return 1;
+	}
+
+	waiter();
+
+	return 0;
+}
+
+Regards.
 
 -- 
-					    Gilles.
+                                                                Gilles.
 
