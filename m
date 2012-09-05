@@ -1,13 +1,14 @@
-Message-ID: <5046549C.7030008@xenomai.org>
-Date: Tue, 04 Sep 2012 21:21:00 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <5046C2DA.7080200@ebus.com>
+Date: Tue, 04 Sep 2012 20:11:22 -0700
+From: Doug Brunner <dbrunner@ebus.com>
 MIME-Version: 1.0
-References: <CANKLDmsO-1E7+d9X6-t532RJ=CWY4P4x30nCNCwgHffJjAFkDA@mail.gmail.com>	<50460BCE.8010505@xenomai.org>	<CANKLDmtmnbAb7PM4URTjxYtaH5WnvGjVcEPOpSNr2A6gPwLLaA@mail.gmail.com>
-	<50464969.2000902@xenomai.org>
-In-Reply-To: <50464969.2000902@xenomai.org>
-Content-Type: text/plain; charset=UTF-8
+References: <50405C4F.5030301@ebus.com> <50406A3D.4080801@xenomai.org>
+	<5043F063.2020302@ebus.com> <50444008.4000109@xenomai.org>
+	<5045AD78.3090904@ebus.com> <5045B732.8040104@xenomai.org>
+In-Reply-To: <5045B732.8040104@xenomai.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] kernel NULL pointer dereference
+Subject: Re: [Xenomai] Upgrading to Xenomai 2.6.1
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,118 +17,83 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Henri Roosen <henriroosen@gmail.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On 09/04/2012 08:33 PM, Gilles Chanteperdrix wrote:
-
-> On 09/04/2012 04:28 PM, Henri Roosen wrote:
-> 
->> On Tue, Sep 4, 2012 at 4:10 PM, Gilles Chanteperdrix
->> <gilles.chanteperdrix@xenomai.org> wrote:
->>> On 09/04/2012 03:42 PM, Henri Roosen wrote:
->>>> Hi,
->>>>
->>>> I'm using the bleeding edge of Xenomai (0590cb45adce468f619) and Ipipe
->>>> (d21e8cdbdcf21ade) on a x86 multicore system and kernel 3.4.6.
->>>> I reserved one cpu (kernel param isolcpus=1).
->>>>
->>>> Our application triggers the following NULL pointer dereference when I
->>>> set the affinity of some tasks to cpu 0 and other tasks to cpu 1.
->>>> The application does not trigger this when all tasks have the same
->>>> affinity (set via /proc/xenomai/affinity).
->>>>
->>>> I was able to reproduce this also under QEMU and will do some
->>>> debugging, but maybe someone knows what is wrong already by seeing the
->>>> stacktrace below:
+On 09/04/2012 01:09 AM, Gilles Chanteperdrix wrote:
+> On 09/04/2012 09:27 AM, Doug Brunner wrote:
+>> On 09/02/2012 10:28 PM, Gilles Chanteperdrix wrote:
+>>> On 09/03/2012 01:48 AM, Doug Brunner wrote:
 >>>
->>> Could you try to reduce the bug to a simple testcase which we would try
->>> and run to reproduce?
->>>
->>>> [  108.013023] BUG: unable to handle kernel NULL pointer dereference
->>> at 00000294
->>>> [  108.013550] IP: [<c0126a91>] __lock_task_sighand+0x53/0xc3
->>>
->>> Or send us a disassembly of the function __lock_task_sighand?
-> 
-> 
-> Looks like someone is calling send_sig_info with an invalid pointer. 
-> There is something seriously wrong.
-> 
-> On the other hand, now that I think about it, you need at least the 
-> following patch:
-> 
-> diff --git a/ksrc/nucleus/intr.c b/ksrc/nucleus/intr.c
-> index c75fcac..0f37bb2 100644
-> --- a/ksrc/nucleus/intr.c
-> +++ b/ksrc/nucleus/intr.c
-> @@ -93,8 +93,18 @@ void xnintr_host_tick(struct xnsched *sched) /* Interrupts off. */
->  
->  void xnintr_clock_handler(void)
->  {
-> -	struct xnsched *sched = xnpod_current_sched();
->  	xnstat_exectime_t *prev;
-> +	struct xnsched *sched;
-> +	unsigned cpu;
-> +
-> +	cpu = xnarch_current_cpu();
-> +
-> +	if (!cpumask_test_cpu(cpu, &xnarch_supported_cpus)) {
-> +		xnarch_relay_tick();
-> +		return;
-> +	}
-> +
-> +	sched = xnpod_sched_slot(cpu);
->  
->  	prev = xnstat_exectime_switch(sched,
->  		&nkclock.stat[xnsched_cpu(sched)].account);
-
-
-It should work (I did not test it), with the following patch on the 
-I-pipe:
-
-diff --git a/kernel/ipipe/timer.c b/kernel/ipipe/timer.c
-index d51fa62..301cdc0 100644
---- a/kernel/ipipe/timer.c
-+++ b/kernel/ipipe/timer.c
-@@ -176,11 +176,17 @@ int ipipe_select_timers(const struct cpumask *mask)
- 		hrclock_freq = __ipipe_hrclock_freq;
- 
- 	spin_lock_irqsave(&lock, flags);
--	for_each_cpu(cpu, mask) {
-+	for_each_cpu(cpu, cpu_online_mask) {
- 		list_for_each_entry(t, &timers, link) {
- 			if (!cpumask_test_cpu(cpu, t->cpumask))
- 				continue;
- 
-+			if (!cpumask_test_cpu(cpu, mask)
-+			    && t->irq == per_cpu(ipipe_percpu.hrtimer_irq, 0)) {
-+				per_cpu(ipipe_percpu.hrtimer_irq, cpu) = t->irq;
-+				goto found;
-+			}
-+
- 			evtdev = t->host_timer;
- #ifdef CONFIG_GENERIC_CLOCKEVENTS
- 			if (!evtdev
-@@ -188,10 +194,16 @@ int ipipe_select_timers(const struct cpumask *mask)
- #endif /* CONFIG_GENERIC_CLOCKEVENTS */
- 				goto found;
- 		}
-+		if (!cpumask_test_cpu(cpu, mask))
-+			continue;
-+
- 		printk("I-pipe: could not find timer for cpu #%d\n", cpu);
- 		goto err_remove_all;
- 
- 	  found:
-+		if (!cpumask_test_cpu(cpu, mask))
-+			continue;
-+
- 		if (__ipipe_hrtimer_freq == 0)
- 			__ipipe_hrtimer_freq = t->freq;
- 		per_cpu(ipipe_percpu.hrtimer_irq, cpu) = t->irq;
-
-
--- 
-                                                                Gilles.
+>>>> On 08/31/2012 12:39 AM, Gilles Chanteperdrix wrote:
+>>>>> On 08/31/2012 08:40 AM, Doug Brunner wrote:
+>>>>>
+>>>>>> I've been having a very hard time with the upgrade from Xenomai 2.6.0 to
+>>>>>> 2.6.1--hoping someone might have a suggestion for me. My thinking was
+>>>>>> that, to get the most possible bug fixes, I should also upgrade to the
+>>>>>> latest kernel for which there is a stable I-pipe patch, which appears to
+>>>>>> be 3.2.21 from examining the list of available patches distributed with
+>>>>>> Xenomai.
+>>>>>>
+>>>>>> Unfortunately, 3.2.21 (even unmodified, using a vanilla Debian kernel
+>>>>>> config, set for 586 cpu type) will not boot on my target platform
+>>>>>> (Winsystems PPM-LX800-G, which has a Geode LX800 CPU). It immediately
+>>>>>> resets after "Loading initial ramdisk", without even any early printk
+>>>>>> output. I have no idea what could be causing that :(
+>>>>> Ok. I have just booted my geode with 3.4, both with 586 cpu type without
+>>>>> tsc and with geode cpu type with tsc. The kernel boots and the latency
+>>>>> test starts. So, I guess you selected a kernel configuration option we
+>>>>> do not support (such as CONFIG_KGDB).
+>>>>>
+>>>>> You can download the configuration which works for me here:
+>>>>> http://xenomai.org/~gch/config-geode
+>>>>>
+>>>> Argh...the problem was apparently that I'd left SMP support selected.
+>>>> Thanks for your config! It's a nice bare-bones kernel and boots my Geode
+>>>> as well so I'm using it as a new starting point.
+>>>> I saw an email from you on 8/3 referring to a regression connected to
+>>>> irq_hold that was fixed in your git. Should I get an I-pipe patch from
+>>>> there, or from git.denx.de/ipipe.git instead of using the one
+>>>> distributed with 2.6.1?
+>>> Probably not, that is a fix for IO-APIC interrupt controller, the geode
+>>> does not have an IO-APIC. Making a few tests with geode without tsc I
+>>> found out something obvious: "statistics collection" should be disabled
+>>> as it causes the tsc read function to be called often, and each read of
+>>> the emulated tsc costs 4us.
+>> If I understand you correctly you are recommending I use 3.2.21 with the
+>> ipipe patch supplied with Xeno 2.6.1 (changing ipipe_root_domain_p to
+>> ipipe_root_p in arch/x86/lib/mmx_32.c).
+>>
+>> Unfortunately it seems neither that 3.2.21 nor the already ipipe-enabled
+>> 3.4.6 from git.denx.de/ipipe.git
+>> (29e656a9501663366287a893d5f6d62bff9f40f6) works with my target
+>> Winsystems PPM-LX800-G. Whether I use the config you posted at
+>> http://xenomai.org/~gch/config-geode or mine (derived from yours, just
+>> drops some ethernet devices I don't use and adds the Geode framebuffer
+>> and IPv6), the system experiences ATA faults such as the following
+>> immediately upon trying to boot:
+>>
+>> ata1.00: exception Emask 0x0 SAct 0x0 SErr 0x0 action 0x6 frozen
+>> ata1.00: failed command: READ DMA
+>> ata1.00: cmd c8/00:08:00:00:00/00:00:00:00:00/e0 tag 0 dma 4096 in
+>>            res 40/00:00:00:00:00/00:00:00:00:00/00 Emask 0x4 (timeout)
+>> ata1.00: status: { DRDY }
+>>
+>> Finally, after several of these with long delays in between, it panics
+>> because it can't find the root filesystem on the ATA device it's trying
+>> to access (CF card via the CS5536 controller).
+>>
+>> The same config minus the ipipe stuff, fed to an unpatched kernel tree,
+>> produces a binary that will boot the system with no error messages; this
+>> is true for both 3.2.21 and 3.4.6. Any idea what could be doing this, or
+>> what else I can do to debug? I've attached my configs for reference,
+>> except the 3.4.6 ipipe which I forgot to save.
+> The cs5536 SATA driver does not work for me either, even without I-pipe,
+> whereas the legacy IDE driver (option CONFIG_BLK_DEV_CS5536) works,
+> could you test whether it works for you?
+>
+For me the CS5536 PATA driver (not SATA as you have) works fine without 
+I-pipe, but with I-pipe I get the fault described above. The legacy IDE 
+driver does work with I-pipe, at least on 3.2.21. I will be running the 
+Xenomai test suite against that build tomorrow.
 
