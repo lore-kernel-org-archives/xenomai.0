@@ -1,22 +1,12 @@
+Message-ID: <5048ACDE.2080308@xenomai.org>
+Date: Thu, 06 Sep 2012 16:02:06 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <CAHue_TX6R8i_8HSNNeBi-JLBv4MGMjtQH6JxGvgj5xqWzU3kkQ@mail.gmail.com>
-References: <CAHue_TVRdTsre3E7NxHtb=6XfxkL7_36nsLLxSkiF3kUJAJ5Vw@mail.gmail.com>
-	<5022B5E4.7040101@xenomai.org>
-	<CAHue_TWodrVNxhsxXZ6_xcOGWHDqVGe41qbY0=R3RhFjBedG+g@mail.gmail.com>
-	<50339840.1070202@xenomai.org>
-	<CAHue_TVSGuatTqL4fRFoOABo4KTm8dFPmRFp7QJNmpk=ZU7NtQ@mail.gmail.com>
-	<CAHue_TUKTiusLqfXK59O+PVoxONKAE2xQyBYOgjDh=dZZ2-b3w@mail.gmail.com>
-	<504503DC.4040908@xenomai.org>
-	<CAHue_TX3+pr39Mso1SXA83NWVRNoeocD-zDcLPk5mKn-XCkQKQ@mail.gmail.com>
-	<50453DCE.5020601@xenomai.org>
-	<CAHue_TUfY4f4CdCXyEYQ5mPFNiCazwZLgv9yy29W5r78tfftYA@mail.gmail.com>
-	<50485E80.6050800@xenomai.org>
+References: <CAHue_TVRdTsre3E7NxHtb=6XfxkL7_36nsLLxSkiF3kUJAJ5Vw@mail.gmail.com>	<5022B5E4.7040101@xenomai.org>	<CAHue_TWodrVNxhsxXZ6_xcOGWHDqVGe41qbY0=R3RhFjBedG+g@mail.gmail.com>	<50339840.1070202@xenomai.org>	<CAHue_TVSGuatTqL4fRFoOABo4KTm8dFPmRFp7QJNmpk=ZU7NtQ@mail.gmail.com>	<CAHue_TUKTiusLqfXK59O+PVoxONKAE2xQyBYOgjDh=dZZ2-b3w@mail.gmail.com>	<504503DC.4040908@xenomai.org>	<CAHue_TX3+pr39Mso1SXA83NWVRNoeocD-zDcLPk5mKn-XCkQKQ@mail.gmail.com>	<50453DCE.5020601@xenomai.org>	<CAHue_TUfY4f4CdCXyEYQ5mPFNiCazwZLgv9yy29W5r78tfftYA@mail.gmail.com>	<50485E80.6050800@xenomai.org>
 	<CAHue_TX6R8i_8HSNNeBi-JLBv4MGMjtQH6JxGvgj5xqWzU3kkQ@mail.gmail.com>
-Date: Thu, 6 Sep 2012 15:44:04 +0200
-Message-ID: <CAHue_TWY9enhqqG4N7nDmHi_iVesqU1o3EYopEJigOVMeB1hnw@mail.gmail.com>
-From: =?ISO-8859-2?Q?Marcin_Ku=B6ka?= <marckuska@gmail.com>
-Content-Type: text/plain; charset=ISO-8859-2
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <CAHue_TX6R8i_8HSNNeBi-JLBv4MGMjtQH6JxGvgj5xqWzU3kkQ@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Subject: Re: [Xenomai] Cortex-a9 - please fix xenomai-fix-lfs-issue.patch
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -26,49 +16,61 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: =?UTF-8?B?TWFyY2luIEt1xZtrYQ==?= <marckuska@gmail.com>
 Cc: xenomai@xenomai.org
 
-About that SLAB warning, there have been a small fix about this:
+On 09/06/2012 03:31 PM, Marcin Kuśka wrote:
+>>
+>> Like what, no kernel message ?
+>>
+> 
+> Sory it must have been pasted wrong:
+> d1Xenomai: suspending kernel thread c9502128 ('rtk4/0') at 0xc00672ac after
+> exception #0x0
 
-Signed-off-by: Michael Grzeschik <m.grzeschik@...>
----
- drivers/usb/host/isp1760-hcd.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/usb/host/isp1760-hcd.c b/drivers/usb/host/isp1760-hcd.=
-c
-index eb99bf9..6599616 100644
---- a/drivers/usb/host/isp1760-hcd.c
-+++ b/drivers/usb/host/isp1760-hcd.c
-@@ -2173,7 +2173,7 @@ static const struct hc_driver isp1760_hc_driver =3D {
-
- int __init init_kmem_once(void)
- {
-- urb_listitem_cachep =3D kmem_cache_create("isp1760 urb_listitem",
-+ urb_listitem_cachep =3D kmem_cache_create("isp1760_urb_listitem",
-  sizeof(struct urb_listitem), 0, SLAB_TEMPORARY |
-  SLAB_MEM_SPREAD, NULL);
-
-Done and never appeared again.
-
-A twd_timer_setup message "no clock found" doesn't appear either. I put
+That is still the same problem. All you need to do is
+arm-none-linux-gnueabi-objdump -d vmlinux | less
+And look for 'c00672ac'
 
 
-static struct clk smp_twd =3D {
-    .rate   =3D 200000000,
-};
+> rtuBoU_Gu:f pMAX_LOCK_DEPTH too low!
+
+No need to investigate on this before we know what happens at the
+address above.
 
 
-{    /* SMP timers */
-        .dev_id        =3D NULL,
-        .con_id        =3D "smp_twd",
-        .clk        =3D &smp_twd,
-    },
+> The message was:
+> WARNING: at mm/slab.c:2264 kmem_cache_create+0x6a4/0x6f4()
+> 
+> In the slab.c:2264 line there is
+> 
+> #if DEBUG
+> WARN_ON(strchr(name, ' '));    /* It confuses parsers */
+> So the isp1760 urb_listitem does have a space in its name and that's all
+> warning. That's not serious is it?
+
+No, we do not care, but investigating it was needed.
 
 
-into mach-vexpress/v2m.c file. And the I-pipe works with 200.000 MHz timer.
+> I'm not really sure about physical address of the global timer (the first
+> parameter of gt_setup). In mach-versatile/include/mach/platform.h file I
+> can find defines but using for example gt_setup(VERSATILE_WATCHDOG_BASE -
+> 0x400,64) it ends up with a kernel panic:
 
-regards
---
-Marcin Ku=B6ka
+The physical address is the physical address of the twd minus 0x400.
+The virtual address of the twd is MMIO_P2V(A9_MPCORE_TWD) (file
+arch/arm/mach-vexpress/ct-ca9x4.c, line 57), so I would use
+A9_MPCORE_TWD - 0x400
+As physical address for the global timer.
+
+
+> Probably you noticed that I managed to run all 4 cores - as it turned out
+> that was trivial, simply include asm/smp_twd.h in mach/irqs.h according to
+> http://www.xenomai.org/index.php/I-pipe-core:ArmPorting.
+
+It is even simpler in the patch for 3.4, gt_setup is called
+automatically, and including asm/smp_twd.h is no longer needed.
+
+-- 
+					    Gilles.
+
