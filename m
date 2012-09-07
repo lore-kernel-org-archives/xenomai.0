@@ -1,15 +1,10 @@
-Message-ID: <50378125.9010301@xenomai.org>
-Date: Fri, 24 Aug 2012 15:27:01 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <50498592.3090204@vareka.com>
+Date: Fri, 07 Sep 2012 00:26:42 -0500
+From: Bill Vareka <bill@vareka.com>
 MIME-Version: 1.0
-References: <50350308.8010405@openwide.fr> <50350712.4020704@xenomai.org>
-	<5035E4CD.9080302@xenomai.org> <50364114.9090804@openwide.fr>
-	<503641EA.2020201@xenomai.org> <503658B3.9060401@openwide.fr>
-	<50366E2A.5030006@xenomai.org> <503778DC.3040201@openwide.fr>
-In-Reply-To: <503778DC.3040201@openwide.fr>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] s3c24xx: Priority rotate enable !?
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="iso-8859-1"; Format="flowed"
+Subject: [Xenomai] Problem with MALLOC_CHECK_
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,84 +13,65 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Romain Naour <romain.naour@openwide.fr>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 08/24/2012 02:51 PM, Romain Naour wrote:
-> Le 23/08/2012 19:53, Gilles Chanteperdrix a écrit :
->> On 08/23/2012 06:22 PM, Romain Naour wrote:
->>
->>> Le 23/08/2012 16:44, Gilles Chanteperdrix a écrit :
->>>> On 08/23/2012 04:41 PM, Romain Naour wrote:
->>>>> Le 23/08/2012 10:07, Gilles Chanteperdrix a écrit :
->>>>>> On 08/22/2012 06:21 PM, Gilles Chanteperdrix wrote:
->>>>>>> On 08/22/2012 06:04 PM, Romain Naour wrote:
->>>>>>>> Hello,
->>>>>>>>
->>>>>>>> On s3c24xx processors the interrupt source priority isn't fixed by Adeos
->>>>>>>> patch (ARB_SEL bits in PRIORITY register).
->>>>>>>> Is it intentional ?
->>>>>>>> It may be possible to give priority to an interrupt simultaneously
->>>>>>>> arrived that the interruption IRQ_TIMER4 (before being grabbed by
->>>>>>>> Adeos). Therefore, we can have more jitter for real time applications.
->>>>>>> This can always happen even with interrupt priorities: imagine that the
->>>>>>> first interrupt happens 1 microsecond before the timer interrupt, even
->>>>>>> with the priority, the handler for first interrupt will be executed and
->>>>>>> the timer interrupt will have to wait for the end of this handler before
->>>>>>> it is serviced.
->>>>>>>
->>>>>>>> Do we need to fix the priority at this level ?
->>>>>>> I do not think so. However, what can be done is implement interrupt
->>>>>>> controller muting using the priority register, see:
->>>>>>> http://www.xenomai.org/index.php/I-pipe-core:ArmPorting#Priority_based_interrupt_controller_muting
->>>>> The priority register can't be used for implement interrupt controller
->>>>> muting using this method .
->>>>> The PIC hardware can't be configured with only two priority levels.
->>>>> We are obligated to choose between fixed or "rotation fashion" priority
->>>>> with 32 levels...
->>>> What prevents us from using the "fixed" priorities, with one level for
->>>> real-time interrupts and another for non real-time interrupts ?
->>> The priority register is used to configure the arbitration procedure
->>> when multiple interrupts occur.
->>> But some interrupt sources always have higher priority than other.
->>>
->>> For example, EINT0 is always takes priority regardless INT_RTC, when
->>> arrive at the same time.
->>> Whatever the configuration of priority register.
->>>
->>> When INT_TIMER4 is trigged, the value of priority register is modified.
->>> Thus, INT_TIMER4 loses its priority for arbitration procedure.
->>> That is why I wonder if it is better to fix the priority for arbitration
->>> procedure.
->> I don't get it, could you point me to the datasheet?
->>
-> In the figure 14-1, there is the Priority Generating Block (priority) 
-> between IRQ mask and INTPND register.
-> It is detailed in figure 14-2 and its functional principle is explained 
-> on the next page.
-> The priority of interrupt source is determined by the configuration of 
-> each arbiter.
-> This configuration is set by the priority register (P 14-13) which is 
-> left on initial state by Linux (0x7F).
-> (ARB_MODE = 1 for all arbiter)
-> 
-> "ARB_MODE bit is 1, ARB_SEL bits are changed in rotation fashion, e.g., 
-> if REQ1 is serviced, ARB_SEL bits are changed to 01b automatically so as 
-> to put REQ1 into the lowest priority"
-> 
-> "Note that REQ0 of an arbiter always has the highest priority, and REQ5 
-> has the lowest one."
-> For example, EINT0 always has the highest priority and INT_ADC has the 
-> lowest one.
-> 
-> I suggest to reset ARB_MODE for all arbiter and modify ARB6 (01b) and 
-> ARB2 (11b), in order to increase and fix INT_TIMER4's priority'.
-> This is all what we can do with this register. Tell me if I'm wrong.
+   We've discovered a weird problem.  Basically, when using the xenomai =
 
-Ok, what I asked was for the URL of the datasheet, but I found it. No,
-you will not gain much with this register, you would better implement
-interrupt controller muting.
+posix skin and allocating and releasing large amounts of memory in a =
 
--- 
-					    Gilles.
+secondary mode thread, the application corrupts the entire system =
 
+(kernel and all) *if* the MALLOC_CHECK_ macro is disabled.  Attached is =
+
+a simple c++ demo program showing this problem (compile with gcc).  If =
+
+you compile using standard posix it works no matter what.  If you =
+
+compile using the xenomai posix skin, then if the environment variable =
+
+MALLOC_CHECK_=3D3 then the program runs fine with no problems.  However, =
+
+if you run with MALLOC_CHECK_=3D0 then the program appears to corrupt =
+
+system memory.   After running this program, less, cat, and other =
+
+standard programs now segfault and won't run.  Also in our case, we see =
+
+that the output of ifconfig is also corrupted (shows table data rather =
+
+than normal format).  The kernel is completely unstable.
+We have encountered the problem before without identifying the source.  =
+
+Currently this affected us because our application ran fine under a =
+
+login shell when testing (since it automatically defined the env var) =
+
+but when we added a launch script to sysVinit to automatically launch it =
+
+at startup, it failed because the environmental variables were much =
+
+different there and did not define this variable.
+
+Again, our app is C++ and this test is with stl strings but I strongly =
+
+suspect the same behavior can be generated using a standard C program =
+
+and malloc/free.
+
+Our setup:
+
+architecture x86 32-bit
+Linux 2.6.38.8
+adeos ipipe 2.11-01
+xenomai-2.6.1
+gcc46-4.6.2_20111026-1.1.4.i586
+libstdc++46-4.6.2_20111026-1.1.4.i586
+glibc-2.14.1-14.12.2.i686
+
+Regards,
+Bill Vareka
+-------------- next part --------------
+An embedded and charset-unspecified text was scrubbed...
+Name: memtst.cpp
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20120907/ad3c81c=
+5/attachment.ksh>
