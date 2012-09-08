@@ -1,14 +1,12 @@
-Message-ID: <504B35AF.2040606@xenomai.org>
-Date: Sat, 08 Sep 2012 14:10:23 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <504B9CCD.9030701@xenomai.org>
+Date: Sat, 08 Sep 2012 21:30:21 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CANKLDmsO-1E7+d9X6-t532RJ=CWY4P4x30nCNCwgHffJjAFkDA@mail.gmail.com>	<50460BCE.8010505@xenomai.org>	<CANKLDmtmnbAb7PM4URTjxYtaH5WnvGjVcEPOpSNr2A6gPwLLaA@mail.gmail.com>	<50464969.2000902@xenomai.org>	<5046549C.7030008@xenomai.org>	<CANKLDmufv25Bngqb3CapS6ybHG9DH76DUq1q6dinzJ5ai7TowA@mail.gmail.com>	<5046FF0A.9000208@xenomai.org>	<CANKLDmverDgL3c2BEtXAwkGhq7KLRopGnM3q9Z_TQiAAeMponw@mail.gmail.com>	<50470D2D.8020004@xenomai.org>	<CANKLDmudbBw5gyWVe_nPSLkQTopaH0ajs3FXgJottn84Cm6anQ@mail.gmail.com>	<5047318D.8060106@xenomai.org>	<504735A6.5040800@xenomai.org>	<CANKLDmtbOPWG_bc3=pcbSpgbEvSj=5ZsiXm3CWgBCwBx=yQ8Pw@mail.gmail.com>	<5047B2B3.2050309@xenomai.org>
-	<504B20CF.8010100@xenomai.org> <504B214F.7020709@xenomai.org>
-	<504B329C.2070805@xenomai.org>
-In-Reply-To: <504B329C.2070805@xenomai.org>
+References: <50484FCA.50909@xenomai.org> <5049DA96.90200@xenomai.org>
+In-Reply-To: <5049DA96.90200@xenomai.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] kernel NULL pointer dereference
+Subject: Re: [Xenomai] RFC: slow tsc optimization
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,120 +15,106 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Xenomai <Xenomai@xenomai.org>
 
-On 09/08/2012 01:57 PM, Gilles Chanteperdrix wrote:
-> On 09/08/2012 12:43 PM, Gilles Chanteperdrix wrote:
+On 09/07/2012 01:29 PM, Gilles Chanteperdrix wrote:
+
+> On 09/06/2012 09:24 AM, Gilles Chanteperdrix wrote:
 > 
->> On 09/08/2012 12:41 PM, Philippe Gerum wrote:
 >>
->>> On 09/05/2012 10:14 PM, Gilles Chanteperdrix wrote:
->>>> On 09/05/2012 02:10 PM, Henri Roosen wrote:
->>>>
->>>>> On Wed, Sep 5, 2012 at 1:21 PM, Gilles Chanteperdrix
->>>>> <gilles.chanteperdrix@xenomai.org> wrote:
->>>>>>> Anyway, what seems to happen is that your application calls exit, while
->>>>>>> some thread was waiting for a a PI mutex, the nucleus tries to send a
->>>>>>> signal to the mutex holder. However, something gets wrong, and the mutex
->>>>>>> holder task pointer is invalid.
->>>>>>>
->>>>>>> What is strange, also, is how a task can be waiting for a mutex and
->>>>>>> calling exit at the same time. Could you try to increase the number of
->>>>>>> trace points to say 1000 points?
->>>>>>
->>>>>>
->>>>>> Answering myself. The thread killed is the one holding the mutex. The
->>>>>> signal is sent to this precise thread, so this may fail because the
->>>>>> thread is in the process of being destroyed, and its user_task pointer
->>>>>> is no longer valid.
->>>>>
->>>>> Please find attached ipipe_trace_2.txt that has the number of
->>>>> tracepoints to 1000. Note that this log also doesn't trace whether
->>>>> irqs are off (arch_irqs_disable_flags is not in the current ipipe tree
->>>>> yet either).
->>>>>
->>>>> I will find out why the application is doing a sys_exit. However I'm
->>>>> not sure how this is related to the thread affinity; when not setting
->>>>> the affinity, the problem is not reproducable.
->>>>
->>>>
->>>> Please try the following patch, it should avoid the bug, but I will 
->>>> wait for Philippe's ack before pushing it:
->>>>
->>>> diff --git a/ksrc/nucleus/shadow.c b/ksrc/nucleus/shadow.c
->>>> index 260fdef..1f1a737 100644
->>>> --- a/ksrc/nucleus/shadow.c
->>>> +++ b/ksrc/nucleus/shadow.c
->>>> @@ -274,7 +274,9 @@ static void rpi_update(struct xnthread *thread)
->>>>  	if (rpi_p(thread)) {
->>>>  		xnsched_pop_rpi(thread);
->>>>  		thread->rpi = NULL;
->>>> -		rpi_push(sched, thread);
->>>> +
->>>> +		if (xnthread_user_task(thread))
->>>> +			rpi_push(sched, thread);
->>>>  	}
->>>>  
->>>>  	xnlock_put_irqrestore(&sched->rpilock, s);
->>>> @@ -1516,15 +1518,18 @@ EXPORT_SYMBOL_GPL(xnshadow_start);
->>>>  /* Called with nklock locked, Xenomai interrupts off. */
->>>>  void xnshadow_renice(struct xnthread *thread)
->>>>  {
->>>> -	/*
->>>> -	 * We need to bound the priority values in the
->>>> -	 * [1..MAX_RT_PRIO-1] range, since the Xenomai priority scale
->>>> -	 * is a superset of the Linux priority scale.
->>>> -	 */
->>>> -	int prio = normalize_priority(thread->cprio);
->>>> +	if (xnthread_user_task(thread)) {
->>>> +		/*
->>>> +		 * We need to bound the priority values in the
->>>> +		 * [1..MAX_RT_PRIO-1] range, since the Xenomai priority scale
->>>> +		 * is a superset of the Linux priority scale.
->>>> +		 */
->>>> +		int prio = normalize_priority(thread->cprio);
->>>>  
->>>> -	xnshadow_send_sig(thread, SIGSHADOW,
->>>> -			  sigshadow_int(SIGSHADOW_ACTION_RENICE, prio), 1);
->>>> +		xnshadow_send_sig
->>>> +			(thread, SIGSHADOW,
->>>> +			 sigshadow_int(SIGSHADOW_ACTION_RENICE, prio), 1);
->>>> +	}
->>>>  
->>>>  	if (!xnthread_test_state(thread, XNDORMANT) &&
->>>>  	    xnthread_sched(thread) == xnpod_current_sched())
->>>>
->>>>
->>>
->>> This patch is correct, but it does not fix the root cause. RPI seems to
->>> be a victim here, not the culprit. As you already noticed, the main
->>> issue is with a thread holding a contented mutex, which exits. This
->>> causes the PIP boost to be cleared for it over its own taskexit handler,
->>> after its task_struct backlink has been cleared. This leads to
->>> schedule_linux_call() being called for a NULL task; enabling
->>> CONFIG_XENO_OPT_DEBUG_NUCLEUS triggers the assertion properly in this
->>> routine.
->>>
->>> The source of all issues in this case is xnsynch_clear_boost() not
->>> handling the particular case of a thread exiting with a contended mutex
->>> held. We can reuse the thread zombie bit to flag this, and avoid any
->>> useless renice.
->>>
->>> Normally, there should not be any SMP-specific triggers of this bug,
->>> the nucleus lock is held all through the deletion and synch de-boost paths.
+>> Hi,
 >>
+>> The last few days, I have been working on getting the "rdtsc"
+>> instruction replaced with a call to a tsc emulation function dynamically
+>> at run time. It turned out to be easy with the Linux "alternative"
+>> mechanism, since it implements replacements based on CPU capabilities,
+>> and the TSC is such a capability. This modification allows to compile a
+>> kernel with Xenomai that will run on any x86_32 platform.
 >>
->> Are we not missing an rpi_pop ?
+>> Now, when running kernels without tsc using the PIT based tsc emulation,
+>> I found out something pretty obvious, this PIT based tsc emulation is
+>> slow, it takes 4us every time we call it. And the nucleus reads the tsc
+>> a number of times when a timer interrupt happens up to the wake up of
+>> the latency user-space task:
+>> - at the very beginning of the timer interrupt
+>> - after the execution of the latency thread timer
+>> - in the timer programming function, to compute the timer delay
+>> - in the middle of the context switch, if the "statistics collection"
+>> feature is enabled
+>> - in the xnpod_wait_thread_periodic function, after the context switch,
+>> in order to compute the number of timer overruns.
 >>
+>> That is 20us, and the thread is not yet running in user-space.
+>>
+>> So, I have been thinking about reducing the number of calls to the PIT,
+>> unfortunately keeping the last tsc value around and reusing it is a bit
+>> heavy, and implies modifications which are completely useless for the
+>> non PIT case (which should be the vast majority), and in fact, the tsc
+>> emulation code has to keep the last read value, since it is required to
+>> convert clocksources with less than 64 bits to a 64 bits value. So, I
+>> propose the following approach:
+>>
+>> The I-pipe core will provide two tsc reading functions:
+>> ipipe_read_tsc which reads the counter
+>> ipipe_read_tsc_fast which will read the tsc if the cpu has a tsc, or
+>> return the last value read if the tsc is emulated.
 > 
-> Ok. It happens in xnshadow_unmap anyway.
+> 
+> An update on this work. In fact the "read_tsc_fast" should be the most
+> common operation, and really reading the PIT counter is not. And reading
+> the slow tsc should be made at some critical points so that the fast_tsc
+> is reasonably accurate. So, in fact I implemented:
+> ipipe_read_tsc, which returns the last tsc value, and is replaced with
+> rdtsc when available
+> ipipe_read_slow_tsc, which reads the emulated tsc, and is also replaced
+> with rdtsc when available,
+> ipipe_touch_tsc, which reads the emulated tsc, but is replaced with a
+> nop when rdtsc is available.
+> 
+> Now, the real remaining problem is where to use
+> ipipe_touch_tsc/ipipe_read_slow_tsc, to have a rasonable accuracy, but
+> not read the hardware tsc too often.
+> 
+> I implemented the following approach: the tsc is read at every entry
+> point of the nucleus, that is: interrupts, xenomai syscalls, events for
+> xenomai tasks. We also need to reread the tsc before programming the
+> next shot, in order to avoid programming too long delays (with a restart
+> of xntimer_tick_aperiodic if we find out that the delay is too short,
+> instead of going through another irq). All in all, these are fairly
+> lightweight modifications, and the latency test seems reasonable. Even
+> on a kernel with statistics collection enabled. I suspect the statistics
+> are a bit off, but at least they are there.
+> 
+> Since we read the tsc twice per interrupt, and reading it takes 4us, the
+> minimum latency is around 8us, I thought about including the tsc latency
+> (twice) into the nktimerlat latency, but this results in negative
+> latencies, and anyway, we should leave the choice to the user to do that
+> with /proc/xenomai/latency if he wants.
+> 
+> Now the remaining issues are:
+> - kernel-space code. We can trap insmod/rmmod in losyscall, but if an
+> RTDM driver ioctl method takes a long time to execute, or when a
+> kernel-space thread runs long tasks before calling xenomai services, it
+> may use old clock data
+> - the time of a syscall is always at least 4us. That is a bit stupid
+> when, say, for instance you want to lock a mutex, to read the tsc, lock
+> the mutex, then return to user space. Working this around seems
+> complicated. We could for instance add a "NOTSC" syscall flag to
+> indicate that the tsc should not be read before a syscall callback, but
+> modifying correctly the syscall tables to add this flag to the proper
+> syscalls is probably not so easy. For instance, when statistics
+> collection is enabled, we want to read the tsc before locking the mutex,
+> since if there is a context switch, we will need the value for updating
+> the statistics.
 > 
 
-Yes, RPI is actually uncorrelated to this issue, it will happen during
-the regular context switching involved in deleting the running task,
-regardless.
+
+Some benchmarks on atom. In the second try "pit, one read", we do not
+re-read the emulated tsc before programming the timer, we avoid loosing
+4us, at the expense of the precision of the timer tick.
+
+http://sisyphus.hd.free.fr/~gilles/core-3.4-latencies/atom2.png
 
 -- 
-Philippe.
+                                                                Gilles.
 
