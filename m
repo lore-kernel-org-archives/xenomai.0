@@ -1,10 +1,14 @@
+Message-ID: <504F6C8E.8070706@logilin.fr>
+Date: Tue, 11 Sep 2012 18:53:34 +0200
+From: Christophe Blaess <mailist@logilin.fr>
 MIME-Version: 1.0
-Sender: madjsw@gmail.com
-Date: Tue, 11 Sep 2012 11:45:26 -0500
-Message-ID: <CAAvA3H_9Ziq0fcdjjPQjE3tLYJL1g0QXEG7ns5h=JwRbaRAkeg@mail.gmail.com>
-From: Jeff Weber <jwamsc@gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Subject: [Xenomai]  Problem with MALLOC_CHECK_
+References: <CAP1DbD7y_G+5tjUucgXE57gA-8K4vMCe5s_cVfOoEJV3CVF_RQ@mail.gmail.com>
+	<504F6604.2000104@xenomai.org>
+In-Reply-To: <504F6604.2000104@xenomai.org>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] Children of forked process do not die upon receiving
+ SIGKILL in Xenomai?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,57 +17,74 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: gilles.chanteperdrix@xenomai.org
-Cc: bill@vareka.com, Xenomai Mailing List <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Gilles:
+Le 11/09/2012 18:25, Gilles Chanteperdrix a =E9crit :
+> On 09/11/2012 06:22 PM, Soo-Hyun Yoo wrote:
+>> Hello,
+>>
+>> I have a certain process "A" that forks and execs a process "B". B
+>> spawns multiple child processes.
+>>
+>> In the vanilla Linux kernel, I can have A send a SIGTERM or SIGKILL to
+>> B and thereby successfully kill B and all of its children.
+No, the childs of B remain alive. Try this code.
 
-On 09/07/2012 7 07:55:08 CEST 2012 Gilles Chanteperdrix wrote:
+*test-kill.c*
 
-> On 09/07/2012 07:26 AM, Bill Vareka wrote:
->
-> >    We've discovered a weird problem.  Basically, when using the xenomai
-> > posix skin and allocating and releasing large amounts of memory in a
-> > secondary mode thread, the application corrupts the entire system
-> > (kernel and all) *if* the MALLOC_CHECK_ macro is disabled.  Attached is
-> > a simple c++ demo program showing this problem (compile with gcc).  If
-> > you compile using standard posix it works no matter what.  If you
-> > compile using the xenomai posix skin, then if the environment variable
-> > MALLOC_CHECK_=3 then the program runs fine with no problems.  However,
-> > if you run with MALLOC_CHECK_=0 then the program appears to corrupt
-> > system memory.   After running this program, less, cat, and other
-> > standard programs now segfault and won't run.  Also in our case, we see
-> > that the output of ifconfig is also corrupted (shows table data rather
-> > than normal format).  The kernel is completely unstable.
-> > We have encountered the problem before without identifying the source.
-> > Currently this affected us because our application ran fine under a
-> > login shell when testing (since it automatically defined the env var)
-> > but when we added a launch script to sysVinit to automatically launch
-it
-> > at startup, it failed because the environmental variables were much
-> > different there and did not define this variable.
-> >
-> > Again, our app is C++ and this test is with stl strings but I strongly
-> > suspect the same behavior can be generated using a standard C program
-> > and malloc/free.
-> >
-> > Our setup:
-> >
-> > architecture x86 32-bit
-> > Linux 2.6.38.8
-> > adeos ipipe 2.11-01
->
->
-> Could you check the I-pipe patch for Linux 3.2? It has this commit:
->
-http://git.denx.de/?p=ipipe.git;a=commit;h=c9f834f80257c4e7c2c01a3c6d34f5485af2be51
->
-> Which 2.6.38 does not appear to have.
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
 
-I am working with Bill Vareka on this issue.  Switching to Linux 3.2.21,
-Xenomai-2.6.1 and using the ipipe-core-3.2.21-x86-1.patch did not make any
-difference.  Our application still requires MALLOC_CHECK_=3 for glibc.
+int main(void)
+{
+     pid_t pid;
 
-We are using glibc-2.14.1-14.12.2 .
+     fprintf(stderr, "[%d] I'm A\n", getpid());
+     if ((pid =3D fork()) =3D=3D 0) {
+         fprintf(stderr, "[%d] I'm B\n", getpid());
+        if (fork() =3D=3D 0) {
+             while (1) {
+                 fprintf(stderr, "[%d] I'm C\n", getpid());
+                 sleep(1);
+             }
+         } else {
+             while (1) {
+                 fprintf(stderr, "[%d] I'm B\n", getpid());
+                 sleep(1);
+             }
+         }
+     }
+     sleep(3);
+     fprintf(stderr,"A kills B\n");
+     kill(pid, 9);
+     fprintf(stderr, "and A exits\n");
+     exit(0);
+}
 
-Jeff Weber
+
+And you'll see :
+
+$ ./test-kill
+[15925] I'm A
+[15926] I'm B
+[15926] I'm B
+[15927] I'm C
+[15926] I'm B
+[15927] I'm C
+[15926] I'm B
+[15927] I'm C
+A kills B
+and A exits
+$ [15927] I'm C
+[15927] I'm C
+[15927] I'm C
+[15927] I'm C
+[15927] I'm C
+[15927] I'm C
+[15927] I'm C
+
+To kill B's childs, you need to send the signal to the group of processes=
+.
+
+
