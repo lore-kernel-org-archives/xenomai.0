@@ -1,9 +1,10 @@
-Message-ID: <504D3216.7030401@ebus.com>
-Date: Sun, 09 Sep 2012 17:19:34 -0700
+Message-ID: <504EBA13.30909@ebus.com>
+Date: Mon, 10 Sep 2012 21:12:03 -0700
 From: Doug Brunner <dbrunner@ebus.com>
 MIME-Version: 1.0
 References: <50483A49.5090100@ebus.com> <504C7797.8040201@xenomai.org>
-In-Reply-To: <504C7797.8040201@xenomai.org>
+	<504D3216.7030401@ebus.com>
+In-Reply-To: <504D3216.7030401@ebus.com>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] Queue corruption from XDDP in Xenomai 2.6.1
@@ -18,34 +19,46 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: Philippe Gerum <rpm@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On 09/09/2012 04:03 AM, Philippe Gerum wrote:
-> On 09/06/2012 07:53 AM, Doug Brunner wrote:
->> It looks like the bug I wrote about back in June still exists in Xenomai
->> 2.6.1 (with Linux 3.2.21). I ran the same test case (an RT thread opens
->> an XDDP socket, then a Linux thread opens its end of the pipe, then the
->> RT thread stops, then with the Linux thread still holding its end of the
->> pipe another RT thread tries to open an XDDP socket with the same minor
->> number). With Xenomai queue and I-pipe debugging enabled, I got a report
->> of a corrupted queue. I've attached my config, test case, and serial
->> console log.
+On 09/09/2012 05:19 PM, Doug Brunner wrote:
+> On 09/09/2012 04:03 AM, Philippe Gerum wrote:
+>> On 09/06/2012 07:53 AM, Doug Brunner wrote:
+>>> It looks like the bug I wrote about back in June still exists in 
+>>> Xenomai
+>>> 2.6.1 (with Linux 3.2.21). I ran the same test case (an RT thread opens
+>>> an XDDP socket, then a Linux thread opens its end of the pipe, then the
+>>> RT thread stops, then with the Linux thread still holding its end of 
+>>> the
+>>> pipe another RT thread tries to open an XDDP socket with the same minor
+>>> number). With Xenomai queue and I-pipe debugging enabled, I got a 
+>>> report
+>>> of a corrupted queue. I've attached my config, test case, and serial
+>>> console log.
+>>>
+>>> So far I haven't found anything in the XDDP or underlying xnpipe_* code
+>>> that would suggest why this is happening. However something is
+>>> definitely going wrong, since xnpipe_minor_free should not be called
+>>> until my Linux task closes its end of the pipe, so the call by the
+>>> second RT thread to open the pipe should fail with -EBUSY. Any thoughts
+>>> on why this might be happening?
+>>>
+>> Yes, please have a look at the commit log there:
+>> http://git.xenomai.org/?p=xenomai-2.6.git;a=commit;h=283c5f6eae1d1d7c65073e2f30fd40abdcf2c1ca 
 >>
->> So far I haven't found anything in the XDDP or underlying xnpipe_* code
->> that would suggest why this is happening. However something is
->> definitely going wrong, since xnpipe_minor_free should not be called
->> until my Linux task closes its end of the pipe, so the call by the
->> second RT thread to open the pipe should fail with -EBUSY. Any thoughts
->> on why this might be happening?
 >>
-> Yes, please have a look at the commit log there:
-> http://git.xenomai.org/?p=xenomai-2.6.git;a=commit;h=283c5f6eae1d1d7c65073e2f30fd40abdcf2c1ca
+>> This patch should fix the issue raised by the test case you sent
+>> (actually, it does, it was very useful to spot the problem - thanks for
+>> this).
+> Thanks Philippe--I will patch this in and try it on my test hardware 
+> tomorrow. (Unfortunately my KVM virtual machine will not boot any 3.2 
+> kernel with I-pipe AFAICT; around the time it remounts the root FS 
+> read-write it begins waiting for something that never happens :( )
 >
-> This patch should fix the issue raised by the test case you sent
-> (actually, it does, it was very useful to spot the problem - thanks for
-> this).
-Thanks Philippe--I will patch this in and try it on my test hardware 
-tomorrow. (Unfortunately my KVM virtual machine will not boot any 3.2 
-kernel with I-pipe AFAICT; around the time it remounts the root FS 
-read-write it begins waiting for something that never happens :( )
+>     --Doug Brunner
+Works fine (passes regression test and appears to run my application 
+OK), thanks again.
+
+I don't suppose anyone has a suggestion for what I might do to debug the 
+hang during boot in KVM? :)
 
      --Doug Brunner
 
