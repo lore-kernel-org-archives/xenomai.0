@@ -1,13 +1,10 @@
-Message-ID: <5050315D.8080107@xenomai.org>
-Date: Wed, 12 Sep 2012 08:53:17 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <504EC598.7050005@ebus.com> <504F8F55.9080006@xenomai.org>
-	<504FAAE6.5010701@xenomai.org>
-In-Reply-To: <504FAAE6.5010701@xenomai.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Interpreting I-pipe trace
+Message-ID: <OF88348236.1046CAF7-ONC1257A77.002D5DEF-C1257A77.002DB549@LocalDomain>
+Date: Wed, 12 Sep 2012 10:19:14 +0200
+From: Pierre.QUELIN@solystic.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] posix skin pthread_create issue
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,41 +13,56 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Doug Brunner <dbrunner@ebus.com>
-Cc: xenomai@xenomai.org
-
-On 09/11/2012 11:19 PM, Gilles Chanteperdrix wrote:
-
-> On 09/11/2012 09:21 PM, Gilles Chanteperdrix wrote:
-> 
->> On 09/11/2012 07:01 AM, Doug Brunner wrote:
->>
->>> While running my latency testing earlier I saw some rather high 
->>> worst-case latencies (~70us) compared to average case (~14us), so I ran 
->>> again with I-pipe tracing enabled. However, I'm not sure what to make of 
->>> the results.
->>>
->>> My worst case involves an IRQ (common_interrupt appears in the trace 
->>> with user value 0xFFFFFFC4) and the wiki page talks about being able to 
->>> translate the user value 0xFFFFFFF4 into IRQ 11 but doesn't elaborate on 
->>> how this correspondence works. I'm not horribly concerned since it's a 
->>> delay of 53 us on a rather slow processor (Geode LX800) but it would be 
->>> nice to know what interrupt is taking so long.
->>
->>
->> You may also want to apply the following patch for SMI on Geode LX, and 
->> enable CONFIG_XENO_HW_SMI_WORKAROUND. You can remove the '#if 0', if you
->> do not use PCI.
-> 
-> 
-> You have to pass cs5536.msr=1 to avoid using PCI registers access (which
-> use SMIs) in the IDE driver.
-> 
+To: xenomai@xenomai.org
 
 
-These two tricks seem to make a big difference here:
-http://sisyphus.hd.free.fr/~gilles/core-3.4-latencies/geode.png
+Dear all,
 
--- 
-                                                                Gilles.
+I have an application that is working fine with the standard Linux kernel
+API and don't works if I build it with Xenomai API.
 
+I have a strange issue. At the begining, the application creates 28 threads
+and all the 33 next returns an error. pthread=5Fcreate() returns 12 (ENOMEM=
+).
+
+I'm not sure to understand which memory is missing.
+
+To solve this I have try :
+
+1) to fix the pthread stack size at PTHREAD=5FSTACK=5FMIN.
+=3D>without effect
+
+2) to change the RealTime sub-system options
+I increase the number of registry slots from 512 to 1024
+I increase the size of the system heap from 256 to 1024
+I increase the size of the private stack pool from 128 to 512
+=3D>without effect
+
+Could you please help me.
+
+Best regards
+
+Pierre Quelin
+Ce message et toutes les pi=E8ces jointes (ci-apr=E8s le "Message") sont co=
+nfidentiels et =E9tablis =E0 l'intention exclusive de leurs destinataires. =
+Si vous avez re=E7u le Message par erreur, merci de l'indiquer =E0 son exp=
+=E9diteur par retour et de proc=E9der =E0 sa destruction dans vos syst=E8me=
+s.Toute utilisation ou diffusion de son contenu non autoris=E9e est stricte=
+ment interdite. Tout message =E9lectronique est susceptible d'alt=E9ration.=
+ SOLYSTIC d=E9cline toute responsabilit=E9 au titre du Message s'il a =E9t=
+=E9 alt=E9r=E9, d=E9form=E9 ou falsifi=E9. SOLYSTIC ne saurait =EAtre tenue=
+ pour responsable, ni de la transmission erron=E9e ou incompl=E8te des info=
+rmations contenues dans ce message, ni des d=E9lais de r=E9ception ou des d=
+ommages caus=E9s =E0 votre syst=E8me. SOLYSTIC ne garantit, ni que l'int=E9=
+grit=E9 de la communication ait =E9t=E9 maintenue, ni que cette transmissio=
+n est exempte de virus, d'interceptions ou d'interf=E9rences.
+
+This message and any attachments (the "Message") are confidential and inten=
+ded solely for the addressee(s). Any unauthorised use or dissemination of t=
+he Message is strictly prohibited. E-mails are susceptible to alteration. S=
+OLYSTIC shall not be liable for the Message if altered, changed or falsifie=
+d. SOLYSTIC shall not be liable for the improper or incomplete transmission=
+ of the information contained in the Message nor for any delay in its recei=
+pt or damage to your system. SOLYSTIC does neither guarantee that the integ=
+rity of the Message has been maintained, nor that this communication is fre=
+e of viruses, interceptions or interferences.
