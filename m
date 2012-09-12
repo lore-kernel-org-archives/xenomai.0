@@ -1,10 +1,12 @@
+Message-ID: <50504805.7040509@xenomai.org>
+Date: Wed, 12 Sep 2012 10:29:57 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Message-ID: <OF88348236.1046CAF7-ONC1257A77.002D5DEF-C1257A77.002DB549@LocalDomain>
-Date: Wed, 12 Sep 2012 10:19:14 +0200
-From: Pierre.QUELIN@solystic.com
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] posix skin pthread_create issue
+References: <OF88348236.1046CAF7-ONC1257A77.002D5DEF-C1257A77.002DB549@LocalDomain>
+In-Reply-To: <OF88348236.1046CAF7-ONC1257A77.002D5DEF-C1257A77.002DB549@LocalDomain>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] posix skin pthread_create issue
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,56 +15,81 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Pierre.QUELIN@solystic.com
+Cc: xenomai@xenomai.org
 
+On 09/12/2012 10:19 AM, Pierre.QUELIN@solystic.com wrote:
+> 
+> Dear all,
+> 
+> I have an application that is working fine with the standard Linux
+> kernel API and don't works if I build it with Xenomai API.
 
-Dear all,
+What version of Xenomai? What I-pipe patch? What platform?
 
-I have an application that is working fine with the standard Linux kernel
-API and don't works if I build it with Xenomai API.
+> 
+> I have a strange issue. At the begining, the application creates 28
+> threads and all the 33 next returns an error. pthread_create()
+> returns 12 (ENOMEM).
+> 
+> I'm not sure to understand which memory is missing.
+> 
+> To solve this I have try :
+> 
+> 1) to fix the pthread stack size at PTHREAD_STACK_MIN. =>without
+> effect
 
-I have a strange issue. At the begining, the application creates 28 threads
-and all the 33 next returns an error. pthread=5Fcreate() returns 12 (ENOMEM=
-).
+For the stack size issue, see:
+http://www.xenomai.org/documentation/xenomai-2.6/html/TROUBLESHOOTING/#_my_application_reserves_a_lot_of_memory
 
-I'm not sure to understand which memory is missing.
+But that is probably not your issue.
 
-To solve this I have try :
+> 2) to change the RealTime sub-system options I increase the number of
+> registry slots from 512 to 1024 I increase the size of the system
+> heap from 256 to 1024 I increase the size of the private stack pool
+> from 128 to 512 =>without effect
+> 
+> Could you please help me.
 
-1) to fix the pthread stack size at PTHREAD=5FSTACK=5FMIN.
-=3D>without effect
+ENOMEM seems to be returned in case the stack pool is not large enough.
+Maybe 512 is not enough? If using Xenomai 2.6.0 with gcc 4.7, you should
+add '-fno-omit-frame-pointer' to the CFLAGS. This issue is fixed in
+Xenomai 2.6.1.
 
-2) to change the RealTime sub-system options
-I increase the number of registry slots from 512 to 1024
-I increase the size of the system heap from 256 to 1024
-I increase the size of the private stack pool from 128 to 512
-=3D>without effect
+> 
+> Best regards
+> 
+> Pierre Quelin Ce message et toutes les pièces jointes (ci-après le
+> "Message") sont confidentiels et établis à l'intention exclusive de
+> leurs destinataires. Si vous avez reçu le Message par erreur, merci
+> de l'indiquer à son expéditeur par retour et de procéder à sa
+> destruction dans vos systèmes.Toute utilisation ou diffusion de son
+> contenu non autorisée est strictement interdite. Tout message
+> électronique est susceptible d'altération. SOLYSTIC décline toute
+> responsabilité au titre du Message s'il a été altéré, déformé ou
+> falsifié. SOLYSTIC ne saurait être tenue pour responsable, ni de la
+> transmission erronée ou incomplète des informations contenues dans ce
+> message, ni des délais de réception ou des dommages causés à votre
+> système. SOLYSTIC ne garantit, ni que l'intégrité de la communication
+> ait été maintenue, ni que cette transmission est exempte de virus,
+> d'interceptions ou d'interférences.
+> 
+> This message and any attachments (the "Message") are confidential and
+> intended solely for the addressee(s). Any unauthorised use or
+> dissemination of the Message is strictly prohibited. E-mails are
+> susceptible to alteration. SOLYSTIC shall not be liable for the
+> Message if altered, changed or falsified. SOLYSTIC shall not be
+> liable for the improper or incomplete transmission of the information
+> contained in the Message nor for any delay in its receipt or damage
+> to your system. SOLYSTIC does neither guarantee that the integrity of
+> the Message has been maintained, nor that this communication is free
+> of viruses, interceptions or interferences.
 
-Could you please help me.
+As usual, please send us messages without this notice: the only way for
+us to comply with this notice is to unsubscribe you from the mailing
+list. The mailing list is public, its archives are on the web for all to
+see, so we are actively disseminating your message.
 
-Best regards
+-- 
+					    Gilles.
 
-Pierre Quelin
-Ce message et toutes les pi=E8ces jointes (ci-apr=E8s le "Message") sont co=
-nfidentiels et =E9tablis =E0 l'intention exclusive de leurs destinataires. =
-Si vous avez re=E7u le Message par erreur, merci de l'indiquer =E0 son exp=
-=E9diteur par retour et de proc=E9der =E0 sa destruction dans vos syst=E8me=
-s.Toute utilisation ou diffusion de son contenu non autoris=E9e est stricte=
-ment interdite. Tout message =E9lectronique est susceptible d'alt=E9ration.=
- SOLYSTIC d=E9cline toute responsabilit=E9 au titre du Message s'il a =E9t=
-=E9 alt=E9r=E9, d=E9form=E9 ou falsifi=E9. SOLYSTIC ne saurait =EAtre tenue=
- pour responsable, ni de la transmission erron=E9e ou incompl=E8te des info=
-rmations contenues dans ce message, ni des d=E9lais de r=E9ception ou des d=
-ommages caus=E9s =E0 votre syst=E8me. SOLYSTIC ne garantit, ni que l'int=E9=
-grit=E9 de la communication ait =E9t=E9 maintenue, ni que cette transmissio=
-n est exempte de virus, d'interceptions ou d'interf=E9rences.
-
-This message and any attachments (the "Message") are confidential and inten=
-ded solely for the addressee(s). Any unauthorised use or dissemination of t=
-he Message is strictly prohibited. E-mails are susceptible to alteration. S=
-OLYSTIC shall not be liable for the Message if altered, changed or falsifie=
-d. SOLYSTIC shall not be liable for the improper or incomplete transmission=
- of the information contained in the Message nor for any delay in its recei=
-pt or damage to your system. SOLYSTIC does neither guarantee that the integ=
-rity of the Message has been maintained, nor that this communication is fre=
-e of viruses, interceptions or interferences.
