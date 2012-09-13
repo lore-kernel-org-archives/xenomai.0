@@ -1,15 +1,13 @@
-Message-ID: <5051DF0A.7030901@xenomai.org>
-Date: Thu, 13 Sep 2012 15:26:34 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <1347469235-17712-1-git-send-email-wolfgang.mauerer@siemens.com>
-	<1347469235-17712-4-git-send-email-wolfgang.mauerer@siemens.com>
-	<505180A8.2010100@xenomai.org> <50519D74.1060801@siemens.com>
-	<5051AA22.2030107@xenomai.org> <5051D85A.4090105@siemens.com>
-In-Reply-To: <5051D85A.4090105@siemens.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PATCH 3/3] Fix IRQs-off-tracer for x86_64
+From: Stephan Kappertz <stephan.kappertz@kabelmail.de>
+Mime-Version: 1.0 (Apple Message framework v1278)
+Date: Thu, 13 Sep 2012 15:31:05 +0200
+In-Reply-To: <f4e484caea0dc89aaa132406e82ac5ae@theropers.us>
+References: <f4e484caea0dc89aaa132406e82ac5ae@theropers.us>
+Message-Id: <70283B31-48C9-4753-A073-993507CF0A96@kabelmail.de>
+Content-Type: text/plain;
+	charset=us-ascii
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] Xenomai on Beaglebone
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,47 +16,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Wolfgang Mauerer <wolfgang.mauerer@siemens.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org, adam.r.roper@gmail.com
 
-On 09/13/2012 02:58 PM, Wolfgang Mauerer wrote:
-> On 13/09/12 11:40, Gilles Chanteperdrix wrote:
->> On 09/13/2012 10:46 AM, Wolfgang Mauerer wrote:
->>> On 13/09/12 08:43, Gilles Chanteperdrix wrote:
-> 
-> ... (some code with varying amounts of pops and pushed)...
-> 
->>> that fixes the bug, too -- thanks. However, I deliberately spent some
->>> extra assembler code (5 insns compared to your approach) to make the
->>> code easier to  understand (the overall size of the resulting kernel
->>> binary is identical for both approaches on my machine, btw.). Since the
->>> overhead of 5 instructions is negligible compared to the two calls of
->>> __ipipe_trace that are necessary in any case, I'd argue that the more
->>> straightforward code is beneficial in the long run, but that's for the
->>> maintainers to decide.
->>
->> To the contrary, the profusion of pushq and popq looked confusing to me,
->> I wondered why so many were needed, so, I guess it is all a matter of taste.
-> 
-> most certainly a matter of taste, agreed. I've rearranged your
-> suggestion slightly, added a comment or two, and turned it into a
-> patch.  Repo at https://github.com/siemens/ipipe.git for-upstream
-> is also updated.
+> Hi Stephan,
+>=20
+> =20
+> I saw that you got Xenomai running on the Beaglebone from the thread =
+here: http://www.xenomai.org/pipermail/xenomai/2012-July/000476.html
+>=20
+> =20
+> I was wondering if you would be willing to share the source code for =
+this.  I am interested in getting Xenomai working on the Beaglebone but =
+I have no previous experience with Xenomai.  I would greatly appreciate =
+it if you would be willing to share your source code.
+>=20
+> =20
+> Thanks!
+>=20
+>=20
+> Adam Roper
+>=20
+> =20
 
-Ok. Small nit:
+I can provide a combined patchfile against the vanilla 3.2.21 kernel =
+that includes both the AM335x support as provided by Koen Kois git =
+repository and the xenomai/adeos patch. That patch file is 9.1 MB. Do =
+you have an FTP server where I can upload it to?
 
-+	movq ORIG_RAX+8-RBP(%rsp), %rdi # IRQ number...
- 	notq %rdi			# ...is inverted, fix up
-+	leaq RIP-8+8-RBP(%rsp), %rbp    # Show interrupted address in trace
-
-I would avoid to use a register as a source in an instruction right
-after an instruction where it was used as a destination, because I
-believe in processors which do not have out of order execution, such as
-Intel Atoms, the processor would have to wait for an instruction to be
-finished to start the next. Though I do not know enough of the x86
-architecture to know if that is true. That is the reason why I put leaq
-before notq.
-
--- 
-					    Gilles.
-
+- Stephan=
