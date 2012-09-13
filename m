@@ -1,13 +1,12 @@
-Message-ID: <505228B1.9010009@xenomai.org>
-Date: Thu, 13 Sep 2012 20:40:49 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <5050E1F2.8090702@free.fr> <5050F04C.6030707@xenomai.org>
-	<50521433.9060807@free.fr>
-In-Reply-To: <50521433.9060807@free.fr>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] posix skin pthread_create issue
+From: "=?gb18030?B?TW9ybmluZw==?=" <juventusgc@qq.com>
+Mime-Version: 1.0
+Date: Fri, 14 Sep 2012 03:19:27 +0800
+Message-ID: <tencent_5E25818D38296A317A4D4C4C@qq.com>
+Content-Type: text/plain;
+	charset="gb18030"
+Content-Transfer-Encoding: base64
+Subject: [Xenomai] =?gb18030?b?u9i4tKO6ICBpcGlwZSBjYW4ndCBoYW5kbGUgaW50?=
+ =?gb18030?q?errupt_from_ohci-s3c2410_well?=
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,168 +15,70 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Pierre Quelin <pierre.quelin@free.fr>
-Cc: pierre.quelin@solystic.com, xenomai@xenomai.org
+To: =?gb18030?B?R2lsbGVzIENoYW50ZXBlcmRyaXg=?= <gilles.chanteperdrix@xenomai.org>
+Cc: =?gb18030?B?eGVub21haQ==?= <xenomai@xenomai.org>
 
-On 09/13/2012 07:13 PM, Pierre Quelin wrote:
-
->=20
-> Le 12/09/2012 22:27, Gilles Chanteperdrix a =C3=A9crit :
->> On 09/12/2012 09:26 PM, Pierre Quelin wrote:
->>
->>> Thank you for quick answer.
->>>
->>> my context
->>>
->>> xenomai : 2.6.0 adeos : 2.11-02 kernel : 2.6.38.8 arch : pentium pro
->>> gcc : 4.6.3 distro : Ubuntu 12.04
->>
->> If you use this version, add "-fno-omit-frame-pointer" to the CFLAGS
->> passed to the configure script.
-> I have tryed this with xenomai 2.6.0 and 2.6.1 without success. Maybe a=
-n=20
-> incompatible option in my CMakeLists file.
-> ...
-> ELSEIF ($ENV{SOLYSTIC_BUILD_TARGET} STREQUAL "linux-x86")
->     SET(CMAKE_C_FLAGS "-O0 -g3 -mtune=3Dpentium -march=3Dpentium -ansi =
-
-> -fno-builtin -fno-defer-pop -Wall -finput-charset=3Diso-8859-1=20
-> -fexec-charset=3Diso-8859-1")
->     SET(CMAKE_CXX_FLAGS "-O0 -g3 -mtune=3Dpentium -march=3Dpentium -ans=
-i=20
-> -fno-builtin -fno-defer-pop -Wall -Wreorder -finput-charset=3Diso-8859-=
-1=20
-> -fexec-charset=3Diso-8859-1")
-> ELSEIF ($ENV{SOLYSTIC_BUILD_TARGET} STREQUAL "xenomai-x86")
->      EXECUTE_PROCESS(COMMAND xeno-config --skin posix --cflags=20
-> OUTPUT_VARIABLE XENO_POSIX_CFLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
->      SET(CMAKE_C_FLAGS "${XENO_POSIX_CFLAGS} -O0 -g3 -mtune=3Dpentium=20
-> -march=3Dpentium -ansi *-fno-omit-frame-pointer* -fno-builtin=20
-> -fno-defer-pop -Wall -finput-charset=3Diso-8859-1 -fexec-charset=3Diso-=
-8859-1")
->      SET(CMAKE_CXX_FLAGS "${XENO_POSIX_CFLAGS} -O0 -g3 -mtune=3Dpentium=
-=20
-> -march=3Dpentium -ansi *-fno-omit-frame-pointer* -fno-builtin=20
-> -fno-defer-pop -Wall -Wreorder -finput-charset=3Diso-8859-1=20
-> -fexec-charset=3Diso-8859-1")
-> ...
-
-
-If you have a compilation issue, you will know it, because the syscall
-in __wrap_pthread_create will not return the same value as the value
-printed in __pthread_create in kernel space, or the arguments received
-in kernel space will not be the same as the ones you pass in user-space.
-So, printf/printk is the way to go. Anyway, I am talking about the
-CFLAGS of the Xenomai library, the one passed to Xenomai configure
-script. Not the CFLAGS of your application. As I said, you should not
-need this with Xenomai 2.6.1.
-
->>> After your answer, I try xenomai 2.6.1 and I increase the size of the=
-
->>>   private stack pool from 128 to 2048 with the same result.
->>>
->>> Is there any limits for the number of threads in Xenomai ?
->>
->> Not that I know of. There are only a few dynamic allocations in the
->> various pools you already mentioned. The corresponding options are:
->> XENO_OPT_REGISTRY_NRSLOTS (maximum number of objects in the registry,
->> each thread is registered in the registry)
->> XENO_OPT_SYS_HEAPSZ (system heap, used for various calls to xnmalloc)
->> XENO_OPT_SEM_HEAPSZ (semaphore heap, use for allocating 4 bytes per
->> thread + 4 bytes per mutex)
->>
->> But anyway, debugging the issue you have should be relatively easy by
->> adding printfs/printks, starting from src/skins/posix/thread.c (functi=
-on
->> __wrap_pthread_create), continuing in ksrc/skins/posix/syscall.c,
->> function __pthread_create, etc...
-> I try to obtain information about my context but all seems to be ok.
-
-
-You have to put a "pause" after the failing call to pthread_create,
-because otherwise if calling exit, when the process fails, all the
-memory it allocated in the various pools is freed.
-
->>   After mlockall() in
->>> //proc/xenomai/faults/ I obtain 2 or more Page fault without visible
->>> software effects. I can't locate it. If you could help me.
->>>
->>>
->>> Our application is writting in C++. At the begining it initialise a
->>> lot of static objects as mutex and do a lot of allocation/syscall. So=
-
->>> it do a lot of switch in secondary mode. To solve this, at first, I
->>> just catch the SIGXCPU in a static class..
->>
->> Well, you should be able to catch the page faults with SIGXCPU, but yo=
-u
->> have to ensure that pthread_set_mode and the signal handler installati=
-on
->> are done before the static objects constructors. And of course, you ha=
-ve
->> to ensure that Xenomai libpthread_rt library constructor gets run befo=
-re
->> your static initializers. That is a problem with C++. Also note that
->> PTHREAD_MUTEX_INITIALIZER and PTHREAD_COND_INITIALIZER do not work wit=
-h
->> Xenomai posix skin.
-> I watch this problem for the first time when I try to resolve the=20
-> pthread_create() error.
-> The problem, there is a lot of SIGXCPU generated by the switch between =
-
-> rt and linux domain that mask the page fault in a lot of noise.
-> I tried to disable everything with pthread_set_mode_np(PTHREAD_WARNSW, =
-
-> 0) in all the thread context (body) but I don't understand why, it stil=
-l=20
-> remains.
-
-
-Not all SIGXCPU are due to page faults. There are various reasons for
-SIGXCPU, for an example of how to know for which reason you receive the
-signal, see examples/sigdebug.c in xenomai sources.
-
->=20
-> I know that the application is not real time with the domain switch but=
-=20
-> at first how can I disable the SIGXCPU in every context to solve this=20
-> page fault ?
->=20
-> You say that I have to be sure that Xenomai libpthread_rt library=20
-> constructor gets run before our static initializers, but how to do that=
- ?
-
-
-Well, the static objects constructors order is a general C++ problem
-which goes well beyond the context of Xenomai. See:
-http://www.parashift.com/c++-faq-lite/static-init-order.html
-The short story is: don't use static objects with constructors.
-
-> When I switch between xenomai 2.6.0 to xenomai 2.6.1 It seems that an=20
-> #include is missing in the include/xenomai/posix/stdio.h file for the=20
-> new size_t type.
->=20
-> #include_next <stdio.h>
->=20
-> #ifndef STDIO_H
-> #define STDIO_H
->=20
-> #include <stdarg.h>
-> *#include <unistd.h> /* size_t */*
-
-
-Thanks for reporting this issue.
-
-That is strange, given the fact that stdio.h defines fwrite for
-instance, which uses size_t. Could you provide a small .c or .C file
-which fails to compile?
-
-We are certainly not going to include unistd.h, which is a POSIX header,
-in stdio.h, which is an ANSI header, more like stddef.h, but AFAIK,
-stddef.h should already be included in the system stdio.h
-
-
---=20
-                                                                Gilles.
-
-
+VGhhbmsgeW91IGZvciB5b3VyIHN1Z2dlc3Rpb24gISBUaGUgcmVsYXRlZCBjb2RlIGluIHMz
+YzI0eHhfaW5pdF9pcnEoKSB3YXMgYXMgZm9sbG93ZWQgOg0Kc3dpdGNoIChpcnFubykgew0K
+CQkJLyogZGVhbCB3aXRoIHRoZSBzcGVjaWFsIElSUXMgKGNhc2NhZGVkKSAqLw0KCQljYXNl
+IElSUV9FSU5UNHQ3Og0KCQljYXNlIElSUV9FSU5UOHQyMzoNCgkJY2FzZSBJUlFfVUFSVDA6
+DQoJCWNhc2UgSVJRX1VBUlQxOg0KCQljYXNlIElSUV9VQVJUMjoNCgkJY2FzZSBJUlFfQURD
+UEFSRU5UOg0KCQkJc2V0X2lycV9jaGlwKGlycW5vLCAmczNjX2lycV9sZXZlbF9jaGlwKTsN
+CgkJCXNldF9pcnFfaGFuZGxlcihpcnFubywgaGFuZGxlX2xldmVsX2lycSk7DQoJCQlicmVh
+azsNCgkJY2FzZSBJUlFfUkVTRVJWRUQ2Og0KCQljYXNlIElSUV9SRVNFUlZFRDI0Og0KCQkJ
+Lyogbm8gSVJRIGhlcmUgKi8NCgkJCWJyZWFrOw0KCQlkZWZhdWx0Og0KCQkJLy9pcnFkYmYo
+InJlZ2lzdGVyaW5nIGlycSAlZCAoczNjIGlycSlcbiIsIGlycW5vKTsNCgkJCXNldF9pcnFf
+Y2hpcChpcnFubywgJnMzY19pcnFfY2hpcCk7DQoJCQlzZXRfaXJxX2hhbmRsZXIoaXJxbm8s
+IGhhbmRsZV9lZGdlX2lycSk7DQoJCQlzZXRfaXJxX2ZsYWdzKGlycW5vLCBJUlFGX1ZBTElE
+KTsgDQogU2hvdWxkIEkganVzdCBhZGQgYSBjYXNlIElSUV9VU0JIIGJlZm9yZSBzZXRfaXJx
+X2NoaXAoaXJxbm8sICZzM2NfaXJxX2xldmVsX2NoaXApIHNvIHRoZSBjb2RlIHdhcyBsaWtl
+IDoNCgkJY2FzZSBJUlFfVUFSVDI6DQoJCWNhc2UgSVJRX0FEQ1BBUkVOVDoNCiAgICAgICAg
+ICAgICAgICBjYXNlIElSUV9VU0JIOg0KCQkJc2V0X2lycV9jaGlwKGlycW5vLCAmczNjX2ly
+cV9sZXZlbF9jaGlwKTsNCgkJCXNldF9pcnFfaGFuZGxlcihpcnFubywgaGFuZGxlX2xldmVs
+X2lycSk7DQoJCQlicmVhazsNCg0KIE9yIHNob3VsZCBJIG9ubHkgY2hhbmdlZCB0aGUgc2V0
+X2lycV9oYW5kbGVyIGFuZCB0aGUgY29kZSB3YXMgbGlrZSA6DQogICAgICAgICAgICAgYnJl
+YWs7DQogICAgICAgICAgICAgY2FzZSBJUlFfVVNCSDoNCiAgICAgICAgICAgICAgICAgICAg
+ICAgIHNldF9pcnFfY2hpcChpcnFubywgJnMzY19pcnFfY2hpcCk7DQoJCQlzZXRfaXJxX2hh
+bmRsZXIoaXJxbm8sIGhhbmRsZV9lZGdlX2lycSk7DQoJCQlzZXRfaXJxX2ZsYWdzKGlycW5v
+LCBJUlFGX1ZBTElEKTsgDQoNCiAgICAgICAgICAgIGJyZWFrOw0KVGhhbmsgeW91IGZvciBy
+ZWFkaW5nIHRoaXMgbWVzc2FnZSAsIEkgcmVhbGx5IGFwcHJlY2lhdGUgeW91ciBhbnN3ZXIh
+DQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgIEdvbmdDaGVuICAgICAgICAgICAgICAgDQotLS0t
+LS0tLS0tLS0tLS0tLS0g1K3KvNPKvP4gLS0tLS0tLS0tLS0tLS0tLS0tDQq3orz+yMs6ICJH
+aWxsZXMgQ2hhbnRlcGVyZHJpeCI8Z2lsbGVzLmNoYW50ZXBlcmRyaXhAeGVub21haS5vcmc+
+Ow0Kt6LLzcqxvOQ6IDIwMTLE6jnUwjE0yNUo0MfG2s7lKSDB6LO/MTowMw0KytW8/sjLOiAi
+TW9ybmluZyI8anV2ZW50dXNnY0BxcS5jb20+OyANCrOty806ICJ4ZW5vbWFpIjx4ZW5vbWFp
+QHhlbm9tYWkub3JnPjsgDQrW98ziOiBSZTogW1hlbm9tYWldIGlwaXBlIGNhbid0IGhhbmRs
+ZSBpbnRlcnJ1cHQgZnJvbSBvaGNpLXMzYzI0MTAgd2VsbA0KDQoNCg0KT24gMDkvMTMvMjAx
+MiAwNjo1NyBQTSwgTW9ybmluZyB3cm90ZToNCj4gSGVsbG8sSSB1c2UgbGludXgga2VybmVs
+IDIuNi4zMyBhbmQgeGVub21haSAyLjUuMyB0byBidWlsZCBteQ0KPiBydC1lbWJlZGRlZCBz
+eXN0ZW0gYmFzZWQgb24gUzNjMjQ0MCxidXQgaSBmb3VuZCB0aGUgaXBpcGUgY2FuJ3QNCj4g
+aGFuZGxlIGludGVycnVwdCBmcm9tIHRoZSB1c2IgaG9zdCBjb250cm9sbGVyICB3ZWxsIC5J
+IHRyaWVkDQo+IGFkZW9zLWlwaXBlLTIuNi4zMy1hcm0tMS4xNi0wMS5wYXRjaCB3aGljaCB4
+ZW5vbWFpIGNvbnRhaW5zIGFuZA0KPiBhZGVvcy1pcGlwZS0yLjYuMzMtYXJtLTEuMTgtMDMu
+cGF0Y2ggd2hpY2ggaXMgdGhlIG5ld2VzdCBwYXRjaCBmb3INCj4ga2VybmVsIDIuNi4zMywg
+YnV0IGJvdGggZGlkbid0IHdvcmsuIEkgdHJhY2VkIHRoZSBjb2RlIGFuZCBmb3VuZCB0aGF0
+DQo+IHRoZSBpcGlwZSBjYW4gaGFuZGxlIHRoZSBmaXJzdCBmZXcgaW50ZXJydXB0cyBmcm9t
+IG9oY2kgd2VsbCBidXQgZnJvbQ0KPiB0aGVuIG9uIHRoZSBpbnRlcnJ1cHRzIHN0YXJ0IHRv
+IGRlc3Ryb3kgdGhlIHN5c3RlbSBhcyBvaGNpIGludGVycnB1dHMNCj4gdGhlIHN5c3RlbSBv
+dmVyIGFuZCBvdmVyIGFnYWluIC5UaGUgc3lzdGVtIGRpZG4ndCBjcmFzaCBidXQgd2FzIGJ1
+c3kNCj4gaGFuZGxpbmcgdGhlIGludGVycnVwdHMgYW5kIGNvdWxkbid0IHJlc3BvbmQgdG8g
+YW55dGhpbmcgZWxzZS4gSQ0KPiBmb3VuZCB0aGF0IHRoZSBpbnRlcnJ1cHRzIGZyb20gb2hj
+aSBjYW4ndCBiZSBoYW5kbGVkIGJlY2F1c2UgdGhlIHJvb3QNCj4gZG9tYWluIGlzIGFsd2F5
+cyBzdGFsbGVkIGFzIGl0IGZhaWxlZCB0aGUgdGVzdCBiZWxvdyBhbGwgdGhlIHRpbWUgOiAN
+Cj4gdm9pZCBfX2lwaXBlX3dhbGtfcGlwZWxpbmUoc3RydWN0IGxpc3RfaGVhZCAqcG9zKXsg
+Li4uLi4uIGlmDQo+ICh0ZXN0X2JpdChJUElQRV9TVEFMTF9GTEFHLCAmbnAtPnN0YXR1cykp
+IGJyZWFrOwkvKiBTdGFsbGVkIHN0YWdlIC0tDQo+IGRvIG5vdCBnbyBmdXJ0aGVyLiAqLw0K
+PiANCj4gLi4uLi4uIH0gSSBhbHNvIGZvdW5kIHRoYXQgdGhlIGludGVycnVwdCBzb3VyY2Ug
+b24gb2hjaSB3YXMgbm90DQo+IGNsZWFyZWQgIGFzIEkgZm91bmQgdGhhdCB0aGVyZSB3YXMg
+bm8gdXNlIGNsZWFyaW5nIHRoZSBVU0JIIGJpdCBvbg0KPiBJTlRQTkQgYW5kIFNSQ1BORCBy
+ZWdzIC4gVGhlIGlwaXBlIGhhbmRsZWQgbGV2ZWwgaW50ZXJydXB0IHdpdGggYWNrDQo+IGFu
+ZCBtYXNrIGJ1dCBoYW5kbGVkIGVkZ2UgaW50ZXJydXB0IHdpdGggb25seSBhY2sgLCBzbyBo
+b3cgZGlkIGlwaXBlDQo+IHdvcmsgd2hlbiBpdCB3YXMgaGFuZGxpbmcgYW4gZWRnZSBpbnRl
+cnJ1cHQgYW5kIGFub3RoZXIgZWRnZQ0KPiBpbnRlcnJ1cHQgY2FtZSBhdCB0aGUgc2FtZSB0
+aW1lID8gV2FzIGl0IHRoZSByZWFzb24gb2Ygb2hjaSBrZXB0DQo+IGludGVycnVwdGluZyBT
+M0MyNDQwIG92ZXIgYW5kIG92ZXIgYWdhaW4/IFRoYW5rIHlvdSBmb3IgcmVhZGluZyB0aGlz
+DQo+IG1lc3NhZ2UgLCBJIHJlYWxseSBhcHByZWNpYXRlIHlvdXIgYW5zd2VyIC4gR29uZ0No
+ZW4gDQoNCkhhdmUgeW91IHRyaWVkIHRoZSBzdWdnZXN0aW9uIGF0IHRoZSBlbmQgb2YgdGhp
+cyBwYXJhZ3JhcGg/DQpodHRwOi8vd3d3Lnhlbm9tYWkub3JnL2luZGV4LnBocC9JLXBpcGUt
+Y29yZTpBcm1Qb3J0aW5nI2Zsb3dfaGFuZGxlcg0KDQotLSANCgkJCQkJICAgIEdpbGxlcy4=
