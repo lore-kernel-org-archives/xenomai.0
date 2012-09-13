@@ -1,12 +1,13 @@
-Message-ID: <5050F7BA.7030802@xenomai.org>
-Date: Wed, 12 Sep 2012 22:59:38 +0200
+Message-ID: <505180A8.2010100@xenomai.org>
+Date: Thu, 13 Sep 2012 08:43:52 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CAAvA3H_9Ziq0fcdjjPQjE3tLYJL1g0QXEG7ns5h=JwRbaRAkeg@mail.gmail.com>
-In-Reply-To: <CAAvA3H_9Ziq0fcdjjPQjE3tLYJL1g0QXEG7ns5h=JwRbaRAkeg@mail.gmail.com>
+References: <1347469235-17712-1-git-send-email-wolfgang.mauerer@siemens.com>
+	<1347469235-17712-4-git-send-email-wolfgang.mauerer@siemens.com>
+In-Reply-To: <1347469235-17712-4-git-send-email-wolfgang.mauerer@siemens.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Problem with MALLOC_CHECK_
+Subject: Re: [Xenomai] [PATCH 3/3] Fix IRQs-off-tracer for x86_64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,68 +16,94 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jeff Weber <jwamsc@gmail.com>
-Cc: bill@vareka.com, Xenomai Mailing List <xenomai@xenomai.org>
+To: Wolfgang Mauerer <wolfgang.mauerer@siemens.com>
+Cc: xenomai@xenomai.org
 
-On 09/11/2012 06:45 PM, Jeff Weber wrote:
+On 09/12/2012 07:00 PM, Wolfgang Mauerer wrote:
 
-> Gilles:
+> Earlier kernels abused the frame pointer to store the
+> old stack pointer in SAVE_ARGS_IRQ. This behaviour was
+> changed in upstream commit a2bbe75089d, which breaks
+> the IRQs-off tracing code for x86_64.
 > 
-> On 09/07/2012 7 07:55:08 CEST 2012 Gilles Chanteperdrix wrote:
+> Fix this by basing the argument calculations for
+> ipipe_trace_begin and ipipe_trace_end on the base
+> pointer stored in %rsi.
 > 
->> On 09/07/2012 07:26 AM, Bill Vareka wrote:
->>
->>>    We've discovered a weird problem.  Basically, when using the xenomai
->>> posix skin and allocating and releasing large amounts of memory in a
->>> secondary mode thread, the application corrupts the entire system
->>> (kernel and all) *if* the MALLOC_CHECK_ macro is disabled.  Attached is
->>> a simple c++ demo program showing this problem (compile with gcc).  If
->>> you compile using standard posix it works no matter what.  If you
->>> compile using the xenomai posix skin, then if the environment variable
->>> MALLOC_CHECK_=3 then the program runs fine with no problems.  However,
->>> if you run with MALLOC_CHECK_=0 then the program appears to corrupt
->>> system memory.   After running this program, less, cat, and other
->>> standard programs now segfault and won't run.  Also in our case, we see
->>> that the output of ifconfig is also corrupted (shows table data rather
->>> than normal format).  The kernel is completely unstable.
->>> We have encountered the problem before without identifying the source.
->>> Currently this affected us because our application ran fine under a
->>> login shell when testing (since it automatically defined the env var)
->>> but when we added a launch script to sysVinit to automatically launch
-> it
->>> at startup, it failed because the environmental variables were much
->>> different there and did not define this variable.
->>>
->>> Again, our app is C++ and this test is with stl strings but I strongly
->>> suspect the same behavior can be generated using a standard C program
->>> and malloc/free.
->>>
->>> Our setup:
->>>
->>> architecture x86 32-bit
->>> Linux 2.6.38.8
->>> adeos ipipe 2.11-01
->>
->>
->> Could you check the I-pipe patch for Linux 3.2? It has this commit:
->>
-> http://git.denx.de/?p=ipipe.git;a=commit;h=c9f834f80257c4e7c2c01a3c6d34f5485af2be51
->>
->> Which 2.6.38 does not appear to have.
+> Signed-off-by: Wolfgang Mauerer <wolfgang.mauerer@siemens.com>
+> Tested-by: Gernot Hillier <gernot.hillier@siemens.com>
+> ---
+>  arch/x86/kernel/entry_64.S |    8 ++++++--
+>  1 files changed, 6 insertions(+), 2 deletions(-)
 > 
-> I am working with Bill Vareka on this issue.  Switching to Linux 3.2.21,
-> Xenomai-2.6.1 and using the ipipe-core-3.2.21-x86-1.patch did not make any
-> difference.  Our application still requires MALLOC_CHECK_=3 for glibc.
-> 
-> We are using glibc-2.14.1-14.12.2 .
+> diff --git a/arch/x86/kernel/entry_64.S b/arch/x86/kernel/entry_64.S
+> index b523908..693ad08 100644
+> --- a/arch/x86/kernel/entry_64.S
+> +++ b/arch/x86/kernel/entry_64.S
+> @@ -869,6 +869,7 @@ END(interrupt)
+>  	CFI_ADJUST_CFA_OFFSET ORIG_RAX-RBP
+>  	SAVE_ARGS_IRQ
+>  #ifdef CONFIG_IPIPE_TRACE_IRQSOFF
+> +	/* SAVE_ARGS_IRQ places the frame pointer into %rdi */
+>  	pushq %rbp
+>  	leaq RIP-8(%rdi), %rbp	# make interrupted address show up in trace
+>  	pushq %rdi
+> @@ -877,13 +878,16 @@ END(interrupt)
+>  	call ipipe_trace_begin
+>  	popq %rdi
+>  	popq %rbp
+> +	pushq %rdi # Preserve the frame pointer...
+>  
+>  	call \func
+>  
+> +	popq %rdi # ...  across the function call
+>  	pushq %rbp
+>  	pushq %rax
+> -	movq 8-ARGOFFSET+ORIG_RAX(%rbp), %rdi
+> -	leaq 8-ARGOFFSET+RIP-8(%rbp), %rbp
+> +	/* Show interrupted address and IRQ number in the trace, as before */
+> +	leaq RIP-8(%rdi), %rbp
+> +	movq ORIG_RAX(%rdi), %rdi
+>  	notq %rdi
+>  	call ipipe_trace_end
+>  	popq %rax
 
 
-I am unable to reproduce this issue, however, you could try:
-- returning 0 at the very beginning of __ipipe_disable_ondemand_mapping
-- returning 0 at the very beginning of __ipipe_pin_vma
-- comment out the code between #ifdef CONFIG_IPIPE in mprotect
+Looking at that again, it seems we do not need to push %rbp or %rdi, 
+%rdi can be computed from %rsp and %rbp was already saved on stack by 
+SAVE_ARGS_IRQ.
 
-These would be the usual suspects which could explain what you see.
+So, I propose the following:
+/* 0(%rsp): ~(interrupt number) */
+	.macro interrupt func
+	/* reserve pt_regs for scratch regs and rbp */
+	subq $ORIG_RAX-RBP, %rsp
+	CFI_ADJUST_CFA_OFFSET ORIG_RAX-RBP
+	SAVE_ARGS_IRQ
+#ifdef CONFIG_IPIPE_TRACE_IRQSOFF
+	/* pt_regs is %rdi or %rsp + 8-RBP */
+	movq ORIG_RAX+8-RBP(%rsp), %rdi # IRQ number
+	leaq RIP-8+8-RBP(%rsp), %rbp  # make interrupted address show up in trace
+	notq %rdi			# IRQ number is inverted, fix up
+	call ipipe_trace_begin
+	leaq 8-RBP(%rsp),%rdi
+	movq RBP+8-RBP(%rsp), %rbp
+
+	call \func
+
+	/* Show interrupted address and IRQ number in the trace, as before */
+	movq ORIG_RAX+8-RBP(%rsp), %rdi
+	leaq RIP-8+8-RBP(%rsp), %rbp
+	pushq %rax
+	notq %rdi
+	call ipipe_trace_end
+	popq %rax
+	movq RBP+8-RBP(%rsp), %rbp
+#else
+	call \func
+#endif
+	.endm
+
 
 -- 
                                                                 Gilles.
