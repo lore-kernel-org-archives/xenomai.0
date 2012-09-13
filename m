@@ -1,10 +1,15 @@
-Message-ID: <BLU142-W21B7F76BD63767374647669AA30@phx.gbl>
-From: =?big5?B?tOUgxHa2rw==?= <x8zmac@hotmail.com>
-Date: Sun, 26 Aug 2012 09:49:25 +0800
+Message-ID: <5051D85A.4090105@siemens.com>
+Date: Thu, 13 Sep 2012 14:58:02 +0200
+From: Wolfgang Mauerer <wolfgang.mauerer@siemens.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="big5"
-Content-Transfer-Encoding: 8bit
-Subject: [Xenomai] s3c6410
+References: <1347469235-17712-1-git-send-email-wolfgang.mauerer@siemens.com>
+	<1347469235-17712-4-git-send-email-wolfgang.mauerer@siemens.com>
+	<505180A8.2010100@xenomai.org> <50519D74.1060801@siemens.com>
+	<5051AA22.2030107@xenomai.org>
+In-Reply-To: <5051AA22.2030107@xenomai.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai] [PATCH 3/3] Fix IRQs-off-tracer for x86_64
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,13 +18,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-
-Hi
-I have a s3c6410 developer board.
-xenomai support s3c2410.
-Does xenomai support s3c6410?
-
-BR
- 		 	   		  
+T24gMTMvMDkvMTIgMTE6NDAsIEdpbGxlcyBDaGFudGVwZXJkcml4IHdyb3RlOgo+IE9uIDA5LzEz
+LzIwMTIgMTA6NDYgQU0sIFdvbGZnYW5nIE1hdWVyZXIgd3JvdGU6Cj4+IE9uIDEzLzA5LzEyIDA4
+OjQzLCBHaWxsZXMgQ2hhbnRlcGVyZHJpeCB3cm90ZToKCi4uLiAoc29tZSBjb2RlIHdpdGggdmFy
+eWluZyBhbW91bnRzIG9mIHBvcHMgYW5kIHB1c2hlZCkuLi4KCj4+IHRoYXQgZml4ZXMgdGhlIGJ1
+ZywgdG9vIC0tIHRoYW5rcy4gSG93ZXZlciwgSSBkZWxpYmVyYXRlbHkgc3BlbnQgc29tZQo+PiBl
+eHRyYSBhc3NlbWJsZXIgY29kZSAoNSBpbnNucyBjb21wYXJlZCB0byB5b3VyIGFwcHJvYWNoKSB0
+byBtYWtlIHRoZQo+PiBjb2RlIGVhc2llciB0byAgdW5kZXJzdGFuZCAodGhlIG92ZXJhbGwgc2l6
+ZSBvZiB0aGUgcmVzdWx0aW5nIGtlcm5lbAo+PiBiaW5hcnkgaXMgaWRlbnRpY2FsIGZvciBib3Ro
+IGFwcHJvYWNoZXMgb24gbXkgbWFjaGluZSwgYnR3LikuIFNpbmNlIHRoZQo+PiBvdmVyaGVhZCBv
+ZiA1IGluc3RydWN0aW9ucyBpcyBuZWdsaWdpYmxlIGNvbXBhcmVkIHRvIHRoZSB0d28gY2FsbHMg
+b2YKPj4gX19pcGlwZV90cmFjZSB0aGF0IGFyZSBuZWNlc3NhcnkgaW4gYW55IGNhc2UsIEknZCBh
+cmd1ZSB0aGF0IHRoZSBtb3JlCj4+IHN0cmFpZ2h0Zm9yd2FyZCBjb2RlIGlzIGJlbmVmaWNpYWwg
+aW4gdGhlIGxvbmcgcnVuLCBidXQgdGhhdCdzIGZvciB0aGUKPj4gbWFpbnRhaW5lcnMgdG8gZGVj
+aWRlLgo+IAo+IFRvIHRoZSBjb250cmFyeSwgdGhlIHByb2Z1c2lvbiBvZiBwdXNocSBhbmQgcG9w
+cSBsb29rZWQgY29uZnVzaW5nIHRvIG1lLAo+IEkgd29uZGVyZWQgd2h5IHNvIG1hbnkgd2VyZSBu
+ZWVkZWQsIHNvLCBJIGd1ZXNzIGl0IGlzIGFsbCBhIG1hdHRlciBvZiB0YXN0ZS4KCm1vc3QgY2Vy
+dGFpbmx5IGEgbWF0dGVyIG9mIHRhc3RlLCBhZ3JlZWQuIEkndmUgcmVhcnJhbmdlZCB5b3VyCnN1
+Z2dlc3Rpb24gc2xpZ2h0bHksIGFkZGVkIGEgY29tbWVudCBvciB0d28sIGFuZCB0dXJuZWQgaXQg
+aW50byBhCnBhdGNoLiAgUmVwbyBhdCBodHRwczovL2dpdGh1Yi5jb20vc2llbWVucy9pcGlwZS5n
+aXQgZm9yLXVwc3RyZWFtCmlzIGFsc28gdXBkYXRlZC4KCkJlc3QgcmVnYXJkcywgV29sZmdhbmcK
+Ci0tClNpZW1lbnMgQUcsIENvcnBvcmF0ZSBUZWNobm9sb2d5CkNvcnBvcmF0ZSBDb21wZXRlbmNl
+IENlbnRyZSBFbWJlZGRlZCBMaW51eAotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0t
+LS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiAwMDAxLUZp
+eC1JUlFzLW9mZi10cmFjZXItZm9yLXg4Nl82NC5wYXRjaApUeXBlOiB0ZXh0L3gtcGF0Y2gKU2l6
+ZTogMjI3MSBieXRlcwpEZXNjOiBub3QgYXZhaWxhYmxlClVSTDogPGh0dHA6Ly93d3cueGVub21h
+aS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxMjA5MTMvNzJiYzY1MWQvYXR0
+YWNobWVudC5iaW4+Cg==
