@@ -1,11 +1,12 @@
-From: "=?ISO-8859-1?B?TW9ybmluZw==?=" <juventusgc@qq.com>
-Mime-Version: 1.0
-Date: Fri, 14 Sep 2012 00:57:21 +0800
-Message-ID: <tencent_152B67887944D27650BB6237@qq.com>
-Content-Type: text/plain;
-	charset="ISO-8859-1"
-Content-Transfer-Encoding: base64
-Subject: [Xenomai] ipipe can't handle interrupt from ohci-s3c2410 well
+Message-ID: <505211EA.2090106@xenomai.org>
+Date: Thu, 13 Sep 2012 19:03:38 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+References: <tencent_152B67887944D27650BB6237@qq.com>
+In-Reply-To: <tencent_152B67887944D27650BB6237@qq.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] ipipe can't handle interrupt from ohci-s3c2410 well
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,35 +15,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?ISO-8859-1?B?eGVub21haQ==?= <xenomai@xenomai.org>
+To: Morning <juventusgc@qq.com>
+Cc: xenomai <xenomai@xenomai.org>
 
-SGVsbG8sSSB1c2UgbGludXgga2VybmVsIDIuNi4zMyBhbmQgeGVub21haSAyLjUuMyB0byBi
-dWlsZCBteSBydC1lbWJlZGRlZCBzeXN0ZW0gYmFzZWQgb24gUzNjMjQ0MCxidXQgaSBmb3Vu
-ZCB0aGUgaXBpcGUgY2FuJ3QgaGFuZGxlIGludGVycnVwdCBmcm9tIHRoZSB1c2IgaG9zdCBj
-b250cm9sbGVyICB3ZWxsIC5JIHRyaWVkIGFkZW9zLWlwaXBlLTIuNi4zMy1hcm0tMS4xNi0w
-MS5wYXRjaCB3aGljaCB4ZW5vbWFpIGNvbnRhaW5zIGFuZCBhZGVvcy1pcGlwZS0yLjYuMzMt
-YXJtLTEuMTgtMDMucGF0Y2ggd2hpY2ggaXMgdGhlIG5ld2VzdCBwYXRjaCBmb3Iga2VybmVs
-IDIuNi4zMywgYnV0IGJvdGggZGlkbid0IHdvcmsuDQogICAgSSB0cmFjZWQgdGhlIGNvZGUg
-YW5kIGZvdW5kIHRoYXQgdGhlIGlwaXBlIGNhbiBoYW5kbGUgdGhlIGZpcnN0IGZldyBpbnRl
-cnJ1cHRzIGZyb20gb2hjaSB3ZWxsIGJ1dCBmcm9tIHRoZW4gb24gdGhlIGludGVycnVwdHMg
-c3RhcnQgdG8gZGVzdHJveSB0aGUgc3lzdGVtIGFzIG9oY2kgaW50ZXJycHV0cyB0aGUgc3lz
-dGVtIG92ZXIgYW5kIG92ZXIgYWdhaW4gLlRoZSBzeXN0ZW0gZGlkbid0IGNyYXNoIGJ1dCB3
-YXMgYnVzeSBoYW5kbGluZyB0aGUgaW50ZXJydXB0cyBhbmQgY291bGRuJ3QgcmVzcG9uZCB0
-byBhbnl0aGluZyBlbHNlLg0KICAgSSBmb3VuZCB0aGF0IHRoZSBpbnRlcnJ1cHRzIGZyb20g
-b2hjaSBjYW4ndCBiZSBoYW5kbGVkIGJlY2F1c2UgdGhlIHJvb3QgZG9tYWluIGlzIGFsd2F5
-cyBzdGFsbGVkIGFzIGl0IGZhaWxlZCB0aGUgdGVzdCBiZWxvdyBhbGwgdGhlIHRpbWUgOg0K
-ICAgdm9pZCBfX2lwaXBlX3dhbGtfcGlwZWxpbmUoc3RydWN0IGxpc3RfaGVhZCAqcG9zKXsN
-CiAgICAgLi4uLi4uDQogICAgICBpZiAodGVzdF9iaXQoSVBJUEVfU1RBTExfRkxBRywgJm5w
-LT5zdGF0dXMpKQ0KICAgICAJCWJyZWFrOwkvKiBTdGFsbGVkIHN0YWdlIC0tIGRvIG5vdCBn
-byBmdXJ0aGVyLiAqLw0KDQogICAgLi4uLi4uDQp9DQogICBJIGFsc28gZm91bmQgdGhhdCB0
-aGUgaW50ZXJydXB0IHNvdXJjZSBvbiBvaGNpIHdhcyBub3QgY2xlYXJlZCAgYXMgSSBmb3Vu
-ZCB0aGF0IHRoZXJlIHdhcyBubyB1c2UgY2xlYXJpbmcgdGhlIFVTQkggYml0IG9uIElOVFBO
-RCBhbmQgU1JDUE5EIHJlZ3MgLg0KICAgVGhlIGlwaXBlIGhhbmRsZWQgbGV2ZWwgaW50ZXJy
-dXB0IHdpdGggYWNrIGFuZCBtYXNrIGJ1dCBoYW5kbGVkIGVkZ2UgaW50ZXJydXB0IHdpdGgg
-b25seSBhY2sgLCBzbyBob3cgZGlkIGlwaXBlIHdvcmsgd2hlbiBpdCB3YXMgaGFuZGxpbmcg
-YW4gZWRnZSBpbnRlcnJ1cHQgYW5kIGFub3RoZXIgZWRnZSBpbnRlcnJ1cHQgY2FtZSBhdCB0
-aGUgc2FtZSB0aW1lID8gV2FzIGl0IHRoZSByZWFzb24gb2Ygb2hjaSBrZXB0IGludGVycnVw
-dGluZyBTM0MyNDQwIG92ZXIgYW5kIG92ZXIgYWdhaW4/DQogICBUaGFuayB5b3UgZm9yIHJl
-YWRpbmcgdGhpcyBtZXNzYWdlICwgSSByZWFsbHkgYXBwcmVjaWF0ZSB5b3VyIGFuc3dlciAu
-DQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgR29uZ0NoZW4=
+On 09/13/2012 06:57 PM, Morning wrote:
+> Hello,I use linux kernel 2.6.33 and xenomai 2.5.3 to build my
+> rt-embedded system based on S3c2440,but i found the ipipe can't
+> handle interrupt from the usb host controller  well .I tried
+> adeos-ipipe-2.6.33-arm-1.16-01.patch which xenomai contains and
+> adeos-ipipe-2.6.33-arm-1.18-03.patch which is the newest patch for
+> kernel 2.6.33, but both didn't work. I traced the code and found that
+> the ipipe can handle the first few interrupts from ohci well but from
+> then on the interrupts start to destroy the system as ohci interrputs
+> the system over and over again .The system didn't crash but was busy
+> handling the interrupts and couldn't respond to anything else. I
+> found that the interrupts from ohci can't be handled because the root
+> domain is always stalled as it failed the test below all the time : 
+> void __ipipe_walk_pipeline(struct list_head *pos){ ...... if
+> (test_bit(IPIPE_STALL_FLAG, &np->status)) break;	/* Stalled stage --
+> do not go further. */
+> 
+> ...... } I also found that the interrupt source on ohci was not
+> cleared  as I found that there was no use clearing the USBH bit on
+> INTPND and SRCPND regs . The ipipe handled level interrupt with ack
+> and mask but handled edge interrupt with only ack , so how did ipipe
+> work when it was handling an edge interrupt and another edge
+> interrupt came at the same time ? Was it the reason of ohci kept
+> interrupting S3C2440 over and over again? Thank you for reading this
+> message , I really appreciate your answer . GongChen 
+
+Have you tried the suggestion at the end of this paragraph?
+http://www.xenomai.org/index.php/I-pipe-core:ArmPorting#flow_handler
+
+-- 
+					    Gilles.
+
