@@ -1,12 +1,12 @@
-Message-ID: <5053493D.3040000@xenomai.org>
-Date: Fri, 14 Sep 2012 17:11:57 +0200
+Message-ID: <505349FB.9050300@xenomai.org>
+Date: Fri, 14 Sep 2012 17:15:07 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <5053404B.9000006@iit.it>
-In-Reply-To: <5053404B.9000006@iit.it>
+References: <1347627593.65114.YahooMailNeo@web29601.mail.ird.yahoo.com>
+In-Reply-To: <1347627593.65114.YahooMailNeo@web29601.mail.ird.yahoo.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] segfault using rt_printf service
+Subject: Re: [Xenomai] Xenomai + Linux Kernel 3.1.4
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,43 +15,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Alessio Margan @ IIT" <alessio.margan@iit.it>
-Cc: xenomai <xenomai@xenomai.org>
+To: devendra rai <rai.devendra@yahoo.co.uk>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 09/14/2012 04:33 PM, Alessio Margan @ IIT wrote:
-> Hi all,
+On 09/14/2012 02:59 PM, devendra rai wrote:
+> Hello Community,
 > 
-> I'm switching from xenomai 2.5.6 to 2.6.1 using 
-> adeos-ipipe-2.6.38.8-x86-2.11-01.patch
-> In this test I have 2 threads :
-> - rx_udp receive udp packets from dsp boards at 1kHz
-> - boards_test send udp packets at 1kHz
 > 
-> I got segfault in printer_loop thread, the point is that if I change env 
-> var RT_PRINT_PERIOD to about 10 or 1000 (default is 100 ms) I do not 
-> have segfault.
 > 
-> Any suggestion ?
+> I have been trying to install xenomai + adeos patch on Linux kernel 3.1.4. I understand the following:
 > 
-> Program received signal SIGSEGV, Segmentation fault.
-> [Switching to Thread 0xb7d1ab70 (LWP 5998)]
-> 0xb7d7cb0c in fwrite () from /lib/i686/cmov/libc.so.6
-> (gdb) bt
-> #0  0xb7d7cb0c in fwrite () from /lib/i686/cmov/libc.so.6
-> #1  0xb7fccbf9 in print_buffers () from /usr/xenomai/lib/libxenomai.so.0
-> #2  0xb7fcd867 in printer_loop () from /usr/xenomai/lib/libxenomai.so.0
-> #3  0xb7fb5955 in start_thread () from /lib/i686/cmov/libpthread.so.0
-> #4  0xb7dec5ee in clone () from /lib/i686/cmov/libc.so.6
+> (a). Xenomai-2.5.6 patches Linux-3.1.4 smoothly
+> (b). Adeos-3.2.21 patch (x86) failed.
 
-Since you seem to be able to catch the error with gdb, maybe try and
-understand the reason for the segfault? The first, quick check, is to
-type "info register", type cat /proc/pid/maps in another terminal, and
-check that the stack pointer is in a valid mapping, to check if we do
-not have a stack overflow.
+No, the most recent Linux version usable with xenomai 2.5.6 is 2.6.37 on
+x86. If you want some Linux 3.x, you should use xenomai 2.6.1.
 
-If you fail to find the error, please try and reduce the test program to
-a simple test case, as simple as needed for the bug to happen and post
-it on this mailing list, this would allow us to reproduce the issue.
+Other than that, yes, the patch Adeos-3.2.21 is made... well... for
+Linux 3.2.21, so is not supposed to be applied to anything else.
 
 -- 
 					    Gilles.
