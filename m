@@ -1,11 +1,12 @@
-Date: Thu, 13 Sep 2012 15:30:24 -0400
-From: Glen Wernersbach <glen@jetsoftdev.com>
-Message-ID: <CC77AC90.21DF3%glen@jetsoftdev.com>
-Mime-version: 1.0
+From: "=?gb18030?B?TW9ybmluZw==?=" <juventusgc@qq.com>
+Mime-Version: 1.0
+Date: Fri, 14 Sep 2012 11:29:55 +0800
+Message-ID: <tencent_794F30C627B9BCFF71C629FD@qq.com>
 Content-Type: text/plain;
-	charset="ISO-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] USB 3.0 on Xenomai
+	charset="gb18030"
+Content-Transfer-Encoding: base64
+Subject: [Xenomai] =?gb18030?b?u9i4tKO6ICBpcGlwZSBjYW4ndCBoYW5kbGUgaW50?=
+ =?gb18030?q?errupt_from_ohci-s3c2410_well?=
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,38 +15,53 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: =?gb18030?B?R2lsbGVzIENoYW50ZXBlcmRyaXg=?= <gilles.chanteperdrix@xenomai.org>
+Cc: =?gb18030?B?eGVub21haQ==?= <xenomai@xenomai.org>
 
-Hi All,
-
-Back to this question.
-
-If I wanted to write a very specific one trick pony RTDM driver for a USB
-3.0 controller that would do basic read and writes to my vendor specific
-device where would I start?
-
-I just need them to run in real time.
-
-
-Glen
---=20
-Glen Wernersbach
-President & CTO
-
-Jetsoft Development Co.
-629 Old St Rt. 74 =AD Suite 210
-Cincinnati, Oh 45244
-Custom Programming Web Site: www.jetsoftdev.com
-Retail Products Web Site: www.scanhelp.com
-Phone:   513-528-6660
-Fax: 513-528-3470
-Cell 513-240-9929
-----
-Partner for Software Technology
-Jacobs Automation
-2365 Progress Drive
-Hebron, KY 41048=20
-(513) 297-7550
-----
-"Support Dyslexia Research"
-
+SSBhZGQgbXkgY29kZSBpbiBzM2MyNHh4X2luaXRfaXJxKClhcyBmb2xsb3dlZCAgYW5kIGl0
+IHdvcmtzIHZlcnkgd2VsbA0KICAgICAgICAgICAgICAgICAgICAgICAgLi4uLi4uDQogICAg
+ICAgICAgICAgICAgICAgICAgICBicmVhazsNCiBjYXNlIElSUV9VU0JIOg0KCQkJc2V0X2ly
+cV9jaGlwKGlycW5vLCAmczNjX2lycV9sZXZlbF9jaGlwKTsNCgkJCXNldF9pcnFfaGFuZGxl
+cihpcnFubywgaGFuZGxlX2xldmVsX2lycSk7DQogICAgICAgICAgICAgICAgICAgICAgICBz
+ZXRfaXJxX2ZsYWdzKGlycW5vLCBJUlFGX1ZBTElEKTsgDQoJCQlicmVhazsNCg0KICAgVGhh
+bmsgeW91IHZlcnkgbXVjaKOhDQoNCg0KDQogICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIEdvbmdD
+aGVuICAgICAgICAgICAgICANCi0tLS0tLS0tLS0tLS0tLS0tLSDUrcq808q8/iAtLS0tLS0t
+LS0tLS0tLS0tLS0NCreivP7IyzogIkdpbGxlcyBDaGFudGVwZXJkcml4IjxnaWxsZXMuY2hh
+bnRlcGVyZHJpeEB4ZW5vbWFpLm9yZz47DQq3osvNyrG85DogMjAxMsTqOdTCMTTI1SjQx8ba
+zuUpIMHos78xOjAzDQrK1bz+yMs6ICJNb3JuaW5nIjxqdXZlbnR1c2djQHFxLmNvbT47IA0K
+s63LzTogInhlbm9tYWkiPHhlbm9tYWlAeGVub21haS5vcmc+OyANCtb3zOI6IFJlOiBbWGVu
+b21haV0gaXBpcGUgY2FuJ3QgaGFuZGxlIGludGVycnVwdCBmcm9tIG9oY2ktczNjMjQxMCB3
+ZWxsDQoNCg0KDQpPbiAwOS8xMy8yMDEyIDA2OjU3IFBNLCBNb3JuaW5nIHdyb3RlOg0KPiBI
+ZWxsbyxJIHVzZSBsaW51eCBrZXJuZWwgMi42LjMzIGFuZCB4ZW5vbWFpIDIuNS4zIHRvIGJ1
+aWxkIG15DQo+IHJ0LWVtYmVkZGVkIHN5c3RlbSBiYXNlZCBvbiBTM2MyNDQwLGJ1dCBpIGZv
+dW5kIHRoZSBpcGlwZSBjYW4ndA0KPiBoYW5kbGUgaW50ZXJydXB0IGZyb20gdGhlIHVzYiBo
+b3N0IGNvbnRyb2xsZXIgIHdlbGwgLkkgdHJpZWQNCj4gYWRlb3MtaXBpcGUtMi42LjMzLWFy
+bS0xLjE2LTAxLnBhdGNoIHdoaWNoIHhlbm9tYWkgY29udGFpbnMgYW5kDQo+IGFkZW9zLWlw
+aXBlLTIuNi4zMy1hcm0tMS4xOC0wMy5wYXRjaCB3aGljaCBpcyB0aGUgbmV3ZXN0IHBhdGNo
+IGZvcg0KPiBrZXJuZWwgMi42LjMzLCBidXQgYm90aCBkaWRuJ3Qgd29yay4gSSB0cmFjZWQg
+dGhlIGNvZGUgYW5kIGZvdW5kIHRoYXQNCj4gdGhlIGlwaXBlIGNhbiBoYW5kbGUgdGhlIGZp
+cnN0IGZldyBpbnRlcnJ1cHRzIGZyb20gb2hjaSB3ZWxsIGJ1dCBmcm9tDQo+IHRoZW4gb24g
+dGhlIGludGVycnVwdHMgc3RhcnQgdG8gZGVzdHJveSB0aGUgc3lzdGVtIGFzIG9oY2kgaW50
+ZXJycHV0cw0KPiB0aGUgc3lzdGVtIG92ZXIgYW5kIG92ZXIgYWdhaW4gLlRoZSBzeXN0ZW0g
+ZGlkbid0IGNyYXNoIGJ1dCB3YXMgYnVzeQ0KPiBoYW5kbGluZyB0aGUgaW50ZXJydXB0cyBh
+bmQgY291bGRuJ3QgcmVzcG9uZCB0byBhbnl0aGluZyBlbHNlLiBJDQo+IGZvdW5kIHRoYXQg
+dGhlIGludGVycnVwdHMgZnJvbSBvaGNpIGNhbid0IGJlIGhhbmRsZWQgYmVjYXVzZSB0aGUg
+cm9vdA0KPiBkb21haW4gaXMgYWx3YXlzIHN0YWxsZWQgYXMgaXQgZmFpbGVkIHRoZSB0ZXN0
+IGJlbG93IGFsbCB0aGUgdGltZSA6IA0KPiB2b2lkIF9faXBpcGVfd2Fsa19waXBlbGluZShz
+dHJ1Y3QgbGlzdF9oZWFkICpwb3MpeyAuLi4uLi4gaWYNCj4gKHRlc3RfYml0KElQSVBFX1NU
+QUxMX0ZMQUcsICZucC0+c3RhdHVzKSkgYnJlYWs7CS8qIFN0YWxsZWQgc3RhZ2UgLS0NCj4g
+ZG8gbm90IGdvIGZ1cnRoZXIuICovDQo+IA0KPiAuLi4uLi4gfSBJIGFsc28gZm91bmQgdGhh
+dCB0aGUgaW50ZXJydXB0IHNvdXJjZSBvbiBvaGNpIHdhcyBub3QNCj4gY2xlYXJlZCAgYXMg
+SSBmb3VuZCB0aGF0IHRoZXJlIHdhcyBubyB1c2UgY2xlYXJpbmcgdGhlIFVTQkggYml0IG9u
+DQo+IElOVFBORCBhbmQgU1JDUE5EIHJlZ3MgLiBUaGUgaXBpcGUgaGFuZGxlZCBsZXZlbCBp
+bnRlcnJ1cHQgd2l0aCBhY2sNCj4gYW5kIG1hc2sgYnV0IGhhbmRsZWQgZWRnZSBpbnRlcnJ1
+cHQgd2l0aCBvbmx5IGFjayAsIHNvIGhvdyBkaWQgaXBpcGUNCj4gd29yayB3aGVuIGl0IHdh
+cyBoYW5kbGluZyBhbiBlZGdlIGludGVycnVwdCBhbmQgYW5vdGhlciBlZGdlDQo+IGludGVy
+cnVwdCBjYW1lIGF0IHRoZSBzYW1lIHRpbWUgPyBXYXMgaXQgdGhlIHJlYXNvbiBvZiBvaGNp
+IGtlcHQNCj4gaW50ZXJydXB0aW5nIFMzQzI0NDAgb3ZlciBhbmQgb3ZlciBhZ2Fpbj8gVGhh
+bmsgeW91IGZvciByZWFkaW5nIHRoaXMNCj4gbWVzc2FnZSAsIEkgcmVhbGx5IGFwcHJlY2lh
+dGUgeW91ciBhbnN3ZXIgLiBHb25nQ2hlbiANCg0KSGF2ZSB5b3UgdHJpZWQgdGhlIHN1Z2dl
+c3Rpb24gYXQgdGhlIGVuZCBvZiB0aGlzIHBhcmFncmFwaD8NCmh0dHA6Ly93d3cueGVub21h
+aS5vcmcvaW5kZXgucGhwL0ktcGlwZS1jb3JlOkFybVBvcnRpbmcjZmxvd19oYW5kbGVyDQoN
+Ci0tIA0KCQkJCQkgICAgR2lsbGVzLg==
