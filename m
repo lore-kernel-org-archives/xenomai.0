@@ -1,14 +1,14 @@
-Message-ID: <505C4388.5070100@xenomai.org>
-Date: Fri, 21 Sep 2012 12:38:00 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <50571738.9060204@siemens.com>
+Date: Mon, 17 Sep 2012 14:27:36 +0200
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-References: <50587BCE.9000402@hs-harz.de> <50587D7B.3060507@xenomai.org>
-	<505882F9.90703@hs-harz.de> <5058C094.9060106@xenomai.org>
-	<969688a82a4682b9.505c415d@hs-harz.de>
-In-Reply-To: <969688a82a4682b9.505c415d@hs-harz.de>
-Content-Type: text/plain; charset=ISO-8859-1
+References: <5056C385.6090403@xenomai.org> <5056D4AE.2010201@web.de>
+	<5056DA52.6040006@xenomai.org> <5056DCC5.10909@web.de>
+	<505715E4.4080404@xenomai.org>
+In-Reply-To: <505715E4.4080404@xenomai.org>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] native skin example with rt_pipe_monitor() ?
+Subject: Re: [Xenomai] IO-APIC latencies
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,50 +17,65 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Michael Wisse <mwisse@hs-harz.de>
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Xenomai <Xenomai@xenomai.org>
 
-On 09/21/2012 10:28 AM, Michael Wisse wrote:
-> Are there plans to remove the rt_pipe API in near future ?
+On 2012-09-17 14:21, Gilles Chanteperdrix wrote:
+> On 09/17/2012 10:18 AM, Jan Kiszka wrote:
+>> On 2012-09-17 10:07, Gilles Chanteperdrix wrote:
+>>> On 09/17/2012 09:43 AM, Jan Kiszka wrote:
+>>>> On 2012-09-17 08:30, Gilles Chanteperdrix wrote:
+>>>>>
+>>>>> Hi,
+>>>>>
+>>>>> looking at x86 latencies, I found that what was taking long on my atom
+>>>>> was masking the fasteoi interrupts at IO-APIC level. So, I experimented
+>>>>> an idea: masking at LAPIC level instead of IO-APIC, by using the "task
+>>>>> priority" register. This seems to improve latencies on my atom:
+>>>>>
+>>>>> http://sisyphus.hd.free.fr/~gilles/core-3.4-latencies/atom.png
+>>>>>
+>>>>> This implies splitting the LAPIC vectors in a high priority and low
+>>>>> priority sets, the final implementation would use ipipe_enable_irqdesc
+>>>>> to detect a high priority domain, and change the vector at that time.
+>>>>>
+>>>>> This also improves the latencies on my old PIII with a VIA chipset, but
+>>>>> it generates spurious interrupts (I do not know if it really is a
+>>>>> matter, as handling a spurious interrupt is still faster than masking an
+>>>>> IO-APIC interrupt), the spurious interrupts in that case are a
+>>>>> documented behaviour of the LAPIC.
+>>>>>
+>>>>> Is there any interest in pursuing this idea, or are x86 with slow
+>>>>> IO-APIC the exception more than the rule, or having to split the vector
+>>>>> space appears too great a restriction?
+>>>>
+>>>> Line-based interrupts are legacy, of decreasing relevance for PCI
+>>>> devices - likely what we are primarily interesting in here - due to MSI.
+>>>
+>>> Even if I enable MSI, the kernel still uses these irqs for the 
+>>> peripherals integrated to the chipset, such as the USB HCI, or ATA 
+>>> driver (IOW, non PCI devices). 
+>>
+>> Those are all PCI as well. And modern chipsets include variants of them
+>> with MSI(-X) support.
+> 
+> Here is what I get on my workstation:
+> $ grep fasteoi /proc/interrupts 
+>   9:          0          0          0          0   IO-APIC-fasteoi   acpi
+>  19:          0          0          0          0   IO-APIC-fasteoi   ahci
+>  23:  280150305          0          0          0   IO-APIC-fasteoi   ehci_hcd:usb5, ehci_hcd:usb6
+> 
+> It is an sandy bridge processor, it has less than 2 years. 
+> What exactly do you mean by "modern" ?
 
-Kernel-space support for this API (rt_pipe_monitor belongs there) has
-been dropped in the upcoming Xenomai 3.x, only userland calls will be
-supported as wrappers to the RTIPC/xddp services.
+Mine is more than 2 years old and has an MSI-capable AHCI e.g.
 
-The original API will fully remain in 2.6.x though.
+Also interesting is the IO-APIC access delay you see on this platform.
+We'll try to measure here as well.
 
-> 
-> Michael
-> 
-> ----- Original Message -----
-> From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-> Date: Tuesday, September 18, 2012 8:42 pm
-> Subject: Re: [Xenomai] native skin example with rt_pipe_monitor() ?
-> To: Michael Wisse <mwisse@hs-harz.de>
-> Cc: xenomai@xenomai.org
-> 
-> 
->> On 09/18/2012 04:19 PM, Michael Wisse wrote:
->>
->>> Thanks for the link to the API documentation, but I'm looking for an 
->>
->>
->>> example.
->>
->> The rt_pipe API is deprecated. Non deprecated APIs such as XDDP sockets
->> have examples, see:
->> examples/rtdm/profiles/ipc/xddp-*
->>
->> -- 
->>                                                                 Gilles.
-> 
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> http://www.xenomai.org/mailman/listinfo/xenomai
-> 
-
+Jan
 
 -- 
-Philippe.
+Siemens AG, Corporate Technology, CT RTC ITP SDP-DE
+Corporate Competence Center Embedded Linux
 
