@@ -1,14 +1,17 @@
-Message-ID: <5065846C.1050204@knapp.com>
-Date: Fri, 28 Sep 2012 13:05:16 +0200
-From: Christoph Permes <christoph.permes@knapp.com>
-MIME-Version: 1.0
-References: <5062CCB0.7060205@knapp.com> <506321EE.5040907@knapp.com>
-	<5063727D.1070801@xenomai.org> <5063F0E6.4070506@knapp.com>
-	<5064A0D0.4080707@xenomai.org>
-In-Reply-To: <5064A0D0.4080707@xenomai.org>
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] Xenomai: native skin init failed, code -19.
+Mime-Version: 1.0 (Apple Message framework v1278)
+Content-Type: text/plain; charset=windows-1252
+From: Stephan Kappertz <stephan.kappertz@kabelmail.de>
+In-Reply-To: <5057164B.40209@xenomai.org>
+Date: Mon, 17 Sep 2012 16:43:14 +0200
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <82C3ADE5-EE56-4579-B5C3-BB5B1D527699@kabelmail.de>
+References: <f4e484caea0dc89aaa132406e82ac5ae@theropers.us>
+	<70283B31-48C9-4753-A073-993507CF0A96@kabelmail.de>
+	<5051E332.8090505@xenomai.org>
+	<CAMpYrwA+-Rhr=MvA2sLXFgHp0o7fseukeaoFDhO6Xej-VUjF_A@mail.gmail.com>
+	<5D11119A-DE48-4041-843F-DFACB8D4E233@kabelmail.de>
+	<5057164B.40209@xenomai.org>
+Subject: Re: [Xenomai] Xenomai on Beaglebone
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,147 +21,73 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+Cc: xenomai@xenomai.org, adam.r.roper@gmail.com
 
-On 09/27/2012 08:54 PM, Gilles Chanteperdrix wrote:
-> On 09/27/2012 08:23 AM, Christoph Permes wrote:
-> 
->> Hi,
->>
->> here is the output of /proc/timer_list when Xenomai initialization fails (X86_PM_TIMER is disabled in kernel config):
->> -------------------------------------------------
->> Timer List Version: v0.4
->> HRTIMER_MAX_CLOCK_BASES: 2
->> now at 80944922880 nsecs
->>
->> Tick Device: mode:     0
->> Broadcast device
->> Clock Event Device: hpet
-> 
->>
->> Tick Device: mode:     0
-> 
->> Per CPU device: 0
->> Clock Event Device: lapic
->>  mode:           1
-> 
->> Tick Device: mode:     0
-> 
->> Per CPU device: 1
->> Clock Event Device: lapic
->>  mode:           1
-> 
-> mode 1 is shutdown, that is the reason why Xenomai will not start.
-> 
-> 
-> 
->> When Xenomai initialization succeeds (same kernel config, X86_PM_TIMER disabled):
->> -------------------------------------------------
-> 
-> 
->> Tick Device: mode:     1
->> Broadcast device
->> Clock Event Device: hpet
->>
->> Tick Device: mode:     1
->> Per CPU device: 0
->> Clock Event Device: lapic
->>  mode:           3
->>
->> Tick Device: mode:     1
->> Per CPU device: 1
->> Clock Event Device: lapic
->>  mode:           3
-> 
-> 
-> mode 3 means that the timer is running (in one-shot mode, but that is
-> not really important), in that case Xenomai can work.
-> 
->> And finally with X86_PM_TIMER enabled (Xenomai works always here):
->> -------------------------------------------------
-> 
-> 
->> Tick Device: mode:     1
-> 
->> Broadcast device
->> Clock Event Device: hpet
->>  mode:           3
->>
->> Tick Device: mode:     1
->> Per CPU device: 0
->> Clock Event Device: lapic
->>  mode:           3
->>
->> Tick Device: mode:     1
->> Per CPU device: 1
->> Clock Event Device: lapic
->>  mode:           3
-> 
-> 
-> Same here.
-> 
-> 
->> I have also turned on APIC debugging with apic=debug to see whats going on:
->>
->> Thats the output where everything is fine:
->> [    0.026300] CPU0: Intel Celeron(R) Dual-Core CPU       T3100  @ 1.90GHz stepping 0a
->> [    0.026466] Using local APIC timer interrupts.
->> [    0.026467] calibrating APIC timer ...
->> [    0.026995] ... lapic delta = 1249983
->> [    0.026995] ..... delta 1249983
->> [    0.026995] ..... mult: 53694522
->> [    0.026995] ..... calibration result: 199997
->> [    0.026995] ..... CPU clock speed is 1899.0974 MHz.
->> [    0.026995] ..... host bus clock speed is 199.0997 MHz.
->> [    0.026995] ... verify APIC timer
->> [    0.128395] ... jiffies delta = 100
->> [    0.128454] ... jiffies result ok
->> [    0.128602] Booting processor 1 APIC 0x1 ip 0x6000
->>
->> And here is the output where Xenomai fails to initialize (note the value of jiffies delta):
->> [    0.026300] CPU0: Intel Celeron(R) Dual-Core CPU       T3100  @ 1.90GHz stepping 0a
->> [    0.026466] Using local APIC timer interrupts.
->> [    0.026467] calibrating APIC timer ...
->> [    0.026995] ... lapic delta = 20124747
->> [    0.026995] ..... delta 20124747
->> [    0.026995] ..... mult: 864482703
->> [    0.026995] ..... calibration result: 3219959
->> [    0.026995] ..... CPU clock speed is -12360.-057 MHz.
-> 
-> 
->> [    0.026995] ..... host bus clock speed is 3219.0959 MHz.
->> [    0.026995] ... verify APIC timer
->> [    1.668621] ... jiffies delta = 1610
-> 
-> 
-> Well the clock speed is weird too... So, it would be interesting to find
-> out what happens during the APIC timer verification. Though you may
-> spend some time figuring out something which was fixed in later
-> revisions, so, I would advise to do a quick test of Xenomai 2.6.1 to see
-> if it still has the problem.
+> On 09/17/2012 02:14 PM, Stephan Kappertz wrote:
+>>> Dear all,
+>>>=20
+>>>>> I am interested in getting Xenomai working on the Beaglebone
+>>>>> but I have no previous experience with Xenomai.  I would=20
+>>>>> greatly appreciate it if you would be willing to share your
+>>>>> source code.
+>>>=20
+>>> I would be very interested in it too as I am in the exactly same
+>>> case here. I am also new to xenomai and I would want to test it in
+>>> a beaglebone.
+>>>=20
+>>>> On 13 September 2012 15:44, Gilles Chanteperdrix wrote: We could
+>>>> distribute this work with Xenomai sources,
+>>>=20
+>>> That would be awesome.
+>>>=20
+>>>> On 09/13/2012 03:31 PM, Stephan Kappertz wrote: I can provide a
+>>>> combined patchfile against the vanilla 3.2.21 kernel
+>>>=20
+>>> That would be great too.
+>>>=20
+>>>> On 09/13/2012 03:31 PM, Stephan Kappertz wrote: that includes
+>>>> both the AM335x support as provided by Koen Kois git On
+>>>> 07/12/2012 09:54 PM, Stephan Kappertz wrote: I am using the
+>>>> slightly patched kernel from linux-omap
+>>>=20
+>>> In the meanwhile, could you tell us what seems to be the best
+>>> kernel tree to get xenomai working in the beaglebone? I can't find
+>>> the git repo you talk about.
+>>>=20
+>>> Thanks,
+>>>=20
+>>> Gdalbeniz
+>>=20
+>> The problem with an post patch is that it needs to be updated for
+>> every updated ipipe patch=85
+>=20
+> The point is that most of the time, you do not need to update it. If =
+you
+> integrate the I-pipe patch in your patch, then it is sure, you need to
+> re-release the patch after every release of the I-pipe patch.
+>=20
+>>=20
+>> What I could do now is creating a post-patch to the the kernel after
+>> applying the original ipipe-core-3.2.21-arm.patch to the vanilla
+>> kernel. I did not update to ipipe-core-3.2.21-arm-1.patch though.
+>> Gilles, do you have an incremental patch available that I can apply
+>> after the original patch? Making that patch apply correctly would
+>> possibly be less effort than starting with the full patch again.
+>=20
+> I do not understand what you mean. I was talking about a pre and post
+> patch, not of a post patch only.
+>=20
+>=20
+> --=20
+> 					    Gilles.
+>=20
 
-Hi,
+Ok. How would I create such a pre-patch? Basically I would have to patch =
+the Koen Koi sources so that the ipipe patch applies successfully. Which =
+means that I have to make them "look like" the vanilla kernel. Sounds =
+like a huge effort given that I had to change the ipipe patch at around =
+50 places to get it apply successfully. Or am I missing something?
 
-I tried out Xenomai 2.6.1 with both Linux 2.6.38.8 and 3.2.21 and CONFIG_X86_PM_TIMER disabled,
-the problem still exists with these versions.
+- Stephan=
 
-[    0.021152] CPU0: Intel Celeron(R) Dual-Core CPU       T3100  @ 1.90GHz stepping 0a
-[    0.021391] Using local APIC timer interrupts.
-[    0.021392] calibrating APIC timer ...
-[    0.021998] ... lapic delta = 20112246
-[    0.021998] ..... delta 20112246
-[    0.021998] ..... mult: 863945707
-[    0.021998] ..... calibration result: 3217959
-[    0.021998] ..... CPU clock speed is -12379.-059 MHz.
-[    0.021998] ..... host bus clock speed is 3217.0959 MHz.
-[    0.021998] ... verify APIC timer
-[    1.662609] ... jiffies delta = 1609
-[    1.662705] APIC timer disabled due to verification failure
-
-
-Also, enabling CONFIG_X86_PM_TIMER seems to solve the problem in these newer versions.
-
-
-Best regards,
-  Christoph
 
