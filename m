@@ -1,13 +1,15 @@
-Message-ID: <50578B21.1010105@xenomai.org>
-Date: Mon, 17 Sep 2012 22:42:09 +0200
+Message-ID: <50578FF0.8050108@xenomai.org>
+Date: Mon, 17 Sep 2012 23:02:40 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <50578981.4070702@wanadoo.fr>
-In-Reply-To: <50578981.4070702@wanadoo.fr>
+References: <5050E1F2.8090702@free.fr> <5050F04C.6030707@xenomai.org>
+	<50521433.9060807@free.fr> <505228B1.9010009@xenomai.org>
+	<50577AB4.6050006@free.fr> <50577F11.7050901@xenomai.org>
+	<50578C29.8030104@free.fr>
+In-Reply-To: <50578C29.8030104@free.fr>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Impact on mmap behaviour depending on the relative
- position of -lnative in ld command line
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] posix skin pthread_create issue
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,55 +18,112 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Thierry Bultel <thierry.bultel@wanadoo.fr>
-Cc: xenomai@xenomai.org
+To: Pierre Quelin <pierre.quelin@free.fr>
+Cc: pierre.quelin@solystic.com, xenomai@xenomai.org
 
-On 09/17/2012 10:35 PM, Thierry Bultel wrote:
+On 09/17/2012 10:46 PM, Pierre Quelin wrote:
 
-> Hi all,
-> 
-> I am porting an application that works on x86, linux-2.6.38.8+xenomai-2.5.2, compiler gcc-4.3.2;
-> on
-> ARM cortexA9; linux-3.2.21+xenomai-2.6.1. compiler is gcc-4.4.6 from crosstools.
-> 
-> The application uses shared memory between 2 processes, and I have noticed
-> that my "mmap" call fails on ARM, whereas it works on x86.
-> 
-> After a few investigation, I have found out that the reason was somewhere in a Makefile.
-> The application uses the posix, rtdm, and native skins.
-> 
-> Thus I have something like:
-> 
-> XENO_CONFIG+=$(DESTCMD) $(SYSROOT)/usr/bin/xeno-config
-> 
-> XENO_FLAGS+=$(shell $(XENO_CONFIG) --skin=posix --ldflags)
-> XENO_FLAGS+=$(shell $(XENO_CONFIG) --skin=rtdm --ldflags)
-> XENO_FLAGS+=$(shell $(XENO_CONFIG) --skin=native --ldflags)
-> 
-> And since it makes quite big command lines, this was added at a time:
-> 
-> # Remove duplicate options
-> LDFLAGS=$(sort $(GENERIC_LDFLAGS) $(XENO_FLAGS))
-> 
-> removing the "sort" basically results in putting back "-lnative" at the end of the 'ld' line and fixes the issue.
-> 
-> I am just curious to understand what is happening, if is is expected or an ld issue of my given version, because
-> I thought that the "-l" options order was not important (and is apparently not on x86).
+>=20
+> Le 17/09/2012 21:50, Gilles Chanteperdrix a =C3=A9crit :
+>> On 09/17/2012 09:32 PM, Pierre Quelin wrote:
+>>
+>>>>>>> After your answer, I try xenomai 2.6.1 and I increase the size of=
+ the
+>>>>>>>     private stack pool from 128 to 2048 with the same result.
+>>>>>>>
+>>>>>>> Is there any limits for the number of threads in Xenomai ?
+>>>>>> Not that I know of. There are only a few dynamic allocations in th=
+e
+>>>>>> various pools you already mentioned. The corresponding options are=
+:
+>>>>>> XENO_OPT_REGISTRY_NRSLOTS (maximum number of objects in the regist=
+ry,
+>>>>>> each thread is registered in the registry)
+>>>>>> XENO_OPT_SYS_HEAPSZ (system heap, used for various calls to xnmall=
+oc)
+>>>>>> XENO_OPT_SEM_HEAPSZ (semaphore heap, use for allocating 4 bytes pe=
+r
+>>>>>> thread + 4 bytes per mutex)
+>>>>>>
+>>>>>> But anyway, debugging the issue you have should be relatively easy=
+ by
+>>>>>> adding printfs/printks, starting from src/skins/posix/thread.c (fu=
+nction
+>>>>>> __wrap_pthread_create), continuing in ksrc/skins/posix/syscall.c,
+>>>>>> function __pthread_create, etc...
+>>>>> I try to obtain information about my context but all seems to be ok=
+=2E
+>>>> You have to put a "pause" after the failing call to pthread_create,
+>>>> because otherwise if calling exit, when the process fails, all the
+>>>> memory it allocated in the various pools is freed.
+>>> I found the problem. It seems that the private sem heap is to small.
+>>>
+>>> I'm not sure about which parameter to increase in kernel menu so at
+>>> first I increase :
+>>
+>> "private sem heap" -> "private semaphores heap", how can this not be c=
+lear?
+> This link is clear, but I don't understand the link between "private=20
+> semaphores heap", "global semaphores heap" and "system heap" ?
+> I just try to fix the right values for my context and my application.
 
 
-The order of -l option is important and always has been as far as I
-know. What depends on the architecture seems to be the implementation of
-the --wrap flag with static libraries, and xenomai uses it.
+There is no link between the various heaps, which is the reason why they
+have separate configuration options. Now if the question is to know how
+much space in each heap consumes a thread, a mutex, etc... I guess
+nobody ever did the computation. For the semaphore heaps at least it is
+clear: each thread consumes 4 bytes in the semaphore heap, each mutex
+consumes 4 bytes in the private or global heap depending on whether it
+is a process-private, or global mutex (for posix mutexes, this is
+related to pthread_mutexattr_setpshared).
 
-So, if you are using static libraries, you should use the wrap-link.sh
-available in xenomai sources (and even installed).
-If you are using dynamic libraries, I do not see how a binary with the
-wrong mmap can be generated.
+>>> ? Is calling pthread_set_mode_np (PTHREAD_WARNSW, 0) inhibits the ris=
+e
+>>> of the signal for a page fault?
+>>
+>> Yes, it inhibits the rise of the signal for any cause of switch to
+>> secondary mode. Quoting the documentation:
+>>
+>> "PTHREAD_WARNSW, when set, cause the signal SIGXCPU to be sent to the
+>> current thread, whenever it involontary switches to secondary mode;"
+>>
+>> so, obviously, when clear, the SIGXCPU is NOT SENT to the current thre=
+ad
+>> whenever it involontary switches to secondary mode. What else did you
+>> understand when reading this documentation ?
+>=20
+> I don't understand that a page fault is 'just' a switch to secondary mo=
+de.
 
-Also note that the rtdm calls are available in the posix skin under
-their posix name. So, for instance, you can replace rt_dev_open, with...
-open, and stop using the rtdm skin.
 
--- 
+A switch to secondary mode is devastating for a real-time thread running
+in primary mode.
+A page fault causes a switch to secondary mode so that the Linux kernel
+can handle the page fault, the only alternative is probably crashing, or
+suspending the thread that had the fault. SIGXCPU is sent, if you
+enabled the PTHREAD_WARNSW bit.
+
+So, PTHREAD_WARNSW should be armed for threads which should stay in
+primary mode. The critical ones.
+
+Anyway, it is not really normal to have page faults, using mlockall and
+the disabling of on-demand mappings by the I-pipe patch should prevent
+page faults from happening. So, it would be interesting to know what
+cause these faults.
+
+> Before posting a message on this mailing list I tried to read all=20
+> documents on Xenomaiand solve the problem by myself.
+> Maybe I did not read the right papers or I did not understand what I=20
+> have read and I apologize.
+
+
+No need to apologize, the mailing list is here so that people can ask
+questions. I guess there are more answers (maybe not the good ones) in
+the mailing list archives than in the documentation.
+
+Regards.
+
+--=20
                                                                 Gilles.
+
 
