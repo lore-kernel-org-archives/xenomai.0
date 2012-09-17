@@ -1,12 +1,10 @@
-Message-ID: <5055E244.4040101@web.de>
-Date: Sun, 16 Sep 2012 16:29:24 +0200
-From: Jan Kiszka <jan.kiszka@web.de>
+Message-ID: <5056C385.6090403@xenomai.org>
+Date: Mon, 17 Sep 2012 08:30:29 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <1347634862.78737.YahooMailNeo@web29605.mail.ird.yahoo.com>
-In-Reply-To: <1347634862.78737.YahooMailNeo@web29605.mail.ird.yahoo.com>
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] Context Switch with rtnet
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai] IO-APIC latencies
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,55 +13,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Franz Engel <franz_lambert_engel@yahoo.de>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Xenomai <Xenomai@xenomai.org>
 
-On 2012-09-14 17:01, Franz Engel wrote:
-> Hi,
-> =
 
-> I've a little problem. I'm using the rtnet.h-header and the following fun=
-ction:
-> ret =3D recvfrom ( ethernetConnection.sock, &recBuffer, sizeof ( recBuffe=
-r ),0, ( struct sockaddr * ) &ethernetConnection.dest_addr,&destlen );
-> =
+Hi,
 
-> =
+looking at x86 latencies, I found that what was taking long on my atom
+was masking the fasteoi interrupts at IO-APIC level. So, I experimented
+an idea: masking at LAPIC level instead of IO-APIC, by using the "task
+priority" register. This seems to improve latencies on my atom:
 
-> I compiled the program with the xenomai compiling flags and library.
-> =
+http://sisyphus.hd.free.fr/~gilles/core-3.4-latencies/atom.png
 
-> When I look to the xenomai state I get something like this:
-> CPU  PID    MSW        CSW        PF    STAT       %CPU  NAME
->  22  0      0          834840     0     00000082    0.1  rtnet-stack
->  22  0      0          1          0     00000082    0.0  rtnet-rtpc
->   0  6262   2          2          0     00300380    0.0  qs_robotpositio
->   2  6265   2          6          0     00300380    0.0  qs_robotpositio
->   0  6266   1          1          0     00300380    0.0  robotrsiinterfa
->   1  6268   1147       2365       0     00300182    0.8  robotrsiinterfa
-> =
+This implies splitting the LAPIC vectors in a high priority and low
+priority sets, the final implementation would use ipipe_enable_irqdesc
+to detect a high priority domain, and change the vector at that time.
 
-> You can see, I get a lote of context and module switches just as the rtne=
-t-stack itself. Is that normal?
+This also improves the latencies on my old PIII with a VIA chipset, but
+it generates spurious interrupts (I do not know if it really is a
+matter, as handling a spurious interrupt is still faster than masking an
+IO-APIC interrupt), the spurious interrupts in that case are a
+documented behaviour of the LAPIC.
 
-Well, I have no clue what you configured, so I can only guess. If your
-task 6268 is a pure RT task that is not supposed to interact with Linux
-services, you first of all have a bug in your software stack. You should
-look for the reason of those mode switches to Linux, e.g. by asking
-Xenomai to raise SIGXCPU when this happens.
+Is there any interest in pursuing this idea, or are x86 with slow
+IO-APIC the exception more than the rule, or having to split the vector
+space appears too great a restriction?
 
-Regarding the rtnet-stack context switches: basically, every switch is
-one packet arriving at your NIC. Either you are receiving a lot of small
-but valid packets or you are on an open network, and that is basically
-heavy unrelated broadcast traffic of other sources than the RT device(s).
+Regards.
 
-Jan
+-- 
+                                                                Gilles.
 
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: signature.asc
-Type: application/pgp-signature
-Size: 259 bytes
-Desc: OpenPGP digital signature
-URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20120916/21fcac6=
-4/attachment.pgp>
