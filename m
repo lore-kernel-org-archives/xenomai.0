@@ -1,24 +1,17 @@
-Message-ID: <aa526cca898247642342ebae7e01b6a0.squirrel@www.xenomai.org>
-In-Reply-To: <5059DB31.6040604@siemens.com>
-References: <504F5F1B.4020806@siemens.com> <50550091.50002@xenomai.org>
-	<505592B8.9000109@xenomai.org> <5056DBAD.1000903@xenomai.org>
-	<5058AE95.2020103@siemens.com> <5058AF21.5000600@xenomai.org>
-	<5058BC96.8090601@siemens.com> <5058BE17.5070304@xenomai.org>
-	<5058C39C.8000407@siemens.com> <5058C5F6.3040406@xenomai.org>
-	<5058C73B.8040006@siemens.com> <5058C79A.5020400@xenomai.org>
-	<5058C8EE.1050803@siemens.com> <5058C9FE.5030505@xenomai.org>
-	<5059D412.7020202@siemens.com>
-	<ce86871e85b087a85fbdd8317716a9fd.squirrel@www.xenomai.org>
-	<5059D7BD.7040103@siemens.com>
-	<79e3e1e2376d88a17769fd13c9447e06.squirrel@www.xenomai.org>
-	<5059DB31.6040604@siemens.com>
-Date: Wed, 19 Sep 2012 17:02:10 +0200
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain;charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] [PATCH] ipipe: x86: Populate vector_irq for all
- dispatched vectors
+In-Reply-To: <50570606.7060909@xenomai.org>
+References: <5056C385.6090403@xenomai.org> <5056D4AE.2010201@web.de>
+	<5056DA52.6040006@xenomai.org> <5056DCC5.10909@web.de>
+	<5056E024.5020904@xenomai.org> <5056E863.4090606@siemens.com>
+	<5056ED68.6050101@xenomai.org> <5056F09C.8050602@siemens.com>
+	<5056F4A1.6070500@xenomai.org>
+	<CANKLDmuxUk0XQobqs_OJ8vwQvaMie3Q3JU5Fn5DjpfpfZH3=cg@mail.gmail.com>
+	<50570606.7060909@xenomai.org>
+Date: Mon, 17 Sep 2012 14:15:30 +0200
+Message-ID: <CANKLDmuTU3351fNd8eTqiY-9+53h2iO5TzWNsX-wqPj98f4gMw@mail.gmail.com>
+From: Henri Roosen <henriroosen@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: Re: [Xenomai] IO-APIC latencies
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -27,68 +20,165 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <Xenomai@xenomai.org>
 
-
-Jan Kiszka wrote:
-> On 2012-09-19 16:46, Gilles Chanteperdrix wrote:
->>
->> Jan Kiszka wrote:
->>> On 2012-09-19 16:28, Gilles Chanteperdrix wrote:
->>>>
->>>> Jan Kiszka wrote:
->>>>>  	for (vector = 0; vector < NR_VECTORS; ++vector) {
->>>>> +		/* I-pipe requires initialized vector_irq for system vectors */
->>>>> +		if (test_bit(vector, used_vectors))
->>>>> +			continue;
->>>>>  		irq = per_cpu(vector_irq, cpu)[vector];
->>>>>  		if (irq < 0)
->>>>>  			continue;
->>>>
->>>> This looks wrong to me: you are skipping a part a code that was
->>>> setting
->>>> to
->>>> -1 vectors that were allocated but not used on this cpu.
->>>
->>> I'm skipping only used_vectors, i.e system vectors. They will be set up
->>> for I-pipe for that well-known reason. I'm no longer skipping to clear
->>> IRQ vectors that are not used on the current CPU
->>> (!cpumask_test_cpu(cpu,
->>> cfg->domain)). That is what was missing in both approaches so far.
->>>
->>> Note: vector_free = (vector_irq == -1) && !used_vector
->>
->> Let us go back to the obvious loop:
->>
->>>         for (vector = 0; vector < first_system_vector; ++vector) {
->>>                 if (vector == IRQ_MOVE_CLEANUP_VECTOR)
->>>                         continue;
->>>
->>>                 irq = per_cpu(vector_irq, cpu)[vector];
->>>                 if (irq < 0)
->>>                         continue;
->>>
->>>                 cfg = irq_cfg(irq);
->>>                 if (!cpumask_test_cpu(cpu, cfg->domain))
->>>                         per_cpu(vector_irq, cpu)[vector] = -1;
->>>         }
->>
->>>From what I understand, this function is called when a CPU is started,
->> so, for instance, with hotplug cpu, on a system that has been running
->> for days and so had a lot of time to allocate a lot of vectors.
->>
->> Now, some of these vectors are known not to be needed on the cpu we
->> are currently starting. What this loop does, is for such vectors, to
->> set the vector_irq entry on the cpu we are currently starting to -1.
->>
->> Now, such vectors will certainly have the used_vectors bit to 1.
+On Mon, Sep 17, 2012 at 1:14 PM, Gilles Chanteperdrix
+<gilles.chanteperdrix@xenomai.org> wrote:
+> On 09/17/2012 12:39 PM, Henri Roosen wrote:
 >
-> used_vectors should be called "used_for_system_vector".
+>> On Mon, Sep 17, 2012 at 12:00 PM, Gilles Chanteperdrix
+>> <gilles.chanteperdrix@xenomai.org> wrote:
+>>> On 09/17/2012 11:42 AM, Jan Kiszka wrote:
+>>>> On 2012-09-17 11:29, Gilles Chanteperdrix wrote:
+>>>>> On 09/17/2012 11:07 AM, Jan Kiszka wrote:
+>>>>>> On 2012-09-17 10:32, Gilles Chanteperdrix wrote:
+>>>>>>> On 09/17/2012 10:18 AM, Jan Kiszka wrote:
+>>>>>>>> On 2012-09-17 10:07, Gilles Chanteperdrix wrote:
+>>>>>>>>> On 09/17/2012 09:43 AM, Jan Kiszka wrote:
+>>>>>>>>>> On 2012-09-17 08:30, Gilles Chanteperdrix wrote:
+>>>>>>>>>>>
+>>>>>>>>>>> Hi,
+>>>>>>>>>>>
+>>>>>>>>>>> looking at x86 latencies, I found that what was taking long on my atom
+>>>>>>>>>>> was masking the fasteoi interrupts at IO-APIC level. So, I experimented
+>>>>>>>>>>> an idea: masking at LAPIC level instead of IO-APIC, by using the "task
+>>>>>>>>>>> priority" register. This seems to improve latencies on my atom:
+>>>>>>>>>>>
+>>>>>>>>>>> http://sisyphus.hd.free.fr/~gilles/core-3.4-latencies/atom.png
+>>>>>>>>>>>
+>>>>>>>>>>> This implies splitting the LAPIC vectors in a high priority and low
+>>>>>>>>>>> priority sets, the final implementation would use ipipe_enable_irqdesc
+>>>>>>>>>>> to detect a high priority domain, and change the vector at that time.
+>>>>>>>>>>>
+>>>>>>>>>>> This also improves the latencies on my old PIII with a VIA chipset, but
+>>>>>>>>>>> it generates spurious interrupts (I do not know if it really is a
+>>>>>>>>>>> matter, as handling a spurious interrupt is still faster than masking an
+>>>>>>>>>>> IO-APIC interrupt), the spurious interrupts in that case are a
+>>>>>>>>>>> documented behaviour of the LAPIC.
+>>>>>>>>>>>
+>>>>>>>>>>> Is there any interest in pursuing this idea, or are x86 with slow
+>>>>>>>>>>> IO-APIC the exception more than the rule, or having to split the vector
+>>>>>>>>>>> space appears too great a restriction?
+>>>>>>>>>>
+>>>>>>>>>> Line-based interrupts are legacy, of decreasing relevance for PCI
+>>>>>>>>>> devices - likely what we are primarily interesting in here - due to MSI.
+>>>>>>>>>
+>>>>>>>>> Even if I enable MSI, the kernel still uses these irqs for the
+>>>>>>>>> peripherals integrated to the chipset, such as the USB HCI, or ATA
+>>>>>>>>> driver (IOW, non PCI devices).
+>>>>>>>>
+>>>>>>>> Those are all PCI as well. And modern chipsets include variants of them
+>>>>>>>> with MSI(-X) support.
+>>>>>>>>
+>>>>>>>>>
+>>>>>>>>> atom login: root
+>>>>>>>>> # cat /proc/interrupts
+>>>>>>>>>            CPU0       CPU1
+>>>>>>>>>   0:         41          0   IO-APIC-edge      timer
+>>>>>>>>>   4:         39          0   IO-APIC-edge      serial
+>>>>>>>>>   9:          0          0   IO-APIC-fasteoi   acpi
+>>>>>>>>>  14:          0          0   IO-APIC-edge      ata_piix
+>>>>>>>>>  15:          0          0   IO-APIC-edge      ata_piix
+>>>>>>>>>  16:          0          0   IO-APIC-fasteoi   uhci_hcd:usb5
+>>>>>>>>>  18:          0          0   IO-APIC-fasteoi   uhci_hcd:usb4
+>>>>>>>>>  19:          0          0   IO-APIC-fasteoi   ata_piix, uhci_hcd:usb3
+>>>>>>>>>  23:       6598          0   IO-APIC-fasteoi   ehci_hcd:usb1, uhci_hcd:usb2
+>>>>>>>>>  43:       2704          0   PCI-MSI-edge      eth0
+>>>>>>>>>  44:        249          0   PCI-MSI-edge      snd_hda_intel
+>>>>>>>>> NMI:          0          0   Non-maskable interrupts
+>>>>>>>>> LOC:        661        644   Local timer interrupts
+>>>>>>>>> SPU:          0          0   Spurious interrupts
+>>>>>>>>> PMI:          0          0   Performance monitoring interrupts
+>>>>>>>>> IWI:          0          0   IRQ work interrupts
+>>>>>>>>> RTR:          0          0   APIC ICR read retries
+>>>>>>>>> RES:       1582       2225   Rescheduling interrupts
+>>>>>>>>> CAL:         26         48   Function call interrupts
+>>>>>>>>> TLB:         10         19   TLB shootdowns
+>>>>>>>>> ERR:          0
+>>>>>>>>> MIS:          0
+>>>>>>>>>
+>>>>>>>>> I do not think peripherals integrated to chipsets can really be
+>>>>>>>>> considered "legacy". And they tend to be used in the field...
+>>>>>>>>
+>>>>>>>> The good news is that, even on your low-end atom, you can avoid those
+>>>>>>>> latencies by CPU assignment, i.e. isolating the Linux IRQ load on one
+>>>>>>>> core and the RT on the other. That's getting easier and easier due to
+>>>>>>>> the inflation of cores.
+>>>>>>>
+>>>>>>> What if you want to use RTUSB for instance?
+>>>>>>
+>>>>>> Then I will likely not worry about a few micros of additional latency
+>>>>>> due to IO-APIC accesses.
+>>>>>
+>>>>> On my atom, taking an IO-APIC fasteoi interrupt, acking and masking it,
+>>>>> takes 10us in UP, and 20us in SMP (with the tracer on).
+>>>>
+>>>> ...and on more appropriate chipsets? I bet the Atom is (once again) off
+>>>> here.
+>>>
+>>> I do not know, do you care for sharing your traces with us? I only run
+>>> Xenomai on atom (which I am not sure do not qualify as "modern", new
+>>> atoms seem to be produced), geode (ok, this one is definitely dead, but
+>>> there seem to be people still running xenomai on them), and an old
+>>> pentium III with an old VIA686 chipset, where masking the IO-APIC is
+>>> even slower than acking the i8259.
+>>>
+>>> Anyway, the IO-APIC registers accesses does not look designed for speed:
+>>> it has an indirect scheme that seem more designed to save space in the
+>>> processor mapping and to be configured once and for all when
+>>> enabling/disabling interrupt, not at each and every interrupt.
+>>>
+>>> The point is: people may want to use Xenomai on atoms. We do not really
+>>> know on what kind of x86 people run xenomai, knowing that would help us
+>>> directing our efforts.
+>>
+>> We are currently investigating whether we can use Atom's for our
+>> future products. We have to stick to the x86 architecture and our
+>> products should work without big cooling fans. Currently running tests
+>> on Atom D2700 (which I know is EOL, but for research purposes should
+>> give us a good indication).
+>>
+>> A 20us latency gain is a lot and would be very welcome in our system!
+>
+>
+> If you enable CONFIG_MSI, do you still see some IO-APIC-fasteoi in
+> /proc/interrupts?
+>
 
-What about TLB flush vectors, are they not restricted to some cpus?
+The kernel config has no CONFIG_MSI, but instead:
+CONFIG_ARCH_SUPPORTS_MSI=y
+CONFIG_PCI_MSI=y
 
--- 
-                    Gilles.
+There is still IO-APIC-fasteoi in /proc/interrupts:
 
+# cat /proc/interrupts
+           CPU0       CPU1
+  0:        250          0   IO-APIC-edge      timer
+  4:         71          0   IO-APIC-edge      serial
+  7:         29          0   IO-APIC-edge
+  8:          0          0   IO-APIC-edge      rtc0
+  9:          0          0   IO-APIC-fasteoi   acpi
+ 16:          0          0   IO-APIC-fasteoi   uhci_hcd:usb5
+ 18:          0          0   IO-APIC-fasteoi   uhci_hcd:usb4
+ 19:         41          0   IO-APIC-fasteoi   ata_piix, uhci_hcd:usb3
+ 23:       5440          0   IO-APIC-fasteoi   ehci_hcd:usb1, uhci_hcd:usb2
+ 40:        940          0   PCI-MSI-edge      eth0
+ 41:         21          0   PCI-MSI-edge      xhci_hcd
+ 42:          0          0   PCI-MSI-edge      xhci_hcd
+ 43:          0          0   PCI-MSI-edge      xhci_hcd
+NMI:          0          0   Non-maskable interrupts
+LOC:      29559      25129   Local timer interrupts
+SPU:          0          0   Spurious interrupts
+PMI:          0          0   Performance monitoring interrupts
+IWI:          0          0   IRQ work interrupts
+RTR:          0          0   APIC ICR read retries
+RES:         20          0   Rescheduling interrupts
+CAL:          0          8   Function call interrupts
+TLB:          9          5   TLB shootdowns
+ERR:         74
+MIS:          0
+
+> --
+>                                                                 Gilles.
 
