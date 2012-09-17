@@ -1,10 +1,22 @@
-Message-ID: <50570606.7060909@xenomai.org>
-Date: Mon, 17 Sep 2012 13:14:14 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <50576978.60101@siemens.com>
+Date: Mon, 17 Sep 2012 20:18:32 +0200
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-References: <5056C385.6090403@xenomai.org>	<5056D4AE.2010201@web.de>	<5056DA52.6040006@xenomai.org>	<5056DCC5.10909@web.de>	<5056E024.5020904@xenomai.org>	<5056E863.4090606@siemens.com>	<5056ED68.6050101@xenomai.org>	<5056F09C.8050602@siemens.com>	<5056F4A1.6070500@xenomai.org>
+References: <5056C385.6090403@xenomai.org>	<5056D4AE.2010201@web.de>
+	<5056DA52.6040006@xenomai.org>	<5056DCC5.10909@web.de>
+	<5056E024.5020904@xenomai.org>	<5056E863.4090606@siemens.com>
+	<5056ED68.6050101@xenomai.org>	<5056F09C.8050602@siemens.com>
+	<5056F4A1.6070500@xenomai.org>
 	<CANKLDmuxUk0XQobqs_OJ8vwQvaMie3Q3JU5Fn5DjpfpfZH3=cg@mail.gmail.com>
-In-Reply-To: <CANKLDmuxUk0XQobqs_OJ8vwQvaMie3Q3JU5Fn5DjpfpfZH3=cg@mail.gmail.com>
+	<50570606.7060909@xenomai.org>
+	<CANKLDmuTU3351fNd8eTqiY-9+53h2iO5TzWNsX-wqPj98f4gMw@mail.gmail.com>
+	<5057173C.9070108@siemens.com> <5057299B.9060804@xenomai.org>
+	<50572B95.2060302@siemens.com> <50572D86.3040306@xenomai.org>
+	<50573532.20700@siemens.com> <505761DF.3010609@xenomai.org>
+	<5057666D.7080404@siemens.com> <50576725.9030601@xenomai.org>
+	<50576804.9030109@siemens.com> <505768B9.6000704@siemens.com>
+	<50576901.2020803@xenomai.org>
+In-Reply-To: <50576901.2020803@xenomai.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] IO-APIC latencies
@@ -16,129 +28,67 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Henri Roosen <henriroosen@gmail.com>
-Cc: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <Xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Xenomai <Xenomai@xenomai.org>
 
-On 09/17/2012 12:39 PM, Henri Roosen wrote:
-
-> On Mon, Sep 17, 2012 at 12:00 PM, Gilles Chanteperdrix
-> <gilles.chanteperdrix@xenomai.org> wrote:
->> On 09/17/2012 11:42 AM, Jan Kiszka wrote:
->>> On 2012-09-17 11:29, Gilles Chanteperdrix wrote:
->>>> On 09/17/2012 11:07 AM, Jan Kiszka wrote:
->>>>> On 2012-09-17 10:32, Gilles Chanteperdrix wrote:
->>>>>> On 09/17/2012 10:18 AM, Jan Kiszka wrote:
->>>>>>> On 2012-09-17 10:07, Gilles Chanteperdrix wrote:
->>>>>>>> On 09/17/2012 09:43 AM, Jan Kiszka wrote:
->>>>>>>>> On 2012-09-17 08:30, Gilles Chanteperdrix wrote:
->>>>>>>>>>
->>>>>>>>>> Hi,
->>>>>>>>>>
->>>>>>>>>> looking at x86 latencies, I found that what was taking long on my atom
->>>>>>>>>> was masking the fasteoi interrupts at IO-APIC level. So, I experimented
->>>>>>>>>> an idea: masking at LAPIC level instead of IO-APIC, by using the "task
->>>>>>>>>> priority" register. This seems to improve latencies on my atom:
->>>>>>>>>>
->>>>>>>>>> http://sisyphus.hd.free.fr/~gilles/core-3.4-latencies/atom.png
->>>>>>>>>>
->>>>>>>>>> This implies splitting the LAPIC vectors in a high priority and low
->>>>>>>>>> priority sets, the final implementation would use ipipe_enable_irqdesc
->>>>>>>>>> to detect a high priority domain, and change the vector at that time.
->>>>>>>>>>
->>>>>>>>>> This also improves the latencies on my old PIII with a VIA chipset, but
->>>>>>>>>> it generates spurious interrupts (I do not know if it really is a
->>>>>>>>>> matter, as handling a spurious interrupt is still faster than masking an
->>>>>>>>>> IO-APIC interrupt), the spurious interrupts in that case are a
->>>>>>>>>> documented behaviour of the LAPIC.
->>>>>>>>>>
->>>>>>>>>> Is there any interest in pursuing this idea, or are x86 with slow
->>>>>>>>>> IO-APIC the exception more than the rule, or having to split the vector
->>>>>>>>>> space appears too great a restriction?
->>>>>>>>>
->>>>>>>>> Line-based interrupts are legacy, of decreasing relevance for PCI
->>>>>>>>> devices - likely what we are primarily interesting in here - due to MSI.
->>>>>>>>
->>>>>>>> Even if I enable MSI, the kernel still uses these irqs for the
->>>>>>>> peripherals integrated to the chipset, such as the USB HCI, or ATA
->>>>>>>> driver (IOW, non PCI devices).
->>>>>>>
->>>>>>> Those are all PCI as well. And modern chipsets include variants of them
->>>>>>> with MSI(-X) support.
->>>>>>>
->>>>>>>>
->>>>>>>> atom login: root
->>>>>>>> # cat /proc/interrupts
->>>>>>>>            CPU0       CPU1
->>>>>>>>   0:         41          0   IO-APIC-edge      timer
->>>>>>>>   4:         39          0   IO-APIC-edge      serial
->>>>>>>>   9:          0          0   IO-APIC-fasteoi   acpi
->>>>>>>>  14:          0          0   IO-APIC-edge      ata_piix
->>>>>>>>  15:          0          0   IO-APIC-edge      ata_piix
->>>>>>>>  16:          0          0   IO-APIC-fasteoi   uhci_hcd:usb5
->>>>>>>>  18:          0          0   IO-APIC-fasteoi   uhci_hcd:usb4
->>>>>>>>  19:          0          0   IO-APIC-fasteoi   ata_piix, uhci_hcd:usb3
->>>>>>>>  23:       6598          0   IO-APIC-fasteoi   ehci_hcd:usb1, uhci_hcd:usb2
->>>>>>>>  43:       2704          0   PCI-MSI-edge      eth0
->>>>>>>>  44:        249          0   PCI-MSI-edge      snd_hda_intel
->>>>>>>> NMI:          0          0   Non-maskable interrupts
->>>>>>>> LOC:        661        644   Local timer interrupts
->>>>>>>> SPU:          0          0   Spurious interrupts
->>>>>>>> PMI:          0          0   Performance monitoring interrupts
->>>>>>>> IWI:          0          0   IRQ work interrupts
->>>>>>>> RTR:          0          0   APIC ICR read retries
->>>>>>>> RES:       1582       2225   Rescheduling interrupts
->>>>>>>> CAL:         26         48   Function call interrupts
->>>>>>>> TLB:         10         19   TLB shootdowns
->>>>>>>> ERR:          0
->>>>>>>> MIS:          0
->>>>>>>>
->>>>>>>> I do not think peripherals integrated to chipsets can really be
->>>>>>>> considered "legacy". And they tend to be used in the field...
->>>>>>>
->>>>>>> The good news is that, even on your low-end atom, you can avoid those
->>>>>>> latencies by CPU assignment, i.e. isolating the Linux IRQ load on one
->>>>>>> core and the RT on the other. That's getting easier and easier due to
->>>>>>> the inflation of cores.
->>>>>>
->>>>>> What if you want to use RTUSB for instance?
->>>>>
->>>>> Then I will likely not worry about a few micros of additional latency
->>>>> due to IO-APIC accesses.
+On 2012-09-17 20:16, Gilles Chanteperdrix wrote:
+> On 09/17/2012 08:15 PM, Jan Kiszka wrote:
+> 
+>> On 2012-09-17 20:12, Jan Kiszka wrote:
+>>> On 2012-09-17 20:08, Gilles Chanteperdrix wrote:
+>>>> On 09/17/2012 08:05 PM, Jan Kiszka wrote:
 >>>>
->>>> On my atom, taking an IO-APIC fasteoi interrupt, acking and masking it,
->>>> takes 10us in UP, and 20us in SMP (with the tracer on).
+>>>>> On 2012-09-17 19:46, Gilles Chanteperdrix wrote:
+>>>>>> ipipe_end is a nop when called from primary domain, yes, but this is not
+>>>>>> very different from edge irqs. Also, fasteoi become a bit like MSI: in
+>>>>>> the same way as we can not mask MSI from primary domain, we should not
+>>>>>> mask IO-APIC fasteoi irqs, because the cost is too prohibitive. If we
+>>>>>> can live with MSI without masking them in primary mode, I guess we can
+>>>>>> do the same with fasteoi irqs.
+>>>>>
+>>>>> MSIs are edge triggered, fasteois are still level-based. They require
+>>>>> masking at the point you defer them - what we do and what Linux may even
+>>>>> extend beyond that. If you mask them by raising the task priority, you
+>>>>> have to keep it raised until Linux finally handled the IRQ.
+>>>>
+>>>>
+>>>> Yes.
+>>>>
+>>>>> Or you
+>>>>> decide to mask it at IO-APIC level again.
+>>>>
+>>>>
+>>>> We do not want that.
+>>>>
+>>>>> If you keep the TPR raised,
+>>>>> you will block more than what Linux wants to block.
+>>>>
+>>>>
+>>>> The point is that if the TPR keeps raised, it means that primary domain
+>>>> has preempted Linux, so, we want it to keep that way. Otherwise the TPR
+>>>> gets lowered when Linux has handled the interrupt.
+>>>>
+>>>> A week-end of testing made me sure of one thing: it works. I assure you.
 >>>
->>> ...and on more appropriate chipsets? I bet the Atom is (once again) off
->>> here.
+>>> Probably, in the absence of IRQF_ONESHOT Linux interrupts. No longer if
+>>> you face threaded IRQs - I assure you.
 >>
->> I do not know, do you care for sharing your traces with us? I only run
->> Xenomai on atom (which I am not sure do not qualify as "modern", new
->> atoms seem to be produced), geode (ok, this one is definitely dead, but
->> there seem to be people still running xenomai on them), and an old
->> pentium III with an old VIA686 chipset, where masking the IO-APIC is
->> even slower than acking the i8259.
->>
->> Anyway, the IO-APIC registers accesses does not look designed for speed:
->> it has an indirect scheme that seem more designed to save space in the
->> processor mapping and to be configured once and for all when
->> enabling/disabling interrupt, not at each and every interrupt.
->>
->> The point is: people may want to use Xenomai on atoms. We do not really
->> know on what kind of x86 people run xenomai, knowing that would help us
->> directing our efforts.
+>> Well, it may work (if mask/unmask callbacks work as native) but the
+>> benefit is gone: masking at IO-APIC level will be done again. Given that
+>> threaded IRQs become increasingly popular, it will also be hard to avoid
+>> them in common setups.
 > 
-> We are currently investigating whether we can use Atom's for our
-> future products. We have to stick to the x86 architecture and our
-> products should work without big cooling fans. Currently running tests
-> on Atom D2700 (which I know is EOL, but for research purposes should
-> give us a good indication).
 > 
-> A 20us latency gain is a lot and would be very welcome in our system!
+> Do they really make sense on low end platforms such as atom? We can make
+> this new masking a compilation option.
 
+If your Linux driver is built around having thread context in its IRQ
+handler, you lost. And there is no option to disable this feature
+anyway, only to control forced threading.
 
-If you enable CONFIG_MSI, do you still see some IO-APIC-fasteoi in
-/proc/interrupts?
+Jan
 
 -- 
-                                                                Gilles.
+Siemens AG, Corporate Technology, CT RTC ITP SDP-DE
+Corporate Competence Center Embedded Linux
 
