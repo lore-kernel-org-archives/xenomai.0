@@ -1,6 +1,6 @@
-Message-ID: <5057685C.9060003@xenomai.org>
-Date: Mon, 17 Sep 2012 20:13:48 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <505768B9.6000704@siemens.com>
+Date: Mon, 17 Sep 2012 20:15:21 +0200
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
 References: <5056C385.6090403@xenomai.org>	<5056D4AE.2010201@web.de>
 	<5056DA52.6040006@xenomai.org>	<5056DCC5.10909@web.de>
@@ -27,11 +27,10 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: Xenomai <Xenomai@xenomai.org>
 
-On 09/17/2012 08:12 PM, Jan Kiszka wrote:
-
+On 2012-09-17 20:12, Jan Kiszka wrote:
 > On 2012-09-17 20:08, Gilles Chanteperdrix wrote:
 >> On 09/17/2012 08:05 PM, Jan Kiszka wrote:
 >>
@@ -70,11 +69,14 @@ On 09/17/2012 08:12 PM, Jan Kiszka wrote:
 > Probably, in the absence of IRQF_ONESHOT Linux interrupts. No longer if
 > you face threaded IRQs - I assure you.
 
+Well, it may work (if mask/unmask callbacks work as native) but the
+benefit is gone: masking at IO-APIC level will be done again. Given that
+threaded IRQs become increasingly popular, it will also be hard to avoid
+them in common setups.
 
-As I said, I have not covered all the cases. Just made it work with my
-setup, but I do not see why we could not get it working for IRQF_ONESHOT.
-
+Jan
 
 -- 
-                                                                Gilles.
+Siemens AG, Corporate Technology, CT RTC ITP SDP-DE
+Corporate Competence Center Embedded Linux
 
