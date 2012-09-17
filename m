@@ -1,14 +1,13 @@
-Message-ID: <505AFACC.1050802@siemens.com>
-Date: Thu, 20 Sep 2012 13:15:24 +0200
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <505715E4.4080404@xenomai.org>
+Date: Mon, 17 Sep 2012 14:21:56 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <505AF205.6010206@siemens.com> <505AF49D.6020905@xenomai.org>
-	<505AF641.6030604@siemens.com> <505AF687.9010002@siemens.com>
-In-Reply-To: <505AF687.9010002@siemens.com>
-Content-Type: text/plain; charset=ISO-8859-1
+References: <5056C385.6090403@xenomai.org> <5056D4AE.2010201@web.de>
+	<5056DA52.6040006@xenomai.org> <5056DCC5.10909@web.de>
+In-Reply-To: <5056DCC5.10909@web.de>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PATCH] Revert "ipipe: ipipe_request_irq(),
- ipipe_free_irq() are root-only services"
+Subject: Re: [Xenomai] IO-APIC latencies
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,57 +16,56 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: "Mauerer, Wolfgang" <wolfgang.mauerer@siemens.com>, Xenomai <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@web.de>
+Cc: Xenomai <Xenomai@xenomai.org>
 
-On 2012-09-20 12:57, Jan Kiszka wrote:
-> On 2012-09-20 12:56, Jan Kiszka wrote:
->> On 2012-09-20 12:49, Philippe Gerum wrote:
->>> On 09/20/2012 12:37 PM, Jan Kiszka wrote:
->>>> This reverts commit 073ff1e8045d0311b8cf390687c0ba3619681672.
+On 09/17/2012 10:18 AM, Jan Kiszka wrote:
+> On 2012-09-17 10:07, Gilles Chanteperdrix wrote:
+>> On 09/17/2012 09:43 AM, Jan Kiszka wrote:
+>>> On 2012-09-17 08:30, Gilles Chanteperdrix wrote:
 >>>>
->>>> Both service are NOT just root-only services. E.g., rtdm_irq_request
->>>> requires by specification support also over non-Linux contexts.
+>>>> Hi,
+>>>>
+>>>> looking at x86 latencies, I found that what was taking long on my atom
+>>>> was masking the fasteoi interrupts at IO-APIC level. So, I experimented
+>>>> an idea: masking at LAPIC level instead of IO-APIC, by using the "task
+>>>> priority" register. This seems to improve latencies on my atom:
+>>>>
+>>>> http://sisyphus.hd.free.fr/~gilles/core-3.4-latencies/atom.png
+>>>>
+>>>> This implies splitting the LAPIC vectors in a high priority and low
+>>>> priority sets, the final implementation would use ipipe_enable_irqdesc
+>>>> to detect a high priority domain, and change the vector at that time.
+>>>>
+>>>> This also improves the latencies on my old PIII with a VIA chipset, but
+>>>> it generates spurious interrupts (I do not know if it really is a
+>>>> matter, as handling a spurious interrupt is still faster than masking an
+>>>> IO-APIC interrupt), the spurious interrupts in that case are a
+>>>> documented behaviour of the LAPIC.
+>>>>
+>>>> Is there any interest in pursuing this idea, or are x86 with slow
+>>>> IO-APIC the exception more than the rule, or having to split the vector
+>>>> space appears too great a restriction?
 >>>
->>> Nack. We can't run the enable code for MSIs over non-root, and
->>> that code typically follows the irq request. Besides, we want to mask
->>> the source upon irq free to handle the SMP case properly, which we could
->>> not do from non-root with MSIs.
->>>
->>> So either we have both request+enable and free usable over non-root, or
->>> there is no point.
+>>> Line-based interrupts are legacy, of decreasing relevance for PCI
+>>> devices - likely what we are primarily interesting in here - due to MSI.
 >>
->> OK, I get the point with legacy MSI. Then we have two other bugs to solve:
->>  - in I-pipe as it holds a hardened spin lock across enable/disable (of
->>    MSIs)
-
-I think this bug may only manifest over ARM as that arch does
-enable/disable_irq() inside __ipipe_enable/disable_irqdesc - unless
-something prevents that enabling will ever happen for interrupts that
-need Linux locks to work. Is that assured?
-
->>  - in Xenomai 2.6 (at least, didn't check forge) as it calls with a
->>    hardened spin lock held into ipipe_virtualize_irq
-
-This problem is something I vaguely recall we discussed before already
-in the past. I think there was no good solution for the Xenomai 2
-architecture.
-
-In this light, let's remove those checks nevertheless.
-Enabling/disabling the IRQ are separate calls, and those should be
-instrumented as those cause the restriction.
-
+>> Even if I enable MSI, the kernel still uses these irqs for the 
+>> peripherals integrated to the chipset, such as the USB HCI, or ATA 
+>> driver (IOW, non PCI devices). 
 > 
-> Sorry, three bugs:
->  - in the RTDM spec as it always allowed rtdm_irq_request over RT task
->    contexts
+> Those are all PCI as well. And modern chipsets include variants of them
+> with MSI(-X) support.
 
-Changing the spec and adding a runtime check will likely be no issue. No
-sane driver should have made use of that option. I will file a patch.
+Here is what I get on my workstation:
+$ grep fasteoi /proc/interrupts 
+  9:          0          0          0          0   IO-APIC-fasteoi   acpi
+ 19:          0          0          0          0   IO-APIC-fasteoi   ahci
+ 23:  280150305          0          0          0   IO-APIC-fasteoi   ehci_hcd:usb5, ehci_hcd:usb6
 
-Jan
+It is an sandy bridge processor, it has less than 2 years. 
+What exactly do you mean by "modern" ?
 
 -- 
-Siemens AG, Corporate Technology, CT RTC ITP SDP-DE
-Corporate Competence Center Embedded Linux
+					    Gilles.
 
