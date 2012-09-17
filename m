@@ -1,6 +1,6 @@
-Message-ID: <505768B9.6000704@siemens.com>
-Date: Mon, 17 Sep 2012 20:15:21 +0200
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <505768C3.2080305@xenomai.org>
+Date: Mon, 17 Sep 2012 20:15:31 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <5056C385.6090403@xenomai.org>	<5056D4AE.2010201@web.de>
 	<5056DA52.6040006@xenomai.org>	<5056DCC5.10909@web.de>
@@ -27,10 +27,11 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
 Cc: Xenomai <Xenomai@xenomai.org>
 
-On 2012-09-17 20:12, Jan Kiszka wrote:
+On 09/17/2012 08:12 PM, Jan Kiszka wrote:
+
 > On 2012-09-17 20:08, Gilles Chanteperdrix wrote:
 >> On 09/17/2012 08:05 PM, Jan Kiszka wrote:
 >>
@@ -69,14 +70,31 @@ On 2012-09-17 20:12, Jan Kiszka wrote:
 > Probably, in the absence of IRQF_ONESHOT Linux interrupts. No longer if
 > you face threaded IRQs - I assure you.
 
-Well, it may work (if mask/unmask callbacks work as native) but the
-benefit is gone: masking at IO-APIC level will be done again. Given that
-threaded IRQs become increasingly popular, it will also be hard to avoid
-them in common setups.
 
-Jan
+I am not sure IRQF_ONESHOT works with CONFIG_IPIPE, anyway:
+
+#ifdef CONFIG_IPIPE
+	/* XXX: IRQCHIP_EOI_IF_HANDLED is ignored. */
+	if (desc->irq_data.chip->irq_release)
+		desc->irq_data.chip->irq_release(&desc->irq_data);
+out_eoi:
+#else  /* !CONFIG_IPIPE */
+	if (desc->istate & IRQS_ONESHOT)
+		cond_unmask_irq(desc);
+
+out_eoi:
+	desc->irq_data.chip->irq_eoi(&desc->irq_data);
+#endif	/* !CONFIG_IPIPE */
+
+
+
+
+> 
+> Jan
+> 
+
+
 
 -- 
-Siemens AG, Corporate Technology, CT RTC ITP SDP-DE
-Corporate Competence Center Embedded Linux
+                                                                Gilles.
 
