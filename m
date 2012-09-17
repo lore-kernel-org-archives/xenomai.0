@@ -1,5 +1,5 @@
-Message-ID: <505768C3.2080305@xenomai.org>
-Date: Mon, 17 Sep 2012 20:15:31 +0200
+Message-ID: <50576901.2020803@xenomai.org>
+Date: Mon, 17 Sep 2012 20:16:33 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <5056C385.6090403@xenomai.org>	<5056D4AE.2010201@web.de>
@@ -14,8 +14,8 @@ References: <5056C385.6090403@xenomai.org>	<5056D4AE.2010201@web.de>
 	<50572B95.2060302@siemens.com> <50572D86.3040306@xenomai.org>
 	<50573532.20700@siemens.com> <505761DF.3010609@xenomai.org>
 	<5057666D.7080404@siemens.com> <50576725.9030601@xenomai.org>
-	<50576804.9030109@siemens.com>
-In-Reply-To: <50576804.9030109@siemens.com>
+	<50576804.9030109@siemens.com> <505768B9.6000704@siemens.com>
+In-Reply-To: <505768B9.6000704@siemens.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] IO-APIC latencies
@@ -30,70 +30,55 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: Jan Kiszka <jan.kiszka@siemens.com>
 Cc: Xenomai <Xenomai@xenomai.org>
 
-On 09/17/2012 08:12 PM, Jan Kiszka wrote:
+On 09/17/2012 08:15 PM, Jan Kiszka wrote:
 
-> On 2012-09-17 20:08, Gilles Chanteperdrix wrote:
->> On 09/17/2012 08:05 PM, Jan Kiszka wrote:
->>
->>> On 2012-09-17 19:46, Gilles Chanteperdrix wrote:
->>>> ipipe_end is a nop when called from primary domain, yes, but this is not
->>>> very different from edge irqs. Also, fasteoi become a bit like MSI: in
->>>> the same way as we can not mask MSI from primary domain, we should not
->>>> mask IO-APIC fasteoi irqs, because the cost is too prohibitive. If we
->>>> can live with MSI without masking them in primary mode, I guess we can
->>>> do the same with fasteoi irqs.
+> On 2012-09-17 20:12, Jan Kiszka wrote:
+>> On 2012-09-17 20:08, Gilles Chanteperdrix wrote:
+>>> On 09/17/2012 08:05 PM, Jan Kiszka wrote:
 >>>
->>> MSIs are edge triggered, fasteois are still level-based. They require
->>> masking at the point you defer them - what we do and what Linux may even
->>> extend beyond that. If you mask them by raising the task priority, you
->>> have to keep it raised until Linux finally handled the IRQ.
+>>>> On 2012-09-17 19:46, Gilles Chanteperdrix wrote:
+>>>>> ipipe_end is a nop when called from primary domain, yes, but this is not
+>>>>> very different from edge irqs. Also, fasteoi become a bit like MSI: in
+>>>>> the same way as we can not mask MSI from primary domain, we should not
+>>>>> mask IO-APIC fasteoi irqs, because the cost is too prohibitive. If we
+>>>>> can live with MSI without masking them in primary mode, I guess we can
+>>>>> do the same with fasteoi irqs.
+>>>>
+>>>> MSIs are edge triggered, fasteois are still level-based. They require
+>>>> masking at the point you defer them - what we do and what Linux may even
+>>>> extend beyond that. If you mask them by raising the task priority, you
+>>>> have to keep it raised until Linux finally handled the IRQ.
+>>>
+>>>
+>>> Yes.
+>>>
+>>>> Or you
+>>>> decide to mask it at IO-APIC level again.
+>>>
+>>>
+>>> We do not want that.
+>>>
+>>>> If you keep the TPR raised,
+>>>> you will block more than what Linux wants to block.
+>>>
+>>>
+>>> The point is that if the TPR keeps raised, it means that primary domain
+>>> has preempted Linux, so, we want it to keep that way. Otherwise the TPR
+>>> gets lowered when Linux has handled the interrupt.
+>>>
+>>> A week-end of testing made me sure of one thing: it works. I assure you.
 >>
->>
->> Yes.
->>
->>> Or you
->>> decide to mask it at IO-APIC level again.
->>
->>
->> We do not want that.
->>
->>> If you keep the TPR raised,
->>> you will block more than what Linux wants to block.
->>
->>
->> The point is that if the TPR keeps raised, it means that primary domain
->> has preempted Linux, so, we want it to keep that way. Otherwise the TPR
->> gets lowered when Linux has handled the interrupt.
->>
->> A week-end of testing made me sure of one thing: it works. I assure you.
+>> Probably, in the absence of IRQF_ONESHOT Linux interrupts. No longer if
+>> you face threaded IRQs - I assure you.
 > 
-> Probably, in the absence of IRQF_ONESHOT Linux interrupts. No longer if
-> you face threaded IRQs - I assure you.
+> Well, it may work (if mask/unmask callbacks work as native) but the
+> benefit is gone: masking at IO-APIC level will be done again. Given that
+> threaded IRQs become increasingly popular, it will also be hard to avoid
+> them in common setups.
 
 
-I am not sure IRQF_ONESHOT works with CONFIG_IPIPE, anyway:
-
-#ifdef CONFIG_IPIPE
-	/* XXX: IRQCHIP_EOI_IF_HANDLED is ignored. */
-	if (desc->irq_data.chip->irq_release)
-		desc->irq_data.chip->irq_release(&desc->irq_data);
-out_eoi:
-#else  /* !CONFIG_IPIPE */
-	if (desc->istate & IRQS_ONESHOT)
-		cond_unmask_irq(desc);
-
-out_eoi:
-	desc->irq_data.chip->irq_eoi(&desc->irq_data);
-#endif	/* !CONFIG_IPIPE */
-
-
-
-
-> 
-> Jan
-> 
-
-
+Do they really make sense on low end platforms such as atom? We can make
+this new masking a compilation option.
 
 -- 
                                                                 Gilles.
