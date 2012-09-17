@@ -1,12 +1,12 @@
-Message-ID: <5056DCC5.10909@web.de>
-Date: Mon, 17 Sep 2012 10:18:13 +0200
-From: Jan Kiszka <jan.kiszka@web.de>
+Message-ID: <5056E024.5020904@xenomai.org>
+Date: Mon, 17 Sep 2012 10:32:36 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <5056C385.6090403@xenomai.org> <5056D4AE.2010201@web.de>
-	<5056DA52.6040006@xenomai.org>
-In-Reply-To: <5056DA52.6040006@xenomai.org>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+	<5056DA52.6040006@xenomai.org> <5056DCC5.10909@web.de>
+In-Reply-To: <5056DCC5.10909@web.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] IO-APIC latencies
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -16,94 +16,104 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Jan Kiszka <jan.kiszka@web.de>
 Cc: Xenomai <Xenomai@xenomai.org>
 
-T24gMjAxMi0wOS0xNyAxMDowNywgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4gT24gMDkv
-MTcvMjAxMiAwOTo0MyBBTSwgSmFuIEtpc3prYSB3cm90ZToKPj4gT24gMjAxMi0wOS0xNyAwODoz
-MCwgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4+Pgo+Pj4gSGksCj4+Pgo+Pj4gbG9va2lu
-ZyBhdCB4ODYgbGF0ZW5jaWVzLCBJIGZvdW5kIHRoYXQgd2hhdCB3YXMgdGFraW5nIGxvbmcgb24g
-bXkgYXRvbQo+Pj4gd2FzIG1hc2tpbmcgdGhlIGZhc3Rlb2kgaW50ZXJydXB0cyBhdCBJTy1BUElD
-IGxldmVsLiBTbywgSSBleHBlcmltZW50ZWQKPj4+IGFuIGlkZWE6IG1hc2tpbmcgYXQgTEFQSUMg
-bGV2ZWwgaW5zdGVhZCBvZiBJTy1BUElDLCBieSB1c2luZyB0aGUgInRhc2sKPj4+IHByaW9yaXR5
-IiByZWdpc3Rlci4gVGhpcyBzZWVtcyB0byBpbXByb3ZlIGxhdGVuY2llcyBvbiBteSBhdG9tOgo+
-Pj4KPj4+IGh0dHA6Ly9zaXN5cGh1cy5oZC5mcmVlLmZyL35naWxsZXMvY29yZS0zLjQtbGF0ZW5j
-aWVzL2F0b20ucG5nCj4+Pgo+Pj4gVGhpcyBpbXBsaWVzIHNwbGl0dGluZyB0aGUgTEFQSUMgdmVj
-dG9ycyBpbiBhIGhpZ2ggcHJpb3JpdHkgYW5kIGxvdwo+Pj4gcHJpb3JpdHkgc2V0cywgdGhlIGZp
-bmFsIGltcGxlbWVudGF0aW9uIHdvdWxkIHVzZSBpcGlwZV9lbmFibGVfaXJxZGVzYwo+Pj4gdG8g
-ZGV0ZWN0IGEgaGlnaCBwcmlvcml0eSBkb21haW4sIGFuZCBjaGFuZ2UgdGhlIHZlY3RvciBhdCB0
-aGF0IHRpbWUuCj4+Pgo+Pj4gVGhpcyBhbHNvIGltcHJvdmVzIHRoZSBsYXRlbmNpZXMgb24gbXkg
-b2xkIFBJSUkgd2l0aCBhIFZJQSBjaGlwc2V0LCBidXQKPj4+IGl0IGdlbmVyYXRlcyBzcHVyaW91
-cyBpbnRlcnJ1cHRzIChJIGRvIG5vdCBrbm93IGlmIGl0IHJlYWxseSBpcyBhCj4+PiBtYXR0ZXIs
-IGFzIGhhbmRsaW5nIGEgc3B1cmlvdXMgaW50ZXJydXB0IGlzIHN0aWxsIGZhc3RlciB0aGFuIG1h
-c2tpbmcgYW4KPj4+IElPLUFQSUMgaW50ZXJydXB0KSwgdGhlIHNwdXJpb3VzIGludGVycnVwdHMg
-aW4gdGhhdCBjYXNlIGFyZSBhCj4+PiBkb2N1bWVudGVkIGJlaGF2aW91ciBvZiB0aGUgTEFQSUMu
-Cj4+Pgo+Pj4gSXMgdGhlcmUgYW55IGludGVyZXN0IGluIHB1cnN1aW5nIHRoaXMgaWRlYSwgb3Ig
-YXJlIHg4NiB3aXRoIHNsb3cKPj4+IElPLUFQSUMgdGhlIGV4Y2VwdGlvbiBtb3JlIHRoYW4gdGhl
-IHJ1bGUsIG9yIGhhdmluZyB0byBzcGxpdCB0aGUgdmVjdG9yCj4+PiBzcGFjZSBhcHBlYXJzIHRv
-byBncmVhdCBhIHJlc3RyaWN0aW9uPwo+Pgo+PiBMaW5lLWJhc2VkIGludGVycnVwdHMgYXJlIGxl
-Z2FjeSwgb2YgZGVjcmVhc2luZyByZWxldmFuY2UgZm9yIFBDSQo+PiBkZXZpY2VzIC0gbGlrZWx5
-IHdoYXQgd2UgYXJlIHByaW1hcmlseSBpbnRlcmVzdGluZyBpbiBoZXJlIC0gZHVlIHRvIE1TSS4K
-PiAKPiBFdmVuIGlmIEkgZW5hYmxlIE1TSSwgdGhlIGtlcm5lbCBzdGlsbCB1c2VzIHRoZXNlIGly
-cXMgZm9yIHRoZSAKPiBwZXJpcGhlcmFscyBpbnRlZ3JhdGVkIHRvIHRoZSBjaGlwc2V0LCBzdWNo
-IGFzIHRoZSBVU0IgSENJLCBvciBBVEEgCj4gZHJpdmVyIChJT1csIG5vbiBQQ0kgZGV2aWNlcyku
-IAoKVGhvc2UgYXJlIGFsbCBQQ0kgYXMgd2VsbC4gQW5kIG1vZGVybiBjaGlwc2V0cyBpbmNsdWRl
-IHZhcmlhbnRzIG9mIHRoZW0Kd2l0aCBNU0koLVgpIHN1cHBvcnQuCgo+IAo+IGF0b20gbG9naW46
-IHJvb3QgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAKPiAjIGNhdCAvcHJvYy9pbnRlcnJ1cHRzICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCj4gICAgICAgICAgICBD
-UFUwICAgICAgIENQVTEgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgIAo+ICAgMDogICAgICAgICA0MSAgICAgICAgICAwICAgSU8tQVBJQy1lZGdl
-ICAgICAgdGltZXIgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKPiAgIDQ6ICAgICAgICAg
-MzkgICAgICAgICAgMCAgIElPLUFQSUMtZWRnZSAgICAgIHNlcmlhbCAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgCj4gICA5OiAgICAgICAgICAwICAgICAgICAgIDAgICBJTy1BUElDLWZhc3Rl
-b2kgICBhY3BpICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAo+ICAxNDogICAgICAgICAg
-MCAgICAgICAgICAwICAgSU8tQVBJQy1lZGdlICAgICAgYXRhX3BpaXggICAgICAgICAgICAgICAg
-ICAgICAgICAgICAKPiAgMTU6ICAgICAgICAgIDAgICAgICAgICAgMCAgIElPLUFQSUMtZWRnZSAg
-ICAgIGF0YV9waWl4ICAgICAgICAgICAgICAgICAgICAgICAgICAgCj4gIDE2OiAgICAgICAgICAw
-ICAgICAgICAgIDAgICBJTy1BUElDLWZhc3Rlb2kgICB1aGNpX2hjZDp1c2I1ICAgICAgICAgICAg
-ICAgICAgICAgIAo+ICAxODogICAgICAgICAgMCAgICAgICAgICAwICAgSU8tQVBJQy1mYXN0ZW9p
-ICAgdWhjaV9oY2Q6dXNiNCAgICAgICAgICAgICAgICAgICAgICAKPiAgMTk6ICAgICAgICAgIDAg
-ICAgICAgICAgMCAgIElPLUFQSUMtZmFzdGVvaSAgIGF0YV9waWl4LCB1aGNpX2hjZDp1c2IzICAg
-ICAgICAgICAgCj4gIDIzOiAgICAgICA2NTk4ICAgICAgICAgIDAgICBJTy1BUElDLWZhc3Rlb2kg
-ICBlaGNpX2hjZDp1c2IxLCB1aGNpX2hjZDp1c2IyICAgICAgIAo+ICA0MzogICAgICAgMjcwNCAg
-ICAgICAgICAwICAgUENJLU1TSS1lZGdlICAgICAgZXRoMCAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAKPiAgNDQ6ICAgICAgICAyNDkgICAgICAgICAgMCAgIFBDSS1NU0ktZWRnZSAgICAg
-IHNuZF9oZGFfaW50ZWwgICAgICAgICAgICAgICAgICAgICAgCj4gTk1JOiAgICAgICAgICAwICAg
-ICAgICAgIDAgICBOb24tbWFza2FibGUgaW50ZXJydXB0cyAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgIAo+IExPQzogICAgICAgIDY2MSAgICAgICAgNjQ0ICAgTG9jYWwgdGltZXIgaW50ZXJy
-dXB0cyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKPiBTUFU6ICAgICAgICAgIDAgICAg
-ICAgICAgMCAgIFNwdXJpb3VzIGludGVycnVwdHMgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgCj4gUE1JOiAgICAgICAgICAwICAgICAgICAgIDAgICBQZXJmb3JtYW5jZSBtb25pdG9y
-aW5nIGludGVycnVwdHMgICAgICAgICAgICAgICAgICAgIAo+IElXSTogICAgICAgICAgMCAgICAg
-ICAgICAwICAgSVJRIHdvcmsgaW50ZXJydXB0cyAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAKPiBSVFI6ICAgICAgICAgIDAgICAgICAgICAgMCAgIEFQSUMgSUNSIHJlYWQgcmV0cmll
-cyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCj4gUkVTOiAgICAgICAxNTgyICAgICAg
-IDIyMjUgICBSZXNjaGVkdWxpbmcgaW50ZXJydXB0cyAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgIAo+IENBTDogICAgICAgICAyNiAgICAgICAgIDQ4ICAgRnVuY3Rpb24gY2FsbCBpbnRlcnJ1
-cHRzICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKPiBUTEI6ICAgICAgICAgMTAgICAgICAg
-ICAxOSAgIFRMQiBzaG9vdGRvd25zICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgCj4gRVJSOiAgICAgICAgICAwICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAo+IE1JUzogICAgICAgICAgMCAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAKPiAKPiBJIGRvIG5vdCB0aGluayBwZXJpcGhlcmFscyBpbnRlZ3JhdGVkIHRvIGNoaXBzZXRz
-IGNhbiByZWFsbHkgYmUKPiBjb25zaWRlcmVkICJsZWdhY3kiLiBBbmQgdGhleSB0ZW5kIHRvIGJl
-IHVzZWQgaW4gdGhlIGZpZWxkLi4uCgpUaGUgZ29vZCBuZXdzIGlzIHRoYXQsIGV2ZW4gb24geW91
-ciBsb3ctZW5kIGF0b20sIHlvdSBjYW4gYXZvaWQgdGhvc2UKbGF0ZW5jaWVzIGJ5IENQVSBhc3Np
-Z25tZW50LCBpLmUuIGlzb2xhdGluZyB0aGUgTGludXggSVJRIGxvYWQgb24gb25lCmNvcmUgYW5k
-IHRoZSBSVCBvbiB0aGUgb3RoZXIuIFRoYXQncyBnZXR0aW5nIGVhc2llciBhbmQgZWFzaWVyIGR1
-ZSB0bwp0aGUgaW5mbGF0aW9uIG9mIGNvcmVzLgoKPiAKPj4gU28gSSB0ZW5kIHRvIHNheSAiZG9u
-J3Qgd29ycnkiLCBzcGVjaWZpY2FsbHkgYXMgZmlkZGxpbmcgd2l0aCB2ZWN0b3IKPj4gYWxsb2Nh
-dGlvbnMgd2lsbCByZXF1aXJlIHlldCBhbm90aGVyIHJvdW5kIG9mIGludmFzaXZlIGNoYW5nZXMg
-dG8gdGhlCj4+IElSUSBzdWJzeXN0ZW0gb2YgTGludXguCj4gCj4gVGhlIGNoYW5nZXMgd291bGQg
-YmUgbWluaW1hbGx5IGludmFzaXZlLCB3ZSB3b3VsZCByZXVzZSB0aGUgZnVuY3Rpb25zCj4gYWxy
-ZWFkeSBleGlzdGluZyAoY2xlYXJfaXJxX3ZlY3RvciBhbmQgYXNzaWduX2lycV92ZWN0b3IpLgo+
-IAoKWW91IHdpbGwgaGF2ZSB0byByZWFycmFuZ2UgdmVjdG9yIGFzc2lnbm1lbnQgYW5kIG1hc2sg
-dGhvc2UgdmVjdG9ycyBvbgphbGwgQ1BVcywgcG9zc2libHkgY29tcGxpY2F0ZWQgbXkgYWZmaW5p
-dHkgY2hhbmdlcy4gVGhhdCdzIHdvcnJ5aW5nIG1lCmFzIHdlbGwuIEJ1dCBJJ20gYWxzbyBvcGVu
-IGZvciBkaXNjdXNzaW5nIGEgcHJvdG90eXBlLgoKSmFuCgotLS0tLS0tLS0tLS0tLSBuZXh0IHBh
-cnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpO
-YW1lOiBzaWduYXR1cmUuYXNjClR5cGU6IGFwcGxpY2F0aW9uL3BncC1zaWduYXR1cmUKU2l6ZTog
-MjU5IGJ5dGVzCkRlc2M6IE9wZW5QR1AgZGlnaXRhbCBzaWduYXR1cmUKVVJMOiA8aHR0cDovL3d3
-dy54ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDEyMDkxNy84ZDMy
-ZjcwZS9hdHRhY2htZW50LnBncD4K
+On 09/17/2012 10:18 AM, Jan Kiszka wrote:
+> On 2012-09-17 10:07, Gilles Chanteperdrix wrote:
+>> On 09/17/2012 09:43 AM, Jan Kiszka wrote:
+>>> On 2012-09-17 08:30, Gilles Chanteperdrix wrote:
+>>>>
+>>>> Hi,
+>>>>
+>>>> looking at x86 latencies, I found that what was taking long on my atom
+>>>> was masking the fasteoi interrupts at IO-APIC level. So, I experimented
+>>>> an idea: masking at LAPIC level instead of IO-APIC, by using the "task
+>>>> priority" register. This seems to improve latencies on my atom:
+>>>>
+>>>> http://sisyphus.hd.free.fr/~gilles/core-3.4-latencies/atom.png
+>>>>
+>>>> This implies splitting the LAPIC vectors in a high priority and low
+>>>> priority sets, the final implementation would use ipipe_enable_irqdesc
+>>>> to detect a high priority domain, and change the vector at that time.
+>>>>
+>>>> This also improves the latencies on my old PIII with a VIA chipset, but
+>>>> it generates spurious interrupts (I do not know if it really is a
+>>>> matter, as handling a spurious interrupt is still faster than masking an
+>>>> IO-APIC interrupt), the spurious interrupts in that case are a
+>>>> documented behaviour of the LAPIC.
+>>>>
+>>>> Is there any interest in pursuing this idea, or are x86 with slow
+>>>> IO-APIC the exception more than the rule, or having to split the vector
+>>>> space appears too great a restriction?
+>>>
+>>> Line-based interrupts are legacy, of decreasing relevance for PCI
+>>> devices - likely what we are primarily interesting in here - due to MSI.
+>>
+>> Even if I enable MSI, the kernel still uses these irqs for the 
+>> peripherals integrated to the chipset, such as the USB HCI, or ATA 
+>> driver (IOW, non PCI devices). 
+> 
+> Those are all PCI as well. And modern chipsets include variants of them
+> with MSI(-X) support.
+> 
+>>
+>> atom login: root                                                                  
+>> # cat /proc/interrupts                                                            
+>>            CPU0       CPU1                                                        
+>>   0:         41          0   IO-APIC-edge      timer                              
+>>   4:         39          0   IO-APIC-edge      serial                             
+>>   9:          0          0   IO-APIC-fasteoi   acpi                               
+>>  14:          0          0   IO-APIC-edge      ata_piix                           
+>>  15:          0          0   IO-APIC-edge      ata_piix                           
+>>  16:          0          0   IO-APIC-fasteoi   uhci_hcd:usb5                      
+>>  18:          0          0   IO-APIC-fasteoi   uhci_hcd:usb4                      
+>>  19:          0          0   IO-APIC-fasteoi   ata_piix, uhci_hcd:usb3            
+>>  23:       6598          0   IO-APIC-fasteoi   ehci_hcd:usb1, uhci_hcd:usb2       
+>>  43:       2704          0   PCI-MSI-edge      eth0                               
+>>  44:        249          0   PCI-MSI-edge      snd_hda_intel                      
+>> NMI:          0          0   Non-maskable interrupts                              
+>> LOC:        661        644   Local timer interrupts                               
+>> SPU:          0          0   Spurious interrupts                                  
+>> PMI:          0          0   Performance monitoring interrupts                    
+>> IWI:          0          0   IRQ work interrupts                                  
+>> RTR:          0          0   APIC ICR read retries                                
+>> RES:       1582       2225   Rescheduling interrupts                              
+>> CAL:         26         48   Function call interrupts                             
+>> TLB:         10         19   TLB shootdowns                                       
+>> ERR:          0                                                                   
+>> MIS:          0                                                                   
+>>
+>> I do not think peripherals integrated to chipsets can really be
+>> considered "legacy". And they tend to be used in the field...
+> 
+> The good news is that, even on your low-end atom, you can avoid those
+> latencies by CPU assignment, i.e. isolating the Linux IRQ load on one
+> core and the RT on the other. That's getting easier and easier due to
+> the inflation of cores.
+
+What if you want to use RTUSB for instance?
+
+> 
+>>
+>>> So I tend to say "don't worry", specifically as fiddling with vector
+>>> allocations will require yet another round of invasive changes to the
+>>> IRQ subsystem of Linux.
+>>
+>> The changes would be minimally invasive, we would reuse the functions
+>> already existing (clear_irq_vector and assign_irq_vector).
+>>
+> 
+> You will have to rearrange vector assignment and mask those vectors on
+> all CPUs, possibly complicated my affinity changes. That's worrying me
+> as well. But I'm also open for discussing a prototype.
+
+You do not need to mask anything. The idea is that assign_irq_vector
+would take an additional argument indicating whether we want a high or
+low vector, the affinity change would use the current vector value to
+pass the right argument to assign_irq_vector (if I am not wrong,
+affinity changes already use assign_irq_vector).
+
+-- 
+					    Gilles.
+
