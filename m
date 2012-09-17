@@ -1,13 +1,15 @@
-Message-ID: <5058CD54.4070509@xenomai.org>
-Date: Tue, 18 Sep 2012 21:36:52 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <50588110.6030701@siemens.com> <50588458.1010802@xenomai.org>
-	<505892E8.6080605@siemens.com>
-In-Reply-To: <505892E8.6080605@siemens.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [GIT PULL] core-5 for x86
+Content-Type: text/plain; charset=windows-1252
+Mime-Version: 1.0 (Apple Message framework v1278)
+From: Stephan Kappertz <stephan.kappertz@kabelmail.de>
+In-Reply-To: <CAMpYrwA+-Rhr=MvA2sLXFgHp0o7fseukeaoFDhO6Xej-VUjF_A@mail.gmail.com>
+Date: Mon, 17 Sep 2012 14:14:41 +0200
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <5D11119A-DE48-4041-843F-DFACB8D4E233@kabelmail.de>
+References: <f4e484caea0dc89aaa132406e82ac5ae@theropers.us>
+	<70283B31-48C9-4753-A073-993507CF0A96@kabelmail.de>
+	<5051E332.8090505@xenomai.org>
+	<CAMpYrwA+-Rhr=MvA2sLXFgHp0o7fseukeaoFDhO6Xej-VUjF_A@mail.gmail.com>
+Subject: Re: [Xenomai] Xenomai on Beaglebone
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,62 +18,57 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Wolfgang Mauerer <wolfgang.mauerer@siemens.com>
-Cc: "Kiszka, Jan" <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "Oier G. de Albeniz" <gdalbeniz.lists@gmail.com>, xenomai@xenomai.org, adam.r.roper@gmail.com, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 
-On 09/18/2012 05:27 PM, Wolfgang Mauerer wrote:
+> Dear all,
+>=20
+> >> I am interested in getting Xenomai working on the
+> >> Beaglebone but I have no previous experience with Xenomai.  I would
+> >> greatly appreciate it if you would be willing to share your source
+> >> code.=20
+>=20
+> I would be very interested in it too as I am in the exactly same case =
+here. I am also new to xenomai and I would want to test it in a =
+beaglebone.
+>=20
+> >On 13 September 2012 15:44, Gilles Chanteperdrix wrote:
+> >We could distribute this work with Xenomai sources,
+>=20
+> That would be awesome.
+>=20
+> >On 09/13/2012 03:31 PM, Stephan Kappertz wrote:
+> > I can provide a combined patchfile against the vanilla 3.2.21 kernel=20=
 
-> On 18/09/12 16:25, Gilles Chanteperdrix wrote:
->> On 09/18/2012 04:11 PM, Wolfgang Mauerer wrote:
->>> Dear all,
->>>
->>> here's a rebase of the x86-specific bits of core-4 to core-5. I've
->>> included all x86 specific changes that are not yet in core-5, and
->>> also added the patches I sent earlier for core-4. I did not include a
->>> separate patch for the mechanical changes required to apply the
->>> x86 base patch on top of core-5, but can surely do so if desired.
->>
->> I am not quite finished with x86 on 3.4. So, I would like to start 3.5
->> from the finishing point on 3.4. There are already commits in my branch
->> which you did not take:
->>
->> http://git.xenomai.org/?p=ipipe-gch.git;a=shortlog;h=refs/heads/for-core-3.4
-> that's true; my last pull was too old. I'll add the corresponding
-> commits to the tree (FYI, the purpose of this tree is mainly to do some
-> experiments with the latest ipipe release and the latest kernel, and
-> I wanted to make sure that work is not duplicated in case someone else
-> is pursuing similar goals)
+>=20
+> That would be great too.=20
+>=20
+> >On 09/13/2012 03:31 PM, Stephan Kappertz wrote:
+> > that includes both the AM335x support as provided by Koen Kois git=20=
 
+> >On 07/12/2012 09:54 PM, Stephan Kappertz wrote:
+> > I am using the slightly patched kernel from linux-omap
+>=20
+> In the meanwhile, could you tell us what seems to be the best kernel =
+tree to get xenomai working in the beaglebone? I can't find the git repo =
+you talk about.
+>=20
+> Thanks,
+>=20
+> Gdalbeniz
 
-Ok. We have a currently pending issue on x86 which you should be
-informed about before discovering it during your tests: using
-rthal_supported_cpus is broken in I-pipe core patches when using the
-LAPIC timer: since there is only one irq handler for all the LAPIC
-timers, the handler is registered on all cpus, but on non started cpus,
-the handler will do nothing at best, and not foward the LAPIC ticks to
-Linux (which is still in control of the LAPIC timer on these cpus).
+The problem with an post patch is that it needs to be updated for every =
+updated ipipe patch=85
 
-This problem is due to the fact that we keep the same vector as Linux,
-and so the same irq. There are two ways out of this:
+What I could do now is creating a post-patch to the the kernel after =
+applying the original ipipe-core-3.2.21-arm.patch to the vanilla kernel. =
+I did not update to ipipe-core-3.2.21-arm-1.patch though. Gilles, do you =
+have an incremental patch available that I can apply after the original =
+patch? Making that patch apply correctly would possibly be less effort =
+than starting with the full patch again.
 
-- change the LAPIC vector when xenomai takes the control of the LAPIC
-timer, like we use to do, this is racy with current code because the
-timer is taken by Xenomai but still used a bit by Linux, before it is
-programmed by Xenomai, and Xenomai assumes that the host tick irq is the
-same as the timer irq. All this can be fixed, but the last drawback of
-this approach is that it does not fix the issue on architectures where
-the local timer irq is the same on all cpus, but can not be changed,
-hence the second approach;
-- the second approach is to add a test at the beginning of
-xnintr_clock_handler and forward the irq to the root domain if the
-current cpu does not belong to xnarch_supported_cpus. This means some
-patching of I-pipe timers so that ipipe_percpu.hrtimer_irq also gets
-defined for non supported cpus when they use the timer shared with other
-cpus, essentially what this patch tries (but fails) to achieve:
-
-http://www.xenomai.org/pipermail/xenomai/2012-September/026066.html
+- Stephan
 
 
--- 
-                                                                Gilles.
+
+
 
