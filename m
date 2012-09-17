@@ -1,5 +1,5 @@
-Message-ID: <50576901.2020803@xenomai.org>
-Date: Mon, 17 Sep 2012 20:16:33 +0200
+Message-ID: <50576970.6010306@xenomai.org>
+Date: Mon, 17 Sep 2012 20:18:24 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <5056C385.6090403@xenomai.org>	<5056D4AE.2010201@web.de>
@@ -77,8 +77,9 @@ On 09/17/2012 08:15 PM, Jan Kiszka wrote:
 > them in common setups.
 
 
-Do they really make sense on low end platforms such as atom? We can make
-this new masking a compilation option.
+The thing is, if we no longer use the IO-APIC spinlock from primary
+domain, we may not have to turn it into an ipipe_spinlock, and may be
+able to preempt the IO-APIC masking.
 
 -- 
                                                                 Gilles.
