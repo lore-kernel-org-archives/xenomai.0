@@ -1,5 +1,5 @@
-Message-ID: <5058C50D.6080609@xenomai.org>
-Date: Tue, 18 Sep 2012 21:01:33 +0200
+Message-ID: <5058C5F6.3040406@xenomai.org>
+Date: Tue, 18 Sep 2012 21:05:26 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <504F5F1B.4020806@siemens.com> <50550091.50002@xenomai.org>
@@ -181,11 +181,11 @@ On 09/18/2012 08:55 PM, Jan Kiszka wrote:
 > vaguely recall that there was a very good reason to patch vector_irq
 > afterward...
 > 
+
 > Will post the old variant, at least for comparison.
 
-
-The point is to avoid having to enumerate the vectors by hand. If a
-system vector is added, no further modification is needed.
+rah, vectors_limit is not needed at all. I do not see which look you are
+talking about.
 
 -- 
                                                                 Gilles.
