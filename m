@@ -1,13 +1,13 @@
-Message-ID: <5058C710.4090104@siemens.com>
-Date: Tue, 18 Sep 2012 21:10:08 +0200
+Message-ID: <5058C73B.8040006@siemens.com>
+Date: Tue, 18 Sep 2012 21:10:51 +0200
 From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
 References: <504F5F1B.4020806@siemens.com> <50550091.50002@xenomai.org>
 	<505592B8.9000109@xenomai.org> <5056DBAD.1000903@xenomai.org>
 	<5058AE95.2020103@siemens.com> <5058AF21.5000600@xenomai.org>
 	<5058BC96.8090601@siemens.com> <5058BE17.5070304@xenomai.org>
-	<5058C39C.8000407@siemens.com> <5058C50D.6080609@xenomai.org>
-In-Reply-To: <5058C50D.6080609@xenomai.org>
+	<5058C39C.8000407@siemens.com> <5058C5F6.3040406@xenomai.org>
+In-Reply-To: <5058C5F6.3040406@xenomai.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] ipipe/x86: kernel BUG due to missing
@@ -23,7 +23,7 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 2012-09-18 21:01, Gilles Chanteperdrix wrote:
+On 2012-09-18 21:05, Gilles Chanteperdrix wrote:
 > On 09/18/2012 08:55 PM, Jan Kiszka wrote:
 > 
 >> On 2012-09-18 20:31, Gilles Chanteperdrix wrote:
@@ -182,18 +182,15 @@ On 2012-09-18 21:01, Gilles Chanteperdrix wrote:
 >> vaguely recall that there was a very good reason to patch vector_irq
 >> afterward...
 >>
+> 
 >> Will post the old variant, at least for comparison.
 > 
-> 
-> The point is to avoid having to enumerate the vectors by hand. If a
-> system vector is added, no further modification is needed.
+> rah, vectors_limit is not needed at all. I do not see which look you are
+> talking about.
 
-I see your intention, but this comes at the price of changing other
-kernel code that works against us due to the initialization order.
-
-Also, we only have two ranges to address: MOVE_CLEANUP and everything >
-first_system_vector. Your patch also have to deal with both of them
-separately.
+		cfg = irq_cfg(irq);
+		if (!cpumask_test_cpu(cpu, cfg->domain))
+			per_cpu(vector_irq, cpu)[vector] = -1;
 
 Jan
 
