@@ -1,16 +1,24 @@
-Message-ID: <50583AFD.3070102@xenomai.org>
-Date: Tue, 18 Sep 2012 11:12:29 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <50583F1E.2050503@siemens.com>
+Date: Tue, 18 Sep 2012 11:30:06 +0200
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-References: <5056C385.6090403@xenomai.org>	<5056D4AE.2010201@web.de>	<5056DA52.6040006@xenomai.org>	<5056DCC5.10909@web.de>	<5056E024.5020904@xenomai.org>	<5056E863.4090606@siemens.com>	<5056ED68.6050101@xenomai.org>	<5056F09C.8050602@siemens.com>	<5056F4A1.6070500@xenomai.org>	<CANKLDmuxUk0XQobqs_OJ8vwQvaMie3Q3JU5Fn5DjpfpfZH3=cg@mail.gmail.com>	<50570606.7060909@xenomai.org>	<CANKLDmuTU3351fNd8eTqiY-9+53h2iO5TzWNsX-wqPj98f4gMw@mail.gmail.com>	<5057173C.9070108@siemens.com>
-	<5057299B.9060804@xenomai.org>	<50572B95.2060302@siemens.com>
-	<50572D86.3040306@xenomai.org>	<50573532.20700@siemens.com>
-	<505761DF.3010609@xenomai.org>	<5057666D.7080404@siemens.com>
-	<50576725.9030601@xenomai.org>	<50576804.9030109@siemens.com>
-	<505768B9.6000704@siemens.com>	<50576970.6010306@xenomai.org>
-	<50576C22.4080607@siemens.com>	<50576DDB.2010709@xenomai.org>
-	<505771CA.50205@siemens.com>	<50579B16.4050804@xenomai.org>
-	<50583551.7030805@siemens.com> <50583981.30706@xenomai.org>
+References: <5056C385.6090403@xenomai.org>	<5056D4AE.2010201@web.de>
+	<5056DA52.6040006@xenomai.org>	<5056DCC5.10909@web.de>
+	<5056E024.5020904@xenomai.org>	<5056E863.4090606@siemens.com>
+	<5056ED68.6050101@xenomai.org>	<5056F09C.8050602@siemens.com>
+	<5056F4A1.6070500@xenomai.org>
+	<CANKLDmuxUk0XQobqs_OJ8vwQvaMie3Q3JU5Fn5DjpfpfZH3=cg@mail.gmail.com>
+	<50570606.7060909@xenomai.org>
+	<CANKLDmuTU3351fNd8eTqiY-9+53h2iO5TzWNsX-wqPj98f4gMw@mail.gmail.com>
+	<5057173C.9070108@siemens.com> <5057299B.9060804@xenomai.org>
+	<50572B95.2060302@siemens.com> <50572D86.3040306@xenomai.org>
+	<50573532.20700@siemens.com> <505761DF.3010609@xenomai.org>
+	<5057666D.7080404@siemens.com> <50576725.9030601@xenomai.org>
+	<50576804.9030109@siemens.com> <505768B9.6000704@siemens.com>
+	<50576970.6010306@xenomai.org> <50576C22.4080607@siemens.com>
+	<50576DDB.2010709@xenomai.org> <505771CA.50205@siemens.com>
+	<50579B16.4050804@xenomai.org> <50583551.7030805@siemens.com>
+	<50583981.30706@xenomai.org>
 In-Reply-To: <50583981.30706@xenomai.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
@@ -23,10 +31,10 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: Xenomai <Xenomai@xenomai.org>
 
-On 09/18/2012 11:06 AM, Gilles Chanteperdrix wrote:
+On 2012-09-18 11:06, Gilles Chanteperdrix wrote:
 > On 09/18/2012 10:48 AM, Jan Kiszka wrote:
 >> On 2012-09-17 23:50, Gilles Chanteperdrix wrote:
 >>> On 09/17/2012 08:54 PM, Jan Kiszka wrote:
@@ -117,12 +125,18 @@ On 09/18/2012 11:06 AM, Gilles Chanteperdrix wrote:
 > I have seen this code, and I wondered if it was not, in fact, only
 > useful, where the irq flow handler were reenabling irqs (that is, before
 > the removal of IRQF_DISABLED), but am really not sure.
+
+This pattern is still present with IRQF_ONESHOT, aka threaded IRQs.
+
 > 
 > Also, some additional results on my atom:
 > the IO-APIC is on IO controller HUB, which is... an ICH4 if I read lspci
 > and the datasheets correctly. And what is more, its registers are
 > accessed through the (slow) LPC bus, the ISA bus replacement. It is
 > probably the reason why it is so slow.
+
+Yes, I was expecting some architectural limitation like this.
+
 > 
 > And last but not least, it is not really a multi-core processor, it has
 > hyper-threading. Booting the processor in UP mode yields a much more
@@ -131,12 +145,35 @@ On 09/18/2012 11:06 AM, Gilles Chanteperdrix wrote:
 > noon), so, the real gain of using the TPR is in fact much lower than
 > what originally announced. Basically, it seems with hyper threading,
 > everything is doubled.
+
+True, hyper-threading doesn't help with latencies in this range.
+
 > 
 > http://sisyphus.hd.free.fr/core-3.4-latencies/atom.png
+> 
+>> Out of the 16 we have, about
+>> 3-4 should already be occupied by exception and system vectors. And, if
+>> you look at today's NICs e.g., you get around 3 vectors per interface at
+>> least. I have a more or less ordinary one here (single port, no SR-IOV)
+>> with 8(!) per port. So interrupt vector shortage is not that far away.
+> 
+> MSI vectors, or legacy vectors?
 
-The results are ready actually, so, the net gain is 6.5us over 30us,
-that is around 20%.
+MSI-X, not legacy MSI. Linux only supports one legacy MSI vector per
+device due to the need to allocate multiple vectors in a consecutive
+range - hard to achieve on x86 across all CPUs.
+
+> Here we generate PCIe peripherals using
+> FPGAs, and such peripherals can only declare one legacy interrupt,
+> whereas they can declare several MSI vectors. Though I do not know if
+> this is a limitation of the PCIe FPGA IP or of the PCIe standard.
+
+PCIe recommends MSI-X, IIRC. Legacy INTx and MSI are still allowed and
+can also be found in the field.
+
+Jan
 
 -- 
-					    Gilles.
+Siemens AG, Corporate Technology, CT RTC ITP SDP-DE
+Corporate Competence Center Embedded Linux
 
