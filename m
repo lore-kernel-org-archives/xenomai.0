@@ -1,26 +1,11 @@
-Message-ID: <2330c5aaa23e65a5d06cabd21bdbe03d.squirrel@www.xenomai.org>
-In-Reply-To: <5059E22E.5020606@siemens.com>
-References: <504F5F1B.4020806@siemens.com> <50550091.50002@xenomai.org>
-	<505592B8.9000109@xenomai.org> <5056DBAD.1000903@xenomai.org>
-	<5058AE95.2020103@siemens.com> <5058AF21.5000600@xenomai.org>
-	<5058BC96.8090601@siemens.com> <5058BE17.5070304@xenomai.org>
-	<5058C39C.8000407@siemens.com> <5058C5F6.3040406@xenomai.org>
-	<5058C73B.8040006@siemens.com> <5058C79A.5020400@xenomai.org>
-	<5058C8EE.1050803@siemens.com> <5058C9FE.5030505@xenomai.org>
-	<5059D412.7020202@siemens.com>
-	<ce86871e85b087a85fbdd8317716a9fd.squirrel@www.xenomai.org>
-	<5059D7BD.7040103@siemens.com>
-	<79e3e1e2376d88a17769fd13c9447e06.squirrel@www.xenomai.org>
-	<5059DB31.6040604@siemens.com>
-	<aa526cca898247642342ebae7e01b6a0.squirrel@www.xenomai.org>
-	<5059E22E.5020606@siemens.com>
-Date: Wed, 19 Sep 2012 18:09:57 +0200
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+Date: Thu, 20 Sep 2012 01:59:52 +0200
+From: Nicholas Mc Guire <der.herr@hofr.at>
+Message-ID: <20120919235952.GA25832@opentech.at>
 MIME-Version: 1.0
-Content-Type: text/plain;charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] [PATCH] ipipe: x86: Populate vector_irq for all
- dispatched vectors
+Content-Type: text/plain; charset=unknown-8bit
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] RTLWS14 Call for Participation
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -29,107 +14,180 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
 
-Jan Kiszka wrote:
-> On 2012-09-19 17:02, Gilles Chanteperdrix wrote:
->>
->> Jan Kiszka wrote:
->>> On 2012-09-19 16:46, Gilles Chanteperdrix wrote:
->>>>
->>>> Jan Kiszka wrote:
->>>>> On 2012-09-19 16:28, Gilles Chanteperdrix wrote:
->>>>>>
->>>>>> Jan Kiszka wrote:
->>>>>>>  	for (vector = 0; vector < NR_VECTORS; ++vector) {
->>>>>>> +		/* I-pipe requires initialized vector_irq for system vectors */
->>>>>>> +		if (test_bit(vector, used_vectors))
->>>>>>> +			continue;
->>>>>>>  		irq = per_cpu(vector_irq, cpu)[vector];
->>>>>>>  		if (irq < 0)
->>>>>>>  			continue;
->>>>>>
->>>>>> This looks wrong to me: you are skipping a part a code that was
->>>>>> setting
->>>>>> to
->>>>>> -1 vectors that were allocated but not used on this cpu.
->>>>>
->>>>> I'm skipping only used_vectors, i.e system vectors. They will be set
->>>>> up
->>>>> for I-pipe for that well-known reason. I'm no longer skipping to
->>>>> clear
->>>>> IRQ vectors that are not used on the current CPU
->>>>> (!cpumask_test_cpu(cpu,
->>>>> cfg->domain)). That is what was missing in both approaches so far.
->>>>>
->>>>> Note: vector_free = (vector_irq == -1) && !used_vector
->>>>
->>>> Let us go back to the obvious loop:
->>>>
->>>>>         for (vector = 0; vector < first_system_vector; ++vector) {
->>>>>                 if (vector == IRQ_MOVE_CLEANUP_VECTOR)
->>>>>                         continue;
->>>>>
->>>>>                 irq = per_cpu(vector_irq, cpu)[vector];
->>>>>                 if (irq < 0)
->>>>>                         continue;
->>>>>
->>>>>                 cfg = irq_cfg(irq);
->>>>>                 if (!cpumask_test_cpu(cpu, cfg->domain))
->>>>>                         per_cpu(vector_irq, cpu)[vector] = -1;
->>>>>         }
->>>>
->>>> >From what I understand, this function is called when a CPU is
->>>> started,
->>>> so, for instance, with hotplug cpu, on a system that has been running
->>>> for days and so had a lot of time to allocate a lot of vectors.
->>>>
->>>> Now, some of these vectors are known not to be needed on the cpu we
->>>> are currently starting. What this loop does, is for such vectors, to
->>>> set the vector_irq entry on the cpu we are currently starting to -1.
->>>>
->>>> Now, such vectors will certainly have the used_vectors bit to 1.
->>>
->>> used_vectors should be called "used_for_system_vector".
->>
->> What about TLB flush vectors, are they not restricted to some cpus?
->
-> OK, let's try this step by step:
->
-> So far, the original loop ("Mark the free vectors" went over all
-> vectors, clearing those out in vector_irq that were filled for *external
-> IRQs* by the first loop ("Mark the inuse vector") but are actually not
-> in use on the current CPU. Linux does not fill any system vector into
-> vector_irq, as we know.
+Hi !
 
-Ok, right, that is the answer to my question. per-cpu TLB vectors will not
-get set in vector_irq, and so, the loop will not be able to clear them
-on cpus where they are not used.
+ I kindly ask you to forward this on to people that might be interested
+ notably in the US. Have some nice papers and also the RT-minisumit repor=
+t
+ on mainline development.
 
->
-> Now that we do enter certain system vectors here (MOVE_CLEANUP and those
-> above first_system_vector), we must avoid that this clearing happens for
-> them. My old version did this by overwriting what was cleared with that
-> simply 1:1 mapping again. Your version avoided any clearing for
-> MOVE_CLEANUP and >first_system_vector. Both were wrong as both left
-> vectors marked as in use which are actually free.
+ hope to see some of you at the workshop!
 
-Which is not actually a big issue, as this will simply result in a oops
-in __ipipe_dispatch_irq due to a NULL descriptor, instead of a call to
-BUG(). No big difference... Ok, the bug may be easier to interpret.
+thx!
+hofrat
 
->
-> What we need is to still clear unused IRQ vectors, i.e. still run the
-> full loop, but skip used system vectors. And the latter can be achieved
-> by looking at used_vectors which is valid for all CPUs.
->
-> Is this clearer?
 
-Ok, no problem.
+14th Real-Time Linux Workshop on October 18 to 20, at the Department of C=
+omputer Science, University of North Carolina at Chapel Hill
 
--- 
-                    Gilles.
+                     Fourteenth Real-Time Linux Workshop
+                           October 18 to 20, 2012
+                       Department of Computer Science
+                 University of North Carolina at Chapel Hill
+                                 Chapel Hill
+                                   USA=20
+
+                          Call for Participation
+
+
+   Following the meetings of academics, developers and users of real-time
+   and embedded Linux at the previous 13 Real Time Linux Workshops held
+   world-wide (Vienna, Orlando, Milano, Boston, Valencia, Singapore,
+   Lille, Lanzhou, Linz, Guadalajara, Dresden, Nairobi and Prague) - the
+   Real Time Linux Workshop for 2012 will come to the University of North
+   Carolina at Chapel Hill in the US. It will be held from October 18 to
+   20, 2012.
+
+Rationale
+
+  Real-time systems have evolved over the past decades in a relatively
+  calm manner - performance has increased, one can say dramatically, but
+  the main paradigms were pretty stable since the mid 80s. This has
+  changed now. The big change that is moving into the embedded field is
+  multicore - and that is not an adaptation of our current methods but a
+  re-design from scratch in quite a few cases - notably of our way of
+  thinking about real-time. Precisely this area of real-time embedded
+  multicore has been a long-time focus of James Anderson's Real-Time
+  Systems Group from the Department of Computer Science, University of
+  North Carolina at Chapel Hill, covering a wide range from multicore RT,
+  embedded applications, testing to certification issues. OSADL and the
+  Real Time Linux Foundation Working Group gratefully acknowledge Prof.
+  Anderson's offer to host this year's workshop at the University of
+  North Carolina at Chapel Hill.
+
+  Linux in embedded systems is well established, ranging from consumer
+  electronics to network devices and increasingly industrial applications
+  including safety related systems. The technological resources suitable
+  for high-availability, real-time, and safety critical systems have been
+  continuously expanding and improving - allowing to cover the entire
+  development life cycle of industrial projects based on open-source
+  tools. At the core of this development is the availability of stable
+  operating systems with reliable real-time properties. Extending and
+  improving these real-time properties of open-source RTOS is continuous
+  research and development effort that OSADL documents in the form of the
+  annual Real Time Linux Workshop.
+
+Accepted Papers
+ =20
+  Abstract of accepted papers are on-line at
+  http://ww.osadl.org/RTLWS-Abstracts
+
+Topics Covered
+
+     * Modifications and variants of the GNU/Linux operating system
+       extending its real-time capabilities,
+     * Contributions to real-time Linux variants, drivers and extensions,
+     * Tools for the verification and validation of real-time properties,
+     * User-mode real-time concepts, implementation and experience,
+       Real-time Linux applications, in academia, research and industry,
+       Safety related FLOSS systems
+     * Work in progress reports, covering recent developments,
+     * Educational material on real-time Linux,
+     * RTOS core concepts, RT-safe synchronization mechanisms,
+     * RT-safe IPC mechanisms for RT and non RT components,
+     * Analysis and Benchmarking methods and results of real-time
+       GNU/Linux variants,
+     * Debugging techniques and tools, both for code and temporal
+       debugging of core RTOS components, drivers and real-time
+       applications,
+     * Real-time related extensions to development environments,
+     * Linux platform concepts and design.
+
+     In the context of RTLWS14 the RT-kernel developers will report on=20
+     the status of Preempt-RT in mainline as well as results of the
+     RT-summit which is collocated at RTLWS14.
+
+Venue
+
+  The workshop will be held October 18-20, 2012, on the beautiful campus
+  of the University of North Carolina at Chapel Hill. Most events will be
+  held in the conjoined Sitterson Hall/Brooks Building, home of the UNC
+  Department of Computer Science. The Department of Computer Science at
+  UNC-Chapel Hill was one of the first in the United States to be
+  established as an independent computer science department. It was
+  founded in 1964 by Dr. Frederick P. Brooks Jr. UNC-Chapel Hill is
+  located within a region of North Carolina known as the Research
+  Triangle, which encompasses the cities of Raleigh, Durham, and Chapel
+  Hill and surrounding communities. Duke University and North Carolina
+  State University are also located within this area. Approximately 150
+  companies and institutions have facilities in the nearby Research
+  Triangle Park. Included among them are companies like IBM and Red Hat,
+  which are heavily involved in Linux-related development efforts.
+
+Registration
+
+  In order to participate to the workshop, please register at the RTLWS14
+  registration page at=20
+  https://www.osadl.org/RTLWS-Registration
+
+Accommodation
+
+  Please refer to the RTLWS 14 Hotel page for accommodation.
+  https://www.osadl.org/RTLWS-Hotels
+
+Organization committee
+
+Local organizers
+
+     * James H. Anderson, Professor, UNC-Chapel Hill
+     * Melissa Wood, Director Research Support and Communications,
+       UNC-Chapel Hill
+     * Kelli Gaskill, Communications Manager, UNC-Chapel Hill
+
+OSADL/RTLF
+
+     * Carsten Emde, OSADL
+     * Nicholas Mc Guire, OSADL
+     * Andreas Platschek, Vienna Inst. for System Safety Engineering,
+       Austria
+
+Program committee
+
+     * Alexey Khoroshilov, ISPRAS, Russia
+     * Alfons Crespo, University Valencia, Spain
+     * Andrea Bastoni, SYSGO AG, Germany
+     * Andreas Platschek, VISSE, Austria
+     * Bernhard Noelte, IQSE TueV SueD Rail, Germany
+     * Bernhard Zagar, Johannes Keppler Universit=C3=A4t, Austria
+     * Bjoern B. Brandenburg, MPI, Germany
+     * Carsten Emde, OSADL, Germany
+     * Frank Mueller, NCSU, USA
+     * Georg Schiesser, OpenTech, Austria
+     * Herman H=C3=A4rtig, Technische Universit=C3=A4t Dresden, Germany
+     * James H. Anderson, University of North Carolina at Chapel Hill, US=
+A
+     * Julia Lawall, Laboratory of Computer Sciences, Paris 6, France
+     * Klaus Reichl, Base Systems Technology Thales, Austria
+     * Michael Friess, AdaCore, France
+     * Nicholas Mc Guire, OpenTech EDV Research GmbH, Austria
+     * Odhiambo Okech, University of Nairobi, Kenya
+     * Paolo Mantegazza, Dipartimento di Ingegneria Aerospaziale Milano,
+       Italy
+     * Paul E. McKenney, Linux Technology Center IBM, USA
+     * Peter Zijlstra, RedHat, Netherlands
+     * Roberto Bucher, SUSPI, Switzerland
+     * Shawn Choo, Weslab, Singapur
+     * Shinpei Kato, Nagoya University, Japan
+     * Stefan Sch=C3=B6negger, B&R, Austria
+     * Thomas Gleixner, Linutronix, Germany
+     * Tommaso Cucinotta, Bell Laboratories, Alcatel-Lucent, Ireland
+     * Wolfgang K=C3=BCchlin, Informatik Symbolisches Rechnen, Uni T=C3=BC=
+bingen,
+       Germany
+     * Yutaka Matsuno, ITC University of Tokyo, Japan
+     * Zhou Qingguo, DSLab, Lanzhou University, China
 
 
