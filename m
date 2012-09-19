@@ -1,13 +1,13 @@
-Message-ID: <50598097.8010005@iit.it>
-Date: Wed, 19 Sep 2012 10:21:43 +0200
-From: "Alessio Margan @ IIT" <alessio.margan@iit.it>
+Message-ID: <5059B76F.7020608@siemens.com>
+Date: Wed, 19 Sep 2012 14:15:43 +0200
+From: Wolfgang Mauerer <wolfgang.mauerer@siemens.com>
 MIME-Version: 1.0
-References: <5053404B.9000006@iit.it> <50537A5F.5030301@xenomai.org>
-	<5058D81A.9070305@xenomai.org>
-In-Reply-To: <5058D81A.9070305@xenomai.org>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] segfault using rt_printf service
+References: <50588110.6030701@siemens.com> <50588458.1010802@xenomai.org>
+	<505892E8.6080605@siemens.com> <5058CD54.4070509@xenomai.org>
+In-Reply-To: <5058CD54.4070509@xenomai.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [GIT PULL] core-5 for x86
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,93 +16,70 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-Cc: xenomai <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: "Kiszka, Jan" <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 09/18/2012 10:22 PM, Gilles Chanteperdrix wrote:
-> On 09/14/2012 08:41 PM, Gilles Chanteperdrix wrote:
->
->> On 09/14/2012 04:33 PM, Alessio Margan @ IIT wrote:
->>
->>> Hi all,
+On 18/09/12 21:36, Gilles Chanteperdrix wrote:
+> On 09/18/2012 05:27 PM, Wolfgang Mauerer wrote:
+> 
+>> On 18/09/12 16:25, Gilles Chanteperdrix wrote:
+>>> On 09/18/2012 04:11 PM, Wolfgang Mauerer wrote:
+>>>> Dear all,
+>>>>
+>>>> here's a rebase of the x86-specific bits of core-4 to core-5. I've
+>>>> included all x86 specific changes that are not yet in core-5, and
+>>>> also added the patches I sent earlier for core-4. I did not include a
+>>>> separate patch for the mechanical changes required to apply the
+>>>> x86 base patch on top of core-5, but can surely do so if desired.
 >>>
->>> I'm switching from xenomai 2.5.6 to 2.6.1 using
->>> adeos-ipipe-2.6.38.8-x86-2.11-01.patch
->>> In this test I have 2 threads :
->>> - rx_udp receive udp packets from dsp boards at 1kHz
->>> - boards_test send udp packets at 1kHz
+>>> I am not quite finished with x86 on 3.4. So, I would like to start 3.5
+>>> from the finishing point on 3.4. There are already commits in my branch
+>>> which you did not take:
 >>>
->>> I got segfault in printer_loop thread, the point is that if I change env
->>> var RT_PRINT_PERIOD to about 10 or 1000 (default is 100 ms) I do not
->>> have segfault.
->>>
->>> Any suggestion ?
->>
->> Could you try the following patch?
->>
->> diff --git a/src/skins/common/rt_print.c b/src/skins/common/rt_print.c
->> index a9fce78..376330b 100644
->> --- a/src/skins/common/rt_print.c
->> +++ b/src/skins/common/rt_print.c
->> @@ -163,9 +163,9 @@ static int vprint_to_buffer(FILE *stream, int priority, unsigned int mode,
->>   	if (mode == RT_PRINT_MODE_FORMAT) {
->>   		if (stream != RT_PRINT_SYSLOG_STREAM) {
->>   			/* We do not need the terminating \0 */
->> -			res = vsnprintf(head->data, len + 1, format, args);
->> +			res = vsnprintf(head->data, len, format, args);
->>
->> -			if (res<  len + 1) {
->> +			if (res<  len) {
->>   				/* Text was written completely, res contains its
->>   				   length */
->>   				len = res;
->>
->>
->
-> ping ?
->
-Hi,
-thanks for the patch !
-since now seems to work ... I just let the systems run; without the 
-patch after few seconds It crashes.
+>>> http://git.xenomai.org/?p=ipipe-gch.git;a=shortlog;h=refs/heads/for-core-3.4
+>> that's true; my last pull was too old. I'll add the corresponding
+>> commits to the tree (FYI, the purpose of this tree is mainly to do some
+>> experiments with the latest ipipe release and the latest kernel, and
+>> I wanted to make sure that work is not duplicated in case someone else
+>> is pursuing similar goals)
+> 
+> 
+> Ok. We have a currently pending issue on x86 which you should be
+> informed about before discovering it during your tests: using
+> rthal_supported_cpus is broken in I-pipe core patches when using the
+> LAPIC timer: since there is only one irq handler for all the LAPIC
+> timers, the handler is registered on all cpus, but on non started cpus,
+> the handler will do nothing at best, and not foward the LAPIC ticks to
+> Linux (which is still in control of the LAPIC timer on these cpus).
+> 
+> This problem is due to the fact that we keep the same vector as Linux,
+> and so the same irq. There are two ways out of this:
+> 
+> - change the LAPIC vector when xenomai takes the control of the LAPIC
+> timer, like we use to do, this is racy with current code because the
+> timer is taken by Xenomai but still used a bit by Linux, before it is
+> programmed by Xenomai, and Xenomai assumes that the host tick irq is the
+> same as the timer irq. All this can be fixed, but the last drawback of
+> this approach is that it does not fix the issue on architectures where
+> the local timer irq is the same on all cpus, but can not be changed,
+> hence the second approach;
+> - the second approach is to add a test at the beginning of
+> xnintr_clock_handler and forward the irq to the root domain if the
+> current cpu does not belong to xnarch_supported_cpus. This means some
+> patching of I-pipe timers so that ipipe_percpu.hrtimer_irq also gets
+> defined for non supported cpus when they use the timer shared with other
+> cpus, essentially what this patch tries (but fails) to achieve:
+> 
+> http://www.xenomai.org/pipermail/xenomai/2012-September/026066.html
 
-Regards
-Alessio
+thanks for the info! Unfortunately, I was not able to reproduce this
+issue quickly using two latency instances bound to different CPUs on a
+machine booted with isolcpus=1, though.
 
--- 
+I did also not see the issue with core-5, but that's because
+bdeaf76ba30a517 (ipipe/x86: use the vector_irq for system vectors too)
+leads to a stuck CPU bringup for >1 CPUs. Will maybe look into that a
+bit further.
 
-ISTITUTO ITALIANO
-DI TECNOLOGIA
-
-Alessio Margan
-/Senior Technician/
-/Advanced Robotics/
-
-Via Morego, 30 16163 Genova 
-<http://maps.google.com/maps?f=q&hl=en&geocode=&q=via+morego,+30+genova&sll=37.0625,-95.677068&sspn=85.420533,191.601563&ie=UTF8&ll=44.474913,8.907037&spn=0.004685,0.011652&t=h&z=17&iwloc=addr>
-alessio.margan[at]iit <mailto:alessio.margan@iit.it>
-
-www.iit.it <http://www.iit.it>
-
-*Legal Disclaimer*
-This electronic message contains information that is confidential. The 
-information is intended for the use of the addressee only. If you are 
-not the addressee we would appreciate your notification in this respect. 
-Please note that any disclosure, copy, distribution or use of the 
-contents of this message is prohibited and may be unlawful. We have 
-taken every reasonable precaution to ensure that any kind of attachment 
-to this e-mail has been swept for viruses. However, we cannot accept 
-liability for any damage sustained as a result of software viruses and 
-would advise you to carry out your own virus checks before opening any 
-attachment.
-*Avvertenza legale*
-Questo messaggio Email contiene informazioni confidenziali riservate ai 
-soli destinatari. Qualora  veniate in possesso di tali informazioni 
-senza essere definito come destinatario vi reghiamo di leggere le 
-seguenti note. Ogni apertura, copia, distribuzione del contenuto del 
-messaggio e dei suoi allegati è proibito e potrebbe violare le presenti 
-leggi. Abbiamo attivato ogni possibile e ragionevole precauzione per 
-assicurare che gli allegati non contengano virus. Comunque non 
-assumeremo alcuna responsabilità per ogni eventuale danno causato da 
-virus software e simili in quanto è onere del destinatario verificarne 
-l’assenza in ogni allegato attuando propri indipendenti controlli.
+Best regards, Wolfgang
 
