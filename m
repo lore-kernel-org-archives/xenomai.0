@@ -1,14 +1,19 @@
-Message-ID: <547ed4e5d933b52c3525a83421ec183c.squirrel@www.xenomai.org>
-In-Reply-To: <5059B76F.7020608@siemens.com>
-References: <50588110.6030701@siemens.com> <50588458.1010802@xenomai.org>
-	<505892E8.6080605@siemens.com> <5058CD54.4070509@xenomai.org>
-	<5059B76F.7020608@siemens.com>
-Date: Wed, 19 Sep 2012 14:36:30 +0200
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+Message-ID: <5059D412.7020202@siemens.com>
+Date: Wed, 19 Sep 2012 16:17:54 +0200
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-Content-Type: text/plain;charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] [GIT PULL] core-5 for x86
+References: <504F5F1B.4020806@siemens.com> <50550091.50002@xenomai.org>
+	<505592B8.9000109@xenomai.org> <5056DBAD.1000903@xenomai.org>
+	<5058AE95.2020103@siemens.com> <5058AF21.5000600@xenomai.org>
+	<5058BC96.8090601@siemens.com> <5058BE17.5070304@xenomai.org>
+	<5058C39C.8000407@siemens.com> <5058C5F6.3040406@xenomai.org>
+	<5058C73B.8040006@siemens.com> <5058C79A.5020400@xenomai.org>
+	<5058C8EE.1050803@siemens.com> <5058C9FE.5030505@xenomai.org>
+In-Reply-To: <5058C9FE.5030505@xenomai.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai] [PATCH] ipipe: x86: Populate vector_irq for all
+	dispatched vectors
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,79 +22,165 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Wolfgang Mauerer <wolfgang.mauerer@siemens.com>
-Cc: "Kiszka, Jan" <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-
-Wolfgang Mauerer wrote:
-> On 18/09/12 21:36, Gilles Chanteperdrix wrote:
->> On 09/18/2012 05:27 PM, Wolfgang Mauerer wrote:
->>
->>> On 18/09/12 16:25, Gilles Chanteperdrix wrote:
->>>> On 09/18/2012 04:11 PM, Wolfgang Mauerer wrote:
->>>>> Dear all,
->>>>>
->>>>> here's a rebase of the x86-specific bits of core-4 to core-5. I've
->>>>> included all x86 specific changes that are not yet in core-5, and
->>>>> also added the patches I sent earlier for core-4. I did not include a
->>>>> separate patch for the mechanical changes required to apply the
->>>>> x86 base patch on top of core-5, but can surely do so if desired.
+On 2012-09-18 21:22, Gilles Chanteperdrix wrote:
+> On 09/18/2012 09:18 PM, Jan Kiszka wrote:
+> 
+>> On 2012-09-18 21:12, Gilles Chanteperdrix wrote:
+>>> On 09/18/2012 09:10 PM, Jan Kiszka wrote:
+>>>
+>>>> On 2012-09-18 21:05, Gilles Chanteperdrix wrote:
+>>>>> rah, vectors_limit is not needed at all. I do not see which look you are
+>>>>> talking about.
 >>>>
->>>> I am not quite finished with x86 on 3.4. So, I would like to start 3.5
->>>> from the finishing point on 3.4. There are already commits in my
->>>> branch
->>>> which you did not take:
->>>>
->>>> http://git.xenomai.org/?p=ipipe-gch.git;a=shortlog;h=refs/heads/for-core-3.4
->>> that's true; my last pull was too old. I'll add the corresponding
->>> commits to the tree (FYI, the purpose of this tree is mainly to do some
->>> experiments with the latest ipipe release and the latest kernel, and
->>> I wanted to make sure that work is not duplicated in case someone else
->>> is pursuing similar goals)
+>>>> 		cfg = irq_cfg(irq);
+>>>> 		if (!cpumask_test_cpu(cpu, cfg->domain))
+>>>> 			per_cpu(vector_irq, cpu)[vector] = -1;
+>>>
+>>>
+>>> Yes, but :
+>>>
+>>>>>>> -	for (vector = 0; vector < NR_VECTORS; ++vector) {
+>>>>>>> +	for (vector = 0; vector < first_system_vector; ++vector) {
+>>>
 >>
+>> And you know all side effects of that change?
 >>
->> Ok. We have a currently pending issue on x86 which you should be
->> informed about before discovering it during your tests: using
->> rthal_supported_cpus is broken in I-pipe core patches when using the
->> LAPIC timer: since there is only one irq handler for all the LAPIC
->> timers, the handler is registered on all cpus, but on non started cpus,
->> the handler will do nothing at best, and not foward the LAPIC ticks to
->> Linux (which is still in control of the LAPIC timer on these cpus).
->>
->> This problem is due to the fact that we keep the same vector as Linux,
->> and so the same irq. There are two ways out of this:
->>
->> - change the LAPIC vector when xenomai takes the control of the LAPIC
->> timer, like we use to do, this is racy with current code because the
->> timer is taken by Xenomai but still used a bit by Linux, before it is
->> programmed by Xenomai, and Xenomai assumes that the host tick irq is the
->> same as the timer irq. All this can be fixed, but the last drawback of
->> this approach is that it does not fix the issue on architectures where
->> the local timer irq is the same on all cpus, but can not be changed,
->> hence the second approach;
->> - the second approach is to add a test at the beginning of
->> xnintr_clock_handler and forward the irq to the root domain if the
->> current cpu does not belong to xnarch_supported_cpus. This means some
->> patching of I-pipe timers so that ipipe_percpu.hrtimer_irq also gets
->> defined for non supported cpus when they use the timer shared with other
->> cpus, essentially what this patch tries (but fails) to achieve:
->>
->> http://www.xenomai.org/pipermail/xenomai/2012-September/026066.html
->
-> thanks for the info! Unfortunately, I was not able to reproduce this
-> issue quickly using two latency instances bound to different CPUs on a
-> machine booted with isolcpus=1, though.
->
-> I did also not see the issue with core-5, but that's because
-> bdeaf76ba30a517 (ipipe/x86: use the vector_irq for system vectors too)
-> leads to a stuck CPU bringup for >1 CPUs. Will maybe look into that a
-> bit further.
->
-> Best regards, Wolfgang
+>> My point is: We have a working version, released and tested on machines
+>> that make use of the affected code paths.
+> 
+> 
+> Come on, look at the code:
+> 
+> 	for (vector = 0; vector < first_system_vector; ++vector) {
+> 		if (vector == IRQ_MOVE_CLEANUP_VECTOR)
+> 			continue;
+> 
+> 		irq = per_cpu(vector_irq, cpu)[vector];
+> 		if (irq < 0)
+> 			continue;
+> 
+> 		cfg = irq_cfg(irq);
+> 		if (!cpumask_test_cpu(cpu, cfg->domain))
+> 			per_cpu(vector_irq, cpu)[vector] = -1;
+> 	}
+> 
+> It simply skips an initialization to -1 because we know that we already
+> initialized this part of the array elsewhere.
 
-Yes, the commit is broken. We discussed this with Jan extensively.
+Yes, it's simple and obvious - and therefore it was wrong. To be fair:
+also in 2.6.38.
 
+Below a patch - using your scheme - that survived both another review
+and testing round. And it builds for APIC-less x86-32.
+
+Jan
+
+---8<---
+
+Based on patch by Gilles: This fixes the dispatching of
+IRQ_MOVE_CLEANUP_VECTOR in __ipipe_handle_irq and simplifies those
+lines by always using vector_irq to translate a vector to a Linux IRQ
+number. In contrast to the version in 2.6.38 and before, this one also
+properly marks unused vectors above first_system_vector as free.
+
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ arch/x86/include/asm/desc.h    |    8 ++++++++
+ arch/x86/kernel/apic/io_apic.c |    3 +++
+ arch/x86/kernel/ipipe.c        |   12 ++----------
+ arch/x86/kernel/irqinit.c      |    5 +++++
+ 4 files changed, 18 insertions(+), 10 deletions(-)
+
+diff --git a/arch/x86/include/asm/desc.h b/arch/x86/include/asm/desc.h
+index e95822d..5a5b415 100644
+--- a/arch/x86/include/asm/desc.h
++++ b/arch/x86/include/asm/desc.h
+@@ -4,6 +4,7 @@
+ #include <asm/desc_defs.h>
+ #include <asm/ldt.h>
+ #include <asm/mmu.h>
++#include <asm/hw_irq.h>
+ 
+ #include <linux/smp.h>
+ 
+@@ -351,6 +352,13 @@ extern unsigned long used_vectors[];
+ static inline void alloc_system_vector(int vector)
+ {
+ 	if (!test_bit(vector, used_vectors)) {
++#ifdef CONFIG_X86_LOCAL_APIC
++		unsigned cpu;
++
++		for_each_possible_cpu(cpu)
++			per_cpu(vector_irq, cpu)[vector] =
++				ipipe_apic_vector_irq(vector);
++#endif
+ 		set_bit(vector, used_vectors);
+ 		if (first_system_vector > vector)
+ 			first_system_vector = vector;
+diff --git a/arch/x86/kernel/apic/io_apic.c b/arch/x86/kernel/apic/io_apic.c
+index 93f84c9..0dd658d 100644
+--- a/arch/x86/kernel/apic/io_apic.c
++++ b/arch/x86/kernel/apic/io_apic.c
+@@ -1318,6 +1318,9 @@ void __setup_vector_irq(int cpu)
+ 	}
+ 	/* Mark the free vectors */
+ 	for (vector = 0; vector < NR_VECTORS; ++vector) {
++		/* I-pipe requires initialized vector_irq for system vectors */
++		if (test_bit(vector, used_vectors))
++			continue;
+ 		irq = per_cpu(vector_irq, cpu)[vector];
+ 		if (irq < 0)
+ 			continue;
+diff --git a/arch/x86/kernel/ipipe.c b/arch/x86/kernel/ipipe.c
+index 1a56b5f..fcf8113 100644
+--- a/arch/x86/kernel/ipipe.c
++++ b/arch/x86/kernel/ipipe.c
+@@ -581,16 +581,8 @@ int __ipipe_handle_irq(struct pt_regs *regs)
+ 	int irq, vector = regs->orig_ax, flags = 0;
+ 
+ 	if (likely(vector < 0)) {
+-		vector = ~vector;
+-#ifdef CONFIG_X86_LOCAL_APIC
+-		if (vector >= FIRST_SYSTEM_VECTOR)
+-			irq = ipipe_apic_vector_irq(vector);
+-		else
+-#endif	/* CONFIG_X86_LOCAL_APIC */
+-		{
+-			irq = __this_cpu_read(vector_irq[vector]);
+-			BUG_ON(irq < 0);
+-		}
++		irq = __this_cpu_read(vector_irq[~vector]);
++		BUG_ON(irq < 0);
+ 	} else { /* Software-generated. */
+ 		irq = vector;
+ 		flags = IPIPE_IRQF_NOACK;
+diff --git a/arch/x86/kernel/irqinit.c b/arch/x86/kernel/irqinit.c
+index 6fa97b2..dd348e1 100644
+--- a/arch/x86/kernel/irqinit.c
++++ b/arch/x86/kernel/irqinit.c
+@@ -165,6 +165,8 @@ static void __init smp_intr_init(void)
+ {
+ #ifdef CONFIG_SMP
+ #if defined(CONFIG_X86_64) || defined(CONFIG_X86_LOCAL_APIC)
++	unsigned cpu;
++
+ 	/*
+ 	 * The reschedule interrupt is a CPU-to-CPU reschedule-helper
+ 	 * IPI, driven by wakeup.
+@@ -254,6 +256,9 @@ static void __init smp_intr_init(void)
+ 	/* Low priority IPI to cleanup after moving an irq */
+ 	set_intr_gate(IRQ_MOVE_CLEANUP_VECTOR, irq_move_cleanup_interrupt);
+ 	set_bit(IRQ_MOVE_CLEANUP_VECTOR, used_vectors);
++	for_each_possible_cpu(cpu)
++		per_cpu(vector_irq, cpu)[IRQ_MOVE_CLEANUP_VECTOR] =
++			IRQ_MOVE_CLEANUP_VECTOR;
+ 
+ 	/* IPI used for rebooting/stopping */
+ 	alloc_intr_gate(REBOOT_VECTOR, reboot_interrupt);
 -- 
-                    Gilles.
+1.7.3.4
 
 
