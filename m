@@ -1,11 +1,15 @@
-Message-ID: <505B0CE0.4080100@siemens.com>
-Date: Thu, 20 Sep 2012 14:32:32 +0200
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <505B13B0.9020302@xenomai.org>
+Date: Thu, 20 Sep 2012 15:01:36 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+References: <505AF205.6010206@siemens.com> <505AF49D.6020905@xenomai.org>
+	<505AF641.6030604@siemens.com> <505AF687.9010002@siemens.com>
+	<505AFACC.1050802@siemens.com>
+In-Reply-To: <505AFACC.1050802@siemens.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] [PATCH] rtdm: Restrict/clarify usage of
-	rtdm_irq_request/free/enable/disable
+Subject: Re: [Xenomai] [PATCH] Revert "ipipe: ipipe_request_irq(),
+ ipipe_free_irq() are root-only services"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,91 +18,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>, Xenomai <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: "Mauerer, Wolfgang" <wolfgang.mauerer@siemens.com>, Xenomai <xenomai@xenomai.org>
 
-We cannot support line enabling/disabling over non-Linux contexts for
-all IRQ types (e.g.: changes to legacy MSIs). Requesting and releasing
-IRQs includes enabling/disabling them, so we better avoid conflicts by
-restricting the usage of rtdm_irq_request/free.
+On 09/20/2012 01:15 PM, Jan Kiszka wrote:
 
-On the other hand, there are users of rtdm_irq_enable/disable over
-interrupt context for supported IRQ types. Therefore, clarify the
-documentation of those functions that even more extreme care has to be
-applied when relying on them.
+> On 2012-09-20 12:57, Jan Kiszka wrote:
+>> On 2012-09-20 12:56, Jan Kiszka wrote:
+>>> On 2012-09-20 12:49, Philippe Gerum wrote:
+>>>> On 09/20/2012 12:37 PM, Jan Kiszka wrote:
+>>>>> This reverts commit 073ff1e8045d0311b8cf390687c0ba3619681672.
+>>>>>
+>>>>> Both service are NOT just root-only services. E.g., rtdm_irq_request
+>>>>> requires by specification support also over non-Linux contexts.
+>>>>
+>>>> Nack. We can't run the enable code for MSIs over non-root, and
+>>>> that code typically follows the irq request. Besides, we want to mask
+>>>> the source upon irq free to handle the SMP case properly, which we could
+>>>> not do from non-root with MSIs.
+>>>>
+>>>> So either we have both request+enable and free usable over non-root, or
+>>>> there is no point.
+>>>
+>>> OK, I get the point with legacy MSI. Then we have two other bugs to solve:
+>>>  - in I-pipe as it holds a hardened spin lock across enable/disable (of
+>>>    MSIs)
+> 
+> I think this bug may only manifest over ARM as that arch does
+> enable/disable_irq() inside __ipipe_enable/disable_irqdesc - unless
+> something prevents that enabling will ever happen for interrupts that
+> need Linux locks to work. Is that assured?
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- include/rtdm/rtdm_driver.h |    1 +
- ksrc/skins/rtdm/drvlib.c   |   16 ++++++++++------
- 2 files changed, 11 insertions(+), 6 deletions(-)
 
-diff --git a/include/rtdm/rtdm_driver.h b/include/rtdm/rtdm_driver.h
-index 68135e4..3006d59 100644
---- a/include/rtdm/rtdm_driver.h
-+++ b/include/rtdm/rtdm_driver.h
-@@ -899,6 +899,7 @@ int rtdm_irq_request(rtdm_irq_t *irq_handle, unsigned int irq_no,
- #ifndef DOXYGEN_CPP /* Avoid static inline tags for RTDM in doxygen */
- static inline int rtdm_irq_free(rtdm_irq_t *irq_handle)
- {
-+	XENO_ASSERT(RTDM, xnpod_root_p(), return -EPERM;);
- 	return xnintr_detach(irq_handle);
- }
- 
-diff --git a/ksrc/skins/rtdm/drvlib.c b/ksrc/skins/rtdm/drvlib.c
-index 4b74042..e5c470c 100644
---- a/ksrc/skins/rtdm/drvlib.c
-+++ b/ksrc/skins/rtdm/drvlib.c
-@@ -1617,8 +1617,7 @@ EXPORT_SYMBOL_GPL(rtdm_mutex_timedlock);
-  * This service can be called from:
-  *
-  * - Kernel module initialization/cleanup code
-- * - Kernel-based task
-- * - User-space task (RT, non-RT)
-+ * - User-space task (non-RT)
-  *
-  * Rescheduling: never.
-  */
-@@ -1628,6 +1627,8 @@ int rtdm_irq_request(rtdm_irq_t *irq_handle, unsigned int irq_no,
- {
- 	int err;
- 
-+	XENO_ASSERT(RTDM, xnpod_root_p(), return -EPERM;);
-+
- 	xnintr_init(irq_handle, device_name, irq_no, handler, NULL, flags);
- 
- 	err = xnintr_attach(irq_handle, arg);
-@@ -1661,8 +1662,7 @@ EXPORT_SYMBOL_GPL(rtdm_irq_request);
-  * This service can be called from:
-  *
-  * - Kernel module initialization/cleanup code
-- * - Kernel-based task
-- * - User-space task (RT, non-RT)
-+ * - User-space task (non-RT)
-  *
-  * Rescheduling: never.
-  */
-@@ -1679,7 +1679,9 @@ int rtdm_irq_free(rtdm_irq_t *irq_handle);
-  * interrupt masking at device level (via corresponding control registers etc.)
-  * over masking at line level. Keep in mind that the latter is incompatible
-  * with IRQ line sharing and can also be more costly as interrupt controller
-- * access requires broader synchronization.
-+ * access requires broader synchronization. Also, certain IRQ types may not
-+ * allow the invocation over RT and interrupt contexts. The caller is
-+ * responsible for excluding such conflicts.
-  *
-  * Environments:
-  *
-@@ -1705,7 +1707,9 @@ int rtdm_irq_enable(rtdm_irq_t *irq_handle);
-  * interrupt masking at device level (via corresponding control registers etc.)
-  * over masking at line level. Keep in mind that the latter is incompatible
-  * with IRQ line sharing and can also be more costly as interrupt controller
-- * access requires broader synchronization.
-+ * access requires broader synchronization. Also, certain IRQ types may not
-+ * allow the invocation over RT and interrupt contexts. The caller is
-+ * responsible for excluding such conflicts.
-  *
-  * Environments:
-  *
+ARM does that because otherwise interrupts are not enabled after a call
+to eg. rtdm_irq_request, and calling rtdm_irq_enable does not work,
+calling request_irq is required to get them working.
+
 -- 
-1.7.3.4
+                                                                Gilles.
 
