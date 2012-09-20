@@ -1,11 +1,11 @@
-Message-ID: <505B5375.50007@grandegger.com>
-Date: Thu, 20 Sep 2012 19:33:41 +0200
-From: Wolfgang Grandegger <wg@grandegger.com>
+Message-ID: <505B5430.5050707@xenomai.org>
+Date: Thu, 20 Sep 2012 19:36:48 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <1347634862.78737.YahooMailNeo@web29605.mail.ird.yahoo.com>
-	<5055E244.4040101@web.de> <003501cd9744$0c80a460$2581ed20$@de>
+References: <1347634862.78737.YahooMailNeo@web29605.mail.ird.yahoo.com>	<5055E244.4040101@web.de>
+	<003501cd9744$0c80a460$2581ed20$@de>
 In-Reply-To: <003501cd9744$0c80a460$2581ed20$@de>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] Context Switch with rtnet
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -62,10 +62,18 @@ On 09/20/2012 05:24 PM, Franz Engel wrote:
 > code also with the native commands, like rt_recvfrom. But the result is the
 > same.
 
-What is the reason for the mode switch? How to get it see:
+Stepping in gdb causes switches to secondary mode (each step is a switch
+to secondary mode).
 
-http://www.rts.uni-hannover.de/xenomai/lxr/source/examples/native/sigdebug.c
+Anyway, you did not tell us:
+- what version of xenomai
+- what version of the Linux kernel
+- what version of the I-pipe patch
+- what architecture
+- what NIC
 
-Wolfgang.
+you are using.
 
+-- 
+					    Gilles.
 
