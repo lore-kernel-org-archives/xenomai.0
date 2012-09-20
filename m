@@ -1,11 +1,12 @@
-Message-ID: <505B2026.6010707@siemens.com>
-Date: Thu, 20 Sep 2012 15:54:46 +0200
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <505B22A3.8020408@xenomai.org>
+Date: Thu, 20 Sep 2012 16:05:23 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 References: <505AF205.6010206@siemens.com> <505AF49D.6020905@xenomai.org>
 	<505AF641.6030604@siemens.com> <505AF687.9010002@siemens.com>
 	<505AFACC.1050802@siemens.com> <505B15BE.2010500@xenomai.org>
-In-Reply-To: <505B15BE.2010500@xenomai.org>
+	<505B2026.6010707@siemens.com>
+In-Reply-To: <505B2026.6010707@siemens.com>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] [PATCH] Revert "ipipe: ipipe_request_irq(),
@@ -18,93 +19,109 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
 Cc: "Mauerer, Wolfgang" <wolfgang.mauerer@siemens.com>, Xenomai <xenomai@xenomai.org>
 
-On 2012-09-20 15:10, Philippe Gerum wrote:
-> On 09/20/2012 01:15 PM, Jan Kiszka wrote:
->> On 2012-09-20 12:57, Jan Kiszka wrote:
->>> On 2012-09-20 12:56, Jan Kiszka wrote:
->>>> On 2012-09-20 12:49, Philippe Gerum wrote:
->>>>> On 09/20/2012 12:37 PM, Jan Kiszka wrote:
->>>>>> This reverts commit 073ff1e8045d0311b8cf390687c0ba3619681672.
+On 09/20/2012 03:54 PM, Jan Kiszka wrote:
+> On 2012-09-20 15:10, Philippe Gerum wrote:
+>> On 09/20/2012 01:15 PM, Jan Kiszka wrote:
+>>> On 2012-09-20 12:57, Jan Kiszka wrote:
+>>>> On 2012-09-20 12:56, Jan Kiszka wrote:
+>>>>> On 2012-09-20 12:49, Philippe Gerum wrote:
+>>>>>> On 09/20/2012 12:37 PM, Jan Kiszka wrote:
+>>>>>>> This reverts commit 073ff1e8045d0311b8cf390687c0ba3619681672.
+>>>>>>>
+>>>>>>> Both service are NOT just root-only services. E.g., rtdm_irq_request
+>>>>>>> requires by specification support also over non-Linux contexts.
 >>>>>>
->>>>>> Both service are NOT just root-only services. E.g., rtdm_irq_request
->>>>>> requires by specification support also over non-Linux contexts.
+>>>>>> Nack. We can't run the enable code for MSIs over non-root, and
+>>>>>> that code typically follows the irq request. Besides, we want to mask
+>>>>>> the source upon irq free to handle the SMP case properly, which we could
+>>>>>> not do from non-root with MSIs.
+>>>>>>
+>>>>>> So either we have both request+enable and free usable over non-root, or
+>>>>>> there is no point.
 >>>>>
->>>>> Nack. We can't run the enable code for MSIs over non-root, and
->>>>> that code typically follows the irq request. Besides, we want to mask
->>>>> the source upon irq free to handle the SMP case properly, which we could
->>>>> not do from non-root with MSIs.
->>>>>
->>>>> So either we have both request+enable and free usable over non-root, or
->>>>> there is no point.
->>>>
->>>> OK, I get the point with legacy MSI. Then we have two other bugs to solve:
->>>>  - in I-pipe as it holds a hardened spin lock across enable/disable (of
->>>>    MSIs)
+>>>>> OK, I get the point with legacy MSI. Then we have two other bugs to solve:
+>>>>>  - in I-pipe as it holds a hardened spin lock across enable/disable (of
+>>>>>    MSIs)
+>>>
+>>> I think this bug may only manifest over ARM as that arch does
+>>> enable/disable_irq() inside __ipipe_enable/disable_irqdesc - unless
+>>> something prevents that enabling will ever happen for interrupts that
+>>> need Linux locks to work. Is that assured?
 >>
->> I think this bug may only manifest over ARM as that arch does
->> enable/disable_irq() inside __ipipe_enable/disable_irqdesc - unless
->> something prevents that enabling will ever happen for interrupts that
->> need Linux locks to work. Is that assured?
+>> I'm not referring to enable_irqdesc, but to the common programming
+>> pattern of calling ipipe_request_irq from the same context than
+>> ipipe_enable_irq (or directly the underlying irqchip handler for unmasking).
 > 
-> I'm not referring to enable_irqdesc, but to the common programming
-> pattern of calling ipipe_request_irq from the same context than
-> ipipe_enable_irq (or directly the underlying irqchip handler for unmasking).
+> Patterns are better enforced at higher layers, not here.
+> 
 
-Patterns are better enforced at higher layers, not here.
+The -core series is really about designing a Xenomai-specific real-time
+enabler.
+
+>>
+>>>
+>>>>>  - in Xenomai 2.6 (at least, didn't check forge) as it calls with a
+>>>>>    hardened spin lock held into ipipe_virtualize_irq
+>>>
+>>> This problem is something I vaguely recall we discussed before already
+>>> in the past. I think there was no good solution for the Xenomai 2
+>>> architecture.
+>>>
+>>
+>> The main issue was about de-registering a handler, passing NULL. To
+>> solve the SMP-specific issue of interrupt synchronization on all CPUs,
+>> we would have to be able to disable the source, which may entail running
+>> regular code, therefore restricting the valid calling context to root.
+> 
+> I'm not sure what the conclusion regarding this tricky topic was. But I
+> don't see how this can be addressed only at I-pipe level anyway.
+
+The I-pipe knows about IRQs, and does very much know what it entails do
+deal with the kernel infrastructure regarding this. It does abstract
+this from the client code, enforcing rules to make sure the interface
+remains applicable to all archs. These rules have an impact on client
+code, we have to live with it.
 
 > 
 >>
->>>>  - in Xenomai 2.6 (at least, didn't check forge) as it calls with a
->>>>    hardened spin lock held into ipipe_virtualize_irq
+>>> In this light, let's remove those checks nevertheless.
+>>> Enabling/disabling the IRQ are separate calls, and those should be
+>>> instrumented as those cause the restriction.
+>>>
 >>
->> This problem is something I vaguely recall we discussed before already
->> in the past. I think there was no good solution for the Xenomai 2
->> architecture.
+>> I don't see it this way, because we can't predict what will be the
+>> constraints we might have for hooking irqs on all archs we will support.
+>> Maybe we will have to run more mainline code in some cases. In any case,
+>> we have to fold masking into the de-registration code for proper SMP
+>> support - this fix was never finalized precisely because we could not
+>> guarantee a root calling context in that case.
 >>
-> 
-> The main issue was about de-registering a handler, passing NULL. To
-> solve the SMP-specific issue of interrupt synchronization on all CPUs,
-> we would have to be able to disable the source, which may entail running
-> regular code, therefore restricting the valid calling context to root.
-
-I'm not sure what the conclusion regarding this tricky topic was. But I
-don't see how this can be addressed only at I-pipe level anyway.
-
-> 
->> In this light, let's remove those checks nevertheless.
->> Enabling/disabling the IRQ are separate calls, and those should be
->> instrumented as those cause the restriction.
+>> These checks are there to express the fact that calling from non-root is
+>> inherently unsafe. We might find a (ugly) way to tag irq descriptors,
+>> for knowing whether this is safe to call from non-root and test this
+>> conditionally. But at the end of the day, we would still end up with
+>> checking for arch-specific constraints in a generic API, which would be
+>> wrong by design.
 >>
+>> I put these checks when refactoring the pipeline API for the very same
+>> reason than you agree to update the RTDM spec regarding
+>> rtdm_request_irq: no sane code should have called ipipe_virtualize_irq()
+>> from a non-root context. This is just about formalizing this fact.
 > 
-> I don't see it this way, because we can't predict what will be the
-> constraints we might have for hooking irqs on all archs we will support.
-> Maybe we will have to run more mainline code in some cases. In any case,
-> we have to fold masking into the de-registration code for proper SMP
-> support - this fix was never finalized precisely because we could not
-> guarantee a root calling context in that case.
-> 
-> These checks are there to express the fact that calling from non-root is
-> inherently unsafe. We might find a (ugly) way to tag irq descriptors,
-> for knowing whether this is safe to call from non-root and test this
-> conditionally. But at the end of the day, we would still end up with
-> checking for arch-specific constraints in a generic API, which would be
-> wrong by design.
-> 
-> I put these checks when refactoring the pipeline API for the very same
-> reason than you agree to update the RTDM spec regarding
-> rtdm_request_irq: no sane code should have called ipipe_virtualize_irq()
-> from a non-root context. This is just about formalizing this fact.
+> ...at the wrong point. Plus it is breaking our instrumentation. Again:
+> this belongs where we can asses the problem better, i.e. in the higher
+> layer and in those functions that do break when called from RT context.
 
-...at the wrong point. Plus it is breaking our instrumentation. Again:
-this belongs where we can asses the problem better, i.e. in the higher
-layer and in those functions that do break when called from RT context.
+I don't think so.
 
-Jan
+> 
+> Jan
+> 
+
 
 -- 
-Siemens AG, Corporate Technology, CT RTC ITP SDP-DE
-Corporate Competence Center Embedded Linux
+Philippe.
 
