@@ -1,9 +1,10 @@
-Message-ID: <505AF641.6030604@siemens.com>
-Date: Thu, 20 Sep 2012 12:56:01 +0200
+Message-ID: <505AF687.9010002@siemens.com>
+Date: Thu, 20 Sep 2012 12:57:11 +0200
 From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
 References: <505AF205.6010206@siemens.com> <505AF49D.6020905@xenomai.org>
-In-Reply-To: <505AF49D.6020905@xenomai.org>
+	<505AF641.6030604@siemens.com>
+In-Reply-To: <505AF641.6030604@siemens.com>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] [PATCH] Revert "ipipe: ipipe_request_irq(),
@@ -19,26 +20,31 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: Philippe Gerum <rpm@xenomai.org>
 Cc: "Mauerer, Wolfgang" <wolfgang.mauerer@siemens.com>, Xenomai <xenomai@xenomai.org>
 
-On 2012-09-20 12:49, Philippe Gerum wrote:
-> On 09/20/2012 12:37 PM, Jan Kiszka wrote:
->> This reverts commit 073ff1e8045d0311b8cf390687c0ba3619681672.
+On 2012-09-20 12:56, Jan Kiszka wrote:
+> On 2012-09-20 12:49, Philippe Gerum wrote:
+>> On 09/20/2012 12:37 PM, Jan Kiszka wrote:
+>>> This reverts commit 073ff1e8045d0311b8cf390687c0ba3619681672.
+>>>
+>>> Both service are NOT just root-only services. E.g., rtdm_irq_request
+>>> requires by specification support also over non-Linux contexts.
 >>
->> Both service are NOT just root-only services. E.g., rtdm_irq_request
->> requires by specification support also over non-Linux contexts.
+>> Nack. We can't run the enable code for MSIs over non-root, and
+>> that code typically follows the irq request. Besides, we want to mask
+>> the source upon irq free to handle the SMP case properly, which we could
+>> not do from non-root with MSIs.
+>>
+>> So either we have both request+enable and free usable over non-root, or
+>> there is no point.
 > 
-> Nack. We can't run the enable code for MSIs over non-root, and
-> that code typically follows the irq request. Besides, we want to mask
-> the source upon irq free to handle the SMP case properly, which we could
-> not do from non-root with MSIs.
-> 
-> So either we have both request+enable and free usable over non-root, or
-> there is no point.
+> OK, I get the point with legacy MSI. Then we have two other bugs to solve:
+>  - in I-pipe as it holds a hardened spin lock across enable/disable (of
+>    MSIs)
+>  - in Xenomai 2.6 (at least, didn't check forge) as it calls with a
+>    hardened spin lock held into ipipe_virtualize_irq
 
-OK, I get the point with legacy MSI. Then we have two other bugs to solve:
- - in I-pipe as it holds a hardened spin lock across enable/disable (of
-   MSIs)
- - in Xenomai 2.6 (at least, didn't check forge) as it calls with a
-   hardened spin lock held into ipipe_virtualize_irq
+Sorry, three bugs:
+ - in the RTDM spec as it always allowed rtdm_irq_request over RT task
+   contexts
 
 Jan
 
