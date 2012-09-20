@@ -1,6 +1,6 @@
-Message-ID: <505AF8BE.70800@xenomai.org>
-Date: Thu, 20 Sep 2012 13:06:38 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <505AFACC.1050802@siemens.com>
+Date: Thu, 20 Sep 2012 13:15:24 +0200
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
 References: <505AF205.6010206@siemens.com> <505AF49D.6020905@xenomai.org>
 	<505AF641.6030604@siemens.com> <505AF687.9010002@siemens.com>
@@ -17,10 +17,10 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: "Mauerer, Wolfgang" <wolfgang.mauerer@siemens.com>, Xenomai <xenomai@xenomai.org>
 
-On 09/20/2012 12:57 PM, Jan Kiszka wrote:
+On 2012-09-20 12:57, Jan Kiszka wrote:
 > On 2012-09-20 12:56, Jan Kiszka wrote:
 >> On 2012-09-20 12:49, Philippe Gerum wrote:
 >>> On 09/20/2012 12:37 PM, Jan Kiszka wrote:
@@ -41,25 +41,33 @@ On 09/20/2012 12:57 PM, Jan Kiszka wrote:
 >>  - in I-pipe as it holds a hardened spin lock across enable/disable (of
 >>    MSIs)
 
-Missed it. Where?
+I think this bug may only manifest over ARM as that arch does
+enable/disable_irq() inside __ipipe_enable/disable_irqdesc - unless
+something prevents that enabling will ever happen for interrupts that
+need Linux locks to work. Is that assured?
 
 >>  - in Xenomai 2.6 (at least, didn't check forge) as it calls with a
 >>    hardened spin lock held into ipipe_virtualize_irq
+
+This problem is something I vaguely recall we discussed before already
+in the past. I think there was no good solution for the Xenomai 2
+architecture.
+
+In this light, let's remove those checks nevertheless.
+Enabling/disabling the IRQ are separate calls, and those should be
+instrumented as those cause the restriction.
+
 > 
 > Sorry, three bugs:
 >  - in the RTDM spec as it always allowed rtdm_irq_request over RT task
 >    contexts
->
 
-Yes. This was likely designed when ->enable/disable() handlers would not
-traverse a whole pile of hairy code highly dependent on the PCI
-infrastructure like today. And on the ppc side, this is not getting any
-prettier.
+Changing the spec and adding a runtime check will likely be no issue. No
+sane driver should have made use of that option. I will file a patch.
 
-> Jan
-> 
-
+Jan
 
 -- 
-Philippe.
+Siemens AG, Corporate Technology, CT RTC ITP SDP-DE
+Corporate Competence Center Embedded Linux
 
