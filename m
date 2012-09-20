@@ -1,14 +1,14 @@
-Message-ID: <505B3287.2030308@xenomai.org>
-Date: Thu, 20 Sep 2012 17:13:11 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <505B3333.20507@xenomai.org>
+Date: Thu, 20 Sep 2012 17:16:03 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 References: <505AF205.6010206@siemens.com> <505AF49D.6020905@xenomai.org>
 	<505AF641.6030604@siemens.com> <505AF687.9010002@siemens.com>
-	<505AFACC.1050802@siemens.com> <505B13B0.9020302@xenomai.org>
-	<505B16EB.3040800@siemens.com> <505B2466.6010304@xenomai.org>
-	<505B2FA4.80906@siemens.com>
-In-Reply-To: <505B2FA4.80906@siemens.com>
-Content-Type: text/plain; charset=UTF-8
+	<505AFACC.1050802@siemens.com> <505B15BE.2010500@xenomai.org>
+	<505B2026.6010707@siemens.com> <505B22A3.8020408@xenomai.org>
+	<505B3142.4060600@siemens.com>
+In-Reply-To: <505B3142.4060600@siemens.com>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] [PATCH] Revert "ipipe: ipipe_request_irq(),
  ipipe_free_irq() are root-only services"
@@ -23,67 +23,49 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: Jan Kiszka <jan.kiszka@siemens.com>
 Cc: "Mauerer, Wolfgang" <wolfgang.mauerer@siemens.com>, Xenomai <xenomai@xenomai.org>
 
-On 09/20/2012 05:00 PM, Jan Kiszka wrote:
-> On 2012-09-20 16:12, Gilles Chanteperdrix wrote:
->> On 09/20/2012 03:15 PM, Jan Kiszka wrote:
->>> On 2012-09-20 15:01, Gilles Chanteperdrix wrote:
->>>> On 09/20/2012 01:15 PM, Jan Kiszka wrote:
->>>>
->>>>> On 2012-09-20 12:57, Jan Kiszka wrote:
->>>>>> On 2012-09-20 12:56, Jan Kiszka wrote:
->>>>>>> On 2012-09-20 12:49, Philippe Gerum wrote:
->>>>>>>> On 09/20/2012 12:37 PM, Jan Kiszka wrote:
->>>>>>>>> This reverts commit 073ff1e8045d0311b8cf390687c0ba3619681672.
->>>>>>>>>
->>>>>>>>> Both service are NOT just root-only services. E.g., rtdm_irq_request
->>>>>>>>> requires by specification support also over non-Linux contexts.
->>>>>>>>
->>>>>>>> Nack. We can't run the enable code for MSIs over non-root, and
->>>>>>>> that code typically follows the irq request. Besides, we want to mask
->>>>>>>> the source upon irq free to handle the SMP case properly, which we could
->>>>>>>> not do from non-root with MSIs.
->>>>>>>>
->>>>>>>> So either we have both request+enable and free usable over non-root, or
->>>>>>>> there is no point.
->>>>>>>
->>>>>>> OK, I get the point with legacy MSI. Then we have two other bugs to solve:
->>>>>>>  - in I-pipe as it holds a hardened spin lock across enable/disable (of
->>>>>>>    MSIs)
+On 09/20/2012 05:07 PM, Jan Kiszka wrote:
+> On 2012-09-20 16:05, Philippe Gerum wrote:
+>>>>> In this light, let's remove those checks nevertheless.
+>>>>> Enabling/disabling the IRQ are separate calls, and those should be
+>>>>> instrumented as those cause the restriction.
 >>>>>
->>>>> I think this bug may only manifest over ARM as that arch does
->>>>> enable/disable_irq() inside __ipipe_enable/disable_irqdesc - unless
->>>>> something prevents that enabling will ever happen for interrupts that
->>>>> need Linux locks to work. Is that assured?
 >>>>
+>>>> I don't see it this way, because we can't predict what will be the
+>>>> constraints we might have for hooking irqs on all archs we will support.
+>>>> Maybe we will have to run more mainline code in some cases. In any case,
+>>>> we have to fold masking into the de-registration code for proper SMP
+>>>> support - this fix was never finalized precisely because we could not
+>>>> guarantee a root calling context in that case.
 >>>>
->>>> ARM does that because otherwise interrupts are not enabled after a call
->>>> to eg. rtdm_irq_request, and calling rtdm_irq_enable does not work,
->>>> calling request_irq is required to get them working.
+>>>> These checks are there to express the fact that calling from non-root is
+>>>> inherently unsafe. We might find a (ugly) way to tag irq descriptors,
+>>>> for knowing whether this is safe to call from non-root and test this
+>>>> conditionally. But at the end of the day, we would still end up with
+>>>> checking for arch-specific constraints in a generic API, which would be
+>>>> wrong by design.
+>>>>
+>>>> I put these checks when refactoring the pipeline API for the very same
+>>>> reason than you agree to update the RTDM spec regarding
+>>>> rtdm_request_irq: no sane code should have called ipipe_virtualize_irq()
+>>>> from a non-root context. This is just about formalizing this fact.
 >>>
->>> The generic pattern Xenomai currently uses is xnintr_attach +
->>> xnintr_enable. The latter happens to be rtdm_irq_enable as well. So,
->>> doesn't xnintr_enable work at all?
+>>> ...at the wrong point. Plus it is breaking our instrumentation. Again:
+>>> this belongs where we can asses the problem better, i.e. in the higher
+>>> layer and in those functions that do break when called from RT context.
 >>
->> No. It has in fact, never worked before the I-pipe core. People had to
->> call request_irq before xnintr_attach.
->>
->>> Or is it only not suited as interrupt
->>> startup? Then, is that a new issue or something core-3.x specific?
->>> Finally, can't we address it in xnarch_enable_irq?
->>
->> This is a very old issue, that I had forgotten, and that bit me when I
->> tried to use a separate timer for Xenomai and Linux on omap3: because
->> the timer interrupt of a different timer has no corresponding linux
->> interrupt.
->>
->> The problem is that irqs which are also used by Linux have to be treated
->> differently from irqs which are registered only for the linux domain.
+>> I don't think so.
 > 
-> OK. Then we can safely assume that this initial enabling/disabling will
-> not cause excessive latencies or even acquire Linux locks on ARM, right?
+> I do agree that the caller of ipipe_request_irq should not be called
+> over RT context. However, ipipe_request_irq itself _is_ called under an
+> RT spin lock with hardirqs disabled, both under Xenomai 2.6 and upcoming
+> 3. And this triggers CONFIG_IPIPE_DEBUG_CONTEXT, clearly showing that
+> things are still broken here. What do you suggest to fix all this?
+> 
 
-mmmm. enable_irq may take the descriptor spinlock, I have to check that.
+Fix the callers in the upcoming Xenomai releases, and provide an open
+coded implementation of ipipe_request_irq in ipipe_virtualize_irq when
+CONFIG_IPIPE_LEGACY is enabled, which will take care of the broken legacy.
 
 -- 
-					    Gilles.
+Philippe.
 
