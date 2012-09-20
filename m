@@ -1,14 +1,14 @@
-Message-ID: <505B4044.7030103@xenomai.org>
-Date: Thu, 20 Sep 2012 18:11:48 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: "Franz Engel" <franz_lambert_engel@yahoo.de>
+References: <1347634862.78737.YahooMailNeo@web29605.mail.ird.yahoo.com>
+	<5055E244.4040101@web.de>
+In-Reply-To: <5055E244.4040101@web.de>
+Date: Thu, 20 Sep 2012 17:24:38 +0200
+Message-ID: <003501cd9744$0c80a460$2581ed20$@de>
 MIME-Version: 1.0
-References: <50588110.6030701@siemens.com> <50588458.1010802@xenomai.org>
-	<505892E8.6080605@siemens.com> <5058CD54.4070509@xenomai.org>
-	<5059B76F.7020608@siemens.com>
-In-Reply-To: <5059B76F.7020608@siemens.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Language: de
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [GIT PULL] core-5 for x86
+Subject: Re: [Xenomai] Context Switch with rtnet
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,73 +17,76 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Wolfgang Mauerer <wolfgang.mauerer@siemens.com>
-Cc: "Kiszka, Jan" <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: 'Jan Kiszka' <jan.kiszka@web.de>
+Cc: xenomai@xenomai.org
 
-On 09/19/2012 02:15 PM, Wolfgang Mauerer wrote:
-> On 18/09/12 21:36, Gilles Chanteperdrix wrote:
->> On 09/18/2012 05:27 PM, Wolfgang Mauerer wrote:
->>
->>> On 18/09/12 16:25, Gilles Chanteperdrix wrote:
->>>> On 09/18/2012 04:11 PM, Wolfgang Mauerer wrote:
->>>>> Dear all,
->>>>>
->>>>> here's a rebase of the x86-specific bits of core-4 to core-5. I've
->>>>> included all x86 specific changes that are not yet in core-5, and
->>>>> also added the patches I sent earlier for core-4. I did not include a
->>>>> separate patch for the mechanical changes required to apply the
->>>>> x86 base patch on top of core-5, but can surely do so if desired.
->>>>
->>>> I am not quite finished with x86 on 3.4. So, I would like to start 3.5
->>>> from the finishing point on 3.4. There are already commits in my branch
->>>> which you did not take:
->>>>
->>>> http://git.xenomai.org/?p=ipipe-gch.git;a=shortlog;h=refs/heads/for-core-3.4
->>> that's true; my last pull was too old. I'll add the corresponding
->>> commits to the tree (FYI, the purpose of this tree is mainly to do some
->>> experiments with the latest ipipe release and the latest kernel, and
->>> I wanted to make sure that work is not duplicated in case someone else
->>> is pursuing similar goals)
->>
->>
->> Ok. We have a currently pending issue on x86 which you should be
->> informed about before discovering it during your tests: using
->> rthal_supported_cpus is broken in I-pipe core patches when using the
->> LAPIC timer: since there is only one irq handler for all the LAPIC
->> timers, the handler is registered on all cpus, but on non started cpus,
->> the handler will do nothing at best, and not foward the LAPIC ticks to
->> Linux (which is still in control of the LAPIC timer on these cpus).
->>
->> This problem is due to the fact that we keep the same vector as Linux,
->> and so the same irq. There are two ways out of this:
->>
->> - change the LAPIC vector when xenomai takes the control of the LAPIC
->> timer, like we use to do, this is racy with current code because the
->> timer is taken by Xenomai but still used a bit by Linux, before it is
->> programmed by Xenomai, and Xenomai assumes that the host tick irq is the
->> same as the timer irq. All this can be fixed, but the last drawback of
->> this approach is that it does not fix the issue on architectures where
->> the local timer irq is the same on all cpus, but can not be changed,
->> hence the second approach;
->> - the second approach is to add a test at the beginning of
->> xnintr_clock_handler and forward the irq to the root domain if the
->> current cpu does not belong to xnarch_supported_cpus. This means some
->> patching of I-pipe timers so that ipipe_percpu.hrtimer_irq also gets
->> defined for non supported cpus when they use the timer shared with other
->> cpus, essentially what this patch tries (but fails) to achieve:
->>
->> http://www.xenomai.org/pipermail/xenomai/2012-September/026066.html
+Hi Jan,
+
+> > Hi,
+> >
+> > I've a little problem. I'm using the rtnet.h-header and the following
+> function:
+> > ret = recvfrom ( ethernetConnection.sock, &recBuffer, sizeof (
+> > recBuffer ),0, ( struct sockaddr * )
+> > &ethernetConnection.dest_addr,&destlen );
+> >
+> >
+> > I compiled the program with the xenomai compiling flags and library.
+> >
+> > When I look to the xenomai state I get something like this:
+> > CPU  PID    MSW        CSW        PF    STAT       %CPU  NAME
+> >  22  0      0          834840     0     00000082    0.1  rtnet-stack
+> >  22  0      0          1          0     00000082    0.0  rtnet-rtpc
+> >   0  6262   2          2          0     00300380    0.0
+> qs_robotpositio
+> >   2  6265   2          6          0     00300380    0.0
+> qs_robotpositio
+> >   0  6266   1          1          0     00300380    0.0
+> robotrsiinterfa
+> >   1  6268   1147       2365       0     00300182    0.8
+> robotrsiinterfa
+> >
+> > You can see, I get a lote of context and module switches just as the
+> rtnet-stack itself. Is that normal?
 > 
-> thanks for the info! Unfortunately, I was not able to reproduce this
-> issue quickly using two latency instances bound to different CPUs on a
-> machine booted with isolcpus=1, though.
+> Well, I have no clue what you configured, so I can only guess. If your
+> task 6268 is a pure RT task that is not supposed to interact with Linux
+> services, you first of all have a bug in your software stack. You
+> should look for the reason of those mode switches to Linux, e.g. by
+> asking Xenomai to raise SIGXCPU when this happens.
 
-The issue is not with isolcpus, but with rthal_supported_cpus, that is
-xenomai "supported_cpus" parameter. And maybe Linux is running fine with
-the bug, but if you do a cat /proc/interrupts, you should see the local
-timer interrupt no longer incrementing on cpus not intercepted by xenomai.
+I use the SIGXCPU signal to look where I get a context switch. It is exactly
+in the line of the recvfrom. I get the same result when I step through my
+code. I debug from line to line and check the /proc/xenomai/state, so I can
+see that the CSW and MSW increases when I step over the recvfrom. I tried my
+code also with the native commands, like rt_recvfrom. But the result is the
+same.
 
+> 
+> Regarding the rtnet-stack context switches: basically, every switch is
+> one packet arriving at your NIC. Either you are receiving a lot of
+> small but valid packets or you are on an open network, and that is
+> basically heavy unrelated broadcast traffic of other sources than the
+> RT device(s).
+> 
+> Jan
 
--- 
-					    Gilles.
+I'm connected to a robot that sends me his position every 4ms.
 
+I send you a minimal example of my code. But I'm not sure if I understand
+your question for the configuration correct. Depends the realtime capability
+of rtnet only by my kdevelop project (cmake, *.c and *.h) or is it possible
+that I miss some settings in the kernel? I start rtnet before I run my
+program and I load the modules for my NIC and for UDP etc. Is there
+something more what I have to do?
+
+Thanks and regards,
+    Franz
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: DemoCSW.tar.gz
+Type: application/octet-stream
+Size: 3601 bytes
+Desc: not available
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20120920/c87f6809/attachment.obj>
