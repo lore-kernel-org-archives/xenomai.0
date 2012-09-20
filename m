@@ -1,11 +1,11 @@
-From: "Haudebourg, Mickael (Silica)" <Mickael.Haudebourg@silica.com>
-Date: Thu, 20 Sep 2012 09:43:42 +0000
-Message-ID: <5A40434AE075D24387A9891F417A1B317225A5@DEPOIY0MX08MB03.msg.avnet.eu>
-Content-Language: en-US
+Message-ID: <505AED9B.1030805@sigmatek.at>
+Date: Thu, 20 Sep 2012 12:19:07 +0200
+From: Johann Obermayr <johann.obermayr@sigmatek.at>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset="iso-8859-15"; format="flowed"
 Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] Xilinx ZYNQ support ( SMP or AMP mode
+Subject: [Xenomai] calculate cpuload
+Reply-To: johann.obermayr@sigmatek.at
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,17 +14,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Xenomai@xenomai.org
 
-HI,
+Hello,
 
+How can i calculate the cpu load for a dualcore ATOM
+Core 0 : Linux and some Xenomai Thread
+Core 1: Fixed 2 Xenomai Threads.
 
-  Could you please tell me if there is a project to run Xenomai on the ZYNQ=
- platform of Xilinx ?   ( SMP mode ? )
-And on which board ?
+thanks
 
+--=20
+Mit freundlichen Gr=FC=DFen, best regards
+     Johann Obermayr
 
-Thanks in advance
-Best regards
-Mickael
+Software/Betriebssystem Entwicklung
+________________________________________________
+SIGMATEK GmbH & Co KG
+Sigmatekstra=DFe 1
+5112 Lamprechtshausen
+=D6sterreich / Austria
+
+Tel.  :  +43 / 6274/ 43 21-0   (Durchwahl leider nicht m=F6glich)
+Fax   :  +43 / 6274/ 43 21-18  (bzw 300 im Werk 2 )
+E-Mail: johann.obermayr@sigmatek.at
+http://www.sigmatek-automation.com
+****************************Please note:********************************
+  This email and all attachments are confidential and intended solely for
+  the person or entity to whom it is addressed. If you are not the named
+  addressee you must not make this email and all attachments accessible
+  to any other person. If you have received this email in error please
+  delete it together with all attachments.
+************************************************************************
+
 
