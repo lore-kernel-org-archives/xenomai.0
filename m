@@ -1,13 +1,15 @@
-Message-ID: <505715E4.4080404@xenomai.org>
-Date: Mon, 17 Sep 2012 14:21:56 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <505AFD85.5090500@siemens.com>
+Date: Thu, 20 Sep 2012 13:27:01 +0200
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-References: <5056C385.6090403@xenomai.org> <5056D4AE.2010201@web.de>
-	<5056DA52.6040006@xenomai.org> <5056DCC5.10909@web.de>
-In-Reply-To: <5056DCC5.10909@web.de>
-Content-Type: text/plain; charset=UTF-8
+References: <505AF205.6010206@siemens.com> <505AF49D.6020905@xenomai.org>
+	<505AF641.6030604@siemens.com> <505AF687.9010002@siemens.com>
+	<505AFACC.1050802@siemens.com>
+In-Reply-To: <505AFACC.1050802@siemens.com>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] IO-APIC latencies
+Subject: Re: [Xenomai] [PATCH] Revert "ipipe: ipipe_request_irq(),
+ ipipe_free_irq() are root-only services"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,56 +18,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@web.de>
-Cc: Xenomai <Xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: "Mauerer, Wolfgang" <wolfgang.mauerer@siemens.com>, Xenomai <xenomai@xenomai.org>
 
-On 09/17/2012 10:18 AM, Jan Kiszka wrote:
-> On 2012-09-17 10:07, Gilles Chanteperdrix wrote:
->> On 09/17/2012 09:43 AM, Jan Kiszka wrote:
->>> On 2012-09-17 08:30, Gilles Chanteperdrix wrote:
->>>>
->>>> Hi,
->>>>
->>>> looking at x86 latencies, I found that what was taking long on my atom
->>>> was masking the fasteoi interrupts at IO-APIC level. So, I experimented
->>>> an idea: masking at LAPIC level instead of IO-APIC, by using the "task
->>>> priority" register. This seems to improve latencies on my atom:
->>>>
->>>> http://sisyphus.hd.free.fr/~gilles/core-3.4-latencies/atom.png
->>>>
->>>> This implies splitting the LAPIC vectors in a high priority and low
->>>> priority sets, the final implementation would use ipipe_enable_irqdesc
->>>> to detect a high priority domain, and change the vector at that time.
->>>>
->>>> This also improves the latencies on my old PIII with a VIA chipset, but
->>>> it generates spurious interrupts (I do not know if it really is a
->>>> matter, as handling a spurious interrupt is still faster than masking an
->>>> IO-APIC interrupt), the spurious interrupts in that case are a
->>>> documented behaviour of the LAPIC.
->>>>
->>>> Is there any interest in pursuing this idea, or are x86 with slow
->>>> IO-APIC the exception more than the rule, or having to split the vector
->>>> space appears too great a restriction?
->>>
->>> Line-based interrupts are legacy, of decreasing relevance for PCI
->>> devices - likely what we are primarily interesting in here - due to MSI.
->>
->> Even if I enable MSI, the kernel still uses these irqs for the 
->> peripherals integrated to the chipset, such as the USB HCI, or ATA 
->> driver (IOW, non PCI devices). 
+On 2012-09-20 13:15, Jan Kiszka wrote:
+>> Sorry, three bugs:
+>>  - in the RTDM spec as it always allowed rtdm_irq_request over RT task
+>>    contexts
 > 
-> Those are all PCI as well. And modern chipsets include variants of them
-> with MSI(-X) support.
+> Changing the spec and adding a runtime check will likely be no issue. No
+> sane driver should have made use of that option. I will file a patch.
 
-Here is what I get on my workstation:
-$ grep fasteoi /proc/interrupts 
-  9:          0          0          0          0   IO-APIC-fasteoi   acpi
- 19:          0          0          0          0   IO-APIC-fasteoi   ahci
- 23:  280150305          0          0          0   IO-APIC-fasteoi   ehci_hcd:usb5, ehci_hcd:usb6
+Naturally, this also affects rtdm_irq_enable/disable, and some use cases
+I'm aware off will bail out when we add assertions for non-RT context.
 
-It is an sandy bridge processor, it has less than 2 years. 
-What exactly do you mean by "modern" ?
+I would prefer to address it more selectively, allowing all those
+services for IRQ types that support it (i.e. that can be atomically
+enabled/disabled), keeping the freedom to reject or otherwise fail for
+types that are in conflict.
+
+Jan
 
 -- 
-					    Gilles.
+Siemens AG, Corporate Technology, CT RTC ITP SDP-DE
+Corporate Competence Center Embedded Linux
 
