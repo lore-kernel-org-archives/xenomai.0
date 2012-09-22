@@ -1,5 +1,5 @@
-Message-ID: <505DBE28.1040803@xenomai.org>
-Date: Sat, 22 Sep 2012 15:33:28 +0200
+Message-ID: <505DC06E.1060401@xenomai.org>
+Date: Sat, 22 Sep 2012 15:43:10 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <mailman.1.1348308001.4459.xenomai@xenomai.org>
@@ -74,43 +74,270 @@ On 09/22/2012 03:20 PM, Franz Engel wrote:
 > That's my versions:
 > rtnet 0.9.12
 > xenomai 2.5.5.2
-
-
-That is not the latest release in the 2.5 branch. You are advised to
-upgrade to 2.5.6, it should work with the same linux kernel version.
-
->
-
+> linux kernel 2.6.32-20
+> ubuntu 10.04
+> i-pipe patch: adeos-ipipe-2.6.32.20-x86-2.7-03.patch
+> NIC driver: 8139too
+> CPU: Intel vPro
+> 
+> 
+> Any other ideas? Or is it not a problem but the normal state that the
+> counters increases?
+> 
+> Here is the code of my cmake-file:
+> cmake_minimum_required(VERSION 2.8)
+> 
+> ##################################
+> # BEGIN OF EDITING THIS TEMPLATE #
+> ##################################
+> 
+> ############################################
+> # PLEASE ENTER HERE THE NAME OF YOUR PROJECT
+> 
+> set(ProjectName robotrsiVersuch)  #e.g. "robotdatalogger" (do not forget the
+> quotes)
+> 
+> PROJECT(${ProjectName})
+> 
+> ###############################################
+> # ENTER HERE THE VERSION NUMBER OF YOUR PROJECT
+> set(${ProjectName}_VERSION_MAJOR 1)
+> set(${ProjectName}_VERSION_MINOR 0)
+> 
+> ###############################################
+> # ENABLE OR DIABLE THE USE OF XENOMAI AND QT
+> option(USE_XENOMAI	"xenomai"		ON	)
+> option(USE_RTNET	"rtnet"			ON	)
+> 
+> #############################################
+> # NOW ADD ALL SOURCE FILES OF YOUR PROJECT
+> # IF YOU'RE USING QT, ALSO ADD ALL HEADERS OF 
+> # QT-OBJECTS, UI-FILES AND RESOURCES
+> 
+> #####################
+> # INCLUDE DIRECTORIES
+> 
+> set(MAIN_DIR ${PROJECT_SOURCE_DIR}/../..)
+> set(SOURCE_DIR src)
+> 
+> 
+> #############################################
+> # ENTER THE INSTALL DIRECTORY
+> # added by stefan.thumfart@profactor.at
+> set(INSTALLDIR ${MAIN_DIR}/bin)
+> 
+> set(INCLUDES
+>     ${SOURCE_DIR}
+> )
+> 
+> 
+> ###########
+> # LIBRARIES
+> 
+> set(EXTRA_LIBS 
+> 
+> )
+> 
+> ######
+> # CPPs
+> 
+> set(SOURCES 
+> 	main.cpp
+> 	src/rsiinterface.cpp
+> 	src/rsiinterface.h
+> )
+> 
+> #############
+> # MOC-Headers
+> set(MOC_HEADERS
+> 
+> )
+> 
+> ##########
+> # UI-Files
+> set(UIS
+> 
+> )
+> 
+> ###########
+> # Resources
+> set(RESOURCES 
+> 
+> )
+> 
+> ##################################
+> #  END OF EDITING THIS TEMPLATE  #
+> ##################################
+> 
+> 
+> message (STATUS "Usage of Xenomai: ${USE_XENOMAI}")
+> message (STATUS "Usage of RTnet: ${USE_RTNET}")
+> 
+> message(STATUS "Generating buid files for project ${ProjectName}, version
+> ${${ProjectName}_VERSION_MAJOR}.${${ProjectName}_VERSION_MINOR}")
+> 
+> include_directories(${INCLUDES})
+> 
+> 
+> IF(USE_XENOMAI)
+>     message(STATUS "Starting Xenomai configuration")
+> 
+>     message(STATUS "startign RTnet configuration")
+>     include_directories(/usr/local/rtnet/include)
+>     include_directories(/usr/xenomai/include/rtdm)
+>     message(STATUS "RTnet configuration finished")   
+> 
+>     find_library(XENO_rtdm rtdm /usr/xenomai/lib)
+>     set(EXTRA_LIBS ${EXTRA_LIBS} ${XENO_rtdm})
+>     message(STATUS ${EXTRA_LIBS} )
+> 
+>     set(XENOMAI_DIR "/usr/xenomai")
+>     set(XENOMAI_INCLUDE_DIR ${XENOMAI_DIR}/include)
+>     set(XENOMAI_INCLUDE_POSIX_DIR ${XENOMAI_DIR}/include/native)
+> 
 >     exec_program("${XENOMAI_DIR}/bin/xeno-config --skin=native --ldflags"
 > OUTPUT_VARIABLE XENOMAI_EXE_LINKER_FLAGS)
 >     set(CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS}
 > ${XENOMAI_EXE_LINKER_FLAGS})
 >     exec_program("${XENOMAI_DIR}/bin/xeno-config --skin=native --cflags"
 > OUTPUT_VARIABLE XENOMAI_DEFINITIONS)
-
-
-Here you are retrieving the flags for the native skin, not for the posix
-skin, unless there is some other part of your makefile which gets them.
-
+>     set(EXTRA_DEFINITIONS ${EXTRA_DEFINITIONS} ${XENOMAI_DEFINITIONS})
+>     ADD_DEFINITIONS(${EXTRA_DEFINITIONS})
+> 
+>     set(EXTRA_LIBS ${EXTRA_LIBS} rtdk)
+>     
+>     message(STATUS ${XENOMAI_EXE_LINKER_FLAGS})
+>     message(STATUS ${XENOMAI_DEFINITIONS})
+>     message(STATUS "Xenomai configuration finished")
+> ELSE(USE_XENOMAI)
+>     find_library(RT_TIME_LIB rt)
+>     set(EXTRA_LIBS ${EXTRA_LIBS} ${RT_TIME_LIB})
+> ENDIF(USE_XENOMAI)
+> 
+> 
+> IF (USE_RTNET)
+> 
+> ENDIF (USE_RTNET)
+> 
+> 
+> add_executable(${ProjectName} ${SOURCES})
+> 
+> TARGET_LINK_LIBRARIES(${ProjectName} ${EXTRA_LIBS})
+> 
+> install(TARGETS ${ProjectName} DESTINATION ${INSTALLDIR})
+> 
+> And this is my cpp:
+> #include <unistd.h>
+> #include <stdlib.h>
+> #include <stdio.h>
+> #include <string.h>
+> #include <signal.h>
+> #include <getopt.h>
+> #include <execinfo.h>
+> #include <sys/mman.h>
+> 
+> #include <stdexcept>
+> #include <arpa/inet.h>
+> #include <native/task.h>
+> #include "rtdk.h"
+> #include <rtnet.h>
+> 
+> 
+> #define RECBUFFERSIZE 600
+> #define SENDBUFFERSIZE 300
+> 
+> RT_TASK task;
+> const char *reason_str[7];
+> 
+> struct conn_t
+> {
+>     int sock;
+>     struct sockaddr_in dest_addr;
+>     struct sockaddr_in local_addr;
+> };
+> 
+> struct conn_t getSocket ()
+> {
+>     struct conn_t ethernetConnection;
+> 
+>     //ethernetConnection.dest_addr.sin_family         = AF_INET;
+>     ethernetConnection.dest_addr.sin_addr.s_addr    = inet_addr
+> ("192.168.100.12");
+>     ethernetConnection.dest_addr.sin_port           = htons (6002);
+>     
+>     //ethernetConnection.local_addr.sin_family        = AF_INET;
+>     ethernetConnection.local_addr.sin_addr.s_addr   = inet_addr
+> ("192.168.100.11");
+>     ethernetConnection.local_addr.sin_port          = htons (6008);
+> 
 >     if ( ( ethernetConnection.sock = socket ( AF_INET, SOCK_DGRAM,
 > IPPROTO_UDP ) ) < 0 )
-
-> (...)
+>     {
+>         throw std::runtime_error("Can not open socket");
+>     }
+>     else
+>     {
+>     }
+> 
 >     if ( bind ( ethernetConnection.sock, ( struct sockaddr * )
-> &ethernetConnection.local_addr, sizeof ( ethernetConnection.local_addr
-) ) <
+> &ethernetConnection.local_addr, sizeof ( ethernetConnection.local_addr ) ) <
 > 0 )
-> (...)
+>     {
+>         close ( ethernetConnection.sock );
+>         throw std::runtime_error("Can not bind socket");
+>     }
+>     else
+>     {
+>     }
+> 
+>     return ethernetConnection;
+> }
+> 
+> void task_body (void *cookie)
+> {  
+>     char recBuffer[RECBUFFERSIZE];
+> 
+>     socklen_t destlen;
+>     
+>     struct conn_t ethernetConnection;
+>     
+>     ethernetConnection = getSocket();
+> 
+>     destlen = sizeof ( ethernetConnection.dest_addr );
+>     
+>     int k;
+>     
+>     rt_task_set_mode(0, T_WARNSW, NULL);
+>     
+>     for(k=0;k<1000;k++)
+>     {
 >         recvfrom( ethernetConnection.sock, &recBuffer, sizeof ( recBuffer
 > ),0, ( struct sockaddr * ) &ethernetConnection.dest_addr,&destlen );
+> 	
+>         //ret = rt_dev_sendto ( ethernetConnection.sock, &sendBuffer, strlen
+> ( sendBuffer ) +1, 0, ( struct sockaddr * )
+> &ethernetConnection.dest_addr,destlen);
+>     }
+> }
+> 
+> 
+> void warn_upon_switch(int sig, siginfo_t *si, void *context)
+> {
+>     unsigned int reason = si->si_value.sival_int;
+>     void *bt[32];
+>     int nentries;
+>     
+>     printf("\nSIGDEBUG received, reason %d: %s\n", reason,
+>            reason <= SIGDEBUG_WATCHDOG ? reason_str[reason] : "<unknown>");
+>     /* Dump a backtrace of the frame which caused the switch to
+>        secondary mode: */
+>     nentries = backtrace(bt,sizeof(bt) / sizeof(bt[0]));
+>     backtrace_symbols_fd(bt,nentries,fileno(stdout));
+> }
 
-Here you are using the posix calls socket, bind and recvfrom. It will
-allow you to work with an RTDM socket only if you compile for the posix
-skin. See:
 
-http://www.xenomai.org/index.php/Porting_POSIX_applications_to_Xenomai#Compilation_for_the_Xenomai_POSIX_skin
-
-Now, I have no idea why you do not get any signal when using these calls.
+Beware the stack, you probably can not use printf with the default
+thread stack size (this is the reason why backtrace_symbols_fd is used).
 
 -- 
                                                                 Gilles.
