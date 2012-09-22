@@ -1,14 +1,14 @@
-Message-ID: <50571738.9060204@siemens.com>
-Date: Mon, 17 Sep 2012 14:27:36 +0200
-From: Jan Kiszka <jan.kiszka@siemens.com>
+From: "Franz Engel" <franz_lambert_engel@yahoo.de>
+References: <mailman.1.1348308001.4459.xenomai@xenomai.org>
+In-Reply-To: <mailman.1.1348308001.4459.xenomai@xenomai.org>
+Date: Sat, 22 Sep 2012 15:20:55 +0200
+Message-ID: <004901cd98c5$194fc590$4bef50b0$@de>
 MIME-Version: 1.0
-References: <5056C385.6090403@xenomai.org> <5056D4AE.2010201@web.de>
-	<5056DA52.6040006@xenomai.org> <5056DCC5.10909@web.de>
-	<505715E4.4080404@xenomai.org>
-In-Reply-To: <505715E4.4080404@xenomai.org>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain;
+	charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] IO-APIC latencies
+Content-Language: de
+Subject: [Xenomai] Context Switch with rtnet
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,65 +17,362 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai <Xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 2012-09-17 14:21, Gilles Chanteperdrix wrote:
-> On 09/17/2012 10:18 AM, Jan Kiszka wrote:
->> On 2012-09-17 10:07, Gilles Chanteperdrix wrote:
->>> On 09/17/2012 09:43 AM, Jan Kiszka wrote:
->>>> On 2012-09-17 08:30, Gilles Chanteperdrix wrote:
->>>>>
->>>>> Hi,
->>>>>
->>>>> looking at x86 latencies, I found that what was taking long on my atom
->>>>> was masking the fasteoi interrupts at IO-APIC level. So, I experimented
->>>>> an idea: masking at LAPIC level instead of IO-APIC, by using the "task
->>>>> priority" register. This seems to improve latencies on my atom:
->>>>>
->>>>> http://sisyphus.hd.free.fr/~gilles/core-3.4-latencies/atom.png
->>>>>
->>>>> This implies splitting the LAPIC vectors in a high priority and low
->>>>> priority sets, the final implementation would use ipipe_enable_irqdesc
->>>>> to detect a high priority domain, and change the vector at that time.
->>>>>
->>>>> This also improves the latencies on my old PIII with a VIA chipset, but
->>>>> it generates spurious interrupts (I do not know if it really is a
->>>>> matter, as handling a spurious interrupt is still faster than masking an
->>>>> IO-APIC interrupt), the spurious interrupts in that case are a
->>>>> documented behaviour of the LAPIC.
->>>>>
->>>>> Is there any interest in pursuing this idea, or are x86 with slow
->>>>> IO-APIC the exception more than the rule, or having to split the vector
->>>>> space appears too great a restriction?
->>>>
->>>> Line-based interrupts are legacy, of decreasing relevance for PCI
->>>> devices - likely what we are primarily interesting in here - due to MSI.
->>>
->>> Even if I enable MSI, the kernel still uses these irqs for the 
->>> peripherals integrated to the chipset, such as the USB HCI, or ATA 
->>> driver (IOW, non PCI devices). 
->>
->> Those are all PCI as well. And modern chipsets include variants of them
->> with MSI(-X) support.
+> On Fri, 21 Sep 2012 12:08:40 +0200, Kai Bollue <mlist1@bollue.de>
+> > On 21.09.2012 12:02, Gilles Chanteperdrix wrote:
+> >> On 09/21/2012 11:58 AM, Kai Bollue wrote:
+> >>> On 14.09.2012 17:01, Franz Engel wrote:
+> >>> Hi,
+> >>>
+> >>> I've a little problem. I'm using the rtnet.h-header and the
+> following function:
+> >>> ret = recvfrom ( ethernetConnection.sock, &recBuffer, sizeof (
+> >>> recBuffer ),0, ( struct sockaddr * )
+> >>> &ethernetConnection.dest_addr,&destlen );
+> >> Hi,
+> >>
+> >> stupid question: But you do use an rtnet socket, not a normal one,
+> do
+> >> you? In this case, shouldn't it be rt_dev_recvfrom(...)?
+> > When using the posix skin, recvfrom is substituted at compilation (or
+> > more exactly link-edit) time with __wrap_recvfrom, implemented in
+> > libpthread_rt.so, allowing to work with real-time sockets.
+> >
 > 
-> Here is what I get on my workstation:
-> $ grep fasteoi /proc/interrupts 
->   9:          0          0          0          0   IO-APIC-fasteoi   acpi
->  19:          0          0          0          0   IO-APIC-fasteoi   ahci
->  23:  280150305          0          0          0   IO-APIC-fasteoi   ehci_hcd:usb5, ehci_hcd:usb6
+> Ah, sorry, I missed that.
 > 
-> It is an sandy bridge processor, it has less than 2 years. 
-> What exactly do you mean by "modern" ?
 
-Mine is more than 2 years old and has an MSI-capable AHCI e.g.
+Sorry, I missed to answer on some questions:
 
-Also interesting is the IO-APIC access delay you see on this platform.
-We'll try to measure here as well.
+Let me explain my problem again. When I run my program ("mytask") the CSW
+and MSW increase every time the program receive a message:
+CPU  PID    MSW        CSW        PF    STAT       %CPU  NAME
+  0  0      0          396        0     00500080  100.0  ROOT/0
+  1  0      0          0          0     00500080  100.0  ROOT/1
+  0  1336   1          1          0     00300380    0.0  kogmo_man
+  0  0      0          209        0     00000082    0.0  rtnet-stack
+  0  0      0          1          0     00000082    0.0  rtnet-rtpc
+  0  0      0          1          0     00000082    0.0  rtcfg-rx
+  0  5182   1          15         0     00340182    0.0  mytask
+  0  0      0          143        0     00000000    0.0  IRQ22: rteth0
+  1  0      0          186        0     00000000    0.0  IRQ22: rteth0
+  0  0      0          2054479    0     00000000    0.0  IRQ4364: [timer]
+  1  0      0          547805     0     00000000    0.0  IRQ4364: [timer]
 
-Jan
+Wolfgang advised me to find the reason for this phenomenon like the program
+on this link:
+http://www.rts.uni-hannover.de/xenomai/lxr/source/examples/native/sigdebug.c
+I tried it and modified my code (see the code further down). When I insert
+an "cout" after "rt_task_set_mode(0, T_WARNSW, NULL);" I get a failure
+message (so it should work). But when I run this program without the cout I
+get no message, but the CSW and MSW counter are still increases.  
 
--- 
-Siemens AG, Corporate Technology, CT RTC ITP SDP-DE
-Corporate Competence Center Embedded Linux
+
+That's my versions:
+rtnet 0.9.12
+xenomai 2.5.5.2
+linux kernel 2.6.32-20
+ubuntu 10.04
+i-pipe patch: adeos-ipipe-2.6.32.20-x86-2.7-03.patch
+NIC driver: 8139too
+CPU: Intel vPro
+
+
+Any other ideas? Or is it not a problem but the normal state that the
+counters increases?
+
+Here is the code of my cmake-file:
+cmake_minimum_required(VERSION 2.8)
+
+##################################
+# BEGIN OF EDITING THIS TEMPLATE #
+##################################
+
+############################################
+# PLEASE ENTER HERE THE NAME OF YOUR PROJECT
+
+set(ProjectName robotrsiVersuch)  #e.g. "robotdatalogger" (do not forget the
+quotes)
+
+PROJECT(${ProjectName})
+
+###############################################
+# ENTER HERE THE VERSION NUMBER OF YOUR PROJECT
+set(${ProjectName}_VERSION_MAJOR 1)
+set(${ProjectName}_VERSION_MINOR 0)
+
+###############################################
+# ENABLE OR DIABLE THE USE OF XENOMAI AND QT
+option(USE_XENOMAI	"xenomai"		ON	)
+option(USE_RTNET	"rtnet"			ON	)
+
+#############################################
+# NOW ADD ALL SOURCE FILES OF YOUR PROJECT
+# IF YOU'RE USING QT, ALSO ADD ALL HEADERS OF 
+# QT-OBJECTS, UI-FILES AND RESOURCES
+
+#####################
+# INCLUDE DIRECTORIES
+
+set(MAIN_DIR ${PROJECT_SOURCE_DIR}/../..)
+set(SOURCE_DIR src)
+
+
+#############################################
+# ENTER THE INSTALL DIRECTORY
+# added by stefan.thumfart@profactor.at
+set(INSTALLDIR ${MAIN_DIR}/bin)
+
+set(INCLUDES
+    ${SOURCE_DIR}
+)
+
+
+###########
+# LIBRARIES
+
+set(EXTRA_LIBS 
+
+)
+
+######
+# CPPs
+
+set(SOURCES 
+	main.cpp
+	src/rsiinterface.cpp
+	src/rsiinterface.h
+)
+
+#############
+# MOC-Headers
+set(MOC_HEADERS
+
+)
+
+##########
+# UI-Files
+set(UIS
+
+)
+
+###########
+# Resources
+set(RESOURCES 
+
+)
+
+##################################
+#  END OF EDITING THIS TEMPLATE  #
+##################################
+
+
+message (STATUS "Usage of Xenomai: ${USE_XENOMAI}")
+message (STATUS "Usage of RTnet: ${USE_RTNET}")
+
+message(STATUS "Generating buid files for project ${ProjectName}, version
+${${ProjectName}_VERSION_MAJOR}.${${ProjectName}_VERSION_MINOR}")
+
+include_directories(${INCLUDES})
+
+
+IF(USE_XENOMAI)
+    message(STATUS "Starting Xenomai configuration")
+
+    message(STATUS "startign RTnet configuration")
+    include_directories(/usr/local/rtnet/include)
+    include_directories(/usr/xenomai/include/rtdm)
+    message(STATUS "RTnet configuration finished")   
+
+    find_library(XENO_rtdm rtdm /usr/xenomai/lib)
+    set(EXTRA_LIBS ${EXTRA_LIBS} ${XENO_rtdm})
+    message(STATUS ${EXTRA_LIBS} )
+
+    set(XENOMAI_DIR "/usr/xenomai")
+    set(XENOMAI_INCLUDE_DIR ${XENOMAI_DIR}/include)
+    set(XENOMAI_INCLUDE_POSIX_DIR ${XENOMAI_DIR}/include/native)
+
+    exec_program("${XENOMAI_DIR}/bin/xeno-config --skin=native --ldflags"
+OUTPUT_VARIABLE XENOMAI_EXE_LINKER_FLAGS)
+    set(CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS}
+${XENOMAI_EXE_LINKER_FLAGS})
+    exec_program("${XENOMAI_DIR}/bin/xeno-config --skin=native --cflags"
+OUTPUT_VARIABLE XENOMAI_DEFINITIONS)
+    set(EXTRA_DEFINITIONS ${EXTRA_DEFINITIONS} ${XENOMAI_DEFINITIONS})
+    ADD_DEFINITIONS(${EXTRA_DEFINITIONS})
+
+    set(EXTRA_LIBS ${EXTRA_LIBS} rtdk)
+    
+    message(STATUS ${XENOMAI_EXE_LINKER_FLAGS})
+    message(STATUS ${XENOMAI_DEFINITIONS})
+    message(STATUS "Xenomai configuration finished")
+ELSE(USE_XENOMAI)
+    find_library(RT_TIME_LIB rt)
+    set(EXTRA_LIBS ${EXTRA_LIBS} ${RT_TIME_LIB})
+ENDIF(USE_XENOMAI)
+
+
+IF (USE_RTNET)
+
+ENDIF (USE_RTNET)
+
+
+add_executable(${ProjectName} ${SOURCES})
+
+TARGET_LINK_LIBRARIES(${ProjectName} ${EXTRA_LIBS})
+
+install(TARGETS ${ProjectName} DESTINATION ${INSTALLDIR})
+
+And this is my cpp:
+#include <unistd.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <signal.h>
+#include <getopt.h>
+#include <execinfo.h>
+#include <sys/mman.h>
+
+#include <stdexcept>
+#include <arpa/inet.h>
+#include <native/task.h>
+#include "rtdk.h"
+#include <rtnet.h>
+
+
+#define RECBUFFERSIZE 600
+#define SENDBUFFERSIZE 300
+
+RT_TASK task;
+const char *reason_str[7];
+
+struct conn_t
+{
+    int sock;
+    struct sockaddr_in dest_addr;
+    struct sockaddr_in local_addr;
+};
+
+struct conn_t getSocket ()
+{
+    struct conn_t ethernetConnection;
+
+    //ethernetConnection.dest_addr.sin_family         = AF_INET;
+    ethernetConnection.dest_addr.sin_addr.s_addr    = inet_addr
+("192.168.100.12");
+    ethernetConnection.dest_addr.sin_port           = htons (6002);
+    
+    //ethernetConnection.local_addr.sin_family        = AF_INET;
+    ethernetConnection.local_addr.sin_addr.s_addr   = inet_addr
+("192.168.100.11");
+    ethernetConnection.local_addr.sin_port          = htons (6008);
+
+    if ( ( ethernetConnection.sock = socket ( AF_INET, SOCK_DGRAM,
+IPPROTO_UDP ) ) < 0 )
+    {
+        throw std::runtime_error("Can not open socket");
+    }
+    else
+    {
+    }
+
+    if ( bind ( ethernetConnection.sock, ( struct sockaddr * )
+&ethernetConnection.local_addr, sizeof ( ethernetConnection.local_addr ) ) <
+0 )
+    {
+        close ( ethernetConnection.sock );
+        throw std::runtime_error("Can not bind socket");
+    }
+    else
+    {
+    }
+
+    return ethernetConnection;
+}
+
+void task_body (void *cookie)
+{  
+    char recBuffer[RECBUFFERSIZE];
+
+    socklen_t destlen;
+    
+    struct conn_t ethernetConnection;
+    
+    ethernetConnection = getSocket();
+
+    destlen = sizeof ( ethernetConnection.dest_addr );
+    
+    int k;
+    
+    rt_task_set_mode(0, T_WARNSW, NULL);
+    
+    for(k=0;k<1000;k++)
+    {
+        recvfrom( ethernetConnection.sock, &recBuffer, sizeof ( recBuffer
+),0, ( struct sockaddr * ) &ethernetConnection.dest_addr,&destlen );
+	
+        //ret = rt_dev_sendto ( ethernetConnection.sock, &sendBuffer, strlen
+( sendBuffer ) +1, 0, ( struct sockaddr * )
+&ethernetConnection.dest_addr,destlen);
+    }
+}
+
+
+void warn_upon_switch(int sig, siginfo_t *si, void *context)
+{
+    unsigned int reason = si->si_value.sival_int;
+    void *bt[32];
+    int nentries;
+    
+    printf("\nSIGDEBUG received, reason %d: %s\n", reason,
+           reason <= SIGDEBUG_WATCHDOG ? reason_str[reason] : "<unknown>");
+    /* Dump a backtrace of the frame which caused the switch to
+       secondary mode: */
+    nentries = backtrace(bt,sizeof(bt) / sizeof(bt[0]));
+    backtrace_symbols_fd(bt,nentries,fileno(stdout));
+}
+
+int main (int argc, char **argv)
+{
+    struct sigaction sa;
+    int err;
+
+    reason_str[SIGDEBUG_UNDEFINED] = "undefined";
+    reason_str[SIGDEBUG_MIGRATE_SIGNAL] = "received signal";
+    reason_str[SIGDEBUG_MIGRATE_SYSCALL] = "invoked syscall";
+    reason_str[SIGDEBUG_MIGRATE_FAULT] = "triggered fault";
+    reason_str[SIGDEBUG_MIGRATE_PRIOINV] = "affected by priority inversion";
+    reason_str[SIGDEBUG_NOMLOCK] = "missing mlockall";
+    reason_str[SIGDEBUG_WATCHDOG] = "runaway thread";
+    
+    mlockall(MCL_CURRENT | MCL_FUTURE);
+    
+    //rt_print_auto_init(0);
+
+    sigemptyset(&sa.sa_mask);
+    sa.sa_sigaction = warn_upon_switch;
+    sa.sa_flags = SA_SIGINFO;
+    sigaction(SIGDEBUG, &sa, NULL);
+
+    err = rt_task_create(&task,"mytask",0,1,T_FPU);
+
+    if (err) {
+      fprintf(stderr,"failed to create task, code %d\n",err);
+      return 0;
+    }
+
+    err = rt_task_start(&task,&task_body,NULL);
+
+    if (err) {
+      fprintf(stderr,"failed to start task, code %d\n",err);
+      return 0;
+    }
+
+    pause();
+
+    return 0;
+}
+
+
 
