@@ -1,16 +1,13 @@
-Message-ID: <505F1C2B.1080800@xenomai.org>
-Date: Sun, 23 Sep 2012 16:26:51 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <505F234B.6070208@wanadoo.fr>
+Date: Sun, 23 Sep 2012 16:57:15 +0200
+From: Thierry Bultel <thierry.bultel@wanadoo.fr>
 MIME-Version: 1.0
-References: <50483A49.5090100@ebus.com> <504C7797.8040201@xenomai.org>
-	<5058F5F6.2060708@xenomai.org> <505F175C.2020702@xenomai.org>
-	<505F17A1.5040302@xenomai.org> <505F1837.9030701@xenomai.org>
-	<505F187E.7080308@xenomai.org> <505F1A1A.3090702@xenomai.org>
-	<505F1ADE.9000105@xenomai.org> <505F1BE5.8010202@xenomai.org>
-In-Reply-To: <505F1BE5.8010202@xenomai.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Queue corruption from XDDP in Xenomai 2.6.1
+References: <505EB99F.7050705@wanadoo.fr> <505EBD61.1050009@wanadoo.fr>
+	<505F0D40.9030105@xenomai.org>
+In-Reply-To: <505F0D40.9030105@xenomai.org>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] Target frozen with rtcan_virt
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,83 +16,55 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Doug Brunner <dbrunner@ebus.com>, xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On 09/23/2012 04:25 PM, Philippe Gerum wrote:
+Gilles,
 
-> On 09/23/2012 04:21 PM, Philippe Gerum wrote:
->> On 09/23/2012 04:18 PM, Philippe Gerum wrote:
->>> On 09/23/2012 04:11 PM, Gilles Chanteperdrix wrote:
->>>> On 09/23/2012 04:09 PM, Philippe Gerum wrote:
->>>>
->>>>> On 09/23/2012 04:07 PM, Gilles Chanteperdrix wrote:
->>>>>> On 09/23/2012 04:06 PM, Philippe Gerum wrote:
->>>>>>
->>>>>>> On 09/19/2012 12:30 AM, Gilles Chanteperdrix wrote:
->>>>>>>> On 09/09/2012 01:03 PM, Philippe Gerum wrote:
->>>>>>>>
->>>>>>>>> On 09/06/2012 07:53 AM, Doug Brunner wrote:
->>>>>>>>>> It looks like the bug I wrote about back in June still exists in Xenomai
->>>>>>>>>> 2.6.1 (with Linux 3.2.21). I ran the same test case (an RT thread opens
->>>>>>>>>> an XDDP socket, then a Linux thread opens its end of the pipe, then the
->>>>>>>>>> RT thread stops, then with the Linux thread still holding its end of the
->>>>>>>>>> pipe another RT thread tries to open an XDDP socket with the same minor
->>>>>>>>>> number). With Xenomai queue and I-pipe debugging enabled, I got a report
->>>>>>>>>> of a corrupted queue. I've attached my config, test case, and serial
->>>>>>>>>> console log.
->>>>>>>>>>
->>>>>>>>>> So far I haven't found anything in the XDDP or underlying xnpipe_* code
->>>>>>>>>> that would suggest why this is happening. However something is
->>>>>>>>>> definitely going wrong, since xnpipe_minor_free should not be called
->>>>>>>>>> until my Linux task closes its end of the pipe, so the call by the
->>>>>>>>>> second RT thread to open the pipe should fail with -EBUSY. Any thoughts
->>>>>>>>>> on why this might be happening?
->>>>>>>>>>
->>>>>>>>>
->>>>>>>>> Yes, please have a look at the commit log there:
->>>>>>>>> http://git.xenomai.org/?p=xenomai-2.6.git;a=commit;h=283c5f6eae1d1d7c65073e2f30fd40abdcf2c1ca
->>>>>>>>>
->>>>>>>>> This patch should fix the issue raised by the test case you sent
->>>>>>>>> (actually, it does, it was very useful to spot the problem - thanks for
->>>>>>>>> this).
->>>>>>>>
->>>>>>>>
->>>>>>>> Hi Philippe, 
->>>>>>>>
->>>>>>>> I am using a test case which should be about the same as Doug's, however when running the test
->>>>>>>> case twice, the second test fails at bind with EADDRINUSE.
->>>>>>>
->>>>>>> This is intended, the port remains bound until both ends
->>>>>>> have released it, e.g.:
->>>>>>
->>>>>>
->>>>>> Well, should not the port be released when the process finishes?
->>>>>>
->>>>>
->>>>> You have two threads involved, there is no finishing process in your test.
->>>>>
->>>>
->>>>
->>>> When I launch the test, it terminates saying "test passed", the two
->>>> threads dead. Then I launch the test again, and get an error EADDRINUSE
->>>> at bind.
->>>>
->>>
->>> Not here, it just waits on sigsuspend, looping in the non-rt thread.
->>> Closing the rtdm fildes manually via /proc/xenomai/rtdm would probably
->>> "fix" the issue on your side.
->>>
+thanks for your advice.
+
+I do not mind using the versatile express especially for emulation, I only want a board with a cortex A9
+that boots in qemu, with a linux kernel >= 3.2, and an available ipipe patch.
+
+Unfortunately qemu does not support the IMX6 yet, which is the board I aim, so I have to cope with another one.
+
+If you have a board name that is already fully supported and that fits my needs,
+please tell me and I will use it with pleasure.
+
+Meanwhile I have set  CONFIG_SMP to "no", and my recv program now just works fine.
+
+I have not been able to identify (in the CONFIG_SMP=y case) the difference between
+"rtcanrecv" and my recv program, that may make behave differently (freeze or not) but
+only the footprint.
+
+cheers,
+Thierry
+
+Le 23/09/2012 15:23, Gilles Chanteperdrix a écrit :
+
+> On 09/23/2012 09:42 AM, Thierry Bultel wrote:
+>
+>> Hi,
 >>
->> ?
->> 	if (ret == 0 && errno == EADDRINUSE && count == 1) {
->>
-> 
-> The test works as expected for me, with this fix:
+>> My configuration is linux-3.2.21+ipipe-core-3.2.21-arm-1.patch,
+>> running in qemu 1.2.0 for versatile express. I have CONFIG_SMP but
+>> qemu is launched with 1 core only (else it does not boot, keeps hung
+>> just after "booting the kernel", but that is not the point here).
+>
+> Basically, versatile express is not a board supported by the I-pipe
+> patch, so, the first thing is to check that the I-pipe port is working
+> correctly. For instance, I would run tsc -w first to see if the tsc
+> emulation is working correctly. Then you can use this document:
+>
+> http://www.xenomai.org/index.php/I-pipe-core:ArmPorting
+>
+> As a check list.
+>
+> Also, some modifications would be needed to get it working in SMP mode.
+> This should be much easier to start with the I-pipe kernel for 3.4,
+> except for the "global timer" which seems not to be present on versatile
+> express, so, some code would be needed to skip the initialization in
+> gt_setup when we detect a processor that does not have a global timer.
+>
 
-
-Indeed, sorry for the noise.
-
--- 
-                                                                Gilles.
 
