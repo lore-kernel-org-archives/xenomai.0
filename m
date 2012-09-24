@@ -1,10 +1,9 @@
-Message-ID: <505F383E.1020502@xenomai.org>
-Date: Sun, 23 Sep 2012 18:26:38 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] I-pipe pull request
+Date: Mon, 24 Sep 2012 15:33:48 +0200
+Message-ID: <CANKLDmsUnaOGUb9KQf=c-68h1YHB7R=Uc-GvMzsJL_L1jG2cJw@mail.gmail.com>
+From: Henri Roosen <henriroosen@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: [Xenomai] No TSC in SMP on Intel Atom
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,80 +12,75 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Xenomai <Xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-The following changes since commit d21e8cdbdcf21ade9878c038e8bd55555ae1d210:
+Hi,
 
-  ipipe: ipipe_timers_request -> ipipe_select_timers (2012-09-03 11:15:35 +0200)
+I'm currently doing some tests on an Intel ATOM D2700 and try to run
+Xenomai threads on different cores. Currently using kernel 3.4.6,
+x86-32 SMP, and Xenomai 2.6.1 SMP.
 
-are available in the git repository at:
-  git://git.xenomai.org/ipipe-gch.git for-core-3.4
+It seems the kernel detects the ATOM's TSC as unusable in SMP
+configuration and switches to the jiffies clock. This because there is
+an offset between both TSC counters of both cores. It seems even
+though the CPU has constant_tsc and nonstop_tsc, there is no guarantee
+for the counters to have the same value. I guess just the offset stays
+the same.
 
-Gilles Chanteperdrix (16):
-      ipipe/timer: only use kHz for large frequencies
-      ipipe/arm: add hard_irqs_disabled_flags definition
-      ipipe/tracer: whitespace cleanup
-      ipipe: allow architectures to use a Linux clock
-      ipipe/x86: implement dynamic tsc selection
-      ipipe/x86: more fixes for AMD processors
-      ipipe/debug: call irq_to_desc once in __ipipe_dispatch_irq
-      ipipe/debug: fix x86 __ipipe_serial_debug
-      ipipe/x86: fix irqsoff traces
-      Merge remote branch 'siemens/for-upstream' into for-core-3.4
-      ipipe/x86: only take the ioapic spinlock when an ioapic eoi is needed
-      ipipe/arm: shorten l2x0 cache interrupts masking sections
-      ipipe/arm: allow detecting calls to arch_get_unmapped_area from do_brk
-      ipipe/arm: print message when disabling wfi on ARM926EJ-S cores
-      arm/M28EVK: avoid led gpios pinmux
-      ipipe/arm: mx28 port
+My question is what are the implications for Xenomai not being able to
+have a TSC in SMP configuration, as Xenomai heavily relies on the TSC?
+Are there any known workarounds for synchronizing the TSC's so TSC can
+be used on these older Intel architectures?
+If not, what would be the best kernel/Xenomai
+configuration/workarounds to get a stable system able to run Xenomai
+threads on different cores?
 
-Jan Kiszka (1):
-      ipipe/x86: Populate vector_irq for all dispatched vectors
+Thanks,
+Henri
 
-Wolfgang Mauerer (3):
-      ipipe: Remove superfluous symbol export of irq_to_desc
-      ipipe,x86: Introduce hard_irqs_disabled_flags
-      Fix IRQs-off-tracer for x86_64
+root@target:~# dmesg -s 64000 | grep -i tsc
+[    0.001000] Fast TSC calibration using PIT
+[    0.285498] TSC synchronization [CPU#0 -> CPU#1]:
+[    0.285762] Measured 14592832 cycles TSC warp between CPUs, turning
+off TSC clock.
+[    0.002999] Marking TSC unstable due to check_tsc_sync_source failed
+root@target:~# cat
+/sys/devices/system/clocksource/clocksource0/available_clocksource
+jiffies tsc
+root@target:~# cat
+/sys/devices/system/clocksource/clocksource0/current_clocksource
+jiffies
 
- arch/arm/include/asm/ipipe_hwirq.h       |    4 +-
- arch/arm/include/asm/mman.h              |    4 +
- arch/arm/kernel/ipipe.c                  |    5 +-
- arch/arm/mach-mxs/Kconfig                |    1 +
- arch/arm/mach-mxs/clock-mx28.c           |    4 +
- arch/arm/mach-mxs/icoll.c                |   16 ++-
- arch/arm/mach-mxs/mach-m28evk.c          |    4 -
- arch/arm/mach-mxs/timer.c                |   67 +++++++++-
- arch/arm/mm/cache-l2x0.c                 |   17 ++-
- arch/arm/mm/fcse.c                       |    5 +-
- arch/x86/Kconfig                         |    1 +
- arch/x86/include/asm/desc.h              |    8 +
- arch/x86/include/asm/ipipe_32.h          |   42 ++++--
- arch/x86/include/asm/irqflags.h          |    2 +
- arch/x86/kernel/apic/io_apic.c           |    7 +-
- arch/x86/kernel/entry_32.S               |   14 ++-
- arch/x86/kernel/entry_64.S               |   26 ++--
- arch/x86/kernel/i8253.c                  |    4 +
- arch/x86/kernel/ipipe.c                  |   15 +--
- arch/x86/kernel/irqinit.c                |    5 +
- arch/x86/kernel/pcspeaker.c              |    7 +
- arch/x86/lib/mmx_32.c                    |    4 +-
- drivers/clocksource/Makefile             |    3 +
- drivers/clocksource/i8253.c              |   40 +++++-
- drivers/clocksource/ipipe_i486_tsc_emu.S |  106 ++++++++++++++
- drivers/tty/serial/8250/8250.c           |    4 +-
- include/asm-generic/mman-common.h        |    3 +
- include/linux/clocksource.h              |    4 +
- include/linux/ipipe.h                    |    8 +
- kernel/ipipe/Kconfig                     |    3 +
- kernel/ipipe/core.c                      |   15 +-
- kernel/ipipe/timer.c                     |   26 ++--
- kernel/ipipe/tracer.c                    |  222 +++++++++++++++---------------
- kernel/time/clocksource.c                |   92 ++++++++++++
- mm/mmap.c                                |    2 +-
- 35 files changed, 591 insertions(+), 199 deletions(-)
- create mode 100644 drivers/clocksource/ipipe_i486_tsc_emu.S
-
--- 
-                                                                Gilles.
+processor       : 0
+vendor_id       : GenuineIntel
+cpu family      : 6
+model           : 54
+model name      : Intel(R) Atom(TM) CPU D2700   @ 2.13GHz
+stepping        : 1
+microcode       : 0x109
+cpu MHz         : 2133.378
+cache size      : 512 KB
+physical id     : 0
+siblings        : 2
+core id         : 0
+cpu cores       : 2
+apicid          : 0
+initial apicid  : 0
+fdiv_bug        : no
+hlt_bug         : no
+f00f_bug        : no
+coma_bug        : no
+fpu             : yes
+fpu_exception   : yes
+cpuid level     : 10
+wp              : yes
+flags           : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge
+mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe
+constant_tsc arch_perfmon pebs bts nonstop_tsc aperfmperf pni dtes64
+monitor ds_cpl tm2 ssse3 xtpr pdcm movbe lahf_lm arat dts
+bogomips        : 4266.75
+clflush size    : 64
+cache_alignment : 64
+address sizes   : 36 bits physical, 32 bits virtual
+power management:
 
