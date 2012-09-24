@@ -1,10 +1,9 @@
 MIME-Version: 1.0
-Date: Mon, 24 Sep 2012 22:34:14 +0900
-Message-ID: <CAH6xOCB_pB4Mhg_WpFXtNN5ELtreYiBSD=obviojoUyGdcr7bg@mail.gmail.com>
-From: Hyeongseok Kang <hseokkang@gmail.com>
+Date: Mon, 24 Sep 2012 23:15:48 +0530
+Message-ID: <CAMgy_J1-6CqxZV+iqQeC8HUa_rkh2LBoSxRxuiiUi44siKud6g@mail.gmail.com>
+From: Shamju Joseph <shamju.joseph@gmail.com>
 Content-Type: text/plain; charset=ISO-8859-1
-Subject: [Xenomai] [Question] Why xenomai domain change the hardware timer
-	to One-Shot mode?
+Subject: [Xenomai] Can we patch Xenomai to RHEL 6 kernel source
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,13 +14,12 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Hi, I am trying to port xenomai to arm board and I have some question.
+Hi,
+i've a doubt on Xenomai patch.
+Is Xenomai patch applied to only kernel from www.kernel.org?
+Can we patch Xenomai source to RHEL 6 kernel source?
 
-Why xenomai domain change the hardware timer to One-Shot mode by use
-__ipipe_mach_set_dec() ?
-Another question, what's the purpose of TSC? Is it related to one-shot mode
-of timer?
-
-Answer me please.
-
-Robert Kang
+Please give a reply.
+Regards,
+Shamju Joseph K
+India.
