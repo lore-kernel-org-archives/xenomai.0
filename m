@@ -1,10 +1,7 @@
-Date: Tue, 25 Sep 2012 14:59:46 +0200 (CEST)
-From: hahnchristopher@arcor.de
-Message-ID: <743819185.213171.1348577986595.JavaMail.ngmail@webmail24.arcor-online.net>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] Segmentation fault in RT_TASK with too big arrays?
+From: Wolfgang Mauerer <wolfgang.mauerer@siemens.com>
+Date: Tue, 25 Sep 2012 15:19:18 +0200
+Message-Id: <1348579158-5686-1-git-send-email-wolfgang.mauerer@siemens.com>
+Subject: [Xenomai] [PATCH] hal: Fix cpu bitmap handling
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,57 +11,46 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
+Cc: wolfgang.mauerer@siemens.com
 
-Hello,
+Don't left-shift further than the bit-width of the
+shifted type allows. In this particular constellation,
+this leads to selecting CPUs that are not specified in
+supported_cpus_arg on systems with more than 32 cores.
 
-I tried to create an int array with big size (up to 160k), but all sizes over 4096 throws segmentation faults!
-That FAQ for POSIX skin tells me, that there is a variable thread stack size. Is there a equivalent native call for pthread_attr_setstacksize() ?
-Or do I have an other problem?
+Signed-off-by: Wolfgang Mauerer <wolfgang.mauerer@siemens.com>
+---
+ ksrc/arch/generic/hal.c |    2 +-
+ ksrc/nucleus/intr.c     |    2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-here is my code:
+diff --git a/ksrc/arch/generic/hal.c b/ksrc/arch/generic/hal.c
+index ac6c171..f6ac722 100644
+--- a/ksrc/arch/generic/hal.c
++++ b/ksrc/arch/generic/hal.c
+@@ -539,7 +539,7 @@ int rthal_init(void)
+     int cpu;
+     cpus_clear(rthal_supported_cpus);
+     for (cpu = 0; cpu < BITS_PER_LONG; cpu++)
+-	    if (supported_cpus_arg & (1 << cpu))
++	    if (supported_cpus_arg & (1ul << cpu))
+ 		    cpu_set(cpu, rthal_supported_cpus);
+ #endif /* CONFIG_SMP */
+ 
+diff --git a/ksrc/nucleus/intr.c b/ksrc/nucleus/intr.c
+index 0f37bb2..e77f25e 100644
+--- a/ksrc/nucleus/intr.c
++++ b/ksrc/nucleus/intr.c
+@@ -1083,7 +1083,7 @@ static int affinity_vfile_show(struct xnvfile_regular_iterator *it,
+ 
+ 	for (cpu = 0; cpu < BITS_PER_LONG; cpu++)
+ 		if (xnarch_cpu_isset(cpu, nkaffinity))
+-			val |= (1 << cpu);
++			val |= (1ul << cpu);
+ 
+ 	xnvfile_printf(it, "%08lx\n", val);
+ 
+-- 
+1.7.1
 
-#include <stdio.h>
-#include <signal.h>
-#include <unistd.h>
-#include <sys/mman.h>
-#include <native/task.h>
-#include <rtdk.h>
-
-RT_TASK task;
-
-void taskOne(void *arg)
-{
-	rt_printf("starting task1\n");
-    int i;
-    int IWORK[160000];
-
-    for (i = 0; i < 20; i++) {
-
-    	IWORK[i] = 0;
-
-    }
-    rt_printf("finished task1\n");
-}
-
-void startup()
-{
-	rt_timer_set_mode(0);
-    rt_task_create(&task, "task1", 0, 50, 0);
-    rt_task_start(&task, taskOne, 0);
-
-}
-
-void init_xenomai() {
-	mlockall(MCL_CURRENT|MCL_FUTURE);
-	rt_print_auto_init(1);
-}
-
-int main(int argc, char* argv[])
-{
-  init_xenomai();
-
-  startup();
-
-  pause();
-}
 
