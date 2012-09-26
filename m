@@ -1,9 +1,12 @@
-From: Wolfgang Mauerer <wolfgang.mauerer@siemens.com>
-Date: Wed, 26 Sep 2012 15:16:02 +0200
-Message-Id: <1348665363-28222-1-git-send-email-wolfgang.mauerer@siemens.com>
-In-Reply-To: <5063141B.8070107@siemens.com>
-References: <5063141B.8070107@siemens.com>
-Subject: [Xenomai] [PATCH 1/2] Refactor ipipe_select_timers
+Message-ID: <506321EE.5040907@knapp.com>
+Date: Wed, 26 Sep 2012 17:40:30 +0200
+From: Christoph Permes <christoph.permes@knapp.com>
+MIME-Version: 1.0
+References: <5062CCB0.7060205@knapp.com>
+In-Reply-To: <5062CCB0.7060205@knapp.com>
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Subject: Re: [Xenomai] Xenomai: native skin init failed, code -19.
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,129 +16,54 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
-Cc: jan.kiszka@siemens.com, wolfgang.mauerer@siemens.com
 
-Make the control flow more readable. No functional changes.
+Hi!
 
-Signed-off-by: Wolfgang Mauerer <wolfgang.mauerer@siemens.com>
----
- kernel/ipipe/timer.c |   82 +++++++++++++++++++++++++++++++------------------
- 1 files changed, 52 insertions(+), 30 deletions(-)
+Meanwhile I found out that the problem does not occur when the X86_PM_TIMER option is enabled in the kernel.
 
-diff --git a/kernel/ipipe/timer.c b/kernel/ipipe/timer.c
-index 8b2eb6f..765340e 100644
---- a/kernel/ipipe/timer.c
-+++ b/kernel/ipipe/timer.c
-@@ -154,21 +154,55 @@ static void ipipe_timer_request_sync(void)
- 	timer->request(timer, steal);
- }
- 
-+/* Set up a timer as per-cpu timer for ipipe */
-+static int install_pcpu_timer(unsigned cpu, unsigned hrclock_freq,
-+			      struct ipipe_timer *t) {
-+	unsigned hrtimer_freq;
-+	unsigned long long tmp;
-+
-+#ifdef CONFIG_GENERIC_CLOCKEVENTS
-+	struct clock_event_device *evtdev;
-+	evtdev = t->host_timer;
-+
-+	if (evtdev && evtdev->mode == CLOCK_EVT_MODE_SHUTDOWN)
-+		return 0;
-+#endif /* CONFIG_GENERIC_CLOCKEVENTS */
-+
-+	if (__ipipe_hrtimer_freq == 0)
-+		__ipipe_hrtimer_freq = t->freq;
-+
-+	per_cpu(ipipe_percpu.hrtimer_irq, cpu) = t->irq;
-+	per_cpu(percpu_timer, cpu) = t;
-+
-+	hrtimer_freq = t->freq;
-+	if (__ipipe_hrclock_freq > UINT_MAX)
-+		hrtimer_freq /= 1000;
-+
-+	t->c2t_integ = hrtimer_freq / hrclock_freq;
-+	tmp = (((unsigned long long)
-+		(hrtimer_freq % hrclock_freq)) << 32)
-+		+ hrclock_freq - 1;
-+	do_div(tmp, hrclock_freq);
-+	t->c2t_frac = tmp;
-+
-+	return 1;
-+}
-+
-+
- /*
-- * choose per-cpu timer: we walk the list, and find the timer with the
-- * highest rating.
-+ * Choose per-cpu timers with the highest rating by traversing the
-+ * rating-sorted list for each CPU.
-  */
- int ipipe_select_timers(const struct cpumask *mask)
- {
--	struct clock_event_device *evtdev;
--	unsigned hrclock_freq, hrtimer_freq;
-+	unsigned hrclock_freq;
- 	unsigned long long tmp;
- 	struct ipipe_timer *t;
- 	unsigned long flags;
--	unsigned cpu, khz;
-+	unsigned cpu;
-+	bool found;
- 
--	khz = __ipipe_hrclock_freq > UINT_MAX;
--	if (khz) {
-+	if (__ipipe_hrclock_freq > UINT_MAX) {
- 		tmp = __ipipe_hrclock_freq;
- 		do_div(tmp, 1000);
- 		hrclock_freq = tmp;
-@@ -177,34 +211,22 @@ int ipipe_select_timers(const struct cpumask *mask)
- 
- 	spin_lock_irqsave(&lock, flags);
- 	for_each_cpu(cpu, mask) {
-+		found = false;
- 		list_for_each_entry(t, &timers, link) {
- 			if (!cpumask_test_cpu(cpu, t->cpumask))
- 				continue;
- 
--			evtdev = t->host_timer;
--#ifdef CONFIG_GENERIC_CLOCKEVENTS
--			if (!evtdev
--			    || evtdev->mode != CLOCK_EVT_MODE_SHUTDOWN)
--#endif /* CONFIG_GENERIC_CLOCKEVENTS */
--				goto found;
-+			if (install_pcpu_timer(cpu, hrclock_freq, t)) {
-+				found = true;
-+				break;
-+			}
-+		}
-+
-+		if (!found) {
-+			printk("I-pipe: could not find timer for cpu #%d\n",
-+			       cpu);
-+			goto err_remove_all;
- 		}
--		printk("I-pipe: could not find timer for cpu #%d\n", cpu);
--		goto err_remove_all;
--
--	  found:
--		if (__ipipe_hrtimer_freq == 0)
--			__ipipe_hrtimer_freq = t->freq;
--		per_cpu(ipipe_percpu.hrtimer_irq, cpu) = t->irq;
--		per_cpu(percpu_timer, cpu) = t;
--		hrtimer_freq = t->freq;
--		if (khz)
--			hrtimer_freq /= 1000;
--		t->c2t_integ = hrtimer_freq / hrclock_freq;
--		tmp = (((unsigned long long)
--			(hrtimer_freq % hrclock_freq)) << 32)
--			+ hrclock_freq - 1;
--		do_div(tmp, hrclock_freq);
--		t->c2t_frac = tmp;
- 	}
- 	spin_unlock_irqrestore(&lock, flags);
- 
--- 
-1.7.1
+Is it OK to enable X86_PM_TIMER? The Xenomai documentation does not explicitly say if this option should be
+enabled or disabled, but I've read about some issues on the mailing list where this option caused problems.
 
+Best regards,
+  Christoph
+
+
+On 09/26/2012 11:36 AM, Christoph Permes wrote:
+> Hi!
+> 
+> I am experiencing problems with Xenomai on a Beckhoff C6920 PC.
+> 
+> Most times Xenomai works correclty, but at random I'm getting the following messages when booting:
+> [    0.459466] Xenomai: hal/i386 started.
+> [    0.471028] Xenomai: real-time nucleus v2.4.9 (Big Bad Moon) loaded.
+> [    0.522072] Xenomai: native skin init failed, code -19.
+> [    0.522135] Xenomai: starting POSIX services.
+> [    0.572046] Xenomai: POSIX skin init failed, code -19.
+> [    0.622037] Xenomai: RTDM skin init failed, code -19.
+> 
+> So, Xenomai may start correctly many times and than fails to start for 10 times or it fails to
+> start every second boot. It's completly random, it may happen on a cold boot or on a reboot.
+> 
+> It seems to have something to do with the APIC timer, as the kernel also writes this message
+> when Xenomai fails to start:
+> [    0.290132] APIC timer disabled due to verification failure
+> 
+> 
+> The kernel options listed in the Xenomai installation and troubleshooting guides are already disabled,
+> C1E is also disabled in BIOS.
+> 
+> I have attached the complete kernel log and the kernel configuration to this e-mail.
+> 
+> The software components I'm using are:
+> Linux: 2.6.29.5
+> Xenomai: 2.4.9
+> Adeos: adeos-ipipe-2.6.29.5-x86-2.4.02
+> 
+> I know, it's pretty old, but we've been running these versions for almost 3 years on our production system
+> on older hardware without any problems. So, maybe there is a simple solution to get rid of this problem.
+> 
+> 
+> Best regarts,
+>   Christoph
+> 
 
