@@ -1,15 +1,10 @@
-Message-ID: <5063141B.8070107@siemens.com>
-Date: Wed, 26 Sep 2012 16:41:31 +0200
 From: Wolfgang Mauerer <wolfgang.mauerer@siemens.com>
-MIME-Version: 1.0
-References: <50588110.6030701@siemens.com> <50588458.1010802@xenomai.org>
-	<505892E8.6080605@siemens.com> <5058CD54.4070509@xenomai.org>
-	<5059B76F.7020608@siemens.com> <505B4044.7030103@xenomai.org>
-	<5061C394.1050005@siemens.com> <5061C643.8080305@xenomai.org>
-In-Reply-To: <5061C643.8080305@xenomai.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [GIT PULL] core-5 for x86
+Date: Wed, 26 Sep 2012 15:16:03 +0200
+Message-Id: <1348665363-28222-2-git-send-email-wolfgang.mauerer@siemens.com>
+In-Reply-To: <5063141B.8070107@siemens.com>
+References: <5063141B.8070107@siemens.com>
+Subject: [Xenomai] [PATCH 2/2] Register high-res timer irq for non-ipipe
+	timers if necessary
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,25 +13,88 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "Kiszka, Jan" <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
+Cc: jan.kiszka@siemens.com, wolfgang.mauerer@siemens.com
 
-On 25/09/12 16:57, Gilles Chanteperdrix wrote:
-> On 09/25/2012 04:45 PM, Wolfgang Mauerer wrote:
->> +			if (!cpumask_test_cpu(cpu, mask)
->> +			    && t->irq == per_cpu(ipipe_percpu.hrtimer_irq, 0)) {
->> +				per_cpu(ipipe_percpu.hrtimer_irq, cpu) = t->irq;
->> +				goto found;
-> 
-> This only works if cpu 0 is part of the "supported cpus" mask. I think
-> we need two loops.
-> 
-I've prepared a version that first handles all CPUs that run ipipe, and
-then makes another pass at setting up the CPUs that may need to forward
-ticks. Since the code is already deeply enough nested as is, I refactored
-it a bit before. Since it runs only once at initialisation time, I did not
-optimise for speed. Patches follow as reply.
-Forward-port to core-5 is on https://github.com/siemens/ipipe.git core-3.5_for-upstream
+If a CPU that is not supported by ipipe, but used by Linux
+shares an IRQ with a timer utilised by ipipe, it must be
+possible to forward IRQs received on behalf of the Linux CPU.
+Based on a patch by Gilles Chanteperdrix.
 
-Cheers, Wolfgang
+Signed-off-by: Wolfgang Mauerer <wolfgang.mauerer@siemens.com>
+---
+ kernel/ipipe/timer.c |   36 ++++++++++++++++++++++++++++++++++++
+ 1 files changed, 36 insertions(+), 0 deletions(-)
+
+diff --git a/kernel/ipipe/timer.c b/kernel/ipipe/timer.c
+index 765340e..3b5e13e 100644
+--- a/kernel/ipipe/timer.c
++++ b/kernel/ipipe/timer.c
+@@ -188,6 +188,21 @@ static int install_pcpu_timer(unsigned cpu, unsigned hrclock_freq,
+ 	return 1;
+ }
+ 
++static void select_root_only_timer(unsigned cpu, unsigned hrclock_khz,
++				   const struct cpumask *mask,
++				   struct ipipe_timer *t) {
++	unsigned icpu;
++
++	/*
++	 * If no ipipe-supported CPU shares an interrupt with the
++	 * timer, we do not need to care about it.
++	 */
++	for_each_cpu(icpu, mask) {
++		if (t->irq == per_cpu(ipipe_percpu.hrtimer_irq, icpu))
++			if (install_pcpu_timer(cpu, hrclock_khz, t))
++				break;
++	}
++}
+ 
+ /*
+  * Choose per-cpu timers with the highest rating by traversing the
+@@ -201,6 +216,7 @@ int ipipe_select_timers(const struct cpumask *mask)
+ 	unsigned long flags;
+ 	unsigned cpu;
+ 	bool found;
++	cpumask_t fixup;
+ 
+ 	if (__ipipe_hrclock_freq > UINT_MAX) {
+ 		tmp = __ipipe_hrclock_freq;
+@@ -210,6 +226,8 @@ int ipipe_select_timers(const struct cpumask *mask)
+ 		hrclock_freq = __ipipe_hrclock_freq;
+ 
+ 	spin_lock_irqsave(&lock, flags);
++
++	/* First, choose timers for the CPUs handled by ipipe */
+ 	for_each_cpu(cpu, mask) {
+ 		found = false;
+ 		list_for_each_entry(t, &timers, link) {
+@@ -228,6 +246,24 @@ int ipipe_select_timers(const struct cpumask *mask)
+ 			goto err_remove_all;
+ 		}
+ 	}
++
++	/*
++	 * Second, check if we need to fix up any CPUs not supported
++	 * by ipipe (but by Linux) whose interrupt may need to be
++	 * forwarded because they have the same IRQ as an ipipe-enabled
++	 * timer.
++	 */
++	cpumask_andnot(&fixup, cpu_online_mask, mask);
++
++	for_each_cpu(cpu, &fixup) {
++		list_for_each_entry(t, &timers, link) {
++			if (!cpumask_test_cpu(cpu, t->cpumask))
++				continue;
++
++			select_root_only_timer(cpu, hrclock_freq, mask, t);
++		}
++	}
++
+ 	spin_unlock_irqrestore(&lock, flags);
+ 
+ 	flags = ipipe_critical_enter(ipipe_timer_request_sync);
+-- 
+1.7.1
+
 
