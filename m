@@ -1,13 +1,13 @@
-Message-ID: <50637398.3090108@xenomai.org>
-Date: Wed, 26 Sep 2012 23:28:56 +0200
+Message-ID: <506373F6.80406@xenomai.org>
+Date: Wed, 26 Sep 2012 23:30:30 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <5063141B.8070107@siemens.com>
-	<1348665363-28222-1-git-send-email-wolfgang.mauerer@siemens.com>
-In-Reply-To: <1348665363-28222-1-git-send-email-wolfgang.mauerer@siemens.com>
+References: <5060AFD1.30303@gmail.com>
+In-Reply-To: <5060AFD1.30303@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PATCH 1/2] Refactor ipipe_select_timers
+Subject: Re: [Xenomai] Kernel 2.6.37.6 + Xenomai 2.5.6 is ok,
+ but with Xenomai 2.6.1 it won't boot
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,106 +16,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Wolfgang Mauerer <wolfgang.mauerer@siemens.com>
-Cc: jan.kiszka@siemens.com, xenomai@xenomai.org
+To: Jari Lietzen <jari.lietzen@gmail.com>
+Cc: xenomai@xenomai.org
 
-On 09/26/2012 03:16 PM, Wolfgang Mauerer wrote:
+On 09/24/2012 09:09 PM, Jari Lietzen wrote:
 
-> Make the control flow more readable. No functional changes.
+> Hi!
 > 
-> Signed-off-by: Wolfgang Mauerer <wolfgang.mauerer@siemens.com>
-> ---
->  kernel/ipipe/timer.c |   82 +++++++++++++++++++++++++++++++------------------
->  1 files changed, 52 insertions(+), 30 deletions(-)
+> Kernel 2.6.37.6 and Xenomai 2.5.6 boots ok, though displaying the error 
+> message: "MP-BIOS bug: 8254 timer not connected to IO-APIC".
 > 
-> diff --git a/kernel/ipipe/timer.c b/kernel/ipipe/timer.c
-> index 8b2eb6f..765340e 100644
-> --- a/kernel/ipipe/timer.c
-> +++ b/kernel/ipipe/timer.c
-> @@ -154,21 +154,55 @@ static void ipipe_timer_request_sync(void)
->  	timer->request(timer, steal);
->  }
->  
-> +/* Set up a timer as per-cpu timer for ipipe */
-> +static int install_pcpu_timer(unsigned cpu, unsigned hrclock_freq,
-> +			      struct ipipe_timer *t) {
-> +	unsigned hrtimer_freq;
-> +	unsigned long long tmp;
-> +
-> +#ifdef CONFIG_GENERIC_CLOCKEVENTS
-> +	struct clock_event_device *evtdev;
-> +	evtdev = t->host_timer;
-> +
-> +	if (evtdev && evtdev->mode == CLOCK_EVT_MODE_SHUTDOWN)
-> +		return 0;
-> +#endif /* CONFIG_GENERIC_CLOCKEVENTS */
-> +
-> +	if (__ipipe_hrtimer_freq == 0)
-> +		__ipipe_hrtimer_freq = t->freq;
-> +
-> +	per_cpu(ipipe_percpu.hrtimer_irq, cpu) = t->irq;
-> +	per_cpu(percpu_timer, cpu) = t;
-> +
-> +	hrtimer_freq = t->freq;
-> +	if (__ipipe_hrclock_freq > UINT_MAX)
-> +		hrtimer_freq /= 1000;
-> +
-> +	t->c2t_integ = hrtimer_freq / hrclock_freq;
-> +	tmp = (((unsigned long long)
-> +		(hrtimer_freq % hrclock_freq)) << 32)
-> +		+ hrclock_freq - 1;
-> +	do_div(tmp, hrclock_freq);
-> +	t->c2t_frac = tmp;
-> +
-> +	return 1;
-> +}
-> +
-> +
->  /*
-> - * choose per-cpu timer: we walk the list, and find the timer with the
-> - * highest rating.
-> + * Choose per-cpu timers with the highest rating by traversing the
-> + * rating-sorted list for each CPU.
->   */
->  int ipipe_select_timers(const struct cpumask *mask)
->  {
-> -	struct clock_event_device *evtdev;
-> -	unsigned hrclock_freq, hrtimer_freq;
-> +	unsigned hrclock_freq;
->  	unsigned long long tmp;
->  	struct ipipe_timer *t;
->  	unsigned long flags;
-> -	unsigned cpu, khz;
-> +	unsigned cpu;
-> +	bool found;
->  
-> -	khz = __ipipe_hrclock_freq > UINT_MAX;
-> -	if (khz) {
-> +	if (__ipipe_hrclock_freq > UINT_MAX) {
->  		tmp = __ipipe_hrclock_freq;
->  		do_div(tmp, 1000);
->  		hrclock_freq = tmp;
-> @@ -177,34 +211,22 @@ int ipipe_select_timers(const struct cpumask *mask)
->  
->  	spin_lock_irqsave(&lock, flags);
->  	for_each_cpu(cpu, mask) {
-> +		found = false;
->  		list_for_each_entry(t, &timers, link) {
->  			if (!cpumask_test_cpu(cpu, t->cpumask))
->  				continue;
->  
-> -			evtdev = t->host_timer;
-> -#ifdef CONFIG_GENERIC_CLOCKEVENTS
-> -			if (!evtdev
-> -			    || evtdev->mode != CLOCK_EVT_MODE_SHUTDOWN)
-> -#endif /* CONFIG_GENERIC_CLOCKEVENTS */
-> -				goto found;
-> +			if (install_pcpu_timer(cpu, hrclock_freq, t)) {
-> +				found = true;
+> If I try to use Xenomai 2.6.1 the error message displayed is the same 
+> and system just hangs after that. No other messages, keyboard doesn't 
+> work, nothing. I started with the same kernel configuration, but I have 
+> disabled a few options more (e.g. syscall auditing, shared interrupt 
+> support).
+> 
+> I'm using Intel Core 2 Duo processor with Asus P5LD2-VM motherboard. 
+> Obviously I'm missing something, but I can't figure that out. Here is 
+> the kernel config file:
 
 
-Talking about readability, I find a goto with a clear label name much
-more readable than a flag. So, NACK this patch, please keep the goto.
+If you use one of the I-pipe patches whih ship with Xenomai 2.6.1, such
+as the patch for linux 3.2, do you also have the issue?
 
 -- 
                                                                 Gilles.
