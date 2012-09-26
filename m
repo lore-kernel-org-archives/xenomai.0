@@ -1,20 +1,13 @@
-Message-ID: <5057299B.9060804@xenomai.org>
-Date: Mon, 17 Sep 2012 15:46:03 +0200
+Message-ID: <50637398.3090108@xenomai.org>
+Date: Wed, 26 Sep 2012 23:28:56 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <5056C385.6090403@xenomai.org>	<5056D4AE.2010201@web.de>
-	<5056DA52.6040006@xenomai.org>	<5056DCC5.10909@web.de>
-	<5056E024.5020904@xenomai.org>	<5056E863.4090606@siemens.com>
-	<5056ED68.6050101@xenomai.org>	<5056F09C.8050602@siemens.com>
-	<5056F4A1.6070500@xenomai.org>
-	<CANKLDmuxUk0XQobqs_OJ8vwQvaMie3Q3JU5Fn5DjpfpfZH3=cg@mail.gmail.com>
-	<50570606.7060909@xenomai.org>
-	<CANKLDmuTU3351fNd8eTqiY-9+53h2iO5TzWNsX-wqPj98f4gMw@mail.gmail.com>
-	<5057173C.9070108@siemens.com>
-In-Reply-To: <5057173C.9070108@siemens.com>
+References: <5063141B.8070107@siemens.com>
+	<1348665363-28222-1-git-send-email-wolfgang.mauerer@siemens.com>
+In-Reply-To: <1348665363-28222-1-git-send-email-wolfgang.mauerer@siemens.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] IO-APIC latencies
+Subject: Re: [Xenomai] [PATCH 1/2] Refactor ipipe_select_timers
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -23,176 +16,107 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Xenomai <Xenomai@xenomai.org>
+To: Wolfgang Mauerer <wolfgang.mauerer@siemens.com>
+Cc: jan.kiszka@siemens.com, xenomai@xenomai.org
 
-On 09/17/2012 02:27 PM, Jan Kiszka wrote:
-> On 2012-09-17 14:15, Henri Roosen wrote:
->> On Mon, Sep 17, 2012 at 1:14 PM, Gilles Chanteperdrix
->> <gilles.chanteperdrix@xenomai.org> wrote:
->>> On 09/17/2012 12:39 PM, Henri Roosen wrote:
->>>
->>>> On Mon, Sep 17, 2012 at 12:00 PM, Gilles Chanteperdrix
->>>> <gilles.chanteperdrix@xenomai.org> wrote:
->>>>> On 09/17/2012 11:42 AM, Jan Kiszka wrote:
->>>>>> On 2012-09-17 11:29, Gilles Chanteperdrix wrote:
->>>>>>> On 09/17/2012 11:07 AM, Jan Kiszka wrote:
->>>>>>>> On 2012-09-17 10:32, Gilles Chanteperdrix wrote:
->>>>>>>>> On 09/17/2012 10:18 AM, Jan Kiszka wrote:
->>>>>>>>>> On 2012-09-17 10:07, Gilles Chanteperdrix wrote:
->>>>>>>>>>> On 09/17/2012 09:43 AM, Jan Kiszka wrote:
->>>>>>>>>>>> On 2012-09-17 08:30, Gilles Chanteperdrix wrote:
->>>>>>>>>>>>>
->>>>>>>>>>>>> Hi,
->>>>>>>>>>>>>
->>>>>>>>>>>>> looking at x86 latencies, I found that what was taking long on my atom
->>>>>>>>>>>>> was masking the fasteoi interrupts at IO-APIC level. So, I experimented
->>>>>>>>>>>>> an idea: masking at LAPIC level instead of IO-APIC, by using the "task
->>>>>>>>>>>>> priority" register. This seems to improve latencies on my atom:
->>>>>>>>>>>>>
->>>>>>>>>>>>> http://sisyphus.hd.free.fr/~gilles/core-3.4-latencies/atom.png
->>>>>>>>>>>>>
->>>>>>>>>>>>> This implies splitting the LAPIC vectors in a high priority and low
->>>>>>>>>>>>> priority sets, the final implementation would use ipipe_enable_irqdesc
->>>>>>>>>>>>> to detect a high priority domain, and change the vector at that time.
->>>>>>>>>>>>>
->>>>>>>>>>>>> This also improves the latencies on my old PIII with a VIA chipset, but
->>>>>>>>>>>>> it generates spurious interrupts (I do not know if it really is a
->>>>>>>>>>>>> matter, as handling a spurious interrupt is still faster than masking an
->>>>>>>>>>>>> IO-APIC interrupt), the spurious interrupts in that case are a
->>>>>>>>>>>>> documented behaviour of the LAPIC.
->>>>>>>>>>>>>
->>>>>>>>>>>>> Is there any interest in pursuing this idea, or are x86 with slow
->>>>>>>>>>>>> IO-APIC the exception more than the rule, or having to split the vector
->>>>>>>>>>>>> space appears too great a restriction?
->>>>>>>>>>>>
->>>>>>>>>>>> Line-based interrupts are legacy, of decreasing relevance for PCI
->>>>>>>>>>>> devices - likely what we are primarily interesting in here - due to MSI.
->>>>>>>>>>>
->>>>>>>>>>> Even if I enable MSI, the kernel still uses these irqs for the
->>>>>>>>>>> peripherals integrated to the chipset, such as the USB HCI, or ATA
->>>>>>>>>>> driver (IOW, non PCI devices).
->>>>>>>>>>
->>>>>>>>>> Those are all PCI as well. And modern chipsets include variants of them
->>>>>>>>>> with MSI(-X) support.
->>>>>>>>>>
->>>>>>>>>>>
->>>>>>>>>>> atom login: root
->>>>>>>>>>> # cat /proc/interrupts
->>>>>>>>>>>            CPU0       CPU1
->>>>>>>>>>>   0:         41          0   IO-APIC-edge      timer
->>>>>>>>>>>   4:         39          0   IO-APIC-edge      serial
->>>>>>>>>>>   9:          0          0   IO-APIC-fasteoi   acpi
->>>>>>>>>>>  14:          0          0   IO-APIC-edge      ata_piix
->>>>>>>>>>>  15:          0          0   IO-APIC-edge      ata_piix
->>>>>>>>>>>  16:          0          0   IO-APIC-fasteoi   uhci_hcd:usb5
->>>>>>>>>>>  18:          0          0   IO-APIC-fasteoi   uhci_hcd:usb4
->>>>>>>>>>>  19:          0          0   IO-APIC-fasteoi   ata_piix, uhci_hcd:usb3
->>>>>>>>>>>  23:       6598          0   IO-APIC-fasteoi   ehci_hcd:usb1, uhci_hcd:usb2
->>>>>>>>>>>  43:       2704          0   PCI-MSI-edge      eth0
->>>>>>>>>>>  44:        249          0   PCI-MSI-edge      snd_hda_intel
->>>>>>>>>>> NMI:          0          0   Non-maskable interrupts
->>>>>>>>>>> LOC:        661        644   Local timer interrupts
->>>>>>>>>>> SPU:          0          0   Spurious interrupts
->>>>>>>>>>> PMI:          0          0   Performance monitoring interrupts
->>>>>>>>>>> IWI:          0          0   IRQ work interrupts
->>>>>>>>>>> RTR:          0          0   APIC ICR read retries
->>>>>>>>>>> RES:       1582       2225   Rescheduling interrupts
->>>>>>>>>>> CAL:         26         48   Function call interrupts
->>>>>>>>>>> TLB:         10         19   TLB shootdowns
->>>>>>>>>>> ERR:          0
->>>>>>>>>>> MIS:          0
->>>>>>>>>>>
->>>>>>>>>>> I do not think peripherals integrated to chipsets can really be
->>>>>>>>>>> considered "legacy". And they tend to be used in the field...
->>>>>>>>>>
->>>>>>>>>> The good news is that, even on your low-end atom, you can avoid those
->>>>>>>>>> latencies by CPU assignment, i.e. isolating the Linux IRQ load on one
->>>>>>>>>> core and the RT on the other. That's getting easier and easier due to
->>>>>>>>>> the inflation of cores.
->>>>>>>>>
->>>>>>>>> What if you want to use RTUSB for instance?
->>>>>>>>
->>>>>>>> Then I will likely not worry about a few micros of additional latency
->>>>>>>> due to IO-APIC accesses.
->>>>>>>
->>>>>>> On my atom, taking an IO-APIC fasteoi interrupt, acking and masking it,
->>>>>>> takes 10us in UP, and 20us in SMP (with the tracer on).
->>>>>>
->>>>>> ...and on more appropriate chipsets? I bet the Atom is (once again) off
->>>>>> here.
->>>>>
->>>>> I do not know, do you care for sharing your traces with us? I only run
->>>>> Xenomai on atom (which I am not sure do not qualify as "modern", new
->>>>> atoms seem to be produced), geode (ok, this one is definitely dead, but
->>>>> there seem to be people still running xenomai on them), and an old
->>>>> pentium III with an old VIA686 chipset, where masking the IO-APIC is
->>>>> even slower than acking the i8259.
->>>>>
->>>>> Anyway, the IO-APIC registers accesses does not look designed for speed:
->>>>> it has an indirect scheme that seem more designed to save space in the
->>>>> processor mapping and to be configured once and for all when
->>>>> enabling/disabling interrupt, not at each and every interrupt.
->>>>>
->>>>> The point is: people may want to use Xenomai on atoms. We do not really
->>>>> know on what kind of x86 people run xenomai, knowing that would help us
->>>>> directing our efforts.
->>>>
->>>> We are currently investigating whether we can use Atom's for our
->>>> future products. We have to stick to the x86 architecture and our
->>>> products should work without big cooling fans. Currently running tests
->>>> on Atom D2700 (which I know is EOL, but for research purposes should
->>>> give us a good indication).
->>>>
->>>> A 20us latency gain is a lot and would be very welcome in our system!
->>>
->>>
->>> If you enable CONFIG_MSI, do you still see some IO-APIC-fasteoi in
->>> /proc/interrupts?
->>>
->>
->> The kernel config has no CONFIG_MSI, but instead:
->> CONFIG_ARCH_SUPPORTS_MSI=y
->> CONFIG_PCI_MSI=y
->>
->> There is still IO-APIC-fasteoi in /proc/interrupts:
->>
->> # cat /proc/interrupts
->>            CPU0       CPU1
->>   0:        250          0   IO-APIC-edge      timer
->>   4:         71          0   IO-APIC-edge      serial
->>   7:         29          0   IO-APIC-edge
->>   8:          0          0   IO-APIC-edge      rtc0
->>   9:          0          0   IO-APIC-fasteoi   acpi
->>  16:          0          0   IO-APIC-fasteoi   uhci_hcd:usb5
->>  18:          0          0   IO-APIC-fasteoi   uhci_hcd:usb4
->>  19:         41          0   IO-APIC-fasteoi   ata_piix, uhci_hcd:usb3
->>  23:       5440          0   IO-APIC-fasteoi   ehci_hcd:usb1, uhci_hcd:usb2
->>  40:        940          0   PCI-MSI-edge      eth0
->>  41:         21          0   PCI-MSI-edge      xhci_hcd
->>  42:          0          0   PCI-MSI-edge      xhci_hcd
->>  43:          0          0   PCI-MSI-edge      xhci_hcd
->> NMI:          0          0   Non-maskable interrupts
->> LOC:      29559      25129   Local timer interrupts
->> SPU:          0          0   Spurious interrupts
->> PMI:          0          0   Performance monitoring interrupts
->> IWI:          0          0   IRQ work interrupts
->> RTR:          0          0   APIC ICR read retries
->> RES:         20          0   Rescheduling interrupts
->> CAL:          0          8   Function call interrupts
->> TLB:          9          5   TLB shootdowns
->> ERR:         74
->> MIS:          0
+On 09/26/2012 03:16 PM, Wolfgang Mauerer wrote:
+
+> Make the control flow more readable. No functional changes.
 > 
-> Unless you are short on CPU resources: isolcpus=1. At least bind all
-> Linux IRQs to one CPU. That's independent of any potential low-level
-> optimizations.
+> Signed-off-by: Wolfgang Mauerer <wolfgang.mauerer@siemens.com>
+> ---
+>  kernel/ipipe/timer.c |   82 +++++++++++++++++++++++++++++++------------------
+>  1 files changed, 52 insertions(+), 30 deletions(-)
+> 
+> diff --git a/kernel/ipipe/timer.c b/kernel/ipipe/timer.c
+> index 8b2eb6f..765340e 100644
+> --- a/kernel/ipipe/timer.c
+> +++ b/kernel/ipipe/timer.c
+> @@ -154,21 +154,55 @@ static void ipipe_timer_request_sync(void)
+>  	timer->request(timer, steal);
+>  }
+>  
+> +/* Set up a timer as per-cpu timer for ipipe */
+> +static int install_pcpu_timer(unsigned cpu, unsigned hrclock_freq,
+> +			      struct ipipe_timer *t) {
+> +	unsigned hrtimer_freq;
+> +	unsigned long long tmp;
+> +
+> +#ifdef CONFIG_GENERIC_CLOCKEVENTS
+> +	struct clock_event_device *evtdev;
+> +	evtdev = t->host_timer;
+> +
+> +	if (evtdev && evtdev->mode == CLOCK_EVT_MODE_SHUTDOWN)
+> +		return 0;
+> +#endif /* CONFIG_GENERIC_CLOCKEVENTS */
+> +
+> +	if (__ipipe_hrtimer_freq == 0)
+> +		__ipipe_hrtimer_freq = t->freq;
+> +
+> +	per_cpu(ipipe_percpu.hrtimer_irq, cpu) = t->irq;
+> +	per_cpu(percpu_timer, cpu) = t;
+> +
+> +	hrtimer_freq = t->freq;
+> +	if (__ipipe_hrclock_freq > UINT_MAX)
+> +		hrtimer_freq /= 1000;
+> +
+> +	t->c2t_integ = hrtimer_freq / hrclock_freq;
+> +	tmp = (((unsigned long long)
+> +		(hrtimer_freq % hrclock_freq)) << 32)
+> +		+ hrclock_freq - 1;
+> +	do_div(tmp, hrclock_freq);
+> +	t->c2t_frac = tmp;
+> +
+> +	return 1;
+> +}
+> +
+> +
+>  /*
+> - * choose per-cpu timer: we walk the list, and find the timer with the
+> - * highest rating.
+> + * Choose per-cpu timers with the highest rating by traversing the
+> + * rating-sorted list for each CPU.
+>   */
+>  int ipipe_select_timers(const struct cpumask *mask)
+>  {
+> -	struct clock_event_device *evtdev;
+> -	unsigned hrclock_freq, hrtimer_freq;
+> +	unsigned hrclock_freq;
+>  	unsigned long long tmp;
+>  	struct ipipe_timer *t;
+>  	unsigned long flags;
+> -	unsigned cpu, khz;
+> +	unsigned cpu;
+> +	bool found;
+>  
+> -	khz = __ipipe_hrclock_freq > UINT_MAX;
+> -	if (khz) {
+> +	if (__ipipe_hrclock_freq > UINT_MAX) {
+>  		tmp = __ipipe_hrclock_freq;
+>  		do_div(tmp, 1000);
+>  		hrclock_freq = tmp;
+> @@ -177,34 +211,22 @@ int ipipe_select_timers(const struct cpumask *mask)
+>  
+>  	spin_lock_irqsave(&lock, flags);
+>  	for_each_cpu(cpu, mask) {
+> +		found = false;
+>  		list_for_each_entry(t, &timers, link) {
+>  			if (!cpumask_test_cpu(cpu, t->cpumask))
+>  				continue;
+>  
+> -			evtdev = t->host_timer;
+> -#ifdef CONFIG_GENERIC_CLOCKEVENTS
+> -			if (!evtdev
+> -			    || evtdev->mode != CLOCK_EVT_MODE_SHUTDOWN)
+> -#endif /* CONFIG_GENERIC_CLOCKEVENTS */
+> -				goto found;
+> +			if (install_pcpu_timer(cpu, hrclock_freq, t)) {
+> +				found = true;
 
-The advantage of the masking at LAPIC using elevated priority I propose
-is that for most APICs, the IO-APIC will forward the interrupts to the
-cpus not currently running with elevated priority (that is what the
-dest_LowestPrio constant means). Dynamically.
+
+Talking about readability, I find a goto with a clear label name much
+more readable than a flag. So, NACK this patch, please keep the goto.
 
 -- 
-					    Gilles.
+                                                                Gilles.
 
