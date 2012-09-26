@@ -1,10 +1,15 @@
-Message-ID: <5062CCB0.7060205@knapp.com>
-Date: Wed, 26 Sep 2012 11:36:48 +0200
-From: Christoph Permes <christoph.permes@knapp.com>
+Message-ID: <5063141B.8070107@siemens.com>
+Date: Wed, 26 Sep 2012 16:41:31 +0200
+From: Wolfgang Mauerer <wolfgang.mauerer@siemens.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: [Xenomai] Xenomai: native skin init failed, code -19.
+References: <50588110.6030701@siemens.com> <50588458.1010802@xenomai.org>
+	<505892E8.6080605@siemens.com> <5058CD54.4070509@xenomai.org>
+	<5059B76F.7020608@siemens.com> <505B4044.7030103@xenomai.org>
+	<5061C394.1050005@siemens.com> <5061C643.8080305@xenomai.org>
+In-Reply-To: <5061C643.8080305@xenomai.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [GIT PULL] core-5 for x86
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,39 +18,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: "Kiszka, Jan" <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-SGkhCgpJIGFtIGV4cGVyaWVuY2luZyBwcm9ibGVtcyB3aXRoIFhlbm9tYWkgb24gYSBCZWNraG9m
-ZiBDNjkyMCBQQy4KCk1vc3QgdGltZXMgWGVub21haSB3b3JrcyBjb3JyZWNsdHksIGJ1dCBhdCBy
-YW5kb20gSSdtIGdldHRpbmcgdGhlIGZvbGxvd2luZyBtZXNzYWdlcyB3aGVuIGJvb3Rpbmc6Clsg
-ICAgMC40NTk0NjZdIFhlbm9tYWk6IGhhbC9pMzg2IHN0YXJ0ZWQuClsgICAgMC40NzEwMjhdIFhl
-bm9tYWk6IHJlYWwtdGltZSBudWNsZXVzIHYyLjQuOSAoQmlnIEJhZCBNb29uKSBsb2FkZWQuClsg
-ICAgMC41MjIwNzJdIFhlbm9tYWk6IG5hdGl2ZSBza2luIGluaXQgZmFpbGVkLCBjb2RlIC0xOS4K
-WyAgICAwLjUyMjEzNV0gWGVub21haTogc3RhcnRpbmcgUE9TSVggc2VydmljZXMuClsgICAgMC41
-NzIwNDZdIFhlbm9tYWk6IFBPU0lYIHNraW4gaW5pdCBmYWlsZWQsIGNvZGUgLTE5LgpbICAgIDAu
-NjIyMDM3XSBYZW5vbWFpOiBSVERNIHNraW4gaW5pdCBmYWlsZWQsIGNvZGUgLTE5LgoKU28sIFhl
-bm9tYWkgbWF5IHN0YXJ0IGNvcnJlY3RseSBtYW55IHRpbWVzIGFuZCB0aGFuIGZhaWxzIHRvIHN0
-YXJ0IGZvciAxMCB0aW1lcyBvciBpdCBmYWlscyB0bwpzdGFydCBldmVyeSBzZWNvbmQgYm9vdC4g
-SXQncyBjb21wbGV0bHkgcmFuZG9tLCBpdCBtYXkgaGFwcGVuIG9uIGEgY29sZCBib290IG9yIG9u
-IGEgcmVib290LgoKSXQgc2VlbXMgdG8gaGF2ZSBzb21ldGhpbmcgdG8gZG8gd2l0aCB0aGUgQVBJ
-QyB0aW1lciwgYXMgdGhlIGtlcm5lbCBhbHNvIHdyaXRlcyB0aGlzIG1lc3NhZ2UKd2hlbiBYZW5v
-bWFpIGZhaWxzIHRvIHN0YXJ0OgpbICAgIDAuMjkwMTMyXSBBUElDIHRpbWVyIGRpc2FibGVkIGR1
-ZSB0byB2ZXJpZmljYXRpb24gZmFpbHVyZQoKClRoZSBrZXJuZWwgb3B0aW9ucyBsaXN0ZWQgaW4g
-dGhlIFhlbm9tYWkgaW5zdGFsbGF0aW9uIGFuZCB0cm91Ymxlc2hvb3RpbmcgZ3VpZGVzIGFyZSBh
-bHJlYWR5IGRpc2FibGVkLApDMUUgaXMgYWxzbyBkaXNhYmxlZCBpbiBCSU9TLgoKSSBoYXZlIGF0
-dGFjaGVkIHRoZSBjb21wbGV0ZSBrZXJuZWwgbG9nIGFuZCB0aGUga2VybmVsIGNvbmZpZ3VyYXRp
-b24gdG8gdGhpcyBlLW1haWwuCgpUaGUgc29mdHdhcmUgY29tcG9uZW50cyBJJ20gdXNpbmcgYXJl
-OgpMaW51eDogMi42LjI5LjUKWGVub21haTogMi40LjkKQWRlb3M6IGFkZW9zLWlwaXBlLTIuNi4y
-OS41LXg4Ni0yLjQuMDIKCkkga25vdywgaXQncyBwcmV0dHkgb2xkLCBidXQgd2UndmUgYmVlbiBy
-dW5uaW5nIHRoZXNlIHZlcnNpb25zIGZvciBhbG1vc3QgMyB5ZWFycyBvbiBvdXIgcHJvZHVjdGlv
-biBzeXN0ZW0Kb24gb2xkZXIgaGFyZHdhcmUgd2l0aG91dCBhbnkgcHJvYmxlbXMuIFNvLCBtYXli
-ZSB0aGVyZSBpcyBhIHNpbXBsZSBzb2x1dGlvbiB0byBnZXQgcmlkIG9mIHRoaXMgcHJvYmxlbS4K
-CgpCZXN0IHJlZ2FydHMsCiAgQ2hyaXN0b3BoCgotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0t
-LS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBr
-ZXJuLmxvZwpUeXBlOiB0ZXh0L3gtbG9nClNpemU6IDU0MTYzIGJ5dGVzCkRlc2M6IG5vdCBhdmFp
-bGFibGUKVVJMOiA8aHR0cDovL3d3dy54ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRh
-Y2htZW50cy8yMDEyMDkyNi84YmIzYjAzMy9hdHRhY2htZW50LmJpbj4KLS0tLS0tLS0tLS0tLS0g
-bmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkFuIGVtYmVkZGVkIGFuZCBjaGFyc2V0LXVuc3BlY2lm
-aWVkIHRleHQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IGNvbmZpZwpVUkw6IDxodHRwOi8vd3d3Lnhl
-bm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTIwOTI2LzhiYjNiMDMz
-L2F0dGFjaG1lbnQua3NoPgo=
+On 25/09/12 16:57, Gilles Chanteperdrix wrote:
+> On 09/25/2012 04:45 PM, Wolfgang Mauerer wrote:
+>> +			if (!cpumask_test_cpu(cpu, mask)
+>> +			    && t->irq == per_cpu(ipipe_percpu.hrtimer_irq, 0)) {
+>> +				per_cpu(ipipe_percpu.hrtimer_irq, cpu) = t->irq;
+>> +				goto found;
+> 
+> This only works if cpu 0 is part of the "supported cpus" mask. I think
+> we need two loops.
+> 
+I've prepared a version that first handles all CPUs that run ipipe, and
+then makes another pass at setting up the CPUs that may need to forward
+ticks. Since the code is already deeply enough nested as is, I refactored
+it a bit before. Since it runs only once at initialisation time, I did not
+optimise for speed. Patches follow as reply.
+Forward-port to core-5 is on https://github.com/siemens/ipipe.git core-3.5_for-upstream
+
+Cheers, Wolfgang
+
