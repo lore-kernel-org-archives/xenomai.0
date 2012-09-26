@@ -1,10 +1,9 @@
 From: Wolfgang Mauerer <wolfgang.mauerer@siemens.com>
-Date: Wed, 26 Sep 2012 15:16:03 +0200
-Message-Id: <1348665363-28222-2-git-send-email-wolfgang.mauerer@siemens.com>
+Date: Wed, 26 Sep 2012 15:16:02 +0200
+Message-Id: <1348665363-28222-1-git-send-email-wolfgang.mauerer@siemens.com>
 In-Reply-To: <5063141B.8070107@siemens.com>
 References: <5063141B.8070107@siemens.com>
-Subject: [Xenomai] [PATCH 2/2] Register high-res timer irq for non-ipipe
-	timers if necessary
+Subject: [Xenomai] [PATCH 1/2] Refactor ipipe_select_timers
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,84 +15,126 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: xenomai@xenomai.org
 Cc: jan.kiszka@siemens.com, wolfgang.mauerer@siemens.com
 
-If a CPU that is not supported by ipipe, but used by Linux
-shares an IRQ with a timer utilised by ipipe, it must be
-possible to forward IRQs received on behalf of the Linux CPU.
-Based on a patch by Gilles Chanteperdrix.
+Make the control flow more readable. No functional changes.
 
 Signed-off-by: Wolfgang Mauerer <wolfgang.mauerer@siemens.com>
 ---
- kernel/ipipe/timer.c |   36 ++++++++++++++++++++++++++++++++++++
- 1 files changed, 36 insertions(+), 0 deletions(-)
+ kernel/ipipe/timer.c |   82 +++++++++++++++++++++++++++++++------------------
+ 1 files changed, 52 insertions(+), 30 deletions(-)
 
 diff --git a/kernel/ipipe/timer.c b/kernel/ipipe/timer.c
-index 765340e..3b5e13e 100644
+index 8b2eb6f..765340e 100644
 --- a/kernel/ipipe/timer.c
 +++ b/kernel/ipipe/timer.c
-@@ -188,6 +188,21 @@ static int install_pcpu_timer(unsigned cpu, unsigned hrclock_freq,
- 	return 1;
+@@ -154,21 +154,55 @@ static void ipipe_timer_request_sync(void)
+ 	timer->request(timer, steal);
  }
  
-+static void select_root_only_timer(unsigned cpu, unsigned hrclock_khz,
-+				   const struct cpumask *mask,
-+				   struct ipipe_timer *t) {
-+	unsigned icpu;
++/* Set up a timer as per-cpu timer for ipipe */
++static int install_pcpu_timer(unsigned cpu, unsigned hrclock_freq,
++			      struct ipipe_timer *t) {
++	unsigned hrtimer_freq;
++	unsigned long long tmp;
 +
-+	/*
-+	 * If no ipipe-supported CPU shares an interrupt with the
-+	 * timer, we do not need to care about it.
-+	 */
-+	for_each_cpu(icpu, mask) {
-+		if (t->irq == per_cpu(ipipe_percpu.hrtimer_irq, icpu))
-+			if (install_pcpu_timer(cpu, hrclock_khz, t))
-+				break;
-+	}
++#ifdef CONFIG_GENERIC_CLOCKEVENTS
++	struct clock_event_device *evtdev;
++	evtdev = t->host_timer;
++
++	if (evtdev && evtdev->mode == CLOCK_EVT_MODE_SHUTDOWN)
++		return 0;
++#endif /* CONFIG_GENERIC_CLOCKEVENTS */
++
++	if (__ipipe_hrtimer_freq == 0)
++		__ipipe_hrtimer_freq = t->freq;
++
++	per_cpu(ipipe_percpu.hrtimer_irq, cpu) = t->irq;
++	per_cpu(percpu_timer, cpu) = t;
++
++	hrtimer_freq = t->freq;
++	if (__ipipe_hrclock_freq > UINT_MAX)
++		hrtimer_freq /= 1000;
++
++	t->c2t_integ = hrtimer_freq / hrclock_freq;
++	tmp = (((unsigned long long)
++		(hrtimer_freq % hrclock_freq)) << 32)
++		+ hrclock_freq - 1;
++	do_div(tmp, hrclock_freq);
++	t->c2t_frac = tmp;
++
++	return 1;
 +}
- 
++
++
  /*
-  * Choose per-cpu timers with the highest rating by traversing the
-@@ -201,6 +216,7 @@ int ipipe_select_timers(const struct cpumask *mask)
+- * choose per-cpu timer: we walk the list, and find the timer with the
+- * highest rating.
++ * Choose per-cpu timers with the highest rating by traversing the
++ * rating-sorted list for each CPU.
+  */
+ int ipipe_select_timers(const struct cpumask *mask)
+ {
+-	struct clock_event_device *evtdev;
+-	unsigned hrclock_freq, hrtimer_freq;
++	unsigned hrclock_freq;
+ 	unsigned long long tmp;
+ 	struct ipipe_timer *t;
  	unsigned long flags;
- 	unsigned cpu;
- 	bool found;
-+	cpumask_t fixup;
+-	unsigned cpu, khz;
++	unsigned cpu;
++	bool found;
  
- 	if (__ipipe_hrclock_freq > UINT_MAX) {
+-	khz = __ipipe_hrclock_freq > UINT_MAX;
+-	if (khz) {
++	if (__ipipe_hrclock_freq > UINT_MAX) {
  		tmp = __ipipe_hrclock_freq;
-@@ -210,6 +226,8 @@ int ipipe_select_timers(const struct cpumask *mask)
- 		hrclock_freq = __ipipe_hrclock_freq;
+ 		do_div(tmp, 1000);
+ 		hrclock_freq = tmp;
+@@ -177,34 +211,22 @@ int ipipe_select_timers(const struct cpumask *mask)
  
  	spin_lock_irqsave(&lock, flags);
-+
-+	/* First, choose timers for the CPUs handled by ipipe */
  	for_each_cpu(cpu, mask) {
- 		found = false;
++		found = false;
  		list_for_each_entry(t, &timers, link) {
-@@ -228,6 +246,24 @@ int ipipe_select_timers(const struct cpumask *mask)
- 			goto err_remove_all;
- 		}
- 	}
-+
-+	/*
-+	 * Second, check if we need to fix up any CPUs not supported
-+	 * by ipipe (but by Linux) whose interrupt may need to be
-+	 * forwarded because they have the same IRQ as an ipipe-enabled
-+	 * timer.
-+	 */
-+	cpumask_andnot(&fixup, cpu_online_mask, mask);
-+
-+	for_each_cpu(cpu, &fixup) {
-+		list_for_each_entry(t, &timers, link) {
-+			if (!cpumask_test_cpu(cpu, t->cpumask))
-+				continue;
-+
-+			select_root_only_timer(cpu, hrclock_freq, mask, t);
+ 			if (!cpumask_test_cpu(cpu, t->cpumask))
+ 				continue;
+ 
+-			evtdev = t->host_timer;
+-#ifdef CONFIG_GENERIC_CLOCKEVENTS
+-			if (!evtdev
+-			    || evtdev->mode != CLOCK_EVT_MODE_SHUTDOWN)
+-#endif /* CONFIG_GENERIC_CLOCKEVENTS */
+-				goto found;
++			if (install_pcpu_timer(cpu, hrclock_freq, t)) {
++				found = true;
++				break;
++			}
 +		}
-+	}
 +
++		if (!found) {
++			printk("I-pipe: could not find timer for cpu #%d\n",
++			       cpu);
++			goto err_remove_all;
+ 		}
+-		printk("I-pipe: could not find timer for cpu #%d\n", cpu);
+-		goto err_remove_all;
+-
+-	  found:
+-		if (__ipipe_hrtimer_freq == 0)
+-			__ipipe_hrtimer_freq = t->freq;
+-		per_cpu(ipipe_percpu.hrtimer_irq, cpu) = t->irq;
+-		per_cpu(percpu_timer, cpu) = t;
+-		hrtimer_freq = t->freq;
+-		if (khz)
+-			hrtimer_freq /= 1000;
+-		t->c2t_integ = hrtimer_freq / hrclock_freq;
+-		tmp = (((unsigned long long)
+-			(hrtimer_freq % hrclock_freq)) << 32)
+-			+ hrclock_freq - 1;
+-		do_div(tmp, hrclock_freq);
+-		t->c2t_frac = tmp;
+ 	}
  	spin_unlock_irqrestore(&lock, flags);
  
- 	flags = ipipe_critical_enter(ipipe_timer_request_sync);
 -- 
 1.7.1
 
