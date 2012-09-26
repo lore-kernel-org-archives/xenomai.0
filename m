@@ -1,12 +1,10 @@
-Message-ID: <5061E1C8.5040208@xenomai.org>
-Date: Tue, 25 Sep 2012 18:54:32 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <5062CCB0.7060205@knapp.com>
+Date: Wed, 26 Sep 2012 11:36:48 +0200
+From: Christoph Permes <christoph.permes@knapp.com>
 MIME-Version: 1.0
-References: <CAMgy_J1-6CqxZV+iqQeC8HUa_rkh2LBoSxRxuiiUi44siKud6g@mail.gmail.com>
-In-Reply-To: <CAMgy_J1-6CqxZV+iqQeC8HUa_rkh2LBoSxRxuiiUi44siKud6g@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Can we patch Xenomai to RHEL 6 kernel source
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: [Xenomai] Xenomai: native skin init failed, code -19.
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,20 +13,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Shamju Joseph <shamju.joseph@gmail.com>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 09/24/2012 07:45 PM, Shamju Joseph wrote:
-> Hi,
-> i've a doubt on Xenomai patch.
-> Is Xenomai patch applied to only kernel from www.kernel.org?
-> Can we patch Xenomai source to RHEL 6 kernel source?
-
-The I-pipe patches delivered with Xenomai sources are made for vanilla
-kernels, yes. But if you manage to apply them to another tree, meaning
-fix the conflicts, applying the changes to get xenomai running (I mean
-running prepare-kernel.sh) should work.
-
--- 
-					    Gilles.
-
+SGkhCgpJIGFtIGV4cGVyaWVuY2luZyBwcm9ibGVtcyB3aXRoIFhlbm9tYWkgb24gYSBCZWNraG9m
+ZiBDNjkyMCBQQy4KCk1vc3QgdGltZXMgWGVub21haSB3b3JrcyBjb3JyZWNsdHksIGJ1dCBhdCBy
+YW5kb20gSSdtIGdldHRpbmcgdGhlIGZvbGxvd2luZyBtZXNzYWdlcyB3aGVuIGJvb3Rpbmc6Clsg
+ICAgMC40NTk0NjZdIFhlbm9tYWk6IGhhbC9pMzg2IHN0YXJ0ZWQuClsgICAgMC40NzEwMjhdIFhl
+bm9tYWk6IHJlYWwtdGltZSBudWNsZXVzIHYyLjQuOSAoQmlnIEJhZCBNb29uKSBsb2FkZWQuClsg
+ICAgMC41MjIwNzJdIFhlbm9tYWk6IG5hdGl2ZSBza2luIGluaXQgZmFpbGVkLCBjb2RlIC0xOS4K
+WyAgICAwLjUyMjEzNV0gWGVub21haTogc3RhcnRpbmcgUE9TSVggc2VydmljZXMuClsgICAgMC41
+NzIwNDZdIFhlbm9tYWk6IFBPU0lYIHNraW4gaW5pdCBmYWlsZWQsIGNvZGUgLTE5LgpbICAgIDAu
+NjIyMDM3XSBYZW5vbWFpOiBSVERNIHNraW4gaW5pdCBmYWlsZWQsIGNvZGUgLTE5LgoKU28sIFhl
+bm9tYWkgbWF5IHN0YXJ0IGNvcnJlY3RseSBtYW55IHRpbWVzIGFuZCB0aGFuIGZhaWxzIHRvIHN0
+YXJ0IGZvciAxMCB0aW1lcyBvciBpdCBmYWlscyB0bwpzdGFydCBldmVyeSBzZWNvbmQgYm9vdC4g
+SXQncyBjb21wbGV0bHkgcmFuZG9tLCBpdCBtYXkgaGFwcGVuIG9uIGEgY29sZCBib290IG9yIG9u
+IGEgcmVib290LgoKSXQgc2VlbXMgdG8gaGF2ZSBzb21ldGhpbmcgdG8gZG8gd2l0aCB0aGUgQVBJ
+QyB0aW1lciwgYXMgdGhlIGtlcm5lbCBhbHNvIHdyaXRlcyB0aGlzIG1lc3NhZ2UKd2hlbiBYZW5v
+bWFpIGZhaWxzIHRvIHN0YXJ0OgpbICAgIDAuMjkwMTMyXSBBUElDIHRpbWVyIGRpc2FibGVkIGR1
+ZSB0byB2ZXJpZmljYXRpb24gZmFpbHVyZQoKClRoZSBrZXJuZWwgb3B0aW9ucyBsaXN0ZWQgaW4g
+dGhlIFhlbm9tYWkgaW5zdGFsbGF0aW9uIGFuZCB0cm91Ymxlc2hvb3RpbmcgZ3VpZGVzIGFyZSBh
+bHJlYWR5IGRpc2FibGVkLApDMUUgaXMgYWxzbyBkaXNhYmxlZCBpbiBCSU9TLgoKSSBoYXZlIGF0
+dGFjaGVkIHRoZSBjb21wbGV0ZSBrZXJuZWwgbG9nIGFuZCB0aGUga2VybmVsIGNvbmZpZ3VyYXRp
+b24gdG8gdGhpcyBlLW1haWwuCgpUaGUgc29mdHdhcmUgY29tcG9uZW50cyBJJ20gdXNpbmcgYXJl
+OgpMaW51eDogMi42LjI5LjUKWGVub21haTogMi40LjkKQWRlb3M6IGFkZW9zLWlwaXBlLTIuNi4y
+OS41LXg4Ni0yLjQuMDIKCkkga25vdywgaXQncyBwcmV0dHkgb2xkLCBidXQgd2UndmUgYmVlbiBy
+dW5uaW5nIHRoZXNlIHZlcnNpb25zIGZvciBhbG1vc3QgMyB5ZWFycyBvbiBvdXIgcHJvZHVjdGlv
+biBzeXN0ZW0Kb24gb2xkZXIgaGFyZHdhcmUgd2l0aG91dCBhbnkgcHJvYmxlbXMuIFNvLCBtYXli
+ZSB0aGVyZSBpcyBhIHNpbXBsZSBzb2x1dGlvbiB0byBnZXQgcmlkIG9mIHRoaXMgcHJvYmxlbS4K
+CgpCZXN0IHJlZ2FydHMsCiAgQ2hyaXN0b3BoCgotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0t
+LS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBr
+ZXJuLmxvZwpUeXBlOiB0ZXh0L3gtbG9nClNpemU6IDU0MTYzIGJ5dGVzCkRlc2M6IG5vdCBhdmFp
+bGFibGUKVVJMOiA8aHR0cDovL3d3dy54ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRh
+Y2htZW50cy8yMDEyMDkyNi84YmIzYjAzMy9hdHRhY2htZW50LmJpbj4KLS0tLS0tLS0tLS0tLS0g
+bmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkFuIGVtYmVkZGVkIGFuZCBjaGFyc2V0LXVuc3BlY2lm
+aWVkIHRleHQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IGNvbmZpZwpVUkw6IDxodHRwOi8vd3d3Lnhl
+bm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTIwOTI2LzhiYjNiMDMz
+L2F0dGFjaG1lbnQua3NoPgo=
