@@ -1,16 +1,12 @@
-Message-ID: <50644D10.6090201@siemens.com>
-Date: Thu, 27 Sep 2012 14:56:48 +0200
-From: Wolfgang Mauerer <wolfgang.mauerer@siemens.com>
+Date: Thu, 27 Sep 2012 13:23:15 +0000 (UTC)
+From: Forconi <forconi@wavecomm.it>
+Message-ID: <1999962074.3983480.1348752195552.JavaMail.root@zmail.sgconsulting.it>
+In-Reply-To: <50644142.3040107@xenomai.org>
 MIME-Version: 1.0
-References: <5063141B.8070107@siemens.com>
-	<1348665363-28222-1-git-send-email-wolfgang.mauerer@siemens.com>
-	<50637398.3090108@xenomai.org> <50640E35.5010302@siemens.com>
-	<506440BF.50001@xenomai.org> <50644ACA.5080906@siemens.com>
-	<50644C92.9040906@xenomai.org>
-In-Reply-To: <50644C92.9040906@xenomai.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PATCH 1/2] Refactor ipipe_select_timers
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] Xenomai 2.6.1 - Linux 2.6.38.8 on AT91SAM9260 -
+ Kernel compilation fails
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,44 +16,101 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "Kiszka, Jan" <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On 27/09/12 14:54, Gilles Chanteperdrix wrote:
-> On 09/27/2012 02:47 PM, Wolfgang Mauerer wrote:
->> On 27/09/12 14:04, Gilles Chanteperdrix wrote:
->>> On 09/27/2012 10:28 AM, Wolfgang Mauerer wrote:
->>>> On 26/09/12 23:28, Gilles Chanteperdrix wrote:
->>>>> On 09/26/2012 03:16 PM, Wolfgang Mauerer wrote:
->> (...)
->>
->>>>> Talking about readability, I find a goto with a clear label name much
->>>>> more readable than a flag. So, NACK this patch, please keep the goto.
->>>>  
->>>> So you're against the refactoring, or only against using the flag?
->>>> Keeping the goto leads to something like
->>>>
->>>> 	if (install_pcpu_timer(cpu, hrclock_freq, t))
->>>> 		goto found
->>>> (...)
->>>> found:    ;
->>>>
->>>> since we need a statement for the label, but nothing is left to do.
->>>> I find this fairly ugly, but if you prefer it over a flag, then
->>>> so be it.
->>>
->>> Then use return instead of goto...
->>
->> Won't work -- that skips the rest of the enclosing per_cpu loop and
->> the second part of the function introduced in the follow-up commit
->> that does the actual bugfixing.
->>
->> Since I take the flag is the issue and not the refactoring as such, 
->> please find an updated patch with a goto below.
-> 
-> Sorry, I do not get it, do you have a gitweb somewhere where I can see
-> the actual code?
-> 
-sure: https://github.com/siemens/ipipe/commits/core-3.5_for-upstream
+The command:
 
-Cheers, Wolfgang
+make ARCH=3Darm CROSS_COMPILE=3Darm-unknown-linux-gnu- uImage
+
+is the command I use to cross compile kernels for my AT91 board, and I have=
+ successfully cross-compiled several kernels, so I think AS is the cross-as=
+ not the system-as.
+
+It seems like my cross-as doesn't support that assembler instruction.. (arm=
+-unknown-linux-gnu-as version is: GNU assembler 2.16.1)
+
+
+
+----- Messaggio originale -----
+Da: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+A: "Forconi" <forconi@wavecomm.it>
+Cc: xenomai@xenomai.org
+Inviato: Gioved=C3=AC, 27 settembre 2012 14:06:26
+Oggetto: Re: [Xenomai] Xenomai 2.6.1 - Linux 2.6.38.8 on AT91SAM9260 - Kern=
+el compilation fails
+
+On 09/27/2012 12:05 PM, Forconi wrote:
+> Hi, this is my first approach to Xenomai, I'm trying to compile a
+> Xenomai patched Linux kernel to run on a AT91SAM9260 embedded board.
+>=20
+> This is my environment: CROSS-GCC: gcc-4.2.3-glibc-2.3.3 KERNEL:
+> Linux 2.6.38.8 XENOMAI: Xenomai-2.6.1
+>=20
+> I'm following the "Installation instructions" on web site (section
+> 3.4. Building for ARM).
+>=20
+> The prepare-kernel.sh script runs ok, all files are patched with no
+> errors, this is the command I've used:=20
+> $xenomai_root/scripts/prepare-kernel.sh --arch=3Darm
+> --adeos=3D$xenomai_root/ksrc/arch/arm/patches/adeos-ipipe-2.6.38.8-arm-1.=
+18-08.patch
+> --linux=3D$linux_tree
+>=20
+> Then I configure/build the kernel: make ARCH=3Darm
+> CROSS_COMPILE=3Darm-unknown-linux-gnu- at91sam9260ek_defconfig make
+> ARCH=3Darm CROSS_COMPILE=3Darm-unknown-linux-gnu- uImage
+>=20
+> But compilation fails: ... AS      arch/arm/nwfpe/entry.o LD
+> arch/arm/nwfpe/nwfpe.o LD      arch/arm/nwfpe/built-in.o CC
+> arch/arm/kernel/elf.o AS      arch/arm/kernel/entry-armv.o AS
+> arch/arm/kernel/entry-common.o arch/arm/kernel/entry-common.S:
+> Assembler messages: arch/arm/kernel/entry-common.S:449: Error: bad
+> instruction `ldm sp,{r0-r3}' make[1]: ***
+> [arch/arm/kernel/entry-common.o] Error 1 make: *** [arch/arm/kernel]
+> Error 2
+>=20
+>=20
+> Maybe I have to try with other versions of xenomai and kernel?
+
+No, the problem is the toolchain. Are you sure AS is $(CROSS_COMPILE)as
+and not the build system as ?
+
+
+--=20
+=09=09=09=09=09    Gilles.
+
+--=20
+Ing. Samuele Forconi
+Responsabile Sviluppo SW
+WaveComm S.r.l.
+Sede legale: Via Donizetti 25, 53011 Castellina in Chianti (SI)
+Sede operativa: Loc. Belvedere - Ingresso 2, 53034 Colle Val d'Elsa (SI)
+Phone: (39) 0577 043101
+Fax: (39) 0577 043101
+Mobile: (39) 347 5899717
+Skype: samueleforconi
+E-mail: forconi@wavecomm.it
+URL: www.wavecomm.it
+
+___________________________________________________________________________=
+__________________
+
+Ai sensi del D. Lgs. n.196 del 30/06/2003, questo messaggio ed ogni suo all=
+egato sono confidenziali e ad uso esclusivo del destinatario, il quale =C3=
+=A8 l'unico autorizzato ad usarlo, copiarlo e, sotto la propria responsabil=
+it=C3=A0, diffonderlo. Se il ricevente non =C3=A8 il destinatario diretto d=
+el presente messaggio, =C3=A8 pregato di contattare l'originario mittente e=
+ di cancellare questo messaggio ed ogni suo allegato dal sistema di posta. =
+Se il ricevente non =C3=A8 il destinatario diretto del presente messaggio, =
+sono vietati l'uso, la riproduzione, e la stampa di questo messaggio e di o=
+gni suo allegato, nonch=C3=A9 la diffusione del loro contenuto a qualsiasi =
+altro soggetto.
+
+For the D. Lgs. n.196 of 30/06/2003, this message and any attachment are co=
+nfidential and privileged for the the recipient identified above, who only =
+may use, copy and, under his/her responsibility, further disseminate it. If=
+ you are not the intended recipient, please contact the sender and delete t=
+his message and any attachment from your system. If you are not the intende=
+d recipient you must not use, copy or print this message or attachment or d=
+isclose the contents to any other person.
 
