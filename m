@@ -1,13 +1,13 @@
-Message-ID: <5064A0D0.4080707@xenomai.org>
-Date: Thu, 27 Sep 2012 20:54:08 +0200
+Message-ID: <5064A428.70003@xenomai.org>
+Date: Thu, 27 Sep 2012 21:08:24 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <5062CCB0.7060205@knapp.com> <506321EE.5040907@knapp.com>
-	<5063727D.1070801@xenomai.org> <5063F0E6.4070506@knapp.com>
-In-Reply-To: <5063F0E6.4070506@knapp.com>
+References: <1280469939.3985122.1348754869513.JavaMail.root@zmail.sgconsulting.it>
+In-Reply-To: <1280469939.3985122.1348754869513.JavaMail.root@zmail.sgconsulting.it>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Xenomai: native skin init failed, code -19.
+Subject: Re: [Xenomai] Xenomai 2.6.1 - Linux 2.6.38.8 on AT91SAM9260 -
+ Kernel compilation fails
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,124 +16,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Christoph Permes <christoph.permes@knapp.com>
+To: Forconi <forconi@wavecomm.it>
 Cc: xenomai@xenomai.org
 
-On 09/27/2012 08:23 AM, Christoph Permes wrote:
+On 09/27/2012 04:07 PM, Forconi wrote:
 
-> Hi,
-> 
-> here is the output of /proc/timer_list when Xenomai initialization fails (X86_PM_TIMER is disabled in kernel config):
-> -------------------------------------------------
-> Timer List Version: v0.4
-> HRTIMER_MAX_CLOCK_BASES: 2
-> now at 80944922880 nsecs
-> 
-> Tick Device: mode:     0
-> Broadcast device
-> Clock Event Device: hpet
-
->
-> Tick Device: mode:     0
-
-> Per CPU device: 0
-> Clock Event Device: lapic
->  mode:           1
-
-> Tick Device: mode:     0
-
-> Per CPU device: 1
-> Clock Event Device: lapic
->  mode:           1
-
-mode 1 is shutdown, that is the reason why Xenomai will not start.
+> Thanks for this suggestion, replacing ldm sp,{r0-r3} with ldmia sp,{r0-r3} does the trick!
+> Now, the kernel compiles fine, so the problem was the ldm instruction was not recognised from the cross-as.
 
 
-
-> When Xenomai initialization succeeds (same kernel config, X86_PM_TIMER disabled):
-> -------------------------------------------------
-
-
-> Tick Device: mode:     1
-> Broadcast device
-> Clock Event Device: hpet
-> 
-> Tick Device: mode:     1
-> Per CPU device: 0
-> Clock Event Device: lapic
->  mode:           3
-> 
-> Tick Device: mode:     1
-> Per CPU device: 1
-> Clock Event Device: lapic
->  mode:           3
-
-
-mode 3 means that the timer is running (in one-shot mode, but that is
-not really important), in that case Xenomai can work.
-
-> And finally with X86_PM_TIMER enabled (Xenomai works always here):
-> -------------------------------------------------
-
-
-> Tick Device: mode:     1
-
-> Broadcast device
-> Clock Event Device: hpet
->  mode:           3
-> 
-> Tick Device: mode:     1
-> Per CPU device: 0
-> Clock Event Device: lapic
->  mode:           3
-> 
-> Tick Device: mode:     1
-> Per CPU device: 1
-> Clock Event Device: lapic
->  mode:           3
-
-
-Same here.
-
-
-> I have also turned on APIC debugging with apic=debug to see whats going on:
-> 
-> Thats the output where everything is fine:
-> [    0.026300] CPU0: Intel Celeron(R) Dual-Core CPU       T3100  @ 1.90GHz stepping 0a
-> [    0.026466] Using local APIC timer interrupts.
-> [    0.026467] calibrating APIC timer ...
-> [    0.026995] ... lapic delta = 1249983
-> [    0.026995] ..... delta 1249983
-> [    0.026995] ..... mult: 53694522
-> [    0.026995] ..... calibration result: 199997
-> [    0.026995] ..... CPU clock speed is 1899.0974 MHz.
-> [    0.026995] ..... host bus clock speed is 199.0997 MHz.
-> [    0.026995] ... verify APIC timer
-> [    0.128395] ... jiffies delta = 100
-> [    0.128454] ... jiffies result ok
-> [    0.128602] Booting processor 1 APIC 0x1 ip 0x6000
-> 
-> And here is the output where Xenomai fails to initialize (note the value of jiffies delta):
-> [    0.026300] CPU0: Intel Celeron(R) Dual-Core CPU       T3100  @ 1.90GHz stepping 0a
-> [    0.026466] Using local APIC timer interrupts.
-> [    0.026467] calibrating APIC timer ...
-> [    0.026995] ... lapic delta = 20124747
-> [    0.026995] ..... delta 20124747
-> [    0.026995] ..... mult: 864482703
-> [    0.026995] ..... calibration result: 3219959
-> [    0.026995] ..... CPU clock speed is -12360.-057 MHz.
-
-
-> [    0.026995] ..... host bus clock speed is 3219.0959 MHz.
-> [    0.026995] ... verify APIC timer
-> [    1.668621] ... jiffies delta = 1610
-
-
-Well the clock speed is weird too... So, it would be interesting to find
-out what happens during the APIC timer verification. Though you may
-spend some time figuring out something which was fixed in later
-revisions, so, I would advise to do a quick test of Xenomai 2.6.1 to see
-if it still has the problem.
+The error suggests, as has been told you on the rt-users mailing list,
+that you are using a very old toolchain. It is not really recommended.
+I would recommend using for instance CodeSourcery toolchain or Denx
+ELDK. If you absolutely want to stay with the oldish 2.6.38, with
+CodeSourcery, do not use anything newer than 2010q1.
 
 -- 
                                                                 Gilles.
