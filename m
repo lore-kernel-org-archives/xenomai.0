@@ -1,13 +1,7 @@
-Message-ID: <50645D6E.2030809@xenomai.org>
-Date: Thu, 27 Sep 2012 16:06:38 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <1280469939.3985122.1348754869513.JavaMail.root@zmail.sgconsulting.it>
-In-Reply-To: <1280469939.3985122.1348754869513.JavaMail.root@zmail.sgconsulting.it>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Xenomai 2.6.1 - Linux 2.6.38.8 on AT91SAM9260 -
- Kernel compilation fails
+From: Wolfgang Grandegger <wg@grandegger.com>
+Date: Thu, 27 Sep 2012 17:29:12 +0200
+Message-Id: <1348759755-13500-1-git-send-email-wg@grandegger.com>
+Subject: [Xenomai] [PATCH 0/3] rtcan: Flexcan driver for Freescale SOCs
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,16 +10,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Forconi <forconi@wavecomm.it>
-Cc: xenomai@xenomai.org
+To: Xenomai@xenomai.org
+Cc: Wolfgang Grandegger <wg@denx.de>
 
-On 09/27/2012 04:07 PM, Forconi wrote:
-> Thanks for this suggestion, replacing ldm sp,{r0-r3} with ldmia sp,{r0-r3} does the trick!
-> Now, the kernel compiles fine, so the problem was the ldm instruction was not recognised from the cross-as.
+From: Wolfgang Grandegger <wg@denx.de>
 
-I would say the cross-as is broken, as it works for everyone else. But
-we have to cope with broken toolchains...
+This patch series adds support for the Flexcan CAN controller available
+on various Freescale PowerPC and ARM SOCs. It is based on the Linux-CAN
+driver "flexcan.c" from Linux v3.5. I have tested it on a i.MX28 board
+under Linux 3.4.6. To get it working on the i.MX6, I'm afraid, there are
+a few more mainline patches necessary, which entered the kernel for
+v3.6. It should not be a big deal to port them over.
+
+It would be nice if anybody else could test the driver.
+
+Thanks,
+
+Wolfgang.
+
+Wolfgang Grandegger (3):
+  rtcan: add some macro definitions for compatibility with Linux-CAN
+  rtcan: add bit-timing calulation from Linux-CAN
+  rtcan: add driver for Flexcan on Freescale SOCs
+
+ include/rtdm/rtcan.h                     |   12 +-
+ ksrc/drivers/can/Kconfig                 |   16 +
+ ksrc/drivers/can/Makefile                |    2 +
+ ksrc/drivers/can/mscan/rtcan_mscan.c     |   17 +
+ ksrc/drivers/can/rtcan_dev.h             |   17 +
+ ksrc/drivers/can/rtcan_flexcan.c         | 1135 ++++++++++++++++++++++++++++++
+ ksrc/drivers/can/rtcan_internal.h        |   10 +
+ ksrc/drivers/can/rtcan_raw_dev.c         |  127 ++++-
+ ksrc/drivers/can/sja1000/rtcan_sja1000.c |   18 +
+ 9 files changed, 1351 insertions(+), 3 deletions(-)
+ create mode 100644 ksrc/drivers/can/rtcan_flexcan.c
 
 -- 
-					    Gilles.
+1.7.7.6
+
 
