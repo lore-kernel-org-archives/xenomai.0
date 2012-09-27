@@ -1,13 +1,14 @@
 MIME-Version: 1.0
-In-Reply-To: <5064C1CB.5070209@xenomai.org>
+In-Reply-To: <CAOiXNkAYj8ACmoVGwV0xRumS5pAjGsKB9eOMUt1d_tqpu+C-Yw@mail.gmail.com>
 References: <CAOiXNkCgA42HcOWaLuzmkaLPaSW2zCTEux3rdzKmUYeu1Egzyg@mail.gmail.com>
 	<506496C2.9030302@xenomai.org>
 	<CAOiXNkA3NLDDzt6PaYj670jGuAeES_r8pm0Q6qo9vAk=zgO9VA@mail.gmail.com>
 	<5064BFDB.1040906@xenomai.org>
 	<CAOiXNkAxMRy5m+-2gwvNbx_YDCOFW-QHJRU-5hRTnBx=3HefAw@mail.gmail.com>
 	<5064C1CB.5070209@xenomai.org>
-Date: Thu, 27 Sep 2012 23:24:03 +0200
-Message-ID: <CAOiXNkAYj8ACmoVGwV0xRumS5pAjGsKB9eOMUt1d_tqpu+C-Yw@mail.gmail.com>
+	<CAOiXNkAYj8ACmoVGwV0xRumS5pAjGsKB9eOMUt1d_tqpu+C-Yw@mail.gmail.com>
+Date: Thu, 27 Sep 2012 23:26:38 +0200
+Message-ID: <CAOiXNkCy7uo69nDufs1XC_Wu=YL9sCY6xDAb-HiGejMoYVMj0A@mail.gmail.com>
 From: Andrey Nechypurenko <andreynech@googlemail.com>
 Content-Type: text/plain; charset=ISO-8859-1
 Subject: Re: [Xenomai] Error requesting IRQ on DM3730 (BeagleBoard xM)
@@ -22,17 +23,9 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-> You are really supposed to use the kernel API for these things, and not
-> touch the registers directly.
+> It is a false positive, you can safely ignore the warning or remove the
+> check from the code.
 
-You are right and I will definitely change the pin configuration code.
-It was just a very first quick prototype and I was unfamiliar with
-corresponding kernel API.
-
-Is it also "safe" to use kernel GPIO API to toggle GPIO from RT
-context such as timer handler? With safe I mean if it can influence
-real-time performance in some negative way?
-
-Thank you,
-Andrey.
+Sounds good :-) . Thank you very much Gilles for such quick response
+and explanations!
 
