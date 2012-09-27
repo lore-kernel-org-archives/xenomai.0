@@ -4,8 +4,8 @@ References: <CAOiXNkCgA42HcOWaLuzmkaLPaSW2zCTEux3rdzKmUYeu1Egzyg@mail.gmail.com>
 	<506496C2.9030302@xenomai.org>
 	<CAOiXNkA3NLDDzt6PaYj670jGuAeES_r8pm0Q6qo9vAk=zgO9VA@mail.gmail.com>
 	<5064BFDB.1040906@xenomai.org>
-Date: Thu, 27 Sep 2012 23:08:31 +0200
-Message-ID: <CAOiXNkAxMRy5m+-2gwvNbx_YDCOFW-QHJRU-5hRTnBx=3HefAw@mail.gmail.com>
+Date: Thu, 27 Sep 2012 23:10:57 +0200
+Message-ID: <CAOiXNkDoqBb90vGA5urqDMYpphuOjfoT5aEjWShu4KKy7fi5rQ@mail.gmail.com>
 From: Andrey Nechypurenko <andreynech@googlemail.com>
 Content-Type: text/plain; charset=ISO-8859-1
 Subject: Re: [Xenomai] Error requesting IRQ on DM3730 (BeagleBoard xM)
@@ -20,90 +20,13 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On 27 September 2012 23:06, Gilles Chanteperdrix
-<gilles.chanteperdrix@xenomai.org> wrote:
 > On 09/27/2012 11:05 PM, Andrey Nechypurenko wrote:
 >
 >>   retval = InitGPIO(channels, sizeof(channels) / sizeof(channels[0]));
 >
 >
 > The code for this funtion is missing.
->
-> --
->                                                                 Gilles.
-static void __iomem *confmem = NULL;
 
-
-int
-InitGPIO(ChannelConfig *channels, size_t ch_count)
-{
-  const u16 mode_value = (EN | PTD | M4);
-  const u32 conf_val = ((1<<5)|(1<<2)|(1<<4)|(1<<3)|(1<<8)|(1<<6)|(1<<7));
-  size_t i;
-  u32 cur_val;
-
-  rtdm_printk("TB6612FNG: configuring I/O pins mode\n");
-  confmem = ioremap(0x48000000, 0x05cc);
-
-  // STBY GPIO 133 - Bank 5, base addr 0x4905 6000
-  iowrite16(mode_value, confmem + 0x215C + 2);
-  // PWMA GPIO 130
-  iowrite16(mode_value, confmem + 0x2158);
-  // AIN1 GPIO 132
-  iowrite16(mode_value, confmem + 0x215C);
-  // AIN2 GPIO 131
-  iowrite16(mode_value, confmem + 0x2158 + 2);
-  // PWMB GPIO 136
-  iowrite16(mode_value, confmem + 0x2164);
-  // BIN1 GPIO 134
-  iowrite16(mode_value, confmem + 0x2160);
-  // BIN2 GPIO 135
-  iowrite16(mode_value, confmem + 0x2160 + 2);
-
-  // ENC1 GPIO 143
-  iowrite16(IEN | mode_value, confmem + 0x2170 + 2);
-
-
-  iounmap(confmem);
-  confmem = NULL;
-  confmem = ioremap(0x49050000, 0x05cc);
-  if(!confmem)
-    {
-      rtdm_printk("TB6612FNG: GPIO bank mapping failed\n");
-      return 2;
-    }
-  else
-    rtdm_printk("TB6612FNG: GPIO bank mapped to address %p\n", confmem);
-
-  // GPIO_OE - config pins as output
-  cur_val = ioread32(confmem + 0x6034);
-  iowrite32(cur_val & (~conf_val), confmem + 0x6034);
-  // Disable the wakeupenable and irqenable intertupts
-  cur_val = ioread32(confmem + 0x6080);
-  iowrite32(cur_val | conf_val, confmem + 0x6080);
-  // GPIO clear_irqenable1
-  cur_val = ioread32(confmem + 0x6060);
-  iowrite32(cur_val | conf_val, confmem + 0x6060);
-  // GPIO clear_irqenable2 is offset
-  cur_val = ioread32(confmem + 0x6070);
-  iowrite32(cur_val | conf_val, confmem + 0x6070);
-
-  // Enable interrupts for rotary encoders
-  // 15 = (gpio)143 - 128
-  // GPIO_OE - config pins as input
-  cur_val = ioread32(confmem + 0x6034);
-  iowrite32(cur_val | (1 << 15), confmem + 0x6034);
-  // GPIO_RISINGDETECT
-  iowrite32(1 << 15, confmem + 0x6048);
-  //GPIO_FALLINGDETECT
-  iowrite32(1 << 15, confmem + 0x604C);
-  // GPIO_SETIRQENABLE1
-  iowrite32(1 << 15, confmem + 0x6064);
-  // GPIO_IRQENABLE1
-  cur_val = ioread32(confmem + 0x601C);
-  iowrite32(cur_val | (1 << 15), confmem + 0x601C);
-  // GPIO_IRQSTATUS1
-  iowrite32(1 << 15, confmem + 0x6018);
-  return 0;
-}
+Actually, if it would be helpful, I can send the complete compilable
+code (is not much more then what is already posted).
 
