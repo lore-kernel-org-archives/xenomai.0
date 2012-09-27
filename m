@@ -1,7 +1,10 @@
 From: Wolfgang Grandegger <wg@grandegger.com>
-Date: Thu, 27 Sep 2012 17:29:12 +0200
-Message-Id: <1348759755-13500-1-git-send-email-wg@grandegger.com>
-Subject: [Xenomai] [PATCH 0/3] rtcan: Flexcan driver for Freescale SOCs
+Date: Thu, 27 Sep 2012 17:29:13 +0200
+Message-Id: <1348759755-13500-2-git-send-email-wg@grandegger.com>
+In-Reply-To: <1348759755-13500-1-git-send-email-wg@grandegger.com>
+References: <1348759755-13500-1-git-send-email-wg@grandegger.com>
+Subject: [Xenomai] [PATCH 1/3] rtcan: add some macro definitions for
+	compatibility with Linux-CAN
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,36 +18,66 @@ Cc: Wolfgang Grandegger <wg@denx.de>
 
 From: Wolfgang Grandegger <wg@denx.de>
 
-This patch series adds support for the Flexcan CAN controller available
-on various Freescale PowerPC and ARM SOCs. It is based on the Linux-CAN
-driver "flexcan.c" from Linux v3.5. I have tested it on a i.MX28 board
-under Linux 3.4.6. To get it working on the i.MX6, I'm afraid, there are
-a few more mainline patches necessary, which entered the kernel for
-v3.6. It should not be a big deal to port them over.
+Signed-off-by: Wolfgang Grandegger <wg@denx.de>
+---
+ include/rtdm/rtcan.h              |   12 ++++++++++--
+ ksrc/drivers/can/rtcan_internal.h |   10 ++++++++++
+ 2 files changed, 20 insertions(+), 2 deletions(-)
 
-It would be nice if anybody else could test the driver.
-
-Thanks,
-
-Wolfgang.
-
-Wolfgang Grandegger (3):
-  rtcan: add some macro definitions for compatibility with Linux-CAN
-  rtcan: add bit-timing calulation from Linux-CAN
-  rtcan: add driver for Flexcan on Freescale SOCs
-
- include/rtdm/rtcan.h                     |   12 +-
- ksrc/drivers/can/Kconfig                 |   16 +
- ksrc/drivers/can/Makefile                |    2 +
- ksrc/drivers/can/mscan/rtcan_mscan.c     |   17 +
- ksrc/drivers/can/rtcan_dev.h             |   17 +
- ksrc/drivers/can/rtcan_flexcan.c         | 1135 ++++++++++++++++++++++++++++++
- ksrc/drivers/can/rtcan_internal.h        |   10 +
- ksrc/drivers/can/rtcan_raw_dev.c         |  127 ++++-
- ksrc/drivers/can/sja1000/rtcan_sja1000.c |   18 +
- 9 files changed, 1351 insertions(+), 3 deletions(-)
- create mode 100644 ksrc/drivers/can/rtcan_flexcan.c
-
+diff --git a/include/rtdm/rtcan.h b/include/rtdm/rtcan.h
+index 4c0749d..b8bd762 100644
+--- a/include/rtdm/rtcan.h
++++ b/include/rtdm/rtcan.h
+@@ -422,6 +422,11 @@ typedef enum CAN_MODE can_mode_t;
+  * test operation. */
+ #define CAN_CTRLMODE_LOOPBACK   0x2
+ 
++/*! Triple sampling mode
++ *
++ * In this mode the CAN controller uses Triple sampling. */
++#define CAN_CTRLMODE_3_SAMPLES  0x4
++
+ /** @} */
+ 
+ /** See @ref CAN_CTRLMODE */
+@@ -433,13 +438,16 @@ typedef int can_ctrlmode_t;
+  * @{ */
+ enum CAN_STATE {
+ 	/** CAN controller is error active */
++	CAN_STATE_ERROR_ACTIVE = 0,
+ 	CAN_STATE_ACTIVE = 0,
+ 
+ 	/** CAN controller is error active, warning level is reached */
+-	CAN_STATE_BUS_WARNING,
++	CAN_STATE_ERROR_WARNING = 1,
++	CAN_STATE_BUS_WARNING = 1,
+ 
+ 	/** CAN controller is error passive */
+-	CAN_STATE_BUS_PASSIVE,
++	CAN_STATE_ERROR_PASSIVE = 2,
++	CAN_STATE_BUS_PASSIVE = 2,
+ 
+ 	/** CAN controller went into Bus Off */
+ 	CAN_STATE_BUS_OFF,
+diff --git a/ksrc/drivers/can/rtcan_internal.h b/ksrc/drivers/can/rtcan_internal.h
+index 626cae7..35b778a 100644
+--- a/ksrc/drivers/can/rtcan_internal.h
++++ b/ksrc/drivers/can/rtcan_internal.h
+@@ -115,4 +115,14 @@
+ # define RTCAN_RTDM_DBG(fmt,args...) do {} while (0)
+ #endif
+ 
++#define rtcan_priv(dev)			(dev)->priv
++#define rtcandev_dbg(dev, fmt, args...)				\
++	printk(KERN_DEBUG "%s: " fmt, (dev)->name, ##args)
++#define rtcandev_info(dev, fmt, args...)			\
++	printk(KERN_INFO "%s: " fmt, (dev)->name, ##args)
++#define rtcandev_warn(dev, fmt, args...)			\
++	printk(KERN_WARNING "%s: " fmt, (dev)->name, ##args)
++#define rtcandev_err(dev, fmt, args...)				\
++	printk(KERN_ERR "%s: " fmt, (dev)->name, ##args)
++
+ #endif /* __RTCAN_INTERNAL_H_ */
 -- 
 1.7.7.6
 
