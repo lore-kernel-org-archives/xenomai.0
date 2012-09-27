@@ -1,11 +1,10 @@
-Message-ID: <50649906.7080605@xenomai.org>
-Date: Thu, 27 Sep 2012 20:20:54 +0200
+Message-ID: <50649984.6060309@xenomai.org>
+Date: Thu, 27 Sep 2012 20:23:00 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <5060AFD1.30303@gmail.com>
-	<506373F6.80406@xenomai.org>	<5063E8DE.8010303@gmail.com>
-	<50640444.8010703@xenomai.org> <50647502.9020204@gmail.com>
-In-Reply-To: <50647502.9020204@gmail.com>
+References: <5060AFD1.30303@gmail.com>	<506373F6.80406@xenomai.org>	<5063E8DE.8010303@gmail.com>	<50640444.8010703@xenomai.org>
+	<50647502.9020204@gmail.com> <5064967E.3040501@xenomai.org>
+In-Reply-To: <5064967E.3040501@xenomai.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] Kernel 2.6.37.6 + Xenomai 2.5.6 is ok,
@@ -21,61 +20,57 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: Jari Lietzen <jari.lietzen@gmail.com>
 Cc: xenomai@xenomai.org
 
-On 09/27/2012 05:47 PM, Jari Lietzen wrote:
+On 09/27/2012 08:10 PM, Gilles Chanteperdrix wrote:
 
-> 27.09.2012 10:46, Gilles Chanteperdrix kirjoitti:
->> On 09/27/2012 07:49 AM, Jari Lietzen wrote:
->>
->>> 27.09.2012 00:30, Gilles Chanteperdrix kirjoitti:
->>>> On 09/24/2012 09:09 PM, Jari Lietzen wrote:
->>>>
->>>>> Hi!
->>>>>
->>>>> Kernel 2.6.37.6 and Xenomai 2.5.6 boots ok, though displaying the error
->>>>> message: "MP-BIOS bug: 8254 timer not connected to IO-APIC".
->>>>>
->>>>> If I try to use Xenomai 2.6.1 the error message displayed is the same
->>>>> and system just hangs after that. No other messages, keyboard doesn't
->>>>> work, nothing. I started with the same kernel configuration, but I have
->>>>> disabled a few options more (e.g. syscall auditing, shared interrupt
->>>>> support).
->>>>>
->>>>> I'm using Intel Core 2 Duo processor with Asus P5LD2-VM motherboard.
->>>>> Obviously I'm missing something, but I can't figure that out. Here is
->>>>> the kernel config file:
->>>>
->>>>
->>>> If you use one of the I-pipe patches whih ship with Xenomai 2.6.1, such
->>>> as the patch for linux 3.2, do you also have the issue?
->>>>
->>>
->>> Hi!
->>>
->>> Yes, I have patched the kernel with this:
->>> /usr/src/xenomai/scripts/prepare-kernel.sh --arch=x86_64
->>> --adeos=/usr/src/xenomai/ksrc/arch/x86/patches/adeos-ipipe-2.6.37.6-x86-2.9-02.patch
->>> --linux=/usr/src/linux
->>>
->>> xenomai being a link to xenomai-2.6.1 -directory. When I switch between
->>> Xenomai 2.5.6 and 2.6.1 I remove the whole linux directory and extract
->>> it from the source again and change the xenomai link accordingly. With
->>> Xenomai 2.5.6 the patching was done with this:
->>> /usr/src/xenomai/scripts/prepare-kernel.sh --arch=x86_64
->>> --adeos=/usr/src/xenomai/ksrc/arch/x86/patches/adeos-ipipe-2.6.37-x86-2.9-00.patch
->>>    --linux=/usr/src/linux
->>
->>
->> So, could you try Xenoami 2.5.6 with the 2.9-02 patch, or 2.6.1 with the
->> 2.9-00 patch, or with the patch for linux 3.2 ?
->>
+> On 09/27/2012 05:47 PM, Jari Lietzen wrote:
 > 
-> I booted 2.6.37.6 kernel patched with 2.9-00 patch and compiled Xenomai 
-> 2.6.1 with the following commands:
+>> This is a snippet from dmesg:
+>>
+>> [    0.443563] Xenomai: hal/x86_64 started.
+>> [    0.443583] Xenomai: scheduling class idle registered.
+>> [    0.443585] Xenomai: scheduling class rt registered.
+>> [    0.444338] Xenomai: real-time nucleus v2.5.6 (Wormhole Wizards) loaded.
+>> [    0.444478] Xenomai: SMI-enabled chipset found, but SMI workaround 
+>> disabled
+>> [    0.444480]          (check CONFIG_XENO_HW_SMI_WORKAROUND). You may 
+>> encounter
+>> [    0.444481]          high interrupt latencies!
+>> [    0.444501] Xenomai: starting native API services.
+>> [    0.444503] Xenomai: starting POSIX services.
+>> [    0.444542] Xenomai: starting RTDM services.
+>>
+>>
+>> Then running /usr/xenomai/bin/xeno-test says:
+>>
+>> Started child 1755: /bin/bash /usr/xenomai/bin/xeno-test-run-wrapper 
+>> /usr/xenomai/bin/xeno-test
+>> ++ echo 0
+>> ++ /usr/xenomai/bin/arith
+>> Xenomai: incompatible ABI revision level
+>> (user-space requires '4', kernel provides '3').
+> 
+> 
+> So, the kernel is booting, this is a different issue:
+> http://www.xenomai.org/documentation/xenomai-2.6/html/TROUBLESHOOTING/#_xenomai_incompatible_abi_revision_level
+> 
+>> I could go on with Xenomai 2.5.6, and that's what I'm using right now. 
+>> But I'd like to bring my environment up to date. The reason I'm using 
+>> kernel 2.6.37.6 is that my applications are build on top of IgH EtherCAT 
+>> Master http://www.etherlab.org/en/ethercat/index.php and the kernel 
+>> version just comes from there.
+> 
+> 
+> You have a bug when updating both Xenomai and I-pipe patch, the test 
+> you made simply proved us that the bug is introduced by the commits 
+> between the 2.9-00 patch and 2.9-02 in the I-pipe tree and not by the 
+> Xenomai update. So, in order to find the bug, the best solution is to 
+> run a git bisect using the I-pipe git:
+> 
+> git://git.denx.de/ipipe.git
+> branch ipipe-2.6.37-x86
 
 
-I mean Xenomai 2.6.1 kernel with the 2.9-00 patch or Xenomai 2.5.6
-kernel with 2.9-00 patch. Since the kernel is not booting, we do not
-care about the user-space at this point.
+Forget about this answer I had not read your answer correctly.
 
 -- 
                                                                 Gilles.
