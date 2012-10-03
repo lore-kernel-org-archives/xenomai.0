@@ -1,10 +1,15 @@
-From: Wayne Warren <wwarren@emacinc.com>
-Content-Type: text/plain; charset="UTF-8"
-Date: Tue, 02 Oct 2012 16:08:36 -0500
-Message-ID: <1349212116.21898.108.camel@ENG-09-LX.emacinc.com>
-Mime-Version: 1.0
+Message-ID: <506BF4C0.10207@xenomai.org>
+Date: Wed, 03 Oct 2012 10:18:08 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+References: <5060AFD1.30303@gmail.com>	<506373F6.80406@xenomai.org>	<5063E8DE.8010303@gmail.com>	<50640444.8010703@xenomai.org>
+	<50647502.9020204@gmail.com>	<50649906.7080605@xenomai.org>
+	<506BE88A.9020303@gmail.com>
+In-Reply-To: <506BE88A.9020303@gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] Adeos I-Pipe patch problem on vendor-specific kernel
+Subject: Re: [Xenomai] Kernel 2.6.37.6 + Xenomai 2.5.6 is ok,
+ but with Xenomai 2.6.1 it won't boot
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,62 +18,124 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Jari Lietzen <jari.lietzen@gmail.com>
+Cc: xenomai@xenomai.org
 
-Howdy folks,
+On 10/03/2012 09:26 AM, Jari Lietzen wrote:
+> 27.09.2012 21:20, Gilles Chanteperdrix kirjoitti:
+>> On 09/27/2012 05:47 PM, Jari Lietzen wrote:
+>>
+>>> 27.09.2012 10:46, Gilles Chanteperdrix kirjoitti:
+>>>> On 09/27/2012 07:49 AM, Jari Lietzen wrote:
+>>>>
+>>>>> 27.09.2012 00:30, Gilles Chanteperdrix kirjoitti:
+>>>>>> On 09/24/2012 09:09 PM, Jari Lietzen wrote:
+>>>>>>
+>>>>>>> Hi!
+>>>>>>>
+>>>>>>> Kernel 2.6.37.6 and Xenomai 2.5.6 boots ok, though displaying the error
+>>>>>>> message: "MP-BIOS bug: 8254 timer not connected to IO-APIC".
+>>>>>>>
+>>>>>>> If I try to use Xenomai 2.6.1 the error message displayed is the same
+>>>>>>> and system just hangs after that. No other messages, keyboard doesn't
+>>>>>>> work, nothing. I started with the same kernel configuration, but I have
+>>>>>>> disabled a few options more (e.g. syscall auditing, shared interrupt
+>>>>>>> support).
+>>>>>>>
+>>>>>>> I'm using Intel Core 2 Duo processor with Asus P5LD2-VM motherboard.
+>>>>>>> Obviously I'm missing something, but I can't figure that out. Here is
+>>>>>>> the kernel config file:
+>>>>>>
+>>>>>>
+>>>>>> If you use one of the I-pipe patches whih ship with Xenomai 2.6.1, such
+>>>>>> as the patch for linux 3.2, do you also have the issue?
+>>>>>>
+>>>>>
+>>>>> Hi!
+>>>>>
+>>>>> Yes, I have patched the kernel with this:
+>>>>> /usr/src/xenomai/scripts/prepare-kernel.sh --arch=x86_64
+>>>>> --adeos=/usr/src/xenomai/ksrc/arch/x86/patches/adeos-ipipe-2.6.37.6-x86-2.9-02.patch
+>>>>> --linux=/usr/src/linux
+>>>>>
+>>>>> xenomai being a link to xenomai-2.6.1 -directory. When I switch between
+>>>>> Xenomai 2.5.6 and 2.6.1 I remove the whole linux directory and extract
+>>>>> it from the source again and change the xenomai link accordingly. With
+>>>>> Xenomai 2.5.6 the patching was done with this:
+>>>>> /usr/src/xenomai/scripts/prepare-kernel.sh --arch=x86_64
+>>>>> --adeos=/usr/src/xenomai/ksrc/arch/x86/patches/adeos-ipipe-2.6.37-x86-2.9-00.patch
+>>>>>     --linux=/usr/src/linux
+>>>>
+>>>>
+>>>> So, could you try Xenoami 2.5.6 with the 2.9-02 patch, or 2.6.1 with the
+>>>> 2.9-00 patch, or with the patch for linux 3.2 ?
+>>>>
+>>>
+>>> I booted 2.6.37.6 kernel patched with 2.9-00 patch and compiled Xenomai
+>>> 2.6.1 with the following commands:
+>>
+>>
+>> I mean Xenomai 2.6.1 kernel with the 2.9-00 patch or Xenomai 2.5.6
+>> kernel with 2.9-00 patch. Since the kernel is not booting, we do not
+>> care about the user-space at this point.
+>>
+> 
+> I tested again the following combinations. Always starting with a fresh 
+> kernel tree and patching it:
+> 
+> 		2.9-00 patch	2.9-02 patch
+> ----------------------------------------------
+> Xenomai 2.5.6	OK		OK
+> 
+> Xenomai 2.6.1	boot fails	boot fails
+> 
+> 
+> Here is a boot log from 2.9-02 patch used with Xenomai 2.6.1 and the 
+> corresponding kernel .config. I used the same config file for all four 
+> tests and prepared and compiled the kernel with:
+> 
+> /usr/src/xenomai/scripts/prepare-kernel.sh --arch=x86_64 
+> --adeos=/usr/src/xenomai/ksrc/arch/x86/patches/adeos-ipipe-2.6.37.6-x86-2.9-02.patch 
+> --linux=/usr/src/linux
 
-I am currently working on a project to get Xenomai up and running on an
-AM3517 based board and have run into some difficulties.
+Ok, this does not match what you originally said, you originally said
+the kernel was locking up after the "MP-BIOS bug: 8254 timer not
+connected to IO-APIC", something changed between the tests?
 
-First off, I am starting with a vendor-supplied kernel that was put into
-use several months ago and on top of which patches have been applied to
-get it working with a board designed by one of my coworkers. This kernel
-works fine. It is a based on a TI 2.6.37-based kernel:
+What about my suggestion to try the patch for Linux 3.2 which ships with
+Xenomai 2.6.1?
 
-http://arago-project.org/git/projects/?p=linux-omap3.git;a=commit;h=adcd067326836777c049e3cb32a5b7d9d401fc31
+> 
+> copy saved configuration to /usr/src/linux/.config
+> make xconfig (no changes, but save .config anyway)
+> make -j 2
+> make modules_install
+> make install
+> 
+> I also tested this with Atom D2500 based board, and Xenomai 2.6.1 with 
+> 2.9-02 patch fails the same way with that too. Changed the processor 
+> type of course.
 
-Because of this I initially chose the following patch:
+Ok, there are a few things in your configuration I would change:
+- enable ACPI, except for ACPI_PROCESSOR
+- disable AUDIT_SYSCALL, KPROBES, PERF_EVENTS, OPROFILE, HPET_TIMER
+But since the same configuration works with 2.5.6, it should work with
+2.6.1.
 
-http://download.gna.org/adeos/patches/v2.6/arm/older/adeos-ipipe-2.6.37.6-arm-1.18-03.patch
+The things I would try to debug this issue:
+- add some printks along the xenomai initialization to see what function
+exactly is causing the issue (the usual suspect would be rthal_start_timer)
+- try and enable the APIC or I/OAPIC nmi watchdog, so that it can tell
+you where the lockup happens
+- try 2.6.0 (which likely does not work either)
+- if 2.6.0 does not work, try a "git bisect" between 2.5.6 and 2.6.0
+- if 2.6.0 works, try a "git bisect" between 2.6.0 and 2.6.1
 
-because I thought this was as close as I would get.
+On my side, I will try and use your kernel configuration on my atom, to
+see if I reproduce the issue.
 
-When it comes time to apply the adeos i-pipe patch, we cannot simply
-apply it over our existing kernel tree using the prepare-kernel.sh
-script due to merge conflicts.
+Regards.
 
-Because of this I checked out a commit from TI's kernel tree that I
-thought would be compatible with the adeos i-pipe patch and it seems to
-have applied cleanly. After this, I merged the version of the TI kernel
-tree on which our product-specific changes were made; this resulted in
-eight conflicts which I was able to resolve in such a way that the
-resulting code compiles, but does not boot: When loading this kernel
-from u-boot, the kernel seems to hang early in the startup sequence.
-
-It occurred to me, however, that it really might be better to apply the
-adeos i-pipe patch directly over the known-to-work commit so that when
-searching for the regression I can have a better idea of where to start
-looking based on a "git diff --name-only" command.
-
-This would involved pulling the i-pipe patch in directly from:
-
-http://git.xenomai.org/?p=ipipe-gch.git;a=tags
-
-The tag that I have my eye on is ipip-2.6.37.6-arm-1.18-03 which I
-believe would correspond with the .patch file listed above. In fact, I
-have applied this patch and again resolved the merge conflicts, but run
-into a problem in that the Makefile/Kconfig kernel configuration
-variables do not seem to be included in that code. What seems to happen
-instead in the prepare-kernel.sh script adds them when patching the
-kernel. It seems like this script may do other important tasks as well.
-
-I am hoping someone can advise me with regard to either how to proceed
-without those variables or maybe offer advice for generally how to
-proceed with this attempt to pull in the i-pipe patches for a
-vendor-specific kernel branch.
-
-Thanks in advance!
-
-Wayne Warren
-
+-- 
+					    Gilles.
 
