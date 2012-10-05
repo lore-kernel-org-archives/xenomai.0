@@ -1,11 +1,11 @@
-Message-ID: <506EB4D2.7060606@wanadoo.fr>
-Date: Fri, 05 Oct 2012 12:22:10 +0200
-From: Thierry Bultel <thierry.bultel@wanadoo.fr>
+Message-ID: <506ED30E.5050002@xenomai.org>
+Date: Fri, 05 Oct 2012 14:31:10 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <506EACBD.8090307@wanadoo.fr> <506EB20A.5010107@xenomai.org>
-In-Reply-To: <506EB20A.5010107@xenomai.org>
+References: <506EACBD.8090307@wanadoo.fr>
+In-Reply-To: <506EACBD.8090307@wanadoo.fr>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] nanosleep and clock_nanosleep increase MSW counter
  without SIGXCPU
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -16,64 +16,73 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Thierry Bultel <thierry.bultel@wanadoo.fr>
 Cc: xenomai@xenomai.org
 
-Le 05/10/2012 12:10, Gilles Chanteperdrix a =C3=A9crit :
-> On 10/05/2012 11:47 AM, Thierry Bultel wrote:
->> Hi,
->>
->> My config is linux-3.2.21+xenomai-2.6.1 ; ipipe-core-3.2.21-arm-1.patc=
-h,
->> on qemu-system-arm ; versatile express. I have CONFIG_SMP to NO
->>
->> My test case is quite simple.
->> The main process is as such:
->>
->> -----------------
->>
->> int main ( ......
->>
->>
->> pthread_set_name_np(pthread_self(), "MAIN PROCESS");
->>
->> if (pthread_set_mode_np(0, PTHREAD_WARNSW) !=3D 0)
->> {
->>     LOG("pthread_set_mode_np FAILED\n");
->>     exit(0);
->> }
->>
->> for (;;)
->> {
->>     struct timespec delay =3D { 10, 0 };
->>     nanosleep(&delay,NULL);
->> }
-> mlockall missing.
->
+On 10/05/2012 11:47 AM, Thierry Bultel wrote:
+> Hi,
+> 
+> My config is linux-3.2.21+xenomai-2.6.1 ; ipipe-core-3.2.21-arm-1.patch,
+> on qemu-system-arm ; versatile express. I have CONFIG_SMP to NO
+> 
+> My test case is quite simple.
+> The main process is as such:
+> 
+> -----------------
+> 
+> int main ( ......
+> 
+> 
+> pthread_set_name_np(pthread_self(), "MAIN PROCESS");
+> 
+> if (pthread_set_mode_np(0, PTHREAD_WARNSW) != 0)
+> {
+>     LOG("pthread_set_mode_np FAILED\n");
+>     exit(0);
+> }
+> 
+> for (;;)
+> {
+>     struct timespec delay = { 10, 0 };
+>     nanosleep(&delay,NULL);
+> }
+> 
+> ----------
+> 
+> The MSW counter keeps increasing, whereas no SIGXCPU is delivered:
+> 
+> [root@buildroot ~]# cat /proc/xenomai/stat 
+> CPU  PID    MSW        CSW        PF    STAT       %CPU  NAME
+>   0  0      0          1131       0     00500080   99.6  ROOT
+>   0  717    95         189        0     00b40184    0.0  MAIN PROCESS
+>   0  0      0          381587     0     00000000    0.4  IRQ34: [timer]
+> 
+> 
+> The build command:
+> 
+> arm-linux-gcc -fmessage-length=0 -pipe -Wall -Werror -g -DNOT_USE_DYNAMIC_LOADING 
+> -I/home/tbultel/workspace/Buildroot/output/host/usr/arm-unknown-linux-gnueabi/sysroot/usr/include/xenomai 
+> -D_GNU_SOURCE -D_REENTRANT -D__XENO__ 
+> -I/home/tbultel/workspace/Buildroot/output/host/usr/arm-unknown-linux-gnueabi/sysroot/usr/include/xenomai/posix 
+> -c /home/tbultel/workspace/agv/linux/simerimcan/sim_agv_can_main.c 
+> -o /home/tbultel/workspace/agv/linux/simerimcan/build.xenomai/obj/sim_agv_can_main.o 
+> -MMD -MF/home/tbultel/workspace/agv/linux/simerimcan/build.xenomai/obj/sim_agv_can_main.d 
+> -I. -I/home/tbultel/workspace/Buildroot/output/host/usr/arm-unknown-linux-gnueabi/sysroot/opt/can/include/canfestival-xenomai 
+> -I"="/usr/include/xenomai -I"="/usr/include/xenomai/posix
+> 
+> 
+> arm-linux-gcc -lrt -lpthread -rdynamic 
+>  -L/home/tbultel/workspace/Buildroot/output/host/usr/arm-unknown-linux-gnueabi/sysroot/usr/lib 
+> -lxenomai -lpthread_rt 
+> -Wl,@/home/tbultel/workspace/Buildroot/output/host/usr/arm-unknown-linux-gnueabi/sysroot/usr/lib/posix.wrappers 
+> -o /home/tbultel/workspace/agv/../bin/arm/sim_agv_can-xenomai 
+> /home/tbultel/workspace/agv/linux/simerimcan/build.xenomai/obj/sim_agv_can_main.o 
+> /home/tbultel/workspace/agv/linux/simerimcan/build.xenomai/obj/sim_agv_can_bus.o 
+> /home/tbultel/workspace/agv/linux/simerimcan/build.xenomai/obj/sim_erim_can_log.o
 
+In order to know if the link process worked correctly with this funky
+argument order, I would use arm-linux-nm -s
 
-Sorry , Yes it is, I have not written down all the init part, (.....   )
-
-but basically it is
-
-#ifdef __XENO__
-
-    /* Initialize realtime logging */
-
-    rt_print_auto_init(1);
-
-    /* Disable paging */
-
-    if( mlockall(MCL_CURRENT | MCL_FUTURE) !=3D 0 )
-
-    {
-
-        printf("ERROR: on mlockall errno=3D%d\n", errno);
-
-        goto failure;
-
-    }
-#endif /* __XENO__ */
-
-
+-- 
+					    Gilles.
 
