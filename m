@@ -1,5 +1,5 @@
-Message-ID: <506DCF21.2000606@xenomai.org>
-Date: Thu, 04 Oct 2012 20:02:09 +0200
+Message-ID: <506E9510.7090105@xenomai.org>
+Date: Fri, 05 Oct 2012 10:06:40 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <1349212116.21898.108.camel@ENG-09-LX.emacinc.com>		<506B5D6B.80005@xenomai.org>
@@ -21,37 +21,17 @@ To: Wayne Warren <wwarren@emacinc.com>
 Cc: xenomai@xenomai.org
 
 On 10/04/2012 07:09 PM, Gilles Chanteperdrix wrote:
-
-> On 10/04/2012 06:57 PM, Wayne Warren wrote:
->> Gilles,
->>
->> Thanks for your help!
->>
->> The ArmPorting guide is helpful, but unfortunately the first tip and
->> trick did not reveal any boot messages. I had to add a function
->> declaration for "printascii" to get the code to compile. I have
->> CONFIG_DEBUG_KERNEL, CONFIG_DEBUG_LL, and CONFIG_EARLY_PRINTK enabled
->> and have passed the boot parameter "earlyprintk" when attempting to
->> boot. 
+>> Also, if I could get an account on the Xenomai wiki, there are some simple
+>> changes I would make to the ArmPorting page to improve its readability a
+>> little (for example, create indented paragraphs for the description of
+>> the "struct ipipe_timer" members). I guess I don't really have anything
+>> concrete or technical to add to it so if you don't want to add me, I
+>> understand.
 > 
-> Either you enable CONFIG_EARLY_PRINTK and pass earlyprintk on the
-> command line, that is the "new" way.
-> 
-> Or, you do the printascii in printk trick, that is the "old" way.
-> 
-> If you do both, you should see everything printed twice.
-> If you do not see anything, it probably means that printascii does not
-> work for your platform. To get it working, you have to look at
-> arch/arm/your-machine/include/mach/debug-macro.S
-> And of course, your kernel has to be compiled for only one board, if the
-> UART used by these macros depends on the board.
+> Done, you should have received a mail with your password.
 
-
-Ah, if it is an OMAP based processor, you need to add a call to
-_DEBUG_LL_ENTRY for your processor in
-arch/arm/plat-omap/include/plat/uncompress.h, it may be what is missing.
-
+By the way, if you feel like correcting my frenglish, I will not be vexed.
 
 -- 
-                                                                Gilles.
+					    Gilles.
 
