@@ -1,14 +1,12 @@
-Message-ID: <5072E660.7070207@wanadoo.fr>
-Date: Mon, 08 Oct 2012 16:42:40 +0200
-From: Thierry Bultel <thierry.bultel@wanadoo.fr>
+Message-ID: <50730FB7.3060604@xenomai.org>
+Date: Mon, 08 Oct 2012 19:39:03 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <506EACBD.8090307@wanadoo.fr> <506ED30E.5050002@xenomai.org>
-	<506EDF54.8060009@wanadoo.fr> <506EE0F5.8090006@xenomai.org>
-In-Reply-To: <506EE0F5.8090006@xenomai.org>
+References: <50729DAB.2080909@gmail.com>
+In-Reply-To: <50729DAB.2080909@gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] nanosleep and clock_nanosleep increase MSW counter
- without SIGXCPU
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Oops while running "cat /proc/xenomai/stat"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,138 +15,79 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Stefan Roese <stefan.roese@gmail.com>
 Cc: xenomai@xenomai.org
 
-Le 05/10/2012 15:30, Gilles Chanteperdrix a =C3=A9crit :
-> On 10/05/2012 03:23 PM, Thierry Bultel wrote:
->> Le 05/10/2012 14:31, Gilles Chanteperdrix a =C3=A9crit :
->>> On 10/05/2012 11:47 AM, Thierry Bultel wrote:
->>>> Hi,
->>>>
->>>> My config is linux-3.2.21+xenomai-2.6.1 ; ipipe-core-3.2.21-arm-1.pa=
-tch,
->>>> on qemu-system-arm ; versatile express. I have CONFIG_SMP to NO
->>>>
->>>> My test case is quite simple.
->>>> The main process is as such:
->>>>
->>>> -----------------
->>>>
->>>> int main ( ......
->>>>
->>>>
->>>> pthread_set_name_np(pthread_self(), "MAIN PROCESS");
->>>>
->>>> if (pthread_set_mode_np(0, PTHREAD_WARNSW) !=3D 0)
->>>> {
->>>>     LOG("pthread_set_mode_np FAILED\n");
->>>>     exit(0);
->>>> }
->>>>
->>>> for (;;)
->>>> {
->>>>     struct timespec delay =3D { 10, 0 };
->>>>     nanosleep(&delay,NULL);
->>>> }
->>>>
->>>> ----------
->>>>
->>>> The MSW counter keeps increasing, whereas no SIGXCPU is delivered:
->>>>
->>>> [root@buildroot ~]# cat /proc/xenomai/stat=20
->>>> CPU  PID    MSW        CSW        PF    STAT       %CPU  NAME
->>>>   0  0      0          1131       0     00500080   99.6  ROOT
->>>>   0  717    95         189        0     00b40184    0.0  MAIN PROCES=
-S
->>>>   0  0      0          381587     0     00000000    0.4  IRQ34: [tim=
-er]
->>>>
->>>>
->>>> The build command:
->>>>
->>>> arm-linux-gcc -fmessage-length=3D0 -pipe -Wall -Werror -g -DNOT_USE_=
-DYNAMIC_LOADING=20
->>>> -I/home/tbultel/workspace/Buildroot/output/host/usr/arm-unknown-linu=
-x-gnueabi/sysroot/usr/include/xenomai=20
->>>> -D_GNU_SOURCE -D_REENTRANT -D__XENO__=20
->>>> -I/home/tbultel/workspace/Buildroot/output/host/usr/arm-unknown-linu=
-x-gnueabi/sysroot/usr/include/xenomai/posix=20
->>>> -c /home/tbultel/workspace/agv/linux/simerimcan/sim_agv_can_main.c=20
->>>> -o /home/tbultel/workspace/agv/linux/simerimcan/build.xenomai/obj/si=
-m_agv_can_main.o=20
->>>> -MMD -MF/home/tbultel/workspace/agv/linux/simerimcan/build.xenomai/o=
-bj/sim_agv_can_main.d=20
->>>> -I. -I/home/tbultel/workspace/Buildroot/output/host/usr/arm-unknown-=
-linux-gnueabi/sysroot/opt/can/include/canfestival-xenomai=20
->>>> -I"=3D"/usr/include/xenomai -I"=3D"/usr/include/xenomai/posix
->>>>
->>>>
->>>> arm-linux-gcc -lrt -lpthread -rdynamic=20
->>>>  -L/home/tbultel/workspace/Buildroot/output/host/usr/arm-unknown-lin=
-ux-gnueabi/sysroot/usr/lib=20
->>>> -lxenomai -lpthread_rt=20
->>>> -Wl,@/home/tbultel/workspace/Buildroot/output/host/usr/arm-unknown-l=
-inux-gnueabi/sysroot/usr/lib/posix.wrappers=20
->>>> -o /home/tbultel/workspace/agv/../bin/arm/sim_agv_can-xenomai=20
->>>> /home/tbultel/workspace/agv/linux/simerimcan/build.xenomai/obj/sim_a=
-gv_can_main.o=20
->>>> /home/tbultel/workspace/agv/linux/simerimcan/build.xenomai/obj/sim_a=
-gv_can_bus.o=20
->>>> /home/tbultel/workspace/agv/linux/simerimcan/build.xenomai/obj/sim_e=
-rim_can_log.o
->>> In order to know if the link process worked correctly with this funky
->>> argument order, I would use arm-linux-nm -s
->>>
->> 'arm-linux-nm -s' shows :
->>
->>          U __wrap_clock_gettime
->>          U __wrap_close
->>          U __wrap_connect
->>          U __wrap_nanosleep
->>          U __wrap_printf
->>          U __wrap_puts
->>          U __wrap_socket
->>
->> That gdb also confirms that
->>
->> (gdb) r
->> Starting program: /root/sim_agv_can-xenomai
->> [Thread debugging using libthread_db enabled]
->> Using host libthread_db library "/lib/libthread_db.so.1".
->> [New Thread 0x2ac82470 (LWP 1642)]
->> [SIMBUS] 03:58:32.955 MLOCKALL DONE
->> [SIMBUS] 03:58:32.975 Starting Bus simulator
->> [SIMBUS] 03:58:32.977 Alive
->> [SIMBUS] 03:58:33.979 Alive
->> ^C
->> Program received signal SIGINT, Interrupt.
->> 0x2ab03ee4 in __wrap_clock_nanosleep () from /usr/lib/libpthread_rt.so=
-.1
->> (gdb)
->>
->> ...and my MSW still increases
->>
->> What link argument order would you advise ?
-> object firsts, libraries next. Libraries in the "logical" order, so, if
-> your .o use libpthread_rt, start with libpthread_rt, since libpthread_r=
-t
-> use libxenomai, libxenomai comes next, since both of them use libtphrea=
-d
-> and librt, libpthread and librt come next, etc...
->
-> IOW, the order provided by xeno-config.
->
-> Anyway, if you did not call pthread_setschedparam in a part of code
-> which you did not show (which is why we usually ask for a self-containe=
-d
-> test case, with full source, so that we do not have to guess what you
-> could have done or not), the main thread is running with SCHED_OTHER
-> policy, and automatically returns to secondary domain after having
-> switched to primary domain during nanosleep.
-Many thanks, SCHED_OTHER was the point
+On 10/08/2012 11:32 AM, Stefan Roese wrote:
 
-Cheers
-Thierry
+> Hi,
+> 
+> I'm currently developing an RTDM driver communicating with an FPGA
+> located on the LPB on an MPC5200 PowerPC. This driver already seems
+> to work quite well. But when I run my test application
+> communicating with the device driver, and I try to check the
+> Xenomai stat's, I get a kernel crash:
+> 
+> root@generic-powerpc:~# cat /proc/xenomai/stat 
+> [   43.722984] Oops: Kernel access of bad area, sig: 11 [#1]
+> [   43.728503] mpc5200-simple-platform
+> [   43.732057] Modules linked in: rt_fpga(O) rt_mpc52xx_lpbfifo(O)
+> [   43.738107] NIP: c00646a8 LR: c0098b84 CTR: c0098b34
+> [   43.743173] REGS: c7025b40 TRAP: 0300   Tainted: G           O  (3.5.3-00253-g4699145-dirty)
+> [   43.751776] MSR: 00001032 <ME,IR,DR,RI>  CR: 24424488  XER: 20000000
+> [   43.758279] DAR: 00000000, DSISR: 22000000
+> [   43.762454] TASK = c7b75360[1430] 'cat' THREAD: c7024000
+> GPR00: 00000000 c7025bf0 c7b75360 c7b1ca0c 00000002 02000007 00000000 00000031 
+> GPR08: c7ab0000 c7b1cc00 00000000 00000000 c0098b34 100a5a74 10017830 10006834 
+> GPR16: 10006770 10006774 c7b1cc00 00000000 00000002 c033d385 c03264ac 00000025 
+> GPR24: c0320000 00000001 00000002 c03b3460 00000000 00000000 c7a6ccc4 c7a6ccb4 
+> [   43.796697] Call Trace:
+> [   43.799189] [c7025bf0] [c004c540] 0xc004c540 (unreliable)
+> [   43.804698] [c7025c20] [c0098b84] 0xc0098b84
+> [   43.809051] [c7025c40] [c90e4588] 0xc90e4588
+> [   43.813406] [c7025c50] [c90d8114] 0xc90d8114
+> [   43.817758] [c7025c60] [c005e85c] 0xc005e85c
+> [   43.822113] [c7025ca0] [c005aef0] 0xc005aef0
+> [   43.826465] [c7025cc0] [c000d664] 0xc000d664
+> [   43.830819] [c7025cd0] [c000f710] 0xc000f710
+> [   43.835175] --- Exception: 501 at 0xc01b2614
+> 
+> This happens reproducible upon the "cat" command from the shell.
+> 
+> Looking at the NIP (c00646a8), the PPC is currently executing
+> xnsynch_flush().
+> 
+> Other proc files from the xenomai directory like "irq" don't cause
+> this crash. And accessing "stat" when this application is not
+> running also works fine:
+> 
+> root@generic-powerpc:~# cat /proc/xenomai/stat 
+> CPU  PID    MSW        CSW        PF    STAT       %CPU  NAME
+>   0  0      0          0          0     00500080  100.0  ROOT
+>   0  0      0          0          0     00000000    0.0  IRQ145: rtcan_mscan
+>   0  0      0          0          0     00000000    0.0  IRQ151: mpc52xx-lpbfifo
+>   0  0      0          0          0     00000000    0.0  IRQ194: mpc52xx-lpbfifo-rx
+>   0  0      0          17619      0     00000000    0.0  IRQ512: [timer]
+> 
+> Any idea what might go wrong here? 
 
+
+Please enable CONFIG_KALLSYMS so that the backtrace contains readable
+function names, otherwise, without a disassembly of your kernel, we have
+no idea what functions the backtrace is referring to.
+
+> 
+> Thanks,
+> Stefan
+> 
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> http://www.xenomai.org/mailman/listinfo/xenomai
+> 
+
+
+
+-- 
+                                                                Gilles.
 
