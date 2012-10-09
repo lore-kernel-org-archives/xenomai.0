@@ -1,20 +1,16 @@
-Message-ID: <50756572.5020108@xenomai.org>
-Date: Wed, 10 Oct 2012 14:09:22 +0200
+Message-ID: <5074430B.90307@xenomai.org>
+Date: Tue, 09 Oct 2012 17:30:19 +0200
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <505EB99F.7050705@wanadoo.fr>	<505EBD61.1050009@wanadoo.fr>	<505F0D40.9030105@xenomai.org>	<50741C5B.4060206@wanadoo.fr>
-	<5074986C.8000509@xenomai.org> <50749A03.9090607@xenomai.org>
-	<50749C71.2020100@xenomai.org> <5075260E.2050402@wanadoo.fr>
-	<507528E4.4050809@xenomai.org> <50752A42.9080303@web.de>
-	<50752C0C.3050803@xenomai.org> <50752D7E.7010207@web.de>
-	<507538C8.7040706@xenomai.org> <50753980.7020409@web.de>
-	<50753EA0.7070007@xenomai.org> <50754849.9030205@web.de>
-	<507548DE.2000305@xenomai.org> <50754D0F.50407@web.de>
-	<507553D0.8070305@xenomai.org> <50755C40.5080002@xenomai.org>
-In-Reply-To: <50755C40.5080002@xenomai.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Target frozen with rtcan_virt
+References: <CANKLDmtLLcZnbJ5vXJFRkdyoy1Qk_wfGR84LdB0dkb8KynS+Yg@mail.gmail.com>
+	<50743048.1050305@xenomai.org>
+	<CANKLDmtU2XwFi3XmN1BL3CcZare7QFu4u6vL-2c5fkbR9TSpsw@mail.gmail.com>
+	<50744267.9030702@xenomai.org>
+	<CANKLDms-sbO6M8j0Mr9ich4Lam94ggx+-_-6XYNCUVfYhX+PSw@mail.gmail.com>
+In-Reply-To: <CANKLDms-sbO6M8j0Mr9ich4Lam94ggx+-_-6XYNCUVfYhX+PSw@mail.gmail.com>
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] Exporting __ipipe_get_cs_tsc
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -23,142 +19,73 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Thierry Bultel <thierry.bultel@wanadoo.fr>, Jan Kiszka <jan.kiszka@web.de>, Wolfgang Grandegger <wg@denx.de>, xenomai@xenomai.org
+To: Henri Roosen <henriroosen@gmail.com>
+Cc: xenomai@xenomai.org
 
-On 10/10/2012 01:30 PM, Gilles Chanteperdrix wrote:
-> On 10/10/2012 12:54 PM, Philippe Gerum wrote:
-> 
->> On 10/10/2012 12:25 PM, Jan Kiszka wrote:
->>> On 2012-10-10 12:07, Gilles Chanteperdrix wrote:
->>>> On 10/10/2012 12:04 PM, Jan Kiszka wrote:
->>>>> On 2012-10-10 11:23, Gilles Chanteperdrix wrote:
->>>>>> On 10/10/2012 11:01 AM, Jan Kiszka wrote:
->>>>>>> On 2012-10-10 10:58, Gilles Chanteperdrix wrote:
->>>>>>>> On 10/10/2012 10:10 AM, Jan Kiszka wrote:
->>>>>>>>> On 2012-10-10 10:04, Gilles Chanteperdrix wrote:
->>>>>>>>>> On 10/10/2012 09:56 AM, Jan Kiszka wrote:
->>>>>>>>>>> On 2012-10-10 09:51, Gilles Chanteperdrix wrote:
->>>>>>>>>>>> On 10/10/2012 09:38 AM, Thierry Bultel wrote:
->>>>>>>>>>>>> Hi Gilles,
->>>>>>>>>>>>>
->>>>>>>>>>>>> Many thanks,
->>>>>>>>>>>>> The first patch does not work, the second does.
->>>>>>>>>>>>> I think the reason for 1st patch why is that in rtcan_virt, we have
->>>>>>>>>>>>>
->>>>>>>>>>>>> rtdm_lock_get_irqsave(&rtcan_recv_list_lock, lock_ctx);
->>>>>>>>>>>>> rtdm_lock_get(&rtcan_socket_lock);
->>>>>>>>>>>>>
->>>>>>>>>>>>> ...
->>>>>>>>>>>>> --->        rtcan_rcv(rx_dev, &skb);
->>>>>>>>>>>>> ....
->>>>>>>>>>>>>
->>>>>>>>>>>>> rtdm_lock_put(&rtcan_socket_lock);
->>>>>>>>>>>>> rtdm_lock_put_irqrestore(&rtcan_recv_list_lock, lock_ctx);
->>>>>>>>>>>>>
->>>>>>>>>>>>> and rtcan_rcv->rtcan_rcv_deliver->rtdm_sem_up(&sock->recv_sem);
->>>>>>>>>>>>>
->>>>>>>>>>>>> thus the same re-scheduling stuff with interrupts locked.
->>>>>>>>>>>>>
->>>>>>>>>>>>> Are you not not afraid of side effects with the second patch, 
->>>>>>>>>>>>> since you change the overall behaviour ?
->>>>>>>>>>>>> Won't you prefer a only locally modified rtcan_virt ?
->>>>>>>>>>>>
->>>>>>>>>>>> We should ask Jan's opinion. In any case, if we adopt the second patch,
->>>>>>>>>>>> we might want to try and reduce the overhead of xnpod_unlock_sched.
->>>>>>>>>>>>
->>>>>>>>>>>
->>>>>>>>>>> We were signaling the semaphore while holding a spin lock? That's a
->>>>>>>>>>> clear bug. Your patch is aligning rtcan to the pattern we are also using
->>>>>>>>>>> in RTnet. We just need to make sure (haven't looked at the full context
->>>>>>>>>>> yet) that sock remains valid even after dropping the lock(s).
->>>>>>>>>>
->>>>>>>>>> The second patch idea was to lock the scheduler while spinlocks are
->>>>>>>>>> held, so that posting a semaphore while holding a spin lock is no longer
->>>>>>>>>> a bug.
->>>>>>>>>
->>>>>>>>> Sounds a bit hacky,
->>>>>>>>
->>>>>>>> Well, that is what the linux kernel does.
->>>>>>>>
->>>>>>>>  but I think we have this pattern
->>>>>>>>> (RTDM_EXECUTE_ATOMICALLY)
->>>>>>>>
->>>>>>>> RTDM_EXECUTE_ATOMICALLY is a bit of a misnomer, if you do:
->>>>>>>> RTDM_EXECUTE_ATOMICALLY(foo(); rtdm_sem_up(); bar());
->>>>>>>> foo() and bar() are not executed atomically if sem_up wakes up another
->>>>>>>> thread.
->>>>>>>>
->>>>>>>> So, I do not see how RTDM_EXECUTE_ATOMICALLY solves the issue we are
->>>>>>>> talking about.
->>>>>>>
->>>>>>> RTDM_EXECUTE_ATOMICALLY holds the nucleus lock across the encapsulated
->>>>>>> code, executing it atomically as rescheduling is postponed until the end
->>>>>>> of the block.
->>>>>>
->>>>>> Err... no. Absolutely not.
+On 10/09/2012 05:28 PM, Henri Roosen wrote:
+> On Tue, Oct 9, 2012 at 5:27 PM, Gilles Chanteperdrix
+> <gilles.chanteperdrix@xenomai.org> wrote:
+>> On 10/09/2012 05:24 PM, Henri Roosen wrote:
+>>> On Tue, Oct 9, 2012 at 4:10 PM, Philippe Gerum <rpm@xenomai.org> wrote:
+>>>> On 10/09/2012 02:32 PM, Henri Roosen wrote:
+>>>>> Hi,
 >>>>>
->>>>> Err... absolutely right.
+>>>>> I'm using the current git heads of core-3.4 and xenomai 2.6.1 for x86
+>>>>> with the attached config file.
 >>>>>
->>>>> The good news is: we don't need to worry about such kind of locking. In
->>>>> rtcan_raw_recvmsg, the socket is locked via the RTDM context as we are
->>>>> in a handler. So it won't disappear when we drop the lock, and your
->>>>> first patch is fine.
+>>>>> When compiling the modules I get undefined symbols:
+>>>>> ERROR: "__ipipe_get_cs_tsc" [kernel/xenomai/skins/posix/xeno_posix.ko]
+>>>>> undefined!
+>>>>>
+>>>>> This is because the run time seleted __ipipe_get_cs_tsc assembly
+>>>>> function is not exported for module use.
+>>>>> I don't know how to export this or whether the symbol should be used
+>>>>> by modules in the first place.
+>>>>>
 >>>>
->>>> Which one? The first one does not seem to work because the rtdm locks
->>>> seem to be nested. The second one would probably need to find a way to
->>>> reduce the overhead of xnpod_unlock_sched(). What can be done, however,
->>>> is adding a call to xnpod_lock_sched()/xnpod_unlock_sched() in
->>>> RTDM_EXECUTE_ATOMICALLY.
+>>>> Please try this:
+>>>>
+>>>> diff --git a/arch/x86/kernel/ipipe.c b/arch/x86/kernel/ipipe.c
+>>>> index 430aeea..2d2f83c 100644
+>>>> --- a/arch/x86/kernel/ipipe.c
+>>>> +++ b/arch/x86/kernel/ipipe.c
+>>>> @@ -634,6 +634,11 @@ void update_vsyscall(struct timespec *wall_time,
+>>>> struct timespec *wtm,
+>>>>  void update_vsyscall_tz(void)
+>>>>  {
+>>>>  }
+>>>> +
+>>>> +#ifdef CONFIG_IPIPE_WANT_CLOCKSOURCE
+>>>> +EXPORT_SYMBOL_GPL(__ipipe_get_cs_tsc);
+>>>> +#endif
+>>>> +
+>>>>  #endif /* CONFIG_X86_32 */
+>>>>
+>>>>  struct task_struct *__switch_to(struct task_struct *prev_p,
 >>>
->>> Oh, I'm seeing the locking forest in rtcan now. I suppose rtcan wasn't
->>> used much on SMP so far. That looks indeed unresolvable without a
->>> semantical change to rtdm_lock/unlock.
+>>> Thanks for looking into this.
 >>>
->>> But then we really need something as light-weight as preempt_enable/disable.
->>>
->> This is not as lightweight as it might be given that we pair a flag and
->> a counter to achieve this (which saves one data reference in
->> xnpod_schedule() though), but this is a start:
+>>> Unfortunately with the patch the compile results in:
+>>> arch/x86/kernel/ipipe.c:640: error: =91__ipipe_get_cs_tsc=92 undeclared
+>>> here (not in a function)
 >>
->> http://git.xenomai.org/?p=xenomai-2.6.git;a=commit;h=aed4dfce9967e45ef7e8a8da4b6c90267ea81497
+>> The function is declared nowhere, because it was supposedly only be used
+>> in assembly. So, you need to declare the function before the
+>> EXPORT_SYMBOL. Its prototype would be:
 >>
->> So, I'm setting __xnpod_lock_sched() and __xnpod_unlock_sched() in stone
->> in the nucleus API to manipulate the sched locking counter from a
->> context where the nucleus lock is already held, so that RTDM can rely on
->> this for RTDM_EXECUTE_ATOMICALLY().
-> 
-> 
-> The problem of xnpod_unlock_sched from my point of view is this section
-> of code:
-> 
->  		xnsched_set_self_resched(curr->sched);
->  		xnpod_schedule();
-> 
-> It means that we will go to the full blown __xnpod_schedule when
-> unlocking the top-most spinlock.
-> 
-> I guess what I meant is that we should have a scheduler bit that is
-> simply tested in xnpod_schedule, but then we loose the ability for the
-> threads with the scheduler locked to suspend themselves. So, maybe we
-> should define another xnpod_lock/unlock pair, maybe something like
-> xnpod_preempt_disablle()/xnpod_preempt_enabled().
-> 
-> 
+>> unsigned long long __ipipe_get_tsc_tsc(void);
+>=20
+> I tried that and I can confirm it works.
+>=20
 
-xnpod_lock_sched() really means xnpod_preempt_disable() in RTOS parlance.
+Ok, pushing the fix.
 
-The main issue we have for really optimizing the implementation, is
-hidden deep into the way we refer to the current running context: we do
-have to go through the current scheduler structure to get the current
-thread, which in turn requires to disable preemption...which is overkill
-by design.
+>>
+>> --
+>>                                             Gilles.
+>=20
 
-core pipelines used in non-legacy mode allow the client code to define a
-stack-based thread-info block, but this won't work for 2.6.x which
-follows the legacy API. And this will work in 3.x when we will have
-gotten rid of these crappy Xenomai-specific stacks for kernel rt threads.
 
--- 
+--=20
 Philippe.
 
