@@ -1,13 +1,13 @@
-Message-ID: <507D0712.9070305@xenomai.org>
-Date: Tue, 16 Oct 2012 09:04:50 +0200
+Message-ID: <50744267.9030702@xenomai.org>
+Date: Tue, 09 Oct 2012 17:27:35 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <507C93B6.30304@nta-inc.net>
-In-Reply-To: <507C93B6.30304@nta-inc.net>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Still having problems running Xenomai on an Intel
- X5650 x86_64 machine
+References: <CANKLDmtLLcZnbJ5vXJFRkdyoy1Qk_wfGR84LdB0dkb8KynS+Yg@mail.gmail.com>	<50743048.1050305@xenomai.org>
+	<CANKLDmtU2XwFi3XmN1BL3CcZare7QFu4u6vL-2c5fkbR9TSpsw@mail.gmail.com>
+In-Reply-To: <CANKLDmtU2XwFi3XmN1BL3CcZare7QFu4u6vL-2c5fkbR9TSpsw@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] Exporting __ipipe_get_cs_tsc
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,36 +16,59 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jeff Webb <jeff.webb@nta-inc.net>
+To: Henri Roosen <henriroosen@gmail.com>
 Cc: xenomai@xenomai.org
 
-On 10/16/2012 12:52 AM, Jeff Webb wrote:
-
-> I'm back to trying to get Xenomai running on a dual 6-core Intel
-> X5650 desktop machine.  I reported my previous attempts a few months
-> ago:
+On 10/09/2012 05:24 PM, Henri Roosen wrote:
+> On Tue, Oct 9, 2012 at 4:10 PM, Philippe Gerum <rpm@xenomai.org> wrote:
+>> On 10/09/2012 02:32 PM, Henri Roosen wrote:
+>>> Hi,
+>>>
+>>> I'm using the current git heads of core-3.4 and xenomai 2.6.1 for x86
+>>> with the attached config file.
+>>>
+>>> When compiling the modules I get undefined symbols:
+>>> ERROR: "__ipipe_get_cs_tsc" [kernel/xenomai/skins/posix/xeno_posix.ko]
+>>> undefined!
+>>>
+>>> This is because the run time seleted __ipipe_get_cs_tsc assembly
+>>> function is not exported for module use.
+>>> I don't know how to export this or whether the symbol should be used
+>>> by modules in the first place.
+>>>
+>>
+>> Please try this:
+>>
+>> diff --git a/arch/x86/kernel/ipipe.c b/arch/x86/kernel/ipipe.c
+>> index 430aeea..2d2f83c 100644
+>> --- a/arch/x86/kernel/ipipe.c
+>> +++ b/arch/x86/kernel/ipipe.c
+>> @@ -634,6 +634,11 @@ void update_vsyscall(struct timespec *wall_time,
+>> struct timespec *wtm,
+>>  void update_vsyscall_tz(void)
+>>  {
+>>  }
+>> +
+>> +#ifdef CONFIG_IPIPE_WANT_CLOCKSOURCE
+>> +EXPORT_SYMBOL_GPL(__ipipe_get_cs_tsc);
+>> +#endif
+>> +
+>>  #endif /* CONFIG_X86_32 */
+>>
+>>  struct task_struct *__switch_to(struct task_struct *prev_p,
 > 
-> On ubuntu 10.04 with 2.6.38.8: 
-> http://www.xenomai.org/pipermail/xenomai/2012-July/000546.html
+> Thanks for looking into this.
 > 
-> On ubuntu 10.04 with 3.2.21: 
-> http://www.xenomai.org/pipermail/xenomai/2012-July/000577.html
-> 
-> I am now using ubuntu 12.04 instead of 10.04, and I'm using the
-> xenomai-2.6.git branch.  I am still not having any success.  The
-> kernel boots, but hangs as the GUI login box is coming up.  This is
-> similar to what happened under ubuntu 10.04/3.2.21, but the call
-> trace seems a little different.  I have attached my kernel config and
-> the console output, which was captured via a serial connection.  This
-> exact kernel package seems to run fine (with very limited testing) on
-> a 4-core Intel X9650 desktop machine running the same OS, for what
-> it's worth.  Any help in debugging this would be appreciated.  What's
-> my next step?
+> Unfortunately with the patch the compile results in:
+> arch/x86/kernel/ipipe.c:640: error: ‘__ipipe_get_cs_tsc’ undeclared
+> here (not in a function)
 
+The function is declared nowhere, because it was supposedly only be used
+in assembly. So, you need to declare the function before the
+EXPORT_SYMBOL. Its prototype would be:
 
-I am afraid that is another known issue fixed in the 3.4 branch. Please
-try the I-pipe git; git://git.denx.de, branch core-3.4.
+unsigned long long __ipipe_get_tsc_tsc(void);
 
 -- 
-                                                                Gilles.
+					    Gilles.
 
