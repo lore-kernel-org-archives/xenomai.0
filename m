@@ -1,13 +1,15 @@
-Message-ID: <50765009.6030809@web.de>
-Date: Thu, 11 Oct 2012 06:50:17 +0200
-From: Jan Kiszka <jan.kiszka@web.de>
+Message-ID: <50747C29.2060504@grandegger.com>
+Date: Tue, 09 Oct 2012 21:34:01 +0200
+From: Wolfgang Grandegger <wg@grandegger.com>
 MIME-Version: 1.0
-References: <506D7DFF.6040403@wanadoo.fr> <506D82E2.6080908@xenomai.org>
-	<506D87E1.8090100@wanadoo.fr> <506D8E6B.10802@xenomai.org>
-In-Reply-To: <506D8E6B.10802@xenomai.org>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] Modified rtcan_virt driver
+References: <503227B5.9070002@basystemes.fr> <50322F06.4000009@wanadoo.fr>
+	<503C63BE.8010201@xenomai.org>
+	<503C709C.3020702@grandegger.com> <503C758B.9000906@wanadoo.fr>
+	<503C7D77.2060209@grandegger.com> <50744BD3.1030703@wanadoo.fr>
+In-Reply-To: <50744BD3.1030703@wanadoo.fr>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [PATCH] rtcan: driver for the Advantech PCI cards
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,59 +18,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Thierry Bultel <thierry.bultel@wanadoo.fr>, xenomai@xenomai.org
+To: Thierry Bultel <thierry.bultel@wanadoo.fr>
+Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-T24gMjAxMi0xMC0wNCAxNToyNiwgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4gT24gMTAv
-MDQvMjAxMiAwMjo1OCBQTSwgVGhpZXJyeSBCdWx0ZWwgd3JvdGU6Cj4+IExlIDA0LzEwLzIwMTIg
-MTQ6MzYsIEdpbGxlcyBDaGFudGVwZXJkcml4IGEgw6ljcml0IDoKPj4+IE9uIDEwLzA0LzIwMTIg
-MDI6MTUgUE0sIFRoaWVycnkgQnVsdGVsIHdyb3RlOgo+Pj4+IEhpLAo+Pj4+Cj4+Pj4gVGhlIGV4
-aXN0aW5nIHJ0Y2FuX3ZpcnQgZHJpdmVyIHNpbXVsYXRlcyBhIHNpbmdsZSBDQU4gYnVzLCBvbiB3
-aGljaCBhcmUKPj4+PiBOIGRldmljZXMuCj4+Pj4gU2VuZGluZyB0byBvbmUgZGlzcGF0Y2hlcyB0
-aGUgZnJhbWUgdG8gYWxsIHRoZSBvdGhlcnMgYnV0IHRoZSBub3QgdG8gdGhlCj4+Pj4gc2VuZGVy
-Lgo+Pj4+Cj4+Pj4gVGhpcyBoYXMgc2V2ZXJhbCBkaXNhZHZhbnRhZ2VzOgo+Pj4+Cj4+Pj4gLSBG
-aXJzdCwgdG8gcnVuIGFuIGFwcGxpY2F0aW9uIHRoYXQgdXNlcyAyIG9yIG1vcmUgcGh5c2ljYWwg
-YnVzZXMsIGl0Cj4+Pj4gZG9lcyBub3QgZml0LCBiZWNhdXNlIGJvdGggZGV2aWNlcyB3b3VsZCBi
-ZSBsaW5rZWQgdG9nZXRoZXIuCj4+Pj4gLSBTZWNvbmQsIGhhdmluZyBOIGluc3RhbnRpYXRlZCB2
-aXJ0dWFsIGRldmljZXMgaXMgaW4gc29tZSBjYXNlcyBub3QKPj4+PiBuZWNlc3NhcnksIGJlY2F1
-c2UgYW4gYXBwbGljYXRpb24gY2FuIG9wZW4gdGhlCj4+Pj4gc2FtZSBkZXZpY2Ugc2V2ZXJhbCB0
-aW1lcywgYW5kIHNpbXVsYXRlIG1hbnkgQ0FOIG5vZGVzLCBvbiB0aGF0IHNpbmdsZQo+Pj4+IGRl
-dmljZS4KPj4+Pgo+Pj4+IFRodXMgSSBoYXZlIHdyaXR0ZW4gYW5vdGhlciBydGNhbl92aXJ0IGRy
-aXZlciwgYmFzZWQgb24gdGhlIG9yaWdpbmFsIG9uZS4KPj4+Pgo+Pj4+IEl0cyBiZWhhdmlvciBp
-cyBhcyBmb2xsb3dzOgo+Pj4+Cj4+Pj4gLSBJdCBpbnN0YW50aWF0ZXMgTiBydGNhbiBkZXZpY2Vz
-LCB0aGF0IGFyZSBpbmRlcGVuZGVudCAobm8gZnJhbWUgZnJvbQo+Pj4+IG9uZSB0byBhbm90aGVy
-KQo+Pj4+IC0gRWFjaCB2aXJ0dWFsIHJ0Y2FuIChydGNhbjAsIHJ0Y2FuMSAuLi4pIGRldmljZSBo
-YXMgYSBtYXRjaGluZyBwZWVyCj4+Pj4gKHJ0Y2FuMHMsIHJ0Y2FuMXMgLi4uKQo+Pj4+ICgncycg
-bGlrZSAnc2xhdmUnIGJ1dCBJIGFtIG9wZW5lZCB0byBhbnkgb3RoZXIgbmFtaW5nKSBhbm90aGVy
-IHRvCj4+Pj4gY29tbXVuaWNhdGUgd2l0aC4KPj4+PiBUaGF0ICdzbGF2ZScgZGV2aWNlIGlzYXV0
-b21hdGljYWxseSBjcmVhdGVkLgo+Pj4+IEkgc2F5ICdzbGF2ZScgaW4gcXVvdGVzIGJlY2F1c2Ug
-dGhlIHdvcmQgaGlkZXMgdGhlIHN5bW1ldHJpY2FsIGFzcGVjdCwKPj4+PiBzbyBpdCBpcyBsaWtl
-bHkgdW5hcHByb3ByaWF0ZS4uCj4+Pj4KPj4+PiBJdCBpcyB0b2RheSBmdWxseSB0ZXN0ZWQsIG15
-IHF1ZXN0aW9uIHdhcyBpZiBpdCBjb3VsZCBiZSBvZiBpbnRlcmVzdCBmb3IKPj4+PiB0aGUgWGVu
-b21haSBtYWlubGluZS4KPj4+PiBJZiBZZXM6Cj4+Pj4gLSBzb21lIHF1ZXN0aW9ucyBjb21lLCB0
-byBteSBtaW5kIHRoZSBtb3N0IGltcG9ydGFudCBvbmUgaXMgaWYgaXMgYSBuZXcKPj4+PiBkcml2
-ZXIsIG9yIGEgcGF0Y2ggZm9yIHRoZSBleGlzdGluZyBvbmUsCj4+Pj4gdG8gbW9kaWZ5IGl0cyBi
-ZWhhdmlvciBkZXBlbmRpbmcgb24gYSBwYXJhbWV0ZXIuIElmIGl0IGlzIGEgbmV3IG9uZSwKPj4+
-PiB3aGF0IHdvdWxkIGJlIHRoZSBhcHByb3ByaWF0ZSBuYW1lID8KPj4+PiAtIEkgd291bGQgYmUg
-aGFwcHkgdG8gbWFrZSBpdCBhcyBhIHBhdGNoIChub3QgcmVhZHkgZm9yIHRoYXQgeWV0LCBhbmQK
-Pj4+PiB1bnRpbCB0aGUgZmlyc3QgcXVlc3Rpb25zIGFyZSBhbnN3ZXJlZCkKPj4+Pgo+Pj4+IElm
-IE5vLCBJIGp1c3QgYXBvbG9naXplIGZvciB0aGUgbm9pc2UuCj4+PiBJIHRoaW5rIGl0IGlzIGlu
-dGVyZXN0aW5nLCB3aGF0IGFib3V0IGxpbmtpbmcgdGhlIG9kZCBvbmVzIHRvIHRoZSBldmVuCj4+
-PiBvbmVzIGZvciB0aGUgc3ltZXRyeT8KPj4+Cj4+IEkgaGF2ZSBiZWVuIHRoaW5raW5nIGFib3V0
-IGl0LCBidXQgdGhhdCB3b3VsZCBicmVhayBhICdJIGRvIG5vdCBtb2RpZnkgCj4+IG15IGFwcGxp
-Y2F0aW9uJyBydWxlLgo+PiBJbiBteSBzcGVjaWFsIGNhc2UsIHRoZSBhcHAgdXNlcyBidXNlcyAi
-MCIgYW5kICIxIiwgdGhhdCB0aGUgQ2FuRmVzdGl2YWwgCj4+IHN0YWNrIHRyYW5zbGF0ZXMgdG8g
-InJ0Y2FuMCIgYW5kICJydGNhbjEiCj4+Cj4+IEl0IGlzIE9rIHRvIGhhdmUgdGhlICJlbXVsYXRl
-ZCByZW1vdGUgbm9kZXMiIGNvbmZpZ3VyZWQgdG8gdXNlIHdoYXRldmVyIAo+PiAicnRjYW4iIG5h
-bWUsCj4+IGJ1dCBmcm9tIHRoZSBhcHBsaWNhdGlvbiBwb2ludCBvZiB2aWV3IGl0IHNob3VsZCBi
-ZSB0cmFuc3BhcmVudC4KPiAKPiBPaywgdGhlbiwgd2hhdCBhYm91dCBhZGRpbmcgYW4gIm5yX2Rl
-dnMiIHBhcmFtZXRlciB0byBydGNhbl92aXJ0LCBhbmQKPiBsaW5raW5nIGRldmljZSAjbiB3aXRo
-IGRldmljZSAjbiArIG5yX2RldnMgZm9yIG4gYmV0d2VlbiAwIGFuZCBucl9kZXZzIC0gMSA/Cj4g
-CgpZb3UgY291bGQgbWFrZSAnZGV2aWNlcycgYW4gYXJyYXkgYW5kIGNyZWF0ZSBhIGJ1cyBmb3Ig
-ZWFjaCBub24temVybwphcnJheSBlbnRyeS4gTGlrZSB3aXRoIHRoZSBudW1iZXIgb2YgdmlydHVh
-bCBkZXZpY2VzLCB0aGlzIHdpbGwganVzdApyZXF1aXJlIGFuIHVwcGVyIGxpbWl0IG9mIGJ1c2Vz
-LgoKSmFuCgotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4
-dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBzaWduYXR1cmUuYXNjClR5cGU6IGFw
-cGxpY2F0aW9uL3BncC1zaWduYXR1cmUKU2l6ZTogMjU5IGJ5dGVzCkRlc2M6IE9wZW5QR1AgZGln
-aXRhbCBzaWduYXR1cmUKVVJMOiA8aHR0cDovL3d3dy54ZW5vbWFpLm9yZy9waXBlcm1haWwveGVu
-b21haS9hdHRhY2htZW50cy8yMDEyMTAxMS83YjQ4YTExOS9hdHRhY2htZW50LnBncD4K
+Hi Thierry,
+
+please do not drop the CC to the Xenomai mailing list.
+
+On 10/09/2012 06:07 PM, Thierry Bultel wrote:
+> 
+>>> Do you still plan to add the flexcan RTDM ?
+>> I have already something running but it's not yet good enough for
+>> mainline. Will need more time. Anyway, I could send my preliminary
+>> patches in case you are interested, especially to test them.
+> Hi Wolfgang,
+> How are you ?
+> 
+> I should receive my devkit for iMX6 in 2 weeks, and immediately start on
+> first applying the ipipe patch to it (the provided kernel is likely to
+> be the 3.2 from Freescale,
+> with some little modifications), and then work on the flexcan rtdm driver.
+
+Why v3.2 from Freescale? For the SabreLite or Nitrohen6x I know about
+3.0.36 from Freescale (rel_imx_3.0.35_12.09.02 from
+git.freecale.com/linux-2.6) or, much better, mainline Linux 3.4.
+Concerning the iPipe patches I think you have currently no other choice.
+
+> If you have the flexcan not achieved yet, and if you still agree to send
+> it to me,
+> that is fine, I would be pleased to test it.
+
+I have posted the patch two weeks ago to this mailing list:
+
+http://www.xenomai.org/pipermail/xenomai/2012-September/026337.html
+
+Would be nice if you could test it on i.MX6 as well. Awaiting your
+"Tested-by".
+
+Wolfgang.
+
+
