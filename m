@@ -1,14 +1,21 @@
-MIME-Version: 1.0
-In-Reply-To: <50780DD5.3040403@xenomai.org>
-References: <mailman.1.1350036002.3896.xenomai@xenomai.org>
-	<1350043471.21618.YahooMailNeo@web171504.mail.ir2.yahoo.com>
-	<50780DD5.3040403@xenomai.org>
-Date: Fri, 12 Oct 2012 15:48:40 +0200
-Message-ID: <CAPASGLr-j_rGyWV--v=146fuy7QkmrCC_-6Ag1tHC6=ex8VBYg@mail.gmail.com>
-From: Eric Noulard <eric.noulard@gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] Where is do_clock_host_realtime
+From: Wayne Warren <wwarren@emacinc.com>
+In-Reply-To: <506FFDDC.60104@xenomai.org>
+References: <1349212116.21898.108.camel@ENG-09-LX.emacinc.com>
+	<506B5D6B.80005@xenomai.org> <506B5E0E.5050900@xenomai.org>
+	<1349369822.3775.107.camel@ENG-09-LX.emacinc.com>
+	<506DC2DA.5000105@xenomai.org> <506E9510.7090105@xenomai.org>
+	<1349462858.26881.43.camel@ENG-09-LX.emacinc.com>
+	<506F402A.9030102@xenomai.org>
+	<1349473634.26881.221.camel@ENG-09-LX.emacinc.com>
+	<506F6283.2040901@xenomai.org>
+	<5afa3b9a7c7daf116f8284b4f255227e.squirrel@mail.emacinc.com>
+	<506FFDDC.60104@xenomai.org>
+Content-Type: text/plain; charset="UTF-8"
+Date: Tue, 09 Oct 2012 15:55:36 -0500
+Message-ID: <1349816136.25350.426.camel@ENG-09-LX.emacinc.com>
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Adeos I-Pipe patch problem on vendor-specific kernel
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,27 +25,59 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Franz Engel <franz_lambert_engel@yahoo.de>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+Cc: xenomai@xenomai.org
 
-2012/10/12 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>:
-> On 10/12/2012 02:04 PM, Franz Engel wrote:
->> Hi,
->>
->> I would like to use the funktion "do_clock_host_realtime" but I can't fi=
-nd it. Is the function available in Xenomai version 2.6.1. I included posix=
-/time.h but it seem so that the function is not existing.
->
-> Is this function supposed to be part of the POSIX specification? Do you
-> have any pointer?
 
-I think it is referenced in Xenomai documentation
-http://www.xenomai.org/documentation/trunk/html/api/group__posix__time.html=
-#ga51d3a6fabddfbe8dbc4ec626e8ffad9f
 
-not in POSIX.
+On Sat, 2012-10-06 at 11:46 +0200, Gilles Chanteperdrix wrote:
+> On 10/06/2012 06:29 AM, Wayne Warren wrote:
+> 
+> > Gilles,
+> > 
+> > I should have mentioned this earlier... I did as you mentioned in one of
+> > your previous e-mails and added DEBUG_LL_OMAP3(3, am3517evm) after finding
+> > that this string corresponds to the processor id passed to the linux
+> > kernel from u-boot (unless I am misunderstanding how that works). This
+> > applies to all the kernels I built and tested as described in my previous
+> > two e-mails.
+> > 
+> > Thanks for your patience, and sorry for the confusion!
+> 
+> 
+> Ok, but for some reason, that is probably what is not working. Are you
+> sure that:
+> - the am3517 uart has the same address and registers as an omap3 uart?
 
---=20
-Erk
-Le gouvernement repr=E9sentatif n'est pas la d=E9mocratie --
-http://www.le-message.org
+I verified this using the AM3517 (which apparently used to be called the
+OMAP3517...I think) Technical Reference Manual.  
+
+> - that the serial console is on UART3 ?
+
+Yes, I just re-verified this looking at the product schematic.
+
+> - the uart registers range is mapped where the code in debug-macro.S
+> expects it?
+
+Not sure how to check this, will probably have to read the tech ref
+manual more in-depth. 
+
+> 
+> I never had to debug this, but if I had to, I would try to find what are
+> the values used by the decompressor for the uart physical and virutal
+> addresses and check whether the virtual adress is really mapped.
+
+One thing I spent some time on Friday night was trying to figure out
+what exactly was happening in the assembly code (which I have little
+familiarity with, but am learning more as I go) to translate physical to
+virtual and back again.
+
+> 
+> If your kernel does not start with CONFIG_IPIPE, earlyprintk does not
+> work, and you do not have a JTAG probe, you can try toggling some GPIOs
+> to light some LEDS.
+> 
+
+Thanks again for the advice!
+
+
 
