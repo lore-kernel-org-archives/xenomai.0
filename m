@@ -1,13 +1,12 @@
+Message-ID: <5074418B.2050409@xenomai.org>
+Date: Tue, 09 Oct 2012 17:23:55 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <50743048.1050305@xenomai.org>
-References: <CANKLDmtLLcZnbJ5vXJFRkdyoy1Qk_wfGR84LdB0dkb8KynS+Yg@mail.gmail.com>
-	<50743048.1050305@xenomai.org>
-Date: Tue, 9 Oct 2012 17:24:03 +0200
-Message-ID: <CANKLDmtU2XwFi3XmN1BL3CcZare7QFu4u6vL-2c5fkbR9TSpsw@mail.gmail.com>
-From: Henri Roosen <henriroosen@gmail.com>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] Exporting __ipipe_get_cs_tsc
+References: <tencent_5C1D288A4D1A48A27E9A95DC@qq.com>
+In-Reply-To: <tencent_5C1D288A4D1A48A27E9A95DC@qq.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] When will adeos-ipipe-3.1.0-arm.patch be released?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,76 +15,17 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Morning <juventusgc@qq.com>
+Cc: xenomai <xenomai@xenomai.org>
 
-On Tue, Oct 9, 2012 at 4:10 PM, Philippe Gerum <rpm@xenomai.org> wrote:
-> On 10/09/2012 02:32 PM, Henri Roosen wrote:
->> Hi,
->>
->> I'm using the current git heads of core-3.4 and xenomai 2.6.1 for x86
->> with the attached config file.
->>
->> When compiling the modules I get undefined symbols:
->> ERROR: "__ipipe_get_cs_tsc" [kernel/xenomai/skins/posix/xeno_posix.ko]
->> undefined!
->>
->> This is because the run time seleted __ipipe_get_cs_tsc assembly
->> function is not exported for module use.
->> I don't know how to export this or whether the symbol should be used
->> by modules in the first place.
->>
->
-> Please try this:
->
-> diff --git a/arch/x86/kernel/ipipe.c b/arch/x86/kernel/ipipe.c
-> index 430aeea..2d2f83c 100644
-> --- a/arch/x86/kernel/ipipe.c
-> +++ b/arch/x86/kernel/ipipe.c
-> @@ -634,6 +634,11 @@ void update_vsyscall(struct timespec *wall_time,
-> struct timespec *wtm,
->  void update_vsyscall_tz(void)
->  {
->  }
-> +
-> +#ifdef CONFIG_IPIPE_WANT_CLOCKSOURCE
-> +EXPORT_SYMBOL_GPL(__ipipe_get_cs_tsc);
-> +#endif
-> +
->  #endif /* CONFIG_X86_32 */
->
->  struct task_struct *__switch_to(struct task_struct *prev_p,
+On 10/09/2012 03:04 PM, Morning wrote:
+> I want to use xenomai with linux kernel 3.1.0 on AM3359 platform ,
+> but there is no appropriate patch for this kernel. Could you tell me
+> when will adeos-ipipe-3.1.0-arm.patch be released please ? 
 
-Thanks for looking into this.
+No release planned, we released 3.2, 3.4 is "in the pipe", and I am late
+for 3.5. So, if someone releases a patch for 3.1, it will not be me.
 
-Unfortunately with the patch the compile results in:
-arch/x86/kernel/ipipe.c:640: error: =91__ipipe_get_cs_tsc=92 undeclared
-here (not in a function)
-
->> Please advice.
->>
->> Thanks,
->> Henri.
->> -------------- next part --------------
->> A non-text attachment was scrubbed...
->> Name: .config
->> Type: application/octet-stream
->> Size: 57776 bytes
->> Desc: not available
->> URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20121009/524a=
-0516/attachment.obj>
->> _______________________________________________
->> Xenomai mailing list
->> Xenomai@xenomai.org
->> http://www.xenomai.org/mailman/listinfo/xenomai
->>
->
->
-> --
-> Philippe.
->
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> http://www.xenomai.org/mailman/listinfo/xenomai
+-- 
+					    Gilles.
 
