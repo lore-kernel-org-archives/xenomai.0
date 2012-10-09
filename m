@@ -1,15 +1,16 @@
-Message-ID: <5076764C.5040406@web.de>
-Date: Thu, 11 Oct 2012 09:33:32 +0200
-From: Jan Kiszka <jan.kiszka@web.de>
+Message-ID: <50747CFB.8050002@xenomai.org>
+Date: Tue, 09 Oct 2012 21:37:31 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <506D7DFF.6040403@wanadoo.fr> <506D82E2.6080908@xenomai.org>
-	<506D87E1.8090100@wanadoo.fr> <506D8E6B.10802@xenomai.org>
-	<50765009.6030809@web.de> <5076625F.6090806@wanadoo.fr>
-	<507665CF.9030201@web.de> <507674ED.10004@wanadoo.fr>
-In-Reply-To: <507674ED.10004@wanadoo.fr>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] Modified rtcan_virt driver
+References: <503227B5.9070002@basystemes.fr> <50322F06.4000009@wanadoo.fr>
+	<503C63BE.8010201@xenomai.org>
+	<503C709C.3020702@grandegger.com> <503C758B.9000906@wanadoo.fr>
+	<503C7D77.2060209@grandegger.com> <50744BD3.1030703@wanadoo.fr>
+	<50747C29.2060504@grandegger.com>
+In-Reply-To: <50747C29.2060504@grandegger.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [PATCH] rtcan: driver for the Advantech PCI cards
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,106 +19,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Thierry Bultel <thierry.bultel@wanadoo.fr>
-Cc: xenomai@xenomai.org
+To: Wolfgang Grandegger <wg@grandegger.com>
+Cc: Thierry Bultel <thierry.bultel@wanadoo.fr>, "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-T24gMjAxMi0xMC0xMSAwOToyNywgVGhpZXJyeSBCdWx0ZWwgd3JvdGU6Cj4gTGUgMTEvMTAvMjAx
-MiAwODoyMywgSmFuIEtpc3prYSBhIMOpY3JpdCA6Cj4+IE9uIDIwMTItMTAtMTEgMDg6MDgsIFRo
-aWVycnkgQnVsdGVsIHdyb3RlOgo+Pj4gTGUgMTEvMTAvMjAxMiAwNjo1MCwgSmFuIEtpc3prYSBh
-IMOpY3JpdCA6Cj4+Pj4gT24gMjAxMi0xMC0wNCAxNToyNiwgR2lsbGVzIENoYW50ZXBlcmRyaXgg
-d3JvdGU6Cj4+Pj4+IE9uIDEwLzA0LzIwMTIgMDI6NTggUE0sIFRoaWVycnkgQnVsdGVsIHdyb3Rl
-Ogo+Pj4+Pj4gTGUgMDQvMTAvMjAxMiAxNDozNiwgR2lsbGVzIENoYW50ZXBlcmRyaXggYSDDqWNy
-aXQgOgo+Pj4+Pj4+IE9uIDEwLzA0LzIwMTIgMDI6MTUgUE0sIFRoaWVycnkgQnVsdGVsIHdyb3Rl
-Ogo+Pj4+Pj4+PiBIaSwKPj4+Pj4+Pj4KPj4+Pj4+Pj4gVGhlIGV4aXN0aW5nIHJ0Y2FuX3ZpcnQg
-ZHJpdmVyIHNpbXVsYXRlcyBhIHNpbmdsZSBDQU4gYnVzLCBvbgo+Pj4+Pj4+PiB3aGljaCBhcmUK
-Pj4+Pj4+Pj4gTiBkZXZpY2VzLgo+Pj4+Pj4+PiBTZW5kaW5nIHRvIG9uZSBkaXNwYXRjaGVzIHRo
-ZSBmcmFtZSB0byBhbGwgdGhlIG90aGVycyBidXQgdGhlIG5vdAo+Pj4+Pj4+PiB0byB0aGUKPj4+
-Pj4+Pj4gc2VuZGVyLgo+Pj4+Pj4+Pgo+Pj4+Pj4+PiBUaGlzIGhhcyBzZXZlcmFsIGRpc2FkdmFu
-dGFnZXM6Cj4+Pj4+Pj4+Cj4+Pj4+Pj4+IC0gRmlyc3QsIHRvIHJ1biBhbiBhcHBsaWNhdGlvbiB0
-aGF0IHVzZXMgMiBvciBtb3JlIHBoeXNpY2FsCj4+Pj4+Pj4+IGJ1c2VzLCBpdAo+Pj4+Pj4+PiBk
-b2VzIG5vdCBmaXQsIGJlY2F1c2UgYm90aCBkZXZpY2VzIHdvdWxkIGJlIGxpbmtlZCB0b2dldGhl
-ci4KPj4+Pj4+Pj4gLSBTZWNvbmQsIGhhdmluZyBOIGluc3RhbnRpYXRlZCB2aXJ0dWFsIGRldmlj
-ZXMgaXMgaW4gc29tZSBjYXNlcwo+Pj4+Pj4+PiBub3QKPj4+Pj4+Pj4gbmVjZXNzYXJ5LCBiZWNh
-dXNlIGFuIGFwcGxpY2F0aW9uIGNhbiBvcGVuIHRoZQo+Pj4+Pj4+PiBzYW1lIGRldmljZSBzZXZl
-cmFsIHRpbWVzLCBhbmQgc2ltdWxhdGUgbWFueSBDQU4gbm9kZXMsIG9uIHRoYXQKPj4+Pj4+Pj4g
-c2luZ2xlCj4+Pj4+Pj4+IGRldmljZS4KPj4+Pj4+Pj4KPj4+Pj4+Pj4gVGh1cyBJIGhhdmUgd3Jp
-dHRlbiBhbm90aGVyIHJ0Y2FuX3ZpcnQgZHJpdmVyLCBiYXNlZCBvbiB0aGUKPj4+Pj4+Pj4gb3Jp
-Z2luYWwgb25lLgo+Pj4+Pj4+Pgo+Pj4+Pj4+PiBJdHMgYmVoYXZpb3IgaXMgYXMgZm9sbG93czoK
-Pj4+Pj4+Pj4KPj4+Pj4+Pj4gLSBJdCBpbnN0YW50aWF0ZXMgTiBydGNhbiBkZXZpY2VzLCB0aGF0
-IGFyZSBpbmRlcGVuZGVudCAobm8gZnJhbWUKPj4+Pj4+Pj4gZnJvbQo+Pj4+Pj4+PiBvbmUgdG8g
-YW5vdGhlcikKPj4+Pj4+Pj4gLSBFYWNoIHZpcnR1YWwgcnRjYW4gKHJ0Y2FuMCwgcnRjYW4xIC4u
-LikgZGV2aWNlIGhhcyBhIG1hdGNoaW5nCj4+Pj4+Pj4+IHBlZXIKPj4+Pj4+Pj4gKHJ0Y2FuMHMs
-IHJ0Y2FuMXMgLi4uKQo+Pj4+Pj4+PiAoJ3MnIGxpa2UgJ3NsYXZlJyBidXQgSSBhbSBvcGVuZWQg
-dG8gYW55IG90aGVyIG5hbWluZykgYW5vdGhlciB0bwo+Pj4+Pj4+PiBjb21tdW5pY2F0ZSB3aXRo
-Lgo+Pj4+Pj4+PiBUaGF0ICdzbGF2ZScgZGV2aWNlIGlzYXV0b21hdGljYWxseSBjcmVhdGVkLgo+
-Pj4+Pj4+PiBJIHNheSAnc2xhdmUnIGluIHF1b3RlcyBiZWNhdXNlIHRoZSB3b3JkIGhpZGVzIHRo
-ZSBzeW1tZXRyaWNhbAo+Pj4+Pj4+PiBhc3BlY3QsCj4+Pj4+Pj4+IHNvIGl0IGlzIGxpa2VseSB1
-bmFwcHJvcHJpYXRlLi4KPj4+Pj4+Pj4KPj4+Pj4+Pj4gSXQgaXMgdG9kYXkgZnVsbHkgdGVzdGVk
-LCBteSBxdWVzdGlvbiB3YXMgaWYgaXQgY291bGQgYmUgb2YKPj4+Pj4+Pj4gaW50ZXJlc3QgZm9y
-Cj4+Pj4+Pj4+IHRoZSBYZW5vbWFpIG1haW5saW5lLgo+Pj4+Pj4+PiBJZiBZZXM6Cj4+Pj4+Pj4+
-IC0gc29tZSBxdWVzdGlvbnMgY29tZSwgdG8gbXkgbWluZCB0aGUgbW9zdCBpbXBvcnRhbnQgb25l
-IGlzIGlmIGlzCj4+Pj4+Pj4+IGEgbmV3Cj4+Pj4+Pj4+IGRyaXZlciwgb3IgYSBwYXRjaCBmb3Ig
-dGhlIGV4aXN0aW5nIG9uZSwKPj4+Pj4+Pj4gdG8gbW9kaWZ5IGl0cyBiZWhhdmlvciBkZXBlbmRp
-bmcgb24gYSBwYXJhbWV0ZXIuIElmIGl0IGlzIGEgbmV3Cj4+Pj4+Pj4+IG9uZSwKPj4+Pj4+Pj4g
-d2hhdCB3b3VsZCBiZSB0aGUgYXBwcm9wcmlhdGUgbmFtZSA/Cj4+Pj4+Pj4+IC0gSSB3b3VsZCBi
-ZSBoYXBweSB0byBtYWtlIGl0IGFzIGEgcGF0Y2ggKG5vdCByZWFkeSBmb3IgdGhhdAo+Pj4+Pj4+
-PiB5ZXQsIGFuZAo+Pj4+Pj4+PiB1bnRpbCB0aGUgZmlyc3QgcXVlc3Rpb25zIGFyZSBhbnN3ZXJl
-ZCkKPj4+Pj4+Pj4KPj4+Pj4+Pj4gSWYgTm8sIEkganVzdCBhcG9sb2dpemUgZm9yIHRoZSBub2lz
-ZS4KPj4+Pj4+PiBJIHRoaW5rIGl0IGlzIGludGVyZXN0aW5nLCB3aGF0IGFib3V0IGxpbmtpbmcg
-dGhlIG9kZCBvbmVzIHRvIHRoZQo+Pj4+Pj4+IGV2ZW4KPj4+Pj4+PiBvbmVzIGZvciB0aGUgc3lt
-ZXRyeT8KPj4+Pj4+Pgo+Pj4+Pj4gSSBoYXZlIGJlZW4gdGhpbmtpbmcgYWJvdXQgaXQsIGJ1dCB0
-aGF0IHdvdWxkIGJyZWFrIGEgJ0kgZG8gbm90Cj4+Pj4+PiBtb2RpZnkKPj4+Pj4+IG15IGFwcGxp
-Y2F0aW9uJyBydWxlLgo+Pj4+Pj4gSW4gbXkgc3BlY2lhbCBjYXNlLCB0aGUgYXBwIHVzZXMgYnVz
-ZXMgIjAiIGFuZCAiMSIsIHRoYXQgdGhlCj4+Pj4+PiBDYW5GZXN0aXZhbAo+Pj4+Pj4gc3RhY2sg
-dHJhbnNsYXRlcyB0byAicnRjYW4wIiBhbmQgInJ0Y2FuMSIKPj4+Pj4+Cj4+Pj4+PiBJdCBpcyBP
-ayB0byBoYXZlIHRoZSAiZW11bGF0ZWQgcmVtb3RlIG5vZGVzIiBjb25maWd1cmVkIHRvIHVzZQo+
-Pj4+Pj4gd2hhdGV2ZXIKPj4+Pj4+ICJydGNhbiIgbmFtZSwKPj4+Pj4+IGJ1dCBmcm9tIHRoZSBh
-cHBsaWNhdGlvbiBwb2ludCBvZiB2aWV3IGl0IHNob3VsZCBiZSB0cmFuc3BhcmVudC4KPj4+Pj4g
-T2ssIHRoZW4sIHdoYXQgYWJvdXQgYWRkaW5nIGFuICJucl9kZXZzIiBwYXJhbWV0ZXIgdG8gcnRj
-YW5fdmlydCwgYW5kCj4+Pj4+IGxpbmtpbmcgZGV2aWNlICNuIHdpdGggZGV2aWNlICNuICsgbnJf
-ZGV2cyBmb3IgbiBiZXR3ZWVuIDAgYW5kCj4+Pj4+IG5yX2RldnMgLSAxID8KPj4+Pj4KPj4+PiBZ
-b3UgY291bGQgbWFrZSAnZGV2aWNlcycgYW4gYXJyYXkgYW5kIGNyZWF0ZSBhIGJ1cyBmb3IgZWFj
-aCBub24temVybwo+Pj4+IGFycmF5IGVudHJ5LiBMaWtlIHdpdGggdGhlIG51bWJlciBvZiB2aXJ0
-dWFsIGRldmljZXMsIHRoaXMgd2lsbCBqdXN0Cj4+Pj4gcmVxdWlyZSBhbiB1cHBlciBsaW1pdCBv
-ZiBidXNlcy4KPj4+Pgo+Pj4+IEphbgo+Pj4+Cj4+PiBTdXJlLCBidXQgd2hhdCB3b3VsZCBiZSB5
-b3UgcHJlZmVyZWQgbmFtaW5nIHJ1bGUgZm9yIHRoZSAic2xhdmUiCj4+PiBkZXZpY2VzID8KPj4g
-S2VlcCBpdCBzaW1wbGUsIGp1c3QgbnVtYmVyIHRoZW0gY29uc2VjdXRpdmVseSBhcyB0aGV5IG5l
-ZWQgdG8gYmUKPj4gY3JlYXRlZCBhY2NvcmRpbmcgdG8gdGhlIGFycmF5Lgo+Pgo+Pj4gSSBkbyBu
-b3QgY29tcGxldGVseSBhZ3JlZSB3aXRoIEdpbGxlcycgbGFzdCBwcm9wb3NhbCwgYmVjYXVzZSBl
-dmVuIGlmCj4+PiB0aGVyZQo+Pj4gaXMgYSBsb2dpY2FsIG1hdGNoaW5nIChlZyBzbGF2ZSMgPSBt
-YXN0ZXIjICsgbiksIHRoZSByZWxhdGlvbnNoaXAgaXMgbm90Cj4+PiB0cml2aWFsIGZyb20gdXNl
-cmxhbmQsIGVzcGVjaWFsbHkgd2hlbiB5b3UgdXNlIGJvdGggdmlydHVhbCBhbmQgcmVhbAo+Pj4g
-ZHJpdmVyKHMpLgo+PiBZb3UgY291bGQgYSkgbWFrZSB1c2VybGFuZCBjb25maWd1cmFibGUgaW4g
-dGhlIHNhbWUgd2F5LCB0ZWxsaW5nIGl0Cj4+IHJ0Y2FuTi4uTSBpcyBidXMgWCwgb3IgZXhwb3J0
-IHRoZSBydGNhbl92aXJ0IHRvcG9sb2d5IHZpYSBpdHMgL3Byb2MKPj4gZm9sZGVyLgo+Pgo+Pj4g
-QW5kIGZvciB0aGUgZHJpdmVyIGl0c2VsZiA/IFNoYWxsIEkgY3JlYXRlIGEgbmV3IG9uZSAoaWYg
-eWVzIHdoYXQgd291bGQKPj4+IGJlIGl0cyBuYW1lID8pLAo+Pj4gb3IgYWRkIGFuIG9wdGlvbiB0
-byB0aGUgZXhpc3RpbmcsCj4+PiBmb3IgY3JlYXRpbmcgZGV2aWNlcyBpbiB0aGUgInBlZXIgdG8g
-cGVlciIgbW9kZSA/Cj4+IE15IHByb3Bvc2FsIGlzIGZ1bGx5IGNvbXBhdGlibGUgd2l0aCB0aGUg
-ZXhpc3RpbmcgZHJpdmVyIGFzIG5vIG5ldwo+PiBwYXJhbWV0ZXIgaXMgYWRkZWQuIEV4aXN0aW5n
-IHVzZXJzIGNhbiBjb250aW51ZSB0byBjb25zaWRlciAnZGV2aWNlJyBhcwo+PiBhbiBhcnJheSB3
-aXRoIG9ubHkgb25lIGVudHJ5Lgo+Pgo+PiBKYW4KPj4KPiBJIGdvdCBpdC4KPiBXaGF0IHlvdSBt
-ZWFuIGlzIHRoYXQgdGhlIHRvcG9sb2d5IGlzIGRlc2NyaWJlZCBieSBhCj4gCj4gdW5zaWduZWQg
-aW50IHZpcnRfYnVzW05CX01BWF9CVVNFU107CgpObywgSSdtIHRoaW5raW5nIG9mCgpzdGF0aWMg
-dW5zaWduZWQgaW50IGRldmljZXNbTkJfTUFYX0JVU0VTXSA9IHsgMiB9OwoKPiAKPiBhbmQgdGhl
-IGVudHJpZXMgYXJlIHRoZSBudW1iZXIgb2YgZGV2aWNlcyBmb3IgZWFjaCBidXMuCj4gU28gdGhl
-IGV4aXN0aW5nIHdvdWxkIGJlIHZpcnRfYnVzWzBdID0gZGV2aWNlczsgKCdkZXZpY2VzJyBpcyB0
-aGUKPiBleGlzdGluZyBtb2R1bGUgb3B0aW9uKQo+IAo+IGFuZCBmb3IgdGhlIHVzYWdlIEkgd2Fu
-dCAoSSBoYXZlIDIgYnVzZXMpCj4gCj4gdmlydF9idXNbMF0gPSAyOwo+IHZpcnRfYnVzWzFdID0g
-MjsKPiAKPiBJIGZpbmQgeW91ciBpZGVhIHRvIHB1Ymxpc2ggdGhlIHRvcG9sb2d5IHZpYSAvcHJv
-YyBncmVhdC4gSSBjb3VsZCBhbHNvIGNvbWUKPiB3aXRoIGEgbmljZSBkaXNwbGF5IHRvb2wsIGxp
-a2UgImxzcGNpIC10IiBkb2VzLCBhbmQgYWxzbyBoYXZlIHRoZSAibHNwY2kKPiAtbW0iIHdheS4K
-PiBXaGF0IGFib3V0IGxzcnRjYW4gPwoKV2UgYWxyZWFkeSBoYXZlIHJ0Y2FuY29uZmlnLCBhbmQg
-dGhlIHZpcnR1YWwgYnVzZXMgYXJlIGEgc3BlY2lhbCBjYXNlLApzbyBJIHdvdWxkbid0IG92ZXJk
-byBoZXJlLgoKPiAKPiBIb3dldmVyLCBtYWtpbmcgaXQgdXNlcmxhbmQgY29uZmlndXJhYmxlIG5l
-ZWRzIG1vcmUgZGV0YWlsZWQgc3BlY2ljYXRpb25zLAo+IHdoYXQgYXJlIHlvdSB0aGlua2luZyBh
-Ym91dCBleGFjdGx5ID8gQXJlIHdlIHRhbGtpbmcgYWJvdXQgdGhlIG1vZHVsZQo+IGxvYWRpbmcK
-PiAoSSBkbyBub3QgdGhpbmsgc28gYmVjYXVzZSB5b3Ugc2FpZCBubyBuZXdlciBvcHRpb24pCj4g
-b3IgYW4gaW9jdGwgPwoKSSBtZWFuIHRvIG1ha2UgdGhlIHVzZXJsYW5kIHByb2dyYW0gY29uZmln
-dXJhYmxlLCB0ZWxsaW5nIGl0IG9uIHRoZQpjb21tYW5kIGxpbmUgb3Igd2hlcmV2ZXIgd2hpY2gg
-cnRjYW4gZGV2aWNlcyBiZWxvbmcgdG8gYSBzaW5nbGUgYnVzLgoKSmFuCgoKLS0tLS0tLS0tLS0t
-LS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2Ny
-dWJiZWQuLi4KTmFtZTogc2lnbmF0dXJlLmFzYwpUeXBlOiBhcHBsaWNhdGlvbi9wZ3Atc2lnbmF0
-dXJlClNpemU6IDI1OSBieXRlcwpEZXNjOiBPcGVuUEdQIGRpZ2l0YWwgc2lnbmF0dXJlClVSTDog
-PGh0dHA6Ly93d3cueGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAx
-MjEwMTEvNjVjZmEwYWYvYXR0YWNobWVudC5wZ3A+Cg==
+On 10/09/2012 09:34 PM, Wolfgang Grandegger wrote:
+
+> Hi Thierry,
+> 
+> please do not drop the CC to the Xenomai mailing list.
+> 
+> On 10/09/2012 06:07 PM, Thierry Bultel wrote:
+>>
+>>>> Do you still plan to add the flexcan RTDM ?
+>>> I have already something running but it's not yet good enough for
+>>> mainline. Will need more time. Anyway, I could send my preliminary
+>>> patches in case you are interested, especially to test them.
+>> Hi Wolfgang,
+>> How are you ?
+>>
+>> I should receive my devkit for iMX6 in 2 weeks, and immediately start on
+>> first applying the ipipe patch to it (the provided kernel is likely to
+>> be the 3.2 from Freescale,
+>> with some little modifications), and then work on the flexcan rtdm driver.
+> 
+> Why v3.2 from Freescale? For the SabreLite or Nitrohen6x I know about
+> 3.0.36 from Freescale (rel_imx_3.0.35_12.09.02 from
+> git.freecale.com/linux-2.6) or, much better, mainline Linux 3.4.
+> Concerning the iPipe patches I think you have currently no other choice.
+> 
+>> If you have the flexcan not achieved yet, and if you still agree to send
+>> it to me,
+>> that is fine, I would be pleased to test it.
+> 
+> I have posted the patch two weeks ago to this mailing list:
+> 
+> http://www.xenomai.org/pipermail/xenomai/2012-September/026337.html
+> 
+> Would be nice if you could test it on i.MX6 as well. Awaiting your
+> "Tested-by".
+
+
+Missed that, sorry, merged and pushed.
+
+-- 
+                                                                Gilles.
+
