@@ -1,14 +1,13 @@
-From: Lukasz Zemla <Lukasz.Zemla@woodward.com>
-Date: Mon, 15 Oct 2012 09:55:15 +0200
-Message-ID: <CE2E43470FE5444A811B580382FE5EDF23A1BD63A2@KEMPMAIL2.woodward.com>
-References: <CAFNBftf5EYFoSPK3VA4NWA5-eCQVvpOt_uV5Kf8VJ9rAsA5eww@mail.gmail.com>
-In-Reply-To: <CAFNBftf5EYFoSPK3VA4NWA5-eCQVvpOt_uV5Kf8VJ9rAsA5eww@mail.gmail.com>
-Content-Language: en-US
-Content-Type: text/plain;
-  charset="utf-8"
-Content-Transfer-Encoding: base64
+Message-ID: <5074986C.8000509@xenomai.org>
+Date: Tue, 09 Oct 2012 23:34:36 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai] Xenomai on Yocto/Openembedded
+References: <505EB99F.7050705@wanadoo.fr> <505EBD61.1050009@wanadoo.fr>
+	<505F0D40.9030105@xenomai.org> <50741C5B.4060206@wanadoo.fr>
+In-Reply-To: <50741C5B.4060206@wanadoo.fr>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Target frozen with rtcan_virt
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,78 +16,62 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Flavio Castro Alves Filho <flavio.alves@gmail.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Thierry Bultel <thierry.bultel@wanadoo.fr>
+Cc: xenomai@xenomai.org
 
-SGksCgpJJ20ganVzdCB3b3JraW5nIG9uIGl0LiBJJ20gbmV3YmllIGluIFlvY3RvLCBidXQgdGhv
-c2UgcmVjaXBlcyBzZWVtIHRvIGJlIHdvcmtpbmcgdG8gbWUuCkkgdXNlIEZyZWVzY2FsZSBMaW51
-eCBTREsgKGJhc2VkIG9uIFlvY3RvKSBmb3IgUW9ySVEgcHJvY2Vzc29ycy4gCgpSZWNpcGUgZm9y
-IGJ1aWxkaW5nIGtlcm5lbDoKCiMtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCgppbmhlcml0IGtlcm5l
-bApyZXF1aXJlIHJlY2lwZXMta2VybmVsL2xpbnV4L2xpbnV4LWR0Yi5pbmMKCkRFU0NSSVBUSU9O
-ID0gIkxpbnV4IGtlcm5lbCAzLjIuMjEgcGF0Y2hlZCBieSBYZW5vbWFpIDIuNi4xIgpTRUNUSU9O
-ID0gImtlcm5lbCIKTElDRU5TRSA9ICJHUEx2MiIKREVQRU5EUyA9ICJ4ZW5vbWFpLWxpYnMtMi42
-LjEiCgpXV19LRVJORUxfVkVSID0gMy4yLjIxCldXX1hFTk9NQUlfVkVSID0gMi42LjEKClMgPSAk
-e1dPUktESVJ9L2xpbnV4LSR7V1dfS0VSTkVMX1ZFUn0KCkxJQ19GSUxFU19DSEtTVU0gPSAiZmls
-ZTovLyR7V09SS0RJUn0vbGludXgtJHtXV19LRVJORUxfVkVSfS9DT1BZSU5HO21kNT1kNzgxMGZh
-Yjc0ODdmYjBhYWQzMjdiNzZmMWJlN2NkNyIKCiMgcmVxdWlyZSByZWNpcGVzLWtlcm5lbC94ZW5v
-bWFpL2xpbnV4LXhlbm9tYWktJHtQVn0uaW5jCgpTUkNfVVJJID0gImh0dHA6Ly93d3cua2VybmVs
-Lm9yZy9wdWIvbGludXgva2VybmVsL3YzLngvbGludXgtJHtXV19LRVJORUxfVkVSfS50YXIuYnoy
-IFwKCQlodHRwOi8vZG93bmxvYWQuZ25hLm9yZy94ZW5vbWFpL3N0YWJsZS94ZW5vbWFpLSR7V1df
-WEVOT01BSV9WRVJ9LnRhci5iejIgXAoJCWZpbGU6Ly9taXNzaW5nLWlwaXBlLWluY2x1ZGUtaW4t
-Z3Bpby1tcGM4eHh4LmMucGF0Y2gJXCAgIAoJIgoKIyBGaW5kIHRoZSBrZXJuZWwgY29uZmlnIGZp
-bGUgaW4gdGhlIHJpZ2h0IGRpcmVjdG9yeS4KRklMRVNFWFRSQVBBVEhTX3ByZXBlbmQgOj0gIiR7
-VEhJU0RJUn0vJHtQTn06IgoKIyBOYW1lIG9mIHRoZSBXb29kd2FyZCBrZXJuZWwgY29uZmlndXJh
-dGlvbiBmaWxlCldXX0tFUk5FTF9DRkdfRklMRSA6PSAiY29uZmlnLSR7V1dfS0VSTkVMX1ZFUn0t
-aXBpcGUiCgojIHVzZSB0aGlzIHd3IGtlcm5lbCBjb25maWd1cmF0aW9uClNSQ19VUkkgKz0gImZp
-bGU6Ly8ke1dXX0tFUk5FTF9DRkdfRklMRX0iCgojIHByZXZlbnQgdGhlIGZzbC1sYXllciBrZXJu
-ZWxfZG9fY29uZmlndXJlX3ByZXBlbmQoKSBmcm9tIHVzaW5nIHRoZSBrZXJuZWwgZGVmY29uZmln
-LAojICBvdXIgY29uZmlnIHNob3VsZCBiZSB1c2VkIGluc3RlYWQKS0VSTkVMX0RFRkNPTkZJRyA9
-ICIke1dPUktESVJ9LyR7V1dfS0VSTkVMX0NGR19GSUxFfSIKCmRvX2NvbmZpZ3VyZV9wcmVwZW5k
-KCkgewoJIyBjb3B5IGRlc2lyZWQgZGVmY29uZmlnIHNvIHdlIHBpY2sgaXQgdXAgZm9yIHRoZSBy
-ZWFsIGtlcm5lbF9kb19jb25maWd1cmUKCWVjaG8gIkNvcHlpbmcgV1cgZGVmY29uZmlnIgkKCWNw
-ICR7S0VSTkVMX0RFRkNPTkZJR30gJHtCfS8uY29uZmlnCgoJY2QgJHtXT1JLRElSfS94ZW5vbWFp
-LSR7V1dfWEVOT01BSV9WRVJ9CgkuL3NjcmlwdHMvcHJlcGFyZS1rZXJuZWwuc2ggLS1hcmNoPXBv
-d2VycGMgLS1saW51eD0ke1dPUktESVJ9L2xpbnV4LSR7V1dfS0VSTkVMX1ZFUn0gLS1pcGlwZT0k
-e1dPUktESVJ9L3hlbm9tYWktJHtXV19YRU5PTUFJX1ZFUn0va3NyYy9hcmNoL3Bvd2VycGMvcGF0
-Y2hlcy9pcGlwZS1jb3JlLSR7V1dfS0VSTkVMX1ZFUn0tcG93ZXJwYy0xLnBhdGNoCgoJY2QgJHtX
-T1JLRElSfS9saW51eC0ke1dXX0tFUk5FTF9WRVJ9Cn0KCnJlcXVpcmUgcmVjaXBlcy1rZXJuZWwv
-bGludXgvbGludXgtdG9vbHMuaW5jCiMtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCgpYZW5vbWFpIGxp
-YnJhcmllcyAoeGVub21haS1saWJzLmJiKToKCiMtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCkRFU0NS
-SVBUSU9OID0gIlhlbm9tYWkgbGlicmFyaWVzIgpTRUNUSU9OID0gImtlcm5lbCIKTElDRU5TRSA9
-ICJHUEx2MiIKSE9NRVBBR0UgPSAiaHR0cDovL3hlbm9tYWkub3JnLyIKREVQRU5EUyA9ICIiCkxJ
-Q19GSUxFU19DSEtTVU0gPSAiZmlsZTovL0NSRURJVFM7bWQ1PTc4NDVmNGQ4ZTk0ZWQzNjY1MWVj
-ZmY1NTRkZDJiMGJlIgoKUyA9ICIke1dPUktESVJ9L3hlbm9tYWktJHtQVn0iCgpQUiA9ICJyMCIK
-ClNSQ19VUkkgPSAiaHR0cDovL2Rvd25sb2FkLmduYS5vcmcveGVub21haS9zdGFibGUveGVub21h
-aS0ke1BWfS50YXIuYnoyIFwKCSAgICIKCmRvX2NvbmZpZ3VyZSAoKSB7CgkuL2NvbmZpZ3VyZSAt
-LWVuYWJsZS1zbXAgLS1ob3N0PXBvd2VycGMtZnNsLWxpbnV4LWdudXNwZQp9Cgpkb19jb21waWxl
-KCkgewoJb2VfcnVubWFrZQp9Cgpkb19pbnN0YWxsKCkgewoJb2VfcnVubWFrZSBERVNURElSPSR7
-RH0gaW5zdGFsbAoJcm0gLXJmICR7RH0veGVub21haS9zaGFyZS9kb2MvCn0KClBBQ0tBR0VTID0g
-IiR7UE59IgojIFdlIGVudW1lcmF0ZSBhbGwgZGlyZWN0b3JpZXMgZXhjbHVkaW5nIC91c3IveGVu
-b21haS9zaGFyZS8gKGl0IGNvbnRhaW5zIG9ubHkgZG9jdW1lbnRhdGlvbiB3aGljaCBvY2N1cGll
-cyBhYm91dCAzM01CKQpGSUxFU18ke1BOfSA9ICIvZGV2L3J0cCogL2Rldi9ydGhlYXAgL3Vzci94
-ZW5vbWFpL2JpbiAvdXNyL3hlbm9tYWkvaW5jbHVkZSAvdXNyL3hlbm9tYWkvbGliIC91c3IveGVu
-b21haS9zYmluIgojLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQoKClBvemRyYXdpYW0gLyBCZXN0IFJl
-Z2FyZHMgLyBNaXQgZnJldW5kbGljaGVuIEdyw7zDn2VuIArFgXVrYXN6IFplbcWCYQoKLS0tLS1P
-cmlnaW5hbCBNZXNzYWdlLS0tLS0KRnJvbTogeGVub21haS1ib3VuY2VzQHhlbm9tYWkub3JnIFtt
-YWlsdG86eGVub21haS1ib3VuY2VzQHhlbm9tYWkub3JnXSBPbiBCZWhhbGYgT2YgRmxhdmlvIENh
-c3RybyBBbHZlcyBGaWxobwpTZW50OiBTYXR1cmRheSwgT2N0b2JlciAxMywgMjAxMiAxOjQ3IEFN
-ClRvOiB4ZW5vbWFpQHhlbm9tYWkub3JnClN1YmplY3Q6IFtYZW5vbWFpXSBYZW5vbWFpIG9uIFlv
-Y3RvL09wZW5lbWJlZGRlZAoKSGVsbG8sCgpIYXMgYW55Ym9keSB0cmllZCB0byBjcmVhdGUgYSBw
-YWNrYWdlIGZvciBYZW5vbWFpIGZvciBZb2N0byBvciBPcGVuZW1iZWRkZWQ/CgpCZXN0IHJlZ2Fy
-ZHMsCgpGbGF2aW8KCi0tCkZsYXZpbyBkZSBDYXN0cm8gQWx2ZXMgRmlsaG8KCmZsYXZpby5hbHZl
-c0BnbWFpbC5jb20Kd3d3LmxpbnV4ZW1iYXJjYWRvLmNvbQpUd2l0dGVyOiBodHRwOi8vdHdpdHRl
-ci5jb20vIyEvZnJhdmlvZmlpIExpbmtlZEluIHByb2ZpbGU6IHd3dy5saW5rZWRpbi5jb20vaW4v
-ZmxhdmlvY2FzdHJvYWx2ZXMKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fClhlbm9tYWkgbWFpbGluZyBsaXN0Clhlbm9tYWlAeGVub21haS5vcmcKaHR0cDov
-L3d3dy54ZW5vbWFpLm9yZy9tYWlsbWFuL2xpc3RpbmZvL3hlbm9tYWkKCgoqKioNClRoZSBpbmZv
-cm1hdGlvbiBpbiB0aGlzIGVtYWlsIGlzIGNvbmZpZGVudGlhbCBhbmQgaW50ZW5kZWQgc29sZWx5
-IGZvciB0aGUgaW5kaXZpZHVhbCBvciBlbnRpdHkgdG8gd2hvbSBpdCBpcyBhZGRyZXNzZWQuIElm
-IHlvdSBoYXZlIHJlY2VpdmVkIHRoaXMgZW1haWwgaW4gZXJyb3IgcGxlYXNlIG5vdGlmeSB0aGUg
-c2VuZGVyIGJ5IHJldHVybiBlLW1haWwsIGRlbGV0ZSB0aGlzIGVtYWlsLCBhbmQgcmVmcmFpbiBm
-cm9tIGFueSBkaXNjbG9zdXJlIG9yIGFjdGlvbiBiYXNlZCBvbiB0aGUgaW5mb3JtYXRpb24uDQoq
-KioK
+On 10/09/2012 02:45 PM, Thierry Bultel wrote:
+> (snip)
+
+> (gdb) bt
+> #0  __ticket_spin_lock (lock=<optimized out>) at 
+> /home/thierry/workspace/Buildroot/output/build/linux-3.2.21/arch/x86/include/asm/spinlock.h:63
+> #1  arch_spin_lock (lock=<optimized out>) at 
+> /home/thierry/workspace/Buildroot/output/build/linux-3.2.21/arch/x86/include/asm/spinlock.h:129
+> #2  rtcan_raw_recvmsg (context=0xc7ff0000, user_info=0xd00b2290, 
+> msg=0xd796df04, flags=<optimized out>) at 
+> drivers/xenomai/can/rtcan_raw.c:655
+> (snip)
+> 
+> 
+> In my previous configuration, disabling CONFIG_SMP was enough to 
+> workaround it, but in that new case
+> I have other bad side-effects (console and X server frozen at startup) 
+> that prevent me to work correctly.
+
+
+That is essentially the same backtrace as in the first case. Could you
+try the following patch?
+
+diff --git a/ksrc/drivers/can/rtcan_raw.c b/ksrc/drivers/can/rtcan_raw.c
+index ded024e..b07f19c 100644
+--- a/ksrc/drivers/can/rtcan_raw.c
++++ b/ksrc/drivers/can/rtcan_raw.c
+@@ -695,10 +695,7 @@ ssize_t rtcan_raw_recvmsg(struct rtdm_dev_context *context,
+ 
+     /* Message completely read from the socket's ring buffer. Now check if
+      * caller is just peeking. */
+-    if (flags & MSG_PEEK)
+-	/* Next one, please! */
+-	rtdm_sem_up(&sock->recv_sem);
+-    else
++    if ((flags & MSG_PEEK) == 0)
+ 	/* Adjust begin of first message in the ring buffer. */
+ 	sock->recv_head = recv_buf_index;
+ 
+@@ -707,6 +704,11 @@ ssize_t rtcan_raw_recvmsg(struct rtdm_dev_context *context,
+     rtdm_lock_put_irqrestore(&rtcan_socket_lock, lock_ctx);
+ 
+ 
++    if (flags & MSG_PEEK)
++	/* Next one, please! */
++	rtdm_sem_up(&sock->recv_sem);
++
++
+     /* Create CAN socket address to give back */
+     if (msg->msg_namelen) {
+ 	scan.can_family = AF_CAN;
+
+
+-- 
+                                                                Gilles.
 
