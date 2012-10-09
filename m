@@ -1,12 +1,14 @@
-Message-ID: <507C8ED1.3050904@nta-inc.net>
-Date: Mon, 15 Oct 2012 17:31:45 -0500
-From: Jeff Webb <jeff.webb@nta-inc.net>
+Message-ID: <50749A03.9090607@xenomai.org>
+Date: Tue, 09 Oct 2012 23:41:23 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <507C8977.506@nta-inc.net> <507C89C7.2060600@xenomai.org>
-In-Reply-To: <507C89C7.2060600@xenomai.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+References: <505EB99F.7050705@wanadoo.fr>
+	<505EBD61.1050009@wanadoo.fr>	<505F0D40.9030105@xenomai.org>
+	<50741C5B.4060206@wanadoo.fr> <5074986C.8000509@xenomai.org>
+In-Reply-To: <5074986C.8000509@xenomai.org>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Problem with ipipe-core-3.2.21-x86-1.patch?
+Subject: Re: [Xenomai] Target frozen with rtcan_virt
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,27 +17,72 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Thierry Bultel <thierry.bultel@wanadoo.fr>
 Cc: xenomai@xenomai.org
 
-On 10/15/2012 05:10 PM, Gilles Chanteperdrix wrote:
-> On 10/16/2012 12:08 AM, Jeff Webb wrote:
->
->> I am trying to build xenomai from the xenomai-2.6.git repo under
->> ubuntu 12.04 on a x86_64 desktop machine.  When I try to build a
->> xenomai-enabled kernel from the 3.2.21 sources, the build fails with
->> a compile error.  (Sorry, I didn't save the error message, but I can
->> repeat the process if necessary.)  In order to get things to compile,
->> I made the following change to ipipe-core-3.2.21-x86-1.patch.  Is
->> this a bug?  If so, I'm wondering why no one else has run into this
->> one yet.  I think I built a kernel without any compiler errors under
->> ubuntu 10.04 using this patch, but I'm not 100% certain about that.
->
->
-> Yep, it has been reported already, and is fixed in the 3.4 branch, not
-> backported in 3.2 yet.
->
+On 10/09/2012 11:34 PM, Gilles Chanteperdrix wrote:
 
-Thanks, Gilles.  Sorry, I missed that report.
+> On 10/09/2012 02:45 PM, Thierry Bultel wrote:
+>> (snip)
+> 
+>> (gdb) bt
+>> #0  __ticket_spin_lock (lock=<optimized out>) at 
+>> /home/thierry/workspace/Buildroot/output/build/linux-3.2.21/arch/x86/include/asm/spinlock.h:63
+>> #1  arch_spin_lock (lock=<optimized out>) at 
+>> /home/thierry/workspace/Buildroot/output/build/linux-3.2.21/arch/x86/include/asm/spinlock.h:129
+>> #2  rtcan_raw_recvmsg (context=0xc7ff0000, user_info=0xd00b2290, 
+>> msg=0xd796df04, flags=<optimized out>) at 
+>> drivers/xenomai/can/rtcan_raw.c:655
+>> (snip)
+>>
+>>
+>> In my previous configuration, disabling CONFIG_SMP was enough to 
+>> workaround it, but in that new case
+>> I have other bad side-effects (console and X server frozen at startup) 
+>> that prevent me to work correctly.
+> 
+> 
+> That is essentially the same backtrace as in the first case. Could you
+> try the following patch?
+> 
+> diff --git a/ksrc/drivers/can/rtcan_raw.c b/ksrc/drivers/can/rtcan_raw.c
+> index ded024e..b07f19c 100644
+> --- a/ksrc/drivers/can/rtcan_raw.c
+> +++ b/ksrc/drivers/can/rtcan_raw.c
+> @@ -695,10 +695,7 @@ ssize_t rtcan_raw_recvmsg(struct rtdm_dev_context *context,
+>  
+>      /* Message completely read from the socket's ring buffer. Now check if
+>       * caller is just peeking. */
+> -    if (flags & MSG_PEEK)
+> -	/* Next one, please! */
+> -	rtdm_sem_up(&sock->recv_sem);
+> -    else
+> +    if ((flags & MSG_PEEK) == 0)
+>  	/* Adjust begin of first message in the ring buffer. */
+>  	sock->recv_head = recv_buf_index;
+>  
+> @@ -707,6 +704,11 @@ ssize_t rtcan_raw_recvmsg(struct rtdm_dev_context *context,
+>      rtdm_lock_put_irqrestore(&rtcan_socket_lock, lock_ctx);
+>  
+>  
+> +    if (flags & MSG_PEEK)
+> +	/* Next one, please! */
+> +	rtdm_sem_up(&sock->recv_sem);
+> +
+> +
+>      /* Create CAN socket address to give back */
+>      if (msg->msg_namelen) {
+>  	scan.can_family = AF_CAN;
+> 
+> 
 
+
+Another possible fix would be to lock xenomai scheduler when taking an
+rtdm_spin_lock, as it is almost always wrong to call xnpod_schedule in
+such a situation. It works for other RT-CAN drivers, because they call
+rtdm_sem_up from interrupt context where the scheduler is locked by the
+XNINIRQ bit.
+
+-- 
+                                                                Gilles.
 
