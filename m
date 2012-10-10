@@ -1,11 +1,18 @@
+Message-ID: <50754849.9030205@web.de>
+Date: Wed, 10 Oct 2012 12:04:57 +0200
+From: Jan Kiszka <jan.kiszka@web.de>
 MIME-Version: 1.0
-In-Reply-To: <CAD0gx3gM7TwoPn-0367BH848nYow02uN3dK5wOcysXFMxmBCSw@mail.gmail.com>
-References: <CAD0gx3gM7TwoPn-0367BH848nYow02uN3dK5wOcysXFMxmBCSw@mail.gmail.com>
-Date: Sat, 20 Oct 2012 22:18:02 -0300
-Message-ID: <CAFNBftfNPqty915_2hgMX+3W3S2UVt1sQgwnFsOufMVXFV3TFA@mail.gmail.com>
-From: Flavio Castro Alves Filho <flavio.alves@gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Subject: Re: [Xenomai] Best ARM-based Linux Distribution for Xenomai
+References: <505EB99F.7050705@wanadoo.fr>	<505EBD61.1050009@wanadoo.fr>	<505F0D40.9030105@xenomai.org>	<50741C5B.4060206@wanadoo.fr>
+	<5074986C.8000509@xenomai.org> <50749A03.9090607@xenomai.org>
+	<50749C71.2020100@xenomai.org> <5075260E.2050402@wanadoo.fr>
+	<507528E4.4050809@xenomai.org> <50752A42.9080303@web.de>
+	<50752C0C.3050803@xenomai.org> <50752D7E.7010207@web.de>
+	<507538C8.7040706@xenomai.org> <50753980.7020409@web.de>
+	<50753EA0.7070007@xenomai.org>
+In-Reply-To: <50753EA0.7070007@xenomai.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai] Target frozen with rtcan_virt
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,52 +21,61 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Bill Smith <shoozboot@gmail.com>
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Thierry Bultel <thierry.bultel@wanadoo.fr>, Wolfgang Grandegger <wg@denx.de>, xenomai@xenomai.org
 
-Hello,
-
-I don't think that there is a better distribution for Xenomai.
-
-And I also don't think there is a pre-installed Xenomai in any
-arm-based Linux distribution.
-
-If you have to build your own kernel and Xenomai lib, any distribution
-will be nice for your project.
-
-Best regards,
-
-Flavio
-
-2012/10/20 Bill Smith <shoozboot@gmail.com>:
-> Hello again,
->
-> Since I am just now beginning the steps to building a cross compile
-> environment for the BeagleBone for inclusion with Xenomai 2.6.2, are there
-> any list member opinions about the best Linux distribution to run on the
-> BeagleBone?
->
-> I am currently running Angstrom (stock that ships with the BeagleBone), but
-> it seems that Debian has better support for Xenomai?
->
-> My requirements are fairly simple:  Xenomai 2.6.2, hardware RNG (or
-> cryptographically strong entropy from /dev/random or /dev/urandom).
->
-> Support for GNU MP (arbitrary precision math libraries); and, filesystem
-> support for GPIO/PWM control like Angstrom supports would be helpful as
-> well.
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> http://www.xenomai.org/mailman/listinfo/xenomai
-
-
-
--- 
-Flavio de Castro Alves Filho
-
-flavio.alves@gmail.com
-www.linuxembarcado.com
-Twitter: http://twitter.com/#!/fraviofii
-LinkedIn profile: www.linkedin.com/in/flaviocastroalves
-
+T24gMjAxMi0xMC0xMCAxMToyMywgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4gT24gMTAv
+MTAvMjAxMiAxMTowMSBBTSwgSmFuIEtpc3prYSB3cm90ZToKPj4gT24gMjAxMi0xMC0xMCAxMDo1
+OCwgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4+PiBPbiAxMC8xMC8yMDEyIDEwOjEwIEFN
+LCBKYW4gS2lzemthIHdyb3RlOgo+Pj4+IE9uIDIwMTItMTAtMTAgMTA6MDQsIEdpbGxlcyBDaGFu
+dGVwZXJkcml4IHdyb3RlOgo+Pj4+PiBPbiAxMC8xMC8yMDEyIDA5OjU2IEFNLCBKYW4gS2lzemth
+IHdyb3RlOgo+Pj4+Pj4gT24gMjAxMi0xMC0xMCAwOTo1MSwgR2lsbGVzIENoYW50ZXBlcmRyaXgg
+d3JvdGU6Cj4+Pj4+Pj4gT24gMTAvMTAvMjAxMiAwOTozOCBBTSwgVGhpZXJyeSBCdWx0ZWwgd3Jv
+dGU6Cj4+Pj4+Pj4+IEhpIEdpbGxlcywKPj4+Pj4+Pj4KPj4+Pj4+Pj4gTWFueSB0aGFua3MsCj4+
+Pj4+Pj4+IFRoZSBmaXJzdCBwYXRjaCBkb2VzIG5vdCB3b3JrLCB0aGUgc2Vjb25kIGRvZXMuCj4+
+Pj4+Pj4+IEkgdGhpbmsgdGhlIHJlYXNvbiBmb3IgMXN0IHBhdGNoIHdoeSBpcyB0aGF0IGluIHJ0
+Y2FuX3ZpcnQsIHdlIGhhdmUKPj4+Pj4+Pj4KPj4+Pj4+Pj4gcnRkbV9sb2NrX2dldF9pcnFzYXZl
+KCZydGNhbl9yZWN2X2xpc3RfbG9jaywgbG9ja19jdHgpOwo+Pj4+Pj4+PiBydGRtX2xvY2tfZ2V0
+KCZydGNhbl9zb2NrZXRfbG9jayk7Cj4+Pj4+Pj4+Cj4+Pj4+Pj4+IC4uLgo+Pj4+Pj4+PiAtLS0+
+ICAgICAgICBydGNhbl9yY3YocnhfZGV2LCAmc2tiKTsKPj4+Pj4+Pj4gLi4uLgo+Pj4+Pj4+Pgo+
+Pj4+Pj4+PiBydGRtX2xvY2tfcHV0KCZydGNhbl9zb2NrZXRfbG9jayk7Cj4+Pj4+Pj4+IHJ0ZG1f
+bG9ja19wdXRfaXJxcmVzdG9yZSgmcnRjYW5fcmVjdl9saXN0X2xvY2ssIGxvY2tfY3R4KTsKPj4+
+Pj4+Pj4KPj4+Pj4+Pj4gYW5kIHJ0Y2FuX3Jjdi0+cnRjYW5fcmN2X2RlbGl2ZXItPnJ0ZG1fc2Vt
+X3VwKCZzb2NrLT5yZWN2X3NlbSk7Cj4+Pj4+Pj4+Cj4+Pj4+Pj4+IHRodXMgdGhlIHNhbWUgcmUt
+c2NoZWR1bGluZyBzdHVmZiB3aXRoIGludGVycnVwdHMgbG9ja2VkLgo+Pj4+Pj4+Pgo+Pj4+Pj4+
+PiBBcmUgeW91IG5vdCBub3QgYWZyYWlkIG9mIHNpZGUgZWZmZWN0cyB3aXRoIHRoZSBzZWNvbmQg
+cGF0Y2gsIAo+Pj4+Pj4+PiBzaW5jZSB5b3UgY2hhbmdlIHRoZSBvdmVyYWxsIGJlaGF2aW91ciA/
+Cj4+Pj4+Pj4+IFdvbid0IHlvdSBwcmVmZXIgYSBvbmx5IGxvY2FsbHkgbW9kaWZpZWQgcnRjYW5f
+dmlydCA/Cj4+Pj4+Pj4KPj4+Pj4+PiBXZSBzaG91bGQgYXNrIEphbidzIG9waW5pb24uIEluIGFu
+eSBjYXNlLCBpZiB3ZSBhZG9wdCB0aGUgc2Vjb25kIHBhdGNoLAo+Pj4+Pj4+IHdlIG1pZ2h0IHdh
+bnQgdG8gdHJ5IGFuZCByZWR1Y2UgdGhlIG92ZXJoZWFkIG9mIHhucG9kX3VubG9ja19zY2hlZC4K
+Pj4+Pj4+Pgo+Pj4+Pj4KPj4+Pj4+IFdlIHdlcmUgc2lnbmFsaW5nIHRoZSBzZW1hcGhvcmUgd2hp
+bGUgaG9sZGluZyBhIHNwaW4gbG9jaz8gVGhhdCdzIGEKPj4+Pj4+IGNsZWFyIGJ1Zy4gWW91ciBw
+YXRjaCBpcyBhbGlnbmluZyBydGNhbiB0byB0aGUgcGF0dGVybiB3ZSBhcmUgYWxzbyB1c2luZwo+
+Pj4+Pj4gaW4gUlRuZXQuIFdlIGp1c3QgbmVlZCB0byBtYWtlIHN1cmUgKGhhdmVuJ3QgbG9va2Vk
+IGF0IHRoZSBmdWxsIGNvbnRleHQKPj4+Pj4+IHlldCkgdGhhdCBzb2NrIHJlbWFpbnMgdmFsaWQg
+ZXZlbiBhZnRlciBkcm9wcGluZyB0aGUgbG9jayhzKS4KPj4+Pj4KPj4+Pj4gVGhlIHNlY29uZCBw
+YXRjaCBpZGVhIHdhcyB0byBsb2NrIHRoZSBzY2hlZHVsZXIgd2hpbGUgc3BpbmxvY2tzIGFyZQo+
+Pj4+PiBoZWxkLCBzbyB0aGF0IHBvc3RpbmcgYSBzZW1hcGhvcmUgd2hpbGUgaG9sZGluZyBhIHNw
+aW4gbG9jayBpcyBubyBsb25nZXIKPj4+Pj4gYSBidWcuCj4+Pj4KPj4+PiBTb3VuZHMgYSBiaXQg
+aGFja3ksCj4+Pgo+Pj4gV2VsbCwgdGhhdCBpcyB3aGF0IHRoZSBsaW51eCBrZXJuZWwgZG9lcy4K
+Pj4+Cj4+PiAgYnV0IEkgdGhpbmsgd2UgaGF2ZSB0aGlzIHBhdHRlcm4KPj4+PiAoUlRETV9FWEVD
+VVRFX0FUT01JQ0FMTFkpCj4+Pgo+Pj4gUlRETV9FWEVDVVRFX0FUT01JQ0FMTFkgaXMgYSBiaXQg
+b2YgYSBtaXNub21lciwgaWYgeW91IGRvOgo+Pj4gUlRETV9FWEVDVVRFX0FUT01JQ0FMTFkoZm9v
+KCk7IHJ0ZG1fc2VtX3VwKCk7IGJhcigpKTsKPj4+IGZvbygpIGFuZCBiYXIoKSBhcmUgbm90IGV4
+ZWN1dGVkIGF0b21pY2FsbHkgaWYgc2VtX3VwIHdha2VzIHVwIGFub3RoZXIKPj4+IHRocmVhZC4K
+Pj4+Cj4+PiBTbywgSSBkbyBub3Qgc2VlIGhvdyBSVERNX0VYRUNVVEVfQVRPTUlDQUxMWSBzb2x2
+ZXMgdGhlIGlzc3VlIHdlIGFyZQo+Pj4gdGFsa2luZyBhYm91dC4KPj4KPj4gUlRETV9FWEVDVVRF
+X0FUT01JQ0FMTFkgaG9sZHMgdGhlIG51Y2xldXMgbG9jayBhY3Jvc3MgdGhlIGVuY2Fwc3VsYXRl
+ZAo+PiBjb2RlLCBleGVjdXRpbmcgaXQgYXRvbWljYWxseSBhcyByZXNjaGVkdWxpbmcgaXMgcG9z
+dHBvbmVkIHVudGlsIHRoZSBlbmQKPj4gb2YgdGhlIGJsb2NrLgo+IAo+IEVyci4uLiBuby4gQWJz
+b2x1dGVseSBub3QuCgpFcnIuLi4gYWJzb2x1dGVseSByaWdodC4KClRoZSBnb29kIG5ld3MgaXM6
+IHdlIGRvbid0IG5lZWQgdG8gd29ycnkgYWJvdXQgc3VjaCBraW5kIG9mIGxvY2tpbmcuIEluCnJ0
+Y2FuX3Jhd19yZWN2bXNnLCB0aGUgc29ja2V0IGlzIGxvY2tlZCB2aWEgdGhlIFJURE0gY29udGV4
+dCBhcyB3ZSBhcmUKaW4gYSBoYW5kbGVyLiBTbyBpdCB3b24ndCBkaXNhcHBlYXIgd2hlbiB3ZSBk
+cm9wIHRoZSBsb2NrLCBhbmQgeW91cgpmaXJzdCBwYXRjaCBpcyBmaW5lLgoKSmFuCgoKLS0tLS0t
+LS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3
+YXMgc2NydWJiZWQuLi4KTmFtZTogc2lnbmF0dXJlLmFzYwpUeXBlOiBhcHBsaWNhdGlvbi9wZ3At
+c2lnbmF0dXJlClNpemU6IDI1OSBieXRlcwpEZXNjOiBPcGVuUEdQIGRpZ2l0YWwgc2lnbmF0dXJl
+ClVSTDogPGh0dHA6Ly93d3cueGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVu
+dHMvMjAxMjEwMTAvYmFmM2VkMzcvYXR0YWNobWVudC5wZ3A+Cg==
