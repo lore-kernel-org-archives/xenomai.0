@@ -1,14 +1,17 @@
-Message-ID: <50818781.7050204@xenomai.org>
-Date: Fri, 19 Oct 2012 19:01:53 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <50753980.7020409@web.de>
+Date: Wed, 10 Oct 2012 11:01:52 +0200
+From: Jan Kiszka <jan.kiszka@web.de>
 MIME-Version: 1.0
-References: <CAN0CFw3KM6VC-q9QHjoME0AqJOApw_9h4aEP0D2uxeD6rgcGcw@mail.gmail.com>	<50798BD3.6010308@xenomai.org>
-	<50798F8A.8060508@xenomai.org>	<CAN0CFw0AhYwkGLQvugxw6NqPtv6mBxxLYnPWsdXXjO25_pmSVQ@mail.gmail.com>	<508171AB.8010707@xenomai.org>
-	<CAN0CFw3WqabceF1LoR===ZXQU5-WRCfYb_itk0_ig2NKKG9vtg@mail.gmail.com>
-In-Reply-To: <CAN0CFw3WqabceF1LoR===ZXQU5-WRCfYb_itk0_ig2NKKG9vtg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Which kernel versions?
+References: <505EB99F.7050705@wanadoo.fr>	<505EBD61.1050009@wanadoo.fr>	<505F0D40.9030105@xenomai.org>	<50741C5B.4060206@wanadoo.fr>
+	<5074986C.8000509@xenomai.org> <50749A03.9090607@xenomai.org>
+	<50749C71.2020100@xenomai.org> <5075260E.2050402@wanadoo.fr>
+	<507528E4.4050809@xenomai.org> <50752A42.9080303@web.de>
+	<50752C0C.3050803@xenomai.org> <50752D7E.7010207@web.de>
+	<507538C8.7040706@xenomai.org>
+In-Reply-To: <507538C8.7040706@xenomai.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai] Target frozen with rtcan_virt
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,87 +20,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Grant <emailgrant@gmail.com>
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Thierry Bultel <thierry.bultel@wanadoo.fr>, Wolfgang Grandegger <wg@denx.de>, xenomai@xenomai.org
 
-On 10/19/2012 06:17 PM, Grant wrote:
->>>>>> Does xenomai.org indicate which versions of the vanilla kernel can be
->>>>>> patched with the latest xenomai release?
->>>>>
->>>>>
->>>>>
->>>>> Basically, any linux version older than the version for which the
->>>>> patches are provided in xenomai sources, for which an Adeos patch exists in
->>>>>
->>>>> http://download.gna.org/adeos/patches/
->>>
->>> How can I tell for which kernel version the patches are provided?  I
->>> believe the latest patches are contained here?
->>>
->>> http://download.gna.org/xenomai/testing/
->>
->> The patches are contained in the ksrc/arch/YOURARCH/patches directory of
->> xenomai sources.
->>
->> Where YOURARCH is one of arm, blackfin, nios2, powerpc, sh, x86, etc...
-> 
-> Got it, but I'm still confused by the following definition:
-> 
-> "any linux version older than the version for which the patches are
-> provided in xenomai sources, for which an Adeos patch exists in:
-> http://download.gna.org/adeos/patches/"
-> 
-> The patches in 2.6.0-rc5 xenomai sources seem to be for these kernel versions:
-
-2.6.0-rc5 is not the latest version, 2.6.1 is. For the x86 architecture
-for instance, it contains the following patches:
-
-adeos-ipipe-2.6.37.6-x86-2.9-02.patch
-adeos-ipipe-2.6.38.8-x86-2.11-01.patch
-ipipe-core-3.2.21-x86-1.patch
-
-So, any version earlier than 3.2.21 for which an Adeos patch exists in
-http://download.gna.org/adeos/patches/v2.6/x86
-http://download.gna.org/adeos/patches/v3.x/x86
-
-Is supported.
-
-That is:
-2.6.24
-2.6.25
-2.6.26
-2.6.26.7
-2.6.26.8
-2.6.27
-2.6.27.13
-2.6.27.19
-2.6.28.2
-2.6.28.7
-2.6.28.9
-2.6.29.1
-2.6.29.4
-2.6.29.5
-2.6.30
-2.6.30.5
-2.6.30.8
-2.6.31
-2.6.31.1
-2.6.31.8
-2.6.32.11
-2.6.32.13
-2.6.32.15
-2.6.32.2
-2.6.32.20
-2.6.32.7
-2.6.34
-2.6.34.5
-2.6.35.7
-2.6.35.9
-2.6.37
-2.6.37.6
-2.6.38.8
-3.2.21
-
--- 
-					    Gilles.
-
+T24gMjAxMi0xMC0xMCAxMDo1OCwgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4gT24gMTAv
+MTAvMjAxMiAxMDoxMCBBTSwgSmFuIEtpc3prYSB3cm90ZToKPj4gT24gMjAxMi0xMC0xMCAxMDow
+NCwgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4+PiBPbiAxMC8xMC8yMDEyIDA5OjU2IEFN
+LCBKYW4gS2lzemthIHdyb3RlOgo+Pj4+IE9uIDIwMTItMTAtMTAgMDk6NTEsIEdpbGxlcyBDaGFu
+dGVwZXJkcml4IHdyb3RlOgo+Pj4+PiBPbiAxMC8xMC8yMDEyIDA5OjM4IEFNLCBUaGllcnJ5IEJ1
+bHRlbCB3cm90ZToKPj4+Pj4+IEhpIEdpbGxlcywKPj4+Pj4+Cj4+Pj4+PiBNYW55IHRoYW5rcywK
+Pj4+Pj4+IFRoZSBmaXJzdCBwYXRjaCBkb2VzIG5vdCB3b3JrLCB0aGUgc2Vjb25kIGRvZXMuCj4+
+Pj4+PiBJIHRoaW5rIHRoZSByZWFzb24gZm9yIDFzdCBwYXRjaCB3aHkgaXMgdGhhdCBpbiBydGNh
+bl92aXJ0LCB3ZSBoYXZlCj4+Pj4+Pgo+Pj4+Pj4gcnRkbV9sb2NrX2dldF9pcnFzYXZlKCZydGNh
+bl9yZWN2X2xpc3RfbG9jaywgbG9ja19jdHgpOwo+Pj4+Pj4gcnRkbV9sb2NrX2dldCgmcnRjYW5f
+c29ja2V0X2xvY2spOwo+Pj4+Pj4KPj4+Pj4+IC4uLgo+Pj4+Pj4gLS0tPiAgICAgICAgcnRjYW5f
+cmN2KHJ4X2RldiwgJnNrYik7Cj4+Pj4+PiAuLi4uCj4+Pj4+Pgo+Pj4+Pj4gcnRkbV9sb2NrX3B1
+dCgmcnRjYW5fc29ja2V0X2xvY2spOwo+Pj4+Pj4gcnRkbV9sb2NrX3B1dF9pcnFyZXN0b3JlKCZy
+dGNhbl9yZWN2X2xpc3RfbG9jaywgbG9ja19jdHgpOwo+Pj4+Pj4KPj4+Pj4+IGFuZCBydGNhbl9y
+Y3YtPnJ0Y2FuX3Jjdl9kZWxpdmVyLT5ydGRtX3NlbV91cCgmc29jay0+cmVjdl9zZW0pOwo+Pj4+
+Pj4KPj4+Pj4+IHRodXMgdGhlIHNhbWUgcmUtc2NoZWR1bGluZyBzdHVmZiB3aXRoIGludGVycnVw
+dHMgbG9ja2VkLgo+Pj4+Pj4KPj4+Pj4+IEFyZSB5b3Ugbm90IG5vdCBhZnJhaWQgb2Ygc2lkZSBl
+ZmZlY3RzIHdpdGggdGhlIHNlY29uZCBwYXRjaCwgCj4+Pj4+PiBzaW5jZSB5b3UgY2hhbmdlIHRo
+ZSBvdmVyYWxsIGJlaGF2aW91ciA/Cj4+Pj4+PiBXb24ndCB5b3UgcHJlZmVyIGEgb25seSBsb2Nh
+bGx5IG1vZGlmaWVkIHJ0Y2FuX3ZpcnQgPwo+Pj4+Pgo+Pj4+PiBXZSBzaG91bGQgYXNrIEphbidz
+IG9waW5pb24uIEluIGFueSBjYXNlLCBpZiB3ZSBhZG9wdCB0aGUgc2Vjb25kIHBhdGNoLAo+Pj4+
+PiB3ZSBtaWdodCB3YW50IHRvIHRyeSBhbmQgcmVkdWNlIHRoZSBvdmVyaGVhZCBvZiB4bnBvZF91
+bmxvY2tfc2NoZWQuCj4+Pj4+Cj4+Pj4KPj4+PiBXZSB3ZXJlIHNpZ25hbGluZyB0aGUgc2VtYXBo
+b3JlIHdoaWxlIGhvbGRpbmcgYSBzcGluIGxvY2s/IFRoYXQncyBhCj4+Pj4gY2xlYXIgYnVnLiBZ
+b3VyIHBhdGNoIGlzIGFsaWduaW5nIHJ0Y2FuIHRvIHRoZSBwYXR0ZXJuIHdlIGFyZSBhbHNvIHVz
+aW5nCj4+Pj4gaW4gUlRuZXQuIFdlIGp1c3QgbmVlZCB0byBtYWtlIHN1cmUgKGhhdmVuJ3QgbG9v
+a2VkIGF0IHRoZSBmdWxsIGNvbnRleHQKPj4+PiB5ZXQpIHRoYXQgc29jayByZW1haW5zIHZhbGlk
+IGV2ZW4gYWZ0ZXIgZHJvcHBpbmcgdGhlIGxvY2socykuCj4+Pgo+Pj4gVGhlIHNlY29uZCBwYXRj
+aCBpZGVhIHdhcyB0byBsb2NrIHRoZSBzY2hlZHVsZXIgd2hpbGUgc3BpbmxvY2tzIGFyZQo+Pj4g
+aGVsZCwgc28gdGhhdCBwb3N0aW5nIGEgc2VtYXBob3JlIHdoaWxlIGhvbGRpbmcgYSBzcGluIGxv
+Y2sgaXMgbm8gbG9uZ2VyCj4+PiBhIGJ1Zy4KPj4KPj4gU291bmRzIGEgYml0IGhhY2t5LAo+IAo+
+IFdlbGwsIHRoYXQgaXMgd2hhdCB0aGUgbGludXgga2VybmVsIGRvZXMuCj4gCj4gIGJ1dCBJIHRo
+aW5rIHdlIGhhdmUgdGhpcyBwYXR0ZXJuCj4+IChSVERNX0VYRUNVVEVfQVRPTUlDQUxMWSkKPiAK
+PiBSVERNX0VYRUNVVEVfQVRPTUlDQUxMWSBpcyBhIGJpdCBvZiBhIG1pc25vbWVyLCBpZiB5b3Ug
+ZG86Cj4gUlRETV9FWEVDVVRFX0FUT01JQ0FMTFkoZm9vKCk7IHJ0ZG1fc2VtX3VwKCk7IGJhcigp
+KTsKPiBmb28oKSBhbmQgYmFyKCkgYXJlIG5vdCBleGVjdXRlZCBhdG9taWNhbGx5IGlmIHNlbV91
+cCB3YWtlcyB1cCBhbm90aGVyCj4gdGhyZWFkLgo+IAo+IFNvLCBJIGRvIG5vdCBzZWUgaG93IFJU
+RE1fRVhFQ1VURV9BVE9NSUNBTExZIHNvbHZlcyB0aGUgaXNzdWUgd2UgYXJlCj4gdGFsa2luZyBh
+Ym91dC4KClJURE1fRVhFQ1VURV9BVE9NSUNBTExZIGhvbGRzIHRoZSBudWNsZXVzIGxvY2sgYWNy
+b3NzIHRoZSBlbmNhcHN1bGF0ZWQKY29kZSwgZXhlY3V0aW5nIGl0IGF0b21pY2FsbHkgYXMgcmVz
+Y2hlZHVsaW5nIGlzIHBvc3Rwb25lZCB1bnRpbCB0aGUgZW5kCm9mIHRoZSBibG9jay4KCkphbgoK
+LS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNo
+bWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogc2lnbmF0dXJlLmFzYwpUeXBlOiBhcHBsaWNhdGlv
+bi9wZ3Atc2lnbmF0dXJlClNpemU6IDI1OSBieXRlcwpEZXNjOiBPcGVuUEdQIGRpZ2l0YWwgc2ln
+bmF0dXJlClVSTDogPGh0dHA6Ly93d3cueGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0
+YWNobWVudHMvMjAxMjEwMTAvMDkxYTJlZDkvYXR0YWNobWVudC5wZ3A+Cg==
