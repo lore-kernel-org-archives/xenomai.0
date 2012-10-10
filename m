@@ -1,13 +1,14 @@
-Message-ID: <507E9605.5070305@siemens.com>
-Date: Wed, 17 Oct 2012 13:27:01 +0200
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <507528E4.4050809@xenomai.org>
+Date: Wed, 10 Oct 2012 09:51:00 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <507E946A.5020105@siemens.com> <507E94ED.9060401@xenomai.org>
-In-Reply-To: <507E94ED.9060401@xenomai.org>
+References: <505EB99F.7050705@wanadoo.fr>	<505EBD61.1050009@wanadoo.fr>	<505F0D40.9030105@xenomai.org>	<50741C5B.4060206@wanadoo.fr>
+	<5074986C.8000509@xenomai.org> <50749A03.9090607@xenomai.org>
+	<50749C71.2020100@xenomai.org> <5075260E.2050402@wanadoo.fr>
+In-Reply-To: <5075260E.2050402@wanadoo.fr>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PATCH] can: Let Flexcan driver depend on platform
- support
+Subject: Re: [Xenomai] Target frozen with rtcan_virt
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,29 +17,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Wolfgang Grandegger <wg@denx.de>, Xenomai <xenomai@xenomai.org>
+To: Thierry Bultel <thierry.bultel@wanadoo.fr>
+Cc: Jan Kiszka <jan.kiszka@web.de>, xenomai@xenomai.org
 
-On 2012-10-17 13:22, Gilles Chanteperdrix wrote:
-> On 10/17/2012 01:20 PM, Jan Kiszka wrote:
+On 10/10/2012 09:38 AM, Thierry Bultel wrote:
+> Hi Gilles,
 > 
->> Just like the Linux version does, let our RT Flexcan driver depend on
->> CONFIG_HAVE_CAN_FLEXCAN so that it can only be selected on platforms
->> that actually support it.
+> Many thanks,
+> The first patch does not work, the second does.
+> I think the reason for 1st patch why is that in rtcan_virt, we have
 > 
+> rtdm_lock_get_irqsave(&rtcan_recv_list_lock, lock_ctx);
+> rtdm_lock_get(&rtcan_socket_lock);
 > 
-> Do all old kernels for CPUs which have a flexcan controller have this
-> symbol defined?
+> ...
+> --->        rtcan_rcv(rx_dev, &skb);
+> ....
+> 
+> rtdm_lock_put(&rtcan_socket_lock);
+> rtdm_lock_put_irqrestore(&rtcan_recv_list_lock, lock_ctx);
+> 
+> and rtcan_rcv->rtcan_rcv_deliver->rtdm_sem_up(&sock->recv_sem);
+> 
+> thus the same re-scheduling stuff with interrupts locked.
+> 
+> Are you not not afraid of side effects with the second patch, 
+> since you change the overall behaviour ?
+> Won't you prefer a only locally modified rtcan_virt ?
 
-That's a question for Wolfgang. We briefly discussed this yesterday, and
-that dependency appeared reasonable on first glance.
-
-The platform has to provide at least CONFIG_OF. So that could be plan B
-in case HAVE_CAN_FLEXCAN is too strict.
-
-Jan
+We should ask Jan's opinion. In any case, if we adopt the second patch,
+we might want to try and reduce the overhead of xnpod_unlock_sched.
 
 -- 
-Siemens AG, Corporate Technology, CT RTC ITP SDP-DE
-Corporate Competence Center Embedded Linux
+					    Gilles.
 
