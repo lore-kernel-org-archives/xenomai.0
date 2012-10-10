@@ -1,14 +1,15 @@
-Message-ID: <507F8477.2070005@xenomai.org>
-Date: Thu, 18 Oct 2012 06:24:23 +0200
+Message-ID: <50752C0C.3050803@xenomai.org>
+Date: Wed, 10 Oct 2012 10:04:28 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <507C93B6.30304@nta-inc.net> <507D0712.9070305@xenomai.org>
-	<507F2D28.4090600@nta-inc.net>
-In-Reply-To: <507F2D28.4090600@nta-inc.net>
+References: <505EB99F.7050705@wanadoo.fr>	<505EBD61.1050009@wanadoo.fr>	<505F0D40.9030105@xenomai.org>	<50741C5B.4060206@wanadoo.fr>
+	<5074986C.8000509@xenomai.org> <50749A03.9090607@xenomai.org>
+	<50749C71.2020100@xenomai.org> <5075260E.2050402@wanadoo.fr>
+	<507528E4.4050809@xenomai.org> <50752A42.9080303@web.de>
+In-Reply-To: <50752A42.9080303@web.de>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Still having problems running Xenomai on an Intel
- X5650 x86_64 machine
+Subject: Re: [Xenomai] Target frozen with rtcan_virt
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,60 +18,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jeff Webb <jeff.webb@nta-inc.net>
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@web.de>
+Cc: Thierry Bultel <thierry.bultel@wanadoo.fr>, xenomai@xenomai.org
 
-On 10/18/2012 12:11 AM, Jeff Webb wrote:
-
-> On 10/16/2012 02:04 AM, Gilles Chanteperdrix wrote:
->> On 10/16/2012 12:52 AM, Jeff Webb wrote:
->> 
->>> I'm back to trying to get Xenomai running on a dual 6-core Intel 
->>> X5650 desktop machine.  I reported my previous attempts a few
->>> months ago:
->>> 
->>> On ubuntu 10.04 with 2.6.38.8: 
->>> http://www.xenomai.org/pipermail/xenomai/2012-July/000546.html
->>> 
->>> On ubuntu 10.04 with 3.2.21: 
->>> http://www.xenomai.org/pipermail/xenomai/2012-July/000577.html
->>> 
->>> I am now using ubuntu 12.04 instead of 10.04, and I'm using the 
->>> xenomai-2.6.git branch.  I am still not having any success.  The 
->>> kernel boots, but hangs as the GUI login box is coming up.  This
->>> is similar to what happened under ubuntu 10.04/3.2.21, but the
->>> call trace seems a little different.  I have attached my kernel
->>> config and the console output, which was captured via a serial
->>> connection.  This exact kernel package seems to run fine (with
->>> very limited testing) on a 4-core Intel X9650 desktop machine
->>> running the same OS, for what it's worth.  Any help in debugging
->>> this would be appreciated.  What's my next step?
->> 
->> 
->> I am afraid that is another known issue fixed in the 3.4 branch.
->> Please try the I-pipe git; git://git.denx.de, branch core-3.4.
->> 
+On 10/10/2012 09:56 AM, Jan Kiszka wrote:
+> On 2012-10-10 09:51, Gilles Chanteperdrix wrote:
+>> On 10/10/2012 09:38 AM, Thierry Bultel wrote:
+>>> Hi Gilles,
+>>>
+>>> Many thanks,
+>>> The first patch does not work, the second does.
+>>> I think the reason for 1st patch why is that in rtcan_virt, we have
+>>>
+>>> rtdm_lock_get_irqsave(&rtcan_recv_list_lock, lock_ctx);
+>>> rtdm_lock_get(&rtcan_socket_lock);
+>>>
+>>> ...
+>>> --->        rtcan_rcv(rx_dev, &skb);
+>>> ....
+>>>
+>>> rtdm_lock_put(&rtcan_socket_lock);
+>>> rtdm_lock_put_irqrestore(&rtcan_recv_list_lock, lock_ctx);
+>>>
+>>> and rtcan_rcv->rtcan_rcv_deliver->rtdm_sem_up(&sock->recv_sem);
+>>>
+>>> thus the same re-scheduling stuff with interrupts locked.
+>>>
+>>> Are you not not afraid of side effects with the second patch, 
+>>> since you change the overall behaviour ?
+>>> Won't you prefer a only locally modified rtcan_virt ?
+>>
+>> We should ask Jan's opinion. In any case, if we adopt the second patch,
+>> we might want to try and reduce the overhead of xnpod_unlock_sched.
+>>
 > 
-> Thanks again, Gilles.
-> 
-> I just rebuilt the kernel using the core-3.4 branch of ipipe.git with
-> xenomai-2.6.git.  I started with the same kernel config as before and
-> then disabled a few drivers to get everything to compile without
-> errors.
+> We were signaling the semaphore while holding a spin lock? That's a
+> clear bug. Your patch is aligning rtcan to the pattern we are also using
+> in RTnet. We just need to make sure (haven't looked at the full context
+> yet) that sock remains valid even after dropping the lock(s).
 
-
-If you do not need to disable these drivers to compile the kernel
-without Xenomai, then it is not normal, please be more specific.
-
->  The system still crashes, but now it seems to happen several
-> seconds after the login box has appeared.  The console output is
-> shown below.
-
-
-This does not look like the same issue, right? As usual, could you
-disassemble __ipipe_dispatch_irq, or run addr2line for the error address
-(0xffffffff810ac055)?
+The second patch idea was to lock the scheduler while spinlocks are
+held, so that posting a semaphore while holding a spin lock is no longer
+a bug.
 
 -- 
-                                                                Gilles.
+					    Gilles.
 
