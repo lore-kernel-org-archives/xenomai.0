@@ -1,19 +1,19 @@
-Message-ID: <50856071.8080404@xenomai.org>
-Date: Mon, 22 Oct 2012 17:04:17 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <50754D0F.50407@web.de>
+Date: Wed, 10 Oct 2012 12:25:19 +0200
+From: Jan Kiszka <jan.kiszka@web.de>
 MIME-Version: 1.0
-References: <CAN0CFw3KM6VC-q9QHjoME0AqJOApw_9h4aEP0D2uxeD6rgcGcw@mail.gmail.com>	<50798BD3.6010308@xenomai.org>
-	<50798F8A.8060508@xenomai.org>	<CAN0CFw0AhYwkGLQvugxw6NqPtv6mBxxLYnPWsdXXjO25_pmSVQ@mail.gmail.com>	<508171AB.8010707@xenomai.org>	<CAN0CFw3WqabceF1LoR===ZXQU5-WRCfYb_itk0_ig2NKKG9vtg@mail.gmail.com>	<50818781.7050204@xenomai.org>
-	<CAN0CFw0ZvkqHO6txvq17xBsU7S52dFW1rn=EC7uz87T95npR9w@mail.gmail.com>
-	<50827B74.2030408@xenomai.org> <50829C67.9040909@xenomai.org>
-	<50829D93.7000407@xenomai.org> <50829E28.2020801@xenomai.org>
-	<50829EC8.1030809@xenomai.org> <5082A25C.4030204@xenomai.org>
-	<50854DB4.3080100@xenomai.org> <50855FBE.7020403@xenomai.org>
-	<50855FFD.90706@xenomai.org>
-In-Reply-To: <50855FFD.90706@xenomai.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Which kernel versions?
+References: <505EB99F.7050705@wanadoo.fr>	<505EBD61.1050009@wanadoo.fr>	<505F0D40.9030105@xenomai.org>	<50741C5B.4060206@wanadoo.fr>
+	<5074986C.8000509@xenomai.org> <50749A03.9090607@xenomai.org>
+	<50749C71.2020100@xenomai.org> <5075260E.2050402@wanadoo.fr>
+	<507528E4.4050809@xenomai.org> <50752A42.9080303@web.de>
+	<50752C0C.3050803@xenomai.org> <50752D7E.7010207@web.de>
+	<507538C8.7040706@xenomai.org> <50753980.7020409@web.de>
+	<50753EA0.7070007@xenomai.org> <50754849.9030205@web.de>
+	<507548DE.2000305@xenomai.org>
+In-Reply-To: <507548DE.2000305@xenomai.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai] Target frozen with rtcan_virt
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -23,64 +23,74 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+Cc: Thierry Bultel <thierry.bultel@wanadoo.fr>, Wolfgang Grandegger <wg@denx.de>, xenomai@xenomai.org
 
-On 10/22/2012 05:02 PM, Gilles Chanteperdrix wrote:
-> On 10/22/2012 05:01 PM, Philippe Gerum wrote:
-> 
->> On 10/22/2012 03:44 PM, Gilles Chanteperdrix wrote:
->>> On 10/20/2012 03:08 PM, Philippe Gerum wrote:
->>>
->>>> On 10/20/2012 02:53 PM, Gilles Chanteperdrix wrote:
->>>>> On 10/20/2012 02:50 PM, Philippe Gerum wrote:
->>>>>
->>>>>> On 10/20/2012 02:48 PM, Gilles Chanteperdrix wrote:
->>>>>>> On 10/20/2012 02:43 PM, Philippe Gerum wrote:
->>>>>>>
->>>>>>>> On 10/20/2012 12:22 PM, Gilles Chanteperdrix wrote:
->>>>>>>>
->>>>>>>>> Note that the list is not exhaustive, because it does not includes
->>>>>>>>> patches that were published before the i386/x86_64 merge, if you take
->>>>>>>>> that into account, you can even run Xenomai 2.6.1 with 2.4 kernels.
->>>>>>>>>
->>>>>>>>
->>>>>>>> 2.4.25/ppc only though. We stopped maintaining 2.4/x86 setups many moons
->>>>>>>> ago, so I doubt this would even build.
->>>>>>>
->>>>>>>
->>>>>>> It is build-tested with every release.
->>>>>>>
->>>>>>
->>>>>> Build AND tested, or tested for build? I did not test such configuration
->>>>>> for ages, do you actually test this?
->>>>>>
->>>>>
->>>>>
->>>>> tested for build only.
->>>>>
->>>>
->>>> We can pull the plug on this.
->>>>
->>>
->>>
->>> On the other hand, it does not cost us much to maintain this.
->>>
->>
->> We don't maintain this, I mean we don't test it at all anymore, and we
->> have no bandwidth to put it back in our manual test routines, and would
->> these fail, I don't think we should spend a minute fixing it. So we are
->> left with a decision to let it bit rot, or remove it. Bit rotting of
->> architecture ports is something we have been trying hard to avoid since
->> day #1, so removing such support would be consistent with that policy.
-> 
-> 
-> Ok, if we remove the support in asm/wrappers.h
-> 
-> 
-
-include/asm-x86/wrappers_32.h? yes. We just have to keep the generic
-bits for supporting 2.4/ppc, since this one is still in use and maintained.
-
--- 
-Philippe.
-
+T24gMjAxMi0xMC0xMCAxMjowNywgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4gT24gMTAv
+MTAvMjAxMiAxMjowNCBQTSwgSmFuIEtpc3prYSB3cm90ZToKPj4gT24gMjAxMi0xMC0xMCAxMToy
+MywgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4+PiBPbiAxMC8xMC8yMDEyIDExOjAxIEFN
+LCBKYW4gS2lzemthIHdyb3RlOgo+Pj4+IE9uIDIwMTItMTAtMTAgMTA6NTgsIEdpbGxlcyBDaGFu
+dGVwZXJkcml4IHdyb3RlOgo+Pj4+PiBPbiAxMC8xMC8yMDEyIDEwOjEwIEFNLCBKYW4gS2lzemth
+IHdyb3RlOgo+Pj4+Pj4gT24gMjAxMi0xMC0xMCAxMDowNCwgR2lsbGVzIENoYW50ZXBlcmRyaXgg
+d3JvdGU6Cj4+Pj4+Pj4gT24gMTAvMTAvMjAxMiAwOTo1NiBBTSwgSmFuIEtpc3prYSB3cm90ZToK
+Pj4+Pj4+Pj4gT24gMjAxMi0xMC0xMCAwOTo1MSwgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6
+Cj4+Pj4+Pj4+PiBPbiAxMC8xMC8yMDEyIDA5OjM4IEFNLCBUaGllcnJ5IEJ1bHRlbCB3cm90ZToK
+Pj4+Pj4+Pj4+PiBIaSBHaWxsZXMsCj4+Pj4+Pj4+Pj4KPj4+Pj4+Pj4+PiBNYW55IHRoYW5rcywK
+Pj4+Pj4+Pj4+PiBUaGUgZmlyc3QgcGF0Y2ggZG9lcyBub3Qgd29yaywgdGhlIHNlY29uZCBkb2Vz
+Lgo+Pj4+Pj4+Pj4+IEkgdGhpbmsgdGhlIHJlYXNvbiBmb3IgMXN0IHBhdGNoIHdoeSBpcyB0aGF0
+IGluIHJ0Y2FuX3ZpcnQsIHdlIGhhdmUKPj4+Pj4+Pj4+Pgo+Pj4+Pj4+Pj4+IHJ0ZG1fbG9ja19n
+ZXRfaXJxc2F2ZSgmcnRjYW5fcmVjdl9saXN0X2xvY2ssIGxvY2tfY3R4KTsKPj4+Pj4+Pj4+PiBy
+dGRtX2xvY2tfZ2V0KCZydGNhbl9zb2NrZXRfbG9jayk7Cj4+Pj4+Pj4+Pj4KPj4+Pj4+Pj4+PiAu
+Li4KPj4+Pj4+Pj4+PiAtLS0+ICAgICAgICBydGNhbl9yY3YocnhfZGV2LCAmc2tiKTsKPj4+Pj4+
+Pj4+PiAuLi4uCj4+Pj4+Pj4+Pj4KPj4+Pj4+Pj4+PiBydGRtX2xvY2tfcHV0KCZydGNhbl9zb2Nr
+ZXRfbG9jayk7Cj4+Pj4+Pj4+Pj4gcnRkbV9sb2NrX3B1dF9pcnFyZXN0b3JlKCZydGNhbl9yZWN2
+X2xpc3RfbG9jaywgbG9ja19jdHgpOwo+Pj4+Pj4+Pj4+Cj4+Pj4+Pj4+Pj4gYW5kIHJ0Y2FuX3Jj
+di0+cnRjYW5fcmN2X2RlbGl2ZXItPnJ0ZG1fc2VtX3VwKCZzb2NrLT5yZWN2X3NlbSk7Cj4+Pj4+
+Pj4+Pj4KPj4+Pj4+Pj4+PiB0aHVzIHRoZSBzYW1lIHJlLXNjaGVkdWxpbmcgc3R1ZmYgd2l0aCBp
+bnRlcnJ1cHRzIGxvY2tlZC4KPj4+Pj4+Pj4+Pgo+Pj4+Pj4+Pj4+IEFyZSB5b3Ugbm90IG5vdCBh
+ZnJhaWQgb2Ygc2lkZSBlZmZlY3RzIHdpdGggdGhlIHNlY29uZCBwYXRjaCwgCj4+Pj4+Pj4+Pj4g
+c2luY2UgeW91IGNoYW5nZSB0aGUgb3ZlcmFsbCBiZWhhdmlvdXIgPwo+Pj4+Pj4+Pj4+IFdvbid0
+IHlvdSBwcmVmZXIgYSBvbmx5IGxvY2FsbHkgbW9kaWZpZWQgcnRjYW5fdmlydCA/Cj4+Pj4+Pj4+
+Pgo+Pj4+Pj4+Pj4gV2Ugc2hvdWxkIGFzayBKYW4ncyBvcGluaW9uLiBJbiBhbnkgY2FzZSwgaWYg
+d2UgYWRvcHQgdGhlIHNlY29uZCBwYXRjaCwKPj4+Pj4+Pj4+IHdlIG1pZ2h0IHdhbnQgdG8gdHJ5
+IGFuZCByZWR1Y2UgdGhlIG92ZXJoZWFkIG9mIHhucG9kX3VubG9ja19zY2hlZC4KPj4+Pj4+Pj4+
+Cj4+Pj4+Pj4+Cj4+Pj4+Pj4+IFdlIHdlcmUgc2lnbmFsaW5nIHRoZSBzZW1hcGhvcmUgd2hpbGUg
+aG9sZGluZyBhIHNwaW4gbG9jaz8gVGhhdCdzIGEKPj4+Pj4+Pj4gY2xlYXIgYnVnLiBZb3VyIHBh
+dGNoIGlzIGFsaWduaW5nIHJ0Y2FuIHRvIHRoZSBwYXR0ZXJuIHdlIGFyZSBhbHNvIHVzaW5nCj4+
+Pj4+Pj4+IGluIFJUbmV0LiBXZSBqdXN0IG5lZWQgdG8gbWFrZSBzdXJlIChoYXZlbid0IGxvb2tl
+ZCBhdCB0aGUgZnVsbCBjb250ZXh0Cj4+Pj4+Pj4+IHlldCkgdGhhdCBzb2NrIHJlbWFpbnMgdmFs
+aWQgZXZlbiBhZnRlciBkcm9wcGluZyB0aGUgbG9jayhzKS4KPj4+Pj4+Pgo+Pj4+Pj4+IFRoZSBz
+ZWNvbmQgcGF0Y2ggaWRlYSB3YXMgdG8gbG9jayB0aGUgc2NoZWR1bGVyIHdoaWxlIHNwaW5sb2Nr
+cyBhcmUKPj4+Pj4+PiBoZWxkLCBzbyB0aGF0IHBvc3RpbmcgYSBzZW1hcGhvcmUgd2hpbGUgaG9s
+ZGluZyBhIHNwaW4gbG9jayBpcyBubyBsb25nZXIKPj4+Pj4+PiBhIGJ1Zy4KPj4+Pj4+Cj4+Pj4+
+PiBTb3VuZHMgYSBiaXQgaGFja3ksCj4+Pj4+Cj4+Pj4+IFdlbGwsIHRoYXQgaXMgd2hhdCB0aGUg
+bGludXgga2VybmVsIGRvZXMuCj4+Pj4+Cj4+Pj4+ICBidXQgSSB0aGluayB3ZSBoYXZlIHRoaXMg
+cGF0dGVybgo+Pj4+Pj4gKFJURE1fRVhFQ1VURV9BVE9NSUNBTExZKQo+Pj4+Pgo+Pj4+PiBSVERN
+X0VYRUNVVEVfQVRPTUlDQUxMWSBpcyBhIGJpdCBvZiBhIG1pc25vbWVyLCBpZiB5b3UgZG86Cj4+
+Pj4+IFJURE1fRVhFQ1VURV9BVE9NSUNBTExZKGZvbygpOyBydGRtX3NlbV91cCgpOyBiYXIoKSk7
+Cj4+Pj4+IGZvbygpIGFuZCBiYXIoKSBhcmUgbm90IGV4ZWN1dGVkIGF0b21pY2FsbHkgaWYgc2Vt
+X3VwIHdha2VzIHVwIGFub3RoZXIKPj4+Pj4gdGhyZWFkLgo+Pj4+Pgo+Pj4+PiBTbywgSSBkbyBu
+b3Qgc2VlIGhvdyBSVERNX0VYRUNVVEVfQVRPTUlDQUxMWSBzb2x2ZXMgdGhlIGlzc3VlIHdlIGFy
+ZQo+Pj4+PiB0YWxraW5nIGFib3V0Lgo+Pj4+Cj4+Pj4gUlRETV9FWEVDVVRFX0FUT01JQ0FMTFkg
+aG9sZHMgdGhlIG51Y2xldXMgbG9jayBhY3Jvc3MgdGhlIGVuY2Fwc3VsYXRlZAo+Pj4+IGNvZGUs
+IGV4ZWN1dGluZyBpdCBhdG9taWNhbGx5IGFzIHJlc2NoZWR1bGluZyBpcyBwb3N0cG9uZWQgdW50
+aWwgdGhlIGVuZAo+Pj4+IG9mIHRoZSBibG9jay4KPj4+Cj4+PiBFcnIuLi4gbm8uIEFic29sdXRl
+bHkgbm90Lgo+Pgo+PiBFcnIuLi4gYWJzb2x1dGVseSByaWdodC4KPj4KPj4gVGhlIGdvb2QgbmV3
+cyBpczogd2UgZG9uJ3QgbmVlZCB0byB3b3JyeSBhYm91dCBzdWNoIGtpbmQgb2YgbG9ja2luZy4g
+SW4KPj4gcnRjYW5fcmF3X3JlY3Ztc2csIHRoZSBzb2NrZXQgaXMgbG9ja2VkIHZpYSB0aGUgUlRE
+TSBjb250ZXh0IGFzIHdlIGFyZQo+PiBpbiBhIGhhbmRsZXIuIFNvIGl0IHdvbid0IGRpc2FwcGVh
+ciB3aGVuIHdlIGRyb3AgdGhlIGxvY2ssIGFuZCB5b3VyCj4+IGZpcnN0IHBhdGNoIGlzIGZpbmUu
+Cj4gCj4gV2hpY2ggb25lPyBUaGUgZmlyc3Qgb25lIGRvZXMgbm90IHNlZW0gdG8gd29yayBiZWNh
+dXNlIHRoZSBydGRtIGxvY2tzCj4gc2VlbSB0byBiZSBuZXN0ZWQuIFRoZSBzZWNvbmQgb25lIHdv
+dWxkIHByb2JhYmx5IG5lZWQgdG8gZmluZCBhIHdheSB0bwo+IHJlZHVjZSB0aGUgb3ZlcmhlYWQg
+b2YgeG5wb2RfdW5sb2NrX3NjaGVkKCkuIFdoYXQgY2FuIGJlIGRvbmUsIGhvd2V2ZXIsCj4gaXMg
+YWRkaW5nIGEgY2FsbCB0byB4bnBvZF9sb2NrX3NjaGVkKCkveG5wb2RfdW5sb2NrX3NjaGVkKCkg
+aW4KPiBSVERNX0VYRUNVVEVfQVRPTUlDQUxMWS4KCk9oLCBJJ20gc2VlaW5nIHRoZSBsb2NraW5n
+IGZvcmVzdCBpbiBydGNhbiBub3cuIEkgc3VwcG9zZSBydGNhbiB3YXNuJ3QKdXNlZCBtdWNoIG9u
+IFNNUCBzbyBmYXIuIFRoYXQgbG9va3MgaW5kZWVkIHVucmVzb2x2YWJsZSB3aXRob3V0IGEKc2Vt
+YW50aWNhbCBjaGFuZ2UgdG8gcnRkbV9sb2NrL3VubG9jay4KCkJ1dCB0aGVuIHdlIHJlYWxseSBu
+ZWVkIHNvbWV0aGluZyBhcyBsaWdodC13ZWlnaHQgYXMgcHJlZW1wdF9lbmFibGUvZGlzYWJsZS4K
+CkphbgoKCi0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0
+IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IHNpZ25hdHVyZS5hc2MKVHlwZTogYXBw
+bGljYXRpb24vcGdwLXNpZ25hdHVyZQpTaXplOiAyNTkgYnl0ZXMKRGVzYzogT3BlblBHUCBkaWdp
+dGFsIHNpZ25hdHVyZQpVUkw6IDxodHRwOi8vd3d3Lnhlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5v
+bWFpL2F0dGFjaG1lbnRzLzIwMTIxMDEwLzRhYWMzZGEwL2F0dGFjaG1lbnQucGdwPgo=
