@@ -1,6 +1,6 @@
-Message-ID: <50767067.7060707@grandegger.com>
-Date: Thu, 11 Oct 2012 09:08:23 +0200
-From: Wolfgang Grandegger <wg@grandegger.com>
+Message-ID: <50767081.8030300@xenomai.org>
+Date: Thu, 11 Oct 2012 09:08:49 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <503227B5.9070002@basystemes.fr> <50322F06.4000009@wanadoo.fr>
 	<503C63BE.8010201@xenomai.org>
@@ -9,7 +9,7 @@ References: <503227B5.9070002@basystemes.fr> <50322F06.4000009@wanadoo.fr>
 	<50747C29.2060504@grandegger.com> <50748733.80709@wanadoo.fr>
 	<50766A8F.9090901@wanadoo.fr>
 In-Reply-To: <50766A8F.9090901@wanadoo.fr>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] [PATCH] rtcan: driver for the Advantech PCI cards
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -24,6 +24,7 @@ To: Thierry Bultel <thierry.bultel@wanadoo.fr>
 Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
 On 10/11/2012 08:43 AM, Thierry Bultel wrote:
+
 > Why v3.2 from Freescale? For the SabreLite or Nitrohen6x I know about
 >>> 3.0.36 from Freescale (rel_imx_3.0.35_12.09.02 from
 >>> git.freecale.com/linux-2.6) or, much better, mainline Linux 3.4.
@@ -31,14 +32,9 @@ On 10/11/2012 08:43 AM, Thierry Bultel wrote:
 >>
 > 
 > 
-> In both cases, (latest one from Freescale, or 3.4 from mainline) there
-> is currently
+> In both cases, (latest one from Freescale, or 3.4 from mainline) there is currently
 > no available matching ipipe patch.
-
-Don't worry, there are. See below.
-
-> I do not know if the latest kernel from mainline will fit for the
-> reference board that I will receive.
+> I do not know if the latest kernel from mainline will fit for the reference board that I will receive.
 > 
 > I do not realize the amount of work for porting either
 > - ipipe-core-3.2.21-arm.patch to 3.4 (mainline)
@@ -49,20 +45,25 @@ Don't worry, there are. See below.
 > Namely from what I know, Freescale kernels are on
 > 
 > http://git.freescale.com/git/cgit.cgi/imx/linux-2.6-imx.git/refs/heads
-> and the latest published 3.x kernel is ... a 3.0.15_12 that has not
-> moved for months.
-
-There is a rather new release. Check the tags! As I said, we have
-Xenomai running for the SabreLite and Nitrohen6x board with the 3.0.36
-Kernel from Freescale (rel_imx_3.0.35_12.09.02 from
-git.freecale.com/linux-2.6) and with mainline Linux 3.4.6.
-
-But we still don't know what Freescale will release when the i.MX6 goes
-public. See:
-http://www.freescale.com/webapp/sps/site/prod_summary.jsp?code=i.MX6Q&fsrch=1&sr=5.
+> and the latest published 3.x kernel is ... a 3.0.15_12 that has not moved for months.
+> Thanks for clarifying
 
 
-What board do you plan to use?
+The 3.4 patch is working for arm, I still have some issues, but it is
+already usable:
 
-Wolfgang.
+git://git.xenomai.org/ipipe-gch.git branch for-core-3.4
+
+For now, you simply have to avoid THUMB user-space binaries (but you can
+compile the kernel with CONFIG_THUMB2_KERNEL, and it results in lower
+latencies from what I measured).
+
+It works on the sabre board "out-of-the-box". I suspect, starting with
+core-3.4, we have no additional work to do to work with any cortex a9
+based processor (except, as I already said, for some old cortex a9
+revisions without a global timer, but that is not the case of the imx6q
+I tested).
+
+-- 
+                                                                Gilles.
 
