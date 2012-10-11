@@ -1,14 +1,7 @@
-Message-ID: <5076625F.6090806@wanadoo.fr>
-Date: Thu, 11 Oct 2012 08:08:31 +0200
-From: Thierry Bultel <thierry.bultel@wanadoo.fr>
-MIME-Version: 1.0
-References: <506D7DFF.6040403@wanadoo.fr> <506D82E2.6080908@xenomai.org>
-	<506D87E1.8090100@wanadoo.fr> <506D8E6B.10802@xenomai.org>
-	<50765009.6030809@web.de>
-In-Reply-To: <50765009.6030809@web.de>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] Modified rtcan_virt driver
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Date: Thu, 11 Oct 2012 08:22:41 +0200
+Message-Id: <1349936561-18062-1-git-send-email-gilles.chanteperdrix@xenomai.org>
+Subject: [Xenomai] [PATCH] rtdm: get spinlocks to lock the scheduler
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,84 +10,136 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@web.de>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Le 11/10/2012 06:50, Jan Kiszka a écrit :
-> On 2012-10-04 15:26, Gilles Chanteperdrix wrote:
->> On 10/04/2012 02:58 PM, Thierry Bultel wrote:
->>> Le 04/10/2012 14:36, Gilles Chanteperdrix a écrit :
->>>> On 10/04/2012 02:15 PM, Thierry Bultel wrote:
->>>>> Hi,
->>>>>
->>>>> The existing rtcan_virt driver simulates a single CAN bus, on which are
->>>>> N devices.
->>>>> Sending to one dispatches the frame to all the others but the not to the
->>>>> sender.
->>>>>
->>>>> This has several disadvantages:
->>>>>
->>>>> - First, to run an application that uses 2 or more physical buses, it
->>>>> does not fit, because both devices would be linked together.
->>>>> - Second, having N instantiated virtual devices is in some cases not
->>>>> necessary, because an application can open the
->>>>> same device several times, and simulate many CAN nodes, on that single
->>>>> device.
->>>>>
->>>>> Thus I have written another rtcan_virt driver, based on the original one.
->>>>>
->>>>> Its behavior is as follows:
->>>>>
->>>>> - It instantiates N rtcan devices, that are independent (no frame from
->>>>> one to another)
->>>>> - Each virtual rtcan (rtcan0, rtcan1 ...) device has a matching peer
->>>>> (rtcan0s, rtcan1s ...)
->>>>> ('s' like 'slave' but I am opened to any other naming) another to
->>>>> communicate with.
->>>>> That 'slave' device isautomatically created.
->>>>> I say 'slave' in quotes because the word hides the symmetrical aspect,
->>>>> so it is likely unappropriate..
->>>>>
->>>>> It is today fully tested, my question was if it could be of interest for
->>>>> the Xenomai mainline.
->>>>> If Yes:
->>>>> - some questions come, to my mind the most important one is if is a new
->>>>> driver, or a patch for the existing one,
->>>>> to modify its behavior depending on a parameter. If it is a new one,
->>>>> what would be the appropriate name ?
->>>>> - I would be happy to make it as a patch (not ready for that yet, and
->>>>> until the first questions are answered)
->>>>>
->>>>> If No, I just apologize for the noise.
->>>> I think it is interesting, what about linking the odd ones to the even
->>>> ones for the symetry?
->>>>
->>> I have been thinking about it, but that would break a 'I do not modify
->>> my application' rule.
->>> In my special case, the app uses buses "0" and "1", that the CanFestival
->>> stack translates to "rtcan0" and "rtcan1"
->>>
->>> It is Ok to have the "emulated remote nodes" configured to use whatever
->>> "rtcan" name,
->>> but from the application point of view it should be transparent.
->> Ok, then, what about adding an "nr_devs" parameter to rtcan_virt, and
->> linking device #n with device #n + nr_devs for n between 0 and nr_devs - 1 ?
->>
-> You could make 'devices' an array and create a bus for each non-zero
-> array entry. Like with the number of virtual devices, this will just
-> require an upper limit of buses.
->
-> Jan
->
-Sure, but what would be you prefered naming rule for the "slave" devices ?
-I do not completely agree with Gilles' last proposal, because even if there
-is a logical matching (eg slave# = master# + n), the relationship is not
-trivial from userland, especially when you use both virtual and real driver(s).
+In a context where callbacks are called with spinlocks held, it is not
+possible for drivers callbacks to wake up threads without holding any
+spinlock. So, we need a mechanism to lock the scheduler when a spinlock
+is grabbed. As xnpod_lock_sched/xnpod_unlock_sched may be a bit heavy
+weight for this case, we implement new nucleus services xnpod_spin_locked
+and xnpod_spin_unlocked.
+---
+ include/nucleus/pod.h      |   20 ++++++++++++++++++--
+ include/nucleus/sched.h    |    2 ++
+ include/rtdm/rtdm_driver.h |   22 +++++++++++++++++-----
+ 3 files changed, 37 insertions(+), 7 deletions(-)
 
-And for the driver itself ? Shall I create a new one (if yes what would be its name ?),
-or add an option to the existing,
-for creating devices in the "peer to peer" mode ?
-
-Thierry
+diff --git a/include/nucleus/pod.h b/include/nucleus/pod.h
+index 06361ff..32e6b01 100644
+--- a/include/nucleus/pod.h
++++ b/include/nucleus/pod.h
+@@ -277,11 +277,11 @@ static inline void xnpod_schedule(void)
+ 	 * unlocked context switch.
+ 	 */
+ #if XENO_DEBUG(NUCLEUS)
+-	if (testbits(sched->status | sched->lflags, XNKCOUT|XNINIRQ|XNSWLOCK))
++	if (testbits(sched->status | sched->lflags, XNKCOUT|XNINIRQ|XNSWLOCK|XNHELDSPIN))
+ 		return;
+ #else /* !XENO_DEBUG(NUCLEUS) */
+ 	if (testbits(sched->status | sched->lflags,
+-		     XNKCOUT|XNINIRQ|XNSWLOCK|XNRESCHED) != XNRESCHED)
++		     XNKCOUT|XNINIRQ|XNSWLOCK|XNHELDSPIN|XNRESCHED) != XNRESCHED)
+ 		return;
+ #endif /* !XENO_DEBUG(NUCLEUS) */
+ 
+@@ -332,6 +332,22 @@ static inline void xnpod_unlock_sched(void)
+ 	xnlock_put_irqrestore(&nklock, s);
+ }
+ 
++static inline void xnpod_spin_locked(void)
++{
++	struct xnsched *sched = xnpod_current_sched();
++	if (sched->held_spinlocks++ == 0)
++		__setbits(sched->lflags, XNHELDSPIN);
++}
++
++static inline void xnpod_spin_unlocked(void)
++{
++	struct xnsched *sched = xnpod_current_sched();
++	if (--sched->held_spinlocks == 0) {
++		__clrbits(sched->lflags, XNHELDSPIN);
++		xnpod_schedule();
++	}
++}
++
+ void xnpod_fire_callouts(xnqueue_t *hookq,
+ 			 xnthread_t *thread);
+ 
+diff --git a/include/nucleus/sched.h b/include/nucleus/sched.h
+index 6ce9228..367c02a 100644
+--- a/include/nucleus/sched.h
++++ b/include/nucleus/sched.h
+@@ -47,6 +47,7 @@
+ #define XNHTICK		0x00008000	/* Host tick pending  */
+ #define XNINIRQ		0x00004000	/* In IRQ handling context */
+ #define XNHDEFER	0x00002000	/* Host tick deferred */
++#define	XNHELDSPIN	0x00001000	/* Spinlocks held */
+ 
+ /* Sched RPI status flags */
+ #define XNRPICK		0x80000000	/* Check RPI state */
+@@ -82,6 +83,7 @@ typedef struct xnsched {
+ 
+ 	xntimerq_t timerqueue;		/* !< Core timer queue. */
+ 	volatile unsigned inesting;	/*!< Interrupt nesting level. */
++	unsigned held_spinlocks;	/*!< Number of spinlocks held by curr */
+ 	struct xntimer htimer;		/*!< Host timer. */
+ 	struct xnthread *zombie;
+ 	struct xnthread rootcb;		/*!< Root thread control block. */
+diff --git a/include/rtdm/rtdm_driver.h b/include/rtdm/rtdm_driver.h
+index 3006d59..a8fa471 100644
+--- a/include/rtdm/rtdm_driver.h
++++ b/include/rtdm/rtdm_driver.h
+@@ -730,6 +730,7 @@ typedef unsigned long rtdm_lockctx_t;
+ 	do {							\
+ 		XENO_BUGON(RTDM, !rthal_local_irq_disabled());	\
+ 		rthal_spin_lock(lock);				\
++		xnpod_spin_locked();				\
+ 	} while (0)
+ #endif
+ 
+@@ -749,7 +750,11 @@ typedef unsigned long rtdm_lockctx_t;
+  *
+  * Rescheduling: never.
+  */
+-#define rtdm_lock_put(lock)	rthal_spin_unlock(lock)
++#define rtdm_lock_put(lock)					\
++	do {							\
++		rthal_spin_unlock(lock);			\
++		xnpod_spin_unlocked();				\
++	} while (0)
+ 
+ /**
+  * Acquire lock and disable preemption
+@@ -768,8 +773,11 @@ typedef unsigned long rtdm_lockctx_t;
+  *
+  * Rescheduling: never.
+  */
+-#define rtdm_lock_get_irqsave(lock, context)	\
+-	rthal_spin_lock_irqsave(lock, context)
++#define rtdm_lock_get_irqsave(lock, context)				\
++	do {								\
++		rthal_spin_lock_irqsave(lock, context);			\
++		xnpod_spin_locked();					\
++	} while (0)
+ 
+ /**
+  * Release lock and restore preemption state
+@@ -788,8 +796,12 @@ typedef unsigned long rtdm_lockctx_t;
+  *
+  * Rescheduling: possible.
+  */
+-#define rtdm_lock_put_irqrestore(lock, context)	\
+-	rthal_spin_unlock_irqrestore(lock, context)
++#define rtdm_lock_put_irqrestore(lock, context)			\
++	do {							\
++		rthal_spin_unlock(lock);			\
++		xnpod_spin_unlocked();				\
++		rthal_local_irq_restore(context);		\
++	} while (0)
+ 
+ /**
+  * Disable preemption locally
+-- 
+1.7.2.5
 
 
