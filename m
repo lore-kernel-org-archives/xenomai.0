@@ -1,16 +1,26 @@
-Message-ID: <50747CFB.8050002@xenomai.org>
-Date: Tue, 09 Oct 2012 21:37:31 +0200
+Message-ID: <50767DCC.6030404@xenomai.org>
+Date: Thu, 11 Oct 2012 10:05:32 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <503227B5.9070002@basystemes.fr> <50322F06.4000009@wanadoo.fr>
-	<503C63BE.8010201@xenomai.org>
-	<503C709C.3020702@grandegger.com> <503C758B.9000906@wanadoo.fr>
-	<503C7D77.2060209@grandegger.com> <50744BD3.1030703@wanadoo.fr>
-	<50747C29.2060504@grandegger.com>
-In-Reply-To: <50747C29.2060504@grandegger.com>
+References: <505EB99F.7050705@wanadoo.fr>	<505EBD61.1050009@wanadoo.fr>	<505F0D40.9030105@xenomai.org>	<50741C5B.4060206@wanadoo.fr>
+	<5074986C.8000509@xenomai.org> <50749A03.9090607@xenomai.org>
+	<50749C71.2020100@xenomai.org> <5075260E.2050402@wanadoo.fr>
+	<507528E4.4050809@xenomai.org> <50752A42.9080303@web.de>
+	<50752C0C.3050803@xenomai.org> <50752D7E.7010207@web.de>
+	<507538C8.7040706@xenomai.org> <50753980.7020409@web.de>
+	<50753EA0.7070007@xenomai.org> <50754849.9030205@web.de>
+	<507548DE.2000305@xenomai.org> <50754D0F.50407@web.de>
+	<507553D0.8070305@xenomai.org> <50755C40.5080002@xenomai.org>
+	<50756572.5020108@xenomai.org> <50756B26.4040505@xenomai.org>
+	<50756D00.6030203@xenomai.org> <5075703C.7080502@xenomai.org>
+	<507570A8.5000301@xenomai.org> <507571AA.2040600@xenomai.org>
+	<50757393.4090407@xenomai.org> <5075753D.6080703@xenomai.org>
+	<50757597.6010600@xenomai.org> <507575DD.2080409@xenomai.org>
+	<50757EBD.7080506@xenomai.org>
+In-Reply-To: <50757EBD.7080506@xenomai.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PATCH] rtcan: driver for the Advantech PCI cards
+Subject: Re: [Xenomai] Target frozen with rtcan_virt
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,48 +29,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Wolfgang Grandegger <wg@grandegger.com>
-Cc: Thierry Bultel <thierry.bultel@wanadoo.fr>, "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Thierry Bultel <thierry.bultel@wanadoo.fr>, Jan Kiszka <jan.kiszka@web.de>, Wolfgang Grandegger <wg@denx.de>, xenomai@xenomai.org
 
-On 10/09/2012 09:34 PM, Wolfgang Grandegger wrote:
-
-> Hi Thierry,
-> 
-> please do not drop the CC to the Xenomai mailing list.
-> 
-> On 10/09/2012 06:07 PM, Thierry Bultel wrote:
+On 10/10/2012 03:57 PM, Philippe Gerum wrote:
+>> Except if we invent another scheduler lock service, simply for the
+>> purpose of spinlocks where suspending the spinlock holder does not make
+>> sense anyway.
 >>
->>>> Do you still plan to add the flexcan RTDM ?
->>> I have already something running but it's not yet good enough for
->>> mainline. Will need more time. Anyway, I could send my preliminary
->>> patches in case you are interested, especially to test them.
->> Hi Wolfgang,
->> How are you ?
->>
->> I should receive my devkit for iMX6 in 2 weeks, and immediately start on
->> first applying the ipipe patch to it (the provided kernel is likely to
->> be the 3.2 from Freescale,
->> with some little modifications), and then work on the flexcan rtdm driver.
 > 
-> Why v3.2 from Freescale? For the SabreLite or Nitrohen6x I know about
-> 3.0.36 from Freescale (rel_imx_3.0.35_12.09.02 from
-> git.freecale.com/linux-2.6) or, much better, mainline Linux 3.4.
-> Concerning the iPipe patches I think you have currently no other choice.
+> Oh, well, ok. Ack.
 > 
->> If you have the flexcan not achieved yet, and if you still agree to send
->> it to me,
->> that is fine, I would be pleased to test it.
+> Let's just make sure that we can fold the whole thing into a single set
+> of services at some point in 3.x though.
 > 
-> I have posted the patch two weeks ago to this mailing list:
-> 
-> http://www.xenomai.org/pipermail/xenomai/2012-September/026337.html
-> 
-> Would be nice if you could test it on i.MX6 as well. Awaiting your
-> "Tested-by".
+> The core issue is that we should not even have to expose a scheduler
+> locking service to userland, but emulating traditional RTOS APIs
+> requires that. What a braindamage counter-feature for a real-time system
+> when one thinks of it.
 
-
-Missed that, sorry, merged and pushed.
+I think we can have the cake and eat it. The idea is to follow the
+approach in the patch I sent, merged with the one you commited, but
+simply, in xnpod_suspend_thread, clear the XNHELDSPIN (misnomed if used
+for that), and simply when we wake up, re-set the bit in the scheduler
+if the thread preemption count is not 0.
 
 -- 
-                                                                Gilles.
+					    Gilles.
 
