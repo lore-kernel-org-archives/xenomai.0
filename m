@@ -1,17 +1,15 @@
-Message-ID: <50767397.3070100@wanadoo.fr>
-Date: Thu, 11 Oct 2012 09:21:59 +0200
+Message-ID: <507674ED.10004@wanadoo.fr>
+Date: Thu, 11 Oct 2012 09:27:41 +0200
 From: Thierry Bultel <thierry.bultel@wanadoo.fr>
 MIME-Version: 1.0
-References: <503227B5.9070002@basystemes.fr> <50322F06.4000009@wanadoo.fr>
-	<503C63BE.8010201@xenomai.org>
-	<503C709C.3020702@grandegger.com> <503C758B.9000906@wanadoo.fr>
-	<503C7D77.2060209@grandegger.com> <50744BD3.1030703@wanadoo.fr>
-	<50747C29.2060504@grandegger.com> <50748733.80709@wanadoo.fr>
-	<50766A8F.9090901@wanadoo.fr> <50767067.7060707@grandegger.com>
-In-Reply-To: <50767067.7060707@grandegger.com>
-Content-Type: text/plain; charset="iso-8859-1"; format="flowed"
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] [PATCH] rtcan: driver for the Advantech PCI cards
+References: <506D7DFF.6040403@wanadoo.fr> <506D82E2.6080908@xenomai.org>
+	<506D87E1.8090100@wanadoo.fr> <506D8E6B.10802@xenomai.org>
+	<50765009.6030809@web.de> <5076625F.6090806@wanadoo.fr>
+	<507665CF.9030201@web.de>
+In-Reply-To: <507665CF.9030201@web.de>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] Modified rtcan_virt driver
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,62 +18,130 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Wolfgang Grandegger <wg@grandegger.com>
-Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@web.de>
+Cc: xenomai@xenomai.org
 
-Le 11/10/2012 09:08, Wolfgang Grandegger a =E9crit :
-> On 10/11/2012 08:43 AM, Thierry Bultel wrote:
->> Why v3.2 from Freescale? For the SabreLite or Nitrohen6x I know about
->>>> 3.0.36 from Freescale (rel_imx_3.0.35_12.09.02 from
->>>> git.freecale.com/linux-2.6) or, much better, mainline Linux 3.4.
->>>> Concerning the iPipe patches I think you have currently no other choic=
-e.
->>
->> In both cases, (latest one from Freescale, or 3.4 from mainline) there
->> is currently
->> no available matching ipipe patch.
-> Don't worry, there are. See below.
+Le 11/10/2012 08:23, Jan Kiszka a écrit :
+> On 2012-10-11 08:08, Thierry Bultel wrote:
+>> Le 11/10/2012 06:50, Jan Kiszka a écrit :
+>>> On 2012-10-04 15:26, Gilles Chanteperdrix wrote:
+>>>> On 10/04/2012 02:58 PM, Thierry Bultel wrote:
+>>>>> Le 04/10/2012 14:36, Gilles Chanteperdrix a écrit :
+>>>>>> On 10/04/2012 02:15 PM, Thierry Bultel wrote:
+>>>>>>> Hi,
+>>>>>>>
+>>>>>>> The existing rtcan_virt driver simulates a single CAN bus, on
+>>>>>>> which are
+>>>>>>> N devices.
+>>>>>>> Sending to one dispatches the frame to all the others but the not
+>>>>>>> to the
+>>>>>>> sender.
+>>>>>>>
+>>>>>>> This has several disadvantages:
+>>>>>>>
+>>>>>>> - First, to run an application that uses 2 or more physical buses, it
+>>>>>>> does not fit, because both devices would be linked together.
+>>>>>>> - Second, having N instantiated virtual devices is in some cases not
+>>>>>>> necessary, because an application can open the
+>>>>>>> same device several times, and simulate many CAN nodes, on that
+>>>>>>> single
+>>>>>>> device.
+>>>>>>>
+>>>>>>> Thus I have written another rtcan_virt driver, based on the
+>>>>>>> original one.
+>>>>>>>
+>>>>>>> Its behavior is as follows:
+>>>>>>>
+>>>>>>> - It instantiates N rtcan devices, that are independent (no frame
+>>>>>>> from
+>>>>>>> one to another)
+>>>>>>> - Each virtual rtcan (rtcan0, rtcan1 ...) device has a matching peer
+>>>>>>> (rtcan0s, rtcan1s ...)
+>>>>>>> ('s' like 'slave' but I am opened to any other naming) another to
+>>>>>>> communicate with.
+>>>>>>> That 'slave' device isautomatically created.
+>>>>>>> I say 'slave' in quotes because the word hides the symmetrical
+>>>>>>> aspect,
+>>>>>>> so it is likely unappropriate..
+>>>>>>>
+>>>>>>> It is today fully tested, my question was if it could be of
+>>>>>>> interest for
+>>>>>>> the Xenomai mainline.
+>>>>>>> If Yes:
+>>>>>>> - some questions come, to my mind the most important one is if is
+>>>>>>> a new
+>>>>>>> driver, or a patch for the existing one,
+>>>>>>> to modify its behavior depending on a parameter. If it is a new one,
+>>>>>>> what would be the appropriate name ?
+>>>>>>> - I would be happy to make it as a patch (not ready for that yet, and
+>>>>>>> until the first questions are answered)
+>>>>>>>
+>>>>>>> If No, I just apologize for the noise.
+>>>>>> I think it is interesting, what about linking the odd ones to the even
+>>>>>> ones for the symetry?
+>>>>>>
+>>>>> I have been thinking about it, but that would break a 'I do not modify
+>>>>> my application' rule.
+>>>>> In my special case, the app uses buses "0" and "1", that the
+>>>>> CanFestival
+>>>>> stack translates to "rtcan0" and "rtcan1"
+>>>>>
+>>>>> It is Ok to have the "emulated remote nodes" configured to use whatever
+>>>>> "rtcan" name,
+>>>>> but from the application point of view it should be transparent.
+>>>> Ok, then, what about adding an "nr_devs" parameter to rtcan_virt, and
+>>>> linking device #n with device #n + nr_devs for n between 0 and
+>>>> nr_devs - 1 ?
+>>>>
+>>> You could make 'devices' an array and create a bus for each non-zero
+>>> array entry. Like with the number of virtual devices, this will just
+>>> require an upper limit of buses.
+>>>
+>>> Jan
+>>>
+>> Sure, but what would be you prefered naming rule for the "slave" devices ?
+> Keep it simple, just number them consecutively as they need to be
+> created according to the array.
 >
->> I do not know if the latest kernel from mainline will fit for the
->> reference board that I will receive.
->>
->> I do not realize the amount of work for porting either
->> - ipipe-core-3.2.21-arm.patch to 3.4 (mainline)
->> or
->> - adeos-ipipe-3.0.43-* to the latest (which one ?) kernel from Freescale
->>
->> About that latest option I am a little bit puzzled.
->> Namely from what I know, Freescale kernels are on
->>
->> http://git.freescale.com/git/cgit.cgi/imx/linux-2.6-imx.git/refs/heads
->> and the latest published 3.x kernel is ... a 3.0.15_12 that has not
->> moved for months.
-> There is a rather new release. Check the tags!
-
-ok, I had missed it
-
-> As I said, we have
-> Xenomai running for the SabreLite and Nitrohen6x board with the 3.0.36
-> Kernel from Freescale (rel_imx_3.0.35_12.09.02 from
-> git.freecale.com/linux-2.6) and with mainline Linux 3.4.6.
+>> I do not completely agree with Gilles' last proposal, because even if there
+>> is a logical matching (eg slave# = master# + n), the relationship is not
+>> trivial from userland, especially when you use both virtual and real
+>> driver(s).
+> You could a) make userland configurable in the same way, telling it
+> rtcanN..M is bus X, or export the rtcan_virt topology via its /proc folder.
 >
-> But we still don't know what Freescale will release when the i.MX6 goes
-> public. See:
-> http://www.freescale.com/webapp/sps/site/prod_summary.jsp?code=3Di.MX6Q&f=
-srch=3D1&sr=3D5.
+>> And for the driver itself ? Shall I create a new one (if yes what would
+>> be its name ?),
+>> or add an option to the existing,
+>> for creating devices in the "peer to peer" mode ?
+> My proposal is fully compatible with the existing driver as no new
+> parameter is added. Existing users can continue to consider 'device' as
+> an array with only one entry.
 >
-I will try again to get the information fro, the manufacturer
-
-> What board do you plan to use?
-
-The reference board of the SOM manufacturer is the Lothron http://www.emtri=
-on.com/dimm_lothron_en.php
-I have been told that it is based on an official one from Freescale but I d=
-o not know which one.
-
-
+> Jan
 >
-> Wolfgang.
->
+I got it.
+What you mean is that the topology is described by a
+
+unsigned int virt_bus[NB_MAX_BUSES];
+
+and the entries are the number of devices for each bus.
+So the existing would be virt_bus[0] = devices; ('devices' is the existing module option)
+
+and for the usage I want (I have 2 buses)
+
+virt_bus[0] = 2;
+virt_bus[1] = 2;
+
+I find your idea to publish the topology via /proc great. I could also come
+with a nice display tool, like "lspci -t" does, and also have the "lspci -mm" way.
+What about lsrtcan ?
+
+However, making it userland configurable needs more detailed specications,
+what are you thinking about exactly ? Are we talking about the module loading
+(I do not think so because you said no newer option)
+or an ioctl ?
+
+Thierry
 
 
