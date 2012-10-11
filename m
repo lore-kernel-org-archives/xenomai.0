@@ -1,6 +1,6 @@
-Message-ID: <507682E0.8070504@xenomai.org>
-Date: Thu, 11 Oct 2012 10:27:12 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <5076A144.9010404@siemens.com>
+Date: Thu, 11 Oct 2012 12:36:52 +0200
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
 References: <1349936561-18062-1-git-send-email-gilles.chanteperdrix@xenomai.org>
 	<50768019.6020807@xenomai.org> <507680F6.701@xenomai.org>
@@ -17,10 +17,10 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On 10/11/2012 10:20 AM, Philippe Gerum wrote:
+On 2012-10-11 10:20, Philippe Gerum wrote:
 > On 10/11/2012 10:19 AM, Gilles Chanteperdrix wrote:
 >> On 10/11/2012 10:15 AM, Philippe Gerum wrote:
 >>> On 10/11/2012 08:22 AM, Gilles Chanteperdrix wrote:
@@ -87,30 +87,14 @@ On 10/11/2012 10:20 AM, Philippe Gerum wrote:
 > 
 > then fix the RTDM code, it has to use the platform locks. The HAL layer
 > in its current form is about to vanish in 3.x.
->
 
-Crap, RTDM does not want recursive locks. So we have to duplicate the
-code insertion into both RTDM like you did, and the xnlock interface.
+RTDM shouldn't gain current nklock semantics (namely recursiveness, it's
+unneeded for properly written drivers). So I'd prefer to export
+preempt_disable/enable services and use them as in the above hunk.
 
-
->> - we want to avoid this for the nklock
->>
->> so, if we build this service into xnlock, we either have to add a test
->> if lock != &nklock
->> or create the nklock_get*/nklock_put* services
->>
-> 
-> Yes, this is why I mentioned the optimizer. gcc will drop the useless
-> branch away, &nklock is a constant reference.
-> 
->> Ok, I will rethink about this and post a new patch, as I think we can
->> fold this with xnpod_lock_sched/xnpod_unlock_sched, as I said in another
->> mail.
->>
-> 
-> 
-
+Jan
 
 -- 
-Philippe.
+Siemens AG, Corporate Technology, CT RTC ITP SDP-DE
+Corporate Competence Center Embedded Linux
 
