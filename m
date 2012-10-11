@@ -1,14 +1,10 @@
-Message-ID: <5076DE61.7040002@xenomai.org>
-Date: Thu, 11 Oct 2012 16:57:37 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Date: Thu, 11 Oct 2012 17:09:58 +0200
+From: "Petr Cervenka" <grugh@centrum.cz>
 MIME-Version: 1.0
-References: <990B36E792F1A4488D3E2B1C46FD62D6943CBA5BD8@corpmail2>
-	<5075CEBD.7060709@xenomai.org>
-	<990B36E792F1A4488D3E2B1C46FD62D6943CBA5BF8@corpmail2>
-In-Reply-To: <990B36E792F1A4488D3E2B1C46FD62D6943CBA5BF8@corpmail2>
+Message-Id: <20121011170958.40C8E372@centrum.cz>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Xenomai does not recognize changed system time
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] Shared interrupts
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,25 +13,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Michael Pustylnik <MichaelPustylnik@ruggedcom.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 10/11/2012 04:52 PM, Michael Pustylnik wrote:
-> I am trying to follow your instructions and I am confused with the
-> following.
-> 
-> - So far I have only used native skin, never POSIX skin
-> 
-> - clock_settime() and clock_gettime() reside in POSIX skin and there
-> are Linux equivalents in Linux libraries
-> 
-> - How should I link my application to make sure I invoke the
-> Xenmomai's clock_settime() and clock_gettime() rather than the Linux
-> native ones?
+Hello everyone.
 
-See:
-http://www.xenomai.org/index.php/Porting_POSIX_applications_to_Xenomai#Compilation_for_the_Xenomai_POSIX_skin
+I have a problem when several devices share the same IRQ.
+If there is one rt and one non-rt device, I have to return RTDM_IRQ_NONE =
+| XN_ISR_PROPAGATE in my rtdm driver for rt device (when it was not handl=
+ed by my driver).  I know that I loose deterministic rt response latency =
+in such case.
+When I return only RTDM_IRQ_NONE, the IRQ is disabled by Xenomai (with a =
+message), probably because of infinite loop.
 
--- 
-					    Gilles.
+But when I share IRQ between 2 rt devices and return RTDM_IRQ_NONE | XN_I=
+SR_PROPAGATE when it is not handled by my device, the IRQ gets disabled (=
+perhaps by Linux, but thate is no message).
+
+Concrete example:
+1) interrupt occurs
+first rt device handles interrupt and return RTDM_IRQ_HANDLED
+second rt device doesn't  handle the interrupt and return RTDM_IRQ_NONE |=
+ XN_ISR_PROPAGATE
+no second interrupt occurs
+
+I'm using xenomai 2.5.6, adeos 2.6.38.8-x86-2.10-01
+
+My primary questions:
+Is there a possibility to have the rtdm driver compatible with both cases=
+?
+
+Do I loose deterministic rt latency when there is no non-rt device?
+I think that all my interrupts should be handled by rt devices in such ca=
+se, so no propagating to linux should happen. Am I wrong?
+
+Petr
 
