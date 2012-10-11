@@ -1,6 +1,6 @@
-Message-ID: <5076BED1.3020902@xenomai.org>
-Date: Thu, 11 Oct 2012 14:42:57 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <5076C15E.2050207@gmail.com>
+Date: Thu, 11 Oct 2012 14:53:50 +0200
+From: Stefan Roese <stefan.roese@gmail.com>
 MIME-Version: 1.0
 References: <50729DAB.2080909@gmail.com> <50730FB7.3060604@xenomai.org>
 	<5073C8C8.7000606@gmail.com> <5074339F.8050601@xenomai.org>
@@ -18,7 +18,7 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Stefan Roese <stefan.roese@gmail.com>
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: xenomai@xenomai.org
 
 On 10/11/2012 02:40 PM, Philippe Gerum wrote:
@@ -51,25 +51,14 @@ On 10/11/2012 02:40 PM, Philippe Gerum wrote:
 > #define LIST_POISON1  ((void *) 0x00100100 + POISON_POINTER_DELTA)
 > 
 > Somebody might be doing bad things with memory it does not own anymore?
-> 
 
-Just to rule this out, could you try raising the kernel thread stack
-size this way?
+Yep. That's it. Changing it some other value shows the new changed
+value. I'm not doing anything with lists though in my code (AFAIR).
 
-diff --git a/include/asm-powerpc/system.h b/include/asm-powerpc/system.h
-index 53fd59d..e8dd57c 100644
---- a/include/asm-powerpc/system.h
-+++ b/include/asm-powerpc/system.h
-@@ -31,7 +31,7 @@
- #ifdef CONFIG_PPC64
- #define XNARCH_THREAD_STACKSZ   8182
- #else
--#define XNARCH_THREAD_STACKSZ   4096
-+#define XNARCH_THREAD_STACKSZ   8192
- #endif
+I'll check the increased stack next and let you know.
 
- #define xnarch_stack_size(tcb)  ((tcb)->stacksize)
+Thanks,
+Stefan
 
--- 
-Philippe.
+
 
