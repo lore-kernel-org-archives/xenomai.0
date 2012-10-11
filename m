@@ -1,14 +1,14 @@
-Message-ID: <507674ED.10004@wanadoo.fr>
-Date: Thu, 11 Oct 2012 09:27:41 +0200
-From: Thierry Bultel <thierry.bultel@wanadoo.fr>
+Message-ID: <5076764C.5040406@web.de>
+Date: Thu, 11 Oct 2012 09:33:32 +0200
+From: Jan Kiszka <jan.kiszka@web.de>
 MIME-Version: 1.0
 References: <506D7DFF.6040403@wanadoo.fr> <506D82E2.6080908@xenomai.org>
 	<506D87E1.8090100@wanadoo.fr> <506D8E6B.10802@xenomai.org>
 	<50765009.6030809@web.de> <5076625F.6090806@wanadoo.fr>
-	<507665CF.9030201@web.de>
-In-Reply-To: <507665CF.9030201@web.de>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
+	<507665CF.9030201@web.de> <507674ED.10004@wanadoo.fr>
+In-Reply-To: <507674ED.10004@wanadoo.fr>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Subject: Re: [Xenomai] Modified rtcan_virt driver
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -18,130 +18,106 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@web.de>
+To: Thierry Bultel <thierry.bultel@wanadoo.fr>
 Cc: xenomai@xenomai.org
 
-Le 11/10/2012 08:23, Jan Kiszka a écrit :
-> On 2012-10-11 08:08, Thierry Bultel wrote:
->> Le 11/10/2012 06:50, Jan Kiszka a écrit :
->>> On 2012-10-04 15:26, Gilles Chanteperdrix wrote:
->>>> On 10/04/2012 02:58 PM, Thierry Bultel wrote:
->>>>> Le 04/10/2012 14:36, Gilles Chanteperdrix a écrit :
->>>>>> On 10/04/2012 02:15 PM, Thierry Bultel wrote:
->>>>>>> Hi,
->>>>>>>
->>>>>>> The existing rtcan_virt driver simulates a single CAN bus, on
->>>>>>> which are
->>>>>>> N devices.
->>>>>>> Sending to one dispatches the frame to all the others but the not
->>>>>>> to the
->>>>>>> sender.
->>>>>>>
->>>>>>> This has several disadvantages:
->>>>>>>
->>>>>>> - First, to run an application that uses 2 or more physical buses, it
->>>>>>> does not fit, because both devices would be linked together.
->>>>>>> - Second, having N instantiated virtual devices is in some cases not
->>>>>>> necessary, because an application can open the
->>>>>>> same device several times, and simulate many CAN nodes, on that
->>>>>>> single
->>>>>>> device.
->>>>>>>
->>>>>>> Thus I have written another rtcan_virt driver, based on the
->>>>>>> original one.
->>>>>>>
->>>>>>> Its behavior is as follows:
->>>>>>>
->>>>>>> - It instantiates N rtcan devices, that are independent (no frame
->>>>>>> from
->>>>>>> one to another)
->>>>>>> - Each virtual rtcan (rtcan0, rtcan1 ...) device has a matching peer
->>>>>>> (rtcan0s, rtcan1s ...)
->>>>>>> ('s' like 'slave' but I am opened to any other naming) another to
->>>>>>> communicate with.
->>>>>>> That 'slave' device isautomatically created.
->>>>>>> I say 'slave' in quotes because the word hides the symmetrical
->>>>>>> aspect,
->>>>>>> so it is likely unappropriate..
->>>>>>>
->>>>>>> It is today fully tested, my question was if it could be of
->>>>>>> interest for
->>>>>>> the Xenomai mainline.
->>>>>>> If Yes:
->>>>>>> - some questions come, to my mind the most important one is if is
->>>>>>> a new
->>>>>>> driver, or a patch for the existing one,
->>>>>>> to modify its behavior depending on a parameter. If it is a new one,
->>>>>>> what would be the appropriate name ?
->>>>>>> - I would be happy to make it as a patch (not ready for that yet, and
->>>>>>> until the first questions are answered)
->>>>>>>
->>>>>>> If No, I just apologize for the noise.
->>>>>> I think it is interesting, what about linking the odd ones to the even
->>>>>> ones for the symetry?
->>>>>>
->>>>> I have been thinking about it, but that would break a 'I do not modify
->>>>> my application' rule.
->>>>> In my special case, the app uses buses "0" and "1", that the
->>>>> CanFestival
->>>>> stack translates to "rtcan0" and "rtcan1"
->>>>>
->>>>> It is Ok to have the "emulated remote nodes" configured to use whatever
->>>>> "rtcan" name,
->>>>> but from the application point of view it should be transparent.
->>>> Ok, then, what about adding an "nr_devs" parameter to rtcan_virt, and
->>>> linking device #n with device #n + nr_devs for n between 0 and
->>>> nr_devs - 1 ?
->>>>
->>> You could make 'devices' an array and create a bus for each non-zero
->>> array entry. Like with the number of virtual devices, this will just
->>> require an upper limit of buses.
->>>
->>> Jan
->>>
->> Sure, but what would be you prefered naming rule for the "slave" devices ?
-> Keep it simple, just number them consecutively as they need to be
-> created according to the array.
->
->> I do not completely agree with Gilles' last proposal, because even if there
->> is a logical matching (eg slave# = master# + n), the relationship is not
->> trivial from userland, especially when you use both virtual and real
->> driver(s).
-> You could a) make userland configurable in the same way, telling it
-> rtcanN..M is bus X, or export the rtcan_virt topology via its /proc folder.
->
->> And for the driver itself ? Shall I create a new one (if yes what would
->> be its name ?),
->> or add an option to the existing,
->> for creating devices in the "peer to peer" mode ?
-> My proposal is fully compatible with the existing driver as no new
-> parameter is added. Existing users can continue to consider 'device' as
-> an array with only one entry.
->
-> Jan
->
-I got it.
-What you mean is that the topology is described by a
-
-unsigned int virt_bus[NB_MAX_BUSES];
-
-and the entries are the number of devices for each bus.
-So the existing would be virt_bus[0] = devices; ('devices' is the existing module option)
-
-and for the usage I want (I have 2 buses)
-
-virt_bus[0] = 2;
-virt_bus[1] = 2;
-
-I find your idea to publish the topology via /proc great. I could also come
-with a nice display tool, like "lspci -t" does, and also have the "lspci -mm" way.
-What about lsrtcan ?
-
-However, making it userland configurable needs more detailed specications,
-what are you thinking about exactly ? Are we talking about the module loading
-(I do not think so because you said no newer option)
-or an ioctl ?
-
-Thierry
-
-
+T24gMjAxMi0xMC0xMSAwOToyNywgVGhpZXJyeSBCdWx0ZWwgd3JvdGU6Cj4gTGUgMTEvMTAvMjAx
+MiAwODoyMywgSmFuIEtpc3prYSBhIMOpY3JpdCA6Cj4+IE9uIDIwMTItMTAtMTEgMDg6MDgsIFRo
+aWVycnkgQnVsdGVsIHdyb3RlOgo+Pj4gTGUgMTEvMTAvMjAxMiAwNjo1MCwgSmFuIEtpc3prYSBh
+IMOpY3JpdCA6Cj4+Pj4gT24gMjAxMi0xMC0wNCAxNToyNiwgR2lsbGVzIENoYW50ZXBlcmRyaXgg
+d3JvdGU6Cj4+Pj4+IE9uIDEwLzA0LzIwMTIgMDI6NTggUE0sIFRoaWVycnkgQnVsdGVsIHdyb3Rl
+Ogo+Pj4+Pj4gTGUgMDQvMTAvMjAxMiAxNDozNiwgR2lsbGVzIENoYW50ZXBlcmRyaXggYSDDqWNy
+aXQgOgo+Pj4+Pj4+IE9uIDEwLzA0LzIwMTIgMDI6MTUgUE0sIFRoaWVycnkgQnVsdGVsIHdyb3Rl
+Ogo+Pj4+Pj4+PiBIaSwKPj4+Pj4+Pj4KPj4+Pj4+Pj4gVGhlIGV4aXN0aW5nIHJ0Y2FuX3ZpcnQg
+ZHJpdmVyIHNpbXVsYXRlcyBhIHNpbmdsZSBDQU4gYnVzLCBvbgo+Pj4+Pj4+PiB3aGljaCBhcmUK
+Pj4+Pj4+Pj4gTiBkZXZpY2VzLgo+Pj4+Pj4+PiBTZW5kaW5nIHRvIG9uZSBkaXNwYXRjaGVzIHRo
+ZSBmcmFtZSB0byBhbGwgdGhlIG90aGVycyBidXQgdGhlIG5vdAo+Pj4+Pj4+PiB0byB0aGUKPj4+
+Pj4+Pj4gc2VuZGVyLgo+Pj4+Pj4+Pgo+Pj4+Pj4+PiBUaGlzIGhhcyBzZXZlcmFsIGRpc2FkdmFu
+dGFnZXM6Cj4+Pj4+Pj4+Cj4+Pj4+Pj4+IC0gRmlyc3QsIHRvIHJ1biBhbiBhcHBsaWNhdGlvbiB0
+aGF0IHVzZXMgMiBvciBtb3JlIHBoeXNpY2FsCj4+Pj4+Pj4+IGJ1c2VzLCBpdAo+Pj4+Pj4+PiBk
+b2VzIG5vdCBmaXQsIGJlY2F1c2UgYm90aCBkZXZpY2VzIHdvdWxkIGJlIGxpbmtlZCB0b2dldGhl
+ci4KPj4+Pj4+Pj4gLSBTZWNvbmQsIGhhdmluZyBOIGluc3RhbnRpYXRlZCB2aXJ0dWFsIGRldmlj
+ZXMgaXMgaW4gc29tZSBjYXNlcwo+Pj4+Pj4+PiBub3QKPj4+Pj4+Pj4gbmVjZXNzYXJ5LCBiZWNh
+dXNlIGFuIGFwcGxpY2F0aW9uIGNhbiBvcGVuIHRoZQo+Pj4+Pj4+PiBzYW1lIGRldmljZSBzZXZl
+cmFsIHRpbWVzLCBhbmQgc2ltdWxhdGUgbWFueSBDQU4gbm9kZXMsIG9uIHRoYXQKPj4+Pj4+Pj4g
+c2luZ2xlCj4+Pj4+Pj4+IGRldmljZS4KPj4+Pj4+Pj4KPj4+Pj4+Pj4gVGh1cyBJIGhhdmUgd3Jp
+dHRlbiBhbm90aGVyIHJ0Y2FuX3ZpcnQgZHJpdmVyLCBiYXNlZCBvbiB0aGUKPj4+Pj4+Pj4gb3Jp
+Z2luYWwgb25lLgo+Pj4+Pj4+Pgo+Pj4+Pj4+PiBJdHMgYmVoYXZpb3IgaXMgYXMgZm9sbG93czoK
+Pj4+Pj4+Pj4KPj4+Pj4+Pj4gLSBJdCBpbnN0YW50aWF0ZXMgTiBydGNhbiBkZXZpY2VzLCB0aGF0
+IGFyZSBpbmRlcGVuZGVudCAobm8gZnJhbWUKPj4+Pj4+Pj4gZnJvbQo+Pj4+Pj4+PiBvbmUgdG8g
+YW5vdGhlcikKPj4+Pj4+Pj4gLSBFYWNoIHZpcnR1YWwgcnRjYW4gKHJ0Y2FuMCwgcnRjYW4xIC4u
+LikgZGV2aWNlIGhhcyBhIG1hdGNoaW5nCj4+Pj4+Pj4+IHBlZXIKPj4+Pj4+Pj4gKHJ0Y2FuMHMs
+IHJ0Y2FuMXMgLi4uKQo+Pj4+Pj4+PiAoJ3MnIGxpa2UgJ3NsYXZlJyBidXQgSSBhbSBvcGVuZWQg
+dG8gYW55IG90aGVyIG5hbWluZykgYW5vdGhlciB0bwo+Pj4+Pj4+PiBjb21tdW5pY2F0ZSB3aXRo
+Lgo+Pj4+Pj4+PiBUaGF0ICdzbGF2ZScgZGV2aWNlIGlzYXV0b21hdGljYWxseSBjcmVhdGVkLgo+
+Pj4+Pj4+PiBJIHNheSAnc2xhdmUnIGluIHF1b3RlcyBiZWNhdXNlIHRoZSB3b3JkIGhpZGVzIHRo
+ZSBzeW1tZXRyaWNhbAo+Pj4+Pj4+PiBhc3BlY3QsCj4+Pj4+Pj4+IHNvIGl0IGlzIGxpa2VseSB1
+bmFwcHJvcHJpYXRlLi4KPj4+Pj4+Pj4KPj4+Pj4+Pj4gSXQgaXMgdG9kYXkgZnVsbHkgdGVzdGVk
+LCBteSBxdWVzdGlvbiB3YXMgaWYgaXQgY291bGQgYmUgb2YKPj4+Pj4+Pj4gaW50ZXJlc3QgZm9y
+Cj4+Pj4+Pj4+IHRoZSBYZW5vbWFpIG1haW5saW5lLgo+Pj4+Pj4+PiBJZiBZZXM6Cj4+Pj4+Pj4+
+IC0gc29tZSBxdWVzdGlvbnMgY29tZSwgdG8gbXkgbWluZCB0aGUgbW9zdCBpbXBvcnRhbnQgb25l
+IGlzIGlmIGlzCj4+Pj4+Pj4+IGEgbmV3Cj4+Pj4+Pj4+IGRyaXZlciwgb3IgYSBwYXRjaCBmb3Ig
+dGhlIGV4aXN0aW5nIG9uZSwKPj4+Pj4+Pj4gdG8gbW9kaWZ5IGl0cyBiZWhhdmlvciBkZXBlbmRp
+bmcgb24gYSBwYXJhbWV0ZXIuIElmIGl0IGlzIGEgbmV3Cj4+Pj4+Pj4+IG9uZSwKPj4+Pj4+Pj4g
+d2hhdCB3b3VsZCBiZSB0aGUgYXBwcm9wcmlhdGUgbmFtZSA/Cj4+Pj4+Pj4+IC0gSSB3b3VsZCBi
+ZSBoYXBweSB0byBtYWtlIGl0IGFzIGEgcGF0Y2ggKG5vdCByZWFkeSBmb3IgdGhhdAo+Pj4+Pj4+
+PiB5ZXQsIGFuZAo+Pj4+Pj4+PiB1bnRpbCB0aGUgZmlyc3QgcXVlc3Rpb25zIGFyZSBhbnN3ZXJl
+ZCkKPj4+Pj4+Pj4KPj4+Pj4+Pj4gSWYgTm8sIEkganVzdCBhcG9sb2dpemUgZm9yIHRoZSBub2lz
+ZS4KPj4+Pj4+PiBJIHRoaW5rIGl0IGlzIGludGVyZXN0aW5nLCB3aGF0IGFib3V0IGxpbmtpbmcg
+dGhlIG9kZCBvbmVzIHRvIHRoZQo+Pj4+Pj4+IGV2ZW4KPj4+Pj4+PiBvbmVzIGZvciB0aGUgc3lt
+ZXRyeT8KPj4+Pj4+Pgo+Pj4+Pj4gSSBoYXZlIGJlZW4gdGhpbmtpbmcgYWJvdXQgaXQsIGJ1dCB0
+aGF0IHdvdWxkIGJyZWFrIGEgJ0kgZG8gbm90Cj4+Pj4+PiBtb2RpZnkKPj4+Pj4+IG15IGFwcGxp
+Y2F0aW9uJyBydWxlLgo+Pj4+Pj4gSW4gbXkgc3BlY2lhbCBjYXNlLCB0aGUgYXBwIHVzZXMgYnVz
+ZXMgIjAiIGFuZCAiMSIsIHRoYXQgdGhlCj4+Pj4+PiBDYW5GZXN0aXZhbAo+Pj4+Pj4gc3RhY2sg
+dHJhbnNsYXRlcyB0byAicnRjYW4wIiBhbmQgInJ0Y2FuMSIKPj4+Pj4+Cj4+Pj4+PiBJdCBpcyBP
+ayB0byBoYXZlIHRoZSAiZW11bGF0ZWQgcmVtb3RlIG5vZGVzIiBjb25maWd1cmVkIHRvIHVzZQo+
+Pj4+Pj4gd2hhdGV2ZXIKPj4+Pj4+ICJydGNhbiIgbmFtZSwKPj4+Pj4+IGJ1dCBmcm9tIHRoZSBh
+cHBsaWNhdGlvbiBwb2ludCBvZiB2aWV3IGl0IHNob3VsZCBiZSB0cmFuc3BhcmVudC4KPj4+Pj4g
+T2ssIHRoZW4sIHdoYXQgYWJvdXQgYWRkaW5nIGFuICJucl9kZXZzIiBwYXJhbWV0ZXIgdG8gcnRj
+YW5fdmlydCwgYW5kCj4+Pj4+IGxpbmtpbmcgZGV2aWNlICNuIHdpdGggZGV2aWNlICNuICsgbnJf
+ZGV2cyBmb3IgbiBiZXR3ZWVuIDAgYW5kCj4+Pj4+IG5yX2RldnMgLSAxID8KPj4+Pj4KPj4+PiBZ
+b3UgY291bGQgbWFrZSAnZGV2aWNlcycgYW4gYXJyYXkgYW5kIGNyZWF0ZSBhIGJ1cyBmb3IgZWFj
+aCBub24temVybwo+Pj4+IGFycmF5IGVudHJ5LiBMaWtlIHdpdGggdGhlIG51bWJlciBvZiB2aXJ0
+dWFsIGRldmljZXMsIHRoaXMgd2lsbCBqdXN0Cj4+Pj4gcmVxdWlyZSBhbiB1cHBlciBsaW1pdCBv
+ZiBidXNlcy4KPj4+Pgo+Pj4+IEphbgo+Pj4+Cj4+PiBTdXJlLCBidXQgd2hhdCB3b3VsZCBiZSB5
+b3UgcHJlZmVyZWQgbmFtaW5nIHJ1bGUgZm9yIHRoZSAic2xhdmUiCj4+PiBkZXZpY2VzID8KPj4g
+S2VlcCBpdCBzaW1wbGUsIGp1c3QgbnVtYmVyIHRoZW0gY29uc2VjdXRpdmVseSBhcyB0aGV5IG5l
+ZWQgdG8gYmUKPj4gY3JlYXRlZCBhY2NvcmRpbmcgdG8gdGhlIGFycmF5Lgo+Pgo+Pj4gSSBkbyBu
+b3QgY29tcGxldGVseSBhZ3JlZSB3aXRoIEdpbGxlcycgbGFzdCBwcm9wb3NhbCwgYmVjYXVzZSBl
+dmVuIGlmCj4+PiB0aGVyZQo+Pj4gaXMgYSBsb2dpY2FsIG1hdGNoaW5nIChlZyBzbGF2ZSMgPSBt
+YXN0ZXIjICsgbiksIHRoZSByZWxhdGlvbnNoaXAgaXMgbm90Cj4+PiB0cml2aWFsIGZyb20gdXNl
+cmxhbmQsIGVzcGVjaWFsbHkgd2hlbiB5b3UgdXNlIGJvdGggdmlydHVhbCBhbmQgcmVhbAo+Pj4g
+ZHJpdmVyKHMpLgo+PiBZb3UgY291bGQgYSkgbWFrZSB1c2VybGFuZCBjb25maWd1cmFibGUgaW4g
+dGhlIHNhbWUgd2F5LCB0ZWxsaW5nIGl0Cj4+IHJ0Y2FuTi4uTSBpcyBidXMgWCwgb3IgZXhwb3J0
+IHRoZSBydGNhbl92aXJ0IHRvcG9sb2d5IHZpYSBpdHMgL3Byb2MKPj4gZm9sZGVyLgo+Pgo+Pj4g
+QW5kIGZvciB0aGUgZHJpdmVyIGl0c2VsZiA/IFNoYWxsIEkgY3JlYXRlIGEgbmV3IG9uZSAoaWYg
+eWVzIHdoYXQgd291bGQKPj4+IGJlIGl0cyBuYW1lID8pLAo+Pj4gb3IgYWRkIGFuIG9wdGlvbiB0
+byB0aGUgZXhpc3RpbmcsCj4+PiBmb3IgY3JlYXRpbmcgZGV2aWNlcyBpbiB0aGUgInBlZXIgdG8g
+cGVlciIgbW9kZSA/Cj4+IE15IHByb3Bvc2FsIGlzIGZ1bGx5IGNvbXBhdGlibGUgd2l0aCB0aGUg
+ZXhpc3RpbmcgZHJpdmVyIGFzIG5vIG5ldwo+PiBwYXJhbWV0ZXIgaXMgYWRkZWQuIEV4aXN0aW5n
+IHVzZXJzIGNhbiBjb250aW51ZSB0byBjb25zaWRlciAnZGV2aWNlJyBhcwo+PiBhbiBhcnJheSB3
+aXRoIG9ubHkgb25lIGVudHJ5Lgo+Pgo+PiBKYW4KPj4KPiBJIGdvdCBpdC4KPiBXaGF0IHlvdSBt
+ZWFuIGlzIHRoYXQgdGhlIHRvcG9sb2d5IGlzIGRlc2NyaWJlZCBieSBhCj4gCj4gdW5zaWduZWQg
+aW50IHZpcnRfYnVzW05CX01BWF9CVVNFU107CgpObywgSSdtIHRoaW5raW5nIG9mCgpzdGF0aWMg
+dW5zaWduZWQgaW50IGRldmljZXNbTkJfTUFYX0JVU0VTXSA9IHsgMiB9OwoKPiAKPiBhbmQgdGhl
+IGVudHJpZXMgYXJlIHRoZSBudW1iZXIgb2YgZGV2aWNlcyBmb3IgZWFjaCBidXMuCj4gU28gdGhl
+IGV4aXN0aW5nIHdvdWxkIGJlIHZpcnRfYnVzWzBdID0gZGV2aWNlczsgKCdkZXZpY2VzJyBpcyB0
+aGUKPiBleGlzdGluZyBtb2R1bGUgb3B0aW9uKQo+IAo+IGFuZCBmb3IgdGhlIHVzYWdlIEkgd2Fu
+dCAoSSBoYXZlIDIgYnVzZXMpCj4gCj4gdmlydF9idXNbMF0gPSAyOwo+IHZpcnRfYnVzWzFdID0g
+MjsKPiAKPiBJIGZpbmQgeW91ciBpZGVhIHRvIHB1Ymxpc2ggdGhlIHRvcG9sb2d5IHZpYSAvcHJv
+YyBncmVhdC4gSSBjb3VsZCBhbHNvIGNvbWUKPiB3aXRoIGEgbmljZSBkaXNwbGF5IHRvb2wsIGxp
+a2UgImxzcGNpIC10IiBkb2VzLCBhbmQgYWxzbyBoYXZlIHRoZSAibHNwY2kKPiAtbW0iIHdheS4K
+PiBXaGF0IGFib3V0IGxzcnRjYW4gPwoKV2UgYWxyZWFkeSBoYXZlIHJ0Y2FuY29uZmlnLCBhbmQg
+dGhlIHZpcnR1YWwgYnVzZXMgYXJlIGEgc3BlY2lhbCBjYXNlLApzbyBJIHdvdWxkbid0IG92ZXJk
+byBoZXJlLgoKPiAKPiBIb3dldmVyLCBtYWtpbmcgaXQgdXNlcmxhbmQgY29uZmlndXJhYmxlIG5l
+ZWRzIG1vcmUgZGV0YWlsZWQgc3BlY2ljYXRpb25zLAo+IHdoYXQgYXJlIHlvdSB0aGlua2luZyBh
+Ym91dCBleGFjdGx5ID8gQXJlIHdlIHRhbGtpbmcgYWJvdXQgdGhlIG1vZHVsZQo+IGxvYWRpbmcK
+PiAoSSBkbyBub3QgdGhpbmsgc28gYmVjYXVzZSB5b3Ugc2FpZCBubyBuZXdlciBvcHRpb24pCj4g
+b3IgYW4gaW9jdGwgPwoKSSBtZWFuIHRvIG1ha2UgdGhlIHVzZXJsYW5kIHByb2dyYW0gY29uZmln
+dXJhYmxlLCB0ZWxsaW5nIGl0IG9uIHRoZQpjb21tYW5kIGxpbmUgb3Igd2hlcmV2ZXIgd2hpY2gg
+cnRjYW4gZGV2aWNlcyBiZWxvbmcgdG8gYSBzaW5nbGUgYnVzLgoKSmFuCgoKLS0tLS0tLS0tLS0t
+LS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2Ny
+dWJiZWQuLi4KTmFtZTogc2lnbmF0dXJlLmFzYwpUeXBlOiBhcHBsaWNhdGlvbi9wZ3Atc2lnbmF0
+dXJlClNpemU6IDI1OSBieXRlcwpEZXNjOiBPcGVuUEdQIGRpZ2l0YWwgc2lnbmF0dXJlClVSTDog
+PGh0dHA6Ly93d3cueGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAx
+MjEwMTEvNjVjZmEwYWYvYXR0YWNobWVudC5wZ3A+Cg==
