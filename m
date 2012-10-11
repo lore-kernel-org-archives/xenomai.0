@@ -1,15 +1,14 @@
-Message-ID: <50747C29.2060504@grandegger.com>
-Date: Tue, 09 Oct 2012 21:34:01 +0200
-From: Wolfgang Grandegger <wg@grandegger.com>
+Message-ID: <5076625F.6090806@wanadoo.fr>
+Date: Thu, 11 Oct 2012 08:08:31 +0200
+From: Thierry Bultel <thierry.bultel@wanadoo.fr>
 MIME-Version: 1.0
-References: <503227B5.9070002@basystemes.fr> <50322F06.4000009@wanadoo.fr>
-	<503C63BE.8010201@xenomai.org>
-	<503C709C.3020702@grandegger.com> <503C758B.9000906@wanadoo.fr>
-	<503C7D77.2060209@grandegger.com> <50744BD3.1030703@wanadoo.fr>
-In-Reply-To: <50744BD3.1030703@wanadoo.fr>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PATCH] rtcan: driver for the Advantech PCI cards
+References: <506D7DFF.6040403@wanadoo.fr> <506D82E2.6080908@xenomai.org>
+	<506D87E1.8090100@wanadoo.fr> <506D8E6B.10802@xenomai.org>
+	<50765009.6030809@web.de>
+In-Reply-To: <50765009.6030809@web.de>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] Modified rtcan_virt driver
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,43 +17,84 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Thierry Bultel <thierry.bultel@wanadoo.fr>
-Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@web.de>
+Cc: xenomai@xenomai.org
 
-Hi Thierry,
+Le 11/10/2012 06:50, Jan Kiszka a écrit :
+> On 2012-10-04 15:26, Gilles Chanteperdrix wrote:
+>> On 10/04/2012 02:58 PM, Thierry Bultel wrote:
+>>> Le 04/10/2012 14:36, Gilles Chanteperdrix a écrit :
+>>>> On 10/04/2012 02:15 PM, Thierry Bultel wrote:
+>>>>> Hi,
+>>>>>
+>>>>> The existing rtcan_virt driver simulates a single CAN bus, on which are
+>>>>> N devices.
+>>>>> Sending to one dispatches the frame to all the others but the not to the
+>>>>> sender.
+>>>>>
+>>>>> This has several disadvantages:
+>>>>>
+>>>>> - First, to run an application that uses 2 or more physical buses, it
+>>>>> does not fit, because both devices would be linked together.
+>>>>> - Second, having N instantiated virtual devices is in some cases not
+>>>>> necessary, because an application can open the
+>>>>> same device several times, and simulate many CAN nodes, on that single
+>>>>> device.
+>>>>>
+>>>>> Thus I have written another rtcan_virt driver, based on the original one.
+>>>>>
+>>>>> Its behavior is as follows:
+>>>>>
+>>>>> - It instantiates N rtcan devices, that are independent (no frame from
+>>>>> one to another)
+>>>>> - Each virtual rtcan (rtcan0, rtcan1 ...) device has a matching peer
+>>>>> (rtcan0s, rtcan1s ...)
+>>>>> ('s' like 'slave' but I am opened to any other naming) another to
+>>>>> communicate with.
+>>>>> That 'slave' device isautomatically created.
+>>>>> I say 'slave' in quotes because the word hides the symmetrical aspect,
+>>>>> so it is likely unappropriate..
+>>>>>
+>>>>> It is today fully tested, my question was if it could be of interest for
+>>>>> the Xenomai mainline.
+>>>>> If Yes:
+>>>>> - some questions come, to my mind the most important one is if is a new
+>>>>> driver, or a patch for the existing one,
+>>>>> to modify its behavior depending on a parameter. If it is a new one,
+>>>>> what would be the appropriate name ?
+>>>>> - I would be happy to make it as a patch (not ready for that yet, and
+>>>>> until the first questions are answered)
+>>>>>
+>>>>> If No, I just apologize for the noise.
+>>>> I think it is interesting, what about linking the odd ones to the even
+>>>> ones for the symetry?
+>>>>
+>>> I have been thinking about it, but that would break a 'I do not modify
+>>> my application' rule.
+>>> In my special case, the app uses buses "0" and "1", that the CanFestival
+>>> stack translates to "rtcan0" and "rtcan1"
+>>>
+>>> It is Ok to have the "emulated remote nodes" configured to use whatever
+>>> "rtcan" name,
+>>> but from the application point of view it should be transparent.
+>> Ok, then, what about adding an "nr_devs" parameter to rtcan_virt, and
+>> linking device #n with device #n + nr_devs for n between 0 and nr_devs - 1 ?
+>>
+> You could make 'devices' an array and create a bus for each non-zero
+> array entry. Like with the number of virtual devices, this will just
+> require an upper limit of buses.
+>
+> Jan
+>
+Sure, but what would be you prefered naming rule for the "slave" devices ?
+I do not completely agree with Gilles' last proposal, because even if there
+is a logical matching (eg slave# = master# + n), the relationship is not
+trivial from userland, especially when you use both virtual and real driver(s).
 
-please do not drop the CC to the Xenomai mailing list.
+And for the driver itself ? Shall I create a new one (if yes what would be its name ?),
+or add an option to the existing,
+for creating devices in the "peer to peer" mode ?
 
-On 10/09/2012 06:07 PM, Thierry Bultel wrote:
-> 
->>> Do you still plan to add the flexcan RTDM ?
->> I have already something running but it's not yet good enough for
->> mainline. Will need more time. Anyway, I could send my preliminary
->> patches in case you are interested, especially to test them.
-> Hi Wolfgang,
-> How are you ?
-> 
-> I should receive my devkit for iMX6 in 2 weeks, and immediately start on
-> first applying the ipipe patch to it (the provided kernel is likely to
-> be the 3.2 from Freescale,
-> with some little modifications), and then work on the flexcan rtdm driver.
-
-Why v3.2 from Freescale? For the SabreLite or Nitrohen6x I know about
-3.0.36 from Freescale (rel_imx_3.0.35_12.09.02 from
-git.freecale.com/linux-2.6) or, much better, mainline Linux 3.4.
-Concerning the iPipe patches I think you have currently no other choice.
-
-> If you have the flexcan not achieved yet, and if you still agree to send
-> it to me,
-> that is fine, I would be pleased to test it.
-
-I have posted the patch two weeks ago to this mailing list:
-
-http://www.xenomai.org/pipermail/xenomai/2012-September/026337.html
-
-Would be nice if you could test it on i.MX6 as well. Awaiting your
-"Tested-by".
-
-Wolfgang.
+Thierry
 
 
