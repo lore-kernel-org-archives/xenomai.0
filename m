@@ -1,14 +1,16 @@
-Message-ID: <507665CF.9030201@web.de>
-Date: Thu, 11 Oct 2012 08:23:11 +0200
-From: Jan Kiszka <jan.kiszka@web.de>
+Message-ID: <50766A8F.9090901@wanadoo.fr>
+Date: Thu, 11 Oct 2012 08:43:27 +0200
+From: Thierry Bultel <thierry.bultel@wanadoo.fr>
 MIME-Version: 1.0
-References: <506D7DFF.6040403@wanadoo.fr> <506D82E2.6080908@xenomai.org>
-	<506D87E1.8090100@wanadoo.fr> <506D8E6B.10802@xenomai.org>
-	<50765009.6030809@web.de> <5076625F.6090806@wanadoo.fr>
-In-Reply-To: <5076625F.6090806@wanadoo.fr>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] Modified rtcan_virt driver
+References: <503227B5.9070002@basystemes.fr> <50322F06.4000009@wanadoo.fr>
+	<503C63BE.8010201@xenomai.org>
+	<503C709C.3020702@grandegger.com> <503C758B.9000906@wanadoo.fr>
+	<503C7D77.2060209@grandegger.com> <50744BD3.1030703@wanadoo.fr>
+	<50747C29.2060504@grandegger.com> <50748733.80709@wanadoo.fr>
+In-Reply-To: <50748733.80709@wanadoo.fr>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [PATCH] rtcan: driver for the Advantech PCI cards
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,80 +19,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Thierry Bultel <thierry.bultel@wanadoo.fr>
-Cc: xenomai@xenomai.org
+To: Wolfgang Grandegger <wg@grandegger.com>
+Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-T24gMjAxMi0xMC0xMSAwODowOCwgVGhpZXJyeSBCdWx0ZWwgd3JvdGU6Cj4gTGUgMTEvMTAvMjAx
-MiAwNjo1MCwgSmFuIEtpc3prYSBhIMOpY3JpdCA6Cj4+IE9uIDIwMTItMTAtMDQgMTU6MjYsIEdp
-bGxlcyBDaGFudGVwZXJkcml4IHdyb3RlOgo+Pj4gT24gMTAvMDQvMjAxMiAwMjo1OCBQTSwgVGhp
-ZXJyeSBCdWx0ZWwgd3JvdGU6Cj4+Pj4gTGUgMDQvMTAvMjAxMiAxNDozNiwgR2lsbGVzIENoYW50
-ZXBlcmRyaXggYSDDqWNyaXQgOgo+Pj4+PiBPbiAxMC8wNC8yMDEyIDAyOjE1IFBNLCBUaGllcnJ5
-IEJ1bHRlbCB3cm90ZToKPj4+Pj4+IEhpLAo+Pj4+Pj4KPj4+Pj4+IFRoZSBleGlzdGluZyBydGNh
-bl92aXJ0IGRyaXZlciBzaW11bGF0ZXMgYSBzaW5nbGUgQ0FOIGJ1cywgb24KPj4+Pj4+IHdoaWNo
-IGFyZQo+Pj4+Pj4gTiBkZXZpY2VzLgo+Pj4+Pj4gU2VuZGluZyB0byBvbmUgZGlzcGF0Y2hlcyB0
-aGUgZnJhbWUgdG8gYWxsIHRoZSBvdGhlcnMgYnV0IHRoZSBub3QKPj4+Pj4+IHRvIHRoZQo+Pj4+
-Pj4gc2VuZGVyLgo+Pj4+Pj4KPj4+Pj4+IFRoaXMgaGFzIHNldmVyYWwgZGlzYWR2YW50YWdlczoK
-Pj4+Pj4+Cj4+Pj4+PiAtIEZpcnN0LCB0byBydW4gYW4gYXBwbGljYXRpb24gdGhhdCB1c2VzIDIg
-b3IgbW9yZSBwaHlzaWNhbCBidXNlcywgaXQKPj4+Pj4+IGRvZXMgbm90IGZpdCwgYmVjYXVzZSBi
-b3RoIGRldmljZXMgd291bGQgYmUgbGlua2VkIHRvZ2V0aGVyLgo+Pj4+Pj4gLSBTZWNvbmQsIGhh
-dmluZyBOIGluc3RhbnRpYXRlZCB2aXJ0dWFsIGRldmljZXMgaXMgaW4gc29tZSBjYXNlcyBub3QK
-Pj4+Pj4+IG5lY2Vzc2FyeSwgYmVjYXVzZSBhbiBhcHBsaWNhdGlvbiBjYW4gb3BlbiB0aGUKPj4+
-Pj4+IHNhbWUgZGV2aWNlIHNldmVyYWwgdGltZXMsIGFuZCBzaW11bGF0ZSBtYW55IENBTiBub2Rl
-cywgb24gdGhhdAo+Pj4+Pj4gc2luZ2xlCj4+Pj4+PiBkZXZpY2UuCj4+Pj4+Pgo+Pj4+Pj4gVGh1
-cyBJIGhhdmUgd3JpdHRlbiBhbm90aGVyIHJ0Y2FuX3ZpcnQgZHJpdmVyLCBiYXNlZCBvbiB0aGUK
-Pj4+Pj4+IG9yaWdpbmFsIG9uZS4KPj4+Pj4+Cj4+Pj4+PiBJdHMgYmVoYXZpb3IgaXMgYXMgZm9s
-bG93czoKPj4+Pj4+Cj4+Pj4+PiAtIEl0IGluc3RhbnRpYXRlcyBOIHJ0Y2FuIGRldmljZXMsIHRo
-YXQgYXJlIGluZGVwZW5kZW50IChubyBmcmFtZQo+Pj4+Pj4gZnJvbQo+Pj4+Pj4gb25lIHRvIGFu
-b3RoZXIpCj4+Pj4+PiAtIEVhY2ggdmlydHVhbCBydGNhbiAocnRjYW4wLCBydGNhbjEgLi4uKSBk
-ZXZpY2UgaGFzIGEgbWF0Y2hpbmcgcGVlcgo+Pj4+Pj4gKHJ0Y2FuMHMsIHJ0Y2FuMXMgLi4uKQo+
-Pj4+Pj4gKCdzJyBsaWtlICdzbGF2ZScgYnV0IEkgYW0gb3BlbmVkIHRvIGFueSBvdGhlciBuYW1p
-bmcpIGFub3RoZXIgdG8KPj4+Pj4+IGNvbW11bmljYXRlIHdpdGguCj4+Pj4+PiBUaGF0ICdzbGF2
-ZScgZGV2aWNlIGlzYXV0b21hdGljYWxseSBjcmVhdGVkLgo+Pj4+Pj4gSSBzYXkgJ3NsYXZlJyBp
-biBxdW90ZXMgYmVjYXVzZSB0aGUgd29yZCBoaWRlcyB0aGUgc3ltbWV0cmljYWwKPj4+Pj4+IGFz
-cGVjdCwKPj4+Pj4+IHNvIGl0IGlzIGxpa2VseSB1bmFwcHJvcHJpYXRlLi4KPj4+Pj4+Cj4+Pj4+
-PiBJdCBpcyB0b2RheSBmdWxseSB0ZXN0ZWQsIG15IHF1ZXN0aW9uIHdhcyBpZiBpdCBjb3VsZCBi
-ZSBvZgo+Pj4+Pj4gaW50ZXJlc3QgZm9yCj4+Pj4+PiB0aGUgWGVub21haSBtYWlubGluZS4KPj4+
-Pj4+IElmIFllczoKPj4+Pj4+IC0gc29tZSBxdWVzdGlvbnMgY29tZSwgdG8gbXkgbWluZCB0aGUg
-bW9zdCBpbXBvcnRhbnQgb25lIGlzIGlmIGlzCj4+Pj4+PiBhIG5ldwo+Pj4+Pj4gZHJpdmVyLCBv
-ciBhIHBhdGNoIGZvciB0aGUgZXhpc3Rpbmcgb25lLAo+Pj4+Pj4gdG8gbW9kaWZ5IGl0cyBiZWhh
-dmlvciBkZXBlbmRpbmcgb24gYSBwYXJhbWV0ZXIuIElmIGl0IGlzIGEgbmV3IG9uZSwKPj4+Pj4+
-IHdoYXQgd291bGQgYmUgdGhlIGFwcHJvcHJpYXRlIG5hbWUgPwo+Pj4+Pj4gLSBJIHdvdWxkIGJl
-IGhhcHB5IHRvIG1ha2UgaXQgYXMgYSBwYXRjaCAobm90IHJlYWR5IGZvciB0aGF0IHlldCwgYW5k
-Cj4+Pj4+PiB1bnRpbCB0aGUgZmlyc3QgcXVlc3Rpb25zIGFyZSBhbnN3ZXJlZCkKPj4+Pj4+Cj4+
-Pj4+PiBJZiBObywgSSBqdXN0IGFwb2xvZ2l6ZSBmb3IgdGhlIG5vaXNlLgo+Pj4+PiBJIHRoaW5r
-IGl0IGlzIGludGVyZXN0aW5nLCB3aGF0IGFib3V0IGxpbmtpbmcgdGhlIG9kZCBvbmVzIHRvIHRo
-ZSBldmVuCj4+Pj4+IG9uZXMgZm9yIHRoZSBzeW1ldHJ5Pwo+Pj4+Pgo+Pj4+IEkgaGF2ZSBiZWVu
-IHRoaW5raW5nIGFib3V0IGl0LCBidXQgdGhhdCB3b3VsZCBicmVhayBhICdJIGRvIG5vdCBtb2Rp
-ZnkKPj4+PiBteSBhcHBsaWNhdGlvbicgcnVsZS4KPj4+PiBJbiBteSBzcGVjaWFsIGNhc2UsIHRo
-ZSBhcHAgdXNlcyBidXNlcyAiMCIgYW5kICIxIiwgdGhhdCB0aGUKPj4+PiBDYW5GZXN0aXZhbAo+
-Pj4+IHN0YWNrIHRyYW5zbGF0ZXMgdG8gInJ0Y2FuMCIgYW5kICJydGNhbjEiCj4+Pj4KPj4+PiBJ
-dCBpcyBPayB0byBoYXZlIHRoZSAiZW11bGF0ZWQgcmVtb3RlIG5vZGVzIiBjb25maWd1cmVkIHRv
-IHVzZSB3aGF0ZXZlcgo+Pj4+ICJydGNhbiIgbmFtZSwKPj4+PiBidXQgZnJvbSB0aGUgYXBwbGlj
-YXRpb24gcG9pbnQgb2YgdmlldyBpdCBzaG91bGQgYmUgdHJhbnNwYXJlbnQuCj4+PiBPaywgdGhl
-biwgd2hhdCBhYm91dCBhZGRpbmcgYW4gIm5yX2RldnMiIHBhcmFtZXRlciB0byBydGNhbl92aXJ0
-LCBhbmQKPj4+IGxpbmtpbmcgZGV2aWNlICNuIHdpdGggZGV2aWNlICNuICsgbnJfZGV2cyBmb3Ig
-biBiZXR3ZWVuIDAgYW5kCj4+PiBucl9kZXZzIC0gMSA/Cj4+Pgo+PiBZb3UgY291bGQgbWFrZSAn
-ZGV2aWNlcycgYW4gYXJyYXkgYW5kIGNyZWF0ZSBhIGJ1cyBmb3IgZWFjaCBub24temVybwo+PiBh
-cnJheSBlbnRyeS4gTGlrZSB3aXRoIHRoZSBudW1iZXIgb2YgdmlydHVhbCBkZXZpY2VzLCB0aGlz
-IHdpbGwganVzdAo+PiByZXF1aXJlIGFuIHVwcGVyIGxpbWl0IG9mIGJ1c2VzLgo+Pgo+PiBKYW4K
-Pj4KPiBTdXJlLCBidXQgd2hhdCB3b3VsZCBiZSB5b3UgcHJlZmVyZWQgbmFtaW5nIHJ1bGUgZm9y
-IHRoZSAic2xhdmUiIGRldmljZXMgPwoKS2VlcCBpdCBzaW1wbGUsIGp1c3QgbnVtYmVyIHRoZW0g
-Y29uc2VjdXRpdmVseSBhcyB0aGV5IG5lZWQgdG8gYmUKY3JlYXRlZCBhY2NvcmRpbmcgdG8gdGhl
-IGFycmF5LgoKPiBJIGRvIG5vdCBjb21wbGV0ZWx5IGFncmVlIHdpdGggR2lsbGVzJyBsYXN0IHBy
-b3Bvc2FsLCBiZWNhdXNlIGV2ZW4gaWYgdGhlcmUKPiBpcyBhIGxvZ2ljYWwgbWF0Y2hpbmcgKGVn
-IHNsYXZlIyA9IG1hc3RlciMgKyBuKSwgdGhlIHJlbGF0aW9uc2hpcCBpcyBub3QKPiB0cml2aWFs
-IGZyb20gdXNlcmxhbmQsIGVzcGVjaWFsbHkgd2hlbiB5b3UgdXNlIGJvdGggdmlydHVhbCBhbmQg
-cmVhbAo+IGRyaXZlcihzKS4KCllvdSBjb3VsZCBhKSBtYWtlIHVzZXJsYW5kIGNvbmZpZ3VyYWJs
-ZSBpbiB0aGUgc2FtZSB3YXksIHRlbGxpbmcgaXQKcnRjYW5OLi5NIGlzIGJ1cyBYLCBvciBleHBv
-cnQgdGhlIHJ0Y2FuX3ZpcnQgdG9wb2xvZ3kgdmlhIGl0cyAvcHJvYyBmb2xkZXIuCgo+IAo+IEFu
-ZCBmb3IgdGhlIGRyaXZlciBpdHNlbGYgPyBTaGFsbCBJIGNyZWF0ZSBhIG5ldyBvbmUgKGlmIHll
-cyB3aGF0IHdvdWxkCj4gYmUgaXRzIG5hbWUgPyksCj4gb3IgYWRkIGFuIG9wdGlvbiB0byB0aGUg
-ZXhpc3RpbmcsCj4gZm9yIGNyZWF0aW5nIGRldmljZXMgaW4gdGhlICJwZWVyIHRvIHBlZXIiIG1v
-ZGUgPwoKTXkgcHJvcG9zYWwgaXMgZnVsbHkgY29tcGF0aWJsZSB3aXRoIHRoZSBleGlzdGluZyBk
-cml2ZXIgYXMgbm8gbmV3CnBhcmFtZXRlciBpcyBhZGRlZC4gRXhpc3RpbmcgdXNlcnMgY2FuIGNv
-bnRpbnVlIHRvIGNvbnNpZGVyICdkZXZpY2UnIGFzCmFuIGFycmF5IHdpdGggb25seSBvbmUgZW50
-cnkuCgpKYW4KCgotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24t
-dGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBzaWduYXR1cmUuYXNjClR5cGU6
-IGFwcGxpY2F0aW9uL3BncC1zaWduYXR1cmUKU2l6ZTogMjU5IGJ5dGVzCkRlc2M6IE9wZW5QR1Ag
-ZGlnaXRhbCBzaWduYXR1cmUKVVJMOiA8aHR0cDovL3d3dy54ZW5vbWFpLm9yZy9waXBlcm1haWwv
-eGVub21haS9hdHRhY2htZW50cy8yMDEyMTAxMS9kZGU4MjU3MC9hdHRhY2htZW50LnBncD4K
+Why v3.2 from Freescale? For the SabreLite or Nitrohen6x I know about
+>> 3.0.36 from Freescale (rel_imx_3.0.35_12.09.02 from
+>> git.freecale.com/linux-2.6) or, much better, mainline Linux 3.4.
+>> Concerning the iPipe patches I think you have currently no other choice.
+>
+
+
+In both cases, (latest one from Freescale, or 3.4 from mainline) there is currently
+no available matching ipipe patch.
+I do not know if the latest kernel from mainline will fit for the reference board that I will receive.
+
+I do not realize the amount of work for porting either
+- ipipe-core-3.2.21-arm.patch to 3.4 (mainline)
+or
+- adeos-ipipe-3.0.43-* to the latest (which one ?) kernel from Freescale
+
+About that latest option I am a little bit puzzled.
+Namely from what I know, Freescale kernels are on
+
+http://git.freescale.com/git/cgit.cgi/imx/linux-2.6-imx.git/refs/heads
+and the latest published 3.x kernel is ... a 3.0.15_12 that has not moved for months.
+Thanks for clarifying
+
+Thierry
+
+
