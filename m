@@ -1,12 +1,13 @@
-Message-ID: <5075CEBD.7060709@xenomai.org>
-Date: Wed, 10 Oct 2012 21:38:37 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <50765009.6030809@web.de>
+Date: Thu, 11 Oct 2012 06:50:17 +0200
+From: Jan Kiszka <jan.kiszka@web.de>
 MIME-Version: 1.0
-References: <990B36E792F1A4488D3E2B1C46FD62D6943CBA5BD8@corpmail2>
-In-Reply-To: <990B36E792F1A4488D3E2B1C46FD62D6943CBA5BD8@corpmail2>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Xenomai does not recognize changed system time
+References: <506D7DFF.6040403@wanadoo.fr> <506D82E2.6080908@xenomai.org>
+	<506D87E1.8090100@wanadoo.fr> <506D8E6B.10802@xenomai.org>
+In-Reply-To: <506D8E6B.10802@xenomai.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai] Modified rtcan_virt driver
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,34 +16,59 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Michael Pustylnik <MichaelPustylnik@ruggedcom.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Thierry Bultel <thierry.bultel@wanadoo.fr>, xenomai@xenomai.org
 
-On 10/10/2012 09:36 PM, Michael Pustylnik wrote:
-
-> I get system time from Xenomai by calling rt_timer_inquire() and examining the 'date' field of RT_TIMER_INFO.
-> After system bootup, Xenomai reports the same system time as Linux (which is expected). However, if I change Linux system time with the 'date' command, Linux starts reporting the new time, while Xenomai keeps reporting the old time, as if the system time was not changed.
-> 
-> Am I doing something wrong?
-
-
-No.
-
-> Is this the expected behavior?
-
-
-Yes.
-
-> How to get updated system time from Xenomai?
-
-
-You have to update system time with the posix skin service clock_settime.
-Or you can use CLOCK_HOST_REALTIME, but you can not use
-CLOCK_HOST_REALTIME for anything else than simply getting linux time. It
-can not be used as absolute dates for clock_nanosleep, or for creating
-timers with timer_create.
-
-
--- 
-                                                                Gilles.
-
+T24gMjAxMi0xMC0wNCAxNToyNiwgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4gT24gMTAv
+MDQvMjAxMiAwMjo1OCBQTSwgVGhpZXJyeSBCdWx0ZWwgd3JvdGU6Cj4+IExlIDA0LzEwLzIwMTIg
+MTQ6MzYsIEdpbGxlcyBDaGFudGVwZXJkcml4IGEgw6ljcml0IDoKPj4+IE9uIDEwLzA0LzIwMTIg
+MDI6MTUgUE0sIFRoaWVycnkgQnVsdGVsIHdyb3RlOgo+Pj4+IEhpLAo+Pj4+Cj4+Pj4gVGhlIGV4
+aXN0aW5nIHJ0Y2FuX3ZpcnQgZHJpdmVyIHNpbXVsYXRlcyBhIHNpbmdsZSBDQU4gYnVzLCBvbiB3
+aGljaCBhcmUKPj4+PiBOIGRldmljZXMuCj4+Pj4gU2VuZGluZyB0byBvbmUgZGlzcGF0Y2hlcyB0
+aGUgZnJhbWUgdG8gYWxsIHRoZSBvdGhlcnMgYnV0IHRoZSBub3QgdG8gdGhlCj4+Pj4gc2VuZGVy
+Lgo+Pj4+Cj4+Pj4gVGhpcyBoYXMgc2V2ZXJhbCBkaXNhZHZhbnRhZ2VzOgo+Pj4+Cj4+Pj4gLSBG
+aXJzdCwgdG8gcnVuIGFuIGFwcGxpY2F0aW9uIHRoYXQgdXNlcyAyIG9yIG1vcmUgcGh5c2ljYWwg
+YnVzZXMsIGl0Cj4+Pj4gZG9lcyBub3QgZml0LCBiZWNhdXNlIGJvdGggZGV2aWNlcyB3b3VsZCBi
+ZSBsaW5rZWQgdG9nZXRoZXIuCj4+Pj4gLSBTZWNvbmQsIGhhdmluZyBOIGluc3RhbnRpYXRlZCB2
+aXJ0dWFsIGRldmljZXMgaXMgaW4gc29tZSBjYXNlcyBub3QKPj4+PiBuZWNlc3NhcnksIGJlY2F1
+c2UgYW4gYXBwbGljYXRpb24gY2FuIG9wZW4gdGhlCj4+Pj4gc2FtZSBkZXZpY2Ugc2V2ZXJhbCB0
+aW1lcywgYW5kIHNpbXVsYXRlIG1hbnkgQ0FOIG5vZGVzLCBvbiB0aGF0IHNpbmdsZQo+Pj4+IGRl
+dmljZS4KPj4+Pgo+Pj4+IFRodXMgSSBoYXZlIHdyaXR0ZW4gYW5vdGhlciBydGNhbl92aXJ0IGRy
+aXZlciwgYmFzZWQgb24gdGhlIG9yaWdpbmFsIG9uZS4KPj4+Pgo+Pj4+IEl0cyBiZWhhdmlvciBp
+cyBhcyBmb2xsb3dzOgo+Pj4+Cj4+Pj4gLSBJdCBpbnN0YW50aWF0ZXMgTiBydGNhbiBkZXZpY2Vz
+LCB0aGF0IGFyZSBpbmRlcGVuZGVudCAobm8gZnJhbWUgZnJvbQo+Pj4+IG9uZSB0byBhbm90aGVy
+KQo+Pj4+IC0gRWFjaCB2aXJ0dWFsIHJ0Y2FuIChydGNhbjAsIHJ0Y2FuMSAuLi4pIGRldmljZSBo
+YXMgYSBtYXRjaGluZyBwZWVyCj4+Pj4gKHJ0Y2FuMHMsIHJ0Y2FuMXMgLi4uKQo+Pj4+ICgncycg
+bGlrZSAnc2xhdmUnIGJ1dCBJIGFtIG9wZW5lZCB0byBhbnkgb3RoZXIgbmFtaW5nKSBhbm90aGVy
+IHRvCj4+Pj4gY29tbXVuaWNhdGUgd2l0aC4KPj4+PiBUaGF0ICdzbGF2ZScgZGV2aWNlIGlzYXV0
+b21hdGljYWxseSBjcmVhdGVkLgo+Pj4+IEkgc2F5ICdzbGF2ZScgaW4gcXVvdGVzIGJlY2F1c2Ug
+dGhlIHdvcmQgaGlkZXMgdGhlIHN5bW1ldHJpY2FsIGFzcGVjdCwKPj4+PiBzbyBpdCBpcyBsaWtl
+bHkgdW5hcHByb3ByaWF0ZS4uCj4+Pj4KPj4+PiBJdCBpcyB0b2RheSBmdWxseSB0ZXN0ZWQsIG15
+IHF1ZXN0aW9uIHdhcyBpZiBpdCBjb3VsZCBiZSBvZiBpbnRlcmVzdCBmb3IKPj4+PiB0aGUgWGVu
+b21haSBtYWlubGluZS4KPj4+PiBJZiBZZXM6Cj4+Pj4gLSBzb21lIHF1ZXN0aW9ucyBjb21lLCB0
+byBteSBtaW5kIHRoZSBtb3N0IGltcG9ydGFudCBvbmUgaXMgaWYgaXMgYSBuZXcKPj4+PiBkcml2
+ZXIsIG9yIGEgcGF0Y2ggZm9yIHRoZSBleGlzdGluZyBvbmUsCj4+Pj4gdG8gbW9kaWZ5IGl0cyBi
+ZWhhdmlvciBkZXBlbmRpbmcgb24gYSBwYXJhbWV0ZXIuIElmIGl0IGlzIGEgbmV3IG9uZSwKPj4+
+PiB3aGF0IHdvdWxkIGJlIHRoZSBhcHByb3ByaWF0ZSBuYW1lID8KPj4+PiAtIEkgd291bGQgYmUg
+aGFwcHkgdG8gbWFrZSBpdCBhcyBhIHBhdGNoIChub3QgcmVhZHkgZm9yIHRoYXQgeWV0LCBhbmQK
+Pj4+PiB1bnRpbCB0aGUgZmlyc3QgcXVlc3Rpb25zIGFyZSBhbnN3ZXJlZCkKPj4+Pgo+Pj4+IElm
+IE5vLCBJIGp1c3QgYXBvbG9naXplIGZvciB0aGUgbm9pc2UuCj4+PiBJIHRoaW5rIGl0IGlzIGlu
+dGVyZXN0aW5nLCB3aGF0IGFib3V0IGxpbmtpbmcgdGhlIG9kZCBvbmVzIHRvIHRoZSBldmVuCj4+
+PiBvbmVzIGZvciB0aGUgc3ltZXRyeT8KPj4+Cj4+IEkgaGF2ZSBiZWVuIHRoaW5raW5nIGFib3V0
+IGl0LCBidXQgdGhhdCB3b3VsZCBicmVhayBhICdJIGRvIG5vdCBtb2RpZnkgCj4+IG15IGFwcGxp
+Y2F0aW9uJyBydWxlLgo+PiBJbiBteSBzcGVjaWFsIGNhc2UsIHRoZSBhcHAgdXNlcyBidXNlcyAi
+MCIgYW5kICIxIiwgdGhhdCB0aGUgQ2FuRmVzdGl2YWwgCj4+IHN0YWNrIHRyYW5zbGF0ZXMgdG8g
+InJ0Y2FuMCIgYW5kICJydGNhbjEiCj4+Cj4+IEl0IGlzIE9rIHRvIGhhdmUgdGhlICJlbXVsYXRl
+ZCByZW1vdGUgbm9kZXMiIGNvbmZpZ3VyZWQgdG8gdXNlIHdoYXRldmVyIAo+PiAicnRjYW4iIG5h
+bWUsCj4+IGJ1dCBmcm9tIHRoZSBhcHBsaWNhdGlvbiBwb2ludCBvZiB2aWV3IGl0IHNob3VsZCBi
+ZSB0cmFuc3BhcmVudC4KPiAKPiBPaywgdGhlbiwgd2hhdCBhYm91dCBhZGRpbmcgYW4gIm5yX2Rl
+dnMiIHBhcmFtZXRlciB0byBydGNhbl92aXJ0LCBhbmQKPiBsaW5raW5nIGRldmljZSAjbiB3aXRo
+IGRldmljZSAjbiArIG5yX2RldnMgZm9yIG4gYmV0d2VlbiAwIGFuZCBucl9kZXZzIC0gMSA/Cj4g
+CgpZb3UgY291bGQgbWFrZSAnZGV2aWNlcycgYW4gYXJyYXkgYW5kIGNyZWF0ZSBhIGJ1cyBmb3Ig
+ZWFjaCBub24temVybwphcnJheSBlbnRyeS4gTGlrZSB3aXRoIHRoZSBudW1iZXIgb2YgdmlydHVh
+bCBkZXZpY2VzLCB0aGlzIHdpbGwganVzdApyZXF1aXJlIGFuIHVwcGVyIGxpbWl0IG9mIGJ1c2Vz
+LgoKSmFuCgotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4
+dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBzaWduYXR1cmUuYXNjClR5cGU6IGFw
+cGxpY2F0aW9uL3BncC1zaWduYXR1cmUKU2l6ZTogMjU5IGJ5dGVzCkRlc2M6IE9wZW5QR1AgZGln
+aXRhbCBzaWduYXR1cmUKVVJMOiA8aHR0cDovL3d3dy54ZW5vbWFpLm9yZy9waXBlcm1haWwveGVu
+b21haS9hdHRhY2htZW50cy8yMDEyMTAxMS83YjQ4YTExOS9hdHRhY2htZW50LnBncD4K
