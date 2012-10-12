@@ -1,13 +1,12 @@
-Message-ID: <5077BDEF.6070307@xenomai.org>
-Date: Fri, 12 Oct 2012 08:51:27 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Date: Fri, 12 Oct 2012 09:11:40 +0200
+From: "Petr Cervenka" <grugh@centrum.cz>
+References: <20121011170958.40C8E372@centrum.cz> <50771645.6020705@xenomai.org>
+In-Reply-To: <50771645.6020705@xenomai.org>
 MIME-Version: 1.0
-References: <5077B799.5000408@xenomai.org>
-	<1350023177-8123-1-git-send-email-gilles.chanteperdrix@xenomai.org>
-In-Reply-To: <1350023177-8123-1-git-send-email-gilles.chanteperdrix@xenomai.org>
+Message-Id: <20121012091140.E3CB5F90@centrum.cz>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PATCH 1/1] rtdm: get spinlocks to lock the scheduler
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] Shared interrupts
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,22 +18,41 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On 10/12/2012 08:26 AM, Gilles Chanteperdrix wrote:
+> Od: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+> Komu: Petr Cervenka <grugh@centrum.cz>
+> Datum: 11.10.2012 20:56
+> P=C5=99edm=C4=9Bt: Re: [Xenomai] Shared interrupts
+>
+> CC: xenomai@xenomai.org
+>On 10/11/2012 05:09 PM, Petr Cervenka wrote:
+>> I'm using xenomai 2.5.6, adeos 2.6.38.8-x86-2.10-01
+>
+>>=20
+>> My primary questions: Is there a possibility to have the rtdm driver
+>> compatible with both cases?
+>
+>
+>Well, yes, enable CONFIG_XENO_OPT_SHIRQ, and pass RTDM_IRQTYPE_SHARED
+>when registering the irq handlers. And do not return XN_ISR_PROPAGATE.
 
-> In a context where callbacks are called with spinlocks held, it is not
-> possible for drivers callbacks to wake up threads without holding any
-> spinlock. So, we need a mechanism to lock the scheduler when a spinlock
-> is grabbed. As xnpod_lock_sched/xnpod_unlock_sched may be a bit heavy
-> weight for this case, we try and reimplement a lighter version.
+Of course, I have enabled CONFIG_XENO_OPT_SHIRQ and I have passed RTDM_IR=
+QTYPE_SHARED flag.
+But I can make running only one of those rt - nrt device combinations at =
+a time.
+Two rt devices with shared IRQ work for me only when I do NOT return XN_I=
+SR_PROPAGATE.
+Combination of rt and nrt device works only when I return XN_ISR_PROPAGAT=
+E.
 
+Do I have something wrong in the other settings? Because it seems that an=
+ interrupt is spread among all rt devices (with same IRQ) and (perhaps) w=
+hen there is one who doesn't handle it, it is propagated to linux and dis=
+abled. (In other words: one rt device handles interrupt, one not and than=
+ interrupt is disabled)
 
-There is a concurrence issue if, say, xnpod_suspend_thread or
-xnpod_reset_thread is called on another cpu while the thread which holds
-the scheduler lock is using an rtdm spinlock. I guess the rtdm spinlocks
-have to take the nklock to serialize access to the scheduler structures,
-so, use xnpod_lock_sched/xnpod_unlock_sched instead of
-__xnpod_lock_sched / __xnpod_unlock_sched.
+I think I want propagation of interrupt to linux, because if there is (ra=
+rely) a nrt device sharing same IRQ, it is usually critical for the PC to=
+ run.
 
--- 
-                                                                Gilles.
+Petr
 
