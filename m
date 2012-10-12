@@ -1,13 +1,11 @@
-Message-ID: <507820C1.9030604@xenomai.org>
-Date: Fri, 12 Oct 2012 15:53:05 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <mailman.1.1350036002.3896.xenomai@xenomai.org>	<1350043471.21618.YahooMailNeo@web171504.mail.ir2.yahoo.com>	<50780DD5.3040403@xenomai.org>
-	<CAPASGLr-j_rGyWV--v=146fuy7QkmrCC_-6Ag1tHC6=ex8VBYg@mail.gmail.com>
-In-Reply-To: <CAPASGLr-j_rGyWV--v=146fuy7QkmrCC_-6Ag1tHC6=ex8VBYg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Where is do_clock_host_realtime
+In-Reply-To: <CAN0CFw1gjwCJO0oauUQX5XdyE3b1XetPYa2y2d30csOaGdjmQA@mail.gmail.com>
+References: <CAN0CFw1gjwCJO0oauUQX5XdyE3b1XetPYa2y2d30csOaGdjmQA@mail.gmail.com>
+Date: Fri, 12 Oct 2012 10:24:05 -0500
+Message-ID: <CADg0w=qa5vo_WbACjEU5zrFiWFzQETPj2Yg2LeW1WeEQsqH4xg@mail.gmail.com>
+From: Garret Cook <garretcook@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: Re: [Xenomai] Xenomai on Gentoo?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,29 +14,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Eric Noulard <eric.noulard@gmail.com>
-Cc: Franz Engel <franz_lambert_engel@yahoo.de>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Grant <emailgrant@gmail.com>
+Cc: xenomai@xenomai.org
 
-On 10/12/2012 03:48 PM, Eric Noulard wrote:
-> 2012/10/12 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>:
->> On 10/12/2012 02:04 PM, Franz Engel wrote:
->>> Hi,
->>>
->>> I would like to use the funktion "do_clock_host_realtime" but I can't find it. Is the function available in Xenomai version 2.6.1. I included posix/time.h but it seem so that the function is not existing.
->>
->> Is this function supposed to be part of the POSIX specification? Do you
->> have any pointer?
-> 
-> I think it is referenced in Xenomai documentation
-> http://www.xenomai.org/documentation/trunk/html/api/group__posix__time.html#ga51d3a6fabddfbe8dbc4ec626e8ffad9f
-> 
-> not in POSIX.
+Hi Grant,
 
-Ok, but if you look at the function prototype you see "static", so, ok,
-will be fixed.
+About a year ago, I had 3-4 realtime production motor controller servers
+running on Xenomai/Gentoo and it worked exceptionally well.  The
+portage/ebuild system made it easy to verify Xenomai was installed as well
+as configure and compile my application code with realtime support.
 
-What you really want is clock_gettime(CLOCK_HOSTREALTIME
+I used the Xenomai quickstart
+guide<http://www.xenomai.org/index.php/Xenomai_quick_build_quide>in
+conjunction with the gentoo
+quick system install
+guide<http://www.gentoo.org/doc/en/gentoo-x86-quickinstall.xml>.
+ Since you typically configure/compile/install kernels by hand in gentoo,
+adding Xenomai wasn't much of a leap.
 
--- 
-					    Gilles.
+Best Regards,
+Garret Cook
 
+
+On Fri, Oct 12, 2012 at 6:10 AM, Grant <emailgrant@gmail.com> wrote:
+
+> Has anyone here used Xenomai on Gentoo?  There is some info here but
+> it's about 6 years old:
+>
+> http://www.gentoo-wiki.info/HOWTO_Xenomai_2.1.x_Branch
+>
+> - Grant
+>
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> http://www.xenomai.org/mailman/listinfo/xenomai
+>
