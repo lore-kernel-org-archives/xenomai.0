@@ -1,12 +1,10 @@
-Message-ID: <50771645.6020705@xenomai.org>
-Date: Thu, 11 Oct 2012 20:56:05 +0200
+Message-ID: <5077B799.5000408@xenomai.org>
+Date: Fri, 12 Oct 2012 08:24:25 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <20121011170958.40C8E372@centrum.cz>
-In-Reply-To: <20121011170958.40C8E372@centrum.cz>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Shared interrupts
+Subject: [Xenomai] [PATCH 0/1] rtdm: get spinlocks to lock the scheduler
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,28 +13,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Petr Cervenka <grugh@centrum.cz>
-Cc: xenomai@xenomai.org
-
-On 10/11/2012 05:09 PM, Petr Cervenka wrote:
-> I'm using xenomai 2.5.6, adeos 2.6.38.8-x86-2.10-01
-
-> 
-> My primary questions: Is there a possibility to have the rtdm driver
-> compatible with both cases?
+To: Xenomai <xenomai@xenomai.org>
 
 
-Well, yes, enable CONFIG_XENO_OPT_SHIRQ, and pass RTDM_IRQTYPE_SHARED
-when registering the irq handlers. And do not return XN_ISR_PROPAGATE.
+Hi,
 
-> 
-> Do I loose deterministic rt latency when there is no non-rt device? I
-> think that all my interrupts should be handled by rt devices in such
-> case, so no propagating to linux should happen. Am I wrong?
+here is the second attempt to try and allow drivers to wake-up threads
+in the middle of spinlock sections. The idea is to try and have a
+lighter version of __xnpod_lock_sched/__xnpod_unlock_sched and use that
+in the RTDM spinlocks.
 
+The lighter version of __xnpod_lock_sched/__xnpod_unlock_sched uses a
+status bit, and a preemption count in the scheduler structure, but as we
+want to allow a thread to suspend itself when the scheduler is locked,
+when this happens, we save the preemption count in the thread structure,
+and clear the preemption count and scheduler bit, they get restore in
+xnpod_schedule/xnshadow epilogue when waking-up such a thread.
 
-You are not wrong. But if you do not want propagation to linux, you
-should not return XN_ISR_PROPAGATE.
+We have to keep the thread XNLOCK bit, it is more or less part of the
+ABI (for instance, it is possible to create a thread with this bit set,
+and the scheduler is locked immediately when this thread is first
+scheduled). I guess we can completely remove it in -forge though.
+
+I have failed to modify xnlock services to also use the scheduler lock,
+xnheap_init is called before the scheduler is initialized, and takes an
+xnlock.
+
+Regards.
 
 -- 
                                                                 Gilles.
