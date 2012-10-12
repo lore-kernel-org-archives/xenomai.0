@@ -1,15 +1,14 @@
-Message-ID: <5077E273.3010109@xenomai.org>
-Date: Fri, 12 Oct 2012 11:27:15 +0200
+Message-ID: <5077E531.5050507@xenomai.org>
+Date: Fri, 12 Oct 2012 11:38:57 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <20121011170958.40C8E372@centrum.cz>,
-	<50771645.6020705@xenomai.org>,
-	<20121012091140.E3CB5F90@centrum.cz> <5077D1D8.1070505@xenomai.org>
-	<20121012112115.C2F442F8@centrum.cz>
-In-Reply-To: <20121012112115.C2F442F8@centrum.cz>
+References: <5077B799.5000408@xenomai.org>
+	<1350023177-8123-1-git-send-email-gilles.chanteperdrix@xenomai.org>
+	<5077BDEF.6070307@xenomai.org>
+In-Reply-To: <5077BDEF.6070307@xenomai.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Shared interrupts
+Subject: Re: [Xenomai] [PATCH 1/1] rtdm: get spinlocks to lock the scheduler
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,44 +17,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Petr Cervenka <grugh@centrum.cz>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On 10/12/2012 11:21 AM, Petr Cervenka wrote:
->>>>>
->>>>> My primary questions: Is there a possibility to have the rtdm driver
->>>>> compatible with both cases?
->>>>
+On 10/12/2012 08:51 AM, Gilles Chanteperdrix wrote:
+> On 10/12/2012 08:26 AM, Gilles Chanteperdrix wrote:
 > 
-> So I assume, it is not possible.
-
-It is possible. What you want is, in case you have a nrt device, and in
-this case only, register a shared irq handler which simply returns
-XN_ISR_PROPAGATE | XN_ISR_NOENABLE, independently of the irq handler for
-the rt device.
-
-But if you start doing that, it is probably better to do what is
-described in the FAQ (write an irq handler for the nrt device which
-really acknowledges the irq at device level, so that you can avoid
-returning XN_ISR_NOENABLE, and keep determinism).
-
+>> In a context where callbacks are called with spinlocks held, it is not
+>> possible for drivers callbacks to wake up threads without holding any
+>> spinlock. So, we need a mechanism to lock the scheduler when a spinlock
+>> is grabbed. As xnpod_lock_sched/xnpod_unlock_sched may be a bit heavy
+>> weight for this case, we try and reimplement a lighter version.
 > 
->>
->> Yes, I was talking about the rt devices only case. For the rt/nrt mixup,
->> see the FAQ.
->>
 > 
-> I have some suggestion on improvement in future version: 
-> Allowing to setup for interrupt, that when no rt device handles the interrupt it could be passed to the linux.
-> More specifically:
-> Similar flag to XN_ISR_PROPAGATE, but pass interrupt to linux only when it was not handled by any rt device at all.
-> 
-> Example:
-> Imagine system with 2 shared PCI slots (and no other). The user can use those slots for any combination of rt and nrt devices. This combination (or IRQ sharing) is not known in advance.
+> There is a concurrence issue if, say, xnpod_suspend_thread or
+> xnpod_reset_thread is called on another cpu while the thread which holds
+> the scheduler lock is using an rtdm spinlock. I guess the rtdm spinlocks
+> have to take the nklock to serialize access to the scheduler structures,
+> so, use xnpod_lock_sched/xnpod_unlock_sched instead of
+> __xnpod_lock_sched / __xnpod_unlock_sched.
 
-This will probably never happen. The case where rt/nrt devices are mixed
-up has absolutely no interest. If you do not need determinism for the rt
-device, do not use an rt driver.
+Doesn't work either. So, handling the scheduler lock has to take place
+in xnpod_schedule. What we can simply do is add a shortcut for this case
+in __xnpod_schedule.
 
 -- 
 					    Gilles.
