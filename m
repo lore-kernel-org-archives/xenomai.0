@@ -1,13 +1,11 @@
-Message-ID: <50790563.8000403@xenomai.org>
-Date: Sat, 13 Oct 2012 08:08:35 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CAN0CFw1gjwCJO0oauUQX5XdyE3b1XetPYa2y2d30csOaGdjmQA@mail.gmail.com>
-	<CADg0w=qa5vo_WbACjEU5zrFiWFzQETPj2Yg2LeW1WeEQsqH4xg@mail.gmail.com>
-In-Reply-To: <CADg0w=qa5vo_WbACjEU5zrFiWFzQETPj2Yg2LeW1WeEQsqH4xg@mail.gmail.com>
+In-Reply-To: <CAFNBftf5EYFoSPK3VA4NWA5-eCQVvpOt_uV5Kf8VJ9rAsA5eww@mail.gmail.com>
+References: <CAFNBftf5EYFoSPK3VA4NWA5-eCQVvpOt_uV5Kf8VJ9rAsA5eww@mail.gmail.com>
+Date: Sat, 13 Oct 2012 11:13:47 +0200
+Message-ID: <CAHQk_AR+n7pq==TSTz5JwVRhg=jOKMXKniGrgdVTVTea5=aq1Q@mail.gmail.com>
+From: Maksym Parkachov <lazy.gopher@gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Xenomai on Gentoo?
+Subject: Re: [Xenomai] Xenomai on Yocto/Openembedded
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,33 +14,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Garret Cook <garretcook@gmail.com>
+To: Flavio Castro Alves Filho <flavio.alves@gmail.com>
 Cc: xenomai@xenomai.org
 
-On 10/12/2012 05:24 PM, Garret Cook wrote:
+Hi Flavio,
 
-> Hi Grant,
-> 
-> About a year ago, I had 3-4 realtime production motor controller servers
-> running on Xenomai/Gentoo and it worked exceptionally well.  The
-> portage/ebuild system made it easy to verify Xenomai was installed as well
-> as configure and compile my application code with realtime support.
-> 
-> I used the Xenomai quickstart
-> guide<http://www.xenomai.org/index.php/Xenomai_quick_build_quide>in
-> conjunction with the gentoo
-> quick system install
-> guide<http://www.gentoo.org/doc/en/gentoo-x86-quickinstall.xml>.
->  Since you typically configure/compile/install kernels by hand in gentoo,
-> adding Xenomai wasn't much of a leap.
+> Has anybody tried to create a package for Xenomai for Yocto or Openembedded?
 
+I have a client side package at my layer, you could check it at:
 
-Xenomai wiki is locked, but it is not because we do not want
-contributions, so, if someone wants write access to the wiki, write a
-page on installing xenomai on gentoo, upload the ebuild, we can do that.
+http://github.com/veter-team/veterlayer/tree/master/recipes/xenomai
 
-Regards.
+It's pretty strait forward. Kernel is different story, I've just made
+a patch to customized kernel:
 
--- 
-                                                                Gilles.
+http://github.com/veter-team/veterlayer/tree/master/recipes/linux
+
+Hope this helps,
+Maksym.
+http://veter-project.blogspot.com
 
