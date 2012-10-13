@@ -1,13 +1,12 @@
-Message-ID: <50796378.9030703@xenomai.org>
-Date: Sat, 13 Oct 2012 14:50:00 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CAFNBftf5EYFoSPK3VA4NWA5-eCQVvpOt_uV5Kf8VJ9rAsA5eww@mail.gmail.com>
-	<507960C7.3010002@gmail.com>
-In-Reply-To: <507960C7.3010002@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Xenomai on Yocto/Openembedded
+In-Reply-To: <CADg0w=qa5vo_WbACjEU5zrFiWFzQETPj2Yg2LeW1WeEQsqH4xg@mail.gmail.com>
+References: <CAN0CFw1gjwCJO0oauUQX5XdyE3b1XetPYa2y2d30csOaGdjmQA@mail.gmail.com>
+	<CADg0w=qa5vo_WbACjEU5zrFiWFzQETPj2Yg2LeW1WeEQsqH4xg@mail.gmail.com>
+Date: Sat, 13 Oct 2012 08:07:27 -0700
+Message-ID: <CAN0CFw330RTyeyYCpokiJhshGsV-Vw+JB3XpAup9jGN4PONTpA@mail.gmail.com>
+From: Grant <emailgrant@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: Re: [Xenomai] Xenomai on Gentoo?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,32 +15,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: koansoftware@gmail.com
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 10/13/2012 02:38 PM, Marco Cavallini wrote:
+> Hi Grant,
+>
+> About a year ago, I had 3-4 realtime production motor controller servers
+> running on Xenomai/Gentoo and it worked exceptionally well.  The
+> portage/ebuild system made it easy to verify Xenomai was installed as well
+> as configure and compile my application code with realtime support.
+>
+> I used the Xenomai quickstart guide in conjunction with the gentoo quick
+> system install guide.  Since you typically configure/compile/install kernels
+> by hand in gentoo, adding Xenomai wasn't much of a leap.
 
-> Il 13/10/2012 01:46, Flavio Castro Alves Filho ha scritto:
->> Hello,
+Thank you Garret and Gilles.  I will try this ASAP.
+
+- Grant
+
+
+>> Has anyone here used Xenomai on Gentoo?  There is some info here but
+>> it's about 6 years old:
 >>
->> Has anybody tried to create a package for Xenomai for Yocto or Openembedded?
+>> http://www.gentoo-wiki.info/HOWTO_Xenomai_2.1.x_Branch
 >>
->> Best regards,
->>
->> Flavio
-> 
-> Hi
-> I am OE developer and looks like there is any Xenomai recipe inside it.
-> BTW which platform are you using?
-
-
-You mean "there is not any" ? or "there is a" ?
-
-Anyway, using a search engine yields the following URLs:
-http://www.lara.unb.br/wiki/index.php/Overo_Xenomai
-http://wiki.gumstix.org/index.php?title=Xenomai_-_Mini_Howto
-http://www.xenomai.org/pipermail/xenomai-help/2010-02/msg00186.html
-
--- 
-                                                                Gilles.
+>> - Grant
 
