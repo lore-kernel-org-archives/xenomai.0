@@ -1,15 +1,14 @@
-From: VEYSSIERE Nicolas <nicolas.veyssiere@thalesgroup.com>
-Date: Mon, 15 Oct 2012 09:42:38 +0200
-Message-ID: <2831_1350286976_507BBE80_2831_9511_1_4008F9ABAF25EA469EA100EAC59FE290011C429A5EA0@THSONEA01CMS01P.one.grp>
-References: <CAN0CFw1gjwCJO0oauUQX5XdyE3b1XetPYa2y2d30csOaGdjmQA@mail.gmail.com>
-	<CADg0w=qa5vo_WbACjEU5zrFiWFzQETPj2Yg2LeW1WeEQsqH4xg@mail.gmail.com>
-	<50790563.8000403@xenomai.org>
-In-Reply-To: <50790563.8000403@xenomai.org>
-Content-Language: fr-FR
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+From: Lukasz Zemla <Lukasz.Zemla@woodward.com>
+Date: Mon, 15 Oct 2012 09:55:15 +0200
+Message-ID: <CE2E43470FE5444A811B580382FE5EDF23A1BD63A2@KEMPMAIL2.woodward.com>
+References: <CAFNBftf5EYFoSPK3VA4NWA5-eCQVvpOt_uV5Kf8VJ9rAsA5eww@mail.gmail.com>
+In-Reply-To: <CAFNBftf5EYFoSPK3VA4NWA5-eCQVvpOt_uV5Kf8VJ9rAsA5eww@mail.gmail.com>
+Content-Language: en-US
+Content-Type: text/plain;
+  charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Subject: Re: [Xenomai] Xenomai on Gentoo?
+Subject: Re: [Xenomai] Xenomai on Yocto/Openembedded
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,61 +17,78 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, Garret Cook <garretcook@gmail.com>
+To: Flavio Castro Alves Filho <flavio.alves@gmail.com>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-So time ago I needed to install Xenomai on gentoo.
-
-For that I made 2 gentoo portage ebuild : one for the xenomai library, and =
-one for the xenomai patched kernel.
-
-I have just created a github project for that : https://github.com/iXo/iXoG=
-entooOverlay
-
-Maybe this can help you.
-
-
-It is a little outdated now, but updating it should not be very difficult.
-
-
------Message d'origine-----
-De=A0: xenomai-bounces@xenomai.org [mailto:xenomai-bounces@xenomai.org] De =
-la part de Gilles Chanteperdrix
-Envoy=E9=A0: samedi 13 octobre 2012 08:09
-=C0=A0: Garret Cook
-Cc=A0: xenomai@xenomai.org
-Objet=A0: Re: [Xenomai] Xenomai on Gentoo?
-
-On 10/12/2012 05:24 PM, Garret Cook wrote:
-
-> Hi Grant,
->=20
-> About a year ago, I had 3-4 realtime production motor controller servers
-> running on Xenomai/Gentoo and it worked exceptionally well.  The
-> portage/ebuild system made it easy to verify Xenomai was installed as wel=
-l
-> as configure and compile my application code with realtime support.
->=20
-> I used the Xenomai quickstart
-> guide<http://www.xenomai.org/index.php/Xenomai_quick_build_quide>in
-> conjunction with the gentoo
-> quick system install
-> guide<http://www.gentoo.org/doc/en/gentoo-x86-quickinstall.xml>.
->  Since you typically configure/compile/install kernels by hand in gentoo,
-> adding Xenomai wasn't much of a leap.
-
-
-Xenomai wiki is locked, but it is not because we do not want
-contributions, so, if someone wants write access to the wiki, write a
-page on installing xenomai on gentoo, upload the ebuild, we can do that.
-
-Regards.
-
---=20
-                                                                Gilles.
-
-_______________________________________________
-Xenomai mailing list
-Xenomai@xenomai.org
-http://www.xenomai.org/mailman/listinfo/xenomai
+SGksCgpJJ20ganVzdCB3b3JraW5nIG9uIGl0LiBJJ20gbmV3YmllIGluIFlvY3RvLCBidXQgdGhv
+c2UgcmVjaXBlcyBzZWVtIHRvIGJlIHdvcmtpbmcgdG8gbWUuCkkgdXNlIEZyZWVzY2FsZSBMaW51
+eCBTREsgKGJhc2VkIG9uIFlvY3RvKSBmb3IgUW9ySVEgcHJvY2Vzc29ycy4gCgpSZWNpcGUgZm9y
+IGJ1aWxkaW5nIGtlcm5lbDoKCiMtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCgppbmhlcml0IGtlcm5l
+bApyZXF1aXJlIHJlY2lwZXMta2VybmVsL2xpbnV4L2xpbnV4LWR0Yi5pbmMKCkRFU0NSSVBUSU9O
+ID0gIkxpbnV4IGtlcm5lbCAzLjIuMjEgcGF0Y2hlZCBieSBYZW5vbWFpIDIuNi4xIgpTRUNUSU9O
+ID0gImtlcm5lbCIKTElDRU5TRSA9ICJHUEx2MiIKREVQRU5EUyA9ICJ4ZW5vbWFpLWxpYnMtMi42
+LjEiCgpXV19LRVJORUxfVkVSID0gMy4yLjIxCldXX1hFTk9NQUlfVkVSID0gMi42LjEKClMgPSAk
+e1dPUktESVJ9L2xpbnV4LSR7V1dfS0VSTkVMX1ZFUn0KCkxJQ19GSUxFU19DSEtTVU0gPSAiZmls
+ZTovLyR7V09SS0RJUn0vbGludXgtJHtXV19LRVJORUxfVkVSfS9DT1BZSU5HO21kNT1kNzgxMGZh
+Yjc0ODdmYjBhYWQzMjdiNzZmMWJlN2NkNyIKCiMgcmVxdWlyZSByZWNpcGVzLWtlcm5lbC94ZW5v
+bWFpL2xpbnV4LXhlbm9tYWktJHtQVn0uaW5jCgpTUkNfVVJJID0gImh0dHA6Ly93d3cua2VybmVs
+Lm9yZy9wdWIvbGludXgva2VybmVsL3YzLngvbGludXgtJHtXV19LRVJORUxfVkVSfS50YXIuYnoy
+IFwKCQlodHRwOi8vZG93bmxvYWQuZ25hLm9yZy94ZW5vbWFpL3N0YWJsZS94ZW5vbWFpLSR7V1df
+WEVOT01BSV9WRVJ9LnRhci5iejIgXAoJCWZpbGU6Ly9taXNzaW5nLWlwaXBlLWluY2x1ZGUtaW4t
+Z3Bpby1tcGM4eHh4LmMucGF0Y2gJXCAgIAoJIgoKIyBGaW5kIHRoZSBrZXJuZWwgY29uZmlnIGZp
+bGUgaW4gdGhlIHJpZ2h0IGRpcmVjdG9yeS4KRklMRVNFWFRSQVBBVEhTX3ByZXBlbmQgOj0gIiR7
+VEhJU0RJUn0vJHtQTn06IgoKIyBOYW1lIG9mIHRoZSBXb29kd2FyZCBrZXJuZWwgY29uZmlndXJh
+dGlvbiBmaWxlCldXX0tFUk5FTF9DRkdfRklMRSA6PSAiY29uZmlnLSR7V1dfS0VSTkVMX1ZFUn0t
+aXBpcGUiCgojIHVzZSB0aGlzIHd3IGtlcm5lbCBjb25maWd1cmF0aW9uClNSQ19VUkkgKz0gImZp
+bGU6Ly8ke1dXX0tFUk5FTF9DRkdfRklMRX0iCgojIHByZXZlbnQgdGhlIGZzbC1sYXllciBrZXJu
+ZWxfZG9fY29uZmlndXJlX3ByZXBlbmQoKSBmcm9tIHVzaW5nIHRoZSBrZXJuZWwgZGVmY29uZmln
+LAojICBvdXIgY29uZmlnIHNob3VsZCBiZSB1c2VkIGluc3RlYWQKS0VSTkVMX0RFRkNPTkZJRyA9
+ICIke1dPUktESVJ9LyR7V1dfS0VSTkVMX0NGR19GSUxFfSIKCmRvX2NvbmZpZ3VyZV9wcmVwZW5k
+KCkgewoJIyBjb3B5IGRlc2lyZWQgZGVmY29uZmlnIHNvIHdlIHBpY2sgaXQgdXAgZm9yIHRoZSBy
+ZWFsIGtlcm5lbF9kb19jb25maWd1cmUKCWVjaG8gIkNvcHlpbmcgV1cgZGVmY29uZmlnIgkKCWNw
+ICR7S0VSTkVMX0RFRkNPTkZJR30gJHtCfS8uY29uZmlnCgoJY2QgJHtXT1JLRElSfS94ZW5vbWFp
+LSR7V1dfWEVOT01BSV9WRVJ9CgkuL3NjcmlwdHMvcHJlcGFyZS1rZXJuZWwuc2ggLS1hcmNoPXBv
+d2VycGMgLS1saW51eD0ke1dPUktESVJ9L2xpbnV4LSR7V1dfS0VSTkVMX1ZFUn0gLS1pcGlwZT0k
+e1dPUktESVJ9L3hlbm9tYWktJHtXV19YRU5PTUFJX1ZFUn0va3NyYy9hcmNoL3Bvd2VycGMvcGF0
+Y2hlcy9pcGlwZS1jb3JlLSR7V1dfS0VSTkVMX1ZFUn0tcG93ZXJwYy0xLnBhdGNoCgoJY2QgJHtX
+T1JLRElSfS9saW51eC0ke1dXX0tFUk5FTF9WRVJ9Cn0KCnJlcXVpcmUgcmVjaXBlcy1rZXJuZWwv
+bGludXgvbGludXgtdG9vbHMuaW5jCiMtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCgpYZW5vbWFpIGxp
+YnJhcmllcyAoeGVub21haS1saWJzLmJiKToKCiMtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCkRFU0NS
+SVBUSU9OID0gIlhlbm9tYWkgbGlicmFyaWVzIgpTRUNUSU9OID0gImtlcm5lbCIKTElDRU5TRSA9
+ICJHUEx2MiIKSE9NRVBBR0UgPSAiaHR0cDovL3hlbm9tYWkub3JnLyIKREVQRU5EUyA9ICIiCkxJ
+Q19GSUxFU19DSEtTVU0gPSAiZmlsZTovL0NSRURJVFM7bWQ1PTc4NDVmNGQ4ZTk0ZWQzNjY1MWVj
+ZmY1NTRkZDJiMGJlIgoKUyA9ICIke1dPUktESVJ9L3hlbm9tYWktJHtQVn0iCgpQUiA9ICJyMCIK
+ClNSQ19VUkkgPSAiaHR0cDovL2Rvd25sb2FkLmduYS5vcmcveGVub21haS9zdGFibGUveGVub21h
+aS0ke1BWfS50YXIuYnoyIFwKCSAgICIKCmRvX2NvbmZpZ3VyZSAoKSB7CgkuL2NvbmZpZ3VyZSAt
+LWVuYWJsZS1zbXAgLS1ob3N0PXBvd2VycGMtZnNsLWxpbnV4LWdudXNwZQp9Cgpkb19jb21waWxl
+KCkgewoJb2VfcnVubWFrZQp9Cgpkb19pbnN0YWxsKCkgewoJb2VfcnVubWFrZSBERVNURElSPSR7
+RH0gaW5zdGFsbAoJcm0gLXJmICR7RH0veGVub21haS9zaGFyZS9kb2MvCn0KClBBQ0tBR0VTID0g
+IiR7UE59IgojIFdlIGVudW1lcmF0ZSBhbGwgZGlyZWN0b3JpZXMgZXhjbHVkaW5nIC91c3IveGVu
+b21haS9zaGFyZS8gKGl0IGNvbnRhaW5zIG9ubHkgZG9jdW1lbnRhdGlvbiB3aGljaCBvY2N1cGll
+cyBhYm91dCAzM01CKQpGSUxFU18ke1BOfSA9ICIvZGV2L3J0cCogL2Rldi9ydGhlYXAgL3Vzci94
+ZW5vbWFpL2JpbiAvdXNyL3hlbm9tYWkvaW5jbHVkZSAvdXNyL3hlbm9tYWkvbGliIC91c3IveGVu
+b21haS9zYmluIgojLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQoKClBvemRyYXdpYW0gLyBCZXN0IFJl
+Z2FyZHMgLyBNaXQgZnJldW5kbGljaGVuIEdyw7zDn2VuIArFgXVrYXN6IFplbcWCYQoKLS0tLS1P
+cmlnaW5hbCBNZXNzYWdlLS0tLS0KRnJvbTogeGVub21haS1ib3VuY2VzQHhlbm9tYWkub3JnIFtt
+YWlsdG86eGVub21haS1ib3VuY2VzQHhlbm9tYWkub3JnXSBPbiBCZWhhbGYgT2YgRmxhdmlvIENh
+c3RybyBBbHZlcyBGaWxobwpTZW50OiBTYXR1cmRheSwgT2N0b2JlciAxMywgMjAxMiAxOjQ3IEFN
+ClRvOiB4ZW5vbWFpQHhlbm9tYWkub3JnClN1YmplY3Q6IFtYZW5vbWFpXSBYZW5vbWFpIG9uIFlv
+Y3RvL09wZW5lbWJlZGRlZAoKSGVsbG8sCgpIYXMgYW55Ym9keSB0cmllZCB0byBjcmVhdGUgYSBw
+YWNrYWdlIGZvciBYZW5vbWFpIGZvciBZb2N0byBvciBPcGVuZW1iZWRkZWQ/CgpCZXN0IHJlZ2Fy
+ZHMsCgpGbGF2aW8KCi0tCkZsYXZpbyBkZSBDYXN0cm8gQWx2ZXMgRmlsaG8KCmZsYXZpby5hbHZl
+c0BnbWFpbC5jb20Kd3d3LmxpbnV4ZW1iYXJjYWRvLmNvbQpUd2l0dGVyOiBodHRwOi8vdHdpdHRl
+ci5jb20vIyEvZnJhdmlvZmlpIExpbmtlZEluIHByb2ZpbGU6IHd3dy5saW5rZWRpbi5jb20vaW4v
+ZmxhdmlvY2FzdHJvYWx2ZXMKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fClhlbm9tYWkgbWFpbGluZyBsaXN0Clhlbm9tYWlAeGVub21haS5vcmcKaHR0cDov
+L3d3dy54ZW5vbWFpLm9yZy9tYWlsbWFuL2xpc3RpbmZvL3hlbm9tYWkKCgoqKioNClRoZSBpbmZv
+cm1hdGlvbiBpbiB0aGlzIGVtYWlsIGlzIGNvbmZpZGVudGlhbCBhbmQgaW50ZW5kZWQgc29sZWx5
+IGZvciB0aGUgaW5kaXZpZHVhbCBvciBlbnRpdHkgdG8gd2hvbSBpdCBpcyBhZGRyZXNzZWQuIElm
+IHlvdSBoYXZlIHJlY2VpdmVkIHRoaXMgZW1haWwgaW4gZXJyb3IgcGxlYXNlIG5vdGlmeSB0aGUg
+c2VuZGVyIGJ5IHJldHVybiBlLW1haWwsIGRlbGV0ZSB0aGlzIGVtYWlsLCBhbmQgcmVmcmFpbiBm
+cm9tIGFueSBkaXNjbG9zdXJlIG9yIGFjdGlvbiBiYXNlZCBvbiB0aGUgaW5mb3JtYXRpb24uDQoq
+KioK
 
