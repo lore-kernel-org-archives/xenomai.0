@@ -1,12 +1,10 @@
+Message-ID: <507C82E0.2030409@nta-inc.net>
+Date: Mon, 15 Oct 2012 16:40:48 -0500
+From: Jeff Webb <jeff.webb@nta-inc.net>
 MIME-Version: 1.0
-In-Reply-To: <507C2A38.4030308@xenomai.org>
-References: <507C2940.7000005@gmail.com>
-	<507C2A38.4030308@xenomai.org>
-Date: Mon, 15 Oct 2012 16:42:24 +0100
-Message-ID: <CANfTc7LUsE5xh_=xF02o9Rh_PSMYRnu_EVkZh3QMgYYwVsBbhw@mail.gmail.com>
-From: Stefan Videv <videvstefan@gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Subject: Re: [Xenomai] Problem Compiling/Building UserSpace Support for ARM
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="iso-8859-1"; Format="flowed"
+Subject: [Xenomai] Building deb packages under Ubuntu 12.04
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,30 +13,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Thanks, Gilles! Worked a threat!
+In order to build a set of xenomai deb packages from the xenomai-2.6.git re=
+po under ubuntu 12.04, I had to make the following change.  Otherwise, the =
+build process aborts because it can't copy files into a non-existent direct=
+ory.
 
--- Stefan
+-Jeff
 
-On Mon, Oct 15, 2012 at 4:22 PM, Gilles Chanteperdrix <
-gilles.chanteperdrix@xenomai.org> wrote:
-
-> On 10/15/2012 05:18 PM, Stefan Videv wrote:
-> > Hello!
-> >
-> > I've been trying to compile the user-space support for the latest
-> > version of Xenomai for ARM but failing.
-> >
-> > After downloading the source files, and running
-> >
-> > ./configure --build=i686-pc-linux-gnu --host=arm-linux-gnueabi
-> > CFLAGS="-march=armv7-a -mfpu=vfp3" LDFLAGS="-march=armv7-a"
->
-> That is because your toolchain compiles by default for thumb. Add -marm
-> to CFLAGS, thumb user-space are currently unsupported.
->
-> --
->                                             Gilles.
->
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: xeno-deb.patch
+Type: text/x-patch
+Size: 552 bytes
+Desc: not available
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20121015/97032be=
+5/attachment.bin>
