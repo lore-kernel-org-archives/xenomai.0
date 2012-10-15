@@ -1,12 +1,10 @@
-Message-ID: <507C85BB.3090204@nta-inc.net>
-Date: Mon, 15 Oct 2012 16:52:59 -0500
+Message-ID: <507C8977.506@nta-inc.net>
+Date: Mon, 15 Oct 2012 17:08:55 -0500
 From: Jeff Webb <jeff.webb@nta-inc.net>
 MIME-Version: 1.0
-References: <507C82E0.2030409@nta-inc.net>
-In-Reply-To: <507C82E0.2030409@nta-inc.net>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Building deb packages under Ubuntu 12.04
+Subject: [Xenomai] Problem with ipipe-core-3.2.21-x86-1.patch?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,25 +15,28 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-On 10/15/2012 04:40 PM, Jeff Webb wrote:
-> In order to build a set of xenomai deb packages from the xenomai-2.6.git repo under ubuntu 12.04, I had to make the following change.  Otherwise, the build process aborts because it can't copy files into a non-existent directory.
->
-> -Jeff
->
+I am trying to build xenomai from the xenomai-2.6.git repo under ubuntu 12.04 on a x86_64 desktop machine.  When I try to build a xenomai-enabled kernel from the 3.2.21 sources, the build fails with a compile error.  (Sorry, I didn't save the error message, but I can repeat the process if necessary.)  In order to get things to compile, I made the following change to ipipe-core-3.2.21-x86-1.patch.  Is this a bug?  If so, I'm wondering why no one else has run into this one yet.  I think I built a kernel without any compiler errors under ubuntu 10.04 using this patch, but I'm not 100% certain about that.
 
-Sorry.  I think a should have given the patch inline:
+-Jeff
 
-diff --git a/debian/rules b/debian/rules
-index d336511..634ecf5 100755
---- a/debian/rules
-+++ b/debian/rules
-@@ -96,6 +96,7 @@ install: build
-  	$(MAKE) install DESTDIR=$(CURDIR)/debian/tmp/
-  	dh_install --sourcedir=$(CURDIR)/debian/tmp
-  	# Patch collection:
-+	mkdir -p $(CURDIR)/debian/linux-patch-xenomai/usr/src/kernel-patches/diffs/xenomai
-  	cp adeos-ipipe-*.patch $(CURDIR)/debian/linux-patch-xenomai/usr/src/kernel-patches/diffs/xenomai
-  	# xeno-config should be only in libxenomai-dev
-  	rm -f $(CURDIR)/debian/xenomai-runtime/usr/bin/xeno-config
-
+diff --git a/ksrc/arch/x86/patches/ipipe-core-3.2.21-x86-1.patch b/ksrc/arch/x86/patches/ipipe-core-3.2.21-x86-1.patch
+index 18b23be..58bdbf4 100644
+--- a/ksrc/arch/x86/patches/ipipe-core-3.2.21-x86-1.patch
++++ b/ksrc/arch/x86/patches/ipipe-core-3.2.21-x86-1.patch
+@@ -1751,12 +1751,12 @@ index 6d939d7..9bbe781 100644
+   #ifdef CONFIG_SMP
+   	chip->irq_set_affinity = ir_ioapic_set_affinity;
+  +#ifdef CONFIG_IPIPE
+-+	chip->irq_move = move_xxapic_irq,
+++	chip->irq_move = move_xxapic_irq;
+  +#endif
+  +#endif
+  +#ifdef CONFIG_IPIPE
+-+	chip->irq_hold = hold_ioapic_irq,
+-+	chip->irq_release = release_ioapic_irq,
+++	chip->irq_hold = hold_ioapic_irq;
+++	chip->irq_release = release_ioapic_irq;
+   #endif
+   }
+   #endif /* CONFIG_IRQ_REMAP */
 
