@@ -1,10 +1,10 @@
-Date: Tue, 16 Oct 2012 16:00:54 +0200
-Message-ID: <5ofi5usm071h5jh59hggtck6.1350396054753@email.android.com>
-From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
+Message-ID: <507D7A0C.7090209@gmail.com>
+Date: Tue, 16 Oct 2012 12:15:24 -0300
+From: =?ISO-8859-1?Q?Sebasti=E1n_Pavez?= <sebastian.pavez.t@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] Problem with ipipe-core-3.2.21-x86-1.patch?
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai] Installing Xenomai Newbie
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,50 +13,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-VG9tb3Jyb3cgSSB3aWxsIHRyeSB0byB0ZXN0IGFuZCBrbm93IHRoYXQgZGF0YS4KClJlZ2FyZHMs
-IAoKCkxlbwoKR2lsbGVzIENoYW50ZXBlcmRyaXggPGdpbGxlcy5jaGFudGVwZXJkcml4QHhlbm9t
-YWkub3JnPiBoYSBlc2NyaXQ6Cgo+T24gMTAvMTYvMjAxMiAwMzoxNiBQTSwgTGVvcG9sZCBQYWxv
-bW8tQXZlbGxhbmVkYSB3cm90ZToKPj4gQSBEaW1hcnRzIDE2IE9jdHVicmUgMjAxMiwgR2lsbGVz
-IENoYW50ZXBlcmRyaXggdmEgZXNjcml1cmU6Cj4+PiBPbiAxMC8xNi8yMDEyIDAxOjE1IFBNLCBM
-ZW9wb2xkIFBhbG9tby1BdmVsbGFuZWRhIHdyb3RlOgo+Pj4+IEEgRGltYXJ0cyAxNiBPY3R1YnJl
-IDIwMTIsIEdpbGxlcyBDaGFudGVwZXJkcml4IHZhIGVzY3JpdXJlOgo+Pj4+PiBPbiAxMC8xNi8y
-MDEyIDEyOjA4IEFNLCBKZWZmIFdlYmIgd3JvdGU6Cj4+Pj4+Cj4+Pj4+PiBJIGFtIHRyeWluZyB0
-byBidWlsZCB4ZW5vbWFpIGZyb20gdGhlIHhlbm9tYWktMi42LmdpdCByZXBvIHVuZGVyCj4+Pj4+
-PiB1YnVudHUgMTIuMDQgb24gYSB4ODZfNjQgZGVza3RvcCBtYWNoaW5lLiAgV2hlbiBJIHRyeSB0
-byBidWlsZCBhCj4+Pj4+PiB4ZW5vbWFpLWVuYWJsZWQga2VybmVsIGZyb20gdGhlIDMuMi4yMSBz
-b3VyY2VzLCB0aGUgYnVpbGQgZmFpbHMgd2l0aAo+Pj4+Pj4gYSBjb21waWxlIGVycm9yLiAgKFNv
-cnJ5LCBJIGRpZG4ndCBzYXZlIHRoZSBlcnJvciBtZXNzYWdlLCBidXQgSSBjYW4KPj4+Pj4+IHJl
-cGVhdCB0aGUgcHJvY2VzcyBpZiBuZWNlc3NhcnkuKSAgSW4gb3JkZXIgdG8gZ2V0IHRoaW5ncyB0
-byBjb21waWxlLAo+Pj4+Pj4gSSBtYWRlIHRoZSBmb2xsb3dpbmcgY2hhbmdlIHRvIGlwaXBlLWNv
-cmUtMy4yLjIxLXg4Ni0xLnBhdGNoLiAgSXMKPj4+Pj4+IHRoaXMgYSBidWc/ICBJZiBzbywgSSdt
-IHdvbmRlcmluZyB3aHkgbm8gb25lIGVsc2UgaGFzIHJ1biBpbnRvIHRoaXMKPj4+Pj4+IG9uZSB5
-ZXQuICBJIHRoaW5rIEkgYnVpbHQgYSBrZXJuZWwgd2l0aG91dCBhbnkgY29tcGlsZXIgZXJyb3Jz
-IHVuZGVyCj4+Pj4+PiB1YnVudHUgMTAuMDQgdXNpbmcgdGhpcyBwYXRjaCwgYnV0IEknbSBub3Qg
-MTAwJSBjZXJ0YWluIGFib3V0IHRoYXQuCj4+Pj4+Cj4+Pj4+Cj4+Pj4+IFllcCwgaXQgaGFzIGJl
-ZW4gcmVwb3J0ZWQgYWxyZWFkeSwgYW5kIGlzIGZpeGVkIGluIHRoZSAzLjQgYnJhbmNoLCBub3QK
-Pj4+Pj4gYmFja3BvcnRlZCBpbiAzLjIgeWV0Lgo+Pj4+Cj4+Pj4gaGksCj4+Pj4KPj4+PiAxKSBk
-b2VzIGl0IG1lYW5zIHRoYXQgdGhpcyBwYXRjaCBjb3VsZCBiZSBjb25zaWRlcmVkIGEgYmFja3Bv
-cnQgdG8gMy4yPwo+Pj4+Cj4+Pj4gMikgd2UgdXNlIG9yb2NvcyBhbmQgdGhlaXIgeGVub21haSBw
-YXJ0LiBXZSBoYXZlIGZvdW5kIHRoYXQgd2hlbiB3ZSBydW4gYW4gCj4+Pj4gYXBwbGljYXRpb24g
-aW4geGVub21haSwgYWx0aG91Z2ggdGhlIGZyYW1ld29yayBjb3VsZCBkbyBpdCwgdGhlcmUncyBu
-byAKPj4+PiBtaWdyYXRpb24gYmV0d2VlbiBjcHVzLCBhbmQgYWxsIGlzIGV4ZWN1dGVkIGluIGNw
-dTAuIFRoZSBtYWluIGRldmVsb3BlciAKPj4gaGF2ZSAKPj4+PiBjb21tZW50ZWQgdGhhdCBhIHNv
-bWUgdGVzdCBpc29sYXRpbmcgeGVub21haSBzaG91bGQgYmUgZG9uZS4gCj4+Pj4KPj4+PiBJIGhh
-dmUgc2VlbiB0aGF0IHRoZSBwYXRjaCB0b3VjaCBzb21ldGhpbmcgb2YgYWZmaW5pdHkuIFNvbWUg
-b25lIHlvdSBoYXZlIAo+Pj4+IGV4cGVyaWVuY2VkIHNvbWUgdHJvdWJsZSB3aGVuIHlvdSBydW4g
-YSBtdWx0aXRocmVhZCBhcHBsaWNhdGlvbiBhbmQgYWxsIAo+PiB0aGUgCj4+Pj4gdGhyZWFkcyBh
-cmUgZXhlY3V0ZWQgaW4gY3B1MCBhbmQgbm8gbWlncmF0aW9uIGlzIGRvbmU/Cj4+Pgo+Pj4gQSBt
-aWdyYXRpb24gaXMgZGV0cmltZW50YWwgdG8gZGV0ZXJtaW5pc20sIHNvIFhlbm9tYWkgdGFrZXMg
-dGhlIGVhc3kgd2F5Cj4+PiBvdXQgb2YgdGhpcyBkaWxlbW5hOiBhYnNvbHV0ZWx5IG5vIG1pZ3Jh
-dGlvbiBpcyBkb25lIGF1dG9tYXRpY2FsbHkuIFNvLAo+Pj4gaWYgeW91IHdhbnQgdG8gcnVuIGEg
-dGhyZWFkIG9uIGEgZGlmZmVyZW50IGNwdSwgeW91IGhhdmUgdG8gc2V0IHRoZQo+Pj4gYWZmaW5p
-dHkgeW91cnNlbGYuIEl0IGhhcyBhbHdheXMgYmVlbiB0aGF0IHdheS4KPj4gCj4+IFdlIGRvIGl0
-IHVzaW5nIHRoZSBPcm9jb3MgYXBpLCBidXQgaXQgZG9lc24ndCB3b3JrLCBzbyB3ZSBkb24ndCBr
-bm93IGlmIGl0J3MgYSAKPj4gT3JvY29zIHByb2JsZW0gb3IgWGVub21haSBwcm9ibGVtLgo+Cj5X
-aGF0IGlzIHRoZSByZXR1cm4gdmFsdWUgb2Ygc2NoZWRfc2V0YWZmaW5pdHk/Cj4KPi0tIAo+CQkJ
-CQkgICAgR2lsbGVzLgo=
+Hi,
 
+My name is Sebastian and I'm a chilean student from PUCV. Currently I 
+have to develop a RT proyect, but the problem is that I dont have 
+experience with Linux and a lot less with Xenomai. Nevertheless i 
+arrived to install xenomai  2.6.0 on Ubuntu 12.04, but when I try to 
+execute ubuntu with the xenomai kernel the screen goes black and the 
+computer doesn't respond, so I have to execute it with the recuperation 
+mode. In this case I'm able to execute the test for the kernel and 
+latency wich are ok, but the system seems unstable (the cursor sometimes 
+disappear for instance), and I couldnt execute Xenomai, I receive a 
+message of "premission denied".
+So, I'll appreciate if someone could give me a hand with the starting 
+problem and the execution too. I was considering to do all the process 
+again from the scratch but i don't know how to erase all the changes I 
+have made in my computer.
+Thanks for your time, and for your help.
+
+PS: I utilise this configuration 
+http://www.blaess.fr/christophe/files/article-2012-05-02/config-linux-2.6.38.8-xenomai 
+according to this tutorial 
+http://www.blaess.fr/christophe/2011/12/28/xenomai-2-6-0-sur-ubuntu-11-10/
 
