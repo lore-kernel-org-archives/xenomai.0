@@ -1,13 +1,18 @@
-Message-ID: <50749C71.2020100@xenomai.org>
-Date: Tue, 09 Oct 2012 23:51:45 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <507D39F4.8040905@grandegger.com>
+Date: Tue, 16 Oct 2012 12:41:56 +0200
+From: Wolfgang Grandegger <wg@grandegger.com>
 MIME-Version: 1.0
-References: <505EB99F.7050705@wanadoo.fr>	<505EBD61.1050009@wanadoo.fr>	<505F0D40.9030105@xenomai.org>	<50741C5B.4060206@wanadoo.fr>
-	<5074986C.8000509@xenomai.org> <50749A03.9090607@xenomai.org>
-In-Reply-To: <50749A03.9090607@xenomai.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Target frozen with rtcan_virt
+References: <503227B5.9070002@basystemes.fr> <50322F06.4000009@wanadoo.fr>
+	<503C63BE.8010201@xenomai.org>
+	<503C709C.3020702@grandegger.com> <503C758B.9000906@wanadoo.fr>
+	<503C7D77.2060209@grandegger.com> <50744BD3.1030703@wanadoo.fr>
+	<50747C29.2060504@grandegger.com> <50748733.80709@wanadoo.fr>
+	<50766A8F.9090901@wanadoo.fr> <50767081.8030300@xenomai.org>
+	<507D32E3.9070402@wanadoo.fr>
+In-Reply-To: <507D32E3.9070402@wanadoo.fr>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] [PATCH] rtcan: driver for the Advantech PCI cards
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,77 +22,65 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Thierry Bultel <thierry.bultel@wanadoo.fr>
-Cc: xenomai@xenomai.org
+Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-On 10/09/2012 11:41 PM, Gilles Chanteperdrix wrote:
+On 10/16/2012 12:11 PM, Thierry Bultel wrote:
+> Le 11/10/2012 09:08, Gilles Chanteperdrix a =E9crit :
+>> On 10/11/2012 08:43 AM, Thierry Bultel wrote:
+>>
+>>> Why v3.2 from Freescale? For the SabreLite or Nitrohen6x I know about
+>>>>> 3.0.36 from Freescale (rel_imx_3.0.35_12.09.02 from
+>>>>> git.freecale.com/linux-2.6) or, much better, mainline Linux 3.4.
+>>>>> Concerning the iPipe patches I think you have currently no other
+>>>>> choice.
+>>>
+>>> In both cases, (latest one from Freescale, or 3.4 from mainline)
+>>> there is currently
+>>> no available matching ipipe patch.
+>>> I do not know if the latest kernel from mainline will fit for the
+>>> reference board that I will receive.
+>>>
+>>> I do not realize the amount of work for porting either
+>>> - ipipe-core-3.2.21-arm.patch to 3.4 (mainline)
+>>> or
+>>> - adeos-ipipe-3.0.43-* to the latest (which one ?) kernel from Freesc=
+ale
+>>>
+>>> About that latest option I am a little bit puzzled.
+>>> Namely from what I know, Freescale kernels are on
+>>>
+>>> http://git.freescale.com/git/cgit.cgi/imx/linux-2.6-imx.git/refs/head=
+s
+>>> and the latest published 3.x kernel is ... a 3.0.15_12 that has not
+>>> moved for months.
+>>> Thanks for clarifying
+>>
+>> The 3.4 patch is working for arm, I still have some issues, but it is
+>> already usable:
+>>
+>> git://git.xenomai.org/ipipe-gch.git branch for-core-3.4
+>>
+>> For now, you simply have to avoid THUMB user-space binaries (but you c=
+an
+>> compile the kernel with CONFIG_THUMB2_KERNEL, and it results in lower
+>> latencies from what I measured).
+>>
+>> It works on the sabre board "out-of-the-box". I suspect, starting with
+>> core-3.4, we have no additional work to do to work with any cortex a9
+>> based processor (except, as I already said, for some old cortex a9
+>> revisions without a global timer, but that is not the case of the imx6=
+q
+>> I tested).
+>>
+>=20
+> AFAIK, my DevKit should finally come with a 3.0.35 kernel
+> How difficult would it be to apply the adeos-ipipe-3.0.43- patches on i=
+t ?
+> It is feasible ?
 
-> Another possible fix would be to lock xenomai scheduler when taking an
-> rtdm_spin_lock, as it is almost always wrong to call xnpod_schedule in
-> such a situation. It works for other RT-CAN drivers, because they call
-> rtdm_sem_up from interrupt context where the scheduler is locked by the
-> XNINIRQ bit.
-> 
+Very likely that kernel is based on Freescale's 3.0.35, which already
+has Xenomai support. If so, the patches should apply without problems.
 
+Wolfgang.
 
-IOW, something like:
-
-diff --git a/include/rtdm/rtdm_driver.h b/include/rtdm/rtdm_driver.h
-index 68135e4..7b18c34 100644
---- a/include/rtdm/rtdm_driver.h
-+++ b/include/rtdm/rtdm_driver.h
-@@ -730,6 +730,7 @@ typedef unsigned long rtdm_lockctx_t;
- 	do {							\
- 		XENO_BUGON(RTDM, !rthal_local_irq_disabled());	\
- 		rthal_spin_lock(lock);				\
-+		xnpod_lock_sched();				\
- 	} while (0)
- #endif
- 
-@@ -749,7 +750,11 @@ typedef unsigned long rtdm_lockctx_t;
-  *
-  * Rescheduling: never.
-  */
--#define rtdm_lock_put(lock)	rthal_spin_unlock(lock)
-+#define rtdm_lock_put(lock)					\
-+	do {							\
-+		rthal_spin_unlock(lock);			\
-+		xnpod_unlock_sched();				\
-+	} while (0)
- 
- /**
-  * Acquire lock and disable preemption
-@@ -768,8 +773,11 @@ typedef unsigned long rtdm_lockctx_t;
-  *
-  * Rescheduling: never.
-  */
--#define rtdm_lock_get_irqsave(lock, context)	\
--	rthal_spin_lock_irqsave(lock, context)
-+#define rtdm_lock_get_irqsave(lock, context)				\
-+	do {								\
-+		rthal_spin_lock_irqsave(lock, context);			\
-+		xnpod_lock_sched();					\
-+	} while (0)
- 
- /**
-  * Release lock and restore preemption state
-@@ -788,8 +796,12 @@ typedef unsigned long rtdm_lockctx_t;
-  *
-  * Rescheduling: possible.
-  */
--#define rtdm_lock_put_irqrestore(lock, context)	\
--	rthal_spin_unlock_irqrestore(lock, context)
-+#define rtdm_lock_put_irqrestore(lock, context)			\
-+	do {							\
-+		rthal_spin_unlock(lock);			\
-+		xnpod_unlock_sched();				\
-+		rthal_local_irq_restore(context);		\
-+	} while (0)
- 
- /**
-  * Disable preemption locally
-
-
-
--- 
-                                                                Gilles.
 
