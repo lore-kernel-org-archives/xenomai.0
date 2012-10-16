@@ -1,13 +1,17 @@
-Message-ID: <507D1EB8.3000406@xenomai.org>
-Date: Tue, 16 Oct 2012 10:45:44 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <507D32E3.9070402@wanadoo.fr>
+Date: Tue, 16 Oct 2012 12:11:47 +0200
+From: Thierry Bultel <thierry.bultel@wanadoo.fr>
 MIME-Version: 1.0
-References: <mailman.94.1350341580.29827.xenomai@xenomai.org>
-	<1350374085.35200.YahooMailNeo@web164604.mail.gq1.yahoo.com>
-In-Reply-To: <1350374085.35200.YahooMailNeo@web164604.mail.gq1.yahoo.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Beagleboard-XM
+References: <503227B5.9070002@basystemes.fr> <50322F06.4000009@wanadoo.fr>
+	<503C63BE.8010201@xenomai.org>
+	<503C709C.3020702@grandegger.com> <503C758B.9000906@wanadoo.fr>
+	<503C7D77.2060209@grandegger.com> <50744BD3.1030703@wanadoo.fr>
+	<50747C29.2060504@grandegger.com> <50748733.80709@wanadoo.fr>
+	<50766A8F.9090901@wanadoo.fr> <50767081.8030300@xenomai.org>
+In-Reply-To: <50767081.8030300@xenomai.org>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] [PATCH] rtcan: driver for the Advantech PCI cards
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,33 +20,54 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Ahmet Tekelioglu <vtam370@yahoo.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-On 10/16/2012 09:54 AM, Ahmet Tekelioglu wrote:
-> Hello,
-> 
-> I am new. Is there a a step-by-step guide for installing Xenomai on BeagleBoard-XM? 
-> 
-> I have gcc toolchain but can install the Sourcery toolchain if necessary. 
+Le 11/10/2012 09:08, Gilles Chanteperdrix a écrit :
+> On 10/11/2012 08:43 AM, Thierry Bultel wrote:
+>
+>> Why v3.2 from Freescale? For the SabreLite or Nitrohen6x I know about
+>>>> 3.0.36 from Freescale (rel_imx_3.0.35_12.09.02 from
+>>>> git.freecale.com/linux-2.6) or, much better, mainline Linux 3.4.
+>>>> Concerning the iPipe patches I think you have currently no other choice.
+>>
+>> In both cases, (latest one from Freescale, or 3.4 from mainline) there is currently
+>> no available matching ipipe patch.
+>> I do not know if the latest kernel from mainline will fit for the reference board that I will receive.
+>>
+>> I do not realize the amount of work for porting either
+>> - ipipe-core-3.2.21-arm.patch to 3.4 (mainline)
+>> or
+>> - adeos-ipipe-3.0.43-* to the latest (which one ?) kernel from Freescale
+>>
+>> About that latest option I am a little bit puzzled.
+>> Namely from what I know, Freescale kernels are on
+>>
+>> http://git.freescale.com/git/cgit.cgi/imx/linux-2.6-imx.git/refs/heads
+>> and the latest published 3.x kernel is ... a 3.0.15_12 that has not moved for months.
+>> Thanks for clarifying
+>
+> The 3.4 patch is working for arm, I still have some issues, but it is
+> already usable:
+>
+> git://git.xenomai.org/ipipe-gch.git branch for-core-3.4
+>
+> For now, you simply have to avoid THUMB user-space binaries (but you can
+> compile the kernel with CONFIG_THUMB2_KERNEL, and it results in lower
+> latencies from what I measured).
+>
+> It works on the sabre board "out-of-the-box". I suspect, starting with
+> core-3.4, we have no additional work to do to work with any cortex a9
+> based processor (except, as I already said, for some old cortex a9
+> revisions without a global timer, but that is not the case of the imx6q
+> I tested).
+>
 
-There is nothing special about the BeagleBoard-XM, the generic
-installation instructions apply, you have them in xenomai sources, it is
-the README.INSTALL file, or can find them on the web:
+AFAIK, my DevKit should finally come with a 3.0.35 kernel
+How difficult would it be to apply the adeos-ipipe-3.0.43- patches on it ?
+It is feasible ?
 
-http://www.xenomai.org/documentation/xenomai-2.6/html/README.INSTALL/
+Thanks
+Thierry
 
-What you may want to find is how to run a custom kernel on your beagle,
-depending on what environment you use (debian, openembedded, etc...).
-
-Also note that xenomai 2.6.1 does not support thumb kernels or thumb
-user-space, so, if you are compiling with a toolchain which compiles for
-thumb by default (like, it seems, linaro cross toolchain), please add
--mthumb to the cflags when compiling xenomai user-space. Also pay
-attention not to enable CONFIG_THUMB2_KERNEL when compiling the kernel.
-
-Regards.
-
--- 
-					    Gilles.
 
