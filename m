@@ -1,13 +1,19 @@
-From: "Leopold Palomo-Avellaneda" <leo@alaxarxa.net>
-Date: Tue, 16 Oct 2012 13:15:08 +0200
-References: <507C8977.506@nta-inc.net> <507C89C7.2060600@xenomai.org>
-In-Reply-To: <507C89C7.2060600@xenomai.org>
+Message-ID: <507D481A.8000408@grandegger.com>
+Date: Tue, 16 Oct 2012 13:42:18 +0200
+From: Wolfgang Grandegger <wg@grandegger.com>
 MIME-Version: 1.0
-Content-Type: Text/Plain;
-  charset="iso-8859-1"
-Content-Transfer-Encoding: 7bit
-Message-Id: <201210161315.09263.leo@alaxarxa.net>
-Subject: Re: [Xenomai] Problem with ipipe-core-3.2.21-x86-1.patch?
+References: <503227B5.9070002@basystemes.fr> <50322F06.4000009@wanadoo.fr>
+	<503C63BE.8010201@xenomai.org>
+	<503C709C.3020702@grandegger.com> <503C758B.9000906@wanadoo.fr>
+	<503C7D77.2060209@grandegger.com> <50744BD3.1030703@wanadoo.fr>
+	<50747C29.2060504@grandegger.com> <50748733.80709@wanadoo.fr>
+	<50766A8F.9090901@wanadoo.fr> <50767081.8030300@xenomai.org>
+	<507D32E3.9070402@wanadoo.fr> <507D39F4.8040905@grandegger.com>
+	<507D4008.4050300@wanadoo.fr>
+In-Reply-To: <507D4008.4050300@wanadoo.fr>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] [PATCH] rtcan: driver for the Advantech PCI cards
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,46 +22,82 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Thierry Bultel <thierry.bultel@wanadoo.fr>
+Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-A Dimarts 16 Octubre 2012, Gilles Chanteperdrix va escriure:
-> On 10/16/2012 12:08 AM, Jeff Webb wrote:
-> 
-> > I am trying to build xenomai from the xenomai-2.6.git repo under
-> > ubuntu 12.04 on a x86_64 desktop machine.  When I try to build a
-> > xenomai-enabled kernel from the 3.2.21 sources, the build fails with
-> > a compile error.  (Sorry, I didn't save the error message, but I can
-> > repeat the process if necessary.)  In order to get things to compile,
-> > I made the following change to ipipe-core-3.2.21-x86-1.patch.  Is
-> > this a bug?  If so, I'm wondering why no one else has run into this
-> > one yet.  I think I built a kernel without any compiler errors under
-> > ubuntu 10.04 using this patch, but I'm not 100% certain about that.
-> 
-> 
-> Yep, it has been reported already, and is fixed in the 3.4 branch, not
-> backported in 3.2 yet.
+On 10/16/2012 01:07 PM, Thierry Bultel wrote:
+> Le 16/10/2012 12:41, Wolfgang Grandegger a =E9crit :
+>> On 10/16/2012 12:11 PM, Thierry Bultel wrote:
+>>> Le 11/10/2012 09:08, Gilles Chanteperdrix a =E9crit :
+>>>> On 10/11/2012 08:43 AM, Thierry Bultel wrote:
+>>>>
+>>>>> Why v3.2 from Freescale? For the SabreLite or Nitrohen6x I know abo=
+ut
+>>>>>>> 3.0.36 from Freescale (rel_imx_3.0.35_12.09.02 from
+>>>>>>> git.freecale.com/linux-2.6) or, much better, mainline Linux 3.4.
+>>>>>>> Concerning the iPipe patches I think you have currently no other
+>>>>>>> choice.
+>>>>> In both cases, (latest one from Freescale, or 3.4 from mainline)
+>>>>> there is currently
+>>>>> no available matching ipipe patch.
+>>>>> I do not know if the latest kernel from mainline will fit for the
+>>>>> reference board that I will receive.
+>>>>>
+>>>>> I do not realize the amount of work for porting either
+>>>>> - ipipe-core-3.2.21-arm.patch to 3.4 (mainline)
+>>>>> or
+>>>>> - adeos-ipipe-3.0.43-* to the latest (which one ?) kernel from
+>>>>> Freescale
+>>>>>
+>>>>> About that latest option I am a little bit puzzled.
+>>>>> Namely from what I know, Freescale kernels are on
+>>>>>
+>>>>> http://git.freescale.com/git/cgit.cgi/imx/linux-2.6-imx.git/refs/he=
+ads
+>>>>> and the latest published 3.x kernel is ... a 3.0.15_12 that has not
+>>>>> moved for months.
+>>>>> Thanks for clarifying
+>>>> The 3.4 patch is working for arm, I still have some issues, but it i=
+s
+>>>> already usable:
+>>>>
+>>>> git://git.xenomai.org/ipipe-gch.git branch for-core-3.4
+>>>>
+>>>> For now, you simply have to avoid THUMB user-space binaries (but you
+>>>> can
+>>>> compile the kernel with CONFIG_THUMB2_KERNEL, and it results in lowe=
+r
+>>>> latencies from what I measured).
+>>>>
+>>>> It works on the sabre board "out-of-the-box". I suspect, starting wi=
+th
+>>>> core-3.4, we have no additional work to do to work with any cortex a=
+9
+>>>> based processor (except, as I already said, for some old cortex a9
+>>>> revisions without a global timer, but that is not the case of the im=
+x6q
+>>>> I tested).
+>>>>
+>>> AFAIK, my DevKit should finally come with a 3.0.35 kernel
+>>> How difficult would it be to apply the adeos-ipipe-3.0.43- patches on
+>>> it ?
+>>> It is feasible ?
+>> Very likely that kernel is based on Freescale's 3.0.35, which already
+>> has Xenomai support.
+>=20
+> yes, 'almost' because the closest available ipipe is actually the 3.0.3=
+6.
+> I do not realize yet what the better strategy is; either upgrade the
+> provided
+> kernel to 3.0.36 of force the patch to apply on 3.0.35
 
-hi,
+As Gilles already said, the patches for this kernel are in:
 
-1) does it means that this patch could be considered a backport to 3.2?
+ ttp://www.xenomai.org/~gch/pub/mxc/3.0.43/
 
-2) we use orocos and their xenomai part. We have found that when we run an 
-application in xenomai, although the framework could do it, there's no 
-migration between cpus, and all is executed in cpu0. The main developer have 
-commented that a some test isolating xenomai should be done. 
+To be more precise, these patches are for Freescale's kernel release tag
+"rel_imx_3.0.35_12.09.02" from git://git.freecale.com/linux-2.6.
 
-I have seen that the patch touch something of affinity. Some one you have 
-experienced some trouble when you run a multithread application and all the 
-threads are executed in cpu0 and no migration is done?
+Wolfgang.
 
-Regards,
-
-Leo
-
-
-
--- 
---
-Linux User 152692
-Catalonia
 
