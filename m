@@ -1,15 +1,14 @@
-Message-ID: <50752A42.9080303@web.de>
-Date: Wed, 10 Oct 2012 09:56:50 +0200
-From: Jan Kiszka <jan.kiszka@web.de>
+Message-ID: <507EDDF1.8090904@mind.be>
+Date: Wed, 17 Oct 2012 18:33:53 +0200
+From: Arnout Vandecappelle <arnout@mind.be>
 MIME-Version: 1.0
-References: <505EB99F.7050705@wanadoo.fr>	<505EBD61.1050009@wanadoo.fr>	<505F0D40.9030105@xenomai.org>	<50741C5B.4060206@wanadoo.fr>
-	<5074986C.8000509@xenomai.org> <50749A03.9090607@xenomai.org>
-	<50749C71.2020100@xenomai.org> <5075260E.2050402@wanadoo.fr>
-	<507528E4.4050809@xenomai.org>
-In-Reply-To: <507528E4.4050809@xenomai.org>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] Target frozen with rtcan_virt
+References: <507E9654.5020503@mind.be> <507EA55E.6010506@xenomai.org>
+	<507EAC59.6000909@mind.be> <507EAE5E.5060200@xenomai.org>
+In-Reply-To: <507EAE5E.5060200@xenomai.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Native skin rt_task_create/rt_task_shadow doesn't
+ inherit affinity
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,32 +18,78 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Thierry Bultel <thierry.bultel@wanadoo.fr>, xenomai@xenomai.org
+Cc: xenomai@xenomai.org
 
-T24gMjAxMi0xMC0xMCAwOTo1MSwgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4gT24gMTAv
-MTAvMjAxMiAwOTozOCBBTSwgVGhpZXJyeSBCdWx0ZWwgd3JvdGU6Cj4+IEhpIEdpbGxlcywKPj4K
-Pj4gTWFueSB0aGFua3MsCj4+IFRoZSBmaXJzdCBwYXRjaCBkb2VzIG5vdCB3b3JrLCB0aGUgc2Vj
-b25kIGRvZXMuCj4+IEkgdGhpbmsgdGhlIHJlYXNvbiBmb3IgMXN0IHBhdGNoIHdoeSBpcyB0aGF0
-IGluIHJ0Y2FuX3ZpcnQsIHdlIGhhdmUKPj4KPj4gcnRkbV9sb2NrX2dldF9pcnFzYXZlKCZydGNh
-bl9yZWN2X2xpc3RfbG9jaywgbG9ja19jdHgpOwo+PiBydGRtX2xvY2tfZ2V0KCZydGNhbl9zb2Nr
-ZXRfbG9jayk7Cj4+Cj4+IC4uLgo+PiAtLS0+ICAgICAgICBydGNhbl9yY3YocnhfZGV2LCAmc2ti
-KTsKPj4gLi4uLgo+Pgo+PiBydGRtX2xvY2tfcHV0KCZydGNhbl9zb2NrZXRfbG9jayk7Cj4+IHJ0
-ZG1fbG9ja19wdXRfaXJxcmVzdG9yZSgmcnRjYW5fcmVjdl9saXN0X2xvY2ssIGxvY2tfY3R4KTsK
-Pj4KPj4gYW5kIHJ0Y2FuX3Jjdi0+cnRjYW5fcmN2X2RlbGl2ZXItPnJ0ZG1fc2VtX3VwKCZzb2Nr
-LT5yZWN2X3NlbSk7Cj4+Cj4+IHRodXMgdGhlIHNhbWUgcmUtc2NoZWR1bGluZyBzdHVmZiB3aXRo
-IGludGVycnVwdHMgbG9ja2VkLgo+Pgo+PiBBcmUgeW91IG5vdCBub3QgYWZyYWlkIG9mIHNpZGUg
-ZWZmZWN0cyB3aXRoIHRoZSBzZWNvbmQgcGF0Y2gsIAo+PiBzaW5jZSB5b3UgY2hhbmdlIHRoZSBv
-dmVyYWxsIGJlaGF2aW91ciA/Cj4+IFdvbid0IHlvdSBwcmVmZXIgYSBvbmx5IGxvY2FsbHkgbW9k
-aWZpZWQgcnRjYW5fdmlydCA/Cj4gCj4gV2Ugc2hvdWxkIGFzayBKYW4ncyBvcGluaW9uLiBJbiBh
-bnkgY2FzZSwgaWYgd2UgYWRvcHQgdGhlIHNlY29uZCBwYXRjaCwKPiB3ZSBtaWdodCB3YW50IHRv
-IHRyeSBhbmQgcmVkdWNlIHRoZSBvdmVyaGVhZCBvZiB4bnBvZF91bmxvY2tfc2NoZWQuCj4gCgpX
-ZSB3ZXJlIHNpZ25hbGluZyB0aGUgc2VtYXBob3JlIHdoaWxlIGhvbGRpbmcgYSBzcGluIGxvY2s/
-IFRoYXQncyBhCmNsZWFyIGJ1Zy4gWW91ciBwYXRjaCBpcyBhbGlnbmluZyBydGNhbiB0byB0aGUg
-cGF0dGVybiB3ZSBhcmUgYWxzbyB1c2luZwppbiBSVG5ldC4gV2UganVzdCBuZWVkIHRvIG1ha2Ug
-c3VyZSAoaGF2ZW4ndCBsb29rZWQgYXQgdGhlIGZ1bGwgY29udGV4dAp5ZXQpIHRoYXQgc29jayBy
-ZW1haW5zIHZhbGlkIGV2ZW4gYWZ0ZXIgZHJvcHBpbmcgdGhlIGxvY2socykuCgpKYW4KCi0tLS0t
-LS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQg
-d2FzIHNjcnViYmVkLi4uCk5hbWU6IHNpZ25hdHVyZS5hc2MKVHlwZTogYXBwbGljYXRpb24vcGdw
-LXNpZ25hdHVyZQpTaXplOiAyNTkgYnl0ZXMKRGVzYzogT3BlblBHUCBkaWdpdGFsIHNpZ25hdHVy
-ZQpVUkw6IDxodHRwOi8vd3d3Lnhlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1l
-bnRzLzIwMTIxMDEwLzcyMTY3OTIxL2F0dGFjaG1lbnQucGdwPgo=
+On 17/10/12 15:10, Gilles Chanteperdrix wrote:
+> On 10/17/2012 03:02 PM, Arnout Vandecappelle wrote:
+>> On 17/10/12 14:32, Gilles Chanteperdrix wrote:
+>>> On 10/17/2012 01:28 PM, Arnout Vandecappelle wrote:
+[snip]
+>>>> and also rt_task_create() looks only at the mode parameter and ignores
+>>>> the parent thread's affinity.
+>>>
+>>> That does not look like an issue. Why should a task inherit its parent's
+>>> affinity.
+>>
+>>    I don't know if it should - it's not specified in the documentation.  But
+>> it is how posix threads behave.
+>
+> Ok. That is an argument. But if an affinity is specified by the mode
+> argument, it should override the parent's affinity.
+
+  OK.  Would you like me to refresh my patch?
+
+
+[snip]
+>>>>      Note, by the way, that calling sched_setaffinity _after_ the task has started
+>>>> _will_ change the affinity (cfr. switchtest), but any calls _before_ the task
+>>>> has started are ignored.
+>>>
+>>> Well, if the thread is not created, how sched_setaffinity change its
+>>> affinity?
+>>
+>>    The (shadow) thread is created, but with a different cpuset than the
+>> Linux thread.  Or rather, the cpuset is changed by shadowing the thread.
+>
+> Ok, misunderstanding again, for me, when you say "before the task has
+> started" clearly means that you are talking about a task created with
+> rt_task_create.
+
+  Yes, that's what I mean.
+
+When you do:
+
+CPU_SET(1, &cpuset);
+sched_setaffinity(0, sizeof(cpuset), &cpuset);
+rt_task_shadow(&task, "test", 99, 0);
+
+then rt_task_shadow will migrate the thread from cpu 1 to cpu 0,
+so it migrates twice overall (assuming Linux had started it on cpu 0).
+
+When you do:
+
+rt_task_shadow(&task, "test", 99, 0);
+CPU_SET(1, &cpuset);
+sched_setaffinity(0, sizeof(cpuset), &cpuset);
+
+then sched_setaffinity will migrate the thread from cpu 0 to cpu 1.
+
+  My point was that it seems inconsistent that it makes a difference
+in which order you shadow the task and you specify which cpu it should
+run on.
+
+  Alternatively, you could document in rt_task_shadow that it will
+implicitly migrate to the lowest CPU (even if that's not the one we're
+currently executing on).
+
+
+  Regards,
+  Arnout
+-- 
+Arnout Vandecappelle                               arnout at mind be
+Senior Embedded Software Architect                 +32-16-286540
+Essensium/Mind                                     http://www.mind.be
+G.Geenslaan 9, 3001 Leuven, Belgium                BE 872 984 063 RPR Leuven
+LinkedIn profile: http://www.linkedin.com/in/arnoutvandecappelle
+GPG fingerprint:  7CB5 E4CC 6C2E EFD4 6E3D A754 F963 ECAB 2450 2F1F
+
