@@ -1,11 +1,13 @@
-Message-ID: <507E9654.5020503@mind.be>
-Date: Wed, 17 Oct 2012 13:28:20 +0200
-From: Arnout Vandecappelle <arnout@mind.be>
+Message-ID: <507EA55E.6010506@xenomai.org>
+Date: Wed, 17 Oct 2012 14:32:30 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Subject: [Xenomai] Native skin rt_task_create/rt_task_shadow doesn't inherit
-	affinity
+References: <507E9654.5020503@mind.be>
+In-Reply-To: <507E9654.5020503@mind.be>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Native skin rt_task_create/rt_task_shadow doesn't
+ inherit affinity
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,32 +16,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Arnout Vandecappelle <arnout@mind.be>
+Cc: xenomai@xenomai.org
 
-ICAgSG9pLAoKICAgSSBub3RpY2VkIHRoYXQgd2hlbiB1c2luZyB0aGUgbmF0aXZlIHNraW4sIHN0
-YXJ0aW5nIGFuIGFwcGxpY2F0aW9uIHdpdGgKInRhc2tzZXQgMiA8bXlfYXBwPiIgZG9lcyBub3Qg
-cHV0IHRoZSBhcHBsaWNhdGlvbiBvbiBwcm9jZXNzb3IgMi4gIERpdmluZyBpbnRvCnRoZSBjb2Rl
-LCBpdCB0dXJucyBvdXQgdGhhdCBjYWxsaW5nIHJ0X3Rhc2tfc2hhZG93KCkgdGhyb3dzIGF3YXkg
-dGhlIHRocmVhZCdzCmNwdXNldCwgYW5kIGFsc28gcnRfdGFza19jcmVhdGUoKSBsb29rcyBvbmx5
-IGF0IHRoZSBtb2RlIHBhcmFtZXRlciBhbmQgaWdub3Jlcwp0aGUgcGFyZW50IHRocmVhZCdzIGFm
-ZmluaXR5LgoKICAgSXMgdGhpcyBpbnRlbnRpb25hbD8gIElmIHllcywgdGhhdCBtZWFucyB0aGF0
-IHVzaW5nIHRoZSBuYXRpdmUgc2tpbiwgdGhlcmUKaXMgbm8gd2F5IHRvIHNldCBhIHRhc2sncyBh
-ZmZpbml0eSBleGNlcHQgZXhwbGljaXRseSBzcGVjaWZ5aW5nIFRfQ1BVIHdoZW4KdGhlIHRhc2sg
-aXMgc3RhcnRlZCwgcmlnaHQ/CgogICBOb3RlLCBieSB0aGUgd2F5LCB0aGF0IGNhbGxpbmcgc2No
-ZWRfc2V0YWZmaW5pdHkgX2FmdGVyXyB0aGUgdGFzayBoYXMgc3RhcnRlZApfd2lsbF8gY2hhbmdl
-IHRoZSBhZmZpbml0eSAoY2ZyLiBzd2l0Y2h0ZXN0KSwgYnV0IGFueSBjYWxscyBfYmVmb3JlXyB0
-aGUgdGFzawpoYXMgc3RhcnRlZCBhcmUgaWdub3JlZC4KCiAgIElmIGl0IGlzIG5vdCBpbnRlbnRp
-b25hbCwgSSB0aGluayB0aGUgYXR0YWNoZWQgcGF0Y2ggc29sdmVzIHRoZSBwcm9ibGVtLgoKICAg
-UmVnYXJkcywKICAgQXJub3V0Ci0tIApBcm5vdXQgVmFuZGVjYXBwZWxsZSAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICBhcm5vdXQgYXQgbWluZCBiZQpTZW5pb3IgRW1iZWRkZWQgU29mdHdh
-cmUgQXJjaGl0ZWN0ICAgICAgICAgICAgICAgICArMzItMTYtMjg2NTQwCkVzc2Vuc2l1bS9NaW5k
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIGh0dHA6Ly93d3cubWluZC5iZQpH
-LkdlZW5zbGFhbiA5LCAzMDAxIExldXZlbiwgQmVsZ2l1bSAgICAgICAgICAgICAgICBCRSA4NzIg
-OTg0IDA2MyBSUFIgTGV1dmVuCkxpbmtlZEluIHByb2ZpbGU6IGh0dHA6Ly93d3cubGlua2VkaW4u
-Y29tL2luL2Fybm91dHZhbmRlY2FwcGVsbGUKR1BHIGZpbmdlcnByaW50OiAgN0NCNSBFNENDIDZD
-MkUgRUZENCA2RTNEIEE3NTQgRjk2MyBFQ0FCIDI0NTAgMkYxRgotLS0tLS0tLS0tLS0tLSBuZXh0
-IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4u
-LgpOYW1lOiB4ZW5vbWFpLWFmZmluaXR5LnBhdGNoClR5cGU6IHRleHQveC1wYXRjaApTaXplOiA3
-MDYgYnl0ZXMKRGVzYzogbm90IGF2YWlsYWJsZQpVUkw6IDxodHRwOi8vd3d3Lnhlbm9tYWkub3Jn
-L3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTIxMDE3LzQ1ZDUyYTYxL2F0dGFjaG1l
-bnQuYmluPgo=
+On 10/17/2012 01:28 PM, Arnout Vandecappelle wrote:
+>    Hoi,
+> 
+>    I noticed that when using the native skin, starting an application with
+> "taskset 2 <my_app>" does not put the application on processor 2.  Diving into
+> the code, it turns out that calling rt_task_shadow() throws away the thread's
+> cpuset,
+
+That is an issue.
+
+> and also rt_task_create() looks only at the mode parameter and ignores
+> the parent thread's affinity.
+
+That does not look like an issue. Why should a task inherit its parent's
+affinity.
+
+> 
+>    Is this intentional?  If yes, that means that using the native skin, there
+> is no way to set a task's affinity except explicitly specifying T_CPU when
+> the task is started, right?
+
+No, this looks like a different issue.
+
+> 
+>    Note, by the way, that calling sched_setaffinity _after_ the task has started
+> _will_ change the affinity (cfr. switchtest), but any calls _before_ the task
+> has started are ignored.
+
+Well, if the thread is not created, how sched_setaffinity change its
+affinity?
+
+-- 
+					    Gilles.
+
