@@ -1,11 +1,13 @@
-Message-ID: <507F0E6E.6050308@xenomai.org>
-Date: Wed, 17 Oct 2012 22:00:46 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
+Sender: sink00@gmail.com
+In-Reply-To: <507F0E6E.6050308@xenomai.org>
 References: <CAODUr7vXcUGmeN9dso5ENeAXWugR9ojj=P3oJOY+3Vr4+mJRiQ@mail.gmail.com>
-In-Reply-To: <CAODUr7vXcUGmeN9dso5ENeAXWugR9ojj=P3oJOY+3Vr4+mJRiQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+	<507F0E6E.6050308@xenomai.org>
+Date: Wed, 17 Oct 2012 17:57:13 -0300
+Message-ID: <CAODUr7t4LOoRhMdv8SidzPstvw+bhuBqghzrh4P+OB7FtB=XLw@mail.gmail.com>
+From: Luis Rossi <luisf.rossi@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
 Subject: Re: [Xenomai] Error during kernel build
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -15,23 +17,53 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Luis Rossi <luisf.rossi@gmail.com>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On 10/17/2012 09:22 PM, Luis Rossi wrote:
+Thank you,
 
-> Hi i am trying to build a kernel with xenomai for debian and i am following
-> all the instuctions.
-> 
-> The target PC will be an Intel Atom.
-> 
-> I am usign xenomai version 2.5.4 with kernel 2.6.34
+I will take a try. I chose version 2.5.4 becouse it was stated as stable
+for debian in the website. How about 2.6.1?
+
+Quick question, if i build the kernel inside a Virtual Box with linux (on a
+x86) computer will i have any problem? I cant see any reason why i would,
+but it is nice to check.
+
+Regards,
+
+On Wed, Oct 17, 2012 at 5:00 PM, Gilles Chanteperdrix <
+gilles.chanteperdrix@xenomai.org> wrote:
+
+> On 10/17/2012 09:22 PM, Luis Rossi wrote:
+>
+> > Hi i am trying to build a kernel with xenomai for debian and i am
+> following
+> > all the instuctions.
+> >
+> > The target PC will be an Intel Atom.
+> >
+> > I am usign xenomai version 2.5.4 with kernel 2.6.34
+>
+>
+> As we said many times, the ABI do not change in a branch, so, there is
+> absolutely no reason to use Xenomai 2.5.4 and not Xenomai 2.5.6. And
+> update to 2.6.1 is recommended.
+>
+> --
+>                                                                 Gilles.
+>
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> http://www.xenomai.org/mailman/listinfo/xenomai
+>
 
 
-As we said many times, the ABI do not change in a branch, so, there is
-absolutely no reason to use Xenomai 2.5.4 and not Xenomai 2.5.6. And
-update to 2.6.1 is recommended.
 
--- 
-                                                                Gilles.
-
+--=20
+Lu=EDs Filipe Rossi
+Electrical Engineer
+Biomechatronics Lab. / Grupo de Sensores Integr=E1veis e Sistemas
+Escola Polit=E9cnica
+Universidade de S=E3o Paulo
+Cel. +55 (11) 7662-9234
