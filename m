@@ -1,13 +1,15 @@
-Message-ID: <50803F21.5020205@siemens.com>
-Date: Thu, 18 Oct 2012 19:40:49 +0200
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <50807391.1020602@nta-inc.net>
+Date: Thu, 18 Oct 2012 16:24:33 -0500
+From: Jeff Webb <jeff.webb@nta-inc.net>
 MIME-Version: 1.0
-References: <507E9424.8060800@siemens.com>
-In-Reply-To: <507E9424.8060800@siemens.com>
-Content-Type: text/plain; charset=ISO-8859-1
+References: <507C93B6.30304@nta-inc.net> <507D0712.9070305@xenomai.org>
+	<507F2D28.4090600@nta-inc.net> <507F8477.2070005@xenomai.org>
+	<50803AC8.6080604@nta-inc.net> <50803E54.3080602@xenomai.org>
+In-Reply-To: <50803E54.3080602@xenomai.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] [PATCH v2] nucleus: Convert intrlock to a sleeping Linux
-	lock
+Subject: Re: [Xenomai] Still having problems running Xenomai on an Intel
+ X5650 x86_64 machine
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,137 +18,125 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-All users of this lock are supposed to run over Linux context already.
-Moreover, latest I-pipe patches complain that ipipe_virtualize_irq is
-called with the Xenomai domain stalled which invalidates that useful
-internal bug check. So convert this lock to a sleeping Linux variant to
-avoid the alarm.
+On 10/18/2012 12:37 PM, Gilles Chanteperdrix wrote:
+> On 10/18/2012 07:22 PM, Jeff Webb wrote:
+>> On 10/17/2012 11:24 PM, Gilles Chanteperdrix wrote:
+>>> On 10/18/2012 12:11 AM, Jeff Webb wrote:
+>>>
+>>>> On 10/16/2012 02:04 AM, Gilles Chanteperdrix wrote:
+>>>>> On 10/16/2012 12:52 AM, Jeff Webb wrote:
+>>>>>
+>>>>>> I'm back to trying to get Xenomai running on a dual 6-core Intel
+>>>>>> X5650 desktop machine.  I reported my previous attempts a few
+>>>>>> months ago:
+>>>>>>
+>>>>>> On ubuntu 10.04 with 2.6.38.8:
+>>>>>> http://www.xenomai.org/pipermail/xenomai/2012-July/000546.html
+>>>>>>
+>>>>>> On ubuntu 10.04 with 3.2.21:
+>>>>>> http://www.xenomai.org/pipermail/xenomai/2012-July/000577.html
+>>>>>>
+>>>>>> I am now using ubuntu 12.04 instead of 10.04, and I'm using the
+>>>>>> xenomai-2.6.git branch.  I am still not having any success.  The
+>>>>>> kernel boots, but hangs as the GUI login box is coming up.  This
+>>>>>> is similar to what happened under ubuntu 10.04/3.2.21, but the
+>>>>>> call trace seems a little different.  I have attached my kernel
+>>>>>> config and the console output, which was captured via a serial
+>>>>>> connection.  This exact kernel package seems to run fine (with
+>>>>>> very limited testing) on a 4-core Intel X9650 desktop machine
+>>>>>> running the same OS, for what it's worth.  Any help in debugging
+>>>>>> this would be appreciated.  What's my next step?
+>>>>>
+>>>>>
+>>>>> I am afraid that is another known issue fixed in the 3.4 branch.
+>>>>> Please try the I-pipe git; git://git.denx.de, branch core-3.4.
+>>>>>
+>>>>
+>>>> Thanks again, Gilles.
+>>>>
+>>>> I just rebuilt the kernel using the core-3.4 branch of ipipe.git with
+>>>> xenomai-2.6.git.  I started with the same kernel config as before and
+>>>> then disabled a few drivers to get everything to compile without
+>>>> errors.
+>>>
+>>>
+>>> If you do not need to disable these drivers to compile the kernel
+>>> without Xenomai, then it is not normal, please be more specific.
+>>
+>> I started with a 3.2-series kernel config (posted earlier) that compiled with Xenomai.  I then copied that config over into the ipipe-core-3.4 build directory before running menuconfig.  When I tried to compile the kernel, I encountered some section mismatch errors.  To get those to go away, I ended up disabling the following options:
+>>
+>> #  Device Drivers
+>> #    GPIO Support
+>> #      Intel EG20T PCH/LAPIS Semiconductor IOH(ML7223/ML7831)...
+>> #    USB Support
+>> #      USB Gadget Support
+>> #    Staging drivers
+>> #      Data acquisition support (comedi)
+>>
+>> It wasn't quite clear to me which comedi module was giving me trouble, so I disabled all of it, although it probably wasn't necessary.  I'm pretty sure that these problems were a result of migrating my kernel config from 3.2 to 3.4, and don't have anything to do with Xenomai.  I did not try to compile a vanilla 3.4 kernel, so I can't be certain.  I apologize for the confusion.  I only mentioned that so you would know that the config was very slightly different from what I posted last time.
+>>
+>>>>    The system still crashes, but now it seems to happen several
+>>>> seconds after the login box has appeared.  The console output is
+>>>> shown below.
+>>>
+>>>
+>>> This does not look like the same issue, right? As usual, could you
+>>> disassemble __ipipe_dispatch_irq, or run addr2line for the error address
+>>> (0xffffffff810ac055)?
+>>
+>> It appears to be a different issue.  Since I have a bzImage in my boot directory, I ran:
+>>
+>>    addr2line -i -e vmlinux ffffffff810ac055
+>>
+>> on the vmlinux file I found in my kernel build directory.  I'm assuming that is the right thing to do.  Here is the result:
+>>
+>>     linux-3.4.6-ipipe-core-3.4.git.2012.10.09/include/linux/ipipe.h:342
+>>     linux-3.4.6-ipipe-core-3.4.git.2012.10.09/kernel/ipipe/core.c:1211
+>>
+>> The code looks like this:
+>>
+>> ipipe.h:
+>>
+>> static inline int ipipe_chained_irq_p(struct irq_desc *desc)
+>> {
+>> 	void __ipipe_chained_irq(unsigned irq, struct irq_desc *desc);
+>>
+>> -->	return desc->handle_irq == __ipipe_chained_irq;
+>> }
+>>
+>> core.c:
+>> 	if (unlikely(irq >= NR_IRQS)) {
+>> 		desc = NULL;
+>> 		chained_irq = 0;
+>> 	} else {
+>> 		desc = irq_to_desc(irq);
+>> -->		chained_irq = ipipe_chained_irq_p(desc);
+>> 	}
+>
+> Ok, desc can be NULL, so, we should have
+> chained_irq = desc ? ipipe_chained_irq_p(desc) : 0;
+>
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
+Hooray!  With this change, the system boots and seems to run fine.  I ran a few of the tests in the test suite (latency, etc.), and the results look good at first glance.  We'll see how it all comes out in the end, but things looks rosy at the moment...
 
-Changes in v2:
- - Improved commit message, no code changes
+Thank you very much for your help in fixing this issue.
 
- ksrc/nucleus/intr.c |   22 +++++++++-------------
- 1 files changed, 9 insertions(+), 13 deletions(-)
+-Jeff
 
-diff --git a/ksrc/nucleus/intr.c b/ksrc/nucleus/intr.c
-index c75fcac..4747de1 100644
---- a/ksrc/nucleus/intr.c
-+++ b/ksrc/nucleus/intr.c
-@@ -39,7 +39,7 @@
- 
- #define XNINTR_MAX_UNHANDLED	1000
- 
--DEFINE_PRIVATE_XNLOCK(intrlock);
-+static DEFINE_BINARY_SEMAPHORE(intrlock);
- 
- #ifdef CONFIG_XENO_OPT_STATS
- xnintr_t nkclock;	     /* Only for statistics */
-@@ -709,7 +709,6 @@ EXPORT_SYMBOL_GPL(xnintr_destroy);
- int xnintr_attach(xnintr_t *intr, void *cookie)
- {
- 	int ret;
--	spl_t s;
- 
- 	trace_mark(xn_nucleus, irq_attach, "irq %u name %s",
- 		   intr->irq, intr->name);
-@@ -721,7 +720,7 @@ int xnintr_attach(xnintr_t *intr, void *cookie)
- 	xnarch_set_irq_affinity(intr->irq, nkaffinity);
- #endif /* CONFIG_SMP */
- 
--	xnlock_get_irqsave(&intrlock, s);
-+	down(&intrlock);
- 
- 	if (__testbits(intr->flags, XN_ISR_ATTACHED)) {
- 		ret = -EBUSY;
-@@ -735,7 +734,7 @@ int xnintr_attach(xnintr_t *intr, void *cookie)
- 	__setbits(intr->flags, XN_ISR_ATTACHED);
- 	xnintr_stat_counter_inc();
- out:
--	xnlock_put_irqrestore(&intrlock, s);
-+	up(&intrlock);
- 
- 	return ret;
- }
-@@ -775,11 +774,10 @@ EXPORT_SYMBOL_GPL(xnintr_attach);
- int xnintr_detach(xnintr_t *intr)
- {
- 	int ret;
--	spl_t s;
- 
- 	trace_mark(xn_nucleus, irq_detach, "irq %u", intr->irq);
- 
--	xnlock_get_irqsave(&intrlock, s);
-+	down(&intrlock);
- 
- 	if (!__testbits(intr->flags, XN_ISR_ATTACHED)) {
- 		ret = -EINVAL;
-@@ -794,7 +792,7 @@ int xnintr_detach(xnintr_t *intr)
- 
- 	xnintr_stat_counter_dec();
-  out:
--	xnlock_put_irqrestore(&intrlock, s);
-+	up(&intrlock);
- 
- 	return ret;
- }
-@@ -920,13 +918,12 @@ int xnintr_query_next(int irq, xnintr_iterator_t *iterator, char *name_buf)
- 	xnticks_t last_switch;
- 	int cpu_no = iterator->cpu + 1;
- 	int err = 0;
--	spl_t s;
- 
- 	if (cpu_no == xnarch_num_online_cpus())
- 		cpu_no = 0;
- 	iterator->cpu = cpu_no;
- 
--	xnlock_get_irqsave(&intrlock, s);
-+	down(&intrlock);
- 
- 	if (iterator->list_rev != xnintr_list_rev) {
- 		err = -EAGAIN;
-@@ -969,7 +966,7 @@ int xnintr_query_next(int irq, xnintr_iterator_t *iterator, char *name_buf)
- 		iterator->prev = intr;
- 
-      unlock_and_exit:
--	xnlock_put_irqrestore(&intrlock, s);
-+	up(&intrlock);
- 
- 	return err;
- }
-@@ -983,7 +980,6 @@ static inline int format_irq_proc(unsigned int irq,
- 				  struct xnvfile_regular_iterator *it)
- {
- 	struct xnintr *intr;
--	spl_t s;
- 
- 	if (irq == XNARCH_TIMER_IRQ) {
- 		xnvfile_puts(it, "         [timer]");
-@@ -1005,7 +1001,7 @@ static inline int format_irq_proc(unsigned int irq,
- 		return 0;
- 	}
- 
--	xnlock_get_irqsave(&intrlock, s);
-+	down(&intrlock);
- 
- 	intr = xnintr_shirq_first(irq);
- 	if (intr) {
-@@ -1018,7 +1014,7 @@ static inline int format_irq_proc(unsigned int irq,
- 		} while (intr);
- 	}
- 
--	xnlock_put_irqrestore(&intrlock, s);
-+	up(&intrlock);
- 
- 	return 0;
- }
--- 
-1.7.3.4
--- 
-Siemens AG, Corporate Technology, CT RTC ITP SDP-DE
-Corporate Competence Center Embedded Linux
+index 9898b92..569eafa 100644
+--- a/kernel/ipipe/core.c
++++ b/kernel/ipipe/core.c
+@@ -1208,7 +1208,7 @@ void __ipipe_dispatch_irq(unsigned int irq, int flags) /* hw interrupts off */
+                 chained_irq = 0;
+         } else {
+                 desc = irq_to_desc(irq);
+-               chained_irq = ipipe_chained_irq_p(desc);
++               chained_irq = desc ? ipipe_chained_irq_p(desc) : 0;
+         }
+  
+  #ifdef CONFIG_IPIPE_DEBUG
+
 
