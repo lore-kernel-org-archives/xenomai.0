@@ -1,12 +1,12 @@
-Message-ID: <507F501A.4000500@gmail.com>
-Date: Wed, 17 Oct 2012 21:40:58 -0300
-From: =?UTF-8?B?U2ViYXN0acOhbiBQYXZleg==?= <sebastian.pavez.t@gmail.com>
 MIME-Version: 1.0
-References: <507D7A0C.7090209@gmail.com> <507E05B4.2040704@xenomai.org>
-In-Reply-To: <507E05B4.2040704@xenomai.org>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Subject: Re: [Xenomai] Installing Xenomai Newbie
+In-Reply-To: <507E0569.5040101@xenomai.org>
+References: <CAFNBftfgRC66N1JBEj5-e+ya4s5-RUqzeXsNs_iK6BTFrLmJ=w@mail.gmail.com>
+	<507E0569.5040101@xenomai.org>
+Date: Wed, 17 Oct 2012 23:04:47 -0300
+Message-ID: <CAFNBfteFL4Za8Va7PEd1dawWb3g1EqpdNSdhDjA9HkFDEpc8Aw@mail.gmail.com>
+From: Flavio Castro Alves Filho <flavio.alves@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: Re: [Xenomai] Latency tests - iMX53qsb
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,45 +18,45 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-RWwgMTYtMTAtMjAxMiAyMjoxMSwgR2lsbGVzIENoYW50ZXBlcmRyaXggZXNjcmliacOzOgo+IE9u
-IDEwLzE2LzIwMTIgMDU6MTUgUE0sIFNlYmFzdGnDoW4gUGF2ZXogd3JvdGU6Cj4KPj4gSGksCj4+
-Cj4+IE15IG5hbWUgaXMgU2ViYXN0aWFuIGFuZCBJJ20gYSBjaGlsZWFuIHN0dWRlbnQgZnJvbSBQ
-VUNWLiBDdXJyZW50bHkgSQo+PiBoYXZlIHRvIGRldmVsb3AgYSBSVCBwcm95ZWN0LCBidXQgdGhl
-IHByb2JsZW0gaXMgdGhhdCBJIGRvbnQgaGF2ZQo+PiBleHBlcmllbmNlIHdpdGggTGludXggYW5k
-IGEgbG90IGxlc3Mgd2l0aCBYZW5vbWFpLiBOZXZlcnRoZWxlc3MgaQo+PiBhcnJpdmVkIHRvIGlu
-c3RhbGwgeGVub21haSAgMi42LjAgb24gVWJ1bnR1IDEyLjA0LCBidXQgd2hlbiBJIHRyeSB0bwo+
-PiBleGVjdXRlIHVidW50dSB3aXRoIHRoZSB4ZW5vbWFpIGtlcm5lbCB0aGUgc2NyZWVuIGdvZXMg
-YmxhY2sKPgo+IFBsZWFzZSByZW1vdmUgInF1aWV0IiBmcm9tIExpbnV4IGNvbW1hbmQgbGluZSwg
-YW5kIG1ha2Ugc3VyZSB0aGF0IHlvdQo+IGhhdmUgYWxsIHRoZSBkcml2ZXJzIG5lY2Vzc2FyeSBm
-b3IgdGhlIHlvdXIgc3lzdGVtIHRvIGJvb3QsIGluY2x1ZGluZzoKPiAtIHZpZGVvIGRpc3BsYXkg
-ZHJpdmVyCj4gLSByb290IGZpbGUgc3lzdGVtIGRldmljZSBkcml2ZXIKPiAtIHJvb3QgZmlsZSBz
-eXN0ZW0gZHJpdmVyCj4KSGksCgpJIHRyaWVkIHRvIGV2ZXJ5dGhpbmcgZnJvbSBzY3JhdGNoLCBi
-dXQgaSBnZXQgdGhlIHNhbWUgcHJvYmxlbS4gSSB0cmllZCAKcmVtb3ZlIHRoZSBxdWlldCBzcGxh
-c2ggYW5kIEkgY291bGQgc2VlIHRoZSBsaW5lCiJGYWxsYmFjayBncmFwaGljcyBkZWZhdWx0IiB3
-ZWxsLCB0aGlzIGlzIHdoZW4gSSBleGVjdXRlIHRoZSBrZXJuZWwgd2l0aCAKeGVub21haSBpbiBy
-ZWNvdmVyeSBtb2RlLiBCZWNhdXNlIHdoZW4gSSB0cmllZCBpdCBpbgphIG5vcm1hbCB3YXkgSSBn
-ZXQgdGhlIGJsYWNsIHNjcmVlbiB3aXRoIGEgdHdpbmtsZSwgaW4gdGhpcyBjYXNlIEknbSAKYWJs
-ZSB0byBwdXQgbXkgcGFzc3dvcmQgYW5kIEkgaGVhcmQgdGhlIGVudHJ5IHNvdW5kICh3aXRoIHNv
-bWUgCmRpc3RvcnNpb24pLCBzbyBsaWtlIHlvdSBzYWlkIGl0IG1heWJlIHNvbWUgZHJpdmVyJ3Mg
-cHJvYmxlbS4KSW4gdGhlIHJlY292ZXJ5IG1vZGUgSSBjaGVja2VkIHRoZSBhcHBsaWNhdGlvbiBk
-cml2ZXJzIGFuZCBub3RoaW5nLiAKTWF5YmUgaXQncyBzb21ldGhpbmcgc2ltcGxlIGJ1dCBJJ20g
-cXVpdGUgc3R1Y2ssIEkndmUgbmV2ZXIgdXNlZCBsaW51eCAKYmVmb3JlIGFuZCBJIHJlYWxseSBu
-ZWVkIHRvIGdldCB0aGlzIG9wZXJhdGl2ZSwgc28gaWYgeW91IG9yIHNvbWVvbmUgCmVsc2UgY291
-bGQgaGVscCBtZSAuLi4gaW4gcGxhaW4gbGFuZ3VhZ2Ugd291bGQgYmUgYXdlc29tZSAuLi4KVGhh
-bmtzIGluIGFkdmFuY2UKClBTOiBJbiB0aGUgcmVjb3ZlcnkgbW9kZSBJIHRyaWVkIHRoZSB4ZW5v
-bWFpIHRlc3RzLCBJIGF0dGFjaGVkIHRoZSAKY2FwdHVyZXMgLi4uCgoKLS0tLS0tLS0tLS0tLS0g
-bmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJi
-ZWQuLi4KTmFtZTogU2NyZWVuc2hvdCBhdCAyMDEyLTEwLTE3IDIwXzQ2XzI4LnBuZwpUeXBlOiBp
-bWFnZS9wbmcKU2l6ZTogMTQ5OTgzIGJ5dGVzCkRlc2M6IG5vdCBhdmFpbGFibGUKVVJMOiA8aHR0
-cDovL3d3dy54ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDEyMTAx
-Ny8xY2U2ZTc5ZS9hdHRhY2htZW50LnBuZz4KLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0t
-LS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogU2Ny
-ZWVuc2hvdCBhdCAyMDEyLTEwLTE3IDIwXzU0XzUzLnBuZwpUeXBlOiBpbWFnZS9wbmcKU2l6ZTog
-MTU0NjQ2IGJ5dGVzCkRlc2M6IG5vdCBhdmFpbGFibGUKVVJMOiA8aHR0cDovL3d3dy54ZW5vbWFp
-Lm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDEyMTAxNy8xY2U2ZTc5ZS9hdHRh
-Y2htZW50LTAwMDEucG5nPgotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0K
-QSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBTY3JlZW5zaG90IGF0
-IDIwMTItMTAtMTcgMjBfNTVfNDEucG5nClR5cGU6IGltYWdlL3BuZwpTaXplOiAxMzMyNTggYnl0
-ZXMKRGVzYzogbm90IGF2YWlsYWJsZQpVUkw6IDxodHRwOi8vd3d3Lnhlbm9tYWkub3JnL3BpcGVy
-bWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTIxMDE3LzFjZTZlNzllL2F0dGFjaG1lbnQtMDAw
-Mi5wbmc+Cg==
+I'm trying to build using the instruction from Xenomai package
+(rel_imx_3.0.15_12.03.00) and I'm facing some issues.
+
+The kernel does not compile when I turn off 'CPU Frequency Scaling' option.
+
+I use imx5_defconfig from the standard kernel config files.
+
+When I let 'CPU Frequency Scaling' on, with Xenomai, I have the
+message on Xenomai configuration options, but the build run with
+success.
+
+Do I have to lel this option on?
+
+Thank you very much.
+
+Best regards,
+
+Flavio
+
+2012/10/16 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>:
+> On 10/17/2012 01:35 AM, Flavio Castro Alves Filho wrote:
+>
+>> Linux version 2.6.35.3-11.09.01+yocto-gd86aa36-svn795-dirty
+>
+>
+> Please use something more recent than Linux 2.6.35, Linux 2.6.35 dates
+> back from 2010, imx53 is supported with Xenomai for Linux versions later
+> than 2.6.38, at least.
+>
+> --
+>                                                                 Gilles.
+
+
+
+-- 
+Flavio de Castro Alves Filho
+
+flavio.alves@gmail.com
+www.linuxembarcado.com
+Twitter: http://twitter.com/#!/fraviofii
+LinkedIn profile: www.linkedin.com/in/flaviocastroalves
+
