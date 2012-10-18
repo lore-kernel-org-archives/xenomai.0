@@ -1,13 +1,13 @@
-Message-ID: <507F85FA.9050704@xenomai.org>
-Date: Thu, 18 Oct 2012 06:30:50 +0200
+Message-ID: <507F876F.7080406@xenomai.org>
+Date: Thu, 18 Oct 2012 06:37:03 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CAFNBftfgRC66N1JBEj5-e+ya4s5-RUqzeXsNs_iK6BTFrLmJ=w@mail.gmail.com>	<507E0569.5040101@xenomai.org>
-	<CAFNBfteFL4Za8Va7PEd1dawWb3g1EqpdNSdhDjA9HkFDEpc8Aw@mail.gmail.com>
-In-Reply-To: <CAFNBfteFL4Za8Va7PEd1dawWb3g1EqpdNSdhDjA9HkFDEpc8Aw@mail.gmail.com>
+References: <507E9424.8060800@siemens.com>
+In-Reply-To: <507E9424.8060800@siemens.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Latency tests - iMX53qsb
+Subject: Re: [Xenomai] [PATCH] nucleus: Convert intrlock to a sleeping Linux
+ lock
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,26 +16,18 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Flavio Castro Alves Filho <flavio.alves@gmail.com>
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 10/18/2012 04:04 AM, Flavio Castro Alves Filho wrote:
+On 10/17/2012 01:19 PM, Jan Kiszka wrote:
 
-> I'm trying to build using the instruction from Xenomai package
-> (rel_imx_3.0.15_12.03.00) and I'm facing some issues.
-> 
-> The kernel does not compile when I turn off 'CPU Frequency Scaling' option.
-> 
-> I use imx5_defconfig from the standard kernel config files.
-> 
-> When I let 'CPU Frequency Scaling' on, with Xenomai, I have the
-> message on Xenomai configuration options, but the build run with
-> success.
-> 
-> Do I have to lel this option on?
+> All users of this lock are supposed to run over Linux context already.
+> Moreover, latest I-pipe patches complain that ipipe_virtualize_irq is
+> called with the Xenomai domain stalled. So convert this lock to a
+> sleeping Linux variant to avoid that alarm.
 
 
-Yes, probably. Please select the "performance" governor.
+Do we really really want such a change in the stable branch?
 
 -- 
                                                                 Gilles.
