@@ -1,12 +1,14 @@
 MIME-Version: 1.0
-In-Reply-To: <507E0569.5040101@xenomai.org>
-References: <CAFNBftfgRC66N1JBEj5-e+ya4s5-RUqzeXsNs_iK6BTFrLmJ=w@mail.gmail.com>
-	<507E0569.5040101@xenomai.org>
-Date: Wed, 17 Oct 2012 23:04:47 -0300
-Message-ID: <CAFNBfteFL4Za8Va7PEd1dawWb3g1EqpdNSdhDjA9HkFDEpc8Aw@mail.gmail.com>
+In-Reply-To: <CAODUr7t4LOoRhMdv8SidzPstvw+bhuBqghzrh4P+OB7FtB=XLw@mail.gmail.com>
+References: <CAODUr7vXcUGmeN9dso5ENeAXWugR9ojj=P3oJOY+3Vr4+mJRiQ@mail.gmail.com>
+	<507F0E6E.6050308@xenomai.org>
+	<CAODUr7t4LOoRhMdv8SidzPstvw+bhuBqghzrh4P+OB7FtB=XLw@mail.gmail.com>
+Date: Wed, 17 Oct 2012 23:07:29 -0300
+Message-ID: <CAFNBftfqDZfsR5jjeESgMFFPKb=EuBBEV8yQ8oomJ4jhMiCfkw@mail.gmail.com>
 From: Flavio Castro Alves Filho <flavio.alves@gmail.com>
 Content-Type: text/plain; charset=ISO-8859-1
-Subject: Re: [Xenomai] Latency tests - iMX53qsb
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] Error during kernel build
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,44 +17,71 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Luis Rossi <luisf.rossi@gmail.com>
 Cc: xenomai@xenomai.org
 
-I'm trying to build using the instruction from Xenomai package
-(rel_imx_3.0.15_12.03.00) and I'm facing some issues.
-
-The kernel does not compile when I turn off 'CPU Frequency Scaling' option.
-
-I use imx5_defconfig from the standard kernel config files.
-
-When I let 'CPU Frequency Scaling' on, with Xenomai, I have the
-message on Xenomai configuration options, but the build run with
-success.
-
-Do I have to lel this option on?
-
-Thank you very much.
-
-Best regards,
-
-Flavio
-
-2012/10/16 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>:
-> On 10/17/2012 01:35 AM, Flavio Castro Alves Filho wrote:
+2012/10/17 Luis Rossi <luisf.rossi@gmail.com>:
+> Thank you,
 >
->> Linux version 2.6.35.3-11.09.01+yocto-gd86aa36-svn795-dirty
+> I will take a try. I chose version 2.5.4 becouse it was stated as stable
+> for debian in the website. How about 2.6.1?
+>
+> Quick question, if i build the kernel inside a Virtual Box with linux (on=
+ a
+> x86) computer will i have any problem? I cant see any reason why i would,
+> but it is nice to check.
+
+Do you want to execute Xenomai from a standard virtual machine?
+
+I believe that, at least, the real time results will not be reliable.
+
+>
+> Regards,
+>
+> On Wed, Oct 17, 2012 at 5:00 PM, Gilles Chanteperdrix <
+> gilles.chanteperdrix@xenomai.org> wrote:
+>
+>> On 10/17/2012 09:22 PM, Luis Rossi wrote:
+>>
+>> > Hi i am trying to build a kernel with xenomai for debian and i am
+>> following
+>> > all the instuctions.
+>> >
+>> > The target PC will be an Intel Atom.
+>> >
+>> > I am usign xenomai version 2.5.4 with kernel 2.6.34
+>>
+>>
+>> As we said many times, the ABI do not change in a branch, so, there is
+>> absolutely no reason to use Xenomai 2.5.4 and not Xenomai 2.5.6. And
+>> update to 2.6.1 is recommended.
+>>
+>> --
+>>                                                                 Gilles.
+>>
+>> _______________________________________________
+>> Xenomai mailing list
+>> Xenomai@xenomai.org
+>> http://www.xenomai.org/mailman/listinfo/xenomai
+>>
 >
 >
-> Please use something more recent than Linux 2.6.35, Linux 2.6.35 dates
-> back from 2010, imx53 is supported with Xenomai for Linux versions later
-> than 2.6.38, at least.
 >
 > --
->                                                                 Gilles.
+> Lu=EDs Filipe Rossi
+> Electrical Engineer
+> Biomechatronics Lab. / Grupo de Sensores Integr=E1veis e Sistemas
+> Escola Polit=E9cnica
+> Universidade de S=E3o Paulo
+> Cel. +55 (11) 7662-9234
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> http://www.xenomai.org/mailman/listinfo/xenomai
 
 
 
--- 
+--=20
 Flavio de Castro Alves Filho
 
 flavio.alves@gmail.com
