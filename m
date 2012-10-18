@@ -1,13 +1,15 @@
-Message-ID: <507FD023.6020201@xenomai.org>
-Date: Thu, 18 Oct 2012 11:47:15 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+References: <mailman.94.1350341580.29827.xenomai@xenomai.org>
+	<1350374085.35200.YahooMailNeo@web164604.mail.gq1.yahoo.com>
+	<507D1EB8.3000406@xenomai.org>
+Message-ID: <1350578804.89380.YahooMailNeo@web164606.mail.gq1.yahoo.com>
+Date: Thu, 18 Oct 2012 09:46:44 -0700 (PDT)
+From: Ahmet Tekelioglu <vtam370@yahoo.com>
+In-Reply-To: <507D1EB8.3000406@xenomai.org>
 MIME-Version: 1.0
-References: <mailman.1.1350468001.6812.xenomai@xenomai.org>	<507F2930.9020709@gmail.com>	<507F8379.3070505@xenomai.org>	<CANKLDmuX+n_XMJAqTQA75rdv5ezN89V=8aaASUGis1rM90N70Q@mail.gmail.com>	<CANKLDmsMPqKm6c-a8ekCa2NmaVCe-Qp+SvW0k=7fhCTsfVycCg@mail.gmail.com>
-	<CANKLDmsxawDVFGBR7e5=hf6q9UjSC+OcrL9A9wPjnP6DUHeH+w@mail.gmail.com>
-In-Reply-To: <CANKLDmsxawDVFGBR7e5=hf6q9UjSC+OcrL9A9wPjnP6DUHeH+w@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] ARM kernel issue
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] Beagleboard-XM
+Reply-To: Ahmet Tekelioglu <vtam370@yahoo.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,100 +18,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Henri Roosen <henriroosen@gmail.com>
-Cc: Stefan Videv <videvstefan@gmail.com>, xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 10/18/2012 11:07 AM, Henri Roosen wrote:
-> On Thu, Oct 18, 2012 at 11:00 AM, Henri Roosen <henriroosen@gmail.com> wrote:
->> On Thu, Oct 18, 2012 at 10:21 AM, Henri Roosen <henriroosen@gmail.com> wrote:
->>> On Thu, Oct 18, 2012 at 6:20 AM, Gilles Chanteperdrix
->>> <gilles.chanteperdrix@xenomai.org> wrote:
->>>> On 10/17/2012 11:54 PM, Stefan Videv wrote:
->>>>
->>>>> Uncompressing Linux... done, booting the kernel.
->>>>> [    0.000000] Initializing cgroup subsys cpuset
->>>>> [    0.000000] Initializing cgroup subsys cpu
->>>>> [    0.000000] Linux version 3.2.31-psp24 (stefan@stefan-VirtualBox)
->>>>> (gcc version 4.6.3 (Ubuntu/Linaro 4.6.3-1ubuntu5) ) #1 Wed Oct 17
->>>>> 17:09:40 BST 2012
->>>>> [    0.000000] CPU: ARMv7 Processor [413fc082] revision 2 (ARMv7),
->>>>> cr=10c53c7d
->>>>> [    0.000000] CPU: PIPT / VIPT nonaliasing data cache, VIPT aliasing
->>>>> instruction cache
->>>>> [    0.000000] Machine: am335xevm
->>>>
->>>>
->>>> You are trying to run Xenomai on a machine for which the I-pipe patch
->>>> does not contain the support. There is no miracle:
->>>> - either you add that support yourself
->>>
->>> I am currently trying to bring up Xenomai on the AM335x EVM board too.
->>> It seems Stephan from the thread referred to in the post was able to
->>> successfully port Xenomai on the Beaglebone which uses the same chip.
->>> So I'm using a similar approach:
->>>
->>> - kernel sources from
->>> git://arago-project.org/git/projects/linux-am33x.git, tag
->>> v3.2_AM335xPSP_04.06.00.08, .config am335x_evm_defconfig.
->>> - merged v3.2.21
->>> - merged core-3.2
->>> - changed arch/arm/mach-omap2/irq.c omap_intc_handle_irq to call
->>> ipipe_handle_multi_irq instead of handle_IRQ.
->>> - cnanged arch/arm/mach-omap2/timer.c OMAP_SYS_TIMER_INIT(3_am33xx,
->>> like Stephan suggested.
->>>
->>> With all this, the kernel boots correctly only without the ipipe.
->>>
->>> With the ipipe it hangs after 1 second during boot
->>> ..
->>> [    0.000000] OMAP clockevent source: GPTIMER2 at 24000000 Hz
->>> [    0.000000] OMAP clocksource: GPTIMER3 at 24000000 Hz
->>> [    0.000000] I-pipe, 24.000 MHz clocksource
->>> [    0.000000] sched_clock: 32 bits at 24MHz, resolution 41ns, wraps
->>> every 178956ms
->>> [    0.000000] Interrupt pipeline (release #1)
->>> [    0.000000] Console: colour dummy device 80x30
->>> [    0.000519] Calibrating delay loop... 718.02 BogoMIPS (lpj=3590144)
->>> [ 0.119053] pid_max: default: 32768 minimum: 301
->>> [    0.119208] Security Framework initialized
->>> [    0.119329] Mount-cache hash table entries: 512
->>> ...
->>> [    1.002498] _regulator_get: 2-0018 supply Vdd not found, using
->>> dummy regulator
->>> [    1.010148] _regulator_get: 2-0018 supply Vdd_IO not found, using
->>> dummy regulator
->>>
->>> A printk in __ipipe_tsc_update which prints every 4096 calls shows:
->>>
->>> Any suggestions how to debug the clocksource? I put a printk in
->>>
->>> [    0.996420] Configure Bluetooth Enable pin...
->>> [    1.002498] _regulator_get: 2-0018 supply Vdd not found, using
->>> dummy regulator
->>> [    1.010148] _regulator_get: 2-0018 supply Vdd_IO not found, using
->>> dummy regulator
->>> [   82.133193] __ipipe_tsc_update
->>> [  164.071647] __ipipe_tsc_update
->>> [   67.053119] __ipipe_tsc_update
->>> [  148.991560] __ipipe_tsc_update
->>> [   51.973047] __ipipe_tsc_update
->>>
->>
->> Forcing clocksource="gp timer" at the kernel commandline makes the
->> board boot with the ipipe enabled.
-> 
-> Ok, the board boots now with clocksource ipipe_tsc. I had to change:
-> 
-> OMAP_SYS_TIMER_INIT(3_am33xx, 2, AM33XX_CLKEV_SOURCE, 3, AM33XX_MPU_SOURCE)
-> to
-> OMAP_SYS_TIMER_INIT(3_am33xx, 2, AM33XX_CLKEV_SOURCE, 1, AM33XX_MPU_SOURCE)
-> 
-> Can someone explain why / confirm this is correct?
-
-By the way, it is probably better to use GP timer 1 as clock event than
-as clock source as it has a higher latency (at least on OMAP3), this is
-the reason why we try and avoid using it.
-
--- 
-					    Gilles.
-
+Thank you, Gilles. I am sorry for the delay in my reply but I only succeede=
+d in cross-compiling a standard a kernel today and installed it on my Beagl=
+eBoard-XM. Until now I didn't feel ready for Xenomai. I'll try to compile f=
+or Xenomai tomorrow. =0A=0AAhmet=0A=0A=0A=0A=0A=0A_________________________=
+_______=0A From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>=0A=
+To: Ahmet Tekelioglu <vtam370@yahoo.com> =0ACc: "xenomai@xenomai.org" <xeno=
+mai@xenomai.org> =0ASent: Tuesday, 16 October 2012, 11:45=0ASubject: Re: [X=
+enomai] Beagleboard-XM=0A =0AOn 10/16/2012 09:54 AM, Ahmet Tekelioglu wrote=
+:=0A> Hello,=0A> =0A> I am new. Is there a a step-by-step guide for install=
+ing Xenomai on BeagleBoard-XM? =0A> =0A> I have gcc toolchain but can insta=
+ll the Sourcery toolchain if necessary. =0A=0AThere is nothing special abou=
+t the BeagleBoard-XM, the generic=0Ainstallation instructions apply, you ha=
+ve them in xenomai sources, it is=0Athe README.INSTALL file, or can find th=
+em on the web:=0A=0Ahttp://www.xenomai.org/documentation/xenomai-2.6/html/R=
+EADME.INSTALL/=0A=0AWhat you may want to find is how to run a custom kernel=
+ on your beagle,=0Adepending on what environment you use (debian, openembed=
+ded, etc...).=0A=0AAlso note that xenomai 2.6.1 does not support thumb kern=
+els or thumb=0Auser-space, so, if you are compiling with a toolchain which =
+compiles for=0Athumb by default (like, it seems, linaro cross toolchain), p=
+lease add=0A-mthumb to the cflags when compiling xenomai user-space. Also p=
+ay=0Aattention not to enable CONFIG_THUMB2_KERNEL when compiling the kernel=
+.=0A=0ARegards.=0A=0A-- =0A=A0=A0=A0 =A0=A0=A0 =A0=A0=A0 =A0=A0=A0 =A0=A0=
+=A0 =A0 =A0 Gilles.
