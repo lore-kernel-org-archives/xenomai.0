@@ -1,16 +1,13 @@
-Message-ID: <50752D7E.7010207@web.de>
-Date: Wed, 10 Oct 2012 10:10:38 +0200
-From: Jan Kiszka <jan.kiszka@web.de>
+Message-ID: <507FD023.6020201@xenomai.org>
+Date: Thu, 18 Oct 2012 11:47:15 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <505EB99F.7050705@wanadoo.fr>	<505EBD61.1050009@wanadoo.fr>	<505F0D40.9030105@xenomai.org>	<50741C5B.4060206@wanadoo.fr>
-	<5074986C.8000509@xenomai.org> <50749A03.9090607@xenomai.org>
-	<50749C71.2020100@xenomai.org> <5075260E.2050402@wanadoo.fr>
-	<507528E4.4050809@xenomai.org> <50752A42.9080303@web.de>
-	<50752C0C.3050803@xenomai.org>
-In-Reply-To: <50752C0C.3050803@xenomai.org>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] Target frozen with rtcan_virt
+References: <mailman.1.1350468001.6812.xenomai@xenomai.org>	<507F2930.9020709@gmail.com>	<507F8379.3070505@xenomai.org>	<CANKLDmuX+n_XMJAqTQA75rdv5ezN89V=8aaASUGis1rM90N70Q@mail.gmail.com>	<CANKLDmsMPqKm6c-a8ekCa2NmaVCe-Qp+SvW0k=7fhCTsfVycCg@mail.gmail.com>
+	<CANKLDmsxawDVFGBR7e5=hf6q9UjSC+OcrL9A9wPjnP6DUHeH+w@mail.gmail.com>
+In-Reply-To: <CANKLDmsxawDVFGBR7e5=hf6q9UjSC+OcrL9A9wPjnP6DUHeH+w@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] ARM kernel issue
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,43 +16,100 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Thierry Bultel <thierry.bultel@wanadoo.fr>, Wolfgang Grandegger <wg@denx.de>, xenomai@xenomai.org
+To: Henri Roosen <henriroosen@gmail.com>
+Cc: Stefan Videv <videvstefan@gmail.com>, xenomai@xenomai.org
 
-T24gMjAxMi0xMC0xMCAxMDowNCwgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4gT24gMTAv
-MTAvMjAxMiAwOTo1NiBBTSwgSmFuIEtpc3prYSB3cm90ZToKPj4gT24gMjAxMi0xMC0xMCAwOTo1
-MSwgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4+PiBPbiAxMC8xMC8yMDEyIDA5OjM4IEFN
-LCBUaGllcnJ5IEJ1bHRlbCB3cm90ZToKPj4+PiBIaSBHaWxsZXMsCj4+Pj4KPj4+PiBNYW55IHRo
-YW5rcywKPj4+PiBUaGUgZmlyc3QgcGF0Y2ggZG9lcyBub3Qgd29yaywgdGhlIHNlY29uZCBkb2Vz
-Lgo+Pj4+IEkgdGhpbmsgdGhlIHJlYXNvbiBmb3IgMXN0IHBhdGNoIHdoeSBpcyB0aGF0IGluIHJ0
-Y2FuX3ZpcnQsIHdlIGhhdmUKPj4+Pgo+Pj4+IHJ0ZG1fbG9ja19nZXRfaXJxc2F2ZSgmcnRjYW5f
-cmVjdl9saXN0X2xvY2ssIGxvY2tfY3R4KTsKPj4+PiBydGRtX2xvY2tfZ2V0KCZydGNhbl9zb2Nr
-ZXRfbG9jayk7Cj4+Pj4KPj4+PiAuLi4KPj4+PiAtLS0+ICAgICAgICBydGNhbl9yY3YocnhfZGV2
-LCAmc2tiKTsKPj4+PiAuLi4uCj4+Pj4KPj4+PiBydGRtX2xvY2tfcHV0KCZydGNhbl9zb2NrZXRf
-bG9jayk7Cj4+Pj4gcnRkbV9sb2NrX3B1dF9pcnFyZXN0b3JlKCZydGNhbl9yZWN2X2xpc3RfbG9j
-aywgbG9ja19jdHgpOwo+Pj4+Cj4+Pj4gYW5kIHJ0Y2FuX3Jjdi0+cnRjYW5fcmN2X2RlbGl2ZXIt
-PnJ0ZG1fc2VtX3VwKCZzb2NrLT5yZWN2X3NlbSk7Cj4+Pj4KPj4+PiB0aHVzIHRoZSBzYW1lIHJl
-LXNjaGVkdWxpbmcgc3R1ZmYgd2l0aCBpbnRlcnJ1cHRzIGxvY2tlZC4KPj4+Pgo+Pj4+IEFyZSB5
-b3Ugbm90IG5vdCBhZnJhaWQgb2Ygc2lkZSBlZmZlY3RzIHdpdGggdGhlIHNlY29uZCBwYXRjaCwg
-Cj4+Pj4gc2luY2UgeW91IGNoYW5nZSB0aGUgb3ZlcmFsbCBiZWhhdmlvdXIgPwo+Pj4+IFdvbid0
-IHlvdSBwcmVmZXIgYSBvbmx5IGxvY2FsbHkgbW9kaWZpZWQgcnRjYW5fdmlydCA/Cj4+Pgo+Pj4g
-V2Ugc2hvdWxkIGFzayBKYW4ncyBvcGluaW9uLiBJbiBhbnkgY2FzZSwgaWYgd2UgYWRvcHQgdGhl
-IHNlY29uZCBwYXRjaCwKPj4+IHdlIG1pZ2h0IHdhbnQgdG8gdHJ5IGFuZCByZWR1Y2UgdGhlIG92
-ZXJoZWFkIG9mIHhucG9kX3VubG9ja19zY2hlZC4KPj4+Cj4+Cj4+IFdlIHdlcmUgc2lnbmFsaW5n
-IHRoZSBzZW1hcGhvcmUgd2hpbGUgaG9sZGluZyBhIHNwaW4gbG9jaz8gVGhhdCdzIGEKPj4gY2xl
-YXIgYnVnLiBZb3VyIHBhdGNoIGlzIGFsaWduaW5nIHJ0Y2FuIHRvIHRoZSBwYXR0ZXJuIHdlIGFy
-ZSBhbHNvIHVzaW5nCj4+IGluIFJUbmV0LiBXZSBqdXN0IG5lZWQgdG8gbWFrZSBzdXJlIChoYXZl
-bid0IGxvb2tlZCBhdCB0aGUgZnVsbCBjb250ZXh0Cj4+IHlldCkgdGhhdCBzb2NrIHJlbWFpbnMg
-dmFsaWQgZXZlbiBhZnRlciBkcm9wcGluZyB0aGUgbG9jayhzKS4KPiAKPiBUaGUgc2Vjb25kIHBh
-dGNoIGlkZWEgd2FzIHRvIGxvY2sgdGhlIHNjaGVkdWxlciB3aGlsZSBzcGlubG9ja3MgYXJlCj4g
-aGVsZCwgc28gdGhhdCBwb3N0aW5nIGEgc2VtYXBob3JlIHdoaWxlIGhvbGRpbmcgYSBzcGluIGxv
-Y2sgaXMgbm8gbG9uZ2VyCj4gYSBidWcuCgpTb3VuZHMgYSBiaXQgaGFja3ksIGJ1dCBJIHRoaW5r
-IHdlIGhhdmUgdGhpcyBwYXR0ZXJuCihSVERNX0VYRUNVVEVfQVRPTUlDQUxMWSkgaW4gcnRjYW4g
-c29tZXdoZXJlIGFscmVhZHkuIElJUkMsIHRoZQpkaWZmZXJlbmNlIHRvIFJUbmV0IGlzIHRoYXQg
-d2UgY2Fubm90IGVhc2lseSBsb2NrIGRvd24gdGhlIGFmZmVjdGVkCm9iamVjdCAodGhlIHNvY2tl
-dCkgaGVyZS4KCkphbgoKLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEg
-bm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogc2lnbmF0dXJlLmFzYwpU
-eXBlOiBhcHBsaWNhdGlvbi9wZ3Atc2lnbmF0dXJlClNpemU6IDI1OSBieXRlcwpEZXNjOiBPcGVu
-UEdQIGRpZ2l0YWwgc2lnbmF0dXJlClVSTDogPGh0dHA6Ly93d3cueGVub21haS5vcmcvcGlwZXJt
-YWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxMjEwMTAvOWE4MmNkOTkvYXR0YWNobWVudC5wZ3A+
-Cg==
+On 10/18/2012 11:07 AM, Henri Roosen wrote:
+> On Thu, Oct 18, 2012 at 11:00 AM, Henri Roosen <henriroosen@gmail.com> wrote:
+>> On Thu, Oct 18, 2012 at 10:21 AM, Henri Roosen <henriroosen@gmail.com> wrote:
+>>> On Thu, Oct 18, 2012 at 6:20 AM, Gilles Chanteperdrix
+>>> <gilles.chanteperdrix@xenomai.org> wrote:
+>>>> On 10/17/2012 11:54 PM, Stefan Videv wrote:
+>>>>
+>>>>> Uncompressing Linux... done, booting the kernel.
+>>>>> [    0.000000] Initializing cgroup subsys cpuset
+>>>>> [    0.000000] Initializing cgroup subsys cpu
+>>>>> [    0.000000] Linux version 3.2.31-psp24 (stefan@stefan-VirtualBox)
+>>>>> (gcc version 4.6.3 (Ubuntu/Linaro 4.6.3-1ubuntu5) ) #1 Wed Oct 17
+>>>>> 17:09:40 BST 2012
+>>>>> [    0.000000] CPU: ARMv7 Processor [413fc082] revision 2 (ARMv7),
+>>>>> cr=10c53c7d
+>>>>> [    0.000000] CPU: PIPT / VIPT nonaliasing data cache, VIPT aliasing
+>>>>> instruction cache
+>>>>> [    0.000000] Machine: am335xevm
+>>>>
+>>>>
+>>>> You are trying to run Xenomai on a machine for which the I-pipe patch
+>>>> does not contain the support. There is no miracle:
+>>>> - either you add that support yourself
+>>>
+>>> I am currently trying to bring up Xenomai on the AM335x EVM board too.
+>>> It seems Stephan from the thread referred to in the post was able to
+>>> successfully port Xenomai on the Beaglebone which uses the same chip.
+>>> So I'm using a similar approach:
+>>>
+>>> - kernel sources from
+>>> git://arago-project.org/git/projects/linux-am33x.git, tag
+>>> v3.2_AM335xPSP_04.06.00.08, .config am335x_evm_defconfig.
+>>> - merged v3.2.21
+>>> - merged core-3.2
+>>> - changed arch/arm/mach-omap2/irq.c omap_intc_handle_irq to call
+>>> ipipe_handle_multi_irq instead of handle_IRQ.
+>>> - cnanged arch/arm/mach-omap2/timer.c OMAP_SYS_TIMER_INIT(3_am33xx,
+>>> like Stephan suggested.
+>>>
+>>> With all this, the kernel boots correctly only without the ipipe.
+>>>
+>>> With the ipipe it hangs after 1 second during boot
+>>> ..
+>>> [    0.000000] OMAP clockevent source: GPTIMER2 at 24000000 Hz
+>>> [    0.000000] OMAP clocksource: GPTIMER3 at 24000000 Hz
+>>> [    0.000000] I-pipe, 24.000 MHz clocksource
+>>> [    0.000000] sched_clock: 32 bits at 24MHz, resolution 41ns, wraps
+>>> every 178956ms
+>>> [    0.000000] Interrupt pipeline (release #1)
+>>> [    0.000000] Console: colour dummy device 80x30
+>>> [    0.000519] Calibrating delay loop... 718.02 BogoMIPS (lpj=3590144)
+>>> [ 0.119053] pid_max: default: 32768 minimum: 301
+>>> [    0.119208] Security Framework initialized
+>>> [    0.119329] Mount-cache hash table entries: 512
+>>> ...
+>>> [    1.002498] _regulator_get: 2-0018 supply Vdd not found, using
+>>> dummy regulator
+>>> [    1.010148] _regulator_get: 2-0018 supply Vdd_IO not found, using
+>>> dummy regulator
+>>>
+>>> A printk in __ipipe_tsc_update which prints every 4096 calls shows:
+>>>
+>>> Any suggestions how to debug the clocksource? I put a printk in
+>>>
+>>> [    0.996420] Configure Bluetooth Enable pin...
+>>> [    1.002498] _regulator_get: 2-0018 supply Vdd not found, using
+>>> dummy regulator
+>>> [    1.010148] _regulator_get: 2-0018 supply Vdd_IO not found, using
+>>> dummy regulator
+>>> [   82.133193] __ipipe_tsc_update
+>>> [  164.071647] __ipipe_tsc_update
+>>> [   67.053119] __ipipe_tsc_update
+>>> [  148.991560] __ipipe_tsc_update
+>>> [   51.973047] __ipipe_tsc_update
+>>>
+>>
+>> Forcing clocksource="gp timer" at the kernel commandline makes the
+>> board boot with the ipipe enabled.
+> 
+> Ok, the board boots now with clocksource ipipe_tsc. I had to change:
+> 
+> OMAP_SYS_TIMER_INIT(3_am33xx, 2, AM33XX_CLKEV_SOURCE, 3, AM33XX_MPU_SOURCE)
+> to
+> OMAP_SYS_TIMER_INIT(3_am33xx, 2, AM33XX_CLKEV_SOURCE, 1, AM33XX_MPU_SOURCE)
+> 
+> Can someone explain why / confirm this is correct?
+
+By the way, it is probably better to use GP timer 1 as clock event than
+as clock source as it has a higher latency (at least on OMAP3), this is
+the reason why we try and avoid using it.
+
+-- 
+					    Gilles.
+
