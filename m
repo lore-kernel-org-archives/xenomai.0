@@ -1,16 +1,23 @@
-Message-ID: <508197A5.9060609@nta-inc.net>
-Date: Fri, 19 Oct 2012 13:10:45 -0500
-From: Jeff Webb <jeff.webb@nta-inc.net>
-MIME-Version: 1.0
-References: <507C93B6.30304@nta-inc.net> <507D0712.9070305@xenomai.org>
-	<507F2D28.4090600@nta-inc.net> <507F8477.2070005@xenomai.org>
-	<50803AC8.6080604@nta-inc.net> <50803E54.3080602@xenomai.org>
-	<50807391.1020602@nta-inc.net> <5080D7B5.1020909@xenomai.org>
-In-Reply-To: <5080D7B5.1020909@xenomai.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+From: Wayne Warren <wwarren@emacinc.com>
+In-Reply-To: <50749349.5070900@xenomai.org>
+References: <1349212116.21898.108.camel@ENG-09-LX.emacinc.com>
+	<506B5D6B.80005@xenomai.org> <506B5E0E.5050900@xenomai.org>
+	<1349369822.3775.107.camel@ENG-09-LX.emacinc.com>
+	<506DC2DA.5000105@xenomai.org> <506E9510.7090105@xenomai.org>
+	<1349462858.26881.43.camel@ENG-09-LX.emacinc.com>
+	<506F402A.9030102@xenomai.org>
+	<1349473634.26881.221.camel@ENG-09-LX.emacinc.com>
+	<506F6283.2040901@xenomai.org>
+	<5afa3b9a7c7daf116f8284b4f255227e.squirrel@mail.emacinc.com>
+	<506FFDDC.60104@xenomai.org>
+	<1349816136.25350.426.camel@ENG-09-LX.emacinc.com>
+	<50749349.5070900@xenomai.org>
+Content-Type: text/plain; charset="UTF-8"
+Date: Fri, 19 Oct 2012 16:22:39 -0500
+Message-ID: <1350681759.1282.88.camel@ENG-09-LX.emacinc.com>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Still having problems running Xenomai on an Intel
- X5650 x86_64 machine
+Subject: Re: [Xenomai] Adeos I-Pipe patch problem on vendor-specific kernel
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,141 +29,80 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On 10/18/2012 11:31 PM, Gilles Chanteperdrix wrote:
-> On 10/18/2012 11:24 PM, Jeff Webb wrote:
->
->> On 10/18/2012 12:37 PM, Gilles Chanteperdrix wrote:
->>> On 10/18/2012 07:22 PM, Jeff Webb wrote:
->>>> On 10/17/2012 11:24 PM, Gilles Chanteperdrix wrote:
->>>>> On 10/18/2012 12:11 AM, Jeff Webb wrote:
->>>>>
->>>>>> On 10/16/2012 02:04 AM, Gilles Chanteperdrix wrote:
->>>>>>> On 10/16/2012 12:52 AM, Jeff Webb wrote:
->>>>>>>
->>>>>>>> I'm back to trying to get Xenomai running on a dual 6-core Intel
->>>>>>>> X5650 desktop machine.  I reported my previous attempts a few
->>>>>>>> months ago:
->>>>>>>>
->>>>>>>> On ubuntu 10.04 with 2.6.38.8:
->>>>>>>> http://www.xenomai.org/pipermail/xenomai/2012-July/000546.html
->>>>>>>>
->>>>>>>> On ubuntu 10.04 with 3.2.21:
->>>>>>>> http://www.xenomai.org/pipermail/xenomai/2012-July/000577.html
->>>>>>>>
->>>>>>>> I am now using ubuntu 12.04 instead of 10.04, and I'm using the
->>>>>>>> xenomai-2.6.git branch.  I am still not having any success.  The
->>>>>>>> kernel boots, but hangs as the GUI login box is coming up.  This
->>>>>>>> is similar to what happened under ubuntu 10.04/3.2.21, but the
->>>>>>>> call trace seems a little different.  I have attached my kernel
->>>>>>>> config and the console output, which was captured via a serial
->>>>>>>> connection.  This exact kernel package seems to run fine (with
->>>>>>>> very limited testing) on a 4-core Intel X9650 desktop machine
->>>>>>>> running the same OS, for what it's worth.  Any help in debugging
->>>>>>>> this would be appreciated.  What's my next step?
->>>>>>>
->>>>>>>
->>>>>>> I am afraid that is another known issue fixed in the 3.4 branch.
->>>>>>> Please try the I-pipe git; git://git.denx.de, branch core-3.4.
->>>>>>>
->>>>>>
->>>>>> Thanks again, Gilles.
->>>>>>
->>>>>> I just rebuilt the kernel using the core-3.4 branch of ipipe.git with
->>>>>> xenomai-2.6.git.  I started with the same kernel config as before and
->>>>>> then disabled a few drivers to get everything to compile without
->>>>>> errors.
->>>>>
->>>>>
->>>>> If you do not need to disable these drivers to compile the kernel
->>>>> without Xenomai, then it is not normal, please be more specific.
->>>>
->>>> I started with a 3.2-series kernel config (posted earlier) that compiled with Xenomai.  I then copied that config over into the ipipe-core-3.4 build directory before running menuconfig.  When I tried to compile the kernel, I encountered some section mismatch errors.  To get those to go away, I ended up disabling the following options:
->>>>
->>>> #  Device Drivers
->>>> #    GPIO Support
->>>> #      Intel EG20T PCH/LAPIS Semiconductor IOH(ML7223/ML7831)...
->>>> #    USB Support
->>>> #      USB Gadget Support
->>>> #    Staging drivers
->>>> #      Data acquisition support (comedi)
->>>>
->>>> It wasn't quite clear to me which comedi module was giving me trouble, so I disabled all of it, although it probably wasn't necessary.  I'm pretty sure that these problems were a result of migrating my kernel config from 3.2 to 3.4, and don't have anything to do with Xenomai.  I did not try to compile a vanilla 3.4 kernel, so I can't be certain.  I apologize for the confusion.  I only mentioned that so you would know that the config was very slightly different from what I posted last time.
->>>>
->>>>>>     The system still crashes, but now it seems to happen several
->>>>>> seconds after the login box has appeared.  The console output is
->>>>>> shown below.
->>>>>
->>>>>
->>>>> This does not look like the same issue, right? As usual, could you
->>>>> disassemble __ipipe_dispatch_irq, or run addr2line for the error address
->>>>> (0xffffffff810ac055)?
->>>>
->>>> It appears to be a different issue.  Since I have a bzImage in my boot directory, I ran:
->>>>
->>>>     addr2line -i -e vmlinux ffffffff810ac055
->>>>
->>>> on the vmlinux file I found in my kernel build directory.  I'm assuming that is the right thing to do.  Here is the result:
->>>>
->>>>      linux-3.4.6-ipipe-core-3.4.git.2012.10.09/include/linux/ipipe.h:342
->>>>      linux-3.4.6-ipipe-core-3.4.git.2012.10.09/kernel/ipipe/core.c:1211
->>>>
->>>> The code looks like this:
->>>>
->>>> ipipe.h:
->>>>
->>>> static inline int ipipe_chained_irq_p(struct irq_desc *desc)
->>>> {
->>>> 	void __ipipe_chained_irq(unsigned irq, struct irq_desc *desc);
->>>>
->>>> -->	return desc->handle_irq == __ipipe_chained_irq;
->>>> }
->>>>
->>>> core.c:
->>>> 	if (unlikely(irq >= NR_IRQS)) {
->>>> 		desc = NULL;
->>>> 		chained_irq = 0;
->>>> 	} else {
->>>> 		desc = irq_to_desc(irq);
->>>> -->		chained_irq = ipipe_chained_irq_p(desc);
->>>> 	}
->>>
->>> Ok, desc can be NULL, so, we should have
->>> chained_irq = desc ? ipipe_chained_irq_p(desc) : 0;
->>>
->>
->> Hooray!  With this change, the system boots and seems to run fine.  I ran a few of the tests in the test suite (latency, etc.), and the results look good at first glance.  We'll see how it all comes out in the end, but things looks rosy at the moment...
->>
->> Thank you very much for your help in fixing this issue.
->>
->> -Jeff
->>
->> index 9898b92..569eafa 100644
->> --- a/kernel/ipipe/core.c
->> +++ b/kernel/ipipe/core.c
->> @@ -1208,7 +1208,7 @@ void __ipipe_dispatch_irq(unsigned int irq, int flags) /* hw interrupts off */
->>                   chained_irq = 0;
->>           } else {
->>                   desc = irq_to_desc(irq);
->> -               chained_irq = ipipe_chained_irq_p(desc);
->> +               chained_irq = desc ? ipipe_chained_irq_p(desc) : 0;
->>           }
->>
->>    #ifdef CONFIG_IPIPE_DEBUG
->
->
-> Ok. If you enable CONFIG_IPIPE_DEBUG, you should see a message about a
-> spurious interrupt, though.
->
+Just an update...
 
-Yes, with CONFIG_IPIPE_DEBUG enabled, I get one instance of this:
+I currently have GDB connected to the unit using a BDI2000 JTAG
+debugger.
 
-kernel: [   35.271218] I-pipe: spurious interrupt 32
 
-What are the implications of this, and how can I figure out what's causing it?
+(gdb) bt
+#0  __set_irq_handler (irq=395, handle=0xc00c3424 <handle_simple_irq>, is_chained=0, name=0x0) at /home/wayne/src/linux/linux-2.6.37-3517-xenomai/kernel/irq/chip.c:836
+#1  0xc0010f04 in gpmc_init () at /home/wayne/src/linux/linux-2.6.37-3517-xenomai/include/linux/irq.h:288
+#2  0xc000beb4 in init_IRQ () at /home/wayne/src/linux/linux-2.6.37-3517-xenomai/arch/arm/kernel/irq.c:159
+#3  0xc0008b44 in start_kernel () at /home/wayne/src/linux/linux-2.6.37-3517-xenomai/init/main.c:611
+#4  0x80008034 in ?? ()
 
-Thanks,
+Then if I continue from here the next breakpoint I have set up is
+__delay:
 
--Jeff
+(gdb) bt
+#0  __delay () at /home/wayne/src/linux/linux-2.6.37-3517-xenomai/arch/arm/lib/delay.S:44
+#1  0xc0482acc in panic (fmt=0xc0641d24 "\001") at /home/wayne/src/linux/linux-2.6.37-3517-xenomai/kernel/panic.c:152
+#2  0xc00800b4 in do_exit (code=11) at /home/wayne/src/linux/linux-2.6.37-3517-xenomai/kernel/exit.c:915
+#3  0xc004ed9c in die (str=0xc00c2e10 "x0\222, regs=0xc062df38, err=0) at /home/wayne/src/linux/linux-2.6.37-3517-xenomai/arch/arm/kernel/traps.c:287
+#4  0xc003f3b8 in do_DataAbort (addr=3735899941, fsr=1, regs=0xc062df38) at /home/wayne/src/linux/linux-2.6.37-3517-xenomai/arch/arm/mm/fault.c:575
+#5  0xc04868ec in __dabt_svc ()
+Backtrace stopped: frame did not save the PC
+
+
+I don't really understand __dabt_svc, maybe it means "data abort
+service" or something. I have pinpointed what seems to be the exact
+instruction just prior to the entry into __dabt_svc, though it seems
+like there is probably something going on behind the scenes in the
+processor which is not visible from the debug unit.
+
+I also now understand why there are no printk messages--since the
+machine_init() has not been called yet, there are no UARTs registered as
+a serial console. The way early_printk works is also a little more clear
+to me, but I do not plan at this time to continue trying to get it to
+work.
+
+One thing I tried was to reduce GPMC_CS_NUM to 7 in
+arch/arm/plat-omap/include/plat/gpmc.h (even though the AM3517 does have
+8 chip selects) since it was always failing on the 8th
+__set_irq_handler invocation in gpmc_init(), which I assume corresponds
+to the 8th chip select. But, it still failed anyway so I guess it is
+just the last GPMC interrupt that fails, maybe regardless of the number.
+
+Wayne
+
+> 
+> There may be a trap in arch/arm/plat-omap/include/mach/serial.h: the
+> constants OMAP3_UARTx_BASE are numbered starting from 1. So, if the
+> hardware UART are numbered from 0, you should pass 4 instead of 3 to the
+> DEBUG_LL_OMAP3 macro.
+> 
+> > 
+> >> - the uart registers range is mapped where the code in debug-macro.S
+> >> expects it?
+> > 
+> > Not sure how to check this, will probably have to read the tech ref
+> > manual more in-depth. 
+> 
+> 
+> No, you will have to check the code and find the place where the I/O
+> mapping is done.
+> 
+
+> The idea is that printascii should work whether the MMU is enabled or
+> not. If the MMU is not enabled the physical address is used directly,
+> if the MMU is enabled, the virtual address is used. However, for this to
+> work, a mapping, presumably static, should have been defined for the
+> UART registers, still presumably somewhere in the .map_io callback for
+> your board. I have to admit that I could not find where this happens for
+> the omap3 based board I use, where printascii works.
+> 
+
 
 
 
