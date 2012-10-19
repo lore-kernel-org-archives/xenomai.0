@@ -1,14 +1,14 @@
 MIME-Version: 1.0
-In-Reply-To: <2831_1350286976_507BBE80_2831_9511_1_4008F9ABAF25EA469EA100EAC59FE290011C429A5EA0@THSONEA01CMS01P.one.grp>
-References: <CAN0CFw1gjwCJO0oauUQX5XdyE3b1XetPYa2y2d30csOaGdjmQA@mail.gmail.com>
-	<CADg0w=qa5vo_WbACjEU5zrFiWFzQETPj2Yg2LeW1WeEQsqH4xg@mail.gmail.com>
-	<50790563.8000403@xenomai.org>
-	<2831_1350286976_507BBE80_2831_9511_1_4008F9ABAF25EA469EA100EAC59FE290011C429A5EA0@THSONEA01CMS01P.one.grp>
-Date: Fri, 19 Oct 2012 08:40:42 -0700
-Message-ID: <CAN0CFw2g2EW9eabuN7g=ttm_BYMSa4sh+j1Rj1E_mq5NqnJsdA@mail.gmail.com>
+In-Reply-To: <508171AB.8010707@xenomai.org>
+References: <CAN0CFw3KM6VC-q9QHjoME0AqJOApw_9h4aEP0D2uxeD6rgcGcw@mail.gmail.com>
+	<50798BD3.6010308@xenomai.org> <50798F8A.8060508@xenomai.org>
+	<CAN0CFw0AhYwkGLQvugxw6NqPtv6mBxxLYnPWsdXXjO25_pmSVQ@mail.gmail.com>
+	<508171AB.8010707@xenomai.org>
+Date: Fri, 19 Oct 2012 09:17:56 -0700
+Message-ID: <CAN0CFw3WqabceF1LoR===ZXQU5-WRCfYb_itk0_ig2NKKG9vtg@mail.gmail.com>
 From: Grant <emailgrant@gmail.com>
 Content-Type: text/plain; charset=ISO-8859-1
-Subject: Re: [Xenomai] Xenomai on Gentoo?
+Subject: Re: [Xenomai] Which kernel versions?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,39 +19,45 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-> So time ago I needed to install Xenomai on gentoo.
+>>>>> Does xenomai.org indicate which versions of the vanilla kernel can be
+>>>>> patched with the latest xenomai release?
+>>>>
+>>>>
+>>>>
+>>>> Basically, any linux version older than the version for which the
+>>>> patches are provided in xenomai sources, for which an Adeos patch exists in
+>>>>
+>>>> http://download.gna.org/adeos/patches/
+>>
+>> How can I tell for which kernel version the patches are provided?  I
+>> believe the latest patches are contained here?
+>>
+>> http://download.gna.org/xenomai/testing/
 >
-> For that I made 2 gentoo portage ebuild : one for the xenomai library, and one for the xenomai patched kernel.
+> The patches are contained in the ksrc/arch/YOURARCH/patches directory of
+> xenomai sources.
 >
-> I have just created a github project for that : https://github.com/iXo/iXoGentooOverlay
->
-> Maybe this can help you.
->
->
-> It is a little outdated now, but updating it should not be very difficult.
+> Where YOURARCH is one of arm, blackfin, nios2, powerpc, sh, x86, etc...
 
-Thanks a lot for that!
+Got it, but I'm still confused by the following definition:
+
+"any linux version older than the version for which the patches are
+provided in xenomai sources, for which an Adeos patch exists in:
+http://download.gna.org/adeos/patches/"
+
+The patches in 2.6.0-rc5 xenomai sources seem to be for these kernel versions:
+
+2.6.35.9
+2.6.37.6
+2.6.38.8
+
+And the Adeos patches are for these:
+
+3.0.13
+3.0.36
+3.2.21
+
+So the above definition doesn't match any versions?
 
 - Grant
-
-
->> Hi Grant,
->>
->> About a year ago, I had 3-4 realtime production motor controller servers
->> running on Xenomai/Gentoo and it worked exceptionally well.  The
->> portage/ebuild system made it easy to verify Xenomai was installed as well
->> as configure and compile my application code with realtime support.
->>
->> I used the Xenomai quickstart
->> guide<http://www.xenomai.org/index.php/Xenomai_quick_build_quide>in
->> conjunction with the gentoo
->> quick system install
->> guide<http://www.gentoo.org/doc/en/gentoo-x86-quickinstall.xml>.
->>  Since you typically configure/compile/install kernels by hand in gentoo,
->> adding Xenomai wasn't much of a leap.
->
->
-> Xenomai wiki is locked, but it is not because we do not want
-> contributions, so, if someone wants write access to the wiki, write a
-> page on installing xenomai on gentoo, upload the ebuild, we can do that.
 
