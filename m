@@ -1,15 +1,13 @@
+Message-ID: <50818D33.30903@xenomai.org>
+Date: Fri, 19 Oct 2012 19:26:11 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <50744267.9030702@xenomai.org>
-References: <CANKLDmtLLcZnbJ5vXJFRkdyoy1Qk_wfGR84LdB0dkb8KynS+Yg@mail.gmail.com>
-	<50743048.1050305@xenomai.org>
-	<CANKLDmtU2XwFi3XmN1BL3CcZare7QFu4u6vL-2c5fkbR9TSpsw@mail.gmail.com>
-	<50744267.9030702@xenomai.org>
-Date: Tue, 9 Oct 2012 17:28:43 +0200
-Message-ID: <CANKLDms-sbO6M8j0Mr9ich4Lam94ggx+-_-6XYNCUVfYhX+PSw@mail.gmail.com>
-From: Henri Roosen <henriroosen@gmail.com>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] Exporting __ipipe_get_cs_tsc
+References: <507D7A0C.7090209@gmail.com>	<507E05B4.2040704@xenomai.org>	<507F501A.4000500@gmail.com>	<507F8579.6040604@xenomai.org>	<50809DD8.60901@gmail.com>	<5080D88E.8040903@xenomai.org>	<CANzNmi_QEB27+5e2FD_cOniCBHR5-s0xDD0d+KxW69Q+z_MkNg@mail.gmail.com>	<50815D27.3090104@xenomai.org>	<CANzNmi8GSnFHD0sGa=s5WP7gGmo9AeCwXCz5ybmh3atkbFXpWg@mail.gmail.com>	<508169E7.6040205@xenomai.org>
+	<CANzNmi9mVt3U4LndZkzfbLucu8QP5=SRaAqfdohL=xpWfqs75A@mail.gmail.com>
+In-Reply-To: <CANzNmi9mVt3U4LndZkzfbLucu8QP5=SRaAqfdohL=xpWfqs75A@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Installing Xenomai Newbie
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,64 +16,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Sebastian Pavez <sebastian.pavez.t@gmail.com>
 Cc: xenomai@xenomai.org
 
-On Tue, Oct 9, 2012 at 5:27 PM, Gilles Chanteperdrix
-<gilles.chanteperdrix@xenomai.org> wrote:
-> On 10/09/2012 05:24 PM, Henri Roosen wrote:
->> On Tue, Oct 9, 2012 at 4:10 PM, Philippe Gerum <rpm@xenomai.org> wrote:
->>> On 10/09/2012 02:32 PM, Henri Roosen wrote:
->>>> Hi,
->>>>
->>>> I'm using the current git heads of core-3.4 and xenomai 2.6.1 for x86
->>>> with the attached config file.
->>>>
->>>> When compiling the modules I get undefined symbols:
->>>> ERROR: "__ipipe_get_cs_tsc" [kernel/xenomai/skins/posix/xeno_posix.ko]
->>>> undefined!
->>>>
->>>> This is because the run time seleted __ipipe_get_cs_tsc assembly
->>>> function is not exported for module use.
->>>> I don't know how to export this or whether the symbol should be used
->>>> by modules in the first place.
->>>>
->>>
->>> Please try this:
->>>
->>> diff --git a/arch/x86/kernel/ipipe.c b/arch/x86/kernel/ipipe.c
->>> index 430aeea..2d2f83c 100644
->>> --- a/arch/x86/kernel/ipipe.c
->>> +++ b/arch/x86/kernel/ipipe.c
->>> @@ -634,6 +634,11 @@ void update_vsyscall(struct timespec *wall_time,
->>> struct timespec *wtm,
->>>  void update_vsyscall_tz(void)
->>>  {
->>>  }
->>> +
->>> +#ifdef CONFIG_IPIPE_WANT_CLOCKSOURCE
->>> +EXPORT_SYMBOL_GPL(__ipipe_get_cs_tsc);
->>> +#endif
->>> +
->>>  #endif /* CONFIG_X86_32 */
->>>
->>>  struct task_struct *__switch_to(struct task_struct *prev_p,
+On 10/19/2012 07:23 PM, Sebastian Pavez wrote:
+> 2012/10/19 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+>> Ok, try compiling the kernel without running prepare-kernel.sh, but
+>> still with the same configuration.
 >>
->> Thanks for looking into this.
+>> --
+>>                                             Gilles.
 >>
->> Unfortunately with the patch the compile results in:
->> arch/x86/kernel/ipipe.c:640: error: =91__ipipe_get_cs_tsc=92 undeclared
->> here (not in a function)
->
-> The function is declared nowhere, because it was supposedly only be used
-> in assembly. So, you need to declare the function before the
-> EXPORT_SYMBOL. Its prototype would be:
->
-> unsigned long long __ipipe_get_tsc_tsc(void);
+> I did that, but after rebooting and selecting the kernel occurs the same
+> thing than before ... :(
+> 
 
-I tried that and I can confirm it works.
+So, the problem is not related to Xenomai, but a configuration issue of
+the Linux kernel for your particular hardware configuration. When you
+have find help for this issue at some other place, we can help you with
+Xenomai installation.
 
->
-> --
->                                             Gilles.
+-- 
+					    Gilles.
 
