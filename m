@@ -1,24 +1,14 @@
-Message-ID: <50825FCA.5050401@xenomai.org>
-Date: Sat, 20 Oct 2012 10:24:42 +0200
+Message-ID: <50827B74.2030408@xenomai.org>
+Date: Sat, 20 Oct 2012 12:22:44 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <1349212116.21898.108.camel@ENG-09-LX.emacinc.com>	
-	<506B5D6B.80005@xenomai.org> <506B5E0E.5050900@xenomai.org>	
-	<1349369822.3775.107.camel@ENG-09-LX.emacinc.com>	
-	<506DC2DA.5000105@xenomai.org> <506E9510.7090105@xenomai.org>	
-	<1349462858.26881.43.camel@ENG-09-LX.emacinc.com>	
-	<506F402A.9030102@xenomai.org>	
-	<1349473634.26881.221.camel@ENG-09-LX.emacinc.com>	
-	<506F6283.2040901@xenomai.org>	
-	<5afa3b9a7c7daf116f8284b4f255227e.squirrel@mail.emacinc.com>	
-	<506FFDDC.60104@xenomai.org>	
-	<1349816136.25350.426.camel@ENG-09-LX.emacinc.com>	
-	<50749349.5070900@xenomai.org>
-	<1350681759.1282.88.camel@ENG-09-LX.emacinc.com>
-In-Reply-To: <1350681759.1282.88.camel@ENG-09-LX.emacinc.com>
+References: <CAN0CFw3KM6VC-q9QHjoME0AqJOApw_9h4aEP0D2uxeD6rgcGcw@mail.gmail.com>	<50798BD3.6010308@xenomai.org>
+	<50798F8A.8060508@xenomai.org>	<CAN0CFw0AhYwkGLQvugxw6NqPtv6mBxxLYnPWsdXXjO25_pmSVQ@mail.gmail.com>	<508171AB.8010707@xenomai.org>	<CAN0CFw3WqabceF1LoR===ZXQU5-WRCfYb_itk0_ig2NKKG9vtg@mail.gmail.com>	<50818781.7050204@xenomai.org>
+	<CAN0CFw0ZvkqHO6txvq17xBsU7S52dFW1rn=EC7uz87T95npR9w@mail.gmail.com>
+In-Reply-To: <CAN0CFw0ZvkqHO6txvq17xBsU7S52dFW1rn=EC7uz87T95npR9w@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Adeos I-Pipe patch problem on vendor-specific kernel
+Subject: Re: [Xenomai] Which kernel versions?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -27,23 +17,74 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Wayne Warren <wwarren@emacinc.com>
+To: Grant <emailgrant@gmail.com>
 Cc: xenomai@xenomai.org
 
-On 10/19/2012 11:22 PM, Wayne Warren wrote:
+On 10/19/2012 11:22 PM, Grant wrote:
 
-> I also now understand why there are no printk messages--since the
-> machine_init() has not been called yet, there are no UARTs registered as
-> a serial console. The way early_printk works is also a little more clear
-> to me, but I do not plan at this time to continue trying to get it to
-> work.
+>>> Got it, but I'm still confused by the following definition:
+>>>
+>>> "any linux version older than the version for which the patches are
+>>> provided in xenomai sources, for which an Adeos patch exists in:
+>>> http://download.gna.org/adeos/patches/"
+>>>
+>>> The patches in 2.6.0-rc5 xenomai sources seem to be for these kernel versions:
+>>
+>> 2.6.0-rc5 is not the latest version, 2.6.1 is. For the x86 architecture
+>> for instance, it contains the following patches:
+>>
+>> adeos-ipipe-2.6.37.6-x86-2.9-02.patch
+>> adeos-ipipe-2.6.38.8-x86-2.11-01.patch
+>> ipipe-core-3.2.21-x86-1.patch
+>>
+>> So, any version earlier than 3.2.21 for which an Adeos patch exists in
+>> http://download.gna.org/adeos/patches/v2.6/x86
+>> http://download.gna.org/adeos/patches/v3.x/x86
+>>
+>> Is supported.
+>>
+>> That is:
+>> 2.6.24
+>> 2.6.25
+>> 2.6.26
+>> 2.6.26.7
+>> 2.6.26.8
+>> 2.6.27
+>> 2.6.27.13
+>> 2.6.27.19
+>> 2.6.28.2
+>> 2.6.28.7
+>> 2.6.28.9
+>> 2.6.29.1
+>> 2.6.29.4
+>> 2.6.29.5
+>> 2.6.30
+>> 2.6.30.5
+>> 2.6.30.8
+>> 2.6.31
+>> 2.6.31.1
+>> 2.6.31.8
+>> 2.6.32.11
+>> 2.6.32.13
+>> 2.6.32.15
+>> 2.6.32.2
+>> 2.6.32.20
+>> 2.6.32.7
+>> 2.6.34
+>> 2.6.34.5
+>> 2.6.35.7
+>> 2.6.35.9
+>> 2.6.37
+>> 2.6.37.6
+>> 2.6.38.8
+>> 3.2.21
+> 
+> Got it, thank you very much for clearing that up.
 
 
-By the way, if early_printk does not work, printascii is supposed to
-work very early, so the "printascii in printk" trick should work. If it
-does not work, it means that printascii does not work, and as I already
-said, you can validate printascii separately, on a correctly working
-kernel. But JTAG is fine, too...
+Note that the list is not exhaustive, because it does not includes
+patches that were published before the i386/x86_64 merge, if you take
+that into account, you can even run Xenomai 2.6.1 with 2.4 kernels.
 
 -- 
                                                                 Gilles.
