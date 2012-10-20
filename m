@@ -1,11 +1,12 @@
-Message-ID: <5082CD5C.1040409@openwide.fr>
-Date: Sat, 20 Oct 2012 18:12:12 +0200
-From: Romain Naour <romain.naour@openwide.fr>
+Message-ID: <5082DED2.1050405@xenomai.org>
+Date: Sat, 20 Oct 2012 19:26:42 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <50812949.5040403@openwide.fr> <50814532.5090408@xenomai.org>
-In-Reply-To: <50814532.5090408@xenomai.org>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+	<5082CD5C.1040409@openwide.fr>
+In-Reply-To: <5082CD5C.1040409@openwide.fr>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Subject: Re: [Xenomai] s3c24xx with clocksource/clockevent (kernel 3.2.21)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -15,143 +16,221 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Romain Naour <romain.naour@openwide.fr>
 Cc: xenomai@xenomai.org
 
-TGUgMTkvMTAvMjAxMiAxNDoxOCwgR2lsbGVzIENoYW50ZXBlcmRyaXggYSDDqWNyaXQgOgo+IE9u
-IDEwLzE5LzIwMTIgMTI6MTkgUE0sIFJvbWFpbiBOYW91ciB3cm90ZToKPj4gSGkgR2lsbGVzLAo+
-Pgo+PiBGaXJzdCwgSSBmb2xsb3dlZCB5b3VyIGFkdmljZSBhbmQgSSBjb252ZXJ0ZWQgdGhlIHRp
-bWVycyB0bwo+PiBjbG9ja3NvdWNlL2Nsb2NrZXZlbnQgZnJhbWV3b3JrLgo+Pj4gT3RoZXIgdGhp
-bmdzIHdoaWNoIGNvdWxkIGJlIGRvbmUgZm9yIHMzYzI0eHggYXJlOgo+Pj4gLSBjb252ZXJ0IHRo
-ZSB0aW1lcnMgdG8gY2xvY2tzb3VyY2UvY2xvY2tldmVudDogc2luY2UgdGhpcyBwbGF0Zm9ybSBp
-cwo+Pj4gdGhlIG9ubHkgb25lIG5vdCB0byB1c2UgY2xvY2tzb3VyY2UvY2xvY2tldmVudCwgd2Ug
-aGF2ZSB0byBrZWVwIGNvZGUKPj4+IGFyb3VuZCBmb3IgdGhpcyBjYXNlIGluIHhlbm9tYWktZm9y
-Z2Ugd2hpY2ggY291bGQgYmUgcmVtb3ZlZC4gSGF2aW5nIHR3bwo+Pj4gZGlmZmVyZW50IHRpbWVy
-cyBmb3IgY2xvY2tzb3VyY2UgYW5kIGNsb2NrZXZlbnQgd291bGQgYWxsb3cgdG8gYXZvaWQgdGhl
-Cj4+PiB0c2MgZW11bGF0aW9uIGJhc2VkIG9uIHRoZSBkZWNyZW1lbnRlciwgd2hpY2ggSSBhbSBu
-b3Qgc3VyZSBpcyByZWFsbHkKPj4+IHJlbGlhYmxlIHNpbmNlIHRoZSBjb252ZXJzaW9uIHRvIENP
-TkZJR19JUElQRV9BUk1fS1VTRVJfVFNDLgo+PiBJIGhhZCB0byByZWR1Y2UgdGltZXJzIGZyZXF1
-ZW5jeSB0byA0LDIxTUh6IGluIG9yZGVyIHRvIHByb2R1Y2UgYW4KPj4gdGltZXIncyBvdmVyZmxv
-dyBldmVyeSAxNSw1bXMuCkFzIHRpbWVycyBhcmUgcHJldmlvdXNseSB1c2VkIHRvIHByb2R1Y2Ug
-YW4gSVJRIGF0IDIwMEh6LCBzb21lIGJvYXJkIHVzZSAKYW4gZXh0ZXJuYWwgMTJNSHogc2lnbmFs
-IHRvIGNsb2NrIHRoZSB0aW1lcnMuClNvIGl0IGlzIG5vdCBwb3NzaWJsZSB0byByZWR1Y2UgdGhl
-IG92ZXJmbG93IHBlcmlvZC4uLiAodXNlX3RjbGsxXzEyKCkgCj09IDEpLgpJIG5lZWQgdG8gY2hl
-Y2sgaWYgSSBjYW4gdXNlIGludGVybmFsIGNsb2NrIGluc3RlYWQuCj4gRm9yIHN1Y2ggb3ZlcmZs
-b3cgcGVyaW9kLCBJIHdvdWxkIHJlY29tbWVuZCBydW5uaW5nIF9faXBpcGVfdXBkYXRlX3RzYwo+
-IGluIHRoZSBhY2t0aW1lciByb3V0aW5lLgpXaGF0IGlzIHRoZSByZWNvbW1lbmRlZCBmcmVxdWVu
-Y3kgZm9yIHRoZSBUU0MgdGltZXI/CkkgY2FuIHJlZHVjZSB0aW1lcnMgZnJlcXVlbmN5IHRvIDFN
-SHogaW4gb3JkZXIgdG8gaGF2ZSBhIGxvbmdlciBvdmVyZmxvdyAKcGVyaW9kLgo+PiBBdCA4LDQ1
-TWh6IGl0IGRvZXMgbm90IHdvcmsuCj4+IFRoYW5rcyB0byB0aGlzLCBJIGFtIGFibGUgdG8gYWN0
-aXZhdGUgaHJ0aW1lciBvbiBMaW51eCA6KQo+Pgo+PiBTZWNvbmRseSwgSSBhZGFwdGVkIHRoZSBj
-b2RlIGZvciBBZGVvcyAoWGVub21haSAyLjYuMSkuCj4+IEJ1dCBJJ20gbm90IHN1cmUgYWJvdXQg
-dGhlIHRzYyBlbXVsYXRpb24uLi4KPj4gU2hvdWxkIEkga2VlcCB1c2luZyB0aGUgSVBJUEVfVFND
-X1RZUEVfREVDUkVNRU5URVIgPwo+PiBEbyB5b3UgdGhpbmsgd2UgbmVlZCBzb21ldGhpbmcgbGlr
-ZQo+PiBJUElQRV9UU0NfVFlQRV9GUkVFUlVOTklOR19DT1VOVERPV05fMTYgPwo+IFRoZSB0eXBl
-IHNob3VsZCBjb3JyZXNwb25kIHRvIHRoZSB0eXBlIG9mIHRoZSBoYXJkd2FyZSB0aW1lciB5b3Ug
-YXJlCj4gdXNpbmcsIEkgZG8gbm90IGtub3cgaWYgeW91IGFyZSB1c2luZyB0aGUgZGVjcmVtZW50
-ZXIgYXMgY2xvY2tzb3VyY2UsIG9yCj4gYSBzZXBhcmF0ZSBmcmVlcnVubmluZyBjb3VudGRvd24g
-dGltZXIsIHNvLCBJIGNhbiBub3QgYW5zd2VyLgpUaGVyZSBhcmUgZml2ZSAxNmJpdHMgZG93biBj
-b3VudGVyIChkZWNyZW1lbnRlcikgdGltZXJzIGluIHRoZSBzM2MyNDQwLgpJJ20gdXNpbmcgdGhl
-IHRpbWVyIDMgYXMgY2xvY2tzb3VyY2Ugd2l0aCBhdXRvLXJlbG9hZCBtb2RlIChyZWxvYWQgdmFs
-dWUgCmlzIDB4RkZGRikuCihXaGljaCBpcyBub3QgZXhhY3RseSBhbiBmcmVlLXJ1bm5pbmcgZG93
-biBjb3VudGVyLi4uKQpUaW1lciA0IGlzIHRoZSBjbG9ja2V2ZW50Lgo+IFlvdSBzaG91bGQgcnVu
-IHRzYyAtdyB0byBzZWUgaWYgdGhlIHRzYyBpcyB3cmFwcGluZyBjb3JyZWN0bHkuCnRzYyAtdyB3
-aXRoIGxhdGVuY3kgdGVzdCBpbiBwYXJhbGxlbCAodGVzdC10c2MudHh0KToKbWluOiAwLCBtYXg6
-IDE0LCBhdmc6IDAuOTIzNzIyIC0+IDAuMjE4OTU2IHVzCml0J3MgZ29vZC4KPj4gSW4gb3JkZXIg
-dG8gYWRqdXN0IHNjaGVkdWxpbmcgbGF0ZW5jeSwgSSBzZXQgL3Byb2MveGVub21haS9sYXRlbmN5
-IHRvIDAKPj4gQnV0IEkgc3RpbGwgaGF2ZSBuZWdhdGl2ZSBsYXRlbmN5Cj4+Cj4+ICh0ZXN0LWxh
-dGVuY3kudHh0KQo+PiAjIGVjaG8gMCA+L3Byb2MveGVub21haS9sYXRlbmN5Cj4+ICMgbGF0ZW5j
-eQo+PiA9PSBTYW1wbGluZyBwZXJpb2Q6IDEwMDAgdXMKPj4gPT0gVGVzdCBtb2RlOiBwZXJpb2Rp
-YyB1c2VyLW1vZGUgdGFzawo+PiA9PSBBbGwgcmVzdWx0cyBpbiBtaWNyb3NlY29uZHMKPj4gd2Fy
-bWluZyB1cC4uLgo+PiBSVFR8ICAwMDowMDowMSAgKHBlcmlvZGljIHVzZXItbW9kZSB0YXNrLCAx
-MDAwIHVzIHBlcmlvZCwgcHJpb3JpdHkgOTkpCj4+IFJUSHwtLS0tbGF0IG1pbnwtLS0tbGF0IGF2
-Z3wtLS0tbGF0IG1heHwtb3ZlcnJ1bnwtLS1tc3d8LS0tbGF0Cj4+IGJlc3R8LS1sYXQgd29yc3QK
-Pj4gUlREfCAgICAgLTAuMjM4fCAgICAgMTYuNTkyfCAgICAgNTcuNTk5fCAgICAgICAwfCAgICAg
-MHwgLTAuMjM4fCAgICAgNTcuNTk5Cj4+IFJURHwgICAgICA1LjkyNXwgICAgIDE2LjgyOXwgICAg
-IDgzLjkxMXwgICAgICAgMHwgICAgIDB8IC0wLjIzOHwgICAgIDgzLjkxMQo+PiBSVER8ICAgICAg
-NS42ODh8ICAgICAxNi44Mjl8ICAgICA3OC42OTZ8ICAgICAgIDB8ICAgICAwfCAtMC4yMzh8ICAg
-ICA4My45MTEKPj4gUlREfCAgICAgIDUuNjg4fCAgICAgMTYuODI5fCAgICAgODAuMzU1fCAgICAg
-ICAwfCAgICAgMHwgLTAuMjM4fCAgICAgODMuOTExCj4+IFJURHwgICAgICA1LjkyNXwgICAgIDE3
-LjA2NnwgICAgIDc1LjE0MHwgICAgICAgMHwgICAgIDB8IC0wLjIzOHwgICAgIDgzLjkxMQo+PiBS
-VER8ICAgICAtMC43MTJ8ICAgICAxOC4yNTF8ICAgICA4NC42MjJ8ICAgICAgIDB8ICAgICAwfCAt
-MC43MTJ8ICAgICA4NC42MjIKPj4gUlREfCAgICAgIDUuOTI1fCAgICAgMTYuODI5fCAgICAgNzYu
-MDg4fCAgICAgICAwfCAgICAgMHwgLTAuNzEyfCAgICAgODQuNjIyCj4+IFJURHwgICAgICA1LjY4
-OHwgICAgIDE2LjgyOXwgICAgIDczLjQ4MXwgICAgICAgMHwgICAgIDB8IC0wLjcxMnwgICAgIDg0
-LjYyMgo+PiAuLi4KPj4KPj4gQ2FuIHlvdSB0ZWxsIG1lIElmIHRoaXMgc2VlbXMgZ29vZC4KPiBZ
-b3UgY2FuIGxvb2sgYXQgL3Byb2MveGVub21haS90aW1lciB0byBzZWUgaWYgdGhlIHRpbWVyIGNh
-bGlicmF0aW9uIGRvZXMKPiBub3QgZ2l2ZSBhIHRvbyBsYXJnZSB2YWx1ZS4KIyBjYXQgL3Byb2Mv
-eGVub21haS90aW1lcgpzdGF0dXM9b24rd2F0Y2hkb2c6c2V0dXA9MzU1NTpjbG9jaz0xMjYxMTU2
-OTk4MDE6dGltZXJkZXY9czNjMjR4eF9ldmVudF90aW1lcjpjbG9ja2Rldj1pcGlwZV90c2MKClNl
-dHVwID0gbmtsYXRlbmN5ID0gMzU1NSAobnMpCj4gICBBcyBhIGdlbmVyYWwgYWR2aWNlLCB0aGUg
-InNldF9uZXh0X2V2ZW50Igo+IGNhbGxiYWNrIHNob3VsZCBtYWtlIGFzIGZldyByZWdpc3RlciBh
-Y2Nlc3NlcyBhcyBwb3NzaWJsZSwgc29tZXRpbWVzCj4gcmVnaXN0ZXIgYWNjZXNzZXMgbWF5IGJl
-IHNsb3cuCkkgdW5kZXJzdGFuZCwgYnV0IEkgaGF2ZSB0byBkbyBhICJtYW51YWwgdXBkYXRlIiB0
-byByZWxvYWQgdGhlIHRpbWVyIAp3aXRoIGEgbmV3IHZhbHVlLgpXaGljaCByZXF1aXJlcyAxIHJl
-YWQgYW5kIDMgd3JpdGUuCj4+IEZpbmFsbHksIEkgYWRkIGEgbGFzdCBwYXRjaCBiZWNhdXNlIEkg
-aGFkIGEgcHJvYmxlbSB3aXRoIHRoZSBkZWJ1ZyBwb3J0Lgo+PiBUaGUgVHggSVJRIHdhcyBub3Qg
-dW5tYXNrZWQgYnkgcm9vdCBkb21haW4gaW4gc29tZSBjaXJjdW1zdGFuY2VzLgo+PiBUaGVyZWZv
-cmUsIHRoZSBkZWJ1ZyBjb25zb2xlIGhhbmdzIHdoZW4geW91IHR5cGUgImRtZXNnIiwgImxzIi4u
-Lgo+PiBrZXJuZWwgMi42LjM4LjggaXMgbm90IGFmZmVjdGVkIGJ5IHRoaXMgYnVnLCBidXQgaSBm
-b3VuZCBJdCB3aXRoIGtlcm5lbAo+PiAzLjAuMzYuCj4gVGhhdCBpcyBhIG5pY2Ugd29yaywgaG93
-ZXZlciB3b3JraW5nIHdpdGggMy4wIHdhcyBtYXliZSBub3QgdGhlIGJlc3QKPiBjaG9pY2UuIFBs
-ZWFzZToKPiAtIHVwZ3JhZGUgdG8gdGhlIGxhdGVzdCBsaW51eCB2ZXJzaW9uICgzLjcpIGFuZCBw
-b3N0IHlvdXIgcGF0Y2hlcwo+IChjb252ZXJ0aW5nIHRvIGNsb2NrZXZlbnQvY2xvY2tzb3VyY2Up
-IG9uIHRoZSBsaW51eCBhcm0ga2VybmVsIG1haWxpbmcKPiBsaXN0LCB5b3Ugd2lsbCBwcm9iYWJs
-eSBnbyBvdmVyIHNldmVyYWwgaXRlcmF0aW9ucyBiZWZvcmUgdGhlIHBhdGNoZXMKPiBhcmUgYWNj
-ZXB0ZWQ7Cj4gLSB3aGVuIHRoZXkgYXJlIGFjY2VwdGVkLCBiYWNrcG9ydCB0aGVtIHRvIHRoZSBs
-YXRlc3QgdmVyc2lvbiBvZiB0aGUKPiBJLXBpcGUga2VybmVsIChpdCBpcyBjdXJyZW50bHkgMy40
-LCBidXQgY291bGQgYmUgMy41IHNvb24pLgo+Cj4gTm90ZSB0aGF0IG1vdmluZyB0aGUgY2xvY2tl
-dmVudC9jbG9ja3NvdXJjZSBjb2RlIHRvIDMuNyBpcyBwcm9iYWJseSBub3QKPiBhIGxvdCBvZiB3
-b3JrLCBhbmQgZ2V0dGluZyB0aGlzIHdvcmsgaW50ZWdyYXRlZCBpbiBtYWlubGluZSBtZWFucyB0
-aGF0Cj4geW91IGNhbiBiZW5lZml0IGZyb20gb3RoZXIgcGVvcGxlIHVzaW5nIGFuZCB0ZXN0aW5n
-IHRoZSBjb2RlIHlvdSB3cm90ZS4KPgo+IFdlIGN1cnJlbnRseSBoYXZlIGFuIHVwIHRvIGRhdGUg
-ZG9jdW1lbnRhdGlvbiBvbiBob3cgdG8gcG9ydCB0aGUgSS1waXBlCj4gcGF0Y2ggdG8gYSBuZXcg
-YXJtIGJvYXJkIGZvciBzdWNoIHJlY2VudCB2ZXJzaW9uczoKPiBodHRwOi8veGVub21haS5vcmcv
-aW5kZXgucGhwL0ktcGlwZS1jb3JlOkFybVBvcnRpbmcKPgpUaGFuayB5b3UgdmVyeSBtdWNoLCBJ
-IGFwcHJlY2lhdGUgeW91ciBjb21tZW50LgpJJ2xsIHRyeSB0byBkbyB0aGF0LCBJJ20gcHJlcGFy
-aW5nIDMuNy1yYzEga2VybmVsIGZvciBteSBtaW5pMjQ0MC4KClVudGlsIG5vdywgSSB1c2VkIHRo
-ZSBsYXRlc3Qgc3VwcG9ydGVkIGtlcm5lbCAzLjIuMjEgd2l0aCBYZW5vbWFpIDIuNi4xLgpXaXRo
-b3V0IHJld29yayB0aW1lciBzeXN0ZW0gd2l0aCBjbG9ja3NvdXJjZSBhbmQgY2xvY2tldmVudCwK
-SSBuZWVkIHRvIHNldCAiczNjMjQxMF9pdGltZXIubWluX2RlbGF5X3RpY2tzIiB2YWx1ZSAKKHMz
-YzI0eHhfZml4X2l0aW1lci5wYXRjaCkKT3RoZXJ3aXNlIHRoZSB0aW1lciBoYW5ncy4KQW5kIGFs
-c28sIHRoZSBsYXN0IHBhdGNoIG9mIG15IHByZXZpb3VzIG1haWwuCgpSZWdhcmRzLApSb21haW4K
-LS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCiMgLi90c2MgLXcKQVJNOiBj
-b3VudGVyIHdyYXAgdGltZTogMSBzZWNvbmRzCkNoZWNraW5nIHRzYyBmb3IgMSBtaW51dGUocykK
-bWluOiAwLCBtYXg6IDEyLCBhdmc6IDAuOTI0Mjc5Cm1pbjogMCwgbWF4OiAxMywgYXZnOiAwLjky
-MzA2NAptaW46IDAsIG1heDogOCwgYXZnOiAwLjkyMzI1OQptaW46IDAsIG1heDogOCwgYXZnOiAw
-LjkyNDg1MwptaW46IDAsIG1heDogMTAsIGF2ZzogMC45MjQwOTkKbWluOiAwLCBtYXg6IDEwLCBh
-dmc6IDAuOTIzMTg2Cm1pbjogMCwgbWF4OiAxMywgYXZnOiAwLjkyMzUxNAptaW46IDAsIG1heDog
-MTEsIGF2ZzogMC45MjQ0ODcKbWluOiAwLCBtYXg6IDgsIGF2ZzogMC45MjMyMDIKbWluOiAwLCBt
-YXg6IDEzLCBhdmc6IDAuOTIzNTUyCm1pbjogMCwgbWF4OiA3LCBhdmc6IDAuOTIyOTkzCm1pbjog
-MCwgbWF4OiAxMSwgYXZnOiAwLjkyMzI1NAptaW46IDAsIG1heDogMTIsIGF2ZzogMC45MjM4Cm1p
-bjogMCwgbWF4OiAxMSwgYXZnOiAwLjkyMzQ3Cm1pbjogMCwgbWF4OiA3LCBhdmc6IDAuOTIzMjA3
-Cm1pbjogMCwgbWF4OiAxMiwgYXZnOiAwLjkyMzA0OAptaW46IDAsIG1heDogOCwgYXZnOiAwLjky
-Mzg1MwptaW46IDAsIG1heDogMTIsIGF2ZzogMC45MjMyOTcKbWluOiAwLCBtYXg6IDEyLCBhdmc6
-IDAuOTI0MjgyCm1pbjogMCwgbWF4OiA3LCBhdmc6IDAuOTIzMTczCm1pbjogMCwgbWF4OiAxMiwg
-YXZnOiAwLjkyNDQ3NwptaW46IDAsIG1heDogMTAsIGF2ZzogMC45MjUxMTUKbWluOiAwLCBtYXg6
-IDEwLCBhdmc6IDAuOTIzOTY1Cm1pbjogMCwgbWF4OiAxMiwgYXZnOiAwLjkyMjcxNAptaW46IDAs
-IG1heDogMTMsIGF2ZzogMC45MjQyODgKbWluOiAwLCBtYXg6IDgsIGF2ZzogMC45MjQzNzUKbWlu
-OiAwLCBtYXg6IDgsIGF2ZzogMC45MjQwMDMKbWluOiAwLCBtYXg6IDExLCBhdmc6IDAuOTIzOTA3
-Cm1pbjogMCwgbWF4OiAxMSwgYXZnOiAwLjkyMzY4NgptaW46IDAsIG1heDogMTIsIGF2ZzogMC45
-MjM0MDkKbWluOiAwLCBtYXg6IDgsIGF2ZzogMC45MjM4NjEKbWluOiAwLCBtYXg6IDgsIGF2Zzog
-MC45MjMxODEKbWluOiAwLCBtYXg6IDExLCBhdmc6IDAuOTIzMzUxCm1pbjogMCwgbWF4OiA3LCBh
-dmc6IDAuOTIzNzgyCm1pbjogMCwgbWF4OiAxMiwgYXZnOiAwLjkyMzgwOQptaW46IDAsIG1heDog
-MTMsIGF2ZzogMC45MjM1OTkKbWluOiAwLCBtYXg6IDgsIGF2ZzogMC45MjI5OTIKbWluOiAwLCBt
-YXg6IDgsIGF2ZzogMC45MjQyOTEKbWluOiAwLCBtYXg6IDE0LCBhdmc6IDAuOTIzMzc1Cm1pbjog
-MCwgbWF4OiAxMiwgYXZnOiAwLjkyMzY4MQptaW46IDAsIG1heDogMTIsIGF2ZzogMC45MjM3NjcK
-bWluOiAwLCBtYXg6IDEwLCBhdmc6IDAuOTIyNjI5Cm1pbjogMCwgbWF4OiA4LCBhdmc6IDAuOTIy
-OTA5Cm1pbjogMCwgbWF4OiA4LCBhdmc6IDAuOTIzNTY5Cm1pbjogMCwgbWF4OiA4LCBhdmc6IDAu
-OTIzNjkzCm1pbjogMCwgbWF4OiAxMiwgYXZnOiAwLjkyMzQ3NAptaW46IDAsIG1heDogMTEsIGF2
-ZzogMC45MjQ3ODkKbWluOiAwLCBtYXg6IDcsIGF2ZzogMC45MjM0NDcKbWluOiAwLCBtYXg6IDgs
-IGF2ZzogMC45MjQxOTEKbWluOiAwLCBtYXg6IDEwLCBhdmc6IDAuOTI0Mjc4Cm1pbjogMCwgbWF4
-OiAxMCwgYXZnOiAwLjkyNDA1NwptaW46IDAsIG1heDogMTIsIGF2ZzogMC45MjM2ODcKbWluOiAw
-LCBtYXg6IDEwLCBhdmc6IDAuOTIzOTk4Cm1pbjogMCwgbWF4OiA3LCBhdmc6IDAuOTIzNTkKbWlu
-OiAwLCBtYXg6IDgsIGF2ZzogMC45MjM4NjQKbWluOiAwLCBtYXg6IDcsIGF2ZzogMC45MjQwOApt
-aW46IDAsIG1heDogMTIsIGF2ZzogMC45MjM1MTcKbWluOiAwLCBtYXg6IDEzLCBhdmc6IDAuOTI0
-MTMxCm1pbjogMCwgbWF4OiAxMiwgYXZnOiAwLjkyMzgxNAptaW46IDAsIG1heDogMTMsIGF2Zzog
-MC45MjQwODUKbWluOiAwLCBtYXg6IDE0LCBhdmc6IDAuOTIzNzIyIC0+IDAuMjE4OTU2IHVzCi0t
-LS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1l
-bnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IGxpbnV4LTAwMDRfczNjMjR4eF9maXhfaXRpbWVyLnBh
-dGNoClR5cGU6IHRleHQveC1wYXRjaApTaXplOiA0OTMgYnl0ZXMKRGVzYzogbm90IGF2YWlsYWJs
-ZQpVUkw6IDxodHRwOi8vd3d3Lnhlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1l
-bnRzLzIwMTIxMDIwLzI0MDM0MWQ0L2F0dGFjaG1lbnQuYmluPgo=
+On 10/20/2012 06:12 PM, Romain Naour wrote:
+
+> Le 19/10/2012 14:18, Gilles Chanteperdrix a =C3=A9crit :
+>> On 10/19/2012 12:19 PM, Romain Naour wrote:
+>>> Hi Gilles,
+>>>
+>>> First, I followed your advice and I converted the timers to
+>>> clocksouce/clockevent framework.
+>>>> Other things which could be done for s3c24xx are:
+>>>> - convert the timers to clocksource/clockevent: since this platform =
+is
+>>>> the only one not to use clocksource/clockevent, we have to keep code=
+
+>>>> around for this case in xenomai-forge which could be removed. Having=
+ two
+>>>> different timers for clocksource and clockevent would allow to avoid=
+ the
+>>>> tsc emulation based on the decrementer, which I am not sure is reall=
+y
+>>>> reliable since the conversion to CONFIG_IPIPE_ARM_KUSER_TSC.
+>>> I had to reduce timers frequency to 4,21MHz in order to produce an
+>>> timer's overflow every 15,5ms.
+> As timers are previously used to produce an IRQ at 200Hz, some board us=
+e=20
+> an external 12MHz signal to clock the timers.
+> So it is not possible to reduce the overflow period... (use_tclk1_12() =
+
+> =3D=3D 1).
+> I need to check if I can use internal clock instead.
+
+
+Well, you can get the clock to tick at a higher rate, and ensure that it
+is always reprogrammed (for instance in order to get __ipipe_tsc_update
+called frequently enough) by reprogramming the timer systematically when
+it is not "stolen", in the "ack" handler.
+
+>> For such overflow period, I would recommend running __ipipe_update_tsc=
+
+>> in the acktimer routine.
+> What is the recommended frequency for the TSC timer?
+> I can reduce timers frequency to 1MHz in order to have a longer overflo=
+w=20
+> period.
+
+
+__ipipe_update_tsc has nothing to do with the TSC frequency. It should
+simply be called often enough (that is once before the timer overflows)
+in order to avoid the tsc going back in time when the hardware timer
+overflows.
+
+As for the TSC frequency itself, 1MHz is probably enough, it gives you a
+1us resolution, which I would guess is enough for pratical needs.
+
+>>> At 8,45Mhz it does not work.
+>>> Thanks to this, I am able to activate hrtimer on Linux :)
+>>>
+>>> Secondly, I adapted the code for Adeos (Xenomai 2.6.1).
+>>> But I'm not sure about the tsc emulation...
+>>> Should I keep using the IPIPE_TSC_TYPE_DECREMENTER ?
+>>> Do you think we need something like
+>>> IPIPE_TSC_TYPE_FREERUNNING_COUNTDOWN_16 ?
+>> The type should correspond to the type of the hardware timer you are
+>> using, I do not know if you are using the decrementer as clocksource, =
+or
+>> a separate freerunning countdown timer, so, I can not answer.
+> There are five 16bits down counter (decrementer) timers in the s3c2440.=
+
+> I'm using the timer 3 as clocksource with auto-reload mode (reload valu=
+e=20
+> is 0xFFFF).
+> (Which is not exactly an free-running down counter...)
+
+
+Well, if when it reaches 0, it counts down to 0xFFFF, it looks very much
+like a free-running down counter to me.
+
+> Timer 4 is the clockevent.
+>> You should run tsc -w to see if the tsc is wrapping correctly.
+> tsc -w with latency test in parallel (test-tsc.txt):
+> min: 0, max: 14, avg: 0.923722 -> 0.218956 us
+> it's good.
+
+
+The point is not really to check the tsc latency, but to check that the
+wrapping takes place correctly, and that there is no hardware bug
+causing the timer to go back. For this, the "tsc" test has to be run
+without anything else running.
+
+210ns looks good indeed.
+
+>>> In order to adjust scheduling latency, I set /proc/xenomai/latency to=
+ 0
+>>> But I still have negative latency
+>>>
+>>> (test-latency.txt)
+>>> # echo 0 >/proc/xenomai/latency
+>>> # latency
+>>> =3D=3D Sampling period: 1000 us
+>>> =3D=3D Test mode: periodic user-mode task
+>>> =3D=3D All results in microseconds
+>>> warming up...
+>>> RTT|  00:00:01  (periodic user-mode task, 1000 us period, priority 99=
+)
+>>> RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat
+>>> best|--lat worst
+>>> RTD|     -0.238|     16.592|     57.599|       0|     0| -0.238|     =
+57.599
+>>> RTD|      5.925|     16.829|     83.911|       0|     0| -0.238|     =
+83.911
+>>> RTD|      5.688|     16.829|     78.696|       0|     0| -0.238|     =
+83.911
+>>> RTD|      5.688|     16.829|     80.355|       0|     0| -0.238|     =
+83.911
+>>> RTD|      5.925|     17.066|     75.140|       0|     0| -0.238|     =
+83.911
+>>> RTD|     -0.712|     18.251|     84.622|       0|     0| -0.712|     =
+84.622
+>>> RTD|      5.925|     16.829|     76.088|       0|     0| -0.712|     =
+84.622
+>>> RTD|      5.688|     16.829|     73.481|       0|     0| -0.712|     =
+84.622
+>>> ...
+>>>
+>>> Can you tell me If this seems good.
+>> You can look at /proc/xenomai/timer to see if the timer calibration do=
+es
+>> not give a too large value.
+> # cat /proc/xenomai/timer
+> status=3Don+watchdog:setup=3D3555:clock=3D126115699801:timerdev=3Ds3c24=
+xx_event_timer:clockdev=3Dipipe_tsc
+>=20
+> Setup =3D nklatency =3D 3555 (ns)
+
+
+That is a bit high.
+
+>>   As a general advice, the "set_next_event"
+>> callback should make as few register accesses as possible, sometimes
+>> register accesses may be slow.
+> I understand, but I have to do a "manual update" to reload the timer=20
+> with a new value.
+> Which requires 1 read and 3 write.
+
+
+The current code seems to only require 3 writes:
+
+static inline void set_dec(unsigned long reload)
+{
+        __raw_writel(reload, S3C2410_TCNTB(4));
+        /* Manual update */
+        __raw_writel(free_running_tcon | S3C2410_TCON_T4MANUALUPD,
+S3C2410_TCON);
+        /* Start timer */
+        __raw_writel(free_running_tcon | S3C2410_TCON_T4START,
+S3C2410_TCON);
+}
+
+
+>>> Finally, I add a last patch because I had a problem with the debug po=
+rt.
+>>> The Tx IRQ was not unmasked by root domain in some circumstances.
+>>> Therefore, the debug console hangs when you type "dmesg", "ls"...
+>>> kernel 2.6.38.8 is not affected by this bug, but i found It with kern=
+el
+>>> 3.0.36.
+>> That is a nice work, however working with 3.0 was maybe not the best
+>> choice. Please:
+>> - upgrade to the latest linux version (3.7) and post your patches
+>> (converting to clockevent/clocksource) on the linux arm kernel mailing=
+
+>> list, you will probably go over several iterations before the patches
+>> are accepted;
+>> - when they are accepted, backport them to the latest version of the
+>> I-pipe kernel (it is currently 3.4, but could be 3.5 soon).
+>>
+>> Note that moving the clockevent/clocksource code to 3.7 is probably no=
+t
+>> a lot of work, and getting this work integrated in mainline means that=
+
+>> you can benefit from other people using and testing the code you wrote=
+=2E
+>>
+>> We currently have an up to date documentation on how to port the I-pip=
+e
+>> patch to a new arm board for such recent versions:
+>> http://xenomai.org/index.php/I-pipe-core:ArmPorting
+>>
+> Thank you very much, I appreciate your comment.
+> I'll try to do that, I'm preparing 3.7-rc1 kernel for my mini2440.
+>=20
+> Until now, I used the latest supported kernel 3.2.21 with Xenomai 2.6.1=
+=2E
+> Without rework timer system with clocksource and clockevent,
+> I need to set "s3c2410_itimer.min_delay_ticks" value=20
+> (s3c24xx_fix_itimer.patch)
+> Otherwise the timer hangs.
+> And also, the last patch of my previous mail.
+
+
+You mean the patch for the UART ? I can not take that patch. You have to
+understand what goes wrong in the I-pipe core, or irq chip callbacks
+implementation for this processor, and fix it there, not in the irq
+handler for the serial interrupt. That is clearly the wrong place.
+
+>=20
+> Regards,
+> Romain
+>=20
+
+
+
+--=20
+                                                                Gilles.
+
+
