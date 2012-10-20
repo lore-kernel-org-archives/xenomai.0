@@ -1,5 +1,5 @@
-Message-ID: <5081FF74.4010109@xenomai.org>
-Date: Sat, 20 Oct 2012 03:33:40 +0200
+Message-ID: <50820039.8000204@xenomai.org>
+Date: Sat, 20 Oct 2012 03:36:57 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <1349212116.21898.108.camel@ENG-09-LX.emacinc.com>	
@@ -14,8 +14,8 @@ References: <1349212116.21898.108.camel@ENG-09-LX.emacinc.com>
 	<506FFDDC.60104@xenomai.org>	
 	<1349816136.25350.426.camel@ENG-09-LX.emacinc.com>	
 	<50749349.5070900@xenomai.org>
-	<1350681759.1282.88.camel@ENG-09-LX.emacinc.com>
-In-Reply-To: <1350681759.1282.88.camel@ENG-09-LX.emacinc.com>
+	<1350682324.1282.92.camel@ENG-09-LX.emacinc.com>
+In-Reply-To: <1350682324.1282.92.camel@ENG-09-LX.emacinc.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] Adeos I-Pipe patch problem on vendor-specific kernel
@@ -30,19 +30,26 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: Wayne Warren <wwarren@emacinc.com>
 Cc: xenomai@xenomai.org
 
-On 10/19/2012 11:22 PM, Wayne Warren wrote:
+On 10/19/2012 11:32 PM, Wayne Warren wrote:
 
-> Just an update...
-> 
-> I currently have GDB connected to the unit using a BDI2000 JTAG
-> debugger.
-> 
-> 
-> (gdb) bt
-> #0  __set_irq_handler (irq=395, handle=0xc00c3424 <handle_simple_irq>, is_chained=0, name=0x0) at /home/wayne/src/linux/linux-2.6.37-3517-xenomai/kernel/irq/chip.c:836
+> Oh yeah, I also wanted to let you know that I did look into making the
+> changes I mentioned previously to the Xenomai wiki but it appears that
+> the content of the wiki was originally formatted to insert line breaks
+> at column 80 for most of the page.
 
 
-So what is the code at line 836 in kernel/irq/chip.c ?
+That is my fault. I use a text buffer formatted with a normal editor
+which wraps line at 80 columns, then paste it in the wiki forms, then
+remove the line breaks which the wiki seem to consider important.
+
+> While it would not be difficult to
+> fix this programmatically, I figure it was probably done that way for a
+> reason and would rather not interfere too strongly with existing
+> conventions.
+
+
+No good reason, I find text wrapped at 80 columns more readable, that is
+all.
 
 -- 
                                                                 Gilles.
