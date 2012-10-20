@@ -1,12 +1,13 @@
-Message-ID: <50829D93.7000407@xenomai.org>
-Date: Sat, 20 Oct 2012 14:48:19 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <50829E28.2020801@xenomai.org>
+Date: Sat, 20 Oct 2012 14:50:48 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 References: <CAN0CFw3KM6VC-q9QHjoME0AqJOApw_9h4aEP0D2uxeD6rgcGcw@mail.gmail.com>	<50798BD3.6010308@xenomai.org>
 	<50798F8A.8060508@xenomai.org>	<CAN0CFw0AhYwkGLQvugxw6NqPtv6mBxxLYnPWsdXXjO25_pmSVQ@mail.gmail.com>	<508171AB.8010707@xenomai.org>	<CAN0CFw3WqabceF1LoR===ZXQU5-WRCfYb_itk0_ig2NKKG9vtg@mail.gmail.com>	<50818781.7050204@xenomai.org>
 	<CAN0CFw0ZvkqHO6txvq17xBsU7S52dFW1rn=EC7uz87T95npR9w@mail.gmail.com>
 	<50827B74.2030408@xenomai.org> <50829C67.9040909@xenomai.org>
-In-Reply-To: <50829C67.9040909@xenomai.org>
+	<50829D93.7000407@xenomai.org>
+In-Reply-To: <50829D93.7000407@xenomai.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] Which kernel versions?
@@ -18,24 +19,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On 10/20/2012 02:43 PM, Philippe Gerum wrote:
-
-> On 10/20/2012 12:22 PM, Gilles Chanteperdrix wrote:
+On 10/20/2012 02:48 PM, Gilles Chanteperdrix wrote:
+> On 10/20/2012 02:43 PM, Philippe Gerum wrote:
 > 
->> Note that the list is not exhaustive, because it does not includes
->> patches that were published before the i386/x86_64 merge, if you take
->> that into account, you can even run Xenomai 2.6.1 with 2.4 kernels.
+>> On 10/20/2012 12:22 PM, Gilles Chanteperdrix wrote:
 >>
+>>> Note that the list is not exhaustive, because it does not includes
+>>> patches that were published before the i386/x86_64 merge, if you take
+>>> that into account, you can even run Xenomai 2.6.1 with 2.4 kernels.
+>>>
+>>
+>> 2.4.25/ppc only though. We stopped maintaining 2.4/x86 setups many moons
+>> ago, so I doubt this would even build.
 > 
-> 2.4.25/ppc only though. We stopped maintaining 2.4/x86 setups many moons
-> ago, so I doubt this would even build.
+> 
+> It is build-tested with every release.
+> 
 
-
-It is build-tested with every release.
+Build AND tested, or tested for build? I did not test such configuration
+for ages, do you actually test this?
 
 -- 
-                                                                Gilles.
+Philippe.
 
