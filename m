@@ -1,5 +1,5 @@
-Message-ID: <50843EFC.2070409@xenomai.org>
-Date: Sun, 21 Oct 2012 20:29:16 +0200
+Message-ID: <50844242.7010107@xenomai.org>
+Date: Sun, 21 Oct 2012 20:43:14 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <50812949.5040403@openwide.fr> <50814532.5090408@xenomai.org>
@@ -22,13 +22,6 @@ Cc: xenomai@xenomai.org
 
 On 10/21/2012 03:35 AM, Romain Naour wrote:
 
->>> Until now, I used the latest supported kernel 3.2.21 with Xenomai 2.6.1.
->>> Without rework timer system with clocksource and clockevent,
->>> I need to set "s3c2410_itimer.min_delay_ticks" value
->>> (s3c24xx_fix_itimer.patch)
->>> Otherwise the timer hangs.
->>> And also, the last patch of my previous mail.
->>
 >> You mean the patch for the UART ? I can not take that patch. You have to
 >> understand what goes wrong in the I-pipe core, or irq chip callbacks
 >> implementation for this processor, and fix it there, not in the irq
@@ -37,18 +30,18 @@ On 10/21/2012 03:35 AM, Romain Naour wrote:
 > irq_enable() and when there is an IRQ pending behind.
 > I made some comments on the ipipe-tracer log 
 > (UART-samsung-bug-ipipe-tracer.txt)
-> 
-> What do you think of this ?
 
 
-Without looking at the trace, if the irqs need to be off during the
-execution of an irq chip callback, we usually do this inside the chip
-callback. When there is a spinlock, simply turn it into an ipipe
-spinlock and use spin_lock_irqsave_cond, as explained here:
-http://www.xenomai.org/index.php/I-pipe-core:ArmPorting#call-backs_implementation
+Ok: first comment: thanks to this patch:
+http://git.xenomai.org/?p=ipipe-gch.git;a=commitdiff;h=352ee07368a89133df74948f3dd71ae657c519a0;hp=5e7413789eb3d1ca1613e986cbeb6c979082a217
 
-> Are we need to disable IRQs before call  irq_enable() ?
-Usually not.
+We know that irq_state_clr_masked is called when unmask_irq is called.
+
+Second, to know why cond_unmask_irq does not unmask the irq, you can use
+ipipe_trace_special to print the value of the various conditions.
+
+It would have been better to include the relevant parts of the trace in
+the mail body, this would have made answering simpler.
 
 -- 
                                                                 Gilles.
