@@ -1,9 +1,11 @@
+Message-ID: <50843CB3.6040406@uqconnect.edu.au>
+Date: Mon, 22 Oct 2012 03:19:31 +0900
+From: David Butterworth <david.butterworth@uqconnect.edu.au>
 MIME-Version: 1.0
-From: Soroush Rabiei <soroush.rabiei@gmail.com>
-Date: Sun, 21 Oct 2012 20:59:26 +0330
-Message-ID: <CAOMsk2RXfU-OuuRtkmjP484UWJGm2+TKWwfr2kJdN74e1_UmfA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: [Xenomai]  After compile, how do I use Xenomai POSIX skin?
+Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai] Drivers for 4-channel CAN or EtherCAT
+Reply-To: david.butterworth@uqconnect.edu.au
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,16 +16,23 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Hi all
+Hi all,
 
-I working on a project aimed to control a mechanical system. One part of
-controller software needs to be handled with a real-time system to satisfy
-timing constraints.
-I've compiled Xenomai 2.6.0 on kernel 2.6.38-8. Compilation was successful
-and kernel logs show that the RT subsystem is active. Now I want to
-re-write the critical thread of my application to use Xenomai subsystem
-instead of kernel scheduling. The application runs in user space and has
-5~8 POSIX threads which only on of them needs to be hard-RT.
-How do I change my code to use Xenomai instead of NPTL? And how compile it?
+Is anyone working on drivers for a 4-channel CAN card?  and what 
+EtherCAT drivers are currently available?
 
-Thanks
+We're talking about using such hardware, so I might need to have a go 
+myself...
+
+I am assuming that Peak's Linux driver (non real-time) works with their 
+4 channel card.
+Is there some problem that has prevented all 4 channels being supported 
+in the current Xenomai peak-pci driver?
+
+Any info or ideas is appreciated.
+
+Regards,
+David.
+
+
+
