@@ -1,28 +1,15 @@
-Message-ID: <5085B6BC.8060906@xenomai.org>
-Date: Mon, 22 Oct 2012 23:12:28 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: Wolfgang Denk <wd@denx.de>
 MIME-Version: 1.0
-References: <1349212116.21898.108.camel@ENG-09-LX.emacinc.com>	
-	<506B5D6B.80005@xenomai.org> <506B5E0E.5050900@xenomai.org>	
-	<1349369822.3775.107.camel@ENG-09-LX.emacinc.com>	
-	<506DC2DA.5000105@xenomai.org> <506E9510.7090105@xenomai.org>	
-	<1349462858.26881.43.camel@ENG-09-LX.emacinc.com>	
-	<506F402A.9030102@xenomai.org>	
-	<1349473634.26881.221.camel@ENG-09-LX.emacinc.com>	
-	<506F6283.2040901@xenomai.org>	
-	<5afa3b9a7c7daf116f8284b4f255227e.squirrel@mail.emacinc.com>	
-	<506FFDDC.60104@xenomai.org>	
-	<1349816136.25350.426.camel@ENG-09-LX.emacinc.com>	
-	<50749349.5070900@xenomai.org>	
-	<1350681759.1282.88.camel@ENG-09-LX.emacinc.com>	
-	<5081FF74.4010109@xenomai.org>	
-	<1350933768.17153.16.camel@ENG-09-LX.emacinc.com>	
-	<50859D99.5040009@xenomai.org>
-	<1350934476.17153.20.camel@ENG-09-LX.emacinc.com>
-In-Reply-To: <1350934476.17153.20.camel@ENG-09-LX.emacinc.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Adeos I-Pipe patch problem on vendor-specific kernel
+Content-type: text/plain; charset=UTF-8
+In-reply-to: <CAD0gx3h3p4X73Q+2f_39hB4SHzOVO0f0JkaUy7bh+bp4ROPB_g@mail.gmail.com>
+References: <CAD0gx3gM7TwoPn-0367BH848nYow02uN3dK5wOcysXFMxmBCSw@mail.gmail.com>
+	<CAFNBftfNPqty915_2hgMX+3W3S2UVt1sQgwnFsOufMVXFV3TFA@mail.gmail.com>
+	<20121022185804.438E22005BB@gemini.denx.de>
+	<CAD0gx3h3p4X73Q+2f_39hB4SHzOVO0f0JkaUy7bh+bp4ROPB_g@mail.gmail.com>
+Date: Mon, 22 Oct 2012 23:59:00 +0200
+Message-Id: <20121022215900.E754A2005BD@gemini.denx.de>
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] Best ARM-based Linux Distribution for Xenomai
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -31,30 +18,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Wayne Warren <wwarren@emacinc.com>
+To: Bill Smith <shoozboot@gmail.com>
 Cc: xenomai@xenomai.org
 
-On 10/22/2012 09:34 PM, Wayne Warren wrote:
+Dear Bill,
 
-> 
->>
->> Chances are you are calling into Adeos code too early. Normally, the
->> first call to local_irq_enable() happens in init/main.c, after the call
->> to __ipipe_init() (you should see both in function start_kernel). I
->> suspect you can not call services such as __set_irq_handler too early in
->> the boot process.
-> 
-> In the code I am looking at, local_irq_enable() is called after
-> ipipe_init().
-> 
-> Are you saying that the __set_irq_handler() service should not be called
-> before ipipe_init() also? Cause it is called after ipipe_init_early()
-> but before ipipe_init().
+In message <CAD0gx3h3p4X73Q+2f_39hB4SHzOVO0f0JkaUy7bh+bp4ROPB_g@mail.gmai=
+l.com> you wrote:
+>
+> I see the BeagleBoard-XM listed as a target, but no specific mention of=
+ the
+> BeagleBone.  Any idea if this next release will have specific support f=
+or
+> the BeagleBone?
 
+Unlike Yocto, ELDK is _not_ focussed on specific boards, but on CPU
+architectures.  Of course, any board support present in a Yocto
+release is also available in the ELDK release based on that.
 
-The same order happens on OMAP3 for the primary interrupt controller.
-So, that should work.
+> Which 2.6 kernel release will this be based on?
 
--- 
-                                                                Gilles.
+None.  2.6 is obsolete.  Welcome to the world of 3.x kernels...
+
+ELDK v5.3 will use likely be based on Linux v3.6.3 for regular
+images, and v3.2.21 fir Xenomai support.
+
+Best regards,
+
+Wolfgang Denk
+
+--=20
+DENX Software Engineering GmbH,     MD: Wolfgang Denk & Detlev Zundel
+HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
+Phone: (+49)-8142-66989-10 Fax: (+49)-8142-66989-80 Email: wd@denx.de
+This was an  amazing  creation  using  small  squares  of  compressed
+vegetable  matter on which letters were made by means of small carbon
+particles from a stylus, giving an effect similar to the  traditional
+word-processor  screen. It seemed amazingly portable and I never once
+saw him have to change the batteries.
+        - Terry Pratchett & Stephen Briggs, _The Discworld Companion_
 
