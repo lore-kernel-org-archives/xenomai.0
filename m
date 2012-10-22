@@ -1,19 +1,16 @@
-Message-ID: <50754D0F.50407@web.de>
-Date: Wed, 10 Oct 2012 12:25:19 +0200
-From: Jan Kiszka <jan.kiszka@web.de>
+Message-ID: <508573C7.5080103@openwide.fr>
+Date: Mon, 22 Oct 2012 18:26:47 +0200
+From: Romain Naour <romain.naour@openwide.fr>
 MIME-Version: 1.0
-References: <505EB99F.7050705@wanadoo.fr>	<505EBD61.1050009@wanadoo.fr>	<505F0D40.9030105@xenomai.org>	<50741C5B.4060206@wanadoo.fr>
-	<5074986C.8000509@xenomai.org> <50749A03.9090607@xenomai.org>
-	<50749C71.2020100@xenomai.org> <5075260E.2050402@wanadoo.fr>
-	<507528E4.4050809@xenomai.org> <50752A42.9080303@web.de>
-	<50752C0C.3050803@xenomai.org> <50752D7E.7010207@web.de>
-	<507538C8.7040706@xenomai.org> <50753980.7020409@web.de>
-	<50753EA0.7070007@xenomai.org> <50754849.9030205@web.de>
-	<507548DE.2000305@xenomai.org>
-In-Reply-To: <507548DE.2000305@xenomai.org>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] Target frozen with rtcan_virt
+References: <50812949.5040403@openwide.fr>
+	<50814532.5090408@xenomai.org>	<5082CD5C.1040409@openwide.fr>
+	<5082DED2.1050405@xenomai.org>	<50835162.5020401@openwide.fr>
+	<50844242.7010107@xenomai.org>	<5084863E.7030900@openwide.fr>
+	<508547AC.7020103@xenomai.org> <508552A9.7020608@xenomai.org>
+In-Reply-To: <508552A9.7020608@xenomai.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] s3c24xx with clocksource/clockevent (kernel 3.2.21)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -23,74 +20,156 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Thierry Bultel <thierry.bultel@wanadoo.fr>, Wolfgang Grandegger <wg@denx.de>, xenomai@xenomai.org
+Cc: xenomai@xenomai.org
 
-T24gMjAxMi0xMC0xMCAxMjowNywgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4gT24gMTAv
-MTAvMjAxMiAxMjowNCBQTSwgSmFuIEtpc3prYSB3cm90ZToKPj4gT24gMjAxMi0xMC0xMCAxMToy
-MywgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4+PiBPbiAxMC8xMC8yMDEyIDExOjAxIEFN
-LCBKYW4gS2lzemthIHdyb3RlOgo+Pj4+IE9uIDIwMTItMTAtMTAgMTA6NTgsIEdpbGxlcyBDaGFu
-dGVwZXJkcml4IHdyb3RlOgo+Pj4+PiBPbiAxMC8xMC8yMDEyIDEwOjEwIEFNLCBKYW4gS2lzemth
-IHdyb3RlOgo+Pj4+Pj4gT24gMjAxMi0xMC0xMCAxMDowNCwgR2lsbGVzIENoYW50ZXBlcmRyaXgg
-d3JvdGU6Cj4+Pj4+Pj4gT24gMTAvMTAvMjAxMiAwOTo1NiBBTSwgSmFuIEtpc3prYSB3cm90ZToK
-Pj4+Pj4+Pj4gT24gMjAxMi0xMC0xMCAwOTo1MSwgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6
-Cj4+Pj4+Pj4+PiBPbiAxMC8xMC8yMDEyIDA5OjM4IEFNLCBUaGllcnJ5IEJ1bHRlbCB3cm90ZToK
-Pj4+Pj4+Pj4+PiBIaSBHaWxsZXMsCj4+Pj4+Pj4+Pj4KPj4+Pj4+Pj4+PiBNYW55IHRoYW5rcywK
-Pj4+Pj4+Pj4+PiBUaGUgZmlyc3QgcGF0Y2ggZG9lcyBub3Qgd29yaywgdGhlIHNlY29uZCBkb2Vz
-Lgo+Pj4+Pj4+Pj4+IEkgdGhpbmsgdGhlIHJlYXNvbiBmb3IgMXN0IHBhdGNoIHdoeSBpcyB0aGF0
-IGluIHJ0Y2FuX3ZpcnQsIHdlIGhhdmUKPj4+Pj4+Pj4+Pgo+Pj4+Pj4+Pj4+IHJ0ZG1fbG9ja19n
-ZXRfaXJxc2F2ZSgmcnRjYW5fcmVjdl9saXN0X2xvY2ssIGxvY2tfY3R4KTsKPj4+Pj4+Pj4+PiBy
-dGRtX2xvY2tfZ2V0KCZydGNhbl9zb2NrZXRfbG9jayk7Cj4+Pj4+Pj4+Pj4KPj4+Pj4+Pj4+PiAu
-Li4KPj4+Pj4+Pj4+PiAtLS0+ICAgICAgICBydGNhbl9yY3YocnhfZGV2LCAmc2tiKTsKPj4+Pj4+
-Pj4+PiAuLi4uCj4+Pj4+Pj4+Pj4KPj4+Pj4+Pj4+PiBydGRtX2xvY2tfcHV0KCZydGNhbl9zb2Nr
-ZXRfbG9jayk7Cj4+Pj4+Pj4+Pj4gcnRkbV9sb2NrX3B1dF9pcnFyZXN0b3JlKCZydGNhbl9yZWN2
-X2xpc3RfbG9jaywgbG9ja19jdHgpOwo+Pj4+Pj4+Pj4+Cj4+Pj4+Pj4+Pj4gYW5kIHJ0Y2FuX3Jj
-di0+cnRjYW5fcmN2X2RlbGl2ZXItPnJ0ZG1fc2VtX3VwKCZzb2NrLT5yZWN2X3NlbSk7Cj4+Pj4+
-Pj4+Pj4KPj4+Pj4+Pj4+PiB0aHVzIHRoZSBzYW1lIHJlLXNjaGVkdWxpbmcgc3R1ZmYgd2l0aCBp
-bnRlcnJ1cHRzIGxvY2tlZC4KPj4+Pj4+Pj4+Pgo+Pj4+Pj4+Pj4+IEFyZSB5b3Ugbm90IG5vdCBh
-ZnJhaWQgb2Ygc2lkZSBlZmZlY3RzIHdpdGggdGhlIHNlY29uZCBwYXRjaCwgCj4+Pj4+Pj4+Pj4g
-c2luY2UgeW91IGNoYW5nZSB0aGUgb3ZlcmFsbCBiZWhhdmlvdXIgPwo+Pj4+Pj4+Pj4+IFdvbid0
-IHlvdSBwcmVmZXIgYSBvbmx5IGxvY2FsbHkgbW9kaWZpZWQgcnRjYW5fdmlydCA/Cj4+Pj4+Pj4+
-Pgo+Pj4+Pj4+Pj4gV2Ugc2hvdWxkIGFzayBKYW4ncyBvcGluaW9uLiBJbiBhbnkgY2FzZSwgaWYg
-d2UgYWRvcHQgdGhlIHNlY29uZCBwYXRjaCwKPj4+Pj4+Pj4+IHdlIG1pZ2h0IHdhbnQgdG8gdHJ5
-IGFuZCByZWR1Y2UgdGhlIG92ZXJoZWFkIG9mIHhucG9kX3VubG9ja19zY2hlZC4KPj4+Pj4+Pj4+
-Cj4+Pj4+Pj4+Cj4+Pj4+Pj4+IFdlIHdlcmUgc2lnbmFsaW5nIHRoZSBzZW1hcGhvcmUgd2hpbGUg
-aG9sZGluZyBhIHNwaW4gbG9jaz8gVGhhdCdzIGEKPj4+Pj4+Pj4gY2xlYXIgYnVnLiBZb3VyIHBh
-dGNoIGlzIGFsaWduaW5nIHJ0Y2FuIHRvIHRoZSBwYXR0ZXJuIHdlIGFyZSBhbHNvIHVzaW5nCj4+
-Pj4+Pj4+IGluIFJUbmV0LiBXZSBqdXN0IG5lZWQgdG8gbWFrZSBzdXJlIChoYXZlbid0IGxvb2tl
-ZCBhdCB0aGUgZnVsbCBjb250ZXh0Cj4+Pj4+Pj4+IHlldCkgdGhhdCBzb2NrIHJlbWFpbnMgdmFs
-aWQgZXZlbiBhZnRlciBkcm9wcGluZyB0aGUgbG9jayhzKS4KPj4+Pj4+Pgo+Pj4+Pj4+IFRoZSBz
-ZWNvbmQgcGF0Y2ggaWRlYSB3YXMgdG8gbG9jayB0aGUgc2NoZWR1bGVyIHdoaWxlIHNwaW5sb2Nr
-cyBhcmUKPj4+Pj4+PiBoZWxkLCBzbyB0aGF0IHBvc3RpbmcgYSBzZW1hcGhvcmUgd2hpbGUgaG9s
-ZGluZyBhIHNwaW4gbG9jayBpcyBubyBsb25nZXIKPj4+Pj4+PiBhIGJ1Zy4KPj4+Pj4+Cj4+Pj4+
-PiBTb3VuZHMgYSBiaXQgaGFja3ksCj4+Pj4+Cj4+Pj4+IFdlbGwsIHRoYXQgaXMgd2hhdCB0aGUg
-bGludXgga2VybmVsIGRvZXMuCj4+Pj4+Cj4+Pj4+ICBidXQgSSB0aGluayB3ZSBoYXZlIHRoaXMg
-cGF0dGVybgo+Pj4+Pj4gKFJURE1fRVhFQ1VURV9BVE9NSUNBTExZKQo+Pj4+Pgo+Pj4+PiBSVERN
-X0VYRUNVVEVfQVRPTUlDQUxMWSBpcyBhIGJpdCBvZiBhIG1pc25vbWVyLCBpZiB5b3UgZG86Cj4+
-Pj4+IFJURE1fRVhFQ1VURV9BVE9NSUNBTExZKGZvbygpOyBydGRtX3NlbV91cCgpOyBiYXIoKSk7
-Cj4+Pj4+IGZvbygpIGFuZCBiYXIoKSBhcmUgbm90IGV4ZWN1dGVkIGF0b21pY2FsbHkgaWYgc2Vt
-X3VwIHdha2VzIHVwIGFub3RoZXIKPj4+Pj4gdGhyZWFkLgo+Pj4+Pgo+Pj4+PiBTbywgSSBkbyBu
-b3Qgc2VlIGhvdyBSVERNX0VYRUNVVEVfQVRPTUlDQUxMWSBzb2x2ZXMgdGhlIGlzc3VlIHdlIGFy
-ZQo+Pj4+PiB0YWxraW5nIGFib3V0Lgo+Pj4+Cj4+Pj4gUlRETV9FWEVDVVRFX0FUT01JQ0FMTFkg
-aG9sZHMgdGhlIG51Y2xldXMgbG9jayBhY3Jvc3MgdGhlIGVuY2Fwc3VsYXRlZAo+Pj4+IGNvZGUs
-IGV4ZWN1dGluZyBpdCBhdG9taWNhbGx5IGFzIHJlc2NoZWR1bGluZyBpcyBwb3N0cG9uZWQgdW50
-aWwgdGhlIGVuZAo+Pj4+IG9mIHRoZSBibG9jay4KPj4+Cj4+PiBFcnIuLi4gbm8uIEFic29sdXRl
-bHkgbm90Lgo+Pgo+PiBFcnIuLi4gYWJzb2x1dGVseSByaWdodC4KPj4KPj4gVGhlIGdvb2QgbmV3
-cyBpczogd2UgZG9uJ3QgbmVlZCB0byB3b3JyeSBhYm91dCBzdWNoIGtpbmQgb2YgbG9ja2luZy4g
-SW4KPj4gcnRjYW5fcmF3X3JlY3Ztc2csIHRoZSBzb2NrZXQgaXMgbG9ja2VkIHZpYSB0aGUgUlRE
-TSBjb250ZXh0IGFzIHdlIGFyZQo+PiBpbiBhIGhhbmRsZXIuIFNvIGl0IHdvbid0IGRpc2FwcGVh
-ciB3aGVuIHdlIGRyb3AgdGhlIGxvY2ssIGFuZCB5b3VyCj4+IGZpcnN0IHBhdGNoIGlzIGZpbmUu
-Cj4gCj4gV2hpY2ggb25lPyBUaGUgZmlyc3Qgb25lIGRvZXMgbm90IHNlZW0gdG8gd29yayBiZWNh
-dXNlIHRoZSBydGRtIGxvY2tzCj4gc2VlbSB0byBiZSBuZXN0ZWQuIFRoZSBzZWNvbmQgb25lIHdv
-dWxkIHByb2JhYmx5IG5lZWQgdG8gZmluZCBhIHdheSB0bwo+IHJlZHVjZSB0aGUgb3ZlcmhlYWQg
-b2YgeG5wb2RfdW5sb2NrX3NjaGVkKCkuIFdoYXQgY2FuIGJlIGRvbmUsIGhvd2V2ZXIsCj4gaXMg
-YWRkaW5nIGEgY2FsbCB0byB4bnBvZF9sb2NrX3NjaGVkKCkveG5wb2RfdW5sb2NrX3NjaGVkKCkg
-aW4KPiBSVERNX0VYRUNVVEVfQVRPTUlDQUxMWS4KCk9oLCBJJ20gc2VlaW5nIHRoZSBsb2NraW5n
-IGZvcmVzdCBpbiBydGNhbiBub3cuIEkgc3VwcG9zZSBydGNhbiB3YXNuJ3QKdXNlZCBtdWNoIG9u
-IFNNUCBzbyBmYXIuIFRoYXQgbG9va3MgaW5kZWVkIHVucmVzb2x2YWJsZSB3aXRob3V0IGEKc2Vt
-YW50aWNhbCBjaGFuZ2UgdG8gcnRkbV9sb2NrL3VubG9jay4KCkJ1dCB0aGVuIHdlIHJlYWxseSBu
-ZWVkIHNvbWV0aGluZyBhcyBsaWdodC13ZWlnaHQgYXMgcHJlZW1wdF9lbmFibGUvZGlzYWJsZS4K
-CkphbgoKCi0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0
-IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IHNpZ25hdHVyZS5hc2MKVHlwZTogYXBw
-bGljYXRpb24vcGdwLXNpZ25hdHVyZQpTaXplOiAyNTkgYnl0ZXMKRGVzYzogT3BlblBHUCBkaWdp
-dGFsIHNpZ25hdHVyZQpVUkw6IDxodHRwOi8vd3d3Lnhlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5v
-bWFpL2F0dGFjaG1lbnRzLzIwMTIxMDEwLzRhYWMzZGEwL2F0dGFjaG1lbnQucGdwPgo=
+Le 22/10/2012 16:05, Gilles Chanteperdrix a =C3=A9crit :
+> On 10/22/2012 03:18 PM, Gilles Chanteperdrix wrote:
+>
+>> Another candidate would be irq_enable in kernel/irq/chip.c, shut off t=
+he
+>> irqs around the whole section, or move irq_state_clk_masked before the
+>> call to irq_unmask with a compiler barrier.
+>
+> Actually, the following patch fixes another bug I had, so, could you
+> check if it fixes yours? (and thanks for the explanations, they were
+> very helpful).
+>
+> diff --git a/kernel/irq/chip.c b/kernel/irq/chip.c
+> index f5d8d5e..cef1e78 100644
+> --- a/kernel/irq/chip.c
+> +++ b/kernel/irq/chip.c
+> @@ -167,8 +167,10 @@ int irq_startup(struct irq_desc *desc, bool resend=
+)
+>   	desc->depth =3D 0;
+>  =20
+>   	if (desc->irq_data.chip->irq_startup) {
+> +		unsigned long flags =3D hard_cond_local_irq_save();
+>   		ret =3D desc->irq_data.chip->irq_startup(&desc->irq_data);
+>   		irq_state_clr_masked(desc);
+> +		hard_cond_local_irq_restore(flags);
+>   	} else {
+>   		irq_enable(desc);
+>   	}
+> @@ -192,12 +194,14 @@ void irq_shutdown(struct irq_desc *desc)
+>  =20
+>   void irq_enable(struct irq_desc *desc)
+>   {
+> +	unsigned long flags =3D hard_cond_local_irq_save();
+>   	irq_state_clr_disabled(desc);
+>   	if (desc->irq_data.chip->irq_enable)
+>   		desc->irq_data.chip->irq_enable(&desc->irq_data);
+>   	else
+>   		desc->irq_data.chip->irq_unmask(&desc->irq_data);
+>   	irq_state_clr_masked(desc);
+> +	hard_cond_local_irq_restore(flags);
+>   }
+>  =20
+>   void irq_disable(struct irq_desc *desc)
+> @@ -211,11 +215,13 @@ void irq_disable(struct irq_desc *desc)
+>  =20
+>   void irq_percpu_enable(struct irq_desc *desc, unsigned int cpu)
+>   {
+> +	unsigned long flags =3D hard_cond_local_irq_save();
+>   	if (desc->irq_data.chip->irq_enable)
+>   		desc->irq_data.chip->irq_enable(&desc->irq_data);
+>   	else
+>   		desc->irq_data.chip->irq_unmask(&desc->irq_data);
+>   	cpumask_set_cpu(cpu, desc->percpu_enabled);
+> +	hard_cond_local_irq_restore(flags);
+>   }
+>  =20
+>   void irq_percpu_disable(struct irq_desc *desc, unsigned int cpu)
+>
+>
+Indeed, it fixes my bug without modifying the samsung driver :)
+Thank you.
+
+> As explained on the page I directed you too, converting a spinlock to a=
+n
+> ipipe_spinlock is not something that should be done lightly. Otherwise,
+> you might well end-up with large masking sections, so, I would try and
+> find what section needs to run with irqs off, and only disable irqs for
+> that section.
+I can see that, IRQs are only disabled during the call of irq_enable().
+It's better :)
+
+Here is the trace:
+I-pipe worst-case tracing service on 3.2.21/ipipe release #1
+-------------------------------------------------------------
+CPU: 0, Begin: 156240209 cycles, Trace Points: 22 (-3500/+85), Length:=20
+1380 us
+Calibrated minimum trace-point overhead: 0.600 us
+
+  +----- Hard IRQs ('|': locked)
+  |+-- Xenomai
+  ||+- Linux ('*': domain stalled, '+': current, '#': current+stalled)
+  |||                          +---------- Delay flag ('+': > 1 us, '!':=20
+ > 10 us)
+  |||                          |        +- NMI noise ('N')
+  |||                          |        |
+      +func               -1750    2.400  uart_start+0x10 (uart_write+0x1=
+34)
+      #func               -1747    2.800  __uart_start+0x10=20
+(uart_start+0x50)
+      #func               -1745    3.200 s3c24xx_serial_start_tx+0x10=20
+(__uart_start+0x54)
+      #func               -1741    1.600  enable_irq+0x14=20
+(s3c24xx_serial_start_tx+0xc4)
+      #func               -1740    4.600 __irq_get_desc_lock+0x10=20
+(enable_irq+0x2c)
+      #func               -1735    2.200  __enable_irq+0x10=20
+(enable_irq+0x64)
+      #func               -1733    3.200  irq_enable+0x10=20
+(__enable_irq+0xac)
+  |   #(0x01)  0x00000001 -1730    1.000  irq_enable+0x3c=20
+(__enable_irq+0xac)
+  |   #(0x02)  0x00000001 -1729    2.000  irq_enable+0x54=20
+(__enable_irq+0xac)
+  |   #func               -1727    2.200 s3c_irq_uart0_unmask+0x10=20
+(irq_enable+0x7c)
+  |   #(0x01)  0x00000001 -1725    1.000  irq_enable+0x9c=20
+(__enable_irq+0xac)
+  |   #(0x02)  0x00000000 -1724    3.800  irq_enable+0xb4=20
+(__enable_irq+0xac)
+  |   #func               -1720    2.800 __ipipe_grab_irq+0x10=20
+(__irq_svc+0x24)
+  |   #func               -1717    2.800 __ipipe_dispatch_irq+0x10=20
+(__ipipe_grab_irq+0x54)
+  |   #func               -1714    1.800 __ipipe_ack_irq+0x10=20
+(__ipipe_dispatch_irq+0x94)
+  |   #func               -1712    1.600 s3c_irq_demux_uart0+0x10=20
+(__ipipe_ack_irq+0x1c)
+  |   #func               -1711    1.600 s3c_irq_demux_uart+0x10=20
+(s3c_irq_demux_uart0+0x1c)
+  |   #func               -1709    1.400 __ipipe_dispatch_irq+0x10=20
+(s3c_irq_demux_uart+0x54)
+  |   #func               -1708    1.800 __ipipe_ack_irq+0x10=20
+(__ipipe_dispatch_irq+0x94)
+  |   #func               -1706    1.200 __ipipe_ack_level_irq+0x10=20
+(__ipipe_ack_irq+0x1c)
+  |   #func               -1705    2.600 s3c_irq_uart0_ack+0x10=20
+(__ipipe_ack_level_irq+0x34)
+  |   #(0x01)  0x00000001 -1702    1.000 __ipipe_ack_level_irq+0x78=20
+(__ipipe_ack_irq+0x1c)
+  |   #(0x02)  0x00000001 -1701    3.000 __ipipe_ack_level_irq+0x90=20
+(__ipipe_ack_irq+0x1c)
+  |   #func               -1698    4.600 __ipipe_set_irq_pending+0x10=20
+(__ipipe_dispatch_irq+0x120)
+  |   #func               -1694    2.200 __ipipe_do_sync_pipeline+0x10=20
+(__ipipe_dispatch_irq+0x16c)
+  |   #func               -1691    1.600 __ipipe_exit_irq+0x10=20
+(__ipipe_grab_irq+0x5c)
+  |   #func               -1690    2.400=20
+__ipipe_check_root_interruptible+0x10 (__irq_svc+0x94)
+      #func               -1687    1.600 check_irq_resend+0x10=20
+(__enable_irq+0xb8)
+      #func               -1686    1.600 __irq_put_desc_unlock+0x10=20
+(enable_irq+0x74)
+      #func               -1684    1.200 ipipe_unstall_root+0x10=20
+(uart_start+0x5c)
+  |   +func               -1683    3.600 __ipipe_do_sync_stage+0x10=20
+(ipipe_unstall_root+0x3c)
+
+Regards,
+Romain
+
