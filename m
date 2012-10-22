@@ -1,12 +1,12 @@
+Message-ID: <5084F364.20404@grandegger.com>
+Date: Mon, 22 Oct 2012 09:19:00 +0200
+From: Wolfgang Grandegger <wg@grandegger.com>
 MIME-Version: 1.0
-In-Reply-To: <50843D8A.1030906@xenomai.org>
-References: <CAD0gx3hbGpX7VyLrRoWNYizVsaCRpPHubdtgAnRPdBEgW_DHDg@mail.gmail.com>
-	<50843D8A.1030906@xenomai.org>
-Date: Sun, 21 Oct 2012 23:10:04 -0400
-Message-ID: <CAD0gx3hOLYxh0+LbLWRDDSCstmbTb4oCNt9bek0oYzQMiPEWRg@mail.gmail.com>
-From: Bill Smith <shoozboot@gmail.com>
+References: <50843CB3.6040406@uqconnect.edu.au>
+In-Reply-To: <50843CB3.6040406@uqconnect.edu.au>
 Content-Type: text/plain; charset=ISO-8859-1
-Subject: Re: [Xenomai] Latest 2.6 Linux kernel supported by Xenomai 2.6.1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Drivers for 4-channel CAN or EtherCAT
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,23 +15,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: david.butterworth@uqconnect.edu.au
+Cc: xenomai@xenomai.org
 
-Sorry, in the 3.x series Linux kernel, what would be the most recent
-supported version for the BeagleBone with Xenomai?  linux kernel 3.2.32?
+On 10/21/2012 08:19 PM, David Butterworth wrote:
+> Hi all,
+> 
+> Is anyone working on drivers for a 4-channel CAN card?  and what
+> EtherCAT drivers are currently available?
 
-On Sun, Oct 21, 2012 at 2:23 PM, Gilles Chanteperdrix <
-gilles.chanteperdrix@xenomai.org> wrote:
+I never heard of EtherCAT with CAN? It normally uses Ethernet network
+devices. Or have I missed something?
 
-> On 10/21/2012 07:50 AM, Bill Smith wrote:
->
-> > Where would I find out the latest 2.6 kernel that is supported for
-> patching
-> > with Xenomai 2.6.1?
->
->
-> The answer given for the hypthetic Xenomai 2.6.2 applies to Xenomai 2.6.1.
->
-> --
->                                                                 Gilles.
->
+> We're talking about using such hardware, so I might need to have a go
+> myself...
+> 
+> I am assuming that Peak's Linux driver (non real-time) works with their
+> 4 channel card.
+
+Me too.
+
+> Is there some problem that has prevented all 4 channels being supported
+> in the current Xenomai peak-pci driver?
+
+Not that I know of, apart from the missing code (so far the RTcan
+"peak_pci" driver only supports up to 2 channels).
+
+Wolfgang.
+
