@@ -1,26 +1,14 @@
-Message-ID: <50859D99.5040009@xenomai.org>
-Date: Mon, 22 Oct 2012 21:25:13 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <1349212116.21898.108.camel@ENG-09-LX.emacinc.com>	
-	<506B5D6B.80005@xenomai.org> <506B5E0E.5050900@xenomai.org>	
-	<1349369822.3775.107.camel@ENG-09-LX.emacinc.com>	
-	<506DC2DA.5000105@xenomai.org> <506E9510.7090105@xenomai.org>	
-	<1349462858.26881.43.camel@ENG-09-LX.emacinc.com>	
-	<506F402A.9030102@xenomai.org>	
-	<1349473634.26881.221.camel@ENG-09-LX.emacinc.com>	
-	<506F6283.2040901@xenomai.org>	
-	<5afa3b9a7c7daf116f8284b4f255227e.squirrel@mail.emacinc.com>	
-	<506FFDDC.60104@xenomai.org>	
-	<1349816136.25350.426.camel@ENG-09-LX.emacinc.com>	
-	<50749349.5070900@xenomai.org>	
-	<1350681759.1282.88.camel@ENG-09-LX.emacinc.com>	
-	<5081FF74.4010109@xenomai.org>
-	<1350933768.17153.16.camel@ENG-09-LX.emacinc.com>
-In-Reply-To: <1350933768.17153.16.camel@ENG-09-LX.emacinc.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Adeos I-Pipe patch problem on vendor-specific kernel
+In-Reply-To: <20121022191357.GI18610@csclub.uwaterloo.ca>
+References: <CAD0gx3hbGpX7VyLrRoWNYizVsaCRpPHubdtgAnRPdBEgW_DHDg@mail.gmail.com>
+	<50843D8A.1030906@xenomai.org>
+	<CAD0gx3hqWNbAj2cgaN8YOv-s2nju4MVDb=HUS5QAWbVbShrFHg@mail.gmail.com>
+	<20121022191357.GI18610@csclub.uwaterloo.ca>
+Date: Mon, 22 Oct 2012 15:30:48 -0400
+Message-ID: <CAD0gx3gBipx4mOxM3J8EKkyy-N059S63WLwz=-ipnxfO=uM5Fg@mail.gmail.com>
+From: Bill Smith <shoozboot@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: Re: [Xenomai] Latest 2.6 Linux kernel supported by Xenomai 2.6.1
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -29,56 +17,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Wayne Warren <wwarren@emacinc.com>
+To: Lennart Sorensen <lsorense@csclub.uwaterloo.ca>
 Cc: xenomai@xenomai.org
 
-On 10/22/2012 09:22 PM, Wayne Warren wrote:
+It looks like 3.2.30 is the most recent version directly supported by
+Angstrom, so I would be looking to integrate Xenomai with that revision.
 
-> This code is the __set_irq_handler function which, given an interrupt
-> number/id, appears to set up an entry in an irq_desc array. This
-> structure (irq_desc) appears to be the place to go for information
-> related to a given IRQ id.
-> 
-> We seem to have discovered the problem, which was that this array was
-> not initialized with enough slots...in
-> arch/arm/plat-omap/include/play/irqs.h OMAP_GPMC_NR_IRQS was defined as
-> 7 rather than 8 (there are actually 8 GPMC chip selects). In a
-> roundabout way, this macro is used to calculate the array size for
-> irq_desc.
-> 
-> Since gpmc_init() was using GPMC_CS_NUM as a bound in the for loop that
-> was calling __set_irq_handler and the "irq" variable in that same
-> function was initialized using OMAP_GPMC_IRQ_BASE, it seems like:
-> 
->   - OMAP_GPMC_NR_IRQS should be used in the for loop instead of
-> GPMC_CS_NUM,
->   - GPMC_CS_NUM should be used to define OMAP_GPMC_NR_IRQS,
->   - or at the very least, GPMC_CS_NUM and OMAP_GPMC_NR_IRQS should be
-> set to the same constant value (8).
-> 
-> I think maybe the first two of those together should be the fix, but I
-> am still fairly lost here. Temporarily, we have set OMAP_GPMC_NR_IRQS to
-> 8 which eliminates the data abort exception that was occurring in
-> __set_irq_handler.
-> 
-> But we still have a kernel panic. Stepping further through the
-> start_kernel function in GDB leads to local_irq_enable() which after
-> some investigation is preprocessed into __ipipe_unstall_root().
-> 
-> It is the last line of this function, "local_irq_enable_hw()" where the
-> next data abort exception occurs. This line translates into the
-> assembler instruction "cpsie i" which is the last instruction before
-> __dabt_svc(). Any idea what might be going on there? 
-> 
-> Thanks again for your help and prompt replies, they are very helpful.
+On Mon, Oct 22, 2012 at 3:13 PM, Lennart Sorensen <
+lsorense@csclub.uwaterloo.ca> wrote:
 
-
-Chances are you are calling into Adeos code too early. Normally, the
-first call to local_irq_enable() happens in init/main.c, after the call
-to __ipipe_init() (you should see both in function start_kernel). I
-suspect you can not call services such as __set_irq_handler too early in
-the boot process.
-
--- 
-                                                                Gilles.
-
+> On Mon, Oct 22, 2012 at 03:06:42PM -0400, Bill Smith wrote:
+> > Hello again... any idea what the highest 2.6 kernel revision is that is
+> > supported for Xenomai?  Or is this not something that you keep track of
+> ;)
+>
+> I think it depends on the architecture and even cpu type.
+>
+> I have used xenomai with 2.6.38 on powerpc and now 3.0 on powerpc as
+> well, and I believe 3.2 and maybe 3.4 are around somewhere.  arm and
+> x86 may be different.
+>
+> Do you count 3.x as 2.6 kernels?
+>
+> --
+> Len Sorensen
+>
