@@ -1,11 +1,13 @@
-From: "Herrera-Bendezu, Luis" <lherrera@harris.com>
-Date: Mon, 22 Oct 2012 19:51:46 +0000
-Message-ID: <584FFDF8F96BB74593285A7D65886EC01EF7325D@ROCMXUS21.cs.myharris.net>
-Content-Language: en-US
+Message-ID: <5085A526.6000209@xenomai.org>
+Date: Mon, 22 Oct 2012 21:57:26 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+References: <CAD0gx3gM7TwoPn-0367BH848nYow02uN3dK5wOcysXFMxmBCSw@mail.gmail.com>	<CAFNBftfNPqty915_2hgMX+3W3S2UVt1sQgwnFsOufMVXFV3TFA@mail.gmail.com>	<20121022185804.438E22005BB@gemini.denx.de>	<CAD0gx3h3p4X73Q+2f_39hB4SHzOVO0f0JkaUy7bh+bp4ROPB_g@mail.gmail.com>	<5085996C.2020808@xenomai.org>
+	<CAD0gx3ic2L6AEiW2F7nDMDgdLs9ZQSCvKQHWxrW_wkJ8jSxQbw@mail.gmail.com>
+In-Reply-To: <CAD0gx3ic2L6AEiW2F7nDMDgdLs9ZQSCvKQHWxrW_wkJ8jSxQbw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai]  Missed interrupt
+Subject: Re: [Xenomai] Best ARM-based Linux Distribution for Xenomai
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,40 +16,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Bill Smith <shoozboot@gmail.com>
+Cc: xenomai@xenomai.org
 
-Hello:
+On 10/22/2012 09:35 PM, Bill Smith wrote:
 
-I am having an issue with RTDM interrupts at the kernel level. The system
-used is as follows:
-CPU: PowerPC 405EX
-Linux: 2.6.30.3
-I-Pipe: 2.7-02
-Xenomai: 2.4.10
-Configuration: config_file (attached)
-
-There is a periodic interrupt at 16 mSec driven by an FPGA. This interrupt
-is occasionally missed in what appears to be a case of disabled interrupt
-for more than 40 mSec. This problem occurs mostly when flash memory is
-written.
-
-The RTDM driver registers non-shared IRQ using rtdm_irq_request()
-
-I had searched Xenomai's mailing list and only found an instance were
-interrupts are disabled in I-Pipe but for version Xenomai 2.6:
-http://www.xenomai.org/pipermail/xenomai-help/2012-03/msg00119.html
-
-Is there any known issue on version 2.4.10 related to interrupts and/or USB?
-Any recommendations for narrowing the scope of this problem?
-
-Thanks,
-Luis
+> Your reply of "...[t]he answer given for the hypthetic Xenomai 2.6.2
+> applies to Xenomai 2.6.1" was somewhat cryptic.
+> 
+> And by cryptic, I mean not helpful at all.
 
 
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: config_file
-Type: application/octet-stream
-Size: 44259 bytes
-Desc: config_file
-URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20121022/f00ebc1c/attachment.obj>
+Do not forget that we are not a proprietary support you are paying for,
+this list has no obligation to give you any answer, we usually prefer
+giving answer to people who:
+- have read the website (for instance, the FAQ gives you a link telling
+you on which boards xenomai is supported, the news section tells you
+which xenomai version is the last)
+- ask smart questions:
+http://www.catb.org/esr/faqs/smart-questions.html
+
+Also not all people reading this list and able to give an answer to your
+question (for instance, people using Xenomai on BeagleBone which could
+tell you their plan for inclusion or not in the next Xenomai release)
+read the list with the same frequency. So, when you ask a question, you
+should wait for at least a week or two before asking it again (some
+people read weekly digests).
+
+-- 
+                                                                Gilles.
+
