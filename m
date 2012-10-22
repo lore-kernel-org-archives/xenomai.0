@@ -1,19 +1,13 @@
-Message-ID: <507553D0.8070305@xenomai.org>
-Date: Wed, 10 Oct 2012 12:54:08 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <5085A187.70209@xenomai.org>
+Date: Mon, 22 Oct 2012 21:41:59 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <505EB99F.7050705@wanadoo.fr>	<505EBD61.1050009@wanadoo.fr>	<505F0D40.9030105@xenomai.org>	<50741C5B.4060206@wanadoo.fr>
-	<5074986C.8000509@xenomai.org> <50749A03.9090607@xenomai.org>
-	<50749C71.2020100@xenomai.org> <5075260E.2050402@wanadoo.fr>
-	<507528E4.4050809@xenomai.org> <50752A42.9080303@web.de>
-	<50752C0C.3050803@xenomai.org> <50752D7E.7010207@web.de>
-	<507538C8.7040706@xenomai.org> <50753980.7020409@web.de>
-	<50753EA0.7070007@xenomai.org> <50754849.9030205@web.de>
-	<507548DE.2000305@xenomai.org> <50754D0F.50407@web.de>
-In-Reply-To: <50754D0F.50407@web.de>
-Content-Type: text/plain; charset=ISO-8859-1
+References: <CAD0gx3gM7TwoPn-0367BH848nYow02uN3dK5wOcysXFMxmBCSw@mail.gmail.com>	<CAFNBftfNPqty915_2hgMX+3W3S2UVt1sQgwnFsOufMVXFV3TFA@mail.gmail.com>	<20121022185804.438E22005BB@gemini.denx.de>	<CAD0gx3h3p4X73Q+2f_39hB4SHzOVO0f0JkaUy7bh+bp4ROPB_g@mail.gmail.com>	<5085996C.2020808@xenomai.org>
+	<CAD0gx3ic2L6AEiW2F7nDMDgdLs9ZQSCvKQHWxrW_wkJ8jSxQbw@mail.gmail.com>
+In-Reply-To: <CAD0gx3ic2L6AEiW2F7nDMDgdLs9ZQSCvKQHWxrW_wkJ8jSxQbw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Target frozen with rtcan_virt
+Subject: Re: [Xenomai] Best ARM-based Linux Distribution for Xenomai
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,109 +16,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@web.de>
-Cc: Thierry Bultel <thierry.bultel@wanadoo.fr>, Wolfgang Grandegger <wg@denx.de>, xenomai@xenomai.org
+To: Bill Smith <shoozboot@gmail.com>
+Cc: xenomai@xenomai.org
 
-On 10/10/2012 12:25 PM, Jan Kiszka wrote:
-> On 2012-10-10 12:07, Gilles Chanteperdrix wrote:
->> On 10/10/2012 12:04 PM, Jan Kiszka wrote:
->>> On 2012-10-10 11:23, Gilles Chanteperdrix wrote:
->>>> On 10/10/2012 11:01 AM, Jan Kiszka wrote:
->>>>> On 2012-10-10 10:58, Gilles Chanteperdrix wrote:
->>>>>> On 10/10/2012 10:10 AM, Jan Kiszka wrote:
->>>>>>> On 2012-10-10 10:04, Gilles Chanteperdrix wrote:
->>>>>>>> On 10/10/2012 09:56 AM, Jan Kiszka wrote:
->>>>>>>>> On 2012-10-10 09:51, Gilles Chanteperdrix wrote:
->>>>>>>>>> On 10/10/2012 09:38 AM, Thierry Bultel wrote:
->>>>>>>>>>> Hi Gilles,
->>>>>>>>>>>
->>>>>>>>>>> Many thanks,
->>>>>>>>>>> The first patch does not work, the second does.
->>>>>>>>>>> I think the reason for 1st patch why is that in rtcan_virt, we have
->>>>>>>>>>>
->>>>>>>>>>> rtdm_lock_get_irqsave(&rtcan_recv_list_lock, lock_ctx);
->>>>>>>>>>> rtdm_lock_get(&rtcan_socket_lock);
->>>>>>>>>>>
->>>>>>>>>>> ...
->>>>>>>>>>> --->        rtcan_rcv(rx_dev, &skb);
->>>>>>>>>>> ....
->>>>>>>>>>>
->>>>>>>>>>> rtdm_lock_put(&rtcan_socket_lock);
->>>>>>>>>>> rtdm_lock_put_irqrestore(&rtcan_recv_list_lock, lock_ctx);
->>>>>>>>>>>
->>>>>>>>>>> and rtcan_rcv->rtcan_rcv_deliver->rtdm_sem_up(&sock->recv_sem);
->>>>>>>>>>>
->>>>>>>>>>> thus the same re-scheduling stuff with interrupts locked.
->>>>>>>>>>>
->>>>>>>>>>> Are you not not afraid of side effects with the second patch, 
->>>>>>>>>>> since you change the overall behaviour ?
->>>>>>>>>>> Won't you prefer a only locally modified rtcan_virt ?
->>>>>>>>>>
->>>>>>>>>> We should ask Jan's opinion. In any case, if we adopt the second patch,
->>>>>>>>>> we might want to try and reduce the overhead of xnpod_unlock_sched.
->>>>>>>>>>
->>>>>>>>>
->>>>>>>>> We were signaling the semaphore while holding a spin lock? That's a
->>>>>>>>> clear bug. Your patch is aligning rtcan to the pattern we are also using
->>>>>>>>> in RTnet. We just need to make sure (haven't looked at the full context
->>>>>>>>> yet) that sock remains valid even after dropping the lock(s).
->>>>>>>>
->>>>>>>> The second patch idea was to lock the scheduler while spinlocks are
->>>>>>>> held, so that posting a semaphore while holding a spin lock is no longer
->>>>>>>> a bug.
->>>>>>>
->>>>>>> Sounds a bit hacky,
->>>>>>
->>>>>> Well, that is what the linux kernel does.
->>>>>>
->>>>>>  but I think we have this pattern
->>>>>>> (RTDM_EXECUTE_ATOMICALLY)
->>>>>>
->>>>>> RTDM_EXECUTE_ATOMICALLY is a bit of a misnomer, if you do:
->>>>>> RTDM_EXECUTE_ATOMICALLY(foo(); rtdm_sem_up(); bar());
->>>>>> foo() and bar() are not executed atomically if sem_up wakes up another
->>>>>> thread.
->>>>>>
->>>>>> So, I do not see how RTDM_EXECUTE_ATOMICALLY solves the issue we are
->>>>>> talking about.
->>>>>
->>>>> RTDM_EXECUTE_ATOMICALLY holds the nucleus lock across the encapsulated
->>>>> code, executing it atomically as rescheduling is postponed until the end
->>>>> of the block.
->>>>
->>>> Err... no. Absolutely not.
->>>
->>> Err... absolutely right.
->>>
->>> The good news is: we don't need to worry about such kind of locking. In
->>> rtcan_raw_recvmsg, the socket is locked via the RTDM context as we are
->>> in a handler. So it won't disappear when we drop the lock, and your
->>> first patch is fine.
->>
->> Which one? The first one does not seem to work because the rtdm locks
->> seem to be nested. The second one would probably need to find a way to
->> reduce the overhead of xnpod_unlock_sched(). What can be done, however,
->> is adding a call to xnpod_lock_sched()/xnpod_unlock_sched() in
->> RTDM_EXECUTE_ATOMICALLY.
+On 10/22/2012 09:35 PM, Bill Smith wrote:
+
+> Your reply of "...[t]he answer given for the hypthetic Xenomai 2.6.2
+> applies to Xenomai 2.6.1" was somewhat cryptic.
 > 
-> Oh, I'm seeing the locking forest in rtcan now. I suppose rtcan wasn't
-> used much on SMP so far. That looks indeed unresolvable without a
-> semantical change to rtdm_lock/unlock.
-> 
-> But then we really need something as light-weight as preempt_enable/disable.
-> 
+> And by cryptic, I mean not helpful at all.
 
-This is not as lightweight as it might be given that we pair a flag and
-a counter to achieve this (which saves one data reference in
-xnpod_schedule() though), but this is a start:
 
-http://git.xenomai.org/?p=xenomai-2.6.git;a=commit;h=aed4dfce9967e45ef7e8a8da4b6c90267ea81497
+s/hypthetic/hypothetic/
 
-So, I'm setting __xnpod_lock_sched() and __xnpod_unlock_sched() in stone
-in the nucleus API to manipulate the sched locking counter from a
-context where the nucleus lock is already held, so that RTDM can rely on
-this for RTDM_EXECUTE_ATOMICALLY().
+I referred to the answer given to the same question you asked for
+Xenomai 2.6.2:
+"Xenomai 2.6.2 is not out yet. But when it is out, simply go in the
+ksrc/arch/arm/patches directory and look for the available patches.
+"
+
+I meant in the "ksrc/arch/arm/patches" directory in the xenomai release
+sources.
+
+Anyway, when you do not understand an answer, it gets less on my nerves
+if you say "I do not understand" than if you keep asking dumbly the same
+question over and over again.
+
+And by the way, it would be nice if you respected a bit the little
+netiquette we have on this list:
+- no top posting
+- lines wrapped to 80 characters
+- no html
+- no private messages.
 
 -- 
-Philippe.
+                                                                Gilles.
 
