@@ -1,13 +1,14 @@
-Message-ID: <5085996C.2020808@xenomai.org>
-Date: Mon, 22 Oct 2012 21:07:24 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
+Date: Mon, 22 Oct 2012 15:13:57 -0400
+Message-ID: <20121022191357.GI18610@csclub.uwaterloo.ca>
+References: <CAD0gx3hbGpX7VyLrRoWNYizVsaCRpPHubdtgAnRPdBEgW_DHDg@mail.gmail.com>
+	<50843D8A.1030906@xenomai.org>
+	<CAD0gx3hqWNbAj2cgaN8YOv-s2nju4MVDb=HUS5QAWbVbShrFHg@mail.gmail.com>
 MIME-Version: 1.0
-References: <CAD0gx3gM7TwoPn-0367BH848nYow02uN3dK5wOcysXFMxmBCSw@mail.gmail.com>	<CAFNBftfNPqty915_2hgMX+3W3S2UVt1sQgwnFsOufMVXFV3TFA@mail.gmail.com>	<20121022185804.438E22005BB@gemini.denx.de>
-	<CAD0gx3h3p4X73Q+2f_39hB4SHzOVO0f0JkaUy7bh+bp4ROPB_g@mail.gmail.com>
-In-Reply-To: <CAD0gx3h3p4X73Q+2f_39hB4SHzOVO0f0JkaUy7bh+bp4ROPB_g@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Best ARM-based Linux Distribution for Xenomai
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAD0gx3hqWNbAj2cgaN8YOv-s2nju4MVDb=HUS5QAWbVbShrFHg@mail.gmail.com>
+Subject: Re: [Xenomai] Latest 2.6 Linux kernel supported by Xenomai 2.6.1
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,18 +20,18 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: Bill Smith <shoozboot@gmail.com>
 Cc: xenomai@xenomai.org
 
-On 10/22/2012 09:05 PM, Bill Smith wrote:
+On Mon, Oct 22, 2012 at 03:06:42PM -0400, Bill Smith wrote:
+> Hello again... any idea what the highest 2.6 kernel revision is that is
+> supported for Xenomai?  Or is this not something that you keep track of ;)
 
-> I see the BeagleBoard-XM listed as a target, but no specific mention of the
-> BeagleBone.  Any idea if this next release will have specific support for
-> the BeagleBone?
-> 
-> Which 2.6 kernel release will this be based on?
+I think it depends on the architecture and even cpu type.
 
+I have used xenomai with 2.6.38 on powerpc and now 3.0 on powerpc as
+well, and I believe 3.2 and maybe 3.4 are around somewhere.  arm and
+x86 may be different.
 
-How many times are you going to ask the same questions? Why do not you
-simply read the answers you were given?
+Do you count 3.x as 2.6 kernels?
 
 -- 
-                                                                Gilles.
+Len Sorensen
 
