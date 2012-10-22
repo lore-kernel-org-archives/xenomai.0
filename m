@@ -1,13 +1,12 @@
 MIME-Version: 1.0
-In-Reply-To: <20121022185804.438E22005BB@gemini.denx.de>
-References: <CAD0gx3gM7TwoPn-0367BH848nYow02uN3dK5wOcysXFMxmBCSw@mail.gmail.com>
-	<CAFNBftfNPqty915_2hgMX+3W3S2UVt1sQgwnFsOufMVXFV3TFA@mail.gmail.com>
-	<20121022185804.438E22005BB@gemini.denx.de>
-Date: Mon, 22 Oct 2012 15:05:35 -0400
-Message-ID: <CAD0gx3h3p4X73Q+2f_39hB4SHzOVO0f0JkaUy7bh+bp4ROPB_g@mail.gmail.com>
+In-Reply-To: <50843D8A.1030906@xenomai.org>
+References: <CAD0gx3hbGpX7VyLrRoWNYizVsaCRpPHubdtgAnRPdBEgW_DHDg@mail.gmail.com>
+	<50843D8A.1030906@xenomai.org>
+Date: Mon, 22 Oct 2012 15:06:42 -0400
+Message-ID: <CAD0gx3hqWNbAj2cgaN8YOv-s2nju4MVDb=HUS5QAWbVbShrFHg@mail.gmail.com>
 From: Bill Smith <shoozboot@gmail.com>
 Content-Type: text/plain; charset=ISO-8859-1
-Subject: Re: [Xenomai] Best ARM-based Linux Distribution for Xenomai
+Subject: Re: [Xenomai] Latest 2.6 Linux kernel supported by Xenomai 2.6.1
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,43 +15,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Wolfgang Denk <wd@denx.de>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-I see the BeagleBoard-XM listed as a target, but no specific mention of the
-BeagleBone.  Any idea if this next release will have specific support for
-the BeagleBone?
+Hello again... any idea what the highest 2.6 kernel revision is that is
+supported for Xenomai?  Or is this not something that you keep track of ;)
 
-Which 2.6 kernel release will this be based on?
+On Sun, Oct 21, 2012 at 2:23 PM, Gilles Chanteperdrix <
+gilles.chanteperdrix@xenomai.org> wrote:
 
-Thanks in advance
-
-
-On Mon, Oct 22, 2012 at 2:58 PM, Wolfgang Denk <wd@denx.de> wrote:
-
-> Dear Flavio Castro Alves Filho,
+> On 10/21/2012 07:50 AM, Bill Smith wrote:
 >
-> In message <
-> CAFNBftfNPqty915_2hgMX+3W3S2UVt1sQgwnFsOufMVXFV3TFA@mail.gmail.com> you
-> wrote:
-> >
-> > And I also don't think there is a pre-installed Xenomai in any
-> > arm-based Linux distribution.
->
-> If you call the ELDK a "distribution", then the next release (ELDK
-> v5.3) will include Xenomai, at least for the PowerPC and ARM
-> architectures.
+> > Where would I find out the latest 2.6 kernel that is supported for
+> patching
+> > with Xenomai 2.6.1?
 >
 >
-> Best regards,
->
-> Wolfgang Denk
+> The answer given for the hypthetic Xenomai 2.6.2 applies to Xenomai 2.6.1.
 >
 > --
-> DENX Software Engineering GmbH,     MD: Wolfgang Denk & Detlev Zundel
-> HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
-> Phone: (+49)-8142-66989-10 Fax: (+49)-8142-66989-80 Email: wd@denx.de
-> The day-to-day travails of the IBM programmer are so amusing to  most
-> of us who are fortunate enough never to have been one - like watching
-> Charlie Chaplin trying to cook a shoe.
+>                                                                 Gilles.
 >
