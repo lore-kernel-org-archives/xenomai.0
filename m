@@ -1,15 +1,12 @@
-From: Wolfgang Denk <wd@denx.de>
+Message-ID: <50862692.4070606@xenomai.org>
+Date: Tue, 23 Oct 2012 07:09:38 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-type: text/plain; charset=UTF-8
-In-reply-to: <CAD0gx3h3p4X73Q+2f_39hB4SHzOVO0f0JkaUy7bh+bp4ROPB_g@mail.gmail.com>
-References: <CAD0gx3gM7TwoPn-0367BH848nYow02uN3dK5wOcysXFMxmBCSw@mail.gmail.com>
-	<CAFNBftfNPqty915_2hgMX+3W3S2UVt1sQgwnFsOufMVXFV3TFA@mail.gmail.com>
-	<20121022185804.438E22005BB@gemini.denx.de>
-	<CAD0gx3h3p4X73Q+2f_39hB4SHzOVO0f0JkaUy7bh+bp4ROPB_g@mail.gmail.com>
-Date: Mon, 22 Oct 2012 23:59:00 +0200
-Message-Id: <20121022215900.E754A2005BD@gemini.denx.de>
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] Best ARM-based Linux Distribution for Xenomai
+References: <584FFDF8F96BB74593285A7D65886EC01EF7325D@ROCMXUS21.cs.myharris.net>
+In-Reply-To: <584FFDF8F96BB74593285A7D65886EC01EF7325D@ROCMXUS21.cs.myharris.net>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Missed interrupt
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,43 +15,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Bill Smith <shoozboot@gmail.com>
-Cc: xenomai@xenomai.org
+To: "Herrera-Bendezu, Luis" <lherrera@harris.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Dear Bill,
+On 10/22/2012 09:51 PM, Herrera-Bendezu, Luis wrote:
+> Hello:
+> 
+> I am having an issue with RTDM interrupts at the kernel level. The system
+> used is as follows:
+> CPU: PowerPC 405EX
+> Linux: 2.6.30.3
+> I-Pipe: 2.7-02
+> Xenomai: 2.4.10
+> Configuration: config_file (attached)
+> 
+> There is a periodic interrupt at 16 mSec driven by an FPGA. This interrupt
+> is occasionally missed in what appears to be a case of disabled interrupt
+> for more than 40 mSec. This problem occurs mostly when flash memory is
+> written.
+> 
+> The RTDM driver registers non-shared IRQ using rtdm_irq_request()
+> 
+> I had searched Xenomai's mailing list and only found an instance were
+> interrupts are disabled in I-Pipe but for version Xenomai 2.6:
+> http://www.xenomai.org/pipermail/xenomai-help/2012-03/msg00119.html
+> 
+> Is there any known issue on version 2.4.10 related to interrupts and/or USB?
+> Any recommendations for narrowing the scope of this problem?
 
-In message <CAD0gx3h3p4X73Q+2f_39hB4SHzOVO0f0JkaUy7bh+bp4ROPB_g@mail.gmai=
-l.com> you wrote:
->
-> I see the BeagleBoard-XM listed as a target, but no specific mention of=
- the
-> BeagleBone.  Any idea if this next release will have specific support f=
-or
-> the BeagleBone?
+Delayed interrupts is an Adeos pipeline issue, not Xenomai per se. If
+your IRQ is cascaded, then this is likely the same issue as the URL
+mentioned. This has been fixed in recent pipeline patches, but 2.4.10
+won't be able to use them.
 
-Unlike Yocto, ELDK is _not_ focussed on specific boards, but on CPU
-architectures.  Of course, any board support present in a Yocto
-release is also available in the ELDK release based on that.
+Unless you can upgrade to Xenomai 2.6.1 over a 3.2 kernel, you are only
+left with the option of backporting the fix mentioned below, to your
+2.6.30 kernel:
+http://www.mail-archive.com/xenomai@xenomai.org/msg00830.html
 
-> Which 2.6 kernel release will this be based on?
-
-None.  2.6 is obsolete.  Welcome to the world of 3.x kernels...
-
-ELDK v5.3 will use likely be based on Linux v3.6.3 for regular
-images, and v3.2.21 fir Xenomai support.
-
-Best regards,
-
-Wolfgang Denk
-
---=20
-DENX Software Engineering GmbH,     MD: Wolfgang Denk & Detlev Zundel
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
-Phone: (+49)-8142-66989-10 Fax: (+49)-8142-66989-80 Email: wd@denx.de
-This was an  amazing  creation  using  small  squares  of  compressed
-vegetable  matter on which letters were made by means of small carbon
-particles from a stylus, giving an effect similar to the  traditional
-word-processor  screen. It seemed amazingly portable and I never once
-saw him have to change the batteries.
-        - Terry Pratchett & Stephen Briggs, _The Discworld Companion_
+-- 
+Philippe.
 
