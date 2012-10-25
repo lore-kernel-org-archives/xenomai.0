@@ -1,13 +1,13 @@
-References: <1352912198.67475.YahooMailNeo@web120601.mail.ne1.yahoo.com>
-Message-ID: <1353072861.79205.YahooMailNeo@web120606.mail.ne1.yahoo.com>
-Date: Fri, 16 Nov 2012 05:34:21 -0800 (PST)
-From: senthil kumar <senthil_mit_rsk@yahoo.com>
-In-Reply-To: <1352912198.67475.YahooMailNeo@web120601.mail.ne1.yahoo.com>
+Message-ID: <50895B51.60409@xenomai.org>
+Date: Thu, 25 Oct 2012 17:31:29 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] AM3358 board support
-Reply-To: senthil kumar <senthil_mit_rsk@yahoo.com>
+References: <CANzNmi8DYqXmwtGe+Nu_HnLC8KgRO=H-29p6QBrjWrawreK_ig@mail.gmail.com>	<508837F9.9060904@xenomai.org>	<CANzNmi8qKWz2PwyS0e_fchO7xpcsq_a0yqDYbuiRU_PYVjsvQA@mail.gmail.com>	<50883F34.4010604@xenomai.org>
+	<CANzNmi-7SKy9HS=5g63=aMom1KsO_ZmxkdULe2gAteuPsuW+_A@mail.gmail.com>
+In-Reply-To: <CANzNmi-7SKy9HS=5g63=aMom1KsO_ZmxkdULe2gAteuPsuW+_A@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Problem trying an example for the first time.
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,10 +16,89 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Sebastian Pavez <sebastian.pavez.t@gmail.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-=0A=0AHi,=0A=A0=A0=A0I am working on AM3358 EVM with linux kernel =A03.2 TI=
- PSP.I tried to add real time support by integrating xenomai 2.6.1.=0ABut i=
-t is not booting.Please let me know whether xneomai supports AM3358 EVM boa=
-rd.If not provide any suggestions to make it work.=0A=0AThanks=0ASenthil ku=
-mar R
+On 10/25/2012 05:21 PM, Sebastian Pavez wrote:
+> 2012/10/24 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+> 
+>> On 10/24/2012 09:08 PM, Sebastian Pavez wrote:
+>>>
+>>>
+>>> 2012/10/24 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org
+>>> <mailto:gilles.chanteperdrix@xenomai.org>>
+>>>
+>>>     On 10/24/2012 07:45 PM, Sebastian Pavez wrote:
+>>>     > Hi everyone,
+>>>     >
+>>>     > Finally I was able to boot the kernel with xenomai. I did that with
+>>>     > xenomai-2.6.1, linux-3.2.32 and ipipe-core-3.2.21-x86-1.patch with
+>>>     this
+>>>     > steps as a guide
+>>>     > http://code.google.com/p/jhu-lcsr-ros-pkg/wiki/UbuntuXenomai.
+>>>     >
+>>>     > Now when I try to execute an example like the one suggested on the
+>>>     quick
+>>>     > build guide I get an error, I attached the capt of this,
+>>>
+>>>     Please try to run the latency test or the xeno-test script first
+>> before
+>>>     trying to compile examples.
+>>>
+>>>     For patches on the issue with examples, see the mailing list
+>> archives.
+>>>
+>>>     --
+>>>                                                 Gilles.
+>>>
+>>> Thank you Gilles for your response  ... again
+>>>
+>>> I executed the test. I attach a capture of them.
+>>> I think the latency one is ok, but for xeno-test the result doesn't seem
+>>> nice.
+>>
+>> First, please stop wasting people's bandwidth with images. When the
+>> error is text, simply cut and paste the text.
+>>
+>> Please no private mails.
+>>
+>> Second the xeno-test you are running is not xenomai 2.6.1 xeno-test, so
+>> you have binaries of some other version of xenomai version installed,
+>> presumably xenomai 2.5. As explained in the troubleshooting guide, this
+>> is a risky situation.
+>>
+>>>
+>>> Regarding the issue with the examples I already read this post
+>>> http://www.xenomai.org/pipermail/xenomai/2012-October/026561.html but I
+>>> didn't understand exactly what to do with that ... I have to change the
+>>> entries that are different on the file??
+>>
+>> Try applying the patch. Using xenomai supposes that you are a C
+>> programmer and as such you should already have seen "unresolved
+>> symbols", and that you are familiar with using the common unix tools.
+>>
+>>>
+>>> One last question, what does it mean the negative values on the latency
+>>> test?? Are they normal??
+>>
+>> Yes, this too is an issue which has been discussed many times on this list.
+>>
+>>
+>> --
+>>                                             Gilles.
+>>
+> 
+> Sorry for the private mail, I didn't mean to.
+> 
+> Regarding the xeno-test issue, I don't know why other version of xenomai
+> could be on the system, I recognize that I tried a lot of things before but
+> never a Xenomai-2.5 ... In any case I re-install ubuntu from scratch to
+> prevent any mistake about that. However when I tried to run xeno-test, the
+> system demands me to install xenomai-runtime ... so, I did it. After that I
+> get the same results:
+
+What does apt-cache show xenomai-runtime say?
+
+-- 
+					    Gilles.
+
