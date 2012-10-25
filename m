@@ -1,13 +1,18 @@
-Message-ID: <50AE7BEB.5090903@ruggedcom.com>
-Date: Thu, 22 Nov 2012 14:24:27 -0500
-From: Makarand Pradhan <makarandpradhan@ruggedcom.com>
 MIME-Version: 1.0
-References: <50AE49ED.9020804@ruggedcom.com> <50AE4F97.8030102@xenomai.org>
-	<50AE570E.10003@ruggedcom.com>
-In-Reply-To: <50AE570E.10003@ruggedcom.com>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Subject: Re: [Xenomai] Mutex enhancement for Auto relaxed threads
+In-Reply-To: <50895CFB.6090602@xenomai.org>
+References: <CANzNmi8DYqXmwtGe+Nu_HnLC8KgRO=H-29p6QBrjWrawreK_ig@mail.gmail.com>
+	<508837F9.9060904@xenomai.org>
+	<CANzNmi8qKWz2PwyS0e_fchO7xpcsq_a0yqDYbuiRU_PYVjsvQA@mail.gmail.com>
+	<50883F34.4010604@xenomai.org>
+	<CANzNmi-7SKy9HS=5g63=aMom1KsO_ZmxkdULe2gAteuPsuW+_A@mail.gmail.com>
+	<50895B51.60409@xenomai.org>
+	<CANzNmi_0j7sFOBpLSdsyAgbsdvcRdB=3448nMpoTDQiq_wg+=A@mail.gmail.com>
+	<50895CFB.6090602@xenomai.org>
+Date: Thu, 25 Oct 2012 15:04:56 -0300
+Message-ID: <CANzNmi_V-qEXhob68AteDC1s=s8kqRUE8B9_meE8XGx2UEpBrg@mail.gmail.com>
+From: Sebastian Pavez <sebastian.pavez.t@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: Re: [Xenomai] Problem trying an example for the first time.
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,57 +22,27 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+Cc: Xenomai <xenomai@xenomai.org>
 
-PiAgV2lsbCBxdWlja2x5IHRlc3QgdGhpcyBhbmQgZ2V0IGJhY2suCgpZZXMuIFRoYXQncyBwcmV0
-dHkgbXVjaCBob3cgdGhlIHN5c3RlbSBiZWhhdmVzLgoKUmdkcywKTWFrYXJhbmQuCgpUZXN0IHBy
-b2dyYW0gYXR0YWNoZWQ6ClJlc3VsdHM6CnRhc2sxOiBQcmlvIDAgQXV0byByZWxheGVkCnRhc2sy
-OiBQcmlvIDEwLiBSVC4Kcm9vdEBydWdnZWRjb206fiMgLi90YzUgMCAxMCAxCkZvcm1hdDogdGM1
-IHByaW8xIHByaW8yIG11eF9pdGVyYXRpb25zLgpTcGF3bmluZzogdGFzazEKdGFzazI6IE11dGV4
-ZXMgY3JlYXRlZAp0YXNrMjogTXV0ZXhlcyBpbiBtZW1vcnkKUnVubmluZyB0YXNrMTogc3RhdHVz
-OiBiMDAzODAKdGFzazE6IEdsb2JhbCB0ZXN0OiAyNQp0YXNrMTogQWNxdWlyaW5nIG11eDEKcnRf
-bXV0ZXhfYWNxdWlyZV9pbm5lcjogRGlkIHN5c3RlbSBjYWxsLiBsb2NrY250OiAxLCBkc29mOiAx
-CnRhc2sxOiBBY3F1aXJlZCBtdXgxLiByYzogMAp0YXNrMTogc3RhdHVzOiBiMDAxODAKdGFzazE6
-IEFjcXVpcmluZyBtdXgyCnRhc2sxOiBBY3F1aXJlZCBtdXgyLiByYzogMAp0YXNrMTogc3RhdHVz
-OiBiMDAxODAKdGFzazE6IFJlbGVhc2luZyBtdXgxCnJ0X211dGV4X3JlbGVhc2U6IERvaW5nIHN5
-c3RlbSBjYWxsLiBsb2NrY250OiAwLCBkc29mOiAxCnRhc2sxOiBSZWxlYXNlZCBtdXgxLiByYzog
-MAp0YXNrMTogc3RhdHVzOiBiMDAzODAgPC0gUmVsYXhlZCB0YXNrMSB3aGlsZSBob2xkaW5nIG11
-dGV4IDIuCnRhc2sxOiBicHJpbzogMCBjcHJpbzogMCBzdGF0dXM6IGIwMDM4MCBpbmZvLnN0YXR1
-czogYjAwMzgwCnRhc2syOiBBY3F1aXJpbmcgbXV4Mi4KdGFzazE6IGJwcmlvOiAwIGNwcmlvOiAx
-MCBzdGF0dXM6IGIwMTE4MCBpbmZvLnN0YXR1czogYjAxMTgwIDwtIHRhc2sxIApqdW1wcyB0byBw
-cmltYXJ5IGFnYWluLi4KdGFzazE6IFJlbGVhc2luZyBtdXgyCnJ0X211dGV4X3JlbGVhc2U6IERv
-aW5nIHN5c3RlbSBjYWxsLiBsb2NrY250OiAwLCBkc29mOiAxCnJ0X211dGV4X2FjcXVpcmVfaW5u
-ZXI6IERpZCBzeXN0ZW0gY2FsbC4gbG9ja2NudDogMSwgZHNvZjogMQp0YXNrMjogQWNxdWlyZWQg
-bXV4Mi4KdGFzazI6IFJlbGVhc2luZyBtdXgyCnJ0X211dGV4X3JlbGVhc2U6IERvaW5nIHN5c3Rl
-bSBjYWxsLiBsb2NrY250OiAwLCBkc29mOiAxCnRhc2syOiBSZWxlYXNlZCBtdXgyLiByYzogMAp0
-YXNrMjogc3RhdHVzOiAzMDAxODAKdGFzazE6IFJlbGVhc2VkIG11eDIuIHJjOiAwCnRhc2sxOiBz
-dGF0dXM6IGIwMDM4MAoKCk9uIDIyLzExLzEyIDExOjQ3IEFNLCBNYWthcmFuZCBQcmFkaGFuIHdy
-b3RlOgo+IEhpIEdpbGxlcywKPgo+IGxvY2sgbXV0ZXgxCj4gbG9jayBtdXRleDIKPiB1bmxvY2sg
-bXV0ZXgxCj4gdW5sb2NrIG11dGV4Mgo+Cj4gQXMgcGVyIG15IGN1cnJlbnQgaW1wbGVtZW50YXRp
-b24sIEkgZXhwZWN0IHRoZSB0aHJlYWQgdG8gcmVsYXggYWZ0ZXIKPiB1bmxvY2tpbmcgbXV0ZXgx
-LiBJZiBhbm90aGVyIFJUIHRocmVhZCBzdGFydHMgd2FpdGluZyBvbiBtdXRleDIsIEkKPiBleHBl
-Y3QgdGhlIHRocmVhZCBob2xkaW5nIHRoZSBtdXRleCB3aWxsIGhhcmRlbiBhbmQgc3RhcnQgcnVu
-bmluZyBpbgo+IHByaW1hcnkgYWdhaW4uIFdpbGwgcXVpY2tseSB0ZXN0IHRoaXMgYW5kIGdldCBi
-YWNrLgo+Cj4gSSBkaWQgY29uc2lkZXIgdGhpcyBzY2VuYXJpbyBidXQgc2luY2Ugd2UgbmV2ZXIg
-dXNlIHN1Y2ggYSBiZWhhdmlvdXIgaW4KPiBvdXIgc3lzdGVtLCBkaWQgbm90IHB1cnN1ZSBpdCBm
-dXJ0aGVyLgo+Cj4gVGhpcyBicmluZ3MgdXAgYW5vdGhlciBxdWVzdGlvbiB0aGF0IEkgd2FzIGNv
-bnRlbXBsYXRpbmcuIERvIHdlIHdhbnQgdG8KPiBoYXJkZW4gdW5sZXNzIHRoZXJlIGlzIGFub3Ro
-ZXIgUlQgdGhyZWFkIHdhbnRpbmcgdGhpcyBtdXRleD8gSWYgbm90IHRoZW4KPiB0aGUgaW1wbGVt
-ZW50YXRpb24gYmVjb21lcyBzaW1wbGVyIGFuZCB0aGUgc2NlbmFyaW8gbWVudGlvbmVkIHdvdWxk
-IGFsc28KPiBnZXQgYWRkcmVzc2VkIGF1dG9tYXRpY2FsbHkuCj4KPiBSZ2RzLAo+IE1hay4KPgo+
-Cj4+IEkgZGlkIG5vdCBsb29rIGluIGRldGFpbHMgYXQgeW91ciBjb2RlLCBidXQgd2hhdCBpZiBJ
-IGRvCj4+Cj4+IGxvY2sgbXV0ZXgxCj4+IGxvY2sgbXV0ZXgyCj4+IHVubG9jayBtdXRleDEKPj4g
-dW5sb2NrIG11dGV4Mgo+Pgo+PiA/Cj4+Cj4KCgotLSAKX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCk5PVElD
-RSBPRiBDT05GSURFTlRJQUxJVFk6ClRoaXMgZS1tYWlsIGFuZCBhbnkgYXR0YWNobWVudHMgbWF5
-IGNvbnRhaW4gY29uZmlkZW50aWFsIGFuZCBwcml2aWxlZ2VkIGluZm9ybWF0aW9uLiAgSWYgeW91
-IGFyZQpub3QgdGhlIGludGVuZGVkIHJlY2lwaWVudCwgcGxlYXNlIG5vdGlmeSB0aGUgc2VuZGVy
-IGltbWVkaWF0ZWx5IGJ5IHJldHVybiBlLW1haWwgYW5kIGRlbGV0ZSB0aGlzCmUtbWFpbCBhbmQg
-YW55IGNvcGllcy4gIEFueSBkaXNzZW1pbmF0aW9uIG9yIHVzZSBvZiB0aGlzIGluZm9ybWF0aW9u
-IGJ5IGEgcGVyc29uIG90aGVyIHRoYW4gdGhlCmludGVuZGVkIHJlY2lwaWVudCBpcyB1bmF1dGhv
-cml6ZWQgYW5kIG1heSBiZSBpbGxlZ2FsLgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KCiAgCgotLS0tLS0tLS0tLS0t
-LSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1
-YmJlZC4uLgpOYW1lOiB0YzUuYwpUeXBlOiB0ZXh0L3gtY3NyYwpTaXplOiA0MzE0IGJ5dGVzCkRl
-c2M6IG5vdCBhdmFpbGFibGUKVVJMOiA8aHR0cDovL3d3dy54ZW5vbWFpLm9yZy9waXBlcm1haWwv
-eGVub21haS9hdHRhY2htZW50cy8yMDEyMTEyMi85NjMxZmIxOC9hdHRhY2htZW50LmM+Cg==
+2012/10/25 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+
+> On 10/25/2012 05:35 PM, Sebastian Pavez wrote:
+> > 2012/10/25 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+> >> What does apt-cache show xenomai-runtime say?
+> >
+> >
+> > Package: xenomai-runtime
+> > Version: 2.5.5.2-1ubuntu2
+>
+> So, is it more clear, now ?
+>
+> --
+>                                             Gilles.
+>
+I think so, I found the 2.6.0 version of xenomai-runtime, but when I try it
+I get the error (user-space requires '3', kernel provides '4'). In the
+forum I found a previous answer of you about the same branch of
+kernel-space and user-space. So I search for xenomai-runtime 2.6.0, but
+what I get it's an experimental package ... I really don't wanna something
+like that because of my lack of experience ... I should try to use xenomai
+2.6.0 instead of the 2.6.1 I'm using now??
