@@ -1,13 +1,12 @@
-Message-ID: <50B73FB5.3080709@thrane.com>
-Date: Thu, 29 Nov 2012 11:57:57 +0100
-From: Jesper Christensen <jbc@thrane.com>
 MIME-Version: 1.0
-References: <50B73EA7.3070501@thrane.com> <50B73F44.9080900@xenomai.org>
-In-Reply-To: <50B73F44.9080900@xenomai.org>
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] mutex and timers
-Reply-To: jesper.christensen@cobham.com
+In-Reply-To: <CAHzTO8nxt5KcK_mekgArQXqdLGQC=d3bWFBse=H6cZmpRvon-A@mail.gmail.com>
+References: <CAMVghhVFiQNbPLgS5zpLw7Bu5t9mxdY5U9htVOOrRxQt_RWgVQ@mail.gmail.com>
+	<CAHzTO8nxt5KcK_mekgArQXqdLGQC=d3bWFBse=H6cZmpRvon-A@mail.gmail.com>
+From: Howard Lee Harkness <howard.lee.harkness@gmail.com>
+Date: Fri, 26 Oct 2012 09:46:40 -0500
+Message-ID: <CAMVghhVXP=VckoAcgSjYBxO=2i2gsAse-or0xvBbNJNuodu2yA@mail.gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: Re: [Xenomai] Seeking recommendations for SBC with precision timer
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,30 +15,122 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Xenomai@xenomai.org
 
-As i suspected, thank you very much.
+Thank you for your fast responses!
 
-/Jesper B. Christensen
-Development Engineer
-T +45 39 55 88 02
-E jesper.christensen@cobham.com
-Thrane & Thrane A/S - Lundtoftegaardsvej 93D
-DK-2800 Kgs. Lyngby, Denmark - www.thrane.com
+1) Not necessarily fanless, but that would be nice.
 
-On 11/29/2012 11:56 AM, Philippe Gerum wrote:
-> On 11/29/2012 11:53 AM, Jesper Christensen wrote:
->> Hello
+2) Don't need a timestamp. All I need is a precision interval. I want to be
+able to send a signal to a device, and read a measurement exactly 11 us (or
+5 us, or 17 us, or 31 us, etc.) later, plus or minus no more than about 1
+us. <1 us precision would be better, but I think for now 1 us resolution is
+sufficient. Reliably, repeatably.
+
+3) The client can stick stuff on the PC/104, but would prefer to have GPIB
+and USB2 on-board.
+
+4) I've go some inquiry emails out to a couple of vendors, including
+Advantech. I may be getting some evaluation boards Real Soon Now to play
+with.
+
+Interesting observation about ICOP boards having a problem with latency
+once an hour. Might be able to deal with that by not scheduling a test
+during the high-latency period. Also, since the intervals I'm interested in
+are short (and there should be nothing else going on), I could sit and spin
+while waiting for completion with interrupts off. Although my understanding
+is that there are some interrupts you can't turn off.
+
+I'm wondering about the use of a dual core CPU. Can I run one core with
+(most) interrupts off, while running the other normally?
+
+Anybody know if Xenomai works with DSL (Damned Small Linux -- a somewhat
+unfortunate name)?
+
+All of the real-time stuff I've done to date didn't have an OS at all (I
+wrote my own cooperative multitasker), so I'm a bit new at using an RTOS at
+this level. I would welcome suggestions for reading material on the subject.
+
+On Fri, Oct 26, 2012 at 7:38 AM, Nicholas Mc Guire der.herr@hofr.at wrote:
+
+> On Fri, 26 Oct 2012, Howard Lee Harkness wrote:
+>
+> > I have a client requirement for a system that can handle hard real time
+> > with precision timing, and I'm looking for recommendations for a SBC to
+> > support it. Here's what is needed:
+> >
+> > 1) x86 architecture
+>
+> fanless ?
+>
+> > 2) support for Linux (I will probably be using Xenomai)
+> > 3) precision timer with 1 us resolution
+>
+> many systems will be able to give you a timer reolution of <=1us
+> but there is no system that will bee able to timstamp an event with
+> that precission - that is any timestamp you get will have an
+> uncertenty atleast in the range of a few microseconds to a few
+> tens of microseconds (thats independent of using Xenomai, Preept-RT
+> or RTAI)
+>
+> > 4) PC/104 bus
+> > 5) lots of I/O (USB 2, I2C, SPI, GPIB, etc)
+> >
+> > Anybody here have any experience with a board that has all this?
+>
+> it does to some extent depend on the "etc" of the "lots of I/O" unless you
+> are good with it all being stacked on the PC/104.
+>
+> you might want to look at the boards in the http:/www.OSADL.org/QA,
+> unfortunately not xenomai based systems in the farm but the jitter/latency
+> numbers will most likely hold for Xenomai based systems with negligable
+> offsets.
+>
+> thx!
+> hofrat
+>
+
+On Fri, Oct 26, 2012 at 7:38 AM, Giampaolo Bellini <iw2lsi@gmail.com> wrote:
+
+> Hello Howard
+>
+> I'll suggest you to use an Advantech board... for example a PCM3362 or a
+> PCM-9562... as I'm succesfully using these cards with RTAI...
+>
+> In these years I've test also other boards like ICOP and IEI (IEI Nova
+> 9452) but falls in trouble with them... ICOP's boards are very low cost but
+> seems to have a hard-coded MTBF routine that results in long latencies
+> exactly every hour, IEI Nova maybe a buggy BIOS... not sure...
+>
+>    Best Regards,
+>
+>              Giampaolo
+>
+>
+> 2012/10/26 Howard Lee Harkness <howard.lee.harkness@gmail.com>
+>
+>> I have a client requirement for a system that can handle hard real time
+>> with precision timing, and I'm looking for recommendations for a SBC to
+>> support it. Here's what is needed:
 >>
->> I was wondering if (and i have a feeling i already know the answer) it
->> is a no-go to call rtdm_mutex_lock from a rtdm timer handler? I've just
->> discovered that is what we do, and i have a feeling it is causing
->> trouble (most of the time it seems to work however).
+>> 1) x86 architecture
+>> 2) support for Linux (I will probably be using Xenomai)
+>> 3) precision timer with 1 us resolution
+>> 4) PC/104 bus
+>> 5) lots of I/O (USB 2, I2C, SPI, GPIB, etc)
 >>
-> 
-> no go indeed. As soon as the mutex is contented, an attempt is made to
-> put the caller to sleep, which can't be done over an IRQ context. So the
-> situation is essentially, a mess.
-> 
+>> Anybody here have any experience with a board that has all this?
+>> --
+>> Howard Lee Harkness
+>> (214) 390-4896
+>> _______________________________________________
+>> Xenomai mailing list
+>> Xenomai@xenomai.org
+>> http://www.xenomai.org/mailman/listinfo/xenomai
+>>
+>
+>
 
+-- 
+Howard Lee Harkness
+(214) 390-4896
