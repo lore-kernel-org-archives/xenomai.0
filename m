@@ -1,5 +1,5 @@
-Message-ID: <5092A5BC.3090103@gmail.com>
-Date: Thu, 01 Nov 2012 16:39:24 +0000
+Message-ID: <5092AAC3.5050900@gmail.com>
+Date: Thu, 01 Nov 2012 17:00:51 +0000
 From: Stefan Videv <videvstefan@gmail.com>
 MIME-Version: 1.0
 References: <5092984A.5050907@gmail.com>
@@ -18,8 +18,6 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
-
-
 
 On 11/01/2012 04:32 PM, Gilles Chanteperdrix wrote:
 > Stefan Videv wrote:
@@ -52,8 +50,41 @@ On 11/01/2012 04:32 PM, Gilles Chanteperdrix wrote:
 > order for this script to produce the correct flags (and as explained if you
 > read xeno-config help) the DESTDIR environment variable needs to be set (to
 > /media/rootfs if I understand correctly).
-I suspected as much, but was not sure exactly what I should set DESTDIR 
-to. Thanks!
+After a quick attempt, things are looking better with DESTDIR. However, 
+it still gives errors:
+
+arm-linux-gnueabi-gcc -I/media/rootfs/usr/xenomai/include -D_GNU_SOURCE 
+-D_REENTRANT -D__XENO__   -lnative -L/media/rootfs/usr/xenomai/lib 
+-lxenomai -lpthread -lrt  -Xlinker -rpath -Xlinker 
+/media/rootfs/usr/xenomai/lib  trivial-periodic.c   -o trivial-periodic
+/tmp/ccZ8pOKK.o: In function `demo':
+trivial-periodic.c:(.text+0x1e): undefined reference to 
+`rt_task_set_periodic'
+trivial-periodic.c:(.text+0x22): undefined reference to `rt_timer_read'
+trivial-periodic.c:(.text+0x2e): undefined reference to 
+`rt_task_wait_period'
+trivial-periodic.c:(.text+0x32): undefined reference to `rt_timer_read'
+/tmp/ccZ8pOKK.o: In function `main':
+trivial-periodic.c:(.text+0x10c): undefined reference to `rt_task_create'
+trivial-periodic.c:(.text+0x124): undefined reference to `rt_task_start'
+trivial-periodic.c:(.text+0x134): undefined reference to `rt_task_delete'
+collect2: ld returned 1 exit status
+make[1]: *** [trivial-periodic] Error 1
+make[1]: Leaving directory 
+`/home/stefan/roosenXenomaiBone/xenomai-2.6.1/examples/native'
+
+However, if the above command is modified to look like this:
+
+arm-linux-gnueabi-gcc -I/media/rootfs/usr/xenomai/include -D_GNU_SOURCE 
+-D_REENTRANT -D__XENO__   -lnative -L/media/rootfs/usr/xenomai/lib 
+-lxenomai -lpthread -lrt  -Xlinker -rpath -Xlinker 
+/media/rootfs/usr/xenomai/lib  trivial-periodic.c   -o trivial-periodic 
+-lnative -lpthread -lxenomai
+
+It works just fine. How can I fix this in the Makefile, or am I still 
+doing something wrong?
+
+Thanks!
 
 >
 > Anyway, the examples are examples, to show you how to use Xenomai API and
@@ -64,9 +95,5 @@ to. Thanks!
 >
 >
 >
-I am trying to compile the examples in order to figure out exactly how I 
-should compile the little Xenomai RTDM module I've just written.
-
--- Stefan
 
 
