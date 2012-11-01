@@ -1,9 +1,5 @@
-Message-ID: <5f41a7bfa4c163e59b393ac2067200e6.squirrel@www.xenomai.org>
-In-Reply-To: <5092AAC3.5050900@gmail.com>
-References: <5092984A.5050907@gmail.com>
-	<984605f116e3f118be8a39540ec40a64.squirrel@www.xenomai.org>
-	<5092AAC3.5050900@gmail.com>
-Date: Thu, 1 Nov 2012 18:03:23 +0100
+Message-ID: <a81ced276a31df626d584233b83aeb10.squirrel@www.xenomai.org>
+Date: Thu, 1 Nov 2012 18:04:13 +0100
 From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 Content-Type: text/plain;charset=iso-8859-1
@@ -19,6 +15,7 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Stefan Videv <videvstefan@gmail.com>
 Cc: xenomai@xenomai.org
+
 
 
 Stefan Videv wrote:
@@ -37,45 +34,45 @@ Stefan Videv wrote:
 >>> make XENO=/media/rootfs/usr/xenomai/ ARCH=arm-linux-gnueabi-
 >>> KSRC=/media/rootfs/usr/include
 >>>
->>> where /media/rootfs/usr/xenomai is where xenomai is installed on the SD
->>> card that "powers" my embedded system, arm-linux-gnueabi- is the cross
->>> compiler chain I have running on my virtual box, and finally
->>> /media/rootfs/usr/include is where I installed the header files for the
->>> kernel that is running on my embedded board.
+>>> where /media/rootfs/usr/xenomai is where xenomai is installed on the
+SD card that "powers" my embedded system, arm-linux-gnueabi- is the
+cross compiler chain I have running on my virtual box, and finally
+>>> /media/rootfs/usr/include is where I installed the header files for
+the kernel that is running on my embedded board.
 >>>
 >>> To me it seems that the XENO parameter is ignored altogether (same for
->>> the KSRC it seems) which results in the particular included .h files
->>> not
+the KSRC it seems) which results in the particular included .h files
+not
 >>> being found on the path. Do I have any options rather than compiling
->>> manually?
+manually?
 >> The problem is that you are cross-compiling, the instructions apply to
->> native compilation. The XENO parameter is not ignored, but as explained
->> on
->> the page you linked its role is to locate the xeno-config script. But in
->> order for this script to produce the correct flags (and as explained if
->> you
+native compilation. The XENO parameter is not ignored, but as explained
+on
+>> the page you linked its role is to locate the xeno-config script. But
+in order for this script to produce the correct flags (and as explained
+if you
 >> read xeno-config help) the DESTDIR environment variable needs to be set
->> (to
+(to
 >> /media/rootfs if I understand correctly).
 > After a quick attempt, things are looking better with DESTDIR. However,
-> it still gives errors:
+it still gives errors:
 >
 > arm-linux-gnueabi-gcc -I/media/rootfs/usr/xenomai/include -D_GNU_SOURCE
-> -D_REENTRANT -D__XENO__   -lnative -L/media/rootfs/usr/xenomai/lib
-> -lxenomai -lpthread -lrt  -Xlinker -rpath -Xlinker
+-D_REENTRANT -D__XENO__   -lnative -L/media/rootfs/usr/xenomai/lib
+-lxenomai -lpthread -lrt  -Xlinker -rpath -Xlinker
 > /media/rootfs/usr/xenomai/lib  trivial-periodic.c   -o trivial-periodic
-> /tmp/ccZ8pOKK.o: In function `demo':
+/tmp/ccZ8pOKK.o: In function `demo':
 > trivial-periodic.c:(.text+0x1e): undefined reference to
 > `rt_task_set_periodic'
 > trivial-periodic.c:(.text+0x22): undefined reference to `rt_timer_read'
-> trivial-periodic.c:(.text+0x2e): undefined reference to
+trivial-periodic.c:(.text+0x2e): undefined reference to
 > `rt_task_wait_period'
 > trivial-periodic.c:(.text+0x32): undefined reference to `rt_timer_read'
-> /tmp/ccZ8pOKK.o: In function `main':
-> trivial-periodic.c:(.text+0x10c): undefined reference to `rt_task_create'
-> trivial-periodic.c:(.text+0x124): undefined reference to `rt_task_start'
-> trivial-periodic.c:(.text+0x134): undefined reference to `rt_task_delete'
-> collect2: ld returned 1 exit status
+/tmp/ccZ8pOKK.o: In function `main':
+> trivial-periodic.c:(.text+0x10c): undefined reference to
+`rt_task_create' trivial-periodic.c:(.text+0x124): undefined reference
+to `rt_task_start' trivial-periodic.c:(.text+0x134): undefined reference
+to `rt_task_delete' collect2: ld returned 1 exit status
 > make[1]: *** [trivial-periodic] Error 1
 > make[1]: Leaving directory
 > `/home/stefan/roosenXenomaiBone/xenomai-2.6.1/examples/native'
@@ -83,18 +80,23 @@ Stefan Videv wrote:
 > However, if the above command is modified to look like this:
 >
 > arm-linux-gnueabi-gcc -I/media/rootfs/usr/xenomai/include -D_GNU_SOURCE
-> -D_REENTRANT -D__XENO__   -lnative -L/media/rootfs/usr/xenomai/lib
-> -lxenomai -lpthread -lrt  -Xlinker -rpath -Xlinker
+-D_REENTRANT -D__XENO__   -lnative -L/media/rootfs/usr/xenomai/lib
+-lxenomai -lpthread -lrt  -Xlinker -rpath -Xlinker
 > /media/rootfs/usr/xenomai/lib  trivial-periodic.c   -o trivial-periodic
-> -lnative -lpthread -lxenomai
+-lnative -lpthread -lxenomai
 >
 > It works just fine. How can I fix this in the Makefile, or am I still
-> doing something wrong?
+doing something wrong?
 
 This has been reported several times. I proposed a patch in the following
 mail:
 http://www.xenomai.org/pipermail/xenomai/2012-October/026561.html
 But since nobody reported whether it fixes anything, it is not merged yet.
+
+
+-- 
+                    Gilles.
+
 
 
 -- 
