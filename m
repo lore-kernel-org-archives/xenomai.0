@@ -1,32 +1,16 @@
-Message-ID: <50882C25.9030105@xenomai.org>
-Date: Wed, 24 Oct 2012 19:57:57 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <5094066F.80501@gmail.com>
+Date: Fri, 02 Nov 2012 17:44:15 +0000
+From: Stefan Videv <videvstefan@gmail.com>
 MIME-Version: 1.0
-References: <1349212116.21898.108.camel@ENG-09-LX.emacinc.com>	
-	<506B5D6B.80005@xenomai.org> <506B5E0E.5050900@xenomai.org>	
-	<1349369822.3775.107.camel@ENG-09-LX.emacinc.com>	
-	<506DC2DA.5000105@xenomai.org> <506E9510.7090105@xenomai.org>	
-	<1349462858.26881.43.camel@ENG-09-LX.emacinc.com>	
-	<506F402A.9030102@xenomai.org>	
-	<1349473634.26881.221.camel@ENG-09-LX.emacinc.com>	
-	<506F6283.2040901@xenomai.org>	
-	<5afa3b9a7c7daf116f8284b4f255227e.squirrel@mail.emacinc.com>	
-	<506FFDDC.60104@xenomai.org>	
-	<1349816136.25350.426.camel@ENG-09-LX.emacinc.com>	
-	<50749349.5070900@xenomai.org>	
-	<1350681759.1282.88.camel@ENG-09-LX.emacinc.com>	
-	<5081FF74.4010109@xenomai.org>	
-	<1350933768.17153.16.camel@ENG-09-LX.emacinc.com>	
-	<50859D99.5040009@xenomai.org>	
-	<1350934476.17153.20.camel@ENG-09-LX.emacinc.com>	
-	<5085B6BC.8060906@xenomai.org>	
-	<1351006344.2975.60.camel@ENG-09-LX.emacinc.com>	
-	<5086FA29.6010008@xenomai.org>
-	<1351100212.25888.299.camel@ENG-09-LX.emacinc.com>
-In-Reply-To: <1351100212.25888.299.camel@ENG-09-LX.emacinc.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] Adeos I-Pipe patch problem on vendor-specific kernel
+References: <a81ced276a31df626d584233b83aeb10.squirrel@www.xenomai.org>
+	<5092AEB3.2070009@gmail.com>
+	<4b27818deb6c26a74a2ab839cb07f718.squirrel@www.xenomai.org>
+	<5093F975.9060807@gmail.com>
+	<d0e366dc91d7b37cd45f8b3a550ea2fd.squirrel@www.xenomai.org>
+In-Reply-To: <d0e366dc91d7b37cd45f8b3a550ea2fd.squirrel@www.xenomai.org>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Compiling the Xenomai examples
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -35,74 +19,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Wayne Warren <wwarren@emacinc.com>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On 10/24/2012 07:36 PM, Wayne Warren wrote:
-> By the way...
-> 
-> The dmesg function in Documentation/kdump/gdbmacros.txt is very slow
-> about printing out the log buffer, so we figured out a somewhat hackish
-> way to get the current log_buffer contents faster. This example assumes
-> that the value of "logged_chars" is 3513:
-> 
-> (gdb) printf "%.3513s", log_buf
-> <5>[    0.000000] Linux version 2.6.37.6+ (wayne@ENG-09-LX) (gcc version 4.3.1 (GCC) ) #31 Wed Oct 24 09:17:39 CDT 2012                                      │············································································································
-> <4>[    0.000000] CPU: ARMv7 Processor [411fc087] revision 7 (ARMv7), cr=10c53c7f                                                                            │············································································································
-> <4>[    0.000000] CPU: VIPT nonaliasing data cache, VIPT nonaliasing instruction cache                                                                       │············································································································
-> <4>[    0.000000] Machine: EMAC SOM-3517                                                                                                                     │············································································································
-> <6>[    0.000000] Reserving 4194304 bytes SDRAM for VRAM                                                                                                     │············································································································
-> <4>[    0.000000] Memory policy: ECC disabled, Data cache writeback                                                                                          │············································································································
-> <6>[    0.000000] AM3517 ES1.1 (l2cache sgx neon isp )                                                                                                       │············································································································
-> <6>[    0.000000] SRAM: Mapped pa 0x40200000 to va 0xfe400000 size: 0x10000                                                                                  │············································································································
-> <7>[    0.000000] On node 0 totalpages: 64512                                                                                                                │············································································································
-> <7>[    0.000000] free_area_init_node: node 0, pgdat c07e060c, node_mem_map c0d95000                                                                         │············································································································
-> <7>[    0.000000]   Normal zone: 512 pages used for memmap                                                                                                   │············································································································
-> <7>[    0.000000]   Normal zone: 0 pages reserved                                                                                                            │············································································································
-> <7>[    0.000000]   Normal zone: 64000 pages, LIFO batch:15                                                                                                  │············································································································
-> <7>[    0.000000] pcpu-alloc: s0 r0 d32768 u32768 alloc=1*32768                                                                                              │············································································································
-> <7>[    0.000000] pcpu-alloc: [0] 0                                                                                                                          │············································································································
-> <4>[    0.000000] Built 1 zonelists in Zone order, mobility grouping on.  Total pages: 64000                                                                 │············································································································
-> <5>[    0.000000] Kernel command line: console=ttyO2,115200n8 root=/dev/mmcblk0p2 rw rootfstype=ext3 rootwait                                                │············································································································
-> <6>[    0.000000] PID hash table entries: 1024 (order: 0, 4096 bytes)                                                                                        │············································································································
-> <6>[    0.000000] Dentry cache hash table entries: 32768 (order: 5, 131072 bytes)                                                                            │············································································································
-> <6>[    0.000000] Inode-cache hash table entries: 16384 (order: 4, 65536 bytes)                                                                              │············································································································
-> <6>[    0.000000] Memory: 252MB = 252MB total                                                                                                                │············································································································
-> <5>[    0.000000] Memory: 241840k/241840k available, 20304k reserved, 0K highmem                                                                             │············································································································
-> <5>[    0.000000] Virtual kernel memory layout:                                                                                                              │············································································································
-> <5>[    0.000000]     vector  : 0xffff0000 - 0xffff1000   (   4 kB)                                                                                          │············································································································
-> <5>[    0.000000]     fixmap  : 0xfff00000 - 0xfffe0000   ( 896 kB)                                                                                          │············································································································
-> <5>[    0.000000]     DMA     : 0xffc00000 - 0xffe00000   (   2 MB)                                                                                          │············································································································
-> <5>[    0.000000]     vmalloc : 0xd0800000 - 0xf8000000   ( 632 MB)                                                                                          │············································································································
-> <5>[    0.000000]     lowmem  : 0xc0000000 - 0xd0000000   ( 256 MB)                                                                                          │············································································································
-> <5>[    0.000000]     modules : 0xbf000000 - 0xc0000000   (  16 MB)                                                                                          │············································································································
-> <5>[    0.000000]       .init : 0xc0008000 - 0xc003f000   ( 220 kB)                                                                                          │············································································································
-> <5>[    0.000000]       .text : 0xc003f000 - 0xc062b828   (6067 kB)                                                                                          │············································································································
-> <5>[    0.000000]       .data : 0xc062c000 - 0xc07e4920   (1763 kB)                                                                                          │············································································································
-> <6>[    0.000000] NR_IRQS:396                                                                                                                                │············································································································
-> <6>[    0.000000] Clocking rate (Crystal/Core/MPU): 26.0/332/600 MHz                                                                                         │············································································································
-> <4>[    0.000000] omap_hwmod: i2c1: softreset failed (waited 10000 usec)                                                                                     │············································································································
-> <4>[    0.000000] omap_hwmod: i2c2: softreset failed (waited 10000 usec)                                                                                     │············································································································
-> <4>[    0.000000] omap_hwmod: i2c3: softreset failed (waited 10000 usec)                                                                                     │············································································································
-> <6>[    0.000000] Reprogramming SDRC clock to 332000000 Hz                                                                                                   │············································································································
-> <3>[    0.000000] dpll3_m2_clk rate change failed: -22                                                                                                       │············································································································
-> <6>[    0.000000] IRQ: Found an INTC at 0xfa200000 (revision 4.0) with 96 interrupts                                                                         │············································································································
-> <6>[    0.000000] Total of 96 interrupts on 1 active controller                                                                                              │············································································································
-> <6>[    0.000000] GPMC revision 5.0                                                                                                                          │············································································································
-> <4>[    0.000000] Trying to install interrupt handler for IRQ388                                                                                             │············································································································
-> <4>[    0.000000] Trying to install interrupt handler for IRQ389                                                                                             │············································································································
-> <4>[    0.000000] Trying to install interrupt handler for IRQ390                                                                                             │············································································································
-> <4>[    0.000000] Trying to install interrupt handler for IRQ391                                                                                             │············································································································
-> <4>[    0.000000] Trying to install interrupt handler for IRQ392                                                                                             │············································································································
-> <4>[    0.000000] Trying to install interrupt handler for IRQ393                                                                                             │············································································································
-> <4>[    0.000000] Trying to install interrupt handler for IRQ394                                                                                             │············································································································
-> <4>[    0.000000] Trying to install interrupt handler for IRQ395                                                                                             │············································································································
-> <6>[    0.000000] OMAP clockevent source: GPTIMER2 at 13000000 Hz                                                                                            │············································································································
-> <6>[    0.000000] I-pipe, 13.000 MHz clocksource                                                                                                             │············································································································
-> <6>[    0.000000] I-pipe 1.18-03: pipeline enabled.         
+On 11/02/2012 05:13 PM, Gilles Chanteperdrix wrote:
+> Stefan Videv wrote:
+>> make XENO=/media/rootfs/usr/xenomai/ ARCH=arm-linux-gnueabi-
+>> KSRC=/media/rootfs/usr/include DESTDIR=/media/rootfs
+> Should be ARCH=arm CROSS_COMPILE=arm-none-linux-gnueabi
+> and KSRC should be the path to the kernel sources.
+>
+Running the above (with the correction) produces the following:
 
-So, I-pipe tsc not registered, this fits the bill.
+sed: can't read /media/rootfs/usr/include/Makefile: No such file or 
+directory
 
--- 
-					    Gilles.
+make -C /media/rootfs/usr/include 
+SUBDIRS=/home/stefan/xenomai-2.6.1/examples/rtdm/driver-api modules
+make[2]: Entering directory `/media/rootfs/usr/include'
+make[2]: *** No rule to make target `modules'. Stop.
+make[2]: Leaving directory `/media/rootfs/usr/include'
+make[1]: *** [all] Error 2
+make[1]: Leaving directory 
+`/home/stefan/xenomai-2.6.1/examples/rtdm/driver-api'
+sed: can't read /media/rootfs/usr/include/Makefile: No such file or 
+directory
+make[1]: Entering directory `/home/stefan/xenomai-2.6.1/examples/posix'
+make -C /media/rootfs/usr/include ARCH=arm 
+CROSS_COMPILE=arm-linux-gnueabi 
+SUBDIRS=/home/stefan/roosenXenomaiBone/xenomai-2.6.1/examples/posix modules
+make[2]: Entering directory `/media/rootfs/usr/include'
+make[2]: *** No rule to make target `modules'. Stop.
+make[2]: Leaving directory `/media/rootfs/usr/include'
+make[1]: *** [all] Error 2
 
