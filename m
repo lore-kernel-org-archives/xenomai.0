@@ -1,11 +1,11 @@
 From: Robert Berger <gmane@reliableembeddedsystems.com>
-Date: Sat, 03 Nov 2012 23:49:51 +0200
-Message-ID: <5095917F.9090707@reliableembeddedsystems.com>
-References: <k73ua9$nf5$1@ger.gmane.org> <50958BA3.1000903@xenomai.org>
+Date: Sun, 04 Nov 2012 00:13:02 +0200
+Message-ID: <509596EE.5010307@reliableembeddedsystems.com>
+References: <k73ua9$nf5$1@ger.gmane.org> <50958E65.9090106@xenomai.org>
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-In-Reply-To: <50958BA3.1000903@xenomai.org>
+In-Reply-To: <50958E65.9090106@xenomai.org>
 Subject: Re: [Xenomai] Beagle-XM - ipipe-core-3.2.21
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -17,24 +17,22 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Hi,
+Hi Gilles,
 
-On 11/03/2012 11:24 PM, Gilles Chanteperdrix wrote:
+On 11/03/2012 11:36 PM, Gilles Chanteperdrix wrote:
+> Please disable CONFIG_SMP. The I-pipe for 3.2.21 does not support
+> SMP_ON_UP yet, it has only be added to 3.4.
 
-> What version of the Linux kernel? Is it a vanilla 3.2.21?
+Spot on! Thanks a lot!
 
-Yes from
-git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git
+Now I have a booting kernel, which even takes the rootfs from nfs.
 
 Regards,
 
 Robert
 
 
-..."Speaking as a recovering physics grad student, I think the situation
-might best be best summed up by Feynmann's own description of Dirac's
-book on Quantum Mechanics: "We all quote this book, but none of us have
-read shit.""
+..."Software is like sex, it's better when it's free"
 
 My public pgp key is available,at:
 http://pgp.mit.edu:11371/pks/lookup?op=get&search=0x90320BF1
