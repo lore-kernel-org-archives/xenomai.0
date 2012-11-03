@@ -1,11 +1,11 @@
-Message-ID: <c96dc71af67fe20655fa9785b52707dc.squirrel@www.xenomai.org>
+Message-ID: <2b4941d6b09c5560d4074bc644ded41d.squirrel@www.xenomai.org>
 In-Reply-To: <CAOiXNkA8u2TjB7FXoJh7opxasgCvnuFkuqOEPZ=tCMz-f-HMpQ@mail.gmail.com>
 References: <CAOiXNkCw3e4mK7XeNif2MM5Ub2__xK8UKxaPNRzzMQUbWdhYRg@mail.gmail.com>
 	<ff881ad96344018ff2cbf9f8211d7603.squirrel@www.xenomai.org>
 	<CAOiXNkBMKNbXOAThav8L9esyRMLBHPk7uFg5fRPhifR_Sg4rXA@mail.gmail.com>
 	<9d3ef55df641c8657ce09c6f6e023e4a.squirrel@www.xenomai.org>
 	<CAOiXNkA8u2TjB7FXoJh7opxasgCvnuFkuqOEPZ=tCMz-f-HMpQ@mail.gmail.com>
-Date: Sat, 3 Nov 2012 15:08:20 +0100
+Date: Sat, 3 Nov 2012 15:09:12 +0100
 From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 Content-Type: text/plain;charset=iso-8859-1
@@ -41,15 +41,9 @@ Andrey Nechypurenko wrote:
 > -D__XENO__ -L/home/bbcross/rootfs/usr/lib -lxenomai -lnative
 > trivial-periodic.c -o trivial-periodic
 
-If your compiler compiles for thumb by default, please add -marm on the
-command line.
+It should be -lnative -lxenomai, please use the xeno-config to obtain the
+flags, do not hardcode them.
 
->
-> The resulting file runs as expected from the serial console, but
-> rt_task_create() fails with the same -EPERM error if running over ssh
-> as root. Do you see anything wrong with the command line above?
-
-Could you try to run the latency test without xeno-test ?
 
 -- 
                     Gilles.
