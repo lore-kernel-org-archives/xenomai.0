@@ -1,17 +1,16 @@
-Message-ID: <fb404ffa94aa6c14f7840621092dbdda.squirrel@www.xenomai.org>
-In-Reply-To: <A34DBFCB-9CC6-42D6-91E7-58A92F4C3CA4@mah.priv.at>
-References: <22700C72-58CD-4B92-B397-43DFC7943F14@mah.priv.at>
-	<c5618ea63b6ec1da7d2fa937467d9f4c.squirrel@www.xenomai.org>
-	<FC582130-25A2-4C10-BD94-1034E2768B8D@mah.priv.at>
-	<b6692aadc37f290753041c6a07ba76f4.squirrel@www.xenomai.org>
-	<A34DBFCB-9CC6-42D6-91E7-58A92F4C3CA4@mah.priv.at>
-Date: Sat, 3 Nov 2012 16:08:06 +0100
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain;charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] Question on rt_timer_tsc() vs rt_timer_read()
- semantics
+In-Reply-To: <2b4941d6b09c5560d4074bc644ded41d.squirrel@www.xenomai.org>
+References: <CAOiXNkCw3e4mK7XeNif2MM5Ub2__xK8UKxaPNRzzMQUbWdhYRg@mail.gmail.com>
+	<ff881ad96344018ff2cbf9f8211d7603.squirrel@www.xenomai.org>
+	<CAOiXNkBMKNbXOAThav8L9esyRMLBHPk7uFg5fRPhifR_Sg4rXA@mail.gmail.com>
+	<9d3ef55df641c8657ce09c6f6e023e4a.squirrel@www.xenomai.org>
+	<CAOiXNkA8u2TjB7FXoJh7opxasgCvnuFkuqOEPZ=tCMz-f-HMpQ@mail.gmail.com>
+	<2b4941d6b09c5560d4074bc644ded41d.squirrel@www.xenomai.org>
+Date: Sat, 3 Nov 2012 19:42:40 +0100
+Message-ID: <CAOiXNkC=C6A=Mfhqx2rjg61D9UaOB55bnm-n5mOArsmpXdU-sg@mail.gmail.com>
+From: Andrey Nechypurenko <andreynech@googlemail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: Re: [Xenomai] rt_task_create fails when running over ssh
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,47 +19,55 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Michael Haberler <mail17@mah.priv.at>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-
-Michael Haberler wrote:
-> sorry to be a pain..
+On 3 November 2012 15:09, Gilles Chanteperdrix
+<gilles.chanteperdrix@xenomai.org> wrote:
 >
->>> that's all, and I'll be happy ever after even after the merge with
->>> RT_PREEMPT ;-?
+> Andrey Nechypurenko wrote:
+>>> Ok, but there is no code in xenomai which accesses or relies on the
+>>> console
+>>> could you try to run the latency test from the ssh console to see if you
+>>> get the same issue?
 >>
->> Yes, that is the point, the port of RTDM over the Linux kernel API
->> already
->> exists, though AFAIK it is not merged yet in the xenomai-forge tree.
+>> xeno-test works just fine. So I assume that it is related to how I am
+>> compiling the example. I've tried trivial-periodic.c using the
+>> following command to compile:
+>>
+>> ARCH=arm CROSS_COMPILE=arm-angstrom-linux-gnueabi- CFLAGS="
+>> -march=armv7-a -fno-tree-vectorize -mthumb-interwork
+>> -mfloat-abi=softfp -mfpu=neon -mtune=cortex-a8 " LOCALVERSION=""
+>> arm-angstrom-linux-gnueabi-gcc
+>> -I/home/bbcross/rootfs/usr/include/xenomai/ -D_GNU_SOURCE -D_REENTRANT
+>> -D__XENO__ -L/home/bbcross/rootfs/usr/lib -lxenomai -lnative
+>> trivial-periodic.c -o trivial-periodic
 >
-> porting native->RTDM: mapping the task and timer RTDM API is fairly clear
-> to me
->
-> the fuzzy part: I need shared memory segments and semaphores allocated in
-> kernel space which eventually are picked up in/used from userland between
-> kernel and user process
->
-> so far I used the rt_heap API for shm, and
-> rt_sem_create/rt_sem_delete/rt_sem_p/rt_sem_v, which worked fine
->
-> I'm completely at loss how to make that work with rtdm_sem* and
-> rtdm_mmap_to_user
->
-> any decent examples or hints how to do this? the examples in the xenomai
-> tree dont help me with that
 
-With the RTDM API, what you implement is a driver, so, the communication
-with user-space happens through the standard open/read/write/ioctl services.
-So, for instance, to get user-space to wait for a semaphore, you would
-implement a read or ioctl method in your driver which waits for an RTDM
-event.
+> Could you try to run the latency test without xeno-test ?
 
-In the same vein, rtdm_mmap_to_user is meant to be used in the
-implementation of a driver ioctl.
+Seams like it does not work in the similar way:
 
+# latency -t 0
+== Sampling period: 1000 us
+== Test mode: periodic user-mode task
+== All results in microseconds
+latency: failed to create latency task, code -1
+warming up...
 
--- 
-                    Gilles.
+and then it exits. -t 1 and -t 2 works fine.
 
+> It should be -lnative -lxenomai
+
+Changing to -lnative -lxenomai does not help
+
+> please use the xeno-config to obtain the flags, do not hardcode them.
+
+I am cross-compiling and I did not figured out yet how to convince
+xeno-config to pick right include and library directories. It generats
+-I/usr/include and -L/usr/lib which is not where actual libraries for
+cross-compilation are.
+
+Thank you,
+Andrey.
 
