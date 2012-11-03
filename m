@@ -1,15 +1,14 @@
-Message-ID: <527ab539f4e846b0f0f03fb5cf3b8f14.squirrel@www.xenomai.org>
-In-Reply-To: <CF928888-710A-475C-B58A-D369B8B3C228@mah.priv.at>
+Mime-Version: 1.0 (Apple Message framework v1283)
+Content-Type: text/plain; charset=iso-8859-1
+From: Michael Haberler <mail17@mah.priv.at>
+In-Reply-To: <c5618ea63b6ec1da7d2fa937467d9f4c.squirrel@www.xenomai.org>
+Date: Sat, 3 Nov 2012 12:41:23 +0100
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <FC582130-25A2-4C10-BD94-1034E2768B8D@mah.priv.at>
 References: <22700C72-58CD-4B92-B397-43DFC7943F14@mah.priv.at>
 	<c5618ea63b6ec1da7d2fa937467d9f4c.squirrel@www.xenomai.org>
-	<CF928888-710A-475C-B58A-D369B8B3C228@mah.priv.at>
-Date: Sat, 3 Nov 2012 12:03:58 +0100
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-Content-Type: text/plain;charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
 Subject: Re: [Xenomai] Question on rt_timer_tsc() vs rt_timer_read()
- semantics
+	semantics
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,30 +17,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Michael Haberler <mail17@mah.priv.at>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
 
-Michael Haberler wrote:
-> - the timedelta module just samples with rtapi_get_time():
->
-> http://git.mah.priv.at/gitweb/emc2-dev.git/blob/5979d84f31c0ef8e9dccdb26426732d0b83f3a87:/src/hal/components/timedelta.comp
-> (this _is_ a kernel module, it's in preprocessor language).
->
-> rtapi_get_time() in turn calls rt_timer_read() here:
-> http://git.mah.priv.at/gitweb/emc2-dev.git/blob/5979d84f31c0ef8e9dccdb26426732d0b83f3a87:/src/rtapi/xenomai_kernel_rtapi.c#l657
->
->
-> whew, I think I covered it. Is this still comprehensible ;-?
+Gilles,
+Am 03.11.2012 um 10:37 schrieb Gilles Chanteperdrix:
+>=20
+> http://www.xenomai.org/index.php/I-pipe:Tracer
 
-That is a lot to check, so, I am afraid it will be hard to be of any help,
-the tracer is probably your only hope.
+thanks for the version hint - it was all in place, just needed to =
+configure - building now.
 
-Just a minor nit though, if you intend to run LinuxCNC on anything else
-than x86, you should replace rdtscll with rt_timer_tsc or __xn_rdtsc.
+> Also note that if LinuxCNC code runs in kernel-space, you should not =
+be
+> using the native API, but the RTDM API.
 
+I missed out that fineprint in the roadmap.. yes, these are kernel-space =
+threads
 
--- 
-                    Gilles.
+reading through the examples it occurs to me adapting to RTDM pretty =
+much only involves changing includes, the --skin=3Drtdm argument to =
+xeno-config, and changing the native rt_* calls to the next best rtdm_* =
+calls=20
 
+that's all, and I'll be happy ever after even after the merge with =
+RT_PREEMPT ;-?
+
+- Michael=
 
