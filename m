@@ -1,11 +1,11 @@
-Message-ID: <50958E65.9090106@xenomai.org>
-Date: Sat, 03 Nov 2012 22:36:37 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <k73ua9$nf5$1@ger.gmane.org>
-In-Reply-To: <k73ua9$nf5$1@ger.gmane.org>
-Content-Type: text/plain; charset=UTF-8
+From: Robert Berger <gmane@reliableembeddedsystems.com>
+Date: Sat, 03 Nov 2012 23:49:51 +0200
+Message-ID: <5095917F.9090707@reliableembeddedsystems.com>
+References: <k73ua9$nf5$1@ger.gmane.org> <50958BA3.1000903@xenomai.org>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
+In-Reply-To: <50958BA3.1000903@xenomai.org>
 Subject: Re: [Xenomai] Beagle-XM - ipipe-core-3.2.21
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -15,18 +15,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Robert Berger <gmane@reliableembeddedsystems.com>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 11/03/2012 09:20 PM, Robert Berger wrote:
+Hi,
 
-> more detailed info about Linux booting is here: http://pastebin.com/54bBuXQi
+On 11/03/2012 11:24 PM, Gilles Chanteperdrix wrote:
+
+> What version of the Linux kernel? Is it a vanilla 3.2.21?
+
+Yes from
+git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git
+
+Regards,
+
+Robert
 
 
-Please disable CONFIG_SMP. The I-pipe for 3.2.21 does not support
-SMP_ON_UP yet, it has only be added to 3.4.
+..."Speaking as a recovering physics grad student, I think the situation
+might best be best summed up by Feynmann's own description of Dirac's
+book on Quantum Mechanics: "We all quote this book, but none of us have
+read shit.""
+
+My public pgp key is available,at:
+http://pgp.mit.edu:11371/pks/lookup?op=get&search=0x90320BF1
 
 
--- 
-                                                                Gilles.
 
