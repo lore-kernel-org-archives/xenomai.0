@@ -14,8 +14,8 @@ References: <CAOiXNkCw3e4mK7XeNif2MM5Ub2__xK8UKxaPNRzzMQUbWdhYRg@mail.gmail.com>
 	<50969840.5010705@xenomai.org>
 	<CAOiXNkDY0aofK=woRrF8+Uh0LZVPjx8qVLB6DUVS+xhmKsyB3g@mail.gmail.com>
 	<5096A058.30204@xenomai.org>
-Date: Sun, 4 Nov 2012 18:14:05 +0100
-Message-ID: <CAOiXNkA36u_=B4KCgshbY_DN=PJ0hiX9PTWecJC+KjG817N3Yw@mail.gmail.com>
+Date: Sun, 4 Nov 2012 18:34:03 +0100
+Message-ID: <CAOiXNkBWwsrM09p7zL4v3FuMqrZvDAz=Fr1ULgs9DnWMuv7qCw@mail.gmail.com>
 From: Andrey Nechypurenko <andreynech@googlemail.com>
 Content-Type: text/plain; charset=ISO-8859-1
 Subject: Re: [Xenomai] rt_task_create fails when running over ssh
@@ -30,95 +30,18 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On 4 November 2012 18:05, Gilles Chanteperdrix
-<gilles.chanteperdrix@xenomai.org> wrote:
-> On 11/04/2012 05:43 PM, Andrey Nechypurenko wrote:
->
->> On 4 November 2012 17:30, Gilles Chanteperdrix
->> <gilles.chanteperdrix@xenomai.org> wrote:
->>> On 11/04/2012 05:13 PM, Andrey Nechypurenko wrote:
->>>
->>>> On 3 November 2012 22:34, Gilles Chanteperdrix
->>>> <gilles.chanteperdrix@xenomai.org> wrote:
->>>>> On 11/03/2012 10:32 PM, Andrey Nechypurenko wrote:
->>>>>
->>>>>>> Use the DESTDIR environment variable (you can look inside xeno-config to
->>>>>>> see how it works, it should be pretty obvious).
->>>>>>
->>>>>> Thanks for the hint. I'll definitely try. However I doubt that it
->>>>>> would solve the issue with rt_task_create() since I were actually
->>>>>> copy-pasting the output from xeno-config and only change the -I and -L
->>>>>> flags to reflect my directory structure.
->>>>>
->>>>>
->>>>> Yes, I also doubt that very much. What about the arm/thumb issue?
->>>>
->>>> I've run strace and found the following line in the output when
->>>> starting the programm over ssh:
->>>> sched_setscheduler(440, SCHED_FIFO, { 99 }) = -1 EPERM (Operation not permitted)
->>>> I assume, that this call is the part of rt_task_create(). In contrast,
->>>> the same call gets no errors if running in the serial console. Really
->>>> strange to me.
->>>>
->>>> My attempts to change corresponding priorities with ulimit command or
->>>> setrlimit() function does not solve the issue. So it seams like ssh
->>>> server limits some permissions somehow which causes rt_task_create()
->>>> to fail.
->>
->>> Did you check if your compiler compiles thumb code or arm code by default?
->>
->> objdump says: file format elf32-littlearm
->> and file says: ELF 32-bit LSB executable, ARM, version 1 (SYSV)
->
->
 > The result is the same with thumb code. In order to know if a binary is
 > thumb or arm, run objdump and check if the binary contains 16 bits
 > instructions.
->
->>
->>> You can run ulimit to check the current limits.
->>> And it would be interesting to run the "whoami" command or use getuid()
->>> in the program to check whether you are really running as the root user.
->>
->> $ ulimit -a
->
->
-> What about whoami or id (it would be nice if did not have to ask the
-> same questions 3 times)?
 
->From my *previous* post:
+Seams like there are no 16 bits instructions. I've also recompiled the
+binary with -marm and it behaves in the same way. So the only thing
+which allows the program to run from ssh console was the change in
+systemd.config file I mentioned in my previous post.
 
-printf("User id: %i\n", getuid()); <<<<<<<<< ist it what you were asking for?
-  getrlimit(RLIMIT_RTPRIO, &resource_limit);
-  printf("Previous limits: soft=%lld; hard=%lld\n",
-         (long long) resource_limit.rlim_cur, (long long)
-resource_limit.rlim_max);
+I know very little about systemd configuration, so probably it is not
+the best solution but it works for me.
 
-The output is:
-
-User id: 0 <<<<<<<<<<<<<<<<<<<<< ist it what you were asking for?
-Previous limits: soft=0; hard=0
-Max FIFO priority is: 99 .
- Setting max limit to 99
-
-As I found here: https://bugzilla.redhat.com/show_bug.cgi?id=655321
-----
-In the meantime, you can avoid the problem by disabling the cpu cgroup
-from /etc/systemd/system.conf. That is, change
-#DefaultControllers=cpu
-into
-DefaultControllers=
-----
-
-Changing systemd.conf as suggested above solved the problem.
-
-I am running
-# systemctl --version
-systemd 44
-angstrom
-+PAM +LIBWRAP -AUDIT -SELINUX +IMA +SYSVINIT -LIBCRYPTSETUP
-
-
-Thanks,
+--
 Andrey.
 
