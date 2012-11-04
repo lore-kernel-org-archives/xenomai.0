@@ -1,34 +1,12 @@
-From: Wayne Warren <wwarren@emacinc.com>
-In-Reply-To: <50882DD0.3030902@xenomai.org>
-References: <1349212116.21898.108.camel@ENG-09-LX.emacinc.com>
-	<1349369822.3775.107.camel@ENG-09-LX.emacinc.com>
-	<506DC2DA.5000105@xenomai.org> <506E9510.7090105@xenomai.org>
-	<1349462858.26881.43.camel@ENG-09-LX.emacinc.com>
-	<506F402A.9030102@xenomai.org>
-	<1349473634.26881.221.camel@ENG-09-LX.emacinc.com>
-	<506F6283.2040901@xenomai.org>
-	<5afa3b9a7c7daf116f8284b4f255227e.squirrel@mail.emacinc.com>
-	<506FFDDC.60104@xenomai.org>
-	<1349816136.25350.426.camel@ENG-09-LX.emacinc.com>
-	<50749349.5070900@xenomai.org>
-	<1350681759.1282.88.camel@ENG-09-LX.emacinc.com>
-	<5081FF74.4010109@xenomai.org>
-	<1350933768.17153.16.camel@ENG-09-LX.emacinc.com>
-	<50859D99.5040009@xenomai.org>
-	<1350934476.17153.20.camel@ENG-09-LX.emacinc.com>
-	<5085B6BC.8060906@xenomai.org>
-	<1351006344.2975.60.camel@ENG-09-LX.emacinc.com>
-	<5086FA29.6010008@xenomai.org>
-	<1351099930.25888.286.camel@ENG-09-LX.emacinc.com>
-	<50882782.50003@xenomai.org>
-	<1351101328.25888.330.camel@ENG-09-LX.emacinc.com>
-	<50882DD0.3030902@xenomai.org>
-Content-Type: text/plain; charset="UTF-8"
-Date: Wed, 24 Oct 2012 13:26:01 -0500
-Message-ID: <1351103161.25888.344.camel@ENG-09-LX.emacinc.com>
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Adeos I-Pipe patch problem on vendor-specific kernel
+Message-ID: <1352041290.49248.YahooMailClassic@web161203.mail.bf1.yahoo.com>
+Date: Sun, 4 Nov 2012 07:01:30 -0800 (PST)
+From: thoga@yahoo.com
+In-Reply-To: <509670C3.5010005@xenomai.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] xeno_mod_isa for a 2 channel can-device with the same
+	shared interrupt for both devices
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -40,46 +18,39 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-  
-> > 
-> > So it looks like maybe __ipipe_tsc_get is working as expected? 
-> 
-> Yes, the debugger can not know what is at 0xffff0f40 because the code
-> copied there is not known at compilation (though you can run disass
-> *0xffff0f40, this should work). __ipipe_tsc_register does copy the
-> actual code, but before __ipipe_tsc_register copies the code, the code
-> there simply returns r0 and r1 set to 0.
-> 
-> You should try and put a breakpoint at 0xffff040 to see what address is
-> invalid. Maybe the counter virtual address is invalid, or the access to
-> the timer register because the timer is not enabled yet at hardware level.
-> 
-
-disass *0xffff0f40 did not work, "No function contains specified
-address."
-
-So in other words, you are saying that if __ipipe_tsc_register had not
-registered the code, the exception would not occur because it would
-simply set r0 and r1 to 0 then return to the calling function? Just want
-to be certain I understand...
-
-I did try to put a breakpoint at 0xffff040 (but I think you meant
-0xfff0f040, i tried both) but then I get "Warning: Cannot insert
-breakpoint 10. Error accessing memory address 0xffff040: Unknown error".
-
-> >                       
-> >>
-> >> Or apply the following patch:
-> >> http://git.xenomai.org/?p=ipipe-gch.git;a=commitdiff;h=42dd9056983cb6f65b6a336363f2f08f4426625a;hp=3b51cebda0b0d0123cb61b6ec07ecb62f293a528
-> > 
-> > I will try this out, thanks!
-> 
-> It will probably not fix this issue, but it is better to start from that
-> code anyway.
-> 
-
-Okay, just to be clear are you suggesting that we start all over with
-this patch, merge in the TI changes and our own code, and begin
-debugging again from there?
-
+Hi Gilles,=0A=0Athanks for your quick answer.=0A=0ACONFIG_XENO_OPT_SHIRQ wa=
+s not set in the kernel-config. I'll set the flag and recompile the kernel,=
+ but this will take 24h on that slow industrial pc.=0A=0AXN_ISR_SHARED flag=
+, however, sound more interesting. How can I check, if the driver uses the =
+XN_ISR_SHARED flag?=0A=0AThomas=0A=0A=0A=0A--- On Sun, 11/4/12, Gilles Chan=
+teperdrix <gilles.chanteperdrix@xenomai.org> wrote:=0A=0A> From: Gilles Cha=
+nteperdrix <gilles.chanteperdrix@xenomai.org>=0A> Subject: Re: [Xenomai] xe=
+no_mod_isa for a 2 channel can-device with the same shared interrupt for bo=
+th devices=0A> To: thoga@yahoo.com=0A> Cc: xenomai@xenomai.org, wg@grandegg=
+er.com=0A> Date: Sunday, November 4, 2012, 2:42 PM=0A> On 11/04/2012 02:31 =
+PM, thoga@yahoo.com=0A> wrote:=0A> =0A> > Hi all,=0A> > =0A> > I'm using XE=
+NOMAI 2.6.0 on a SYSLOGIC ML/COMPACT6=0A> industrial pc,=0A> > which has 2 =
+ISA-CAN-bus controllers onbard.=0A> > =0A> > Both controllers share the sam=
+e irq=3D11 while they have=0A> different=0A> > i/o-port regions, the first =
+uses io=3D0x7600 while the=0A> second uses=0A> > io=3D0x7700.=0A> > =0A> > =
+When I load the xeno_can_isa module to use only one=0A> controller=0A> > =
+=0A> > modprobe xeno_can_isa io=3D0x7600 irq=3D11=0A> > =0A> > everything w=
+orks fine and realtime can-communication is=0A> possible. But=0A> > when I =
+want to initialize both can controllers by=0A> issuing=0A> > =0A> > modprob=
+e xeno_can_isa io=3D0x7600,0x7700 irq=3D11,11=0A> > =0A> > it says=0A> > =
+=0A> > FATAL: Error inserting xeno_can_isa=0A> >=0A> (/lib/modules/2.6.38.8=
+/kernel/drivers/xenomai/can/sja1000/xeno_can_isa.ko):=0A> > Device or resou=
+rce busy=0A> > =0A> > On the other hand the command issued with two differe=
+nt=0A> irq (11 and=0A> > 12)=0A> > =0A> > modprobe xeno_can_isa io=3D0x7600=
+,0x7700 irq=3D11,12=0A> > =0A> > works and the module loads successfully (b=
+ut the second=0A> channel=0A> > cannot be used due to wrong irq, of course)=
+.=0A> > =0A> > Now, my question is: What does the message "Device or=0A> re=
+source busy"=0A> > mean? Does it refere to the irq=3D11 which is already in=
+=0A> use for the=0A> > first controller and is not available anymore for th=
+e=0A> second one?=0A> > =0A> > Does anybody have experience in using the xe=
+no_can_isa=0A> module with=0A> > two controllers sharing the same irq ?=0A>=
+ =0A> =0A> Do you have CONFIG_XENO_OPT_SHIRQ enabled ?=0A> Does the driver =
+use the XN_ISR_SHARED flag?=0A> =0A> -- =0A> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
+=A0=0A> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0=0A> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0=
+=0A> =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0=0A> Gilles.=0A> 
 
