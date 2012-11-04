@@ -1,10 +1,10 @@
-Message-ID: <50969E7B.8030308@xenomai.org>
-Date: Sun, 04 Nov 2012 17:57:31 +0100
+Message-ID: <5096A058.30204@xenomai.org>
+Date: Sun, 04 Nov 2012 18:05:28 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CAOiXNkCw3e4mK7XeNif2MM5Ub2__xK8UKxaPNRzzMQUbWdhYRg@mail.gmail.com>	<ff881ad96344018ff2cbf9f8211d7603.squirrel@www.xenomai.org>	<CAOiXNkBMKNbXOAThav8L9esyRMLBHPk7uFg5fRPhifR_Sg4rXA@mail.gmail.com>	<9d3ef55df641c8657ce09c6f6e023e4a.squirrel@www.xenomai.org>	<CAOiXNkA8u2TjB7FXoJh7opxasgCvnuFkuqOEPZ=tCMz-f-HMpQ@mail.gmail.com>	<2b4941d6b09c5560d4074bc644ded41d.squirrel@www.xenomai.org>	<CAOiXNkC=C6A=Mfhqx2rjg61D9UaOB55bnm-n5mOArsmpXdU-sg@mail.gmail.com>	<50958A57.8010902@xenomai.org>	<CAOiXNkAQxitHg=uQRhL-+h1vNGRQh-3-JXaOz78NmvwdtqDTdA@mail.gmail.com>	<50958DD4.1000702@xenomai.org>	<CAOiXNkANO_1205mweCok_34Z_fQgLFRtg4w4xehNj3X+xOpfQw@mail.gmail.com>	<50969760.70307@xenomai.org>
-	<CAOiXNkCsfGArU+XyfYMgv4-TF=aXFqHmhy7BihNfXZUnerjbEw@mail.gmail.com>
-In-Reply-To: <CAOiXNkCsfGArU+XyfYMgv4-TF=aXFqHmhy7BihNfXZUnerjbEw@mail.gmail.com>
+References: <CAOiXNkCw3e4mK7XeNif2MM5Ub2__xK8UKxaPNRzzMQUbWdhYRg@mail.gmail.com>	<ff881ad96344018ff2cbf9f8211d7603.squirrel@www.xenomai.org>	<CAOiXNkBMKNbXOAThav8L9esyRMLBHPk7uFg5fRPhifR_Sg4rXA@mail.gmail.com>	<9d3ef55df641c8657ce09c6f6e023e4a.squirrel@www.xenomai.org>	<CAOiXNkA8u2TjB7FXoJh7opxasgCvnuFkuqOEPZ=tCMz-f-HMpQ@mail.gmail.com>	<2b4941d6b09c5560d4074bc644ded41d.squirrel@www.xenomai.org>	<CAOiXNkC=C6A=Mfhqx2rjg61D9UaOB55bnm-n5mOArsmpXdU-sg@mail.gmail.com>	<50958A57.8010902@xenomai.org>	<CAOiXNkAQxitHg=uQRhL-+h1vNGRQh-3-JXaOz78NmvwdtqDTdA@mail.gmail.com>	<50958DD4.1000702@xenomai.org>	<CAOiXNkANO_1205mweCok_34Z_fQgLFRtg4w4xehNj3X+xOpfQw@mail.gmail.com>	<50969840.5010705@xenomai.org>
+	<CAOiXNkDY0aofK=woRrF8+Uh0LZVPjx8qVLB6DUVS+xhmKsyB3g@mail.gmail.com>
+In-Reply-To: <CAOiXNkDY0aofK=woRrF8+Uh0LZVPjx8qVLB6DUVS+xhmKsyB3g@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] rt_task_create fails when running over ssh
@@ -19,22 +19,62 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: Andrey Nechypurenko <andreynech@googlemail.com>
 Cc: xenomai@xenomai.org
 
-On 11/04/2012 05:48 PM, Andrey Nechypurenko wrote:
+On 11/04/2012 05:43 PM, Andrey Nechypurenko wrote:
 
+> On 4 November 2012 17:30, Gilles Chanteperdrix
+> <gilles.chanteperdrix@xenomai.org> wrote:
+>> On 11/04/2012 05:13 PM, Andrey Nechypurenko wrote:
+>>
+>>> On 3 November 2012 22:34, Gilles Chanteperdrix
+>>> <gilles.chanteperdrix@xenomai.org> wrote:
+>>>> On 11/03/2012 10:32 PM, Andrey Nechypurenko wrote:
+>>>>
+>>>>>> Use the DESTDIR environment variable (you can look inside xeno-config to
+>>>>>> see how it works, it should be pretty obvious).
+>>>>>
+>>>>> Thanks for the hint. I'll definitely try. However I doubt that it
+>>>>> would solve the issue with rt_task_create() since I were actually
+>>>>> copy-pasting the output from xeno-config and only change the -I and -L
+>>>>> flags to reflect my directory structure.
+>>>>
+>>>>
+>>>> Yes, I also doubt that very much. What about the arm/thumb issue?
+>>>
+>>> I've run strace and found the following line in the output when
+>>> starting the programm over ssh:
+>>> sched_setscheduler(440, SCHED_FIFO, { 99 }) = -1 EPERM (Operation not permitted)
+>>> I assume, that this call is the part of rt_task_create(). In contrast,
+>>> the same call gets no errors if running in the serial console. Really
+>>> strange to me.
+>>>
+>>> My attempts to change corresponding priorities with ulimit command or
+>>> setrlimit() function does not solve the issue. So it seams like ssh
+>>> server limits some permissions somehow which causes rt_task_create()
+>>> to fail.
+> 
 >> Did you check if your compiler compiles thumb code or arm code by default?
 > 
-> Here are my compilation options:
+> objdump says: file format elf32-littlearm
+> and file says: ELF 32-bit LSB executable, ARM, version 1 (SYSV)
+
+
+The result is the same with thumb code. In order to know if a binary is
+thumb or arm, run objdump and check if the binary contains 16 bits
+instructions.
+
 > 
-> ARCH=arm CROSS_COMPILE=arm-angstrom-linux-gnueabi- CFLAGS="
-> -march=armv7-a -fno-tree-vectorize -mthumb-interwork
-> -mfloat-abi=softfp -mfpu=neon -mtune=cortex-a8 " LOCALVERSION=""
+>> You can run ulimit to check the current limits.
+>> And it would be interesting to run the "whoami" command or use getuid()
+>> in the program to check whether you are really running as the root user.
 > 
+> $ ulimit -a
 
 
-I know that. What I ask you is whether the toolchain you use generates
-thumb code by default or not. If you want to force arm code, pass -marm
-(I already said that in my first answer).
+What about whoami or id (it would be nice if did not have to ask the
+same questions 3 times)?
 
+I have 0 for scheduling priority and real-time priority, and it does not
+seem to cause any issue.
 
 -- 
                                                                 Gilles.
