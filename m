@@ -1,9 +1,20 @@
+Message-ID: <5097E223.4020600@gmail.com>
+Date: Mon, 05 Nov 2012 15:58:27 +0000
+From: Stefan Videv <videvstefan@gmail.com>
 MIME-Version: 1.0
-Date: Mon, 5 Nov 2012 12:09:59 -0300
-Message-ID: <CANzNmi-P+pXRT0ECC-0CPtZyR8f4cmMt+ZkbzHvJU_9sgWtD9g@mail.gmail.com>
-From: Sebastian Pavez <sebastian.pavez.t@gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Subject: [Xenomai] Compiling the Xenomai examples 2.0
+References: <a81ced276a31df626d584233b83aeb10.squirrel@www.xenomai.org>
+	<5092AEB3.2070009@gmail.com>
+	<4b27818deb6c26a74a2ab839cb07f718.squirrel@www.xenomai.org>
+	<5093F975.9060807@gmail.com>
+	<d0e366dc91d7b37cd45f8b3a550ea2fd.squirrel@www.xenomai.org>
+	<5094066F.80501@gmail.com>
+	<6f7c3c10f83647f48c380d2fa64b22c1.squirrel@www.xenomai.org>
+	<509409BF.3060808@gmail.com>
+	<9057373f4f1063cc464eccb857ac7992.squirrel@www.xenomai.org>
+In-Reply-To: <9057373f4f1063cc464eccb857ac7992.squirrel@www.xenomai.org>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Compiling the Xenomai examples
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,80 +23,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-Hi everybody,
+On 11/02/2012 06:46 PM, Gilles Chanteperdrix wrote:
+> Stefan Videv wrote:
+>> Thanks. I got it to compile now -- I pointed to the root directory of
+>> the kernel sources, is that ok? It of course remains to be tested if the
+>> examples would work at all. Do you want me to let you guys know when I
+>> test that?
+> Yes, please.
+>
+Okay, so I've tested the examples I compiled last week.
 
-I have problems with the xenomai examples.
-I've followed this conversation:
-http://www.mail-archive.com/xenomai@xenomai.org/msg01501.html
+-- common: could not test as I don't have the particular hardware required
+-- native: work
+-- posix: fails to load the kernel module with:
+     satch: Unknown symbol munmap (err 0)
+     satch: Unknown symbol shm_open (err 0)
+     satch: Unknown symbol pse51_shm_close (err 0)
+     satch: Unknown symbol ftruncate (err 0)
+     satch: Unknown symbol mmap (err 0)
+     satch: Unknown symbol shm_unlink (err 0)
+-- rtdm driver-api -- works, the second example seems to be out of date 
+with the xenomai API as I get a message saying RT open and close 
+handlers are deprecated.
+-- rtdm profiles -- could/did not test
 
-But I'm not able to move forward, I got the following:
+Any ideas regarding the problem with the POSIX example kernel module?
 
-labcontrol@labcontrol:~/xenomai-head/examples$ make XENO=/usr/xenomai
-KSRC=/usr/src/linux-3.2.32
-make[1]: Entering directory `/home/labcontrol/xenomai-head/examples/native'
-make[1]: Nothing to be done for `all'.
-make[1]: Leaving directory `/home/labcontrol/xenomai-head/examples/native'
-make[1]: Entering directory
-`/home/labcontrol/xenomai-head/examples/rtdm/driver-api'
-make -C /usr/src/linux-3.2.32
-SUBDIRS=/home/labcontrol/xenomai-head/examples/rtdm/driver-api modules
-make[2]: Entering directory `/usr/src/linux-3.2.32'
-  CC [M]  /home/labcontrol/xenomai-head/examples/rtdm/driver-api/heartbeat.o
-  CC [M]
-/home/labcontrol/xenomai-head/examples/rtdm/driver-api/tut01-skeleton-drv.o
-  CC [M]
-/home/labcontrol/xenomai-head/examples/rtdm/driver-api/tut02-skeleton-drv.o
-  Building modules, stage 2.
-  MODPOST 3 modules
-  CC
-/home/labcontrol/xenomai-head/examples/rtdm/driver-api/heartbeat.mod.o
-  LD [M]
-/home/labcontrol/xenomai-head/examples/rtdm/driver-api/heartbeat.ko
-  CC
-/home/labcontrol/xenomai-head/examples/rtdm/driver-api/tut01-skeleton-drv.mod.o
-  LD [M]
-/home/labcontrol/xenomai-head/examples/rtdm/driver-api/tut01-skeleton-drv.ko
-  CC
-/home/labcontrol/xenomai-head/examples/rtdm/driver-api/tut02-skeleton-drv.mod.o
-  LD [M]
-/home/labcontrol/xenomai-head/examples/rtdm/driver-api/tut02-skeleton-drv.ko
-make[2]: Leaving directory `/usr/src/linux-3.2.32'
-make[1]: Leaving directory
-`/home/labcontrol/xenomai-head/examples/rtdm/driver-api'
-make[1]: Entering directory
-`/home/labcontrol/xenomai-head/examples/rtdm/profiles/serial'
-make[1]: Nothing to be done for `all'.
-make[1]: Leaving directory
-`/home/labcontrol/xenomai-head/examples/rtdm/profiles/serial'
-make[1]: Entering directory
-`/home/labcontrol/xenomai-head/examples/rtdm/profiles/ipc'
-make[1]: Nothing to be done for `all'.
-make[1]: Leaving directory
-`/home/labcontrol/xenomai-head/examples/rtdm/profiles/ipc'
-make[1]: Entering directory
-`/home/labcontrol/xenomai-head/examples/rtdm/profiles/can'
-make[1]: Nothing to be done for `all'.
-make[1]: Leaving directory
-`/home/labcontrol/xenomai-head/examples/rtdm/profiles/can'
-make[1]: Entering directory `/home/labcontrol/xenomai-head/examples/posix'
-make -C /usr/src/linux-3.2.32 ARCH= CROSS_COMPILE=
-SUBDIRS=/home/labcontrol/xenomai-head/examples/posix modules
-make[2]: Entering directory `/usr/src/linux-3.2.32'
-Makefile:567: /usr/src/linux-3.2.32/arch//Makefile: No such file or
-directory
-make[2]: *** No rule to make target
-`/usr/src/linux-3.2.32/arch//Makefile'.  Stop.
-make[2]: Leaving directory `/usr/src/linux-3.2.32'
-make[1]: *** [all] Error 2
-make[1]: Leaving directory `/home/labcontrol/xenomai-head/examples/posix'
-make[1]: Entering directory `/home/labcontrol/xenomai-head/examples/common'
-make[1]: Nothing to be done for `all'.
-make[1]: Leaving directory `/home/labcontrol/xenomai-head/examples/common'
+-- Stefan
 
-What should I do??
-I wanna try the posix examples because I'll use posix later on my proyect.
-Please, some help will be appreciated.
-Thank you,
-Sebas
+
