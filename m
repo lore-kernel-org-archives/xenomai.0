@@ -1,10 +1,12 @@
-Message-ID: <5097F3BE.8070709@gmail.com>
-Date: Mon, 05 Nov 2012 17:13:34 +0000
+Message-ID: <5097F518.9090101@gmail.com>
+Date: Mon, 05 Nov 2012 17:19:20 +0000
 From: Stefan Videv <videvstefan@gmail.com>
 MIME-Version: 1.0
+References: <5097F3BE.8070709@gmail.com>
+In-Reply-To: <5097F3BE.8070709@gmail.com>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] Cross-compiling RTDM driver errors
+Subject: Re: [Xenomai] Cross-compiling RTDM driver errors
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,28 +17,45 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Hi,
+On 11/05/2012 05:13 PM, Stefan Videv wrote:
+> Hi,
+>
+> I am trying to cross compile a driver that I wrote which is very 
+> similar to the one provided in the examples (tut02-skeleton-drv). I've 
+> basically changed the write function to do what I am interested in 
+> doing, everything else is the same (however I am not providing a read 
+> function).
+>
+> During compilation I get the following error:
+>
+> FATAL: modpost: GPL-incompatible module vlcTxDriver.ko uses GPL-only 
+> symbol 'rtdm_dev_unregister'
+>
+> What's that supposed to mean, and how do you get around it?
+I answered my own question just now -- I've forgotten to define the 
+module licence correctly. Having done that I end up with some undefined 
+symbols, just like when trying to compile the POSIX examples.
 
-I am trying to cross compile a driver that I wrote which is very similar 
-to the one provided in the examples (tut02-skeleton-drv). I've basically 
-changed the write function to do what I am interested in doing, 
-everything else is the same (however I am not providing a read function).
+Here's what I get:
 
-During compilation I get the following error:
+WARNING: "pse51_shm_close" [/home/stefan/VLCTxDriver/vlcTxDriver.ko] 
+undefined!
+WARNING: "munmap" [/home/stefan/VLCTxDriver/vlcTxDriver.ko] undefined!
+WARNING: "mmap" [/home/stefan/VLCTxDriver/vlcTxDriver.ko] undefined!
+WARNING: "open" [/home/stefan/VLCTxDriver/vlcTxDriver.ko] undefined!
 
-FATAL: modpost: GPL-incompatible module vlcTxDriver.ko uses GPL-only 
-symbol 'rtdm_dev_unregister'
+Any help is appreciated! Thanks!
 
-What's that supposed to mean, and how do you get around it?
+>
+> I am using the Makefile provided with the examples and compiling like so:
+>
+> make XENO=/media/rootfs/usr/xenomai/ ARCH=arm 
+> CROSS_COMPILE=arm-linux-gnueabi- KSRC=~/beagle/linux/ 
+> DESTDIR=/media/rootfs ADD_CFLAGS=-I/usr/arm-linux-gnueabi/include
+>
+>
+> Thanks!
+>
+> -- Stefan
 
-I am using the Makefile provided with the examples and compiling like so:
-
-make XENO=/media/rootfs/usr/xenomai/ ARCH=arm 
-CROSS_COMPILE=arm-linux-gnueabi- KSRC=~/beagle/linux/ 
-DESTDIR=/media/rootfs ADD_CFLAGS=-I/usr/arm-linux-gnueabi/include
-
-
-Thanks!
-
--- Stefan
 
