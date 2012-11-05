@@ -1,13 +1,20 @@
-Message-ID: <5097FEC9.6010603@gmail.com>
-Date: Mon, 05 Nov 2012 18:00:41 +0000
-From: Stefan Videv <videvstefan@gmail.com>
 MIME-Version: 1.0
-References: <5097F3BE.8070709@gmail.com> <5097F518.9090101@gmail.com>
-	<5097F882.3010509@gmail.com>
-In-Reply-To: <5097F882.3010509@gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Cross-compiling RTDM driver errors
+In-Reply-To: <5097E223.4020600@gmail.com>
+References: <a81ced276a31df626d584233b83aeb10.squirrel@www.xenomai.org>
+	<5092AEB3.2070009@gmail.com>
+	<4b27818deb6c26a74a2ab839cb07f718.squirrel@www.xenomai.org>
+	<5093F975.9060807@gmail.com>
+	<d0e366dc91d7b37cd45f8b3a550ea2fd.squirrel@www.xenomai.org>
+	<5094066F.80501@gmail.com>
+	<6f7c3c10f83647f48c380d2fa64b22c1.squirrel@www.xenomai.org>
+	<509409BF.3060808@gmail.com>
+	<9057373f4f1063cc464eccb857ac7992.squirrel@www.xenomai.org>
+	<5097E223.4020600@gmail.com>
+Date: Mon, 5 Nov 2012 18:09:23 +0000
+Message-ID: <CANfTc7J2FHW+=9V-3WLCUYDC9o5KC7vo82r2Y6k-_S6F2RxUvg@mail.gmail.com>
+From: Stefan Videv <videvstefan@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: Re: [Xenomai] Compiling the Xenomai examples
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,78 +23,50 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On 11/05/2012 05:33 PM, Stefan Videv wrote:
-> On 11/05/2012 05:19 PM, Stefan Videv wrote:
->> On 11/05/2012 05:13 PM, Stefan Videv wrote:
->>> Hi,
->>>
->>> I am trying to cross compile a driver that I wrote which is very 
->>> similar to the one provided in the examples (tut02-skeleton-drv). 
->>> I've basically changed the write function to do what I am interested 
->>> in doing, everything else is the same (however I am not providing a 
->>> read function).
->>>
->>> During compilation I get the following error:
->>>
->>> FATAL: modpost: GPL-incompatible module vlcTxDriver.ko uses GPL-only 
->>> symbol 'rtdm_dev_unregister'
->>>
->>> What's that supposed to mean, and how do you get around it?
->> I answered my own question just now -- I've forgotten to define the 
->> module licence correctly. Having done that I end up with some 
->> undefined symbols, just like when trying to compile the POSIX examples.
->>
->> Here's what I get:
->>
->> WARNING: "pse51_shm_close" [/home/stefan/VLCTxDriver/vlcTxDriver.ko] 
->> undefined!
->> WARNING: "munmap" [/home/stefan/VLCTxDriver/vlcTxDriver.ko] undefined!
->> WARNING: "mmap" [/home/stefan/VLCTxDriver/vlcTxDriver.ko] undefined!
->> WARNING: "open" [/home/stefan/VLCTxDriver/vlcTxDriver.ko] undefined!
->>
->> Any help is appreciated! Thanks!
-> I've somewhat answered my questions again:
+On Mon, Nov 5, 2012 at 3:58 PM, Stefan Videv <videvstefan@gmail.com> wrote:
+
+> On 11/02/2012 06:46 PM, Gilles Chanteperdrix wrote:
 >
-> http://www.xenomai.org/pipermail/xenomai-help/2011-12/msg00014.html
+>> Stefan Videv wrote:
+>>
+>>> Thanks. I got it to compile now -- I pointed to the root directory of
+>>> the kernel sources, is that ok? It of course remains to be tested if the
+>>> examples would work at all. Do you want me to let you guys know when I
+>>> test that?
+>>>
+>> Yes, please.
+>>
+>>  Okay, so I've tested the examples I compiled last week.
 >
-> However, I still do not understand how do you go about enabling these 
-> features (i.e. what to enable when configuring my kernel). 
-I've enabled shared memory support from the POSIX options for Xenomai. 
-That takes care of the first 3 warnings.
+> -- common: could not test as I don't have the particular hardware required
+> -- native: work
+> -- posix: fails to load the kernel module with:
+>     satch: Unknown symbol munmap (err 0)
+>     satch: Unknown symbol shm_open (err 0)
+>     satch: Unknown symbol pse51_shm_close (err 0)
+>     satch: Unknown symbol ftruncate (err 0)
+>     satch: Unknown symbol mmap (err 0)
+>     satch: Unknown symbol shm_unlink (err 0)
+> -- rtdm driver-api -- works, the second example seems to be out of date
+> with the xenomai API as I get a message saying RT open and close handlers
+> are deprecated.
+> -- rtdm profiles -- could/did not test
+>
+> Any ideas regarding the problem with the POSIX example kernel module?
+>
+Including POSIX shared memory support in the kernel options solves the
+above.
 
-However, I am still having the last one. I am trying to use this 
-particular open() function:
-
-http://pubs.opengroup.org/onlinepubs/000095399/functions/open.html
-
-to be able to write to /dev/mem
+In conclusion, applying the fix to all the make files in the examples
+directory should solve the problem of cross compiling.
 
 -- Stefan
 
-> Also, I have a user space program that I then converted to the kernel 
-> module that I am now trying to compile. That runs perfectly fine on my 
-> kernel. Is that possible? Is the kernel missing support for these 
-> operations, but you can do that fine from user space?
->
-> Thanks, again!
+
 >
 > -- Stefan
->>
->>>
->>> I am using the Makefile provided with the examples and compiling 
->>> like so:
->>>
->>> make XENO=/media/rootfs/usr/xenomai/ ARCH=arm 
->>> CROSS_COMPILE=arm-linux-gnueabi- KSRC=~/beagle/linux/ 
->>> DESTDIR=/media/rootfs ADD_CFLAGS=-I/usr/arm-linux-gnueabi/include
->>>
->>>
->>> Thanks!
->>>
->>> -- Stefan
->>
 >
-
-
+>
