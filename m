@@ -1,20 +1,27 @@
+Message-ID: <509809A1.9030304@xenomai.org>
+Date: Mon, 05 Nov 2012 19:46:57 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <5097E223.4020600@gmail.com>
-References: <a81ced276a31df626d584233b83aeb10.squirrel@www.xenomai.org>
-	<5092AEB3.2070009@gmail.com>
-	<4b27818deb6c26a74a2ab839cb07f718.squirrel@www.xenomai.org>
-	<5093F975.9060807@gmail.com>
-	<d0e366dc91d7b37cd45f8b3a550ea2fd.squirrel@www.xenomai.org>
-	<5094066F.80501@gmail.com>
-	<6f7c3c10f83647f48c380d2fa64b22c1.squirrel@www.xenomai.org>
-	<509409BF.3060808@gmail.com>
-	<9057373f4f1063cc464eccb857ac7992.squirrel@www.xenomai.org>
-	<5097E223.4020600@gmail.com>
-Date: Mon, 5 Nov 2012 18:09:23 +0000
-Message-ID: <CANfTc7J2FHW+=9V-3WLCUYDC9o5KC7vo82r2Y6k-_S6F2RxUvg@mail.gmail.com>
-From: Stefan Videv <videvstefan@gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Subject: Re: [Xenomai] Compiling the Xenomai examples
+References: <505EB99F.7050705@wanadoo.fr>	<505F0D40.9030105@xenomai.org>	<50741C5B.4060206@wanadoo.fr>
+	<5074986C.8000509@xenomai.org> <50749A03.9090607@xenomai.org>
+	<50749C71.2020100@xenomai.org> <5075260E.2050402@wanadoo.fr>
+	<507528E4.4050809@xenomai.org> <50752A42.9080303@web.de>
+	<50752C0C.3050803@xenomai.org> <50752D7E.7010207@web.de>
+	<507538C8.7040706@xenomai.org> <50753980.7020409@web.de>
+	<50753EA0.7070007@xenomai.org> <50754849.9030205@web.de>
+	<507548DE.2000305@xenomai.org> <50754D0F.50407@web.de>
+	<507553D0.8070305@xenomai.org> <50755C40.5080002@xenomai.org>
+	<50756572.5020108@xenomai.org> <50756B26.4040505@xenomai.org>
+	<50756D00.6030203@xenomai.org> <5075703C.7080502@xenomai.org>
+	<507570A8.5000301@xenomai.org> <507571AA.2040600@xenomai.org>
+	<50757393.4090407@xenomai.org> <5075753D.6080703@xenomai.org>
+	<50757597.6010600@xenomai.org> <507575DD.2080409@xenomai.org>
+	<50757EBD.7080506@xenomai.org> <50767DCC.6030404@xenomai.org>
+	<5097C028.9040108@wanadoo.fr>
+In-Reply-To: <5097C028.9040108@wanadoo.fr>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] Target frozen with rtcan_virt
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -23,50 +30,54 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Thierry Bultel <thierry.bultel@wanadoo.fr>
+Cc: Jan Kiszka <jan.kiszka@web.de>, Wolfgang Grandegger <wg@denx.de>, xenomai@xenomai.org
 
-On Mon, Nov 5, 2012 at 3:58 PM, Stefan Videv <videvstefan@gmail.com> wrote:
+On 11/05/2012 02:33 PM, Thierry Bultel wrote:
 
-> On 11/02/2012 06:46 PM, Gilles Chanteperdrix wrote:
->
->> Stefan Videv wrote:
->>
->>> Thanks. I got it to compile now -- I pointed to the root directory of
->>> the kernel sources, is that ok? It of course remains to be tested if the
->>> examples would work at all. Do you want me to let you guys know when I
->>> test that?
+> Le 11/10/2012 10:05, Gilles Chanteperdrix a =C3=A9crit :
+>> On 10/10/2012 03:57 PM, Philippe Gerum wrote:
+>>>> Except if we invent another scheduler lock service, simply for the
+>>>> purpose of spinlocks where suspending the spinlock holder does not m=
+ake
+>>>> sense anyway.
+>>>>
 >>>
->> Yes, please.
+>>> Oh, well, ok. Ack.
+>>>
+>>> Let's just make sure that we can fold the whole thing into a single s=
+et
+>>> of services at some point in 3.x though.
+>>>
+>>> The core issue is that we should not even have to expose a scheduler
+>>> locking service to userland, but emulating traditional RTOS APIs
+>>> requires that. What a braindamage counter-feature for a real-time sys=
+tem
+>>> when one thinks of it.
 >>
->>  Okay, so I've tested the examples I compiled last week.
->
-> -- common: could not test as I don't have the particular hardware required
-> -- native: work
-> -- posix: fails to load the kernel module with:
->     satch: Unknown symbol munmap (err 0)
->     satch: Unknown symbol shm_open (err 0)
->     satch: Unknown symbol pse51_shm_close (err 0)
->     satch: Unknown symbol ftruncate (err 0)
->     satch: Unknown symbol mmap (err 0)
->     satch: Unknown symbol shm_unlink (err 0)
-> -- rtdm driver-api -- works, the second example seems to be out of date
-> with the xenomai API as I get a message saying RT open and close handlers
-> are deprecated.
-> -- rtdm profiles -- could/did not test
->
-> Any ideas regarding the problem with the POSIX example kernel module?
->
-Including POSIX shared memory support in the kernel options solves the
-above.
+>> I think we can have the cake and eat it. The idea is to follow the
+>> approach in the patch I sent, merged with the one you commited, but
+>> simply, in xnpod_suspend_thread, clear the XNHELDSPIN (misnomed if use=
+d
+>> for that), and simply when we wake up, re-set the bit in the scheduler=
 
-In conclusion, applying the fix to all the make files in the examples
-directory should solve the problem of cross compiling.
-
--- Stefan
+>> if the thread preemption count is not 0.
+>>
+>=20
+> Hi,
+> sorry to come on that thread again, but it is not clear to me if the
+> issue has been adressed or not.
+> I have noticed the "nucleus: introduce internal sched locking helpers"
+> commit, that seems related but I am not sure.
+> Sorry for the noise.
 
 
->
-> -- Stefan
->
->
+I have posted a patch, and await Philippe's approval. The patch may have
+some dubious side effects, it is here:
+
+http://www.xenomai.org/pipermail/xenomai/2012-October/026523.html
+
+--=20
+                                                                Gilles.
+
+
