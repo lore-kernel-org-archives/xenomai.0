@@ -1,10 +1,27 @@
-Message-ID: <50991915.7050500@basystemes.fr>
-Date: Tue, 06 Nov 2012 15:05:09 +0100
-From: Jean-Baptiste Tredez <jean-baptiste.tredez@basystemes.fr>
+Message-ID: <50992367.6080703@xenomai.org>
+Date: Tue, 06 Nov 2012 15:49:11 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] pthread_set_name_np
+References: <505EB99F.7050705@wanadoo.fr>	<5074986C.8000509@xenomai.org>
+	<50749A03.9090607@xenomai.org> <50749C71.2020100@xenomai.org>
+	<5075260E.2050402@wanadoo.fr> <507528E4.4050809@xenomai.org>
+	<50752A42.9080303@web.de> <50752C0C.3050803@xenomai.org>
+	<50752D7E.7010207@web.de> <507538C8.7040706@xenomai.org>
+	<50753980.7020409@web.de> <50753EA0.7070007@xenomai.org>
+	<50754849.9030205@web.de> <507548DE.2000305@xenomai.org>
+	<50754D0F.50407@web.de> <507553D0.8070305@xenomai.org>
+	<50755C40.5080002@xenomai.org> <50756572.5020108@xenomai.org>
+	<50756B26.4040505@xenomai.org> <50756D00.6030203@xenomai.org>
+	<5075703C.7080502@xenomai.org> <507570A8.5000301@xenomai.org>
+	<507571AA.2040600@xenomai.org> <50757393.4090407@xenomai.org>
+	<5075753D.6080703@xenomai.org> <50757597.6010600@xenomai.org>
+	<507575DD.2080409@xenomai.org> <50757EBD.7080506@xenomai.org>
+	<50767DCC.6030404@xenomai.org> <5097C028.9040108@wanadoo.fr>
+	<509809A1.9030304@xenomai.org> <5098FBBA.20104@xenomai.org>
+In-Reply-To: <5098FBBA.20104@xenomai.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] Target frozen with rtcan_virt
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,88 +30,57 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Thierry Bultel <thierry.bultel@wanadoo.fr>, Jan Kiszka <jan.kiszka@web.de>, Wolfgang Grandegger <wg@denx.de>, xenomai@xenomai.org
 
-Hello,
+On 11/06/2012 12:59 PM, Philippe Gerum wrote:
+> On 11/05/2012 07:46 PM, Gilles Chanteperdrix wrote:
+>> On 11/05/2012 02:33 PM, Thierry Bultel wrote:
+>>
+>>> Le 11/10/2012 10:05, Gilles Chanteperdrix a écrit :
+>>>> On 10/10/2012 03:57 PM, Philippe Gerum wrote:
+>>>>>> Except if we invent another scheduler lock service, simply for the
+>>>>>> purpose of spinlocks where suspending the spinlock holder does not make
+>>>>>> sense anyway.
+>>>>>>
+>>>>>
+>>>>> Oh, well, ok. Ack.
+>>>>>
+>>>>> Let's just make sure that we can fold the whole thing into a single set
+>>>>> of services at some point in 3.x though.
+>>>>>
+>>>>> The core issue is that we should not even have to expose a scheduler
+>>>>> locking service to userland, but emulating traditional RTOS APIs
+>>>>> requires that. What a braindamage counter-feature for a real-time system
+>>>>> when one thinks of it.
+>>>>
+>>>> I think we can have the cake and eat it. The idea is to follow the
+>>>> approach in the patch I sent, merged with the one you commited, but
+>>>> simply, in xnpod_suspend_thread, clear the XNHELDSPIN (misnomed if used
+>>>> for that), and simply when we wake up, re-set the bit in the scheduler
+>>>> if the thread preemption count is not 0.
+>>>>
+>>>
+>>> Hi,
+>>> sorry to come on that thread again, but it is not clear to me if the
+>>> issue has been adressed or not.
+>>> I have noticed the "nucleus: introduce internal sched locking helpers"
+>>> commit, that seems related but I am not sure.
+>>> Sorry for the noise.
+>>
+>>
+>> I have posted a patch, and await Philippe's approval. The patch may have
+>> some dubious side effects, it is here:
+>>
+>> http://www.xenomai.org/pipermail/xenomai/2012-October/026523.html
+>>
+> 
+> Yes, I'm late once again. The patch has some problems, so please hold
+> this for now.
 
-I have some issues when I change the name of a task (created with the 
-native skin) with the posix skin (pthread_set_name_np) on xenomai 2.6.1 
-(kernel 2.6.38.8). This is a task created by a external library and we 
-can not set the right name at the first place.
-pthread_set_name_np seems to work only on tasks created with the posix skin.
+I can remove the parts of the patches we already know are problematic,
+and post a new patch if you wish.
 
-Here is a test program (that worked with linux 2.6.38.8 + xenomai-2.6.0 
-and crash with linux 2.6.38 + xenomai 2.6.1) :
-
-#include <sys/mman.h>
-#include <stdio.h>
-#include <native/task.h>
-
-RT_TASK task1;
-
-void task1_main(void* arg)
-{
-     pthread_set_name_np(pthread_self(), "foo");
-}
-
-int main()
-{
-     int ret;
-
-     mlockall(MCL_CURRENT | MCL_FUTURE);
-
-     ret = rt_task_create(&task1, "task1", 0, 50, T_JOINABLE);
-     if( ret )
-     {
-         printf("rt_task_create : %i\n", errno);
-         return 0;
-     }
-
-     ret = rt_task_start(&task1, &task1_main, NULL);
-     if( ret )
-     {
-             printf("rt_task_start : %i\n", errno);
-             return 0;
-     }
-
-     return 0;
-}
-
-
-BUG: unable to handle kernel NULL pointer dereference at 0000039c
-IP: [<c10bff87>] __pthread_set_name_np+0x65/0x96
-*pde = 00000000
-Oops: 0000 [#3] PREEMPT SMP
-last sysfs file: /sys/devices/pci0000:00/0000:00:03.0/class
-Modules linked in: xeno_16550A ipv6 pcspkr uhci_hcd
-
-Pid: 5694, comm: task1 Tainted: G      D     2.6.38.8-os-0201patch04 #1 
-Bochs Bochs
-EIP: 0060:[<c10bff87>] EFLAGS: 00010286 CPU: 0
-EIP is at __pthread_set_name_np+0x65/0x96
-EAX: 00000000 EBX: cea33fb4 ECX: 99f915b3 EDX: df403180
-ESI: 00000000 EDI: cea96130 EBP: e082d840 ESP: cea33ee8
-  DS: 007b ES: 007b FS: 00d8 GS: 0033 SS: 0068
-Process task1 (pid: 5694, ti=cea32000 task=cea96130 task.ti=cea32000)
-I-pipe domain Linux
-Stack:
-  006f6f66 c102da2d 00000000 00000082 c174b180 00000000 c1071458 00000046
-  b7733b90 dead3540 cea33fb4 00000000 cea96130 c1090bf8 00000000 00000000
-  cea33fb4 00000050 c183d080 00000000 00000038 df40cf24 c183d080 c1090a3b
-Call Trace:
-  [<c102da2d>] ? try_to_wake_up+0x1e7/0x2bc
-  [<c1071458>] ? __ipipe_restore_pipeline_head+0x11/0x100
-  [<c1090bf8>] ? hisyscall_event+0x1bd/0x30e
-  [<c1090a3b>] ? hisyscall_event+0x0/0x30e
-  [<c107088f>] ? __ipipe_dispatch_event+0x10d/0x3d7
-  [<c1017de5>] ? __ipipe_syscall_root+0x3f/0x183
-  [<c150a6dd>] ? system_call+0x2d/0x53
-Code: 00 85 c0 78 e4 c6 44 24 1f 00 8b 03 89 44 24 20 64 a1 cc 94 74 c1 
-8b 80 c8 00 00 00 89 44 24 24 8d 44 24 20 e8 fc fb ff ff 89 c6 <8b> 98 
-9c 03 00 00 8d 83 d8 01 00 00 b9 10 00 00 00 89 e2 e8 e2
-EIP: [<c10bff87>] __pthread_set_name_np+0x65/0x96 SS:ESP 0068:cea33ee8
-CR2: 000000000000039c
----[ end trace c8148c10eacbfd85 ]---
-
-Jean-Baptiste
+-- 
+					    Gilles.
 
