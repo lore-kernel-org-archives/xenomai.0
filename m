@@ -1,14 +1,27 @@
-Message-ID: <50981062.9070005@gmail.com>
-Date: Mon, 05 Nov 2012 19:15:46 +0000
-From: Stefan Videv <videvstefan@gmail.com>
+Message-ID: <5098BABC.2040006@wanadoo.fr>
+Date: Tue, 06 Nov 2012 08:22:36 +0100
+From: Thierry Bultel <thierry.bultel@wanadoo.fr>
 MIME-Version: 1.0
-References: <5097F3BE.8070709@gmail.com>
-	<5097F518.9090101@gmail.com>	<5097F882.3010509@gmail.com>
-	<5097FEC9.6010603@gmail.com> <50980A89.7060008@xenomai.org>
-In-Reply-To: <50980A89.7060008@xenomai.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Cross-compiling RTDM driver errors
+References: <505EB99F.7050705@wanadoo.fr>	<50741C5B.4060206@wanadoo.fr>
+	<5074986C.8000509@xenomai.org> <50749A03.9090607@xenomai.org>
+	<50749C71.2020100@xenomai.org> <5075260E.2050402@wanadoo.fr>
+	<507528E4.4050809@xenomai.org> <50752A42.9080303@web.de>
+	<50752C0C.3050803@xenomai.org> <50752D7E.7010207@web.de>
+	<507538C8.7040706@xenomai.org> <50753980.7020409@web.de>
+	<50753EA0.7070007@xenomai.org> <50754849.9030205@web.de>
+	<507548DE.2000305@xenomai.org> <50754D0F.50407@web.de>
+	<507553D0.8070305@xenomai.org> <50755C40.5080002@xenomai.org>
+	<50756572.5020108@xenomai.org> <50756B26.4040505@xenomai.org>
+	<50756D00.6030203@xenomai.org> <5075703C.7080502@xenomai.org>
+	<507570A8.5000301@xenomai.org> <507571AA.2040600@xenomai.org>
+	<50757393.4090407@xenomai.org> <5075753D.6080703@xenomai.org>
+	<50757597.6010600@xenomai.org> <507575DD.2080409@xenomai.org>
+	<50757EBD.7080506@xenomai.org> <50767DCC.6030404@xenomai.org>
+	<5097C028.9040108@wanadoo.fr> <509809A1.9030304@xenomai.org>
+In-Reply-To: <509809A1.9030304@xenomai.org>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] Target frozen with rtcan_virt
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,64 +31,50 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+Cc: Jan Kiszka <jan.kiszka@web.de>, Wolfgang Grandegger <wg@denx.de>, xenomai@xenomai.org
 
-On 11/05/2012 06:50 PM, Gilles Chanteperdrix wrote:
-> On 11/05/2012 07:00 PM, Stefan Videv wrote:
+Le 05/11/2012 19:46, Gilles Chanteperdrix a écrit :
+> On 11/05/2012 02:33 PM, Thierry Bultel wrote:
 >
->> On 11/05/2012 05:33 PM, Stefan Videv wrote:
->>> On 11/05/2012 05:19 PM, Stefan Videv wrote:
->>>> On 11/05/2012 05:13 PM, Stefan Videv wrote:
->>>>> Hi,
+>> Le 11/10/2012 10:05, Gilles Chanteperdrix a écrit :
+>>> On 10/10/2012 03:57 PM, Philippe Gerum wrote:
+>>>>> Except if we invent another scheduler lock service, simply for the
+>>>>> purpose of spinlocks where suspending the spinlock holder does not make
+>>>>> sense anyway.
 >>>>>
->>>>> I am trying to cross compile a driver that I wrote which is very
->>>>> similar to the one provided in the examples (tut02-skeleton-drv).
->>>>> I've basically changed the write function to do what I am interested
->>>>> in doing, everything else is the same (however I am not providing a
->>>>> read function).
->>>>>
->>>>> During compilation I get the following error:
->>>>>
->>>>> FATAL: modpost: GPL-incompatible module vlcTxDriver.ko uses GPL-only
->>>>> symbol 'rtdm_dev_unregister'
->>>>>
->>>>> What's that supposed to mean, and how do you get around it?
->>>> I answered my own question just now -- I've forgotten to define the
->>>> module licence correctly. Having done that I end up with some
->>>> undefined symbols, just like when trying to compile the POSIX examples.
 >>>>
->>>> Here's what I get:
+>>>> Oh, well, ok. Ack.
 >>>>
->>>> WARNING: "pse51_shm_close" [/home/stefan/VLCTxDriver/vlcTxDriver.ko]
->>>> undefined!
->>>> WARNING: "munmap" [/home/stefan/VLCTxDriver/vlcTxDriver.ko] undefined!
->>>> WARNING: "mmap" [/home/stefan/VLCTxDriver/vlcTxDriver.ko] undefined!
->>>> WARNING: "open" [/home/stefan/VLCTxDriver/vlcTxDriver.ko] undefined!
+>>>> Let's just make sure that we can fold the whole thing into a single set
+>>>> of services at some point in 3.x though.
 >>>>
->>>> Any help is appreciated! Thanks!
->>> I've somewhat answered my questions again:
+>>>> The core issue is that we should not even have to expose a scheduler
+>>>> locking service to userland, but emulating traditional RTOS APIs
+>>>> requires that. What a braindamage counter-feature for a real-time system
+>>>> when one thinks of it.
 >>>
->>> http://www.xenomai.org/pipermail/xenomai-help/2011-12/msg00014.html
+>>> I think we can have the cake and eat it. The idea is to follow the
+>>> approach in the patch I sent, merged with the one you commited, but
+>>> simply, in xnpod_suspend_thread, clear the XNHELDSPIN (misnomed if used
+>>> for that), and simply when we wake up, re-set the bit in the scheduler
+>>> if the thread preemption count is not 0.
 >>>
->>> However, I still do not understand how do you go about enabling these
->>> features (i.e. what to enable when configuring my kernel).
->> I've enabled shared memory support from the POSIX options for Xenomai.
->> That takes care of the first 3 warnings.
 >>
->> However, I am still having the last one. I am trying to use this
->> particular open() function:
->>
->> http://pubs.opengroup.org/onlinepubs/000095399/functions/open.html
->>
->> to be able to write to /dev/mem
+>> Hi,
+>> sorry to come on that thread again, but it is not clear to me if the
+>> issue has been adressed or not.
+>> I have noticed the "nucleus: introduce internal sched locking helpers"
+>> commit, that seems related but I am not sure.
+>> Sorry for the noise.
 >
-> You do not write to /dev/mem in a kernel module. You use ioremap.
 >
-Great point :) Everything works now (well apart from the fact that I am 
-not sure I am writing to the correct registers when using ioremap and 
-iowrite, but that's outside the scope of this mailing list :) ).
+> I have posted a patch, and await Philippe's approval. The patch may have
+> some dubious side effects, it is here:
+>
+> http://www.xenomai.org/pipermail/xenomai/2012-October/026523.html
+>
 
-Thanks!
-
--- Stefan
+Thanks a lot,
+I will also try it asap
+Thierry
 
