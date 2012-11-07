@@ -1,13 +1,10 @@
-Message-ID: <509A7C51.9010702@xenomai.org>
-Date: Wed, 07 Nov 2012 16:20:49 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <CANzNmi-P+pXRT0ECC-0CPtZyR8f4cmMt+ZkbzHvJU_9sgWtD9g@mail.gmail.com>
-	<50980A35.8090607@xenomai.org> <509A7839.40509@gmail.com>
-In-Reply-To: <509A7839.40509@gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] Compiling the Xenomai examples 2.0
+From: Michael Haberler <mail17@mah.priv.at>
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: quoted-printable
+Date: Wed, 7 Nov 2012 20:06:45 +0100
+Message-Id: <9A40FDD0-65C2-470A-ACB7-AB556CF62501@mah.priv.at>
+Mime-Version: 1.0 (Apple Message framework v1283)
+Subject: [Xenomai] RTDM API: no CPU binding, FPU setting for tasks available?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,47 +13,19 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Sebastian Pavez <sebastian.pavez.t@gmail.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 11/07/2012 04:03 PM, Sebastian Pavez wrote:
-> El 05/11/2012 15:49 p.m., Gilles Chanteperdrix escribió:
->> On 11/05/2012 04:09 PM, Sebastian Pavez wrote:
->>
->>> make -C /usr/src/linux-3.2.32 ARCH= CROSS_COMPILE=
->>> (...)
->>> What should I do??
->>
->> Read the documentation? Documentation/kbuild/modules.txt in the kernel
->> sources for starters. The above line can not work.
->>
-> Thank you for your answer.
-> I've been reading the documentation you suggest me and also something 
-> about the Makefile stuff.
-> It's imperative to do the process with the modules?
+As suggested, I adapted the LinuxCNC kernel support from native to RTDM =
+API; my remaining issues are:
 
-If is not imperative at all to compile the examples, xenomai comes with
-a testsuite which allows you to test whether your system runs correctly.
-The aim of the examples is to show you how to compile code outside
-xenomai build system.
+- how do I achieve CPU binding which is available in rt_task_create() =
+(T_CPU(cpuid))?
+- do I need to tell an RTDM task that the thread might use the FPU =
+(T_FPU in rt_task_create()) ?
 
- I mean, I've
-> followed the instructions on http://www.xenomai.org/index.php/Examples 
-> but not for
-> cross-compiling and I supposed that with those instructions would be enough.
-> 
-> The native examples compile fine, but the posix ones don't (and I'm 
-> planning to u se posix). I understand the line
-> 
-> make -C /usr/src/linux-3.2.32 ARCH= CROSS_COMPILE=
-> 
-> looks weird and there's a problem because after that it gives me 
-> "/usr/src/linux-3.2.32/arch//Makefile: No such file or directory", but 
-> if I'm not cross-compiling what should I do?
+thanks in advance,
 
-What about passing a correct value for the ARCH variable, as described
-in Documentation/kbuild/kbuild.txt?
+Michael
 
--- 
-					    Gilles.
+
 
