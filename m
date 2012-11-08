@@ -1,17 +1,12 @@
-From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
-Date: Wed, 7 Nov 2012 17:40:01 -0500
-Message-ID: <20121107224001.GB14555@csclub.uwaterloo.ca>
-References: <9A40FDD0-65C2-470A-ACB7-AB556CF62501@mah.priv.at>
-	<509AB38E.1060802@grandegger.com>
-	<39DEC9F1-236E-481A-A685-E3EFE883BCFA@mah.priv.at>
-	<509ABA2F.3070507@xenomai.org>
-	<79291449-2780-432F-AD58-BED661299EC6@mah.priv.at>
+Message-ID: <509BB2BE.5040500@basystemes.fr>
+Date: Thu, 08 Nov 2012 14:25:18 +0100
+From: Jean-Baptiste Tredez <jean-baptiste.tredez@basystemes.fr>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <79291449-2780-432F-AD58-BED661299EC6@mah.priv.at>
-Subject: Re: [Xenomai] RTDM API: no CPU binding,
- FPU setting for tasks available?
+References: <50991915.7050500@basystemes.fr> <509927B2.7010305@xenomai.org>
+In-Reply-To: <509927B2.7010305@xenomai.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] pthread_set_name_np
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,26 +15,62 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Michael Haberler <mail17@mah.priv.at>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On Wed, Nov 07, 2012 at 09:17:14PM +0100, Michael Haberler wrote:
-> that I wasnt aware of, and it is quite a showstopper for me - I wish I had known before and saved the time. It puts in question any plans to release the kernel mode port of LinuxCNC altogether.
-> 
-> You _do_ want to add that fact to the Xenomai Roadmap _badly_.
-> 
-> what would be a realistic 'useful remaing life expectancy' for Xenomai 2.x? 1,2,3 years? 
-
-Well Linux has always been highly anti FPU in kernel mode, and Xenomai
-3 seems to drop the idea of doing anything in kernel mode if possible,
-so since all your real time code should be in user space anyhow, there
-should not be any FPU issues.
-
-There have also been interesting bugs to do with FPU in xenomai 2.x
-under certain corner cases that have been entertaining to track down,
-although I don't remember if any had to do with user space versus kernel
-space or not.
-
--- 
-Len Sorensen
+Le 06/11/2012 16:07, Gilles Chanteperdrix a =C3=A9crit :
+> On 11/06/2012 03:05 PM, Jean-Baptiste Tredez wrote:
+>> Hello,
+>>
+>> I have some issues when I change the name of a task (created with the
+>> native skin) with the posix skin (pthread_set_name_np) on xenomai 2.6.=
+1
+>> (kernel 2.6.38.8). This is a task created by a external library and we
+>> can not set the right name at the first place.
+>> pthread_set_name_np seems to work only on tasks created with the posix=
+ skin.
+> Yes, pthread_set_name_np only works for posix skin threads, I do not
+> think we have a simple way of retrieving the native skin thread
+> associated with a given pthread_t identifier.
+>
+> We have some way of doing it that will only work for pthread_self().
+>
+>> Here is a test program (that worked with linux 2.6.38.8 + xenomai-2.6.=
+0
+>> and crash with linux 2.6.38 + xenomai 2.6.1) :
+> I doubt very much it has ever worked. It did not crash, but did not do
+> anything (and returned ESRCH by the way).
+Ok, it did not crash but did nothing.
+>   Anyway, we can try the
+> following patch, that should restore pthread_set_name_np as a nop for
+> non-posix threads as in 2.6.0:
+>
+> diff --git a/ksrc/skins/posix/syscall.c b/ksrc/skins/posix/syscall.c
+> index 9b1c266..6c78244 100644
+> --- a/ksrc/skins/posix/syscall.c
+> +++ b/ksrc/skins/posix/syscall.c
+> @@ -435,9 +435,11 @@ static int __pthread_set_name_np(struct pt_regs *r=
+egs)
+>   	hkey.u_tid =3D __xn_reg_arg1(regs);
+>   	hkey.mm =3D current->mm;
+>   	k_tid =3D __pthread_find(&hkey);
+> -	p =3D xnthread_user_task(&k_tid->threadbase);
+> -	strncpy(p->comm, name, sizeof(p->comm));
+> -	p->comm[sizeof(p->comm) - 1] =3D '\0';
+> +	if (k_tid) {
+> +		p =3D xnthread_user_task(&k_tid->threadbase);
+> +		strncpy(p->comm, name, sizeof(p->comm));
+> +		p->comm[sizeof(p->comm) - 1] =3D '\0';
+> +	}
+>
+>   	return -pthread_set_name_np(k_tid, name);
+>   }
+This is working (nop operation).
+> If you want to set a thread name for display in top or ps, you should u=
+se
+> prctl(PR_SET_NAME). If you want to set the thread name for display in
+> /proc/xenomai/stat or /proc/xenomai/sched, you have no other choice tha=
+n
+> using the native API for native skin threads.
+>
 
