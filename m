@@ -1,14 +1,12 @@
-Message-ID: <50A224BE.5060800@xenomai.org>
-Date: Tue, 13 Nov 2012 11:45:18 +0100
+Message-ID: <50A23100.5040003@xenomai.org>
+Date: Tue, 13 Nov 2012 12:37:36 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <50A10873.9030907@axelsw.it> <50A109F3.9090106@axelsw.it>
-	<50A16CA2.7060403@xenomai.org> <50A1FF6A.3000802@axelsw.it>
-In-Reply-To: <50A1FF6A.3000802@axelsw.it>
+References: <50A188A3.90704@gmail.com>
+In-Reply-To: <50A188A3.90704@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] debug a xenomai application with gdb stops another
- xenomai application
+Subject: Re: [Xenomai] module.h error
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,20 +15,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Roberto Bielli <roberto.bielli@axelsw.it>
-Cc: xenomai@xenomai.org
+To: Sebastian Pavez <sebastian.pavez.t@gmail.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 11/13/2012 09:06 AM, Roberto Bielli wrote:
+On 11/13/2012 12:39 AM, Sebastian Pavez wrote:
 
-> Hi,
+> Hi everybody!
 > 
-> is there a way instead to debug a xenomai userspace application without 
-> than the other xenomai task in the application stops  ?
+> I have xenomai-2.6.1 with kernel 3.2.32 over an i7.
+> I'm trying to compile the attached files, but with make I get this message:
+> 
+> cc -I/lib/modules/3.2.32/build/include/xenomai 
+> -I/lib/modules/3.2.32/build/include/xenomai/compat
+> -I/lib/modules/3.2.32/build/include/xenomai/posix     -c -o sinus.o sinus.c
+> sinus.c:2:26: fatal error: linux/module.h: No such file or directory
+> compilation terminated.
+> make: *** [sinus.o] Error 1
+> 
+> How could I fix this?? This mean that I have some problems with 
+> xenomai's installation?? or did I overlook something??
 
 
-The other xenomai task should not stop when you debug an application,
-they only stop when the debugged application is stopped.
+The makefiles in xenomai examples are makefiles for you to reuse, but to
+reuse them, you have to understand how they work.
 
+See Documentation/kbuild/modules.txt in the linux kernel sources to
+understand how to compile modules.
 
 -- 
                                                                 Gilles.
