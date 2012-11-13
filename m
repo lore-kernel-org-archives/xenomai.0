@@ -1,5 +1,5 @@
-Message-ID: <50A1FC73.7080104@axelsw.it>
-Date: Tue, 13 Nov 2012 08:53:23 +0100
+Message-ID: <50A1FF6A.3000802@axelsw.it>
+Date: Tue, 13 Nov 2012 09:06:02 +0100
 From: Roberto Bielli <roberto.bielli@axelsw.it>
 MIME-Version: 1.0
 References: <50A10873.9030907@axelsw.it> <50A109F3.9090106@axelsw.it>
@@ -22,16 +22,10 @@ Cc: xenomai@xenomai.org
 
 Hi,
 
-is the same behaviour in kernel space ?
-
-I explain it better.
-
-if i develop a rtdm driver with xenomai tasks and put a gdb breakpoint 
-into user space application
-does the task in kernel space continue ?
+is there a way instead to debug a xenomai userspace application without 
+than the other xenomai task in the application stops  ?
 
 Best Regards
-
 
 Il 12/11/2012 22:39, Gilles Chanteperdrix ha scritto:
 > On 11/12/2012 03:38 PM, Roberto Bielli wrote:
