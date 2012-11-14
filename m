@@ -1,15 +1,11 @@
-Message-ID: <50A24098.60102@xenomai.org>
-Date: Tue, 13 Nov 2012 13:44:08 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <50A39708.5060000@wanadoo.fr>
+Date: Wed, 14 Nov 2012 14:05:12 +0100
+From: Thierry Bultel <thierry.bultel@wanadoo.fr>
 MIME-Version: 1.0
-References: <50A10873.9030907@axelsw.it> <50A109F3.9090106@axelsw.it>
-	<50A16CA2.7060403@xenomai.org> <50A1FF6A.3000802@axelsw.it>
-	<50A224BE.5060800@xenomai.org> <50A23D62.3080409@axelsw.it>
-In-Reply-To: <50A23D62.3080409@axelsw.it>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] debug a xenomai application with gdb stops another
- xenomai application
+Subject: [Xenomai] minor build issue with linux-rel_imx_3.0.15_12.03.00 +
+ adeos-ipipe-3.0.36-arm-1.18-11.patch using imx6_defconfig
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,38 +14,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Roberto Bielli <roberto.bielli@axelsw.it>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 11/13/2012 01:30 PM, Roberto Bielli wrote:
+Following latest README;
 
-> Hi Gilles,
-> 
-> excuse me for my english but the exact question is this:
-> 
-> i have two applications with xenomai tasks.
-> 
-> I want to debug the first application with gdb but i don't want to debug 
-> the second.
-> I want that the second goes normally.
-> 
-> Tha actual behaviour is that if i put a breakpoint in a xenomai task in 
-> the first application also the tasks in the second applications stops.
+Manually applied :
 
+adeos-ipipe-3.0.36-arm-1.18-11-pre.patch
+adeos-ipipe-3.0.36-arm-1.18-11.patch
+adeos-ipipe-3.0.36-arm-1.18-11-post.patch
 
-If that happens then this is a bug. The second application should only
-stop when you hit the breakpoint or otherwise stop the first application
-in the debugger, not when you PUT the breakpoint.
+and using imx6_defconfig
 
-> 
-> You answer me that it's the correct behavior because it's a feature.
-> 
-> So i ask you if there is a way to allow to debug the first application 
-> without the second stops.
+the build fails at:
 
+drivers/misc/mxs-perfmon.c: In function 'perfmon_show':
+drivers/misc/mxs-perfmon.c:174: error: too few arguments to function
+'mxs_reset_block'
+drivers/misc/mxs-perfmon.c: In function 'perfmon_store':
+drivers/misc/mxs-perfmon.c:237: error: too few arguments to function
+'mxs_reset_block'
 
-No.
+It is the only and single issue, adding 'false' as 2nd arg is fine (for
+building, not tested at runtime yet).
 
--- 
-                                                                Gilles.
+Cheers
+Thierry
 
