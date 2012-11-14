@@ -1,11 +1,9 @@
-Message-ID: <50A39708.5060000@wanadoo.fr>
-Date: Wed, 14 Nov 2012 14:05:12 +0100
-From: Thierry Bultel <thierry.bultel@wanadoo.fr>
 MIME-Version: 1.0
+From: Jonathan Bohren <jonathan.bohren@gmail.com>
+Date: Wed, 14 Nov 2012 15:18:20 -0500
+Message-ID: <CADy-PFhkr+VzMXQV-+0Gn2KvFvVs5QYHazZYpcLoifem4wSDMA@mail.gmail.com>
 Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] minor build issue with linux-rel_imx_3.0.15_12.03.00 +
- adeos-ipipe-3.0.36-arm-1.18-11.patch using imx6_defconfig
+Subject: [Xenomai] Xenomai 2.6.1 Kernel 3.2 on new Xeon E5 machine
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,28 +14,33 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Following latest README;
+All,
 
-Manually applied :
+I'm trying to set up a new realtime box with a single Intel Xeon E5-1620
+CPU running with Xenomai 2.6.1 and Kernel 3.2.21.
 
-adeos-ipipe-3.0.36-arm-1.18-11-pre.patch
-adeos-ipipe-3.0.36-arm-1.18-11.patch
-adeos-ipipe-3.0.36-arm-1.18-11-post.patch
+So far, I can get it to boot, but then the mouse and keyboard respond as if
+they're dropping events and lagging dramatically (both in X11 and magic
+sysreq). However, I don't seem to see any lag issues when logged in over
+ssh from another machine.
 
-and using imx6_defconfig
+I couldn't disable MSI in the kernel config, but I do have the "pci=nomsi"
+boot args.
 
-the build fails at:
+I also tried using the SMI workaround, and adding my LPC ID to smi.c, but I
+still get the same GUI lag issues.
 
-drivers/misc/mxs-perfmon.c: In function 'perfmon_show':
-drivers/misc/mxs-perfmon.c:174: error: too few arguments to function
-'mxs_reset_block'
-drivers/misc/mxs-perfmon.c: In function 'perfmon_store':
-drivers/misc/mxs-perfmon.c:237: error: too few arguments to function
-'mxs_reset_block'
+Any ideas?
 
-It is the only and single issue, adding 'false' as 2nd arg is fine (for
-building, not tested at runtime yet).
+thanks!
+-j
 
-Cheers
-Thierry
+-- 
+Jonathan Bohren
+PhD Student
+Dynamical Systems and Control Laboratory
+Laboratory for Computational Sensing and Robotics
+The Johns Hopkins University
 
+(707) 520-4736
+jbo@jhu.edu
