@@ -1,13 +1,14 @@
-Message-ID: <50A8BC07.7080900@xenomai.org>
-Date: Sun, 18 Nov 2012 11:44:23 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <50AA2D11.2060505@gmail.com>
+Date: Mon, 19 Nov 2012 13:58:57 +0100
+From: Stefan Roese <stefan.roese@gmail.com>
 MIME-Version: 1.0
-References: <50A81190.5000200@rti.com> <50A8BAB0.6040002@xenomai.org>
-In-Reply-To: <50A8BAB0.6040002@xenomai.org>
-Content-Type: text/plain; charset=UTF-8
+References: <1352989143-32531-1-git-send-email-stefan.roese@gmail.com>
+	<50A67BB8.2070903@xenomai.org>
+In-Reply-To: <50A67BB8.2070903@xenomai.org>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Xenomai support has been added to the OMG Data
- Distribution Service (DDS) Implementation from RTI
+Subject: Re: [Xenomai] [PATCH] mpc5200: Add RTDM LPBFIFO driver and demo
+ RTDM FPGA device driver
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,57 +17,84 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gerardo Pardo-Castellote <gerardo@rti.com>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On 11/18/2012 11:38 AM, Gilles Chanteperdrix wrote:
+Hi Gilles,
 
-> On 11/17/2012 11:37 PM, Gerardo Pardo-Castellote wrote:
+On 11/16/2012 06:45 PM, Gilles Chanteperdrix wrote:
+> On 11/15/2012 03:19 PM, stefan.roese@gmail.com wrote:
+>> +/*
+>> + * NO_DMA:
+>> + *
+>> + * Define to enable memcpy() for blockdata transfer instead of DMA
+>> + * support. This is available only for test purposes. Should be disabled
+>> + * or even removed in the final driver version.
+>> + */
+>> +#if 0
+>> +#define NO_DMA
+>> +#endif
+>> +
+>> +/*
+>> + * PRINT_READ_TIME:
+>> + *
+>> + * Print min and max times consumed by the blockdata transfer, either
+>> + * per DMA or per memcpy. Should be disbaled or even removed in the
+>> + * final driver version.
+>> + */
+>> +#if 1
+>> +#define PRINT_READ_TIME
+>> +#endif
+>> +
+>> +/*
+>> + * DEBUG:
+>> + *
+>> + * Define to print debug informations. Should be disabled in the
+>> + * final driver of course.
+>> + */
+>> +#if 0
+>> +#define DEBUG
+>> +#endif
 > 
->>
->> Hello,
->>
->> I wanted to make everyone aware that RTI just added support for Xenomai 
->> to RTI Connext DDS.  This is RTI's implementation of the OMG 
->> Data-Distribution Service standard specification.
->>
->> If deemed appropriate you could add this link to your Weblinks page:
->> http://community.rti.com/content/forum-topic/howto-use-dds-xenomai-configure-xenomai-and-run-rti-connext-dds
+> This is dead code, please use Kconfig or remove the dead code entirely.
+
+Yes. Will move to Kconfig option.
+
+>> +	/*
+>> +	 * Block until the blockdata is completely read into
+>> +	 * the buffer (done in interrupt)
+>> +	 */
+>> +	ret = rtdm_event_timedwait(&fpga_ctx->read_event,
+>> +				   fpga_ctx->info->timeout, NULL);
+>> +
+>> +	/*
+>> +	 * Mark blockdata as read
+>> +	 */
+>> +	fpga_ctx->blockdata_ready = 0;
+>> +
+>> +	if (ret)
+>> +		return ret;
 > 
-> 
-> Hi,
-> 
-> this is interesting, but not all the configuration advices apply to
-> latest kernels. I guess this is our fault, we should update the wiki.
-> Anyway:
-> - starting with the I-pipe for linux 3.2, disabling HPET timer or PC
-> speaker is no longer necessary
-> - starting with the I-pipe for linux 3.4, the processor choice with
-> regard to TSC does not really matter
-> - you can keep the "stack protector" option enabled on x86_32.
-> 
-> And something which has always been true: it is a bad idea to disable
-> ACPI completely, ACPI should be kept enabled, except for the
-> ACPI_PROCESSOR option.
-> 
+> You set blockdata_ready whatever the return value of
+> rtdm_event_timedwait so, what if rtdm_event_timedwait fails?
+
+Even when rtdm_event_timedwait() fails (timeout) the blockdata_ready
+flag needs to be reset. As it marks the last read access from the
+application (task) to be finished. So re-setting it to 0 even in the
+timeout case was done intentionally here.
+
+> and you do it without any kind of mutual exclusion, so, what if another
+> thread or an irq is doing something between the call to
+> rtdm_event_timedwait and the moment where that variable is set to 0?
+
+Only one thread can access the read function at a time (synchronized
+with ctx->reading). So there can be no clashes with other read-threads
+here. And the interrupt shall set the blockdata_ready flag upon the
+cycle data interrupt. To signal new data ready for reading. So I don't
+see where some synchronization method is needed here.
+
+Thanks for the review,
+Stefan
 
 
-Something else: the part about xeno-config could lead people to run 
-xeno-config by hand and paste the result in their makefile, this is not 
-the way xeno-config should be used, it is better to show people how to 
-integrate the use of xeno-config in their makefile, as is demonstrated 
-here:
-https://www.xenomai.org/index.php/Porting_POSIX_applications_to_Xenomai#Compilation_flags
-
-The difference is that if we change the flags between two versions of
-xenomai, the makefiles should continue to work. We do not consider the
-compilation flags as part of the ABI, so, they may change between two
-versions.
-
-Also note that starting with xenomai 2.6, pkg-config support is
-available, it may make things easier for people integrating xenomai 
-with autotools based projects.
-
--- 
-                                                                Gilles.
 
