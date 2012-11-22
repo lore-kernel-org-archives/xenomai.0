@@ -1,14 +1,10 @@
-Message-ID: <50AC9EB4.1020705@gmail.com>
-Date: Wed, 21 Nov 2012 10:28:20 +0100
-From: Stefan Roese <stefan.roese@gmail.com>
+Message-ID: <50AE49ED.9020804@ruggedcom.com>
+Date: Thu, 22 Nov 2012 10:51:09 -0500
+From: Makarand Pradhan <makarandpradhan@ruggedcom.com>
 MIME-Version: 1.0
-References: <1353481805-28850-1-git-send-email-stefan.roese@gmail.com>
-	<20121121090913.B53842003CF@gemini.denx.de>
-In-Reply-To: <20121121090913.B53842003CF@gemini.denx.de>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PATCH v2] mpc5200: Add RTDM LPBFIFO driver and demo
- RTDM FPGA device driver
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="iso-8859-1"; Format="flowed"
+Subject: [Xenomai] Mutex enhancement for Auto relaxed threads
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,64 +13,80 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Wolfgang Denk <wd@denx.de>
-Cc: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi Wolfgang,
+Greetings,
 
-On 11/21/2012 10:09 AM, Wolfgang Denk wrote:
-> In message <1353481805-28850-1-git-send-email-stefan.roese@gmail.com> you wrote:
->>
->> This patch adds support for the RTDM LPB (LocalPlusBus) FIFO driver
->> for the MPC5200. It will be used for DMA support in an RTDM FPGA
->> device driver. This rt-fpga.c driver is a custom device driver,
->> but might be useful for other developers as well. Thats why I
->> included it here too.
-> ...
->> --- /dev/null
->> +++ b/ksrc/drivers/mpc5200_dma/Config.in
->> @@ -0,0 +1,10 @@
->> +#
->> +# Xenomai configuration for Linux v2.4
-> 
-> Linux v2.4 ??? 
-> 
-> I am pretty sure this driver will not run with a 2.4 Linux kenrel...
+I have a proposal for enhancing the process of locking a real-time mutex in=
+ auto-relaxed Xenomai threads. It will  save a lot of CPU cycles in some sc=
+enarios, and I would like to get your expert opinion about it (I have coded=
+ the enhancement for native skin and changes are attached to this email).
 
-Yes. I just put it in since all drivers in ksrc had it as well. Will
-remove in the next version.
+Xenomai mutex is designed in such a way that trapping to the kernel is not =
+needed.This is a very efficient design which saves a great deal of CPU cycl=
+es.
+However, there is an exception to this efficient behavior: if the Xenomai t=
+hread is an auto-relaxed thread (i.e. running with priority 0), locking a m=
+utex always traps to the kernel because the current implementation handles =
+auto-relaxing upon exiting the system call.
 
->> +#define dbg(format, arg...)						\
->> +	printk("%s (%d): " format, __func__, __LINE__, ##arg)
->> +#else
->> +#define dbg(format, arg...)						\
->> +do {									\
->> +	if (0)								\
->> +		printk("%s (%d): " format, __func__, __LINE__, ##arg);	\
->> +} while (0)
->> +#endif
-> 
-> Why do you define your own (incomaptible to everything else) debug
-> facilities?  Can you not rather use the existing kernel debug
-> macros?
+Look at this scenario:
 
-I'll move to a common kernel debug function/macro in the next patch version.
+A Xenomai thread
+1) locks a mutex (which is an OUTER mutex in this scenario)
+2) then loops multiple times through some operation that requires locking a=
+n unlocking some other mutex (INNER mutex)
+3) unlocks the OUTER mutex
 
->> +#ifdef PRINT_READ_TIME
-> 
-> I see no translation happening anywhere between PRINT_READ_TIME and
-> CONFIG_XENO_DRIVERS_MPC5200_DMA_PRINT_READ_TIME - am I missing
-> something?
-> 
->> +#ifdef NO_DMA
-> 
-> Ditto for NO_DMA versus CONFIG_XENO_DRIVERS_MPC5200_DMA_NO_DMA ?
+If the thread is a real-time thread, locking mutexes is done efficiently. I=
+f the thread is auto-relaxed though, both OUTER and INNER mutexes cause tra=
+pping to the kernel which is not really needed.
+Please note that locking the OUTER mutex already moves the thread to the pr=
+imary domain, so handling the INNER mutex could be done as if the thread wa=
+s a real-time (non-auto-relaxed) thread.
 
-Good catch. I forgot to switch all occurrences of these defines. Will
-fix in next version.
+Enhancements:
+The mutex code was modified in such a way that priority 0 (auto-relaxed) th=
+read will do a system call only once when grabbing and releasing the outter=
+most mutex. The inner mutexes will not jump into the kernel. This change wo=
+uld significantly save CPU cycles by using the user space fast mutexes when=
+ the thread is not relaxed after grabbing the outtermost mutex.
 
-Thanks,
-Stefan
+
+I would highly appreciate your comments.
+
+Best Regards,
+Makarand
+Software Engineer
+RuggedCom Inc.
+www.ruggedcom.com
+300 Applewood Crescent
+Concord, Ontario, L4K 5C7
+Tel:  (905)482-4523
+Fax: (905)856-1995
 
 
 
+
+
+-- =
+
+___________________________________________________________________________
+NOTICE OF CONFIDENTIALITY:
+This e-mail and any attachments may contain confidential and privileged inf=
+ormation.  If you are
+not the intended recipient, please notify the sender immediately by return =
+e-mail and delete this
+e-mail and any copies.  Any dissemination or use of this information by a p=
+erson other than the
+intended recipient is unauthorized and may be illegal.
+_____________________________________________________________________
+
+  =
+
+
+-------------- next part --------------
+An embedded and charset-unspecified text was scrubbed...
+Name: xenomai_changes
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20121122/fc104aa=
+6/attachment.ksh>
