@@ -1,12 +1,12 @@
-From: Michael Pustylnik <MichaelPustylnik@ruggedcom.com>
-Date: Thu, 22 Nov 2012 11:55:52 -0500
-Message-ID: <990B36E792F1A4488D3E2B1C46FD62D69A13775FD4@corpmail2>
-References: <50AE49ED.9020804@ruggedcom.com> <50AE4F97.8030102@xenomai.org>
-In-Reply-To: <50AE4F97.8030102@xenomai.org>
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+Message-ID: <50AE7BEB.5090903@ruggedcom.com>
+Date: Thu, 22 Nov 2012 14:24:27 -0500
+From: Makarand Pradhan <makarandpradhan@ruggedcom.com>
 MIME-Version: 1.0
+References: <50AE49ED.9020804@ruggedcom.com> <50AE4F97.8030102@xenomai.org>
+	<50AE570E.10003@ruggedcom.com>
+In-Reply-To: <50AE570E.10003@ruggedcom.com>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 Subject: Re: [Xenomai] Mutex enhancement for Auto relaxed threads
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -16,79 +16,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, Makarand Pradhan <MakarandPradhan@ruggedcom.com>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Although you can use mutexes in this order, why would you want to do that? =
-Logically, unlocking mutex1 would mean finishing some operation started whe=
-n mutex1 was locked. If as a part of the operation you locked mutex2 and ha=
-ven't unlocked it yet, that would mean you haven't completed your operation=
- yet, and unlocking mutex1 at this point would probably be a bug. Am I wron=
-g?
-
-Michael Pustylnik, P.Eng.
-Senior Software Engineer
-RuggedCom Inc.
-www.ruggedcom.com
-300 Applewood Crescent
-Concord, Ontario, L4K 5C7
-Tel:  (905)482-4523
-Fax: (905)856-1995
-
-=20
-
-
------Original Message-----
-From: xenomai-bounces@xenomai.org [mailto:xenomai-bounces@xenomai.org] On B=
-ehalf Of Gilles Chanteperdrix
-Sent: Thursday, November 22, 2012 11:15 AM
-To: Makarand Pradhan
-Cc: xenomai@xenomai.org
-Subject: Re: [Xenomai] Mutex enhancement for Auto relaxed threads
-
-On 11/22/2012 04:51 PM, Makarand Pradhan wrote:
-> Greetings,
->=20
-> I have a proposal for enhancing the process of locking a real-time mutex =
-in auto-relaxed Xenomai threads. It will  save a lot of CPU cycles in some =
-scenarios, and I would like to get your expert opinion about it (I have cod=
-ed the enhancement for native skin and changes are attached to this email).
->=20
-> Xenomai mutex is designed in such a way that trapping to the kernel is no=
-t needed.This is a very efficient design which saves a great deal of CPU cy=
-cles.
-> However, there is an exception to this efficient behavior: if the Xenomai=
- thread is an auto-relaxed thread (i.e. running with priority 0), locking a=
- mutex always traps to the kernel because the current implementation handle=
-s auto-relaxing upon exiting the system call.
->=20
-> Look at this scenario:
->=20
-> A Xenomai thread
-> 1) locks a mutex (which is an OUTER mutex in this scenario)
-> 2) then loops multiple times through some operation that requires locking=
- an unlocking some other mutex (INNER mutex)
-> 3) unlocks the OUTER mutex
-
-I did not look in details at your code, but what if I do
-
-lock mutex1
-lock mutex2
-unlock mutex1
-unlock mutex2
-
-?
-
---=20
-					    Gilles.
-
-_______________________________________________
-Xenomai mailing list
-Xenomai@xenomai.org
-http://www.xenomai.org/mailman/listinfo/xenomai
-
-No virus found in this incoming message.
-Checked by AVG - www.avg.com=20
-Version: 8.5.455 / Virus Database: 271.1.1/5393 - Release Date: 11/21/12 20=
-:05:00
-
+PiAgV2lsbCBxdWlja2x5IHRlc3QgdGhpcyBhbmQgZ2V0IGJhY2suCgpZZXMuIFRoYXQncyBwcmV0
+dHkgbXVjaCBob3cgdGhlIHN5c3RlbSBiZWhhdmVzLgoKUmdkcywKTWFrYXJhbmQuCgpUZXN0IHBy
+b2dyYW0gYXR0YWNoZWQ6ClJlc3VsdHM6CnRhc2sxOiBQcmlvIDAgQXV0byByZWxheGVkCnRhc2sy
+OiBQcmlvIDEwLiBSVC4Kcm9vdEBydWdnZWRjb206fiMgLi90YzUgMCAxMCAxCkZvcm1hdDogdGM1
+IHByaW8xIHByaW8yIG11eF9pdGVyYXRpb25zLgpTcGF3bmluZzogdGFzazEKdGFzazI6IE11dGV4
+ZXMgY3JlYXRlZAp0YXNrMjogTXV0ZXhlcyBpbiBtZW1vcnkKUnVubmluZyB0YXNrMTogc3RhdHVz
+OiBiMDAzODAKdGFzazE6IEdsb2JhbCB0ZXN0OiAyNQp0YXNrMTogQWNxdWlyaW5nIG11eDEKcnRf
+bXV0ZXhfYWNxdWlyZV9pbm5lcjogRGlkIHN5c3RlbSBjYWxsLiBsb2NrY250OiAxLCBkc29mOiAx
+CnRhc2sxOiBBY3F1aXJlZCBtdXgxLiByYzogMAp0YXNrMTogc3RhdHVzOiBiMDAxODAKdGFzazE6
+IEFjcXVpcmluZyBtdXgyCnRhc2sxOiBBY3F1aXJlZCBtdXgyLiByYzogMAp0YXNrMTogc3RhdHVz
+OiBiMDAxODAKdGFzazE6IFJlbGVhc2luZyBtdXgxCnJ0X211dGV4X3JlbGVhc2U6IERvaW5nIHN5
+c3RlbSBjYWxsLiBsb2NrY250OiAwLCBkc29mOiAxCnRhc2sxOiBSZWxlYXNlZCBtdXgxLiByYzog
+MAp0YXNrMTogc3RhdHVzOiBiMDAzODAgPC0gUmVsYXhlZCB0YXNrMSB3aGlsZSBob2xkaW5nIG11
+dGV4IDIuCnRhc2sxOiBicHJpbzogMCBjcHJpbzogMCBzdGF0dXM6IGIwMDM4MCBpbmZvLnN0YXR1
+czogYjAwMzgwCnRhc2syOiBBY3F1aXJpbmcgbXV4Mi4KdGFzazE6IGJwcmlvOiAwIGNwcmlvOiAx
+MCBzdGF0dXM6IGIwMTE4MCBpbmZvLnN0YXR1czogYjAxMTgwIDwtIHRhc2sxIApqdW1wcyB0byBw
+cmltYXJ5IGFnYWluLi4KdGFzazE6IFJlbGVhc2luZyBtdXgyCnJ0X211dGV4X3JlbGVhc2U6IERv
+aW5nIHN5c3RlbSBjYWxsLiBsb2NrY250OiAwLCBkc29mOiAxCnJ0X211dGV4X2FjcXVpcmVfaW5u
+ZXI6IERpZCBzeXN0ZW0gY2FsbC4gbG9ja2NudDogMSwgZHNvZjogMQp0YXNrMjogQWNxdWlyZWQg
+bXV4Mi4KdGFzazI6IFJlbGVhc2luZyBtdXgyCnJ0X211dGV4X3JlbGVhc2U6IERvaW5nIHN5c3Rl
+bSBjYWxsLiBsb2NrY250OiAwLCBkc29mOiAxCnRhc2syOiBSZWxlYXNlZCBtdXgyLiByYzogMAp0
+YXNrMjogc3RhdHVzOiAzMDAxODAKdGFzazE6IFJlbGVhc2VkIG11eDIuIHJjOiAwCnRhc2sxOiBz
+dGF0dXM6IGIwMDM4MAoKCk9uIDIyLzExLzEyIDExOjQ3IEFNLCBNYWthcmFuZCBQcmFkaGFuIHdy
+b3RlOgo+IEhpIEdpbGxlcywKPgo+IGxvY2sgbXV0ZXgxCj4gbG9jayBtdXRleDIKPiB1bmxvY2sg
+bXV0ZXgxCj4gdW5sb2NrIG11dGV4Mgo+Cj4gQXMgcGVyIG15IGN1cnJlbnQgaW1wbGVtZW50YXRp
+b24sIEkgZXhwZWN0IHRoZSB0aHJlYWQgdG8gcmVsYXggYWZ0ZXIKPiB1bmxvY2tpbmcgbXV0ZXgx
+LiBJZiBhbm90aGVyIFJUIHRocmVhZCBzdGFydHMgd2FpdGluZyBvbiBtdXRleDIsIEkKPiBleHBl
+Y3QgdGhlIHRocmVhZCBob2xkaW5nIHRoZSBtdXRleCB3aWxsIGhhcmRlbiBhbmQgc3RhcnQgcnVu
+bmluZyBpbgo+IHByaW1hcnkgYWdhaW4uIFdpbGwgcXVpY2tseSB0ZXN0IHRoaXMgYW5kIGdldCBi
+YWNrLgo+Cj4gSSBkaWQgY29uc2lkZXIgdGhpcyBzY2VuYXJpbyBidXQgc2luY2Ugd2UgbmV2ZXIg
+dXNlIHN1Y2ggYSBiZWhhdmlvdXIgaW4KPiBvdXIgc3lzdGVtLCBkaWQgbm90IHB1cnN1ZSBpdCBm
+dXJ0aGVyLgo+Cj4gVGhpcyBicmluZ3MgdXAgYW5vdGhlciBxdWVzdGlvbiB0aGF0IEkgd2FzIGNv
+bnRlbXBsYXRpbmcuIERvIHdlIHdhbnQgdG8KPiBoYXJkZW4gdW5sZXNzIHRoZXJlIGlzIGFub3Ro
+ZXIgUlQgdGhyZWFkIHdhbnRpbmcgdGhpcyBtdXRleD8gSWYgbm90IHRoZW4KPiB0aGUgaW1wbGVt
+ZW50YXRpb24gYmVjb21lcyBzaW1wbGVyIGFuZCB0aGUgc2NlbmFyaW8gbWVudGlvbmVkIHdvdWxk
+IGFsc28KPiBnZXQgYWRkcmVzc2VkIGF1dG9tYXRpY2FsbHkuCj4KPiBSZ2RzLAo+IE1hay4KPgo+
+Cj4+IEkgZGlkIG5vdCBsb29rIGluIGRldGFpbHMgYXQgeW91ciBjb2RlLCBidXQgd2hhdCBpZiBJ
+IGRvCj4+Cj4+IGxvY2sgbXV0ZXgxCj4+IGxvY2sgbXV0ZXgyCj4+IHVubG9jayBtdXRleDEKPj4g
+dW5sb2NrIG11dGV4Mgo+Pgo+PiA/Cj4+Cj4KCgotLSAKX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCk5PVElD
+RSBPRiBDT05GSURFTlRJQUxJVFk6ClRoaXMgZS1tYWlsIGFuZCBhbnkgYXR0YWNobWVudHMgbWF5
+IGNvbnRhaW4gY29uZmlkZW50aWFsIGFuZCBwcml2aWxlZ2VkIGluZm9ybWF0aW9uLiAgSWYgeW91
+IGFyZQpub3QgdGhlIGludGVuZGVkIHJlY2lwaWVudCwgcGxlYXNlIG5vdGlmeSB0aGUgc2VuZGVy
+IGltbWVkaWF0ZWx5IGJ5IHJldHVybiBlLW1haWwgYW5kIGRlbGV0ZSB0aGlzCmUtbWFpbCBhbmQg
+YW55IGNvcGllcy4gIEFueSBkaXNzZW1pbmF0aW9uIG9yIHVzZSBvZiB0aGlzIGluZm9ybWF0aW9u
+IGJ5IGEgcGVyc29uIG90aGVyIHRoYW4gdGhlCmludGVuZGVkIHJlY2lwaWVudCBpcyB1bmF1dGhv
+cml6ZWQgYW5kIG1heSBiZSBpbGxlZ2FsLgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KCiAgCgotLS0tLS0tLS0tLS0t
+LSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1
+YmJlZC4uLgpOYW1lOiB0YzUuYwpUeXBlOiB0ZXh0L3gtY3NyYwpTaXplOiA0MzE0IGJ5dGVzCkRl
+c2M6IG5vdCBhdmFpbGFibGUKVVJMOiA8aHR0cDovL3d3dy54ZW5vbWFpLm9yZy9waXBlcm1haWwv
+eGVub21haS9hdHRhY2htZW50cy8yMDEyMTEyMi85NjMxZmIxOC9hdHRhY2htZW50LmM+Cg==
