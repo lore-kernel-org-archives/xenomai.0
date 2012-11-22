@@ -1,18 +1,13 @@
+Message-ID: <50AE7FEC.8090404@ruggedcom.com>
+Date: Thu, 22 Nov 2012 14:41:32 -0500
+From: Makarand Pradhan <makarandpradhan@ruggedcom.com>
 MIME-Version: 1.0
-In-Reply-To: <50895CFB.6090602@xenomai.org>
-References: <CANzNmi8DYqXmwtGe+Nu_HnLC8KgRO=H-29p6QBrjWrawreK_ig@mail.gmail.com>
-	<508837F9.9060904@xenomai.org>
-	<CANzNmi8qKWz2PwyS0e_fchO7xpcsq_a0yqDYbuiRU_PYVjsvQA@mail.gmail.com>
-	<50883F34.4010604@xenomai.org>
-	<CANzNmi-7SKy9HS=5g63=aMom1KsO_ZmxkdULe2gAteuPsuW+_A@mail.gmail.com>
-	<50895B51.60409@xenomai.org>
-	<CANzNmi_0j7sFOBpLSdsyAgbsdvcRdB=3448nMpoTDQiq_wg+=A@mail.gmail.com>
-	<50895CFB.6090602@xenomai.org>
-Date: Thu, 25 Oct 2012 15:04:56 -0300
-Message-ID: <CANzNmi_V-qEXhob68AteDC1s=s8kqRUE8B9_meE8XGx2UEpBrg@mail.gmail.com>
-From: Sebastian Pavez <sebastian.pavez.t@gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Subject: Re: [Xenomai] Problem trying an example for the first time.
+References: <50AE49ED.9020804@ruggedcom.com> <50AE4F97.8030102@xenomai.org>
+	<50AE570E.10003@ruggedcom.com> <50AE7BEB.5090903@ruggedcom.com>
+In-Reply-To: <50AE7BEB.5090903@ruggedcom.com>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Subject: Re: [Xenomai] Mutex enhancement for Auto relaxed threads
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,27 +17,61 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-2012/10/25 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-
-> On 10/25/2012 05:35 PM, Sebastian Pavez wrote:
-> > 2012/10/25 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-> >> What does apt-cache show xenomai-runtime say?
-> >
-> >
-> > Package: xenomai-runtime
-> > Version: 2.5.5.2-1ubuntu2
->
-> So, is it more clear, now ?
->
-> --
->                                             Gilles.
->
-I think so, I found the 2.6.0 version of xenomai-runtime, but when I try it
-I get the error (user-space requires '3', kernel provides '4'). In the
-forum I found a previous answer of you about the same branch of
-kernel-space and user-space. So I search for xenomai-runtime 2.6.0, but
-what I get it's an experimental package ... I really don't wanna something
-like that because of my lack of experience ... I should try to use xenomai
-2.6.0 instead of the 2.6.1 I'm using now??
+SGksCgpNYWRlIGEgc21hbGwgY2hhbmdlLgoKU28gcmUgc2VuZGluZyBjaGFuZ2VzLgoKUmdkcywK
+TWFrYXJhbmQuCgpPbiAyMi8xMS8xMiAwMjoyNCBQTSwgTWFrYXJhbmQgUHJhZGhhbiB3cm90ZToK
+Pj4gICBXaWxsIHF1aWNrbHkgdGVzdCB0aGlzIGFuZCBnZXQgYmFjay4KPiBZZXMuIFRoYXQncyBw
+cmV0dHkgbXVjaCBob3cgdGhlIHN5c3RlbSBiZWhhdmVzLgo+Cj4gUmdkcywKPiBNYWthcmFuZC4K
+Pgo+IFRlc3QgcHJvZ3JhbSBhdHRhY2hlZDoKPiBSZXN1bHRzOgo+IHRhc2sxOiBQcmlvIDAgQXV0
+byByZWxheGVkCj4gdGFzazI6IFByaW8gMTAuIFJULgo+IHJvb3RAcnVnZ2VkY29tOn4jIC4vdGM1
+IDAgMTAgMQo+IEZvcm1hdDogdGM1IHByaW8xIHByaW8yIG11eF9pdGVyYXRpb25zLgo+IFNwYXdu
+aW5nOiB0YXNrMQo+IHRhc2syOiBNdXRleGVzIGNyZWF0ZWQKPiB0YXNrMjogTXV0ZXhlcyBpbiBt
+ZW1vcnkKPiBSdW5uaW5nIHRhc2sxOiBzdGF0dXM6IGIwMDM4MAo+IHRhc2sxOiBHbG9iYWwgdGVz
+dDogMjUKPiB0YXNrMTogQWNxdWlyaW5nIG11eDEKPiBydF9tdXRleF9hY3F1aXJlX2lubmVyOiBE
+aWQgc3lzdGVtIGNhbGwuIGxvY2tjbnQ6IDEsIGRzb2Y6IDEKPiB0YXNrMTogQWNxdWlyZWQgbXV4
+MS4gcmM6IDAKPiB0YXNrMTogc3RhdHVzOiBiMDAxODAKPiB0YXNrMTogQWNxdWlyaW5nIG11eDIK
+PiB0YXNrMTogQWNxdWlyZWQgbXV4Mi4gcmM6IDAKPiB0YXNrMTogc3RhdHVzOiBiMDAxODAKPiB0
+YXNrMTogUmVsZWFzaW5nIG11eDEKPiBydF9tdXRleF9yZWxlYXNlOiBEb2luZyBzeXN0ZW0gY2Fs
+bC4gbG9ja2NudDogMCwgZHNvZjogMQo+IHRhc2sxOiBSZWxlYXNlZCBtdXgxLiByYzogMAo+IHRh
+c2sxOiBzdGF0dXM6IGIwMDM4MDwtIFJlbGF4ZWQgdGFzazEgd2hpbGUgaG9sZGluZyBtdXRleCAy
+Lgo+IHRhc2sxOiBicHJpbzogMCBjcHJpbzogMCBzdGF0dXM6IGIwMDM4MCBpbmZvLnN0YXR1czog
+YjAwMzgwCj4gdGFzazI6IEFjcXVpcmluZyBtdXgyLgo+IHRhc2sxOiBicHJpbzogMCBjcHJpbzog
+MTAgc3RhdHVzOiBiMDExODAgaW5mby5zdGF0dXM6IGIwMTE4MDwtIHRhc2sxCj4ganVtcHMgdG8g
+cHJpbWFyeSBhZ2Fpbi4uCj4gdGFzazE6IFJlbGVhc2luZyBtdXgyCj4gcnRfbXV0ZXhfcmVsZWFz
+ZTogRG9pbmcgc3lzdGVtIGNhbGwuIGxvY2tjbnQ6IDAsIGRzb2Y6IDEKPiBydF9tdXRleF9hY3F1
+aXJlX2lubmVyOiBEaWQgc3lzdGVtIGNhbGwuIGxvY2tjbnQ6IDEsIGRzb2Y6IDEKPiB0YXNrMjog
+QWNxdWlyZWQgbXV4Mi4KPiB0YXNrMjogUmVsZWFzaW5nIG11eDIKPiBydF9tdXRleF9yZWxlYXNl
+OiBEb2luZyBzeXN0ZW0gY2FsbC4gbG9ja2NudDogMCwgZHNvZjogMQo+IHRhc2syOiBSZWxlYXNl
+ZCBtdXgyLiByYzogMAo+IHRhc2syOiBzdGF0dXM6IDMwMDE4MAo+IHRhc2sxOiBSZWxlYXNlZCBt
+dXgyLiByYzogMAo+IHRhc2sxOiBzdGF0dXM6IGIwMDM4MAo+Cj4KPiBPbiAyMi8xMS8xMiAxMTo0
+NyBBTSwgTWFrYXJhbmQgUHJhZGhhbiB3cm90ZToKPj4gSGkgR2lsbGVzLAo+Pgo+PiBsb2NrIG11
+dGV4MQo+PiBsb2NrIG11dGV4Mgo+PiB1bmxvY2sgbXV0ZXgxCj4+IHVubG9jayBtdXRleDIKPj4K
+Pj4gQXMgcGVyIG15IGN1cnJlbnQgaW1wbGVtZW50YXRpb24sIEkgZXhwZWN0IHRoZSB0aHJlYWQg
+dG8gcmVsYXggYWZ0ZXIKPj4gdW5sb2NraW5nIG11dGV4MS4gSWYgYW5vdGhlciBSVCB0aHJlYWQg
+c3RhcnRzIHdhaXRpbmcgb24gbXV0ZXgyLCBJCj4+IGV4cGVjdCB0aGUgdGhyZWFkIGhvbGRpbmcg
+dGhlIG11dGV4IHdpbGwgaGFyZGVuIGFuZCBzdGFydCBydW5uaW5nIGluCj4+IHByaW1hcnkgYWdh
+aW4uIFdpbGwgcXVpY2tseSB0ZXN0IHRoaXMgYW5kIGdldCBiYWNrLgo+Pgo+PiBJIGRpZCBjb25z
+aWRlciB0aGlzIHNjZW5hcmlvIGJ1dCBzaW5jZSB3ZSBuZXZlciB1c2Ugc3VjaCBhIGJlaGF2aW91
+ciBpbgo+PiBvdXIgc3lzdGVtLCBkaWQgbm90IHB1cnN1ZSBpdCBmdXJ0aGVyLgo+Pgo+PiBUaGlz
+IGJyaW5ncyB1cCBhbm90aGVyIHF1ZXN0aW9uIHRoYXQgSSB3YXMgY29udGVtcGxhdGluZy4gRG8g
+d2Ugd2FudCB0bwo+PiBoYXJkZW4gdW5sZXNzIHRoZXJlIGlzIGFub3RoZXIgUlQgdGhyZWFkIHdh
+bnRpbmcgdGhpcyBtdXRleD8gSWYgbm90IHRoZW4KPj4gdGhlIGltcGxlbWVudGF0aW9uIGJlY29t
+ZXMgc2ltcGxlciBhbmQgdGhlIHNjZW5hcmlvIG1lbnRpb25lZCB3b3VsZCBhbHNvCj4+IGdldCBh
+ZGRyZXNzZWQgYXV0b21hdGljYWxseS4KPj4KPj4gUmdkcywKPj4gTWFrLgo+Pgo+Pgo+Pj4gSSBk
+aWQgbm90IGxvb2sgaW4gZGV0YWlscyBhdCB5b3VyIGNvZGUsIGJ1dCB3aGF0IGlmIEkgZG8KPj4+
+Cj4+PiBsb2NrIG11dGV4MQo+Pj4gbG9jayBtdXRleDIKPj4+IHVubG9jayBtdXRleDEKPj4+IHVu
+bG9jayBtdXRleDIKPj4+Cj4+PiA/Cj4+Pgo+CgoKLS0gCl9fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpOT1RJ
+Q0UgT0YgQ09ORklERU5USUFMSVRZOgpUaGlzIGUtbWFpbCBhbmQgYW55IGF0dGFjaG1lbnRzIG1h
+eSBjb250YWluIGNvbmZpZGVudGlhbCBhbmQgcHJpdmlsZWdlZCBpbmZvcm1hdGlvbi4gIElmIHlv
+dSBhcmUKbm90IHRoZSBpbnRlbmRlZCByZWNpcGllbnQsIHBsZWFzZSBub3RpZnkgdGhlIHNlbmRl
+ciBpbW1lZGlhdGVseSBieSByZXR1cm4gZS1tYWlsIGFuZCBkZWxldGUgdGhpcwplLW1haWwgYW5k
+IGFueSBjb3BpZXMuICBBbnkgZGlzc2VtaW5hdGlvbiBvciB1c2Ugb2YgdGhpcyBpbmZvcm1hdGlv
+biBieSBhIHBlcnNvbiBvdGhlciB0aGFuIHRoZQppbnRlbmRlZCByZWNpcGllbnQgaXMgdW5hdXRo
+b3JpemVkIGFuZCBtYXkgYmUgaWxsZWdhbC4KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCgogIAoKLS0tLS0tLS0tLS0t
+LS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkFuIGVtYmVkZGVkIGFuZCBjaGFyc2V0LXVuc3Bl
+Y2lmaWVkIHRleHQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IHhlbm9tYWlfY2hhbmdlcwpVUkw6IDxo
+dHRwOi8vd3d3Lnhlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTIx
+MTIyL2JkMGM0MDcyL2F0dGFjaG1lbnQua3NoPgo=
