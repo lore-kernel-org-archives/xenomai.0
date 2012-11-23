@@ -1,13 +1,14 @@
-Message-ID: <50AF5ADF.4090502@siemens.com>
-Date: Fri, 23 Nov 2012 12:15:43 +0100
-From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-References: <50AE49ED.9020804@ruggedcom.com> <50AE4F97.8030102@xenomai.org>
-	<990B36E792F1A4488D3E2B1C46FD62D69A13775FD4@corpmail2>
-In-Reply-To: <990B36E792F1A4488D3E2B1C46FD62D69A13775FD4@corpmail2>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Mutex enhancement for Auto relaxed threads
+Date: Fri, 23 Nov 2012 13:35:41 +0100
+From: WONG Sheng Chao <wong@isir.upmc.fr>
+In-Reply-To: <50AF48DA.9010200@xenomai.org>
+References: <04934a1da80b9542fe5e0375b07d3663@isir.upmc.fr>
+	<50AF48DA.9010200@xenomai.org>
+Message-ID: <80c97c7c58b1c913fd0fb2ec83a86b3d@isir.upmc.fr>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Subject: Re: [Xenomai] Compiling I-pipe patched kernel on beaglebone from
+ Angstrom branch
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,57 +17,119 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Michael Pustylnik <MichaelPustylnik@ruggedcom.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On 2012-11-22 17:55, Michael Pustylnik wrote:
-> Although you can use mutexes in this order, why would you want to do that? Logically, unlocking mutex1 would mean finishing some operation started when mutex1 was locked. If as a part of the operation you locked mutex2 and haven't unlocked it yet, that would mean you haven't completed your operation yet, and unlocking mutex1 at this point would probably be a bug. Am I wrong?
-
-I'm not aware that POSIX or some other APIs Xenomai implements forbid
-such an ordering. And you never know if there is weird convoluted legacy
-code out there that depends on exactly this.
-
-However, I think you can avoid the limitation by attaching the property
-"trap to kernel on mutex lock" to the thread instead of some mutex,
-analogously to xeno_current_mode.
-
-Jan
-
-PS: Please no top postings!
-
-> -----Original Message-----
-> From: xenomai-bounces@xenomai.org [mailto:xenomai-bounces@xenomai.org] On Behalf Of Gilles Chanteperdrix
-> Sent: Thursday, November 22, 2012 11:15 AM
-> To: Makarand Pradhan
-> Cc: xenomai@xenomai.org
-> Subject: Re: [Xenomai] Mutex enhancement for Auto relaxed threads
-> 
-> On 11/22/2012 04:51 PM, Makarand Pradhan wrote:
->> Greetings,
->>
->> I have a proposal for enhancing the process of locking a real-time mutex in auto-relaxed Xenomai threads. It will  save a lot of CPU cycles in some scenarios, and I would like to get your expert opinion about it (I have coded the enhancement for native skin and changes are attached to this email).
->>
->> Xenomai mutex is designed in such a way that trapping to the kernel is not needed.This is a very efficient design which saves a great deal of CPU cycles.
->> However, there is an exception to this efficient behavior: if the Xenomai thread is an auto-relaxed thread (i.e. running with priority 0), locking a mutex always traps to the kernel because the current implementation handles auto-relaxing upon exiting the system call.
->>
->> Look at this scenario:
->>
->> A Xenomai thread
->> 1) locks a mutex (which is an OUTER mutex in this scenario)
->> 2) then loops multiple times through some operation that requires locking an unlocking some other mutex (INNER mutex)
->> 3) unlocks the OUTER mutex
-> 
-> I did not look in details at your code, but what if I do
-> 
-> lock mutex1
-> lock mutex2
-> unlock mutex1
-> unlock mutex2
-> 
-> ?
-> 
-
--- 
-Siemens AG, Corporate Technology, CT RTC ITP SDP-DE
-Corporate Competence Center Embedded Linux
-
+T24gRnJpLCAyMyBOb3YgMjAxMiAxMDo1ODo1MCArMDEwMCwgR2lsbGVzIENoYW50ZXBlcmRyaXgg
+d3JvdGU6Cj4gT24gMTEvMjMvMjAxMiAxMDo0NSBBTSwgV09ORyBTaGVuZyBDaGFvIHdyb3RlOgo+
+PiBIaQo+Pgo+PiBJIGFtIHRyeWluZyB0byBnZXQgWGVub21haSB3b3JraW5nIG9uIHRoZSBiZWFn
+bGVib25lIChBTTMzNTkpIGFuZCBJIAo+PiBoYWQKPj4gYmVlbiBmb2xsb3dpbmcgdGhlIGluc3Ry
+dWN0aW9ucyBmcm9tIHRoaXMgbWFpbGluZyBsaXN0Cj4+Cj4+IGh0dHA6Ly93d3cueGVub21haS5v
+cmcvcGlwZXJtYWlsL3hlbm9tYWkvMjAxMi1TZXB0ZW1iZXIvMDI2MTkwLmh0bWwKPj4KPj4gVGhl
+IHN0ZXBzIHRoYXQgSSB3ZW50IHRocm91Z2ggd2FzIHN1Y2gKPj4KPj4gMSkgSSBjb25maWd1cmVk
+IHRoZSBBbmdzdG9ybSBkaXN0cmlidXRpb24gd2l0aCBsaW51eCBrZXJuZWwgMy4yLjIxIAo+PiBm
+b3IKPj4gYmVhZ2xlYm9uZSB1c2luZyBiaXRiYWtlCj4+Cj4+IDIpIENvcGllZCB0aGUga2VybmVs
+IHNvdXJjZSBmcm9tIGl0IGFuZCBzYXZlZCBpdCBhcwo+PiB7b3JpZ2luYWxfYW5nc3Ryb21fa2Vy
+bmVsfQo+Pgo+PiAzKSBJIHRoZW4gcmFuIHRoZSBwYXRjaCBzY3JpcHQgZnJvbSB4ZW5vbWFpLTIu
+Ni4xCj4+Cj4+ICQuL3ByZXBhcmUta2VybmVsLnNoIC0tbGludXg9e29yaWdpbmFsX2FuZ3N0cm9t
+X2tlcm5lbH0gLS1hcmNoPWFybQo+PiAKPj4gLS1hZGVvcz0veGVub21haS0yLjYuMS9rc3JjL2Fy
+Y2gvYXJtL3BhdGNoZXMvaXBpcGUtY29yZS0zLjIuMjEtYXJtLTEucGF0Y2gKPj4KPj4gNCkgVGhl
+cmUgd2VyZSBmb3VyIGNvbmZsaWN0aW5nIGZpbGVzLCBuYW1lbHkKPj4KPj4gYXJjaC9hcm0vY29t
+bW9uL2dpYy5jCj4+IGFyY2gvYXJtL21hY2gtb21hcDIvaXJxLmMKPj4gYXJjaC9hcm0vcGxhdC1t
+eGMvZ2ljLmMKPj4gYXJjaC9hcm0vcGxhdC1vbWFwL2luY2x1ZGUvcGxhdC9pcnFzLmgKPj4KPj4g
+NSkgSSBjb21wYXJlZCB0aGVzZSBmb3VyIGZpbGVzIHRvIHRoZSB2YW5pbGxhIGxpbnV4LWtlcm5l
+bC0zLjIuMjEgCj4+IGFuZAo+PiBwYXRjaCB0aGVzZSA0IGZpbGVzIGluZGl2aWR1YWxseSBmcm9t
+IHtvcmlnaW5hbF9hbmdzdHJvbV9rZXJuZWx9IAo+PiB3aXRoCj4+IHt2YW5pbGxhLWtlcm5lbC0z
+LjIuMjF9LiBOb3cgaSBzYXZlIHRoZSBuZXdseSBwYXRjaGVkIGtlcm5lbCBzb3VyY2UgCj4+IGFz
+Cj4+IHtwcmVfcGF0Y2hlZF9vcmlnaW5hbF9hbmdzdHJvbV9rZXJuZWx9Cj4+Cj4+IDYpIEkgcmFu
+IHRoZSBwcmVwYXJlLWtlcm5lbCBzY3JpcHQgYWdhaW4gd2l0aCB0aGUgLS1saW51eCBkaXJlY3Rl
+ZCAKPj4gdG8KPj4gdGhlIHtwcmVfcGF0Y2hlZF9vcmlnaW5hbF9hbmdzdHJvbV9rZXJuZWx9IGFu
+ZCB0aGUgcGF0Y2ggd2VudCAKPj4gdGhyb3VnaAo+PiBmaW5lLiBTbyBub3cgaSBoYXZlIGEgY29w
+eSBvZiBpLXBpcGUgcGF0Y2hlZCBzb3VyY2UKPj4ge2lwaXBlX3BhdGNoZWRfb3JpZ2luYWxfYW5n
+c3Ryb21fa2VybmVsfQo+Pgo+PiA3KSBJIHByb2NlZWQgd2l0aCBjb3B5aW5nIHRoZSAuY29uZmln
+IGZ1bmN0aW9uIGZyb20KPj4gYXJjaC9hcm0vY29uZmlncy9vbWFwMnBsdXNfZGVmY29uZmlnIGFu
+ZCBydW4gdGhlIG1ha2UgbWVudWNvbmZpZyAKPj4gd2l0aAo+Pgo+PiAkbWFrZSBBUkNIPWFybSBD
+Uk9TU19DT01QSUxFPWFybS1hbmdzdHJvbS1saW51eC1nbnVlYWJpLSBtZW51Y29uZmlnCj4+Cj4+
+IGFuZCBzYXZlIHRoZSBrZXJuZWwgY29uZmlndXJhdGlvbgo+Pgo+PiA4KSBpIHRoZW4gcHJvY2Vl
+ZCB0byBjb21waWxlIHRoZSBrZXJuZWwgd2l0aCB0aGUgZm9sbG93aW5nIGNvbW1hbmQKPj4KPj4g
+JG1ha2UgQVJDSD1hcm0gQ1JPU1NfQ09NUElMRT1hcm0tYW5nc3Ryb20tbGludXgtZ251ZWFiaS0g
+dUltYWdlCj4+Cj4+IDkpIFRoZSBjb21waWxhdGlvbiBmYWlscyBhbmQgaXQgZ2l2ZXMgdGhlIGZv
+bGxvd2luZyBlcnJvcgo+Pgo+PiAgIGFyY2gvYXJtL21hY2gtb21hcDIvZGV2aWNlcy5jOjEwOTY6
+MTI6IGVycm9yOiAnQU0zM1hYX0lSUV9JQ1NTMF8wJwo+PiB1bmRlY2xhcmVkIGhlcmUgKG5vdCBp
+biBhIGZ1bmN0aW9uKQo+PiB8IGFyY2gvYXJtL21hY2gtb21hcDIvZGV2aWNlcy5jOjExMDE6MTI6
+IGVycm9yOiAnQU0zM1hYX0lSUV9JQ1NTMF8xJwo+PiB1bmRlY2xhcmVkIGhlcmUgKG5vdCBpbiBh
+IGZ1bmN0aW9uKQo+PiB8IGFyY2gvYXJtL21hY2gtb21hcDIvZGV2aWNlcy5jOjExMDY6MTI6IGVy
+cm9yOiAnQU0zM1hYX0lSUV9JQ1NTMF8yJwo+PiB1bmRlY2xhcmVkIGhlcmUgKG5vdCBpbiBhIGZ1
+bmN0aW9uKQo+PiB8IGFyY2gvYXJtL21hY2gtb21hcDIvZGV2aWNlcy5jOjExMTE6MTI6IGVycm9y
+OiAnQU0zM1hYX0lSUV9JQ1NTMF8zJwo+PiB1bmRlY2xhcmVkIGhlcmUgKG5vdCBpbiBhIGZ1bmN0
+aW9uKQo+PiB8IGFyY2gvYXJtL21hY2gtb21hcDIvZGV2aWNlcy5jOjExMTY6MTI6IGVycm9yOiAn
+QU0zM1hYX0lSUV9JQ1NTMF80Jwo+PiB1bmRlY2xhcmVkIGhlcmUgKG5vdCBpbiBhIGZ1bmN0aW9u
+KQo+PiB8IGFyY2gvYXJtL21hY2gtb21hcDIvZGV2aWNlcy5jOjExMjE6MTI6IGVycm9yOiAnQU0z
+M1hYX0lSUV9JQ1NTMF81Jwo+PiB1bmRlY2xhcmVkIGhlcmUgKG5vdCBpbiBhIGZ1bmN0aW9uKQo+
+PiB8IGFyY2gvYXJtL21hY2gtb21hcDIvZGV2aWNlcy5jOjExMjY6MTI6IGVycm9yOiAnQU0zM1hY
+X0lSUV9JQ1NTMF82Jwo+PiB1bmRlY2xhcmVkIGhlcmUgKG5vdCBpbiBhIGZ1bmN0aW9uKQo+PiB8
+IGFyY2gvYXJtL21hY2gtb21hcDIvZGV2aWNlcy5jOjExMzE6MTI6IGVycm9yOiAnQU0zM1hYX0lS
+UV9JQ1NTMF83Jwo+PiB1bmRlY2xhcmVkIGhlcmUgKG5vdCBpbiBhIGZ1bmN0aW9uKQo+PiB8IGFy
+Y2gvYXJtL21hY2gtb21hcDIvZGV2aWNlcy5jOjEyNjA6MTI6IGVycm9yOiAKPj4gJ0FNMzNYWF9J
+UlFfQ1BTV19DMF9SWCcKPj4gdW5kZWNsYXJlZCBoZXJlIChub3QgaW4gYSBmdW5jdGlvbikKPj4g
+fCBhcmNoL2FybS9tYWNoLW9tYXAyL2RldmljZXMuYzoxMjYwOjM6IGVycm9yOiBpbml0aWFsaXpl
+ciBlbGVtZW50IAo+PiBpcwo+PiBub3QgY29uc3RhbnQKPj4gfCBhcmNoL2FybS9tYWNoLW9tYXAy
+L2RldmljZXMuYzoxMjYwOjM6IGVycm9yOiAobmVhciBpbml0aWFsaXphdGlvbiAKPj4gZm9yCj4+
+ICdhbTMzeHhfY3Bzd19yZXNvdXJjZXNbMl0uc3RhcnQnKQo+PiB8IGFyY2gvYXJtL21hY2gtb21h
+cDIvZGV2aWNlcy5jOjEyNjE6MzogZXJyb3I6IGluaXRpYWxpemVyIGVsZW1lbnQgCj4+IGlzCj4+
+IG5vdCBjb25zdGFudAo+PiB8IGFyY2gvYXJtL21hY2gtb21hcDIvZGV2aWNlcy5jOjEyNjE6Mzog
+ZXJyb3I6IChuZWFyIGluaXRpYWxpemF0aW9uIAo+PiBmb3IKPj4gJ2FtMzN4eF9jcHN3X3Jlc291
+cmNlc1syXS5lbmQnKQo+PiB8IGFyY2gvYXJtL21hY2gtb21hcDIvZGV2aWNlcy5jOjEyNjU6MTI6
+IGVycm9yOiAKPj4gJ0FNMzNYWF9JUlFfRE1USU1FUjUnCj4+IHVuZGVjbGFyZWQgaGVyZSAobm90
+IGluIGEgZnVuY3Rpb24pCj4+IHwgYXJjaC9hcm0vbWFjaC1vbWFwMi9kZXZpY2VzLmM6MTI2NToz
+OiBlcnJvcjogaW5pdGlhbGl6ZXIgZWxlbWVudCAKPj4gaXMKPj4gbm90IGNvbnN0YW50Cj4+IHwg
+YXJjaC9hcm0vbWFjaC1vbWFwMi9kZXZpY2VzLmM6MTI2NTozOiBlcnJvcjogKG5lYXIgaW5pdGlh
+bGl6YXRpb24gCj4+IGZvcgo+PiAnYW0zM3h4X2Nwc3dfcmVzb3VyY2VzWzNdLnN0YXJ0JykKPj4g
+fCBhcmNoL2FybS9tYWNoLW9tYXAyL2RldmljZXMuYzoxMjY2OjM6IGVycm9yOiBpbml0aWFsaXpl
+ciBlbGVtZW50IAo+PiBpcwo+PiBub3QgY29uc3RhbnQKPj4gfCBhcmNoL2FybS9tYWNoLW9tYXAy
+L2RldmljZXMuYzoxMjY2OjM6IGVycm9yOiAobmVhciBpbml0aWFsaXphdGlvbiAKPj4gZm9yCj4+
+ICdhbTMzeHhfY3Bzd19yZXNvdXJjZXNbM10uZW5kJykKPj4gfCBhcmNoL2FybS9tYWNoLW9tYXAy
+L2RldmljZXMuYzoxMjcwOjEyOiBlcnJvcjogCj4+ICdBTTMzWFhfSVJRX0RNVElNRVI2Jwo+PiB1
+bmRlY2xhcmVkIGhlcmUgKG5vdCBpbiBhIGZ1bmN0aW9uKQo+PiB8IGFyY2gvYXJtL21hY2gtb21h
+cDIvZGV2aWNlcy5jOjEyNzA6MzogZXJyb3I6IGluaXRpYWxpemVyIGVsZW1lbnQgCj4+IGlzCj4+
+IG5vdCBjb25zdGFudAo+PiB8IGFyY2gvYXJtL21hY2gtb21hcDIvZGV2aWNlcy5jOjEyNzA6Mzog
+ZXJyb3I6IChuZWFyIGluaXRpYWxpemF0aW9uIAo+PiBmb3IKPj4gJ2FtMzN4eF9jcHN3X3Jlc291
+cmNlc1s0XS5zdGFydCcpCj4+IHwgYXJjaC9hcm0vbWFjaC1vbWFwMi9kZXZpY2VzLmM6MTI3MToz
+OiBlcnJvcjogaW5pdGlhbGl6ZXIgZWxlbWVudCAKPj4gaXMKPj4gbm90IGNvbnN0YW50Cj4+IHwg
+YXJjaC9hcm0vbWFjaC1vbWFwMi9kZXZpY2VzLmM6MTI3MTozOiBlcnJvcjogKG5lYXIgaW5pdGlh
+bGl6YXRpb24gCj4+IGZvcgo+PiAnYW0zM3h4X2Nwc3dfcmVzb3VyY2VzWzRdLmVuZCcpCj4+IHwg
+YXJjaC9hcm0vbWFjaC1vbWFwMi9kZXZpY2VzLmM6MTI3NToxMjogZXJyb3I6ICdBTTMzWFhfSVJR
+X0NQU1dfQzAnCj4+IHVuZGVjbGFyZWQgaGVyZSAobm90IGluIGEgZnVuY3Rpb24pCj4+IHwgYXJj
+aC9hcm0vbWFjaC1vbWFwMi9kZXZpY2VzLmM6MTI3NTozOiBlcnJvcjogaW5pdGlhbGl6ZXIgZWxl
+bWVudCAKPj4gaXMKPj4gbm90IGNvbnN0YW50Cj4+IHwgYXJjaC9hcm0vbWFjaC1vbWFwMi9kZXZp
+Y2VzLmM6MTI3NTozOiBlcnJvcjogKG5lYXIgaW5pdGlhbGl6YXRpb24gCj4+IGZvcgo+PiAnYW0z
+M3h4X2Nwc3dfcmVzb3VyY2VzWzVdLnN0YXJ0JykKPj4gfCBhcmNoL2FybS9tYWNoLW9tYXAyL2Rl
+dmljZXMuYzoxMjc2OjM6IGVycm9yOiBpbml0aWFsaXplciBlbGVtZW50IAo+PiBpcwo+PiBub3Qg
+Y29uc3RhbnQKPj4gfCBhcmNoL2FybS9tYWNoLW9tYXAyL2RldmljZXMuYzoxMjc2OjM6IGVycm9y
+OiAobmVhciBpbml0aWFsaXphdGlvbiAKPj4gZm9yCj4+ICdhbTMzeHhfY3Bzd19yZXNvdXJjZXNb
+NV0uZW5kJykKPj4KPj4gSSByZWFkIGZyb20gdGhpcyBsaW5rCj4+IGh0dHA6Ly93d3cueGVub21h
+aS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvMjAxMi1KdWx5LzAwMDQ3Ni5odG1sIHRoYXQgCj4+IGZv
+cgo+PiB0aGUga2VybmVsIHRvIGJvb3QgcHJvcGVybHkgb24gdGhlIEFNMzM1OSB0d28gY2hhbmdl
+cyBuZWVkcyB0byBiZSAKPj4gbWFkZS4KPj4gSSBoYWQgeWV0IHRvIG1hZGUgdGhlc2UgY2hhbmdl
+cyBhcyBpIHdhbnQgdG8gc2VlIGlmIHRoZSBrZXJuZWwgCj4+IHNvdXJjZQo+PiB3b3VsZCBjb21w
+aWxlZCBhbmQgdG8gdmVyaWZ5IG15IHN0ZXBzLgo+Pgo+PiBJcyBteSBhcHByb2FjaCBjb3JyZWN0
+PyBBbnkgYWR2aWNlIG9uIGhvdyB0byBzb2x2ZSB0aGlzIHByb2JsZW0/Cj4KPiBUaGVyZSBpcyBu
+byBjb3JyZWN0IGFwcHJvYWNoLCB0aGVyZSBpcyBtb3JlIHRoYW4gb25lIHdheSB0byBkbyBpdC4g
+Cj4gRG9lcwo+IHRoZSB1bi1wYXRjaGVkIGtlcm5lbCBjb21waWxlIHdpdGggdGhlIC5jb25maWcg
+eW91IHVzZT8gSWYgeWVzLCBkb2VzIAo+IHRoZQo+IHBhdGNoZWQga2VybmVsIGNvbXBpbGUgd2l0
+aCBDT05GSUdfSVBJUEUgYW5kIENPTkZJR19YRU5PTUFJIGRpc2FibGVkPwoKClNvcnJ5IGFib3V0
+IHRoZSBwcml2YXRlIHJlcGx5IEdpbGxlcywgSSBjbGlja2VkIHRoZSByZXBseSBidXR0b24gCmlu
+c3RlYWQgb2YgcmVwbHkgYWxsLgoKClRoZSB1bi1wYXRjaGVkIGtlcm5lbCBjb21waWxlIGZpbmUg
+d2l0aCB0aGUgb3JpZ2luYWwgLmNvbmZpZy4KClRoZSBpcGlwZSBwYXRjaGVkIGtlcm5lbCB3aXRo
+IENPTkZJR19JUElQRSBhbmQgQ09ORklHX1hFTk9NQUkgZGlzYWJsZSAKc2hvd3MgdGhlIHNhbWUg
+Y29tcGlsYXRpb24gZXJyb3IgYXMgYmVmb3JlLgoKRm9sbG93aW5nIHRoZSBpbmZvcm1hdGlvbiBm
+cm9tIGhlcmUgYW5kIGxvb2tpbmcgYXQgdGhlIGVycm9yIGNvZGUKCmh0dHA6Ly93d3cueGVub21h
+aS5vcmcvaW5kZXgucGhwL0ktcGlwZS1jb3JlOkFybVBvcnRpbmcjVGhlX2dlbmVyYWxfY2FzZQoK
+SSBoYWQgYSBsb29rIGF0IGFyY2gvYXJtL21hY2gtb21hcDIvS2NvbmZpZyBhbmQgaSBmb3VuZCB0
+aGlzIHNuaXBwZXQsIApidXQgSSBhbSBub3Qgc3VyZSBob3cgdG8gcHJvY2VlZCBmcm9tIGhlcmUu
+Cgpjb25maWcgU09DX09NQVBBTTMzWFgKCWJvb2wgIkFNMzNYWCBzdXBwb3J0IgoJZGVwZW5kcyBv
+biBBUkNIX09NQVAzCglkZWZhdWx0IHkKCkkgd2lsbCBhdHRhY2ggbXkgLmNvbmZpZyBmb3IgcmVm
+ZXJlbmNlCi0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBbiBlbWJlZGRl
+ZCBhbmQgY2hhcnNldC11bnNwZWNpZmllZCB0ZXh0IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBjb25m
+aWcKVVJMOiA8aHR0cDovL3d3dy54ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2ht
+ZW50cy8yMDEyMTEyMy9iZDUwY2VhMS9hdHRhY2htZW50LmtzaD4K
