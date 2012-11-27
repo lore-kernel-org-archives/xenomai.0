@@ -1,14 +1,13 @@
-Message-ID: <50B4C489.1080404@siemens.com>
-Date: Tue, 27 Nov 2012 14:47:53 +0100
-From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-References: <50AE49ED.9020804@ruggedcom.com> <50AE4F97.8030102@xenomai.org>
-	<990B36E792F1A4488D3E2B1C46FD62D69A13775FD4@corpmail2>
-	<50AF5ADF.4090502@siemens.com> <50B4C422.6050709@xenomai.org>
-In-Reply-To: <50B4C422.6050709@xenomai.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Mutex enhancement for Auto relaxed threads
+In-Reply-To: <CADy-PFjCScUGXgUebJj9a6arhZ6mRCnJPuwE3kHT=XcjkY0SpA@mail.gmail.com>
+References: <CADy-PFjUiqnyaP5_1T934OLZQPU2NvNZnZj1uEG3MJvzKhgALQ@mail.gmail.com>
+	<5069E424.9090500@grandegger.com>
+	<CADy-PFjCScUGXgUebJj9a6arhZ6mRCnJPuwE3kHT=XcjkY0SpA@mail.gmail.com>
+From: Jonathan Bohren <jonathan.bohren@gmail.com>
+Date: Tue, 27 Nov 2012 09:33:09 -0500
+Message-ID: <CADy-PFjg9NuOLte1CzoMFs3u+_cPUXE5xu7fzfDOug-qz0sQbg@mail.gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: Re: [Xenomai] RTDM and PEAK PCIe
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,32 +16,82 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Wolfgang Grandegger <wg@grandegger.com>
+Cc: Simon Leonard <simon.v.leonard@gmail.com>, xenomai@xenomai.org
 
-On 2012-11-27 14:46, Gilles Chanteperdrix wrote:
-> On 11/23/2012 12:15 PM, Jan Kiszka wrote:
->> On 2012-11-22 17:55, Michael Pustylnik wrote:
->>> Although you can use mutexes in this order, why would you want to do that? Logically, unlocking mutex1 would mean finishing some operation started when mutex1 was locked. If as a part of the operation you locked mutex2 and haven't unlocked it yet, that would mean you haven't completed your operation yet, and unlocking mutex1 at this point would probably be a bug. Am I wrong?
+Wolfgang,
+
+I got the PEAK PCAN-003027 card working yesterday, but it required
+adding the device ID (0x0003 in addition to 0x0001) to the module
+device table `peak_pci_tbl` here:
+http://git.xenomai.org/?p=xenomai-2.6.git;a=blob;f=ksrc/drivers/can/sja1000/rtcan_peak_pci.c;h=53c8fef71d6d9e71dce6001941cb5922f6c977d6;hb=HEAD#l79
+
+I've committed my changes to a fork on github under the branch name
+"feature_peak_pcie" here:
+https://github.com/jbohren-forks/xenomai/compare/feature_peak_pcie
+
+Is this the appropriate channel to make a pull request, or should I do
+that somewhere else?
+
+thanks again!
+-j
+
+On Mon, Oct 1, 2012 at 3:27 PM, Jonathan Bohren
+<jonathan.bohren@gmail.com> wrote:
+> On Mon, Oct 1, 2012 at 2:42 PM, Wolfgang Grandegger <wg@grandegger.com>
+> wrote:
 >>
->> I'm not aware that POSIX or some other APIs Xenomai implements forbid
->> such an ordering. And you never know if there is weird convoluted legacy
->> code out there that depends on exactly this.
+>> On 10/01/2012 07:27 PM, Jonathan Bohren wrote:
+>> > All,
+>> >
+>> > I'm spec-ing out a new machine for realtime robot control over CANbus
+>> > with
+>> > Xenomai. We currently use a machine with a PCI-based CANbus card from
+>> > PEAK,
+>> > but we'd like to upgrade to the PCI Express version with our new
+>> > machine.
+>> > Specifically the PCAN-PCI Express dual-channel card with galvanic
+>> > isolation
+>> > (PCAN-003027) <http://www.peak-system.com/PCAN-PCI-Express.206.0.html>.
+>> >
+>> >>From the looks of it, the current (and older) peak_pci driver in the
+>> >
+>> > kernel<http://svn.berlios.de/svnroot/repos/socketcan/trunk/kernel/2.6/drivers/net/can/sja1000/peak_pci.c>
+>> > lists
+>> > the PCIe device, but the peak_pci driver in the Xenomai
+>> >
+>> > sources<http://git.xenomai.org/?p=xenomai-2.6.git;a=blob;f=ksrc/drivers/can/sja1000/rtcan_peak_pci.c>is
+>> > an older version that does not.
+>> >
+>> > It looks like the PCI card and the PCIe card have the same device ID
+>> > (0x0001), but it's not clear if there are any other differences that
+>> > would
+>> > keep it from working.
+>> >
+>> > Does anyone know about the Xenomai support for this card?
 >>
->> However, I think you can avoid the limitation by attaching the property
->> "trap to kernel on mutex lock" to the thread instead of some mutex,
->> analogously to xeno_current_mode.
-> 
-> I think the simplest solution to implement this is to share the
-> resources count between user and kernel, using a pthread_key in
-> user-space. However, I really do not see how to do this without breaking
-> the ABI, so, this really is material for xenomai-forge, not for 2.6.
+>> There is support for both of this card in mainline Linux-CAN:
+>>
+>> http://lxr.linux.no/#linux+v3.6/drivers/net/can/sja1000/peak_pci.c#L64
+>>
+>> There is no special treatment for the PCIe-version of that card and
+>> therefore it should also work with the rtcan_peak_pci driver. But
+>> support for 4 channels is still missing.
+>
+>
+> Great, thanks for the quick response!
+>
+> -j
 
-For sure.
 
-Jan
 
 -- 
-Siemens AG, Corporate Technology, CT RTC ITP SDP-DE
-Corporate Competence Center Embedded Linux
+Jonathan Bohren
+PhD Student
+Dynamical Systems and Control Laboratory
+Laboratory for Computational Sensing and Robotics
+The Johns Hopkins University
+
+(707) 520-4736
+jbo@jhu.edu
 
