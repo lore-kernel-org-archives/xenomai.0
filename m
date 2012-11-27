@@ -1,10 +1,15 @@
-Message-ID: <508999F4.6060802@advaoptical.com>
-Date: Thu, 25 Oct 2012 21:58:44 +0200
-From: Oded Gabbay <ogabbay@advaoptical.com>
+Message-ID: <50B4EF81.50307@grandegger.com>
+Date: Tue, 27 Nov 2012 17:51:13 +0100
+From: Wolfgang Grandegger <wg@grandegger.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
+References: <CADy-PFjUiqnyaP5_1T934OLZQPU2NvNZnZj1uEG3MJvzKhgALQ@mail.gmail.com>
+	<5069E424.9090500@grandegger.com>
+	<CADy-PFjCScUGXgUebJj9a6arhZ6mRCnJPuwE3kHT=XcjkY0SpA@mail.gmail.com>
+	<CADy-PFjg9NuOLte1CzoMFs3u+_cPUXE5xu7fzfDOug-qz0sQbg@mail.gmail.com>
+In-Reply-To: <CADy-PFjg9NuOLte1CzoMFs3u+_cPUXE5xu7fzfDOug-qz0sQbg@mail.gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] Problem with rtdm_mmap_to_user
+Subject: Re: [Xenomai] RTDM and PEAK PCIe
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,44 +18,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Jonathan Bohren <jonathan.bohren@gmail.com>
+Cc: Simon Leonard <simon.v.leonard@gmail.com>, xenomai@xenomai.org
 
-Hi,
+On 11/27/2012 03:33 PM, Jonathan Bohren wrote:
+> Wolfgang,
+> 
+> I got the PEAK PCAN-003027 card working yesterday, but it required
+> adding the device ID (0x0003 in addition to 0x0001) to the module
+> device table `peak_pci_tbl` here:
+> http://git.xenomai.org/?p=xenomai-2.6.git;a=blob;f=ksrc/drivers/can/sja1000/rtcan_peak_pci.c;h=53c8fef71d6d9e71dce6001941cb5922f6c977d6;hb=HEAD#l79
+> 
+> I've committed my changes to a fork on github under the branch name
+> "feature_peak_pcie" here:
+> https://github.com/jbohren-forks/xenomai/compare/feature_peak_pcie
+> 
+> Is this the appropriate channel to make a pull request, or should I do
+> that somewhere else?
 
-I'm using Xenomai 2.6.1 and kernel 2.6.33 on mpc8309 (powerpc) processor.
+Just post the patch here on this mailing list.
 
-I'm trying to map a kernel memory area to user space memory.
-
-The call to rtdm_mmap_to_user inside the rt driver works but when I read 
-the memory in the user space thread (rt thread), the contents of the 
-memory area are wrong.
-
-Here is the code in the driver:
-
-         ret = rtdm_mmap_to_user(user_info, skb, sizeof(struct rtskb), 
-PROT_READ|PROT_WRITE,
-                                 (void **)&msg->msg_iov[1].iov_base, 
-NULL, NULL);
-
-
-msg->msg_iov[1].iov_base is a void* which points to NULL before the call 
-to rtdm_mmap_to_user.
-
-The result is in msg->msg_iov[1].iov_base. The address seems good, as it 
-in the range of the addresses of other variables in my user space thread.
-
-In the user-space thread I do:
-
-             void *tmp;
-             tmp = msg->msg_iov[1].iov_base;
-             printf("tmp = %p:%x\n", tmp, *(int *)tmp);
-
-The results is that tmp points to the same address I got at 
-rtdm_mmap_to_user, but the contents of tmp are wrong.
-
-Please help me...
-
-Thanks,
-Oded
+Wolfgang.
 
 
