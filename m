@@ -1,14 +1,14 @@
-From: Wolfgang Denk <wd@denx.de>
+Message-ID: <50B4C422.6050709@xenomai.org>
+Date: Tue, 27 Nov 2012 14:46:10 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-type: text/plain; charset=UTF-8
-In-reply-to: <1353678609-9730-4-git-send-email-stefan.roese@gmail.com>
-References: <1353678609-9730-1-git-send-email-stefan.roese@gmail.com>
-	<1353678609-9730-4-git-send-email-stefan.roese@gmail.com>
-Date: Fri, 23 Nov 2012 21:19:15 +0100
-Message-Id: <20121123201915.358C620027E@gemini.denx.de>
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] [PATCH v3 3/3] mpc5200: Add demo RTDM FPGA DMA based
-	device driver
+References: <50AE49ED.9020804@ruggedcom.com> <50AE4F97.8030102@xenomai.org>
+	<990B36E792F1A4488D3E2B1C46FD62D69A13775FD4@corpmail2>
+	<50AF5ADF.4090502@siemens.com>
+In-Reply-To: <50AF5ADF.4090502@siemens.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Mutex enhancement for Auto relaxed threads
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,47 +17,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: stefan.roese@gmail.com
-Cc: Stefan Roese <sr@denx.de>, xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Dear Stefan,
+On 11/23/2012 12:15 PM, Jan Kiszka wrote:
+> On 2012-11-22 17:55, Michael Pustylnik wrote:
+>> Although you can use mutexes in this order, why would you want to do that? Logically, unlocking mutex1 would mean finishing some operation started when mutex1 was locked. If as a part of the operation you locked mutex2 and haven't unlocked it yet, that would mean you haven't completed your operation yet, and unlocking mutex1 at this point would probably be a bug. Am I wrong?
+> 
+> I'm not aware that POSIX or some other APIs Xenomai implements forbid
+> such an ordering. And you never know if there is weird convoluted legacy
+> code out there that depends on exactly this.
+> 
+> However, I think you can avoid the limitation by attaching the property
+> "trap to kernel on mutex lock" to the thread instead of some mutex,
+> analogously to xeno_current_mode.
 
-In message <1353678609-9730-4-git-send-email-stefan.roese@gmail.com> you =
-wrote:
->=20
-...
-> +/*
-> + * CONFIG_XENO_DRIVERS_MPC5200_DMA_DEBUG:
-> + *
-> + * Define to print debug informations. Should be disabled in the
-> + * final driver of course.
-> + */
-> +
-> +#ifdef CONFIG_XENO_DRIVERS_MPC5200_DMA_DEBUG
-> +#define dbg(format, arg...)						\
-> +	printk("%s (%d): " format, __func__, __LINE__, ##arg)
-> +#else
-> +#define dbg(format, arg...)						\
-> +do {									\
-> +	if (0)								\
-> +		printk("%s (%d): " format, __func__, __LINE__, ##arg);	\
-> +} while (0)
-> +#endif
+I think the simplest solution to implement this is to share the
+resources count between user and kernel, using a pthread_key in
+user-space. However, I really do not see how to do this without breaking
+the ABI, so, this really is material for xenomai-forge, not for 2.6.
 
-Your change log said: "Removed dbg macro and used existing kernel
-debug function".
-
-What about this, then?
-
-Best regards,
-
-Wolfgang Denk
-
---=20
-DENX Software Engineering GmbH,     MD: Wolfgang Denk & Detlev Zundel
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
-Phone: (+49)-8142-66989-10 Fax: (+49)-8142-66989-80 Email: wd@denx.de
-Conceptual integrity in turn dictates that the  design  must  proceed
-from  one  mind,  or  from  a  very small number of agreeing resonant
-minds.               - Frederick Brooks Jr., "The Mythical Man Month"
+-- 
+					    Gilles.
 
