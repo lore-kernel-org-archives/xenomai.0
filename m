@@ -1,12 +1,17 @@
-Date: Fri, 26 Oct 2012 14:36:34 +0200
-From: Nicholas Mc Guire <der.herr@hofr.at>
-Message-ID: <20121026123634.GA28381@opentech.at>
-References: <CAMVghhVFiQNbPLgS5zpLw7Bu5t9mxdY5U9htVOOrRxQt_RWgVQ@mail.gmail.com>
+Message-ID: <50B6619A.10300@grandegger.com>
+Date: Wed, 28 Nov 2012 20:10:18 +0100
+From: Wolfgang Grandegger <wg@grandegger.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAMVghhVFiQNbPLgS5zpLw7Bu5t9mxdY5U9htVOOrRxQt_RWgVQ@mail.gmail.com>
-Subject: Re: [Xenomai] Seeking recommendations for SBC with precision timer
+References: <CADy-PFjUiqnyaP5_1T934OLZQPU2NvNZnZj1uEG3MJvzKhgALQ@mail.gmail.com>
+	<5069E424.9090500@grandegger.com>
+	<CADy-PFjCScUGXgUebJj9a6arhZ6mRCnJPuwE3kHT=XcjkY0SpA@mail.gmail.com>
+	<CADy-PFjg9NuOLte1CzoMFs3u+_cPUXE5xu7fzfDOug-qz0sQbg@mail.gmail.com>
+	<50B4EF81.50307@grandegger.com>
+	<CADy-PFjLCRbPc8MuYYsqEoEPXOuWNurzoG6nKaZFF_2+hQUoEw@mail.gmail.com>
+In-Reply-To: <CADy-PFjLCRbPc8MuYYsqEoEPXOuWNurzoG6nKaZFF_2+hQUoEw@mail.gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] RTDM and PEAK PCIe
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,40 +20,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Howard Lee Harkness <howard.lee.harkness@gmail.com>
-Cc: xenomai@xenomai.org
+To: Jonathan Bohren <jonathan.bohren@gmail.com>
+Cc: Simon Leonard <simon.v.leonard@gmail.com>, xenomai@xenomai.org
 
-On Fri, 26 Oct 2012, Howard Lee Harkness wrote:
-
-> I have a client requirement for a system that can handle hard real time
-> with precision timing, and I'm looking for recommendations for a SBC to
-> support it. Here's what is needed:
+On 11/27/2012 06:08 PM, Jonathan Bohren wrote:
+> On Tue, Nov 27, 2012 at 11:51 AM, Wolfgang Grandegger <wg@grandegger.com> wrote:
+>> On 11/27/2012 03:33 PM, Jonathan Bohren wrote:
+>>> Wolfgang,
+>>>
+>>> I got the PEAK PCAN-003027 card working yesterday, but it required
+>>> adding the device ID (0x0003 in addition to 0x0001) to the module
+>>> device table `peak_pci_tbl` here:
+>>> http://git.xenomai.org/?p=xenomai-2.6.git;a=blob;f=ksrc/drivers/can/sja1000/rtcan_peak_pci.c;h=53c8fef71d6d9e71dce6001941cb5922f6c977d6;hb=HEAD#l79
+>>>
+>>> I've committed my changes to a fork on github under the branch name
+>>> "feature_peak_pcie" here:
+>>> https://github.com/jbohren-forks/xenomai/compare/feature_peak_pcie
+>>>
+>>> Is this the appropriate channel to make a pull request, or should I do
+>>> that somewhere else?
+>>
+>> Just post the patch here on this mailing list.
+>>
+>> Wolfgang.
+>>
 > 
-> 1) x86 architecture
-
-fanless ?
-
-> 2) support for Linux (I will probably be using Xenomai)
-> 3) precision timer with 1 us resolution
-
-many systems will be able to give you a timer reolution of <=1us
-but there is no system that will bee able to timstamp an event with
-that precission - that is any timestamp you get will have an
-uncertenty atleast in the range of a few microseconds to a few
-tens of microseconds (thats independent of using Xenomai, Preept-RT
-or RTAI)
-
-> 4) PC/104 bus
-> 5) lots of I/O (USB 2, I2C, SPI, GPIB, etc)
 > 
-> Anybody here have any experience with a board that has all this?
+> Here you go:
+> 
+> 
+>>From d97ee63e108c3f6eff26368af0df3ba1d1050692 Mon Sep 17 00:00:00 2001
+> From: Jonathan Bohren <jbo@jhu.edu>
+> Date: Tue, 27 Nov 2012 09:13:11 -0500
+> Subject: [PATCH] Adding device ID for PEAK PCIe card IPEH-003027
 
-it does to some extent depend on the "etc" of the "lots of I/O" unless you
-are good with it all being stacked on the PC/104.
+Thanks, just your Signed-off-by is missing.
 
-you might want to look at the boards in the http:/www.OSADL.org/QA, unfortunately not xenomai based systems in the farm but the jitter/latency numbers will most likely hold for Xenomai based systems with negligable offsets.
-
-thx!
-hofrat
+Wolfgang.
 
 
