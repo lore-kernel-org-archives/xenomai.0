@@ -1,10 +1,12 @@
-Message-ID: <50B61654.40504@gmail.com>
-Date: Wed, 28 Nov 2012 10:49:08 -0300
-From: Sebastian Pavez <sebastian.pavez.t@gmail.com>
+Message-ID: <50B617CA.8080209@xenomai.org>
+Date: Wed, 28 Nov 2012 14:55:22 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+References: <50B61654.40504@gmail.com>
+In-Reply-To: <50B61654.40504@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] EDF on Xenomai
+Subject: Re: [Xenomai] EDF on Xenomai
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,14 +15,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: Sebastian Pavez <sebastian.pavez.t@gmail.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-Hi everybody,
+On 11/28/2012 02:49 PM, Sebastian Pavez wrote:
+> Hi everybody,
+> 
+> It's there support for EDF schedulling on Xenomai? I found this question
+> before
+> (http://www.xenomai.org/pipermail/xenomai-core/2007-10/msg00137.html)
+> and the answer was no. It's still the answer?
 
-It's there support for EDF schedulling on Xenomai? I found this question 
-before (http://www.xenomai.org/pipermail/xenomai-core/2007-10/msg00137.html)
-and the answer was no. It's still the answer?
+Yes, no EDF yet.
 
-Thanks,
-Seba.
+> 
+> Thanks,
+> Seba.
+> 
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> http://www.xenomai.org/mailman/listinfo/xenomai
+> 
+
+
+-- 
+Philippe.
 
