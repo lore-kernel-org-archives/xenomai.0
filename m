@@ -1,12 +1,21 @@
-Message-ID: <50B61BBB.9010605@xenomai.org>
-Date: Wed, 28 Nov 2012 15:12:11 +0100
-From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <50B61654.40504@gmail.com> <50B617CA.8080209@xenomai.org>
-In-Reply-To: <50B617CA.8080209@xenomai.org>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=UTF-8;
+ format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] EDF on Xenomai
+Date: Wed, 28 Nov 2012 16:12:58 +0100
+From: WONG Sheng Chao <wong@isir.upmc.fr>
+In-Reply-To: <50B4FFBE.20204@xenomai.org>
+References: <04934a1da80b9542fe5e0375b07d3663@isir.upmc.fr>
+	<50AF48DA.9010200@xenomai.org>
+	<80c97c7c58b1c913fd0fb2ec83a86b3d@isir.upmc.fr>
+	<50AFA44E.4070506@xenomai.org>
+	<b5d8fc2c77444a0bf20a3446d6a7edd0@isir.upmc.fr>
+	<50AFB64E.4030702@xenomai.org>
+	<b6df56ed969c01a5916ff3efc3ce4c87@isir.upmc.fr>
+	<50B4FFBE.20204@xenomai.org>
+Message-ID: <db62a2cc790904728c13fca4beffd559@isir.upmc.fr>
+Subject: Re: [Xenomai] Compiling I-pipe patched kernel on beaglebone from
+ Angstrom branch
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,25 +24,80 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Sebastian Pavez <sebastian.pavez.t@gmail.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On 11/28/2012 02:55 PM, Philippe Gerum wrote:
-> On 11/28/2012 02:49 PM, Sebastian Pavez wrote:
->> Hi everybody,
+On Tue, 27 Nov 2012 19:00:30 +0100, Gilles Chanteperdrix wrote:
+> On 11/27/2012 05:40 PM, WONG Sheng Chao wrote:
+>> Hi Gilles
 >>
->> It's there support for EDF schedulling on Xenomai? I found this question
->> before
->> (http://www.xenomai.org/pipermail/xenomai-core/2007-10/msg00137.html)
->> and the answer was no. It's still the answer?
-> 
-> Yes, no EDF yet.
-> 
+>> Following your advice i tracked down the include files which need to 
+>> be
+>> included to remove the error. The kernel now compiles without 
+>> errors. I
+>> followed the instructions in
+>>
+>> http://www.xenomai.org/pipermail/xenomai/2012-July/000481.html
+>>
+>> to change the timer.c and also changing the .handle_irq with
+>> ipipe_handle_multi_irq
+>>
+>>  From the serial terminal i noticed that with CONFIG_IPIPE = ON the
+>> timer is used correctly as in the above post but it hangs at
+>
+> Are you sure the timer is running correctly?
+>
+>
+>> Any advice on how to proceed to debug this problem? I attach the
+>> config files of two cases for your reference.
+>
+> I would put a printk in linux timer irq handler.
 
-In case somebody is interested in contributing this, Xenomai implements
-policies as plugins over a common scheduler infrastructure. See
-ksrc/nucleus/sched*.c
+How should i come about debugging the timer irq handler?
 
--- 
-Philippe.
+Looking at the arch/arm/mach-omap2/timer.c i would think the timer 
+handler is omap_itimer.irq ? But i am not sure how to verify it.
+
+
+As for the omap_intc_handle_irq in arch/arm/mach-omap2/irq.c here is my 
+function which i used from the vender
+
+static inline void omap_intc_handle_irq(void __iomem 
+*base_addr,unsigned int no_regs_req, struct pt_regs *regs)
+{
+	u32 irqnr = 0;
+
+	do {
+		int i = 0;
+
+		for (i = 0; i < no_regs_req; i++) {
+			irqnr = readl_relaxed(base_addr + 0x98 + (0x20 * i));
+			if (irqnr)
+				goto out;
+		}
+
+out:
+		if (!irqnr)
+			break;
+
+		irqnr = readl_relaxed(base_addr + INTCPS_SIR_IRQ_OFFSET);
+		irqnr &= ACTIVEIRQ_MASK;
+
+		if (irqnr)
+		{
+//			handle_IRQ(irqnr, regs);
+			ipipe_handle_multi_irq(irqnr, regs); //This is where i added the 
+ipipe_handle_multi_irq
+		}
+
+	} while (irqnr);
+}
+
+Is this the right place for it?
+
+-WONG
+
+
+
+
 
