@@ -1,28 +1,12 @@
+From: "Steven Seeger" <sseeger@mpl.com>
+Date: Thu, 29 Nov 2012 09:18:11 -0500
+Message-ID: <01f101cdce3c$5dd719f0$19854dd0$@mpl.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8;
- format=flowed
+Content-Language: en-us
+Content-Type: text/plain;
+	charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Date: Thu, 29 Nov 2012 13:10:01 +0100
-From: WONG Sheng Chao <wong@isir.upmc.fr>
-In-Reply-To: <50B66C2C.7010208@xenomai.org>
-References: <04934a1da80b9542fe5e0375b07d3663@isir.upmc.fr>
-	<50AF48DA.9010200@xenomai.org>
-	<80c97c7c58b1c913fd0fb2ec83a86b3d@isir.upmc.fr>
-	<50AFA44E.4070506@xenomai.org>
-	<b5d8fc2c77444a0bf20a3446d6a7edd0@isir.upmc.fr>
-	<50AFB64E.4030702@xenomai.org>
-	<b6df56ed969c01a5916ff3efc3ce4c87@isir.upmc.fr>
-	<50B4FFBE.20204@xenomai.org>
-	<db62a2cc790904728c13fca4beffd559@isir.upmc.fr>
-	<8230f5b2d86c368c49f1ce75ce93d097@isir.upmc.fr>
-	<50B65491.60005@xenomai.org>
-	<4e8167f1cebe6c6e79543a573c2ea773@isir.upmc.fr>
-	<50B65EAE.8080902@xenomai.org>
-	<e2fc1139f60bc3e194a28bbd3d5fd6b3@isir.upmc.fr>
-	<50B66C2C.7010208@xenomai.org>
-Message-ID: <506158ed11676e5b852515ec8fe233e0@isir.upmc.fr>
-Subject: Re: [Xenomai] Compiling I-pipe patched kernel on beaglebone from
- Angstrom branch
+Subject: [Xenomai] xenomai in vmware smp crash
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -31,170 +15,199 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Wed, 28 Nov 2012 20:55:24 +0100, Gilles Chanteperdrix wrote:
-> On 11/28/2012 08:34 PM, WONG Sheng Chao wrote:
->
->> On Wed, 28 Nov 2012 19:57:50 +0100, Gilles Chanteperdrix wrote:
->>> On 11/28/2012 07:49 PM, WONG Sheng Chao wrote:
->>>
->>>> On Wed, 28 Nov 2012 19:14:41 +0100, Gilles Chanteperdrix wrote:
->>>>> On 11/28/2012 06:40 PM, WONG Sheng Chao wrote:
->>>>>> On Wed, 28 Nov 2012 16:12:58 +0100, WONG Sheng Chao wrote:
->>>>>>> On Tue, 27 Nov 2012 19:00:30 +0100, Gilles Chanteperdrix wrote:
->>>>>>>> On 11/27/2012 05:40 PM, WONG Sheng Chao wrote:
->>>>>>>>> Hi Gilles
->>>>>>>>>
->>>>>>>>> Following your advice i tracked down the include files which
->>>>>>>>> need
->>>>>>>>> to be
->>>>>>>>> included to remove the error. The kernel now compiles without
->>>>>>>>> errors. I
->>>>>>>>> followed the instructions in
->>>>>>>>>
->>>>>>>>> 
->>>>>>>>> http://www.xenomai.org/pipermail/xenomai/2012-July/000481.html
->>>>>>>>>
->>>>>>>>> to change the timer.c and also changing the .handle_irq with
->>>>>>>>> ipipe_handle_multi_irq
->>>>>>>>>
->>>>>>>>>  From the serial terminal i noticed that with CONFIG_IPIPE = 
->>>>>>>>> ON
->>>>>>>>> the
->>>>>>>>> timer is used correctly as in the above post but it hangs at
->>>>>>>>
->>>>>>>> Are you sure the timer is running correctly?
->>>>>>>>
->>>>>>>>
->>>>>>>>> Any advice on how to proceed to debug this problem? I attach
->>>>>>>>> the
->>>>>>>>> config files of two cases for your reference.
->>>>>>>>
->>>>>>>> I would put a printk in linux timer irq handler.
->>>>>>>
->>>>>>> How should i come about debugging the timer irq handler?
->>>>>>
->>>>>> Refering to this,
->>>>>>
->>>>>> http://www.xenomai.org/pipermail/xenomai/2012-May/025838.html
->>>>>>
->>>>>> I believe that i should be put a printk in the function
->>>>>> ipipe_mach_acktimer, as it is called when the linux timer
->>>>>> interrupt,
->>>>>> but
->>>>>> I after checking in these files, i still couldn't find it.
->>>>>
->>>>> ipipe_mach_acktimer disappeared, it is in the pre I-pipe core
->>>>> patches.
->>>>> The documentation for the I-pipe core patches on the ARM
->>>>> architecture
->>>>> is
->>>>> here:
->>>>> http://www.xenomai.org/index.php/I-pipe-core:ArmPorting
->>>>>
->>>>> The linux timer interrupt handler given as example in this
->>>>> documentation
->>>>> is "omap2_gp_timer_interrupt" function, and is probably the same
->>>>> for
->>>>> your omap3 derivative.
->>>>
->>>> Thanks for the information. So to proceed i looked at the function
->>>>
->>>> static irqreturn_t omap2_gp_timer_interrupt(int irq, void *dev_id)
->>>> {
->>>> 	struct clock_event_device *evt = &clockevent_gpt;
->>>>
->>>> 	if (!clockevent_ipipe_stolen(evt))
->>>> 		omap2_gp_timer_ack();
->>>>
->>>> 	if (num_online_cpus() == 1)
->>>> 		__ipipe_tsc_update();
->>>>
->>>> 	evt->event_handler(evt);
->>>> 	return IRQ_HANDLED;
->>>> }
->>>>
->>>> when clockevent_ipipe_stolen == 0
->>>> the omap2_gp_timer_ack is called to acknowledge the linux timer
->>>> interrupt (with CONFIG_XENOMAI = no)
->>>>
->>>> I put a printk in omap2_gp_timer_ack and i notice that in both 
->>>> cases
->>>> of
->>>> CONFIG_IPIPE = yes and CONFIG_IPIPE = no
->>>>
->>>> the omap2_gp_timer_ack function get called.
->>>>
->>>> But i am not sure how to interrupt this. I guess this means that 
->>>> the
->>>> timer interrupt is being handled. But it still does not tell me 
->>>> why
->>>> the
->>>> kernel does not boot properly when CONFIG_IPIPE = yes.
->>>
->>>
->>> Put a static counter in the timer_ack function to only emit a 
->>> printk
->>> every HZ ticks, and check whether the timer is ticking when you get
->>> the
->>> freeze in the at24c driver initialization.
->>
->> Yes the timer is still ticking after the freeze in the at24c driver
->> initialization. Does this means that  the ipipe_handle_multi_irq in
->> omap_intc_handle_irq is not handling the multiple irq properly?
->
->
-> No. It simply means the problem is not the timer. Next usual suspect 
-> is
-> the clocksource. Did you get the message about clocksource switching 
-> to
-> ipipe_tsc and does ipipe_tsc_get return increasing values?
+Gentlemen,
 
+ 
 
-I added a static counter and a printk on ipipe_tsc_get() under the 
-omap2_gp_timer_ack function
+Hello! It's been many years since I've been on the list. I still dabble in
+Xenomai when jobs come up. I wish I had more need to use it so I can
+contribute. I've missed my "friendly" back and forth emails with Gilles on
+geopolitical issues. 
 
+ 
 
-static void omap2_gp_timer_ack(void)
-{
+I was asked by a client to patch an Ubuntu 64-bit VM in VMWARE with xenomai
+to use as a development platform. It obviously is not going to be realtime
+and nobody is concerned about that. I built a kernel with SMP mode but have
+just one core for my VM, and everything works fine. However, if I give my VM
+more than one processor or core, I get a kernel panic after about 6-8
+seconds after bootup when the login GUI appears.
 
-	test_counter++;
+ 
 
-	if(test_counter > 100)
-	{
-	 test_counter = 0;
-	 printk("static counter overflow, ipipe_tsc_get = 
-%llu\n",__ipipe_tsc_get());
-	}
+I set up the kernel to use a serial console and captured the panic:
 
-	__omap_dm_timer_write_status(&clkev, OMAP_TIMER_INT_OVERFLOW);
-	__omap_dm_timer_read_status(&clkev);
-}
+ 
 
-And this is the boot message that i got
+[   17.062448] ------------[ cut here ]------------
 
-[    0.181481] Switching to clocksource ipipe_tsc
-.
-.
-.
-[    0.892249] brd: module loaded
-[    0.900176] loop: module loaded
-[    0.903603] at24 1-0051: 32768 byte 24c256 EEPROM, writable, 64 
-bytes/write
-[    1.633867] static counter overflow, ipipe_tsc_get = 4294967296
-[    2.650588] static counter overflow, ipipe_tsc_get = 4294967296
-[    3.667300] static counter overflow, ipipe_tsc_get = 4294967296
-[    4.684013] static counter overflow, ipipe_tsc_get = 4294967296
-[    5.700726] static counter overflow, ipipe_tsc_get = 4294967296
-[    6.717439] static counter overflow, ipipe_tsc_get = 4294967296
-[    7.734150] static counter overflow, ipipe_tsc_get = 4294967296
-[    8.750861] static counter overflow, ipipe_tsc_get = 4294967296
+[   17.065610] kernel BUG at arch/x86/kernel/ipipe.c:592!
 
-the ipipe_tsc_get is returning a constant value rather than increasing 
-values. How can i further track down the source of the problem?
+[   17.069109] invalid opcode: 0000 [#1] SMP 
 
+[   17.070161] CPU 0 
 
+[   17.070575] Modules linked in: bnep rfcomm bluetooth parport_pc ppdev
+snd_ens1371 gameport snd_ac97_codec ac97_bus snd_pcm snd_seq_midi
+snd_rawmidi snd_seq_midi_event snd_seq joydev snd_timer snd_seq_device
+mac_hid snd vmw_balloon psmouse soundcore snd_page_alloc serio_raw i2c_piix4
+vmwgfx ttm drm shpchp lp parport usbhid hid e1000 mptspi mptscsih mptbase
+vmw_pvscsi vmxnet3
 
+[   17.079691] 
+
+[   17.080167] Pid: 0, comm: swapper/0 Not tainted 3.2.31xenomai #2 VMware,
+Inc. VMware Virtual Platform/440BX Desktop Reference Platform
+
+[   17.083084] RIP: 0010:[<ffffffff8101de4e>]  [<ffffffff8101de4e>]
+__ipipe_handle_irq+0x1be/0x1c0
+
+[   17.085104] RSP: 0018:ffffffff81a03e20  EFLAGS: 00010286
+
+[   17.086262] RAX: 000000000000da80 RBX: 00000000ffffffff RCX:
+00000000ffffffff
+
+[   17.088014] RDX: ffffffffffffffdf RSI: ffffffff81a03e58 RDI:
+ffffffff81a03e38
+
+[   17.089693] RBP: ffffffff81a03e40 R08: 0000000000000000 R09:
+0000000000000000
+
+[   17.091284] R10: 0000000000000000 R11: 0000000000000000 R12:
+000000000000da80
+
+[   17.092850] R13: ffffffff81a03e38 R14: ffff88003be00000 R15:
+0000000000000000
+
+[   17.094562] FS:  0000000000000000(0000) GS:ffff88003be00000(0000)
+knlGS:0000000000000000
+
+[   17.096556] CS:  0010 DS: 0000 ES: 0000 CR0: 000000008005003b
+
+[   17.098080] CR2: 00007f7f2e678eb0 CR3: 0000000038df4000 CR4:
+00000000000006f0
+
+[   17.099696] DR0: 0000000000000000 DR1: 0000000000000000 DR2:
+0000000000000000
+
+[   17.101322] DR3: 0000000000000000 DR6: 00000000ffff0ff0 DR7:
+0000000000000400
+
+[   17.103029] Process swapper/0 (pid: 0, threadinfo ffffffff81a00000, task
+ffffffff81a0f020)
+
+[   17.104932] Stack:
+
+[   17.105400]  ffffffff81a03fd8 ffffffff81ad3920 0000000000000000
+ffffffffffffffff
+
+[   17.107190]  ffffffff81a03ee8 ffffffff815c6d5d ffffffff81a03e58
+ffffffff81a03ee8
+
+[   17.109004]  ffffffff810605ad 0000000000000000 0000000000000000
+0000000000000000
+
+[   17.111037] Call Trace:
+
+[   17.112251]  [<ffffffff815c6d5d>] irq_move_cleanup_interrupt+0x5d/0x90
+
+[   17.114259]  [<ffffffff810605ad>] ? get_next_timer_interrupt+0x1cd/0x260
+
+[   17.115958]  [<ffffffff8101d47a>] ? __ipipe_halt_root+0x2a/0x40
+
+[   17.117321]  [<ffffffff8100a5e3>] default_idle+0x53/0x1d0
+
+[   17.118611]  [<ffffffff81001236>] cpu_idle+0xe6/0x130
+
+[   17.119752]  [<ffffffff81596afe>] rest_init+0x72/0x74
+
+[   17.120933]  [<ffffffff81b32bdb>] start_kernel+0x3e9/0x3f6
+
+[   17.122203]  [<ffffffff81b32322>] x86_64_start_reservations+0x132/0x136
+
+[   17.123723]  [<ffffffff81b3245b>] x86_64_start_kernel+0x135/0x13c
+
+[   17.125223] Code: 0f 1f 44 00 00 48 83 a0 70 07 00 00 fe 4c 89 ee bf 20
+00 00 00 e8 13 c8 0a 00 e9 f3 fe ff ff 89 d3 be 01 00 00 00 e9 a6 fe ff ff
+<0f> 0b 55 48 89 e5 53 48 81 ec b8 00 00 00 66 66 66 66 90 9c 5b 
+
+[   17.131844] RIP  [<ffffffff8101de4e>] __ipipe_handle_irq+0x1be/0x1c0
+
+[   17.133398]  RSP <ffffffff81a03e20>
+
+[   17.134295] ---[ end trace bc97edd2d31fbe38 ]---
+
+[   17.135365] Kernel panic - not syncing: Attempted to kill the idle task!
+
+[   17.136838] Pid: 0, comm: swapper/0 Tainted: G      D      3.2.31xenomai
+#2
+
+[   17.138503] Call Trace:
+
+[   17.139159]  [<ffffffff815b44fb>] panic+0x91/0x1a2
+
+[   17.140313]  [<ffffffff8101d542>] ? __ipipe_do_IRQ+0x82/0xa0
+
+[   17.141809]  [<ffffffff81053904>] do_exit+0x784/0x870
+
+[   17.143129]  [<ffffffff815be39b>] ? _raw_spin_unlock_irqrestore+0x1b/0x30
+
+[   17.144692]  [<ffffffff8105106c>] ? kmsg_dump+0x5c/0xf0
+
+[   17.145944]  [<ffffffff815bf37f>] oops_end+0xaf/0xf0
+
+[   17.147049]  [<ffffffff810057d8>] die+0x58/0x90
+
+[   17.148112]  [<ffffffff815becb4>] do_trap+0xc4/0x170
+
+[   17.149317]  [<ffffffff81002db5>] do_invalid_op+0x95/0xb0
+
+[   17.150516]  [<ffffffff8101de4e>] ? __ipipe_handle_irq+0x1be/0x1c0
+
+[   17.151979]  [<ffffffff81056d7c>] ? irq_exit+0x7c/0xb0
+
+[   17.153308]  [<ffffffff815c944c>] ? do_IRQ+0x6c/0xf0
+
+[   17.154408]  [<ffffffff8101d84f>] __ipipe_handle_exception+0x11f/0x2a0
+
+[   17.155941]  [<ffffffff815c88ac>] invalid_op+0x1c/0x60
+
+[   17.157201]  [<ffffffff8101de4e>] ? __ipipe_handle_irq+0x1be/0x1c0
+
+[   17.158767]  [<ffffffff815c6d5d>] irq_move_cleanup_interrupt+0x5d/0x90
+
+[   17.160266]  [<ffffffff810605ad>] ? get_next_timer_interrupt+0x1cd/0x260
+
+[   17.161858]  [<ffffffff8101d47a>] ? __ipipe_halt_root+0x2a/0x40
+
+[   17.163250]  [<ffffffff8100a5e3>] default_idle+0x53/0x1d0
+
+[   17.164528]  [<ffffffff81001236>] cpu_idle+0xe6/0x130
+
+[   17.165702]  [<ffffffff81596afe>] rest_init+0x72/0x74
+
+[   17.166859]  [<ffffffff81b32bdb>] start_kernel+0x3e9/0x3f6
+
+[   17.168309]  [<ffffffff81b32322>] x86_64_start_reservations+0x132/0x136
+
+[   17.169907]  [<ffffffff81b3245b>] x86_64_start_kernel+0x135/0x13c
+
+ 
+
+I figured I would post here and see if anyone has noticed this issue before.
+
+ 
+
+I'm glad to see the project still going strong! If I am lucky I will find a
+way to use it for my doctoral research. J
+
+ 
+
+Thanks,
+
+Steven
+
+ 
 
