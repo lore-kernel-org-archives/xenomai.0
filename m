@@ -1,11 +1,14 @@
-Message-ID: <50B783E9.5030903@xenomai.org>
-Date: Thu, 29 Nov 2012 16:48:57 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
+From: "Steven Seeger" <sseeger@mpl.com>
 References: <01f101cdce3c$5dd719f0$19854dd0$@mpl.com>
-In-Reply-To: <01f101cdce3c$5dd719f0$19854dd0$@mpl.com>
-Content-Type: text/plain; charset=UTF-8
+	<021b01cdce3f$a9972990$fcc57cb0$@mpl.com>
+In-Reply-To: <021b01cdce3f$a9972990$fcc57cb0$@mpl.com>
+Date: Thu, 29 Nov 2012 11:21:33 -0500
+Message-ID: <028401cdce4d$9a2f30c0$ce8d9240$@mpl.com>
+MIME-Version: 1.0
+Content-Type: text/plain;
+	charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Language: en-us
 Subject: Re: [Xenomai] xenomai in vmware smp crash
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -15,29 +18,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Steven Seeger <sseeger@mpl.com>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 11/29/2012 03:18 PM, Steven Seeger wrote:
-> Gentlemen,
-> 
->  
-> 
-> Hello! It's been many years since I've been on the list. I still dabble in
-> Xenomai when jobs come up. I wish I had more need to use it so I can
-> contribute. I've missed my "friendly" back and forth emails with Gilles on
-> geopolitical issues. 
+Disregard my email. I did search before posting, but found nothing. I did
+another search after posting for "ipipe.c:592" and found it.
 
-I am not sure you are not mixing up with Philippe, what you used to
-discuss with me was why Xenomai was slow on Geode GX1 and I understood
-this very recently, I doubt it counts as a geopolitical issue, though.
+This patch solved my problem:
 
-> [   17.065610] kernel BUG at arch/x86/kernel/ipipe.c:592!
+http://www.mail-archive.com/xenomai@xenomai.org/msg01010.html
 
-This is a known issue which has been fixed by the Siemens team in the
-I-pipe patch for Linux 3.4 and should be backported to the I-pipe patch
-for Linux 3.2 one of these days.
+Thanks,
+Steven
 
--- 
-					    Gilles.
+
+-----Original Message-----
+From: Steven Seeger [mailto:sseeger@mpl.com] 
+Sent: Thursday, November 29, 2012 9:42 AM
+To: xenomai@xenomai.org
+Subject: Re: [Xenomai] xenomai in vmware smp crash
+
+I should mention that this is 3.2.31 and it's using the ipipe 3.2.21-x86-1
+patch.
+
+
+
+_______________________________________________
+Xenomai mailing list
+Xenomai@xenomai.org
+http://www.xenomai.org/mailman/listinfo/xenomai
+
 
