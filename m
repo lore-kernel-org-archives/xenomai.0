@@ -1,14 +1,11 @@
-Message-ID: <50B8B7A8.2010800@xenomai.org>
-Date: Fri, 30 Nov 2012 14:42:00 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: Dharma R Bhushan <Dharma.Bhushan@sdc.canon.co.in>
+Date: Fri, 30 Nov 2012 19:34:02 +0530
+Message-ID: <E715748DB106B94DAE5D77B7F3D1DC4101BB100291@CIPL-MAIL.in.canon-asia.com>
+Content-Language: en-US
 MIME-Version: 1.0
-References: <mailman.0.1354186801.18650.xenomai@xenomai.org>	<6F62EBB3-71FC-47B6-B6A4-9A2A7EFE793B@kabelmail.de>	<bf6a998422f24fab874ae21fd0adb396@isir.upmc.fr>
-	<F74C5334-2EAF-4D8E-AE55-38BF37437EE6@mah.priv.at>
-In-Reply-To: <F74C5334-2EAF-4D8E-AE55-38BF37437EE6@mah.priv.at>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Compiling I-pipe patched kernel on beaglebone from
- Angstrom branch
+Subject: [Xenomai] Problem with bringing up Xenomai User Space
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,33 +14,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Michael Haberler <mail17@mah.priv.at>
-Cc: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 11/30/2012 12:45 PM, Michael Haberler wrote:
-> 
-> Am 30.11.2012 um 09:54 schrieb WONG Sheng Chao:
-> 
->> On Thu, 29 Nov 2012 13:16:31 +0100, Stephan Kappertz wrote:
->>>
->>> The problem is that you are using the wrong timer.
->>> ...
-> 
->>>
->>> #endif
->>>
->>> - Stephan
->>
->> Thanks a lot Stephan and Gilles! The kernel is now able to boot with both CONFIG_XENOMAI and CONFIG_IPIPE.
-> 
-> great! could you publish a complete patch relative to a known base?
-> 
-> thanks in advance,
+Hello Community Members,
 
-As I already said, if someone takes the little time it takes to generate
-a pre and post patch (I explained the why and how in a previous mail),
-we can even integrate it in xenomai repository.
+I am trying to run test cases present in xenomai-2.5.6 test suite. We are getting the "Segmentation fault".
 
--- 
-					    Gilles.
+Environment is as follows
 
+ Board:                         Bagle-board XM rev C
+ Kernel:                      2.6.35.14(2.6.35 from kernel.org+patch-2.6.35.10+linaro-2.6.35.10 patch+ patch-2.6.35.11+ patch-2.6.35.12+patch-2.6.35.13+ patch-2.6.35.14)
+ I-Pipe patch:          adeos-ipipe-2.6.35.9-arm-1.18-03.patch(slightly modified to apply the above kernel)
+ Tool chain:                  arm-none-linux-gnueabi-
+ Config command:              ./configure --build=i686-pc-linux-gnu --host=arm-none-linux-gnueabi --enable-arm-mach=omap3 --enable-arm-tsc --enable-arm-eabi
+                          make DESTDIR=/root/nfsroot install
+
+ Then I tried to run the xenomai latency test case. Then got the following error
+
+ root@armv7a-target:~# /usr/xenomai/bin/latency == Sampling period: 1000
+ us == Test mode: periodic user-mode task == All results in microseconds
+ Segmentation fault
+
+ Strace log of is attached. Upon debug I found a simple program with one
+ rt_task_create and rt_task_start is also giving segmentation fault.
+
+ I tried the approach in the below post without any success.
+ http://www.mail-archive.com/xenomai-help@gna.org/msg02216.html
+
+ I am getting the same working with the following combination.
+ Board:                         Bagle-board XM rev C
+ Kernel:                      3.2.21(3.2.21-kernel.org+minor fixes to boot the board)
+ I-Pipe patch:          ipipe-core-3.2.21-arm-1.patch
+ Tool chain:                  arm-none-linux-gnueabi-
+ Config command:              ./configure CFLAGS="-march=armv7-a" LDFLAGS="-march=armv7-a" --build=i686-pc-linux-gnu --host=arm-none-linux-gnueabi-
+                         make DESTDIR=/root/nfsroot install
+
+ I feel I am missing something w.r.t ./configure command in xenomai
+ 2.5.6. I have attached my kernel config(2.6.35.14 kernel) too for the
+ reference.
+
+Regards,
+Dharma
+
+This e-mail and any files transmitted with it are confidential and intended solely for the use of the individual(s) or entity addressed above. If you are not the intended recipient of this e-mail, then (i) please notify us at cipl.administrator@canon.co.in (ii) do not use the information contained  & (iii) delete it from your system. E-mail communications are not secure. Though efforts have been taken to ensure that this communication has not been tampered with; however,  Canon India Pvt. Ltd. is not responsible for any changes made to the contents of or any attachments to this message without its consent.
+All information contained in this message which are not of an official nature shall not be deemed as given or endorsed by Canon India Pvt. Ltd.
+-------------- next part --------------
+An embedded and charset-unspecified text was scrubbed...
+Name: strace_latency.TXT
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20121130/285729f0/attachment.ksh>
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: Beaglexm_2635_adeos_defconfig
+Type: application/octet-stream
+Size: 61951 bytes
+Desc: Beaglexm_2635_adeos_defconfig
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20121130/285729f0/attachment.obj>
