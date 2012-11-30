@@ -1,13 +1,15 @@
-Message-ID: <50B88506.6000002@xenomai.org>
-Date: Fri, 30 Nov 2012 11:05:58 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <CAMgy_J0idydJq8wzH3CwQoCa+BEbSyUyOJoWmvwc+oAB3jpZ6w@mail.gmail.com>
-	<CAKvQZ_2Nzfgj7oK12+t3CtLj-YWBCB=nFYSDU6B4KqW4aWQpnQ@mail.gmail.com>
-In-Reply-To: <CAKvQZ_2Nzfgj7oK12+t3CtLj-YWBCB=nFYSDU6B4KqW4aWQpnQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Frustrating experience with Xenomai
+Mime-Version: 1.0 (Apple Message framework v1283)
+Content-Type: text/plain; charset=us-ascii
+From: Michael Haberler <mail17@mah.priv.at>
+In-Reply-To: <bf6a998422f24fab874ae21fd0adb396@isir.upmc.fr>
+Date: Fri, 30 Nov 2012 12:45:29 +0100
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <F74C5334-2EAF-4D8E-AE55-38BF37437EE6@mah.priv.at>
+References: <mailman.0.1354186801.18650.xenomai@xenomai.org>
+	<6F62EBB3-71FC-47B6-B6A4-9A2A7EFE793B@kabelmail.de>
+	<bf6a998422f24fab874ae21fd0adb396@isir.upmc.fr>
+Subject: Re: [Xenomai] Compiling I-pipe patched kernel on beaglebone from
+	Angstrom branch
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,21 +18,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Willy Lambert <lambert.willy@gmail.com>
-Cc: Shamju Joseph <shamju.joseph@gmail.com>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 11/30/2012 09:45 AM, Willy Lambert wrote:
-> P.S. : to xenomai community, is there a problem if I continue some
-> support here, or should we go somewhere else more on topic ?
 
-Absolutely no problem, this is a recurring problem, so, we can not
-really ignore it. The thingx I would add is:
-- if you have a very recent computer, you will have more trouble
-installing really old kernels than install the latest revision, so, I
-would advise to use the I-pipe patch for Linux 3.2 with xenomai 2.6.1
-- we can give you write access to the wiki if you wish to write some
-documents about this.
+Am 30.11.2012 um 09:54 schrieb WONG Sheng Chao:
 
--- 
-					    Gilles.
+> On Thu, 29 Nov 2012 13:16:31 +0100, Stephan Kappertz wrote:
+>>=20
+>> The problem is that you are using the wrong timer.
+>> ...
+
+>>=20
+>> #endif
+>>=20
+>> - Stephan
+>=20
+> Thanks a lot Stephan and Gilles! The kernel is now able to boot with =
+both CONFIG_XENOMAI and CONFIG_IPIPE.
+
+great! could you publish a complete patch relative to a known base?
+
+thanks in advance,
+
+- Michael
+
+
+
+>=20
+>=20
+>=20
+>=20
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> http://www.xenomai.org/mailman/listinfo/xenomai
+
 
