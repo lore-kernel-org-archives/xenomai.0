@@ -1,10 +1,18 @@
 MIME-Version: 1.0
-Date: Wed, 24 Oct 2012 14:45:08 -0300
-Message-ID: <CANzNmi8DYqXmwtGe+Nu_HnLC8KgRO=H-29p6QBrjWrawreK_ig@mail.gmail.com>
-From: Sebastian Pavez <sebastian.pavez.t@gmail.com>
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] Problem trying an example for the first time.
+In-Reply-To: <CADy-PFjz_CeJ7-RC8xfr5PLrMcKH6sFTJP56z4ULKL8sS_q-VA@mail.gmail.com>
+References: <CADy-PFjUiqnyaP5_1T934OLZQPU2NvNZnZj1uEG3MJvzKhgALQ@mail.gmail.com>
+	<5069E424.9090500@grandegger.com>
+	<CADy-PFjCScUGXgUebJj9a6arhZ6mRCnJPuwE3kHT=XcjkY0SpA@mail.gmail.com>
+	<CADy-PFjg9NuOLte1CzoMFs3u+_cPUXE5xu7fzfDOug-qz0sQbg@mail.gmail.com>
+	<50B4EF81.50307@grandegger.com>
+	<CADy-PFjLCRbPc8MuYYsqEoEPXOuWNurzoG6nKaZFF_2+hQUoEw@mail.gmail.com>
+	<50B6619A.10300@grandegger.com>
+	<CADy-PFjz_CeJ7-RC8xfr5PLrMcKH6sFTJP56z4ULKL8sS_q-VA@mail.gmail.com>
+From: Jonathan Bohren <jonathan.bohren@gmail.com>
+Date: Mon, 3 Dec 2012 10:43:55 -0500
+Message-ID: <CADy-PFgMDBt693UF0QbUnAAYZgGXG+H+7RdZc0G1fpeYLv_0oA@mail.gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: Re: [Xenomai] RTDM and PEAK PCIe
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,25 +21,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Wolfgang Grandegger <wg@grandegger.com>, xenomai@xenomai.org
 
-Hi everyone,
+Ok, here's the PEAK CANBus PCIE patch with all the necessary metadata:
+thanks!
+-j
 
-Finally I was able to boot the kernel with xenomai. I did that with
-xenomai-2.6.1, linux-3.2.32 and ipipe-core-3.2.21-x86-1.patch with this
-steps as a guide
-http://code.google.com/p/jhu-lcsr-ros-pkg/wiki/UbuntuXenomai.
+>From d97ee63e108c3f6eff26368af0df3ba1d1050692 Mon Sep 17 00:00:00 2001
+From: Jonathan Bohren <jbo@jhu.edu>
+Date: Tue, 27 Nov 2012 09:13:11 -0500
+Subject: [PATCH] Adding device ID for PEAK PCIe card IPEH-003027
+Signed-off-by: Jonathan Bohren <jbo@jhu.edu>
+Acked-by: Wolfgang Grandegger <wg@grandegger.com>
+---
+ #define PCI_CONFIG_PORT_SIZE 0x1000  // size of the config io-memory
+ ksrc/drivers/can/sja1000/rtcan_peak_pci.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-Now when I try to execute an example like the one suggested on the quick
-build guide I get an error, I attached the capt of this,
+diff --git a/ksrc/drivers/can/sja1000/rtcan_peak_pci.c
+b/ksrc/drivers/can/sja1000/rtcan_peak_pci.c
+index 53c8fef..b5ad226 100644
+--- a/ksrc/drivers/can/sja1000/rtcan_peak_pci.c
++++ b/ksrc/drivers/can/sja1000/rtcan_peak_pci.c
+@@ -71,13 +71,15 @@ struct rtcan_peak_pci
+ #define PITA_MISC        0x1C        // miscellanoes register
+ #define PEAK_PCI_VENDOR_ID   0x001C  // the PCI device and vendor IDs
+-#define PEAK_PCI_DEVICE_ID   0x0001
++#define PEAK_PCI_DEVICE_ID   0x0001  // Device ID for PCI and older PCIe
+cards
++#define PEAK_PCIE_DEVICE_ID  0x0003  // Device ID for newer PCIe
+cards (IPEH-003027)
+ #define PCI_PORT_SIZE        0x0400  // size of a channel io-memory
 
-Any insights??
-Seba
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: Screenshot from 2012-10-24 14:38:03.png
-Type: image/png
-Size: 295655 bytes
-Desc: not available
-URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20121024/f92c04e=
-6/attachment.png>
+ static struct pci_device_id peak_pci_tbl[] = {
+  {PEAK_PCI_VENDOR_ID, PEAK_PCI_DEVICE_ID, PCI_ANY_ID, PCI_ANY_ID, 0, 0, 0},
++ {PEAK_PCI_VENDOR_ID, PEAK_PCIE_DEVICE_ID, PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+0},
+  { }
+ };
+ MODULE_DEVICE_TABLE (pci, peak_pci_tbl);
+--
+
+>     1.7.9.5
