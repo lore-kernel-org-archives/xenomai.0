@@ -1,14 +1,19 @@
-Message-ID: <50BC705D.2040407@xenomai.org>
-Date: Mon, 03 Dec 2012 10:26:53 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CAL7_A_WEXhEBQr+LFb_mfaqLxBh=hsHJg6WiY08cmkgb=Y2TNA@mail.gmail.com>	<4FF369E5.5040007@xenomai.org>	<CAL7_A_WYVjFhh9RuxAm1jtVp7HqakB5gEzkSt8i7XsWJNJrh=Q@mail.gmail.com>	<4FF402AD.3020601@xenomai.org>	<4FF415AB.2030503@xenomai.org>	<CAL7_A_Xr432pEEEiG4D5xsD-2yqWdgSd0tD26aEi4q0FzeWD_w@mail.gmail.com>	<CAL7_A_XMD_KY9nryEyb3xzHpCb1PFYTG6qJupLWqRZhJXjkYRw@mail.gmail.com>	<4FF44389.3030209@xenomai.org>	<CAL7_A_WTJUeWNTTra2t9veiyWMxC5VtpotocMHGPdU1v7QAxKA@mail.gmail.com>	<4FF44C52.6050809@xenomai.org>	<CAL7_A_VUC8JD9yeMnLt2iJQ0ex_at3QMhiL3cQ5CHPFh0rcJRA@mail.gmail.com>	<4FF585C4.1000708@xenomai.org>	<CAL7_A_WZ=mQ9F_Od92qQKFS85QcOtOwqyXu+omrhOBgnZpJFNQ@mail.gmail.com>	<50AA3732.5000701@xenomai.org>
-	<CAL7_A_VBCVX9o4_m4DEH7iDAf423UiowDGy+FhD_VZLcfonq9g@mail.gmail.com>
-In-Reply-To: <CAL7_A_VBCVX9o4_m4DEH7iDAf423UiowDGy+FhD_VZLcfonq9g@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] Xenomai and normal linux application - Wait time with
- select() not reliable
+Date: Mon, 03 Dec 2012 15:31:20 +0100
+From: WONG Sheng Chao <wong@isir.upmc.fr>
+In-Reply-To: <50BB7E6D.8080602@xenomai.org>
+References: "\"\\\"\\\\\\\"\\\\\\\\\\\\\\\"\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"<mailman.0.1354186801.18650.xenomai@xenomai.org>\\\\\\\\\\\\\\\"	<6F62EBB3-71FC-47B6-B6A4-9A2A7EFE793B@kabelmail.de>\\\\\\\\\\\\\\\"	<bf6a998422f24fab874ae21fd0adb396@isir.upmc.fr>	<F74C5334-2EAF-4D8E-AE55-38BF37437EE6@mah.priv.at>"
+	<50B8B7A8.2010800@xenomai.org>"
+	"<D5733E9B-1AA5-4C5F-A2E8-1346A11A7E4C@mah.priv.at>\""
+	"<7563882586f5c36943667b067978e7ff@isir.upmc.fr>\"
+	<50BB69A4.8020401@xenomai.org>
+	"<f4d725b0ea36a139107d61f00b627b47@isir.upmc.fr>\""
+	<50BB7E6D.8080602@xenomai.org>
+Message-ID: <54b68e5271dffe6add316e94480ffeb6@isir.upmc.fr>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Subject: Re: [Xenomai] Compiling I-pipe patched kernel on beaglebone from
+ Angstrom branch
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,39 +22,72 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?B?SmVucyBLw7ZobGVy?= <jenskxxx@googlemail.com>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On 12/03/2012 08:59 AM, Jens K=C3=B6hler wrote:
-
-> Hello,
->=20
-> I found following additionaly out:
-> One of the Xenomai tasks writes cyclically to a shared linux memory
-> (its not a Xenomai shared memory). Write and read access is controlled
-> by Linux semaphores. If shared memory writing is out-commented is
-> there never a delay problem.
-
-
-If you expect a task using a Linux semaphore to have bounded latencies,
-you misunderstood the way Xenomai works.
-
->=20
-> I found following explanation about Xenomai in internet. Could it
-> reason for problem?
->=20
-> "If an interrupt arrives while a Xenomai thread executes in secondary
-> mode, it is not forwarded to Linux! The mechanism works as follows:
-> When a Xenomai thread is executed in secondary mode, the interrupt
-> shield domain is activated All Linux interrupts are stalled, until the
-> Xenomai thread completes execution. The interrupts will be served
-> again when Linux goes back to execute in background mode."
-
-
-The interrupt shield no longer exists.
-
-
---=20
-                                                                Gilles.
-
-
+T24gU3VuLCAwMiBEZWMgMjAxMiAxNzoxNDozNyArMDEwMCwgR2lsbGVzIENoYW50ZXBlcmRyaXgg
+d3JvdGU6Cj4gT24gMTIvMDIvMjAxMiAwNDoxNSBQTSwgV09ORyBTaGVuZyBDaGFvIHdyb3RlOgo+
+Cj4+IE9uIFN1biwgMDIgRGVjIDIwMTIgMTU6NDU6NTYgKzAxMDAsIEdpbGxlcyBDaGFudGVwZXJk
+cml4IHdyb3RlOgo+Pj4gT24gMTIvMDIvMjAxMiAwMjo1MyBQTSwgV09ORyBTaGVuZyBDaGFvIHdy
+b3RlOgo+Pj4KPj4+PiBPbiBGcmksIDMwIE5vdiAyMDEyIDIwOjIyOjExICswMTAwLCBNaWNoYWVs
+IEhhYmVybGVyIHdyb3RlOgo+Pj4+PiBBbSAzMC4xMS4yMDEyIHVtIDE0OjQyIHNjaHJpZWIgR2ls
+bGVzIENoYW50ZXBlcmRyaXg6Cj4+Pj4+Cj4+Pj4+PiBPbiAxMS8zMC8yMDEyIDEyOjQ1IFBNLCBN
+aWNoYWVsIEhhYmVybGVyIHdyb3RlOgo+Pj4+Pj4+Cj4+Pj4+Pj4gQW0gMzAuMTEuMjAxMiB1bSAw
+OTo1NCBzY2hyaWViIFdPTkcgU2hlbmcgQ2hhbzoKPj4+Pj4+Pgo+Pj4+Pj4+PiBPbiBUaHUsIDI5
+IE5vdiAyMDEyIDEzOjE2OjMxICswMTAwLCBTdGVwaGFuIEthcHBlcnR6IHdyb3RlOgo+Pj4+Pj4+
+Pj4KPj4+Pj4+Pj4+IFRoZSBwcm9ibGVtIGlzIHRoYXQgeW91IGFyZSB1c2luZyB0aGUgd3Jvbmcg
+dGltZXIuCj4+Pj4+Pj4+PiAuLi4KPj4+Pj4+Pgo+Pj4+Pj4+Pj4KPj4+Pj4+Pj4+ICNlbmRpZgo+
+Pj4+Pj4+Pj4KPj4+Pj4+Pj4+IC0gU3RlcGhhbgo+Pj4+Pj4+Pgo+Pj4+Pj4+PiBUaGFua3MgYSBs
+b3QgU3RlcGhhbiBhbmQgR2lsbGVzISBUaGUga2VybmVsIGlzIG5vdyBhYmxlIHRvIAo+Pj4+Pj4+
+PiBib290Cj4+Pj4+Pj4+IHdpdGggYm90aCBDT05GSUdfWEVOT01BSSBhbmQgQ09ORklHX0lQSVBF
+Lgo+Pj4+Pj4+Cj4+Pj4+Pj4gZ3JlYXQhIGNvdWxkIHlvdSBwdWJsaXNoIGEgY29tcGxldGUgcGF0
+Y2ggcmVsYXRpdmUgdG8gYSBrbm93bgo+Pj4+Pj4+IGJhc2U/Cj4+Pj4+Pj4KPj4+Pj4+PiB0aGFu
+a3MgaW4gYWR2YW5jZSwKPj4+Pj4+Cj4+Pj4+PiBBcyBJIGFscmVhZHkgc2FpZCwgaWYgc29tZW9u
+ZSB0YWtlcyB0aGUgbGl0dGxlIHRpbWUgaXQgdGFrZXMgdG8KPj4+Pj4+IGdlbmVyYXRlCj4+Pj4+
+PiBhIHByZSBhbmQgcG9zdCBwYXRjaCAoSSBleHBsYWluZWQgdGhlIHdoeSBhbmQgaG93IGluIGEg
+cHJldmlvdXMKPj4+Pj4+IG1haWwpLAo+Pj4+Pj4gd2UgY2FuIGV2ZW4gaW50ZWdyYXRlIGl0IGlu
+IHhlbm9tYWkgcmVwb3NpdG9yeS4KPj4+Pgo+Pj4+IEkgYW0gdHJ5aW5nIHRvIGdlbmVyYXRlIHRo
+ZSBwcmUgYW5kIHBvc3QgcGF0Y2ggZm9sbG93aW5nIHRoZQo+Pj4+IGluc3RydWN0aW9ucyBmcm9t
+IHRoaXMgbWFpbAo+Pj4+Cj4+Pj4gCj4+Pj4gaHR0cDovL3d3dy54ZW5vbWFpLm9yZy9waXBlcm1h
+aWwveGVub21haS8yMDEyLVNlcHRlbWJlci8wMjYxOTAuaHRtbAo+Pj4+Cj4+Pj4gQnV0IEkgYW0g
+c3RpbGwgbm90IGNsZWFyIG9uIHRoZSBwcmUtcGF0Y2ggcGFydCBlc3BlY2lhbGx5IHRoaXMgCj4+
+Pj4gcGFydAo+Pj4+IG9mCj4+Pj4gdGhlIG1haWwKPj4+Pgo+Pj4+IFRoZSBwcmUtcGF0Y2ggaXMg
+dGhlIHJldmVyc2UgZGlmZiBiZXR3ZWVuIHRoZSBmaWxlcyBpbiB0aGUgdmFuaWxsYQo+Pj4+IGtl
+cm5lbCwKPj4+PiBhbmQgdGhlIGZpbGVzIGNvbmZsaWN0aW5nIGluIHRoZSB2ZW5kb3IgYnJhbmNo
+Lgo+Pj4+IEdlbmVyYXRlIHRoZSBwcmUtcGF0Y2guCj4+Pj4gZ2l0IHJlc2V0IC0taGFyZAo+Pj4+
+IGdpdCBjbGVhbiAtZGYgKGJld2FyZSB0aGlzIGVyYXNlcyBhbGwgZmlsZXMgbm9uIGNvbW1pdGVk
+IGluIGdpdCwgCj4+Pj4gc28KPj4+PiBkbwo+Pj4+IG5vdCBkbyB0aGF0IGlmIHlvdSBrZWVwIHBy
+ZWNpb3VzIGZpbGVzIG5vdCB1bmRlciBnaXQgY29udHJvbCkKPj4+Pgo+Pj4+Cj4+Pj4gIEZyb20g
+d2hhdCBJIHVuZGVyc3RhbmQgc28gZmFyLCB0aGUgc3RlcHMgdG8gbWFrZSB0aGUgcHJlIGFuZCBw
+b3N0Cj4+Pj4gcGF0Y2gKPj4+PiBhcmUgYXMgZm9sbG93Cj4+Pj4KPj4+PiAxKSBNYWtlIGEgY29w
+eSBvZiB0aGUgb3JpZ2luYWxfdmVuZG9yX2tlcm5lbF9zb3VyY2UgYW5kIHJ1biBnaXQKPj4+PiBj
+b21taXQuCj4+Pj4KPj4+PiAyKSBJIHJhbiB0aGUgaS1waXBlIHBhdGNoIGZyb20geGVub21haS9z
+Y3JpcHRzIHdpdGggdGhlIGxpbnV4X3RyZWUKPj4+PiBwb2ludGluZyB0byB0aGUgb3JpZ2luYWxf
+dmVuZGVyX2tlcm5lbF9zb3VyY2UgdG8gY2hlY2sgZm9yIHRoZQo+Pj4+IGNvbmZsaWN0aW5nIGZp
+bGVzLgo+Pj4KPj4+Cj4+PiBObywgdGhlIHByZSBhbmQgcG9zdCBwYXRjaGVzIGFyZSBJLXBpcGUg
+b25seSwgdGhleSBkbyBub3QgaW5jbHVkZQo+Pj4gWGVub21haS4KPj4KPj4gU28gZm9yIHN0ZXAg
+MiwgSSBzaG91bGQgY29weSB0aGUgaXBpcGUtY29yZS0zLjIuMjEtYXJtLTEucGF0Y2ggdG8gbXkK
+Pj4gb3JpZ2luYWxfdmVuZG9yX2tlcm5lbF9zb3VyY2UgZm9sZGVyIGFuZCBydW4KPj4KPj4gcGF0
+Y2ggLS1kcnktcnVuIC1wMSAtaSBpcGlwZS1jb3JlLTMuMi4yMS1hcm0tMS5wYXRjaAo+Pgo+PiB0
+byBjaGVjayBmb3IgY29uZmxpY3RpbmcgZmlsZXM/Cj4KPgo+IEkgZG8gbm90IGtub3cgd2hhdCAt
+aSBtZWFucywgYnV0IHllcywgdGhhdCBpcyB3aGF0IHlvdSBzaG91bGQgZG8uCgpIZXJlIGFyZSB0
+aGUgcHJlIGFuZCBwb3N0IHBhdGNoIHRoYXQgSSBtYWRlIHRvIG1ha2UgWGVub21haSBydW4gb24g
+bXkgCmJlYWdsZWJvbmUuCgpUaGUgZ2VuZXJhbCB3b3JrZmxvdyB0aGF0IEkgdG9vayB3YXMgYXMg
+Zm9sbG93CgoxKSBDbG9uZSB0aGUgc2V0dXAtc2NyaXB0IGZyb20gYmVsb3cgYW5kIHJ1biB0aGUg
+dXBkYXRlIHNjcmlwdAoKZ2l0IGNsb25lIGdpdDovL2dpdGh1Yi5jb20vQW5nc3Ryb20tZGlzdHJp
+YnV0aW9uL3NldHVwLXNjcmlwdHMuZ2l0CgoyKSBFZGl0IHRoZSBiaXRiYWtlIHJlY2lwZSB0byBk
+b3dubG9hZCB0aGUga2VybmVsIHNvdXJjZSBvZiBsaW51eCAKMy4yLjIxIGFuZCB0aGUgcmVzdCBv
+ZiB0aGUgbWV0YSBwYXRjaC4KCjMpIEFwcGx5IHRoZSBwcmUtcGF0Y2gKCjQpIEFwcGx5IHRoZSBp
+cGlwZSBwYXRjaCBhcyB1c3VhbCB3aXRoIHRoZSAuL3ByZXBhcmUta2VybmVsLnNoIHNjcmlwdAoK
+NSkgQXBwbHkgdGhlIHBvc3QtcGF0Y2gKCjYpIENvcHkgdGhlIGFtMzM1eC1wbS1maXJtd2FyZS5i
+aW4gdG8gdGhlIC9maXJtd2FyZSBmb2xkZXIsIHRoaXMgaXMgCm5lZWRlZCB0byBjb21waWxlIHRo
+ZSBrZXJuZWwgZm9yIEFNMzM1OQoKNykgQ29tcGlsZSB0aGUga2VybmVsCgoKCgoKCgoKCgoKCgoK
+CgotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRh
+Y2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBwcmUtcGF0Y2gucGF0Y2gKVHlwZTogdGV4dC94
+LWMKU2l6ZTogMTY0NTggYnl0ZXMKRGVzYzogbm90IGF2YWlsYWJsZQpVUkw6IDxodHRwOi8vd3d3
+Lnhlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTIxMjAzL2ZhODVk
+MzBkL2F0dGFjaG1lbnQuYmluPgotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0t
+LS0KQW4gZW1iZWRkZWQgYW5kIGNoYXJzZXQtdW5zcGVjaWZpZWQgdGV4dCB3YXMgc2NydWJiZWQu
+Li4KTmFtZTogcG9zdC1wYXRjaC5wYXRjaApVUkw6IDxodHRwOi8vd3d3Lnhlbm9tYWkub3JnL3Bp
+cGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTIxMjAzL2ZhODVkMzBkL2F0dGFjaG1lbnQu
+a3NoPgo=
