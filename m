@@ -1,22 +1,14 @@
+Message-ID: <50BD0343.7000000@xenomai.org>
+Date: Mon, 03 Dec 2012 20:53:39 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Date: Mon, 03 Dec 2012 19:30:43 +0100
-From: WONG Sheng Chao <wong@isir.upmc.fr>
-In-Reply-To: <54b68e5271dffe6add316e94480ffeb6@isir.upmc.fr>
-References: "\"\\\"\\\\\\\"\\\\\\\\\\\\\\\"\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"<mailman.0.1354186801.18650.xenomai@xenomai.org>\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"	<6F62EBB3-71FC-47B6-B6A4-9A2A7EFE793B@kabelmail.de>\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"
-	<bf6a998422f24fab874ae21fd0adb396@isir.upmc.fr>"
-	"<F74C5334-2EAF-4D8E-AE55-38BF37437EE6@mah.priv.at>\""
-	"<50B8B7A8.2010800@xenomai.org>\"
-	"\\\"<D5733E9B-1AA5-4C5F-A2E8-1346A11A7E4C@mah.priv.at>\\\\\\\"\\\"\""
-	"<7563882586f5c36943667b067978e7ff@isir.upmc.fr>\"
-	<50BB69A4.8020401@xenomai.org>
-	"<f4d725b0ea36a139107d61f00b627b47@isir.upmc.fr>\""
-	<50BB7E6D.8080602@xenomai.org>
-	<54b68e5271dffe6add316e94480ffeb6@isir.upmc.fr>
-Message-ID: <5f186a473469646525a404ab3fbe4a62@isir.upmc.fr>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Subject: Re: [Xenomai] Compiling I-pipe patched kernel on beaglebone from
- Angstrom branch
+References: <E715748DB106B94DAE5D77B7F3D1DC4101BB100291@CIPL-MAIL.in.canon-asia.com>
+	<50B8BEAA.607@xenomai.org>
+	<E715748DB106B94DAE5D77B7F3D1DC4101BB100298@CIPL-MAIL.in.canon-asia.com>
+In-Reply-To: <E715748DB106B94DAE5D77B7F3D1DC4101BB100298@CIPL-MAIL.in.canon-asia.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Problem with bringing up Xenomai User Space
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -25,84 +17,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: WONG Sheng Chao <wong@isir.upmc.fr>
-Cc: xenomai@xenomai.org
+To: Dharma R Bhushan <Dharma.Bhushan@sdc.canon.co.in>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-T24gTW9uLCAwMyBEZWMgMjAxMiAxNTozMToyMCArMDEwMCwgV09ORyBTaGVuZyBDaGFvIHdyb3Rl
-Ogo+IE9uIFN1biwgMDIgRGVjIDIwMTIgMTc6MTQ6MzcgKzAxMDAsIEdpbGxlcyBDaGFudGVwZXJk
-cml4IHdyb3RlOgo+PiBPbiAxMi8wMi8yMDEyIDA0OjE1IFBNLCBXT05HIFNoZW5nIENoYW8gd3Jv
-dGU6Cj4+Cj4+PiBPbiBTdW4sIDAyIERlYyAyMDEyIDE1OjQ1OjU2ICswMTAwLCBHaWxsZXMgQ2hh
-bnRlcGVyZHJpeCB3cm90ZToKPj4+PiBPbiAxMi8wMi8yMDEyIDAyOjUzIFBNLCBXT05HIFNoZW5n
-IENoYW8gd3JvdGU6Cj4+Pj4KPj4+Pj4gT24gRnJpLCAzMCBOb3YgMjAxMiAyMDoyMjoxMSArMDEw
-MCwgTWljaGFlbCBIYWJlcmxlciB3cm90ZToKPj4+Pj4+IEFtIDMwLjExLjIwMTIgdW0gMTQ6NDIg
-c2NocmllYiBHaWxsZXMgQ2hhbnRlcGVyZHJpeDoKPj4+Pj4+Cj4+Pj4+Pj4gT24gMTEvMzAvMjAx
-MiAxMjo0NSBQTSwgTWljaGFlbCBIYWJlcmxlciB3cm90ZToKPj4+Pj4+Pj4KPj4+Pj4+Pj4gQW0g
-MzAuMTEuMjAxMiB1bSAwOTo1NCBzY2hyaWViIFdPTkcgU2hlbmcgQ2hhbzoKPj4+Pj4+Pj4KPj4+
-Pj4+Pj4+IE9uIFRodSwgMjkgTm92IDIwMTIgMTM6MTY6MzEgKzAxMDAsIFN0ZXBoYW4gS2FwcGVy
-dHogd3JvdGU6Cj4+Pj4+Pj4+Pj4KPj4+Pj4+Pj4+PiBUaGUgcHJvYmxlbSBpcyB0aGF0IHlvdSBh
-cmUgdXNpbmcgdGhlIHdyb25nIHRpbWVyLgo+Pj4+Pj4+Pj4+IC4uLgo+Pj4+Pj4+Pgo+Pj4+Pj4+
-Pj4+Cj4+Pj4+Pj4+Pj4gI2VuZGlmCj4+Pj4+Pj4+Pj4KPj4+Pj4+Pj4+PiAtIFN0ZXBoYW4KPj4+
-Pj4+Pj4+Cj4+Pj4+Pj4+PiBUaGFua3MgYSBsb3QgU3RlcGhhbiBhbmQgR2lsbGVzISBUaGUga2Vy
-bmVsIGlzIG5vdyBhYmxlIHRvIAo+Pj4+Pj4+Pj4gYm9vdAo+Pj4+Pj4+Pj4gd2l0aCBib3RoIENP
-TkZJR19YRU5PTUFJIGFuZCBDT05GSUdfSVBJUEUuCj4+Pj4+Pj4+Cj4+Pj4+Pj4+IGdyZWF0ISBj
-b3VsZCB5b3UgcHVibGlzaCBhIGNvbXBsZXRlIHBhdGNoIHJlbGF0aXZlIHRvIGEga25vd24KPj4+
-Pj4+Pj4gYmFzZT8KPj4+Pj4+Pj4KPj4+Pj4+Pj4gdGhhbmtzIGluIGFkdmFuY2UsCj4+Pj4+Pj4K
-Pj4+Pj4+PiBBcyBJIGFscmVhZHkgc2FpZCwgaWYgc29tZW9uZSB0YWtlcyB0aGUgbGl0dGxlIHRp
-bWUgaXQgdGFrZXMgdG8KPj4+Pj4+PiBnZW5lcmF0ZQo+Pj4+Pj4+IGEgcHJlIGFuZCBwb3N0IHBh
-dGNoIChJIGV4cGxhaW5lZCB0aGUgd2h5IGFuZCBob3cgaW4gYSBwcmV2aW91cwo+Pj4+Pj4+IG1h
-aWwpLAo+Pj4+Pj4+IHdlIGNhbiBldmVuIGludGVncmF0ZSBpdCBpbiB4ZW5vbWFpIHJlcG9zaXRv
-cnkuCj4+Pj4+Cj4+Pj4+IEkgYW0gdHJ5aW5nIHRvIGdlbmVyYXRlIHRoZSBwcmUgYW5kIHBvc3Qg
-cGF0Y2ggZm9sbG93aW5nIHRoZQo+Pj4+PiBpbnN0cnVjdGlvbnMgZnJvbSB0aGlzIG1haWwKPj4+
-Pj4KPj4+Pj4gCj4+Pj4+IGh0dHA6Ly93d3cueGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkv
-MjAxMi1TZXB0ZW1iZXIvMDI2MTkwLmh0bWwKPj4+Pj4KPj4+Pj4gQnV0IEkgYW0gc3RpbGwgbm90
-IGNsZWFyIG9uIHRoZSBwcmUtcGF0Y2ggcGFydCBlc3BlY2lhbGx5IHRoaXMgCj4+Pj4+IHBhcnQK
-Pj4+Pj4gb2YKPj4+Pj4gdGhlIG1haWwKPj4+Pj4KPj4+Pj4gVGhlIHByZS1wYXRjaCBpcyB0aGUg
-cmV2ZXJzZSBkaWZmIGJldHdlZW4gdGhlIGZpbGVzIGluIHRoZSAKPj4+Pj4gdmFuaWxsYQo+Pj4+
-PiBrZXJuZWwsCj4+Pj4+IGFuZCB0aGUgZmlsZXMgY29uZmxpY3RpbmcgaW4gdGhlIHZlbmRvciBi
-cmFuY2guCj4+Pj4+IEdlbmVyYXRlIHRoZSBwcmUtcGF0Y2guCj4+Pj4+IGdpdCByZXNldCAtLWhh
-cmQKPj4+Pj4gZ2l0IGNsZWFuIC1kZiAoYmV3YXJlIHRoaXMgZXJhc2VzIGFsbCBmaWxlcyBub24g
-Y29tbWl0ZWQgaW4gZ2l0LCAKPj4+Pj4gc28KPj4+Pj4gZG8KPj4+Pj4gbm90IGRvIHRoYXQgaWYg
-eW91IGtlZXAgcHJlY2lvdXMgZmlsZXMgbm90IHVuZGVyIGdpdCBjb250cm9sKQo+Pj4+Pgo+Pj4+
-Pgo+Pj4+PiAgRnJvbSB3aGF0IEkgdW5kZXJzdGFuZCBzbyBmYXIsIHRoZSBzdGVwcyB0byBtYWtl
-IHRoZSBwcmUgYW5kIAo+Pj4+PiBwb3N0Cj4+Pj4+IHBhdGNoCj4+Pj4+IGFyZSBhcyBmb2xsb3cK
-Pj4+Pj4KPj4+Pj4gMSkgTWFrZSBhIGNvcHkgb2YgdGhlIG9yaWdpbmFsX3ZlbmRvcl9rZXJuZWxf
-c291cmNlIGFuZCBydW4gZ2l0Cj4+Pj4+IGNvbW1pdC4KPj4+Pj4KPj4+Pj4gMikgSSByYW4gdGhl
-IGktcGlwZSBwYXRjaCBmcm9tIHhlbm9tYWkvc2NyaXB0cyB3aXRoIHRoZSAKPj4+Pj4gbGludXhf
-dHJlZQo+Pj4+PiBwb2ludGluZyB0byB0aGUgb3JpZ2luYWxfdmVuZGVyX2tlcm5lbF9zb3VyY2Ug
-dG8gY2hlY2sgZm9yIHRoZQo+Pj4+PiBjb25mbGljdGluZyBmaWxlcy4KPj4+Pgo+Pj4+Cj4+Pj4g
-Tm8sIHRoZSBwcmUgYW5kIHBvc3QgcGF0Y2hlcyBhcmUgSS1waXBlIG9ubHksIHRoZXkgZG8gbm90
-IGluY2x1ZGUKPj4+PiBYZW5vbWFpLgo+Pj4KPj4+IFNvIGZvciBzdGVwIDIsIEkgc2hvdWxkIGNv
-cHkgdGhlIGlwaXBlLWNvcmUtMy4yLjIxLWFybS0xLnBhdGNoIHRvIAo+Pj4gbXkKPj4+IG9yaWdp
-bmFsX3ZlbmRvcl9rZXJuZWxfc291cmNlIGZvbGRlciBhbmQgcnVuCj4+Pgo+Pj4gcGF0Y2ggLS1k
-cnktcnVuIC1wMSAtaSBpcGlwZS1jb3JlLTMuMi4yMS1hcm0tMS5wYXRjaAo+Pj4KPj4+IHRvIGNo
-ZWNrIGZvciBjb25mbGljdGluZyBmaWxlcz8KPj4KPj4KPj4gSSBkbyBub3Qga25vdyB3aGF0IC1p
-IG1lYW5zLCBidXQgeWVzLCB0aGF0IGlzIHdoYXQgeW91IHNob3VsZCBkby4KPgo+IEhlcmUgYXJl
-IHRoZSBwcmUgYW5kIHBvc3QgcGF0Y2ggdGhhdCBJIG1hZGUgdG8gbWFrZSBYZW5vbWFpIHJ1biBv
-biBteQo+IGJlYWdsZWJvbmUuCj4KPiBUaGUgZ2VuZXJhbCB3b3JrZmxvdyB0aGF0IEkgdG9vayB3
-YXMgYXMgZm9sbG93Cj4KPiAxKSBDbG9uZSB0aGUgc2V0dXAtc2NyaXB0IGZyb20gYmVsb3cgYW5k
-IHJ1biB0aGUgdXBkYXRlIHNjcmlwdAo+Cj4gZ2l0IGNsb25lIGdpdDovL2dpdGh1Yi5jb20vQW5n
-c3Ryb20tZGlzdHJpYnV0aW9uL3NldHVwLXNjcmlwdHMuZ2l0Cj4KPiAyKSBFZGl0IHRoZSBiaXRi
-YWtlIHJlY2lwZSB0byBkb3dubG9hZCB0aGUga2VybmVsIHNvdXJjZSBvZiBsaW51eAo+IDMuMi4y
-MSBhbmQgdGhlIHJlc3Qgb2YgdGhlIG1ldGEgcGF0Y2guCj4KPiAzKSBBcHBseSB0aGUgcHJlLXBh
-dGNoCj4KPiA0KSBBcHBseSB0aGUgaXBpcGUgcGF0Y2ggYXMgdXN1YWwgd2l0aCB0aGUgLi9wcmVw
-YXJlLWtlcm5lbC5zaCBzY3JpcHQKPgo+IDUpIEFwcGx5IHRoZSBwb3N0LXBhdGNoCj4KPiA2KSBD
-b3B5IHRoZSBhbTMzNXgtcG0tZmlybXdhcmUuYmluIHRvIHRoZSAvZmlybXdhcmUgZm9sZGVyLCB0
-aGlzIGlzCj4gbmVlZGVkIHRvIGNvbXBpbGUgdGhlIGtlcm5lbCBmb3IgQU0zMzU5Cj4KPiA3KSBD
-b21waWxlIHRoZSBrZXJuZWwKPgo+Cj4KPiAtLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0t
-LS0tLS0tLS0KPiBBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCj4gTmFtZTog
-cHJlLXBhdGNoLnBhdGNoCj4gVHlwZTogdGV4dC94LWMKPiBTaXplOiAxNjQ1OCBieXRlcwo+IERl
-c2M6IG5vdCBhdmFpbGFibGUKPiBVUkw6Cj4gCj4gPGh0dHA6Ly93d3cueGVub21haS5vcmcvcGlw
-ZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxMjEyMDMvZmE4NWQzMGQvYXR0YWNobWVudC5i
-aW4+Cj4gLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCj4gQW4gZW1iZWRk
-ZWQgYW5kIGNoYXJzZXQtdW5zcGVjaWZpZWQgdGV4dCB3YXMgc2NydWJiZWQuLi4KPiBOYW1lOiBw
-b3N0LXBhdGNoLnBhdGNoCj4gVVJMOgo+IAo+IDxodHRwOi8vd3d3Lnhlbm9tYWkub3JnL3BpcGVy
-bWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTIxMjAzL2ZhODVkMzBkL2F0dGFjaG1lbnQua3No
-Pgo+IF9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCj4gWGVu
-b21haSBtYWlsaW5nIGxpc3QKPiBYZW5vbWFpQHhlbm9tYWkub3JnCj4gaHR0cDovL3d3dy54ZW5v
-bWFpLm9yZy9tYWlsbWFuL2xpc3RpbmZvL3hlbm9tYWkKCgoKcG9zdCBhbmQgcHJlIHBhdGNoZXMg
-cmVzZW50IGluIGF0dGFjaG1lbnQKCgoKCi0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0t
-LS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IHByZV9w
-b3N0X3BhdGNoZXMudGFyLmJ6MgpUeXBlOiBhcHBsaWNhdGlvbi9vY3RldC1zdHJlYW0KU2l6ZTog
-MjU1NTggYnl0ZXMKRGVzYzogbm90IGF2YWlsYWJsZQpVUkw6IDxodHRwOi8vd3d3Lnhlbm9tYWku
-b3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTIxMjAzL2M5N2FiZWU4L2F0dGFj
-aG1lbnQub2JqPgo=
+On 12/03/2012 05:16 PM, Dharma R Bhushan wrote:
+> Gilles wrote:
+
+>> If the toolchain is a linaro toolchain (...), you absolutely
+>> need CONFIG_ARM_ERRATA_430973 enabled in the kernel configuration,
+
+>
+
+> I am using code-sourcery tool chain.
+
+> (...)
+
+> I have tried with CONFIG_ARM_ERRATA_430973 enabled. No success.
+
+
+Please stop top posting. No surprise if you read carefully my answer.
+
+The problem probably comes from your configuration, a simple look at it
+shows that you have some options enabled which should be disabled, and
+it is documentd, namely CONFIG_CPU_FREQ.
+
+Please also try disabling:
+- CONFIG_ARCH_OMAP2
+- CONFIG_PERF_EVENTS
+- CONFIG_KPROBES
+- CONFIG_FTRACE
+- CONFIG_PM_SLEEP
+
+Could you post the boot logs if this still fails?
+
+-- 
+                                                                Gilles.
+
