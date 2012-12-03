@@ -1,16 +1,25 @@
-Message-ID: <50BB7E6D.8080602@xenomai.org>
-Date: Sun, 02 Dec 2012 17:14:37 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: "\"\\\"\\\\\\\"<mailman.0.1354186801.18650.xenomai@xenomai.org>\\\"	<6F62EBB3-71FC-47B6-B6A4-9A2A7EFE793B@kabelmail.de>\\\"	<bf6a998422f24fab874ae21fd0adb396@isir.upmc.fr>	<F74C5334-2EAF-4D8E-AE55-38BF37437EE6@mah.priv.at>	<50B8B7A8.2010800@xenomai.org>	<D5733E9B-1AA5-4C5F-A2E8-1346A11A7E4C@mah.priv.at>"
-	<7563882586f5c36943667b067978e7ff@isir.upmc.fr>"
-	<50BB69A4.8020401@xenomai.org>
-	<f4d725b0ea36a139107d61f00b627b47@isir.upmc.fr>
-In-Reply-To: <f4d725b0ea36a139107d61f00b627b47@isir.upmc.fr>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Compiling I-pipe patched kernel on beaglebone from
- Angstrom branch
+In-Reply-To: <50AA3732.5000701@xenomai.org>
+References: <CAL7_A_WEXhEBQr+LFb_mfaqLxBh=hsHJg6WiY08cmkgb=Y2TNA@mail.gmail.com>
+	<4FF369E5.5040007@xenomai.org>
+	<CAL7_A_WYVjFhh9RuxAm1jtVp7HqakB5gEzkSt8i7XsWJNJrh=Q@mail.gmail.com>
+	<4FF402AD.3020601@xenomai.org> <4FF415AB.2030503@xenomai.org>
+	<CAL7_A_Xr432pEEEiG4D5xsD-2yqWdgSd0tD26aEi4q0FzeWD_w@mail.gmail.com>
+	<CAL7_A_XMD_KY9nryEyb3xzHpCb1PFYTG6qJupLWqRZhJXjkYRw@mail.gmail.com>
+	<4FF44389.3030209@xenomai.org>
+	<CAL7_A_WTJUeWNTTra2t9veiyWMxC5VtpotocMHGPdU1v7QAxKA@mail.gmail.com>
+	<4FF44C52.6050809@xenomai.org>
+	<CAL7_A_VUC8JD9yeMnLt2iJQ0ex_at3QMhiL3cQ5CHPFh0rcJRA@mail.gmail.com>
+	<4FF585C4.1000708@xenomai.org>
+	<CAL7_A_WZ=mQ9F_Od92qQKFS85QcOtOwqyXu+omrhOBgnZpJFNQ@mail.gmail.com>
+	<50AA3732.5000701@xenomai.org>
+Date: Mon, 3 Dec 2012 08:59:36 +0100
+Message-ID: <CAL7_A_VBCVX9o4_m4DEH7iDAf423UiowDGy+FhD_VZLcfonq9g@mail.gmail.com>
+From: =?ISO-8859-1?Q?Jens_K=F6hler?= <jenskxxx@googlemail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] Xenomai and normal linux application - Wait time with
+ select() not reliable
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,89 +28,80 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: WONG Sheng Chao <wong@isir.upmc.fr>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On 12/02/2012 04:15 PM, WONG Sheng Chao wrote:
+Hello,
 
-> On Sun, 02 Dec 2012 15:45:56 +0100, Gilles Chanteperdrix wrote:
->> On 12/02/2012 02:53 PM, WONG Sheng Chao wrote:
+I found following additionaly out:
+One of the Xenomai tasks writes cyclically to a shared linux memory
+(its not a Xenomai shared memory). Write and read access is controlled
+by Linux semaphores. If shared memory writing is out-commented is
+there never a delay problem.
+
+I found following explanation about Xenomai in internet. Could it
+reason for problem?
+
+"If an interrupt arrives while a Xenomai thread executes in secondary
+mode, it is not forwarded to Linux! The mechanism works as follows:
+When a Xenomai thread is executed in secondary mode, the interrupt
+shield domain is activated All Linux interrupts are stalled, until the
+Xenomai thread completes execution. The interrupts will be served
+again when Linux goes back to execute in background mode."
+
+Best regards,
+Jens
+
+
+2012/11/19, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>:
+> On 11/19/2012 02:29 PM, Jens K=F6hler wrote:
+>> Hello,
 >>
->>> On Fri, 30 Nov 2012 20:22:11 +0100, Michael Haberler wrote:
->>>> Am 30.11.2012 um 14:42 schrieb Gilles Chanteperdrix:
->>>>
->>>>> On 11/30/2012 12:45 PM, Michael Haberler wrote:
->>>>>>
->>>>>> Am 30.11.2012 um 09:54 schrieb WONG Sheng Chao:
->>>>>>
->>>>>>> On Thu, 29 Nov 2012 13:16:31 +0100, Stephan Kappertz wrote:
->>>>>>>>
->>>>>>>> The problem is that you are using the wrong timer.
->>>>>>>> ...
->>>>>>
->>>>>>>>
->>>>>>>> #endif
->>>>>>>>
->>>>>>>> - Stephan
->>>>>>>
->>>>>>> Thanks a lot Stephan and Gilles! The kernel is now able to boot
->>>>>>> with both CONFIG_XENOMAI and CONFIG_IPIPE.
->>>>>>
->>>>>> great! could you publish a complete patch relative to a known 
->>>>>> base?
->>>>>>
->>>>>> thanks in advance,
->>>>>
->>>>> As I already said, if someone takes the little time it takes to
->>>>> generate
->>>>> a pre and post patch (I explained the why and how in a previous
->>>>> mail),
->>>>> we can even integrate it in xenomai repository.
->>>
->>> I am trying to generate the pre and post patch following the
->>> instructions from this mail
->>>
->>> http://www.xenomai.org/pipermail/xenomai/2012-September/026190.html
->>>
->>> But I am still not clear on the pre-patch part especially this part 
->>> of
->>> the mail
->>>
->>> The pre-patch is the reverse diff between the files in the vanilla
->>> kernel,
->>> and the files conflicting in the vendor branch.
->>> Generate the pre-patch.
->>> git reset --hard
->>> git clean -df (beware this erases all files non commited in git, so 
->>> do
->>> not do that if you keep precious files not under git control)
->>>
->>>
->>>  From what I understand so far, the steps to make the pre and post 
->>> patch
->>> are as follow
->>>
->>> 1) Make a copy of the original_vendor_kernel_source and run git 
->>> commit.
->>>
->>> 2) I ran the i-pipe patch from xenomai/scripts with the linux_tree
->>> pointing to the original_vender_kernel_source to check for the
->>> conflicting files.
+>> Now is Xenomai 2.6 installed. But I have sometimes still delays in
+>> user space applications.
 >>
+>> Delay: 0.003064
+>> Delay: 0.003066
+>> Delay: 0.003504
+>> Delay: 0.003066
+>> Delay: 0.003066
+>> Delay: 0.003066
+>> Delay: 0.003090
+>> Delay: 0.003064
+>> Delay: 0.003066
+>> Delay: 0.003067
+>> Delay: 0.053807 <- 53 ms instead 3ms
+>> Delay: 0.003067
+>> Delay: 0.003067
 >>
->> No, the pre and post patches are I-pipe only, they do not include 
->> Xenomai.
-> 
-> So for step 2, I should copy the ipipe-core-3.2.21-arm-1.patch to my 
-> original_vendor_kernel_source folder and run
-> 
-> patch --dry-run -p1 -i ipipe-core-3.2.21-arm-1.patch
-> 
-> to check for conflicting files?
-
-
-I do not know what -i means, but yes, that is what you should do.
-
--- 
-                                                                Gilles.
+>> I found out that problem depends from a real time queue between two
+>> Xenomai tasks.
+>>
+>> retval =3D rt_queue_create(&RtMeasureData, "RtMeasureData", 1000 * 256,
+>> Q_UNLIMITED, Q_FIFO | Q_SHARED);
+>>
+>> A real time task writes measurement data every 2 ms to a rt_queue.
+>> retval =3D rt_queue_write(&RtMeasureData, &FifoMeasureData, 256, Q_NORMA=
+L);
+>>
+>> Another Xenomai task reads all measured data from queue and makes them
+>> available for user land applications. (Task is not real time, context
+>> switches)
+>>
+>> retval =3D rt_queue_read(&RtMeasureData, &FifoMeasureData, 256,
+>> TM_NONBLOCK);
+>>
+>> When nothing is written to queue is there also never an unexpected delay=
+.
+>>
+>> Any ideas or recommendations to find reason for problem?
+>
+> Without seeing any code, there is strictly nothing we can do.
+> If you are able to reduce the code to a simple, self-contained test case
+> we can run anywhere, then we can have a look at it.
+> If not, then use the I-pipe tracer.
+>
+> --
+> 					    Gilles.
+>
 
