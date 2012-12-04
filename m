@@ -1,26 +1,20 @@
+Message-ID: <50BDF922.9030805@grandegger.com>
+Date: Tue, 04 Dec 2012 14:22:42 +0100
+From: Wolfgang Grandegger <wg@grandegger.com>
 MIME-Version: 1.0
-In-Reply-To: <50BC705D.2040407@xenomai.org>
-References: <CAL7_A_WEXhEBQr+LFb_mfaqLxBh=hsHJg6WiY08cmkgb=Y2TNA@mail.gmail.com>
-	<4FF369E5.5040007@xenomai.org>
-	<CAL7_A_WYVjFhh9RuxAm1jtVp7HqakB5gEzkSt8i7XsWJNJrh=Q@mail.gmail.com>
-	<4FF402AD.3020601@xenomai.org> <4FF415AB.2030503@xenomai.org>
-	<CAL7_A_Xr432pEEEiG4D5xsD-2yqWdgSd0tD26aEi4q0FzeWD_w@mail.gmail.com>
-	<CAL7_A_XMD_KY9nryEyb3xzHpCb1PFYTG6qJupLWqRZhJXjkYRw@mail.gmail.com>
-	<4FF44389.3030209@xenomai.org>
-	<CAL7_A_WTJUeWNTTra2t9veiyWMxC5VtpotocMHGPdU1v7QAxKA@mail.gmail.com>
-	<4FF44C52.6050809@xenomai.org>
-	<CAL7_A_VUC8JD9yeMnLt2iJQ0ex_at3QMhiL3cQ5CHPFh0rcJRA@mail.gmail.com>
-	<4FF585C4.1000708@xenomai.org>
-	<CAL7_A_WZ=mQ9F_Od92qQKFS85QcOtOwqyXu+omrhOBgnZpJFNQ@mail.gmail.com>
-	<50AA3732.5000701@xenomai.org>
-	<CAL7_A_VBCVX9o4_m4DEH7iDAf423UiowDGy+FhD_VZLcfonq9g@mail.gmail.com>
-	<50BC705D.2040407@xenomai.org>
-Date: Tue, 4 Dec 2012 11:09:05 +0100
-Message-ID: <CAL7_A_UE2siUJTMcWnJiJz4y0=PhcEM-Y6dJsnY5XwdgW12_ig@mail.gmail.com>
-From: =?ISO-8859-1?Q?Jens_K=F6hler?= <jenskxxx@googlemail.com>
+References: <CADy-PFjUiqnyaP5_1T934OLZQPU2NvNZnZj1uEG3MJvzKhgALQ@mail.gmail.com>
+	<5069E424.9090500@grandegger.com>
+	<CADy-PFjCScUGXgUebJj9a6arhZ6mRCnJPuwE3kHT=XcjkY0SpA@mail.gmail.com>
+	<CADy-PFjg9NuOLte1CzoMFs3u+_cPUXE5xu7fzfDOug-qz0sQbg@mail.gmail.com>
+	<50B4EF81.50307@grandegger.com>
+	<CADy-PFjLCRbPc8MuYYsqEoEPXOuWNurzoG6nKaZFF_2+hQUoEw@mail.gmail.com>
+	<50B6619A.10300@grandegger.com>
+	<CADy-PFjz_CeJ7-RC8xfr5PLrMcKH6sFTJP56z4ULKL8sS_q-VA@mail.gmail.com>
+	<CADy-PFgMDBt693UF0QbUnAAYZgGXG+H+7RdZc0G1fpeYLv_0oA@mail.gmail.com>
+In-Reply-To: <CADy-PFgMDBt693UF0QbUnAAYZgGXG+H+7RdZc0G1fpeYLv_0oA@mail.gmail.com>
 Content-Type: text/plain; charset=ISO-8859-1
-Subject: Re: [Xenomai] Xenomai and normal linux application - Wait time with
- select() not reliable
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] RTDM and PEAK PCIe
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -29,23 +23,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Jonathan Bohren <jonathan.bohren@gmail.com>
 Cc: xenomai@xenomai.org
 
-Hi,
+On 12/03/2012 04:43 PM, Jonathan Bohren wrote:
+> Ok, here's the PEAK CANBus PCIE patch with all the necessary metadata:
+> thanks!
+> -j
+> 
+>>From d97ee63e108c3f6eff26368af0df3ba1d1050692 Mon Sep 17 00:00:00 2001
+> From: Jonathan Bohren <jbo@jhu.edu>
+> Date: Tue, 27 Nov 2012 09:13:11 -0500
+> Subject: [PATCH] Adding device ID for PEAK PCIe card IPEH-003027
 
-> If you expect a task using a Linux semaphore to have bounded latencies,
-> you misunderstood the way Xenomai works.
+Please add an empty line between the subject and the commit message.
 
-I have not so a deep knowledge about linux semaphores and xenomai. A
-linux semaphore controls access to a linux shared memory. The Xenomai
-task is the only task which writes to shared memory. Several linux
-applications reading from shared memory. The task of semaphore is to
-prevent that during data reading the Xenomai task could write to
-shared memory. I understand Xenomai has highest priority. What does
-xenomai/ linux when xenomai task tries to write to shared memory, but
-semaphore blocks writing?
+> Signed-off-by: Jonathan Bohren <jbo@jhu.edu>
+> Acked-by: Wolfgang Grandegger <wg@grandegger.com>
+> ---
+>  #define PCI_CONFIG_PORT_SIZE 0x1000  // size of the config io-memory
 
-best regards,
-Jens
+Hm, where does that line come from. Maybe the result of the missing line
+above.
+
+>  ksrc/drivers/can/sja1000/rtcan_peak_pci.c |    4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
+> 
+> diff --git a/ksrc/drivers/can/sja1000/rtcan_peak_pci.c
+> b/ksrc/drivers/can/sja1000/rtcan_peak_pci.c
+> index 53c8fef..b5ad226 100644
+> --- a/ksrc/drivers/can/sja1000/rtcan_peak_pci.c
+> +++ b/ksrc/drivers/can/sja1000/rtcan_peak_pci.c
+> @@ -71,13 +71,15 @@ struct rtcan_peak_pci
+>  #define PITA_MISC        0x1C        // miscellanoes register
+>  #define PEAK_PCI_VENDOR_ID   0x001C  // the PCI device and vendor IDs
+> -#define PEAK_PCI_DEVICE_ID   0x0001
+> +#define PEAK_PCI_DEVICE_ID   0x0001  // Device ID for PCI and older PCIe
+> cards
+> +#define PEAK_PCIE_DEVICE_ID  0x0003  // Device ID for newer PCIe
+> cards (IPEH-003027)
+>  #define PCI_PORT_SIZE        0x0400  // size of a channel io-memory
+> 
+>  static struct pci_device_id peak_pci_tbl[] = {
+>   {PEAK_PCI_VENDOR_ID, PEAK_PCI_DEVICE_ID, PCI_ANY_ID, PCI_ANY_ID, 0, 0, 0},
+> + {PEAK_PCI_VENDOR_ID, PEAK_PCIE_DEVICE_ID, PCI_ANY_ID, PCI_ANY_ID, 0, 0,
+> 0},
+
+Unfortunately, you mail client has wrapped lines. This patch will not
+apply. To avoid such problems I recommend to post the patch with  "git
+send-email".
+
+Thanks,
+
+Wolfgang.
+
 
