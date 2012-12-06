@@ -1,10 +1,11 @@
 MIME-Version: 1.0
-In-Reply-To: <CANKLDms4gtzdTngtENm4aJrh_aXN5283yNLi-NuY9SCuNPgoLQ@mail.gmail.com>
+In-Reply-To: <CANKLDmtYfN_P-wROiVNU5BZj71K0r98FG32g+5R8Z4R=8ng6cQ@mail.gmail.com>
 References: <CANKLDmvSr6j-=6T-YGCG8byGsZ6oy_7sTmcknL7YC8uk9ymTrQ@mail.gmail.com>
 	<CANKLDmvhj_sbQnLgmWSo6QsOnrB1CnJcpvg0DRbnW+X93bozbQ@mail.gmail.com>
 	<CANKLDms4gtzdTngtENm4aJrh_aXN5283yNLi-NuY9SCuNPgoLQ@mail.gmail.com>
-Date: Thu, 6 Dec 2012 12:23:16 +0100
-Message-ID: <CANKLDmtYfN_P-wROiVNU5BZj71K0r98FG32g+5R8Z4R=8ng6cQ@mail.gmail.com>
+	<CANKLDmtYfN_P-wROiVNU5BZj71K0r98FG32g+5R8Z4R=8ng6cQ@mail.gmail.com>
+Date: Thu, 6 Dec 2012 17:35:06 +0100
+Message-ID: <CANKLDmuGztuXdm8F=OjXkmXtejmu0kfx_r7msYxgiRWsAKnW6Q@mail.gmail.com>
 From: Henri Roosen <henriroosen@gmail.com>
 Content-Type: text/plain; charset=ISO-8859-1
 Subject: Re: [Xenomai] Strange behavior calling certain libraries from
@@ -19,135 +20,157 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-On Wed, Dec 5, 2012 at 6:08 PM, Henri Roosen <henriroosen@gmail.com> wrote:
+On Thu, Dec 6, 2012 at 12:23 PM, Henri Roosen <henriroosen@gmail.com> wrote:
 
-> On Wed, Dec 5, 2012 at 12:42 PM, Henri Roosen <henriroosen@gmail.com>wrote:
+> On Wed, Dec 5, 2012 at 6:08 PM, Henri Roosen <henriroosen@gmail.com>wrote:
 >
+>> On Wed, Dec 5, 2012 at 12:42 PM, Henri Roosen <henriroosen@gmail.com>wrote:
 >>
->>
->>
->> On Tue, Dec 4, 2012 at 5:53 PM, Henri Roosen <henriroosen@gmail.com>wrote:
->>
->>> Hi,
 >>>
->>> I have a task that is using the libvlc (v2.0.4) library to play some
->>> media streams. This all works when it is a normal posix task. When the task
->>> is a non-realtime shadow task (prio 0, autorelax), then the shared
->>> libraries that libvlc loads (its plugins, codecs etc) get corrupted on
->>> disk. A second run of the program is not working.
 >>>
+>>>
+>>> On Tue, Dec 4, 2012 at 5:53 PM, Henri Roosen <henriroosen@gmail.com>wrote:
+>>>
+>>>> Hi,
+>>>>
+>>>> I have a task that is using the libvlc (v2.0.4) library to play some
+>>>> media streams. This all works when it is a normal posix task. When the task
+>>>> is a non-realtime shadow task (prio 0, autorelax), then the shared
+>>>> libraries that libvlc loads (its plugins, codecs etc) get corrupted on
+>>>> disk. A second run of the program is not working.
+>>>>
+>>>
+>>> The files get corrupted when they are loaded with a dlopen() call.
+>>> Is a dlopen() call allowed from a shadowed non-realtime task? Or what
+>>> can cause the loaded library to get corrupted at this point?
+>>>
+>>> Traced this problem a little further. We found out the problem was easy
+>> to reproduce running the testcode below. An md5sum on the
+>> file /usr/lib/libavutil.so.50 before and after calling the application
+>> shows the md5 of this file changed.
 >>
->> The files get corrupted when they are loaded with a dlopen() call.
->> Is a dlopen() call allowed from a shadowed non-realtime task? Or what can
->> cause the loaded library to get corrupted at this point?
+>> Debugging into dlopen() was not easy, but it looked like the file changed
+>> somewhere around were the file was mapped to memory.
 >>
->> Traced this problem a little further. We found out the problem was easy
-> to reproduce running the testcode below. An md5sum on the
-> file /usr/lib/libavutil.so.50 before and after calling the application
-> shows the md5 of this file changed.
+>> In parallel we found out the problem was not reproducable on our "next"
+>> development status which uses xenomai-2.6.1+ and kernel 3.4.6. A step by
+>> step upgrade of the platform showed that the problem disappeared after
+>> upgrading the kernel form 2.6.38.8 (ipipe-2.6.38.8-x86-2.11-02) to 3.4.6
+>> (git 0bd76072135271ad58e7bea559acb524ab8c7dfe).
+>>
+>> Now I would like to find out if this behavior is fix with a newer kernel
+>> or whether it is hidden.
+>> Does anyone on the list have any input on this?
+>>
+>>
+> We thought that by spawning a normal pthread that does the dlopen() call,
+> the problem would disappear, but unfortunately that is not the case. The
+> problem can still be reproduced when then maintask is shadowed. Without
+> shadowing the main task there is no problem.
 >
-> Debugging into dlopen() was not easy, but it looked like the file changed
-> somewhere around were the file was mapped to memory.
+> Anyone an idea how to debug this?
 >
-> In parallel we found out the problem was not reproducable on our "next"
-> development status which uses xenomai-2.6.1+ and kernel 3.4.6. A step by
-> step upgrade of the platform showed that the problem disappeared after
-> upgrading the kernel form 2.6.38.8 (ipipe-2.6.38.8-x86-2.11-02) to 3.4.6
-> (git 0bd76072135271ad58e7bea559acb524ab8c7dfe).
->
-> Now I would like to find out if this behavior is fix with a newer kernel
-> or whether it is hidden.
-> Does anyone on the list have any input on this?
->
->
-We thought that by spawning a normal pthread that does the dlopen() call,
-the problem would disappear, but unfortunately that is not the case. The
-problem can still be reproduced when then maintask is shadowed. Without
-shadowing the main task there is no problem.
+> I have been debugging this a little further. In libc, the dlopen() call
+maps the file, changes the __mprotect of the code segment to writable to
+put in addresses. In case the main thread has been shadowed, then these
+changes are written through to the file, while when the mainthread is not
+shadowed, the addresses are changed only in memory, but not written back to
+the file.
 
-Anyone an idea how to debug this?
+I'm not sure whether the file is mapped wrong or the mprotect is doing
+incorrect things. I will now debug into the kernel to find out.
+
+Searching through Xenomai commits I found there is a configure option
+--enable-dlopen-skins. This option is not set in my configuration as I am
+under the impression that it should only be enabled when dynamically
+loading a _skin_ using dlopen(). Can some confirm this impression is
+correct and I don't need to set this option?
+
+Thanks,
+Henri
 
 /*
- * ${CROSS_COMPILE}gcc -g -O0 mytest.c -o mytest -pthread -ldl
--I/home/henri/development/xeno-2.6/usr/xenomai/include
--L/home/henri/development/xeno-2.6/usr/xenomai/lib -Xlinker -rpath -Xlinker
-/usr/xenomai/lib -lxenomai -lnative
- */
-#define CONFIG_RT_SHADOW
-
-#include <stdio.h>
-#include <sys/mman.h>
-#include <native/task.h>
-#include <dlfcn.h>
-#include <unistd.h>
-#include <pthread.h>
-
-static pthread_t ph;
-static pthread_attr_t threadattr;
-static volatile int mainThreadShadowed;
-static volatile int workerThreadDone;
-
-static void *work_thread(void *cookie)
-{
-        while (!mainThreadShadowed)
-                usleep(100);
-
-        dlopen("/usr/lib/libavutil.so.50.15.1", RTLD_LAZY);
-        workerThreadDone = 1;
-        return NULL;
-}
-
-int main(int argc, char *argv[])
-{
-        mlockall(MCL_CURRENT | MCL_FUTURE);
-        pthread_attr_init(&threadattr);
-        pthread_create(&ph, &threadattr, work_thread, NULL);
-
-#ifdef CONFIG_RT_SHADOW
-        rt_task_shadow(NULL, "main", 0, 0);
-#endif
-
-        mainThreadShadowed = 1;
-        while (!workerThreadDone) {
-#ifdef CONFIG_RT_SHADOW
-                rt_task_sleep(100000);
-#else
-                usleep(100);
-#endif
-        }
-        return 0;
-}
-
-
-#include <stdio.h>
+>  * ${CROSS_COMPILE}gcc -g -O0 mytest.c -o mytest -pthread -ldl
+> -I/home/henri/development/xeno-2.6/usr/xenomai/include
+> -L/home/henri/development/xeno-2.6/usr/xenomai/lib -Xlinker -rpath -Xlinker
+> /usr/xenomai/lib -lxenomai -lnative
+>  */
+> #define CONFIG_RT_SHADOW
+>
+> #include <stdio.h>
 > #include <sys/mman.h>
 > #include <native/task.h>
 > #include <dlfcn.h>
+> #include <unistd.h>
+> #include <pthread.h>
 >
-> #define CONFIG_RT_SHADOW
+> static pthread_t ph;
+> static pthread_attr_t threadattr;
+> static volatile int mainThreadShadowed;
+> static volatile int workerThreadDone;
+>
+> static void *work_thread(void *cookie)
+> {
+>         while (!mainThreadShadowed)
+>                 usleep(100);
+>
+>         dlopen("/usr/lib/libavutil.so.50.15.1", RTLD_LAZY);
+>         workerThreadDone = 1;
+>         return NULL;
+> }
 >
 > int main(int argc, char *argv[])
 > {
-> mlockall(MCL_CURRENT | MCL_FUTURE);
+>         mlockall(MCL_CURRENT | MCL_FUTURE);
+>         pthread_attr_init(&threadattr);
+>         pthread_create(&ph, &threadattr, work_thread, NULL);
+>
 > #ifdef CONFIG_RT_SHADOW
-> rt_task_shadow(NULL, "main", 0, 0);
+>         rt_task_shadow(NULL, "main", 0, 0);
 > #endif
-> dlopen("/usr/lib/libavutil.so.50", 1);
-> return 0;
+>
+>         mainThreadShadowed = 1;
+>         while (!workerThreadDone) {
+> #ifdef CONFIG_RT_SHADOW
+>                 rt_task_sleep(100000);
+> #else
+>                 usleep(100);
+> #endif
+>         }
+>         return 0;
 > }
 >
 >
->>> Does anyone know what can be causing this? I was under the impression an
->>> autorelaxed shadow task was allowed to make all Linux calls. Are there
->>> known limitations or is this a bug?
->>>
->>>  Platform: x86
->>> Xenomai 2.5.6
->>> Linux 2.6.38.8
->>>
->>> Thanks,
->>> Henri
->>>
+>  #include <stdio.h>
+>> #include <sys/mman.h>
+>> #include <native/task.h>
+>> #include <dlfcn.h>
 >>
+>> #define CONFIG_RT_SHADOW
+>>
+>> int main(int argc, char *argv[])
+>> {
+>> mlockall(MCL_CURRENT | MCL_FUTURE);
+>> #ifdef CONFIG_RT_SHADOW
+>> rt_task_shadow(NULL, "main", 0, 0);
+>> #endif
+>> dlopen("/usr/lib/libavutil.so.50", 1);
+>> return 0;
+>> }
+>>
+>>
+>>>> Does anyone know what can be causing this? I was under the impression
+>>>> an autorelaxed shadow task was allowed to make all Linux calls. Are there
+>>>> known limitations or is this a bug?
+>>>>
+>>>>  Platform: x86
+>>>> Xenomai 2.5.6
+>>>> Linux 2.6.38.8
+>>>>
+>>>> Thanks,
+>>>> Henri
+>>>>
+>>>
+>>>
 >>
 >
