@@ -1,16 +1,11 @@
-Content-Type: text/plain; charset=us-ascii
-Mime-Version: 1.0 (Apple Message framework v1283)
-From: Michael Haberler <mail17@mah.priv.at>
-In-Reply-To: <50C849BB.9090307@xenomai.org>
-Date: Wed, 12 Dec 2012 10:28:47 +0100
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <7A843E24-17B0-4F91-96DA-84CE8007AC5A@mah.priv.at>
-References: <1491832.238.1355257934434.JavaMail.poli@jacqueline>
-	<FE9848C4-D19F-4628-8047-5E67A667A2E9@mah.priv.at>
-	<50C8330D.8040305@xenomai.org>
-	<325B0F26-79FE-4C8B-A41E-10ED40FC0B3B@mah.priv.at>
-	<50C849BB.9090307@xenomai.org>
-Subject: Re: [Xenomai] RT GPIO with Raspberry Pi
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Date: Fri,  7 Dec 2012 18:09:44 +0100
+Message-Id: <bccbecd725a84b0e556f488fd5442b7e6d1ed2e2.1354900184.git.jan.kiszka@siemens.com>
+In-Reply-To: <cover.1354900184.git.jan.kiszka@siemens.com>
+References: <cover.1354900184.git.jan.kiszka@siemens.com>
+In-Reply-To: <cover.1354900184.git.jan.kiszka@siemens.com>
+References: <cover.1354900184.git.jan.kiszka@siemens.com>
+Subject: [Xenomai] [PATCH 1/3] ipipe: Factor out ipipe_pin_vma
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,47 +14,97 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Xenomai <xenomai@xenomai.org>
 
+Will be used for pinning during mprotect as well.
 
-Am 12.12.2012 um 10:09 schrieb Gilles Chanteperdrix:
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ include/linux/ipipe.h |    1 +
+ mm/memory.c           |   43 +++++++++++++++++++++++++------------------
+ 2 files changed, 26 insertions(+), 18 deletions(-)
 
-> On 12/12/2012 09:30 AM, Michael Haberler wrote:
->>>=20
->>> ...
->>=20
->> just to make sure I understand your suggestion:
->>=20
->> in kernel mode you'd suggest to go through gpiolib and use
->> gpio_get_value/gpio_set_value if possible ?
->>=20
->> in user mode you can prepare things through sysfs but I dont see an
->> alternative to memory-mapped register manipulation in that case if
->> one wants to avoid system calls like read/write/open/ioctl which
->> likely will be a dog on top of switching to secondary domain
->=20
-> This happens if you put the kernel/user split in the wrong place. For
-> instance, if your GPIOS are used to implement an I2C master,
-> implementing the I2C master in user-space manipulating GPIOS in
-> kernel-space is the wrong thing to do. What you should do is implement
-> the I2C master in kernel-space, and use it either in other drivers, or
-> in user-space. This way, you will get a write for a whole I2C transfer
-> instead of a write for each GPIO change. The same goes for a PWM, SPI
-> master, RS232 why not, etc... If your GPIOs are used to power on/power
-> off some devices, then using them in primary mode is probably not =
-relevant.
-
-in that particular application, the GPIO's are used, among others, for =
-generating stepper pulses, and the thread running this should be as fast =
-as possible; in the RTAI/parport version of that code that's anywhere =
-from 20-50uSec
-
-nothing else though except wiggling pins, in particular no =
-interrupt-driven input; so I dont see any extra functionality a kernel =
-driver could provide
-
--m
-
-
+diff --git a/include/linux/ipipe.h b/include/linux/ipipe.h
+index fb0789e..48f93bd 100644
+--- a/include/linux/ipipe.h
++++ b/include/linux/ipipe.h
+@@ -647,6 +647,7 @@ int ipipe_set_ptd(int key,
+ void *ipipe_get_ptd(int key);
+ 
+ int ipipe_disable_ondemand_mappings(struct task_struct *tsk);
++int ipipe_pin_vma(struct mm_struct *mm, struct vm_area_struct *vma);
+ 
+ static inline void ipipe_nmi_enter(void)
+ {
+diff --git a/mm/memory.c b/mm/memory.c
+index 949d965..18a59619 100644
+--- a/mm/memory.c
++++ b/mm/memory.c
+@@ -3903,13 +3903,31 @@ static inline int ipipe_pin_pud_range(struct mm_struct *mm, pgd_t *pgd,
+ 	return 0;
+ }
+ 
+-int ipipe_disable_ondemand_mappings(struct task_struct *tsk)
++int ipipe_pin_vma(struct mm_struct *mm, struct vm_area_struct *vma)
+ {
+ 	unsigned long addr, next, end;
++	pgd_t *pgd;
++
++	addr = vma->vm_start;
++	end = vma->vm_end;
++
++	pgd = pgd_offset(mm, addr);
++	do {
++		next = pgd_addr_end(addr, end);
++		if (pgd_none_or_clear_bad(pgd))
++			continue;
++		if (ipipe_pin_pud_range(mm, pgd, vma, addr, next))
++			return -ENOMEM;
++	} while (pgd++, addr = next, addr != end);
++
++	return 0;
++}
++
++int ipipe_disable_ondemand_mappings(struct task_struct *tsk)
++{
+ 	struct vm_area_struct *vma;
+ 	struct mm_struct *mm;
+ 	int result = 0;
+-	pgd_t *pgd;
+ 
+ 	mm = get_task_mm(tsk);
+ 	if (!mm)
+@@ -3920,23 +3938,12 @@ int ipipe_disable_ondemand_mappings(struct task_struct *tsk)
+ 		goto done_mm;
+ 
+ 	for (vma = mm->mmap; vma; vma = vma->vm_next) {
+-		if (!is_cow_mapping(vma->vm_flags)
+-		    || !(vma->vm_flags & VM_WRITE))
+-			continue;
+-
+-		addr = vma->vm_start;
+-		end = vma->vm_end;
+-
+-		pgd = pgd_offset(mm, addr);
+-		do {
+-			next = pgd_addr_end(addr, end);
+-			if (pgd_none_or_clear_bad(pgd))
+-				continue;
+-			if (ipipe_pin_pud_range(mm, pgd, vma, addr, next)) {
+-				result = -ENOMEM;
++		if (is_cow_mapping(vma->vm_flags) &&
++		    (vma->vm_flags & VM_WRITE)) {
++			result = ipipe_pin_vma(mm, vma);
++			if (result < 0)
+ 				goto done_mm;
+-			}
+-		} while (pgd++, addr = next, addr != end);
++		}
+ 	}
+ 	set_bit(MMF_VM_PINNED, &mm->flags);
+ 
+-- 
+1.7.3.4
 
 
