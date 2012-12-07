@@ -1,13 +1,20 @@
+Message-ID: <50C1AC2A.70602@xenomai.org>
+Date: Fri, 07 Dec 2012 09:43:22 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <CB3E339B-7A10-4A25-A49D-63971ED35FA7@imag.fr>
-References: <CB3E339B-7A10-4A25-A49D-63971ED35FA7@imag.fr>
-Date: Mon, 17 Dec 2012 15:21:17 +0100
-Message-ID: <CAKvQZ_0fwkVB_SAkxQbsc68_CO+HqHBtHn1ky+yRR3cb1C4d6Q@mail.gmail.com>
-From: Willy Lambert <lambert.willy@gmail.com>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] Beginner's Problem: Installing Xenomai Kernel for i7
- multi-core processor
+References: <CANKLDmvSr6j-=6T-YGCG8byGsZ6oy_7sTmcknL7YC8uk9ymTrQ@mail.gmail.com>
+	<CANKLDmvhj_sbQnLgmWSo6QsOnrB1CnJcpvg0DRbnW+X93bozbQ@mail.gmail.com>
+	<CANKLDms4gtzdTngtENm4aJrh_aXN5283yNLi-NuY9SCuNPgoLQ@mail.gmail.com>
+	<CANKLDmtYfN_P-wROiVNU5BZj71K0r98FG32g+5R8Z4R=8ng6cQ@mail.gmail.com>
+	<CANKLDmuGztuXdm8F=OjXkmXtejmu0kfx_r7msYxgiRWsAKnW6Q@mail.gmail.com>
+	<50C0E337.2020907@xenomai.org>
+	<CANKLDmtqsoX4---HGumHbMhzGWgaq5P1VwVbzNkasDxjXS9wrg@mail.gmail.com>
+	<50C1A9A5.4040209@siemens.com>
+In-Reply-To: <50C1A9A5.4040209@siemens.com>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Strange behavior calling certain libraries from
+ non-realtime shadow task
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,87 +23,102 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: James Leonard <james.leonard@imag.fr>
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-2012/12/17 James Leonard <james.leonard@imag.fr>:
-> Hello everyone,
+On 12/07/2012 09:32 AM, Jan Kiszka wrote:
+> On 2012-12-07 09:18, Henri Roosen wrote:
+>> On Thu, Dec 6, 2012 at 7:25 PM, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org<mailto:gilles.chanteperdrix@xenomai.org>> wrote:
+>> On 12/06/2012 05:35 PM, Henri Roosen wrote:
+>>
+>>> On Thu, Dec 6, 2012 at 12:23 PM, Henri Roosen <henriroosen@gmail.com<mailto:henriroosen@gmail.com>> wrote:
+>>>
+>>>> On Wed, Dec 5, 2012 at 6:08 PM, Henri Roosen <henriroosen@gmail.com<mailto:henriroosen@gmail.com>>wrote:
+>>>>
+>>>>> On Wed, Dec 5, 2012 at 12:42 PM, Henri Roosen <henriroosen@gmail.com<mailto:henriroosen@gmail.com>>wrote:
+>>>>>
+>>>>>>
+>>>>>>
+>>>>>>
+>>>>>> On Tue, Dec 4, 2012 at 5:53 PM, Henri Roosen <henriroosen@gmail.com<mailto:henriroosen@gmail.com>>wrote:
+>>>>>>
+>>>>>>> Hi,
+>>>>>>>
+>>>>>>> I have a task that is using the libvlc (v2.0.4) library to play some
+>>>>>>> media streams. This all works when it is a normal posix task. When the task
+>>>>>>> is a non-realtime shadow task (prio 0, autorelax), then the shared
+>>>>>>> libraries that libvlc loads (its plugins, codecs etc) get corrupted on
+>>>>>>> disk. A second run of the program is not working.
+>>>>>>>
+>>>>>>
+>>>>>> The files get corrupted when they are loaded with a dlopen() call.
+>>>>>> Is a dlopen() call allowed from a shadowed non-realtime task? Or what
+>>>>>> can cause the loaded library to get corrupted at this point?
+>>>>>>
+>>>>>> Traced this problem a little further. We found out the problem was easy
+>>>>> to reproduce running the testcode below. An md5sum on the
+>>>>> file /usr/lib/libavutil.so.50 before and after calling the application
+>>>>> shows the md5 of this file changed.
+>>>>>
+>>>>> Debugging into dlopen() was not easy, but it looked like the file changed
+>>>>> somewhere around were the file was mapped to memory.
+>>>>>
+>>>>> In parallel we found out the problem was not reproducable on our "next"
+>>>>> development status which uses xenomai-2.6.1+ and kernel 3.4.6. A step by
+>>>>> step upgrade of the platform showed that the problem disappeared after
+>>>>> upgrading the kernel form 2.6.38.8 (ipipe-2.6.38.8-x86-2.11-02) to 3.4.6
+>>>>> (git 0bd76072135271ad58e7bea559acb524ab8c7dfe).
+>>>>>
+>>>>> Now I would like to find out if this behavior is fix with a newer kernel
+>>>>> or whether it is hidden.
+>>>>> Does anyone on the list have any input on this?
+>>>>>
+>>>>>
+>>>> We thought that by spawning a normal pthread that does the dlopen() call,
+>>>> the problem would disappear, but unfortunately that is not the case. The
+>>>> problem can still be reproduced when then maintask is shadowed. Without
+>>>> shadowing the main task there is no problem.
+>>>>
+>>>> Anyone an idea how to debug this?
+>>>>
+>>>> I have been debugging this a little further. In libc, the dlopen() call
+>>> maps the file, changes the __mprotect of the code segment to writable to
+>>> put in addresses. In case the main thread has been shadowed, then these
+>>> changes are written through to the file, while when the mainthread is not
+>>> shadowed, the addresses are changed only in memory, but not written back to
+>>> the file.
+>>>
+>>> I'm not sure whether the file is mapped wrong or the mprotect is doing
+>>> incorrect things. I will now debug into the kernel to find out.
+>>>
+>>> Searching through Xenomai commits I found there is a configure option
+>>> --enable-dlopen-skins. This option is not set in my configuration as I am
+>>> under the impression that it should only be enabled when dynamically
+>>> loading a _skin_ using dlopen(). Can some confirm this impression is
+>>> correct and I don't need to set this option?
+>>
+>>
+>> Please try reverting this patch:
+>> http://git.denx.de/ipipe.git/?p=ipipe.git;a=commit;h=641d8e87531c6367a6357335378194ea06a23701
+>>
+>> Thanks Gilles! This looks like the patch that is introducing the problem; when reverted I cannot reproduce the library corruption.
+>>
+>> Now, wondering why core-3.2 didn't show the problem, I noticed commit c9f834f80257c4e7c2c01a3c6d34f5485af2be51 which is missing in the ipipe for 2.6.38.8. I will test to add this patch instead of reverting the other one.
+>> I'll put Jan on the copy list. Maybe he can shine a light on this and advice.
 >
-> I'm an absolute beginner when it comes to Linux based RTOS systems, so I =
-apologise in advance for any beginner=92s mistakes I may have made.
->
-> I have been trying to install and configure a Xenomai patched Kernel on a=
- PC with a Intel i7 quad core processor and an ASUS P7P55D motherboard, but=
- so far I have had no success.
->
-> I tried patching and installing a 2.6.38.8 Kernel on a Fedora 16 OS (with=
- 3.4.2 default kernel), but upon boot I was told that the 'ext4' root file =
-system was not recognized, so I decided to try installing on other OS, form=
-atted with ext3.
+> Yes, those patches (the one before it as well) were never merged into
+> 2.6-ipipe, but they will fix the issues. If 3.6.38 is still maintained,
+> I can send a pull request, including also some unrelated fix I recently
+> developed.
 >
 
-As always, before trying to have a real time kernel, just try to have
-a kernel. So in your case, before trying to do anything with xenomai,
-you have to choose a kernel version compatible with xenomai (2.6.38.8
-is ok, but in the end, why taking a so old version since, afaik, newer
-are working ?), and configure/build your kernel and try again until it
-works correctly. In your case you certainly needs some options about
-ext4 to let your linux boot on it (and this depend if you use an
-initrd or not).
+Please do, I'll close 2.6.38 on this changeset. I'm about to roll out a 
+new set of 3.4 patches, now that the ARM stuff is merged. So if you have 
+anything pending for this branch, please push this too.
 
-Usually you start with an older kernel version, and use a newer one
-with "make oldconfig". I'm not sure that your system can go backward
-that way from 3.4.X to 2.6.38.X ...
-
-Then, and only then, add xenomai kernel patches and user space and you
-will just have xenomai problems.
+TIA,
 
 
-> I tried Debian (installing via the debian packages) and Fedora 14 (manual=
- patching and install). The results I have with these are the following:
-> =B7     When booting, I get a "MP BIOS bug: 8254 timer not connected to I=
-O-APIC" error. Then the system starts OK
-
-This is a quite classical issue. If you google your error message you
-should find a lot of info on it, it is related to apic configuration.
-As far as I can remember passing some parameters to your kernel boot
-command line like "noioapic" or "noapic" would help. To be confirmed
-by xenomai experts
-
->
-> =B7      The latency test gives about 10000 overruns per cycle, with enor=
-mous max latency times.
->
-> I've tried many different configurations, initially following this tutori=
-al (in French) http://doc.fedora-fr.org/wiki/Mise_en_=9Cuvre_de_Xenomai_pou=
-r_cr=E9er_un_noyau_Temps_R=E9el_dur :
->
->         - simply disabling power options such as APM and CPU Freq Scaling=
- (as in tutorial)
->         - Enabling the SMI workaround and globally disabling the SMIs
->         - Other things listed in the x86 kernel config guide of the Xenom=
-ai website
->
-> I'm sorry, the description of my problem is probably very vague, but I ge=
-t the feeling I must be forgetting something basic in the hardware/kernel c=
-onfiguration, as I cannot get things to work at all and have seen many peop=
-le use i7 processors and Xenomai successfully.
-
-You will have to provide some more precise informations like your
-kernel.config file, dmesg results, ... (is there a xenomai page on the
-wiki telling us what infos to give ?). But before that I highly
-suggests that you make your system working with your choosed vanilla
-kernel
-
->
->
->  Regards,
->
-> James Leonard
->
->
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> http://www.xenomai.org/mailman/listinfo/xenomai
+-- 
+Philippe.
 
