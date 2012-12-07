@@ -1,10 +1,12 @@
-Message-ID: <50C9FCAE.7020507@ucv.cl>
-Date: Thu, 13 Dec 2012 13:05:02 -0300
-From: =?ISO-8859-1?Q?H=E9ctor_Vargas?= <hector.vargas@ucv.cl>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] Question about Xenomai,  Posix and Java
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Date: Fri,  7 Dec 2012 18:09:46 +0100
+Message-Id: <7d16b3d2e8f37f164eecf46ba2a8fad4e753facf.1354900184.git.jan.kiszka@siemens.com>
+In-Reply-To: <cover.1354900184.git.jan.kiszka@siemens.com>
+References: <cover.1354900184.git.jan.kiszka@siemens.com>
+In-Reply-To: <cover.1354900184.git.jan.kiszka@siemens.com>
+References: <cover.1354900184.git.jan.kiszka@siemens.com>
+Subject: [Xenomai] [PATCH 3/3] ipipe: Clear IRQ_MASKED from irq descriptor
+	on setup
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,18 +15,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Xenomai <xenomai@xenomai.org>
 
-Hi everyone,
+This bit is set my the kernel on __free_irq. That's unproblematic in the
+absence of ipipe, but when it is enabled, handle_fasteoi_irq will fail
+to reenable the line on exit due to this spurious state. Only required
+on 2.6 kernels, later versions properly clear the MASKED state
+themselves.
 
-I want to create an application where a control task (real time control=20
-of a DC motor) developed in Xenomai (posix skin) can be controlled from=20
-a Java interface (GUI). The idea is to create a middle task between the=20
-xenomai control task and the Java application working as a gateway by=20
-using TCP sockets. Before starting to work on it I would like to know if=20
-someone has already done something like this. It is possible to do it?.
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ kernel/irq/chip.c   |    2 +-
+ kernel/irq/manage.c |    2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-Thanks for your answer,
+diff --git a/kernel/irq/chip.c b/kernel/irq/chip.c
+index b79ec1d..aeb8cc1 100644
+--- a/kernel/irq/chip.c
++++ b/kernel/irq/chip.c
+@@ -878,7 +878,7 @@ __set_irq_handler(unsigned int irq, irq_flow_handler_t handle, int is_chained,
+ 	desc->name = name;
+ 
+ 	if (handle != handle_bad_irq && is_chained) {
+-		desc->status &= ~IRQ_DISABLED;
++		desc->status &= ~(IRQ_DISABLED | IRQ_MASKED);
+ 		desc->status |= IRQ_NOREQUEST | IRQ_NOPROBE;
+ 		desc->depth = 0;
+ 		desc->irq_data.chip->irq_startup(&desc->irq_data);
+diff --git a/kernel/irq/manage.c b/kernel/irq/manage.c
+index 9033c1c..57fdf57 100644
+--- a/kernel/irq/manage.c
++++ b/kernel/irq/manage.c
+@@ -785,7 +785,7 @@ __setup_irq(unsigned int irq, struct irq_desc *desc, struct irqaction *new)
+ 
+ 		if (!(desc->status & IRQ_NOAUTOEN)) {
+ 			desc->depth = 0;
+-			desc->status &= ~IRQ_DISABLED;
++			desc->status &= ~(IRQ_DISABLED | IRQ_MASKED);
+ 			desc->irq_data.chip->irq_startup(&desc->irq_data);
+ 		} else
+ 			/* Undo nested disables: */
+-- 
+1.7.3.4
 
-H=E9ctor.-
 
