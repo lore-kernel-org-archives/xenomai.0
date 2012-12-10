@@ -1,13 +1,16 @@
-Message-ID: <50DF1FAE.5090907@xenomai.org>
-Date: Sat, 29 Dec 2012 17:51:58 +0100
+Message-ID: <50C63069.1010607@xenomai.org>
+Date: Mon, 10 Dec 2012 19:56:41 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <50dd6f0ee3dc65.48983574@wp.pl>
-In-Reply-To: <50dd6f0ee3dc65.48983574@wp.pl>
+References: <50C1EF04.1090506@wanadoo.fr> <50C236B9.3030507@xenomai.org>
+	<50C4EF5A.3030502@wanadoo.fr> <50C524A6.6020006@xenomai.org>
+	<50C5F784.6040801@wanadoo.fr> <50C6076F.7050505@xenomai.org>
+	<50C60E6A.1080307@wanadoo.fr> <50C61DF3.8030703@xenomai.org>
+	<50C62B41.1060308@wanadoo.fr>
+In-Reply-To: <50C62B41.1060308@wanadoo.fr>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Odp: Re: Xenomai 2.6.2 + Kernel 3.5.3 + AMD Phenom II
- X6 1055
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] iMX6q 1Hz tick
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,51 +19,158 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Mariusz Janiak <mariuszjaniak@wp.pl>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Thierry Bultel <thierry.bultel@wanadoo.fr>
+Cc: xenomai@xenomai.org
 
-On 12/28/2012 11:06 AM, Mariusz Janiak wrote:
+On 12/10/2012 07:34 PM, Thierry Bultel wrote:
 
->    If you find useful please add bellow text to the TROUBLESHOOTING.adoc
->    file.
-> 
->    On AMD x86_64
->    ^^^^^^^^^^^^^
->    You will most likely also see the following message:
->    --------------------------------------------
->    I-pipe: cannot use LAPIC as a tick device
->    I-pipe: disable C1E power state in your BIOS
->    --------------------------------------------
->    Xenomai sends this message if C1E option is enabled in a BIOS. To fix
->    this issue please disable C1E support in the BIOS. In some Award BIOS
->    this option is located in the +Advanced BIOS Features->+ menu (+AMD
->    C1E Support+).
->    On some systems, above message may not appear in the system log.
->    IMPORTANT: Disabling +AMD K8 Cool&Quiet+ option in a BIOS does not
->    solve the problem.
+> Le 10/12/2012 18:37, Gilles Chanteperdrix a =C3=A9crit :
+>> On 12/10/2012 05:31 PM, Thierry Bultel wrote:
+>>> Le 10/12/2012 17:01, Gilles Chanteperdrix a =C3=A9crit :
+>>>> On 12/10/2012 03:53 PM, Thierry Bultel wrote:
+>>>>> Le 10/12/2012 00:54, Gilles Chanteperdrix a =C3=A9crit :
+>>>>>> On 12/09/2012 09:06 PM, Thierry Bultel wrote:
+>>>>>>
+>>>>>>> Le 07/12/2012 19:34, Gilles Chanteperdrix a =C3=A9crit :
+>>>>>>>> On 12/07/2012 02:28 PM, Thierry Bultel wrote:
+>>>>>>>>
+>>>>>>>>> Hi,
+>>>>>>>
+>>>>>>> Hello Gilles,
+>>>>>>>
+>>>>>>>>>
+>>>>>>>>> I have "successfully" patched a 3.0.35 kernel from Freescale wi=
+th
+>>>>>>>>> adeos-ipipe-3.0.36-1.18.11
+>>>>>>>>>
+>>>>>>>>> I have -not- applied the adeos-ipipe-3.0.36-arm-1.18-11-pre.pat=
+ch
+>>>>>>>>> that showed too much "revert patch detected" errors.
+>>>>>>>>
+>>>>>>>>
+>>>>>>>>
+>>>>>>>> The patch should apply cleanly, the question, if you get too man=
+y
+>>>>>>>> rejections, it is because you do not apply it to the proper bran=
+ch.
+>>>>>>>>
+>>>>>>>
+>>>>>>> Of course it was not.
+>>>>>>> I started with a kernel provided by the module manufacturer. I es=
+timate
+>>>>>>> that this kernel is "almost" a rel_imx_3.0.35_12.09.02, I mean, t=
+hat
+>>>>>>> I have not found a closer tag than this one.
+>>>>>>>
+>>>>>>> My first idea was to attempt to apply the patches to that kernel
+>>>>>>> directly. I was not expecting it would have been simple, and it w=
+as
+>>>>>>> actually not. But after a few hours I came to the initial result =
+I said.
+>>>>>>>
+>>>>>>>
+>>>>>>>
+>>>>>>>>>
+>>>>>>>>> BTW, I have understand that its purpose was mainly to upgrade t=
+o 3.0.36,
+>>>>>>>>> but what is actually the role of the
+>>>>>>>>> adeos-ipipe-3.0.36-arm-1.18-11-post.patch ? (I applied it).
+>>>>>>>>
+>>>>>>>>
+>>>>>>>> I have explained this in a previous mail.
+>>>>>>>
+>>>>>>> Ok, I will seek in the history. I would be nice if the explanatio=
+n
+>>>>>>> was in the README.
+>>>>>>>
+>>>>>>>>
+>>>>>>>>>
+>>>>>>>>> I had to deal with some rejections but at least the kernel is b=
+ooting
+>>>>>>>>> and my application running.
+>>>>>>>>>
+>>>>>>>>> But the target is very slow, and /proc/xenomai/irq shows that t=
+he
+>>>>>>>>> [timer] irq only comes about every 1 second.
+>>>>>>>>>
+>>>>>>>>> The /proc/interrupts shows an IRQ every 10ms, which was expecte=
+d
+>>>>>>>>> since I have CONFIG_HZ=3D100
+>>>>>>>>>
+>>>>>>>>> I am pretty sure that I messed up something in the patch proces=
+s,
+>>>>>>>>> however I do not know where to start to look for.
+>>>>>>>>
+>>>>>>>>
+>>>>>>>> Apply the patches to the proper imx release, and everything shou=
+ld be fine.
+>>>>>>>
+>>>>>>>
+>>>>>>> That is what I did, at last.
+>>>>>>> To do so, I have extracted the BSP from the given 'almost'
+>>>>>>> rel_imx_3.0.35_12.09.02 kernel,
+>>>>>>> taken the rel_imx_3.0.15_12.03.00, applied the patches,
+>>>>>>> and brought back the BSP to the patched kernel.
+>>>>>>
+>>>>>
+>>>>> The issues I mentionned are not also present with CONFIG_IPIPE=3Dno=
+,
+>>>>> so it is just that the 3.0.15 kernel does not have everything for m=
+y board.
+>>>>>
+>>>>>>
+>>>>>> I would do what you want to do with git. Checkout the ipipe-3.0-im=
+x6q
+>>>>>> branch from the ipipe-gch.git, then merge it with the vendor branc=
+h you
+>>>>>> want to use.
+>>>>>>
+>>>>>
+>>>>> Sure it would work and would be fine with git.
+>>>>> But unfortunalely I do not have access to the repository of the ven=
+dor,
+>>>>> but only to a bz2 snapshot of their kernel.
+>>>>>
+>>>>> I wonder if the right method would be to use git to merge Ipipe to =
+the
+>>>>> 3.0.35_12_09.02, and then bring back the BSP that I have isolated a=
+s a patch
+>>>>
+>>>> Yes, if the vendor BSP is based on 3.0.35_12_09.02, you should make =
+a
+>>>> diff with that, and try and merge it with the ipipe-3.0-imx6q branch=
+=2E
+>>>>
+>>>
+>>>
+>>> Done. And success. Thanks. I am running your 3.0.43 kernel with my BS=
+P.
+>>> no more network or reboot slowness issues.
+>>>
+>>> However, htop it saying that CPU0 is at 20% and CPU3 at 12%,
+>>> no application is running. The only thing that I see running is the
+>>> timer interrupt.
+>>>
+>>> Also, I still have
+>>> 87:         13          0          0          0       GIC  i.MX Timer=
+ Tick
+>>>
+>>> .. the counter increases very slowly, about 1 every 10 minutes maybe.=
+
+>>>
+>>> That does not happen with CONFIG_IPIPE=3Dno
+>>
+>> Do you have CONFIG_LOCALTIMER (and CONFIG_SMP) enabled?
+>>
+>>
+>=20
+> CONFIG_SMP yes,
+> You mean CONFIG_LOCAL_TIMERS ? Yes
 
 
-Hi Mariusz,
+Could you post the disassembly of the mxc_timer_interrupt function?
 
-thanks for the help text. Could you try the following patch 
-to see if it restores the message?
-
-diff --git a/arch/x86/kernel/apic/apic.c b/arch/x86/kernel/apic/apic.c
-index 7f07610..6cc9208 100644
---- a/arch/x86/kernel/apic/apic.c
-+++ b/arch/x86/kernel/apic/apic.c
-@@ -545,7 +545,8 @@ static void __cpuinit setup_APIC_timer(void)
- 	memcpy(levt, &lapic_clockevent, sizeof(*levt));
- 	levt->cpumask = cpumask_of(smp_processor_id());
- #ifdef CONFIG_IPIPE
--	if (!(lapic_clockevent.features & CLOCK_EVT_FEAT_DUMMY))
-+	if (!(lapic_clockevent.features & CLOCK_EVT_FEAT_DUMMY)
-+	    && !cpu_has_amd_erratum(amd_erratum_400))
- 		levt->ipipe_timer = &__get_cpu_var(lapic_itimer);
- 	else {
- 	       printk(KERN_INFO
-
-
--- 
+--=20
                                                                 Gilles.
+
 
