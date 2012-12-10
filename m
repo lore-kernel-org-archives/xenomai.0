@@ -1,12 +1,23 @@
-Message-ID: <50E45035.4050704@siemens.com>
-Date: Wed, 02 Jan 2013 16:20:21 +0100
-From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-References: <1348579158-5686-1-git-send-email-wolfgang.mauerer@siemens.com>
-In-Reply-To: <1348579158-5686-1-git-send-email-wolfgang.mauerer@siemens.com>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=UTF-8;
+ format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PATCH] hal: Fix cpu bitmap handling
+Date: Mon, 10 Dec 2012 21:23:49 +0100
+From: WONG Sheng Chao <wong@isir.upmc.fr>
+In-Reply-To: <50C63303.407@xenomai.org>
+References: "\"\\\"\\\\\\\"\\\\\\\\\\\\\\\"\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\"<bf6a998422f24fab874ae21fd0adb396@isir.upmc.fr>\"	\"<F74C5334-2EAF-4D8E-AE55-38BF37437EE6@mah.priv.at>\\\"\"	\"<50B8B7A8.2010800@xenomai.org>\\\"	\"\\\\\\\"<D5733E9B-1AA5-4C5F-A2E8-1346A11A7E4C@mah.priv.at>\\\\\\\\\\\\\\\"\\\\\\\"\\\"\"	\"<7563882586f5c36943667b067978e7ff@isir.upmc.fr>\\\"	<50BB69A4.8020401@xenomai.org>	\"<f4d725b0ea36a139107d61f00b627b47@isir.upmc.fr>\\\"\"
+	<50BB7E6D.8080602@xenomai.org>"
+	<54b68e5271dffe6add316e94480ffeb6@isir.upmc.fr>
+	<5f186a473469646525a404ab3fbe4a62@isir.upmc.fr>
+	<50BD043D.8080901@xenomai.org>
+	<798d18aaa8af5d21590a2c2dacc2d400@isir.upmc.fr>
+	<274ee8164e9384b2faf0dbe50bf890be@isir.upmc.fr>
+	<50BE4F09.7060508@xenomai.org>
+	<4f87d2b280543885c9cefc9b9d376fa9@isir.upmc.fr>
+	<50C63303.407@xenomai.org>
+Message-ID: <ebaafe297f9d50512d32831f8757cb3b@isir.upmc.fr>
+Subject: Re: [Xenomai] Compiling I-pipe patched kernel on beaglebone from
+ Angstrom branch
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,53 +27,83 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Wolfgang Mauerer <wolfgang.mauerer@siemens.com>, xenomai@xenomai.org
+Cc: xenomai@xenomai.org
 
-On 2012-09-25 15:19, Wolfgang Mauerer wrote:
-> Don't left-shift further than the bit-width of the
-> shifted type allows. In this particular constellation,
-> this leads to selecting CPUs that are not specified in
-> supported_cpus_arg on systems with more than 32 cores.
-> 
-> Signed-off-by: Wolfgang Mauerer <wolfgang.mauerer@siemens.com>
-> ---
->  ksrc/arch/generic/hal.c |    2 +-
->  ksrc/nucleus/intr.c     |    2 +-
->  2 files changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/ksrc/arch/generic/hal.c b/ksrc/arch/generic/hal.c
-> index ac6c171..f6ac722 100644
-> --- a/ksrc/arch/generic/hal.c
-> +++ b/ksrc/arch/generic/hal.c
-> @@ -539,7 +539,7 @@ int rthal_init(void)
->      int cpu;
->      cpus_clear(rthal_supported_cpus);
->      for (cpu = 0; cpu < BITS_PER_LONG; cpu++)
-> -	    if (supported_cpus_arg & (1 << cpu))
-> +	    if (supported_cpus_arg & (1ul << cpu))
->  		    cpu_set(cpu, rthal_supported_cpus);
->  #endif /* CONFIG_SMP */
->  
-> diff --git a/ksrc/nucleus/intr.c b/ksrc/nucleus/intr.c
-> index 0f37bb2..e77f25e 100644
-> --- a/ksrc/nucleus/intr.c
-> +++ b/ksrc/nucleus/intr.c
-> @@ -1083,7 +1083,7 @@ static int affinity_vfile_show(struct xnvfile_regular_iterator *it,
->  
->  	for (cpu = 0; cpu < BITS_PER_LONG; cpu++)
->  		if (xnarch_cpu_isset(cpu, nkaffinity))
-> -			val |= (1 << cpu);
-> +			val |= (1ul << cpu);
->  
->  	xnvfile_printf(it, "%08lx\n", val);
->  
-> 
+On Mon, 10 Dec 2012 20:07:47 +0100, Gilles Chanteperdrix wrote:
+> On 12/10/2012 07:08 PM, WONG Sheng Chao wrote:
+>
+>>>>>> The first post was just fine. But two things:
+>>>>>> - we do not want the .config in the post patch
+>>>>>
+>>>>> I will redo the post patch without the .config file
+>>>>>
+>>>>>> - the post patch does not re-add the changes removed by the
+>>>>>> pre-patch in
+>>>>>> arch/arm/common/gic.c, which makes it look really suspicious.
+>>>>>
+>>>>> as for the arch/arm/common/gic.c, it did not exist in the 
+>>>>> original
+>>>>> vendor code (Angstrom). Since it did not exists, there were an
+>>>>> error
+>>>>> when i ran the .prepare-kernel script. So what I did was copy the
+>>>>> arch/arm/common/gic.c from the vanilla linux kernel to my vender
+>>>>> code.
+>>>>> I did not modify the arch/arm/common/gic.c there after thus the
+>>>>> post
+>>>>> patch does not do anything to it.
+>>>>>
+>>>>> Does that makes sense? or did I miss somethin
+>>>>
+>>>> I am sorry i made a mistake, the file i mentioned above is
+>>>> arch/arm/plat-mxc/gic.c
+>>>>
+>>>> As for arch/arm/common/gic.c, i pre-patch it to the
+>>>> vanilla-kernel-3.2.21.
+>>>>
+>>>> I don't quite understand, since I did not do any changes in this
+>>>> file
+>>>> after i patch it with ipipe, so isn't it logical that the 
+>>>> post-patch
+>>>> does not re-add since there is nothing to add?
+>>>
+>>>
+>>> If you did not modify it, then the pre-patch should not contain
+>>> anything
+>>> with regard to that file. Could you give me the url to the vendor 
+>>> git
+>>> repository and the modified branch so that I can generate the 
+>>> patches
+>>> myself and compare ?
+>>
+>>
+>> Since I was using bitbake recipe to get the vendor source code, I
+>> created my own git repository for the kernel source
+>>
+>> https://github.com/shengchao/beaglebone-angstrom-xenomai
+>>
+>> the master branch contains the original source from the vendor
+>>
+>> and the xenomai branch is the one with pre-patch, ipipe_patch and
+>> post_patch applied.
+>
+>
+> As I already said, what you should put under source control is the
+> I-pipe kernel, putting xenomai in the sources defeats the purpose of
+> having xenomai separated from the I-pipe patch.
 
-This fix wasn't merged into 2.6. Just forgotten?
+I'm sorry but can you be more specific about the error i made as i am 
+still new to source control. What do you mean by putting xenomai in the 
+sources? What i did was
 
-Jan
+1) Pre patch the vendor source to remove the conflict files for ipipe 
+patch
 
--- 
-Siemens AG, Corporate Technology, CT RTC ITP SDP-DE
-Corporate Competence Center Embedded Linux
+2) Patch the updated vendor source with ipipe using prepare-kernel.sh ( 
+Is this a mistake? )
+
+3) post patch the ipipe patched source
+
+4) Compile and deploy the kernel
+
+
 
