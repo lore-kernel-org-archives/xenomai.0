@@ -1,20 +1,16 @@
-Message-ID: <50C76468.6030100@xenomai.org>
-Date: Tue, 11 Dec 2012 17:50:48 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <50C1EF04.1090506@wanadoo.fr> <50C236B9.3030507@xenomai.org>
-	<50C4EF5A.3030502@wanadoo.fr> <50C524A6.6020006@xenomai.org>
-	<50C5F784.6040801@wanadoo.fr> <50C6076F.7050505@xenomai.org>
-	<50C60E6A.1080307@wanadoo.fr> <50C61DF3.8030703@xenomai.org>
-	<50C62B41.1060308@wanadoo.fr> <50C63069.1010607@xenomai.org>
-	<50C63FF3.6040409@wanadoo.fr> <50C643DC.1080901@xenomai.org>
-	<50C64F79.8070101@wanadoo.fr> <50C65296.9070508@xenomai.org>
-	<50C75094.3070906@wanadoo.fr> <50C75307.8020400@xenomai.org>
-	<50C758F0.4060805@wanadoo.fr>
-In-Reply-To: <50C758F0.4060805@wanadoo.fr>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] iMX6q 1Hz tick
+In-Reply-To: <CAPpP=rPG6VBxi3TF9Lja7T2LGjMSSTSGcvbR7xTYdPi9omwDRw@mail.gmail.com>
+References: <CAPpP=rOpsiFBEZLFUrc_Sjf88J66Q0zDgmrNkaQ5O4xoz=iwYQ@mail.gmail.com>
+	<50C74977.4040207@xenomai.org>
+	<CAPpP=rOkGfB0Wixi4JcLbPAxKayptTJnGeJO4R_FFGtXJAXx8w@mail.gmail.com>
+	<CAPpP=rPG6VBxi3TF9Lja7T2LGjMSSTSGcvbR7xTYdPi9omwDRw@mail.gmail.com>
+Date: Tue, 11 Dec 2012 18:15:56 +0100
+Message-ID: <CAPpP=rMq-zJXTg5LNFbidx-VA8Fz3_B7itZGt4j0gyOfCq9UwA@mail.gmail.com>
+From: alex alex <duch.alexandre@gmail.com>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] RTDM/POSIX - Select mask return value missing in case
+ of timeout
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -23,36 +19,64 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Thierry Bultel <thierry.bultel@wanadoo.fr>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 12/11/2012 05:01 PM, Thierry Bultel wrote:
-> Le 11/12/2012 16:36, Gilles Chanteperdrix a écrit :
->> On 12/11/2012 04:26 PM, Thierry Bultel wrote:
->>> Gilles,
->>>
->>> another issue (likely related, and that may help to diagnose) that I can
->>> see is that time is completely wrong;
->>>
->>> For instance:
->>>
->>>
->>> [root@buildroot ~]# time sleep 10
->>>
->>> real	0m10.009s
->>> user	0m0.002s
->>> sys	0m0.013s
->>>
->>> The system says that it spent 10 secs but I actually measured 25 secs.
+Here is the patch;
+
+--- syscall1.c    2012-12-11 18:08:31.000000000 +0100
++++ syscall.c    2012-12-11 13:48:24.000000000 +0100
+@@ -2498,7 +2498,7 @@
+                       &tv, sizeof(tv)))
+             return -EFAULT;
+     }
+-    if (err > 0)
++    if (err >=3D 0)
+         for (i =3D 0; i < XNSELECT_MAX_TYPES; i++)
+             if (ufd_sets[i]
+                 && __xn_copy_to_user((void __user *) ufd_sets[i],
+
+2012/12/11 alex alex <duch.alexandre@gmail.com>
+
+> Tested. It seems to work!
+> Thank you.
+> I add the patch...
+>
+>
+>
+> 2012/12/11 alex alex <duch.alexandre@gmail.com>
+>
+>> I made the changes and I'm recompiling the kernel, so it takes a little
+>> time ...
+>> I'll let you know as soon as I know if it works.
 >>
->> No, that is likely because you have CONFIG_CPU_FREQ or CONFIG_CPU_IDLE
->> enabled.
 >>
-> 
-> Thanks, yes this was CONFIG_CPU_FREQ
-
-Ok, and when running at full speed, do the timer thread always take 20%
-cpu ?
--- 
-					    Gilles.
-
+>> 2012/12/11 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+>>
+>>> On 12/11/2012 03:07 PM, alex alex wrote:
+>>> > Hi,
+>>> >
+>>> >
+>>> > The problem is the following:
+>>> >
+>>> >
+>>> > When the timeout interval expires of the =93select=94 function the re=
+turn
+>>> value
+>>> > of FD_ISSET(fdr,&readfds) is 1 whereas it should be 0.
+>>> >
+>>> > In ksrc/skins/posix/syscall.c we can see that they are not copy to
+>>> > userspace of select return value in case of timeout.
+>>> >
+>>> >
+>>> >
+>>> > The attached code shows this bug with the use of a rtdm driver.
+>>>
+>>> So, could you try making the obvious change in the code? Or do you need
+>>> me to send you the patch?
+>>>
+>>> --
+>>>                                             Gilles.
+>>>
+>>
+>>
+>
