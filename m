@@ -1,7 +1,19 @@
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Date: Fri,  7 Dec 2012 18:09:43 +0100
-Message-Id: <cover.1354900184.git.jan.kiszka@siemens.com>
-Subject: [Xenomai] [PATCH 0/3] [PULL] ipipe-2.6.38-x86
+Message-ID: <50C75307.8020400@xenomai.org>
+Date: Tue, 11 Dec 2012 16:36:39 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+References: <50C1EF04.1090506@wanadoo.fr> <50C236B9.3030507@xenomai.org>
+	<50C4EF5A.3030502@wanadoo.fr> <50C524A6.6020006@xenomai.org>
+	<50C5F784.6040801@wanadoo.fr> <50C6076F.7050505@xenomai.org>
+	<50C60E6A.1080307@wanadoo.fr> <50C61DF3.8030703@xenomai.org>
+	<50C62B41.1060308@wanadoo.fr> <50C63069.1010607@xenomai.org>
+	<50C63FF3.6040409@wanadoo.fr> <50C643DC.1080901@xenomai.org>
+	<50C64F79.8070101@wanadoo.fr> <50C65296.9070508@xenomai.org>
+	<50C75094.3070906@wanadoo.fr>
+In-Reply-To: <50C75094.3070906@wanadoo.fr>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] iMX6q 1Hz tick
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -10,41 +22,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Thierry Bultel <thierry.bultel@wanadoo.fr>
+Cc: xenomai@xenomai.org
 
-The following changes since commit ac565906d56ced004f39bc38a751466b2b5242ae:
+On 12/11/2012 04:26 PM, Thierry Bultel wrote:
+> Gilles,
+> 
+> another issue (likely related, and that may help to diagnose) that I can 
+> see is that time is completely wrong;
+> 
+> For instance:
+> 
+> 
+> [root@buildroot ~]# time sleep 10
+> 
+> real	0m10.009s
+> user	0m0.002s
+> sys	0m0.013s
+> 
+> The system says that it spent 10 secs but I actually measured 25 secs.
 
-  ipipe-2.6.38.8-x86-2.11-02 (2012-03-17 11:09:18 +0100)
-
-are available in the git repository at:
-  git://git.kiszka.org/ipipe queues/2.6.38-x86
-
-Jan Kiszka (3):
-      ipipe: Factor out ipipe_pin_vma
-      ipipe: Pin potential COW pages before applying mprotect changes
-      ipipe: Clear IRQ_MASKED from irq descriptor on setup
-
- include/linux/ipipe.h |    1 +
- kernel/irq/chip.c     |    2 +-
- kernel/irq/manage.c   |    2 +-
- mm/memory.c           |   43 +++++++++++++++++++++++++------------------
- mm/mprotect.c         |   18 ++++++++++++++++++
- 5 files changed, 46 insertions(+), 20 deletions(-)
-
-Jan Kiszka (3):
-  ipipe: Factor out ipipe_pin_vma
-  ipipe: Pin potential COW pages before applying mprotect changes
-  ipipe: Clear IRQ_MASKED from irq descriptor on setup
-
- include/linux/ipipe.h |    1 +
- kernel/irq/chip.c     |    2 +-
- kernel/irq/manage.c   |    2 +-
- mm/memory.c           |   43 +++++++++++++++++++++++++------------------
- mm/mprotect.c         |   18 ++++++++++++++++++
- 5 files changed, 46 insertions(+), 20 deletions(-)
+No, that is likely because you have CONFIG_CPU_FREQ or CONFIG_CPU_IDLE
+enabled.
 
 -- 
-1.7.3.4
-
+					    Gilles.
 
