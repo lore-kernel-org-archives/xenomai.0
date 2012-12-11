@@ -1,13 +1,13 @@
-Message-ID: <50C73FAD.4010705@antcom.de>
-Date: Tue, 11 Dec 2012 15:14:05 +0100
-From: Roland Stigge <stigge@antcom.de>
+Message-ID: <50C74977.4040207@xenomai.org>
+Date: Tue, 11 Dec 2012 15:55:51 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <CAPpP=rOpsiFBEZLFUrc_Sjf88J66Q0zDgmrNkaQ5O4xoz=iwYQ@mail.gmail.com>
 In-Reply-To: <CAPpP=rOpsiFBEZLFUrc_Sjf88J66Q0zDgmrNkaQ5O4xoz=iwYQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Subject: Re: [Xenomai] RTDM/POSIX - Select mask return value missing in case
- of timeout
+ of	timeout
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,25 +19,26 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: alex alex <duch.alexandre@gmail.com>
 Cc: xenomai@xenomai.org
 
-Hi,
-
 On 12/11/2012 03:07 PM, alex alex wrote:
-> When the timeout interval expires of the =E2=80=9Cselect=E2=80=9D funct=
-ion the return value
+> Hi,
+> 
+> 
+> The problem is the following:
+> 
+> 
+> When the timeout interval expires of the “select” function the return value
 > of FD_ISSET(fdr,&readfds) is 1 whereas it should be 0.
->=20
+> 
 > In ksrc/skins/posix/syscall.c we can see that they are not copy to
 > userspace of select return value in case of timeout.
->=20
+> 
+> 
+> 
 > The attached code shows this bug with the use of a rtdm driver.
 
-I guess you are reporting the same issue you reported to Debian some
-hours ago at:
+So, could you try making the obvious change in the code? Or do you need
+me to send you the patch?
 
-http://bugs.debian.org/695657 (including attachment)
-
-Since your attachment got removed from your xenomai mailing list mail on
-the way to me, I'm putting this here just for reference.
-
-Roland
+-- 
+					    Gilles.
 
