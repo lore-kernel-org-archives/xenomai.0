@@ -1,21 +1,11 @@
-Message-ID: <50C77023.5080000@xenomai.org>
-Date: Tue, 11 Dec 2012 18:40:51 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: "Beaufils Sylvie (IT&LAB)" <sylvie.beaufils@thomson-networks.com>
+Date: Tue, 11 Dec 2012 17:49:53 +0000
+Message-ID: <14AA522E86E5754F8BC33C742D045A4A8134EFB4@srv0024.corp.thvnet.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <50C1EF04.1090506@wanadoo.fr> <50C236B9.3030507@xenomai.org>
-	<50C4EF5A.3030502@wanadoo.fr> <50C524A6.6020006@xenomai.org>
-	<50C5F784.6040801@wanadoo.fr> <50C6076F.7050505@xenomai.org>
-	<50C60E6A.1080307@wanadoo.fr> <50C61DF3.8030703@xenomai.org>
-	<50C62B41.1060308@wanadoo.fr> <50C63069.1010607@xenomai.org>
-	<50C63FF3.6040409@wanadoo.fr> <50C643DC.1080901@xenomai.org>
-	<50C64F79.8070101@wanadoo.fr> <50C65296.9070508@xenomai.org>
-	<50C75094.3070906@wanadoo.fr> <50C75307.8020400@xenomai.org>
-	<50C758F0.4060805@wanadoo.fr> <50C76468.6030100@xenomai.org>
-	<50C76DAC.6020603@wanadoo.fr>
-In-Reply-To: <50C76DAC.6020603@wanadoo.fr>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] iMX6q 1Hz tick
+Subject: [Xenomai] Latency test results Xeon E5-1650 higher than Xeon E5620
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -24,53 +14,62 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Thierry Bultel <thierry.bultel@wanadoo.fr>
-Cc: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 12/11/2012 06:30 PM, Thierry Bultel wrote:
-> Le 11/12/2012 17:50, Gilles Chanteperdrix a écrit :
->> On 12/11/2012 05:01 PM, Thierry Bultel wrote:
->>> Le 11/12/2012 16:36, Gilles Chanteperdrix a écrit :
->>>> On 12/11/2012 04:26 PM, Thierry Bultel wrote:
->>>>> Gilles,
->>>>>
->>>>> another issue (likely related, and that may help to diagnose) that I can
->>>>> see is that time is completely wrong;
->>>>>
->>>>> For instance:
->>>>>
->>>>>
->>>>> [root@buildroot ~]# time sleep 10
->>>>>
->>>>> real	0m10.009s
->>>>> user	0m0.002s
->>>>> sys	0m0.013s
->>>>>
->>>>> The system says that it spent 10 secs but I actually measured 25 secs.
->>>>
->>>> No, that is likely because you have CONFIG_CPU_FREQ or CONFIG_CPU_IDLE
->>>> enabled.
->>>>
->>>
->>> Thanks, yes this was CONFIG_CPU_FREQ
->>
->> Ok, and when running at full speed, do the timer thread always take 20%
->> cpu ?
->>
-> 
-> It is much better. I only have 1.3% of CPU load.
-> Also the target seems really stable now. Thanks a lot, again.
-> 
-> The only remaining 'weird' issue is that the iMX Timer Tick counter in 
-> /proc/interrupts does not increase whereas it does when CONFIG_IPIPE is 
-> set to NO. It is not really a blocking issue, but I would like to 
-> understand why.
+Hi all,
 
-Could you check if you have the issue with the I-pipe kernel for Linux
-3.4.6, available in xenomai git?
+We run linux kernel 3.2.34 + ipipe-core-3.2.21-x86-1 + xenomai 2.6.1 on two=
+ platforms, one with Xeon E5620 and the other with Xeon E5-1650.
 
-git://git.denx.de/ipipe.git branch core-3.4
+E5-1650 shows higher latencies than E5620 when running the following test o=
+n an idle system:
 
--- 
-					    Gilles.
+latency -t 2 -T60 -q ; latency -t 1 -T60 -q ; latency -t 0 -T60 -q
+
+++++++ Xeon E5-1650 ++++++
+=3D=3D Test mode: in-kernel timer handler
+---|-----------|-----------|-----------|--------|------|-------------------=
+------
+RTS|     -3.156|     -2.073|     10.554|       0|     0|    00:01:00/00:01:=
+00
+=3D=3D Test mode: in-kernel periodic task
+---|-----------|-----------|-----------|--------|------|-------------------=
+------
+RTS|     -2.694|     -1.215|     16.683|       0|     0|    00:01:00/00:01:=
+00
+=3D=3D Test mode: periodic user-mode task
+---|-----------|-----------|-----------|--------|------|-------------------=
+------
+RTS|     -2.445|     -0.412|     15.308|       0|     0|    00:01:00/00:01:=
+00
+
+++++++ Xeon E5620 ++++++
+=3D=3D Test mode: in-kernel timer handler
+---|-----------|-----------|-----------|--------|------|-------------------=
+------
+RTS|     -3.759|     -2.669|      1.056|       0|     0|    00:01:00/00:01:=
+00
+=3D=3D Test mode: in-kernel periodic task
+---|-----------|-----------|-----------|--------|------|-------------------=
+------
+RTS|     -2.656|     -1.567|      6.852|       0|     0|    00:01:00/00:01:=
+00
+=3D=3D Test mode: periodic user-mode task
+---|-----------|-----------|-----------|--------|------|-------------------=
+------
+RTS|     -2.060|     -0.964|      7.631|       0|     0|    00:01:00/00:01:=
+00
+
+
+I have read that "The most common reason for high latencies on x86 are SMIs=
+". But the SMI workaround does not manage the Patsburg LPC controller. I tr=
+ied to add the PCI ID [8086:1d41] to ksrc/arch/x86/smi.c with this result:
+[    1.926417] Xenomai: SMI-enabled chipset found
+[    1.926490] Xenomai: SMI workaround failed!
+
+Should the SMI workaround be managed for the C602 chipset ? Could it explai=
+n the above latency results ?
+
+Thanks,
+Sylvie
 
