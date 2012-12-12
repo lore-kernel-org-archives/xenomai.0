@@ -1,11 +1,12 @@
-Mime-Version: 1.0 (Apple Message framework v1283)
-Content-Type: text/plain; charset=us-ascii
-From: Michael Haberler <mail17@mah.priv.at>
-In-Reply-To: <1491832.238.1355257934434.JavaMail.poli@jacqueline>
-Date: Wed, 12 Dec 2012 07:54:04 +0100
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <FE9848C4-D19F-4628-8047-5E67A667A2E9@mah.priv.at>
+Message-ID: <50C8330D.8040305@xenomai.org>
+Date: Wed, 12 Dec 2012 08:32:29 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
 References: <1491832.238.1355257934434.JavaMail.poli@jacqueline>
+	<FE9848C4-D19F-4628-8047-5E67A667A2E9@mah.priv.at>
+In-Reply-To: <FE9848C4-D19F-4628-8047-5E67A667A2E9@mah.priv.at>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] RT GPIO with Raspberry Pi
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -15,50 +16,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Marco Poli <polimarco@gmail.com>
+To: Michael Haberler <mail17@mah.priv.at>
 Cc: xenomai@xenomai.org
 
-not strictly a Xenomai issue, but I'd completely bypass the kernel GPIO =
-support and manipulate the GPIO registers directly - they are all memory =
-mapped=20
+On 12/12/2012 07:54 AM, Michael Haberler wrote:
 
-some inspiration here: =
-http://git.mah.priv.at/gitweb/emc2-dev.git/blob/refs/heads/rtos-integratio=
-n-preview1:/src/hal/drivers/hal_gpio.c
+> not strictly a Xenomai issue, but I'd completely bypass the kernel
+> GPIO support and manipulate the GPIO registers directly - they are
+> all memory mapped
+> 
+> some inspiration here:
+> http://git.mah.priv.at/gitweb/emc2-dev.git/blob/refs/heads/rtos-integration-preview1:/src/hal/drivers/hal_gpio.c
+>
+>  this runs from a userland thread but kernel shouldnt be much
+> different
 
-this runs from a userland thread but kernel shouldnt be much different
 
--m
+Yeah, good idea, depending on the way to access registers, you get
+concurrence issues, conflicts between applications, a lot of fun.
 
-Am 11.12.2012 um 21:32 schrieb Marco Poli:
-
-> Hello all!
->=20
->=20
->=20
-> I would like to apologize if this is a somehow recurrent or previously =
-addressed question, but all the answers I got on the topic were =
-inconclusive, at least for someone with so far minimal experience with =
-Xenomai.
->=20
-> Raspberry Pi patched kernels have GPIO and GPIO generated-interrupts =
-working and exported to userland, but it is unclear to me if the =
-in-kernel drivers are able to deal with RT applications in primary mode, =
-or would it be necessary to make changes to the Linux Kernel Drivers or =
-new GPIO RTDM drivers to be able to access GPIO from a RT application in =
-primary mode? Maybe Analogy?
->=20
-> Is it possible to use these sort of Linux Kernel GPIO drivers and =
-still be able to have my application not leave primary mode? Is there =
-some source of documentation someone can point me to that might be of =
-assistence?
->=20
->=20
-> Thanks in advance.
->=20
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> http://www.xenomai.org/mailman/listinfo/xenomai
-
+-- 
+                                                                Gilles.
 
