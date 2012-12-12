@@ -1,18 +1,12 @@
-Content-Type: text/plain; charset=iso-8859-1
-Mime-Version: 1.0 (Apple Message framework v1283)
-From: Michael Haberler <mail17@mah.priv.at>
-In-Reply-To: <CAOiXNkC-R0EdK2QdkzYOPTQ7mTfmAyp8cJcG4Y28r5pW=SwUFQ@mail.gmail.com>
-Date: Wed, 12 Dec 2012 11:30:51 +0100
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <71DCFC46-3931-4279-B9EC-DAC517874164@mah.priv.at>
-References: <1491832.238.1355257934434.JavaMail.poli@jacqueline>
-	<FE9848C4-D19F-4628-8047-5E67A667A2E9@mah.priv.at>
-	<50C8330D.8040305@xenomai.org>
-	<325B0F26-79FE-4C8B-A41E-10ED40FC0B3B@mah.priv.at>
-	<50C849BB.9090307@xenomai.org>
-	<7A843E24-17B0-4F91-96DA-84CE8007AC5A@mah.priv.at>
-	<CAOiXNkC-R0EdK2QdkzYOPTQ7mTfmAyp8cJcG4Y28r5pW=SwUFQ@mail.gmail.com>
-Subject: Re: [Xenomai] RT GPIO with Raspberry Pi
+Message-ID: <50C86C7A.4070702@xenomai.org>
+Date: Wed, 12 Dec 2012 12:37:30 +0100
+From: Philippe Gerum <rpm@xenomai.org>
+MIME-Version: 1.0
+References: <cover.1354900184.git.jan.kiszka@siemens.com>
+In-Reply-To: <cover.1354900184.git.jan.kiszka@siemens.com>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [PATCH 0/3] [PULL] ipipe-2.6.38-x86
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,49 +15,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
+On 12/07/2012 06:09 PM, Jan Kiszka wrote:
+> The following changes since commit ac565906d56ced004f39bc38a751466b2b5242ae:
+>
+>    ipipe-2.6.38.8-x86-2.11-02 (2012-03-17 11:09:18 +0100)
+>
+> are available in the git repository at:
+>    git://git.kiszka.org/ipipe queues/2.6.38-x86
+>
+> Jan Kiszka (3):
+>        ipipe: Factor out ipipe_pin_vma
+>        ipipe: Pin potential COW pages before applying mprotect changes
+>        ipipe: Clear IRQ_MASKED from irq descriptor on setup
+>
+>   include/linux/ipipe.h |    1 +
+>   kernel/irq/chip.c     |    2 +-
+>   kernel/irq/manage.c   |    2 +-
+>   mm/memory.c           |   43 +++++++++++++++++++++++++------------------
+>   mm/mprotect.c         |   18 ++++++++++++++++++
+>   5 files changed, 46 insertions(+), 20 deletions(-)
+>
+> Jan Kiszka (3):
+>    ipipe: Factor out ipipe_pin_vma
+>    ipipe: Pin potential COW pages before applying mprotect changes
+>    ipipe: Clear IRQ_MASKED from irq descriptor on setup
+>
+>   include/linux/ipipe.h |    1 +
+>   kernel/irq/chip.c     |    2 +-
+>   kernel/irq/manage.c   |    2 +-
+>   mm/memory.c           |   43 +++++++++++++++++++++++++------------------
+>   mm/mprotect.c         |   18 ++++++++++++++++++
+>   5 files changed, 46 insertions(+), 20 deletions(-)
+>
 
-Am 12.12.2012 um 10:47 schrieb Andrey Nechypurenko:
+Merged, thanks.
 
->> in that particular application, the GPIO's are used, among
->> others, for generating stepper pulses, and the thread running
->> this should be as fast as possible; in the RTAI/parport version
->> of that code that's anywhere from 20-50uSec
->>=20
->> nothing else though except wiggling pins, in particular no
->> interrupt-driven input; so I dont see any extra functionality a
->> kernel driver could provide
->=20
-> If pulses should be preciese with low jitter (and I assume that in
-> case of steppers they should), then, most probably, kernel driver is
-> anavoidable because the timing precission achievable in the kernel is
-> much higher then in the user-space. You might be interesting to take a
-> look at our blog post here:
-> =
-http://veter-project.blogspot.de/2012/04/precise-pwms-with-gpio-using-xeno=
-mai.html
-> where we describe our attempts to generate precise PWMs to drive the
-> servo motor. We end up with RTDM kernel module which uses timers
-> (instead of periodic tasks) to get acceptable jitter.
-
-Andrey,
-
-thanks - I read your post on the issue, and that was quite valuable. =
-Yes, jitter is an issue with loss of torque and eventually loosing =
-steps; long thread periods also limit the granularity of frequencies the =
-stepgen code can generate.
-
-I did report what is being used in the RTAI/parport version of the code =
-(which I didnt write to start with), and I am painfully aware this =
-approach doesnt scale well
-=20
-in the case of the beaglebone port, the stepper code will be in the =
-Programmable Realtime Unit which is capable of achieving very high rates =
-at next to no jitter, so the RT OS is out of the loop except for feeding =
-a stream of control values at > 1mS intervals
-
--m
-
-
+-- 
+Philippe.
 
