@@ -1,12 +1,9 @@
-Message-ID: <50C86C7A.4070702@xenomai.org>
-Date: Wed, 12 Dec 2012 12:37:30 +0100
-From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <cover.1354900184.git.jan.kiszka@siemens.com>
-In-Reply-To: <cover.1354900184.git.jan.kiszka@siemens.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PATCH 0/3] [PULL] ipipe-2.6.38-x86
+From: dave.joynson@alstom.com
+Message-ID: <OF8BDEF87A.CA8542D0-ON80257AD2.00581CFA-80257AD2.005A5994@test.alstom.com>
+Date: Wed, 12 Dec 2012 16:26:52 +0000
+Content-Type: text/plain; charset="US-ASCII"
+Subject: [Xenomai] Timer support in user-space
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,44 +12,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 12/07/2012 06:09 PM, Jan Kiszka wrote:
-> The following changes since commit ac565906d56ced004f39bc38a751466b2b5242ae:
->
->    ipipe-2.6.38.8-x86-2.11-02 (2012-03-17 11:09:18 +0100)
->
-> are available in the git repository at:
->    git://git.kiszka.org/ipipe queues/2.6.38-x86
->
-> Jan Kiszka (3):
->        ipipe: Factor out ipipe_pin_vma
->        ipipe: Pin potential COW pages before applying mprotect changes
->        ipipe: Clear IRQ_MASKED from irq descriptor on setup
->
->   include/linux/ipipe.h |    1 +
->   kernel/irq/chip.c     |    2 +-
->   kernel/irq/manage.c   |    2 +-
->   mm/memory.c           |   43 +++++++++++++++++++++++++------------------
->   mm/mprotect.c         |   18 ++++++++++++++++++
->   5 files changed, 46 insertions(+), 20 deletions(-)
->
-> Jan Kiszka (3):
->    ipipe: Factor out ipipe_pin_vma
->    ipipe: Pin potential COW pages before applying mprotect changes
->    ipipe: Clear IRQ_MASKED from irq descriptor on setup
->
->   include/linux/ipipe.h |    1 +
->   kernel/irq/chip.c     |    2 +-
->   kernel/irq/manage.c   |    2 +-
->   mm/memory.c           |   43 +++++++++++++++++++++++++------------------
->   mm/mprotect.c         |   18 ++++++++++++++++++
->   5 files changed, 46 insertions(+), 20 deletions(-)
->
+Hi,
+I have recently started to use Xenomai on Raspberry Pi. My experience with 
+Linux Kernel building etc. is zero so I downloaded the pre-built image 
+from powet.eu. I have successfully created a cross compile environment to 
+create user-space applications using the Posix skin. While tracking down 
+some mode changes I came across the limitation of Posix skin Timers in 
+that the timer expiry creates a signal which causes a mode switch.
+I have considered creating an application layer timer module using a pool 
+of threads that use nanosleep and a callback function on expiry. Careful 
+management of these threads using a custom timer API could fulfill my 
+requirements.
+While exploring the documentation for alternatives, I noticed that the 
+RTDM Driver Development API provides access to native timers that would 
+seem to perform the functionality that I need, On trying to use them in a 
+user-space application, however, it seems that they may only be used in 
+kernel-space. This leads me to the following question:
 
-Merged, thanks.
+        Is the documentation incorrect for rtdm_timer_init() when it says 
+it may be used in user-space tasks?
 
--- 
-Philippe.
+Dave Joynson
+Alstom Grid | Research & Technology | Senior Research Technologist
+Phone: +44 (0)1785 223 251 ext. 6577 | E-mail: dave.joynson@alstom.com
+Office address: St Leonard Avenue - Stafford ST17 4LX - England
+Site: www.alstom.com
+** Please consider the environment before printing this e-mail **
 
+P Before printing, please consider the environment!
+ALSTOM Grid UK Limited, Registered in England and Wales No. 4955841. 
+Registered Office St Leonards Avenue, Stafford, ST17 4LX
+
+:._______________
+CONFIDENTIALITY : This  e-mail  and  any attachments are confidential and 
+may be privileged. If  you are not a named recipient, please notify the 
+sender immediately and do not disclose the contents to another person, use 
+it for any purpose or store or copy the information in any medium.
