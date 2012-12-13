@@ -1,12 +1,9 @@
-Message-ID: <50C8B445.2080609@xenomai.org>
-Date: Wed, 12 Dec 2012 17:43:49 +0100
-From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <OF8BDEF87A.CA8542D0-ON80257AD2.00581CFA-80257AD2.005A5994@test.alstom.com>
-In-Reply-To: <OF8BDEF87A.CA8542D0-ON80257AD2.00581CFA-80257AD2.005A5994@test.alstom.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Timer support in user-space
+Date: Thu, 13 Dec 2012 10:21:20 +0100
+Message-ID: <CAPpP=rMVEY5_Ris9_HGPpsUFht-CdvPdWhPm7jtJ4qfZoyVjKw@mail.gmail.com>
+From: alex alex <duch.alexandre@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: [Xenomai] RTDM - Dynamic linking of device
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,33 +12,17 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: dave.joynson@alstom.com
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 12/12/2012 05:26 PM, dave.joynson@alstom.com wrote:
-> Hi,
-> I have recently started to use Xenomai on Raspberry Pi. My experience with
-> Linux Kernel building etc. is zero so I downloaded the pre-built image
-> from powet.eu. I have successfully created a cross compile environment to
-> create user-space applications using the Posix skin. While tracking down
-> some mode changes I came across the limitation of Posix skin Timers in
-> that the timer expiry creates a signal which causes a mode switch.
-> I have considered creating an application layer timer module using a pool
-> of threads that use nanosleep and a callback function on expiry. Careful
-> management of these threads using a custom timer API could fulfill my
-> requirements.
-> While exploring the documentation for alternatives, I noticed that the
-> RTDM Driver Development API provides access to native timers that would
-> seem to perform the functionality that I need, On trying to use them in a
-> user-space application, however, it seems that they may only be used in
-> kernel-space. This leads me to the following question:
->
->          Is the documentation incorrect for rtdm_timer_init() when it says
-> it may be used in user-space tasks?
+Hi,
 
-Yes. This is likely a copy&paste leftover.
+I need to link new devices once my module is loaded and I'd like to know if
+we can do this with RTDM?
+Are we forced to link the device in the "_init" fonction ? Or is there an
+other way to do the connection device/driver than using
+rtdm_dev_register<http://www.xenomai.org/documentation/trunk/html/api/group__devregister.html#ga6a191b3d206680c48cad2047adb9fc98>wich
+doesn't allow to do what I want?
 
+Thanks for your answer.
 
--- 
-Philippe.
-
+Alex.
