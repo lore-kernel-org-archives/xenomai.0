@@ -1,9 +1,10 @@
+Message-ID: <50C9FCAE.7020507@ucv.cl>
+Date: Thu, 13 Dec 2012 13:05:02 -0300
+From: =?ISO-8859-1?Q?H=E9ctor_Vargas?= <hector.vargas@ucv.cl>
 MIME-Version: 1.0
-Date: Thu, 13 Dec 2012 10:21:20 +0100
-Message-ID: <CAPpP=rMVEY5_Ris9_HGPpsUFht-CdvPdWhPm7jtJ4qfZoyVjKw@mail.gmail.com>
-From: alex alex <duch.alexandre@gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Subject: [Xenomai] RTDM - Dynamic linking of device
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] Question about Xenomai,  Posix and Java
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,15 +15,16 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Hi,
+Hi everyone,
 
-I need to link new devices once my module is loaded and I'd like to know if
-we can do this with RTDM?
-Are we forced to link the device in the "_init" fonction ? Or is there an
-other way to do the connection device/driver than using
-rtdm_dev_register<http://www.xenomai.org/documentation/trunk/html/api/group__devregister.html#ga6a191b3d206680c48cad2047adb9fc98>wich
-doesn't allow to do what I want?
+I want to create an application where a control task (real time control=20
+of a DC motor) developed in Xenomai (posix skin) can be controlled from=20
+a Java interface (GUI). The idea is to create a middle task between the=20
+xenomai control task and the Java application working as a gateway by=20
+using TCP sockets. Before starting to work on it I would like to know if=20
+someone has already done something like this. It is possible to do it?.
 
-Thanks for your answer.
+Thanks for your answer,
 
-Alex.
+H=E9ctor.-
+
