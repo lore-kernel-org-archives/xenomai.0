@@ -1,12 +1,12 @@
-Message-ID: <50CB4D73.5090905@xenomai.org>
-Date: Fri, 14 Dec 2012 17:01:55 +0100
+Message-ID: <50CB4E5F.8060005@xenomai.org>
+Date: Fri, 14 Dec 2012 17:05:51 +0100
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <1355499196.2190.23.camel@herbert.er.corscience.de>
-In-Reply-To: <1355499196.2190.23.camel@herbert.er.corscience.de>
+References: <OF1F531AEB.47F2B1C8-ON80257AD4.003957EA-80257AD4.003A0655@test.alstom.com>
+In-Reply-To: <OF1F531AEB.47F2B1C8-ON80257AD4.003957EA-80257AD4.003A0655@test.alstom.com>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Question about IPIPE_IRQF_NOSYNC
+Subject: Re: [Xenomai] Timer support in user-space
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,35 +15,60 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Tim Niemeyer <tim.niemeyer@corscience.de>
-Cc: xenomai <xenomai@xenomai.org>
+To: dave.joynson@alstom.com
+Cc: xenomai@xenomai.org
 
-On 12/14/2012 04:33 PM, Tim Niemeyer wrote:
-> Hi
+On 12/14/2012 11:33 AM, dave.joynson@alstom.com wrote:
 >
-> I'm using Xenomai 2.6.1 with linux 3.4.14 (with latest 'for-core-3.4'
-> Adeos) on an omap3 board.
->
-> While hunting a gpio-irq latency i tried to understand the adeos chained
-> interrupt code. I'm currently stuck at ipipe_handle_demuxed_irq()
-> because i didn't understand the IPIPE_IRQF_NOSYNC-Flag:
->
-> static inline void ipipe_handle_demuxed_irq(unsigned int cascade_irq)
-> {
-> ..
-> __ipipe_dispatch_irq(cascade_irq, IPIPE_IRQF_NOSYNC);
-> ..
-> }
+> Thanks for your prompt reply Philippe. Do you welcome reports of
+> innacurate documentation etc. and if so, is there a mechanism, other
+> than this list, to report them?
+
+We can either pull changes from a public git repository you would 
+maintain, or merge properly formatted commits sent to this list inline.
+
+> I must say that in general, the quality of the documentation is
+> excellent and allowed me, an experienced software engineer but a Linux
+> novice, to get up and running relatively quickly.
+> Thanks for the effort you have put in to this excellent project.
 >
 
-This means "mark the interrupt as pending, but do not attempt to run the 
-handler". Normally, __ipipe_dispatch_irq would eventually check and 
-figure out that some interrupt is pending, and provided the context 
-allows, it would run the handlers for each interrupt flagged as such, by 
-calling __ipipe_sync_pipeline.
+You are welcome.
 
-> Maybe someone can give me hint or point me to the right documentation,
-> so that i can better understand the code for __ipipe_dispatch_irq() ?
+> Dave.
+>
+>
+>
+> *Philippe Gerum <rpm@xenomai.org>*
+>
+> 12/12/2012 16:45
+>
+> 	
+> To
+> 	Dave JOYNSON/GBSRD01/Grid/ALSTOM@GA
+> cc
+> 	xenomai@xenomai.org
+> Subject
+> 	Re: [Xenomai] Timer support in user-space
+>
+>
+> 	
+>
+>
+>
+>
+>
+> On 12/12/2012 05:26 PM, dave.joynson@alstom.com wrote:
+>  >
+>  >          Is the documentation incorrect for rtdm_timer_init() when it
+> says
+>  > it may be used in user-space tasks?
+>
+> Yes. This is likely a copy&paste leftover.
+>
+>
+> --
+> Philippe.
 >
 
 
