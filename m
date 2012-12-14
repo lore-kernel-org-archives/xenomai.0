@@ -1,13 +1,10 @@
 From: Tim Niemeyer <tim.niemeyer@corscience.de>
-In-Reply-To: <50CB3347.8060000@gmail.com>
-References: <50CB3347.8060000@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
-Date: Fri, 14 Dec 2012 15:27:00 +0100
-Message-ID: <1355495220.2190.6.camel@herbert.er.corscience.de>
+Date: Fri, 14 Dec 2012 16:33:16 +0100
+Message-ID: <1355499196.2190.23.camel@herbert.er.corscience.de>
 Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] How does the adeos and xenomai project stay
- synchronized with the linux kernel project?
+Subject: [Xenomai] Question about IPIPE_IRQF_NOSYNC
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,27 +13,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: hauptmech <hauptmech@gmail.com>
-Cc: xenomai@xenomai.org
+To: xenomai <xenomai@xenomai.org>
 
 Hi
 
-Am Freitag, den 14.12.2012, 15:10 +0100 schrieb hauptmech:
-> I've used and followed Xenomai off and on since it forked from RTAI. I'm 
-> building a new xenomai x86 system after a few years of doing other 
-> things. I'm noticing that the adeos patches are few and relatively old 
-> compared to the kernel for the x86 architecture. Kernel version 3.2 has 
-> moved from .21 to .35 for instance. Meanwhile my (non-rt) systems all 
-> use 3.4 or 3.6.
+I'm using Xenomai 2.6.1 with linux 3.4.14 (with latest 'for-core-3.4'
+Adeos) on an omap3 board.
 
-I use 3.4 on my rt system. You can find the adeos work from the
-Xenomai-Team here:
-http://git.xenomai.org/?p=ipipe-gch.git;a=shortlog;h=refs/heads/for-core-3.4
+While hunting a gpio-irq latency i tried to understand the adeos chained
+interrupt code. I'm currently stuck at ipipe_handle_demuxed_irq()
+because i didn't understand the IPIPE_IRQF_NOSYNC-Flag:
 
-It was quite confused to get it working on 3.4.14. As the work is based
-on 3.4.6.
+static inline void ipipe_handle_demuxed_irq(unsigned int cascade_irq)
+{
+..
+__ipipe_dispatch_irq(cascade_irq, IPIPE_IRQF_NOSYNC);
+..
+}
 
-There is also a branch 'for-core-3.5'.
+Maybe someone can give me hint or point me to the right documentation,
+so that i can better understand the code for __ipipe_dispatch_irq() ?
 
 -- 
 Tim Niemeyer
