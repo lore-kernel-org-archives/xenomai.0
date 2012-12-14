@@ -1,12 +1,12 @@
-Message-ID: <50CB4E5F.8060005@xenomai.org>
-Date: Fri, 14 Dec 2012 17:05:51 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <50CB561D.5070706@grandegger.com>
+Date: Fri, 14 Dec 2012 17:38:53 +0100
+From: Wolfgang Grandegger <wg@grandegger.com>
 MIME-Version: 1.0
-References: <OF1F531AEB.47F2B1C8-ON80257AD4.003957EA-80257AD4.003A0655@test.alstom.com>
-In-Reply-To: <OF1F531AEB.47F2B1C8-ON80257AD4.003957EA-80257AD4.003A0655@test.alstom.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+References: <50CB364C.70706@wanadoo.fr>
+In-Reply-To: <50CB364C.70706@wanadoo.fr>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Timer support in user-space
+Subject: Re: [Xenomai] Init issue with rtcan_flexcan
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,63 +15,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: dave.joynson@alstom.com
+To: Thierry Bultel <thierry.bultel@wanadoo.fr>
 Cc: xenomai@xenomai.org
 
-On 12/14/2012 11:33 AM, dave.joynson@alstom.com wrote:
->
-> Thanks for your prompt reply Philippe. Do you welcome reports of
-> innacurate documentation etc. and if so, is there a mechanism, other
-> than this list, to report them?
+On 12/14/2012 03:23 PM, Thierry Bultel wrote:
+> Hi,
+> some days ago I have posted a patch for the rtcan_flexcan to be
+> correctly probed on the iMX6q
+> 
+> It is functional, but I have not tested it enough, I am sorry about that.
+> It only works if the linux flexcan driver module has been used once before.
+> 
+> Else I have got IRQs but no packet go to the upper layer, I think it is
+> stuck in passive state, I am investigating on it.
 
-We can either pull changes from a public git repository you would 
-maintain, or merge properly formatted commits sent to this list inline.
+It would be nice if you could port the missing patches from the mainline
+Linux kernel to rtcan_flexcan.
 
-> I must say that in general, the quality of the documentation is
-> excellent and allowed me, an experienced software engineer but a Linux
-> novice, to get up and running relatively quickly.
-> Thanks for the effort you have put in to this excellent project.
->
+Thanks,
 
-You are welcome.
+Wolfgang.
 
-> Dave.
->
->
->
-> *Philippe Gerum <rpm@xenomai.org>*
->
-> 12/12/2012 16:45
->
-> 	
-> To
-> 	Dave JOYNSON/GBSRD01/Grid/ALSTOM@GA
-> cc
-> 	xenomai@xenomai.org
-> Subject
-> 	Re: [Xenomai] Timer support in user-space
->
->
-> 	
->
->
->
->
->
-> On 12/12/2012 05:26 PM, dave.joynson@alstom.com wrote:
->  >
->  >          Is the documentation incorrect for rtdm_timer_init() when it
-> says
->  > it may be used in user-space tasks?
->
-> Yes. This is likely a copy&paste leftover.
->
->
-> --
-> Philippe.
->
-
-
--- 
-Philippe.
 
