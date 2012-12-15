@@ -1,5 +1,5 @@
-Message-ID: <50CC8E3B.8030109@xenomai.org>
-Date: Sat, 15 Dec 2012 15:50:35 +0100
+Message-ID: <50CC8F3E.30908@xenomai.org>
+Date: Sat, 15 Dec 2012 15:54:54 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <7385E066AECB78449EEDFA7EE2A2B2B60A052D7D@DB3PRD0410MB355.eurprd04.prod.outlook.com>,
@@ -23,31 +23,16 @@ To: GUGLIELMO NAVARRA <guglielmo.navarra@studenti.uniparthenope.it>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
 On 12/15/2012 03:42 PM, GUGLIELMO NAVARRA wrote:
+> Question : If the address in the tsc_info struct were incorrect,
 
-> Reply for FCSE: Omap L138 is based on ARM926ejs (FCSE supported) 
-> Reply for tsc_info hardcode: The DAVINCI_TIMER0_BASE macro represents
-> the physical address of the timer 0 (corrected), which is 64bit timer
-> that i use (unchained mode) 32bit for clockevent (BOTTOM) and 32bit
-> for clocksource (TOP) . Instead "t->base" represents the virtual
-> address obtained from ioremap.
+> there would be a hang?
 
 
-The Xenomai mailing list is an old style mailing list where we do not
-top-post. So, please stop top-posting.
+If you are accessing another timer register, the processor will not
+hang, what you read is simply not the hardware counter.
 
-If the virtual address of the hardware counter is t->base + t->tim_off
-and
-t->base is the ioremap of DAVICIN_TIMER0_BASE then the counter physical
-address is:
-DAVINCI_TIMER0_BASE + t->tim_off
-
-Hence my first question (which you did not answer):
-"what about t->tim_off ?"
-
-What I said was if other SOCs or other boards use different timer
-configuration where t->base is not DAVINCI_TIMER0_BASE, then you should
-not hardcode DAVINCI_TIMER0_BASE in the tsc physical address, yes this
-will work in your case, but not for other possible configurations.
+Anyway, I also asked you to run the "tsc" test, what does this test tell
+you?
 
 -- 
                                                                 Gilles.
