@@ -1,13 +1,10 @@
-Message-ID: <50CBA44C.5090402@xenomai.org>
-Date: Fri, 14 Dec 2012 23:12:28 +0100
-From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <50CB2610.6010905@gmail.com>
-In-Reply-To: <50CB2610.6010905@gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] How does the adeos and xenomai project stay
- synchronized with the linux kernel project?
+Date: Sat, 15 Dec 2012 14:19:52 +0530
+Message-ID: <CAMgy_J0sPiUcRn7wk+VUux=4T1BNDjo+OwqxwUfqqakqzceZkA@mail.gmail.com>
+From: Shamju Joseph <shamju.joseph@gmail.com>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] (no subject)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,66 +13,69 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: hauptmech <hauptmech@gmail.com>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 12/14/2012 02:13 PM, hauptmech wrote:
->
-> I've used and followed Xenomai off and on since it forked from RTAI.
+Hi
 
-It did not. A fork happens when you diverge from a common code base, 
-which does not apply to Xenomai wrt RTAI. Both used to be independent 
-projects before they joined forces, then split as we failed to actually 
-merge both real-time cores. Portions of Adeos might still be shared by 
-both projects, but incidentally, it is a Xenomai-originated 
-contribution. Please check 
-https://www.xenomai.org/index.php/Xenomai:History for facts.
+I=92m facing some problem with Xenomai. I have to run kernel patched with
+xenomai on a multi core system. (Panasonic laptop with core duo and dell
+laptop with core i5 processor) The kernel configuration says =93Warning you
+enabled APM, CPU frequency scaling or ACPI processor. These options are
+known to cause trouble with xenomai=94. But if I disable ACPI and build
+kernel patched with xenomai, I get only one core after booting. (Even if
+SMP is selected & max no of CPUs is set ). So I enabled ACPI and built
+kernel with xenomai patch. I could boot the kernel and got multiple core
+listed in /proc/cpuinfo. But the issue is that when I call xenomai API task
+spawn on the second core, program hangs for long time. Also observed lot of
+timing variations in the latency test.
 
-  I'm
-> building a new xenomai x86 system after a few years of doing other
-> things. I'm noticing that the adeos patches are few and relatively old
-> compared to the kernel for the x86 architecture.
+I tried with Fedora 14 and RHEL 6 distributions. I used kernel 2.6.37 and
+xenomai 2.5.6 versions. The following are the output I got from system.
 
-We published 990 official Adeos patches since 2001, with more than half 
-of them targeting the x86_32 and _64 architectures. I would not call 
-these a few. Please check download.gna.org/adeos/patches for more 
-information.
+[gddr@M4500 ~]$ dmesg | grep Xenomai
 
-  Kernel version 3.2 has
-> moved from .21 to .35 for instance.
->
+[    1.665262] I-pipe: Domain Xenomai registered.
 
-We never updated the Adeos patches for minor linux releases routinely, 
-this has never been our policy, and will likely never be the case. This 
-would just involve way too much work for our bandwidth. We are focusing 
-on major releases. So you seem to be expecting something we never 
-delivered in the past anyway.
+[    1.665266] Xenomai: hal/i386 started.
 
-However, the pace of our Adeos updates for major kernel releases has 
-slowed down over the past three years, definitely. This said, we have 
-support for kernel 3.4 and in some cases 3.5, for the main architecture 
-ports we maintain, it's not lagging that far behind.
+[    1.665285] Xenomai: scheduling class idle registered.
 
-> So my question is (with the deepest respect for the effort it must take)
-> why?
->
+[    1.665287] Xenomai: scheduling class rt registered.
 
-Because we all have to deal with priorities and available resources, 
-this is no different for the Xenomai maintainers.
+[    1.665719] Xenomai: real-time nucleus v2.5.6 (Wormhole Wizards) loaded.
 
-> Is
->
->
->
->
->
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> http://www.xenomai.org/mailman/listinfo/xenomai
->
+[    1.665798] Xenomai: SMI-enabled chipset found
 
+[    1.665808] Xenomai: SMI workaround enabled
 
--- 
-Philippe.
+[    1.665816] Xenomai: starting native API services.
 
+[    1.665817] Xenomai: starting POSIX services.
+
+[    1.665835] Xenomai: starting RTDM services.
+
+[gddr@M4500 ~]$
+
+[gddr@M4500 ~]$ dmesg | grep I-pipe
+
+[    0.000000] I-pipe 2.9-00: pipeline enabled.
+
+[    1.665262] I-pipe: Domain Xenomai registered.
+
+[gddr@M4500 ~]$
+
+I=92ve the following doubts.
+
+1)      How to get xenomai working with multi core processor system?
+
+2)      There are many services like cpuspeed, irqbalance, crond, sendmail,
+acpid, pcscd, iscsi etc running in the background by default. Are these
+causing some problem with xenomai? What are the essential services required
+and what are to be disabled?
+
+3)      Is there any standard or HOWTO document available which explains
+the detailed installation steps (kernel configurations to set/clear & Linux
+services to enable/disable) for xenomai?
+
+Please help me.
+-Shamju Joseph
