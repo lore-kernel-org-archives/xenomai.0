@@ -1,9 +1,11 @@
-Message-ID: <50CC6E7E.3040404@xenomai.org>
-Date: Sat, 15 Dec 2012 13:35:10 +0100
+Message-ID: <50CC819F.7010009@xenomai.org>
+Date: Sat, 15 Dec 2012 14:56:47 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <7385E066AECB78449EEDFA7EE2A2B2B60A052D7D@DB3PRD0410MB355.eurprd04.prod.outlook.com>
-In-Reply-To: <7385E066AECB78449EEDFA7EE2A2B2B60A052D7D@DB3PRD0410MB355.eurprd04.prod.outlook.com>
+References: <7385E066AECB78449EEDFA7EE2A2B2B60A052D7D@DB3PRD0410MB355.eurprd04.prod.outlook.com>,
+	<50CC6B1E.8070102@xenomai.org>
+	<7385E066AECB78449EEDFA7EE2A2B2B60A052DA8@DB3PRD0410MB355.eurprd04.prod.outlook.com>
+In-Reply-To: <7385E066AECB78449EEDFA7EE2A2B2B60A052DA8@DB3PRD0410MB355.eurprd04.prod.outlook.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] [Xenomai-help] Latency calculation on da850 (Omap
@@ -16,25 +18,64 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: GUGLIELMO NAVARRA <guglielmo.navarra@studenti.uniparthenope.it>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: guglielmo.navarra@studenti.uniparthenope.it
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 12/15/2012 01:07 PM, GUGLIELMO NAVARRA wrote:
+On 12/15/2012 02:31 PM, GUGLIELMO NAVARRA wrote:
 
-> Hello,
-> I ported i-pipe to the board da850 with TI L138 CPU.
-> I have no problems during startup, the system starts quietly.
-> I followed the guide http://www.xenomai.org/index.php/I-pipe-core:ArmPorting,
-> the only thing that I did not (because do not use ) are the changes to the GPIO module.
+> Thanks for your reply,
+> my tsc_info definition is:
+> 
+> /*------------------------------------------------
+>   Timer che utilizza IPIPE
+>  -------------------------------------------------*/
+> #ifdef CONFIG_IPIPE
+> static struct __ipipe_tscinfo tsc_info = {
+>         .type = IPIPE_TSC_TYPE_FREERUNNING,
+>        .u = {
+>                 {
+>                         .mask = 0xffffffff,
+>                 },
+>         },
+> };
+> 
+> static void l138_xenomai_tsc_init(void)
+> {
+>    struct timer_s *t = &timers[TID_CLOCKSOURCE];
+>   
+>    tsc_info.type = IPIPE_TSC_TYPE_FREERUNNING;
+>    tsc_info.freq = l138_clock_tick_rate;
+
+>    tsc_info.counter_vaddr = (unsigned long)(t->base + t->tim_off);
+
+>    tsc_info.u.counter_paddr = DAVINCI_TIMER0_BASE + TIM12;
 
 
-Maybe the documentation is not clear enough, but you have to make the
-changes to multiplexed GPIO irq handlers, otherwise all hell will break
-loose when such an irq will happen, even in the absence of real-time
-drivers.
+What about t->tim_off ?
 
-Also, if your processor is an armv4 or armv5, you should consider
-enabling the FCSE.
+>    //tsc_info.u.fr.counter = (unsigned *)(t->base + t->tim_off);
+>    tsc_info.u.fr.mask = 0xffffffff;
+>    __ipipe_tsc_register(&tsc_info);
+> }
+> 
+> 
+> Maybe I need to control access to the timer by user-space.
+> I have already enabled FCSE in "guaranteed mode".
+
+
+What processor core are you using? As explained in the documentation,
+FCSE is only implemented for the arm920T, arm926EJ-S and Intel xscale cores.
+
+> You tell me that I have to implement the part of the GPIO?
+
+
+Definitely, if there are some multiplexed GPIOs and some drivers
+existing using them. It is optional otherwise, but if you intend to
+publish your patch (which I hope you do), it is better to implement the
+GPIO demultiplexing, and even the hardening of gpiolib callbacks, in
+case other users of the same platform need to use GPIOs.
+
+Please no top-posting and no private mails.
 
 -- 
                                                                 Gilles.
