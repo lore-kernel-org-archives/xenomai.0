@@ -1,12 +1,13 @@
-Message-ID: <50C4EF5A.3030502@wanadoo.fr>
-Date: Sun, 09 Dec 2012 21:06:50 +0100
-From: Thierry Bultel <thierry.bultel@wanadoo.fr>
+Message-ID: <50CCF66E.1060107@linux-kernel.net>
+Date: Sat, 15 Dec 2012 23:15:10 +0100
+From: Wolfgang Mauerer <wm@linux-kernel.net>
 MIME-Version: 1.0
-References: <50C1EF04.1090506@wanadoo.fr> <50C236B9.3030507@xenomai.org>
-In-Reply-To: <50C236B9.3030507@xenomai.org>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
+References: <50C9FCAE.7020507@ucv.cl>
+	<50CC6607.6080506__19747.5351779305$1355572777$gmane$org@xenomai.org>
+In-Reply-To: <50CC6607.6080506__19747.5351779305$1355572777$gmane$org@xenomai.org>
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] iMX6q 1Hz tick
+Subject: Re: [Xenomai] Question about Xenomai,  Posix and Java
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,104 +16,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: hector.vargas@ucv.cl
 Cc: xenomai@xenomai.org
 
-Le 07/12/2012 19:34, Gilles Chanteperdrix a écrit :
-> On 12/07/2012 02:28 PM, Thierry Bultel wrote:
->
->> Hi,
-
-Hello Gilles,
-
+On 15/12/2012 12:59, Gilles Chanteperdrix wrote:
+> On 12/13/2012 05:05 PM, Héctor Vargas wrote:
+> 
+>> Hi everyone,
 >>
->> I have "successfully" patched a 3.0.35 kernel from Freescale with
->> adeos-ipipe-3.0.36-1.18.11
->>
->> I have -not- applied the adeos-ipipe-3.0.36-arm-1.18-11-pre.patch
->> that showed too much "revert patch detected" errors.
->
->
->
-> The patch should apply cleanly, the question, if you get too many
-> rejections, it is because you do not apply it to the proper branch.
->
+>> I want to create an application where a control task (real time control 
+>> of a DC motor) developed in Xenomai (posix skin) can be controlled from 
+>> a Java interface (GUI). The idea is to create a middle task between the 
+>> xenomai control task and the Java application working as a gateway by 
+>> using TCP sockets. Before starting to work on it I would like to know if 
+>> someone has already done something like this. It is possible to do it?.
+> 
+> 
+> I do not see why it would not work (RTnet has everything needed AFAIK).
+> But why not invoking the Xenomai code from the Java code as JNI ?
+> 
+we have also made good experiences with an architecture that uses
+a lock-free/wait-free communication scheme between non-RT and RT
+components, see
+http://www.linuxtag.org/2012/fileadmin/www.linuxtag.org/slides/Gernot%20Hillier%20+%20Wolfgang%20Mauerer%20+%20Jan%20Sawallisch%20-%20Android_%20real-time%20for%20the%20rest%20of%20us.p416.pdf
 
-Of course it was not.
-I started with a kernel provided by the module manufacturer. I estimate 
-that this kernel is "almost" a rel_imx_3.0.35_12.09.02, I mean, that
-I have not found a closer tag than this one.
+(the paper is about Java in the sense of Android and real-time in the
+sense of preempt_rt, but the scheme is immediately transferable to
+Java/Xenomai)
 
-My first idea was to attempt to apply the patches to that kernel
-directly. I was not expecting it would have been simple, and it was 
-actually not. But after a few hours I came to the initial result I said.
-
-
-
->>
->> BTW, I have understand that its purpose was mainly to upgrade to 3.0.36,
->> but what is actually the role of the
->> adeos-ipipe-3.0.36-arm-1.18-11-post.patch ? (I applied it).
->
->
-> I have explained this in a previous mail.
-
-Ok, I will seek in the history. I would be nice if the explanation
-was in the README.
-
->
->>
->> I had to deal with some rejections but at least the kernel is booting
->> and my application running.
->>
->> But the target is very slow, and /proc/xenomai/irq shows that the
->> [timer] irq only comes about every 1 second.
->>
->> The /proc/interrupts shows an IRQ every 10ms, which was expected
->> since I have CONFIG_HZ=100
->>
->> I am pretty sure that I messed up something in the patch process,
->> however I do not know where to start to look for.
->
->
-> Apply the patches to the proper imx release, and everything should be fine.
-
-
-That is what I did, at last.
-To do so, I have extracted the BSP from the given 'almost' 
-rel_imx_3.0.35_12.09.02 kernel,
-taken the rel_imx_3.0.15_12.03.00, applied the patches,
-and brought back the BSP to the patched kernel.
-
-The kernel boots, it is stuck for some seconds when initializing 
-network, but I have noticed some substancial differences on the fec 
-driver, I should take a look at that later.
-
-I do not have the slowness issue anymore,
-/proc/xenomai/irq shows the timer IRQ counter increasing, on the 4 CPUs
-
-
-[root@buildroot ~]# cat /proc/xenomai/irq | grep timer
-  29:      257278       86177       23138       11670         [timer]
-
-However,
-
-in /proc/interrupts,
-I have
-  87:          8          0          0          0       GIC  i.MX Timer Tick
-
-The counter increases -very- slowly, I have not measured accurately, but 
-I takes several minutes to increase by one.
-
-Where can I look to fix that issue please ?
-
-
-Another issue I have noticed is that the "reboot" command takes about 
-10-12 seconds, whereas it is almost immediate with the original kernel.
-
-regards
-Thierry
-
->
-
+Cheers, Wolfgang
 
