@@ -1,12 +1,12 @@
-Message-ID: <50CC6607.6080506@xenomai.org>
-Date: Sat, 15 Dec 2012 12:59:03 +0100
+Message-ID: <50CC6730.6060308@xenomai.org>
+Date: Sat, 15 Dec 2012 13:04:00 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <50C9FCAE.7020507@ucv.cl>
-In-Reply-To: <50C9FCAE.7020507@ucv.cl>
+References: <1355499196.2190.23.camel@herbert.er.corscience.de>
+In-Reply-To: <1355499196.2190.23.camel@herbert.er.corscience.de>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] Question about Xenomai,  Posix and Java
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Question about IPIPE_IRQF_NOSYNC
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,30 +15,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?B?SMOpY3RvciBWYXJnYXM=?= <hector.vargas@ucv.cl>
-Cc: xenomai@xenomai.org
+To: Tim Niemeyer <tim.niemeyer@corscience.de>
+Cc: xenomai <xenomai@xenomai.org>
 
-On 12/13/2012 05:05 PM, H=C3=A9ctor Vargas wrote:
+On 12/14/2012 04:33 PM, Tim Niemeyer wrote:
 
-> Hi everyone,
->=20
-> I want to create an application where a control task (real time control=
-=20
-> of a DC motor) developed in Xenomai (posix skin) can be controlled from=
-=20
-> a Java interface (GUI). The idea is to create a middle task between the=
-=20
-> xenomai control task and the Java application working as a gateway by=20
-> using TCP sockets. Before starting to work on it I would like to know i=
-f=20
-> someone has already done something like this. It is possible to do it?.=
+> Hi
+> 
+> I'm using Xenomai 2.6.1 with linux 3.4.14 (with latest 'for-core-3.4'
+> Adeos) on an omap3 board.
 
 
+The latest Adeos is the core-3.4 branch from the git.denx.de/ipipe.git
+repository, not the 'for-core-3.4' branch from the
+git.xenomai.org/ipipe-gch.git.
 
-I do not see why it would not work (RTnet has everything needed AFAIK).
-But why not invoking the Xenomai code from the Java code as JNI ?
+Anyway, you can not use Xenomai 2.6.1 with linux 3.4, you also have to
+use xenomai from its git repository git.xenomai.og/xenomai-2.6.git
 
---=20
+> 
+> While hunting a gpio-irq latency i tried to understand the adeos chained
+
+
+How high a latency are we talking about?
+
+Anyway, the way we track down this kind of issues is the I-pipe tracer.
+http://www.xenomai.org/index.php/I-pipe:Tracer
+
+You will have to trigger the freeze yourself if you find a too high latency.
+
+-- 
                                                                 Gilles.
-
 
