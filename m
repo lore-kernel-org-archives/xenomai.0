@@ -1,13 +1,12 @@
-Message-ID: <50CC87FD.70305@xenomai.org>
-Date: Sat, 15 Dec 2012 15:23:57 +0100
+Message-ID: <50CC890D.20304@xenomai.org>
+Date: Sat, 15 Dec 2012 15:28:29 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <14AA522E86E5754F8BC33C742D045A4A8134EFB4@srv0024.corp.thvnet.com>
-In-Reply-To: <14AA522E86E5754F8BC33C742D045A4A8134EFB4@srv0024.corp.thvnet.com>
+References: <CAM6X2GKDLrs=Aua1bp83V_H-2TA32ervyUxXGdtkz0VcxA7R2w@mail.gmail.com>
+In-Reply-To: <CAM6X2GKDLrs=Aua1bp83V_H-2TA32ervyUxXGdtkz0VcxA7R2w@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Latency test results Xeon E5-1650 higher than Xeon
- E5620
+Subject: Re: [Xenomai] Unable to start Xenomai-2.6.1 on Ubuntu kernel 3.2.21
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,33 +15,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Beaufils Sylvie (IT&LAB)" <sylvie.beaufils@thomson-networks.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: karan shah <itskaranshah@gmail.com>
+Cc: xenomai@xenomai.org
 
-On 12/11/2012 06:49 PM, Beaufils Sylvie (IT&LAB) wrote:
-> I have read that "The most common reason for high latencies on x86
+On 12/04/2012 05:14 PM, karan shah wrote:
 
-> are SMIs". But the SMI workaround does not manage the Patsburg LPC
-> controller. I tried to add the PCI ID [8086:1d41] to
-> ksrc/arch/x86/smi.c with this result: [    1.926417] Xenomai:
-> SMI-enabled chipset found [    1.926490] Xenomai: SMI workaround
-> failed!
+> Respected Sir,
 > 
-> Should the SMI workaround be managed for the C602 chipset ? Could it
-> explain the above latency results ?
+> I am trying to install Xenomai-2.6.1 on Ubuntu with a kernel version
+> 3.2.21,but when a reboot  my system after compiling and building the
+> kernel, system give the error as follows
+> 
+> Nov 30 07:04:47 karan-Pc kernel: [    3.753371] I-pipe: could not find
+> timer for cpu #1
+> Nov 30 07:04:47 karan-Pc kernel: [    3.753375] Xenomai: system init
+> failed, code -19.
+> Nov 30 07:04:47 karan-Pc kernel: [    3.753383] Xenomai: native skin init
+> failed, code -19.
+> Nov 30 07:04:47 karan-Pc kernel: [    3.753387] Xenomai: starting POSIX
+> services.
+> Nov 30 07:04:47 karan-Pc kernel: [    3.753390] Xenomai: POSIX skin init
+> failed, code -19.
+> Nov 30 07:04:47 karan-Pc kernel: [    3.753394] Xenomai: RTDM skin init
+> failed, code -19.
+> 
+> I want through the Troubleshooting document but that doesn't work.
 
 
-Maybe, but as mentioned in the part of the troubleshooting guide you do
-not quote, a "pathological" latency is a latency around say 100us.
+You probably missed that part of the troubleshooting guide:
+http://www.xenomai.org/documentation/xenomai-2.6/html/TROUBLESHOOTING/#kconf
 
-The result of a latency test running:
-- 1 minute
-- on an idle system
-
-is absolutely meaningless.
-
-Anyway, if you want to understand the difference, you may use the I-pipe
-tracer.
 
 -- 
                                                                 Gilles.
