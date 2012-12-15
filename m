@@ -1,15 +1,13 @@
-Message-ID: <50CC83E8.1070408@xenomai.org>
-Date: Sat, 15 Dec 2012 15:06:32 +0100
+Message-ID: <50CC87FD.70305@xenomai.org>
+Date: Sat, 15 Dec 2012 15:23:57 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <7385E066AECB78449EEDFA7EE2A2B2B60A052D7D@DB3PRD0410MB355.eurprd04.prod.outlook.com>,
-	<50CC6B1E.8070102@xenomai.org>	<7385E066AECB78449EEDFA7EE2A2B2B60A052DA8@DB3PRD0410MB355.eurprd04.prod.outlook.com>
-	<50CC819F.7010009@xenomai.org>
-In-Reply-To: <50CC819F.7010009@xenomai.org>
+References: <14AA522E86E5754F8BC33C742D045A4A8134EFB4@srv0024.corp.thvnet.com>
+In-Reply-To: <14AA522E86E5754F8BC33C742D045A4A8134EFB4@srv0024.corp.thvnet.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [Xenomai-help] Latency calculation on da850 (Omap
-	L138)
+Subject: Re: [Xenomai] Latency test results Xeon E5-1650 higher than Xeon
+ E5620
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,49 +16,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: guglielmo.navarra@studenti.uniparthenope.it
-Cc: Xenomai <xenomai@xenomai.org>
+To: "Beaufils Sylvie (IT&LAB)" <sylvie.beaufils@thomson-networks.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 12/15/2012 02:56 PM, Gilles Chanteperdrix wrote:
+On 12/11/2012 06:49 PM, Beaufils Sylvie (IT&LAB) wrote:
+> I have read that "The most common reason for high latencies on x86
 
-> On 12/15/2012 02:31 PM, GUGLIELMO NAVARRA wrote:
+> are SMIs". But the SMI workaround does not manage the Patsburg LPC
+> controller. I tried to add the PCI ID [8086:1d41] to
+> ksrc/arch/x86/smi.c with this result: [    1.926417] Xenomai:
+> SMI-enabled chipset found [    1.926490] Xenomai: SMI workaround
+> failed!
 > 
->> Thanks for your reply,
->> my tsc_info definition is:
->>
->> /*------------------------------------------------
->>   Timer che utilizza IPIPE
->>  -------------------------------------------------*/
->> #ifdef CONFIG_IPIPE
->> static struct __ipipe_tscinfo tsc_info = {
->>         .type = IPIPE_TSC_TYPE_FREERUNNING,
->>        .u = {
->>                 {
->>                         .mask = 0xffffffff,
->>                 },
->>         },
->> };
->>
->> static void l138_xenomai_tsc_init(void)
->> {
->>    struct timer_s *t = &timers[TID_CLOCKSOURCE];
->>   
->>    tsc_info.type = IPIPE_TSC_TYPE_FREERUNNING;
->>    tsc_info.freq = l138_clock_tick_rate;
-> 
->>    tsc_info.counter_vaddr = (unsigned long)(t->base + t->tim_off);
-> 
->>    tsc_info.u.counter_paddr = DAVINCI_TIMER0_BASE + TIM12;
-> 
-> 
-> What about t->tim_off ?
+> Should the SMI workaround be managed for the C602 chipset ? Could it
+> explain the above latency results ?
 
 
-Also, if t->base can be something else than the result of an
-ioremap(DAVINCI_TIMER0_BASE), then you should not hardcode
-DAVINCI_TIMER0_BASE, as other boards may pass a different value, rather,
-you should add a phys_base to "struct timer_s", and set it correctly for
-each possible physical address.
+Maybe, but as mentioned in the part of the troubleshooting guide you do
+not quote, a "pathological" latency is a latency around say 100us.
+
+The result of a latency test running:
+- 1 minute
+- on an idle system
+
+is absolutely meaningless.
+
+Anyway, if you want to understand the difference, you may use the I-pipe
+tracer.
 
 -- 
                                                                 Gilles.
