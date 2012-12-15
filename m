@@ -1,12 +1,12 @@
-Message-ID: <50CC65AF.6040102@xenomai.org>
-Date: Sat, 15 Dec 2012 12:57:35 +0100
+Message-ID: <50CC6607.6080506@xenomai.org>
+Date: Sat, 15 Dec 2012 12:59:03 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CAPpP=rMVEY5_Ris9_HGPpsUFht-CdvPdWhPm7jtJ4qfZoyVjKw@mail.gmail.com>
-In-Reply-To: <CAPpP=rMVEY5_Ris9_HGPpsUFht-CdvPdWhPm7jtJ4qfZoyVjKw@mail.gmail.com>
+References: <50C9FCAE.7020507@ucv.cl>
+In-Reply-To: <50C9FCAE.7020507@ucv.cl>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] RTDM - Dynamic linking of device
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] Question about Xenomai,  Posix and Java
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,30 +15,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: alex alex <duch.alexandre@gmail.com>
+To: =?UTF-8?B?SMOpY3RvciBWYXJnYXM=?= <hector.vargas@ucv.cl>
 Cc: xenomai@xenomai.org
 
-On 12/13/2012 10:21 AM, alex alex wrote:
+On 12/13/2012 05:05 PM, H=C3=A9ctor Vargas wrote:
 
-> Hi,
-> 
-> I need to link new devices once my module is loaded and I'd like to know if
-> we can do this with RTDM?
-> Are we forced to link the device in the "_init" fonction ?
-
-
-If you link the device in the "_init" function it will link the new
-device once the module is loaded.
-
-> Or is there an
-> other way to do the connection device/driver than using
-> rtdm_dev_register<http://www.xenomai.org/documentation/trunk/html/api/group__devregister.html#ga6a191b3d206680c48cad2047adb9fc98>wich
-> doesn't allow to do what I want?
+> Hi everyone,
+>=20
+> I want to create an application where a control task (real time control=
+=20
+> of a DC motor) developed in Xenomai (posix skin) can be controlled from=
+=20
+> a Java interface (GUI). The idea is to create a middle task between the=
+=20
+> xenomai control task and the Java application working as a gateway by=20
+> using TCP sockets. Before starting to work on it I would like to know i=
+f=20
+> someone has already done something like this. It is possible to do it?.=
 
 
-I do not really understand what you are talking about. If something does
-not work, please post code demonstrating what does not work.
 
--- 
+I do not see why it would not work (RTnet has everything needed AFAIK).
+But why not invoking the Xenomai code from the Java code as JNI ?
+
+--=20
                                                                 Gilles.
+
 
