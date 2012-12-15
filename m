@@ -1,10 +1,10 @@
 MIME-Version: 1.0
-Date: Sat, 15 Dec 2012 14:19:52 +0530
-Message-ID: <CAMgy_J0sPiUcRn7wk+VUux=4T1BNDjo+OwqxwUfqqakqzceZkA@mail.gmail.com>
+Date: Sat, 15 Dec 2012 14:21:39 +0530
+Message-ID: <CAMgy_J2Evr-oAZqDiUES2JCa5n8yRqYZzfDpid=T+1nEW6PNqg@mail.gmail.com>
 From: Shamju Joseph <shamju.joseph@gmail.com>
 Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] (no subject)
+Subject: [Xenomai] Issues with Xenomai on multi core computer
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -78,4 +78,4 @@ the detailed installation steps (kernel configurations to set/clear & Linux
 services to enable/disable) for xenomai?
 
 Please help me.
--Shamju Joseph
+ -Shamju Joseph
