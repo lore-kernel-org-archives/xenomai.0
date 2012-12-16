@@ -1,11 +1,11 @@
-Message-ID: <50CDCF87.2010207@gmail.com>
-Date: Sun, 16 Dec 2012 14:41:27 +0100
-From: hauptmech <hauptmech@gmail.com>
+Message-ID: <50CDD690.8050802@xenomai.org>
+Date: Sun, 16 Dec 2012 15:11:28 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <50CB2610.6010905@gmail.com> <50CBA44C.5090402@xenomai.org>
-	<50CC634B.3020307@xenomai.org>
-In-Reply-To: <50CC634B.3020307@xenomai.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+	<50CC634B.3020307@xenomai.org> <50CDCF87.2010207@gmail.com>
+In-Reply-To: <50CDCF87.2010207@gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] How does the adeos and xenomai project stay
  synchronized with the linux kernel project?
@@ -17,72 +17,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: hauptmech <hauptmech@gmail.com>
 Cc: xenomai@xenomai.org
 
+On 12/16/2012 02:41 PM, hauptmech wrote:
 
-I'm coming to the documentation with relatively fresh eyes. If you give 
-me a user on the wiki I'm happy to do a little gardening. Things like 
-the [getting started] page which is useful but not linked to anymore. 
-Perhaps a buffer page between the wiki and the git page with a little 
-description of the repos and how they fit into the development workflow 
-(where a link to denx could go).
-
-I have made xenomai source packages for pacman (Archlinux + a few 
-others) for arm last year and just now x86. However since archlinux 
-tends to use a minimally patched vanilla kernel it's not as exciting as 
-debian.
-
-More embedded below...
-
-On 12/15/2012 12:47 PM, Gilles Chanteperdrix wrote:
-> On 12/14/2012 11:12 PM, Philippe Gerum wrote:
->
->> We never updated the Adeos patches for minor linux releases routinely,
->> this has never been our policy, and will likely never be the case. This
->> would just involve way too much work for our bandwidth. We are focusing
->> on major releases. So you seem to be expecting something we never
->> delivered in the past anyway.
-Ok, I wasn't expecting anything. I just didn't understand.
-
->>
->> However, the pace of our Adeos updates for major kernel releases has
->> slowed down over the past three years, definitely. This said, we have
->> support for kernel 3.4 and in some cases 3.5, for the main architecture
->> ports we maintain, it's not lagging that far behind.
-The availability of ipipe for 3.4/3.5 (x86) is not apparent from the 
-website nor the patches in the xenomai source.
->>
->>> So my question is (with the deepest respect for the effort it must take)
->>> why?
->>>
->> Because we all have to deal with priorities and available resources,
->> this is no different for the Xenomai maintainers.
->
-> Speaking for myself here, porting the I-pipe patch (for the ARM
-> architecture in my case) to new versions of Linux is the most boring
-> part of the job, and since I do it on my free time, I tend to
-> procrastinate. Which is why for instance the I-pipe patch for 3.5 has
-> been available since august, and I did the port to the ARM architecture
-> only last week-end (shame on me...).
-Does all the work involve expertise with the kernel? I realize that 
-having a inexpert 'helper' for a lot of tasks just creates extra work 
-but if that's not the case here, perhaps a help-wanted post on the wiki 
-and some documentation on the process would attract someone wanting to 
-learn or help.
->
-> Anyway, I think the real problem for an end user is the frequency of
-> Xenomai releases, not of the I-pipe patches, because we probably should
-> have made a release of Xenomai as soon as the patch for 3.4 has been
-> available on all architectures. But on the other hand, if you look at
-> the core-3.4 branch in the git repository, you will see that staying
-> some time on that patch allowed us to fix many issues.
-I look forward to the release when it does happen.
-
--hauptmech
+> 
+> I'm coming to the documentation with relatively fresh eyes. If you give 
+> me a user on the wiki I'm happy to do a little gardening. Things like 
+> the [getting started] page which is useful but not linked to anymore. 
+> Perhaps a buffer page between the wiki and the git page with a little 
+> description of the repos and how they fit into the development workflow 
+> (where a link to denx could go).
 
 
+The "getting started" page is unfinished (contains empty paragraphs),
+and outdated (contains dead links and references to things like the
+simulator which is currently not really usable) at the same time. I do
+not believe we have the resources to maintain such a page up-to-date.
 
+>From my point of view, what we need is:
+- up to date manual pages of the binaries in xenomai distribution, in
+the xenomai sources, we can start from the current manual pages, but
+some of them are outdated and we should convert them to asciidoc so that
+more people can work on them, and we can put the html versions on the
+web site (with automatic update, as currently happens for the API
+documentation and README.INSTALL/TROUBLESHOOTING)
+- some thematic pages on the wiki such as:
+. calibrating your system with xeno-test
+. influence of the various Linux kernel options on latencies on at least
+the arm and x86 platforms
+- and hyperlinks, for instance at the end of README.INSTALL point to the
+"calibrating your system" page, and in this page, have an hyperlink to
+the xeno-test and latency test manual pages, in the page "porting the
+I-pipe-core patch to a new ARM board", mention the tools that can be
+used to debug the various issues, and have an hyperlink to their manual
+page.
+- a user guide, the "porting posix applications to xenomai" page, was my
+attempt of a user-guide, but it has a very specialized goal, whereas
+part of the information it contains is general to anyone writing posix
+applications for xenomai, and evern applications in general.
+- something we have talked about but has long gone forgotten, have some
+kind of database of the latency results sortable by a mix of measurement
+type, load type, kernel versions, configuration options, processors or SOCs.
 
+I agree with you, we have some information on the wiki, but it seems
+hard to find, seeing how people are asking again and again the same
+questions about configuring an x86 kernel, which are answered and
+hyperlinked in at least three pages on the web site.
 
+So, if you feel like organizing things a bit better, I created a wiki
+account for you.
+
+-- 
+                                                                Gilles.
 
