@@ -1,13 +1,10 @@
-Message-ID: <50CD3563.2070400@xenomai.org>
-Date: Sun, 16 Dec 2012 03:43:47 +0100
+Message-ID: <50CD8E87.2070906@xenomai.org>
+Date: Sun, 16 Dec 2012 10:04:07 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CAPpP=rMVEY5_Ris9_HGPpsUFht-CdvPdWhPm7jtJ4qfZoyVjKw@mail.gmail.com>	<50CC65AF.6040102@xenomai.org>
-	<CAPpP=rPn8k2LTwrYQ_XkKE4vaiazfREnfCJEE5nbY0iD7Apofw@mail.gmail.com>
-In-Reply-To: <CAPpP=rPn8k2LTwrYQ_XkKE4vaiazfREnfCJEE5nbY0iD7Apofw@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] RTDM - Dynamic linking of device
+Subject: [Xenomai] next xenomai release
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,26 +13,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: alex alex <duch.alexandre@gmail.com>
+To: Roland Stigge <stigge@antcom.de>
 Cc: Xenomai <xenomai@xenomai.org>
 
-On 12/16/2012 03:01 AM, alex alex wrote:
 
-> Infact, I wonder if it is possible with RTDM to add devices after the
-> module is loaded.
-> My module is used by programs that do not allow me to know in advance
-> how many device linked to the module there will be and what will be
-> their name.
-> With "rtdm_dev_register" I have to declare statically a fixed number of
-> device with a fixed name for each so I wonder if there is a dynamic way
-> to add device after the module loading.
+Hi Roland,
 
+the next release of Xenomai should happen soon. The changes which may
+impact the Debian packaging are:
+* changes in the configure script option, actually simplifications;
+- --enable-smp is no longer needed on x86, powerpc and arm
+- as a reminder, on the ARM architecture, passing --enable-arm-arch or
+--enable-arm-eabi is not needed either since 2.6.0, so in fact, no
+option is needed when running the configure script for the arm
+architecture. Passing the correct -march to the CFLAGS is recommended to
+generate optimized code, but starting with the future release, is not
+even mandatory.
+- this release support ARM user-space built with the thumb instruction
+set (-mthumb added to the CFLAGS, or enabled by default in the toolchain
+configuration)
+* small changes in the documentation, we introduced some asciidoc (I
+would have wanted to also move the manual pages to asciidoc, and update
+them, but it will be for the next release), the visible change is that
+an HTML version of the README.INSTALL and TROUBLESHOOTING files are now
+installed by the "make install" command in the html directory.
 
+I would also like to setup an apt repository to provide pre-compiled
+kernels, at least for the x86 architecture (say, for instance, i486 UP,
+i686 SMP, x86_64 SMP), as well as the user-space packages, so, would be
+interested in documentation URLs.
 
-
-I do not understand what prevents you from calling rtdm_dev_register
-with dynamic parameters... Again, please post the code which does not
-work to help us understand what your problem is.
+Regards.
 
 -- 
                                                                 Gilles.
