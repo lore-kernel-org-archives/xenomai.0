@@ -1,12 +1,14 @@
-Message-ID: <50CDAD2C.8050209@antcom.de>
-Date: Sun, 16 Dec 2012 12:14:52 +0100
-From: Roland Stigge <stigge@antcom.de>
+Message-ID: <50CDCF87.2010207@gmail.com>
+Date: Sun, 16 Dec 2012 14:41:27 +0100
+From: hauptmech <hauptmech@gmail.com>
 MIME-Version: 1.0
-References: <50CD8E87.2070906@xenomai.org>
-In-Reply-To: <50CD8E87.2070906@xenomai.org>
-Content-Type: text/plain; charset=UTF-8
+References: <50CB2610.6010905@gmail.com> <50CBA44C.5090402@xenomai.org>
+	<50CC634B.3020307@xenomai.org>
+In-Reply-To: <50CC634B.3020307@xenomai.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] next xenomai release
+Subject: Re: [Xenomai] How does the adeos and xenomai project stay
+ synchronized with the linux kernel project?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,64 +17,72 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, Xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-Hi Gilles,
 
-On 16/12/12 10:04, Gilles Chanteperdrix wrote:
-> the next release of Xenomai should happen soon. The changes which may
-> impact the Debian packaging are:
-> * changes in the configure script option, actually simplifications;
-> - --enable-smp is no longer needed on x86, powerpc and arm
-> - as a reminder, on the ARM architecture, passing --enable-arm-arch or
-> --enable-arm-eabi is not needed either since 2.6.0, so in fact, no
-> option is needed when running the configure script for the arm
-> architecture. Passing the correct -march to the CFLAGS is recommended to
-> generate optimized code, but starting with the future release, is not
-> even mandatory.
-> - this release support ARM user-space built with the thumb instruction
-> set (-mthumb added to the CFLAGS, or enabled by default in the toolchain
-> configuration)
-> * small changes in the documentation, we introduced some asciidoc (I
-> would have wanted to also move the manual pages to asciidoc, and update
-> them, but it will be for the next release), the visible change is that
-> an HTML version of the README.INSTALL and TROUBLESHOOTING files are now
-> installed by the "make install" command in the html directory.
+I'm coming to the documentation with relatively fresh eyes. If you give 
+me a user on the wiki I'm happy to do a little gardening. Things like 
+the [getting started] page which is useful but not linked to anymore. 
+Perhaps a buffer page between the wiki and the git page with a little 
+description of the repos and how they fit into the development workflow 
+(where a link to denx could go).
 
-Thank you for the note! This really simplified my update in Debian.
+I have made xenomai source packages for pacman (Archlinux + a few 
+others) for arm last year and just now x86. However since archlinux 
+tends to use a minimally patched vanilla kernel it's not as exciting as 
+debian.
 
-I just tested a snapshot from git.xenomai.org (using xenomai-head.git
-and building a test tarball with ./configure && make dist) - looks good
-so far.
+More embedded below...
 
-> I would also like to setup an apt repository to provide pre-compiled
-> kernels, at least for the x86 architecture (say, for instance, i486 UP,
-> i686 SMP, x86_64 SMP), as well as the user-space packages, so, would be
-> interested in documentation URLs.
+On 12/15/2012 12:47 PM, Gilles Chanteperdrix wrote:
+> On 12/14/2012 11:12 PM, Philippe Gerum wrote:
+>
+>> We never updated the Adeos patches for minor linux releases routinely,
+>> this has never been our policy, and will likely never be the case. This
+>> would just involve way too much work for our bandwidth. We are focusing
+>> on major releases. So you seem to be expecting something we never
+>> delivered in the past anyway.
+Ok, I wasn't expecting anything. I just didn't understand.
 
-For setting up an apt-repository, I recommend using the "reprepro"
-package (from Debian) which helps setting up and maintaining an apt
-repo. You just need to provide individual .deb, .changes, or .dsa files
-on the command line and it adds them automatically to our new repo. Just
-ask if you need assistance here.
+>>
+>> However, the pace of our Adeos updates for major kernel releases has
+>> slowed down over the past three years, definitely. This said, we have
+>> support for kernel 3.4 and in some cases 3.5, for the main architecture
+>> ports we maintain, it's not lagging that far behind.
+The availability of ipipe for 3.4/3.5 (x86) is not apparent from the 
+website nor the patches in the xenomai source.
+>>
+>>> So my question is (with the deepest respect for the effort it must take)
+>>> why?
+>>>
+>> Because we all have to deal with priorities and available resources,
+>> this is no different for the Xenomai maintainers.
+>
+> Speaking for myself here, porting the I-pipe patch (for the ARM
+> architecture in my case) to new versions of Linux is the most boring
+> part of the job, and since I do it on my free time, I tend to
+> procrastinate. Which is why for instance the I-pipe patch for 3.5 has
+> been available since august, and I did the port to the ARM architecture
+> only last week-end (shame on me...).
+Does all the work involve expertise with the kernel? I realize that 
+having a inexpert 'helper' for a lot of tasks just creates extra work 
+but if that's not the case here, perhaps a help-wanted post on the wiki 
+and some documentation on the process would attract someone wanting to 
+learn or help.
+>
+> Anyway, I think the real problem for an end user is the frequency of
+> Xenomai releases, not of the I-pipe patches, because we probably should
+> have made a release of Xenomai as soon as the patch for 3.4 has been
+> available on all architectures. But on the other hand, if you look at
+> the core-3.4 branch in the git repository, you will see that staying
+> some time on that patch allowed us to fix many issues.
+I look forward to the release when it does happen.
 
-For building the packages for this repo, you ideally just build the
-default Debian packages with dpkg-buildpackage and follow the
-instructions in
+-hauptmech
 
-/usr/share/doc/linux-patch-xenomai/README.Debian
 
-to build kernels.
 
-There is also
 
-http://www.xenomai.org/index.php/Building_Debian_packages
 
-I hope this answers your questions?
-
-Looking forward to the xenomai release.
-
-Thanks in advance,
-
-Roland
 
