@@ -1,13 +1,13 @@
-Message-ID: <50C524A6.6020006@xenomai.org>
-Date: Mon, 10 Dec 2012 00:54:14 +0100
+Message-ID: <50CE3D8C.2080702@xenomai.org>
+Date: Sun, 16 Dec 2012 22:30:52 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <50C1EF04.1090506@wanadoo.fr> <50C236B9.3030507@xenomai.org>
-	<50C4EF5A.3030502@wanadoo.fr>
-In-Reply-To: <50C4EF5A.3030502@wanadoo.fr>
+References: <50CE1EE9.3060607@gmail.com> <50CE2CDE.3040904@xenomai.org>
+	<50CE3945.90503@gmail.com>
+In-Reply-To: <50CE3945.90503@gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] iMX6q 1Hz tick
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Documentation and WIKI
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,88 +16,55 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Thierry Bultel <thierry.bultel@wanadoo.fr>
+To: hauptmech <hauptmech@gmail.com>
 Cc: xenomai@xenomai.org
 
-On 12/09/2012 09:06 PM, Thierry Bultel wrote:
+On 12/16/2012 10:12 PM, hauptmech wrote:
 
-> Le 07/12/2012 19:34, Gilles Chanteperdrix a =C3=A9crit :
->> On 12/07/2012 02:28 PM, Thierry Bultel wrote:
+> On 12/16/2012 09:19 PM, Gilles Chanteperdrix wrote:
+>> On 12/16/2012 08:20 PM, hauptmech wrote:
 >>
->>> Hi,
->=20
-> Hello Gilles,
->=20
+>>> I'd like to propose a buffer page between the menu options and non-wiki
+>>> pages. Specifically GIT repositories and Installing. A couple reasons...
+>>> One it's unexpected, as conventionally links to outside pages are marked
+>>> as such in a wiki. Two: a wiki page between the menu and the external
+>>> page allows us to put some summary info to help ease the reader into the
+>>> bigger document and add useful tidbits (like the existance of denx)
 >>>
->>> I have "successfully" patched a 3.0.35 kernel from Freescale with
->>> adeos-ipipe-3.0.36-1.18.11
+>>> Examples of buffer pages are at:
+>>> http://www.xenomai.org/index.php/Install_Xenomai
+>>> http://www.xenomai.org/index.php/GIT_repositories
 >>>
->>> I have -not- applied the adeos-ipipe-3.0.36-arm-1.18-11-pre.patch
->>> that showed too much "revert patch detected" errors.
+>>> Link them in (I don't have permission) if you agree.
+>>>> The "getting started" page is unfinished (contains empty paragraphs),
+>>>> and outdated (contains dead links and references to things like the
+>>>> simulator which is currently not really usable) at the same time. I do
+>>>> not believe we have the resources to maintain such a page up-to-date.
+>>> I think the getting started page is a nice little introduction. I've had
+>>> a pass at cleaning it up.
+>>>    http://www.xenomai.org/index.php/Getting_Started
+>>> There's more that could be done but if it looks ok, consider linking to
+>>> it from the menu 'Start here'
 >>
+>> It is sort of a replacement of "Start here", so, from my point of view,
+>> it should be the "Start here" page, and also contain what the "Start
+>> here" page contains (namely, the link to the "porting posix applications
+>> to xenomai", and all the links to all the API documentation versions).
 >>
->>
->> The patch should apply cleanly, the question, if you get too many
->> rejections, it is because you do not apply it to the proper branch.
->>
->=20
-> Of course it was not.
-> I started with a kernel provided by the module manufacturer. I estimate=
-=20
-> that this kernel is "almost" a rel_imx_3.0.35_12.09.02, I mean, that
-> I have not found a closer tag than this one.
->=20
-> My first idea was to attempt to apply the patches to that kernel
-> directly. I was not expecting it would have been simple, and it was=20
-> actually not. But after a few hours I came to the initial result I said=
-=2E
->=20
->=20
->=20
->>>
->>> BTW, I have understand that its purpose was mainly to upgrade to 3.0.=
-36,
->>> but what is actually the role of the
->>> adeos-ipipe-3.0.36-arm-1.18-11-post.patch ? (I applied it).
->>
->>
->> I have explained this in a previous mail.
->=20
-> Ok, I will seek in the history. I would be nice if the explanation
-> was in the README.
->=20
->>
->>>
->>> I had to deal with some rejections but at least the kernel is booting=
-
->>> and my application running.
->>>
->>> But the target is very slow, and /proc/xenomai/irq shows that the
->>> [timer] irq only comes about every 1 second.
->>>
->>> The /proc/interrupts shows an IRQ every 10ms, which was expected
->>> since I have CONFIG_HZ=3D100
->>>
->>> I am pretty sure that I messed up something in the patch process,
->>> however I do not know where to start to look for.
->>
->>
->> Apply the patches to the proper imx release, and everything should be =
-fine.
->=20
->=20
-> That is what I did, at last.
-> To do so, I have extracted the BSP from the given 'almost'=20
-> rel_imx_3.0.35_12.09.02 kernel,
-> taken the rel_imx_3.0.15_12.03.00, applied the patches,
-> and brought back the BSP to the patched kernel.
+> I see what you mean. The Documentation Summary (start here) is nicely 
+> compact, I wouldn't want to ruin it. What about calling 'getting 
+> started'  'beginners guide' and inserting a link to it between 'Start 
+> here' and 'Installing'?
+> 
 
 
-I would do what you want to do with git. Checkout the ipipe-3.0-imx6q
-branch from the ipipe-gch.git, then merge it with the vendor branch you
-want to use.
+I think the farther the information (in count of navigation hops) is
+from the main page, the less it is likely to be found, and this is
+verified by the statistics on page accesses.
 
---=20
+So, I suggest the "Getting started" guide, or whatever its name should
+be directly accessible from the main page.
+
+-- 
                                                                 Gilles.
-
 
