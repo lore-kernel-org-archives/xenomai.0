@@ -1,13 +1,15 @@
-Message-ID: <50CE4FCA.5090801@gmail.com>
-Date: Sun, 16 Dec 2012 23:48:42 +0100
+Message-ID: <50CE60FA.90502@gmail.com>
+Date: Mon, 17 Dec 2012 01:02:02 +0100
 From: hauptmech <hauptmech@gmail.com>
 MIME-Version: 1.0
-References: <50CE1EE9.3060607@gmail.com> <50CE2CDE.3040904@xenomai.org>
-	<50CE3945.90503@gmail.com> <50CE3D8C.2080702@xenomai.org>
-In-Reply-To: <50CE3D8C.2080702@xenomai.org>
+References: <50CB2610.6010905@gmail.com> <50CBA44C.5090402@xenomai.org>
+	<50CC634B.3020307@xenomai.org> <50CDCF87.2010207@gmail.com>
+	<50CDD690.8050802@xenomai.org>
+In-Reply-To: <50CDD690.8050802@xenomai.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Documentation and WIKI
+Subject: Re: [Xenomai] How does the adeos and xenomai project stay
+ synchronized with the linux kernel project?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,51 +21,94 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On 12/16/2012 10:30 PM, Gilles Chanteperdrix wrote:
-> On 12/16/2012 10:12 PM, hauptmech wrote:
+On 12/16/2012 03:11 PM, Gilles Chanteperdrix wrote:
+> On 12/16/2012 02:41 PM, hauptmech wrote:
 >
->> On 12/16/2012 09:19 PM, Gilles Chanteperdrix wrote:
->>> On 12/16/2012 08:20 PM, hauptmech wrote:
->>>
->>>> I'd like to propose a buffer page between the menu options and non-wiki
->>>> pages. Specifically GIT repositories and Installing. A couple reasons...
->>>> One it's unexpected, as conventionally links to outside pages are marked
->>>> as such in a wiki. Two: a wiki page between the menu and the external
->>>> page allows us to put some summary info to help ease the reader into the
->>>> bigger document and add useful tidbits (like the existance of denx)
->>>>
->>>> Examples of buffer pages are at:
->>>> http://www.xenomai.org/index.php/Install_Xenomai
->>>> http://www.xenomai.org/index.php/GIT_repositories
->>>>
->>>> Link them in (I don't have permission) if you agree.
->>>>> The "getting started" page is unfinished (contains empty paragraphs),
->>>>> and outdated (contains dead links and references to things like the
->>>>> simulator which is currently not really usable) at the same time. I do
->>>>> not believe we have the resources to maintain such a page up-to-date.
->>>> I think the getting started page is a nice little introduction. I've had
->>>> a pass at cleaning it up.
->>>>     http://www.xenomai.org/index.php/Getting_Started
->>>> There's more that could be done but if it looks ok, consider linking to
->>>> it from the menu 'Start here'
->>> It is sort of a replacement of "Start here", so, from my point of view,
->>> it should be the "Start here" page, and also contain what the "Start
->>> here" page contains (namely, the link to the "porting posix applications
->>> to xenomai", and all the links to all the API documentation versions).
->>>
->> I see what you mean. The Documentation Summary (start here) is nicely
->> compact, I wouldn't want to ruin it. What about calling 'getting
->> started'  'beginners guide' and inserting a link to it between 'Start
->> here' and 'Installing'?
->>
+>> I'm coming to the documentation with relatively fresh eyes. If you give
+>> me a user on the wiki I'm happy to do a little gardening. Things like
+>> the [getting started] page which is useful but not linked to anymore.
+>> Perhaps a buffer page between the wiki and the git page with a little
+>> description of the repos and how they fit into the development workflow
+>> (where a link to denx could go).
 >
-> I think the farther the information (in count of navigation hops) is
-> from the main page, the less it is likely to be found, and this is
-> verified by the statistics on page accesses.
+> The "getting started" page is unfinished (contains empty paragraphs),
+> and outdated (contains dead links and references to things like the
+> simulator which is currently not really usable) at the same time. I do
+> not believe we have the resources to maintain such a page up-to-date.
+Do you mind if your list of documentation wants goes into the wiki (at 
+the taskmarket I guess)?
+
 >
-> So, I suggest the "Getting started" guide, or whatever its name should
-> be directly accessible from the main page.
+>  From my point of view, what we need is:
+> - up to date manual pages of the binaries in xenomai distribution, in
+> the xenomai sources, we can start from the current manual pages, but
+> some of them are outdated and we should convert them to asciidoc so that
+> more people can work on them, and we can put the html versions on the
+> web site (with automatic update, as currently happens for the API
+> documentation and README.INSTALL/TROUBLESHOOTING)
+Do the asciidoc man page sources go in doc/asciidoc or doc/man?
+
+I'm a bit shaky with automake/Makefile scripts, if someone can shim 
+Makefile.am with the code to call 'a2x -f manpage $SOURCEFILE' in the 
+right location then I don't mind converting them. An example...
+
+CLOCKTEST(1)
+============
+:doctype: manpage
+
+NAME
+----
+clocktest - Xenomai Clock Test
+
+SYNOPSIS
+--------
+*clocktest* ['OPTIONS']
+
+DESCRIPTION
+-----------
+*clocktest* is part of the Xenomai test suite and tests the Clock. For each
+CPU, it repeatedly prints a time offset (compared to the reference
+gettimeofday()), a drift value, the number of warps and the maximum warp in
+microseconds.
+
+For this program to work, you need to run a suitable Xenomai enabled kernel
+with the respective module (xeno_posix).
+
+OPTIONS
+-------
+*-C <clock_id>*::
+     clock to be tested, default=0 (CLOCK_REALTIME=0, CLOCK_MONOTONIC=1, 
+CLOCK_HOST_REALTIME=42)
+
+*-T <test_duration_seconds>*::
+     default=0 (Never stop, ^C to end)
+
+*-D*::
+     print extra diagnostics for CLOCK_HOST_REALTIME
+
+AUTHOR
+------
+
+*clocktest* was written by Jan Kiszka <jan.kiszka@web.de>. This man page
+was written by Roland Stigge <stigge@antcom.de>.
+
+> - some thematic pages on the wiki such as:
+> . calibrating your system with xeno-test
+> . influence of the various Linux kernel options on latencies on at least
+> the arm and x86 platforms
+> - and hyperlinks, for instance at the end of README.INSTALL point to the
+> "calibrating your system" page, and in this page, have an hyperlink to
+> the xeno-test and latency test manual pages, in the page "porting the
+> I-pipe-core patch to a new ARM board", mention the tools that can be
+> used to debug the various issues, and have an hyperlink to their manual
+> page.
+> - a user guide, the "porting posix applications to xenomai" page, was my
+> attempt of a user-guide, but it has a very specialized goal, whereas
+> part of the information it contains is general to anyone writing posix
+> applications for xenomai, and evern applications in general.
+> - something we have talked about but has long gone forgotten, have some
+> kind of database of the latency results sortable by a mix of measurement
+> type, load type, kernel versions, configuration options, processors or SOCs.
 >
-I agree. I meant inserting a left side wiki menu link in the 
-documentation section between "Start Here" and "Installing"
+
 
