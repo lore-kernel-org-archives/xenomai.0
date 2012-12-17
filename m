@@ -1,13 +1,12 @@
-Message-ID: <50C5F784.6040801@wanadoo.fr>
-Date: Mon, 10 Dec 2012 15:53:56 +0100
-From: Thierry Bultel <thierry.bultel@wanadoo.fr>
-MIME-Version: 1.0
-References: <50C1EF04.1090506@wanadoo.fr> <50C236B9.3030507@xenomai.org>
-	<50C4EF5A.3030502@wanadoo.fr> <50C524A6.6020006@xenomai.org>
-In-Reply-To: <50C524A6.6020006@xenomai.org>
-Content-Type: text/plain; charset=UTF-8
+From: James Leonard <james.leonard@imag.fr>
+Date: Mon, 17 Dec 2012 14:07:51 +0100
+Message-Id: <CB3E339B-7A10-4A25-A49D-63971ED35FA7@imag.fr>
+Mime-Version: 1.0 (Apple Message framework v1084)
+Content-Type: text/plain;
+	charset=windows-1252
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] iMX6q 1Hz tick
+Subject: [Xenomai] Beginner's Problem: Installing Xenomai Kernel for i7
+	multi-core processor
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,99 +15,50 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Le 10/12/2012 00:54, Gilles Chanteperdrix a =C3=A9crit :
-> On 12/09/2012 09:06 PM, Thierry Bultel wrote:
->=20
->> Le 07/12/2012 19:34, Gilles Chanteperdrix a =C3=A9crit :
->>> On 12/07/2012 02:28 PM, Thierry Bultel wrote:
->>>
->>>> Hi,
->>
->> Hello Gilles,
->>
->>>>
->>>> I have "successfully" patched a 3.0.35 kernel from Freescale with
->>>> adeos-ipipe-3.0.36-1.18.11
->>>>
->>>> I have -not- applied the adeos-ipipe-3.0.36-arm-1.18-11-pre.patch
->>>> that showed too much "revert patch detected" errors.
->>>
->>>
->>>
->>> The patch should apply cleanly, the question, if you get too many
->>> rejections, it is because you do not apply it to the proper branch.
->>>
->>
->> Of course it was not.
->> I started with a kernel provided by the module manufacturer. I estimat=
-e=20
->> that this kernel is "almost" a rel_imx_3.0.35_12.09.02, I mean, that
->> I have not found a closer tag than this one.
->>
->> My first idea was to attempt to apply the patches to that kernel
->> directly. I was not expecting it would have been simple, and it was=20
->> actually not. But after a few hours I came to the initial result I sai=
-d.
->>
->>
->>
->>>>
->>>> BTW, I have understand that its purpose was mainly to upgrade to 3.0=
-.36,
->>>> but what is actually the role of the
->>>> adeos-ipipe-3.0.36-arm-1.18-11-post.patch ? (I applied it).
->>>
->>>
->>> I have explained this in a previous mail.
->>
->> Ok, I will seek in the history. I would be nice if the explanation
->> was in the README.
->>
->>>
->>>>
->>>> I had to deal with some rejections but at least the kernel is bootin=
-g
->>>> and my application running.
->>>>
->>>> But the target is very slow, and /proc/xenomai/irq shows that the
->>>> [timer] irq only comes about every 1 second.
->>>>
->>>> The /proc/interrupts shows an IRQ every 10ms, which was expected
->>>> since I have CONFIG_HZ=3D100
->>>>
->>>> I am pretty sure that I messed up something in the patch process,
->>>> however I do not know where to start to look for.
->>>
->>>
->>> Apply the patches to the proper imx release, and everything should be=
- fine.
->>
->>
->> That is what I did, at last.
->> To do so, I have extracted the BSP from the given 'almost'=20
->> rel_imx_3.0.35_12.09.02 kernel,
->> taken the rel_imx_3.0.15_12.03.00, applied the patches,
->> and brought back the BSP to the patched kernel.
->=20
+Hello everyone,
 
-The issues I mentionned are not also present with CONFIG_IPIPE=3Dno,
-so it is just that the 3.0.15 kernel does not have everything for my boar=
-d.
+I'm an absolute beginner when it comes to Linux based RTOS systems, so I =
+apologise in advance for any beginner=92s mistakes I may have made.
 
->=20
-> I would do what you want to do with git. Checkout the ipipe-3.0-imx6q
-> branch from the ipipe-gch.git, then merge it with the vendor branch you
-> want to use.
->=20
+I have been trying to install and configure a Xenomai patched Kernel on =
+a PC with a Intel i7 quad core processor and an ASUS P7P55D motherboard, =
+but so far I have had no success.
 
-Sure it would work and would be fine with git.
-But unfortunalely I do not have access to the repository of the vendor,
-but only to a bz2 snapshot of their kernel.
+I tried patching and installing a 2.6.38.8 Kernel on a Fedora 16 OS =
+(with 3.4.2 default kernel), but upon boot I was told that the 'ext4' =
+root file system was not recognized, so I decided to try installing on =
+other OS, formatted with ext3.
 
-I wonder if the right method would be to use git to merge Ipipe to the
-3.0.35_12_09.02, and then bring back the BSP that I have isolated as a pa=
-tch
+I tried Debian (installing via the debian packages) and Fedora 14 =
+(manual patching and install). The results I have with these are the =
+following:
+=B7     When booting, I get a "MP BIOS bug: 8254 timer not connected to =
+IO-APIC" error. Then the system starts OK
+
+=B7      The latency test gives about 10000 overruns per cycle, with =
+enormous max latency times.
+
+I've tried many different configurations, initially following this =
+tutorial (in French) =
+http://doc.fedora-fr.org/wiki/Mise_en_=9Cuvre_de_Xenomai_pour_cr=E9er_un_n=
+oyau_Temps_R=E9el_dur :
+
+	- simply disabling power options such as APM and CPU Freq =
+Scaling (as in tutorial)
+	- Enabling the SMI workaround and globally disabling the SMIs
+	- Other things listed in the x86 kernel config guide of the =
+Xenomai website
+
+I'm sorry, the description of my problem is probably very vague, but I =
+get the feeling I must be forgetting something basic in the =
+hardware/kernel configuration, as I cannot get things to work at all and =
+have seen many people use i7 processors and Xenomai successfully.
+
+
+ Regards,
+
+James Leonard
+
 
