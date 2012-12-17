@@ -1,15 +1,13 @@
-Message-ID: <50CECF42.5020906@xenomai.org>
-Date: Mon, 17 Dec 2012 08:52:34 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <50CB2610.6010905@gmail.com> <50CBA44C.5090402@xenomai.org>
-	<50CC634B.3020307@xenomai.org> <50CDCF87.2010207@gmail.com>
-	<50CDD690.8050802@xenomai.org> <50CE60FA.90502@gmail.com>
-In-Reply-To: <50CE60FA.90502@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] How does the adeos and xenomai project stay
- synchronized with the linux kernel project?
+From: Tim Niemeyer <tim.niemeyer@corscience.de>
+In-Reply-To: <50CC6730.6060308@xenomai.org>
+References: <1355499196.2190.23.camel@herbert.er.corscience.de>
+	<50CC6730.6060308@xenomai.org>
+Content-Type: text/plain; charset="UTF-8"
+Date: Mon, 17 Dec 2012 09:14:13 +0100
+Message-ID: <1355732053.2205.38.camel@herbert.er.corscience.de>
+Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] Question about IPIPE_IRQF_NOSYNC
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,65 +16,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: hauptmech <hauptmech@gmail.com>
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai <xenomai@xenomai.org>
 
-Hi,
+Am Samstag, den 15.12.2012, 13:04 +0100 schrieb Gilles Chanteperdrix:
+> The latest Adeos is the core-3.4 branch from the git.denx.de/ipipe.git
+> repository, not the 'for-core-3.4' branch from the
+> git.xenomai.org/ipipe-gch.git.
+Ah, thanks for clearing up.
 
-On 12/17/2012 01:02 AM, hauptmech wrote:
+> Anyway, you can not use Xenomai 2.6.1 with linux 3.4, you also have to
+> use xenomai from its git repository git.xenomai.og/xenomai-2.6.git
+It's working here fine. Why do you expect, that Xenomai 2.6.1 and linux
+3.4 won't work together?
 
-> On 12/16/2012 03:11 PM, Gilles Chanteperdrix wrote:
->> On 12/16/2012 02:41 PM, hauptmech wrote:
->>
->>> I'm coming to the documentation with relatively fresh eyes. If you give
->>> me a user on the wiki I'm happy to do a little gardening. Things like
->>> the [getting started] page which is useful but not linked to anymore.
->>> Perhaps a buffer page between the wiki and the git page with a little
->>> description of the repos and how they fit into the development workflow
->>> (where a link to denx could go).
->>
->> The "getting started" page is unfinished (contains empty paragraphs),
->> and outdated (contains dead links and references to things like the
->> simulator which is currently not really usable) at the same time. I do
->> not believe we have the resources to maintain such a page up-to-date.
-> Do you mind if your list of documentation wants goes into the wiki (at 
-> the taskmarket I guess)?
+I'm using 'for-core-3.4' branch from git.xenomai.org/ipipe-gch.git with
+Linux 3.4.14. I just build a big diff from 'for-core-3.4' against 3.4.6
+and applied this on my 3.4.14. Then i took all the kernel-src files and
+Kconfig changes from xenomai-2.6.1.tar.bz2 and build again a patch.
+I use simple patches as they are easier for me to maintain in ptxdist.
 
+> > While hunting a gpio-irq latency i tried to understand the adeos chai=
+ned
+>=20
+> How high a latency are we talking about?
+The latency was about ~11=C2=B5s. I then found out, that the cpu clock wa=
+sn't
+the full 600MHz. I changed this and now the gpio-irq latency is about
+~7=C2=B5s. In contrast, the timer-irq latency is less than 3=C2=B5s.
+But when i use IPIPE_IRQF_NOSYNC the gpio-irq latency rises to ~14=C2=B5s=
+.
+But on the other hand the switch between gpio-irq and timer-irq is
+faster with IRQF_NOSYNC. It takes ~3=C2=B5s and without IRQF_NOSYNC is ta=
+kes
+~7=C2=B5s.
 
-Go ahead. Another task we talked about would be pages for users out of
-tree ports, like currently exist for the Raspberry Pi, BeagleBone and
-OMAP L138, where some information such as where to find the patch,
-applying to which kernel sources and links to pre-built kernels if they
-exist.
+> Anyway, the way we track down this kind of issues is the I-pipe tracer.
+> http://www.xenomai.org/index.php/I-pipe:Tracer
+>=20
+> You will have to trigger the freeze yourself if you find a too high lat=
+ency.
+It's a great tool. I played a bit with the tracer, but 11=C2=B5s is very
+short, so it's difficult.
 
-> 
->>
->>  From my point of view, what we need is:
->> - up to date manual pages of the binaries in xenomai distribution, in
->> the xenomai sources, we can start from the current manual pages, but
->> some of them are outdated and we should convert them to asciidoc so that
->> more people can work on them, and we can put the html versions on the
->> web site (with automatic update, as currently happens for the API
->> documentation and README.INSTALL/TROUBLESHOOTING)
-> Do the asciidoc man page sources go in doc/asciidoc or doc/man?
-> 
-> I'm a bit shaky with automake/Makefile scripts, if someone can shim 
-> Makefile.am with the code to call 'a2x -f manpage $SOURCEFILE' in the 
-> right location then I don't mind converting them. An example...
+--=20
+Tim Niemeyer
 
+Corscience GmbH & Co. KG
+Henkestr. 91
+D-91052 Erlangen
+Germany
 
-Ok, I will do that.
+e-mail: tim.niemeyer@corscience.de
+Internet: www.corscience.de
 
-> *clocktest* was written by Jan Kiszka <jan.kiszka@web.de>. This man page
-> was written by Roland Stigge <stigge@antcom.de>.
-
-
-Yes, that is fine, however we should remove the mail addresses (but keep
-the authors addresses), are the pages are going to be on the website.
-
-Thanks for helping with this.
-Regards.
-
--- 
-                                                                Gilles.
 
