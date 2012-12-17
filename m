@@ -1,13 +1,13 @@
-From: Tim Niemeyer <tim.niemeyer@corscience.de>
-In-Reply-To: <50CC6730.6060308@xenomai.org>
-References: <1355499196.2190.23.camel@herbert.er.corscience.de>
-	<50CC6730.6060308@xenomai.org>
-Content-Type: text/plain; charset="UTF-8"
-Date: Mon, 17 Dec 2012 09:14:13 +0100
-Message-ID: <1355732053.2205.38.camel@herbert.er.corscience.de>
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] Question about IPIPE_IRQF_NOSYNC
+From: "Leopold Palomo-Avellaneda" <leo@alaxarxa.net>
+Date: Mon, 17 Dec 2012 09:45:47 +0100
+References: <50CD8E87.2070906@xenomai.org> <50CDAD2C.8050209@antcom.de>
+In-Reply-To: <50CDAD2C.8050209@antcom.de>
+MIME-Version: 1.0
+Content-Type: Text/Plain;
+  charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
+Message-Id: <201212170945.47992.leo@alaxarxa.net>
+Subject: Re: [Xenomai] next xenomai release
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,58 +16,113 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Am Samstag, den 15.12.2012, 13:04 +0100 schrieb Gilles Chanteperdrix:
-> The latest Adeos is the core-3.4 branch from the git.denx.de/ipipe.git
-> repository, not the 'for-core-3.4' branch from the
-> git.xenomai.org/ipipe-gch.git.
-Ah, thanks for clearing up.
+A Diumenge 16 Desembre 2012, Roland Stigge va escriure:
+> Hi Gilles,
+> 
+> On 16/12/12 10:04, Gilles Chanteperdrix wrote:
+> > the next release of Xenomai should happen soon. The changes which may
+> > impact the Debian packaging are:
+> > * changes in the configure script option, actually simplifications;
+> > - --enable-smp is no longer needed on x86, powerpc and arm
+> > - as a reminder, on the ARM architecture, passing --enable-arm-arch or
+> > --enable-arm-eabi is not needed either since 2.6.0, so in fact, no
+> > option is needed when running the configure script for the arm
+> > architecture. Passing the correct -march to the CFLAGS is recommended to
+> > generate optimized code, but starting with the future release, is not
+> > even mandatory.
+> > - this release support ARM user-space built with the thumb instruction
+> > set (-mthumb added to the CFLAGS, or enabled by default in the toolchain
+> > configuration)
+> > * small changes in the documentation, we introduced some asciidoc (I
+> > would have wanted to also move the manual pages to asciidoc, and update
+> > them, but it will be for the next release), the visible change is that
+> > an HTML version of the README.INSTALL and TROUBLESHOOTING files are now
+> > installed by the "make install" command in the html directory.
+> 
+> Thank you for the note! This really simplified my update in Debian.
+> 
+> I just tested a snapshot from git.xenomai.org (using xenomai-head.git
+> and building a test tarball with ./configure && make dist) - looks good
+> so far.
 
-> Anyway, you can not use Xenomai 2.6.1 with linux 3.4, you also have to
-> use xenomai from its git repository git.xenomai.og/xenomai-2.6.git
-It's working here fine. Why do you expect, that Xenomai 2.6.1 and linux
-3.4 won't work together?
+well,
 
-I'm using 'for-core-3.4' branch from git.xenomai.org/ipipe-gch.git with
-Linux 3.4.14. I just build a big diff from 'for-core-3.4' against 3.4.6
-and applied this on my 3.4.14. Then i took all the kernel-src files and
-Kconfig changes from xenomai-2.6.1.tar.bz2 and build again a patch.
-I use simple patches as they are easier for me to maintain in ptxdist.
+there's a bug, and I must admit that I don't know if it's deliberated (*) or 
+not.  This bug comes from some time ago. In the /ksrc/arch/x86/patches 
+directory, there's a patch for the 3.2.21 kernel:
 
-> > While hunting a gpio-irq latency i tried to understand the adeos chai=
-ned
->=20
-> How high a latency are we talking about?
-The latency was about ~11=C2=B5s. I then found out, that the cpu clock wa=
-sn't
-the full 600MHz. I changed this and now the gpio-irq latency is about
-~7=C2=B5s. In contrast, the timer-irq latency is less than 3=C2=B5s.
-But when i use IPIPE_IRQF_NOSYNC the gpio-irq latency rises to ~14=C2=B5s=
-.
-But on the other hand the switch between gpio-irq and timer-irq is
-faster with IRQF_NOSYNC. It takes ~3=C2=B5s and without IRQF_NOSYNC is ta=
-kes
-~7=C2=B5s.
+ipipe-core-3.2.21-x86-1.patch
 
-> Anyway, the way we track down this kind of issues is the I-pipe tracer.
-> http://www.xenomai.org/index.php/I-pipe:Tracer
->=20
-> You will have to trigger the freeze yourself if you find a too high lat=
-ency.
-It's a great tool. I played a bit with the tracer, but 11=C2=B5s is very
-short, so it's difficult.
+this patch, in the build process is not included in the root directory: the 
+/scripts/prepare-patch.sh script executes:
 
---=20
-Tim Niemeyer
+find $xenomai_root/ksrc/ -name "adeos-ipipe-2.6.*-$supported_arch-*.patch" 
 
-Corscience GmbH & Co. KG
-Henkestr. 91
-D-91052 Erlangen
-Germany
+that is incorrect because the ipipe-core* patch is not found. The correct one 
+would be:
 
-e-mail: tim.niemeyer@corscience.de
-Internet: www.corscience.de
+----------------------------------------------------------------
+$ diff -u xenomai-2.6.git/scripts/prepare-patch.sh xenomai-
+head/scripts/prepare-patch.sh 
+--- xenomai-2.6.git/scripts/prepare-patch.sh	2012-11-06 11:17:56.722698342 
++0100
++++ xenomai-head/scripts/prepare-patch.sh 	2012-12-17 09:23:31.912258850 
++0100
+@@ -148,7 +148,7 @@
+ 
+ cd $xenomai_root
+ 
+-find $xenomai_root/ksrc/ -name "*ipipe*$supported_arch-*.patch" |
++find $xenomai_root/ksrc/ -name "adeos-ipipe-2.6.*-$supported_arch-*.patch" |
+ while read f ; do
+ 
+     file=`basename $f`
 
+----------------------------------------------------------------
+
+so, please could you clarified if you put this patch or not?
+
+
+(*) Deliberated in the way that maybe it's not sufficient stable yet to 
+include it and upstream prefers to not include it by default.
+
+> > I would also like to setup an apt repository to provide pre-compiled
+> > kernels, at least for the x86 architecture (say, for instance, i486 UP,
+> > i686 SMP, x86_64 SMP), as well as the user-space packages, so, would be
+> > interested in documentation URLs.
+> 
+> For setting up an apt-repository, I recommend using the "reprepro"
+> package (from Debian) which helps setting up and maintaining an apt
+> repo. You just need to provide individual .deb, .changes, or .dsa files
+> on the command line and it adds them automatically to our new repo. Just
+> ask if you need assistance here.
+> 
+> For building the packages for this repo, you ideally just build the
+> default Debian packages with dpkg-buildpackage and follow the
+> instructions in
+> 
+> /usr/share/doc/linux-patch-xenomai/README.Debian
+> 
+> to build kernels.
+> 
+> There is also
+> 
+> http://www.xenomai.org/index.php/Building_Debian_packages
+> 
+
+I agree. 
+
+Also, I can mirror the repo at my University.
+
+Regards,
+
+Leo
+
+
+-- 
+--
+Linux User 152692
+Catalonia
 
