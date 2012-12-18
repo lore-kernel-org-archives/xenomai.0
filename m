@@ -1,14 +1,15 @@
-Message-ID: <50CF6E88.1010004@xenomai.org>
-Date: Mon, 17 Dec 2012 20:12:08 +0100
+Message-ID: <50D024DD.3060509@xenomai.org>
+Date: Tue, 18 Dec 2012 09:10:05 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <50CCEA7E.1080000__518.307140055363$1355606686$gmane$org@xenomai.org>
-	<50CCF3B8.5000201@linux-kernel.net>
-	<50CCF6C4.80408@xenomai.org> <50CF4392.4030000@siemens.com>
-In-Reply-To: <50CF4392.4030000@siemens.com>
+References: <50CB2610.6010905@gmail.com> <50CBA44C.5090402@xenomai.org>
+	<50CC634B.3020307@xenomai.org> <50CDCF87.2010207@gmail.com>
+	<50CDD690.8050802@xenomai.org> <50CE60FA.90502@gmail.com>
+In-Reply-To: <50CE60FA.90502@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] core-3.5 for x86
+Subject: Re: [Xenomai] How does the adeos and xenomai project stay
+ synchronized with the linux kernel project?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,65 +18,53 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Wolfgang Mauerer <wolfgang.mauerer@siemens.com>
-Cc: "wm@linux-kernel.net" <wm@linux-kernel.net>, "Kiszka,
-	Jan" <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: hauptmech <hauptmech@gmail.com>
+Cc: xenomai@xenomai.org
 
-On 12/17/2012 05:08 PM, Wolfgang Mauerer wrote:
+On 12/17/2012 01:02 AM, hauptmech wrote:
 
-> On 15/12/12 23:16, Gilles Chanteperdrix wrote:
->> On 12/15/2012 11:03 PM, Wolfgang Mauerer wrote:
->>> On 15/12/2012 22:24, Gilles Chanteperdrix wrote:
->>>> I see some (recent) activity on this git repository:
->>>> https://github.com/siemens/ipipe/commits/core-3.5_for-upstream
->>>>
->>>> In what state is this branch, can I pull from it?
->>> please don't pull yet, I need to port a few more patches forward
->>> and fix one known issue with the tree. But I'll try to send a
->>> pull/discussion request next week.
->>>
->>>> At least the changes allowing preempt_disable()/preempt_enable() to be
->>>> called from non-root context look dubious.
->>> are you referring to 767f0d43fe3? This one still carries a TODO
->>> item in the description to remind me to check with which
->>> non-x86 archs this can cause problems, and what we can do about
->>> them.
+> On 12/16/2012 03:11 PM, Gilles Chanteperdrix wrote:
+>> On 12/16/2012 02:41 PM, hauptmech wrote:
 >>
+>>> I'm coming to the documentation with relatively fresh eyes. If you give
+>>> me a user on the wiki I'm happy to do a little gardening. Things like
+>>> the [getting started] page which is useful but not linked to anymore.
+>>> Perhaps a buffer page between the wiki and the git page with a little
+>>> description of the repos and how they fit into the development workflow
+>>> (where a link to denx could go).
 >>
->> Actually, we already have ipipe_safe_current(), so I guess what you need
->> is ipipe_safe_current_thread_info() ?
+>> The "getting started" page is unfinished (contains empty paragraphs),
+>> and outdated (contains dead links and references to things like the
+>> simulator which is currently not really usable) at the same time. I do
+>> not believe we have the resources to maintain such a page up-to-date.
+> Do you mind if your list of documentation wants goes into the wiki (at 
+> the taskmarket I guess)?
 > 
-> yes, that makes sense -- how about something like
+>>
+>>  From my point of view, what we need is:
+>> - up to date manual pages of the binaries in xenomai distribution, in
+>> the xenomai sources, we can start from the current manual pages, but
+>> some of them are outdated and we should convert them to asciidoc so that
+>> more people can work on them, and we can put the html versions on the
+>> web site (with automatic update, as currently happens for the API
+>> documentation and README.INSTALL/TROUBLESHOOTING)
+> Do the asciidoc man page sources go in doc/asciidoc or doc/man?
 > 
-> #ifndef ipipe_safe_current_thread_info
-> #define ipipe_safe_current_thread_info()				\
-> 	({								\
-> 		struct thread_info *__ti__;				\
-> 		unsigned long __flags__;				\
-> 		__flags__ = hard_smp_local_irq_save();			\
-> 		__ti__ = ipipe_test_foreign_stack() ?			\
-> 			&init_thread_info : current_thread_info();	\
-> 		hard_smp_local_irq_restore(__flags__);			\
-> 		__ti__;							\
-> 	})
-> #endif
-> 
-> and use that as basis to determine the preemption counter in  preempt_count()?
-> Unfortunately, solely #including linux/ipipe.h into linux/preempt.h 
-> leads to complete havoc, most likely caused by some spinlock preprocessor magic.
-> So I need to figure out a clean way of getting this definition into preempt.h
-> before I prepare a patch.
-> 
-> Thanks, Wolfgang
-> 
+> I'm a bit shaky with automake/Makefile scripts, if someone can shim 
+> Makefile.am with the code to call 'a2x -f manpage $SOURCEFILE' in the 
+> right location then I don't mind converting them. An example...
 
 
-Needless to say, you have to pay attention that add_preempt_count() and
-sub_preempt_count() are no longer inlined in this case, otherwise this
-will cause a lot of bloat. Also, you probably want safe_preempt_disable
-and safe_preempt_enable which are nops for foreign stacks, and this
-should be replaced unconditionnaly, but only for configurations
-requiring it (such as CONFIG_PERF ?).
+I have just pushed the changes to do that. I integrated the clocktest
+example. To add the new foo.man manual page, you have to:
+- remove the corresponding references to foo.man in configure.in
+- add a foo.adoc file in the doc/man directory
+- add foo to the HTML_DOCS variable (to generate the html version of the
+manual page) in doc/man/Makefile.am
+- add foo.adoc to the EXTRA_DIST variable in doc/man/Makefile.am
+- run scripts/bootstrap
+
+Then you should be able to run make in the build directory.
 
 -- 
                                                                 Gilles.
