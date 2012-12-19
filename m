@@ -1,14 +1,12 @@
-Message-ID: <50D0CFB9.9050602@xenomai.org>
-Date: Tue, 18 Dec 2012 21:19:05 +0100
+Message-ID: <50D168E8.6060107@xenomai.org>
+Date: Wed, 19 Dec 2012 08:12:40 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CAPpP=rPyuKK5Sr9mxXFw+KMhD3g1F+Q5=d8Xm7nQS6hF5OCebw@mail.gmail.com>	<50D08B74.1010809@xenomai.org>	<50D08C0A.10502@xenomai.org>	<CAPpP=rPi6NvBV6OAfLM3Ynym2FWtO_i7iyKx0hT7eYJLUT+8Bg@mail.gmail.com>	<50D099A2.3080407@xenomai.org>
-	<CAPpP=rO9JjAeWS7evj9u-bVOZuS79NxVJhtLOUJRpFn1zRCb5w@mail.gmail.com>
-In-Reply-To: <CAPpP=rO9JjAeWS7evj9u-bVOZuS79NxVJhtLOUJRpFn1zRCb5w@mail.gmail.com>
+References: <50D06553.8060700@gmail.com>
+In-Reply-To: <50D06553.8060700@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [Page fault - POSIX skin] Interraction between malloc
- en nanosleep
+Subject: Re: [Xenomai] [PATCH] Asciidoc versions of the man pages
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,20 +15,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: alex alex <duch.alexandre@gmail.com>
+To: hauptmech <hauptmech@gmail.com>
 Cc: xenomai@xenomai.org
 
-On 12/18/2012 08:27 PM, alex alex wrote:
+On 12/18/2012 01:45 PM, hauptmech wrote:
 
-> In fact, this is what I intend to use when the bug will be solved. I use
-> native because RTDM semaphore freezes my PC while with native, semaphore
-> is just no longer blocking (so native helped me to find out the bug and
-> it keeps me from restart the PC when it bugs... )
 > 
-> Thanks for the link.
+> Asciidoc versions of the man pages. Still TBD is updating the contents 
+> of the man pages to match the present software where needed.
 
 
-Please try the patch to see if it still causes the bug.
+Thank you very much for this patch, we now have web versions of the
+manual pages here:
+http://xenomai.org/documentation/xenomai-2.6/html/
+
+It is now obvious that we should update some of them, and it should be easy.
 
 -- 
                                                                 Gilles.
