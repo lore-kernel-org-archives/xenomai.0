@@ -1,15 +1,12 @@
-Message-ID: <50C61DF3.8030703@xenomai.org>
-Date: Mon, 10 Dec 2012 18:37:55 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <50D48EE0.5050407@xenomai.org>
+Date: Fri, 21 Dec 2012 17:31:28 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <50C1EF04.1090506@wanadoo.fr> <50C236B9.3030507@xenomai.org>
-	<50C4EF5A.3030502@wanadoo.fr> <50C524A6.6020006@xenomai.org>
-	<50C5F784.6040801@wanadoo.fr> <50C6076F.7050505@xenomai.org>
-	<50C60E6A.1080307@wanadoo.fr>
-In-Reply-To: <50C60E6A.1080307@wanadoo.fr>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] iMX6q 1Hz tick
+References: <1356096375-29859-1-git-send-email-wolfgang.mauerer@siemens.com>
+In-Reply-To: <1356096375-29859-1-git-send-email-wolfgang.mauerer@siemens.com>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [RFC PATCH 0/10] Support ftrace on ipipe kernels
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,120 +15,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Thierry Bultel <thierry.bultel@wanadoo.fr>
-Cc: xenomai@xenomai.org
+To: Wolfgang Mauerer <wolfgang.mauerer@siemens.com>
+Cc: jan.kiszka@siemens.com, xenomai@xenomai.org
 
-On 12/10/2012 05:31 PM, Thierry Bultel wrote:
-> Le 10/12/2012 17:01, Gilles Chanteperdrix a écrit :
->> On 12/10/2012 03:53 PM, Thierry Bultel wrote:
->>> Le 10/12/2012 00:54, Gilles Chanteperdrix a écrit :
->>>> On 12/09/2012 09:06 PM, Thierry Bultel wrote:
->>>>
->>>>> Le 07/12/2012 19:34, Gilles Chanteperdrix a écrit :
->>>>>> On 12/07/2012 02:28 PM, Thierry Bultel wrote:
->>>>>>
->>>>>>> Hi,
->>>>>
->>>>> Hello Gilles,
->>>>>
->>>>>>>
->>>>>>> I have "successfully" patched a 3.0.35 kernel from Freescale with
->>>>>>> adeos-ipipe-3.0.36-1.18.11
->>>>>>>
->>>>>>> I have -not- applied the adeos-ipipe-3.0.36-arm-1.18-11-pre.patch
->>>>>>> that showed too much "revert patch detected" errors.
->>>>>>
->>>>>>
->>>>>>
->>>>>> The patch should apply cleanly, the question, if you get too many
->>>>>> rejections, it is because you do not apply it to the proper branch.
->>>>>>
->>>>>
->>>>> Of course it was not.
->>>>> I started with a kernel provided by the module manufacturer. I estimate 
->>>>> that this kernel is "almost" a rel_imx_3.0.35_12.09.02, I mean, that
->>>>> I have not found a closer tag than this one.
->>>>>
->>>>> My first idea was to attempt to apply the patches to that kernel
->>>>> directly. I was not expecting it would have been simple, and it was 
->>>>> actually not. But after a few hours I came to the initial result I said.
->>>>>
->>>>>
->>>>>
->>>>>>>
->>>>>>> BTW, I have understand that its purpose was mainly to upgrade to 3.0.36,
->>>>>>> but what is actually the role of the
->>>>>>> adeos-ipipe-3.0.36-arm-1.18-11-post.patch ? (I applied it).
->>>>>>
->>>>>>
->>>>>> I have explained this in a previous mail.
->>>>>
->>>>> Ok, I will seek in the history. I would be nice if the explanation
->>>>> was in the README.
->>>>>
->>>>>>
->>>>>>>
->>>>>>> I had to deal with some rejections but at least the kernel is booting
->>>>>>> and my application running.
->>>>>>>
->>>>>>> But the target is very slow, and /proc/xenomai/irq shows that the
->>>>>>> [timer] irq only comes about every 1 second.
->>>>>>>
->>>>>>> The /proc/interrupts shows an IRQ every 10ms, which was expected
->>>>>>> since I have CONFIG_HZ=100
->>>>>>>
->>>>>>> I am pretty sure that I messed up something in the patch process,
->>>>>>> however I do not know where to start to look for.
->>>>>>
->>>>>>
->>>>>> Apply the patches to the proper imx release, and everything should be fine.
->>>>>
->>>>>
->>>>> That is what I did, at last.
->>>>> To do so, I have extracted the BSP from the given 'almost' 
->>>>> rel_imx_3.0.35_12.09.02 kernel,
->>>>> taken the rel_imx_3.0.15_12.03.00, applied the patches,
->>>>> and brought back the BSP to the patched kernel.
->>>>
->>>
->>> The issues I mentionned are not also present with CONFIG_IPIPE=no,
->>> so it is just that the 3.0.15 kernel does not have everything for my board.
->>>
->>>>
->>>> I would do what you want to do with git. Checkout the ipipe-3.0-imx6q
->>>> branch from the ipipe-gch.git, then merge it with the vendor branch you
->>>> want to use.
->>>>
->>>
->>> Sure it would work and would be fine with git.
->>> But unfortunalely I do not have access to the repository of the vendor,
->>> but only to a bz2 snapshot of their kernel.
->>>
->>> I wonder if the right method would be to use git to merge Ipipe to the
->>> 3.0.35_12_09.02, and then bring back the BSP that I have isolated as a patch
->>
->> Yes, if the vendor BSP is based on 3.0.35_12_09.02, you should make a
->> diff with that, and try and merge it with the ipipe-3.0-imx6q branch.
->>
-> 
-> 
-> Done. And success. Thanks. I am running your 3.0.43 kernel with my BSP.
-> no more network or reboot slowness issues.
-> 
-> However, htop it saying that CPU0 is at 20% and CPU3 at 12%,
-> no application is running. The only thing that I see running is the
-> timer interrupt.
-> 
-> Also, I still have
-> 87:         13          0          0          0       GIC  i.MX Timer Tick
-> 
-> .. the counter increases very slowly, about 1 every 10 minutes maybe.
-> 
-> That does not happen with CONFIG_IPIPE=no
+On 12/21/2012 02:26 PM, Wolfgang Mauerer wrote:
+> Hi Gilles, Jan,
+>
+> here's a proposal to make ipipe compatible with ftrace that
+> does not require global modifications to the preemption system,
+> but makes do with local changes. The approach should be easy
+> to maintain in the long run:
+>
 
-Do you have CONFIG_LOCALTIMER (and CONFIG_SMP) enabled?
+In the long run, we won't have any non-linux stacks to deal with. 
+Xenomai 3.x will be moving kernel-based threads over regular linux 
+kthreads soon, the conversion has begun today in my local tree actually. 
+I guess that nobody is going to be saddened to see this non-sense go 
+away (yes, I'm the original author of this non-sense, it's painful enough).
 
+So basically, this patches series will be required for running the 2.6.x 
+series only. For this reason, on a general note, I'd like to see all 
+these extra bits moving to the legacy section in a way or another 
+(CONFIG_IPIPE_LEGACY).
 
 -- 
-					    Gilles.
+Philippe.
 
