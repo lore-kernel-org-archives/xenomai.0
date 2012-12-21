@@ -1,9 +1,10 @@
 From: Wolfgang Mauerer <wolfgang.mauerer@siemens.com>
-Date: Fri, 21 Dec 2012 14:26:14 +0100
-Message-Id: <1356096375-29859-10-git-send-email-wolfgang.mauerer@siemens.com>
+Date: Fri, 21 Dec 2012 14:26:13 +0100
+Message-Id: <1356096375-29859-9-git-send-email-wolfgang.mauerer@siemens.com>
 In-Reply-To: <1356096375-29859-1-git-send-email-wolfgang.mauerer@siemens.com>
 References: <1356096375-29859-1-git-send-email-wolfgang.mauerer@siemens.com>
-Subject: [Xenomai] [PATCH 09/10] ipipe: Fix CONFIG_PREEMPT build
+Subject: [Xenomai] [PATCH 08/10] ipipe: Introduce preemption call
+	replacement mechanism
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,26 +16,53 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: xenomai@xenomai.org
 Cc: jan.kiszka@siemens.com, wolfgang.mauerer@siemens.com
 
-API change: ipipe_root_domain_p -> ipipe_root_p
+Including <linux/ipipe_switch_preempt.h> replaces all
+calls to preemption functions with calls to alternatives
+that are safe in non-root context.
 
 Signed-off-by: Wolfgang Mauerer <wolfgang.mauerer@siemens.com>
 ---
- kernel/sched/core.c |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
+ include/linux/ipipe_switch_preempt.h |   31 +++++++++++++++++++++++++++++++
+ 1 files changed, 31 insertions(+), 0 deletions(-)
+ create mode 100644 include/linux/ipipe_switch_preempt.h
 
-diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 9fdcc22..d8e0e9e 100644
---- a/kernel/sched/core.c
-+++ b/kernel/sched/core.c
-@@ -3558,7 +3558,7 @@ asmlinkage void __sched notrace preempt_schedule(void)
- 	 * we do not want to preempt the current task. Just return..
- 	 */
- 	if (likely(ti->preempt_count || irqs_disabled() ||
--		   !ipipe_root_domain_p))
-+		   !ipipe_root_p))
- 		return;
- 
- 	do {
+diff --git a/include/linux/ipipe_switch_preempt.h b/include/linux/ipipe_switch_preempt.h
+new file mode 100644
+index 0000000..f53919f
+--- /dev/null
++++ b/include/linux/ipipe_switch_preempt.h
+@@ -0,0 +1,31 @@
++#ifndef IPIPE_SWITCH_PREEMPT
++#define IPIPE_SWITCH_PREEMPT
++
++/* #include'ing this file switches the Linux preemption calls
++   to the more costly functions that may be called from non-root
++   context. */
++
++#if defined(CONFIG_IPIPE) && defined(CONFIG_PREEMPT)
++#undef preempt_count
++#define preempt_count()	ipipe_safe_preempt_count()
++
++#undef preempt_disable
++#define preempt_disable()	ipipe_safe_preempt_disable()
++
++#undef preempt_disable_notrace
++#define preempt_disable_notrace() 	ipipe_safe_preempt_disable_notrace()
++
++#undef preempt_enable
++#define preempt_enable()	ipipe_safe_preempt_enable()
++
++#undef preempt_enable_notrace
++#define preempt_enable_notrace()	ipipe_safe_preempt_enable_notrace()
++
++#undef preempt_enable_no_resched_notrace
++#define preempt_enable_no_resched_notrace()	ipipe_safe_preempt_enable_no_resched_notrace()
++
++#undef preempt_enable_no_resched
++#define preempt_enable_no_resched()	ipipe_safe_preempt_enable_no_resched()
++#endif /* CONFIG_IPIPE && CONFIG_PREEMPT */
++
++#endif
 -- 
 1.7.1
 
