@@ -1,9 +1,10 @@
 From: Wolfgang Mauerer <wolfgang.mauerer@siemens.com>
-Date: Fri, 21 Dec 2012 14:26:07 +0100
-Message-Id: <1356096375-29859-3-git-send-email-wolfgang.mauerer@siemens.com>
+Date: Fri, 21 Dec 2012 14:26:11 +0100
+Message-Id: <1356096375-29859-7-git-send-email-wolfgang.mauerer@siemens.com>
 In-Reply-To: <1356096375-29859-1-git-send-email-wolfgang.mauerer@siemens.com>
 References: <1356096375-29859-1-git-send-email-wolfgang.mauerer@siemens.com>
-Subject: [Xenomai] [PATCH 02/10] ipipe: Harden clocks used by ftrace and perf
+Subject: [Xenomai] [PATCH 06/10] ipipe: safe thread_info access from
+	non-root context
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,67 +16,159 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: xenomai@xenomai.org
 Cc: jan.kiszka@siemens.com, wolfgang.mauerer@siemens.com
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Provide a function that allows for safely accessing
+the thread_info structure from non-root context.
+Architectures that don't store the corresponding
+data on the stack (x86_64) can provide machine-specific
+override definitions. Also create a own header file
+(including the other definitions to access foreign stacks)
+so that the mechanism can be used in contexts where not
+the full ipipe API is required.
 
-Convert local_irq_save/restore into hw variates in those cpu/sched_clock
-paths that are used by ftrace and perf. We don't want to trace them to
-reduce the overhead.
-
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 Signed-off-by: Wolfgang Mauerer <wolfgang.mauerer@siemens.com>
 ---
- kernel/sched/clock.c       |    6 ++++--
- kernel/trace/trace_clock.c |    4 ++--
- 2 files changed, 6 insertions(+), 4 deletions(-)
+ include/linux/ipipe.h               |   32 +------------------
+ include/linux/ipipe_foreign_stack.h |   61 +++++++++++++++++++++++++++++++++++
+ kernel/ipipe/core.c                 |    1 +
+ 3 files changed, 63 insertions(+), 31 deletions(-)
+ create mode 100644 include/linux/ipipe_foreign_stack.h
 
-diff --git a/kernel/sched/clock.c b/kernel/sched/clock.c
-index c685e31..67cad6f 100644
---- a/kernel/sched/clock.c
-+++ b/kernel/sched/clock.c
-@@ -216,7 +216,9 @@ u64 sched_clock_cpu(int cpu)
- 	struct sched_clock_data *scd;
- 	u64 clock;
+diff --git a/include/linux/ipipe.h b/include/linux/ipipe.h
+index bcd5d41..6f011cc 100644
+--- a/include/linux/ipipe.h
++++ b/include/linux/ipipe.h
+@@ -27,6 +27,7 @@
+ #include <linux/irq.h>
+ #include <linux/thread_info.h>
+ #include <linux/ipipe_base.h>
++#include <linux/ipipe_foreign_stack.h>
+ #include <linux/ipipe_debug.h>
+ #include <asm/ptrace.h>
+ #include <asm/ipipe.h>
+@@ -226,36 +227,6 @@ void ipipe_critical_exit(unsigned long flags);
  
-+#ifndef CONFIG_IPIPE
- 	WARN_ON_ONCE(!irqs_disabled());
+ void ipipe_prepare_panic(void);
+ 
+-static inline void ipipe_set_foreign_stack(struct ipipe_domain *ipd)
+-{
+-	/* Must be called hw interrupts off. */
+-	__set_bit(IPIPE_NOSTACK_FLAG, &ipipe_this_cpu_context(ipd)->status);
+-}
+-
+-static inline void ipipe_clear_foreign_stack(struct ipipe_domain *ipd)
+-{
+-	/* Must be called hw interrupts off. */
+-	__clear_bit(IPIPE_NOSTACK_FLAG, &ipipe_this_cpu_context(ipd)->status);
+-}
+-
+-static inline int ipipe_test_foreign_stack(void)
+-{
+-	/* Must be called hw interrupts off. */
+-	return test_bit(IPIPE_NOSTACK_FLAG, &__ipipe_current_context->status);
+-}
+-
+-#ifndef ipipe_safe_current
+-#define ipipe_safe_current()						\
+-	({								\
+-		struct task_struct *__p__;				\
+-		unsigned long __flags__;				\
+-		__flags__ = hard_smp_local_irq_save();			\
+-		__p__ = ipipe_test_foreign_stack() ? &init_task : current; \
+-		hard_smp_local_irq_restore(__flags__);			\
+-		__p__;							\
+-	})
+-#endif
+-
+ #ifdef CONFIG_SMP
+ void ipipe_set_irq_affinity(unsigned int irq, cpumask_t cpumask);
+ void ipipe_send_ipi(unsigned int ipi, cpumask_t cpumask);
+@@ -380,7 +351,6 @@ static inline void __ipipe_nmi_enter(void) { }
+ 
+ static inline void __ipipe_nmi_exit(void) { }
+ 
+-#define ipipe_safe_current()	current
+ #define ipipe_processor_id()	smp_processor_id()
+ 
+ static inline int ipipe_test_foreign_stack(void)
+diff --git a/include/linux/ipipe_foreign_stack.h b/include/linux/ipipe_foreign_stack.h
+new file mode 100644
+index 0000000..4d5132a
+--- /dev/null
++++ b/include/linux/ipipe_foreign_stack.h
+@@ -0,0 +1,61 @@
++#ifndef IPIPE_FOREIGN_STACK_H
++#define IPIPE_FOREIGN_STACK_H
++
++#include <linux/ipipe_base.h>
++#include <linux/ipipe_domain.h>
++#include <asm/irqflags.h> // hard_smp_local_irq_safe
++#include <asm/ipipe.h>    // Possible per-arch definitions of ipipe_safe_current
++
++#ifdef CONFIG_IPIPE
++
++static inline void ipipe_set_foreign_stack(struct ipipe_domain *ipd)
++{
++	/* Must be called hw interrupts off. */
++	__set_bit(IPIPE_NOSTACK_FLAG, &ipipe_this_cpu_context(ipd)->status);
++}
++
++static inline void ipipe_clear_foreign_stack(struct ipipe_domain *ipd)
++{
++	/* Must be called hw interrupts off. */
++	__clear_bit(IPIPE_NOSTACK_FLAG, &ipipe_this_cpu_context(ipd)->status);
++}
++
++static inline int ipipe_test_foreign_stack(void)
++{
++	/* Must be called hw interrupts off. */
++	return test_bit(IPIPE_NOSTACK_FLAG, &__ipipe_current_context->status);
++}
++
++#ifndef ipipe_safe_current
++#define ipipe_safe_current()						\
++	({								\
++		struct task_struct *__p__;				\
++		unsigned long __flags__;				\
++		__flags__ = hard_smp_local_irq_save();			\
++		__p__ = ipipe_test_foreign_stack() ? &init_task : current; \
++		hard_smp_local_irq_restore(__flags__);			\
++		__p__;							\
++	})
 +#endif
++
++#ifndef ipipe_safe_current_thread_info
++#define ipipe_safe_current_thread_info()				\
++	({								\
++		struct thread_info *__ti__;				\
++		unsigned long __flags__;				\
++		__flags__ = hard_smp_local_irq_save();			\
++		__ti__ = ipipe_test_foreign_stack() ?			\
++			&init_thread_info : current_thread_info();	\
++		hard_smp_local_irq_restore(__flags__);			\
++		__ti__;							\
++	})
++#endif
++
++#else /* !CONFIG_IPIPE */
++
++#define ipipe_safe_current()			current
++#define ipipe_safe_current_thread_info()	current_thread_info
++
++#endif /* CONFIG_IPIPE */
++
++#endif
+diff --git a/kernel/ipipe/core.c b/kernel/ipipe/core.c
+index 182b61c..126953b 100644
+--- a/kernel/ipipe/core.c
++++ b/kernel/ipipe/core.c
+@@ -33,6 +33,7 @@
+ #include <linux/seq_file.h>
+ #endif	/* CONFIG_PROC_FS */
+ #include <linux/ipipe_trace.h>
++#include <linux/ipipe_foreign_stack.h>
+ #include <linux/ipipe.h>
  
- 	if (sched_clock_stable)
- 		return sched_clock();
-@@ -293,9 +295,9 @@ u64 cpu_clock(int cpu)
- 	u64 clock;
- 	unsigned long flags;
- 
--	local_irq_save(flags);
-+	flags = hard_local_irq_save_notrace();
- 	clock = sched_clock_cpu(cpu);
--	local_irq_restore(flags);
-+	hard_local_irq_restore_notrace(flags);
- 
- 	return clock;
- }
-diff --git a/kernel/trace/trace_clock.c b/kernel/trace/trace_clock.c
-index 3947835..4e297ad 100644
---- a/kernel/trace/trace_clock.c
-+++ b/kernel/trace/trace_clock.c
-@@ -83,7 +83,7 @@ u64 notrace trace_clock_global(void)
- 	int this_cpu;
- 	u64 now;
- 
--	local_irq_save(flags);
-+	flags = hard_local_irq_save_notrace();
- 
- 	this_cpu = raw_smp_processor_id();
- 	now = cpu_clock(this_cpu);
-@@ -109,7 +109,7 @@ u64 notrace trace_clock_global(void)
- 	arch_spin_unlock(&trace_clock_struct.lock);
- 
-  out:
--	local_irq_restore(flags);
-+	hard_local_irq_restore_notrace(flags);
- 
- 	return now;
- }
+ struct ipipe_domain ipipe_root;
 -- 
 1.7.1
 
