@@ -1,9 +1,9 @@
 From: Wolfgang Mauerer <wolfgang.mauerer@siemens.com>
-Date: Fri, 21 Dec 2012 14:26:09 +0100
-Message-Id: <1356096375-29859-5-git-send-email-wolfgang.mauerer@siemens.com>
+Date: Fri, 21 Dec 2012 14:26:14 +0100
+Message-Id: <1356096375-29859-10-git-send-email-wolfgang.mauerer@siemens.com>
 In-Reply-To: <1356096375-29859-1-git-send-email-wolfgang.mauerer@siemens.com>
 References: <1356096375-29859-1-git-send-email-wolfgang.mauerer@siemens.com>
-Subject: [Xenomai] [PATCH 04/10] Harden trace_vbprintk for non-root use
+Subject: [Xenomai] [PATCH 09/10] ipipe: Fix CONFIG_PREEMPT build
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,49 +15,26 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: xenomai@xenomai.org
 Cc: jan.kiszka@siemens.com, wolfgang.mauerer@siemens.com
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
-
-We depend on hard-irqs being disabled to push trace_printk
-data safely to ftrace.
+API change: ipipe_root_domain_p -> ipipe_root_p
 
 Signed-off-by: Wolfgang Mauerer <wolfgang.mauerer@siemens.com>
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- kernel/trace/trace.c |    6 +++---
- 1 files changed, 3 insertions(+), 3 deletions(-)
+ kernel/sched/core.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
 
-diff --git a/kernel/trace/trace.c b/kernel/trace/trace.c
-index a7fa070..a85936f 100644
---- a/kernel/trace/trace.c
-+++ b/kernel/trace/trace.c
-@@ -1592,8 +1592,9 @@ int trace_vbprintk(unsigned long ip, const char *fmt, va_list args)
- 	/* Don't pollute graph traces with trace_vprintk internals */
- 	pause_graph_tracing();
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index 9fdcc22..d8e0e9e 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -3558,7 +3558,7 @@ asmlinkage void __sched notrace preempt_schedule(void)
+ 	 * we do not want to preempt the current task. Just return..
+ 	 */
+ 	if (likely(ti->preempt_count || irqs_disabled() ||
+-		   !ipipe_root_domain_p))
++		   !ipipe_root_p))
+ 		return;
  
-+	flags = hard_local_irq_save();
-+
- 	pc = preempt_count();
--	preempt_disable_notrace();
- 
- 	tbuffer = get_trace_buf();
- 	if (!tbuffer) {
-@@ -1606,7 +1607,6 @@ int trace_vbprintk(unsigned long ip, const char *fmt, va_list args)
- 	if (len > TRACE_BUF_SIZE/sizeof(int) || len < 0)
- 		goto out;
- 
--	local_save_flags(flags);
- 	size = sizeof(*entry) + sizeof(u32) * len;
- 	buffer = tr->buffer;
- 	event = trace_buffer_lock_reserve(buffer, TRACE_BPRINT, size,
-@@ -1624,7 +1624,7 @@ int trace_vbprintk(unsigned long ip, const char *fmt, va_list args)
- 	}
- 
- out:
--	preempt_enable_notrace();
-+	hard_local_irq_restore(flags);
- 	unpause_graph_tracing();
- 
- 	return len;
+ 	do {
 -- 
 1.7.1
 
