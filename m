@@ -1,14 +1,13 @@
-Message-ID: <50DC9C51.9090300@antcom.de>
-Date: Thu, 27 Dec 2012 20:06:57 +0100
-From: Roland Stigge <stigge@antcom.de>
-MIME-Version: 1.0
-References: <50CD8E87.2070906@xenomai.org>
-	<201212170945.47992.leo@alaxarxa.net> <50CEFB24.9000306@antcom.de>
-	<201212171453.44318.leo@alaxarxa.net>
-In-Reply-To: <201212171453.44318.leo@alaxarxa.net>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] next xenomai release
+From: Wim  <wim@hidof.com>
+Date: Thu, 27 Dec 2012 19:06:42 +0000 (UTC)
+Message-ID: <loom.20121227T200150-371@post.gmane.org>
+References: <CAFjfccCyg_nbnNB3UGxEbWy3+SV+wp9T5iuj87DBN1Do08C7DQ@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai]
+	=?utf-8?q?Kernel_compilation_error_due_to_Adeos_patch_e?=
+	=?utf-8?b?cnJvciBpbgknaW9fYXBpYy5jJw==?=
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,58 +16,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 17/12/12 14:53, Leopold Palomo-Avellaneda wrote:
-> A Dilluns 17 Desembre 2012, Roland Stigge va escriure:
->> On 12/17/2012 09:45 AM, Leopold Palomo-Avellaneda wrote:
->>> there's a bug, and I must admit that I don't know if it's deliberated (*) 
-> or 
->>> not.  This bug comes from some time ago. In the /ksrc/arch/x86/patches 
->>> directory, there's a patch for the 3.2.21 kernel:
->>>
->>> ipipe-core-3.2.21-x86-1.patch
->>>
->>> this patch, in the build process is not included in the root directory: 
-> the 
->>> /scripts/prepare-patch.sh script executes:
->>>
->>> find $xenomai_root/ksrc/ -name "adeos-ipipe-2.6.*-$supported_arch-*.patch" 
->>>
->>> that is incorrect because the ipipe-core* patch is not found. The correct 
-> one 
->>> would be:
->>>
->>> ----------------------------------------------------------------
->>> $ diff -u xenomai-2.6.git/scripts/prepare-patch.sh xenomai-
->>> head/scripts/prepare-patch.sh 
->>> --- xenomai-2.6.git/scripts/prepare-patch.sh	2012-11-06 
-> 11:17:56.722698342 
->>> +0100
->>> +++ xenomai-head/scripts/prepare-patch.sh 	2012-12-17 
-> 09:23:31.912258850 
->>> +0100
->>> @@ -148,7 +148,7 @@
->>>  
->>>  cd $xenomai_root
->>>  
->>> -find $xenomai_root/ksrc/ -name "*ipipe*$supported_arch-*.patch" |
->>> +find $xenomai_root/ksrc/ -name "adeos-ipipe-2.6.*-$supported_arch-
-> *.patch" |
->>>  while read f ; do
->>>  
->>>      file=`basename $f`
->>>
->>> ----------------------------------------------------------------
->>
->> I guess this is a reverse patch?
+ 
+> Vanilla Kernel: 3.2.21
+> Adeos Patch: ipipe-core-3.2.21-x86-1.patch
+> gcc --version: 4.7.0
+> Xenomai Version: 2.6.1
 > 
-> :-)
+> Patch applies itself cleanly.
 > 
-> yes, the order is inverse. Sorry.
+> Compilation error during initial kernel 'make':
+> arch/x86/kernel/apic/io_apic.c: In function
+> ‘irq_remap_modify_chip_defaults’:
+> arch/x86/kernel/apic/io_apic.c:2763:1: error: expected expression before
+> ‘}’ token
+> 
+> Problem:
+> Commas instead of semi-colons at the end of lines inside CONFIG_IPIPE 'if'
+> directives in 'io_apic.c'.
 
-OK, should be fixed. Can't find the change in xenomai 2.6.2, unfortunately.
 
-Roland
+
+Thanks Steve, this really helped!  
+
+I can confirm that this problem still exists with yesterday's  
+stable Xenomai release 2.6.2, ipipe-core-3.2.21-x86-2.patch, a vanilla 3.2.21 
+kernel, ang gcc 4.6.3 on Ubuntu 12.04.
+
 
