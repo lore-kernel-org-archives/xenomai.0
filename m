@@ -1,11 +1,14 @@
-From: "Beaufils Sylvie (IT&LAB)" <sylvie.beaufils@thomson-networks.com>
-Date: Thu, 27 Dec 2012 13:44:30 +0000
-Message-ID: <14AA522E86E5754F8BC33C742D045A4A8135033E@srv0024.corp.thvnet.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+Message-ID: <50DC9C51.9090300@antcom.de>
+Date: Thu, 27 Dec 2012 20:06:57 +0100
+From: Roland Stigge <stigge@antcom.de>
 MIME-Version: 1.0
-Subject: [Xenomai] Pb with PCIe card using IRQ 32 on x86_64 platform
+References: <50CD8E87.2070906@xenomai.org>
+	<201212170945.47992.leo@alaxarxa.net> <50CEFB24.9000306@antcom.de>
+	<201212171453.44318.leo@alaxarxa.net>
+In-Reply-To: <201212171453.44318.leo@alaxarxa.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] next xenomai release
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,44 +17,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
+Cc: xenomai@xenomai.org
 
-Hi all,
+On 17/12/12 14:53, Leopold Palomo-Avellaneda wrote:
+> A Dilluns 17 Desembre 2012, Roland Stigge va escriure:
+>> On 12/17/2012 09:45 AM, Leopold Palomo-Avellaneda wrote:
+>>> there's a bug, and I must admit that I don't know if it's deliberated (*) 
+> or 
+>>> not.  This bug comes from some time ago. In the /ksrc/arch/x86/patches 
+>>> directory, there's a patch for the 3.2.21 kernel:
+>>>
+>>> ipipe-core-3.2.21-x86-1.patch
+>>>
+>>> this patch, in the build process is not included in the root directory: 
+> the 
+>>> /scripts/prepare-patch.sh script executes:
+>>>
+>>> find $xenomai_root/ksrc/ -name "adeos-ipipe-2.6.*-$supported_arch-*.patch" 
+>>>
+>>> that is incorrect because the ipipe-core* patch is not found. The correct 
+> one 
+>>> would be:
+>>>
+>>> ----------------------------------------------------------------
+>>> $ diff -u xenomai-2.6.git/scripts/prepare-patch.sh xenomai-
+>>> head/scripts/prepare-patch.sh 
+>>> --- xenomai-2.6.git/scripts/prepare-patch.sh	2012-11-06 
+> 11:17:56.722698342 
+>>> +0100
+>>> +++ xenomai-head/scripts/prepare-patch.sh 	2012-12-17 
+> 09:23:31.912258850 
+>>> +0100
+>>> @@ -148,7 +148,7 @@
+>>>  
+>>>  cd $xenomai_root
+>>>  
+>>> -find $xenomai_root/ksrc/ -name "*ipipe*$supported_arch-*.patch" |
+>>> +find $xenomai_root/ksrc/ -name "adeos-ipipe-2.6.*-$supported_arch-
+> *.patch" |
+>>>  while read f ; do
+>>>  
+>>>      file=`basename $f`
+>>>
+>>> ----------------------------------------------------------------
+>>
+>> I guess this is a reverse patch?
+> 
+> :-)
+> 
+> yes, the order is inverse. Sorry.
 
-We try to add a PCIe HBA SAS Adaptec 1405 to a x86_64 platform (Xeon E5-165=
-0).
+OK, should be fixed. Can't find the change in xenomai 2.6.2, unfortunately.
 
-It runs fine with a kernel 3.2.35 without xenomai, whatever the PCIe slot.
-
-With (kernel 3.2.35 + ipipe-core-3.2.21-x86-2 + xenomai 2.6.1), it depends =
-on the PCIe slot: it runs fine if it gets IRQ 34 but in another slot it get=
-s IRQ 32 and hdd is not detected. dmesg shows mvsas errors:
-
-[    2.420330] mvsas 0000:03:00.0: PCI INT A -> GSI 32 (level, low) -> IRQ =
-32
-. . .
-[    5.072211] sas: DOING DISCOVERY on port 0, pid:5
-. . .
-[   26.150292] sas: command 0xffff8804682a1ec0, task 0xffff8804682a2cc0, ti=
-med out: BLK_EH_NOT_HANDLED
-[   26.150304] sas: Enter sas_scsi_recover_host
-[   26.150307] sas: trying to find task 0xffff8804682a2cc0
-[   26.150310] sas: sas_scsi_find_task: aborting task 0xffff8804682a2cc0
-
-Moreover, IRQ 16 gets disabled after 2 messages "irq 16: nobody cared". I t=
-ried with "irqpoll" boot option: hdd is working but without interrupts.
-
-CONFIG_X86_LOCAL_APIC and CONFIG_X86_IO_APIC are enabled. I didn't find any=
-thing in the BIOS to change the IRQ assignment.=20
-
-I also compiled ipipe.git core-3.4 from git.denx.de with same results.
-
-I've seen in the source code that 32 is already used by IRQ_MOVE_CLEANUP_VE=
-CTOR, is it related to my problem? Is there a way to get the PCIe card work=
-ing with IRQ 32 ?
-=20
-I can provide the whole kernel config and dmesg if needed.
-
-Thanks,
-Sylvie
+Roland
 
