@@ -1,15 +1,14 @@
-Message-ID: <50DDCDC7.4050007@nta-inc.net>
-Date: Fri, 28 Dec 2012 10:50:15 -0600
+Message-ID: <50DDD0A6.3080305@nta-inc.net>
+Date: Fri, 28 Dec 2012 11:02:30 -0600
 From: Jeff Webb <jeff.webb@nta-inc.net>
 MIME-Version: 1.0
-References: <50CD8E87.2070906@xenomai.org>	<201212170945.47992.leo@alaxarxa.net>	<50CEFB24.9000306@antcom.de>	<201212171453.44318.leo@alaxarxa.net>	<50DC9C51.9090300@antcom.de>
-	<50DCA2B1.6070805@xenomai.org> <50DCB69A.9000004@nta-inc.net>
-	<50DCB84C.8070401@xenomai.org> <50DCBAFF.2080300@nta-inc.net>
-	<50DCCE5B.4040802@xenomai.org>
-In-Reply-To: <50DCCE5B.4040802@xenomai.org>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Another dpkg build issue for Xenomai 2.6.2
+References: <50dd8fe7a2bbd6.25169205@wp.pl> <50DDB448.2050307@xenomai.org>
+	<50DDBBE2.20403@gmail.com> <50DDBE66.3040405@xenomai.org>
+	<50DDCFB4.3070206@nta-inc.net>
+In-Reply-To: <50DDCFB4.3070206@nta-inc.net>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] posix/stdio.h error: ?size_t? does not name a type
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,33 +19,52 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-On 12/27/2012 04:40 PM, Gilles Chanteperdrix wrote:
-> On 12/27/2012 10:17 PM, Jeff Webb wrote:
->
->> On 12/27/2012 03:06 PM, Gilles Chanteperdrix wrote:
->>> On 12/27/2012 09:59 PM, Jeff Webb wrote:
->>>
->>>> When building dpkgs on Ubuntu 12.04, this line in the debian/rules file gives me trouble because there are no longer any adeos-ipipe-*.patch files for the x86 architecture:
->>>>
->>>> cp adeos-ipipe-*.patch $(CURDIR)/debian/linux-patch-xenomai/usr/src/kernel-patches/diffs/xenomai
->>>>
->>>> As a workaround, I did this before building:
->>>>
->>>> touch ./ksrc/arch/x86/patches/adeos-ipipe-2.6.0-x86-dummy.patch
->>>
->>>
->>> That is one of the "other issues".
->>>
+On 12/28/2012 10:58 AM, Jeff Webb wrote:
+> On 12/28/2012 09:44 AM, Gilles Chanteperdrix wrote:
+>> On 12/28/2012 04:33 PM, hauptmech wrote:
 >>
->> Thanks, Gilles.
+>>> On 12/28/2012 04:01 PM, Gilles Chanteperdrix wrote:
+>>>> On 12/28/2012 01:26 PM, Mariusz Janiak wrote:
+>>>>
+>>>>> Hi
+>>>>>
+>>>>> After successful Xenomai 2.6.2 installation (with Gilles help), I have started building OROCOS 2.6 with xeno support, and once again I went into trouble. This time I am not sure that it is a Xenomai related bug. The problem is following
+>>>>>
+>>>>> from /worek/install/orocos-toolchain-xeno/rtt/rtt/transports/mqueue/MQLib.hpp:42,
+>>>>>                        from /worek/install/orocos-toolchain-xeno/rtt/rtt/transports/mqueue/MQLib.cpp:40:
+>>>>>       /usr/xenomai/include/xenomai/posix/stdio.h:30:1: error: ?size_t? does not name a type
+>>>>>       make[2]: *** [rtt/transports/mqueue/CMakeFiles/rtt-transport-mqueue-xenomai_plugin.dir/MQLib.cpp.o] Błąd 1
+>>>>>
+>>>>> I have found one thread related to this problem
+>>>>>
+>>>>> http://www.xenomai.org/pipermail/xenomai/2012-September/026143.html
+>>>>>
+>>>>> Adding #include <unistd.h> in /usr/xenomai/include/xenomai/posix/stdio.h have solved my problem, but I don't know if it is a suitable solution.
+>>>>
+>>>> Hi Mariusz,
+>>>>
+>>>> thanks for the report. Could you tell me which distribution and which
+>>>> version you are using? We are certainly not going to include unistd.h in
+>>>> stdio.h, the fact that size_t is not defined indicates that something
+>>>> else is wrong as there are services supposedly defined in stdio.h which
+>>>> use size_t.
+>>>>
+>>>> Regards.
+>>> http://gcc.gnu.org/gcc-4.7/porting_to.html (search for unistd.h)
+>>>
+>>> The correct fix is probably to add unistd.h to MQLib.hpp (and other
+>>> include files that are missing it)
 >>
->
-> You can try the following commit:
-> http://git.xenomai.org/?p=xenomai-2.6.git;a=commit;h=89ff2edf76dae49e4a3643f17e118954b68a692e
->
-
-That works for me.  Thanks.
+>>
+>> This does not look like the same issue: using size_t is valid in stdio.h
+>> without including unistd.h
+>>
+>> I will install the same distribution as Mariusz to try and reproduce the
+>> issue.
+>>
+  
+I ran into a similar issue under Ubuntu 12.04 and Xenomai-2.6.1+.  I was also using C++, so maybe it isn't a problem in C...
 
 -Jeff
-
+  
 
