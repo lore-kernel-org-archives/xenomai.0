@@ -1,15 +1,11 @@
-Message-ID: <50C62B41.1060308@wanadoo.fr>
-Date: Mon, 10 Dec 2012 19:34:41 +0100
-From: Thierry Bultel <thierry.bultel@wanadoo.fr>
+Date: Fri, 28 Dec 2012 16:13:17 +0100
+From: "Mariusz Janiak" <mariuszjaniak@wp.pl>
+Message-ID: <50ddb70d31c128.40198428@wp.pl>
 MIME-Version: 1.0
-References: <50C1EF04.1090506@wanadoo.fr> <50C236B9.3030507@xenomai.org>
-	<50C4EF5A.3030502@wanadoo.fr> <50C524A6.6020006@xenomai.org>
-	<50C5F784.6040801@wanadoo.fr> <50C6076F.7050505@xenomai.org>
-	<50C60E6A.1080307@wanadoo.fr> <50C61DF3.8030703@xenomai.org>
-In-Reply-To: <50C61DF3.8030703@xenomai.org>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] iMX6q 1Hz tick
+Content-Type: text/plain; charset="iso-8859-2"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+Subject: Re: [Xenomai] posix/stdio.h error: ?size_t? does not name a type
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,124 +14,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Xenomai <xenomai@xenomai.org>
 
-Le 10/12/2012 18:37, Gilles Chanteperdrix a écrit :
-> On 12/10/2012 05:31 PM, Thierry Bultel wrote:
->> Le 10/12/2012 17:01, Gilles Chanteperdrix a écrit :
->>> On 12/10/2012 03:53 PM, Thierry Bultel wrote:
->>>> Le 10/12/2012 00:54, Gilles Chanteperdrix a écrit :
->>>>> On 12/09/2012 09:06 PM, Thierry Bultel wrote:
->>>>>
->>>>>> Le 07/12/2012 19:34, Gilles Chanteperdrix a écrit :
->>>>>>> On 12/07/2012 02:28 PM, Thierry Bultel wrote:
->>>>>>>
->>>>>>>> Hi,
->>>>>>
->>>>>> Hello Gilles,
->>>>>>
->>>>>>>>
->>>>>>>> I have "successfully" patched a 3.0.35 kernel from Freescale with
->>>>>>>> adeos-ipipe-3.0.36-1.18.11
->>>>>>>>
->>>>>>>> I have -not- applied the adeos-ipipe-3.0.36-arm-1.18-11-pre.patch
->>>>>>>> that showed too much "revert patch detected" errors.
->>>>>>>
->>>>>>>
->>>>>>>
->>>>>>> The patch should apply cleanly, the question, if you get too many
->>>>>>> rejections, it is because you do not apply it to the proper branch.
->>>>>>>
->>>>>>
->>>>>> Of course it was not.
->>>>>> I started with a kernel provided by the module manufacturer. I estimate
->>>>>> that this kernel is "almost" a rel_imx_3.0.35_12.09.02, I mean, that
->>>>>> I have not found a closer tag than this one.
->>>>>>
->>>>>> My first idea was to attempt to apply the patches to that kernel
->>>>>> directly. I was not expecting it would have been simple, and it was
->>>>>> actually not. But after a few hours I came to the initial result I said.
->>>>>>
->>>>>>
->>>>>>
->>>>>>>>
->>>>>>>> BTW, I have understand that its purpose was mainly to upgrade to 3.0.36,
->>>>>>>> but what is actually the role of the
->>>>>>>> adeos-ipipe-3.0.36-arm-1.18-11-post.patch ? (I applied it).
->>>>>>>
->>>>>>>
->>>>>>> I have explained this in a previous mail.
->>>>>>
->>>>>> Ok, I will seek in the history. I would be nice if the explanation
->>>>>> was in the README.
->>>>>>
->>>>>>>
->>>>>>>>
->>>>>>>> I had to deal with some rejections but at least the kernel is booting
->>>>>>>> and my application running.
->>>>>>>>
->>>>>>>> But the target is very slow, and /proc/xenomai/irq shows that the
->>>>>>>> [timer] irq only comes about every 1 second.
->>>>>>>>
->>>>>>>> The /proc/interrupts shows an IRQ every 10ms, which was expected
->>>>>>>> since I have CONFIG_HZ=100
->>>>>>>>
->>>>>>>> I am pretty sure that I messed up something in the patch process,
->>>>>>>> however I do not know where to start to look for.
->>>>>>>
->>>>>>>
->>>>>>> Apply the patches to the proper imx release, and everything should be fine.
->>>>>>
->>>>>>
->>>>>> That is what I did, at last.
->>>>>> To do so, I have extracted the BSP from the given 'almost'
->>>>>> rel_imx_3.0.35_12.09.02 kernel,
->>>>>> taken the rel_imx_3.0.15_12.03.00, applied the patches,
->>>>>> and brought back the BSP to the patched kernel.
->>>>>
->>>>
->>>> The issues I mentionned are not also present with CONFIG_IPIPE=no,
->>>> so it is just that the 3.0.15 kernel does not have everything for my board.
->>>>
->>>>>
->>>>> I would do what you want to do with git. Checkout the ipipe-3.0-imx6q
->>>>> branch from the ipipe-gch.git, then merge it with the vendor branch you
->>>>> want to use.
->>>>>
->>>>
->>>> Sure it would work and would be fine with git.
->>>> But unfortunalely I do not have access to the repository of the vendor,
->>>> but only to a bz2 snapshot of their kernel.
->>>>
->>>> I wonder if the right method would be to use git to merge Ipipe to the
->>>> 3.0.35_12_09.02, and then bring back the BSP that I have isolated as a patch
->>>
->>> Yes, if the vendor BSP is based on 3.0.35_12_09.02, you should make a
->>> diff with that, and try and merge it with the ipipe-3.0-imx6q branch.
->>>
->>
->>
->> Done. And success. Thanks. I am running your 3.0.43 kernel with my BSP.
->> no more network or reboot slowness issues.
->>
->> However, htop it saying that CPU0 is at 20% and CPU3 at 12%,
->> no application is running. The only thing that I see running is the
->> timer interrupt.
->>
->> Also, I still have
->> 87:         13          0          0          0       GIC  i.MX Timer Tick
->>
->> .. the counter increases very slowly, about 1 every 10 minutes maybe.
->>
->> That does not happen with CONFIG_IPIPE=no
->
-> Do you have CONFIG_LOCALTIMER (and CONFIG_SMP) enabled?
->
->
+Dnia Pi=B1tek, 28 Grudnia 2012 16:01 Gilles Chanteperdrix <gilles.chanteper=
+drix@xenomai.org> napisa=B3(a)=20
+> On 12/28/2012 01:26 PM, Mariusz Janiak wrote:
+>=20
+> > Hi
+> >=20
+> > After successful Xenomai 2.6.2 installation (with Gilles help), I have =
+started building OROCOS 2.6 with xeno support, and once again I went into t=
+rouble. This time I am not sure that it is a Xenomai related bug. The probl=
+em is following=20
+> >=20
+> > from /worek/install/orocos-toolchain-xeno/rtt/rtt/transports/mqueue/MQL=
+ib.hpp:42,
+> >                      from /worek/install/orocos-toolchain-xeno/rtt/rtt/=
+transports/mqueue/MQLib.cpp:40:
+> >     /usr/xenomai/include/xenomai/posix/stdio.h:30:1: error: ?size_t? do=
+es not name a type
+> >     make[2]: *** [rtt/transports/mqueue/CMakeFiles/rtt-transport-mqueue=
+-xenomai_plugin.dir/MQLib.cpp.o] B=B3=B1d 1
+> >=20
+> > I have found one thread related to this problem=20
+> >=20
+> > http://www.xenomai.org/pipermail/xenomai/2012-September/026143.html
+> >=20
+> > Adding #include <unistd.h> in /usr/xenomai/include/xenomai/posix/stdio.=
+h have solved my problem, but I don't know if it is a suitable solution.=20
+>=20
+>=20
+> Hi Mariusz,
+>=20
+> thanks for the report. Could you tell me which distribution and which
+> version you are using? We are certainly not going to include unistd.h in
+> stdio.h, the fact that size_t is not defined indicates that something
+> else is wrong as there are services supposedly defined in stdio.h which
+> use size_t.
+=20
+I have Ubuntu 12.10 x86_64, gcc version 4.7.2 (Ubuntu/Linaro 4.7.2-2ubuntu1=
+).
 
-CONFIG_SMP yes,
-You mean CONFIG_LOCAL_TIMERS ? Yes
+Mariusz
 
 
 
