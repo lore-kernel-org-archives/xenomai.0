@@ -1,13 +1,17 @@
-Message-ID: <50DDBE66.3040405@xenomai.org>
-Date: Fri, 28 Dec 2012 16:44:38 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <50DDCD86.302@nta-inc.net>
+Date: Fri, 28 Dec 2012 10:49:10 -0600
+From: Jeff Webb <jeff.webb@nta-inc.net>
 MIME-Version: 1.0
-References: <50dd8fe7a2bbd6.25169205@wp.pl> <50DDB448.2050307@xenomai.org>
-	<50DDBBE2.20403@gmail.com>
-In-Reply-To: <50DDBBE2.20403@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] posix/stdio.h error: ?size_t? does not name a type
+References: <CAFjfccCyg_nbnNB3UGxEbWy3+SV+wp9T5iuj87DBN1Do08C7DQ@mail.gmail.com>
+	<loom.20121227T200150-371@post.gmane.org>
+	<50DCA303.7090303@xenomai.org>
+	<CAAq7VdD_rrspRMqE8MVfLLnwPi+wOj87QedkdiSAto5YBG76Kw@mail.gmail.com>
+	<50DCC0DD.6030105@xenomai.org>
+In-Reply-To: <50DCC0DD.6030105@xenomai.org>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Kernel compilation error due to Adeos patch error in
+ 'io_apic.c'
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,62 +20,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: hauptmech <hauptmech@gmail.com>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 12/28/2012 04:33 PM, hauptmech wrote:
-
-> On 12/28/2012 04:01 PM, Gilles Chanteperdrix wrote:
->> On 12/28/2012 01:26 PM, Mariusz Janiak wrote:
+On 12/27/2012 03:42 PM, Gilles Chanteperdrix wrote:
+> On 12/27/2012 10:38 PM, Wim Meeussen wrote:
+>
+>>>> I can confirm that this problem still exists with yesterday's
+>>>> stable Xenomai release 2.6.2, ipipe-core-3.2.21-x86-2.patch, a vanilla 3.2.21
+>>>> kernel, ang gcc 4.6.3 on Ubuntu 12.04.
 >>
->>> Hi
->>>
->>> After successful Xenomai 2.6.2 installation (with Gilles help), I hav=
-e started building OROCOS 2.6 with xeno support, and once again I went in=
-to trouble. This time I am not sure that it is a Xenomai related bug. The=
- problem is following
->>>
->>> from /worek/install/orocos-toolchain-xeno/rtt/rtt/transports/mqueue/M=
-QLib.hpp:42,
->>>                       from /worek/install/orocos-toolchain-xeno/rtt/r=
-tt/transports/mqueue/MQLib.cpp:40:
->>>      /usr/xenomai/include/xenomai/posix/stdio.h:30:1: error: ?size_t?=
- does not name a type
->>>      make[2]: *** [rtt/transports/mqueue/CMakeFiles/rtt-transport-mqu=
-eue-xenomai_plugin.dir/MQLib.cpp.o] B=C5=82=C4=85d 1
->>>
->>> I have found one thread related to this problem
->>>
->>> http://www.xenomai.org/pipermail/xenomai/2012-September/026143.html
->>>
->>> Adding #include <unistd.h> in /usr/xenomai/include/xenomai/posix/stdi=
-o.h have solved my problem, but I don't know if it is a suitable solution=
-=2E
+>>> Ok, do you have the issue with I-pipe core 3.4 and 3.5 ?
 >>
->> Hi Mariusz,
 >>
->> thanks for the report. Could you tell me which distribution and which
->> version you are using? We are certainly not going to include unistd.h =
-in
->> stdio.h, the fact that size_t is not defined indicates that something
->> else is wrong as there are services supposedly defined in stdio.h whic=
-h
->> use size_t.
+>> With Xenomai 2.6.2, ipipe-core-3.5.3-x86-2.patch, linux 3.5.3 and gcc
+>> 4.6.3, I have a different problem, which I haven't been able to solve
+>> yet (that's why I started using the older 3.2.21 kernel, and ran into
+>> the problem described above).
 >>
->> Regards.
-> http://gcc.gnu.org/gcc-4.7/porting_to.html (search for unistd.h)
->=20
-> The correct fix is probably to add unistd.h to MQLib.hpp (and other=20
-> include files that are missing it)
+>> Running "make CONFIG_DEBUG_SECTION_MISMATCH=y -j4" on the 3.5.3 kernel
+>> sources gives me the result below.  The
+>> "CONFIG_DEBUG_SECTION_MISMATCH" parameter was suggested by the
+>> previous build that failed, to get more information on the failure.
+>>
+>>
+>> WARNING: drivers/scsi/fcoe/libfcoe.o(.init.text+0x1e): Section
+>> mismatch in reference from the function init_module() to the function
+>> .exit.text:fcoe_transport_exit()
+>> The function __init init_module() references
+>> a function __exit fcoe_transport_exit().
+>> This is often seen when error handling in the init function
+>> uses functionality in the exit path.
+>> The fix is often to remove the __exit annotation of
+>> fcoe_transport_exit() so it may be used outside an exit section.
+>>
+>
+>
+> Are you sure this error is related to xenomai?
+>
 
+For what it's worth, I would guess no.  I had similar problems when compiling a 3.4 series kernel under Ubuntu 12.04.  I solved the problem by disabling the modules that CONFIG_DEBUG_SECTION_MISMATCH was complaining about.  This all had nothing to do with Xenomai.
 
-This does not look like the same issue: using size_t is valid in stdio.h
-without including unistd.h
-
-I will install the same distribution as Mariusz to try and reproduce the
-issue.
-
---=20
-                                                                Gilles.
+-Jeff
 
 
