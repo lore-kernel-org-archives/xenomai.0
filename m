@@ -1,16 +1,13 @@
+Message-ID: <50DF1FAE.5090907@xenomai.org>
+Date: Sat, 29 Dec 2012 17:51:58 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <50DCC0DD.6030105@xenomai.org>
-References: <CAFjfccCyg_nbnNB3UGxEbWy3+SV+wp9T5iuj87DBN1Do08C7DQ@mail.gmail.com>
-	<loom.20121227T200150-371@post.gmane.org>
-	<50DCA303.7090303@xenomai.org>
-	<CAAq7VdD_rrspRMqE8MVfLLnwPi+wOj87QedkdiSAto5YBG76Kw@mail.gmail.com>
-	<50DCC0DD.6030105@xenomai.org>
-From: Wim Meeussen <wim@hidof.com>
-Date: Fri, 28 Dec 2012 10:32:51 -0800
-Message-ID: <CAAq7VdDJB+F8CArTAXjVLfVZ1d5i0dfhH+p66K5QVTKzPVL-LQ@mail.gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Subject: Re: [Xenomai] Kernel compilation error due to Adeos patch error in
-	'io_apic.c'
+References: <50dd6f0ee3dc65.48983574@wp.pl>
+In-Reply-To: <50dd6f0ee3dc65.48983574@wp.pl>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Odp: Re: Xenomai 2.6.2 + Kernel 3.5.3 + AMD Phenom II
+ X6 1055
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,50 +16,51 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Mariusz Janiak <mariuszjaniak@wp.pl>
+Cc: Xenomai <xenomai@xenomai.org>
 
->>> Ok, do you have the issue with I-pipe core 3.4 and 3.5 ?
+On 12/28/2012 11:06 AM, Mariusz Janiak wrote:
 
->> With Xenomai 2.6.2, ipipe-core-3.5.3-x86-2.patch, linux 3.5.3 and gcc
->> 4.6.3, I have a different problem, which I haven't been able to solve
->> yet (that's why I started using the older 3.2.21 kernel, and ran into
->> the problem described above).
->>
->> Running "make CONFIG_DEBUG_SECTION_MISMATCH=y -j4" on the 3.5.3 kernel
->> sources gives me the result below.  The
->> "CONFIG_DEBUG_SECTION_MISMATCH" parameter was suggested by the
->> previous build that failed, to get more information on the failure.
->>
->>
->> WARNING: drivers/scsi/fcoe/libfcoe.o(.init.text+0x1e): Section
->> mismatch in reference from the function init_module() to the function
->> .exit.text:fcoe_transport_exit()
->> The function __init init_module() references
->> a function __exit fcoe_transport_exit().
->> This is often seen when error handling in the init function
->> uses functionality in the exit path.
->> The fix is often to remove the __exit annotation of
->> fcoe_transport_exit() so it may be used outside an exit section.
+>    If you find useful please add bellow text to the TROUBLESHOOTING.adoc
+>    file.
+> 
+>    On AMD x86_64
+>    ^^^^^^^^^^^^^
+>    You will most likely also see the following message:
+>    --------------------------------------------
+>    I-pipe: cannot use LAPIC as a tick device
+>    I-pipe: disable C1E power state in your BIOS
+>    --------------------------------------------
+>    Xenomai sends this message if C1E option is enabled in a BIOS. To fix
+>    this issue please disable C1E support in the BIOS. In some Award BIOS
+>    this option is located in the +Advanced BIOS Features->+ menu (+AMD
+>    C1E Support+).
+>    On some systems, above message may not appear in the system log.
+>    IMPORTANT: Disabling +AMD K8 Cool&Quiet+ option in a BIOS does not
+>    solve the problem.
 
 
-> Are you sure this error is related to xenomai?
+Hi Mariusz,
 
-I still have to dig a little deeper to check what is causing this
-problem, that's why I hadn't reported this before. I'll try to compile
-the 3.5.3 kernel with the same configuration, but without the Adeos
-patch. I'll follow up on this email when I can confirm the problem is
-related to Xenomai.
+thanks for the help text. Could you try the following patch 
+to see if it restores the message?
 
-Thanks for the response!
-Wim
+diff --git a/arch/x86/kernel/apic/apic.c b/arch/x86/kernel/apic/apic.c
+index 7f07610..6cc9208 100644
+--- a/arch/x86/kernel/apic/apic.c
++++ b/arch/x86/kernel/apic/apic.c
+@@ -545,7 +545,8 @@ static void __cpuinit setup_APIC_timer(void)
+ 	memcpy(levt, &lapic_clockevent, sizeof(*levt));
+ 	levt->cpumask = cpumask_of(smp_processor_id());
+ #ifdef CONFIG_IPIPE
+-	if (!(lapic_clockevent.features & CLOCK_EVT_FEAT_DUMMY))
++	if (!(lapic_clockevent.features & CLOCK_EVT_FEAT_DUMMY)
++	    && !cpu_has_amd_erratum(amd_erratum_400))
+ 		levt->ipipe_timer = &__get_cpu_var(lapic_itimer);
+ 	else {
+ 	       printk(KERN_INFO
 
 
-
-
---
-Wim Meeussen
-CTO, hiDOF Inc.
-650-529-4522
-http://hidof.com
+-- 
+                                                                Gilles.
 
