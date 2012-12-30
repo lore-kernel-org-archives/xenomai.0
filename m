@@ -1,12 +1,10 @@
-Date: Sat, 29 Dec 2012 20:17:26 +0100
-From: "Mariusz Janiak" <mariuszjaniak@wp.pl>
-Message-ID: <50df41c6c460f5.18354805@wp.pl>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-2"
+Date: Sun, 30 Dec 2012 11:32:06 +0800
+Message-ID: <CABi95VNaL3VuLq-qBEGgG1Fnwtpi2eQsDCMyEqPqvh9yNuZ-Eg@mail.gmail.com>
+From: =?GB2312?B?yfLMzg==?= <xst0001@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-Subject: Re: [Xenomai] Odp: Re: Xenomai 2.6.2 + Kernel 3.5.3 + AMD Phenom II
- X6 1055
+Subject: [Xenomai] Can not run test on Raspberry Pi
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,129 +13,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: Xenomai@xenomai.org
 
-Dnia Sobota, 29 Grudnia 2012 19:21 Gilles Chanteperdrix <gilles.chanteperdr=
-ix@xenomai.org> napisa=B3(a)=20
-> On 12/29/2012 07:06 PM, Mariusz Janiak wrote:
->=20
-> > Dnia Sobota, 29 Grudnia 2012 17:51 Gilles Chanteperdrix <gilles.chantep=
-erdrix@xenomai.org> napisa=B3(a)=20
-> >> On 12/28/2012 11:06 AM, Mariusz Janiak wrote:
-> >>
-> >>>    If you find useful please add bellow text to the TROUBLESHOOTING.a=
-doc
-> >>>    file.
-> >>>
-> >>>    On AMD x86_64
-> >>>    ^^^^^^^^^^^^^
-> >>>    You will most likely also see the following message:
-> >>>    --------------------------------------------
-> >>>    I-pipe: cannot use LAPIC as a tick device
-> >>>    I-pipe: disable C1E power state in your BIOS
-> >>>    --------------------------------------------
-> >>>    Xenomai sends this message if C1E option is enabled in a BIOS. To =
-fix
-> >>>    this issue please disable C1E support in the BIOS. In some Award B=
-IOS
-> >>>    this option is located in the +Advanced BIOS Features->+ menu (+AMD
-> >>>    C1E Support+).
-> >>>    On some systems, above message may not appear in the system log.
-> >>>    IMPORTANT: Disabling +AMD K8 Cool&Quiet+ option in a BIOS does not
-> >>>    solve the problem.
-> >>
-> >>
-> >> Hi Mariusz,
-> >>
-> >> thanks for the help text. Could you try the following patch=20
-> >> to see if it restores the message?
-> >>
-> >> diff --git a/arch/x86/kernel/apic/apic.c b/arch/x86/kernel/apic/apic.c
-> >> index 7f07610..6cc9208 100644
-> >> --- a/arch/x86/kernel/apic/apic.c
-> >> +++ b/arch/x86/kernel/apic/apic.c
-> >> @@ -545,7 +545,8 @@ static void __cpuinit setup_APIC_timer(void)
-> >>  	memcpy(levt, &lapic_clockevent, sizeof(*levt));
-> >>  	levt->cpumask =3D cpumask_of(smp_processor_id());
-> >>  #ifdef CONFIG_IPIPE
-> >> -	if (!(lapic_clockevent.features & CLOCK_EVT_FEAT_DUMMY))
-> >> +	if (!(lapic_clockevent.features & CLOCK_EVT_FEAT_DUMMY)
-> >> +	    && !cpu_has_amd_erratum(amd_erratum_400))
-> >>  		levt->ipipe_timer =3D &__get_cpu_var(lapic_itimer);
-> >>  	else {
-> >>  	       printk(KERN_INFO
-> >>
-> >>
-> >> --=20
-> >>                                                                 Gilles.
-> >=20
-> > Hi Gilles,
-> >=20
-> > I confirm, the patch solve problem with printing warning messages in a =
-system log. Executing 'dmesg | grep -i i-pipe' give following results
-> > =20
-> > I-pipe: cannot use LAPIC as a tick device
-> > I-pipe: disable C1E power state in your BIOS
-> > I-pipe: cannot use LAPIC as a tick device
-> > I-pipe: disable C1E power state in your BIOS
-> > I-pipe: cannot use LAPIC as a tick device
-> > I-pipe: disable C1E power state in your BIOS
-> > I-pipe: cannot use LAPIC as a tick device
-> > I-pipe: disable C1E power state in your BIOS
-> > I-pipe: cannot use LAPIC as a tick device
-> > I-pipe: disable C1E power state in your BIOS
-> > I-pipe: cannot use LAPIC as a tick device
-> > I-pipe: disable C1E power state in your BIOS
-> > I-pipe: could not find timer for cpu #1
->=20
->=20
-> Not really nice, could you try this one:
->=20
-> diff --git a/arch/x86/kernel/apic/apic.c b/arch/x86/kernel/apic/apic.c
-> index 7f07610..91531bb 100644
-> --- a/arch/x86/kernel/apic/apic.c
-> +++ b/arch/x86/kernel/apic/apic.c
-> @@ -545,14 +545,18 @@ static void __cpuinit setup_APIC_timer(void)
->  	memcpy(levt, &lapic_clockevent, sizeof(*levt));
->  	levt->cpumask =3D cpumask_of(smp_processor_id());
->  #ifdef CONFIG_IPIPE
-> -	if (!(lapic_clockevent.features & CLOCK_EVT_FEAT_DUMMY))
-> +	if (!(lapic_clockevent.features & CLOCK_EVT_FEAT_DUMMY)
-> +	    && !cpu_has_amd_erratum(amd_erratum_400))
->  		levt->ipipe_timer =3D &__get_cpu_var(lapic_itimer);
->  	else {
-> -	       printk(KERN_INFO
-> -		      "I-pipe: cannot use LAPIC as a tick device\n");
-> -	       if (cpu_has_amd_erratum(amd_erratum_400))
-> -		       printk(KERN_INFO
-> -			      "I-pipe: disable C1E power state in your BIOS\n");
-> +		static atomic_t printed =3D ATOMIC_INIT(-1);
-> +		printk(KERN_INFO
-> +		       "I-pipe: cannot use LAPIC on cpu #%d as a tick device\n",
-> +		       smp_processor_id());
-> +		if (cpu_has_amd_erratum(amd_erratum_400)
-> +		    && atomic_inc_and_test(&printed))
-> +			printk(KERN_INFO
-> +			       "I-pipe: disable C1E power state in your BIOS\n");
->  	}
->  #endif /* CONFIG_IPIPE */
-> =20
->=20
-> --=20
->                                                                 Gilles.
+Hello all!
 
-Now is better, 'dmesg | grep -i i-pipe' give
+I'm not familiar with either Xenomai or Raspberry Pi.So please do not be
+mad at me if my question seems silly.
 
-I-pipe: cannot use LAPIC on cpu #0 as a tick device
-I-pipe: disable C1E power state in your BIOS
-I-pipe: cannot use LAPIC on cpu #1 as a tick device
-I-pipe: cannot use LAPIC on cpu #2 as a tick device
-I-pipe: cannot use LAPIC on cpu #3 as a tick device
-I-pipe: cannot use LAPIC on cpu #4 as a tick device
-I-pipe: cannot use LAPIC on cpu #5 as a tick device
-I-pipe: could not find timer for cpu #1
+Anyway,I followed the instructions on
+http://powet.eu/2012/07/25/raspberry-pi-xenomai/<http://translate.googleuse=
+rcontent.com/translate_c?depth=3D1&hl=3Den&ie=3DUTF8&prev=3D_t&rurl=3Dtrans=
+late.google.com&sl=3Dfr&tl=3Den&twu=3D1&u=3Dhttp://powet.eu/2012/07/25/rasp=
+berry-pi-xenomai/&usg=3DALkJrhh8sBPbInHso_27CJ73Qprh-F7cxA>
+and
+cross compiled a kernel patched with Xenomai with tools from
+https://github.com/raspberrypi/tools.It seems work fine.
 
-Mariusz
+Then I cross compile Xenomai(the user-space sport),and copied all the
+results to my Raspberry Pi.When I try to run the /usr/xenomai/bin/latency,I
+get the ERROR: error while loading shared libraries:libnative.so.3:cannot
+open shared object file: No such file or directory.
 
+pi@raspberrypi ~ $ ls /usr/xenomai/lib
+...... libnative.so.3 ......
 
+So the object file is there.
 
+The I tried to ldconfig with /usr/xenomai/lib in my /etc/ld.so.conf,and
+confirm the result.
+
+pi@raspberrypi ~ $ ldconfig - p | grep native
+   libnative.so.3(libc6)=3D>/usr/xenomai/lib/libnative.so.3
+   ......
+
+I also tried to export LD_LIBRARY_PATH,still get the same error.
+
+I know the problem may seems familiar to you.I have already googled it and
+keep trying to solve it.I also read the Program-Library-HOWTO from
+http://www.tldp.org/HOWTO/Program-Library-HOWTO/introduction.html and try
+to learn more about shared libraries.But I still can not solve my
+problem,need some help.
+
+Thanks in advance.
+
+Shen Tao
