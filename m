@@ -1,10 +1,10 @@
-Message-ID: <50E062E8.6030903@openwide.fr>
-Date: Sun, 30 Dec 2012 16:51:04 +0100
-From: Romain Naour <romain.naour@openwide.fr>
+From: Paul <paul_c@tuxcnc.org>
+Date: Sun, 30 Dec 2012 16:55:33 +0000
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Message-Id: <201212301655.33062.paul_c@tuxcnc.org>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] Xenomai 2.6.2 user-space compilation error on ARM < armv6
+Subject: [Xenomai] [PATCH] Minor spelling correction
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,28 +15,18 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Hi Gilles,
 
-First of all, thank you for the new release of Xenomai :)
+Spotted a minor spelling error in the dohell usage message. Also found 
+the same error in one of the analogy sources along with a second typo.
+Attached trivial patch to resolve these.
 
-I'm compiling Xenomai 2.6.2 and Linux kernel 3.5.3 for mini2440 with buildroot 2012.11.
+Regards, Paul.
 
-During compilation I get the following error:
-error: #error "SMP not supported below armv6, compile with -march=armv6 or above"
 
-This error is caused by the SMP mode which is now enabled by default on ARM.
-So I added the option --disable-smp on the buildroot's command line for ./configure
-(buildroot assumes that the SMP mode is not enabled when it compile Xenomai for arm) 
-
-This option became mandatory for ARM < armv6 to pass this test: (xenomai-2.6/include/asm-arm/feature.h)
-
-#if __LINUX_ARM_ARCH__ < 6 && defined(CONFIG_SMP)
-#error "SMP not supported below armv6, compile with -march=armv6 or above"
-#endif
-
-The error message may be advisable to add the option --disable-smp ?
-However, since your objective is to allow to run the same binary on UP and SMP system, it is safe to remove this test for ARM < armv6 now ?
-
-Regards,
-Romain
-
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: optionally.diff
+Type: text/x-diff
+Size: 1857 bytes
+Desc: not available
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20121230/2e0de716/attachment.diff>
