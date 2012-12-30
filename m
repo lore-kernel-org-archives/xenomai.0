@@ -1,13 +1,9 @@
-Message-ID: <50E07220.8000602@xenomai.org>
-Date: Sun, 30 Dec 2012 17:56:00 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <50E062E8.6030903@openwide.fr>
-In-Reply-To: <50E062E8.6030903@openwide.fr>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Xenomai 2.6.2 user-space compilation error on ARM <
- armv6
+Date: Mon, 31 Dec 2012 01:41:16 +0530
+Message-ID: <CAFv1zn4i8M=m65+jxK9ch7R6GWdfuMOqXiCsz+GY=BiJ=10iOw@mail.gmail.com>
+From: RAGHAVENDRA GANIGA <ravi23ganiga@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: [Xenomai] real time Watchdog timer device driver
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,44 +12,10 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Romain Naour <romain.naour@openwide.fr>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 12/30/2012 04:51 PM, Romain Naour wrote:
-
-> Hi Gilles,
-> 
-> First of all, thank you for the new release of Xenomai :)
-> 
-> I'm compiling Xenomai 2.6.2 and Linux kernel 3.5.3 for mini2440 with buildroot 2012.11.
-> 
-> During compilation I get the following error:
-> error: #error "SMP not supported below armv6, compile with -march=armv6 or above"
-> 
-> This error is caused by the SMP mode which is now enabled by default on ARM.
-> So I added the option --disable-smp on the buildroot's command line for ./configure
-> (buildroot assumes that the SMP mode is not enabled when it compile Xenomai for arm) 
-> 
-> This option became mandatory for ARM < armv6 to pass this test: (xenomai-2.6/include/asm-arm/feature.h)
-> 
-> #if __LINUX_ARM_ARCH__ < 6 && defined(CONFIG_SMP)
-> #error "SMP not supported below armv6, compile with -march=armv6 or above"
-> #endif
-> 
-> The error message may be advisable to add the option --disable-smp ?
-> However, since your objective is to allow to run the same binary on UP and SMP system, it is safe to remove this test for ARM < armv6 now ?
-
-
-Hi Romain,
-
-thanks for the report, this test only makes sense if compiling with the
-"ad-hoc" atomic operations, with the default setting which is to use gcc
-atomic operations, we can remove the test.
-
-Will fix for 2.6.2.1, thanks for the report.
-
-Regards.
-
--- 
-                                                                Gilles.
-
+I am about to start my work on real time device driver for watch dog timers
+on panda board and want to benchmark my driver , for this i need a rtos
+model for the already existing device driver for watch dog timer to and
+also would like to have suggestions from your side to progress in my
+project. Thank you
