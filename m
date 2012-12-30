@@ -1,15 +1,12 @@
+Message-ID: <50E03E2E.9000803@xenomai.org>
+Date: Sun, 30 Dec 2012 14:14:22 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <50B8F21B.5090503@xenomai.org>
-References: <CAMgy_J0idydJq8wzH3CwQoCa+BEbSyUyOJoWmvwc+oAB3jpZ6w@mail.gmail.com>
-	<CAKvQZ_2Nzfgj7oK12+t3CtLj-YWBCB=nFYSDU6B4KqW4aWQpnQ@mail.gmail.com>
-	<50B88506.6000002@xenomai.org>
-	<CAKvQZ_3LJ-u2B0zc0+pobSGnMZ4nNviyxfuP1uiVRVuHw9Y9pQ@mail.gmail.com>
-	<50B8F21B.5090503@xenomai.org>
-Date: Sun, 30 Dec 2012 12:47:48 +0100
-Message-ID: <CAKvQZ_2FFgp7gh9a5VrqAd0-qy3CEEKPayZcXkUfxbaWodh=yQ@mail.gmail.com>
-From: Willy Lambert <lambert.willy@gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Subject: Re: [Xenomai] Frustrating experience with Xenomai
+References: <CABi95VNaL3VuLq-qBEGgG1Fnwtpi2eQsDCMyEqPqvh9yNuZ-Eg@mail.gmail.com>
+In-Reply-To: <CABi95VNaL3VuLq-qBEGgG1Fnwtpi2eQsDCMyEqPqvh9yNuZ-Eg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] Can not run test on Raspberry Pi
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,65 +15,67 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: =?UTF-8?B?5rKI5rab?= <xst0001@gmail.com>
+Cc: Xenomai@xenomai.org
 
-2012/11/30 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>:
-> On 11/30/2012 03:29 PM, Willy Lambert wrote:
->> 2012/11/30 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>:
->>> On 11/30/2012 09:45 AM, Willy Lambert wrote:
->>>> P.S. : to xenomai community, is there a problem if I continue some
->>>> support here, or should we go somewhere else more on topic ?
->>>
->>> Absolutely no problem, this is a recurring problem, so, we can not
->>> really ignore it. The thingx I would add is:
->>> - if you have a very recent computer, you will have more trouble
->>> installing really old kernels than install the latest revision, so, I
->>> would advise to use the I-pipe patch for Linux 3.2 with xenomai 2.6.1
->>> - we can give you write access to the wiki if you wish to write some
->>> documents about this.
->>>
->>
->> Ok, let me know where I should write something.
->>
->> I'll rewrite something like my first mail in the "old debian way"
->> (should be ok for debian and ubuntu) :
->> _ explaining the idea "first compile your vanilla kernel before
->> patching it, try boot, and add xenomai".
->> _ getting compile tools
->> _ getting linux source with ketchup (cause it's really no brain)
->> _ getting current config, configuring personnal version
->> _ compile command (producing .deb)
->> _ install command / remove
->> Keeping the aim to show a simple method without getting into details,
->> and providing some general linux doc to read.
->>
->> I don't have time to update my process to "latest pratices", but at
->> least it a starting point.
->
-> Ok, I will create a login/password on the wiki.
->
-> However, for the particular case of Debian, starting with the I-pipe for
-> Linux 3.4, we can probably provide a precompiled kernel with a
-> debian-like configuration which will run on any platform.
->
-> --
+On 12/30/2012 04:32 AM, =E6=B2=88=E6=B6=9B wrote:
 
-Hi all,
+> Hello all!
+>=20
+> I'm not familiar with either Xenomai or Raspberry Pi.So please do not b=
+e
+> mad at me if my question seems silly.
+>=20
+> Anyway,I followed the instructions on
+> http://powet.eu/2012/07/25/raspberry-pi-xenomai/<http://translate.googl=
+eusercontent.com/translate_c?depth=3D1&hl=3Den&ie=3DUTF8&prev=3D_t&rurl=3D=
+translate.google.com&sl=3Dfr&tl=3Den&twu=3D1&u=3Dhttp://powet.eu/2012/07/=
+25/raspberry-pi-xenomai/&usg=3DALkJrhh8sBPbInHso_27CJ73Qprh-F7cxA>
+> and
+> cross compiled a kernel patched with Xenomai with tools from
+> https://github.com/raspberrypi/tools.It seems work fine.
+>=20
+> Then I cross compile Xenomai(the user-space sport),and copied all the
+> results to my Raspberry Pi.When I try to run the /usr/xenomai/bin/laten=
+cy,I
+> get the ERROR: error while loading shared libraries:libnative.so.3:cann=
+ot
+> open shared object file: No such file or directory.
+>=20
+> pi@raspberrypi ~ $ ls /usr/xenomai/lib
+> ...... libnative.so.3 ......
+>=20
+> So the object file is there.
+>=20
+> The I tried to ldconfig with /usr/xenomai/lib in my /etc/ld.so.conf,and=
 
-back from holidays, so I have some time to write some documentation
-about this. I suggest that I add a page linked from :
-http://www.xenomai.org/index.php/Howtos
-That I'll call :
-http://www.xenomai.org/index.php/Building_kernel
-I wonder if something should be added there :
-http://www.xenomai.org/index.php/Included_documentation_summary
-The howto page is not linked. Maybe the "building kernel" should comes
-first, at least the warning that "before doing a xenomai kernel you
-have to have a kernel"
-
-Do I need to update any "source" documentation ? If y please tell me
-how (there is plain text, html, pdf,...)
+> confirm the result.
+>=20
+> pi@raspberrypi ~ $ ldconfig - p | grep native
+>    libnative.so.3(libc6)=3D>/usr/xenomai/lib/libnative.so.3
+>    ......
+>=20
+> I also tried to export LD_LIBRARY_PATH,still get the same error.
+>=20
+> I know the problem may seems familiar to you.I have already googled it =
+and
+> keep trying to solve it.I also read the Program-Library-HOWTO from
+> http://www.tldp.org/HOWTO/Program-Library-HOWTO/introduction.html and t=
+ry
+> to learn more about shared libraries.But I still can not solve my
+> problem,need some help.
 
 
->                                             Gilles.
+Hi Shen,
+
+The most common reason for such issues is if you are not compiling
+xenomai with the same toolchain or same toolchain options (regarding for
+instance the EABI setting) as the one used to compile the target libc.
+
+Regards.
+
+
+--=20
+                                                                Gilles.
+
 
