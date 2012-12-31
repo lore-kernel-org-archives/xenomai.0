@@ -1,13 +1,13 @@
-Message-ID: <50E0C15B.3060502@xenomai.org>
-Date: Sun, 30 Dec 2012 23:34:03 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <50E17756.7030400@openwide.fr>
+Date: Mon, 31 Dec 2012 12:30:30 +0100
+From: Romain Naour <romain.naour@openwide.fr>
 MIME-Version: 1.0
-References: <50dd6f0ee3dc65.48983574@wp.pl>
-In-Reply-To: <50dd6f0ee3dc65.48983574@wp.pl>
+References: <50E062E8.6030903@openwide.fr> <50E0BD01.1020404@xenomai.org>
+In-Reply-To: <50E0BD01.1020404@xenomai.org>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Odp: Re: Xenomai 2.6.2 + Kernel 3.5.3 + AMD Phenom II
- X6 1055
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] Xenomai 2.6.2 user-space compilation error on ARM <
+ armv6
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,33 +16,88 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Mariusz Janiak <mariuszjaniak@wp.pl>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On 12/28/2012 11:06 AM, Mariusz Janiak wrote:
+Le 30/12/2012 23:15, Gilles Chanteperdrix a =C3=A9crit :
+> On 12/30/2012 04:51 PM, Romain Naour wrote:
+>=20
+>> Hi Gilles,
+>>
+>> First of all, thank you for the new release of Xenomai :)
+>>
+>> I'm compiling Xenomai 2.6.2 and Linux kernel 3.5.3 for mini2440 with
+>> buildroot 2012.11.
+>>
+>> During compilation I get the following error: error: #error "SMP not
+>> supported below armv6, compile with -march=3Darmv6 or above"
+>>
+>> This error is caused by the SMP mode which is now enabled by default
+>> on ARM. So I added the option --disable-smp on the buildroot's
+>> command line for ./configure (buildroot assumes that the SMP mode is
+>> not enabled when it compile Xenomai for arm)
+>>
+>> This option became mandatory for ARM < armv6 to pass this test:
+>> (xenomai-2.6/include/asm-arm/feature.h)
+>>
+>> #if __LINUX_ARM_ARCH__ < 6 && defined(CONFIG_SMP) #error "SMP not
+>> supported below armv6, compile with -march=3Darmv6 or above" #endif
+>>
+>> The error message may be advisable to add the option --disable-smp ?=20
+>> However, since your objective is to allow to run the same binary on
+>> UP and SMP system, it is safe to remove this test for ARM < armv6 now
+>> ?
+>=20
+>=20
+> Could you try the following patch?
+>=20
+> diff --git a/include/asm-arm/atomic_asm.h b/include/asm-arm/atomic_asm.=
+h
+> index 47f17c9..ef62690 100644
+> --- a/include/asm-arm/atomic_asm.h
+> +++ b/include/asm-arm/atomic_asm.h
+> @@ -27,6 +27,10 @@
+>  #error "please don't include asm/atomic_asm.h directly"
+>  #endif
+> =20
+> +#if __LINUX_ARM_ARCH__ < 6 && defined(CONFIG_SMP)
+> +#error "SMP not supported below armv6 with ad-hoc atomic operations, c=
+ompile without SMP or with -march=3Darmv6 or above"
+> +#endif
+> +
+>  extern void __xnarch_xchg_called_with_bad_pointer(void);
+> =20
+>  #define xnarch_read_memory_barrier()		xnarch_memory_barrier()
+> diff --git a/include/asm-arm/features.h b/include/asm-arm/features.h
+> index 279f752..bddaa5e 100644
+> --- a/include/asm-arm/features.h
+> +++ b/include/asm-arm/features.h
+> @@ -73,10 +73,6 @@
+>  #error "Could not find current ARM architecture"
+>  #endif
+> =20
+> -#if __LINUX_ARM_ARCH__ < 6 && defined(CONFIG_SMP)
+> -#error "SMP not supported below armv6, compile with -march=3Darmv6 or =
+above"
+> -#endif
+> -
+>  #define CONFIG_XENO_FASTSYNCH 1
+> =20
+>  #if CONFIG_XENO_ARM_TSC_TYPE =3D=3D __XN_TSC_TYPE_KUSER
+>=20
 
->    If you find useful please add bellow text to the TROUBLESHOOTING.adoc
->    file.
-> 
->    On AMD x86_64
->    ^^^^^^^^^^^^^
->    You will most likely also see the following message:
->    --------------------------------------------
->    I-pipe: cannot use LAPIC as a tick device
->    I-pipe: disable C1E power state in your BIOS
->    --------------------------------------------
->    Xenomai sends this message if C1E option is enabled in a BIOS. To fix
->    this issue please disable C1E support in the BIOS. In some Award BIOS
->    this option is located in the +Advanced BIOS Features->+ menu (+AMD
->    C1E Support+).
->    On some systems, above message may not appear in the system log.
->    IMPORTANT: Disabling +AMD K8 Cool&Quiet+ option in a BIOS does not
->    solve the problem.
+Hi Gilles,
 
+I applied your patch and tried to compile with the following options:
+--with-atomic-ops=3Dad-hoc
+As expected, the build fails with this error:
+#error "SMP not supported below armv6 with ad-hoc atomic operations,
+compile without SMP or with -march=3Darmv6 or above"
 
-Merged, thanks.
+--with-atomic-ops=3Dbuiltins (or when this option is not specified)
+The build ends correctly.
+I haven't the board at this time, I'll do a test this week.
 
-
--- 
-                                                                Gilles.
+Regards,
+Romain
 
