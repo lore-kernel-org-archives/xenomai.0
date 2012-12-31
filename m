@@ -1,11 +1,11 @@
-Message-ID: <50E1B291.7010905@xenomai.org>
-Date: Mon, 31 Dec 2012 16:43:13 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <CAGVaUoFsUJKCSOMrDuq3htrLzScpzjVP8oKs2ARp7k7o8KbRfQ@mail.gmail.com>
+Content-Type: text/plain; charset=us-ascii
+Mime-Version: 1.0 (Apple Message framework v1283)
+From: Michael Haberler <mail17@mah.priv.at>
 In-Reply-To: <CAGVaUoFsUJKCSOMrDuq3htrLzScpzjVP8oKs2ARp7k7o8KbRfQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Date: Mon, 31 Dec 2012 17:39:45 +0100
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <9480305C-20DF-4DBA-AC23-7E3E59EBCEEB@mah.priv.at>
+References: <CAGVaUoFsUJKCSOMrDuq3htrLzScpzjVP8oKs2ARp7k7o8KbRfQ@mail.gmail.com>
 Subject: Re: [Xenomai] About the timer interrupt in beaglebone
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -15,50 +15,66 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Bao Rui <rbaocug@gmail.com>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 12/23/2012 01:12 PM, Bao Rui wrote:
+Bao,
+
+I got Xenomai working fine, based on Henri Roosen's branch: =
+https://github.com/roosen/linux/tree/v3.2.21_AM33xx_core-3.2
+
+The current snapshot is here: =
+http://git.mah.priv.at/gitweb/linuxcnc-kernel.git/shortlog/refs/heads/xeno=
+mai-3.2.21-bb-roosen-v3.2-staging-merged but there's no essential =
+changes wrt Henri's branch
+
+- Michael=20
+
+Am 23.12.2012 um 13:12 schrieb Bao Rui:
 
 > Hi,
-> 
-> I worked on the beaglebone with Xenomai, currently I meet a problem about
+>=20
+> I worked on the beaglebone with Xenomai, currently I meet a problem =
+about
 > the timer interrupt after integrated Xenomai into my beaglebone,
-> 
-> The beaglebone can startup after integrating Xenomai and IPIPE, but the
-> timer seems not work properly. Here I add a printk in the timer interrut:
+>=20
+> The beaglebone can startup after integrating Xenomai and IPIPE, but =
+the
+> timer seems not work properly. Here I add a printk in the timer =
+interrut:
 > static irqreturn_t omap2_gp_timer_interrupt(int irq, void *dev_id)
 > {
->     struct clock_event_device *evt = &clockevent_gpt;
-> 
->     if (!clockevent_ipipe_stolen(evt))
->         omap2_gp_timer_ack();
-> 
->     if (num_online_cpus() == 1)
->         __ipipe_tsc_update();
->     pr_info("testtimer\n");
->     evt->event_handler(evt);
->     return IRQ_HANDLED;
+>   struct clock_event_device *evt =3D &clockevent_gpt;
+>=20
+>   if (!clockevent_ipipe_stolen(evt))
+>       omap2_gp_timer_ack();
+>=20
+>   if (num_online_cpus() =3D=3D 1)
+>       __ipipe_tsc_update();
+>   pr_info("testtimer\n");
+>   evt->event_handler(evt);
+>   return IRQ_HANDLED;
 > }
-> 
+>=20
 > And the kernel logs here:
 > ......
 > NR_IRQS:396
-> [    0.000000] IRQ: Found an INTC at 0xfa200000 (revision 5.0) with 128
+> [    0.000000] IRQ: Found an INTC at 0xfa200000 (revision 5.0) with =
+128
 > interrus
 > [    0.000000] Total of 128 interrupts on 1 active
 > controller
 > [    0.000000]
-> omap2_gp_timer_set_mode:mode=1,clkev.rate:24000000l,HZ=100
+> omap2_gp_timer_set_mode:mode=3D1,clkev.rate:24000000l,HZ=3D100
 > [    0.000000]
-> omap2_gp_timer_set_mode:mode=2,clkev.rate:24000000l,HZ=100
+> omap2_gp_timer_set_mode:mode=3D2,clkev.rate:24000000l,HZ=3D100
 > [    0.000000] OMAP clockevent source: GPTIMER2 at 24000000
 > Hz
 > [    0.000000] OMAP clocksource: GPTIMER3 at 24000000
 > Hz
 > [    0.000000] I-pipe, 24.000 MHz
 > clocksource
-> [    0.000000] sched_clock: 32 bits at 24MHz, resolution 41ns, wraps every
+> [    0.000000] sched_clock: 32 bits at 24MHz, resolution 41ns, wraps =
+every
 > 1789s
 > [    0.000000] Interrupt pipeline (release
 > #1)
@@ -91,7 +107,7 @@ On 12/23/2012 01:12 PM, Bao Rui wrote:
 > [    0.119012]
 > testtimer
 > [    0.119054] 718.02 BogoMIPS
-> (lpj=3590144)
+> (lpj=3D3590144)
 > [    0.119064] pid_max: default: 32768 minimum:
 > 301
 > [    0.119196] Security Framework
@@ -150,10 +166,10 @@ On 12/23/2012 01:12 PM, Bao Rui wrote:
 > hub
 > [    0.197577] usbcore: registered new device driver
 > usb
-> [    0.197725] musb-ti81xx musb-ti81xx: musb0, board_mode=0x13,
-> plat_mode=0x3
-> [    0.198020] musb-ti81xx musb-ti81xx: musb1, board_mode=0x13,
-> plat_mode=0x1
+> [    0.197725] musb-ti81xx musb-ti81xx: musb0, board_mode=3D0x13,
+> plat_mode=3D0x3
+> [    0.198020] musb-ti81xx musb-ti81xx: musb1, board_mode=3D0x13,
+> plat_mode=3D0x1
 > [    0.199029]
 > testtimer
 > [    0.199348] omap_i2c omap_i2c.1: bus 1 rev2.4.0 at 100
@@ -165,24 +181,26 @@ On 12/23/2012 01:12 PM, Bao Rui wrote:
 > [    0.209036]
 > testtimer
 > [    0.209088]
-> omap2_gp_timer_set_mode:mode=3,clkev.rate:24000000l,HZ=100
+> omap2_gp_timer_set_mode:mode=3D3,clkev.rate:24000000l,HZ=3D100
 > [    0.219143]
 > testtimer
 > [    0.220092] musb-hdrc: version 6.0, ?dma?, otg
 > (peripheral+host)
 > [    0.220271] musb-hdrc musb-hdrc.0: dma type:
 > pio
-> [    0.221242] musb-hdrc musb-hdrc.0: USB OTG mode controller at d081c000
+> [    0.221242] musb-hdrc musb-hdrc.0: USB OTG mode controller at =
+d081c000
 > using8
 > [    0.221419] musb-hdrc musb-hdrc.1: dma type:
 > pio
 > [    0.221872] musb-hdrc musb-hdrc.1: MUSB HDRC host
 > driver
-> [    0.221949] musb-hdrc musb-hdrc.1: new USB bus registered, assigned bus
+> [    0.221949] musb-hdrc musb-hdrc.1: new USB bus registered, assigned =
+bus
 > numb1
-> [    0.222094] usb usb1: New USB device found, idVendor=1d6b,
-> idProduct=0002
-> [    0.222110] usb usb1: New USB device strings: Mfr=3, Product=2,
+> [    0.222094] usb usb1: New USB device found, idVendor=3D1d6b,
+> idProduct=3D0002
+> [    0.222110] usb usb1: New USB device strings: Mfr=3D3, Product=3D2,
 > SerialNumber1
 > [    0.222124] usb usb1: Product: MUSB HDRC host
 > driver
@@ -193,33 +211,27 @@ On 12/23/2012 01:12 PM, Bao Rui wrote:
 > [    0.223028] hub 1-0:1.0: USB hub
 > found
 > [    0.223069] hub 1-0:1.0: 1 port detected
-> 
-> First we can see the "testtimer" logs, but after some while, this interrupt
-> will not enter again. If I disable the Xenomai and IPIPE, I can get the
+>=20
+> First we can see the "testtimer" logs, but after some while, this =
+interrupt
+> will not enter again. If I disable the Xenomai and IPIPE, I can get =
+the
 > "testtimer" working always.
-> 
-> If omap2_gp_timer_interrupt() does not work properly, the kernel will stop
-> after a msleep() call(The i2c driver will call this msleep() to read the
+>=20
+> If omap2_gp_timer_interrupt() does not work properly, the kernel will =
+stop
+> after a msleep() call(The i2c driver will call this msleep() to read =
+the
 > eeprom information).
-> 
-> Could you give some suggestions about this issue? I can try it on my target.
+>=20
+> Could you give some suggestions about this issue? I can try it on my =
+target.
+>=20
+> Best Regards,
+> Henry
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> http://www.xenomai.org/mailman/listinfo/xenomai
 
-
-Hi Henry,
-
-the beaglebone port is not part of the officile I-pipe patch, so, we
-have no idea which code you are talking about, we do not even know which
-version of the Linux kernel you are talking about. It seems some people
-are using Xenomai on BeagleBone without any problem, so maybe they will
-be able to answer your questions specifically about beagle bone.
-
-As for debugging Xenomai on an ARM board, the only generic advices we
-have are in this document:
-http://www.xenomai.org/index.php/I-pipe-core:ArmPorting
-
-Regards.
-
-
--- 
-                                                                Gilles.
 
