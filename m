@@ -1,13 +1,12 @@
-Message-ID: <50E1AAFE.5020503@xenomai.org>
-Date: Mon, 31 Dec 2012 16:10:54 +0100
+Message-ID: <50E1B291.7010905@xenomai.org>
+Date: Mon, 31 Dec 2012 16:43:13 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CAMgy_J0idydJq8wzH3CwQoCa+BEbSyUyOJoWmvwc+oAB3jpZ6w@mail.gmail.com>	<CAKvQZ_2Nzfgj7oK12+t3CtLj-YWBCB=nFYSDU6B4KqW4aWQpnQ@mail.gmail.com>	<50B88506.6000002@xenomai.org>	<CAKvQZ_3LJ-u2B0zc0+pobSGnMZ4nNviyxfuP1uiVRVuHw9Y9pQ@mail.gmail.com>	<50B8F21B.5090503@xenomai.org>
-	<CAKvQZ_2FFgp7gh9a5VrqAd0-qy3CEEKPayZcXkUfxbaWodh=yQ@mail.gmail.com>
-In-Reply-To: <CAKvQZ_2FFgp7gh9a5VrqAd0-qy3CEEKPayZcXkUfxbaWodh=yQ@mail.gmail.com>
+References: <CAGVaUoFsUJKCSOMrDuq3htrLzScpzjVP8oKs2ARp7k7o8KbRfQ@mail.gmail.com>
+In-Reply-To: <CAGVaUoFsUJKCSOMrDuq3htrLzScpzjVP8oKs2ARp7k7o8KbRfQ@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Frustrating experience with Xenomai
+Subject: Re: [Xenomai] About the timer interrupt in beaglebone
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,78 +15,210 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Willy Lambert <lambert.willy@gmail.com>
+To: Bao Rui <rbaocug@gmail.com>
 Cc: xenomai@xenomai.org
 
-On 12/30/2012 12:47 PM, Willy Lambert wrote:
+On 12/23/2012 01:12 PM, Bao Rui wrote:
 
-> 2012/11/30 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>:
->> On 11/30/2012 03:29 PM, Willy Lambert wrote:
->>> 2012/11/30 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>:
->>>> On 11/30/2012 09:45 AM, Willy Lambert wrote:
->>>>> P.S. : to xenomai community, is there a problem if I continue some
->>>>> support here, or should we go somewhere else more on topic ?
->>>>
->>>> Absolutely no problem, this is a recurring problem, so, we can not
->>>> really ignore it. The thingx I would add is:
->>>> - if you have a very recent computer, you will have more trouble
->>>> installing really old kernels than install the latest revision, so, I
->>>> would advise to use the I-pipe patch for Linux 3.2 with xenomai 2.6.1
->>>> - we can give you write access to the wiki if you wish to write some
->>>> documents about this.
->>>>
->>>
->>> Ok, let me know where I should write something.
->>>
->>> I'll rewrite something like my first mail in the "old debian way"
->>> (should be ok for debian and ubuntu) :
->>> _ explaining the idea "first compile your vanilla kernel before
->>> patching it, try boot, and add xenomai".
->>> _ getting compile tools
->>> _ getting linux source with ketchup (cause it's really no brain)
->>> _ getting current config, configuring personnal version
->>> _ compile command (producing .deb)
->>> _ install command / remove
->>> Keeping the aim to show a simple method without getting into details,
->>> and providing some general linux doc to read.
->>>
->>> I don't have time to update my process to "latest pratices", but at
->>> least it a starting point.
->>
->> Ok, I will create a login/password on the wiki.
->>
->> However, for the particular case of Debian, starting with the I-pipe for
->> Linux 3.4, we can probably provide a precompiled kernel with a
->> debian-like configuration which will run on any platform.
->>
->> --
+> Hi,
 > 
-> Hi all,
+> I worked on the beaglebone with Xenomai, currently I meet a problem about
+> the timer interrupt after integrated Xenomai into my beaglebone,
 > 
-> back from holidays, so I have some time to write some documentation
-> about this. I suggest that I add a page linked from :
-> http://www.xenomai.org/index.php/Howtos
-> That I'll call :
-> http://www.xenomai.org/index.php/Building_kernel
-> I wonder if something should be added there :
-> http://www.xenomai.org/index.php/Included_documentation_summary
-> The howto page is not linked. Maybe the "building kernel" should comes
-> first, at least the warning that "before doing a xenomai kernel you
-> have to have a kernel"
+> The beaglebone can startup after integrating Xenomai and IPIPE, but the
+> timer seems not work properly. Here I add a printk in the timer interrut:
+> static irqreturn_t omap2_gp_timer_interrupt(int irq, void *dev_id)
+> {
+>     struct clock_event_device *evt = &clockevent_gpt;
 > 
-> Do I need to update any "source" documentation ? If y please tell me
-> how (there is plain text, html, pdf,...)
+>     if (!clockevent_ipipe_stolen(evt))
+>         omap2_gp_timer_ack();
+> 
+>     if (num_online_cpus() == 1)
+>         __ipipe_tsc_update();
+>     pr_info("testtimer\n");
+>     evt->event_handler(evt);
+>     return IRQ_HANDLED;
+> }
+> 
+> And the kernel logs here:
+> ......
+> NR_IRQS:396
+> [    0.000000] IRQ: Found an INTC at 0xfa200000 (revision 5.0) with 128
+> interrus
+> [    0.000000] Total of 128 interrupts on 1 active
+> controller
+> [    0.000000]
+> omap2_gp_timer_set_mode:mode=1,clkev.rate:24000000l,HZ=100
+> [    0.000000]
+> omap2_gp_timer_set_mode:mode=2,clkev.rate:24000000l,HZ=100
+> [    0.000000] OMAP clockevent source: GPTIMER2 at 24000000
+> Hz
+> [    0.000000] OMAP clocksource: GPTIMER3 at 24000000
+> Hz
+> [    0.000000] I-pipe, 24.000 MHz
+> clocksource
+> [    0.000000] sched_clock: 32 bits at 24MHz, resolution 41ns, wraps every
+> 1789s
+> [    0.000000] Interrupt pipeline (release
+> #1)
+> [    0.000000] Console: colour dummy device
+> 80x30
+> [    0.000514] Calibrating delay
+> loop...
+> [    0.009032]
+> testtimer
+> [    0.019013]
+> testtimer
+> [    0.029013]
+> testtimer
+> [    0.039013]
+> testtimer
+> [    0.049012]
+> testtimer
+> [    0.059012]
+> testtimer
+> [    0.069013]
+> testtimer
+> [    0.079012]
+> testtimer
+> [    0.089012]
+> testtimer
+> [    0.099012]
+> testtimer
+> [    0.109012]
+> testtimer
+> [    0.119012]
+> testtimer
+> [    0.119054] 718.02 BogoMIPS
+> (lpj=3590144)
+> [    0.119064] pid_max: default: 32768 minimum:
+> 301
+> [    0.119196] Security Framework
+> initialized
+> [    0.119301] Mount-cache hash table entries:
+> 512
+> [    0.119712] CPU: Testing write buffer coherency:
+> ok
+> [    0.129031]
+> testtimer
+> [    0.139013]
+> testtimer
+> [    0.139918] omap_hwmod: gfx: failed to
+> hardreset
+> [    0.149013]
+> testtimer
+> [    0.156191] omap_hwmod: pruss: failed to
+> hardreset
+> [    0.157420] print_constraints:
+> dummy:
+> [    0.157810] NET: Registered protocol family
+> 16
+> [    0.159025]
+> testtimer
+> [    0.160259] OMAP GPIO hardware version
+> 0.1
+> [    0.163100] omap_mux_init: Add partition: #1: core, flags:
+> 0
+> [    0.165344]
+> HB:am335x_evm_i2c_init
+> [    0.165586]  omap_i2c.1: alias fck already
+> exists
+> [    0.166245] HB:End
+> am335x_evm_init
+> [    0.166573]  omap2_mcspi.1: alias fck already
+> exists
+> [    0.166819]  omap2_mcspi.2: alias fck already
+> exists
+> [    0.167096]  edma.0: alias fck already
+> exists
+> [    0.167117]  edma.0: alias fck already
+> exists
+> [    0.167136]  edma.0: alias fck already
+> exists
+> [    0.169030]
+> testtimer
+> [    0.179036]
+> testtimer
+> [    0.189026]
+> testtimer
+> [    0.193574] bio: create slab <bio-0> at
+> 0
+> [    0.196996] usbcore: registered new interface driver
+> usbfs
+> [    0.197349] usbcore: registered new interface driver
+> hub
+> [    0.197577] usbcore: registered new device driver
+> usb
+> [    0.197725] musb-ti81xx musb-ti81xx: musb0, board_mode=0x13,
+> plat_mode=0x3
+> [    0.198020] musb-ti81xx musb-ti81xx: musb1, board_mode=0x13,
+> plat_mode=0x1
+> [    0.199029]
+> testtimer
+> [    0.199348] omap_i2c omap_i2c.1: bus 1 rev2.4.0 at 100
+> kHz
+> [    0.200917] tps65910 1-002d: could not be
+> detected
+> [    0.202916] Switching to clocksource
+> ipipe_tsc
+> [    0.209036]
+> testtimer
+> [    0.209088]
+> omap2_gp_timer_set_mode:mode=3,clkev.rate:24000000l,HZ=100
+> [    0.219143]
+> testtimer
+> [    0.220092] musb-hdrc: version 6.0, ?dma?, otg
+> (peripheral+host)
+> [    0.220271] musb-hdrc musb-hdrc.0: dma type:
+> pio
+> [    0.221242] musb-hdrc musb-hdrc.0: USB OTG mode controller at d081c000
+> using8
+> [    0.221419] musb-hdrc musb-hdrc.1: dma type:
+> pio
+> [    0.221872] musb-hdrc musb-hdrc.1: MUSB HDRC host
+> driver
+> [    0.221949] musb-hdrc musb-hdrc.1: new USB bus registered, assigned bus
+> numb1
+> [    0.222094] usb usb1: New USB device found, idVendor=1d6b,
+> idProduct=0002
+> [    0.222110] usb usb1: New USB device strings: Mfr=3, Product=2,
+> SerialNumber1
+> [    0.222124] usb usb1: Product: MUSB HDRC host
+> driver
+> [    0.222135] usb usb1: Manufacturer: Linux 3.2.0
+> musb-hcd
+> [    0.222147] usb usb1: SerialNumber:
+> musb-hdrc.1
+> [    0.223028] hub 1-0:1.0: USB hub
+> found
+> [    0.223069] hub 1-0:1.0: 1 port detected
+> 
+> First we can see the "testtimer" logs, but after some while, this interrupt
+> will not enter again. If I disable the Xenomai and IPIPE, I can get the
+> "testtimer" working always.
+> 
+> If omap2_gp_timer_interrupt() does not work properly, the kernel will stop
+> after a msleep() call(The i2c driver will call this msleep() to read the
+> eeprom information).
+> 
+> Could you give some suggestions about this issue? I can try it on my target.
 
 
-Hi Willy,
+Hi Henry,
 
-go ahead for the documentation. The page explaining how to build a
-kernel should point to the page about configuring a kernel for x86
-machines. Then the source documentation pointing to this patch should be
-README.INSTALL, README.INSTALL sources are
-doc/asciidoc/README.INSTALL.adoc in xenomai sources.
+the beaglebone port is not part of the officile I-pipe patch, so, we
+have no idea which code you are talking about, we do not even know which
+version of the Linux kernel you are talking about. It seems some people
+are using Xenomai on BeagleBone without any problem, so maybe they will
+be able to answer your questions specifically about beagle bone.
+
+As for debugging Xenomai on an ARM board, the only generic advices we
+have are in this document:
+http://www.xenomai.org/index.php/I-pipe-core:ArmPorting
 
 Regards.
+
 
 -- 
                                                                 Gilles.
