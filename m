@@ -1,14 +1,11 @@
-Content-Type: text/plain; charset=us-ascii
-Mime-Version: 1.0 (Apple Message framework v1283)
-From: Michael Haberler <mail17@mah.priv.at>
-In-Reply-To: <50E1CC06.9050404@xenomai.org>
-Date: Mon, 31 Dec 2012 19:18:19 +0100
+Date: Mon, 31 Dec 2012 20:14:20 +0100
+From: "Mariusz Janiak" <mariuszjaniak@wp.pl>
+Message-ID: <50e1e40c413df8.28309699@wp.pl>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="iso-8859-2"
 Content-Transfer-Encoding: quoted-printable
-Message-Id: <382C7691-29C9-408C-97DE-4A020138B0A4@mah.priv.at>
-References: <CAGVaUoFsUJKCSOMrDuq3htrLzScpzjVP8oKs2ARp7k7o8KbRfQ@mail.gmail.com>
-	<9480305C-20DF-4DBA-AC23-7E3E59EBCEEB@mah.priv.at>
-	<50E1CC06.9050404@xenomai.org>
-Subject: Re: [Xenomai] About the timer interrupt in beaglebone
+Content-Disposition: inline
+Subject: [Xenomai] Odp: Re:  SIGXCPU with rt_mutex_release
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,70 +14,71 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: peter@thesourceworks.com
+Cc: Xenomai <xenomai@xenomai.org>
 
-Hi Gilles,
+Thank you Gilles, I my opinion Peter is right that we should start debuging=
+ from OROCOS side. If it will be Xenomai issue I will let you know.=20
+
+Mariusz
+
+PS. Orocos related topic is following=20
+
+http://www.orocos.org/forum/orocos/orocos-users/orocos-26-xenomai-262-and-s=
+igxcpu-cpu-time-limit-exceeded
+
+=20
+Dnia Poniedzia=B3ek, 31 Grudnia 2012 18:52 Peter Soetens <peter@thesourcewo=
+rks.com> napisa=B3(a)
+> Hi all,
+> Thanks for the analysis. I'd propose to move this to bugs.orocos.org wher=
+e we can try to reproduce and track this bug in orocos.
+> We've been testing in our buildfarm against xenomai 2.5, so this might be=
+ something we did not notice until now...
+> Peter
+> Op maandag 31 december 2012 schreef Gilles Chanteperdrix (gilles.chantepe=
+rdrix@xenomai.org) het volgende:
+> > On 12/31/2012 06:32 PM, Mariusz Janiak wrote:
+> > =20
+> >  > Hi,
+> >  >
+> >  > I have met problem when I run OROCOS helloWord example. Xenomai
+> >  > generate SIGXCPU signal when rt_mutex_release(...) is called. I have
+> >  > installed signal handler for each realtime thread created by OROCOS
+> >  > and I get following result
+> >  >
+> >  > SIGDEBUG received, reason 4: affected by priority inversion
+> > =20
+> > =20
+> >  There is a problem in your application, namely a mutex owned by a thre=
+ad
+> >  running with the SCHED_OTHER scheduling policy, released while Xenomai
+> >  did not notice that the same thread had taken the mutex. This could
+> >  happen if for instance you change the scheduling policy while holding a
+> >  mutex.
+> > =20
+> >  Please try reducing the error to a simple testcase which will allow us
+> >  to investigate this issue.
+> > =20
+> >  > There is much bigger mess during exiting from application. I am not
+> >  > pretty sure this is a Xenomai problem, if not sorry for bothering. I
+> >  > haven check it with previous Xenomai release yet.
+> > =20
+> > =20
+> >  We need facts to start working, again, please write a simple test case
+> >  to help investigating the issue.
+> > =20
+> >  --
+> >                                                                  Gilles.
+> > =20
+> >  _______________________________________________
+> >  Xenomai mailing list
+> >  Xenomai@xenomai.org
+> >  http://www.xenomai.org/mailman/listinfo/xenomai
 
 
-I would think Henri is in better position to explain the genealogy; the =
-way I understand it is is a merge of torvalds 3.2.21 onto this TI 3.2 =
-branch: =
-http://arago-project.org/git/projects/linux-am33x.git?p=3Dprojects/linux-a=
-m33x.git;a=3Dcommit;h=3Dd7e124e8074cccf9958290e773c88a4b2b36412b
-
-Henri told me this:
-
-> I made this tree for supporting the AM335x-evm board. The beaglebone =
-is untested with this tree.
-> This posting and thread sums what I did to get the tree =
-http://www.xenomai.org/pipermail/xenomai/2012-October/026594.html.
-
-I took Henri's branch and merged =
-http://arago-project.org/git/projects/linux-am33x.git?p=3Dprojects/linux-a=
-m33x.git;a=3Dshortlog;h=3Drefs/heads/v3.2-staging where all the 3.2 =
-related fixes show up.
-
-I wound up with this configuration; =
-http://git.mah.priv.at/gitweb/linuxcnc-kernel.git/blob/ce9f5236ec183aff622=
-ffc4c59e331957167f934:/arch/arm/configs/mah_bbone_defconfig  which works =
-fine for a few people working on LinuxCNC on the beaglebone in a tftp =
-boot/nfs root setting.
-
-I'm sorry to be fuzzy/slightly belletristic on this, I'm not very firm =
-in this space. I am also a tad confused by the number of options - =
-there's the Arago project sources which look 'most TI official' to me, =
-then the Koen Koi kernels, and the Robert C Nelson kernels (both on =
-github) with a bewildering variety of branches.
-
-I did try to replicate Stephan Kappertz's work, as well Sheng Chao's, =
-both of which went nowhere for me, but that doesnt mean they dont work; =
-just not for me.
+=20
 
 
-- Michael
-
-
-
-Am 31.12.2012 um 18:31 schrieb Gilles Chanteperdrix:
-
-> On 12/31/2012 05:39 PM, Michael Haberler wrote:
->=20
->> Bao,
->>=20
->> I got Xenomai working fine, based on Henri Roosen's branch: =
-https://github.com/roosen/linux/tree/v3.2.21_AM33xx_core-3.2
->=20
->=20
-> Hi Michael,
->=20
-> if you tell us on which unpatched kernel this branch is based, we =
-could
-> generate the pre- and post- patches we have been talking about.
->=20
-> Regards.
->=20
->=20
-> --=20
->                                                                Gilles.
 
 
