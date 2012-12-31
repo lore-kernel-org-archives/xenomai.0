@@ -1,13 +1,11 @@
-Message-ID: <50E1CC06.9050404@xenomai.org>
-Date: Mon, 31 Dec 2012 18:31:50 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Date: Mon, 31 Dec 2012 18:32:31 +0100
+From: "Mariusz Janiak" <mariuszjaniak@wp.pl>
+Message-ID: <50e1cc2fb40c67.12589971@wp.pl>
 MIME-Version: 1.0
-References: <CAGVaUoFsUJKCSOMrDuq3htrLzScpzjVP8oKs2ARp7k7o8KbRfQ@mail.gmail.com>
-	<9480305C-20DF-4DBA-AC23-7E3E59EBCEEB@mah.priv.at>
-In-Reply-To: <9480305C-20DF-4DBA-AC23-7E3E59EBCEEB@mah.priv.at>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] About the timer interrupt in beaglebone
+Content-Type: text/plain; charset=iso-8859-2
+Content-Transfer-Encoding: 8bit
+Content-Disposition: inline
+Subject: [Xenomai] SIGXCPU with rt_mutex_release
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,24 +14,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Michael Haberler <mail17@mah.priv.at>
-Cc: xenomai@xenomai.org
+To: Xenomai <xenomai@xenomai.org>
 
-On 12/31/2012 05:39 PM, Michael Haberler wrote:
+Hi,
 
-> Bao,
-> 
-> I got Xenomai working fine, based on Henri Roosen's branch: https://github.com/roosen/linux/tree/v3.2.21_AM33xx_core-3.2
+I have met problem when I run OROCOS helloWord example. Xenomai generate SIGXCPU signal when rt_mutex_release(...) is called. I have installed signal handler for each realtime thread created by OROCOS and I get following result 
+
+SIGDEBUG received, reason 4: affected by priority inversion
+/worek/install/orocos-toolchain-xeno/install/lib/liborocos-rtt-xenomai.so.2.6(my_warn_upon_switch+0x44)[0x7f687ad75024]
+/lib/x86_64-linux-gnu/libpthread.so.0(+0xfcb0)[0x7f687a5dbcb0]
+/usr/xenomai/lib/libnative.so.3(rt_mutex_release+0xbb)[0x7f687a7ecf5b]
+/worek/install/orocos-toolchain-xeno/install/lib/liborocos-rtt-xenomai.so.2.6(_ZN3RTT2os6ThreadD1Ev+0x129)[0x7f687ad73d89]
+/worek/install/orocos-toolchain-xeno/install/lib/liborocos-rtt-xenomai.so.2.6(_ZN3RTT8ActivityD2Ev+0x37)[0x7f687ad272e7]
+/worek/install/orocos-toolchain-xeno/install/lib/liborocos-rtt-xenomai.so.2.6(_ZN3RTT8ActivityD0Ev+0x9)[0x7f687ad27339]
+/worek/install/orocos-toolchain-xeno/install/lib/liborocos-rtt-xenomai.so.2.6(_ZN5boost10shared_ptrIN3RTT4base17ActivityInterfaceEEaSERKS4_+0x4e)[0x7f687ad3fb6e]
+/worek/install/orocos-toolchain-xeno/install/lib/liborocos-rtt-xenomai.so.2.6(_ZN3RTT11TaskContext11setActivityEPNS_4base17ActivityInterfaceE+0x72)[0x7f687ad34d32]
+./helloworld(_ZN3OCL10HelloWorldC2ESs+0x19f)[0x4505ff]
+./helloworld(_Z13ORO_main_impliPPc+0xe3)[0x445393]
+./helloworld(main+0x83)[0x444d63]
+/lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0xed)[0x7f6879a1976d]
+./helloworld[0x444f01]
+
+There is much bigger mess during exiting from application. I am not pretty sure this is a Xenomai problem, if not sorry for bothering. I haven check it with previous Xenomai release yet.
+
+Best regards and happy new year,
+Mariusz
 
 
-Hi Michael,
-
-if you tell us on which unpatched kernel this branch is based, we could
-generate the pre- and post- patches we have been talking about.
-
-Regards.
 
 
--- 
-                                                                Gilles.
 
