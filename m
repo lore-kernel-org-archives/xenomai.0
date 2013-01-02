@@ -1,13 +1,10 @@
-Message-ID: <50E46C37.9090408@siemens.com>
-Date: Wed, 02 Jan 2013 18:19:51 +0100
+Message-ID: <50E471AC.2000701@siemens.com>
+Date: Wed, 02 Jan 2013 18:43:08 +0100
 From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-References: <3a62cd359d1baaa923985e5438f7b75a.squirrel@www.nta-inc.net>
-	<50E2C4C6.60306@xenomai.org> <50E461E2.10502@nta-inc.net>
-In-Reply-To: <50E461E2.10502@nta-inc.net>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] RTDM serial issue
+Subject: [Xenomai] XNARCH_TIMER_IRQ
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,32 +13,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jeff Webb <jeff.webb@nta-inc.net>
-Cc: xenomai@xenomai.org
+To: Xenomai <xenomai@xenomai.org>
 
-On 2013-01-02 17:35, Jeff Webb wrote:
-> On 01/01/2013 05:13 AM, Gilles Chanteperdrix wrote:
->> On 01/01/2013 05:09 AM, jeff.webb@nta-inc.net wrote:
->>
->>> When I try to open an RTDM serial device under Xenomai-2.6.2/Linux 3.4.6
->>> (Ubuntu 12.04), the call appears to succeed, but I get the following
->>> output in /var/log/kern.log:
->>>
->>> [...]
->>>
->>
->> This is a known issue, for a proposed fix, see:
->> http://www.xenomai.org/pipermail/xenomai/2012-October/026566.html
->>
->> Whether we are merging this patch is still not sure.
-> 
-> Are there performance issues if the patch is not applied, or does the
-> patch essentially just remove the worrisome log messages?  From the
-> commit message, it sounds like the latter.
+Hi,
 
-There are no performance issues with that patch, but it turned out to be
-incomplete, causing different errors when dumping /proc/xenomai/stat.
-I'm working on an update.
+this may involve some refactoring of the HAL and a bit of I-pipe, so I
+better ask first:
+
+Not sure when it changed, but XNARCH_TIMER_IRQ may no longer return the
+same values when called on different CPUs. Therefore, It should rather
+be called XNARCH_THIS_CPU_TIMER_IRQ now.
+
+Looking at its users (an I-pipe debug warning pointed it out), there are
+two that don't expect this: xnintr_query_next() and format_irq_proc().
+The former actually wants XNARCH_TIMER_IRQ(cpu), the latter needs
+something like is_timer_irq_on_any_cpus(irq).
+
+So I would propose to refactor XNARCH_TIMER_IRQ and RTHAL_TIMER_IRQ
+accordingly. But this unfortunately requires extensions of I-pipe to
+provide something like __ipipe_hrtimer_irq(cpu) and
+__ipipe_this_cpu_hrtimer_irq. And some ugly workaround in Xenomai for
+older I-pipe versions.
+
+Does this make sense?
 
 Jan
 
