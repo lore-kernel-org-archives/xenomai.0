@@ -1,13 +1,14 @@
-Message-ID: <50E497AD.9000404@nta-inc.net>
-Date: Wed, 02 Jan 2013 14:25:17 -0600
-From: Jeff Webb <jeff.webb@nta-inc.net>
+Message-ID: <50E4C4E3.2070909@openwide.fr>
+Date: Thu, 03 Jan 2013 00:38:11 +0100
+From: Romain Naour <romain.naour@openwide.fr>
 MIME-Version: 1.0
-References: <50E47751.1070005@siemens.com>
-In-Reply-To: <50E47751.1070005@siemens.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PATCH v2] nucleus: Convert intrlock to a sleeping
-	Linux lock
+References: <50E062E8.6030903@openwide.fr> <50E0BD01.1020404@xenomai.org>
+	<50E17756.7030400@openwide.fr>
+In-Reply-To: <50E17756.7030400@openwide.fr>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] Xenomai 2.6.2 user-space compilation error on ARM <
+ armv6
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,51 +17,127 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Wolfgang Mauerer <wolfgang.mauerer@siemens.com>, Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 01/02/2013 12:07 PM, Jan Kiszka wrote:
-> Conceptually, all users of this lock are supposed to run over Linux
-> context already. Moreover, latest I-pipe patches complain that
-> ipipe_virtualize_irq is called with the Xenomai domain stalled which
-> invalidates that useful internal bug check.
->
-> So rework the locking for dumping scheduling statistics and convert
-> intrlock to a sleeping Linux variant to avoid the alarm. And to simplify
-> some code paths.
->
-> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
-> ---
+Le 31/12/2012 12:30, Romain Naour a =C3=A9crit :
+> Le 30/12/2012 23:15, Gilles Chanteperdrix a =C3=A9crit :
+>> On 12/30/2012 04:51 PM, Romain Naour wrote:
+>>
+>>> Hi Gilles,
+>>>
+>>> First of all, thank you for the new release of Xenomai :)
+>>>
+>>> I'm compiling Xenomai 2.6.2 and Linux kernel 3.5.3 for mini2440 with
+>>> buildroot 2012.11.
+>>>
+>>> During compilation I get the following error: error: #error "SMP not
+>>> supported below armv6, compile with -march=3Darmv6 or above"
+>>>
+>>> This error is caused by the SMP mode which is now enabled by default
+>>> on ARM. So I added the option --disable-smp on the buildroot's
+>>> command line for ./configure (buildroot assumes that the SMP mode is
+>>> not enabled when it compile Xenomai for arm)
+>>>
+>>> This option became mandatory for ARM < armv6 to pass this test:
+>>> (xenomai-2.6/include/asm-arm/feature.h)
+>>>
+>>> #if __LINUX_ARM_ARCH__ < 6 && defined(CONFIG_SMP) #error "SMP not
+>>> supported below armv6, compile with -march=3Darmv6 or above" #endif
+>>>
+>>> The error message may be advisable to add the option --disable-smp ?=20
+>>> However, since your objective is to allow to run the same binary on
+>>> UP and SMP system, it is safe to remove this test for ARM < armv6 now
+>>> ?
+>>
+>>
+>> Could you try the following patch?
+>>
+>> diff --git a/include/asm-arm/atomic_asm.h b/include/asm-arm/atomic_asm=
+.h
+>> index 47f17c9..ef62690 100644
+>> --- a/include/asm-arm/atomic_asm.h
+>> +++ b/include/asm-arm/atomic_asm.h
+>> @@ -27,6 +27,10 @@
+>>  #error "please don't include asm/atomic_asm.h directly"
+>>  #endif
+>> =20
+>> +#if __LINUX_ARM_ARCH__ < 6 && defined(CONFIG_SMP)
+>> +#error "SMP not supported below armv6 with ad-hoc atomic operations, =
+compile without SMP or with -march=3Darmv6 or above"
+>> +#endif
+>> +
+>>  extern void __xnarch_xchg_called_with_bad_pointer(void);
+>> =20
+>>  #define xnarch_read_memory_barrier()		xnarch_memory_barrier()
+>> diff --git a/include/asm-arm/features.h b/include/asm-arm/features.h
+>> index 279f752..bddaa5e 100644
+>> --- a/include/asm-arm/features.h
+>> +++ b/include/asm-arm/features.h
+>> @@ -73,10 +73,6 @@
+>>  #error "Could not find current ARM architecture"
+>>  #endif
+>> =20
+>> -#if __LINUX_ARM_ARCH__ < 6 && defined(CONFIG_SMP)
+>> -#error "SMP not supported below armv6, compile with -march=3Darmv6 or=
+ above"
+>> -#endif
+>> -
+>>  #define CONFIG_XENO_FASTSYNCH 1
+>> =20
+>>  #if CONFIG_XENO_ARM_TSC_TYPE =3D=3D __XN_TSC_TYPE_KUSER
+>>
+>=20
+> Hi Gilles,
+>=20
+> I applied your patch and tried to compile with the following options:
+> --with-atomic-ops=3Dad-hoc
+> As expected, the build fails with this error:
+> #error "SMP not supported below armv6 with ad-hoc atomic operations,
+> compile without SMP or with -march=3Darmv6 or above"
+>=20
+> --with-atomic-ops=3Dbuiltins (or when this option is not specified)
+> The build ends correctly.
+> I haven't the board at this time, I'll do a test this week.
+>=20
+> Regards,
+> Romain
+>=20
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> http://www.xenomai.org/mailman/listinfo/xenomai
+>=20
 
-This patch seems to solve the original problem, but I get the following output in the kernel log, when I do a 'cat /proc/xenomai/stat'.
+Hi Gilles,
 
--Jeff
+I did a test today with your previous patch, it works correctly.
+However the following patch is required since the new ipipe-core.
 
-kernel: [  106.030870] ------------[ cut here ]------------
-kernel: [  106.030878] WARNING: at kernel/xenomai/nucleus/intr.c:903 xnintr_query_next+0x189/0x1a0()
-kernel: [  106.030880] Hardware name: Precision WorkStation T3400
-kernel: [  106.030882] Modules linked in: bnep rfcomm bluetooth binfmt_misc dm_crypt snd_hda_codec_analog snd_hda_intel snd_hda_codec snd_hwdep snd_pcm snd_seq_midi snd_rawmidi snd_seq_midi_event snd_seq usbhid snd_timer snd_seq_device psmouse mac_hid snd hid coretemp dcdbas x38_edac ppdev soundcore snd_page_alloc serio_raw edac_core parport_pc microcode lp parport reiserfs nouveau tg3 ttm drm_kms_helper drm i2c_algo_bit mxm_wmi video wmi
-kernel: [  106.030932] Pid: 3106, comm: cat Not tainted 3.4.6-xenomai-2.6.2 #1
-kernel: [  106.030934] Call Trace:
-kernel: [  106.030941]  [<ffffffff8103cc0f>] warn_slowpath_common+0x7f/0xc0
-kernel: [  106.030944]  [<ffffffff8103cc6a>] warn_slowpath_null+0x1a/0x20
-kernel: [  106.030947]  [<ffffffff811060b9>] xnintr_query_next+0x189/0x1a0
-kernel: [  106.030951]  [<ffffffff81119003>] vfile_stat_next+0x163/0x200
-kernel: [  106.030955]  [<ffffffff8113063b>] vfile_snapshot_open+0x21b/0x2e0
-kernel: [  106.030960]  [<ffffffff81263cc3>] proc_reg_open+0xa3/0x180
-kernel: [  106.030963]  [<ffffffff81130160>] ? vfile_regular_release+0x50/0x50
-kernel: [  106.030967]  [<ffffffff81263c20>] ? proc_alloc_inode+0xb0/0xb0
-kernel: [  106.030972]  [<ffffffff81201ace>] __dentry_open+0x24e/0x310
-kernel: [  106.030975]  [<ffffffff81202f51>] nameidata_to_filp+0x71/0x80
-kernel: [  106.030979]  [<ffffffff81212afc>] do_last+0x26c/0x920
-kernel: [  106.030983]  [<ffffffff812132c3>] path_openat+0xd3/0x3c0
-kernel: [  106.030986]  [<ffffffff812136d2>] do_filp_open+0x42/0xa0
-kernel: [  106.030990]  [<ffffffff8121fb8f>] ? alloc_fd+0x4f/0x130
-kernel: [  106.030993]  [<ffffffff81203058>] do_sys_open+0xf8/0x1d0
-kernel: [  106.030997]  [<ffffffff813a5c4a>] ? __ipipe_syscall_root_thunk+0x35/0x67
-kernel: [  106.031001]  [<ffffffff81203151>] sys_open+0x21/0x30
-kernel: [  106.031005]  [<ffffffff816c61e6>] system_call_fastpath+0x16/0x1b
-kernel: [  106.031007] ---[ end trace 5ed7b1604d797a3f ]---
+Signed-off-by: Naour Romain <romain.naour@openwide.fr>
+---
+
+We need a minimal reload value for s3c2410_itimer, otherwise the hardware=
+ timer stops.
+
+ arch/arm/plat-samsung/time.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/arch/arm/plat-samsung/time.c b/arch/arm/plat-samsung/time.c
+index 8d14b85..97fbdc5 100644
+--- a/arch/arm/plat-samsung/time.c
++++ b/arch/arm/plat-samsung/time.c
+@@ -364,6 +364,8 @@ static void s3c2410_timer_setup (void)
+=20
+ #ifdef CONFIG_IPIPE
+ 	s3c2410_itimer.freq =3D tcnt * HZ;
++	/* hardware timer can't be reloaded below 120ns */
++	s3c2410_itimer.min_delay_ticks =3D ipipe_timer_ns2ticks(&s3c2410_itimer=
+, 120);
+ 	ipipe_timer_register(&s3c2410_itimer);
+ #endif /* CONFIG_IPIPE */
+ }
+--=20
+1.8.0.3
 
 
 
