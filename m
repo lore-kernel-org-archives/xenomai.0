@@ -1,11 +1,13 @@
-Message-ID: <50E47751.1070005@siemens.com>
-Date: Wed, 02 Jan 2013 19:07:13 +0100
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <50E497AD.9000404@nta-inc.net>
+Date: Wed, 02 Jan 2013 14:25:17 -0600
+From: Jeff Webb <jeff.webb@nta-inc.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+References: <50E47751.1070005@siemens.com>
+In-Reply-To: <50E47751.1070005@siemens.com>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] [PATCH v2] nucleus: Convert intrlock to a sleeping Linux
-	lock
+Subject: Re: [Xenomai] [PATCH v2] nucleus: Convert intrlock to a sleeping
+	Linux lock
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,269 +16,51 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
-Cc: Wolfgang Mauerer <wolfgang.mauerer@siemens.com>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Wolfgang Mauerer <wolfgang.mauerer@siemens.com>, Xenomai <xenomai@xenomai.org>
 
-Conceptually, all users of this lock are supposed to run over Linux
-context already. Moreover, latest I-pipe patches complain that
-ipipe_virtualize_irq is called with the Xenomai domain stalled which
-invalidates that useful internal bug check.
+On 01/02/2013 12:07 PM, Jan Kiszka wrote:
+> Conceptually, all users of this lock are supposed to run over Linux
+> context already. Moreover, latest I-pipe patches complain that
+> ipipe_virtualize_irq is called with the Xenomai domain stalled which
+> invalidates that useful internal bug check.
+>
+> So rework the locking for dumping scheduling statistics and convert
+> intrlock to a sleeping Linux variant to avoid the alarm. And to simplify
+> some code paths.
+>
+> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+> ---
 
-So rework the locking for dumping scheduling statistics and convert
-intrlock to a sleeping Linux variant to avoid the alarm. And to simplify
-some code paths.
+This patch seems to solve the original problem, but I get the following output in the kernel log, when I do a 'cat /proc/xenomai/stat'.
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
+-Jeff
 
-This revealed the broken usage of XNARCH_TIMER_IRQ by xnintr_query_next.
-A similar issue was visible in format_irq_proc even before this change.
-Requires different patches, see corresponding posting.
+kernel: [  106.030870] ------------[ cut here ]------------
+kernel: [  106.030878] WARNING: at kernel/xenomai/nucleus/intr.c:903 xnintr_query_next+0x189/0x1a0()
+kernel: [  106.030880] Hardware name: Precision WorkStation T3400
+kernel: [  106.030882] Modules linked in: bnep rfcomm bluetooth binfmt_misc dm_crypt snd_hda_codec_analog snd_hda_intel snd_hda_codec snd_hwdep snd_pcm snd_seq_midi snd_rawmidi snd_seq_midi_event snd_seq usbhid snd_timer snd_seq_device psmouse mac_hid snd hid coretemp dcdbas x38_edac ppdev soundcore snd_page_alloc serio_raw edac_core parport_pc microcode lp parport reiserfs nouveau tg3 ttm drm_kms_helper drm i2c_algo_bit mxm_wmi video wmi
+kernel: [  106.030932] Pid: 3106, comm: cat Not tainted 3.4.6-xenomai-2.6.2 #1
+kernel: [  106.030934] Call Trace:
+kernel: [  106.030941]  [<ffffffff8103cc0f>] warn_slowpath_common+0x7f/0xc0
+kernel: [  106.030944]  [<ffffffff8103cc6a>] warn_slowpath_null+0x1a/0x20
+kernel: [  106.030947]  [<ffffffff811060b9>] xnintr_query_next+0x189/0x1a0
+kernel: [  106.030951]  [<ffffffff81119003>] vfile_stat_next+0x163/0x200
+kernel: [  106.030955]  [<ffffffff8113063b>] vfile_snapshot_open+0x21b/0x2e0
+kernel: [  106.030960]  [<ffffffff81263cc3>] proc_reg_open+0xa3/0x180
+kernel: [  106.030963]  [<ffffffff81130160>] ? vfile_regular_release+0x50/0x50
+kernel: [  106.030967]  [<ffffffff81263c20>] ? proc_alloc_inode+0xb0/0xb0
+kernel: [  106.030972]  [<ffffffff81201ace>] __dentry_open+0x24e/0x310
+kernel: [  106.030975]  [<ffffffff81202f51>] nameidata_to_filp+0x71/0x80
+kernel: [  106.030979]  [<ffffffff81212afc>] do_last+0x26c/0x920
+kernel: [  106.030983]  [<ffffffff812132c3>] path_openat+0xd3/0x3c0
+kernel: [  106.030986]  [<ffffffff812136d2>] do_filp_open+0x42/0xa0
+kernel: [  106.030990]  [<ffffffff8121fb8f>] ? alloc_fd+0x4f/0x130
+kernel: [  106.030993]  [<ffffffff81203058>] do_sys_open+0xf8/0x1d0
+kernel: [  106.030997]  [<ffffffff813a5c4a>] ? __ipipe_syscall_root_thunk+0x35/0x67
+kernel: [  106.031001]  [<ffffffff81203151>] sys_open+0x21/0x30
+kernel: [  106.031005]  [<ffffffff816c61e6>] system_call_fastpath+0x16/0x1b
+kernel: [  106.031007] ---[ end trace 5ed7b1604d797a3f ]---
 
- include/nucleus/intr.h |    4 ++
- ksrc/nucleus/intr.c    |   81 ++++++++++++-----------------------------------
- ksrc/nucleus/sched.c   |    6 +++
- 3 files changed, 31 insertions(+), 60 deletions(-)
 
-diff --git a/include/nucleus/intr.h b/include/nucleus/intr.h
-index 20a625d..4105122 100644
---- a/include/nucleus/intr.h
-+++ b/include/nucleus/intr.h
-@@ -131,6 +131,10 @@ void xnintr_affinity(xnintr_t *intr,
- 
- int xnintr_query_init(xnintr_iterator_t *iterator);
- 
-+void xnintr_put_query_lock(struct xnvfile *vfile);
-+
-+int xnintr_get_query_lock(struct xnvfile *vfile);
-+
- int xnintr_query_next(int irq, xnintr_iterator_t *iterator,
- 		      char *name_buf);
- 
-diff --git a/ksrc/nucleus/intr.c b/ksrc/nucleus/intr.c
-index c75fcac..36f20fe 100644
---- a/ksrc/nucleus/intr.c
-+++ b/ksrc/nucleus/intr.c
-@@ -39,30 +39,11 @@
- 
- #define XNINTR_MAX_UNHANDLED	1000
- 
--DEFINE_PRIVATE_XNLOCK(intrlock);
-+static DEFINE_BINARY_SEMAPHORE(intrlock);
- 
- #ifdef CONFIG_XENO_OPT_STATS
- xnintr_t nkclock;	     /* Only for statistics */
- static int xnintr_count = 1; /* Number of attached xnintr objects + nkclock */
--static int xnintr_list_rev;  /* Modification counter of xnintr list */
--
--/* Both functions update xnintr_list_rev at the very end.
-- * This guarantees that module.c::stat_seq_open() won't get
-- * an up-to-date xnintr_list_rev and old xnintr_count. */
--
--static inline void xnintr_stat_counter_inc(void)
--{
--	xnintr_count++;
--	xnarch_memory_barrier();
--	xnintr_list_rev++;
--}
--
--static inline void xnintr_stat_counter_dec(void)
--{
--	xnintr_count--;
--	xnarch_memory_barrier();
--	xnintr_list_rev++;
--}
- 
- static inline void xnintr_sync_stat_references(xnintr_t *intr)
- {
-@@ -76,8 +57,6 @@ static inline void xnintr_sync_stat_references(xnintr_t *intr)
- 	}
- }
- #else
--static inline void xnintr_stat_counter_inc(void) {}
--static inline void xnintr_stat_counter_dec(void) {}
- static inline void xnintr_sync_stat_references(xnintr_t *intr) {}
- #endif /* CONFIG_XENO_OPT_STATS */
- 
-@@ -709,7 +688,6 @@ EXPORT_SYMBOL_GPL(xnintr_destroy);
- int xnintr_attach(xnintr_t *intr, void *cookie)
- {
- 	int ret;
--	spl_t s;
- 
- 	trace_mark(xn_nucleus, irq_attach, "irq %u name %s",
- 		   intr->irq, intr->name);
-@@ -721,7 +699,7 @@ int xnintr_attach(xnintr_t *intr, void *cookie)
- 	xnarch_set_irq_affinity(intr->irq, nkaffinity);
- #endif /* CONFIG_SMP */
- 
--	xnlock_get_irqsave(&intrlock, s);
-+	down(&intrlock);
- 
- 	if (__testbits(intr->flags, XN_ISR_ATTACHED)) {
- 		ret = -EBUSY;
-@@ -733,9 +711,9 @@ int xnintr_attach(xnintr_t *intr, void *cookie)
- 		goto out;
- 
- 	__setbits(intr->flags, XN_ISR_ATTACHED);
--	xnintr_stat_counter_inc();
-+	xnintr_count++;
- out:
--	xnlock_put_irqrestore(&intrlock, s);
-+	up(&intrlock);
- 
- 	return ret;
- }
-@@ -775,11 +753,10 @@ EXPORT_SYMBOL_GPL(xnintr_attach);
- int xnintr_detach(xnintr_t *intr)
- {
- 	int ret;
--	spl_t s;
- 
- 	trace_mark(xn_nucleus, irq_detach, "irq %u", intr->irq);
- 
--	xnlock_get_irqsave(&intrlock, s);
-+	down(&intrlock);
- 
- 	if (!__testbits(intr->flags, XN_ISR_ATTACHED)) {
- 		ret = -EINVAL;
-@@ -792,9 +769,9 @@ int xnintr_detach(xnintr_t *intr)
- 	if (ret)
- 		goto out;
- 
--	xnintr_stat_counter_dec();
-+	xnintr_count--;
-  out:
--	xnlock_put_irqrestore(&intrlock, s);
-+	up(&intrlock);
- 
- 	return ret;
- }
-@@ -894,23 +871,21 @@ void xnintr_affinity(xnintr_t *intr, xnarch_cpumask_t cpumask)
- EXPORT_SYMBOL_GPL(xnintr_affinity);
- 
- #ifdef CONFIG_XENO_OPT_STATS
-+int xnintr_get_query_lock(struct xnvfile *vfile)
-+{
-+	return down_interruptible(&intrlock) ? -ERESTARTSYS : 0;
-+}
-+
-+void xnintr_put_query_lock(struct xnvfile *vfile)
-+{
-+	up(&intrlock);
-+}
-+
- int xnintr_query_init(xnintr_iterator_t *iterator)
- {
- 	iterator->cpu = -1;
- 	iterator->prev = NULL;
- 
--	/* The order is important here: first xnintr_list_rev then
--	 * xnintr_count.  On the other hand, xnintr_attach/detach()
--	 * update xnintr_count first and then xnintr_list_rev.  This
--	 * should guarantee that we can't get an up-to-date
--	 * xnintr_list_rev and old xnintr_count here. The other way
--	 * around is not a problem as xnintr_query() will notice this
--	 * fact later.  Should xnintr_list_rev change later,
--	 * xnintr_query() will trigger an appropriate error below. */
--
--	iterator->list_rev = xnintr_list_rev;
--	xnarch_memory_barrier();
--
- 	return xnintr_count;
- }
- 
-@@ -919,20 +894,11 @@ int xnintr_query_next(int irq, xnintr_iterator_t *iterator, char *name_buf)
- 	xnintr_t *intr;
- 	xnticks_t last_switch;
- 	int cpu_no = iterator->cpu + 1;
--	int err = 0;
--	spl_t s;
- 
- 	if (cpu_no == xnarch_num_online_cpus())
- 		cpu_no = 0;
- 	iterator->cpu = cpu_no;
- 
--	xnlock_get_irqsave(&intrlock, s);
--
--	if (iterator->list_rev != xnintr_list_rev) {
--		err = -EAGAIN;
--		goto unlock_and_exit;
--	}
--
- 	if (!iterator->prev) {
- 		if (irq == XNARCH_TIMER_IRQ)
- 			intr = &nkclock;
-@@ -944,8 +910,7 @@ int xnintr_query_next(int irq, xnintr_iterator_t *iterator, char *name_buf)
- 	if (!intr) {
- 		cpu_no = -1;
- 		iterator->prev = NULL;
--		err = -ENODEV;
--		goto unlock_and_exit;
-+		return -ENODEV;
- 	}
- 
- 	snprintf(name_buf, XNOBJECT_NAME_LEN, "IRQ%d: %s", irq, intr->name);
-@@ -968,10 +933,7 @@ int xnintr_query_next(int irq, xnintr_iterator_t *iterator, char *name_buf)
- 	if (cpu_no + 1 == xnarch_num_online_cpus())
- 		iterator->prev = intr;
- 
--     unlock_and_exit:
--	xnlock_put_irqrestore(&intrlock, s);
--
--	return err;
-+	return 0;
- }
- #endif /* CONFIG_XENO_OPT_STATS */
- 
-@@ -983,7 +945,6 @@ static inline int format_irq_proc(unsigned int irq,
- 				  struct xnvfile_regular_iterator *it)
- {
- 	struct xnintr *intr;
--	spl_t s;
- 
- 	if (irq == XNARCH_TIMER_IRQ) {
- 		xnvfile_puts(it, "         [timer]");
-@@ -1005,7 +966,7 @@ static inline int format_irq_proc(unsigned int irq,
- 		return 0;
- 	}
- 
--	xnlock_get_irqsave(&intrlock, s);
-+	down(&intrlock);
- 
- 	intr = xnintr_shirq_first(irq);
- 	if (intr) {
-@@ -1018,7 +979,7 @@ static inline int format_irq_proc(unsigned int irq,
- 		} while (intr);
- 	}
- 
--	xnlock_put_irqrestore(&intrlock, s);
-+	up(&intrlock);
- 
- 	return 0;
- }
-diff --git a/ksrc/nucleus/sched.c b/ksrc/nucleus/sched.c
-index 61957e6..16a59f8 100644
---- a/ksrc/nucleus/sched.c
-+++ b/ksrc/nucleus/sched.c
-@@ -839,11 +839,17 @@ struct vfile_stat_data {
- 
- static struct xnvfile_snapshot_ops vfile_stat_ops;
- 
-+static struct xnvfile_lock_ops vfile_stat_lockops = {
-+	.get = xnintr_get_query_lock,
-+	.put = xnintr_put_query_lock,
-+};
-+
- static struct xnvfile_snapshot stat_vfile = {
- 	.privsz = sizeof(struct vfile_stat_priv),
- 	.datasz = sizeof(struct vfile_stat_data),
- 	.tag = &nkpod_struct.threadlist_tag,
- 	.ops = &vfile_stat_ops,
-+	.entry = { .lockops = &vfile_stat_lockops },
- };
- 
- static int vfile_stat_rewind(struct xnvfile_snapshot_iterator *it)
--- 
-1.7.3.4
 
