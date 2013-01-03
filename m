@@ -1,12 +1,12 @@
-Message-ID: <50E5C043.8090804@xenomai.org>
-Date: Thu, 03 Jan 2013 18:30:43 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <50E5C050.5000006@xenomai.org>
+Date: Thu, 03 Jan 2013 18:30:56 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 References: <50E471AC.2000701@siemens.com> <50E5A0E4.4000108@xenomai.org>
 	<50E5A75B.6090507@siemens.com> <50E5B174.2040106@xenomai.org>
-	<50E5BF03.5020004@siemens.com>
-In-Reply-To: <50E5BF03.5020004@siemens.com>
-Content-Type: text/plain; charset=UTF-8
+	<50E5BDFE.6040407@xenomai.org>
+In-Reply-To: <50E5BDFE.6040407@xenomai.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] XNARCH_TIMER_IRQ
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -17,11 +17,11 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>
 
-On 01/03/2013 06:25 PM, Jan Kiszka wrote:
-> On 2013-01-03 17:27, Philippe Gerum wrote:
+On 01/03/2013 06:21 PM, Gilles Chanteperdrix wrote:
+> On 01/03/2013 05:27 PM, Philippe Gerum wrote:
 >> On 01/03/2013 04:44 PM, Jan Kiszka wrote:
 >>> On 2013-01-03 16:16, Gilles Chanteperdrix wrote:
 >>>> On 01/02/2013 06:43 PM, Jan Kiszka wrote:
@@ -51,19 +51,16 @@ On 01/03/2013 06:25 PM, Jan Kiszka wrote:
 >>>> http://git.xenomai.org/?p=xenomai-gch.git;a=commitdiff;h=37ca257af466e7e5fbfb402b39f088487d048fd5;hp=a9971c363fd361b428f12200536bc5a01dff9c05
 >>>
 >>
->> Caution, this code is WIP. nktimer will have to move to the percpu 
+>> Caution, this code is WIP. nktimer will have to move to the percpu
 >> scheduler descriptor to complete this.
-> 
-> That's nkclock in 2.6. Mostly a cosmetic issue, the interrupt name will
-> not be properly printed, statistics are already per-cpu. Could be
-> improved nevertheless.
-> 
-> Is there an easy way to find out if we have per-CPU timers on some arch?
+>
+> You mean nkclock? But does it make sense if the timer has the same irq
+> on all cpus?
+>
 
-The thing is you can also have a mix, on x86 for instance, you could in
-theory have a mix between LAPIC on some cpus, and HPET on other cpus.
-Each HPET will have its own MSI, but all the LAPICs will use the same irq.
+If we stop assuming that for some archs, we have to stop assuming the 
+same for any arch.
 
 -- 
-					    Gilles.
+Philippe.
 
