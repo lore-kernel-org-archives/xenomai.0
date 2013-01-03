@@ -1,12 +1,13 @@
-Message-ID: <50E5CCA8.3090608@nta-inc.net>
-Date: Thu, 03 Jan 2013 12:23:36 -0600
-From: Jeff Webb <jeff.webb@nta-inc.net>
+Message-ID: <50E5DE47.2080700@xenomai.org>
+Date: Thu, 03 Jan 2013 20:38:47 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CAD1Etoj5JcMcDS8Y7eWkbfenxxyctia_T0sSysYQk7L9fv5MfA@mail.gmail.com>
-In-Reply-To: <CAD1Etoj5JcMcDS8Y7eWkbfenxxyctia_T0sSysYQk7L9fv5MfA@mail.gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+References: <1348579158-5686-1-git-send-email-wolfgang.mauerer@siemens.com>
+	<50E45035.4050704@siemens.com>
+In-Reply-To: <50E45035.4050704@siemens.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] building .deb for 2.6.2
+Subject: Re: [Xenomai] [PATCH] hal: Fix cpu bitmap handling
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,39 +16,56 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Wolfgang Mauerer <wolfgang.mauerer@siemens.com>, xenomai@xenomai.org
 
-On 01/03/2013 12:17 PM, Daniel M. Drucker, Ph.D. wrote:
-> I am trying to run debuild to create a .deb for Xenomai 2.6.2 on kernel
-> 3.5.3 on x86.
->
-> The install rule in xenomai-2.6.2/debian/rules says:
->      cp adeos-ipipe-*.patch
-> $(CURDIR)/debian/linux-patch-xenomai/usr/src/kernel-patches/diffs/xenomai
-> but at that point in the build process adeos-ipipe-*.patch does not seem to
-> exist:
->
-> [ ... ]
-> dh_install --sourcedir=/home/dmd/build/xenomai-2.6.2/debian/tmp
-> # Patch collection:
-> mkdir -p
-> /home/dmd/build/xenomai-2.6.2/debian/linux-patch-xenomai/usr/src/kernel-patches/diffs/xenomai
-> cp adeos-ipipe-*.patch
-> /home/dmd/build/xenomai-2.6.2/debian/linux-patch-xenomai/usr/src/kernel-patches/diffs/xenomai
-> cp: cannot stat `adeos-ipipe-*.patch': No such file or directory
-> make: *** [install] Error 1
-> dpkg-buildpackage: error: fakeroot debian/rules binary gave error exit
-> status 2
-> debuild: fatal error at line 1350:
-> dpkg-buildpackage -rfakeroot -D -us -uc failed
->
->
-> Am I missing something, or is the package?
+On 01/02/2013 04:20 PM, Jan Kiszka wrote:
 
-I posted the same question last week.  Gilles posted a patch for this here:
+> On 2012-09-25 15:19, Wolfgang Mauerer wrote:
+>> Don't left-shift further than the bit-width of the
+>> shifted type allows. In this particular constellation,
+>> this leads to selecting CPUs that are not specified in
+>> supported_cpus_arg on systems with more than 32 cores.
+>>
+>> Signed-off-by: Wolfgang Mauerer <wolfgang.mauerer@siemens.com>
+>> ---
+>>  ksrc/arch/generic/hal.c |    2 +-
+>>  ksrc/nucleus/intr.c     |    2 +-
+>>  2 files changed, 2 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/ksrc/arch/generic/hal.c b/ksrc/arch/generic/hal.c
+>> index ac6c171..f6ac722 100644
+>> --- a/ksrc/arch/generic/hal.c
+>> +++ b/ksrc/arch/generic/hal.c
+>> @@ -539,7 +539,7 @@ int rthal_init(void)
+>>      int cpu;
+>>      cpus_clear(rthal_supported_cpus);
+>>      for (cpu = 0; cpu < BITS_PER_LONG; cpu++)
+>> -	    if (supported_cpus_arg & (1 << cpu))
+>> +	    if (supported_cpus_arg & (1ul << cpu))
+>>  		    cpu_set(cpu, rthal_supported_cpus);
+>>  #endif /* CONFIG_SMP */
+>>  
+>> diff --git a/ksrc/nucleus/intr.c b/ksrc/nucleus/intr.c
+>> index 0f37bb2..e77f25e 100644
+>> --- a/ksrc/nucleus/intr.c
+>> +++ b/ksrc/nucleus/intr.c
+>> @@ -1083,7 +1083,7 @@ static int affinity_vfile_show(struct xnvfile_regular_iterator *it,
+>>  
+>>  	for (cpu = 0; cpu < BITS_PER_LONG; cpu++)
+>>  		if (xnarch_cpu_isset(cpu, nkaffinity))
+>> -			val |= (1 << cpu);
+>> +			val |= (1ul << cpu);
+>>  
+>>  	xnvfile_printf(it, "%08lx\n", val);
+>>  
+>>
+> 
+> This fix wasn't merged into 2.6. Just forgotten?
 
-http://www.xenomai.org/pipermail/xenomai/2012-December/027118.html
 
--Jeff
+Yes, merged now, thanks.
 
+-- 
+                                                                Gilles.
 
