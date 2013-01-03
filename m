@@ -1,17 +1,13 @@
-Content-Type: text/plain; charset=us-ascii
-Mime-Version: 1.0 (Apple Message framework v1283)
-From: Michael Haberler <mail17@mah.priv.at>
-In-Reply-To: <20130103085312.GA8132@localhost.localdomain>
-Date: Thu, 3 Jan 2013 10:18:15 +0100
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <5C3D95AF-ADF8-4B1E-8FB6-5B9557262EC8@mah.priv.at>
-References: <CAGVaUoFsUJKCSOMrDuq3htrLzScpzjVP8oKs2ARp7k7o8KbRfQ@mail.gmail.com>
-	<9480305C-20DF-4DBA-AC23-7E3E59EBCEEB@mah.priv.at>
-	<50E1CC06.9050404@xenomai.org>
-	<382C7691-29C9-408C-97DE-4A020138B0A4@mah.priv.at>
-	<CANKLDmuU254PGkv2+ABiGitZDg1u9A5uq9Po=3gzOo8-KyANVw@mail.gmail.com>
-	<20130103085312.GA8132@localhost.localdomain>
-Subject: Re: [Xenomai] About the timer interrupt in beaglebone
+Message-ID: <50E5616D.8060303@siemens.com>
+Date: Thu, 03 Jan 2013 11:46:05 +0100
+From: Jan Kiszka <jan.kiszka@siemens.com>
+MIME-Version: 1.0
+References: <50E47751.1070005@siemens.com> <50E497AD.9000404@nta-inc.net>
+In-Reply-To: <50E497AD.9000404@nta-inc.net>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [PATCH v2] nucleus: Convert intrlock to a sleeping
+	Linux lock
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,36 +16,60 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Richard Cochran <richardcochran@gmail.com>, xenomai@xenomai.org
+To: Jeff Webb <jeff.webb@nta-inc.net>
+Cc: "Mauerer, Wolfgang" <wolfgang.mauerer@siemens.com>, Xenomai <xenomai@xenomai.org>
 
+On 2013-01-02 21:25, Jeff Webb wrote:
+> On 01/02/2013 12:07 PM, Jan Kiszka wrote:
+>> Conceptually, all users of this lock are supposed to run over Linux
+>> context already. Moreover, latest I-pipe patches complain that
+>> ipipe_virtualize_irq is called with the Xenomai domain stalled which
+>> invalidates that useful internal bug check.
+>>
+>> So rework the locking for dumping scheduling statistics and convert
+>> intrlock to a sleeping Linux variant to avoid the alarm. And to simplify
+>> some code paths.
+>>
+>> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+>> ---
+> 
+> This patch seems to solve the original problem, but I get the following output in the kernel log, when I do a 'cat /proc/xenomai/stat'.
+> 
+> -Jeff
+> 
+> kernel: [  106.030870] ------------[ cut here ]------------
+> kernel: [  106.030878] WARNING: at kernel/xenomai/nucleus/intr.c:903 xnintr_query_next+0x189/0x1a0()
+> kernel: [  106.030880] Hardware name: Precision WorkStation T3400
+> kernel: [  106.030882] Modules linked in: bnep rfcomm bluetooth binfmt_misc dm_crypt snd_hda_codec_analog snd_hda_intel snd_hda_codec snd_hwdep snd_pcm snd_seq_midi snd_rawmidi snd_seq_midi_event snd_seq usbhid snd_timer snd_seq_device psmouse mac_hid snd hid coretemp dcdbas x38_edac ppdev soundcore snd_page_alloc serio_raw edac_core parport_pc microcode lp parport reiserfs nouveau tg3 ttm drm_kms_helper drm i2c_algo_bit mxm_wmi video wmi
+> kernel: [  106.030932] Pid: 3106, comm: cat Not tainted 3.4.6-xenomai-2.6.2 #1
+> kernel: [  106.030934] Call Trace:
+> kernel: [  106.030941]  [<ffffffff8103cc0f>] warn_slowpath_common+0x7f/0xc0
+> kernel: [  106.030944]  [<ffffffff8103cc6a>] warn_slowpath_null+0x1a/0x20
+> kernel: [  106.030947]  [<ffffffff811060b9>] xnintr_query_next+0x189/0x1a0
+> kernel: [  106.030951]  [<ffffffff81119003>] vfile_stat_next+0x163/0x200
+> kernel: [  106.030955]  [<ffffffff8113063b>] vfile_snapshot_open+0x21b/0x2e0
+> kernel: [  106.030960]  [<ffffffff81263cc3>] proc_reg_open+0xa3/0x180
+> kernel: [  106.030963]  [<ffffffff81130160>] ? vfile_regular_release+0x50/0x50
+> kernel: [  106.030967]  [<ffffffff81263c20>] ? proc_alloc_inode+0xb0/0xb0
+> kernel: [  106.030972]  [<ffffffff81201ace>] __dentry_open+0x24e/0x310
+> kernel: [  106.030975]  [<ffffffff81202f51>] nameidata_to_filp+0x71/0x80
+> kernel: [  106.030979]  [<ffffffff81212afc>] do_last+0x26c/0x920
+> kernel: [  106.030983]  [<ffffffff812132c3>] path_openat+0xd3/0x3c0
+> kernel: [  106.030986]  [<ffffffff812136d2>] do_filp_open+0x42/0xa0
+> kernel: [  106.030990]  [<ffffffff8121fb8f>] ? alloc_fd+0x4f/0x130
+> kernel: [  106.030993]  [<ffffffff81203058>] do_sys_open+0xf8/0x1d0
+> kernel: [  106.030997]  [<ffffffff813a5c4a>] ? __ipipe_syscall_root_thunk+0x35/0x67
+> kernel: [  106.031001]  [<ffffffff81203151>] sys_open+0x21/0x30
+> kernel: [  106.031005]  [<ffffffff816c61e6>] system_call_fastpath+0x16/0x1b
+> kernel: [  106.031007] ---[ end trace 5ed7b1604d797a3f ]---
+> 
+> 
 
-Am 03.01.2013 um 09:53 schrieb Richard Cochran:
+Yes, that's the XNARCH_TIMER_IRQ bug I was referring to.
 
-> On Wed, Jan 02, 2013 at 10:40:05AM +0100, Henri Roosen wrote:
->>=20
->> My decision to base the port on the Arago project was also that it =
-looked
->> 'most TI official' to me. TI ships an evaluation disk with the =
-AM335x-evm
->> board that is based on this project.
->=20
-> The arago thing has gazillions of hacks, must of which are never going
-> mainline. I would avoid it if at all possible.
->=20
-> I have been pushing to get the beaglebone working "out of the box" in
-> mainline Linux, and as of v3.8-rc2 it does work with a ramfs and
-> Ethernet networking. However, I don't know which other drivers are
-> still not working on that board.
+Jan
 
-Richard -
-
-fine, but my requirement is a working Xenomai kernel with - in the =
-minimum - GPIO, PRU, PWM, cape support, and I dont see that combination =
-of Xenomai and v.3.8 around the corner anyday soon
-
-what would you then suggest as an alternative base for getting Xenomai =
-to run on the beaglebone with the above laundry list?
-
-- Michael
-
+-- 
+Siemens AG, Corporate Technology, CT RTC ITP SDP-DE
+Corporate Competence Center Embedded Linux
 
