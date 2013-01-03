@@ -1,15 +1,16 @@
+Date: Thu, 3 Jan 2013 09:53:12 +0100
+From: Richard Cochran <richardcochran@gmail.com>
+Message-ID: <20130103085312.GA8132@localhost.localdomain>
+References: <CAGVaUoFsUJKCSOMrDuq3htrLzScpzjVP8oKs2ARp7k7o8KbRfQ@mail.gmail.com>
+	<9480305C-20DF-4DBA-AC23-7E3E59EBCEEB@mah.priv.at>
+	<50E1CC06.9050404@xenomai.org>
+	<382C7691-29C9-408C-97DE-4A020138B0A4@mah.priv.at>
+	<CANKLDmuU254PGkv2+ABiGitZDg1u9A5uq9Po=3gzOo8-KyANVw@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <CABi95VOOcH7uCKXrEyYf5Jw9MTyhVtTRLJzafXxZft-X=9hWYg@mail.gmail.com>
-References: <CABi95VNaL3VuLq-qBEGgG1Fnwtpi2eQsDCMyEqPqvh9yNuZ-Eg@mail.gmail.com>
-	<50E03E2E.9000803@xenomai.org>
-	<201212301534.06581.paul_c@tuxcnc.org>
-	<CABi95VOOcH7uCKXrEyYf5Jw9MTyhVtTRLJzafXxZft-X=9hWYg@mail.gmail.com>
-Date: Thu, 3 Jan 2013 13:58:59 +0800
-Message-ID: <CABi95VOmgcCRDSGOs=SQqQOm4PauK82DnTWh0JOpn-3Y1AD-3Q@mail.gmail.com>
-From: =?GB2312?B?yfLMzg==?= <xst0001@gmail.com>
-Content-Type: text/plain; charset=GB2312
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] Can not run test on Raspberry Pi
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CANKLDmuU254PGkv2+ABiGitZDg1u9A5uq9Po=3gzOo8-KyANVw@mail.gmail.com>
+Subject: Re: [Xenomai] About the timer interrupt in beaglebone
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,36 +19,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai@xenomai.org
+To: Henri Roosen <henriroosen@gmail.com>
+Cc: xenomai@xenomai.org
 
-2013/1/3 =C9=F2=CC=CE <xst0001@gmail.com>
->
->
->
-> 2012/12/30 Paul <paul_c@tuxcnc.org>
->>
->> On Sunday 30 December 2012, Gilles Chanteperdrix wrote:
->>
->> > The most common reason for such issues is if you are not compiling
->> > xenomai with the same toolchain or same toolchain options (regarding
->> > for instance the EABI setting) as the one used to compile the target
->> > libc.
->>
->> If you are using a Raspian install, then try using:
->>  configure --host=3Darm-bcm2708hardfp-linux-gnueabi
->> The alternative is to compile Xenomai on the PI which doesn't take too
->> long. Both options work fine for me.
->>
->> The kernel should have also been compiled with  the bcm2708hardfp
->> toolchain so as to avoid problems further down the line.
->>
-I use arm-bcm2708hardfp-linux-gnueabi instead of arm-bcm2708-linux-gnueabi
-to compile the kernl and Xenomai,and there is no error now.Maybe the libc o=
-f
-Raspbian is compiled by arm-bcm2708hardfp-linux-gnueabi.
+On Wed, Jan 02, 2013 at 10:40:05AM +0100, Henri Roosen wrote:
+> 
+> My decision to base the port on the Arago project was also that it looked
+> 'most TI official' to me. TI ships an evaluation disk with the AM335x-evm
+> board that is based on this project.
 
-Thank you for your help,Gilles and Paul.
+The arago thing has gazillions of hacks, must of which are never going
+mainline. I would avoid it if at all possible.
 
+I have been pushing to get the beaglebone working "out of the box" in
+mainline Linux, and as of v3.8-rc2 it does work with a ramfs and
+Ethernet networking. However, I don't know which other drivers are
+still not working on that board.
 
-               Shen Tao
+HTH,
+Richard
 
