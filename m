@@ -1,12 +1,20 @@
-Message-ID: <50E60C72.6000801@xenomai.org>
-Date: Thu, 03 Jan 2013 23:55:46 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CAD1EtoiVOD7KdOD7ZyqtxQ3AttD=Ca0bbsOsKOiMQtyNxm47EA@mail.gmail.com>	<50E60647.5090309@xenomai.org>	<CAD1EtoiFivw1qesTzEUF9Scb-uMwMaJpnw18cJJ79DJQ3tejLw@mail.gmail.com>	<50E608CF.3020606@xenomai.org>	<CAD1EtoiHmA1YnRcoc-vHLT6BO1A61VuP9Ey+WWnoZS_7aOmYmQ@mail.gmail.com>	<50E60994.8010903@xenomai.org>	<CAD1Etohn+D9+8XebcRFj09hb=tbu_PgC_Tsx0bxLwMJ8w1xAzA@mail.gmail.com>	<50E60A3B.7040501@xenomai.org>	<CAD1EtojxM6PajHda1V4DZ0OqUMd-EtutiPmgtkYPnwKWG5Z30g@mail.gmail.com>
+In-Reply-To: <CAD1Etoi=F2Ds7hUCKZD7M2j2CT3FKo_5vkqY2O3mLwjBVHYG=A@mail.gmail.com>
+References: <CAD1EtoiVOD7KdOD7ZyqtxQ3AttD=Ca0bbsOsKOiMQtyNxm47EA@mail.gmail.com>
+	<50E60647.5090309@xenomai.org>
+	<CAD1EtoiFivw1qesTzEUF9Scb-uMwMaJpnw18cJJ79DJQ3tejLw@mail.gmail.com>
+	<50E608CF.3020606@xenomai.org>
+	<CAD1EtoiHmA1YnRcoc-vHLT6BO1A61VuP9Ey+WWnoZS_7aOmYmQ@mail.gmail.com>
+	<50E60994.8010903@xenomai.org>
+	<CAD1Etohn+D9+8XebcRFj09hb=tbu_PgC_Tsx0bxLwMJ8w1xAzA@mail.gmail.com>
+	<50E60A3B.7040501@xenomai.org>
+	<CAD1EtojxM6PajHda1V4DZ0OqUMd-EtutiPmgtkYPnwKWG5Z30g@mail.gmail.com>
 	<50E60B67.7060401@xenomai.org>
-In-Reply-To: <50E60B67.7060401@xenomai.org>
+	<CAD1Etoi=F2Ds7hUCKZD7M2j2CT3FKo_5vkqY2O3mLwjBVHYG=A@mail.gmail.com>
+Date: Thu, 3 Jan 2013 18:00:19 -0500
+Message-ID: <CAD1Etojxz1tt9wDxjO7ghQE95p8vbuT9r0b3DeuqmwEZRyLnxw@mail.gmail.com>
+From: "Daniel M. Drucker, Ph.D." <dmd@interactive-motion.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] make devices not run from deb
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -16,36 +24,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Daniel M. Drucker, Ph.D." <dmd@interactive-motion.com>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 01/03/2013 11:51 PM, Gilles Chanteperdrix wrote:
-
-> On 01/03/2013 11:50 PM, Daniel M. Drucker, Ph.D. wrote:
-> 
->>
->>     Are you sure Xenomai is started correctly?
->>
->>
->> In the previous version (which we had working) we didn't have to do
->> anything to start it - it just started on boot.
->>
->> I have CONFIG_XENOMAI=y in my linux kernel config.
->>
->> Is there something else I have to do? /etc/init.d/xenomai start doesn't
->> appear to do anything.
-> 
-> 
+>
 > You have to check if Xenomai is started correctly, see the
 > TROUBLESHOOTING guide.
-> 
+>
+>
+imt@imtrobot:~$ dmesg|grep -i xeno
+[    0.000000] Linux version 3.5.3-xenomai.2.6.git.imt.20130103.1357.thu
+(root@rossum) (gcc version 4.6.3 (Ubuntu/Linaro 4.6.3-1ubuntu5) ) #1 SMP
+Thu Jan 3 14:10:49 EST 2013
+[    0.000000] Kernel command line:
+BOOT_IMAGE=/boot/vmlinuz-3.5.3-xenomai.2.6.git.imt.20130103.1357.thu
+root=UUID=1eb41f5a-ea91-4772-8e91-acfcc80dcbca ro quiet splash vt.handoff=7
 
+It doesn't appear that xenomai is starting at all.
+I built the kernel using scripts/prepare-kernel.sh.
 
-README.INSTALL, available here:
-http://www.xenomai.org/documentation/xenomai-2.6/html/README.INSTALL/
+> README.INSTALL, available here:
+> http://www.xenomai.org/documentation/xenomai-2.6/html/README.INSTALL/
+> Section 4 gives you the details.
 
-Section 4 gives you the details.
-
--- 
-                                                                Gilles.
-
+I don't even HAVE a /usr/xenomai/bin ... something must be very wrong. I
+only have a /usr/lib/xenomai/testsuite/latency.
