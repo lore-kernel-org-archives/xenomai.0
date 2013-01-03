@@ -1,11 +1,11 @@
-Message-ID: <50E5BDFE.6040407@xenomai.org>
-Date: Thu, 03 Jan 2013 18:21:02 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <50E5BF03.5020004@siemens.com>
+Date: Thu, 03 Jan 2013 18:25:23 +0100
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
 References: <50E471AC.2000701@siemens.com> <50E5A0E4.4000108@xenomai.org>
 	<50E5A75B.6090507@siemens.com> <50E5B174.2040106@xenomai.org>
 In-Reply-To: <50E5B174.2040106@xenomai.org>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] XNARCH_TIMER_IRQ
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -17,9 +17,9 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Philippe Gerum <rpm@xenomai.org>
-Cc: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 01/03/2013 05:27 PM, Philippe Gerum wrote:
+On 2013-01-03 17:27, Philippe Gerum wrote:
 > On 01/03/2013 04:44 PM, Jan Kiszka wrote:
 >> On 2013-01-03 16:16, Gilles Chanteperdrix wrote:
 >>> On 01/02/2013 06:43 PM, Jan Kiszka wrote:
@@ -52,9 +52,15 @@ On 01/03/2013 05:27 PM, Philippe Gerum wrote:
 > Caution, this code is WIP. nktimer will have to move to the percpu 
 > scheduler descriptor to complete this.
 
-You mean nkclock? But does it make sense if the timer has the same irq
-on all cpus?
+That's nkclock in 2.6. Mostly a cosmetic issue, the interrupt name will
+not be properly printed, statistics are already per-cpu. Could be
+improved nevertheless.
+
+Is there an easy way to find out if we have per-CPU timers on some arch?
+
+Jan
 
 -- 
-					    Gilles.
+Siemens AG, Corporate Technology, CT RTC ITP SDP-DE
+Corporate Competence Center Embedded Linux
 
