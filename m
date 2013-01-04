@@ -1,11 +1,16 @@
-Message-ID: <50EC908A.1090906@uqconnect.edu.au>
-Date: Tue, 8 Jan 2013 22:32:58 +0100
-From: David Butterworth <david.butterworth@uqconnect.edu.au>
+Message-ID: <50E6AFC3.5080400@xenomai.org>
+Date: Fri, 04 Jan 2013 11:32:35 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
+References: <50E471AC.2000701@siemens.com> <50E5A0E4.4000108@xenomai.org>
+	<50E5A75B.6090507@siemens.com> <50E5B174.2040106@xenomai.org>
+	<50E5BF03.5020004@siemens.com> <50E5C134.3010804@xenomai.org>
+	<50E5C69E.7090707@siemens.com> <50E6A871.9010008@xenomai.org>
+	<50E6ABF7.1050503@siemens.com>
+In-Reply-To: <50E6ABF7.1050503@siemens.com>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] Peak CAN Device IDs and using Peak PCAN-PC/104-Express
-Reply-To: david.butterworth@uqconnect.edu.au
+Subject: Re: [Xenomai] XNARCH_TIMER_IRQ
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,35 +19,92 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-Hi all,
+On 01/04/2013 11:16 AM, Jan Kiszka wrote:
+> On 2013-01-04 11:01, Philippe Gerum wrote:
+>> On 01/03/2013 06:57 PM, Jan Kiszka wrote:
+>>> On 2013-01-03 18:34, Philippe Gerum wrote:
+>>>> On 01/03/2013 06:25 PM, Jan Kiszka wrote:
+>>>>> On 2013-01-03 17:27, Philippe Gerum wrote:
+>>>>>> On 01/03/2013 04:44 PM, Jan Kiszka wrote:
+>>>>>>> On 2013-01-03 16:16, Gilles Chanteperdrix wrote:
+>>>>>>>> On 01/02/2013 06:43 PM, Jan Kiszka wrote:
+>>>>>>>>> Hi,
+>>>>>>>>>
+>>>>>>>>> this may involve some refactoring of the HAL and a bit of I-pipe, so I
+>>>>>>>>> better ask first:
+>>>>>>>>>
+>>>>>>>>> Not sure when it changed, but XNARCH_TIMER_IRQ may no longer return the
+>>>>>>>>> same values when called on different CPUs. Therefore, It should rather
+>>>>>>>>> be called XNARCH_THIS_CPU_TIMER_IRQ now.
+>>>>>>>>>
+>>>>>>>>> Looking at its users (an I-pipe debug warning pointed it out), there are
+>>>>>>>>> two that don't expect this: xnintr_query_next() and format_irq_proc().
+>>>>>>>>> The former actually wants XNARCH_TIMER_IRQ(cpu), the latter needs
+>>>>>>>>> something like is_timer_irq_on_any_cpus(irq).
+>>>>>>>>>
+>>>>>>>>> So I would propose to refactor XNARCH_TIMER_IRQ and RTHAL_TIMER_IRQ
+>>>>>>>>> accordingly. But this unfortunately requires extensions of I-pipe to
+>>>>>>>>> provide something like __ipipe_hrtimer_irq(cpu) and
+>>>>>>>>> __ipipe_this_cpu_hrtimer_irq. And some ugly workaround in Xenomai for
+>>>>>>>>> older I-pipe versions.
+>>>>>>>>>
+>>>>>>>>> Does this make sense?
+>>>>>>>>
+>>>>>>>> Made something similar for forge:
+>>>>>>>> http://git.xenomai.org/?p=xenomai-gch.git;a=commitdiff;h=37ca257af466e7e5fbfb402b39f088487d048fd5;hp=a9971c363fd361b428f12200536bc5a01dff9c05
+>>>>>>>
+>>>>>>
+>>>>>> Caution, this code is WIP. nktimer will have to move to the percpu
+>>>>>> scheduler descriptor to complete this.
+>>>>>
+>>>>> That's nkclock in 2.6. Mostly a cosmetic issue, the interrupt name will
+>>>>> not be properly printed, statistics are already per-cpu. Could be
+>>>>> improved nevertheless.
+>>>>>
+>>>>
+>>>> My point is to tell you that what you look to in -forge regarding this
+>>>> area is in a state of flux. I'm not referring to 2.6, I'm focusing
+>>>> almost exclusively on 3.x these days.
+>>>>
+>>>>> Is there an easy way to find out if we have per-CPU timers on some arch?
+>>>>>
+>>>>
+>>>> Why should we assume differently?
+>>>
+>>> To avoid dumping redundant statistic lines when some timer IRQ has no
+>>> home on a given CPU. But as there are also mixed setups possible as
+>>> Gilles pointed out, we need a different approach, likely just skip when
+>>> there are no hits.
+>>>
+>>
+>> Your question sounded like "is it possible to know whether an SMP arch
+>> may use different per-CPU IRQs for the timer". I was about to answer
+>> that testing for any pipeline core API rev >= 2 would do, excluding all
+>> legacy patches.
+>>
+>> For the cosmetic issue you mention, testing rthal_supported_cpus would do.
+>
+> Nope, this is not sufficient. A per-CPU timer IRQ would then still
+> generate useless lines in stat for all those CPUs it is not bound to.
+>
 
-Firstly, the current RT-Socket-CAN driver looks like it has 2 Device IDs 
-for Peak PCI:
-0x0001
-0x0003
+You know which CPU has a real-time timer attached via 
+rthal_supported_cpus, which timer IRQ # is attached to each real-time 
+CPU when per-CPU timer IRQs are supported by the pipeline. For legacy 
+patches which only allow a common IRQ line for all timers regardless of 
+the CPU, the matter is solved by design. I still don't get where the 
+issue would be.
 
-Why was 0x0002 for PCI ExpressCard removed?
+> I'll resume the work on this as soon as I found the reason for the zero
+> page corruption we face now with 3.5.
+>
+> Jan
+>
 
-Comparing this to Peak's driver, which has Device IDs:
-#define PEAK_PCI_VENDOR_ID   0x001C  // the PCI device and vendor IDs
-#define PEAK_PCI_DEVICE_ID   0x0001  // ID for PCI / PCIe Slot cards
-#define PEAK_PCIE_CARD_ID    0x0002  // ID for PCIExpress Card
-#define PEAK_PCIE_DEVICE_ID  0x0003  // ID for new PCIe Slot cards
-#define PEAK_CPCI_ID         0x0004  // ID for new cPCI
-#define PEAK_MINIPCI_ID      0x0005  // ID for miniPCI
-#define PEAK_PC104PLUS_ID    0x0006  // ID for new PC-104 Plus
-#define PEAK_PC104E_ID       0x0007  // ID for PC-104 Express
-#define PEAK_MINIPCIE_ID     0x0008  // ID for miniPCIe Slot cards
 
-We already have the PC/104-Plus card working with ID 0x0001.
-** So what is the "new" ID 0x0006?
-
-** We bought a PC/104-Express card.  Has anyone tested this?  Can we 
-just add the ID 0x0007?
-
-Thanks,
-David.
-
+-- 
+Philippe.
 
