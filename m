@@ -1,15 +1,22 @@
-Message-ID: <50F41136.3070200@xenomai.org>
-Date: Mon, 14 Jan 2013 15:07:50 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <50E6E42C.9040300@xenomai.org>
+Date: Fri, 04 Jan 2013 15:16:12 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <D9F55F45-EC38-45B2-A922-08F24868BA87@mah.priv.at>
-	<50F3F296.5000008@xenomai.org>
-	<3F8DFF0B-6F81-48E1-9D64-83B08DA6A599@mah.priv.at>
-In-Reply-To: <3F8DFF0B-6F81-48E1-9D64-83B08DA6A599@mah.priv.at>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+References: <9480305C-20DF-4DBA-AC23-7E3E59EBCEEB@mah.priv.at>
+	<50E1CC06.9050404@xenomai.org>
+	<382C7691-29C9-408C-97DE-4A020138B0A4@mah.priv.at>
+	<CANKLDmuU254PGkv2+ABiGitZDg1u9A5uq9Po=3gzOo8-KyANVw@mail.gmail.com>
+	<20130103085312.GA8132@localhost.localdomain>
+	<5C3D95AF-ADF8-4B1E-8FB6-5B9557262EC8@mah.priv.at>
+	<20130103141552.GB9656@localhost.localdomain>
+	<50E5E7D9.7020605@xenomai.org>
+	<20130104085019.GA13416@localhost.localdomain>
+	<50E6A5CF.7040501@xenomai.org>
+	<20130104100435.GA2309@netboy.at.omicron.at>
+In-Reply-To: <20130104100435.GA2309@netboy.at.omicron.at>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] universal application binary: how to
- auto-detect	Xenomai/RT-PREEMPT/vanilla kernel
+Subject: Re: [Xenomai] About the timer interrupt in beaglebone
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,51 +25,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Michael Haberler <mail17@mah.priv.at>
+To: Richard Cochran <richardcochran@gmail.com>
 Cc: xenomai@xenomai.org
 
-On 01/14/2013 01:05 PM, Michael Haberler wrote:
-> Gilles,
->
-> Am 14.01.2013 um 12:57 schrieb Gilles Chanteperdrix:
->
->> On 01/14/2013 09:29 AM, Michael Haberler wrote:
->>
->>> Hi,
->>
->>
->> Hi,
->>
->>>
->>> thanks to patience on this list we were able to build linuxcnc such
->>> that it runs on Xenomai, besides RT-PREEMPT, vanilla kernels (in a
->>> simulator/non-RT mode) and RTAI
->>>
->>>
->>> I'm planning to adapt linuxcnc such that a universal binary can be
->>> built which runs under Xenomai, RT-PREEMPT and vanilla kernels as
->>> this will simplify logistics quite a bit; what I'd like have is
->>> reliable auto-detection of the kernel type and 'do the right thing'
->>> (RTAI will remain a separate build).
->>
->>
->> I have no idea about preempt_rt, however, in order to detect xenomai,
->> you can check for /dev/rtheap. If it does not exist, xenomai programs
->> will not start anyway. Also, I guess for a universal binary, you would
->> dlopen xenomai libraries (native or posix, depending on the one you want
->> to use), if you want to do that, you have to pass --enable-dlopen-skins
->> to xenomai configure script.
->
-> thanks, that is a good idea to verify the libraries are in place; I had to use --enable-dlopen-skins anyway to make Python imports happy.
->
-> I'll muddle my way through some string matching to find rt-preempt running; https://rt.wiki.kernel.org/index.php/RT_PREEMPT_HOWTO#Checking_the_Kernel gives some hints
->
-> Is there any chance somebody runs Xenomai AND RT_PREEMPT patches applied? I heard a rumor but havent actually seen that
+On 01/04/2013 11:04 AM, Richard Cochran wrote:
+> FCSE is a special, esoteric case I think. New drivers are not so hard
+> to get merged, but you are right about the iterations.
 
-Yes, this works. The current target is ppc 85xx, but I don't see any 
-showstopper for running such combo on other archs, provided the I-pipe 
-patch is adapted to a -rt kernel. This requires Xenomai 2.6.1+, stock.
+Is it? Still working on that consumer device I have another example of
+patch that never made it to mainline. Maybe simply different communities
+have different goals?
+
+http://linux.davincidsp.com/pipermail/davinci-linux-open-source/2011-January/021885.html
+
+https://lkml.org/lkml/2011/2/3/43
+
+for a consumer device, it makes sense to continue working properly even
+if a storage device was removed uncleanly, the linux community, on the
+other hand, may consider this issue a corner case, just like using the FCSE.
 
 -- 
-Philippe.
+					    Gilles.
 
