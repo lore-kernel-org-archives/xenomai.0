@@ -1,13 +1,20 @@
-Message-ID: <50E61144.6090009@xenomai.org>
-Date: Fri, 04 Jan 2013 00:16:20 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Date: Fri, 4 Jan 2013 09:50:19 +0100
+From: Richard Cochran <richardcochran@gmail.com>
+Message-ID: <20130104085019.GA13416@localhost.localdomain>
+References: <CAGVaUoFsUJKCSOMrDuq3htrLzScpzjVP8oKs2ARp7k7o8KbRfQ@mail.gmail.com>
+	<9480305C-20DF-4DBA-AC23-7E3E59EBCEEB@mah.priv.at>
+	<50E1CC06.9050404@xenomai.org>
+	<382C7691-29C9-408C-97DE-4A020138B0A4@mah.priv.at>
+	<CANKLDmuU254PGkv2+ABiGitZDg1u9A5uq9Po=3gzOo8-KyANVw@mail.gmail.com>
+	<20130103085312.GA8132@localhost.localdomain>
+	<5C3D95AF-ADF8-4B1E-8FB6-5B9557262EC8@mah.priv.at>
+	<20130103141552.GB9656@localhost.localdomain>
+	<50E5E7D9.7020605@xenomai.org>
 MIME-Version: 1.0
-References: <CAD1EtoiVOD7KdOD7ZyqtxQ3AttD=Ca0bbsOsKOiMQtyNxm47EA@mail.gmail.com>	<50E60647.5090309@xenomai.org>	<CAD1EtoiFivw1qesTzEUF9Scb-uMwMaJpnw18cJJ79DJQ3tejLw@mail.gmail.com>	<50E608CF.3020606@xenomai.org>	<CAD1EtoiHmA1YnRcoc-vHLT6BO1A61VuP9Ey+WWnoZS_7aOmYmQ@mail.gmail.com>	<50E60994.8010903@xenomai.org>	<CAD1Etohn+D9+8XebcRFj09hb=tbu_PgC_Tsx0bxLwMJ8w1xAzA@mail.gmail.com>	<50E60A3B.7040501@xenomai.org>	<CAD1EtojxM6PajHda1V4DZ0OqUMd-EtutiPmgtkYPnwKWG5Z30g@mail.gmail.com>	<50E60B67.7060401@xenomai.org>	<CAD1Etoi=F2Ds7hUCKZD7M2j2CT3FKo_5vkqY2O3mLwjBVHYG=A@mail.gmail.com>	<CAD1Etojxz1tt9wDxjO7ghQE95p8vbuT9r0b3DeuqmwEZRyLnxw@mail.gmail.com>	<50E60E32.4060704@xenomai.org>	<50E60EE9.9060909@xenomai.org>	<CAD1Etohx2MUrmZsGacCD11eaH97e-tPRhaw4L7xQqTDrXuPAig@mail.gmail.com>	<50E60F86.8070009@xenomai.org>
-	<CAD1Etog=7+By9931BatB-Y4qmON-So-Z2KgpmS_TjxWa7SGZ5Q@mail.gmail.com>
-In-Reply-To: <CAD1Etog=7+By9931BatB-Y4qmON-So-Z2KgpmS_TjxWa7SGZ5Q@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] make devices not run from deb
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <50E5E7D9.7020605@xenomai.org>
+Subject: Re: [Xenomai] About the timer interrupt in beaglebone
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,26 +23,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Daniel M. Drucker, Ph.D." <dmd@interactive-motion.com>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On 01/04/2013 12:11 AM, Daniel M. Drucker, Ph.D. wrote:
+On Thu, Jan 03, 2013 at 09:19:37PM +0100, Gilles Chanteperdrix wrote:
 
-> 
->     Then your problem is solved, you found out why /dev/rtheap is not
->     created.
-> 
-> 
-> Ok. I'll go back to using 2.6.1, which runs fine.
+> Of course some of the code they contain is not really acceptable in
+> mainline, but at least it is there and takes less time to debug than it
+> would if starting from scratch.
+
+That it takes "less time" is only sometimes true.
+ 
+> Just trying to give a different opinion from Richard.
+
+I actually agree with you, Gilles. If you are developing a consumer device
+
+  - with a three year product lifetime
+  - that will never receive a firmware upgrade
+  - where time to market is most important
+
+then the TI kernel is the best choice. But if you want to build, let's
+say, a platform for a family of products with a five to ten year
+scope, then maybe using TI's heavily modified v3.2 kernel is not best
+way.
+
+In any case, what is clearly best for the community is having mainline
+support. I myself am interested in and am willing to help out with
+xenomai on the beaglebone, but I will not waste my time with the TI
+kernel. It is just too far away for me.
+
+Thanks,
+Richard
 
 
-To be sure, really sure whether xenomai is started, and what we see is
-not some printing artifact (a loglevel too low, or the log buffer too
-smal), check whether you have /proc/xenomai and /proc/ipipe files.
-
-Also, if xenomai is compiled as a module (CONFIG_XENOMAI=m), of course,
-you have to modprobe xeno_nucleus to get xenomai started.
-
--- 
-                                                                Gilles.
 
