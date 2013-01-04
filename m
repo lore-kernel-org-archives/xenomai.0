@@ -1,22 +1,22 @@
-Message-ID: <50F5B08D.60504@xenomai.org>
-Date: Tue, 15 Jan 2013 20:39:57 +0100
+Message-ID: <50E7092E.50109@xenomai.org>
+Date: Fri, 04 Jan 2013 17:54:06 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <50F19CE1.5080106@zultron.com> <50F19DE4.4030805@xenomai.org>
-	<50F239E1.40400@zultron.com> <50F2A59D.5050600@xenomai.org>
-	<50F30781.3050302@zultron.com> <50F30DE5.7030007@xenomai.org>
-	<50F3F36A.8050804@siemens.com> <50F45358.1020601@xenomai.org>
-	<50F458E9.7080504@siemens.com> <50F4594C.8090907@xenomai.org>
-	<50F45E87.9030701@siemens.com> <50F46D0E.9000706@xenomai.org>
-	<50F53F0E.7020604@siemens.com> <50F54641.3010802@xenomai.org>
-	<50F546E8.2050606@xenomai.org> <50F549AD.7040508@siemens.com>
-	<50F55D33.3020205@xenomai.org> <50F55E22.9030308@siemens.com>
-	<50F56074.50203@xenomai.org>
-In-Reply-To: <50F56074.50203@xenomai.org>
+References: <382C7691-29C9-408C-97DE-4A020138B0A4@mah.priv.at>
+	<CANKLDmuU254PGkv2+ABiGitZDg1u9A5uq9Po=3gzOo8-KyANVw@mail.gmail.com>
+	<20130103085312.GA8132@localhost.localdomain>
+	<5C3D95AF-ADF8-4B1E-8FB6-5B9557262EC8@mah.priv.at>
+	<20130103141552.GB9656@localhost.localdomain>
+	<50E5E7D9.7020605@xenomai.org>
+	<20130104085019.GA13416@localhost.localdomain>
+	<50E6A5CF.7040501@xenomai.org>
+	<20130104100435.GA2309@netboy.at.omicron.at>
+	<50E6E42C.9040300@xenomai.org>
+	<20130104160213.GA14111@localhost.localdomain>
+In-Reply-To: <20130104160213.GA14111@localhost.localdomain>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] 3.5.7 "I-pipe: could not find timer" (Was: Re: Kernel
- OOPS during regression tests)
+Subject: Re: [Xenomai] About the timer interrupt in beaglebone
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -25,58 +25,70 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Jan Kiszka <jan.kiszka@siemens.com>, John Morris <john@zultron.com>, Xenomai <xenomai@xenomai.org>
+To: Richard Cochran <richardcochran@gmail.com>
+Cc: xenomai@xenomai.org
 
-On 01/15/2013 02:58 PM, Philippe Gerum wrote:
+On 01/04/2013 05:02 PM, Richard Cochran wrote:
+> I was able to push the beaglebone to the present (v3.8-rc2) state of
+> actually booting with Ethernet working only by kicking and screaming
+> on the arm list.
 
-> On 01/15/2013 02:48 PM, Jan Kiszka wrote:
->> On 2013-01-15 14:44, Philippe Gerum wrote:
->>> On 01/15/2013 01:21 PM, Jan Kiszka wrote:
->>>> On 2013-01-15 13:09, Philippe Gerum wrote:
->>>>> On 01/15/2013 01:06 PM, Gilles Chanteperdrix wrote:
->>>>>> On 01/15/2013 12:35 PM, Jan Kiszka wrote:
->>>>>>
->>>>>>> On 2013-01-14 21:39, Gilles Chanteperdrix wrote:
->>>>>>>> Done, also note that my current work is the for-core-3.5.7 branch, not
->>>>>>>> the for-core-3.5 branch.
->>>>>>>
->>>>>>> Both branches point to the same commit ATM. I suppose you didn't push
->>>>>>> the new for-core-3.5.7 version yet. Once done, I'll rebase my stuff on top.
->>>>>>
->>>>>>
->>>>>> Sorry, pushed.
->>>>>>
->>>>>
->>>>> Please everybody, make sure to eventually resync with my tree, this is
->>>>> becoming a mess when merging your stuff here. TIA,
->>>>
->>>> I'm fetching from you regularly, but your public tree contains no
->>>> changes for 3.5, sorry.
->>>>
->>>
->>> You must mean no change for 3.5.3 since the last stable pipeline release
->>> I pushed out. I'm seeing several breakages when merging the very latest
->>> work, I'm solving this with Gilles.
->>
->> I mean that I have no clue what I should resolve. My branch was based on
->> your core-3.5 branch, the latest publicly available version. I've just
->> rebased it on top of Gilles' 3.5.7 queue - without any conflicts. So
->> what are you talking about?
->>
+IIRC, you also had to kick and scream for ixp4xx fixes, and getting
+clock synchronization through IEEE 1588, and no TI maintainer was
+involved. So, I may be stating the obvious, but it seems to me that we
+you are new to the exercise, getting code merged into mainline is not
+that easy, perhaps both because you may not do it the way the known
+maintainers/contributors expect you to do it, and because the
+maintainers/contributors do not tend to trust someone they do not know.
+Most people involved in short term projects simply give up after the
+first rejection.
+
+> The real problem there is the TI people who are
+> posting the the lists, but fail to follow through, saying things like
 > 
-> I'm talking about conflicts in pgtable.h, apic.c with the atomic counter 
-> braindamage and stuff like this. I'm not asking you to fix anything in 
-> your tree, I'm pulling from Gilles' trees almost exclusively, and had 
-> issues with those. I raised an alert about painful merges happening 
-> lately, and a recommendation to avoid these. Gilles fixed the issue on 
-> his end, and the merge now resolves as a fast forward, as expected. 
-> Issue closed.
+>   "it is already working" (but only with their out of tree patches)
+> 
+> and
+> 
+>   "we submitted a patch that will appear soon" (but the patch is only
+>   on some omap list an not in maintainer tree)
 
+These excuses look a lot like the ones which happen with xenomai between
+the time a fix happens in the git tree and a release or between the time
+a fix happen in my ipipe git, and is merged in the official ipipe git,
+if you get a link to the actual patch, I do not see how else things
+could be handled. If the patch is finally merged, this is not really a
+problem.
 
-These were issues due to rebasing. Rebasings makes merging incrementally
-harder, will avoid this in the future.
+> 
+> and
+> 
+>   "yes, we got driver merged into the tree, but it is not our fault
+>   that it doesn't actually work."
+
+we try to avoid that here...
+
+> 
+> The TI people are clearly focused on their arago-whatever trees, and
+> they are not gettings things done for mainline.
+
+I am afraid the code contained in the arago tree is not entirely
+developed by TI people, the people having to maintain it may not be the
+ones who wrote it. That may make getting things done for mainline a tad
+harder.
+
+> * Post to the arm list. That is the one that counts.
+
+I knew that, I even said it:
+http://linux.davincidsp.com/pipermail/davinci-linux-open-source/2011-February/021979.html
+
+The FCSE patch was certainly posted to the lakml, but someone told me
+"you should have sent a mail to rmk as well". What? rmk is not reading
+the lakml? Sometimes, the rules for posting to a list (like never
+posting a patch for review during the merge window) are a bit hard for
+the newcomer, especially when they are of the kind "it is not written
+anywhere, it is obvious, everybody knows that".
 
 -- 
-                                                                Gilles.
+					    Gilles.
 
