@@ -1,15 +1,18 @@
-Message-ID: <50F38DD5.5010105@zultron.com>
-Date: Sun, 13 Jan 2013 22:47:17 -0600
-From: John Morris <john@zultron.com>
+Message-ID: <50E6D11E.9090808@xenomai.org>
+Date: Fri, 04 Jan 2013 13:54:54 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <50F19CE1.5080106@zultron.com> <50F19DE4.4030805@xenomai.org>
-	<50F239E1.40400@zultron.com> <50F2A59D.5050600@xenomai.org>
-	<50F30781.3050302@zultron.com> <50F30DE5.7030007@xenomai.org>
-In-Reply-To: <50F30DE5.7030007@xenomai.org>
-Content-Type: text/plain; charset=ISO-8859-1
+References: <50E471AC.2000701@siemens.com> <50E5A0E4.4000108@xenomai.org>
+	<50E5A75B.6090507@siemens.com> <50E5B174.2040106@xenomai.org>
+	<50E5BF03.5020004@siemens.com> <50E5C134.3010804@xenomai.org>
+	<50E5C69E.7090707@siemens.com> <50E6A871.9010008@xenomai.org>
+	<50E6ABF7.1050503@siemens.com> <50E6AFC3.5080400@xenomai.org>
+	<50E6BB87.4020100@siemens.com> <50E6BE15.2060805@xenomai.org>
+	<50E6C112.6070106@siemens.com>
+In-Reply-To: <50E6C112.6070106@siemens.com>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] 3.5.7 posix/mprotect failure;
- "I-pipe: could not find timer" fixed!
+Subject: Re: [Xenomai] XNARCH_TIMER_IRQ
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,127 +21,116 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
 Cc: Xenomai <xenomai@xenomai.org>
 
-On 01/13/2013 01:41 PM, Gilles Chanteperdrix wrote:
-> On 01/13/2013 08:14 PM, John Morris wrote:
-> 
->> Hi Gilles and Jan,
->>
->> Note change of thread subject.  I'm starting to get confused.
->>
->> On 01/13/2013 06:16 AM, Gilles Chanteperdrix wrote:
->>> On 01/13/2013 05:36 AM, John Morris wrote:
->>>
->>>> On 01/12/2013 11:31 AM, Gilles Chanteperdrix wrote:
->>>>> On 01/12/2013 06:26 PM, John Morris wrote:
->>>>>> 1)  Most worrisome is "kernel BUG at mm/mmap.c:2313!   invalid opcode:
->>>>>> 0000 [#2] SMP".  Is this related to HEAPSZ or STACKPOOLSZ?  My mind is
->>>>>> getting foggy about all the things I've seen, but it seems like it was
->>>>>> happening earlier in the tests until these config values were quadrupled.
+On 01/04/2013 12:46 PM, Jan Kiszka wrote:
+> On 2013-01-04 12:33, Philippe Gerum wrote:
+>> On 01/04/2013 12:22 PM, Jan Kiszka wrote:
+>>> On 2013-01-04 11:32, Philippe Gerum wrote:
+>>>> On 01/04/2013 11:16 AM, Jan Kiszka wrote:
+>>>>> On 2013-01-04 11:01, Philippe Gerum wrote:
+>>>>>> On 01/03/2013 06:57 PM, Jan Kiszka wrote:
+>>>>>>> On 2013-01-03 18:34, Philippe Gerum wrote:
+>>>>>>>> On 01/03/2013 06:25 PM, Jan Kiszka wrote:
+>>>>>>>>> On 2013-01-03 17:27, Philippe Gerum wrote:
+>>>>>>>>>> On 01/03/2013 04:44 PM, Jan Kiszka wrote:
+>>>>>>>>>>> On 2013-01-03 16:16, Gilles Chanteperdrix wrote:
+>>>>>>>>>>>> On 01/02/2013 06:43 PM, Jan Kiszka wrote:
+>>>>>>>>>>>>> Hi,
+>>>>>>>>>>>>>
+>>>>>>>>>>>>> this may involve some refactoring of the HAL and a bit of I-pipe, so I
+>>>>>>>>>>>>> better ask first:
+>>>>>>>>>>>>>
+>>>>>>>>>>>>> Not sure when it changed, but XNARCH_TIMER_IRQ may no longer return the
+>>>>>>>>>>>>> same values when called on different CPUs. Therefore, It should rather
+>>>>>>>>>>>>> be called XNARCH_THIS_CPU_TIMER_IRQ now.
+>>>>>>>>>>>>>
+>>>>>>>>>>>>> Looking at its users (an I-pipe debug warning pointed it out), there are
+>>>>>>>>>>>>> two that don't expect this: xnintr_query_next() and format_irq_proc().
+>>>>>>>>>>>>> The former actually wants XNARCH_TIMER_IRQ(cpu), the latter needs
+>>>>>>>>>>>>> something like is_timer_irq_on_any_cpus(irq).
+>>>>>>>>>>>>>
+>>>>>>>>>>>>> So I would propose to refactor XNARCH_TIMER_IRQ and RTHAL_TIMER_IRQ
+>>>>>>>>>>>>> accordingly. But this unfortunately requires extensions of I-pipe to
+>>>>>>>>>>>>> provide something like __ipipe_hrtimer_irq(cpu) and
+>>>>>>>>>>>>> __ipipe_this_cpu_hrtimer_irq. And some ugly workaround in Xenomai for
+>>>>>>>>>>>>> older I-pipe versions.
+>>>>>>>>>>>>>
+>>>>>>>>>>>>> Does this make sense?
+>>>>>>>>>>>>
+>>>>>>>>>>>> Made something similar for forge:
+>>>>>>>>>>>> http://git.xenomai.org/?p=xenomai-gch.git;a=commitdiff;h=37ca257af466e7e5fbfb402b39f088487d048fd5;hp=a9971c363fd361b428f12200536bc5a01dff9c05
+>>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>> Caution, this code is WIP. nktimer will have to move to the percpu
+>>>>>>>>>> scheduler descriptor to complete this.
+>>>>>>>>>
+>>>>>>>>> That's nkclock in 2.6. Mostly a cosmetic issue, the interrupt name will
+>>>>>>>>> not be properly printed, statistics are already per-cpu. Could be
+>>>>>>>>> improved nevertheless.
+>>>>>>>>>
+>>>>>>>>
+>>>>>>>> My point is to tell you that what you look to in -forge regarding this
+>>>>>>>> area is in a state of flux. I'm not referring to 2.6, I'm focusing
+>>>>>>>> almost exclusively on 3.x these days.
+>>>>>>>>
+>>>>>>>>> Is there an easy way to find out if we have per-CPU timers on some arch?
+>>>>>>>>>
+>>>>>>>>
+>>>>>>>> Why should we assume differently?
+>>>>>>>
+>>>>>>> To avoid dumping redundant statistic lines when some timer IRQ has no
+>>>>>>> home on a given CPU. But as there are also mixed setups possible as
+>>>>>>> Gilles pointed out, we need a different approach, likely just skip when
+>>>>>>> there are no hits.
+>>>>>>>
+>>>>>>
+>>>>>> Your question sounded like "is it possible to know whether an SMP arch
+>>>>>> may use different per-CPU IRQs for the timer". I was about to answer
+>>>>>> that testing for any pipeline core API rev >= 2 would do, excluding all
+>>>>>> legacy patches.
+>>>>>>
+>>>>>> For the cosmetic issue you mention, testing rthal_supported_cpus would do.
 >>>>>
+>>>>> Nope, this is not sufficient. A per-CPU timer IRQ would then still
+>>>>> generate useless lines in stat for all those CPUs it is not bound to.
 >>>>>
->>>>> Could you check whether you can reproduce this issue with the I-pipe
->>>>> patch for 3.5.7 ? The next xenomai release will be based on this version
->>>>> on x86 anyway. Branch for-core-3.5.7 in ipipe-gch.git
 >>>>
->>>> Different problem; Xenomai wouldn't start:
->>>>
->>>>   I-pipe: could not find timer for cpu #0
->>>>
->>>> dmesg:
->>>> http://www.zultron.com/static/2013/01/xenomai/3.5.7-test/foo-dmesg-3.5.7.log
->>>>
->>>> .config:
->>>> www.zultron.com/static/2013/01/xenomai/3.5.7-test/foo-kernel-3.5.7.config
->>>>
->>>> FYI, I found this same problem on two of my systems while testing your
->>>> Debian packages.  Both AMD Athlon II 64-bit (one single, one dual core).
->>>>  They're about the same generation of motherboards, AM2 or AM2+ socket.
->>>>  One is AMD 770 chipset, the other NVidia GeForce 6100 / nForce 430.
->>>>
->>>> Hardware looks similar to Mariusz's in this post, where he had the same
->>>> problem:
->>>>
->>>> http://www.xenomai.org/pipermail/xenomai/2012-December/027121.html
->>>>
->>>> He's also running AMD 64-bit on a Gigabyte motherboard, but the next
->>>> generation AM3 socket, Phenom CPU, AMD 890 chipset.  I don't have a C1E
->>>> BIOS option on these boards to enable/disable.  These same motherboards
->>>> don't suffer this problem with mainline Xenomai on 3.5.3.
+>>>> You know which CPU has a real-time timer attached via
+>>>> rthal_supported_cpus, which timer IRQ # is attached to each real-time
+>>>> CPU when per-CPU timer IRQs are supported by the pipeline. For legacy
+>>>> patches which only allow a common IRQ line for all timers regardless of
+>>>> the CPU, the matter is solved by design. I still don't get where the
+>>>> issue would be.
 >>>
+>>> rthal_supported_cpus doesn't contain enough information. We need
 >>>
->>> If you had the same problem as Marius, you would have seen it with
->>> 3.5.3, and you would get the message in the dmesg about C1E, so, it is
->>> probably something else. 
->>
->> Yes, I'm definitely getting confused.  I did see the same problem with
->> C1E, but only while running your 3.5.7 .debs, and not in the 3.5.7 el6
->> packages that are the main subject of this sub-thread:
->>
->> http://www.zultron.com/static/2013/01/xenomai/3.5.7-deb-gilles/dmesg-3.5.7-deb-gilles.log
-> 
-> 
-> Ah, that is because I rebased the I-pipe tree in between, and at some
-> point the code printing the message was wrong (ATOMIC_INIT(0) instead of
-> ATOMIC_INIT(-1)). That is my fault then, sorry.
-> 
->>
->>> Could you run
+>>> is_valid_irq(irq, cpu):
+>>> 	if (timer_irq(cpu) == irq)
+>>> 		return true
+>>> 	for_each_cpu(n)
+>>> 		if (timer_irq(n) == irq)
+>>> 			return false
+>>> 	return true
 >>>
->>> cat /proc/timer_list
+>>> for a cleaned up /stat output as we iterate over all combinations of
+>>> (irq, cpu) there. That for_each_cpu is a bit ugly, and that's why I was
+>>> considering to derive is_valid_irq from irq.hits > 0.
+>>>
 >>
->> Back to el6 again, 3.5.7 i-pipe:
 >>
->> http://www.zultron.com/static/2013/01/xenomai/3.5.7-test/foo-cat-proc-timer_list-3.5.7-test.log
-> 
-> 
-> The LAPIC is definitely up and running (mode: 3). So, it probably means
-> that the erratum detection is not sufficient to decide not to use a
-> LAPIC. Checking your logs, we see:
-> 
-> using AMD E400 aware idle routine
-> 
-> which means the LAPIC could potentially be unusable, but the idle
-> routine also checks for a bit in a K8 specific MSR and prints the message:
-> 
-> System has AMD C1E enabled
-> 
-> If this bit is set, and in your case the message is not printed so the
-> bit is not set. So, the LAPIC is usable, but due to the changes I made
-> to try and print a message in Marius case, I broke the detection in your
-> case.
-> 
-> I have just pushed a rework for this commit in the for-core-3.5.7 branch
-> in ipipe-gch git.
+>> The problem goes away with cpus displayed on lines, and irq # on columns.
+>>
+>
+> Not applicable to /stat.
+>
 
-And it worked, no more C1E error!  Thanks!
+No, the real issue is that using /stat to display timer activity as 
+thread placeholders is not applicable. So that stuff has to move to 
+another /proc file.
 
-It looks like the AMD-64 AM2/AM2+ socket CPUs were the last generation
-without C1E, and the AM3 socket CPUs were the first gen with.
 
-Back to the original problem, the posix/mprotect problem is confirmed to
-be in this branch:
-
-  ++ /usr/lib64/xenomai/regression/posix/mprotect
-  memory read
-  FAILURE: sigdebug_handler triggered, reason 2
-  memory write after exec enable
-
-Regression test run:
-http://www.zultron.com/static/2013/01/xenomai/3.5.7-test/foo-xeno-regression-test-3.5.7-test.log
-
-Dmesg:
-http://www.zultron.com/static/2013/01/xenomai/3.5.7-test/foo-dmesg-3.5.7.log
-
-Kernel .config:
-http://www.zultron.com/static/2013/01/xenomai/3.5.7-test/foo-kernel-3.5.7.config.txt
-
-To minimize confusion (esp. my own) and answer Jan's question, this is
-Gilles's ipipe-gch/for-core-3.5.7 kernel (20130113git08f0596) with
-xenomai master (20130113git210ed428) and standard xenomai kernel options
-from the wiki, plus CPUMASK_OFFSTACK of course.
-
-	John
+-- 
+Philippe.
 
