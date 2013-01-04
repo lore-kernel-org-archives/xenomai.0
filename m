@@ -1,11 +1,16 @@
-Date: Tue, 08 Jan 2013 18:42:20 +0100
-From: "Mariusz Janiak" <mariuszjaniak@wp.pl>
-Message-ID: <50ec5a7c40d395.38707397@wp.pl>
+Message-ID: <50E6AE8D.2090206@xenomai.org>
+Date: Fri, 04 Jan 2013 11:27:25 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-2"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-Subject: Re: [Xenomai] SIGXCPU with rt_mutex_release
+References: <50E471AC.2000701@siemens.com> <50E5A0E4.4000108@xenomai.org>
+	<50E5A75B.6090507@siemens.com> <50E5B174.2040106@xenomai.org>
+	<50E5BF03.5020004@siemens.com> <50E5C134.3010804@xenomai.org>
+	<50E5C69E.7090707@siemens.com> <50E6A871.9010008@xenomai.org>
+	<50E6ABF7.1050503@siemens.com>
+In-Reply-To: <50E6ABF7.1050503@siemens.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] XNARCH_TIMER_IRQ
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,61 +19,81 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-Dnia Wtorek, 8 Stycznia 2013 14:33 Jan Kiszka <jan.kiszka@siemens.com> napi=
-sa=B3(a)=20
-> On 2013-01-08 12:12, Mariusz Janiak wrote:
-> > Hi GIlles,
-> >=20
-> > As you suggested, I have prepared simple test case that demonstrate how=
- Xenomai is utilized by OROCOS. This test case behaves exactly the same lik=
-e helloword example. Scheduler is chosen before any mutex are processed, so=
- in my opinion it is not the case which you defined. What is really surpris=
-ing is that the replacing TM_NONBLOCK with TM_INFINITE, in one before last =
-line, do magic and suppress signal generation. Furthermore, there is no cal=
-l to 'rt_task_set_mode(0, T_WARNSW, NULL);' so=20
-why=20
-> > signal is generated? If we enable T_WARNSW in the thread, SIGXCPU is ge=
-nerated when mutex is locked first time in the thread.=20
->=20
-> This should cure the issue (there was a check for XNTRAPSW missing):
->=20
-> diff --git a/ksrc/nucleus/synch.c b/ksrc/nucleus/synch.c
-> index e10be47..c1465dc 100644
-> --- a/ksrc/nucleus/synch.c
-> +++ b/ksrc/nucleus/synch.c
-> @@ -687,10 +687,11 @@ xnsynch_release_thread(struct xnsynch *synch, struc=
-t xnthread *lastowner)
-> =20
->  #ifdef CONFIG_XENO_OPT_PERVASIVE
->  	if (xnthread_test_state(lastowner, XNOTHER)) {
-> -		if (xnthread_get_rescnt(lastowner) =3D=3D 0)
-> -			xnshadow_send_sig(lastowner, SIGDEBUG,
-> -					  SIGDEBUG_MIGRATE_PRIOINV, 1);
-> -		else
-> +		if (xnthread_get_rescnt(lastowner) =3D=3D 0) {
-> +			if (xnthread_test_state(lastowner, XNTRAPSW))
-> +				xnshadow_send_sig(lastowner, SIGDEBUG,
-> +						  SIGDEBUG_MIGRATE_PRIOINV, 1);
-> +		} else
->  			xnthread_dec_rescnt(lastowner);
->  	}
->  #endif
->=20
-> Thanks for providing the test case.
->=20
-> Jan
->=20
-> --=20
-> Siemens AG, Corporate Technology, CT RTC ITP SDP-DE
-> Corporate Competence Center Embedded Linux
+On 01/04/2013 11:16 AM, Jan Kiszka wrote:
+> On 2013-01-04 11:01, Philippe Gerum wrote:
+>> On 01/03/2013 06:57 PM, Jan Kiszka wrote:
+>>> On 2013-01-03 18:34, Philippe Gerum wrote:
+>>>> On 01/03/2013 06:25 PM, Jan Kiszka wrote:
+>>>>> On 2013-01-03 17:27, Philippe Gerum wrote:
+>>>>>> On 01/03/2013 04:44 PM, Jan Kiszka wrote:
+>>>>>>> On 2013-01-03 16:16, Gilles Chanteperdrix wrote:
+>>>>>>>> On 01/02/2013 06:43 PM, Jan Kiszka wrote:
+>>>>>>>>> Hi,
+>>>>>>>>>
+>>>>>>>>> this may involve some refactoring of the HAL and a bit of I-pipe, so I
+>>>>>>>>> better ask first:
+>>>>>>>>>
+>>>>>>>>> Not sure when it changed, but XNARCH_TIMER_IRQ may no longer return the
+>>>>>>>>> same values when called on different CPUs. Therefore, It should rather
+>>>>>>>>> be called XNARCH_THIS_CPU_TIMER_IRQ now.
+>>>>>>>>>
+>>>>>>>>> Looking at its users (an I-pipe debug warning pointed it out), there are
+>>>>>>>>> two that don't expect this: xnintr_query_next() and format_irq_proc().
+>>>>>>>>> The former actually wants XNARCH_TIMER_IRQ(cpu), the latter needs
+>>>>>>>>> something like is_timer_irq_on_any_cpus(irq).
+>>>>>>>>>
+>>>>>>>>> So I would propose to refactor XNARCH_TIMER_IRQ and RTHAL_TIMER_IRQ
+>>>>>>>>> accordingly. But this unfortunately requires extensions of I-pipe to
+>>>>>>>>> provide something like __ipipe_hrtimer_irq(cpu) and
+>>>>>>>>> __ipipe_this_cpu_hrtimer_irq. And some ugly workaround in Xenomai for
+>>>>>>>>> older I-pipe versions.
+>>>>>>>>>
+>>>>>>>>> Does this make sense?
+>>>>>>>>
+>>>>>>>> Made something similar for forge:
+>>>>>>>> http://git.xenomai.org/?p=xenomai-gch.git;a=commitdiff;h=37ca257af466e7e5fbfb402b39f088487d048fd5;hp=a9971c363fd361b428f12200536bc5a01dff9c05
+>>>>>>>
+>>>>>>
+>>>>>> Caution, this code is WIP. nktimer will have to move to the percpu
+>>>>>> scheduler descriptor to complete this.
+>>>>>
+>>>>> That's nkclock in 2.6. Mostly a cosmetic issue, the interrupt name will
+>>>>> not be properly printed, statistics are already per-cpu. Could be
+>>>>> improved nevertheless.
+>>>>>
+>>>>
+>>>> My point is to tell you that what you look to in -forge regarding this
+>>>> area is in a state of flux. I'm not referring to 2.6, I'm focusing
+>>>> almost exclusively on 3.x these days.
+>>>>
+>>>>> Is there an easy way to find out if we have per-CPU timers on some arch?
+>>>>>
+>>>>
+>>>> Why should we assume differently?
+>>>
+>>> To avoid dumping redundant statistic lines when some timer IRQ has no
+>>> home on a given CPU. But as there are also mixed setups possible as
+>>> Gilles pointed out, we need a different approach, likely just skip when
+>>> there are no hits.
+>>>
+>>
+>> Your question sounded like "is it possible to know whether an SMP arch 
+>> may use different per-CPU IRQs for the timer". I was about to answer 
+>> that testing for any pipeline core API rev >= 2 would do, excluding all 
+>> legacy patches.
+>>
+>> For the cosmetic issue you mention, testing rthal_supported_cpus would do.
+> 
+> Nope, this is not sufficient. A per-CPU timer IRQ would then still
+> generate useless lines in stat for all those CPUs it is not bound to.
 
-Thank you, after this, unexpected SIGXCPU is no longer a problem for my tes=
-t case and OROCOS helloword example, as well.=20
+What we can do is, like linux, not print any irq number for the timer
+irq, simply something like "local timer", in which case whether the
+local timer irq is the same on all cpus or not does not matter.
 
-Best regards,
-Mariusz
-
-
+-- 
+					    Gilles.
 
