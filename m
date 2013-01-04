@@ -1,20 +1,21 @@
-Message-ID: <50F549AD.7040508@siemens.com>
-Date: Tue, 15 Jan 2013 13:21:01 +0100
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Date: Fri, 4 Jan 2013 17:08:37 +0100
+From: Richard Cochran <richardcochran@gmail.com>
+Message-ID: <20130104160837.GB14111@localhost.localdomain>
+References: <382C7691-29C9-408C-97DE-4A020138B0A4@mah.priv.at>
+	<CANKLDmuU254PGkv2+ABiGitZDg1u9A5uq9Po=3gzOo8-KyANVw@mail.gmail.com>
+	<20130103085312.GA8132@localhost.localdomain>
+	<5C3D95AF-ADF8-4B1E-8FB6-5B9557262EC8@mah.priv.at>
+	<20130103141552.GB9656@localhost.localdomain>
+	<50E5E7D9.7020605@xenomai.org>
+	<20130104085019.GA13416@localhost.localdomain>
+	<50E6A5CF.7040501@xenomai.org>
+	<20130104100435.GA2309@netboy.at.omicron.at>
+	<50E6E42C.9040300@xenomai.org>
 MIME-Version: 1.0
-References: <50F19CE1.5080106@zultron.com> <50F19DE4.4030805@xenomai.org>
-	<50F239E1.40400@zultron.com> <50F2A59D.5050600@xenomai.org>
-	<50F30781.3050302@zultron.com> <50F30DE5.7030007@xenomai.org>
-	<50F3F36A.8050804@siemens.com> <50F45358.1020601@xenomai.org>
-	<50F458E9.7080504@siemens.com> <50F4594C.8090907@xenomai.org>
-	<50F45E87.9030701@siemens.com> <50F46D0E.9000706@xenomai.org>
-	<50F53F0E.7020604@siemens.com> <50F54641.3010802@xenomai.org>
-	<50F546E8.2050606@xenomai.org>
-In-Reply-To: <50F546E8.2050606@xenomai.org>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] 3.5.7 "I-pipe: could not find timer" (Was: Re: Kernel
- OOPS during regression tests)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <50E6E42C.9040300@xenomai.org>
+Subject: Re: [Xenomai] About the timer interrupt in beaglebone
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -23,33 +24,17 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: John Morris <john@zultron.com>, Xenomai <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On 2013-01-15 13:09, Philippe Gerum wrote:
-> On 01/15/2013 01:06 PM, Gilles Chanteperdrix wrote:
->> On 01/15/2013 12:35 PM, Jan Kiszka wrote:
->>
->>> On 2013-01-14 21:39, Gilles Chanteperdrix wrote:
->>>> Done, also note that my current work is the for-core-3.5.7 branch, not
->>>> the for-core-3.5 branch.
->>>
->>> Both branches point to the same commit ATM. I suppose you didn't push
->>> the new for-core-3.5.7 version yet. Once done, I'll rebase my stuff on top.
->>
->>
->> Sorry, pushed.
->>
+On Fri, Jan 04, 2013 at 03:16:12PM +0100, Gilles Chanteperdrix wrote:
 > 
-> Please everybody, make sure to eventually resync with my tree, this is 
-> becoming a mess when merging your stuff here. TIA,
+> https://lkml.org/lkml/2011/2/3/43
 
-I'm fetching from you regularly, but your public tree contains no
-changes for 3.5, sorry.
+Also, that patch says "RFC". After getting no feedback, I would have
+resubmitted a "bugfix" or something more assertive in the subject
+line.
 
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RTC ITP SDP-DE
-Corporate Competence Center Embedded Linux
+Thanks,
+Richard
 
