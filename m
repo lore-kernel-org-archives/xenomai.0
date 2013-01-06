@@ -1,15 +1,14 @@
-From: "Leopold Palomo-Avellaneda" <leo@alaxarxa.net>
-Date: Thu, 17 Jan 2013 16:55:02 +0100
-References: <50F7DB33.7000902@siemens.com>
-	<201301171500.43290.leo@alaxarxa.net>
-	<50F8056A.2020701@xenomai.org>
-In-Reply-To: <50F8056A.2020701@xenomai.org>
+Message-ID: <50E959EC.8030306@web.de>
+Date: Sun, 06 Jan 2013 12:03:08 +0100
+From: Jan Kiszka <jan.kiszka@web.de>
 MIME-Version: 1.0
-Content-Type: Text/Plain;
-  charset="iso-8859-1"
-Content-Transfer-Encoding: 7bit
-Message-Id: <201301171655.03019.leo@alaxarxa.net>
-Subject: Re: [Xenomai] core-3.5 vs. core-3.5.7
+References: <50E47751.1070005@siemens.com> <50E59112.6080005@siemens.com>
+	<50E94E72.5050309@xenomai.org> <50E95812.8050503@web.de>
+In-Reply-To: <50E95812.8050503@web.de>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] [PATCH v3] nucleus: Convert intrlock to a sleeping
+	Linux lock
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,56 +18,47 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Philippe Gerum <rpm@xenomai.org>
-Cc: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
+Cc: "Mauerer, Wolfgang" <wolfgang.mauerer@siemens.com>, Xenomai <xenomai@xenomai.org>
 
-A Dijous 17 Gener 2013, Philippe Gerum va escriure:
-> On 01/17/2013 03:00 PM, Leopold Palomo-Avellaneda wrote:
-> > A Dijous 17 Gener 2013, Philippe Gerum va escriure:
-> >> On 01/17/2013 12:06 PM, Jan Kiszka wrote:
-> > [....]
-> >
-> >> powerpc* and bfin will have support for kernel 3.5.7 in the upcoming
-> >> 2.6.2.1.
-> >
-> > 2.6.2.1 ?
-> >
-> > what's about to have a 2.6.3? IMHO four version numbers is a bit excessive 
-...
-> >
-> 
-> It's not about how many numbers you put in the release tag, this is 
-> about what you put in the release. The next release is a fix up for 
-> brown paper bag issues in 2.6.2, not a full fledged upgrade with 
-> significant functional updates.
+On 2013-01-06 11:55, Jan Kiszka wrote:
+> On 2013-01-06 11:14, Philippe Gerum wrote:
+>> On 01/03/2013 03:09 PM, Jan Kiszka wrote:
+>>
+>>> +static struct xnvfile_lock_ops vfile_stat_lockops =3D {
+>>> +	.get =3D xnintr_get_query_lock,
+>>> +	.put =3D xnintr_put_query_lock,
+>>> +};
+>>> +
+>>>  static struct xnvfile_snapshot stat_vfile =3D {
+>>>  	.privsz =3D sizeof(struct vfile_stat_priv),
+>>>  	.datasz =3D sizeof(struct vfile_stat_data),
+>>>  	.tag =3D &nkpod_struct.threadlist_tag,
+>>>  	.ops =3D &vfile_stat_ops,
+>>> +	.entry =3D { .lockops =3D &vfile_stat_lockops },
+>>>  };
+>>
+>> This would introduce a regression. stat_vfile's rewind/next handlers
+>> compete with code altering the global thread queue which may run in
+>> primary mode, such as xnpod_delete_thread() when deleting a kernel task.
+>> So we can't use a linux lock to protect it.
+> =
 
-I know, but _always_ all of this kind of stuff is relative. I think that 
-looking on the xenomai audience you don't need a:
+> The Linux lock is held around this rewind loop (which is still in
+> place), and it is not protecting anything thread related, just the
+> appearance and disappearance of IRQs. I fail to see a conflict, and
+> there are also no I-pipe/Xenomai warnings triggered with this pattern.
 
-> a full fledged upgrade with significant functional updates
+Oh, now I see: The nklock is automatically taken if there are no
+lockops. That needs to be done in the stat lockups as well, of course.
+Will fix.
 
-to put a 2.6.3. You can say:
+Jan
 
-we release a new version with all the fixes of 2.6.2
-
-I see looking on [1] the xenomai history some version with 4 numbers. But, 
-IMHO all this kind of stuff is a convention and it's not necessary to be so 
-strict with the last number. It's binary compatible, you don't have changed 
-the ABI ...
-
-Just my 2 ct.
-
-Regards,
-
-
-Leo
-
-
-[1] http://www.xenomai.org/index.php/Xenomai:News
-
-
-
--- 
---
-Linux User 152692
-Catalonia
-
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 261 bytes
+Desc: OpenPGP digital signature
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20130106/f836c9a=
+4/attachment.pgp>
