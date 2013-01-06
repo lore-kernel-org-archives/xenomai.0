@@ -1,21 +1,20 @@
-Message-ID: <50E6A5CF.7040501@xenomai.org>
-Date: Fri, 04 Jan 2013 10:50:07 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <50E998CE.3070507@web.de>
+Date: Sun, 06 Jan 2013 16:31:26 +0100
+From: Jan Kiszka <jan.kiszka@web.de>
 MIME-Version: 1.0
-References: <CAGVaUoFsUJKCSOMrDuq3htrLzScpzjVP8oKs2ARp7k7o8KbRfQ@mail.gmail.com>
-	<9480305C-20DF-4DBA-AC23-7E3E59EBCEEB@mah.priv.at>
-	<50E1CC06.9050404@xenomai.org>
-	<382C7691-29C9-408C-97DE-4A020138B0A4@mah.priv.at>
-	<CANKLDmuU254PGkv2+ABiGitZDg1u9A5uq9Po=3gzOo8-KyANVw@mail.gmail.com>
-	<20130103085312.GA8132@localhost.localdomain>
-	<5C3D95AF-ADF8-4B1E-8FB6-5B9557262EC8@mah.priv.at>
-	<20130103141552.GB9656@localhost.localdomain>
-	<50E5E7D9.7020605@xenomai.org>
-	<20130104085019.GA13416@localhost.localdomain>
-In-Reply-To: <20130104085019.GA13416@localhost.localdomain>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] About the timer interrupt in beaglebone
+References: <50E47751.1070005@siemens.com>
+	<50E59112.6080005@siemens.com>	<50E94E72.5050309@xenomai.org>
+	<50E95812.8050503@web.de> <50E959EC.8030306@web.de>
+	<50E98242.30104@xenomai.org> <50E98849.5050903@web.de>
+	<50E9897E.2000106@xenomai.org> <50E98E62.7090907@web.de>
+	<50E993B7.9070201@xenomai.org> <50E99430.5000700@web.de>
+	<50E9951E.4030809@xenomai.org> <50E995EB.8040300@web.de>
+	<50E997C3.20906@xenomai.org>
+In-Reply-To: <50E997C3.20906@xenomai.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai] [PATCH v3] nucleus: Convert intrlock to a sleeping
+ Linux lock
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -24,62 +23,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Richard Cochran <richardcochran@gmail.com>
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: "Mauerer, Wolfgang" <wolfgang.mauerer@siemens.com>, Xenomai <xenomai@xenomai.org>
 
-On 01/04/2013 09:50 AM, Richard Cochran wrote:
-> On Thu, Jan 03, 2013 at 09:19:37PM +0100, Gilles Chanteperdrix wrote:
-> 
->> Of course some of the code they contain is not really acceptable in
->> mainline, but at least it is there and takes less time to debug than it
->> would if starting from scratch.
-> 
-> That it takes "less time" is only sometimes true.
-
-Well, at some point you can still decide to abandon the vendor driver
-and start from scratch.
-
->  
->> Just trying to give a different opinion from Richard.
-> 
-> I actually agree with you, Gilles. If you are developing a consumer device
-> 
->   - with a three year product lifetime
->   - that will never receive a firmware upgrade
-
-Thanks to the stable kernel releases, a kernel still gets updates for
-security fixes. A product I have worked on around three years ago used
-the 2.6.32 kernel from the "arago" tree, this looks old, but on the
-other hand, the debian stable distribution default kernel running on the
-xenomai.org server is also based on the 2.6.32 kernel.
-
->   - where time to market is most important
-> 
-> then the TI kernel is the best choice. But if you want to build, let's
-> say, a platform for a family of products with a five to ten year
-> scope, then maybe using TI's heavily modified v3.2 kernel is not best
-> way.
-> 
-> In any case, what is clearly best for the community is having mainline
-> support. I myself am interested in and am willing to help out with
-> xenomai on the beaglebone, but I will not waste my time with the TI
-> kernel. It is just too far away for me.
-
-I agree with that too, and I would like to help mainline the support for
-the TI processors I am using at work, but the fact is that at work, I do
-not really have time to do it, because the drivers for the TI processor
-I am working with (the TI processors for video encoding, ex-DaVinci
-family) represent big masses of code, and getting code into mainline
-means many iterations, especially for someone who does not do it often,
-and at home, well, most of the time I devote to free-software
-contributions is devoted to the xenomai project. Maybe I was discouraged
-by the attempt of contributing the FCSE patch too.
-
-The effort should come from TI, because if the support for new
-processors directly lands into mainline, we will no longer have to
-choose between the vendor kernel and the mainline kernel. I guess that
-is the point of having created Linaro.
-
--- 
-					    Gilles.
-
+T24gMjAxMy0wMS0wNiAxNjoyNiwgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4gT24gMDEv
+MDYvMjAxMyAwNDoxOSBQTSwgSmFuIEtpc3prYSB3cm90ZToKPiAKPj4gT24gMjAxMy0wMS0wNiAx
+NjoxNSwgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4+PiBPbiAwMS8wNi8yMDEzIDA0OjEx
+IFBNLCBKYW4gS2lzemthIHdyb3RlOgo+Pj4KPj4+PiBPbiAyMDEzLTAxLTA2IDE2OjA5LCBHaWxs
+ZXMgQ2hhbnRlcGVyZHJpeCB3cm90ZToKPj4+Pj4+IElmIHlvdSBwcmVmZXIgdG8gc2tpcCB0aGUg
+d2FybmluZyBpbiBpcGlwZSwgdGhlbiBJIHdpbGwgc2VuZCBhCj4+Pj4+PiBjb3JyZXNwb25kaW5n
+IHBhdGNoLiBUaGUgbG9jayBjb252ZXJzaW9uIGlzIHN0aWxsIG5lY2Vzc2FyeSBmb3IgZm9yZ2Us
+Cj4+Pj4+PiB0aG91Z2guCj4+Pj4+Cj4+Pj4+Cj4+Pj4+IFRoZXJlIGFyZSBvdGhlciB3YXlzIGFy
+b3VuZCwgaXBpcGVfdmlydHVhbGl6ZV9pcnEgaXMgYWxyZWFkeSBhIHdyYXBwZXIKPj4+Pj4gdXNl
+ZCBvbmx5IGJ5IDIuNiwgc28gd2UgY2FuIGFkZCBzb21lIGNvZGUgaGVyZS4gU28sIHdlIGNhbiBv
+bmx5IGNoZWNrCj4+Pj4+IGlwaXBlX3Jvb3RfcCBoZXJlLCBhbmQgZGlzYWJsZSB0aGUgd2Fybmlu
+ZyBpbiBpcGlwZV9yZXF1ZXN0X2lycS4KPj4+Pgo+Pj4+IEVyciwgd2UgcmF0aGVyIG5lZWQgdW5j
+aGVja2VkIF9faXBpcGVfcmVxdWVzdF9pcnEsIGNhbGxlZCBieQo+Pj4+IGlwaXBlX3JlcXVlc3Rf
+aXJxIGFmdGVyIHRlc3RpbmcgdGhlIGNvbnRleHQgYW5kIGJ5IGlwaXBlX3ZpcnR1YWxpemVfaXJx
+Cj4+Pj4gd2l0aG91dCB0aGF0IHRlc3QuCj4+Pgo+Pj4KPj4+IGlwaXBlX3Jvb3Rfb25seSBkb2Vz
+IHR3byB0ZXN0cywgaXQgdGVzdHMgd2hldGhlciB0aGUgY3VycmVudCBkb21haW4gaXMKPj4+IHJv
+b3QsIGFuZCB3aGV0aGVyIHJvb3QgaXMgc3RhbGxlZC4gVGhlIHByb2JsZW0sIGFzIGZhciBhcyBJ
+IHVuZGVyc3Rvb2QsCj4+PiBjb21lIGZyb20gdGhlIHNlY29uZCB0ZXN0LCB3aGF0IEkgbWVhbiBp
+cyB0aGF0IHdlIGNhbiBhcnJhbmdlIHRvIGtlZXAKPj4+IHRoZSBmaXJzdCB0ZXN0IGZvciBpcGlw
+ZV92aXJ0dWFsaXplX2lycS4KPj4KPj4gV2VsbCwgaWYgd2UgZGlzYWxsb3cgbm9uLXJvb3QgaW52
+b2NhdGlvbnMgb2YgaXBpcGVfdmlydHVhbGl6ZV9pcnEsIHRoZW4KPj4gd2UgY2FuIGFsc28gY29u
+dmVydCB0aGUgbG9jayB0byBhIExpbnV4IHZlcnNpb24uIEkgdGhvdWdodCB5b3VyIGNvbmNlcm5z
+Cj4+IGFyZSByZWxhdGVkIHRvIHJlc3RyaWN0aW5nIHRoZSB1c2FnZSBvZiB0aGF0IHNlcnZpY2Vz
+IChvciBzZXJ2aWNlcyB0aGF0Cj4+IGNhbGwgaXQpIGluIHN0YWJsZSAyLjYuCj4gCj4gCj4gTm8s
+IG15IGNvbmNlcm5zIGFyZSBhYm91dCB0aGUgbWFueSByZWdyZXNzaW9uIHRoYXQgdHVybmluZyBh
+IHNwaW5sb2NrCj4gaW50byBhIG11dGV4IGNvdWxkIGJyaW5nLiBJZiB0dXJuaW5nIGEgc3Bpbmxv
+Y2sgaW50byBhIG11dGV4IHdhcyBzdWNoIGEKPiBoYXJtbGVzcyBtYXR0ZXIsIG1heWJlIHRoZSAt
+cnQgcGF0Y2ggd291bGQgaGF2ZSBiZWVuIG1lcmdlZCBmb3IgeWVhcnMKPiA7LSkKPiAKPiBZb3Vy
+IHBhdGNoZXMgY2hhbmdlcyBzb21lIGJlaGF2aW91ciwgZm9yIGluc3RhbmNlLCB3aXRoIHRoZSBj
+dXJyZW50Cj4gaW1wbGVtZW50YXRpb24sIGlmIGFuIGludGVycnVwdCBpcyB0YWtlbiB3aGlsZSBy
+ZWFkaW5nIGNhdAo+IC9wcm9jL3hlbm9tYWkvaXJxLCB0aGUgZGlzcGxheSB0byAvcHJvYyBpcyBy
+ZXN0YXJ0ZWQsIGFmdGVyIHlvdXIgcGF0Y2gsCj4gdGhpcyBiZWhhdmlvdXIgY2hhbmdlcy4KClRo
+aXMgY2hhbmdlIHdhcyBicm9rZW4sIHRoZSBuZXh0IHZlcnNpb24gKG9yIHRoZSBvbmUgZm9yIGZv
+cmdlKSB3aWxsIG5vdApkbyB0aGlzIG1pc3Rha2UuCgo+IEkgZG8gbm90IHRoaW5rIHRoYXQgaXQg
+bWF0dGVycywgYnV0IHlvdSBnZXQgdGhlCj4gcG9pbnQ6IHRoZXJlIGFyZSBtYW55IGNvbnNlcXVl
+bmNlcyBwb3NzaWJsZSB3aXRoIHRoaXMgY2hhbmdlLCB5ZXQKPiB1bmZvcmVzZWVuIGJ1dCB3aGlj
+aCB3aWxsIHBvcCB1cCBhcyBzb29uIGFzIHBlb3BsZSBzdGFydCB1c2luZyB0aGUKPiBtb2RpZmll
+ZCB2ZXJzaW9uIGFuZCBjYXVzZSB1cyB0byBrZWVwIHdvcmtpbmcgb24gMi42IHdoZXJlYXMgd2Ug
+c2hvdWxkCj4gYmUgd29ya2luZyBvbiAtZm9yZ2UuCgpJIGNhbm5vdCBjaG9zZSB5ZXQgd2hlcmUg
+SSdkIGxpa2UgdG8gd29yayBvbi4gR2V0dGluZyBhIHdvcmtpbmcgY29tYm8gb2YKWGVub21haSAy
+LjYgd2l0aCBrZXJuZWwgMy54IHdpbGwgaG9wZWZ1bGx5IGdpdmUgdXMgdGhlIHJvb20gdG8gbW92
+ZSBvbi4KCkphbgoKCi0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5v
+bi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IHNpZ25hdHVyZS5hc2MKVHlw
+ZTogYXBwbGljYXRpb24vcGdwLXNpZ25hdHVyZQpTaXplOiAyNjEgYnl0ZXMKRGVzYzogT3BlblBH
+UCBkaWdpdGFsIHNpZ25hdHVyZQpVUkw6IDxodHRwOi8vd3d3Lnhlbm9tYWkub3JnL3BpcGVybWFp
+bC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTMwMTA2L2VmMGZlOTYxL2F0dGFjaG1lbnQucGdwPgo=
