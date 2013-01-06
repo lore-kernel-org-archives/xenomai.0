@@ -1,20 +1,18 @@
-Message-ID: <50E998CE.3070507@web.de>
-Date: Sun, 06 Jan 2013 16:31:26 +0100
-From: Jan Kiszka <jan.kiszka@web.de>
+Message-ID: <50E9A18D.5040509@xenomai.org>
+Date: Sun, 06 Jan 2013 17:08:45 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <50E47751.1070005@siemens.com>
-	<50E59112.6080005@siemens.com>	<50E94E72.5050309@xenomai.org>
-	<50E95812.8050503@web.de> <50E959EC.8030306@web.de>
-	<50E98242.30104@xenomai.org> <50E98849.5050903@web.de>
-	<50E9897E.2000106@xenomai.org> <50E98E62.7090907@web.de>
-	<50E993B7.9070201@xenomai.org> <50E99430.5000700@web.de>
-	<50E9951E.4030809@xenomai.org> <50E995EB.8040300@web.de>
-	<50E997C3.20906@xenomai.org>
-In-Reply-To: <50E997C3.20906@xenomai.org>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] [PATCH v3] nucleus: Convert intrlock to a sleeping
- Linux lock
+References: <50E471AC.2000701@siemens.com> <50E5A0E4.4000108@xenomai.org>
+	<50E5A75B.6090507@siemens.com> <50E5B174.2040106@xenomai.org>
+	<50E5BF03.5020004@siemens.com> <50E5C134.3010804@xenomai.org>
+	<50E5C69E.7090707@siemens.com> <50E6A871.9010008@xenomai.org>
+	<50E6ABF7.1050503@siemens.com> <50E6AFC3.5080400@xenomai.org>
+	<50E6BB87.4020100@siemens.com> <50E6BE15.2060805@xenomai.org>
+	<50E6C112.6070106@siemens.com> <50E6D11E.9090808@xenomai.org>
+In-Reply-To: <50E6D11E.9090808@xenomai.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] XNARCH_TIMER_IRQ
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -23,52 +21,123 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "Mauerer, Wolfgang" <wolfgang.mauerer@siemens.com>, Xenomai <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@xenomai.org>
 
-T24gMjAxMy0wMS0wNiAxNjoyNiwgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4gT24gMDEv
-MDYvMjAxMyAwNDoxOSBQTSwgSmFuIEtpc3prYSB3cm90ZToKPiAKPj4gT24gMjAxMy0wMS0wNiAx
-NjoxNSwgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4+PiBPbiAwMS8wNi8yMDEzIDA0OjEx
-IFBNLCBKYW4gS2lzemthIHdyb3RlOgo+Pj4KPj4+PiBPbiAyMDEzLTAxLTA2IDE2OjA5LCBHaWxs
-ZXMgQ2hhbnRlcGVyZHJpeCB3cm90ZToKPj4+Pj4+IElmIHlvdSBwcmVmZXIgdG8gc2tpcCB0aGUg
-d2FybmluZyBpbiBpcGlwZSwgdGhlbiBJIHdpbGwgc2VuZCBhCj4+Pj4+PiBjb3JyZXNwb25kaW5n
-IHBhdGNoLiBUaGUgbG9jayBjb252ZXJzaW9uIGlzIHN0aWxsIG5lY2Vzc2FyeSBmb3IgZm9yZ2Us
-Cj4+Pj4+PiB0aG91Z2guCj4+Pj4+Cj4+Pj4+Cj4+Pj4+IFRoZXJlIGFyZSBvdGhlciB3YXlzIGFy
-b3VuZCwgaXBpcGVfdmlydHVhbGl6ZV9pcnEgaXMgYWxyZWFkeSBhIHdyYXBwZXIKPj4+Pj4gdXNl
-ZCBvbmx5IGJ5IDIuNiwgc28gd2UgY2FuIGFkZCBzb21lIGNvZGUgaGVyZS4gU28sIHdlIGNhbiBv
-bmx5IGNoZWNrCj4+Pj4+IGlwaXBlX3Jvb3RfcCBoZXJlLCBhbmQgZGlzYWJsZSB0aGUgd2Fybmlu
-ZyBpbiBpcGlwZV9yZXF1ZXN0X2lycS4KPj4+Pgo+Pj4+IEVyciwgd2UgcmF0aGVyIG5lZWQgdW5j
-aGVja2VkIF9faXBpcGVfcmVxdWVzdF9pcnEsIGNhbGxlZCBieQo+Pj4+IGlwaXBlX3JlcXVlc3Rf
-aXJxIGFmdGVyIHRlc3RpbmcgdGhlIGNvbnRleHQgYW5kIGJ5IGlwaXBlX3ZpcnR1YWxpemVfaXJx
-Cj4+Pj4gd2l0aG91dCB0aGF0IHRlc3QuCj4+Pgo+Pj4KPj4+IGlwaXBlX3Jvb3Rfb25seSBkb2Vz
-IHR3byB0ZXN0cywgaXQgdGVzdHMgd2hldGhlciB0aGUgY3VycmVudCBkb21haW4gaXMKPj4+IHJv
-b3QsIGFuZCB3aGV0aGVyIHJvb3QgaXMgc3RhbGxlZC4gVGhlIHByb2JsZW0sIGFzIGZhciBhcyBJ
-IHVuZGVyc3Rvb2QsCj4+PiBjb21lIGZyb20gdGhlIHNlY29uZCB0ZXN0LCB3aGF0IEkgbWVhbiBp
-cyB0aGF0IHdlIGNhbiBhcnJhbmdlIHRvIGtlZXAKPj4+IHRoZSBmaXJzdCB0ZXN0IGZvciBpcGlw
-ZV92aXJ0dWFsaXplX2lycS4KPj4KPj4gV2VsbCwgaWYgd2UgZGlzYWxsb3cgbm9uLXJvb3QgaW52
-b2NhdGlvbnMgb2YgaXBpcGVfdmlydHVhbGl6ZV9pcnEsIHRoZW4KPj4gd2UgY2FuIGFsc28gY29u
-dmVydCB0aGUgbG9jayB0byBhIExpbnV4IHZlcnNpb24uIEkgdGhvdWdodCB5b3VyIGNvbmNlcm5z
-Cj4+IGFyZSByZWxhdGVkIHRvIHJlc3RyaWN0aW5nIHRoZSB1c2FnZSBvZiB0aGF0IHNlcnZpY2Vz
-IChvciBzZXJ2aWNlcyB0aGF0Cj4+IGNhbGwgaXQpIGluIHN0YWJsZSAyLjYuCj4gCj4gCj4gTm8s
-IG15IGNvbmNlcm5zIGFyZSBhYm91dCB0aGUgbWFueSByZWdyZXNzaW9uIHRoYXQgdHVybmluZyBh
-IHNwaW5sb2NrCj4gaW50byBhIG11dGV4IGNvdWxkIGJyaW5nLiBJZiB0dXJuaW5nIGEgc3Bpbmxv
-Y2sgaW50byBhIG11dGV4IHdhcyBzdWNoIGEKPiBoYXJtbGVzcyBtYXR0ZXIsIG1heWJlIHRoZSAt
-cnQgcGF0Y2ggd291bGQgaGF2ZSBiZWVuIG1lcmdlZCBmb3IgeWVhcnMKPiA7LSkKPiAKPiBZb3Vy
-IHBhdGNoZXMgY2hhbmdlcyBzb21lIGJlaGF2aW91ciwgZm9yIGluc3RhbmNlLCB3aXRoIHRoZSBj
-dXJyZW50Cj4gaW1wbGVtZW50YXRpb24sIGlmIGFuIGludGVycnVwdCBpcyB0YWtlbiB3aGlsZSBy
-ZWFkaW5nIGNhdAo+IC9wcm9jL3hlbm9tYWkvaXJxLCB0aGUgZGlzcGxheSB0byAvcHJvYyBpcyBy
-ZXN0YXJ0ZWQsIGFmdGVyIHlvdXIgcGF0Y2gsCj4gdGhpcyBiZWhhdmlvdXIgY2hhbmdlcy4KClRo
-aXMgY2hhbmdlIHdhcyBicm9rZW4sIHRoZSBuZXh0IHZlcnNpb24gKG9yIHRoZSBvbmUgZm9yIGZv
-cmdlKSB3aWxsIG5vdApkbyB0aGlzIG1pc3Rha2UuCgo+IEkgZG8gbm90IHRoaW5rIHRoYXQgaXQg
-bWF0dGVycywgYnV0IHlvdSBnZXQgdGhlCj4gcG9pbnQ6IHRoZXJlIGFyZSBtYW55IGNvbnNlcXVl
-bmNlcyBwb3NzaWJsZSB3aXRoIHRoaXMgY2hhbmdlLCB5ZXQKPiB1bmZvcmVzZWVuIGJ1dCB3aGlj
-aCB3aWxsIHBvcCB1cCBhcyBzb29uIGFzIHBlb3BsZSBzdGFydCB1c2luZyB0aGUKPiBtb2RpZmll
-ZCB2ZXJzaW9uIGFuZCBjYXVzZSB1cyB0byBrZWVwIHdvcmtpbmcgb24gMi42IHdoZXJlYXMgd2Ug
-c2hvdWxkCj4gYmUgd29ya2luZyBvbiAtZm9yZ2UuCgpJIGNhbm5vdCBjaG9zZSB5ZXQgd2hlcmUg
-SSdkIGxpa2UgdG8gd29yayBvbi4gR2V0dGluZyBhIHdvcmtpbmcgY29tYm8gb2YKWGVub21haSAy
-LjYgd2l0aCBrZXJuZWwgMy54IHdpbGwgaG9wZWZ1bGx5IGdpdmUgdXMgdGhlIHJvb20gdG8gbW92
-ZSBvbi4KCkphbgoKCi0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5v
-bi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IHNpZ25hdHVyZS5hc2MKVHlw
-ZTogYXBwbGljYXRpb24vcGdwLXNpZ25hdHVyZQpTaXplOiAyNjEgYnl0ZXMKRGVzYzogT3BlblBH
-UCBkaWdpdGFsIHNpZ25hdHVyZQpVUkw6IDxodHRwOi8vd3d3Lnhlbm9tYWkub3JnL3BpcGVybWFp
-bC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTMwMTA2L2VmMGZlOTYxL2F0dGFjaG1lbnQucGdwPgo=
+On 01/04/2013 01:54 PM, Philippe Gerum wrote:
+
+> On 01/04/2013 12:46 PM, Jan Kiszka wrote:
+>> On 2013-01-04 12:33, Philippe Gerum wrote:
+>>> On 01/04/2013 12:22 PM, Jan Kiszka wrote:
+>>>> On 2013-01-04 11:32, Philippe Gerum wrote:
+>>>>> On 01/04/2013 11:16 AM, Jan Kiszka wrote:
+>>>>>> On 2013-01-04 11:01, Philippe Gerum wrote:
+>>>>>>> On 01/03/2013 06:57 PM, Jan Kiszka wrote:
+>>>>>>>> On 2013-01-03 18:34, Philippe Gerum wrote:
+>>>>>>>>> On 01/03/2013 06:25 PM, Jan Kiszka wrote:
+>>>>>>>>>> On 2013-01-03 17:27, Philippe Gerum wrote:
+>>>>>>>>>>> On 01/03/2013 04:44 PM, Jan Kiszka wrote:
+>>>>>>>>>>>> On 2013-01-03 16:16, Gilles Chanteperdrix wrote:
+>>>>>>>>>>>>> On 01/02/2013 06:43 PM, Jan Kiszka wrote:
+>>>>>>>>>>>>>> Hi,
+>>>>>>>>>>>>>>
+>>>>>>>>>>>>>> this may involve some refactoring of the HAL and a bit of I-pipe, so I
+>>>>>>>>>>>>>> better ask first:
+>>>>>>>>>>>>>>
+>>>>>>>>>>>>>> Not sure when it changed, but XNARCH_TIMER_IRQ may no longer return the
+>>>>>>>>>>>>>> same values when called on different CPUs. Therefore, It should rather
+>>>>>>>>>>>>>> be called XNARCH_THIS_CPU_TIMER_IRQ now.
+>>>>>>>>>>>>>>
+>>>>>>>>>>>>>> Looking at its users (an I-pipe debug warning pointed it out), there are
+>>>>>>>>>>>>>> two that don't expect this: xnintr_query_next() and format_irq_proc().
+>>>>>>>>>>>>>> The former actually wants XNARCH_TIMER_IRQ(cpu), the latter needs
+>>>>>>>>>>>>>> something like is_timer_irq_on_any_cpus(irq).
+>>>>>>>>>>>>>>
+>>>>>>>>>>>>>> So I would propose to refactor XNARCH_TIMER_IRQ and RTHAL_TIMER_IRQ
+>>>>>>>>>>>>>> accordingly. But this unfortunately requires extensions of I-pipe to
+>>>>>>>>>>>>>> provide something like __ipipe_hrtimer_irq(cpu) and
+>>>>>>>>>>>>>> __ipipe_this_cpu_hrtimer_irq. And some ugly workaround in Xenomai for
+>>>>>>>>>>>>>> older I-pipe versions.
+>>>>>>>>>>>>>>
+>>>>>>>>>>>>>> Does this make sense?
+>>>>>>>>>>>>>
+>>>>>>>>>>>>> Made something similar for forge:
+>>>>>>>>>>>>> http://git.xenomai.org/?p=xenomai-gch.git;a=commitdiff;h=37ca257af466e7e5fbfb402b39f088487d048fd5;hp=a9971c363fd361b428f12200536bc5a01dff9c05
+>>>>>>>>>>>>
+>>>>>>>>>>>
+>>>>>>>>>>> Caution, this code is WIP. nktimer will have to move to the percpu
+>>>>>>>>>>> scheduler descriptor to complete this.
+>>>>>>>>>>
+>>>>>>>>>> That's nkclock in 2.6. Mostly a cosmetic issue, the interrupt name will
+>>>>>>>>>> not be properly printed, statistics are already per-cpu. Could be
+>>>>>>>>>> improved nevertheless.
+>>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>> My point is to tell you that what you look to in -forge regarding this
+>>>>>>>>> area is in a state of flux. I'm not referring to 2.6, I'm focusing
+>>>>>>>>> almost exclusively on 3.x these days.
+>>>>>>>>>
+>>>>>>>>>> Is there an easy way to find out if we have per-CPU timers on some arch?
+>>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>> Why should we assume differently?
+>>>>>>>>
+>>>>>>>> To avoid dumping redundant statistic lines when some timer IRQ has no
+>>>>>>>> home on a given CPU. But as there are also mixed setups possible as
+>>>>>>>> Gilles pointed out, we need a different approach, likely just skip when
+>>>>>>>> there are no hits.
+>>>>>>>>
+>>>>>>>
+>>>>>>> Your question sounded like "is it possible to know whether an SMP arch
+>>>>>>> may use different per-CPU IRQs for the timer". I was about to answer
+>>>>>>> that testing for any pipeline core API rev >= 2 would do, excluding all
+>>>>>>> legacy patches.
+>>>>>>>
+>>>>>>> For the cosmetic issue you mention, testing rthal_supported_cpus would do.
+>>>>>>
+>>>>>> Nope, this is not sufficient. A per-CPU timer IRQ would then still
+>>>>>> generate useless lines in stat for all those CPUs it is not bound to.
+>>>>>>
+>>>>>
+>>>>> You know which CPU has a real-time timer attached via
+>>>>> rthal_supported_cpus, which timer IRQ # is attached to each real-time
+>>>>> CPU when per-CPU timer IRQs are supported by the pipeline. For legacy
+>>>>> patches which only allow a common IRQ line for all timers regardless of
+>>>>> the CPU, the matter is solved by design. I still don't get where the
+>>>>> issue would be.
+>>>>
+>>>> rthal_supported_cpus doesn't contain enough information. We need
+>>>>
+>>>> is_valid_irq(irq, cpu):
+>>>> 	if (timer_irq(cpu) == irq)
+>>>> 		return true
+>>>> 	for_each_cpu(n)
+>>>> 		if (timer_irq(n) == irq)
+>>>> 			return false
+>>>> 	return true
+>>>>
+>>>> for a cleaned up /stat output as we iterate over all combinations of
+>>>> (irq, cpu) there. That for_each_cpu is a bit ugly, and that's why I was
+>>>> considering to derive is_valid_irq from irq.hits > 0.
+>>>>
+>>>
+>>>
+>>> The problem goes away with cpus displayed on lines, and irq # on columns.
+>>>
+>>
+>> Not applicable to /stat.
+>>
+> 
+> No, the real issue is that using /stat to display timer activity as 
+> thread placeholders is not applicable. So that stuff has to move to 
+> another /proc file.
+
+
+Ok, so what we need is a different /proc entry for timer activity. As
+for the timer/irq association, the real problem is the aggregation of
+statistics for timers sharing the same irq, not unlike what is done for
+shared irqs.
+
+-- 
+                                                                Gilles.
+
