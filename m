@@ -1,16 +1,16 @@
-From: Paul <paul_c@tuxcnc.org>
-Date: Sat, 19 Jan 2013 00:52:19 +0000
-References: <CALJOq=VtrBhMzCaT=7omDVN9hnnwZ+cmM1_1eff9DTS-fvLjaw@mail.gmail.com>
-	<201301182211.27006.paul_c@tuxcnc.org>
-	<CALJOq=Vy2eqfikHRzxwxs=yC4sXp=cChC76Q4ZNfs8GudpSAdg@mail.gmail.com>
-In-Reply-To: <CALJOq=Vy2eqfikHRzxwxs=yC4sXp=cChC76Q4ZNfs8GudpSAdg@mail.gmail.com>
+Message-ID: <50E98849.5050903@web.de>
+Date: Sun, 06 Jan 2013 15:20:57 +0100
+From: Jan Kiszka <jan.kiszka@web.de>
 MIME-Version: 1.0
-Content-Type: text/plain;
-  charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Message-Id: <201301190052.19037.paul_c@tuxcnc.org>
-Subject: Re: [Xenomai] GPIO Interrupts problem with RTDM
+References: <50E47751.1070005@siemens.com>
+	<50E59112.6080005@siemens.com>	<50E94E72.5050309@xenomai.org>
+	<50E95812.8050503@web.de> <50E959EC.8030306@web.de>
+	<50E98242.30104@xenomai.org>
+In-Reply-To: <50E98242.30104@xenomai.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai] [PATCH v3] nucleus: Convert intrlock to a sleeping
+ Linux lock
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,86 +19,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Pierre LE COZ <peter.le.coz@gmail.com>
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: "Mauerer, Wolfgang" <wolfgang.mauerer@siemens.com>, Xenomai <xenomai@xenomai.org>
 
-On Friday 18 January 2013, Pierre LE COZ wrote:
-> Thank you Gilles and Paul for your quick reply and your help !
->
-> I've checked my bcm2708_gpio.c, and in fact, the call to
-> ipipe_handle_demuxed_Igor() misses.
->
-> > In the meantime, in kernel space, use the following
-> > calls in conjunction with rtdm_irq_request:
-> >
-> >         // To enable an interrupt.
-> >         gpio_request_one(gpio_pin, GPIOF_DIR_IN, "module name");
-> >         irq_number = gpio_to_irq(gpio_pin);
-> >         irq_set_irq_type(irq_number,  IRQF_TRIGGER_RISING);
-> >         enable_irq(irq_number);
-> >
-> >
-> >         // To disable an interrupt and clean up.
-> >         disable_irq(irq_number);
-> >         free_irq(irq_number, NULL);
-> >         gpio_free(gpio_pin);
->
-> I tried it. Here is my code :
->
->         rtdm_irq_request(& irq_exemple, num_irq, exemple_handler,
-> RTDM_IRQTYPE_SHARED | RTDM_IRQTYPE_EDGE,THIS_MODULE->name, NULL);
->
->          gpio_request_one(GPIO_IN, GPIOF_DIR_IN, THIS_MODULE->name);
->         irq_set_irq_type(num_irq,  IRQF_TRIGGER_RISING);
->         enable_irq(num_irq);
-
-Request and set up the gpio & irq before calling rtdm_irq_request() then 
-enable_irq(). However.... ALWAYS check the return codes from ANY 
-function that requests or enables resources - Sometimes they fail and 
-then you crash & burn.
-
->
->         return 0;
-> }
->
-> But here is what I get :
->
-> # insmod rpi-rtdm.ko
-> ------------[ cut here ]------------
-> WARNING: at kernel/irq/manage.c:421 enable_irq+0x50/0x6c()
-> Unbalanced enable for IRQ 108
-> Modules linked in: rpi_rtdm(O+)
-> [<c00136bc>] (unwind_backtrace+0x0/0xe4) from [<c0021c6c>]
-> (warn_slowpath_common+0x4c/0x64)
-> [<c0021c6c>] (warn_slowpath_common+0x4c/0x64) from [<c0021d04>]
-> (warn_slowpath_fmt+0x2c/0x3c)
-> [<c0021d04>] (warn_slowpath_fmt+0x2c/0x3c) from [<c0060c50>]
-> (enable_irq+0x50/0x6c)
-> [<c0060c50>] (enable_irq+0x50/0x6c) from [<bf0020a8>]
-> (exemple_init+0xa8/0xbc [rpi_rtdm])
-> [<bf0020a8>] (exemple_init+0xa8/0xbc [rpi_rtdm]) from [<c00086a8>]
-> (do_one_initcall+0x9c/0x17c)
-> [<c00086a8>] (do_one_initcall+0x9c/0x17c) from [<c0051a5c>]
-> (sys_init_module+0x1658/0x1830)
-> [<c0051a5c>] (sys_init_module+0x1658/0x1830) from [<c000dbe0>]
-> (ret_fast_syscall+0x0/0x30)
-> ---[ end trace 6358198229f2f036 ]---
->
-> So do I need to rebuild my entire system after patching my
-> bcm2708_gpio.c ?
-
-Just the kernel & modules needs to be recompiled and installed - Don't 
-forget to recompile your module in case the Module.symvers map has 
-changed.
-
-> Or, I am doing something wrong with the lines of code that Paul gave
-> me?
-
-Apart from the ordering and lack of checks on the return codes - You 
-will find information about the return codes in Documentation/gpio.txt 
-along with plenty of examples in numerous driver code.
-
-Regards, Paul.
-
-
-
+T24gMjAxMy0wMS0wNiAxNDo1NSwgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4gT24gMDEv
+MDYvMjAxMyAxMjowMyBQTSwgSmFuIEtpc3prYSB3cm90ZToKPiAKPj4gT24gMjAxMy0wMS0wNiAx
+MTo1NSwgSmFuIEtpc3prYSB3cm90ZToKPj4+IE9uIDIwMTMtMDEtMDYgMTE6MTQsIFBoaWxpcHBl
+IEdlcnVtIHdyb3RlOgo+Pj4+IE9uIDAxLzAzLzIwMTMgMDM6MDkgUE0sIEphbiBLaXN6a2Egd3Jv
+dGU6Cj4+Pj4KPj4+Pj4gK3N0YXRpYyBzdHJ1Y3QgeG52ZmlsZV9sb2NrX29wcyB2ZmlsZV9zdGF0
+X2xvY2tvcHMgPSB7Cj4+Pj4+ICsJLmdldCA9IHhuaW50cl9nZXRfcXVlcnlfbG9jaywKPj4+Pj4g
+KwkucHV0ID0geG5pbnRyX3B1dF9xdWVyeV9sb2NrLAo+Pj4+PiArfTsKPj4+Pj4gKwo+Pj4+PiAg
+c3RhdGljIHN0cnVjdCB4bnZmaWxlX3NuYXBzaG90IHN0YXRfdmZpbGUgPSB7Cj4+Pj4+ICAJLnBy
+aXZzeiA9IHNpemVvZihzdHJ1Y3QgdmZpbGVfc3RhdF9wcml2KSwKPj4+Pj4gIAkuZGF0YXN6ID0g
+c2l6ZW9mKHN0cnVjdCB2ZmlsZV9zdGF0X2RhdGEpLAo+Pj4+PiAgCS50YWcgPSAmbmtwb2Rfc3Ry
+dWN0LnRocmVhZGxpc3RfdGFnLAo+Pj4+PiAgCS5vcHMgPSAmdmZpbGVfc3RhdF9vcHMsCj4+Pj4+
+ICsJLmVudHJ5ID0geyAubG9ja29wcyA9ICZ2ZmlsZV9zdGF0X2xvY2tvcHMgfSwKPj4+Pj4gIH07
+Cj4+Pj4KPj4+PiBUaGlzIHdvdWxkIGludHJvZHVjZSBhIHJlZ3Jlc3Npb24uIHN0YXRfdmZpbGUn
+cyByZXdpbmQvbmV4dCBoYW5kbGVycwo+Pj4+IGNvbXBldGUgd2l0aCBjb2RlIGFsdGVyaW5nIHRo
+ZSBnbG9iYWwgdGhyZWFkIHF1ZXVlIHdoaWNoIG1heSBydW4gaW4KPj4+PiBwcmltYXJ5IG1vZGUs
+IHN1Y2ggYXMgeG5wb2RfZGVsZXRlX3RocmVhZCgpIHdoZW4gZGVsZXRpbmcgYSBrZXJuZWwgdGFz
+ay4KPj4+PiBTbyB3ZSBjYW4ndCB1c2UgYSBsaW51eCBsb2NrIHRvIHByb3RlY3QgaXQuCj4+Pgo+
+Pj4gVGhlIExpbnV4IGxvY2sgaXMgaGVsZCBhcm91bmQgdGhpcyByZXdpbmQgbG9vcCAod2hpY2gg
+aXMgc3RpbGwgaW4KPj4+IHBsYWNlKSwgYW5kIGl0IGlzIG5vdCBwcm90ZWN0aW5nIGFueXRoaW5n
+IHRocmVhZCByZWxhdGVkLCBqdXN0IHRoZQo+Pj4gYXBwZWFyYW5jZSBhbmQgZGlzYXBwZWFyYW5j
+ZSBvZiBJUlFzLiBJIGZhaWwgdG8gc2VlIGEgY29uZmxpY3QsIGFuZAo+Pj4gdGhlcmUgYXJlIGFs
+c28gbm8gSS1waXBlL1hlbm9tYWkgd2FybmluZ3MgdHJpZ2dlcmVkIHdpdGggdGhpcyBwYXR0ZXJu
+Lgo+Pgo+PiBPaCwgbm93IEkgc2VlOiBUaGUgbmtsb2NrIGlzIGF1dG9tYXRpY2FsbHkgdGFrZW4g
+aWYgdGhlcmUgYXJlIG5vCj4+IGxvY2tvcHMuIFRoYXQgbmVlZHMgdG8gYmUgZG9uZSBpbiB0aGUg
+c3RhdCBsb2NrdXBzIGFzIHdlbGwsIG9mIGNvdXJzZS4KPj4gV2lsbCBmaXguCj4gCj4gCj4gVGhl
+IG1vcmUgSSB0aGluayBhYm91dCB0aGlzLCB0aGUgbW9yZSBJIGZpbmQgd2Ugc2hvdWxkIG5vdCBi
+ZSBkb2luZwo+IHRoaXMuIFhlbm9tYWkgMi42LnggaXMgYSBzdGFibGUgYnJhbmNoLCBsZXQgdXMg
+c3RvcCBtYWtpbmcgc3VjaCBjaGFuZ2VzLAo+IHRoaXMgd2lsbCBhbGxvdyB1cyB0byBzdGFydCB3
+b3JraW5nIG9uIC1mb3JnZS4gVGhlIHdhcm5pbmcgaXMKPiBlc3NlbnRpYWxseSBhIGZhbHNlLXBv
+c2l0aXZlLCBJIGRvIG5vdCBzZWUgYW55IHByb2JsZW0gY2FsbGluZwo+IGlwaXBlX3ZpcnR1YWxp
+emVfaXJxIHdpdGggdGhlIHJvb3QgZG9tYWluIHN0YWxsZWQuIFdlIGNhbiBza2lwIGl0IGluIHRo
+ZQo+IEktcGlwZSBjb3JlIHBhdGNoZXMgd2hlbiBjb21waWxpbmcgd2l0aCBDT05GSUdfSVBJUEVf
+TEVHQUNZLgoKV2VsbCwgd2UgbmVlZCB0byBzdXBwb3J0IDIuNiBmb3IgcXVpdGUgYSB3aGlsZSBo
+ZXJlLCBzbyBJJ20gaW50ZXJlc3RlZAppbiBmaXhpbmcgc3VjaCByZWdyZXNzaW9ucywgYWxzbyBv
+biBpbnN0cnVtZW50YXRpb25zLCB3aXRob3V0IGluY3JlYXNpbmcKb3VyIGxvY2FsIHF1ZXVlIHNp
+emUuIFRoZSBuZXh0IHZlcnNpb24gd2lsbCBiZSBsZXNzIGludmFzaXZlIHRoYW4gdGhlCmN1cnJl
+bnQgb25lLiBGaW5hbGx5LCBmaXhpbmcgdGhpcyBpc3N1ZSByZXZlYWxlZCBhbHNvIG90aGVyIHBy
+b2Mgb3V0cHV0CmJ1Z3MuCgpKYW4KCi0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0t
+LS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IHNpZ25hdHVy
+ZS5hc2MKVHlwZTogYXBwbGljYXRpb24vcGdwLXNpZ25hdHVyZQpTaXplOiAyNjEgYnl0ZXMKRGVz
+YzogT3BlblBHUCBkaWdpdGFsIHNpZ25hdHVyZQpVUkw6IDxodHRwOi8vd3d3Lnhlbm9tYWkub3Jn
+L3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTMwMTA2LzEwZmZlODY0L2F0dGFjaG1l
+bnQucGdwPgo=
