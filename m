@@ -1,15 +1,13 @@
-Message-ID: <50E6ABF7.1050503@siemens.com>
-Date: Fri, 04 Jan 2013 11:16:23 +0100
+Message-ID: <50EB1071.60803@siemens.com>
+Date: Mon, 07 Jan 2013 19:14:09 +0100
 From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-References: <50E471AC.2000701@siemens.com> <50E5A0E4.4000108@xenomai.org>
-	<50E5A75B.6090507@siemens.com> <50E5B174.2040106@xenomai.org>
-	<50E5BF03.5020004@siemens.com> <50E5C134.3010804@xenomai.org>
-	<50E5C69E.7090707@siemens.com> <50E6A871.9010008@xenomai.org>
-In-Reply-To: <50E6A871.9010008@xenomai.org>
+References: <50EB104F.6090703@siemens.com>
+In-Reply-To: <50EB104F.6090703@siemens.com>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] XNARCH_TIMER_IRQ
+Subject: [Xenomai] [PATCH 2/2] ipipe: Fault in locked vmas after changing
+ the protection flags
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,82 +16,85 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Xenomai <xenomai@xenomai.org>
 
-On 2013-01-04 11:01, Philippe Gerum wrote:
-> On 01/03/2013 06:57 PM, Jan Kiszka wrote:
->> On 2013-01-03 18:34, Philippe Gerum wrote:
->>> On 01/03/2013 06:25 PM, Jan Kiszka wrote:
->>>> On 2013-01-03 17:27, Philippe Gerum wrote:
->>>>> On 01/03/2013 04:44 PM, Jan Kiszka wrote:
->>>>>> On 2013-01-03 16:16, Gilles Chanteperdrix wrote:
->>>>>>> On 01/02/2013 06:43 PM, Jan Kiszka wrote:
->>>>>>>> Hi,
->>>>>>>>
->>>>>>>> this may involve some refactoring of the HAL and a bit of I-pipe, so I
->>>>>>>> better ask first:
->>>>>>>>
->>>>>>>> Not sure when it changed, but XNARCH_TIMER_IRQ may no longer return the
->>>>>>>> same values when called on different CPUs. Therefore, It should rather
->>>>>>>> be called XNARCH_THIS_CPU_TIMER_IRQ now.
->>>>>>>>
->>>>>>>> Looking at its users (an I-pipe debug warning pointed it out), there are
->>>>>>>> two that don't expect this: xnintr_query_next() and format_irq_proc().
->>>>>>>> The former actually wants XNARCH_TIMER_IRQ(cpu), the latter needs
->>>>>>>> something like is_timer_irq_on_any_cpus(irq).
->>>>>>>>
->>>>>>>> So I would propose to refactor XNARCH_TIMER_IRQ and RTHAL_TIMER_IRQ
->>>>>>>> accordingly. But this unfortunately requires extensions of I-pipe to
->>>>>>>> provide something like __ipipe_hrtimer_irq(cpu) and
->>>>>>>> __ipipe_this_cpu_hrtimer_irq. And some ugly workaround in Xenomai for
->>>>>>>> older I-pipe versions.
->>>>>>>>
->>>>>>>> Does this make sense?
->>>>>>>
->>>>>>> Made something similar for forge:
->>>>>>> http://git.xenomai.org/?p=xenomai-gch.git;a=commitdiff;h=37ca257af466e7e5fbfb402b39f088487d048fd5;hp=a9971c363fd361b428f12200536bc5a01dff9c05
->>>>>>
->>>>>
->>>>> Caution, this code is WIP. nktimer will have to move to the percpu
->>>>> scheduler descriptor to complete this.
->>>>
->>>> That's nkclock in 2.6. Mostly a cosmetic issue, the interrupt name will
->>>> not be properly printed, statistics are already per-cpu. Could be
->>>> improved nevertheless.
->>>>
->>>
->>> My point is to tell you that what you look to in -forge regarding this
->>> area is in a state of flux. I'm not referring to 2.6, I'm focusing
->>> almost exclusively on 3.x these days.
->>>
->>>> Is there an easy way to find out if we have per-CPU timers on some arch?
->>>>
->>>
->>> Why should we assume differently?
->>
->> To avoid dumping redundant statistic lines when some timer IRQ has no
->> home on a given CPU. But as there are also mixed setups possible as
->> Gilles pointed out, we need a different approach, likely just skip when
->> there are no hits.
->>
-> 
-> Your question sounded like "is it possible to know whether an SMP arch 
-> may use different per-CPU IRQs for the timer". I was about to answer 
-> that testing for any pipeline core API rev >= 2 would do, excluding all 
-> legacy patches.
-> 
-> For the cosmetic issue you mention, testing rthal_supported_cpus would do.
+__ipipe_pin_vma now practically removes the risk that vmas using COW are
+not fully populated before we patch the protection flags, thus can take
+faults later on and use that patched value on the zero page. Still, it
+turned out to be safer and simpler to fault in the pages after the
+protection change without touching the protection flags.
 
-Nope, this is not sufficient. A per-CPU timer IRQ would then still
-generate useless lines in stat for all those CPUs it is not bound to.
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ mm/mprotect.c |   36 +++++++-----------------------------
+ 1 files changed, 7 insertions(+), 29 deletions(-)
 
-I'll resume the work on this as soon as I found the reason for the zero
-page corruption we face now with 3.5.
-
-Jan
-
+diff --git a/mm/mprotect.c b/mm/mprotect.c
+index 195b91e..057b1d8 100644
+--- a/mm/mprotect.c
++++ b/mm/mprotect.c
+@@ -147,7 +147,6 @@ mprotect_fixup(struct vm_area_struct *vma, struct vm_area_struct **pprev,
+ {
+ 	struct mm_struct *mm = vma->vm_mm;
+ 	unsigned long oldflags = vma->vm_flags;
+-	unsigned long protflags;
+ 	long nrpages = (end - start) >> PAGE_SHIFT;
+ 	unsigned long charged = 0;
+ 	pgoff_t pgoff;
+@@ -206,17 +205,8 @@ success:
+ 	 * held in write mode.
+ 	 */
+ 	vma->vm_flags = newflags;
+-	protflags = newflags;
+-#ifdef CONFIG_IPIPE
+-	/*
+-	 * Enforce non-COW vm_page_prot by faking VM_SHARED on locked regions.
+-	 */
+-	if (test_bit(MMF_VM_PINNED, &mm->flags) &&
+-	    ((vma->vm_flags | mm->def_flags) & VM_LOCKED))
+-		protflags |= VM_SHARED;
+-#endif
+ 	vma->vm_page_prot = pgprot_modify(vma->vm_page_prot,
+-					  vm_get_page_prot(protflags));
++					  vm_get_page_prot(newflags));
+ 
+ 	if (vma_wants_writenotify(vma)) {
+ 		vma->vm_page_prot = vm_get_page_prot(newflags & ~VM_SHARED);
+@@ -224,28 +214,16 @@ success:
+ 	}
+ 
+ 	mmu_notifier_invalidate_range_start(mm, start, end);
+-#ifdef CONFIG_IPIPE
+-	/*
+-	 * Privatize potential COW pages
+-	 */
+-	if (test_bit(MMF_VM_PINNED, &mm->flags) &&
+-	    (((vma->vm_flags | mm->def_flags) & (VM_LOCKED | VM_WRITE)) ==
+-	     (VM_LOCKED | VM_WRITE))) {
+-		error = __ipipe_pin_vma(mm, vma);
+-		if (error)
+-			/*
+-			 * OOM. Just revert the fake VM_SHARED so that the
+-			 * zero page cannot be overwritten.
+-			 */
+-			vma->vm_page_prot =
+-				pgprot_modify(vma->vm_page_prot,
+-					      vm_get_page_prot(newflags));
+-	}
+-#endif
+ 	if (is_vm_hugetlb_page(vma))
+ 		hugetlb_change_protection(vma, start, end, vma->vm_page_prot);
+ 	else
+ 		change_protection(vma, start, end, vma->vm_page_prot, dirty_accountable);
++#ifdef CONFIG_IPIPE
++	if (test_bit(MMF_VM_PINNED, &mm->flags) &&
++	    ((vma->vm_flags | mm->def_flags) & VM_LOCKED) &&
++	    (vma->vm_flags & (VM_READ | VM_WRITE | VM_EXEC)))
++		__ipipe_pin_vma(mm, vma);
++#endif
+ 	mmu_notifier_invalidate_range_end(mm, start, end);
+ 	vm_stat_account(mm, oldflags, vma->vm_file, -nrpages);
+ 	vm_stat_account(mm, newflags, vma->vm_file, nrpages);
 -- 
-Siemens AG, Corporate Technology, CT RTC ITP SDP-DE
-Corporate Competence Center Embedded Linux
+1.7.3.4
 
