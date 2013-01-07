@@ -1,20 +1,10 @@
-Message-ID: <50EA0526.3020403@web.de>
-Date: Mon, 07 Jan 2013 00:13:42 +0100
-From: Jan Kiszka <jan.kiszka@web.de>
+Message-ID: <50EA9B9A.6000804@zultron.com>
+Date: Mon, 07 Jan 2013 03:55:38 -0600
+From: John Morris <john@zultron.com>
 MIME-Version: 1.0
-References: <50E471AC.2000701@siemens.com> <50E5A0E4.4000108@xenomai.org>
-	<50E5A75B.6090507@siemens.com> <50E5B174.2040106@xenomai.org>
-	<50E5BF03.5020004@siemens.com> <50E5C134.3010804@xenomai.org>
-	<50E5C69E.7090707@siemens.com> <50E6A871.9010008@xenomai.org>
-	<50E6ABF7.1050503@siemens.com> <50E6AFC3.5080400@xenomai.org>
-	<50E6BB87.4020100@siemens.com> <50E6BE15.2060805@xenomai.org>
-	<50E6C112.6070106@siemens.com> <50E6D11E.9090808@xenomai.org>
-	<50E9A18D.5040509@xenomai.org> <50EA028A.1070903@web.de>
-	<50EA0496.7070700@xenomai.org>
-In-Reply-To: <50EA0496.7070700@xenomai.org>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] XNARCH_TIMER_IRQ
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] Debian package build problems
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -23,22 +13,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-T24gMjAxMy0wMS0wNyAwMDoxMSwgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4gT24gMDEv
-MDcvMjAxMyAxMjowMiBBTSwgSmFuIEtpc3prYSB3cm90ZToKPiAKPj4gU3BsaXR0aW5nIC9wcm9j
-IGlzIG5vdCBhIGdvb2QgaWRlYSBmcm9tIHRoZSB1c2FiaWxpdHkgUE9WLiBUaGUgd2hvbGUKPj4g
-cG9pbnQgb2Ygc2hvd2luZyB0aGUgbG9hZCBvZiBJUlFzIGluIC9zdGF0IGlzIHRvIGhhdmUgYWxs
-IGluZm9ybWF0aW9uIGluCj4+IG9uZSBwbGFjZSAocGVyY2VudGFnZXMgc3VtIHVwIHRvIDEwMC4u
-LikuCj4+Cj4+IEkndmUgcHVzaGVkIGEgc2ltcGxlIHBhdGNoIHZpYSBmb3ItdXBzdHJlYW0gaW4g
-bXkgcmVwbyB0aGF0IHNob3VsZCBiZQo+PiBzdWZmaWNpZW50IGZvciAyLjYuIFdlIGNvdWxkIHJl
-ZmluZSBvbiB0b3AgbGF0ZXIgb24uCj4gCj4gCj4gVGhhdCBpcyBmaW5lLCBleGNlcHQgdGhhdCB5
-b3UgcHVzaGVkIHRoZSBjaGFuZ2Ugb2YgdGhlIGludHJsb2NrIHRvIGEKPiBtdXRleCBhcyB3ZWxs
-Li4uCgpJdCBzaG93cyBob3cgc2ltcGxlIHRoZSBjaGFuZ2Ugbm93IGlzLCBtYXkgc2VydmUgZm9y
-Z2UgYW5kIGl0J3MgbGFzdCBpbgp0aGUgc2VyaWVzLCB0aHVzIGVhc3kgdG8gc2tpcCBpZiB5b3Ug
-cHJlZmVyLgoKSmFuCgotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBu
-b24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBzaWduYXR1cmUuYXNjClR5
-cGU6IGFwcGxpY2F0aW9uL3BncC1zaWduYXR1cmUKU2l6ZTogMjYxIGJ5dGVzCkRlc2M6IE9wZW5Q
-R1AgZGlnaXRhbCBzaWduYXR1cmUKVVJMOiA8aHR0cDovL3d3dy54ZW5vbWFpLm9yZy9waXBlcm1h
-aWwveGVub21haS9hdHRhY2htZW50cy8yMDEzMDEwNy83ZjJhZGUyZC9hdHRhY2htZW50LnBncD4K
+Hi list,
+
+I encountered a couple of problems building packages for 2.6.2 when
+following the instructions to build from git in this link:
+
+http://www.xenomai.org/index.php/Building_Debian_packages
+
+First, the autoconf-generated 'configure' script is checked into git.
+When git-buildpackage cleans up, it removes the configure script, and
+then bombs out when it finds uncommitted changes (i.e. the configure
+script removed) in the git tree.  I hacked around it by committing a
+'git rm configure' in my own tree, but don't have a more sophisticated
+fix (is the configure script committed in git for a reason?).
+
+Second, the kernel patch copying code in debian/rules is out of date.
+It expects to find "adeos-ipipe-*.patch" in the top-level directory.
+Here's a patch to copy the ipipe-core patch files from the
+ksrc/arch/<arch>/patches/ directory instead.
+
+One more problem when building the 3.2.21 kernel (I'm building 3.5.3
+now, but since I have the fix, may as well report it).  The ipipe-core
+patch introduces a syntax error in arch/x86/kernel/apic/io_apic.c,
+breaking compile.  Here's a second patch to fix that.
+
+Thanks-
+
+	John
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: xenomai-2.6.2-debian_rules_copy_kernel_patches.patch
+Type: text/x-patch
+Size: 1850 bytes
+Desc: not available
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20130107/dff1e42=
+e/attachment.bin>
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: xenomai-2.6.2-ipipe_core_3.2.21_io_apic.c_compile.patch
+Type: text/x-patch
+Size: 632 bytes
+Desc: not available
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20130107/dff1e42=
+e/attachment-0001.bin>
