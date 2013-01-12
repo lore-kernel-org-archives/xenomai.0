@@ -1,11 +1,13 @@
-In-Reply-To: 
-References: 
-From: mfornero@aanddtech.com
-Message-ID: <OF682F5C70.F8F7AA50-ON85257AF1.005F580A-85257AF1.005F580C@aanddtech.com>
-Date: Sat, 12 Jan 2013 12:21:24 -0500
+Message-ID: <50F19C76.8000001@xenomai.org>
+Date: Sat, 12 Jan 2013 18:25:10 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"
-Subject: [Xenomai] Porting Ipipe to new ARM SoC (Xilinx Zynq)
+References: <E1TtJG5-0003u8-9L@xenomai.org>
+In-Reply-To: <E1TtJG5-0003u8-9L@xenomai.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [Xenomai-git] Jan Kiszka : configure: Report defaults
+ for	smp/x86-sep/ x86-tsc in help output
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,34 +16,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-   Hi All,
+On 01/10/2013 03:37 PM, GIT version control wrote:
 
-   I'm looking for recommendations on how to best port ipipe support to a
-   new ARM SoC. The SoC has started to show up in mainline, but many of
-   the features haven't made it over yet. Xilinx maintains a git repo
-   here:
+> Module: xenomai-jki
+> Branch: for-upstream
+> Commit: 45aca4239b6e5c772a12962bcdbe75435f4ffec2
+> URL:    http://git.xenomai.org/?p=xenomai-jki.git;a=commit;h=45aca4239b6e5c772a12962bcdbe75435f4ffec2
+> 
+> Author: Jan Kiszka <jan.kiszka@siemens.com>
+> Date:   Thu Jan 10 14:29:14 2013 +0100
+> 
+> configure: Report defaults for smp/x86-sep/x86-tsc in help output
 
-   git://git.xilinx.com/linux-xlnx.git
 
-   And it look like they've synced with mainline 3.6
+why only the x86 options? The option defaults have never been documented
+in configure help string, but in README.INSTALL (I just fixed the
+defaults there instead). If we start documenting them in configure.in,
+then all defaults options should be documented.
 
-   The two approaches I've considered were either trying to port ipipe to
-   stock 3.6 (or at least the generic and ARM bits) or trying to backport
-   the Xilinx code to 3.5.3. I started with the later approach, but some
-   changes to the common clock architecture between 3.5 and 3.6 make this
-   somewhat difficult.
+-- 
+                                                                Gilles.
 
-   Any thoughts on which approach would be better?
-
-   Best Regards,
-
-   Matthew Fornero
-   This email transmission may contain information that is confidential or
-   legally privileged. If you are not the intended recipient, you are
-   hereby notified that any disclosure, copying, printing, distribution or
-   use of this transmission is strictly prohibited. If you have received
-   this transmission in error, please notify the sender immediately and
-   delete the original transmission and its attachments without reading or
-   saving in any manner.
