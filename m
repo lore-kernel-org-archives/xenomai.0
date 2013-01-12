@@ -1,12 +1,13 @@
-Message-ID: <50F115E6.30209@web.de>
-Date: Sat, 12 Jan 2013 08:51:02 +0100
-From: Jan Kiszka <jan.kiszka@web.de>
+Message-ID: <50F19966.9050008@xenomai.org>
+Date: Sat, 12 Jan 2013 18:12:06 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <50F05652.4000002@siemens.com> <50F0CCD6.80609@xenomai.org>
-In-Reply-To: <50F0CCD6.80609@xenomai.org>
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] [PREVIEW] x86/ipipe queue for 3.5
+References: <50ED750B.4010606@siemens.com>
+In-Reply-To: <50ED750B.4010606@siemens.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [PATCH] prepare-kernel: Only purge links from target
+ directories
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,35 +16,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
 Cc: Xenomai <xenomai@xenomai.org>
 
-On 2013-01-12 03:39, Gilles Chanteperdrix wrote:
-> On 01/11/2013 07:13 PM, Jan Kiszka wrote:
-> =
+On 01/09/2013 02:47 PM, Jan Kiszka wrote:
 
->>       x86/ipipe: Disallow transparent huge pages when I-pipe is active
->> # if you copy a distro .config, this can bite you... (we need to account=
- for THP later)
-> =
-
-> =
-
-> What is wrong with transparent huge pages?
-
-I didn't look at all details yet: we do not account for huge pages while
-unCOW'ing e.g. Also, we once had THP enabled in some test setup and
-quickly got crashes. Once understood, it's probably trivial to resolve.
-But that needs to be done first. Huge page support is on our todo list.
-
-Jan
+> Only remove files from the target directory of patch_link if they are
+> missing in Xenomai AND are actually symbolic links. This is required
+> when merging Xenomai directories into non-empty kernel dirs.
+> 
+> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+> ---
+> 
+> This is not required for the current patch workload but helps us in 2.6
+> with integrating ftrace (we patch into include/trace/events there).
+> Would reduce our queue length by one if this could be merged
+> nevertheless.
 
 
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: signature.asc
-Type: application/pgp-signature
-Size: 261 bytes
-Desc: OpenPGP digital signature
-URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20130112/3900fd1=
-6/attachment.pgp>
+Despite the fact that it is a one-liner, I do not understand what this
+patch does, and I am not sure it is not going to break things.
+
+-- 
+                                                                Gilles.
+
