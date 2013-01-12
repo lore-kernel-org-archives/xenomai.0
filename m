@@ -1,13 +1,10 @@
-Message-ID: <50F19C76.8000001@xenomai.org>
-Date: Sat, 12 Jan 2013 18:25:10 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <50F19CE1.5080106@zultron.com>
+Date: Sat, 12 Jan 2013 11:26:57 -0600
+From: John Morris <john@zultron.com>
 MIME-Version: 1.0
-References: <E1TtJG5-0003u8-9L@xenomai.org>
-In-Reply-To: <E1TtJG5-0003u8-9L@xenomai.org>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [Xenomai-git] Jan Kiszka : configure: Report defaults
- for	smp/x86-sep/ x86-tsc in help output
+Subject: [Xenomai] Kernel OOPS during regression tests
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,26 +13,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Xenomai <xenomai@xenomai.org>
 
-On 01/10/2013 03:37 PM, GIT version control wrote:
+Hi list,
 
-> Module: xenomai-jki
-> Branch: for-upstream
-> Commit: 45aca4239b6e5c772a12962bcdbe75435f4ffec2
-> URL:    http://git.xenomai.org/?p=xenomai-jki.git;a=commit;h=45aca4239b6e5c772a12962bcdbe75435f4ffec2
-> 
-> Author: Jan Kiszka <jan.kiszka@siemens.com>
-> Date:   Thu Jan 10 14:29:14 2013 +0100
-> 
-> configure: Report defaults for smp/x86-sep/x86-tsc in help output
+The el6 packages are coming along nicely:
 
+https://github.com/zultron/kernel-ml/tree/branch3.5.3-xeno
 
-why only the x86 options? The option defaults have never been documented
-in configure help string, but in README.INSTALL (I just fixed the
-defaults there instead). If we start documenting them in configure.in,
-then all defaults options should be documented.
+Still a few problems when running xeno-regression-test.
 
--- 
-                                                                Gilles.
+1)  Most worrisome is "kernel BUG at mm/mmap.c:2313!   invalid opcode:
+0000 [#2] SMP".  Is this related to HEAPSZ or STACKPOOLSZ?  My mind is
+getting foggy about all the things I've seen, but it seems like it was
+happening earlier in the tests until these config values were quadrupled.
+
+2)  posix/mprotect is failing:  "FAILURE: sigdebug_handler triggered,
+reason 2    memory write after exec enable".
+
+3)  FPU warning:  "fptest.h:24: Warning: Linux is compiled to use FPU in
+kernel-space.    For this reason, switchtest can not test using FPU in
+Linux kernel-space."
+
+Regression test run log:
+http://www.zultron.com/static/2013/01/xenomai/foo-xeno-regression-test.log
+
+Log of dmesg with oops at end:
+http://www.zultron.com/static/2013/01/xenomai/foo-oops.log
+
+Kernel .config:
+www.zultron.com/static/2013/01/xenomai/foo-kernel.config
+
+The kernel is built from the elrepo.org kernel, and this config file
+overrides the upstream config; makes it easy to see the Xenomai-specific
+changes:
+https://github.com/zultron/kernel-ml/blob/branch3.5.3-xeno/config-3.5.3-xenomai-x86_64
+
+Any help is greatly appreciated!  These RPMs are part of my effort to
+enable RH-like distros to run LinuxCNC and expand the pool of potential
+users, so if I'm successful, many folks will benefit.
+
+	John
 
