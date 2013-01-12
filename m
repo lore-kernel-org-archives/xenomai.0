@@ -1,10 +1,10 @@
-Message-ID: <50F05C26.5000400@siemens.com>
-Date: Fri, 11 Jan 2013 19:38:30 +0100
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <50F0CCD6.80609@xenomai.org>
+Date: Sat, 12 Jan 2013 03:39:18 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <50F05652.4000002@siemens.com>
 In-Reply-To: <50F05652.4000002@siemens.com>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] [PREVIEW] x86/ipipe queue for 3.5
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -15,24 +15,17 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 2013-01-11 19:13, Jan Kiszka wrote:
-> Hi,
-> 
-> at
-> 
->     git://git.xenomai.org/ipipe-jki for-upstream/3.5
-> 
-> I've lined up our current x86 queue for I-pipe core-3.5. We are not yet
-> fully done with testing, I'd specifically like to give x86-32 a final
-> kick, so this is just a heads-up.
+On 01/11/2013 07:13 PM, Jan Kiszka wrote:
 
-Yep, and -32 is broken. Food for next week.
+>       x86/ipipe: Disallow transparent huge pages when I-pipe is active
+> # if you copy a distro .config, this can bite you... (we need to account for THP later)
 
-Jan
+
+What is wrong with transparent huge pages?
 
 -- 
-Siemens AG, Corporate Technology, CT RTC ITP SDP-DE
-Corporate Competence Center Embedded Linux
+                                                                Gilles.
 
