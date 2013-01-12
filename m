@@ -1,11 +1,12 @@
-Message-ID: <50F19EFA.9070203@xenomai.org>
-Date: Sat, 12 Jan 2013 18:35:54 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <50F1A149.3020609@web.de>
+Date: Sat, 12 Jan 2013 18:45:45 +0100
+From: Jan Kiszka <jan.kiszka@web.de>
 MIME-Version: 1.0
 References: <50EFC153.8030406@web.de> <50EFC336.3000509@web.de>
-In-Reply-To: <50EFC336.3000509@web.de>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+	<50F19EFA.9070203@xenomai.org>
+In-Reply-To: <50F19EFA.9070203@xenomai.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Subject: Re: [Xenomai] [PATCH] x86/ipipe: restore warning with AMD erratum
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -15,64 +16,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@web.de>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: Xenomai <xenomai@xenomai.org>
 
-On 01/11/2013 08:45 AM, Jan Kiszka wrote:
-
-> On 2013-01-11 08:37, Jan Kiszka wrote:
->>> From acc3c57390d275a1b28d66f1ec88c85e0f8c0890 Mon Sep 17 00:00:00 2001
->>> From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
->>> Date: Sat, 29 Dec 2012 17:48:20 +0100
->>> Subject: [PATCH] x86/ipipe: restore warning with AMD erratum
->>>
->>> ---
->>>  arch/x86/kernel/apic/apic.c |   16 ++++++++++------
->>>  1 files changed, 10 insertions(+), 6 deletions(-)
->>>
->>> diff --git a/arch/x86/kernel/apic/apic.c b/arch/x86/kernel/apic/apic.c
->>> index 7f07610..91531bb 100644
->>> --- a/arch/x86/kernel/apic/apic.c
->>> +++ b/arch/x86/kernel/apic/apic.c
->>> @@ -545,14 +545,18 @@ static void __cpuinit setup_APIC_timer(void)
->>>  	memcpy(levt, &lapic_clockevent, sizeof(*levt));
->>>  	levt->cpumask = cpumask_of(smp_processor_id());
->>>  #ifdef CONFIG_IPIPE
->>> -	if (!(lapic_clockevent.features & CLOCK_EVT_FEAT_DUMMY))
->>> +	if (!(lapic_clockevent.features & CLOCK_EVT_FEAT_DUMMY)
->>> +	    && !cpu_has_amd_erratum(amd_erratum_400))
->>>  		levt->ipipe_timer = &__get_cpu_var(lapic_itimer);
->>>  	else {
->>> -	       printk(KERN_INFO
->>> -		      "I-pipe: cannot use LAPIC as a tick device\n");
->>> -	       if (cpu_has_amd_erratum(amd_erratum_400))
->>> -		       printk(KERN_INFO
->>> -			      "I-pipe: disable C1E power state in your BIOS\n");
->>> +		static atomic_t printed = ATOMIC_INIT(-1);
->>> +		printk(KERN_INFO
->>> +		       "I-pipe: cannot use LAPIC on cpu #%d as a tick device\n",
->>> +		       smp_processor_id());
->>> +		if (cpu_has_amd_erratum(amd_erratum_400)
->>> +		    && atomic_inc_and_test(&printed))
->>> +			printk(KERN_INFO
->>> +			       "I-pipe: disable C1E power state in your BIOS\n");
->>
->> printk_once should do the trick as well.
-> 
-> In fact, it should actually do what you likely intended: print on first
-> occurrence, not on second or later. ;)
-
-
-Not quite, printk_once is not protected from the code running
-concurrently on multiple cpus. So, atomic_inc_and_test is better, except
-the ATOMIC_INIT needs to be set to 0.
-
-> 
-> Jan
-> 
-
-
-
--- 
-                                                                Gilles.
-
+T24gMjAxMy0wMS0xMiAxODozNSwgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4gT24gMDEv
+MTEvMjAxMyAwODo0NSBBTSwgSmFuIEtpc3prYSB3cm90ZToKPiAKPj4gT24gMjAxMy0wMS0xMSAw
+ODozNywgSmFuIEtpc3prYSB3cm90ZToKPj4+PiBGcm9tIGFjYzNjNTczOTBkMjc1YTFiMjhkNjZm
+MWVjODhjODVlMGY4YzA4OTAgTW9uIFNlcCAxNyAwMDowMDowMCAyMDAxCj4+Pj4gRnJvbTogR2ls
+bGVzIENoYW50ZXBlcmRyaXggPGdpbGxlcy5jaGFudGVwZXJkcml4QHhlbm9tYWkub3JnPgo+Pj4+
+IERhdGU6IFNhdCwgMjkgRGVjIDIwMTIgMTc6NDg6MjAgKzAxMDAKPj4+PiBTdWJqZWN0OiBbUEFU
+Q0hdIHg4Ni9pcGlwZTogcmVzdG9yZSB3YXJuaW5nIHdpdGggQU1EIGVycmF0dW0KPj4+Pgo+Pj4+
+IC0tLQo+Pj4+ICBhcmNoL3g4Ni9rZXJuZWwvYXBpYy9hcGljLmMgfCAgIDE2ICsrKysrKysrKyst
+LS0tLS0KPj4+PiAgMSBmaWxlcyBjaGFuZ2VkLCAxMCBpbnNlcnRpb25zKCspLCA2IGRlbGV0aW9u
+cygtKQo+Pj4+Cj4+Pj4gZGlmZiAtLWdpdCBhL2FyY2gveDg2L2tlcm5lbC9hcGljL2FwaWMuYyBi
+L2FyY2gveDg2L2tlcm5lbC9hcGljL2FwaWMuYwo+Pj4+IGluZGV4IDdmMDc2MTAuLjkxNTMxYmIg
+MTAwNjQ0Cj4+Pj4gLS0tIGEvYXJjaC94ODYva2VybmVsL2FwaWMvYXBpYy5jCj4+Pj4gKysrIGIv
+YXJjaC94ODYva2VybmVsL2FwaWMvYXBpYy5jCj4+Pj4gQEAgLTU0NSwxNCArNTQ1LDE4IEBAIHN0
+YXRpYyB2b2lkIF9fY3B1aW5pdCBzZXR1cF9BUElDX3RpbWVyKHZvaWQpCj4+Pj4gIAltZW1jcHko
+bGV2dCwgJmxhcGljX2Nsb2NrZXZlbnQsIHNpemVvZigqbGV2dCkpOwo+Pj4+ICAJbGV2dC0+Y3B1
+bWFzayA9IGNwdW1hc2tfb2Yoc21wX3Byb2Nlc3Nvcl9pZCgpKTsKPj4+PiAgI2lmZGVmIENPTkZJ
+R19JUElQRQo+Pj4+IC0JaWYgKCEobGFwaWNfY2xvY2tldmVudC5mZWF0dXJlcyAmIENMT0NLX0VW
+VF9GRUFUX0RVTU1ZKSkKPj4+PiArCWlmICghKGxhcGljX2Nsb2NrZXZlbnQuZmVhdHVyZXMgJiBD
+TE9DS19FVlRfRkVBVF9EVU1NWSkKPj4+PiArCSAgICAmJiAhY3B1X2hhc19hbWRfZXJyYXR1bShh
+bWRfZXJyYXR1bV80MDApKQo+Pj4+ICAJCWxldnQtPmlwaXBlX3RpbWVyID0gJl9fZ2V0X2NwdV92
+YXIobGFwaWNfaXRpbWVyKTsKPj4+PiAgCWVsc2Ugewo+Pj4+IC0JICAgICAgIHByaW50ayhLRVJO
+X0lORk8KPj4+PiAtCQkgICAgICAiSS1waXBlOiBjYW5ub3QgdXNlIExBUElDIGFzIGEgdGljayBk
+ZXZpY2VcbiIpOwo+Pj4+IC0JICAgICAgIGlmIChjcHVfaGFzX2FtZF9lcnJhdHVtKGFtZF9lcnJh
+dHVtXzQwMCkpCj4+Pj4gLQkJICAgICAgIHByaW50ayhLRVJOX0lORk8KPj4+PiAtCQkJICAgICAg
+IkktcGlwZTogZGlzYWJsZSBDMUUgcG93ZXIgc3RhdGUgaW4geW91ciBCSU9TXG4iKTsKPj4+PiAr
+CQlzdGF0aWMgYXRvbWljX3QgcHJpbnRlZCA9IEFUT01JQ19JTklUKC0xKTsKPj4+PiArCQlwcmlu
+dGsoS0VSTl9JTkZPCj4+Pj4gKwkJICAgICAgICJJLXBpcGU6IGNhbm5vdCB1c2UgTEFQSUMgb24g
+Y3B1ICMlZCBhcyBhIHRpY2sgZGV2aWNlXG4iLAo+Pj4+ICsJCSAgICAgICBzbXBfcHJvY2Vzc29y
+X2lkKCkpOwo+Pj4+ICsJCWlmIChjcHVfaGFzX2FtZF9lcnJhdHVtKGFtZF9lcnJhdHVtXzQwMCkK
+Pj4+PiArCQkgICAgJiYgYXRvbWljX2luY19hbmRfdGVzdCgmcHJpbnRlZCkpCj4+Pj4gKwkJCXBy
+aW50ayhLRVJOX0lORk8KPj4+PiArCQkJICAgICAgICJJLXBpcGU6IGRpc2FibGUgQzFFIHBvd2Vy
+IHN0YXRlIGluIHlvdXIgQklPU1xuIik7Cj4+Pgo+Pj4gcHJpbnRrX29uY2Ugc2hvdWxkIGRvIHRo
+ZSB0cmljayBhcyB3ZWxsLgo+Pgo+PiBJbiBmYWN0LCBpdCBzaG91bGQgYWN0dWFsbHkgZG8gd2hh
+dCB5b3UgbGlrZWx5IGludGVuZGVkOiBwcmludCBvbiBmaXJzdAo+PiBvY2N1cnJlbmNlLCBub3Qg
+b24gc2Vjb25kIG9yIGxhdGVyLiA7KQo+IAo+IAo+IE5vdCBxdWl0ZSwgcHJpbnRrX29uY2UgaXMg
+bm90IHByb3RlY3RlZCBmcm9tIHRoZSBjb2RlIHJ1bm5pbmcKPiBjb25jdXJyZW50bHkgb24gbXVs
+dGlwbGUgY3B1cy4KCk9LLgoKPiBTbywgYXRvbWljX2luY19hbmRfdGVzdCBpcyBiZXR0ZXIsIGV4
+Y2VwdAo+IHRoZSBBVE9NSUNfSU5JVCBuZWVkcyB0byBiZSBzZXQgdG8gMC4KCk5vcGUsIC0xIGlz
+IGNvcnJlY3QuIGF0b21pY19pbmNfYW5kX3Rlc3QgZmlyc3QgaW5jcmVtZW50cywgdGhlbiB0ZXN0
+cy4gSQptaXNzZWQgdGhhdCBpdCBjaGVja3MgYWdhaW5zdCAwLCBub3QgIT0gMC4gU28gdGhlIGxv
+Z2ljIGlzIGZpbmUsIHlvdQpzaG91bGQganVzdCBpbmNsdWRlIHRoZSBmaXJzdCBwcmludGsgYXMg
+d2VsbC4KCkphbgoKLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9u
+LXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogc2lnbmF0dXJlLmFzYwpUeXBl
+OiBhcHBsaWNhdGlvbi9wZ3Atc2lnbmF0dXJlClNpemU6IDI2MSBieXRlcwpEZXNjOiBPcGVuUEdQ
+IGRpZ2l0YWwgc2lnbmF0dXJlClVSTDogPGh0dHA6Ly93d3cueGVub21haS5vcmcvcGlwZXJtYWls
+L3hlbm9tYWkvYXR0YWNobWVudHMvMjAxMzAxMTIvOWUyZWU4MjAvYXR0YWNobWVudC5wZ3A+Cg==
