@@ -1,14 +1,14 @@
-Message-ID: <50F2AA04.5090603@web.de>
-Date: Sun, 13 Jan 2013 13:35:16 +0100
-From: Jan Kiszka <jan.kiszka@web.de>
+Message-ID: <50F2AAE7.60409@xenomai.org>
+Date: Sun, 13 Jan 2013 13:39:03 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <50ebff2e488690.18102992@wp.pl> <50EC76E9.30002@xenomai.org>
-	<50EC8A6D.2060702@web.de> <50ED70F0.8020608@siemens.com>
-	<50F1AEDC.3070306@xenomai.org> <50F2A8B9.1040103@web.de>
-In-Reply-To: <50F2A8B9.1040103@web.de>
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] SIGXCPU with rt_mutex_release
+References: <50EFC153.8030406@web.de> <50EFC336.3000509@web.de>
+	<50F19EFA.9070203@xenomai.org> <50F1A149.3020609@web.de>
+	<50F1A468.4000500@xenomai.org> <50F2A877.4080602@web.de>
+In-Reply-To: <50F2A877.4080602@web.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [PATCH] x86/ipipe: restore warning with AMD erratum
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,88 +17,107 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Jan Kiszka <jan.kiszka@web.de>
 Cc: Xenomai <xenomai@xenomai.org>
 
-On 2013-01-13 13:29, Jan Kiszka wrote:
-> On 2013-01-12 19:43, Gilles Chanteperdrix wrote:
->> On 01/09/2013 02:30 PM, Jan Kiszka wrote:
+On 01/13/2013 01:28 PM, Jan Kiszka wrote:
+
+> On 2013-01-12 18:59, Gilles Chanteperdrix wrote:
+>> On 01/12/2013 06:45 PM, Jan Kiszka wrote:
 >>
->>> On 2013-01-08 22:06, Jan Kiszka wrote:
->>>> On 2013-01-08 20:43, Gilles Chanteperdrix wrote:
->>>>> On 01/08/2013 12:12 PM, Mariusz Janiak wrote:
->>>>>
->>>>>> Hi GIlles,
->>>>>>
->>>>>> As you suggested, I have prepared simple test case that demonstrate =
-how Xenomai is utilized by OROCOS. This test case behaves exactly the same =
-like helloword example. Scheduler is chosen before any mutex are processed,=
- so in my opinion it is not the case which you defined. What is really surp=
-rising is that the replacing TM_NONBLOCK with TM_INFINITE, in one before la=
-st line, do magic and suppress signal generation. Furthermore, there is no =
-call to 'rt_task_set_mode(0, T_WARNSW, NULL);' so why =
-
->>>>>> signal is generated? If we enable T_WARNSW in the thread, SIGXCPU is=
- generated when mutex is locked first time in the thread. =
-
->>>>>
->>>>>
->>>>> I guess the test could be simpler, simply:
->>>>>
->>>>> rt_mutex_acquire
->>>>> rt_task_create
->>>>> rt_mutex_release
->>>>> rt_mutex_acquire
->>>>> rt_mutex_release
->>>>>
->>>>> Anyway, calling rt_task_create while holding a real-time mutex is its=
-elf
->>>>> a priority inversion: any thread in primary mode waiting for the mutex
->>>>> will now have to wait for task running in secondary mode, so may be
->>>>> block during an unbounded amount of time. So, using a real-time mutex
->>>>> for this is completely useless you should be using a glibc
->>>>> pthread_mutex_t. If compiling for the posix skin, use
->>>>> __real_pthread_mutex_lock.
->>>>>
->>>>> Now, how this can cause the issue you observe remains to be understoo=
-d,
->>>>> and probably requires a fix.
+>>> On 2013-01-12 18:35, Gilles Chanteperdrix wrote:
+>>>> On 01/11/2013 08:45 AM, Jan Kiszka wrote:
 >>>>
->>>> OK, second try: We do not update the new owner's hrescnt if we acquire=
- a
->>>> mutex via trylock. This applies both to rt_mutex_acquire_inner and
->>>> pthread_mutex_trylock. Probably, this should be done in the
->>>> corresponding syscall wrapper as both services are also used for the
->>>> in-kernel API.
+>>>>> On 2013-01-11 08:37, Jan Kiszka wrote:
+>>>>>>> From acc3c57390d275a1b28d66f1ec88c85e0f8c0890 Mon Sep 17 00:00:00 2001
+>>>>>>> From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+>>>>>>> Date: Sat, 29 Dec 2012 17:48:20 +0100
+>>>>>>> Subject: [PATCH] x86/ipipe: restore warning with AMD erratum
+>>>>>>>
+>>>>>>> ---
+>>>>>>>  arch/x86/kernel/apic/apic.c |   16 ++++++++++------
+>>>>>>>  1 files changed, 10 insertions(+), 6 deletions(-)
+>>>>>>>
+>>>>>>> diff --git a/arch/x86/kernel/apic/apic.c b/arch/x86/kernel/apic/apic.c
+>>>>>>> index 7f07610..91531bb 100644
+>>>>>>> --- a/arch/x86/kernel/apic/apic.c
+>>>>>>> +++ b/arch/x86/kernel/apic/apic.c
+>>>>>>> @@ -545,14 +545,18 @@ static void __cpuinit setup_APIC_timer(void)
+>>>>>>>  	memcpy(levt, &lapic_clockevent, sizeof(*levt));
+>>>>>>>  	levt->cpumask = cpumask_of(smp_processor_id());
+>>>>>>>  #ifdef CONFIG_IPIPE
+>>>>>>> -	if (!(lapic_clockevent.features & CLOCK_EVT_FEAT_DUMMY))
+>>>>>>> +	if (!(lapic_clockevent.features & CLOCK_EVT_FEAT_DUMMY)
+>>>>>>> +	    && !cpu_has_amd_erratum(amd_erratum_400))
+>>>>>>>  		levt->ipipe_timer = &__get_cpu_var(lapic_itimer);
+>>>>>>>  	else {
+>>>>>>> -	       printk(KERN_INFO
+>>>>>>> -		      "I-pipe: cannot use LAPIC as a tick device\n");
+>>>>>>> -	       if (cpu_has_amd_erratum(amd_erratum_400))
+>>>>>>> -		       printk(KERN_INFO
+>>>>>>> -			      "I-pipe: disable C1E power state in your BIOS\n");
+>>>>>>> +		static atomic_t printed = ATOMIC_INIT(-1);
+>>>>>>> +		printk(KERN_INFO
+>>>>>>> +		       "I-pipe: cannot use LAPIC on cpu #%d as a tick device\n",
+>>>>>>> +		       smp_processor_id());
+>>>>>>> +		if (cpu_has_amd_erratum(amd_erratum_400)
+>>>>>>> +		    && atomic_inc_and_test(&printed))
+>>>>>>> +			printk(KERN_INFO
+>>>>>>> +			       "I-pipe: disable C1E power state in your BIOS\n");
+>>>>>>
+>>>>>> printk_once should do the trick as well.
+>>>>>
+>>>>> In fact, it should actually do what you likely intended: print on first
+>>>>> occurrence, not on second or later. ;)
+>>>>
+>>>>
+>>>> Not quite, printk_once is not protected from the code running
+>>>> concurrently on multiple cpus.
 >>>
->>> Here is the corresponding patch:
+>>> OK.
+>>>
+>>>> So, atomic_inc_and_test is better, except
+>>>> the ATOMIC_INIT needs to be set to 0.
+>>>
+>>> Nope, -1 is correct. atomic_inc_and_test first increments, then tests. I
+>>> missed that it checks against 0, not != 0. So the logic is fine, you
+>>> should just include the first printk as well.
 >>
->>> http://www.xenomai.org/pipermail/xenomai-git/2013-January/000336.html
 >>
->> Ok, so, if I understand correctly, the whole orocos testcase boils down =
-to:
->> trylock
->> unlock
+>> Yes, I have just realized that looking at the x86 version of
+>> atomic_inc_and_test, only the asm-generic version is broken, but I guess
+>> nobody uses it:
 >>
->> We should move the incrementation of the resource counter to
->> xnsynch_fast_acquire. We will be left with only two places to patch: the
->> native and posix trylock in the !FASTSYNCH case.
-> =
+>> static inline int atomic_add_return(int i, atomic_t *v)
+>> {
+>> 	unsigned long flags;
+>> 	int temp;
+>>
+>> 	flags = hard_local_irq_save(); /* Don't trace it in an irqsoff handler */
+>> 	temp = v->counter;
+>> 	temp += i;
+>> 	v->counter = temp;
+>> 	hard_local_irq_restore(flags);
+>>
+>> 	return temp;
+>> }
+>>
+>> #define atomic_inc_and_test(v)		(atomic_inc_return(v) == 0)
+>>
+> 
+> Are you referring to lacking SMP support of this version? I guess that's
+> intentional (no SMP arch should lack atomic ops).
+> 
+> It is otherwise functionally identical to the x86 code, i.e. it *first*
+> increments and *then* tests. Your new version of this patch will
+> therefore never print anything due to the 0 initialization - well, until
+> the counter overflows. Probably it's better to use test_and_set_bit here
+> to avoid all these confusions.
 
-> xnsynch_fast_acquire is shared with user space code and therefore
-> references no kernel types.
 
-...and there are more spots than those after successful
-xnsynch_fast_acquire.
-
-Jan
+Sorry, fixed, thanks.
 
 
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: signature.asc
-Type: application/pgp-signature
-Size: 261 bytes
-Desc: OpenPGP digital signature
-URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20130113/4c2fdc8=
-3/attachment.pgp>
+-- 
+                                                                Gilles.
+
