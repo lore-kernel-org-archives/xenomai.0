@@ -1,13 +1,13 @@
-Message-ID: <50F26428.8040705@zultron.com>
-Date: Sun, 13 Jan 2013 01:37:12 -0600
-From: John Morris <john@zultron.com>
+Message-ID: <50F297D1.2090800@web.de>
+Date: Sun, 13 Jan 2013 12:17:37 +0100
+From: Jan Kiszka <jan.kiszka@web.de>
 MIME-Version: 1.0
-References: <50EA9B9A.6000804@zultron.com> <50EB4FAD.2000804@xenomai.org>
-	<50EBDAC8.8010006@zultron.com> <50EC80AD.3090301@xenomai.org>
-In-Reply-To: <50EC80AD.3090301@xenomai.org>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Debian package build problems
+References: <50ED750B.4010606@siemens.com> <50F19966.9050008@xenomai.org>
+In-Reply-To: <50F19966.9050008@xenomai.org>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] [PATCH] prepare-kernel: Only purge links from target
+	directories
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,109 +17,50 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+Cc: Xenomai <xenomai@xenomai.org>
 
+On 2013-01-12 18:12, Gilles Chanteperdrix wrote:
+> On 01/09/2013 02:47 PM, Jan Kiszka wrote:
+> =
 
+>> Only remove files from the target directory of patch_link if they are
+>> missing in Xenomai AND are actually symbolic links. This is required
+>> when merging Xenomai directories into non-empty kernel dirs.
+>>
+>> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+>> ---
+>>
+>> This is not required for the current patch workload but helps us in 2.6
+>> with integrating ftrace (we patch into include/trace/events there).
+>> Would reduce our queue length by one if this could be merged
+>> nevertheless.
+> =
 
-On 01/08/2013 02:25 PM, Gilles Chanteperdrix wrote:
-> On 01/08/2013 09:37 AM, John Morris wrote:
->> The most difficult part has been to create a kernel config that works on
->> everybody's hardware.  My approach to solving that problem is to create
->> a well-documented, minimal set of configuration changes that may be
->> applied to stock distro kernels.
-> 
-> 
-> This minimal set of change is documented, for xenomai, on the website.
-> If you find you need other changes, they may be bugs, and could need fixing.
+> =
 
-Actually, I spent a few days bisecting the RedHat 2.6.38.8 kernel
-.config with those minimal changes applied to locate a few problems.
-See the config snippet pasted at the end.
+> Despite the fact that it is a one-liner, I do not understand what this
+> patch does, and I am not sure it is not going to break things.
 
-As for 3.5.x, the only change was to disable CPUMASK_OFFSTACK, enabled
-by default in RH kernels.
+One way to install Xenomai into a kernel source tree is by adding
+symbolic links to the individual source files. In preparation of this
+step, the prepare-kernel script first purges all files from affected
+directories that are not present in the Xenomai sources (anymore). That
+works fine for our current Xenomai dirs as they are exclusively used but
+fails once we have to patch dirs that are also used by the original
+kernel (like the cited trace event dir).
 
->> It seems terrible to duplicate this effort, so let me know if there's
->> anything I can do to help.  I can also supply packages for EL6 (my own
->> most familiar distro).
-> 
-> 
-> we realized recently that:
-> - we need to test whether the in-tree debian packaging works for every
-> release, otherwise we make broken releases, the only way to do that is
-> to well, generate the debian packages and install them to see whether
-> they work;
-> - many newbies questions are about compiling kernels, mostly for the x86
-> architecture, so, if we provide the packaged kernels, we will avoid
-> these questions, and people will not have to master kernel compilation
-> and installation to be able to use xenomai. This did not look so hard a
-> few days ago, as learning to compile your own kernel was part of
-> learning to use Linux, but these days, with the one-fits-all distros
-> kernel, we find that people no longer know how to compile a kernel
-> (however easy it seems).
+This patch addresses the issue by only purging symbolic links, not
+regular files. We will also need it in forge once we add ftrace support
+over there.
 
-Also, there are many newbie pitfalls in generating a valid kernel
-.config, as I'm finding out!
+HTH,
+Jan
 
-> So, we tried and improved the I-pipe patches so that a single or a pair
-> of kernels (SMP and UP) can be generated for each architecture.
-
-Great!  This is the right way to go in order to increase adoption.
-
-> I started setting up a repository on the xenomai server, but obviously,
-> can not do it for all distributions, so, any help is welcome. What I can
-> propose is to set-up an inoticoming repository, give you access to an
-> incoming repository through scp (you whould have to send me your ssh
-> public key for that). Then, before a release, we would work to provide
-> the corresponding debian and ubuntu packages. As for the fedora
-> packages, I do not know the equivalent of reprepro and inoticoming.
-
-I've been thinking about what I can offer over the last few days.  I'm
-really too inexperienced with Deb-like distros and I'm poor at
-maintenance.  My solution would be to automate this chore with some type
-of build infrastructure, but that would probably take me much longer
-than someone else more at home with Debian.
-
-On the other hand, it would be quite easy for me to do this for el6 and,
-once I have packages, Fedora, since we do have the automated build
-infrastructure (and the expertise) in the shop that it wouldn't be
-difficult.  In this case, it would be easiest to keep a git repo of the
-RPM files online (just like the one I recently pointed to in other
-threads) to keep the development open, compile the packages on our
-infrastructure, and rsync the resulting repo either to the xenomai.org
-site, my site, or anywhere else suitable.  The only piece missing would
-be a public view of the build system (called 'koji', the same as the
-Fedora project uses), which could come in time if we choose.
-
-At any rate, I will certainly have my own el6 repo up soon, and I'll
-announce it here for folks to try out.
-
-	John
-
-
-Config changes needed against stock RH kernel config for 2.6.38.8
-
-# CONFIG_CPUMASK_OFFSTACK is enabled in the RH kernel configs
-# Having this turned on caused compile errors:
-# kernel/xenomai/nucleus/shadow.c: In function 'gatekeeper_thread':
-# kernel/xenomai/nucleus/shadow.c:867: error: implicit declaration \
-#   of function 'set_cpus_allowed'
-# CONFIG_CPUMASK_OFFSTACK is not set
-#
-# CONFIG_SLAB and CONFIG_MODVERSION enabled cause unresolved module
-# symbols:
-#   rtapi: Unknown symbol kmalloc_caches (err 0)
-# CONFIG_SLAB is not set
-# CONFIG_MODVERSIONS is not set
-#
-# Avoid a problem where modules have a '[permanent]' tag in lsmod,
-# and can't be unloaded:
-#   ERROR: Module hal_lib is in use by timedelta,threads,[permanent]
-CONFIG_JUMP_LABEL=y
-#
-# Fix rtapi init problem
-#      RTAPI: ERROR: rtapi_init: rt_heap_bind() returns -11 - \
-#         Resource temporarily unavailable
-#      ERROR: could not not initialize RTAPI
-CONFIG_UNUSED_SYMBOLS=y
-
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 261 bytes
+Desc: OpenPGP digital signature
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20130113/ffd0ce1=
+3/attachment.pgp>
