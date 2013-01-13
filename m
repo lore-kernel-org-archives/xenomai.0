@@ -1,10 +1,10 @@
-Message-ID: <50F2A59D.5050600@xenomai.org>
-Date: Sun, 13 Jan 2013 13:16:29 +0100
+Message-ID: <50F2A629.4030901@xenomai.org>
+Date: Sun, 13 Jan 2013 13:18:49 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <50F19CE1.5080106@zultron.com> <50F19DE4.4030805@xenomai.org>
-	<50F239E1.40400@zultron.com>
-In-Reply-To: <50F239E1.40400@zultron.com>
+References: <50F19CE1.5080106@zultron.com> <50F1B329.80303@xenomai.org>
+	<50F2592F.3010300@zultron.com> <50F2994F.6060904@web.de>
+In-Reply-To: <50F2994F.6060904@web.de>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] Kernel OOPS during regression tests
@@ -16,56 +16,62 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: John Morris <john@zultron.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@web.de>
+Cc: John Morris <john@zultron.com>, Xenomai <xenomai@xenomai.org>
 
-On 01/13/2013 05:36 AM, John Morris wrote:
+On 01/13/2013 12:23 PM, Jan Kiszka wrote:
 
-> On 01/12/2013 11:31 AM, Gilles Chanteperdrix wrote:
->> On 01/12/2013 06:26 PM, John Morris wrote:
->>> 1)  Most worrisome is "kernel BUG at mm/mmap.c:2313!   invalid opcode:
->>> 0000 [#2] SMP".  Is this related to HEAPSZ or STACKPOOLSZ?  My mind is
->>> getting foggy about all the things I've seen, but it seems like it was
->>> happening earlier in the tests until these config values were quadrupled.
+> On 2013-01-13 07:50, John Morris wrote:
+>> On 01/12/2013 01:02 PM, Gilles Chanteperdrix wrote:
+>>> On 01/12/2013 06:26 PM, John Morris wrote:
+>>>
+>>>> Hi list,
+>>>>
+>>>> The el6 packages are coming along nicely:
+>>>>
+>>>> https://github.com/zultron/kernel-ml/tree/branch3.5.3-xeno
+>>>>
+>>>> Still a few problems when running xeno-regression-test.
+>>>>
+>>>> 1)  Most worrisome is "kernel BUG at mm/mmap.c:2313!   invalid opcode:
+>>>> 0000 [#2] SMP".  Is this related to HEAPSZ or STACKPOOLSZ?  My mind is
+>>>> getting foggy about all the things I've seen, but it seems like it was
+>>>> happening earlier in the tests until these config values were quadrupled.
+>>>
+>>>
+>>> Try disabling transparent hugepages, as noted by Jan.
+>>>
+>>>>
+>>>> 2)  posix/mprotect is failing:  "FAILURE: sigdebug_handler triggered,
+>>>> reason 2    memory write after exec enable".
+>>>>
+>>>> 3)  FPU warning:  "fptest.h:24: Warning: Linux is compiled to use FPU in
+>>>> kernel-space.    For this reason, switchtest can not test using FPU in
+>>>> Linux kernel-space."
+>>>>
+>>>> Regression test run log:
+>>>> http://www.zultron.com/static/2013/01/xenomai/foo-xeno-regression-test.log
+>>>
+>>>
+>>> You should normally use the -l option to use a non default "load", and
+>>> run the test for a long time.
+>>>
+>>> See xeno-regression-test --help and dohell --help
+>>>
+>>>
 >>
 >>
->> Could you check whether you can reproduce this issue with the I-pipe
->> patch for 3.5.7 ? The next xenomai release will be based on this version
->> on x86 anyway. Branch for-core-3.5.7 in ipipe-gch.git
+>> Jan's fix appears to have solved 1) above, but 2) posix/mprotect is
+>> still failing.  Thanks for the xeno-regression-test tips; ran a couple
+>> more (not for a long time, will do that later).
 > 
-> Different problem; Xenomai wouldn't start:
-> 
->   I-pipe: could not find timer for cpu #0
-> 
-> dmesg:
-> http://www.zultron.com/static/2013/01/xenomai/3.5.7-test/foo-dmesg-3.5.7.log
-> 
-> .config:
-> www.zultron.com/static/2013/01/xenomai/3.5.7-test/foo-kernel-3.5.7.config
-> 
-> FYI, I found this same problem on two of my systems while testing your
-> Debian packages.  Both AMD Athlon II 64-bit (one single, one dual core).
->  They're about the same generation of motherboards, AM2 or AM2+ socket.
->  One is AMD 770 chipset, the other NVidia GeForce 6100 / nForce 430.
-> 
-> Hardware looks similar to Mariusz's in this post, where he had the same
-> problem:
-> 
-> http://www.xenomai.org/pipermail/xenomai/2012-December/027121.html
-> 
-> He's also running AMD 64-bit on a Gigabyte motherboard, but the next
-> generation AM3 socket, Phenom CPU, AMD 890 chipset.  I don't have a C1E
-> BIOS option on these boards to enable/disable.  These same motherboards
-> don't suffer this problem with mainline Xenomai on 3.5.3.
+> Can you clarify how your setup looks like? The kernel is a vanilla 3.5.3
+> patched with ipipe-core-3.5.3-x86-2.patch? And then you just disabled
+> THP? Or did you switch to my for-upstream/3.5 I-pipe branch?
 
 
-If you had the same problem as Marius, you would have seen it with
-3.5.3, and you would get the message in the dmesg about C1E, so, it is
-probably something else. Could you run
-
-cat /proc/timer_list
-
-?
+I have merged the bugfixes from your branch in my branch in addition to
+other bug fixes, so, I would recommend using this one.
 
 -- 
                                                                 Gilles.
