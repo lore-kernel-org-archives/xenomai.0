@@ -1,13 +1,13 @@
-Message-ID: <50F2994F.6060904@web.de>
-Date: Sun, 13 Jan 2013 12:23:59 +0100
+Message-ID: <50F29988.3020105@web.de>
+Date: Sun, 13 Jan 2013 12:24:56 +0100
 From: Jan Kiszka <jan.kiszka@web.de>
 MIME-Version: 1.0
-References: <50F19CE1.5080106@zultron.com> <50F1B329.80303@xenomai.org>
-	<50F2592F.3010300@zultron.com>
-In-Reply-To: <50F2592F.3010300@zultron.com>
+References: <E1TtJG5-0003u8-9L@xenomai.org> <50F19C76.8000001@xenomai.org>
+In-Reply-To: <50F19C76.8000001@xenomai.org>
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] Kernel OOPS during regression tests
+Subject: Re: [Xenomai] [Xenomai-git] Jan Kiszka : configure: Report defaults
+ for smp/x86-sep/ x86-tsc in help output
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,62 +16,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: John Morris <john@zultron.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On 2013-01-13 07:50, John Morris wrote:
-> On 01/12/2013 01:02 PM, Gilles Chanteperdrix wrote:
->> On 01/12/2013 06:26 PM, John Morris wrote:
+On 2013-01-12 18:25, Gilles Chanteperdrix wrote:
+> On 01/10/2013 03:37 PM, GIT version control wrote:
+> =
+
+>> Module: xenomai-jki
+>> Branch: for-upstream
+>> Commit: 45aca4239b6e5c772a12962bcdbe75435f4ffec2
+>> URL:    http://git.xenomai.org/?p=3Dxenomai-jki.git;a=3Dcommit;h=3D45aca=
+4239b6e5c772a12962bcdbe75435f4ffec2
 >>
->>> Hi list,
->>>
->>> The el6 packages are coming along nicely:
->>>
->>> https://github.com/zultron/kernel-ml/tree/branch3.5.3-xeno
->>>
->>> Still a few problems when running xeno-regression-test.
->>>
->>> 1)  Most worrisome is "kernel BUG at mm/mmap.c:2313!   invalid opcode:
->>> 0000 [#2] SMP".  Is this related to HEAPSZ or STACKPOOLSZ?  My mind is
->>> getting foggy about all the things I've seen, but it seems like it was
->>> happening earlier in the tests until these config values were quadruple=
-d.
+>> Author: Jan Kiszka <jan.kiszka@siemens.com>
+>> Date:   Thu Jan 10 14:29:14 2013 +0100
 >>
->>
->> Try disabling transparent hugepages, as noted by Jan.
->>
->>>
->>> 2)  posix/mprotect is failing:  "FAILURE: sigdebug_handler triggered,
->>> reason 2    memory write after exec enable".
->>>
->>> 3)  FPU warning:  "fptest.h:24: Warning: Linux is compiled to use FPU in
->>> kernel-space.    For this reason, switchtest can not test using FPU in
->>> Linux kernel-space."
->>>
->>> Regression test run log:
->>> http://www.zultron.com/static/2013/01/xenomai/foo-xeno-regression-test.=
-log
->>
->>
->> You should normally use the -l option to use a non default "load", and
->> run the test for a long time.
->>
->> See xeno-regression-test --help and dohell --help
->>
->>
+>> configure: Report defaults for smp/x86-sep/x86-tsc in help output
 > =
 
 > =
 
-> Jan's fix appears to have solved 1) above, but 2) posix/mprotect is
-> still failing.  Thanks for the xeno-regression-test tips; ran a couple
-> more (not for a long time, will do that later).
+> why only the x86 options? The option defaults have never been documented
+> in configure help string, but in README.INSTALL (I just fixed the
+> defaults there instead). If we start documenting them in configure.in,
+> then all defaults options should be documented.
 
-Can you clarify how your setup looks like? The kernel is a vanilla 3.5.3
-patched with ipipe-core-3.5.3-x86-2.patch? And then you just disabled
-THP? Or did you switch to my for-upstream/3.5 I-pipe branch?
-
-I'll have a look at your .config next week.
+Sure, will document the rest as well.
 
 Jan
 
@@ -82,5 +53,5 @@ Name: signature.asc
 Type: application/pgp-signature
 Size: 261 bytes
 Desc: OpenPGP digital signature
-URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20130113/978ba19=
-3/attachment.pgp>
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20130113/0cc7f5f=
+a/attachment.pgp>
