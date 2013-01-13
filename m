@@ -1,14 +1,14 @@
-Message-ID: <50F2A877.4080602@web.de>
-Date: Sun, 13 Jan 2013 13:28:39 +0100
+Message-ID: <50F2A8B9.1040103@web.de>
+Date: Sun, 13 Jan 2013 13:29:45 +0100
 From: Jan Kiszka <jan.kiszka@web.de>
 MIME-Version: 1.0
-References: <50EFC153.8030406@web.de> <50EFC336.3000509@web.de>
-	<50F19EFA.9070203@xenomai.org> <50F1A149.3020609@web.de>
-	<50F1A468.4000500@xenomai.org>
-In-Reply-To: <50F1A468.4000500@xenomai.org>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] [PATCH] x86/ipipe: restore warning with AMD erratum
+References: <50ebff2e488690.18102992@wp.pl> <50EC76E9.30002@xenomai.org>
+	<50EC8A6D.2060702@web.de> <50ED70F0.8020608@siemens.com>
+	<50F1AEDC.3070306@xenomai.org>
+In-Reply-To: <50F1AEDC.3070306@xenomai.org>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] SIGXCPU with rt_mutex_release
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,70 +20,82 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: Xenomai <xenomai@xenomai.org>
 
-T24gMjAxMy0wMS0xMiAxODo1OSwgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4gT24gMDEv
-MTIvMjAxMyAwNjo0NSBQTSwgSmFuIEtpc3prYSB3cm90ZToKPiAKPj4gT24gMjAxMy0wMS0xMiAx
-ODozNSwgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4+PiBPbiAwMS8xMS8yMDEzIDA4OjQ1
-IEFNLCBKYW4gS2lzemthIHdyb3RlOgo+Pj4KPj4+PiBPbiAyMDEzLTAxLTExIDA4OjM3LCBKYW4g
-S2lzemthIHdyb3RlOgo+Pj4+Pj4gRnJvbSBhY2MzYzU3MzkwZDI3NWExYjI4ZDY2ZjFlYzg4Yzg1
-ZTBmOGMwODkwIE1vbiBTZXAgMTcgMDA6MDA6MDAgMjAwMQo+Pj4+Pj4gRnJvbTogR2lsbGVzIENo
-YW50ZXBlcmRyaXggPGdpbGxlcy5jaGFudGVwZXJkcml4QHhlbm9tYWkub3JnPgo+Pj4+Pj4gRGF0
-ZTogU2F0LCAyOSBEZWMgMjAxMiAxNzo0ODoyMCArMDEwMAo+Pj4+Pj4gU3ViamVjdDogW1BBVENI
-XSB4ODYvaXBpcGU6IHJlc3RvcmUgd2FybmluZyB3aXRoIEFNRCBlcnJhdHVtCj4+Pj4+Pgo+Pj4+
-Pj4gLS0tCj4+Pj4+PiAgYXJjaC94ODYva2VybmVsL2FwaWMvYXBpYy5jIHwgICAxNiArKysrKysr
-KysrLS0tLS0tCj4+Pj4+PiAgMSBmaWxlcyBjaGFuZ2VkLCAxMCBpbnNlcnRpb25zKCspLCA2IGRl
-bGV0aW9ucygtKQo+Pj4+Pj4KPj4+Pj4+IGRpZmYgLS1naXQgYS9hcmNoL3g4Ni9rZXJuZWwvYXBp
-Yy9hcGljLmMgYi9hcmNoL3g4Ni9rZXJuZWwvYXBpYy9hcGljLmMKPj4+Pj4+IGluZGV4IDdmMDc2
-MTAuLjkxNTMxYmIgMTAwNjQ0Cj4+Pj4+PiAtLS0gYS9hcmNoL3g4Ni9rZXJuZWwvYXBpYy9hcGlj
-LmMKPj4+Pj4+ICsrKyBiL2FyY2gveDg2L2tlcm5lbC9hcGljL2FwaWMuYwo+Pj4+Pj4gQEAgLTU0
-NSwxNCArNTQ1LDE4IEBAIHN0YXRpYyB2b2lkIF9fY3B1aW5pdCBzZXR1cF9BUElDX3RpbWVyKHZv
-aWQpCj4+Pj4+PiAgCW1lbWNweShsZXZ0LCAmbGFwaWNfY2xvY2tldmVudCwgc2l6ZW9mKCpsZXZ0
-KSk7Cj4+Pj4+PiAgCWxldnQtPmNwdW1hc2sgPSBjcHVtYXNrX29mKHNtcF9wcm9jZXNzb3JfaWQo
-KSk7Cj4+Pj4+PiAgI2lmZGVmIENPTkZJR19JUElQRQo+Pj4+Pj4gLQlpZiAoIShsYXBpY19jbG9j
-a2V2ZW50LmZlYXR1cmVzICYgQ0xPQ0tfRVZUX0ZFQVRfRFVNTVkpKQo+Pj4+Pj4gKwlpZiAoIShs
-YXBpY19jbG9ja2V2ZW50LmZlYXR1cmVzICYgQ0xPQ0tfRVZUX0ZFQVRfRFVNTVkpCj4+Pj4+PiAr
-CSAgICAmJiAhY3B1X2hhc19hbWRfZXJyYXR1bShhbWRfZXJyYXR1bV80MDApKQo+Pj4+Pj4gIAkJ
-bGV2dC0+aXBpcGVfdGltZXIgPSAmX19nZXRfY3B1X3ZhcihsYXBpY19pdGltZXIpOwo+Pj4+Pj4g
-IAllbHNlIHsKPj4+Pj4+IC0JICAgICAgIHByaW50ayhLRVJOX0lORk8KPj4+Pj4+IC0JCSAgICAg
-ICJJLXBpcGU6IGNhbm5vdCB1c2UgTEFQSUMgYXMgYSB0aWNrIGRldmljZVxuIik7Cj4+Pj4+PiAt
-CSAgICAgICBpZiAoY3B1X2hhc19hbWRfZXJyYXR1bShhbWRfZXJyYXR1bV80MDApKQo+Pj4+Pj4g
-LQkJICAgICAgIHByaW50ayhLRVJOX0lORk8KPj4+Pj4+IC0JCQkgICAgICAiSS1waXBlOiBkaXNh
-YmxlIEMxRSBwb3dlciBzdGF0ZSBpbiB5b3VyIEJJT1NcbiIpOwo+Pj4+Pj4gKwkJc3RhdGljIGF0
-b21pY190IHByaW50ZWQgPSBBVE9NSUNfSU5JVCgtMSk7Cj4+Pj4+PiArCQlwcmludGsoS0VSTl9J
-TkZPCj4+Pj4+PiArCQkgICAgICAgIkktcGlwZTogY2Fubm90IHVzZSBMQVBJQyBvbiBjcHUgIyVk
-IGFzIGEgdGljayBkZXZpY2VcbiIsCj4+Pj4+PiArCQkgICAgICAgc21wX3Byb2Nlc3Nvcl9pZCgp
-KTsKPj4+Pj4+ICsJCWlmIChjcHVfaGFzX2FtZF9lcnJhdHVtKGFtZF9lcnJhdHVtXzQwMCkKPj4+
-Pj4+ICsJCSAgICAmJiBhdG9taWNfaW5jX2FuZF90ZXN0KCZwcmludGVkKSkKPj4+Pj4+ICsJCQlw
-cmludGsoS0VSTl9JTkZPCj4+Pj4+PiArCQkJICAgICAgICJJLXBpcGU6IGRpc2FibGUgQzFFIHBv
-d2VyIHN0YXRlIGluIHlvdXIgQklPU1xuIik7Cj4+Pj4+Cj4+Pj4+IHByaW50a19vbmNlIHNob3Vs
-ZCBkbyB0aGUgdHJpY2sgYXMgd2VsbC4KPj4+Pgo+Pj4+IEluIGZhY3QsIGl0IHNob3VsZCBhY3R1
-YWxseSBkbyB3aGF0IHlvdSBsaWtlbHkgaW50ZW5kZWQ6IHByaW50IG9uIGZpcnN0Cj4+Pj4gb2Nj
-dXJyZW5jZSwgbm90IG9uIHNlY29uZCBvciBsYXRlci4gOykKPj4+Cj4+Pgo+Pj4gTm90IHF1aXRl
-LCBwcmludGtfb25jZSBpcyBub3QgcHJvdGVjdGVkIGZyb20gdGhlIGNvZGUgcnVubmluZwo+Pj4g
-Y29uY3VycmVudGx5IG9uIG11bHRpcGxlIGNwdXMuCj4+Cj4+IE9LLgo+Pgo+Pj4gU28sIGF0b21p
-Y19pbmNfYW5kX3Rlc3QgaXMgYmV0dGVyLCBleGNlcHQKPj4+IHRoZSBBVE9NSUNfSU5JVCBuZWVk
-cyB0byBiZSBzZXQgdG8gMC4KPj4KPj4gTm9wZSwgLTEgaXMgY29ycmVjdC4gYXRvbWljX2luY19h
-bmRfdGVzdCBmaXJzdCBpbmNyZW1lbnRzLCB0aGVuIHRlc3RzLiBJCj4+IG1pc3NlZCB0aGF0IGl0
-IGNoZWNrcyBhZ2FpbnN0IDAsIG5vdCAhPSAwLiBTbyB0aGUgbG9naWMgaXMgZmluZSwgeW91Cj4+
-IHNob3VsZCBqdXN0IGluY2x1ZGUgdGhlIGZpcnN0IHByaW50ayBhcyB3ZWxsLgo+IAo+IAo+IFll
-cywgSSBoYXZlIGp1c3QgcmVhbGl6ZWQgdGhhdCBsb29raW5nIGF0IHRoZSB4ODYgdmVyc2lvbiBv
-Zgo+IGF0b21pY19pbmNfYW5kX3Rlc3QsIG9ubHkgdGhlIGFzbS1nZW5lcmljIHZlcnNpb24gaXMg
-YnJva2VuLCBidXQgSSBndWVzcwo+IG5vYm9keSB1c2VzIGl0Ogo+IAo+IHN0YXRpYyBpbmxpbmUg
-aW50IGF0b21pY19hZGRfcmV0dXJuKGludCBpLCBhdG9taWNfdCAqdikKPiB7Cj4gCXVuc2lnbmVk
-IGxvbmcgZmxhZ3M7Cj4gCWludCB0ZW1wOwo+IAo+IAlmbGFncyA9IGhhcmRfbG9jYWxfaXJxX3Nh
-dmUoKTsgLyogRG9uJ3QgdHJhY2UgaXQgaW4gYW4gaXJxc29mZiBoYW5kbGVyICovCj4gCXRlbXAg
-PSB2LT5jb3VudGVyOwo+IAl0ZW1wICs9IGk7Cj4gCXYtPmNvdW50ZXIgPSB0ZW1wOwo+IAloYXJk
-X2xvY2FsX2lycV9yZXN0b3JlKGZsYWdzKTsKPiAKPiAJcmV0dXJuIHRlbXA7Cj4gfQo+IAo+ICNk
-ZWZpbmUgYXRvbWljX2luY19hbmRfdGVzdCh2KQkJKGF0b21pY19pbmNfcmV0dXJuKHYpID09IDAp
-Cj4gCgpBcmUgeW91IHJlZmVycmluZyB0byBsYWNraW5nIFNNUCBzdXBwb3J0IG9mIHRoaXMgdmVy
-c2lvbj8gSSBndWVzcyB0aGF0J3MKaW50ZW50aW9uYWwgKG5vIFNNUCBhcmNoIHNob3VsZCBsYWNr
-IGF0b21pYyBvcHMpLgoKSXQgaXMgb3RoZXJ3aXNlIGZ1bmN0aW9uYWxseSBpZGVudGljYWwgdG8g
-dGhlIHg4NiBjb2RlLCBpLmUuIGl0ICpmaXJzdCoKaW5jcmVtZW50cyBhbmQgKnRoZW4qIHRlc3Rz
-LiBZb3VyIG5ldyB2ZXJzaW9uIG9mIHRoaXMgcGF0Y2ggd2lsbAp0aGVyZWZvcmUgbmV2ZXIgcHJp
-bnQgYW55dGhpbmcgZHVlIHRvIHRoZSAwIGluaXRpYWxpemF0aW9uIC0gd2VsbCwgdW50aWwKdGhl
-IGNvdW50ZXIgb3ZlcmZsb3dzLiBQcm9iYWJseSBpdCdzIGJldHRlciB0byB1c2UgdGVzdF9hbmRf
-c2V0X2JpdCBoZXJlCnRvIGF2b2lkIGFsbCB0aGVzZSBjb25mdXNpb25zLgoKSmFuCgotLS0tLS0t
-LS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdh
-cyBzY3J1YmJlZC4uLgpOYW1lOiBzaWduYXR1cmUuYXNjClR5cGU6IGFwcGxpY2F0aW9uL3BncC1z
-aWduYXR1cmUKU2l6ZTogMjYxIGJ5dGVzCkRlc2M6IE9wZW5QR1AgZGlnaXRhbCBzaWduYXR1cmUK
-VVJMOiA8aHR0cDovL3d3dy54ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50
-cy8yMDEzMDExMy8wOTI1MjQ2MS9hdHRhY2htZW50LnBncD4K
+On 2013-01-12 19:43, Gilles Chanteperdrix wrote:
+> On 01/09/2013 02:30 PM, Jan Kiszka wrote:
+> =
+
+>> On 2013-01-08 22:06, Jan Kiszka wrote:
+>>> On 2013-01-08 20:43, Gilles Chanteperdrix wrote:
+>>>> On 01/08/2013 12:12 PM, Mariusz Janiak wrote:
+>>>>
+>>>>> Hi GIlles,
+>>>>>
+>>>>> As you suggested, I have prepared simple test case that demonstrate h=
+ow Xenomai is utilized by OROCOS. This test case behaves exactly the same l=
+ike helloword example. Scheduler is chosen before any mutex are processed, =
+so in my opinion it is not the case which you defined. What is really surpr=
+ising is that the replacing TM_NONBLOCK with TM_INFINITE, in one before las=
+t line, do magic and suppress signal generation. Furthermore, there is no c=
+all to 'rt_task_set_mode(0, T_WARNSW, NULL);' so why =
+
+>>>>> signal is generated? If we enable T_WARNSW in the thread, SIGXCPU is =
+generated when mutex is locked first time in the thread. =
+
+>>>>
+>>>>
+>>>> I guess the test could be simpler, simply:
+>>>>
+>>>> rt_mutex_acquire
+>>>> rt_task_create
+>>>> rt_mutex_release
+>>>> rt_mutex_acquire
+>>>> rt_mutex_release
+>>>>
+>>>> Anyway, calling rt_task_create while holding a real-time mutex is itse=
+lf
+>>>> a priority inversion: any thread in primary mode waiting for the mutex
+>>>> will now have to wait for task running in secondary mode, so may be
+>>>> block during an unbounded amount of time. So, using a real-time mutex
+>>>> for this is completely useless you should be using a glibc
+>>>> pthread_mutex_t. If compiling for the posix skin, use
+>>>> __real_pthread_mutex_lock.
+>>>>
+>>>> Now, how this can cause the issue you observe remains to be understood,
+>>>> and probably requires a fix.
+>>>
+>>> OK, second try: We do not update the new owner's hrescnt if we acquire a
+>>> mutex via trylock. This applies both to rt_mutex_acquire_inner and
+>>> pthread_mutex_trylock. Probably, this should be done in the
+>>> corresponding syscall wrapper as both services are also used for the
+>>> in-kernel API.
+>>
+>> Here is the corresponding patch:
+> =
+
+>> http://www.xenomai.org/pipermail/xenomai-git/2013-January/000336.html
+> =
+
+> Ok, so, if I understand correctly, the whole orocos testcase boils down t=
+o:
+> trylock
+> unlock
+> =
+
+> We should move the incrementation of the resource counter to
+> xnsynch_fast_acquire. We will be left with only two places to patch: the
+> native and posix trylock in the !FASTSYNCH case.
+
+xnsynch_fast_acquire is shared with user space code and therefore
+references no kernel types.
+
+Jan
+
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 261 bytes
+Desc: OpenPGP digital signature
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20130113/610ec0d=
+2/attachment.pgp>
