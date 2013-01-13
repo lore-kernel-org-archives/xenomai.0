@@ -1,13 +1,13 @@
-Message-ID: <50F297D1.2090800@web.de>
-Date: Sun, 13 Jan 2013 12:17:37 +0100
+Message-ID: <50F2994F.6060904@web.de>
+Date: Sun, 13 Jan 2013 12:23:59 +0100
 From: Jan Kiszka <jan.kiszka@web.de>
 MIME-Version: 1.0
-References: <50ED750B.4010606@siemens.com> <50F19966.9050008@xenomai.org>
-In-Reply-To: <50F19966.9050008@xenomai.org>
+References: <50F19CE1.5080106@zultron.com> <50F1B329.80303@xenomai.org>
+	<50F2592F.3010300@zultron.com>
+In-Reply-To: <50F2592F.3010300@zultron.com>
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] [PATCH] prepare-kernel: Only purge links from target
-	directories
+Subject: Re: [Xenomai] Kernel OOPS during regression tests
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,45 +16,65 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: John Morris <john@zultron.com>
 Cc: Xenomai <xenomai@xenomai.org>
 
-On 2013-01-12 18:12, Gilles Chanteperdrix wrote:
-> On 01/09/2013 02:47 PM, Jan Kiszka wrote:
-> =
-
->> Only remove files from the target directory of patch_link if they are
->> missing in Xenomai AND are actually symbolic links. This is required
->> when merging Xenomai directories into non-empty kernel dirs.
+On 2013-01-13 07:50, John Morris wrote:
+> On 01/12/2013 01:02 PM, Gilles Chanteperdrix wrote:
+>> On 01/12/2013 06:26 PM, John Morris wrote:
 >>
->> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
->> ---
+>>> Hi list,
+>>>
+>>> The el6 packages are coming along nicely:
+>>>
+>>> https://github.com/zultron/kernel-ml/tree/branch3.5.3-xeno
+>>>
+>>> Still a few problems when running xeno-regression-test.
+>>>
+>>> 1)  Most worrisome is "kernel BUG at mm/mmap.c:2313!   invalid opcode:
+>>> 0000 [#2] SMP".  Is this related to HEAPSZ or STACKPOOLSZ?  My mind is
+>>> getting foggy about all the things I've seen, but it seems like it was
+>>> happening earlier in the tests until these config values were quadruple=
+d.
 >>
->> This is not required for the current patch workload but helps us in 2.6
->> with integrating ftrace (we patch into include/trace/events there).
->> Would reduce our queue length by one if this could be merged
->> nevertheless.
+>>
+>> Try disabling transparent hugepages, as noted by Jan.
+>>
+>>>
+>>> 2)  posix/mprotect is failing:  "FAILURE: sigdebug_handler triggered,
+>>> reason 2    memory write after exec enable".
+>>>
+>>> 3)  FPU warning:  "fptest.h:24: Warning: Linux is compiled to use FPU in
+>>> kernel-space.    For this reason, switchtest can not test using FPU in
+>>> Linux kernel-space."
+>>>
+>>> Regression test run log:
+>>> http://www.zultron.com/static/2013/01/xenomai/foo-xeno-regression-test.=
+log
+>>
+>>
+>> You should normally use the -l option to use a non default "load", and
+>> run the test for a long time.
+>>
+>> See xeno-regression-test --help and dohell --help
+>>
+>>
 > =
 
 > =
 
-> Despite the fact that it is a one-liner, I do not understand what this
-> patch does, and I am not sure it is not going to break things.
+> Jan's fix appears to have solved 1) above, but 2) posix/mprotect is
+> still failing.  Thanks for the xeno-regression-test tips; ran a couple
+> more (not for a long time, will do that later).
 
-One way to install Xenomai into a kernel source tree is by adding
-symbolic links to the individual source files. In preparation of this
-step, the prepare-kernel script first purges all files from affected
-directories that are not present in the Xenomai sources (anymore). That
-works fine for our current Xenomai dirs as they are exclusively used but
-fails once we have to patch dirs that are also used by the original
-kernel (like the cited trace event dir).
+Can you clarify how your setup looks like? The kernel is a vanilla 3.5.3
+patched with ipipe-core-3.5.3-x86-2.patch? And then you just disabled
+THP? Or did you switch to my for-upstream/3.5 I-pipe branch?
 
-This patch addresses the issue by only purging symbolic links, not
-regular files. We will also need it in forge once we add ftrace support
-over there.
+I'll have a look at your .config next week.
 
-HTH,
 Jan
+
 
 -------------- next part --------------
 A non-text attachment was scrubbed...
@@ -62,5 +82,5 @@ Name: signature.asc
 Type: application/pgp-signature
 Size: 261 bytes
 Desc: OpenPGP digital signature
-URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20130113/ffd0ce1=
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20130113/978ba19=
 3/attachment.pgp>
