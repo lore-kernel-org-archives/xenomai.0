@@ -1,12 +1,13 @@
-Message-ID: <50F2592F.3010300@zultron.com>
-Date: Sun, 13 Jan 2013 00:50:23 -0600
+Message-ID: <50F26428.8040705@zultron.com>
+Date: Sun, 13 Jan 2013 01:37:12 -0600
 From: John Morris <john@zultron.com>
 MIME-Version: 1.0
-References: <50F19CE1.5080106@zultron.com> <50F1B329.80303@xenomai.org>
-In-Reply-To: <50F1B329.80303@xenomai.org>
+References: <50EA9B9A.6000804@zultron.com> <50EB4FAD.2000804@xenomai.org>
+	<50EBDAC8.8010006@zultron.com> <50EC80AD.3090301@xenomai.org>
+In-Reply-To: <50EC80AD.3090301@xenomai.org>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Kernel OOPS during regression tests
+Subject: Re: [Xenomai] Debian package build problems
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,59 +17,109 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
-
-On 01/12/2013 01:02 PM, Gilles Chanteperdrix wrote:
-> On 01/12/2013 06:26 PM, John Morris wrote:
-> 
->> Hi list,
->>
->> The el6 packages are coming along nicely:
->>
->> https://github.com/zultron/kernel-ml/tree/branch3.5.3-xeno
->>
->> Still a few problems when running xeno-regression-test.
->>
->> 1)  Most worrisome is "kernel BUG at mm/mmap.c:2313!   invalid opcode:
->> 0000 [#2] SMP".  Is this related to HEAPSZ or STACKPOOLSZ?  My mind is
->> getting foggy about all the things I've seen, but it seems like it was
->> happening earlier in the tests until these config values were quadrupled.
-> 
-> 
-> Try disabling transparent hugepages, as noted by Jan.
-> 
->>
->> 2)  posix/mprotect is failing:  "FAILURE: sigdebug_handler triggered,
->> reason 2    memory write after exec enable".
->>
->> 3)  FPU warning:  "fptest.h:24: Warning: Linux is compiled to use FPU in
->> kernel-space.    For this reason, switchtest can not test using FPU in
->> Linux kernel-space."
->>
->> Regression test run log:
->> http://www.zultron.com/static/2013/01/xenomai/foo-xeno-regression-test.log
-> 
-> 
-> You should normally use the -l option to use a non default "load", and
-> run the test for a long time.
-> 
-> See xeno-regression-test --help and dohell --help
-> 
-> 
+Cc: xenomai@xenomai.org
 
 
-Jan's fix appears to have solved 1) above, but 2) posix/mprotect is
-still failing.  Thanks for the xeno-regression-test tips; ran a couple
-more (not for a long time, will do that later).
 
-Test runs:
-http://www.zultron.com/static/2013/01/xenomai/3.5.3-jan-fix/foo-xeno-regression-test-3.5.3-jan-fix.log
+On 01/08/2013 02:25 PM, Gilles Chanteperdrix wrote:
+> On 01/08/2013 09:37 AM, John Morris wrote:
+>> The most difficult part has been to create a kernel config that works on
+>> everybody's hardware.  My approach to solving that problem is to create
+>> a well-documented, minimal set of configuration changes that may be
+>> applied to stock distro kernels.
+> 
+> 
+> This minimal set of change is documented, for xenomai, on the website.
+> If you find you need other changes, they may be bugs, and could need fixing.
 
-Kernel config (only change is disabling TRANSPARENT_HUGEPAGE):
-http://www.zultron.com/static/2013/01/xenomai/3.5.3-jan-fix/foo-kernel-3.5.3-jan-fix.log
+Actually, I spent a few days bisecting the RedHat 2.6.38.8 kernel
+.config with those minimal changes applied to locate a few problems.
+See the config snippet pasted at the end.
 
-Dmesg output with no oops (hopefully boring):
-http://www.zultron.com/static/2013/01/xenomai/3.5.3-jan-fix/foo-dmesg-3.5.3-jan-fix.log
+As for 3.5.x, the only change was to disable CPUMASK_OFFSTACK, enabled
+by default in RH kernels.
+
+>> It seems terrible to duplicate this effort, so let me know if there's
+>> anything I can do to help.  I can also supply packages for EL6 (my own
+>> most familiar distro).
+> 
+> 
+> we realized recently that:
+> - we need to test whether the in-tree debian packaging works for every
+> release, otherwise we make broken releases, the only way to do that is
+> to well, generate the debian packages and install them to see whether
+> they work;
+> - many newbies questions are about compiling kernels, mostly for the x86
+> architecture, so, if we provide the packaged kernels, we will avoid
+> these questions, and people will not have to master kernel compilation
+> and installation to be able to use xenomai. This did not look so hard a
+> few days ago, as learning to compile your own kernel was part of
+> learning to use Linux, but these days, with the one-fits-all distros
+> kernel, we find that people no longer know how to compile a kernel
+> (however easy it seems).
+
+Also, there are many newbie pitfalls in generating a valid kernel
+.config, as I'm finding out!
+
+> So, we tried and improved the I-pipe patches so that a single or a pair
+> of kernels (SMP and UP) can be generated for each architecture.
+
+Great!  This is the right way to go in order to increase adoption.
+
+> I started setting up a repository on the xenomai server, but obviously,
+> can not do it for all distributions, so, any help is welcome. What I can
+> propose is to set-up an inoticoming repository, give you access to an
+> incoming repository through scp (you whould have to send me your ssh
+> public key for that). Then, before a release, we would work to provide
+> the corresponding debian and ubuntu packages. As for the fedora
+> packages, I do not know the equivalent of reprepro and inoticoming.
+
+I've been thinking about what I can offer over the last few days.  I'm
+really too inexperienced with Deb-like distros and I'm poor at
+maintenance.  My solution would be to automate this chore with some type
+of build infrastructure, but that would probably take me much longer
+than someone else more at home with Debian.
+
+On the other hand, it would be quite easy for me to do this for el6 and,
+once I have packages, Fedora, since we do have the automated build
+infrastructure (and the expertise) in the shop that it wouldn't be
+difficult.  In this case, it would be easiest to keep a git repo of the
+RPM files online (just like the one I recently pointed to in other
+threads) to keep the development open, compile the packages on our
+infrastructure, and rsync the resulting repo either to the xenomai.org
+site, my site, or anywhere else suitable.  The only piece missing would
+be a public view of the build system (called 'koji', the same as the
+Fedora project uses), which could come in time if we choose.
+
+At any rate, I will certainly have my own el6 repo up soon, and I'll
+announce it here for folks to try out.
 
 	John
+
+
+Config changes needed against stock RH kernel config for 2.6.38.8
+
+# CONFIG_CPUMASK_OFFSTACK is enabled in the RH kernel configs
+# Having this turned on caused compile errors:
+# kernel/xenomai/nucleus/shadow.c: In function 'gatekeeper_thread':
+# kernel/xenomai/nucleus/shadow.c:867: error: implicit declaration \
+#   of function 'set_cpus_allowed'
+# CONFIG_CPUMASK_OFFSTACK is not set
+#
+# CONFIG_SLAB and CONFIG_MODVERSION enabled cause unresolved module
+# symbols:
+#   rtapi: Unknown symbol kmalloc_caches (err 0)
+# CONFIG_SLAB is not set
+# CONFIG_MODVERSIONS is not set
+#
+# Avoid a problem where modules have a '[permanent]' tag in lsmod,
+# and can't be unloaded:
+#   ERROR: Module hal_lib is in use by timedelta,threads,[permanent]
+CONFIG_JUMP_LABEL=y
+#
+# Fix rtapi init problem
+#      RTAPI: ERROR: rtapi_init: rt_heap_bind() returns -11 - \
+#         Resource temporarily unavailable
+#      ERROR: could not not initialize RTAPI
+CONFIG_UNUSED_SYMBOLS=y
 
