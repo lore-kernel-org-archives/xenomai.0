@@ -1,12 +1,12 @@
-Message-ID: <50F29F69.3030409@xenomai.org>
-Date: Sun, 13 Jan 2013 12:50:01 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <50F2A088.9070805@web.de>
+Date: Sun, 13 Jan 2013 12:54:48 +0100
+From: Jan Kiszka <jan.kiszka@web.de>
 MIME-Version: 1.0
 References: <50ED750B.4010606@siemens.com> <50F19966.9050008@xenomai.org>
-	<50F297D1.2090800@web.de>
-In-Reply-To: <50F297D1.2090800@web.de>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+	<50F297D1.2090800@web.de> <50F29F69.3030409@xenomai.org>
+In-Reply-To: <50F29F69.3030409@xenomai.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Subject: Re: [Xenomai] [PATCH] prepare-kernel: Only purge links from target
 	directories
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -17,42 +17,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@web.de>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: Xenomai <xenomai@xenomai.org>
 
-On 01/13/2013 12:17 PM, Jan Kiszka wrote:
-
-> On 2013-01-12 18:12, Gilles Chanteperdrix wrote:
->> On 01/09/2013 02:47 PM, Jan Kiszka wrote:
->>
->>> Only remove files from the target directory of patch_link if they are
->>> missing in Xenomai AND are actually symbolic links. This is required
->>> when merging Xenomai directories into non-empty kernel dirs.
->>>
->>> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
->>> ---
->>>
->>> This is not required for the current patch workload but helps us in 2.6
->>> with integrating ftrace (we patch into include/trace/events there).
->>> Would reduce our queue length by one if this could be merged
->>> nevertheless.
->>
->>
->> Despite the fact that it is a one-liner, I do not understand what this
->> patch does, and I am not sure it is not going to break things.
-> 
-> One way to install Xenomai into a kernel source tree is by adding
-> symbolic links to the individual source files. In preparation of this
-> step, the prepare-kernel script first purges all files from affected
-> directories that are not present in the Xenomai sources (anymore). That
-> works fine for our current Xenomai dirs as they are exclusively used but
-> fails once we have to patch dirs that are also used by the original
-> kernel (like the cited trace event dir).
-
-
-The thing I do not understand is why Xenomai would patch the trace event
-dir? This is the I-pipe's job.
-
--- 
-                                                                Gilles.
-
+T24gMjAxMy0wMS0xMyAxMjo1MCwgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4gT24gMDEv
+MTMvMjAxMyAxMjoxNyBQTSwgSmFuIEtpc3prYSB3cm90ZToKPiAKPj4gT24gMjAxMy0wMS0xMiAx
+ODoxMiwgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4+PiBPbiAwMS8wOS8yMDEzIDAyOjQ3
+IFBNLCBKYW4gS2lzemthIHdyb3RlOgo+Pj4KPj4+PiBPbmx5IHJlbW92ZSBmaWxlcyBmcm9tIHRo
+ZSB0YXJnZXQgZGlyZWN0b3J5IG9mIHBhdGNoX2xpbmsgaWYgdGhleSBhcmUKPj4+PiBtaXNzaW5n
+IGluIFhlbm9tYWkgQU5EIGFyZSBhY3R1YWxseSBzeW1ib2xpYyBsaW5rcy4gVGhpcyBpcyByZXF1
+aXJlZAo+Pj4+IHdoZW4gbWVyZ2luZyBYZW5vbWFpIGRpcmVjdG9yaWVzIGludG8gbm9uLWVtcHR5
+IGtlcm5lbCBkaXJzLgo+Pj4+Cj4+Pj4gU2lnbmVkLW9mZi1ieTogSmFuIEtpc3prYSA8amFuLmtp
+c3prYUBzaWVtZW5zLmNvbT4KPj4+PiAtLS0KPj4+Pgo+Pj4+IFRoaXMgaXMgbm90IHJlcXVpcmVk
+IGZvciB0aGUgY3VycmVudCBwYXRjaCB3b3JrbG9hZCBidXQgaGVscHMgdXMgaW4gMi42Cj4+Pj4g
+d2l0aCBpbnRlZ3JhdGluZyBmdHJhY2UgKHdlIHBhdGNoIGludG8gaW5jbHVkZS90cmFjZS9ldmVu
+dHMgdGhlcmUpLgo+Pj4+IFdvdWxkIHJlZHVjZSBvdXIgcXVldWUgbGVuZ3RoIGJ5IG9uZSBpZiB0
+aGlzIGNvdWxkIGJlIG1lcmdlZAo+Pj4+IG5ldmVydGhlbGVzcy4KPj4+Cj4+Pgo+Pj4gRGVzcGl0
+ZSB0aGUgZmFjdCB0aGF0IGl0IGlzIGEgb25lLWxpbmVyLCBJIGRvIG5vdCB1bmRlcnN0YW5kIHdo
+YXQgdGhpcwo+Pj4gcGF0Y2ggZG9lcywgYW5kIEkgYW0gbm90IHN1cmUgaXQgaXMgbm90IGdvaW5n
+IHRvIGJyZWFrIHRoaW5ncy4KPj4KPj4gT25lIHdheSB0byBpbnN0YWxsIFhlbm9tYWkgaW50byBh
+IGtlcm5lbCBzb3VyY2UgdHJlZSBpcyBieSBhZGRpbmcKPj4gc3ltYm9saWMgbGlua3MgdG8gdGhl
+IGluZGl2aWR1YWwgc291cmNlIGZpbGVzLiBJbiBwcmVwYXJhdGlvbiBvZiB0aGlzCj4+IHN0ZXAs
+IHRoZSBwcmVwYXJlLWtlcm5lbCBzY3JpcHQgZmlyc3QgcHVyZ2VzIGFsbCBmaWxlcyBmcm9tIGFm
+ZmVjdGVkCj4+IGRpcmVjdG9yaWVzIHRoYXQgYXJlIG5vdCBwcmVzZW50IGluIHRoZSBYZW5vbWFp
+IHNvdXJjZXMgKGFueW1vcmUpLiBUaGF0Cj4+IHdvcmtzIGZpbmUgZm9yIG91ciBjdXJyZW50IFhl
+bm9tYWkgZGlycyBhcyB0aGV5IGFyZSBleGNsdXNpdmVseSB1c2VkIGJ1dAo+PiBmYWlscyBvbmNl
+IHdlIGhhdmUgdG8gcGF0Y2ggZGlycyB0aGF0IGFyZSBhbHNvIHVzZWQgYnkgdGhlIG9yaWdpbmFs
+Cj4+IGtlcm5lbCAobGlrZSB0aGUgY2l0ZWQgdHJhY2UgZXZlbnQgZGlyKS4KPiAKPiAKPiBUaGUg
+dGhpbmcgSSBkbyBub3QgdW5kZXJzdGFuZCBpcyB3aHkgWGVub21haSB3b3VsZCBwYXRjaCB0aGUg
+dHJhY2UgZXZlbnQKPiBkaXI/IFRoaXMgaXMgdGhlIEktcGlwZSdzIGpvYi4KClhlbm9tYWkgaGFz
+IHRvIGRlbGl2ZXIgaXRzIG93biB0cmFjZSBldmVudCBoZWFkZXJzIHRvIGJlIHJlY29nbml6ZWQg
+YnkKZnRyYWNlLCBzZWUgZS5nLiBteSBvbGQgZnRyYWNlIHBhdGNoOgpodHRwOi8vZ2l0Lnhlbm9t
+YWkub3JnLz9wPXhlbm9tYWktamtpLmdpdDthPWNvbW1pdGRpZmY7aD02NmMwMTFiMGRlNGNjNGJk
+MGJjNTBiNTIxMzA4YWFkMTNmNTNlYzIxCgpKYW4KCgotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQg
+LS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1l
+OiBzaWduYXR1cmUuYXNjClR5cGU6IGFwcGxpY2F0aW9uL3BncC1zaWduYXR1cmUKU2l6ZTogMjYx
+IGJ5dGVzCkRlc2M6IE9wZW5QR1AgZGlnaXRhbCBzaWduYXR1cmUKVVJMOiA8aHR0cDovL3d3dy54
+ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDEzMDExMy9iMmQ1NTEz
+My9hdHRhY2htZW50LnBncD4K
