@@ -1,14 +1,14 @@
-Message-ID: <50F2A650.7050700@xenomai.org>
-Date: Sun, 13 Jan 2013 13:19:28 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <50F2A877.4080602@web.de>
+Date: Sun, 13 Jan 2013 13:28:39 +0100
+From: Jan Kiszka <jan.kiszka@web.de>
 MIME-Version: 1.0
-References: <50EA9B9A.6000804@zultron.com> <50EB4FAD.2000804@xenomai.org>
-	<50EBDAC8.8010006@zultron.com> <50EC80AD.3090301@xenomai.org>
-	<50F26428.8040705@zultron.com>
-In-Reply-To: <50F26428.8040705@zultron.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Debian package build problems
+References: <50EFC153.8030406@web.de> <50EFC336.3000509@web.de>
+	<50F19EFA.9070203@xenomai.org> <50F1A149.3020609@web.de>
+	<50F1A468.4000500@xenomai.org>
+In-Reply-To: <50F1A468.4000500@xenomai.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai] [PATCH] x86/ipipe: restore warning with AMD erratum
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,99 +17,73 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: John Morris <john@zultron.com>
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 01/13/2013 08:37 AM, John Morris wrote:
-
-> 
-> 
-> On 01/08/2013 02:25 PM, Gilles Chanteperdrix wrote:
->> On 01/08/2013 09:37 AM, John Morris wrote:
->>> The most difficult part has been to create a kernel config that works on
->>> everybody's hardware.  My approach to solving that problem is to create
->>> a well-documented, minimal set of configuration changes that may be
->>> applied to stock distro kernels.
->>
->>
->> This minimal set of change is documented, for xenomai, on the website.
->> If you find you need other changes, they may be bugs, and could need fixing.
-> 
-> Actually, I spent a few days bisecting the RedHat 2.6.38.8 kernel
-> .config with those minimal changes applied to locate a few problems.
-> See the config snippet pasted at the end.
-
-
-I understand this, what I mean is that you should post (or have posted)
-the problems on the list. Disabling a configuration option is simply
-papering over the bug, and most of these issues can be fixed in a way
-that allow keeping the choice of enabling or disabling the option.
-
-> 
-> As for 3.5.x, the only change was to disable CPUMASK_OFFSTACK, enabled
-> by default in RH kernels.
-
-
-Looking at the kernel headers, it simply means that Xenomai has to use
-set_cpus_allowed_ptr and provide a wrapper for older kernels which had
-only set_cpus_allowed.
-
-> Also, there are many newbie pitfalls in generating a valid kernel
-> .config, as I'm finding out!
-
-
-The problem is that it is difficult for us to test every possible
-configurations combinations, so, when you find such a problem, please
-post about it.
-
-> 
->> So, we tried and improved the I-pipe patches so that a single or a pair
->> of kernels (SMP and UP) can be generated for each architecture.
-> 
-> Great!  This is the right way to go in order to increase adoption.
-> 
->> I started setting up a repository on the xenomai server, but obviously,
->> can not do it for all distributions, so, any help is welcome. What I can
->> propose is to set-up an inoticoming repository, give you access to an
->> incoming repository through scp (you whould have to send me your ssh
->> public key for that). Then, before a release, we would work to provide
->> the corresponding debian and ubuntu packages. As for the fedora
->> packages, I do not know the equivalent of reprepro and inoticoming.
-> 
-> I've been thinking about what I can offer over the last few days.  I'm
-> really too inexperienced with Deb-like distros and I'm poor at
-> maintenance.  My solution would be to automate this chore with some type
-> of build infrastructure, but that would probably take me much longer
-> than someone else more at home with Debian.
-
-
-I have been thinking about that too. Actually, running my tests on x86
-from the Debian package instead of custom build kernels does not change
-much (except the compilation time for the kernel, so, it has to be done
-once I have a working kernel). Though I am going to test only Debian
-stable, not Ubuntu.
-
-> 
-> On the other hand, it would be quite easy for me to do this for el6 and,
-> once I have packages, Fedora, since we do have the automated build
-> infrastructure (and the expertise) in the shop that it wouldn't be
-> difficult.  In this case, it would be easiest to keep a git repo of the
-> RPM files online (just like the one I recently pointed to in other
-> threads) to keep the development open, compile the packages on our
-> infrastructure, and rsync the resulting repo either to the xenomai.org
-> site, my site, or anywhere else suitable.  The only piece missing would
-> be a public view of the build system (called 'koji', the same as the
-> Fedora project uses), which could come in time if we choose.
-> 
-> At any rate, I will certainly have my own el6 repo up soon, and I'll
-> announce it here for folks to try out.
-
-
-Ok, as you wish, it is not really a problem for us to provide you with a
-git access, and an access to set-up a repository. At any rate, whatever
-we do, we should also have a page in the wiki explaining how to get the
-Fedora packages.
-
--- 
-                                                                Gilles.
-
+T24gMjAxMy0wMS0xMiAxODo1OSwgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4gT24gMDEv
+MTIvMjAxMyAwNjo0NSBQTSwgSmFuIEtpc3prYSB3cm90ZToKPiAKPj4gT24gMjAxMy0wMS0xMiAx
+ODozNSwgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4+PiBPbiAwMS8xMS8yMDEzIDA4OjQ1
+IEFNLCBKYW4gS2lzemthIHdyb3RlOgo+Pj4KPj4+PiBPbiAyMDEzLTAxLTExIDA4OjM3LCBKYW4g
+S2lzemthIHdyb3RlOgo+Pj4+Pj4gRnJvbSBhY2MzYzU3MzkwZDI3NWExYjI4ZDY2ZjFlYzg4Yzg1
+ZTBmOGMwODkwIE1vbiBTZXAgMTcgMDA6MDA6MDAgMjAwMQo+Pj4+Pj4gRnJvbTogR2lsbGVzIENo
+YW50ZXBlcmRyaXggPGdpbGxlcy5jaGFudGVwZXJkcml4QHhlbm9tYWkub3JnPgo+Pj4+Pj4gRGF0
+ZTogU2F0LCAyOSBEZWMgMjAxMiAxNzo0ODoyMCArMDEwMAo+Pj4+Pj4gU3ViamVjdDogW1BBVENI
+XSB4ODYvaXBpcGU6IHJlc3RvcmUgd2FybmluZyB3aXRoIEFNRCBlcnJhdHVtCj4+Pj4+Pgo+Pj4+
+Pj4gLS0tCj4+Pj4+PiAgYXJjaC94ODYva2VybmVsL2FwaWMvYXBpYy5jIHwgICAxNiArKysrKysr
+KysrLS0tLS0tCj4+Pj4+PiAgMSBmaWxlcyBjaGFuZ2VkLCAxMCBpbnNlcnRpb25zKCspLCA2IGRl
+bGV0aW9ucygtKQo+Pj4+Pj4KPj4+Pj4+IGRpZmYgLS1naXQgYS9hcmNoL3g4Ni9rZXJuZWwvYXBp
+Yy9hcGljLmMgYi9hcmNoL3g4Ni9rZXJuZWwvYXBpYy9hcGljLmMKPj4+Pj4+IGluZGV4IDdmMDc2
+MTAuLjkxNTMxYmIgMTAwNjQ0Cj4+Pj4+PiAtLS0gYS9hcmNoL3g4Ni9rZXJuZWwvYXBpYy9hcGlj
+LmMKPj4+Pj4+ICsrKyBiL2FyY2gveDg2L2tlcm5lbC9hcGljL2FwaWMuYwo+Pj4+Pj4gQEAgLTU0
+NSwxNCArNTQ1LDE4IEBAIHN0YXRpYyB2b2lkIF9fY3B1aW5pdCBzZXR1cF9BUElDX3RpbWVyKHZv
+aWQpCj4+Pj4+PiAgCW1lbWNweShsZXZ0LCAmbGFwaWNfY2xvY2tldmVudCwgc2l6ZW9mKCpsZXZ0
+KSk7Cj4+Pj4+PiAgCWxldnQtPmNwdW1hc2sgPSBjcHVtYXNrX29mKHNtcF9wcm9jZXNzb3JfaWQo
+KSk7Cj4+Pj4+PiAgI2lmZGVmIENPTkZJR19JUElQRQo+Pj4+Pj4gLQlpZiAoIShsYXBpY19jbG9j
+a2V2ZW50LmZlYXR1cmVzICYgQ0xPQ0tfRVZUX0ZFQVRfRFVNTVkpKQo+Pj4+Pj4gKwlpZiAoIShs
+YXBpY19jbG9ja2V2ZW50LmZlYXR1cmVzICYgQ0xPQ0tfRVZUX0ZFQVRfRFVNTVkpCj4+Pj4+PiAr
+CSAgICAmJiAhY3B1X2hhc19hbWRfZXJyYXR1bShhbWRfZXJyYXR1bV80MDApKQo+Pj4+Pj4gIAkJ
+bGV2dC0+aXBpcGVfdGltZXIgPSAmX19nZXRfY3B1X3ZhcihsYXBpY19pdGltZXIpOwo+Pj4+Pj4g
+IAllbHNlIHsKPj4+Pj4+IC0JICAgICAgIHByaW50ayhLRVJOX0lORk8KPj4+Pj4+IC0JCSAgICAg
+ICJJLXBpcGU6IGNhbm5vdCB1c2UgTEFQSUMgYXMgYSB0aWNrIGRldmljZVxuIik7Cj4+Pj4+PiAt
+CSAgICAgICBpZiAoY3B1X2hhc19hbWRfZXJyYXR1bShhbWRfZXJyYXR1bV80MDApKQo+Pj4+Pj4g
+LQkJICAgICAgIHByaW50ayhLRVJOX0lORk8KPj4+Pj4+IC0JCQkgICAgICAiSS1waXBlOiBkaXNh
+YmxlIEMxRSBwb3dlciBzdGF0ZSBpbiB5b3VyIEJJT1NcbiIpOwo+Pj4+Pj4gKwkJc3RhdGljIGF0
+b21pY190IHByaW50ZWQgPSBBVE9NSUNfSU5JVCgtMSk7Cj4+Pj4+PiArCQlwcmludGsoS0VSTl9J
+TkZPCj4+Pj4+PiArCQkgICAgICAgIkktcGlwZTogY2Fubm90IHVzZSBMQVBJQyBvbiBjcHUgIyVk
+IGFzIGEgdGljayBkZXZpY2VcbiIsCj4+Pj4+PiArCQkgICAgICAgc21wX3Byb2Nlc3Nvcl9pZCgp
+KTsKPj4+Pj4+ICsJCWlmIChjcHVfaGFzX2FtZF9lcnJhdHVtKGFtZF9lcnJhdHVtXzQwMCkKPj4+
+Pj4+ICsJCSAgICAmJiBhdG9taWNfaW5jX2FuZF90ZXN0KCZwcmludGVkKSkKPj4+Pj4+ICsJCQlw
+cmludGsoS0VSTl9JTkZPCj4+Pj4+PiArCQkJICAgICAgICJJLXBpcGU6IGRpc2FibGUgQzFFIHBv
+d2VyIHN0YXRlIGluIHlvdXIgQklPU1xuIik7Cj4+Pj4+Cj4+Pj4+IHByaW50a19vbmNlIHNob3Vs
+ZCBkbyB0aGUgdHJpY2sgYXMgd2VsbC4KPj4+Pgo+Pj4+IEluIGZhY3QsIGl0IHNob3VsZCBhY3R1
+YWxseSBkbyB3aGF0IHlvdSBsaWtlbHkgaW50ZW5kZWQ6IHByaW50IG9uIGZpcnN0Cj4+Pj4gb2Nj
+dXJyZW5jZSwgbm90IG9uIHNlY29uZCBvciBsYXRlci4gOykKPj4+Cj4+Pgo+Pj4gTm90IHF1aXRl
+LCBwcmludGtfb25jZSBpcyBub3QgcHJvdGVjdGVkIGZyb20gdGhlIGNvZGUgcnVubmluZwo+Pj4g
+Y29uY3VycmVudGx5IG9uIG11bHRpcGxlIGNwdXMuCj4+Cj4+IE9LLgo+Pgo+Pj4gU28sIGF0b21p
+Y19pbmNfYW5kX3Rlc3QgaXMgYmV0dGVyLCBleGNlcHQKPj4+IHRoZSBBVE9NSUNfSU5JVCBuZWVk
+cyB0byBiZSBzZXQgdG8gMC4KPj4KPj4gTm9wZSwgLTEgaXMgY29ycmVjdC4gYXRvbWljX2luY19h
+bmRfdGVzdCBmaXJzdCBpbmNyZW1lbnRzLCB0aGVuIHRlc3RzLiBJCj4+IG1pc3NlZCB0aGF0IGl0
+IGNoZWNrcyBhZ2FpbnN0IDAsIG5vdCAhPSAwLiBTbyB0aGUgbG9naWMgaXMgZmluZSwgeW91Cj4+
+IHNob3VsZCBqdXN0IGluY2x1ZGUgdGhlIGZpcnN0IHByaW50ayBhcyB3ZWxsLgo+IAo+IAo+IFll
+cywgSSBoYXZlIGp1c3QgcmVhbGl6ZWQgdGhhdCBsb29raW5nIGF0IHRoZSB4ODYgdmVyc2lvbiBv
+Zgo+IGF0b21pY19pbmNfYW5kX3Rlc3QsIG9ubHkgdGhlIGFzbS1nZW5lcmljIHZlcnNpb24gaXMg
+YnJva2VuLCBidXQgSSBndWVzcwo+IG5vYm9keSB1c2VzIGl0Ogo+IAo+IHN0YXRpYyBpbmxpbmUg
+aW50IGF0b21pY19hZGRfcmV0dXJuKGludCBpLCBhdG9taWNfdCAqdikKPiB7Cj4gCXVuc2lnbmVk
+IGxvbmcgZmxhZ3M7Cj4gCWludCB0ZW1wOwo+IAo+IAlmbGFncyA9IGhhcmRfbG9jYWxfaXJxX3Nh
+dmUoKTsgLyogRG9uJ3QgdHJhY2UgaXQgaW4gYW4gaXJxc29mZiBoYW5kbGVyICovCj4gCXRlbXAg
+PSB2LT5jb3VudGVyOwo+IAl0ZW1wICs9IGk7Cj4gCXYtPmNvdW50ZXIgPSB0ZW1wOwo+IAloYXJk
+X2xvY2FsX2lycV9yZXN0b3JlKGZsYWdzKTsKPiAKPiAJcmV0dXJuIHRlbXA7Cj4gfQo+IAo+ICNk
+ZWZpbmUgYXRvbWljX2luY19hbmRfdGVzdCh2KQkJKGF0b21pY19pbmNfcmV0dXJuKHYpID09IDAp
+Cj4gCgpBcmUgeW91IHJlZmVycmluZyB0byBsYWNraW5nIFNNUCBzdXBwb3J0IG9mIHRoaXMgdmVy
+c2lvbj8gSSBndWVzcyB0aGF0J3MKaW50ZW50aW9uYWwgKG5vIFNNUCBhcmNoIHNob3VsZCBsYWNr
+IGF0b21pYyBvcHMpLgoKSXQgaXMgb3RoZXJ3aXNlIGZ1bmN0aW9uYWxseSBpZGVudGljYWwgdG8g
+dGhlIHg4NiBjb2RlLCBpLmUuIGl0ICpmaXJzdCoKaW5jcmVtZW50cyBhbmQgKnRoZW4qIHRlc3Rz
+LiBZb3VyIG5ldyB2ZXJzaW9uIG9mIHRoaXMgcGF0Y2ggd2lsbAp0aGVyZWZvcmUgbmV2ZXIgcHJp
+bnQgYW55dGhpbmcgZHVlIHRvIHRoZSAwIGluaXRpYWxpemF0aW9uIC0gd2VsbCwgdW50aWwKdGhl
+IGNvdW50ZXIgb3ZlcmZsb3dzLiBQcm9iYWJseSBpdCdzIGJldHRlciB0byB1c2UgdGVzdF9hbmRf
+c2V0X2JpdCBoZXJlCnRvIGF2b2lkIGFsbCB0aGVzZSBjb25mdXNpb25zLgoKSmFuCgotLS0tLS0t
+LS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdh
+cyBzY3J1YmJlZC4uLgpOYW1lOiBzaWduYXR1cmUuYXNjClR5cGU6IGFwcGxpY2F0aW9uL3BncC1z
+aWduYXR1cmUKU2l6ZTogMjYxIGJ5dGVzCkRlc2M6IE9wZW5QR1AgZGlnaXRhbCBzaWduYXR1cmUK
+VVJMOiA8aHR0cDovL3d3dy54ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50
+cy8yMDEzMDExMy8wOTI1MjQ2MS9hdHRhY2htZW50LnBncD4K
