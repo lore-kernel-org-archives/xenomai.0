@@ -1,14 +1,13 @@
-Content-Type: text/plain; charset=us-ascii
-Mime-Version: 1.0 (Apple Message framework v1283)
-From: Michael Haberler <mail17@mah.priv.at>
-In-Reply-To: <50F3F296.5000008@xenomai.org>
-Date: Mon, 14 Jan 2013 13:05:15 +0100
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <3F8DFF0B-6F81-48E1-9D64-83B08DA6A599@mah.priv.at>
+Message-ID: <50F3F4BF.4050501@siemens.com>
+Date: Mon, 14 Jan 2013 13:06:23 +0100
+From: Jan Kiszka <jan.kiszka@siemens.com>
+MIME-Version: 1.0
 References: <D9F55F45-EC38-45B2-A922-08F24868BA87@mah.priv.at>
-	<50F3F296.5000008@xenomai.org>
-Subject: Re: [Xenomai] universal application binary: how to
-	auto-detect	Xenomai/RT-PREEMPT/vanilla kernel
+In-Reply-To: <D9F55F45-EC38-45B2-A922-08F24868BA87@mah.priv.at>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] universal application binary: how to auto-detect
+ Xenomai/RT-PREEMPT/vanilla kernel
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,55 +16,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Michael Haberler <mail17@mah.priv.at>
+Cc: xenomai@xenomai.org
 
-Gilles,
-
-Am 14.01.2013 um 12:57 schrieb Gilles Chanteperdrix:
-
-> On 01/14/2013 09:29 AM, Michael Haberler wrote:
->=20
->> Hi,
->=20
->=20
+On 2013-01-14 09:29, Michael Haberler wrote:
 > Hi,
->=20
->>=20
->> thanks to patience on this list we were able to build linuxcnc such
->> that it runs on Xenomai, besides RT-PREEMPT, vanilla kernels (in a
->> simulator/non-RT mode) and RTAI
->>=20
->>=20
->> I'm planning to adapt linuxcnc such that a universal binary can be
->> built which runs under Xenomai, RT-PREEMPT and vanilla kernels as
->> this will simplify logistics quite a bit; what I'd like have is
->> reliable auto-detection of the kernel type and 'do the right thing'
->> (RTAI will remain a separate build).
->=20
->=20
-> I have no idea about preempt_rt, however, in order to detect xenomai,
-> you can check for /dev/rtheap. If it does not exist, xenomai programs
-> will not start anyway. Also, I guess for a universal binary, you would
-> dlopen xenomai libraries (native or posix, depending on the one you =
-want
-> to use), if you want to do that, you have to pass =
---enable-dlopen-skins
-> to xenomai configure script.
+> 
+> thanks to patience on this list we were able to build linuxcnc such that it runs on Xenomai, besides RT-PREEMPT, vanilla kernels (in a simulator/non-RT mode) and RTAI
+> 
+> 
+> I'm planning to adapt linuxcnc such that a universal binary can be built which runs under Xenomai, RT-PREEMPT and vanilla kernels as this will simplify logistics quite a bit; what I'd like have is reliable auto-detection of the kernel type and 'do the right thing' (RTAI will remain a separate build).
+> 
+> Autodetection could be one of several things - digging around with a shell script, using system calls, digging in /proc - unsure how to best do this, in particular I'm unsure how to tell an RT-PREEMPT kernel from a vanilla kernel 
+> 
+> I know it's a bit OT - still I'd be thankful for suggestions
+> 
+> any other low-lying cliffs I might hit?
 
-thanks, that is a good idea to verify the libraries are in place; I had =
-to use --enable-dlopen-skins anyway to make Python imports happy.
+I do not see why you application should have to tell -RT from vanilla
+apart (syscalls are identical).
 
-I'll muddle my way through some string matching to find rt-preempt =
-running; =
-https://rt.wiki.kernel.org/index.php/RT_PREEMPT_HOWTO#Checking_the_Kernel =
-gives some hints
+To handle the existence of Xenomai dynamically, you could push all
+Xenomai API calls into a separate library, some abstraction layer (I
+suppose you already have one in LinuxCNC), link that one against the
+Xenomai libs, have a "vanilla" version as well that builds against
+standard Linux, and then pull in the right version via dlopen (enable
+support for this via --enable-dlopen-skins during Xenomai configure).
+You could test in /proc for the existence of Xenomai before that, e.g.
 
-Is there any chance somebody runs Xenomai AND RT_PREEMPT patches =
-applied? I heard a rumor but havent actually seen that
+Jan
 
-regards
-
-- Michael
-
-
+-- 
+Siemens AG, Corporate Technology, CT RTC ITP SDP-DE
+Corporate Competence Center Embedded Linux
 
