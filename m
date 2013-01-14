@@ -1,17 +1,15 @@
-Message-ID: <50F409C0.7050701@siemens.com>
-Date: Mon, 14 Jan 2013 14:36:00 +0100
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <50F41136.3070200@xenomai.org>
+Date: Mon, 14 Jan 2013 15:07:50 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <50F19CE1.5080106@zultron.com> <50F19DE4.4030805@xenomai.org>
-	<50F239E1.40400@zultron.com> <50F2A59D.5050600@xenomai.org>
-	<50F30781.3050302@zultron.com> <50F30DE5.7030007@xenomai.org>
-	<50F38DD5.5010105@zultron.com> <50F3F2C6.2040900@xenomai.org>
-	<50F3F359.9020502@siemens.com>
-In-Reply-To: <50F3F359.9020502@siemens.com>
-Content-Type: text/plain; charset=ISO-8859-1
+References: <D9F55F45-EC38-45B2-A922-08F24868BA87@mah.priv.at>
+	<50F3F296.5000008@xenomai.org>
+	<3F8DFF0B-6F81-48E1-9D64-83B08DA6A599@mah.priv.at>
+In-Reply-To: <3F8DFF0B-6F81-48E1-9D64-83B08DA6A599@mah.priv.at>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] 3.5.7 posix/mprotect failure;
- "I-pipe: could not find timer" fixed!
+Subject: Re: [Xenomai] universal application binary: how to
+ auto-detect	Xenomai/RT-PREEMPT/vanilla kernel
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,138 +18,51 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, John Morris <john@zultron.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Michael Haberler <mail17@mah.priv.at>
+Cc: xenomai@xenomai.org
 
-On 2013-01-14 13:00, Jan Kiszka wrote:
-> On 2013-01-14 12:57, Gilles Chanteperdrix wrote:
->> On 01/14/2013 05:47 AM, John Morris wrote:
+On 01/14/2013 01:05 PM, Michael Haberler wrote:
+> Gilles,
+>
+> Am 14.01.2013 um 12:57 schrieb Gilles Chanteperdrix:
+>
+>> On 01/14/2013 09:29 AM, Michael Haberler wrote:
 >>
->>> On 01/13/2013 01:41 PM, Gilles Chanteperdrix wrote:
->>>> On 01/13/2013 08:14 PM, John Morris wrote:
->>>>
->>>>> Hi Gilles and Jan,
->>>>>
->>>>> Note change of thread subject.  I'm starting to get confused.
->>>>>
->>>>> On 01/13/2013 06:16 AM, Gilles Chanteperdrix wrote:
->>>>>> On 01/13/2013 05:36 AM, John Morris wrote:
->>>>>>
->>>>>>> On 01/12/2013 11:31 AM, Gilles Chanteperdrix wrote:
->>>>>>>> On 01/12/2013 06:26 PM, John Morris wrote:
->>>>>>>>> 1)  Most worrisome is "kernel BUG at mm/mmap.c:2313!   invalid opcode:
->>>>>>>>> 0000 [#2] SMP".  Is this related to HEAPSZ or STACKPOOLSZ?  My mind is
->>>>>>>>> getting foggy about all the things I've seen, but it seems like it was
->>>>>>>>> happening earlier in the tests until these config values were quadrupled.
->>>>>>>>
->>>>>>>>
->>>>>>>> Could you check whether you can reproduce this issue with the I-pipe
->>>>>>>> patch for 3.5.7 ? The next xenomai release will be based on this version
->>>>>>>> on x86 anyway. Branch for-core-3.5.7 in ipipe-gch.git
->>>>>>>
->>>>>>> Different problem; Xenomai wouldn't start:
->>>>>>>
->>>>>>>   I-pipe: could not find timer for cpu #0
->>>>>>>
->>>>>>> dmesg:
->>>>>>> http://www.zultron.com/static/2013/01/xenomai/3.5.7-test/foo-dmesg-3.5.7.log
->>>>>>>
->>>>>>> .config:
->>>>>>> www.zultron.com/static/2013/01/xenomai/3.5.7-test/foo-kernel-3.5.7.config
->>>>>>>
->>>>>>> FYI, I found this same problem on two of my systems while testing your
->>>>>>> Debian packages.  Both AMD Athlon II 64-bit (one single, one dual core).
->>>>>>>  They're about the same generation of motherboards, AM2 or AM2+ socket.
->>>>>>>  One is AMD 770 chipset, the other NVidia GeForce 6100 / nForce 430.
->>>>>>>
->>>>>>> Hardware looks similar to Mariusz's in this post, where he had the same
->>>>>>> problem:
->>>>>>>
->>>>>>> http://www.xenomai.org/pipermail/xenomai/2012-December/027121.html
->>>>>>>
->>>>>>> He's also running AMD 64-bit on a Gigabyte motherboard, but the next
->>>>>>> generation AM3 socket, Phenom CPU, AMD 890 chipset.  I don't have a C1E
->>>>>>> BIOS option on these boards to enable/disable.  These same motherboards
->>>>>>> don't suffer this problem with mainline Xenomai on 3.5.3.
->>>>>>
->>>>>>
->>>>>> If you had the same problem as Marius, you would have seen it with
->>>>>> 3.5.3, and you would get the message in the dmesg about C1E, so, it is
->>>>>> probably something else. 
->>>>>
->>>>> Yes, I'm definitely getting confused.  I did see the same problem with
->>>>> C1E, but only while running your 3.5.7 .debs, and not in the 3.5.7 el6
->>>>> packages that are the main subject of this sub-thread:
->>>>>
->>>>> http://www.zultron.com/static/2013/01/xenomai/3.5.7-deb-gilles/dmesg-3.5.7-deb-gilles.log
->>>>
->>>>
->>>> Ah, that is because I rebased the I-pipe tree in between, and at some
->>>> point the code printing the message was wrong (ATOMIC_INIT(0) instead of
->>>> ATOMIC_INIT(-1)). That is my fault then, sorry.
->>>>
->>>>>
->>>>>> Could you run
->>>>>>
->>>>>> cat /proc/timer_list
->>>>>
->>>>> Back to el6 again, 3.5.7 i-pipe:
->>>>>
->>>>> http://www.zultron.com/static/2013/01/xenomai/3.5.7-test/foo-cat-proc-timer_list-3.5.7-test.log
->>>>
->>>>
->>>> The LAPIC is definitely up and running (mode: 3). So, it probably means
->>>> that the erratum detection is not sufficient to decide not to use a
->>>> LAPIC. Checking your logs, we see:
->>>>
->>>> using AMD E400 aware idle routine
->>>>
->>>> which means the LAPIC could potentially be unusable, but the idle
->>>> routine also checks for a bit in a K8 specific MSR and prints the message:
->>>>
->>>> System has AMD C1E enabled
->>>>
->>>> If this bit is set, and in your case the message is not printed so the
->>>> bit is not set. So, the LAPIC is usable, but due to the changes I made
->>>> to try and print a message in Marius case, I broke the detection in your
->>>> case.
->>>>
->>>> I have just pushed a rework for this commit in the for-core-3.5.7 branch
->>>> in ipipe-gch git.
->>>
->>> And it worked, no more C1E error!  Thanks!
->>>
->>> It looks like the AMD-64 AM2/AM2+ socket CPUs were the last generation
->>> without C1E, and the AM3 socket CPUs were the first gen with.
->>>
->>> Back to the original problem, the posix/mprotect problem is confirmed to
->>> be in this branch:
->>>
->>>   ++ /usr/lib64/xenomai/regression/posix/mprotect
->>>   memory read
->>>   FAILURE: sigdebug_handler triggered, reason 2
->>>   memory write after exec enable
+>>> Hi,
 >>
 >>
->> I will try to compile a kernel with the same configuration as you to see
->> if I can reproduce the issue.
-> 
-> Unless you want to double-check: build is already running here. This
-> feature is critical for us, but I have no clue ATM why it could fail
-> over the latest patch queue.
+>> Hi,
+>>
+>>>
+>>> thanks to patience on this list we were able to build linuxcnc such
+>>> that it runs on Xenomai, besides RT-PREEMPT, vanilla kernels (in a
+>>> simulator/non-RT mode) and RTAI
+>>>
+>>>
+>>> I'm planning to adapt linuxcnc such that a universal binary can be
+>>> built which runs under Xenomai, RT-PREEMPT and vanilla kernels as
+>>> this will simplify logistics quite a bit; what I'd like have is
+>>> reliable auto-detection of the kernel type and 'do the right thing'
+>>> (RTAI will remain a separate build).
+>>
+>>
+>> I have no idea about preempt_rt, however, in order to detect xenomai,
+>> you can check for /dev/rtheap. If it does not exist, xenomai programs
+>> will not start anyway. Also, I guess for a universal binary, you would
+>> dlopen xenomai libraries (native or posix, depending on the one you want
+>> to use), if you want to do that, you have to pass --enable-dlopen-skins
+>> to xenomai configure script.
+>
+> thanks, that is a good idea to verify the libraries are in place; I had to use --enable-dlopen-skins anyway to make Python imports happy.
+>
+> I'll muddle my way through some string matching to find rt-preempt running; https://rt.wiki.kernel.org/index.php/RT_PREEMPT_HOWTO#Checking_the_Kernel gives some hints
+>
+> Is there any chance somebody runs Xenomai AND RT_PREEMPT patches applied? I heard a rumor but havent actually seen that
 
-OK, would probably be good to double-check as I'm unable to reproduce
-the issue over my queue with John's .config.
-
-The reason code is suspicious BTW: syscall. Would be good if someone who
-can reproduce attaches gdb and provides a backtrace from the signal to
-the call that triggered it. Could something have went wrong while
-building the test case, that not all required functions are wrapped such
-as printf?
-
-Jan
+Yes, this works. The current target is ppc 85xx, but I don't see any 
+showstopper for running such combo on other archs, provided the I-pipe 
+patch is adapted to a -rt kernel. This requires Xenomai 2.6.1+, stock.
 
 -- 
-Siemens AG, Corporate Technology, CT RTC ITP SDP-DE
-Corporate Competence Center Embedded Linux
+Philippe.
 
