@@ -1,14 +1,15 @@
-Message-ID: <50F30F19.1040901@zultron.com>
-Date: Sun, 13 Jan 2013 13:46:33 -0600
+Message-ID: <50F38DD5.5010105@zultron.com>
+Date: Sun, 13 Jan 2013 22:47:17 -0600
 From: John Morris <john@zultron.com>
 MIME-Version: 1.0
-References: <50EA9B9A.6000804@zultron.com> <50EB4FAD.2000804@xenomai.org>
-	<50EBDAC8.8010006@zultron.com> <50EC80AD.3090301@xenomai.org>
-	<50F26428.8040705@zultron.com> <50F2A650.7050700@xenomai.org>
-In-Reply-To: <50F2A650.7050700@xenomai.org>
-Content-Type: text/plain; charset=UTF-8
+References: <50F19CE1.5080106@zultron.com> <50F19DE4.4030805@xenomai.org>
+	<50F239E1.40400@zultron.com> <50F2A59D.5050600@xenomai.org>
+	<50F30781.3050302@zultron.com> <50F30DE5.7030007@xenomai.org>
+In-Reply-To: <50F30DE5.7030007@xenomai.org>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Debian package build problems
+Subject: Re: [Xenomai] 3.5.7 posix/mprotect failure;
+ "I-pipe: could not find timer" fixed!
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,112 +19,126 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 01/13/2013 06:19 AM, Gilles Chanteperdrix wrote:
-> On 01/13/2013 08:37 AM, John Morris wrote:
+On 01/13/2013 01:41 PM, Gilles Chanteperdrix wrote:
+> On 01/13/2013 08:14 PM, John Morris wrote:
 > 
+>> Hi Gilles and Jan,
 >>
+>> Note change of thread subject.  I'm starting to get confused.
 >>
->> On 01/08/2013 02:25 PM, Gilles Chanteperdrix wrote:
->>> On 01/08/2013 09:37 AM, John Morris wrote:
->>>> The most difficult part has been to create a kernel config that works on
->>>> everybody's hardware.  My approach to solving that problem is to create
->>>> a well-documented, minimal set of configuration changes that may be
->>>> applied to stock distro kernels.
+>> On 01/13/2013 06:16 AM, Gilles Chanteperdrix wrote:
+>>> On 01/13/2013 05:36 AM, John Morris wrote:
+>>>
+>>>> On 01/12/2013 11:31 AM, Gilles Chanteperdrix wrote:
+>>>>> On 01/12/2013 06:26 PM, John Morris wrote:
+>>>>>> 1)  Most worrisome is "kernel BUG at mm/mmap.c:2313!   invalid opcode:
+>>>>>> 0000 [#2] SMP".  Is this related to HEAPSZ or STACKPOOLSZ?  My mind is
+>>>>>> getting foggy about all the things I've seen, but it seems like it was
+>>>>>> happening earlier in the tests until these config values were quadrupled.
+>>>>>
+>>>>>
+>>>>> Could you check whether you can reproduce this issue with the I-pipe
+>>>>> patch for 3.5.7 ? The next xenomai release will be based on this version
+>>>>> on x86 anyway. Branch for-core-3.5.7 in ipipe-gch.git
+>>>>
+>>>> Different problem; Xenomai wouldn't start:
+>>>>
+>>>>   I-pipe: could not find timer for cpu #0
+>>>>
+>>>> dmesg:
+>>>> http://www.zultron.com/static/2013/01/xenomai/3.5.7-test/foo-dmesg-3.5.7.log
+>>>>
+>>>> .config:
+>>>> www.zultron.com/static/2013/01/xenomai/3.5.7-test/foo-kernel-3.5.7.config
+>>>>
+>>>> FYI, I found this same problem on two of my systems while testing your
+>>>> Debian packages.  Both AMD Athlon II 64-bit (one single, one dual core).
+>>>>  They're about the same generation of motherboards, AM2 or AM2+ socket.
+>>>>  One is AMD 770 chipset, the other NVidia GeForce 6100 / nForce 430.
+>>>>
+>>>> Hardware looks similar to Mariusz's in this post, where he had the same
+>>>> problem:
+>>>>
+>>>> http://www.xenomai.org/pipermail/xenomai/2012-December/027121.html
+>>>>
+>>>> He's also running AMD 64-bit on a Gigabyte motherboard, but the next
+>>>> generation AM3 socket, Phenom CPU, AMD 890 chipset.  I don't have a C1E
+>>>> BIOS option on these boards to enable/disable.  These same motherboards
+>>>> don't suffer this problem with mainline Xenomai on 3.5.3.
 >>>
 >>>
->>> This minimal set of change is documented, for xenomai, on the website.
->>> If you find you need other changes, they may be bugs, and could need fixing.
+>>> If you had the same problem as Marius, you would have seen it with
+>>> 3.5.3, and you would get the message in the dmesg about C1E, so, it is
+>>> probably something else. 
 >>
->> Actually, I spent a few days bisecting the RedHat 2.6.38.8 kernel
->> .config with those minimal changes applied to locate a few problems.
->> See the config snippet pasted at the end.
-> 
-> 
-> I understand this, what I mean is that you should post (or have posted)
-> the problems on the list. Disabling a configuration option is simply
-> papering over the bug, and most of these issues can be fixed in a way
-> that allow keeping the choice of enabling or disabling the option.
-
-Ah yes, understood.  I did intend to bring this to the list, but to do
-what I could by myself first.
-
->> As for 3.5.x, the only change was to disable CPUMASK_OFFSTACK, enabled
->> by default in RH kernels.
-> 
-> 
-> Looking at the kernel headers, it simply means that Xenomai has to use
-> set_cpus_allowed_ptr and provide a wrapper for older kernels which had
-> only set_cpus_allowed.
-
-Right.  I went through and fixed about half of them in Xenomai, but then
-came upon one that looked like it touched the API, and realized I'd
-better stop.  It's a pretty easy fix, though.
-
->> Also, there are many newbie pitfalls in generating a valid kernel
->> .config, as I'm finding out!
-> 
-> 
-> The problem is that it is difficult for us to test every possible
-> configurations combinations, so, when you find such a problem, please
-> post about it.
-
-Will do.  I predict I'll have a bunch of users reporting problems with
-packages to me soon.
-
->>> So, we tried and improved the I-pipe patches so that a single or a pair
->>> of kernels (SMP and UP) can be generated for each architecture.
+>> Yes, I'm definitely getting confused.  I did see the same problem with
+>> C1E, but only while running your 3.5.7 .debs, and not in the 3.5.7 el6
+>> packages that are the main subject of this sub-thread:
 >>
->> Great!  This is the right way to go in order to increase adoption.
+>> http://www.zultron.com/static/2013/01/xenomai/3.5.7-deb-gilles/dmesg-3.5.7-deb-gilles.log
+> 
+> 
+> Ah, that is because I rebased the I-pipe tree in between, and at some
+> point the code printing the message was wrong (ATOMIC_INIT(0) instead of
+> ATOMIC_INIT(-1)). That is my fault then, sorry.
+> 
 >>
->>> I started setting up a repository on the xenomai server, but obviously,
->>> can not do it for all distributions, so, any help is welcome. What I can
->>> propose is to set-up an inoticoming repository, give you access to an
->>> incoming repository through scp (you whould have to send me your ssh
->>> public key for that). Then, before a release, we would work to provide
->>> the corresponding debian and ubuntu packages. As for the fedora
->>> packages, I do not know the equivalent of reprepro and inoticoming.
+>>> Could you run
+>>>
+>>> cat /proc/timer_list
 >>
->> I've been thinking about what I can offer over the last few days.  I'm
->> really too inexperienced with Deb-like distros and I'm poor at
->> maintenance.  My solution would be to automate this chore with some type
->> of build infrastructure, but that would probably take me much longer
->> than someone else more at home with Debian.
-> 
-> 
-> I have been thinking about that too. Actually, running my tests on x86
-> from the Debian package instead of custom build kernels does not change
-> much (except the compilation time for the kernel, so, it has to be done
-> once I have a working kernel). Though I am going to test only Debian
-> stable, not Ubuntu.
-
-Understood.  Actually, testing could be automated by installing the OS
-with the kernel to be tested and run xeno-regression-test.  That's some
-infrastructure that I don't have ATM, but wouldn't be a huge leap.
-
->> On the other hand, it would be quite easy for me to do this for el6 and,
->> once I have packages, Fedora, since we do have the automated build
->> infrastructure (and the expertise) in the shop that it wouldn't be
->> difficult.  In this case, it would be easiest to keep a git repo of the
->> RPM files online (just like the one I recently pointed to in other
->> threads) to keep the development open, compile the packages on our
->> infrastructure, and rsync the resulting repo either to the xenomai.org
->> site, my site, or anywhere else suitable.  The only piece missing would
->> be a public view of the build system (called 'koji', the same as the
->> Fedora project uses), which could come in time if we choose.
+>> Back to el6 again, 3.5.7 i-pipe:
 >>
->> At any rate, I will certainly have my own el6 repo up soon, and I'll
->> announce it here for folks to try out.
+>> http://www.zultron.com/static/2013/01/xenomai/3.5.7-test/foo-cat-proc-timer_list-3.5.7-test.log
 > 
 > 
-> Ok, as you wish, it is not really a problem for us to provide you with a
-> git access, and an access to set-up a repository. At any rate, whatever
-> we do, we should also have a page in the wiki explaining how to get the
-> Fedora packages.
+> The LAPIC is definitely up and running (mode: 3). So, it probably means
+> that the erratum detection is not sufficient to decide not to use a
+> LAPIC. Checking your logs, we see:
+> 
+> using AMD E400 aware idle routine
+> 
+> which means the LAPIC could potentially be unusable, but the idle
+> routine also checks for a bit in a K8 specific MSR and prints the message:
+> 
+> System has AMD C1E enabled
+> 
+> If this bit is set, and in your case the message is not printed so the
+> bit is not set. So, the LAPIC is usable, but due to the changes I made
+> to try and print a message in Marius case, I broke the detection in your
+> case.
+> 
+> I have just pushed a rework for this commit in the for-core-3.5.7 branch
+> in ipipe-gch git.
 
-Ok, thanks.  Taking the lazy approach, let's wait until my repos are up,
-and then see what looks like the best option.
+And it worked, no more C1E error!  Thanks!
+
+It looks like the AMD-64 AM2/AM2+ socket CPUs were the last generation
+without C1E, and the AM3 socket CPUs were the first gen with.
+
+Back to the original problem, the posix/mprotect problem is confirmed to
+be in this branch:
+
+  ++ /usr/lib64/xenomai/regression/posix/mprotect
+  memory read
+  FAILURE: sigdebug_handler triggered, reason 2
+  memory write after exec enable
+
+Regression test run:
+http://www.zultron.com/static/2013/01/xenomai/3.5.7-test/foo-xeno-regression-test-3.5.7-test.log
+
+Dmesg:
+http://www.zultron.com/static/2013/01/xenomai/3.5.7-test/foo-dmesg-3.5.7.log
+
+Kernel .config:
+http://www.zultron.com/static/2013/01/xenomai/3.5.7-test/foo-kernel-3.5.7.config.txt
+
+To minimize confusion (esp. my own) and answer Jan's question, this is
+Gilles's ipipe-gch/for-core-3.5.7 kernel (20130113git08f0596) with
+xenomai master (20130113git210ed428) and standard xenomai kernel options
+from the wiki, plus CPUMASK_OFFSTACK of course.
 
 	John
 
