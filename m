@@ -1,12 +1,13 @@
-Message-ID: <50F3DD9A.9050306@gmail.com>
-Date: Mon, 14 Jan 2013 11:27:38 +0100
-From: Stefan Roese <stefan.roese@gmail.com>
+Message-ID: <50F3F296.5000008@xenomai.org>
+Date: Mon, 14 Jan 2013 12:57:10 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <OF682F5C70.F8F7AA50-ON85257AF1.005F580A-85257AF1.005F580C@aanddtech.com>
-In-Reply-To: <OF682F5C70.F8F7AA50-ON85257AF1.005F580A-85257AF1.005F580C@aanddtech.com>
-Content-Type: text/plain; charset=ISO-8859-1
+References: <D9F55F45-EC38-45B2-A922-08F24868BA87@mah.priv.at>
+In-Reply-To: <D9F55F45-EC38-45B2-A922-08F24868BA87@mah.priv.at>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Porting Ipipe to new ARM SoC (Xilinx Zynq)
+Subject: Re: [Xenomai] universal application binary: how to
+ auto-detect	Xenomai/RT-PREEMPT/vanilla kernel
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,36 +16,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: mfornero@aanddtech.com
-Cc: Xenomai@xenomai.org
+To: Michael Haberler <mail17@mah.priv.at>
+Cc: xenomai@xenomai.org
 
-Hi Matthew,
+On 01/14/2013 09:29 AM, Michael Haberler wrote:
 
-On 01/12/2013 06:21 PM, mfornero@aanddtech.com wrote:
->    I'm looking for recommendations on how to best port ipipe support to a
->    new ARM SoC. The SoC has started to show up in mainline, but many of
->    the features haven't made it over yet. Xilinx maintains a git repo
->    here:
+> Hi,
+
+
+Hi,
+
 > 
->    git://git.xilinx.com/linux-xlnx.git
+> thanks to patience on this list we were able to build linuxcnc such
+> that it runs on Xenomai, besides RT-PREEMPT, vanilla kernels (in a
+> simulator/non-RT mode) and RTAI
 > 
->    And it look like they've synced with mainline 3.6
 > 
->    The two approaches I've considered were either trying to port ipipe to
->    stock 3.6 (or at least the generic and ARM bits) or trying to backport
->    the Xilinx code to 3.5.3. I started with the later approach, but some
->    changes to the common clock architecture between 3.5 and 3.6 make this
->    somewhat difficult.
-> 
->    Any thoughts on which approach would be better?
-
-I'm also working on supporting Zynq in I-pipe. My approach was to use
-the Xilinx 3.5.0 code version (git tag "xilinx-14.3-build2"). And port
-the I-pipe version from Gilles git repository to it. I still need to do
-some cleanup then I can send you the latest version.
-
-Best regards,
-Stefan
+> I'm planning to adapt linuxcnc such that a universal binary can be
+> built which runs under Xenomai, RT-PREEMPT and vanilla kernels as
+> this will simplify logistics quite a bit; what I'd like have is
+> reliable auto-detection of the kernel type and 'do the right thing'
+> (RTAI will remain a separate build).
 
 
+I have no idea about preempt_rt, however, in order to detect xenomai,
+you can check for /dev/rtheap. If it does not exist, xenomai programs
+will not start anyway. Also, I guess for a universal binary, you would
+dlopen xenomai libraries (native or posix, depending on the one you want
+to use), if you want to do that, you have to pass --enable-dlopen-skins
+to xenomai configure script.
+
+Regards.
+
+-- 
+                                                                Gilles.
 
