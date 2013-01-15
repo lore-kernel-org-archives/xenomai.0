@@ -1,22 +1,10 @@
-Message-ID: <50F56359.4030503@siemens.com>
-Date: Tue, 15 Jan 2013 15:10:33 +0100
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <50F5741A.9060404@grandegger.com>
+Date: Tue, 15 Jan 2013 16:22:02 +0100
+From: Wolfgang Grandegger <wg@grandegger.com>
 MIME-Version: 1.0
-References: <50F19CE1.5080106@zultron.com> <50F19DE4.4030805@xenomai.org>
-	<50F239E1.40400@zultron.com> <50F2A59D.5050600@xenomai.org>
-	<50F30781.3050302@zultron.com> <50F30DE5.7030007@xenomai.org>
-	<50F3F36A.8050804@siemens.com> <50F45358.1020601@xenomai.org>
-	<50F458E9.7080504@siemens.com> <50F4594C.8090907@xenomai.org>
-	<50F45E87.9030701@siemens.com> <50F46D0E.9000706@xenomai.org>
-	<50F53F0E.7020604@siemens.com> <50F54641.3010802@xenomai.org>
-	<50F546E8.2050606@xenomai.org> <50F549AD.7040508@siemens.com>
-	<50F55D33.3020205@xenomai.org> <50F55E22.9030308@siemens.com>
-	<50F56074.50203@xenomai.org>
-In-Reply-To: <50F56074.50203@xenomai.org>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] 3.5.7 "I-pipe: could not find timer" (Was: Re: Kernel
- OOPS during regression tests)
+Subject: [Xenomai] rtdm_iomap_to_user: fix caching and page fault issues
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -25,69 +13,55 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
+To: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-On 2013-01-15 14:58, Philippe Gerum wrote:
-> On 01/15/2013 02:48 PM, Jan Kiszka wrote:
->> On 2013-01-15 14:44, Philippe Gerum wrote:
->>> On 01/15/2013 01:21 PM, Jan Kiszka wrote:
->>>> On 2013-01-15 13:09, Philippe Gerum wrote:
->>>>> On 01/15/2013 01:06 PM, Gilles Chanteperdrix wrote:
->>>>>> On 01/15/2013 12:35 PM, Jan Kiszka wrote:
->>>>>>
->>>>>>> On 2013-01-14 21:39, Gilles Chanteperdrix wrote:
->>>>>>>> Done, also note that my current work is the for-core-3.5.7 branch, not
->>>>>>>> the for-core-3.5 branch.
->>>>>>>
->>>>>>> Both branches point to the same commit ATM. I suppose you didn't push
->>>>>>> the new for-core-3.5.7 version yet. Once done, I'll rebase my stuff on top.
->>>>>>
->>>>>>
->>>>>> Sorry, pushed.
->>>>>>
->>>>>
->>>>> Please everybody, make sure to eventually resync with my tree, this is
->>>>> becoming a mess when merging your stuff here. TIA,
->>>>
->>>> I'm fetching from you regularly, but your public tree contains no
->>>> changes for 3.5, sorry.
->>>>
->>>
->>> You must mean no change for 3.5.3 since the last stable pipeline release
->>> I pushed out. I'm seeing several breakages when merging the very latest
->>> work, I'm solving this with Gilles.
->>
->> I mean that I have no clue what I should resolve. My branch was based on
->> your core-3.5 branch, the latest publicly available version. I've just
->> rebased it on top of Gilles' 3.5.7 queue - without any conflicts. So
->> what are you talking about?
->>
-> 
-> I'm talking about conflicts in pgtable.h, apic.c with the atomic counter 
-> braindamage and stuff like this. I'm not asking you to fix anything in 
-> your tree, I'm pulling from Gilles' trees almost exclusively, and had 
-> issues with those. I raised an alert about painful merges happening 
-> lately, and a recommendation to avoid these. Gilles fixed the issue on 
-> his end, and the merge now resolves as a fast forward, as expected. 
-> Issue closed.
+From: Wolfgang Grandegger <wg@denx.de>
 
-I still don't see even that issue (based on what was publicly visible),
-but if it's fine now, well, it's fine.
+Pages mapped by rtdm_iomap_to_user() might be cached and may
+page fault on the first write. At least that's the behaviour
+we observed on an ARM mx6q system. This patch fixes these
+issues.
 
-BTW, we are committed on x86 maintenance, so I would suggest to route
-all related changes though one tree (per core version) to avoid
-conflicts and confusions. Unless there are major concerns on your sides,
-I could offer that tree to Philippe to pull from.
+Signed-off-by: Wolfgang Grandegger <wg@denx.de>
+---
+ include/asm-generic/wrappers.h | 2 +-
+ ksrc/skins/rtdm/drvlib.c       | 8 +++++---
+ 2 files changed, 6 insertions(+), 4 deletions(-)
 
-In addition, I could provide all generic commits in a separate tree as
-well so that Gilles can pull them earlier for testing purposes. If
-conflicts between Gilles' and my tree are in sight, we should, of
-course, always try to resolve them in advance before offering you the pull.
-
-Jan
-
+diff --git a/include/asm-generic/wrappers.h b/include/asm-generic/wrappers.h
+index de1f0d7..e71bcc3 100644
+--- a/include/asm-generic/wrappers.h
++++ b/include/asm-generic/wrappers.h
+@@ -394,7 +394,7 @@ static inline void *kzalloc(size_t size, int flags)
+ #define wrap_remap_io_page_range(vma,from,to,size,prot)  ({		\
+     (vma)->vm_page_prot = pgprot_noncached((vma)->vm_page_prot);	\
+     /* Sets VM_RESERVED | VM_IO | VM_PFNMAP on the vma. */		\
+-    remap_pfn_range(vma,from,(to) >> PAGE_SHIFT,size,prot);		\
++    remap_pfn_range(vma,from,(to) >> PAGE_SHIFT,size,pgprot_noncached(prot));		\
+     })
+ #define wrap_remap_kmem_page_range(vma,from,to,size,prot)  ({		\
+     /* Sets VM_RESERVED | VM_IO | VM_PFNMAP on the vma. */		\
+diff --git a/ksrc/skins/rtdm/drvlib.c b/ksrc/skins/rtdm/drvlib.c
+index e5c470c..391d45f 100644
+--- a/ksrc/skins/rtdm/drvlib.c
++++ b/ksrc/skins/rtdm/drvlib.c
+@@ -1858,10 +1858,12 @@ static int rtdm_mmap_buffer(struct file *filp, struct vm_area_struct *vma)
+ #else
+ 	vma->vm_pgoff = paddr >> PAGE_SHIFT;
+ #endif /* CONFIG_MMU */
+-	if (mmap_data->src_paddr)
+-	  	ret = xnarch_remap_io_page_range(filp, vma, maddr, paddr,
++	if (mmap_data->src_paddr) {
++		ret = xnarch_remap_io_page_range(filp, vma, maddr, paddr,
+ 						 size, PAGE_SHARED);
+-	else {
++		if (!ret)
++			xnarch_fault_range(vma);
++	} else {
+ 		ret = xnarch_remap_kmem_page_range(vma, maddr, paddr,
+ 						   size, PAGE_SHARED);
+ 		if (!ret)
 -- 
-Siemens AG, Corporate Technology, CT RTC ITP SDP-DE
-Corporate Competence Center Embedded Linux
+1.7.11.7
+
 
