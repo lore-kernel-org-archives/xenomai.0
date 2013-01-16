@@ -1,16 +1,13 @@
-Message-ID: <50F64ED2.7060503@zultron.com>
-Date: Wed, 16 Jan 2013 00:55:14 -0600
-From: John Morris <john@zultron.com>
+Message-ID: <50F65508.9090605@xenomai.org>
+Date: Wed, 16 Jan 2013 08:21:44 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <D9F55F45-EC38-45B2-A922-08F24868BA87@mah.priv.at>
-	<50F3F296.5000008@xenomai.org>
-	<3F8DFF0B-6F81-48E1-9D64-83B08DA6A599@mah.priv.at>
-	<50F41136.3070200@xenomai.org>
-In-Reply-To: <50F41136.3070200@xenomai.org>
-Content-Type: text/plain; charset=ISO-8859-1
+References: <CAJN_JFwe5Td7oCN0YS-07hys7-v2OEhZ=SUebUtm4Af=q9tmrw@mail.gmail.com>
+In-Reply-To: <CAJN_JFwe5Td7oCN0YS-07hys7-v2OEhZ=SUebUtm4Af=q9tmrw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] universal application binary: how to
- auto-detect	Xenomai/RT-PREEMPT/vanilla kernel
+Subject: Re: [Xenomai] Build error for kernel 3.5.3 with xenomai 2.6.2 (arch
+ i686) : gpio-pch.ko undefined
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,27 +16,22 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
+To: Paul Smith <prs247au@gmail.com>
 Cc: xenomai@xenomai.org
 
-On 01/14/2013 08:07 AM, Philippe Gerum wrote:
-> On 01/14/2013 01:05 PM, Michael Haberler wrote:
->> Is there any chance somebody runs Xenomai AND RT_PREEMPT patches
->> applied? I heard a rumor but havent actually seen that
+On 01/16/2013 04:02 AM, Paul Smith wrote:
+
+> I'm building linux kernel 3.5.3 patched with xenomai 2.6.2 stable and the
+> provided 3.5.3 i-pipe patch. The kernel build is bombing out with;
 > 
-> Yes, this works. The current target is ppc 85xx, but I don't see any
->  showstopper for running such combo on other archs, provided the
-> I-pipe patch is adapted to a -rt kernel. This requires Xenomai
-> 2.6.1+, stock.
+> ERROR: "__fixup_irq_handler" [drivers/gpio/gpio-pch.ko] undefined!
+> make[1]: *** [__modpost] Error 1
+> make: *** [modules] Error 2
 
-Comparing the xenomai-2.6.2 x86/patches directory and
-http://www.kernel.org/pub/linux/kernel/projects/rt, it appears there's a
-common kernel version in 3.2.21.
 
-I'm preparing RPM packages for 3.5 because I assume that's where most
-development and bug fixing is going on, and because I hope the work will
-be useful beyond the LinuxCNC community.  Unfortunately, RT_PREEMPT
-seems to skip linux 3.5 entirely, jumping from 3.4 to 3.6.
+We are missing an EXPORT_SYMBOL_GPL(__fixup_irq_handler) in
+kernel/irq/chip.c
 
-	John
+-- 
+                                                                Gilles.
 
