@@ -1,16 +1,24 @@
-From: Paul <paul_c@tuxcnc.org>
-Date: Wed, 16 Jan 2013 10:21:49 +0000
-References: <D9F55F45-EC38-45B2-A922-08F24868BA87@mah.priv.at>
-	<50F66131.2000903@siemens.com> <50F662A8.9080904@xenomai.org>
-In-Reply-To: <50F662A8.9080904@xenomai.org>
+Message-ID: <50F682DB.5000509@xenomai.org>
+Date: Wed, 16 Jan 2013 11:37:15 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
-  charset="us-ascii"
+References: <50F19CE1.5080106@zultron.com> <50F19DE4.4030805@xenomai.org>
+	<50F239E1.40400@zultron.com> <50F2A59D.5050600@xenomai.org>
+	<50F30781.3050302@zultron.com> <50F30DE5.7030007@xenomai.org>
+	<50F3F36A.8050804@siemens.com> <50F45358.1020601@xenomai.org>
+	<50F458E9.7080504@siemens.com> <50F4594C.8090907@xenomai.org>
+	<50F45E87.9030701@siemens.com> <50F46D0E.9000706@xenomai.org>
+	<50F53F0E.7020604@siemens.com> <50F54641.3010802@xenomai.org>
+	<50F546E8.2050606@xenomai.org> <50F549AD.7040508@siemens.com>
+	<50F55D33.3020205@xenomai.org> <50F55E22.9030308@siemens.com>
+	<50F56074.50203@xenomai.org> <50F5B08D.60504@xenomai.org>
+	<50F65EB3.1000301@siemens.com> <50F6687C.7040809@siemens.com>
+	<50F675C8.1060009@xenomai.org> <50F67750.60408@siemens.com>
+In-Reply-To: <50F67750.60408@siemens.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Message-Id: <201301161021.49867.paul_c@tuxcnc.org>
-Subject: Re: [Xenomai] universal application binary: how to auto-detect
-	Xenomai/RT-PREEMPT/vanilla kernel
+Subject: Re: [Xenomai] 3.5.7 "I-pipe: could not find timer" (Was: Re: Kernel
+ OOPS during regression tests)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,24 +27,59 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: John Morris <john@zultron.com>, Xenomai <xenomai@xenomai.org>
 
-On Wednesday 16 January 2013, Gilles Chanteperdrix wrote:
-> I may jump to 3.6, at least for the ARM architecture. As for the
-> backports to 3.4, I still intend to re-release 2.6.2, so, it would be
-> nice to backport the bugfixes in the core-3.5 branch to the core-3.4
-> branch.
+On 01/16/2013 10:48 AM, Jan Kiszka wrote:
+> On 2013-01-16 10:41, Philippe Gerum wrote:
+>> On 01/16/2013 09:44 AM, Jan Kiszka wrote:
+>>> On 2013-01-16 09:02, Jan Kiszka wrote:
+>>>> At the same time, upstream should not pull or pick in
+>>>> a way that makes life harder for downstream.
+>>>
+>>> Philippe, in the future, please keep your public tree up-to-date,
+>>> ideally at a daily base. I'm seeing commits there that were done locally
+>>> more than a week ago. Only publishing your state will avoid the problems
+>>> you faced with integrating our changes.
+>>
+>> No. If I don't publish, there must be a reason.
+>
+> This approach doesn't work very well - to state it carefully. Push you
+> stuff at least into a public "next" branch, one that may be rebased /
+> reordered without warning. That allows us to prepare for what is under
+> test, maybe pick up arch-specific changes into the subsystem queues. And
+> don't complain about conflict if you cherry-pick subsystem patches
+> without dropping a note to the author - or was Gilles aware of your
+> private queue?
+>
 
-If you plan on updating the 3.2.21 ipipe-core patch, any chance you 
-could include the fix to timer.c that you kindly provided a patch for 
-(see 
-http://www.xenomai.org/pipermail/xenomai/2012-August/026015.html )
+You are off base, this has nothing to do with random cherry picking, or 
+any private queue I would maintain: none of these have existed. Besides, 
+it's not about integrating my changes in the reference tree - I had 
+almost none recently - but Gilles', and many of them came from other 
+sources he merged into his local queue.
 
-I notice the bug affects all architectures, not just the ARM across the 
-3.2.21 patch set. Other kernel versions already have the fix applied.
-Thanks.
+Please, we have been working reasonably successfully with our current 
+workflow for the past ten years now, so we had some time to understand - 
+even if our very limited brainpower made this quite a challenge - the 
+basics of distributed development.
 
+What happened is a misunderstanding between Gilles and myself on the 
+presence of a pending pull request, nothing more, which eventually led 
+to an out-of-sync pulling on my end. Since this happened when several 
+people were pushing stuff to Gilles, this triggered my warning to the 
+list, so that everyone involved may know that things stopped going as 
+smoothly as usual. Rest assured that under normal circumstances, Gilles 
+is very well aware of what I'm working on daily, and conversely. I 
+understand your willingness to work the right way now that you recently 
+committed to maintaining the x86 branch, and this is appreciated.
 
-Regards, Paul.
+On a more general note, the situation changed because we have been 
+receiving more patches from more authors in the last weeks than we used 
+to get, and conflicts follow the same trend. So yes, for this reason I'm 
+going to open a 'next' branch or something alike to be periodically 
+merged to the reference core branch as a fast forward.
 
+-- 
+Philippe.
 
