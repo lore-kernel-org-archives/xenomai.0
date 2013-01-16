@@ -1,6 +1,6 @@
-Message-ID: <50F6687C.7040809@siemens.com>
-Date: Wed, 16 Jan 2013 09:44:44 +0100
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <50F675C8.1060009@xenomai.org>
+Date: Wed, 16 Jan 2013 10:41:28 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 References: <50F19CE1.5080106@zultron.com> <50F19DE4.4030805@xenomai.org>
 	<50F239E1.40400@zultron.com> <50F2A59D.5050600@xenomai.org>
@@ -12,9 +12,9 @@ References: <50F19CE1.5080106@zultron.com> <50F19DE4.4030805@xenomai.org>
 	<50F546E8.2050606@xenomai.org> <50F549AD.7040508@siemens.com>
 	<50F55D33.3020205@xenomai.org> <50F55E22.9030308@siemens.com>
 	<50F56074.50203@xenomai.org> <50F5B08D.60504@xenomai.org>
-	<50F65EB3.1000301@siemens.com>
-In-Reply-To: <50F65EB3.1000301@siemens.com>
-Content-Type: text/plain; charset=UTF-8
+	<50F65EB3.1000301@siemens.com> <50F6687C.7040809@siemens.com>
+In-Reply-To: <50F6687C.7040809@siemens.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] 3.5.7 "I-pipe: could not find timer" (Was: Re: Kernel
  OOPS during regression tests)
@@ -26,24 +26,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
 Cc: John Morris <john@zultron.com>, Xenomai <xenomai@xenomai.org>
 
-On 2013-01-16 09:02, Jan Kiszka wrote:
-> At the same time, upstream should not pull or pick in
-> a way that makes life harder for downstream.
+On 01/16/2013 09:44 AM, Jan Kiszka wrote:
+> On 2013-01-16 09:02, Jan Kiszka wrote:
+>> At the same time, upstream should not pull or pick in
+>> a way that makes life harder for downstream.
+>
+> Philippe, in the future, please keep your public tree up-to-date,
+> ideally at a daily base. I'm seeing commits there that were done locally
+> more than a week ago. Only publishing your state will avoid the problems
+> you faced with integrating our changes.
 
-Philippe, in the future, please keep your public tree up-to-date,
-ideally at a daily base. I'm seeing commits there that were done locally
-more than a week ago. Only publishing your state will avoid the problems
-you faced with integrating our changes.
+No. If I don't publish, there must be a reason.
 
-Will you pull Gilles' 3.5.7 merge before the next core release?
+>
+> Will you pull Gilles' 3.5.7 merge before the next core release?
+>
+> Thanks,
+> Jan
+>
 
-Thanks,
-Jan
 
 -- 
-Siemens AG, Corporate Technology, CT RTC ITP SDP-DE
-Corporate Competence Center Embedded Linux
+Philippe.
 
