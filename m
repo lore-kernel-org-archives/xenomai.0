@@ -1,14 +1,13 @@
-Message-ID: <50F662A8.9080904@xenomai.org>
-Date: Wed, 16 Jan 2013 09:19:52 +0100
+Message-ID: <50F66343.4060508@xenomai.org>
+Date: Wed, 16 Jan 2013 09:22:27 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <D9F55F45-EC38-45B2-A922-08F24868BA87@mah.priv.at>	<50F3F296.5000008@xenomai.org>	<3F8DFF0B-6F81-48E1-9D64-83B08DA6A599@mah.priv.at>	<50F41136.3070200@xenomai.org>
-	<50F64ED2.7060503@zultron.com> <50F66131.2000903@siemens.com>
-In-Reply-To: <50F66131.2000903@siemens.com>
+References: <50F5741A.9060404@grandegger.com> <50F5B1FD.3040901@xenomai.org>
+	<50F658BA.7050107@grandegger.com>
+In-Reply-To: <50F658BA.7050107@grandegger.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] universal application binary: how to auto-detect
- Xenomai/RT-PREEMPT/vanilla kernel
+Subject: Re: [Xenomai] rtdm_iomap_to_user: fix caching and page fault issues
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,40 +16,51 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: John Morris <john@zultron.com>, xenomai@xenomai.org
+To: Wolfgang Grandegger <wg@grandegger.com>
+Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-On 01/16/2013 09:13 AM, Jan Kiszka wrote:
+On 01/16/2013 08:37 AM, Wolfgang Grandegger wrote:
 
-> On 2013-01-16 07:55, John Morris wrote:
->> On 01/14/2013 08:07 AM, Philippe Gerum wrote:
->>> On 01/14/2013 01:05 PM, Michael Haberler wrote:
->>>> Is there any chance somebody runs Xenomai AND RT_PREEMPT patches
->>>> applied? I heard a rumor but havent actually seen that
+> On 01/15/2013 08:46 PM, Gilles Chanteperdrix wrote:
+>> On 01/15/2013 04:22 PM, Wolfgang Grandegger wrote:
+>>
+>>> From: Wolfgang Grandegger <wg@denx.de>
 >>>
->>> Yes, this works. The current target is ppc 85xx, but I don't see any
->>>  showstopper for running such combo on other archs, provided the
->>> I-pipe patch is adapted to a -rt kernel. This requires Xenomai
->>> 2.6.1+, stock.
->>
->> Comparing the xenomai-2.6.2 x86/patches directory and
->> http://www.kernel.org/pub/linux/kernel/projects/rt, it appears there's a
->> common kernel version in 3.2.21.
->>
->> I'm preparing RPM packages for 3.5 because I assume that's where most
->> development and bug fixing is going on, and because I hope the work will
->> be useful beyond the LinuxCNC community.  Unfortunately, RT_PREEMPT
->> seems to skip linux 3.5 entirely, jumping from 3.4 to 3.6.
+>>> Pages mapped by rtdm_iomap_to_user() might be cached and may
+>>> page fault on the first write. At least that's the behaviour
+>>> we observed on an ARM mx6q system. This patch fixes these
+>>> issues.
+>>>
+>>> Signed-off-by: Wolfgang Grandegger <wg@denx.de>
+>>> ---
+>>>  include/asm-generic/wrappers.h | 2 +-
+>>>  ksrc/skins/rtdm/drvlib.c       | 8 +++++---
+>>>  2 files changed, 6 insertions(+), 4 deletions(-)
+>>>
+>>> diff --git a/include/asm-generic/wrappers.h b/include/asm-generic/wrappers.h
+>>> index de1f0d7..e71bcc3 100644
+>>> --- a/include/asm-generic/wrappers.h
+>>> +++ b/include/asm-generic/wrappers.h
+>>> @@ -394,7 +394,7 @@ static inline void *kzalloc(size_t size, int flags)
+>>>  #define wrap_remap_io_page_range(vma,from,to,size,prot)  ({		\
+>>>      (vma)->vm_page_prot = pgprot_noncached((vma)->vm_page_prot);	\
 > 
-> I-pipe also jumps, and now happened to land on 3.5 with its latest fixes
-> and features. When we jump the next time, we should probably pick 3.8 as
-> target for that reason. I may look into this soon. But I'm also
-> considering to backport recent work to 3.4 (for x86 targets at least).
+> Hm, here pgprot_noncached() is already used.
+> 
+>>>      /* Sets VM_RESERVED | VM_IO | VM_PFNMAP on the vma. */		\
+>>> -    remap_pfn_range(vma,from,(to) >> PAGE_SHIFT,size,prot);		\
+>>> +    remap_pfn_range(vma,from,(to) >> PAGE_SHIFT,size,pgprot_noncached(prot));		\
+>>
+>>
+>> Should not this be decided in the upper layers?
+> 
+> Upper layers? You mean calling xnarch_remap_io_page_range() with the
+> protection argument "pgprot_noncached(PAGE_SHARED)" in rtdm_mmap_buffer()?
 
 
-I may jump to 3.6, at least for the ARM architecture. As for the
-backports to 3.4, I still intend to re-release 2.6.2, so, it would be
-nice to backport the bugfixes in the core-3.5 branch to the core-3.4 branch.
+I mean users could want to map i/o regions cacheable, but as you say,
+the pgprot_noncached is already hardcoded in the vma, so, I will merge
+your patch.
 
 -- 
                                                                 Gilles.
