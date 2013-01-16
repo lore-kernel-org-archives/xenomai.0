@@ -1,9 +1,10 @@
-Message-ID: <50F6C781.2060407@siemens.com>
-Date: Wed, 16 Jan 2013 16:30:09 +0100
+Message-ID: <50F6CCCE.2050801@siemens.com>
+Date: Wed, 16 Jan 2013 16:52:46 +0100
 From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
 References: <50F6C3EE.1020508@siemens.com> <50F6C657.2060503@xenomai.org>
-In-Reply-To: <50F6C657.2060503@xenomai.org>
+	<50F6C781.2060407@siemens.com>
+In-Reply-To: <50F6C781.2060407@siemens.com>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] ipipe: fix domain migration helper
@@ -18,23 +19,26 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: Philippe Gerum <rpm@xenomai.org>
 Cc: Xenomai <xenomai@xenomai.org>
 
-On 2013-01-16 16:25, Philippe Gerum wrote:
-> On 01/16/2013 04:14 PM, Jan Kiszka wrote:
->> Hi Philippe,
+On 2013-01-16 16:30, Jan Kiszka wrote:
+> On 2013-01-16 16:25, Philippe Gerum wrote:
+>> On 01/16/2013 04:14 PM, Jan Kiszka wrote:
+>>> Hi Philippe,
+>>>
+>>> a first heads-up, maybe you have an idea before I start debugging: That
+>>> patch causes troubles when our application shuts down. The main thread
+>>> hangs like this, unkillable:
+>>>
 >>
->> a first heads-up, maybe you have an idea before I start debugging: That
->> patch causes troubles when our application shuts down. The main thread
->> hangs like this, unkillable:
->>
+>> It looks like the LO_WAKEUP_REQ virtual interrupt does not reach the 
+>> handler.
 > 
-> It looks like the LO_WAKEUP_REQ virtual interrupt does not reach the 
-> handler.
+> Hmm, lostage queue overflow? We used to carry some detection patch (to
+> make the existing detector unconditional), not sure what happened to it.
+> Will dig in this direction first.
 
-Hmm, lostage queue overflow? We used to carry some detection patch (to
-make the existing detector unconditional), not sure what happened to it.
-Will dig in this direction first.
-
-That said, the system runs fine with the patch removed.
+No queue overflow. And you can immediately trigger it on x86-64 with
+latency e.g. I have this now in my VM, but a different bug on real HW is
+calling which has higher prio. Will come back to this ASAP.
 
 Jan
 
