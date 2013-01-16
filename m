@@ -1,6 +1,6 @@
-Message-ID: <50F69709.8040506@xenomai.org>
-Date: Wed, 16 Jan 2013 13:03:21 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <50F69A90.6030107@siemens.com>
+Date: Wed, 16 Jan 2013 13:18:24 +0100
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
 References: <50F19CE1.5080106@zultron.com> <50F19DE4.4030805@xenomai.org>
 	<50F239E1.40400@zultron.com> <50F2A59D.5050600@xenomai.org>
@@ -14,8 +14,8 @@ References: <50F19CE1.5080106@zultron.com> <50F19DE4.4030805@xenomai.org>
 	<50F56074.50203@xenomai.org> <50F5B08D.60504@xenomai.org>
 	<50F65EB3.1000301@siemens.com> <50F6687C.7040809@siemens.com>
 	<50F675C8.1060009@xenomai.org> <50F67750.60408@siemens.com>
-	<50F682DB.5000509@xenomai.org>
-In-Reply-To: <50F682DB.5000509@xenomai.org>
+	<50F682DB.5000509@xenomai.org> <50F69709.8040506@xenomai.org>
+In-Reply-To: <50F69709.8040506@xenomai.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] 3.5.7 "I-pipe: could not find timer" (Was: Re: Kernel
@@ -28,26 +28,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Jan Kiszka <jan.kiszka@siemens.com>, John Morris <john@zultron.com>, Xenomai <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: John Morris <john@zultron.com>, Xenomai <xenomai@xenomai.org>
 
-On 01/16/2013 11:37 AM, Philippe Gerum wrote:>
+On 2013-01-16 13:03, Gilles Chanteperdrix wrote:
+> On 01/16/2013 11:37 AM, Philippe Gerum wrote:>
+> 
+>> What happened is a misunderstanding between Gilles and myself on the 
+>> presence of a pending pull request, nothing more, which eventually led 
+>> to an out-of-sync pulling on my end. Since this happened when several 
+>> people were pushing stuff to Gilles, this triggered my warning to the 
+>> list, so that everyone involved may know that things stopped going as 
+>> smoothly as usual. Rest assured that under normal circumstances, Gilles 
+>> is very well aware of what I'm working on daily, and conversely. I 
+>> understand your willingness to work the right way now that you recently 
+>> committed to maintaining the x86 branch, and this is appreciated.
+> 
+> 
+> My problem was to send the pull request then continue working on the
+> branch, I should have a branch for pull requests, or send pull request
+> for tags if that is possible.
 
-> What happened is a misunderstanding between Gilles and myself on the 
-> presence of a pending pull request, nothing more, which eventually led 
-> to an out-of-sync pulling on my end. Since this happened when several 
-> people were pushing stuff to Gilles, this triggered my warning to the 
-> list, so that everyone involved may know that things stopped going as 
-> smoothly as usual. Rest assured that under normal circumstances, Gilles 
-> is very well aware of what I'm working on daily, and conversely. I 
-> understand your willingness to work the right way now that you recently 
-> committed to maintaining the x86 branch, and this is appreciated.
+I think this all melts down to communicating, like formally revoking a
+pull or notifying the contributor about the merge of his pull. And this
+will be more important when more people work on I-pipe now. There are
+much bigger projects that struggle with such glitches, but we should
+more easily be able to avoid them.
 
-
-My problem was to send the pull request then continue working on the
-branch, I should have a branch for pull requests, or send pull request
-for tags if that is possible.
+Jan
 
 -- 
-                                                                Gilles.
+Siemens AG, Corporate Technology, CT RTC ITP SDP-DE
+Corporate Competence Center Embedded Linux
 
