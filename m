@@ -1,22 +1,16 @@
-Message-ID: <50F65EB3.1000301@siemens.com>
-Date: Wed, 16 Jan 2013 09:02:59 +0100
+Message-ID: <50F66131.2000903@siemens.com>
+Date: Wed, 16 Jan 2013 09:13:37 +0100
 From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-References: <50F19CE1.5080106@zultron.com> <50F19DE4.4030805@xenomai.org>
-	<50F239E1.40400@zultron.com> <50F2A59D.5050600@xenomai.org>
-	<50F30781.3050302@zultron.com> <50F30DE5.7030007@xenomai.org>
-	<50F3F36A.8050804@siemens.com> <50F45358.1020601@xenomai.org>
-	<50F458E9.7080504@siemens.com> <50F4594C.8090907@xenomai.org>
-	<50F45E87.9030701@siemens.com> <50F46D0E.9000706@xenomai.org>
-	<50F53F0E.7020604@siemens.com> <50F54641.3010802@xenomai.org>
-	<50F546E8.2050606@xenomai.org> <50F549AD.7040508@siemens.com>
-	<50F55D33.3020205@xenomai.org> <50F55E22.9030308@siemens.com>
-	<50F56074.50203@xenomai.org> <50F5B08D.60504@xenomai.org>
-In-Reply-To: <50F5B08D.60504@xenomai.org>
-Content-Type: text/plain; charset=UTF-8
+References: <D9F55F45-EC38-45B2-A922-08F24868BA87@mah.priv.at>
+	<50F3F296.5000008@xenomai.org>
+	<3F8DFF0B-6F81-48E1-9D64-83B08DA6A599@mah.priv.at>
+	<50F41136.3070200@xenomai.org> <50F64ED2.7060503@zultron.com>
+In-Reply-To: <50F64ED2.7060503@zultron.com>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] 3.5.7 "I-pipe: could not find timer" (Was: Re: Kernel
- OOPS during regression tests)
+Subject: Re: [Xenomai] universal application binary: how to auto-detect
+ Xenomai/RT-PREEMPT/vanilla kernel
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -25,66 +19,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: John Morris <john@zultron.com>, Xenomai <xenomai@xenomai.org>
+To: John Morris <john@zultron.com>
+Cc: xenomai@xenomai.org
 
-On 2013-01-15 20:39, Gilles Chanteperdrix wrote:
-> On 01/15/2013 02:58 PM, Philippe Gerum wrote:
-> 
->> On 01/15/2013 02:48 PM, Jan Kiszka wrote:
->>> On 2013-01-15 14:44, Philippe Gerum wrote:
->>>> On 01/15/2013 01:21 PM, Jan Kiszka wrote:
->>>>> On 2013-01-15 13:09, Philippe Gerum wrote:
->>>>>> On 01/15/2013 01:06 PM, Gilles Chanteperdrix wrote:
->>>>>>> On 01/15/2013 12:35 PM, Jan Kiszka wrote:
->>>>>>>
->>>>>>>> On 2013-01-14 21:39, Gilles Chanteperdrix wrote:
->>>>>>>>> Done, also note that my current work is the for-core-3.5.7 branch, not
->>>>>>>>> the for-core-3.5 branch.
->>>>>>>>
->>>>>>>> Both branches point to the same commit ATM. I suppose you didn't push
->>>>>>>> the new for-core-3.5.7 version yet. Once done, I'll rebase my stuff on top.
->>>>>>>
->>>>>>>
->>>>>>> Sorry, pushed.
->>>>>>>
->>>>>>
->>>>>> Please everybody, make sure to eventually resync with my tree, this is
->>>>>> becoming a mess when merging your stuff here. TIA,
->>>>>
->>>>> I'm fetching from you regularly, but your public tree contains no
->>>>> changes for 3.5, sorry.
->>>>>
->>>>
->>>> You must mean no change for 3.5.3 since the last stable pipeline release
->>>> I pushed out. I'm seeing several breakages when merging the very latest
->>>> work, I'm solving this with Gilles.
->>>
->>> I mean that I have no clue what I should resolve. My branch was based on
->>> your core-3.5 branch, the latest publicly available version. I've just
->>> rebased it on top of Gilles' 3.5.7 queue - without any conflicts. So
->>> what are you talking about?
->>>
+On 2013-01-16 07:55, John Morris wrote:
+> On 01/14/2013 08:07 AM, Philippe Gerum wrote:
+>> On 01/14/2013 01:05 PM, Michael Haberler wrote:
+>>> Is there any chance somebody runs Xenomai AND RT_PREEMPT patches
+>>> applied? I heard a rumor but havent actually seen that
 >>
->> I'm talking about conflicts in pgtable.h, apic.c with the atomic counter 
->> braindamage and stuff like this. I'm not asking you to fix anything in 
->> your tree, I'm pulling from Gilles' trees almost exclusively, and had 
->> issues with those. I raised an alert about painful merges happening 
->> lately, and a recommendation to avoid these. Gilles fixed the issue on 
->> his end, and the merge now resolves as a fast forward, as expected. 
->> Issue closed.
+>> Yes, this works. The current target is ppc 85xx, but I don't see any
+>>  showstopper for running such combo on other archs, provided the
+>> I-pipe patch is adapted to a -rt kernel. This requires Xenomai
+>> 2.6.1+, stock.
 > 
+> Comparing the xenomai-2.6.2 x86/patches directory and
+> http://www.kernel.org/pub/linux/kernel/projects/rt, it appears there's a
+> common kernel version in 3.2.21.
 > 
-> These were issues due to rebasing. Rebasings makes merging incrementally
-> harder, will avoid this in the future.
+> I'm preparing RPM packages for 3.5 because I assume that's where most
+> development and bug fixing is going on, and because I hope the work will
+> be useful beyond the LinuxCNC community.  Unfortunately, RT_PREEMPT
+> seems to skip linux 3.5 entirely, jumping from 3.4 to 3.6.
 
-Rebasing is not bad per se and, where possible, better than leaving an
-un-bisectable commit series behind - IMHO. I suppose Philippe started
-pulling from your queue before you reordered/updated it again. That's
-why I didn't send out a pull request yet - mine wasn't done. I'm trying
-to formalize this process here, i.e. never rebase after releasing a
-queue for pulling. At the same time, upstream should not pull or pick in
-a way that makes life harder for downstream.
+I-pipe also jumps, and now happened to land on 3.5 with its latest fixes
+and features. When we jump the next time, we should probably pick 3.8 as
+target for that reason. I may look into this soon. But I'm also
+considering to backport recent work to 3.4 (for x86 targets at least).
 
 Jan
 
