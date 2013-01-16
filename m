@@ -1,13 +1,10 @@
-Message-ID: <50F6FA6D.7080709@siemens.com>
-Date: Wed, 16 Jan 2013 20:07:25 +0100
+Message-ID: <50F6FCDB.1020109@siemens.com>
+Date: Wed, 16 Jan 2013 20:17:47 +0100
 From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-References: <50F6C3EE.1020508@siemens.com> <50F6C657.2060503@xenomai.org>
-	<50F6C781.2060407@siemens.com> <50F6CCCE.2050801@siemens.com>
-In-Reply-To: <50F6CCCE.2050801@siemens.com>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] ipipe: fix domain migration helper
+Subject: [Xenomai] [PATCH] ipipe: Re-fix migration helper for legacy users
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,32 +16,33 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: Philippe Gerum <rpm@xenomai.org>
 Cc: Xenomai <xenomai@xenomai.org>
 
-On 2013-01-16 16:52, Jan Kiszka wrote:
-> @@ -1095,12 +1120,8 @@ int __ipipe_switch_tail(void)
->  	hard_local_irq_disable();
->  #endif
->  	x = __ipipe_root_p;
-> -
-> -#ifdef CONFIG_IPIPE_LEGACY
-> -	current->state &= ~TASK_HARDENING;
-> -#else
-> -	complete_domain_migration();
-> -#endif	/* !CONFIG_IPIPE_LEGACY */
-> +	if (x)
-> +		complete_domain_migration();
+In the legacy use case, __ipipe_switch_tail will be invoked over the
+non-root domain after hardening. So clearing of TASK_HARDENING must not
+be restricted to root.
 
-This seems wrong, at least for legacy: Now we no longer clear
-TASK_HARDENING after the switch back from the gatekeeper because the
-current domain is Xenomai then. Does the new migration scheme work
-differently in this regard? Then we will have to keep the #ifdef.
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
 
-Do I get this correctly that the patch did not target an issue with
-legacy usage? Or is there still a problem that could also affect Xenomai
-2.6?
+For the case my analysis was right. With this, Xenomai 2.6 works again
+here.
 
-Jan
+ kernel/ipipe/core.c |    2 ++
+ 1 files changed, 2 insertions(+), 0 deletions(-)
 
+diff --git a/kernel/ipipe/core.c b/kernel/ipipe/core.c
+index 6929156..4695ba8 100644
+--- a/kernel/ipipe/core.c
++++ b/kernel/ipipe/core.c
+@@ -1124,7 +1124,9 @@ int __ipipe_switch_tail(void)
+ 	hard_local_irq_disable();
+ #endif
+ 	x = __ipipe_root_p;
++#ifndef CONFIG_IPIPE_LEGACY
+ 	if (x)
++#endif
+ 		complete_domain_migration();
+ 
+ #ifndef CONFIG_IPIPE_WANT_PREEMPTIBLE_SWITCH
 -- 
-Siemens AG, Corporate Technology, CT RTC ITP SDP-DE
-Corporate Competence Center Embedded Linux
+1.7.3.4
 
