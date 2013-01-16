@@ -1,13 +1,23 @@
-Message-ID: <50F66343.4060508@xenomai.org>
-Date: Wed, 16 Jan 2013 09:22:27 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <50F6687C.7040809@siemens.com>
+Date: Wed, 16 Jan 2013 09:44:44 +0100
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-References: <50F5741A.9060404@grandegger.com> <50F5B1FD.3040901@xenomai.org>
-	<50F658BA.7050107@grandegger.com>
-In-Reply-To: <50F658BA.7050107@grandegger.com>
+References: <50F19CE1.5080106@zultron.com> <50F19DE4.4030805@xenomai.org>
+	<50F239E1.40400@zultron.com> <50F2A59D.5050600@xenomai.org>
+	<50F30781.3050302@zultron.com> <50F30DE5.7030007@xenomai.org>
+	<50F3F36A.8050804@siemens.com> <50F45358.1020601@xenomai.org>
+	<50F458E9.7080504@siemens.com> <50F4594C.8090907@xenomai.org>
+	<50F45E87.9030701@siemens.com> <50F46D0E.9000706@xenomai.org>
+	<50F53F0E.7020604@siemens.com> <50F54641.3010802@xenomai.org>
+	<50F546E8.2050606@xenomai.org> <50F549AD.7040508@siemens.com>
+	<50F55D33.3020205@xenomai.org> <50F55E22.9030308@siemens.com>
+	<50F56074.50203@xenomai.org> <50F5B08D.60504@xenomai.org>
+	<50F65EB3.1000301@siemens.com>
+In-Reply-To: <50F65EB3.1000301@siemens.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] rtdm_iomap_to_user: fix caching and page fault issues
+Subject: Re: [Xenomai] 3.5.7 "I-pipe: could not find timer" (Was: Re: Kernel
+ OOPS during regression tests)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,52 +26,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Wolfgang Grandegger <wg@grandegger.com>
-Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: John Morris <john@zultron.com>, Xenomai <xenomai@xenomai.org>
 
-On 01/16/2013 08:37 AM, Wolfgang Grandegger wrote:
+On 2013-01-16 09:02, Jan Kiszka wrote:
+> At the same time, upstream should not pull or pick in
+> a way that makes life harder for downstream.
 
-> On 01/15/2013 08:46 PM, Gilles Chanteperdrix wrote:
->> On 01/15/2013 04:22 PM, Wolfgang Grandegger wrote:
->>
->>> From: Wolfgang Grandegger <wg@denx.de>
->>>
->>> Pages mapped by rtdm_iomap_to_user() might be cached and may
->>> page fault on the first write. At least that's the behaviour
->>> we observed on an ARM mx6q system. This patch fixes these
->>> issues.
->>>
->>> Signed-off-by: Wolfgang Grandegger <wg@denx.de>
->>> ---
->>>  include/asm-generic/wrappers.h | 2 +-
->>>  ksrc/skins/rtdm/drvlib.c       | 8 +++++---
->>>  2 files changed, 6 insertions(+), 4 deletions(-)
->>>
->>> diff --git a/include/asm-generic/wrappers.h b/include/asm-generic/wrappers.h
->>> index de1f0d7..e71bcc3 100644
->>> --- a/include/asm-generic/wrappers.h
->>> +++ b/include/asm-generic/wrappers.h
->>> @@ -394,7 +394,7 @@ static inline void *kzalloc(size_t size, int flags)
->>>  #define wrap_remap_io_page_range(vma,from,to,size,prot)  ({		\
->>>      (vma)->vm_page_prot = pgprot_noncached((vma)->vm_page_prot);	\
-> 
-> Hm, here pgprot_noncached() is already used.
-> 
->>>      /* Sets VM_RESERVED | VM_IO | VM_PFNMAP on the vma. */		\
->>> -    remap_pfn_range(vma,from,(to) >> PAGE_SHIFT,size,prot);		\
->>> +    remap_pfn_range(vma,from,(to) >> PAGE_SHIFT,size,pgprot_noncached(prot));		\
->>
->>
->> Should not this be decided in the upper layers?
-> 
-> Upper layers? You mean calling xnarch_remap_io_page_range() with the
-> protection argument "pgprot_noncached(PAGE_SHARED)" in rtdm_mmap_buffer()?
+Philippe, in the future, please keep your public tree up-to-date,
+ideally at a daily base. I'm seeing commits there that were done locally
+more than a week ago. Only publishing your state will avoid the problems
+you faced with integrating our changes.
 
+Will you pull Gilles' 3.5.7 merge before the next core release?
 
-I mean users could want to map i/o regions cacheable, but as you say,
-the pgprot_noncached is already hardcoded in the vma, so, I will merge
-your patch.
+Thanks,
+Jan
 
 -- 
-                                                                Gilles.
+Siemens AG, Corporate Technology, CT RTC ITP SDP-DE
+Corporate Competence Center Embedded Linux
 
