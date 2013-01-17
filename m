@@ -1,13 +1,13 @@
-Message-ID: <50E94E72.5050309@xenomai.org>
-Date: Sun, 06 Jan 2013 11:14:10 +0100
+Message-ID: <50F7B5BC.20701@xenomai.org>
+Date: Thu, 17 Jan 2013 09:26:36 +0100
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <50E47751.1070005@siemens.com> <50E59112.6080005@siemens.com>
-In-Reply-To: <50E59112.6080005@siemens.com>
-Content-Type: text/plain; charset=ISO-8859-1
+References: <50F6FCDB.1020109@siemens.com>
+In-Reply-To: <50F6FCDB.1020109@siemens.com>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PATCH v3] nucleus: Convert intrlock to a sleeping
- Linux lock
+Subject: Re: [Xenomai] [PATCH] ipipe: Re-fix migration helper for legacy
+	users
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,27 +17,42 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: "Mauerer, Wolfgang" <wolfgang.mauerer@siemens.com>, Xenomai <xenomai@xenomai.org>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 01/03/2013 03:09 PM, Jan Kiszka wrote:
+On 01/16/2013 08:17 PM, Jan Kiszka wrote:
+> In the legacy use case, __ipipe_switch_tail will be invoked over the
+> non-root domain after hardening. So clearing of TASK_HARDENING must not
+> be restricted to root.
+>
+> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+> ---
+>
+> For the case my analysis was right. With this, Xenomai 2.6 works again
+> here.
+>
+>   kernel/ipipe/core.c |    2 ++
+>   1 files changed, 2 insertions(+), 0 deletions(-)
+>
+> diff --git a/kernel/ipipe/core.c b/kernel/ipipe/core.c
+> index 6929156..4695ba8 100644
+> --- a/kernel/ipipe/core.c
+> +++ b/kernel/ipipe/core.c
+> @@ -1124,7 +1124,9 @@ int __ipipe_switch_tail(void)
+>   	hard_local_irq_disable();
+>   #endif
+>   	x = __ipipe_root_p;
+> +#ifndef CONFIG_IPIPE_LEGACY
+>   	if (x)
+> +#endif
+>   		complete_domain_migration();
+>
+>   #ifndef CONFIG_IPIPE_WANT_PREEMPTIBLE_SWITCH
+>
 
-> +static struct xnvfile_lock_ops vfile_stat_lockops = {
-> +	.get = xnintr_get_query_lock,
-> +	.put = xnintr_put_query_lock,
-> +};
-> +
->  static struct xnvfile_snapshot stat_vfile = {
->  	.privsz = sizeof(struct vfile_stat_priv),
->  	.datasz = sizeof(struct vfile_stat_data),
->  	.tag = &nkpod_struct.threadlist_tag,
->  	.ops = &vfile_stat_ops,
-> +	.entry = { .lockops = &vfile_stat_lockops },
->  };
+The analysis is right. I already fixed this bug in the 3.5 branch, we 
+are missing a forward port to 3.5.7.
 
-This would introduce a regression. stat_vfile's rewind/next handlers
-compete with code altering the global thread queue which may run in
-primary mode, such as xnpod_delete_thread() when deleting a kernel task.
-So we can't use a linux lock to protect it.
+http://git.denx.de/?p=ipipe-2.6.git;a=commit;h=8b11dc5fee73842a24ec4367b57aaa2dcdd67225
 
 -- 
 Philippe.
