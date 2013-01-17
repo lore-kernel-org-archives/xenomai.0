@@ -1,5 +1,5 @@
-Message-ID: <50F7B5BC.20701@xenomai.org>
-Date: Thu, 17 Jan 2013 09:26:36 +0100
+Message-ID: <50F7B644.5070402@xenomai.org>
+Date: Thu, 17 Jan 2013 09:28:52 +0100
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 References: <50F6FCDB.1020109@siemens.com>
@@ -49,10 +49,9 @@ On 01/16/2013 08:17 PM, Jan Kiszka wrote:
 >   #ifndef CONFIG_IPIPE_WANT_PREEMPTIBLE_SWITCH
 >
 
-The analysis is right. I already fixed this bug in the 3.5 branch, we 
-are missing a forward port to 3.5.7.
-
-http://git.denx.de/?p=ipipe-2.6.git;a=commit;h=8b11dc5fee73842a24ec4367b57aaa2dcdd67225
+We need this in the non-legacy case as well. Otherwise, a 
+gatekeeper-less system like the one we use in 3.x would spuriously run 
+the migration hook over the head domain.
 
 -- 
 Philippe.
