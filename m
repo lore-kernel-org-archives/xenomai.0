@@ -1,20 +1,10 @@
-Message-ID: <50F8D03E.3070905@xenomai.org>
-Date: Fri, 18 Jan 2013 05:31:58 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <50F904C3.3060906@zultron.com>
+Date: Fri, 18 Jan 2013 02:16:03 -0600
+From: John Morris <john@zultron.com>
 MIME-Version: 1.0
-References: <50F19CE1.5080106@zultron.com> <50F19DE4.4030805@xenomai.org>
-	<50F239E1.40400@zultron.com> <50F2A59D.5050600@xenomai.org>
-	<50F30781.3050302@zultron.com> <50F30DE5.7030007@xenomai.org>
-	<50F38DD5.5010105@zultron.com> <50F3F2C6.2040900@xenomai.org>
-	<50F3F359.9020502@siemens.com> <50F409C0.7050701@siemens.com>
-	<50F46FF8.5050100@zultron.com> <50F48CBB.7080605@xenomai.org>
-	<50F5025E.1040500@zultron.com> <50F505C3.3090803@xenomai.org>
-	<50F8C7F3.8000406@zultron.com>
-In-Reply-To: <50F8C7F3.8000406@zultron.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] 3.5.7 posix/mprotect fixed;
-	(Was:  posix/mprotect failure)
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] Redhat packaging patch
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -23,32 +13,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: John Morris <john@zultron.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Xenomai <xenomai@xenomai.org>
 
-On 01/18/2013 04:56 AM, John Morris wrote:
+Here's a two-liner patch to Makefile.in that disables /dev entry
+creation when 'make NODEVICES=3D1 install'.
 
-> On 01/15/2013 01:31 AM, Gilles Chanteperdrix wrote:
->> On 01/15/2013 08:16 AM, John Morris wrote:
->>> 1)  "xddp_test" fails:  "...IPCPROTO_XDDP): Address family not supported
->>> by protocol".  DRIVERS_RTIPC_XDDP is enabled in the config.  Doesn't
->>> look like others have experienced this before.  LinuxCNC doesn't use
->>> XDDP, but it should be fixed for the general audience.
->>
->>
->> You are missing some kernel drivers. I used the following options in the
->> Debian configuration: basically, all options enabled (some as module,
->> because they are expected to be used less often).
->>
->> CONFIG_XENO_DRIVERS_RTIPC_XDDP=y
-> 
-> I think the problem was here.  xddp was compiled in as a module in my
-> original config, and wasn't loaded by the test suite.
+RedHat packages are built as normal users, and there is no fakeroot
+mechanism like Debian has, so devices must be recreated from a separate
+script run after the rest of the package is unpacked.
 
+Incorporating this patch into Xenomai makes it a little cleaner for RH
+package maintainers, as we don't have to keep a separate patch in the
+RPM sources.  Unfortunately, we still must continue maintaining the
+%post script to create the devices.  :P
 
-The testsuite does not load any module. It makes more sense to have xddp
-builtin anyway.
-
--- 
-                                                                Gilles.
-
+	John
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: xenomai-2.6-nodevices.patch
+Type: text/x-patch
+Size: 872 bytes
+Desc: not available
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20130118/4a4e357=
+1/attachment.bin>
