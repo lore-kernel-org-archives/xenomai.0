@@ -1,14 +1,9 @@
-Message-ID: <50F94341.2050904@xenomai.org>
-Date: Fri, 18 Jan 2013 13:42:41 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <50F904C3.3060906@zultron.com>
-	<50F9056A.2090605@xenomai.org>	<50F90B3A.9020002@zultron.com>
-	<50F93B19.4000202@xenomai.org>
-In-Reply-To: <50F93B19.4000202@xenomai.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Redhat packaging patch
+From: Pierre LE COZ <peter.le.coz@gmail.com>
+Date: Fri, 18 Jan 2013 16:15:47 +0100
+Message-ID: <CALJOq=VtrBhMzCaT=7omDVN9hnnwZ+cmM1_1eff9DTS-fvLjaw@mail.gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: [Xenomai] GPIO Interrupts problem with RTDM
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,59 +12,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: John Morris <john@zultron.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 01/18/2013 01:07 PM, Gilles Chanteperdrix wrote:
+Hi all,
 
-> On 01/18/2013 09:43 AM, John Morris wrote:
-> 
->> On 01/18/2013 02:18 AM, Gilles Chanteperdrix wrote:
->>> On 01/18/2013 09:16 AM, John Morris wrote:
->>>
->>>> Here's a two-liner patch to Makefile.in that disables /dev entry
->>>> creation when 'make NODEVICES=1 install'.
->>>
->>>
->>> What is wrong with "make install-user" ?
->>>
->>>>
->>>> RedHat packages are built as normal users, and there is no fakeroot
->>>> mechanism like Debian has, so devices must be recreated from a separate
->>>> script run after the rest of the package is unpacked.
->>>>
->>>> Incorporating this patch into Xenomai makes it a little cleaner for RH
->>>> package maintainers, as we don't have to keep a separate patch in the
->>>> RPM sources.  Unfortunately, we still must continue maintaining the
->>>> %post script to create the devices.  :P
->>>
->>>
->>> Why not using udev rules like debian?
->>
->> Why, those are exactly what I need.  Simplifies the package well, thanks!
->>
->> Just ran into this regression test failure, wouldn't repeat itself.  How
->> much cause for alarm?
->>
->> ++ /usr/lib64/xenomai/regression/native/tsc
->> Checking tsc for 1 minute(s)
->> min: 8, max: 18, avg: 10.0001
->> 00000056e5d97ffa -> 00000056e5d0eef9
->> tsc not monotonic after 2217251653 ticks, jumped back 561409 tick
-> 
-> 
-> I believe it is a false positive, the test is running as an ordinary
-> linux thread, so, it can be migrated by the kernel between different
-> cpus. What you have here is simply the case where the test was migrated,
-> on a machine with unsynced tscs.
-> 
-> To avoid this, we have to either set the affinity, or to shadow the main
-> thread. The second solution is easier, since it will work on machines
-> with UP glibc which do not support setting affinity, without having to
+I have simple program to manage the GPIO of my raspberry Pi using RTDM.
+
+I use :
+"rtdm_irq_request(& irq_exemple, num_irq, exemple_handler,
+RTDM_IRQTYPE_SHARED | RTDM_IRQTYPE_EDGE, "MyProgram", NULL);"
+in order to detect interrupts.
+
+After repeated presses on a pushbutton linking my input GPIO to 3,3v, I run
+:
+# cat /proc/xenomai/irq
+IRQ CPU0
+3: 1134 [timer]
+108: 0 MyProgram
+259: 0 [virtual]
+
+No interrupt is taken into account.
+
+Please, does anyone can help?
 
 
-More exactly, with old libcs.
 
--- 
-                                                                Gilles.
 
+PS : Without Xenomai, I can detect interrupts with the same set-up :
+
+# cat /proc/interrupts
+CPU0
+3: 14053 ARMCTRL BCM2708 Timer Tick
+52: 10 ARMCTRL BCM2708 GPIO catchall handler
+65: 6 ARMCTRL ARM Mailbox IRQ
+66: 0 ARMCTRL VCHIQ doorbell
+75: 7942676 ARMCTRL dwc_otg, dwc_otg_pcd, dwc_otg_hcd:usb1
+77: 148 ARMCTRL bcm2708_sdhci (dma)
+83: 452 ARMCTRL uart-pl011
+84: 1297 ARMCTRL mmc0
+108: 10 GPIO MyProgram
+Err: 0
+
+To do so I use "request_irq(gpio_to_irq(RPI_GPIO_IN), rpi_gpio_2_handler,
+IRQF_SHARED | IRQF_TRIGGER_RISING, THIS_MODULE->name, THIS_MODULE->name);"
