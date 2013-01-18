@@ -1,13 +1,11 @@
-Message-ID: <50F98088.5070804@siemens.com>
-Date: Fri, 18 Jan 2013 18:04:08 +0100
+Message-ID: <50F980C1.3050504@siemens.com>
+Date: Fri, 18 Jan 2013 18:05:05 +0100
 From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-References: <50F96C89.8010004@siemens.com> <50F97A65.7060306@xenomai.org>
-In-Reply-To: <50F97A65.7060306@xenomai.org>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [CRITICAL PATCH] ipipe: Re-read domain context after
-	IRQ processing
+Subject: [Xenomai] [PATCH 2.6] nucleus: Fix migration race in
+	schedule_linux_call
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,36 +14,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: Xenomai <xenomai@xenomai.org>
 
-On 2013-01-18 17:37, Philippe Gerum wrote:
-> On 01/18/2013 04:38 PM, Jan Kiszka wrote:
->> This fixes a nasty bug on SMP boxes: We may migrate to root in the
->> context of an IRQ handler, and then also to a different CPU. Therefore,
->> we must not use domain contexts read before the invocation but update
->> them afterward or use stable information like the domain reference.
-> 
-> Ack.
-> 
->>
->> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
->> ---
->>
->> We are still facing stalled, unkillable RT processes despite this fix,
-> 
-> Is TASK_HARDENING still lingering in task->state despite the recent 
-> switch_tail fix, or is this something different?
+schedule_linux_call may also be invoked over preemptible, thus
+migratable Linux contexts. Therefore we must not read the CPU number
+outside the splhigh/splexit section.
 
-Patch is applied, but I didn't check this detail yet.
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ ksrc/nucleus/shadow.c |    3 ++-
+ 1 files changed, 2 insertions(+), 1 deletions(-)
 
-I just found a potential SMP race in schedule_linux_call, patch follows.
-But now I triggered XENO_BUGON(NUCLEUS, need_resched == 0); for unknown
-reasons...
-
-Jan
-
+diff --git a/ksrc/nucleus/shadow.c b/ksrc/nucleus/shadow.c
+index 260fdef..c91a6f3 100644
+--- a/ksrc/nucleus/shadow.c
++++ b/ksrc/nucleus/shadow.c
+@@ -820,7 +820,7 @@ static void lostage_handler(void *cookie)
+ 
+ static void schedule_linux_call(int type, struct task_struct *p, int arg)
+ {
+-	int cpu = rthal_processor_id(), reqnum;
++	int cpu, reqnum;
+ 	struct __lostagerq *rq;
+ 	spl_t s;
+ 
+@@ -832,6 +832,7 @@ static void schedule_linux_call(int type, struct task_struct *p, int arg)
+ 
+ 	splhigh(s);
+ 
++	cpu = rthal_processor_id();
+ 	rq = &lostagerq[cpu];
+ 	reqnum = rq->in;
+ 	rq->in = (reqnum + 1) & (LO_MAX_REQUESTS - 1);
 -- 
-Siemens AG, Corporate Technology, CT RTC ITP SDP-DE
-Corporate Competence Center Embedded Linux
+1.7.3.4
 
