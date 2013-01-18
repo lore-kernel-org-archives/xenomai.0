@@ -1,12 +1,14 @@
-Message-ID: <50F9A9A3.8040003@xenomai.org>
-Date: Fri, 18 Jan 2013 20:59:31 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <50F9ABEC.7070504@siemens.com>
+Date: Fri, 18 Jan 2013 21:09:16 +0100
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-References: <CALJOq=VtrBhMzCaT=7omDVN9hnnwZ+cmM1_1eff9DTS-fvLjaw@mail.gmail.com>
-In-Reply-To: <CALJOq=VtrBhMzCaT=7omDVN9hnnwZ+cmM1_1eff9DTS-fvLjaw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
+References: <50F96C89.8010004@siemens.com> <50F97A65.7060306@xenomai.org>
+	<50F98088.5070804@siemens.com> <50F99CCE.1000907@siemens.com>
+In-Reply-To: <50F99CCE.1000907@siemens.com>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] GPIO Interrupts problem with RTDM
+Subject: Re: [Xenomai] [CRITICAL PATCH] ipipe: Re-read domain context after
+	IRQ processing
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,40 +17,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Pierre LE COZ <peter.le.coz@gmail.com>
-Cc: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 01/18/2013 04:15 PM, Pierre LE COZ wrote:
+On 2013-01-18 20:04, Jan Kiszka wrote:
+> On 2013-01-18 18:04, Jan Kiszka wrote:
+>> On 2013-01-18 17:37, Philippe Gerum wrote:
+>>> On 01/18/2013 04:38 PM, Jan Kiszka wrote:
+>>>> This fixes a nasty bug on SMP boxes: We may migrate to root in the
+>>>> context of an IRQ handler, and then also to a different CPU. Therefore,
+>>>> we must not use domain contexts read before the invocation but update
+>>>> them afterward or use stable information like the domain reference.
+>>>
+>>> Ack.
+>>>
+>>>>
+>>>> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+>>>> ---
+>>>>
+>>>> We are still facing stalled, unkillable RT processes despite this fix,
+>>>
+>>> Is TASK_HARDENING still lingering in task->state despite the recent 
+>>> switch_tail fix, or is this something different?
+>>
+>> Patch is applied, but I didn't check this detail yet.
+>>
+>> I just found a potential SMP race in schedule_linux_call, patch follows.
+>> But now I triggered XENO_BUGON(NUCLEUS, need_resched == 0); for unknown
+>> reasons...
+> 
+> Probably found the problem - or at least another one: XNINLOCK must be
+> used with xnsched::lflags, not status. It is set/cleared by the RTDM
+> spin locks outside nklock. Will patch that and retest.
 
-> Hi all,
-> 
-> I have simple program to manage the GPIO of my raspberry Pi using RTDM.
-> 
-> I use :
-> "rtdm_irq_request(& irq_exemple, num_irq, exemple_handler,
-> RTDM_IRQTYPE_SHARED | RTDM_IRQTYPE_EDGE, "MyProgram", NULL);"
-> in order to detect interrupts.
-> 
-> After repeated presses on a pushbutton linking my input GPIO to 3,3v, I run
-> :
-> # cat /proc/xenomai/irq
-> IRQ CPU0
-> 3: 1134 [timer]
-> 108: 0 MyProgram
-> 259: 0 [virtual]
-> 
-> No interrupt is taken into account.
-> 
-> Please, does anyone can help?
+Wasn't able to run all tests yet, but it looked promising so far. Will
+finish this on Monday.
 
+Xenomai patches pushed, they seem consistent to me now.
 
-The Raspberry PI code is not part of the I-pipe kernel maintained by 
-the Xenomai project, so, basically, what it does is not really under 
-the control of this list. However, I would bet you are missing the GPIO 
-demuxing:
-
-http://xenomai.org/index.php/I-pipe-core:ArmPorting#GPIOs_as_interrupt_sources
+Jan
 
 -- 
-                                                                Gilles.
+Siemens AG, Corporate Technology, CT RTC ITP SDP-DE
+Corporate Competence Center Embedded Linux
 
