@@ -1,9 +1,11 @@
+Message-ID: <50F96C89.8010004@siemens.com>
+Date: Fri, 18 Jan 2013 16:38:49 +0100
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-From: Pierre LE COZ <peter.le.coz@gmail.com>
-Date: Fri, 18 Jan 2013 16:15:47 +0100
-Message-ID: <CALJOq=VtrBhMzCaT=7omDVN9hnnwZ+cmM1_1eff9DTS-fvLjaw@mail.gmail.com>
 Content-Type: text/plain; charset=ISO-8859-1
-Subject: [Xenomai] GPIO Interrupts problem with RTDM
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai] [CRITICAL PATCH] ipipe: Re-read domain context after IRQ
+	processing
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,46 +14,50 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Xenomai <xenomai@xenomai.org>
 
-Hi all,
+This fixes a nasty bug on SMP boxes: We may migrate to root in the
+context of an IRQ handler, and then also to a different CPU. Therefore,
+we must not use domain contexts read before the invocation but update
+them afterward or use stable information like the domain reference.
 
-I have simple program to manage the GPIO of my raspberry Pi using RTDM.
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
 
-I use :
-"rtdm_irq_request(& irq_exemple, num_irq, exemple_handler,
-RTDM_IRQTYPE_SHARED | RTDM_IRQTYPE_EDGE, "MyProgram", NULL);"
-in order to detect interrupts.
+We are still facing stalled, unkillable RT processes despite this fix,
+but at least the head domain status corruption (and related warnings)
+seems to be gone now.
 
-After repeated presses on a pushbutton linking my input GPIO to 3,3v, I run
-:
-# cat /proc/xenomai/irq
-IRQ CPU0
-3: 1134 [timer]
-108: 0 MyProgram
-259: 0 [virtual]
+ kernel/ipipe/core.c |    5 +++--
+ 1 files changed, 3 insertions(+), 2 deletions(-)
 
-No interrupt is taken into account.
+diff --git a/kernel/ipipe/core.c b/kernel/ipipe/core.c
+index 68af0b3..6aa9572 100644
+--- a/kernel/ipipe/core.c
++++ b/kernel/ipipe/core.c
+@@ -1173,18 +1173,19 @@ static void dispatch_irq_head(unsigned int irq) /* hw interrupts off */
+ 	head->irqs[irq].handler(irq, head->irqs[irq].cookie);
+ 	__ipipe_run_irqtail(irq);
+ 	hard_local_irq_disable();
++	p = ipipe_this_cpu_head_context();
+ 	__clear_bit(IPIPE_STALL_FLAG, &p->status);
+ 
+ 	/* Are we still running in the head domain? */
+ 	if (likely(__ipipe_current_context == p)) {
+ 		/* Did we enter this code over the head domain? */
+-		if (old == p) {
++		if (old->domain == head) {
+ 			/* Yes, do immediate synchronization. */
+ 			if (__ipipe_ipending_p(p))
+ 				__ipipe_sync_stage();
+ 			return;
+ 		}
+-		__ipipe_set_current_context(old);
++		__ipipe_set_current_context(ipipe_this_cpu_root_context());
+ 	}
+ 
+ 	/*
+-- 
+1.7.3.4
 
-Please, does anyone can help?
-
-
-
-
-PS : Without Xenomai, I can detect interrupts with the same set-up :
-
-# cat /proc/interrupts
-CPU0
-3: 14053 ARMCTRL BCM2708 Timer Tick
-52: 10 ARMCTRL BCM2708 GPIO catchall handler
-65: 6 ARMCTRL ARM Mailbox IRQ
-66: 0 ARMCTRL VCHIQ doorbell
-75: 7942676 ARMCTRL dwc_otg, dwc_otg_pcd, dwc_otg_hcd:usb1
-77: 148 ARMCTRL bcm2708_sdhci (dma)
-83: 452 ARMCTRL uart-pl011
-84: 1297 ARMCTRL mmc0
-108: 10 GPIO MyProgram
-Err: 0
-
-To do so I use "request_irq(gpio_to_irq(RPI_GPIO_IN), rpi_gpio_2_handler,
-IRQF_SHARED | IRQF_TRIGGER_RISING, THIS_MODULE->name, THIS_MODULE->name);"
