@@ -1,10 +1,19 @@
-Message-ID: <50F8C6D6.8070209@zultron.com>
-Date: Thu, 17 Jan 2013 21:51:50 -0600
+Message-ID: <50F8C7F3.8000406@zultron.com>
+Date: Thu, 17 Jan 2013 21:56:35 -0600
 From: John Morris <john@zultron.com>
 MIME-Version: 1.0
+References: <50F19CE1.5080106@zultron.com> <50F19DE4.4030805@xenomai.org>
+	<50F239E1.40400@zultron.com> <50F2A59D.5050600@xenomai.org>
+	<50F30781.3050302@zultron.com> <50F30DE5.7030007@xenomai.org>
+	<50F38DD5.5010105@zultron.com> <50F3F2C6.2040900@xenomai.org>
+	<50F3F359.9020502@siemens.com> <50F409C0.7050701@siemens.com>
+	<50F46FF8.5050100@zultron.com> <50F48CBB.7080605@xenomai.org>
+	<50F5025E.1040500@zultron.com> <50F505C3.3090803@xenomai.org>
+In-Reply-To: <50F505C3.3090803@xenomai.org>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] mmap() segfaults
+Subject: Re: [Xenomai] 3.5.7 posix/mprotect fixed;
+	(Was:  posix/mprotect failure)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,57 +22,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Xenomai <xenomai@xenomai.org>
 
-Hi list,
+On 01/15/2013 01:31 AM, Gilles Chanteperdrix wrote:
+> On 01/15/2013 08:16 AM, John Morris wrote:
+>> 1)  "xddp_test" fails:  "...IPCPROTO_XDDP): Address family not supported
+>> by protocol".  DRIVERS_RTIPC_XDDP is enabled in the config.  Doesn't
+>> look like others have experienced this before.  LinuxCNC doesn't use
+>> XDDP, but it should be fixed for the general audience.
+> 
+> 
+> You are missing some kernel drivers. I used the following options in the
+> Debian configuration: basically, all options enabled (some as module,
+> because they are expected to be used less often).
+> 
+> CONFIG_XENO_DRIVERS_RTIPC_XDDP=y
 
-The linux 3.5.7/i-ipipe ipipe-gch for-core-3.5.7/xenomai master packages
-haven't been tested much yet, but both el6 and deb packages seem to be
-working great.  Those will be available in the next day or so.
+I think the problem was here.  xddp was compiled in as a module in my
+original config, and wasn't loaded by the test suite.
 
-For the use of others, I prefer the linux 3.5.3/xenomai 2.6.2
-combination, since it has undergone more testing.  There's a problem
-mixing the 3.5.3 kernel with xenomai-2.6.git master.  The mprotect
-regression is failing again, but in a different way.
-
-Details follow, but the thing I've lost track of is which version of
-Xenomai the kernel was prepared with, 2.6.2 (/proc/xenomai/version says
-2.6.2) or git master.  Is it a rule that the kernel must be prepared
-from the same Xenomai source tree as the installed runtime tools?  In
-that case, the packages must be modified with the proper dependency
-information.  Otherwise, here's the report:
-
-First run:
-
-++ /usr/lib64/xenomai/regression/posix/mprotect
-memory read
-memory write after exec enable
-memory write after write enable
-memory read/write after access enable
-FAILURE main:102: read zero returned 255 instead of 0
-
-Second and subsequent runs slightly different:
-
-++ /usr/lib64/xenomai/regression/posix/mprotect
-memory read
-FAILURE main:69: read mem returned 255 instead of 0
-
-Then curiously, some non-xenomai applications that work fine before the
-regression test begin to segfault in mmap() when run after the test; a
-simple example is 'git fetch'.  Nothing funny in dmesg; kernel .config
-and strace linked below.
-
-After a reboot, everything is normal again until the regression test is
-rerun.
-
-The released 2.6.2 tools work fine with the same kernel, and the i-pipe
-
-    John
-
-
-
-http://www.zultron.com/static/2013/01/xenomai/3.5.3-mmap-segfault/kernel.config.txt
-
-http://www.zultron.com/static/2013/01/xenomai/3.5.3-mmap-segfault/strace.log
+	John
 
 
