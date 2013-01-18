@@ -1,11 +1,12 @@
-From: Gregory Perry <Gregory.Perry@govirtual.tv>
-Date: Fri, 18 Jan 2013 21:26:44 +0000
-Message-ID: <718DFA7882181D45B8BD18F31C46D554218F71D6@MBX201.domain.local>
-Content-Language: en-US
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+From: Paul <paul_c@tuxcnc.org>
+Date: Fri, 18 Jan 2013 22:11:26 +0000
+References: <CALJOq=VtrBhMzCaT=7omDVN9hnnwZ+cmM1_1eff9DTS-fvLjaw@mail.gmail.com>
+In-Reply-To: <CALJOq=VtrBhMzCaT=7omDVN9hnnwZ+cmM1_1eff9DTS-fvLjaw@mail.gmail.com>
 MIME-Version: 1.0
-Subject: [Xenomai] Xenomai Documentation for ARM Integration
+Message-Id: <201301182211.27006.paul_c@tuxcnc.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] GPIO Interrupts problem with RTDM
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,24 +15,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
+Cc: Pierre LE COZ <peter.le.coz@gmail.com>
 
-Hello,
+On Friday 18 January 2013, Pierre LE COZ wrote:
+> I have simple program to manage the GPIO of my raspberry Pi using
+> RTDM.
+>
+> I use :
+> "rtdm_irq_request(& irq_exemple, num_irq, exemple_handler,
+> RTDM_IRQTYPE_SHARED | RTDM_IRQTYPE_EDGE, "MyProgram", NULL);"
+> in order to detect interrupts.
 
-I have been following the Xenomai project for a few months now and it seems=
- there is a lot of confusion about the optimal path to integrating Xenomai =
-with the appropriate I-pipe patches and other legwork required to get it ru=
-nning and stable on ARM platforms such as the BeagleBone and Raspberry Pi.
+rtdm_irq_request does not explicitly enable the interrupts on a gpio pin 
+with ian_cim's patch - This could probably be done, but I don't have 
+the time for it. In the meantime, in kernel space, use the following 
+calls in conjunction with rtdm_irq_request:
 
-I would be willing to document at length the entire process required for bu=
-ilding a kernel successfully with all userland and kernel support required,=
- but I want to make sure that it is a workflow advocated by the project mai=
-ntainers in terms of the build environment, patching process, and performan=
-ce testing objectives of the documentation.
+        // To enable an interrupt.
+        gpio_request_one(gpio_pin, GPIOF_DIR_IN, "module name");
+        irq_number = gpio_to_irq(gpio_pin);
+        irq_set_irq_type(irq_number,  IRQF_TRIGGER_RISING);
+        enable_irq(irq_number);
 
-Is there any interest in this and would someone from the Xenomai project be=
- willing to provide answers to questions if I were to write up the document=
-ation?  In the long run it would probably cut down on most if not all of th=
-e redundant "how do I get Xenomai running on the BeagleBone" threads that p=
-op up from time to time.
 
+        // To disable an interrupt and clean up.
+        disable_irq(irq_number);
+        free_irq(irq_number, NULL);
+        gpio_free(gpio_pin);
+
+In user space, I'd suggest looking at the source code for Mike 
+McCauley's bcm2835 library <http://www.open.com.au/mikem/bcm2835/>
+
+> After repeated presses on a pushbutton linking my input GPIO to 3,3v,
+> I run
+>
+> # cat /proc/xenomai/irq
+> IRQ CPU0
+> 3: 1134 [timer]
+> 108: 0 MyProgram
+> 259: 0 [virtual]
+>
+> No interrupt is taken into account.
+
+As Gilles has already pointed out, you are missing a call to 
+ipipe_handle_demuxed_irq() - See attached patch.
+
+
+Regards, Paul.
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: bcm2708_gpio.diff
+Type: text/x-diff
+Size: 605 bytes
+Desc: not available
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20130118/331ef7d4/attachment.diff>
