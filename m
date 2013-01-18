@@ -1,14 +1,11 @@
-Message-ID: <50F9ABEC.7070504@siemens.com>
-Date: Fri, 18 Jan 2013 21:09:16 +0100
-From: Jan Kiszka <jan.kiszka@siemens.com>
+From: Gregory Perry <Gregory.Perry@govirtual.tv>
+Date: Fri, 18 Jan 2013 21:26:44 +0000
+Message-ID: <718DFA7882181D45B8BD18F31C46D554218F71D6@MBX201.domain.local>
+Content-Language: en-US
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <50F96C89.8010004@siemens.com> <50F97A65.7060306@xenomai.org>
-	<50F98088.5070804@siemens.com> <50F99CCE.1000907@siemens.com>
-In-Reply-To: <50F99CCE.1000907@siemens.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [CRITICAL PATCH] ipipe: Re-read domain context after
-	IRQ processing
+Subject: [Xenomai] Xenomai Documentation for ARM Integration
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,47 +14,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 2013-01-18 20:04, Jan Kiszka wrote:
-> On 2013-01-18 18:04, Jan Kiszka wrote:
->> On 2013-01-18 17:37, Philippe Gerum wrote:
->>> On 01/18/2013 04:38 PM, Jan Kiszka wrote:
->>>> This fixes a nasty bug on SMP boxes: We may migrate to root in the
->>>> context of an IRQ handler, and then also to a different CPU. Therefore,
->>>> we must not use domain contexts read before the invocation but update
->>>> them afterward or use stable information like the domain reference.
->>>
->>> Ack.
->>>
->>>>
->>>> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
->>>> ---
->>>>
->>>> We are still facing stalled, unkillable RT processes despite this fix,
->>>
->>> Is TASK_HARDENING still lingering in task->state despite the recent 
->>> switch_tail fix, or is this something different?
->>
->> Patch is applied, but I didn't check this detail yet.
->>
->> I just found a potential SMP race in schedule_linux_call, patch follows.
->> But now I triggered XENO_BUGON(NUCLEUS, need_resched == 0); for unknown
->> reasons...
-> 
-> Probably found the problem - or at least another one: XNINLOCK must be
-> used with xnsched::lflags, not status. It is set/cleared by the RTDM
-> spin locks outside nklock. Will patch that and retest.
+Hello,
 
-Wasn't able to run all tests yet, but it looked promising so far. Will
-finish this on Monday.
+I have been following the Xenomai project for a few months now and it seems=
+ there is a lot of confusion about the optimal path to integrating Xenomai =
+with the appropriate I-pipe patches and other legwork required to get it ru=
+nning and stable on ARM platforms such as the BeagleBone and Raspberry Pi.
 
-Xenomai patches pushed, they seem consistent to me now.
+I would be willing to document at length the entire process required for bu=
+ilding a kernel successfully with all userland and kernel support required,=
+ but I want to make sure that it is a workflow advocated by the project mai=
+ntainers in terms of the build environment, patching process, and performan=
+ce testing objectives of the documentation.
 
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RTC ITP SDP-DE
-Corporate Competence Center Embedded Linux
+Is there any interest in this and would someone from the Xenomai project be=
+ willing to provide answers to questions if I were to write up the document=
+ation?  In the long run it would probably cut down on most if not all of th=
+e redundant "how do I get Xenomai running on the BeagleBone" threads that p=
+op up from time to time.
 
