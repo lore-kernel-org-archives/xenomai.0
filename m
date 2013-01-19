@@ -1,9 +1,10 @@
-Message-ID: <50FB1AB9.30604@xenomai.org>
-Date: Sat, 19 Jan 2013 23:14:17 +0100
+Message-ID: <50FB1B41.6050001@xenomai.org>
+Date: Sat, 19 Jan 2013 23:16:33 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <50FAFF77.8020803@zultron.com> <50FB1A58.5040307@zultron.com>
-In-Reply-To: <50FB1A58.5040307@zultron.com>
+	<50FB1AB9.30604@xenomai.org>
+In-Reply-To: <50FB1AB9.30604@xenomai.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] 32-bit regression tests:  CLOCK_REALTIME wonkiness
@@ -18,33 +19,39 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: John Morris <john@zultron.com>
 Cc: Xenomai <xenomai@xenomai.org>
 
-On 01/19/2013 11:12 PM, John Morris wrote:
+On 01/19/2013 11:14 PM, Gilles Chanteperdrix wrote:
 
-> On 01/19/2013 02:17 PM, John Morris wrote:
->> Hi list,
->>
->> These are the final tests on 32-bit before the initial RedHat packages
->> can be released for wider testing.
->>
->> On this host, a Dell Celeron with ICH5 chipset, the CLOCK_REALTIME
->> numbers look funny.  All other tests run correctly.
+> On 01/19/2013 11:12 PM, John Morris wrote:
 > 
-> Whoops, how embarrassing, I reported the wrong thing:  it's the
-> native/tsc numbers that look funny.
+>> On 01/19/2013 02:17 PM, John Morris wrote:
+>>> Hi list,
+>>>
+>>> These are the final tests on 32-bit before the initial RedHat packages
+>>> can be released for wider testing.
+>>>
+>>> On this host, a Dell Celeron with ICH5 chipset, the CLOCK_REALTIME
+>>> numbers look funny.  All other tests run correctly.
+>>
+>> Whoops, how embarrassing, I reported the wrong thing:  it's the
+>> native/tsc numbers that look funny.
+>>
+>> ++ /usr/lib/xenomai/regression/native/tsc
+>> Checking tsc for 1 minute(s)
+>> min: 4294967295, max: 0, avg: -nan
+>> min: 4294967295, max: 0, avg: -nan
+>> min: 4294967295, max: 0, avg: -nan
+>> min: 4294967295, max: 0, avg: -nan
+>> min: 4294967295, max: 0, avg: -nan
+>> min: 4294967295, max: 0, avg: -nan
+>> [...]
+>> min: 4294967295, max: 0, avg: -nan -> -nan us
 > 
-> ++ /usr/lib/xenomai/regression/native/tsc
-> Checking tsc for 1 minute(s)
-> min: 4294967295, max: 0, avg: -nan
-> min: 4294967295, max: 0, avg: -nan
-> min: 4294967295, max: 0, avg: -nan
-> min: 4294967295, max: 0, avg: -nan
-> min: 4294967295, max: 0, avg: -nan
-> min: 4294967295, max: 0, avg: -nan
-> [...]
-> min: 4294967295, max: 0, avg: -nan -> -nan us
+> 
+> You are probably missing --enable-x86-tsc on configure command line.
+> 
 
-
-You are probably missing --enable-x86-tsc on configure command line.
+(or rather have passed --disable-x86-tsc as --enable-x86-tsc should be
+the default).
 
 -- 
                                                                 Gilles.
