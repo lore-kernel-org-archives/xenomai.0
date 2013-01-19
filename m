@@ -1,16 +1,14 @@
-Message-ID: <50E98849.5050903@web.de>
-Date: Sun, 06 Jan 2013 15:20:57 +0100
-From: Jan Kiszka <jan.kiszka@web.de>
 MIME-Version: 1.0
-References: <50E47751.1070005@siemens.com>
-	<50E59112.6080005@siemens.com>	<50E94E72.5050309@xenomai.org>
-	<50E95812.8050503@web.de> <50E959EC.8030306@web.de>
-	<50E98242.30104@xenomai.org>
-In-Reply-To: <50E98242.30104@xenomai.org>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] [PATCH v3] nucleus: Convert intrlock to a sleeping
- Linux lock
+In-Reply-To: <201301190052.19037.paul_c@tuxcnc.org>
+References: <CALJOq=VtrBhMzCaT=7omDVN9hnnwZ+cmM1_1eff9DTS-fvLjaw@mail.gmail.com>
+	<201301182211.27006.paul_c@tuxcnc.org>
+	<CALJOq=Vy2eqfikHRzxwxs=yC4sXp=cChC76Q4ZNfs8GudpSAdg@mail.gmail.com>
+	<201301190052.19037.paul_c@tuxcnc.org>
+From: Pierre LE COZ <peter.le.coz@gmail.com>
+Date: Sat, 19 Jan 2013 11:41:37 +0100
+Message-ID: <CALJOq=UhOuExbOd+SLXQahQZi4PL8xrUTo27VQoKNvdUuKbizQ@mail.gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: Re: [Xenomai] GPIO Interrupts problem with RTDM
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,49 +17,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "Mauerer, Wolfgang" <wolfgang.mauerer@siemens.com>, Xenomai <xenomai@xenomai.org>
+To: Paul <paul_c@tuxcnc.org>
+Cc: xenomai@xenomai.org
 
-T24gMjAxMy0wMS0wNiAxNDo1NSwgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4gT24gMDEv
-MDYvMjAxMyAxMjowMyBQTSwgSmFuIEtpc3prYSB3cm90ZToKPiAKPj4gT24gMjAxMy0wMS0wNiAx
-MTo1NSwgSmFuIEtpc3prYSB3cm90ZToKPj4+IE9uIDIwMTMtMDEtMDYgMTE6MTQsIFBoaWxpcHBl
-IEdlcnVtIHdyb3RlOgo+Pj4+IE9uIDAxLzAzLzIwMTMgMDM6MDkgUE0sIEphbiBLaXN6a2Egd3Jv
-dGU6Cj4+Pj4KPj4+Pj4gK3N0YXRpYyBzdHJ1Y3QgeG52ZmlsZV9sb2NrX29wcyB2ZmlsZV9zdGF0
-X2xvY2tvcHMgPSB7Cj4+Pj4+ICsJLmdldCA9IHhuaW50cl9nZXRfcXVlcnlfbG9jaywKPj4+Pj4g
-KwkucHV0ID0geG5pbnRyX3B1dF9xdWVyeV9sb2NrLAo+Pj4+PiArfTsKPj4+Pj4gKwo+Pj4+PiAg
-c3RhdGljIHN0cnVjdCB4bnZmaWxlX3NuYXBzaG90IHN0YXRfdmZpbGUgPSB7Cj4+Pj4+ICAJLnBy
-aXZzeiA9IHNpemVvZihzdHJ1Y3QgdmZpbGVfc3RhdF9wcml2KSwKPj4+Pj4gIAkuZGF0YXN6ID0g
-c2l6ZW9mKHN0cnVjdCB2ZmlsZV9zdGF0X2RhdGEpLAo+Pj4+PiAgCS50YWcgPSAmbmtwb2Rfc3Ry
-dWN0LnRocmVhZGxpc3RfdGFnLAo+Pj4+PiAgCS5vcHMgPSAmdmZpbGVfc3RhdF9vcHMsCj4+Pj4+
-ICsJLmVudHJ5ID0geyAubG9ja29wcyA9ICZ2ZmlsZV9zdGF0X2xvY2tvcHMgfSwKPj4+Pj4gIH07
-Cj4+Pj4KPj4+PiBUaGlzIHdvdWxkIGludHJvZHVjZSBhIHJlZ3Jlc3Npb24uIHN0YXRfdmZpbGUn
-cyByZXdpbmQvbmV4dCBoYW5kbGVycwo+Pj4+IGNvbXBldGUgd2l0aCBjb2RlIGFsdGVyaW5nIHRo
-ZSBnbG9iYWwgdGhyZWFkIHF1ZXVlIHdoaWNoIG1heSBydW4gaW4KPj4+PiBwcmltYXJ5IG1vZGUs
-IHN1Y2ggYXMgeG5wb2RfZGVsZXRlX3RocmVhZCgpIHdoZW4gZGVsZXRpbmcgYSBrZXJuZWwgdGFz
-ay4KPj4+PiBTbyB3ZSBjYW4ndCB1c2UgYSBsaW51eCBsb2NrIHRvIHByb3RlY3QgaXQuCj4+Pgo+
-Pj4gVGhlIExpbnV4IGxvY2sgaXMgaGVsZCBhcm91bmQgdGhpcyByZXdpbmQgbG9vcCAod2hpY2gg
-aXMgc3RpbGwgaW4KPj4+IHBsYWNlKSwgYW5kIGl0IGlzIG5vdCBwcm90ZWN0aW5nIGFueXRoaW5n
-IHRocmVhZCByZWxhdGVkLCBqdXN0IHRoZQo+Pj4gYXBwZWFyYW5jZSBhbmQgZGlzYXBwZWFyYW5j
-ZSBvZiBJUlFzLiBJIGZhaWwgdG8gc2VlIGEgY29uZmxpY3QsIGFuZAo+Pj4gdGhlcmUgYXJlIGFs
-c28gbm8gSS1waXBlL1hlbm9tYWkgd2FybmluZ3MgdHJpZ2dlcmVkIHdpdGggdGhpcyBwYXR0ZXJu
-Lgo+Pgo+PiBPaCwgbm93IEkgc2VlOiBUaGUgbmtsb2NrIGlzIGF1dG9tYXRpY2FsbHkgdGFrZW4g
-aWYgdGhlcmUgYXJlIG5vCj4+IGxvY2tvcHMuIFRoYXQgbmVlZHMgdG8gYmUgZG9uZSBpbiB0aGUg
-c3RhdCBsb2NrdXBzIGFzIHdlbGwsIG9mIGNvdXJzZS4KPj4gV2lsbCBmaXguCj4gCj4gCj4gVGhl
-IG1vcmUgSSB0aGluayBhYm91dCB0aGlzLCB0aGUgbW9yZSBJIGZpbmQgd2Ugc2hvdWxkIG5vdCBi
-ZSBkb2luZwo+IHRoaXMuIFhlbm9tYWkgMi42LnggaXMgYSBzdGFibGUgYnJhbmNoLCBsZXQgdXMg
-c3RvcCBtYWtpbmcgc3VjaCBjaGFuZ2VzLAo+IHRoaXMgd2lsbCBhbGxvdyB1cyB0byBzdGFydCB3
-b3JraW5nIG9uIC1mb3JnZS4gVGhlIHdhcm5pbmcgaXMKPiBlc3NlbnRpYWxseSBhIGZhbHNlLXBv
-c2l0aXZlLCBJIGRvIG5vdCBzZWUgYW55IHByb2JsZW0gY2FsbGluZwo+IGlwaXBlX3ZpcnR1YWxp
-emVfaXJxIHdpdGggdGhlIHJvb3QgZG9tYWluIHN0YWxsZWQuIFdlIGNhbiBza2lwIGl0IGluIHRo
-ZQo+IEktcGlwZSBjb3JlIHBhdGNoZXMgd2hlbiBjb21waWxpbmcgd2l0aCBDT05GSUdfSVBJUEVf
-TEVHQUNZLgoKV2VsbCwgd2UgbmVlZCB0byBzdXBwb3J0IDIuNiBmb3IgcXVpdGUgYSB3aGlsZSBo
-ZXJlLCBzbyBJJ20gaW50ZXJlc3RlZAppbiBmaXhpbmcgc3VjaCByZWdyZXNzaW9ucywgYWxzbyBv
-biBpbnN0cnVtZW50YXRpb25zLCB3aXRob3V0IGluY3JlYXNpbmcKb3VyIGxvY2FsIHF1ZXVlIHNp
-emUuIFRoZSBuZXh0IHZlcnNpb24gd2lsbCBiZSBsZXNzIGludmFzaXZlIHRoYW4gdGhlCmN1cnJl
-bnQgb25lLiBGaW5hbGx5LCBmaXhpbmcgdGhpcyBpc3N1ZSByZXZlYWxlZCBhbHNvIG90aGVyIHBy
-b2Mgb3V0cHV0CmJ1Z3MuCgpKYW4KCi0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0t
-LS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IHNpZ25hdHVy
-ZS5hc2MKVHlwZTogYXBwbGljYXRpb24vcGdwLXNpZ25hdHVyZQpTaXplOiAyNjEgYnl0ZXMKRGVz
-YzogT3BlblBHUCBkaWdpdGFsIHNpZ25hdHVyZQpVUkw6IDxodHRwOi8vd3d3Lnhlbm9tYWkub3Jn
-L3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTMwMTA2LzEwZmZlODY0L2F0dGFjaG1l
-bnQucGdwPgo=
+Thanks Paul for suggestions.
+
+Having patched my bcm2708_gpio.c,  I rebuild the kernel and modules.
+I added the checks on the return codes and recompiled my own module.
+
+Unfortunately it looks like I still have the same problem, except this
+time, I get a return code :
+
+# insmod rpi-rtdm.ko
+insmod: can't insert 'rpi-rtdm.ko': Device or resource busy
+
+I could not find it in Documentation/gpio.txt.
+I've found someone asking for similar problems. Respondents suggested the
+use of at32_select_gpio(), but it's for an other target. So I don't think
+this will help.
