@@ -1,16 +1,13 @@
-Message-ID: <50E9897E.2000106@xenomai.org>
-Date: Sun, 06 Jan 2013 15:26:06 +0100
+Message-ID: <50FAC07F.1000405@xenomai.org>
+Date: Sat, 19 Jan 2013 16:49:19 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <50E47751.1070005@siemens.com>
-	<50E59112.6080005@siemens.com>	<50E94E72.5050309@xenomai.org>
-	<50E95812.8050503@web.de> <50E959EC.8030306@web.de>
-	<50E98242.30104@xenomai.org> <50E98849.5050903@web.de>
-In-Reply-To: <50E98849.5050903@web.de>
+References: <CALJOq=VtrBhMzCaT=7omDVN9hnnwZ+cmM1_1eff9DTS-fvLjaw@mail.gmail.com>	<201301190052.19037.paul_c@tuxcnc.org>	<CALJOq=UhOuExbOd+SLXQahQZi4PL8xrUTo27VQoKNvdUuKbizQ@mail.gmail.com>	<201301191235.11402.paul_c@tuxcnc.org>
+	<CALJOq=VS548FH3W_tWdmpW8kYu69ZaXM4WiYVQu1CTwep0VD3A@mail.gmail.com>
+In-Reply-To: <CALJOq=VS548FH3W_tWdmpW8kYu69ZaXM4WiYVQu1CTwep0VD3A@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PATCH v3] nucleus: Convert intrlock to a sleeping
- Linux lock
+Subject: Re: [Xenomai] GPIO Interrupts problem with RTDM
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,74 +16,111 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@web.de>
-Cc: "Mauerer, Wolfgang" <wolfgang.mauerer@siemens.com>, Xenomai <xenomai@xenomai.org>
+To: Pierre LE COZ <peter.le.coz@gmail.com>
+Cc: xenomai@xenomai.org
 
-On 01/06/2013 03:20 PM, Jan Kiszka wrote:
+On 01/19/2013 04:46 PM, Pierre LE COZ wrote:
 
-> On 2013-01-06 14:55, Gilles Chanteperdrix wrote:
->> On 01/06/2013 12:03 PM, Jan Kiszka wrote:
+>> Add some debug messages in the areas you request resources and then use
+>> dmesg - The most likely source of error is either attempting to use a
+>> resource that has been claimed or not releasing when you have finished
+>> with it.
 >>
->>> On 2013-01-06 11:55, Jan Kiszka wrote:
->>>> On 2013-01-06 11:14, Philippe Gerum wrote:
->>>>> On 01/03/2013 03:09 PM, Jan Kiszka wrote:
->>>>>
->>>>>> +static struct xnvfile_lock_ops vfile_stat_lockops = {
->>>>>> +	.get = xnintr_get_query_lock,
->>>>>> +	.put = xnintr_put_query_lock,
->>>>>> +};
->>>>>> +
->>>>>>  static struct xnvfile_snapshot stat_vfile = {
->>>>>>  	.privsz = sizeof(struct vfile_stat_priv),
->>>>>>  	.datasz = sizeof(struct vfile_stat_data),
->>>>>>  	.tag = &nkpod_struct.threadlist_tag,
->>>>>>  	.ops = &vfile_stat_ops,
->>>>>> +	.entry = { .lockops = &vfile_stat_lockops },
->>>>>>  };
->>>>>
->>>>> This would introduce a regression. stat_vfile's rewind/next handlers
->>>>> compete with code altering the global thread queue which may run in
->>>>> primary mode, such as xnpod_delete_thread() when deleting a kernel task.
->>>>> So we can't use a linux lock to protect it.
->>>>
->>>> The Linux lock is held around this rewind loop (which is still in
->>>> place), and it is not protecting anything thread related, just the
->>>> appearance and disappearance of IRQs. I fail to see a conflict, and
->>>> there are also no I-pipe/Xenomai warnings triggered with this pattern.
->>>
->>> Oh, now I see: The nklock is automatically taken if there are no
->>> lockops. That needs to be done in the stat lockups as well, of course.
->>> Will fix.
->>
->>
->> The more I think about this, the more I find we should not be doing
->> this. Xenomai 2.6.x is a stable branch, let us stop making such changes,
->> this will allow us to start working on -forge. The warning is
->> essentially a false-positive, I do not see any problem calling
->> ipipe_virtualize_irq with the root domain stalled. We can skip it in the
->> I-pipe core patches when compiling with CONFIG_IPIPE_LEGACY.
 > 
-> Well, we need to support 2.6 for quite a while here, so I'm interested
-> in fixing such regressions,
+> Here's my entire init :
+> 
+> static int __init exemple_init (void)
+> {
+>         int err;
+> 
+>         printk(KERN_INFO "Requesting GPIO %d\n",GPIO_IN);
+>                 if((err = gpio_request_one(GPIO_IN, GPIOF_DIR_IN,
+> THIS_MODULE->name)) !=0) {
+>                 printk(KERN_INFO "error %d: could not request gpio: %d\n",
+> err, GPIO_IN);
+>                 return err;
+>         }
+> 
+>         printk(KERN_INFO "Setting the irq type to trigger rising\n");
+>         irq_set_irq_type(BUTTON_IRQ,  IRQF_TRIGGER_RISING);
+> 
+> 
+>         printk(KERN_INFO "Requesting irq %d\n", BUTTON_IRQ);
+>         if((err = rtdm_irq_request(& irq_exemple, BUTTON_IRQ,
+> exemple_handler, 0, THIS_MODULE->name,  NULL)) !=0) {
+>                 printk(KERN_INFO "error %d: could not request irq: %d\n",
+> err, GPIO_IN);
+>                 gpio_free(GPIO_IN);
+>                 return err;
+>         }
+> 
+>         printk(KERN_INFO "Enabling irq %d\n", BUTTON_IRQ);
+> 
+>         // enable_irq(BUTTON_IRQ);
+>         rtdm_irq_enable(& irq_exemple);
+>         return 0;
+> }
+> 
+> The module is running well, but still no interrupt detected  :
+> # insmod rpi-rtdm.ko
+> 
+> Requesting GPIO 23
+> Setting the irq type to trigger rising
+> Requesting irq 108
+> Enabling irq 108
+> /MyDEV/06_GPIO_rtdm_livre # cat /proc/xenomai/irq
+> IRQ         CPU0
+>   3:        3491         [timer]
+> 108:           0         rpi_rtdm
+> 259:           0         [virtual]
+> /MyDEV/06_GPIO_rtdm_livre #
+> 
+> When replacing "rtdm_irq_enable(& irq_exemple);" with
+> "enable_irq(BUTTON_IRQ);" to try to enable the irq, the module fails :
+> # insmod rpi-rtdm.ko
+> Requesting GPIO 23
+> Setting the irq type to trigger rising
+> Requesting irq 108
+> Enabling irq 108
+> ------------[ cut here ]------------
+> WARNING: at kernel/irq/manage.c:421 enable_irq+0x50/0x6c()
+> Unbalanced enable for IRQ 108
+> Modules linked in: rpi_rtdm(O+)
+> [<c00136bc>] (unwind_backtrace+0x0/0xe4) from [<c0021c6c>]
+> (warn_slowpath_common+0x4c/0x64)
+> [<c0021c6c>] (warn_slowpath_common+0x4c/0x64) from [<c0021d04>]
+> (warn_slowpath_fmt+0x2c/0x3c)
+> [<c0021d04>] (warn_slowpath_fmt+0x2c/0x3c) from [<c0060c50>]
+> (enable_irq+0x50/0x6c)
+> [<c0060c50>] (enable_irq+0x50/0x6c) from [<bf0020b4>]
+> (exemple_init+0xb4/0xe0 [rpi_rtdm])
+> [<bf0020b4>] (exemple_init+0xb4/0xe0 [rpi_rtdm]) from [<c00086a8>]
+> (do_one_initcall+0x9c/0x17c)
+> [<c00086a8>] (do_one_initcall+0x9c/0x17c) from [<c0051a5c>]
+> (sys_init_module+0x1658/0x1830)
+> [<c0051a5c>] (sys_init_module+0x1658/0x1830) from [<c000dbe0>]
+> (ret_fast_syscall+0x0/0x30)
+> ---[ end trace d3f5d198ddeaf1cf ]---
+> 
+> 
+>  About the fact that interrupts are not detected :
+> 
+> This may be a generic issue, which I thought was fixed, but may not be.
+>> Could you try the following patch?
+>>
+> 
+> http://git.xenomai.org/?p=ipipe-gch.git;a=commit;h=c14c79d29fed82267560c7bf26d628ef4d39f5b7
+> 
+> 
+> Thank you Gilles for the patch. I tried it but I could not rebuild my
+> kernel :
 
 
-I repeat again: there is no regression, it is not invalid to call
-ipipe_virtualize_irq with the root domain stalled, and never was, the
-warning is new and a false positive. I am opposed to changing intrlock
-into a mutex with a lot of cascading consequences, the ones we see, the
-ones we will discover when people start using the next release.
+I do not know what you took. What you were supposed to apply is this diff:
 
-If you want to benefit from the full instrumentation of the I-pipe core,
-use xenomai-forge.
+http://git.xenomai.org/?p=ipipe-gch.git;a=commitdiff;h=c14c79d29fed82267560c7bf26d628ef4d39f5b7;hp=3b3b1d3969106b561ec5fee6c0006eff2f1bc1bb
 
-> also on instrumentations, without increasing
-> our local queue size. The next version will be less invasive than the
-> current one. Finally, fixing this issue revealed also other proc output
-> bugs.
-
-
-If you are talking about the XNARCH_TIMER_IRQ mess, then yes, we should
-fix this one.
+Which should not cause any such issue.
 
 -- 
                                                                 Gilles.
