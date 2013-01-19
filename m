@@ -1,12 +1,10 @@
+Message-ID: <50FAFF77.8020803@zultron.com>
+Date: Sat, 19 Jan 2013 14:17:59 -0600
+From: John Morris <john@zultron.com>
 MIME-Version: 1.0
-In-Reply-To: <50FA920A.1070900@xenomai.org>
-References: <718DFA7882181D45B8BD18F31C46D554218F71D6@MBX201.domain.local>
-	<50FA920A.1070900@xenomai.org>
-Date: Sat, 19 Jan 2013 20:02:26 +0100
-Message-ID: <CAKvQZ_3ZPPeOGCYEYpeR9hkvh2xL27z=aqKeVyOM8o=tgpJ2hQ@mail.gmail.com>
-From: Willy Lambert <lambert.willy@gmail.com>
 Content-Type: text/plain; charset=ISO-8859-1
-Subject: Re: [Xenomai] Xenomai Documentation for ARM Integration
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai] 32-bit regression tests:  CLOCK_REALTIME wonkiness
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,66 +13,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Xenomai <xenomai@xenomai.org>
 
-2013/1/19 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>:
-> On 01/18/2013 10:26 PM, Gregory Perry wrote:
->
->> Hello,
->>
->> I have been following the Xenomai project for a few months now and it
->> seems there is a lot of confusion about the optimal path to
->> integrating Xenomai with the appropriate I-pipe patches and other
->> legwork required to get it running and stable on ARM platforms such
->> as the BeagleBone and Raspberry Pi.
->
->
-> The simplest solution is to integrate the support for these processors
-> to the mainline kernel so that the I-pipe support can be merged in the
-> I-pipe patch itself. That is what I tried to tell here:
-> http://xenomai.org/index.php/I-pipe-core:ArmPorting#Publishing_your_modifications
->
-> Failing that, I recommended, several times, to provide pre and post
-> patches allowing to apply the support for the additional processor in
-> addition to the I-pipe patch, explained how to generate these
-> patches, and said that we would be glad to distribute these patches
-> as part of the xenomai tarball.
->
->>
->> I would be willing to document at length the entire process required
->> for building a kernel successfully with all userland and kernel
->> support required, but I want to make sure that it is a workflow
->> advocated by the project maintainers in terms of the build
->> environment, patching process, and performance testing objectives of
->> the documentation.
->
->
-> This process is already documented in the README.INSTALL guide...
-> The part we do not document is the configuration and compilation of
-> the Linux kernel, someone else volunteered to provide more documentation
-> on this subject, you may want to coordinate your efforts with him.
->
+Hi list,
 
-FYI it's me, I'm looking for time to do it ^^
+These are the final tests on 32-bit before the initial RedHat packages
+can be released for wider testing.
 
->>
->> Is there any interest in this and would someone from the Xenomai
->> project be willing to provide answers to questions if I were to write
->> up the documentation?  In the long run it would probably cut down on
->> most if not all of the redundant "how do I get Xenomai running on the
->> BeagleBone" threads that pop up from time to time.
->
->
-> From my point of view, these threads exist because the work on BeagleBone
-> is still separated.
->
->
-> --
->                                                                 Gilles.
->
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> http://www.xenomai.org/mailman/listinfo/xenomai
+On this host, a Dell Celeron with ICH5 chipset, the CLOCK_REALTIME
+numbers look funny.  All other tests run correctly.
+
+++ /usr/lib/xenomai/clocktest -T 30
+== Tested clock: 0 (CLOCK_REALTIME)
+CPU      ToD offset [us] ToD drift [us/s]      warps max delta [us]
+--- -------------------- ---------------- ---------- --------------
+  0                  0.0            0.000          0            0.0
+^[[1A  0           -1074721.3           39.245          0            0.0
+^[[1A  0           -1074711.5           39.172          0            0.0
+^[[1A  0           -1074701.8           39.096          0            0.0
+^[[1A  0           -1074691.9           39.184          0            0.0
+
+This is Gilles's i-pipe dev tree and xenomai master pulled yesterday,
+kernel 3.5.7.
+
+	John
+
+
+http://www.zultron.com/static/2013/01/xenomai/3.5.7-test-32-bit/config-3.5.7.txt
+
+http://www.zultron.com/static/2013/01/xenomai/3.5.7-test-32-bit/dmesg.log
+
+http://www.zultron.com/static/2013/01/xenomai/3.5.7-test-32-bit/xeno-regression-test.log
 
