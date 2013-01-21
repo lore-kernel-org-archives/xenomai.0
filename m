@@ -1,12 +1,12 @@
-Message-ID: <50FDCB83.4060707@xenomai.org>
-Date: Tue, 22 Jan 2013 00:13:07 +0100
+Message-ID: <50FDCD39.2000603@xenomai.org>
+Date: Tue, 22 Jan 2013 00:20:25 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <1358809464.75419.YahooMailNeo@web140601.mail.bf1.yahoo.com>
-In-Reply-To: <1358809464.75419.YahooMailNeo@web140601.mail.bf1.yahoo.com>
+References: <1358804184.96123.YahooMailNeo@web172102.mail.ir2.yahoo.com>
+In-Reply-To: <1358804184.96123.YahooMailNeo@web172102.mail.ir2.yahoo.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] x86 Linux with xenomai and i915 graphics stall
+Subject: Re: [Xenomai] Building xenomai with latest buildroot snapshot.
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,47 +15,50 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: A User <t02446@yahoo.com>
+To: bifferos <bifferos@yahoo.co.uk>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 01/22/2013 12:04 AM, A User wrote:
+On 01/21/2013 10:36 PM, bifferos wrote:
 
-> I'm trying to run a Linux/Xenomai system with Ubuntu 12.04 LTS
-> distro including X Window System on an Intel x86 board.
 > 
-> linux: 3.2.21
-> xenomai: 2.6.1
-> i-pipe Patch: 3.2.21-x86-1
 > 
-> When I run with CONFIG_PCI_MSI turned off, I get good Xenomai latency,
-> but the X Window System is unusable.  With MSI turned on, graphics is
-> solid, but latency jumps to about 450 usec when I run glxgears
-> (instead of avg 10 usec, max 50 usec).
+> I was able to compile Xenomai under buildroot 2011.11 without too much trouble, however I'm now trying 
 > 
-> I believe that if I want to use X Window system in a recent x86 system
-> with motherboard graphics, the most popular choice (the only choice?)
-> is i915.
+> to do the same with the latest buildroot snapshot.  Unfortunately it seems buildroot no longer has an
+> easy option to select a kernel compatible with Xenomai.  I looked in xenomai-2.6.1/ksrc/arch/x86/patches
 > 
-> Do you have any advice on how I can run with i915 and Xenomai with
-> this hardware and software?
+> and there are three of them
+> 
+> adeos-ipipe-2.6.37.6-x86-2.9-02.patch
+> adeos-ipipe-2.6.38.8-x86-2.11-01.patch
+> ipipe-core-3.2.21-x86-1.patch
+> 
+> 
+> Can someone please explain what this ipipe-core thing is?
 
 
-That is strange, I have tested xenomai on my workstation which is a core
-i5 and also has an i915, I have been playing video and running other
-opengl apps (including glxgears) and dit not observe high latencies. I
-was using Linux 3.5.7 patched with Xenomai 2.6.2, but I guess it should
-not make any difference. My core i5 is a "sandy bridge" though, so
-should have an intel graphics HD3000 not 4000.
+I am desperately looking for a mail from Philippe where he explained it,
+but can not find it back. Maybe he can give some explanations.
 
-I would suggest enabling the I-pipe tracer in the kernel configuration
-in order to find what is taking so long.
+> Are these interchangeable (they are similar
 
-Anyway, turning on CONFIG_PCI_MSI is recommended these days. Also, have
-you read the troubleshooting guide about SMIs?
+> sizes)? 
 
-If you can not run an accelerated X server, there is always the solution
-to revert to disable the acceleration in the server configuration, as is
-documented in the troubleshooting guide as well.
+
+Yes.
+
+> Do I have to stick to 2.6.37.6 kernel to stand any chance of getting this working?
+
+
+The newer versions should work, though I would recommend to wait for the
+next release which should happen in the next few days.
+
+Also note that I guess you are using Xenomai on the bifferboard, since I
+also guess the processor on this board does not have a tsc, it will be
+emulated using the PIT, which is slow, so, unless you can provide
+another hardware timer with a lower latency, which will work starting
+with the I-pipe core for Linux 3.4, you should turn off
+CONFIG_XENO_OPT_STATS to improve latencies.
 
 -- 
                                                                 Gilles.
