@@ -1,17 +1,15 @@
-Message-ID: <50E98E62.7090907@web.de>
-Date: Sun, 06 Jan 2013 15:46:58 +0100
-From: Jan Kiszka <jan.kiszka@web.de>
+Message-ID: <50FD2D26.4030701@xenomai.org>
+Date: Mon, 21 Jan 2013 12:57:26 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <50E47751.1070005@siemens.com>
-	<50E59112.6080005@siemens.com>	<50E94E72.5050309@xenomai.org>
-	<50E95812.8050503@web.de> <50E959EC.8030306@web.de>
-	<50E98242.30104@xenomai.org> <50E98849.5050903@web.de>
-	<50E9897E.2000106@xenomai.org>
-In-Reply-To: <50E9897E.2000106@xenomai.org>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] [PATCH v3] nucleus: Convert intrlock to a sleeping
- Linux lock
+References: <50F96C89.8010004@siemens.com> <50F97A65.7060306@xenomai.org>
+	<50F98088.5070804@siemens.com> <50F99CCE.1000907@siemens.com>
+	<50F9ABEC.7070504@siemens.com> <50FD26CB.2000809@siemens.com>
+In-Reply-To: <50FD26CB.2000809@siemens.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [CRITICAL PATCH] ipipe: Re-read domain context after
+	IRQ processing
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,63 +18,51 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "Mauerer, Wolfgang" <wolfgang.mauerer@siemens.com>, Xenomai <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-T24gMjAxMy0wMS0wNiAxNToyNiwgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4gT24gMDEv
-MDYvMjAxMyAwMzoyMCBQTSwgSmFuIEtpc3prYSB3cm90ZToKPiAKPj4gT24gMjAxMy0wMS0wNiAx
-NDo1NSwgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4+PiBPbiAwMS8wNi8yMDEzIDEyOjAz
-IFBNLCBKYW4gS2lzemthIHdyb3RlOgo+Pj4KPj4+PiBPbiAyMDEzLTAxLTA2IDExOjU1LCBKYW4g
-S2lzemthIHdyb3RlOgo+Pj4+PiBPbiAyMDEzLTAxLTA2IDExOjE0LCBQaGlsaXBwZSBHZXJ1bSB3
-cm90ZToKPj4+Pj4+IE9uIDAxLzAzLzIwMTMgMDM6MDkgUE0sIEphbiBLaXN6a2Egd3JvdGU6Cj4+
-Pj4+Pgo+Pj4+Pj4+ICtzdGF0aWMgc3RydWN0IHhudmZpbGVfbG9ja19vcHMgdmZpbGVfc3RhdF9s
-b2Nrb3BzID0gewo+Pj4+Pj4+ICsJLmdldCA9IHhuaW50cl9nZXRfcXVlcnlfbG9jaywKPj4+Pj4+
-PiArCS5wdXQgPSB4bmludHJfcHV0X3F1ZXJ5X2xvY2ssCj4+Pj4+Pj4gK307Cj4+Pj4+Pj4gKwo+
-Pj4+Pj4+ICBzdGF0aWMgc3RydWN0IHhudmZpbGVfc25hcHNob3Qgc3RhdF92ZmlsZSA9IHsKPj4+
-Pj4+PiAgCS5wcml2c3ogPSBzaXplb2Yoc3RydWN0IHZmaWxlX3N0YXRfcHJpdiksCj4+Pj4+Pj4g
-IAkuZGF0YXN6ID0gc2l6ZW9mKHN0cnVjdCB2ZmlsZV9zdGF0X2RhdGEpLAo+Pj4+Pj4+ICAJLnRh
-ZyA9ICZua3BvZF9zdHJ1Y3QudGhyZWFkbGlzdF90YWcsCj4+Pj4+Pj4gIAkub3BzID0gJnZmaWxl
-X3N0YXRfb3BzLAo+Pj4+Pj4+ICsJLmVudHJ5ID0geyAubG9ja29wcyA9ICZ2ZmlsZV9zdGF0X2xv
-Y2tvcHMgfSwKPj4+Pj4+PiAgfTsKPj4+Pj4+Cj4+Pj4+PiBUaGlzIHdvdWxkIGludHJvZHVjZSBh
-IHJlZ3Jlc3Npb24uIHN0YXRfdmZpbGUncyByZXdpbmQvbmV4dCBoYW5kbGVycwo+Pj4+Pj4gY29t
-cGV0ZSB3aXRoIGNvZGUgYWx0ZXJpbmcgdGhlIGdsb2JhbCB0aHJlYWQgcXVldWUgd2hpY2ggbWF5
-IHJ1biBpbgo+Pj4+Pj4gcHJpbWFyeSBtb2RlLCBzdWNoIGFzIHhucG9kX2RlbGV0ZV90aHJlYWQo
-KSB3aGVuIGRlbGV0aW5nIGEga2VybmVsIHRhc2suCj4+Pj4+PiBTbyB3ZSBjYW4ndCB1c2UgYSBs
-aW51eCBsb2NrIHRvIHByb3RlY3QgaXQuCj4+Pj4+Cj4+Pj4+IFRoZSBMaW51eCBsb2NrIGlzIGhl
-bGQgYXJvdW5kIHRoaXMgcmV3aW5kIGxvb3AgKHdoaWNoIGlzIHN0aWxsIGluCj4+Pj4+IHBsYWNl
-KSwgYW5kIGl0IGlzIG5vdCBwcm90ZWN0aW5nIGFueXRoaW5nIHRocmVhZCByZWxhdGVkLCBqdXN0
-IHRoZQo+Pj4+PiBhcHBlYXJhbmNlIGFuZCBkaXNhcHBlYXJhbmNlIG9mIElSUXMuIEkgZmFpbCB0
-byBzZWUgYSBjb25mbGljdCwgYW5kCj4+Pj4+IHRoZXJlIGFyZSBhbHNvIG5vIEktcGlwZS9YZW5v
-bWFpIHdhcm5pbmdzIHRyaWdnZXJlZCB3aXRoIHRoaXMgcGF0dGVybi4KPj4+Pgo+Pj4+IE9oLCBu
-b3cgSSBzZWU6IFRoZSBua2xvY2sgaXMgYXV0b21hdGljYWxseSB0YWtlbiBpZiB0aGVyZSBhcmUg
-bm8KPj4+PiBsb2Nrb3BzLiBUaGF0IG5lZWRzIHRvIGJlIGRvbmUgaW4gdGhlIHN0YXQgbG9ja3Vw
-cyBhcyB3ZWxsLCBvZiBjb3Vyc2UuCj4+Pj4gV2lsbCBmaXguCj4+Pgo+Pj4KPj4+IFRoZSBtb3Jl
-IEkgdGhpbmsgYWJvdXQgdGhpcywgdGhlIG1vcmUgSSBmaW5kIHdlIHNob3VsZCBub3QgYmUgZG9p
-bmcKPj4+IHRoaXMuIFhlbm9tYWkgMi42LnggaXMgYSBzdGFibGUgYnJhbmNoLCBsZXQgdXMgc3Rv
-cCBtYWtpbmcgc3VjaCBjaGFuZ2VzLAo+Pj4gdGhpcyB3aWxsIGFsbG93IHVzIHRvIHN0YXJ0IHdv
-cmtpbmcgb24gLWZvcmdlLiBUaGUgd2FybmluZyBpcwo+Pj4gZXNzZW50aWFsbHkgYSBmYWxzZS1w
-b3NpdGl2ZSwgSSBkbyBub3Qgc2VlIGFueSBwcm9ibGVtIGNhbGxpbmcKPj4+IGlwaXBlX3ZpcnR1
-YWxpemVfaXJxIHdpdGggdGhlIHJvb3QgZG9tYWluIHN0YWxsZWQuIFdlIGNhbiBza2lwIGl0IGlu
-IHRoZQo+Pj4gSS1waXBlIGNvcmUgcGF0Y2hlcyB3aGVuIGNvbXBpbGluZyB3aXRoIENPTkZJR19J
-UElQRV9MRUdBQ1kuCj4+Cj4+IFdlbGwsIHdlIG5lZWQgdG8gc3VwcG9ydCAyLjYgZm9yIHF1aXRl
-IGEgd2hpbGUgaGVyZSwgc28gSSdtIGludGVyZXN0ZWQKPj4gaW4gZml4aW5nIHN1Y2ggcmVncmVz
-c2lvbnMsCj4gCj4gCj4gSSByZXBlYXQgYWdhaW46IHRoZXJlIGlzIG5vIHJlZ3Jlc3Npb24sIGl0
-IGlzIG5vdCBpbnZhbGlkIHRvIGNhbGwKPiBpcGlwZV92aXJ0dWFsaXplX2lycSB3aXRoIHRoZSBy
-b290IGRvbWFpbiBzdGFsbGVkLCBhbmQgbmV2ZXIgd2FzLCB0aGUKPiB3YXJuaW5nIGlzIG5ldyBh
-bmQgYSBmYWxzZSBwb3NpdGl2ZS4gSSBhbSBvcHBvc2VkIHRvIGNoYW5naW5nIGludHJsb2NrCj4g
-aW50byBhIG11dGV4IHdpdGggYSBsb3Qgb2YgY2FzY2FkaW5nIGNvbnNlcXVlbmNlcywgdGhlIG9u
-ZXMgd2Ugc2VlLCB0aGUKPiBvbmVzIHdlIHdpbGwgZGlzY292ZXIgd2hlbiBwZW9wbGUgc3RhcnQg
-dXNpbmcgdGhlIG5leHQgcmVsZWFzZS4KPiAKPiBJZiB5b3Ugd2FudCB0byBiZW5lZml0IGZyb20g
-dGhlIGZ1bGwgaW5zdHJ1bWVudGF0aW9uIG9mIHRoZSBJLXBpcGUgY29yZSwKPiB1c2UgeGVub21h
-aS1mb3JnZS4KClVuZm9ydHVuYXRlbHksIGZvcmdlIHdhc24ndCByZWFkeSBmb3Igb3VyIHdvcmts
-b2FkIGxhc3QgdGltZSB3ZSBjaGVja2VkLgpUaGF0J3Mgd2h5IHdlIGFyZSBzdGFiaWxpemluZyBJ
-LXBpcGUgeDg2IG92ZXIgMi42IGhlcmUsIGFuZCB0aGF0J3Mgd2h5CndlIG5lZWQgd29ya2luZyBp
-bnN0cnVtZW50YXRpb25zIGFsc28gaW4gbGVnYWN5IG1vZGUuCgpJZiB5b3UgcHJlZmVyIHRvIHNr
-aXAgdGhlIHdhcm5pbmcgaW4gaXBpcGUsIHRoZW4gSSB3aWxsIHNlbmQgYQpjb3JyZXNwb25kaW5n
-IHBhdGNoLiBUaGUgbG9jayBjb252ZXJzaW9uIGlzIHN0aWxsIG5lY2Vzc2FyeSBmb3IgZm9yZ2Us
-CnRob3VnaC4KCkphbgoKLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEg
-bm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogc2lnbmF0dXJlLmFzYwpU
-eXBlOiBhcHBsaWNhdGlvbi9wZ3Atc2lnbmF0dXJlClNpemU6IDI2MSBieXRlcwpEZXNjOiBPcGVu
-UEdQIGRpZ2l0YWwgc2lnbmF0dXJlClVSTDogPGh0dHA6Ly93d3cueGVub21haS5vcmcvcGlwZXJt
-YWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxMzAxMDYvZWZjNGExNDkvYXR0YWNobWVudC5wZ3A+
-Cg==
+On 01/21/2013 12:30 PM, Jan Kiszka wrote:
+
+> On 2013-01-18 21:09, Jan Kiszka wrote:
+>> On 2013-01-18 20:04, Jan Kiszka wrote:
+>>> On 2013-01-18 18:04, Jan Kiszka wrote:
+>>>> On 2013-01-18 17:37, Philippe Gerum wrote:
+>>>>> On 01/18/2013 04:38 PM, Jan Kiszka wrote:
+>>>>>> This fixes a nasty bug on SMP boxes: We may migrate to root in the
+>>>>>> context of an IRQ handler, and then also to a different CPU. Therefore,
+>>>>>> we must not use domain contexts read before the invocation but update
+>>>>>> them afterward or use stable information like the domain reference.
+>>>>>
+>>>>> Ack.
+>>>>>
+>>>>>>
+>>>>>> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+>>>>>> ---
+>>>>>>
+>>>>>> We are still facing stalled, unkillable RT processes despite this fix,
+>>>>>
+>>>>> Is TASK_HARDENING still lingering in task->state despite the recent 
+>>>>> switch_tail fix, or is this something different?
+>>>>
+>>>> Patch is applied, but I didn't check this detail yet.
+>>>>
+>>>> I just found a potential SMP race in schedule_linux_call, patch follows.
+>>>> But now I triggered XENO_BUGON(NUCLEUS, need_resched == 0); for unknown
+>>>> reasons...
+>>>
+>>> Probably found the problem - or at least another one: XNINLOCK must be
+>>> used with xnsched::lflags, not status. It is set/cleared by the RTDM
+>>> spin locks outside nklock. Will patch that and retest.
+>>
+>> Wasn't able to run all tests yet, but it looked promising so far. Will
+>> finish this on Monday.
+> 
+> Looks stable now according to the testers.
+
+
+Ok, we are good to go for the 2.6.2 re-release then.
+
+
+-- 
+                                                                Gilles.
+
