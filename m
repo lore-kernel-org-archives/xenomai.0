@@ -1,12 +1,13 @@
-Message-ID: <50FDCD39.2000603@xenomai.org>
-Date: Tue, 22 Jan 2013 00:20:25 +0100
+Message-ID: <50FDD15D.2060800@xenomai.org>
+Date: Tue, 22 Jan 2013 00:38:05 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <1358804184.96123.YahooMailNeo@web172102.mail.ir2.yahoo.com>
-In-Reply-To: <1358804184.96123.YahooMailNeo@web172102.mail.ir2.yahoo.com>
+References: <CABEhrWC5a+Mbj3HmLAeGw3ePOX-nj0yaoX5rHEYbCv8NrbXOHQ@mail.gmail.com>
+	<CABEhrWDy6W1VN1qP=cpeGEqdyMypntbBUUBQn05tHPhgu7k10A@mail.gmail.com>
+In-Reply-To: <CABEhrWDy6W1VN1qP=cpeGEqdyMypntbBUUBQn05tHPhgu7k10A@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Building xenomai with latest buildroot snapshot.
+Subject: Re: [Xenomai] Fwd: Help regarding Benchmarking
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,50 +16,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: bifferos <bifferos@yahoo.co.uk>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Abhimanyu Varde <abhi1561@gmail.com>
+Cc: xenomai@xenomai.org
 
-On 01/21/2013 10:36 PM, bifferos wrote:
+On 01/21/2013 08:29 PM, Abhimanyu Varde wrote:
 
+> We are Embedded system students who are writing a driver for a PCI-DIOT 48
+> card using RTDM on Xenomai.We plan to do some benchmarking with respect to :
 > 
+> 1. response latency  (to external events which will be serviced through
+> interrupts)
+> 2. jitter
 > 
-> I was able to compile Xenomai under buildroot 2011.11 without too much trouble, however I'm now trying 
-> 
-> to do the same with the latest buildroot snapshot.  Unfortunately it seems buildroot no longer has an
-> easy option to select a kernel compatible with Xenomai.  I looked in xenomai-2.6.1/ksrc/arch/x86/patches
-> 
-> and there are three of them
-> 
-> adeos-ipipe-2.6.37.6-x86-2.9-02.patch
-> adeos-ipipe-2.6.38.8-x86-2.11-01.patch
-> ipipe-core-3.2.21-x86-1.patch
-> 
-> 
-> Can someone please explain what this ipipe-core thing is?
+> If you could provide us with some standard experiments that can be
+> performed to help benchmark, we would be obliged
 
 
-I am desperately looking for a mail from Philippe where he explained it,
-but can not find it back. Maybe he can give some explanations.
+Hi,
 
-> Are these interchangeable (they are similar
+we have a few examples of code in tree:
 
-> sizes)? 
+src/testsuite/latency/latency.c measures timer interrupt, kernel-space
+and user-space latencies, I guess you could rewire it to use another
+RTDM driver than the timerbench driver to measure the same things based
+on your PCI board.
 
+src/testsuite/irqbench/irqbench.c is another example, measuring hardware
+interrupt latencies (instead of relying on the timer interrupt).
 
-Yes.
+Irqbench relies on a particular setup with another machine, which would
+correspond to a "standard experiment". You can also look at the
+experiments made by other people benchmarking Xenomai or other real-time
+extensions, for instance:
+https://www.osadl.org/fileadmin/dam/rtlws/12/Brown.pdf
 
-> Do I have to stick to 2.6.37.6 kernel to stand any chance of getting this working?
-
-
-The newer versions should work, though I would recommend to wait for the
-next release which should happen in the next few days.
-
-Also note that I guess you are using Xenomai on the bifferboard, since I
-also guess the processor on this board does not have a tsc, it will be
-emulated using the PIT, which is slow, so, unless you can provide
-another hardware timer with a lower latency, which will work starting
-with the I-pipe core for Linux 3.4, you should turn off
-CONFIG_XENO_OPT_STATS to improve latencies.
+Regards.
 
 -- 
                                                                 Gilles.
