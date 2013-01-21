@@ -1,15 +1,17 @@
-Message-ID: <50FD26CB.2000809@siemens.com>
-Date: Mon, 21 Jan 2013 12:30:19 +0100
-From: Jan Kiszka <jan.kiszka@siemens.com>
-MIME-Version: 1.0
-References: <50F96C89.8010004@siemens.com> <50F97A65.7060306@xenomai.org>
-	<50F98088.5070804@siemens.com> <50F99CCE.1000907@siemens.com>
-	<50F9ABEC.7070504@siemens.com>
-In-Reply-To: <50F9ABEC.7070504@siemens.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [CRITICAL PATCH] ipipe: Re-read domain context after
-	IRQ processing
+Content-Type: text/plain; charset=us-ascii
+Mime-Version: 1.0 (Apple Message framework v1283)
+From: Michael Haberler <mail17@mah.priv.at>
+In-Reply-To: <50FAAE9A.2060705@xenomai.org>
+Date: Mon, 21 Jan 2013 12:43:59 +0100
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <1C475D27-61D9-41F9-98D8-476556B485C4@mah.priv.at>
+References: <4D4F8D1B-022E-47F8-A579-EBF2A3427C5D@mah.priv.at>	<50F6D940.3040406@xs4all.nl>	<F1ACE4FC-3E71-4498-B683-81F5C40CB6E3@mah.priv.at>	<50F7AF53.2090800@xs4all.nl>
+	<50F7BC13.50009@xenomai.org>	<50F7FCD8.7020105@xs4all.nl>
+	<50FA9FA0.7020400@xenomai.org>
+	<F995AEC4-6B7E-4DB9-9C64-A5ED3F01DCFA@mah.priv.at>
+	<50FAAE9A.2060705@xenomai.org>
+Subject: Re: [Xenomai] [Emc-developers] "new RTOS" status:
+	Scheduler	(?)	lockup on ARM
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,48 +20,19 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 2013-01-18 21:09, Jan Kiszka wrote:
-> On 2013-01-18 20:04, Jan Kiszka wrote:
->> On 2013-01-18 18:04, Jan Kiszka wrote:
->>> On 2013-01-18 17:37, Philippe Gerum wrote:
->>>> On 01/18/2013 04:38 PM, Jan Kiszka wrote:
->>>>> This fixes a nasty bug on SMP boxes: We may migrate to root in the
->>>>> context of an IRQ handler, and then also to a different CPU. Therefore,
->>>>> we must not use domain contexts read before the invocation but update
->>>>> them afterward or use stable information like the domain reference.
->>>>
->>>> Ack.
->>>>
->>>>>
->>>>> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
->>>>> ---
->>>>>
->>>>> We are still facing stalled, unkillable RT processes despite this fix,
->>>>
->>>> Is TASK_HARDENING still lingering in task->state despite the recent 
->>>> switch_tail fix, or is this something different?
->>>
->>> Patch is applied, but I didn't check this detail yet.
->>>
->>> I just found a potential SMP race in schedule_linux_call, patch follows.
->>> But now I triggered XENO_BUGON(NUCLEUS, need_resched == 0); for unknown
->>> reasons...
->>
->> Probably found the problem - or at least another one: XNINLOCK must be
->> used with xnsched::lflags, not status. It is set/cleared by the RTDM
->> spin locks outside nklock. Will patch that and retest.
-> 
-> Wasn't able to run all tests yet, but it looked promising so far. Will
-> finish this on Monday.
+the suspicion now turned to the DHCP lease setting and RTC time warp =
+issues - the Beaglebone doesnt have an RTC so it starts up at 1-1-1970
 
-Looks stable now according to the testers.
+the first DHCP lease still has 1970 timestamps, but eventually the RTC =
+is set with ntpdate and it could be this causes confusion
 
-Jan
+the thing which is hard to believe for me: loss of IP connectivity - =
+conceivable; kernel hang - why?
 
--- 
-Siemens AG, Corporate Technology, CT RTC ITP SDP-DE
-Corporate Competence Center Embedded Linux
+question: does a RTC time warp have any possible bearing on Xenomai =
+operations?
+
+- Michael=
 
