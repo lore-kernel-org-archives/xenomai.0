@@ -1,14 +1,15 @@
-References: <1358804184.96123.YahooMailNeo@web172102.mail.ir2.yahoo.com>
-	<50FDCD39.2000603@xenomai.org>
-Message-ID: <1358813358.92635.YahooMailNeo@web172106.mail.ir2.yahoo.com>
-Date: Tue, 22 Jan 2013 00:09:18 +0000 (GMT)
-From: bifferos <bifferos@yahoo.co.uk>
-In-Reply-To: <50FDCD39.2000603@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] Building xenomai with latest buildroot snapshot.
-Reply-To: bifferos <bifferos@yahoo.co.uk>
+In-Reply-To: <50B8F21B.5090503@xenomai.org>
+References: <CAMgy_J0idydJq8wzH3CwQoCa+BEbSyUyOJoWmvwc+oAB3jpZ6w@mail.gmail.com>
+	<CAKvQZ_2Nzfgj7oK12+t3CtLj-YWBCB=nFYSDU6B4KqW4aWQpnQ@mail.gmail.com>
+	<50B88506.6000002@xenomai.org>
+	<CAKvQZ_3LJ-u2B0zc0+pobSGnMZ4nNviyxfuP1uiVRVuHw9Y9pQ@mail.gmail.com>
+	<50B8F21B.5090503@xenomai.org>
+Date: Tue, 22 Jan 2013 01:43:17 +0100
+Message-ID: <CAKvQZ_13VsZV9sKjNLqMTHJhGn55pjkLqffsb8kYQb1b8H7rFw@mail.gmail.com>
+From: Willy Lambert <lambert.willy@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: Re: [Xenomai] Frustrating experience with Xenomai
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,36 +19,56 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+Cc: Shamju Joseph <shamju.joseph@gmail.com>, xenomai@xenomai.org
 
-=0A=0A----- Original Message -----=0A=0A> From: Gilles Chanteperdrix <gille=
-s.chanteperdrix@xenomai.org>=0A> =0A> On 01/21/2013 10:36 PM, bifferos wrot=
-e:=0A>> =0A>>  I was able to compile Xenomai under buildroot 2011.11 withou=
-t too much =0A> trouble, however I'm now trying =0A>> =0A>>  to do the same=
- with the latest buildroot snapshot.=A0 Unfortunately it seems =0A> buildro=
-ot no longer has an=0A>>  easy option to select a kernel compatible with Xe=
-nomai.=A0 I looked in =0A> xenomai-2.6.1/ksrc/arch/x86/patches=0A>> =0A>>  =
-and there are three of them=0A>> =0A>>  adeos-ipipe-2.6.37.6-x86-2.9-02.pat=
-ch=0A>>  adeos-ipipe-2.6.38.8-x86-2.11-01.patch=0A>>  ipipe-core-3.2.21-x86=
--1.patch=0A>> =0A>> =0A>>  Can someone please explain what this ipipe-core =
-thing is?=0A> =0A> =0A> I am desperately looking for a mail from Philippe w=
-here he explained it,=0A> but can not find it back. Maybe he can give some =
-explanations.=0A> =0A>>  Are these interchangeable (they are similar=0A> =
-=0A>>  sizes)? =0A> =0A> Yes.=0A=0AOK, thanks, I will give 3.2.21 a go then=
-.=0A=0A> =0A>>  Do I have to stick to 2.6.37.6 kernel to stand any chance o=
-f getting this =0A> working?=0A> =0A> =0A> The newer versions should work, =
-though I would recommend to wait for the=0A> next release which should happ=
-en in the next few days.=0A> =0A> Also note that I guess you are using Xeno=
-mai on the bifferboard, since I=0A> also guess the processor on this board =
-does not have a tsc, it will be=0A> emulated using the PIT, which is slow, =
-so, unless you can provide=0A> another hardware timer with a lower latency,=
- which will work starting=0A> with the I-pipe core for Linux 3.4, you shoul=
-d turn off=0A> CONFIG_XENO_OPT_STATS to improve latencies.=0A=0AThanks for =
-the tip, actually I am trying to simply compile an ISO image to run under V=
-irtualBox=0Aat the moment, so latencies are way down on my list.=A0 My note=
-s are here:=0Ahttps://sites.google.com/site/bifferboard/Home/boards-with-1m=
-b-flash/buildroot/xenomai=0A=0AIt all seems like a bit of a hack, so my nex=
-t task is to try to create a buildroot package to =0Aallow choosing the tri=
-vial-periodic demo and installing it from the Buildroot config menu.=0A=0Ak=
-ind regards,=0ABiff.
+2012/11/30 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>:
+> On 11/30/2012 03:29 PM, Willy Lambert wrote:
+>> 2012/11/30 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>:
+>>> On 11/30/2012 09:45 AM, Willy Lambert wrote:
+>>>> P.S. : to xenomai community, is there a problem if I continue some
+>>>> support here, or should we go somewhere else more on topic ?
+>>>
+>>> Absolutely no problem, this is a recurring problem, so, we can not
+>>> really ignore it. The thingx I would add is:
+>>> - if you have a very recent computer, you will have more trouble
+>>> installing really old kernels than install the latest revision, so, I
+>>> would advise to use the I-pipe patch for Linux 3.2 with xenomai 2.6.1
+>>> - we can give you write access to the wiki if you wish to write some
+>>> documents about this.
+>>>
+>>
+>> Ok, let me know where I should write something.
+>>
+>> I'll rewrite something like my first mail in the "old debian way"
+>> (should be ok for debian and ubuntu) :
+>> _ explaining the idea "first compile your vanilla kernel before
+>> patching it, try boot, and add xenomai".
+>> _ getting compile tools
+>> _ getting linux source with ketchup (cause it's really no brain)
+>> _ getting current config, configuring personnal version
+>> _ compile command (producing .deb)
+>> _ install command / remove
+>> Keeping the aim to show a simple method without getting into details,
+>> and providing some general linux doc to read.
+>>
+>> I don't have time to update my process to "latest pratices", but at
+>> least it a starting point.
+>
+> Ok, I will create a login/password on the wiki.
+>
+> However, for the particular case of Debian, starting with the I-pipe for
+> Linux 3.4, we can probably provide a precompiled kernel with a
+> debian-like configuration which will run on any platform.
+>
+> --
+>                                             Gilles.
+
+Here is a first try.
+http://www.xenomai.org/index.php/Building_kernel
+ Don't hesitate to comment/correct this. I will add some links later to :
+_ a good complete kernel building guide (if you have some please share)
+_ x86 configure hints wiki page.
+
+The end is a bit specific to Debian/Ubuntu distros. Is it a problem ?
+Should I rework this ?
 
