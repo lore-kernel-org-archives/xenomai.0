@@ -1,16 +1,17 @@
-From: Paul <paul_c@tuxcnc.org>
-Date: Tue, 22 Jan 2013 03:06:28 +0000
-References: <CALJOq=VtrBhMzCaT=7omDVN9hnnwZ+cmM1_1eff9DTS-fvLjaw@mail.gmail.com>
-	<201301200013.09110.paul_c@tuxcnc.org>
-	<50FBF628.1000709@xenomai.org>
-In-Reply-To: <50FBF628.1000709@xenomai.org>
+Message-ID: <50FE4116.8060508@zultron.com>
+Date: Tue, 22 Jan 2013 01:34:46 -0600
+From: John Morris <john@zultron.com>
 MIME-Version: 1.0
-Content-Type: text/plain;
-  charset="us-ascii"
+References: <CAMgy_J0idydJq8wzH3CwQoCa+BEbSyUyOJoWmvwc+oAB3jpZ6w@mail.gmail.com>
+	<CAKvQZ_2Nzfgj7oK12+t3CtLj-YWBCB=nFYSDU6B4KqW4aWQpnQ@mail.gmail.com>
+	<50B88506.6000002@xenomai.org>
+	<CAKvQZ_3LJ-u2B0zc0+pobSGnMZ4nNviyxfuP1uiVRVuHw9Y9pQ@mail.gmail.com>
+	<50B8F21B.5090503@xenomai.org>
+	<CAKvQZ_13VsZV9sKjNLqMTHJhGn55pjkLqffsb8kYQb1b8H7rFw@mail.gmail.com>
+In-Reply-To: <CAKvQZ_13VsZV9sKjNLqMTHJhGn55pjkLqffsb8kYQb1b8H7rFw@mail.gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Message-Id: <201301220306.28220.paul_c@tuxcnc.org>
-Subject: Re: [Xenomai] GPIO Interrupts problem with RTDM
+Subject: Re: [Xenomai] Frustrating experience with Xenomai
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,47 +20,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Pierre LE COZ <peter.le.coz@gmail.com>, xenomai@xenomai.org
+To: Willy Lambert <lambert.willy@gmail.com>
+Cc: xenomai@xenomai.org
 
-On Sunday 20 January 2013, Gilles Chanteperdrix wrote:
-> On 01/20/2013 01:13 AM, Paul wrote:
+Hi Willy,
 
-> >>  About the fact that interrupts are not detected :
-> >>
-> >> This may be a generic issue, which I thought was fixed, but may
-> >> not be.
-> >>
-> >>> Could you try the following patch?
-> >>
-> >> http://git.xenomai.org/?p=ipipe-gch.git;a=commit;h=c14c79d29fed822
-> >>675 60c7bf26d628ef4d39f5b7
-> >
-> > Gilles: Looked at the patch and got as far as the changes in
-> > kernel/ipipe/timer.c:ipipe_timer_stop() - Correct me if I'm wrong,
-> > but this patch is based on a 3.5.7 parent without
-> > GENERIC_CLOCKEVENTS ?
->
-> Yes, this patch is based on 3.5.7 and is used with and without
-> GENERIC_CLOCKEVENTS.
+On 01/21/2013 06:43 PM, Willy Lambert wrote:
+> Here is a first try.
+> http://www.xenomai.org/index.php/Building_kernel
+>  Don't hesitate to comment/correct this. I will add some links later to :
+> _ a good complete kernel building guide (if you have some please share)
+> _ x86 configure hints wiki page.
+> 
+> The end is a bit specific to Debian/Ubuntu distros. Is it a problem ?
+> Should I rework this ?
 
-Short version: Updated my kernel to 3.5.7 and backported the Raspberry 
-Pi changes from 3.6.11 and added in the ipipe support. Interrupts are 
-not being recognised unless irq_set_irq_type() is called. Digging 
-through the rtdm, nucleus, and ipipe code, at no point is 
-irq_chip->irq_set_type() called - Also have a problem that none of the 
-ipipe_pic_muter fields are set, so __ipipe_enable_irqdesc() & friends 
-do nothing.
+Nice write-up.  I've done the same thing on the LinuxCNC website.  Feel
+free to comment, fix, borrow, ignore....
 
-Noticed XN_ISR_EDGE equates to a falling edge trigger - 
-irq_set_irq_type() allows for rising, level, or falling edge triggers. 
-At some point, it may be advantageous to be able to select one of the 
-three.
+http://wiki.linuxcnc.org/cgi-bin/wiki.pl?XenomaiKernel
 
-Will continue digging and add a routine in bcm2708_gpio.c to set the 
-ipipe_pic_muter fields in the morning.
-
-
-Regards, Paul.
+	John
 
 
