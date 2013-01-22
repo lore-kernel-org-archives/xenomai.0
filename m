@@ -1,5 +1,5 @@
-Message-ID: <50FE6505.4010706@xenomai.org>
-Date: Tue, 22 Jan 2013 11:08:05 +0100
+Message-ID: <50FE68F5.8040603@xenomai.org>
+Date: Tue, 22 Jan 2013 11:24:53 +0100
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 References: <1358804184.96123.YahooMailNeo@web172102.mail.ir2.yahoo.com>
@@ -44,8 +44,9 @@ On 01/22/2013 11:04 AM, bifferos wrote:
 > same patch but not originating from Adeos.
 >
 
-No, see my next mail.
-
+The Adeos and Xenomai projects have been initiated and are still 
+maintained by the same guys, with Xenomai as the driving force behind 
+Adeos, which is basically a by-product.
 
 -- 
 Philippe.
