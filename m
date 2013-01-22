@@ -1,15 +1,13 @@
-Message-ID: <50FE44F5.9000204@xenomai.org>
-Date: Tue, 22 Jan 2013 08:51:17 +0100
+Message-ID: <50FE45E9.1040909@xenomai.org>
+Date: Tue, 22 Jan 2013 08:55:21 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CALJOq=VtrBhMzCaT=7omDVN9hnnwZ+cmM1_1eff9DTS-fvLjaw@mail.gmail.com>
-	<201301200013.09110.paul_c@tuxcnc.org>
-	<50FBF628.1000709@xenomai.org>
-	<201301220306.28220.paul_c@tuxcnc.org>
-In-Reply-To: <201301220306.28220.paul_c@tuxcnc.org>
+References: <OF682F5C70.F8F7AA50-ON85257AF1.005F580A-85257AF1.005F580C@aanddtech.com>	<50F3DD9A.9050306@gmail.com>
+	<OF5CF00330.868585F8-ON85257AFA.00801D57-85257AFB.00000E92@aanddtech.com>
+In-Reply-To: <OF5CF00330.868585F8-ON85257AFA.00801D57-85257AFB.00000E92@aanddtech.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] GPIO Interrupts problem with RTDM
+Subject: Re: [Xenomai] Porting Ipipe to new ARM SoC (Xilinx Zynq)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,50 +16,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Paul <paul_c@tuxcnc.org>
-Cc: Pierre LE COZ <peter.le.coz@gmail.com>, xenomai@xenomai.org
+To: mfornero@aanddtech.com
+Cc: Xenomai@xenomai.org
 
-On 01/22/2013 04:06 AM, Paul wrote:
+On 01/22/2013 01:00 AM, mfornero@aanddtech.com wrote:
 
-> On Sunday 20 January 2013, Gilles Chanteperdrix wrote:
->> On 01/20/2013 01:13 AM, Paul wrote:
+> The issue seems to be somewhat erratic, as I was able to run the latency 
+> test for a couple of hours this morning without observing it. Now however, 
+> it seems to show up on every boot (I don't believe I changed anything, but 
+> it's possible).
 > 
->>>>  About the fact that interrupts are not detected :
->>>>
->>>> This may be a generic issue, which I thought was fixed, but may
->>>> not be.
->>>>
->>>>> Could you try the following patch?
->>>>
->>>> http://git.xenomai.org/?p=ipipe-gch.git;a=commit;h=c14c79d29fed822
->>>> 675 60c7bf26d628ef4d39f5b7
->>>
->>> Gilles: Looked at the patch and got as far as the changes in
->>> kernel/ipipe/timer.c:ipipe_timer_stop() - Correct me if I'm wrong,
->>> but this patch is based on a 3.5.7 parent without
->>> GENERIC_CLOCKEVENTS ?
->>
->> Yes, this patch is based on 3.5.7 and is used with and without
->> GENERIC_CLOCKEVENTS.
+> For reference, I'm booting from a SDHC partitioned as such:
+>         1) vfat         256 MB <-- This partition holds the first stage 
+> bootloader, uboot, the device tree and the Kernel zImage
+>         2) ext4         768 MB <-- This partition is the rootfs (busybox + 
+> xenomai)
 > 
-> Short version: Updated my kernel to 3.5.7 and backported the Raspberry 
-> Pi changes from 3.6.11 and added in the ipipe support. Interrupts are 
-> not being recognised unless irq_set_irq_type() is called. Digging 
-> through the rtdm, nucleus, and ipipe code, at no point is 
-> irq_chip->irq_set_type() called - Also have a problem that none of the 
-> ipipe_pic_muter fields are set, so __ipipe_enable_irqdesc() & friends 
-> do nothing.
+> The kernel boot command line is:
+>         bootargs = "console=ttyPS0,115200 root=/dev/mmcblk0p2 rw 
+> earlyprintk rootfstype=ext4 rootwait devtmpfs.mount=1";
 > 
-> Noticed XN_ISR_EDGE equates to a falling edge trigger - 
-> irq_set_irq_type() allows for rising, level, or falling edge triggers. 
-> At some point, it may be advantageous to be able to select one of the 
-> three.
+> And I'm using the uboot compilation shipped with the ZedBoard.
 > 
-> Will continue digging and add a routine in bcm2708_gpio.c to set the 
-> ipipe_pic_muter fields in the morning.
+> My ipipe port can be found here:
+> git://github.com/mfornero/ipipe.git
 
 
-PIC muting is not mandatory, I am not sure why you would need it.
+At a quick glance, you are missing this change:
+http://xenomai.org/index.php/I-pipe-core:ArmPorting#GPIOs_as_interrupt_sources
+
+In drivers/gpio/gpio-xilinxps.c
 
 -- 
                                                                 Gilles.
