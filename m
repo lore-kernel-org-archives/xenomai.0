@@ -1,14 +1,13 @@
-Message-ID: <50FEDBC4.8080801@xenomai.org>
-Date: Tue, 22 Jan 2013 19:34:44 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+References: <1358809464.75419.YahooMailNeo@web140601.mail.bf1.yahoo.com>
+Message-ID: <1358883137.7479.YahooMailNeo@web140606.mail.bf1.yahoo.com>
+Date: Tue, 22 Jan 2013 11:32:17 -0800 (PST)
+From: A User <t02446@yahoo.com>
+In-Reply-To: <1358809464.75419.YahooMailNeo@web140601.mail.bf1.yahoo.com>
 MIME-Version: 1.0
-References: <CAD1Etoj3AxmFr1=5Osf9nsb576_c9e9V_oEsHafMTe=4Hs_uyw@mail.gmail.com>
-In-Reply-To: <CAD1Etoj3AxmFr1=5Osf9nsb576_c9e9V_oEsHafMTe=4Hs_uyw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] dpkg-shlibdeps: warning: symbol xeno_bind_skin_opt
- used by debian/libxenomai1/usr/lib/libvrtx.so.0.0.0 found in none of the
- libraries. ... et al.
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] x86 Linux with xenomai and i915 graphics stall
+Reply-To: A User <t02446@yahoo.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,176 +16,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Daniel M. Drucker, Ph.D." <dmd@interactive-motion.com>
-Cc: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 01/22/2013 06:07 PM, Daniel M. Drucker, Ph.D. wrote:
-
-> As noted by Andy yesterday, we've been having problems with Xenomai + i915,
-> and it was suggested that we try using 2.6.2+3.5.7. I'm trying to build
-> that combination now, using the git head (because the 2.6.2 tag has an
-> error that prevents a deb from being built).
-> 
-> My build process is:
-> git clone git://git.xenomai.org/xenomai-head.git
-> cd xenomai-head
-> DEBEMAIL="dev@interactive-motion.com" DEBFULLNAME="dev" debchange -v
-> 2.6.git Release 2.6.git
-> debuild -uc -us
-> 
-> [ lots of build messages here, and then: ]
-> 
-> dpkg-shlibdeps: warning: symbol xeno_bind_skin_opt used by
-> debian/libxenomai1/usr/lib/libvrtx.so.0.0.0 found in none of the libraries.
-> dpkg-shlibdeps: warning: symbol xeno_handle_mlock_alert used by
-> debian/libxenomai1/usr/lib/libvrtx.so.0.0.0 found in none of the libraries.
-> dpkg-shlibdeps: warning: symbol xeno_set_current_mode used by
-> debian/libxenomai1/usr/lib/libvrtx.so.0.0.0 found in none of the libraries.
-> dpkg-shlibdeps: warning: symbol xeno_set_current used by
-> debian/libxenomai1/usr/lib/libvrtx.so.0.0.0 found in none of the libraries.
-> dpkg-shlibdeps: warning: symbol xeno_sigshadow_install_once used by
-> debian/libxenomai1/usr/lib/libvrtx.so.0.0.0 found in none of the libraries.
-> dpkg-shlibdeps: warning: symbol xeno_map_heap used by
-> debian/libxenomai1/usr/lib/libvrtx.so.0.0.0 found in none of the libraries.
-> dpkg-shlibdeps: warning: symbol xeno_bind_skin_opt used by
-> debian/libxenomai1/usr/lib/libvxworks.so.1.0.0 found in none of the
-> libraries.
-> dpkg-shlibdeps: warning: symbol xeno_handle_mlock_alert used by
-> debian/libxenomai1/usr/lib/libvxworks.so.1.0.0 found in none of the
-> libraries.
-> dpkg-shlibdeps: warning: symbol xeno_set_current_mode used by
-> debian/libxenomai1/usr/lib/libvxworks.so.1.0.0 found in none of the
-> libraries.
-> dpkg-shlibdeps: warning: symbol xeno_set_current used by
-> debian/libxenomai1/usr/lib/libvxworks.so.1.0.0 found in none of the
-> libraries.
-> dpkg-shlibdeps: warning: symbol xeno_sigshadow_install_once used by
-> debian/libxenomai1/usr/lib/libvxworks.so.1.0.0 found in none of the
-> libraries.
-> dpkg-shlibdeps: warning: symbol xeno_bind_skin_opt used by
-> debian/libxenomai1/usr/lib/libuitron.so.0.0.0 found in none of the
-> libraries.
-> dpkg-shlibdeps: warning: symbol xeno_handle_mlock_alert used by
-> debian/libxenomai1/usr/lib/libuitron.so.0.0.0 found in none of the
-> libraries.
-> dpkg-shlibdeps: warning: symbol xeno_set_current_mode used by
-> debian/libxenomai1/usr/lib/libuitron.so.0.0.0 found in none of the
-> libraries.
-> dpkg-shlibdeps: warning: symbol xeno_set_current used by
-> debian/libxenomai1/usr/lib/libuitron.so.0.0.0 found in none of the
-> libraries.
-> dpkg-shlibdeps: warning: symbol xeno_sigshadow_install_once used by
-> debian/libxenomai1/usr/lib/libuitron.so.0.0.0 found in none of the
-> libraries.
-> dpkg-shlibdeps: warning: symbol xeno_fault_stack used by
-> debian/libxenomai1/usr/lib/libuitron.so.0.0.0 found in none of the
-> libraries.
-> dpkg-shlibdeps: warning: symbol nkvdso used by
-> debian/libxenomai1/usr/lib/libpthread_rt.so.1.0.0 found in none of the
-> libraries.
-> dpkg-shlibdeps: warning: symbol rt_print_auto_init used by
-> debian/libxenomai1/usr/lib/libpthread_rt.so.1.0.0 found in none of the
-> libraries.
-> dpkg-shlibdeps: warning: symbol xeno_bind_skin_opt used by
-> debian/libxenomai1/usr/lib/libpthread_rt.so.1.0.0 found in none of the
-> libraries.
-> dpkg-shlibdeps: warning: symbol xeno_handle_mlock_alert used by
-> debian/libxenomai1/usr/lib/libpthread_rt.so.1.0.0 found in none of the
-> libraries.
-> dpkg-shlibdeps: warning: symbol xeno_sem_heap used by
-> debian/libxenomai1/usr/lib/libpthread_rt.so.1.0.0 found in none of the
-> libraries.
-> dpkg-shlibdeps: warning: symbol rt_vsyslog used by
-> debian/libxenomai1/usr/lib/libpthread_rt.so.1.0.0 found in none of the
-> libraries.
-> dpkg-shlibdeps: warning: symbol rt_fputs used by
-> debian/libxenomai1/usr/lib/libpthread_rt.so.1.0.0 found in none of the
-> libraries.
-> dpkg-shlibdeps: warning: symbol rt_puts used by
-> debian/libxenomai1/usr/lib/libpthread_rt.so.1.0.0 found in none of the
-> libraries.
-> dpkg-shlibdeps: warning: symbol rt_vfprintf used by
-> debian/libxenomai1/usr/lib/libpthread_rt.so.1.0.0 found in none of the
-> libraries.
-> dpkg-shlibdeps: warning: symbol xnarch_tsc_to_ns used by
-> debian/libxenomai1/usr/lib/libpthread_rt.so.1.0.0 found in none of the
-> libraries.
-> dpkg-shlibdeps: warning: 13 other similar warnings have been skipped (use
-> -v to see them all).
-> dpkg-shlibdeps: warning: symbol xeno_bind_skin_opt used by
-> debian/libxenomai1/usr/lib/libnative.so.3.0.0 found in none of the
-> libraries.
-> dpkg-shlibdeps: warning: symbol xeno_handle_mlock_alert used by
-> debian/libxenomai1/usr/lib/libnative.so.3.0.0 found in none of the
-> libraries.
-> dpkg-shlibdeps: warning: symbol xnarch_tsc_to_ns used by
-> debian/libxenomai1/usr/lib/libnative.so.3.0.0 found in none of the
-> libraries.
-> dpkg-shlibdeps: warning: symbol xeno_sem_heap used by
-> debian/libxenomai1/usr/lib/libnative.so.3.0.0 found in none of the
-> libraries.
-> dpkg-shlibdeps: warning: symbol xnarch_ns_to_tsc used by
-> debian/libxenomai1/usr/lib/libnative.so.3.0.0 found in none of the
-> libraries.
-> dpkg-shlibdeps: warning: symbol xeno_set_current_mode used by
-> debian/libxenomai1/usr/lib/libnative.so.3.0.0 found in none of the
-> libraries.
-> dpkg-shlibdeps: warning: symbol xeno_set_current used by
-> debian/libxenomai1/usr/lib/libnative.so.3.0.0 found in none of the
-> libraries.
-> dpkg-shlibdeps: warning: symbol xeno_current used by
-> debian/libxenomai1/usr/lib/libnative.so.3.0.0 found in none of the
-> libraries.
-> dpkg-shlibdeps: warning: symbol xeno_sigshadow_install_once used by
-> debian/libxenomai1/usr/lib/libnative.so.3.0.0 found in none of the
-> libraries.
-> dpkg-shlibdeps: warning: symbol xeno_map_heap used by
-> debian/libxenomai1/usr/lib/libnative.so.3.0.0 found in none of the
-> libraries.
-> dpkg-shlibdeps: warning: 2 other similar warnings have been skipped (use -v
-> to see them all).
-> dpkg-shlibdeps: warning: symbol rt_dev_close used by
-> debian/libxenomai1/usr/lib/libanalogy.so.1.0.0 found in none of the
-> libraries.
-> dpkg-shlibdeps: warning: symbol rt_dev_write used by
-> debian/libxenomai1/usr/lib/libanalogy.so.1.0.0 found in none of the
-> libraries.
-> dpkg-shlibdeps: warning: symbol rt_dev_read used by
-> debian/libxenomai1/usr/lib/libanalogy.so.1.0.0 found in none of the
-> libraries.
-> dpkg-shlibdeps: warning: symbol rt_dev_ioctl used by
-> debian/libxenomai1/usr/lib/libanalogy.so.1.0.0 found in none of the
-> libraries.
-> dpkg-shlibdeps: warning: symbol rt_dev_open used by
-> debian/libxenomai1/usr/lib/libanalogy.so.1.0.0 found in none of the
-> libraries.
-> dpkg-shlibdeps: warning: symbol xeno_bind_skin_opt used by
-> debian/libxenomai1/usr/lib/librtdm.so.1.0.0 found in none of the libraries.
-> dpkg-shlibdeps: warning: symbol xeno_bind_skin_opt used by
-> debian/libxenomai1/usr/lib/libpsos.so.0.0.0 found in none of the libraries.
-> dpkg-shlibdeps: warning: symbol xeno_handle_mlock_alert used by
-> debian/libxenomai1/usr/lib/libpsos.so.0.0.0 found in none of the libraries.
-> dpkg-shlibdeps: warning: symbol xeno_set_current_mode used by
-> debian/libxenomai1/usr/lib/libpsos.so.0.0.0 found in none of the libraries.
-> dpkg-shlibdeps: warning: symbol xeno_set_current used by
-> debian/libxenomai1/usr/lib/libpsos.so.0.0.0 found in none of the libraries.
-> dpkg-shlibdeps: warning: symbol xeno_sigshadow_install_once used by
-> debian/libxenomai1/usr/lib/libpsos.so.0.0.0 found in none of the libraries.
-> dpkg-shlibdeps: warning: symbol xeno_map_heap used by
-> debian/libxenomai1/usr/lib/libpsos.so.0.0.0 found in none of the libraries.
-> dpkg-shlibdeps: warning: symbol xeno_fault_stack used by
-> debian/libxenomai1/usr/lib/libpsos.so.0.0.0 found in none of the libraries.
-> 
-> 
-> What's going on here?
-
-
-The symbols are defined in libxenomai.so, but this library is not linked
-with the skins libraries in order to avoid a libtool bug when
-cross-compiling. However if you user xeno-config or pkg-config to build
-your applications you will not have any issue, so you can ignore this
-warning.
-
--- 
-                                                                Gilles.
+Gilles,=0A=0AThank you for your help.=0A=0AToday we compiled our buggy 3.2.=
+21 Linux (i915 stalls) with the I-pipe tracer turned on.=A0 That had the ef=
+fect of making the GPU stall bug disappear (or made it less frequent - it's=
+ intermittent).=A0 So instead of trying to figure that out, we decided to t=
+ry running:=A0 3.5.7/2.6.2.=0A=0ANote, when we tried compiling 3.5.3 and 2.=
+6.2 on January 3, we had some problems, which have since been fixed:=0Ahttp=
+://www.xenomai.org/pipermail/xenomai/2013-January/027187.html=0A=0ASo today=
+ Daniel and I compiled a kernel.org Linux 3.5.7 patched with Xenomai 2.6.2 =
+from git.=A0 We used the same Linux .config as our 3.2.21 that was giving u=
+s GPU stall problems.=A0 (We ran make xconfig and accepted the changes that=
+ it made.)=0A=0AOur new Linux 3.5.7 with Xenomai 2.6.2 compiles and runs.=
+=0AThe compile gets warning messages that we will ignore for now.=0Ahttp://=
+www.xenomai.org/pipermail/xenomai/2013-January/027491.html=0A=0AWe compiled=
+ two 3.5.7 kernels, with CONFIG_PCI_MSI turned off and on.=0A=0AIt looks li=
+ke both kernels behave about the same.=A0 We do not see the GPU stalls now.=
+=A0 (The GPU stalls were intermittent before, so we are not 100% sure they =
+are gone, but we have not seen them yet.)=0A=0A=0AWhen we run latency, we s=
+till get about 10 usec on a quiet system.=A0 When we run glxgears and make =
+the window size=A0 600x600 pixels, and we use the mouse to drag the glxgear=
+s window quickly around on the desktop, the max latency goes to about 250 u=
+sec (with gnome-3 fallback and compiz).=0A=0ASo, it looks like we are ok fo=
+r now with this configuration, unless that latency is unusual.=0Aglxgears i=
+n a window that is not being dragged has lower latency.=0A=0A=0APlease note=
+ that the x86 config help file:=0A=0Ahttp://www.xenomai.org/index.php/Confi=
+guring_x86_kernels=0A=0Asays:=0A=0A"""=0A=0AUse care when referring to old =
+mail posts, archives, and google results. This page is kept up to date with=
+ information on what options you might need to tweak.=0A...=0A=0AThe option=
+ CONFIG_PCI_MSI should be disabled=0A=0A"""=0A=0A=0AWe will keep CONFIG_PCI=
+_MSI turned on for now, as Gilles suggests.=0A=0A=0A-Andy and Daniel=0A=0A=
+=0A=0A----- Original Message -----=0AFrom: A User <t02446@yahoo.com>=0ATo: =
+"xenomai@xenomai.org" <xenomai@xenomai.org>=0ACc: =0ASent: Monday, January =
+21, 2013 6:04 PM=0ASubject: x86 Linux with xenomai and i915 graphics stall=
+=0A=0AI'm trying to run a Linux/Xenomai system with Ubuntu 12.04 LTS=0Adist=
+ro including X Window System on an Intel x86 board.=0A=0A...=0A
 
