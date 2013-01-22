@@ -1,14 +1,17 @@
-Message-ID: <50FE462A.3010406@xenomai.org>
-Date: Tue, 22 Jan 2013 08:56:26 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <1358804184.96123.YahooMailNeo@web172102.mail.ir2.yahoo.com>
-	<50FDCD39.2000603@xenomai.org>
-	<1358813358.92635.YahooMailNeo@web172106.mail.ir2.yahoo.com>
-In-Reply-To: <1358813358.92635.YahooMailNeo@web172106.mail.ir2.yahoo.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Building xenomai with latest buildroot snapshot.
+In-Reply-To: <50FE4116.8060508@zultron.com>
+References: <CAMgy_J0idydJq8wzH3CwQoCa+BEbSyUyOJoWmvwc+oAB3jpZ6w@mail.gmail.com>
+	<CAKvQZ_2Nzfgj7oK12+t3CtLj-YWBCB=nFYSDU6B4KqW4aWQpnQ@mail.gmail.com>
+	<50B88506.6000002@xenomai.org>
+	<CAKvQZ_3LJ-u2B0zc0+pobSGnMZ4nNviyxfuP1uiVRVuHw9Y9pQ@mail.gmail.com>
+	<50B8F21B.5090503@xenomai.org>
+	<CAKvQZ_13VsZV9sKjNLqMTHJhGn55pjkLqffsb8kYQb1b8H7rFw@mail.gmail.com>
+	<50FE4116.8060508@zultron.com>
+Date: Tue, 22 Jan 2013 09:30:21 +0100
+Message-ID: <CAKvQZ_1BF99C7MDuwOL+XJMEG=T9DV3zetEUL85-EyNcGwkzVw@mail.gmail.com>
+From: Willy Lambert <lambert.willy@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: Re: [Xenomai] Frustrating experience with Xenomai
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,74 +20,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: bifferos <bifferos@yahoo.co.uk>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: John Morris <john@zultron.com>
+Cc: xenomai@xenomai.org
 
-On 01/22/2013 01:09 AM, bifferos wrote:
+2013/1/22 John Morris <john@zultron.com>:
+> Hi Willy,
+>
+> On 01/21/2013 06:43 PM, Willy Lambert wrote:
+>> Here is a first try.
+>> http://www.xenomai.org/index.php/Building_kernel
+>>  Don't hesitate to comment/correct this. I will add some links later to :
+>> _ a good complete kernel building guide (if you have some please share)
+>> _ x86 configure hints wiki page.
+>>
+>> The end is a bit specific to Debian/Ubuntu distros. Is it a problem ?
+>> Should I rework this ?
+>
+> Nice write-up.  I've done the same thing on the LinuxCNC website.  Feel
+> free to comment, fix, borrow, ignore....
+>
+> http://wiki.linuxcnc.org/cgi-bin/wiki.pl?XenomaiKernel
+>
+>         John
+>
 
-> 
-> 
-> ----- Original Message -----
-> 
->> From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
->>
->> On 01/21/2013 10:36 PM, bifferos wrote:
->>>
->>>  I was able to compile Xenomai under buildroot 2011.11 without too much 
->> trouble, however I'm now trying 
->>>
->>>  to do the same with the latest buildroot snapshot.  Unfortunately it seems 
->> buildroot no longer has an
->>>  easy option to select a kernel compatible with Xenomai.  I looked in 
->> xenomai-2.6.1/ksrc/arch/x86/patches
->>>
->>>  and there are three of them
->>>
->>>  adeos-ipipe-2.6.37.6-x86-2.9-02.patch
->>>  adeos-ipipe-2.6.38.8-x86-2.11-01.patch
->>>  ipipe-core-3.2.21-x86-1.patch
->>>
->>>
->>>  Can someone please explain what this ipipe-core thing is?
->>
->>
->> I am desperately looking for a mail from Philippe where he explained it,
->> but can not find it back. Maybe he can give some explanations.
->>
->>>  Are these interchangeable (they are similar
->>
->>>  sizes)? 
->>
->> Yes.
-> 
-> OK, thanks, I will give 3.2.21 a go then.
-> 
->>
->>>  Do I have to stick to 2.6.37.6 kernel to stand any chance of getting this 
->> working?
->>
->>
->> The newer versions should work, though I would recommend to wait for the
->> next release which should happen in the next few days.
->>
->> Also note that I guess you are using Xenomai on the bifferboard, since I
->> also guess the processor on this board does not have a tsc, it will be
->> emulated using the PIT, which is slow, so, unless you can provide
->> another hardware timer with a lower latency, which will work starting
->> with the I-pipe core for Linux 3.4, you should turn off
->> CONFIG_XENO_OPT_STATS to improve latencies.
-> 
-> Thanks for the tip, actually I am trying to simply compile an ISO image to run under VirtualBox
-> at the moment, so latencies are way down on my list.  My notes are here:
-> https://sites.google.com/site/bifferboard/Home/boards-with-1mb-flash/buildroot/xenomai
-> 
-> It all seems like a bit of a hack, so my next task is to try to create a buildroot package to 
-> allow choosing the trivial-periodic demo and installing it from the Buildroot config menu.
+Arg, a pity I know this just after I write the xenomai wiki :D But
+anyway thanks for pointing
 
+I think a part of this stuff has to come to the xenomai wiki because
+the question rise from time to time. We need 2 things :
+_ something like my page, about general thinking,  maybe without the
+compilation details (which is not depending on versions)
+_ intructions to build everything with latests versions (which is more
+like your page), which we have to maintain... (it alredy exists
+somewhere on the wiki, but I think is is not about kernel compilation)
 
-There are other tests in Xenomai testsuite you may want to try before
-trivial-periodic.
-
--- 
-                                                                Gilles.
+One point is that I'm not taking care about cross compiling the kernel...
 
