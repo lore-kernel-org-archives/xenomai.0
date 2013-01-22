@@ -1,12 +1,14 @@
-Message-ID: <50FE6259.40406@xenomai.org>
-Date: Tue, 22 Jan 2013 10:56:41 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+References: <1358804184.96123.YahooMailNeo@web172102.mail.ir2.yahoo.com>
+	<50FDCD39.2000603@xenomai.org> <50FE5A62.4070506@xenomai.org>
+Message-ID: <1358849086.90606.YahooMailNeo@web172102.mail.ir2.yahoo.com>
+Date: Tue, 22 Jan 2013 10:04:46 +0000 (GMT)
+From: bifferos <bifferos@yahoo.co.uk>
+In-Reply-To: <50FE5A62.4070506@xenomai.org>
 MIME-Version: 1.0
-References: <CAPpP=rM-0xrf5N9iKVq2S+7wRrD4LoHxMTUxnxYb6aYbNP9nEA@mail.gmail.com>
-In-Reply-To: <CAPpP=rM-0xrf5N9iKVq2S+7wRrD4LoHxMTUxnxYb6aYbNP9nEA@mail.gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [Posix skin] program test with pthread_set_mode_np
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] Building xenomai with latest buildroot snapshot.
+Reply-To: bifferos <bifferos@yahoo.co.uk>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,44 +17,18 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: alex alex <duch.alexandre@gmail.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 01/22/2013 10:41 AM, alex alex wrote:
-> Hi,
->
-> In the attached test program I test the scheduler lock operation with
-> pthread_set_mode_np and the PTHREAD_LOCK_SCHED bit mask.
->
-> Description:
-> Two tasks are created.
-> t1 lock the scheduler then load the cpu, sleep then load the cpu again but
-> t2 task start when t1 sleep while the scheduler is locked. Why t1 is
-> preempted?
-
-Think of what would happen would a blocked task be allowed to keep the 
-scheduler lock.
-
->
-> I run on Xenomai 2.6.2 with linux kernel 3.2.21.
->
-> Thanks in advance.
->
-> Alex
-> -------------- next part --------------
-> A non-text attachment was scrubbed...
-> Name: test-pthread_set_mode_np.bz
-> Type: application/octet-stream
-> Size: 1302 bytes
-> Desc: not available
-> URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20130122/97ba44e9/attachment.obj>
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> http://www.xenomai.org/mailman/listinfo/xenomai
->
-
-
--- 
-Philippe.
+=0A=0A----- Original Message -----=0A> From: Philippe Gerum <rpm@xenomai.or=
+g>=0A>>>  and there are three of them=0A>>> =0A>>>  adeos-ipipe-2.6.37.6-x8=
+6-2.9-02.patch=0A>>>  adeos-ipipe-2.6.38.8-x86-2.11-01.patch=0A>>>  ipipe-c=
+ore-3.2.21-x86-1.patch=0A>>> =0A>>> =0A>>>  Can someone please explain what=
+ this ipipe-core thing is?=0A>> =0A>> =0A>>  I am desperately looking for a=
+ mail from Philippe where he explained it,=0A>>  but can not find it back. =
+Maybe he can give some explanations.=0A> =0A> https://www.xenomai.org/index=
+.php/FAQs#What_is_this_I-pipe_thing.3F_And_what_about_Adeos.3F_Are_they_rel=
+ated.3F=0A=0AThanks. I had read this, however it didn't tell me anything ab=
+out 'ipipe-core'.=A0 I guess that Ipipe-core is just the=0Asame patch but n=
+ot originating from Adeos.=0A=0Aregards,=0ABiff.
 
