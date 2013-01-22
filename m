@@ -1,13 +1,14 @@
-Message-ID: <50FE45E9.1040909@xenomai.org>
-Date: Tue, 22 Jan 2013 08:55:21 +0100
+Message-ID: <50FE462A.3010406@xenomai.org>
+Date: Tue, 22 Jan 2013 08:56:26 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <OF682F5C70.F8F7AA50-ON85257AF1.005F580A-85257AF1.005F580C@aanddtech.com>	<50F3DD9A.9050306@gmail.com>
-	<OF5CF00330.868585F8-ON85257AFA.00801D57-85257AFB.00000E92@aanddtech.com>
-In-Reply-To: <OF5CF00330.868585F8-ON85257AFA.00801D57-85257AFB.00000E92@aanddtech.com>
+References: <1358804184.96123.YahooMailNeo@web172102.mail.ir2.yahoo.com>
+	<50FDCD39.2000603@xenomai.org>
+	<1358813358.92635.YahooMailNeo@web172106.mail.ir2.yahoo.com>
+In-Reply-To: <1358813358.92635.YahooMailNeo@web172106.mail.ir2.yahoo.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Porting Ipipe to new ARM SoC (Xilinx Zynq)
+Subject: Re: [Xenomai] Building xenomai with latest buildroot snapshot.
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,36 +17,73 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: mfornero@aanddtech.com
-Cc: Xenomai@xenomai.org
+To: bifferos <bifferos@yahoo.co.uk>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 01/22/2013 01:00 AM, mfornero@aanddtech.com wrote:
+On 01/22/2013 01:09 AM, bifferos wrote:
 
-> The issue seems to be somewhat erratic, as I was able to run the latency 
-> test for a couple of hours this morning without observing it. Now however, 
-> it seems to show up on every boot (I don't believe I changed anything, but 
-> it's possible).
 > 
-> For reference, I'm booting from a SDHC partitioned as such:
->         1) vfat         256 MB <-- This partition holds the first stage 
-> bootloader, uboot, the device tree and the Kernel zImage
->         2) ext4         768 MB <-- This partition is the rootfs (busybox + 
-> xenomai)
 > 
-> The kernel boot command line is:
->         bootargs = "console=ttyPS0,115200 root=/dev/mmcblk0p2 rw 
-> earlyprintk rootfstype=ext4 rootwait devtmpfs.mount=1";
+> ----- Original Message -----
 > 
-> And I'm using the uboot compilation shipped with the ZedBoard.
+>> From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+>>
+>> On 01/21/2013 10:36 PM, bifferos wrote:
+>>>
+>>>  I was able to compile Xenomai under buildroot 2011.11 without too much 
+>> trouble, however I'm now trying 
+>>>
+>>>  to do the same with the latest buildroot snapshot.  Unfortunately it seems 
+>> buildroot no longer has an
+>>>  easy option to select a kernel compatible with Xenomai.  I looked in 
+>> xenomai-2.6.1/ksrc/arch/x86/patches
+>>>
+>>>  and there are three of them
+>>>
+>>>  adeos-ipipe-2.6.37.6-x86-2.9-02.patch
+>>>  adeos-ipipe-2.6.38.8-x86-2.11-01.patch
+>>>  ipipe-core-3.2.21-x86-1.patch
+>>>
+>>>
+>>>  Can someone please explain what this ipipe-core thing is?
+>>
+>>
+>> I am desperately looking for a mail from Philippe where he explained it,
+>> but can not find it back. Maybe he can give some explanations.
+>>
+>>>  Are these interchangeable (they are similar
+>>
+>>>  sizes)? 
+>>
+>> Yes.
 > 
-> My ipipe port can be found here:
-> git://github.com/mfornero/ipipe.git
+> OK, thanks, I will give 3.2.21 a go then.
+> 
+>>
+>>>  Do I have to stick to 2.6.37.6 kernel to stand any chance of getting this 
+>> working?
+>>
+>>
+>> The newer versions should work, though I would recommend to wait for the
+>> next release which should happen in the next few days.
+>>
+>> Also note that I guess you are using Xenomai on the bifferboard, since I
+>> also guess the processor on this board does not have a tsc, it will be
+>> emulated using the PIT, which is slow, so, unless you can provide
+>> another hardware timer with a lower latency, which will work starting
+>> with the I-pipe core for Linux 3.4, you should turn off
+>> CONFIG_XENO_OPT_STATS to improve latencies.
+> 
+> Thanks for the tip, actually I am trying to simply compile an ISO image to run under VirtualBox
+> at the moment, so latencies are way down on my list.  My notes are here:
+> https://sites.google.com/site/bifferboard/Home/boards-with-1mb-flash/buildroot/xenomai
+> 
+> It all seems like a bit of a hack, so my next task is to try to create a buildroot package to 
+> allow choosing the trivial-periodic demo and installing it from the Buildroot config menu.
 
 
-At a quick glance, you are missing this change:
-http://xenomai.org/index.php/I-pipe-core:ArmPorting#GPIOs_as_interrupt_sources
-
-In drivers/gpio/gpio-xilinxps.c
+There are other tests in Xenomai testsuite you may want to try before
+trivial-periodic.
 
 -- 
                                                                 Gilles.
