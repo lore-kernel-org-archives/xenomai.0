@@ -1,20 +1,13 @@
-Message-ID: <5106228D.8040403@zultron.com>
-Date: Mon, 28 Jan 2013 01:02:37 -0600
-From: John Morris <john@zultron.com>
+Message-ID: <50FF16E9.7050902@xenomai.org>
+Date: Tue, 22 Jan 2013 23:47:05 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CAMgy_J0idydJq8wzH3CwQoCa+BEbSyUyOJoWmvwc+oAB3jpZ6w@mail.gmail.com>
-	<CAKvQZ_2Nzfgj7oK12+t3CtLj-YWBCB=nFYSDU6B4KqW4aWQpnQ@mail.gmail.com>
-	<50B88506.6000002@xenomai.org>
-	<CAKvQZ_3LJ-u2B0zc0+pobSGnMZ4nNviyxfuP1uiVRVuHw9Y9pQ@mail.gmail.com>
-	<50B8F21B.5090503@xenomai.org>
-	<CAKvQZ_13VsZV9sKjNLqMTHJhGn55pjkLqffsb8kYQb1b8H7rFw@mail.gmail.com>
-	<50FE4116.8060508@zultron.com>
-	<CAKvQZ_1BF99C7MDuwOL+XJMEG=T9DV3zetEUL85-EyNcGwkzVw@mail.gmail.com>
-	<CAKvQZ_1JThr2=TJ-2knMBwi-VmZpXnVMO8_QPE3OZdpoYYjogg@mail.gmail.com>
-In-Reply-To: <CAKvQZ_1JThr2=TJ-2knMBwi-VmZpXnVMO8_QPE3OZdpoYYjogg@mail.gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
+References: <CAD1EtogQBZ5f=7w5mZz19rrnQVB_BP=t-f4rKtq12wKn9cd1Yw@mail.gmail.com>	<50FF1249.2070807@xenomai.org>
+	<CAD1EtoiMKsipxzaDZOHFHfzQWRX1Oub=HspCCn01UNC3C9e53A@mail.gmail.com>
+In-Reply-To: <CAD1EtoiMKsipxzaDZOHFHfzQWRX1Oub=HspCCn01UNC3C9e53A@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Frustrating experience with Xenomai
+Subject: Re: [Xenomai] x86 Linux with xenomai and i915 graphics stall
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -23,73 +16,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Willy Lambert <lambert.willy@gmail.com>
+To: "Daniel M. Drucker, Ph.D." <dmd@interactive-motion.com>
 Cc: xenomai@xenomai.org
 
-On 01/22/2013 02:31 AM, Willy Lambert wrote:
-> 2013/1/22 Willy Lambert <lambert.willy@gmail.com>:
->> 2013/1/22 John Morris <john@zultron.com>:
->>> Hi Willy,
->>>
->>> On 01/21/2013 06:43 PM, Willy Lambert wrote:
->>>> Here is a first try.
->>>> http://www.xenomai.org/index.php/Building_kernel
->>>>  Don't hesitate to comment/correct this. I will add some links later to :
->>>> _ a good complete kernel building guide (if you have some please share)
->>>> _ x86 configure hints wiki page.
->>>>
->>>> The end is a bit specific to Debian/Ubuntu distros. Is it a problem ?
->>>> Should I rework this ?
->>>
->>> Nice write-up.  I've done the same thing on the LinuxCNC website.  Feel
->>> free to comment, fix, borrow, ignore....
->>>
->>> http://wiki.linuxcnc.org/cgi-bin/wiki.pl?XenomaiKernel
->>>
->>>         John
->>>
->>
->> Arg, a pity I know this just after I write the xenomai wiki :D But
->> anyway thanks for pointing
->>
->> I think a part of this stuff has to come to the xenomai wiki because
->> the question rise from time to time. We need 2 things :
->> _ something like my page, about general thinking,  maybe without the
->> compilation details (which is not depending on versions)
->> _ intructions to build everything with latests versions (which is more
->> like your page), which we have to maintain... (it alredy exists
->> somewhere on the wiki, but I think is is not about kernel compilation)
+On 01/22/2013 11:29 PM, Daniel M. Drucker, Ph.D. wrote:
 
-Good point, that's an important distinction I hadn't thought of:
-general thinking vs. compilation recipe.
+> 
+>     And you are sure that it is not an SMI issue? Could you post your kernel
+>     configuration?
+> 
+> 
+> Here it
+> is: https://gist.github.com/raw/4599242/0eea44377371e4d7213eea28cd33823950afeaca/gistfile1
 
-The Xenomai wiki does have something like that recipe for both xenomai
-and kernel packages:
 
-http://www.xenomai.org/index.php/Building_Debian_packages
+You can try disabling CONFIG_PM_RUNTIME
 
->> One point is that I'm not taking care about cross compiling the kernel...
+What could take long in __xnpod_schedule is locking the spinlock, that
+could be because another CPU has the lock, in which case you will be
+able to catch the culprit by enabling CONFIG_XENO_OPT_DEBUG_XNLOCK
 
-I'd like to know more about that, too, since LinuxCNC is preparing to
-support the BeagleBone (ARM) and will need kernel packages.
+or because the bus is locked for a long time, you could also try
+disabling CONFIG_MTRR or CONFIG_X86_PAT.
 
-> Btw I personnaly don't use the --revision option to manage different
-> tries because it is not completely visible when the packaged is
-> installed.
+Finally, what may happen is an NMI, the perf system uses NMIs and
+oprofile as well. You can avoid compiling oprofile, but I am not sure
+perf can be disabled, but you can comment out the code enabling the NMI
+with the following patch:
 
-There are a number of shortcomings with the instructions on my wiki
-page, but as the page states, it is meant for one-off builds, and not
-meant for packages to be widely distributed.  What do you do instead?  I
-actually have never used Debian before, and have no idea what common
-practice is.
+diff --git a/arch/x86/kernel/cpu/perf_event.c
+b/arch/x86/kernel/cpu/perf_event.c
+index bb8e034..a26df66 100644
+--- a/arch/x86/kernel/cpu/perf_event.c
++++ b/arch/x86/kernel/cpu/perf_event.c
+@@ -1324,6 +1324,8 @@ static int __init init_hw_perf_events(void)
+ 	struct event_constraint *c;
+ 	int err;
 
-I did spend some time preparing kernel packages that I hope will be
-suitable for distribution some day.  The packages are built with
-dpkg-buildpackage, not make-kpkg, and use the revision from
-debian/changelog.  There is a separate wiki page here that discusses
-more 'general thinking' subjects:
++	return 0;
++	
+ 	pr_info("Performance Events: ");
 
-http://wiki.linuxcnc.org/cgi-bin/wiki.pl?XenomaiKernelPackages
+ 	switch (boot_cpu_data.x86_vendor) {
 
-	John
+-- 
+                                                                Gilles.
 
