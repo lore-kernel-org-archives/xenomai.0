@@ -1,12 +1,12 @@
-Message-ID: <511293EB.1080502@siemens.com>
-Date: Wed, 06 Feb 2013 18:33:31 +0100
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <51003087.4090302@xenomai.org>
+Date: Wed, 23 Jan 2013 19:48:39 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <51128CE4.4020303@siemens.com> <51128E3E.808@xenomai.org>
-In-Reply-To: <51128E3E.808@xenomai.org>
+References: <CANzShzdBHfYGQEzpvnHGhbuwb1KNcdFT-7M8LOV=VoyGa+MZ9Q@mail.gmail.com>
+In-Reply-To: <CANzShzdBHfYGQEzpvnHGhbuwb1KNcdFT-7M8LOV=VoyGa+MZ9Q@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] ipipe/x86: do not restore during context switch
+Subject: Re: [Xenomai] Native_skin_Alarm_reprogramming
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,32 +15,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Moustapha Bikienga <mbikienga@gmail.com>
+Cc: xenomai@xenomai.org
 
-On 2013-02-06 18:09, Gilles Chanteperdrix wrote:
-> On 02/06/2013 06:03 PM, Jan Kiszka wrote:
+On 01/23/2013 05:40 PM, Moustapha Bikienga wrote:
+
+> Hi.
 > 
->> Gilles,
->>
->> do you remember if this core-3.4 change was a performance optimization
->> or a necessary fix? Also, I'm not yet understanding why we need all the
->> #ifdefs except for the first one which forces fpu.preload to 0.
-> 
-> 
-> It is a performance optimization, without it, we systematically hit the
-> maximum latency when the timer would tick during a context switch which
-> restores the FPU. Note that if you change that, you will probably break
-> -forge.
+> Writing a periodic alarm tested program, I noticed that after 10 shot, the
+> alarm wasn't reprogramming (or some thing else!).
 
-According to the Intel folks who introduced eagerfpu, xsave, or at least
-xsaveopt (which I didn't implemented yet) is now faster than serializing
-clts/stts. On the other hand, the worst case is a full SSE + AVX restore
-while the target RT task is not depending on the FPU.
+> Is there any reason for this ?
 
-Jan
-
+If you pause() the main thread before returning 0, it will survive many
+more shots ;-)
 -- 
-Siemens AG, Corporate Technology, CT RTC ITP SDP-DE
-Corporate Competence Center Embedded Linux
+                                                                Gilles.
 
