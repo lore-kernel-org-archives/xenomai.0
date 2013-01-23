@@ -1,16 +1,13 @@
-Mime-Version: 1.0 (Apple Message framework v1283)
-From: Stephan Kappertz <stephan.kappertz@kabelmail.de>
-In-Reply-To: <E97DED58-C06A-44D7-AAA5-46106D594C97@mah.priv.at>
-Date: Thu, 31 Jan 2013 21:13:02 +0100
-Message-Id: <029CF5E2-9875-41FA-B974-363393DFC7BC@kabelmail.de>
-References: <mailman.0.1359630001.19052.xenomai@xenomai.org>
-	<9EFD9D88-FCCB-489A-9DA9-06A8C8AFE8EA@kabelmail.de>
-	<E97DED58-C06A-44D7-AAA5-46106D594C97@mah.priv.at>
-Content-Type: text/plain;
-	charset=us-ascii
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] Ipipe pre and post patch for AM335x beagleBone/
-	koenkooi branch
+Message-ID: <50FF8B16.3060100@xenomai.org>
+Date: Wed, 23 Jan 2013 08:02:46 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+References: <OF682F5C70.F8F7AA50-ON85257AF1.005F580A-85257AF1.005F580C@aanddtech.com>	<50F3DD9A.9050306@gmail.com>	<OF5CF00330.868585F8-ON85257AFA.00801D57-85257AFB.00000E92@aanddtech.com>	<50FE45E9.1040909@xenomai.org>	<OF518EBAA9.1B02356C-ON85257AFC.00002A9B-85257AFC.00028E23@aanddtech.com>	<50FF4434.7030405@xenomai.org>
+	<CAFVR4DVpsR026fvgybs91iC7-gDLVvBS8wsXBRO0XdzLBcXzpg@mail.gmail.com>
+In-Reply-To: <CAFVR4DVpsR026fvgybs91iC7-gDLVvBS8wsXBRO0XdzLBcXzpg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Porting Ipipe to new ARM SoC (Xilinx Zynq)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,113 +16,110 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Michael Haberler <mail17@mah.priv.at>
-Cc: xenomai@xenomai.org
+To: Matthew Fornero <matthew.fornero@gmail.com>
+Cc: mfornero@aanddtech.com, Xenomai@xenomai.org
+
+On 01/23/2013 04:43 AM, Matthew Fornero wrote:
+
+> I'll cat out the proc/interrupts when I get to the office tomorrow. I
+> did read the porting guide, but stupidly missed that function call. On
+> this dev kit, we're not initially planning to use GPIO from our code
+> (real time or otherwise), but of course they could be used by various
+> peripherals.
+> 
+> I'm somewhat new to arm (mostly worked on x86 until now), so please
+> excuse my ignorance-- would there be another irq chip or something I
+> need to multiplex in other driver files (other than the
+> gpio-xilinxps.c file)? Is there an existing platform I can reference
+> for this? Maybe some code in the board level file as well?
 
 
-Am 31.01.2013 um 17:01 schrieb Michael Haberler:
+Each platform defines its own irqchips for multiplexed GPIOs. If you
+want to track all invalid GPIO demuxers, you can enable ipipe debugging
+and add ipipe_root_only() inside "generic_handle_irq".
 
-> Hi Stephan,
->=20
-> Am 31.01.2013 um 15:17 schrieb Stephan Kappertz:
->=20
->>=20
->>>> Hi All,
->>>>=20
->>>> sorry for the long delay. As Gilles suggested I have prepared a pre =
-and post patch for ipipe-core-3.2.21-arm-4 and the git repository =
-supporting BeagleBone here: =
-https://github.com/koenkooi/linux/tree/linux-ti33x-psp-3.2.21-r13g%2Bgitr7=
-20e07b4c1f687b61b147b31c698cb6816d72f01 . Should I send the patches to =
-the list?
->>>>=20
->>>> - Stephan
->>>=20
->>> I think that you should.
->>>=20
->>> Goran
->>>=20
->>=20
->> Here they are.
->> Usage:
->>=20
->> * clone git repository =
-https://github.com/koenkooi/linux/tree/linux-ti33x-psp-3.2.21-r13g%2Bgitr7=
-20e07b4c1f687b61b147b31c698cb6816d72f01
->>=20
->> * checkout linux-ti33x-psp-3.2.21-r13g
->>=20
->> * apply pre.patch
->>=20
->> * run xenomai (tested with 2.6.2.1) prepare-kernel.sh
->>=20
->> * apply post.patch
->>=20
->> * Configure & compile kernel
->>=20
->> - Stephan
->=20
-> I followed your steps above
-> when building I get
->=20
->  LD      .tmp_vmlinux1
-> arch/arm/mach-omap2/built-in.o:(.arch.info.init+0x34): undefined =
-reference to `omap3_timer'
-> arch/arm/mach-omap2/built-in.o:(.arch.info.init+0x78): undefined =
-reference to `omap3_secure_timer'
-> arch/arm/mach-omap2/built-in.o:(.arch.info.init+0xbc): undefined =
-reference to `omap3_timer'
-> arch/arm/mach-omap2/built-in.o:(.arch.info.init+0x100): undefined =
-reference to `omap3_timer'
->=20
-> looks like a difference in the config - could you share your config as =
-well?
->=20
-> --
->=20
-> I had to apply this patch =
-http://git.mah.priv.at/gitweb/linuxcnc-kernel.git/commitdiff/cea8a24ff294e=
-6d7020c43fb1802b5ff6bbd85c8
-> which is an imported copy & paste error  from the Koen Koi branch.
->=20
-> - Michael
->=20
-> current status is here if somebody wants to skip the plumbing: =
-http://git.mah.priv.at/gitweb/linuxcnc-kernel.git/shortlog/refs/heads/beag=
-lebone-3.2.21-2.6.2-kappertz
->=20
->=20
->=20
->>=20
->> -------------- next part --------------
->> A non-text attachment was scrubbed...
->> Name: beagleBone_pre_post_patches.tar.bz2
->> Type: application/x-bzip2
->> Size: 5820 bytes
->> Desc: not available
->> URL: =
-<http://www.xenomai.org/pipermail/xenomai/attachments/20130131/e6446062/at=
-tachment.bin>
->> -------------- next part --------------
->>=20
->>=20
->>=20
->>=20
->> _______________________________________________
->> Xenomai mailing list
->> Xenomai@xenomai.org
->> http://www.xenomai.org/mailman/listinfo/xenomai
->=20
+> 
+> I'll try the remainder of the above debug steps as well. Unfortunately
+> our JTAG environment isn't totally stable, but I should be able to get
+> something going.
+> 
+>>> If I boot with Xenomai off (CONFIG_XENOMAI = n) but IPIPE still on
+>>> (CONFIG_IPIPE = y), I get a warning at boot. Haven't looked into the
+>>> root cause of this-- but maybe it's related?
+>>>
+>>> mmc0: new high speed SDHC card at address b368
+>>> mmcblk0: mmc0:b368 F0F0F 3.71 GiB
+>>>  mmcblk0: p1 p2
+>>> EXT4-fs (mmcblk0p2): recovery complete
+>>> EXT4-fs (mmcblk0p2): mounted filesystem with ordered data mode. Opts:
+>>> (null)
+>>> VFS: Mounted root (ext4 filesystem) on device 179:2.
+>>> devtmpfs: mounted
+>>> Freeing init memory: 160K
+>>> ------------[ cut here ]------------
+>>> WARNING: at arch/arm/mm/context.c:182 __new_context+0x40/0x118()
+>>
+>>
+>> Known issue, which I thought was fixed, but maybe not. Try this patch:
+>>
+>> diff --git a/arch/arm/mm/context.c b/arch/arm/mm/context.c
+>> index 3ae015f..79de5dc 100644
+>> --- a/arch/arm/mm/context.c
+>> +++ b/arch/arm/mm/context.c
+>> @@ -167,11 +167,12 @@ static inline void set_mm_context(struct mm_struct
+>> *mm, unsigned int asid)
+>>
+>>  void __new_context(struct mm_struct *mm)
+>>  {
+>> -       int cpu = ipipe_processor_id();
+>>         unsigned long flags;
+>>         unsigned int asid;
+>> +       int cpu;
+>>
+>>         asid_lock(flags);
+>> +       cpu = ipipe_processor_id();
+>>  #ifdef CONFIG_SMP
+>>         /*
+>>          * Check the ASID again, in case the change was broadcast from
+> 
+> Will try tomorrow and report if it resolves it.
 
-CONFIG_MACH_OMAP3_BEAGLE=3Dy
-CONFIG_MACH_TI8168EVM=3Dy
-CONFIG_MACH_TI8148EVM=3Dy
 
-Hi Michael,
+Forget it, it is purely a problem due to CONFIG_XENOMAI=n and
+CONFIG_IPIPE=y, in that case preemptible context switches do not get
+selected, __new_context gets called with irqs off, which can not work
+with CONFIG_IPIPE. The fix is to select IPIPE_WANT_PREEMPTIBLE_SWITCH
+with CONFIG_SMP, I thought I did it, but it probably got lost.
 
-you should disable these targets. They collide with the AM335x related =
-changes in mach-omap2/timer.c
+> 
+>>
+>>> If I boot with Xenomai on (CONFIG_XENOMAI = y) and Nucleus as a module
+>>> (CONFIG_XENO_OPT_NUCLEUS = m), the system boots without issue (not even
+>>> a warning at boot), but the Nucleus module fails to compile with the
+>>> following error:
+>>>
+>>> [mfornero@hwbuild linux]$ make -j8 modules
+>>>   CHK     include/linux/version.h
+>>>   CHK     include/generated/utsrelease.h
+>>> make[1]: `include/generated/mach-types.h' is up to date.
+>>>   CALL    scripts/checksyscalls.sh
+>>>   Building modules, stage 2.
+>>>   MODPOST 22 modules
+>>> ERROR: "current_mm" [kernel/xenomai/nucleus/xeno_nucleus.ko] undefined!
+>>> make[1]: *** [__modpost] Error 1
+>>> make: *** [modules] Error 2
+>>
+>>
+>> It simply means EXPORT_SYMBOL_GPL(current_mm) is missing.
+> 
+> So this export should go in something like arch/arm/include/asm/mmu_context.h?
+> 
+> Do I need to do anything special for the export given that it's
+> defined via "DECLARE_PER_CPU"?
 
-- Stephan
 
+Right, you need to use EXPORT_PER_CPU_SYMBOL_GPL(current_mm).
+
+-- 
+                                                                Gilles.
 
