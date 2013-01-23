@@ -1,10 +1,9 @@
-Message-ID: <DUB112-W13050D5AFBEFC5B494C17E2DB070@phx.gbl>
-From: =?windows-1254?B?SGFzYW4gRXJkZW0gWWFudP1y?= <heyantir@hotmail.com>
-Date: Wed, 6 Feb 2013 13:59:20 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset="windows-1254"
-Content-Transfer-Encoding: 8bit
-Subject: [Xenomai] Xenomai on uClinux on Altera FPGA
+Date: Wed, 23 Jan 2013 17:40:01 +0100
+Message-ID: <CANzShzdBHfYGQEzpvnHGhbuwb1KNcdFT-7M8LOV=VoyGa+MZ9Q@mail.gmail.com>
+From: Moustapha Bikienga <mbikienga@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: [Xenomai] Native_skin_Alarm_reprogramming
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,8 +14,43 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
+Hi.
 
-Hello 
-I am a researcher and dealing with RTOSes on Field Programmable Gate Arrays. As an processor I am using Nios II soft core processor on Altera FPGAs, and I've loaded the uClinux operating system. The operating system which I loaded was nios2-linux-20090929.tar version. After loading uClinux, I've patched it with Xenomai 2.6 however patch causes a verification error while loading the image file. 
-Are there any member in this list who succesfully patched Xenomai to uClinux and run it on the FPGA. Can he/she provide the exact version / source of the uClinux which he/she has used.
-Thanks... 		 	   		  
+Writing a periodic alarm tested program, I noticed that after 10 shot, the
+alarm wasn't reprogramming (or some thing else!).
+Is there any reason for this ?
+
+Best regards
+
+Configuration :
+xenomai : 2.6.0
+Linux kernel : 2.6.38
+---------------------
+My program
+#include <sys/mman.h>
+#include <native/task.h>
+#include <native/alarm.h>
+#include <native/timer.h>
+
+RT_ALARM alarm_desc;
+RT_TASK server_desc;
+
+void alarm_server(void *cookie){
+int i;
+i=0;
+while(1){
+rt_alarm_wait(&alarm_desc);
+printf("SHOTED %d \n",i);
+i++;
+}
+}
+int main(int argc, char *argv[]){
+int err;
+mlockall(MCL_CURRENT|MCL_FUTURE);
+err=rt_alarm_create(&alarm_desc,"MyAlarm");
+err=rt_alarm_start(&alarm_desc,100000000,10000000);
+err=rt_task_create(&server_desc,"myAlarmServer",0,5,0);
+if(!err) rt_task_start(&server_desc,&alarm_server,NULL);
+return 0;
+}
+-----------------------
