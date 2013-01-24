@@ -1,15 +1,18 @@
+In-Reply-To: <5100F8FA.9000104@xenomai.org>
+References: <OF682F5C70.F8F7AA50-ON85257AF1.005F580A-85257AF1.005F580C@aanddtech.com>	<50F3DD9A.9050306@gmail.com>
+	<OF5CF00330.868585F8-ON85257AFA.00801D57-85257AFB.00000E92@aanddtech.com>
+	<50FE45E9.1040909@xenomai.org>	<OF518EBAA9.1B02356C-ON85257AFC.00002A9B-85257AFC.00028E23@aanddtech.com>
+	<50FF4434.7030405@xenomai.org>
+	<CAFVR4DVpsR026fvgybs91iC7-gDLVvBS8wsXBRO0XdzLBcXzpg@mail.gmail.com>
+	<50FF8B16.3060100@xenomai.org>
+	<OFC84FDBBF.88E9186F-ON85257AFC.007B4CC3-85257AFC.008309FB@aanddtech.com>
+	<5100F8FA.9000104@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <CAD1EtogPNsGWkA0_puttwFTGMfZ6aW1_1WniND0GRJYRba389Q@mail.gmail.com>
-References: <CAD1EtogQBZ5f=7w5mZz19rrnQVB_BP=t-f4rKtq12wKn9cd1Yw@mail.gmail.com>
-	<50FF1249.2070807@xenomai.org>
-	<CAD1EtoiMKsipxzaDZOHFHfzQWRX1Oub=HspCCn01UNC3C9e53A@mail.gmail.com>
-	<50FF16E9.7050902@xenomai.org>
-	<CAD1EtogPNsGWkA0_puttwFTGMfZ6aW1_1WniND0GRJYRba389Q@mail.gmail.com>
-Date: Thu, 24 Jan 2013 17:22:04 -0500
-Message-ID: <CAD1Etohk3SO-dtSOUSPrwgA-oDFfQAMt_eJK9PYMrVWhO=SJjw@mail.gmail.com>
-From: "Daniel M. Drucker, Ph.D." <dmd@interactive-motion.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] x86 Linux with xenomai and i915 graphics stall
+Message-ID: <OF3C3DF41E.C733E3A5-ON85257AFD.00809CA9-85257AFD.0083A303@aanddtech.com>
+From: mfornero@aanddtech.com
+Date: Thu, 24 Jan 2013 18:57:49 -0500
+Content-Type: text/plain; charset="US-ASCII"
+Subject: Re: [Xenomai] Porting Ipipe to new ARM SoC (Xilinx Zynq)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,33 +21,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, xenomai@xenomai.org
-Cc: Andrew Tannenbaum <trb@interactive-motion.com>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Xenomai@xenomai.org
 
-Hi Gilles et al.,
+Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote on 
+01/24/2013 04:03:54 AM:
+ 
+> As said in the porting guide, it means that you have a timer issue. What
+> happens when you load a skin module is that Xenomai takes over the
+> control of the timer. So, that is where you should look. Do not assume
+> anything about the TWD code, it is not because it works on other
+> platforms that it works on this one.
 
-We tried setting processor type more correctly, turning off CONFIG_M686 and
-turning on CONFIG_MCORE2, and also turned off CONFIG_X86_GENERIC.
+I modified the xttcpss code to support the ipipe_timer structure and got 
+some interesting results:
 
-That change has caused our worst latencies to drop to around 200us, but
-those are actually rare - we can only [but reliably] trigger that by using
-glxgears with a very large (1200x700 or larger or so) window size. (Other
-things we tried had no latency-increasing effects - we tried heavy disk and
-network activity, playing youtube videos, etc.)''
+If I simply register this device with ipipe, there is largely no 
+difference-- this is because the twd timer has a higher rating, and is 
+registered by the time xenomai loads
 
-/proc/ipipe/trace/frozen, without glxgears running: http://ix.io/46I
-with glxgears running: http://ix.io/46J
+If I increase the rating of the xttcpss timer, the system is able to boot 
+and run the xenomai sample applications
+        CPU0 uses the xttcpss timer as it's timer
+        CPU1 uses the twd timer as it's timer
 
-Log of latency: http://ix.io/46L
+        latency test is able to run on both cores (though CPU1 gets 
+considerably better numbers-- likely because the twd timer runs at a much 
+higher frequency)
 
-And.... here is a video of the problem:
-http://www.youtube.com/watch?v=l4rYvhqZql8
- (problem starts at about 0:41)
+This seems to indicate there is some problem on this platform with the twd 
+code (maybe the sharing of the twd interrupt between linux and xenomai?).
 
-Can you think of anything else we could try? We've tried enabling SMI
-workaround, disabling PM_RUNTIME, disabling MTRR, and disabling X86_PAT,
-and none of these have solved this issue.
+Of note-- when both cores are using the twd (the still broken case), if I 
+turn on CONFIG_IPIPE_DEBUG_INTERNAL and enable the __ipipe_serial_debug 
+message in twd_hrtimer_debug, I see far more interrupts on CPU1 than on 
+CPU0. Is this to be expected?
 
-Thanks so much for your help,
-Daniel and Andy
-Interactive Motion
+In general, do is there any advice for debugging where the twd_smp.c code 
+is falling over on my platform?
+
+Best Regards,
+
+Matt Fornero
