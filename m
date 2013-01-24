@@ -1,13 +1,15 @@
-Message-ID: <511CD673.2030400@xenomai.org>
-Date: Thu, 14 Feb 2013 13:20:03 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <510166D3.8050905@logilin.fr>
+Date: Thu, 24 Jan 2013 17:52:35 +0100
+From: Christophe Blaess <mailist@logilin.fr>
 MIME-Version: 1.0
-References: <224444793.158669.1360843957336.JavaMail.ngmail@webmail16.arcor-online.net>
-	<511CD5C2.50701@arcor.de>
-In-Reply-To: <511CD5C2.50701@arcor.de>
-Content-Type: text/plain; charset=UTF-8
+References: <CALJOq=VtrBhMzCaT=7omDVN9hnnwZ+cmM1_1eff9DTS-fvLjaw@mail.gmail.com>
+	<201301200013.09110.paul_c@tuxcnc.org>
+	<50FBF628.1000709@xenomai.org>
+	<201301220306.28220.paul_c@tuxcnc.org>
+In-Reply-To: <201301220306.28220.paul_c@tuxcnc.org>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] kernel configuration problems with ACPI
+Subject: Re: [Xenomai] GPIO Interrupts problem with RTDM
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,45 +18,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Christopher Hahn <hahnchristopher@arcor.de>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 02/14/2013 01:17 PM, Christopher Hahn wrote:
+On 22/01/2013 04:06, Paul wrote:
+> On Sunday 20 January 2013, Gilles Chanteperdrix wrote:
+>> Yes, this patch is based on 3.5.7 and is used with and without
+>> GENERIC_CLOCKEVENTS.
+> Short version: Updated my kernel to 3.5.7 and backported the Raspberry
+> Pi changes from 3.6.11 and added in the ipipe support. Interrupts are
+> not being recognised unless irq_set_irq_type() is called. Digging
+> through the rtdm, nucleus, and ipipe code, at no point is
+> irq_chip->irq_set_type() called - Also have a problem that none of the
+> ipipe_pic_muter fields are set, so __ipipe_enable_irqdesc() & friends
+> do nothing.
 
-> Am 14.02.2013 13:12, schrieb hahnchristopher@arcor.de:
->> Hey guys,
->>
->> I'm running the new Xenomai 2.6.2.1 with 3.5.7 Kernel on a x86 machine.
->> I tried several kernel configurations, but I haven't found the right one yet.
->>
->> The PC (ADLD25PC) uses a PEAK-Systems PCIE/104 CAN interface and two serialport devices.
->>
->> I have selected the CAN driver and 16550A driver as kernel modules.
->>
->>
->> With kernel configuration "-xenomai4"  the serial and can devices works, but there are only 2 CPUs detected - so the hyperthreading cores arn't detected.
->> And I get a message during bootup "BIOS bug, no explicit IRQ entries, using default mptable. (tell your hw vendor)."
->> This is my "best" solution so far - CONFIG_ACPI is completely disabled.
->>
->>
->> In "-xenomai5" configuration is ACPI enabled as you can see in the attached kernel configs.
->> The mptable message disappears, 4 cores are detected, but serial and can device IRQs get disabled.
->> The can interface and a usb hub get IRQ 19 - thats solvable for me, but the serialport on IRQ 4 gets disabled and I don't know why. (lspci -v log is also attached)
->>
->>
->> Could you point me in a direction how to combine the advantages of the two configurations?
->>
->>
->> Thank you,
->>
->> Christopher
-> 
-> 
-> Attachments now as txt files
+I'm trying to follow the same steps as you but I still have some 
+compilation errors while porting
+R-Pi modifications to 3.5.7. (especially arm timer code).
+
+Do you have any available patch against 3.5.7 vanilla kernel ?
+
+I have a working GPIO interrupt rtdm driver with 3.2.21 kernel (Xenomai 
+2.6.2) but the interrupt latencies seems terrible (about 20us and 
+jiterring up to 150us without any load). To compare with the 7us latency 
+I see on a vanilla Linux GPIO interrupt handler.
 
 
-It would be interesting to have the kernel boot logs too.
+Regards,
 
 -- 
-                                                                Gilles.
+Christophe
 
