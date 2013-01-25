@@ -1,12 +1,12 @@
+Message-ID: <5102D28D.2010908@xenomai.org>
+Date: Fri, 25 Jan 2013 19:44:29 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <50FF1249.2070807@xenomai.org>
-References: <CAD1EtogQBZ5f=7w5mZz19rrnQVB_BP=t-f4rKtq12wKn9cd1Yw@mail.gmail.com>
-	<50FF1249.2070807@xenomai.org>
-Date: Tue, 22 Jan 2013 17:29:23 -0500
-Message-ID: <CAD1EtoiMKsipxzaDZOHFHfzQWRX1Oub=HspCCn01UNC3C9e53A@mail.gmail.com>
-From: "Daniel M. Drucker, Ph.D." <dmd@interactive-motion.com>
+References: <51029170.7070104@siemens.com>
+In-Reply-To: <51029170.7070104@siemens.com>
 Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] x86 Linux with xenomai and i915 graphics stall
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Lacking xsave support in Xenomai
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,16 +15,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
->
->
-> And you are sure that it is not an SMI issue? Could you post your kernel
-> configuration?
->
->
-Here it is:
-https://gist.github.com/raw/4599242/0eea44377371e4d7213eea28cd33823950afeaca/gistfile1
+On 01/25/2013 03:06 PM, Jan Kiszka wrote:
 
-Daniel
+> Hi all,
+> 
+> yesterday I pushed a fix to my for-upstream queue that properly disables
+> all xsave-dependent CPU features (AVX/AVX2 namely). However, this is no
+> real solution for us as it blocks a lot of acceleration potential on
+> current Intel CPUs.
+> 
+> Did anyone already look into this in more details? Is it just a matter
+> of implementing the necessary context switching bits? Are there known
+
+> pitfalls?
+
+
+The known pitfalls of FPU support is that we never get it right the
+first time. And debugging why it fails is hard.
+
+-- 
+                                                                Gilles.
+
