@@ -1,13 +1,13 @@
-Message-ID: <51024BA3.9040402@xenomai.org>
-Date: Fri, 25 Jan 2013 10:08:51 +0100
+Message-ID: <51027032.7010009@xenomai.org>
+Date: Fri, 25 Jan 2013 12:44:50 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CALJOq=VtrBhMzCaT=7omDVN9hnnwZ+cmM1_1eff9DTS-fvLjaw@mail.gmail.com>	<201301220306.28220.paul_c@tuxcnc.org>	<510166D3.8050905@logilin.fr>	<201301241712.21645.paul_c@tuxcnc.org>
-	<5101719D.9080908@logilin.fr>
-In-Reply-To: <5101719D.9080908@logilin.fr>
+References: <CAD1EtogQBZ5f=7w5mZz19rrnQVB_BP=t-f4rKtq12wKn9cd1Yw@mail.gmail.com>	<50FF1249.2070807@xenomai.org>	<CAD1EtoiMKsipxzaDZOHFHfzQWRX1Oub=HspCCn01UNC3C9e53A@mail.gmail.com>	<50FF16E9.7050902@xenomai.org>	<CAD1EtogPNsGWkA0_puttwFTGMfZ6aW1_1WniND0GRJYRba389Q@mail.gmail.com>
+	<CAD1Etohk3SO-dtSOUSPrwgA-oDFfQAMt_eJK9PYMrVWhO=SJjw@mail.gmail.com>
+In-Reply-To: <CAD1Etohk3SO-dtSOUSPrwgA-oDFfQAMt_eJK9PYMrVWhO=SJjw@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] GPIO Interrupts problem with RTDM
+Subject: Re: [Xenomai] x86 Linux with xenomai and i915 graphics stall
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,80 +16,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Christophe Blaess <mailist@logilin.fr>
-Cc: xenomai@xenomai.org
+To: "Daniel M. Drucker, Ph.D." <dmd@interactive-motion.com>
+Cc: Andrew Tannenbaum <trb@interactive-motion.com>, xenomai@xenomai.org
 
-On 01/24/2013 06:38 PM, Christophe Blaess wrote:
+On 01/24/2013 11:22 PM, Daniel M. Drucker, Ph.D. wrote:
 
-> On 24/01/2013 18:12, Paul wrote:
->> On Thursday 24 January 2013, Christophe Blaess wrote:
->>> On 22/01/2013 04:06, Paul wrote:
->>>> On Sunday 20 January 2013, Gilles Chanteperdrix wrote:
->>>>> Yes, this patch is based on 3.5.7 and is used with and without
->>>>> GENERIC_CLOCKEVENTS.
->>>> Short version: Updated my kernel to 3.5.7 and backported the
->>>> Raspberry Pi changes from 3.6.11 and added in the ipipe support.
->>>> Interrupts are not being recognised unless irq_set_irq_type() is
->>>> called. Digging through the rtdm, nucleus, and ipipe code, at no
->>>> point is
->>>> irq_chip->irq_set_type() called - Also have a problem that none of
->>>> the ipipe_pic_muter fields are set, so __ipipe_enable_irqdesc() &
->>>> friends do nothing.
->>> I'm trying to follow the same steps as you but I still have some
->>> compilation errors while porting
->>> R-Pi modifications to 3.5.7. (especially arm timer code).
->>>
->>> Do you have any available patch against 3.5.7 vanilla kernel ?
->> Funny that you should ask - I am in the middle of generating a patch set
->> against 3.5.7 with the Raspberry Pi additions. This will include the
->> ipipe modifications along with a fix to the gpio interrupt handler.
+> Hi Gilles et al.,
 > 
-> Great.
+> We tried setting processor type more correctly, turning off CONFIG_M686
+> and turning on CONFIG_MCORE2, and also turned off CONFIG_X86_GENERIC.
 > 
->>
->>> I have a working GPIO interrupt rtdm driver with 3.2.21 kernel
->>> (Xenomai 2.6.2) but the interrupt latencies seems terrible (about
->>> 20us and jiterring up to 150us without any load). To compare with the
->>> 7us latency I see on a vanilla Linux GPIO interrupt handler.
->> Should be better than that - Did you make any changes to the interrupt
->> handler in bcm207_gpio.c ?
+> That change has caused our worst latencies to drop to around 200us, but
+> those are actually rare - we can only [but reliably] trigger that by
+> using glxgears with a very large (1200x700 or larger or so) window size.
+> (Other things we tried had no latency-increasing effects - we tried
+> heavy disk and network activity, playing youtube videos, etc.)''
 > 
-> I replaced generic_handle_irq() by ipipe_handle_demuxed_irq().
-> 
-> 
-> My interrupt handler toggle an ouput GPIO pin :
-> 
-> static int handler_irq(rtdm_irq_t * irq)
-> {
->          static int value = 0;
->          gpio_set_value(GPIO_OUT, value);
->          value = 1 - value;
->          return RTDM_IRQ_HANDLED;
-> }
-> 
-> I think that gpio_set_value() doesn't call any Linux services, but I may 
-> be wrong.
+> /proc/ipipe/trace/frozen, without glxgears running: http://ix.io/46I
+> with glxgears running: http://ix.io/46J
 
 
-Two things to check then:
-http://xenomai.org/index.php/I-pipe-core:ArmPorting#GPIOs_in_real-time_drivers
+It would be interesting to know what happens on other cpus at the time
+when this happens. Or could you try forcing glxgears to run on the same
+CPU as the latency test?
 
-And the second I forgot in the porting guide is the idle loop. The
-processor dependent idle routine is called by the I-pipe kernel with
-hardware irqs on, this could result in an interrupt being handled with
-part of the processor still prepared for sleeping. For instance, on
-arm926ejs, this could result in interrupts being handled with I-cache
-off, which resulted in high latencies.
+> 
+> Log of latency: http://ix.io/46L
+> 
+> And.... here is a video of the
+> problem: http://www.youtube.com/watch?v=l4rYvhqZql8
+>  (problem starts at about 0:41)
+> 
+> Can you think of anything else we could try? We've tried enabling SMI
 
-As a first step  to check that it is not the issue you observe, boot
-with the "nohlt" kernel option. If the latencies improve, then something
-needs to be done about the idle loop.
 
-If that is your issue, there are two ways around:
-- call hard_local_irq_disable() at the beginning of the processor
-dependent idle routine
-- if this results in to high latencies (due to the time it takes to
-execute the handler), then simply disable this idle routine.
+Yes, but did you run dmesg | grep SMI to see if your chipset is acutally
+supported?
+
+Have you tried to turn off graphic acceleration in X window configuration?
 
 -- 
                                                                 Gilles.
