@@ -1,9 +1,9 @@
-Message-ID: <5102D28D.2010908@xenomai.org>
-Date: Fri, 25 Jan 2013 19:44:29 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <5102D688.6080901@siemens.com>
+Date: Fri, 25 Jan 2013 20:01:28 +0100
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-References: <51029170.7070104@siemens.com>
-In-Reply-To: <51029170.7070104@siemens.com>
+References: <51029170.7070104@siemens.com> <5102D28D.2010908@xenomai.org>
+In-Reply-To: <5102D28D.2010908@xenomai.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] Lacking xsave support in Xenomai
@@ -15,27 +15,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: Xenomai <xenomai@xenomai.org>
 
-On 01/25/2013 03:06 PM, Jan Kiszka wrote:
-
-> Hi all,
+On 2013-01-25 19:44, Gilles Chanteperdrix wrote:
+> On 01/25/2013 03:06 PM, Jan Kiszka wrote:
 > 
-> yesterday I pushed a fix to my for-upstream queue that properly disables
-> all xsave-dependent CPU features (AVX/AVX2 namely). However, this is no
-> real solution for us as it blocks a lot of acceleration potential on
-> current Intel CPUs.
+>> Hi all,
+>>
+>> yesterday I pushed a fix to my for-upstream queue that properly disables
+>> all xsave-dependent CPU features (AVX/AVX2 namely). However, this is no
+>> real solution for us as it blocks a lot of acceleration potential on
+>> current Intel CPUs.
+>>
+>> Did anyone already look into this in more details? Is it just a matter
+>> of implementing the necessary context switching bits? Are there known
 > 
-> Did anyone already look into this in more details? Is it just a matter
-> of implementing the necessary context switching bits? Are there known
+>> pitfalls?
+> 
+> The known pitfalls of FPU support is that we never get it right the
+> first time. And debugging why it fails is hard.
 
-> pitfalls?
+OK, so no conceptual issues. And it will remain controllable via "noxsave".
 
+Still need to discuss details here, but I bet we will look into this soon.
 
-The known pitfalls of FPU support is that we never get it right the
-first time. And debugging why it fails is hard.
+Thanks,
+Jan
 
 -- 
-                                                                Gilles.
+Siemens AG, Corporate Technology, CT RTC ITP SDP-DE
+Corporate Competence Center Embedded Linux
 
