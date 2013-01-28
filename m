@@ -1,13 +1,15 @@
-Message-ID: <50FF16E9.7050902@xenomai.org>
-Date: Tue, 22 Jan 2013 23:47:05 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <51062A21.3050208@zultron.com>
+Date: Mon, 28 Jan 2013 01:34:57 -0600
+From: John Morris <john@zultron.com>
 MIME-Version: 1.0
-References: <CAD1EtogQBZ5f=7w5mZz19rrnQVB_BP=t-f4rKtq12wKn9cd1Yw@mail.gmail.com>	<50FF1249.2070807@xenomai.org>
-	<CAD1EtoiMKsipxzaDZOHFHfzQWRX1Oub=HspCCn01UNC3C9e53A@mail.gmail.com>
-In-Reply-To: <CAD1EtoiMKsipxzaDZOHFHfzQWRX1Oub=HspCCn01UNC3C9e53A@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
+References: <50EA9B9A.6000804@zultron.com> <50EB4FAD.2000804@xenomai.org>
+	<50EBDAC8.8010006@zultron.com> <50EC80AD.3090301@xenomai.org>
+	<50F26428.8040705@zultron.com> <50F2A650.7050700@xenomai.org>
+	<50F30F19.1040901@zultron.com>
+In-Reply-To: <50F30F19.1040901@zultron.com>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] x86 Linux with xenomai and i915 graphics stall
+Subject: Re: [Xenomai] Debian package build problems
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,49 +18,87 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Daniel M. Drucker, Ph.D." <dmd@interactive-motion.com>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On 01/22/2013 11:29 PM, Daniel M. Drucker, Ph.D. wrote:
-
+On 01/13/2013 01:46 PM, John Morris wrote:
+> On 01/13/2013 06:19 AM, Gilles Chanteperdrix wrote:
+>> On 01/13/2013 08:37 AM, John Morris wrote:
+>>> On 01/08/2013 02:25 PM, Gilles Chanteperdrix wrote:
+>>>> So, we tried and improved the I-pipe patches so that a single or a pair
+>>>> of kernels (SMP and UP) can be generated for each architecture.
+>>>
+>>> Great!  This is the right way to go in order to increase adoption.
+>>>
+>>>> I started setting up a repository on the xenomai server, but obviously,
+>>>> can not do it for all distributions, so, any help is welcome. What I can
+>>>> propose is to set-up an inoticoming repository, give you access to an
+>>>> incoming repository through scp (you whould have to send me your ssh
+>>>> public key for that). Then, before a release, we would work to provide
+>>>> the corresponding debian and ubuntu packages. As for the fedora
+>>>> packages, I do not know the equivalent of reprepro and inoticoming.
+>>>
+>>> I've been thinking about what I can offer over the last few days.  I'm
+>>> really too inexperienced with Deb-like distros and I'm poor at
+>>> maintenance.  My solution would be to automate this chore with some type
+>>> of build infrastructure, but that would probably take me much longer
+>>> than someone else more at home with Debian.
+>>
+>>
+>> I have been thinking about that too. Actually, running my tests on x86
+>> from the Debian package instead of custom build kernels does not change
+>> much (except the compilation time for the kernel, so, it has to be done
+>> once I have a working kernel). Though I am going to test only Debian
+>> stable, not Ubuntu.
 > 
->     And you are sure that it is not an SMI issue? Could you post your kernel
->     configuration?
+> Understood.  Actually, testing could be automated by installing the OS
+> with the kernel to be tested and run xeno-regression-test.  That's some
+> infrastructure that I don't have ATM, but wouldn't be a huge leap.
 > 
+>>> On the other hand, it would be quite easy for me to do this for el6 and,
+>>> once I have packages, Fedora, since we do have the automated build
+>>> infrastructure (and the expertise) in the shop that it wouldn't be
+>>> difficult.  In this case, it would be easiest to keep a git repo of the
+>>> RPM files online (just like the one I recently pointed to in other
+>>> threads) to keep the development open, compile the packages on our
+>>> infrastructure, and rsync the resulting repo either to the xenomai.org
+>>> site, my site, or anywhere else suitable.  The only piece missing would
+>>> be a public view of the build system (called 'koji', the same as the
+>>> Fedora project uses), which could come in time if we choose.
+>>>
+>>> At any rate, I will certainly have my own el6 repo up soon, and I'll
+>>> announce it here for folks to try out.
+>>
+>>
+>> Ok, as you wish, it is not really a problem for us to provide you with a
+>> git access, and an access to set-up a repository. At any rate, whatever
+>> we do, we should also have a page in the wiki explaining how to get the
+>> Fedora packages.
 > 
-> Here it
-> is: https://gist.github.com/raw/4599242/0eea44377371e4d7213eea28cd33823950afeaca/gistfile1
+> Ok, thanks.  Taking the lazy approach, let's wait until my repos are up,
+> and then see what looks like the best option.
 
+Hi Gilles,
 
-You can try disabling CONFIG_PM_RUNTIME
+I put up an experimental PPA with 2.6.2.1 release packages for Ubuntu
+12.04 Precise:
 
-What could take long in __xnpod_schedule is locking the spinlock, that
-could be because another CPU has the lock, in which case you will be
-able to catch the culprit by enabling CONFIG_XENO_OPT_DEBUG_XNLOCK
+http://wiki.linuxcnc.org/cgi-bin/wiki.pl?XenomaiKernelPackages
 
-or because the bus is locked for a long time, you could also try
-disabling CONFIG_MTRR or CONFIG_X86_PAT.
+The packages are not good for anything except initial testing, and I've
+asked the folks on the emc-devel list to give them a try.  The first
+success has been reported, but there may not be many testers until
+packages are available for Ubuntu 10.04 Lucid, where current LinuxCNC
+users are stuck.
 
-Finally, what may happen is an NMI, the perf system uses NMIs and
-oprofile as well. You can avoid compiling oprofile, but I am not sure
-perf can be disabled, but you can comment out the code enabling the NMI
-with the following patch:
+I have working EL6 packages too, but haven't put up a repository yet;
+hopefully in the next couple of days.
 
-diff --git a/arch/x86/kernel/cpu/perf_event.c
-b/arch/x86/kernel/cpu/perf_event.c
-index bb8e034..a26df66 100644
---- a/arch/x86/kernel/cpu/perf_event.c
-+++ b/arch/x86/kernel/cpu/perf_event.c
-@@ -1324,6 +1324,8 @@ static int __init init_hw_perf_events(void)
- 	struct event_constraint *c;
- 	int err;
+My project depends on LinuxCNC and therefore Xenomai, and I plan to
+maintain the RedHat packages myself.  I haven't decided exactly what to
+do about the Debian packages yet, but I need to ensure quality,
+up-to-date .deb packages are maintained for x86 architecture for at
+least a couple of years.
 
-+	return 0;
-+	
- 	pr_info("Performance Events: ");
-
- 	switch (boot_cpu_data.x86_vendor) {
-
--- 
-                                                                Gilles.
+	John
 
