@@ -1,16 +1,12 @@
-From: Paul <paul_c@tuxcnc.org>
-Date: Mon, 28 Jan 2013 12:29:49 +0000
-References: <CALJOq=VtrBhMzCaT=7omDVN9hnnwZ+cmM1_1eff9DTS-fvLjaw@mail.gmail.com>
-	<201301241712.21645.paul_c@tuxcnc.org>
-	<51024A62.8020206@xenomai.org>
-In-Reply-To: <51024A62.8020206@xenomai.org>
+From: "Poole Jr, Donald R." <donald.poole@swri.org>
+Date: Mon, 28 Jan 2013 14:52:07 +0000
+Message-ID: <E9605457112439448B6B3ED284E065333175B15C@mbx256-1.adm.swri.edu>
+In-Reply-To: <E9605457112439448B6B3ED284E065333175A92A@mbx256-1.adm.swri.edu>
+Content-Language: en-US
 MIME-Version: 1.0
-Content-Type: text/plain;
-  charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Message-Id: <201301281229.49771.paul_c@tuxcnc.org>
-Subject: Re: [Xenomai] GPIO Interrupts problem with RTDM
+Content-Type: text/plain; charset="Windows-1252"
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] Xenomai RTDM Driver /dev/ Population
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,53 +15,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Friday 25 January 2013, Gilles Chanteperdrix wrote:
-> On 01/24/2013 06:12 PM, Paul wrote:
-> > On Thursday 24 January 2013, Christophe Blaess wrote:
-> >> On 22/01/2013 04:06, Paul wrote:
-> >>> On Sunday 20 January 2013, Gilles Chanteperdrix wrote:
-> >>>> Yes, this patch is based on 3.5.7 and is used with and without
-> >>>> GENERIC_CLOCKEVENTS.
-> >>>
-> >>> Short version: Updated my kernel to 3.5.7 and backported the
-> >>> Raspberry Pi changes from 3.6.11 and added in the ipipe support.
-> >>> Interrupts are not being recognised unless irq_set_irq_type() is
-> >>> called. Digging through the rtdm, nucleus, and ipipe code, at no
-> >>> point is
-> >>> irq_chip->irq_set_type() called - Also have a problem that none
-> >>> of the ipipe_pic_muter fields are set, so
-> >>> __ipipe_enable_irqdesc() & friends do nothing.
-> >>
-> >> I'm trying to follow the same steps as you but I still have some
-> >> compilation errors while porting
-> >> R-Pi modifications to 3.5.7. (especially arm timer code).
-> >>
-> >> Do you have any available patch against 3.5.7 vanilla kernel ?
-> >
-> > Funny that you should ask - I am in the middle of generating a
-> > patch set against 3.5.7 with the Raspberry Pi additions. This will
-> > include the ipipe modifications along with a fix to the gpio
-> > interrupt handler.
->
-> If you generate this patch as a diff agains the I-pipe kernel, the
-> patch could be shipped with Xenomai, or even merged in the I-pipe
-> kernel.
+Hello All,
 
-Generated three patches which Christophe is trying out. At some 91,000 
-lines, it touches on several core kernel sources including mmc, dma, 
-and skbuff as well as adding a dwc_otg driver on top of the 
-BCM2835/2708 support. Not sure that you'd want to merge the changes 
-that affect some (estimated) sixty 3.5.7 files. Shipping as an optional 
-add-on patch is possible, but it currently generates a couple of 
-rejects when applied to a vanilla 3.5.7-stable.
+I'm currently writing a driver using the Xenomai RTDM API, but had a questi=
+on regarding where in the /dev/ hierarchy the driver gets instantiated.  Wh=
+en I do an ls =96l on the /dev/ folder.  I don't see my driver listed  belo=
+w is my device structure:
 
-Work is under way by the Raspberry Pi team to get the required support 
-integrated with the mainline kernel. By the time 3.10.y gets released, 
-we might see it in stable.
+static struct rtdm_device gpe_device =3D {
+    .struct_version =3D RTDM_DEVICE_STRUCT_VER,
 
+    .device_flags =3D RTDM_NAMED_DEVICE,
+    .context_size =3D sizeof(context_t),
+    .device_name =3D DEVICE_NAME,
 
-Regards, Paul.
+    .open_nrt =3D pwm_rtdm_open_nrt,
 
+    .ops =3D {
+        .close_nrt =3D pwm_rtdm_close_nrt,
+        .read_nrt =3D pwm_rtdm_read_nrt,
+        .write_nrt =3D pwm_rtdm_write_nrt,
+    },
+
+    .device_class =3D RTDM_CLASS_EXPERIMENTAL,
+    .device_sub_class =3D SOME_SUB_CLASS,
+    .profile_version =3D 1,
+    .driver_name =3D "GPE",
+    .driver_version =3D RTDM_DRIVER_VER(0, 1, 2),
+    .peripheral_name =3D "GPIO PWM Engine (GPE)",
+    .provider_name =3D "Donald R. Poole, Jr.",
+    .proc_name =3D gpe_device.device_name,
+};
+
+Could anyone point me in the right direction to see what it is that I might=
+ be doing wrong? Thanks in advance.
+
+Thanks,
+Donald R. Poole, Jr.
+Research Engineer
+Voice: 210.522.3131 | Fax: 210.522.4931
+Tactical Networks & Communications (tacticalnetworks.swri.org)
+Southwest Research Institute (SwRI)
