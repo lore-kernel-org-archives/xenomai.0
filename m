@@ -1,17 +1,12 @@
-Message-ID: <5106360C.2070508@xenomai.org>
-Date: Mon, 28 Jan 2013 09:25:48 +0100
+Message-ID: <510636B8.9010600@xenomai.org>
+Date: Mon, 28 Jan 2013 09:28:40 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <50EA9B9A.6000804@zultron.com> <50EB4FAD.2000804@xenomai.org>
-	<50EBDAC8.8010006@zultron.com> <50EC80AD.3090301@xenomai.org>
-	<50F26428.8040705@zultron.com> <50F2A650.7050700@xenomai.org>
-	<50F30F19.1040901@zultron.com> <51062A21.3050208@zultron.com>
-	<51062B1B.3050305@xenomai.org> <51062D65.70604@zultron.com>
-	<51063253.5040403@xenomai.org> <5106349A.6060609@zultron.com>
-In-Reply-To: <5106349A.6060609@zultron.com>
+References: <5102FC88.1070000@xenomai.org>
+In-Reply-To: <5102FC88.1070000@xenomai.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Debian package build problems
+Subject: Re: [Xenomai] [Announce] Xenomai 2.6.2.1
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,142 +15,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: John Morris <john@zultron.com>
-Cc: xenomai@xenomai.org
+To: Xenomai <xenomai@xenomai.org>
 
-On 01/28/2013 09:19 AM, John Morris wrote:
+On 01/25/2013 10:43 PM, Gilles Chanteperdrix wrote:
 
-> On 01/28/2013 02:09 AM, Gilles Chanteperdrix wrote:
->> On 01/28/2013 08:48 AM, John Morris wrote:
->>
->>>
->>>
->>> On 01/28/2013 01:39 AM, Gilles Chanteperdrix wrote:
->>>> On 01/28/2013 08:34 AM, John Morris wrote:
->>>>
->>>>> On 01/13/2013 01:46 PM, John Morris wrote:
->>>>>> On 01/13/2013 06:19 AM, Gilles Chanteperdrix wrote:
->>>>>>> On 01/13/2013 08:37 AM, John Morris wrote:
->>>>>>>> On 01/08/2013 02:25 PM, Gilles Chanteperdrix wrote:
->>>>>>>>> So, we tried and improved the I-pipe patches so that a single or a pair
->>>>>>>>> of kernels (SMP and UP) can be generated for each architecture.
->>>>>>>>
->>>>>>>> Great!  This is the right way to go in order to increase adoption.
->>>>>>>>
->>>>>>>>> I started setting up a repository on the xenomai server, but obviously,
->>>>>>>>> can not do it for all distributions, so, any help is welcome. What I can
->>>>>>>>> propose is to set-up an inoticoming repository, give you access to an
->>>>>>>>> incoming repository through scp (you whould have to send me your ssh
->>>>>>>>> public key for that). Then, before a release, we would work to provide
->>>>>>>>> the corresponding debian and ubuntu packages. As for the fedora
->>>>>>>>> packages, I do not know the equivalent of reprepro and inoticoming.
->>>>>>>>
->>>>>>>> I've been thinking about what I can offer over the last few days.  I'm
->>>>>>>> really too inexperienced with Deb-like distros and I'm poor at
->>>>>>>> maintenance.  My solution would be to automate this chore with some type
->>>>>>>> of build infrastructure, but that would probably take me much longer
->>>>>>>> than someone else more at home with Debian.
->>>>>>>
->>>>>>>
->>>>>>> I have been thinking about that too. Actually, running my tests on x86
->>>>>>> from the Debian package instead of custom build kernels does not change
->>>>>>> much (except the compilation time for the kernel, so, it has to be done
->>>>>>> once I have a working kernel). Though I am going to test only Debian
->>>>>>> stable, not Ubuntu.
->>>>>>
->>>>>> Understood.  Actually, testing could be automated by installing the OS
->>>>>> with the kernel to be tested and run xeno-regression-test.  That's some
->>>>>> infrastructure that I don't have ATM, but wouldn't be a huge leap.
->>>>>>
->>>>>>>> On the other hand, it would be quite easy for me to do this for el6 and,
->>>>>>>> once I have packages, Fedora, since we do have the automated build
->>>>>>>> infrastructure (and the expertise) in the shop that it wouldn't be
->>>>>>>> difficult.  In this case, it would be easiest to keep a git repo of the
->>>>>>>> RPM files online (just like the one I recently pointed to in other
->>>>>>>> threads) to keep the development open, compile the packages on our
->>>>>>>> infrastructure, and rsync the resulting repo either to the xenomai.org
->>>>>>>> site, my site, or anywhere else suitable.  The only piece missing would
->>>>>>>> be a public view of the build system (called 'koji', the same as the
->>>>>>>> Fedora project uses), which could come in time if we choose.
->>>>>>>>
->>>>>>>> At any rate, I will certainly have my own el6 repo up soon, and I'll
->>>>>>>> announce it here for folks to try out.
->>>>>>>
->>>>>>>
->>>>>>> Ok, as you wish, it is not really a problem for us to provide you with a
->>>>>>> git access, and an access to set-up a repository. At any rate, whatever
->>>>>>> we do, we should also have a page in the wiki explaining how to get the
->>>>>>> Fedora packages.
->>>>>>
->>>>>> Ok, thanks.  Taking the lazy approach, let's wait until my repos are up,
->>>>>> and then see what looks like the best option.
->>>>>
->>>>> Hi Gilles,
->>>>>
->>>>> I put up an experimental PPA with 2.6.2.1 release packages for Ubuntu
->>>>> 12.04 Precise:
->>>>>
->>>>> http://wiki.linuxcnc.org/cgi-bin/wiki.pl?XenomaiKernelPackages
->>>>>
->>>>> The packages are not good for anything except initial testing, and I've
->>>>> asked the folks on the emc-devel list to give them a try.  The first
->>>>> success has been reported, but there may not be many testers until
->>>>> packages are available for Ubuntu 10.04 Lucid, where current LinuxCNC
->>>>> users are stuck.
->>>>>
->>>>> I have working EL6 packages too, but haven't put up a repository yet;
->>>>> hopefully in the next couple of days.
->>>>>
->>>>> My project depends on LinuxCNC and therefore Xenomai, and I plan to
->>>>> maintain the RedHat packages myself.  I haven't decided exactly what to
->>>>> do about the Debian packages yet, but I need to ensure quality,
->>>>> up-to-date .deb packages are maintained for x86 architecture for at
->>>>> least a couple of years.
->>>>
->>>>
->>>> I have compiled and tested the xenomai packages for Debian stable (for
->>>> amd64 and i686), and am going to put them in the repository. The plan is
->>>> to push them with every release.
->>>
->>> The xenomai packages in my repo are built with little change from the
->>> 2.6.2.1 release, of course.
->>>
->>> My kernel packages are not related to yours, so I assume you mean you
->>> recompiled your own packages.
->>
->>
->> From what I understand, you made packages for Ubuntu, my target is
->> Debian stable.
+> Hi,
 > 
-> Yes, I made packages for Ubuntu Precise.  My other targets are Lucid and
-> Debian stable, which I hope to build from the same source package.
+> After "a few" issues in the 2.6.2 release, please find Xenomai 2.6.2.1 at 
+> the following address:
+> http://download.gna.org/xenomai/stable/xenomai-2.6.2.1.tar.bz2
 
 
-Ok, providing the packages for Debian stable is something new for us,
-the idea is to avoid recurring questions on the mailing list about
-compiling kernel by avoiding kernel compilation to the user, but if
-someone wants to do that work, there is no reason to duplicate it.
+The packages for the Debian stable distribution for the x86
+architectures are available by adding the following line to your
+sources.list:
 
-> 
->>> Do you have a place you keep the kernel package sources?  I didn't see
->>> those last time around.  (Looks like your repo is undergoing maintenance
->>> right now, so I'm unable to check again.)
->>
->>
->> Well, the kernel sources are a vanilla kernel with the xenomai patch
->> applied, so, nothing that can not be reproduced. But I guess I could put
->> the kernel sources packages in the repository. Maintenance should be
->> finished, now.
-> 
-> If your package sources are not important, then maybe you're using
-> make-kpkg?  Where did the base kernel .config come from?
+deb http://www.xenomai.org/debian squeeze main
 
+And installing the packages:
+xenomai-keyring
+xenomai-runtime
+libxenomai1-dev
+linux-image-3.5.7-xenomai-2.6.2.1-amd64 on x86_64
+linux-image-3.5.7-xenomai-2.6.2.1-686 on i386
 
-Yes, I am using make-kpkg, the .config is derived from Debian kernel
-configuration for Linux 3.2.0 (from debian backports) with the usual
-modifications made for Xenomai, most new options in the configuration
-enabled as "module", or "yes" if module is not possible, and ftrace
-disabled.
+We could provide a -486 version if someone needs it.
 
 -- 
                                                                 Gilles.
