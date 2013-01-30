@@ -1,15 +1,10 @@
-Message-ID: <50FF4434.7030405@xenomai.org>
-Date: Wed, 23 Jan 2013 03:00:20 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <5108FABD.8090401@sirius-es.it>
+Date: Wed, 30 Jan 2013 11:49:33 +0100
+From: Matteo Facchinetti <matteo.facchinetti@sirius-es.it>
 MIME-Version: 1.0
-References: <OF682F5C70.F8F7AA50-ON85257AF1.005F580A-85257AF1.005F580C@aanddtech.com>	<50F3DD9A.9050306@gmail.com>
-	<OF5CF00330.868585F8-ON85257AFA.00801D57-85257AFB.00000E92@aanddtech.com>
-	<50FE45E9.1040909@xenomai.org>
-	<OF518EBAA9.1B02356C-ON85257AFC.00002A9B-85257AFC.00028E23@aanddtech.com>
-In-Reply-To: <OF518EBAA9.1B02356C-ON85257AFC.00002A9B-85257AFC.00028E23@aanddtech.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Porting Ipipe to new ARM SoC (Xilinx Zynq)
+Subject: [Xenomai] FPU problems in Xenomai 2.4.x
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,142 +13,56 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: mfornero@aanddtech.com
-Cc: Xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 01/23/2013 01:27 AM, mfornero@aanddtech.com wrote:
+Hi,
 
-> Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote on
-> 01/22/2013 02:55:21 AM:
-> 
->> From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
->> To: mfornero@aanddtech.com,
->> Cc: Xenomai@xenomai.org
->> Date: 01/22/2013 02:55 AM
->> Subject: Re: [Xenomai] Porting Ipipe to new ARM SoC (Xilinx Zynq)
->>
->> On 01/22/2013 01:00 AM, mfornero@aanddtech.com wrote:
->>
->> > The issue seems to be somewhat erratic, as I was able to run the
-> latency
->> > test for a couple of hours this morning without observing it. Now
-> however,
->> > it seems to show up on every boot (I don't believe I changed
-> anything, but
->> > it's possible).
->> >
->> > For reference, I'm booting from a SDHC partitioned as such:
->> >         1) vfat         256 MB <-- This partition holds the first stage
->> > bootloader, uboot, the device tree and the Kernel zImage
->> >         2) ext4         768 MB <-- This partition is the rootfs
-> (busybox +
->> > xenomai)
->> >
->> > The kernel boot command line is:
->> >         bootargs = "console=ttyPS0,115200 root=/dev/mmcblk0p2 rw
->> > earlyprintk rootfstype=ext4 rootwait devtmpfs.mount=1";
->> >
->> > And I'm using the uboot compilation shipped with the ZedBoard.
->> >
->> > My ipipe port can be found here:
->> > git://github.com/mfornero/ipipe.git
->>
->>
->> At a quick glance, you are missing this change:
->>
-> http://xenomai.org/index.php/I-pipe-core:ArmPorting#GPIOs_as_interrupt_sources
->>
->> In drivers/gpio/gpio-xilinxps.c
-> 
-> Thanks Gilles. I fixed the irq handler as follows (pushed to github):
-> 
-> --- a/drivers/gpio/gpio-xilinxps.c
-> +++ b/drivers/gpio/gpio-xilinxps.c
-> @@ -422,7 +422,7 @@ void xgpiops_irqhandler(unsigned int irq, struct
-> irq_desc *desc)
->                         chip->irq_ack(&gpio_irq_desc->irq_data);
->  
->                         /* call the pin specific handler */
-> -                       generic_handle_irq(gpio_irq);
-> +                       ipipe_handle_demuxed_irq(gpio_irq);
->                 }
->                 /* shift to first virtual irq of next bank */
->                 gpio_irq = (int)irq_get_handler_data(irq) +
-> 
-> 
-> Unfortunately, this does not seem to have any effect on the issue. I did
-> a couple more tests today, and found the following:
+in a PPC mpc5125 system we're using xenomai 2.4.x (from git repository) 
+with kernel 2.6.29
+and have applied 
+ksrc_arch_powerpc_patches_adeos-ipipe-2.6.29.4-powerpc-DENX-2.6-02.patch
 
+We have encountered a problem in a userspace application that makes 
+heavy use of the FPU.
+In specific, our application consists about two concurrent processes:
+- the first use FPU in a xenomai_task
+- the second use FPU in a normal linux thread
 
-Could you run cat /proc/interrupts on the running kernel? Are there not
-other multiplexed gpios you should modify? Have you read the porting
-guide and applied everything (the fact that you missed that point makes
-me think that maybe you did not)? Have you tried enabling I-pipe debugs?
-Other than that, you have to trace starting from __ipipe_grab_irq to
-understand what happens. Debugging such kind of issues by proxy is a bit
-hard.
+After a random time of test, Kernel crash with the following oops:
 
+Unrecoverable FP Unavailable Exception 801 at c0003888
+Oops: Unrecoverable FP Unavailable Exception, sig: 6 [#1]
+PREEMPT MPC5125 ADS
+Modules linked in: xeno_can_mscan xeno_can mchpar1xxx ipv6
+NIP: c0003888 LR: c0006c14 CTR: 1008879c
+REGS: ced71e40 TRAP: 0801   Not tainted  (2.6.29.1)
+MSR: 00009032 <EE,ME,IR,DR>  CR: 84000444  XER: 00000000
+TASK = cec164e0[4069] 'gui_powerpc.elf' THREAD: ced70000
+GPR00: c0006c04 ced71ef0 cec164e0 ced71efc ced71ef8 cec166e8 102b24fe 
+000000cc
+GPR08: 102b2500 c0520000 00000000 00000000 0ec166e8
+NIP [c0003888] cvt_fd+0x0/0x1c
+LR [c0006c14] fix_alignment+0x6cc/0x84c
+Call Trace:
+[ced71ef0] [c0006c04] fix_alignment+0x6bc/0x84c (unreliable)
+[ced71f30] [c0010cec] alignment_exception+0x8c/0x128
+[ced71f40] [c0013820] ret_from_except_full+0x0/0x4c
+--- Exception: 600 at 0x100887ac
+     LR = 0x100887a4
+Instruction dump:
+dbe30110 fc00048e d8030118 41820014 80850084 38602900 7c841878 90850084
+38a00000 3c80c052 90a46044 4e800020 <c8050118> fdfe058e c0030000 d8040000
+---[ end trace 0cdaae6afca79e76 ]---
+note: gui_powerpc.elf[4069] exited with preempt_count 1
 
-> If I boot with Xenomai off (CONFIG_XENOMAI = n) but IPIPE still on
-> (CONFIG_IPIPE = y), I get a warning at boot. Haven't looked into the
-> root cause of this-- but maybe it's related?
-> 
-> mmc0: new high speed SDHC card at address b368
-> mmcblk0: mmc0:b368 F0F0F 3.71 GiB
->  mmcblk0: p1 p2
-> EXT4-fs (mmcblk0p2): recovery complete
-> EXT4-fs (mmcblk0p2): mounted filesystem with ordered data mode. Opts:
-> (null)
-> VFS: Mounted root (ext4 filesystem) on device 179:2.
-> devtmpfs: mounted
-> Freeing init memory: 160K
-> ------------[ cut here ]------------
-> WARNING: at arch/arm/mm/context.c:182 __new_context+0x40/0x118()
+In relation about mail:
+http://www.xenomai.org/pipermail/xenomai-core/2010-10/msg00007.html
+We commented out local_irq_save_hw_cond(flags).
+Kernel doesn't crash but application die with fpu register corrupted.
 
+Does anyone know if xenomai 2.4.x with 2.6.29 kernel series have 
+problems with heavy FPU usage?
 
-Known issue, which I thought was fixed, but maybe not. Try this patch:
-
-diff --git a/arch/arm/mm/context.c b/arch/arm/mm/context.c
-index 3ae015f..79de5dc 100644
---- a/arch/arm/mm/context.c
-+++ b/arch/arm/mm/context.c
-@@ -167,11 +167,12 @@ static inline void set_mm_context(struct mm_struct
-*mm, unsigned int asid)
-
- void __new_context(struct mm_struct *mm)
- {
--	int cpu = ipipe_processor_id();
- 	unsigned long flags;
- 	unsigned int asid;
-+	int cpu;
-
- 	asid_lock(flags);
-+	cpu = ipipe_processor_id();
- #ifdef CONFIG_SMP
- 	/*
- 	 * Check the ASID again, in case the change was broadcast from
-
-
-
-> If I boot with Xenomai on (CONFIG_XENOMAI = y) and Nucleus as a module
-> (CONFIG_XENO_OPT_NUCLEUS = m), the system boots without issue (not even
-> a warning at boot), but the Nucleus module fails to compile with the
-> following error:
-> 
-> [mfornero@hwbuild linux]$ make -j8 modules
->   CHK     include/linux/version.h
->   CHK     include/generated/utsrelease.h
-> make[1]: `include/generated/mach-types.h' is up to date.
->   CALL    scripts/checksyscalls.sh
->   Building modules, stage 2.
->   MODPOST 22 modules
-> ERROR: "current_mm" [kernel/xenomai/nucleus/xeno_nucleus.ko] undefined!
-> make[1]: *** [__modpost] Error 1
-> make: *** [modules] Error 2
-
-
-It simply means EXPORT_SYMBOL_GPL(current_mm) is missing.
-
--- 
-                                                                Gilles.
+Matteo Facchinetti
+Sirius Electronic Systems s.r.l.
 
