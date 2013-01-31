@@ -1,14 +1,14 @@
-Content-Type: text/plain; charset=us-ascii
-Mime-Version: 1.0 (Apple Message framework v1283)
-From: Michael Haberler <mail17@mah.priv.at>
-In-Reply-To: <9EFD9D88-FCCB-489A-9DA9-06A8C8AFE8EA@kabelmail.de>
-Date: Thu, 31 Jan 2013 19:52:04 +0100
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <BBC83491-8FC6-49AD-B4A5-A723477C171C@mah.priv.at>
-References: <mailman.0.1359630001.19052.xenomai@xenomai.org>
-	<9EFD9D88-FCCB-489A-9DA9-06A8C8AFE8EA@kabelmail.de>
-Subject: Re: [Xenomai] Ipipe pre and post patch for AM335x beagleBone/
-	koenkooi branch
+Message-ID: <510AC9D2.5050008@xenomai.org>
+Date: Thu, 31 Jan 2013 20:45:22 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+References: <CALJOq=VtrBhMzCaT=7omDVN9hnnwZ+cmM1_1eff9DTS-fvLjaw@mail.gmail.com>	<5101719D.9080908@logilin.fr>
+	<51024BA3.9040402@xenomai.org>
+	<201301310211.44277.paul_c@tuxcnc.org>
+In-Reply-To: <201301310211.44277.paul_c@tuxcnc.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] GPIO Interrupts problem with RTDM
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,70 +17,101 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Paul <paul_c@tuxcnc.org>
+Cc: xenomai@xenomai.org
 
-folks working on Xenomai for the Beaglebone might want to read this:
+On 01/31/2013 03:11 AM, Paul wrote:
 
-http://sourceforge.net/mailarchive/message.php?msg_id=3D30426770
+> On Friday 25 January 2013, Gilles Chanteperdrix wrote:
+>> On 01/24/2013 06:38 PM, Christophe Blaess wrote:
+>>> On 24/01/2013 18:12, Paul wrote:
+>>>> On Thursday 24 January 2013, Christophe Blaess wrote:
+>>>>> On 22/01/2013 04:06, Paul wrote:
+>>>>>> On Sunday 20 January 2013, Gilles Chanteperdrix wrote:
+>>>>>>> Yes, this patch is based on 3.5.7 and is used with and without
+>>>>>>> GENERIC_CLOCKEVENTS.
+>>>>>>
+>>>>>> Short version: Updated my kernel to 3.5.7 and backported the
+>>>>>> Raspberry Pi changes from 3.6.11 and added in the ipipe support.
+>>>>>> Interrupts are not being recognised unless irq_set_irq_type() is
+>>>>>> called. Digging through the rtdm, nucleus, and ipipe code, at no
+>>>>>> point is
+>>>>>> irq_chip->irq_set_type() called - Also have a problem that none
+>>>>>> of the ipipe_pic_muter fields are set, so
+>>>>>> __ipipe_enable_irqdesc() & friends do nothing.
+>>>>>
+>>>>> I'm trying to follow the same steps as you but I still have some
+>>>>> compilation errors while porting
+>>>>> R-Pi modifications to 3.5.7. (especially arm timer code).
+>>>>>
+>>>>> Do you have any available patch against 3.5.7 vanilla kernel ?
+>>>>
+>>>> Funny that you should ask - I am in the middle of generating a
+>>>> patch set against 3.5.7 with the Raspberry Pi additions. This will
+>>>> include the ipipe modifications along with a fix to the gpio
+>>>> interrupt handler.
+>>>
+>>> Great.
+>>>
+>>>>> I have a working GPIO interrupt rtdm driver with 3.2.21 kernel
+>>>>> (Xenomai 2.6.2) but the interrupt latencies seems terrible (about
+>>>>> 20us and jiterring up to 150us without any load). To compare with
+>>>>> the 7us latency I see on a vanilla Linux GPIO interrupt handler.
+>>>>
+>>>> Should be better than that - Did you make any changes to the
+>>>> interrupt handler in bcm207_gpio.c ?
+>>>
+>>> I replaced generic_handle_irq() by ipipe_handle_demuxed_irq().
+>>>
+>>>
+>>> My interrupt handler toggle an ouput GPIO pin :
+>>>
+>>> static int handler_irq(rtdm_irq_t * irq)
+>>> {
+>>>          static int value = 0;
+>>>          gpio_set_value(GPIO_OUT, value);
+>>>          value = 1 - value;
+>>>          return RTDM_IRQ_HANDLED;
+>>> }
+>>>
+>>> I think that gpio_set_value() doesn't call any Linux services, but
+>>> I may be wrong.
+>>
+>> Two things to check then:
+>> http://xenomai.org/index.php/I-pipe-core:ArmPorting#GPIOs_in_real-tim
+>> e_drivers
+>>
+>> And the second I forgot in the porting guide is the idle loop. The
+>> processor dependent idle routine is called by the I-pipe kernel with
+>> hardware irqs on, this could result in an interrupt being handled
+>> with part of the processor still prepared for sleeping. For instance,
+>> on arm926ejs, this could result in interrupts being handled with
+>> I-cache off, which resulted in high latencies.
+>>
+>> As a first step  to check that it is not the issue you observe, boot
+>> with the "nohlt" kernel option. If the latencies improve, then
+>> something needs to be done about the idle loop.
+>>
+>> If that is your issue, there are two ways around:
+>> - call hard_local_irq_disable() at the beginning of the processor
+>> dependent idle routine
+>> - if this results in to high latencies (due to the time it takes to
+>> execute the handler), then simply disable this idle routine.
+> 
+> Booting with "dwc_otg.fiq_fix_enable=0" in cmdline.txt improves matters 
+> considerably - The problem is in the FIQ handler and/or the dwc_otg 
+> driver.
 
-- Michael
+>
+
+> This will have to wait until the weekend and hopefully I can get time to 
+> dig further. One option is to route the timer through the FIQ which may 
+> improve latency a little, another is to disable it altogether.
 
 
-Am 31.01.2013 um 15:17 schrieb Stephan Kappertz:
+You can not really execute the timer irq handler in FIQ mode, if that is
+what you mean.
 
->=20
->>> Hi All,
->>>=20
->>> sorry for the long delay. As Gilles suggested I have prepared a pre =
-and post patch for ipipe-core-3.2.21-arm-4 and the git repository =
-supporting BeagleBone here: =
-https://github.com/koenkooi/linux/tree/linux-ti33x-psp-3.2.21-r13g%2Bgitr7=
-20e07b4c1f687b61b147b31c698cb6816d72f01 . Should I send the patches to =
-the list?
->>>=20
->>> - Stephan
->>=20
->> I think that you should.
->>=20
->> Goran
->>=20
->=20
-> Here they are.
-> Usage:
->=20
-> * clone git repository =
-https://github.com/koenkooi/linux/tree/linux-ti33x-psp-3.2.21-r13g%2Bgitr7=
-20e07b4c1f687b61b147b31c698cb6816d72f01
->=20
-> * checkout linux-ti33x-psp-3.2.21-r13g
->=20
-> * apply pre.patch
->=20
-> * run xenomai (tested with 2.6.2.1) prepare-kernel.sh
->=20
-> * apply post.patch
->=20
-> * Configure & compile kernel
->=20
-> - Stephan
->=20
-> -------------- next part --------------
-> A non-text attachment was scrubbed...
-> Name: beagleBone_pre_post_patches.tar.bz2
-> Type: application/x-bzip2
-> Size: 5820 bytes
-> Desc: not available
-> URL: =
-<http://www.xenomai.org/pipermail/xenomai/attachments/20130131/e6446062/at=
-tachment.bin>
-> -------------- next part --------------
->=20
->=20
->=20
->=20
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> http://www.xenomai.org/mailman/listinfo/xenomai
-
+-- 
+                                                                Gilles.
 
