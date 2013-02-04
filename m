@@ -1,11 +1,12 @@
-Message-ID: <51101A62.2090904@siemens.com>
-Date: Mon, 04 Feb 2013 21:30:26 +0100
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <51102316.9090107@xenomai.org>
+Date: Mon, 04 Feb 2013 22:07:34 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <510FFDE0.4080703@icid.cu> <510FFE7C.1090601@xenomai.org>
 	<51100A6B.90701@icid.cu> <5110122C.2090807@xenomai.org>
-In-Reply-To: <5110122C.2090807@xenomai.org>
-Content-Type: text/plain; charset=ISO-8859-1
+	<511021FC.7080906@icid.cu>
+In-Reply-To: <511021FC.7080906@icid.cu>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] about switchtest ...
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -16,35 +17,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, raespi <raespi@icid.cu>
-Cc: xenomai@xenomai.org
+To: raespi <raespi@icid.cu>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 2013-02-04 20:55, Gilles Chanteperdrix wrote:
-> On 02/04/2013 08:22 PM, raespi wrote:
+On 02/04/2013 10:02 PM, raespi wrote:
+
+>  Right, I'm using these tools and options:
 > 
->>  Ok, I downloaded the 2.6.2.1 stable version now.  Everything compiles
->> without problems ... Still I get the same error when running *xeno-latency*:
->>
->> switchtest: Unable to open switchtest device.
->> (modprobe xeno_switchtest ?)
->>
->> Any ideas .. ?
+> *- toolchain:*
+> 4.6.3 (Sourcery CodeBench Lite 2012.03-57)
 > 
+> *- configure options ( Running under buildroot, no special recipe, it
+> comes with one for the 2.6.0 version ):*
+> $ ./configure --target=arm-linux --host=arm-linux
+> --build=i686-pc-linux-gnu --prefix=/usr --exec-prefix=/usr
+> --sysconfdir=/etc --program-prefix= --disable-gtk-doc --enable-ipv6
+> --enable-static --enable-shared --includedir=/usr/include/xenomai/
 > 
-> No, we do not have enough details. What toolchain do you use? What
-> arguments do you pass to configure? Did you recompile the kernel too?
+> *- Prepin' the kernel:*
+> $(XENOMAI_DIR)/scripts/prepare-kernel.sh --linux=$(LINUX_DIR) --arch=arm
+> --adeos=adeos-ipipe-3.1.10-arm-001.patch
+> 
+> I think I saw the problem.   Buildroot doesn't pass the " -march=armv4t
+> -msoft-float"  CFLAGS and LDFLAGS options to the xenomai configure line
+> for the s3c24xx.  At least the *xeno-test* is running now ...
 
-I remember stumbling over this issue recently as well, on x86. Hmm, I
-think it was not a missing device but failing
-RTTST_RTIOC_SWTEST_SET_TASKS_COUNT due to too few resources of the
-nucleus - but that was on 16 or even 32 CPU box.
 
-Anyway, my point is that the failure might be in that IOCTL. Instrument
-the code to find out.
+Good news. It is strange that not passing these options does not cause
+other run-time errors though (like invalid instructions).
 
-Jan
+> 
+> Thanks for your time, are you interested in the complete patch for the
+> 3.1.10 version ?? ...
+
+
+Yes, that is interesting, but 3.1 is a bit old, I am not sure you have
+all the fixes, any reason for not using 3.2?
+
+Please keep the mailing list in CC.
 
 -- 
-Siemens AG, Corporate Technology, CT RTC ITP SDP-DE
-Corporate Competence Center Embedded Linux
+                                                                Gilles.
 
