@@ -1,13 +1,14 @@
-Message-ID: <510D85AE.5030108@xenomai.org>
-Date: Sat, 02 Feb 2013 22:31:26 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <3B6652EE-A4C6-4819-B3BB-DB02EFA1B08B@mah.priv.at>
-	<510D74EB.6070606@zultron.com> <510D8568.6080406@xenomai.org>
-In-Reply-To: <510D8568.6080406@xenomai.org>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] kconfig CONFIG_XENO_OPT_TIMING_PERIODIC=y/n
+Content-Type: text/plain; charset=windows-1252
+Mime-Version: 1.0 (Apple Message framework v1283)
+From: Stephan Kappertz <stephan.kappertz@kabelmail.de>
+In-Reply-To: <9EFD9D88-FCCB-489A-9DA9-06A8C8AFE8EA@kabelmail.de>
+Date: Mon, 4 Feb 2013 14:28:40 +0100
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <335BAC77-AB58-4E49-B573-FD7FCB2645FC@kabelmail.de>
+References: <mailman.0.1359630001.19052.xenomai@xenomai.org>
+	<9EFD9D88-FCCB-489A-9DA9-06A8C8AFE8EA@kabelmail.de>
+Subject: Re: [Xenomai] Ipipe pre and post patch for AM335x beagleBone/
+	koenkooi branch
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,58 +17,81 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>, mail17@mah.priv.at
-
-Le 02/02/2013 22:30, Gilles Chanteperdrix a écrit :
-> Le 02/02/2013 21:19, John Morris a écrit :
->>
->>
->> On 01/29/2013 06:54 AM, Michael Haberler wrote:
->>> I'm testing linuxcnc with John's 3.5.7 - 2.6.2.1 kernel and found an
->>> issue with the deprecated linuxcnc xenomai-kernel threads version
->>> (the userland threads version is fine; both using native skin). I
->>> traced that back to rt_timer_ticks2ns(30000) returning zero.
->>>
->>> The config difference I see is: CONFIG_XENO_OPT_TIMING_PERIODIC=y on
->>> 3.5.7, unset on 3.2.21
->>
->> The periodic timing option =y made it into my kernel
->> script-kiddie-style:  I copied it directly from Gilles's config without
->> trying to understand every option.
->>
->>>
->>> The way I read back messages I'd think that should be unset for
->>> native and Posix skins; these are compiled in:
->>>
->>> CONFIG_XENO_SKIN_NATIVE=y
->>> CONFIG_XENO_SKIN_POSIX=y
->>> CONFIG_XENO_SKIN_PSOS=m
->>> CONFIG_XENO_SKIN_UITRON=m
->>> CONFIG_XENO_SKIN_VRTX=m
->>> CONFIG_XENO_SKIN_VXWORKS=m
->>> CONFIG_XENO_SKIN_RTDM=y
->>
->> Now that I've gone back and read, I don't understand either.  Native and
->> posix styles need periodic timing unset.
->
-> No, since xenomai 2.5, each skin decides whether it uses a periodic or
-> aperiodic timing.
->
-> without CONFIG_XENO_OPT_TIMING_PERIODIC, only the aperiodic timer is
-> available, with this option set, the user has the choice.
->
-> Each skin has:
-> - a pre-set timer period in micro-seconds (which should be 0 by default
-> for the native and posix skin, meaning the default aperiodic mode)
-> - a module parameter "tick_arg" allowing to override the compiled-in
-> pre-set timer period.
->
-> So, enabling this option is what makes the most sense for a "generic"
-> configuration. Now, what you observe with rt_timer_ticks2ns is
-> undoubtely a bug.
->
+To: xenomai@xenomai.org
 
 
--- 
-Gilles.
+Am 31.01.2013 um 15:17 schrieb Stephan Kappertz:
+
+>=20
+>>> Hi All,
+>>>=20
+>>> sorry for the long delay. As Gilles suggested I have prepared a pre =
+and post patch for ipipe-core-3.2.21-arm-4 and the git repository =
+supporting BeagleBone here: =
+https://github.com/koenkooi/linux/tree/linux-ti33x-psp-3.2.21-r13g%2Bgitr7=
+20e07b4c1f687b61b147b31c698cb6816d72f01 . Should I send the patches to =
+the list?
+>>>=20
+>>> - Stephan
+>>=20
+>> I think that you should.
+>>=20
+>> Goran
+>>=20
+>=20
+> Here they are.
+> Usage:
+>=20
+> * clone git repository =
+https://github.com/koenkooi/linux/tree/linux-ti33x-psp-3.2.21-r13g%2Bgitr7=
+20e07b4c1f687b61b147b31c698cb6816d72f01
+>=20
+> * checkout linux-ti33x-psp-3.2.21-r13g
+>=20
+> * apply pre.patch
+>=20
+> * run xenomai (tested with 2.6.2.1) prepare-kernel.sh
+>=20
+> * apply post.patch
+>=20
+> * Configure & compile kernel
+>=20
+> - Stephan
+>=20
+> <beagleBone_pre_post_patches.tar.bz2>
+>=20
+>=20
+>=20
+
+FWIW:
+
+You can also apply the above pre/post patch to the other repository that =
+Michael Haberle mentioned:
+
+HowTo:
+
+* git clone git://github.com/beagleboard/kernel.git
+
+* git checkout origin/beaglebone-3.2 -b beaglebone-3.2
+
+* edit patch.sh to not apply patches beyond 3.2.21:
+
+#PATCHSET=3D"usb psp 3.2.1 3.2.2 3.2.3 3.2.4 3.2.5 3.2.6 3.2.7 3.2.8 =
+3.2.9 3.2.10 3.2.11 3.2.12 3.2.13 3.2.14 3.2.15 3.2.16 3.2.17 3.2.18 =
+3.2.19 3.2.20 3.2.21 3.2.22 3.2.23 3.2.24 3.2.25 3.2.26 3.2.27 3.2.28 =
+3.2.29 3.2.30 3.2.31 3.2.32 3.2.33 3.2.34 led libertas pwm mfd =
+beaglebone"
+
+PATCHSET=3D"usb psp 3.2.1 3.2.2 3.2.3 3.2.4 3.2.5 3.2.6 3.2.7 3.2.8 =
+3.2.9 3.2.10 3.2.11 3.2.12 3.2.13 3.2.14 3.2.15 3.2.16 3.2.17 3.2.18 =
+3.2.19 3.2.20 3.2.21 led libertas pwm mfd beaglebone"
+
+* patch -p1 < pre.patch
+* prepare-kernel.sh --arch=3Darm --linux=3D.
+* patch -p1 < post.patch
+
+* configure, compile=85=20
+
+- Stephan=
+
 
