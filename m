@@ -1,5 +1,5 @@
-Message-ID: <51111685.6070107@xenomai.org>
-Date: Tue, 05 Feb 2013 15:26:13 +0100
+Message-ID: <51111CC2.3040204@xenomai.org>
+Date: Tue, 05 Feb 2013 15:52:50 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <510FFDE0.4080703@icid.cu>
@@ -30,19 +30,10 @@ On 02/05/2013 02:34 PM, raespi wrote:
 > the buildroot maintainer about this topic to fix this problem ...
 
 
-Xenomai does not do anything special, it uses the autotools default
-which is:
-- if you pass CFLAGS and LDFLAGS on the right hand of the configure
-command line, the generated makefiles are hardcoded with these flags
-values, and you need not do anything special later on to get these flags
-used for all the compilations. This has been the recommended way of
-passing CFLAGS and LDFLAGS when building autotools-based projects for
-many years.
-
-- if you want to pass them as environment variables (so, on the left
-hand of the configure command line), the makefiles are not generated
-with these flags, so, you have to pass them in the environment of the
-"make" command.
+I am not sure you should bother the buildroot maintainer until you have
+understood what the real problem is. Because if you do not compile for
+the right machine, you should get illegal instructions, not the error
+you report.
 
 -- 
                                                                 Gilles.
