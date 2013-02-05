@@ -1,12 +1,10 @@
-Message-ID: <51114E10.6030805@xenomai.org>
-Date: Tue, 05 Feb 2013 19:23:12 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <5111750E.6090700@siemens.com>
+Date: Tue, 05 Feb 2013 22:09:34 +0100
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-References: <CAFv1zn7-zGPw71e4fFJAdf9FodKskesq1NRXooY4AOZ0Bojo5g@mail.gmail.com>
-In-Reply-To: <CAFv1zn7-zGPw71e4fFJAdf9FodKskesq1NRXooY4AOZ0Bojo5g@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] PandaBoard related issue
+Subject: [Xenomai] [FOR TESTING] I-pipe for 3.8-rc6-x86
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,42 +13,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: RAGHAVENDRA GANIGA <ravi23ganiga@gmail.com>
-Cc: xenomai@xenomai.org
+To: Xenomai <xenomai@xenomai.org>
 
-On 02/05/2013 02:17 PM, RAGHAVENDRA GANIGA wrote:
+Hi,
 
-> Sir i have compiled the linux 3.5.7 with xenomai 2.6.2.1 using
-> toolchain arm-none-linux-gnueabi from codesourcery and we were
-> testing the code which i have attached with the mail the non real
-> time tasks are working properly but the real time tasks are
-> giving some unexpected results like the code which i have attached
-> , in that when i execute the code the task gets registered in
-> /proc/xenomai/sched but there is no output from the tasks routine
-> like the first thing it should print is "in real time task" but
-> it is not printing, i have also attached the dmesg and the latency
-> test result from user space and kernel space.
-> Thanking you.
+to move forward with our kernel support, I've started porting I-pipe to
+upcoming 3.8. The result survived a very basic test in a VM, more
+torturing is definitely required. In case someone already wants to have
+a look or start porting other archs:
 
+  git://git.xenomai.org/ipipe-jki next-x86
+  (Note: "next" branches may be rebased without warning)
 
-Please try the following patch, without it the printk virq gets 
-replaced with the "service vnmi":
+Xenomai generates minor troubles while building. PCI drivers seem to
+require some massaging, and we get an ugly warning of Kconfig on every
+build:
 
-diff --git a/arch/arm/kernel/smp.c b/arch/arm/kernel/smp.c
-index 3b86167..f77ef11 100644
---- a/arch/arm/kernel/smp.c
-+++ b/arch/arm/kernel/smp.c
-@@ -440,7 +440,7 @@ void __ipipe_ipis_alloc(void)
- 		return;
- 
- 	/* __ipipe_first_ipi is 0 here  */
--	ipi_nr = IPI_IPIPE_FIRST + IPIPE_LAST_IPI;
-+	ipi_nr = IPI_IPIPE_FIRST + IPIPE_LAST_IPI + 1;
- 
- 	for (virq = IPIPE_IPI_BASE; virq < IPIPE_IPI_BASE + ipi_nr; virq++) {
- 		_virq = ipipe_alloc_virq();
+drivers/pcmcia/Kconfig:20:error: recursive dependency detected!
+drivers/pcmcia/Kconfig:20:      symbol PCMCIA depends on PCCARD
+drivers/pcmcia/Kconfig:5:       symbol PCCARD depends on HOTPLUG
+init/Kconfig:1261:      symbol HOTPLUG is selected by PM_SLEEP_SMP
+kernel/power/Kconfig:98:        symbol PM_SLEEP_SMP depends on PM_SLEEP
+kernel/power/Kconfig:94:        symbol PM_SLEEP depends on HIBERNATE_CALLBACKS
+kernel/power/Kconfig:21:        symbol HIBERNATE_CALLBACKS is selected by XEN_SAVE_RESTORE
+arch/x86/xen/Kconfig:40:        symbol XEN_SAVE_RESTORE depends on PARAVIRT_GUEST
+arch/x86/Kconfig:574:   symbol PARAVIRT_GUEST depends on IPIPE
+kernel/ipipe/Kconfig:1: symbol IPIPE is selected by XENOMAI
+init/Kconfig:1765:      symbol XENOMAI depends on INPUT_PCSPKR
+drivers/input/misc/Kconfig:96:  symbol INPUT_PCSPKR depends on INPUT
+drivers/input/Kconfig:8:        symbol INPUT is selected by VT
+drivers/tty/Kconfig:1:  symbol VT is selected by FB_STI
+drivers/video/Kconfig:680:      symbol FB_STI depends on FB
+drivers/video/Kconfig:36:       symbol FB is selected by DRM_KMS_HELPER
+drivers/gpu/drm/Kconfig:28:     symbol DRM_KMS_HELPER is selected by DRM_UDL
+drivers/gpu/drm/udl/Kconfig:1:  symbol DRM_UDL depends on USB_ARCH_HAS_HCD
+drivers/usb/Kconfig:82: symbol USB_ARCH_HAS_HCD depends on PCMCIA
 
+This may be a false positive of Kbuild, need to dig deeper. It is
+definitely harmless, just ugly.
+
+So far,
+Jan
 
 -- 
-                                                                Gilles.
+Siemens AG, Corporate Technology, CT RTC ITP SDP-DE
+Corporate Competence Center Embedded Linux
 
