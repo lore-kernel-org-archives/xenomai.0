@@ -1,14 +1,12 @@
-Message-ID: <51124FE2.7060806@siemens.com>
-Date: Wed, 06 Feb 2013 13:43:14 +0100
+Message-ID: <51128272.9010109@siemens.com>
+Date: Wed, 06 Feb 2013 17:18:58 +0100
 From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-References: <51122E82.6050209@siemens.com> <51124A06.3020205@xenomai.org>
-	<51124C88.1060401@siemens.com> <51124D37.1000001@xenomai.org>
-	<51124DAD.3060306@siemens.com> <51124E54.603@xenomai.org>
-In-Reply-To: <51124E54.603@xenomai.org>
-Content-Type: text/plain; charset=UTF-8
+References: <5111750E.6090700@siemens.com>
+In-Reply-To: <5111750E.6090700@siemens.com>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] i8253 clocksource vs. rthal_get_8254_tsc
+Subject: Re: [Xenomai] [FOR TESTING] I-pipe for 3.8-rc6-x86
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,73 +15,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: Xenomai <xenomai@xenomai.org>
 
-On 2013-02-06 13:36, Gilles Chanteperdrix wrote:
-> On 02/06/2013 01:33 PM, Jan Kiszka wrote:
+On 2013-02-05 22:09, Jan Kiszka wrote:
+> Hi,
 > 
->> On 2013-02-06 13:31, Gilles Chanteperdrix wrote:
->>> On 02/06/2013 01:28 PM, Jan Kiszka wrote:
->>>
->>>> On 2013-02-06 13:18, Gilles Chanteperdrix wrote:
->>>>> On 02/06/2013 11:20 AM, Jan Kiszka wrote:
->>>>>
->>>>>> Hi Gilles,
->>>>>>
->>>>>> I just realized that there is now a 8253 clocksource in core-3.4+. How
->>>>>> does this work together with Xenomai's TSC emulation via the 8254 in the
->>>>>> x86 hal_32? Xenomai reprograms the PIT in rthal_setup_8254_tsc - is this
->>>>>> harmless?
->>>>>>
->>>>>> I came across this while trying to get rid of Xenomai's "depends on
->>>>>> !INPUT_PCSPKR" to avoid that circular Kbuild dependency.
->>>>>
->>>>>
->>>>> This emulation replaces Xenomai's TSC emulation when the kernel boots on
->>>>> a cpu without a TSC: the detection is made at run-time instead of
->>>>> compilation time using self-modifying code (this in order to be able to
->>>>> build Debian kernels which boots with any configuration).
->>>>
->>>> Hmm, that's for the kernel. But what prevents rthal_setup_8254_tsc from
->>>> being executed in addition? I'm currently a bit lost in the #ifdefs.
->>>
->>>
->>> rthal_setup_8254_tsc is not called.
->>>
->>>>
->>>>> There is no
->>>>> reason to keep the compilation-time dependency on !INPUT_PCSPKR with
->>>>> I-pipe core, as now the pc speaker is disabled at run-time too.
->>>>> Unfortunately, I could not find how to arrange the Kconfig either.
->>>>
->>>> As this is only about practically unsupported combinations of Xenomai
->>>> (2.6.x) and I-pipe (for kernel 2.6.x) on x86, we could move from a
->>>> configure-time to a build-time detection (#ifdef CONFIG_INPUT_PCSPKR ->
->>>> BUILD_BUG()).
->>>
->>>
->>> There is already a run-time detection which simply does not declare the
->>> PC speaker platform device when there is no tsc.
->>
->> That's for core-3.4+, but not for older kernels. If we are fine with
->> ignoring them, I'll just write a patch to remove that Kconfig dependency.
+> to move forward with our kernel support, I've started porting I-pipe to
+> upcoming 3.8. The result survived a very basic test in a VM, more
+> torturing is definitely required. In case someone already wants to have
+> a look or start porting other archs:
 > 
+>   git://git.xenomai.org/ipipe-jki next-x86
+>   (Note: "next" branches may be rebased without warning)
 > 
-> You could replace !INPUT_PCSPKR with !X86_TSC && !INPUT_PCSPKR
-> I-pipe core kernels can be compiled with CONFIG_X86_TSC anyway.
+> Xenomai generates minor troubles while building. PCI drivers seem to
+> require some massaging, and we get an ugly warning of Kconfig on every
+> build:
 
-We already have "depend on (X86_TSC || !X86 || !INPUT_PCSPKR)", and
-that's not impressing kconfig's dependency analyzer. I suppose it is not
-taking the ! into account in its cycle detection.
+Brief update:
+ - Xenomai patches for those two issues are now in my for-upstream
+   queue (git.xenomai.org/xenomai-jki).
+ - Xenomai's FPU switching collides with the new eager FPU management
+   of the kernel.
+   This affects only recent Intel CPUs with xsave support and a can be
+   avoided by disabling this method for now ("eagerfpu=off" kernel
+   parameter). I'm looking into fixing this properly.
 
-CONFIG A
-	depends on !B
-
-CONFIG B
-	depends on !A
-
-A cycle, but harmless.
+Besides this, at least x86-64 works well. I still need to check 32-bit,
+though.
 
 Jan
 
