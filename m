@@ -1,6 +1,6 @@
-Message-ID: <51124CE5.7030906@siemens.com>
-Date: Wed, 06 Feb 2013 13:30:29 +0100
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <51124D37.1000001@xenomai.org>
+Date: Wed, 06 Feb 2013 13:31:51 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <51122E82.6050209@siemens.com> <51124A06.3020205@xenomai.org>
 	<51124C88.1060401@siemens.com>
@@ -16,10 +16,11 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
 Cc: Xenomai <xenomai@xenomai.org>
 
-On 2013-02-06 13:28, Jan Kiszka wrote:
+On 02/06/2013 01:28 PM, Jan Kiszka wrote:
+
 > On 2013-02-06 13:18, Gilles Chanteperdrix wrote:
 >> On 02/06/2013 11:20 AM, Jan Kiszka wrote:
 >>
@@ -42,11 +43,24 @@ On 2013-02-06 13:28, Jan Kiszka wrote:
 > Hmm, that's for the kernel. But what prevents rthal_setup_8254_tsc from
 > being executed in addition? I'm currently a bit lost in the #ifdefs.
 
-Ah! IPIPE_CORE_APIREV < 2, right?
 
-Jan
+rthal_setup_8254_tsc is not called.
+
+> 
+>> There is no
+>> reason to keep the compilation-time dependency on !INPUT_PCSPKR with
+>> I-pipe core, as now the pc speaker is disabled at run-time too.
+>> Unfortunately, I could not find how to arrange the Kconfig either.
+> 
+> As this is only about practically unsupported combinations of Xenomai
+> (2.6.x) and I-pipe (for kernel 2.6.x) on x86, we could move from a
+> configure-time to a build-time detection (#ifdef CONFIG_INPUT_PCSPKR ->
+> BUILD_BUG()).
+
+
+There is already a run-time detection which simply does not declare the
+PC speaker platform device when there is no tsc.
 
 -- 
-Siemens AG, Corporate Technology, CT RTC ITP SDP-DE
-Corporate Competence Center Embedded Linux
+                                                                Gilles.
 
