@@ -1,10 +1,10 @@
-Message-ID: <51122E82.6050209@siemens.com>
-Date: Wed, 06 Feb 2013 11:20:50 +0100
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <DUB112-W13050D5AFBEFC5B494C17E2DB070@phx.gbl>
+From: =?windows-1254?B?SGFzYW4gRXJkZW0gWWFudP1y?= <heyantir@hotmail.com>
+Date: Wed, 6 Feb 2013 13:59:20 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] i8253 clocksource vs. rthal_get_8254_tsc
+Content-Type: text/plain; charset="windows-1254"
+Content-Transfer-Encoding: 8bit
+Subject: [Xenomai] Xenomai on uClinux on Altera FPGA
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,22 +13,10 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Hi Gilles,
 
-I just realized that there is now a 8253 clocksource in core-3.4+. How
-does this work together with Xenomai's TSC emulation via the 8254 in the
-x86 hal_32? Xenomai reprograms the PIT in rthal_setup_8254_tsc - is this
-harmless?
-
-I came across this while trying to get rid of Xenomai's "depends on
-!INPUT_PCSPKR" to avoid that circular Kbuild dependency.
-
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RTC ITP SDP-DE
-Corporate Competence Center Embedded Linux
-
+Hello 
+I am a researcher and dealing with RTOSes on Field Programmable Gate Arrays. As an processor I am using Nios II soft core processor on Altera FPGAs, and I've loaded the uClinux operating system. The operating system which I loaded was nios2-linux-20090929.tar version. After loading uClinux, I've patched it with Xenomai 2.6 however patch causes a verification error while loading the image file. 
+Are there any member in this list who succesfully patched Xenomai to uClinux and run it on the FPGA. Can he/she provide the exact version / source of the uClinux which he/she has used.
+Thanks... 		 	   		  
