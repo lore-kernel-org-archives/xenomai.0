@@ -1,13 +1,10 @@
-Message-ID: <DUB112-W611452F2FFED2C76DFCA3BDB060@phx.gbl>
-From: =?windows-1254?B?SGFzYW4gRXJkZW0gWWFudP1y?= <heyantir@hotmail.com>
-Date: Thu, 7 Feb 2013 15:14:52 +0200
-In-Reply-To: <51124977.3050706@vmars.tuwien.ac.at>
-References: <DUB112-W13050D5AFBEFC5B494C17E2DB070@phx.gbl>,
-	<51124977.3050706@vmars.tuwien.ac.at>
+Message-ID: <5113BFD0.7050501@hilscher.com>
+Date: Thu, 07 Feb 2013 15:53:04 +0100
+From: =?ISO-8859-1?Q?St=E9phane_LOS?= <slos@hilscher.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="windows-1254"
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] Xenomai on uClinux on Altera FPGA
+Content-Type: text/plain; charset="iso-8859-1"; format="flowed"
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] Hilscher driver for cifX boards
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,38 +15,57 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-ClRoYW5rcyBhIGxvdCBEZWFyIE1hcnRpbiBmb3IgdGhlIHJlcGx5LApJIGhhdmUgZm9sbG93ZWQg
-dGhpcyB0dXRvcmlhbCBob3dldmVyIEkgY291bGQgIG5vdCBmaW5kIHRoZSBleGFjdCB2ZXJzaW9u
-IHRoYXQgdXNlZCBpbiB0aGUgdHV0b3JpYWwgKG5pb3MyLWxpbnV4LTIwMDkwNzMwKS4gbmlvczJm
-dHAuY29tIGlzIGNsb3NlZCBub3cuIEkgdHJpZWQgd2l0aCBuZXZlciB2ZXJzaW9uIGFuZCB3aGVu
-IGRvd25sb2FkaW5nIGltYWdlIGZpbGUgYXQgdGhlIGVuZCwgbmlvczItZG93bmxvYWQgZ2F2ZSB0
-aGUgdmVyaWZpY2F0aW9uIGVycm9yIG9uIERFMiBib2FyZC4gTWF5IGJlIHNvbWUgaGFyZHdhcmUg
-cHJvYmxlbSBjYW4gZXhpc3QgYmV0d2VlbiBkZXZpY2UgZmFtaWxpZXMuCj4gRGF0ZTogV2VkLCA2
-IEZlYiAyMDEzIDEzOjE1OjUxICswMTAwCj4gRnJvbTogbWFydGluZUB2bWFycy50dXdpZW4uYWMu
-YXQKPiBUbzogeGVub21haUB4ZW5vbWFpLm9yZwo+IFN1YmplY3Q6IFJlOiBbWGVub21haV0gWGVu
-b21haSBvbiB1Q2xpbnV4IG9uIEFsdGVyYSBGUEdBCj4gCj4gRGVhciBIYXNhbiwKPiAKPiBJIGRp
-ZCBpdCwgb24gYSBub24tTU1VIE5pb3MgMiBhcmNoaXRlY3R1cmUgd2l0aCBhIFN0cmF0aXggSVYg
-RlBHQSwgdXNpbmcgCj4gdGhlIGd1aWRlICgiWGVub21haSBvbiBOSU9TIElJIFNvZnRjb3JlIFBy
-b2Nlc3NvcjogYSBzdGVwIGJ5IHN0ZXAgCj4gR3VpZGUiKSBpbiB0aGUgbGluayBiZWxvdwo+IGh0
-dHA6Ly9rYWRpb25pay52dnYuZW5zZWlyYi1tYXRtZWNhLmZyL25pb3MyLXhlbm9tYWkvZG9jL1hl
-bm9tYWklMjBvbiUyME5JT1MlMjBJSSUyMFNvZnRjb3JlJTIwUHJvY2Vzc29yJTIwR3VpZGUtdjEu
-Mi5wZGYKPiAKPiBIb3dldmVyIHRoZXJlIG1pZ2h0IGJlIG5ld2VyIHZlcnNpb25zIGF2YWlsYWJs
-ZSB0aGF0IGFyZSBub3QgY292ZXJlZCBieSAKPiB0aGlzIGRvY3VtZW50Lgo+IAo+IEkgaG9wZSB0
-aGlzIGhlbHBzCj4gTWFydGluCj4gCj4gT24gMDIvMDYvMjAxMyAxMjo1OSBQTSwgSGFzYW4gRXJk
-ZW0gWWFudP1yIHdyb3RlOgo+ID4gSGVsbG8KPiA+IEkgYW0gYSByZXNlYXJjaGVyIGFuZCBkZWFs
-aW5nIHdpdGggUlRPU2VzIG9uIEZpZWxkIFByb2dyYW1tYWJsZSBHYXRlIEFycmF5cy4gQXMgYW4g
-cHJvY2Vzc29yIEkgYW0gdXNpbmcgTmlvcyBJSSBzb2Z0IGNvcmUgcHJvY2Vzc29yIG9uIEFsdGVy
-YSBGUEdBcywgYW5kIEkndmUgbG9hZGVkIHRoZSB1Q2xpbnV4IG9wZXJhdGluZyBzeXN0ZW0uIFRo
-ZSBvcGVyYXRpbmcgc3lzdGVtIHdoaWNoIEkgbG9hZGVkIHdhcyBuaW9zMi1saW51eC0yMDA5MDky
-OS50YXIgdmVyc2lvbi4gQWZ0ZXIgbG9hZGluZyB1Q2xpbnV4LCBJJ3ZlIHBhdGNoZWQgaXQgd2l0
-aCBYZW5vbWFpIDIuNiBob3dldmVyIHBhdGNoIGNhdXNlcyBhIHZlcmlmaWNhdGlvbiBlcnJvciB3
-aGlsZSBsb2FkaW5nIHRoZSBpbWFnZSBmaWxlLgo+ID4gQXJlIHRoZXJlIGFueSBtZW1iZXIgaW4g
-dGhpcyBsaXN0IHdobyBzdWNjZXNmdWxseSBwYXRjaGVkIFhlbm9tYWkgdG8gdUNsaW51eCBhbmQg
-cnVuIGl0IG9uIHRoZSBGUEdBLiBDYW4gaGUvc2hlIHByb3ZpZGUgdGhlIGV4YWN0IHZlcnNpb24g
-LyBzb3VyY2Ugb2YgdGhlIHVDbGludXggd2hpY2ggaGUvc2hlIGhhcyB1c2VkLgo+ID4gVGhhbmtz
-Li4uIAkJIAkgICAJCQo+ID4gX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX18KPiA+IFhlbm9tYWkgbWFpbGluZyBsaXN0Cj4gPiBYZW5vbWFpQHhlbm9tYWkub3Jn
-Cj4gPiBodHRwOi8vd3d3Lnhlbm9tYWkub3JnL21haWxtYW4vbGlzdGluZm8veGVub21haQo+IAo+
-IAo+IF9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCj4gWGVu
-b21haSBtYWlsaW5nIGxpc3QKPiBYZW5vbWFpQHhlbm9tYWkub3JnCj4gaHR0cDovL3d3dy54ZW5v
-bWFpLm9yZy9tYWlsbWFuL2xpc3RpbmZvL3hlbm9tYWkKIAkJIAkgICAJCSAgCg==
+Hello Sirs,
+
+Hilscher is offering a Linux driver based on UIO for cifX boards.
+
+In my understanding, down to 1ms cycle time, a PREEMPT RT solution=20
+should be enough.
+
+The cifX boards can manage with bus cycle times down to 250=B5s like with=20
+EtherCAT or Sercos III firmwares.
+
+So it seems in that cases that using Xenomai would be the way to go.
+I suppose that it would be needed to modify or change the existing=20
+driver but I can't figure out how things (Xenomai / RTDM / UIO) fit=20
+together.
+
+UIO is the kernel module that allows the mapping of the board memory to=20
+user space.
+
+The cifX driver uses the libpciaccess to pick up the board and retrieve=20
+some board information from UIO before the mapping.
+Then it uses pthread and rt functions when accessing the board.
+
+Since UIO and libpciaccess are only used during the initialization, is=20
+it a problem for a Xenomai application ?
+
+We have setup a Xenomai system and tried to compile the user land=20
+library with Xenomai options and flags and it seems we have been successful.
+The driver should be using the POSIX skin of Xenomai if we have been lucky.
+
+I can't see why we would need RTDM. Any hint please ?
+
+I am an absolute beginner in the Xenomai arena, don't throw me to the=20
+lions...
+
+--=20
+Best Regards,
+Cordialement,
+
+St=E9phane LOS
+slos@hilscher.com
+Support technique
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Hilscher France
+12, rue du 35=E8me R=E9giment d'Aviation
+Miniparc du Ch=EAne
+69500 BRON
+France
+T=E9l. : +33 (0) 4 72 37 98 40
+Fax  : +33 (0) 4 78 26 83 27
+http ://www.hilscher.fr
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
