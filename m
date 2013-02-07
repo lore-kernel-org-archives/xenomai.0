@@ -1,10 +1,12 @@
-Message-ID: <5113BFD0.7050501@hilscher.com>
-Date: Thu, 07 Feb 2013 15:53:04 +0100
-From: =?ISO-8859-1?Q?St=E9phane_LOS?= <slos@hilscher.com>
+Message-ID: <5113D225.8030900@xenomai.org>
+Date: Thu, 07 Feb 2013 17:11:17 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"; format="flowed"
+References: <5113BFD0.7050501@hilscher.com>
+In-Reply-To: <5113BFD0.7050501@hilscher.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] Hilscher driver for cifX boards
+Subject: Re: [Xenomai] Hilscher driver for cifX boards
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,59 +15,69 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: =?UTF-8?B?U3TDqXBoYW5lIExPUw==?= <slos@hilscher.com>
+Cc: xenomai@xenomai.org
 
-Hello Sirs,
+On 02/07/2013 03:53 PM, St=C3=A9phane LOS wrote:
 
-Hilscher is offering a Linux driver based on UIO for cifX boards.
+> Hello Sirs,
+>=20
+> Hilscher is offering a Linux driver based on UIO for cifX boards.
+>=20
+> In my understanding, down to 1ms cycle time, a PREEMPT RT solution=20
+> should be enough.
+>=20
+> The cifX boards can manage with bus cycle times down to 250=C2=B5s like=
+ with=20
+> EtherCAT or Sercos III firmwares.
+>=20
+> So it seems in that cases that using Xenomai would be the way to go.
+> I suppose that it would be needed to modify or change the existing=20
+> driver but I can't figure out how things (Xenomai / RTDM / UIO) fit=20
+> together.
+>=20
+> UIO is the kernel module that allows the mapping of the board memory to=
+=20
+> user space.
+>=20
+> The cifX driver uses the libpciaccess to pick up the board and retrieve=
+=20
+> some board information from UIO before the mapping.
+> Then it uses pthread and rt functions when accessing the board.
+>=20
+> Since UIO and libpciaccess are only used during the initialization, is =
 
-In my understanding, down to 1ms cycle time, a PREEMPT RT solution=20
-should be enough.
+> it a problem for a Xenomai application ?
+>=20
+> We have setup a Xenomai system and tried to compile the user land=20
+> library with Xenomai options and flags and it seems we have been succes=
+sful.
+> The driver should be using the POSIX skin of Xenomai if we have been lu=
+cky.
+>=20
+> I can't see why we would need RTDM. Any hint please ?
+>=20
+> I am an absolute beginner in the Xenomai arena, don't throw me to the=20
+> lions...
+>=20
 
-The cifX boards can manage with bus cycle times down to 250=B5s like with=20
-EtherCAT or Sercos III firmwares.
 
-So it seems in that cases that using Xenomai would be the way to go.
-I suppose that it would be needed to modify or change the existing=20
-driver but I can't figure out how things (Xenomai / RTDM / UIO) fit=20
-together.
+If UIO is used to register an interrupt handler for instance, the
+interrupt handler will not be called in real-time context when used with
+Xenomai, so, you would have to use the (deprecated) native or posix skin
+services to register a user-space interrupt handler, or more likely
+write an RTDM driver. On the other hand, if what you need is simply
+accessing the board registers through MMIO, then you do not need RTDM.
 
-UIO is the kernel module that allows the mapping of the board memory to=20
-user space.
-
-The cifX driver uses the libpciaccess to pick up the board and retrieve=20
-some board information from UIO before the mapping.
-Then it uses pthread and rt functions when accessing the board.
-
-Since UIO and libpciaccess are only used during the initialization, is=20
-it a problem for a Xenomai application ?
-
-We have setup a Xenomai system and tried to compile the user land=20
-library with Xenomai options and flags and it seems we have been successful.
-The driver should be using the POSIX skin of Xenomai if we have been lucky.
-
-I can't see why we would need RTDM. Any hint please ?
-
-I am an absolute beginner in the Xenomai arena, don't throw me to the=20
-lions...
+While accessing registers from user-space may be tempting, there is a
+risk of ending up with an application where the driver code is not
+clearly separated. Writing a driver separated from the application is
+preferable, as it provides a sane isolation between the two. If you
+change the hardware, you just have to rewrite a driver which follows the
+same profile, if you want to write another application using the same
+driver, you can keep the driver.
 
 --=20
-Best Regards,
-Cordialement,
-
-St=E9phane LOS
-slos@hilscher.com
-Support technique
-
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Hilscher France
-12, rue du 35=E8me R=E9giment d'Aviation
-Miniparc du Ch=EAne
-69500 BRON
-France
-T=E9l. : +33 (0) 4 72 37 98 40
-Fax  : +33 (0) 4 78 26 83 27
-http ://www.hilscher.fr
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                                                                Gilles.
 
 
