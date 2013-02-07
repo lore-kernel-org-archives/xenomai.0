@@ -1,20 +1,13 @@
-Message-ID: <5112BB26.5020809@xenomai.org>
-Date: Wed, 06 Feb 2013 21:20:54 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <DUB112-W611452F2FFED2C76DFCA3BDB060@phx.gbl>
+From: =?windows-1254?B?SGFzYW4gRXJkZW0gWWFudP1y?= <heyantir@hotmail.com>
+Date: Thu, 7 Feb 2013 15:14:52 +0200
+In-Reply-To: <51124977.3050706@vmars.tuwien.ac.at>
+References: <DUB112-W13050D5AFBEFC5B494C17E2DB070@phx.gbl>,
+	<51124977.3050706@vmars.tuwien.ac.at>
 MIME-Version: 1.0
-References: <51128CE4.4020303@siemens.com> <51128E3E.808@xenomai.org>
-	<511293EB.1080502@siemens.com> <5112945F.8080102@xenomai.org>
-	<51129599.3080709@siemens.com> <51129693.1040400@xenomai.org>
-	<5112974A.8050008@siemens.com> <5112982B.1020901@xenomai.org>
-	<5112A06A.7030809@siemens.com> <5112A175.5010002@xenomai.org>
-	<5112A269.40609@siemens.com> <5112A392.3050302@xenomai.org>
-	<5112AD78.5080308@siemens.com> <5112AF72.3020201@xenomai.org>
-	<5112B51A.6000207@siemens.com> <5112B718.6010402@xenomai.org>
-	<5112BA45.1090106@siemens.com>
-In-Reply-To: <5112BA45.1090106@siemens.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] ipipe/x86: do not restore during context switch
+Content-Type: text/plain; charset="windows-1254"
+Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai] Xenomai on uClinux on Altera FPGA
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -23,72 +16,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 02/06/2013 09:17 PM, Jan Kiszka wrote:
-
-> On 2013-02-06 21:03, Gilles Chanteperdrix wrote:
->> On 02/06/2013 08:55 PM, Jan Kiszka wrote:
->>
->>>> To the contrary, the overhead is the cost of the fault (with the
->>>> user/kernel and kernel/user switches), so, the larger the context
->>>> switch, the smaller the overhead in proportion.
->>>
->>> Yes, continuously faulting in FPU states of heavy Linux users is the
->>> problem. That must be changed.
->>
->>
->> We are talking x86 here, so, the cost of the FPU fault is not that heavy.
->>
->>>>> Instead of always doing stts for the new task, we could do the restore
->>>>> later, after the hard_local_irq_enable of __ipipe_switch_tail. That
->>>>> should allow the eager model for Linux as well without making
->>>>> save+restore of Linux-Linux switches atomic.
->>>>
->>>>
->>>> That could be done, but it is probably simpler to implement unlocked
->>>> context switch, and split __switch_to into several atomic sections.
->>>
->>> Yep, indeed.
->>>
->>>> Anyway, any change in this area will probably break the work done for
->>>> kthreads on -forge, so, can't we postpone this?
->>>
->>> For how long? What are the dependencies?
->>
->>
->> For the time it takes to validate FPU on kthreads with -forge.
->>
->>> I thought unlocked context
->>> switches already exit for other archs.
->>
->>
->> That is not an issue, indeed.
->>
->>>
->>> At least I will need to look into this internally - we are using less
->>> than 10% of our CPUs for RT, the rest wants high performance.
->>
->>
->> Are you sure this is not a priori optimization of something which is not
->> really an issue?
-> 
-> Of course, it depends on the context switch rate. We have to measure,
-> but I wouldn't be surprised to see high numbers. And the FPU is used by
-> everything today.
-> 
-> My colleague recently measured that (on an older standard kernel)
-> accelerated disk encryption was slightly slower than unaccelerated one -
-> due to the overhead of FPU context switches. I suppose we have a nice
-> benchmark in that scenario (dd on an encrypted disk)...
-
-
-You are talking kernel_fpu_begin()/kernel_fpu_end() here, this is a
-completely different issue. If Xenomai interrupts Linux in the middle of
-such a section, the FPU context is restored eagerly when switching back
-to Linux, so there is absolutely nothing more we can do in this area.
-
--- 
-                                                                Gilles.
-
+ClRoYW5rcyBhIGxvdCBEZWFyIE1hcnRpbiBmb3IgdGhlIHJlcGx5LApJIGhhdmUgZm9sbG93ZWQg
+dGhpcyB0dXRvcmlhbCBob3dldmVyIEkgY291bGQgIG5vdCBmaW5kIHRoZSBleGFjdCB2ZXJzaW9u
+IHRoYXQgdXNlZCBpbiB0aGUgdHV0b3JpYWwgKG5pb3MyLWxpbnV4LTIwMDkwNzMwKS4gbmlvczJm
+dHAuY29tIGlzIGNsb3NlZCBub3cuIEkgdHJpZWQgd2l0aCBuZXZlciB2ZXJzaW9uIGFuZCB3aGVu
+IGRvd25sb2FkaW5nIGltYWdlIGZpbGUgYXQgdGhlIGVuZCwgbmlvczItZG93bmxvYWQgZ2F2ZSB0
+aGUgdmVyaWZpY2F0aW9uIGVycm9yIG9uIERFMiBib2FyZC4gTWF5IGJlIHNvbWUgaGFyZHdhcmUg
+cHJvYmxlbSBjYW4gZXhpc3QgYmV0d2VlbiBkZXZpY2UgZmFtaWxpZXMuCj4gRGF0ZTogV2VkLCA2
+IEZlYiAyMDEzIDEzOjE1OjUxICswMTAwCj4gRnJvbTogbWFydGluZUB2bWFycy50dXdpZW4uYWMu
+YXQKPiBUbzogeGVub21haUB4ZW5vbWFpLm9yZwo+IFN1YmplY3Q6IFJlOiBbWGVub21haV0gWGVu
+b21haSBvbiB1Q2xpbnV4IG9uIEFsdGVyYSBGUEdBCj4gCj4gRGVhciBIYXNhbiwKPiAKPiBJIGRp
+ZCBpdCwgb24gYSBub24tTU1VIE5pb3MgMiBhcmNoaXRlY3R1cmUgd2l0aCBhIFN0cmF0aXggSVYg
+RlBHQSwgdXNpbmcgCj4gdGhlIGd1aWRlICgiWGVub21haSBvbiBOSU9TIElJIFNvZnRjb3JlIFBy
+b2Nlc3NvcjogYSBzdGVwIGJ5IHN0ZXAgCj4gR3VpZGUiKSBpbiB0aGUgbGluayBiZWxvdwo+IGh0
+dHA6Ly9rYWRpb25pay52dnYuZW5zZWlyYi1tYXRtZWNhLmZyL25pb3MyLXhlbm9tYWkvZG9jL1hl
+bm9tYWklMjBvbiUyME5JT1MlMjBJSSUyMFNvZnRjb3JlJTIwUHJvY2Vzc29yJTIwR3VpZGUtdjEu
+Mi5wZGYKPiAKPiBIb3dldmVyIHRoZXJlIG1pZ2h0IGJlIG5ld2VyIHZlcnNpb25zIGF2YWlsYWJs
+ZSB0aGF0IGFyZSBub3QgY292ZXJlZCBieSAKPiB0aGlzIGRvY3VtZW50Lgo+IAo+IEkgaG9wZSB0
+aGlzIGhlbHBzCj4gTWFydGluCj4gCj4gT24gMDIvMDYvMjAxMyAxMjo1OSBQTSwgSGFzYW4gRXJk
+ZW0gWWFudP1yIHdyb3RlOgo+ID4gSGVsbG8KPiA+IEkgYW0gYSByZXNlYXJjaGVyIGFuZCBkZWFs
+aW5nIHdpdGggUlRPU2VzIG9uIEZpZWxkIFByb2dyYW1tYWJsZSBHYXRlIEFycmF5cy4gQXMgYW4g
+cHJvY2Vzc29yIEkgYW0gdXNpbmcgTmlvcyBJSSBzb2Z0IGNvcmUgcHJvY2Vzc29yIG9uIEFsdGVy
+YSBGUEdBcywgYW5kIEkndmUgbG9hZGVkIHRoZSB1Q2xpbnV4IG9wZXJhdGluZyBzeXN0ZW0uIFRo
+ZSBvcGVyYXRpbmcgc3lzdGVtIHdoaWNoIEkgbG9hZGVkIHdhcyBuaW9zMi1saW51eC0yMDA5MDky
+OS50YXIgdmVyc2lvbi4gQWZ0ZXIgbG9hZGluZyB1Q2xpbnV4LCBJJ3ZlIHBhdGNoZWQgaXQgd2l0
+aCBYZW5vbWFpIDIuNiBob3dldmVyIHBhdGNoIGNhdXNlcyBhIHZlcmlmaWNhdGlvbiBlcnJvciB3
+aGlsZSBsb2FkaW5nIHRoZSBpbWFnZSBmaWxlLgo+ID4gQXJlIHRoZXJlIGFueSBtZW1iZXIgaW4g
+dGhpcyBsaXN0IHdobyBzdWNjZXNmdWxseSBwYXRjaGVkIFhlbm9tYWkgdG8gdUNsaW51eCBhbmQg
+cnVuIGl0IG9uIHRoZSBGUEdBLiBDYW4gaGUvc2hlIHByb3ZpZGUgdGhlIGV4YWN0IHZlcnNpb24g
+LyBzb3VyY2Ugb2YgdGhlIHVDbGludXggd2hpY2ggaGUvc2hlIGhhcyB1c2VkLgo+ID4gVGhhbmtz
+Li4uIAkJIAkgICAJCQo+ID4gX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX18KPiA+IFhlbm9tYWkgbWFpbGluZyBsaXN0Cj4gPiBYZW5vbWFpQHhlbm9tYWkub3Jn
+Cj4gPiBodHRwOi8vd3d3Lnhlbm9tYWkub3JnL21haWxtYW4vbGlzdGluZm8veGVub21haQo+IAo+
+IAo+IF9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCj4gWGVu
+b21haSBtYWlsaW5nIGxpc3QKPiBYZW5vbWFpQHhlbm9tYWkub3JnCj4gaHR0cDovL3d3dy54ZW5v
+bWFpLm9yZy9tYWlsbWFuL2xpc3RpbmZvL3hlbm9tYWkKIAkJIAkgICAJCSAgCg==
