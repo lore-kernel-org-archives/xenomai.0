@@ -1,11 +1,11 @@
-Message-ID: <5114E5B2.60507@siemens.com>
-Date: Fri, 08 Feb 2013 12:46:58 +0100
+Message-ID: <51150057.4090608@siemens.com>
+Date: Fri, 08 Feb 2013 14:40:39 +0100
 From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
 References: <5113BFD0.7050501@hilscher.com> <5113D225.8030900@xenomai.org>
 	<5114C05B.7040507@hilscher.com> <5114C302.5020209@xenomai.org>
-	<5114E175.4080908@siemens.com> <5114E30A.2010305@xenomai.org>
-In-Reply-To: <5114E30A.2010305@xenomai.org>
+	<5114E175.4080908@siemens.com> <5114FD7B.20902@hilscher.com>
+In-Reply-To: <5114FD7B.20902@hilscher.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 Subject: Re: [Xenomai] Hilscher driver for cifX boards
@@ -17,12 +17,13 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: =?UTF-8?B?U3TDqXBoYW5lIExPUw==?= <slos@hilscher.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 2013-02-08 12:35, Gilles Chanteperdrix wrote:
-> On 02/08/2013 12:28 PM, Jan Kiszka wrote:
->=20
+[re-adding the list]
+
+On 2013-02-08 14:28, St=C3=A9phane LOS wrote:
+> Le 08/02/2013 12:28, Jan Kiszka a =C3=A9crit :
 >> On 2013-02-08 10:18, Gilles Chanteperdrix wrote:
 >>> On 02/08/2013 10:07 AM, St=C3=A9phane LOS wrote:
 >>>
@@ -72,7 +73,6 @@ en lucky.
 the
 >>>>>> lions...
 >>>>>>
->>>>>
 >>>>> If UIO is used to register an interrupt handler for instance, the
 >>>>> interrupt handler will not be called in real-time context when used=
  with
@@ -95,30 +95,26 @@ s the
 me
 >>>>> driver, you can keep the driver.
 >>>>>
->>>>
 >>>> Thank you for your kind support Gilles.
 >>>>
 >>>> The cifX Device Driver is Hilscher's library to deal with cifX board=
-s=20
+s
 >>>> and is available for the major OSes.
 >>>> Additionally it is available to anybody as source code, the cifX Dri=
-ver=20
+ver
 >>>> Toolkit when one has to create a driver for his own OS.
 >>>>
 >>>> This driver library accesses the board interface which is a Dual Por=
-t=20
+t
 >>>> Memory.
 >>>>
 >>>> So the user application shall use this layer and gets independence f=
-rom=20
+rom
 >>>> the target OS.
 >>>>
->>>> I understand that we should create an RTDM driver instead of a UIO=20
+>>>> I understand that we should create an RTDM driver instead of a UIO
 >>>> driver and adapt the user library so that it uses the RTDM driver.
->>>
->>>>
 >>>> Am I right ?
->>>
 >>>
 >>> I tried to explain why it may be better to create an RTDM driver, but=
  in
@@ -128,7 +124,6 @@ n
 >>> you simply have to access MMIO registers, user-space may be fine, if =
 you
 >>> have to handle interrupts kernel-space (so, RTDM) is preferable.
->>
 >> Are we talking about linux/drivers/uio/uio_cif.c here? That one
 >> obviously has interrupt support.
 >>
@@ -142,12 +137,30 @@ h
 >> I also wonder if it didn't make sense for us to provide an UIO-like
 >> infrastructure for such use cases (single-user device drivers with IRQ
 >> event channel needs).
+>>
+>> Jan
+>>
 >=20
->=20
-> The native and posix skin provide support for interrupts in user-space.=
-..
+> I am talking about the new products based on the netX chip :
+> http://lxr.free-electrons.com/source/drivers/uio/uio_netx.c
 
-That's deprecated, and UIO is more than this.
+Ah, I see. Structurally similar, though.
+
+>=20
+> I have been through :
+> http://www.xenomai.org/index.php/Xenomai:Roadmap#Toward_Xenomai_3
+>=20
+> Looks like we should create an RTDM driver and build our Xenomai=20
+> specific libcifx on top of it.
+>=20
+> Since the kernel now includes by default the UIO stuff, the board will=20
+> likely be detected twice, once by UIO and second by the RTDM driver.
+> Is it a problem ?
+> Should the user of the RTDM driver disable UIO / netX in the kernel ?
+
+It's not problem to have multiple drivers registered for the same IDs.
+You can always rebind them via sysfs or black-list one of them in the
+local modprobe configuration.
 
 Jan
 
