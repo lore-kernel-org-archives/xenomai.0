@@ -1,15 +1,13 @@
-Message-ID: <51150CD1.3060407@hilscher.com>
-Date: Fri, 08 Feb 2013 15:33:53 +0100
-From: =?UTF-8?B?U3TDqXBoYW5lIExPUw==?= <slos@hilscher.com>
+Message-ID: <5117AD5A.1080504@xenomai.org>
+Date: Sun, 10 Feb 2013 15:23:22 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <5113BFD0.7050501@hilscher.com> <5113D225.8030900@xenomai.org>
-	<5114C05B.7040507@hilscher.com> <5114C302.5020209@xenomai.org>
-	<5114E175.4080908@siemens.com> <5114FD7B.20902@hilscher.com>
-	<51150057.4090608@siemens.com>
-In-Reply-To: <51150057.4090608@siemens.com>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] Hilscher driver for cifX boards
+References: <OF682F5C70.F8F7AA50-ON85257AF1.005F580A-85257AF1.005F580C@aanddtech.com>
+	<50F3DD9A.9050306@gmail.com>
+In-Reply-To: <50F3DD9A.9050306@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Porting Ipipe to new ARM SoC (Xilinx Zynq)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,148 +16,63 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Stefan Roese <stefan.roese@gmail.com>
+Cc: mfornero@aanddtech.com, Xenomai@xenomai.org
 
-Le 08/02/2013 14:40, Jan Kiszka a écrit :
-> [re-adding the list]
->
-> On 2013-02-08 14:28, Stéphane LOS wrote:
->> Le 08/02/2013 12:28, Jan Kiszka a écrit :
->>> On 2013-02-08 10:18, Gilles Chanteperdrix wrote:
->>>> On 02/08/2013 10:07 AM, Stéphane LOS wrote:
->>>>
->>>>> Le 07/02/2013 17:11, Gilles Chanteperdrix a écrit :
->>>>>> On 02/07/2013 03:53 PM, Stéphane LOS wrote:
->>>>>>
->>>>>>> Hello Sirs,
->>>>>>>
->>>>>>> Hilscher is offering a Linux driver based on UIO for cifX boards.
->>>>>>>
->>>>>>> In my understanding, down to 1ms cycle time, a PREEMPT RT solution
->>>>>>> should be enough.
->>>>>>>
->>>>>>> The cifX boards can manage with bus cycle times down to 250µs like with
->>>>>>> EtherCAT or Sercos III firmwares.
->>>>>>>
->>>>>>> So it seems in that cases that using Xenomai would be the way to go.
->>>>>>> I suppose that it would be needed to modify or change the existing
->>>>>>> driver but I can't figure out how things (Xenomai / RTDM / UIO) fit
->>>>>>> together.
->>>>>>>
->>>>>>> UIO is the kernel module that allows the mapping of the board memory to
->>>>>>> user space.
->>>>>>>
->>>>>>> The cifX driver uses the libpciaccess to pick up the board and retrieve
->>>>>>> some board information from UIO before the mapping.
->>>>>>> Then it uses pthread and rt functions when accessing the board.
->>>>>>>
->>>>>>> Since UIO and libpciaccess are only used during the initialization, is
->>>>>>> it a problem for a Xenomai application ?
->>>>>>>
->>>>>>> We have setup a Xenomai system and tried to compile the user land
->>>>>>> library with Xenomai options and flags and it seems we have been successful.
->>>>>>> The driver should be using the POSIX skin of Xenomai if we have been lucky.
->>>>>>>
->>>>>>> I can't see why we would need RTDM. Any hint please ?
->>>>>>>
->>>>>>> I am an absolute beginner in the Xenomai arena, don't throw me to the
->>>>>>> lions...
->>>>>>>
->>>>>> If UIO is used to register an interrupt handler for instance, the
->>>>>> interrupt handler will not be called in real-time context when used with
->>>>>> Xenomai, so, you would have to use the (deprecated) native or posix skin
->>>>>> services to register a user-space interrupt handler, or more likely
->>>>>> write an RTDM driver. On the other hand, if what you need is simply
->>>>>> accessing the board registers through MMIO, then you do not need RTDM.
->>>>>>
->>>>>> While accessing registers from user-space may be tempting, there is a
->>>>>> risk of ending up with an application where the driver code is not
->>>>>> clearly separated. Writing a driver separated from the application is
->>>>>> preferable, as it provides a sane isolation between the two. If you
->>>>>> change the hardware, you just have to rewrite a driver which follows the
->>>>>> same profile, if you want to write another application using the same
->>>>>> driver, you can keep the driver.
->>>>>>
->>>>> Thank you for your kind support Gilles.
->>>>>
->>>>> The cifX Device Driver is Hilscher's library to deal with cifX boards
->>>>> and is available for the major OSes.
->>>>> Additionally it is available to anybody as source code, the cifX Driver
->>>>> Toolkit when one has to create a driver for his own OS.
->>>>>
->>>>> This driver library accesses the board interface which is a Dual Port
->>>>> Memory.
->>>>>
->>>>> So the user application shall use this layer and gets independence from
->>>>> the target OS.
->>>>>
->>>>> I understand that we should create an RTDM driver instead of a UIO
->>>>> driver and adapt the user library so that it uses the RTDM driver.
->>>>> Am I right ?
->>>> I tried to explain why it may be better to create an RTDM driver, but in
->>>> this case this may not be the best option. The answer to your question
->>>> depends on what you have to do to implement the driver. As I said, if
->>>> you simply have to access MMIO registers, user-space may be fine, if you
->>>> have to handle interrupts kernel-space (so, RTDM) is preferable.
->>> Are we talking about linux/drivers/uio/uio_cif.c here? That one
->>> obviously has interrupt support.
->>>
->>> If your customers may want to use Xenomai 3 with I-pipe instead of
->>> Preempt-RT underneath (both options will exist), RTDM will still be
->>> required for interrupt handling. If you like to, you could propose such
->>> a driver for Xenomai integration. That would ensure it will come with
->>> future releases.
->>>
->>> I also wonder if it didn't make sense for us to provide an UIO-like
->>> infrastructure for such use cases (single-user device drivers with IRQ
->>> event channel needs).
->>>
->>> Jan
->>>
->> I am talking about the new products based on the netX chip :
->> http://lxr.free-electrons.com/source/drivers/uio/uio_netx.c
-> Ah, I see. Structurally similar, though.
->
->> I have been through :
->> http://www.xenomai.org/index.php/Xenomai:Roadmap#Toward_Xenomai_3
+On 01/14/2013 11:27 AM, Stefan Roese wrote:
+
+> Hi Matthew,
+> 
+> On 01/12/2013 06:21 PM, mfornero@aanddtech.com wrote:
+>>    I'm looking for recommendations on how to best port ipipe support to a
+>>    new ARM SoC. The SoC has started to show up in mainline, but many of
+>>    the features haven't made it over yet. Xilinx maintains a git repo
+>>    here:
 >>
->> Looks like we should create an RTDM driver and build our Xenomai
->> specific libcifx on top of it.
+>>    git://git.xilinx.com/linux-xlnx.git
 >>
->> Since the kernel now includes by default the UIO stuff, the board will
->> likely be detected twice, once by UIO and second by the RTDM driver.
->> Is it a problem ?
->> Should the user of the RTDM driver disable UIO / netX in the kernel ?
-> It's not problem to have multiple drivers registered for the same IDs.
-> You can always rebind them via sysfs or black-list one of them in the
-> local modprobe configuration.
->
-> Jan
->
-Sorry for not posting to the list, wrong button pushed.
-
-Thank you and Gilles for your answer.
-
-I bet there will be more questions. Have a nice week end.
-
-Best Regards,
-Cordialement,
-
-Stéphane LOS
-slos@hilscher.com
-Support technique
-
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Hilscher France
-12, rue du 35ème Régiment d'Aviation
-Miniparc du Chêne
-69500 BRON
-France
-Tél. : +33 (0) 4 72 37 98 40
-Fax  : +33 (0) 4 78 26 83 27
-http ://www.hilscher.fr
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>>    And it look like they've synced with mainline 3.6
+>>
+>>    The two approaches I've considered were either trying to port ipipe to
+>>    stock 3.6 (or at least the generic and ARM bits) or trying to backport
+>>    the Xilinx code to 3.5.3. I started with the later approach, but some
+>>    changes to the common clock architecture between 3.5 and 3.6 make this
+>>    somewhat difficult.
+>>
+>>    Any thoughts on which approach would be better?
+> 
+> I'm also working on supporting Zynq in I-pipe. My approach was to use
+> the Xilinx 3.5.0 code version (git tag "xilinx-14.3-build2"). And port
+> the I-pipe version from Gilles git repository to it. I still need to do
+> some cleanup then I can send you the latest version.
 
 
+Hi Stefan, Matthew,
+
+I do not know if you managed to get the I-pipe working on Zynq. 
+You may have missed it, but it may be very important for debugging the 
+issues you encounter with the I-pipe port on Zynq, printk from primary 
+domain in I-pipe patches for Linux 3.4 and 3.5 does not work. So, if 
+you are debugging with printk, it may lead you to false conclusions. 
+You should apply the following patch (it has been pushed in the 
+for-core-3.5.7 branch of the ipipe-gch git):
+
+diff --git a/arch/arm/kernel/smp.c b/arch/arm/kernel/smp.c
+index 3b86167..f77ef11 100644
+--- a/arch/arm/kernel/smp.c
++++ b/arch/arm/kernel/smp.c
+@@ -440,7 +440,7 @@ void __ipipe_ipis_alloc(void)
+ 		return;
+ 
+ 	/* __ipipe_first_ipi is 0 here  */
+-	ipi_nr = IPI_IPIPE_FIRST + IPIPE_LAST_IPI;
++	ipi_nr = IPI_IPIPE_FIRST + IPIPE_LAST_IPI + 1;
+ 
+ 	for (virq = IPIPE_IPI_BASE; virq < IPIPE_IPI_BASE + ipi_nr; virq++) {
+ 		_virq = ipipe_alloc_virq();
+
+
+
+-- 
+                                                                Gilles.
 
