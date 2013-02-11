@@ -1,10 +1,15 @@
-Message-ID: <5100AB10.3030509@ebus.com>
-Date: Wed, 23 Jan 2013 19:31:28 -0800
-From: Doug Brunner <dbrunner@ebus.com>
-MIME-Version: 1.0
+Mime-Version: 1.0 (Apple Message framework v1283)
+Content-Type: text/plain; charset=us-ascii
+From: Stephan Kappertz <stephan.kappertz@kabelmail.de>
+In-Reply-To: <5118A3AF.60707@xenomai.org>
+Date: Mon, 11 Feb 2013 09:24:11 +0100
 Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="iso-8859-1"; Format="flowed"
-Subject: [Xenomai] rt_dev_write returns immediately on xeno_16550A
+Message-Id: <CFECC321-DA65-4754-8974-94B050F686A8@kabelmail.de>
+References: <mailman.0.1359630001.19052.xenomai@xenomai.org>
+	<9EFD9D88-FCCB-489A-9DA9-06A8C8AFE8EA@kabelmail.de>
+	<5118A3AF.60707@xenomai.org>
+Subject: Re: [Xenomai] Ipipe pre and post patch for AM335x
+	beagleBone/	koenkooi branch
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,96 +18,70 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-I have a 16550A UART (actually 1/4 of a TI TL16C554) on the ISA bus on =
 
-my WinSystems PPM-LX800-G SBC, and I'm finding that rt_dev_write returns =
+Am 11.02.2013 um 08:54 schrieb Gilles Chanteperdrix:
 
-control to the userspace process much earlier than I would expect, given =
+> On 01/31/2013 03:17 PM, Stephan Kappertz wrote:
+>=20
+>>=20
+>>>> Hi All,
+>>>>=20
+>>>> sorry for the long delay. As Gilles suggested I have prepared a pre =
+and post patch for ipipe-core-3.2.21-arm-4 and the git repository =
+supporting BeagleBone here: =
+https://github.com/koenkooi/linux/tree/linux-ti33x-psp-3.2.21-r13g%2Bgitr7=
+20e07b4c1f687b61b147b31c698cb6816d72f01 . Should I send the patches to =
+the list?
+>>>>=20
+>>>> - Stephan
+>>>=20
+>>> I think that you should.
+>>>=20
+>>> Goran
+>>>=20
+>>=20
+>> Here they are.
+>> Usage:
+>>=20
+>> * clone git repository =
+https://github.com/koenkooi/linux/tree/linux-ti33x-psp-3.2.21-r13g%2Bgitr7=
+20e07b4c1f687b61b147b31c698cb6816d72f01
+>=20
+>=20
+> I get:
+> fatal:
+> =
+https://github.com/koenkooi/linux/tree/linux-ti33x-psp-3.2.21-r13g%2Bgitr7=
+20e07b4c1f687b61b147b31c698cb6816d72f01/info/refs
+> not found: did you run git update-server-info on the server?
+>=20
+> At this point.
+>=20
+> --=20
+>                                                                Gilles.
+>=20
 
-how the kernel module is set up. (I'm using Xenomai 2.6.1 btw.) =
 
-Fortunately it has a dedicated IRQ line, so I was able to put a logic =
+The git repositore is not mine. It's the Koen Kooi repository I =
+mentioned before.
+=20
+To build the kernel with xenomai support I did:
 
-analyzer on the IRQ, the TX line, and the RTS line (which my software =
+* git clone git://github.com/koenkooi/linux.git
 
-manually controls to operate an RS485 transceiver).
+* git checkout =
+origin/linux-ti33x-psp-3.2.21-r13g+gitr720e07b4c1f687b61b147b31c698cb6816d=
+72f01 -b linux-3.2.21
 
-I initially found that, with the TX FIFO size allowed to default to 16 =
+* patch -p1 < ../pre.patch
 
-bytes, rt_dev_write with a block of size 13 returns immediately. (I =
+* ./xenomai-2.6.2.1/scripts/prepare-kernel.sh --arch=3Darm --linux=3D.
 
-could tell this because my userspace routine sets RTS just before =
+* patch -p1 < ../post.patch
 
-calling rt_dev_write and clears RTS immediately after, so it was visible =
+- Stephan=
 
-on the logic analyzer.) This makes sense, because I could see that the =
 
-16C554 fires an IRQ immediately on the start of transmission (that =
-
-violates the description of the TX IRQ in its datasheet, but that's a =
-
-matter for TI). This would lead into rt_16550_interrupt, which would see =
-
-that ctx->out_npend =3D=3D 0 because the data was written to the FIFO in on=
-e =
-
-go, and consequently fire out_event. The TX timeout was configured for =
-
-100 ms, so rt_16550_write would be waiting on out_event, and =
-
-rt_dev_write would return at that time.
-
-However...I tried setting the TX FIFO to 1 byte via xeno_16550A module =
-
-parameter, and found that rt_dev_write still returned almost =
-
-immediately. This is what I don't understand, since I could see data =
-
-being transmitted, and the IRQ line going high once for every byte. This =
-
-means that rt_16550_interrupt MUST be getting called, and in turn =
-
-calling rt_16550_tx_interrupt to move data out to the UART. For =
-
-rt_16550_tx_interrupt to be doing so, out_npend must !=3D 0, so out_event =
-
-should not be getting fired until the very last character.
-
-I did notice something odd: at the beginning of rt_16550_write, we =
-
-initialize timeout_seq with ctx->config.rx_timeout. Later that timeout =
-
-sequence is reused while waiting on out_event, which is naturally =
-
-subject to ctx->config.tx_timeout. This seems like a possible source of =
-
-error if tx and rx timeout are not equal--I didn't study the internal =
-
-implementation of the timeout sequence so I'm not sure. However, I tried =
-
-changing the references from rx_timeout to tx_timeout and it produced no =
-
-change in behavior.
-
-Do you know why rt_dev_write would be returning prematurely? I've =
-
-attached the relevant userspace code snippets for reference. Note that =
-
-RawInterface is a subclass of Interface, and higher level code will call =
-
-RawInterface::Write.
-
--- =
-
-     Doug Brunner
-
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: rt-16550a-snippet.cpp
-Type: text/x-c++src
-Size: 2784 bytes
-Desc: not available
-URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20130123/d5da87e=
-f/attachment.cpp>
