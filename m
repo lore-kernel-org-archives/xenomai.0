@@ -1,12 +1,11 @@
-Message-ID: <5100F41C.2070006@grandegger.com>
-Date: Thu, 24 Jan 2013 09:43:08 +0100
-From: Wolfgang Grandegger <wg@grandegger.com>
+From: "Giataganas, Petros" <petros.giataganas11@imperial.ac.uk>
+Date: Tue, 12 Feb 2013 19:20:59 +0000
+Message-ID: <CC872764D2E12B469BE82C0BF22F24DF2716AB5A@icexch-m2.ic.ac.uk>
+Content-Language: en-US
 MIME-Version: 1.0
-References: <5100AB10.3030509@ebus.com>
-In-Reply-To: <5100AB10.3030509@ebus.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] rt_dev_write returns immediately on xeno_16550A
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] Xenomai linux kernel compile
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,72 +14,77 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Doug Brunner <dbrunner@ebus.com>
-Cc: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 01/24/2013 04:31 AM, Doug Brunner wrote:
-> I have a 16550A UART (actually 1/4 of a TI TL16C554) on the ISA bus on
-> my WinSystems PPM-LX800-G SBC, and I'm finding that rt_dev_write returns
-> control to the userspace process much earlier than I would expect, given
-> how the kernel module is set up. (I'm using Xenomai 2.6.1 btw.)
-> Fortunately it has a dedicated IRQ line, so I was able to put a logic
-> analyzer on the IRQ, the TX line, and the RTS line (which my software
-> manually controls to operate an RS485 transceiver).
+Hi all,
 
-The 16550A driver does not support half duplex RS485 mode but I see
-below that you it it's handled in your application.
+Thank you for your amazing work on xenomai and the documentation that suppo=
+rts it.
 
-> I initially found that, with the TX FIFO size allowed to default to 16
-> bytes, rt_dev_write with a block of size 13 returns immediately. (I
-> could tell this because my userspace routine sets RTS just before
-> calling rt_dev_write and clears RTS immediately after, so it was visible
-> on the logic analyzer.) This makes sense, because I could see that the
-> 16C554 fires an IRQ immediately on the start of transmission (that
-> violates the description of the TX IRQ in its datasheet, but that's a
-> matter for TI). This would lead into rt_16550_interrupt, which would see
-> that ctx->out_npend == 0 because the data was written to the FIFO in one
-> go, and consequently fire out_event. The TX timeout was configured for
+I have to say that I am newbie but I have not found any solution on mr. Goo=
+gle!
 
-rt_dev_write does store the data in a ring buffer and enable the TX
-interrupt. When it occurs, the data is written to the FIFO and a
-subsequent interrupt will signal completion when the FIFO is empty and
-no more data in the ring buffer.
+I am running ubuntu 12.04 and I want to run xenomai 2.6.2.1
 
-> 100 ms, so rt_16550_write would be waiting on out_event, and
-> rt_dev_write would return at that time.
+My problem is presented when I am doing the full kernel compile based on th=
+e guide :
 
-Yes, if the TX has not complete at that time.
+http://www.stanley.gatech.edu/skelly/uncategorized/installing-xenomai-on-ub=
+untu-12-04/
 
-> However...I tried setting the TX FIFO to 1 byte via xeno_16550A module
-> parameter, and found that rt_dev_write still returned almost
-> immediately. This is what I don't understand, since I could see data
-> being transmitted, and the IRQ line going high once for every byte. This
-> means that rt_16550_interrupt MUST be getting called, and in turn
-> calling rt_16550_tx_interrupt to move data out to the UART. For
-> rt_16550_tx_interrupt to be doing so, out_npend must != 0, so out_event
-> should not be getting fired until the very last character.
+In particular, when I execute the command:  sudo dpkg -i linux-image-*.deb
 
-What value does rt_dev_write return?
+it gives me the error:
 
-> I did notice something odd: at the beginning of rt_16550_write, we
-> initialize timeout_seq with ctx->config.rx_timeout. Later that timeout
-> sequence is reused while waiting on out_event, which is naturally
-> subject to ctx->config.tx_timeout. This seems like a possible source of
-> error if tx and rx timeout are not equal--I didn't study the internal
-> implementation of the timeout sequence so I'm not sure. However, I tried
-> changing the references from rx_timeout to tx_timeout and it produced no
-> change in behavior.
+--------------------------------
+ERROR (dkms apport): kernel package linux-headers-3.5.7-xenomai-2.6.2.1 is =
+not supported
+Error! Bad return status for module build on kernel: 3.5.7-xenomai-2.6.2.1 =
+(i686)
+Consult /var/lib/dkms/nvidia-current/304.64/build/make.log for more informa=
+tion.
+ERROR (dkms apport): kernel package linux-headers-3.5.7-xenomai-2.6.2.1 is =
+not supported
+ERROR (dkms apport): kernel package linux-headers-3.5.7-xenomai-2.6.2.1 is =
+not supported
+ERROR (dkms apport): kernel package linux-headers-3.5.7-xenomai-2.6.2.1 is =
+not supported
+Error! Bad return status for module build on kernel: 3.5.7-xenomai-2.6.2.1 =
+(i686)
+Consult /var/lib/dkms/nvidia-current-updates/304.64/build/make.log for more=
+ information.
+Error! Bad return status for module build on kernel: 3.5.7-xenomai-2.6.2.1 =
+(i686)
+Consult /var/lib/dkms/nvidia-experimental-310/310.14/build/make.log for mor=
+e information.
+Error! Bad return status for module build on kernel: 3.5.7-xenomai-2.6.2.1 =
+(i686)
+Consult /var/lib/dkms/nvidia-experimental-304/304.48/build/make.log for mor=
+e information.
+--------------------------------------------
 
-The ctx->config.rx_timeout is used to lock (via mutex) the TX handling
-against RX.
+which is definitely due to my graphics card.
 
-> Do you know why rt_dev_write would be returning prematurely? I've
-> attached the relevant userspace code snippets for reference. Note that
-> RawInterface is a subclass of Interface, and higher level code will call
-> RawInterface::Write.
+Is there any solution on that? Am I doing something wrong?
 
-Not yet. An iPipe trace would help to understand the problem.
+I have to say that the kernel is created and when I am booting there it wor=
+ks but the resolution is really low and it does not allow me to install any=
+ of the nvidia drivers. When I totally removed the nvidia drivers from the =
+synaptic, I managed to have full resolution on my screen (running therefore=
+ the default drivers and not the nvidia ones).
 
-Wolfgang.
+However, now I am not sure if the kernel is builded correctly and if I am w=
+orking in the user space or in the kernel space when for example I am runni=
+ng the code for  "./trivial-periodic"  (there I am having steady 1000 ms wi=
+th small variations).
 
+The final question is: have I installed correctly the xenomai real-time or =
+I should do the process from the beginning? Should I consider something in =
+the kernel config for the Nvidia drivers or not?
 
+Sorry if I am asking a problem that you have already solved in another thre=
+ad.
+
+Thank you in advance!
+
+Petros Giat.
