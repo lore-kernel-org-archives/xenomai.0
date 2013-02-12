@@ -1,12 +1,14 @@
-Message-ID: <511A2CA4.1000408@siemens.com>
-Date: Tue, 12 Feb 2013 12:51:00 +0100
-From: Jan Kiszka <jan.kiszka@siemens.com>
+From: "Zemskov, Evgeny" <Evgeny.Zemskov@transas.com>
+Date: Tue, 12 Feb 2013 12:33:40 +0000
+Message-ID: <FA4CEC4EBE2FA145A7663764A1CCB31E5C4C8FEA@VOITV-EXCH-BE01.transas.com>
+References: <FA4CEC4EBE2FA145A7663764A1CCB31E5C4C87A6@VOITV-EXCH-BE01.transas.com>
+In-Reply-To: <FA4CEC4EBE2FA145A7663764A1CCB31E5C4C87A6@VOITV-EXCH-BE01.transas.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <511A2964.4080902@hilscher.com>
-In-Reply-To: <511A2964.4080902@hilscher.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] Hilscher driver for cifX boards
+Subject: [Xenomai] xeno_16550A : "unrecoverable" receive buffer overflow on
+	read
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,25 +17,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?ISO-8859-1?Q?St=E9phane_LOS?= <slos@hilscher.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 2013-02-12 12:37, St=E9phane LOS wrote:
-> Hello there,
->=20
-> It seems we have managed to build an RTDM module and we can insmod it
-> and it shows up in the named devices list.
->=20
-> If we forget to rmmod the module, the kernel crashes when stopping or
-> rebooting.
-
-So you have a bug in your driver that requires fixing. Is the device
-opened while you shutdown? What does the backtrace tell you you about
-the crash? If you share your code early, we could review it already.
-
-Jan
-
---=20
-Siemens AG, Corporate Technology, CT RTC ITP SDP-DE
-Corporate Competence Center Embedded Linux
+R3JlZXRpbmdzICEKCkknbSB0cnlpbmcgdG8gdXNlIHhlbm9fMTY1NTBBIGRyaXZlciB0byByZWFk
+IGEgc3RyZWFtIG9mIGhpZ2gtZnJlcXVlbmN5IGRhdGEKKH41MCBieXRlIHBhY2tldCBlYWNoIDIw
+IG1zZWMgYXQgNTc2MDAgYmF1ZCkgd2l0aCBsb3cgbGF0ZW5jaWVzLgoKQWZ0ZXIgc3VjY2Vzc2Z1
+bCBpbnN0YWxsYXRpb24gb2YgeGVub18xNjU1MEEua28gZHJpdmVyIG1vZHVsZSBhbmQgCmluaXRp
+YWxpemF0aW9uIG9mIHJ0c2VyMCBkZXZpY2UsIGFuIGF0dGVtcHQgdG8gcmVhZCBmcm9tIHRoZSBk
+ZXZpY2UgZmFpbHMgOgpydF9kZXZfcmVhZCByZXR1cm5zIC01IChJbnB1dC9vdXRwdXQgZXJyb3Ip
+LAphbmQgc3Vic2VxdWVudCBpb2N0bCBSVFNFUl9SVElPQ19HRVRfU1RBVFVTIHNob3dzIHRoZSB2
+YWx1ZSBvZiAKTFNSPTB4NjIgYW5kIE1TUj0weDUuCgpUaGUgZGF0YSBmcm9tIHJ0c2VyMCBkZXZp
+Y2UgY2FuIGJlIHJlYWQgc3VjY2Vzc2Z1bGx5IGFmdGVyIGZvbGxvd2luZyBzZXF1ZW5jZSA6CiAt
+IHJtbW9kIHhlbm9fMTY1NTBBCiAtIGluaXQgL2Rldi90dHlTMCB0byB1c2Ugc3RhbmRhcmQgTGlu
+dXggODI1MCBkcml2ZXIgd2l0aCBzZXRzZXJpYWwKIC0gc3RhcnQgYW5kIHN0b3AgcmVhZGluZyBm
+cm9tIC9kZXYvdHR5UzAKIC0gaW5zbW9kIHhlbm9fMTY1NTBBIHdpdGggdmFsaWQgcGFyYW1ldGVy
+cwoKTmF0dXJhbGx5LCAvZGV2L3R0eVMwIGFuZCBydHNlcjAgcG9pbnQgdG8gdGhlIHNhbWUgYnVp
+bHQtaW4gc2VyaWFsIHBvcnQgCmF0IDB4M0Y4LgoKVGhlIHByb2JsZW0gZG9lc24ndCBhcHBlYXIg
+d2hlbiBJIHNlbmQgdG8gdGhlIHBvcnQgb2Nhc3Npb25hbCBidXJzdHMgb2YgZGF0YQooc2l6ZWQg
+YXJvdW5kIDIwLTMwIGJ5dGVzKSwgaS5lLiBydHNlcjAgY2FuIGJlIHJlYWQgZnJvbSBjb25zaXN0
+ZW50bHkgYWZ0ZXIgCmVhY2ggcmVzdGFydCBvZiB0aGUgdXRpbGl0eSAoaSB1c2UgbW9kaWZpZWQg
+Y3Jvc3MtbGluayB3aXRoIHRydW5jYXRlZCB3cml0ZSAKZnVuY3Rpb25hbGl0eSkuCgpJdCBzZWVt
+cyBsaWtlIHRoYXQgeGVub18xNjU1MEEgaXMgdW5hYmxlIHRvIGhhbmRsZSBvdmVyZmxvdyBvZiBV
+QVJUIFJ4IGJ1ZmZlciwKd2hpY2ggaXMgZmx1c2hlZCBvbiBpbml0aWFsaXphdGlvbiBieSA4MjUw
+IGRyaXZlci4KCkNvdWxkIGFueWJvZHkgc3VnZ2VzdCB3aGVyZSBpbiBzb3VyY2VzIChvZiBib3Ro
+IDE2NTUwQSBhbmQgODI1MCkgdG8gbG9vayBmb3IgCnRoZSBzb2x1dGlvbiA/CgpUaGFua3MsIEV1
+Z2VuZQoKCkV2Z2VueSBaZW1za292LCBUcmFuc2FzIEx0ZApldmdlbnkuemVtc2tvdkB0cmFuc2Fz
+LmNvbQrvu79PZmZpY2UgcGhvbmUgIyArNyA4MTIgMzI1MzEzMSBhZGQuIDI3NC0wMwpDZWxsIHBo
+b25lICMgKzcgOTUyIDM5NDMxMjkK
 
