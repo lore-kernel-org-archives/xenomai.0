@@ -1,14 +1,14 @@
-From: "Zemskov, Evgeny" <Evgeny.Zemskov@transas.com>
-Date: Tue, 12 Feb 2013 12:33:54 +0000
-Message-ID: <FA4CEC4EBE2FA145A7663764A1CCB31E5C4C8FF3@VOITV-EXCH-BE01.transas.com>
-References: <FA4CEC4EBE2FA145A7663764A1CCB31E5C4C8FBB@VOITV-EXCH-BE01.transas.com>
-In-Reply-To: <FA4CEC4EBE2FA145A7663764A1CCB31E5C4C8FBB@VOITV-EXCH-BE01.transas.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Message-ID: <511A396E.2060703@xenomai.org>
+Date: Tue, 12 Feb 2013 13:45:34 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Subject: [Xenomai] Would a Xenomai thread running in secondary mode affect
- the latencies of other Xenomai threads in primary modes ?
+References: <FA4CEC4EBE2FA145A7663764A1CCB31E5C4C8FBB@VOITV-EXCH-BE01.transas.com>
+	<FA4CEC4EBE2FA145A7663764A1CCB31E5C4C8FF3@VOITV-EXCH-BE01.transas.com>
+In-Reply-To: <FA4CEC4EBE2FA145A7663764A1CCB31E5C4C8FF3@VOITV-EXCH-BE01.transas.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Would a Xenomai thread running in secondary mode
+ affect the latencies of other Xenomai threads in primary modes ?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,28 +17,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "Zemskov, Evgeny" <Evgeny.Zemskov@transas.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-R29vZCBldmVuaW5nICEKCldlJ3JlIGRldmVsb3BpbmcgYSBzeXN0ZW0gd2l0aCBidW5jaCBvZiBY
-ZW5vbWFpIHRocmVhZHMsIG9uZSBvZiB3aGljaCB3cml0ZXMKdGhlIGRhdGEgdG8gc29tZSBzcGVj
-aWZpYyBkZXZpY2UgKE1JTC1TVEQtMTU1M0IgYnVzIGNvbnRyb2xsZXIpLgoKUlRETSBkcml2ZXJz
-IGZvciB0aGlzIGRldmljZSBhcmUgbm90IGF2YWlsYWJsZSwgYW5kIHdlIHdhbnQgdG8gYXZvaWQg
-cG9ydGluZwp0aGVtIHRvIFJURE0uClNpbmNlIHdlIGRvbid0IG5lZWQgdG8gd2FpdCBmb3IgYW55
-IGludGVycnVwdHMgZnJvbSB0aGlzIGRldmljZSAod2UgaW5pdCB0aGUKdHJhbnNtaXNzaW9uIHdp
-dGggc29tZSBpb2N0bCdzIHdoaWNoIHdyaXRlIHRvIHRoZSByZWdpc3RlcnMgb2YgdGhlIGRldmlj
-ZSBhbmQKd3JpdGUgdGhlIGRhdGEgYmVpbmcgdGFybnNtaXR0ZWQgd2l0aCBfX2NvcHlfZnJvbV91
-c2VyKSwgd2UndmUgdHJpZWQgdG8gdXNlCnN0YW5kYXJkIExpbnV4IGRyaXZlZCBmcm9tIFhlbm9t
-YWkgdGhyZWFkLgpOYXR1cmFsbHksIG9uIGVhY2ggdHJhbnNtaXNzaW9uLCB0aGUgdHJhbnNtaXR0
-aW5nIFhlbm9tYWkgdGhyZWFkIHN3aXRjaGVzIHRvCnRoZSBzZWNvbmRhcnkgbW9kZSwgYnV0IHRo
-ZSByZXN1bHRpbmcgbGF0ZW5jeSBpcyBwZXJmZWN0bHkgT0sgZm9yIHVzICh3ZQplc3RpbWF0ZSBp
-dCBhdCBhcm91bmQgNTAuLjEwMCB1c2VjKS4KCldvdWxkIHN1Y2ggYXBwcm9hY2ggY2F1c2UgZXh0
-cmEgbGF0ZW5jaWVzIHRvIG90aGVyIFhlbm9tYWkgdGhyZWFkcywgd2hpY2ggcnVuCiBzaW11bHRh
-bmVvdXNseSBpbiBwcmltYXJ5IG1vZGUgPwpBbHNvLCB3b3VsZCB0aGVyZSBiZSBhbnkgcHJvYmxl
-bXMgd2l0aCBjb25zdGFudCBzd2l0Y2hlcyBvZiBvdXIgd3JpdGVyIHRocmVhZApiZXR3ZWVuIHBy
-aW1hcnkgYW5kIHNlY29uZGFyeSBtb2RlID8KQXMgZmFyIGFzIEkgdW5kZXJzdGFuZCwgb24gZWFj
-aCByZWdpc3RlciBhY2Nlc3MgaXQgaXMgc3dpdGNoZWQgdG8gc2Vjb25kYXJ5Cm1vZGUsIGFuZCBv
-biBlYWNoIHJ0X2NvbmRfd2FpdCBpdCBnb2VzIGJhY2sgdG8gcHJpbWFyeSBtb2RlLgoKVGhhbmtz
-IG9uY2UgYWdhaW4uCgpFdWdlbmUKCgpFdmdlbnkgWmVtc2tvdiwgVHJhbnNhcyBMdGQKZXZnZW55
-LnplbXNrb3ZAdHJhbnNhcy5jb20K77u/T2ZmaWNlIHBob25lICMgKzcgODEyIDMyNTMxMzEgYWRk
-LiAyNzQtMDMKQ2VsbCBwaG9uZSAjICs3IDk1MiAzOTQzMTI5Cg==
+On 02/12/2013 01:33 PM, Zemskov, Evgeny wrote:
+
+> Good evening !
+> 
+> We're developing a system with bunch of Xenomai threads, one of which writes
+> the data to some specific device (MIL-STD-1553B bus controller).
+> 
+> RTDM drivers for this device are not available, and we want to avoid porting
+> them to RTDM.
+> Since we don't need to wait for any interrupts from this device (we init the
+> transmission with some ioctl's which write to the registers of the device and
+> write the data being tarnsmitted with __copy_from_user), we've tried to use
+> standard Linux drived from Xenomai thread.
+> Naturally, on each transmission, the transmitting Xenomai thread switches to
+> the secondary mode, but the resulting latency is perfectly OK for us (we
+> estimate it at around 50..100 usec).
+
+
+You probably should not expect a bounded latency from Linux.
+
+> 
+> Would such approach cause extra latencies to other Xenomai threads, which run
+>  simultaneously in primary mode ?
+
+
+If you enable CONFIG_XENO_OPT_PRIOCPL and the task running in secondary
+mode has a higher priority than other Xenomai threads, then yes.
+Otherwise no.
+
+> Also, would there be any problems with constant switches of our writer thread
+> between primary and secondary mode ?
+
+
+It depends on your definition of "problems":
+- such a task can not be considered a real-time task
+- and the constant switches induces a bit of CPU consumption.
+
+> As far as I understand, on each register access it is switched to secondary
+> mode, and on each rt_cond_wait it goes back to primary mode.
+
+
+You understand right.
+
+-- 
+                                                                Gilles.
 
