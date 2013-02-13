@@ -1,12 +1,16 @@
-Message-ID: <5100F708.1000701@web.de>
-Date: Thu, 24 Jan 2013 09:55:36 +0100
-From: Jan Kiszka <jan.kiszka@web.de>
+Message-ID: <511B885E.8030300@siemens.com>
+Date: Wed, 13 Feb 2013 13:34:38 +0100
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-References: <5100AB10.3030509@ebus.com>
-In-Reply-To: <5100AB10.3030509@ebus.com>
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] rt_dev_write returns immediately on xeno_16550A
+References: <FA4CEC4EBE2FA145A7663764A1CCB31E5C4C87A6@VOITV-EXCH-BE01.transas.com>
+	<FA4CEC4EBE2FA145A7663764A1CCB31E5C4C8FEA@VOITV-EXCH-BE01.transas.com>,
+	<511A408C.7070501@siemens.com>
+	<FA4CEC4EBE2FA145A7663764A1CCB31E5C4C90E2@VOITV-EXCH-BE01.transas.com>
+In-Reply-To: <FA4CEC4EBE2FA145A7663764A1CCB31E5C4C90E2@VOITV-EXCH-BE01.transas.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] xeno_16550A : "unrecoverable" receive buffer overflow
+	on read
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,76 +19,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Doug Brunner <dbrunner@ebus.com>
-Cc: xenomai@xenomai.org
+To: "Zemskov, Evgeny" <Evgeny.Zemskov@transas.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 2013-01-24 04:31, Doug Brunner wrote:
-> I have a 16550A UART (actually 1/4 of a TI TL16C554) on the ISA bus on
-> my WinSystems PPM-LX800-G SBC, and I'm finding that rt_dev_write returns
-> control to the userspace process much earlier than I would expect, given
-> how the kernel module is set up. (I'm using Xenomai 2.6.1 btw.)
-> Fortunately it has a dedicated IRQ line, so I was able to put a logic
-> analyzer on the IRQ, the TX line, and the RTS line (which my software
-> manually controls to operate an RS485 transceiver).
-> =
+On 2013-02-13 13:22, Zemskov, Evgeny wrote:
+>> Is there a packet frequency that is still fine? Are you sure your reader
+>> task is able to keep up with the data stream? What is your RX FIFO
+>> depth? Your hardware is 16550A compatible?
+> 
+>> Check the rate of RX interrupts and what status reported on each
+>> (rt_16550_rx_interrupt). Do they complete successfully at all, only fail
+>> after a while? Do they come regularly? Maybe something (SMI?) is
+>> blocking interrupts for a longer period, causing the FIFO overflow.
+> 
+> At the moment we're testing with low frequencies, the same problem 
+> occurs even at 1..2 second intervals between packets.
+> The reader is definitely quick enough (essentially, it only executes an rt_printf 
+> with read notification), and it handles in time packets with at least 50msec intervals.
+> 
+> Interesting thing is that problem occurs _only_ if packets are received by UART 
+> during the startup or shutdown of the reader application.
+> In latter case, rt_dev_read fails on first packet received after startup (probably, when
+>  next RX interrupt is triggered).
+> No problem occurs is data is received by UART when application is not running.
+> 
+> All RX interrupts are triggered and executed in xeno_16550A driver correctly 
+> (I've added printk's in rt_16550_rx_interrupt), even after rt_dev_read has failed 
+> (but the application is still running and keeps driver initialized)/
 
-> I initially found that, with the TX FIFO size allowed to default to 16
-> bytes, rt_dev_write with a block of size 13 returns immediately. (I
-> could tell this because my userspace routine sets RTS just before
-> calling rt_dev_write and clears RTS immediately after, so it was visible
-> on the logic analyzer.) This makes sense, because I could see that the
-> 16C554 fires an IRQ immediately on the start of transmission (that
-> violates the description of the TX IRQ in its datasheet, but that's a
-> matter for TI). This would lead into rt_16550_interrupt, which would see
-> that ctx->out_npend =3D=3D 0 because the data was written to the FIFO in =
-one
-> go, and consequently fire out_event. The TX timeout was configured for
-> 100 ms, so rt_16550_write would be waiting on out_event, and
-> rt_dev_write would return at that time.
-> =
+Sorry, I still don't fully get the error: rt_dev_read suddenly returns
+-EIO and, after that, never works again until you do the hardware
+re-init via the Linux driver?
 
-> However...I tried setting the TX FIFO to 1 byte via xeno_16550A module
-> parameter, and found that rt_dev_write still returned almost
-> immediately. This is what I don't understand, since I could see data
-> being transmitted, and the IRQ line going high once for every byte. This
-> means that rt_16550_interrupt MUST be getting called, and in turn
-> calling rt_16550_tx_interrupt to move data out to the UART. For
-> rt_16550_tx_interrupt to be doing so, out_npend must !=3D 0, so out_event
-> should not be getting fired until the very last character.
-> =
+After the first EIO, what does the interrupt handler read from the LSR
+register from that on? Always RTSER_LSR_OVERRUN_ERR?
 
-> I did notice something odd: at the beginning of rt_16550_write, we
-> initialize timeout_seq with ctx->config.rx_timeout.
+> 
+> Hardware is a serial port built into ASUS P4 motherboard with i865 chipset. 
+> Couldn't find which UART are they using, but it works fine with everything.
+> I believe that its Rx FIFO depth is standard 16 bytes (at least Rx trigger 
+> level can be set to standard 1-4-8-14 bytes)
 
-Oh, classic copy&paste mistake. A very old one (as old as the driver).
-Please send a patch.
-
-> Later that timeout
-> sequence is reused while waiting on out_event, which is naturally
-> subject to ctx->config.tx_timeout. This seems like a possible source of
-> error if tx and rx timeout are not equal--I didn't study the internal
-> implementation of the timeout sequence so I'm not sure. However, I tried
-> changing the references from rx_timeout to tx_timeout and it produced no
-> change in behavior.
-> =
-
-> Do you know why rt_dev_write would be returning prematurely? I've
-> attached the relevant userspace code snippets for reference. Note that
-> RawInterface is a subclass of Interface, and higher level code will call
-> RawInterface::Write.
-
-This behaviour makes sense, even with a hw fifo lenght of 1: 16550A's
-rt_dev_write works against a software buffer (out_buf) first, and that
-one is still 4K. Only if you fill up the buffer, rt_dev_write will start
-to block (or time out).
+And you leave the trigger depth at "1", right?
 
 Jan
 
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: signature.asc
-Type: application/pgp-signature
-Size: 263 bytes
-Desc: OpenPGP digital signature
-URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20130124/4f064d5=
-0/attachment.pgp>
+-- 
+Siemens AG, Corporate Technology, CT RTC ITP SDP-DE
+Corporate Competence Center Embedded Linux
+
