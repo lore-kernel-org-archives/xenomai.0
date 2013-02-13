@@ -1,15 +1,13 @@
-Message-ID: <5100F8FA.9000104@xenomai.org>
-Date: Thu, 24 Jan 2013 10:03:54 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <511BCA3E.4050705@xenomai.org>
+Date: Wed, 13 Feb 2013 18:15:42 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <OF682F5C70.F8F7AA50-ON85257AF1.005F580A-85257AF1.005F580C@aanddtech.com>	<50F3DD9A.9050306@gmail.com>	<OF5CF00330.868585F8-ON85257AFA.00801D57-85257AFB.00000E92@aanddtech.com>	<50FE45E9.1040909@xenomai.org>	<OF518EBAA9.1B02356C-ON85257AFC.00002A9B-85257AFC.00028E23@aanddtech.com>	<50FF4434.7030405@xenomai.org>
-	<CAFVR4DVpsR026fvgybs91iC7-gDLVvBS8wsXBRO0XdzLBcXzpg@mail.gmail.com>
-	<50FF8B16.3060100@xenomai.org>
-	<OFC84FDBBF.88E9186F-ON85257AFC.007B4CC3-85257AFC.008309FB@aanddtech.com>
-In-Reply-To: <OFC84FDBBF.88E9186F-ON85257AFC.007B4CC3-85257AFC.008309FB@aanddtech.com>
-Content-Type: text/plain; charset=UTF-8
+References: <511B94E4.2070708@mediso.hu> <511B9901.7040104@xenomai.org>
+	<511BB60E.7090900@mediso.hu>
+In-Reply-To: <511BB60E.7090900@mediso.hu>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Porting Ipipe to new ARM SoC (Xilinx Zynq)
+Subject: Re: [Xenomai] Floating point operations in kernel on powerpc
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,53 +16,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: mfornero@aanddtech.com
-Cc: Xenomai@xenomai.org
+To: Norbert Bukuli <norbert.bukuli@mediso.hu>
+Cc: xenomai@xenomai.org
 
-On 01/24/2013 12:51 AM, mfornero@aanddtech.com wrote:>
+On 02/13/2013 04:49 PM, Norbert Bukuli wrote:
+> -----BEGIN PGP SIGNED MESSAGE-----
+> Hash: SHA1
+>
+> Dear Mr Gerum,
+>
+> thank you for your kind answer.
+> As you can see in the example code I do not call explicitly either
+> _savefpr_XX or rthal_save_fpu and their restore counterparts. I only
+> do some floating point operations in a Xenomai domain kernel thread.
+> However the linker misses the routines mentioned earlier.
+> Are there linker flags to change this behaviour?
+> One important note, in the kernel configuration the hardware FPU
+> support is switched on. (CONFIG_XENO_HW_FPU=y)
 
-> Things of note:
-> twd is the (per cpu) timer used by the ipipe
-> xttcpss is a triple timer counter within the SoC, which appears to only
-> be used until the twd timer is setup-- this timer is *not* ported to the
-> Ipipe, which I assumed was okay because the twd is used-- is this
-> assumption correct?
+-msoft-float with hw FPU looks suspicious. I don't understand why you 
+mention C runtime libraries when building kernel modules either. 
+Building with eldk 5.2.1 for fpu-enabled 6xx cores can be done with
+eldk-5.2.1/powerpc/sysroots/i686-eldk-linux/usr/bin/powerpc-linux/powerpc-linux-gcc 
+from a stock eldk install.
 
-
-You need to register this timer with the I-pipe if not compiling for
-SMP, as in this case, Linux does not start the TWD.
-
->> Each platform defines its own irqchips for multiplexed GPIOs. If you
->> want to track all invalid GPIO demuxers, you can enable ipipe debugging
->> and add ipipe_root_only() inside "generic_handle_irq".
-> 
-> I tested this, and never triggered the debug code-- I assume this means
-> no calls to generic_handle_irq were made in the head domain?
-
-
-Indeed, as /proc/interrupts show, you are not using any GPIO multiplexed
-interrupt.
-
->> Right, you need to use EXPORT_PER_CPU_SYMBOL_GPL(current_mm).
-> 
-> Thanks-- this let me compile Xenomai as a module, which may help with
-> debugging.
-> 
-> I found that the hang seems to occur when a skin is loaded, not nucleus.
-> Something seems to happen at this point that prevents further SDHC
-> interrupts.
-> It's not clear, but it also may have some effect on the UART (maybe
-> all?) interrupt as well-- I observed a printk stop partway through a
-> string as the nucleus module was loaded [note-- I am running through a
-> serial console, and have MMC_DEBUG turned on] -- see timestamp 151.49
-
-
-As said in the porting guide, it means that you have a timer issue. What
-happens when you load a skin module is that Xenomai takes over the
-control of the timer. So, that is where you should look. Do not assume
-anything about the TWD code, it is not because it works on other
-platforms that it works on this one.
+Actually, running fpu code in kernel space is a bad idea in the first 
+place. Xenomai supports this for desperate situations when porting relic 
+code absolutely requires it, but this is clearly something that should 
+be avoided. You should really consider moving all that stuff to userland 
+if the situation is not that desperate.
 
 -- 
-                                                                Gilles.
+Philippe.
 
