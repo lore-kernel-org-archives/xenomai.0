@@ -1,12 +1,11 @@
-Message-ID: <511B9E94.2030108@hilscher.com>
-Date: Wed, 13 Feb 2013 15:09:24 +0100
-From: =?ISO-8859-1?Q?St=E9phane_LOS?= <slos@hilscher.com>
 MIME-Version: 1.0
-References: <511A2964.4080902@hilscher.com> <511A2CA4.1000408@siemens.com>
-In-Reply-To: <511A2CA4.1000408@siemens.com>
-Content-Type: text/plain; charset="iso-8859-1"; format="flowed"
+Date: Wed, 13 Feb 2013 09:26:47 -0500
+Message-ID: <CAA+HEuk86rVdKy1DDWmzRGjpvNkDpVsAmG+H-R4mg1Bu2RLy+A@mail.gmail.com>
+From: Kris Ellis <drfrankencopter@gmail.com>
+Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] Hilscher driver for cifX boards
+Subject: [Xenomai] Segfault error 4 when running latency test (and all
+	userspace tests)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,57 +14,55 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Le 12/02/2013 12:51, Jan Kiszka a =E9crit :
-> On 2013-02-12 12:37, St=E9phane LOS wrote:
->> Hello there,
->>
->> It seems we have managed to build an RTDM module and we can insmod it
->> and it shows up in the named devices list.
->>
->> If we forget to rmmod the module, the kernel crashes when stopping or
->> rebooting.
-> So you have a bug in your driver that requires fixing. Is the device
-> opened while you shutdown? What does the backtrace tell you you about
-> the crash? If you share your code early, we could review it already.
->
-> Jan
->
-Yes, of course we have a bug. I think that we have plenty of them in=20
-fact. ;-)
-I would like to share the code but it is a little early since we are=20
-trying to figure out what we have to do.
-Something is written started from what we have found in the sources but=20
-we still have to learn.
-The RTDM API documentation is good but we have very little knowledge on=20
-how RTDM drivers should be used with Xenomai.
-We lack general information.
-Since the following links are broken now :
-http://www.xenomai.org/index.php/Weblinks#Installation_of_Xenomai_and_RTDM_=
-Driver_Writing
-I remember that there use to be here a documentation about the RTDM=20
-driver for CIF boards, it was years ago.
-My colleague is actually working on the driver, I intervene here because=20
-I like writing in English and I am the support guy. ;-)
-
-Best Regards,
-Cordialement,
-
-St=E9phane LOS
-slos@hilscher.com
-Support technique
-
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Hilscher France
-12, rue du 35=E8me R=E9giment d'Aviation
-Miniparc du Ch=EAne
-69500 BRON
-France
-T=E9l. : +33 (0) 4 72 37 98 40
-Fax  : +33 (0) 4 78 26 83 27
-http ://www.hilscher.fr
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Hi All,
 
 
+
+I=92m using buildroot to build and configure Xenomai 2.6.1 on Linux 3.2.21
+for an Intel Atom based single board computer.
+
+
+
+I=92ve managed to get the kernel to compile with the Xenomai patch. That mu=
+ch
+seems to run correctly. The kernel boots and if I open a shell and type
+=93dmesg  | grep Xenomai=94 I get:
+
+I-pipe: head domain Xenomai registered.
+
+Xenomai: hal/i386 started.
+
+Xenomai: scheduling class idle registered.
+
+Xenomai: scheduling class rt registered.
+
+Xenomai: real-time nucleus v2.6.1 (Light Years Away) loaded.
+
+Xenomai: debug mode enabled.
+
+Xenomai: starting native API services.
+
+Xenomai: starting POSIX services.
+
+Xenomai: starting RTDM services.
+
+
+
+So far so good, but when I try to run the latency test I get:
+
+segfault at 0 ip  (null) sp bfd30cfc error 4 in latency
+
+Segmentation fault
+
+
+
+Something is not right with my user-space build, but I=92m sort of at a los=
+s
+since buildroot did both the kernel build and the user-space build. Any
+guidance that can be offered would be greatly appreciated.
+
+
+
+Thanks
