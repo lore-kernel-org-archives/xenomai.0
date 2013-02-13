@@ -1,16 +1,12 @@
-From: Paul <paul_c@tuxcnc.org>
-Date: Wed, 13 Feb 2013 12:40:39 +0000
-References: <CALJOq=VtrBhMzCaT=7omDVN9hnnwZ+cmM1_1eff9DTS-fvLjaw@mail.gmail.com>
-	<201301310211.44277.paul_c@tuxcnc.org>
-	<510AC9D2.5050008@xenomai.org>
-In-Reply-To: <510AC9D2.5050008@xenomai.org>
+Message-ID: <511B8A11.1060204@xenomai.org>
+Date: Wed, 13 Feb 2013 13:41:53 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
-  charset="us-ascii"
+References: <CC872764D2E12B469BE82C0BF22F24DF2716AB5A@icexch-m2.ic.ac.uk>
+In-Reply-To: <CC872764D2E12B469BE82C0BF22F24DF2716AB5A@icexch-m2.ic.ac.uk>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Message-Id: <201302131240.39173.paul_c@tuxcnc.org>
-Subject: Re: [Xenomai] GPIO Interrupts problem with RTDM
+Subject: Re: [Xenomai] Xenomai linux kernel compile
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,36 +15,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: "Giataganas, Petros" <petros.giataganas11@imperial.ac.uk>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Thursday 31 January 2013, Gilles Chanteperdrix wrote:
-> On 01/31/2013 03:11 AM, Paul wrote:
-> > Booting with "dwc_otg.fiq_fix_enable=0" in cmdline.txt improves
-> > matters considerably - The problem is in the FIQ handler and/or the
-> > dwc_otg driver.
+On 02/12/2013 08:20 PM, Giataganas, Petros wrote:
 
-Hvaving spent some time going over some of the code, the FIQ handler is 
-not at the root of the problem.
-
-> > This will have to wait until the weekend and hopefully I can get
-> > time to dig further. One option is to route the timer through the
-> > FIQ which may improve latency a little, another is to disable it
-> > altogether.
-> You can not really execute the timer irq handler in FIQ mode, if that
-> is what you mean.
-
-I had indeed thought the timer irq handler could be run in FIQ mode. 
-Didn't take long to rule that idea out as a nonstarter.
-
-Upshot of the last couple of weeks is I finally have GPIO interrupt 
-latencies down to a more respectable 12-30uS delay - This is with the 
-ipipe tracer enabled, so there is scope to reduce it further.
-
-Once I've cleaned up my hacks and run on a fully loaded box with the 
-tracer disabled, I'll generate a patch for the Raspberry Pi and post it 
-somewhere.
+> Hi all,
+> 
+> Thank you for your amazing work on xenomai and the documentation that supports it.
+> 
+> I have to say that I am newbie but I have not found any solution on mr. Google!
+> 
+> I am running ubuntu 12.04 and I want to run xenomai 2.6.2.1
+> 
+> My problem is presented when I am doing the full kernel compile based on the guide :
+> 
+> http://www.stanley.gatech.edu/skelly/uncategorized/installing-xenomai-on-ubuntu-12-04/
 
 
-Regards, Paul.
+The instructions for installing Xenomai on a Debian distribution are here:
+http://xenomai.org/index.php/Building_Debian_packages
 
+They are a bit outdated as they mention a
+"/usr/src/kernel-patches/i386/apply/xenomai" script which no longer
+exists. Instead, see what patch you need in the
+/usr/src/kernel-patches/diffs/xenomai
+
+and apply it to the kernel sources with the patch command.
+
+You may also find pre-compiled packages for Ubuntu starting on this page:
+http://wiki.linuxcnc.org/cgi-bin/wiki.pl?XenomaiKernelPackages
+
+-- 
+                                                                Gilles.
 
