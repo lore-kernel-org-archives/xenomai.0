@@ -1,14 +1,16 @@
-Message-ID: <511B7F41.7060108@xenomai.org>
-Date: Wed, 13 Feb 2013 12:55:45 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: "Zemskov, Evgeny" <Evgeny.Zemskov@transas.com>
+Date: Wed, 13 Feb 2013 12:22:58 +0000
+Message-ID: <FA4CEC4EBE2FA145A7663764A1CCB31E5C4C90E2@VOITV-EXCH-BE01.transas.com>
+References: <FA4CEC4EBE2FA145A7663764A1CCB31E5C4C87A6@VOITV-EXCH-BE01.transas.com>
+	<FA4CEC4EBE2FA145A7663764A1CCB31E5C4C8FEA@VOITV-EXCH-BE01.transas.com>,
+	<511A408C.7070501@siemens.com>
+In-Reply-To: <511A408C.7070501@siemens.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <DC570CF5-F540-40FB-B313-596AF53EDDA2@mah.priv.at>	<F43474DF-1ADA-4463-AF44-2B498EF3024E@mah.priv.at>	<CANKLDmuNom-Eeg_2UO3DBjL8z6SUF=vZJtfgM0URp464mA7evw@mail.gmail.com>	<511B6481.4010207@siemens.com>
-	<511B65C1.4070905@siemens.com>
-In-Reply-To: <511B65C1.4070905@siemens.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] puzzled: running switchtest improves latency figures
- permanently
+Subject: Re: [Xenomai] xeno_16550A : "unrecoverable" receive buffer overflow
+	on read
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,123 +20,85 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Schooner <schooner30@tiscali.co.uk>, sam sokolik <samco@empirescreen.com>, John Morris <john@zultron.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 02/13/2013 11:06 AM, Jan Kiszka wrote:
-
-> On 2013-02-13 11:01, Jan Kiszka wrote:
->> On 2013-02-13 10:49, Henri Roosen wrote:
->>> On Wed, Feb 13, 2013 at 10:26 AM, Michael Haberler <mail17@mah.priv.at>wrote:
->>>
->>>>
->>>> We have a report from 'the field' which we cannot make sense of.
->>>>
->>>> The situation:
->>>> - an AMD board: http://www.asus.com/Motherboard/F1A75M_PRO
->>>> - dmesg post boot: http://pastebin.com/38XrxNBy
->>>> - xeno-regression-test runs well, max 32us jitter
->>>> - John's Xenomai kernel packages:  3.5.7/2.6.2.1 [1]
->>>> - a native-skin userland RT threads application (linuxcnc[3])
->>>>  - 2 threads
->>>>  - jitter measured with its own GUI application 'latency-test'
->>>>  - successfully tested on several other platforms
->>>>
->>>>
->>>> what we observed:
->>>>
->>>> 1. Problem behaviour
->>>> ---------------------
->>>> - boot
->>>> - run LinuxCNC latency-test
->>>> - observe massive spikes in latency
->>>>  - >100uS on a 25uS thread!
->>>>  - http://static.mah.priv.at/public/latency/skunkworks-unprimed.png
->>>>
->>>> now any of 2), 3) or 4) improve latency:
->>>>
->>>> 2. run switchtest:  temporary change
->>>> ------------------------------------
->>>> - while still running LinuxCNC latency-test from 1) above,
->>>> - running "/usr/lib/xenomai/testsuite/switchtest -s 1000" in a separate
->>>> window
->>>> - hit 'Reset Statistics' on the latency-test window
->>>> - max latency drops massively
->>>> - see http://static.mah.priv.at/public/latency/skunkworks-primed.png [3]
->>>> - ^C-ing out of the switchtest makes latency rise again
->>>>
->>>>
->>>> 3. running a trivial shell script:  temporary change during script
->>>> execution
->>>>
->>>> ----------------------------------------------------------------------------
->>>> - reboot
->>>> - run latency-test, again observe latency spikes
->>>> - in a separate window, run:
->>>>  - while true; do echo "nothing" > /dev/null; done
->>>> - again, latency-test shows rather low latency figures after hitting
->>>> 'reset statistics' *as long as the above script is running*
->>>> - quote from Sam: "BTW - I ran the latency-test all night with the
->>>> donothing scrip and it peaked at about 19.6us latency."
->>>> - killing the script makes the latency spikes reappear.
->>>>
->>>>
->>>> 4. running xeno-regression-test and breaking out: permanent drop in latency
->>>> --------------------------------------------------------------------------
->>>> - reboot
->>>> - run latency-test, again observe latency spikes
->>>> - in a separate window, run:
->>>>   sudo xeno-regression-test -l "/usr/lib/xenomai/testsuite/dohell -m /tmp
->>>> 100 " -t 2
->>>> - latency drops
->>>> - the key observation: if you break by ^C out of xeno-regression-test,
->>>> *latency
->>>> figures remain low*
->>>> - note that breaking out of xeno-regression-test left some processes
->>>> running, obviously dd and ls:  http://pastebin.ca/2313116
->>>> - once these processes complete ( http://pastebin.ca/2313117) latency
->>>> goes up again.
->>>>
->>>> second data point:
->>>> we have a report from another user, same kernel, Intel Q8200 Quad core
->>>> board, which confirms 'dohell 900' in a separate window does drop latency
->>>> significantly. This suggests it might not board specific.
->>>>
->>>>
->>>> This leaves us puzzled as to the causality here. We would really like to
->>>> get rid of the latency spikes, but the shell script approach isnt appealing.
->>>>
->>>> Any suggestions?
->>>>
->>>
->>> I've seen similar behaviour. In my case it had to do with the latency of
->>> transitions of the cpu's idle states. The problem was worked around by
->>> providing "nohlt idle=poll". I'm sure it is documented somewhere on the
->>> xenomai website too.
->>
->> That will burn quite a bit of power, though. Maybe there is some BIOS
->> switch to relax power saving mode a bit without giving up on halt. Also,
->> do you see the same effect in text mode?
->>
->> In any case, confirming the latency source via the ipipe tracer is a
->> good first step: http://xenomai.org/index.php/I-pipe:Tracer. You could
->> programmaticly break the trace once you detect the spike in your
->> program. Post the resulting trace here for public discussion.
->>
->> Jan
->>
-> 
-> BTW, though unrelated to the latency issues: Running a 32-bit kernel on
-> a box with >1GB RAM is not a good choice, performance-wise. PAE is slow...
-> 
-> i386 is for low-end embedded only today. I'll continue testing it, but
-> it will surely receive less attention than x86-64, just like in mainline
-> Linux.
-
-
-I can continue running xeno-regression-test on geode and duall piii for
-the I-pipe releases as I did up to now.
-
-
--- 
-                                                                Gilles.
+PklzIHRoZXJlIGEgcGFja2V0IGZyZXF1ZW5jeSB0aGF0IGlzIHN0aWxsIGZpbmU/IEFyZSB5b3Ug
+c3VyZSB5b3VyIHJlYWRlcgo+dGFzayBpcyBhYmxlIHRvIGtlZXAgdXAgd2l0aCB0aGUgZGF0YSBz
+dHJlYW0/IFdoYXQgaXMgeW91ciBSWCBGSUZPCj5kZXB0aD8gWW91ciBoYXJkd2FyZSBpcyAxNjU1
+MEEgY29tcGF0aWJsZT8KCj5DaGVjayB0aGUgcmF0ZSBvZiBSWCBpbnRlcnJ1cHRzIGFuZCB3aGF0
+IHN0YXR1cyByZXBvcnRlZCBvbiBlYWNoCj4ocnRfMTY1NTBfcnhfaW50ZXJydXB0KS4gRG8gdGhl
+eSBjb21wbGV0ZSBzdWNjZXNzZnVsbHkgYXQgYWxsLCBvbmx5IGZhaWwKPmFmdGVyIGEgd2hpbGU/
+IERvIHRoZXkgY29tZSByZWd1bGFybHk/IE1heWJlIHNvbWV0aGluZyAoU01JPykgaXMKPmJsb2Nr
+aW5nIGludGVycnVwdHMgZm9yIGEgbG9uZ2VyIHBlcmlvZCwgY2F1c2luZyB0aGUgRklGTyBvdmVy
+Zmxvdy4KCkF0IHRoZSBtb21lbnQgd2UncmUgdGVzdGluZyB3aXRoIGxvdyBmcmVxdWVuY2llcywg
+dGhlIHNhbWUgcHJvYmxlbSAKb2NjdXJzIGV2ZW4gYXQgMS4uMiBzZWNvbmQgaW50ZXJ2YWxzIGJl
+dHdlZW4gcGFja2V0cy4KVGhlIHJlYWRlciBpcyBkZWZpbml0ZWx5IHF1aWNrIGVub3VnaCAoZXNz
+ZW50aWFsbHksIGl0IG9ubHkgZXhlY3V0ZXMgYW4gcnRfcHJpbnRmIAp3aXRoIHJlYWQgbm90aWZp
+Y2F0aW9uKSwgYW5kIGl0IGhhbmRsZXMgaW4gdGltZSBwYWNrZXRzIHdpdGggYXQgbGVhc3QgNTBt
+c2VjIGludGVydmFscy4KCkludGVyZXN0aW5nIHRoaW5nIGlzIHRoYXQgcHJvYmxlbSBvY2N1cnMg
+X29ubHlfIGlmIHBhY2tldHMgYXJlIHJlY2VpdmVkIGJ5IFVBUlQgCmR1cmluZyB0aGUgc3RhcnR1
+cCBvciBzaHV0ZG93biBvZiB0aGUgcmVhZGVyIGFwcGxpY2F0aW9uLgpJbiBsYXR0ZXIgY2FzZSwg
+cnRfZGV2X3JlYWQgZmFpbHMgb24gZmlyc3QgcGFja2V0IHJlY2VpdmVkIGFmdGVyIHN0YXJ0dXAg
+KHByb2JhYmx5LCB3aGVuCiBuZXh0IFJYIGludGVycnVwdCBpcyB0cmlnZ2VyZWQpLgpObyBwcm9i
+bGVtIG9jY3VycyBpcyBkYXRhIGlzIHJlY2VpdmVkIGJ5IFVBUlQgd2hlbiBhcHBsaWNhdGlvbiBp
+cyBub3QgcnVubmluZy4KCkFsbCBSWCBpbnRlcnJ1cHRzIGFyZSB0cmlnZ2VyZWQgYW5kIGV4ZWN1
+dGVkIGluIHhlbm9fMTY1NTBBIGRyaXZlciBjb3JyZWN0bHkgCihJJ3ZlIGFkZGVkIHByaW50aydz
+IGluIHJ0XzE2NTUwX3J4X2ludGVycnVwdCksIGV2ZW4gYWZ0ZXIgcnRfZGV2X3JlYWQgaGFzIGZh
+aWxlZCAKKGJ1dCB0aGUgYXBwbGljYXRpb24gaXMgc3RpbGwgcnVubmluZyBhbmQga2VlcHMgZHJp
+dmVyIGluaXRpYWxpemVkKS8KCkhhcmR3YXJlIGlzIGEgc2VyaWFsIHBvcnQgYnVpbHQgaW50byBB
+U1VTIFA0IG1vdGhlcmJvYXJkIHdpdGggaTg2NSBjaGlwc2V0LiAKQ291bGRuJ3QgZmluZCB3aGlj
+aCBVQVJUIGFyZSB0aGV5IHVzaW5nLCBidXQgaXQgd29ya3MgZmluZSB3aXRoIGV2ZXJ5dGhpbmcu
+CkkgYmVsaWV2ZSB0aGF0IGl0cyBSeCBGSUZPIGRlcHRoIGlzIHN0YW5kYXJkIDE2IGJ5dGVzIChh
+dCBsZWFzdCBSeCB0cmlnZ2VyIApsZXZlbCBjYW4gYmUgc2V0IHRvIHN0YW5kYXJkIDEtNC04LTE0
+IGJ5dGVzKQoKU01JIHNlZW0gdG8gYmUgZGlzYWJsZWQgcHJvcGVybHkgOiBpbiBrZXJuZWwgY29u
+ZmlndXJhdGlvbiwgQ09ORklHX1hFTk9fSFdfU01JX0FMTCAKYW5kIENPTkZJR19YRU5PX0hXX1NN
+SV9XT1JLQVJPVU5EIGFyZSBlbmFibGVkLgpJbiAvdmFyL2xvZy9kbXNlZywgb25seSB0aGUgbWVz
+c2FnZSAiWGVub21haTogU01JLWVuYWJsZWQgY2hpcHNldCBmb3VuZCIgaXMgc2hvd24uCgpUaGFu
+a3MsCkV1Z2VuZQoKRXZnZW55IFplbXNrb3YsIFRyYW5zYXMgTHRkCmV2Z2VueS56ZW1za292QHRy
+YW5zYXMuY29tCu+7v09mZmljZSBwaG9uZSAjICs3IDgxMiAzMjUzMTMxIGFkZC4gMjc0LTAzCkNl
+bGwgcGhvbmUgIyArNyA5NTIgMzk0MzEyOQoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fXwpGcm9tOiBKYW4gS2lzemthIFtqYW4ua2lzemthQHNpZW1lbnMuY29tXQpTZW50
+OiBUdWVzZGF5LCBGZWJydWFyeSAxMiwgMjAxMyA1OjE1IFBNClRvOiBaZW1za292LCBFdmdlbnkK
+Q2M6IHhlbm9tYWlAeGVub21haS5vcmcKU3ViamVjdDogUmU6IHhlbm9fMTY1NTBBIDogInVucmVj
+b3ZlcmFibGUiIHJlY2VpdmUgYnVmZmVyIG92ZXJmbG93IG9uIHJlYWQKCk9uIDIwMTMtMDItMTIg
+MTM6MzMsIFplbXNrb3YsIEV2Z2VueSB3cm90ZToKPiBHcmVldGluZ3MgIQo+Cj4gSSdtIHRyeWlu
+ZyB0byB1c2UgeGVub18xNjU1MEEgZHJpdmVyIHRvIHJlYWQgYSBzdHJlYW0gb2YgaGlnaC1mcmVx
+dWVuY3kgZGF0YQo+ICh+NTAgYnl0ZSBwYWNrZXQgZWFjaCAyMCBtc2VjIGF0IDU3NjAwIGJhdWQp
+IHdpdGggbG93IGxhdGVuY2llcy4KClRoZSBkcml2ZXIgd2FzIG9uY2UgZGV2ZWxvcGVkIHRvIGhh
+bmRsZSBoaWdoLXJhdGUgZGF0YSBzdHJlYW1zIGF0IDEKTWJwcywgc28gaXQgc2hvdWxkIGdlbmVy
+YWxseSB3b3JrLgoKCj4gQWZ0ZXIgc3VjY2Vzc2Z1bCBpbnN0YWxsYXRpb24gb2YgeGVub18xNjU1
+MEEua28gZHJpdmVyIG1vZHVsZSBhbmQKPiBpbml0aWFsaXphdGlvbiBvZiBydHNlcjAgZGV2aWNl
+LCBhbiBhdHRlbXB0IHRvIHJlYWQgZnJvbSB0aGUgZGV2aWNlIGZhaWxzIDoKPiBydF9kZXZfcmVh
+ZCByZXR1cm5zIC01IChJbnB1dC9vdXRwdXQgZXJyb3IpLAo+IGFuZCBzdWJzZXF1ZW50IGlvY3Rs
+IFJUU0VSX1JUSU9DX0dFVF9TVEFUVVMgc2hvd3MgdGhlIHZhbHVlIG9mCj4gTFNSPTB4NjIgYW5k
+IE1TUj0weDUuCgpydF8xNjU1MF9jb250ZXh0OjpzdGF0dXMgaXMgcmVzZXQgYWZ0ZXIgZWFjaCBl
+cnJvciByZXBvcnRlZCBieQpydF9kZXZfcmVhZCwgcnRfMTY1NTBfY29udGV4dDo6c2F2ZWRfc3Rh
+dHVzIGlzIHJlc2V0IGFmdGVyClJUU0VSX1JUSU9DX0dFVF9TVEFUVVMuIFNvLCB1bmxlc3MgdGhl
+IHByb2JsZW0gcmUtYXJpc2VzIGNvbnRpbnVvdXNseSwKeW91IHNob3VsZCBiZSBhYmxlIHRvIHJl
+Y292ZXIgdGhlIHBvcnQuIHdpdGhvdXQgdGhhdCBzdGVwcyBiZWxvdy4KCklzIHRoZXJlIGEgcGFj
+a2V0IGZyZXF1ZW5jeSB0aGF0IGlzIHN0aWxsIGZpbmU/IEFyZSB5b3Ugc3VyZSB5b3VyIHJlYWRl
+cgp0YXNrIGlzIGFibGUgdG8ga2VlcCB1cCB3aXRoIHRoZSBkYXRhIHN0cmVhbT8gV2hhdCBpcyB5
+b3VyIFJYIEZJRk8KZGVwdGg/IFlvdXIgaGFyZHdhcmUgaXMgMTY1NTBBIGNvbXBhdGlibGU/Cgo+
+Cj4gVGhlIGRhdGEgZnJvbSBydHNlcjAgZGV2aWNlIGNhbiBiZSByZWFkIHN1Y2Nlc3NmdWxseSBh
+ZnRlciBmb2xsb3dpbmcgc2VxdWVuY2UgOgo+ICAtIHJtbW9kIHhlbm9fMTY1NTBBCj4gIC0gaW5p
+dCAvZGV2L3R0eVMwIHRvIHVzZSBzdGFuZGFyZCBMaW51eCA4MjUwIGRyaXZlciB3aXRoIHNldHNl
+cmlhbAo+ICAtIHN0YXJ0IGFuZCBzdG9wIHJlYWRpbmcgZnJvbSAvZGV2L3R0eVMwCj4gIC0gaW5z
+bW9kIHhlbm9fMTY1NTBBIHdpdGggdmFsaWQgcGFyYW1ldGVycwo+Cj4gTmF0dXJhbGx5LCAvZGV2
+L3R0eVMwIGFuZCBydHNlcjAgcG9pbnQgdG8gdGhlIHNhbWUgYnVpbHQtaW4gc2VyaWFsIHBvcnQK
+PiBhdCAweDNGOC4KPgo+IFRoZSBwcm9ibGVtIGRvZXNuJ3QgYXBwZWFyIHdoZW4gSSBzZW5kIHRv
+IHRoZSBwb3J0IG9jYXNzaW9uYWwgYnVyc3RzIG9mIGRhdGEKPiAoc2l6ZWQgYXJvdW5kIDIwLTMw
+IGJ5dGVzKSwgaS5lLiBydHNlcjAgY2FuIGJlIHJlYWQgZnJvbSBjb25zaXN0ZW50bHkgYWZ0ZXIK
+PiBlYWNoIHJlc3RhcnQgb2YgdGhlIHV0aWxpdHkgKGkgdXNlIG1vZGlmaWVkIGNyb3NzLWxpbmsg
+d2l0aCB0cnVuY2F0ZWQgd3JpdGUKPiBmdW5jdGlvbmFsaXR5KS4KPgo+IEl0IHNlZW1zIGxpa2Ug
+dGhhdCB4ZW5vXzE2NTUwQSBpcyB1bmFibGUgdG8gaGFuZGxlIG92ZXJmbG93IG9mIFVBUlQgUngg
+YnVmZmVyLAo+IHdoaWNoIGlzIGZsdXNoZWQgb24gaW5pdGlhbGl6YXRpb24gYnkgODI1MCBkcml2
+ZXIuCj4KPiBDb3VsZCBhbnlib2R5IHN1Z2dlc3Qgd2hlcmUgaW4gc291cmNlcyAob2YgYm90aCAx
+NjU1MEEgYW5kIDgyNTApIHRvIGxvb2sgZm9yCj4gdGhlIHNvbHV0aW9uID8KCkNoZWNrIHRoZSBy
+YXRlIG9mIFJYIGludGVycnVwdHMgYW5kIHdoYXQgc3RhdHVzIHJlcG9ydGVkIG9uIGVhY2gKKHJ0
+XzE2NTUwX3J4X2ludGVycnVwdCkuIERvIHRoZXkgY29tcGxldGUgc3VjY2Vzc2Z1bGx5IGF0IGFs
+bCwgb25seSBmYWlsCmFmdGVyIGEgd2hpbGU/IERvIHRoZXkgY29tZSByZWd1bGFybHk/IE1heWJl
+IHNvbWV0aGluZyAoU01JPykgaXMKYmxvY2tpbmcgaW50ZXJydXB0cyBmb3IgYSBsb25nZXIgcGVy
+aW9kLCBjYXVzaW5nIHRoZSBGSUZPIG92ZXJmbG93LgoKSmFuCgotLQpTaWVtZW5zIEFHLCBDb3Jw
+b3JhdGUgVGVjaG5vbG9neSwgQ1QgUlRDIElUUCBTRFAtREUKQ29ycG9yYXRlIENvbXBldGVuY2Ug
+Q2VudGVyIEVtYmVkZGVkIExpbnV4Cg==
 
