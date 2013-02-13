@@ -1,16 +1,16 @@
-Message-ID: <511B885E.8030300@siemens.com>
-Date: Wed, 13 Feb 2013 13:34:38 +0100
-From: Jan Kiszka <jan.kiszka@siemens.com>
+From: Paul <paul_c@tuxcnc.org>
+Date: Wed, 13 Feb 2013 12:40:39 +0000
+References: <CALJOq=VtrBhMzCaT=7omDVN9hnnwZ+cmM1_1eff9DTS-fvLjaw@mail.gmail.com>
+	<201301310211.44277.paul_c@tuxcnc.org>
+	<510AC9D2.5050008@xenomai.org>
+In-Reply-To: <510AC9D2.5050008@xenomai.org>
 MIME-Version: 1.0
-References: <FA4CEC4EBE2FA145A7663764A1CCB31E5C4C87A6@VOITV-EXCH-BE01.transas.com>
-	<FA4CEC4EBE2FA145A7663764A1CCB31E5C4C8FEA@VOITV-EXCH-BE01.transas.com>,
-	<511A408C.7070501@siemens.com>
-	<FA4CEC4EBE2FA145A7663764A1CCB31E5C4C90E2@VOITV-EXCH-BE01.transas.com>
-In-Reply-To: <FA4CEC4EBE2FA145A7663764A1CCB31E5C4C90E2@VOITV-EXCH-BE01.transas.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain;
+  charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] xeno_16550A : "unrecoverable" receive buffer overflow
-	on read
+Content-Disposition: inline
+Message-Id: <201302131240.39173.paul_c@tuxcnc.org>
+Subject: Re: [Xenomai] GPIO Interrupts problem with RTDM
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,52 +19,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Zemskov, Evgeny" <Evgeny.Zemskov@transas.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 2013-02-13 13:22, Zemskov, Evgeny wrote:
->> Is there a packet frequency that is still fine? Are you sure your reader
->> task is able to keep up with the data stream? What is your RX FIFO
->> depth? Your hardware is 16550A compatible?
-> 
->> Check the rate of RX interrupts and what status reported on each
->> (rt_16550_rx_interrupt). Do they complete successfully at all, only fail
->> after a while? Do they come regularly? Maybe something (SMI?) is
->> blocking interrupts for a longer period, causing the FIFO overflow.
-> 
-> At the moment we're testing with low frequencies, the same problem 
-> occurs even at 1..2 second intervals between packets.
-> The reader is definitely quick enough (essentially, it only executes an rt_printf 
-> with read notification), and it handles in time packets with at least 50msec intervals.
-> 
-> Interesting thing is that problem occurs _only_ if packets are received by UART 
-> during the startup or shutdown of the reader application.
-> In latter case, rt_dev_read fails on first packet received after startup (probably, when
->  next RX interrupt is triggered).
-> No problem occurs is data is received by UART when application is not running.
-> 
-> All RX interrupts are triggered and executed in xeno_16550A driver correctly 
-> (I've added printk's in rt_16550_rx_interrupt), even after rt_dev_read has failed 
-> (but the application is still running and keeps driver initialized)/
+On Thursday 31 January 2013, Gilles Chanteperdrix wrote:
+> On 01/31/2013 03:11 AM, Paul wrote:
+> > Booting with "dwc_otg.fiq_fix_enable=0" in cmdline.txt improves
+> > matters considerably - The problem is in the FIQ handler and/or the
+> > dwc_otg driver.
 
-Sorry, I still don't fully get the error: rt_dev_read suddenly returns
--EIO and, after that, never works again until you do the hardware
-re-init via the Linux driver?
+Hvaving spent some time going over some of the code, the FIQ handler is 
+not at the root of the problem.
 
-After the first EIO, what does the interrupt handler read from the LSR
-register from that on? Always RTSER_LSR_OVERRUN_ERR?
+> > This will have to wait until the weekend and hopefully I can get
+> > time to dig further. One option is to route the timer through the
+> > FIQ which may improve latency a little, another is to disable it
+> > altogether.
+> You can not really execute the timer irq handler in FIQ mode, if that
+> is what you mean.
 
-> 
-> Hardware is a serial port built into ASUS P4 motherboard with i865 chipset. 
-> Couldn't find which UART are they using, but it works fine with everything.
-> I believe that its Rx FIFO depth is standard 16 bytes (at least Rx trigger 
-> level can be set to standard 1-4-8-14 bytes)
+I had indeed thought the timer irq handler could be run in FIQ mode. 
+Didn't take long to rule that idea out as a nonstarter.
 
-And you leave the trigger depth at "1", right?
+Upshot of the last couple of weeks is I finally have GPIO interrupt 
+latencies down to a more respectable 12-30uS delay - This is with the 
+ipipe tracer enabled, so there is scope to reduce it further.
 
-Jan
+Once I've cleaned up my hacks and run on a fully loaded box with the 
+tracer disabled, I'll generate a patch for the Raspberry Pi and post it 
+somewhere.
 
--- 
-Siemens AG, Corporate Technology, CT RTC ITP SDP-DE
-Corporate Competence Center Embedded Linux
+
+Regards, Paul.
+
 
