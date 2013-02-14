@@ -1,11 +1,12 @@
-From: Martin Pongratz <pongratz@ict.tuwien.ac.at>
-Date: Thu, 14 Feb 2013 11:33:50 +0000
-Message-ID: <A7B6C93529C6D844895F37ADAB8DF0AC5D7097AB@ictsrv010.ICT.TUWIEN.AC.AT>
-Content-Language: de-DE
+Message-ID: <511CD1F2.50307@xenomai.org>
+Date: Thu, 14 Feb 2013 13:00:50 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] Analogy DIO execution time and timing behavior
+References: <CAJjOJyZ3H=ffAT1JbqPr4DEpZsHmAdNXt+eZuWKhg0xhVd+T1w@mail.gmail.com>
+In-Reply-To: <CAJjOJyZ3H=ffAT1JbqPr4DEpZsHmAdNXt+eZuWKhg0xhVd+T1w@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Kernel choice for Xenomai on the Beagle Bone
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,41 +15,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jonathan Wallace <jonmon6691@gmail.com>
+Cc: xenomai@xenomai.org
 
-Hello,
+On 02/14/2013 01:09 AM, Jonathan Wallace wrote:
 
-I'm planning to use a NI DAQ-card (PCI-622x) with Xenomai and Analogy.
+> First I just want to say that I've been doing a lot of reading in the
+> archives of this mailing list and I'm really impressed with the community,
+> I'm excited to get my project going with this software!
+> 
+> I'm really just trying to get my bearings before I start mucking around and
+> one question has been lingering during all my research that I've yet to see
+> a clear answer for. I'ts one that seems to come up every now and then here,
+> and I hope I'm not beating a dead horse with it.
+> 
+> Essentially I want to know what kernel I should apply the Xenomai patches
+> against. From what I've read, the naming conventions on the adeos patches
+> in .../xenomai-2.6.2.1/ksrc/arch/arm/patches/ should indicate the latest
+> suitable kernel version with which the patch will work. As of yesterday,
+> that appears to be ipipe-core-3.5.7-arm-3.patch. I have two hesitations
+> though. The first is the arm-3 suffix, does this imply some sort of
+> processor restriction e.g. no compatibility with ARMv7 isa or
+> something?
 
-The idea is to synchronize a camera setup with a robot. The robot is contro=
-lled via UDP-packets that are transmitted periodically with a cycle-time of=
- 1 ms. The initiator of this communication is the robot controller (KUKA FR=
-I setup with LWR 4+ robot). With every 20th datagram a camera setup shall b=
-e triggered via the DAQ-card. The delay between the data-transfer and the t=
-rigger-activation should be minimal or at least known with a reasonable sma=
-ll jitter (magnitudes smaller than 1 ms).
 
-But before buying the card I'd like to have some information about the timi=
-ng-performance of this setup:
+No, it is a version number of the I-pipe patch.
 
-1)      What execution time (or magnitude of execution time) for DIO, espec=
-ially output, from command execution until change of signal on the output c=
-an be achieved?
 
-2)      How much jitter in this execution time can be expected?
+> And my second hesitation
+> is that the 3.5.7 kernel is currently EOL. Would it be a wiser choice to
+> use 3.4.30 which is still supported?
 
-Thanks and BR
-Martin Pongratz
---
-DI Martin Pongratz
-University Assistant
 
-Robotics & Automation Group
-Vienna University of Technology
-Institute of Computer Technology
-phn +43 1 58801 38435
-fax +43 1 58801 38499
-http://www.ict.tuwien.ac.at<http://www.ict.tuwien.ac.at/>
+There is also an I-pipe patch for Linux 3.4, you may use that one if you
+prefer.
 
-DVR:0005886
+-- 
+                                                                Gilles.
 
