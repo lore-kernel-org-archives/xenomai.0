@@ -1,15 +1,13 @@
-Message-ID: <5101719D.9080908@logilin.fr>
-Date: Thu, 24 Jan 2013 18:38:37 +0100
-From: Christophe Blaess <mailist@logilin.fr>
+Message-ID: <511D2777.107@zultron.com>
+Date: Thu, 14 Feb 2013 12:05:43 -0600
+From: John Morris <john@zultron.com>
 MIME-Version: 1.0
-References: <CALJOq=VtrBhMzCaT=7omDVN9hnnwZ+cmM1_1eff9DTS-fvLjaw@mail.gmail.com>
-	<201301220306.28220.paul_c@tuxcnc.org>
-	<510166D3.8050905@logilin.fr>
-	<201301241712.21645.paul_c@tuxcnc.org>
-In-Reply-To: <201301241712.21645.paul_c@tuxcnc.org>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+References: <511C911B.2080609@zultron.com> <511CD558.2000409@xenomai.org>
+In-Reply-To: <511CD558.2000409@xenomai.org>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] GPIO Interrupts problem with RTDM
+Subject: Re: [Xenomai] Announcing beta x86 Xenomai kernel packages: squeeze, precise,
+ lucid
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,56 +16,73 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: emc-developers@lists.sourceforge.net, Xenomai <xenomai@xenomai.org>
 
-On 24/01/2013 18:12, Paul wrote:
-> On Thursday 24 January 2013, Christophe Blaess wrote:
->> On 22/01/2013 04:06, Paul wrote:
->>> On Sunday 20 January 2013, Gilles Chanteperdrix wrote:
->>>> Yes, this patch is based on 3.5.7 and is used with and without
->>>> GENERIC_CLOCKEVENTS.
->>> Short version: Updated my kernel to 3.5.7 and backported the
->>> Raspberry Pi changes from 3.6.11 and added in the ipipe support.
->>> Interrupts are not being recognised unless irq_set_irq_type() is
->>> called. Digging through the rtdm, nucleus, and ipipe code, at no
->>> point is
->>> irq_chip->irq_set_type() called - Also have a problem that none of
->>> the ipipe_pic_muter fields are set, so __ipipe_enable_irqdesc() &
->>> friends do nothing.
->> I'm trying to follow the same steps as you but I still have some
->> compilation errors while porting
->> R-Pi modifications to 3.5.7. (especially arm timer code).
+On 02/14/2013 06:15 AM, Gilles Chanteperdrix wrote:
+> On 02/14/2013 08:24 AM, John Morris wrote:
+> 
+>> Hello emc-dev and xenomai lists,
 >>
->> Do you have any available patch against 3.5.7 vanilla kernel ?
-> Funny that you should ask - I am in the middle of generating a patch set
-> against 3.5.7 with the Raspberry Pi additions. This will include the
-> ipipe modifications along with a fix to the gpio interrupt handler.
+>> I'm very pleased to announce the availability of one-size-fits-all
+>> Xenomai kernel packages for x86 arch.  These packages have been
+>> successfully tested on umpteen motherboards at this point, and are ready
+>> for wider testing.
+>>
+>> * Beta status *
+>> Distros: Ubuntu Precise and Lucid; Debian Squeeze
+>> Architectures: i686 and amd64
+>> Xenomai version: v2.6.2.1, released 2013/01/25
+>> Kernel version: v3.5.7 vanilla
+>> Kernel config:  Ubuntu 3.5 stock kernel with Xenomai additions
+>>
+>> The instruction wiki page on linuxcnc.org is somewhat oriented toward
+>> LinuxCNC users, but most will apply to the general audience:
+>>
+>>   http://wiki.linuxcnc.org/cgi-bin/wiki.pl?XenomaiKernelPackages
+> 
+> 
+> Hi John,
+> 
+> thanks to you and the LinuxCNC community at large for working on this.
+> Is there any problem if we modify the page about Debian on Xenomai wiki
+> to point to this page?
 
-Great.
+Of course you're welcome to do that.  Or if you like, you (or I) can
+copy the information to the xenomai.org wiki and the linuxcnc wiki can
+point to your page.
 
->
->> I have a working GPIO interrupt rtdm driver with 3.2.21 kernel
->> (Xenomai 2.6.2) but the interrupt latencies seems terrible (about
->> 20us and jiterring up to 150us without any load). To compare with the
->> 7us latency I see on a vanilla Linux GPIO interrupt handler.
-> Should be better than that - Did you make any changes to the interrupt
-> handler in bcm207_gpio.c ?
+I'm hoping that someone else will volunteer to take over package
+maintenance once the dust settles a little.  That will be a while, but
+if you're interested in hosting the package repos on xenomai.org
+eventually, moving the wiki material there makes sense.
 
-I replaced generic_handle_irq() by ipipe_handle_demuxed_irq().
+> 
+> We will also try and address the issues which were identified since you
+> started working on this, namely:
+> - allowing enabling the SMI workaround without kernel re-compilation
 
+Great!  I'm working around this for now by packaging Jan's smictrl
+utility.  That could actually be sufficient; I'd rather put effort into
+a more user-friendly wrapper, and maybe a config file and init script
+for persistent settings across reboots.
 
-My interrupt handler toggle an ouput GPIO pin :
+> - allow building Xenomai user-space support with _FORTIY_SOURCE
 
-static int handler_irq(rtdm_irq_t * irq)
-{
-         static int value = 0;
-         gpio_set_value(GPIO_OUT, value);
-         value = 1 - value;
-         return RTDM_IRQ_HANDLED;
-}
+This affects RedHat-like distros, which turn this on by default in
+package builds.  My RPM packages (forthcoming) have a workaround, so
+low-priority for the packaging effort.
 
-I think that gpio_set_value() doesn't call any Linux services, but I may 
-be wrong.
+> - find the origin of the latency issue with i915 and opengl
+> - the harcoded 80 in the tsc test
 
+Great.  On my test machine (1.7GHz Celeron), 200 would have been 2x
+enough.  Michael saw this problem on his machine too, but I didn't see
+his numbers.
 
+Thanks for the support Gilles.  I think this will help the community
+greatly, and hopefully reduce the support headache for developers at the
+same time!
+
+	John
 
