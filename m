@@ -1,15 +1,12 @@
-Message-ID: <510166D3.8050905@logilin.fr>
-Date: Thu, 24 Jan 2013 17:52:35 +0100
-From: Christophe Blaess <mailist@logilin.fr>
+Message-ID: <511CD812.9040407@control.lth.se>
+Date: Thu, 14 Feb 2013 13:26:58 +0100
+From: Anders Blomdell <anders.blomdell@control.lth.se>
 MIME-Version: 1.0
-References: <CALJOq=VtrBhMzCaT=7omDVN9hnnwZ+cmM1_1eff9DTS-fvLjaw@mail.gmail.com>
-	<201301200013.09110.paul_c@tuxcnc.org>
-	<50FBF628.1000709@xenomai.org>
-	<201301220306.28220.paul_c@tuxcnc.org>
-In-Reply-To: <201301220306.28220.paul_c@tuxcnc.org>
+References: <A7B6C93529C6D844895F37ADAB8DF0AC5D7097AB@ictsrv010.ICT.TUWIEN.AC.AT>
+In-Reply-To: <A7B6C93529C6D844895F37ADAB8DF0AC5D7097AB@ictsrv010.ICT.TUWIEN.AC.AT>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] GPIO Interrupts problem with RTDM
+Subject: Re: [Xenomai] Analogy DIO execution time and timing behavior
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,34 +15,53 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Martin Pongratz <pongratz@ict.tuwien.ac.at>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 22/01/2013 04:06, Paul wrote:
-> On Sunday 20 January 2013, Gilles Chanteperdrix wrote:
->> Yes, this patch is based on 3.5.7 and is used with and without
->> GENERIC_CLOCKEVENTS.
-> Short version: Updated my kernel to 3.5.7 and backported the Raspberry
-> Pi changes from 3.6.11 and added in the ipipe support. Interrupts are
-> not being recognised unless irq_set_irq_type() is called. Digging
-> through the rtdm, nucleus, and ipipe code, at no point is
-> irq_chip->irq_set_type() called - Also have a problem that none of the
-> ipipe_pic_muter fields are set, so __ipipe_enable_irqdesc() & friends
-> do nothing.
+On 2013-02-14 12:33, Martin Pongratz wrote:
+> Hello,
+>
+> I'm planning to use a NI DAQ-card (PCI-622x) with Xenomai and Analogy.
+Expensive digital out :-;, wouldn't a parallell-port card do the trick?
 
-I'm trying to follow the same steps as you but I still have some 
-compilation errors while porting
-R-Pi modifications to 3.5.7. (especially arm timer code).
+>
+> The idea is to synchronize a camera setup with a robot. The robot is controlled via UDP-packets that are transmitted periodically with a cycle-time of 1 ms. The initiator of this communication is the robot controller (KUKA FRI setup with LWR 4+ robot). With every 20th datagram a camera setup shall be triggered via the DAQ-card. The delay between the data-transfer and the trigger-activation should be minimal or at least known with a reasonable small jitter (magnitudes smaller than 1 ms).
+>
+> But before buying the card I'd like to have some information about the timing-performance of this setup:
+>
+> 1)      What execution time (or magnitude of execution time) for DIO, especially output, from command execution until change of signal on the output can be achieved?
+>
+> 2)      How much jitter in this execution time can be expected?
+10-50 us in my experience (provided you get the Ethernet packets via RTNet)
 
-Do you have any available patch against 3.5.7 vanilla kernel ?
+>
+> Thanks and BR
+> Martin Pongratz
+> --
+> DI Martin Pongratz
+> University Assistant
+>
+> Robotics & Automation Group
+> Vienna University of Technology
+> Institute of Computer Technology
+> phn +43 1 58801 38435
+> fax +43 1 58801 38499
+> http://www.ict.tuwien.ac.at<http://www.ict.tuwien.ac.at/>
+>
+> DVR:0005886
+>
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> http://www.xenomai.org/mailman/listinfo/xenomai
+>
 
-I have a working GPIO interrupt rtdm driver with 3.2.21 kernel (Xenomai 
-2.6.2) but the interrupt latencies seems terrible (about 20us and 
-jiterring up to 150us without any load). To compare with the 7us latency 
-I see on a vanilla Linux GPIO interrupt handler.
-
-
-Regards,
 
 -- 
-Christophe
+Anders Blomdell                  Email: anders.blomdell@control.lth.se
+Department of Automatic Control
+Lund University                  Phone:    +46 46 222 4625
+P.O. Box 118                     Fax:      +46 46 138118
+SE-221 00 Lund, Sweden
+
 
