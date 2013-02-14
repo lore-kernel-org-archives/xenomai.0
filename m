@@ -1,14 +1,15 @@
-Message-ID: <511E26AE.1010203@xenomai.org>
-Date: Fri, 15 Feb 2013 13:14:38 +0100
+Message-ID: <511D3A9C.3060403@xenomai.org>
+Date: Thu, 14 Feb 2013 20:27:24 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <224444793.158669.1360843957336.JavaMail.ngmail@webmail16.arcor-online.net>	<511CD5C2.50701@arcor.de>	<511CD673.2030400@xenomai.org>
-	<511CDF65.1020907@arcor.de>	<511D3A22.40307@xenomai.org>
-	<511DF30B.6040601@arcor.de>
-In-Reply-To: <511DF30B.6040601@arcor.de>
+References: <511B94E4.2070708@mediso.hu>
+	<511B9901.7040104@xenomai.org>	<511BB60E.7090900@mediso.hu>
+	<511BCA3E.4050705@xenomai.org>	<511C989C.7070700@mediso.hu>
+	<511D0297.6030105@mediso.hu>
+In-Reply-To: <511D0297.6030105@mediso.hu>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] kernel configuration problems with ACPI
+Subject: Re: [Xenomai] Floating point operations in kernel on powerpc
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,24 +18,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Christopher Hahn <hahnchristopher@arcor.de>
+To: Norbert Bukuli <norbert.bukuli@mediso.hu>
 Cc: xenomai@xenomai.org
 
-On 02/15/2013 09:34 AM, Christopher Hahn wrote:
+On 02/14/2013 04:28 PM, Norbert Bukuli wrote:
 
-> after running the application which accesses the serial device
-> "Xenomai: xnintr_edge_shirq_handler: IRQ4 not handled. Disabling IRQ
-> line." was printed to dmesg and the next two outputs of
-> /proc/interrupts and /proc/xenomai/irq
+> This problem is still not resolved, so any suggestion or idea is
+> highly appreciated!
+> Thank you in advance!
 
 
-If xnintr_edge_shirq_handler is called, an RTDM driver registered a
-handler for this irq. So, please keep the application running with all
-the file descriptors opened, and run cat /proc/xenomai/irq while the
-application is still running.
-
-The most logical result would be that irq 4 is claimed by the 16550A driver.
-
+You have two choices:
+- try and spend the time reducing the kernel-space code to the bare
+mininimum which produces references to this two functions, and
+understand what they are used for, then throw away the result of this
+work once you end-up porting your code to user-space
+- ignore the uninteresting and obsolete issues you have when using FPU
+in kernel-sapce and directly port your code to user-space.
 
 -- 
                                                                 Gilles.
