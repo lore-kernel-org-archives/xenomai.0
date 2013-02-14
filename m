@@ -1,11 +1,13 @@
-From: "Zemskov, Evgeny" <Evgeny.Zemskov@transas.com>
-Date: Fri, 15 Feb 2013 09:28:24 +0000
-Message-ID: <FA4CEC4EBE2FA145A7663764A1CCB31E5C4D2D50@VOITV-EXCH-BE02.transas.com>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Message-ID: <511D3A22.40307@xenomai.org>
+Date: Thu, 14 Feb 2013 20:25:22 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Subject: [Xenomai] xeno_16550A and Exar-based multiport PCI board
+References: <224444793.158669.1360843957336.JavaMail.ngmail@webmail16.arcor-online.net>	<511CD5C2.50701@arcor.de>
+	<511CD673.2030400@xenomai.org> <511CDF65.1020907@arcor.de>
+In-Reply-To: <511CDF65.1020907@arcor.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] kernel configuration problems with ACPI
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,33 +16,60 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Christopher Hahn <hahnchristopher@arcor.de>
+Cc: xenomai@xenomai.org
 
-R3JlZXRpbmdzICEKCkknbSBhZGRpbmcgdGhlIHNldHRpbmdzIGZvciBvdXIgaGFyZHdhcmUgKENU
-SSBYdHJlbWUgc2VyaWVzIGJvYXJkIHdpdGggMTIgcG9ydHMpIAppbnRvIHJ0XzE2NTUwQSBkcml2
-ZXIgYW5kIGhhdmUgZW5jb3VudGVyZWQgc29tZSBzdHJhbmdlIHBvaW50IGluIGl0cyBkZXNpZ24u
-CgpUaGUgY2FyZCBoYXMgWFIxNlY3OTQvNzk4IFVBUlRzLCAgTU1JTyBhZGRyZXNzIHNoaWZ0IGJl
-dHdlZW4gaXRzIHBvcnRzIGlzIDB4MjAwIAphbmQgd2hvbGUgYWRkcmVzcyBzcGFjZSBvZiB0aGUg
-Y2FyZCAoYWNxdWlyZWQgd2l0aCBwY2lfcmVzb3VyY2VfbGVuKSBpcyAxNksuIAoKVGhlIG5hdGl2
-ZSBkcml2ZXIgZnJvbSBDVEkgZXhlY3V0ZXMgaW9yZW1hcCBmb3IgMTZLIGJ5dGVzLCBzdGFydGlu
-ZyBhdCB0aGUgcGh5c2ljYWwgCmJhc2UgYWRkcmVzcyBvZiB0aGUgYm9hcmQsIGFuZCB0aGVuIGNh
-bGN1bGF0ZXMgdGhlIGFkZHJlc3Mgb2YgZXZlcnkgcG9ydCBieSAKYWRkaW5nIDB4MjAwKk4gdG8g
-dGhlIHJlbWFwcGVkIGNhcmQgYmFzZSBhZGRyZXNzLiBJdCB3b3JrcyBmaW5lLiAKCnhlbm9fMTY1
-NTBBIGRyaXZlciBkb2VzIHRoZSB0aGluZ3MgJ2luc2lkZSBvdXQnIDogZmlyc3QgY2FsY3VsYXRl
-cyB0aGUgCnBoeXNpY2FsIGJhc2UgYWRkcmVzcyBvZiBlYWNoIHBvcnQgKGNhcmQgYmFzZSBhZGRy
-ZXNzICsgMHgyMDAqTikgYW5kIAp0aGVuIGlvcmVtYXAncyBoYXJkY29kZWQgOCBieXRlcywgc3Rh
-cnRpbmcgZnJvbSB0aGUgcGh5c2ljYWwgYmFzZSBvZiAKZWFjaCBwb3J0LiAKSXQgZGlkbid0IHdv
-cmsgb24gQ1RJIGNhcmQgKG9jYXNzaW9uYWxseSByZWFkIGZldyBieXRlcyBvZiBnYXJiYWdlIGZy
-b20pLCAKZXZlbiBhZnRlciByZW1hcHBpbmcgNTEyIGJ5dGVzICh0aGUgd2hvbGUgYWRkcmVzcyBz
-aGlmdCkgZm9yIGVhY2ggcG9ydC4KCkkndmUgaGFja2VkIHhlbm9fMTY1NTBBLCBzdWNoIHRoYXQg
-aXQgZG9lcyBpb3JlbWFwIGFuZCBhZGRyZXNzIGNhbGN1bGF0aW9ucyAKaW4gcnRfMTY1NTBfcGNp
-X3Byb2JlKC4uLiksIHN0b3JlcyB0aGUgcmVtYXBwZWQgYWRkcmVzc2VzIGluIGlvW10gYXJyYXks
-IAphbmQgdGhlbiBpbiBydF8xNjU1MF9pbml0X2lvKC4uLikgc3dhcHMgdGhlIGNvbnRlbnRzIG9m
-IGlvW10gYW5kIG1hcHBlZF9pb1tdIAphcnJheXMuIApUaGUgcmVzdWx0IHNlZW1zIHRvIHdvcmss
-IGJ1dCBpdCdzIG9idmlvdXMgaGFjayBhbmQgYWxzbyBpdCBtaWdodCBicmVhayBNb3hhIApib2Fy
-ZHMgY29tcGF0aWJpbGl0eSAoYWx0aG91Z2ggSSBjYW4gZXZlbnR1YWxseSBjaGVjayBpdCBvbiBz
-b21lIE1veGEgYm9hcmQpLgoKQ291bGQgeW91IHN1Z2dlc3QgYW55IGJldHRlciBzb2x1dGlvbiA/
-CgpUaGFuayB5b3UgIQoKRXVnZW5lCgoKRXZnZW55IFplbXNrb3YsIFRyYW5zYXMgTHRkCmV2Z2Vu
-eS56ZW1za292QHRyYW5zYXMuY29tCu+7v09mZmljZSBwaG9uZSAjICs3IDgxMiAzMjUzMTMxIGFk
-ZC4gMjc0LTAzCkNlbGwgcGhvbmUgIyArNyA5NTIgMzk0MzEyOQo=
+On 02/14/2013 01:58 PM, Christopher Hahn wrote:
+
+> Am 14.02.2013 13:20, schrieb Gilles Chanteperdrix:
+>> On 02/14/2013 01:17 PM, Christopher Hahn wrote:
+>>
+>>> Am 14.02.2013 13:12, schrieb hahnchristopher@arcor.de:
+>>>> Hey guys,
+>>>>
+>>>> I'm running the new Xenomai 2.6.2.1 with 3.5.7 Kernel on a x86 machine.
+>>>> I tried several kernel configurations, but I haven't found the right one yet.
+>>>>
+>>>> The PC (ADLD25PC) uses a PEAK-Systems PCIE/104 CAN interface and two serialport devices.
+>>>>
+>>>> I have selected the CAN driver and 16550A driver as kernel modules.
+>>>>
+>>>>
+>>>> With kernel configuration "-xenomai4"  the serial and can devices works, but there are only 2 CPUs detected - so the hyperthreading cores arn't detected.
+>>>> And I get a message during bootup "BIOS bug, no explicit IRQ entries, using default mptable. (tell your hw vendor)."
+>>>> This is my "best" solution so far - CONFIG_ACPI is completely disabled.
+>>>>
+>>>>
+>>>> In "-xenomai5" configuration is ACPI enabled as you can see in the attached kernel configs.
+>>>> The mptable message disappears, 4 cores are detected, but serial and can device IRQs get disabled.
+>>>> The can interface and a usb hub get IRQ 19 - thats solvable for me, but the serialport on IRQ 4 gets disabled and I don't know why. (lspci -v log is also attached)
+>>>>
+>>>>
+>>>> Could you point me in a direction how to combine the advantages of the two configurations?
+>>>>
+>>>>
+>>>> Thank you,
+>>>>
+>>>> Christopher
+>>>
+>>> Attachments now as txt files
+>>
+>> It would be interesting to have the kernel boot logs too.
+> 
+> Sorry, here they are.
+> 
+> I tested these two versions again and recognised that in "-xenomai5" the 
+> CAN interface is working.. so there is "just" the serialport issue (IRQ 
+> 4 disabled) left. Everything else seems to work correct.
+
+
+Please also post the result of
+cat /proc/interrupts
+and
+cat /proc/xenomai/irq
+
+But I guess the problem you have is that the IRQ 4 is shared.
+
+-- 
+                                                                Gilles.
 
