@@ -1,10 +1,10 @@
-Message-ID: <511CE85D.6070704@hilscher.com>
-Date: Thu, 14 Feb 2013 14:36:29 +0100
+Message-ID: <511CFC47.5000709@hilscher.com>
+Date: Thu, 14 Feb 2013 16:01:27 +0100
 From: =?ISO-8859-1?Q?St=E9phane_LOS?= <slos@hilscher.com>
 MIME-Version: 1.0
 References: <511A2964.4080902@hilscher.com> <511A2CA4.1000408@siemens.com>
-	<511B9E94.2030108@hilscher.com>
-In-Reply-To: <511B9E94.2030108@hilscher.com>
+	<511B9E94.2030108@hilscher.com> <511CE85D.6070704@hilscher.com>
+In-Reply-To: <511CE85D.6070704@hilscher.com>
 Content-Transfer-Encoding: quoted-printable
 Content-Type: text/plain; charset="iso-8859-1"; Format="flowed"
 Subject: Re: [Xenomai] Hilscher driver for cifX boards
@@ -19,87 +19,11 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: Jan Kiszka <jan.kiszka@siemens.com>
 Cc: Xenomai <xenomai@xenomai.org>
 
-Le 13/02/2013 15:09, St=E9phane LOS a =E9crit :
-> Le 12/02/2013 12:51, Jan Kiszka a =E9crit :
->> On 2013-02-12 12:37, St=E9phane LOS wrote:
->>> Hello there,
->>>
->>> It seems we have managed to build an RTDM module and we can insmod it
->>> and it shows up in the named devices list.
->>>
->>> If we forget to rmmod the module, the kernel crashes when stopping or
->>> rebooting.
->> So you have a bug in your driver that requires fixing. Is the device
->> opened while you shutdown? What does the backtrace tell you you about
->> the crash? If you share your code early, we could review it already.
->>
->> Jan
->>
-> Yes, of course we have a bug. I think that we have plenty of them in =
+Hi,
 
-> fact. ;-)
-> I would like to share the code but it is a little early since we are =
+Please find attached the newest version that seems better to us.
 
-> trying to figure out what we have to do.
-> Something is written started from what we have found in the sources =
-
-> but we still have to learn.
-> The RTDM API documentation is good but we have very little knowledge =
-
-> on how RTDM drivers should be used with Xenomai.
-> We lack general information.
-> Since the following links are broken now :
-> http://www.xenomai.org/index.php/Weblinks#Installation_of_Xenomai_and_RTD=
-M_Driver_Writing =
-
->
-> I remember that there use to be here a documentation about the RTDM =
-
-> driver for CIF boards, it was years ago.
-> My colleague is actually working on the driver, I intervene here =
-
-> because I like writing in English and I am the support guy. ;-)
->
-> Best Regards,
-> Cordialement,
->
-> St=E9phane LOS
-> slos@hilscher.com
-> Support technique
->
-> ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> Hilscher France
-> 12, rue du 35=E8me R=E9giment d'Aviation
-> Miniparc du Ch=EAne
-> 69500 BRON
-> France
-> T=E9l. : +33 (0) 4 72 37 98 40
-> Fax  : +33 (0) 4 78 26 83 27
-> http ://www.hilscher.fr
-> ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
->
->
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> http://www.xenomai.org/mailman/listinfo/xenomai
->
-
-Hello,
-
-Please find attached the faulty code being developed.
-
-Thank you in advance for your comments and hints.
-
-By the way, our Linux driver supports as many boards as needed.
-
-Is it possible with a RTDM driver to drive several boards ?
-I guess yes but we don't understand yet how things go to the =
-
-/proc/xenomai file system.
-What should we find there ?
-
-Again thank you for your help.
+Thank your for your comments.
 
 Best Regards,
 Cordialement,
@@ -311,10 +235,11 @@ static void __devexit cifx_pci_remove(struct pci_dev *dev);
 
 /* Local variables */
 
-static int cifx_num	=3D	0;
+static 	int32_t cifx_num	=3D	0;
 
 static const struct rtdm_device __initdata cifx_device_tmpl =3D {
 	.struct_version		=3D RTDM_DEVICE_STRUCT_VER,
+	=
 
 	.device_flags		=3D RTDM_NAMED_DEVICE,
 	.device_name		=3D "",
@@ -395,6 +320,10 @@ static struct pci_driver cifx_pci_driver =3D {
 	.remove		=3D __devexit_p(cifx_pci_remove),
 };
 
+struct cifx_pci_context {
+	int32_t cifx_num;
+};
+
 /**************************************************************************=
 */
 
@@ -411,7 +340,7 @@ static struct pci_driver cifx_pci_driver =3D {
 */
 /**************************************************************************=
 ***/
-static int cifx_handler(rtdm_irq_t *irq)
+static inline int cifx_handler(rtdm_irq_t *irq)
 {
 	struct rtdm_device	*info 			=3D (struct rtdm_device *)rtdm_irq_get_arg(irq=
 , void);
@@ -582,6 +511,52 @@ _MASK))
 static int cifx_pci_open(struct rtdm_dev_context *context, rtdm_user_info_t=
  * user_info, int oflags)
 {
+	struct cifx_pci_context *ctx =3D (struct cifx_pci_context *)context->dev_p=
+rivate; =
+
+	struct rtdm_device 		*info =3D (struct rtdm_device *)context->device;
+	int32_t					ret;
+
+	ctx->cifx_num =3D cifx_num;
+	=
+
+	if ((ret =3D rtdm_irq_request(((io_info_t *)info->device_data)->irq_handle=
+, ((io_info_t *)info->device_data)->irq, ((io_info_t *)info->device_data)->=
+handler, ((io_info_t *)info->device_data)->irq_flags, info->device_name, (v=
+oid *)info)) !=3D 0)
+	{
+#ifdef DEBUG_PRINTK
+		switch (ret)
+		{
+			case -EINVAL :
+			=
+
+				rtdm_printk("cifx rtdm driver error : rtdm_irq_request error : an inval=
+id parameter was passed\n");
+				break;
+				=
+
+			case -EBUSY :
+			=
+
+				rtdm_printk("cifx rtdm driver error : rtdm_irq_request error : the spec=
+ified IRQ line is already in use\n");
+				break;
+		=
+
+			default :
+			=
+
+				rtdm_printk("cifx rtdm driver error : rtdm_irq_request error\n");
+				break;
+		}				=
+
+#endif /* DEBUG_PRINTK */
+
+		return -ENODEV;
+	}
+	=
+
 	return 0;
 }
 
@@ -602,6 +577,33 @@ static int cifx_pci_open(struct rtdm_dev_context *context, rtdm_user_info_t=
 static int cifx_pci_close(struct rtdm_dev_context *context, rtdm_user_info_=
 t * user_info)
 {
+	struct cifx_pci_context *ctx =3D (struct cifx_pci_context *)context->dev_p=
+rivate;
+	struct rtdm_device 		*info =3D (struct rtdm_device *)context->device;
+	int32_t					ret;
+	=
+
+	ctx->cifx_num =3D cifx_num;
+		=
+
+	if (((io_info_t *)info->device_data)->irq_handle !=3D NULL)
+	{
+		if ((ret =3D rtdm_irq_free(((io_info_t *)info->device_data)->irq_handle))=
+ !=3D 0)
+		{
+#ifdef DEBUG_PRINTK
+			rtdm_printk("cifx rtdm driver error : rtdm_irq_free error\n");
+#endif /* DEBUG_PRINTK */
+
+			return -ENODEV;;
+		}
+		else
+		{
+			rtdm_free(((io_info_t *)info->device_data)->irq_handle);
+		}
+	}
+	=
+
 	return 0;
 }
 	=
@@ -680,6 +682,8 @@ ret);
 	snprintf((char *)info->device_name, RTDM_MAX_DEVNAME_LEN, "cifx%i", cifx_n=
 um);
 	info->proc_name	=3D info->device_name;
+	info->context_size =3D sizeof(struct cifx_pci_context);
+	=
 
 	switch (id->device) =
 
@@ -933,41 +937,6 @@ roc entry cannot be created\n");
 	}
 
 	memset(irq_handle, 0, sizeof(rtdm_irq_t));
-	=
-
-	if ((ret =3D rtdm_irq_request(irq_handle, device_data->irq, device_data->h=
-andler, device_data->irq_flags, info->device_name, (void *)info)) !=3D 0)
-	{
-#ifdef DEBUG_PRINTK
-		switch (ret)
-		{
-			case -EINVAL :
-			=
-
-				rtdm_printk("cifx rtdm driver error : rtdm_irq_request error : an inval=
-id parameter was passed\n");
-				break;
-				=
-
-			case -EBUSY :
-			=
-
-				rtdm_printk("cifx rtdm driver error : rtdm_irq_request error : the spec=
-ified IRQ line is already in use\n");
-				break;
-		=
-
-			default :
-			=
-
-				rtdm_printk("cifx rtdm driver error : rtdm_irq_request error\n");
-				break;
-		}				=
-
-#endif /* DEBUG_PRINTK */
-
-		goto out_release_irq;
-	}
 		=
 
 	device_data->irq_handle =3D irq_handle;
@@ -997,10 +966,6 @@ a)->priv;
 		=
 
 	return 0;
-	=
-
-out_release_irq :
-	rtdm_irq_free(irq_handle);
 
 out_free_irq:
 	rtdm_free(((io_info_t *)info->device_data)->irq_handle);
@@ -1084,28 +1049,11 @@ static void __devexit cifx_pci_remove(struct pci_dev *dev)
 );
 	=
 
-		if (pxa_info && pxa_info->plx)
+		if (pxa_info->plx !=3D NULL)
 			iounmap((void *)pxa_info->plx);
 
 		rtdm_free((void *)pxa_info);		=
 
-	}
-	=
-
-	if (device_data->irq_handle !=3D NULL)
-	{
-		if ((ret =3D rtdm_irq_free(device_data->irq_handle)) !=3D 0)
-		{
-#ifdef DEBUG_PRINTK
-			rtdm_printk("cifx rtdm driver error : rtdm_irq_free error\n");
-#endif /* DEBUG_PRINTK */
-
-			return;
-		}
-		else
-		{
-			rtdm_free(device_data->irq_handle);
-		}
 	}
 
 	if ((ret =3D rtdm_dev_unregister(info, 1000)) !=3D 0)
