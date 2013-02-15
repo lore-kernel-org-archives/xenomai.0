@@ -1,16 +1,15 @@
-From: "Zemskov, Evgeny" <Evgeny.Zemskov@transas.com>
-Date: Fri, 15 Feb 2013 11:09:37 +0000
-Message-ID: <FA4CEC4EBE2FA145A7663764A1CCB31E5C4D2D86@VOITV-EXCH-BE02.transas.com>
-References: <FA4CEC4EBE2FA145A7663764A1CCB31E5C4C8FBB@VOITV-EXCH-BE01.transas.com>
-	<FA4CEC4EBE2FA145A7663764A1CCB31E5C4C8FF3@VOITV-EXCH-BE01.transas.com>,
-	<511A396E.2060703@xenomai.org>
-In-Reply-To: <511A396E.2060703@xenomai.org>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+From: Paul <paul_c@tuxcnc.org>
+Date: Fri, 15 Feb 2013 11:50:44 +0000
+References: <201302141227.05428.paul_c@tuxcnc.org>
+	<511D3F8F.8090501@xenomai.org>
+In-Reply-To: <511D3F8F.8090501@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai] Would a Xenomai thread running in secondary mode
- affect the latencies of other Xenomai threads in primary modes ?
+Content-Type: text/plain;
+  charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Message-Id: <201302151150.44164.paul_c@tuxcnc.org>
+Subject: Re: [Xenomai] Xenomai, Raspberry Pi, 3.5.7 kernel
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,53 +18,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-VGhhbmsgeW91ICEKCk9mIGNvdXJzZSwgd2Ugd29uJ3QgZXhwZWN0ICBib3VuZGVkIGxhdGVuY2ll
-cyBmcm9tIG91ciB0aHJlYWQgdGhhdCB1c2VzIExpbnV4IGRyaXZlcjsgCmJ1dCBJIGJlbGlldmUg
-dG8gYmUgYWJsZSB0byBtZWFzdXJlIHRoZSBsb2FkIG9uIG91ciBzeXRlbSBhbmQgdGVzdCBpbiB1
-bmRlciBzdWNoIGxvYWQgCmZvciBzb21lIHRpbWUgYW5kIGNoZWNrIGlmIG91ciB3cml0ZSBsYXRl
-bmNpZXMgYXJlIHN0aWxsIE9LLgpBbm90aGVyIHNvbHV0aW9uICh3aGljaCBhbHNvIHdvcmtlZCBz
-YXRpc2ZhY3Rvcnkgc28gZmFyKSB3YXMgdG8gJ2V4aGF1c3QnIG91ciBkYXRhIHRvIGEKIExpbnV4
-IHByb2Nlc3MgdmlhIGEgcnRfcGlwZSBhbmQgd3JpdGUgaXQgaW4gJ3Byb3Blcicgd2F5LgoKVGhl
-IG1vc3QgaW1wb3J0YW50IHBhcnQgb2YgdGhlIHF1ZXN0aW9uIGFuZCB0aGUgYW5zd2VyIHRoYXQg
-aXQgd291bGQnbnQgYWZmZWN0IG90aGVyCiB0aHJlYWRzIGluIHByaW1hcnkgbW9kZS4KCgpFdWdl
-bmUKCkV2Z2VueSBaZW1za292LCBUcmFuc2FzIEx0ZApldmdlbnkuemVtc2tvdkB0cmFuc2FzLmNv
-bQrvu79PZmZpY2UgcGhvbmUgIyArNyA4MTIgMzI1MzEzMSBhZGQuIDI3NC0wMwpDZWxsIHBob25l
-ICMgKzcgOTUyIDM5NDMxMjkKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X18KRnJvbTogR2lsbGVzIENoYW50ZXBlcmRyaXggW2dpbGxlcy5jaGFudGVwZXJkcml4QHhlbm9t
-YWkub3JnXQpTZW50OiBUdWVzZGF5LCBGZWJydWFyeSAxMiwgMjAxMyA0OjQ1IFBNClRvOiBaZW1z
-a292LCBFdmdlbnkKQ2M6IHhlbm9tYWlAeGVub21haS5vcmcKU3ViamVjdDogUmU6IFtYZW5vbWFp
-XSBXb3VsZCBhIFhlbm9tYWkgdGhyZWFkIHJ1bm5pbmcgaW4gc2Vjb25kYXJ5IG1vZGUgYWZmZWN0
-IHRoZSBsYXRlbmNpZXMgb2Ygb3RoZXIgWGVub21haSB0aHJlYWRzIGluIHByaW1hcnkgbW9kZXMg
-PwoKT24gMDIvMTIvMjAxMyAwMTozMyBQTSwgWmVtc2tvdiwgRXZnZW55IHdyb3RlOgoKPiBHb29k
-IGV2ZW5pbmcgIQo+Cj4gV2UncmUgZGV2ZWxvcGluZyBhIHN5c3RlbSB3aXRoIGJ1bmNoIG9mIFhl
-bm9tYWkgdGhyZWFkcywgb25lIG9mIHdoaWNoIHdyaXRlcwo+IHRoZSBkYXRhIHRvIHNvbWUgc3Bl
-Y2lmaWMgZGV2aWNlIChNSUwtU1RELTE1NTNCIGJ1cyBjb250cm9sbGVyKS4KPgo+IFJURE0gZHJp
-dmVycyBmb3IgdGhpcyBkZXZpY2UgYXJlIG5vdCBhdmFpbGFibGUsIGFuZCB3ZSB3YW50IHRvIGF2
-b2lkIHBvcnRpbmcKPiB0aGVtIHRvIFJURE0uCj4gU2luY2Ugd2UgZG9uJ3QgbmVlZCB0byB3YWl0
-IGZvciBhbnkgaW50ZXJydXB0cyBmcm9tIHRoaXMgZGV2aWNlICh3ZSBpbml0IHRoZQo+IHRyYW5z
-bWlzc2lvbiB3aXRoIHNvbWUgaW9jdGwncyB3aGljaCB3cml0ZSB0byB0aGUgcmVnaXN0ZXJzIG9m
-IHRoZSBkZXZpY2UgYW5kCj4gd3JpdGUgdGhlIGRhdGEgYmVpbmcgdGFybnNtaXR0ZWQgd2l0aCBf
-X2NvcHlfZnJvbV91c2VyKSwgd2UndmUgdHJpZWQgdG8gdXNlCj4gc3RhbmRhcmQgTGludXggZHJp
-dmVkIGZyb20gWGVub21haSB0aHJlYWQuCj4gTmF0dXJhbGx5LCBvbiBlYWNoIHRyYW5zbWlzc2lv
-biwgdGhlIHRyYW5zbWl0dGluZyBYZW5vbWFpIHRocmVhZCBzd2l0Y2hlcyB0bwo+IHRoZSBzZWNv
-bmRhcnkgbW9kZSwgYnV0IHRoZSByZXN1bHRpbmcgbGF0ZW5jeSBpcyBwZXJmZWN0bHkgT0sgZm9y
-IHVzICh3ZQo+IGVzdGltYXRlIGl0IGF0IGFyb3VuZCA1MC4uMTAwIHVzZWMpLgoKCllvdSBwcm9i
-YWJseSBzaG91bGQgbm90IGV4cGVjdCBhIGJvdW5kZWQgbGF0ZW5jeSBmcm9tIExpbnV4LgoKPgo+
-IFdvdWxkIHN1Y2ggYXBwcm9hY2ggY2F1c2UgZXh0cmEgbGF0ZW5jaWVzIHRvIG90aGVyIFhlbm9t
-YWkgdGhyZWFkcywgd2hpY2ggcnVuCj4gIHNpbXVsdGFuZW91c2x5IGluIHByaW1hcnkgbW9kZSA/
-CgoKSWYgeW91IGVuYWJsZSBDT05GSUdfWEVOT19PUFRfUFJJT0NQTCBhbmQgdGhlIHRhc2sgcnVu
-bmluZyBpbiBzZWNvbmRhcnkKbW9kZSBoYXMgYSBoaWdoZXIgcHJpb3JpdHkgdGhhbiBvdGhlciBY
-ZW5vbWFpIHRocmVhZHMsIHRoZW4geWVzLgpPdGhlcndpc2Ugbm8uCgo+IEFsc28sIHdvdWxkIHRo
-ZXJlIGJlIGFueSBwcm9ibGVtcyB3aXRoIGNvbnN0YW50IHN3aXRjaGVzIG9mIG91ciB3cml0ZXIg
-dGhyZWFkCj4gYmV0d2VlbiBwcmltYXJ5IGFuZCBzZWNvbmRhcnkgbW9kZSA/CgoKSXQgZGVwZW5k
-cyBvbiB5b3VyIGRlZmluaXRpb24gb2YgInByb2JsZW1zIjoKLSBzdWNoIGEgdGFzayBjYW4gbm90
-IGJlIGNvbnNpZGVyZWQgYSByZWFsLXRpbWUgdGFzawotIGFuZCB0aGUgY29uc3RhbnQgc3dpdGNo
-ZXMgaW5kdWNlcyBhIGJpdCBvZiBDUFUgY29uc3VtcHRpb24uCgo+IEFzIGZhciBhcyBJIHVuZGVy
-c3RhbmQsIG9uIGVhY2ggcmVnaXN0ZXIgYWNjZXNzIGl0IGlzIHN3aXRjaGVkIHRvIHNlY29uZGFy
-eQo+IG1vZGUsIGFuZCBvbiBlYWNoIHJ0X2NvbmRfd2FpdCBpdCBnb2VzIGJhY2sgdG8gcHJpbWFy
-eSBtb2RlLgoKCllvdSB1bmRlcnN0YW5kIHJpZ2h0LgoKLS0KICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIEdpbGxlcy4K
+On Thursday 14 February 2013, Gilles Chanteperdrix wrote:
+> On 02/14/2013 01:27 PM, Paul wrote:
+> > Attached, a patch set aimed at providing support for the Broadcom
+> > BCM2835 SoC as used in the Raspberry Pi[1].
+
+> In the meantime, we can put it in a raspberry subdirectory in Xenomai
+> sources. Would you mind making a single patch? Or do you prefer the
+> patches to be kept separated?
+
+A single patch would be preferable for most people - The multi-patch set 
+was mainly for the benefit of the guys who had a working kernel but 
+were sturggling with the GPIO problem (patch No.4 should apply on a 
+3.2.2x kernel).
+
+I'll rename the defconfig and add some recent changes made to 
+the "official" Raspberry kernel. Expect a single patch in a day or two.
+
+
+Regards, Paul.
 
