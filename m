@@ -1,13 +1,16 @@
-Message-ID: <511D3A22.40307@xenomai.org>
-Date: Thu, 14 Feb 2013 20:25:22 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: "Zemskov, Evgeny" <Evgeny.Zemskov@transas.com>
+Date: Fri, 15 Feb 2013 11:09:37 +0000
+Message-ID: <FA4CEC4EBE2FA145A7663764A1CCB31E5C4D2D86@VOITV-EXCH-BE02.transas.com>
+References: <FA4CEC4EBE2FA145A7663764A1CCB31E5C4C8FBB@VOITV-EXCH-BE01.transas.com>
+	<FA4CEC4EBE2FA145A7663764A1CCB31E5C4C8FF3@VOITV-EXCH-BE01.transas.com>,
+	<511A396E.2060703@xenomai.org>
+In-Reply-To: <511A396E.2060703@xenomai.org>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <224444793.158669.1360843957336.JavaMail.ngmail@webmail16.arcor-online.net>	<511CD5C2.50701@arcor.de>
-	<511CD673.2030400@xenomai.org> <511CDF65.1020907@arcor.de>
-In-Reply-To: <511CDF65.1020907@arcor.de>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] kernel configuration problems with ACPI
+Subject: Re: [Xenomai] Would a Xenomai thread running in secondary mode
+ affect the latencies of other Xenomai threads in primary modes ?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,60 +19,53 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Christopher Hahn <hahnchristopher@arcor.de>
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 02/14/2013 01:58 PM, Christopher Hahn wrote:
-
-> Am 14.02.2013 13:20, schrieb Gilles Chanteperdrix:
->> On 02/14/2013 01:17 PM, Christopher Hahn wrote:
->>
->>> Am 14.02.2013 13:12, schrieb hahnchristopher@arcor.de:
->>>> Hey guys,
->>>>
->>>> I'm running the new Xenomai 2.6.2.1 with 3.5.7 Kernel on a x86 machine.
->>>> I tried several kernel configurations, but I haven't found the right one yet.
->>>>
->>>> The PC (ADLD25PC) uses a PEAK-Systems PCIE/104 CAN interface and two serialport devices.
->>>>
->>>> I have selected the CAN driver and 16550A driver as kernel modules.
->>>>
->>>>
->>>> With kernel configuration "-xenomai4"  the serial and can devices works, but there are only 2 CPUs detected - so the hyperthreading cores arn't detected.
->>>> And I get a message during bootup "BIOS bug, no explicit IRQ entries, using default mptable. (tell your hw vendor)."
->>>> This is my "best" solution so far - CONFIG_ACPI is completely disabled.
->>>>
->>>>
->>>> In "-xenomai5" configuration is ACPI enabled as you can see in the attached kernel configs.
->>>> The mptable message disappears, 4 cores are detected, but serial and can device IRQs get disabled.
->>>> The can interface and a usb hub get IRQ 19 - thats solvable for me, but the serialport on IRQ 4 gets disabled and I don't know why. (lspci -v log is also attached)
->>>>
->>>>
->>>> Could you point me in a direction how to combine the advantages of the two configurations?
->>>>
->>>>
->>>> Thank you,
->>>>
->>>> Christopher
->>>
->>> Attachments now as txt files
->>
->> It would be interesting to have the kernel boot logs too.
-> 
-> Sorry, here they are.
-> 
-> I tested these two versions again and recognised that in "-xenomai5" the 
-> CAN interface is working.. so there is "just" the serialport issue (IRQ 
-> 4 disabled) left. Everything else seems to work correct.
-
-
-Please also post the result of
-cat /proc/interrupts
-and
-cat /proc/xenomai/irq
-
-But I guess the problem you have is that the IRQ 4 is shared.
-
--- 
-                                                                Gilles.
+VGhhbmsgeW91ICEKCk9mIGNvdXJzZSwgd2Ugd29uJ3QgZXhwZWN0ICBib3VuZGVkIGxhdGVuY2ll
+cyBmcm9tIG91ciB0aHJlYWQgdGhhdCB1c2VzIExpbnV4IGRyaXZlcjsgCmJ1dCBJIGJlbGlldmUg
+dG8gYmUgYWJsZSB0byBtZWFzdXJlIHRoZSBsb2FkIG9uIG91ciBzeXRlbSBhbmQgdGVzdCBpbiB1
+bmRlciBzdWNoIGxvYWQgCmZvciBzb21lIHRpbWUgYW5kIGNoZWNrIGlmIG91ciB3cml0ZSBsYXRl
+bmNpZXMgYXJlIHN0aWxsIE9LLgpBbm90aGVyIHNvbHV0aW9uICh3aGljaCBhbHNvIHdvcmtlZCBz
+YXRpc2ZhY3Rvcnkgc28gZmFyKSB3YXMgdG8gJ2V4aGF1c3QnIG91ciBkYXRhIHRvIGEKIExpbnV4
+IHByb2Nlc3MgdmlhIGEgcnRfcGlwZSBhbmQgd3JpdGUgaXQgaW4gJ3Byb3Blcicgd2F5LgoKVGhl
+IG1vc3QgaW1wb3J0YW50IHBhcnQgb2YgdGhlIHF1ZXN0aW9uIGFuZCB0aGUgYW5zd2VyIHRoYXQg
+aXQgd291bGQnbnQgYWZmZWN0IG90aGVyCiB0aHJlYWRzIGluIHByaW1hcnkgbW9kZS4KCgpFdWdl
+bmUKCkV2Z2VueSBaZW1za292LCBUcmFuc2FzIEx0ZApldmdlbnkuemVtc2tvdkB0cmFuc2FzLmNv
+bQrvu79PZmZpY2UgcGhvbmUgIyArNyA4MTIgMzI1MzEzMSBhZGQuIDI3NC0wMwpDZWxsIHBob25l
+ICMgKzcgOTUyIDM5NDMxMjkKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X18KRnJvbTogR2lsbGVzIENoYW50ZXBlcmRyaXggW2dpbGxlcy5jaGFudGVwZXJkcml4QHhlbm9t
+YWkub3JnXQpTZW50OiBUdWVzZGF5LCBGZWJydWFyeSAxMiwgMjAxMyA0OjQ1IFBNClRvOiBaZW1z
+a292LCBFdmdlbnkKQ2M6IHhlbm9tYWlAeGVub21haS5vcmcKU3ViamVjdDogUmU6IFtYZW5vbWFp
+XSBXb3VsZCBhIFhlbm9tYWkgdGhyZWFkIHJ1bm5pbmcgaW4gc2Vjb25kYXJ5IG1vZGUgYWZmZWN0
+IHRoZSBsYXRlbmNpZXMgb2Ygb3RoZXIgWGVub21haSB0aHJlYWRzIGluIHByaW1hcnkgbW9kZXMg
+PwoKT24gMDIvMTIvMjAxMyAwMTozMyBQTSwgWmVtc2tvdiwgRXZnZW55IHdyb3RlOgoKPiBHb29k
+IGV2ZW5pbmcgIQo+Cj4gV2UncmUgZGV2ZWxvcGluZyBhIHN5c3RlbSB3aXRoIGJ1bmNoIG9mIFhl
+bm9tYWkgdGhyZWFkcywgb25lIG9mIHdoaWNoIHdyaXRlcwo+IHRoZSBkYXRhIHRvIHNvbWUgc3Bl
+Y2lmaWMgZGV2aWNlIChNSUwtU1RELTE1NTNCIGJ1cyBjb250cm9sbGVyKS4KPgo+IFJURE0gZHJp
+dmVycyBmb3IgdGhpcyBkZXZpY2UgYXJlIG5vdCBhdmFpbGFibGUsIGFuZCB3ZSB3YW50IHRvIGF2
+b2lkIHBvcnRpbmcKPiB0aGVtIHRvIFJURE0uCj4gU2luY2Ugd2UgZG9uJ3QgbmVlZCB0byB3YWl0
+IGZvciBhbnkgaW50ZXJydXB0cyBmcm9tIHRoaXMgZGV2aWNlICh3ZSBpbml0IHRoZQo+IHRyYW5z
+bWlzc2lvbiB3aXRoIHNvbWUgaW9jdGwncyB3aGljaCB3cml0ZSB0byB0aGUgcmVnaXN0ZXJzIG9m
+IHRoZSBkZXZpY2UgYW5kCj4gd3JpdGUgdGhlIGRhdGEgYmVpbmcgdGFybnNtaXR0ZWQgd2l0aCBf
+X2NvcHlfZnJvbV91c2VyKSwgd2UndmUgdHJpZWQgdG8gdXNlCj4gc3RhbmRhcmQgTGludXggZHJp
+dmVkIGZyb20gWGVub21haSB0aHJlYWQuCj4gTmF0dXJhbGx5LCBvbiBlYWNoIHRyYW5zbWlzc2lv
+biwgdGhlIHRyYW5zbWl0dGluZyBYZW5vbWFpIHRocmVhZCBzd2l0Y2hlcyB0bwo+IHRoZSBzZWNv
+bmRhcnkgbW9kZSwgYnV0IHRoZSByZXN1bHRpbmcgbGF0ZW5jeSBpcyBwZXJmZWN0bHkgT0sgZm9y
+IHVzICh3ZQo+IGVzdGltYXRlIGl0IGF0IGFyb3VuZCA1MC4uMTAwIHVzZWMpLgoKCllvdSBwcm9i
+YWJseSBzaG91bGQgbm90IGV4cGVjdCBhIGJvdW5kZWQgbGF0ZW5jeSBmcm9tIExpbnV4LgoKPgo+
+IFdvdWxkIHN1Y2ggYXBwcm9hY2ggY2F1c2UgZXh0cmEgbGF0ZW5jaWVzIHRvIG90aGVyIFhlbm9t
+YWkgdGhyZWFkcywgd2hpY2ggcnVuCj4gIHNpbXVsdGFuZW91c2x5IGluIHByaW1hcnkgbW9kZSA/
+CgoKSWYgeW91IGVuYWJsZSBDT05GSUdfWEVOT19PUFRfUFJJT0NQTCBhbmQgdGhlIHRhc2sgcnVu
+bmluZyBpbiBzZWNvbmRhcnkKbW9kZSBoYXMgYSBoaWdoZXIgcHJpb3JpdHkgdGhhbiBvdGhlciBY
+ZW5vbWFpIHRocmVhZHMsIHRoZW4geWVzLgpPdGhlcndpc2Ugbm8uCgo+IEFsc28sIHdvdWxkIHRo
+ZXJlIGJlIGFueSBwcm9ibGVtcyB3aXRoIGNvbnN0YW50IHN3aXRjaGVzIG9mIG91ciB3cml0ZXIg
+dGhyZWFkCj4gYmV0d2VlbiBwcmltYXJ5IGFuZCBzZWNvbmRhcnkgbW9kZSA/CgoKSXQgZGVwZW5k
+cyBvbiB5b3VyIGRlZmluaXRpb24gb2YgInByb2JsZW1zIjoKLSBzdWNoIGEgdGFzayBjYW4gbm90
+IGJlIGNvbnNpZGVyZWQgYSByZWFsLXRpbWUgdGFzawotIGFuZCB0aGUgY29uc3RhbnQgc3dpdGNo
+ZXMgaW5kdWNlcyBhIGJpdCBvZiBDUFUgY29uc3VtcHRpb24uCgo+IEFzIGZhciBhcyBJIHVuZGVy
+c3RhbmQsIG9uIGVhY2ggcmVnaXN0ZXIgYWNjZXNzIGl0IGlzIHN3aXRjaGVkIHRvIHNlY29uZGFy
+eQo+IG1vZGUsIGFuZCBvbiBlYWNoIHJ0X2NvbmRfd2FpdCBpdCBnb2VzIGJhY2sgdG8gcHJpbWFy
+eSBtb2RlLgoKCllvdSB1bmRlcnN0YW5kIHJpZ2h0LgoKLS0KICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIEdpbGxlcy4K
 
