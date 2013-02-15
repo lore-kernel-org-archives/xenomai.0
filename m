@@ -1,13 +1,11 @@
-Message-ID: <511E5594.2010809@siemens.com>
-Date: Fri, 15 Feb 2013 16:34:44 +0100
-From: Jan Kiszka <jan.kiszka@siemens.com>
+From: Steve Deiters <SteveDeiters@BASLER.com>
+Date: Fri, 15 Feb 2013 22:48:20 +0000
+Message-ID: <37FC08B05779524B9F78C36BD9D8375E340A6591@vExchange2010.basler.com>
+Content-Language: en-US
 MIME-Version: 1.0
-References: <511E5112.9030006@control.lth.se> <511E53A5.1030406@siemens.com>
-In-Reply-To: <511E53A5.1030406@siemens.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] kernel BUG at arch/x86/kernel/ipipe.c:589! on
-	motherboard DX79SI
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: [Xenomai] Losing Real Time Response During ARP Flood
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,35 +14,59 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Anders Blomdell <anders.blomdell@control.lth.se>
-Cc: Xenomai <xenomai@xenomai.org>
+To: "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
 
-On 2013-02-15 16:26, Jan Kiszka wrote:
-> On 2013-02-15 16:15, Anders Blomdell wrote:
->> Hi,
->>
->> I have a DX79SI that dies with "kernel BUG at
->> arch/x86/kernel/ipipe.c:589!" when running Xenomai. This is not very
->> surprising since when running the system with an ordinary kernel thera
->> are a few 'do_IRQ: X.Y No irq handler for vector (irq -1)' each day.
->>
->> Question is if it would be possible to do something less fatal than
->> 'BUG_ON(irq < 0);' in the code below:
-> 
-> This remains a bug that has to be understood.
-
-Oh, now I really read the paragraph above: So your system generates
-spurious interrupts? OK, for which vector? Are there reports on the web
-related to this issue and hardware reasons? I wouldn't want to run RT
-load on such a wacky box - provided it is a hardware issue.
-
-The reason why we BUG here is that so far all cases were real I-pipe
-bugs. Until we know this is required for otherwise fine hardware, I'm a
-bit reluctant to add special code that handles this differently.
-
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RTC ITP SDP-DE
-Corporate Competence Center Embedded Linux
-
+V2Ugc2VlbSB0byBiZSBsb3NpbmcgcmVhbCB0aW1lIHJlc3BvbnNlIGR1cmluZyBhbiBBUlAgZmxv
+b2QuICBXZSByZWNlbnRseSBoYWQgYSBtaXNjb25maWd1cmVkIHN3aXRjaCB0aGF0IGNhdXNlZCBh
+biBBUlAgZmxvb2QgYW5kIGNhdXNlZCBhIGxvdCBvZiBvdXIgZGV2aWNlcyB0byByZWJvb3QuICBB
+ZnRlciBsb29raW5nIGF0IGl0IGEgYml0IHdlIGZvdW5kIHRoZSBleHRlcm5hbCB3YXRjaGRvZyBj
+aXJjdWl0IHdhcyByZXNldHRpbmcgdGhlIGJvYXJkcy4gIFdlIGhhdmUgYSBkZXNpZ24gd2hlcmUg
+dGhlcmUgaXMgYSBsb3cgcHJpb3JpdHkgdGhyZWFkIHRvZ2dsaW5nIGEgR1BJTyB0byBzZXJ2aWNl
+IGFuIGV4dGVybmFsIHdhdGNoZG9nLiAgV2XigJl2ZSBmb3VuZCB0aGF0IHRoaXMgdGhyZWFkIGlz
+IGdldHRpbmcgZGVsYXllZCBzaWduaWZpY2FudGx5IGR1cmluZyB0aGUgQVJQIGZsb29kLg0KDQpU
+aGUgRXRoZXJuZXQgZHJpdmVyIGFuZCBUQ1Agc3RhY2sgaXMganVzdCB0aGUgcGxhaW4gTGludXgg
+b25lcy4gIFdl4oCZdmUgaGFkIFBDcyBydW5uaW5nIFdpbmRvd3MgYW5kIExpbnV4IHRoYXQgd2Vy
+ZSBvbiB0aGUgbmV0d29yayBhdCB0aGUgc2FtZSB0aW1lIG1hbGZ1bmN0aW9uIGFzIHdlbGwuICBI
+b3dldmVyIHdpdGggWGVub21haSBJIHdvdWxkIHRoaW5rIHlvdSB3b3VsZCBiZSBzb21ld2hhdCBn
+dWFyZGVkIGFnYWluc3QgYW55IGlzc3VlcyB3aXRoIExpbnV4IGhhbmRsaW5nIHRoZSBuZXR3b3Jr
+aW5nLg0KDQpXZSBoYXZlbuKAmXQgZm91bmQgYW55IHN1cmUgZmlyZSBmaXggdG8gZ2V0IGFyb3Vu
+ZCB0aGlzIHlldC4gIFdlIGNhbiBjaGFuZ2Ugc29tZSBvZiB0aGUgcHJpb3JpdGllcyBhcm91bmQg
+YW5kIGl0IHNlZW1zIHRvIGFsbGV2aWF0ZSB0aGUgaXNzdWUuICBJZiB3ZSBpbmNyZWFzZSB0aGUg
+cHJpb3JpdHkgb2YgdGhlIHdhdGNoZG9nIHRocmVhZCBpdCBkb2VzbuKAmXQgaGFwcGVuLiAgV2Ug
+bGluayBhZ2FpbnN0IHRoZSBQT1NJWCBza2luIHNvIHdlIGhhdmUgcmVhbCB0aW1lIHRocmVhZHMg
+ZnJvbSBhbGwgb3VyIHB0aHJlYWRfY3JlYXRlIGNhbGxzLiAgQW55dGhpbmcgcmVseWluZyBvbiBu
+ZXR3b3JrIGNvbW11bmljYXRpb24gSSB3b3VsZCBleHBlY3QgdG8gYmUgcnVubmluZyBtb3N0bHkg
+aW4gdGhlIExpbnV4IGRvbWFpbi4gIFRoZXNlIG1vc3RseSBqdXN0IHJlY2VpdmUgZGF0YSBhbmQg
+cGFzcyBpdCBvbiB0byBvdGhlciByZWFsIHRpbWUgdGhyZWFkcyB0aHJvdWdoIHNoYXJlZCBtZW1v
+cnkgYW5kIG1lbW9yeSBxdWV1ZXMuDQoNCldlIGFyZSB0cnlpbmcgdG8gZ2V0IGFueSBpZGVhcyBv
+biB3aGF0IG1heSBjYXVzZSB0aGlzIGJlaGF2aW9yLiAgV2Ugd291bGQgdGhpbmsgYSBwdXJlIExp
+bnV4IEV0aGVybmV0IGRyaXZlciB3b3VsZCBub3QgYmUgYWJsZSB0byBob2xkIG9mZiB0aGUgcmVh
+bCB0aW1lIHRocmVhZHMuICBXZeKAmXZlIHNwZWN1bGF0ZWQgaXQgbWF5IGJlIHB1cmVseSBkdWUg
+dG8gQ1BVIGxvYWRpbmcgZHVlIHRvIHRoZSBoaWdoIG51bWJlciBvZiBpbnRlcnJ1cHRzIGJlaW5n
+IHByb2Nlc3NlZCwgYnV0IHdlIGhhdmVu4oCZdCBiZWVuIGFibGUgdG8gcHJvdmUgdGhpcy4NCg0K
+V2XigJlyZSBnb2luZyB0byB0cnkgdGhlIEktUGlwZSB0cmFjZXIgYW5kIG91ciBKVEFHIHByb2Zp
+bGVyIG5leHQuICBJIHdhcyB3b25kZXJpbmcgaWYgdGhlcmUgYXJlIGFueSBpZGVhcyB0aG91Z2gg
+b24gd2hlcmUgdG8gc3RhcnQgbG9va2luZy4gIElzIHRoZXJlIGFueSB3YXkgdG8gcmF0ZSBsaW1p
+dCBhbiBpbmNvbWluZyBpbnRlcnJ1cHQgc291cmNlPw0KDQpXZSBhcmUgcnVubmluZyBhIFBvd2Vy
+UEMgcGxhdGZvcm0gd2l0aCAyLjYuMzMuNSBMaW51eCBrZXJuZWwgYW5kIDIuNS40IFhlbm9tYWku
+DQoNCg0KQW55IGlkZWFzIGFyZSBhcHByZWNpYXRlZC4uDQoNCg0KU3RldmUgRGVpdGVycw0KU2Vu
+aW9yIFNvZnR3YXJlIEVuZ2luZWVyDQpCYXNsZXIgRWxlY3RyaWMgQ29tcGFueQ0KMTI1NzAgU3Rh
+dGUgUm91dGUgMTQzDQpIaWdobGFuZCwgSUwgNjIyNDktMTA3NA0KVW5pdGVkIFN0YXRlcw0KUGhv
+bmU6ICsxIDYxOCA2NTQgMjM0MSBFeHQuIDQwNg0KRmF4OiArMSA2MTggNjU0IDIzNTENCkVtYWls
+OiBTdGV2ZURlaXRlcnNAQkFTTEVSLmNvbTxtYWlsdG86U3RldmVEZWl0ZXJzQEJBU0xFUi5jb20+
+DQp3d3cuYmFzbGVyLmNvbQ0KDQoNCg0KQ09ORklERU5USUFMSVRZIE5PVElDRTogVGhpcyBtZXNz
+YWdlIG1heSBpbmNsdWRlIGNvbmZpZGVudGlhbCBhbmQvb3IgbGVnYWxseSBwcm90ZWN0ZWQgaW5m
+b3JtYXRpb24gYW5kIGlzIGludGVuZGVkIHNvbGVseSBmb3IgdGhlIHVzZSBvZiBpdHMgaW50ZW5k
+ZWQgcmVjaXBpZW50KHMpLiAgSWYgeW91IGFyZSBub3QgdGhlIGludGVuZGVkIHJlY2lwaWVudCwg
+YW55IGRpc3RyaWJ1dGlvbiBvciBjb3B5aW5nIG9mIHRoaXMgbWVzc2FnZSAoaW5jbHVkaW5nIGFu
+eSBhdHRhY2htZW50cykgaXMgc3RyaWN0bHkgcHJvaGliaXRlZC4gIElmIHlvdSBhcmUgbm90IHRo
+ZSBpbnRlbmRlZCByZWNpcGllbnQsIHBsZWFzZSBkZWxldGUgaXQgKGluY2x1ZGluZyBhbnkgYXR0
+YWNobWVudHMpIGZyb20geW91ciBzeXN0ZW0gd2l0aG91dCBjb3B5aW5nIG9yIGZvcndhcmRpbmcg
+aXQsIGFuZCBub3RpZnkgdGhlIHNlbmRlciBvZiB0aGUgZXJyb3IgYnkgcmVwbHkgZS1tYWlsLg0K
+DQpBbHRob3VnaCB0aGlzIHRyYW5zbWlzc2lvbiBhbmQgYW55IGF0dGFjaG1lbnRzIGFyZSBiZWxp
+ZXZlZCB0byBiZSBmcmVlIG9mIGFueSB2aXJ1cyBvciBvdGhlciBkZWZlY3QgdGhhdCBtaWdodCBh
+ZmZlY3QgYW55IGNvbXB1dGVyIHN5c3RlbSBpbnRvIHdoaWNoIGl0IHdvdWxkIGJlIHJlY2VpdmVk
+LCBpdCBpcyB0aGUgcmVzcG9uc2liaWxpdHkgb2YgdGhlIHJlY2lwaWVudCB0byBlbnN1cmUgdGhh
+dCB0aGUgZS1tYWlsIGlzIHZpcnVzIGZyZWUgYW5kIG5vIHJlc3BvbnNpYmlsaXR5IGlzIGFjY2Vw
+dGVkIGJ5IEJhc2xlciBFbGVjdHJpYyBDb21wYW55IGZvciBhbnkgZGFtYWdlIG9yIGxvc3MgYXJp
+c2luZyBmcm9tIGl0cyB1c2UuDQoNCg0KDQoNCg==
