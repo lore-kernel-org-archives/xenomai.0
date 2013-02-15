@@ -1,14 +1,15 @@
-Message-ID: <511E3A5C.4000209@arcor.de>
-Date: Fri, 15 Feb 2013 14:38:36 +0100
-From: Christopher Hahn <hahnchristopher@arcor.de>
+Message-ID: <511E4B65.5040403@xenomai.org>
+Date: Fri, 15 Feb 2013 15:51:17 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <224444793.158669.1360843957336.JavaMail.ngmail@webmail16.arcor-online.net>	<511CD5C2.50701@arcor.de>	<511CD673.2030400@xenomai.org>
-	<511CDF65.1020907@arcor.de>	<511D3A22.40307@xenomai.org>
-	<511DF30B.6040601@arcor.de> <511E26AE.1010203@xenomai.org>
-In-Reply-To: <511E26AE.1010203@xenomai.org>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Subject: Re: [Xenomai] kernel configuration problems with ACPI
+References: <511B94E4.2070708@mediso.hu> <511B9901.7040104@xenomai.org>
+	<511BB60E.7090900@mediso.hu> <511BCA3E.4050705@xenomai.org>
+	<511C989C.7070700@mediso.hu> <511E2846.8040206@xenomai.org>
+	<511E38CD.8080301@mediso.hu>
+In-Reply-To: <511E38CD.8080301@mediso.hu>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Floating point operations in kernel on powerpc
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,64 +18,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Norbert Bukuli <norbert.bukuli@mediso.hu>
+Cc: xenomai@xenomai.org
 
-QW0gMTUuMDIuMjAxMyAxMzoxNCwgc2NocmllYiBHaWxsZXMgQ2hhbnRlcGVyZHJpeDoKPiBPbiAw
-Mi8xNS8yMDEzIDA5OjM0IEFNLCBDaHJpc3RvcGhlciBIYWhuIHdyb3RlOgo+Cj4+IGFmdGVyIHJ1
-bm5pbmcgdGhlIGFwcGxpY2F0aW9uIHdoaWNoIGFjY2Vzc2VzIHRoZSBzZXJpYWwgZGV2aWNlCj4+
-ICJYZW5vbWFpOiB4bmludHJfZWRnZV9zaGlycV9oYW5kbGVyOiBJUlE0IG5vdCBoYW5kbGVkLiBE
-aXNhYmxpbmcgSVJRCj4+IGxpbmUuIiB3YXMgcHJpbnRlZCB0byBkbWVzZyBhbmQgdGhlIG5leHQg
-dHdvIG91dHB1dHMgb2YKPj4gL3Byb2MvaW50ZXJydXB0cyBhbmQgL3Byb2MveGVub21haS9pcnEK
-Pgo+IElmIHhuaW50cl9lZGdlX3NoaXJxX2hhbmRsZXIgaXMgY2FsbGVkLCBhbiBSVERNIGRyaXZl
-ciByZWdpc3RlcmVkIGEKPiBoYW5kbGVyIGZvciB0aGlzIGlycS4gU28sIHBsZWFzZSBrZWVwIHRo
-ZSBhcHBsaWNhdGlvbiBydW5uaW5nIHdpdGggYWxsCj4gdGhlIGZpbGUgZGVzY3JpcHRvcnMgb3Bl
-bmVkLCBhbmQgcnVuIGNhdCAvcHJvYy94ZW5vbWFpL2lycSB3aGlsZSB0aGUKPiBhcHBsaWNhdGlv
-biBpcyBzdGlsbCBydW5uaW5nLgo+Cj4gVGhlIG1vc3QgbG9naWNhbCByZXN1bHQgd291bGQgYmUg
-dGhhdCBpcnEgNCBpcyBjbGFpbWVkIGJ5IHRoZSAxNjU1MEEgZHJpdmVyLgo+Cj4Kd2hpbGUgYWNj
-ZXNzaW5nIG9uZSBzZXJpYWwgcG9ydCBJIGdldCB0aGlzCi0tLS0tLS0tLS0tLS0tIG5leHQgcGFy
-dCAtLS0tLS0tLS0tLS0tLQojIGNhdCAvcHJvYy9pbnRlcnJ1cHRzIAogICAgICAgICAgIENQVTAg
-ICAgICAgQ1BVMSAgICAgICBDUFUyICAgICAgIENQVTMgICAgICAgCiAgMDogICAgICAgIDEyMCAg
-ICAgICAgICAwICAgICAgICAgIDAgICAgICAgICAgMCAgIElPLUFQSUMtZWRnZSAgICAgIHRpbWVy
-CiAgMTogICAgICAgICAgMiAgICAgICAgICAxICAgICAgICAgIDAgICAgICAgICAgMCAgIElPLUFQ
-SUMtZWRnZSAgICAgIGk4MDQyCiAgNDogICAgICAgICAgMyAgICAgICAgICAyICAgICAgICAgIDIg
-ICAgICAgICAgMyAgIElPLUFQSUMtZmFzdGVvaSAKICA3OiAgICAgICAgICAwICAgICAgICAgIDAg
-ICAgICAgICAgMCAgICAgICAgICAwICAgSU8tQVBJQy1mYXN0ZW9pICAgcGFycG9ydDAKICA4OiAg
-ICAgICAgICAwICAgICAgICAgIDAgICAgICAgICAgMSAgICAgICAgICAwICAgSU8tQVBJQy1lZGdl
-ICAgICAgcnRjMAogIDk6ICAgICAgICAgIDAgICAgICAgICAgMCAgICAgICAgICAwICAgICAgICAg
-IDAgICBJTy1BUElDLWZhc3Rlb2kgICBhY3BpCiAxNjogICAgICAgICA4MiAgICAgICAgIDU3ICAg
-ICAgICAgNjggICAgICAgICA3NyAgIElPLUFQSUMtZmFzdGVvaSAgIGk5MTUKIDE4OiAgICAgICAg
-ICAwICAgICAgICAgIDAgICAgICAgICAgMCAgICAgICAgICAwICAgSU8tQVBJQy1mYXN0ZW9pICAg
-dWhjaV9oY2Q6dXNiMwogMTk6ICAgICAgICAgIDkgICAgICAgICAxMCAgICAgICAgICA5ICAgICAg
-ICAgIDkgICBJTy1BUElDLWZhc3Rlb2kgICB1aGNpX2hjZDp1c2IyCiAyMDogICAgICAgIDMwNyAg
-ICAgICAgMzMwICAgICAgICAzMTEgICAgICAgIDMzMSAgIElPLUFQSUMtZmFzdGVvaSAgIGV0aDAK
-IDIyOiAgICAgICAzNjYzICAgICAgIDM2NTcgICAgICAgMzY2NCAgICAgICAzNjQ5ICAgSU8tQVBJ
-Qy1mYXN0ZW9pICAgYWhjaSwgc25kX2hkYV9pbnRlbAogMjM6ICAgICAgICAxNTggICAgICAgIDE2
-NyAgICAgICAgMTY2ICAgICAgICAxNTkgICBJTy1BUElDLWZhc3Rlb2kgICB1aGNpX2hjZDp1c2Ix
-Ck5NSTogICAgICAgICAgMCAgICAgICAgICAwICAgICAgICAgIDAgICAgICAgICAgMCAgIE5vbi1t
-YXNrYWJsZSBpbnRlcnJ1cHRzCkxPQzogICAgICAyOTI1MyAgICAgIDMwMDU2ICAgICAgMzE4ODcg
-ICAgICAyOTU1MiAgIExvY2FsIHRpbWVyIGludGVycnVwdHMKU1BVOiAgICAgICAgICAwICAgICAg
-ICAgIDAgICAgICAgICAgMCAgICAgICAgICAwICAgU3B1cmlvdXMgaW50ZXJydXB0cwpQTUk6ICAg
-ICAgICAgIDAgICAgICAgICAgMCAgICAgICAgICAwICAgICAgICAgIDAgICBQZXJmb3JtYW5jZSBt
-b25pdG9yaW5nIGludGVycnVwdHMKSVdJOiAgICAgICAgICAwICAgICAgICAgIDAgICAgICAgICAg
-MCAgICAgICAgICAwICAgSVJRIHdvcmsgaW50ZXJydXB0cwpSVFI6ICAgICAgICAgIDAgICAgICAg
-ICAgMCAgICAgICAgICAwICAgICAgICAgIDAgICBBUElDIElDUiByZWFkIHJldHJpZXMKUkVTOiAg
-ICAgIDQ0Mjk1ICAgICAgNDk1NjkgICAgICAzOTAzMyAgICAgIDM1MTA1ICAgUmVzY2hlZHVsaW5n
-IGludGVycnVwdHMKQ0FMOiAgICAgICAxMTk3ICAgICAgIDEzNDYgICAgICAgMjU2NCAgICAgICAy
-MTA3ICAgRnVuY3Rpb24gY2FsbCBpbnRlcnJ1cHRzClRMQjogICAgICAgIDQyMiAgICAgICAgNzMw
-ICAgICAgICA4OTYgICAgICAgIDYyNiAgIFRMQiBzaG9vdGRvd25zClRSTTogICAgICAgICAgMCAg
-ICAgICAgICAwICAgICAgICAgIDAgICAgICAgICAgMCAgIFRoZXJtYWwgZXZlbnQgaW50ZXJydXB0
-cwpUSFI6ICAgICAgICAgIDAgICAgICAgICAgMCAgICAgICAgICAwICAgICAgICAgIDAgICBUaHJl
-c2hvbGQgQVBJQyBpbnRlcnJ1cHRzCk1DRTogICAgICAgICAgMCAgICAgICAgICAwICAgICAgICAg
-IDAgICAgICAgICAgMCAgIE1hY2hpbmUgY2hlY2sgZXhjZXB0aW9ucwpNQ1A6ICAgICAgICAgIDEg
-ICAgICAgICAgMSAgICAgICAgICAxICAgICAgICAgIDEgICBNYWNoaW5lIGNoZWNrIHBvbGxzCkVS
-UjogICAgICAgICAgMApNSVM6ICAgICAgICAgIDAKCiMgY2F0IC9wcm9jL3hlbm9tYWkvaXJxIApJ
-UlEgICAgICAgICBDUFUwICAgICAgICBDUFUxICAgICAgICBDUFUyICAgICAgICBDUFUzCiAgNDog
-ICAgICAgICAyNTIgICAgICAgICAyNTIgICAgICAgICAyNTIgICAgICAgICAyNTEgICAgICAgICBy
-dHNlcjAKIDE5OiAgICAgICAgIDI1MSAgICAgICAgIDI1MCAgICAgICAgIDI1MyAgICAgICAgIDI0
-NiAgICAgICAgIFNKQTEwMDAgU0pBMTAwMAoyMzM2OiAgICAgICAyOTgzNyAgICAgICAzMDczMCAg
-ICAgICAzMTkwNiAgICAgICAzMDAwNyAgICAgICAgIFt0aW1lcl0KMjMzNzogICAgICAgICAgIDAg
-ICAgICAgICAgIDEgICAgICAgICAgIDIgICAgICAgICAgIDEgICAgICAgICBbcmVzY2hlZHVsZV0K
-MjMzODogICAgICAgICAgIDAgICAgICAgICAgIDEgICAgICAgICAgIDEgICAgICAgICAgIDEgICAg
-ICAgICBbdGltZXItaXBpXQoyMzM5OiAgICAgICAgICAgMCAgICAgICAgICAgMCAgICAgICAgICAg
-MCAgICAgICAgICAgMCAgICAgICAgIFtzeW5jXQoyMzcxOiAgICAgICAgICAgMyAgICAgICAgICAg
-MCAgICAgICAgICAgMCAgICAgICAgICAgMCAgICAgICAgIFt2aXJ0dWFsXQo=
+On 02/15/2013 02:31 PM, Norbert Bukuli wrote:
+> -----BEGIN PGP SIGNED MESSAGE-----
+> Hash: SHA1
+>
+> Thank you again for your kind help!
+> I am really sorry for the confusing question. Now we are compiling
+> kernel modules only. Afterwards we port our application from RTAI,
+> kernelspace to Xenomai, kernelspace will we port from kernelspace to
+> userspace.
+> I found what makes the problem. The CONFIG_CC_OPTIMIZE_FOR_SIZE kernel
+> option was set on. After I turned it off, the compilation was successful.
+
+I guess you are referring to that issue brought in by gcc releases >= 4.4.x?
+http://www.mail-archive.com/linuxppc-dev@lists.ozlabs.org/msg17189.html
+http://gcc.gnu.org/ml/gcc-patches/2008-04/msg01678.html
+
+It looks like the suggested kernel patch to fix it did not make its way 
+to the kernel. Bottom line is that it's not fpu related actually. This 
+is definitely good material for the Xenomai wiki.
+
+-- 
+Philippe.
+
