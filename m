@@ -1,14 +1,11 @@
-Message-ID: <511E4C3B.2020407@siemens.com>
-Date: Fri, 15 Feb 2013 15:54:51 +0100
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <511E5112.9030006@control.lth.se>
+Date: Fri, 15 Feb 2013 16:15:30 +0100
+From: Anders Blomdell <anders.blomdell@control.lth.se>
 MIME-Version: 1.0
-References: <511A2964.4080902@hilscher.com> <511A2CA4.1000408@siemens.com>
-	<511B9E94.2030108@hilscher.com> <511CE85D.6070704@hilscher.com>
-	<511CFC47.5000709@hilscher.com>
-In-Reply-To: <511CFC47.5000709@hilscher.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] Hilscher driver for cifX boards
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai] kernel BUG at arch/x86/kernel/ipipe.c:589! on motherboard
+	DX79SI
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,32 +14,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?ISO-8859-1?Q?St=E9phane_LOS?= <slos@hilscher.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Xenomai <xenomai@xenomai.org>
 
-On 2013-02-14 16:01, St=E9phane LOS wrote:
-> Hi,
->=20
-> Please find attached the newest version that seems better to us.
+Hi,
 
-Some remarks on the code first:
- - Consider reformatting your code according to kernel style, it will
-   improve readability (no long lines, e.g.).
- - rtdm_malloc is for the rare case that you allocate memory over RT
-   context. But probe is still Linux.
- - If you register/free the IRQ handler on open/close, you must also
-   enable/disable the IRQ sources in the hardware in those functions.
- - On removal, unregister the RTDM device first. That will synchronize
-   with remaining open instances.
- - Minor: Avoid __devinit/exit, they were removed from recent kernels.
+I have a DX79SI that dies with "kernel BUG at 
+arch/x86/kernel/ipipe.c:589!" when running Xenomai. This is not very 
+surprising since when running the system with an ordinary kernel thera 
+are a few 'do_IRQ: X.Y No irq handler for vector (irq -1)' each day.
 
-So, what is the bug again? How does the oops message look like? When
-will the device start generating IRQs, and do they arrive while rebooting=
-?
+Question is if it would be possible to do something less fatal than 
+'BUG_ON(irq < 0);' in the code below:
 
-Jan
+int __ipipe_handle_irq(struct pt_regs *regs)
+{
+	struct ipipe_percpu_data *p = __ipipe_this_cpu_ptr(&ipipe_percpu);
+	int irq, vector = regs->orig_ax, flags = 0;
+	struct pt_regs *tick_regs;
 
---=20
-Siemens AG, Corporate Technology, CT RTC ITP SDP-DE
-Corporate Competence Center Embedded Linux
+	if (likely(vector < 0)) {
+		irq = __this_cpu_read(vector_irq[~vector]);
+		BUG_ON(irq < 0);
+	} else { /* Software-generated. */
+		irq = vector;
+		flags = IPIPE_IRQF_NOACK;
+	}
+
+Regards
+
+Anders Blomdell
+
+-- 
+Anders Blomdell                  Email: anders.blomdell@control.lth.se
+Department of Automatic Control
+Lund University                  Phone:    +46 46 222 4625
+P.O. Box 118                     Fax:      +46 46 138118
+SE-221 00 Lund, Sweden
+
 
