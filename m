@@ -1,15 +1,13 @@
-Message-ID: <511E532C.2010209@mediso.hu>
-Date: Fri, 15 Feb 2013 16:24:28 +0100
-From: Norbert Bukuli <norbert.bukuli@mediso.hu>
+Message-ID: <511E53A5.1030406@siemens.com>
+Date: Fri, 15 Feb 2013 16:26:29 +0100
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-References: <511B94E4.2070708@mediso.hu> <511B9901.7040104@xenomai.org>
-	<511BB60E.7090900@mediso.hu> <511BCA3E.4050705@xenomai.org>
-	<511C989C.7070700@mediso.hu> <511E2846.8040206@xenomai.org>
-	<511E38CD.8080301@mediso.hu> <511E4B65.5040403@xenomai.org>
-In-Reply-To: <511E4B65.5040403@xenomai.org>
-Content-Type: text/plain; charset="ISO-8859-1"
+References: <511E5112.9030006@control.lth.se>
+In-Reply-To: <511E5112.9030006@control.lth.se>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Floating point operations in kernel on powerpc
+Subject: Re: [Xenomai] kernel BUG at arch/x86/kernel/ipipe.c:589! on
+	motherboard DX79SI
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,53 +16,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Anders Blomdell <anders.blomdell@control.lth.se>
+Cc: Xenomai <xenomai@xenomai.org>
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
-
-
-
-On 2013-02-15 15:51, Philippe Gerum wrote:
-> On 02/15/2013 02:31 PM, Norbert Bukuli wrote:
->> -----BEGIN PGP SIGNED MESSAGE----- Hash: SHA1
->> 
->> Thank you again for your kind help! I am really sorry for the
->> confusing question. Now we are compiling kernel modules only.
->> Afterwards we port our application from RTAI, kernelspace to
->> Xenomai, kernelspace will we port from kernelspace to userspace. 
->> I found what makes the problem. The CONFIG_CC_OPTIMIZE_FOR_SIZE
->> kernel option was set on. After I turned it off, the compilation
->> was successful.
+On 2013-02-15 16:15, Anders Blomdell wrote:
+> Hi,
 > 
-> I guess you are referring to that issue brought in by gcc releases
-> >= 4.4.x? 
-> http://www.mail-archive.com/linuxppc-dev@lists.ozlabs.org/msg17189.html
->
+> I have a DX79SI that dies with "kernel BUG at
+> arch/x86/kernel/ipipe.c:589!" when running Xenomai. This is not very
+> surprising since when running the system with an ordinary kernel thera
+> are a few 'do_IRQ: X.Y No irq handler for vector (irq -1)' each day.
 > 
-http://gcc.gnu.org/ml/gcc-patches/2008-04/msg01678.html
+> Question is if it would be possible to do something less fatal than
+> 'BUG_ON(irq < 0);' in the code below:
+
+This remains a bug that has to be understood.
+
 > 
-Yes, that was the problem, definitely.
-
-> It looks like the suggested kernel patch to fix it did not make its
-> way to the kernel. Bottom line is that it's not fpu related
-> actually. This is definitely good material for the Xenomai wiki.
+> int __ipipe_handle_irq(struct pt_regs *regs)
+> {
+>     struct ipipe_percpu_data *p = __ipipe_this_cpu_ptr(&ipipe_percpu);
+>     int irq, vector = regs->orig_ax, flags = 0;
+>     struct pt_regs *tick_regs;
 > 
+>     if (likely(vector < 0)) {
+>         irq = __this_cpu_read(vector_irq[~vector]);
+>         BUG_ON(irq < 0);
+>     } else { /* Software-generated. */
+>         irq = vector;
+>         flags = IPIPE_IRQF_NOACK;
+>     }
 
-- -- 
-Best regards,
-Norbert Bukuli
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.19 (GNU/Linux)
-Comment: Using GnuPG with Thunderbird - http://www.enigmail.net/
+Kernel 3.5.7 with latest I-pipe? This is the second report of this kind,
+see [1] for the discussion and suggestions. If you don't have KGDB and
+that kind enabled, try Gilles' instrumentations.
 
-iQEcBAEBAgAGBQJRHlMsAAoJEJEs22zQJ00Su18IALszpx85WwK8kR7U/kgRg9ex
-Y4Fod11O+erU/dRpAwVhvxK8mK+HO06m0GARAadkDUjQJjFmjOUyEs6p71oFGRkQ
-+l6/IJOnUCVOjOVO5JLhYjsyoeh8VnQtMcI9IUIvoukSNPngyr41UMOTFp7traXj
-Mdnjbt2Spk8CY3u2JX28SbfzEjSBmmnQajTJy9mOtkrpXyRt4D6Pbsyb4M1gVD5N
-LbCX09/Vj6B9yJrWk1bvKxm7Lbbin2O896k/tTTh5ZxH0HyS9ZnTLrKKDWN65ZMq
-sJZg84cN23U8vv3WJVwhdRmXvZ8ub8eLjM9R1gmK89F7v4+Arwsou8VQv2EBbjY=
-=yprj
------END PGP SIGNATURE-----
+Jan
+
+[1] http://thread.gmane.org/gmane.linux.real-time.xenomai.users/15936
+
+-- 
+Siemens AG, Corporate Technology, CT RTC ITP SDP-DE
+Corporate Competence Center Embedded Linux
 
