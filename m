@@ -1,15 +1,14 @@
-Message-ID: <511E4B65.5040403@xenomai.org>
-Date: Fri, 15 Feb 2013 15:51:17 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <511E4C3B.2020407@siemens.com>
+Date: Fri, 15 Feb 2013 15:54:51 +0100
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-References: <511B94E4.2070708@mediso.hu> <511B9901.7040104@xenomai.org>
-	<511BB60E.7090900@mediso.hu> <511BCA3E.4050705@xenomai.org>
-	<511C989C.7070700@mediso.hu> <511E2846.8040206@xenomai.org>
-	<511E38CD.8080301@mediso.hu>
-In-Reply-To: <511E38CD.8080301@mediso.hu>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Floating point operations in kernel on powerpc
+References: <511A2964.4080902@hilscher.com> <511A2CA4.1000408@siemens.com>
+	<511B9E94.2030108@hilscher.com> <511CE85D.6070704@hilscher.com>
+	<511CFC47.5000709@hilscher.com>
+In-Reply-To: <511CFC47.5000709@hilscher.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] Hilscher driver for cifX boards
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,29 +17,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Norbert Bukuli <norbert.bukuli@mediso.hu>
-Cc: xenomai@xenomai.org
+To: =?ISO-8859-1?Q?St=E9phane_LOS?= <slos@hilscher.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 02/15/2013 02:31 PM, Norbert Bukuli wrote:
-> -----BEGIN PGP SIGNED MESSAGE-----
-> Hash: SHA1
->
-> Thank you again for your kind help!
-> I am really sorry for the confusing question. Now we are compiling
-> kernel modules only. Afterwards we port our application from RTAI,
-> kernelspace to Xenomai, kernelspace will we port from kernelspace to
-> userspace.
-> I found what makes the problem. The CONFIG_CC_OPTIMIZE_FOR_SIZE kernel
-> option was set on. After I turned it off, the compilation was successful.
+On 2013-02-14 16:01, St=E9phane LOS wrote:
+> Hi,
+>=20
+> Please find attached the newest version that seems better to us.
 
-I guess you are referring to that issue brought in by gcc releases >= 4.4.x?
-http://www.mail-archive.com/linuxppc-dev@lists.ozlabs.org/msg17189.html
-http://gcc.gnu.org/ml/gcc-patches/2008-04/msg01678.html
+Some remarks on the code first:
+ - Consider reformatting your code according to kernel style, it will
+   improve readability (no long lines, e.g.).
+ - rtdm_malloc is for the rare case that you allocate memory over RT
+   context. But probe is still Linux.
+ - If you register/free the IRQ handler on open/close, you must also
+   enable/disable the IRQ sources in the hardware in those functions.
+ - On removal, unregister the RTDM device first. That will synchronize
+   with remaining open instances.
+ - Minor: Avoid __devinit/exit, they were removed from recent kernels.
 
-It looks like the suggested kernel patch to fix it did not make its way 
-to the kernel. Bottom line is that it's not fpu related actually. This 
-is definitely good material for the Xenomai wiki.
+So, what is the bug again? How does the oops message look like? When
+will the device start generating IRQs, and do they arrive while rebooting=
+?
 
--- 
-Philippe.
+Jan
+
+--=20
+Siemens AG, Corporate Technology, CT RTC ITP SDP-DE
+Corporate Competence Center Embedded Linux
 
