@@ -1,14 +1,14 @@
-Message-ID: <511E38CD.8080301@mediso.hu>
-Date: Fri, 15 Feb 2013 14:31:57 +0100
-From: Norbert Bukuli <norbert.bukuli@mediso.hu>
+Message-ID: <511E3A5C.4000209@arcor.de>
+Date: Fri, 15 Feb 2013 14:38:36 +0100
+From: Christopher Hahn <hahnchristopher@arcor.de>
 MIME-Version: 1.0
-References: <511B94E4.2070708@mediso.hu> <511B9901.7040104@xenomai.org>
-	<511BB60E.7090900@mediso.hu> <511BCA3E.4050705@xenomai.org>
-	<511C989C.7070700@mediso.hu> <511E2846.8040206@xenomai.org>
-In-Reply-To: <511E2846.8040206@xenomai.org>
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Floating point operations in kernel on powerpc
+References: <224444793.158669.1360843957336.JavaMail.ngmail@webmail16.arcor-online.net>	<511CD5C2.50701@arcor.de>	<511CD673.2030400@xenomai.org>
+	<511CDF65.1020907@arcor.de>	<511D3A22.40307@xenomai.org>
+	<511DF30B.6040601@arcor.de> <511E26AE.1010203@xenomai.org>
+In-Reply-To: <511E26AE.1010203@xenomai.org>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Subject: Re: [Xenomai] kernel configuration problems with ACPI
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,131 +17,64 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA1
-
-Thank you again for your kind help!
-I am really sorry for the confusing question. Now we are compiling
-kernel modules only. Afterwards we port our application from RTAI,
-kernelspace to Xenomai, kernelspace will we port from kernelspace to
-userspace.
-I found what makes the problem. The CONFIG_CC_OPTIMIZE_FOR_SIZE kernel
-option was set on. After I turned it off, the compilation was successful.
-Thank you, once again!
-
-
-On 2013-02-15 13:21, Philippe Gerum wrote:
-> On 02/14/2013 08:56 AM, Norbert Bukuli wrote:
->> -----BEGIN PGP SIGNED MESSAGE----- Hash: SHA1
->> 
->> Dear Mr Gerum,
->> 
->> let me respond your letter below.
->> 
->> On 2013-02-13 18:15, Philippe Gerum wrote:
->>> On 02/13/2013 04:49 PM, Norbert Bukuli wrote:
->>>> -----BEGIN PGP SIGNED MESSAGE----- Hash: SHA1
->>>> 
->>>> Dear Mr Gerum,
->>>> 
->>>> thank you for your kind answer. As you can see in the
->>>> example code I do not call explicitly either _savefpr_XX or 
->>>> rthal_save_fpu and their restore counterparts. I only do
->>>> some floating point operations in a Xenomai domain kernel
->>>> thread. However the linker misses the routines mentioned
->>>> earlier. Are there linker flags to change this behaviour? One
->>>> important note, in the kernel configuration the hardware FPU
->>>> support is switched on. (CONFIG_XENO_HW_FPU=y)
->>> 
->>> -msoft-float with hw FPU looks suspicious.
->> - -msoft-float is defined by the kernel's make system, but if you
->> read the line further you can see, that I set the -mhard-float
->> compiler flag.
->> 
->> I don't understand why you
->>> mention C runtime libraries when building kernel modules
->>> either.
->> It is probably my bad english, sorry for that. I mentioned the c
->> runtime library, because there is a file a kernel source:
->> arch/powerpc/lib/crtsavres.S One can see in this file: "Based on
->> gcc/config/rs6000/crtsavres.asm from gcc".
->> 
->>> Building with eldk 5.2.1 for fpu-enabled 6xx cores can be done 
->>> with 
->>> eldk-5.2.1/powerpc/sysroots/i686-eldk-linux/usr/bin/powerpc-linux/powerpc-linux-gcc
->>>
->>>
->>>
->>
->>> 
-from a stock eldk install.
->> I use eldk-switch for set the environmental variables
->> corresponding to the ELDK toolchain, and I use exactly the same
->> compiler: $ eldk-switch -r 5.2.1 powerpc $ which
->> powerpc-linux-gcc 
->> /opt/eldk-5.2.1/powerpc/sysroots/i686-eldk-linux/usr/bin/powerpc-linux/powerpc-linux-gcc
->>
->>
->>>
->>>
->> 
-Actually, running fpu code in kernel space is a bad idea in the
->>> first place. Xenomai supports this for desperate situations
->>> when porting relic code absolutely requires it, but this is
->>> clearly something that should be avoided. You should really
->>> consider moving all that stuff to userland if the situation is
->>> not that desperate.
->>> 
->> 
->> Yes, I know, that is what we are working on. As I wrote it in my
->> first letter, we should port our application to Xenomai and run
->> it in userspace.
->> 
-> 
-> No, this does not look like so, which is exactly what makes your 
-> questions quite confusing. You talk about porting to userland, and
-> keep building kernel modules, which does not make much sense.
-> 
-> Meanwhile, I tried your test project, and successfully compiled
-> it, which was expected reading the code:
-> 
-> {rpm@cobalt} make ARCH=powerpc CROSS_COMPILE=powerpc-linux- 
-> KSRC=$HOME/git/ipipe modules make -C /home/rpm/git/ipipe
-> M=/home/rpm/foo/4951215 modules make[1]: Entering directory
-> `/home/rpm/git/ipipe' CC [M]  /home/rpm/foo/4951215/fpu_test.o In
-> file included from /home/rpm/foo/4951215/fpu_test.c:4:0: 
-> include/xenomai/native/task.h: In function 'rt_task_spawn': 
-> include/xenomai/native/task.h:319:5: warning: 'rt_task_create' is 
-> deprecated (declared at include/xenomai/native/task.h:252) 
-> [-Wdeprecated-declarations] /home/rpm/foo/4951215/fpu_test.c: In
-> function 'fpu_test_init': /home/rpm/foo/4951215/fpu_test.c:28:2:
-> warning: 'rt_task_create' is deprecated (declared at
-> include/xenomai/native/task.h:252) [-Wdeprecated-declarations] 
-> Building modules, stage 2. MODPOST 1 modules CC
-> /home/rpm/foo/4951215/fpu_test.mod.o LD [M]
-> /home/rpm/foo/4951215/fpu_test.ko make[1]: Leaving directory
-> `/home/rpm/git/ipipe'
-> 
-> So, as a matter of fact, I don't know where the problem could be,
-> since I see no code those helpers could be referenced from.
-> 
-
-- -- 
-Best regards,
-Norbert Bukuli
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2.0.19 (GNU/Linux)
-Comment: Using GnuPG with Thunderbird - http://www.enigmail.net/
-
-iQEcBAEBAgAGBQJRHjjNAAoJEJEs22zQJ00SSLsIAJqwSi5NL+uBsRopuw3mBeNf
-aHNut0qQsaK/yK8h3+B88TI/y6gvQWehzAMaosrO+fSWMfma30kiq10O7SDW9bmk
-/zLicexwnXradW5qp6KcvQx5PWVtVBrXOl7n4vD15c0roxJyYUuO82Lb/jhkyrwn
-xEFnbItHQ+tdbnwc6IYLjYZBDp4gp2FHqT/ZfWvMCshDKUxyrP63DjBzXTKT4qYq
-U7anyrD2gb+KgQn73OfKpzTOI0p++cUFk+W8k6Sskvyep2WLiLVGpA+Xx/GXXjU4
-QcnM6hPOMgNp1EUI6kZhA9ZlGPfABsIFEGAgH277GZrzo7HytWpjU/ueufmhWiE=
-=c85i
------END PGP SIGNATURE-----
-
+QW0gMTUuMDIuMjAxMyAxMzoxNCwgc2NocmllYiBHaWxsZXMgQ2hhbnRlcGVyZHJpeDoKPiBPbiAw
+Mi8xNS8yMDEzIDA5OjM0IEFNLCBDaHJpc3RvcGhlciBIYWhuIHdyb3RlOgo+Cj4+IGFmdGVyIHJ1
+bm5pbmcgdGhlIGFwcGxpY2F0aW9uIHdoaWNoIGFjY2Vzc2VzIHRoZSBzZXJpYWwgZGV2aWNlCj4+
+ICJYZW5vbWFpOiB4bmludHJfZWRnZV9zaGlycV9oYW5kbGVyOiBJUlE0IG5vdCBoYW5kbGVkLiBE
+aXNhYmxpbmcgSVJRCj4+IGxpbmUuIiB3YXMgcHJpbnRlZCB0byBkbWVzZyBhbmQgdGhlIG5leHQg
+dHdvIG91dHB1dHMgb2YKPj4gL3Byb2MvaW50ZXJydXB0cyBhbmQgL3Byb2MveGVub21haS9pcnEK
+Pgo+IElmIHhuaW50cl9lZGdlX3NoaXJxX2hhbmRsZXIgaXMgY2FsbGVkLCBhbiBSVERNIGRyaXZl
+ciByZWdpc3RlcmVkIGEKPiBoYW5kbGVyIGZvciB0aGlzIGlycS4gU28sIHBsZWFzZSBrZWVwIHRo
+ZSBhcHBsaWNhdGlvbiBydW5uaW5nIHdpdGggYWxsCj4gdGhlIGZpbGUgZGVzY3JpcHRvcnMgb3Bl
+bmVkLCBhbmQgcnVuIGNhdCAvcHJvYy94ZW5vbWFpL2lycSB3aGlsZSB0aGUKPiBhcHBsaWNhdGlv
+biBpcyBzdGlsbCBydW5uaW5nLgo+Cj4gVGhlIG1vc3QgbG9naWNhbCByZXN1bHQgd291bGQgYmUg
+dGhhdCBpcnEgNCBpcyBjbGFpbWVkIGJ5IHRoZSAxNjU1MEEgZHJpdmVyLgo+Cj4Kd2hpbGUgYWNj
+ZXNzaW5nIG9uZSBzZXJpYWwgcG9ydCBJIGdldCB0aGlzCi0tLS0tLS0tLS0tLS0tIG5leHQgcGFy
+dCAtLS0tLS0tLS0tLS0tLQojIGNhdCAvcHJvYy9pbnRlcnJ1cHRzIAogICAgICAgICAgIENQVTAg
+ICAgICAgQ1BVMSAgICAgICBDUFUyICAgICAgIENQVTMgICAgICAgCiAgMDogICAgICAgIDEyMCAg
+ICAgICAgICAwICAgICAgICAgIDAgICAgICAgICAgMCAgIElPLUFQSUMtZWRnZSAgICAgIHRpbWVy
+CiAgMTogICAgICAgICAgMiAgICAgICAgICAxICAgICAgICAgIDAgICAgICAgICAgMCAgIElPLUFQ
+SUMtZWRnZSAgICAgIGk4MDQyCiAgNDogICAgICAgICAgMyAgICAgICAgICAyICAgICAgICAgIDIg
+ICAgICAgICAgMyAgIElPLUFQSUMtZmFzdGVvaSAKICA3OiAgICAgICAgICAwICAgICAgICAgIDAg
+ICAgICAgICAgMCAgICAgICAgICAwICAgSU8tQVBJQy1mYXN0ZW9pICAgcGFycG9ydDAKICA4OiAg
+ICAgICAgICAwICAgICAgICAgIDAgICAgICAgICAgMSAgICAgICAgICAwICAgSU8tQVBJQy1lZGdl
+ICAgICAgcnRjMAogIDk6ICAgICAgICAgIDAgICAgICAgICAgMCAgICAgICAgICAwICAgICAgICAg
+IDAgICBJTy1BUElDLWZhc3Rlb2kgICBhY3BpCiAxNjogICAgICAgICA4MiAgICAgICAgIDU3ICAg
+ICAgICAgNjggICAgICAgICA3NyAgIElPLUFQSUMtZmFzdGVvaSAgIGk5MTUKIDE4OiAgICAgICAg
+ICAwICAgICAgICAgIDAgICAgICAgICAgMCAgICAgICAgICAwICAgSU8tQVBJQy1mYXN0ZW9pICAg
+dWhjaV9oY2Q6dXNiMwogMTk6ICAgICAgICAgIDkgICAgICAgICAxMCAgICAgICAgICA5ICAgICAg
+ICAgIDkgICBJTy1BUElDLWZhc3Rlb2kgICB1aGNpX2hjZDp1c2IyCiAyMDogICAgICAgIDMwNyAg
+ICAgICAgMzMwICAgICAgICAzMTEgICAgICAgIDMzMSAgIElPLUFQSUMtZmFzdGVvaSAgIGV0aDAK
+IDIyOiAgICAgICAzNjYzICAgICAgIDM2NTcgICAgICAgMzY2NCAgICAgICAzNjQ5ICAgSU8tQVBJ
+Qy1mYXN0ZW9pICAgYWhjaSwgc25kX2hkYV9pbnRlbAogMjM6ICAgICAgICAxNTggICAgICAgIDE2
+NyAgICAgICAgMTY2ICAgICAgICAxNTkgICBJTy1BUElDLWZhc3Rlb2kgICB1aGNpX2hjZDp1c2Ix
+Ck5NSTogICAgICAgICAgMCAgICAgICAgICAwICAgICAgICAgIDAgICAgICAgICAgMCAgIE5vbi1t
+YXNrYWJsZSBpbnRlcnJ1cHRzCkxPQzogICAgICAyOTI1MyAgICAgIDMwMDU2ICAgICAgMzE4ODcg
+ICAgICAyOTU1MiAgIExvY2FsIHRpbWVyIGludGVycnVwdHMKU1BVOiAgICAgICAgICAwICAgICAg
+ICAgIDAgICAgICAgICAgMCAgICAgICAgICAwICAgU3B1cmlvdXMgaW50ZXJydXB0cwpQTUk6ICAg
+ICAgICAgIDAgICAgICAgICAgMCAgICAgICAgICAwICAgICAgICAgIDAgICBQZXJmb3JtYW5jZSBt
+b25pdG9yaW5nIGludGVycnVwdHMKSVdJOiAgICAgICAgICAwICAgICAgICAgIDAgICAgICAgICAg
+MCAgICAgICAgICAwICAgSVJRIHdvcmsgaW50ZXJydXB0cwpSVFI6ICAgICAgICAgIDAgICAgICAg
+ICAgMCAgICAgICAgICAwICAgICAgICAgIDAgICBBUElDIElDUiByZWFkIHJldHJpZXMKUkVTOiAg
+ICAgIDQ0Mjk1ICAgICAgNDk1NjkgICAgICAzOTAzMyAgICAgIDM1MTA1ICAgUmVzY2hlZHVsaW5n
+IGludGVycnVwdHMKQ0FMOiAgICAgICAxMTk3ICAgICAgIDEzNDYgICAgICAgMjU2NCAgICAgICAy
+MTA3ICAgRnVuY3Rpb24gY2FsbCBpbnRlcnJ1cHRzClRMQjogICAgICAgIDQyMiAgICAgICAgNzMw
+ICAgICAgICA4OTYgICAgICAgIDYyNiAgIFRMQiBzaG9vdGRvd25zClRSTTogICAgICAgICAgMCAg
+ICAgICAgICAwICAgICAgICAgIDAgICAgICAgICAgMCAgIFRoZXJtYWwgZXZlbnQgaW50ZXJydXB0
+cwpUSFI6ICAgICAgICAgIDAgICAgICAgICAgMCAgICAgICAgICAwICAgICAgICAgIDAgICBUaHJl
+c2hvbGQgQVBJQyBpbnRlcnJ1cHRzCk1DRTogICAgICAgICAgMCAgICAgICAgICAwICAgICAgICAg
+IDAgICAgICAgICAgMCAgIE1hY2hpbmUgY2hlY2sgZXhjZXB0aW9ucwpNQ1A6ICAgICAgICAgIDEg
+ICAgICAgICAgMSAgICAgICAgICAxICAgICAgICAgIDEgICBNYWNoaW5lIGNoZWNrIHBvbGxzCkVS
+UjogICAgICAgICAgMApNSVM6ICAgICAgICAgIDAKCiMgY2F0IC9wcm9jL3hlbm9tYWkvaXJxIApJ
+UlEgICAgICAgICBDUFUwICAgICAgICBDUFUxICAgICAgICBDUFUyICAgICAgICBDUFUzCiAgNDog
+ICAgICAgICAyNTIgICAgICAgICAyNTIgICAgICAgICAyNTIgICAgICAgICAyNTEgICAgICAgICBy
+dHNlcjAKIDE5OiAgICAgICAgIDI1MSAgICAgICAgIDI1MCAgICAgICAgIDI1MyAgICAgICAgIDI0
+NiAgICAgICAgIFNKQTEwMDAgU0pBMTAwMAoyMzM2OiAgICAgICAyOTgzNyAgICAgICAzMDczMCAg
+ICAgICAzMTkwNiAgICAgICAzMDAwNyAgICAgICAgIFt0aW1lcl0KMjMzNzogICAgICAgICAgIDAg
+ICAgICAgICAgIDEgICAgICAgICAgIDIgICAgICAgICAgIDEgICAgICAgICBbcmVzY2hlZHVsZV0K
+MjMzODogICAgICAgICAgIDAgICAgICAgICAgIDEgICAgICAgICAgIDEgICAgICAgICAgIDEgICAg
+ICAgICBbdGltZXItaXBpXQoyMzM5OiAgICAgICAgICAgMCAgICAgICAgICAgMCAgICAgICAgICAg
+MCAgICAgICAgICAgMCAgICAgICAgIFtzeW5jXQoyMzcxOiAgICAgICAgICAgMyAgICAgICAgICAg
+MCAgICAgICAgICAgMCAgICAgICAgICAgMCAgICAgICAgIFt2aXJ0dWFsXQo=
