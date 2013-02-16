@@ -1,11 +1,14 @@
-From: Steve Deiters <SteveDeiters@BASLER.com>
-Date: Fri, 15 Feb 2013 22:48:20 +0000
-Message-ID: <37FC08B05779524B9F78C36BD9D8375E340A6591@vExchange2010.basler.com>
-Content-Language: en-US
+From: Paul <paul_c@tuxcnc.org>
+Date: Sat, 16 Feb 2013 00:20:53 +0000
+References: <201302141227.05428.paul_c@tuxcnc.org>
+	<511D3F8F.8090501@xenomai.org>
+	<201302151150.44164.paul_c@tuxcnc.org>
+In-Reply-To: <201302151150.44164.paul_c@tuxcnc.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: [Xenomai] Losing Real Time Response During ARP Flood
+Message-Id: <201302160020.53324.paul_c@tuxcnc.org>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Xenomai, Raspberry Pi, 3.5.7 kernel
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,59 +17,51 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Xenomai (xenomai@xenomai.org)" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-V2Ugc2VlbSB0byBiZSBsb3NpbmcgcmVhbCB0aW1lIHJlc3BvbnNlIGR1cmluZyBhbiBBUlAgZmxv
-b2QuICBXZSByZWNlbnRseSBoYWQgYSBtaXNjb25maWd1cmVkIHN3aXRjaCB0aGF0IGNhdXNlZCBh
-biBBUlAgZmxvb2QgYW5kIGNhdXNlZCBhIGxvdCBvZiBvdXIgZGV2aWNlcyB0byByZWJvb3QuICBB
-ZnRlciBsb29raW5nIGF0IGl0IGEgYml0IHdlIGZvdW5kIHRoZSBleHRlcm5hbCB3YXRjaGRvZyBj
-aXJjdWl0IHdhcyByZXNldHRpbmcgdGhlIGJvYXJkcy4gIFdlIGhhdmUgYSBkZXNpZ24gd2hlcmUg
-dGhlcmUgaXMgYSBsb3cgcHJpb3JpdHkgdGhyZWFkIHRvZ2dsaW5nIGEgR1BJTyB0byBzZXJ2aWNl
-IGFuIGV4dGVybmFsIHdhdGNoZG9nLiAgV2XigJl2ZSBmb3VuZCB0aGF0IHRoaXMgdGhyZWFkIGlz
-IGdldHRpbmcgZGVsYXllZCBzaWduaWZpY2FudGx5IGR1cmluZyB0aGUgQVJQIGZsb29kLg0KDQpU
-aGUgRXRoZXJuZXQgZHJpdmVyIGFuZCBUQ1Agc3RhY2sgaXMganVzdCB0aGUgcGxhaW4gTGludXgg
-b25lcy4gIFdl4oCZdmUgaGFkIFBDcyBydW5uaW5nIFdpbmRvd3MgYW5kIExpbnV4IHRoYXQgd2Vy
-ZSBvbiB0aGUgbmV0d29yayBhdCB0aGUgc2FtZSB0aW1lIG1hbGZ1bmN0aW9uIGFzIHdlbGwuICBI
-b3dldmVyIHdpdGggWGVub21haSBJIHdvdWxkIHRoaW5rIHlvdSB3b3VsZCBiZSBzb21ld2hhdCBn
-dWFyZGVkIGFnYWluc3QgYW55IGlzc3VlcyB3aXRoIExpbnV4IGhhbmRsaW5nIHRoZSBuZXR3b3Jr
-aW5nLg0KDQpXZSBoYXZlbuKAmXQgZm91bmQgYW55IHN1cmUgZmlyZSBmaXggdG8gZ2V0IGFyb3Vu
-ZCB0aGlzIHlldC4gIFdlIGNhbiBjaGFuZ2Ugc29tZSBvZiB0aGUgcHJpb3JpdGllcyBhcm91bmQg
-YW5kIGl0IHNlZW1zIHRvIGFsbGV2aWF0ZSB0aGUgaXNzdWUuICBJZiB3ZSBpbmNyZWFzZSB0aGUg
-cHJpb3JpdHkgb2YgdGhlIHdhdGNoZG9nIHRocmVhZCBpdCBkb2VzbuKAmXQgaGFwcGVuLiAgV2Ug
-bGluayBhZ2FpbnN0IHRoZSBQT1NJWCBza2luIHNvIHdlIGhhdmUgcmVhbCB0aW1lIHRocmVhZHMg
-ZnJvbSBhbGwgb3VyIHB0aHJlYWRfY3JlYXRlIGNhbGxzLiAgQW55dGhpbmcgcmVseWluZyBvbiBu
-ZXR3b3JrIGNvbW11bmljYXRpb24gSSB3b3VsZCBleHBlY3QgdG8gYmUgcnVubmluZyBtb3N0bHkg
-aW4gdGhlIExpbnV4IGRvbWFpbi4gIFRoZXNlIG1vc3RseSBqdXN0IHJlY2VpdmUgZGF0YSBhbmQg
-cGFzcyBpdCBvbiB0byBvdGhlciByZWFsIHRpbWUgdGhyZWFkcyB0aHJvdWdoIHNoYXJlZCBtZW1v
-cnkgYW5kIG1lbW9yeSBxdWV1ZXMuDQoNCldlIGFyZSB0cnlpbmcgdG8gZ2V0IGFueSBpZGVhcyBv
-biB3aGF0IG1heSBjYXVzZSB0aGlzIGJlaGF2aW9yLiAgV2Ugd291bGQgdGhpbmsgYSBwdXJlIExp
-bnV4IEV0aGVybmV0IGRyaXZlciB3b3VsZCBub3QgYmUgYWJsZSB0byBob2xkIG9mZiB0aGUgcmVh
-bCB0aW1lIHRocmVhZHMuICBXZeKAmXZlIHNwZWN1bGF0ZWQgaXQgbWF5IGJlIHB1cmVseSBkdWUg
-dG8gQ1BVIGxvYWRpbmcgZHVlIHRvIHRoZSBoaWdoIG51bWJlciBvZiBpbnRlcnJ1cHRzIGJlaW5n
-IHByb2Nlc3NlZCwgYnV0IHdlIGhhdmVu4oCZdCBiZWVuIGFibGUgdG8gcHJvdmUgdGhpcy4NCg0K
-V2XigJlyZSBnb2luZyB0byB0cnkgdGhlIEktUGlwZSB0cmFjZXIgYW5kIG91ciBKVEFHIHByb2Zp
-bGVyIG5leHQuICBJIHdhcyB3b25kZXJpbmcgaWYgdGhlcmUgYXJlIGFueSBpZGVhcyB0aG91Z2gg
-b24gd2hlcmUgdG8gc3RhcnQgbG9va2luZy4gIElzIHRoZXJlIGFueSB3YXkgdG8gcmF0ZSBsaW1p
-dCBhbiBpbmNvbWluZyBpbnRlcnJ1cHQgc291cmNlPw0KDQpXZSBhcmUgcnVubmluZyBhIFBvd2Vy
-UEMgcGxhdGZvcm0gd2l0aCAyLjYuMzMuNSBMaW51eCBrZXJuZWwgYW5kIDIuNS40IFhlbm9tYWku
-DQoNCg0KQW55IGlkZWFzIGFyZSBhcHByZWNpYXRlZC4uDQoNCg0KU3RldmUgRGVpdGVycw0KU2Vu
-aW9yIFNvZnR3YXJlIEVuZ2luZWVyDQpCYXNsZXIgRWxlY3RyaWMgQ29tcGFueQ0KMTI1NzAgU3Rh
-dGUgUm91dGUgMTQzDQpIaWdobGFuZCwgSUwgNjIyNDktMTA3NA0KVW5pdGVkIFN0YXRlcw0KUGhv
-bmU6ICsxIDYxOCA2NTQgMjM0MSBFeHQuIDQwNg0KRmF4OiArMSA2MTggNjU0IDIzNTENCkVtYWls
-OiBTdGV2ZURlaXRlcnNAQkFTTEVSLmNvbTxtYWlsdG86U3RldmVEZWl0ZXJzQEJBU0xFUi5jb20+
-DQp3d3cuYmFzbGVyLmNvbQ0KDQoNCg0KQ09ORklERU5USUFMSVRZIE5PVElDRTogVGhpcyBtZXNz
-YWdlIG1heSBpbmNsdWRlIGNvbmZpZGVudGlhbCBhbmQvb3IgbGVnYWxseSBwcm90ZWN0ZWQgaW5m
-b3JtYXRpb24gYW5kIGlzIGludGVuZGVkIHNvbGVseSBmb3IgdGhlIHVzZSBvZiBpdHMgaW50ZW5k
-ZWQgcmVjaXBpZW50KHMpLiAgSWYgeW91IGFyZSBub3QgdGhlIGludGVuZGVkIHJlY2lwaWVudCwg
-YW55IGRpc3RyaWJ1dGlvbiBvciBjb3B5aW5nIG9mIHRoaXMgbWVzc2FnZSAoaW5jbHVkaW5nIGFu
-eSBhdHRhY2htZW50cykgaXMgc3RyaWN0bHkgcHJvaGliaXRlZC4gIElmIHlvdSBhcmUgbm90IHRo
-ZSBpbnRlbmRlZCByZWNpcGllbnQsIHBsZWFzZSBkZWxldGUgaXQgKGluY2x1ZGluZyBhbnkgYXR0
-YWNobWVudHMpIGZyb20geW91ciBzeXN0ZW0gd2l0aG91dCBjb3B5aW5nIG9yIGZvcndhcmRpbmcg
-aXQsIGFuZCBub3RpZnkgdGhlIHNlbmRlciBvZiB0aGUgZXJyb3IgYnkgcmVwbHkgZS1tYWlsLg0K
-DQpBbHRob3VnaCB0aGlzIHRyYW5zbWlzc2lvbiBhbmQgYW55IGF0dGFjaG1lbnRzIGFyZSBiZWxp
-ZXZlZCB0byBiZSBmcmVlIG9mIGFueSB2aXJ1cyBvciBvdGhlciBkZWZlY3QgdGhhdCBtaWdodCBh
-ZmZlY3QgYW55IGNvbXB1dGVyIHN5c3RlbSBpbnRvIHdoaWNoIGl0IHdvdWxkIGJlIHJlY2VpdmVk
-LCBpdCBpcyB0aGUgcmVzcG9uc2liaWxpdHkgb2YgdGhlIHJlY2lwaWVudCB0byBlbnN1cmUgdGhh
-dCB0aGUgZS1tYWlsIGlzIHZpcnVzIGZyZWUgYW5kIG5vIHJlc3BvbnNpYmlsaXR5IGlzIGFjY2Vw
-dGVkIGJ5IEJhc2xlciBFbGVjdHJpYyBDb21wYW55IGZvciBhbnkgZGFtYWdlIG9yIGxvc3MgYXJp
-c2luZyBmcm9tIGl0cyB1c2UuDQoNCg0KDQoNCg==
+On Friday 15 February 2013, Paul wrote:
+> On Thursday 14 February 2013, Gilles Chanteperdrix wrote:
+> > On 02/14/2013 01:27 PM, Paul wrote:
+> > > Attached, a patch set aimed at providing support for the Broadcom
+> > > BCM2835 SoC as used in the Raspberry Pi[1].
+> >
+> > In the meantime, we can put it in a raspberry subdirectory in
+> > Xenomai sources. Would you mind making a single patch? Or do you
+> > prefer the patches to be kept separated?
+>
+> A single patch would be preferable for most people - The multi-patch
+> set was mainly for the benefit of the guys who had a working kernel
+> but were sturggling with the GPIO problem (patch No.4 should apply on
+> a 3.2.2x kernel).
+>
+> I'll rename the defconfig and add some recent changes made to
+> the "official" Raspberry kernel. Expect a single patch in a day or
+> two.
+
+Attached, a single patch against ipipe-core-3.5.7. This assumes the 
+appropriate arm patch has already been applied to a virgin stable 3.5.7 
+tree as per standard instructions.
+
+The raspberry-post.patch provides support for the BCM2835 SoC backported 
+from the rpi-3.6.y branch[1] up to, and including commit 871eef1b84. A 
+minimal config is provided (bcmrpi_xenomai_defconfig) in place of the 
+usual bcmrpi_*_defconfigs.
+
+Credit for the original 3.2.21 Xenomai support should go to ian-cim as 
+noted in earlier emails - My efforts are limited to backporting and 
+hacks to the gpio interrupts.
+
+
+Regards, Paul.
+
+
+[1] git://github.com/raspberrypi/linux.git
+
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: ipipe-core-3.5.7-raspberry-post.patch
+Type: text/x-diff
+Size: 2724091 bytes
+Desc: not available
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20130216/4f487e30/attachment.patch>
