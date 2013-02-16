@@ -1,14 +1,10 @@
-From: Paul <paul_c@tuxcnc.org>
-Date: Sat, 16 Feb 2013 00:20:53 +0000
-References: <201302141227.05428.paul_c@tuxcnc.org>
-	<511D3F8F.8090501@xenomai.org>
-	<201302151150.44164.paul_c@tuxcnc.org>
-In-Reply-To: <201302151150.44164.paul_c@tuxcnc.org>
-MIME-Version: 1.0
-Message-Id: <201302160020.53324.paul_c@tuxcnc.org>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Xenomai, Raspberry Pi, 3.5.7 kernel
+From: Michael Haberler <mail17@mah.priv.at>
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: quoted-printable
+Date: Sat, 16 Feb 2013 08:22:41 +0100
+Message-Id: <AB936CE5-5675-4DA5-85B2-F2DD5A88531B@mah.priv.at>
+Mime-Version: 1.0 (Apple Message framework v1283)
+Subject: [Xenomai] packaging question: no kernel dependencies?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,49 +15,18 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-On Friday 15 February 2013, Paul wrote:
-> On Thursday 14 February 2013, Gilles Chanteperdrix wrote:
-> > On 02/14/2013 01:27 PM, Paul wrote:
-> > > Attached, a patch set aimed at providing support for the Broadcom
-> > > BCM2835 SoC as used in the Raspberry Pi[1].
-> >
-> > In the meantime, we can put it in a raspberry subdirectory in
-> > Xenomai sources. Would you mind making a single patch? Or do you
-> > prefer the patches to be kept separated?
->
-> A single patch would be preferable for most people - The multi-patch
-> set was mainly for the benefit of the guys who had a working kernel
-> but were sturggling with the GPIO problem (patch No.4 should apply on
-> a 3.2.2x kernel).
->
-> I'll rename the defconfig and add some recent changes made to
-> the "official" Raspberry kernel. Expect a single patch in a day or
-> two.
+I'm working to debian-package linuxcnc with Xenomai userland RT threads.
 
-Attached, a single patch against ipipe-core-3.5.7. This assumes the 
-appropriate arm patch has already been applied to a virgin stable 3.5.7 
-tree as per standard instructions.
+AFAICT building requires only the userland support package, but for =
+instance not the kernel headers. The way I read =
+http://www.xenomai.org/documentation/xenomai-2.6/html/README.INSTALL/#_fea=
+ture_conflict_resolution it is safe to rely on runtime detection of =
+feature compatibility.
 
-The raspberry-post.patch provides support for the BCM2835 SoC backported 
-from the rpi-3.6.y branch[1] up to, and including commit 871eef1b84. A 
-minimal config is provided (bcmrpi_xenomai_defconfig) in place of the 
-usual bcmrpi_*_defconfigs.
+goof prevention question: Is it safe to wrap such a package without =
+explicit references to some kernel version?
 
-Credit for the original 3.2.21 Xenomai support should go to ian-cim as 
-noted in earlier emails - My efforts are limited to backporting and 
-hacks to the gpio interrupts.
+- Michael=20
 
 
-Regards, Paul.
 
-
-[1] git://github.com/raspberrypi/linux.git
-
-
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: ipipe-core-3.5.7-raspberry-post.patch
-Type: text/x-diff
-Size: 2724091 bytes
-Desc: not available
-URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20130216/4f487e30/attachment.patch>
