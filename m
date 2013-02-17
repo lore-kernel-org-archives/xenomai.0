@@ -1,12 +1,12 @@
-Message-ID: <511F797C.3010006@xenomai.org>
-Date: Sat, 16 Feb 2013 13:20:12 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <AB936CE5-5675-4DA5-85B2-F2DD5A88531B@mah.priv.at>
-In-Reply-To: <AB936CE5-5675-4DA5-85B2-F2DD5A88531B@mah.priv.at>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] packaging question: no kernel dependencies?
+In-Reply-To: 
+References: 
+From: George Broz <GBroz@moog.com>
+Message-ID: <OF44D0F7ED.D0CBED6B-ON85257B15.00319BA4-85257B15.00319BA9@moog.com>
+Date: Sun, 17 Feb 2013 04:01:51 -0500
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="ISO-8859-1"
+Subject: [Xenomai] properties of task at priority 0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,28 +15,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Michael Haberler <mail17@mah.priv.at>
-Cc: xenomai@xenomai.org
+To: Xenomai@xenomai.org
 
-On 02/16/2013 08:22 AM, Michael Haberler wrote:
+Hello All,
 
-> I'm working to debian-package linuxcnc with Xenomai userland RT
-> threads.
-> 
-> AFAICT building requires only the userland support package, but for
-> instance not the kernel headers. The way I read
-> http://www.xenomai.org/documentation/xenomai-2.6/html/README.INSTALL/#_feature_conflict_resolution
-> it is safe to rely on runtime detection of feature compatibility.
-> 
-> goof prevention question: Is it safe to wrap such a package without
-> explicit references to some kernel version?
+I'm using a kernel driver for which some calls cause the=20
+Xenomai kernel to crash with a message:
+    "Xenomai: stuck on nucleus lock..",=20
+but only when called from a Xenomai task with a non-zero priority.
 
 
-Yes, the only thing which defines the kernel/user ABI, is the branch you
-are using, so, for instance, you can keep a kernel patched with 2.6.1,
-and upgrade user-space to 2.6.2.1. And you will get a runtime error if
-you try running a kernel patched with 2.5.6 with a 2.6.2.1 user-space.
+If I make the same calls from a Linux thread that is still part
+of the Xenomai application, no crash results. And it seems
+that when I make the same calls from a Xenomai task that has=20
+a priority of "0", it also does not crash the kernel.
 
--- 
-                                                                Gilles.
+
+I knew these calls would put the task into secondary mode=20
+since they make a number of kmallocs/kfrees and other syscalls.
+I didn't expect there to be a difference in behavior between=20
+a Xenomai task in secondary mode versus a normal Linux thread=20
+versus a Xenomai task with priority of "0".
+
+
+I'm running Linux 2.6.37.6 w/Xenomai 2.6.1, native API on x86=20
+(Atom, SMP, 32-bit).
+
+
+Is it possible that a (well-written) driver can cause such=20
+behavior?  (If not I can post the crashdump details).
+
+
+I would like to use rt=5Fevent=5F / rt=5Fmutex=5F at other times=20
+which I cannot do if I need to make this a Linux thread. =20
+Is there a rational explanation that would allow me to use
+these calls and the driver calls if I simply set the task=20
+to priority "0"?
+
+
+Thanks in advance!
+----
+George Broz
+Moog, Inc. Industrial Group=
+
 
