@@ -1,12 +1,13 @@
-Message-ID: <51228628.20801@xenomai.org>
-Date: Mon, 18 Feb 2013 20:51:04 +0100
+Message-ID: <51229E79.7030607@xenomai.org>
+Date: Mon, 18 Feb 2013 22:34:49 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CAPeEhapftuafRVnLOnAT0mcMDu7o_WVBfHFpLAqf_a0DtyxUDQ@mail.gmail.com>
-In-Reply-To: <CAPeEhapftuafRVnLOnAT0mcMDu7o_WVBfHFpLAqf_a0DtyxUDQ@mail.gmail.com>
+References: <201302141227.05428.paul_c@tuxcnc.org>	<511D3F8F.8090501@xenomai.org>	<201302151150.44164.paul_c@tuxcnc.org>
+	<201302160020.53324.paul_c@tuxcnc.org>
+In-Reply-To: <201302160020.53324.paul_c@tuxcnc.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] scheduling class rt reboots system
+Subject: Re: [Xenomai] Xenomai, Raspberry Pi, 3.5.7 kernel
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,24 +16,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: uMinded Strikes Again <iceblu3710@gmail.com>
+To: Paul <paul_c@tuxcnc.org>
 Cc: xenomai@xenomai.org
 
-On 02/18/2013 05:13 PM, uMinded Strikes Again wrote:
+On 02/16/2013 01:20 AM, Paul wrote:
 
-> I have compiled my kernel and it seems to register my ipipe with the
-> correct frequency to the system and xenomai begins to start but then the
-> system hard reboots and drops me back to u-boot.
+> On Friday 15 February 2013, Paul wrote:
+>> On Thursday 14 February 2013, Gilles Chanteperdrix wrote:
+>>> On 02/14/2013 01:27 PM, Paul wrote:
+>>>> Attached, a patch set aimed at providing support for the Broadcom
+>>>> BCM2835 SoC as used in the Raspberry Pi[1].
+>>>
+>>> In the meantime, we can put it in a raspberry subdirectory in
+>>> Xenomai sources. Would you mind making a single patch? Or do you
+>>> prefer the patches to be kept separated?
+>>
+>> A single patch would be preferable for most people - The multi-patch
+>> set was mainly for the benefit of the guys who had a working kernel
+>> but were sturggling with the GPIO problem (patch No.4 should apply on
+>> a 3.2.2x kernel).
+>>
+>> I'll rename the defconfig and add some recent changes made to
+>> the "official" Raspberry kernel. Expect a single patch in a day or
+>> two.
 > 
-> Any idea where I should start?
+> Attached, a single patch against ipipe-core-3.5.7. This assumes the 
+> appropriate arm patch has already been applied to a virgin stable 3.5.7 
+> tree as per standard instructions.
+> 
+> The raspberry-post.patch provides support for the BCM2835 SoC backported 
+> from the rpi-3.6.y branch[1] up to, and including commit 871eef1b84. A 
+> minimal config is provided (bcmrpi_xenomai_defconfig) in place of the 
+> usual bcmrpi_*_defconfigs.
+> 
+> Credit for the original 3.2.21 Xenomai support should go to ian-cim as 
+> noted in earlier emails - My efforts are limited to backporting and 
+> hacks to the gpio interrupts.
 
+>
+>
+> Regards, Paul.
 
-Try to find the last function called before the reboot by adding printks
-all around.
-
-The first things you should suspect is the timer
-(ipipe_mach_timer_set_dec). 99% of the problems of porting the I-pipe
-patch to a new ARM board are related to hardware timers.
+Included in the repository, thanks.
 
 -- 
                                                                 Gilles.
