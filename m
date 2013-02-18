@@ -1,14 +1,14 @@
-Message-ID: <511EACB8.30000@zultron.com>
-Date: Fri, 15 Feb 2013 15:46:32 -0600
-From: John Morris <john@zultron.com>
 MIME-Version: 1.0
-References: <511C911B.2080609@zultron.com> <511CD558.2000409@xenomai.org>
-	<511D2777.107@zultron.com> <511D3D04.7080902@xenomai.org>
-In-Reply-To: <511D3D04.7080902@xenomai.org>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Announcing beta x86 Xenomai kernel packages: squeeze,
- precise, lucid
+In-Reply-To: <5120ED91.2070800@xenomai.org>
+References: <5120ED91.2070800@xenomai.org>, <5120A36E.9050509@xenomai.org>,
+	<OF44D0F7ED.D0CBED6B-ON85257B15.00319BA4-85257B15.00319BA9@moog.com>
+	<OF5D712584.D7829A38-ON85257B15.003F8547-85257B15.003F854D@moog.com>
+From: George Broz <GBroz@moog.com>
+Message-ID: <OF6C5EC1F2.4F6E9358-ON85257B16.003EE2D7-85257B16.003EE2DD@moog.com>
+Date: Mon, 18 Feb 2013 06:26:53 -0500
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] properties of task at priority 0
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,71 +17,188 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: emc-developers@lists.sourceforge.net, Xenomai <xenomai@xenomai.org>
+To: rpm@xenomai.org
+Cc: Xenomai@xenomai.org
 
-On 02/14/2013 01:37 PM, Gilles Chanteperdrix wrote:
-> On 02/14/2013 07:05 PM, John Morris wrote:
->> On 02/14/2013 06:15 AM, Gilles Chanteperdrix wrote:
->> I'm hoping that someone else will volunteer to take over package
->> maintenance once the dust settles a little.
-> 
-> 
-> To be completely frank, I hope we find a volunteer for the debian
-> packages too... So, actually, we could add such an announce to the wiki.
 
-There's a request for volunteer package maintainers on the LinuxCNC
-wiki, but probably not in a prominent enough position.
-
-Once the packages are tested and working, I'll be around to help fix
-problems.  However I'm quite eager to pass basic maintenance along to
-someone else, so I'm trying to make maintenance as easy as possible to
-help encourage volunteers.
-
-When a new Xenomai is released, the steps to update the kernel packages
-are simple (I might forget something small):
-
-- Rebuild xenomai package; just a few minor tweaks
-- Unpack new vanilla kernel and check out /debian directory from git
-- Fix version numbers in new debian/changelog entry
-- Update the vanilla kernel .config, either:
-  - pull a config verbatim from a similar Debian/Ubuntu kernel package
-  - or else update the existing config by running 'make fooconfig'
-- Rebuild.  Xeno patch is grabbed from /usr/src, and Xeno config is
-    automatically overlaid upon the vanilla config.
-
-I'm also working on a Makefile that will automatically assemble all the
-ingredients and build the packages in a chroot (using
-pbuilder/debootstrap) for all combos of squeeze/precise/lucid and
-i386/amd64.  Whether the next maintainer uses it as is, or sets up a
-buildbot or buildd, it should make the job trivial.
-
->>> We will also try and address the issues which were identified since you
->>> started working on this, namely:
->>> - allowing enabling the SMI workaround without kernel re-compilation
+-----Philippe Gerum <rpm@xenomai.org> wrote: -----
+>
+>
+>On 02/17/2013 12:33 PM, George Broz wrote:
 >>
->> Great!  I'm working around this for now by packaging Jan's smictrl
->> utility.  That could actually be sufficient; I'd rather put effort into
->> a more user-friendly wrapper, and maybe a config file and init script
->> for persistent settings across reboots.
-> 
-> I guess I have some little piece of code somewhere to handle
-> configuration files with the "windows ini" style, if you are interested.
+>>
+>> -----Philippe Gerum <rpm@xenomai.org> wrote: -----
+>>
+>>  >On 02/17/2013 10:01 AM, George Broz wrote:
+>>  >> Hello All,
+>>  >>
+>>  >> I'm using a kernel driver for which some calls cause the
+>>  >> Xenomai kernel to crash with a message:
+>>  >>      "Xenomai: stuck on nucleus lock..",
+>>  >> but only when called from a Xenomai task with a non-zero
+>priority.
+>>  >>
+>>  >>
+>>  >> If I make the same calls from a Linux thread that is still
+>part
+>>  >> of the Xenomai application, no crash results. And it seems
+>>  >> that when I make the same calls from a Xenomai task that has
+>>  >> a priority of "0", it also does not crash the kernel.
+>>  >>
+>>  >>
+>>  >> I knew these calls would put the task into secondary mode
+>>  >> since they make a number of kmallocs/kfrees and other
+>syscalls.
+>>  >
+>>  >Xenomai won't switch to secondary mode automatically because a
+>>  >regular
+>>  >linux driver calls the regular kernel API, it simply does not
+>know
+>>  >about
+>>  >this fact. It would switch only when a transition from userland
+>to
+>>  >kernel context happens due to a regular linux system call, which
+>>  >includes the POSIX I/O calls one may invoke to reach such a
+>driver.
+>>  >
+>>  >However, if that driver is RTDM-based, the set of POSIX I/O
+>calls
+>>  >becomes mode-sensitive, and a real-time task (i.e. non-zero prio)
+>may
+>>  >
+>>  >well enter the driver code in primary mode, depending on how the
+>>  >driver
+>>  >is programmed to handle the request.
+>>  >
+>>  >> I didn't expect there to be a difference in behavior between
+>>  >> a Xenomai task in secondary mode versus a normal Linux thread
+>>  >> versus a Xenomai task with priority of "0".
+>>  >>
+>>  >
+>>  >Xenomai assumes that 0-prio tasks it creates normally want to run
+>in
+>>  >
+>>  >secondary mode, except when they invoke primary mode-only
+>services.
+>>  >For
+>>  >this reason, Xenomai switches them back to secondary mode
+>>  >automatically
+>>  >when they are done with such kernel services. This does not
+>happen
+>>  >with
+>>  >non-zero priority tasks, which are left in the current mode.
+>>  >
+>>  >So the difference could be that some kernel API is called from
+>>  >primary
+>>  >mode, leading to unexpected results in the latter case, which
+>would
+>>  >mean
+>>  >that a RTDM-based driver is doing the wrong thing.
+>>  >
+>>  >>
+>>  >> I'm running Linux 2.6.37.6 w/Xenomai 2.6.1, native API on x86
+>>  >> (Atom, SMP, 32-bit).
+>>  >>
+>>  >>
+>>  >> Is it possible that a (well-written) driver can cause such
+>>  >> behavior?  (If not I can post the crashdump details).
+>>  >>
+>>  >>
+>>  >> I would like to use rt=5Fevent=5F / rt=5Fmutex=5F at other times
+>>  >> which I cannot do if I need to make this a Linux thread.
+>>  >> Is there a rational explanation that would allow me to use
+>>  >> these calls and the driver calls if I simply set the task
+>>  >> to priority "0"?
+>>  >>
+>>  >
+>>  >Is this driver a RTDM driver, or a regular linux one?
+>> It is a complex driver - its "runtime" calls are through RTDM,
+>> its "setup/teardown" calls are not. The "runtime" calls (called
+>> from a different, non-zero prio task) cause no problems and
+>> are never called at the same time as the "setup/td" set.
+>> The ones causing a problem are the "setup/td" set which are
+>> probably calling the kernel in primary mode as you suggest
+>> above.
+>
+>A simple way to check this is to enable=20
+>CONFIG=5FIPIPE=5FDEBUG=5FCONTEXT. You would get debug=20
+>assertions triggering, and related messages to your kernel=20
+>console when/if this happens.
 
-I'm interested.  It may sit on the back burner for a little, but if it's
-easy for you to find, send it over and I'll certainly borrow from it
-when the time comes.
+Thanks - I will give this a try.
 
-> The kernel-based approach has a big advantage though: recent kernels
-> have a driver for the LPC part of the Intel ICH, which is where the
-> register controlling SMI is found (drivers/mfd/lpc_ich.c), so, basing
-> our work on this driver in the I-pipe kernel, we could share the table
-> and avoid the double maintenance.
+>
+>> If they are called from a task that remains in secondary mode
+>> (except to service calls to rt=5Fmutex=5F, rt=5Fevent=5F which force
+>> a temporary switch to primary) would those calls be as stable
+>> as calling them out of a pure Linux thread?
+>
+>RTDM-wise, what makes these calls stable is when you ensure that only
+>non-rt routines may call into the regular kernel API within your
+>driver. Non-rt routines are those assigned to the *=5Fnrt handlers in your=
+=20
+>driver's device description structure, i.e. struct rtdm=5Fdevice.
+>Typically, open=5Fnrt should be the entry point for setup duties.
+>Therefore, what you need to make sure of, is that absolutely no =5Frt
+>type handler calls into the regular kernel API.
+>
+I will consult the driver author. It may take some time. If =5Frt calls are=
+=20
+being made into the kernel wouldn't problems show up even when the=20
+"setup/td" calls were made on the Linux thread?=20
 
-Is the advantage that the lpc_ich driver has more control than Jan's
-smictrl?  Anyway, I don't expect to get to the config/init script for a
-bit unless there's a lot of demand for it, so for now maybe I can be
-lazy here and wait for you to make the first move.  ;)
+An important clarification: when I refer to the "setup/td" calls, it is=20
+not the setup/teardown calls for the driver itself, but rather the objects =
+it=20
+manages. So both the "runtime" calls and "setup/td" calls are through=20
+ioctl=5Fnrt / ioctl=5Frt at this point. The calls are made several times=20
+throughout the lifetime of the application.
 
-	John
 
+>> Is this a valid/typical application of a 0-prio task?
+>
+>0-prio tasks are aimed at running most of the time in secondary mode,
+>because they most of the time require regular kernel services only,=20
+>except when they have to synchronize with the real-time stuff in some
+>ways, and therefore have to be able to switch temporarily to primary
+>mode for this.
+>
+>A typical use case is when you want such a task to deplete a
+>real-time semaphore, to sync with a real-time activity running in parallel:
+>when that happens, the 0-prio task might have to be blocked by the
+>real-time scheduler until a semaphore resources is released by the=20
+>real-time activity. This is only possible if that task has a Xenomai task
+>control block associated, in addition to the regular Linux's task stuct=20
+>descriptor, which allows it to switch to primary mode when needed,
+>i.e. to be controlled by the Xenomai scheduler.
+
+That is the use case we are trying to achieve - trying to coordinate
+when the "setup/td" calls are made from the 0-prio task with a
+state machine in another task and also mutex protect data shared=20
+between the two. So a 0-prio task is a good fit!
+
+So... am I correct to interpret your responses so far that it is not enough
+that the driver code runs successfully when accessed from a Linux thread
+to guarantee that it will also work when those same calls are made
+from a 0-prio task?
+
+>
+>To sum up, 0-prio tasks allow non-rt code to synchronize on real-time
+>objects, although real-time processing is not their main purpose. The
+>motivation is different from having to call regular linux setup code
+>once during the task's lifetime: in that case, automatic mode
+>switching controlled by Xenomai is enough, and such switching=20
+>happens with non-zero prio tasks as well.
+>
+>But, how Xenomai switches mode is defined on a per-syscall basis:
+>some Xenomai syscalls may lead to switch to primary immediately prior to=20
+>running the syscall (typically when the caller might block as a
+>result of such call, or do some introspection of its own TCB), others may
+>lead to switch to secondary mode. Regular linux syscalls will always cause
+>the latter, regardless of the Xenomai task priority.
+>
+
+Thanks again, Philippe, for the wealth of info you're sharing!
+
+Best regards,
+--George
