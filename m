@@ -1,14 +1,14 @@
-Message-ID: <5123BCE7.2050609@xenomai.org>
-Date: Tue, 19 Feb 2013 18:56:55 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <5123C910.7090107@siemens.com>
+Date: Tue, 19 Feb 2013 19:48:48 +0100
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-References: <224444793.158669.1360843957336.JavaMail.ngmail@webmail16.arcor-online.net>	<511CD5C2.50701@arcor.de>	<511CD673.2030400@xenomai.org>	<511CDF65.1020907@arcor.de>	<511D3A22.40307@xenomai.org>	<511DF30B.6040601@arcor.de>
-	<511E26AE.1010203@xenomai.org>	<511E3A5C.4000209@arcor.de>
-	<51237586.6030201@arcor.de>
-In-Reply-To: <51237586.6030201@arcor.de>
+References: <511CD2FB.7010502@gmail.com> <511DDBD5.4060505@web.de>
+	<51236088.1030402@gmail.com> <51236A75.5090400@siemens.com>
+In-Reply-To: <51236A75.5090400@siemens.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] kernel configuration problems with ACPI
+Subject: Re: [Xenomai] (Boot)-problems with (current) ipipe patch on AMD FX
+ 61000 - 2.6.38.8 & 3.5.7
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,18 +17,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Christopher Hahn <hahnchristopher@arcor.de>
-Cc: xenomai@xenomai.org
+To: Manuel Huber <manuel.h87@gmail.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 02/19/2013 01:52 PM, Christopher Hahn wrote:
+On 2013-02-19 13:05, Jan Kiszka wrote:
+> On 2013-02-19 12:22, Manuel Huber wrote:
+>> Thanks for your reply and sorry for the delay ;)
+>> I have tried disabling the options and attached the logs. It still fails :(
+>>
+>> I hope it's okay to attach so many files... I can also add the config
+>> files for
+>> every build if that helps.
+> 
+> I'll try your config later, though in a different environment. If I'm
+> unable to reproduce, I'll provide further instrumentation suggestions.
 
-> Do you have any idea how to solve the problem?
-> Even if the system receives interrupts at IRQ 4, the program doesn't 
-> receive any message from the serial port with this kernel configuration.
+No luck in reproducing, even with enforced IRQ7 injection. I suppose
+there are more factors influencing this. Again my question: any
+indication on normal Linux kernels that there are spurious IRQs? What is
+associated with IRQ7 on your system?
 
-
-Trying to register the irq handler as level instead of edge?
+Jan
 
 -- 
-                                                                Gilles.
+Siemens AG, Corporate Technology, CT RTC ITP SDP-DE
+Corporate Competence Center Embedded Linux
 
