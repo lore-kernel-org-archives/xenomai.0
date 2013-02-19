@@ -1,13 +1,13 @@
-Message-ID: <5123CD17.4020505@siemens.com>
-Date: Tue, 19 Feb 2013 20:05:59 +0100
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <5123DDBE.8060105@web.de>
+Date: Tue, 19 Feb 2013 21:17:02 +0100
+From: Jan Kiszka <jan.kiszka@web.de>
 MIME-Version: 1.0
 References: <511CD2FB.7010502@gmail.com> <511DDBD5.4060505@web.de>
 	<51236088.1030402@gmail.com> <51236A75.5090400@siemens.com>
-	<5123C910.7090107@siemens.com> <5123C9E9.2060707@xenomai.org>
-In-Reply-To: <5123C9E9.2060707@xenomai.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+	<5123C910.7090107@siemens.com>
+In-Reply-To: <5123C910.7090107@siemens.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Subject: Re: [Xenomai] (Boot)-problems with (current) ipipe patch on AMD FX
  61000 - 2.6.38.8 & 3.5.7
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -18,57 +18,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Manuel Huber <manuel.h87@gmail.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Manuel Huber <manuel.h87@gmail.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 2013-02-19 19:52, Gilles Chanteperdrix wrote:
-> On 02/19/2013 07:48 PM, Jan Kiszka wrote:
-> 
->> On 2013-02-19 13:05, Jan Kiszka wrote:
->>> On 2013-02-19 12:22, Manuel Huber wrote:
->>>> Thanks for your reply and sorry for the delay ;)
->>>> I have tried disabling the options and attached the logs. It still fails :(
->>>>
->>>> I hope it's okay to attach so many files... I can also add the config
->>>> files for
->>>> every build if that helps.
->>>
->>> I'll try your config later, though in a different environment. If I'm
->>> unable to reproduce, I'll provide further instrumentation suggestions.
->>
->> No luck in reproducing, even with enforced IRQ7 injection. I suppose
->> there are more factors influencing this. Again my question: any
->> indication on normal Linux kernels that there are spurious IRQs? What is
->> associated with IRQ7 on your system?
-> 
-> 
-> IRQ7 may be a PIC spurious interrupt:
-> http://wiki.osdev.org/Interrupts#Standard_ISA_IRQs
-> http://wiki.osdev.org/8259_PIC#Spurious_IRQs
-
-True. And the PIC may not deliver to all CPUs on all systems. Sometimes
-those IRQs only land on CPU0.
-
-I just stepped through start_secondary here. It starts with
-
-(gdb) p $lx_per_cpu("vector_irq")[0x37]
-$2 = -1
-
-But then, before executing local_irq_enable:
-
-(gdb) p $lx_per_cpu("vector_irq")[0x37]
-$10 = 7
-
-However:
-
-(gdb) p /x $eflags
-$11 = 0x46
-
-Thus IRQs hard disabled. I really don't understand what happens there.
-
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RTC ITP SDP-DE
-Corporate Competence Center Embedded Linux
-
+T24gMjAxMy0wMi0xOSAxOTo0OCwgSmFuIEtpc3prYSB3cm90ZToKPiBPbiAyMDEzLTAyLTE5IDEz
+OjA1LCBKYW4gS2lzemthIHdyb3RlOgo+PiBPbiAyMDEzLTAyLTE5IDEyOjIyLCBNYW51ZWwgSHVi
+ZXIgd3JvdGU6Cj4+PiBUaGFua3MgZm9yIHlvdXIgcmVwbHkgYW5kIHNvcnJ5IGZvciB0aGUgZGVs
+YXkgOykKPj4+IEkgaGF2ZSB0cmllZCBkaXNhYmxpbmcgdGhlIG9wdGlvbnMgYW5kIGF0dGFjaGVk
+IHRoZSBsb2dzLiBJdCBzdGlsbCBmYWlscyA6KAo+Pj4KPj4+IEkgaG9wZSBpdCdzIG9rYXkgdG8g
+YXR0YWNoIHNvIG1hbnkgZmlsZXMuLi4gSSBjYW4gYWxzbyBhZGQgdGhlIGNvbmZpZwo+Pj4gZmls
+ZXMgZm9yCj4+PiBldmVyeSBidWlsZCBpZiB0aGF0IGhlbHBzLgo+Pgo+PiBJJ2xsIHRyeSB5b3Vy
+IGNvbmZpZyBsYXRlciwgdGhvdWdoIGluIGEgZGlmZmVyZW50IGVudmlyb25tZW50LiBJZiBJJ20K
+Pj4gdW5hYmxlIHRvIHJlcHJvZHVjZSwgSSdsbCBwcm92aWRlIGZ1cnRoZXIgaW5zdHJ1bWVudGF0
+aW9uIHN1Z2dlc3Rpb25zLgo+IAo+IE5vIGx1Y2sgaW4gcmVwcm9kdWNpbmcsIGV2ZW4gd2l0aCBl
+bmZvcmNlZCBJUlE3IGluamVjdGlvbi4gSSBzdXBwb3NlCj4gdGhlcmUgYXJlIG1vcmUgZmFjdG9y
+cyBpbmZsdWVuY2luZyB0aGlzLiBBZ2FpbiBteSBxdWVzdGlvbjogYW55Cj4gaW5kaWNhdGlvbiBv
+biBub3JtYWwgTGludXgga2VybmVscyB0aGF0IHRoZXJlIGFyZSBzcHVyaW91cyBJUlFzPyBXaGF0
+IGlzCj4gYXNzb2NpYXRlZCB3aXRoIElSUTcgb24geW91ciBzeXN0ZW0/CgpQbGVhc2UgYWxzbyB0
+cnkgdGhpcyBpbnN0cnVtZW50YXRpb24gYW5kIHJlcG9ydCBiYWNrIHdoYXQgdGhlIGtlcm5lbApk
+dW1wcyB0byB0aGUgY29uc29sZToKCmRpZmYgLS1naXQgYS9hcmNoL3g4Ni9rZXJuZWwvc21wYm9v
+dC5jIGIvYXJjaC94ODYva2VybmVsL3NtcGJvb3QuYwppbmRleCA0MTE5NmQyLi4zOTE3NWU2IDEw
+MDY0NAotLS0gYS9hcmNoL3g4Ni9rZXJuZWwvc21wYm9vdC5jCisrKyBiL2FyY2gveDg2L2tlcm5l
+bC9zbXBib290LmMKQEAgLTE5NCw2ICsxOTQsNyBAQCBzdGF0aWMgdm9pZCBfX2NwdWluaXQgc21w
+X2NhbGxpbih2b2lkKQogCSAqIE5lZWQgdG8gc2V0dXAgdmVjdG9yIG1hcHBpbmdzIGJlZm9yZSB3
+ZSBlbmFibGUgaW50ZXJydXB0cy4KIAkgKi8KIAlzZXR1cF92ZWN0b3JfaXJxKHNtcF9wcm9jZXNz
+b3JfaWQoKSk7CisJcHJpbnRrKCJ2ZWN0b3JfaXJxWzB4MzddID0gJWRcbiIsIF9fdGhpc19jcHVf
+cmVhZCh2ZWN0b3JfaXJxWzB4MzddKSk7CiAKIAkvKgogCSAqIFNhdmUgb3VyIHByb2Nlc3NvciBw
+YXJhbWV0ZXJzLiBOb3RlOiB0aGlzIGluZm9ybWF0aW9uCkBAIC0yNDksNiArMjUwLDcgQEAgc3Rh
+dGljIHZvaWQgX19jcHVpbml0IHN0YXJ0X3NlY29uZGFyeSh2b2lkICp1bnVzZWQpCiAKIAkvKiBv
+dGhlcndpc2UgZ2NjIHdpbGwgbW92ZSB1cCBzbXBfcHJvY2Vzc29yX2lkIGJlZm9yZSB0aGUgY3B1
+X2luaXQgKi8KIAliYXJyaWVyKCk7CisJcHJpbnRrKCJ2ZWN0b3JfaXJxWzB4MzddID0gJWRcbiIs
+IF9fdGhpc19jcHVfcmVhZCh2ZWN0b3JfaXJxWzB4MzddKSk7CiAJLyoKIAkgKiBDaGVjayBUU0Mg
+c3luY2hyb25pemF0aW9uIHdpdGggdGhlIEJQOgogCSAqLwpAQCAtMjc0LDYgKzI3Niw3IEBAIHN0
+YXRpYyB2b2lkIF9fY3B1aW5pdCBzdGFydF9zZWNvbmRhcnkodm9pZCAqdW51c2VkKQogCXBlcl9j
+cHUoY3B1X3N0YXRlLCBzbXBfcHJvY2Vzc29yX2lkKCkpID0gQ1BVX09OTElORTsKIAl4ODZfcGxh
+dGZvcm0ubm1pX2luaXQoKTsKIAorCXByaW50aygidmVjdG9yX2lycVsweDM3XSA9ICVkXG4iLCBf
+X3RoaXNfY3B1X3JlYWQodmVjdG9yX2lycVsweDM3XSkpOwogCS8qIGVuYWJsZSBsb2NhbCBpbnRl
+cnJ1cHRzICovCiAJbG9jYWxfaXJxX2VuYWJsZSgpOwogCgpUaGFua3MsCkphbgoKLS0tLS0tLS0t
+LS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMg
+c2NydWJiZWQuLi4KTmFtZTogc2lnbmF0dXJlLmFzYwpUeXBlOiBhcHBsaWNhdGlvbi9wZ3Atc2ln
+bmF0dXJlClNpemU6IDI2MyBieXRlcwpEZXNjOiBPcGVuUEdQIGRpZ2l0YWwgc2lnbmF0dXJlClVS
+TDogPGh0dHA6Ly93d3cueGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMv
+MjAxMzAyMTkvYjI4YjhiMWQvYXR0YWNobWVudC5wZ3A+Cg==
