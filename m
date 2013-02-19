@@ -1,10 +1,11 @@
-Message-ID: <5123C910.7090107@siemens.com>
-Date: Tue, 19 Feb 2013 19:48:48 +0100
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <5123C9E9.2060707@xenomai.org>
+Date: Tue, 19 Feb 2013 19:52:25 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <511CD2FB.7010502@gmail.com> <511DDBD5.4060505@web.de>
-	<51236088.1030402@gmail.com> <51236A75.5090400@siemens.com>
-In-Reply-To: <51236A75.5090400@siemens.com>
+References: <511CD2FB.7010502@gmail.com>
+	<511DDBD5.4060505@web.de>	<51236088.1030402@gmail.com>
+	<51236A75.5090400@siemens.com> <5123C910.7090107@siemens.com>
+In-Reply-To: <5123C910.7090107@siemens.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] (Boot)-problems with (current) ipipe patch on AMD FX
@@ -17,29 +18,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Manuel Huber <manuel.h87@gmail.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Manuel Huber <manuel.h87@gmail.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 2013-02-19 13:05, Jan Kiszka wrote:
-> On 2013-02-19 12:22, Manuel Huber wrote:
->> Thanks for your reply and sorry for the delay ;)
->> I have tried disabling the options and attached the logs. It still fails :(
+On 02/19/2013 07:48 PM, Jan Kiszka wrote:
+
+> On 2013-02-19 13:05, Jan Kiszka wrote:
+>> On 2013-02-19 12:22, Manuel Huber wrote:
+>>> Thanks for your reply and sorry for the delay ;)
+>>> I have tried disabling the options and attached the logs. It still fails :(
+>>>
+>>> I hope it's okay to attach so many files... I can also add the config
+>>> files for
+>>> every build if that helps.
 >>
->> I hope it's okay to attach so many files... I can also add the config
->> files for
->> every build if that helps.
+>> I'll try your config later, though in a different environment. If I'm
+>> unable to reproduce, I'll provide further instrumentation suggestions.
 > 
-> I'll try your config later, though in a different environment. If I'm
-> unable to reproduce, I'll provide further instrumentation suggestions.
+> No luck in reproducing, even with enforced IRQ7 injection. I suppose
+> there are more factors influencing this. Again my question: any
+> indication on normal Linux kernels that there are spurious IRQs? What is
+> associated with IRQ7 on your system?
 
-No luck in reproducing, even with enforced IRQ7 injection. I suppose
-there are more factors influencing this. Again my question: any
-indication on normal Linux kernels that there are spurious IRQs? What is
-associated with IRQ7 on your system?
 
-Jan
+IRQ7 may be a PIC spurious interrupt:
+http://wiki.osdev.org/Interrupts#Standard_ISA_IRQs
+http://wiki.osdev.org/8259_PIC#Spurious_IRQs
 
 -- 
-Siemens AG, Corporate Technology, CT RTC ITP SDP-DE
-Corporate Competence Center Embedded Linux
+                                                                Gilles.
 
