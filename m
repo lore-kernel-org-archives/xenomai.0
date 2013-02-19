@@ -1,16 +1,15 @@
-Message-ID: <512372C2.9000203@siemens.com>
-Date: Tue, 19 Feb 2013 13:40:34 +0100
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <51237586.6030201@arcor.de>
+Date: Tue, 19 Feb 2013 13:52:22 +0100
+From: Christopher Hahn <hahnchristopher@arcor.de>
 MIME-Version: 1.0
-References: <511CD2FB.7010502@gmail.com> <511DDBD5.4060505@web.de>
-	<51236088.1030402@gmail.com> <51236A75.5090400@siemens.com>
-	<51236B02.2030106@xenomai.org> <51236E6C.40600@siemens.com>
-	<51237077.4040800@xenomai.org>
-In-Reply-To: <51237077.4040800@xenomai.org>
-Content-Type: text/plain; charset=UTF-8
+References: <224444793.158669.1360843957336.JavaMail.ngmail@webmail16.arcor-online.net>	<511CD5C2.50701@arcor.de>	<511CD673.2030400@xenomai.org>
+	<511CDF65.1020907@arcor.de>	<511D3A22.40307@xenomai.org>
+	<511DF30B.6040601@arcor.de> <511E26AE.1010203@xenomai.org>
+	<511E3A5C.4000209@arcor.de>
+In-Reply-To: <511E3A5C.4000209@arcor.de>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] (Boot)-problems with (current) ipipe patch on AMD FX
- 61000 - 2.6.38.8 & 3.5.7
+Subject: Re: [Xenomai] kernel configuration problems with ACPI
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,55 +18,87 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Manuel Huber <manuel.h87@gmail.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 2013-02-19 13:30, Gilles Chanteperdrix wrote:
-> On 02/19/2013 01:22 PM, Jan Kiszka wrote:
-> 
->> On 2013-02-19 13:07, Gilles Chanteperdrix wrote:
->>> On 02/19/2013 01:05 PM, Jan Kiszka wrote:
->>>
->>>> On 2013-02-19 12:22, Manuel Huber wrote:
->>>>> Thanks for your reply and sorry for the delay ;)
->>>>> I have tried disabling the options and attached the logs. It still fails :(
->>>>>
->>>>> I hope it's okay to attach so many files... I can also add the config
->>>>> files for
->>>>> every build if that helps.
->>>>
->>>> I'll try your config later, though in a different environment. If I'm
->>>> unable to reproduce, I'll provide further instrumentation suggestions.
->>>>
->>>> Gilles instrumentation confirmed that the CPU is taking a standard
->>>> external IRQ (#23: 0x37-FIRST_EXTERNAL_VECTOR). I suspect we are
->>>> enabling hardware IRQs too early during the boot of secondary CPUs,
->>>> causing this BUG as not all data structures are initialized yet. What
->>>> enables then can be some code that we do not run normally, on x86-64 or
->>>> maybe also x86-32 unless using your .config and/or your hardware.
->>>
->>>
->>> Remember that we have had such problems with grub2, so, the error could
->>> depend on the bootloader, for instance a network-aware bootloader could
->>> keep the network interface configured and we would take an interrupt
->>> when re-enabling interrupts.
+Am 15.02.2013 14:38, schrieb Christopher Hahn:
+> Am 15.02.2013 13:14, schrieb Gilles Chanteperdrix:
+>> On 02/15/2013 09:34 AM, Christopher Hahn wrote:
 >>
->> Possibly, but I don't see yet how Linux (3.5.7) would behave better in
->> this case. It should rather access the irq_desc array with a negative
->> index. And that suggests there is still an I-pipe factor involved that
->> makes this bug possible (the BUG_ON just catches it).
-> 
-> 
-> Maybe because Linux only unmask the interrupt after request_irq has
-> installed a handler?
+>>> after running the application which accesses the serial device
+>>> "Xenomai: xnintr_edge_shirq_handler: IRQ4 not handled. Disabling IRQ
+>>> line." was printed to dmesg and the next two outputs of
+>>> /proc/interrupts and /proc/xenomai/irq
+>>
+>> If xnintr_edge_shirq_handler is called, an RTDM driver registered a
+>> handler for this irq. So, please keep the application running with all
+>> the file descriptors opened, and run cat /proc/xenomai/irq while the
+>> application is still running.
+>>
+>> The most logical result would be that irq 4 is claimed by the 16550A 
+>> driver.
+>>
+>>
+> while accessing one serial port I get this
+> -------------- next part --------------
+> # cat /proc/interrupts           CPU0       CPU1       CPU2 CPU3       
+>  0:        120          0          0          0 IO-APIC-edge      timer
+>  1:          2          1          0          0 IO-APIC-edge      i8042
+>  4:          3          2          2          3   IO-APIC-fasteoi 
+>  7:          0          0          0          0 IO-APIC-fasteoi   
+> parport0
+>  8:          0          0          1          0 IO-APIC-edge      rtc0
+>  9:          0          0          0          0 IO-APIC-fasteoi   acpi
+> 16:         82         57         68         77 IO-APIC-fasteoi   i915
+> 18:          0          0          0          0 IO-APIC-fasteoi   
+> uhci_hcd:usb3
+> 19:          9         10          9          9 IO-APIC-fasteoi   
+> uhci_hcd:usb2
+> 20:        307        330        311        331 IO-APIC-fasteoi   eth0
+> 22:       3663       3657       3664       3649 IO-APIC-fasteoi   
+> ahci, snd_hda_intel
+> 23:        158        167        166        159 IO-APIC-fasteoi   
+> uhci_hcd:usb1
+> NMI:          0          0          0          0   Non-maskable 
+> interrupts
+> LOC:      29253      30056      31887      29552   Local timer interrupts
+> SPU:          0          0          0          0   Spurious interrupts
+> PMI:          0          0          0          0   Performance 
+> monitoring interrupts
+> IWI:          0          0          0          0   IRQ work interrupts
+> RTR:          0          0          0          0   APIC ICR read retries
+> RES:      44295      49569      39033      35105   Rescheduling 
+> interrupts
+> CAL:       1197       1346       2564       2107   Function call 
+> interrupts
+> TLB:        422        730        896        626   TLB shootdowns
+> TRM:          0          0          0          0   Thermal event 
+> interrupts
+> THR:          0          0          0          0   Threshold APIC 
+> interrupts
+> MCE:          0          0          0          0   Machine check 
+> exceptions
+> MCP:          1          1          1          1   Machine check polls
+> ERR:          0
+> MIS:          0
+>
+> # cat /proc/xenomai/irq IRQ         CPU0        CPU1 CPU2        CPU3
+>  4:         252         252         252         251         rtser0
+> 19:         251         250         253         246 SJA1000 SJA1000
+> 2336:       29837       30730       31906       30007 [timer]
+> 2337:           0           1           2           1 [reschedule]
+> 2338:           0           1           1           1 [timer-ipi]
+> 2339:           0           0           0           0 [sync]
+> 2371:           3           0           0           0 [virtual]
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> http://www.xenomai.org/mailman/listinfo/xenomai
 
-Does I-pipe do this, specifically that early during boot?
+Do you have any idea how to solve the problem?
+Even if the system receives interrupts at IRQ 4, the program doesn't 
+receive any message from the serial port with this kernel configuration.
 
-Well, I can try injecting a spurious IRQ7 through QEMU to see what happens.
+Thank you,
 
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RTC ITP SDP-DE
-Corporate Competence Center Embedded Linux
+Christopher
 
