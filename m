@@ -1,10 +1,11 @@
-Message-ID: <51236C20.5020906@siemens.com>
-Date: Tue, 19 Feb 2013 13:12:16 +0100
+Message-ID: <51236E6C.40600@siemens.com>
+Date: Tue, 19 Feb 2013 13:22:04 +0100
 From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
 References: <511CD2FB.7010502@gmail.com> <511DDBD5.4060505@web.de>
 	<51236088.1030402@gmail.com> <51236A75.5090400@siemens.com>
-In-Reply-To: <51236A75.5090400@siemens.com>
+	<51236B02.2030106@xenomai.org>
+In-Reply-To: <51236B02.2030106@xenomai.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] (Boot)-problems with (current) ipipe patch on AMD FX
@@ -17,29 +18,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Manuel Huber <manuel.h87@gmail.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Manuel Huber <manuel.h87@gmail.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 2013-02-19 13:05, Jan Kiszka wrote:
-> On 2013-02-19 12:22, Manuel Huber wrote:
->> Thanks for your reply and sorry for the delay ;)
->> I have tried disabling the options and attached the logs. It still fails :(
+On 2013-02-19 13:07, Gilles Chanteperdrix wrote:
+> On 02/19/2013 01:05 PM, Jan Kiszka wrote:
+> 
+>> On 2013-02-19 12:22, Manuel Huber wrote:
+>>> Thanks for your reply and sorry for the delay ;)
+>>> I have tried disabling the options and attached the logs. It still fails :(
+>>>
+>>> I hope it's okay to attach so many files... I can also add the config
+>>> files for
+>>> every build if that helps.
 >>
->> I hope it's okay to attach so many files... I can also add the config
->> files for
->> every build if that helps.
+>> I'll try your config later, though in a different environment. If I'm
+>> unable to reproduce, I'll provide further instrumentation suggestions.
+>>
+>> Gilles instrumentation confirmed that the CPU is taking a standard
+>> external IRQ (#23: 0x37-FIRST_EXTERNAL_VECTOR). I suspect we are
+>> enabling hardware IRQs too early during the boot of secondary CPUs,
+>> causing this BUG as not all data structures are initialized yet. What
+>> enables then can be some code that we do not run normally, on x86-64 or
+>> maybe also x86-32 unless using your .config and/or your hardware.
 > 
-> I'll try your config later, though in a different environment. If I'm
-> unable to reproduce, I'll provide further instrumentation suggestions.
 > 
-> Gilles instrumentation confirmed that the CPU is taking a standard
-> external IRQ (#23: 0x37-FIRST_EXTERNAL_VECTOR).
+> Remember that we have had such problems with grub2, so, the error could
+> depend on the bootloader, for instance a network-aware bootloader could
+> keep the network interface configured and we would take an interrupt
+> when re-enabling interrupts.
 
-Wrong, it's IRQ #7: 0x37-IRQ0_VECTOR.
-
-BTW, do you get spurious events on that IRQ line? Check your kernel log
-while running a normal kernel for a while. Also have a look at
-/proc/interrupts, if there are entries for #7.
+Possibly, but I don't see yet how Linux (3.5.7) would behave better in
+this case. It should rather access the irq_desc array with a negative
+index. And that suggests there is still an I-pipe factor involved that
+makes this bug possible (the BUG_ON just catches it).
 
 Jan
 
