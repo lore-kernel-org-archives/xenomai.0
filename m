@@ -1,10 +1,10 @@
-Message-ID: <512369BA.60206@xenomai.org>
-Date: Tue, 19 Feb 2013 13:02:02 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <51236A75.5090400@siemens.com>
+Date: Tue, 19 Feb 2013 13:05:09 +0100
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-References: <511CD2FB.7010502@gmail.com> <511D4559.5030505@xenomai.org>
-	<51235E42.20607@gmail.com>
-In-Reply-To: <51235E42.20607@gmail.com>
+References: <511CD2FB.7010502@gmail.com> <511DDBD5.4060505@web.de>
+	<51236088.1030402@gmail.com>
+In-Reply-To: <51236088.1030402@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] (Boot)-problems with (current) ipipe patch on AMD FX
@@ -20,18 +20,27 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: Manuel Huber <manuel.h87@gmail.com>
 Cc: xenomai@xenomai.org
 
-On 02/19/2013 12:13 PM, Manuel Huber wrote:
-
-> Hi!
+On 2013-02-19 12:22, Manuel Huber wrote:
+> Thanks for your reply and sorry for the delay ;)
+> I have tried disabling the options and attached the logs. It still fails :(
 > 
-> Thanks for the suggestions and sorry for the delay. I've applied the 
-> patch and attached the output (still fails to boot).
+> I hope it's okay to attach so many files... I can also add the config
+> files for
+> every build if that helps.
 
+I'll try your config later, though in a different environment. If I'm
+unable to reproduce, I'll provide further instrumentation suggestions.
 
-The patch was not supposed to fix the bug, simply print the vector which
-causes the bug. So, now we know: the vector is 0x37... I do not know
-what to make of this.
+Gilles instrumentation confirmed that the CPU is taking a standard
+external IRQ (#23: 0x37-FIRST_EXTERNAL_VECTOR). I suspect we are
+enabling hardware IRQs too early during the boot of secondary CPUs,
+causing this BUG as not all data structures are initialized yet. What
+enables then can be some code that we do not run normally, on x86-64 or
+maybe also x86-32 unless using your .config and/or your hardware.
+
+Jan
 
 -- 
-                                                                Gilles.
+Siemens AG, Corporate Technology, CT RTC ITP SDP-DE
+Corporate Competence Center Embedded Linux
 
