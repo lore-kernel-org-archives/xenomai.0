@@ -1,16 +1,13 @@
-Message-ID: <51277B66.60505@siemens.com>
-Date: Fri, 22 Feb 2013 15:06:30 +0100
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <512B3A5F.5000707@control.lth.se>
+Date: Mon, 25 Feb 2013 11:18:07 +0100
+From: Anders Blomdell <anders.blomdell@control.lth.se>
 MIME-Version: 1.0
-References: <511CD2FB.7010502@gmail.com> <511DDBD5.4060505@web.de>
-	<51236088.1030402@gmail.com> <51236A75.5090400@siemens.com>
-	<5123C910.7090107@siemens.com> <5123DDBE.8060105@web.de>
-	<512778A0.6090300@gmail.com>
-In-Reply-To: <512778A0.6090300@gmail.com>
-Content-Type: text/plain; charset=UTF-8
+References: <511E5112.9030006@control.lth.se> <511E53A5.1030406@siemens.com>
+In-Reply-To: <511E53A5.1030406@siemens.com>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] (Boot)-problems with (current) ipipe patch on AMD FX
- 61000 - 2.6.38.8 & 3.5.7
+Subject: Re: [Xenomai] kernel BUG at arch/x86/kernel/ipipe.c:589! on
+	motherboard DX79SI
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,24 +16,67 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Manuel Huber <manuel.h87@gmail.com>
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 2013-02-22 14:54, Manuel Huber wrote:
-> Hey!
-> 
-> Great work, it booted! I appended the log file, just in
-> case you want to check... Let me now if I should test
-> some more patches!
+On 2013-02-15 16:26, Jan Kiszka wrote:
+> On 2013-02-15 16:15, Anders Blomdell wrote:
+>> Hi,
+>>
+>> I have a DX79SI that dies with "kernel BUG at
+>> arch/x86/kernel/ipipe.c:589!" when running Xenomai. This is not very
+>> surprising since when running the system with an ordinary kernel thera
+>> are a few 'do_IRQ: X.Y No irq handler for vector (irq -1)' each day.
+>>
+>> Question is if it would be possible to do something less fatal than
+>> 'BUG_ON(irq < 0);' in the code below:
+>
+> This remains a bug that has to be understood.
+>
+>>
+>> int __ipipe_handle_irq(struct pt_regs *regs)
+>> {
+>>      struct ipipe_percpu_data *p = __ipipe_this_cpu_ptr(&ipipe_percpu);
+>>      int irq, vector = regs->orig_ax, flags = 0;
+>>      struct pt_regs *tick_regs;
+>>
+>>      if (likely(vector < 0)) {
+>>          irq = __this_cpu_read(vector_irq[~vector]);
+>>          BUG_ON(irq < 0);
+>>      } else { /* Software-generated. */
+>>          irq = vector;
+>>          flags = IPIPE_IRQF_NOACK;
+>>      }
+>
+> Kernel 3.5.7 with latest I-pipe?
+Yes.
 
-Err, that is just an instrumentation that shows if that target vector is
-initialized at all. Maybe the instrumentation changed the timing,
-"resolving" the issue this way. I will have to look at more details why
-IRQ7 is not wired up.
+> This is the second report of this kind,
+> see [1] for the discussion and suggestions. If you don't have KGDB and
+> that kind enabled, try Gilles' instrumentations.
+After a running xenomai five and a half day on a DX58SO motherboard, the 
+system crashed, leaving a single 'do_IRQ: 2.166 No irq handler for 
+vector (irq -1)' on our logserver.
 
-Jan
+I'm planning to put in Gilles instrumentations and change the BUG_ON to 
+a WARN_ON/WARN, but what should I return after that (my guess is a 
+'return 1', but waiting a week to be proved wrong would be a waste of 
+time :-).
+
+>
+> Jan
+>
+> [1] http://thread.gmane.org/gmane.linux.real-time.xenomai.users/15936
+>
+Regards
+
+Anders
 
 -- 
-Siemens AG, Corporate Technology, CT RTC ITP SDP-DE
-Corporate Competence Center Embedded Linux
+Anders Blomdell                  Email: anders.blomdell@control.lth.se
+Department of Automatic Control
+Lund University                  Phone:    +46 46 222 4625
+P.O. Box 118                     Fax:      +46 46 138118
+SE-221 00 Lund, Sweden
+
 
