@@ -1,15 +1,16 @@
-Message-ID: <512B806F.6010004@control.lth.se>
-Date: Mon, 25 Feb 2013 16:17:03 +0100
-From: Anders Blomdell <anders.blomdell@control.lth.se>
+Message-ID: <512B9A86.4060900@siemens.com>
+Date: Mon, 25 Feb 2013 18:08:22 +0100
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-References: <511E5112.9030006@control.lth.se> <511E53A5.1030406@siemens.com>
-	<512B3A5F.5000707@control.lth.se> <512B58B1.4060509@xenomai.org>
-	<512B77AF.9020509@control.lth.se> <512B7B1E.7090900@siemens.com>
-In-Reply-To: <512B7B1E.7090900@siemens.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+References: <511CD2FB.7010502@gmail.com> <511DDBD5.4060505@web.de>
+	<51236088.1030402@gmail.com> <51236A75.5090400@siemens.com>
+	<5123C910.7090107@siemens.com> <5123DDBE.8060105@web.de>
+	<512778A0.6090300@gmail.com> <51277B66.60505@siemens.com>
+In-Reply-To: <51277B66.60505@siemens.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] kernel BUG at arch/x86/kernel/ipipe.c:589! on
- motherboard DX79SI
+Subject: Re: [Xenomai] (Boot)-problems with (current) ipipe patch on AMD FX
+ 61000 - 2.6.38.8 & 3.5.7
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,120 +19,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Manuel Huber <manuel.h87@gmail.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 2013-02-25 15:54, Jan Kiszka wrote:
-> On 2013-02-25 15:39, Anders Blomdell wrote:
->> On 2013-02-25 13:27, Gilles Chanteperdrix wrote:
->>> On 02/25/2013 11:18 AM, Anders Blomdell wrote:
->>>
->>>> On 2013-02-15 16:26, Jan Kiszka wrote:
->>>>> On 2013-02-15 16:15, Anders Blomdell wrote:
->>>>>> Hi,
->>>>>>
->>>>>> I have a DX79SI that dies with "kernel BUG at
->>>>>> arch/x86/kernel/ipipe.c:589!" when running Xenomai. This is not very
->>>>>> surprising since when running the system with an ordinary kernel thera
->>>>>> are a few 'do_IRQ: X.Y No irq handler for vector (irq -1)' each day.
->>>>>>
->>>>>> Question is if it would be possible to do something less fatal than
->>>>>> 'BUG_ON(irq < 0);' in the code below:
->>>>>
->>>>> This remains a bug that has to be understood.
->>>>>
->>>>>>
->>>>>> int __ipipe_handle_irq(struct pt_regs *regs)
->>>>>> {
->>>>>>        struct ipipe_percpu_data *p = __ipipe_this_cpu_ptr(&ipipe_percpu);
->>>>>>        int irq, vector = regs->orig_ax, flags = 0;
->>>>>>        struct pt_regs *tick_regs;
->>>>>>
->>>>>>        if (likely(vector < 0)) {
->>>>>>            irq = __this_cpu_read(vector_irq[~vector]);
->>>>>>            BUG_ON(irq < 0);
->>>>>>        } else { /* Software-generated. */
->>>>>>            irq = vector;
->>>>>>            flags = IPIPE_IRQF_NOACK;
->>>>>>        }
->>>>>
->>>>> Kernel 3.5.7 with latest I-pipe?
->>>> Yes.
->>>>
->>>>> This is the second report of this kind,
->>>>> see [1] for the discussion and suggestions. If you don't have KGDB and
->>>>> that kind enabled, try Gilles' instrumentations.
->>>> After a running xenomai five and a half day on a DX58SO motherboard, the
->>>> system crashed, leaving a single 'do_IRQ: 2.166 No irq handler for
->>>> vector (irq -1)' on our logserver.
->>>>
->>>> I'm planning to put in Gilles instrumentations and change the BUG_ON to
->>>> a WARN_ON/WARN, but what should I return after that (my guess is a
->>>> 'return 1', but waiting a week to be proved wrong would be a waste of
->>>> time :-).
->>>
->>>
->>> Returning 1 is incorrect:
->>> - you should probably jump to the end of the __ipipe_handle_irq function
->>> - if the irq is irq 7, meaning a spurious irq, Linux should handle it,
->>> so, __ipipe_dispatch_irq should be called.
->> OK, so you mean that I'm probably lokking at two different problems
->> DX58SO: a spurious interrupt (irq==7) passes through __ipipe_handle_irq
->> without triggering BUG_ON, but something else breaks.
->> DX79SI: some (spurious?) interrupt results in irq < 0, triggering BUG_ON
+On 2013-02-22 15:06, Jan Kiszka wrote:
+> On 2013-02-22 14:54, Manuel Huber wrote:
+>> Hey!
 >>
->> Would the following changes be what you have in mind:
->>
->> 	if (likely(vector < 0)) {
->> 		irq = __this_cpu_read(vector_irq[~vector]);
->> 	        if (irq < 0) {
->> 		    	WARN(irq < 0, "irq(%d) < 0", irq);
->
-> Again, that's only an instrumentation to help finding the bug.
-I know (have to crawl before i can walk :-))
+>> Great work, it booted! I appended the log file, just in
+>> case you want to check... Let me now if I should test
+>> some more patches!
+> 
+> Err, that is just an instrumentation that shows if that target vector is
+> initialized at all. Maybe the instrumentation changed the timing,
+> "resolving" the issue this way. I will have to look at more details why
+> IRQ7 is not wired up.
 
-My understanding of the code is that if irq < 0, should not call 
-__ipipe_dispatch_irq, since its irq argument is unsigned, but perhaps 
-the MAYDAY and IPIPE_STALL_FLAG stuff should be executed (moving the 
-out: label up a few lines).
+OK, after writing tons of instrumentations for your system and wondering
+even more why we see this strange effect when the code says something
+like "For legacy IRQ's, start with assigning irq0 to irq15 to
+IRQ0_VECTOR to IRQ15_VECTOR for *all* cpu's.", I finally realized that I
+was accidentally hacking against 3.8 and that there is apparently an
+upstream bug in older kernels. It was fixed in 3.8 by "x86, apic:
+Cleanup cfg->domain setup for legacy interrupts" ("cleanup" - well the
+commit log rather talks about "issues"...).
 
-I guess that I don't need to consider the special case when 
-p->hrtimer_irq == -1 and irq == -1?
+As 3.5 is dead, this fix will never make it there unless we back-port.
+While I'm doing this, could you try if
 
+    git://git.xenomai.org/ipipe-jki.git for-upstream/master
 
+works for you? Anders, this bug may explain your problems, too. Please
+give my tree a try as well.
 
-> According to my reading of the code, Linux should behave incorrectly
- > over invalid vector_irq entries as well.
-The difference on DX79SI being that Linux (3.6.11) only logs do_IRQ, 
-while Xenomai (Linux 3.5.7/xenomai-2.6.2.1) gives a BUG_ON which makes 
-all filesystems read-only, and after that everything more or less 
-freezes :-(
-
->
-> Jan
->
->>    		  	goto out:
->> 	 	}
->> 	} else { /* Software-generated. */
->> 		irq = vector;
->> 		flags = IPIPE_IRQF_NOACK;
->> 	}
->> 	...
->> out:
->> 	return 1;
->>
->>
->>
->>
-Regards
-
-Anders
+Thanks,
+Jan
 
 -- 
-Anders Blomdell                  Email: anders.blomdell@control.lth.se
-Department of Automatic Control
-Lund University                  Phone:    +46 46 222 4625
-P.O. Box 118                     Fax:      +46 46 138118
-SE-221 00 Lund, Sweden
-
+Siemens AG, Corporate Technology, CT RTC ITP SDP-DE
+Corporate Competence Center Embedded Linux
 
