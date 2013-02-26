@@ -1,15 +1,12 @@
-Date: Tue, 26 Feb 2013 11:01:39 +0100 (CET)
-From: hahnchristopher@arcor.de
-Message-ID: <963432115.61822.1361872899385.JavaMail.ngmail@webmail10.arcor-online.net>
-In-Reply-To: <5123BCE7.2050609@xenomai.org>
-References: <5123BCE7.2050609@xenomai.org>
-	<224444793.158669.1360843957336.JavaMail.ngmail@webmail16.arcor-online.net>	<511CD5C2.50701@arcor.de>	<511CD673.2030400@xenomai.org>	<511CDF65.1020907@arcor.de>	<511D3A22.40307@xenomai.org>	<511DF30B.6040601@arcor.de>
-	<511E26AE.1010203@xenomai.org>	<511E3A5C.4000209@arcor.de>
-	<51237586.6030201@arcor.de>
+Message-ID: <512C9E78.1060208@siemens.com>
+Date: Tue, 26 Feb 2013 12:37:28 +0100
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
+References: <512C806F.2020209@hilscher.com>
+In-Reply-To: <512C806F.2020209@hilscher.com>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] kernel configuration problems with ACPI
+Subject: Re: [Xenomai] Hilscher driver for cifX boards
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,33 +15,51 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Jerome Poncin <JPoncin@hilscher.com>
+Cc: xenomai@xenomai.org
 
-On 02/19/2013 6:56 PM,  Gilles Chanteperdrix wrote:
-> On 02/19/2013 01:52 PM, Christopher Hahn wrote:
+On 2013-02-26 10:29, Jerome Poncin wrote:
+> Hello,
 > 
-> > Do you have any idea how to solve the problem?
-> > Even if the system receives interrupts at IRQ 4, the program doesn't 
-> > receive any message from the serial port with this kernel configuration.
+> I have a problem with driver for Hilscher cifx with IRQ.
 > 
+> All driver run good (I verified in polling mode) but in case I activate
+> IRQ the system freeze.
 > 
-> Trying to register the irq handler as level instead of edge?
-> 
-> -- 
->                                                                 Gilles.
-> 
+> I checked parameters of "rtdm_irq_request" function without success (all
+> seems good) ! I tried to see on internet to get some information about
+> the use of "rtdm_irq_request", or compare my code with other driver but
+> it's not easy...
+> I give you in attached file my code because I have no idea about my
+> problem, and it's really difficult to have some information or trace
+> after system freeze...
+> Do you have an idea about my problem ?
 
-I removed the 'RTDM_IRQTYPE_EDGE' from ksrc/drivers/serial/16550A.c at line 123.
+> static inline int cifx_handler(rtdm_irq_t *irq)
+         ^^^^^^
+But I suspect the compiler is smart enough to ignore this.
 
-Now I get 'Xenomai: xnintr_shirq_handler: IRQ4 not handled. Disabling IRQ line.'
+Is the line you are registering for shared with other devices? Check
+/proc/interrupts and lspci -v. If yes, resolve that conflict.
 
+If not, add printk to your IRQ handler, redirect the kernel messages to
+a serial console and try to find out how far and how ofter you get into
+the handler.
 
+Well, and then there is the option of source-level debugging. kgdb for
+I-pipe patches aren't merged yet, but more convenient is KVM-based
+debugging anyway. See [1] for the concept. Just requires VT-d or AMD
+IOMMU on your target.
 
+Jan
 
+PS: Still no kernel coding style. Specifically the long lines makes it
+hard to read.
 
+[1]
+http://chemnitzer.linux-tage.de/2012/vortraege/folien/1061-VirtualDebugging.pdf
 
-
-
-
-
+-- 
+Siemens AG, Corporate Technology, CT RTC ITP SDP-DE
+Corporate Competence Center Embedded Linux
 
