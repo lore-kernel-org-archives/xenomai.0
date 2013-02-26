@@ -1,12 +1,13 @@
-Message-ID: <511D3DA1.1040209@xenomai.org>
-Date: Thu, 14 Feb 2013 20:40:17 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <512CC6A3.1010005@siemens.com>
+Date: Tue, 26 Feb 2013 15:28:51 +0100
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-References: <CAPeEhaoXWQy_w3AvZPg7DTKWebiTh9p3zOaDEGkkcUe56ftPdA@mail.gmail.com>
-In-Reply-To: <CAPeEhaoXWQy_w3AvZPg7DTKWebiTh9p3zOaDEGkkcUe56ftPdA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
+References: <512C806F.2020209@hilscher.com> <512C9E78.1060208@siemens.com>
+	<512CC5C6.8050204@hilscher.com>
+In-Reply-To: <512CC5C6.8050204@hilscher.com>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] #INCLUDE for __ipipe_tsc_register()
+Subject: Re: [Xenomai] Hilscher driver for cifX boards
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,45 +16,67 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: uMinded Strikes Again <iceblu3710@gmail.com>
-Cc: xenomai@xenomai.org
+To: Jerome Poncin <JPoncin@hilscher.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 02/14/2013 07:16 PM, uMinded Strikes Again wrote:
-
-> I had a read through http://xenomai.org/index.php/I-pipe-core:ArmPorting but
-> my 3.0.36 kernel does not use this style of ipipe functions. I took a look
-> at the mach-omap2 implementation of ipipe and just copied it in my arch.
+On 2013-02-26 15:25, Jerome Poncin wrote:
+> Hello Jan,
 > 
-> I have written functions and exported whats needed for everything `I HOPE`
-> but I get an erro when linking:
-> undefined reference to `__ipipe_tsc_register'
+> Thank you for your answer. I checked /proc/interrupts and lspci -v, and I saw that the IRQ is shared.
 > 
-> My snippit of code in my timer init function:
-> #if defined(CONFIG_IPIPE)
->   tsc_info.type = IPIPE_TSC_TYPE_FREERUNNING,
->   tsc_info.freq = TIMER2_HPET_CLOCK_EVENT_HZ;
->   tsc_info.counter_vaddr = TMR_REG_o_TMR2_CUR;
->   tsc_info.u.counter_paddr = TMR_REG_o_TMR2_CUR;
->   tsc_info.u.mask = 0xffffffff;
->   __ipipe_tsc_register(&tsc_info);
-> #endif /* CONFIG_IPIPE */
+> "If yes, resolve that conflict."
 > 
-> The only places I find the register function is in:
-> /arch/arm/include/asm/ipipe.h
-> /arch/arm/kernel/ipipe_tsc.c
+> => What must I do ? I'm not sure to have understood ?
+
+See
+http://xenomai.org/index.php/FAQs#What_can_I_do_if_Xenomai_and_Linux_devices_share_the_same_IRQ.3F
+
 > 
-> but including either of those files does not solve the reference. Any idea
-> what include I need for this __ipipe_tsc_register function?
+> 
+> /*****************************************************************************/
+> /*!
+> *   \brief  cifx_handler
+> *
+> *   \param  [in]    irq      Resource task pointer
+> *
+> *   \return RTDM_IRQ_NONE or RTDM_IRQ_HANDLED
+> *
+> *   \note   cifx interrupt handler
+> */
+> /*****************************************************************************/
+> static /*inline*/ int cifx_handler(rtdm_irq_t *irq)
+> {
+>     struct rtdm_device    *info             = (struct rtdm_device *)rtdm_irq_get_arg(irq, void);
+>     io_info_t             *device_data     = (io_info_t *) info->device_data;
+> 
+>     if ((device_data->priv != NULL) || (device_data->irq_registered == FALSE) || (device_data->irq_enable == FALSE))
+>     {
+>         /* This is a PLX device and cannot produce an IRQ */
+>         return RTDM_IRQ_NONE;
+>     }
+>     else
+>     {
+>         void __iomem *int_enable_reg = device_data->mem[DPM_INDEX].internal_addr + DPM_HOST_INT_EN0;
+>         void __iomem *int_status_reg = device_data->mem[DPM_INDEX].internal_addr + DPM_HOST_INT_STAT0;
+> 
+>         /* Is one of our interrupts enabled and active ? */
+>         if (!(ioread32(int_enable_reg) & ioread32(int_status_reg) & DPM_HOST_INT_MASK))
+>             return RTDM_IRQ_NONE;
+> 
+>         /* Disable interrupt */
+>         iowrite32(ioread32(int_enable_reg) & ~DPM_HOST_INT_GLOBAL_EN, int_enable_reg);
+> 
+>         return RTDM_IRQ_HANDLED;
+>     }
+> }
+> 
+> If IRQ is not mine, I return RTDM_IRQ_NONE, it's not correct ?
 
+It is. The problem is the sharing between RT and Linux. That cannot work.
 
-That is explained at the very beginning of the TSC part of the porting 
-guide, with an example given for the SPEAR processor:
-http://xenomai.org/index.php/I-pipe-core:ArmPorting#High_resolution_counter
-
-Namely, you have to add:
-	select IPIPE_ARM_KUSER_TSC if IPIPE
-somewhere in the Kconfig for the processor you are porting the I-pipe to.
+Jan
 
 -- 
-                                                                Gilles.
+Siemens AG, Corporate Technology, CT RTC ITP SDP-DE
+Corporate Competence Center Embedded Linux
 
