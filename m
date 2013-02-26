@@ -1,13 +1,19 @@
-Message-ID: <512CC6A3.1010005@siemens.com>
-Date: Tue, 26 Feb 2013 15:28:51 +0100
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <512CDB6C.9010700@control.lth.se>
+Date: Tue, 26 Feb 2013 16:57:32 +0100
+From: Anders Blomdell <anders.blomdell@control.lth.se>
 MIME-Version: 1.0
-References: <512C806F.2020209@hilscher.com> <512C9E78.1060208@siemens.com>
-	<512CC5C6.8050204@hilscher.com>
-In-Reply-To: <512CC5C6.8050204@hilscher.com>
-Content-Type: text/plain; charset=ISO-8859-1
+References: <511CD2FB.7010502@gmail.com> <511DDBD5.4060505@web.de>
+	<51236088.1030402@gmail.com> <51236A75.5090400@siemens.com>
+	<5123C910.7090107@siemens.com> <5123DDBE.8060105@web.de>
+	<512778A0.6090300@gmail.com> <51277B66.60505@siemens.com>
+	<512B9A86.4060900@siemens.com> <512BB672.7080900@control.lth.se>
+	<512BB714.6080707@siemens.com>
+	<512BC4E2.4020605@control.lth.se> <512BDF7F.3030005@web.de>
+In-Reply-To: <512BDF7F.3030005@web.de>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Hilscher driver for cifX boards
+Subject: Re: [Xenomai] (Boot)-problems with (current) ipipe patch on AMD FX
+ 61000 - 2.6.38.8 & 3.5.7
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,67 +22,115 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jerome Poncin <JPoncin@hilscher.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@web.de>
+Cc: Manuel Huber <manuel.h87@gmail.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 2013-02-26 15:25, Jerome Poncin wrote:
-> Hello Jan,
-> 
-> Thank you for your answer. I checked /proc/interrupts and lspci -v, and I saw that the IRQ is shared.
-> 
-> "If yes, resolve that conflict."
-> 
-> => What must I do ? I'm not sure to have understood ?
+On 2013-02-25 23:02, Jan Kiszka wrote:
+> On 2013-02-25 21:09, Anders Blomdell wrote:
+>> On 2013-02-25 20:10, Jan Kiszka wrote:
+>>> On 2013-02-25 20:07, Anders Blomdell wrote:
+>>>> On 2013-02-25 18:08, Jan Kiszka wrote:
+>>>>> As 3.5 is dead, this fix will never make it there unless we back-port.
+>>>>> While I'm doing this, could you try if
+>>>>>
+>>>>>        git://git.xenomai.org/ipipe-jki.git for-upstream/master
+>>>> I'm probably more stupid than normal (i.e I can't find any ipipe for
+>>>> x86_64):
+>>>>
+>>>> # git clone git://git.xenomai.org/ipipe-jki.git for-upstream/master
+>>>
+>>> git clone git://git.xenomai.org/ipipe-jki.git
+>>> git checkout -b for-upstream/master origin/for-upstream/master
+>> OK, thanks. Do I need to setup xenomai in order to gain any useful
+>> information, or is:
+>>
+>> CONFIG_IPIPE=y
+>> CONFIG_IPIPE_LEGACY=y
+>> CONFIG_IPIPE_CORE=y
+>> CONFIG_IPIPE_CORE_APIREV=2
+>> CONFIG_IPIPE_TARGET_APIREV=1
+>> CONFIG_IPIPE_HAVE_HOSTRT=y
+>> CONFIG_IPIPE_DELAYED_ATOMICSW=y
+>> # CONFIG_IPIPE_DEBUG is not set
+>>
+>> sufficient?
+>
+> Plain I-pipe will suffice as the the interrupt virtualization is
+> unconditional, thus __ipipe_handle_irq is always taken.
+>
+> Alternatively, here is the backported patch over 3.5.7:
+>
+> diff --git a/arch/x86/kernel/apic/io_apic.c b/arch/x86/kernel/apic/io_apic.c
+> index 08e5ad4..aade7f0 100644
+> --- a/arch/x86/kernel/apic/io_apic.c
+> +++ b/arch/x86/kernel/apic/io_apic.c
+> @@ -234,11 +234,11 @@ int __init arch_early_irq_init(void)
+>   		zalloc_cpumask_var_node(&cfg[i].old_domain, GFP_KERNEL, node);
+>   		/*
+>   		 * For legacy IRQ's, start with assigning irq0 to irq15 to
+> -		 * IRQ0_VECTOR to IRQ15_VECTOR on cpu 0.
+> +		 * IRQ0_VECTOR to IRQ15_VECTOR for all cpu's.
+>   		 */
+>   		if (i < legacy_pic->nr_legacy_irqs) {
+>   			cfg[i].vector = IRQ0_VECTOR + i;
+> -			cpumask_set_cpu(0, cfg[i].domain);
+> +			cpumask_setall(cfg[i].domain);
+>   		}
+>   	}
+>
+> @@ -1181,8 +1181,9 @@ next:
+>   		current_vector = vector;
+>   		current_offset = offset;
+>   		if (old_vector) {
+> -			cfg->move_in_progress = 1;
+>   			cpumask_copy(cfg->old_domain, cfg->domain);
+> +			cfg->move_in_progress =
+> +			   cpumask_intersects(cfg->old_domain, cpu_online_mask);
+>   		}
+>   		for_each_cpu_and(new_cpu, tmp_mask, cpu_online_mask)
+>   			per_cpu(vector_irq, new_cpu)[vector] = irq;
+> @@ -1250,12 +1251,6 @@ void __setup_vector_irq(int cpu)
+>   		cfg = irq_get_chip_data(irq);
+>   		if (!cfg)
+>   			continue;
+> -		/*
+> -		 * If it is a legacy IRQ handled by the legacy PIC, this cpu
+> -		 * will be part of the irq_cfg's domain.
+> -		 */
+> -		if (irq < legacy_pic->nr_legacy_irqs && !IO_APIC_IRQ(irq))
+> -			cpumask_set_cpu(cpu, cfg->domain);
+>
+>   		if (!cpumask_test_cpu(cpu, cfg->domain))
+>   			continue;
+> @@ -1380,13 +1375,6 @@ static void setup_ioapic_irq(unsigned int irq, struct irq_cfg *cfg,
+>
+>   	if (!IO_APIC_IRQ(irq))
+>   		return;
+> -	/*
+> -	 * For legacy irqs, cfg->domain starts with cpu 0 for legacy
+> -	 * controllers like 8259. Now that IO-APIC can handle this irq, update
+> -	 * the cfg->domain.
+> -	 */
+> -	if (irq < legacy_pic->nr_legacy_irqs && cpumask_test_cpu(0, cfg->domain))
+> -		apic->vector_allocation_domain(0, cfg->domain);
+>
+>   	if (assign_irq_vector(irq, cfg, apic->target_cpus()))
+>   		return;
 
-See
-http://xenomai.org/index.php/FAQs#What_can_I_do_if_Xenomai_and_Linux_devices_share_the_same_IRQ.3F
+Thanks, have put both versions under test on different machines. Will 
+come back if it crashes.
 
-> 
-> 
-> /*****************************************************************************/
-> /*!
-> *   \brief  cifx_handler
-> *
-> *   \param  [in]    irq      Resource task pointer
-> *
-> *   \return RTDM_IRQ_NONE or RTDM_IRQ_HANDLED
-> *
-> *   \note   cifx interrupt handler
-> */
-> /*****************************************************************************/
-> static /*inline*/ int cifx_handler(rtdm_irq_t *irq)
-> {
->     struct rtdm_device    *info             = (struct rtdm_device *)rtdm_irq_get_arg(irq, void);
->     io_info_t             *device_data     = (io_info_t *) info->device_data;
-> 
->     if ((device_data->priv != NULL) || (device_data->irq_registered == FALSE) || (device_data->irq_enable == FALSE))
->     {
->         /* This is a PLX device and cannot produce an IRQ */
->         return RTDM_IRQ_NONE;
->     }
->     else
->     {
->         void __iomem *int_enable_reg = device_data->mem[DPM_INDEX].internal_addr + DPM_HOST_INT_EN0;
->         void __iomem *int_status_reg = device_data->mem[DPM_INDEX].internal_addr + DPM_HOST_INT_STAT0;
-> 
->         /* Is one of our interrupts enabled and active ? */
->         if (!(ioread32(int_enable_reg) & ioread32(int_status_reg) & DPM_HOST_INT_MASK))
->             return RTDM_IRQ_NONE;
-> 
->         /* Disable interrupt */
->         iowrite32(ioread32(int_enable_reg) & ~DPM_HOST_INT_GLOBAL_EN, int_enable_reg);
-> 
->         return RTDM_IRQ_HANDLED;
->     }
-> }
-> 
-> If IRQ is not mine, I return RTDM_IRQ_NONE, it's not correct ?
+Best regards
 
-It is. The problem is the sharing between RT and Linux. That cannot work.
+Anders
 
-Jan
+
 
 -- 
-Siemens AG, Corporate Technology, CT RTC ITP SDP-DE
-Corporate Competence Center Embedded Linux
+Anders Blomdell                  Email: anders.blomdell@control.lth.se
+Department of Automatic Control
+Lund University                  Phone:    +46 46 222 4625
+P.O. Box 118                     Fax:      +46 46 138118
+SE-221 00 Lund, Sweden
+
 
