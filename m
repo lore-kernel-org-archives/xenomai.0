@@ -1,10 +1,11 @@
-Message-ID: <512CA697.5060405@xenomai.org>
-Date: Tue, 26 Feb 2013 13:12:07 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <512CA7FA.60807@siemens.com>
+Date: Tue, 26 Feb 2013 13:18:02 +0100
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
 References: <5123BCE7.2050609@xenomai.org>	<224444793.158669.1360843957336.JavaMail.ngmail@webmail16.arcor-online.net>	<511CD5C2.50701@arcor.de>	<511CD673.2030400@xenomai.org>	<511CDF65.1020907@arcor.de>	<511D3A22.40307@xenomai.org>	<511DF30B.6040601@arcor.de>	<511E26AE.1010203@xenomai.org>	<511E3A5C.4000209@arcor.de>	<51237586.6030201@arcor.de>
 	<963432115.61822.1361872899385.JavaMail.ngmail@webmail10.arcor-online.net>
-In-Reply-To: <963432115.61822.1361872899385.JavaMail.ngmail@webmail10.arcor-online.net>
+	<512CA697.5060405@xenomai.org>
+In-Reply-To: <512CA697.5060405@xenomai.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] kernel configuration problems with ACPI
@@ -16,32 +17,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: hahnchristopher@arcor.de
-Cc: Jan Kiszka <jan.kiszka@web.de>, xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On 02/26/2013 11:01 AM, hahnchristopher@arcor.de wrote:
-
-> On 02/19/2013 6:56 PM,  Gilles Chanteperdrix wrote:
->> On 02/19/2013 01:52 PM, Christopher Hahn wrote:
->>
->>> Do you have any idea how to solve the problem?
->>> Even if the system receives interrupts at IRQ 4, the program doesn't 
->>> receive any message from the serial port with this kernel configuration.
->>
->>
->> Trying to register the irq handler as level instead of edge?
->>
->> -- 
->>                                                                 Gilles.
->>
+On 2013-02-26 13:12, Gilles Chanteperdrix wrote:
+> On 02/26/2013 11:01 AM, hahnchristopher@arcor.de wrote:
 > 
-> I removed the 'RTDM_IRQTYPE_EDGE' from ksrc/drivers/serial/16550A.c at line 123.
+>> On 02/19/2013 6:56 PM,  Gilles Chanteperdrix wrote:
+>>> On 02/19/2013 01:52 PM, Christopher Hahn wrote:
+>>>
+>>>> Do you have any idea how to solve the problem?
+>>>> Even if the system receives interrupts at IRQ 4, the program doesn't 
+>>>> receive any message from the serial port with this kernel configuration.
+>>>
+>>>
+>>> Trying to register the irq handler as level instead of edge?
+>>>
+>>> -- 
+>>>                                                                 Gilles.
+>>>
+>>
+>> I removed the 'RTDM_IRQTYPE_EDGE' from ksrc/drivers/serial/16550A.c at line 123.
+>>
+>> Now I get 'Xenomai: xnintr_shirq_handler: IRQ4 not handled. Disabling IRQ line.'
 > 
-> Now I get 'Xenomai: xnintr_shirq_handler: IRQ4 not handled. Disabling IRQ line.'
+> 
+> Jan, any idea?
 
+Not really. If there is an IRQ and the UART says "not for me", either
+the UART is buggy or someone else injects on that line.
 
-Jan, any idea?
+Linux uses that UART normally on IRQ 4 as well?
+
+Is there any IPMI / Serial-over-LAN stuff configured in the BIOS? If so,
+disable.
+
+Jan
 
 -- 
-                                                                Gilles.
+Siemens AG, Corporate Technology, CT RTC ITP SDP-DE
+Corporate Competence Center Embedded Linux
 
