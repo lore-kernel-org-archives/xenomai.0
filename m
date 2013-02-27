@@ -1,12 +1,18 @@
-Message-ID: <512E904A.2080408@xenomai.org>
-Date: Thu, 28 Feb 2013 00:01:30 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <512E8C10.8080707@ruggedcom.com>
-In-Reply-To: <512E8C10.8080707@ruggedcom.com>
+In-Reply-To: <CAD1EtogPsUtE7L0WaYE8euo5JYZ-AGx1d1-RA50zgSiY0GUsVQ@mail.gmail.com>
+References: <CAD1EtohJTQi9jj07_NrC=anxQiqQS1=TrHecAK21uW0wBoOnYQ@mail.gmail.com>
+	<512E67D4.70804@xenomai.org>
+	<CAD1EtogDAPC7Q1-sq1fh1J71hQRYMoAs=HNEzZOYosxP8NeWbg@mail.gmail.com>
+	<512E696A.2010106@xenomai.org> <512E69D3.6090601@xenomai.org>
+	<CAD1Etoj6q+xOoK5Zgy1rpB73_9e236mpfOjCQk6+eDMa=c2Fmw@mail.gmail.com>
+	<CAD1EtoiHUSqP-aXWenyHNkm8xA4dJHW_0kqiVtMJ36ssAMYPww@mail.gmail.com>
+	<512E75C8.4050403@xenomai.org>
+	<CAD1EtogPsUtE7L0WaYE8euo5JYZ-AGx1d1-RA50zgSiY0GUsVQ@mail.gmail.com>
+Date: Wed, 27 Feb 2013 18:02:08 -0500
+Message-ID: <CAD1Etoj=9FDB=Zs+qSprpDp9WUkDs6zy6HMy2ctHtekZXOv4Hg@mail.gmail.com>
+From: "Daniel M. Drucker, Ph.D." <dmd@interactive-motion.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Is CLOCK_HOST_REALTIME supported for powerpc?
+Subject: Re: [Xenomai] Failing to recognize/use PEAK PCAN-miniPCIe card
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,40 +21,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Makarand Pradhan <makarandpradhan@ruggedcom.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On 02/27/2013 11:43 PM, Makarand Pradhan wrote:
+The latest Linux driver (7.8) from PEAK (
+http://www.peak-system.com/fileadmin/media/linux/files/peak-linux-driver-7.8.tar.gz)
+has the following in its peak_pci_tbl:
 
-> Hi All,
-> 
-> I'm trying to use clock_gettime to read Linux time in my Xenomai task. I 
-> may be doing something wrong, but the call fails. The code is properly 
-> linked against the pthread_rt Xenomai library.
-> 
-> I'm running Linux 3.0.0, Xenomai 2.6.0 on powerpc MPC8360.
-
-
-Please, upgrade to Xenomai 2.6.2.1.
-
-> 
-> Can you pl comment if this is supported? While quickly going through the 
-> Xenomai code I had a feeling that it was supported only for x86 and arm.
+#define PEAK_PCI_DEVICE_ID   0x0001  // ID for PCI / PCIe Slot cards
+#define PEAK_PCIE_CARD_ID    0x0002  // ID for PCIExpress Card
+#define PEAK_PCIE_DEVICE_ID  0x0003  // ID for new PCIe Slot cards
+#define PEAK_CPCI_ID         0x0004  // ID for new cPCI
+#define PEAK_MINIPCI_ID      0x0005  // ID for miniPCI
+#define PEAK_PC104PLUS_ID    0x0006  // ID for new PC-104 Plus
+#define PEAK_PC104E_ID       0x0007  // ID for PC-104 Express
+#define PEAK_MINIPCIE_ID     0x0008  // ID for miniPCIe Slot cards
 
 
-clocktest -C 42 -D
-will answer your question:
-http://www.xenomai.org/documentation/xenomai-2.6/html/clocktest/
+Is there any reason why these all shouldn't also be in Xenomai's version?
 
-> 
-> Thanks for your time.
-> 
-> Rgds,
-> Makarand.
-> 
-
-
-
--- 
-                                                                Gilles.
-
+Daniel
