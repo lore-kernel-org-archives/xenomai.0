@@ -1,12 +1,13 @@
-Message-ID: <512E69D3.6090601@xenomai.org>
-Date: Wed, 27 Feb 2013 21:17:23 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CAD1EtohJTQi9jj07_NrC=anxQiqQS1=TrHecAK21uW0wBoOnYQ@mail.gmail.com>	<512E67D4.70804@xenomai.org>	<CAD1EtogDAPC7Q1-sq1fh1J71hQRYMoAs=HNEzZOYosxP8NeWbg@mail.gmail.com>
-	<512E696A.2010106@xenomai.org>
-In-Reply-To: <512E696A.2010106@xenomai.org>
+In-Reply-To: <512E69D3.6090601@xenomai.org>
+References: <CAD1EtohJTQi9jj07_NrC=anxQiqQS1=TrHecAK21uW0wBoOnYQ@mail.gmail.com>
+	<512E67D4.70804@xenomai.org>
+	<CAD1EtogDAPC7Q1-sq1fh1J71hQRYMoAs=HNEzZOYosxP8NeWbg@mail.gmail.com>
+	<512E696A.2010106@xenomai.org> <512E69D3.6090601@xenomai.org>
+Date: Wed, 27 Feb 2013 15:19:53 -0500
+Message-ID: <CAD1Etoj6q+xOoK5Zgy1rpB73_9e236mpfOjCQk6+eDMa=c2Fmw@mail.gmail.com>
+From: "Daniel M. Drucker, Ph.D." <dmd@interactive-motion.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] Failing to recognize/use PEAK PCAN-miniPCIe card
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -16,26 +17,10 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Daniel M. Drucker, Ph.D." <dmd@interactive-motion.com>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On 02/27/2013 09:15 PM, Gilles Chanteperdrix wrote:
+Aha. So since ours is identifying as 001C:0008, it's not picking it up.
+Thank you, this is very helpful!
 
-> On 02/27/2013 09:14 PM, Daniel M. Drucker, Ph.D. wrote:
-> 
->>     The numerical IDs, to compare them with the list of numerical IDs
->>     supported by the drivr.
->>
->>
->> Ok, I updated the spreadsheet using lspci -nn -vvv. I think the [0280]
->> is what you're looking for? Where do I find the list you're referring to?
-> 
-> 
-> I am not looking for anything. The list is in the driver code.
-> 
-
-http://git.xenomai.org/?p=xenomai-2.6.git;a=blob;f=ksrc/drivers/can/sja1000/rtcan_peak_pci.c;h=b5ad2262948545950e0bf890a6e8971eb4fcde2f;hb=HEAD#l73
-
--- 
-                                                                Gilles.
-
+Daniel
