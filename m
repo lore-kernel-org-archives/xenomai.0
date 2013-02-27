@@ -1,11 +1,9 @@
-Sender: messages-noreply@bounce.linkedin.com
-Date: Wed, 27 Feb 2013 09:26:24 +0000 (UTC)
-From: wolfgang Li <fugangli2012@gmail.com>
-Message-ID: <655190545.7976533.1361957184738.JavaMail.app@ela4-app2311.prod>
 MIME-Version: 1.0
+Date: Wed, 27 Feb 2013 14:04:51 -0500
+Message-ID: <CAD1EtojOLiC5L=NE7nkCTqoYwLpqWFigWG-yqGMtuJsWt0AEbg@mail.gmail.com>
+From: "Daniel M. Drucker, Ph.D." <dmd@interactive-motion.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] Invitation to connect on LinkedIn
+Subject: [Xenomai] Failing to recognize/use PEAK PCAN-miniPCIe card
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,27 +14,28 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-LinkedIn
-------------
+Hello all,
 
+We have a PC/104 computer with a PEAK PC/104-PLUS card which we are
+successfully using to talk CAN from within Xenomai. For various reasons, we
+want to switch to using a mini-ITX board.
 
+We're trying to use the PEAK PCAN-miniPCIe card on the mini-ITX board, but
+we are having no luck - the card doesn't seem to get seen by Xenomai.
 
-I'd like to add you to my professional network on LinkedIn.
+We're not sure if this is an IRQ problem or something else. On the PC104
+system, we had an IRQ conflict which we were able to solve by changing a
+jumper - the new card has no jumpers to change, and our motherboard's BIOS
+does not have any settings that allow changing of daughterboard IRQs.
 
-- wolfgang
+Both systems are running the same OS install with the same kernel. The
+'latency' command in the Xenomai testsuite runs correctly on both systems.
 
-wolfgang Li
-Software Arch at Huawei
-China
+I have put together a comparison of command outputs on the old (working)
+and new (non-working) systems:  http://goo.gl/GBy8h
 
-Confirm that you know wolfgang Li:
-https://www.linkedin.com/e/9ep150-hdoa55g7-p/isd/11327652177/FyFuFkrq/?hs=false&tok=0roNEG77wmnlE1
+Any insight into what's wrong in our new system and how to get it working
+would be greatly appreciated!
 
---
-You are receiving Invitation to Connect emails. Click to unsubscribe:
-http://www.linkedin.com/e/9ep150-hdoa55g7-p/VZz1Rq0whcXjxqYtiNO1OkMOV4hvwc_/goo/xenomai%40xenomai%2Eorg/20061/I3746487567_1/?hs=false&tok=1ur2cAZWgmnlE1
-
-(c) 2012 LinkedIn Corporation. 2029 Stierlin Ct, Mountain View, CA 94043, USA.
-
-
-  
+Thanks,
+Daniel
