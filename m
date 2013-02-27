@@ -1,17 +1,10 @@
+Message-ID: <512E8C10.8080707@ruggedcom.com>
+Date: Wed, 27 Feb 2013 17:43:28 -0500
+From: Makarand Pradhan <makarandpradhan@ruggedcom.com>
 MIME-Version: 1.0
-In-Reply-To: <512E75C8.4050403@xenomai.org>
-References: <CAD1EtohJTQi9jj07_NrC=anxQiqQS1=TrHecAK21uW0wBoOnYQ@mail.gmail.com>
-	<512E67D4.70804@xenomai.org>
-	<CAD1EtogDAPC7Q1-sq1fh1J71hQRYMoAs=HNEzZOYosxP8NeWbg@mail.gmail.com>
-	<512E696A.2010106@xenomai.org> <512E69D3.6090601@xenomai.org>
-	<CAD1Etoj6q+xOoK5Zgy1rpB73_9e236mpfOjCQk6+eDMa=c2Fmw@mail.gmail.com>
-	<CAD1EtoiHUSqP-aXWenyHNkm8xA4dJHW_0kqiVtMJ36ssAMYPww@mail.gmail.com>
-	<512E75C8.4050403@xenomai.org>
-Date: Wed, 27 Feb 2013 16:12:58 -0500
-Message-ID: <CAD1EtogPsUtE7L0WaYE8euo5JYZ-AGx1d1-RA50zgSiY0GUsVQ@mail.gmail.com>
-From: "Daniel M. Drucker, Ph.D." <dmd@interactive-motion.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] Failing to recognize/use PEAK PCAN-miniPCIe card
+Content-Type: text/plain; charset="ISO-8859-1"; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai] Is CLOCK_HOST_REALTIME supported for powerpc?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,31 +13,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-I meant non-real-time mode.
+Hi All,
 
-On Wed, Feb 27, 2013 at 4:08 PM, Gilles Chanteperdrix <
-gilles.chanteperdrix@xenomai.org> wrote:
+I'm trying to use clock_gettime to read Linux time in my Xenomai task. I 
+may be doing something wrong, but the call fails. The code is properly 
+linked against the pthread_rt Xenomai library.
 
-> On 02/27/2013 10:03 PM, Daniel M. Drucker, Ph.D. wrote:
->
-> > Success!
-> >
-> > All we had to do was add:
-> >
-> > #define PEAK_MPCI_DEVICE_ID  0x0008  // Device ID for newer PCIe cards
-> > (IPEH-003027)
-> >
-> > and add that to pci_device_id peak_pci_tbl[].
-> >
-> > Note that that ID is included in the user-mode driver (
-> > linux-3.5.7/drivers/net/can/sja1000/peak_pci.c ).
->
->
-> If the driver is in the kernel sources, chances are that it is not a
-> user-mode driver at all...
-> --
->                                                                 Gilles.
->
+I'm running Linux 3.0.0, Xenomai 2.6.0 on powerpc MPC8360.
+
+Can you pl comment if this is supported? While quickly going through the 
+Xenomai code I had a feeling that it was supported only for x86 and arm.
+
+Thanks for your time.
+
+Rgds,
+Makarand.
+
+-- 
+___________________________________________________________________________
+NOTICE OF CONFIDENTIALITY:
+This e-mail and any attachments may contain confidential and privileged information.  If you are
+not the intended recipient, please notify the sender immediately by return e-mail and delete this
+e-mail and any copies.  Any dissemination or use of this information by a person other than the
+intended recipient is unauthorized and may be illegal.
+_____________________________________________________________________
+
+  
+
+
