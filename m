@@ -1,8 +1,21 @@
-From: Stefan Roese <sr@denx.de>
-Date: Thu, 28 Feb 2013 17:25:15 +0100
-Message-Id: <1362068715-3458-1-git-send-email-sr@denx.de>
-Subject: [Xenomai] [PATCH] ipipe: MPC5200: Fix problem with external
-	interrupts
+Message-ID: <512F9428.5000103@siemens.com>
+Date: Thu, 28 Feb 2013 18:30:16 +0100
+From: Jan Kiszka <jan.kiszka@siemens.com>
+MIME-Version: 1.0
+References: <511CD2FB.7010502@gmail.com> <511DDBD5.4060505@web.de>
+	<51236088.1030402@gmail.com> <51236A75.5090400@siemens.com>
+	<5123C910.7090107@siemens.com> <5123DDBE.8060105@web.de>
+	<512778A0.6090300@gmail.com> <51277B66.60505@siemens.com>
+	<512B9A86.4060900@siemens.com> <512BB672.7080900@control.lth.se>
+	<512BB714.6080707@siemens.com>
+	<512BC4E2.4020605@control.lth.se> <512BDF7F.3030005@web.de>
+	<512CDB6C.9010700@control.lth.se> <512CDBA8.2050706@siemens.com>
+	<512F92C3.1070003@control.lth.se>
+In-Reply-To: <512F92C3.1070003@control.lth.se>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] (Boot)-problems with (current) ipipe patch on AMD FX
+ 61000 - 2.6.38.8 & 3.5.7
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -11,63 +24,138 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Anders Blomdell <anders.blomdell@control.lth.se>
+Cc: Xenomai <xenomai@xenomai.org>
 
-The MPC5200 external interrupt are not working at all in the Linux
-context with the current I-pipe support enabled. For example a
-PCI firewire chip connected to an external interrupt doesn't generate
-interrupts any more using the Linux FW drivers. With I-pipe
-disabled or without the current I-pipe patch for the mpc52xx_pic.c
-file, the external interrupts work just fine.
+On 2013-02-28 18:24, Anders Blomdell wrote:
+> On 2013-02-26 16:58, Jan Kiszka wrote:
+>> On 2013-02-26 16:57, Anders Blomdell wrote:
+>>> On 2013-02-25 23:02, Jan Kiszka wrote:
+>>>> On 2013-02-25 21:09, Anders Blomdell wrote:
+>>>>> On 2013-02-25 20:10, Jan Kiszka wrote:
+>>>>>> On 2013-02-25 20:07, Anders Blomdell wrote:
+>>>>>>> On 2013-02-25 18:08, Jan Kiszka wrote:
+>>>>>>>> As 3.5 is dead, this fix will never make it there unless we
+>>>>>>>> back-port.
+>>>>>>>> While I'm doing this, could you try if
+>>>>>>>>
+>>>>>>>>         git://git.xenomai.org/ipipe-jki.git for-upstream/master
+>>>>>>> I'm probably more stupid than normal (i.e I can't find any ipipe for
+>>>>>>> x86_64):
+>>>>>>>
+>>>>>>> # git clone git://git.xenomai.org/ipipe-jki.git for-upstream/master
+>>>>>>
+>>>>>> git clone git://git.xenomai.org/ipipe-jki.git
+>>>>>> git checkout -b for-upstream/master origin/for-upstream/master
+>>>>> OK, thanks. Do I need to setup xenomai in order to gain any useful
+>>>>> information, or is:
+>>>>>
+>>>>> CONFIG_IPIPE=y
+>>>>> CONFIG_IPIPE_LEGACY=y
+>>>>> CONFIG_IPIPE_CORE=y
+>>>>> CONFIG_IPIPE_CORE_APIREV=2
+>>>>> CONFIG_IPIPE_TARGET_APIREV=1
+>>>>> CONFIG_IPIPE_HAVE_HOSTRT=y
+>>>>> CONFIG_IPIPE_DELAYED_ATOMICSW=y
+>>>>> # CONFIG_IPIPE_DEBUG is not set
+>>>>>
+>>>>> sufficient?
+>>>>
+>>>> Plain I-pipe will suffice as the the interrupt virtualization is
+>>>> unconditional, thus __ipipe_handle_irq is always taken.
+>>>>
+>>>> Alternatively, here is the backported patch over 3.5.7:
+>>>>
+>>>> diff --git a/arch/x86/kernel/apic/io_apic.c
+>>>> b/arch/x86/kernel/apic/io_apic.c
+>>>> index 08e5ad4..aade7f0 100644
+>>>> --- a/arch/x86/kernel/apic/io_apic.c
+>>>> +++ b/arch/x86/kernel/apic/io_apic.c
+>>>> @@ -234,11 +234,11 @@ int __init arch_early_irq_init(void)
+>>>>            zalloc_cpumask_var_node(&cfg[i].old_domain, GFP_KERNEL, node);
+>>>>            /*
+>>>>             * For legacy IRQ's, start with assigning irq0 to irq15 to
+>>>> -         * IRQ0_VECTOR to IRQ15_VECTOR on cpu 0.
+>>>> +         * IRQ0_VECTOR to IRQ15_VECTOR for all cpu's.
+>>>>             */
+>>>>            if (i < legacy_pic->nr_legacy_irqs) {
+>>>>                cfg[i].vector = IRQ0_VECTOR + i;
+>>>> -            cpumask_set_cpu(0, cfg[i].domain);
+>>>> +            cpumask_setall(cfg[i].domain);
+>>>>            }
+>>>>        }
+>>>>
+>>>> @@ -1181,8 +1181,9 @@ next:
+>>>>            current_vector = vector;
+>>>>            current_offset = offset;
+>>>>            if (old_vector) {
+>>>> -            cfg->move_in_progress = 1;
+>>>>                cpumask_copy(cfg->old_domain, cfg->domain);
+>>>> +            cfg->move_in_progress =
+>>>> +               cpumask_intersects(cfg->old_domain, cpu_online_mask);
+>>>>            }
+>>>>            for_each_cpu_and(new_cpu, tmp_mask, cpu_online_mask)
+>>>>                per_cpu(vector_irq, new_cpu)[vector] = irq;
+>>>> @@ -1250,12 +1251,6 @@ void __setup_vector_irq(int cpu)
+>>>>            cfg = irq_get_chip_data(irq);
+>>>>            if (!cfg)
+>>>>                continue;
+>>>> -        /*
+>>>> -         * If it is a legacy IRQ handled by the legacy PIC, this cpu
+>>>> -         * will be part of the irq_cfg's domain.
+>>>> -         */
+>>>> -        if (irq < legacy_pic->nr_legacy_irqs && !IO_APIC_IRQ(irq))
+>>>> -            cpumask_set_cpu(cpu, cfg->domain);
+>>>>
+>>>>            if (!cpumask_test_cpu(cpu, cfg->domain))
+>>>>                continue;
+>>>> @@ -1380,13 +1375,6 @@ static void setup_ioapic_irq(unsigned int irq,
+>>>> struct irq_cfg *cfg,
+>>>>
+>>>>        if (!IO_APIC_IRQ(irq))
+>>>>            return;
+>>>> -    /*
+>>>> -     * For legacy irqs, cfg->domain starts with cpu 0 for legacy
+>>>> -     * controllers like 8259. Now that IO-APIC can handle this irq,
+>>>> update
+>>>> -     * the cfg->domain.
+>>>> -     */
+>>>> -    if (irq < legacy_pic->nr_legacy_irqs && cpumask_test_cpu(0,
+>>>> cfg->domain))
+>>>> -        apic->vector_allocation_domain(0, cfg->domain);
+>>>>
+>>>>        if (assign_irq_vector(irq, cfg, apic->target_cpus()))
+>>>>            return;
+>>>
+>>> Thanks, have put both versions under test on different machines. Will
+>>> come back if it crashes.
+> No crash, but the system that had spurious interrupts before (DX79SI) 
+> running 3.8.0-rc7+ ipipe only, was just seen doing this:
+> 
+> [227422.688553] do_IRQ: 0.182 No irq handler for vector (irq -1)
+> [229142.795703] do_IRQ: 2.230 No irq handler for vector (irq -1)
+> [231501.284207] do_IRQ: 0.151 No irq handler for vector (irq -1)
 
-This patch now introduces the xxx_mask_ack() function for these
-external interrupts as already done for the other interrupts handled
-in this driver. With this change, the interrupts work regardless
-if I-pipe support is enabled or not.
+Well, might be "normal" then, specifically if vanilla says the same.
+That's something you could try afterward, if 3.8 without I-pipe still
+generates these warnings.
 
-Additionally a small coding style issue has been included (spaces
-around "-").
+> 
+> But as I said no crash :-). DX58SO with backported 3.5.7 has been stable 
+> so far...
+> 
+> 
+>> Then I hope you'll stay away...
+> Sorry...
+> 
 
-Signed-off-by: Stefan Roese <sr@denx.de>
-Cc: Philippe Gerum <rpm@xenomai.org>
----
- arch/powerpc/platforms/52xx/mpc52xx_pic.c | 12 +++++++++++-
- 1 file changed, 11 insertions(+), 1 deletion(-)
+Could be worse. ;)
 
-diff --git a/arch/powerpc/platforms/52xx/mpc52xx_pic.c b/arch/powerpc/platforms/52xx/mpc52xx_pic.c
-index 7ed93f8..2c25c4b 100644
---- a/arch/powerpc/platforms/52xx/mpc52xx_pic.c
-+++ b/arch/powerpc/platforms/52xx/mpc52xx_pic.c
-@@ -195,10 +195,19 @@ static void mpc52xx_extirq_unmask(struct irq_data *d)
- 	hard_local_irq_restore(flags);
- }
- 
-+static void mpc52xx_extirq_mask_ack(struct irq_data *d)
-+{
-+	int l2irq = irqd_to_hwirq(d) & MPC52xx_IRQ_L2_MASK;
-+
-+	__io_be_clrbit(&intr->ctrl, 11 - l2irq);
-+	__io_be_setbit(&intr->ctrl, 27 - l2irq);
-+}
-+
- static void mpc52xx_extirq_ack(struct irq_data *d)
- {
- 	int l2irq = irqd_to_hwirq(d) & MPC52xx_IRQ_L2_MASK;
--	__io_be_setbit(&intr->ctrl, 27-l2irq);
-+
-+	__io_be_setbit(&intr->ctrl, 27 - l2irq);
- }
- 
- static int mpc52xx_extirq_set_type(struct irq_data *d, unsigned int flow_type)
-@@ -233,6 +242,7 @@ static struct irq_chip mpc52xx_extirq_irqchip = {
- 	.name = "MPC52xx External",
- 	.irq_mask = mpc52xx_extirq_mask,
- 	.irq_unmask = mpc52xx_extirq_unmask,
-+	.irq_mask_ack = mpc52xx_extirq_mask_ack,
- 	.irq_ack = mpc52xx_extirq_ack,
- 	.irq_set_type = mpc52xx_extirq_set_type,
- };
+Jan
+
+PS: CC'ed the list.
+
 -- 
-1.8.1.4
-
+Siemens AG, Corporate Technology, CT RTC ITP SDP-DE
+Corporate Competence Center Embedded Linux
 
