@@ -1,14 +1,14 @@
-Message-ID: <511D3DE7.3090204@xenomai.org>
-Date: Thu, 14 Feb 2013 20:41:27 +0100
+Message-ID: <512FB80B.7000207@xenomai.org>
+Date: Thu, 28 Feb 2013 21:03:23 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <OF682F5C70.F8F7AA50-ON85257AF1.005F580A-85257AF1.005F580C@aanddtech.com>	<50F3DD9A.9050306@gmail.com>
-	<5117AD5A.1080504@xenomai.org>	<OF7193B3EB.20F44A56-ON85257B11.006195D9-85257B11.0062A0F5@aanddtech.com>
-	<511BED27.7010004@xenomai.org>
-In-Reply-To: <511BED27.7010004@xenomai.org>
+References: <512E8C10.8080707@ruggedcom.com> <512E904A.2080408@xenomai.org>
+	<512E9417.20708@ruggedcom.com> <512EE94A.8000802@xenomai.org>
+	<512F7043.20900@ruggedcom.com>
+In-Reply-To: <512F7043.20900@ruggedcom.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Porting Ipipe to new ARM SoC (Xilinx Zynq)
+Subject: Re: [Xenomai] Is CLOCK_HOST_REALTIME supported for powerpc?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,21 +17,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: mfornero@aanddtech.com
-Cc: Xenomai@xenomai.org
+To: Makarand Pradhan <makarandpradhan@ruggedcom.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 02/13/2013 08:44 PM, Gilles Chanteperdrix wrote:
+On 02/28/2013 03:57 PM, Makarand Pradhan wrote:
 
-> On 02/13/2013 06:57 PM, mfornero@aanddtech.com wrote:
->> CONFIG_CPU_FREQ=n
-> 
-> 
-> This one is definitely not harmless is you select another cpufreq
-> governor than "performance".
+> On 28/02/13 12:21 AM, Gilles Chanteperdrix wrote:
+>> 2.6.2.1 is the latest release, please do not use 2.6.2. 2.6.2.1 is in
+>> the same branch as 2.6.0, so it is completely ABI and API compatible.
+>> Anyway, you do as you wish, but please do not expect support from us for
+>> 2.6.0.
+> Thanks Gilles. Will investigate the relevant Ipipe pathes to check 
+> support for powerpc.
 
 
-I meant: This one is definitely harmless if you select another cpufreq
-governor than performance.
+All old I-pipe patches should work with the latest version of xenomai,
+though as I said, whether CLOCK_HOST_REALTIME work probably depends more
+on the I-pipe patch.
 
 -- 
                                                                 Gilles.
