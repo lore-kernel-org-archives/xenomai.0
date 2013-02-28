@@ -1,12 +1,11 @@
-Message-ID: <512FBDBF.3070401@xenomai.org>
-Date: Thu, 28 Feb 2013 21:27:43 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CAMJ=MEfo5EU2mnM4=JDNU4QXX00W=0aC2+m5LucPYiN39W5wcQ@mail.gmail.com>	<512FB9B5.9040709@xenomai.org>
-	<CAAXf6LXDSxU_eASbHOgQzw_2xSpZua2BaORAiJ59KoPitFNEcg@mail.gmail.com>
-In-Reply-To: <CAAXf6LXDSxU_eASbHOgQzw_2xSpZua2BaORAiJ59KoPitFNEcg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <512FB9B5.9040709@xenomai.org>
+References: <CAMJ=MEfo5EU2mnM4=JDNU4QXX00W=0aC2+m5LucPYiN39W5wcQ@mail.gmail.com>
+	<512FB9B5.9040709@xenomai.org>
+From: Ronny Meeus <ronny.meeus@gmail.com>
+Date: Thu, 28 Feb 2013 21:30:26 +0100
+Message-ID: <CAMJ=MEeO8P2tjcBR8bb907j5JOOXCY=n0=wcxUZALqDp-4JRJw@mail.gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
 Subject: Re: [Xenomai] Xenomai-forge: thread using 100% cpu load
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -16,67 +15,65 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Thomas De Schampheleire <patrickdepinguin+xenomai@gmail.com>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On 02/28/2013 09:22 PM, Thomas De Schampheleire wrote:
-
-> On Thu, Feb 28, 2013 at 9:10 PM, Gilles Chanteperdrix
-> <gilles.chanteperdrix@xenomai.org> wrote:
->> On 02/28/2013 08:19 PM, Ronny Meeus wrote:
+On Thu, Feb 28, 2013 at 9:10 PM, Gilles Chanteperdrix
+<gilles.chanteperdrix@xenomai.org> wrote:
+> On 02/28/2013 08:19 PM, Ronny Meeus wrote:
+>
+>> Hello
 >>
->>> Hello
->>>
->>> we are using the PSOS interface of Xenomai forge, running completely
->>> in user-space using the mercury code.
->>> We deploy our application on different processors, one product is
->>> running on PPC multicore (P4040, P4080, P4034) and another one on
->>> Cavium (8 core device).
->>> The Linux version we use is 2.6.32 but I would assume that this is not
->>> so relevant.
->>>
->>> Our Xenomai application is running on one of the cores (affinity is
->>> set), while the other cores are running other code.
->>>
->>> On both architectures we recently start to see issues that one thread
->>> is consuming 100% of the core on which the application is pinned.
->>> The thread that monopolizes the core is the thread internally used to
->>> manage the timers, running at the highest priority.
->>> The trigger for running into this behavior is currently unclear.
->>> If we only start a part of the application (platform management only),
->>> the issue is not observed.
->>> We see this on both an old version of Xenomai and a very recent one
->>> (pulled from the git repo yesterday).
->>>
->>> I will continue to debug this issue in the coming days and try isolate
->>> the code that is triggering it, but I can use hints from the
->>> community.
->>> Debugging is complex since once the load starts, the debugger is not
->>> reacting anymore.
->>> If I put breakpoints in the functions that are called when the timer
->>> expires (both oneshot and periodic), the process starts to clone
->>> itself and I endup with tens of them.
->>>
->>> Has anybody seen an issue like this before or does somebody has some
->>> hints on how to debug this problem?
+>> we are using the PSOS interface of Xenomai forge, running completely
+>> in user-space using the mercury code.
+>> We deploy our application on different processors, one product is
+>> running on PPC multicore (P4040, P4080, P4034) and another one on
+>> Cavium (8 core device).
+>> The Linux version we use is 2.6.32 but I would assume that this is not
+>> so relevant.
 >>
+>> Our Xenomai application is running on one of the cores (affinity is
+>> set), while the other cores are running other code.
 >>
->> First enable the watchdog. It will send a signal to the application when
->> detecting a problem, then you can use the watchdog to trigger an I-pipe
->> tracer trace when the bug happens. You will probably have to increase
->> the watchdog polling frequency, in order to have a meaningful trace.
+>> On both architectures we recently start to see issues that one thread
+>> is consuming 100% of the core on which the application is pinned.
+>> The thread that monopolizes the core is the thread internally used to
+>> manage the timers, running at the highest priority.
+>> The trigger for running into this behavior is currently unclear.
+>> If we only start a part of the application (platform management only),
+>> the issue is not observed.
+>> We see this on both an old version of Xenomai and a very recent one
+>> (pulled from the git repo yesterday).
 >>
-> 
-> I don't think an I-pipe tracer will be possible when using the Mercury
-> core, right (xenomai-forge) ?
+>> I will continue to debug this issue in the coming days and try isolate
+>> the code that is triggering it, but I can use hints from the
+>> community.
+>> Debugging is complex since once the load starts, the debugger is not
+>> reacting anymore.
+>> If I put breakpoints in the functions that are called when the timer
+>> expires (both oneshot and periodic), the process starts to clone
+>> itself and I endup with tens of them.
+>>
+>> Has anybody seen an issue like this before or does somebody has some
+>> hints on how to debug this problem?
+>
+>
+> First enable the watchdog. It will send a signal to the application when
+> detecting a problem, then you can use the watchdog to trigger an I-pipe
+> tracer trace when the bug happens. You will probably have to increase
+> the watchdog polling frequency, in order to have a meaningful trace.
+>
+> --
+>                                                                 Gilles.
 
+Gilles,
 
-As the name indicates the "I-PIPE tracer" has nothing to do with the
-version of Xenomai you use. Anyway, you can firs try to trigger a
-backtrace when the watchdog sends its signal, in case the bug is in the
-application and not in the kernel. You never know...
+We are running completely in user-space (mercury) .
+I thought that the watchdog and I-pipe tracer are only relevant when
+using the cobalt code.
+In case my assumption is wrong, please correct me and let me know how
+to enable it.
 
-
--- 
-                                                                Gilles.
+---
+Ronny
 
