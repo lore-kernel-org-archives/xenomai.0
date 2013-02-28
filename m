@@ -1,14 +1,12 @@
-Message-ID: <512FB80B.7000207@xenomai.org>
-Date: Thu, 28 Feb 2013 21:03:23 +0100
+Message-ID: <512FB9B5.9040709@xenomai.org>
+Date: Thu, 28 Feb 2013 21:10:29 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <512E8C10.8080707@ruggedcom.com> <512E904A.2080408@xenomai.org>
-	<512E9417.20708@ruggedcom.com> <512EE94A.8000802@xenomai.org>
-	<512F7043.20900@ruggedcom.com>
-In-Reply-To: <512F7043.20900@ruggedcom.com>
+References: <CAMJ=MEfo5EU2mnM4=JDNU4QXX00W=0aC2+m5LucPYiN39W5wcQ@mail.gmail.com>
+In-Reply-To: <CAMJ=MEfo5EU2mnM4=JDNU4QXX00W=0aC2+m5LucPYiN39W5wcQ@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Is CLOCK_HOST_REALTIME supported for powerpc?
+Subject: Re: [Xenomai] Xenomai-forge: thread using 100% cpu load
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,23 +15,51 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Makarand Pradhan <makarandpradhan@ruggedcom.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Ronny Meeus <ronny.meeus@gmail.com>
+Cc: xenomai@xenomai.org
 
-On 02/28/2013 03:57 PM, Makarand Pradhan wrote:
+On 02/28/2013 08:19 PM, Ronny Meeus wrote:
 
-> On 28/02/13 12:21 AM, Gilles Chanteperdrix wrote:
->> 2.6.2.1 is the latest release, please do not use 2.6.2. 2.6.2.1 is in
->> the same branch as 2.6.0, so it is completely ABI and API compatible.
->> Anyway, you do as you wish, but please do not expect support from us for
->> 2.6.0.
-> Thanks Gilles. Will investigate the relevant Ipipe pathes to check 
-> support for powerpc.
+> Hello
+> 
+> we are using the PSOS interface of Xenomai forge, running completely
+> in user-space using the mercury code.
+> We deploy our application on different processors, one product is
+> running on PPC multicore (P4040, P4080, P4034) and another one on
+> Cavium (8 core device).
+> The Linux version we use is 2.6.32 but I would assume that this is not
+> so relevant.
+> 
+> Our Xenomai application is running on one of the cores (affinity is
+> set), while the other cores are running other code.
+> 
+> On both architectures we recently start to see issues that one thread
+> is consuming 100% of the core on which the application is pinned.
+> The thread that monopolizes the core is the thread internally used to
+> manage the timers, running at the highest priority.
+> The trigger for running into this behavior is currently unclear.
+> If we only start a part of the application (platform management only),
+> the issue is not observed.
+> We see this on both an old version of Xenomai and a very recent one
+> (pulled from the git repo yesterday).
+> 
+> I will continue to debug this issue in the coming days and try isolate
+> the code that is triggering it, but I can use hints from the
+> community.
+> Debugging is complex since once the load starts, the debugger is not
+> reacting anymore.
+> If I put breakpoints in the functions that are called when the timer
+> expires (both oneshot and periodic), the process starts to clone
+> itself and I endup with tens of them.
+> 
+> Has anybody seen an issue like this before or does somebody has some
+> hints on how to debug this problem?
 
 
-All old I-pipe patches should work with the latest version of xenomai,
-though as I said, whether CLOCK_HOST_REALTIME work probably depends more
-on the I-pipe patch.
+First enable the watchdog. It will send a signal to the application when
+detecting a problem, then you can use the watchdog to trigger an I-pipe
+tracer trace when the bug happens. You will probably have to increase
+the watchdog polling frequency, in order to have a meaningful trace.
 
 -- 
                                                                 Gilles.
