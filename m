@@ -1,12 +1,14 @@
-Message-ID: <512F3ED9.3070103@grandegger.com>
-Date: Thu, 28 Feb 2013 12:26:17 +0100
-From: Wolfgang Grandegger <wg@grandegger.com>
+Message-ID: <512F4005.60000@siemens.com>
+Date: Thu, 28 Feb 2013 12:31:17 +0100
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-References: <CAD1EtojOLiC5L=NE7nkCTqoYwLpqWFigWG-yqGMtuJsWt0AEbg@mail.gmail.com>
-In-Reply-To: <CAD1EtojOLiC5L=NE7nkCTqoYwLpqWFigWG-yqGMtuJsWt0AEbg@mail.gmail.com>
+References: <512C806F.2020209@hilscher.com> <512C9E78.1060208@siemens.com>
+	<512CC5C6.8050204@hilscher.com> <512CC6A3.1010005@siemens.com>
+	<512F120A.5060109@hilscher.com>
+In-Reply-To: <512F120A.5060109@hilscher.com>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Failing to recognize/use PEAK PCAN-miniPCIe card
+Subject: Re: [Xenomai] Hilscher driver for cifX boards
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,44 +17,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Daniel M. Drucker, Ph.D." <dmd@interactive-motion.com>
-Cc: xenomai@xenomai.org
+To: Jerome Poncin <JPoncin@hilscher.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 02/27/2013 08:04 PM, Daniel M. Drucker, Ph.D. wrote:
-> Hello all,
+On 2013-02-28 09:15, Jerome Poncin wrote:
+> Hello,
 > 
-> We have a PC/104 computer with a PEAK PC/104-PLUS card which we are
-> successfully using to talk CAN from within Xenomai. For various reasons, we
-> want to switch to using a mini-ITX board.
-> 
-> We're trying to use the PEAK PCAN-miniPCIe card on the mini-ITX board, but
-> we are having no luck - the card doesn't seem to get seen by Xenomai.
-> 
-> We're not sure if this is an IRQ problem or something else. On the PC104
-> system, we had an IRQ conflict which we were able to solve by changing a
-> jumper - the new card has no jumpers to change, and our motherboard's BIOS
-> does not have any settings that allow changing of daughterboard IRQs.
-> 
-> Both systems are running the same OS install with the same kernel. The
-> 'latency' command in the Xenomai testsuite runs correctly on both systems.
-> 
-> I have put together a comparison of command outputs on the old (working)
-> and new (non-working) systems:  http://goo.gl/GBy8h
+> I tried to put one IRQ only for my cifX board without success. I have
+> not enough IRQ on my PC and the most of them are shared.
+> I modified Linux kernel to limit driver, I checked that all was correct
+> in BIOS etc. I had the same problem for a driver on another system.
 
-"lspci" list different PCI device IDs for the cards on the old and new
-system. The new card with the ID 001c:0008 is not (yet) supported.
+And it is impossible to disable/unload drivers that conflict with that
+IRQ? Nor do you have a modern system at hand? Those tend to use more MSI
+than legacy IRQs for the on-board devices (or did you disable
+CONFIG_PCI_MSI?) and provide more legacy IRQ lines (8 instead of 4).
 
-> Any insight into what's wrong in our new system and how to get it working
-> would be greatly appreciated!
+> It's not really important for the moment because the normal use of the
+> driver is polling.
 
-As this new card is already supported in the mainline Linux driver [1],
-does have just two channels and does not need special handling, simply
-adding that vendor:device ID here should work:
+Then remove IRQ support. If it's untested, it's worthless.
 
-http://www.rts.uni-hannover.de/xenomai/lxr/source/ksrc/drivers/can/sja1000/rtcan_peak_pci.c#0079
+> Therefore for me, the part of Xenomai kernel driver for CifX is finished
+> and can be integrated to next release of Xenomai.
+> I don't know how to integrate my source to Xenomai kernel, therefore I
+> give you my last release of Xenomai kernel driver for cifX with the
+> makefile for compilation option.
 
-[1] http://lxr.linux.no/#linux+v3.8/drivers/net/can/sja1000/peak_pci.c#L72
+First of all, reformat your driver according to kernel coding style
+(check with linux/scripts/checkpatch.pl). Then provide it in form of a
+patch against Xenomai git head. The patch should add the driver source
+code under ksrc/drivers/cifx (or so) and change the Makefiles and
+Kconfigs as required. Make sure the result is properly built along a
+normal Xenomai kernel build. We can then perform a code review and merge
+the code if it is fine.
 
-Wolfgang.
+Jan
 
+-- 
+Siemens AG, Corporate Technology, CT RTC ITP SDP-DE
+Corporate Competence Center Embedded Linux
 
