@@ -1,17 +1,9 @@
-Message-ID: <512F3CBA.6030308@siemens.com>
-Date: Thu, 28 Feb 2013 12:17:14 +0100
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <512F3ED9.3070103@grandegger.com>
+Date: Thu, 28 Feb 2013 12:26:17 +0100
+From: Wolfgang Grandegger <wg@grandegger.com>
 MIME-Version: 1.0
-References: <CAD1EtohJTQi9jj07_NrC=anxQiqQS1=TrHecAK21uW0wBoOnYQ@mail.gmail.com>
-	<512E67D4.70804@xenomai.org>
-	<CAD1EtogDAPC7Q1-sq1fh1J71hQRYMoAs=HNEzZOYosxP8NeWbg@mail.gmail.com>
-	<512E696A.2010106@xenomai.org> <512E69D3.6090601@xenomai.org>
-	<CAD1Etoj6q+xOoK5Zgy1rpB73_9e236mpfOjCQk6+eDMa=c2Fmw@mail.gmail.com>
-	<CAD1EtoiHUSqP-aXWenyHNkm8xA4dJHW_0kqiVtMJ36ssAMYPww@mail.gmail.com>
-	<512E75C8.4050403@xenomai.org>
-	<CAD1EtogPsUtE7L0WaYE8euo5JYZ-AGx1d1-RA50zgSiY0GUsVQ@mail.gmail.com>
-	<CAD1Etoj=9FDB=Zs+qSprpDp9WUkDs6zy6HMy2ctHtekZXOv4Hg@mail.gmail.com>
-In-Reply-To: <CAD1Etoj=9FDB=Zs+qSprpDp9WUkDs6zy6HMy2ctHtekZXOv4Hg@mail.gmail.com>
+References: <CAD1EtojOLiC5L=NE7nkCTqoYwLpqWFigWG-yqGMtuJsWt0AEbg@mail.gmail.com>
+In-Reply-To: <CAD1EtojOLiC5L=NE7nkCTqoYwLpqWFigWG-yqGMtuJsWt0AEbg@mail.gmail.com>
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] Failing to recognize/use PEAK PCAN-miniPCIe card
@@ -26,31 +18,41 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: "Daniel M. Drucker, Ph.D." <dmd@interactive-motion.com>
 Cc: xenomai@xenomai.org
 
-On 2013-02-28 00:02, Daniel M. Drucker, Ph.D. wrote:
-> The latest Linux driver (7.8) from PEAK (
-> http://www.peak-system.com/fileadmin/media/linux/files/peak-linux-driver-7.8.tar.gz)
-> has the following in its peak_pci_tbl:
+On 02/27/2013 08:04 PM, Daniel M. Drucker, Ph.D. wrote:
+> Hello all,
 > 
-> #define PEAK_PCI_DEVICE_ID   0x0001  // ID for PCI / PCIe Slot cards
-> #define PEAK_PCIE_CARD_ID    0x0002  // ID for PCIExpress Card
-> #define PEAK_PCIE_DEVICE_ID  0x0003  // ID for new PCIe Slot cards
-> #define PEAK_CPCI_ID         0x0004  // ID for new cPCI
-> #define PEAK_MINIPCI_ID      0x0005  // ID for miniPCI
-> #define PEAK_PC104PLUS_ID    0x0006  // ID for new PC-104 Plus
-> #define PEAK_PC104E_ID       0x0007  // ID for PC-104 Express
-> #define PEAK_MINIPCIE_ID     0x0008  // ID for miniPCIe Slot cards
+> We have a PC/104 computer with a PEAK PC/104-PLUS card which we are
+> successfully using to talk CAN from within Xenomai. For various reasons, we
+> want to switch to using a mini-ITX board.
 > 
+> We're trying to use the PEAK PCAN-miniPCIe card on the mini-ITX board, but
+> we are having no luck - the card doesn't seem to get seen by Xenomai.
 > 
-> Is there any reason why these all shouldn't also be in Xenomai's version?
+> We're not sure if this is an IRQ problem or something else. On the PC104
+> system, we had an IRQ conflict which we were able to solve by changing a
+> jumper - the new card has no jumpers to change, and our motherboard's BIOS
+> does not have any settings that allow changing of daughterboard IRQs.
+> 
+> Both systems are running the same OS install with the same kernel. The
+> 'latency' command in the Xenomai testsuite runs correctly on both systems.
+> 
+> I have put together a comparison of command outputs on the old (working)
+> and new (non-working) systems:  http://goo.gl/GBy8h
 
-If those cards are compatible with the ones we already support, you can
-go ahead and send a patch to add the IDs to Xenomai's driver. But I
-would first cross-check with the kernel commits that added support for
-them, if more was changed.
+"lspci" list different PCI device IDs for the cards on the old and new
+system. The new card with the ID 001c:0008 is not (yet) supported.
 
-Jan
+> Any insight into what's wrong in our new system and how to get it working
+> would be greatly appreciated!
 
--- 
-Siemens AG, Corporate Technology, CT RTC ITP SDP-DE
-Corporate Competence Center Embedded Linux
+As this new card is already supported in the mainline Linux driver [1],
+does have just two channels and does not need special handling, simply
+adding that vendor:device ID here should work:
+
+http://www.rts.uni-hannover.de/xenomai/lxr/source/ksrc/drivers/can/sja1000/rtcan_peak_pci.c#0079
+
+[1] http://lxr.linux.no/#linux+v3.8/drivers/net/can/sja1000/peak_pci.c#L72
+
+Wolfgang.
+
 
