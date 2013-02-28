@@ -1,9 +1,12 @@
+Message-ID: <512FB7B0.1040003@xenomai.org>
+Date: Thu, 28 Feb 2013 21:01:52 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-From: Ronny Meeus <ronny.meeus@gmail.com>
-Date: Thu, 28 Feb 2013 20:19:14 +0100
-Message-ID: <CAMJ=MEfo5EU2mnM4=JDNU4QXX00W=0aC2+m5LucPYiN39W5wcQ@mail.gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Subject: [Xenomai] Xenomai-forge: thread using 100% cpu load
+References: <20130228094644.5CCB8C91@centrum.cz>
+In-Reply-To: <20130228094644.5CCB8C91@centrum.cz>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] mutex problem
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,45 +15,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Petr Cervenka <grugh@centrum.cz>
+Cc: Xenomai <xenomai@xenomai.org>
 
-Hello
+On 02/28/2013 09:46 AM, Petr Cervenka wrote:
 
-we are using the PSOS interface of Xenomai forge, running completely
-in user-space using the mercury code.
-We deploy our application on different processors, one product is
-running on PPC multicore (P4040, P4080, P4034) and another one on
-Cavium (8 core device).
-The Linux version we use is 2.6.32 but I would assume that this is not
-so relevant.
+> Hello.
+> 
+> I have a problem with a mutex shared by 3 real-time user tasks. Once in a while (~hours) the mutex get locked with the first task as owner and the other two tasks are fronzen on rt_mutex_aquire calls. But I have double checked, that every "acquire" of that mutex is followed by "release".
+> 
+> Typical example:
+> Lets call those tasks REG, SEND, RECEIVE
+> 
+> RECV: acquire
+> RECV: release
+> 
+> RECV: acquire
+> RECV: release
+> 
+> RECV: acquire - FREEZE
+> 
+> REG: acquire
+> REG: release
+> 
+> REG: acquire
+> REG: release
+> 
+> REG: acquire
+> REG: release
+> 
+> SEND: acquire - FREEZE
+> 
+> There are also other threads, sync. objects, network sockets, ... in the system, but the threads are frozen by this particular mutex.
+> rt_task_unblock call unblocks the tasks, return value of rt_mutex_acquire is -4 (-EINTR), as expected.
+> Used version of Xenomai 2.5.6, skin native. Was there any known issue similar to that behavior?
+> Also it seems that rt_mutex_create is called before mlockall call? Could it be a problem?
 
-Our Xenomai application is running on one of the cores (affinity is
-set), while the other cores are running other code.
 
-On both architectures we recently start to see issues that one thread
-is consuming 100% of the core on which the application is pinned.
-The thread that monopolizes the core is the thread internally used to
-manage the timers, running at the highest priority.
-The trigger for running into this behavior is currently unclear.
-If we only start a part of the application (platform management only),
-the issue is not observed.
-We see this on both an old version of Xenomai and a very recent one
-(pulled from the git repo yesterday).
+It is a bit old to recall. Could you try and reproduce the problem with
+2.6.2.1 ?
 
-I will continue to debug this issue in the coming days and try isolate
-the code that is triggering it, but I can use hints from the
-community.
-Debugging is complex since once the load starts, the debugger is not
-reacting anymore.
-If I put breakpoints in the functions that are called when the timer
-expires (both oneshot and periodic), the process starts to clone
-itself and I endup with tens of them.
-
-Has anybody seen an issue like this before or does somebody has some
-hints on how to debug this problem?
-
-Many thanks.
-
----
-Ronny
+-- 
+                                                                Gilles.
 
