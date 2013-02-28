@@ -1,12 +1,14 @@
-Message-ID: <512FB9B5.9040709@xenomai.org>
-Date: Thu, 28 Feb 2013 21:10:29 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <512FBC0A.9030008@ruggedcom.com>
+Date: Thu, 28 Feb 2013 15:20:26 -0500
+From: Makarand Pradhan <makarandpradhan@ruggedcom.com>
 MIME-Version: 1.0
-References: <CAMJ=MEfo5EU2mnM4=JDNU4QXX00W=0aC2+m5LucPYiN39W5wcQ@mail.gmail.com>
-In-Reply-To: <CAMJ=MEfo5EU2mnM4=JDNU4QXX00W=0aC2+m5LucPYiN39W5wcQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Xenomai-forge: thread using 100% cpu load
+References: <512E8C10.8080707@ruggedcom.com> <512E904A.2080408@xenomai.org>
+	<512E9417.20708@ruggedcom.com> <512EE94A.8000802@xenomai.org>
+	<512F7043.20900@ruggedcom.com>
+In-Reply-To: <512F7043.20900@ruggedcom.com>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Subject: Re: [Xenomai] Is CLOCK_HOST_REALTIME supported for powerpc?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,52 +17,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Ronny Meeus <ronny.meeus@gmail.com>
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 02/28/2013 08:19 PM, Ronny Meeus wrote:
-
-> Hello
-> 
-> we are using the PSOS interface of Xenomai forge, running completely
-> in user-space using the mercury code.
-> We deploy our application on different processors, one product is
-> running on PPC multicore (P4040, P4080, P4034) and another one on
-> Cavium (8 core device).
-> The Linux version we use is 2.6.32 but I would assume that this is not
-> so relevant.
-> 
-> Our Xenomai application is running on one of the cores (affinity is
-> set), while the other cores are running other code.
-> 
-> On both architectures we recently start to see issues that one thread
-> is consuming 100% of the core on which the application is pinned.
-> The thread that monopolizes the core is the thread internally used to
-> manage the timers, running at the highest priority.
-> The trigger for running into this behavior is currently unclear.
-> If we only start a part of the application (platform management only),
-> the issue is not observed.
-> We see this on both an old version of Xenomai and a very recent one
-> (pulled from the git repo yesterday).
-> 
-> I will continue to debug this issue in the coming days and try isolate
-> the code that is triggering it, but I can use hints from the
-> community.
-> Debugging is complex since once the load starts, the debugger is not
-> reacting anymore.
-> If I put breakpoints in the functions that are called when the timer
-> expires (both oneshot and periodic), the process starts to clone
-> itself and I endup with tens of them.
-> 
-> Has anybody seen an issue like this before or does somebody has some
-> hints on how to debug this problem?
-
-
-First enable the watchdog. It will send a signal to the application when
-detecting a problem, then you can use the watchdog to trigger an I-pipe
-tracer trace when the bug happens. You will probably have to increase
-the watchdog polling frequency, in order to have a meaningful trace.
-
--- 
-                                                                Gilles.
-
+SGksCgpJIHdhcyBhYmxlIHRvIGJhY2twb3J0IHRoZSBpcGlwZSBob3N0cnQgY2hhbmdlcyB0byBn
+ZXQgaXQgd29ya2luZyBvbiAKWGVub21haSAyLjYuMCBvbiBwb3dlcnBjLgoKRm9yIHRob3NlIGlu
+dGVyZXN0ZWQsIHRoZSBwYXRjaCBpcyBhdHRhY2hlZCB0byB0aGlzIGVtYWlsLgoKY2xvY2t0ZXN0
+IGlzIHdvcmtpbmcgZm9yIENMT0NLX0hPU1RfUkVBTFRJTUUgb24gcG93ZXJwYywgWGVub21haSAy
+LjYuMCwgCmxpbnV4IDMuMC4wLgoKcm9vdEBydWdnZWRjb206fi94ZW5vdGVzdCMgLi9jbG9ja3Rl
+c3QgLUMgNDIgLUQKaG9zdHJ0IGRhdGEgYXJlYSBpcyBsaXZlClNlcXVlbmNlIGNvdW50ZXIgOiAx
+NDczMTM1Mgp3YWxsX3RpbWVfc2VjICAgIDogOTQ2NzA5NzEyCndhbGxfdGltZV9uc2VjICAgOiAz
+MjM2NzEzMTMKd2FsbF90b19tb25vdG9uaWMKICAgICAgICAgICB0dl9zZWMgOiAtOTQ2NzAyMzAx
+CiAgICAgICAgICB0dl9uc2VjIDogNzY0Njk3MwpjeWNsZV9sYXN0ICAgICAgIDogNDk1MDI2MzU0
+MjQ0Cm1hc2sgICAgICAgICAgICAgOiAweGZmZmZmZmZmZmZmZmZmZmYKbXVsdCAgICAgICAgICAg
+ICA6IDYyOTE0NTYxCnNoaWZ0ICAgICAgICAgICAgOiAyMgoKPT0gVGVzdGVkIGNsb2NrOiA0MiAo
+Q0xPQ0tfSE9TVF9SRUFMVElNRSkKQ1BVICAgICAgVG9EIG9mZnNldCBbdXNdIFRvRCBkcmlmdCBb
+dXMvc10gICAgICB3YXJwcyBtYXggZGVsdGEgW3VzXQotLS0gLS0tLS0tLS0tLS0tLS0tLS0tLS0g
+LS0tLS0tLS0tLS0tLS0tLSAtLS0tLS0tLS0tIC0tLS0tLS0tLS0tLS0tCiAgIDAgICAgICAgICAg
+ICAgICAgICAwLjAgICAgICAgICAgICAwLjAwMCAgICAgICAgICAwICAgICAgICAgICAgMC4wCgpU
+aGFua3MgZm9yIGFsbCB5b3VyIGhlbHAuCgpXYXJtIFJnZHMsCk1ha2FyYW5kLgoKCj4gQWxsIG9s
+ZCBJLXBpcGUgcGF0Y2hlcyBzaG91bGQgd29yayB3aXRoIHRoZSBsYXRlc3QgdmVyc2lvbiBvZiB4
+ZW5vbWFpLAo+IHRob3VnaCBhcyBJIHNhaWQsIHdoZXRoZXIgQ0xPQ0tfSE9TVF9SRUFMVElNRSB3
+b3JrIHByb2JhYmx5IGRlcGVuZHMgbW9yZQo+IG9uIHRoZSBJLXBpcGUgcGF0Y2guCj4KCgoKLS0t
+LS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVu
+dCB3YXMgc2NydWJiZWQuLi4KTmFtZTogaG9zdHJ0X2lwaXBlX3hlbm9fMi42LjAuZGlmZgpUeXBl
+OiB0ZXh0L3gtZGlmZgpTaXplOiAyNDg4IGJ5dGVzCkRlc2M6IG5vdCBhdmFpbGFibGUKVVJMOiA8
+aHR0cDovL3d3dy54ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDEz
+MDIyOC8yZTNmYmRmOC9hdHRhY2htZW50LmRpZmY+Cg==
