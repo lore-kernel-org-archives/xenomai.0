@@ -1,12 +1,19 @@
-Message-ID: <51307C85.8000702@xenomai.org>
-Date: Fri, 01 Mar 2013 11:01:41 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <51308DC2.7040000@gmail.com>
+Date: Fri, 01 Mar 2013 12:15:14 +0100
+From: Manuel Huber <manuel.h87@gmail.com>
 MIME-Version: 1.0
-References: <CAJjOJya=dP9EB737Sx3L=rMneryZwBiJYmGPJQq0B93iF6Sx0w@mail.gmail.com>
-In-Reply-To: <CAJjOJya=dP9EB737Sx3L=rMneryZwBiJYmGPJQq0B93iF6Sx0w@mail.gmail.com>
+References: <511CD2FB.7010502@gmail.com> <511DDBD5.4060505@web.de>
+	<51236088.1030402@gmail.com> <51236A75.5090400@siemens.com>
+	<5123C910.7090107@siemens.com> <5123DDBE.8060105@web.de>
+	<512778A0.6090300@gmail.com> <51277B66.60505@siemens.com>
+	<512B9A86.4060900@siemens.com> <512BB672.7080900@control.lth.se>
+	<512BB714.6080707@siemens.com>
+	<512BC4E2.4020605@control.lth.se> <512BDF7F.3030005@web.de>
+In-Reply-To: <512BDF7F.3030005@web.de>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Undefined references when using xeno-config
+Subject: Re: [Xenomai] (Boot)-problems with (current) ipipe patch on AMD FX
+ 61000 - 2.6.38.8 & 3.5.7
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,106 +22,109 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jonathan Wallace <jonmon6691@gmail.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@web.de>
+Cc: xenomai@xenomai.org
 
-On 03/01/2013 10:59 AM, Jonathan Wallace wrote:
-> This is probably an easy question, I'm not very experienced using the
-> GNU build tools. I'm trying to cross compile the trivial-periodic
-> example for my board using the following makefile
+On 2013-02-25 23:02, Jan Kiszka wrote:
+> On 2013-02-25 21:09, Anders Blomdell wrote:
+>> On 2013-02-25 20:10, Jan Kiszka wrote:
+>>> On 2013-02-25 20:07, Anders Blomdell wrote:
+>>>> On 2013-02-25 18:08, Jan Kiszka wrote:
+>>>>> As 3.5 is dead, this fix will never make it there unless we back-port.
+>>>>> While I'm doing this, could you try if
+>>>>>
+>>>>>        git://git.xenomai.org/ipipe-jki.git for-upstream/master
+>>>> I'm probably more stupid than normal (i.e I can't find any ipipe for
+>>>> x86_64):
+>>>>
+>>>> # git clone git://git.xenomai.org/ipipe-jki.git for-upstream/master
+>>> git clone git://git.xenomai.org/ipipe-jki.git
+>>> git checkout -b for-upstream/master origin/for-upstream/master
+>> OK, thanks. Do I need to setup xenomai in order to gain any useful
+>> information, or is:
+>>
+>> CONFIG_IPIPE=y
+>> CONFIG_IPIPE_LEGACY=y
+>> CONFIG_IPIPE_CORE=y
+>> CONFIG_IPIPE_CORE_APIREV=2
+>> CONFIG_IPIPE_TARGET_APIREV=1
+>> CONFIG_IPIPE_HAVE_HOSTRT=y
+>> CONFIG_IPIPE_DELAYED_ATOMICSW=y
+>> # CONFIG_IPIPE_DEBUG is not set
+>>
+>> sufficient?
+> Plain I-pipe will suffice as the the interrupt virtualization is
+> unconditional, thus __ipipe_handle_irq is always taken.
 >
-> XENO_DESTDIR:=/home/jon/bone
-> XENO_CONFIG:=$(XENO_DESTDIR)/usr/xenomai/bin/xeno-config
-> XENO_CFLAGS:=$(shell DESTDIR=$(XENO_DESTDIR) $(XENO_CONFIG) --skin
-> native --cflags)
-> XENO_LDFLAGS:=$(shell DESTDIR=$(XENO_DESTDIR) $(XENO_CONFIG) --skin
-> native --ldflags)
-> CC:=$(shell DESTDIR=$(XENO_DESTDIR) $(XENO_CONFIG) --skin native --cc)
+> Alternatively, here is the backported patch over 3.5.7:
 >
-> objs += trivial-periodic.c
+> diff --git a/arch/x86/kernel/apic/io_apic.c b/arch/x86/kernel/apic/io_apic.c
+> index 08e5ad4..aade7f0 100644
+> --- a/arch/x86/kernel/apic/io_apic.c
+> +++ b/arch/x86/kernel/apic/io_apic.c
+> @@ -234,11 +234,11 @@ int __init arch_early_irq_init(void)
+>   		zalloc_cpumask_var_node(&cfg[i].old_domain, GFP_KERNEL, node);
+>   		/*
+>   		 * For legacy IRQ's, start with assigning irq0 to irq15 to
+> -		 * IRQ0_VECTOR to IRQ15_VECTOR on cpu 0.
+> +		 * IRQ0_VECTOR to IRQ15_VECTOR for all cpu's.
+>   		 */
+>   		if (i < legacy_pic->nr_legacy_irqs) {
+>   			cfg[i].vector = IRQ0_VECTOR + i;
+> -			cpumask_set_cpu(0, cfg[i].domain);
+> +			cpumask_setall(cfg[i].domain);
+>   		}
+>   	}
+>   
+> @@ -1181,8 +1181,9 @@ next:
+>   		current_vector = vector;
+>   		current_offset = offset;
+>   		if (old_vector) {
+> -			cfg->move_in_progress = 1;
+>   			cpumask_copy(cfg->old_domain, cfg->domain);
+> +			cfg->move_in_progress =
+> +			   cpumask_intersects(cfg->old_domain, cpu_online_mask);
+>   		}
+>   		for_each_cpu_and(new_cpu, tmp_mask, cpu_online_mask)
+>   			per_cpu(vector_irq, new_cpu)[vector] = irq;
+> @@ -1250,12 +1251,6 @@ void __setup_vector_irq(int cpu)
+>   		cfg = irq_get_chip_data(irq);
+>   		if (!cfg)
+>   			continue;
+> -		/*
+> -		 * If it is a legacy IRQ handled by the legacy PIC, this cpu
+> -		 * will be part of the irq_cfg's domain.
+> -		 */
+> -		if (irq < legacy_pic->nr_legacy_irqs && !IO_APIC_IRQ(irq))
+> -			cpumask_set_cpu(cpu, cfg->domain);
+>   
+>   		if (!cpumask_test_cpu(cpu, cfg->domain))
+>   			continue;
+> @@ -1380,13 +1375,6 @@ static void setup_ioapic_irq(unsigned int irq, struct irq_cfg *cfg,
+>   
+>   	if (!IO_APIC_IRQ(irq))
+>   		return;
+> -	/*
+> -	 * For legacy irqs, cfg->domain starts with cpu 0 for legacy
+> -	 * controllers like 8259. Now that IO-APIC can handle this irq, update
+> -	 * the cfg->domain.
+> -	 */
+> -	if (irq < legacy_pic->nr_legacy_irqs && cpumask_test_cpu(0, cfg->domain))
+> -		apic->vector_allocation_domain(0, cfg->domain);
+>   
+>   	if (assign_irq_vector(irq, cfg, apic->target_cpus()))
+>   		return;
 >
-> CFLAGS := -march=armv7-a -mfpu=vfp3
 >
-> main:
->          $(CC) $(CFLAGS) $(XENO_CFLAGS) $(XENO_LDFLAGS) $(objs)
+> Jan
+>
+>
+Hey!
 
-You should swap XENO_LDFLAGS and objs.
+I applied your patch and rebooted several times with and without serial 
+console and it seems to have finally fixed the problem (but I've said 
+that a lot recently... sorry again...). I've also tried the version of 
+your branch and it compiled and booted.
 
->
-> Which results in the following build command on my system
->
-> jon@ubuntu:~/xeno/beaglebone-xenomai/driver_test/native$ make
-> arm-linux-gnueabi-gcc -march=armv7-a -mfpu=vfp3
-> -I/home/jon/bone/usr/xenomai/include -D_GNU_SOURCE -D_REENTRANT
-> -D__XENO__ -lnative -L/home/jon/bone/usr/xenomai/lib -lxenomai
-> -lpthread -lrt trivial-periodic.c
-> /tmp/ccCuIb83.o: In function `demo':
-> trivial-periodic.c:(.text+0x1e): undefined reference to `rt_task_set_periodic'
-> trivial-periodic.c:(.text+0x22): undefined reference to `rt_timer_read'
-> trivial-periodic.c:(.text+0x2e): undefined reference to `rt_task_wait_period'
-> trivial-periodic.c:(.text+0x32): undefined reference to `rt_timer_read'
-> /tmp/ccCuIb83.o: In function `main':
-> trivial-periodic.c:(.text+0x10c): undefined reference to `rt_task_create'
-> trivial-periodic.c:(.text+0x124): undefined reference to `rt_task_start'
-> trivial-periodic.c:(.text+0x134): undefined reference to `rt_task_delete'
-> collect2: ld returned 1 exit status
-> make: *** [main] Error 1
->
-> But it looks like the linker isn't actually finding the xenomai
-> libraries. Or isn't finding the symbols within them. I'll paste the
-> output of nm below, but the libraries look fine, and I'm not sure what
-> else to try at this point.
->
-> jon@ubuntu:~/bone/usr/xenomai/lib$ nm libnative.so | grep rt_t
-> 00004051 T rt_task_bind
-> 00003e41 T rt_task_create
-> 00004349 T rt_task_delete
-> 0000428d T rt_task_inquire
-> 000043ed T rt_task_join
-> 000042c1 T rt_task_notify
-> 0000445d T rt_task_receive
-> 00004495 T rt_task_reply
-> 000040bd T rt_task_resume
-> 000044c9 T rt_task_same
-> 00004331 T rt_task_self
-> 00004405 T rt_task_send
-> 000042f5 T rt_task_set_mode
-> 00004119 T rt_task_set_periodic
-> 00004199 T rt_task_set_priority
-> 00003f8d T rt_task_shadow
-> 000041cd T rt_task_sleep
-> 00004215 T rt_task_sleep_until
-> 000043b5 T rt_task_slice
-> 00003f55 T rt_task_start
-> 0000408d T rt_task_suspend
-> 00003d5d t rt_task_trampoline
-> 0000425d T rt_task_unblock
-> 00004155 T rt_task_wait_period
-> 000040ed T rt_task_yield
-> 000045dd T rt_timer_inquire
-> 0000455d T rt_timer_ns2ticks
-> 000045d5 T rt_timer_ns2tsc
-> 0000450d T rt_timer_read
-> 000044d9 T rt_timer_set_mode
-> 0000460d T rt_timer_spin
-> 00004599 T rt_timer_ticks2ns
-> 00004541 T rt_timer_tsc
-> 000045d9 T rt_timer_tsc2ns
->
-> Like I said, I'm probably forgetting something obvious, this is first
-> time I've tried to link to cross-compiled libraries so forgive my
-> ignorance.
->
-> Thanks for any help,
-> Jon Wallace
->
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> http://www.xenomai.org/mailman/listinfo/xenomai
->
-
-
--- 
-Philippe.
+Thanks for backporting the fix!
 
