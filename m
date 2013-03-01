@@ -1,16 +1,12 @@
-Message-ID: <513069D5.1090508@xenomai.org>
-Date: Fri, 01 Mar 2013 09:41:57 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Date: Fri, 01 Mar 2013 09:54:37 +0100
+From: =?utf-8?q?Petr_Cervenka?= <grugh@centrum.cz>
+References: <20130228094644.5CCB8C91@centrum.cz> <512FB7B0.1040003@xenomai.org>
+In-Reply-To: <512FB7B0.1040003@xenomai.org>
 MIME-Version: 1.0
-References: <CAMJ=MEfo5EU2mnM4=JDNU4QXX00W=0aC2+m5LucPYiN39W5wcQ@mail.gmail.com>
-	<512FB9B5.9040709@xenomai.org>
-	<CAAXf6LXDSxU_eASbHOgQzw_2xSpZua2BaORAiJ59KoPitFNEcg@mail.gmail.com>
-	<51306545.1010200@xenomai.org> <5130663F.7070209@xenomai.org>
-	<51306710.5030201@xenomai.org> <5130673D.2090700@xenomai.org>
-In-Reply-To: <5130673D.2090700@xenomai.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Xenomai-forge: thread using 100% cpu load
+Message-Id: <20130301095437.EB654F58@centrum.cz>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] =?utf-8?q?mutex_problem?=
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,83 +15,61 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: =?utf-8?q?Gilles_Chanteperdrix?= <gilles.chanteperdrix@xenomai.org>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 03/01/2013 09:30 AM, Gilles Chanteperdrix wrote:
-> On 03/01/2013 09:30 AM, Philippe Gerum wrote:
+SOLVED (perhaps)
+
 >
->> On 03/01/2013 09:26 AM, Gilles Chanteperdrix wrote:
->>> On 03/01/2013 09:22 AM, Philippe Gerum wrote:
->>>
->>>> On 02/28/2013 09:22 PM, Thomas De Schampheleire wrote:
->>>>> On Thu, Feb 28, 2013 at 9:10 PM, Gilles Chanteperdrix
->>>>> <gilles.chanteperdrix@xenomai.org> wrote:
->>>>>> On 02/28/2013 08:19 PM, Ronny Meeus wrote:
->>>>>>
->>>>>>> Hello
->>>>>>>
->>>>>>> we are using the PSOS interface of Xenomai forge, running completely
->>>>>>> in user-space using the mercury code.
->>>>>>> We deploy our application on different processors, one product is
->>>>>>> running on PPC multicore (P4040, P4080, P4034) and another one on
->>>>>>> Cavium (8 core device).
->>>>>>> The Linux version we use is 2.6.32 but I would assume that this is not
->>>>>>> so relevant.
->>>>>>>
->>>>>>> Our Xenomai application is running on one of the cores (affinity is
->>>>>>> set), while the other cores are running other code.
->>>>>>>
->>>>>>> On both architectures we recently start to see issues that one thread
->>>>>>> is consuming 100% of the core on which the application is pinned.
->>>>>>> The thread that monopolizes the core is the thread internally used to
->>>>>>> manage the timers, running at the highest priority.
->>>>>>> The trigger for running into this behavior is currently unclear.
->>>>>>> If we only start a part of the application (platform management only),
->>>>>>> the issue is not observed.
->>>>>>> We see this on both an old version of Xenomai and a very recent one
->>>>>>> (pulled from the git repo yesterday).
->>>>>>>
->>>>>>> I will continue to debug this issue in the coming days and try isolate
->>>>>>> the code that is triggering it, but I can use hints from the
->>>>>>> community.
->>>>>>> Debugging is complex since once the load starts, the debugger is not
->>>>>>> reacting anymore.
->>>>>>> If I put breakpoints in the functions that are called when the timer
->>>>>>> expires (both oneshot and periodic), the process starts to clone
->>>>>>> itself and I endup with tens of them.
->>>>>>>
->>>>>>> Has anybody seen an issue like this before or does somebody has some
->>>>>>> hints on how to debug this problem?
->>>>>>
->>>>>>
->>>>>> First enable the watchdog. It will send a signal to the application when
->>>>>> detecting a problem, then you can use the watchdog to trigger an I-pipe
->>>>>> tracer trace when the bug happens. You will probably have to increase
->>>>>> the watchdog polling frequency, in order to have a meaningful trace.
->>>>>>
->>>>>
->>>>> I don't think an I-pipe tracer will be possible when using the Mercury
->>>>> core, right (xenomai-forge) ?
->>>>>
->>>>
->>>> Correct.
->>>
->>>
->>> I do not think so. The way I see it, you can enable the I-pipe tracer
->>> without CONFIG_XENOMAI.
->>>
->>
->> Mercury has NO pipeline in the kernel.
->>
+>> Hello.
+>>=20
+>> I have a problem with a mutex shared by 3 real-time user tasks. Once i=
+n a while (~hours) the mutex get locked with the first task as owner and =
+the other two tasks are fronzen on rt_mutex_aquire calls. But I have doub=
+le checked, that every "acquire" of that mutex is followed by "release".
+>>=20
+>> Typical example:
+>> Lets call those tasks REG, SEND, RECEIVE
+>>=20
+>> RECV: acquire
+>> RECV: release
+>>=20
+>> RECV: acquire
+>> RECV: release
+>>=20
+>> RECV: acquire - FREEZE
+>>=20
+>> REG: acquire
+>> REG: release
+>>=20
+>> REG: acquire
+>> REG: release
+>>=20
+>> REG: acquire
+>> REG: release
+>>=20
+>> SEND: acquire - FREEZE
+>>=20
+>> There are also other threads, sync. objects, network sockets, ... in t=
+he system, but the threads are frozen by this particular mutex.
+>> rt_task_unblock call unblocks the tasks, return value of rt_mutex_acqu=
+ire is -4 (-EINTR), as expected.
+>> Used version of Xenomai 2.5.6, skin native. Was there any known issue =
+similar to that behavior?
+>> Also it seems that rt_mutex_create is called before mlockall call? Cou=
+ld it be a problem?
 >
-> You mean mercury can not run with an I-pipe kernel?
+>
+>It is a bit old to recall. Could you try and reproduce the problem with
+>2.6.2.1 ?
 >
 
-I mean it does not care about the pipeline, it does not need it. So if 
-this is about observing kernel activity, then ftrace should be fine, or 
-possibly perf to find out where userland spends time.
+I tried to use new version of everything (kernel 3.5.7, xenomai 2.6.2.1, =
+...) and I got some exception to the kernel log in rt_mutex_create.
+So I suppose that the problem was caused by calling of rt_mutex_create be=
+fore mlockall. I already fixed it and now I'm waiting for some longer ter=
+m results. I for now it seems to be SOLVED. If not, I will let you know. =
+Thank you for your support.
 
--- 
-Philippe.
+Petr Cervenka
 
