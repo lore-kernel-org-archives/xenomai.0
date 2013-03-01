@@ -1,15 +1,12 @@
-Message-ID: <5130B39C.70300@hilscher.com>
-Date: Fri, 01 Mar 2013 14:56:44 +0100
-From: Jerome Poncin <JPoncin@hilscher.com>
+References: 
+Message-ID: <1362151982.5735.YahooMailNeo@web171205.mail.ir2.yahoo.com>
+Date: Fri, 1 Mar 2013 15:33:02 +0000 (GMT)
+From: Gabriele Moabiti <gabmoa@yahoo.it>
 MIME-Version: 1.0
-References: <512C806F.2020209@hilscher.com> <512C9E78.1060208@siemens.com>
-	<512CC5C6.8050204@hilscher.com> <512CC6A3.1010005@siemens.com>
-	<512F120A.5060109@hilscher.com> <512F4005.60000@siemens.com>
-	<512F48AA.8020601@hilscher.com>
-In-Reply-To: <512F48AA.8020601@hilscher.com>
-Content-Type: text/plain; charset="iso-8859-1"; format="flowed"
+Content-Type: text/plain; charset=iso-8859-1
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] Hilscher driver for cifX boards
+Subject: [Xenomai] kvm freeze with ipipe patch for kernel 3.x
+Reply-To: Gabriele Moabiti <gabmoa@yahoo.it>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,129 +15,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hello,
-
-I finished to reformat my driver according to kernel coding style.
-
-I'm compiling no version to test it ;-) !
-
-I'm ready to do a patch against Xenomai git head. The patch will add the=20
-driver source
-code under ksrc/drivers/cifx and change the Makefiles and Kconfigs as=20
-required.
-
-I did this command to get Xenomai git head :
-
-git clone git://git.xenomai.org/xenomai-head.git xenomai-head
-
-but connexion is refused. What must I do to clone Xenomai git head and=20
-do my patch ?
-
-Thank you for your help,
-
-Hilscher France
-12, rue du 35=E8me R=E9giment d'Aviation
-Miniparc du Ch=EAne
-69500 BRON
-France
-T=E9l. : +33 (0) 4 72 37 98 40
-Fax  : +33 (0) 4 78 26 83 27
-http://www.hilscher.fr
-HILSCHER FRANCE 	J=E9r=F4me Poncin
-jponcin@hilscher.com
-Ing=E9nieur D=E9veloppement Logiciel
-T=E9l. : +33 (0) 4 72 37 98 44
-
-
-
-
-
-Le 28/02/2013 13:08, Jerome Poncin a =E9crit :
-> Hello,
->
-> "And it is impossible to disable/unload drivers that conflict with=20
-> that IRQ? "
-> =3D> I disable a maximum but other driver on the same IRQ are SATA, USB, =
-
-> etc...
->
-> Nor do you have a modern system at hand? Those tend to use more MSI
-> than legacy IRQs for the on-board devices (or did you disable
-> CONFIG_PCI_MSI?) and provide more legacy IRQ lines (8 instead of 4).
-> =3D> OK I will see and try.
->
-> Then remove IRQ support. If it's untested, it's worthless.
-> =3D> You are right, but I prefer put a compilation condition with #ifdef =
-
-> for the future.
->
-> First of all, reformat your driver according to kernel coding style
-> (check with linux/scripts/checkpatch.pl). Then provide it in form of a
-> patch against Xenomai git head. The patch should add the driver source
-> code under ksrc/drivers/cifx (or so) and change the Makefiles and
-> Kconfigs as required. Make sure the result is properly built along a
-> normal Xenomai kernel build. We can then perform a code review and merge
-> the code if it is fine.
-> =3D> OK thank you for all these information, I will try.
->
-> Thank you for your help,
->
-> Hilscher France
-> 12, rue du 35=E8me R=E9giment d'Aviation
-> Miniparc du Ch=EAne
-> 69500 BRON
-> France
-> T=E9l. : +33 (0) 4 72 37 98 40
-> Fax  : +33 (0) 4 78 26 83 27
-> http://www.hilscher.fr
-> HILSCHER FRANCE     J=E9r=F4me Poncin
-> jponcin@hilscher.com
-> Ing=E9nieur D=E9veloppement Logiciel
-> T=E9l. : +33 (0) 4 72 37 98 44
->
->
->
->
->
-> Le 28/02/2013 12:31, Jan Kiszka a =E9crit :
->> On 2013-02-28 09:15, Jerome Poncin wrote:
->>> Hello,
->>>
->>> I tried to put one IRQ only for my cifX board without success. I have
->>> not enough IRQ on my PC and the most of them are shared.
->>> I modified Linux kernel to limit driver, I checked that all was correct
->>> in BIOS etc. I had the same problem for a driver on another system.
->> And it is impossible to disable/unload drivers that conflict with that
->> IRQ? Nor do you have a modern system at hand? Those tend to use more MSI
->> than legacy IRQs for the on-board devices (or did you disable
->> CONFIG_PCI_MSI?) and provide more legacy IRQ lines (8 instead of 4).
->>
->>> It's not really important for the moment because the normal use of the
->>> driver is polling.
->> Then remove IRQ support. If it's untested, it's worthless.
->>
->>> Therefore for me, the part of Xenomai kernel driver for CifX is=20
->>> finished
->>> and can be integrated to next release of Xenomai.
->>> I don't know how to integrate my source to Xenomai kernel, therefore I
->>> give you my last release of Xenomai kernel driver for cifX with the
->>> makefile for compilation option.
->> First of all, reformat your driver according to kernel coding style
->> (check with linux/scripts/checkpatch.pl). Then provide it in form of a
->> patch against Xenomai git head. The patch should add the driver source
->> code under ksrc/drivers/cifx (or so) and change the Makefiles and
->> Kconfigs as required. Make sure the result is properly built along a
->> normal Xenomai kernel build. We can then perform a code review and merge
->> the code if it is fine.
->>
->> Jan
->>
->
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> http://www.xenomai.org/mailman/listinfo/xenomai
->
+=0AI'm using an XP guest with qemu+kvm (vmx) on linux host (kernel 3.2.21 +=
+ ipipe patch + xenomai version 2.6.2.1)=0Aand I'm experiencing many system =
+freezes when the vm is active.=0AI think then problem is in the 3.x (3.2,3.=
+4,3.5) ipipe patch (ipipe-core-3.2.21-x86-5.patch):=0A=0A:=0A=0Adiff --git =
+a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c=0A=0A=0A....=0A=0A@@ -5749,13 +57=
+95,11 @@ static int vcpu_enter_guest(struct kvm_vcpu *vcpu)=0A=A0=A0=A0=A0 =
+=A0*/=0A=A0=A0=A0=A0 smp_mb();=0A=0A-=A0=A0=A0 local_irq_disable();=0A-=0A=
+=A0=A0=A0=A0 if (vcpu->mode =3D=3D EXITING_GUEST_MODE || vcpu->requests=0A=
+=A0=A0=A0=A0 =A0=A0=A0 || need_resched() || signal_pending(current)) {=0A=
+=A0=A0=A0=A0 =A0=A0=A0 vcpu->mode =3D OUTSIDE_GUEST_MODE;=0A=A0=A0=A0=A0 =
+=A0=A0=A0 smp_wmb();=0A-=A0=A0=A0 =A0=A0=A0 local_irq_enable();=0A+=A0=A0=
+=A0 =A0=A0=A0 hard_cond_local_irq_enable();=0A=A0=A0=A0=A0 =A0=A0=A0 preemp=
+t_enable();=0A=A0=A0=A0=A0 =A0=A0=A0 kvm_x86_ops->cancel_injection(vcpu);=
+=0A=A0=A0=A0=A0 =A0=A0=A0 r =3D 1;=0A=0A=0A....=0A=0A=0A=0A=0Alocal_irq_ena=
+ble() should be enabled after hard_cond_local_irq_enable (as in the 2.6.38 =
+patch), in this way:=0A=0A=0A=0A...=0A-=A0=A0=A0 local_irq_disable();=0A-=
+=0A=A0=A0=A0=A0 if (vcpu->mode =3D=3D EXITING_GUEST_MODE || vcpu->requests=
+=0A=A0=A0=A0=A0 =A0=A0=A0 || need_resched() || signal_pending(current)) {=
+=0A=A0=A0=A0=A0 =A0=A0=A0 vcpu->mode =3D OUTSIDE_GUEST_MODE;=0A=A0=A0=A0=A0=
+ =A0=A0=A0 smp_wmb();=0A+=A0=A0=A0 =A0=A0=A0 hard_cond_local_irq_enable();=
+=0A=A0=A0=A0=A0 =A0=A0=A0 local_irq_enable();=0A=A0=A0=A0=A0 =A0=A0=A0 pree=
+mpt_enable();=0A....=0A=0AI've done some tests and now the system runs fine=
+.=0A=0AGabriele Moabiti
 
