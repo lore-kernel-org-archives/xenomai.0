@@ -1,14 +1,15 @@
-Message-ID: <51320EDF.2090104@web.de>
-Date: Sat, 02 Mar 2013 15:38:23 +0100
-From: Jan Kiszka <jan.kiszka@web.de>
+Message-ID: <51320F98.7010900@xenomai.org>
+Date: Sat, 02 Mar 2013 15:41:28 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <1362151982.5735.YahooMailNeo@web171205.mail.ir2.yahoo.com>	<5130E0C7.80709@siemens.com>
 	<5130E6FE.2070905@siemens.com>	<1362185238.64750.YahooMailNeo@web171203.mail.ir2.yahoo.com>
 	<5131B5A2.6000501@web.de> <5131DC27.80909@xenomai.org>
 	<5131DE8D.4070701@web.de> <51320ACA.4070101@xenomai.org>
-In-Reply-To: <51320ACA.4070101@xenomai.org>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+	<51320EDF.2090104@web.de>
+In-Reply-To: <51320EDF.2090104@web.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Subject: Re: [Xenomai] kvm freeze with ipipe patch for kernel 3.x
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -18,52 +19,84 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Jan Kiszka <jan.kiszka@web.de>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-T24gMjAxMy0wMy0wMiAxNToyMCwgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4gT24gMDMv
-MDIvMjAxMyAxMjoxMiBQTSwgSmFuIEtpc3prYSB3cm90ZToKPiAKPj4gT24gMjAxMy0wMy0wMiAx
-MjowMSwgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4+PiBPbiAwMy8wMi8yMDEzIDA5OjE3
-IEFNLCBKYW4gS2lzemthIHdyb3RlOgo+Pj4KPj4+PiBPbiAyMDEzLTAzLTAyIDAxOjQ3LCBHYWJy
-aWVsZSBNb2FiaXRpIHdyb3RlOgo+Pj4+Pgo+Pj4+Pgo+Pj4+PiAtLS0tLSBNZXNzYWdnaW8gb3Jp
-Z2luYWxlIC0tLS0tCj4+Pj4+Cj4+Pj4+IERhOiBKYW4gS2lzemthIDxqYW4ua2lzemthQHNpZW1l
-bnMuY29tPgo+Pj4+PiBPbiAyMDEzLTAzLTAxIDE4OjA5LCBKYW4gS2lzemthIHdyb3RlOgo+Pj4+
-Pj4gVGhlcmUgaXMgbW9yZSBicm9rZW4sIGV2ZW4gaW4gbGF0ZXN0IHN0YWJsZSAzLjUuNy4gU2Vl
-IHRoZSBwYXRjaGVzIGF0Cj4+Pj4+PiBbMV0gZm9yIGEgdGVzdGVkIHZlcnNpb24uIFVuZm9ydHVu
-YXRlbHksIEkgY2Fubm90IHVwZGF0ZSBteSB0cmVlIGZvciAzLjgKPj4+Pj4+IEFUTSBhcyBnaXQg
-c2VydmljZXMgc2VlbSB0byBiZSBkb3duIG9uIHhlbm9tYWkub3JnLgo+Pj4+Pgo+Pj4+PiBEb2Vz
-IHRoaXMgYW5kIG90aGVyIGltcG9ydGFudCBwYXRjaGVzIHdpbGwgYmUgYmFja3BvcnRlZCB0byAz
-LjI/Cj4+Pj4KPj4+PiBJJ20gcGxhbm5pbmcgdG8gZ2V0IHRoZW0gbWVyZ2VkIGludG8gMy44IGZp
-cnN0IG9mIGFsbCwgbWF5YmUgYWxzbyBpbnRvCj4+Pj4gMy41IChhcyB0aGlzIGlzIG91ciBjdXJy
-ZW50IHByb2R1Y3Rpb24gYmFzZWxpbmUpLiBObyBwbGFucyBleGlzdCBiZXlvbmQKPj4+PiB0aGF0
-LiBJJ2QgcmF0aGVyIGxpa2UgdG8gbGVhdmUgb2xkZXIga2VybmVscyBhbG9uZSB0byByZWR1Y2Ug
-bWFpbnRlbmFuY2UKPj4+PiBlZmZvcnRzIChwb3J0aW5nIGlzIHNpbXBsZSwgcHJvcGVyIHRlc3Rp
-bmcgdGFrZXMgdGltZSkuCj4+Pj4KPj4+PiBBbHNvIG5vdGUgdGhhdCAzLjIgaXMgbGFja2luZyBt
-dWNoIG1vcmUgY3JpdGljYWwgZml4ZXMgdGhhbiB0aG9zZSBmZXcKPj4+PiBhcm91bmQgS1ZNLiBJ
-T1c6IERvbid0IHVzZSBpdCBmb3IgYW55dGhpbmcgc2VyaW91cyB3aXRoIHg4Ni4KPj4+Cj4+Pgo+
-Pj4gTWF5YmUgcmV2ZXJ0aW5nIHRoZSBtcHJvdGVjdC9pcGlwZV9waW5fdm1hIHBhdGNoZXMgaW4g
-dGhlIDMuMiBicmFuY2gsIHNvCj4+PiBhcyB0byBhdm9pZCB0aGUgemVybyBwYWdlIGNvcnJ1cHRp
-b24sIGJ1dCB0YWtlIHNvbWUgZmF1bHRzIHNvbWV0aW1lcwo+Pj4gd291bGQgYmUgYSBzaW1wbGUs
-IGZlYXNpYmxlIHNvbHV0aW9uPyAzLjIgc2VlbXMgdG8gaGF2ZSBiZWVuIGNob3NlbiBhcyBhCj4+
-PiBsb25nIHRlcm0gc3RhYmxlIGJyYW5jaC4KPj4KPj4gQWdhaW4sIHRoZSBwcm9ibGVtIGlzIG5v
-dCB3cml0aW5nIHRoZSBwYXRjaGVzCj4gCj4gCj4gSXQgaXMgZWFzeSB0byBmb3JnZXQgYSBwYXRj
-aCB3aGVuIChiYWNrKXBvcnRpbmcgcGF0Y2hlcyBmcm9tIGFuIEktcGlwZQo+IHRvIHRoZSBvdGhl
-ci4KPiAKPj4gYnV0IHRlc3RpbmcgYWxsIHRoZSBzdHVmZgo+PiBpbiBhbGwgbmVjZXNzYXJ5IGNv
-bWJpbmF0aW9ucy4KPiAKPiAKPiBJIGNhbiB0ZXN0IDQgY29tYmluYXRpb25zIGF0IG9uY2U6IGk2
-ODYgVVAsIGk2ODYgU01QIGFuZCB4ODZfNjQgKFVQIG9yCj4gU01QKSwgdGhpcyBsZWF2ZXMgb25s
-eSBvbmUgY29tYmluYXRpb24gdG8gdGVzdC4KClRoYXQncyBhIHNtYWxsIHN1YnNldCBvZiB0aGUg
-cmVsZXZhbnQgdmFyaWF0aW9uLiBUaGV5IGNvbWUgd2l0aCBlbmFibGluZwpkaWZmZXJlbnQgY29u
-ZmlnIG9wdGlvbnMgb3IgdXNpbmcgY2VydGFpbiBmZWF0dXJlcy4gRG8geW91IGhhdmUgYSB0ZXN0
-CnNldHVwIGZvciBLVk0gb24gSS1waXBlIGUuZy4/IEknbSBub3Qgc2F5aW5nIHdlIGNhdGNoIHRo
-ZW0gYWxsIHdpdGggdGhlCmRldmVsb3BtZW50IGhlYWQsIGJ1dCBhZGRpbmcgbW9yZSB2ZXJzaW9u
-cyB0byB0aGUgdGVzdCBtYXRyaXggZG9lc24ndAptYWtlIGl0IGJldHRlci4KCj4gCj4+IEJUVywg
-My40IGlzIGFsc28gTFRTLCBhbmQgdGhlcmUgd2UgaGF2ZSB0aG9zZSBmaXhlcyBhdCBsZWFzdCAo
-anVzdCBub3QKPj4geWV0IHB1bGxlZCBpbnRvIHRoZSBtYWlubGluZSkuCj4gCj4gCj4gQXJlIHlv
-dSBzdXJlIHlvdSBoYXZlIG5vdCBtaXNzZWQgYW55IHBhdGNoZXMgZm9yIDMuND8KCkkgd2FzIHN1
-cmUgcmVnYXJkaW5nIGltcG9ydGFudCBwYXRjaGVzIGJ5IHRoZSB0aW1lIEkgc2VudCB0aGUgcHVs
-bC4KRGlkbid0IGNoZWNrIGFnYWluIHNpbmNlIHRoZW4uCgpKYW4KCi0tLS0tLS0tLS0tLS0tIG5l
-eHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVk
-Li4uCk5hbWU6IHNpZ25hdHVyZS5hc2MKVHlwZTogYXBwbGljYXRpb24vcGdwLXNpZ25hdHVyZQpT
-aXplOiAyNjMgYnl0ZXMKRGVzYzogT3BlblBHUCBkaWdpdGFsIHNpZ25hdHVyZQpVUkw6IDxodHRw
-Oi8vd3d3Lnhlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTMwMzAy
-L2NkMjQ0Y2RhL2F0dGFjaG1lbnQucGdwPgo=
+On 03/02/2013 03:38 PM, Jan Kiszka wrote:
+
+> On 2013-03-02 15:20, Gilles Chanteperdrix wrote:
+>> On 03/02/2013 12:12 PM, Jan Kiszka wrote:
+>>
+>>> On 2013-03-02 12:01, Gilles Chanteperdrix wrote:
+>>>> On 03/02/2013 09:17 AM, Jan Kiszka wrote:
+>>>>
+>>>>> On 2013-03-02 01:47, Gabriele Moabiti wrote:
+>>>>>>
+>>>>>>
+>>>>>> ----- Messaggio originale -----
+>>>>>>
+>>>>>> Da: Jan Kiszka <jan.kiszka@siemens.com>
+>>>>>> On 2013-03-01 18:09, Jan Kiszka wrote:
+>>>>>>> There is more broken, even in latest stable 3.5.7. See the patche=
+s at
+>>>>>>> [1] for a tested version. Unfortunately, I cannot update my tree =
+for 3.8
+>>>>>>> ATM as git services seem to be down on xenomai.org.
+>>>>>>
+>>>>>> Does this and other important patches will be backported to 3.2?
+>>>>>
+>>>>> I'm planning to get them merged into 3.8 first of all, maybe also i=
+nto
+>>>>> 3.5 (as this is our current production baseline). No plans exist be=
+yond
+>>>>> that. I'd rather like to leave older kernels alone to reduce mainte=
+nance
+>>>>> efforts (porting is simple, proper testing takes time).
+>>>>>
+>>>>> Also note that 3.2 is lacking much more critical fixes than those f=
+ew
+>>>>> around KVM. IOW: Don't use it for anything serious with x86.
+>>>>
+>>>>
+>>>> Maybe reverting the mprotect/ipipe_pin_vma patches in the 3.2 branch=
+, so
+>>>> as to avoid the zero page corruption, but take some faults sometimes=
+
+>>>> would be a simple, feasible solution? 3.2 seems to have been chosen =
+as a
+>>>> long term stable branch.
+>>>
+>>> Again, the problem is not writing the patches
+>>
+>>
+>> It is easy to forget a patch when (back)porting patches from an I-pipe=
+
+>> to the other.
+>>
+>>> but testing all the stuff
+>>> in all necessary combinations.
+>>
+>>
+>> I can test 4 combinations at once: i686 UP, i686 SMP and x86_64 (UP or=
+
+>> SMP), this leaves only one combination to test.
+>=20
+> That's a small subset of the relevant variation. They come with enablin=
+g
+> different config options or using certain features. Do you have a test
+> setup for KVM on I-pipe e.g.? I'm not saying we catch them all with the=
+
+> development head, but adding more versions to the test matrix doesn't
+> make it better.
+
+
+I man 3, not 4 combinations. Anyway, I na=C3=AFvely test with only one
+=2Econfig, which recently switched from embedded like minimal kernel to
+debian like config. Do you have a list of the options combinations which
+necessitate separate tests?
+
+
+--=20
+                                                                Gilles.
+
+
