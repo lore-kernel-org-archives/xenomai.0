@@ -1,14 +1,16 @@
-Message-ID: <5131DE8D.4070701@web.de>
-Date: Sat, 02 Mar 2013 12:12:13 +0100
-From: Jan Kiszka <jan.kiszka@web.de>
 MIME-Version: 1.0
-References: <1362151982.5735.YahooMailNeo@web171205.mail.ir2.yahoo.com>	<5130E0C7.80709@siemens.com>
-	<5130E6FE.2070905@siemens.com>	<1362185238.64750.YahooMailNeo@web171203.mail.ir2.yahoo.com>
-	<5131B5A2.6000501@web.de> <5131DC27.80909@xenomai.org>
-In-Reply-To: <5131DC27.80909@xenomai.org>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] kvm freeze with ipipe patch for kernel 3.x
+In-Reply-To: <513069D5.1090508@xenomai.org>
+References: <CAMJ=MEfo5EU2mnM4=JDNU4QXX00W=0aC2+m5LucPYiN39W5wcQ@mail.gmail.com>
+	<512FB9B5.9040709@xenomai.org>
+	<CAAXf6LXDSxU_eASbHOgQzw_2xSpZua2BaORAiJ59KoPitFNEcg@mail.gmail.com>
+	<51306545.1010200@xenomai.org> <5130663F.7070209@xenomai.org>
+	<51306710.5030201@xenomai.org> <5130673D.2090700@xenomai.org>
+	<513069D5.1090508@xenomai.org>
+From: Ronny Meeus <ronny.meeus@gmail.com>
+Date: Sat, 2 Mar 2013 12:13:10 +0100
+Message-ID: <CAMJ=MEdAfvwWhjc4SLPk5smh+vNbPDJP=kM3bBFdw6n3bJd_mg@mail.gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: Re: [Xenomai] Xenomai-forge: thread using 100% cpu load
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,41 +19,135 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@xenomai.org
 
-T24gMjAxMy0wMy0wMiAxMjowMSwgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4gT24gMDMv
-MDIvMjAxMyAwOToxNyBBTSwgSmFuIEtpc3prYSB3cm90ZToKPiAKPj4gT24gMjAxMy0wMy0wMiAw
-MTo0NywgR2FicmllbGUgTW9hYml0aSB3cm90ZToKPj4+Cj4+Pgo+Pj4gLS0tLS0gTWVzc2FnZ2lv
-IG9yaWdpbmFsZSAtLS0tLQo+Pj4KPj4+IERhOiBKYW4gS2lzemthIDxqYW4ua2lzemthQHNpZW1l
-bnMuY29tPgo+Pj4gT24gMjAxMy0wMy0wMSAxODowOSwgSmFuIEtpc3prYSB3cm90ZToKPj4+PiBU
-aGVyZSBpcyBtb3JlIGJyb2tlbiwgZXZlbiBpbiBsYXRlc3Qgc3RhYmxlIDMuNS43LiBTZWUgdGhl
-IHBhdGNoZXMgYXQKPj4+PiBbMV0gZm9yIGEgdGVzdGVkIHZlcnNpb24uIFVuZm9ydHVuYXRlbHks
-IEkgY2Fubm90IHVwZGF0ZSBteSB0cmVlIGZvciAzLjgKPj4+PiBBVE0gYXMgZ2l0IHNlcnZpY2Vz
-IHNlZW0gdG8gYmUgZG93biBvbiB4ZW5vbWFpLm9yZy4KPj4+Cj4+PiBEb2VzIHRoaXMgYW5kIG90
-aGVyIGltcG9ydGFudCBwYXRjaGVzIHdpbGwgYmUgYmFja3BvcnRlZCB0byAzLjI/Cj4+Cj4+IEkn
-bSBwbGFubmluZyB0byBnZXQgdGhlbSBtZXJnZWQgaW50byAzLjggZmlyc3Qgb2YgYWxsLCBtYXli
-ZSBhbHNvIGludG8KPj4gMy41IChhcyB0aGlzIGlzIG91ciBjdXJyZW50IHByb2R1Y3Rpb24gYmFz
-ZWxpbmUpLiBObyBwbGFucyBleGlzdCBiZXlvbmQKPj4gdGhhdC4gSSdkIHJhdGhlciBsaWtlIHRv
-IGxlYXZlIG9sZGVyIGtlcm5lbHMgYWxvbmUgdG8gcmVkdWNlIG1haW50ZW5hbmNlCj4+IGVmZm9y
-dHMgKHBvcnRpbmcgaXMgc2ltcGxlLCBwcm9wZXIgdGVzdGluZyB0YWtlcyB0aW1lKS4KPj4KPj4g
-QWxzbyBub3RlIHRoYXQgMy4yIGlzIGxhY2tpbmcgbXVjaCBtb3JlIGNyaXRpY2FsIGZpeGVzIHRo
-YW4gdGhvc2UgZmV3Cj4+IGFyb3VuZCBLVk0uIElPVzogRG9uJ3QgdXNlIGl0IGZvciBhbnl0aGlu
-ZyBzZXJpb3VzIHdpdGggeDg2Lgo+IAo+IAo+IE1heWJlIHJldmVydGluZyB0aGUgbXByb3RlY3Qv
-aXBpcGVfcGluX3ZtYSBwYXRjaGVzIGluIHRoZSAzLjIgYnJhbmNoLCBzbwo+IGFzIHRvIGF2b2lk
-IHRoZSB6ZXJvIHBhZ2UgY29ycnVwdGlvbiwgYnV0IHRha2Ugc29tZSBmYXVsdHMgc29tZXRpbWVz
-Cj4gd291bGQgYmUgYSBzaW1wbGUsIGZlYXNpYmxlIHNvbHV0aW9uPyAzLjIgc2VlbXMgdG8gaGF2
-ZSBiZWVuIGNob3NlbiBhcyBhCj4gbG9uZyB0ZXJtIHN0YWJsZSBicmFuY2guCgpBZ2FpbiwgdGhl
-IHByb2JsZW0gaXMgbm90IHdyaXRpbmcgdGhlIHBhdGNoZXMgYnV0IHRlc3RpbmcgYWxsIHRoZSBz
-dHVmZgppbiBhbGwgbmVjZXNzYXJ5IGNvbWJpbmF0aW9ucy4gRm9yIG1lIGl0IHJlYWxseSBtYWtl
-cyBubyBzZW5zZSB0byBoYXZlIG4KZGlmZmVyZW50IGxlZ2FjeSB2ZXJzaW9ucyBzdXBwb3J0ZWQg
-aWYgd2Ugd2FudCB0byBtYWtlIHByb2dyZXNzLgpIb3dldmVyLCBpZiBzb21lb25lIGZlZWxzIGxp
-a2UgZG9pbmcgc2VyaW91cyBzdGFibGUgbWFpbnRlbmFuY2Ugb2YKSS1waXBlIHBhdGNoZXMgYmV5
-b25kICIxIHN0YWJsZSwgMSBkZXZlbG9wbWVudCBoZWFkIiwgdGhhdCB3b3VsZCBzdXJlbHkKYmUg
-d2VsY29tZS4KCkJUVywgMy40IGlzIGFsc28gTFRTLCBhbmQgdGhlcmUgd2UgaGF2ZSB0aG9zZSBm
-aXhlcyBhdCBsZWFzdCAoanVzdCBub3QKeWV0IHB1bGxlZCBpbnRvIHRoZSBtYWlubGluZSkuCgpK
-YW4KCgotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBh
-dHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBzaWduYXR1cmUuYXNjClR5cGU6IGFwcGxp
-Y2F0aW9uL3BncC1zaWduYXR1cmUKU2l6ZTogMjYzIGJ5dGVzCkRlc2M6IE9wZW5QR1AgZGlnaXRh
-bCBzaWduYXR1cmUKVVJMOiA8aHR0cDovL3d3dy54ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21h
-aS9hdHRhY2htZW50cy8yMDEzMDMwMi8yYTU0OTQ1NS9hdHRhY2htZW50LnBncD4K
+On Fri, Mar 1, 2013 at 9:41 AM, Philippe Gerum <rpm@xenomai.org> wrote:
+> On 03/01/2013 09:30 AM, Gilles Chanteperdrix wrote:
+>>
+>> On 03/01/2013 09:30 AM, Philippe Gerum wrote:
+>>
+>>> On 03/01/2013 09:26 AM, Gilles Chanteperdrix wrote:
+>>>>
+>>>> On 03/01/2013 09:22 AM, Philippe Gerum wrote:
+>>>>
+>>>>> On 02/28/2013 09:22 PM, Thomas De Schampheleire wrote:
+>>>>>>
+>>>>>> On Thu, Feb 28, 2013 at 9:10 PM, Gilles Chanteperdrix
+>>>>>> <gilles.chanteperdrix@xenomai.org> wrote:
+>>>>>>>
+>>>>>>> On 02/28/2013 08:19 PM, Ronny Meeus wrote:
+>>>>>>>
+>>>>>>>> Hello
+>>>>>>>>
+>>>>>>>> we are using the PSOS interface of Xenomai forge, running completely
+>>>>>>>> in user-space using the mercury code.
+>>>>>>>> We deploy our application on different processors, one product is
+>>>>>>>> running on PPC multicore (P4040, P4080, P4034) and another one on
+>>>>>>>> Cavium (8 core device).
+>>>>>>>> The Linux version we use is 2.6.32 but I would assume that this is
+>>>>>>>> not
+>>>>>>>> so relevant.
+>>>>>>>>
+>>>>>>>> Our Xenomai application is running on one of the cores (affinity is
+>>>>>>>> set), while the other cores are running other code.
+>>>>>>>>
+>>>>>>>> On both architectures we recently start to see issues that one
+>>>>>>>> thread
+>>>>>>>> is consuming 100% of the core on which the application is pinned.
+>>>>>>>> The thread that monopolizes the core is the thread internally used
+>>>>>>>> to
+>>>>>>>> manage the timers, running at the highest priority.
+>>>>>>>> The trigger for running into this behavior is currently unclear.
+>>>>>>>> If we only start a part of the application (platform management
+>>>>>>>> only),
+>>>>>>>> the issue is not observed.
+>>>>>>>> We see this on both an old version of Xenomai and a very recent one
+>>>>>>>> (pulled from the git repo yesterday).
+>>>>>>>>
+>>>>>>>> I will continue to debug this issue in the coming days and try
+>>>>>>>> isolate
+>>>>>>>> the code that is triggering it, but I can use hints from the
+>>>>>>>> community.
+>>>>>>>> Debugging is complex since once the load starts, the debugger is not
+>>>>>>>> reacting anymore.
+>>>>>>>> If I put breakpoints in the functions that are called when the timer
+>>>>>>>> expires (both oneshot and periodic), the process starts to clone
+>>>>>>>> itself and I endup with tens of them.
+>>>>>>>>
+>>>>>>>> Has anybody seen an issue like this before or does somebody has some
+>>>>>>>> hints on how to debug this problem?
+>>>>>>>
+>>>>>>>
+>>>>>>>
+>>>>>>> First enable the watchdog. It will send a signal to the application
+>>>>>>> when
+>>>>>>> detecting a problem, then you can use the watchdog to trigger an
+>>>>>>> I-pipe
+>>>>>>> tracer trace when the bug happens. You will probably have to increase
+>>>>>>> the watchdog polling frequency, in order to have a meaningful trace.
+>>>>>>>
+>>>>>>
+>>>>>> I don't think an I-pipe tracer will be possible when using the Mercury
+>>>>>> core, right (xenomai-forge) ?
+>>>>>>
+>>>>>
+>>>>> Correct.
+>>>>
+>>>>
+>>>>
+>>>> I do not think so. The way I see it, you can enable the I-pipe tracer
+>>>> without CONFIG_XENOMAI.
+>>>>
+>>>
+>>> Mercury has NO pipeline in the kernel.
+>>>
+>>
+>> You mean mercury can not run with an I-pipe kernel?
+>>
+>
+> I mean it does not care about the pipeline, it does not need it. So if this
+> is about observing kernel activity, then ftrace should be fine, or possibly
+> perf to find out where userland spends time.
+>
+> --
+> Philippe.
+>
+>
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> http://www.xenomai.org/mailman/listinfo/xenomai
+
+Hello
+
+An update on the investigation:
+I was able to make this issue disappear by changing the timeout value
+of the smallest timers we use.
+We use a couple of timers with a timeout of 25ms. By enlarging these
+to 25sec and the problem is gone.
+
+Yesterday I was also able to see (using the"strace" tool) the process
+executing constantly "clone" system calls.
+Note that the process we use is large (2Gb) and uses an mlockall call.
+
+In http://stackoverflow.com/questions/4263958/some-information-on-timer-helper-thread-of-librt-so-1/4935895#4935895
+I see that a new thread is created when the timer_create is called for
+the first time. This thread stays alive until the program exits and is
+used to process the timer expiries.
+I have the feeling that there is an issue during the creation of this
+thread. For example what would happen if the clone operation takes
+longer than the time needed to perform the clone operation?
+In the past we already observed issues with the clone call that we
+could not explain (creation of the clone simply failed on our
+application while it was working fine on a smaller application).
+
+Do you guys know whether there is an impact on the clone operation by
+this mlockall call?
+
+I will try to make a small test application on which the issue can be
+reproduced.
+
+---
+Ronny
+
