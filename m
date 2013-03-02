@@ -1,5 +1,5 @@
-Message-ID: <51318FAE.4010500@xenomai.org>
-Date: Sat, 02 Mar 2013 06:35:42 +0100
+Message-ID: <51319119.9020000@xenomai.org>
+Date: Sat, 02 Mar 2013 06:41:45 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <CAJjOJyZWM-73DoTOAT4Xoiw3dk-yUw7Gu4ZOU9D9_b4qe5N-QQ@mail.gmail.com>
@@ -25,6 +25,22 @@ On 03/02/2013 05:47 AM, Jonathan Wallace wrote:
 > I'm trying to get a small variation of the usr_irq.c example working,
 > but rt_intr_wait keeps returning -38 without blocking and perror
 > prints success. If I don't let it print anything (so it will run
+
+
+Sorry for the empty reply. The native skin does not use errno, so,
+perror will not print anything, rt_intr_wait return value has to be
+considered the error itself.
+
+-38 is -ENOSYS, meaning that the kernel does not implement the function.
+
+Indeed, handling interrupts in user-space is deprecated, for this
+reason, support is disabled by default in Xenomai kernel.
+
+In order to add support for the rt_intr_* services, you have to enable
+CONFIG_XENO_OPT_NATIVE_INTR
+in the kernel configuration.
+
+
 > faster) it seg faults after about 4 or 5 seconds, calling rt_intr_wait
 > in an infinite loop during that time.
 > 
@@ -33,6 +49,15 @@ On 03/02/2013 05:47 AM, Jonathan Wallace wrote:
 > run the program from the serial console. I can only assume there's
 > some difference in the shell processes at the kernel level, but if
 > there's a way to get around this, I would love to know too.
+
+
+I do not know if this is related, but Xenomai services are by default
+only available to the "root" user, so, if you are not loging with ssh as
+root user, what you observe is normal. If not, then what you observe is
+a new bug. Maybe ssh restrict some capabilities even when logging at root?
+
+
+
 > 
 > A little background about the IRQ, because I could have this all wrong
 > too... I exported a gpio pin and echoed "falling" into the edge file
@@ -41,123 +66,12 @@ On 03/02/2013 05:47 AM, Jonathan Wallace wrote:
 > button to cause an physical interrupt on the pin so I know its at
 > least working up to that point. I used this number 205 as the argument
 > to rt_intr_create, but I'm not sure that was the right thing to do.
-> 
-> Here's the complete source code, its not complicated at all.
-> 
-> #include <sys/mman.h>
-> #include <errno.h>
-> #include <signal.h>
-> #include <native/task.h>
-> #include <native/intr.h>
-> #define IRQ_NUMBER 205          /* GPIOLIB interrupt */
-> #define TASK_PRIO  99           /* Highest RT priority */
-> #define TASK_MODE  0            /* No flags */
-> #define TASK_STKSZ 0            /* Stack size (use default one) */
-> 
-> RT_INTR intr_desc;
-> RT_TASK server_desc;
-> 
-> void irq_server(void *cookie)
-> {
->         int err;
->         for (;;) {
->                 /* Wait for the next interrupt */
-> 
->                 /* Always returns -38 instantly*/
->                 err = rt_intr_wait(&intr_desc, TM_INFINITE);
-> 
->                 if (err > 0) {
->                         printf("Interrupt rcvd! %d events\n", err);
->                 } else switch (err) {
->                 case -ETIMEDOUT:
->                         printf("Timed out waiting\n");
->                         break;
->                 case -EINVAL:
->                         printf("Inavlid argument\n");
->                         break;
->                 case -EIDRM:
->                         printf("Deleted object\n");
->                         break;
->                 case -EINTR:
->                         printf("unblocked\n");
->                         break;
->                 case 0:
->                         break;
->                 default:
->                         printf("%d\n",err);
->                         perror("irq_server");
->                         break;
->                 }
->         }
-> }
-> 
-> void catch_signal(int sig)
-> {
-> }
-> 
-> int main(int argc, char *argv[])
-> {
->         signal(SIGTERM, catch_signal);
->         signal(SIGINT, catch_signal);
->         int err;
-> 
->         mlockall(MCL_CURRENT | MCL_FUTURE);
-> 
->         printf("Registering interrupt...\n");
->         err = rt_intr_create(&intr_desc, "MyIrq", IRQ_NUMBER, 0);
->         switch (err) {
->         case -ENOMEM:
->                 printf("No mem!\n");
->                 goto fail1;
->                 break;
->         case -EBUSY:
->                 printf("Busy!\n");
->                 goto fail1;
->                 break;
->         default:
->                 break;
->         }
-> 
->         printf("Creating task...\n");
->         err = rt_task_create(&server_desc,
->                              "MyIrqServer",
->                              TASK_STKSZ, TASK_PRIO, TASK_MODE);
->         switch (err) {
->         case -ENOMEM:
->                 printf("No mem!\n");
->                 goto fail2;
->                 break;
->         case -EEXIST:
->                 printf("Name is already in use\n");
->                 goto fail2;
->                 break;
->         case -EPERM:
->                 printf("EPERM, called from async context!\n");
->                 goto fail2;
->                 break;
->         case 0: /* No error */
->                 printf("Starting task...\n");
->                 rt_task_start(&server_desc, &irq_server, NULL);
->                 break;
->         }
->         pause();
-> fail2:
->         rt_task_delete(&server_desc);
-> fail1:
->         rt_intr_delete(&intr_desc);
-> }
-> 
-> 
-> -Jon Wallace
-> 
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> http://www.xenomai.org/mailman/listinfo/xenomai
-> 
 
 
+This should probably work. You may have to run rt_intr_enable after
+rt_intr_create though.
 
 -- 
+
                                                                 Gilles.
 
