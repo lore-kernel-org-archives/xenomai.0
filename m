@@ -1,13 +1,20 @@
-Message-ID: <51319FEB.9050701@xenomai.org>
-Date: Sat, 02 Mar 2013 07:44:59 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <5131B212.6090007@grandegger.com>
+Date: Sat, 02 Mar 2013 09:02:26 +0100
+From: Wolfgang Grandegger <wg@grandegger.com>
 MIME-Version: 1.0
-References: <CAJjOJyZWM-73DoTOAT4Xoiw3dk-yUw7Gu4ZOU9D9_b4qe5N-QQ@mail.gmail.com>	<51319119.9020000@xenomai.org>
-	<CAJjOJyaCg0A_wYzew=monnfvjmCWGvc8Y4APXG5fFoarGH9SRw@mail.gmail.com>
-In-Reply-To: <CAJjOJyaCg0A_wYzew=monnfvjmCWGvc8Y4APXG5fFoarGH9SRw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
+References: <CAD1EtohJTQi9jj07_NrC=anxQiqQS1=TrHecAK21uW0wBoOnYQ@mail.gmail.com>
+	<512E67D4.70804@xenomai.org>
+	<CAD1EtogDAPC7Q1-sq1fh1J71hQRYMoAs=HNEzZOYosxP8NeWbg@mail.gmail.com>
+	<512E696A.2010106@xenomai.org> <512E69D3.6090601@xenomai.org>
+	<CAD1Etoj6q+xOoK5Zgy1rpB73_9e236mpfOjCQk6+eDMa=c2Fmw@mail.gmail.com>
+	<CAD1EtoiHUSqP-aXWenyHNkm8xA4dJHW_0kqiVtMJ36ssAMYPww@mail.gmail.com>
+	<512E75C8.4050403@xenomai.org>
+	<CAD1EtogPsUtE7L0WaYE8euo5JYZ-AGx1d1-RA50zgSiY0GUsVQ@mail.gmail.com>
+	<CAD1Etoj=9FDB=Zs+qSprpDp9WUkDs6zy6HMy2ctHtekZXOv4Hg@mail.gmail.com>
+In-Reply-To: <CAD1Etoj=9FDB=Zs+qSprpDp9WUkDs6zy6HMy2ctHtekZXOv4Hg@mail.gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Problem Handling GPIO interrupts
+Subject: Re: [Xenomai] Failing to recognize/use PEAK PCAN-miniPCIe card
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,104 +23,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jonathan Wallace <jonmon6691@gmail.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: "Daniel M. Drucker, Ph.D." <dmd@interactive-motion.com>
+Cc: xenomai@xenomai.org
 
-On 03/02/2013 07:38 AM, Jonathan Wallace wrote:
-
-> On Fri, Mar 1, 2013 at 9:41 PM, Gilles Chanteperdrix
-> <gilles.chanteperdrix@xenomai.org
-> <mailto:gilles.chanteperdrix@xenomai.org>> wrote:
->> On 03/02/2013 05:47 AM, Jonathan Wallace wrote:
->>
->>> Hi all,
->>>
->>> I'm trying to get a small variation of the usr_irq.c example working,
->>> but rt_intr_wait keeps returning -38 without blocking and perror
->>> prints success. If I don't let it print anything (so it will run
->>
->>
->> Sorry for the empty reply. The native skin does not use errno, so,
->> perror will not print anything, rt_intr_wait return value has to be
->> considered the error itself.
->>
->> -38 is -ENOSYS, meaning that the kernel does not implement the function.
->>
->> Indeed, handling interrupts in user-space is deprecated, for this
->> reason, support is disabled by default in Xenomai kernel.
->>
->> In order to add support for the rt_intr_* services, you have to enable
->> CONFIG_XENO_OPT_NATIVE_INTR
->> in the kernel configuration.
->>
->>
->>> faster) it seg faults after about 4 or 5 seconds, calling rt_intr_wait
->>> in an infinite loop during that time.
->>>
->>> I'm also having an issue where if I run the program from an SSH
->>> session, rt_task_create returns EPERM, but will return a success if I
->>> run the program from the serial console. I can only assume there's
->>> some difference in the shell processes at the kernel level, but if
->>> there's a way to get around this, I would love to know too.
->>
->>
->> I do not know if this is related, but Xenomai services are by default
->> only available to the "root" user, so, if you are not loging with ssh as
->> root user, what you observe is normal. If not, then what you observe is
->> a new bug. Maybe ssh restrict some capabilities even when logging at root?
->>
->>
->>
->>>
->>> A little background about the IRQ, because I could have this all wrong
->>> too... I exported a gpio pin and echoed "falling" into the edge file
->>> in sysfs. This added an entry in /procs/interrupts "205: 42
->>> GPIO gpiolib" The number 42, increments every time I press my
->>> button to cause an physical interrupt on the pin so I know its at
->>> least working up to that point. I used this number 205 as the argument
->>> to rt_intr_create, but I'm not sure that was the right thing to do.
->>
->>
->> This should probably work. You may have to run rt_intr_enable after
->> rt_intr_create though.
->>
->> --
->>
->> Gilles.
+On 02/28/2013 12:02 AM, Daniel M. Drucker, Ph.D. wrote:
+> The latest Linux driver (7.8) from PEAK (
+> http://www.peak-system.com/fileadmin/media/linux/files/peak-linux-driver-7.8.tar.gz)
+> has the following in its peak_pci_tbl:
 > 
-> Oh, the API documentation doesn't list ENOSYS as a possible return value
-> for rt_intr_wait, is there a Xenomai version of errno that I should use
-> for the definitions of the error codes or are they just part of the
-> standard headers?
-
-
-ENOSYS is defined of errno.h, the error are not returned through the
-"errno" variable by native skin services, but directly as negative
-values. ENOSYS is a "generic" return value, meaning that a service is
-not implemented by the kernel, and generally means that you have to
-enable some option in the kernel configuration to enable the service.
-Maybe we can document this in TROUBLESHOOTING.
-
+> #define PEAK_PCI_DEVICE_ID   0x0001  // ID for PCI / PCIe Slot cards
+> #define PEAK_PCIE_CARD_ID    0x0002  // ID for PCIExpress Card
+> #define PEAK_PCIE_DEVICE_ID  0x0003  // ID for new PCIe Slot cards
+> #define PEAK_CPCI_ID         0x0004  // ID for new cPCI
+> #define PEAK_MINIPCI_ID      0x0005  // ID for miniPCI
+> #define PEAK_PC104PLUS_ID    0x0006  // ID for new PC-104 Plus
+> #define PEAK_PC104E_ID       0x0007  // ID for PC-104 Express
+> #define PEAK_MINIPCIE_ID     0x0008  // ID for miniPCIe Slot cards
 > 
-> Either way I'd rather run this in kernel space I thought I'd just
-> implement it the easy way if possible to make sure things were working
-> on the Xenomai side of things.
-
-
-You can try to implement this in user-space. Chances are, however, that
-handling interrupts in user-space is in fact harder than handling them
-in kernel-space.
-
 > 
-> For the SSH part, I was root in both terminals, I'll check the ssh group
-> permissions though. This is on a beaglebone btw.
+> Is there any reason why these all shouldn't also be in Xenomai's version?
 
+Some of these cards are available with more than two channels. It would
+be nice to update the driver to support up to 4 channels. Should not be
+a big deal to port the relevant code from the Linux driver, though.
 
-Maybe your rootfs has /etc/security/capabilities.conf or
-/etc/security/limits.conf ?
+Wolfgang.
 
-(re-adding the list to cc).
-
--- 
-                                                                Gilles.
 
