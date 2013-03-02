@@ -1,13 +1,13 @@
-Message-ID: <5131DC27.80909@xenomai.org>
-Date: Sat, 02 Mar 2013 12:01:59 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <5131DE8D.4070701@web.de>
+Date: Sat, 02 Mar 2013 12:12:13 +0100
+From: Jan Kiszka <jan.kiszka@web.de>
 MIME-Version: 1.0
 References: <1362151982.5735.YahooMailNeo@web171205.mail.ir2.yahoo.com>	<5130E0C7.80709@siemens.com>
 	<5130E6FE.2070905@siemens.com>	<1362185238.64750.YahooMailNeo@web171203.mail.ir2.yahoo.com>
-	<5131B5A2.6000501@web.de>
-In-Reply-To: <5131B5A2.6000501@web.de>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+	<5131B5A2.6000501@web.de> <5131DC27.80909@xenomai.org>
+In-Reply-To: <5131DC27.80909@xenomai.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Subject: Re: [Xenomai] kvm freeze with ipipe patch for kernel 3.x
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -17,38 +17,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@web.de>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 03/02/2013 09:17 AM, Jan Kiszka wrote:
-
-> On 2013-03-02 01:47, Gabriele Moabiti wrote:
->>
->>
->> ----- Messaggio originale -----
->>
->> Da: Jan Kiszka <jan.kiszka@siemens.com>
->> On 2013-03-01 18:09, Jan Kiszka wrote:
->>> There is more broken, even in latest stable 3.5.7. See the patches at
->>> [1] for a tested version. Unfortunately, I cannot update my tree for 3.8
->>> ATM as git services seem to be down on xenomai.org.
->>
->> Does this and other important patches will be backported to 3.2?
-> 
-> I'm planning to get them merged into 3.8 first of all, maybe also into
-> 3.5 (as this is our current production baseline). No plans exist beyond
-> that. I'd rather like to leave older kernels alone to reduce maintenance
-> efforts (porting is simple, proper testing takes time).
-> 
-> Also note that 3.2 is lacking much more critical fixes than those few
-> around KVM. IOW: Don't use it for anything serious with x86.
-
-
-Maybe reverting the mprotect/ipipe_pin_vma patches in the 3.2 branch, so
-as to avoid the zero page corruption, but take some faults sometimes
-would be a simple, feasible solution? 3.2 seems to have been chosen as a
-long term stable branch.
-
--- 
-                                                                Gilles.
-
+T24gMjAxMy0wMy0wMiAxMjowMSwgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4gT24gMDMv
+MDIvMjAxMyAwOToxNyBBTSwgSmFuIEtpc3prYSB3cm90ZToKPiAKPj4gT24gMjAxMy0wMy0wMiAw
+MTo0NywgR2FicmllbGUgTW9hYml0aSB3cm90ZToKPj4+Cj4+Pgo+Pj4gLS0tLS0gTWVzc2FnZ2lv
+IG9yaWdpbmFsZSAtLS0tLQo+Pj4KPj4+IERhOiBKYW4gS2lzemthIDxqYW4ua2lzemthQHNpZW1l
+bnMuY29tPgo+Pj4gT24gMjAxMy0wMy0wMSAxODowOSwgSmFuIEtpc3prYSB3cm90ZToKPj4+PiBU
+aGVyZSBpcyBtb3JlIGJyb2tlbiwgZXZlbiBpbiBsYXRlc3Qgc3RhYmxlIDMuNS43LiBTZWUgdGhl
+IHBhdGNoZXMgYXQKPj4+PiBbMV0gZm9yIGEgdGVzdGVkIHZlcnNpb24uIFVuZm9ydHVuYXRlbHks
+IEkgY2Fubm90IHVwZGF0ZSBteSB0cmVlIGZvciAzLjgKPj4+PiBBVE0gYXMgZ2l0IHNlcnZpY2Vz
+IHNlZW0gdG8gYmUgZG93biBvbiB4ZW5vbWFpLm9yZy4KPj4+Cj4+PiBEb2VzIHRoaXMgYW5kIG90
+aGVyIGltcG9ydGFudCBwYXRjaGVzIHdpbGwgYmUgYmFja3BvcnRlZCB0byAzLjI/Cj4+Cj4+IEkn
+bSBwbGFubmluZyB0byBnZXQgdGhlbSBtZXJnZWQgaW50byAzLjggZmlyc3Qgb2YgYWxsLCBtYXli
+ZSBhbHNvIGludG8KPj4gMy41IChhcyB0aGlzIGlzIG91ciBjdXJyZW50IHByb2R1Y3Rpb24gYmFz
+ZWxpbmUpLiBObyBwbGFucyBleGlzdCBiZXlvbmQKPj4gdGhhdC4gSSdkIHJhdGhlciBsaWtlIHRv
+IGxlYXZlIG9sZGVyIGtlcm5lbHMgYWxvbmUgdG8gcmVkdWNlIG1haW50ZW5hbmNlCj4+IGVmZm9y
+dHMgKHBvcnRpbmcgaXMgc2ltcGxlLCBwcm9wZXIgdGVzdGluZyB0YWtlcyB0aW1lKS4KPj4KPj4g
+QWxzbyBub3RlIHRoYXQgMy4yIGlzIGxhY2tpbmcgbXVjaCBtb3JlIGNyaXRpY2FsIGZpeGVzIHRo
+YW4gdGhvc2UgZmV3Cj4+IGFyb3VuZCBLVk0uIElPVzogRG9uJ3QgdXNlIGl0IGZvciBhbnl0aGlu
+ZyBzZXJpb3VzIHdpdGggeDg2Lgo+IAo+IAo+IE1heWJlIHJldmVydGluZyB0aGUgbXByb3RlY3Qv
+aXBpcGVfcGluX3ZtYSBwYXRjaGVzIGluIHRoZSAzLjIgYnJhbmNoLCBzbwo+IGFzIHRvIGF2b2lk
+IHRoZSB6ZXJvIHBhZ2UgY29ycnVwdGlvbiwgYnV0IHRha2Ugc29tZSBmYXVsdHMgc29tZXRpbWVz
+Cj4gd291bGQgYmUgYSBzaW1wbGUsIGZlYXNpYmxlIHNvbHV0aW9uPyAzLjIgc2VlbXMgdG8gaGF2
+ZSBiZWVuIGNob3NlbiBhcyBhCj4gbG9uZyB0ZXJtIHN0YWJsZSBicmFuY2guCgpBZ2FpbiwgdGhl
+IHByb2JsZW0gaXMgbm90IHdyaXRpbmcgdGhlIHBhdGNoZXMgYnV0IHRlc3RpbmcgYWxsIHRoZSBz
+dHVmZgppbiBhbGwgbmVjZXNzYXJ5IGNvbWJpbmF0aW9ucy4gRm9yIG1lIGl0IHJlYWxseSBtYWtl
+cyBubyBzZW5zZSB0byBoYXZlIG4KZGlmZmVyZW50IGxlZ2FjeSB2ZXJzaW9ucyBzdXBwb3J0ZWQg
+aWYgd2Ugd2FudCB0byBtYWtlIHByb2dyZXNzLgpIb3dldmVyLCBpZiBzb21lb25lIGZlZWxzIGxp
+a2UgZG9pbmcgc2VyaW91cyBzdGFibGUgbWFpbnRlbmFuY2Ugb2YKSS1waXBlIHBhdGNoZXMgYmV5
+b25kICIxIHN0YWJsZSwgMSBkZXZlbG9wbWVudCBoZWFkIiwgdGhhdCB3b3VsZCBzdXJlbHkKYmUg
+d2VsY29tZS4KCkJUVywgMy40IGlzIGFsc28gTFRTLCBhbmQgdGhlcmUgd2UgaGF2ZSB0aG9zZSBm
+aXhlcyBhdCBsZWFzdCAoanVzdCBub3QKeWV0IHB1bGxlZCBpbnRvIHRoZSBtYWlubGluZSkuCgpK
+YW4KCgotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBh
+dHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBzaWduYXR1cmUuYXNjClR5cGU6IGFwcGxp
+Y2F0aW9uL3BncC1zaWduYXR1cmUKU2l6ZTogMjYzIGJ5dGVzCkRlc2M6IE9wZW5QR1AgZGlnaXRh
+bCBzaWduYXR1cmUKVVJMOiA8aHR0cDovL3d3dy54ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21h
+aS9hdHRhY2htZW50cy8yMDEzMDMwMi8yYTU0OTQ1NS9hdHRhY2htZW50LnBncD4K
