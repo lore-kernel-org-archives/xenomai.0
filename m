@@ -1,16 +1,14 @@
-Message-ID: <51310A5E.20609@xenomai.org>
-Date: Fri, 01 Mar 2013 21:06:54 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+References: <1362151982.5735.YahooMailNeo@web171205.mail.ir2.yahoo.com>
+	<5130E0C7.80709@siemens.com> <5130E6FE.2070905@siemens.com>
+Message-ID: <1362185238.64750.YahooMailNeo@web171203.mail.ir2.yahoo.com>
+Date: Sat, 2 Mar 2013 00:47:18 +0000 (GMT)
+From: Gabriele Moabiti <gabmoa@yahoo.it>
+In-Reply-To: <5130E6FE.2070905@siemens.com>
 MIME-Version: 1.0
-References: <512C806F.2020209@hilscher.com>
-	<512C9E78.1060208@siemens.com>	<512CC5C6.8050204@hilscher.com>
-	<512CC6A3.1010005@siemens.com>	<512F120A.5060109@hilscher.com>
-	<512F4005.60000@siemens.com>	<512F48AA.8020601@hilscher.com>
-	<5130B39C.70300@hilscher.com>
-In-Reply-To: <5130B39C.70300@hilscher.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Hilscher driver for cifX boards
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] kvm freeze with ipipe patch for kernel 3.x
+Reply-To: Gabriele Moabiti <gabmoa@yahoo.it>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,40 +17,13 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jerome Poncin <JPoncin@hilscher.com>
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 03/01/2013 02:56 PM, Jerome Poncin wrote:
-
-> Hello,
-> 
-> I finished to reformat my driver according to kernel coding style.
-> 
-> I'm compiling no version to test it ;-) !
-> 
-> I'm ready to do a patch against Xenomai git head. The patch will add the 
-> driver source
-> code under ksrc/drivers/cifx and change the Makefiles and Kconfigs as 
-> required.
-> 
-> I did this command to get Xenomai git head :
-> 
-> git clone git://git.xenomai.org/xenomai-head.git xenomai-head
-
-
-Please do not use xenomai-head. Use xenomai-2.6 if you are patching the
-2.6 branch, or xenomai-forge if you are patching the -forge branch.
-
-> 
-> but connexion is refused. What must I do to clone Xenomai git head and 
-> do my patch ?
-
-
-This should be fixed now.
-
-Please stop top-posting.
-
-
--- 
-                                                                Gilles.
+=0A=0A----- Messaggio originale -----=0A=0ADa: Jan Kiszka <jan.kiszka@sieme=
+ns.com>=0AOn 2013-03-01 18:09, Jan Kiszka wrote:=0A> There is more broken, =
+even in latest stable 3.5.7. See the patches at=0A> [1] for a tested versio=
+n. Unfortunately, I cannot update my tree for 3.8=0A> ATM as git services s=
+eem to be down on xenomai.org.=0A=0ADoes this and other important patches w=
+ill be backported to 3.2?=0A=0AThank you=0A
 
