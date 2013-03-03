@@ -1,16 +1,14 @@
-Message-ID: <51320F98.7010900@xenomai.org>
-Date: Sat, 02 Mar 2013 15:41:28 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <1362151982.5735.YahooMailNeo@web171205.mail.ir2.yahoo.com>	<5130E0C7.80709@siemens.com>
-	<5130E6FE.2070905@siemens.com>	<1362185238.64750.YahooMailNeo@web171203.mail.ir2.yahoo.com>
-	<5131B5A2.6000501@web.de> <5131DC27.80909@xenomai.org>
-	<5131DE8D.4070701@web.de> <51320ACA.4070101@xenomai.org>
-	<51320EDF.2090104@web.de>
-In-Reply-To: <51320EDF.2090104@web.de>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] kvm freeze with ipipe patch for kernel 3.x
+In-Reply-To: <51319FEB.9050701@xenomai.org>
+References: <CAJjOJyZWM-73DoTOAT4Xoiw3dk-yUw7Gu4ZOU9D9_b4qe5N-QQ@mail.gmail.com>
+	<51319119.9020000@xenomai.org>
+	<CAJjOJyaCg0A_wYzew=monnfvjmCWGvc8Y4APXG5fFoarGH9SRw@mail.gmail.com>
+	<51319FEB.9050701@xenomai.org>
+Date: Sat, 2 Mar 2013 18:53:09 -0800
+Message-ID: <CAJjOJyYkOmXyyrXCvQ+EHrW9qs98TdFw4SPV+1d9_ozMVM2xBg@mail.gmail.com>
+From: Jonathan Wallace <jonmon6691@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: Re: [Xenomai] Problem Handling GPIO interrupts
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,84 +17,136 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@web.de>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 03/02/2013 03:38 PM, Jan Kiszka wrote:
-
-> On 2013-03-02 15:20, Gilles Chanteperdrix wrote:
->> On 03/02/2013 12:12 PM, Jan Kiszka wrote:
->>
->>> On 2013-03-02 12:01, Gilles Chanteperdrix wrote:
->>>> On 03/02/2013 09:17 AM, Jan Kiszka wrote:
->>>>
->>>>> On 2013-03-02 01:47, Gabriele Moabiti wrote:
->>>>>>
->>>>>>
->>>>>> ----- Messaggio originale -----
->>>>>>
->>>>>> Da: Jan Kiszka <jan.kiszka@siemens.com>
->>>>>> On 2013-03-01 18:09, Jan Kiszka wrote:
->>>>>>> There is more broken, even in latest stable 3.5.7. See the patche=
-s at
->>>>>>> [1] for a tested version. Unfortunately, I cannot update my tree =
-for 3.8
->>>>>>> ATM as git services seem to be down on xenomai.org.
->>>>>>
->>>>>> Does this and other important patches will be backported to 3.2?
->>>>>
->>>>> I'm planning to get them merged into 3.8 first of all, maybe also i=
-nto
->>>>> 3.5 (as this is our current production baseline). No plans exist be=
-yond
->>>>> that. I'd rather like to leave older kernels alone to reduce mainte=
-nance
->>>>> efforts (porting is simple, proper testing takes time).
->>>>>
->>>>> Also note that 3.2 is lacking much more critical fixes than those f=
-ew
->>>>> around KVM. IOW: Don't use it for anything serious with x86.
->>>>
->>>>
->>>> Maybe reverting the mprotect/ipipe_pin_vma patches in the 3.2 branch=
-, so
->>>> as to avoid the zero page corruption, but take some faults sometimes=
-
->>>> would be a simple, feasible solution? 3.2 seems to have been chosen =
-as a
->>>> long term stable branch.
+On Fri, Mar 1, 2013 at 10:44 PM, Gilles Chanteperdrix
+<gilles.chanteperdrix@xenomai.org> wrote:
+> On 03/02/2013 07:38 AM, Jonathan Wallace wrote:
+>
+>> On Fri, Mar 1, 2013 at 9:41 PM, Gilles Chanteperdrix
+>> <gilles.chanteperdrix@xenomai.org
+>> <mailto:gilles.chanteperdrix@xenomai.org>> wrote:
+>>> On 03/02/2013 05:47 AM, Jonathan Wallace wrote:
 >>>
->>> Again, the problem is not writing the patches
+>>>> Hi all,
+>>>>
+>>>> I'm trying to get a small variation of the usr_irq.c example working,
+>>>> but rt_intr_wait keeps returning -38 without blocking and perror
+>>>> prints success. If I don't let it print anything (so it will run
+>>>
+>>>
+>>> Sorry for the empty reply. The native skin does not use errno, so,
+>>> perror will not print anything, rt_intr_wait return value has to be
+>>> considered the error itself.
+>>>
+>>> -38 is -ENOSYS, meaning that the kernel does not implement the function.
+>>>
+>>> Indeed, handling interrupts in user-space is deprecated, for this
+>>> reason, support is disabled by default in Xenomai kernel.
+>>>
+>>> In order to add support for the rt_intr_* services, you have to enable
+>>> CONFIG_XENO_OPT_NATIVE_INTR
+>>> in the kernel configuration.
+>>>
+>>>
+>>>> faster) it seg faults after about 4 or 5 seconds, calling rt_intr_wait
+>>>> in an infinite loop during that time.
+>>>>
+>>>> I'm also having an issue where if I run the program from an SSH
+>>>> session, rt_task_create returns EPERM, but will return a success if I
+>>>> run the program from the serial console. I can only assume there's
+>>>> some difference in the shell processes at the kernel level, but if
+>>>> there's a way to get around this, I would love to know too.
+>>>
+>>>
+>>> I do not know if this is related, but Xenomai services are by default
+>>> only available to the "root" user, so, if you are not loging with ssh as
+>>> root user, what you observe is normal. If not, then what you observe is
+>>> a new bug. Maybe ssh restrict some capabilities even when logging at root?
+>>>
+>>>
+>>>
+>>>>
+>>>> A little background about the IRQ, because I could have this all wrong
+>>>> too... I exported a gpio pin and echoed "falling" into the edge file
+>>>> in sysfs. This added an entry in /procs/interrupts "205: 42
+>>>> GPIO gpiolib" The number 42, increments every time I press my
+>>>> button to cause an physical interrupt on the pin so I know its at
+>>>> least working up to that point. I used this number 205 as the argument
+>>>> to rt_intr_create, but I'm not sure that was the right thing to do.
+>>>
+>>>
+>>> This should probably work. You may have to run rt_intr_enable after
+>>> rt_intr_create though.
+>>>
+>>> --
+>>>
+>>> Gilles.
 >>
+>> Oh, the API documentation doesn't list ENOSYS as a possible return value
+>> for rt_intr_wait, is there a Xenomai version of errno that I should use
+>> for the definitions of the error codes or are they just part of the
+>> standard headers?
+>
+>
+> ENOSYS is defined of errno.h, the error are not returned through the
+> "errno" variable by native skin services, but directly as negative
+> values. ENOSYS is a "generic" return value, meaning that a service is
+> not implemented by the kernel, and generally means that you have to
+> enable some option in the kernel configuration to enable the service.
+> Maybe we can document this in TROUBLESHOOTING.
+>
 >>
->> It is easy to forget a patch when (back)porting patches from an I-pipe=
-
->> to the other.
+>> Either way I'd rather run this in kernel space I thought I'd just
+>> implement it the easy way if possible to make sure things were working
+>> on the Xenomai side of things.
+>
+>
+> You can try to implement this in user-space. Chances are, however, that
+> handling interrupts in user-space is in fact harder than handling them
+> in kernel-space.
+>
 >>
->>> but testing all the stuff
->>> in all necessary combinations.
->>
->>
->> I can test 4 combinations at once: i686 UP, i686 SMP and x86_64 (UP or=
+>> For the SSH part, I was root in both terminals, I'll check the ssh group
+>> permissions though. This is on a beaglebone btw.
+>
+>
+> Maybe your rootfs has /etc/security/capabilities.conf or
+> /etc/security/limits.conf ?
+>
+> (re-adding the list to cc).
+>
+> --
+>                                                                 Gilles.
 
->> SMP), this leaves only one combination to test.
->=20
-> That's a small subset of the relevant variation. They come with enablin=
-g
-> different config options or using certain features. Do you have a test
-> setup for KVM on I-pipe e.g.? I'm not saying we catch them all with the=
+I've moved my test app over to a bare-bones module where I can printk
+to see if its working, but I can't get it to compile using a simple
+Makefile that works for cross-compiling modules that don't #include
+Xenomai headers. It quits when it can't find native/task.h. So I ran
+make with V=1 and it looks like -Iinclude/xenomai isn't added to the
+(enormous) gcc command, which should put native/* in the search path.
+I don't know what the "proper" way of adding this to the CFLAGS is so
+I thought I'd look at some of the examples in the xenomai source...
 
-> development head, but adding more versions to the test matrix doesn't
-> make it better.
+I ended up modifying the makefile in
+.../xenomai-2.6.2.1/examples/rtdm/driver-api to try and make it
+compile just the rtdm examples for my board but the preprocesser isn't
+finding the Xenomai headers either and has a few other errors. I ran
+this one with V=1 also and it looks like some of the "-I" paths,
+including .../include/xenomai, are missing the XENO_DESTDIR prefix so
+its looking in my native machine's /lib/modules path instead of the
+target's, I don't know how to fix this one either. I can send one or
+both of these makefiles if it would help, but if there was an example
+with a makefile built for cross-compiling modules, that would make my
+life a lot easier.
 
+As far as the SSH permissions issue, I checked the files under
+/etc/security and there aren't any policies configured, ssh has a very
+minimal config (dropbear server). Let me know if there's anything else
+you want me to check, I don't know if there is a bugreporting site,
+but I'd be happy to write up a small report on it if you think its
+something worth looking into.
 
-I man 3, not 4 combinations. Anyway, I na=C3=AFvely test with only one
-=2Econfig, which recently switched from embedded like minimal kernel to
-debian like config. Do you have a list of the options combinations which
-necessitate separate tests?
-
-
---=20
-                                                                Gilles.
-
+-Jon
 
