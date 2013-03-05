@@ -1,20 +1,14 @@
+Message-ID: <5135E35A.4020303@xenomai.org>
+Date: Tue, 05 Mar 2013 13:21:46 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <5137659F.6060205@xenomai.org>
-References: <CAMJ=MEfo5EU2mnM4=JDNU4QXX00W=0aC2+m5LucPYiN39W5wcQ@mail.gmail.com>
-	<512FB9B5.9040709@xenomai.org>
-	<CAAXf6LXDSxU_eASbHOgQzw_2xSpZua2BaORAiJ59KoPitFNEcg@mail.gmail.com>
-	<51306545.1010200@xenomai.org> <5130663F.7070209@xenomai.org>
-	<51306710.5030201@xenomai.org> <5130673D.2090700@xenomai.org>
-	<513069D5.1090508@xenomai.org>
-	<CAMJ=MEdAfvwWhjc4SLPk5smh+vNbPDJP=kM3bBFdw6n3bJd_mg@mail.gmail.com>
-	<5137496C.4090908@xenomai.org>
-	<CAMJ=MEcMeQ2oj+g099xxOukwBvGaxyNwQ5dtYDCZfMOOgD8kng@mail.gmail.com>
-	<5137659F.6060205@xenomai.org>
-From: Ronny Meeus <ronny.meeus@gmail.com>
-Date: Thu, 7 Mar 2013 11:02:19 +0100
-Message-ID: <CAMJ=MEf-ENT3Wzo9iyHfib9zhiupoaF6Z+yZhqY-Taxj=8tq=A@mail.gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Subject: Re: [Xenomai] Xenomai-forge: thread using 100% cpu load
+References: <512C806F.2020209@hilscher.com>	<512C9E78.1060208@siemens.com>	<512CC5C6.8050204@hilscher.com>	<512CC6A3.1010005@siemens.com>	<512F120A.5060109@hilscher.com>	<512F4005.60000@siemens.com>	<512F48AA.8020601@hilscher.com>	<5130B39C.70300@hilscher.com>
+	<513465CF.4030807@hilscher.com>	<51350D5B.6060309@xenomai.org>
+	<5135CCDE.5090401@hilscher.com> <5135D667.8060309@siemens.com>
+In-Reply-To: <5135D667.8060309@siemens.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Hilscher driver for cifX boards
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -23,65 +17,83 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
 Cc: xenomai@xenomai.org
 
-On Wed, Mar 6, 2013 at 4:49 PM, Philippe Gerum <rpm@xenomai.org> wrote:
-> On 03/06/2013 03:32 PM, Ronny Meeus wrote:
+On 03/05/2013 12:26 PM, Jan Kiszka wrote:
+
+> On 2013-03-05 11:45, Jerome Poncin wrote:
+>> The code with #ifdef DEBUG is also questionable, it will tend to bitrot
+>> since nobody will think to enable it.
 >>
->> si_code=SI_TIMER, si_pid=51, si_uid=0, si_value={int=273724880,
->> ptr=0x1050b5d0}}, NULL, 16) = 32
->> 11309     15.442127 +++ killed by SIGKILL +++
+>> => I disagree with you, it could be helpful if somebody have a problem
+>> and want to debug quickly.
+>> But I can remove it if it's not standard to xenomai kernel.
+> 
+> #ifdef DEBUG is widely considered obsolete. If you have debug relevant
+> information, tracepoints are much better as they are runtime switchable.
+> 
+> But to look at a concrete example:
+> 
+>> +static ssize_t cifx_pci_read(struct rtdm_dev_context *context,
+>> +                 rtdm_user_info_t *user_info, void *buf,
+>> +                 size_t nbyte)
+>> +{
+>> +    struct rtdm_device *info = (struct rtdm_device *)context->device;
+>> +
+>> +    if (nbyte > sizeof(struct io_info)) {
+>> +#ifdef DEBUG
+>> +        rtdm_printk
+>> +            ("cifx rtdm driver error : data user size too big\n");
+>> +#endif /* DEBUG */
+>> +
+>> +        return 0;
+> 
+> If it is an error, return the proper code (-EINVAL? Or -E2BIG?). That
+> will be visible without any driver instrumentation.
+> 
+>> +    }
+>> +
+>> +    /* Copy data information for userland */
+>> +    if (rtdm_safe_copy_to_user(user_info, buf,
+>> +                   ((struct io_info *)info->device_data),
+>> +                   nbyte)) {
+>> +#ifdef DEBUG
+>> +        rtdm_printk
+>> +            ("cifx rtdm driver error : can't copy data from driver\n");
+>> +#endif /* DEBUG */
+> 
+> And this is a bug: return -EFAULT. Again, no need for driver
+> instrumentation.
+> 
+>> +    }
+>> +
+>> +    return nbyte;
+>> +}
+> 
+> ...
+> 
 >>
->> I'm not an expert in this, but to me it looks like the create_timer
->> call, executed in the context of the 11308 thread, gets interrupted
->> because a signal is received by thread 11309. This signal is generated
->> because of a timer expiry which creates a new thread and processes the
->> callback function.
+>> I think you are not convinced yet that "code is the best documentation"
 >>
->> Is it not possible to disable all signals of the process during the
->> creation of the timer in xenomai. In this way we can avoid the race
->> condition in the library. This might be not a clean solution but would
->> it work as a temporary one until you finish the timer handling you
->> talk about in one of your earlier mails.
->
->
-> Fiddling with signal masks to work around an underlying bug would be asking
-> for more trouble. Time is a scarce enough resource.
->
->
-> BTW can I have some
->>
->> information about what you are planning to change?
->>
->
-> This one:
-> http://git.xenomai.org/?p=xenomai-forge.git;a=commit;h=cf30fb5e22a1a3d66412f1024be1ba86260904cc
->
-> This implementation passes the psos testsuite in -forge, and runs your
-> testcase fine. Please pull this change and let me know if the situation
-> improves.
->
-> --
-> Philippe.
-
-Philippe
-
-thanks for the patch.
-With this patch the test application is working fine, no cpuload is
-observed anymore.
-Our real application on the other hand aborts after some time with
-this reporting:
-------------------------------------------------------------------------------
-[ ERROR BACKTRACE: thread root ]
-
-   #0  EAGAIN in t_create(), task.c:320
-   #1  EAGAIN in copperplate_create_thread(), internal.c:138
-------------------------------------------------------------------------------
-
-I did not observe this when running with the xenomai before the patch.
-Do you have a clue about why I see this?
+>> => Yes, you right it's because I worked long time on safety project (for
+>> me it's a habit) .
+>> Moreover I thunk it could be helpful in an open source project, if
+>> somebody want to more easily understand code.
+> 
+> Non-trivial code is better augmented with comments.
 
 
-Ronny
+Or better removed and replaced with trivial code...
+
+> However, commenting
+> on the obvious is like meaningless chatting. ;)
+
+
+Yes, IMO, a driver should not be a tutorial for people wanting to write
+other drivers, if they need a tutorial, they should look for a tutorial,
+not for comments in existing code.
+
+-- 
+                                                                Gilles.
 
