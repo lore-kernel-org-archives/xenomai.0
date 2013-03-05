@@ -1,15 +1,14 @@
-Message-ID: <51398412.2020800@xenomai.org>
-Date: Fri, 08 Mar 2013 07:24:18 +0100
+Message-ID: <5135E583.8070706@xenomai.org>
+Date: Tue, 05 Mar 2013 13:30:59 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <51372B12.2030400@mitrol.it>	<51373149.4050700@xenomai.org>	<5137370B.2050402@mitrol.it>	<51373841.70704@xenomai.org>	<51385910.80203@mitrol.it>	<51388A3A.2090004@xenomai.org>
-	<51388DD2.2020805@mitrol.it>	<51388EB2.6000206@xenomai.org>
-	<51389940.1090100@mitrol.it> <51398293.9030103@xenomai.org>
-In-Reply-To: <51398293.9030103@xenomai.org>
+References: <512C806F.2020209@hilscher.com>	<512C9E78.1060208@siemens.com>	<512CC5C6.8050204@hilscher.com>	<512CC6A3.1010005@siemens.com>	<512F120A.5060109@hilscher.com>	<512F4005.60000@siemens.com>	<512F48AA.8020601@hilscher.com>	<5130B39C.70300@hilscher.com>
+	<513465CF.4030807@hilscher.com>	<51350D5B.6060309@xenomai.org>
+	<5135CCDE.5090401@hilscher.com> <5135D667.8060309@siemens.com>
+In-Reply-To: <5135D667.8060309@siemens.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Sporadic problem : rt_task_sleep
-	locked	after	debugging
+Subject: Re: [Xenomai] Hilscher driver for cifX boards
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,176 +17,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Paolo Minazzi <Paolo.Minazzi@mitrol.it>, Xenomai <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: xenomai@xenomai.org
 
-On 03/08/2013 07:17 AM, Gilles Chanteperdrix wrote:
+On 03/05/2013 12:26 PM, Jan Kiszka wrote:
 
-> On 03/07/2013 02:42 PM, Paolo Minazzi wrote:
+>> => I agree with you but that the price to be compliant with
+>> checkpatch.pl... limitation to 80 characters per line is difficult for me.
+>> If you saw some better thing to do, don't hesitate ;-) ! I tried to my
+>> best !
 > 
->> Il 07/03/2013 13.57, Gilles Chanteperdrix ha scritto:
->>> #define ARM(x...)	x
->>> #define	THUMB(x...)
->> I have a problem of double definition of  __xn_tscinfo
->>
->> #make
->> 2ms.c: In function 'InitIrq':
->> 2ms.c:182: warning: incompatible implicit declaration of built-in 
->> function 'exit'
->> /DVD/xenomai-2.6.2.1/src/skins/common/.libs/libxenomai.a(libxenomai_la-bind.o):(.data+0x0): 
->> multiple definition of `__xn_tscinfo'
->> /DVD/xenomai-2.6.2.1/src/skins/native/.libs/libnative.a(libnative_la-init.o):(.data+0x4): 
->> first defined here
->> collect2: ld returned 1 exit status
->> make: *** [All] Error 1
->>
->>
->> __xn_tscinfo is defined in src/include/asm/xenomai/bits/bind.h
->>
->> ...
->> ...
->> #include <asm-generic/xenomai/bits/bind.h>
->> #include <asm/xenomai/syscall.h>
->>
->> struct __xn_full_tscinfo __xn_tscinfo = {
->>          .kinfo = {
->>                  .type = -1,
->>          },
->> };
->> ...
->> ...
->>
->> It is strange define a struct in a .h file.
-> 
-> 
-> Right, normally this file should only be included in
-> src/skins/common/bind.c, but it happens to be included in all skins.
-> Will fix.
-> 
-
-Could you try to compile again static libraries with the following patch
-applied?
-
-diff --git a/include/asm-nios2/bits/bind.h b/include/asm-nios2/bits/bind.h
-index 067e7e2..668d8b8 100644
---- a/include/asm-nios2/bits/bind.h
-+++ b/include/asm-nios2/bits/bind.h
-@@ -12,7 +12,7 @@
-
- #include <asm-generic/xenomai/bits/bind.h>
-
--__attribute__((weak)) volatile void *xeno_nios2_hrclock = NULL;
-+volatile void *xeno_nios2_hrclock = NULL;
-
- static inline void xeno_nios2_features_check(struct xnfeatinfo *finfo)
- {
-diff --git a/include/asm-sh/bits/bind.h b/include/asm-sh/bits/bind.h
-index 3b2b54d..bd25f80 100644
---- a/include/asm-sh/bits/bind.h
-+++ b/include/asm-sh/bits/bind.h
-@@ -14,10 +14,8 @@
-
- struct xnarch_tsc_area;
-
--__attribute__((weak))
- volatile struct xnarch_tsc_area *xeno_sh_tsc = NULL;
-
--__attribute__((weak))
- volatile unsigned long *xeno_sh_tcnt = NULL;
-
- static volatile void *__xeno_kmem_map(unsigned long pa, unsigned int
-pagesz)
-diff --git a/src/skins/native/init.c b/src/skins/native/init.c
-index 2c36444..5d433b3 100644
---- a/src/skins/native/init.c
-+++ b/src/skins/native/init.c
-@@ -24,7 +24,7 @@
- #include <pthread.h>
- #include <native/syscall.h>
- #include <native/task.h>
--#include <asm/xenomai/bits/bind.h>
-+#include <asm-generic/xenomai/bits/bind.h>
-
- int __native_muxid = -1;
- static int fork_handler_registered;
-diff --git a/src/skins/posix/init.c b/src/skins/posix/init.c
-index 332081a..83d27a6 100644
---- a/src/skins/posix/init.c
-+++ b/src/skins/posix/init.c
-@@ -30,7 +30,7 @@
- #include <posix/mutex.h>
- #include <rtdk.h>
-
--#include <asm/xenomai/bits/bind.h>
-+#include <asm-generic/xenomai/bits/bind.h>
-
- int __pse51_muxid = -1;
- int __pse51_rtdm_muxid = -1;
-diff --git a/src/skins/psos+/init.c b/src/skins/psos+/init.c
-index b72825f..5098f91 100644
---- a/src/skins/psos+/init.c
-+++ b/src/skins/psos+/init.c
-@@ -20,7 +20,7 @@
- #include <errno.h>
- #include <sys/mman.h>
- #include <psos+/psos.h>
--#include <asm/xenomai/bits/bind.h>
-+#include <asm-generic/xenomai/bits/bind.h>
-
- int __psos_muxid = -1;
-
-diff --git a/src/skins/rtdm/init.c b/src/skins/rtdm/init.c
-index dbbcbb1..9672486 100644
---- a/src/skins/rtdm/init.c
-+++ b/src/skins/rtdm/init.c
-@@ -21,7 +21,7 @@
- #include <stdlib.h>
- #include <string.h>
- #include <rtdm/syscall.h>
--#include <asm/xenomai/bits/bind.h>
-+#include <asm-generic/xenomai/bits/bind.h>
-
- int __rtdm_muxid = -1;
-
-diff --git a/src/skins/uitron/init.c b/src/skins/uitron/init.c
-index a6cc77f..0ffc8bd 100644
---- a/src/skins/uitron/init.c
-+++ b/src/skins/uitron/init.c
-@@ -20,7 +20,7 @@
- #include <errno.h>
- #include <sys/mman.h>
- #include <uitron/uitron.h>
--#include <asm/xenomai/bits/bind.h>
-+#include <asm-generic/xenomai/bits/bind.h>
-
- int __uitron_muxid = -1;
-
-diff --git a/src/skins/vrtx/init.c b/src/skins/vrtx/init.c
-index 8a81660..d3d6cdb 100644
---- a/src/skins/vrtx/init.c
-+++ b/src/skins/vrtx/init.c
-@@ -23,7 +23,7 @@
- #include <stdlib.h>
- #include <pthread.h>
- #include <vrtx/vrtx.h>
--#include <asm/xenomai/bits/bind.h>
-+#include <asm-generic/xenomai/bits/bind.h>
-
- int __vrtx_muxid = -1;
-
-diff --git a/src/skins/vxworks/init.c b/src/skins/vxworks/init.c
-index 181b575..b2cdad4 100644
---- a/src/skins/vxworks/init.c
-+++ b/src/skins/vxworks/init.c
-@@ -23,7 +23,7 @@
- #include <stdlib.h>
- #include <pthread.h>
- #include <vxworks/vxworks.h>
--#include <asm/xenomai/bits/bind.h>
-+#include <asm-generic/xenomai/bits/bind.h>
-
- int __vxworks_muxid = -1;
+> If you overrun the 80-char limit, it is usually a good sign that you
+> should introduce a function.
 
 
+Or that you are nesting ifs the wrong way, as I tried to explain.
 
 -- 
                                                                 Gilles.
