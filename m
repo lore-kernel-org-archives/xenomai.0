@@ -1,18 +1,17 @@
-Message-ID: <5137496C.4090908@xenomai.org>
-Date: Wed, 06 Mar 2013 14:49:32 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <5135D667.8060309@siemens.com>
+Date: Tue, 05 Mar 2013 12:26:31 +0100
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-References: <CAMJ=MEfo5EU2mnM4=JDNU4QXX00W=0aC2+m5LucPYiN39W5wcQ@mail.gmail.com>
-	<512FB9B5.9040709@xenomai.org>
-	<CAAXf6LXDSxU_eASbHOgQzw_2xSpZua2BaORAiJ59KoPitFNEcg@mail.gmail.com>
-	<51306545.1010200@xenomai.org> <5130663F.7070209@xenomai.org>
-	<51306710.5030201@xenomai.org> <5130673D.2090700@xenomai.org>
-	<513069D5.1090508@xenomai.org>
-	<CAMJ=MEdAfvwWhjc4SLPk5smh+vNbPDJP=kM3bBFdw6n3bJd_mg@mail.gmail.com>
-In-Reply-To: <CAMJ=MEdAfvwWhjc4SLPk5smh+vNbPDJP=kM3bBFdw6n3bJd_mg@mail.gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+References: <512C806F.2020209@hilscher.com>
+	<512C9E78.1060208@siemens.com>	<512CC5C6.8050204@hilscher.com>
+	<512CC6A3.1010005@siemens.com>	<512F120A.5060109@hilscher.com>
+	<512F4005.60000@siemens.com>	<512F48AA.8020601@hilscher.com>
+	<5130B39C.70300@hilscher.com> <513465CF.4030807@hilscher.com>
+	<51350D5B.6060309@xenomai.org> <5135CCDE.5090401@hilscher.com>
+In-Reply-To: <5135CCDE.5090401@hilscher.com>
+Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Xenomai-forge: thread using 100% cpu load
+Subject: Re: [Xenomai] Hilscher driver for cifX boards
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,31 +20,88 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Ronny Meeus <ronny.meeus@gmail.com>
+To: Jerome Poncin <JPoncin@hilscher.com>
 Cc: xenomai@xenomai.org
 
-On 03/02/2013 12:13 PM, Ronny Meeus wrote:
+On 2013-03-05 11:45, Jerome Poncin wrote:
+> The code with #ifdef DEBUG is also questionable, it will tend to bitrot
+> since nobody will think to enable it.
+> 
+> => I disagree with you, it could be helpful if somebody have a problem
+> and want to debug quickly.
+> But I can remove it if it's not standard to xenomai kernel.
 
-> An update on the investigation:
-> I was able to make this issue disappear by changing the timeout value
-> of the smallest timers we use.
-> We use a couple of timers with a timeout of 25ms. By enlarging these
-> to 25sec and the problem is gone.
->
-> Yesterday I was also able to see (using the"strace" tool) the process
-> executing constantly "clone" system calls.
-> Note that the process we use is large (2Gb) and uses an mlockall call.
->
-> In http://stackoverflow.com/questions/4263958/some-information-on-timer-helper-thread-of-librt-so-1/4935895#4935895
-> I see that a new thread is created when the timer_create is called for
-> the first time. This thread stays alive until the program exits and is
-> used to process the timer expiries.
+#ifdef DEBUG is widely considered obsolete. If you have debug relevant
+information, tracepoints are much better as they are runtime switchable.
 
-Looking at the code, glibc 2.9 not only forks one helper thread once, 
-but also creates a dedicated short-lived thread for running the user 
-handler at each timer expiration. This implementation is still current 
-with 2.15. Which makes quite too many clones out there for my taste.
+But to look at a concrete example:
+
+> +static ssize_t cifx_pci_read(struct rtdm_dev_context *context,
+> +                 rtdm_user_info_t *user_info, void *buf,
+> +                 size_t nbyte)
+> +{
+> +    struct rtdm_device *info = (struct rtdm_device *)context->device;
+> +
+> +    if (nbyte > sizeof(struct io_info)) {
+> +#ifdef DEBUG
+> +        rtdm_printk
+> +            ("cifx rtdm driver error : data user size too big\n");
+> +#endif /* DEBUG */
+> +
+> +        return 0;
+
+If it is an error, return the proper code (-EINVAL? Or -E2BIG?). That
+will be visible without any driver instrumentation.
+
+> +    }
+> +
+> +    /* Copy data information for userland */
+> +    if (rtdm_safe_copy_to_user(user_info, buf,
+> +                   ((struct io_info *)info->device_data),
+> +                   nbyte)) {
+> +#ifdef DEBUG
+> +        rtdm_printk
+> +            ("cifx rtdm driver error : can't copy data from driver\n");
+> +#endif /* DEBUG */
+
+And this is a bug: return -EFAULT. Again, no need for driver
+instrumentation.
+
+> +    }
+> +
+> +    return nbyte;
+> +}
+
+...
+
+> 
+> I think you are not convinced yet that "code is the best documentation"
+> 
+> => Yes, you right it's because I worked long time on safety project (for
+> me it's a habit) .
+> Moreover I thunk it could be helpful in an open source project, if
+> somebody want to more easily understand code.
+
+Non-trivial code is better augmented with comments. However, commenting
+on the obvious is like meaningless chatting. ;)
+
+> 
+> The coding style is a bit indigest
+> 
+> => I agree with you but that the price to be compliant with
+> checkpatch.pl... limitation to 80 characters per line is difficult for me.
+> If you saw some better thing to do, don't hesitate ;-) ! I tried to my
+> best !
+
+If you overrun the 80-char limit, it is usually a good sign that you
+should introduce a function.
+
+Jan
+
+PS: Your mail client does funky marking of cited text. The web standard
+is ">".
 
 -- 
-Philippe.
+Siemens AG, Corporate Technology, CT RTC ITP SDP-DE
+Corporate Competence Center Embedded Linux
 
