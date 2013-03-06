@@ -1,15 +1,22 @@
-Message-ID: <515FEE47.90507@web.de>
-Date: Sat, 06 Apr 2013 11:43:35 +0200
-From: Jan Kiszka <jan.kiszka@web.de>
+Message-ID: <513725F3.6000404@xenomai.org>
+Date: Wed, 06 Mar 2013 12:18:11 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <515229C4.6000805@xenomai.org> <515296C8.30806@web.de>
-	<5152BAA3.30508@xenomai.org> <5152BC4D.8050501@siemens.com>
-	<5152EC25.7060004@xenomai.org> <5152F489.1000106@siemens.com>
-	<515B5154.2000802@xenomai.org>
-In-Reply-To: <515B5154.2000802@xenomai.org>
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] one-shot fasteoi irqs
+References: <CAMJ=MEfo5EU2mnM4=JDNU4QXX00W=0aC2+m5LucPYiN39W5wcQ@mail.gmail.com>
+	<512FB9B5.9040709@xenomai.org>
+	<CAAXf6LXDSxU_eASbHOgQzw_2xSpZua2BaORAiJ59KoPitFNEcg@mail.gmail.com>
+	<51306545.1010200@xenomai.org> <5130663F.7070209@xenomai.org>
+	<51306710.5030201@xenomai.org> <5130673D.2090700@xenomai.org>
+	<513069D5.1090508@xenomai.org>
+	<CAMJ=MEdAfvwWhjc4SLPk5smh+vNbPDJP=kM3bBFdw6n3bJd_mg@mail.gmail.com>
+	<CAMJ=MEf7VMen7ikfPFpR=4J4SksHT0yiGpOOZySxNcPfezUfcQ@mail.gmail.com>
+	<5135FC42.3010606@xenomai.org>
+	<CAMJ=MEccwvx-__TQZZdAzxmb=cuzivG_kUkKxU65V=R3a5yuTw@mail.gmail.com>
+	<513723EC.6070203@xenomai.org>
+In-Reply-To: <513723EC.6070203@xenomai.org>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Xenomai-forge: thread using 100% cpu load
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,114 +25,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Ronny Meeus <ronny.meeus@gmail.com>
+Cc: xenomai@xenomai.org
 
-On 2013-04-02 23:44, Gilles Chanteperdrix wrote:
-> On 03/27/2013 02:30 PM, Jan Kiszka wrote:
-> =
-
->> I'm wondering now why we need this differently for the I-pipe case.
+On 03/06/2013 12:09 PM, Philippe Gerum wrote:
+>> do you have a reference to the issue that you are suspecting and a
+>
+> Nothing specific I can confirm yet.
+>
+>> view on which version of the glib we need to use to solve it?
 >>
->> Let's revisit what happens with a fasteoi normally:
 >>
->> - it's masked only if it's a oneshot IRQ before calling the flow handler
->> - it's unmasked after the flow handling if the thread was not woken up
->>
->> With I-pipe we already enter handle_fasteoi_irq with the IRQ masked. The
->> conditions and spots to unmask are:
->> - from handle_fasteoi_irq if the thread wasn't woken up or we have
->>   non-threaded or non-oneshot handling
->> - otherwise on end_irq from the handler thread
->>
->> Do you think this is correct? If so, I do not think it matches this
->> patch yet.
-> =
+>
+> So far I have the test running fine over glibc 2.15(x86) and eglibc
+> 2.13(ppc). I have an outdated glibc 2.8(arm) I'm about to test which
+> might give me a different status.
+>
+> I don't think I'll keep running timers over SIGEV_THREAD in the upcoming
+> -forge work anyway, the spec leaves too much room for interpretation
+> with respect to the underlying implementation. Typically, one server
+> thread per-timer would be quite of a problem with legacy systems firing
+> tenths of timeout timers used as plain watchdogs.
+>
 
-> =
+No luck, 2.8 works fine too. Could you strace your small example on the 
+failing system for a few seconds until the oneshot timer triggers, 
+sending me the bzipped output log (privately)?
 
-> Hi,
-> =
+TIA,
 
-> here is a much simpler patch:
-> diff --git a/kernel/irq/chip.c b/kernel/irq/chip.c
-> index 11e75d1..a1c9918 100644
-> --- a/kernel/irq/chip.c
-> +++ b/kernel/irq/chip.c
-> @@ -421,6 +421,13 @@ static inline void preflow_handler(struct irq_desc *=
-desc)
->  static inline void preflow_handler(struct irq_desc *desc) { }
->  #endif
->  =
+-- 
+Philippe.
 
-> +static void cond_release_fasteoi_irq(struct irq_desc *desc)
-> +{
-> +	if (desc->irq_data.chip->irq_release && =
-
-> +	    !irqd_irq_disabled(&desc->irq_data) && !desc->threads_oneshot)
-> +		desc->irq_data.chip->irq_release(&desc->irq_data);
-> +}
-> +
->  /**
->   *	handle_fasteoi_irq - irq handler for transparent controllers
->   *	@irq:	the interrupt number
-> @@ -463,8 +470,7 @@ handle_fasteoi_irq(unsigned int irq, struct irq_desc =
-*desc)
->  =
-
->  #ifdef CONFIG_IPIPE
->  	/* XXX: IRQCHIP_EOI_IF_HANDLED is ignored. */
-
-Makes me wonder what this comment wants to tell us. That there is an
-unhandled corner case or that this is intentionally ignored? I support
-the latter as I-pipe already does EOI when accepting the IRQ, no? Maybe
-you can clarify that line at this chance.
-
-> -	if (desc->irq_data.chip->irq_release)
-> -		desc->irq_data.chip->irq_release(&desc->irq_data);
-> +	cond_release_fasteoi_irq(desc);
->  out_eoi:
->  #else  /* !CONFIG_IPIPE */
->  	if (desc->istate & IRQS_ONESHOT)
-> diff --git a/kernel/irq/manage.c b/kernel/irq/manage.c
-> index e49a288..e7ae8bd 100644
-> --- a/kernel/irq/manage.c
-> +++ b/kernel/irq/manage.c
-> @@ -715,9 +715,14 @@ again:
->  =
-
->  	desc->threads_oneshot &=3D ~action->thread_mask;
->  =
-
-> +#ifndef CONFIG_IPIPE
->  	if (!desc->threads_oneshot && !irqd_irq_disabled(&desc->irq_data) &&
->  	    irqd_irq_masked(&desc->irq_data))
->  		unmask_irq(desc);
-> +#else /* CONFIG_IPIPE */
-> +	if (!desc->threads_oneshot && !irqd_irq_disabled(&desc->irq_data))
-> +		desc->ipipe_end(desc->irq_data.irq, desc);
-> +#endif /* CONFIG_IPIPE */
->  =
-
->  out_unlock:
->  	raw_spin_unlock_irq(&desc->lock);
-> =
-
-> =
-
-
-Looks good. I should dig out our test case again and check it on x86. I
-think it was PCI device assignment with KVM where the IRQ of the
-assigned device is handled by an IRQ thread of KVM.
-
-Jan
-
-
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: signature.asc
-Type: application/pgp-signature
-Size: 263 bytes
-Desc: OpenPGP digital signature
-URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20130406/ef69ff6=
-6/attachment.pgp>
