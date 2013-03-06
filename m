@@ -1,5 +1,5 @@
-Message-ID: <5137439A.8080008@xenomai.org>
-Date: Wed, 06 Mar 2013 14:24:42 +0100
+Message-ID: <5137496C.4090908@xenomai.org>
+Date: Wed, 06 Mar 2013 14:49:32 +0100
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 References: <CAMJ=MEfo5EU2mnM4=JDNU4QXX00W=0aC2+m5LucPYiN39W5wcQ@mail.gmail.com>
@@ -9,10 +9,7 @@ References: <CAMJ=MEfo5EU2mnM4=JDNU4QXX00W=0aC2+m5LucPYiN39W5wcQ@mail.gmail.com>
 	<51306710.5030201@xenomai.org> <5130673D.2090700@xenomai.org>
 	<513069D5.1090508@xenomai.org>
 	<CAMJ=MEdAfvwWhjc4SLPk5smh+vNbPDJP=kM3bBFdw6n3bJd_mg@mail.gmail.com>
-	<CAMJ=MEf7VMen7ikfPFpR=4J4SksHT0yiGpOOZySxNcPfezUfcQ@mail.gmail.com>
-	<5135FC42.3010606@xenomai.org>
-	<CAMJ=MEccwvx-__TQZZdAzxmb=cuzivG_kUkKxU65V=R3a5yuTw@mail.gmail.com>
-In-Reply-To: <CAMJ=MEccwvx-__TQZZdAzxmb=cuzivG_kUkKxU65V=R3a5yuTw@mail.gmail.com>
+In-Reply-To: <CAMJ=MEdAfvwWhjc4SLPk5smh+vNbPDJP=kM3bBFdw6n3bJd_mg@mail.gmail.com>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] Xenomai-forge: thread using 100% cpu load
@@ -27,20 +24,27 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: Ronny Meeus <ronny.meeus@gmail.com>
 Cc: xenomai@xenomai.org
 
-On 03/06/2013 11:55 AM, Ronny Meeus wrote:
+On 03/02/2013 12:13 PM, Ronny Meeus wrote:
 
->> I can't reproduce this bug using that test code, over glibc 2.15/x86. We
->> might have a problem with SIGEV_THREAD. Which glibc release are you running?
->>
+> An update on the investigation:
+> I was able to make this issue disappear by changing the timeout value
+> of the smallest timers we use.
+> We use a couple of timers with a timeout of 25ms. By enlarging these
+> to 25sec and the problem is gone.
 >
-> Philip,
-> do you have a reference to the issue that you are suspecting and a
-> view on which version of the glib we need to use to solve it?
+> Yesterday I was also able to see (using the"strace" tool) the process
+> executing constantly "clone" system calls.
+> Note that the process we use is large (2Gb) and uses an mlockall call.
 >
+> In http://stackoverflow.com/questions/4263958/some-information-on-timer-helper-thread-of-librt-so-1/4935895#4935895
+> I see that a new thread is created when the timer_create is called for
+> the first time. This thread stays alive until the program exits and is
+> used to process the timer expiries.
 
-http://sourceware.org/bugzilla/show_bug.cgi?id=7094
-
-I would definitely drop glibc 2.9 in our case.
+Looking at the code, glibc 2.9 not only forks one helper thread once, 
+but also creates a dedicated short-lived thread for running the user 
+handler at each timer expiration. This implementation is still current 
+with 2.15. Which makes quite too many clones out there for my taste.
 
 -- 
 Philippe.
