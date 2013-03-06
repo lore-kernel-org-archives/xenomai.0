@@ -1,13 +1,13 @@
+Message-ID: <5136F5E6.6090003@xenomai.org>
+Date: Wed, 06 Mar 2013 08:53:10 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <514C9EE9.6000505@xenomai.org>
-References: <CAMJ=MEc9W3KvNuL6nLQUt_jDPY1zBfsEZJH2pQZs2kJj7g+KBg@mail.gmail.com>
-	<514C9EE9.6000505@xenomai.org>
-From: Ronny Meeus <ronny.meeus@gmail.com>
-Date: Fri, 22 Mar 2013 20:05:11 +0100
-Message-ID: <CAMJ=MEf_HMQFFQfHtVyWH4btgC0iO0K_ajcR6_ayUrADUQBoZw@mail.gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Subject: Re: [Xenomai] xenomai-forge: psos skin does not take t_start flags
- into account
+References: <1362541011.90317.YahooMailNeo@web161401.mail.bf1.yahoo.com>
+	<5136F3A6.8090400@antcom.de>
+In-Reply-To: <5136F3A6.8090400@antcom.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] about Xenomai in Debian and Ubuntu
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,77 +16,62 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Roland Stigge <stigge@antcom.de>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Fri, Mar 22, 2013 at 7:11 PM, Philippe Gerum <rpm@xenomai.org> wrote:
-> On 03/15/2013 02:10 PM, Ronny Meeus wrote:
->>
->> Hello
->>
->> In august last year I reported a problem with round-robin scheduling
->> in the pSOS skin.
->> See mail thread "xenomai-forge: round-robin scheduling in pSOS skin".
->>
->> Now that we stepped up to the latest version of Xenomai-forge, I was
->> retrying the same test I did at that time.
->> I observe that the situation has been improved: the roundrobin
->> scheduling as such is now working well,
->> but there is an issue with the initial flags passed to the t_start call.
->>
->> The flags are not correctly taken into account by the t_start call.
->> The complete testcode is attached to the mail.
->>
->> I basically create 2 tasks which both consume all cpu power for some time.
->> If I create the tasks with timeslice enabled:
->>      t_create("WORK",10,0,0,0,&tid);
->>      t_start(tid,T_TSLICE, perform_work, args);
->>
->> I get this result:
->>
->> # taskset 4 ./roundrobin.exe
->>     0"000.493| WARNING: [main] Xenomai compiled with full debug enabled,
->>                                very high latencies expected
->> [--enable-debug=full]
->> 0 -> 7196
->> 1 -> 0
->>
->> If I explicitly add code in the taskbody to enable the timeslicing:
->>    unsigned long old_mode;
->>    t_mode((T_TSLICE|T_NOTSLICE),T_NOTSLICE, &old_mode);
->>    t_mode((T_TSLICE|T_NOTSLICE),T_TSLICE, &old_mode);
->>
->> I get this:
->>
->> # taskset 4 ./roundrobin.exe
->>     0"000.491| WARNING: [main] Xenomai compiled with full debug enabled,
->>                                very high latencies expected
->> [--enable-debug=full]
->> 0 -> 3600
->> 1 -> 3592
->>
->> The latter is the correct behavior: both tasks get equal cpu power.
->> Note the t_mode is called 2 times to make sure the change of the state
->> stored in the task object is taken into account.
->>
+On 03/06/2013 08:43 AM, Roland Stigge wrote:
 
-Philippe
+> Hi,
+> 
+> On 06/03/13 04:36, Tom Z wrote:
+>> I noticed that Debian and Ubuntu desktop distro's have included Xenomai, 
+>> and I can "install" Xenomai through the software center in these 
+>> distro's.
+> 
+> I can only speak for Debian here. We deliberately don't promote it as
+> "desktop distro". Rather as "Universal OS", to underline its use in the
+> Server, Embedded, Realtime areas, etc.
+> 
+>> But after I "installed" Xenomai in Ubuntu, executing  "dmesg | grep xenomai" showed nothing, so I am wondering if I still need to 
+>> patch and compile the kernels before using the Xenomai features? If so, 
+>> what benefits does it have to include Xenomai in these distro's.
+> 
+> First, you still have to compile the Xenomai-enabled kernel yourself
+> (but this might change in the future). This is supported by the
+> Debian-included package linux-patch-xenomai. The file
+> 
+> /usr/share/doc/linux-patch-xenomai/README.Debian
+> 
+> gives instructions how to prepare the kernel as a Debian package.
+> 
+> Second, Debian ships Xenomai's userland programs and libraries, so you
+> can use them directly, without compiling.
+> 
+> Since Debian derived distros (as you mentioned one) typically copy the
+> Xenomai packages from Debian, much of this should apply there also, but
+> I can't guarantee this.
 
-> My understanding is that your latest patch in commit #eaef6154 fixes the
-> issue.
->
 
-I think this is not correct.
-The patch solved the large round-robin time, not the issue reported in
-this mail.
-What I observed during debugging this issue is that for example the
-timer used to implement the round-robin is not started when T_TSLICE
-is passed to the t_start call. If I change the mode in the taskbody
-itself the timer is started.
-I tried to start the timer after creating the thread but then I
-observed a crash. So it looked to me that these flags need to be
-processed in the trampoline code in the taskbody itself.
+As a side note, we started with 2.6.2.1 to provide pre-compiled kernel
+packages for the Debian stable distribution, simply add:
 
----
-Ronny
+deb http://www.xenomai.org/debian squeeze main
+
+Then run:
+apt-get update
+apt-get install xenomai-keyring
+Answer yes
+apt-get update
+apt-get install linux-image-3.5.7-xenomai-2.6.2.1 xenomai-runtime
+
+Then reboot on the new kernel, and you should be able to launch:
+xeno latency
+
+The Linux CNC project also provides packages for Ubuntu Precise, Debian
+Squeeze and Ubuntu Lucid, see:
+
+http://wiki.linuxcnc.org/cgi-bin/wiki.pl?XenomaiKernelPackages
+
+-- 
+                                                                Gilles.
 
