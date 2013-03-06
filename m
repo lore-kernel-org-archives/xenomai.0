@@ -1,10 +1,19 @@
 MIME-Version: 1.0
-Date: Thu, 28 Mar 2013 18:00:53 -0400
-Message-ID: <CAD1EtognG+9J_Bbo3x6AsBCJ4eU4SLrXQz=wDvJtFw0vCSZ8NQ@mail.gmail.com>
-From: "Daniel M. Drucker, Ph.D." <dmd@interactive-motion.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: [Xenomai] patch to src/utils/can/rtcansend.c to support data from a
-	file
+In-Reply-To: <5135FC42.3010606@xenomai.org>
+References: <CAMJ=MEfo5EU2mnM4=JDNU4QXX00W=0aC2+m5LucPYiN39W5wcQ@mail.gmail.com>
+	<512FB9B5.9040709@xenomai.org>
+	<CAAXf6LXDSxU_eASbHOgQzw_2xSpZua2BaORAiJ59KoPitFNEcg@mail.gmail.com>
+	<51306545.1010200@xenomai.org> <5130663F.7070209@xenomai.org>
+	<51306710.5030201@xenomai.org> <5130673D.2090700@xenomai.org>
+	<513069D5.1090508@xenomai.org>
+	<CAMJ=MEdAfvwWhjc4SLPk5smh+vNbPDJP=kM3bBFdw6n3bJd_mg@mail.gmail.com>
+	<CAMJ=MEf7VMen7ikfPFpR=4J4SksHT0yiGpOOZySxNcPfezUfcQ@mail.gmail.com>
+	<5135FC42.3010606@xenomai.org>
+From: Ronny Meeus <ronny.meeus@gmail.com>
+Date: Wed, 6 Mar 2013 11:55:44 +0100
+Message-ID: <CAMJ=MEccwvx-__TQZZdAzxmb=cuzivG_kUkKxU65V=R3a5yuTw@mail.gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: Re: [Xenomai] Xenomai-forge: thread using 100% cpu load
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,156 +22,243 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@xenomai.org
 
-When sending a large number of CAN messages from a script (in our case, to
-initialize a servo), rtcansend can be somewhat slow because every message
-requires a setup and teardown.
+On Tue, Mar 5, 2013 at 3:08 PM, Philippe Gerum <rpm@xenomai.org> wrote:
+> On 03/05/2013 01:43 PM, Ronny Meeus wrote:
+>>
+>> On Sat, Mar 2, 2013 at 12:13 PM, Ronny Meeus <ronny.meeus@gmail.com>
+>> wrote:
+>>>
+>>> On Fri, Mar 1, 2013 at 9:41 AM, Philippe Gerum <rpm@xenomai.org> wrote:
+>>>>
+>>>> On 03/01/2013 09:30 AM, Gilles Chanteperdrix wrote:
+>>>>>
+>>>>>
+>>>>> On 03/01/2013 09:30 AM, Philippe Gerum wrote:
+>>>>>
+>>>>>> On 03/01/2013 09:26 AM, Gilles Chanteperdrix wrote:
+>>>>>>>
+>>>>>>>
+>>>>>>> On 03/01/2013 09:22 AM, Philippe Gerum wrote:
+>>>>>>>
+>>>>>>>> On 02/28/2013 09:22 PM, Thomas De Schampheleire wrote:
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>> On Thu, Feb 28, 2013 at 9:10 PM, Gilles Chanteperdrix
+>>>>>>>>> <gilles.chanteperdrix@xenomai.org> wrote:
+>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>> On 02/28/2013 08:19 PM, Ronny Meeus wrote:
+>>>>>>>>>>
+>>>>>>>>>>> Hello
+>>>>>>>>>>>
+>>>>>>>>>>> we are using the PSOS interface of Xenomai forge, running
+>>>>>>>>>>> completely
+>>>>>>>>>>> in user-space using the mercury code.
+>>>>>>>>>>> We deploy our application on different processors, one product is
+>>>>>>>>>>> running on PPC multicore (P4040, P4080, P4034) and another one on
+>>>>>>>>>>> Cavium (8 core device).
+>>>>>>>>>>> The Linux version we use is 2.6.32 but I would assume that this
+>>>>>>>>>>> is
+>>>>>>>>>>> not
+>>>>>>>>>>> so relevant.
+>>>>>>>>>>>
+>>>>>>>>>>> Our Xenomai application is running on one of the cores (affinity
+>>>>>>>>>>> is
+>>>>>>>>>>> set), while the other cores are running other code.
+>>>>>>>>>>>
+>>>>>>>>>>> On both architectures we recently start to see issues that one
+>>>>>>>>>>> thread
+>>>>>>>>>>> is consuming 100% of the core on which the application is pinned.
+>>>>>>>>>>> The thread that monopolizes the core is the thread internally
+>>>>>>>>>>> used
+>>>>>>>>>>> to
+>>>>>>>>>>> manage the timers, running at the highest priority.
+>>>>>>>>>>> The trigger for running into this behavior is currently unclear.
+>>>>>>>>>>> If we only start a part of the application (platform management
+>>>>>>>>>>> only),
+>>>>>>>>>>> the issue is not observed.
+>>>>>>>>>>> We see this on both an old version of Xenomai and a very recent
+>>>>>>>>>>> one
+>>>>>>>>>>> (pulled from the git repo yesterday).
+>>>>>>>>>>>
+>>>>>>>>>>> I will continue to debug this issue in the coming days and try
+>>>>>>>>>>> isolate
+>>>>>>>>>>> the code that is triggering it, but I can use hints from the
+>>>>>>>>>>> community.
+>>>>>>>>>>> Debugging is complex since once the load starts, the debugger is
+>>>>>>>>>>> not
+>>>>>>>>>>> reacting anymore.
+>>>>>>>>>>> If I put breakpoints in the functions that are called when the
+>>>>>>>>>>> timer
+>>>>>>>>>>> expires (both oneshot and periodic), the process starts to clone
+>>>>>>>>>>> itself and I endup with tens of them.
+>>>>>>>>>>>
+>>>>>>>>>>> Has anybody seen an issue like this before or does somebody has
+>>>>>>>>>>> some
+>>>>>>>>>>> hints on how to debug this problem?
+>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>> First enable the watchdog. It will send a signal to the
+>>>>>>>>>> application
+>>>>>>>>>> when
+>>>>>>>>>> detecting a problem, then you can use the watchdog to trigger an
+>>>>>>>>>> I-pipe
+>>>>>>>>>> tracer trace when the bug happens. You will probably have to
+>>>>>>>>>> increase
+>>>>>>>>>> the watchdog polling frequency, in order to have a meaningful
+>>>>>>>>>> trace.
+>>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>> I don't think an I-pipe tracer will be possible when using the
+>>>>>>>>> Mercury
+>>>>>>>>> core, right (xenomai-forge) ?
+>>>>>>>>>
+>>>>>>>>
+>>>>>>>> Correct.
+>>>>>>>
+>>>>>>>
+>>>>>>>
+>>>>>>>
+>>>>>>> I do not think so. The way I see it, you can enable the I-pipe tracer
+>>>>>>> without CONFIG_XENOMAI.
+>>>>>>>
+>>>>>>
+>>>>>> Mercury has NO pipeline in the kernel.
+>>>>>>
+>>>>>
+>>>>> You mean mercury can not run with an I-pipe kernel?
+>>>>>
+>>>>
+>>>> I mean it does not care about the pipeline, it does not need it. So if
+>>>> this
+>>>> is about observing kernel activity, then ftrace should be fine, or
+>>>> possibly
+>>>> perf to find out where userland spends time.
+>>>>
+>>>> --
+>>>> Philippe.
+>>>>
+>>>>
+>>>> _______________________________________________
+>>>> Xenomai mailing list
+>>>> Xenomai@xenomai.org
+>>>> http://www.xenomai.org/mailman/listinfo/xenomai
+>>>
+>>>
+>>> Hello
+>>>
+>>> An update on the investigation:
+>>> I was able to make this issue disappear by changing the timeout value
+>>> of the smallest timers we use.
+>>> We use a couple of timers with a timeout of 25ms. By enlarging these
+>>> to 25sec and the problem is gone.
+>>>
+>>> Yesterday I was also able to see (using the"strace" tool) the process
+>>> executing constantly "clone" system calls.
+>>> Note that the process we use is large (2Gb) and uses an mlockall call.
+>>>
+>>> In
+>>> http://stackoverflow.com/questions/4263958/some-information-on-timer-helper-thread-of-librt-so-1/4935895#4935895
+>>> I see that a new thread is created when the timer_create is called for
+>>> the first time. This thread stays alive until the program exits and is
+>>> used to process the timer expiries.
+>>> I have the feeling that there is an issue during the creation of this
+>>> thread. For example what would happen if the clone operation takes
+>>> longer than the time needed to perform the clone operation?
+>>> In the past we already observed issues with the clone call that we
+>>> could not explain (creation of the clone simply failed on our
+>>> application while it was working fine on a smaller application).
+>>>
+>>> Do you guys know whether there is an impact on the clone operation by
+>>> this mlockall call?
+>>>
+>>> I will try to make a small test application on which the issue can be
+>>> reproduced.
+>>>
+>>> ---
+>>> Ronny
+>>
+>>
+>> I'm able to reproduce the issue on a small test build:
+>>
+>> #include <stdio.h>
+>> #include <unistd.h>
+>> #include <sys/types.h>
+>> #include <sys/mman.h>
+>> #include <psos.h>
+>> #include <copperplate/init.h>
+>> #include <stdlib.h>
+>> #include <string.h>
+>>
+>> static void foo (u_long a0, u_long a1, u_long a2, u_long a3)
+>> {
+>>          u_long ret, ev = 0, tmid,tmid2;
+>>
+>>          ret = tm_evevery(1,1,&tmid);
+>>          ret = tm_evafter(30000,4,&tmid2);
+>>          while (1) {
+>>                  ret = ev_receive(0xFF,EV_ANY|EV_WAIT,0,&ev);
+>>                  if (ev & 4) {
+>>                          printf("%lx Restarting one-shot timer.
+>> ev=%lx\n",ret,ev);
+>>                          tm_evafter(30000,4,&tmid2);
+>>                  }
+>>                  ev = 0;
+>>          }
+>>          tm_wkafter(100);
+>> }
+>>
+>> int main(int argc, char * const *argv)
+>> {
+>>          u_long ret, tid = 0, args[4];
+>>
+>>          mlockall(MCL_CURRENT | MCL_FUTURE);
+>>          copperplate_init(&argc,&argv);
+>>
+>>          ret = t_create("TEST",97, 0, 0, 0, &tid);
+>>          printf("t_create(tid=%lu) = %lu\n", tid, ret);
+>>          args[0] = 1;
+>>          args[1] = 2;
+>>          args[2] = 3;
+>>          args[3] = 4;
+>>          ret = t_start(tid, 0, foo, args);
+>>          printf("t_start(tid=%lu) = %lu\n", tid, ret);
+>>
+>>          while (1)
+>>                  tm_wkafter(100);
+>>          return 0;
+>> }
+>>
+>> The TEST task starts 2 timers: one periodic and one 1shot timer.
+>> Each time the one-shot timer expires, a print is done and the timer is
+>> restarted.
+>>
+>> Observation is that once the one-shot timer expires, the application
+>> starts to use 100% cpuload on one core and the application code is not
+>> executed anymore. So it looks like there is constant processing in
+>> either Xenomai or the library code to process the timer handling. If
+>> periodic timers are used the issue is not observed.
+>>
+>
+> I can't reproduce this bug using that test code, over glibc 2.15/x86. We
+> might have a problem with SIGEV_THREAD. Which glibc release are you running?
+>
 
-I added a --file flag to rtcansend which allows you to instead read bytes
-from a file (or stdin, using '-' as the filename). The file has one CAN
-message per line, in the same format (space-separated) as it would have
-been in the can-msg on the command line. Blank lines are ignored. Lines
-which start with a ' ' (space) or '#' (hash) character are ignored. If a
-filename is given, any can-msg specified on the command line is ignored.
+Philip,
+do you have a reference to the issue that you are suspecting and a
+view on which version of the glib we need to use to solve it?
 
-I hope this of use to someone, and it'd be really great if this could be
-merged!
 
-Thanks,
-Daniel
+Ronny
 
-https://gist.github.com/dmd/5267158 and inlined here:
+> Also, do you observe the same issue with a larger event interval for the
+> periodic timer (e.g. 1000 ticks)?
+>
+> --
+> Philippe.
 
---- xenomai-2.6.2.1/src/utils/can/rtcansend.c 2013-01-22 14:37:05.000000000
--0500
-+++ robot4/crob/rtcansendmulti.c 2013-03-28 17:47:21.436106822 -0400
-@@ -1,4 +1,5 @@
- #include <stdio.h>
-+#include <string.h>
- #include <stdlib.h>
- #include <signal.h>
- #include <unistd.h>
-@@ -18,9 +19,10 @@
- static void print_usage(char *prg)
- {
-     fprintf(stderr,
--    "Usage: %s <can-interface> [Options] <can-msg>\n"
-+    "Usage: %s <can-interface> [Options] [<can-msg>]\n"
-     "<can-msg> can consist of up to 8 bytes given as a space separated
-list\n"
-     "Options:\n"
-+    " -f, --file=FILENAME   file to read bytes from instead of the command
-line. one list per line.\n"
-     " -i, --identifier=ID   CAN Identifier (default = 1)\n"
-     " -r  --rtr             send remote request\n"
-     " -e  --extended        send extended frame\n"
-@@ -45,7 +47,7 @@
- static nanosecs_rel_t timeout = 0;
- static struct can_frame frame;
- static struct sockaddr_can to_addr;
--
-+const char* input_filename = NULL;
-
- void cleanup(void)
- {
-@@ -127,6 +129,7 @@
-
-     struct option long_options[] = {
-  { "help", no_argument, 0, 'h' },
-+ { "file", required_argument, NULL, 'f'},
-  { "identifier", required_argument, 0, 'i'},
-  { "rtr", no_argument, 0, 'r'},
-  { "extended", no_argument, 0, 'e'},
-@@ -148,15 +151,20 @@
-
-     frame.can_id = 1;
-
--    while ((opt = getopt_long(argc, argv, "hvi:l:red:t:cp:sL:",
-+    while ((opt = getopt_long(argc, argv, "hvi:l:red:t:cp:sL:f:",
-       long_options, NULL)) != -1) {
-  switch (opt) {
-  case 'h':
-     print_usage(argv[0]);
-     exit(0);
-
-+ case 'f':
-+    input_filename = optarg;
-+    break;
-+
-  case 'p':
-     print = strtoul(optarg, NULL, 0);
-+    /* fall through */
-
-  case 'v':
-     verbose = 1;
-@@ -263,18 +271,6 @@
-  }
-     }
-
--    if (count)
-- frame.can_dlc = sizeof(int);
--    else {
-- for (i = optind + 1; i < argc; i++) {
--    frame.data[dlc] = strtoul(argv[i], NULL, 0);
--    dlc++;
--    if( dlc == 8 )
-- break;
-- }
-- frame.can_dlc = dlc;
--    }
--
-     if (rtr)
-  frame.can_id |= CAN_RTR_FLAG;
-
-@@ -298,7 +294,49 @@
-  goto failure;
-     }
-
--    rt_task();
-+    if (input_filename != NULL) {
-+ if (!strcmp(input_filename, "-"))
-+    input_filename = "/dev/stdin";
-+
-+ FILE *file = fopen(input_filename, "r");
-+
-+ if (file != NULL) {
-+    char line [1024];
-+    while (fgets(line, sizeof line, file) != NULL) {
-+ // put the data into frame
-+ char * pch;
-+ if (line[0] == '#' || line[0] == ' ' || line[0] == '\n') continue;
-+ pch = strtok(line, " ");
-+ dlc = 0;
-+ while ((pch != NULL) && (dlc < 8)) {
-+    frame.data[dlc] = strtoul(pch, NULL, 0);
-+    pch = strtok(NULL, " ");
-+    dlc++;
-+ }
-+ frame.can_dlc = dlc;
-+ rt_task();
-+    }
-+    fclose(file);
-+ }
-+ else {
-+    perror(input_filename);
-+    goto failure;
-+ }
-+    }
-+    else {
-+ if (count)
-+    frame.can_dlc = sizeof(int);
-+ else {
-+    for (i = optind + 1; i < argc; i++) {
-+ frame.data[dlc] = strtoul(argv[i], NULL, 0);
-+ dlc++;
-+ if( dlc == 8 )
-+    break;
-+    }
-+    frame.can_dlc = dlc;
-+ }
-+ rt_task();
-+    }
-
-     cleanup();
-     return 0;
