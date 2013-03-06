@@ -1,11 +1,16 @@
+Message-ID: <5136FC1E.6060608@xenomai.org>
+Date: Wed, 06 Mar 2013 09:19:42 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-From: Ronny Meeus <ronny.meeus@gmail.com>
-Date: Mon, 25 Mar 2013 15:16:48 +0100
-Message-ID: <CAMJ=MEdEOxm2_7_3On9vdzfQq1+5oyqXt+R+5RMPc30u_GNcKw@mail.gmail.com>
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] xenomai-forge: psos skin: t_delete assertion when task
- was not able to run before it is deleted.
+References: <512C806F.2020209@hilscher.com>	<512C9E78.1060208@siemens.com>	<512CC5C6.8050204@hilscher.com>	<512CC6A3.1010005@siemens.com>	<512F120A.5060109@hilscher.com>	<512F4005.60000@siemens.com>	<512F48AA.8020601@hilscher.com>	<5130B39C.70300@hilscher.com>
+	<513465CF.4030807@hilscher.com>	<51350D5B.6060309@xenomai.org>
+	<5135CCDE.5090401@hilscher.com>	<5135D667.8060309@siemens.com>
+	<51361281.20307@hilscher.com> <51364A61.3090002@xenomai.org>
+	<5136F9E9.9030604@hilscher.com>
+In-Reply-To: <5136F9E9.9030604@hilscher.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Hilscher driver for cifX boards
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,52 +19,96 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Jerome Poncin <JPoncin@hilscher.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hello
+On 03/06/2013 09:10 AM, Jerome Poncin wrote:
 
-I'm doing some more tests related to task creation and deletion.
-The complete testcode is attached to the mail.
+> 
+> Hello Gilles,
+> 
+> I don't understand, because I think I did a maximum of modifications
 
-I basically have a task that creates, starts and deletes other tasks in a l=
-oop:
+> that you said me...
 
-  for (i=3D0;i<500;i++) {
-    printf("Priority %d\n",i);
-    check("t_create loop3",t_create ("TEST",(i%HIGH_PRIO)+2,100000,0,0,&tid=
-),0);
-    check("t_start loop3",t_start(tid,T_PREEMPT,test_taskcreation_body,args=
-),0);
-    check("t_delete loop3",t_delete(tid),0);
-  }
+Not really, both Jan and I gave you (different) reasons why this is wrong:
 
-If the code above is execute by a task running at priority 1, there is no i=
-ssue.
-Note that the task that are being created range from prio 2 to 97
-(HIGH_PRIO=3D95).
++static ssize_t cifx_pci_write(struct rtdm_dev_context *context,
++			      rtdm_user_info_t *user_info, const void *buf,
++			      size_t nbyte)
++{
++	struct io_map_mem map_mem;
++	int ret;
++
++	if (nbyte > sizeof(struct io_map_mem))
++		return 0;
++
++	if (nbyte == sizeof(struct io_map_mem)) {
++		/* Copy data information for Kernel */
++		if (rtdm_safe_copy_from_user(user_info, &map_mem, buf, nbyte)) {
++			nbyte = 0;
++		} else {
++			if (*map_mem.virt_addr == NULL) {
++				/* Map physical on virtual memory */
++				ret = rtdm_iomap_to_user(user_info,
++							 (phys_addr_t) map_mem.
++							 phys_addr,
++							 (size_t) map_mem.
++							 length,
++							 (PROT_READ |
++							  PROT_WRITE),
++							 map_mem.virt_addr,
++							 NULL, NULL);
++
++				if (ret != 0)
++					nbyte = 0;
++			} else {
++				/* Unap virtual memory */
++				ret = rtdm_munmap(user_info, *map_mem.virt_addr,
++						  (size_t) map_mem.length);
++
++				if (ret != 0)
++					nbyte = 0;
++			}
++		}
++	} else {
++		/* Error nothing to do */
++		nbyte = 0;
++	}
++
++	return nbyte;
++}
 
-If the task that executes the code is running at a higher priority
-(for example 3), I observe this:
-# taskset 2 ./createdelete.exe
-   0"000.492| WARNING: [main] Xenomai compiled with full debug enabled,
-                              very high latencies expected [--enable-debug=
-=3Dfull]
-Priority 0
-createdelete.exe: ../../include/copperplate/threadobj.h:205:
-__threadobj_tag_unlocked: Assertion `thobj->status & 0x20' failed.
-Aborted
+Yet you kept this in the "final" patch.
 
-Conclusion is: as soon as a task that is being created/started/deleted
-has a lower priority than the task that creates it, the code crashes
-in t_delete with the assertion above.
 
----
-Ronny
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: createdelete.c
-Type: text/x-csrc
-Size: 1546 bytes
-Desc: not available
-URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20130325/b3ed188=
-1/attachment.c>
+> 
+> I'm agree to test the code if you fixed the code, no problem. Perhaps I
+> don't understand what you really want.
+> 
+> For modification in 80 line, how to change this ? :
+> 
+> struct pxa_dev_info *pxa_info =
+>         (struct pxa_dev_info *)((struct io_info *)info->device_data)->priv;
+>     uint32_t __iomem *plx_timing;
+> 
+> I can't do a function...
+
+
+Well, first of all you should not use "pxa" as a suffix, as you may know,
+there are processors named "pxa", so, this may conflict. Some name related 
+to the board would be better, such as "cifx".
+
+Second, there are usually acesssors to things like "device_data" and "priv"
+members. 
+
+Thirdly, in C, you do not need an explicit cast when casting from void *, 
+to any pointer type, this is what makes using malloc convenient for instance.
+So, what you should really do is:
+
+struct io_info *io_info = the_device_data_accessor(info);
+struct cifx_dev_info *dev_info = the_priv_accessor(io_info);
+
+-- 
+                                                                Gilles.
+
