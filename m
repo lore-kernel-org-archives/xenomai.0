@@ -1,16 +1,10 @@
-Message-ID: <51350D5B.6060309@xenomai.org>
-Date: Mon, 04 Mar 2013 22:08:43 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <51372B12.2030400@mitrol.it>
+Date: Wed, 06 Mar 2013 12:40:02 +0100
+From: Paolo Minazzi <Paolo.Minazzi@mitrol.it>
 MIME-Version: 1.0
-References: <512C806F.2020209@hilscher.com>
-	<512C9E78.1060208@siemens.com>	<512CC5C6.8050204@hilscher.com>
-	<512CC6A3.1010005@siemens.com>	<512F120A.5060109@hilscher.com>
-	<512F4005.60000@siemens.com>	<512F48AA.8020601@hilscher.com>
-	<5130B39C.70300@hilscher.com> <513465CF.4030807@hilscher.com>
-In-Reply-To: <513465CF.4030807@hilscher.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Hilscher driver for cifX boards
+Subject: [Xenomai] Sporadic problem : rt_task_sleep locked after debugging
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,323 +13,212 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jerome Poncin <JPoncin@hilscher.com>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
+
+Hi to all.
+I'm Paolo Minazzi and we use a port of xenomai on our arm Marvel mv78100 
+board.
+We use kernel 2.6.31.8 and xenomai 2.5.6.
+All works well.
+We have developed an application that use the xenomai features.
+We can debug it with gdb, native or gdb client/server ver 6.8a.
+
+I have tried also other gdb version, also the new 7.5.1.
+
+Sometimes *** during debugging ***  we can generate a very strange problem.
+When the realtime tasks execute the rt_task_sleep(), the rt_task_sleep() 
+does not return anymore !
+When we enter in this strange condition, the system is usable, linux 
+works normally, but the realtime features do not works.
+
+The problem is not easily reproducible.
+I have tried in a lot of way to write a simple program for generating 
+the problem, but I am not able to do it.
+
+When I can reach the bug conditionm, If I run a simple xenomai test 
+program with
+- 20 realtime tasks
+- 1 irq external line (generated every 2ms from a Fujitsu microcontroller)
+
+     #include <...>
+
+     #define N 20
+
+     void tsk(void *arg)
+     {
+         struct data_task_struct *p = arg;
+         while (1)
+         {
+             rt_task_sleep(p->delay);
+             cnt++;
+         }
+     }
+
+     int main(int argc, char* argv[])
+     {
+         mlockall(MCL_CURRENT|MCL_FUTURE);
+
+         rt_timer_set_mode ( 0 );
+         rt_task_set_mode(0, 0, NULL);
+
+         MapRegistersARM();
+
+         InitIrq();
+         enable_irq_fujitsu();
+
+         for (i=0; i<N; i++)
+         {
+             char s[1024];
+             sprintf(s,"demo%d",i);
+             data_task[i].cnt = 0;
+             data_task[i].delay = 1000000 * (1+i);
+             rt_task_create(&data_task[i].tsk, s, 0, i, T_JOINABLE);
+             rt_task_start(&data_task[i].tsk, &tsk, &data_task[i]);
+         }
+
+         while(1)
+         {
+             int i;
+             printf("[ %4d ]    ",cnt2ms);
+             for (i=0; i<N; i++)
+                 printf("%3d ",data_task[i].cnt);
+             usleep(10000);
+             printf("\n");
+         }
+     }
+
+I can get the following information :
+
+[========================= cat /proc/xenomai/sched 
+==============================]
+     CPU  PID    CLASS  PRI      TIMEOUT     TIMEBASE   STAT       NAME
+       0  0      idle    -1      -           master     R          ROOT
+       0  2746   rt     257      -           master     W          Irq2ms
+       0  2747   rt       0      159ms591us  master     D          demo0
+       0  2748   rt       1      160ms689us  master     D          demo1
+       0  2749   rt       2      162ms19us   master     D          demo2
+       0  2750   rt       3      163ms350us  master     D          demo3
+       0  2751   rt       4      164ms685us  master     D          demo4
+       0  2752   rt       5      166ms33us   master     D          demo5
+       0  2753   rt       6      167ms359us  master     D          demo6
+       0  2754   rt       7      168ms691us  master     D          demo7
+       0  2755   rt       8      170ms17us   master     D          demo8
+       0  2756   rt       9      171ms341us  master     D          demo9
+       0  2757   rt      10      172ms670us  master     D          demo10
+       0  2758   rt      11      174ms14us   master     D          demo11
+       0  2759   rt      12      175ms347us  master     D          demo12
+       0  2760   rt      13      176ms673us  master     D          demo13
+       0  2761   rt      14      178ms5us    master     D          demo14
+       0  2762   rt      15      179ms332us  master     D          demo15
+       0  2763   rt      16      180ms664us  master     D          demo16
+       0  2764   rt      17      182ms12us   master     D          demo17
+       0  2765   rt      18      183ms338us  master     D          demo18
+       0  2766   rt      19      184ms664us  master     D          demo19
 
-On 03/04/2013 10:13 AM, Jerome Poncin wrote:
+     The TIMEOUT values runs correctly.
 
-> Hello,
-> 
-> I did two patch one for version head, and for 2.6 version in attached 
-> files.  The result is identical.
 
 
-xenomai-head is a symbolic link to xenomai-2.6. Well, if I did not
-forget to put it again during the xenomai.org server migration.
+[========================= cat /proc/xenomai/stat 
+==============================]
+     CPU  PID    MSW        CSW        PF    STAT       %CPU  NAME
+       0  0      0          976221     0     00500080   99.9  ROOT
+       0  2746   0          68477      0     00300182    0.0  Irq2ms
+       0  2747   0          1          0     00300184    0.0  demo0
+       0  2748   0          1          0     00300184    0.0  demo1
+       0  2749   0          1          0     00300184    0.0  demo2
+       0  2750   0          1          0     00300184    0.0  demo3
+       0  2751   0          1          0     00300184    0.0  demo4
+       0  2752   0          1          0     00300184    0.0  demo5
+       0  2753   0          1          0     00300184    0.0  demo6
+       0  2754   0          1          0     00300184    0.0  demo7
+       0  2755   0          1          0     00300184    0.0  demo8
+       0  2756   0          1          0     00300184    0.0  demo9
+       0  2757   0          1          0     00300184    0.0  demo10
+       0  2758   0          1          0     00300184    0.0  demo11
+       0  2759   0          1          0     00300184    0.0  demo12
+       0  2760   0          1          0     00300184    0.0  demo13
+       0  2761   0          1          0     00300184    0.0  demo14
+       0  2762   0          1          0     00300184    0.0  demo15
+       0  2763   0          1          0     00300184    0.0  demo16
+       0  2764   0          1          0     00300184    0.0  demo17
+       0  2765   0          1          0     00300184    0.0  demo18
+       0  2766   0          1          0     00300184    0.0  demo19
+       0  0      0          2551886    0     00000000    0.0  IRQ8: [timer]
+       0  0      0          0          0     00000000    0.0  IRQ44: 
+rtdm_eth
+       0  0      0          68477      0     00000000    0.0  IRQ58: 
+IntFujitsu
 
-> 
-> Therefore, I let you
-> 
-> "perform a code review and merge
-> the code if it is fine."
+     The values in in the CSW column (ROOT, Irq2ms, IRQ8, IRQ58) runs 
+correctly.
 
 
-The coding style is a bit indigest, so I will criticize this first and
-let you send a cleaned up version which I will really be able to read.
-Maybe others will be able to really read the code, but I am afraid I can't.
 
-> +#
-> +# Xenomai configuration for Linux v2.4
-> +#
+[========================= cat /proc/xenomai/irq 
+==============================]
+     IRQ         CPU0
+       8:     2584003         [timer]
+      44:           0         rtdm_eth
+      58:      993694         IntFujitsu
+      98:      404350         [virtual]
 
-
-Have you tested your driver on Linux 2.4?
-
-> +++ b/ksrc/drivers/cifx/Config.in~
-
-> +++ b/ksrc/drivers/cifx/Kconfig~
-> +++ b/ksrc/drivers/cifx/Makefile~
-> +++ b/ksrc/drivers/cifx/cifx_pci.c~
-
-We do not want these file. A simple way to avoid it (besides using diff
--x option), is to work with git, and generate your patches with git
-format-patch.
-
-
-> +/***************************************************************************
-> + *   Copyright (C) 2013                                                    *
-> + *   Hilscher France (JP)                                                  *
-> + *   http://www.hilscher.fr                                                *
-> + *                                                                         *
-> + *   This program is free software; you can redistribute it and/or modify  *
-> + *   it under the terms of the GNU General Public License as published by  *
-> + *   the Free Software Foundation; either version 2 of the License, or     *
-> + *   (at your option) any later version.                                   *
-> + *                                                                         *
-> + *   This program is distributed in the hope that it will be useful,       *
-> + *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
-> + *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
-> + *   GNU General Public License for more details.                          *
-> + *                                                                         *
-> + *   You should have received a copy of the GNU General Public License     *
-> + *   along with this program; if not, write to the                         *
-> + *   Free Software Foundation, Inc.,                                       *
-> + *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
-> + ***************************************************************************/
+     The values [timer] and IntFujitsu in the CPU0 columns runs correctly.
 
 
-Please don't do that. Look at the other files in Xenomai sources to see
-how we put the GPL "cartouche". And the doxygen cartouches as well.
 
-The standard multiline comment is:
+[========================= cat /proc/xenomai/timer 
+==============================]
+     
+status=on:setup=455:clock=1863202575863:timerdev=orion_tick:clockdev=orion_clocksource
 
-/*
- *
- */
+     The value clock run correctly.
 
-> +
 
-> +/*****************************************************************************/
 
+[========================= cat /proc/xenomai/hal 
+==============================]
+     1.16-02
 
-We do not want that either
 
-> +
-> +/* Includes */
 
+[========================= date ==============================]
+     The date program works correclty.
 
-Useless comment, everything which begins with #include is obviously an
-include
 
-> +#ifndef TRUE
-> +#define TRUE                            1
-> +#endif				/* TRUE */
-> +
-> +#ifndef FALSE
-> +#define FALSE                           0
-> +#endif				/* TRUE */
 
+[========================= cat /proc/xenomai/latency 
+==============================]
+     4300
 
-No, you do not want to do that. If you really want to use true and
-false, use the "bool" type (but I agree, this will not work with 2.4,
-but have you really tested your driver with Linux 2.4?).
 
-Besides, tests like if (foo == TRUE) are a bit preposterous. If foo is a
-boolean, then if (foo) already tests if foo is true. If we follow your
-reasoning why not adding a few more == TRUE ?
-If (((foo == TRUE) == TRUE) == TRUE) ?
 
 
-> +
-> +#ifndef PCI_VENDOR_ID_HILSCHER
-> +#define PCI_VENDOR_ID_HILSCHER          0x15CF
-> +#endif				/* PCI_VENDOR_ID_HILSCHER */
-> +
-> +#ifndef PCI_DEVICE_ID_HILSCHER_NETX
-> +#define PCI_DEVICE_ID_HILSCHER_NETX     0x0000
-> +#endif				/* PCI_DEVICE_ID_HILSCHER_NETX */
-> +
-> +#ifndef PCI_DEVICE_ID_HILSCHER_NETPLC
-> +#define PCI_DEVICE_ID_HILSCHER_NETPLC   0x0010
-> +#endif				/* PCI_DEVICE_ID_HILSCHER_NETPLC */
-> +
-> +#ifndef PCI_DEVICE_ID_HILSCHER_NETJACK
-> +#define PCI_DEVICE_ID_HILSCHER_NETJACK  0x0020
-> +#endif				/* PCI_DEVICE_ID_HILSCHER_NETJACK */
-> +
-> +#ifndef PCI_SUBDEVICE_ID_NXSB_PCA
-> +#define PCI_SUBDEVICE_ID_NXSB_PCA       0x3235
-> +#endif				/* PCI_SUBDEVICE_ID_NXSB_PCA */
-> +
-> +#ifndef PCI_SUBDEVICE_ID_NXPCA
-> +#define PCI_SUBDEVICE_ID_NXPCA          0x3335
-> +#endif				/* PCI_SUBDEVICE_ID_NXPCA */
-> +
-> +#ifndef PCI_SUBDEVICE_ID_NETPLC_RAM
-> +#define PCI_SUBDEVICE_ID_NETPLC_RAM     0x0000
-> +#endif				/* PCI_SUBDEVICE_ID_NETPLC_RAM */
-> +
-> +#ifndef PCI_SUBDEVICE_ID_NETPLC_FLASH
-> +#define PCI_SUBDEVICE_ID_NETPLC_FLASH   0x0001
-> +#endif				/* PCI_SUBDEVICE_ID_NETPLC_FLASH */
-> +
-> +#ifndef PCI_SUBDEVICE_ID_NETJACK_RAM
-> +#define PCI_SUBDEVICE_ID_NETJACK_RAM    0x0000
-> +#endif				/* PCI_SUBDEVICE_ID_NETJACK_RAM */
-> +
-> +#ifndef PCI_SUBDEVICE_ID_NETJACK_FLASH
-> +#define PCI_SUBDEVICE_ID_NETJACK_FLASH  0x0001
-> +#endif				/* PCI_SUBDEVICE_ID_NETJACK_FLASH */
+[========================= cat /proc/xenomai/timebases 
+==============================]
+     NAME       RESOLUTION     JIFFIES   STATUS
+     master              1         n/a   enabled,set
 
 
-These defines should go to asm-generic/pci_ids.h
 
+[========================= cat /proc/xenomai/heap 
+==============================]
+     size=126976:used=16:pagesz=4096  (global sem heap)
+     size=4161536:used=43552:pagesz=512  (main heap)
+     size=129536:used=0:pagesz=512  (stack pool)
+     size=8192:used=0:pagesz=4096  (private sem heap [2745])
 
-> +/* Prototypes */
 
 
-Just as useless as "includes".
 
-> +/* Local variables */
+I can generate the problem only debugging with gdb, otherwise there is 
+no problem.
 
+Can you help me to undertand what happen ?
+Have you got an idea ? do you need other information ?
 
-Again.
+Thanks for your time.
 
-> +/** RTDM Device information structure */
+Paolo Minazzi
 
-
-Again
-
-
-> +/** Device table */
-
-
-Again.
-
-> +static DEFINE_PCI_DEVICE_TABLE(cifx_pci_tbl) = {
-> +	{
-> +		.vendor = PCI_VENDOR_ID_HILSCHER,
-> +		.device = PCI_DEVICE_ID_HILSCHER_NETX,
-> +		.subvendor = 0,
-> +		.subdevice = 0,
-> +	},
-
-
-There are convenient standard macro to put these declarations on a
-single line.
-
-> +#ifdef IRQ_SUPPORT
-
-
-If IRQ support is not tested, and is never compiled, then this is dead
-code, remove it.
-
-The code with #ifdef DEBUG is also questionable, it will tend to bitrot
-since nobody will think to enable it.
-
-
-> +	/* Test if (oflags) IRQ are use */
-> +	if (oflags == TRUE) {
-> +		if (((struct io_info_t *)info->device_data)->irq_registered
-> +		    == FALSE) {
-> +			/* Register IRQ */
-> +			ret =
-> +			    rtdm_irq_request(&
-> +					     (((struct io_info_t *)info->
-> +					       device_data)->irq_handle),
-> +					     ((struct io_info_t *)info->
-> +					      device_data)->irq, cifx_handler,
-> +					     RTDM_IRQTYPE_SHARED,
-> +					     info->device_name, (void *)info);
-
-
-Your code is drifting a lot to the right.
-
-That is because instead of:
-
-if (ok)
-	if (still_ok)
-		if (still_ok2)
-			if (still_ok3)
-				action;
-
-you should do
-
-if (!ok)
-	return;
-
-if (!still_ok)
-	return;
-
-if (!still_ok2)
-	return;
-
-if (!still_ok3)
-	return;
-
-This is much more readable.
-And if you want to please Philippe, you should replace:
-
-if (!ok)
-
-with
-
-if (ok == 0)
-
-He finds this more readable (it is easy to miss the '!' character when
-reading fast, and read the test inverted).
-
-
-> +/*****************************************************************************/
-> +/*!
-> + *   \brief  cifx_pci_probe
-> + *
-> + *   \param  [in]   dev
-> + *   \param  [in]   id
-> + *
-> + *   \return 0 (OK) or Error
-> + *
-> + *   \note  Open the device.
-> + *			This function is called when the device shall be opened.
-> + */
-> +/*****************************************************************************/
-> +static int cifx_pci_probe(struct pci_dev *dev, const struct pci_device_id *id)
-
-
-I am not sure this function needs to be documented. What should be
-documented in an RTDM driver is the driver "profile", meaning the
-behaviour of the externally usable interface, the behaviour of open,
-read, write, and most of all the various ioctls it supports.
-
-The comment is misleading: the probe function is not called when the
-device is opened, but when the device is enumerated by a device
-enumeration technique (be it a bus like PCI or USB with enumeration, or
-platform devices or device tree), and matched with a driver. The suffix
-_probe suffices to indicate this situation, no further comment is needed.
-
-> +	/* Initialize structure with default values */
-> +	memcpy(info, &cifx_device_tmpl, sizeof(struct rtdm_device));
-
-
-I would use sizeof(*info) here, if the type of the info pointer changes,
-the memcpy will not have unintended effects.
-
-> +
-
-
-> +/*****************************************************************************/
-> +/*!
-> + *   \brief  cifx_pci_init
-> + *
-> + *   \return None
-> + *
-> + *   \note   It simply registers the RTDM device.
-> + *   This function is called when the module is loaded.
-> + */
-> +/*****************************************************************************/
-> +static int __init cifx_pci_init(void)
-> +{
-> +	cifx_num = 0;
-> +
-> +	return pci_register_driver(&cifx_pci_driver);
-> +}
-
-
-Useless comment again. The following line:
-
-> +module_init(cifx_pci_init);
-
-Is sufficient to indicate that the function is called when the module is
-loaded. So, if you want to make that obvious, put the declaration close
-to the function definition, and avoid the comment.
-
-I think  you are not convinced yet that "code is the best
-documentation". Imagine a moment that we remove the "module_init" macro
-call, the function will no longer be called when the module is loaded,
-yet the comment will still claim that it is, and can puzzle someone
-debugging your code and wondering why the pci driver does not get
-registered.
-
--- 
-                                                                Gilles.
 
