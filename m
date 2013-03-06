@@ -1,20 +1,10 @@
-Message-ID: <5137659F.6060205@xenomai.org>
-Date: Wed, 06 Mar 2013 16:49:51 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <5137734F.2000907@siemens.com>
+Date: Wed, 06 Mar 2013 17:48:15 +0100
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-References: <CAMJ=MEfo5EU2mnM4=JDNU4QXX00W=0aC2+m5LucPYiN39W5wcQ@mail.gmail.com>
-	<512FB9B5.9040709@xenomai.org>
-	<CAAXf6LXDSxU_eASbHOgQzw_2xSpZua2BaORAiJ59KoPitFNEcg@mail.gmail.com>
-	<51306545.1010200@xenomai.org> <5130663F.7070209@xenomai.org>
-	<51306710.5030201@xenomai.org> <5130673D.2090700@xenomai.org>
-	<513069D5.1090508@xenomai.org>
-	<CAMJ=MEdAfvwWhjc4SLPk5smh+vNbPDJP=kM3bBFdw6n3bJd_mg@mail.gmail.com>
-	<5137496C.4090908@xenomai.org>
-	<CAMJ=MEcMeQ2oj+g099xxOukwBvGaxyNwQ5dtYDCZfMOOgD8kng@mail.gmail.com>
-In-Reply-To: <CAMJ=MEcMeQ2oj+g099xxOukwBvGaxyNwQ5dtYDCZfMOOgD8kng@mail.gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Xenomai-forge: thread using 100% cpu load
+Subject: [Xenomai] [PULL] x86/ipipe: Tracing related fixes
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -23,40 +13,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Ronny Meeus <ronny.meeus@gmail.com>
-Cc: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 03/06/2013 03:32 PM, Ronny Meeus wrote:
-> si_code=SI_TIMER, si_pid=51, si_uid=0, si_value={int=273724880,
-> ptr=0x1050b5d0}}, NULL, 16) = 32
-> 11309     15.442127 +++ killed by SIGKILL +++
->
-> I'm not an expert in this, but to me it looks like the create_timer
-> call, executed in the context of the 11308 thread, gets interrupted
-> because a signal is received by thread 11309. This signal is generated
-> because of a timer expiry which creates a new thread and processes the
-> callback function.
->
-> Is it not possible to disable all signals of the process during the
-> creation of the timer in xenomai. In this way we can avoid the race
-> condition in the library. This might be not a clean solution but would
-> it work as a temporary one until you finish the timer handling you
-> talk about in one of your earlier mails.
+The following changes since commit 85d706363aec4d1467d127d51429ddd623655707:
 
-Fiddling with signal masks to work around an underlying bug would be 
-asking for more trouble. Time is a scarce enough resource.
+  Merge branch 'core-next' (2013-02-20 15:38:20 +0100)
 
-BTW can I have some
-> information about what you are planning to change?
->
+are available in the git repository at:
 
-This one:
-http://git.xenomai.org/?p=xenomai-forge.git;a=commit;h=cf30fb5e22a1a3d66412f1024be1ba86260904cc
+  git://git.xenomai.org/ipipe-jki for-upstream/master
 
-This implementation passes the psos testsuite in -forge, and runs your 
-testcase fine. Please pull this change and let me know if the situation 
-improves.
+The first one is what I already posted for 3.5, the second fix should
+unbreak ftrace for any arch, but I only tested on x86.
 
--- 
-Philippe.
+Jan Kiszka (2):
+      x86/ipipe: Do not call TRACE_IRQS_OFF before __ipipe_divert_exception
+      ipipe: Harden __ftrace_ops_list_func
+
+ arch/x86/kernel/entry_32.S |    4 ++--
+ arch/x86/kernel/entry_64.S |    8 ++++++--
+ kernel/trace/ftrace.c      |    5 +++--
+ 3 files changed, 11 insertions(+), 6 deletions(-)
 
