@@ -1,22 +1,15 @@
-Message-ID: <51386CB1.6090701@xenomai.org>
-Date: Thu, 07 Mar 2013 11:32:17 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <51388DD2.2020805@mitrol.it>
+Date: Thu, 07 Mar 2013 13:53:38 +0100
+From: Paolo Minazzi <Paolo.Minazzi@mitrol.it>
 MIME-Version: 1.0
-References: <CAMJ=MEfo5EU2mnM4=JDNU4QXX00W=0aC2+m5LucPYiN39W5wcQ@mail.gmail.com>
-	<512FB9B5.9040709@xenomai.org>
-	<CAAXf6LXDSxU_eASbHOgQzw_2xSpZua2BaORAiJ59KoPitFNEcg@mail.gmail.com>
-	<51306545.1010200@xenomai.org> <5130663F.7070209@xenomai.org>
-	<51306710.5030201@xenomai.org> <5130673D.2090700@xenomai.org>
-	<513069D5.1090508@xenomai.org>
-	<CAMJ=MEdAfvwWhjc4SLPk5smh+vNbPDJP=kM3bBFdw6n3bJd_mg@mail.gmail.com>
-	<5137496C.4090908@xenomai.org>
-	<CAMJ=MEcMeQ2oj+g099xxOukwBvGaxyNwQ5dtYDCZfMOOgD8kng@mail.gmail.com>
-	<5137659F.6060205@xenomai.org>
-	<CAMJ=MEf-ENT3Wzo9iyHfib9zhiupoaF6Z+yZhqY-Taxj=8tq=A@mail.gmail.com>
-In-Reply-To: <CAMJ=MEf-ENT3Wzo9iyHfib9zhiupoaF6Z+yZhqY-Taxj=8tq=A@mail.gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+References: <51372B12.2030400@mitrol.it> <51373149.4050700@xenomai.org>
+	<5137370B.2050402@mitrol.it> <51373841.70704@xenomai.org>
+	<51385910.80203@mitrol.it> <51388A3A.2090004@xenomai.org>
+In-Reply-To: <51388A3A.2090004@xenomai.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Xenomai-forge: thread using 100% cpu load
+Subject: Re: [Xenomai] Sporadic problem : rt_task_sleep locked after
+	debugging
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -25,70 +18,137 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Ronny Meeus <ronny.meeus@gmail.com>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 03/07/2013 11:02 AM, Ronny Meeus wrote:
-> On Wed, Mar 6, 2013 at 4:49 PM, Philippe Gerum <rpm@xenomai.org> wrote:
->> On 03/06/2013 03:32 PM, Ronny Meeus wrote:
->>>
->>> si_code=SI_TIMER, si_pid=51, si_uid=0, si_value={int=273724880,
->>> ptr=0x1050b5d0}}, NULL, 16) = 32
->>> 11309     15.442127 +++ killed by SIGKILL +++
->>>
->>> I'm not an expert in this, but to me it looks like the create_timer
->>> call, executed in the context of the 11308 thread, gets interrupted
->>> because a signal is received by thread 11309. This signal is generated
->>> because of a timer expiry which creates a new thread and processes the
->>> callback function.
->>>
->>> Is it not possible to disable all signals of the process during the
->>> creation of the timer in xenomai. In this way we can avoid the race
->>> condition in the library. This might be not a clean solution but would
->>> it work as a temporary one until you finish the timer handling you
->>> talk about in one of your earlier mails.
->>
->>
->> Fiddling with signal masks to work around an underlying bug would be asking
->> for more trouble. Time is a scarce enough resource.
->>
->>
->> BTW can I have some
->>>
->>> information about what you are planning to change?
->>>
->>
->> This one:
->> http://git.xenomai.org/?p=xenomai-forge.git;a=commit;h=cf30fb5e22a1a3d66412f1024be1ba86260904cc
->>
->> This implementation passes the psos testsuite in -forge, and runs your
->> testcase fine. Please pull this change and let me know if the situation
->> improves.
->>
->> --
->> Philippe.
+Il 07/03/2013 13.38, Gilles Chanteperdrix ha scritto:
+> On 03/07/2013 10:08 AM, Paolo Minazzi wrote:
 >
-> Philippe
+>> Il 06/03/2013 13.36, Gilles Chanteperdrix ha scritto:
+>>> On 03/06/2013 01:31 PM, Paolo Minazzi wrote:
+>>>
+>>>> Il 06/03/2013 13.06, Gilles Chanteperdrix ha scritto:
+>>>>> On 03/06/2013 12:40 PM, Paolo Minazzi wrote:
+>>>>>
+>>>>>> I can generate the problem only debugging with gdb, otherwise there is
+>>>>>> no problem.
+>>>>>>
+>>>>>> Can you help me to undertand what happen ?
+>>>>>> Have you got an idea ? do you need other information ?
+>>>>> In case it is something which was fixed since Xenomai 2.5.6, could you
+>>>>> try Xenomai 2.6.2.1?
+>>>>>
+>>>> I have not done the port.
+>>>> This work is done by an external firm.
+>>>> I know well enough the linux kernel, but very very little the xenomai
+>>>> internals.
+>>> You can use Xenomai 2.6.2.1 with the same version of the I-pipe kernel,
+>>> and the I-pipe kernel is the only thing which needs to be ported.
+>>>
+>>>> I could try ... but it is not easy ....
+>>> It should be as easy as:
+>>> - keep your kernel patched with the I-pipe patch
+>>> - download the newest version of Xenomai, that is 2.6.2.1
+>>> - follow the installation instructions, here:
+>>> http://www.xenomai.org/documentation/xenomai-2.6/html/README.INSTALL/
+>>>
+>>>> The problem appear only using gdb .... any ideas ?
+>>> Could be the timer programmed for a too short delay, could be something
+>>> we already fixed, could be a new bug... Really, testing rapidly the last
+>>> version will make us win a lot of time if this is an issue already fixed.
+>>>
+>>>
+>> I Gilles,
+>> I have ported to 2.6.1 without problems.
+>> To 2.6.2 and 2.6.2.1 I need to add a gcc built-in. My compiler is
 >
-> thanks for the patch.
-> With this patch the test application is working fine, no cpuload is
-> observed anymore.
-> Our real application on the other hand aborts after some time with
-> this reporting:
-> ------------------------------------------------------------------------------
-> [ ERROR BACKTRACE: thread root ]
+> pass --with-atomic-ops=ad-hoc to configure script, this will avoid the
+> builtins.
 >
->     #0  EAGAIN in t_create(), task.c:320
->     #1  EAGAIN in copperplate_create_thread(), internal.c:138
-> ------------------------------------------------------------------------------
+>> gcc-4.3.2 and does not have some built-in atomic function.
+>> After this I need to change the switch.S because my assembler cannot
 >
-> I did not observe this when running with the xenomai before the patch.
-> Do you have a clue about why I see this?
+> switch.S has been compiling for ages, way before gcc 4.4. Could you show
+> me the warning you get?
+>
+>> compile it. Maybe a newer compiler (gcc>= 4.4) could solve all these
+>> problems, but for me this is not a valid solution because other
+>> developers of us use a cygwin compiler. We should built a new cygwin
+>> compiler ... the libs will be different and so I will have problem with
+>> shared libraries .... too complex to solve a sporadic bug using gdb ....
+>> I can try to see the 2.6.1.
+>
+> The idea of asking you to try 2.6.2.1 is not to ask you to switch to it,
+> but simply to do a quick test to see if you can reproduce the issue.
 >
 >
 
-There is likely a resource leakage hiding somewhere. I'll have a look.
+   CC      drivers/xenomai/testing/switchtest.o
+   CC      drivers/xenomai/testing/timerbench.o
+   LD      drivers/xenomai/testing/xeno_timerbench.o
+   LD      drivers/xenomai/testing/xeno_switchtest.o
+   LD      drivers/xenomai/testing/built-in.o
+   LD      drivers/xenomai/built-in.o
+   LD      drivers/built-in.o
+   CC      arch/arm/xenomai/hal.o
+   AS      arch/arm/xenomai/switch.o
+/home/axel/MarvellEnv/BuildLinux/linux-2.6.31.8/arch/arm/xenomai/switch.S: 
+Assembler messages:
+/home/axel/MarvellEnv/BuildLinux/linux-2.6.31.8/arch/arm/xenomai/switch.S:156: 
+Error: bad instruction `arm( stmia ip!,{r4-sl,fp,sp,lr})'
+/home/axel/MarvellEnv/BuildLinux/linux-2.6.31.8/arch/arm/xenomai/switch.S:157: 
+Error: bad instruction `thumb( stmia ip!,{r4-sl,fp})'
+/home/axel/MarvellEnv/BuildLinux/linux-2.6.31.8/arch/arm/xenomai/switch.S:158: 
+Error: bad instruction `thumb( str sp,[ip],#4)'
+/home/axel/MarvellEnv/BuildLinux/linux-2.6.31.8/arch/arm/xenomai/switch.S:159: 
+Error: bad instruction `thumb( str lr,[ip],#4)'
+/home/axel/MarvellEnv/BuildLinux/linux-2.6.31.8/arch/arm/xenomai/switch.S:170: 
+Error: bad instruction `arm( add r4,r2,#28)'
+/home/axel/MarvellEnv/BuildLinux/linux-2.6.31.8/arch/arm/xenomai/switch.S:171: 
+Error: bad instruction `arm( ldmia r4,{r4-sl,fp,sp,pc})'
+/home/axel/MarvellEnv/BuildLinux/linux-2.6.31.8/arch/arm/xenomai/switch.S:172: 
+Error: bad instruction `thumb( add ip,r2,#28)'
+/home/axel/MarvellEnv/BuildLinux/linux-2.6.31.8/arch/arm/xenomai/switch.S:173: 
+Error: bad instruction `thumb( ldmia ip!,{r4-sl,fp})'
+/home/axel/MarvellEnv/BuildLinux/linux-2.6.31.8/arch/arm/xenomai/switch.S:174: 
+Error: bad instruction `thumb( ldr sp,[ip],#4)'
+/home/axel/MarvellEnv/BuildLinux/linux-2.6.31.8/arch/arm/xenomai/switch.S:175: 
+Error: bad instruction `thumb( ldr pc,[ip])'
+make[2]: *** [arch/arm/xenomai/switch.o] Error 1
+make[1]: *** [arch/arm/xenomai] Error 2
+make: *** [sub-make] Error 2
 
--- 
-Philippe.
+
+
+**************************************
+arm-mv5sft-linux-gnueabi-gcc -v
+**************************************
+Using built-in specs.
+Target: arm-mv5sft-linux-gnueabi
+Configured with: /home/seugene/sdk/targets/src/gcc-4.3.2/configure 
+--build=i486-build_pc-linux-gnu --host=i486-build_pc-linux-gnu 
+--target=arm-mv5sft-linux-gnueabi 
+--prefix=/home/seugene/sdk/targets/arm-mv5sft-linux-gnueabi/cross 
+--with-sysroot=/home/seugene/sdk/targets/arm-mv5sft-linux-gnueabi/cross/arm-mv5sft-linux-gnueabi//sys-root 
+--enable-languages=c,c++,fortran,java --disable-multilib 
+--with-arch=armv5te --with-float=soft 
+--with-gmp=/home/seugene/sdk/targets/arm-mv5sft-linux-gnueabi/cross 
+--with-mpfr=/home/seugene/sdk/targets/arm-mv5sft-linux-gnueabi/cross 
+--with-pkgversion=sdk3.2rc1-ct-ng-1.4.1 --disable-sjlj-exceptions 
+--enable-__cxa_atexit 
+--with-local-prefix=/home/seugene/sdk/targets/arm-mv5sft-linux-gnueabi/cross/arm-mv5sft-linux-gnueabi//sys-root 
+--disable-nls --enable-threads=posix --enable-symvers=gnu --enable-c99
+--enable-long-long --enable-target-optspace
+Thread model: posix
+gcc version 4.3.2 (sdk3.2rc1-ct-ng-1.4.1)
+
+
+**************************************
+arm-mv5sft-linux-gnueabi-as -v
+**************************************
+GNU assembler version 2.18.50 (arm-mv5sft-linux-gnueabi) using BFD 
+version (GNU Binutils) 2.18.50.20080215
+
+Thanks
+Paolo
+
 
