@@ -1,23 +1,17 @@
+Message-ID: <5139BABA.8010602@hilscher.com>
+Date: Fri, 08 Mar 2013 11:17:30 +0100
+From: Jerome Poncin <JPoncin@hilscher.com>
 MIME-Version: 1.0
-In-Reply-To: <CAMJ=MEcWSfKM6eDkZDcLbd=K4xMXX=_3Wgu49rS8XE6U20oqgg@mail.gmail.com>
-References: <CAMJ=MEfo5EU2mnM4=JDNU4QXX00W=0aC2+m5LucPYiN39W5wcQ@mail.gmail.com>
-	<512FB9B5.9040709@xenomai.org>
-	<CAAXf6LXDSxU_eASbHOgQzw_2xSpZua2BaORAiJ59KoPitFNEcg@mail.gmail.com>
-	<51306545.1010200@xenomai.org> <5130663F.7070209@xenomai.org>
-	<51306710.5030201@xenomai.org> <5130673D.2090700@xenomai.org>
-	<513069D5.1090508@xenomai.org>
-	<CAMJ=MEdAfvwWhjc4SLPk5smh+vNbPDJP=kM3bBFdw6n3bJd_mg@mail.gmail.com>
-	<5137496C.4090908@xenomai.org>
-	<CAMJ=MEcMeQ2oj+g099xxOukwBvGaxyNwQ5dtYDCZfMOOgD8kng@mail.gmail.com>
-	<5137659F.6060205@xenomai.org>
-	<CAMJ=MEf-ENT3Wzo9iyHfib9zhiupoaF6Z+yZhqY-Taxj=8tq=A@mail.gmail.com>
-	<51386CB1.6090701@xenomai.org> <5138B8C4.3000708@xenomai.org>
-	<CAMJ=MEcWSfKM6eDkZDcLbd=K4xMXX=_3Wgu49rS8XE6U20oqgg@mail.gmail.com>
-From: Ronny Meeus <ronny.meeus@gmail.com>
-Date: Fri, 8 Mar 2013 08:44:09 +0100
-Message-ID: <CAMJ=MEdOFEGYP_2d3K4+2iAv7a90i7fe2Hyv5a3qsAv3Bz+d=A@mail.gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Subject: Re: [Xenomai] Xenomai-forge: thread using 100% cpu load
+References: <512C806F.2020209@hilscher.com>	<512C9E78.1060208@siemens.com>	<512CC5C6.8050204@hilscher.com>	<512CC6A3.1010005@siemens.com>	<512F120A.5060109@hilscher.com>	<512F4005.60000@siemens.com>	<512F48AA.8020601@hilscher.com>	<5130B39C.70300@hilscher.com>	<513465CF.4030807@hilscher.com>	<51350D5B.6060309@xenomai.org>	<5135CCDE.5090401@hilscher.com>	<5135D667.8060309@siemens.com>	<51361281.20307@hilscher.com>
+	<51364A61.3090002@xenomai.org>	<5136F9E9.9030604@hilscher.com>
+	<5136FC1E.6060608@xenomai.org>	<51371B89.4020103@hilscher.com>
+	<513730CE.2070102@xenomai.org>	<51374B98.7030103@hilscher.com>
+	<51376093.7060701@siemens.com> <5137AF89.1020009@xenomai.org>
+	<5138B33C.1060506@hilscher.com>
+In-Reply-To: <5138B33C.1060506@hilscher.com>
+Content-Type: text/plain; charset="iso-8859-1"; format="flowed"
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] Hilscher driver for cifX boards
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -26,70 +20,68 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Thu, Mar 7, 2013 at 8:51 PM, Ronny Meeus <ronny.meeus@gmail.com> wrote:
-> On Thu, Mar 7, 2013 at 4:56 PM, Philippe Gerum <rpm@xenomai.org> wrote:
->> On 03/07/2013 11:32 AM, Philippe Gerum wrote:
->>>
->>> On 03/07/2013 11:02 AM, Ronny Meeus wrote:
->>>>
->>>>
->>>> thanks for the patch.
->>>> With this patch the test application is working fine, no cpuload is
->>>> observed anymore.
->>>> Our real application on the other hand aborts after some time with
->>>> this reporting:
->>>>
->>>> ------------------------------------------------------------------------------
->>>>
->>>> [ ERROR BACKTRACE: thread root ]
->>>>
->>>>     #0  EAGAIN in t_create(), task.c:320
->>>>     #1  EAGAIN in copperplate_create_thread(), internal.c:138
->>>>
->>>> ------------------------------------------------------------------------------
->>>>
->>>>
->>>> I did not observe this when running with the xenomai before the patch.
->>>> Do you have a clue about why I see this?
->>>>
->>>>
->>>
->>> There is likely a resource leakage hiding somewhere. I'll have a look.
->>>
+Le 07/03/2013 16:33, Jerome Poncin a =E9crit :
+> Le 06/03/2013 22:05, Gilles Chanteperdrix a =E9crit :
+>> On 03/06/2013 04:28 PM, Jan Kiszka wrote:
 >>
->> After hours running the test case, I didn't see any sign of leakage, same
->> after code inspection. Maybe this bug is visible now that your app can run
->> more code. There are several potential causes for EAGAIN, however assuming
->> this is not a rlimit issue, checking /proc/vmstat while your app runs may
->> give some hint.
+>>> Also here: Do not misuse write(), define an IOCTL that contains
+>>> something like "MMAP" and another one with MUNMAP in its name - that's
+>>> the purpose of this service, no?
 >>
->> --
->> Philippe.
+>> A lot of drivers probably have to reinvent a way to pass all the
+>> parameters for an mmap, why not adding an "mmap" method to RTDM drivers?
+>>
+>>
+> Hello,
 >
-> I try to debug this issue tomorrow.
+> I  re factored my code with all your remarks (I think and I hope).
 >
-> Ronny
+> Could you say me if it's correct now ?
+>
+> Jan, you're right, It's possible to use Xenomai with UIO driver, but I=20
+> would like to use more real time possibilities of Xenomai in future=20
+> (like IRQ).
+> My first goal is to have a code compliant.
+> I added IRQ, and my next step will be to understand why the kernel=20
+> crash after IRQ registration.
+>
+> Thank you for your help,
+>
+> Jerome
+>
+>
+>
+Hello,
 
-I found the issue, thanks to your  /proc/vmstat hint.
-The problem was that the complete virtual address space was depleted
-and there was no space left to create some of the tasks.
-By reducing the memory configuration of our application the build
-starts up and the original load issue is resolved.
+I have good news because, I arrived to validated driver with IRQ=20
+support. I changed position of cifx on my motherboard in my PC and the=20
+IRQ affected is not shared ;-) !
 
-In the coming days I will do some further testing on this Xenomai
-version and let you know the result later.
+I have now a question about IRQ. What is the good method to signal to=20
+user-land that there is an IRQ. Is there an example ?
 
-In a comment in the code it is indicated that a timerwheel will be
-introduced later.
-To you have any plans for this in the near future?
-Our application is a legacy one and I think it has something like 50
-timers running.
+Thank you for your help,
+
+Jerome
+
+--=20
+
+Hilscher France
+12, rue du 35=E8me R=E9giment d'Aviation
+Miniparc du Ch=EAne
+69500 BRON
+France
+T=E9l. : +33 (0) 4 72 37 98 40
+Fax  : +33 (0) 4 78 26 83 27
+http://www.hilscher.fr
+HILSCHER FRANCE 	J=E9r=F4me Poncin
+jponcin@hilscher.com
+Ing=E9nieur D=E9veloppement Logiciel
+T=E9l. : +33 (0) 4 72 37 98 44
 
 
-Thanks for the great support.
 
-Ronny
+
 
