@@ -1,5 +1,5 @@
-Message-ID: <513CE8FD.7060604@xenomai.org>
-Date: Sun, 10 Mar 2013 21:11:41 +0100
+Message-ID: <513CE9F0.5000107@xenomai.org>
+Date: Sun, 10 Mar 2013 21:15:44 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <513CDF10.8000305@xenomai.org> <513CE48D.60304@web.de>
@@ -36,10 +36,13 @@ On 03/10/2013 08:52 PM, Jan Kiszka wrote:
 > Did you try my Xenomai upstream queue for 3.8? This should resolve the
 > cyclic dependency:
 > http://git.xenomai.org/?p=xenomai-jki.git;a=commitdiff;h=ba0fcc1736c4e3ad05389b74ffbef50f7096a1df
+> 
+> Jan
+> 
+> 
 
-
-You mean, I missed a pull request ?
-
+No luck, it is anothe issue. It is probably caused by the ARM Kconfig,
+will have a look at it.
 
 -- 
                                                                 Gilles.
