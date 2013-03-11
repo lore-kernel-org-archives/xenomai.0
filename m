@@ -1,17 +1,15 @@
-Message-ID: <513E3E04.8040708@xenomai.org>
-Date: Mon, 11 Mar 2013 21:26:44 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <513E5AB9.3060203@crubille.lautre.net>
+Date: Mon, 11 Mar 2013 23:29:13 +0100
+From: Paul <paul@crubille.lautre.net>
 MIME-Version: 1.0
-References: <51372B12.2030400@mitrol.it>	<51373149.4050700@xenomai.org>	<5137370B.2050402@mitrol.it>	<51373841.70704@xenomai.org>	<51385910.80203@mitrol.it>	<51388A3A.2090004@xenomai.org>
-	<51388DD2.2020805@mitrol.it>	<51388EB2.6000206@xenomai.org>
-	<5139DEA2.9050103@mitrol.it> <513A464E.90800@xenomai.org>
-	<513D9A17.7020204@mitrol.it> <513DD703.9070000@xenomai.org>
-	<513DE023.9010506@mitrol.it>
-In-Reply-To: <513DE023.9010506@mitrol.it>
-Content-Type: text/plain; charset=UTF-8
+References: <512BFD9E.5010501@crubille.lautre.net>
+	<512BE5A2.3090505@xenomai.org>
+	<513DA0B5.5060304@crubille.lautre.net>
+	<513D8C24.4010009@xenomai.org>
+In-Reply-To: <513D8C24.4010009@xenomai.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Sporadic problem : rt_task_sleep
-	locked	after	debugging
+Subject: Re: [Xenomai] Linux port to ARM Allwinner A13
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,112 +18,88 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Paolo Minazzi <Paolo.Minazzi@mitrol.it>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On 03/11/2013 02:46 PM, Paolo Minazzi wrote:
+Hello Gilles,
 
-> Il 11/03/2013 14.07, Gilles Chanteperdrix ha scritto:
->> On 03/11/2013 09:47 AM, Paolo Minazzi wrote:
+On 11/03/2013 08:47, Gilles Chanteperdrix wrote:
+> On 03/11/2013 10:15 AM, Paul wrote:
+>
+>> Hello,
 >>
->>> Il 08/03/2013 21.13, Gilles Chanteperdrix ha scritto:
->>>> On 03/08/2013 01:50 PM, Paolo Minazzi wrote:
->>>>
->>>>> This fault does not freeze the arm, I can countinue to work.
->>>>>
->>>>> Ideas ?
->>>> Please try the following patch:
->>>>
->>>> diff --git a/ksrc/nucleus/shadow.c b/ksrc/nucleus/shadow.c
->>>> index c91a6f3..ed3864b 100644
->>>> --- a/ksrc/nucleus/shadow.c
->>>> +++ b/ksrc/nucleus/shadow.c
->>>> @@ -1430,8 +1430,10 @@ void xnshadow_unmap(xnthread_t *thread)
->>>>    	rpi_pop(thread);
->>>>
->>>>    	sys_ppd = xnsys_ppd_get(0);
->>>> -	xnheap_free(&sys_ppd->sem_heap, thread->u_mode);
->>>> -	thread->u_mode = NULL;
->>>> +	if (thread->u_mode) {
->>>> +		xnheap_free(&sys_ppd->sem_heap, thread->u_mode);
->>>> +		thread->u_mode = NULL;
->>>> +	}
->>>>
->>>>    	xnarch_atomic_dec(&sys_ppd->refcnt);
->>>>
->>>> @@ -2379,7 +2381,7 @@ int do_hisyscall_event(unsigned event, rthal_pipeline_stage_t *stage,
->>>>          ret_handled:
->>>>
->>>>    	/* Update the userland-visible state. */
->>>> -	if (thread)
->>>> +	if (thread&&   thread->u_mode)
->>>>    		*thread->u_mode = thread->state;
->>>>
->>>>    	trace_mark(xn_nucleus, syscall_histage_exit,
->>>> @@ -2549,7 +2551,7 @@ int do_losyscall_event(unsigned event, rthal_pipeline_stage_t *stage,
->>>>          ret_handled:
->>>>
->>>>    	/* Update the userland-visible state. */
->>>> -	if (thread)
->>>> +	if (thread&&   thread->u_mode)
->>>>    		*thread->u_mode = thread->state;
->>>>
->>>>    	trace_mark(xn_nucleus, syscall_lostage_exit,
->>>>
->>> Hi Gilles,
->>> I can see the same problem under 2.6.2.1.
->>> I was debugging, after a while I could not stop anymore the code using
->>> breakpoints because all tasks are stopped at rt_task_sleep.
->>> After this, If I close the application and restart it, the rt_task sleep
->>> are blocked. I have to restart my arm processor.
->>> Any ideas ?
+>> Here are pre and post patch for xenomai on sun5i (allwinner A13). It
+>> should work for sun4i (allwinner A10) too, but is not tested for this
+>>   proc.
 >>
->> Debugging xenomai thread causes the timers to be stopped, and they are
->> supposed to be restarted when the thread blocked on the breakpoint,
->> maybe this is what goes wrong: the timers are not restarted.
+>> The tested kernels are
 >>
->> Another possibility is the hardware timer being programmed for a too
->> short delay.
->>
->> Please no private mails.
->>
->>> Paolo
->>>
->>>
+>> wget
+>> https://github.com/linux-sunxi/linux-sunxi/archive/sunxi-v3.4.24-r1.tar.gz
 >>
 >>
-> 
-> Time ago I have already tried to change a parameter 
-> ksrc/nucleus/timer.c:402 (the following is the comment ...)
->                                  /*
->                                   * Make the blocked timer elapse again
->                                   * at a reasonably close date in the
->                                   * future, waiting for the timebase to
->                                   * be unlocked at some point. Timers
->                                   * are blocked when single-stepping
->                                   * into an application using a
->                                   * debugger, so it is fine to wait for
->                                   * 250 ms for the user to continue
->                                   * program execution.
->                                   */
->                                  interval = xnarch_ns_to_tsc(250000000ULL);
->                                  goto requeue;
-> 
-> I have tried bigger and smaller value than 250ms without luck.
+>
+> and
+>
+>> wget
+>> https://github.com/linux-sunxi/linux-sunxi/archive/sunxi-v3.4.24-r2.tar.gz
+>
+>
+>
+> Fine,
+>
+>
+> but the pre patch touches a lot of things which I believe it
+> should not be touching, like entry.S.
+>
+> Is it because your patch is based on 3.2.24 and not 3.2.21? If that is
+> the case, the post patch should undo the changes made by the pre patch.
+
+The patch is based on 3.4.24 and the ipipe patch is noted to be a 3.4.6, 
+but there is no such kernel for the sunxi.
+So most of the patch fail are from the different linux version but 
+curiously, vfp/entry.S are differents in the sunxi3.4.24 and in the 
+vanill3.4.24..
+
+>
+> The coding style you use is not really the kernel coding style, see:
+> Documentation/CodingStyle
+OK, I would do it.
+>
+> For sunxi_enable_irqdesc/sunxi_disable_irqdesc, you could use a switch
+> case, or even better, define a macro SW_INT_SRCPRIO_REG(n) that gives
+> the address of the nth register, and avoid the ifs completely.
+strange, but i copy/paste this part of code from the sunxi part (and 
+found that bad):
+My first idea was to mask, shift and use the result as index in a 
+register index.
+To stay close to the actual style, ok to use switch (it is not a so 
+performance critical part).
+>
+> You do not need to manually call enable_irqdesc for the timer irq, it
+> should be called automatically. Maybe your problem is that your
+> "pic_muter_init" function is called too late, if that is the case, you
+> should call it in the function which declares the Linux timer, this one
+> should be called early enough.
+I add this in an attempt to solve a problem which have nothing to do 
+with it, and it stay here.
+To be removed.
+>
+> ipipe_ns_delay is ugly, you  can probably get away much more simply with
+> ipipe_tsc_get, or can not you simply wait for a PLL lock bit or
+> somehting? If you want to maintain ipipe_ns_delay, plase call it
+> ipipe_mach_something, and fix the coding style.
+I dont know about ipipe_tsc_get, so i will test with it.
+>
+> Please avoid dead code, and C++ comments. And the cartouches.
 
 
-As the comment says, and the code shows, the timer will elapse again and
-check if the timebase is unlocked, if the timebase is locked, it will go
-to sleep again.
-
-> If you have got some ideas I can make tests as you want.
-
-
-Provide us with an example allowing to reproduce the issue. Or
-alternatively, you can do the debug yourself following the leads I
-already gave you.
+FROM THE FOLLOWING MAIL:
+> Also, you seem to have duplicated the timer code, this should not be
+> needed, right?
+The initialisation is very close, but i think the linux-sunxi 
+timer_set_mode is broken.
 
 
--- 
-                                                                Gilles.
+
 
