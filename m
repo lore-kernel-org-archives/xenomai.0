@@ -1,5 +1,5 @@
-Message-ID: <513E5AB9.3060203@crubille.lautre.net>
-Date: Mon, 11 Mar 2013 23:29:13 +0100
+Message-ID: <513E5F09.30600@crubille.lautre.net>
+Date: Mon, 11 Mar 2013 23:47:37 +0100
 From: Paul <paul@crubille.lautre.net>
 MIME-Version: 1.0
 References: <512BFD9E.5010501@crubille.lautre.net>
@@ -21,84 +21,158 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-Hello Gilles,
+Some precision and 2 small examples about a preempt test:
 
 On 11/03/2013 08:47, Gilles Chanteperdrix wrote:
 > On 03/11/2013 10:15 AM, Paul wrote:
 >
 >> Hello,
 >>
->> Here are pre and post patch for xenomai on sun5i (allwinner A13). It
->> should work for sun4i (allwinner A10) too, but is not tested for this
->>   proc.
+>> ... ... ...
 >>
->> The tested kernels are
->>
->> wget
->> https://github.com/linux-sunxi/linux-sunxi/archive/sunxi-v3.4.24-r1.tar.gz
->>
->>
+>> I check the priority masking with a preempt test which is derived
+>> from the latency test: The real time task loop for 1/4 of its period
+>> reading and rereading the clock, so i get the min, avg and worst case
+>> that the task can be preempted while it is running.
 >
-> and
->
->> wget
->> https://github.com/linux-sunxi/linux-sunxi/archive/sunxi-v3.4.24-r2.tar.gz
+>> If you are interested in this test, i can post it when I have
+>> modified the output messages.
 >
 >
+> I do not really understand. Why would it be more preempted in the first
+> 1/4 of its period?
 >
-> Fine,
 >
->
-> but the pre patch touches a lot of things which I believe it
-> should not be touching, like entry.S.
->
-> Is it because your patch is based on 3.2.24 and not 3.2.21? If that is
-> the case, the post patch should undo the changes made by the pre patch.
-
-The patch is based on 3.4.24 and the ipipe patch is noted to be a 3.4.6, 
-but there is no such kernel for the sunxi.
-So most of the patch fail are from the different linux version but 
-curiously, vfp/entry.S are differents in the sunxi3.4.24 and in the 
-vanill3.4.24..
-
->
-> The coding style you use is not really the kernel coding style, see:
-> Documentation/CodingStyle
-OK, I would do it.
->
-> For sunxi_enable_irqdesc/sunxi_disable_irqdesc, you could use a switch
-> case, or even better, define a macro SW_INT_SRCPRIO_REG(n) that gives
-> the address of the nth register, and avoid the ifs completely.
-strange, but i copy/paste this part of code from the sunxi part (and 
-found that bad):
-My first idea was to mask, shift and use the result as index in a 
-register index.
-To stay close to the actual style, ok to use switch (it is not a so 
-performance critical part).
->
-> You do not need to manually call enable_irqdesc for the timer irq, it
-> should be called automatically. Maybe your problem is that your
-> "pic_muter_init" function is called too late, if that is the case, you
-> should call it in the function which declares the Linux timer, this one
-> should be called early enough.
-I add this in an attempt to solve a problem which have nothing to do 
-with it, and it stay here.
-To be removed.
->
-> ipipe_ns_delay is ugly, you  can probably get away much more simply with
-> ipipe_tsc_get, or can not you simply wait for a PLL lock bit or
-> somehting? If you want to maintain ipipe_ns_delay, plase call it
-> ipipe_mach_something, and fix the coding style.
-I dont know about ipipe_tsc_get, so i will test with it.
->
-> Please avoid dead code, and C++ comments. And the cartouches.
+No reason sure but -
+  It can be preempted only while it is running, so between the time it 
+is restarted after sleeping and before it go to sleep again.
+Let it running 1/4 of the period is enough to catch lots of events if 
+there is lots of irqs but not too much so linux, dohell or even xenomai 
+tasks can run just a bit slower.
 
 
-FROM THE FOLLOWING MAIL:
-> Also, you seem to have duplicated the timer code, this should not be
-> needed, right?
-The initialisation is very close, but i think the linux-sunxi 
-timer_set_mode is broken.
+Here are some result i get (yes with the priority interrupt masking, and 
+i am pretty sure it work - but the watchdog is on).
+There is a dohell at the same time in the whole experiment and i start 
+X11, stop it , restart it  ...
+
+
+root@debian:/usr/xenomai/bin# 
+/usr/src/build_xenomai/src/testsuite/preempt/preempt -p 111
+== Sampling period: 111 us
+== Test mode: periodic user-mode task
+== All results in microseconds
+warming up...
+RTT|  00:00:01  (periodic user-mode task, 111 us period, priority 99)
+RTH|----pre min|----pre avg|----pre max|-overrun|---msw|---pre 
+best|--pre worst
+RTD|      0.333|      0.374|      3.333|       0|     0|      
+0.333|      3.333
+RTD|      0.333|      0.374|     15.666|       0|     0|      0.333|     
+15.666
+---|-----------|-----------|-----------|--------|------|-------------------------
+
+RTH|----pre min|----pre avg|----pre max|-overrun|---msw|---pre 
+best|--pre worst
+RTD|      0.333|      0.374|      3.708|       0|     0|      0.333|     
+23.333
+RTD|      0.333|      0.374|      3.874|       0|     0|      0.333|     
+23.333
+RTD|      0.333|      0.374|      3.541|       0|     0|      0.333|     
+23.333
+RTD|      0.333|      0.374|      3.916|       0|     0|      0.333|     
+23.333
+RTD|      0.333|      0.374|      3.541|       0|     0|      0.333|     
+23.333
+RTD|      0.333|      0.374|      3.583|       0|     0|      0.333|     
+23.333
+RTD|      0.333|      0.374|      3.499|       0|     0|      0.333|     
+23.333
+RTD|      0.333|      0.374|      3.833|       0|     0|      0.333|     
+23.333
+RTD|      0.333|      0.374|      3.791|       0|     0|      0.333|     
+23.333
+RTD|      0.333|      0.374|      3.666|       0|     0|      0.333|     
+23.333
+RTD|      0.333|      0.374|      3.833|       0|     0|      0.333|     
+23.333
+RTD|      0.333|      0.374|      3.749|       0|     0|      0.333|     
+23.333
+RTD|      0.333|      0.374|      3.749|       0|     0|      0.333|     
+23.333
+RTD|      0.333|      0.374|      3.624|       0|     0|      0.333|     
+23.333
+^C---|-----------|-----------|-----------|--------|------|-------------------------
+RTS|      0.333|      0.374|     23.333|       0|     0|    
+00:13:33/00:13:33
+
+
+A second experiment, just setting the period to 100 (and the period for 
+the watchdog is a multiple so 3/4 it never preempt the task:
+
+/usr/src/build_xenomai/src/testsuite/preempt/preempt -p 100 -h
+== Sampling period: 100 us
+== Test mode: periodic user-mode task
+== All results in microseconds
+warming up...
+RTT|  00:00:01  (periodic user-mode task, 100 us period, priority 99)
+RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat 
+best|--lat worst
+RTD|      0.333|      0.374|      0.749|       0|     0|      
+0.333|      0.749
+RTD|      0.333|      0.374|      2.749|       0|     0|      
+0.333|      2.749
+RTD|      0.333|      0.374|      0.708|       0|     0|      
+0.333|      2.749
+RTD|      0.333|      0.374|      0.833|       0|     0|      
+0.333|      2.749
+RTD|      0.333|      0.374|      0.708|       0|     0|      
+0.333|      2.749
+RTD|      0.333|      0.374|      0.833|       0|     0|      
+0.333|      2.749
+... ... ...
+RTD|      0.333|      0.374|      3.749|       0|     0|      
+0.333|      4.541
+RTD|      0.333|      0.374|      4.166|       0|     0|      
+0.333|      4.541
+RTD|      0.333|      0.374|      3.541|       0|     0|      
+0.333|      4.541
+RTD|      0.333|      0.374|      3.791|       0|     0|      
+0.333|      4.541
+RTD|      0.333|      0.374|      3.666|       0|     0|      
+0.333|      4.541
+RTD|      0.333|      0.374|      4.416|       0|     0|      
+0.333|      4.541
+RTD|      0.333|      0.374|      3.791|       0|     0|      
+0.333|      4.541
+RTD|      0.333|      0.374|      3.874|       0|     0|      
+0.333|      4.541
+RTD|      0.333|      0.374|      3.749|       0|     0|      
+0.333|      4.541
+RTT|  00:04:13  (periodic user-mode task, 100 us period, priority 99)
+RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat 
+best|--lat worst
+RTD|      0.333|      0.374|      4.124|       0|     0|      
+0.333|      4.541
+^C---|--param|----range-|--samples
+HSD|    min|   0 -  1 |      253
+---|--param|----range-|--samples
+HSD|    avg|   0 -  1 |  2530149
+---|--param|----range-|--samples
+HSD|    max|   0 -  1 |        3
+HSD|    max|   1 -  2 |        1
+HSD|    max|   2 -  3 |        3
+HSD|    max|   3 -  4 |      186
+HSD|    max|   4 -  5 |       60
+HSH|--param|--samples-|--average--|---stddev--
+HSS|    min|       253|      0.000|      0.000
+HSS|    avg|   2530149|      0.000|      0.000
+HSS|    max|       253|      3.182|      0.583
+---|-----------|-----------|-----------|--------|------|-------------------------
+RTS|      0.333|      0.374|      4.541|       0|     0|    
+00:04:13/00:04:13
+
+
 
 
 
