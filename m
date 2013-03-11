@@ -1,15 +1,16 @@
-Message-ID: <513DD683.6020705@xenomai.org>
-Date: Mon, 11 Mar 2013 14:05:07 +0100
+Message-ID: <513DD703.9070000@xenomai.org>
+Date: Mon, 11 Mar 2013 14:07:15 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <20130228094644.5CCB8C91@centrum.cz>,
-	<512FB7B0.1040003@xenomai.org>,
-	<20130301095437.EB654F58@centrum.cz> <51309A54.7090101@xenomai.org>
-	<20130311113513.D17FAEF8@centrum.cz>
-In-Reply-To: <20130311113513.D17FAEF8@centrum.cz>
+References: <51372B12.2030400@mitrol.it>	<51373149.4050700@xenomai.org>	<5137370B.2050402@mitrol.it>	<51373841.70704@xenomai.org>	<51385910.80203@mitrol.it>	<51388A3A.2090004@xenomai.org>
+	<51388DD2.2020805@mitrol.it>	<51388EB2.6000206@xenomai.org>
+	<5139DEA2.9050103@mitrol.it> <513A464E.90800@xenomai.org>
+	<513D9A17.7020204@mitrol.it>
+In-Reply-To: <513D9A17.7020204@mitrol.it>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] mutex problem
+Subject: Re: [Xenomai] Sporadic problem : rt_task_sleep
+	locked	after	debugging
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,23 +19,78 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Petr Cervenka <grugh@centrum.cz>
+To: Paolo Minazzi <Paolo.Minazzi@mitrol.it>
 Cc: Xenomai <xenomai@xenomai.org>
 
-On 03/11/2013 11:35 AM, Petr Cervenka wrote:
+On 03/11/2013 09:47 AM, Paolo Minazzi wrote:
 
-> The problem with mutexes is still present. I'm really desperate now.
-> Does anyone know, how the mutex could "stay locked" when every
-> "acquire" is sooner or later followed by "release" and both functions
-> always return 0 (success) code? Every advice is appreciated.
+> Il 08/03/2013 21.13, Gilles Chanteperdrix ha scritto:
+>> On 03/08/2013 01:50 PM, Paolo Minazzi wrote:
+>>
+>>> This fault does not freeze the arm, I can countinue to work.
+>>>
+>>> Ideas ?
+>>
+>> Please try the following patch:
+>>
+>> diff --git a/ksrc/nucleus/shadow.c b/ksrc/nucleus/shadow.c
+>> index c91a6f3..ed3864b 100644
+>> --- a/ksrc/nucleus/shadow.c
+>> +++ b/ksrc/nucleus/shadow.c
+>> @@ -1430,8 +1430,10 @@ void xnshadow_unmap(xnthread_t *thread)
+>>   	rpi_pop(thread);
+>>
+>>   	sys_ppd = xnsys_ppd_get(0);
+>> -	xnheap_free(&sys_ppd->sem_heap, thread->u_mode);
+>> -	thread->u_mode = NULL;
+>> +	if (thread->u_mode) {
+>> +		xnheap_free(&sys_ppd->sem_heap, thread->u_mode);
+>> +		thread->u_mode = NULL;
+>> +	}
+>>
+>>   	xnarch_atomic_dec(&sys_ppd->refcnt);
+>>
+>> @@ -2379,7 +2381,7 @@ int do_hisyscall_event(unsigned event, rthal_pipeline_stage_t *stage,
+>>         ret_handled:
+>>
+>>   	/* Update the userland-visible state. */
+>> -	if (thread)
+>> +	if (thread&&  thread->u_mode)
+>>   		*thread->u_mode = thread->state;
+>>
+>>   	trace_mark(xn_nucleus, syscall_histage_exit,
+>> @@ -2549,7 +2551,7 @@ int do_losyscall_event(unsigned event, rthal_pipeline_stage_t *stage,
+>>         ret_handled:
+>>
+>>   	/* Update the userland-visible state. */
+>> -	if (thread)
+>> +	if (thread&&  thread->u_mode)
+>>   		*thread->u_mode = thread->state;
+>>
+>>   	trace_mark(xn_nucleus, syscall_lostage_exit,
+>>
+> Hi Gilles,
+> I can see the same problem under 2.6.2.1.
+> I was debugging, after a while I could not stop anymore the code using 
+> breakpoints because all tasks are stopped at rt_task_sleep.
+> After this, If I close the application and restart it, the rt_task sleep 
+> are blocked. I have to restart my arm processor.
+> Any ideas ?
 
 
-Could you provide us with a simple test case which would allow us to
-reproduce the problem?
+Debugging xenomai thread causes the timers to be stopped, and they are
+supposed to be restarted when the thread blocked on the breakpoint,
+maybe this is what goes wrong: the timers are not restarted.
 
-Other than that, you can try forcing the path through the kernel for
-every mutex call, enable the I-pipe tracer, and trigger a trace as soon
-as you detect that the mutex is not free after a release.
+Another possibility is the hardware timer being programmed for a too
+short delay.
+
+Please no private mails.
+
+> Paolo
+> 
+> 
+
 
 
 -- 
