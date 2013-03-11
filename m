@@ -1,12 +1,11 @@
-Message-ID: <513CE9F0.5000107@xenomai.org>
-Date: Sun, 10 Mar 2013 21:15:44 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <1362975314.45141.YahooMailNeo@web161406.mail.bf1.yahoo.com>
+Date: Sun, 10 Mar 2013 21:15:14 -0700 (PDT)
+From: Tom Z <tomz30@yahoo.com>
 MIME-Version: 1.0
-References: <513CDF10.8000305@xenomai.org> <513CE48D.60304@web.de>
-In-Reply-To: <513CE48D.60304@web.de>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] recursive dependency
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] how to install a "preemption hook"?
+Reply-To: Tom Z <tomz30@yahoo.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,35 +14,12 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@web.de>
-Cc: Xenomai <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 03/10/2013 08:52 PM, Jan Kiszka wrote:
-
-> On 2013-03-10 20:29, Gilles Chanteperdrix wrote:
->>
->> Hi,
->>
->> I get this warning when compiling Xenomai based on Linux 3.8 for ARM:
->>
->> kernel/ipipe/Kconfig:1:error: recursive dependency detected!
->> kernel/ipipe/Kconfig:1: symbol IPIPE is selected by XENOMAI
->> init/Kconfig:1763:      symbol XENOMAI depends on IPIPE_CORE
->> kernel/ipipe/Kconfig:16:        symbol IPIPE_CORE depends on IPIPE
->>
->> Any idea how to avoid this?
-> 
-> Did you try my Xenomai upstream queue for 3.8? This should resolve the
-> cyclic dependency:
-> http://git.xenomai.org/?p=xenomai-jki.git;a=commitdiff;h=ba0fcc1736c4e3ad05389b74ffbef50f7096a1df
-> 
-> Jan
-> 
-> 
-
-No luck, it is anothe issue. It is probably caused by the ARM Kconfig,
-will have a look at it.
-
--- 
-                                                                Gilles.
-
+Hi,=0A=0AI am using native APIs to do some development and have a question =
+recently. I have a task A with a medium priority, so during A's execution, =
+it could be preempted by higher-priority tasks or interrupts. What I want t=
+o do is to install a hook so that whenever A is preempted, this hook is exe=
+cuted immediately after A is preempted, but before the execution of the tas=
+k that preempts A.=0A=0AHow can I accomplish this goal? Any ideas would be =
+highly appreciated.=0A=0ATom
