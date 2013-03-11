@@ -1,13 +1,15 @@
-Message-ID: <513DC20D.6060606@web.de>
-Date: Mon, 11 Mar 2013 12:37:49 +0100
-From: Jan Kiszka <jan.kiszka@web.de>
+Message-ID: <513DD683.6020705@xenomai.org>
+Date: Mon, 11 Mar 2013 14:05:07 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <513CDF10.8000305@xenomai.org> <513CE48D.60304@web.de>
-	<513CE8FD.7060604@xenomai.org>
-In-Reply-To: <513CE8FD.7060604@xenomai.org>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] recursive dependency
+References: <20130228094644.5CCB8C91@centrum.cz>,
+	<512FB7B0.1040003@xenomai.org>,
+	<20130301095437.EB654F58@centrum.cz> <51309A54.7090101@xenomai.org>
+	<20130311113513.D17FAEF8@centrum.cz>
+In-Reply-To: <20130311113513.D17FAEF8@centrum.cz>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] mutex problem
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,26 +18,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Petr Cervenka <grugh@centrum.cz>
 Cc: Xenomai <xenomai@xenomai.org>
 
-T24gMjAxMy0wMy0xMCAyMToxMSwgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4gT24gMDMv
-MTAvMjAxMyAwODo1MiBQTSwgSmFuIEtpc3prYSB3cm90ZToKPiAKPj4gT24gMjAxMy0wMy0xMCAy
-MDoyOSwgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4+Pgo+Pj4gSGksCj4+Pgo+Pj4gSSBn
-ZXQgdGhpcyB3YXJuaW5nIHdoZW4gY29tcGlsaW5nIFhlbm9tYWkgYmFzZWQgb24gTGludXggMy44
-IGZvciBBUk06Cj4+Pgo+Pj4ga2VybmVsL2lwaXBlL0tjb25maWc6MTplcnJvcjogcmVjdXJzaXZl
-IGRlcGVuZGVuY3kgZGV0ZWN0ZWQhCj4+PiBrZXJuZWwvaXBpcGUvS2NvbmZpZzoxOiBzeW1ib2wg
-SVBJUEUgaXMgc2VsZWN0ZWQgYnkgWEVOT01BSQo+Pj4gaW5pdC9LY29uZmlnOjE3NjM6ICAgICAg
-c3ltYm9sIFhFTk9NQUkgZGVwZW5kcyBvbiBJUElQRV9DT1JFCj4+PiBrZXJuZWwvaXBpcGUvS2Nv
-bmZpZzoxNjogICAgICAgIHN5bWJvbCBJUElQRV9DT1JFIGRlcGVuZHMgb24gSVBJUEUKPj4+Cj4+
-PiBBbnkgaWRlYSBob3cgdG8gYXZvaWQgdGhpcz8KPj4KPj4gRGlkIHlvdSB0cnkgbXkgWGVub21h
-aSB1cHN0cmVhbSBxdWV1ZSBmb3IgMy44PyBUaGlzIHNob3VsZCByZXNvbHZlIHRoZQo+PiBjeWNs
-aWMgZGVwZW5kZW5jeToKPj4gaHR0cDovL2dpdC54ZW5vbWFpLm9yZy8/cD14ZW5vbWFpLWpraS5n
-aXQ7YT1jb21taXRkaWZmO2g9YmEwZmNjMTczNmM0ZTNhZDA1Mzg5Yjc0ZmZiZWY1MGY3MDk2YTFk
-Zgo+IAo+IAo+IFlvdSBtZWFuLCBJIG1pc3NlZCBhIHB1bGwgcmVxdWVzdCA/CgpEaWRuJ3QgYW5u
-b3VuY2UgaXQgZXhwbGljaXRseSBhcyBJLXBpcGUgZm9yIDMuOCBpcyBub3QgeWV0IHJlbGVhc2Vk
-LgoKSmFuCgoKLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRl
-eHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogc2lnbmF0dXJlLmFzYwpUeXBlOiBh
-cHBsaWNhdGlvbi9wZ3Atc2lnbmF0dXJlClNpemU6IDI2MyBieXRlcwpEZXNjOiBPcGVuUEdQIGRp
-Z2l0YWwgc2lnbmF0dXJlClVSTDogPGh0dHA6Ly93d3cueGVub21haS5vcmcvcGlwZXJtYWlsL3hl
-bm9tYWkvYXR0YWNobWVudHMvMjAxMzAzMTEvZDNmMTNiM2MvYXR0YWNobWVudC5wZ3A+Cg==
+On 03/11/2013 11:35 AM, Petr Cervenka wrote:
+
+> The problem with mutexes is still present. I'm really desperate now.
+> Does anyone know, how the mutex could "stay locked" when every
+> "acquire" is sooner or later followed by "release" and both functions
+> always return 0 (success) code? Every advice is appreciated.
+
+
+Could you provide us with a simple test case which would allow us to
+reproduce the problem?
+
+Other than that, you can try forcing the path through the kernel for
+every mutex call, enable the I-pipe tracer, and trigger a trace as soon
+as you detect that the mutex is not free after a release.
+
+
+-- 
+                                                                Gilles.
+
