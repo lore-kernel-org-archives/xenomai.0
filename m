@@ -1,14 +1,13 @@
-Date: Mon, 11 Mar 2013 11:35:13 +0100
-From: =?utf-8?q?Petr_Cervenka?= <grugh@centrum.cz>
-References: <20130228094644.5CCB8C91@centrum.cz>,
-	<512FB7B0.1040003@xenomai.org>,
-	<20130301095437.EB654F58@centrum.cz> <51309A54.7090101@xenomai.org>
-In-Reply-To: <51309A54.7090101@xenomai.org>
+Message-ID: <513DC20D.6060606@web.de>
+Date: Mon, 11 Mar 2013 12:37:49 +0100
+From: Jan Kiszka <jan.kiszka@web.de>
 MIME-Version: 1.0
-Message-Id: <20130311113513.D17FAEF8@centrum.cz>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] =?utf-8?q?mutex_problem?=
+References: <513CDF10.8000305@xenomai.org> <513CE48D.60304@web.de>
+	<513CE8FD.7060604@xenomai.org>
+In-Reply-To: <513CE8FD.7060604@xenomai.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai] recursive dependency
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,66 +16,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Xenomai <xenomai@xenomai.org>
 
-The problem with mutexes is still present. I'm really desperate now. Does=
- anyone know, how the mutex could "stay locked" when every "acquire" is s=
-ooner or later followed by "release" and both functions always return 0 (=
-success) code?
-Every advice is appreciated.
-
-Petr
-
->>>=20
->>>> Hello.
->>>>=20
->>>> I have a problem with a mutex shared by 3 real-time user tasks.
->>>> Once in a while (~hours) the mutex get locked with the first task
->>>> as owner and the other two tasks are fronzen on rt_mutex_aquire
->>>> calls. But I have double checked, that every "acquire" of that
->>>> mutex is followed by "release".
->>>>=20
->>>> Typical example: Lets call those tasks REG, SEND, RECEIVE
->>>>=20
->>>> RECV: acquire RECV: release
->>>>=20
->>>> RECV: acquire RECV: release
->>>>=20
->>>> RECV: acquire - FREEZE
->>>>=20
->>>> REG: acquire REG: release
->>>>=20
->>>> REG: acquire REG: release
->>>>=20
->>>> REG: acquire REG: release
->>>>=20
->>>> SEND: acquire - FREEZE
->>>>=20
->>>> There are also other threads, sync. objects, network sockets, ...
->>>> in the system, but the threads are frozen by this particular
->>>> mutex. rt_task_unblock call unblocks the tasks, return value of
->>>> rt_mutex_acquire is -4 (-EINTR), as expected. Used version of
->>>> Xenomai 2.5.6, skin native. Was there any known issue similar to
->>>> that behavior? Also it seems that rt_mutex_create is called
->>>> before mlockall call? Could it be a problem?
->>>=20
->>>=20
->>> It is a bit old to recall. Could you try and reproduce the problem
->>> with 2.6.2.1 ?
->>>=20
->>=20
->> I tried to use new version of everything (kernel 3.5.7, xenomai
->> 2.6.2.1, ...) and I got some exception to the kernel log in
->> rt_mutex_create. So I suppose that the problem was caused by calling
->> of rt_mutex_create before mlockall. I already fixed it and now I'm
->> waiting for some longer term results. I for now it seems to be
->> SOLVED. If not, I will let you know. Thank you for your support.
->
->
->It is not expected to get a crash, though, will try and see if I can
->reproduce the problem.
->
->--=20
->                                                                Gilles.
->
-
+T24gMjAxMy0wMy0xMCAyMToxMSwgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4gT24gMDMv
+MTAvMjAxMyAwODo1MiBQTSwgSmFuIEtpc3prYSB3cm90ZToKPiAKPj4gT24gMjAxMy0wMy0xMCAy
+MDoyOSwgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4+Pgo+Pj4gSGksCj4+Pgo+Pj4gSSBn
+ZXQgdGhpcyB3YXJuaW5nIHdoZW4gY29tcGlsaW5nIFhlbm9tYWkgYmFzZWQgb24gTGludXggMy44
+IGZvciBBUk06Cj4+Pgo+Pj4ga2VybmVsL2lwaXBlL0tjb25maWc6MTplcnJvcjogcmVjdXJzaXZl
+IGRlcGVuZGVuY3kgZGV0ZWN0ZWQhCj4+PiBrZXJuZWwvaXBpcGUvS2NvbmZpZzoxOiBzeW1ib2wg
+SVBJUEUgaXMgc2VsZWN0ZWQgYnkgWEVOT01BSQo+Pj4gaW5pdC9LY29uZmlnOjE3NjM6ICAgICAg
+c3ltYm9sIFhFTk9NQUkgZGVwZW5kcyBvbiBJUElQRV9DT1JFCj4+PiBrZXJuZWwvaXBpcGUvS2Nv
+bmZpZzoxNjogICAgICAgIHN5bWJvbCBJUElQRV9DT1JFIGRlcGVuZHMgb24gSVBJUEUKPj4+Cj4+
+PiBBbnkgaWRlYSBob3cgdG8gYXZvaWQgdGhpcz8KPj4KPj4gRGlkIHlvdSB0cnkgbXkgWGVub21h
+aSB1cHN0cmVhbSBxdWV1ZSBmb3IgMy44PyBUaGlzIHNob3VsZCByZXNvbHZlIHRoZQo+PiBjeWNs
+aWMgZGVwZW5kZW5jeToKPj4gaHR0cDovL2dpdC54ZW5vbWFpLm9yZy8/cD14ZW5vbWFpLWpraS5n
+aXQ7YT1jb21taXRkaWZmO2g9YmEwZmNjMTczNmM0ZTNhZDA1Mzg5Yjc0ZmZiZWY1MGY3MDk2YTFk
+Zgo+IAo+IAo+IFlvdSBtZWFuLCBJIG1pc3NlZCBhIHB1bGwgcmVxdWVzdCA/CgpEaWRuJ3QgYW5u
+b3VuY2UgaXQgZXhwbGljaXRseSBhcyBJLXBpcGUgZm9yIDMuOCBpcyBub3QgeWV0IHJlbGVhc2Vk
+LgoKSmFuCgoKLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRl
+eHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogc2lnbmF0dXJlLmFzYwpUeXBlOiBh
+cHBsaWNhdGlvbi9wZ3Atc2lnbmF0dXJlClNpemU6IDI2MyBieXRlcwpEZXNjOiBPcGVuUEdQIGRp
+Z2l0YWwgc2lnbmF0dXJlClVSTDogPGh0dHA6Ly93d3cueGVub21haS5vcmcvcGlwZXJtYWlsL3hl
+bm9tYWkvYXR0YWNobWVudHMvMjAxMzAzMTEvZDNmMTNiM2MvYXR0YWNobWVudC5wZ3A+Cg==
