@@ -1,10 +1,13 @@
-Message-ID: <51351D5F.4070201@xenomai.org>
-Date: Mon, 04 Mar 2013 23:17:03 +0100
+Message-ID: <513D92B0.7000504@xenomai.org>
+Date: Mon, 11 Mar 2013 09:15:44 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
+References: <512BFD9E.5010501@crubille.lautre.net>	<512BE5A2.3090505@xenomai.org>	<513DA0B5.5060304@crubille.lautre.net>
+	<513D8C24.4010009@xenomai.org>
+In-Reply-To: <513D8C24.4010009@xenomai.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] I-pipe pull requests
+Subject: Re: [Xenomai] Linux port to ARM Allwinner A13
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,44 +16,22 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Paul <paul@crubille.lautre.net>
+Cc: xenomai@xenomai.org
+
+On 03/11/2013 08:47 AM, Gilles Chanteperdrix wrote:
+
+> On 03/11/2013 10:15 AM, Paul wrote:
+> 
+>> Hello,
+>>
+>> Here are pre and post patch for xenomai on sun5i (allwinner A13). It
+>> should work for sun4i (allwinner A10) too, but is not tested for this
+>>  proc.
 
 
-Hi Philippe,
-
-Please pull the for-3.4 and for core-3.5.7 in the ipipe-gch.git, there
-is only one commit.
-
-Regards.
-
-The following changes since commit 946ca3977e75316751caecc7182f4e64af6499d5:
-
-  ipipe-core-3.5.7-blackfin-3 (2013-01-22 11:41:34 +0100)
-
-are available in the git repository at:
-  git://git.xenomai.org/ipipe-gch.git for-core-3.5.7
-
-Gilles Chanteperdrix (1):
-      arm/ipipe: fix off-by-one error in IPI virqs allocation
-
- arch/arm/kernel/smp.c |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
-
-
-The following changes since commit 7b032e6d3c458a49e6419d098c54d90f2def9290:
-
-  ipipe-core-3.4.6-powerpc-4 (2013-01-22 11:43:59 +0100)
-
-are available in the git repository at:
-  git://git.xenomai.org/ipipe-gch.git for-core-3.4
-
-Gilles Chanteperdrix (1):
-      arm/ipipe: fix off-by-one error in IPI virqs allocation
-
- arch/arm/kernel/smp.c |    2 +-
- 1 files changed, 1 insertions(+), 1 deletions(-)
-
+Also, you seem to have duplicated the timer code, this should not be
+needed, right?
 
 -- 
                                                                 Gilles.
