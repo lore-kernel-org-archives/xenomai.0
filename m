@@ -1,13 +1,14 @@
-Message-ID: <513DA08D.9000209@xenomai.org>
-Date: Mon, 11 Mar 2013 10:14:53 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Date: Mon, 11 Mar 2013 11:35:13 +0100
+From: =?utf-8?q?Petr_Cervenka?= <grugh@centrum.cz>
+References: <20130228094644.5CCB8C91@centrum.cz>,
+	<512FB7B0.1040003@xenomai.org>,
+	<20130301095437.EB654F58@centrum.cz> <51309A54.7090101@xenomai.org>
+In-Reply-To: <51309A54.7090101@xenomai.org>
 MIME-Version: 1.0
-References: <513CDF10.8000305@xenomai.org> <513CE48D.60304@web.de>
-	<513CE9F0.5000107@xenomai.org>
-In-Reply-To: <513CE9F0.5000107@xenomai.org>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] recursive dependency
+Message-Id: <20130311113513.D17FAEF8@centrum.cz>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] =?utf-8?q?mutex_problem?=
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,41 +17,66 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Jan Kiszka <jan.kiszka@web.de>, Xenomai <xenomai@xenomai.org>
+To: Xenomai <xenomai@xenomai.org>
 
-On 03/10/2013 09:15 PM, Gilles Chanteperdrix wrote:
-> On 03/10/2013 08:52 PM, Jan Kiszka wrote:
+The problem with mutexes is still present. I'm really desperate now. Does=
+ anyone know, how the mutex could "stay locked" when every "acquire" is s=
+ooner or later followed by "release" and both functions always return 0 (=
+success) code?
+Every advice is appreciated.
+
+Petr
+
+>>>=20
+>>>> Hello.
+>>>>=20
+>>>> I have a problem with a mutex shared by 3 real-time user tasks.
+>>>> Once in a while (~hours) the mutex get locked with the first task
+>>>> as owner and the other two tasks are fronzen on rt_mutex_aquire
+>>>> calls. But I have double checked, that every "acquire" of that
+>>>> mutex is followed by "release".
+>>>>=20
+>>>> Typical example: Lets call those tasks REG, SEND, RECEIVE
+>>>>=20
+>>>> RECV: acquire RECV: release
+>>>>=20
+>>>> RECV: acquire RECV: release
+>>>>=20
+>>>> RECV: acquire - FREEZE
+>>>>=20
+>>>> REG: acquire REG: release
+>>>>=20
+>>>> REG: acquire REG: release
+>>>>=20
+>>>> REG: acquire REG: release
+>>>>=20
+>>>> SEND: acquire - FREEZE
+>>>>=20
+>>>> There are also other threads, sync. objects, network sockets, ...
+>>>> in the system, but the threads are frozen by this particular
+>>>> mutex. rt_task_unblock call unblocks the tasks, return value of
+>>>> rt_mutex_acquire is -4 (-EINTR), as expected. Used version of
+>>>> Xenomai 2.5.6, skin native. Was there any known issue similar to
+>>>> that behavior? Also it seems that rt_mutex_create is called
+>>>> before mlockall call? Could it be a problem?
+>>>=20
+>>>=20
+>>> It is a bit old to recall. Could you try and reproduce the problem
+>>> with 2.6.2.1 ?
+>>>=20
+>>=20
+>> I tried to use new version of everything (kernel 3.5.7, xenomai
+>> 2.6.2.1, ...) and I got some exception to the kernel log in
+>> rt_mutex_create. So I suppose that the problem was caused by calling
+>> of rt_mutex_create before mlockall. I already fixed it and now I'm
+>> waiting for some longer term results. I for now it seems to be
+>> SOLVED. If not, I will let you know. Thank you for your support.
 >
->> On 2013-03-10 20:29, Gilles Chanteperdrix wrote:
->>>
->>> Hi,
->>>
->>> I get this warning when compiling Xenomai based on Linux 3.8 for ARM:
->>>
->>> kernel/ipipe/Kconfig:1:error: recursive dependency detected!
->>> kernel/ipipe/Kconfig:1: symbol IPIPE is selected by XENOMAI
->>> init/Kconfig:1763:      symbol XENOMAI depends on IPIPE_CORE
->>> kernel/ipipe/Kconfig:16:        symbol IPIPE_CORE depends on IPIPE
->>>
->>> Any idea how to avoid this?
->>
->> Did you try my Xenomai upstream queue for 3.8? This should resolve the
->> cyclic dependency:
->> http://git.xenomai.org/?p=xenomai-jki.git;a=commitdiff;h=ba0fcc1736c4e3ad05389b74ffbef50f7096a1df
->>
->> Jan
->>
->>
 >
-> No luck, it is anothe issue. It is probably caused by the ARM Kconfig,
-> will have a look at it.
+>It is not expected to get a crash, though, will try and see if I can
+>reproduce the problem.
 >
-
-I had to fix this on -forge too:
-5f481e0 cobalt/nucleus: fix recursive dependency on IPIPE symbols
-
-
--- 
-Philippe.
+>--=20
+>                                                                Gilles.
+>
 
