@@ -1,12 +1,13 @@
-Message-ID: <513D83A2.4020004@xenomai.org>
-Date: Mon, 11 Mar 2013 08:11:30 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <513DA0B5.5060304@crubille.lautre.net>
+Date: Mon, 11 Mar 2013 10:15:33 +0100
+From: Paul <paul@crubille.lautre.net>
 MIME-Version: 1.0
-References: <1362975314.45141.YahooMailNeo@web161406.mail.bf1.yahoo.com>
-In-Reply-To: <1362975314.45141.YahooMailNeo@web161406.mail.bf1.yahoo.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] how to install a "preemption hook"?
+References: <512BFD9E.5010501@crubille.lautre.net>
+	<512BE5A2.3090505@xenomai.org>
+In-Reply-To: <512BE5A2.3090505@xenomai.org>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Subject: Re: [Xenomai] Linux port to ARM Allwinner A13
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,27 +16,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Tom Z <tomz30@yahoo.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On 03/11/2013 05:15 AM, Tom Z wrote:
-
-> Hi,
-> 
-> I am using native APIs to do some development and have a question
-> recently. I have a task A with a medium priority, so during A's
-> execution, it could be preempted by higher-priority tasks or
-> interrupts. What I want to do is to install a hook so that whenever A
-> is preempted, this hook is executed immediately after A is preempted,
-> but before the execution of the task that preempts A.
-> 
-> How can I accomplish this goal? Any ideas would be highly
-> appreciated.
-
-
-In kernel-space, you can use rt_task_add_hook:
-http://www.xenomai.org/documentation/xenomai-2.6/html/api/group__task.html#ga7452f367f9e17bf2fc0b70f717b96dd8
-
--- 
-                                                                Gilles.
-
+SGVsbG8sCgpIZXJlIGFyZSBwcmUgYW5kIHBvc3QgcGF0Y2ggZm9yIHhlbm9tYWkgb24gc3VuNWkg
+KGFsbHdpbm5lciBBMTMpLgpJdCBzaG91bGQgd29yayBmb3Igc3VuNGkgKGFsbHdpbm5lciBBMTAp
+IHRvbywgYnV0IGlzIG5vdCB0ZXN0ZWQgZm9yIHRoaXMgCnByb2MuCgpUaGUgdGVzdGVkIGtlcm5l
+bHMgYXJlCgp3Z2V0IApodHRwczovL2dpdGh1Yi5jb20vbGludXgtc3VueGkvbGludXgtc3VueGkv
+YXJjaGl2ZS9zdW54aS12My40LjI0LXIxLnRhci5negphbmQKd2dldCAKaHR0cHM6Ly9naXRodWIu
+Y29tL2xpbnV4LXN1bnhpL2xpbnV4LXN1bnhpL2FyY2hpdmUvc3VueGktdjMuNC4yNC1yMi50YXIu
+Z3oKCkl0IGltcGxlbWVudCBwcmlvcml0eSBpbnRlcnJ1cHQgbWFza2luZy4KCkkgY2hlY2sgdGhl
+IHByaW9yaXR5IG1hc2tpbmcgd2l0aCBhIHByZWVtcHQgdGVzdCB3aGljaCBpcyBkZXJpdmVkIGZy
+b20gCnRoZSBsYXRlbmN5IHRlc3Q6ClRoZSByZWFsIHRpbWUgdGFzayBsb29wIGZvciAxLzQgb2Yg
+aXRzIHBlcmlvZCByZWFkaW5nIGFuZCByZXJlYWRpbmcgdGhlIApjbG9jaywgc28gaSBnZXQKdGhl
+IG1pbiwgYXZnIGFuZCB3b3JzdCBjYXNlIHRoYXQgdGhlIHRhc2sgY2FuIGJlIHByZWVtcHRlZCB3
+aGlsZSBpdCBpcyAKcnVubmluZy4KCklmIHlvdSBhcmUgaW50ZXJlc3RlZCBpbiB0aGlzIHRlc3Qs
+IGkgY2FuIHBvc3QgaXQgd2hlbiBJIGhhdmUgbW9kaWZpZWQgCnRoZSBvdXRwdXQgbWVzc2FnZXMu
+CgpQYXVsIENydWJpbGzDqQoKLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0t
+CkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogcHJlLnBhdGNoClR5
+cGU6IHRleHQveC1wYXRjaApTaXplOiA5MDczIGJ5dGVzCkRlc2M6IG5vdCBhdmFpbGFibGUKVVJM
+OiA8aHR0cDovL3d3dy54ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8y
+MDEzMDMxMS83NTM2ZWVmMy9hdHRhY2htZW50LmJpbj4KLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0
+IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFt
+ZTogcG9zdC5wYXRjaApUeXBlOiB0ZXh0L3gtcGF0Y2gKU2l6ZTogMjAwODQgYnl0ZXMKRGVzYzog
+bm90IGF2YWlsYWJsZQpVUkw6IDxodHRwOi8vd3d3Lnhlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5v
+bWFpL2F0dGFjaG1lbnRzLzIwMTMwMzExLzc1MzZlZWYzL2F0dGFjaG1lbnQtMDAwMS5iaW4+Cg==
