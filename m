@@ -1,12 +1,13 @@
-Message-ID: <513DA0B5.5060304@crubille.lautre.net>
-Date: Mon, 11 Mar 2013 10:15:33 +0100
-From: Paul <paul@crubille.lautre.net>
+Message-ID: <513D8C24.4010009@xenomai.org>
+Date: Mon, 11 Mar 2013 08:47:48 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <512BFD9E.5010501@crubille.lautre.net>
 	<512BE5A2.3090505@xenomai.org>
-In-Reply-To: <512BE5A2.3090505@xenomai.org>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+	<513DA0B5.5060304@crubille.lautre.net>
+In-Reply-To: <513DA0B5.5060304@crubille.lautre.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] Linux port to ARM Allwinner A13
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -16,28 +17,83 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Paul <paul@crubille.lautre.net>
 Cc: xenomai@xenomai.org
 
-SGVsbG8sCgpIZXJlIGFyZSBwcmUgYW5kIHBvc3QgcGF0Y2ggZm9yIHhlbm9tYWkgb24gc3VuNWkg
-KGFsbHdpbm5lciBBMTMpLgpJdCBzaG91bGQgd29yayBmb3Igc3VuNGkgKGFsbHdpbm5lciBBMTAp
-IHRvbywgYnV0IGlzIG5vdCB0ZXN0ZWQgZm9yIHRoaXMgCnByb2MuCgpUaGUgdGVzdGVkIGtlcm5l
-bHMgYXJlCgp3Z2V0IApodHRwczovL2dpdGh1Yi5jb20vbGludXgtc3VueGkvbGludXgtc3VueGkv
-YXJjaGl2ZS9zdW54aS12My40LjI0LXIxLnRhci5negphbmQKd2dldCAKaHR0cHM6Ly9naXRodWIu
-Y29tL2xpbnV4LXN1bnhpL2xpbnV4LXN1bnhpL2FyY2hpdmUvc3VueGktdjMuNC4yNC1yMi50YXIu
-Z3oKCkl0IGltcGxlbWVudCBwcmlvcml0eSBpbnRlcnJ1cHQgbWFza2luZy4KCkkgY2hlY2sgdGhl
-IHByaW9yaXR5IG1hc2tpbmcgd2l0aCBhIHByZWVtcHQgdGVzdCB3aGljaCBpcyBkZXJpdmVkIGZy
-b20gCnRoZSBsYXRlbmN5IHRlc3Q6ClRoZSByZWFsIHRpbWUgdGFzayBsb29wIGZvciAxLzQgb2Yg
-aXRzIHBlcmlvZCByZWFkaW5nIGFuZCByZXJlYWRpbmcgdGhlIApjbG9jaywgc28gaSBnZXQKdGhl
-IG1pbiwgYXZnIGFuZCB3b3JzdCBjYXNlIHRoYXQgdGhlIHRhc2sgY2FuIGJlIHByZWVtcHRlZCB3
-aGlsZSBpdCBpcyAKcnVubmluZy4KCklmIHlvdSBhcmUgaW50ZXJlc3RlZCBpbiB0aGlzIHRlc3Qs
-IGkgY2FuIHBvc3QgaXQgd2hlbiBJIGhhdmUgbW9kaWZpZWQgCnRoZSBvdXRwdXQgbWVzc2FnZXMu
-CgpQYXVsIENydWJpbGzDqQoKLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0t
-CkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogcHJlLnBhdGNoClR5
-cGU6IHRleHQveC1wYXRjaApTaXplOiA5MDczIGJ5dGVzCkRlc2M6IG5vdCBhdmFpbGFibGUKVVJM
-OiA8aHR0cDovL3d3dy54ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8y
-MDEzMDMxMS83NTM2ZWVmMy9hdHRhY2htZW50LmJpbj4KLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0
-IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFt
-ZTogcG9zdC5wYXRjaApUeXBlOiB0ZXh0L3gtcGF0Y2gKU2l6ZTogMjAwODQgYnl0ZXMKRGVzYzog
-bm90IGF2YWlsYWJsZQpVUkw6IDxodHRwOi8vd3d3Lnhlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5v
-bWFpL2F0dGFjaG1lbnRzLzIwMTMwMzExLzc1MzZlZWYzL2F0dGFjaG1lbnQtMDAwMS5iaW4+Cg==
+On 03/11/2013 10:15 AM, Paul wrote:
+
+> Hello,
+> 
+> Here are pre and post patch for xenomai on sun5i (allwinner A13). It
+> should work for sun4i (allwinner A10) too, but is not tested for this
+>  proc.
+> 
+> The tested kernels are
+> 
+> wget 
+> https://github.com/linux-sunxi/linux-sunxi/archive/sunxi-v3.4.24-r1.tar.gz
+>
+> 
+
+
+and
+
+> wget 
+> https://github.com/linux-sunxi/linux-sunxi/archive/sunxi-v3.4.24-r2.tar.gz
+
+
+
+
+Fine,
+
+> 
+
+
+but the pre patch touches a lot of things which I believe it
+should not be touching, like entry.S.
+
+Is it because your patch is based on 3.2.24 and not 3.2.21? If that is
+the case, the post patch should undo the changes made by the pre patch.
+
+The coding style you use is not really the kernel coding style, see:
+Documentation/CodingStyle
+
+For sunxi_enable_irqdesc/sunxi_disable_irqdesc, you could use a switch
+case, or even better, define a macro SW_INT_SRCPRIO_REG(n) that gives
+the address of the nth register, and avoid the ifs completely.
+
+You do not need to manually call enable_irqdesc for the timer irq, it
+should be called automatically. Maybe your problem is that your
+"pic_muter_init" function is called too late, if that is the case, you
+should call it in the function which declares the Linux timer, this one
+should be called early enough.
+
+ipipe_ns_delay is ugly, you  can probably get away much more simply with
+ipipe_tsc_get, or can not you simply wait for a PLL lock bit or
+somehting? If you want to maintain ipipe_ns_delay, plase call it
+ipipe_mach_something, and fix the coding style.
+
+Please avoid dead code, and C++ comments. And the cartouches.
+
+> 
+> It implement priority interrupt masking.
+> 
+> I check the priority masking with a preempt test which is derived
+> from the latency test: The real time task loop for 1/4 of its period
+> reading and rereading the clock, so i get the min, avg and worst case
+> that the task can be preempted while it is running.
+
+
+> 
+> If you are interested in this test, i can post it when I have
+> modified the output messages.
+
+
+
+I do not really understand. Why would it be more preempted in the first
+1/4 of its period?
+
+
+-- 
+                                                                Gilles.
+
