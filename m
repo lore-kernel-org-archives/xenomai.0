@@ -1,21 +1,13 @@
-Message-ID: <513D9704.4040708@control.lth.se>
-Date: Mon, 11 Mar 2013 09:34:12 +0100
-From: Anders Blomdell <anders.blomdell@control.lth.se>
+Message-ID: <513DA08D.9000209@xenomai.org>
+Date: Mon, 11 Mar 2013 10:14:53 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <511CD2FB.7010502@gmail.com> <511DDBD5.4060505@web.de>
-	<51236088.1030402@gmail.com> <51236A75.5090400@siemens.com>
-	<5123C910.7090107@siemens.com> <5123DDBE.8060105@web.de>
-	<512778A0.6090300@gmail.com> <51277B66.60505@siemens.com>
-	<512B9A86.4060900@siemens.com> <512BB672.7080900@control.lth.se>
-	<512BB714.6080707@siemens.com>
-	<512BC4E2.4020605@control.lth.se> <512BDF7F.3030005@web.de>
-	<512CDB6C.9010700@control.lth.se> <512CDBA8.2050706@siemens.com>
-	<512F92C3.1070003@control.lth.se> <512F9428.5000103@siemens.com>
-In-Reply-To: <512F9428.5000103@siemens.com>
+References: <513CDF10.8000305@xenomai.org> <513CE48D.60304@web.de>
+	<513CE9F0.5000107@xenomai.org>
+In-Reply-To: <513CE9F0.5000107@xenomai.org>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] (Boot)-problems with (current) ipipe patch on AMD FX
- 61000 - 2.6.38.8 & 3.5.7
+Subject: Re: [Xenomai] recursive dependency
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -24,154 +16,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Jan Kiszka <jan.kiszka@web.de>, Xenomai <xenomai@xenomai.org>
 
-On 2013-02-28 18:30, Jan Kiszka wrote:
-> On 2013-02-28 18:24, Anders Blomdell wrote:
->> On 2013-02-26 16:58, Jan Kiszka wrote:
->>> On 2013-02-26 16:57, Anders Blomdell wrote:
->>>> On 2013-02-25 23:02, Jan Kiszka wrote:
->>>>> On 2013-02-25 21:09, Anders Blomdell wrote:
->>>>>> On 2013-02-25 20:10, Jan Kiszka wrote:
->>>>>>> On 2013-02-25 20:07, Anders Blomdell wrote:
->>>>>>>> On 2013-02-25 18:08, Jan Kiszka wrote:
->>>>>>>>> As 3.5 is dead, this fix will never make it there unless we
->>>>>>>>> back-port.
->>>>>>>>> While I'm doing this, could you try if
->>>>>>>>>
->>>>>>>>>          git://git.xenomai.org/ipipe-jki.git for-upstream/master
->>>>>>>> I'm probably more stupid than normal (i.e I can't find any ipipe for
->>>>>>>> x86_64):
->>>>>>>>
->>>>>>>> # git clone git://git.xenomai.org/ipipe-jki.git for-upstream/master
->>>>>>>
->>>>>>> git clone git://git.xenomai.org/ipipe-jki.git
->>>>>>> git checkout -b for-upstream/master origin/for-upstream/master
->>>>>> OK, thanks. Do I need to setup xenomai in order to gain any useful
->>>>>> information, or is:
->>>>>>
->>>>>> CONFIG_IPIPE=y
->>>>>> CONFIG_IPIPE_LEGACY=y
->>>>>> CONFIG_IPIPE_CORE=y
->>>>>> CONFIG_IPIPE_CORE_APIREV=2
->>>>>> CONFIG_IPIPE_TARGET_APIREV=1
->>>>>> CONFIG_IPIPE_HAVE_HOSTRT=y
->>>>>> CONFIG_IPIPE_DELAYED_ATOMICSW=y
->>>>>> # CONFIG_IPIPE_DEBUG is not set
->>>>>>
->>>>>> sufficient?
->>>>>
->>>>> Plain I-pipe will suffice as the the interrupt virtualization is
->>>>> unconditional, thus __ipipe_handle_irq is always taken.
->>>>>
->>>>> Alternatively, here is the backported patch over 3.5.7:
->>>>>
->>>>> diff --git a/arch/x86/kernel/apic/io_apic.c
->>>>> b/arch/x86/kernel/apic/io_apic.c
->>>>> index 08e5ad4..aade7f0 100644
->>>>> --- a/arch/x86/kernel/apic/io_apic.c
->>>>> +++ b/arch/x86/kernel/apic/io_apic.c
->>>>> @@ -234,11 +234,11 @@ int __init arch_early_irq_init(void)
->>>>>             zalloc_cpumask_var_node(&cfg[i].old_domain, GFP_KERNEL, node);
->>>>>             /*
->>>>>              * For legacy IRQ's, start with assigning irq0 to irq15 to
->>>>> -         * IRQ0_VECTOR to IRQ15_VECTOR on cpu 0.
->>>>> +         * IRQ0_VECTOR to IRQ15_VECTOR for all cpu's.
->>>>>              */
->>>>>             if (i < legacy_pic->nr_legacy_irqs) {
->>>>>                 cfg[i].vector = IRQ0_VECTOR + i;
->>>>> -            cpumask_set_cpu(0, cfg[i].domain);
->>>>> +            cpumask_setall(cfg[i].domain);
->>>>>             }
->>>>>         }
->>>>>
->>>>> @@ -1181,8 +1181,9 @@ next:
->>>>>             current_vector = vector;
->>>>>             current_offset = offset;
->>>>>             if (old_vector) {
->>>>> -            cfg->move_in_progress = 1;
->>>>>                 cpumask_copy(cfg->old_domain, cfg->domain);
->>>>> +            cfg->move_in_progress =
->>>>> +               cpumask_intersects(cfg->old_domain, cpu_online_mask);
->>>>>             }
->>>>>             for_each_cpu_and(new_cpu, tmp_mask, cpu_online_mask)
->>>>>                 per_cpu(vector_irq, new_cpu)[vector] = irq;
->>>>> @@ -1250,12 +1251,6 @@ void __setup_vector_irq(int cpu)
->>>>>             cfg = irq_get_chip_data(irq);
->>>>>             if (!cfg)
->>>>>                 continue;
->>>>> -        /*
->>>>> -         * If it is a legacy IRQ handled by the legacy PIC, this cpu
->>>>> -         * will be part of the irq_cfg's domain.
->>>>> -         */
->>>>> -        if (irq < legacy_pic->nr_legacy_irqs && !IO_APIC_IRQ(irq))
->>>>> -            cpumask_set_cpu(cpu, cfg->domain);
->>>>>
->>>>>             if (!cpumask_test_cpu(cpu, cfg->domain))
->>>>>                 continue;
->>>>> @@ -1380,13 +1375,6 @@ static void setup_ioapic_irq(unsigned int irq,
->>>>> struct irq_cfg *cfg,
->>>>>
->>>>>         if (!IO_APIC_IRQ(irq))
->>>>>             return;
->>>>> -    /*
->>>>> -     * For legacy irqs, cfg->domain starts with cpu 0 for legacy
->>>>> -     * controllers like 8259. Now that IO-APIC can handle this irq,
->>>>> update
->>>>> -     * the cfg->domain.
->>>>> -     */
->>>>> -    if (irq < legacy_pic->nr_legacy_irqs && cpumask_test_cpu(0,
->>>>> cfg->domain))
->>>>> -        apic->vector_allocation_domain(0, cfg->domain);
->>>>>
->>>>>         if (assign_irq_vector(irq, cfg, apic->target_cpus()))
->>>>>             return;
->>>>
->>>> Thanks, have put both versions under test on different machines. Will
->>>> come back if it crashes.
->> No crash, but the system that had spurious interrupts before (DX79SI)
->> running 3.8.0-rc7+ ipipe only, was just seen doing this:
->>
->> [227422.688553] do_IRQ: 0.182 No irq handler for vector (irq -1)
->> [229142.795703] do_IRQ: 2.230 No irq handler for vector (irq -1)
->> [231501.284207] do_IRQ: 0.151 No irq handler for vector (irq -1)
+On 03/10/2013 09:15 PM, Gilles Chanteperdrix wrote:
+> On 03/10/2013 08:52 PM, Jan Kiszka wrote:
 >
-> Well, might be "normal" then, specifically if vanilla says the same.
-> That's something you could try afterward, if 3.8 without I-pipe still
-> generates these warnings.
->
+>> On 2013-03-10 20:29, Gilles Chanteperdrix wrote:
+>>>
+>>> Hi,
+>>>
+>>> I get this warning when compiling Xenomai based on Linux 3.8 for ARM:
+>>>
+>>> kernel/ipipe/Kconfig:1:error: recursive dependency detected!
+>>> kernel/ipipe/Kconfig:1: symbol IPIPE is selected by XENOMAI
+>>> init/Kconfig:1763:      symbol XENOMAI depends on IPIPE_CORE
+>>> kernel/ipipe/Kconfig:16:        symbol IPIPE_CORE depends on IPIPE
+>>>
+>>> Any idea how to avoid this?
 >>
->> But as I said no crash :-). DX58SO with backported 3.5.7 has been stable
->> so far...
+>> Did you try my Xenomai upstream queue for 3.8? This should resolve the
+>> cyclic dependency:
+>> http://git.xenomai.org/?p=xenomai-jki.git;a=commitdiff;h=ba0fcc1736c4e3ad05389b74ffbef50f7096a1df
 >>
+>> Jan
 >>
->>> Then I hope you'll stay away...
->> Sorry...
 >>
 >
-> Could be worse. ;)
-Maybe it is, the DX58SO/3.5.7 (on which I haven't seen any do_IRQ's 
-without ipipe/xenomai) has crashed three times (with an interval of 
-about a week). It looks like the do_IRQ is immediately followed by 
-inaccessible disks (hence no tracebacks), but most other things seems to 
-work until it needs the disk. All crashes has been on off hours (i.e 
-probably light load).
+> No luck, it is anothe issue. It is probably caused by the ARM Kconfig,
+> will have a look at it.
+>
 
-These are the entries caught by the logserver.
+I had to fix this on -forge too:
+5f481e0 cobalt/nucleus: fix recursive dependency on IPIPE symbols
 
-do_IRQ: 2.166 No irq handler for vector (irq -1)
-do_IRQ: 3.42 No irq handler for vector (irq -1)
-do_IRQ: 0.42 No irq handler for vector (irq -1)
 
-Any finished 3.8 patch I could try?
-
-/Anders
 -- 
-Anders Blomdell                  Email: anders.blomdell@control.lth.se
-Department of Automatic Control
-Lund University                  Phone:    +46 46 222 4625
-P.O. Box 118                     Fax:      +46 46 138118
-SE-221 00 Lund, Sweden
-
+Philippe.
 
