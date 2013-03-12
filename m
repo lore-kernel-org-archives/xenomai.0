@@ -1,10 +1,10 @@
-Message-ID: <513F96BA.4030309@xenomai.org>
-Date: Tue, 12 Mar 2013 21:57:30 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <513F9DF2.2030803@antcom.de>
+Date: Tue, 12 Mar 2013 22:28:18 +0100
+From: Roland Stigge <stigge@antcom.de>
 MIME-Version: 1.0
 References: <1362541011.90317.YahooMailNeo@web161401.mail.bf1.yahoo.com>
-	<5136F3A6.8090400@antcom.de>
-In-Reply-To: <5136F3A6.8090400@antcom.de>
+	<5136F3A6.8090400@antcom.de> <513F96BA.4030309@xenomai.org>
+In-Reply-To: <513F96BA.4030309@xenomai.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] about Xenomai in Debian and Ubuntu
@@ -16,69 +16,57 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Roland Stigge <stigge@antcom.de>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 03/06/2013 08:43 AM, Roland Stigge wrote:
-
-> Hi,
+On 03/12/2013 09:57 PM, Gilles Chanteperdrix wrote:
+> Roland, at some point I lost track of what your intentions were. In the
+> following mail:
+> http://www.xenomai.org/pipermail/xenomai/2012-July/000473.html
 > 
-> On 06/03/13 04:36, Tom Z wrote:
->> I noticed that Debian and Ubuntu desktop distro's have included Xenomai, 
->> and I can "install" Xenomai through the software center in these 
->> distro's.
+> You seemed to agree to take care of the debian directory in xenomai
+> sources, asking me to simply warn you before a release.
+> Which I did before the 2.6.2 release in the following mail:
 > 
-> I can only speak for Debian here. We deliberately don't promote it as
-> "desktop distro". Rather as "Universal OS", to underline its use in the
-> Server, Embedded, Realtime areas, etc.
+> http://www.xenomai.org/pipermail/xenomai/2012-December/027051.html
 > 
->> But after I "installed" Xenomai in Ubuntu, executing  "dmesg | grep xenomai" showed nothing, so I am wondering if I still need to 
->> patch and compile the kernels before using the Xenomai features? If so, 
->> what benefits does it have to include Xenomai in these distro's.
-> 
-> First, you still have to compile the Xenomai-enabled kernel yourself
-> (but this might change in the future).
+> With a list of things which could be changed in the debian/rules file,
+> inviting you to do what I had understood you had agreed to do.
+
+When you propose things, and implement them, fine. That's your decision.
+When you propose things and I implement them, also fine. That's my
+decision. But please don't expect me to just follow commands. That's not
+my nature at all. Sorry.
+
+> http://www.xenomai.org/pipermail/xenomai/2012-December/027052.html
+> You simply told me that you did not even try debian/rules, following
+> this, Leopold sent a post with a patch to fix the issue before the
+> release, but your reply could be interpreted as the fact that the patch
+> was actually broken, you did not send a fixed patch for the update, and
+> as a result 2.6.2 was released with a broken debian directory.
+
+Please don't over-interpret things I actually didn't say at all. Every
+patch is welcome, including things you propose, and from other
+contributors. When I see conflicts in the code, I will state that clearly.
+
+> Which is why, for the 2.6.2.1 release, I did not warn you (since it had
+> proved useless anyway)
+
+This is also your interpretation of things, and your own decision. Not
+discussed with me.
+
+Sorry when I missed some detail in the past. Please don't let this lead
+to bad further communication in return, or blaming each other.
+
+Thanks,
+
+Roland
 
 
-Roland, at some point I lost track of what your intentions were. In the
-following mail:
-http://www.xenomai.org/pipermail/xenomai/2012-July/000473.html
+PS: I consider Debian itself the primary source of Debian packages and
+will continue to do so. When people ask specific questions about those,
+I'll answer accordingly.
 
-You seemed to agree to take care of the debian directory in xenomai
-sources, asking me to simply warn you before a release.
-Which I did before the 2.6.2 release in the following mail:
-
-http://www.xenomai.org/pipermail/xenomai/2012-December/027051.html
-
-With a list of things which could be changed in the debian/rules file,
-inviting you to do what I had understood you had agreed to do.
-
-In this answer:
-http://www.xenomai.org/pipermail/xenomai/2012-December/027052.html
-You simply told me that you did not even try debian/rules, following
-this, Leopold sent a post with a patch to fix the issue before the
-release, but your reply could be interpreted as the fact that the patch
-was actually broken, you did not send a fixed patch for the update, and
-as a result 2.6.2 was released with a broken debian directory.
-
-Which is why, for the 2.6.2.1 release, I did not warn you (since it had
-proved useless anyway) and took the liberty to do the changes to
-debian/rules myself, as, according to what I had said many times on this
-list, I started to set-up a debian repository (following your advices on
-the way to do it, use reprepro), and so needed a working debian/rules.
-The aim of this was to avoid the kind of questions "Tom Z" is asking.
-
-Now, since I did the Debian packages following your advice, and
-basically did the work that you did not want to do, I do not really
-understand why you keep ignoring the fact that we have not one but two
-sources of up to date pre-buid debian kernel packages for Debian
-squeeze, and continue to give answers to "Tom Z" misguiding him in
-compiling the Xenomai package from the tarball, not even from the debian
-directory.
-
-Regards.
-
-
--- 
-                                                                Gilles.
+PPS: If you consider your tone as helpful towards positive motivation of
+contributors, please rethink.
 
