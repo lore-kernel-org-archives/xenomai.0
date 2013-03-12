@@ -1,10 +1,17 @@
-Date: Tue, 12 Mar 2013 10:29:38 +0100
-From: =?utf-8?q?Petr_Cervenka?= <grugh@centrum.cz>
+Message-ID: <513F0123.4030906@mitrol.it>
+Date: Tue, 12 Mar 2013 11:19:15 +0100
+From: Paolo Minazzi <Paolo.Minazzi@mitrol.it>
 MIME-Version: 1.0
-Message-Id: <20130312102938.B04FB5F2@centrum.cz>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] =?utf-8?q?mutex_problem?=
+References: <51372B12.2030400@mitrol.it>	<51373149.4050700@xenomai.org>	<5137370B.2050402@mitrol.it>	<51373841.70704@xenomai.org>	<51385910.80203@mitrol.it>	<51388A3A.2090004@xenomai.org>
+	<51388DD2.2020805@mitrol.it>	<51388EB2.6000206@xenomai.org>
+	<5139DEA2.9050103@mitrol.it> <513A464E.90800@xenomai.org>
+	<513D9A17.7020204@mitrol.it> <513DD703.9070000@xenomai.org>
+	<513DE023.9010506@mitrol.it> <513E3E04.8040708@xenomai.org>
+In-Reply-To: <513E3E04.8040708@xenomai.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Sporadic problem : rt_task_sleep locked	after
+	debugging
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,49 +20,118 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?utf-8?q?Gilles_Chanteperdrix?= <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-> Od: "Gilles Chanteperdrix"=20
-> Komu: Petr Cervenka=20
-> Datum: 11.03.2013 14:05
-> P=C5=99edm=C4=9Bt: Re: [Xenomai] mutex problem
+Il 11/03/2013 21.26, Gilles Chanteperdrix ha scritto:
+> On 03/11/2013 02:46 PM, Paolo Minazzi wrote:
 >
-> CC: "Xenomai" <xenomai@xenomai.org>
->On 03/11/2013 11:35 AM, Petr Cervenka wrote:
+>> Il 11/03/2013 14.07, Gilles Chanteperdrix ha scritto:
+>>> On 03/11/2013 09:47 AM, Paolo Minazzi wrote:
+>>>
+>>>> Il 08/03/2013 21.13, Gilles Chanteperdrix ha scritto:
+>>>>> On 03/08/2013 01:50 PM, Paolo Minazzi wrote:
+>>>>>
+>>>>>> This fault does not freeze the arm, I can countinue to work.
+>>>>>>
+>>>>>> Ideas ?
+>>>>> Please try the following patch:
+>>>>>
+>>>>> diff --git a/ksrc/nucleus/shadow.c b/ksrc/nucleus/shadow.c
+>>>>> index c91a6f3..ed3864b 100644
+>>>>> --- a/ksrc/nucleus/shadow.c
+>>>>> +++ b/ksrc/nucleus/shadow.c
+>>>>> @@ -1430,8 +1430,10 @@ void xnshadow_unmap(xnthread_t *thread)
+>>>>>     	rpi_pop(thread);
+>>>>>
+>>>>>     	sys_ppd = xnsys_ppd_get(0);
+>>>>> -	xnheap_free(&sys_ppd->sem_heap, thread->u_mode);
+>>>>> -	thread->u_mode = NULL;
+>>>>> +	if (thread->u_mode) {
+>>>>> +		xnheap_free(&sys_ppd->sem_heap, thread->u_mode);
+>>>>> +		thread->u_mode = NULL;
+>>>>> +	}
+>>>>>
+>>>>>     	xnarch_atomic_dec(&sys_ppd->refcnt);
+>>>>>
+>>>>> @@ -2379,7 +2381,7 @@ int do_hisyscall_event(unsigned event, rthal_pipeline_stage_t *stage,
+>>>>>           ret_handled:
+>>>>>
+>>>>>     	/* Update the userland-visible state. */
+>>>>> -	if (thread)
+>>>>> +	if (thread&&    thread->u_mode)
+>>>>>     		*thread->u_mode = thread->state;
+>>>>>
+>>>>>     	trace_mark(xn_nucleus, syscall_histage_exit,
+>>>>> @@ -2549,7 +2551,7 @@ int do_losyscall_event(unsigned event, rthal_pipeline_stage_t *stage,
+>>>>>           ret_handled:
+>>>>>
+>>>>>     	/* Update the userland-visible state. */
+>>>>> -	if (thread)
+>>>>> +	if (thread&&    thread->u_mode)
+>>>>>     		*thread->u_mode = thread->state;
+>>>>>
+>>>>>     	trace_mark(xn_nucleus, syscall_lostage_exit,
+>>>>>
+>>>> Hi Gilles,
+>>>> I can see the same problem under 2.6.2.1.
+>>>> I was debugging, after a while I could not stop anymore the code using
+>>>> breakpoints because all tasks are stopped at rt_task_sleep.
+>>>> After this, If I close the application and restart it, the rt_task sleep
+>>>> are blocked. I have to restart my arm processor.
+>>>> Any ideas ?
+>>> Debugging xenomai thread causes the timers to be stopped, and they are
+>>> supposed to be restarted when the thread blocked on the breakpoint,
+>>> maybe this is what goes wrong: the timers are not restarted.
+>>>
+>>> Another possibility is the hardware timer being programmed for a too
+>>> short delay.
+>>>
+>>> Please no private mails.
+>>>
+>>>> Paolo
+>>>>
+>>>>
+>>>
+>> Time ago I have already tried to change a parameter
+>> ksrc/nucleus/timer.c:402 (the following is the comment ...)
+>>                                   /*
+>>                                    * Make the blocked timer elapse again
+>>                                    * at a reasonably close date in the
+>>                                    * future, waiting for the timebase to
+>>                                    * be unlocked at some point. Timers
+>>                                    * are blocked when single-stepping
+>>                                    * into an application using a
+>>                                    * debugger, so it is fine to wait for
+>>                                    * 250 ms for the user to continue
+>>                                    * program execution.
+>>                                    */
+>>                                   interval = xnarch_ns_to_tsc(250000000ULL);
+>>                                   goto requeue;
+>>
+>> I have tried bigger and smaller value than 250ms without luck.
 >
->> The problem with mutexes is still present. I'm really desperate now.
->> Does anyone know, how the mutex could "stay locked" when every
->> "acquire" is sooner or later followed by "release" and both functions
->> always return 0 (success) code? Every advice is appreciated.
+> As the comment says, and the code shows, the timer will elapse again and
+> check if the timebase is unlocked, if the timebase is locked, it will go
+> to sleep again.
+>
+>> If you have got some ideas I can make tests as you want.
+>
+> Provide us with an example allowing to reproduce the issue. Or
+> alternatively, you can do the debug yourself following the leads I
+> already gave you.
 >
 >
->Could you provide us with a simple test case which would allow us to
->reproduce the problem?
->
->Other than that, you can try forcing the path through the kernel for
->every mutex call, enable the I-pipe tracer, and trigger a trace as soon
->as you detect that the mutex is not free after a release.
->
+Unfortunately it is not easy make a small program that produce the problem.
+I have tried making the debugging with gdb an automatic process, but I 
+cannot see the problem.
+I can uderstand that timer stops because a problem in programming the 
+timer interval.
+But I do not understand why if I use CTRL-C to stop the application (in 
+a moment that rt_task_sleep are blocked) I have still the same problem 
+(rt_task_sleep blocked). The only solution to use a realtime process is 
+to reset my arm processor. Why xenomai does not reset all when I start a 
+xenomai application ?
 
-Sadly, I'm not able to reproduce it with simple test.
-Maybe I was not clear, the mutex stays not locked after "release". But I =
-think it is locked by something else because the seldom strange behavior.=
- Example of it follows:
-Imagine threads A and B
-A acquires lock
-A releases lock
-B acquires lock
-B releases lock
-B tries to acquire lock, but the mutex is already locked and the owner is=
- A!
+Paolo
 
-Also the inicialization order of threads/mutexes/... transfered the probl=
-em to another mutex (and threads). Owner is the same thread as before (hi=
- priority, short time period).
-
-PS: Meanwhile I found another mutex, which was deleted immediately after =
-creation, but commonly used later.
-
-Petr
 
