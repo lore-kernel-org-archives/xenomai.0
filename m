@@ -1,14 +1,10 @@
-Message-ID: <513EF0F0.4070705@hilscher.com>
-Date: Tue, 12 Mar 2013 10:10:08 +0100
-From: Jerome Poncin <JPoncin@hilscher.com>
+Date: Tue, 12 Mar 2013 10:29:38 +0100
+From: =?utf-8?q?Petr_Cervenka?= <grugh@centrum.cz>
 MIME-Version: 1.0
-References: <512C806F.2020209@hilscher.com>	<512C9E78.1060208@siemens.com>	<512CC5C6.8050204@hilscher.com>	<512CC6A3.1010005@siemens.com>	<512F120A.5060109@hilscher.com>	<512F4005.60000@siemens.com>	<512F48AA.8020601@hilscher.com>	<5130B39C.70300@hilscher.com>	<513465CF.4030807@hilscher.com>	<51350D5B.6060309@xenomai.org>	<5135CCDE.5090401@hilscher.com>	<5135D667.8060309@siemens.com>	<51361281.20307@hilscher.com>	<51364A61.3090002@xenomai.org>	<5136F9E9.9030604@hilscher.com>	<5136FC1E.6060608@xenomai.org>	<51371B89.4020103@hilscher.com>	<513730CE.2070102@xenomai.org>	<51374B98.7030103@hilscher.com>	<51376093.7060701@siemens.com>
-	<5137AF89.1020009@xenomai.org>	<5138B33C.1060506@hilscher.com>
-	<5139BABA.8010602@hilscher.com> <5139D7F5.2090904@xenomai.org>
-In-Reply-To: <5139D7F5.2090904@xenomai.org>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Subject: Re: [Xenomai] Hilscher driver for cifX boards
+Message-Id: <20130312102938.B04FB5F2@centrum.cz>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] =?utf-8?q?mutex_problem?=
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,81 +13,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: =?utf-8?q?Gilles_Chanteperdrix?= <gilles.chanteperdrix@xenomai.org>
+Cc: Xenomai <xenomai@xenomai.org>
 
-TGUgMDgvMDMvMjAxMyAxMzoyMiwgR2lsbGVzIENoYW50ZXBlcmRyaXggYSDDqWNyaXQgOgo+IE9u
-IDAzLzA4LzIwMTMgMTE6MTcgQU0sIEplcm9tZSBQb25jaW4gd3JvdGU6Cj4KPj4gTGUgMDcvMDMv
-MjAxMyAxNjozMywgSmVyb21lIFBvbmNpbiBhIMOpY3JpdCA6Cj4+PiBMZSAwNi8wMy8yMDEzIDIy
-OjA1LCBHaWxsZXMgQ2hhbnRlcGVyZHJpeCBhIMOpY3JpdCA6Cj4+Pj4gT24gMDMvMDYvMjAxMyAw
-NDoyOCBQTSwgSmFuIEtpc3prYSB3cm90ZToKPj4+Pgo+Pj4+PiBBbHNvIGhlcmU6IERvIG5vdCBt
-aXN1c2Ugd3JpdGUoKSwgZGVmaW5lIGFuIElPQ1RMIHRoYXQgY29udGFpbnMKPj4+Pj4gc29tZXRo
-aW5nIGxpa2UgIk1NQVAiIGFuZCBhbm90aGVyIG9uZSB3aXRoIE1VTk1BUCBpbiBpdHMgbmFtZSAt
-IHRoYXQncwo+Pj4+PiB0aGUgcHVycG9zZSBvZiB0aGlzIHNlcnZpY2UsIG5vPwo+Pj4+IEEgbG90
-IG9mIGRyaXZlcnMgcHJvYmFibHkgaGF2ZSB0byByZWludmVudCBhIHdheSB0byBwYXNzIGFsbCB0
-aGUKPj4+PiBwYXJhbWV0ZXJzIGZvciBhbiBtbWFwLCB3aHkgbm90IGFkZGluZyBhbiAibW1hcCIg
-bWV0aG9kIHRvIFJURE0gZHJpdmVycz8KPj4+Pgo+Pj4+Cj4+PiBIZWxsbywKPj4+Cj4+PiBJICBy
-ZSBmYWN0b3JlZCBteSBjb2RlIHdpdGggYWxsIHlvdXIgcmVtYXJrcyAoSSB0aGluayBhbmQgSSBo
-b3BlKS4KPj4+Cj4+PiBDb3VsZCB5b3Ugc2F5IG1lIGlmIGl0J3MgY29ycmVjdCBub3cgPwo+Pj4K
-Pj4+IEphbiwgeW91J3JlIHJpZ2h0LCBJdCdzIHBvc3NpYmxlIHRvIHVzZSBYZW5vbWFpIHdpdGgg
-VUlPIGRyaXZlciwgYnV0IEkKPj4+IHdvdWxkIGxpa2UgdG8gdXNlIG1vcmUgcmVhbCB0aW1lIHBv
-c3NpYmlsaXRpZXMgb2YgWGVub21haSBpbiBmdXR1cmUKPj4+IChsaWtlIElSUSkuCj4+PiBNeSBm
-aXJzdCBnb2FsIGlzIHRvIGhhdmUgYSBjb2RlIGNvbXBsaWFudC4KPj4+IEkgYWRkZWQgSVJRLCBh
-bmQgbXkgbmV4dCBzdGVwIHdpbGwgYmUgdG8gdW5kZXJzdGFuZCB3aHkgdGhlIGtlcm5lbAo+Pj4g
-Y3Jhc2ggYWZ0ZXIgSVJRIHJlZ2lzdHJhdGlvbi4KPj4+Cj4+PiBUaGFuayB5b3UgZm9yIHlvdXIg
-aGVscCwKPj4+Cj4+PiBKZXJvbWUKPj4+Cj4+Pgo+Pj4KPj4gSGVsbG8sCj4+Cj4+IEkgaGF2ZSBn
-b29kIG5ld3MgYmVjYXVzZSwgSSBhcnJpdmVkIHRvIHZhbGlkYXRlZCBkcml2ZXIgd2l0aCBJUlEK
-Pj4gc3VwcG9ydC4gSSBjaGFuZ2VkIHBvc2l0aW9uIG9mIGNpZnggb24gbXkgbW90aGVyYm9hcmQg
-aW4gbXkgUEMgYW5kIHRoZQo+PiBJUlEgYWZmZWN0ZWQgaXMgbm90IHNoYXJlZCA7LSkgIQo+Pgo+
-PiBJIGhhdmUgbm93IGEgcXVlc3Rpb24gYWJvdXQgSVJRLiBXaGF0IGlzIHRoZSBnb29kIG1ldGhv
-ZCB0byBzaWduYWwgdG8KPj4gdXNlci1sYW5kIHRoYXQgdGhlcmUgaXMgYW4gSVJRLiBJcyB0aGVy
-ZSBhbiBleGFtcGxlID8KPgo+IEFsbW9zdCBldmVyeSAicmVhZCIgY2FsbCBpcyBhbiBleGFtcGxl
-Li4uIDstKQo+CkhlbGxvLAoKSSdtIGZpbmlzaGluZyBteSBkcml2ZXIgd2l0aCBJUlEuIEkgc2F3
-IHRoYXQgdGhlcmUgaXMgdHdvIG1vZGUsIFJlYWwgCnRpbWUgYW5kIE5vbiByZWFsIHRpbWUgZm9y
-IFJURE0gZHJpdmVyIGZ1bmN0aW9uLgpNeSBkcml2ZXIgc2hvdWxkIHJ1biBpbiB0aGUgdHdvIG1v
-ZGUuIFdoZW4gSSBjb21waWxlIG15IFVzZXIgU3BhY2UgClNoYXJlZCBsaWJyYXJ5IHRoYXQgY2Fs
-bCBYZW5vbWFpIEtlcm5lbCBkcml2ZXIsCkkgc2F3IHRoYXQgbGlicmFyeSBjYWxsIGV2ZXJ5IHRp
-bWUgTm9uIHJlYWwgdGltZSBmdW5jdGlvbiBhbmQgbm8gcmVhbCAKdGltZSBmdW5jdGlvbi4uLgpJ
-IHVzZSBhIHNoYXJlZCBsaWJyYXJ5IHdpdGggcG9zaXggc2tpbiB3aXRoIG1ha2VmaWxlIGluIGF0
-dGFjaGVkIGZpbGUuIEkgCnJlYWQgZXhwbGFuYXRpb24gZm9yIHN0YXRpYyBsaWJyYXJ5IHdpdGgg
-cG9zaXggc2tpbiA6CgpodHRwOi8vd3d3Lnhlbm9tYWkub3JnL2luZGV4LnBocC9Qb3J0aW5nX1BP
-U0lYX2FwcGxpY2F0aW9uc190b19YZW5vbWFpCgpXaGF0IG11c3QgSSBkbyB3aXRoIHNoYXJlZCBs
-aWJyYXJ5IGZvciB1c2luZyBydCBtb2RlID8KCkplcm9tZQoKCgotLS0tLS0tLS0tLS0tLSBuZXh0
-IHBhcnQgLS0tLS0tLS0tLS0tLS0KIyAtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KIyBsaW5lIGJlbG93
-IHNob3VsZCBub3QgYmUgY2hhbmdlZAojIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQojIyMgRGVmYXVs
-dCBYZW5vbWFpIGluc3RhbGxhdGlvbiBwYXRoClhFTk8gPz0gL3Vzci94ZW5vbWFpCgpYRU5PQ09O
-RklHPSQoc2hlbGwgUEFUSD0kKFhFTk8pOiQoWEVOTykvYmluOiQoUEFUSCkgd2hpY2ggeGVuby1j
-b25maWcgMj4vZGV2L251bGwpCgojIyMgU2FuaXR5IGNoZWNrCmlmZXEgKCQoWEVOT0NPTkZJRyks
-KQphbGw6OgoJQGVjaG8gIj4+PiBJbnZva2UgbWFrZSBsaWtlIHRoaXM6IFwibWFrZSBYRU5PPS9w
-YXRoL3RvL3hlbm8tY29uZmlnXCIgPDw8IgoJQGVjaG8KZW5kaWYKCgpDQz0kKHNoZWxsICQoWEVO
-T0NPTkZJRykgLS1jYykKCkNGTEFHUz0tRENPTlNVTUVSICQoc2hlbGwgJChYRU5PQ09ORklHKSAt
-LXNraW49cG9zaXggLS1jZmxhZ3MpICQoTVlfQ0ZMQUdTKQoKTERGTEFHUz0kKE1ZX0xERkxBR1Mp
-CkxETElCUz0kKHNoZWxsICQoWEVOT0NPTkZJRykgLS1za2luPXBvc2l4IC0tbGRmbGFncykKCiMg
-VGhpcyBpbmNsdWRlcyB0aGUgbGlicmFyeSBwYXRoIG9mIGdpdmVuIFhlbm9tYWkgaW50byB0aGUg
-YmluYXJ5IHRvIG1ha2UgbGl2ZQojIGVhc2llciBmb3IgYmVnaW5uZXJzIGlmIFhlbm9tYWkncyBs
-aWJzIGFyZSBub3QgaW4gYW55IGRlZmF1bHQgc2VhcmNoIHBhdGguCkxERkxBR1MrPS1YbGlua2Vy
-IC1ycGF0aCAtWGxpbmtlciAkKHNoZWxsICQoWEVOT0NPTkZJRykgLS1saWJkaXIpCgpLU1JDID89
-IC91c3IveGVub21haS9pbmNsdWRlCkxTUkMgPz0gLi8KVEtTUkMgPz0gLi9Ub29sa2l0CgpJTkNM
-VURFIDo9IC1JJChLU1JDKS9pbmNsdWRlL3hlbm9tYWkgLUkkKEtTUkMpL2luY2x1ZGUveGVub21h
-aS9jb21wYXQgLUkkKEtTUkMpL2luY2x1ZGUveGVub21haS9wb3NpeCAtSSQoTFNSQykgLUkkKExT
-UkMpL1Rvb2xraXQKCkVYVFJBX0NGTEFHUyA6PSAtV2FsbCAtZnBpYyAtTzIgIyAtRFZFUkJPU0UK
-RVhUUkFfTERGTEFHUyA6PSAtTC91c3IveGVub21haS9saWIgLXNoYXJlZAoKYWxsOiAKCSQoQ0Mp
-ICQoQ0ZMQUdTKSAkKElOQ0xVREUpICQoRVhUUkFfQ0ZMQUdTKSAtYyAkKFRLU1JDKS9jaWZYRG93
-bmxvYWQuYwoJJChDQykgJChDRkxBR1MpICQoSU5DTFVERSkgJChFWFRSQV9DRkxBR1MpIC1jICQo
-VEtTUkMpL2NpZlhFbmRpYW5lc3MuYwoJJChDQykgJChDRkxBR1MpICQoSU5DTFVERSkgJChFWFRS
-QV9DRkxBR1MpIC1jICQoVEtTUkMpL2NpZlhGdW5jdGlvbnMuYwoJJChDQykgJChDRkxBR1MpICQo
-SU5DTFVERSkgJChFWFRSQV9DRkxBR1MpIC1jICQoVEtTUkMpL2NpZlhIV0Z1bmN0aW9ucy5jCgkk
-KENDKSAkKENGTEFHUykgJChJTkNMVURFKSAkKEVYVFJBX0NGTEFHUykgLWMgJChUS1NSQykvY2lm
-WEluaXQuYyAKCSQoQ0MpICQoQ0ZMQUdTKSAkKElOQ0xVREUpICQoRVhUUkFfQ0ZMQUdTKSAtYyAk
-KFRLU1JDKS9jaWZYSW50ZXJydXB0LmMgCgkkKENDKSAkKENGTEFHUykgJChJTkNMVURFKSAkKEVY
-VFJBX0NGTEFHUykgLWMgJChUS1NSQykvbWQ1LmMgCgkkKENDKSAkKENGTEFHUykgJChJTkNMVURF
-KSAkKEVYVFJBX0NGTEFHUykgLWMgJChMU1JDKS9jaWZ4X3hlbm9tYWkuYyAKCSQoQ0MpICQoQ0ZM
-QUdTKSAkKElOQ0xVREUpICQoRVhUUkFfQ0ZMQUdTKSAtYyAkKExTUkMpL09TX3hlbm9tYWkuYyAK
-CSQoQ0MpICQoQ0ZMQUdTKSAkKElOQ0xVREUpICQoRVhUUkFfQ0ZMQUdTKSAtYyAkKExTUkMpL1VT
-RVJfeGVub21haS5jIAoJJChDQykgJChDRkxBR1MpICQoSU5DTFVERSkgJChFWFRSQV9MREZMQUdT
-KSAtbyBsaWJjaWZ4LnNvICQoTFNSQykvY2lmWERvd25sb2FkLm8gJChMU1JDKS9jaWZYRW5kaWFu
-ZXNzLm8gJChMU1JDKS9jaWZYRnVuY3Rpb25zLm8gJChMU1JDKS9jaWZYSFdGdW5jdGlvbnMubyAk
-KExTUkMpL2NpZlhJbml0Lm8gJChMU1JDKS9jaWZYSW50ZXJydXB0Lm8gJChMU1JDKS9tZDUubyAg
-ICQoTFNSQykvY2lmeF94ZW5vbWFpLm8gJChMU1JDKS9PU194ZW5vbWFpLm8gJChMU1JDKS9VU0VS
-X3hlbm9tYWkubyAkKEVYVFJBX0xERkxBR1MpCgpjbGVhbjoKCXJtIC1mICoubyAqLnNvCg==
+> Od: "Gilles Chanteperdrix"=20
+> Komu: Petr Cervenka=20
+> Datum: 11.03.2013 14:05
+> P=C5=99edm=C4=9Bt: Re: [Xenomai] mutex problem
+>
+> CC: "Xenomai" <xenomai@xenomai.org>
+>On 03/11/2013 11:35 AM, Petr Cervenka wrote:
+>
+>> The problem with mutexes is still present. I'm really desperate now.
+>> Does anyone know, how the mutex could "stay locked" when every
+>> "acquire" is sooner or later followed by "release" and both functions
+>> always return 0 (success) code? Every advice is appreciated.
+>
+>
+>Could you provide us with a simple test case which would allow us to
+>reproduce the problem?
+>
+>Other than that, you can try forcing the path through the kernel for
+>every mutex call, enable the I-pipe tracer, and trigger a trace as soon
+>as you detect that the mutex is not free after a release.
+>
+
+Sadly, I'm not able to reproduce it with simple test.
+Maybe I was not clear, the mutex stays not locked after "release". But I =
+think it is locked by something else because the seldom strange behavior.=
+ Example of it follows:
+Imagine threads A and B
+A acquires lock
+A releases lock
+B acquires lock
+B releases lock
+B tries to acquire lock, but the mutex is already locked and the owner is=
+ A!
+
+Also the inicialization order of threads/mutexes/... transfered the probl=
+em to another mutex (and threads). Owner is the same thread as before (hi=
+ priority, short time period).
+
+PS: Meanwhile I found another mutex, which was deleted immediately after =
+creation, but commonly used later.
+
+Petr
+
