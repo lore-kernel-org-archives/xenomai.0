@@ -1,16 +1,13 @@
-Message-ID: <513F1D63.6000503@xenomai.org>
-Date: Tue, 12 Mar 2013 13:19:47 +0100
+Message-ID: <513F1DBD.5090603@xenomai.org>
+Date: Tue, 12 Mar 2013 13:21:17 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <51372B12.2030400@mitrol.it>	<51373149.4050700@xenomai.org>	<5137370B.2050402@mitrol.it>	<51373841.70704@xenomai.org>	<51385910.80203@mitrol.it>	<51388A3A.2090004@xenomai.org>	<51388DD2.2020805@mitrol.it>	<51388EB2.6000206@xenomai.org>	<5139DEA2.9050103@mitrol.it>
-	<513A464E.90800@xenomai.org>	<513D9A17.7020204@mitrol.it>
-	<513DD703.9070000@xenomai.org>	<513DE023.9010506@mitrol.it>
-	<513E3E04.8040708@xenomai.org> <513F0123.4030906@mitrol.it>
-In-Reply-To: <513F0123.4030906@mitrol.it>
+References: <512C806F.2020209@hilscher.com>	<512C9E78.1060208@siemens.com>	<512CC5C6.8050204@hilscher.com>	<512CC6A3.1010005@siemens.com>	<512F120A.5060109@hilscher.com>	<512F4005.60000@siemens.com>	<512F48AA.8020601@hilscher.com>	<5130B39C.70300@hilscher.com>	<513465CF.4030807@hilscher.com>	<51350D5B.6060309@xenomai.org>	<5135CCDE.5090401@hilscher.com>	<5135D667.8060309@siemens.com>	<51361281.20307@hilscher.com>	<51364A61.3090002@xenomai.org>	<5136F9E9.9030604@hilscher.com>	<5136FC1E.6060608@xenomai.org>	<51371B89.4020103@hilscher.com>	<513730CE.2070102@xenomai.org>	<51374B98.7030103@hilscher.com>	<51376093.7060701@siemens.com>	<5137AF89.1020009@xenomai.org>	<5138B33C.1060506@hilscher.com>	<5139BABA.8010602@hilscher.com>
+	<5139D7F5.2090904@xenomai.org> <513EF0F0.4070705@hilscher.com>
+In-Reply-To: <513EF0F0.4070705@hilscher.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Sporadic problem : rt_task_sleep
-	locked	after	debugging
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] Hilscher driver for cifX boards
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,126 +16,80 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Paolo Minazzi <Paolo.Minazzi@mitrol.it>
-Cc: xenomai@xenomai.org
+To: Jerome Poncin <JPoncin@hilscher.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 03/12/2013 11:19 AM, Paolo Minazzi wrote:
+On 03/12/2013 10:10 AM, Jerome Poncin wrote:
 
-> Il 11/03/2013 21.26, Gilles Chanteperdrix ha scritto:
->> On 03/11/2013 02:46 PM, Paolo Minazzi wrote:
+> Le 08/03/2013 13:22, Gilles Chanteperdrix a =C3=A9crit :
+>> On 03/08/2013 11:17 AM, Jerome Poncin wrote:
 >>
->>> Il 11/03/2013 14.07, Gilles Chanteperdrix ha scritto:
->>>> On 03/11/2013 09:47 AM, Paolo Minazzi wrote:
->>>>
->>>>> Il 08/03/2013 21.13, Gilles Chanteperdrix ha scritto:
->>>>>> On 03/08/2013 01:50 PM, Paolo Minazzi wrote:
->>>>>>
->>>>>>> This fault does not freeze the arm, I can countinue to work.
->>>>>>>
->>>>>>> Ideas ?
->>>>>> Please try the following patch:
->>>>>>
->>>>>> diff --git a/ksrc/nucleus/shadow.c b/ksrc/nucleus/shadow.c
->>>>>> index c91a6f3..ed3864b 100644
->>>>>> --- a/ksrc/nucleus/shadow.c
->>>>>> +++ b/ksrc/nucleus/shadow.c
->>>>>> @@ -1430,8 +1430,10 @@ void xnshadow_unmap(xnthread_t *thread)
->>>>>>     	rpi_pop(thread);
->>>>>>
->>>>>>     	sys_ppd = xnsys_ppd_get(0);
->>>>>> -	xnheap_free(&sys_ppd->sem_heap, thread->u_mode);
->>>>>> -	thread->u_mode = NULL;
->>>>>> +	if (thread->u_mode) {
->>>>>> +		xnheap_free(&sys_ppd->sem_heap, thread->u_mode);
->>>>>> +		thread->u_mode = NULL;
->>>>>> +	}
->>>>>>
->>>>>>     	xnarch_atomic_dec(&sys_ppd->refcnt);
->>>>>>
->>>>>> @@ -2379,7 +2381,7 @@ int do_hisyscall_event(unsigned event, rthal_pipeline_stage_t *stage,
->>>>>>           ret_handled:
->>>>>>
->>>>>>     	/* Update the userland-visible state. */
->>>>>> -	if (thread)
->>>>>> +	if (thread&&    thread->u_mode)
->>>>>>     		*thread->u_mode = thread->state;
->>>>>>
->>>>>>     	trace_mark(xn_nucleus, syscall_histage_exit,
->>>>>> @@ -2549,7 +2551,7 @@ int do_losyscall_event(unsigned event, rthal_pipeline_stage_t *stage,
->>>>>>           ret_handled:
->>>>>>
->>>>>>     	/* Update the userland-visible state. */
->>>>>> -	if (thread)
->>>>>> +	if (thread&&    thread->u_mode)
->>>>>>     		*thread->u_mode = thread->state;
->>>>>>
->>>>>>     	trace_mark(xn_nucleus, syscall_lostage_exit,
->>>>>>
->>>>> Hi Gilles,
->>>>> I can see the same problem under 2.6.2.1.
->>>>> I was debugging, after a while I could not stop anymore the code using
->>>>> breakpoints because all tasks are stopped at rt_task_sleep.
->>>>> After this, If I close the application and restart it, the rt_task sleep
->>>>> are blocked. I have to restart my arm processor.
->>>>> Any ideas ?
->>>> Debugging xenomai thread causes the timers to be stopped, and they are
->>>> supposed to be restarted when the thread blocked on the breakpoint,
->>>> maybe this is what goes wrong: the timers are not restarted.
->>>>
->>>> Another possibility is the hardware timer being programmed for a too
->>>> short delay.
->>>>
->>>> Please no private mails.
->>>>
->>>>> Paolo
+>>> Le 07/03/2013 16:33, Jerome Poncin a =C3=A9crit :
+>>>> Le 06/03/2013 22:05, Gilles Chanteperdrix a =C3=A9crit :
+>>>>> On 03/06/2013 04:28 PM, Jan Kiszka wrote:
+>>>>>
+>>>>>> Also here: Do not misuse write(), define an IOCTL that contains
+>>>>>> something like "MMAP" and another one with MUNMAP in its name - th=
+at's
+>>>>>> the purpose of this service, no?
+>>>>> A lot of drivers probably have to reinvent a way to pass all the
+>>>>> parameters for an mmap, why not adding an "mmap" method to RTDM dri=
+vers?
 >>>>>
 >>>>>
+>>>> Hello,
 >>>>
->>> Time ago I have already tried to change a parameter
->>> ksrc/nucleus/timer.c:402 (the following is the comment ...)
->>>                                   /*
->>>                                    * Make the blocked timer elapse again
->>>                                    * at a reasonably close date in the
->>>                                    * future, waiting for the timebase to
->>>                                    * be unlocked at some point. Timers
->>>                                    * are blocked when single-stepping
->>>                                    * into an application using a
->>>                                    * debugger, so it is fine to wait for
->>>                                    * 250 ms for the user to continue
->>>                                    * program execution.
->>>                                    */
->>>                                   interval = xnarch_ns_to_tsc(250000000ULL);
->>>                                   goto requeue;
+>>>> I  re factored my code with all your remarks (I think and I hope).
+>>>>
+>>>> Could you say me if it's correct now ?
+>>>>
+>>>> Jan, you're right, It's possible to use Xenomai with UIO driver, but=
+ I
+>>>> would like to use more real time possibilities of Xenomai in future
+>>>> (like IRQ).
+>>>> My first goal is to have a code compliant.
+>>>> I added IRQ, and my next step will be to understand why the kernel
+>>>> crash after IRQ registration.
+>>>>
+>>>> Thank you for your help,
+>>>>
+>>>> Jerome
+>>>>
+>>>>
+>>>>
+>>> Hello,
 >>>
->>> I have tried bigger and smaller value than 250ms without luck.
+>>> I have good news because, I arrived to validated driver with IRQ
+>>> support. I changed position of cifx on my motherboard in my PC and th=
+e
+>>> IRQ affected is not shared ;-) !
+>>>
+>>> I have now a question about IRQ. What is the good method to signal to=
+
+>>> user-land that there is an IRQ. Is there an example ?
 >>
->> As the comment says, and the code shows, the timer will elapse again and
->> check if the timebase is unlocked, if the timebase is locked, it will go
->> to sleep again.
+>> Almost every "read" call is an example... ;-)
 >>
->>> If you have got some ideas I can make tests as you want.
->>
->> Provide us with an example allowing to reproduce the issue. Or
->> alternatively, you can do the debug yourself following the leads I
->> already gave you.
->>
->>
-> Unfortunately it is not easy make a small program that produce the problem.
-> I have tried making the debugging with gdb an automatic process, but I 
-> cannot see the problem.
-> I can uderstand that timer stops because a problem in programming the 
-> timer interval.
-> But I do not understand why if I use CTRL-C to stop the application (in 
-> a moment that rt_task_sleep are blocked) I have still the same problem 
-> (rt_task_sleep blocked). The only solution to use a realtime process is 
-> to reset my arm processor. Why xenomai does not reset all when I start a 
-> xenomai application ?
+> Hello,
+>=20
+> I'm finishing my driver with IRQ. I saw that there is two mode, Real=20
+> time and Non real time for RTDM driver function.
+> My driver should run in the two mode. When I compile my User Space=20
+> Shared library that call Xenomai Kernel driver,
+> I saw that library call every time Non real time function and no real=20
+> time function...
+> I use a shared library with posix skin with makefile in attached file. =
+I=20
+> read explanation for static library with posix skin :
+>=20
+> http://www.xenomai.org/index.php/Porting_POSIX_applications_to_Xenomai
+>=20
+> What must I do with shared library for using rt mode ?
 
 
-Well, there is a bug. If the code did the right thing, there would be no
-bug, right? Now your job is to find it. We can not find it for you if
-you do not provide us with a way to reproduce it.
+Use the LDLIBS variable when linking the library?
 
--- 
+--=20
                                                                 Gilles.
+
 
