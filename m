@@ -1,10 +1,12 @@
-Message-ID: <513F5C23.2090603@yahoo.com>
-Date: Tue, 12 Mar 2013 11:47:31 -0500
-From: Tom Z <tomz30@yahoo.com>
+Message-ID: <513F7196.2070305@antcom.de>
+Date: Tue, 12 Mar 2013 19:19:02 +0100
+From: Roland Stigge <stigge@antcom.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+References: <513F5C23.2090603@yahoo.com>
+In-Reply-To: <513F5C23.2090603@yahoo.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] problems while patching Debian kernel
+Subject: Re: [Xenomai] problems while patching Debian kernel
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,52 +15,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Tom Z <tomz30@yahoo.com>
+Cc: xenomai@xenomai.org
 
 Hi,
 
-I encountered the follow errors while trying to patch Debian 6.0.7 
-(linux-2.6.32) with the Xenomai patch installed through Software Center 
-in Debian:
+thanks for using Xenomai and Debian!
 
-dpkg: warning: obsolete option '--print-installation-architecture', 
-please use '--print-architecture' instead.
-START applying xenomai patch (Xenomai realtime kernel patches)
-Testing whether "Xenomai realtime kernel patches" patch for 2.6.32 
-applies (dry run):
-1 out of 4 hunks FAILED -- saving rejects to file 
-arch/x86/kernel/process_64.c.rej
-1 out of 6 hunks FAILED -- saving rejects to file arch/x86/mm/fault.c.rej
-1 out of 15 hunks FAILED -- saving rejects to file kernel/sched.c.rej
-1 out of 1 hunk FAILED -- saving rejects to file kernel/signal.c.rej
-"Xenomai realtime kernel patches" patch for 2.6.32 does not apply cleanly
+On 03/12/2013 05:47 PM, Tom Z wrote:
+> Does that mean "2.6.32 48squeeze1" is not supported by this patch?
 
-Below are the the steps I took:
-1. Debian 6.0.7 is installed in a virtual machine (as I want to try it 
-first before installing it on a native hardware)
-2. I installed the Xenomai patches and linux kernel source 2.6.32 
-through Software Center
-3. I ran "/usr/src/kernel-patches/i386/apply/xenomai" as told by 
-"/usr/share/doc/linux-patch-xenomai/README.Debian"
+Strictly speaking, yes.
 
-I found the following details, but not sure if they are related,
-The Linux kernel source is under "/usr/src/linux-source-2.6.32", and the 
-file "version.Debian" shows "2.6.32 48squeeze1", but 
-"/usr/src/kernel-patches/i386/apply/xenomai" has the following lines:
-KVERSIONS=(2.6.31.8 2.6.32 2.6.34 2.6.32.15)
-PATCHFILES=("/usr/src/kernel-patches/diffs/xenomai/adeos-ipipe-2.6.31.8-x86-2.4-09.patch.gz" 
-"/usr/src/kernel-patches/diffs/xenomai/adeos-ipipe-2.6.32-x86-2.7-01.patch.gz" 
-"/usr/src/kernel-patches/diffs/xenomai/adeos-ipipe-2.6.34-x86-2.7-02.patch.gz" 
-"/usr/src/kernel-patches/diffs/xenomai/adeos-ipipe-2.6.32.15-x86-2.7-01.patch.gz") 
+> what caused the above problems?
 
+When Debian was released (or when Xenomai in Debian was updated the last
+time), the patch was made to apply to Debian's kernel back then.
+Meanwhile, the kernel (sources) changed due to security fixes and other
+important changes.
 
-Does that mean "2.6.32 48squeeze1" is not supported by this patch? If 
-this is not the cause, then what caused the above problems? How can I 
-solve them?
+So the patch doesn't apply anymore. Until I update the patch in the
+Xenomai package in Debian.
 
+I'll need to adjust the patch in the Debian stable package and integrate
+into the updates for Debian squeeze.
 
-With many thanks,
+> How can I solve them?
 
-Tom
+You can either wait until my updated patch is available from the Debian
+mirror network which will be in a few days.
 
+Remember that Debian stable currently contains Xenomai 2.5.4 (with
+patches), so you might be interested in current "upstream" Xenomai
+2.6.2.1 from xenomai.org. This one should work fine with Debian since
+newer kernels up to 3.8 are commonly used with Debian. For this option,
+you would take Xenomai directly from xenomai.org (follow the common
+installation instructions there).
+
+Hope this helps,
+
+Roland
 
