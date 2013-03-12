@@ -1,10 +1,11 @@
-Message-ID: <513F849C.1050505@yahoo.com>
-Date: Tue, 12 Mar 2013 14:40:12 -0500
-From: Tom Z <tomz30@yahoo.com>
+Message-ID: <513F879F.6000500@antcom.de>
+Date: Tue, 12 Mar 2013 20:53:03 +0100
+From: Roland Stigge <stigge@antcom.de>
 MIME-Version: 1.0
 References: <513F5C23.2090603@yahoo.com> <513F7196.2070305@antcom.de>
-In-Reply-To: <513F7196.2070305@antcom.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+	<513F849C.1050505@yahoo.com>
+In-Reply-To: <513F849C.1050505@yahoo.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] problems while patching Debian kernel
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -15,62 +16,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Roland Stigge <stigge@antcom.de>
+To: Tom Z <tomz30@yahoo.com>
 Cc: xenomai@xenomai.org
 
-Hi Roland,
+On 03/12/2013 08:40 PM, Tom Z wrote:
+> I don't quite understand "...Debian stable currently contains Xenomai
+> 2.5.4 (with patches)...":
+> It seems the Xenomai source code & binaries are not automatically
+> included after I installed Debian 6.0.7. Before I switched to Debian, to
+> install Xenomai on my another Ubuntu laptop, what I do is:
+> 1. Get a Linux kernel tarball from kernel.org and a Xenomai tarball from
+> Xenomai.org
+> 2. Patch the kernel and make menuconfig
+> 3. compile & build the patched Linux kernel, and generate a kernel image
+> 4. make & make install Xenomai binaries
+> So, if "Debian stable currently contains Xenomai 2.5.4", which of the
+> above steps can be skipped?
 
-Thanks for you reply that helps me a lot.
-I don't quite understand "...Debian stable currently contains Xenomai 
-2.5.4 (with patches)...":
-It seems the Xenomai source code & binaries are not automatically 
-included after I installed Debian 6.0.7. Before I switched to Debian, to 
-install Xenomai on my another Ubuntu laptop, what I do is:
-1. Get a Linux kernel tarball from kernel.org and a Xenomai tarball from 
-Xenomai.org
-2. Patch the kernel and make menuconfig
-3. compile & build the patched Linux kernel, and generate a kernel image
-4. make & make install Xenomai binaries
-So, if "Debian stable currently contains Xenomai 2.5.4", which of the 
-above steps can be skipped?
+1. and 4. can be skipped since Debian includes Xenomai's binaries and
+the kernel patch. 2. and 3. still need to be done, as documented in the
+README you already found.
 
-With many thanks
-Tom
-
-On 3/12/2013 1:19 PM, Roland Stigge wrote:
-> Hi,
->
-> thanks for using Xenomai and Debian!
->
-> On 03/12/2013 05:47 PM, Tom Z wrote:
->> Does that mean "2.6.32 48squeeze1" is not supported by this patch?
-> Strictly speaking, yes.
->
->> what caused the above problems?
-> When Debian was released (or when Xenomai in Debian was updated the last
-> time), the patch was made to apply to Debian's kernel back then.
-> Meanwhile, the kernel (sources) changed due to security fixes and other
-> important changes.
->
-> So the patch doesn't apply anymore. Until I update the patch in the
-> Xenomai package in Debian.
->
-> I'll need to adjust the patch in the Debian stable package and integrate
-> into the updates for Debian squeeze.
->
->> How can I solve them?
-> You can either wait until my updated patch is available from the Debian
-> mirror network which will be in a few days.
->
-> Remember that Debian stable currently contains Xenomai 2.5.4 (with
-> patches), so you might be interested in current "upstream" Xenomai
-> 2.6.2.1 from xenomai.org. This one should work fine with Debian since
-> newer kernels up to 3.8 are commonly used with Debian. For this option,
-> you would take Xenomai directly from xenomai.org (follow the common
-> installation instructions there).
->
-> Hope this helps,
->
-> Roland
-
+Roland
 
