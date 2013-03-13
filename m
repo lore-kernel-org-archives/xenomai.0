@@ -1,12 +1,14 @@
-Date: Wed, 13 Mar 2013 09:37:22 +0100
-From: =?utf-8?q?Petr_Cervenka?= <grugh@centrum.cz>
-References: <20130312102938.B04FB5F2@centrum.cz> <513F1CF6.8010306@xenomai.org>
-In-Reply-To: <513F1CF6.8010306@xenomai.org>
+Message-ID: <51404997.7000900@hilscher.com>
+Date: Wed, 13 Mar 2013 10:40:39 +0100
+From: =?ISO-8859-1?Q?St=E9phane_LOS?= <slos@hilscher.com>
 MIME-Version: 1.0
-Message-Id: <20130313093722.215F47BA@centrum.cz>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Subject: Re: [Xenomai] =?utf-8?q?mutex_problem?=
+References: <1362541011.90317.YahooMailNeo@web161401.mail.bf1.yahoo.com>
+	<5136F3A6.8090400@antcom.de> <513F96BA.4030309@xenomai.org>
+	<513F9DF2.2030803@antcom.de>
+In-Reply-To: <513F9DF2.2030803@antcom.de>
+Content-Type: text/plain; charset="iso-8859-1"; format="flowed"
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] about Xenomai in Debian and Ubuntu
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,69 +17,120 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?utf-8?q?Gilles_Chanteperdrix?= <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-PiBPZDogIkdpbGxlcyBDaGFudGVwZXJkcml4Igo+IEtvbXU6IFBldHIgQ2VydmVua2EKPiBEYXR1
-bTogMTIuMDMuMjAxMyAxMzoxOAo+IFDFmWVkbcSbdDogUmU6IFtYZW5vbWFpXSBtdXRleCBwcm9i
-bGVtCj4KPiBDQzogIlhlbm9tYWkiIDx4ZW5vbWFpQHhlbm9tYWkub3JnPgo+T24gMDMvMTIvMjAx
-MyAxMDoyOSBBTSwgUGV0ciBDZXJ2ZW5rYSB3cm90ZToKPgo+Pj4gT2Q6ICJHaWxsZXMgQ2hhbnRl
-cGVyZHJpeCIgS29tdTogUGV0ciBDZXJ2ZW5rYSBEYXR1bTogMTEuMDMuMjAxMwo+Pj4gMTQ6MDUg
-UMWZZWRtxJt0OiBSZTogW1hlbm9tYWldIG11dGV4IHByb2JsZW0KPj4+IAo+Pj4gQ0M6ICJYZW5v
-bWFpIiA8eGVub21haUB4ZW5vbWFpLm9yZz4gT24gMDMvMTEvMjAxMyAxMTozNSBBTSwgUGV0cgo+
-Pj4gQ2VydmVua2Egd3JvdGU6Cj4+PiAKPj4+PiBUaGUgcHJvYmxlbSB3aXRoIG11dGV4ZXMgaXMg
-c3RpbGwgcHJlc2VudC4gSSdtIHJlYWxseSBkZXNwZXJhdGUKPj4+PiBub3cuIERvZXMgYW55b25l
-IGtub3csIGhvdyB0aGUgbXV0ZXggY291bGQgInN0YXkgbG9ja2VkIiB3aGVuCj4+Pj4gZXZlcnkg
-ImFjcXVpcmUiIGlzIHNvb25lciBvciBsYXRlciBmb2xsb3dlZCBieSAicmVsZWFzZSIgYW5kIGJv
-dGgKPj4+PiBmdW5jdGlvbnMgYWx3YXlzIHJldHVybiAwIChzdWNjZXNzKSBjb2RlPyBFdmVyeSBh
-ZHZpY2UgaXMKPj4+PiBhcHByZWNpYXRlZC4KPj4+IAo+Pj4gCj4+PiBDb3VsZCB5b3UgcHJvdmlk
-ZSB1cyB3aXRoIGEgc2ltcGxlIHRlc3QgY2FzZSB3aGljaCB3b3VsZCBhbGxvdyB1cwo+Pj4gdG8g
-cmVwcm9kdWNlIHRoZSBwcm9ibGVtPwo+Pj4gCj4+PiBPdGhlciB0aGFuIHRoYXQsIHlvdSBjYW4g
-dHJ5IGZvcmNpbmcgdGhlIHBhdGggdGhyb3VnaCB0aGUga2VybmVsCj4+PiBmb3IgZXZlcnkgbXV0
-ZXggY2FsbCwgZW5hYmxlIHRoZSBJLXBpcGUgdHJhY2VyLCBhbmQgdHJpZ2dlciBhIHRyYWNlCj4+
-PiBhcyBzb29uIGFzIHlvdSBkZXRlY3QgdGhhdCB0aGUgbXV0ZXggaXMgbm90IGZyZWUgYWZ0ZXIg
-YSByZWxlYXNlLgo+Pj4gCj4+IAo+PiBTYWRseSwgSSdtIG5vdCBhYmxlIHRvIHJlcHJvZHVjZSBp
-dCB3aXRoIHNpbXBsZSB0ZXN0Lgo+Cj4KPlRoYXQgaXMgYSByYXRoZXIgZ29vZCBuZXdzLgo+Cj4+
-IE1heWJlIEkgd2FzIG5vdAo+PiBjbGVhciwgdGhlIG11dGV4IHN0YXlzIG5vdCBsb2NrZWQgYWZ0
-ZXIgInJlbGVhc2UiLgo+Cj4KPlRoZSB0aGluZyBpcywgWGVub21haSBvbmx5IG1vZGlmaWVzIHRo
-ZSBtdXRleCBtZW1vcnkgZHVyaW5nIHRoZSBtdXRleAo+c2VydmljZXMsIHNvLCBpZiB0aGUgcHJv
-YmxlbSBoYXBwZW5zIGJldHdlZW4gdGhlIHRpbWUgdGhlIG11dGV4IGlzCj5yZWxlYXNlZCBhbmQg
-dGhlIHRpbWUgdGhlIG5leHQgYWNxdWlzdGlvbiBpcyBkb25lLCB0aGVuIHNvbWV0aGluZyBlbHNl
-Cj50aGFuIHhlbm9tYWkgc2VydmljZXMgY2hhbmdlcyB0aGUgY29udGVudCBvZiB0aGUgbXV0ZXgg
-bWVtb3J5LiBUaGVyZSBhcmUKPnR3byBwb3NzaWJsZSBjdWxwcml0czoKPi0geW91ciBhcHBsaWNh
-dGlvbgo+LSB0aGUga2VybmVsLXNpZGUgb2YgWGVub21haS4KPgo+WW91IGNvdWxkIHRyeSByZWNv
-bXBpbGluZyB3aXRob3V0IENPTkZJR19YRU5PX0ZBU1RTWU5DSCBhbmQgc2VlIGlmIHlvdQo+c3Rp
-bGwgZ2V0IHRoZSBpc3N1ZS4gSWYgeW91IHN0aWxsIGdldCBpdCwgdGhlIGlzc3VlIGRlZmluaXRl
-bHkgY29tZXMKPmZyb20gWGVub21haSBrZXJuZWwgc2lkZS4KPgoKSSB3YXMgbm90IGFibGUgdG8g
-ZGlzYWJsZSBDT05GSUdfWEVOT19GQVNUU1lOQ0ggaW4gInhjb25maWciLiBJdCBsb29rcyBsaWtl
-IG5vdCBjaGFuZ2VhYmxlIGhpZGRlbiBzZXR0aW5ncy4KCj4gQnV0IEkgdGhpbmsgaXQgaXMKPj4g
-bG9ja2VkIGJ5IHNvbWV0aGluZyBlbHNlIGJlY2F1c2UgdGhlIHNlbGRvbSBzdHJhbmdlIGJlaGF2
-aW9yLiBFeGFtcGxlCj4+IG9mIGl0IGZvbGxvd3M6IEltYWdpbmUgdGhyZWFkcyBBIGFuZCBCIEEg
-YWNxdWlyZXMgbG9jayBBIHJlbGVhc2VzCj4+IGxvY2sgQiBhY3F1aXJlcyBsb2NrIEIgcmVsZWFz
-ZXMgbG9jayBCIHRyaWVzIHRvIGFjcXVpcmUgbG9jaywgYnV0IHRoZQo+PiBtdXRleCBpcyBhbHJl
-YWR5IGxvY2tlZCBhbmQgdGhlIG93bmVyIGlzIEEhCj4+IAo+PiBBbHNvIHRoZSBpbmljaWFsaXph
-dGlvbiBvcmRlciBvZiB0aHJlYWRzL211dGV4ZXMvLi4uIHRyYW5zZmVyZWQgdGhlCj4+IHByb2Js
-ZW0gdG8gYW5vdGhlciBtdXRleCAoYW5kIHRocmVhZHMpLiBPd25lciBpcyB0aGUgc2FtZSB0aHJl
-YWQgYXMKPj4gYmVmb3JlIChoaSBwcmlvcml0eSwgc2hvcnQgdGltZSBwZXJpb2QpLgo+Cj4KPlRo
-aXMgbWFrZXMgdGhpbmsgYWJvdXQgYSBtZW1vcnkgaXNzdWUuIElzIGl0IHBvc3NpYmxlIHRvIHJl
-Y29tcGlsZSB5b3VyCj5hcHBsaWNhdGlvbiB3aXRob3V0IHhlbm9tYWkgYW5kIHJ1biBpdCB3aXRo
-IHZhbGdyaW5kPwo+CgpBcHBsaWNhdGlvbiB3YXMgY2hlY2tlZCBieSB1c2FnZSBvZiBtdHJhY2Ug
-bm90IGxvbmcgdGltZSBhZ28uIEl0IGlzIHF1aXRlIHN0YWJsZSwgd2l0aG91dCBzZWdtZW50YXRp
-b24gZmF1bHRzLgoKPj4gCj4+IFBTOiBNZWFud2hpbGUgSSBmb3VuZCBhbm90aGVyIG11dGV4LCB3
-aGljaCB3YXMgZGVsZXRlZCBpbW1lZGlhdGVseQo+PiBhZnRlciBjcmVhdGlvbiwgYnV0IGNvbW1v
-bmx5IHVzZWQgbGF0ZXIuCj4KCkFmdGVyIEkgZml4ZWQgaXQgKGZvcmdvdHRlbiByZXR1cm4gaW4g
-aW5pdGlhbGl6YXRpb24gZnVuY3Rpb24gYmV0d2VlbiBpbml0aWFsaXphdGlvbiBhbmQgY2xlYW51
-cCBpbiBjYXNlIG9mIGVycm9yKSwgaXQgc3Vydml2ZWQgd2hvbGUgbmlnaHQuIEl0J3MgdG9vIGVh
-cmx5LCBidXQgSSB0aGluayBpdCBjb3VsZCBiZSB0aGUgcHJvYmxlbSEhIQoKPgo+V2VsbCwgeWVz
-LCB0aGF0IGNvdWxkIGNhdXNlIHN1Y2ggaXNzdWVzLiBDb3VsZCB5b3UgdHJ5IHNldHRpbmcKPm11
-dGV4LT5mYXN0bG9jayB0byBOVUxMIGluIHJ0X211dGV4X2RlbGV0ZT8KPgoKSSB3aWxsIHRyeSBp
-dCB3aGVuIEkgaGF2ZSBzb21lIHNwYXJlIHRpbWUgYW5kIFBDIGZvciBsb25nZXIgdGVybSB0ZXN0
-LgoKUGV0cgoKUFM6IFdoZW4gSSBlbmFibGVkIFhlbm9tYWkgZGVidWdnaW5nIGFuZCBJLXBpcGUg
-dHJhY2luZyAoYnV0IG5vdCBzdGFydGVkKSBJIGdvdCBzb21lIGJ1ZyBjcmFzaCB3aGVuIHRyeWlu
-ZyB0byByZWFkIC9wcm9jL3hlbm9tYWkvcmVnaXN0cnkvbmF0aXZlL211dGV4Ly4uLiBmaWxlcyAo
-aW4gY2NhIDUwJSBvZiBjYXNlcykuIFRocmVlIHN1Y2ggY3Jhc2hlcyBhbmQgZG1lc2cgb3V0cHV0
-IChiZWZvcmUgY3Jhc2gpIGFyZSBpbiBhdHRhY2htZW50LgotLS0tLS0tLS0tLS0tLSBuZXh0IHBh
-cnQgLS0tLS0tLS0tLS0tLS0KQW4gZW1iZWRkZWQgYW5kIGNoYXJzZXQtdW5zcGVjaWZpZWQgdGV4
-dCB3YXMgc2NydWJiZWQuLi4KTmFtZTogZXJyb3Jsb2cudHh0ClVSTDogPGh0dHA6Ly93d3cueGVu
-b21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxMzAzMTMvYTM4NzliNjYv
-YXR0YWNobWVudC50eHQ+Cg==
+Le 12/03/2013 22:28, Roland Stigge a =E9crit :
+> On 03/12/2013 09:57 PM, Gilles Chanteperdrix wrote:
+>> Roland, at some point I lost track of what your intentions were. In the
+>> following mail:
+>> http://www.xenomai.org/pipermail/xenomai/2012-July/000473.html
+>>
+>> You seemed to agree to take care of the debian directory in xenomai
+>> sources, asking me to simply warn you before a release.
+>> Which I did before the 2.6.2 release in the following mail:
+>>
+>> http://www.xenomai.org/pipermail/xenomai/2012-December/027051.html
+>>
+>> With a list of things which could be changed in the debian/rules file,
+>> inviting you to do what I had understood you had agreed to do.
+> When you propose things, and implement them, fine. That's your decision.
+> When you propose things and I implement them, also fine. That's my
+> decision. But please don't expect me to just follow commands. That's not
+> my nature at all. Sorry.
+>
+>> http://www.xenomai.org/pipermail/xenomai/2012-December/027052.html
+>> You simply told me that you did not even try debian/rules, following
+>> this, Leopold sent a post with a patch to fix the issue before the
+>> release, but your reply could be interpreted as the fact that the patch
+>> was actually broken, you did not send a fixed patch for the update, and
+>> as a result 2.6.2 was released with a broken debian directory.
+> Please don't over-interpret things I actually didn't say at all. Every
+> patch is welcome, including things you propose, and from other
+> contributors. When I see conflicts in the code, I will state that clearly.
+>
+>> Which is why, for the 2.6.2.1 release, I did not warn you (since it had
+>> proved useless anyway)
+> This is also your interpretation of things, and your own decision. Not
+> discussed with me.
+>
+> Sorry when I missed some detail in the past. Please don't let this lead
+> to bad further communication in return, or blaming each other.
+>
+> Thanks,
+>
+> Roland
+>
+>
+> PS: I consider Debian itself the primary source of Debian packages and
+> will continue to do so. When people ask specific questions about those,
+> I'll answer accordingly.
+>
+> PPS: If you consider your tone as helpful towards positive motivation of
+> contributors, please rethink.
+>
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> http://www.xenomai.org/mailman/listinfo/xenomai
+>
+Hi,
+
+I just want to say that I agree with Roland about the tone.
+
+My colleague J=E9r=F4me and I ARE NOT kernel developers for sure.
+
+Hilscher is proposing a Linux driver for the cifX boards. Not for free,=20
+I can't do anything about that fact.
+Then our customer gets the source code. The documentation is available=20
+on our web site.
+
+As I like FLOSS and have years of fiddling here and there, I have=20
+noticed Xenomai existence and usage in projects such as Orocos and Linux=20
+CNC.
+And I have noticed also the usage of CIF boards in those projects.
+
+So I have proposed to my manager and J=E9r=F4me to work on a Xenomai driver=
+=20
+for cifX boards and it was accepted.
+
+Again, we are not kernel developers and our background is different.
+
+Of course we could sell some boards but it is nothing compared to the=20
+time and energy we have already spent in this project.
+
+Our customers are traditionally using RTX or VxWorks with our boards. I=20
+wanted to promote the use of Linux / Xenomai for some kind of applications.
+
+We have received some support from Gilles and Jan and I thank them very=20
+much but the tone was never very friendly.
+
+I understand that FLOSS projects need to sell training and development=20
+but the cost would have cancelled the project since we don't think we=20
+could generate the cash to cover the expenses. So the driver is done on=20
+our free time.
+
+I am just wondering why in this list nobody cares of saying Hi or Hello=20
+before anything.
+May be you are just too busy reading / writing kernel code lines.
+
+I am a little bit disappointed. Sorry for bothering you.
+
+Best Regards,
+Cordialement,
+
+St=E9phane LOS
+slos@hilscher.com
+Support technique
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Hilscher France
+12, rue du 35=E8me R=E9giment d'Aviation
+Miniparc du Ch=EAne
+69500 BRON
+France
+T=E9l. : +33 (0) 4 72 37 98 40
+Fax  : +33 (0) 4 78 26 83 27
+http ://www.hilscher.fr
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
