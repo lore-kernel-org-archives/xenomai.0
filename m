@@ -1,14 +1,10 @@
-From: "Leopold Palomo-Avellaneda" <leo@alaxarxa.net>
-Date: Wed, 13 Mar 2013 16:47:58 +0100
-References: <1362541011.90317.YahooMailNeo@web161401.mail.bf1.yahoo.com>
-	<51406EAA.5000303@xenomai.org> <514076BD.3020202@antcom.de>
-In-Reply-To: <514076BD.3020202@antcom.de>
 MIME-Version: 1.0
-Content-Type: Text/Plain;
-  charset="iso-8859-1"
+Date: Wed, 13 Mar 2013 20:43:11 +0100
+Message-ID: <CAPRPZsBh=5TkR93kiQR8yg0ABfJZtwJ_piBQKAOznEWMppgCyw@mail.gmail.com>
+From: Jeroen Van den Keybus <jeroen.vandenkeybus@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: quoted-printable
-Message-Id: <201303131647.58842.leo@alaxarxa.net>
-Subject: Re: [Xenomai] about Xenomai in Debian and Ubuntu
+Subject: [Xenomai] SMI handling on x86
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,52 +15,31 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Hi, (I think that I always put Hi or Bones (in catalan ..),
+Hi,
 
-I would like to put some comments to this thread:
 
-<Roland>
-I really understand that you will take care of the debian directory of the=
-=20
-upstream code. Probably I misunderstand something reading your posts ... I=
-=20
-understand Gilles mail.
+We have configured Linux 3.5.7 / Xenomai 2.6.2.1 on an MSI-7514 mainboard
+with a Core 2 Duo CPU.
 
-I propose to have two branches in the upstream tree, one with the necessary=
-=20
-stuff to create a kernel package for the debian stable tree (with their=20
-kernel) and another for the sid/testing. This stuff could be the same of th=
-e=20
-official ones. Maybe some submodules or another hyper-special characteristi=
-c=20
-of git could help.
+This configuration suffers from excessive worst-case latencies during the
+'latency' test (on average: 2.6 =B5s, worst-case around 1900 =B5s, around 1=
+0
+overruns per second). I believe these overruns are due to the CPUs entering
+SM mode (SMI). As soon as the ACPI BIOS SMI is disabled (when
+xeno_nucleus/native are loaded as a module), the computer shuts down in 5
+secs. or so. Presumably some power supply watchdog on the mainboard isn't
+triggered.
 
-I don't understand your tone in your last mails. I think that it has been a=
-=20
-misunderstanding problem. Please, _we_ can do it better.
-</Roland>
+- Has someone also observed this behaviour and maybe solved it in some way =
+?
+- I looked around in the Intel manuals and I don't think it's possible to
+have only 1 CPU handle these SMIs. Is that correct ? If it were possible,
+we could run RT tasks on the other one, obviously, but currently latency
+shows overruns on both CPUs.
+- Would it somehow be possible/sensible to leave the SMI disabled and
+generically call the SMI handler directly from within (a task in) the OS ?
+There's probably going to be issues, the least of which would be proper
+handling of the RSM instruction outside SM mode. But still...
 
-<Gilles/Jan>
-Yes, I understand to St=E9phane. However as I'm in several projects, a lot =
-of=20
-mails and to much things and a few time to do it. I have had the same feeli=
-ng,=20
-but, well, maybe I begin to be a bit old and ....
 
-I send to patch to UPSTREAM not to debian packagers. The script belongs to=
-=20
-upstream. I had a bad feeling because no answer to the patch, no push. I ha=
-d=20
-to insist because the stupid error. But, rereading the mail I think that I=
-=20
-post it in a wrong and confusing way: mea culpa.
-</Gilles/Jan>
-
-Regards,
-
-Leo
-=2D-=20
-=2D-
-Linux User 152692
-Catalonia
-
+Jeroen.
