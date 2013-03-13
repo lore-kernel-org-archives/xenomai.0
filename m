@@ -1,10 +1,12 @@
-Message-ID: <5140EEEA.2080209@yahoo.com>
-Date: Wed, 13 Mar 2013 16:26:02 -0500
-From: Tom Z <tomz30@yahoo.com>
+Message-ID: <5140F1FA.6060205@xenomai.org>
+Date: Wed, 13 Mar 2013 22:39:06 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+References: <5140EEEA.2080209@yahoo.com>
+In-Reply-To: <5140EEEA.2080209@yahoo.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] linkage problem under 2.6.2.1
+Subject: Re: [Xenomai] linkage problem under 2.6.2.1
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,43 +15,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Tom Z <tomz30@yahoo.com>
+Cc: xenomai@xenomai.org
+
+On 03/13/2013 10:26 PM, Tom Z wrote:
+
+> Hi,
+
 
 Hi,
 
-First I would like to sincerely thank all the people here that kindly 
-helped me with my previous problems regarding Xenomai installation.
-Now I got Xenomai 2.6.2.1 running on Ubuntu 12.04 (Linux-3.5.7) . I 
-added 
-"/usr/xenomai/bin:/usr/xenomai/lib:/usr/xenomai/include:/usr/local/lib" 
-to my $PATH, and can run "xeno latency" and "xeno-test".
-However, when I tried to compile this toy program found at 
-http://www.cs.ru.nl/lab/xenomai/ , I got some linage problems as follows:
-/tmp/ccwl2tpg.o: In function `main':
-ex01.c:(.text+0x8a): undefined reference to `rt_print_auto_init'
-ex01.c:(.text+0xa2): undefined reference to `rt_printf'
-ex01.c:(.text+0xe3): undefined reference to `rt_task_create'
-ex01.c:(.text+0xff): undefined reference to `rt_task_start'
-collect2: ld returned 1 exit status
+> gcc -I/usr/xenomai/include -D_GNU_SOURCE -D_REENTRANT -D__XENO__ 
+> -lnative -L/usr/xenomai/lib -lxenomai -lpthread -lrt -lxenomai ex01.c -o 
+> ex01
 
-The above source code can be compiled & linked under Xenomai 2.4.3 
-smoothly, and I understand that the rtdk library had been moved to 
-libxenomai, so I changed the build flags accordingly. Below is what I 
-used to build the above toy program:
-gcc -I/usr/xenomai/include -D_GNU_SOURCE -D_REENTRANT -D__XENO__ 
--lnative -L/usr/xenomai/lib -lxenomai -lpthread -lrt -lxenomai ex01.c -o 
-ex01
 
-On my system, running "xeno-config --skin=native --cflags" gets 
-"-I/usr/xenomai/include -D_GNU_SOURCE -D_REENTRANT -D__XENO__",
-and running "xeno-config --skin=native --ldflags" gets "-lnative 
--L/usr/xenomai/lib -lxenomai -lpthread -lrt".
-Under "/usr/xenomai/lib", I can find libnative.[a|la|so], 
-libxenomai.[a|la|so], and other libs.
+The link order seems wrong.
 
-I don't understand why there are still undefined reference to 
-`rt_print_auto_init', etc. Did I miss something while building this program?
-
-With many thanks,
-Tom
+-- 
+                                                                Gilles.
 
