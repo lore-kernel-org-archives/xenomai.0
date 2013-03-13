@@ -1,11 +1,12 @@
-Message-ID: <5140F24B.7080900@xenomai.org>
-Date: Wed, 13 Mar 2013 22:40:27 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
+In-Reply-To: <CAPRPZsDDi_LfwiMdbfZro5h6cU69ONNNvG7XtSDdKE0M3bjwpw@mail.gmail.com>
 References: <CAPRPZsBh=5TkR93kiQR8yg0ABfJZtwJ_piBQKAOznEWMppgCyw@mail.gmail.com>
-In-Reply-To: <CAPRPZsBh=5TkR93kiQR8yg0ABfJZtwJ_piBQKAOznEWMppgCyw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+	<5140F24B.7080900@xenomai.org>
+	<CAPRPZsDDi_LfwiMdbfZro5h6cU69ONNNvG7XtSDdKE0M3bjwpw@mail.gmail.com>
+Date: Wed, 13 Mar 2013 22:59:12 +0100
+Message-ID: <CAPRPZsCBku_sq49cBorxQXd1_TkZks17dE_iVkA03m=Z6b32EQ@mail.gmail.com>
+From: Jeroen Van den Keybus <jeroen.vandenkeybus@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
 Subject: Re: [Xenomai] SMI handling on x86
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -15,34 +16,18 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jeroen Van den Keybus <jeroen.vandenkeybus@gmail.com>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 03/13/2013 08:43 PM, Jeroen Van den Keybus wrote:
-
-> Hi,
+I don't have the .config at hand, but I believe so, yes. I did disable
+processor ACPI though.
 
 
-Hi,
 
->=20
->=20
-> We have configured Linux 3.5.7 / Xenomai 2.6.2.1 on an MSI-7514 mainboa=
-rd
-> with a Core 2 Duo CPU.
->=20
-> This configuration suffers from excessive worst-case latencies during t=
-he
-> 'latency' test (on average: 2.6 =C2=B5s, worst-case around 1900 =C2=B5s=
-, around 10
-> overruns per second). I believe these overruns are due to the CPUs ente=
-ring
-> SM mode (SMI). As soon as the ACPI BIOS SMI
+2013/3/13 Jeroen Van den Keybus <jeroen.vandenkeybus@gmail.com>
 
-
-Do you have ACPI enabled in the kernel configuration?
-
---=20
-                                                                Gilles.
-
-
+> I don't have the .config at hand, but I believe so, yes. I did disable
+> processor ACPIm though.
+>
+> Jeroen.
+>
+>
