@@ -1,11 +1,14 @@
-Message-ID: <514092EE.5090406@siemens.com>
-Date: Wed, 13 Mar 2013 15:53:34 +0100
-From: Jan Kiszka <jan.kiszka@siemens.com>
+From: "Leopold Palomo-Avellaneda" <leo@alaxarxa.net>
+Date: Wed, 13 Mar 2013 16:47:58 +0100
+References: <1362541011.90317.YahooMailNeo@web161401.mail.bf1.yahoo.com>
+	<51406EAA.5000303@xenomai.org> <514076BD.3020202@antcom.de>
+In-Reply-To: <514076BD.3020202@antcom.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] [PATCH] Do not overwrite pre-existing SIGDEBUG handler in
-	xeno_skin_bind
+Content-Type: Text/Plain;
+  charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <201303131647.58842.leo@alaxarxa.net>
+Subject: Re: [Xenomai] about Xenomai in Debian and Ubuntu
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,39 +17,54 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-In case the application already set a SIGDEBUG handler, let that one
-handle any potential SIGDEBUG_NOMLOCK events and keep our handler
-(xeno_handle_mlock_alert) out of the loop. This helps in scenarios where
-skin libraries are loaded belatedly via dlopen.
+Hi, (I think that I always put Hi or Bones (in catalan ..),
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
+I would like to put some comments to this thread:
 
-Anything that speaks against this? We ran into that issue with a large
-application, and that can be one way to solve but should even make
-sense in general.
+<Roland>
+I really understand that you will take care of the debian directory of the=
+=20
+upstream code. Probably I misunderstand something reading your posts ... I=
+=20
+understand Gilles mail.
 
- include/asm-generic/bits/bind.h |    5 +++++
- 1 files changed, 5 insertions(+), 0 deletions(-)
+I propose to have two branches in the upstream tree, one with the necessary=
+=20
+stuff to create a kernel package for the debian stable tree (with their=20
+kernel) and another for the sid/testing. This stuff could be the same of th=
+e=20
+official ones. Maybe some submodules or another hyper-special characteristi=
+c=20
+of git could help.
 
-diff --git a/include/asm-generic/bits/bind.h b/include/asm-generic/bits/bind.h
-index 269be95..f39c853 100644
---- a/include/asm-generic/bits/bind.h
-+++ b/include/asm-generic/bits/bind.h
-@@ -23,6 +23,11 @@ xeno_bind_skin(unsigned skin_magic, const char *skin, const char *module)
- 		exit(EXIT_FAILURE);
- 	}
- 
-+	/* do not overwrite an already installed SIGDEBUG handler */
-+	sigaction(SIGXCPU, NULL, &sa);
-+	if (sa.sa_handler != SIG_DFL)
-+		return muxid;
-+
- 	sa.sa_sigaction = xeno_handle_mlock_alert;
- 	sigemptyset(&sa.sa_mask);
- 	sa.sa_flags = SA_SIGINFO;
--- 
-1.7.3.4
+I don't understand your tone in your last mails. I think that it has been a=
+=20
+misunderstanding problem. Please, _we_ can do it better.
+</Roland>
+
+<Gilles/Jan>
+Yes, I understand to St=E9phane. However as I'm in several projects, a lot =
+of=20
+mails and to much things and a few time to do it. I have had the same feeli=
+ng,=20
+but, well, maybe I begin to be a bit old and ....
+
+I send to patch to UPSTREAM not to debian packagers. The script belongs to=
+=20
+upstream. I had a bad feeling because no answer to the patch, no push. I ha=
+d=20
+to insist because the stupid error. But, rereading the mail I think that I=
+=20
+post it in a wrong and confusing way: mea culpa.
+</Gilles/Jan>
+
+Regards,
+
+Leo
+=2D-=20
+=2D-
+Linux User 152692
+Catalonia
 
