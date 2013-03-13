@@ -1,14 +1,14 @@
-Message-ID: <51404997.7000900@hilscher.com>
-Date: Wed, 13 Mar 2013 10:40:39 +0100
-From: =?ISO-8859-1?Q?St=E9phane_LOS?= <slos@hilscher.com>
+Message-ID: <51405E4A.9010607@hilscher.com>
+Date: Wed, 13 Mar 2013 12:08:58 +0100
+From: Jerome Poncin <JPoncin@hilscher.com>
 MIME-Version: 1.0
-References: <1362541011.90317.YahooMailNeo@web161401.mail.bf1.yahoo.com>
-	<5136F3A6.8090400@antcom.de> <513F96BA.4030309@xenomai.org>
-	<513F9DF2.2030803@antcom.de>
-In-Reply-To: <513F9DF2.2030803@antcom.de>
-Content-Type: text/plain; charset="iso-8859-1"; format="flowed"
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] about Xenomai in Debian and Ubuntu
+References: <512C806F.2020209@hilscher.com>	<512C9E78.1060208@siemens.com>	<512CC5C6.8050204@hilscher.com>	<512CC6A3.1010005@siemens.com>	<512F120A.5060109@hilscher.com>	<512F4005.60000@siemens.com>	<512F48AA.8020601@hilscher.com>	<5130B39C.70300@hilscher.com>	<513465CF.4030807@hilscher.com>	<51350D5B.6060309@xenomai.org>	<5135CCDE.5090401@hilscher.com>	<5135D667.8060309@siemens.com>	<51361281.20307@hilscher.com>	<51364A61.3090002@xenomai.org>	<5136F9E9.9030604@hilscher.com>	<5136FC1E.6060608@xenomai.org>	<51371B89.4020103@hilscher.com>	<513730CE.2070102@xenomai.org>	<51374B98.7030103@hilscher.com>	<51376093.7060701@siemens.com>	<5137AF89.1020009@xenomai.org>	<5138B33C.1060506@hilscher.com>	<5139BABA.8010602@hilscher.com>	<5139D7F5.2090904@xenomai.org>
+	<513EF0F0.4070705@hilscher.com>	<513F1DBD.5090603@xenomai.org>
+	<513F4944.9010202@hilscher.com> <513F8434.6070405@xenomai.org>
+In-Reply-To: <513F8434.6070405@xenomai.org>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] Hilscher driver for cifX boards
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,120 +17,136 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Le 12/03/2013 22:28, Roland Stigge a =E9crit :
-> On 03/12/2013 09:57 PM, Gilles Chanteperdrix wrote:
->> Roland, at some point I lost track of what your intentions were. In the
->> following mail:
->> http://www.xenomai.org/pipermail/xenomai/2012-July/000473.html
+Le 12/03/2013 20:38, Gilles Chanteperdrix a écrit :
+> On 03/12/2013 04:27 PM, Jerome Poncin wrote:
+>
+>> Le 12/03/2013 13:21, Gilles Chanteperdrix a écrit :
+>>> On 03/12/2013 10:10 AM, Jerome Poncin wrote:
+>>>
+>>>> Le 08/03/2013 13:22, Gilles Chanteperdrix a écrit :
+>>>>> On 03/08/2013 11:17 AM, Jerome Poncin wrote:
+>>>>>
+>>>>>> Le 07/03/2013 16:33, Jerome Poncin a écrit :
+>>>>>>> Le 06/03/2013 22:05, Gilles Chanteperdrix a écrit :
+>>>>>>>> On 03/06/2013 04:28 PM, Jan Kiszka wrote:
+>>>>>>>>
+>>>>>>>>> Also here: Do not misuse write(), define an IOCTL that contains
+>>>>>>>>> something like "MMAP" and another one with MUNMAP in its name - that's
+>>>>>>>>> the purpose of this service, no?
+>>>>>>>> A lot of drivers probably have to reinvent a way to pass all the
+>>>>>>>> parameters for an mmap, why not adding an "mmap" method to RTDM drivers?
+>>>>>>>>
+>>>>>>>>
+>>>>>>> Hello,
+>>>>>>>
+>>>>>>> I  re factored my code with all your remarks (I think and I hope).
+>>>>>>>
+>>>>>>> Could you say me if it's correct now ?
+>>>>>>>
+>>>>>>> Jan, you're right, It's possible to use Xenomai with UIO driver, but I
+>>>>>>> would like to use more real time possibilities of Xenomai in future
+>>>>>>> (like IRQ).
+>>>>>>> My first goal is to have a code compliant.
+>>>>>>> I added IRQ, and my next step will be to understand why the kernel
+>>>>>>> crash after IRQ registration.
+>>>>>>>
+>>>>>>> Thank you for your help,
+>>>>>>>
+>>>>>>> Jerome
+>>>>>>>
+>>>>>>>
+>>>>>>>
+>>>>>> Hello,
+>>>>>>
+>>>>>> I have good news because, I arrived to validated driver with IRQ
+>>>>>> support. I changed position of cifx on my motherboard in my PC and the
+>>>>>> IRQ affected is not shared ;-) !
+>>>>>>
+>>>>>> I have now a question about IRQ. What is the good method to signal to
+>>>>>> user-land that there is an IRQ. Is there an example ?
+>>>>> Almost every "read" call is an example... ;-)
+>>>>>
+>>>> Hello,
+>>>>
+>>>> I'm finishing my driver with IRQ. I saw that there is two mode, Real
+>>>> time and Non real time for RTDM driver function.
+>>>> My driver should run in the two mode. When I compile my User Space
+>>>> Shared library that call Xenomai Kernel driver,
+>>>> I saw that library call every time Non real time function and no real
+>>>> time function...
+>>>> I use a shared library with posix skin with makefile in attached file. I
+>>>> read explanation for static library with posix skin :
+>>>>
+>>>> http://www.xenomai.org/index.php/Porting_POSIX_applications_to_Xenomai
+>>>>
+>>>> What must I do with shared library for using rt mode ?
+>>> Use the LDLIBS variable when linking the library?
+>>>
+>> Gilles,
 >>
->> You seemed to agree to take care of the debian directory in xenomai
->> sources, asking me to simply warn you before a release.
->> Which I did before the 2.6.2 release in the following mail:
+>> you're right ;-), I didn't use LDLIBS for linking the library, therefore
+>> I corrected this.
 >>
->> http://www.xenomai.org/pipermail/xenomai/2012-December/027051.html
+>> Now I have this as link line for my library :
 >>
->> With a list of things which could be changed in the debian/rules file,
->> inviting you to do what I had understood you had agreed to do.
-> When you propose things, and implement them, fine. That's your decision.
-> When you propose things and I implement them, also fine. That's my
-> decision. But please don't expect me to just follow commands. That's not
-> my nature at all. Sorry.
+>> gcc -shared -Xlinker -rpath -Xlinker /usr/xenomai/lib
+>> -I/usr/xenomai/include/include/xenomai
+>> -I/usr/xenomai/include/include/xenomai/compat
+>> -I/usr/xenomai/include/include/xenomai/posix -I./ -I.//Toolkit
+>> -Wl,@/usr/xenomai/lib/posix.wrappers -L/usr/xenomai/lib -lpthread_rt
+>> -lxenomai -lpthread -lrt -o libcifx.so .//cifXDownload.o
+>> .//cifXEndianess.o .//cifXFunctions.o .//cifXHWFunctions.o .//cifXInit.o
+>> .//cifXInterrupt.o .//md5.o   .//cifx_xenomai.o .//OS_xenomai.o
+>> .//USER_xenomai.o
+>>
+>> and this for the application :
+>>
+>> gcc -DCONSUMER -I/usr/xenomai/include -D_GNU_SOURCE -D_REENTRANT
+>> -D__XENO__ -I/usr/xenomai/include/posix -I../libcifx
+>> -I../libcifx/Toolkit -O2   -lcifx -lpciaccess -lrtdm -Xlinker -rpath
+>> -Xlinker /usr/xenomai/lib  cifx_xenomai_sample.c
+>> -Wl,@/usr/xenomai/lib/posix.wrappers -L/usr/xenomai/lib -lpthread_rt
+>> -lxenomai -lpthread -lrt -lcifx -lpciaccess -lrtdm -o cifx_xenomai_sample
+>>
+>> with
+>>
+>> mlockall(MCL_CURRENT | MCL_FUTURE);
+>>
+>>
+>> first line in main
+>>
+>> I have a new log :
+>>
+>> [ 4700.073616] cifx 0000:04:01.0: PCI INT A -> GSI 16 (level, low) -> IRQ 16
+>> [ 4700.073643] cifx 0000:04:01.0: DPM at FEBF0000
+>> [ 4700.073654] cifx 0000:04:01.0: registered CifX card
+>> [ 4734.146888] NRT mode
+>> [ 4751.104009] rt
+>> [ 4751.388002] Xenomai: Posix: destroying mutex f8419600.
+>>
+>> But as you see It seems I'm always in Non Real Time mode...
 >
->> http://www.xenomai.org/pipermail/xenomai/2012-December/027052.html
->> You simply told me that you did not even try debian/rules, following
->> this, Leopold sent a post with a patch to fix the issue before the
->> release, but your reply could be interpreted as the fact that the patch
->> was actually broken, you did not send a fixed patch for the update, and
->> as a result 2.6.2 was released with a broken debian directory.
-> Please don't over-interpret things I actually didn't say at all. Every
-> patch is welcome, including things you propose, and from other
-> contributors. When I see conflicts in the code, I will state that clearly.
+> I do not see anything, as I do not see the sources for either your
+> driver or application.
 >
->> Which is why, for the 2.6.2.1 release, I did not warn you (since it had
->> proved useless anyway)
-> This is also your interpretation of things, and your own decision. Not
-> discussed with me.
+>> Do you have an idea about my problem ?
+>>
+>> The log "rt" and " Xenomai: Posix: destroying mutex f8419600." is normal ?
 >
-> Sorry when I missed some detail in the past. Please don't let this lead
-> to bad further communication in return, or blaming each other.
->
-> Thanks,
->
-> Roland
->
->
-> PS: I consider Debian itself the primary source of Debian packages and
-> will continue to do so. When people ask specific questions about those,
-> I'll answer accordingly.
->
-> PPS: If you consider your tone as helpful towards positive motivation of
-> contributors, please rethink.
->
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> http://www.xenomai.org/mailman/listinfo/xenomai
->
-Hi,
+> It depends if you consider normal leaving an application with a mutex
+> created but not destroyed.
+Hello Gilles,
 
-I just want to say that I agree with Roland about the tone.
+First, I checked mutex Creation and Destroy and all is correct all 
+created are destroyed... I will continue to investigate, it's very strange !
+Secondly, I read that if a program use file or stdio library "causes 
+switches to secondary mode".
+In my shared library, I have read file and fprintf at start 
+(initialization), therefore I think that's why the library run in NRT mode.
+But is possible to switch in RT mode after, or must I do two thread ?
 
-My colleague J=E9r=F4me and I ARE NOT kernel developers for sure.
+thank you for your help,
 
-Hilscher is proposing a Linux driver for the cifX boards. Not for free,=20
-I can't do anything about that fact.
-Then our customer gets the source code. The documentation is available=20
-on our web site.
-
-As I like FLOSS and have years of fiddling here and there, I have=20
-noticed Xenomai existence and usage in projects such as Orocos and Linux=20
-CNC.
-And I have noticed also the usage of CIF boards in those projects.
-
-So I have proposed to my manager and J=E9r=F4me to work on a Xenomai driver=
-=20
-for cifX boards and it was accepted.
-
-Again, we are not kernel developers and our background is different.
-
-Of course we could sell some boards but it is nothing compared to the=20
-time and energy we have already spent in this project.
-
-Our customers are traditionally using RTX or VxWorks with our boards. I=20
-wanted to promote the use of Linux / Xenomai for some kind of applications.
-
-We have received some support from Gilles and Jan and I thank them very=20
-much but the tone was never very friendly.
-
-I understand that FLOSS projects need to sell training and development=20
-but the cost would have cancelled the project since we don't think we=20
-could generate the cash to cover the expenses. So the driver is done on=20
-our free time.
-
-I am just wondering why in this list nobody cares of saying Hi or Hello=20
-before anything.
-May be you are just too busy reading / writing kernel code lines.
-
-I am a little bit disappointed. Sorry for bothering you.
-
-Best Regards,
-Cordialement,
-
-St=E9phane LOS
-slos@hilscher.com
-Support technique
-
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Hilscher France
-12, rue du 35=E8me R=E9giment d'Aviation
-Miniparc du Ch=EAne
-69500 BRON
-France
-T=E9l. : +33 (0) 4 72 37 98 40
-Fax  : +33 (0) 4 78 26 83 27
-http ://www.hilscher.fr
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
+Jerome
