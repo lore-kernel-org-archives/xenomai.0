@@ -1,11 +1,16 @@
+Message-ID: <51432110.3090900@siemens.com>
+Date: Fri, 15 Mar 2013 14:24:32 +0100
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-From: Ronny Meeus <ronny.meeus@gmail.com>
-Date: Fri, 15 Mar 2013 14:10:51 +0100
-Message-ID: <CAMJ=MEc9W3KvNuL6nLQUt_jDPY1zBfsEZJH2pQZs2kJj7g+KBg@mail.gmail.com>
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] xenomai-forge: psos skin does not take t_start flags into
-	account
+References: <512C806F.2020209@hilscher.com>	<512CC5C6.8050204@hilscher.com>	<512CC6A3.1010005@siemens.com>	<512F120A.5060109@hilscher.com>	<512F4005.60000@siemens.com>	<512F48AA.8020601@hilscher.com>	<5130B39C.70300@hilscher.com>	<513465CF.4030807@hilscher.com>	<51350D5B.6060309@xenomai.org>	<5135CCDE.5090401@hilscher.com>	<5135D667.8060309@siemens.com>	<51361281.20307@hilscher.com>	<51364A61.3090002@xenomai.org>	<5136F9E9.9030604@hilscher.com>	<5136FC1E.6060608@xenomai.org>	<51371B89.4020103@hilscher.com>	<513730CE.2070102@xenomai.org>	<51374B98.7030103@hilscher.com>	<51376093.7060701@siemens.com>	<5137AF89.1020009@xenomai.org>	<5138B33C.1060506@hilscher.com>	<5139BABA.8010602@hilscher.com>	<5139D7F5.2090904@xenomai.org>
+	<513EF0F0.4070705@hilscher.com>	<513F1DBD.5090603@xenomai.org>
+	<513F4944.9010202@hilscher.com> <513F8434.6070405@xenomai.org>
+	<51405E4A.9010607@hilscher.com> <5142E55E.4090705@hilscher.com>
+	<51430107.3060600@siemens.com> <51431C55.8050304@hilscher.com>
+In-Reply-To: <51431C55.8050304@hilscher.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Hilscher driver for cifX boards
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,62 +19,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Jerome Poncin <JPoncin@hilscher.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hello
+On 2013-03-15 14:04, Jerome Poncin wrote:
+> Hello Jan,
+> 
+> Yes you're right. I have 1 thread for test (main) application and the
+> driver create one or two thread if IRQ or polling is enable.
+> The driver thread are loop waiting event with delay.
+> At Driver start it take few second to download firmware and configuration.
+> My question is why it's a problem to have a real time that that run few
+> second.
+> If this task have the bigger priority, it's normal to not release hand
+> and to not sleep, I'm right or not ?
 
-In august last year I reported a problem with round-robin scheduling
-in the pSOS skin.
-See mail thread "xenomai-forge: round-robin scheduling in pSOS skin".
+Linux is not capable (yet) of handling the case that an online CPU is
+100% occupied. Sooner or later, the whole (Linux) system will lock up,
+also the timekeeping can be negatively affected. That's nothing Xenomai
+can change.
 
-Now that we stepped up to the latest version of Xenomai-forge, I was
-retrying the same test I did at that time.
-I observe that the situation has been improved: the roundrobin
-scheduling as such is now working well,
-but there is an issue with the initial flags passed to the t_start call.
+Therefore, every real-time task has to behave properly, sleep on
+asynchronous external events or suspend itself for a certain while when
+there is nothing to do. In good real-time designs, that is usually no
+problem, specifically if the number of tasks is moderate and the
+workload is clear. I've seen less obvious problems in large
+applications, but those were typically bugs as well.
 
-The flags are not correctly taken into account by the t_start call.
-The complete testcode is attached to the mail.
+Jan
 
-I basically create 2 tasks which both consume all cpu power for some time.
-If I create the tasks with timeslice enabled:
-    t_create("WORK",10,0,0,0,&tid);
-    t_start(tid,T_TSLICE, perform_work, args);
+-- 
+Siemens AG, Corporate Technology, CT RTC ITP SDP-DE
+Corporate Competence Center Embedded Linux
 
-I get this result:
-
-# taskset 4 ./roundrobin.exe
-   0"000.493| WARNING: [main] Xenomai compiled with full debug enabled,
-                              very high latencies expected [--enable-debug=
-=3Dfull]
-0 -> 7196
-1 -> 0
-
-If I explicitly add code in the taskbody to enable the timeslicing:
-  unsigned long old_mode;
-  t_mode((T_TSLICE|T_NOTSLICE),T_NOTSLICE, &old_mode);
-  t_mode((T_TSLICE|T_NOTSLICE),T_TSLICE, &old_mode);
-
-I get this:
-
-# taskset 4 ./roundrobin.exe
-   0"000.491| WARNING: [main] Xenomai compiled with full debug enabled,
-                              very high latencies expected [--enable-debug=
-=3Dfull]
-0 -> 3600
-1 -> 3592
-
-The latter is the correct behavior: both tasks get equal cpu power.
-Note the t_mode is called 2 times to make sure the change of the state
-stored in the task object is taken into account.
-
----
-Ronny
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: roundrobin.c
-Type: text/x-csrc
-Size: 1203 bytes
-Desc: not available
-URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20130315/67f4636=
-4/attachment.c>
