@@ -1,9 +1,9 @@
-Date: Fri, 15 Mar 2013 13:13:43 +0800 (CST)
+Date: Fri, 15 Mar 2013 13:16:28 +0800 (CST)
 From: =?GBK?B?zuK9o7fm?= <wu_jianfeng@126.com>
 In-Reply-To: <mailman.99.1363213184.1444.xenomai@xenomai.org>
 References: <mailman.99.1363213184.1444.xenomai@xenomai.org>
 MIME-Version: 1.0
-Message-ID: <374d78ea.a5c8.13d6c77cb72.Coremail.wu_jianfeng@126.com>
+Message-ID: <55e2964e.a6c5.13d6c7a5318.Coremail.wu_jianfeng@126.com>
 Content-Type: text/plain; charset=GBK
 Content-Transfer-Encoding: 7bit
 Subject: [Xenomai] Xenomai UBUNTU memory Leak
@@ -15,7 +15,7 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: xenomai@xenomai.org, xenomai-request@xenomai.org, xenomai-owner@xenomai.org
 
 Hi
  
@@ -569,6 +569,9 @@ At 2013-03-14 06:19:44,xenomai-request@xenomai.org wrote:
 >
 >End of Xenomai Digest, Vol 11, Issue 32
 >***************************************
+
+
+
 
 
 
