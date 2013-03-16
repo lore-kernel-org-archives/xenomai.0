@@ -1,11 +1,12 @@
-Message-ID: <5144D5AB.3080004@xenomai.org>
-Date: Sat, 16 Mar 2013 21:27:23 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <5144D5E3.9050601@web.de>
+Date: Sat, 16 Mar 2013 21:28:19 +0100
+From: Jan Kiszka <jan.kiszka@web.de>
 MIME-Version: 1.0
 References: <5144D3E9.2050205@xenomai.org> <5144D524.4000302@web.de>
-In-Reply-To: <5144D524.4000302@web.de>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+	<5144D5AB.3080004@xenomai.org>
+In-Reply-To: <5144D5AB.3080004@xenomai.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Subject: Re: [Xenomai] __get_user/__put_user
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -15,30 +16,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@web.de>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: Xenomai <xenomai@xenomai.org>
 
-On 03/16/2013 09:25 PM, Jan Kiszka wrote:
-
-> On 2013-03-16 21:19, Gilles Chanteperdrix wrote:
->>
->> Hi,
->>
->> xenomai asm-generic/syscall.h defines __xn_put_user/__xn_get_user as
->> aliases for __put_user/__get_user, which implementation, for the ARM
->> architecture calls might_fault() which triggers an ipipe_root_only() check.
->>
->> So, the question is, what is the best way of avoiding this issue? Remove
->> the call to might_fault() when compiling with CONFIG_IPIPE enabled?
->> Define __ipipe_safe_put_user which avoids the call to might_fault() ?
-> 
-> Adjust might_fault() in a way that it only considers atomic non-root
-> contexts as problematic.
-
-
-atomic meaning with hardware irqs off? or within an irq handler? This
-requires xenomai...
-
--- 
-                                                                Gilles.
-
+T24gMjAxMy0wMy0xNiAyMToyNywgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4gT24gMDMv
+MTYvMjAxMyAwOToyNSBQTSwgSmFuIEtpc3prYSB3cm90ZToKPiAKPj4gT24gMjAxMy0wMy0xNiAy
+MToxOSwgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4+Pgo+Pj4gSGksCj4+Pgo+Pj4geGVu
+b21haSBhc20tZ2VuZXJpYy9zeXNjYWxsLmggZGVmaW5lcyBfX3huX3B1dF91c2VyL19feG5fZ2V0
+X3VzZXIgYXMKPj4+IGFsaWFzZXMgZm9yIF9fcHV0X3VzZXIvX19nZXRfdXNlciwgd2hpY2ggaW1w
+bGVtZW50YXRpb24sIGZvciB0aGUgQVJNCj4+PiBhcmNoaXRlY3R1cmUgY2FsbHMgbWlnaHRfZmF1
+bHQoKSB3aGljaCB0cmlnZ2VycyBhbiBpcGlwZV9yb290X29ubHkoKSBjaGVjay4KPj4+Cj4+PiBT
+bywgdGhlIHF1ZXN0aW9uIGlzLCB3aGF0IGlzIHRoZSBiZXN0IHdheSBvZiBhdm9pZGluZyB0aGlz
+IGlzc3VlPyBSZW1vdmUKPj4+IHRoZSBjYWxsIHRvIG1pZ2h0X2ZhdWx0KCkgd2hlbiBjb21waWxp
+bmcgd2l0aCBDT05GSUdfSVBJUEUgZW5hYmxlZD8KPj4+IERlZmluZSBfX2lwaXBlX3NhZmVfcHV0
+X3VzZXIgd2hpY2ggYXZvaWRzIHRoZSBjYWxsIHRvIG1pZ2h0X2ZhdWx0KCkgPwo+Pgo+PiBBZGp1
+c3QgbWlnaHRfZmF1bHQoKSBpbiBhIHdheSB0aGF0IGl0IG9ubHkgY29uc2lkZXJzIGF0b21pYyBu
+b24tcm9vdAo+PiBjb250ZXh0cyBhcyBwcm9ibGVtYXRpYy4KPiAKPiAKPiBhdG9taWMgbWVhbmlu
+ZyB3aXRoIGhhcmR3YXJlIGlycXMgb2ZmPyBvciB3aXRoaW4gYW4gaXJxIGhhbmRsZXI/IFRoaXMK
+PiByZXF1aXJlcyB4ZW5vbWFpLi4uCgpIYXJkIGlycXMgb2ZmIHx8IGhlYWQgZG9tYWluIHN0YWxs
+ZWQsIEkgd291bGQgc2F5LgoKSmFuCgoKLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0t
+LS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogc2lnbmF0
+dXJlLmFzYwpUeXBlOiBhcHBsaWNhdGlvbi9wZ3Atc2lnbmF0dXJlClNpemU6IDI2MyBieXRlcwpE
+ZXNjOiBPcGVuUEdQIGRpZ2l0YWwgc2lnbmF0dXJlClVSTDogPGh0dHA6Ly93d3cueGVub21haS5v
+cmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxMzAzMTYvYzhkNjIzYjAvYXR0YWNo
+bWVudC5wZ3A+Cg==
