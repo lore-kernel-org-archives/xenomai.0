@@ -1,13 +1,10 @@
-Message-ID: <5144DB0F.9050901@xenomai.org>
-Date: Sat, 16 Mar 2013 21:50:23 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: Paul Janzen <pcj@xenomai.sez.to>
+Date: Sun, 17 Mar 2013 11:56:46 -0700
+Message-ID: <oqr4jdyggv.fsf@merlin.sez.to>
 MIME-Version: 1.0
-References: <5144D3E9.2050205@xenomai.org> <5144D524.4000302@web.de>
-	<5144D5AB.3080004@xenomai.org> <5144D5E3.9050601@web.de>
-In-Reply-To: <5144D5E3.9050601@web.de>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] __get_user/__put_user
+Content-Type: text/plain; charset=us-ascii
+Subject: [Xenomai] [PATCH 1/2] rtcan_module: Fix tx_timeout buffer size
+	inconsistency
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,38 +13,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@web.de>
-Cc: Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 03/16/2013 09:28 PM, Jan Kiszka wrote:
+When formatting /proc/rtcan/sockets, tx_timeout is defined as
+char[16], but a length of 20 is passed to rtcan_get_timeout_name. If
+tx_timeout for any socket is infinite, this causes snprintf to zero
+outside the buffer, leading to stack overflow and a kernel panic.
+Make the tx_timeout buffer 20 bytes long instead.
 
-> On 2013-03-16 21:27, Gilles Chanteperdrix wrote:
->> On 03/16/2013 09:25 PM, Jan Kiszka wrote:
->>
->>> On 2013-03-16 21:19, Gilles Chanteperdrix wrote:
->>>>
->>>> Hi,
->>>>
->>>> xenomai asm-generic/syscall.h defines __xn_put_user/__xn_get_user as
->>>> aliases for __put_user/__get_user, which implementation, for the ARM
->>>> architecture calls might_fault() which triggers an ipipe_root_only() check.
->>>>
->>>> So, the question is, what is the best way of avoiding this issue? Remove
->>>> the call to might_fault() when compiling with CONFIG_IPIPE enabled?
->>>> Define __ipipe_safe_put_user which avoids the call to might_fault() ?
->>>
->>> Adjust might_fault() in a way that it only considers atomic non-root
->>> contexts as problematic.
->>
->>
->> atomic meaning with hardware irqs off? or within an irq handler? This
->> requires xenomai...
-> 
+Signed-off-by: Paul Janzen <pcj@xenomai.sez.to>
+---
+ ksrc/drivers/can/rtcan_module.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
 
-> Hard irqs off || head domain stalled, I would say.
-
-ok, done, thanks.
-
+diff --git a/ksrc/drivers/can/rtcan_module.c b/ksrc/drivers/can/rtcan_module.c
+index 3ebc333..f270f65 100644
+--- a/ksrc/drivers/can/rtcan_module.c
++++ b/ksrc/drivers/can/rtcan_module.c
+@@ -165,7 +165,7 @@ static int rtcan_read_proc_sockets(char *buf, char **start, off_t offset,
+     struct rtdm_dev_context *context;
+     struct rtcan_device *dev;
+     char name[IFNAMSIZ] = "not-bound";
+-    char rx_timeout[20], tx_timeout[16];
++    char rx_timeout[20], tx_timeout[20];
+     rtdm_lockctx_t lock_ctx;
+     int ifindex;
+     RTCAN_PROC_PRINT_VARS(120);
 -- 
-                                                                Gilles.
+1.7.6.5
+
 
