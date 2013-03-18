@@ -1,11 +1,17 @@
-From: Paul Janzen <pcj@xenomai.sez.to>
-Date: Sun, 17 Mar 2013 12:16:54 -0700
-References: <oqr4jdyggv.fsf@merlin.sez.to>
-Message-ID: <oqli9lyg2i.fsf@merlin.sez.to>
+Message-ID: <5146E61E.4080606@hilscher.com>
+Date: Mon, 18 Mar 2013 11:02:06 +0100
+From: Jerome Poncin <JPoncin@hilscher.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Subject: [Xenomai] [PATCH 2/2] rtcan_module: Improve buffer size handling
-	for /proc/rtcan entries
+References: <512C806F.2020209@hilscher.com>	<512CC6A3.1010005@siemens.com>	<512F120A.5060109@hilscher.com>	<512F4005.60000@siemens.com>	<512F48AA.8020601@hilscher.com>	<5130B39C.70300@hilscher.com>	<513465CF.4030807@hilscher.com>	<51350D5B.6060309@xenomai.org>	<5135CCDE.5090401@hilscher.com>	<5135D667.8060309@siemens.com>	<51361281.20307@hilscher.com>	<51364A61.3090002@xenomai.org>	<5136F9E9.9030604@hilscher.com>	<5136FC1E.6060608@xenomai.org>	<51371B89.4020103@hilscher.com>	<513730CE.2070102@xenomai.org>	<51374B98.7030103@hilscher.com>	<51376093.7060701@siemens.com>	<5137AF89.1020009@xenomai.org>	<5138B33C.1060506@hilscher.com>	<5139BABA.8010602@hilscher.com>	<5139D7F5.2090904@xenomai.org>
+	<513EF0F0.4070705@hilscher.com>	<513F1DBD.5090603@xenomai.org>
+	<513F4944.9010202@hilscher.com> <513F8434.6070405@xenomai.org>
+	<51405E4A.9010607@hilscher.com> <5142E55E.4090705@hilscher.com>
+	<51430107.3060600@siemens.com> <51431C55.8050304@hilscher.com>
+	<51432110.3090900@siemens.com>
+In-Reply-To: <51432110.3090900@siemens.com>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] Hilscher driver for cifX boards
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,73 +20,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
+Le 15/03/2013 14:24, Jan Kiszka a écrit :
+> On 2013-03-15 14:04, Jerome Poncin wrote:
+>> Hello Jan,
+>>
+>> Yes you're right. I have 1 thread for test (main) application and the
+>> driver create one or two thread if IRQ or polling is enable.
+>> The driver thread are loop waiting event with delay.
+>> At Driver start it take few second to download firmware and configuration.
+>> My question is why it's a problem to have a real time that that run few
+>> second.
+>> If this task have the bigger priority, it's normal to not release hand
+>> and to not sleep, I'm right or not ?
+> Linux is not capable (yet) of handling the case that an online CPU is
+> 100% occupied. Sooner or later, the whole (Linux) system will lock up,
+> also the timekeeping can be negatively affected. That's nothing Xenomai
+> can change.
+>
+> Therefore, every real-time task has to behave properly, sleep on
+> asynchronous external events or suspend itself for a certain while when
+> there is nothing to do. In good real-time designs, that is usually no
+> problem, specifically if the number of tasks is moderate and the
+> workload is clear. I've seen less obvious problems in large
+> applications, but those were typically bugs as well.
+>
+> Jan
+>
+Hello Jan,
 
-Signed-off-by: Paul Janzen <pcj@xenomai.sez.to>
----
- ksrc/drivers/can/rtcan_module.c |   26 +++++++++++++++++---------
- 1 files changed, 17 insertions(+), 9 deletions(-)
+I investigated my problem and the problem come from some lock on thread.
+I think my thread management is not correct... I
+Is there an example in posix with multiple thread management ?
 
-diff --git a/ksrc/drivers/can/rtcan_module.c b/ksrc/drivers/can/rtcan_module.c
-index f270f65..6301f63 100644
---- a/ksrc/drivers/can/rtcan_module.c
-+++ b/ksrc/drivers/can/rtcan_module.c
-@@ -116,7 +116,7 @@ static void rtcan_get_timeout_name(nanosecs_rel_t timeout,
-     if (timeout == RTDM_TIMEOUT_INFINITE)
- 	strncpy(name, "infinite", max_len);
-     else
--	sprintf(name, "%lld", (long long)timeout);
-+	snprintf(name, max_len, "%lld", (long long)timeout);
- }
- 
- static int rtcan_read_proc_devices(char *buf, char **start, off_t offset,
-@@ -141,8 +141,10 @@ static int rtcan_read_proc_devices(char *buf, char **start, off_t offset,
- 
-     for (i = 1; i <= RTCAN_MAX_DEVICES; i++) {
- 	if ((dev = rtcan_dev_get_by_index(i)) != NULL) {
--	    rtcan_dev_get_state_name(dev->state, state_name, 20);
--	    rtcan_dev_get_baudrate_name(dev->baudrate, baudrate_name, 20);
-+	    rtcan_dev_get_state_name(dev->state,
-+				     state_name, sizeof(state_name));
-+	    rtcan_dev_get_baudrate_name(dev->baudrate,
-+					baudrate_name, sizeof(baudrate_name));
- 	    ret = RTCAN_PROC_PRINT("%-15s %9s %-8s %10d %10d %10d\n",
- 				   dev->name, baudrate_name, state_name,
- 				   dev->tx_count, dev->rx_count, dev->err_count);
-@@ -195,8 +197,10 @@ static int rtcan_read_proc_sockets(char *buf, char **start, off_t offset,
- 	    } else
- 		sprintf(name, "%d", ifindex);
- 	}
--	rtcan_get_timeout_name(sock->tx_timeout, tx_timeout, 20);
--	rtcan_get_timeout_name(sock->rx_timeout, rx_timeout, 20);
-+	rtcan_get_timeout_name(sock->tx_timeout,
-+			       tx_timeout, sizeof(tx_timeout));
-+	rtcan_get_timeout_name(sock->rx_timeout,
-+			       rx_timeout, sizeof(rx_timeout));
- 	if (!RTCAN_PROC_PRINT("%2d %-15s %6d 0x%05x %13s %13s %10d %5d\n",
- 			      context->fd, name, sock->flistlen,
- 			      sock->err_mask, rx_timeout, tx_timeout,
-@@ -224,10 +228,14 @@ static int rtcan_read_proc_info(char *buf, char **start, off_t offset,
-     if (down_interruptible(&rtcan_devices_nrt_lock))
- 	return -ERESTARTSYS;
- 
--    rtcan_dev_get_state_name(dev->state, state_name, 20);
--    rtcan_dev_get_ctrlmode_name(dev->ctrl_mode, ctrlmode_name, 80);
--    rtcan_dev_get_baudrate_name(dev->baudrate, baudrate_name, 20);
--    rtcan_dev_get_bittime_name(&dev->bit_time, bittime_name, 80);
-+    rtcan_dev_get_state_name(dev->state,
-+			     state_name, sizeof(state_name));
-+    rtcan_dev_get_ctrlmode_name(dev->ctrl_mode,
-+				ctrlmode_name, sizeof(ctrlmode_name));
-+    rtcan_dev_get_baudrate_name(dev->baudrate,
-+				baudrate_name, sizeof(baudrate_name));
-+    rtcan_dev_get_bittime_name(&dev->bit_time,
-+			       bittime_name, sizeof(bittime_name));
- 
-     if (!RTCAN_PROC_PRINT("%s %s\n", "Device    ", dev->name) ||
- 	!RTCAN_PROC_PRINT("%s %s\n", "Controller", dev->ctrl_name) ||
--- 
-1.7.6.5
+Thank you for your help,
 
+Jerome
 
