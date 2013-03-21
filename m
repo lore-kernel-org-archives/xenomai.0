@@ -1,12 +1,11 @@
-Message-ID: <5148CEA9.7060700@xenomai.org>
-Date: Tue, 19 Mar 2013 21:46:33 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: Younes CHALABI <y.chalabi@sinters.fr>
+Date: Thu, 21 Mar 2013 15:52:01 +0000
+Message-ID: <A46EF8CF1BBB8E4B8A27B73E177C4664EA5CA7@MAIL-SINTERS-01.sinters-int.fr>
+Content-Language: fr-FR
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <5148C728.6000101@gmail.com>
-In-Reply-To: <5148C728.6000101@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Decrease Latency (below 10 us) on x32 or x32_64?
+Subject: [Xenomai] Informations about Xenomai
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,64 +14,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Manuel Huber <manuel.h87@gmail.com>
-Cc: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 03/19/2013 09:14 PM, Manuel Huber wrote:
+Hello,
 
-> Hello!
-> 
-> We use a AMD FX-61000 CPU together with Xenomai 2.6.2.1 and Kernel
-> 3.5.7 (thanks to Jan Kiszka) and I was wondering if it's possible to
-> further decrease the latency of the system. I currently can get more
-> than 30 us when interacting with the system.
-> 
-> My first guess was the graphics card + graphics card driver because I
-> read about such problems and tested another graphics card which caused
-> a huge amount of extra-latency... I tried to get the real system
-> latency by booting the system in recovery mode (single) with vga=792
-> option + setting the nouveau driver on the blacklist... This seems to
-> work, but I still get roughly the same latencies (>20us) even after
-> 1hour by using the latency program in interrupt mode (-t 2). Only a
-> few times the latency grows beyond 10us but still it does... I have
-> unplugged the usb mouse and keyboard before running the test and
-> started ten instances of burnK7 with nice -n -20.  I also tried
-> booting with isolcpus=2,3 and assigned the latency program to cpu 3
-> (-c 3). This didn't really improve the worst case latency (still the
-> same setup as above, no gui, single). Is it possible to further
-> decrease latency (especially worst case latency) by using one cpu just
-> for real-time tasks? Is there some other way to keep Linux from using
-> a core?
-> 
-> The next thing I want to test is using 64bits; It seems rational that
-> using 32 bits with 16GB ram causes some extra latencies but is it
-> possible that it causes about 10 us extra? Is there some other option
-> I can tune? I know that the I-Pipe system isn't trivial but to me,
-> using interrupts seems pretty low-level and I would expect this to
-> have minimal latency (and jitter). I don't want to complain, it's just
-> that my supervisor asked me about the source of the latency and I
-> can't really explain... After having read just about all papers
-> about I-Pipe, I still don't have a deep understanding of the system.
-> Is there a good reference I missed?
+I have seen on the website, that Xenomai supports the i.MX27 and i.MX6 by F=
+reescale.
 
+I need this complementary informations :
 
-First, to know where the latency comes from, enable the I-pipe tracer,
-and run latency with the "-f" option.
+- What is the size of Xenomai in RAM / ROM and footprint on the platforms i=
+.MX27 and i.MX6 ?
 
-Now, common ways to reduce latencies are:
-- optimize the kernel for size
-- disable high res timers, you can try fiddling with the various preempt
-settings, this used to have a big impact on code size, but with the
-"optimize for size" option, they no longer seem to have one.
-- check what the processor does when idle; if it enters C1 state, try to
-avoid that with the BIOS settings, or pass "nohlt" on the kernel command
-line.
+- Which are the build systems to generate the kernel on the platforms ?
 
-But of course, what you should do probably depends on the I-pipe tracer
-results. And to really know what your worst case latency is, you should
-always run the test the same time with the same load, you can use
-xeno-test for that.
+- What about the developement tools ?
 
--- 
-                                                                Gilles.
+- Concerning the development environment : Is it command line ? workbench? =
+and the frameworks for creating applications?
+
+- What are the programming langages ?
+
+- Are these drivers supported ?=20
+   - Screen
+   - Touchscreen
+   - WLAN
+   - USB 2.0 / 3.0 / OTG=20
+   - SPI=20
+   - I2C=20
+   - Ethernet (gigabit)
+   - UART=20
+   - PCI Express=20
+   - CAN=20
+   - I/O Micro
+   - Video : LVD / HDMI / DVI=20
+
+- Is it compatible with multi-core ?
+
+- Is it possible to interface Matlab Simulink models ?
+
+- Is there BSPs ?
+
+Cordially
+
+Younes Chalabi
 
