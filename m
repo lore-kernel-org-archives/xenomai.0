@@ -1,11 +1,11 @@
-From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
-Date: Thu, 21 Mar 2013 12:25:13 -0400
-Message-ID: <20130321162513.GL1271@csclub.uwaterloo.ca>
-References: <A46EF8CF1BBB8E4B8A27B73E177C4664EA5CA7@MAIL-SINTERS-01.sinters-int.fr>
+From: Wolfgang Denk <wd@denx.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <A46EF8CF1BBB8E4B8A27B73E177C4664EA5CA7@MAIL-SINTERS-01.sinters-int.fr>
+Content-type: text/plain; charset=UTF-8
+Content-transfer-encoding: 8bit
+In-reply-to: <A46EF8CF1BBB8E4B8A27B73E177C4664EA5CA7@MAIL-SINTERS-01.sinters-int.fr>
+References: <A46EF8CF1BBB8E4B8A27B73E177C4664EA5CA7@MAIL-SINTERS-01.sinters-int.fr>
+Date: Thu, 21 Mar 2013 17:53:02 +0100
+Message-Id: <20130321165302.E33BD200547@gemini.denx.de>
 Subject: Re: [Xenomai] Informations about Xenomai
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -18,35 +18,53 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: Younes CHALABI <y.chalabi@sinters.fr>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Thu, Mar 21, 2013 at 03:52:01PM +0000, Younes CHALABI wrote:
+Dear Younes,
+
+In message <A46EF8CF1BBB8E4B8A27B73E177C4664EA5CA7@MAIL-SINTERS-01.sinters-int.fr> you wrote:
+> 
 > I have seen on the website, that Xenomai supports the i.MX27 and i.MX6 by Freescale.
 > 
 > I need this complementary informations :
-> 
+
+This is a long list of questions, and most of them are difficult to
+answer without at least minimal background information about the
+requirements of your project.  I'll try anyway...
+
 > - What is the size of Xenomai in RAM / ROM and footprint on the platforms i.MX27 and i.MX6 ?
 
-Xenomai is a linux kernel patch and user space libraries to allow running
-some realtime code on linux.  How big your linux system is depends what
-you put in it.
+This largely depends on how you use Xenomai.
+
+The impact of the kernel patch is usually so small that you can
+neglect it.  As for the user space libraries, these total in a some
+200...300 KiB in the root file system, but usually you will use a
+single skin only, so you will need much less.
 
 > - Which are the build systems to generate the kernel on the platforms ?
 
-It is a linux kernel.  You compile it with gcc usually.
+Whatever you use to build your normal Linux kernel images.
+
+If you just start with such development (as it appears from your
+questions), you should have a look at the build environment provided
+by the Linux Foundation's Yocto Project [1], and embedded distros that
+build on top of this, as for example the ELDK [2].
+
+[1] http://www.yoctoproject.org/
+[2] http://www.denx.de/wiki/ELDK-5/
 
 > - What about the developement tools ?
 
-Not relevant to a kernel patch.  Do whatever you normally do for linux
-development.
+Like with standard Linux, you will normally use the standard GNU based
+tool chain, eventually in combination with some IDE of your choice.
 
 > - Concerning the development environment : Is it command line ? workbench? and the frameworks for creating applications?
 
-Same thing.  Do whatever works for you.  I think vim as a text editor
-and running make works great.
+You chose.  Everything that works with plain GNU/Linux systems will
+work in the very same way with Xenomai.
 
 > - What are the programming langages ?
 
-It certainly allows you to use C code.  Of course most languages can
-talk to C libraries in some way.
+Same as with standard Linux.  As for real-time applications, these are
+usually written in C and/or C++.
 
 > - Are these drivers supported ? 
 >    - Screen
@@ -62,29 +80,58 @@ talk to C libraries in some way.
 >    - I/O Micro
 >    - Video : LVD / HDMI / DVI 
 
-What the kernel supports depends on which kernel you use.
+This question is not precise enough.
+
+First, you do not explain wether you are talking about standard Linux
+drivers, or about real-time capable drivers.
+
+Which drivers are supported on a specific board is mostly a question
+of the quality and completeness of the board support package for your
+hardware, so the first thing we need to know is which actual hardware
+you have in mind, and where you got the BSP from, etc.
+
+In general device support is pretty good in recent versions of
+mainline Linux, and for the typical embedded devices (for example,
+CAN) there are also real-time capable RTDM drivers.
 
 > - Is it compatible with multi-core ?
 
-I haven't tried, but I believe xenomai supports SMP on some architectures
-at least.
+Yes, SMP is suported on the i.MX6.
 
 > - Is it possible to interface Matlab Simulink models ?
 
-Never heard of it.
+I have no idea.
 
 > - Is there BSPs ?
 
-That's more of a board maker issue in terms of what they support for
-linux.  As long as their kernel is supported by the xenomai pathes then
-you could probably use their BSP if you really want to.  I personally
-think BSPs are collections of close to unusable drivers by makers that
-don't really understand how linux drivers are supposed to be made and
-generally best avoided except possibly as example code for getting real
-drivers written.
+Yes, depending on where you get your hardware from. If you have a
+choice, then go for a vendor that hashis hardware supported in the
+recent (v3.9) mainline kernel.
 
-Perhaps some official xenomai developers have better answers though.
+
+Note 1:  We are in the final steps of adding Xenomai support to the
+         ELDK mentioned in [2] above.  We're in the final testing
+	 stages now, but due to Easter vacation I guess the release
+	 will not happen before April.  But if you are interested
+	 please feel free to contact me for early access.
+
+<shameless plug>
+Note 2:  In addition to the free community support you can get here on
+	 the mailing list you can also get commercial support for all
+	 the topics you asked about above, of course including
+	 Xenomai, and/or porting Linux/Xenomai/drivers to your
+	 hardware.  Again, please feel free to contact me if you need
+	 help.
+<shameless plug>
+
+Best regards,
+
+Wolfgang Denk
 
 -- 
-Len Sorensen
+DENX Software Engineering GmbH,     MD: Wolfgang Denk & Detlev Zundel
+HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
+Phone: (+49)-8142-66989-10 Fax: (+49)-8142-66989-80 Email: wd@denx.de
+The biggest difference between time and space is that you can't reuse
+time.                                                 - Merrick Furst
 
