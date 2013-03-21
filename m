@@ -1,12 +1,12 @@
-Message-ID: <514B7676.1090404@xenomai.org>
-Date: Thu, 21 Mar 2013 22:07:02 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <514B7C8C.7030603@yahoo.com>
+Date: Thu, 21 Mar 2013 16:33:00 -0500
+From: Tom Z <tomz30@yahoo.com>
 MIME-Version: 1.0
-References: <514B754C.4080800@yahoo.com>
-In-Reply-To: <514B754C.4080800@yahoo.com>
-Content-Type: text/plain; charset=UTF-8
+References: <5140EEEA.2080209@yahoo.com> <5140F1FA.6060205@xenomai.org>
+In-Reply-To: <5140F1FA.6060205@xenomai.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] questions regarding context switch
+Subject: Re: [Xenomai] linkage problem under 2.6.2.1
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,32 +15,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Tom Z <tomz30@yahoo.com>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On 03/21/2013 10:02 PM, Tom Z wrote:
+Hi Gilles,
 
-> when an RT_ALARM expires and executes a handler, shouldn't 
-> there be a context switch if an RT_TASK is running? The task mentioned 
-> above executes rt_timer_spin for 100ms during each period, and the 
-> highest priority among all the 8 tasks, so while it is executing, the 
-> RT_ALARM must expire for many times -- but why does it NOT increase the 
-> number of the tasks' context switches?
+Thanks for your answer. You're right, the order was wrong. After a few 
+trial&error, I changed to the following order, everything seems work well.
+CFLAGS=$(shell $(XENOCONFIG) --skin=native --cflags)
+LDFLAGS=$(shell $(XENOCONFIG) --skin=native --ldflags)
+gcc $(CFLAGS) main.c $(LDFLAGS) -o main
 
+Sincerely,
+Tom
 
-Hi,
+On 3/13/2013 4:39 PM, Gilles Chanteperdrix wrote:
+> On 03/13/2013 10:26 PM, Tom Z wrote:
+>
+>> Hi,
+>
+> Hi,
+>
+>> gcc -I/usr/xenomai/include -D_GNU_SOURCE -D_REENTRANT -D__XENO__
+>> -lnative -L/usr/xenomai/lib -lxenomai -lpthread -lrt -lxenomai ex01.c -o
+>> ex01
+>
+> The link order seems wrong.
+>
 
-Because the number of context switches is the number of task switches.
-An alarm in kernel-space is simply triggered on the timer interrupt, so,
-it does not need any task switch. An alarm is not a task.
-
-Any news about the issue you described here:
-http://www.xenomai.org/pipermail/xenomai/2013-March/028005.html
-?
-
-Regards.
-
-
--- 
-                                                                Gilles.
 
