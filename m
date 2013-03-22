@@ -1,13 +1,12 @@
-Message-ID: <5136F5E6.6090003@xenomai.org>
-Date: Wed, 06 Mar 2013 08:53:10 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <514CAFAC.8050001@geomar.de>
+Date: Fri, 22 Mar 2013 20:23:24 +0100
+From: mwollatz-vogt <mwollatz-vogt@geomar.de>
 MIME-Version: 1.0
-References: <1362541011.90317.YahooMailNeo@web161401.mail.bf1.yahoo.com>
-	<5136F3A6.8090400@antcom.de>
-In-Reply-To: <5136F3A6.8090400@antcom.de>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] about Xenomai in Debian and Ubuntu
+References: <514C8FD5.90507@geomar.de>
+In-Reply-To: <514C8FD5.90507@geomar.de>
+Content-Type: text/plain; charset="iso-8859-15"; format="flowed"
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] Problems Crosscompiling for Foxboard G20
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,62 +15,167 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Roland Stigge <stigge@antcom.de>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 03/06/2013 08:43 AM, Roland Stigge wrote:
+the variable __kernel__ is not set, and so not all includes are working.
+where should this __kernel__ be defined ?
 
-> Hi,
-> 
-> On 06/03/13 04:36, Tom Z wrote:
->> I noticed that Debian and Ubuntu desktop distro's have included Xenomai, 
->> and I can "install" Xenomai through the software center in these 
->> distro's.
-> 
-> I can only speak for Debian here. We deliberately don't promote it as
-> "desktop distro". Rather as "Universal OS", to underline its use in the
-> Server, Embedded, Realtime areas, etc.
-> 
->> But after I "installed" Xenomai in Ubuntu, executing  "dmesg | grep xenomai" showed nothing, so I am wondering if I still need to 
->> patch and compile the kernels before using the Xenomai features? If so, 
->> what benefits does it have to include Xenomai in these distro's.
-> 
-> First, you still have to compile the Xenomai-enabled kernel yourself
-> (but this might change in the future). This is supported by the
-> Debian-included package linux-patch-xenomai. The file
-> 
-> /usr/share/doc/linux-patch-xenomai/README.Debian
-> 
-> gives instructions how to prepare the kernel as a Debian package.
-> 
-> Second, Debian ships Xenomai's userland programs and libraries, so you
-> can use them directly, without compiling.
-> 
-> Since Debian derived distros (as you mentioned one) typically copy the
-> Xenomai packages from Debian, much of this should apply there also, but
-> I can't guarantee this.
+Am 22.03.2013 18:07, schrieb mwollatz-vogt:
+> Hi List,
+>
+> I?m following the howto http://www.federicololli.com/xenomaifoxg20.htm
+>
+> i?m working with ubuntu 12 in a virtual-box.
+> i downloaded linux-2.6.35.9 and patched it with Federico?s patch
+> then i run make to compile the kernel.
+> i got the uImage
+> to get the armel-root i run the gen_root3.sh
+> (btw. i had to change in gen_root3.sh the rep?s in archieve and also=20
+> add mkdir etc and mkdir dev )
+>
+> i installed xenomai-2.5.6 (this worked only after adding CFLAGS "-marm"
+> so i run
+> ./configure --host=3Darm-linux-gnueabi --enable-arm-eabi=20
+> --enable-arm-mach=3Dat91sam89 --disable-arm-tsc *CFLAGS=3D"-marm"*
+> and
+> make DESTDIR=3D/ install
+> now i got in /usr/xenomai the files
+>
+> now i want to compile the examples
+> so i followed the http://www.xenomai.org/index.php/Examples
+>
+> *question:*
+> how to crosscompile the examples?
+>
+> i tried this:
+>
+> DESTDIR=3D/ make XENO=3D/usr/xenomai ARCH=3DARM=20
+> KSRC=3D/home/martin/xenomai/xenomai-2.5.6/ksrc
+>
+> and this:
+>
+> DESTDIR=3D/ make XENO=3D/usr/xenomai ARCH=3DARM CROSS_COMPILE=3Darm-none-=
+linux=20
+> KSRC=3D/home/martin/xenomai/xenomai-2.5.6/ksrc
+>
+> it is compiling with errors :
+>
+> root@martin-VirtualBox:/home/martin/xenomai/xenomai-head/examples#=20
+> DESTDIR=3D/
+> make XENO=3D/usr/xenomai ARCH=3Darm CROSS_COMPILE=3Darm-linux-gnueabi
+> KSRC=3D/home/martin/xenomai/xenomai-2.5.6/ksrc
+> make[1]: Betrete Verzeichnis
+> '/home/martin/xenomai/xenomai-head/examples/common'
+> make[1]: F=C31/4r das Ziel =C2=BBall=C2=AB ist nichts zu tun.
+> make[1]: Verlasse Verzeichnis
+> '/home/martin/xenomai/xenomai-head/examples/common'
+> make[1]: Betrete Verzeichnis
+> '/home/martin/xenomai/xenomai-head/examples/native'
+> arm-linux-gnueabi-gcc  -I//usr/xenomai/include -D_GNU_SOURCE -D_REENTRANT
+> -Wall -pipe -D__XENO__    rtprint.c -Xlinker -rpath -Xlinker
+> -//usr/xenomai/lib -lnative -L//usr/xenomai/lib -lxenomai -lpthread -o
+> -//rtprint
+> /tmp/ccDtXhmB.o: In function `task2_func':
+> rtprint.c:(.text+0x20): undefined reference to `rt_printf'
+> rtprint.c:(.text+0x48): undefined reference to `rt_print_buffer_name'
+> rtprint.c:(.text+0x68): undefined reference to `rt_fprintf'
+> /tmp/ccDtXhmB.o: In function `main':
+> rtprint.c:(.text+0xb0): undefined reference to `rt_print_auto_init'
+> rtprint.c:(.text+0xbc): undefined reference to `rt_print_init'
+> rtprint.c:(.text+0x124): undefined reference to `rt_print_buffer_name'
+> rtprint.c:(.text+0x144): undefined reference to `rt_printf'
+> collect2: ld returned 1 exit status
+> make[1]: *** [rtprint] Fehler 1
+> make[1]: Verlasse Verzeichnis
+> '/home/martin/xenomai/xenomai-head/examples/native'
+> make[1]: Betrete Verzeichnis
+> '/home/martin/xenomai/xenomai-head/examples/posix'
+> echo make -C /home/martin/xenomai/xenomai-2.5.6/ksrc ARCH=3Darm
+> CROSS_COMPILE=3Darm-linux-gnueabi
+> SUBDIRS=3D/home/martin/xenomai/xenomai-head/examples/posix modules
+> make -C /home/martin/xenomai/xenomai-2.5.6/ksrc ARCH=3Darm
+> CROSS_COMPILE=3Darm-linux-gnueabi
+> SUBDIRS=3D/home/martin/xenomai/xenomai-head/examples/posix modules
+> make -C /home/martin/xenomai/xenomai-2.5.6/ksrc ARCH=3Darm
+> CROSS_COMPILE=3Darm-linux-gnueabi
+> SUBDIRS=3D/home/martin/xenomai/xenomai-head/examples/posix modules
+> make[2]: Betrete Verzeichnis '/home/martin/xenomai/xenomai-2.5.6/ksrc'
+> Makefile:18: /Rules.make: Datei oder Verzeichnis nicht gefunden
+> make[2]: *** Keine Regel, um =C2=BB/Rules.make=C2=AB zu erstellen. Schlus=
+s.
+> make[2]: Verlasse Verzeichnis '/home/martin/xenomai/xenomai-2.5.6/ksrc'
+> make[1]: *** [all] Fehler 2
+> make[1]: Verlasse Verzeichnis
+> '/home/martin/xenomai/xenomai-head/examples/posix'
+> make[1]: Betrete Verzeichnis
+> '/home/martin/xenomai/xenomai-head/examples/rtdm/driver-api'
+> make -C /home/martin/xenomai/xenomai-2.5.6/ksrc
+> SUBDIRS=3D/home/martin/xenomai/xenomai-head/examples/rtdm/driver-api=20
+> modules
+> make[2]: Betrete Verzeichnis '/home/martin/xenomai/xenomai-2.5.6/ksrc'
+> Makefile:18: /Rules.make: Datei oder Verzeichnis nicht gefunden
+> make[2]: *** Keine Regel, um =C2=BB/Rules.make=C2=AB zu erstellen. Schlus=
+s.
+> make[2]: Verlasse Verzeichnis '/home/martin/xenomai/xenomai-2.5.6/ksrc'
+> make[1]: *** [all] Fehler 2
+> make[1]: Verlasse Verzeichnis
+> '/home/martin/xenomai/xenomai-head/examples/rtdm/driver-api'
+> make[1]: Betrete Verzeichnis
+> '/home/martin/xenomai/xenomai-head/examples/rtdm/profiles/ipc'
+> arm-linux-gnueabi-gcc -I//usr/xenomai/include -D_GNU_SOURCE -D_REENTRANT
+> -Wall -pipe -D__XENO__ -I//usr/xenomai/include/posix    -Xlinker -rpath
+> --Xlinker //usr/xenomai/lib  xddp-echo.c
+> ---Wl,@//usr/xenomai/lib/posix.wrappers -L//usr/xenomai/lib -lpthread_rt
+> ----lxenomai -lpthread -lrt  -lrtdm -L//usr/xenomai/lib -lxenomai=20
+> -lpthread
+> -----o xddp-echo
+> xddp-echo.c: In function =E2=80=98realtime_thread=E2=80=99:
+> xddp-echo.c:115: error: =E2=80=98SOL_XDDP=E2=80=99 undeclared (first use =
+in this=20
+> function)
+> xddp-echo.c:115: error: (Each undeclared identifier is reported only once
+> xddp-echo.c:115: error: for each function it appears in.)
+> xddp-echo.c:115: error: =E2=80=98XDDP_POOLSZ=E2=80=99 undeclared (first u=
+se in this
+> function)
+> make[1]: *** [xddp-echo] Fehler 1
+> make[1]: Verlasse Verzeichnis
+> '/home/martin/xenomai/xenomai-head/examples/rtdm/profiles/ipc'
+> make[1]: Betrete Verzeichnis
+> '/home/martin/xenomai/xenomai-head/examples/rtdm/profiles/serial'
+> make[1]: F=C31/4r das Ziel =C2=BBall=C2=AB ist nichts zu tun.
+> make[1]: Verlasse Verzeichnis
+> '/home/martin/xenomai/xenomai-head/examples/rtdm/profiles/serial'
+> make[1]: Betrete Verzeichnis
+> '/home/martin/xenomai/xenomai-head/examples/rtdm/profiles/can'
+> make[1]: F=C31/4r das Ziel =C2=BBall=C2=AB ist nichts zu tun.
+> make[1]: Verlasse Verzeichnis
+> '/home/martin/xenomai/xenomai-head/examples/rtdm/profiles/can'
+>
+>
+> I?m following the howto http://www.federicololli.com/xenomaifoxg20.htm
+>
+> i?m working with ubuntu 12 in a virtual-box.
+> i downloaded linux-2.6.35.9 and patched it with Federico?s patch
+> then i run make to compile the kernel.
+> i got the uImage
+> to get the armel-root i run the gen_root3.sh
+> (btw. i had to change in gen_root3.sh the rep?s in archieve and also=20
+> add mkdir etc and mkdir dev )
+>
+> i installed xenomai-2.5.6 (this worked only after adding CFLAGS "-marm"
+> so i run
+> ./configure --host=3Darm-linux-gnueabi --enable-arm-eabi=20
+> --enable-arm-mach=3Dat91sam89 --disable-arm-tsc *CFLAGS=3D"-marm"*
+> and
+> make DESTDIR=3D/ install
+> now i got in /usr/xenomai the files
+>
+> now i want to compile the examples
+> so i followed the http://www.xenomai.org/index.php/Examples
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> http://www.xenomai.org/mailman/listinfo/xenomai
 
-
-As a side note, we started with 2.6.2.1 to provide pre-compiled kernel
-packages for the Debian stable distribution, simply add:
-
-deb http://www.xenomai.org/debian squeeze main
-
-Then run:
-apt-get update
-apt-get install xenomai-keyring
-Answer yes
-apt-get update
-apt-get install linux-image-3.5.7-xenomai-2.6.2.1 xenomai-runtime
-
-Then reboot on the new kernel, and you should be able to launch:
-xeno latency
-
-The Linux CNC project also provides packages for Ubuntu Precise, Debian
-Squeeze and Ubuntu Lucid, see:
-
-http://wiki.linuxcnc.org/cgi-bin/wiki.pl?XenomaiKernelPackages
-
--- 
-                                                                Gilles.
 
