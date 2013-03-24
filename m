@@ -1,12 +1,10 @@
-Message-ID: <514F2A42.3080302@xenomai.org>
-Date: Sun, 24 Mar 2013 17:30:58 +0100
-From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <1364092805.60885.YahooMailNeo@web161402.mail.bf1.yahoo.com>
-In-Reply-To: <1364092805.60885.YahooMailNeo@web161402.mail.bf1.yahoo.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] native task status
+Sender: davide.faconti@gmail.com
+From: Davide Faconti <faconti@icarustechnology.com>
+Date: Sun, 24 Mar 2013 23:01:23 +0100
+Message-ID: <CAPRNvtSqfrtXW1L=W6_OTtenk+YyR_RWbPjrwRXYqEwN00P1rQ@mail.gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: [Xenomai] CAN bus on beaglebone
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,28 +13,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Tom Z <tomz30@yahoo.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 03/24/2013 03:40 AM, Tom Z wrote:
-> Hi,
->
-> I create a rt_task in user space program by rt_task_create(), and in a kernel module I use use rt_task_inquire to get rt_task_info of this task during execution. I notice that rt_task_info:status of this task is 0x300180 during its execution, and if I call rt_task_suspend on it, the status is 0x300181. So where is the task status value defined? I examined nucleus/thread.h, and it seems there are numbers like 0x300180 or 0x300181.
->
->
+Dear Xenomai users and developers,
 
-This status is a bitmask. XNSUSP from include/nucleus/thread.h is set 
-when the task is forcibly suspended.
+finally I managet to have a working xenomai (Kernel 3.2.21, xenomai
+2.6.2.1) on my beloved Beaglebone.
 
-> Thanks,
-> Tom
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> http://www.xenomai.org/mailman/listinfo/xenomai
->
+Everything works fine BUT I can't get my CAN bus working.
+Partly this is not a surprise, since I don't think that RTCAN
+currently support the D_CAN on Beaglebone (am I right?)
 
+> rtcanconfig rtcan0 --verbose --baudrate=125000 start
+> mode: start (0x1)
+> Can't get interface index for rtcan0, code = -19
 
--- 
-Philippe.
+What is disappointing is that the other Socketcan, that in theory it
+is also installed, isn't working anymore.
+
+I can get the device can0 "up" writing the command
+
+> ip link set can0 up type can bitrate 125000
+
+But when I try to actually open de device I get the error
+
+> Socket: Protocol not supported
+
+Is there anyone that as any idea of what is going on and how I could fix it?
+According to Google no one has tried already to use Xenomai +
+Beaglebone + CAN  ;)
+
+Davide Faconti
 
