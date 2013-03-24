@@ -1,12 +1,13 @@
-Message-ID: <514F8392.6080201@xenomai.org>
-Date: Sun, 24 Mar 2013 23:52:02 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <OFFC519FEC.3D6ECA30-ON85257B37.00588608-85257B37.0058860B@aanddtech.com>
-In-Reply-To: <OFFC519FEC.3D6ECA30-ON85257B37.00588608-85257B37.0058860B@aanddtech.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] (no subject)
+Sender: davide.faconti@gmail.com
+In-Reply-To: <514F79C2.6080807@xenomai.org>
+References: <CAPRNvtSqfrtXW1L=W6_OTtenk+YyR_RWbPjrwRXYqEwN00P1rQ@mail.gmail.com>
+	<514F79C2.6080807@xenomai.org>
+From: Davide Faconti <faconti@icarustechnology.com>
+Date: Mon, 25 Mar 2013 00:25:52 +0100
+Message-ID: <CAPRNvtQBTNRLxsTmnkwo18+xd3KKi=Ja+YSjvCegO++LpqSoAg@mail.gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: Re: [Xenomai] CAN bus on beaglebone
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,41 +16,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: mfornero@aanddtech.com
-Cc: xenomai@xenomai.org
-
-On 03/23/2013 05:06 PM, mfornero@aanddtech.com wrote:
-
->>> Is there a new ADEOS patch for ARM in the works ? I am interested to know
->>> what kernel version is targeted if that decision has been made.
-> 
->> 3.8. It currently works on at91s, but not yet on omap. We will probably
->> need to run tests on the imxs, as a lot of things have changed between
->> 3.5 and 3.8.
-> 
-> Hi Gilles,
-> 
-> Is there a public git tree with this work-in-progress? I couldn't pinpoint a 
-> specific one on git.xenomai.org or git.denx.de that was ARM/3.8 based
-> 
-> The Xilinx -next tree for Zynq looks like it's based on 3.8, so a 3.8 ipipe would
-> likely be much easier for me than attempting to back port all of the important patches.
-> 
-> On a related note, is there something I can do to help prevent the Zynq ipipe port from
-> bit-rotting? Even in 3.8, mainline is still missing a lot of the necessary code for Zynq,
-> so I assume I'd need a pre- and post- patch. Could you elaborate on what these would entail?
-
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai <xenomai@xenomai.org>
 
 Hi,
 
-You can have a look at the "next" branch in the ipipe-gch git
-repository, it is work in progress, but currently boot on at91, omap3
-and omap4 (cortex A9 SMP, like Zynq). The solution currently used to
-allow the I-pipe working with IRQDOMAINS is not very satisfactory and
-should be improved in next versions.
+I tried but the output isn't very different (I hope I did everything
+correctly...)
 
-Regards.
 
--- 
-                                                                Gilles.
+> mode: start (0x1)
+> Can't get interface index for rtcan0, code = -19
+
+By the way, I also get this:
+
+> [ 4477.943935] Xenomai: RTDM: closing file descriptor 0.
+
+Davide
 
