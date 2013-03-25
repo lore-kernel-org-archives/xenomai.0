@@ -1,16 +1,13 @@
-Message-ID: <5136FC1E.6060608@xenomai.org>
-Date: Wed, 06 Mar 2013 09:19:42 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <515072C0.5010607@xenomai.org>
+Date: Mon, 25 Mar 2013 16:52:32 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <512C806F.2020209@hilscher.com>	<512C9E78.1060208@siemens.com>	<512CC5C6.8050204@hilscher.com>	<512CC6A3.1010005@siemens.com>	<512F120A.5060109@hilscher.com>	<512F4005.60000@siemens.com>	<512F48AA.8020601@hilscher.com>	<5130B39C.70300@hilscher.com>
-	<513465CF.4030807@hilscher.com>	<51350D5B.6060309@xenomai.org>
-	<5135CCDE.5090401@hilscher.com>	<5135D667.8060309@siemens.com>
-	<51361281.20307@hilscher.com> <51364A61.3090002@xenomai.org>
-	<5136F9E9.9030604@hilscher.com>
-In-Reply-To: <5136F9E9.9030604@hilscher.com>
-Content-Type: text/plain; charset=UTF-8
+References: <CAMJ=MEdEOxm2_7_3On9vdzfQq1+5oyqXt+R+5RMPc30u_GNcKw@mail.gmail.com>
+In-Reply-To: <CAMJ=MEdEOxm2_7_3On9vdzfQq1+5oyqXt+R+5RMPc30u_GNcKw@mail.gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Hilscher driver for cifX boards
+Subject: Re: [Xenomai] xenomai-forge: psos skin: t_delete assertion when
+ task was not able to run before it is deleted.
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,96 +16,59 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jerome Poncin <JPoncin@hilscher.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Ronny Meeus <ronny.meeus@gmail.com>
+Cc: xenomai@xenomai.org
 
-On 03/06/2013 09:10 AM, Jerome Poncin wrote:
-
+On 03/25/2013 03:16 PM, Ronny Meeus wrote:
+> Hello
 > 
-> Hello Gilles,
+> I'm doing some more tests related to task creation and deletion.
+> The complete testcode is attached to the mail.
 > 
-> I don't understand, because I think I did a maximum of modifications
-
-> that you said me...
-
-Not really, both Jan and I gave you (different) reasons why this is wrong:
-
-+static ssize_t cifx_pci_write(struct rtdm_dev_context *context,
-+			      rtdm_user_info_t *user_info, const void *buf,
-+			      size_t nbyte)
-+{
-+	struct io_map_mem map_mem;
-+	int ret;
-+
-+	if (nbyte > sizeof(struct io_map_mem))
-+		return 0;
-+
-+	if (nbyte == sizeof(struct io_map_mem)) {
-+		/* Copy data information for Kernel */
-+		if (rtdm_safe_copy_from_user(user_info, &map_mem, buf, nbyte)) {
-+			nbyte = 0;
-+		} else {
-+			if (*map_mem.virt_addr == NULL) {
-+				/* Map physical on virtual memory */
-+				ret = rtdm_iomap_to_user(user_info,
-+							 (phys_addr_t) map_mem.
-+							 phys_addr,
-+							 (size_t) map_mem.
-+							 length,
-+							 (PROT_READ |
-+							  PROT_WRITE),
-+							 map_mem.virt_addr,
-+							 NULL, NULL);
-+
-+				if (ret != 0)
-+					nbyte = 0;
-+			} else {
-+				/* Unap virtual memory */
-+				ret = rtdm_munmap(user_info, *map_mem.virt_addr,
-+						  (size_t) map_mem.length);
-+
-+				if (ret != 0)
-+					nbyte = 0;
-+			}
-+		}
-+	} else {
-+		/* Error nothing to do */
-+		nbyte = 0;
-+	}
-+
-+	return nbyte;
-+}
-
-Yet you kept this in the "final" patch.
-
-
+> I basically have a task that creates, starts and deletes other tasks in a loop:
 > 
-> I'm agree to test the code if you fixed the code, no problem. Perhaps I
-> don't understand what you really want.
+>    for (i=0;i<500;i++) {
+>      printf("Priority %d\n",i);
+>      check("t_create loop3",t_create ("TEST",(i%HIGH_PRIO)+2,100000,0,0,&tid),0);
+>      check("t_start loop3",t_start(tid,T_PREEMPT,test_taskcreation_body,args),0);
+>      check("t_delete loop3",t_delete(tid),0);
+>    }
 > 
-> For modification in 80 line, how to change this ? :
+> If the code above is execute by a task running at priority 1, there is no issue.
+> Note that the task that are being created range from prio 2 to 97
+> (HIGH_PRIO=95).
 > 
-> struct pxa_dev_info *pxa_info =
->         (struct pxa_dev_info *)((struct io_info *)info->device_data)->priv;
->     uint32_t __iomem *plx_timing;
+> If the task that executes the code is running at a higher priority
+> (for example 3), I observe this:
+> # taskset 2 ./createdelete.exe
+>     0"000.492| WARNING: [main] Xenomai compiled with full debug enabled,
+>                                very high latencies expected [--enable-debug=full]
+> Priority 0
+> createdelete.exe: ../../include/copperplate/threadobj.h:205:
+> __threadobj_tag_unlocked: Assertion `thobj->status & 0x20' failed.
+> Aborted
 > 
-> I can't do a function...
+> Conclusion is: as soon as a task that is being created/started/deleted
+> has a lower priority than the task that creates it, the code crashes
+> in t_delete with the assertion above.
+>
 
+Sloppy state tracking. Any improvement with this patch?
 
-Well, first of all you should not use "pxa" as a suffix, as you may know,
-there are processors named "pxa", so, this may conflict. Some name related 
-to the board would be better, such as "cifx".
-
-Second, there are usually acesssors to things like "device_data" and "priv"
-members. 
-
-Thirdly, in C, you do not need an explicit cast when casting from void *, 
-to any pointer type, this is what makes using malloc convenient for instance.
-So, what you should really do is:
-
-struct io_info *io_info = the_device_data_accessor(info);
-struct cifx_dev_info *dev_info = the_priv_accessor(io_info);
-
+diff --git a/lib/copperplate/threadobj.c b/lib/copperplate/threadobj.c
+index 3891536..c9c720f 100644
+--- a/lib/copperplate/threadobj.c
++++ b/lib/copperplate/threadobj.c
+@@ -1002,7 +1002,9 @@ static void cancel_sync(struct threadobj *thobj) /* thobj->lock held */
+ 
+ 	while (thobj->status & THREADOBJ_WARMUP) {
+ 		oldstate = thobj->cancel_state;
++		__threadobj_tag_unlocked(thobj);
+ 		__RT(pthread_cond_wait(&thobj->barrier, &thobj->lock));
++		__threadobj_tag_locked(thobj);
+ 		thobj->cancel_state = oldstate;
+ 	}
+ 
 -- 
-                                                                Gilles.
+Philippe.
 
