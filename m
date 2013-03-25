@@ -1,11 +1,11 @@
 MIME-Version: 1.0
-In-Reply-To: <CADVgf9=qcKpZKFhtKUMjVxqcRNRoL2hS+PRpCMGg_MLD44ct-g@mail.gmail.com>
-References: <CADVgf9=qcKpZKFhtKUMjVxqcRNRoL2hS+PRpCMGg_MLD44ct-g@mail.gmail.com>
-Date: Mon, 25 Mar 2013 09:38:16 -0400
-Message-ID: <CADVgf9n=KHaipJ6wFz4j8mfvHQq2qZfB6w-0A773OUnsunk=4A@mail.gmail.com>
-From: Matthew Fornero <mfornero.lists@gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Subject: Re: [Xenomai] next ARM kernel patch ?
+From: Ronny Meeus <ronny.meeus@gmail.com>
+Date: Mon, 25 Mar 2013 15:16:48 +0100
+Message-ID: <CAMJ=MEdEOxm2_7_3On9vdzfQq1+5oyqXt+R+5RMPc30u_GNcKw@mail.gmail.com>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] xenomai-forge: psos skin: t_delete assertion when task
+ was not able to run before it is deleted.
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,24 +14,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: gilles.chanteperdrix@xenomai.org
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-> Hi,
->
-> You can have a look at the "next" branch in the ipipe-gch git
-> repository, it is work in progress, but currently boot on at91, omap3
-> and omap4 (cortex A9 SMP, like Zynq). The solution currently used to
-> allow the I-pipe working with IRQDOMAINS is not very satisfactory and
-> should be improved in next versions.
+Hello
 
-Note-- sorry about the previous issues with threading/etc. Moving away
-from using corporate account/client to send mails from now on.
+I'm doing some more tests related to task creation and deletion.
+The complete testcode is attached to the mail.
 
-Looks like this branch also includes Jan's x86 work. Is 3.8.x the
-target ipipe branch for x86 as well (or all archs)? We have some code
-that needs to run on both types of platform, so synchronizing the
-kernel versions makes things a bit easier.
+I basically have a task that creates, starts and deletes other tasks in a l=
+oop:
 
--Matt
+  for (i=3D0;i<500;i++) {
+    printf("Priority %d\n",i);
+    check("t_create loop3",t_create ("TEST",(i%HIGH_PRIO)+2,100000,0,0,&tid=
+),0);
+    check("t_start loop3",t_start(tid,T_PREEMPT,test_taskcreation_body,args=
+),0);
+    check("t_delete loop3",t_delete(tid),0);
+  }
 
+If the code above is execute by a task running at priority 1, there is no i=
+ssue.
+Note that the task that are being created range from prio 2 to 97
+(HIGH_PRIO=3D95).
+
+If the task that executes the code is running at a higher priority
+(for example 3), I observe this:
+# taskset 2 ./createdelete.exe
+   0"000.492| WARNING: [main] Xenomai compiled with full debug enabled,
+                              very high latencies expected [--enable-debug=
+=3Dfull]
+Priority 0
+createdelete.exe: ../../include/copperplate/threadobj.h:205:
+__threadobj_tag_unlocked: Assertion `thobj->status & 0x20' failed.
+Aborted
+
+Conclusion is: as soon as a task that is being created/started/deleted
+has a lower priority than the task that creates it, the code crashes
+in t_delete with the assertion above.
+
+---
+Ronny
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: createdelete.c
+Type: text/x-csrc
+Size: 1546 bytes
+Desc: not available
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20130325/b3ed188=
+1/attachment.c>
