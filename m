@@ -1,12 +1,15 @@
-Message-ID: <51504AAB.5000600@grandegger.com>
-Date: Mon, 25 Mar 2013 14:01:31 +0100
-From: Wolfgang Grandegger <wg@grandegger.com>
 MIME-Version: 1.0
-References: <CAPRNvtSqfrtXW1L=W6_OTtenk+YyR_RWbPjrwRXYqEwN00P1rQ@mail.gmail.com>
-In-Reply-To: <CAPRNvtSqfrtXW1L=W6_OTtenk+YyR_RWbPjrwRXYqEwN00P1rQ@mail.gmail.com>
+In-Reply-To: <514D7437.2010705@xenomai.org>
+References: <CAMJ=MEc9W3KvNuL6nLQUt_jDPY1zBfsEZJH2pQZs2kJj7g+KBg@mail.gmail.com>
+	<514C9EE9.6000505@xenomai.org>
+	<CAMJ=MEf_HMQFFQfHtVyWH4btgC0iO0K_ajcR6_ayUrADUQBoZw@mail.gmail.com>
+	<514D72E7.4060507@xenomai.org> <514D7437.2010705@xenomai.org>
+From: Ronny Meeus <ronny.meeus@gmail.com>
+Date: Mon, 25 Mar 2013 14:19:23 +0100
+Message-ID: <CAMJ=MEeHYoDX-RQhm3_W-7FUNAWCTnLdxqBYcgoPStR=BPY2RA@mail.gmail.com>
 Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] CAN bus on beaglebone
+Subject: Re: [Xenomai] xenomai-forge: psos skin does not take t_start flags
+ into account
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,54 +18,108 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Davide Faconti <faconti@icarustechnology.com>
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On 03/24/2013 11:01 PM, Davide Faconti wrote:
-> Dear Xenomai users and developers,
-> 
-> finally I managet to have a working xenomai (Kernel 3.2.21, xenomai
-> 2.6.2.1) on my beloved Beaglebone.
-> 
-> Everything works fine BUT I can't get my CAN bus working.
-> Partly this is not a surprise, since I don't think that RTCAN
-> currently support the D_CAN on Beaglebone (am I right?)
+On Sat, Mar 23, 2013 at 10:21 AM, Philippe Gerum <rpm@xenomai.org> wrote:
+> On 03/23/2013 10:16 AM, Philippe Gerum wrote:
+>>
+>> On 03/22/2013 08:05 PM, Ronny Meeus wrote:
+>>>
+>>> On Fri, Mar 22, 2013 at 7:11 PM, Philippe Gerum <rpm@xenomai.org> wrote:
+>>>>
+>>>> On 03/15/2013 02:10 PM, Ronny Meeus wrote:
+>>>>>
+>>>>>
+>>>>> Hello
+>>>>>
+>>>>> In august last year I reported a problem with round-robin scheduling
+>>>>> in the pSOS skin.
+>>>>> See mail thread "xenomai-forge: round-robin scheduling in pSOS skin".
+>>>>>
+>>>>> Now that we stepped up to the latest version of Xenomai-forge, I was
+>>>>> retrying the same test I did at that time.
+>>>>> I observe that the situation has been improved: the roundrobin
+>>>>> scheduling as such is now working well,
+>>>>> but there is an issue with the initial flags passed to the t_start
+>>>>> call.
+>>>>>
+>>>>> The flags are not correctly taken into account by the t_start call.
+>>>>> The complete testcode is attached to the mail.
+>>>>>
+>>>>> I basically create 2 tasks which both consume all cpu power for some
+>>>>> time.
+>>>>> If I create the tasks with timeslice enabled:
+>>>>>       t_create("WORK",10,0,0,0,&tid);
+>>>>>       t_start(tid,T_TSLICE, perform_work, args);
+>>>>>
+>>>>> I get this result:
+>>>>>
+>>>>> # taskset 4 ./roundrobin.exe
+>>>>>      0"000.493| WARNING: [main] Xenomai compiled with full debug
+>>>>> enabled,
+>>>>>                                 very high latencies expected
+>>>>> [--enable-debug=full]
+>>>>> 0 -> 7196
+>>>>> 1 -> 0
+>>>>>
+>>>>> If I explicitly add code in the taskbody to enable the timeslicing:
+>>>>>     unsigned long old_mode;
+>>>>>     t_mode((T_TSLICE|T_NOTSLICE),T_NOTSLICE, &old_mode);
+>>>>>     t_mode((T_TSLICE|T_NOTSLICE),T_TSLICE, &old_mode);
+>>>>>
+>>>>> I get this:
+>>>>>
+>>>>> # taskset 4 ./roundrobin.exe
+>>>>>      0"000.491| WARNING: [main] Xenomai compiled with full debug
+>>>>> enabled,
+>>>>>                                 very high latencies expected
+>>>>> [--enable-debug=full]
+>>>>> 0 -> 3600
+>>>>> 1 -> 3592
+>>>>>
+>>>>> The latter is the correct behavior: both tasks get equal cpu power.
+>>>>> Note the t_mode is called 2 times to make sure the change of the state
+>>>>> stored in the task object is taken into account.
+>>>>>
+>>>
+>>> Philippe
+>>>
+>>>> My understanding is that your latest patch in commit #eaef6154 fixes the
+>>>> issue.
+>>>>
+>>>
+>>> I think this is not correct.
+>>> The patch solved the large round-robin time, not the issue reported in
+>>> this mail.
+>>> What I observed during debugging this issue is that for example the
+>>> timer used to implement the round-robin is not started when T_TSLICE
+>>> is passed to the t_start call. If I change the mode in the taskbody
+>>> itself the timer is started.
+>>> I tried to start the timer after creating the thread but then I
+>>> observed a crash. So it looked to me that these flags need to be
+>>> processed in the trampoline code in the taskbody itself.
+>>>
+>>
+>> They are actually. testsuite/task8.c tests the behavior of the RR code.
+>> Could you run all the tests there, and report about task8? TIA,
+>>
+>> e.g.
+>>
+>> $ cd lib/psos/testsuite
+>> $ make DESTDIR=<xenomai_install-dir> test
+>>
+>
+> Confirmed. The test case you sent works perfectly now.
+>
+> --
+> Philippe.
 
-You are right? There is no C_CAN/D_CAN driver in RTcan. It needs to be
-ported from the Linux driver similar to what I have done recently for
-the Flexcan driver.
+Phillippe,
 
->> rtcanconfig rtcan0 --verbose --baudrate=125000 start
->> mode: start (0x1)
->> Can't get interface index for rtcan0, code = -19
+I can also confirm that the code is working fine now.
+Thanks for your support.
 
-#define	ENODEV		19	/* No such device */
-
-That is no suprise. It's useless to use rtcanconfig without supported
-device.
-
-> What is disappointing is that the other Socketcan, that in theory it
-> is also installed, isn't working anymore.
-> 
-> I can get the device can0 "up" writing the command
-> 
->> ip link set can0 up type can bitrate 125000
-> 
-> But when I try to actually open de device I get the error
-> 
->> Socket: Protocol not supported
-
-Does it definitely work with a vanilla kernel (without iPipe and Xenomai)?
-
-Did you link your program against the Xenomai POSIX libraries?
-
-> Is there anyone that as any idea of what is going on and how I could fix it?
-> According to Google no one has tried already to use Xenomai +
-> Beaglebone + CAN  ;)
-
-As long as you do not have a RTcan driver for your hardware you could
-play with the "Virtual CAN bus driver" (CONFIG_XENO_DRIVERS_CAN_VIRT).
-
-Wolfgang.
-
+---
+Ronny
 
