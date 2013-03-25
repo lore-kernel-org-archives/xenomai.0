@@ -1,13 +1,14 @@
-Message-ID: <515072C0.5010607@xenomai.org>
-Date: Mon, 25 Mar 2013 16:52:32 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+From: Martin Krause <Martin.Krause@tqs.de>
+Date: Mon, 25 Mar 2013 16:11:42 +0000
+Message-ID: <4808D1F1BD47644DA51DFECD4F7F5DD2178CCD78@TQ-MAIL.tq-net.de>
+References: <4808D1F1BD47644DA51DFECD4F7F5DD2178CCAB6@TQ-MAIL.tq-net.de>
+	<515048EC.4020502@xenomai.org>
+In-Reply-To: <515048EC.4020502@xenomai.org>
 MIME-Version: 1.0
-References: <CAMJ=MEdEOxm2_7_3On9vdzfQq1+5oyqXt+R+5RMPc30u_GNcKw@mail.gmail.com>
-In-Reply-To: <CAMJ=MEdEOxm2_7_3On9vdzfQq1+5oyqXt+R+5RMPc30u_GNcKw@mail.gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] xenomai-forge: psos skin: t_delete assertion when
- task was not able to run before it is deleted.
+Content-Language: de-DE
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai] ipipe kernel core-3.5.7 does not boot on MX28
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,59 +17,85 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Ronny Meeus <ronny.meeus@gmail.com>
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 03/25/2013 03:16 PM, Ronny Meeus wrote:
-> Hello
-> 
-> I'm doing some more tests related to task creation and deletion.
-> The complete testcode is attached to the mail.
-> 
-> I basically have a task that creates, starts and deletes other tasks in a loop:
-> 
->    for (i=0;i<500;i++) {
->      printf("Priority %d\n",i);
->      check("t_create loop3",t_create ("TEST",(i%HIGH_PRIO)+2,100000,0,0,&tid),0);
->      check("t_start loop3",t_start(tid,T_PREEMPT,test_taskcreation_body,args),0);
->      check("t_delete loop3",t_delete(tid),0);
->    }
-> 
-> If the code above is execute by a task running at priority 1, there is no issue.
-> Note that the task that are being created range from prio 2 to 97
-> (HIGH_PRIO=95).
-> 
-> If the task that executes the code is running at a higher priority
-> (for example 3), I observe this:
-> # taskset 2 ./createdelete.exe
->     0"000.492| WARNING: [main] Xenomai compiled with full debug enabled,
->                                very high latencies expected [--enable-debug=full]
-> Priority 0
-> createdelete.exe: ../../include/copperplate/threadobj.h:205:
-> __threadobj_tag_unlocked: Assertion `thobj->status & 0x20' failed.
-> Aborted
-> 
-> Conclusion is: as soon as a task that is being created/started/deleted
-> has a lower priority than the task that creates it, the code crashes
-> in t_delete with the assertion above.
->
-
-Sloppy state tracking. Any improvement with this patch?
-
-diff --git a/lib/copperplate/threadobj.c b/lib/copperplate/threadobj.c
-index 3891536..c9c720f 100644
---- a/lib/copperplate/threadobj.c
-+++ b/lib/copperplate/threadobj.c
-@@ -1002,7 +1002,9 @@ static void cancel_sync(struct threadobj *thobj) /* thobj->lock held */
- 
- 	while (thobj->status & THREADOBJ_WARMUP) {
- 		oldstate = thobj->cancel_state;
-+		__threadobj_tag_unlocked(thobj);
- 		__RT(pthread_cond_wait(&thobj->barrier, &thobj->lock));
-+		__threadobj_tag_locked(thobj);
- 		thobj->cancel_state = oldstate;
- 	}
- 
--- 
-Philippe.
+T24gMDMvMjUvMjAxMyAxMzo1NCBQTSwgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6DQo+IE9u
+IDAzLzI1LzIwMTMgMTI6MDEgUE0sIE1hcnRpbiBLcmF1c2Ugd3JvdGU6DQo+IA0KPiA+IEhpLA0K
+PiA+DQo+ID4gSSB0cmllZCB0byBib290IGFuIGlwaXBlIEtlcm5lbCBvbiBhbiBNWDI4IGJhc2Vk
+IGJvYXJkLCBidXQgZmFpbGVkLg0KPiA+IEJlbG93IGFyZSB0aGUgYm9vdCBtZXNzYWdlcyBJIGdv
+dCBmb3IgdGhlIGlwaXBlLWNvcmUtMy41LjMtYXJtLTINCj4gPiByZWxlYXNlOg0KPiA+DQo+ID4g
+Qm9vdGluZyBMaW51eCBvbiBwaHlzaWNhbCBDUFUgMA0KPiA+IExpbnV4IHZlcnNpb24gMy41LjMt
+aXBpcGUtMDAwNzktZzNiM2IxZDMgKHRxQGVhc3lwYWQpIChnY2MgdmVyc2lvbg0KPiA+IDQuNi40
+IDIwMTIwMzAzIChwcmVyZWxlYXNlKSAoR0NDKSApICM5IE1vbiBNYXIgMjUgMTE6MDQ6MTQgQ0VU
+IDIwMTMNCj4gPiBDUFU6IEFSTTkyNkVKLVMgWzQxMDY5MjY1XSByZXZpc2lvbiA1IChBUk12NVRF
+SiksIGNyPTAwMDUzMTc3DQo+ID4gQ1BVOiBWSVZUIGRhdGEgY2FjaGUsIFZJVlQgaW5zdHJ1Y3Rp
+b24gY2FjaGUNCj4gPiBNYWNoaW5lOiBGcmVlc2NhbGUgaS5NWDI4IChEZXZpY2UgVHJlZSksIG1v
+ZGVsOiBGcmVlc2NhbGUgaS5NWDI4DQo+ID4gRXZhbHVhdGlvbiBLaXQgTWVtb3J5IHBvbGljeTog
+RUNDIGRpc2FibGVkLCBEYXRhIGNhY2hld3JpdGViYWNrIE9uDQo+ID4gbm9kZSAwIHRvdGFscGFn
+ZXM6IDMyNzY4DQo+ID4gZnJlZV9hcmVhX2luaXRfbm9kZTogbm9kZSAwLCBwZ2RhdCBjMDQ2ZWVl
+Yywgbm9kZV9tZW1fbWFwIGMwOWUwMDAwDQo+ID4gTm9ybWFsIHpvbmU6IDI1NiBwYWdlcyB1c2Vk
+IGZvciBtZW1tYXAgTm9ybWFsIHpvbmU6IDAgcGFnZXMgcmVzZXJ2ZWQNCj4gPiBOb3JtYWwgem9u
+ZTogMzI1MTIgcGFnZXMsIExJRk8gYmF0Y2g6Nw0KPiA+IHBjcHUtYWxsb2M6IHMwIHIwIGQzMjc2
+OCB1MzI3NjggYWxsb2M9MSozMjc2OA0KPiA+IHBjcHUtYWxsb2M6IFswXSAwDQo+ID4gQnVpbHQg
+MSB6b25lbGlzdHMgaW4gWm9uZSBvcmRlciwgbW9iaWxpdHkgZ3JvdXBpbmcgb24uICBUb3RhbCBw
+YWdlczoNCj4gPiAzMjUxMiBLZXJuZWwgY29tbWFuZCBsaW5lOiBmZWNfbWFjPTAwOmQwOjkzOjI4
+OjJjOmMxDQo+ID4gaXA9MTcyLjIxLjUuNzM6MTcyLjIxLjEwLjU2Ojo6OmV0aDA6b2ZmIHJvb3Q9
+L2Rldi9uZnMgcncNCj4gPiByYW1kaXNrX3NpemU9MTYzODQNCj4gPiBuZnNyb290PTE3Mi4yMS4x
+MC41Njovb3B0L2VsZGstNS4yLjEvYXJtdjV0ZS9yb290ZnMtbHNiLXNkayx2Myx0Y3ANCj4gPiBj
+b25zb2xlPXR0eUFQUDMsMTE1MjAwIGxjZF9wYW5lbD1GRzA3MDAgc3NwMSBwYW5pYz0xIFBJRCBo
+YXNoIHRhYmxlDQo+ID4gZW50cmllczo1MTIgKG9yZGVyOiAtMSwyMDQ4IGJ5dGVzKSBEZW50cnkg
+Y2FjaGUgaGFzaCB0YWJsZSBlbnRyaWVzOg0KPiA+IDE2Mzg0IChvcmRlcjogNCwgNjU1MzYgYnl0
+ZXMpIElub2RlLWNhY2hlIGhhc2ggdGFibGUgZW50cmllczo4MTkyDQo+ID4gKG9yZGVyOiAzLDMy
+NzY4IGJ5dGVzKQ0KPiA+IE1lbW9yeTogMTI4TUIgPTEyOE1CIHRvdGFsDQo+ID4gTWVtb3J5OiAx
+MTk3NDhrLzExOTc0OGsgYXZhaWxhYmxlLCAxMTMyNGsgcmVzZXJ2ZWQsIDBLIGhpZ2htZW0gVmly
+dHVhbA0KPiA+IGtlcm5lbCBtZW1vcnkgbGF5b3V0Og0KPiA+IAl2ZWN0b3IgIDogMHhmZmZmMDAw
+MCAtIDB4ZmZmZjEwMDAgICAoICAgNCBrQikNCj4gPiAgICAgZml4bWFwCTogMHhmZmYwMDAwMCAt
+IDB4ZmZmZTAwMDAgICAoIDg5NiBrQikNCj4gPiAgICAgdm1hbGxvYyA6IDB4Yzg4MDAwMDAgLSAw
+eGZmMDAwMDAwICAgKCA4NzJNQikNCj4gPiAgICAgbG93bWVtCTogMHhjMDAwMDAwMCAtIDB4Yzgw
+MDAwMDAgICAoIDEyOCBNQikNCj4gPiAgICAgbW9kdWxlcyA6IDB4YmYwMDAwMDAgLSAweGMwMDAw
+MDAwICAgKCAxNiBNQikNCj4gPiAgICAgICAudGV4dAk6IDB4YzAwMDgwMDAgLSAweGMwNDEzODkw
+KDQxNDMga0IpDQo+ID4gCSAgLmluaXQgOiAweGMwNDE0MDAwIC0gMHhjMDQzMmVmMCAgKCAxMjQg
+a0IpDQo+ID4gCSAgLmRhdGEgOiAweGMwNDM0MDAwIC0gMHhjMDQ3MTVmMCAgICggMjQ2IGtCKQ0K
+PiA+IAkgICAuYnNzIDogMHhjMDQ3MTYxNCAtIDB4YzA5ZGZkMDAgICAoNTU2MiBrQikNCj4gPiBT
+TFVCOiBHZW5zbGFicz0xMywgSFdhbGlnbj0zMiwgT3JkZXI9MC0zLCBNaW5PYmplY3RzPTAsIENQ
+VXM9MSxOb2Rlcz0xDQo+ID4gTlJfSVJRUzozMDQNCj4gPiBJLXBpcGUsMC4wMzIgTUh6IGNsb2Nr
+c291cmNlDQo+ID4gc2NoZWRfY2xvY2s6IDMyIGJpdHMgYXQxMDAgSHosIHJlc29sdXRpb24gMTAw
+MDAwMDBucywgd3JhcHMgZXZlcnkNCj4gPiA0Mjk0OTY3Mjg2bXMgSS1waXBlOkFSTTkyNkVKLVMg
+ZGV0ZWN0ZWQsIGRpc2FibGluZyB3ZmkgaW5zdHJ1Y3Rpb24gaW4NCj4gPiBpZGxlIGxvb3AgSW50
+ZXJydXB0IHBpcGVsaW5lIChyZWxlYXNlICMyKQ0KPiA+DQo+ID4gQWZ0ZXIgdGhhdCwgbm90aGlu
+ZyBtb3JlIGhhcHBlbnMuIEkgaGF2ZSByZWFkIHRoZSBsb2cgb3V0cHV0IGRpcmVjdGx5DQo+ID4g
+ZnJvbSBNZW1vcnkgYWZ0ZXIgYSByZXNldCAoZnJvbSBfX2xvZ19idWYpLCBzaW5jZSBub3RoaW5n
+IGlzIG91dHB1dCBvbg0KPiA+IHRoZSBzZXJpYWwgY29uc29sZS4NCj4gPg0KPiA+IEkgYWxzbyB0
+cmllZCB0b3Agb2YgY29yZS0zLjUuNyB0cmVlLCB3aXRoIHRoZSBzYW1lIHJlc3VsdC4NCj4gPg0K
+PiA+IFRoZSBjbG9ja3NvdXJjZSBvZiAiMC4wMzIgTUh6IiBsb29rcyB2ZXJ5IHN0cmFuZ2UuIElz
+IHRoaXMgY29ycmVjdD8NCj4gPiBEb2VzIGFueW9uZSBzdWNjZXNzZnVsbHkgaGFzIGJvb3RlZCBp
+cGlwZS0zLjUuNyBvbiBNWDI4Pw0KPiANCj4gDQo+IEhpLA0KPiANCj4gVGhlIE1YMjggcG9ydCB3
+YXMgbWFkZSBvbiAzLjQsIGF0IHRoZSB0aW1lIG9mIG1vdmluZyB0byAzLjUsIHRoaW5ncw0KPiBz
+ZWVtZWQgdG8gaGF2ZSBub3QgY2hhbmdlZCBtdWNoLiBJbmRlZWQgdGhlIDAuMDMyIE1IeiBjbG9j
+ayBpcyB3cm9uZy4NCj4gQnV0IG9uZSBjaGFuZ2UgZ290IGxvc3Q6IHRoZSBjaGFuZ2Ugd2hpY2gg
+bWFkZSB0aGUgdGltZXIgdXNlIHRoZSB4YnVzDQo+IGNsb2NrIGluc3RlYWQgb2YgdGhlIDMyayBj
+bG9jay4gVGhpcyBzaG91bGQgIHByb2JhYmx5IGJlIGNoYW5nZWQgaW4gdGhlDQo+IGR0Yi4gQnV0
+IEkgZG8gbm90IHNlZSBob3cgdGhlICJ0aW1yb3QiIGNsb2NrIGZyZXF1ZW5jeSBnZXRzIGRlZmlu
+ZWQuDQoNCkhpIEdpbGxlcywNCg0KdGhhbmtzIHRvIHlvdXIgcXVpY2sgYW5zd2VyIEkgd2FzIGFi
+bGUgdG8gZ2V0IHRoZSBrZXJuZWwgcnVubmluZw0Kb24gbXkgTVgyOCBib2FyZC4gSSBhZGQgdGhl
+IGZvbGxvd2luZzoNCg0KdHFAZWFzeXBhZDp+L2lwaXBlJCBnaXQgZGlmZg0KZGlmZiAtLWdpdCBh
+L2RyaXZlcnMvY2xrL214cy9jbGstaW14MjguYyBiL2RyaXZlcnMvY2xrL214cy9jbGstaW14Mjgu
+Yw0KaW5kZXggNjU4NTgxYy4uZDA4ODdkOSAxMDA2NDQNCi0tLSBhL2RyaXZlcnMvY2xrL214cy9j
+bGstaW14MjguYw0KKysrIGIvZHJpdmVycy9jbGsvbXhzL2Nsay1pbXgyOC5jDQpAQCAtMzEyLDcg
+KzMxMiwxMSBAQCBpbnQgX19pbml0IG14MjhfY2xvY2tzX2luaXQodm9pZCkNCiAgICAgICAgICAg
+ICAgICAgICAgICAgIHJldHVybiBQVFJfRVJSKGNsa3NbaV0pOw0KICAgICAgICAgICAgICAgIH0N
+Cg0KKyNpZm5kZWYgQ09ORklHX0lQSVBFDQogICAgICAgIGNsa19yZWdpc3Rlcl9jbGtkZXYoY2xr
+c1tjbGszMmtdLCBOVUxMLCAidGltcm90Iik7DQorI2Vsc2UNCisgICAgICAgY2xrX3JlZ2lzdGVy
+X2Nsa2RldihjbGtzW3hidXNdLCBOVUxMLCAidGltcm90Iik7DQorI2VuZGlmIC8qIENPTkZJR19J
+UElQRSAqLw0KICAgICAgICBjbGtfcmVnaXN0ZXJfY2xrZGV2KGNsa3NbZW5ldF9vdXRdLCBOVUxM
+LCAiZW5ldF9vdXQiKTsNCiAgICAgICAgY2xrX3JlZ2lzdGVyX2Nsa2RldihjbGtzW3B3bV0sIE5V
+TEwsICI4MDA2NDAwMC5wd20iKTsNCiAgICAgICAgY2xrX3JlZ2lzdGVyX2Nsa2RldnMoY2xrc1to
+YnVzXSwgaGJ1c19sb29rdXBzLCBBUlJBWV9TSVpFKGhidXNfbG9va3VwcykpDQoNCkkgaGF2ZSBu
+byBpZGVhLCBpZiBpdCBpcyBwb3NzaWJsZSB0byBjb25maWd1cmVkIHRoaXMgaW4gdGhlIA0KZGV2
+aWNlIHRyZWUuIEFuZCBpZiB5ZXMsIGhvdyBpdCBpcyBkb25lLiBJIGxvb2tlZCBhcm91bmQgaW4g
+dGhlDQprZXJuZWwgc291cmNlcywgYnV0IGRpZCBub3QgZmluZCBhbnl0aGluZyBoZWxwZnVsLg0K
+DQpCdXQgYW55d2F5LCB0aGUgYWJvdmUgZml4IHNlZW1zIHRvIHdvcmsgZm9yIG1lIDopLiBUaGFu
+ayB5b3UNCnZlcnkgbXVjaCBmb3IgeW91ciBoZWxwIQ0KDQpCZXN0IHJlZ2FyZHMsDQpNYXJ0aW4N
+Cg==
 
