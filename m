@@ -1,14 +1,11 @@
-Message-ID: <514FFFCF.3010102@xenomai.org>
-Date: Mon, 25 Mar 2013 08:42:07 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: Martin Krause <Martin.Krause@tqs.de>
+Date: Mon, 25 Mar 2013 11:01:35 +0000
+Message-ID: <4808D1F1BD47644DA51DFECD4F7F5DD2178CCAB6@TQ-MAIL.tq-net.de>
 MIME-Version: 1.0
-References: <CAPRNvtSqfrtXW1L=W6_OTtenk+YyR_RWbPjrwRXYqEwN00P1rQ@mail.gmail.com>
-	<514F79C2.6080807@xenomai.org>
-	<CAPRNvtQBTNRLxsTmnkwo18+xd3KKi=Ja+YSjvCegO++LpqSoAg@mail.gmail.com>
-In-Reply-To: <CAPRNvtQBTNRLxsTmnkwo18+xd3KKi=Ja+YSjvCegO++LpqSoAg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] CAN bus on beaglebone
+Content-Language: de-DE
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] ipipe kernel core-3.5.7 does not boot on MX28
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,39 +14,68 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Davide Faconti <faconti@icarustechnology.com>
-Cc: xenomai <xenomai@xenomai.org>
-
-On 03/25/2013 12:25 AM, Davide Faconti wrote:
-
-> Hi,
-
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
 Hi,
 
-> 
-> I tried but the output isn't very different (I hope I did everything
-> correctly...)
-> 
-> 
->> mode: start (0x1)
->> Can't get interface index for rtcan0, code = -19
+I tried to boot an ipipe Kernel on an MX28 based board, but failed.
+Below are the boot messages I got for the ipipe-core-3.5.3-arm-2=20
+release:
 
+Booting Linux on physical CPU 0
+Linux version 3.5.3-ipipe-00079-g3b3b1d3 (tq@easypad) (gcc version 4.6.4 20=
+120303 (prerelease) (GCC) ) #9 Mon Mar 25 11:04:14 CET 2013
+CPU: ARM926EJ-S [41069265] revision 5 (ARMv5TEJ), cr=3D00053177
+CPU: VIVT data cache, VIVT instruction cache
+Machine: Freescale i.MX28 (Device Tree), model: Freescale i.MX28 Evaluation=
+ Kit
+Memory policy: ECC disabled, Data cachewriteback
+On node 0 totalpages: 32768
+free_area_init_node: node 0, pgdat c046eeec, node_mem_map c09e0000
+Normal zone: 256 pages used for memmap
+Normal zone: 0 pages reserved
+Normal zone: 32512 pages, LIFO batch:7
+pcpu-alloc: s0 r0 d32768 u32768 alloc=3D1*32768
+pcpu-alloc: [0] 0
+Built 1 zonelists in Zone order, mobility grouping on.  Total pages: 32512
+Kernel command line: fec_mac=3D00:d0:93:28:2c:c1 ip=3D172.21.5.73:172.21.10=
+.56::::eth0:off root=3D/dev/nfs rw ramdisk_size=3D16384 nfsroot=3D172.21.10=
+.56:/opt/eldk-5.2.1/armv5te/rootfs-lsb-sdk,v3,tcp console=3DttyAPP3,115200 =
+lcd_panel=3DFG0700 ssp1 panic=3D1
+PID hash table entries:512 (order: -1,2048 bytes)
+Dentry cache hash table entries: 16384 (order: 4, 65536 bytes)
+Inode-cache hash table entries:8192 (order: 3,32768 bytes)
+Memory: 128MB =3D128MB total
+Memory: 119748k/119748k available, 11324k reserved, 0K highmem
+Virtual kernel memory layout:
+	vector  : 0xffff0000 - 0xffff1000   (   4 kB)
+    fixmap	: 0xfff00000 - 0xfffe0000   ( 896 kB)
+    vmalloc : 0xc8800000 - 0xff000000   ( 872MB)
+    lowmem	: 0xc0000000 - 0xc8000000   ( 128 MB)
+    modules : 0xbf000000 - 0xc0000000   ( 16 MB)
+      .text	: 0xc0008000 - 0xc0413890(4143 kB)
+	  .init : 0xc0414000 - 0xc0432ef0  ( 124 kB)
+	  .data : 0xc0434000 - 0xc04715f0   ( 246 kB)
+	   .bss : 0xc0471614 - 0xc09dfd00   (5562 kB)
+SLUB: Genslabs=3D13, HWalign=3D32, Order=3D0-3, MinObjects=3D0, CPUs=3D1,No=
+des=3D1
+NR_IRQS:304
+I-pipe,0.032 MHz clocksource
+sched_clock: 32 bits at100 Hz, resolution 10000000ns, wraps every 429496728=
+6ms
+I-pipe:ARM926EJ-S detected, disabling wfi instruction in idle loop
+Interrupt pipeline (release #2)
 
-The patch is supposed to fix the issue "Socket: protocol not supported"
-you would get when trying to use linux socketcan interface with a
-program compiled with xenomai posix skin flags. Which is why my answer
-quoted this error message.
+After that, nothing more happens. I have read the log output directly=20
+from Memory after a reset (from __log_buf), since nothing is output=20
+on the serial console.
 
-> 
-> By the way, I also get this:
-> 
->> [ 4477.943935] Xenomai: RTDM: closing file descriptor 0.
+I also tried top of core-3.5.7 tree, with the same result.
 
+The clocksource of "0.032 MHz" looks very strange. Is this
+correct? Does anyone successfully has booted ipipe-3.5.7 on=20
+MX28?
 
-You get that because you exit from the program without closing the RTDM
-file descriptor 0.
-
--- 
-                                                                Gilles.
+Best regards,
+Martin=20
 
