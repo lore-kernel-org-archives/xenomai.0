@@ -1,10 +1,11 @@
-Message-ID: <5152EC25.7060004@xenomai.org>
-Date: Wed, 27 Mar 2013 13:55:01 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <5152F489.1000106@siemens.com>
+Date: Wed, 27 Mar 2013 14:30:49 +0100
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
 References: <515229C4.6000805@xenomai.org> <515296C8.30806@web.de>
 	<5152BAA3.30508@xenomai.org> <5152BC4D.8050501@siemens.com>
-In-Reply-To: <5152BC4D.8050501@siemens.com>
+	<5152EC25.7060004@xenomai.org>
+In-Reply-To: <5152EC25.7060004@xenomai.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] one-shot fasteoi irqs
@@ -16,154 +17,96 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: Xenomai <xenomai@xenomai.org>
 
-On 03/27/2013 10:30 AM, Jan Kiszka wrote:
-
-> On 2013-03-27 10:23, Gilles Chanteperdrix wrote:
->> On 03/27/2013 07:50 AM, Jan Kiszka wrote:
->>
->>> On 2013-03-27 00:05, Gilles Chanteperdrix wrote:
->>>>
->>>> Hi Jan,
->>>>
->>>> I seem to recall you sent patches to fix threaded irqs some time ago. I 
->>>
->>> In fact, that was Wolfgang with commits fdda86bca9 and 54d161b85b for
->>> 2.6.38 back then.
->>>
->>>> am having a problem here without SMP, whereas the system works with 
->>>> SMP. A fasteoi irq handler triggers repeatedly while its threaded 
->>>> counterpart never gets triggered. I believe this is because 
->>>> handle_fasteoi_irq unconditionally releases the irq line.
->>>
->>> You mean it doesn't respect the conditions in cond_unmask_irq?
->>>
->>>> The following 
->>>> patch seems to fix the issue though I would prefer a cleaner solution.
->>>>
->>>> diff --git a/kernel/irq/chip.c b/kernel/irq/chip.c
->>>> index 11e75d1..2ff8d3a 100644
->>>> --- a/kernel/irq/chip.c
->>>> +++ b/kernel/irq/chip.c
->>>> @@ -463,8 +463,11 @@ handle_fasteoi_irq(unsigned int irq, struct irq_desc *desc)
->>>>  
->>>>  #ifdef CONFIG_IPIPE
->>>>  	/* XXX: IRQCHIP_EOI_IF_HANDLED is ignored. */
->>>> -	if (desc->irq_data.chip->irq_release)
->>>> -		desc->irq_data.chip->irq_release(&desc->irq_data);
->>>> +	if (desc->irq_data.chip->irq_release) {
->>>> +		if ((!(desc->istate & IRQS_ONESHOT) ||
->>>> +		     !desc->threads_oneshot))
->>>> +			desc->irq_data.chip->irq_release(&desc->irq_data);
->>>> +	}
->>>>  out_eoi:
->>>>  #else  /* !CONFIG_IPIPE */
->>>>  	if (desc->istate & IRQS_ONESHOT)
->>>> diff --git a/kernel/irq/manage.c b/kernel/irq/manage.c
->>>> index e49a288..485c2c4 100644
->>>> --- a/kernel/irq/manage.c
->>>> +++ b/kernel/irq/manage.c
->>>> @@ -715,9 +715,15 @@ again:
->>>>  
->>>>  	desc->threads_oneshot &= ~action->thread_mask;
->>>>  
->>>> -	if (!desc->threads_oneshot && !irqd_irq_disabled(&desc->irq_data) &&
->>>> -	    irqd_irq_masked(&desc->irq_data))
->>>> -		unmask_irq(desc);
->>>> +	if (!desc->threads_oneshot && !irqd_irq_disabled(&desc->irq_data)) {
->>>> +#ifdef CONFIG_IPIPE
->>>> +		if (desc->irq_data.chip->irq_release)
->>>> +			desc->irq_data.chip->irq_release(&desc->irq_data);
->>>> +		else 
->>>> +#endif
->>>> +			if (irqd_irq_masked(&desc->irq_data))
->>>> +				unmask_irq(desc);
->>>> +	}
->>>>  
->>>>  out_unlock:
->>>>  	raw_spin_unlock_irq(&desc->lock);
->>>>
->>>>
->>>
->>> So this basically extends I-pipe's held phase of the IRQ to the threaded
->>> handler if we are working in oneshot mode, right?
->>>
->>> I will have to dig into this again, but without remembering all details,
->>> there are some things that do not look OK:
->>>  - Shouldn't we just replace unmask_irq with irq_release for the I-pipe
->>>    case? IOW: There is too much code under #ifdef CONFIG_IPIPE.
->>
->>
->> No, unmask_irq still has to use ->irq_unmask, while the masking done by
->> the I-pipe has to use ->irq_release.
+On 2013-03-27 13:55, Gilles Chanteperdrix wrote:
+> Ok, how about this one:
 > 
-> No, I mean that unmask should be replaced by release, but we must not
-> apply different conditions on the unmask, at least the logical one. If
-> Linux wants the line to remain masked, we have to respect this. That is
-> currently (also) broken after the last refactoring.
+> iff --git a/kernel/irq/chip.c b/kernel/irq/chip.c
+> index 11e75d1..47d1d27 100644
+> --- a/kernel/irq/chip.c
+> +++ b/kernel/irq/chip.c
+> @@ -256,13 +256,19 @@ void mask_irq(struct irq_desc *desc)
+>  void unmask_irq(struct irq_desc *desc)
+>  {
+>  	unsigned long flags;
+> -
+> +	
+> +	flags = hard_cond_local_irq_save();
+> +#ifdef CONFIG_IPIPE
+> +	if (desc->irq_data.chip->irq_release) {
+> +		desc->irq_data.chip->irq_release(&desc->irq_data);
+> +		irq_state_clr_masked(desc);
 
+Are you sure that every call to unmask_irq implies (under I-pipe) that
+the IRQ was held before so that release_irq is appropriate here? Or did
+you rather want to patch cond_unmask_irq this way? But that has
+unfortunately also more users than our fast_eoi path.
 
-Ok, how about this one:
+> +	} else
+> +#endif /* CONFIG_IPIPE */
+>  	if (desc->irq_data.chip->irq_unmask) {
+> -		flags = hard_cond_local_irq_save();
+>  		desc->irq_data.chip->irq_unmask(&desc->irq_data);
+>  		irq_state_clr_masked(desc);
+> -		hard_cond_local_irq_restore(flags);
+>  	}
+> +	hard_cond_local_irq_restore(flags);
+>  }
+>  
+>  /*
+> @@ -463,8 +469,7 @@ handle_fasteoi_irq(unsigned int irq, struct irq_desc *desc)
+>  
+>  #ifdef CONFIG_IPIPE
+>  	/* XXX: IRQCHIP_EOI_IF_HANDLED is ignored. */
+> -	if (desc->irq_data.chip->irq_release)
+> -		desc->irq_data.chip->irq_release(&desc->irq_data);
+> +	cond_unmask_irq(desc);
 
-iff --git a/kernel/irq/chip.c b/kernel/irq/chip.c
-index 11e75d1..47d1d27 100644
---- a/kernel/irq/chip.c
-+++ b/kernel/irq/chip.c
-@@ -256,13 +256,19 @@ void mask_irq(struct irq_desc *desc)
- void unmask_irq(struct irq_desc *desc)
- {
- 	unsigned long flags;
--
-+	
-+	flags = hard_cond_local_irq_save();
-+#ifdef CONFIG_IPIPE
-+	if (desc->irq_data.chip->irq_release) {
-+		desc->irq_data.chip->irq_release(&desc->irq_data);
-+		irq_state_clr_masked(desc);
-+	} else
-+#endif /* CONFIG_IPIPE */
- 	if (desc->irq_data.chip->irq_unmask) {
--		flags = hard_cond_local_irq_save();
- 		desc->irq_data.chip->irq_unmask(&desc->irq_data);
- 		irq_state_clr_masked(desc);
--		hard_cond_local_irq_restore(flags);
- 	}
-+	hard_cond_local_irq_restore(flags);
- }
- 
- /*
-@@ -463,8 +469,7 @@ handle_fasteoi_irq(unsigned int irq, struct irq_desc *desc)
- 
- #ifdef CONFIG_IPIPE
- 	/* XXX: IRQCHIP_EOI_IF_HANDLED is ignored. */
--	if (desc->irq_data.chip->irq_release)
--		desc->irq_data.chip->irq_release(&desc->irq_data);
-+	cond_unmask_irq(desc);
- out_eoi:
- #else  /* !CONFIG_IPIPE */
- 	if (desc->istate & IRQS_ONESHOT)
-@@ -682,12 +687,15 @@ void __ipipe_end_level_irq(unsigned irq, struct irq_desc *desc)
- void __ipipe_ack_fasteoi_irq(unsigned irq, struct irq_desc *desc)
- {
- 	desc->irq_data.chip->irq_hold(&desc->irq_data);
-+	irq_state_set_masked(desc);	
- }
- 
- void __ipipe_end_fasteoi_irq(unsigned irq, struct irq_desc *desc)
- {
--	if (desc->irq_data.chip->irq_release)
-+	if (desc->irq_data.chip->irq_release) {
-+		irq_state_clr_masked(desc);		
- 		desc->irq_data.chip->irq_release(&desc->irq_data);
-+	}
- }
- 
- void __ipipe_ack_edge_irq(unsigned irq, struct irq_desc *desc)
+I'm wondering now why we need this differently for the I-pipe case.
 
+Let's revisit what happens with a fasteoi normally:
 
+- it's masked only if it's a oneshot IRQ before calling the flow handler
+- it's unmasked after the flow handling if the thread was not woken up
+
+With I-pipe we already enter handle_fasteoi_irq with the IRQ masked. The
+conditions and spots to unmask are:
+- from handle_fasteoi_irq if the thread wasn't woken up or we have
+  non-threaded or non-oneshot handling
+- otherwise on end_irq from the handler thread
+
+Do you think this is correct? If so, I do not think it matches this
+patch yet.
+
+Jan
+
+>  out_eoi:
+>  #else  /* !CONFIG_IPIPE */
+>  	if (desc->istate & IRQS_ONESHOT)
+> @@ -682,12 +687,15 @@ void __ipipe_end_level_irq(unsigned irq, struct irq_desc *desc)
+>  void __ipipe_ack_fasteoi_irq(unsigned irq, struct irq_desc *desc)
+>  {
+>  	desc->irq_data.chip->irq_hold(&desc->irq_data);
+> +	irq_state_set_masked(desc);	
+>  }
+>  
+>  void __ipipe_end_fasteoi_irq(unsigned irq, struct irq_desc *desc)
+>  {
+> -	if (desc->irq_data.chip->irq_release)
+> +	if (desc->irq_data.chip->irq_release) {
+> +		irq_state_clr_masked(desc);		
+>  		desc->irq_data.chip->irq_release(&desc->irq_data);
+> +	}
+>  }
+>  
+>  void __ipipe_ack_edge_irq(unsigned irq, struct irq_desc *desc)
+> 
+> 
+> 
 
 -- 
-                                                                Gilles.
+Siemens AG, Corporate Technology, CT RTC ITP SDP-DE
+Corporate Competence Center Embedded Linux
 
