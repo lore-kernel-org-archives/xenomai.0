@@ -1,14 +1,13 @@
-Message-ID: <5152D526.6050700@xenomai.org>
-Date: Wed, 27 Mar 2013 12:16:54 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <5152EC25.7060004@xenomai.org>
+Date: Wed, 27 Mar 2013 13:55:01 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <5151F44F.3050306@siemens.com> <5151F730.4090507@siemens.com>
-	<5152C8FC.10705@xenomai.org> <5152C990.9050101@siemens.com>
-	<5152CAC6.1020304@xenomai.org> <5152CB6D.40208@siemens.com>
-In-Reply-To: <5152CB6D.40208@siemens.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+References: <515229C4.6000805@xenomai.org> <515296C8.30806@web.de>
+	<5152BAA3.30508@xenomai.org> <5152BC4D.8050501@siemens.com>
+In-Reply-To: <5152BC4D.8050501@siemens.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] New domain migration process with ipipe-core and forge
+Subject: Re: [Xenomai] one-shot fasteoi irqs
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,35 +19,151 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: Jan Kiszka <jan.kiszka@siemens.com>
 Cc: Xenomai <xenomai@xenomai.org>
 
-On 03/27/2013 11:35 AM, Jan Kiszka wrote:
-> On 2013-03-27 11:32, Philippe Gerum wrote:
->> On 03/27/2013 11:27 AM, Jan Kiszka wrote:
->>
->>>> Nitpicking: in theory, the code should expect the migration hook to have
->>>> actually done the work, and not delayed it like Xenomai currently does
->>>> in practice.
->>>
->>> Where does Xenomai do that? I was looking for it but didn't find a log
->>> flush.
->>>
->>
->> You mean delaying? Check per-arch xnarch_escalate(). Flushing occurs as
->> soon as the xnpod_schedule() caller unstalls the head domain, which has
->> to happen quickly after the delay was enforced.
->
-> Hmm, I still do not see where we should flush in Xenomai forge before
-> the return to complete_domain_migration and its clearance of the stall flag.
->
+On 03/27/2013 10:30 AM, Jan Kiszka wrote:
 
-With the new migration interface, we don't have to do that from Xenomai, 
-since the migration hook assumes it is called with the head domain 
-stalled, so the caller has to unstall shortly after anyway. But for that 
-to work, we need your latest fix.
+> On 2013-03-27 10:23, Gilles Chanteperdrix wrote:
+>> On 03/27/2013 07:50 AM, Jan Kiszka wrote:
+>>
+>>> On 2013-03-27 00:05, Gilles Chanteperdrix wrote:
+>>>>
+>>>> Hi Jan,
+>>>>
+>>>> I seem to recall you sent patches to fix threaded irqs some time ago. I 
+>>>
+>>> In fact, that was Wolfgang with commits fdda86bca9 and 54d161b85b for
+>>> 2.6.38 back then.
+>>>
+>>>> am having a problem here without SMP, whereas the system works with 
+>>>> SMP. A fasteoi irq handler triggers repeatedly while its threaded 
+>>>> counterpart never gets triggered. I believe this is because 
+>>>> handle_fasteoi_irq unconditionally releases the irq line.
+>>>
+>>> You mean it doesn't respect the conditions in cond_unmask_irq?
+>>>
+>>>> The following 
+>>>> patch seems to fix the issue though I would prefer a cleaner solution.
+>>>>
+>>>> diff --git a/kernel/irq/chip.c b/kernel/irq/chip.c
+>>>> index 11e75d1..2ff8d3a 100644
+>>>> --- a/kernel/irq/chip.c
+>>>> +++ b/kernel/irq/chip.c
+>>>> @@ -463,8 +463,11 @@ handle_fasteoi_irq(unsigned int irq, struct irq_desc *desc)
+>>>>  
+>>>>  #ifdef CONFIG_IPIPE
+>>>>  	/* XXX: IRQCHIP_EOI_IF_HANDLED is ignored. */
+>>>> -	if (desc->irq_data.chip->irq_release)
+>>>> -		desc->irq_data.chip->irq_release(&desc->irq_data);
+>>>> +	if (desc->irq_data.chip->irq_release) {
+>>>> +		if ((!(desc->istate & IRQS_ONESHOT) ||
+>>>> +		     !desc->threads_oneshot))
+>>>> +			desc->irq_data.chip->irq_release(&desc->irq_data);
+>>>> +	}
+>>>>  out_eoi:
+>>>>  #else  /* !CONFIG_IPIPE */
+>>>>  	if (desc->istate & IRQS_ONESHOT)
+>>>> diff --git a/kernel/irq/manage.c b/kernel/irq/manage.c
+>>>> index e49a288..485c2c4 100644
+>>>> --- a/kernel/irq/manage.c
+>>>> +++ b/kernel/irq/manage.c
+>>>> @@ -715,9 +715,15 @@ again:
+>>>>  
+>>>>  	desc->threads_oneshot &= ~action->thread_mask;
+>>>>  
+>>>> -	if (!desc->threads_oneshot && !irqd_irq_disabled(&desc->irq_data) &&
+>>>> -	    irqd_irq_masked(&desc->irq_data))
+>>>> -		unmask_irq(desc);
+>>>> +	if (!desc->threads_oneshot && !irqd_irq_disabled(&desc->irq_data)) {
+>>>> +#ifdef CONFIG_IPIPE
+>>>> +		if (desc->irq_data.chip->irq_release)
+>>>> +			desc->irq_data.chip->irq_release(&desc->irq_data);
+>>>> +		else 
+>>>> +#endif
+>>>> +			if (irqd_irq_masked(&desc->irq_data))
+>>>> +				unmask_irq(desc);
+>>>> +	}
+>>>>  
+>>>>  out_unlock:
+>>>>  	raw_spin_unlock_irq(&desc->lock);
+>>>>
+>>>>
+>>>
+>>> So this basically extends I-pipe's held phase of the IRQ to the threaded
+>>> handler if we are working in oneshot mode, right?
+>>>
+>>> I will have to dig into this again, but without remembering all details,
+>>> there are some things that do not look OK:
+>>>  - Shouldn't we just replace unmask_irq with irq_release for the I-pipe
+>>>    case? IOW: There is too much code under #ifdef CONFIG_IPIPE.
+>>
+>>
+>> No, unmask_irq still has to use ->irq_unmask, while the masking done by
+>> the I-pipe has to use ->irq_release.
+> 
+> No, I mean that unmask should be replaced by release, but we must not
+> apply different conditions on the unmask, at least the logical one. If
+> Linux wants the line to remain masked, we have to respect this. That is
+> currently (also) broken after the last refactoring.
 
-2.x was immune because everything happened on behalf of the gatekeeper, 
-which triggered a rescheduling with head unstalled. This is how the bug 
-slipped into the -forge logic.
+
+Ok, how about this one:
+
+iff --git a/kernel/irq/chip.c b/kernel/irq/chip.c
+index 11e75d1..47d1d27 100644
+--- a/kernel/irq/chip.c
++++ b/kernel/irq/chip.c
+@@ -256,13 +256,19 @@ void mask_irq(struct irq_desc *desc)
+ void unmask_irq(struct irq_desc *desc)
+ {
+ 	unsigned long flags;
+-
++	
++	flags = hard_cond_local_irq_save();
++#ifdef CONFIG_IPIPE
++	if (desc->irq_data.chip->irq_release) {
++		desc->irq_data.chip->irq_release(&desc->irq_data);
++		irq_state_clr_masked(desc);
++	} else
++#endif /* CONFIG_IPIPE */
+ 	if (desc->irq_data.chip->irq_unmask) {
+-		flags = hard_cond_local_irq_save();
+ 		desc->irq_data.chip->irq_unmask(&desc->irq_data);
+ 		irq_state_clr_masked(desc);
+-		hard_cond_local_irq_restore(flags);
+ 	}
++	hard_cond_local_irq_restore(flags);
+ }
+ 
+ /*
+@@ -463,8 +469,7 @@ handle_fasteoi_irq(unsigned int irq, struct irq_desc *desc)
+ 
+ #ifdef CONFIG_IPIPE
+ 	/* XXX: IRQCHIP_EOI_IF_HANDLED is ignored. */
+-	if (desc->irq_data.chip->irq_release)
+-		desc->irq_data.chip->irq_release(&desc->irq_data);
++	cond_unmask_irq(desc);
+ out_eoi:
+ #else  /* !CONFIG_IPIPE */
+ 	if (desc->istate & IRQS_ONESHOT)
+@@ -682,12 +687,15 @@ void __ipipe_end_level_irq(unsigned irq, struct irq_desc *desc)
+ void __ipipe_ack_fasteoi_irq(unsigned irq, struct irq_desc *desc)
+ {
+ 	desc->irq_data.chip->irq_hold(&desc->irq_data);
++	irq_state_set_masked(desc);	
+ }
+ 
+ void __ipipe_end_fasteoi_irq(unsigned irq, struct irq_desc *desc)
+ {
+-	if (desc->irq_data.chip->irq_release)
++	if (desc->irq_data.chip->irq_release) {
++		irq_state_clr_masked(desc);		
+ 		desc->irq_data.chip->irq_release(&desc->irq_data);
++	}
+ }
+ 
+ void __ipipe_ack_edge_irq(unsigned irq, struct irq_desc *desc)
+
+
 
 -- 
-Philippe.
+                                                                Gilles.
 
