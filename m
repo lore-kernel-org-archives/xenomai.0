@@ -1,12 +1,12 @@
-Resent-To: Xenomai <xenomai@xenomai.org>
-Resent-Message-Id: <51522A2B.4030601@xenomai.org>
-Message-ID: <515229C4.6000805@xenomai.org>
-Date: Wed, 27 Mar 2013 00:05:40 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <515296C8.30806@web.de>
+Date: Wed, 27 Mar 2013 07:50:48 +0100
+From: Jan Kiszka <jan.kiszka@web.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] one-shot fasteoi irqs
+References: <515229C4.6000805@xenomai.org>
+In-Reply-To: <515229C4.6000805@xenomai.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai] one-shot fasteoi irqs
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,61 +15,57 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@web.de>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Xenomai <xenomai@xenomai.org>
 
-
-Hi Jan,
-
-I seem to recall you sent patches to fix threaded irqs some time ago. I 
-am having a problem here without SMP, whereas the system works with 
-SMP. A fasteoi irq handler triggers repeatedly while its threaded 
-counterpart never gets triggered. I believe this is because 
-handle_fasteoi_irq unconditionally releases the irq line. The following 
-patch seems to fix the issue though I would prefer a cleaner solution.
-
-diff --git a/kernel/irq/chip.c b/kernel/irq/chip.c
-index 11e75d1..2ff8d3a 100644
---- a/kernel/irq/chip.c
-+++ b/kernel/irq/chip.c
-@@ -463,8 +463,11 @@ handle_fasteoi_irq(unsigned int irq, struct irq_desc *desc)
- 
- #ifdef CONFIG_IPIPE
- 	/* XXX: IRQCHIP_EOI_IF_HANDLED is ignored. */
--	if (desc->irq_data.chip->irq_release)
--		desc->irq_data.chip->irq_release(&desc->irq_data);
-+	if (desc->irq_data.chip->irq_release) {
-+		if ((!(desc->istate & IRQS_ONESHOT) ||
-+		     !desc->threads_oneshot))
-+			desc->irq_data.chip->irq_release(&desc->irq_data);
-+	}
- out_eoi:
- #else  /* !CONFIG_IPIPE */
- 	if (desc->istate & IRQS_ONESHOT)
-diff --git a/kernel/irq/manage.c b/kernel/irq/manage.c
-index e49a288..485c2c4 100644
---- a/kernel/irq/manage.c
-+++ b/kernel/irq/manage.c
-@@ -715,9 +715,15 @@ again:
- 
- 	desc->threads_oneshot &= ~action->thread_mask;
- 
--	if (!desc->threads_oneshot && !irqd_irq_disabled(&desc->irq_data) &&
--	    irqd_irq_masked(&desc->irq_data))
--		unmask_irq(desc);
-+	if (!desc->threads_oneshot && !irqd_irq_disabled(&desc->irq_data)) {
-+#ifdef CONFIG_IPIPE
-+		if (desc->irq_data.chip->irq_release)
-+			desc->irq_data.chip->irq_release(&desc->irq_data);
-+		else 
-+#endif
-+			if (irqd_irq_masked(&desc->irq_data))
-+				unmask_irq(desc);
-+	}
- 
- out_unlock:
- 	raw_spin_unlock_irq(&desc->lock);
-
-
--- 
-                                                                Gilles.
-
+T24gMjAxMy0wMy0yNyAwMDowNSwgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4gCj4gSGkg
+SmFuLAo+IAo+IEkgc2VlbSB0byByZWNhbGwgeW91IHNlbnQgcGF0Y2hlcyB0byBmaXggdGhyZWFk
+ZWQgaXJxcyBzb21lIHRpbWUgYWdvLiBJIAoKSW4gZmFjdCwgdGhhdCB3YXMgV29sZmdhbmcgd2l0
+aCBjb21taXRzIGZkZGE4NmJjYTkgYW5kIDU0ZDE2MWI4NWIgZm9yCjIuNi4zOCBiYWNrIHRoZW4u
+Cgo+IGFtIGhhdmluZyBhIHByb2JsZW0gaGVyZSB3aXRob3V0IFNNUCwgd2hlcmVhcyB0aGUgc3lz
+dGVtIHdvcmtzIHdpdGggCj4gU01QLiBBIGZhc3Rlb2kgaXJxIGhhbmRsZXIgdHJpZ2dlcnMgcmVw
+ZWF0ZWRseSB3aGlsZSBpdHMgdGhyZWFkZWQgCj4gY291bnRlcnBhcnQgbmV2ZXIgZ2V0cyB0cmln
+Z2VyZWQuIEkgYmVsaWV2ZSB0aGlzIGlzIGJlY2F1c2UgCj4gaGFuZGxlX2Zhc3Rlb2lfaXJxIHVu
+Y29uZGl0aW9uYWxseSByZWxlYXNlcyB0aGUgaXJxIGxpbmUuCgpZb3UgbWVhbiBpdCBkb2Vzbid0
+IHJlc3BlY3QgdGhlIGNvbmRpdGlvbnMgaW4gY29uZF91bm1hc2tfaXJxPwoKPiBUaGUgZm9sbG93
+aW5nIAo+IHBhdGNoIHNlZW1zIHRvIGZpeCB0aGUgaXNzdWUgdGhvdWdoIEkgd291bGQgcHJlZmVy
+IGEgY2xlYW5lciBzb2x1dGlvbi4KPiAKPiBkaWZmIC0tZ2l0IGEva2VybmVsL2lycS9jaGlwLmMg
+Yi9rZXJuZWwvaXJxL2NoaXAuYwo+IGluZGV4IDExZTc1ZDEuLjJmZjhkM2EgMTAwNjQ0Cj4gLS0t
+IGEva2VybmVsL2lycS9jaGlwLmMKPiArKysgYi9rZXJuZWwvaXJxL2NoaXAuYwo+IEBAIC00NjMs
+OCArNDYzLDExIEBAIGhhbmRsZV9mYXN0ZW9pX2lycSh1bnNpZ25lZCBpbnQgaXJxLCBzdHJ1Y3Qg
+aXJxX2Rlc2MgKmRlc2MpCj4gIAo+ICAjaWZkZWYgQ09ORklHX0lQSVBFCj4gIAkvKiBYWFg6IElS
+UUNISVBfRU9JX0lGX0hBTkRMRUQgaXMgaWdub3JlZC4gKi8KPiAtCWlmIChkZXNjLT5pcnFfZGF0
+YS5jaGlwLT5pcnFfcmVsZWFzZSkKPiAtCQlkZXNjLT5pcnFfZGF0YS5jaGlwLT5pcnFfcmVsZWFz
+ZSgmZGVzYy0+aXJxX2RhdGEpOwo+ICsJaWYgKGRlc2MtPmlycV9kYXRhLmNoaXAtPmlycV9yZWxl
+YXNlKSB7Cj4gKwkJaWYgKCghKGRlc2MtPmlzdGF0ZSAmIElSUVNfT05FU0hPVCkgfHwKPiArCQkg
+ICAgICFkZXNjLT50aHJlYWRzX29uZXNob3QpKQo+ICsJCQlkZXNjLT5pcnFfZGF0YS5jaGlwLT5p
+cnFfcmVsZWFzZSgmZGVzYy0+aXJxX2RhdGEpOwo+ICsJfQo+ICBvdXRfZW9pOgo+ICAjZWxzZSAg
+LyogIUNPTkZJR19JUElQRSAqLwo+ICAJaWYgKGRlc2MtPmlzdGF0ZSAmIElSUVNfT05FU0hPVCkK
+PiBkaWZmIC0tZ2l0IGEva2VybmVsL2lycS9tYW5hZ2UuYyBiL2tlcm5lbC9pcnEvbWFuYWdlLmMK
+PiBpbmRleCBlNDlhMjg4Li40ODVjMmM0IDEwMDY0NAo+IC0tLSBhL2tlcm5lbC9pcnEvbWFuYWdl
+LmMKPiArKysgYi9rZXJuZWwvaXJxL21hbmFnZS5jCj4gQEAgLTcxNSw5ICs3MTUsMTUgQEAgYWdh
+aW46Cj4gIAo+ICAJZGVzYy0+dGhyZWFkc19vbmVzaG90ICY9IH5hY3Rpb24tPnRocmVhZF9tYXNr
+Owo+ICAKPiAtCWlmICghZGVzYy0+dGhyZWFkc19vbmVzaG90ICYmICFpcnFkX2lycV9kaXNhYmxl
+ZCgmZGVzYy0+aXJxX2RhdGEpICYmCj4gLQkgICAgaXJxZF9pcnFfbWFza2VkKCZkZXNjLT5pcnFf
+ZGF0YSkpCj4gLQkJdW5tYXNrX2lycShkZXNjKTsKPiArCWlmICghZGVzYy0+dGhyZWFkc19vbmVz
+aG90ICYmICFpcnFkX2lycV9kaXNhYmxlZCgmZGVzYy0+aXJxX2RhdGEpKSB7Cj4gKyNpZmRlZiBD
+T05GSUdfSVBJUEUKPiArCQlpZiAoZGVzYy0+aXJxX2RhdGEuY2hpcC0+aXJxX3JlbGVhc2UpCj4g
+KwkJCWRlc2MtPmlycV9kYXRhLmNoaXAtPmlycV9yZWxlYXNlKCZkZXNjLT5pcnFfZGF0YSk7Cj4g
+KwkJZWxzZSAKPiArI2VuZGlmCj4gKwkJCWlmIChpcnFkX2lycV9tYXNrZWQoJmRlc2MtPmlycV9k
+YXRhKSkKPiArCQkJCXVubWFza19pcnEoZGVzYyk7Cj4gKwl9Cj4gIAo+ICBvdXRfdW5sb2NrOgo+
+ICAJcmF3X3NwaW5fdW5sb2NrX2lycSgmZGVzYy0+bG9jayk7Cj4gCj4gCgpTbyB0aGlzIGJhc2lj
+YWxseSBleHRlbmRzIEktcGlwZSdzIGhlbGQgcGhhc2Ugb2YgdGhlIElSUSB0byB0aGUgdGhyZWFk
+ZWQKaGFuZGxlciBpZiB3ZSBhcmUgd29ya2luZyBpbiBvbmVzaG90IG1vZGUsIHJpZ2h0PwoKSSB3
+aWxsIGhhdmUgdG8gZGlnIGludG8gdGhpcyBhZ2FpbiwgYnV0IHdpdGhvdXQgcmVtZW1iZXJpbmcg
+YWxsIGRldGFpbHMsCnRoZXJlIGFyZSBzb21lIHRoaW5ncyB0aGF0IGRvIG5vdCBsb29rIE9LOgog
+LSBTaG91bGRuJ3Qgd2UganVzdCByZXBsYWNlIHVubWFza19pcnEgd2l0aCBpcnFfcmVsZWFzZSBm
+b3IgdGhlIEktcGlwZQogICBjYXNlPyBJT1c6IFRoZXJlIGlzIHRvbyBtdWNoIGNvZGUgdW5kZXIg
+I2lmZGVmIENPTkZJR19JUElQRS4KIC0gSXQgc2VlbXMgd2UgZG8gbm90IHJlc3BlY3QgbWFza2lu
+ZyBkb25lIGJ5IExpbnV4LCByYXRoZXIKICAgdW5jb25kaXRpb25hbGx5IHJlbGVhc2UgKEFLQSB1
+bm1hc2spIHRoZSBsaW5lLgoKVGhlIGxhdHRlciB3YXMgcmlnaHQgaW4gMi42LjM4IGJ1dCBhcHBh
+cmVudGx5IGdvdCBicm9rZW4gZHVyaW5nIHRvIHBvcnQKZnJvbSAzLjIgdG8gMy40LgoKSmFuCgot
+LS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2ht
+ZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBzaWduYXR1cmUuYXNjClR5cGU6IGFwcGxpY2F0aW9u
+L3BncC1zaWduYXR1cmUKU2l6ZTogMjYzIGJ5dGVzCkRlc2M6IE9wZW5QR1AgZGlnaXRhbCBzaWdu
+YXR1cmUKVVJMOiA8aHR0cDovL3d3dy54ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRh
+Y2htZW50cy8yMDEzMDMyNy9kNTkwZGM3Yy9hdHRhY2htZW50LnBncD4K
