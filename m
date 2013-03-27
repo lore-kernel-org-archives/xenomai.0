@@ -1,9 +1,10 @@
-Message-ID: <5152BAA3.30508@xenomai.org>
-Date: Wed, 27 Mar 2013 10:23:47 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <5152BC4D.8050501@siemens.com>
+Date: Wed, 27 Mar 2013 10:30:53 +0100
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
 References: <515229C4.6000805@xenomai.org> <515296C8.30806@web.de>
-In-Reply-To: <515296C8.30806@web.de>
+	<5152BAA3.30508@xenomai.org>
+In-Reply-To: <5152BAA3.30508@xenomai.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] one-shot fasteoi irqs
@@ -15,100 +16,95 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@web.de>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: Xenomai <xenomai@xenomai.org>
 
-On 03/27/2013 07:50 AM, Jan Kiszka wrote:
-
-> On 2013-03-27 00:05, Gilles Chanteperdrix wrote:
+On 2013-03-27 10:23, Gilles Chanteperdrix wrote:
+> On 03/27/2013 07:50 AM, Jan Kiszka wrote:
+> 
+>> On 2013-03-27 00:05, Gilles Chanteperdrix wrote:
+>>>
+>>> Hi Jan,
+>>>
+>>> I seem to recall you sent patches to fix threaded irqs some time ago. I 
 >>
->> Hi Jan,
+>> In fact, that was Wolfgang with commits fdda86bca9 and 54d161b85b for
+>> 2.6.38 back then.
 >>
->> I seem to recall you sent patches to fix threaded irqs some time ago. I 
-> 
-> In fact, that was Wolfgang with commits fdda86bca9 and 54d161b85b for
-> 2.6.38 back then.
-> 
->> am having a problem here without SMP, whereas the system works with 
->> SMP. A fasteoi irq handler triggers repeatedly while its threaded 
->> counterpart never gets triggered. I believe this is because 
->> handle_fasteoi_irq unconditionally releases the irq line.
-> 
-> You mean it doesn't respect the conditions in cond_unmask_irq?
-> 
->> The following 
->> patch seems to fix the issue though I would prefer a cleaner solution.
+>>> am having a problem here without SMP, whereas the system works with 
+>>> SMP. A fasteoi irq handler triggers repeatedly while its threaded 
+>>> counterpart never gets triggered. I believe this is because 
+>>> handle_fasteoi_irq unconditionally releases the irq line.
 >>
->> diff --git a/kernel/irq/chip.c b/kernel/irq/chip.c
->> index 11e75d1..2ff8d3a 100644
->> --- a/kernel/irq/chip.c
->> +++ b/kernel/irq/chip.c
->> @@ -463,8 +463,11 @@ handle_fasteoi_irq(unsigned int irq, struct irq_desc *desc)
->>  
->>  #ifdef CONFIG_IPIPE
->>  	/* XXX: IRQCHIP_EOI_IF_HANDLED is ignored. */
->> -	if (desc->irq_data.chip->irq_release)
->> -		desc->irq_data.chip->irq_release(&desc->irq_data);
->> +	if (desc->irq_data.chip->irq_release) {
->> +		if ((!(desc->istate & IRQS_ONESHOT) ||
->> +		     !desc->threads_oneshot))
->> +			desc->irq_data.chip->irq_release(&desc->irq_data);
->> +	}
->>  out_eoi:
->>  #else  /* !CONFIG_IPIPE */
->>  	if (desc->istate & IRQS_ONESHOT)
->> diff --git a/kernel/irq/manage.c b/kernel/irq/manage.c
->> index e49a288..485c2c4 100644
->> --- a/kernel/irq/manage.c
->> +++ b/kernel/irq/manage.c
->> @@ -715,9 +715,15 @@ again:
->>  
->>  	desc->threads_oneshot &= ~action->thread_mask;
->>  
->> -	if (!desc->threads_oneshot && !irqd_irq_disabled(&desc->irq_data) &&
->> -	    irqd_irq_masked(&desc->irq_data))
->> -		unmask_irq(desc);
->> +	if (!desc->threads_oneshot && !irqd_irq_disabled(&desc->irq_data)) {
->> +#ifdef CONFIG_IPIPE
->> +		if (desc->irq_data.chip->irq_release)
->> +			desc->irq_data.chip->irq_release(&desc->irq_data);
->> +		else 
->> +#endif
->> +			if (irqd_irq_masked(&desc->irq_data))
->> +				unmask_irq(desc);
->> +	}
->>  
->>  out_unlock:
->>  	raw_spin_unlock_irq(&desc->lock);
+>> You mean it doesn't respect the conditions in cond_unmask_irq?
 >>
+>>> The following 
+>>> patch seems to fix the issue though I would prefer a cleaner solution.
+>>>
+>>> diff --git a/kernel/irq/chip.c b/kernel/irq/chip.c
+>>> index 11e75d1..2ff8d3a 100644
+>>> --- a/kernel/irq/chip.c
+>>> +++ b/kernel/irq/chip.c
+>>> @@ -463,8 +463,11 @@ handle_fasteoi_irq(unsigned int irq, struct irq_desc *desc)
+>>>  
+>>>  #ifdef CONFIG_IPIPE
+>>>  	/* XXX: IRQCHIP_EOI_IF_HANDLED is ignored. */
+>>> -	if (desc->irq_data.chip->irq_release)
+>>> -		desc->irq_data.chip->irq_release(&desc->irq_data);
+>>> +	if (desc->irq_data.chip->irq_release) {
+>>> +		if ((!(desc->istate & IRQS_ONESHOT) ||
+>>> +		     !desc->threads_oneshot))
+>>> +			desc->irq_data.chip->irq_release(&desc->irq_data);
+>>> +	}
+>>>  out_eoi:
+>>>  #else  /* !CONFIG_IPIPE */
+>>>  	if (desc->istate & IRQS_ONESHOT)
+>>> diff --git a/kernel/irq/manage.c b/kernel/irq/manage.c
+>>> index e49a288..485c2c4 100644
+>>> --- a/kernel/irq/manage.c
+>>> +++ b/kernel/irq/manage.c
+>>> @@ -715,9 +715,15 @@ again:
+>>>  
+>>>  	desc->threads_oneshot &= ~action->thread_mask;
+>>>  
+>>> -	if (!desc->threads_oneshot && !irqd_irq_disabled(&desc->irq_data) &&
+>>> -	    irqd_irq_masked(&desc->irq_data))
+>>> -		unmask_irq(desc);
+>>> +	if (!desc->threads_oneshot && !irqd_irq_disabled(&desc->irq_data)) {
+>>> +#ifdef CONFIG_IPIPE
+>>> +		if (desc->irq_data.chip->irq_release)
+>>> +			desc->irq_data.chip->irq_release(&desc->irq_data);
+>>> +		else 
+>>> +#endif
+>>> +			if (irqd_irq_masked(&desc->irq_data))
+>>> +				unmask_irq(desc);
+>>> +	}
+>>>  
+>>>  out_unlock:
+>>>  	raw_spin_unlock_irq(&desc->lock);
+>>>
+>>>
 >>
+>> So this basically extends I-pipe's held phase of the IRQ to the threaded
+>> handler if we are working in oneshot mode, right?
+>>
+>> I will have to dig into this again, but without remembering all details,
+>> there are some things that do not look OK:
+>>  - Shouldn't we just replace unmask_irq with irq_release for the I-pipe
+>>    case? IOW: There is too much code under #ifdef CONFIG_IPIPE.
 > 
-> So this basically extends I-pipe's held phase of the IRQ to the threaded
-> handler if we are working in oneshot mode, right?
 > 
-> I will have to dig into this again, but without remembering all details,
-> there are some things that do not look OK:
->  - Shouldn't we just replace unmask_irq with irq_release for the I-pipe
->    case? IOW: There is too much code under #ifdef CONFIG_IPIPE.
+> No, unmask_irq still has to use ->irq_unmask, while the masking done by
+> the I-pipe has to use ->irq_release.
 
+No, I mean that unmask should be replaced by release, but we must not
+apply different conditions on the unmask, at least the logical one. If
+Linux wants the line to remain masked, we have to respect this. That is
+currently (also) broken after the last refactoring.
 
-No, unmask_irq still has to use ->irq_unmask, while the masking done by
-the I-pipe has to use ->irq_release.
-
->  - It seems we do not respect masking done by Linux, rather
->    unconditionally release (AKA unmask) the line.
-
-
-You mean masking which could be done by the interrupt handler?
-
-> 
-> The latter was right in 2.6.38 but apparently got broken during to port
-> from 3.2 to 3.4.
-
-
-fasteoi irqs were reworked with the introduction of ->irq_hold and
-->irq_release, because the 2.6.38 was found not to work either...
+Jan
 
 -- 
-                                                                Gilles.
+Siemens AG, Corporate Technology, CT RTC ITP SDP-DE
+Corporate Competence Center Embedded Linux
 
