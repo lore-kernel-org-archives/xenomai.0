@@ -1,22 +1,12 @@
-Message-ID: <513725F3.6000404@xenomai.org>
-Date: Wed, 06 Mar 2013 12:18:11 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <515FEF85.5010801@web.de>
+Date: Sat, 06 Apr 2013 11:48:53 +0200
+From: Jan Kiszka <jan.kiszka@web.de>
 MIME-Version: 1.0
-References: <CAMJ=MEfo5EU2mnM4=JDNU4QXX00W=0aC2+m5LucPYiN39W5wcQ@mail.gmail.com>
-	<512FB9B5.9040709@xenomai.org>
-	<CAAXf6LXDSxU_eASbHOgQzw_2xSpZua2BaORAiJ59KoPitFNEcg@mail.gmail.com>
-	<51306545.1010200@xenomai.org> <5130663F.7070209@xenomai.org>
-	<51306710.5030201@xenomai.org> <5130673D.2090700@xenomai.org>
-	<513069D5.1090508@xenomai.org>
-	<CAMJ=MEdAfvwWhjc4SLPk5smh+vNbPDJP=kM3bBFdw6n3bJd_mg@mail.gmail.com>
-	<CAMJ=MEf7VMen7ikfPFpR=4J4SksHT0yiGpOOZySxNcPfezUfcQ@mail.gmail.com>
-	<5135FC42.3010606@xenomai.org>
-	<CAMJ=MEccwvx-__TQZZdAzxmb=cuzivG_kUkKxU65V=R3a5yuTw@mail.gmail.com>
-	<513723EC.6070203@xenomai.org>
-In-Reply-To: <513723EC.6070203@xenomai.org>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Xenomai-forge: thread using 100% cpu load
+References: <515DE96F.7080508@xenomai.org>
+In-Reply-To: <515DE96F.7080508@xenomai.org>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] I-pipe on ARM platform.
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -25,35 +15,121 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Ronny Meeus <ronny.meeus@gmail.com>
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 03/06/2013 12:09 PM, Philippe Gerum wrote:
->> do you have a reference to the issue that you are suspecting and a
->
-> Nothing specific I can confirm yet.
->
->> view on which version of the glib we need to use to solve it?
->>
->>
->
-> So far I have the test running fine over glibc 2.15(x86) and eglibc
-> 2.13(ppc). I have an outdated glibc 2.8(arm) I'm about to test which
-> might give me a different status.
->
-> I don't think I'll keep running timers over SIGEV_THREAD in the upcoming
-> -forge work anyway, the spec leaves too much room for interpretation
-> with respect to the underlying implementation. Typically, one server
-> thread per-timer would be quite of a problem with legacy systems firing
-> tenths of timeout timers used as plain watchdogs.
->
+On 2013-04-04 22:58, Gilles Chanteperdrix wrote:
+> =
 
-No luck, 2.8 works fine too. Could you strace your small example on the 
-failing system for a few seconds until the oneshot timer triggers, 
-sending me the bzipped output log (privately)?
+> Hi,
+> =
 
-TIA,
+> The for-core-3.5.7 and for-core-3.8.2 branches in ipipe_gch.git =
 
--- 
-Philippe.
+> repository contain new versions of the I-pipe kernel for the ARM =
 
+> architecture. =
+
+> =
+
+> The for-core-3.5.7 branch contains an important fix for SMP platforms, =
+
+> and the fix for mx28 posted by Martin Krause. =
+
+> =
+
+> The for-core-3.8.2 branch is the newest port. Known issues are:
+> - it has been rebased on v3.8.2, so it will not merge with the branch =
+
+> it started from, if preferred, I can push a merged version;
+> - ftrace is broken, so I wonder if it would not be simpler to have a =
+
+> tracer not relying on ftrace, as we did at the beginning of the I-pipe =
+
+> tracer;
+> - threaded fasteoi irqs are broken, the branch contains the latest =
+
+> patch posted on this list, but since I received no comment, I am not =
+
+> sure it is the right fix.
+> =
+
+> The pull requests follow.
+> The following changes since commit 946ca3977e75316751caecc7182f4e64af6499=
+d5:
+> =
+
+>   ipipe-core-3.5.7-blackfin-3 (2013-01-22 11:41:34 +0100)
+> =
+
+> are available in the git repository at:
+>   git://git.xenomai.org/ipipe-gch.git for-core-3.5.7
+> =
+
+> Gilles Chanteperdrix (2):
+>       arm/ipipe: fix off-by-one error in IPI virqs allocation
+>       mx28/ipipe: allow building kernel for both mx28 and mx23
+> =
+
+> Martin Krause (1):
+>       mx28/ipipe: fix the timer selected with I-pipe
+> =
+
+>  arch/arm/kernel/smp.c       |    2 +-
+>  arch/arm/mach-mxs/timer.c   |   40 ++++++++++++++++---------------------=
+---
+>  drivers/clk/mxs/clk-imx28.c |    4 ++++
+>  3 files changed, 21 insertions(+), 25 deletions(-)
+> =
+
+> =
+
+> The following changes since commit 5a16a5a4dd127afcb2446afa057b55a60cffe7=
+f9:
+> =
+
+>   blackfin/ipipe: import arch-dep bits based on 3.5.7-blackfin-3 (2013-04=
+-04 21:37:51 +0200)
+> =
+
+> are available in the git repository at:
+>   git://git.xenomai.org/ipipe-gch.git for-core-3.8.2
+> =
+
+> Gilles Chanteperdrix (18):
+>       avoid kernel fault upon coredump on arm with vivt cache
+>       FCSE: pid life cycle
+>       FCSE: Conversions between VA and MVA
+>       FCSE: Address-space limits
+>       FCSE: Make the shared mappings uncacheable
+>       FCSE: do not flush cache during context switch
+>       "Best-effort" FCSE: choose whether to flush cache at run-time
+>       "Best-effort" FCSE: Allow PID re-use
+>       "Best-effort" FCSE: Handle mappings above 32 MB
+>       "Best effort" FCSE: Reserve address-space for stack
+>       "Best-effort" FCSE: Handle shared mappings
+>       FCSE: add Makefile and compilation option
+>       noarch/ipipe: fix ipipe_update_hostrt
+>       noarch/ipipe: fix one-shot fasteoi irq
+>       noarch/ipipe: introduce IPIPE_NR_ROOT_IRQS
+        ^^^^^^
+I'm tagging generic patches just with "ipipe:". IIRC, this is what
+Philippe requested.
+
+>       arm/ipipe: import arch-dep bits based on 3.5.7-arm-3
+>       arm/ipipe: avoid calling might_fault() with non-root domains
+
+I think ipipe_uaccess_might_fault could become a generic service in case
+other archs need it as well. And it has to map directly to might_fault
+in case CONFIG_IPIPE_DEBUG_CONTEXT is disabled (thus zero overhead).
+
+Jan
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 263 bytes
+Desc: OpenPGP digital signature
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20130406/cf16b7c=
+3/attachment.pgp>
