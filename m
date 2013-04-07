@@ -1,12 +1,13 @@
-Message-ID: <5161C292.3070703@web.de>
-Date: Sun, 07 Apr 2013 21:01:38 +0200
-From: Jan Kiszka <jan.kiszka@web.de>
+Message-ID: <5161C61F.9000009@xenomai.org>
+Date: Sun, 07 Apr 2013 21:16:47 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <515DE96F.7080508@xenomai.org> <515FEF85.5010801@web.de>
 	<5161A51C.8050606@xenomai.org> <5161BF47.9020007@xenomai.org>
-In-Reply-To: <5161BF47.9020007@xenomai.org>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+	<5161C292.3070703@web.de>
+In-Reply-To: <5161C292.3070703@web.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] I-pipe on ARM platform.
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -16,40 +17,81 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Jan Kiszka <jan.kiszka@web.de>
 Cc: Xenomai <xenomai@xenomai.org>
 
-T24gMjAxMy0wNC0wNyAyMDo0NywgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4gT24gMDQv
-MDcvMjAxMyAwNjo1NSBQTSwgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4gCj4+IE9uIDA0
-LzA2LzIwMTMgMTE6NDggQU0sIEphbiBLaXN6a2Egd3JvdGU6Cj4+Cj4+PiBPbiAyMDEzLTA0LTA0
-IDIyOjU4LCBHaWxsZXMgQ2hhbnRlcGVyZHJpeCB3cm90ZToKPj4+PiAtIGZ0cmFjZSBpcyBicm9r
-ZW4sIHNvIEkgd29uZGVyIGlmIGl0IHdvdWxkIG5vdCBiZSBzaW1wbGVyIHRvIGhhdmUgYSAKPj4+
-PiB0cmFjZXIgbm90IHJlbHlpbmcgb24gZnRyYWNlLCBhcyB3ZSBkaWQgYXQgdGhlIGJlZ2lubmlu
-ZyBvZiB0aGUgSS1waXBlIAo+Pj4+IHRyYWNlcjsKPiAKPj4gKC4uLikKPiAKPj4KPj4gSGksCj4+
-Cj4+IEkgaGF2ZSBqdXN0IHB1c2hlZCBhIG5ldyB2ZXJzaW9uIG9mIHRoZSBmb3ItY29yZS0zLjgu
-MiBicmFuY2ggd2l0aCBhbGwKPj4gdGhlIGNvbW1lbnRzIGFkZHJlc3NlZC4KPj4KPj4gSSBhbHNv
-IGhhZCB0ZXN0ZWQgYSBtZXJnZSBvZiB0aGUgcHJldmlvdXMgdmVyc2lvbiB3aXRoIHlvdXIgbmV4
-dC14ODYKPj4gYnJhbmNoLCBhbmQgZXhjZXB0IGEgZmV3IG1lcmdlIGNvbmZsaWN0cyBhbmQgYSBi
-dWlsZCBlcnJvciB3aXRob3V0IFNNUCwKPj4gYWRyZXNzZWQgYnkgdGhpcyBjb21taXQ6Cj4+IGh0
-dHA6Ly9naXQueGVub21haS5vcmcvaXBpcGUtZ2NoLmdpdC8/cD1pcGlwZS1nY2guZ2l0O2E9Y29t
-bWl0ZGlmZjtoPWZhZTgxNDQ0YTBiZmUxMmRlNTE0YWMwMzlmODY2YzBmNjZhYmZiM2M7aHA9MTE5
-ODI1MzU4MGUwZDU2MTBlZTg4NmUxZmYzNzcxNDYxYTA2ZjQxNAoKVGhhbmtzIGZvciB0aGUgZml4
-LCB3aWxsIHBpY2sgaXQgdXAgYXMgd2VsbC4KCj4+Cj4+IEl0IHNlZW1lZCB0byB3b3JrIGZpbmUg
-b24gbXkgeDg2IGJveGVzLgo+IAo+IAo+IFRoZSBmaXhlcyBpbiB0aGUgbmV4dC14ODYgYnJhbmNo
-IHNlZW0gdG8gbWFrZSB0aGUgdHJhY2VyIHdvcmtpbmcsIAo+IHRob3VnaCBpdCBzZWVtcyB2ZXJ5
-IHNsb3cgKGxhdGVuY2llcyBkb3VibGVkIG9uIEFSTSkuCgpZb3UgbWVhbiB0aGUgSS1waXBlIHRy
-YWNlcj8gVGhhdCBpdCB3b3JrcyBpcyBsaWtlbHkgZHVlIHRvIGUwMDg4OGI0YWEuClRoZSBzbG93
-bmVzcywgaXMgaXQgY29tcGFyZWQgdG8gYW4gb2xkZXIgSS1waXBlIHZlcnNpb24/Cgo+ICBUaGUg
-Y2hhbmdlcyBpbiAKPiB0aW1pbmdzIHNlZW0gdG8gYnJlYWsgc29tZSBvZiB0aGUgcmVncmVzc2lv
-biB0ZXN0cywKClRpbWVvdXRzIGZpcmU/Cgo+IEkgYWxzbyBnZXQgYSAKPiByZXByb2R1Y2libGUg
-YnVnIG9uIGF0OTFzYW05MjYzIHdoaWxlIHJ1bm5pbmcgdGhlICJjb25kLXRvcnR1cmUtbmF0aXZl
-IiAKPiB0ZXN0Ogo+IAo+IFsgIDIwMi42NTAwMDBdIFhlbm9tYWk6IFN3aXRjaGluZyBtYWluX3Rh
-c2sgdG8gc2Vjb25kYXJ5IG1vZGUgYWZ0ZXIgZXhjZXB0aW9uICM4IGluIGtlcm5lbC1zcGFjZSBh
-dCAweGMwMDkzNDE4IChwaWQgOTg2KQouLi4KPiBbICAyMDMuNDcwMDAwXSBVbmFibGUgdG8gaGFu
-ZGxlIGtlcm5lbCBwYWdpbmcgcmVxdWVzdCBhdCB2aXJ0dWFsIGFkZHJlc3MgMjBjMDA0MWUKCkkg
-c3VwcG9zZSB0aGF0IGFkZHJlc3MgaXMgdG90YWxseSBvZmYuIFVzZSBhZnRlciByZWxlYXNlIGlz
-c3VlPwoKSmFuCgoKLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9u
-LXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogc2lnbmF0dXJlLmFzYwpUeXBl
-OiBhcHBsaWNhdGlvbi9wZ3Atc2lnbmF0dXJlClNpemU6IDI2MyBieXRlcwpEZXNjOiBPcGVuUEdQ
-IGRpZ2l0YWwgc2lnbmF0dXJlClVSTDogPGh0dHA6Ly93d3cueGVub21haS5vcmcvcGlwZXJtYWls
-L3hlbm9tYWkvYXR0YWNobWVudHMvMjAxMzA0MDcvNDlmNmY3NDgvYXR0YWNobWVudC5wZ3A+Cg==
+On 04/07/2013 09:01 PM, Jan Kiszka wrote:
+
+> On 2013-04-07 20:47, Gilles Chanteperdrix wrote:
+>> On 04/07/2013 06:55 PM, Gilles Chanteperdrix wrote:
+>>
+>>> On 04/06/2013 11:48 AM, Jan Kiszka wrote:
+>>>
+>>>> On 2013-04-04 22:58, Gilles Chanteperdrix wrote:
+>>>>> - ftrace is broken, so I wonder if it would not be simpler to have a 
+>>>>> tracer not relying on ftrace, as we did at the beginning of the I-pipe 
+>>>>> tracer;
+>>
+>>> (...)
+>>
+>>>
+>>> Hi,
+>>>
+>>> I have just pushed a new version of the for-core-3.8.2 branch with all
+>>> the comments addressed.
+>>>
+>>> I also had tested a merge of the previous version with your next-x86
+>>> branch, and except a few merge conflicts and a build error without SMP,
+>>> adressed by this commit:
+>>> http://git.xenomai.org/ipipe-gch.git/?p=ipipe-gch.git;a=commitdiff;h=fae81444a0bfe12de514ac039f866c0f66abfb3c;hp=1198253580e0d5610ee886e1ff3771461a06f414
+> 
+> Thanks for the fix, will pick it up as well.
+> 
+>>>
+>>> It seemed to work fine on my x86 boxes.
+>>
+>>
+>> The fixes in the next-x86 branch seem to make the tracer working, 
+>> though it seems very slow (latencies doubled on ARM).
+> 
+> You mean the I-pipe tracer? That it works is likely due to e00888b4aa.
+> The slowness, is it compared to an older I-pipe version?
+
+
+Yes, it seems slower than older versions, but I have no figures, it is
+just a general impression. I run "xeno-regression-test" with the tracer
+on, as well as with xenomai and ipipe debugging options enabled.
+
+> 
+>>  The changes in 
+>> timings seem to break some of the regression tests,
+> 
+> Timeouts fire?
+
+
+Some tests rely on "sleep" for synchronization, I had to add a semaphore
+to xddp_test, see:
+http://git.xenomai.org/?p=xenomai-2.6.git;a=commitdiff;h=73232678927c2afe525090a359f241c1acac4a2d;hp=926f4fbc2e38c198eefda6f0a98a278588d421db
+
+I also had a problem with mutex-torture-native, but it does not seem
+easy to reproduce.
+
+> 
+>> I also get a 
+>> reproducible bug on at91sam9263 while running the "cond-torture-native" 
+>> test:
+>>
+>> [  202.650000] Xenomai: Switching main_task to secondary mode after exception #8 in kernel-space at 0xc0093418 (pid 986)
+> ...
+>> [  203.470000] Unable to handle kernel paging request at virtual address 20c0041e
+> 
+> I suppose that address is totally off. Use after release issue?
+
+
+It seems registry_unexport_pnode reads an invalid object->vfilp and
+triggers registry_proc_apc whereas no vfile is currently reading the
+object, as if registry_export_pnode had not been called.
+
+-- 
+                                                                Gilles.
+
