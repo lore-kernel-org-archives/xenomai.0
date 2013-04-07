@@ -1,13 +1,13 @@
-Message-ID: <51618B70.7070809@xenomai.org>
-Date: Sun, 07 Apr 2013 17:06:24 +0200
+Message-ID: <51618C48.7040505@xenomai.org>
+Date: Sun, 07 Apr 2013 17:10:00 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <51613CE2.6010900@wanadoo.fr>
-In-Reply-To: <51613CE2.6010900@wanadoo.fr>
+References: <515DE96F.7080508@xenomai.org> <515FEF85.5010801@web.de>
+	<51606911.7050205@xenomai.org> <51606A47.8000606@web.de>
+In-Reply-To: <51606A47.8000606@web.de>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Kernel 3.5.7 not booting in qemu for vexpress-a9 with
- xenomai-2.6.2.1
+Subject: Re: [Xenomai] I-pipe on ARM platform.
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,33 +16,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Thierry Bultel <thierry.bultel@wanadoo.fr>
-Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@web.de>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 04/07/2013 11:31 AM, Thierry Bultel wrote:
+On 04/06/2013 08:32 PM, Jan Kiszka wrote:
 
-> Hi,
+> On 2013-04-06 20:27, Gilles Chanteperdrix wrote:
+>>> And it has to map directly to might_fault
+>>> in case CONFIG_IPIPE_DEBUG_CONTEXT is disabled (thus zero overhead).
+>>
+>> That would defeat the purpose of the patch. might_fault can not be
+>> called over non root domains.
 > 
-> I am using a vanilla 3.5.7 kernel in qemu-1.4.0
-> The base defconfig is the vexpress.
-> 
-> I want to use xenomai-2.6.2.1 with it.
-> 
-> The non-patched kernel boots fine, the patched one doesnot, there is 
-> nothing on the console,
-> the boot logo does not comeand Qemu then takes 100% CPU.
-> 
-> Here is my command line
-> ./qemu-1.4.0/arm-softmmu/qemu-system-arm -M vexpress-a9 -kernel 
-> ./Buildroot/output.linaro.vexpress-a9/build/linux-3.5.7/arch/arm/boot/uImage 
-> -append "console=ttyAMA0" -m 1024M -serial stdio
-> 
-> Any ideas ? May I have missed something ?
+> True. But we should avoid leaving the costly irq-disable/enable and
+> domain checks in production code behind when might_fault actually
+> resolves to a nop. That should be the case for
+> !CONFIG_DEBUG_ATOMIC_SLEEP && !CONFIG_PROVE_LOCKING.
 
 
-Well, vexpress is not in the list of machines supported by Xenomai. So,
-someone needs to port the I-pipe kernel to it.
-
+I am almost sure I did not have either of these two options enabled when
+I observed the bug.
 
 -- 
                                                                 Gilles.
