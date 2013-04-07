@@ -1,13 +1,13 @@
-Message-ID: <516BA7C4.1050403@grandegger.com>
-Date: Mon, 15 Apr 2013 09:09:56 +0200
-From: Wolfgang Grandegger <wg@grandegger.com>
+Message-ID: <5161CE7B.1040404@wanadoo.fr>
+Date: Sun, 07 Apr 2013 21:52:27 +0200
+From: Thierry Bultel <thierry.bultel@wanadoo.fr>
 MIME-Version: 1.0
-References: <CAD1EtognG+9J_Bbo3x6AsBCJ4eU4SLrXQz=wDvJtFw0vCSZ8NQ@mail.gmail.com>
-In-Reply-To: <CAD1EtognG+9J_Bbo3x6AsBCJ4eU4SLrXQz=wDvJtFw0vCSZ8NQ@mail.gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] patch to src/utils/can/rtcansend.c to support data
- from a file
+References: <51613CE2.6010900@wanadoo.fr> <51618B70.7070809@xenomai.org>
+In-Reply-To: <51618B70.7070809@xenomai.org>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] Kernel 3.5.7 not booting in qemu for vexpress-a9 with
+ xenomai-2.6.2.1
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,31 +16,53 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Daniel M. Drucker, Ph.D." <dmd@interactive-motion.com>
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-Hi Daniel,
+Le 07/04/2013 17:06, Gilles Chanteperdrix a écrit :
+> On 04/07/2013 11:31 AM, Thierry Bultel wrote:
+>
+>> Hi,
+>>
+>> I am using a vanilla 3.5.7 kernel in qemu-1.4.0
+>> The base defconfig is the vexpress.
+>>
+>> I want to use xenomai-2.6.2.1 with it.
+>>
+>> The non-patched kernel boots fine, the patched one doesnot, there is
+>> nothing on the console,
+>> the boot logo does not comeand Qemu then takes 100% CPU.
+>>
+>> Here is my command line
+>> ./qemu-1.4.0/arm-softmmu/qemu-system-arm -M vexpress-a9 -kernel
+>> ./Buildroot/output.linaro.vexpress-a9/build/linux-3.5.7/arch/arm/boot/uImage
+>> -append "console=ttyAMA0" -m 1024M -serial stdio
+>>
+>> Any ideas ? May I have missed something ?
+>
+>
+> Well, vexpress is not in the list of machines supported by Xenomai. So,
+> someone needs to port the I-pipe kernel to it.
+>
+>
 
-thanks for your contribution...
+Hi Gilles,
 
-On 03/28/2013 11:00 PM, Daniel M. Drucker, Ph.D. wrote:
-> When sending a large number of CAN messages from a script (in our case, to
-> initialize a servo), rtcansend can be somewhat slow because every message
-> requires a setup and teardown.
-> 
-> I added a --file flag to rtcansend which allows you to instead read bytes
-> from a file (or stdin, using '-' as the filename). The file has one CAN
-> message per line, in the same format (space-separated) as it would have
-> been in the can-msg on the command line. Blank lines are ignored. Lines
-> which start with a ' ' (space) or '#' (hash) character are ignored. If a
-> filename is given, any can-msg specified on the command line is ignored.
-> 
-> I hope this of use to someone, and it'd be really great if this could be
-> merged!
+We already talked about the vexpress, it was at the beginning of the 
+rtcan discussion.
+It used to work (and pretty well), my configuration was:
 
-Well, I actually see it as a nice extension for a special purpose. I do
-not see an general benefit for basic CAN testing. I also prefer to keep
-rtcansend short and simple.
+linux-3.2.21+ipipe-core-3.2.21-arm-1.patch
 
-Wolfgang.
+and I have just successfully tested
+
+linux-3.2.21+ipipe-core-3.2.21-arm-4.patch
+as well.
+
+There is likely not much missing for having it working on the 3.5.7 
+kernel. I am taking a look.
+
+Cheers
+Thierry
+
 
