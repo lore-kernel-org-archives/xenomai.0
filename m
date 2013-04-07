@@ -1,13 +1,13 @@
-Message-ID: <51618D60.80204@web.de>
-Date: Sun, 07 Apr 2013 17:14:40 +0200
-From: Jan Kiszka <jan.kiszka@web.de>
+Message-ID: <51619016.1090001@xenomai.org>
+Date: Sun, 07 Apr 2013 17:26:14 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <515DE96F.7080508@xenomai.org> <515FEF85.5010801@web.de>
 	<51606911.7050205@xenomai.org> <51606A47.8000606@web.de>
-	<51618C48.7040505@xenomai.org>
-In-Reply-To: <51618C48.7040505@xenomai.org>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+	<51618C48.7040505@xenomai.org> <51618D60.80204@web.de>
+In-Reply-To: <51618D60.80204@web.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] I-pipe on ARM platform.
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -17,26 +17,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Jan Kiszka <jan.kiszka@web.de>
 Cc: Xenomai <xenomai@xenomai.org>
 
-T24gMjAxMy0wNC0wNyAxNzoxMCwgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4gT24gMDQv
-MDYvMjAxMyAwODozMiBQTSwgSmFuIEtpc3prYSB3cm90ZToKPiAKPj4gT24gMjAxMy0wNC0wNiAy
-MDoyNywgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4+Pj4gQW5kIGl0IGhhcyB0byBtYXAg
-ZGlyZWN0bHkgdG8gbWlnaHRfZmF1bHQKPj4+PiBpbiBjYXNlIENPTkZJR19JUElQRV9ERUJVR19D
-T05URVhUIGlzIGRpc2FibGVkICh0aHVzIHplcm8gb3ZlcmhlYWQpLgo+Pj4KPj4+IFRoYXQgd291
-bGQgZGVmZWF0IHRoZSBwdXJwb3NlIG9mIHRoZSBwYXRjaC4gbWlnaHRfZmF1bHQgY2FuIG5vdCBi
-ZQo+Pj4gY2FsbGVkIG92ZXIgbm9uIHJvb3QgZG9tYWlucy4KPj4KPj4gVHJ1ZS4gQnV0IHdlIHNo
-b3VsZCBhdm9pZCBsZWF2aW5nIHRoZSBjb3N0bHkgaXJxLWRpc2FibGUvZW5hYmxlIGFuZAo+PiBk
-b21haW4gY2hlY2tzIGluIHByb2R1Y3Rpb24gY29kZSBiZWhpbmQgd2hlbiBtaWdodF9mYXVsdCBh
-Y3R1YWxseQo+PiByZXNvbHZlcyB0byBhIG5vcC4gVGhhdCBzaG91bGQgYmUgdGhlIGNhc2UgZm9y
-Cj4+ICFDT05GSUdfREVCVUdfQVRPTUlDX1NMRUVQICYmICFDT05GSUdfUFJPVkVfTE9DS0lORy4K
-PiAKPiAKPiBJIGFtIGFsbW9zdCBzdXJlIEkgZGlkIG5vdCBoYXZlIGVpdGhlciBvZiB0aGVzZSB0
-d28gb3B0aW9ucyBlbmFibGVkIHdoZW4KPiBJIG9ic2VydmVkIHRoZSBidWcuCgpIbW0uIEFuZCBD
-T05GSUdfUFJFRU1QVF9WT0xVTlRBUlk/IEluIHRoYXQgY2FzZSwgbWlnaHRfc2xlZXAgc2VlbXMg
-dG8Kc2VydmUgYXMgYSB2b2x1bnRhcnkgcHJlZW1wdGlvbiBwb2ludC4KCkphbgoKCi0tLS0tLS0t
-LS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2Fz
-IHNjcnViYmVkLi4uCk5hbWU6IHNpZ25hdHVyZS5hc2MKVHlwZTogYXBwbGljYXRpb24vcGdwLXNp
-Z25hdHVyZQpTaXplOiAyNjMgYnl0ZXMKRGVzYzogT3BlblBHUCBkaWdpdGFsIHNpZ25hdHVyZQpV
-Ukw6IDxodHRwOi8vd3d3Lnhlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRz
-LzIwMTMwNDA3L2RhYWM5MWQ0L2F0dGFjaG1lbnQucGdwPgo=
+On 04/07/2013 05:14 PM, Jan Kiszka wrote:
+
+> On 2013-04-07 17:10, Gilles Chanteperdrix wrote:
+>> On 04/06/2013 08:32 PM, Jan Kiszka wrote:
+>>
+>>> On 2013-04-06 20:27, Gilles Chanteperdrix wrote:
+>>>>> And it has to map directly to might_fault
+>>>>> in case CONFIG_IPIPE_DEBUG_CONTEXT is disabled (thus zero overhead).
+>>>>
+>>>> That would defeat the purpose of the patch. might_fault can not be
+>>>> called over non root domains.
+>>>
+>>> True. But we should avoid leaving the costly irq-disable/enable and
+>>> domain checks in production code behind when might_fault actually
+>>> resolves to a nop. That should be the case for
+>>> !CONFIG_DEBUG_ATOMIC_SLEEP && !CONFIG_PROVE_LOCKING.
+>>
+>>
+>> I am almost sure I did not have either of these two options enabled when
+>> I observed the bug.
+> 
+> Hmm. And CONFIG_PREEMPT_VOLUNTARY? In that case, might_sleep seems to
+> serve as a voluntary preemption point.
+
+
+>From what I see, ipipe_root_only is called systematically, even when
+CONFIG_PREEMPT_VOLUNTARY is disabled.
+
+-- 
+                                                                Gilles.
+
