@@ -1,10 +1,11 @@
-Message-ID: <5165C158.7060005@gmail.com>
-Date: Wed, 10 Apr 2013 21:45:28 +0200
-From: Marco Guerri <gmarco.dev@gmail.com>
+From: Younes CHALABI <y.chalabi@sinters.fr>
+Date: Mon, 8 Apr 2013 12:17:31 +0000
+Message-ID: <A46EF8CF1BBB8E4B8A27B73E177C4664EDD7CD@MAIL-SINTERS-01.sinters-int.fr>
+Content-Language: fr-FR
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] Kernel space task VS User space task latency
+Subject: [Xenomai] xenomai on Sabre Lite i.MX6
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,35 +14,14 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi everyone,
+Hi,
 
-I was wondering if there is anyone who can help me clarify some very 
-basic doubts I have regarding Xenomai internals.
-I am working with Xenomai 2.6.2.1 on a 2.6.31 kernel on an i.MX35 
-processor (thus, ARM arch).
+Is there anybody who tried to install Xenomai on the i.MX6 Sabre Lite Board=
+ ?
 
-Using the latency test program, I get the following results for User 
-space and Kernel space tasks.
+Wainting your answers.
 
-*** IDLE ***
-User space --> Mean: ~7us
-Kernel space --> Mean: ~4us
-
-*** HEAVY LOAD (dohell) ***
-User space --> Mean: ~34us
-Kernel space --> Mean: ~18us
-
-Could you give me some hints on how to explain this great difference, 
-expecially with the system under load?
-What are the factors that could worsen the latency in IDLE conditions?
-What are the factors that can explain a value of latency doubled in case 
-of a system under load?
-
-Thank you a lot for any suggestion.
-Regards,
-
-Marco
-
+Younes=
 
