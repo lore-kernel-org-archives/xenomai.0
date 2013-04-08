@@ -1,24 +1,15 @@
-Message-ID: <516C0E3B.5050606@xenomai.org>
-Date: Mon, 15 Apr 2013 16:27:07 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <51633059.4070504@xenomai.org>
+Date: Mon, 08 Apr 2013 23:02:17 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CAPpP=rPQa-Fa+1j7Lb11dUX8srkinCQQ2yS2gR5y9f9Pqf1jdg@mail.gmail.com>
-	<516998B7.9090901@xenomai.org>
-	<CAPpP=rOEjuy8w0x-_zRv_7vHDOmjU6n1Hi=jrE6UNEULL=zYcQ@mail.gmail.com>
-	<5169C63B.1070406@xenomai.org>
-	<CAPpP=rMOmOkd2Gwswu685zsPhxJDMj7GnRWA0yU+gRHmz=V2bw@mail.gmail.com>
-	<5169EC2C.4000101@xenomai.org>
-	<CAPpP=rNCBdcussSRzHN_Vpjj0afWZRGKRqPXxh7ps2-_GP7nBQ@mail.gmail.com>
-	<516BC4DF.3030302@xenomai.org>
-	<CAPpP=rMRx5CKj2uJv3wBSu=UUb88W2nXy73z1B6ewBgXEQNYiQ@mail.gmail.com>
-	<516BF43D.7070708@xenomai.org>
-	<CAPpP=rPLiziMZU8-KUQvsfcUr8MbXh9pTeobuTO+HRfGtizJPw@mail.gmail.com>
-	<516C094F.2050107@xenomai.org>
-	<CAPpP=rMsqp5SOfq8_dNUOZ5UFugNa-YwsLyT5WT4d01_UTWRMA@mail.gmail.com>
-In-Reply-To: <CAPpP=rMsqp5SOfq8_dNUOZ5UFugNa-YwsLyT5WT4d01_UTWRMA@mail.gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+References: <515DE96F.7080508@xenomai.org>
+	<515FEF85.5010801@web.de>	<5161A51C.8050606@xenomai.org>
+	<5161BF47.9020007@xenomai.org>	<5161C292.3070703@web.de>
+	<5161C61F.9000009@xenomai.org>
+In-Reply-To: <5161C61F.9000009@xenomai.org>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [QUESTION] thread creation and hook function
+Subject: Re: [Xenomai] I-pipe on ARM platform.
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -27,162 +18,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: alex alex <duch.alexandre@gmail.com>, "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@web.de>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 04/15/2013 04:18 PM, alex alex wrote:
-> pthread_set_name_np is called after the task creation and it seems that
-> the *_np function force to switch in secondary too...
+On 04/07/2013 09:16 PM, Gilles Chanteperdrix wrote:
 
-No, it does not. Maybe you should double-check the way you determine 
-mode switches.
+>>>> I also had tested a merge of the previous version with your next-x86
+>>>> branch, and except a few merge conflicts and a build error without SMP,
+>>>> adressed by this commit:
+>>>> http://git.xenomai.org/ipipe-gch.git/?p=ipipe-gch.git;a=commitdiff;h=fae81444a0bfe12de514ac039f866c0f66abfb3c;hp=1198253580e0d5610ee886e1ff3771461a06f414
+>>
+>> Thanks for the fix, will pick it up as well.
 
-> Anyway, I'll probably continue to use a rt function to force a created
-> task to be in primary mode from the beginning...
->
->
-> 2013/4/15 Philippe Gerum <rpm@xenomai.org <mailto:rpm@xenomai.org>>
->
->     On 04/15/2013 03:43 PM, alex alex wrote:
->
->         Infact, given that the posix skin can not create named task in
->         user space,
->         the default name which is assigned is the source file name, in
->         this case hook
->         (hook.c)
->
->
->     pthread_set_name_np
->
->
->         I add the changes to have the same ouput and I use xeno-config flag.
->
->
->
->
->         2013/4/15 Philippe Gerum <rpm@xenomai.org <mailto:rpm@xenomai.org>>
->
->             On 04/15/2013 12:25 PM, alex alex wrote:
->
->                 linux kernel : 3.2.21
->                 xenomai version : 2.6.2.1
->                 arch: x86
->
->                 Thank, I add your code and now I have :
->
->                 case 1 : ( without nanosleep(0) )
->
->                 6138.151187 <tel:6138.151187>] TRD: 394830ns - NOM
->                 "ROOT/0" - CPU 0 - RT:1 - linux
->                 [ 6138.159924 <tel:%5B%206138.159924>] TRD: 9127501ns -
->                 NOM "hook" - CPU 0 - RT:0 - shadow
->                 [ 6138.159953 <tel:%5B%206138.159953>] TRD: 9163835ns -
->                 NOM "ROOT/0" - CPU 0 - RT:1 - linux
->                 [ 6138.160014 <tel:%5B%206138.160014>] TRD: 370242723ns
->                 - NOM "ROOT/0" - CPU 0 - RT:1 - linux
->                 [ 6138.520008 <tel:%5B%206138.520008>] TRD: 370429306ns
->                 - NOM "ROOT/0" - CPU 0 - RT:1 - linux
->                 [ 6139.521009 <tel:%5B%206139.521009>] TRD: 1370433173ns
->                 - NOM "hook" - CPU 0 - RT:1 - user-space
->                 shadow in real-time mode
->                 [ 6139.521014 <tel:%5B%206139.521014>] TRD: 1370446122ns
->                 - NOM "ROOT/0" - CPU 0 - RT:1 - linux
->                 [ 6139.521705 <tel:%5B%206139.521705>] TRD: 1371147808ns
->                 - NOM "ROOT/0" - CPU 0 - RT:1 - linux
->                 [ 6139.521723 <tel:%5B%206139.521723>] TRD: 1371168314ns
->                 - NOM "ROOT/0" - CPU 0 - RT:1 - linux
->
->                 case 2 : ( with nanosleep(0) before the loop )
->
->                 [ 6144.996779 <tel:%5B%206144.996779>] TRD: 382277ns -
->                 NOM "ROOT/0" - CPU 0 - RT:1 - linux
->                 [ 6145.005024 <tel:%5B%206145.005024>] TRD: 8625148ns -
->                 NOM "hook" - CPU 0 - RT:0 - shadow
->                 [ 6145.005054 <tel:%5B%206145.005054>] TRD: 8659990ns -
->                 NOM "ROOT/0" - CPU 0 - RT:1 - linux
->                 [ 6145.008013 <tel:%5B%206145.008013>] TRD: 8730535ns -
->                 NOM "ROOT/0" - CPU 0 - RT:1 - linux
->                 [ 6145.008013 <tel:%5B%206145.008013>] TRD: 8734846ns -
->                 NOM "hook" - CPU 0 - RT:1 - user-space
->                 shadow in real-time mode
->                 [ 6145.008013 <tel:%5B%206145.008013>] TRD: 367409427ns
->                 - NOM "ROOT/0" - CPU 0 - RT:1 - linux
->                 [ 6145.363763 <tel:%5B%206145.363763>] TRD: 367634768ns
->                 - NOM "ROOT/0" - CPU 0 - RT:1 - linux
->                 [ 6146.363810 <tel:%5B%206146.363810>] TRD: 1367637465ns
->                 - NOM "hook" - CPU 0 - RT:1 - user-space
->                 shadow in real-time mode
->                 [ 6146.363815 <tel:%5B%206146.363815>] TRD: 1367646922ns
->                 - NOM "ROOT/0" - CPU 0 - RT:1 - linux
->                 [ 6146.365055 <tel:%5B%206146.365055>] TRD: 1368896836ns
->                 - NOM "ROOT/0" - CPU 0 - RT:1 - linux
->                 [ 6146.365073 <tel:%5B%206146.365073>] TRD: 1368916343ns
->                 - NOM "ROOT/0" - CPU 0 - RT:1 - linux
->
->                 If I follow these outputs, this means that the loop is
->                 made by a linux
->                 task
->                 and if I add a nanosleep just before, the loop is done
->                 by the xenomai
->                 task.
->                 Moreover, "hook " switch in primary mode only when it is
->                 destroyed unless
->                 we
->                 force a primary switch with nanosleep(0) before the loop.
->
->                 Is a xenomai thread shouldn't start in primary mode
->
->
->             It certainly does.
->
->
->                or maybe it wait for a
->
->                 rt service to switch in primary mode?
->
->
->             I can't give you any information. I downloaded your code and
->             can't see any
->             "hook" task. There is a "hook" driver, a "tr_sleep" task,
->             but nothing else.
->             Besides, your Makefile should use xeno-config for getting
->             the proper build
->             flags. Handcrafting this is the fastest path to hell with
->             the POSIX skin.
->
->             Until I can make sense of the output you mention looking at
->             the actual
->             code, I won't be able to help.
->
->             /proc/xenomai/sched and /proc/xenomai/stat may help to
->             determine who is
->             running, in which mode.
->
->             --
->             Philippe.
->
->         -------------- next part --------------
->         A non-text attachment was scrubbed...
->         Name: test_switch.tar.bz2
->         Type: application/x-bzip2
->         Size: 3504 bytes
->         Desc: not available
->         URL:
->         <http://www.xenomai.org/__pipermail/xenomai/attachments/__20130415/e0528953/attachment.__bin
->         <http://www.xenomai.org/pipermail/xenomai/attachments/20130415/e0528953/attachment.bin>>
->         _________________________________________________
->         Xenomai mailing list
->         Xenomai@xenomai.org <mailto:Xenomai@xenomai.org>
->         http://www.xenomai.org/__mailman/listinfo/xenomai
->         <http://www.xenomai.org/mailman/listinfo/xenomai>
->
->
->
->     --
->     Philippe.
->
->
 
+I have also pushed a for-core-3.8.2-x86 branch in the ipipe-gch git,
+with both the ARM and x86 changes.
+
+> It seems registry_unexport_pnode reads an invalid object->vfilp and>
+triggers registry_proc_apc whereas no vfile is currently reading the
+
+> object, as if registry_export_pnode had not been called.
+> 
+
+
+Forget that, I do not really understand the vfile code, need to spend
+more time on it.
 
 -- 
-Philippe.
+                                                                Gilles.
 
