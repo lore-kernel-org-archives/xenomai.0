@@ -1,13 +1,20 @@
-Message-ID: <5176D2FB.8050101@xenomai.org>
-Date: Tue, 23 Apr 2013 20:29:15 +0200
+Message-ID: <516491AF.2080808@xenomai.org>
+Date: Wed, 10 Apr 2013 00:09:51 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <517536B8.4080508@gmail.com> <51766F9F.6070407@xenomai.org>
-	<E3B5BC29-0015-4473-B5F5-304EEAEC8122@gmail.com>
-In-Reply-To: <E3B5BC29-0015-4473-B5F5-304EEAEC8122@gmail.com>
+References: <511CD2FB.7010502@gmail.com>
+	<511DDBD5.4060505@web.de>	<51236088.1030402@gmail.com>
+	<51236A75.5090400@siemens.com>	<5123C910.7090107@siemens.com>
+	<5123DDBE.8060105@web.de>	<512778A0.6090300@gmail.com>
+	<51277B66.60505@siemens.com>	<512B9A86.4060900@siemens.com>
+	<512BB672.7080900@control.lth.se>	<512BB714.6080707@siemens.com>	<512BC4E2.4020605@control.lth.se>
+	<512BDF7F.3030005@web.de>	<51308DC2.7040000@gmail.com>
+	<5130B1AC.1090300@siemens.com>
+In-Reply-To: <5130B1AC.1090300@siemens.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] How to use rtdm_(io/m)map_to_user
+Subject: Re: [Xenomai] (Boot)-problems with (current) ipipe patch on AMD FX
+ 61000 - 2.6.38.8 & 3.5.7
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,40 +23,123 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Victor Hiairrassary <victor.hiairrassary.ml@gmail.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Manuel Huber <manuel.h87@gmail.com>, xenomai@xenomai.org
 
-On 04/23/2013 02:50 PM, Victor Hiairrassary wrote:
+On 03/01/2013 02:48 PM, Jan Kiszka wrote:
 
+> On 2013-03-01 12:15, Manuel Huber wrote:
+>> On 2013-02-25 23:02, Jan Kiszka wrote:
+>>> On 2013-02-25 21:09, Anders Blomdell wrote:
+>>>> On 2013-02-25 20:10, Jan Kiszka wrote:
+>>>>> On 2013-02-25 20:07, Anders Blomdell wrote:
+>>>>>> On 2013-02-25 18:08, Jan Kiszka wrote:
+>>>>>>> As 3.5 is dead, this fix will never make it there unless we
+>>>>>>> back-port.
+>>>>>>> While I'm doing this, could you try if
+>>>>>>>
+>>>>>>>        git://git.xenomai.org/ipipe-jki.git for-upstream/master
+>>>>>> I'm probably more stupid than normal (i.e I can't find any ipipe for
+>>>>>> x86_64):
+>>>>>>
+>>>>>> # git clone git://git.xenomai.org/ipipe-jki.git for-upstream/master
+>>>>> git clone git://git.xenomai.org/ipipe-jki.git
+>>>>> git checkout -b for-upstream/master origin/for-upstream/master
+>>>> OK, thanks. Do I need to setup xenomai in order to gain any useful
+>>>> information, or is:
+>>>>
+>>>> CONFIG_IPIPE=y
+>>>> CONFIG_IPIPE_LEGACY=y
+>>>> CONFIG_IPIPE_CORE=y
+>>>> CONFIG_IPIPE_CORE_APIREV=2
+>>>> CONFIG_IPIPE_TARGET_APIREV=1
+>>>> CONFIG_IPIPE_HAVE_HOSTRT=y
+>>>> CONFIG_IPIPE_DELAYED_ATOMICSW=y
+>>>> # CONFIG_IPIPE_DEBUG is not set
+>>>>
+>>>> sufficient?
+>>> Plain I-pipe will suffice as the the interrupt virtualization is
+>>> unconditional, thus __ipipe_handle_irq is always taken.
+>>>
+>>> Alternatively, here is the backported patch over 3.5.7:
+>>>
+>>> diff --git a/arch/x86/kernel/apic/io_apic.c
+>>> b/arch/x86/kernel/apic/io_apic.c
+>>> index 08e5ad4..aade7f0 100644
+>>> --- a/arch/x86/kernel/apic/io_apic.c
+>>> +++ b/arch/x86/kernel/apic/io_apic.c
+>>> @@ -234,11 +234,11 @@ int __init arch_early_irq_init(void)
+>>>           zalloc_cpumask_var_node(&cfg[i].old_domain, GFP_KERNEL, node);
+>>>           /*
+>>>            * For legacy IRQ's, start with assigning irq0 to irq15 to
+>>> -         * IRQ0_VECTOR to IRQ15_VECTOR on cpu 0.
+>>> +         * IRQ0_VECTOR to IRQ15_VECTOR for all cpu's.
+>>>            */
+>>>           if (i < legacy_pic->nr_legacy_irqs) {
+>>>               cfg[i].vector = IRQ0_VECTOR + i;
+>>> -            cpumask_set_cpu(0, cfg[i].domain);
+>>> +            cpumask_setall(cfg[i].domain);
+>>>           }
+>>>       }
+>>>   @@ -1181,8 +1181,9 @@ next:
+>>>           current_vector = vector;
+>>>           current_offset = offset;
+>>>           if (old_vector) {
+>>> -            cfg->move_in_progress = 1;
+>>>               cpumask_copy(cfg->old_domain, cfg->domain);
+>>> +            cfg->move_in_progress =
+>>> +               cpumask_intersects(cfg->old_domain, cpu_online_mask);
+>>>           }
+>>>           for_each_cpu_and(new_cpu, tmp_mask, cpu_online_mask)
+>>>               per_cpu(vector_irq, new_cpu)[vector] = irq;
+>>> @@ -1250,12 +1251,6 @@ void __setup_vector_irq(int cpu)
+>>>           cfg = irq_get_chip_data(irq);
+>>>           if (!cfg)
+>>>               continue;
+>>> -        /*
+>>> -         * If it is a legacy IRQ handled by the legacy PIC, this cpu
+>>> -         * will be part of the irq_cfg's domain.
+>>> -         */
+>>> -        if (irq < legacy_pic->nr_legacy_irqs && !IO_APIC_IRQ(irq))
+>>> -            cpumask_set_cpu(cpu, cfg->domain);
+>>>             if (!cpumask_test_cpu(cpu, cfg->domain))
+>>>               continue;
+>>> @@ -1380,13 +1375,6 @@ static void setup_ioapic_irq(unsigned int irq,
+>>> struct irq_cfg *cfg,
+>>>         if (!IO_APIC_IRQ(irq))
+>>>           return;
+>>> -    /*
+>>> -     * For legacy irqs, cfg->domain starts with cpu 0 for legacy
+>>> -     * controllers like 8259. Now that IO-APIC can handle this irq,
+>>> update
+>>> -     * the cfg->domain.
+>>> -     */
+>>> -    if (irq < legacy_pic->nr_legacy_irqs && cpumask_test_cpu(0,
+>>> cfg->domain))
+>>> -        apic->vector_allocation_domain(0, cfg->domain);
+>>>         if (assign_irq_vector(irq, cfg, apic->target_cpus()))
+>>>           return;
+>>>
+>>>
+>>> Jan
+>>>
+>>>
+>> Hey!
+>>
+>> I applied your patch and rebooted several times with and without serial
+>> console and it seems to have finally fixed the problem (but I've said
+>> that a lot recently... sorry again...). I've also tried the version of
+>> your branch and it compiled and booted.
 > 
-> 
-> On 23 avr. 2013, at 13:25, Gilles Chanteperdrix
-> <gilles.chanteperdrix@xenomai.org> wrote:
->> 
->> This is wrong. The "abstraction layer" used by an application
->> should be the usual driver interface open/read/write/ioctl and mmap
->> if there are high volumes of data to exchange with the application.
->> Access to the registers should be confined to the driver
->> implementation.
->> 
-> 
-> The hardware is a FPGA which expose 1024 registers. Currently to read
-> or write in a register, we use mmap. How use them with read/write
-> file operations of this registers? i.e. in userspace, once mmaped on
-> an ptr, we do : ptr[addr] = value. How achieve this with write
-> operation, because write accepts only a value ?
+> OK, perfect. Will send a pull request for I-pipe 3.5.7 to push this fix
+> upstream.
 
 
-The register access is almost certainly the wrong abstraction layer.
-If you need writing to registers 2 to 13 starts a motor, then, there
-should be an ioctl START_THE_MOTOR, which implementation in RTDM driver
-writes to registers 2 to 13. In other words, without knowing what you do
-with this FPGA there is no way to answer.
+Hi Jan,
 
-Anyway, if the 1024 registers are 1024 parameters of the FPGA which you
-need to configure individually, you can create an ioctl with a structure
-where you pass the register number and the value.
+did this patch make it to one of the branches in the ipipe-jki repository?
 
+Regards.
 
 -- 
                                                                 Gilles.
