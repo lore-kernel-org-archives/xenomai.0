@@ -1,18 +1,10 @@
-Message-ID: <51753E59.4090609@siemens.com>
-Date: Mon, 22 Apr 2013 15:42:49 +0200
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <51646B6B.6040104@xenomai.org>
+Date: Tue, 09 Apr 2013 21:26:35 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <201304191346.38739.leo@alaxarxa.net>
-	<517195B6.8020209@xenomai.org>
-	<12ABCC03-FADF-4C5A-9CAE-CD9E5CA63A19@mah.priv.at>
-	<51724F82.2000809@web.de> <5172B0E5.7090806@xenomai.org>
-	<5172B1B5.10804@web.de> <5172B28C.6070503@xenomai.org>
-	<5172B3CD.20007@web.de> <5172B4AA.1060704@xenomai.org>
-	<5174E2A0.1040906@siemens.com> <51752114.7040903@xenomai.org>
-In-Reply-To: <51752114.7040903@xenomai.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Default options in the debian package
+Subject: [Xenomai] Preparing the 2.6.3 release
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,99 +13,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Xenomai <xenomai@xenomai.org>
 
-On 2013-04-22 13:37, Gilles Chanteperdrix wrote:
-> On 04/22/2013 09:11 AM, Jan Kiszka wrote:
-> 
->> On 2013-04-20 17:30, Gilles Chanteperdrix wrote:
->>> On 04/20/2013 05:27 PM, Jan Kiszka wrote:
->>>
->>>> On 2013-04-20 17:21, Gilles Chanteperdrix wrote:
->>>>> On 04/20/2013 05:18 PM, Jan Kiszka wrote:
->>>>>
->>>>>> On 2013-04-20 17:14, Gilles Chanteperdrix wrote:
->>>>>>> On 04/20/2013 10:19 AM, Jan Kiszka wrote:
->>>>>>>
->>>>>>>> On 2013-04-20 08:04, Michael Haberler wrote:
->>>>>>>>>
->>>>>>>>> Am 19.04.2013 um 21:06 schrieb Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>:
->>>>>>>>>
->>>>>>>>>> On 04/19/2013 01:46 PM, Leopold Palomo-Avellaneda wrote:
->>>>>>>>>>
->>>>>>>>>>> [1] 
->>>>>>>>>>> http://lists.mech.kuleuven.be/pipermail/orocos-users/2013-April/006986.html
->>>>>>>>>>
->>>>>>>>>>
->>>>>>>>>> Hi,
->>>>>>>>>>
->>>>>>>>>> that link does not tell us why you need this option. And that would be
->>>>>>>>>> the most important information.
->>>>>>>>>
->>>>>>>>> with the linuxcnc package build I need to turn on --enable-dlopen-skins as well to get Python modules to work properly
->>>>>>>>
->>>>>>>> OK, it looks like we should try harder to detect dlopen scenarios during
->>>>>>>> runtime to avoid build-time switches. This is likely Xenomai 3 material:
->>>>>>>>
->>>>>>>>  - We need to disable TLS optimizations by default (no big deal).
->>>>>>>>
->>>>>>>>  - In the POSIX skin constructor, we need to read out the mlockall
->>>>>>>>    state, lock everything if necessary, and restore the state
->>>>>>>>    accordingly afterward. The Nucleus may help us here if there is no
->>>>>>>>    adequate libc service (ABI change -> Xenomai 3).
->>>>>>>>
->>>>>>>>  - IIRC, the problem with unconditional auto-shadowing back then were
->>>>>>>>    the improper scheduling parameters that POSIX used to apply. That
->>>>>>>>    was fixed a while back. So if we simple re-apply the current
->>>>>>>>    parameters, it should cause no harm in a dlopen scenario. But I need
->>>>>>>>    to check this again at work against our scenario.
->>>>>>>
->>>>>>>
->>>>>>> You do not like the idea of an environment variable allowing to disable
->>>>>>> the automatic shadowing?
->>>>>>
->>>>>> Not as a long-term solution as it is user-unfriendly. But it can be an
->>>>>> option worth considering for 2.6.
->>>>>
->>>>>
->>>>> Apparently -forge is already doing it. The advantage of this solution is
->>>>> that the same binary serves well several usages, if we intend to provide
->>>>> packages as generic as possible, this seems like the way to go. Several
->>>>> of the changes I made in the last few weeks go in the same direction.
->>>>
->>>> I'm not sure if there is added value for the controlling auto-shadowing
->>>> in general. But for the case it is in conflict with dlopen, the solution
->>>> I'm proposing is clearly superior as it removes those conflicts
->>>> automatically.
->>>>
->>>> Of course, an environment variable control can exist in parallel if
->>>> there is a need beyond the dlopen conflict resolution.
->>>
->>>
->>> The difference with what you propose is that you propose a syscall to
->>> get the mlockall state. Another solution would be not to call munlockall
->>> after the main thread shadowing, this looks less complicated and does
->>> not require ABI changes.
->>
->> Yes, that's an option as well. But then we should apply this
->> consistently, invoking mlockall from all skin init functions
->> unconditionally. The nucleus depends on this anyway. Not sure if such
->> change would be fine for 2.6 - you decide.
-> 
-> 
-> What we could do is:
-> - if XENO_NOSHADOW is set, shadow the main thread, and call mlockall
-> - if it is not set, do not shadow the main thread or call
-> mlockall/munlockall
 
-That's not what I suggested. I was questioning the value of _not_ doing
-mlockall automatically during init, thus reducing user duties. That
-would reduce the need to think about XENO_NOSHADOW or not as a normal user.
+Hi,
 
-Jan
+it is time for a 2.6.3 release. In order to avoid what happened with the
+last release, here is a list of items which I intend to get handled for
+the release. If I forget anything, please reply to this mail.
+
+- x86: 3.5.7 with intel graphic card, try and find the source of high
+latencies
+- rt_mutex_create issues, see Petr posts, probably setting
+mutex->fastlock to NULL in rt_mutex_delete is enough
+- SMI workaround: a vanilla driver exists with all the ids of intel
+chipset supporting SMI workaround, try and see if we can not hook the
+workaround with this driver, if not, copy the ids list
+- _FORTIFY_SOURCE: get printf wrapping to work even with _FORTIFY_SOURCE
+- tsc test: remove the hardcoded 80, pin the thread to one cpu
+- manpages: update outdated manpages, now that they use the asciidoc format
+- switchtest: fix error handling (other errors than ENOSYS in
+open_rtttest are probably real errors)
+- problem with periodic timing enabled: tsctons or tickstons were
+reported wrong
+- socket return codes: catch all the NOTSUPPORT codes
+- separate libxenomai headers from include/asm
+- documentation: find a place to add the "generic" error values,
+TROUBLESHOOTING or Doxygen
+- try and reproduce /proc vfile issues (I seem to remember we had a post
+with a way to reproduce this systematically, and I got it while
+stress-testing 3.8.2 on ARM).
+
+Regards.
 
 -- 
-Siemens AG, Corporate Technology, CT RTC ITP SDP-DE
-Corporate Competence Center Embedded Linux
+                                                                Gilles.
 
