@@ -1,10 +1,16 @@
-Message-ID: <5176A9B0.6080601@siemens.com>
-Date: Tue, 23 Apr 2013 17:33:04 +0200
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <516490C1.9070608@xenomai.org>
+Date: Wed, 10 Apr 2013 00:05:53 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+References: <512BFD9E.5010501@crubille.lautre.net>
+	<512BE5A2.3090505@xenomai.org>
+	<513DA0B5.5060304@crubille.lautre.net>
+	<513D8C24.4010009@xenomai.org>
+	<513E5AB9.3060203@crubille.lautre.net>
+In-Reply-To: <513E5AB9.3060203@crubille.lautre.net>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] Rework of mlockall and dlopen handling
+Subject: Re: [Xenomai] Linux port to ARM Allwinner A13
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,29 +19,97 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: Paul <paul@crubille.lautre.net>
+Cc: xenomai@xenomai.org
 
-Hi,
+On 03/11/2013 11:29 PM, Paul wrote:
 
-I've coded down what we discussed and pushed it into 'for-upstream'.
-This does not yet remove redundant mlockall from included userspace
-code or change the docs, but the core mechanisms are ready. Patch list
-below summarizes the steps.
+> Hello Gilles,
+> 
+> On 11/03/2013 08:47, Gilles Chanteperdrix wrote:
+>> On 03/11/2013 10:15 AM, Paul wrote:
+>>
+>>> Hello,
+>>>
+>>> Here are pre and post patch for xenomai on sun5i (allwinner A13). It
+>>> should work for sun4i (allwinner A10) too, but is not tested for this
+>>>   proc.
+>>>
+>>> The tested kernels are
+>>>
+>>> wget
+>>> https://github.com/linux-sunxi/linux-sunxi/archive/sunxi-v3.4.24-r1.tar.gz
+>>>
+>>>
+>>
+>> and
+>>
+>>> wget
+>>> https://github.com/linux-sunxi/linux-sunxi/archive/sunxi-v3.4.24-r2.tar.gz
+>>
+>>
+>>
+>> Fine,
+>>
+>>
+>> but the pre patch touches a lot of things which I believe it
+>> should not be touching, like entry.S.
+>>
+>> Is it because your patch is based on 3.2.24 and not 3.2.21? If that is
+>> the case, the post patch should undo the changes made by the pre patch.
+> 
+> The patch is based on 3.4.24 and the ipipe patch is noted to be a 3.4.6, 
+> but there is no such kernel for the sunxi.
+> So most of the patch fail are from the different linux version but 
+> curiously, vfp/entry.S are differents in the sunxi3.4.24 and in the 
+> vanill3.4.24..
+> 
+>>
+>> The coding style you use is not really the kernel coding style, see:
+>> Documentation/CodingStyle
+> OK, I would do it.
+>>
+>> For sunxi_enable_irqdesc/sunxi_disable_irqdesc, you could use a switch
+>> case, or even better, define a macro SW_INT_SRCPRIO_REG(n) that gives
+>> the address of the nth register, and avoid the ifs completely.
+> strange, but i copy/paste this part of code from the sunxi part (and 
+> found that bad):
+> My first idea was to mask, shift and use the result as index in a 
+> register index.
+> To stay close to the actual style, ok to use switch (it is not a so 
+> performance critical part).
+>>
+>> You do not need to manually call enable_irqdesc for the timer irq, it
+>> should be called automatically. Maybe your problem is that your
+>> "pic_muter_init" function is called too late, if that is the case, you
+>> should call it in the function which declares the Linux timer, this one
+>> should be called early enough.
+> I add this in an attempt to solve a problem which have nothing to do 
+> with it, and it stay here.
+> To be removed.
+>>
+>> ipipe_ns_delay is ugly, you  can probably get away much more simply with
+>> ipipe_tsc_get, or can not you simply wait for a PLL lock bit or
+>> somehting? If you want to maintain ipipe_ns_delay, plase call it
+>> ipipe_mach_something, and fix the coding style.
+> I dont know about ipipe_tsc_get, so i will test with it.
+>>
+>> Please avoid dead code, and C++ comments. And the cartouches.
+> 
+> 
+> FROM THE FOLLOWING MAIL:
+>> Also, you seem to have duplicated the timer code, this should not be
+>> needed, right?
+> The initialisation is very close, but i think the linux-sunxi 
+> timer_set_mode is broken.
 
-Jan
 
+Hi Paul,
 
-Jan Kiszka (4):
-      Invoke mlockall on every skin library initialization
-      posix: Control auto-shadowing via environment variable
-      Remove mlockall alert handler
-      Drop --enable-dlopen, disable optimized TLS support by default
+do you plan to send revised pre and post patches in say, the next few weeks?
 
- configure.in               |   70 +++----------------------------------------
- include/asm-generic/bind.h |   10 ------
- src/skins/common/bind.c    |   24 ++++-----------
- src/skins/posix/init.c     |   52 +++++++++++---------------------
- src/skins/psos+/init.c     |   15 +---------
- src/skins/uitron/init.c    |   15 +---------
- 6 files changed, 31 insertions(+), 155 deletions(-)
+Regards.
+
+-- 
+                                                                Gilles.
 
