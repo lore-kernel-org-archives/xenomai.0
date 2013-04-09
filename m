@@ -1,13 +1,13 @@
-Message-ID: <51777F8C.9000700@xenomai.org>
-Date: Wed, 24 Apr 2013 08:45:32 +0200
+Message-ID: <5164936A.8000005@xenomai.org>
+Date: Wed, 10 Apr 2013 00:17:14 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <mailman.252.1366321778.1444.xenomai@xenomai.org>	<00f801ce3fcb$30850ce0$918f26a0$@com>	<51763D6E.6090407@xenomai.org>	<016901ce4043$7b54e1f0$71fea5d0$@com>	<5176D40E.7060607@xenomai.org>
-	<019a01ce40a5$95325b90$bf9712b0$@com>
-In-Reply-To: <019a01ce40a5$95325b90$bf9712b0$@com>
+References: <1362068715-3458-1-git-send-email-sr@denx.de>
+In-Reply-To: <1362068715-3458-1-git-send-email-sr@denx.de>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] for-core-3.8 on ARM ( i.MX53 )
+Subject: Re: [Xenomai] [PATCH] ipipe: MPC5200: Fix problem with
+	external	interrupts
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,18 +16,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: George Pontis <GPontis@z9.com>
-Cc: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Stefan Roese <sr@denx.de>, Xenomai <xenomai@xenomai.org>
 
-On 04/24/2013 06:38 AM, George Pontis wrote:
+On 02/28/2013 05:25 PM, Stefan Roese wrote:
 
->> - is the timer running correctly?
->> - is the clocksource incrementing correctly?
+> The MPC5200 external interrupt are not working at all in the Linux
+> context with the current I-pipe support enabled. For example a
+> PCI firewire chip connected to an external interrupt doesn't generate
+> interrupts any more using the Linux FW drivers. With I-pipe
+> disabled or without the current I-pipe patch for the mpc52xx_pic.c
+> file, the external interrupts work just fine.
 > 
-> I don't know how to check either of these.
+> This patch now introduces the xxx_mask_ack() function for these
+> external interrupts as already done for the other interrupts handled
+> in this driver. With this change, the interrupts work regardless
+> if I-pipe support is enabled or not.
+> 
+> Additionally a small coding style issue has been included (spaces
+> around "-").
+> 
+> Signed-off-by: Stefan Roese <sr@denx.de>
+> Cc: Philippe Gerum <rpm@xenomai.org>
 
 
-Use printk...
+Philippe, has this patch been forgotten? I can't seem to find it in the
+core-next branch.
 
 -- 
                                                                 Gilles.
