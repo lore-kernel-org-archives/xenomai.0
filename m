@@ -1,17 +1,18 @@
-Message-ID: <5165BF38.7010309@xenomai.org>
-Date: Wed, 10 Apr 2013 21:36:24 +0200
+Message-ID: <5165C015.4060209@xenomai.org>
+Date: Wed, 10 Apr 2013 21:40:05 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <515229C4.6000805@xenomai.org> <515296C8.30806@web.de>
-	<5152BAA3.30508@xenomai.org> <5152BC4D.8050501@siemens.com>
-	<5152EC25.7060004@xenomai.org> <5152F489.1000106@siemens.com>
-	<515B5154.2000802@xenomai.org> <515FEE47.90507@web.de>
-	<51633200.8030007@xenomai.org> <51653195.1050009@xenomai.org>
-	<5165409B.4060505@siemens.com>
-In-Reply-To: <5165409B.4060505@siemens.com>
+References: <51613CE2.6010900@wanadoo.fr>
+	<51618B70.7070809@xenomai.org>	<5161CE7B.1040404@wanadoo.fr>
+	<5162711E.7080505@xenomai.org> <51627A31.80801@xenomai.org>
+	<516316C0.7000400@wanadoo.fr> <51632EC4.7000108@xenomai.org>
+	<5163B4E6.6040507@wanadoo.fr> <5163C4E7.8080007@xenomai.org>
+	<5165650D.309@wanadoo.fr>
+In-Reply-To: <5165650D.309@wanadoo.fr>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] one-shot fasteoi irqs
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] Kernel 3.5.7 not booting in qemu for vexpress-a9 with
+ xenomai-2.6.2.1
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,95 +21,149 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Thierry Bultel <thierry.bultel@wanadoo.fr>
+Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-On 04/10/2013 12:36 PM, Jan Kiszka wrote:
+On 04/10/2013 03:11 PM, Thierry Bultel wrote:
 
-> On 2013-04-10 11:32, Philippe Gerum wrote:
->> On 04/08/2013 11:09 PM, Gilles Chanteperdrix wrote:
->>> On 04/06/2013 11:43 AM, Jan Kiszka wrote:
->>>
->>>> On 2013-04-02 23:44, Gilles Chanteperdrix wrote:
->>>>> On 03/27/2013 02:30 PM, Jan Kiszka wrote:
->>>>>
->>>>>> I'm wondering now why we need this differently for the I-pipe case.
->>>>>>
->>>>>> Let's revisit what happens with a fasteoi normally:
->>>>>>
->>>>>> - it's masked only if it's a oneshot IRQ before calling the flow
->>>>>> handler
->>>>>> - it's unmasked after the flow handling if the thread was not woken up
->>>>>>
->>>>>> With I-pipe we already enter handle_fasteoi_irq with the IRQ
->>>>>> masked. The
->>>>>> conditions and spots to unmask are:
->>>>>> - from handle_fasteoi_irq if the thread wasn't woken up or we have
->>>>>>    non-threaded or non-oneshot handling
->>>>>> - otherwise on end_irq from the handler thread
->>>>>>
->>>>>> Do you think this is correct? If so, I do not think it matches this
->>>>>> patch yet.
->>>>>
->>>>>
->>>>> Hi,
->>>>>
->>>>> here is a much simpler patch:
->>>>> diff --git a/kernel/irq/chip.c b/kernel/irq/chip.c
->>>>> index 11e75d1..a1c9918 100644
->>>>> --- a/kernel/irq/chip.c
->>>>> +++ b/kernel/irq/chip.c
->>>>> @@ -421,6 +421,13 @@ static inline void preflow_handler(struct
->>>>> irq_desc *desc)
->>>>>   static inline void preflow_handler(struct irq_desc *desc) { }
->>>>>   #endif
->>>>>
->>>>> +static void cond_release_fasteoi_irq(struct irq_desc *desc)
->>>>> +{
->>>>> +    if (desc->irq_data.chip->irq_release &&
->>>>> +        !irqd_irq_disabled(&desc->irq_data) && !desc->threads_oneshot)
->>>>> +        desc->irq_data.chip->irq_release(&desc->irq_data);
->>>>> +}
->>>>> +
->>>>>   /**
->>>>>    *    handle_fasteoi_irq - irq handler for transparent controllers
->>>>>    *    @irq:    the interrupt number
->>>>> @@ -463,8 +470,7 @@ handle_fasteoi_irq(unsigned int irq, struct
->>>>> irq_desc *desc)
->>>>>
->>>>>   #ifdef CONFIG_IPIPE
->>>>>       /* XXX: IRQCHIP_EOI_IF_HANDLED is ignored. */
->>>>
->>>> Makes me wonder what this comment wants to tell us. That there is an
->>>> unhandled corner case or that this is intentionally ignored? I support
->>>> the latter as I-pipe already does EOI when accepting the IRQ, no? Maybe
->>>> you can clarify that line at this chance.
->>>
->>>
->>> I have no idea where this comment come from. I do not think this flag
->>> can be handled with the I-pipe kernel, as the EOI is sent before trying
->>> to handle the IRQ. The only users are in arch/sparc and arch/powerpc,
->>> maybe Philippe knows more?
->>>
+> Le 09/04/2013 09:36, Gilles Chanteperdrix a =C3=A9crit :
+>> On 04/09/2013 08:27 AM, Thierry Bultel wrote:
 >>
->> Jan is right, we ignore EOI_IF_HANDLED and never send EOI from the
->> regular flow handler, as a consequence of doing eoi+mask when holding
->> the IRQ in the ipipe's flow handler.
-> 
-> OK, then I'll write a clarification patch for that comment - to get rid
-> of that triple X...
+>>> Le 08/04/2013 22:55, Gilles Chanteperdrix a =C3=A9crit :
+>>>> On 04/08/2013 09:13 PM, Thierry Bultel wrote:
+>>>>
+>>>>> Le 08/04/2013 10:05, Gilles Chanteperdrix a =C3=A9crit :
+>>>>>> On 04/08/2013 09:26 AM, Gilles Chanteperdrix wrote:
+>>>>>>
+>>>>>>> On 04/07/2013 09:52 PM, Thierry Bultel wrote:
+>>>>>>>
+>>>>>>>> Le 07/04/2013 17:06, Gilles Chanteperdrix a =C3=A9crit :
+>>>>>>>>> On 04/07/2013 11:31 AM, Thierry Bultel wrote:
+>>>>>>>>>
+>>>>>>>>>> Hi,
+>>>>>>>>>>
+>>>>>>>>>> I am using a vanilla 3.5.7 kernel in qemu-1.4.0
+>>>>>>>>>> The base defconfig is the vexpress.
+>>>>>>>>>>
+>>>>>>>>>> I want to use xenomai-2.6.2.1 with it.
+>>>>>>>>>>
+>>>>>>>>>> The non-patched kernel boots fine, the patched one doesnot, th=
+ere is
+>>>>>>>>>> nothing on the console,
+>>>>>>>>>> the boot logo does not comeand Qemu then takes 100% CPU.
+>>>>>>>>>>
+>>>>>>>>>> Here is my command line
+>>>>>>>>>> ./qemu-1.4.0/arm-softmmu/qemu-system-arm -M vexpress-a9 -kerne=
+l
+>>>>>>>>>> ./Buildroot/output.linaro.vexpress-a9/build/linux-3.5.7/arch/a=
+rm/boot/uImage
+>>>>>>>>>> -append "console=3DttyAMA0" -m 1024M -serial stdio
+>>>>>>>>>>
+>>>>>>>>>> Any ideas ? May I have missed something ?
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>> Well, vexpress is not in the list of machines supported by Xeno=
+mai. So,
+>>>>>>>>> someone needs to port the I-pipe kernel to it.
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>
+>>>>>>>> Hi Gilles,
+>>>>>>>>
+>>>>>>>> We already talked about the vexpress, it was at the beginning of=
+ the
+>>>>>>>> rtcan discussion.
+>>>>>>>> It used to work (and pretty well), my configuration was:
+>>>>>>>>
+>>>>>>>> linux-3.2.21+ipipe-core-3.2.21-arm-1.patch
+>>>>>>>>
+>>>>>>>> and I have just successfully tested
+>>>>>>>>
+>>>>>>>> linux-3.2.21+ipipe-core-3.2.21-arm-4.patch
+>>>>>>>> as well.
+>>>>>>>>
+>>>>>>>> There is likely not much missing for having it working on the 3.=
+5.7
+>>>>>>>> kernel. I am taking a look.
+>>>>>>>
+>>>>>>>
+>>>>>>> Someone did the port of the I-pipe patch to vexpress (but did not=
+
+>>>>>>> contribute it), the difference between vexpress and other cortex =
+A9
+>>>>>>> based SOCs is that it does not support global timers, the one use=
+d by
+>>>>>>> the I-pipe patch as clocksource. The difference between 3.2 and l=
+ater
+>>>>>>> patches is probably that later patches unconditionally use the gl=
+obal
+>>>>>>> timer. The fix around this is to add code do detect the cortex a9=
+
+>>>>>>> revision and do not register the global timers when the revision =
+is too old.
+>>>>>>>
+>>>>>>
+>>>>>>
+>>>>>> Found the mail: "I just got a reply from ARM support and obviously=
+ I
+>>>>>> missed the thing that my release of Cortex-A9 does NOT have a glob=
+al
+>>>>>> timer (they added it from r1p0, mine is r0p1)."
+>>>>>>
+>>>>>> You know what version your processor is by reading the first few l=
+ines
+>>>>>> printed by the kernel:
+>>>>>> CPU: ARMv7 Processor [411fc092] revision 2 (ARMv7), cr=3D10c53c7d
+>>>>>>
+>>>>>> 41 is used by all cores from ARM
+>>>>>> fc09 represents the cortex a9
+>>>>>>
+>>>>>> The remaining 1 and 2 mean that this cortex a9 is an r1p2
+>>>>>>
+>>>>>
+>>>>>
+>>>>> Many thanks,
+>>>>> I confirm that this fix makes vexpress boot in qemu:
+>>>>
+>>>>
+>>>> Merged thanks. I believe you should keep the calculation of
+>>>> twd_timer_rate, otherwise the twd timers will not be calibratd
+>>>> correctly. The following:
+>>>>
+>>>> http://git.xenomai.org/?p=3Dipipe-gch.git;a=3Dcommitdiff;h=3D9a776ad=
+3c41fa1aef1b60d0cce5de3ca9dece42d;hp=3D82b6948fed3581e65bcce64b91b1614068=
+6263a7
+>>>>
+>>>> Works for me.
+>>>>
+>>>>
+>>>
+>>> It works on what platform ? It does not in qemu. The boot hangs the s=
+ame=20
+>>> way.
+>>
+>>
+>> It works on omap4, a platform with global timers... So, what you are
+>> saying is that it is in fact the twd calibration which hangs?
+>>
+>=20
+> Probably related, I first did not notice it,
+> the  twd_get_clock() call fails in my case (See below; smp_twd: clock
+> not found: -2):
+>=20
+> Is it safe to call twd_calibrate_rate in this case ?
 
 
-I understand the flag with a negative sense: do not eoi the interrupt if
-the handler reports that it has not handled it. Obviously, if that is
-what the flag means, we can not honour it when the I-pipe is on.
+See:
+http://www.xenomai.org/index.php/I-pipe-core:ArmPorting#The_Cortex-A9_cas=
+e
 
-> 
-> Jan
-> 
+The issues are probably unrelated. From my point of view, if you want
+vexpress to really work with I-pipe, someone has to consider the work to
+be done as a real port of the I-pipe kernel to this architecture. You
+can use this page as a check list.
 
-
-
--- 
+--=20
                                                                 Gilles.
+
 
