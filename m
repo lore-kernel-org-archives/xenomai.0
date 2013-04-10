@@ -1,12 +1,10 @@
-Message-ID: <5165C463.4090600@xenomai.org>
-Date: Wed, 10 Apr 2013 21:58:27 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <5165C158.7060005@gmail.com>
-In-Reply-To: <5165C158.7060005@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Kernel space task VS User space task latency
+From: Michael Haberler <mail17@mah.priv.at>
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: quoted-printable
+Date: Wed, 10 Apr 2013 23:24:56 +0200
+Message-Id: <FD5EBA50-E222-4012-A755-A20FF5D5971D@mah.priv.at>
+Mime-Version: 1.0 (Apple Message framework v1283)
+Subject: [Xenomai] shared memory compatibility - advice sought
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,55 +13,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Marco Guerri <gmarco.dev@gmail.com>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 04/10/2013 09:45 PM, Marco Guerri wrote:
+I am building an RT application which is portable across RTAI, =
+Xenomai/userland threads, Xenomai/kernel threads, RT-preempt and vanilla =
+kernels (modulo timing restrictions). The xenomai kernel threads build =
+is on a deprecation path but build for coverage reasons atm.
 
-> Hi everyone,
-> 
-> I was wondering if there is anyone who can help me clarify some very 
-> basic doubts I have regarding Xenomai internals.
-> I am working with Xenomai 2.6.2.1 on a 2.6.31 kernel on an i.MX35 
-> processor (thus, ARM arch).
-> 
-> Using the latency test program, I get the following results for User 
-> space and Kernel space tasks.
-> 
-> *** IDLE ***
-> User space --> Mean: ~7us
-> Kernel space --> Mean: ~4us
-> 
-> *** HEAVY LOAD (dohell) ***
-> User space --> Mean: ~34us
-> Kernel space --> Mean: ~18us
-> 
-> Could you give me some hints on how to explain this great difference, 
-> expecially with the system under load?
-> What are the factors that could worsen the latency in IDLE conditions?
-> What are the factors that can explain a value of latency doubled in case 
-> of a system under load?
+The application already does support several instances on one machine, =
+for instance one instance could be Xenomai kernel threads, a second one =
+Xenomai user threads, a third one Posix threads (thats an example and =
+doesnt make sense, just pointing out whats possible)
+
+The userland threads instances uses sysvipc shm; RTAI instance uses =
+rtai_malloc/rtai_kmalloc; Xenomai kernel uses =
+rt_heap_create/rt_heap_alloc.
+
+--
+
+A requirement has come up to enable access of shared memory between =
+instances and that's where I dont know how to proceed - the issues I =
+have are:
+
+- incompatible shared memory models between RTAI, Xenomai and shmctl()
+- sequencing imposed by kernel threads models - shared memory must be =
+created in-kernel and can attached to in userland but not vice versa
+
+I know it is a faint hope, let me try nevertheless:
+
+- is there a way to make Xenomai kernel threads use shared memory =
+created in userland by shmctl(2) or mmap for that matter
+- if there is, are there any downsides to it
+- any other creative solutions you could think of?
 
 
-These results are completely expected. The code executed between the
-time an interrupt happens and a kernel thread is woken up is simply
-shorter than the code executed between the time an interrupt happens and
-a user-space thread is woken up. On a loaded system, the difference in
-time is even greater due to cache effects.
+I am aware that atm this is really a RTAI question; nevertheless it =
+(still) affects Xenomai a bit so I dare to ask here
 
-The latency in idle conditions is meaningless. The average latency is
-meaningless.
+thanks in advance
 
-Now the choice between kernel-space and user-space:
-- should not be an all-or-nothing choice, you can do some performance
-critical things in kernel-space by writing a driver using the RTDM skin,
-and have it communicate with user-space tasks which should remain the
-master;
-- should not be governed by latencies measurement only (especially not
-measurement on an idle system and measurement of average values),
-programming in kernel-space is hard, takes time, and some habit, it
-better be worth it.
+Michael
 
--- 
-                                                                Gilles.
+
 
