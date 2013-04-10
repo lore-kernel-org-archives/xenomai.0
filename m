@@ -1,16 +1,13 @@
-Message-ID: <51653195.1050009@xenomai.org>
-Date: Wed, 10 Apr 2013 11:32:05 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <51653957.2070405@grandegger.com>
+Date: Wed, 10 Apr 2013 12:05:11 +0200
+From: Wolfgang Grandegger <wg@grandegger.com>
 MIME-Version: 1.0
-References: <515229C4.6000805@xenomai.org> <515296C8.30806@web.de>
-	<5152BAA3.30508@xenomai.org> <5152BC4D.8050501@siemens.com>
-	<5152EC25.7060004@xenomai.org> <5152F489.1000106@siemens.com>
-	<515B5154.2000802@xenomai.org> <515FEE47.90507@web.de>
-	<51633200.8030007@xenomai.org>
-In-Reply-To: <51633200.8030007@xenomai.org>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+References: <oqr4jdyggv.fsf@merlin.sez.to> <51646CBA.40407@xenomai.org>
+In-Reply-To: <51646CBA.40407@xenomai.org>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] one-shot fasteoi irqs
+Subject: Re: [Xenomai] [PATCH 1/2] rtcan_module: Fix tx_timeout buffer size
+ inconsistency
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,73 +17,28 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Jan Kiszka <jan.kiszka@web.de>, Xenomai <xenomai@xenomai.org>
+Cc: xenomai@xenomai.org, Wolfgang Grandegger <wg@denx.de>
 
-On 04/08/2013 11:09 PM, Gilles Chanteperdrix wrote:
-> On 04/06/2013 11:43 AM, Jan Kiszka wrote:
->
->> On 2013-04-02 23:44, Gilles Chanteperdrix wrote:
->>> On 03/27/2013 02:30 PM, Jan Kiszka wrote:
->>>
->>>> I'm wondering now why we need this differently for the I-pipe case.
->>>>
->>>> Let's revisit what happens with a fasteoi normally:
->>>>
->>>> - it's masked only if it's a oneshot IRQ before calling the flow handler
->>>> - it's unmasked after the flow handling if the thread was not woken up
->>>>
->>>> With I-pipe we already enter handle_fasteoi_irq with the IRQ masked. The
->>>> conditions and spots to unmask are:
->>>> - from handle_fasteoi_irq if the thread wasn't woken up or we have
->>>>    non-threaded or non-oneshot handling
->>>> - otherwise on end_irq from the handler thread
->>>>
->>>> Do you think this is correct? If so, I do not think it matches this
->>>> patch yet.
->>>
->>>
->>> Hi,
->>>
->>> here is a much simpler patch:
->>> diff --git a/kernel/irq/chip.c b/kernel/irq/chip.c
->>> index 11e75d1..a1c9918 100644
->>> --- a/kernel/irq/chip.c
->>> +++ b/kernel/irq/chip.c
->>> @@ -421,6 +421,13 @@ static inline void preflow_handler(struct irq_desc *desc)
->>>   static inline void preflow_handler(struct irq_desc *desc) { }
->>>   #endif
->>>
->>> +static void cond_release_fasteoi_irq(struct irq_desc *desc)
->>> +{
->>> +	if (desc->irq_data.chip->irq_release &&
->>> +	    !irqd_irq_disabled(&desc->irq_data) && !desc->threads_oneshot)
->>> +		desc->irq_data.chip->irq_release(&desc->irq_data);
->>> +}
->>> +
->>>   /**
->>>    *	handle_fasteoi_irq - irq handler for transparent controllers
->>>    *	@irq:	the interrupt number
->>> @@ -463,8 +470,7 @@ handle_fasteoi_irq(unsigned int irq, struct irq_desc *desc)
->>>
->>>   #ifdef CONFIG_IPIPE
->>>   	/* XXX: IRQCHIP_EOI_IF_HANDLED is ignored. */
+On 04/09/2013 09:32 PM, Gilles Chanteperdrix wrote:
+> On 03/17/2013 07:56 PM, Paul Janzen wrote:
+> 
+>> When formatting /proc/rtcan/sockets, tx_timeout is defined as
+>> char[16], but a length of 20 is passed to rtcan_get_timeout_name. If
+>> tx_timeout for any socket is infinite, this causes snprintf to zero
+>> outside the buffer, leading to stack overflow and a kernel panic.
+>> Make the tx_timeout buffer 20 bytes long instead.
 >>
->> Makes me wonder what this comment wants to tell us. That there is an
->> unhandled corner case or that this is intentionally ignored? I support
->> the latter as I-pipe already does EOI when accepting the IRQ, no? Maybe
->> you can clarify that line at this chance.
->
->
-> I have no idea where this comment come from. I do not think this flag
-> can be handled with the I-pipe kernel, as the EOI is sent before trying
-> to handle the IRQ. The only users are in arch/sparc and arch/powerpc,
-> maybe Philippe knows more?
->
+>> Signed-off-by: Paul Janzen <pcj@xenomai.sez.to>
 
-Jan is right, we ignore EOI_IF_HANDLED and never send EOI from the 
-regular flow handler, as a consequence of doing eoi+mask when holding 
-the IRQ in the ipipe's flow handler.
+It's a bug, therefore:
 
--- 
-Philippe.
+Acked-by: Wolfgang Grandegger <wg@grandegger.com>
+
+> Wolfgang, ping?
+
+Pong, sorry for delay.
+
+Wolfgang.
+
+
 
