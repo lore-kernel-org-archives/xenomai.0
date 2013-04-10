@@ -1,6 +1,6 @@
-Message-ID: <51650F36.7050305@xenomai.org>
-Date: Wed, 10 Apr 2013 09:05:26 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <5165101C.2040307@web.de>
+Date: Wed, 10 Apr 2013 09:09:16 +0200
+From: Jan Kiszka <jan.kiszka@web.de>
 MIME-Version: 1.0
 References: <511CD2FB.7010502@gmail.com>
 	<511DDBD5.4060505@web.de>	<51236088.1030402@gmail.com>
@@ -10,10 +10,10 @@ References: <511CD2FB.7010502@gmail.com>
 	<512BB672.7080900@control.lth.se>	<512BB714.6080707@siemens.com>	<512BC4E2.4020605@control.lth.se>
 	<512BDF7F.3030005@web.de>	<51308DC2.7040000@gmail.com>
 	<5130B1AC.1090300@siemens.com> <516491AF.2080808@xenomai.org>
-	<51650E75.2090503@web.de>
-In-Reply-To: <51650E75.2090503@web.de>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+	<51650E75.2090503@web.de> <51650F36.7050305@xenomai.org>
+In-Reply-To: <51650F36.7050305@xenomai.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Subject: Re: [Xenomai] (Boot)-problems with (current) ipipe patch on AMD FX
  61000 - 2.6.38.8 & 3.5.7
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -24,134 +24,104 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@web.de>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: Manuel Huber <manuel.h87@gmail.com>, xenomai@xenomai.org
 
-On 04/10/2013 09:02 AM, Jan Kiszka wrote:
-
-> On 2013-04-10 00:09, Gilles Chanteperdrix wrote:
->> On 03/01/2013 02:48 PM, Jan Kiszka wrote:
->>
->>> On 2013-03-01 12:15, Manuel Huber wrote:
->>>> On 2013-02-25 23:02, Jan Kiszka wrote:
->>>>> On 2013-02-25 21:09, Anders Blomdell wrote:
->>>>>> On 2013-02-25 20:10, Jan Kiszka wrote:
->>>>>>> On 2013-02-25 20:07, Anders Blomdell wrote:
->>>>>>>> On 2013-02-25 18:08, Jan Kiszka wrote:
->>>>>>>>> As 3.5 is dead, this fix will never make it there unless we
->>>>>>>>> back-port.
->>>>>>>>> While I'm doing this, could you try if
->>>>>>>>>
->>>>>>>>>        git://git.xenomai.org/ipipe-jki.git for-upstream/master
->>>>>>>> I'm probably more stupid than normal (i.e I can't find any ipipe for
->>>>>>>> x86_64):
->>>>>>>>
->>>>>>>> # git clone git://git.xenomai.org/ipipe-jki.git for-upstream/master
->>>>>>> git clone git://git.xenomai.org/ipipe-jki.git
->>>>>>> git checkout -b for-upstream/master origin/for-upstream/master
->>>>>> OK, thanks. Do I need to setup xenomai in order to gain any useful
->>>>>> information, or is:
->>>>>>
->>>>>> CONFIG_IPIPE=y
->>>>>> CONFIG_IPIPE_LEGACY=y
->>>>>> CONFIG_IPIPE_CORE=y
->>>>>> CONFIG_IPIPE_CORE_APIREV=2
->>>>>> CONFIG_IPIPE_TARGET_APIREV=1
->>>>>> CONFIG_IPIPE_HAVE_HOSTRT=y
->>>>>> CONFIG_IPIPE_DELAYED_ATOMICSW=y
->>>>>> # CONFIG_IPIPE_DEBUG is not set
->>>>>>
->>>>>> sufficient?
->>>>> Plain I-pipe will suffice as the the interrupt virtualization is
->>>>> unconditional, thus __ipipe_handle_irq is always taken.
->>>>>
->>>>> Alternatively, here is the backported patch over 3.5.7:
->>>>>
->>>>> diff --git a/arch/x86/kernel/apic/io_apic.c
->>>>> b/arch/x86/kernel/apic/io_apic.c
->>>>> index 08e5ad4..aade7f0 100644
->>>>> --- a/arch/x86/kernel/apic/io_apic.c
->>>>> +++ b/arch/x86/kernel/apic/io_apic.c
->>>>> @@ -234,11 +234,11 @@ int __init arch_early_irq_init(void)
->>>>>           zalloc_cpumask_var_node(&cfg[i].old_domain, GFP_KERNEL, node);
->>>>>           /*
->>>>>            * For legacy IRQ's, start with assigning irq0 to irq15 to
->>>>> -         * IRQ0_VECTOR to IRQ15_VECTOR on cpu 0.
->>>>> +         * IRQ0_VECTOR to IRQ15_VECTOR for all cpu's.
->>>>>            */
->>>>>           if (i < legacy_pic->nr_legacy_irqs) {
->>>>>               cfg[i].vector = IRQ0_VECTOR + i;
->>>>> -            cpumask_set_cpu(0, cfg[i].domain);
->>>>> +            cpumask_setall(cfg[i].domain);
->>>>>           }
->>>>>       }
->>>>>   @@ -1181,8 +1181,9 @@ next:
->>>>>           current_vector = vector;
->>>>>           current_offset = offset;
->>>>>           if (old_vector) {
->>>>> -            cfg->move_in_progress = 1;
->>>>>               cpumask_copy(cfg->old_domain, cfg->domain);
->>>>> +            cfg->move_in_progress =
->>>>> +               cpumask_intersects(cfg->old_domain, cpu_online_mask);
->>>>>           }
->>>>>           for_each_cpu_and(new_cpu, tmp_mask, cpu_online_mask)
->>>>>               per_cpu(vector_irq, new_cpu)[vector] = irq;
->>>>> @@ -1250,12 +1251,6 @@ void __setup_vector_irq(int cpu)
->>>>>           cfg = irq_get_chip_data(irq);
->>>>>           if (!cfg)
->>>>>               continue;
->>>>> -        /*
->>>>> -         * If it is a legacy IRQ handled by the legacy PIC, this cpu
->>>>> -         * will be part of the irq_cfg's domain.
->>>>> -         */
->>>>> -        if (irq < legacy_pic->nr_legacy_irqs && !IO_APIC_IRQ(irq))
->>>>> -            cpumask_set_cpu(cpu, cfg->domain);
->>>>>             if (!cpumask_test_cpu(cpu, cfg->domain))
->>>>>               continue;
->>>>> @@ -1380,13 +1375,6 @@ static void setup_ioapic_irq(unsigned int irq,
->>>>> struct irq_cfg *cfg,
->>>>>         if (!IO_APIC_IRQ(irq))
->>>>>           return;
->>>>> -    /*
->>>>> -     * For legacy irqs, cfg->domain starts with cpu 0 for legacy
->>>>> -     * controllers like 8259. Now that IO-APIC can handle this irq,
->>>>> update
->>>>> -     * the cfg->domain.
->>>>> -     */
->>>>> -    if (irq < legacy_pic->nr_legacy_irqs && cpumask_test_cpu(0,
->>>>> cfg->domain))
->>>>> -        apic->vector_allocation_domain(0, cfg->domain);
->>>>>         if (assign_irq_vector(irq, cfg, apic->target_cpus()))
->>>>>           return;
->>>>>
->>>>>
->>>>> Jan
->>>>>
->>>>>
->>>> Hey!
->>>>
->>>> I applied your patch and rebooted several times with and without serial
->>>> console and it seems to have finally fixed the problem (but I've said
->>>> that a lot recently... sorry again...). I've also tried the version of
->>>> your branch and it compiled and booted.
->>>
->>> OK, perfect. Will send a pull request for I-pipe 3.5.7 to push this fix
->>> upstream.
->>
->>
->> Hi Jan,
->>
->> did this patch make it to one of the branches in the ipipe-jki repository?
-> 
-> It's contained in both for-upstream/master and for-upstream/3.5, for a
-> long time.
-
-
-Ok, something curious also in the 3.8 branch:
-http://git.xenomai.org/?p=ipipe-jki.git;a=blob;f=arch/x86/kernel/ipipe.c;h=99e0615ada495fcc69fa34196a3d688d11efcc01;hb=refs/heads/next-x86#l218
-
-Is not there a missing ipipe_apic_vector_irq ?
-
--- 
-                                                                Gilles.
-
+T24gMjAxMy0wNC0xMCAwOTowNSwgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4gT24gMDQv
+MTAvMjAxMyAwOTowMiBBTSwgSmFuIEtpc3prYSB3cm90ZToKPiAKPj4gT24gMjAxMy0wNC0xMCAw
+MDowOSwgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4+PiBPbiAwMy8wMS8yMDEzIDAyOjQ4
+IFBNLCBKYW4gS2lzemthIHdyb3RlOgo+Pj4KPj4+PiBPbiAyMDEzLTAzLTAxIDEyOjE1LCBNYW51
+ZWwgSHViZXIgd3JvdGU6Cj4+Pj4+IE9uIDIwMTMtMDItMjUgMjM6MDIsIEphbiBLaXN6a2Egd3Jv
+dGU6Cj4+Pj4+PiBPbiAyMDEzLTAyLTI1IDIxOjA5LCBBbmRlcnMgQmxvbWRlbGwgd3JvdGU6Cj4+
+Pj4+Pj4gT24gMjAxMy0wMi0yNSAyMDoxMCwgSmFuIEtpc3prYSB3cm90ZToKPj4+Pj4+Pj4gT24g
+MjAxMy0wMi0yNSAyMDowNywgQW5kZXJzIEJsb21kZWxsIHdyb3RlOgo+Pj4+Pj4+Pj4gT24gMjAx
+My0wMi0yNSAxODowOCwgSmFuIEtpc3prYSB3cm90ZToKPj4+Pj4+Pj4+PiBBcyAzLjUgaXMgZGVh
+ZCwgdGhpcyBmaXggd2lsbCBuZXZlciBtYWtlIGl0IHRoZXJlIHVubGVzcyB3ZQo+Pj4+Pj4+Pj4+
+IGJhY2stcG9ydC4KPj4+Pj4+Pj4+PiBXaGlsZSBJJ20gZG9pbmcgdGhpcywgY291bGQgeW91IHRy
+eSBpZgo+Pj4+Pj4+Pj4+Cj4+Pj4+Pj4+Pj4gICAgICAgIGdpdDovL2dpdC54ZW5vbWFpLm9yZy9p
+cGlwZS1qa2kuZ2l0IGZvci11cHN0cmVhbS9tYXN0ZXIKPj4+Pj4+Pj4+IEknbSBwcm9iYWJseSBt
+b3JlIHN0dXBpZCB0aGFuIG5vcm1hbCAoaS5lIEkgY2FuJ3QgZmluZCBhbnkgaXBpcGUgZm9yCj4+
+Pj4+Pj4+PiB4ODZfNjQpOgo+Pj4+Pj4+Pj4KPj4+Pj4+Pj4+ICMgZ2l0IGNsb25lIGdpdDovL2dp
+dC54ZW5vbWFpLm9yZy9pcGlwZS1qa2kuZ2l0IGZvci11cHN0cmVhbS9tYXN0ZXIKPj4+Pj4+Pj4g
+Z2l0IGNsb25lIGdpdDovL2dpdC54ZW5vbWFpLm9yZy9pcGlwZS1qa2kuZ2l0Cj4+Pj4+Pj4+IGdp
+dCBjaGVja291dCAtYiBmb3ItdXBzdHJlYW0vbWFzdGVyIG9yaWdpbi9mb3ItdXBzdHJlYW0vbWFz
+dGVyCj4+Pj4+Pj4gT0ssIHRoYW5rcy4gRG8gSSBuZWVkIHRvIHNldHVwIHhlbm9tYWkgaW4gb3Jk
+ZXIgdG8gZ2FpbiBhbnkgdXNlZnVsCj4+Pj4+Pj4gaW5mb3JtYXRpb24sIG9yIGlzOgo+Pj4+Pj4+
+Cj4+Pj4+Pj4gQ09ORklHX0lQSVBFPXkKPj4+Pj4+PiBDT05GSUdfSVBJUEVfTEVHQUNZPXkKPj4+
+Pj4+PiBDT05GSUdfSVBJUEVfQ09SRT15Cj4+Pj4+Pj4gQ09ORklHX0lQSVBFX0NPUkVfQVBJUkVW
+PTIKPj4+Pj4+PiBDT05GSUdfSVBJUEVfVEFSR0VUX0FQSVJFVj0xCj4+Pj4+Pj4gQ09ORklHX0lQ
+SVBFX0hBVkVfSE9TVFJUPXkKPj4+Pj4+PiBDT05GSUdfSVBJUEVfREVMQVlFRF9BVE9NSUNTVz15
+Cj4+Pj4+Pj4gIyBDT05GSUdfSVBJUEVfREVCVUcgaXMgbm90IHNldAo+Pj4+Pj4+Cj4+Pj4+Pj4g
+c3VmZmljaWVudD8KPj4+Pj4+IFBsYWluIEktcGlwZSB3aWxsIHN1ZmZpY2UgYXMgdGhlIHRoZSBp
+bnRlcnJ1cHQgdmlydHVhbGl6YXRpb24gaXMKPj4+Pj4+IHVuY29uZGl0aW9uYWwsIHRodXMgX19p
+cGlwZV9oYW5kbGVfaXJxIGlzIGFsd2F5cyB0YWtlbi4KPj4+Pj4+Cj4+Pj4+PiBBbHRlcm5hdGl2
+ZWx5LCBoZXJlIGlzIHRoZSBiYWNrcG9ydGVkIHBhdGNoIG92ZXIgMy41Ljc6Cj4+Pj4+Pgo+Pj4+
+Pj4gZGlmZiAtLWdpdCBhL2FyY2gveDg2L2tlcm5lbC9hcGljL2lvX2FwaWMuYwo+Pj4+Pj4gYi9h
+cmNoL3g4Ni9rZXJuZWwvYXBpYy9pb19hcGljLmMKPj4+Pj4+IGluZGV4IDA4ZTVhZDQuLmFhZGU3
+ZjAgMTAwNjQ0Cj4+Pj4+PiAtLS0gYS9hcmNoL3g4Ni9rZXJuZWwvYXBpYy9pb19hcGljLmMKPj4+
+Pj4+ICsrKyBiL2FyY2gveDg2L2tlcm5lbC9hcGljL2lvX2FwaWMuYwo+Pj4+Pj4gQEAgLTIzNCwx
+MSArMjM0LDExIEBAIGludCBfX2luaXQgYXJjaF9lYXJseV9pcnFfaW5pdCh2b2lkKQo+Pj4+Pj4g
+ICAgICAgICAgIHphbGxvY19jcHVtYXNrX3Zhcl9ub2RlKCZjZmdbaV0ub2xkX2RvbWFpbiwgR0ZQ
+X0tFUk5FTCwgbm9kZSk7Cj4+Pj4+PiAgICAgICAgICAgLyoKPj4+Pj4+ICAgICAgICAgICAgKiBG
+b3IgbGVnYWN5IElSUSdzLCBzdGFydCB3aXRoIGFzc2lnbmluZyBpcnEwIHRvIGlycTE1IHRvCj4+
+Pj4+PiAtICAgICAgICAgKiBJUlEwX1ZFQ1RPUiB0byBJUlExNV9WRUNUT1Igb24gY3B1IDAuCj4+
+Pj4+PiArICAgICAgICAgKiBJUlEwX1ZFQ1RPUiB0byBJUlExNV9WRUNUT1IgZm9yIGFsbCBjcHUn
+cy4KPj4+Pj4+ICAgICAgICAgICAgKi8KPj4+Pj4+ICAgICAgICAgICBpZiAoaSA8IGxlZ2FjeV9w
+aWMtPm5yX2xlZ2FjeV9pcnFzKSB7Cj4+Pj4+PiAgICAgICAgICAgICAgIGNmZ1tpXS52ZWN0b3Ig
+PSBJUlEwX1ZFQ1RPUiArIGk7Cj4+Pj4+PiAtICAgICAgICAgICAgY3B1bWFza19zZXRfY3B1KDAs
+IGNmZ1tpXS5kb21haW4pOwo+Pj4+Pj4gKyAgICAgICAgICAgIGNwdW1hc2tfc2V0YWxsKGNmZ1tp
+XS5kb21haW4pOwo+Pj4+Pj4gICAgICAgICAgIH0KPj4+Pj4+ICAgICAgIH0KPj4+Pj4+ICAgQEAg
+LTExODEsOCArMTE4MSw5IEBAIG5leHQ6Cj4+Pj4+PiAgICAgICAgICAgY3VycmVudF92ZWN0b3Ig
+PSB2ZWN0b3I7Cj4+Pj4+PiAgICAgICAgICAgY3VycmVudF9vZmZzZXQgPSBvZmZzZXQ7Cj4+Pj4+
+PiAgICAgICAgICAgaWYgKG9sZF92ZWN0b3IpIHsKPj4+Pj4+IC0gICAgICAgICAgICBjZmctPm1v
+dmVfaW5fcHJvZ3Jlc3MgPSAxOwo+Pj4+Pj4gICAgICAgICAgICAgICBjcHVtYXNrX2NvcHkoY2Zn
+LT5vbGRfZG9tYWluLCBjZmctPmRvbWFpbik7Cj4+Pj4+PiArICAgICAgICAgICAgY2ZnLT5tb3Zl
+X2luX3Byb2dyZXNzID0KPj4+Pj4+ICsgICAgICAgICAgICAgICBjcHVtYXNrX2ludGVyc2VjdHMo
+Y2ZnLT5vbGRfZG9tYWluLCBjcHVfb25saW5lX21hc2spOwo+Pj4+Pj4gICAgICAgICAgIH0KPj4+
+Pj4+ICAgICAgICAgICBmb3JfZWFjaF9jcHVfYW5kKG5ld19jcHUsIHRtcF9tYXNrLCBjcHVfb25s
+aW5lX21hc2spCj4+Pj4+PiAgICAgICAgICAgICAgIHBlcl9jcHUodmVjdG9yX2lycSwgbmV3X2Nw
+dSlbdmVjdG9yXSA9IGlycTsKPj4+Pj4+IEBAIC0xMjUwLDEyICsxMjUxLDYgQEAgdm9pZCBfX3Nl
+dHVwX3ZlY3Rvcl9pcnEoaW50IGNwdSkKPj4+Pj4+ICAgICAgICAgICBjZmcgPSBpcnFfZ2V0X2No
+aXBfZGF0YShpcnEpOwo+Pj4+Pj4gICAgICAgICAgIGlmICghY2ZnKQo+Pj4+Pj4gICAgICAgICAg
+ICAgICBjb250aW51ZTsKPj4+Pj4+IC0gICAgICAgIC8qCj4+Pj4+PiAtICAgICAgICAgKiBJZiBp
+dCBpcyBhIGxlZ2FjeSBJUlEgaGFuZGxlZCBieSB0aGUgbGVnYWN5IFBJQywgdGhpcyBjcHUKPj4+
+Pj4+IC0gICAgICAgICAqIHdpbGwgYmUgcGFydCBvZiB0aGUgaXJxX2NmZydzIGRvbWFpbi4KPj4+
+Pj4+IC0gICAgICAgICAqLwo+Pj4+Pj4gLSAgICAgICAgaWYgKGlycSA8IGxlZ2FjeV9waWMtPm5y
+X2xlZ2FjeV9pcnFzICYmICFJT19BUElDX0lSUShpcnEpKQo+Pj4+Pj4gLSAgICAgICAgICAgIGNw
+dW1hc2tfc2V0X2NwdShjcHUsIGNmZy0+ZG9tYWluKTsKPj4+Pj4+ICAgICAgICAgICAgIGlmICgh
+Y3B1bWFza190ZXN0X2NwdShjcHUsIGNmZy0+ZG9tYWluKSkKPj4+Pj4+ICAgICAgICAgICAgICAg
+Y29udGludWU7Cj4+Pj4+PiBAQCAtMTM4MCwxMyArMTM3NSw2IEBAIHN0YXRpYyB2b2lkIHNldHVw
+X2lvYXBpY19pcnEodW5zaWduZWQgaW50IGlycSwKPj4+Pj4+IHN0cnVjdCBpcnFfY2ZnICpjZmcs
+Cj4+Pj4+PiAgICAgICAgIGlmICghSU9fQVBJQ19JUlEoaXJxKSkKPj4+Pj4+ICAgICAgICAgICBy
+ZXR1cm47Cj4+Pj4+PiAtICAgIC8qCj4+Pj4+PiAtICAgICAqIEZvciBsZWdhY3kgaXJxcywgY2Zn
+LT5kb21haW4gc3RhcnRzIHdpdGggY3B1IDAgZm9yIGxlZ2FjeQo+Pj4+Pj4gLSAgICAgKiBjb250
+cm9sbGVycyBsaWtlIDgyNTkuIE5vdyB0aGF0IElPLUFQSUMgY2FuIGhhbmRsZSB0aGlzIGlycSwK
+Pj4+Pj4+IHVwZGF0ZQo+Pj4+Pj4gLSAgICAgKiB0aGUgY2ZnLT5kb21haW4uCj4+Pj4+PiAtICAg
+ICAqLwo+Pj4+Pj4gLSAgICBpZiAoaXJxIDwgbGVnYWN5X3BpYy0+bnJfbGVnYWN5X2lycXMgJiYg
+Y3B1bWFza190ZXN0X2NwdSgwLAo+Pj4+Pj4gY2ZnLT5kb21haW4pKQo+Pj4+Pj4gLSAgICAgICAg
+YXBpYy0+dmVjdG9yX2FsbG9jYXRpb25fZG9tYWluKDAsIGNmZy0+ZG9tYWluKTsKPj4+Pj4+ICAg
+ICAgICAgaWYgKGFzc2lnbl9pcnFfdmVjdG9yKGlycSwgY2ZnLCBhcGljLT50YXJnZXRfY3B1cygp
+KSkKPj4+Pj4+ICAgICAgICAgICByZXR1cm47Cj4+Pj4+Pgo+Pj4+Pj4KPj4+Pj4+IEphbgo+Pj4+
+Pj4KPj4+Pj4+Cj4+Pj4+IEhleSEKPj4+Pj4KPj4+Pj4gSSBhcHBsaWVkIHlvdXIgcGF0Y2ggYW5k
+IHJlYm9vdGVkIHNldmVyYWwgdGltZXMgd2l0aCBhbmQgd2l0aG91dCBzZXJpYWwKPj4+Pj4gY29u
+c29sZSBhbmQgaXQgc2VlbXMgdG8gaGF2ZSBmaW5hbGx5IGZpeGVkIHRoZSBwcm9ibGVtIChidXQg
+SSd2ZSBzYWlkCj4+Pj4+IHRoYXQgYSBsb3QgcmVjZW50bHkuLi4gc29ycnkgYWdhaW4uLi4pLiBJ
+J3ZlIGFsc28gdHJpZWQgdGhlIHZlcnNpb24gb2YKPj4+Pj4geW91ciBicmFuY2ggYW5kIGl0IGNv
+bXBpbGVkIGFuZCBib290ZWQuCj4+Pj4KPj4+PiBPSywgcGVyZmVjdC4gV2lsbCBzZW5kIGEgcHVs
+bCByZXF1ZXN0IGZvciBJLXBpcGUgMy41LjcgdG8gcHVzaCB0aGlzIGZpeAo+Pj4+IHVwc3RyZWFt
+Lgo+Pj4KPj4+Cj4+PiBIaSBKYW4sCj4+Pgo+Pj4gZGlkIHRoaXMgcGF0Y2ggbWFrZSBpdCB0byBv
+bmUgb2YgdGhlIGJyYW5jaGVzIGluIHRoZSBpcGlwZS1qa2kgcmVwb3NpdG9yeT8KPj4KPj4gSXQn
+cyBjb250YWluZWQgaW4gYm90aCBmb3ItdXBzdHJlYW0vbWFzdGVyIGFuZCBmb3ItdXBzdHJlYW0v
+My41LCBmb3IgYQo+PiBsb25nIHRpbWUuCj4gCj4gCj4gT2ssIHNvbWV0aGluZyBjdXJpb3VzIGFs
+c28gaW4gdGhlIDMuOCBicmFuY2g6Cj4gaHR0cDovL2dpdC54ZW5vbWFpLm9yZy8/cD1pcGlwZS1q
+a2kuZ2l0O2E9YmxvYjtmPWFyY2gveDg2L2tlcm5lbC9pcGlwZS5jO2g9OTllMDYxNWFkYTQ5NWZj
+YzY5ZmEzNDE5NmEzZDY4OGQxMWVmY2MwMTtoYj1yZWZzL2hlYWRzL25leHQteDg2I2wyMTgKPiAK
+PiBJcyBub3QgdGhlcmUgYSBtaXNzaW5nIGlwaXBlX2FwaWNfdmVjdG9yX2lycSA/Cj4gCgpTZWUg
+c21wX2ludHJfaW5pdCwgdmVjdG9yIGFuZCBJUlEgYXJlIHRoZSBzYW1lIHZhbHVlLiBPbmUgY2Fu
+IGFyZ3VlIHRoYXQKaXBpcGVfYXBpY192ZWN0b3JfaXJxIHNob3VsZCBiZSB0aGVyZSBuZXZlcnRo
+ZWxlc3MgZm9yIHRoZSBzYWtlIG9mCmNvbnNpc3RlbmN5LCB0aG91Z2guCgpKYW4KCi0tLS0tLS0t
+LS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2Fz
+IHNjcnViYmVkLi4uCk5hbWU6IHNpZ25hdHVyZS5hc2MKVHlwZTogYXBwbGljYXRpb24vcGdwLXNp
+Z25hdHVyZQpTaXplOiAyNjMgYnl0ZXMKRGVzYzogT3BlblBHUCBkaWdpdGFsIHNpZ25hdHVyZQpV
+Ukw6IDxodHRwOi8vd3d3Lnhlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRz
+LzIwMTMwNDEwLzRjOGU2ZmRhL2F0dGFjaG1lbnQucGdwPgo=
