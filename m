@@ -1,18 +1,13 @@
-Message-ID: <51670ED3.2070009@xenomai.org>
-Date: Thu, 11 Apr 2013 21:28:19 +0200
+Message-ID: <51695D5C.6020105@xenomai.org>
+Date: Sat, 13 Apr 2013 15:27:56 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <FD5EBA50-E222-4012-A755-A20FF5D5971D@mah.priv.at>
-	<5165E85B.2040609@xenomai.org>
-	<E9BAB42D-B8E9-4E23-8A15-934A72AC7823@mah.priv.at>
-	<51660709.3010809@xenomai.org>
-	<6C6B8C75-5498-4645-AA10-5651431A1E90@mah.priv.at>
-	<516660A2.3020307@xenomai.org>
-	<913FB5D5-4051-40BC-A81D-5832DDD4D69D@mah.priv.at>
-In-Reply-To: <913FB5D5-4051-40BC-A81D-5832DDD4D69D@mah.priv.at>
+References: <1358809464.75419.YahooMailNeo@web140601.mail.bf1.yahoo.com>
+	<1358883137.7479.YahooMailNeo@web140606.mail.bf1.yahoo.com>
+In-Reply-To: <1358883137.7479.YahooMailNeo@web140606.mail.bf1.yahoo.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] shared memory compatibility - advice sought
+Subject: Re: [Xenomai] x86 Linux with xenomai and i915 graphics stall
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,65 +16,75 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Michael Haberler <mail17@mah.priv.at>
-Cc: xenomai@xenomai.org
+To: A User <t02446@yahoo.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 04/11/2013 10:35 AM, Michael Haberler wrote:
+On 01/22/2013 08:32 PM, A User wrote:
 
+> When we run latency, we still get about 10 usec on a quiet system.
+> When we run glxgears and make the window size  600x600 pixels, and we
+> use the mouse to drag the glxgears window quickly around on the
+> desktop, the max latency goes to about 250 usec (with gnome-3
+> fallback and compiz).
 > 
-> Am 11.04.2013 um 09:05 schrieb Gilles Chanteperdrix:
-> 
->> On 04/11/2013 09:00 AM, Michael Haberler wrote:
->>
->>> Gilles,
->>>
->>> I think I see the light although I'm not totally clear on all details yet:
->>
->>
->> There is a very simple solution, see my other mail:
->> http://www.xenomai.org/pipermail/xenomai/2013-April/028169.html
-> 
-> Well, 'simple' is just my kind of keyword, that one I'd manage 
-> 
-> I understand there are no dumb questions but rather inquisitive idiots, so let me rattle off my remaining topics in advance:
-> 
-> - I read this to mean: forget about rt_heap* and rtai_(k)malloc altogether: if that is the case - any downsides in the crystal ball?
-> - if it is that simple, why isnt everybody using this scheme over rt_heap_* and rtai_(k)malloc and friends which has the sequencing restriction?
+> So, it looks like we are ok for now with this configuration, unless
+> that latency is unusual. glxgears in a window that is not being
+> dragged has lower latency.
 
 
-Well, that is the way Xenomai shared memories are implemented, and RTAI
-too I guess. The linux native shared memories are implemented
-differently, but rely on mmap as well. The point is that instead of
-using three different implementations of the same thing which can not
-communicate together, and put an abstraction layer on top to try and get
-them to communicate together, it may be simpler to provide a fourth
-implementation, which you know will always be available in all the cases
-you describe. What makes Xenomai implementation a little bit more
-complicated is all the part of supporting many kernel API revisions, the
-current version of xenomai is still compiling with 2.4 kernels.
-Obviously if you do this now you will not have this issue, and the
-kernel API for mmap implementation is unlikely to change as much now as
-it has changed in the past.
+Hi,
 
-Of course, this is where the down-side is, you will have to maintain
-your little kernel module with kernel version changes.
+I have been able to spend some time on this issue. It seems the time 
+gets spent in the "__gen6_gt_force_wake_get" function.
 
-> 
-> 
-> The overall approach looks a bit like this project: http://sourceforge.net/projects/mbuff/ and the author mentions an interesting point in the FAQ file:
-> 
->> WARNING
->>
->> All versions od mbuff have a known bug occuring when a program having mapped
->> areas forks. Do not do it for now. Attach to shared memory areas after 
->> the fork in parent and child if neccesary.
-> 
-> I do for now take that as a restriction which can be dealt with if it is known to exist even if I dont fully understand where it comes from; some old code remark in the RTAI userland code workaround in LinuxCNC hints that RTAI rtai_malloc()'d memory suffers, or suffered from a similar issue
+I modified the function as such:
 
+void __gen6_gt_force_wake_get(struct drm_i915_private *dev_priv)
+{
+	unsigned long flags;
+	int count;
+	count = 0;
+	while (count++ < 50 && (I915_READ_NOTRACE(FORCEWAKE_ACK) & 1))
+		udelay(10);
 
-I would say have a look at the "Linux device drivers" chapter about
-mmap, maybe the answer is there.
+	ipipe_trace_special(50, native_apic_mem_read(APIC_TMCCT));
+	I915_WRITE_NOTRACE(FORCEWAKE, 1);
+	ipipe_trace_special(51, native_apic_mem_read(APIC_TMCCT));
+	POSTING_READ(FORCEWAKE);
+	ipipe_trace_special(52, native_apic_mem_read(APIC_TMCCT));
 
+	count = 0;
+	while (count++ < 50 && (I915_READ_NOTRACE(FORCEWAKE_ACK) & 1) == 0)
+		udelay(10);
+}
+
+And I get the following trace:
+(...)
+:|  # event   tick@-56    -154	  0.036  xntimer_next_local_shot+0x9d (xntimer_tick_aperiodic+0x154)
+(...)
+:    #func                 -79	  0.103  __gen6_gt_force_wake_get+0x7 [i915] (i915_read32+0x5f [i915])
+:    #(0x32)	0x00000093   -79	  0.738  __gen6_gt_force_wake_get+0x56 [i915] (i915_read32+0x5f [i915])
+:    #(0x33)	0x0000008e   -78!  66.706  __gen6_gt_force_wake_get+0x79 [i915] (i915_read32+0x5f [i915])
+:|   #begin   0x000000ef   -12	  0.257  apic_timer_interrupt+0x6a (__gen6_gt_force_wake_get+0x84 [i915])
+
+The second hexadecimal value in the trace is the value of the APIC 
+current counter register. The APIC timer runs on my machine at 6249609Hz.
+This means that:
+- before I915_WRITE_NOTRACE(FORCEWAKE, 1), there are
+0x93 * 1000000 / 6249609 = 23us remaining before the timer tick.
+- after I915_WRITE_NOTRACE(FORCEWAKE, 1), which lasted for 67us, there are
+0x8e * 1000000 / 6249609 = 22us remaining before the timer tick.
+
+The only explanation I see for this behaviour, is that the APIC timer clock 
+stops during the write to the FORCEWAKE register.
+
+I have tried the usual graphic driver workaround:
+set "Option NoAccel" in /etc/X11/xorg.conf, it did not work.
+
+However, installing the debian packet xserver-xorg-video-fbdev, and
+replacing "Driver "intel"" with "Driver "fbdev"" does the trick for me.
+
+Regards.
 
 -- 
                                                                 Gilles.
