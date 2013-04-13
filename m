@@ -1,13 +1,12 @@
-Message-ID: <516983AF.2000909@xenomai.org>
-Date: Sat, 13 Apr 2013 18:11:27 +0200
+Message-ID: <51698AE9.7000603@xenomai.org>
+Date: Sat, 13 Apr 2013 18:42:17 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <E1U2RE9-0007Zc-Em@xenomai.org>
-In-Reply-To: <E1U2RE9-0007Zc-Em@xenomai.org>
+References: <5148C728.6000101@gmail.com> <5148CEA9.7060700@xenomai.org>
+In-Reply-To: <5148CEA9.7060700@xenomai.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [Xenomai-git] Jan Kiszka : switchtest: Add SSE and
-	AVX check
+Subject: Re: [Xenomai] Decrease Latency (below 10 us) on x32 or x32_64?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,110 +15,65 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Manuel Huber <manuel.h87@gmail.com>
+Cc: xenomai@xenomai.org
 
-On 02/04/2013 07:57 PM, GIT version control wrote:
+On 03/19/2013 09:46 PM, Gilles Chanteperdrix wrote:
 
-> Module: xenomai-2.6
-> Branch: master
-> Commit: 192597326a0becd1980cb6c5cc9395af18a19c60
-> URL:    http://git.xenomai.org/?p=xenomai-2.6.git;a=commit;h=192597326a0becd1980cb6c5cc9395af18a19c60
+> On 03/19/2013 09:14 PM, Manuel Huber wrote:
 > 
-> Author: Jan Kiszka <jan.kiszka@siemens.com>
-> Date:   Tue Jan 29 18:46:13 2013 +0100
+>> Hello!
+>>
+>> We use a AMD FX-61000 CPU together with Xenomai 2.6.2.1 and Kernel
+>> 3.5.7 (thanks to Jan Kiszka) and I was wondering if it's possible to
+>> further decrease the latency of the system. I currently can get more
+>> than 30 us when interacting with the system.
+>>
+>> My first guess was the graphics card + graphics card driver because I
+>> read about such problems and tested another graphics card which caused
+>> a huge amount of extra-latency... I tried to get the real system
+>> latency by booting the system in recovery mode (single) with vga=792
+>> option + setting the nouveau driver on the blacklist... This seems to
+>> work, but I still get roughly the same latencies (>20us) even after
+>> 1hour by using the latency program in interrupt mode (-t 2). Only a
+>> few times the latency grows beyond 10us but still it does... I have
+>> unplugged the usb mouse and keyboard before running the test and
+>> started ten instances of burnK7 with nice -n -20.  I also tried
+>> booting with isolcpus=2,3 and assigned the latency program to cpu 3
+>> (-c 3). This didn't really improve the worst case latency (still the
+>> same setup as above, no gui, single). Is it possible to further
+>> decrease latency (especially worst case latency) by using one cpu just
+>> for real-time tasks? Is there some other way to keep Linux from using
+>> a core?
+>>
+>> The next thing I want to test is using 64bits; It seems rational that
+>> using 32 bits with 16GB ram causes some extra latencies but is it
+>> possible that it causes about 10 us extra? Is there some other option
+>> I can tune? I know that the I-Pipe system isn't trivial but to me,
+>> using interrupts seems pretty low-level and I would expect this to
+>> have minimal latency (and jitter). I don't want to complain, it's just
+>> that my supervisor asked me about the source of the latency and I
+>> can't really explain... After having read just about all papers
+>> about I-Pipe, I still don't have a deep understanding of the system.
+>> Is there a good reference I missed?
 > 
-> switchtest: Add SSE and AVX check
 > 
-> Add a test for switching the lower SSE registers xmm0..7 or AVX
-> registers ymm0..7, provided the CPU supports the corresponding
-> feature. As xmm and ymm share their storage, we only need to check
-> one of the features.
+> First, to know where the latency comes from, enable the I-pipe tracer,
+> and run latency with the "-f" option.
 > 
-> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
-> 
-> ---
+> Now, common ways to reduce latencies are:
+> - optimize the kernel for size
+> - disable high res timers, you can try fiddling with the various preempt
+> settings, this used to have a big impact on code size, but with the
+> "optimize for size" option, they no longer seem to have one.
+> - check what the processor does when idle; if it enters C1 state, try to
+> avoid that with the BIOS settings, or pass "nohlt" on the kernel command
+> line.
 
 
->  static inline unsigned fp_regs_check(unsigned val)
->  {
->  	unsigned i, result = val;
-> +	uint64_t vec[8][4];
->  	unsigned e[8];
->  
->  	for (i = 0; i < 8; i++)
->  		__asm__ __volatile__("fistpl %0":"=m"(e[7 - i]));
-> +	if (fp_features & FP_FEATURE_AVX) {
-> +		__asm__ __volatile__(
-> +			"vmovupd %%ymm0,%0;"
-> +			"vmovupd %%ymm1,%1;"
-> +			"vmovupd %%ymm2,%2;"
-> +			"vmovupd %%ymm3,%3;"
-> +			"vmovupd %%ymm4,%4;"
-> +			"vmovupd %%ymm5,%5;"
-> +			"vmovupd %%ymm6,%6;"
-> +			"vmovupd %%ymm7,%7;"
-> +			:
-> +			: "m" (vec[0][0]), "m" (vec[1][0]),
-> +			  "m" (vec[2][0]), "m" (vec[3][0]),
-> +			  "m" (vec[4][0]), "m" (vec[5][0]),
-> +			  "m" (vec[6][0]), "m" (vec[7][0]));
-> +	} else if (fp_features & FP_FEATURE_SSE) {
-> +		__asm__ __volatile__(
-> +			"movupd %%xmm0,%0;"
-> +			"movupd %%xmm1,%1;"
-> +			"movupd %%xmm2,%2;"
-> +			"movupd %%xmm3,%3;"
-> +			"movupd %%xmm4,%4;"
-> +			"movupd %%xmm5,%5;"
-> +			"movupd %%xmm6,%6;"
-> +			"movupd %%xmm7,%7;"
-> +			:
-> +			: "m" (vec[0][0]), "m" (vec[1][0]),
-> +			  "m" (vec[2][0]), "m" (vec[3][0]),
-> +			  "m" (vec[4][0]), "m" (vec[5][0]),
-> +			  "m" (vec[6][0]), "m" (vec[7][0]));
-> +	}
->  
->  	for (i = 0; i < 8; i++)
->  		if (e[i] != val) {
-> @@ -65,8 +148,33 @@ static inline unsigned fp_regs_check(unsigned val)
->  			result = e[i];
->  		}
->  
-> +	if (fp_features & FP_FEATURE_AVX) {
-> +		for (i = 0; i < 8; i++) {
-> +			int error = 0;
-> +			if (vec[i][0] != val) {
-> +				result = vec[i][0];
-> +				error = 1;
-> +			}
-> +			if (vec[i][2] != val) {
-> +				result = vec[i][2];
-> +				error = 1;
-> +			}
-> +			if (error)
-> +				printk("ymm%d: %llu/%llu != %u/%u\n",
-> +				       i, (unsigned long long)vec[i][0],
-> +				       (unsigned long long)vec[i][2],
-> +				       val, val);
-> +		}
-> +	} else if (fp_features & FP_FEATURE_SSE) {
-> +		for (i = 0; i < 8; i++)
-> +			if (vec[i][0] != val) {
-> +				printk("xmm%d: %llu != %u\n",
-> +				       i, (unsigned long long)vec[i][0], val);
-> +				result = vec[i][0];
-> +			}
-> +	}
-> +
->  	return result;
->  }
-
-
-This routine causes a warning from gcc and looks indeed wrong: if the
-"vec" variable is used as an output variable of the inline assembly, it
-should be in the output section of the inline assembly, not the input
-section.
+Some more advices after some tests:
+- try passing "idle=poll" on the kernel command line
+- disable MTRR
 
 -- 
                                                                 Gilles.
