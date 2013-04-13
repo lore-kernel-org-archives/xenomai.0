@@ -1,15 +1,13 @@
-Message-ID: <516316C0.7000400@wanadoo.fr>
-Date: Mon, 08 Apr 2013 21:13:04 +0200
-From: Thierry Bultel <thierry.bultel@wanadoo.fr>
+Message-ID: <5169E517.9060707@xenomai.org>
+Date: Sun, 14 Apr 2013 01:07:03 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <51613CE2.6010900@wanadoo.fr>
-	<51618B70.7070809@xenomai.org>	<5161CE7B.1040404@wanadoo.fr>
-	<5162711E.7080505@xenomai.org> <51627A31.80801@xenomai.org>
-In-Reply-To: <51627A31.80801@xenomai.org>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] Kernel 3.5.7 not booting in qemu for vexpress-a9 with
- xenomai-2.6.2.1
+References: <CAPpP=rPQa-Fa+1j7Lb11dUX8srkinCQQ2yS2gR5y9f9Pqf1jdg@mail.gmail.com>	<516998B7.9090901@xenomai.org>	<CAPpP=rOEjuy8w0x-_zRv_7vHDOmjU6n1Hi=jrE6UNEULL=zYcQ@mail.gmail.com>	<5169C63B.1070406@xenomai.org>	<CAPpP=rMOmOkd2Gwswu685zsPhxJDMj7GnRWA0yU+gRHmz=V2bw@mail.gmail.com>
+	<5169E4AB.9030808@xenomai.org>
+In-Reply-To: <5169E4AB.9030808@xenomai.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [QUESTION] thread creation and hook function
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,117 +16,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: alex alex <duch.alexandre@gmail.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-Le 08/04/2013 10:05, Gilles Chanteperdrix a écrit :
-> On 04/08/2013 09:26 AM, Gilles Chanteperdrix wrote:
->
->> On 04/07/2013 09:52 PM, Thierry Bultel wrote:
+On 04/14/2013 01:05 AM, Gilles Chanteperdrix wrote:
+
+> On 04/14/2013 12:41 AM, alex alex wrote:
+> 
+>> linux kernel : 3.2.21
+>> xenomai version : 2.6.2.1
+>> arch: x86
+> 
 >>
->>> Le 07/04/2013 17:06, Gilles Chanteperdrix a écrit :
->>>> On 04/07/2013 11:31 AM, Thierry Bultel wrote:
->>>>
->>>>> Hi,
->>>>>
->>>>> I am using a vanilla 3.5.7 kernel in qemu-1.4.0
->>>>> The base defconfig is the vexpress.
->>>>>
->>>>> I want to use xenomai-2.6.2.1 with it.
->>>>>
->>>>> The non-patched kernel boots fine, the patched one doesnot, there is
->>>>> nothing on the console,
->>>>> the boot logo does not comeand Qemu then takes 100% CPU.
->>>>>
->>>>> Here is my command line
->>>>> ./qemu-1.4.0/arm-softmmu/qemu-system-arm -M vexpress-a9 -kernel
->>>>> ./Buildroot/output.linaro.vexpress-a9/build/linux-3.5.7/arch/arm/boot/uImage
->>>>> -append "console=ttyAMA0" -m 1024M -serial stdio
->>>>>
->>>>> Any ideas ? May I have missed something ?
->>>>
->>>>
->>>> Well, vexpress is not in the list of machines supported by Xenomai. So,
->>>> someone needs to port the I-pipe kernel to it.
->>>>
->>>>
->>>
->>> Hi Gilles,
->>>
->>> We already talked about the vexpress, it was at the beginning of the
->>> rtcan discussion.
->>> It used to work (and pretty well), my configuration was:
->>>
->>> linux-3.2.21+ipipe-core-3.2.21-arm-1.patch
->>>
->>> and I have just successfully tested
->>>
->>> linux-3.2.21+ipipe-core-3.2.21-arm-4.patch
->>> as well.
->>>
->>> There is likely not much missing for having it working on the 3.5.7
->>> kernel. I am taking a look.
->>
->>
->> Someone did the port of the I-pipe patch to vexpress (but did not
->> contribute it), the difference between vexpress and other cortex A9
->> based SOCs is that it does not support global timers, the one used by
->> the I-pipe patch as clocksource. The difference between 3.2 and later
->> patches is probably that later patches unconditionally use the global
->> timer. The fix around this is to add code do detect the cortex a9
->> revision and do not register the global timers when the revision is too old.
->>
->
->
-> Found the mail: "I just got a reply from ARM support and obviously I
-> missed the thing that my release of Cortex-A9 does NOT have a global
-> timer (they added it from r1p0, mine is r0p1)."
->
-> You know what version your processor is by reading the first few lines
-> printed by the kernel:
-> CPU: ARMv7 Processor [411fc092] revision 2 (ARMv7), cr=10c53c7d
->
-> 41 is used by all cores from ARM
-> fc09 represents the cortex a9
->
-> The remaining 1 and 2 mean that this cortex a9 is an r1p2
->
+> 
+>> In fact, I base on the cookie of the "rt_task_add_hook" function to
+>> retrieve the descriptor address of the task which has been switched or
+>> started.
+>> And I guess that if the returned name is ROOT it's means that either the
+>> task is switched to secondary mode or it's another linux task and if the
+>> retuned name isn't ROOT it mean that it's a task in the xenomai scheduler.
+> 
+> 
+> Yes, but as I told you ROOT does not necessarily means that a real-time
+> thread is running in secondary mode.
+> 
+> Also, as I also told you, if you want why a thread switches to secondary
+> mode, see examples/sigdebug.c
+> 
+> I do not intend to run your example and understand what it does. The way
+> you try to understand what happens is too indirect and convoluted.
+> 
+> There are simple ways in the application itself, you do not need a
+> kernel module and a switch hook.
 
 
-Many thanks,
-I confirm that this fix makes vexpress boot in qemu:
-
-diff -Nru linux-3.5.7/arch/arm/kernel/smp_twd.c 
-linux-3.5.7.new/arch/arm/kernel/smp_twd.c
---- linux-3.5.7/arch/arm/kernel/smp_twd.c	2013-04-08 21:06:03.723019682 
-+0200
-+++ linux-3.5.7.new/arch/arm/kernel/smp_twd.c	2013-04-08 
-21:02:18.722003361 +0200
-@@ -28,6 +28,7 @@
-  #include <asm/localtimer.h>
-  #include <asm/hardware/gic.h>
-  #include <asm/ipipe.h>
-+#include <asm/cputype.h>
-
-  /* set up by the platform code */
-  static void __iomem *twd_base;
-@@ -56,6 +57,9 @@
-
-  static void __cpuinit gt_setup(unsigned long base_paddr, unsigned bits)
-  {
-+	if ((read_cpuid_id() & 0xf00000) == 0)
-+		return;
-+
-  	twd_clk = twd_get_clock();
-
-  	if (!IS_ERR_OR_NULL(twd_clk))
+The most exhaustive way being the I-pipe tracer:
+http://www.xenomai.org/index.php/I-pipe:Tracer
 
 
-FYI I have CPU: ARMv7 Processor [410fc090] revision 0 (ARMv7), cr=10c53c7d
-
-Cheers
-Thierry
-
-
-
+-- 
+                                                                Gilles.
 
