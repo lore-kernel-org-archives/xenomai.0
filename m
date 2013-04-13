@@ -1,12 +1,12 @@
+Message-ID: <5169C63B.1070406@xenomai.org>
+Date: Sat, 13 Apr 2013 22:55:23 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <516998B7.9090901@xenomai.org>
-References: <CAPpP=rPQa-Fa+1j7Lb11dUX8srkinCQQ2yS2gR5y9f9Pqf1jdg@mail.gmail.com>
-	<516998B7.9090901@xenomai.org>
-Date: Sat, 13 Apr 2013 20:20:00 +0200
-Message-ID: <CAPpP=rOEjuy8w0x-_zRv_7vHDOmjU6n1Hi=jrE6UNEULL=zYcQ@mail.gmail.com>
-From: alex alex <duch.alexandre@gmail.com>
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+References: <CAPpP=rPQa-Fa+1j7Lb11dUX8srkinCQQ2yS2gR5y9f9Pqf1jdg@mail.gmail.com>	<516998B7.9090901@xenomai.org>
+	<CAPpP=rOEjuy8w0x-_zRv_7vHDOmjU6n1Hi=jrE6UNEULL=zYcQ@mail.gmail.com>
+In-Reply-To: <CAPpP=rOEjuy8w0x-_zRv_7vHDOmjU6n1Hi=jrE6UNEULL=zYcQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] [QUESTION] thread creation and hook function
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -16,54 +16,83 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: alex alex <duch.alexandre@gmail.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-I hope this is more clear like this.
+On 04/13/2013 08:20 PM, alex alex wrote:
+
+> I hope this is more clear like this.
 
 
-2013/4/13 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+We definitely do not have information. As usual, we do not know what
+version of Xenomai you are using, on what platform, how your kernel is
+configured.
 
-> On 04/13/2013 06:58 PM, alex alex wrote:
->
-> > Hi all,
-> >
-> > I made a simple debugging program with the hook native functions and I
-> > see something
-> > I do not understand...
-> >
-> > This program create 1 thread who loads the CPU for some time.
-> >
-> > case 1 - Looking at the kernel log, we can see that the task is created
-> in the
-> > primary mode then immediatly switch to the secondary (it's the root lin=
-ux
-> > task who loads the cpu).
-> >
-> > I made 2 others tests:
-> > case 2 - When I release the context with a rt sleep function, we see
-> that the
-> > task remains in the primary mode during the CPU load.
-> >
-> > case 3 - I try to use "pthread_set_mode_np(0, PTHREAD_PRIMARY)" to force
-> > the task to remain in primary mode but I see that it's still the root
-> task
-> > who loads the cpu.
-> >
-> > I would appreciate if someone could clear my head about this behavior.
->
->
-> Well, to explain the behaviour, we would have to understand the
-> behaviour. Could you add comment in the code to explain what you do not
-> understand?
->
-> --
->                                                                 Gilles.
->
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: test_switch.tar.bz2
-Type: application/x-bzip2
-Size: 3255 bytes
-Desc: not available
-URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20130413/e11e690=
-c/attachment.bin>
+/*
+ * When case 1 is activated we see (with the dmesg command) :
+ *
+[  796.318290] HOOK: 107212ns - NAME "ROOT/0"
+[  796.321501] HOOK: 3322158ns - NAME "hook"        <- task creation
+(primary mode)
+[  796.321512] HOOK: 3335024ns - NAME "ROOT/0"      <- immediate switch
+in secondary mode and do cpu load (why this switch?)
+
+1- a switch from "hook" to "ROOT" thread does not necessarily mean a
+switch to secondary mode. It also happens if "hook" suspends, of if ROOT
+preempts hook.
+2- a switch to "hook" does not necessarily mean that the task startup is
+done, if you have a look at the thread startup code, you will see that
+has several steps, switching back and forth between the creator task and
+the created task.
+3- if it is indeed a switch to secondary mode, you can have a look at
+examples/sigdebug.c to see how to find the reason for a secondary mode
+switch.
+
+
+[  796.526870] HOOK: 208957565ns - NAME "ROOT/0"
+[  796.526927] HOOK: 209017235ns - NAME "ROOT/0"
+[  797.525640] HOOK: 1209016502ns - NAME "hook"     <- the task is deleted
+[  797.525642] HOOK: 1209020993ns - NAME "ROOT/0"
+ *
+ * case 2 : with the sleep function
+ *
+ 1093.722850] HOOK: 109993ns - NAME "ROOT/0"
+[ 1093.726044] HOOK: 3307528ns - NAME "hook"        <- task creation
+(primary mode)
+[ 1093.726056] HOOK: 3321275ns - NAME "ROOT/0"
+[ 1093.931404] HOOK: 3350018ns - NAME "ROOT/0"
+[ 1093.931405] HOOK: 3351297ns - NAME "hook"        <- after the sleep.
+The sleep seems to force the task to remain in primary mode during the
+cpu load.
+
+I do not think nanosleep(0) suspends the calling task.
+
+
+[ 1093.931406] HOOK: 208932507ns - NAME "ROOT/0"
+[ 1093.931469] HOOK: 209001818ns - NAME "ROOT/0"
+[ 1094.930182] HOOK: 1209000982ns - NAME "hook"     <- the task is deleted
+[ 1094.930184] HOOK: 1209005156ns - NAME "ROOT/0"
+ *
+ * case 3 : with the pthread_set_mode_np
+ *
+[ 1455.427711] HOOK: 123409ns - NAME "ROOT/0"
+[ 1455.430896] HOOK: 3311532ns - NAME "hook"      <- task creation
+(primary mode)
+[ 1455.430908] HOOK: 3325521ns - NAME "ROOT/0"    <- immediate switch in
+secondary mode and do cpu load while pthread_set_mode_np
+should force the task to remain in primary mode?
+
+Again, how do you see this a switch to secondary mode? The three
+sequences look the same to me, I do not see how do you get all these
+interpretations.
+
+[ 1455.636262] HOOK: 208942671ns - NAME "ROOT/0"
+[ 1455.636331] HOOK: 209015748ns - NAME "ROOT/0"
+[ 1456.635043] HOOK: 1209014877ns - NAME "hook"   <- the task is deleted
+[ 1456.635045] HOOK: 1209019259ns - NAME "ROOT/0"
+
+
+
+-- 
+                                                                Gilles.
+
