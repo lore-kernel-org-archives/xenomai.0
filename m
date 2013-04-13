@@ -1,13 +1,10 @@
-Message-ID: <51695D5C.6020105@xenomai.org>
-Date: Sat, 13 Apr 2013 15:27:56 +0200
+Message-ID: <5169643D.9020207@xenomai.org>
+Date: Sat, 13 Apr 2013 15:57:17 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <1358809464.75419.YahooMailNeo@web140601.mail.bf1.yahoo.com>
-	<1358883137.7479.YahooMailNeo@web140606.mail.bf1.yahoo.com>
-In-Reply-To: <1358883137.7479.YahooMailNeo@web140606.mail.bf1.yahoo.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] x86 Linux with xenomai and i915 graphics stall
+Subject: [Xenomai] Debian: reworking kernel package generation.
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,73 +13,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: A User <t02446@yahoo.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
-
-On 01/22/2013 08:32 PM, A User wrote:
-
-> When we run latency, we still get about 10 usec on a quiet system.
-> When we run glxgears and make the window size  600x600 pixels, and we
-> use the mouse to drag the glxgears window quickly around on the
-> desktop, the max latency goes to about 250 usec (with gnome-3
-> fallback and compiz).
-> 
-> So, it looks like we are ok for now with this configuration, unless
-> that latency is unusual. glxgears in a window that is not being
-> dragged has lower latency.
+To: Xenomai <xenomai@xenomai.org>
 
 
 Hi,
 
-I have been able to spend some time on this issue. It seems the time 
-gets spent in the "__gen6_gt_force_wake_get" function.
+currently, the kernel packages for the Debian distribution are generated
+the following way:
 
-I modified the function as such:
+during compilation of the xenomai source package, static patches with
+both Xenomai and I-pipe are generated for all the I-pipe patches in
+Xenomai sources, using the "prepare-patch.sh" script, then put into the
+"linux-patch-xenomai" package.
 
-void __gen6_gt_force_wake_get(struct drm_i915_private *dev_priv)
-{
-	unsigned long flags;
-	int count;
-	count = 0;
-	while (count++ < 50 && (I915_READ_NOTRACE(FORCEWAKE_ACK) & 1))
-		udelay(10);
+In the past, in order to compile a kernel with Xenomai enabled, this
+package needed to be installed in addition to a kernel source package,
+the DKMS system would then probably automate the patching and the user
+would have to run "make-kpkg" to have a kernel automagically generated.
 
-	ipipe_trace_special(50, native_apic_mem_read(APIC_TMCCT));
-	I915_WRITE_NOTRACE(FORCEWAKE, 1);
-	ipipe_trace_special(51, native_apic_mem_read(APIC_TMCCT));
-	POSTING_READ(FORCEWAKE);
-	ipipe_trace_special(52, native_apic_mem_read(APIC_TMCCT));
+The drawback of this approach is the double maintenance issue caused by
+having a "prepare-patch" script which does almost the same thing, but
+not really, as the "prepare-kernel" script, and breaks regularly when
+preper-kernel is modified, but the advantage was the simplicity and
+maybe outweighted the drawback.
 
-	count = 0;
-	while (count++ < 50 && (I915_READ_NOTRACE(FORCEWAKE_ACK) & 1) == 0)
-		udelay(10);
-}
+Today, DKMS is no longer in use, so after installing the
+"linux-patch-xenomai" package,  patches have to be applied by hand, so
+this whole approach brings little value compared to running directly the
+"prepare-kernel.sh" script, and limits the compilation of Debian
+packages to only those I-pipe patches that were provided at package
+compilation time.
 
-And I get the following trace:
-(...)
-:|  # event   tick@-56    -154	  0.036  xntimer_next_local_shot+0x9d (xntimer_tick_aperiodic+0x154)
-(...)
-:    #func                 -79	  0.103  __gen6_gt_force_wake_get+0x7 [i915] (i915_read32+0x5f [i915])
-:    #(0x32)	0x00000093   -79	  0.738  __gen6_gt_force_wake_get+0x56 [i915] (i915_read32+0x5f [i915])
-:    #(0x33)	0x0000008e   -78!  66.706  __gen6_gt_force_wake_get+0x79 [i915] (i915_read32+0x5f [i915])
-:|   #begin   0x000000ef   -12	  0.257  apic_timer_interrupt+0x6a (__gen6_gt_force_wake_get+0x84 [i915])
+So, I propose to:
+- remove the generation of the linux-patch-xenomai kernel
+- remove the prepare-patch script
+- require people who want to compile xenomai kernels to install the
+xenomai source package and run prepare-kernel.sh script, and change the
+installation instructions in accordance with this new approach.
 
-The second hexadecimal value in the trace is the value of the APIC 
-current counter register. The APIC timer runs on my machine at 6249609Hz.
-This means that:
-- before I915_WRITE_NOTRACE(FORCEWAKE, 1), there are
-0x93 * 1000000 / 6249609 = 23us remaining before the timer tick.
-- after I915_WRITE_NOTRACE(FORCEWAKE, 1), which lasted for 67us, there are
-0x8e * 1000000 / 6249609 = 22us remaining before the timer tick.
-
-The only explanation I see for this behaviour, is that the APIC timer clock 
-stops during the write to the FORCEWAKE register.
-
-I have tried the usual graphic driver workaround:
-set "Option NoAccel" in /etc/X11/xorg.conf, it did not work.
-
-However, installing the debian packet xserver-xorg-video-fbdev, and
-replacing "Driver "intel"" with "Driver "fbdev"" does the trick for me.
+If nobody is opposed to this approach, I will make the modifications in
+the next few weeks for the 2.6.3 release.
 
 Regards.
 
