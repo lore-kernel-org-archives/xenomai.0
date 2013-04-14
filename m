@@ -1,13 +1,12 @@
-Message-ID: <5169EC2C.4000101@xenomai.org>
-Date: Sun, 14 Apr 2013 01:37:16 +0200
+Message-ID: <516A4497.9010801@xenomai.org>
+Date: Sun, 14 Apr 2013 07:54:31 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CAPpP=rPQa-Fa+1j7Lb11dUX8srkinCQQ2yS2gR5y9f9Pqf1jdg@mail.gmail.com>	<516998B7.9090901@xenomai.org>	<CAPpP=rOEjuy8w0x-_zRv_7vHDOmjU6n1Hi=jrE6UNEULL=zYcQ@mail.gmail.com>	<5169C63B.1070406@xenomai.org>
-	<CAPpP=rMOmOkd2Gwswu685zsPhxJDMj7GnRWA0yU+gRHmz=V2bw@mail.gmail.com>
-In-Reply-To: <CAPpP=rMOmOkd2Gwswu685zsPhxJDMj7GnRWA0yU+gRHmz=V2bw@mail.gmail.com>
+References: <3B6652EE-A4C6-4819-B3BB-DB02EFA1B08B@mah.priv.at>
+In-Reply-To: <3B6652EE-A4C6-4819-B3BB-DB02EFA1B08B@mah.priv.at>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [QUESTION] thread creation and hook function
+Subject: Re: [Xenomai] kconfig CONFIG_XENO_OPT_TIMING_PERIODIC=y/n
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,17 +15,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: alex alex <duch.alexandre@gmail.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Michael Haberler <mail17@mah.priv.at>
+Cc: xenomai@xenomai.org
 
-On 04/14/2013 12:41 AM, alex alex wrote:
+On 01/29/2013 01:54 PM, Michael Haberler wrote:
 
-> linux kernel : 3.2.21
-> xenomai version : 2.6.2.1
-> arch: x86
+> I'm testing linuxcnc with John's 3.5.7 - 2.6.2.1 kernel and found an
+> issue with the deprecated linuxcnc xenomai-kernel threads version
+> (the userland threads version is fine; both using native skin). I
+> traced that back to rt_timer_ticks2ns(30000) returning zero.
 
 
-BTW, Xenomai is broken on 3.2.21, so moving to 3.4 or 3.5 is recommended.
+Hi Michael,
+
+I am unable to reproduce this issue. I have written the following 
+kernel code:
+
+#include <native/timer.h>
+
+int init(void)
+{
+	rt_timer_set_mode(0);
+	xnprintf("mode aperiodic, ticks2ns: %Lu\n", rt_timer_ticks2ns(30000));
+	rt_timer_set_mode(1000000);
+	xnprintf("mode periodic, ticks2ns: %Lu\n", rt_timer_ticks2ns(30000));
+			
+	return 0;
+}
+
+module_init(init);
+MODULE_LICENSE("GPL");
+
+And I get:
+[   17.366373] Xenomai: mode 0, ticks2ns: 30000                                    
+[   17.370918] Xenomai: mode periodic, ticks2ns: 30000000000                       
+
+Which is the expected behaviour.
+
+Could you send us a test case allowing to reproduce the issue you 
+encountered ?
 
 
 -- 
