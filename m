@@ -1,14 +1,20 @@
-From: Paul <paul_c@tuxcnc.org>
-Date: Mon, 15 Apr 2013 11:52:09 +0100
-References: <516BA4E9.3070201@xenomai.org>
-In-Reply-To: <516BA4E9.3070201@xenomai.org>
+Message-ID: <516BF43D.7070708@xenomai.org>
+Date: Mon, 15 Apr 2013 14:36:13 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
-  charset="us-ascii"
+References: <CAPpP=rPQa-Fa+1j7Lb11dUX8srkinCQQ2yS2gR5y9f9Pqf1jdg@mail.gmail.com>
+	<516998B7.9090901@xenomai.org>
+	<CAPpP=rOEjuy8w0x-_zRv_7vHDOmjU6n1Hi=jrE6UNEULL=zYcQ@mail.gmail.com>
+	<5169C63B.1070406@xenomai.org>
+	<CAPpP=rMOmOkd2Gwswu685zsPhxJDMj7GnRWA0yU+gRHmz=V2bw@mail.gmail.com>
+	<5169EC2C.4000101@xenomai.org>
+	<CAPpP=rNCBdcussSRzHN_Vpjj0afWZRGKRqPXxh7ps2-_GP7nBQ@mail.gmail.com>
+	<516BC4DF.3030302@xenomai.org>
+	<CAPpP=rMRx5CKj2uJv3wBSu=UUb88W2nXy73z1B6ewBgXEQNYiQ@mail.gmail.com>
+In-Reply-To: <CAPpP=rMRx5CKj2uJv3wBSu=UUb88W2nXy73z1B6ewBgXEQNYiQ@mail.gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Message-Id: <201304151152.09727.paul_c@tuxcnc.org>
-Subject: Re: [Xenomai] Raspberry and Beaglebone patches
+Subject: Re: [Xenomai] [QUESTION] thread creation and hook function
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,40 +23,70 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Stephan Kappertz <stephan.kappertz@kabelmail.de>, Xenomai <xenomai@xenomai.org>
+To: alex alex <duch.alexandre@gmail.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
+On 04/15/2013 12:25 PM, alex alex wrote:
+> linux kernel : 3.2.21
+> xenomai version : 2.6.2.1
+> arch: x86
+>
+> Thank, I add your code and now I have :
+>
+> case 1 : ( without nanosleep(0) )
+>
+>   6138.151187] TRD: 394830ns - NOM "ROOT/0" - CPU 0 - RT:1 - linux
+> [ 6138.159924] TRD: 9127501ns - NOM "hook" - CPU 0 - RT:0 - shadow
+> [ 6138.159953] TRD: 9163835ns - NOM "ROOT/0" - CPU 0 - RT:1 - linux
+> [ 6138.160014] TRD: 370242723ns - NOM "ROOT/0" - CPU 0 - RT:1 - linux
+> [ 6138.520008] TRD: 370429306ns - NOM "ROOT/0" - CPU 0 - RT:1 - linux
+> [ 6139.521009] TRD: 1370433173ns - NOM "hook" - CPU 0 - RT:1 - user-space
+> shadow in real-time mode
+> [ 6139.521014] TRD: 1370446122ns - NOM "ROOT/0" - CPU 0 - RT:1 - linux
+> [ 6139.521705] TRD: 1371147808ns - NOM "ROOT/0" - CPU 0 - RT:1 - linux
+> [ 6139.521723] TRD: 1371168314ns - NOM "ROOT/0" - CPU 0 - RT:1 - linux
+>
+> case 2 : ( with nanosleep(0) before the loop )
+>
+> [ 6144.996779] TRD: 382277ns - NOM "ROOT/0" - CPU 0 - RT:1 - linux
+> [ 6145.005024] TRD: 8625148ns - NOM "hook" - CPU 0 - RT:0 - shadow
+> [ 6145.005054] TRD: 8659990ns - NOM "ROOT/0" - CPU 0 - RT:1 - linux
+> [ 6145.008013] TRD: 8730535ns - NOM "ROOT/0" - CPU 0 - RT:1 - linux
+> [ 6145.008013] TRD: 8734846ns - NOM "hook" - CPU 0 - RT:1 - user-space
+> shadow in real-time mode
+> [ 6145.008013] TRD: 367409427ns - NOM "ROOT/0" - CPU 0 - RT:1 - linux
+> [ 6145.363763] TRD: 367634768ns - NOM "ROOT/0" - CPU 0 - RT:1 - linux
+> [ 6146.363810] TRD: 1367637465ns - NOM "hook" - CPU 0 - RT:1 - user-space
+> shadow in real-time mode
+> [ 6146.363815] TRD: 1367646922ns - NOM "ROOT/0" - CPU 0 - RT:1 - linux
+> [ 6146.365055] TRD: 1368896836ns - NOM "ROOT/0" - CPU 0 - RT:1 - linux
+> [ 6146.365073] TRD: 1368916343ns - NOM "ROOT/0" - CPU 0 - RT:1 - linux
+>
+> If I follow these outputs, this means that the loop is made by a linux task
+> and if I add a nanosleep just before, the loop is done by the xenomai task.
+> Moreover, "hook " switch in primary mode only when it is destroyed unless we
+> force a primary switch with nanosleep(0) before the loop.
+>
+> Is a xenomai thread shouldn't start in primary mode
 
-Hi Gilles
+It certainly does.
 
-On Monday 15 April 2013, Gilles Chanteperdrix wrote:
-> we have a problem with the patches for Raspberry and BeagleBone: they
-> are based on the 3.2.21 patch, which we know is broken. So, we can
-> not really ship the next version of Xenomai with these patches.
+  or maybe it wait for a
+> rt service to switch in primary mode?
+>
 
-The original Raspberry patch from Ian-cim consisted of adding ipipe 
-timer support to the BSP sources in 3.2.21. My efforts concentrated on 
-backporting some of the Raspberry specific support from their 3.6.y 
-tree to Xenomai 3.5.7 - Any breakages in 3.2.xx shouldn't be an issue.
+I can't give you any information. I downloaded your code and can't see 
+any "hook" task. There is a "hook" driver, a "tr_sleep" task, but 
+nothing else. Besides, your Makefile should use xeno-config for getting 
+the proper build flags. Handcrafting this is the fastest path to hell 
+with the POSIX skin.
 
-> There are two ways we could keep patches for these machines:
-> - you could send patches for 3.4 or 3.5, or even 3.8
+Until I can make sense of the output you mention looking at the actual 
+code, I won't be able to help.
 
-The Raspberry patch is already at 3.5.7, not sure what state the 
-raspberry-3.8.y tree is in at the moment. Time allowing, I'll have a 
-look at a 3.8 patch over the next few days.
+/proc/xenomai/sched and /proc/xenomai/stat may help to determine who is 
+running, in which mode.
 
-> - we could backport the fixes to 3.2, but as already discussed on
-> this list, this would cost some time to re-validate the 3.2 patch on
-> all architectures. However, if you do the backport, validate it on
-> your side, I could validate the result on my test boards, and we
-> would release a new version of the patch for 3.2 only for the ARM
-> architecture.
-
-I feel my time would be better spent on updating to 3.8, so I'll give 
-the backport a miss for now ;-)
-
-
-Regards, Paul.
-
+-- 
+Philippe.
 
