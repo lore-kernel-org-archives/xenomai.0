@@ -1,15 +1,12 @@
-Message-ID: <51633059.4070504@xenomai.org>
-Date: Mon, 08 Apr 2013 23:02:17 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <516C1000.7000106@nta-inc.net>
+Date: Mon, 15 Apr 2013 09:34:40 -0500
+From: Jeff Webb <jeff.webb@nta-inc.net>
 MIME-Version: 1.0
-References: <515DE96F.7080508@xenomai.org>
-	<515FEF85.5010801@web.de>	<5161A51C.8050606@xenomai.org>
-	<5161BF47.9020007@xenomai.org>	<5161C292.3070703@web.de>
-	<5161C61F.9000009@xenomai.org>
-In-Reply-To: <5161C61F.9000009@xenomai.org>
-Content-Type: text/plain; charset=UTF-8
+References: <5169643D.9020207@xenomai.org>
+In-Reply-To: <5169643D.9020207@xenomai.org>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] I-pipe on ARM platform.
+Subject: Re: [Xenomai] Debian: reworking kernel package generation.
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,32 +15,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@web.de>
-Cc: Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 04/07/2013 09:16 PM, Gilles Chanteperdrix wrote:
+On 04/13/2013 08:57 AM, Gilles Chanteperdrix wrote:
+> So, I propose to:
+> - remove the generation of the linux-patch-xenomai kernel
+> - remove the prepare-patch script
+> - require people who want to compile xenomai kernels to install the
+> xenomai source package and run prepare-kernel.sh script, and change the
+> installation instructions in accordance with this new approach.
+>
+> If nobody is opposed to this approach, I will make the modifications in
+> the next few weeks for the 2.6.3 release.
 
->>>> I also had tested a merge of the previous version with your next-x86
->>>> branch, and except a few merge conflicts and a build error without SMP,
->>>> adressed by this commit:
->>>> http://git.xenomai.org/ipipe-gch.git/?p=ipipe-gch.git;a=commitdiff;h=fae81444a0bfe12de514ac039f866c0f66abfb3c;hp=1198253580e0d5610ee886e1ff3771461a06f414
->>
->> Thanks for the fix, will pick it up as well.
+That works for me.  I switched to using prepare-kernel.sh a while back anyway, since that approach seemed to have fewer issues.
 
+-Jeff
 
-I have also pushed a for-core-3.8.2-x86 branch in the ipipe-gch git,
-with both the ARM and x86 changes.
-
-> It seems registry_unexport_pnode reads an invalid object->vfilp and>
-triggers registry_proc_apc whereas no vfile is currently reading the
-
-> object, as if registry_export_pnode had not been called.
-> 
-
-
-Forget that, I do not really understand the vfile code, need to spend
-more time on it.
-
--- 
-                                                                Gilles.
 
