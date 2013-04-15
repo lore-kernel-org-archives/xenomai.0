@@ -1,5 +1,7 @@
+Message-ID: <516C094F.2050107@xenomai.org>
+Date: Mon, 15 Apr 2013 16:06:07 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <CAPpP=rPLiziMZU8-KUQvsfcUr8MbXh9pTeobuTO+HRfGtizJPw@mail.gmail.com>
 References: <CAPpP=rPQa-Fa+1j7Lb11dUX8srkinCQQ2yS2gR5y9f9Pqf1jdg@mail.gmail.com>
 	<516998B7.9090901@xenomai.org>
 	<CAPpP=rOEjuy8w0x-_zRv_7vHDOmjU6n1Hi=jrE6UNEULL=zYcQ@mail.gmail.com>
@@ -11,10 +13,9 @@ References: <CAPpP=rPQa-Fa+1j7Lb11dUX8srkinCQQ2yS2gR5y9f9Pqf1jdg@mail.gmail.com>
 	<CAPpP=rMRx5CKj2uJv3wBSu=UUb88W2nXy73z1B6ewBgXEQNYiQ@mail.gmail.com>
 	<516BF43D.7070708@xenomai.org>
 	<CAPpP=rPLiziMZU8-KUQvsfcUr8MbXh9pTeobuTO+HRfGtizJPw@mail.gmail.com>
-Date: Mon, 15 Apr 2013 15:48:37 +0200
-Message-ID: <CAPpP=rOa+zQePVUfmv46PrKuD=Pd_+uRgy1Li3eq346b96zQEQ@mail.gmail.com>
-From: alex alex <duch.alexandre@gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
+In-Reply-To: <CAPpP=rPLiziMZU8-KUQvsfcUr8MbXh9pTeobuTO+HRfGtizJPw@mail.gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] [QUESTION] thread creation and hook function
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -24,20 +25,16 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: alex alex <duch.alexandre@gmail.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
->In addition, calling rtdm_printk services from the hook is strongly
-discouraged >unless you don't care for timings.
-
-I use the rtdm_printk just for debugging purpose, in my real application I use
-a buffer to store datas.
-
-
-2013/4/15 alex alex <duch.alexandre@gmail.com>
-
+On 04/15/2013 03:43 PM, alex alex wrote:
 > Infact, given that the posix skin can not create named task in user space,
 > the default name which is assigned is the source file name, in this case hook
 > (hook.c)
+
+pthread_set_name_np
+
 >
 > I add the changes to have the same ouput and I use xeno-config flag.
 >
@@ -56,13 +53,12 @@ a buffer to store datas.
 >>>
 >>> case 1 : ( without nanosleep(0) )
 >>>
->>>   6138.151187] TRD: 394830ns - NOM "ROOT/0" - CPU 0 - RT:1 - linux
+>>>    6138.151187] TRD: 394830ns - NOM "ROOT/0" - CPU 0 - RT:1 - linux
 >>> [ 6138.159924] TRD: 9127501ns - NOM "hook" - CPU 0 - RT:0 - shadow
 >>> [ 6138.159953] TRD: 9163835ns - NOM "ROOT/0" - CPU 0 - RT:1 - linux
 >>> [ 6138.160014] TRD: 370242723ns - NOM "ROOT/0" - CPU 0 - RT:1 - linux
 >>> [ 6138.520008] TRD: 370429306ns - NOM "ROOT/0" - CPU 0 - RT:1 - linux
->>> [ 6139.521009] TRD: 1370433173ns - NOM "hook" - CPU 0 - RT:1 -
->>> user-space
+>>> [ 6139.521009] TRD: 1370433173ns - NOM "hook" - CPU 0 - RT:1 - user-space
 >>> shadow in real-time mode
 >>> [ 6139.521014] TRD: 1370446122ns - NOM "ROOT/0" - CPU 0 - RT:1 - linux
 >>> [ 6139.521705] TRD: 1371147808ns - NOM "ROOT/0" - CPU 0 - RT:1 - linux
@@ -78,8 +74,7 @@ a buffer to store datas.
 >>> shadow in real-time mode
 >>> [ 6145.008013] TRD: 367409427ns - NOM "ROOT/0" - CPU 0 - RT:1 - linux
 >>> [ 6145.363763] TRD: 367634768ns - NOM "ROOT/0" - CPU 0 - RT:1 - linux
->>> [ 6146.363810] TRD: 1367637465ns - NOM "hook" - CPU 0 - RT:1 -
->>> user-space
+>>> [ 6146.363810] TRD: 1367637465ns - NOM "hook" - CPU 0 - RT:1 - user-space
 >>> shadow in real-time mode
 >>> [ 6146.363815] TRD: 1367646922ns - NOM "ROOT/0" - CPU 0 - RT:1 - linux
 >>> [ 6146.365055] TRD: 1368896836ns - NOM "ROOT/0" - CPU 0 - RT:1 - linux
@@ -89,8 +84,8 @@ a buffer to store datas.
 >>> task
 >>> and if I add a nanosleep just before, the loop is done by the xenomai
 >>> task.
->>> Moreover, "hook " switch in primary mode only when it is destroyed
->>> unless we
+>>> Moreover, "hook " switch in primary mode only when it is destroyed unless
+>>> we
 >>> force a primary switch with nanosleep(0) before the loop.
 >>>
 >>> Is a xenomai thread shouldn't start in primary mode
@@ -99,16 +94,15 @@ a buffer to store datas.
 >> It certainly does.
 >>
 >>
->>  or maybe it wait for a
+>>   or maybe it wait for a
 >>
 >>> rt service to switch in primary mode?
 >>>
 >>>
->> I can't give you any information. I downloaded your code and can't see
->> any "hook" task. There is a "hook" driver, a "tr_sleep" task, but nothing
->> else. Besides, your Makefile should use xeno-config for getting the proper
->> build flags. Handcrafting this is the fastest path to hell with the POSIX
->> skin.
+>> I can't give you any information. I downloaded your code and can't see any
+>> "hook" task. There is a "hook" driver, a "tr_sleep" task, but nothing else.
+>> Besides, your Makefile should use xeno-config for getting the proper build
+>> flags. Handcrafting this is the fastest path to hell with the POSIX skin.
 >>
 >> Until I can make sense of the output you mention looking at the actual
 >> code, I won't be able to help.
@@ -119,5 +113,20 @@ a buffer to store datas.
 >> --
 >> Philippe.
 >>
+> -------------- next part --------------
+> A non-text attachment was scrubbed...
+> Name: test_switch.tar.bz2
+> Type: application/x-bzip2
+> Size: 3504 bytes
+> Desc: not available
+> URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20130415/e0528953/attachment.bin>
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> http://www.xenomai.org/mailman/listinfo/xenomai
 >
->
+
+
+-- 
+Philippe.
+
