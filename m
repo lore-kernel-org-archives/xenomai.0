@@ -1,13 +1,13 @@
-Message-ID: <516C5922.8000708@xenomai.org>
-Date: Mon, 15 Apr 2013 21:46:42 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <516C78FD.1090002@web.de>
+Date: Tue, 16 Apr 2013 00:02:37 +0200
+From: Jan Kiszka <jan.kiszka@web.de>
 MIME-Version: 1.0
-References: <516BA4E9.3070201@xenomai.org>
-	<201304151152.09727.paul_c@tuxcnc.org>
-In-Reply-To: <201304151152.09727.paul_c@tuxcnc.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Raspberry and Beaglebone patches
+References: <E1U2RE9-0007Zc-Em@xenomai.org> <516983AF.2000909@xenomai.org>
+In-Reply-To: <516983AF.2000909@xenomai.org>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] [Xenomai-git] Jan Kiszka : switchtest: Add SSE and
+	AVX check
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,46 +16,134 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Paul <paul_c@tuxcnc.org>
-Cc: Stephan Kappertz <stephan.kappertz@kabelmail.de>, Xenomai <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On 04/15/2013 12:52 PM, Paul wrote:
+On 2013-04-13 18:11, Gilles Chanteperdrix wrote:
+> On 02/04/2013 07:57 PM, GIT version control wrote:
+> =
 
-> 
-> Hi Gilles
-> 
-> On Monday 15 April 2013, Gilles Chanteperdrix wrote:
->> we have a problem with the patches for Raspberry and BeagleBone: they
->> are based on the 3.2.21 patch, which we know is broken. So, we can
->> not really ship the next version of Xenomai with these patches.
-> 
-> The original Raspberry patch from Ian-cim consisted of adding ipipe 
-> timer support to the BSP sources in 3.2.21. My efforts concentrated on 
-> backporting some of the Raspberry specific support from their 3.6.y 
-> tree to Xenomai 3.5.7 - Any breakages in 3.2.xx shouldn't be an issue.
-> 
->> There are two ways we could keep patches for these machines:
->> - you could send patches for 3.4 or 3.5, or even 3.8
-> 
-> The Raspberry patch is already at 3.5.7, not sure what state the 
-> raspberry-3.8.y tree is in at the moment. Time allowing, I'll have a 
-> look at a 3.8 patch over the next few days.
-> 
->> - we could backport the fixes to 3.2, but as already discussed on
->> this list, this would cost some time to re-validate the 3.2 patch on
->> all architectures. However, if you do the backport, validate it on
->> your side, I could validate the result on my test boards, and we
->> would release a new version of the patch for 3.2 only for the ARM
->> architecture.
-> 
-> I feel my time would be better spent on updating to 3.8, so I'll give 
-> the backport a miss for now ;-)
+>> Module: xenomai-2.6
+>> Branch: master
+>> Commit: 192597326a0becd1980cb6c5cc9395af18a19c60
+>> URL:    http://git.xenomai.org/?p=3Dxenomai-2.6.git;a=3Dcommit;h=3D19259=
+7326a0becd1980cb6c5cc9395af18a19c60
+>>
+>> Author: Jan Kiszka <jan.kiszka@siemens.com>
+>> Date:   Tue Jan 29 18:46:13 2013 +0100
+>>
+>> switchtest: Add SSE and AVX check
+>>
+>> Add a test for switching the lower SSE registers xmm0..7 or AVX
+>> registers ymm0..7, provided the CPU supports the corresponding
+>> feature. As xmm and ymm share their storage, we only need to check
+>> one of the features.
+>>
+>> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+>>
+>> ---
+> =
+
+> =
+
+>>  static inline unsigned fp_regs_check(unsigned val)
+>>  {
+>>  	unsigned i, result =3D val;
+>> +	uint64_t vec[8][4];
+>>  	unsigned e[8];
+>>  =
+
+>>  	for (i =3D 0; i < 8; i++)
+>>  		__asm__ __volatile__("fistpl %0":"=3Dm"(e[7 - i]));
+>> +	if (fp_features & FP_FEATURE_AVX) {
+>> +		__asm__ __volatile__(
+>> +			"vmovupd %%ymm0,%0;"
+>> +			"vmovupd %%ymm1,%1;"
+>> +			"vmovupd %%ymm2,%2;"
+>> +			"vmovupd %%ymm3,%3;"
+>> +			"vmovupd %%ymm4,%4;"
+>> +			"vmovupd %%ymm5,%5;"
+>> +			"vmovupd %%ymm6,%6;"
+>> +			"vmovupd %%ymm7,%7;"
+>> +			:
+>> +			: "m" (vec[0][0]), "m" (vec[1][0]),
+>> +			  "m" (vec[2][0]), "m" (vec[3][0]),
+>> +			  "m" (vec[4][0]), "m" (vec[5][0]),
+>> +			  "m" (vec[6][0]), "m" (vec[7][0]));
+>> +	} else if (fp_features & FP_FEATURE_SSE) {
+>> +		__asm__ __volatile__(
+>> +			"movupd %%xmm0,%0;"
+>> +			"movupd %%xmm1,%1;"
+>> +			"movupd %%xmm2,%2;"
+>> +			"movupd %%xmm3,%3;"
+>> +			"movupd %%xmm4,%4;"
+>> +			"movupd %%xmm5,%5;"
+>> +			"movupd %%xmm6,%6;"
+>> +			"movupd %%xmm7,%7;"
+>> +			:
+>> +			: "m" (vec[0][0]), "m" (vec[1][0]),
+>> +			  "m" (vec[2][0]), "m" (vec[3][0]),
+>> +			  "m" (vec[4][0]), "m" (vec[5][0]),
+>> +			  "m" (vec[6][0]), "m" (vec[7][0]));
+>> +	}
+>>  =
+
+>>  	for (i =3D 0; i < 8; i++)
+>>  		if (e[i] !=3D val) {
+>> @@ -65,8 +148,33 @@ static inline unsigned fp_regs_check(unsigned val)
+>>  			result =3D e[i];
+>>  		}
+>>  =
+
+>> +	if (fp_features & FP_FEATURE_AVX) {
+>> +		for (i =3D 0; i < 8; i++) {
+>> +			int error =3D 0;
+>> +			if (vec[i][0] !=3D val) {
+>> +				result =3D vec[i][0];
+>> +				error =3D 1;
+>> +			}
+>> +			if (vec[i][2] !=3D val) {
+>> +				result =3D vec[i][2];
+>> +				error =3D 1;
+>> +			}
+>> +			if (error)
+>> +				printk("ymm%d: %llu/%llu !=3D %u/%u\n",
+>> +				       i, (unsigned long long)vec[i][0],
+>> +				       (unsigned long long)vec[i][2],
+>> +				       val, val);
+>> +		}
+>> +	} else if (fp_features & FP_FEATURE_SSE) {
+>> +		for (i =3D 0; i < 8; i++)
+>> +			if (vec[i][0] !=3D val) {
+>> +				printk("xmm%d: %llu !=3D %u\n",
+>> +				       i, (unsigned long long)vec[i][0], val);
+>> +				result =3D vec[i][0];
+>> +			}
+>> +	}
+>> +
+>>  	return result;
+>>  }
+> =
+
+> =
+
+> This routine causes a warning from gcc and looks indeed wrong: if the
+> "vec" variable is used as an output variable of the inline assembly, it
+> should be in the output section of the inline assembly, not the input
+> section.
+> =
 
 
-Sorry for the noise, I thought the Raspberry Pi patch was for 3.2. Yes,
-the patch for 3.8 would be intersting to get for the 2.6.3 release.
+Yes, seems wrong. Will try to look into it the next days.
+
+Jan
 
 
--- 
-                                                                Gilles.
-
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 263 bytes
+Desc: OpenPGP digital signature
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20130416/fdb62eb=
+0/attachment.pgp>
