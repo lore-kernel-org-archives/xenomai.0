@@ -1,9 +1,14 @@
+Message-ID: <516B9C3F.2080107@grandegger.com>
+Date: Mon, 15 Apr 2013 08:20:47 +0200
+From: Wolfgang Grandegger <wg@grandegger.com>
 MIME-Version: 1.0
-Date: Sun, 14 Apr 2013 20:01:18 -0700
-Message-ID: <CAJjOJyYC0v3d1w21XdQ+tyGbTAoxaPbtHVL1qf0B5JJwrtsg0g@mail.gmail.com>
-From: Jonathan Wallace <jonmon6691@gmail.com>
+References: <oqr4jdyggv.fsf@merlin.sez.to> <51646CBA.40407@xenomai.org>
+	<51653957.2070405@grandegger.com> <516AC595.5060103@xenomai.org>
+In-Reply-To: <516AC595.5060103@xenomai.org>
 Content-Type: text/plain; charset=ISO-8859-1
-Subject: [Xenomai] Using spi_async with and rtdm periodic task
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [PATCH 1/2] rtcan_module: Fix tx_timeout buffer size
+ inconsistency
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,24 +17,50 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org, Wolfgang Grandegger <wg@denx.de>
 
-Hi!
+On 04/14/2013 05:04 PM, Gilles Chanteperdrix wrote:
+> On 04/10/2013 12:05 PM, Wolfgang Grandegger wrote:
+> 
+>> On 04/09/2013 09:32 PM, Gilles Chanteperdrix wrote:
+>>> On 03/17/2013 07:56 PM, Paul Janzen wrote:
+>>>
+>>>> When formatting /proc/rtcan/sockets, tx_timeout is defined as
+>>>> char[16], but a length of 20 is passed to rtcan_get_timeout_name. If
+>>>> tx_timeout for any socket is infinite, this causes snprintf to zero
+>>>> outside the buffer, leading to stack overflow and a kernel panic.
+>>>> Make the tx_timeout buffer 20 bytes long instead.
+>>>>
+>>>> Signed-off-by: Paul Janzen <pcj@xenomai.sez.to>
+>>
+>> It's a bug, therefore:
+>>
+>> Acked-by: Wolfgang Grandegger <wg@grandegger.com>
+>>
+>>> Wolfgang, ping?
+>>
+>> Pong, sorry for delay.
+> 
+> 
+> Hi,
+> 
+> No problem for the delay, merged, thanks.
+> 
+> We have two other unconfirmed CAN patches:
+> http://www.xenomai.org/pipermail/xenomai/2013-March/028111.html
 
-I'm trying to write a spi driver with RTDM but I've read in at least a
-couple places that spi_sync can't be used with rt tasks.
-That definitely makes sense to me, but I was wondering if I could use
-spi_async. I don't particularly care about the latency or jitter of the spi
-operation as long as it actually occurs every period.
+We can add even more PCI IDs here. I'm going to prepare a patch. Just
+support for 4 channel cards needs more effort.
 
-My idea was to protect the spi system with an rtdm_mutex_t by locking it
-when it is created, and unlocking it once the spi driver is probed. The
-task attempts to lock the mutex without a timeout and schedules a transfer
-with spi_async, or just waits another period if it can't (Other more
-important things happen in the task, missing spi isn't a show-stopper).
-Then the spi callback unlocks the mutex. This should prevent the real time
-task from muking with spi while the kernel is working with it right? Or am
-I missing something else?
+> And not really a patch, but modifying the code is trivial if you confirm
+> that we can do it:
 
-Thanks,
--Jon Wallace
+> http://www.xenomai.org/pipermail/xenomai/2013-February/027824.html
+
+Well, I'm not happy with that extension to rtcansend. I will answer to
+the original thread.
+
+Wolfgang.
+
+
