@@ -1,14 +1,10 @@
-Message-ID: <516B9C3F.2080107@grandegger.com>
-Date: Mon, 15 Apr 2013 08:20:47 +0200
-From: Wolfgang Grandegger <wg@grandegger.com>
+Message-ID: <516BA4E9.3070201@xenomai.org>
+Date: Mon, 15 Apr 2013 08:57:45 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <oqr4jdyggv.fsf@merlin.sez.to> <51646CBA.40407@xenomai.org>
-	<51653957.2070405@grandegger.com> <516AC595.5060103@xenomai.org>
-In-Reply-To: <516AC595.5060103@xenomai.org>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PATCH 1/2] rtcan_module: Fix tx_timeout buffer size
- inconsistency
+Subject: [Xenomai] Raspberry and Beaglebone patches
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,50 +13,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org, Wolfgang Grandegger <wg@denx.de>
+To: Stephan Kappertz <stephan.kappertz@kabelmail.de>, Paul <paul_c@tuxcnc.org>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 04/14/2013 05:04 PM, Gilles Chanteperdrix wrote:
-> On 04/10/2013 12:05 PM, Wolfgang Grandegger wrote:
-> 
->> On 04/09/2013 09:32 PM, Gilles Chanteperdrix wrote:
->>> On 03/17/2013 07:56 PM, Paul Janzen wrote:
->>>
->>>> When formatting /proc/rtcan/sockets, tx_timeout is defined as
->>>> char[16], but a length of 20 is passed to rtcan_get_timeout_name. If
->>>> tx_timeout for any socket is infinite, this causes snprintf to zero
->>>> outside the buffer, leading to stack overflow and a kernel panic.
->>>> Make the tx_timeout buffer 20 bytes long instead.
->>>>
->>>> Signed-off-by: Paul Janzen <pcj@xenomai.sez.to>
->>
->> It's a bug, therefore:
->>
->> Acked-by: Wolfgang Grandegger <wg@grandegger.com>
->>
->>> Wolfgang, ping?
->>
->> Pong, sorry for delay.
-> 
-> 
-> Hi,
-> 
-> No problem for the delay, merged, thanks.
-> 
-> We have two other unconfirmed CAN patches:
-> http://www.xenomai.org/pipermail/xenomai/2013-March/028111.html
 
-We can add even more PCI IDs here. I'm going to prepare a patch. Just
-support for 4 channel cards needs more effort.
+Hi Stephan, Paul,
 
-> And not really a patch, but modifying the code is trivial if you confirm
-> that we can do it:
+we have a problem with the patches for Raspberry and BeagleBone: they
+are based on the 3.2.21 patch, which we know is broken. So, we can not
+really ship the next version of Xenomai with these patches.
 
-> http://www.xenomai.org/pipermail/xenomai/2013-February/027824.html
+There are two ways we could keep patches for these machines:
+- you could send patches for 3.4 or 3.5, or even 3.8
+- we could backport the fixes to 3.2, but as already discussed on this
+list, this would cost some time to re-validate the 3.2 patch on all
+architectures. However, if you do the backport, validate it on your
+side, I could validate the result on my test boards, and we would
+release a new version of the patch for 3.2 only for the ARM architecture.
 
-Well, I'm not happy with that extension to rtcansend. I will answer to
-the original thread.
+Regards.
 
-Wolfgang.
-
+-- 
+                                                                Gilles.
 
