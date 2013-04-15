@@ -1,12 +1,9 @@
-Message-ID: <516AE908.6020203@xenomai.org>
-Date: Sun, 14 Apr 2013 19:36:08 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <1365959460.11897.YahooMailNeo@web161406.mail.bf1.yahoo.com>
-In-Reply-To: <1365959460.11897.YahooMailNeo@web161406.mail.bf1.yahoo.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] how to suppress "CPU time limit exceeded" message?
+Date: Sun, 14 Apr 2013 20:01:18 -0700
+Message-ID: <CAJjOJyYC0v3d1w21XdQ+tyGbTAoxaPbtHVL1qf0B5JJwrtsg0g@mail.gmail.com>
+From: Jonathan Wallace <jonmon6691@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: [Xenomai] Using spi_async with and rtdm periodic task
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,34 +12,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Tom Z <tomz30@yahoo.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 04/14/2013 07:11 PM, Tom Z wrote:
+Hi!
 
-> Hi All, I encountered frequently "CPU time limit exceeded" messages
-> during my program's execution. I think it might be related to the
-> Xenomai watchdog (Please correct me if wrong).
+I'm trying to write a spi driver with RTDM but I've read in at least a
+couple places that spi_sync can't be used with rt tasks.
+That definitely makes sense to me, but I was wondering if I could use
+spi_async. I don't particularly care about the latency or jitter of the spi
+operation as long as it actually occurs every period.
 
+My idea was to protect the spi system with an rtdm_mutex_t by locking it
+when it is created, and unlocking it once the spi driver is probed. The
+task attempts to lock the mutex without a timeout and schedules a transfer
+with spi_async, or just waits another period if it can't (Other more
+important things happen in the task, missing spi isn't a show-stopper).
+Then the spi callback unlocks the mutex. This should prevent the real time
+task from muking with spi while the kernel is working with it right? Or am
+I missing something else?
 
-See examples/sigdebug.c, there are many possible reasons for this message.
-
-> Is there a way to
-> disable this feature without recompiling a new kernel without
-> watchdog support?
-
-
-There is currently no way to disable it. You can increase its timeout
-with the xeno_nucleus.watchdog_timeout kernel parameter though.
-
-Note that if your application gets killed by the watchdog, it means that
-it uses the CPU for 4 seconds without relinquishing it, an application
-doing that is consider a problem with Xenomai, because you are never
-sure that Linux can recover from being interrupted 4 seconds, and having
-to handle the backlog: generally, it causes the system to crash, purely
-and simply. So, the watchdog avoid crashes.
-
-
--- 
-                                                                Gilles.
-
+Thanks,
+-Jon Wallace
