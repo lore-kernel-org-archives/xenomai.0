@@ -1,15 +1,16 @@
-Message-ID: <516D0502.4090703@grandegger.com>
-Date: Tue, 16 Apr 2013 10:00:02 +0200
-From: Wolfgang Grandegger <wg@grandegger.com>
+Message-ID: <516D0B8A.8010908@web.de>
+Date: Tue, 16 Apr 2013 10:27:54 +0200
+From: Jan Kiszka <jan.kiszka@web.de>
 MIME-Version: 1.0
-References: <oqr4jdyggv.fsf@merlin.sez.to> <51646CBA.40407@xenomai.org>
-	<51653957.2070405@grandegger.com> <516AC595.5060103@xenomai.org>
-	<516B9C3F.2080107@grandegger.com> <oqr4icp8ie.fsf@merlin.sez.to>
-In-Reply-To: <oqr4icp8ie.fsf@merlin.sez.to>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PATCH 1/2] rtcan_module: Fix tx_timeout buffer size
- inconsistency
+References: <E1U2RE9-0007Zc-Em@xenomai.org> <516983AF.2000909@xenomai.org>
+	<516C78FD.1090002@web.de> <516CFC95.4000305@web.de>
+	<516CFE78.1030903@xenomai.org> <516CFEEB.5050704@web.de>
+	<516D0397.5050301@xenomai.org>
+In-Reply-To: <516D0397.5050301@xenomai.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai] [Xenomai-git] Jan Kiszka : switchtest: Add SSE and
+	AVX check
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,29 +19,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Paul Janzen <pcj@xenomai.sez.to>
-Cc: Wolfgang Grandegger <wg@denx.de>, xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-Hi Paul,
-
-On 04/15/2013 09:18 AM, Paul Janzen wrote:
-> Wolfgang Grandegger <wg@grandegger.com> writes:
-> 
->>> We have two other unconfirmed CAN patches:
->>> http://www.xenomai.org/pipermail/xenomai/2013-March/028111.html
->>
->> We can add even more PCI IDs here. I'm going to prepare a patch. Just
->> support for 4 channel cards needs more effort.
-> 
-> Along these same lines, would there be any interest in a patch
-> removing the deprecated ESD PCI-CAN driver?
-
-It does not make a lot of sense to maintain two variants of a driver.
-
-> All of the devices claimed by that driver are supported by PLX_PCI.
-
-Yes, I will check if there are some relevant differences.
-
-Wolfgang.
-
-
+T24gMjAxMy0wNC0xNiAwOTo1MywgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4gT24gMDQv
+MTYvMjAxMyAwOTozNCBBTSwgSmFuIEtpc3prYSB3cm90ZToKPiAKPj4gT24gMjAxMy0wNC0xNiAw
+OTozMiwgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4+PiBPbiAwNC8xNi8yMDEzIDA5OjI0
+IEFNLCBKYW4gS2lzemthIHdyb3RlOgo+Pj4KPj4+PiBPbiAyMDEzLTA0LTE2IDAwOjAyLCBKYW4g
+S2lzemthIHdyb3RlOgo+Pj4+PiBPbiAyMDEzLTA0LTEzIDE4OjExLCBHaWxsZXMgQ2hhbnRlcGVy
+ZHJpeCB3cm90ZToKPj4+Pj4+IFRoaXMgcm91dGluZSBjYXVzZXMgYSB3YXJuaW5nIGZyb20gZ2Nj
+IGFuZCBsb29rcyBpbmRlZWQgd3Jvbmc6IGlmIHRoZQo+Pj4+Pj4gInZlYyIgdmFyaWFibGUgaXMg
+dXNlZCBhcyBhbiBvdXRwdXQgdmFyaWFibGUgb2YgdGhlIGlubGluZSBhc3NlbWJseSwgaXQKPj4+
+Pj4+IHNob3VsZCBiZSBpbiB0aGUgb3V0cHV0IHNlY3Rpb24gb2YgdGhlIGlubGluZSBhc3NlbWJs
+eSwgbm90IHRoZSBpbnB1dAo+Pj4+Pj4gc2VjdGlvbi4KPj4+Pj4+Cj4+Pj4+Cj4+Pj4+IFllcywg
+c2VlbXMgd3JvbmcuIFdpbGwgdHJ5IHRvIGxvb2sgaW50byBpdCB0aGUgbmV4dCBkYXlzLgo+Pj4+
+Cj4+Pj4gRG9uZSwgeW91IGNhbiBmaW5kIHRoZSBvYnZpb3VzIGZpeCBpbiBteSBmb3ItdXBzdHJl
+YW0gcXVldWUuCj4+Pgo+Pj4KPj4+IEhpIEphbiwKPj4+Cj4+PiB5ZXMgdGhlIGZpeCBpcyBvYnZp
+b3VzLCBob3dldmVyIHRoZSBmYWN0IHRoYXQgbWFjaGluZXMgd2l0aCBBVlggc3VwcG9ydAo+Pj4g
+c3RpbGwgcGFzcyB4ZW5vLXJlZ3Jlc3Npb24tdGVzdCBpcyBub3QsIGhhdmUgeW91IGNoZWNrZWQg
+dGhhdD8KPj4KPj4gSSd2ZSBjaGVja2VkIHRoYXQgdGhlIGJpbmFyeSBvdXRwdXQgaXMgdW5hZmZl
+Y3RlZCwgYXQgbGVhc3QgZm9yIG15Cj4+IGNvbXBpbGVyIGhlcmUuIE1ha2VzIHNlbnNlIGFzIHRo
+ZXJlIGlzIG5vIG90aGVyIHVzZSBmb3IgdGhlIHJlZ2lzdGVycwo+PiBhcm91bmQsIGFuZCB0aGUg
+YXNzZW1ibGVyIGp1c3QgYmxpbmRseSBwdXQgdGhlIGlucHV0IHZhcmlhYmxlcyBpbnRvIHRoZQo+
+PiBkZXN0aW5hdGlvbiBzbG90IG9mIHRoZSBpbnN0cnVjdGlvbnMuCj4gCj4gCj4gTm8sIGl0IGRv
+ZXMgbm90IHJlYWxseSBtYWtlIHNlbnNlOiBhIHBpZWNlIG9mIGFzc2VtYmx5IHdpdGhvdXQgYW55
+IHNpZGUKPiBlZmZlY3RzIGFuZCBhbnkgb3V0cHV0cyBpcyBiYXNpY2FsbHkgdXNlbGVzcywgc28g
+dGhlIGNvbXBpbGVyIGNvdWxkIHZlcnkKPiB3ZWxsIGRlY2lkZSB0byBvcHRpbWl6ZSBpdCBvdXQu
+IEJ1dCBpZiB5b3UgaGF2ZSBjaGVja2VkLCBPSy4KCk1heWJlIGl0J3MgdGhlIHZvbGF0aWxlIGlu
+IHRoZSBpbmxpbmUgYXNzZW1ibHkgdGhhdCBwcmV2ZW50ZWQgaXQuCgpKYW4KCgotLS0tLS0tLS0t
+LS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBz
+Y3J1YmJlZC4uLgpOYW1lOiBzaWduYXR1cmUuYXNjClR5cGU6IGFwcGxpY2F0aW9uL3BncC1zaWdu
+YXR1cmUKU2l6ZTogMjYzIGJ5dGVzCkRlc2M6IE9wZW5QR1AgZGlnaXRhbCBzaWduYXR1cmUKVVJM
+OiA8aHR0cDovL3d3dy54ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8y
+MDEzMDQxNi80MWJhMTJmYS9hdHRhY2htZW50LnBncD4K
