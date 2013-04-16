@@ -1,12 +1,13 @@
-Message-ID: <516CFE78.1030903@xenomai.org>
-Date: Tue, 16 Apr 2013 09:32:08 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <516CFEEB.5050704@web.de>
+Date: Tue, 16 Apr 2013 09:34:03 +0200
+From: Jan Kiszka <jan.kiszka@web.de>
 MIME-Version: 1.0
 References: <E1U2RE9-0007Zc-Em@xenomai.org> <516983AF.2000909@xenomai.org>
 	<516C78FD.1090002@web.de> <516CFC95.4000305@web.de>
-In-Reply-To: <516CFC95.4000305@web.de>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+	<516CFE78.1030903@xenomai.org>
+In-Reply-To: <516CFE78.1030903@xenomai.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Subject: Re: [Xenomai] [Xenomai-git] Jan Kiszka : switchtest: Add SSE and
 	AVX check
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -17,31 +18,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@web.de>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On 04/16/2013 09:24 AM, Jan Kiszka wrote:
-
-> On 2013-04-16 00:02, Jan Kiszka wrote:
->> On 2013-04-13 18:11, Gilles Chanteperdrix wrote:
->>> This routine causes a warning from gcc and looks indeed wrong: if the
->>> "vec" variable is used as an output variable of the inline assembly, it
->>> should be in the output section of the inline assembly, not the input
->>> section.
->>>
->>
->> Yes, seems wrong. Will try to look into it the next days.
-> 
-> Done, you can find the obvious fix in my for-upstream queue.
-
-
-Hi Jan,
-
-yes the fix is obvious, however the fact that machines with AVX support
-still pass xeno-regression-test is not, have you checked that?
-
-Regards.
-
--- 
-                                                                Gilles.
-
+T24gMjAxMy0wNC0xNiAwOTozMiwgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4gT24gMDQv
+MTYvMjAxMyAwOToyNCBBTSwgSmFuIEtpc3prYSB3cm90ZToKPiAKPj4gT24gMjAxMy0wNC0xNiAw
+MDowMiwgSmFuIEtpc3prYSB3cm90ZToKPj4+IE9uIDIwMTMtMDQtMTMgMTg6MTEsIEdpbGxlcyBD
+aGFudGVwZXJkcml4IHdyb3RlOgo+Pj4+IFRoaXMgcm91dGluZSBjYXVzZXMgYSB3YXJuaW5nIGZy
+b20gZ2NjIGFuZCBsb29rcyBpbmRlZWQgd3Jvbmc6IGlmIHRoZQo+Pj4+ICJ2ZWMiIHZhcmlhYmxl
+IGlzIHVzZWQgYXMgYW4gb3V0cHV0IHZhcmlhYmxlIG9mIHRoZSBpbmxpbmUgYXNzZW1ibHksIGl0
+Cj4+Pj4gc2hvdWxkIGJlIGluIHRoZSBvdXRwdXQgc2VjdGlvbiBvZiB0aGUgaW5saW5lIGFzc2Vt
+Ymx5LCBub3QgdGhlIGlucHV0Cj4+Pj4gc2VjdGlvbi4KPj4+Pgo+Pj4KPj4+IFllcywgc2VlbXMg
+d3JvbmcuIFdpbGwgdHJ5IHRvIGxvb2sgaW50byBpdCB0aGUgbmV4dCBkYXlzLgo+Pgo+PiBEb25l
+LCB5b3UgY2FuIGZpbmQgdGhlIG9idmlvdXMgZml4IGluIG15IGZvci11cHN0cmVhbSBxdWV1ZS4K
+PiAKPiAKPiBIaSBKYW4sCj4gCj4geWVzIHRoZSBmaXggaXMgb2J2aW91cywgaG93ZXZlciB0aGUg
+ZmFjdCB0aGF0IG1hY2hpbmVzIHdpdGggQVZYIHN1cHBvcnQKPiBzdGlsbCBwYXNzIHhlbm8tcmVn
+cmVzc2lvbi10ZXN0IGlzIG5vdCwgaGF2ZSB5b3UgY2hlY2tlZCB0aGF0PwoKSSd2ZSBjaGVja2Vk
+IHRoYXQgdGhlIGJpbmFyeSBvdXRwdXQgaXMgdW5hZmZlY3RlZCwgYXQgbGVhc3QgZm9yIG15CmNv
+bXBpbGVyIGhlcmUuIE1ha2VzIHNlbnNlIGFzIHRoZXJlIGlzIG5vIG90aGVyIHVzZSBmb3IgdGhl
+IHJlZ2lzdGVycwphcm91bmQsIGFuZCB0aGUgYXNzZW1ibGVyIGp1c3QgYmxpbmRseSBwdXQgdGhl
+IGlucHV0IHZhcmlhYmxlcyBpbnRvIHRoZQpkZXN0aW5hdGlvbiBzbG90IG9mIHRoZSBpbnN0cnVj
+dGlvbnMuCgpKYW4KCgotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBu
+b24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBzaWduYXR1cmUuYXNjClR5
+cGU6IGFwcGxpY2F0aW9uL3BncC1zaWduYXR1cmUKU2l6ZTogMjYzIGJ5dGVzCkRlc2M6IE9wZW5Q
+R1AgZGlnaXRhbCBzaWduYXR1cmUKVVJMOiA8aHR0cDovL3d3dy54ZW5vbWFpLm9yZy9waXBlcm1h
+aWwveGVub21haS9hdHRhY2htZW50cy8yMDEzMDQxNi9hMzc2OTIzNy9hdHRhY2htZW50LnBncD4K
