@@ -1,13 +1,14 @@
-Message-ID: <516CF7D4.9070000@xenomai.org>
-Date: Tue, 16 Apr 2013 09:03:48 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <516CFC95.4000305@web.de>
+Date: Tue, 16 Apr 2013 09:24:05 +0200
+From: Jan Kiszka <jan.kiszka@web.de>
 MIME-Version: 1.0
-References: <CAPpP=rPQa-Fa+1j7Lb11dUX8srkinCQQ2yS2gR5y9f9Pqf1jdg@mail.gmail.com>	<516998B7.9090901@xenomai.org>	<CAPpP=rOEjuy8w0x-_zRv_7vHDOmjU6n1Hi=jrE6UNEULL=zYcQ@mail.gmail.com>	<5169C63B.1070406@xenomai.org>	<CAPpP=rMOmOkd2Gwswu685zsPhxJDMj7GnRWA0yU+gRHmz=V2bw@mail.gmail.com>	<5169EC2C.4000101@xenomai.org>	<CAPpP=rNCBdcussSRzHN_Vpjj0afWZRGKRqPXxh7ps2-_GP7nBQ@mail.gmail.com>	<516BC4DF.3030302@xenomai.org>	<CAPpP=rMRx5CKj2uJv3wBSu=UUb88W2nXy73z1B6ewBgXEQNYiQ@mail.gmail.com>	<516BF43D.7070708@xenomai.org>	<CAPpP=rPLiziMZU8-KUQvsfcUr8MbXh9pTeobuTO+HRfGtizJPw@mail.gmail.com>	<516C094F.2050107@xenomai.org>	<CAPpP=rMsqp5SOfq8_dNUOZ5UFugNa-YwsLyT5WT4d01_UTWRMA@mail.gmail.com>
-	<516C0E3B.5050606@xenomai.org> <516C58C3.1080404@xenomai.org>
-In-Reply-To: <516C58C3.1080404@xenomai.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [QUESTION] thread creation and hook function
+References: <E1U2RE9-0007Zc-Em@xenomai.org> <516983AF.2000909@xenomai.org>
+	<516C78FD.1090002@web.de>
+In-Reply-To: <516C78FD.1090002@web.de>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] [Xenomai-git] Jan Kiszka : switchtest: Add SSE and
+	AVX check
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,29 +18,131 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On 04/15/2013 09:45 PM, Gilles Chanteperdrix wrote:
-> On 04/15/2013 04:27 PM, Philippe Gerum wrote:
->
->> On 04/15/2013 04:18 PM, alex alex wrote:
->>> pthread_set_name_np is called after the task creation and it seems that
->>> the *_np function force to switch in secondary too...
+On 2013-04-16 00:02, Jan Kiszka wrote:
+> On 2013-04-13 18:11, Gilles Chanteperdrix wrote:
+>> On 02/04/2013 07:57 PM, GIT version control wrote:
 >>
->> No, it does not. Maybe you should double-check the way you determine
->> mode switches.
->
->
-> Yes, using SIGDEBUG is the recommended way to understand mode switches.
-> Anyway, a reason for parasite mode switches could be that Alexandre is
-> using the 3.2.21 kernel, which we know has issues with mprotect, maybe
-> he gets additional page faults?
->
->
+>>> Module: xenomai-2.6
+>>> Branch: master
+>>> Commit: 192597326a0becd1980cb6c5cc9395af18a19c60
+>>> URL:    http://git.xenomai.org/?p=3Dxenomai-2.6.git;a=3Dcommit;h=3D1925=
+97326a0becd1980cb6c5cc9395af18a19c60
+>>>
+>>> Author: Jan Kiszka <jan.kiszka@siemens.com>
+>>> Date:   Tue Jan 29 18:46:13 2013 +0100
+>>>
+>>> switchtest: Add SSE and AVX check
+>>>
+>>> Add a test for switching the lower SSE registers xmm0..7 or AVX
+>>> registers ymm0..7, provided the CPU supports the corresponding
+>>> feature. As xmm and ymm share their storage, we only need to check
+>>> one of the features.
+>>>
+>>> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+>>>
+>>> ---
+>>
+>>
+>>>  static inline unsigned fp_regs_check(unsigned val)
+>>>  {
+>>>  	unsigned i, result =3D val;
+>>> +	uint64_t vec[8][4];
+>>>  	unsigned e[8];
+>>>  =
 
-In that case he should see reports of forced switches to secondary mode 
-in the kernel log, provided CONFIG_XENO_DEBUG_NUCLEUS is enabled.
+>>>  	for (i =3D 0; i < 8; i++)
+>>>  		__asm__ __volatile__("fistpl %0":"=3Dm"(e[7 - i]));
+>>> +	if (fp_features & FP_FEATURE_AVX) {
+>>> +		__asm__ __volatile__(
+>>> +			"vmovupd %%ymm0,%0;"
+>>> +			"vmovupd %%ymm1,%1;"
+>>> +			"vmovupd %%ymm2,%2;"
+>>> +			"vmovupd %%ymm3,%3;"
+>>> +			"vmovupd %%ymm4,%4;"
+>>> +			"vmovupd %%ymm5,%5;"
+>>> +			"vmovupd %%ymm6,%6;"
+>>> +			"vmovupd %%ymm7,%7;"
+>>> +			:
+>>> +			: "m" (vec[0][0]), "m" (vec[1][0]),
+>>> +			  "m" (vec[2][0]), "m" (vec[3][0]),
+>>> +			  "m" (vec[4][0]), "m" (vec[5][0]),
+>>> +			  "m" (vec[6][0]), "m" (vec[7][0]));
+>>> +	} else if (fp_features & FP_FEATURE_SSE) {
+>>> +		__asm__ __volatile__(
+>>> +			"movupd %%xmm0,%0;"
+>>> +			"movupd %%xmm1,%1;"
+>>> +			"movupd %%xmm2,%2;"
+>>> +			"movupd %%xmm3,%3;"
+>>> +			"movupd %%xmm4,%4;"
+>>> +			"movupd %%xmm5,%5;"
+>>> +			"movupd %%xmm6,%6;"
+>>> +			"movupd %%xmm7,%7;"
+>>> +			:
+>>> +			: "m" (vec[0][0]), "m" (vec[1][0]),
+>>> +			  "m" (vec[2][0]), "m" (vec[3][0]),
+>>> +			  "m" (vec[4][0]), "m" (vec[5][0]),
+>>> +			  "m" (vec[6][0]), "m" (vec[7][0]));
+>>> +	}
+>>>  =
 
--- 
-Philippe.
+>>>  	for (i =3D 0; i < 8; i++)
+>>>  		if (e[i] !=3D val) {
+>>> @@ -65,8 +148,33 @@ static inline unsigned fp_regs_check(unsigned val)
+>>>  			result =3D e[i];
+>>>  		}
+>>>  =
 
+>>> +	if (fp_features & FP_FEATURE_AVX) {
+>>> +		for (i =3D 0; i < 8; i++) {
+>>> +			int error =3D 0;
+>>> +			if (vec[i][0] !=3D val) {
+>>> +				result =3D vec[i][0];
+>>> +				error =3D 1;
+>>> +			}
+>>> +			if (vec[i][2] !=3D val) {
+>>> +				result =3D vec[i][2];
+>>> +				error =3D 1;
+>>> +			}
+>>> +			if (error)
+>>> +				printk("ymm%d: %llu/%llu !=3D %u/%u\n",
+>>> +				       i, (unsigned long long)vec[i][0],
+>>> +				       (unsigned long long)vec[i][2],
+>>> +				       val, val);
+>>> +		}
+>>> +	} else if (fp_features & FP_FEATURE_SSE) {
+>>> +		for (i =3D 0; i < 8; i++)
+>>> +			if (vec[i][0] !=3D val) {
+>>> +				printk("xmm%d: %llu !=3D %u\n",
+>>> +				       i, (unsigned long long)vec[i][0], val);
+>>> +				result =3D vec[i][0];
+>>> +			}
+>>> +	}
+>>> +
+>>>  	return result;
+>>>  }
+>>
+>>
+>> This routine causes a warning from gcc and looks indeed wrong: if the
+>> "vec" variable is used as an output variable of the inline assembly, it
+>> should be in the output section of the inline assembly, not the input
+>> section.
+>>
+> =
+
+> Yes, seems wrong. Will try to look into it the next days.
+
+Done, you can find the obvious fix in my for-upstream queue.
+
+Jan
+
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 263 bytes
+Desc: OpenPGP digital signature
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20130416/7ad3152=
+c/attachment.pgp>
