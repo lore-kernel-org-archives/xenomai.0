@@ -1,12 +1,19 @@
-Mime-Version: 1.0 (Apple Message framework v1283)
 Content-Type: text/plain; charset=us-ascii
-From: Stephan Kappertz <stephan.kappertz@kabelmail.de>
-In-Reply-To: <516BA4E9.3070201@xenomai.org>
-Date: Tue, 16 Apr 2013 12:26:21 +0200
+Mime-Version: 1.0 (Mac OS X Mail 6.3 \(1503\))
+From: Michael Haberler <mail17@mah.priv.at>
+In-Reply-To: <51670ED3.2070009@xenomai.org>
+Date: Tue, 16 Apr 2013 14:59:24 +0200
 Content-Transfer-Encoding: quoted-printable
-Message-Id: <90FBAEE5-D70C-4563-B9DB-776D6E4E7FA9@kabelmail.de>
-References: <516BA4E9.3070201@xenomai.org>
-Subject: Re: [Xenomai] Raspberry and Beaglebone patches
+Message-Id: <08EA9EC3-6EBE-4527-AE0C-D44F9FB8A9E1@mah.priv.at>
+References: <FD5EBA50-E222-4012-A755-A20FF5D5971D@mah.priv.at>
+	<5165E85B.2040609@xenomai.org>
+	<E9BAB42D-B8E9-4E23-8A15-934A72AC7823@mah.priv.at>
+	<51660709.3010809@xenomai.org>
+	<6C6B8C75-5498-4645-AA10-5651431A1E90@mah.priv.at>
+	<516660A2.3020307@xenomai.org>
+	<913FB5D5-4051-40BC-A81D-5832DDD4D69D@mah.priv.at>
+	<51670ED3.2070009@xenomai.org>
+Subject: Re: [Xenomai] shared memory compatibility - advice sought
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,41 +23,40 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
+Cc: xenomai@xenomai.org
 
-Am 15.04.2013 um 08:57 schrieb Gilles Chanteperdrix:
 
+I've gotten the char shm driver to work flawlessly as suggested, and am =
+now looking into dumping the rest of the SysV IPC legacy code in the =
+linuxcnc code base and replace it by shm_open/mmap
+
+reading up on the Xenomai Posix skin a bit late (ahem) it occurs to me =
+the best solution would have been to use the Xenomai Posix skin =
+throughout, kernel and userland, dump my little driver, and be done with =
+it
+
+the catch, of course, is that the Xenomai Posix skin is available on, =
+well, Xenomai only, which leaves out the RTAI and vanilla kernels cases, =
+and any other flavor downstream
+
+reading up on ksrc/skins/posix/shm.c it occurs to me it isnt exactly a =
+copy & paste job getting that to run without the Xenomai environment
+
+so I'm really just asking so I dont write off an option prematurely... =
+this is whacky, right?
+
+- Michael
+
+
+Am 11.04.2013 um 21:28 schrieb Gilles Chanteperdrix =
+<gilles.chanteperdrix@xenomai.org>:
+
+> Of course, this is where the down-side is, you will have to maintain
+> your little kernel module with kernel version changes.
+..
 >=20
-> Hi Stephan, Paul,
->=20
-> we have a problem with the patches for Raspberry and BeagleBone: they
-> are based on the 3.2.21 patch, which we know is broken. So, we can not
-> really ship the next version of Xenomai with these patches.
->=20
-> There are two ways we could keep patches for these machines:
-> - you could send patches for 3.4 or 3.5, or even 3.8
-> - we could backport the fixes to 3.2, but as already discussed on this
-> list, this would cost some time to re-validate the 3.2 patch on all
-> architectures. However, if you do the backport, validate it on your
-> side, I could validate the result on my test boards, and we would
-> release a new version of the patch for 3.2 only for the ARM =
-architecture.
->=20
-> Regards.
 >=20
 > --=20
 >                                                                Gilles.
->=20
-
-Hi Gilles,
-
-there's a 3.8.7 branch available for beagleBone at =
-https://github.com/beagleboard/kernel/tree/3.8.
-
-I can look into updating the beagleBone patch for that repository. Where =
-do I find the latest ipipe patch for 3.8 on ARM?
-
-- Stephan
-
 
 
