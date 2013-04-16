@@ -1,16 +1,12 @@
-Message-ID: <516D0B8A.8010908@web.de>
-Date: Tue, 16 Apr 2013 10:27:54 +0200
-From: Jan Kiszka <jan.kiszka@web.de>
-MIME-Version: 1.0
-References: <E1U2RE9-0007Zc-Em@xenomai.org> <516983AF.2000909@xenomai.org>
-	<516C78FD.1090002@web.de> <516CFC95.4000305@web.de>
-	<516CFE78.1030903@xenomai.org> <516CFEEB.5050704@web.de>
-	<516D0397.5050301@xenomai.org>
-In-Reply-To: <516D0397.5050301@xenomai.org>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] [Xenomai-git] Jan Kiszka : switchtest: Add SSE and
-	AVX check
+Mime-Version: 1.0 (Apple Message framework v1283)
+Content-Type: text/plain; charset=us-ascii
+From: Stephan Kappertz <stephan.kappertz@kabelmail.de>
+In-Reply-To: <516BA4E9.3070201@xenomai.org>
+Date: Tue, 16 Apr 2013 12:26:21 +0200
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <90FBAEE5-D70C-4563-B9DB-776D6E4E7FA9@kabelmail.de>
+References: <516BA4E9.3070201@xenomai.org>
+Subject: Re: [Xenomai] Raspberry and Beaglebone patches
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,35 +16,41 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+Cc: Xenomai <xenomai@xenomai.org>
 
-T24gMjAxMy0wNC0xNiAwOTo1MywgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4gT24gMDQv
-MTYvMjAxMyAwOTozNCBBTSwgSmFuIEtpc3prYSB3cm90ZToKPiAKPj4gT24gMjAxMy0wNC0xNiAw
-OTozMiwgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4+PiBPbiAwNC8xNi8yMDEzIDA5OjI0
-IEFNLCBKYW4gS2lzemthIHdyb3RlOgo+Pj4KPj4+PiBPbiAyMDEzLTA0LTE2IDAwOjAyLCBKYW4g
-S2lzemthIHdyb3RlOgo+Pj4+PiBPbiAyMDEzLTA0LTEzIDE4OjExLCBHaWxsZXMgQ2hhbnRlcGVy
-ZHJpeCB3cm90ZToKPj4+Pj4+IFRoaXMgcm91dGluZSBjYXVzZXMgYSB3YXJuaW5nIGZyb20gZ2Nj
-IGFuZCBsb29rcyBpbmRlZWQgd3Jvbmc6IGlmIHRoZQo+Pj4+Pj4gInZlYyIgdmFyaWFibGUgaXMg
-dXNlZCBhcyBhbiBvdXRwdXQgdmFyaWFibGUgb2YgdGhlIGlubGluZSBhc3NlbWJseSwgaXQKPj4+
-Pj4+IHNob3VsZCBiZSBpbiB0aGUgb3V0cHV0IHNlY3Rpb24gb2YgdGhlIGlubGluZSBhc3NlbWJs
-eSwgbm90IHRoZSBpbnB1dAo+Pj4+Pj4gc2VjdGlvbi4KPj4+Pj4+Cj4+Pj4+Cj4+Pj4+IFllcywg
-c2VlbXMgd3JvbmcuIFdpbGwgdHJ5IHRvIGxvb2sgaW50byBpdCB0aGUgbmV4dCBkYXlzLgo+Pj4+
-Cj4+Pj4gRG9uZSwgeW91IGNhbiBmaW5kIHRoZSBvYnZpb3VzIGZpeCBpbiBteSBmb3ItdXBzdHJl
-YW0gcXVldWUuCj4+Pgo+Pj4KPj4+IEhpIEphbiwKPj4+Cj4+PiB5ZXMgdGhlIGZpeCBpcyBvYnZp
-b3VzLCBob3dldmVyIHRoZSBmYWN0IHRoYXQgbWFjaGluZXMgd2l0aCBBVlggc3VwcG9ydAo+Pj4g
-c3RpbGwgcGFzcyB4ZW5vLXJlZ3Jlc3Npb24tdGVzdCBpcyBub3QsIGhhdmUgeW91IGNoZWNrZWQg
-dGhhdD8KPj4KPj4gSSd2ZSBjaGVja2VkIHRoYXQgdGhlIGJpbmFyeSBvdXRwdXQgaXMgdW5hZmZl
-Y3RlZCwgYXQgbGVhc3QgZm9yIG15Cj4+IGNvbXBpbGVyIGhlcmUuIE1ha2VzIHNlbnNlIGFzIHRo
-ZXJlIGlzIG5vIG90aGVyIHVzZSBmb3IgdGhlIHJlZ2lzdGVycwo+PiBhcm91bmQsIGFuZCB0aGUg
-YXNzZW1ibGVyIGp1c3QgYmxpbmRseSBwdXQgdGhlIGlucHV0IHZhcmlhYmxlcyBpbnRvIHRoZQo+
-PiBkZXN0aW5hdGlvbiBzbG90IG9mIHRoZSBpbnN0cnVjdGlvbnMuCj4gCj4gCj4gTm8sIGl0IGRv
-ZXMgbm90IHJlYWxseSBtYWtlIHNlbnNlOiBhIHBpZWNlIG9mIGFzc2VtYmx5IHdpdGhvdXQgYW55
-IHNpZGUKPiBlZmZlY3RzIGFuZCBhbnkgb3V0cHV0cyBpcyBiYXNpY2FsbHkgdXNlbGVzcywgc28g
-dGhlIGNvbXBpbGVyIGNvdWxkIHZlcnkKPiB3ZWxsIGRlY2lkZSB0byBvcHRpbWl6ZSBpdCBvdXQu
-IEJ1dCBpZiB5b3UgaGF2ZSBjaGVja2VkLCBPSy4KCk1heWJlIGl0J3MgdGhlIHZvbGF0aWxlIGlu
-IHRoZSBpbmxpbmUgYXNzZW1ibHkgdGhhdCBwcmV2ZW50ZWQgaXQuCgpKYW4KCgotLS0tLS0tLS0t
-LS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBz
-Y3J1YmJlZC4uLgpOYW1lOiBzaWduYXR1cmUuYXNjClR5cGU6IGFwcGxpY2F0aW9uL3BncC1zaWdu
-YXR1cmUKU2l6ZTogMjYzIGJ5dGVzCkRlc2M6IE9wZW5QR1AgZGlnaXRhbCBzaWduYXR1cmUKVVJM
-OiA8aHR0cDovL3d3dy54ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8y
-MDEzMDQxNi80MWJhMTJmYS9hdHRhY2htZW50LnBncD4K
+Am 15.04.2013 um 08:57 schrieb Gilles Chanteperdrix:
+
+>=20
+> Hi Stephan, Paul,
+>=20
+> we have a problem with the patches for Raspberry and BeagleBone: they
+> are based on the 3.2.21 patch, which we know is broken. So, we can not
+> really ship the next version of Xenomai with these patches.
+>=20
+> There are two ways we could keep patches for these machines:
+> - you could send patches for 3.4 or 3.5, or even 3.8
+> - we could backport the fixes to 3.2, but as already discussed on this
+> list, this would cost some time to re-validate the 3.2 patch on all
+> architectures. However, if you do the backport, validate it on your
+> side, I could validate the result on my test boards, and we would
+> release a new version of the patch for 3.2 only for the ARM =
+architecture.
+>=20
+> Regards.
+>=20
+> --=20
+>                                                                Gilles.
+>=20
+
+Hi Gilles,
+
+there's a 3.8.7 branch available for beagleBone at =
+https://github.com/beagleboard/kernel/tree/3.8.
+
+I can look into updating the beagleBone patch for that repository. Where =
+do I find the latest ipipe patch for 3.8 on ARM?
+
+- Stephan
+
+
+
