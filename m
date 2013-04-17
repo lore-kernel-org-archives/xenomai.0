@@ -1,13 +1,15 @@
 MIME-Version: 1.0
-In-Reply-To: <5164826E.2000808@xenomai.org>
-References: <CAPRPZsBh=5TkR93kiQR8yg0ABfJZtwJ_piBQKAOznEWMppgCyw@mail.gmail.com>
-	<5164826E.2000808@xenomai.org>
-Date: Wed, 17 Apr 2013 13:44:47 +0200
-Message-ID: <CAPRPZsD-FhrVrKW7Kqhqaaac4rxcq+vKL_37PZBD2Ay5BRZ50w@mail.gmail.com>
-From: Jeroen Van den Keybus <jeroen.vandenkeybus@gmail.com>
+In-Reply-To: <516E336C.1060509@xenomai.org>
+References: <CAD1EtognG+9J_Bbo3x6AsBCJ4eU4SLrXQz=wDvJtFw0vCSZ8NQ@mail.gmail.com>
+	<516BA7C4.1050403@grandegger.com>
+	<CADVgf9nD4Qkaz54ba1PuKx0h1WkSkhPYQM9C0RU2LkE7aE96nQ@mail.gmail.com>
+	<516E336C.1060509@xenomai.org>
+Date: Wed, 17 Apr 2013 09:04:08 -0400
+Message-ID: <CADVgf9=CJ0MQEpsub3g=bDZvxk3U3G1tDDvjvFm1jZRmke35fg@mail.gmail.com>
+From: Matthew Fornero <mfornero.lists@gmail.com>
 Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] SMI handling on x86
+Subject: Re: [Xenomai] patch to src/utils/can/rtcansend.c to support data
+ from a file
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,75 +19,16 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+Cc: "Daniel M. Drucker, Ph.D." <dmd@interactive-motion.com>, xenomai@xenomai.org
 
-Gilles,
+On Wed, Apr 17, 2013 at 1:30 AM, Gilles Chanteperdrix
+<gilles.chanteperdrix@xenomai.org> wrote:
+> Maybe you could make it a separate test?
 
-Thanks for responding. I had also checked what you describe. Unfortunately
-it is the ACPI interrupt that causes the delay and is also responsible for
-keeping the motherboard powered.
+Yep-- we certainly could (and have in the past). Just wanted to
+provide some feedback that other users (my group) of the software
+would find this feature useful, as we often reach for the most common
+tool when turning on / testing a new system.
 
-It's not the first time I hit the SMI induced latency problem, but it is
-the first board that goes as far as to actually reset itself.
+-Matt
 
-Jeroen.
-
-
-
-2013/4/9 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-
-> On 03/13/2013 08:43 PM, Jeroen Van den Keybus wrote:
->
-> > Hi,
-> >
-> >
-> > We have configured Linux 3.5.7 / Xenomai 2.6.2.1 on an MSI-7514 mainboa=
-rd
-> > with a Core 2 Duo CPU.
-> >
-> > This configuration suffers from excessive worst-case latencies during t=
-he
-> > 'latency' test (on average: 2.6 =B5s, worst-case around 1900 =B5s, arou=
-nd 10
-> > overruns per second). I believe these overruns are due to the CPUs
-> entering
-> > SM mode (SMI). As soon as the ACPI BIOS SMI is disabled (when
-> > xeno_nucleus/native are loaded as a module), the computer shuts down in=
- 5
-> > secs. or so. Presumably some power supply watchdog on the mainboard isn=
-'t
-> > triggered.
-> >
-> > - Has someone also observed this behaviour and maybe solved it in some
-> way ?
-> > - I looked around in the Intel manuals and I don't think it's possible =
-to
-> > have only 1 CPU handle these SMIs. Is that correct ? If it were possibl=
-e,
-> > we could run RT tasks on the other one, obviously, but currently latenc=
-y
-> > shows overruns on both CPUs.
-> > - Would it somehow be possible/sensible to leave the SMI disabled and
-> > generically call the SMI handler directly from within (a task in) the O=
-S
-> ?
-> > There's probably going to be issues, the least of which would be proper
-> > handling of the RSM instruction outside SM mode. But still...
->
->
-> Hi,
->
-> I see this post has not received an answer after a long time. What can
-> be done for sure is only disabling some sources of SMI, the SMI
-> workaround module tries to do that, but probably has not a knob for
-> every possible SMI source. So, what you should do is get the datasheet
-> for the precise Intel ICH you own, and try and find all the SMI sources.
-> Then try and find which one causes the latency issues, with the hope
-> that it is not also the one needed to avoid the reboot.
->
-> Regards.
->
-> --
->                                                                 Gilles.
->
->
