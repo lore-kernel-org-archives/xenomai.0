@@ -1,19 +1,15 @@
-Message-ID: <516FA077.20400@grandegger.com>
-Date: Thu, 18 Apr 2013 09:27:51 +0200
-From: Wolfgang Grandegger <wg@grandegger.com>
+Message-ID: <516FA9E6.9010800@xenomai.org>
+Date: Thu, 18 Apr 2013 10:08:06 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CAD1EtognG+9J_Bbo3x6AsBCJ4eU4SLrXQz=wDvJtFw0vCSZ8NQ@mail.gmail.com>
-	<516BA7C4.1050403@grandegger.com>
-	<CADVgf9nD4Qkaz54ba1PuKx0h1WkSkhPYQM9C0RU2LkE7aE96nQ@mail.gmail.com>
-	<516E336C.1060509@xenomai.org>
-	<CADVgf9=CJ0MQEpsub3g=bDZvxk3U3G1tDDvjvFm1jZRmke35fg@mail.gmail.com>
-	<CAD1EtoiQm8rZtkDTjZK8Tq3xeDKHULjc7V6Stg=bZ9XpEp5o7w@mail.gmail.com>
-	<516F9E87.6020002@grandegger.com>
-In-Reply-To: <516F9E87.6020002@grandegger.com>
-Content-Type: text/plain; charset=ISO-8859-1
+References: <CAG5EsAGn8oNQkH-OkEpS6NHjW7y1vZfp5HjV3+FTGi-eh667pg@mail.gmail.com>
+	<00DF7AD9-868B-4AFC-B385-8C47F8522E4B@mah.priv.at>
+	<516F1510.3030608@xenomai.org>
+	<CAG5EsAHjpA0JTKHGVsq2Egbq+r3Hx=xV_U3bp+zWxHa0dUTrzg@mail.gmail.com>
+In-Reply-To: <CAG5EsAHjpA0JTKHGVsq2Egbq+r3Hx=xV_U3bp+zWxHa0dUTrzg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] patch to src/utils/can/rtcansend.c to support data
- from a file
+Subject: Re: [Xenomai] rtdm and rasberry-pi GPIO
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,27 +18,18 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Daniel M. Drucker, Ph.D." <dmd@interactive-motion.com>
+To: Ross Williamson <rwilliamson@astro.caltech.edu>
 Cc: xenomai@xenomai.org
 
-On 04/18/2013 09:19 AM, Wolfgang Grandegger wrote:
-> On 04/17/2013 03:07 PM, Daniel M. Drucker, Ph.D. wrote:
->> Gilles et al.,
->> Would you be willing to merge a separate 'rtcanmultisend' tool perhaps?
-> 
-> Well, I do still not see the real benefit of reading just the data from
-> a file. Why is a simply shell script not good enough for that purpose?
-> What are you doing whith that data sent to the bus?
-> 
-> Anyway, the input file should provide the id, rtr and ext, apart from
-> the data, at least.
+On 04/18/2013 01:12 AM, Ross Williamson wrote:
 
-Thinking more about it, a specialized rtcanmultisend.c in
-"examples/rtdm/profiles/can" would be nice. Please also provide an
-example input file.
+> So I managed to get it working in kernel space - I'm not entirely sure what
+> I did to fix it - I did a full read/modify/write on the GPIO registers
 
-Thanks,
 
-Wolfgang.
+That is not a good idea either. You should use the gpiolib interface.
 
+
+-- 
+                                                                Gilles.
 
