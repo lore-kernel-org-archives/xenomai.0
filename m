@@ -1,12 +1,12 @@
-Message-ID: <516FDC3C.70503@xenomai.org>
-Date: Thu, 18 Apr 2013 13:42:52 +0200
+Message-ID: <516FDC81.7000809@xenomai.org>
+Date: Thu, 18 Apr 2013 13:44:01 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CAFByoKwn0==mQT_q9jnsWvbbTNNJ1cSaH0KaYN+Ryw34v-CZOQ@mail.gmail.com>
-In-Reply-To: <CAFByoKwn0==mQT_q9jnsWvbbTNNJ1cSaH0KaYN+Ryw34v-CZOQ@mail.gmail.com>
+References: <A46EF8CF1BBB8E4B8A27B73E177C4664EDE4E5@MAIL-SINTERS-01.sinters-int.fr>
+In-Reply-To: <A46EF8CF1BBB8E4B8A27B73E177C4664EDE4E5@MAIL-SINTERS-01.sinters-int.fr>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] latency test
+Subject: Re: [Xenomai] xeno-test problem
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,37 +15,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: kidd <gong.kidd@gmail.com>
-Cc: xenomai@xenomai.org
+To: Younes CHALABI <y.chalabi@sinters.fr>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 04/18/2013 10:48 AM, kidd wrote:
+On 04/18/2013 12:12 PM, Younes CHALABI wrote:
 
-> Hi
->     I post Adeos+xenomai to S3C6410 SOC with Linux-2.6.35.9, and the Linux
-> kernel and Xenomai are ok when system boot(according the printed
-> information when system boot)
->    when I input "xeno latency", the information in screen is
+> Hi,
 > 
->    == Sampling period: 1000 us
->    == Test mode: periodic user-mode task
->    == All results in microseconds
->    Xenomai: registered exported object dispsem-832 (semaphores)
->    warming up...
-> 
-> 
-> Then the system is hang (ctrl + C does not work). Through print debug
-> information in code ,I guess the problem is in "display(in
-> latency.c)->rt_sem_p"
-> 
-> Can somebody help me to analyse the problem? Thanks
+> I have installed [ Xenomai-2.6.0 ] with [ adeos-ipipe-2.6.29-arm-1.13-05.patch ] on the APF27-dev board with the following parameters :
 
 
-If you are porting xenomai to S3C6410, you should have a look at the
-I-pipe porting guide:
-http://xenomai.org/index.php/I-pipe-core:ArmPorting
+Xenomai 2.6.0 is outdated, the latest release in the same branch is
+xenomai 2.6.2.1. Please check the latest version in case the issue you
+have has already been resolved.
 
-the fact that the display task waits for the semaphore is probably not
-the problem at all.
+> 
+> Younes.
+> 
+> 
+> 
+
+
 
 -- 
                                                                 Gilles.
