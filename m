@@ -1,14 +1,11 @@
 From: Younes CHALABI <y.chalabi@sinters.fr>
-Date: Tue, 9 Apr 2013 07:03:37 +0000
-Message-ID: <A46EF8CF1BBB8E4B8A27B73E177C4664EDD826@MAIL-SINTERS-01.sinters-int.fr>
-References: <A46EF8CF1BBB8E4B8A27B73E177C4664EDD7CD@MAIL-SINTERS-01.sinters-int.fr>,
-	<516310E1.7080809@xenomai.org>
-In-Reply-To: <516310E1.7080809@xenomai.org>
+Date: Thu, 18 Apr 2013 10:12:18 +0000
+Message-ID: <A46EF8CF1BBB8E4B8A27B73E177C4664EDE4E5@MAIL-SINTERS-01.sinters-int.fr>
 Content-Language: fr-FR
-Content-Type: text/plain; charset="iso-8859-1"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Subject: [Xenomai] RE :  xenomai on Sabre Lite i.MX6
+Subject: [Xenomai] xeno-test problem
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,56 +17,41 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi Gilles,
-
-Thank you for your answer.
-
-At the moment I wanted just to know if the port was done on this board.
-
-I will receive the board in few weeks, so I will probabely turn to you, for=
- deploying and using Xenomai.
-
-Best regards.
-
-Younes
-________________________________________
-De : Gilles Chanteperdrix [gilles.chanteperdrix@xenomai.org]
-Date d'envoi : lundi 8 avril 2013 20:48
-=C0 : Younes CHALABI
-Cc : xenomai@xenomai.org
-Objet : Re: [Xenomai] xenomai on Sabre Lite i.MX6
-
-On 04/08/2013 02:17 PM, Younes CHALABI wrote:
-
-> Hi,
->
-> Is there anybody who tried to install Xenomai on the i.MX6 Sabre Lite Boa=
-rd ?
-
-
 Hi,
 
-as a matter of fact, the Xenomai port has been done on this board, so
-the answer is yes. Now, if you ask the question because you have some
-difficulties, you would probably be better telling us exactly what
-problem you have with what version of each components (kernel, I-pipe
-patch, and xenomai), preferably providing logs, configuration files, and
-any other item suitable to help us debug the issue you have.
+I have installed [ Xenomai-2.6.0 ] with [ adeos-ipipe-2.6.29-arm-1.13-05.pa=
+tch ] on the APF27-dev board with the following parameters :
 
-Regards.
+- Buildroot : 2012.02
+- gcc : 4.4.6
+- libc : uClibc 0.9.33
+- busybox : 1.19.4
+- U-Boot : (2012.04)
+- Linux : 2.6.29.6
 
->
-> Wainting your answers.
->
-> Younes
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> http://www.xenomai.org/mailman/listinfo/xenomai
->
+Everything goes OK, but when doing the command : [ xeno-test ] I have the f=
+ollowing error message :
+
+___________________________________________________________________________=
+____________________________________________________________
+# xeno-test
+Started child 493: /bin/sh /usr/bin/xeno-test-run-wrapper /usr/bin/xeno-tes=
+t
++ echo 0
+sh: write error: Bad address
++ :
++ /usr/bin/arith
+Xenomai: incompatible feature set
+(userland requires "kuser_tsc fastsynch nosmp", kernel provides "sa1100 eab=
+i fastsynch nosmp", missing=3D"kuser_tsc").
+___________________________________________________________________________=
+____________________________________________________________
+
+I don't know what is the kuser-tsc !!!
+
+If someone has an idea, it will be welcome :)
+
+Younes.
 
 
-
---
-                                                                Gilles.
 
