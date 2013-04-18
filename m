@@ -1,13 +1,18 @@
-Message-ID: <516F89FD.6070903@gmail.com>
-Date: Thu, 18 Apr 2013 07:51:57 +0200
-From: Manuel Huber <manuel.h87@gmail.com>
+Message-ID: <516F9E87.6020002@grandegger.com>
+Date: Thu, 18 Apr 2013 09:19:35 +0200
+From: Wolfgang Grandegger <wg@grandegger.com>
 MIME-Version: 1.0
-References: <5148C728.6000101@gmail.com> <5148CEA9.7060700@xenomai.org>
-	<51698AE9.7000603@xenomai.org>
-In-Reply-To: <51698AE9.7000603@xenomai.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+References: <CAD1EtognG+9J_Bbo3x6AsBCJ4eU4SLrXQz=wDvJtFw0vCSZ8NQ@mail.gmail.com>
+	<516BA7C4.1050403@grandegger.com>
+	<CADVgf9nD4Qkaz54ba1PuKx0h1WkSkhPYQM9C0RU2LkE7aE96nQ@mail.gmail.com>
+	<516E336C.1060509@xenomai.org>
+	<CADVgf9=CJ0MQEpsub3g=bDZvxk3U3G1tDDvjvFm1jZRmke35fg@mail.gmail.com>
+	<CAD1EtoiQm8rZtkDTjZK8Tq3xeDKHULjc7V6Stg=bZ9XpEp5o7w@mail.gmail.com>
+In-Reply-To: <CAD1EtoiQm8rZtkDTjZK8Tq3xeDKHULjc7V6Stg=bZ9XpEp5o7w@mail.gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Decrease Latency (below 10 us) on x32 or x32_64?
+Subject: Re: [Xenomai] patch to src/utils/can/rtcansend.c to support data
+ from a file
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,68 +21,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, xenomai@xenomai.org
+To: "Daniel M. Drucker, Ph.D." <dmd@interactive-motion.com>
+Cc: xenomai@xenomai.org
 
-I'm currently not working on the system, but I will continue in a few
-weeks and try the suggested options. I'm thankful for all your help. I
-will definitely test and report back!
+On 04/17/2013 03:07 PM, Daniel M. Drucker, Ph.D. wrote:
+> Gilles et al.,
+> Would you be willing to merge a separate 'rtcanmultisend' tool perhaps?
 
+Well, I do still not see the real benefit of reading just the data from
+a file. Why is a simply shell script not good enough for that purpose?
+What are you doing whith that data sent to the bus?
 
-On 2013-04-13 18:42, Gilles Chanteperdrix wrote:
-> On 03/19/2013 09:46 PM, Gilles Chanteperdrix wrote:
->
->> On 03/19/2013 09:14 PM, Manuel Huber wrote:
->>
->>> Hello!
->>>
->>> We use a AMD FX-61000 CPU together with Xenomai 2.6.2.1 and Kernel
->>> 3.5.7 (thanks to Jan Kiszka) and I was wondering if it's possible to
->>> further decrease the latency of the system. I currently can get more
->>> than 30 us when interacting with the system.
->>>
->>> My first guess was the graphics card + graphics card driver because I
->>> read about such problems and tested another graphics card which caused
->>> a huge amount of extra-latency... I tried to get the real system
->>> latency by booting the system in recovery mode (single) with vga=792
->>> option + setting the nouveau driver on the blacklist... This seems to
->>> work, but I still get roughly the same latencies (>20us) even after
->>> 1hour by using the latency program in interrupt mode (-t 2). Only a
->>> few times the latency grows beyond 10us but still it does... I have
->>> unplugged the usb mouse and keyboard before running the test and
->>> started ten instances of burnK7 with nice -n -20.  I also tried
->>> booting with isolcpus=2,3 and assigned the latency program to cpu 3
->>> (-c 3). This didn't really improve the worst case latency (still the
->>> same setup as above, no gui, single). Is it possible to further
->>> decrease latency (especially worst case latency) by using one cpu just
->>> for real-time tasks? Is there some other way to keep Linux from using
->>> a core?
->>>
->>> The next thing I want to test is using 64bits; It seems rational that
->>> using 32 bits with 16GB ram causes some extra latencies but is it
->>> possible that it causes about 10 us extra? Is there some other option
->>> I can tune? I know that the I-Pipe system isn't trivial but to me,
->>> using interrupts seems pretty low-level and I would expect this to
->>> have minimal latency (and jitter). I don't want to complain, it's just
->>> that my supervisor asked me about the source of the latency and I
->>> can't really explain... After having read just about all papers
->>> about I-Pipe, I still don't have a deep understanding of the system.
->>> Is there a good reference I missed?
->>
->> First, to know where the latency comes from, enable the I-pipe tracer,
->> and run latency with the "-f" option.
->>
->> Now, common ways to reduce latencies are:
->> - optimize the kernel for size
->> - disable high res timers, you can try fiddling with the various preempt
->> settings, this used to have a big impact on code size, but with the
->> "optimize for size" option, they no longer seem to have one.
->> - check what the processor does when idle; if it enters C1 state, try to
->> avoid that with the BIOS settings, or pass "nohlt" on the kernel command
->> line.
->
-> Some more advices after some tests:
-> - try passing "idle=poll" on the kernel command line
-> - disable MTRR
->
+Anyway, the input file should provide the id, rtr and ext, apart from
+the data, at least.
+
+Wolfgang.
 
 
