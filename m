@@ -1,7 +1,5 @@
-Message-ID: <5171A299.60905@grandegger.com>
-Date: Fri, 19 Apr 2013 22:01:29 +0200
-From: Wolfgang Grandegger <wg@grandegger.com>
 MIME-Version: 1.0
+In-Reply-To: <5171A299.60905@grandegger.com>
 References: <CAD1EtognG+9J_Bbo3x6AsBCJ4eU4SLrXQz=wDvJtFw0vCSZ8NQ@mail.gmail.com>
 	<516BA7C4.1050403@grandegger.com>
 	<CADVgf9nD4Qkaz54ba1PuKx0h1WkSkhPYQM9C0RU2LkE7aE96nQ@mail.gmail.com>
@@ -12,9 +10,11 @@ References: <CAD1EtognG+9J_Bbo3x6AsBCJ4eU4SLrXQz=wDvJtFw0vCSZ8NQ@mail.gmail.com>
 	<CAD1EtoiZ05S5HXEvdq2+Sg6-1XbxHwMUpcVMrpYA6gv0JgLqJw@mail.gmail.com>
 	<5171069C.3020909@grandegger.com>
 	<CAMsuG6pte10W8AbABnwAzLnVKF6kTRv+M5m2o=JE6z6oT_Qc4g@mail.gmail.com>
-In-Reply-To: <CAMsuG6pte10W8AbABnwAzLnVKF6kTRv+M5m2o=JE6z6oT_Qc4g@mail.gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
+	<5171A299.60905@grandegger.com>
+Date: Fri, 19 Apr 2013 16:09:34 -0400
+Message-ID: <CAD1Etoi3iFSyWA_z4ex9T9=mbtHQyCkd0zR4Yq3Lf6e1NCu+0g@mail.gmail.com>
+From: "Daniel M. Drucker, Ph.D." <dmd@interactive-motion.com>
+Content-Type: text/plain; charset=UTF-8
 Subject: Re: [Xenomai] patch to src/utils/can/rtcansend.c to support data
  from a file
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -25,26 +25,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Carles Lopez <carles.lopez@pal-robotics.com>
-Cc: "Daniel M. Drucker, Ph.D." <dmd@interactive-motion.com>, xenomai@xenomai.org
+To: Wolfgang Grandegger <wg@grandegger.com>
+Cc: xenomai@xenomai.org
 
-On 04/19/2013 03:58 PM, Carles Lopez wrote:
-> Hi,
-> 
-> as Daniel we are here also interested in dumping CAN frames to our
-> devices and extending/adding this tool to Xenomai would be great.
-> 
-> Sometimes in our company it's really useful to save the rtcanrecv
-> output and, sometime later, send it in order to reproduce CAN traffic.
-> 
-> do you guys think that it's interesting that rtcansendmulti supports
-> same syntax than rtcanrecv output?
-> To do for instance:
-> rtcanrecv | rtcansendmulti -
+>> do you guys think that it's interesting that rtcansendmulti supports
+>> same syntax than rtcanrecv output?
+>> To do for instance:
+>> rtcanrecv | rtcansendmulti -
+>
+> Good idea. Sounds useful.
 
-Good idea. Sounds useful.
+I'm not sure how I'd reconcile that idea with:
 
-Wolfgang.
+> I would prefer removing -i, -r, -e, etc. and add it as data:
+>  s 0x601 0x40 0x41 0x60 0x00   (standard frame)
+>  e 0x12345678 0x40 0x41        (extended frame)
+>  sr 0x601                      (standard rtr frame)
+>  er 0x3456778                  (extended rtr frame)
 
+I liked the format I came up with because it explicitly does NOT
+define any new syntax and does not require any kind of parsing beyond
+what rtcansend is already doing with getopt.
 
+Is there a good reason to define a new syntax? Using the syntax that
+is the output of rtcanrecv would mean we couldn't have things like
+per-message delays.
+
+Daniel
 
