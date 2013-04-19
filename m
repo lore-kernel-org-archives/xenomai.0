@@ -1,16 +1,16 @@
 From: Paul <paul_c@tuxcnc.org>
-Date: Fri, 19 Apr 2013 10:37:21 +0100
-References: <mailman.1.1365156001.11055.xenomai@xenomai.org>
-	<201304181124.44673.paul_c@tuxcnc.org>
-	<5170502A.8020502@xenomai.org>
-In-Reply-To: <5170502A.8020502@xenomai.org>
+Date: Fri, 19 Apr 2013 10:44:59 +0100
+References: <CAG5EsAGn8oNQkH-OkEpS6NHjW7y1vZfp5HjV3+FTGi-eh667pg@mail.gmail.com>
+	<CAG5EsAEfX-sseaJE6u+1mhDk_MqmEr-m4Xx8sx2_c_redLNWkQ@mail.gmail.com>
+	<5170432B.3030108@xenomai.org>
+In-Reply-To: <5170432B.3030108@xenomai.org>
 MIME-Version: 1.0
 Content-Type: text/plain;
   charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Content-Disposition: inline
-Message-Id: <201304191037.21795.paul_c@tuxcnc.org>
-Subject: Re: [Xenomai] interested to try patch for ARM kernel 3.8.2
+Message-Id: <201304191044.59794.paul_c@tuxcnc.org>
+Subject: Re: [Xenomai] rtdm and rasberry-pi GPIO
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,40 +19,22 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: xenomai <xenomai@xenomai.org>
 
 On Thursday 18 April 2013, Gilles Chanteperdrix wrote:
-> On 04/18/2013 12:24 PM, Paul wrote:
-> > On Wednesday 17 April 2013, Gilles Chanteperdrix wrote:
-> >> On 04/17/2013 10:53 PM, George Pontis wrote:
-> >>> In an earlier post it looked like there was an early patch for
-> >>> ARM kernel 3.8.2 in the next branch at
-> >>> git://git.xenomai.org/ipipe-gch.git. I was not able to clone it.
-> >>> Has it moved, or am I not using the tool properly ?
-> >>
-> >> The branch you want is for-core-3.8
-> >>
-> >> I have removed the next branch, as it was indeed pointing to
-> >> references which no longer exist.
-> >
-> > ------------
-> > git clone git://git.xenomai.org/ipipe-gch.git
-> > Cloning into ipipe-gch...
-> > [...]
-> > Resolving deltas: 100% (2595985/2595985), done.
-> > warning: remote HEAD refers to nonexistent ref, unable to checkout.
-> > ------------
-> >
-> > Also having problems here trying to clone or update from ipipe-gch.
-> > The above warning would seem to indicate HEAD is currently a
-> > dangling ref.
+> On 04/18/2013 06:38 PM, Ross Williamson wrote:
+> > Is this a bad idea from a RTlinux point of view or a style point of
+> > view?
 >
-> This should be fixed now. Note that I do not use the master branch.
+> It is a bad idea from a very general point of view. gpiolib does two
+> things: - it ensures that no two drivers try and request the same
+> gpio - if toggling a gpio state implies a read-modify-write
+> operation, it protects it with a spinlock, so that no two drivers can
+> interrupt each other and cause issues in the operation.
 
-Thanks. Cloning now works without a hitch. I'll make a start on the 
-Raspberry patch this evening.
+ - Code portability. As the underlying hardware evolves or you switch to 
+a different board, your code requires little, if any modification.
 
-
-Regards, Paul.
-
+> By accessing the registers directly, you do not get these
+> protections.
 
