@@ -1,14 +1,11 @@
-From: Paul <paul_c@tuxcnc.org>
-Date: Fri, 19 Apr 2013 15:19:55 +0100
-References: <bbc6252ba3dfdbef5f91d311e740e966@apollo.open-resource.org>
-In-Reply-To: <bbc6252ba3dfdbef5f91d311e740e966@apollo.open-resource.org>
+Message-ID: <51717A5A.9050109@siemens.com>
+Date: Fri, 19 Apr 2013 19:09:46 +0200
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-Content-Type: text/plain;
-  charset="us-ascii"
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Message-Id: <201304191519.55313.paul_c@tuxcnc.org>
-Subject: Re: [Xenomai] Xenomai, Raspberry Pi, 3.5.7 kernel
+Subject: [Xenomai] [PATCH] ipipe: Retry clocksource validation in watchdog
+ handler before failing
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,87 +14,65 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: chrono <chrono@open-resource.org>
-Cc: xenomai@xenomai.org
+To: Xenomai <xenomai@xenomai.org>
 
-On Friday 19 April 2013, chrono wrote:
-> Hi everyone, Paul
+The realtime domain may interrupt the clocksource watchdog right between
+its reading of the tested clock and the reference value. We do not want
+to make this sequence atomic as some clocksources may have high access
+latencies, but we also do not want to simply drop the watchdog because
+broken hardware could otherwise remain unnoticed.
 
-> I was looking for a more recent xenomai + pi setup than 3.2.27 and
-> found
-> your post on the ML which encouraged me to try to compile a more
-> recent PI Kernel with Xenomai in order to play with LinuxCNC on the
-> PI.
+The solution is to read the watchdog clocksource twice, before and after
+the tested clock, and retry this until the watchdog clock does not
+progress excessively between the measurement points.
 
-You really don't want to go down that route... Accept that the Raspberry 
-is an educational tool and teaching aid.
+The watchdog is generic, but it currently only monitors x86's TSC.
 
-> Test 1:
->
-> 1. Fetched the RPI Kernel sources:
-> git clone git://github.com/raspberrypi/linux.git linux-rpi
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
 
-Wrong. No one has suggested using the modified sources from the 
-RaspberryPi repository.
+For review before queuing it up.
 
-> 2. Tried to get back to the commit you suggested (871eef1b84)
-> 3. Download xenomai-2.6.1 and unpack
-> 4. Downloaded Paul's combined patch
-> (http://www.xenomai.org/pipermail/xenomai/attachments/20130216/4f487e
->30/attachment.patch)
->
-> xenomai-2.6.1/scripts/prepare-kernel.sh  --arch=arm
-> --adeos=/usr/src/xenomai-2.6.1/ksrc/arch/arm/patches/ipipe-core-3.5.7
->-arm.patch --linux=/usr/src/linux-rpi
->
-> Almost all hunks failed to apply and it ends with:
->
-> prepare-kernel.sh: Unable to patch kernel 3.6.11 with
-> ipipe-core-3.5.7-arm.patch.
+ kernel/time/clocksource.c |   14 ++++++++++++++
+ 1 files changed, 14 insertions(+), 0 deletions(-)
 
-Entirely predictable - You are trying to patch one (modified) kernel 
-version with a patch intended for a completely different one.
-
-
-> Test 2:
-> 1. Reset kernel to suggested commit
-> git reset --hard 871eef1b84
-> 2. Download xenomai-2.6.2.1 and unpack
-> 3. Trying to patch with the bundled ipipe arm patch
-> xenomai-2.6.2.1/scripts/prepare-kernel.sh  --arch=arm
-> --adeos=/usr/src/xenomai-2.6.2.1/ksrc/arch/arm/patches/ipipe-core-3.5
->.7-arm-3.patch --linux=/usr/src/linux-rpi
-[...]
-> prepare-kernel.sh: Unable to patch kernel 3.6.11 with
-> ipipe-core-3.5.7-arm-3.patch.
-
-See above. 
-
-> Paul, you mentioned: "This assumes the appropriate arm patch has
-> already
-> been applied to a virgin stable 3.5.7 tree as per standard
-> instructions."
-
-Download an unpatched kernel source tarball from www.kernel.org, 
-specifically the 3.5.7, unpack, run the prepare-kernel.sh script, and 
-THEN apply the Raspberry Pi patch that accompanies the xenomai-2.6.2.1 
-sources.
-
-> What am I missing here?
-
-No comment.
-
-> Thanks a lot for all your time and efforts to put Xenomai/LinuxCNC to
-> the PI :)
-
-My interest lies purely with Xenomai and real applications - A patch for 
-3.8.y should be ready in a day or three.
-
-
-Regards, Paul.
-
-
-
-
-
+diff --git a/kernel/time/clocksource.c b/kernel/time/clocksource.c
+index 0e71d18..84a290f 100644
+--- a/kernel/time/clocksource.c
++++ b/kernel/time/clocksource.c
+@@ -250,6 +250,9 @@ static void clocksource_watchdog(unsigned long data)
+ 	cycle_t csnow, wdnow;
+ 	int64_t wd_nsec, cs_nsec;
+ 	int next_cpu, reset_pending;
++#ifdef CONFIG_IPIPE
++	cycle_t wdref;
++#endif
+ 
+ 	spin_lock(&watchdog_lock);
+ 	if (!watchdog_running)
+@@ -266,11 +269,22 @@ static void clocksource_watchdog(unsigned long data)
+ 			continue;
+ 		}
+ 
++#ifdef CONFIG_IPIPE
++retry:
++#endif
+ 		local_irq_disable();
++		wdref = watchdog->read(watchdog);
+ 		csnow = cs->read(cs);
+ 		wdnow = watchdog->read(watchdog);
+ 		local_irq_enable();
+ 
++#ifdef CONFIG_IPIPE
++		wd_nsec = clocksource_cyc2ns((wdnow - wdref) & watchdog->mask,
++					     watchdog->mult, watchdog->shift);
++		if (wd_nsec > WATCHDOG_THRESHOLD)
++			goto retry;
++#endif
++
+ 		/* Clocksource initialized ? */
+ 		if (!(cs->flags & CLOCK_SOURCE_WATCHDOG) ||
+ 		    atomic_read(&watchdog_reset_pending)) {
+-- 
+1.7.3.4
 
