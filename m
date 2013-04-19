@@ -1,13 +1,12 @@
-Message-ID: <5171950C.1010900@xenomai.org>
-Date: Fri, 19 Apr 2013 21:03:40 +0200
+Message-ID: <517195B6.8020209@xenomai.org>
+Date: Fri, 19 Apr 2013 21:06:30 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CAG5EsAGn8oNQkH-OkEpS6NHjW7y1vZfp5HjV3+FTGi-eh667pg@mail.gmail.com>	<CAG5EsAEfX-sseaJE6u+1mhDk_MqmEr-m4Xx8sx2_c_redLNWkQ@mail.gmail.com>	<5170432B.3030108@xenomai.org>
-	<201304191044.59794.paul_c@tuxcnc.org>
-In-Reply-To: <201304191044.59794.paul_c@tuxcnc.org>
+References: <201304191346.38739.leo@alaxarxa.net>
+In-Reply-To: <201304191346.38739.leo@alaxarxa.net>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] rtdm and rasberry-pi GPIO
+Subject: Re: [Xenomai] Default options in the debian package
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,28 +15,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Paul <paul_c@tuxcnc.org>
+To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
 Cc: xenomai <xenomai@xenomai.org>
 
-On 04/19/2013 11:44 AM, Paul wrote:
+On 04/19/2013 01:46 PM, Leopold Palomo-Avellaneda wrote:
 
-> On Thursday 18 April 2013, Gilles Chanteperdrix wrote:
->> On 04/18/2013 06:38 PM, Ross Williamson wrote:
->>> Is this a bad idea from a RTlinux point of view or a style point of
->>> view?
->>
->> It is a bad idea from a very general point of view. gpiolib does two
->> things: - it ensures that no two drivers try and request the same
->> gpio - if toggling a gpio state implies a read-modify-write
->> operation, it protects it with a spinlock, so that no two drivers can
->> interrupt each other and cause issues in the operation.
-> 
->  - Code portability. As the underlying hardware evolves or you switch to 
-> a different board, your code requires little, if any modification.
+> [1] 
+> http://lists.mech.kuleuven.be/pipermail/orocos-users/2013-April/006986.html
 
 
-Yes, and that too. And that my even be the most important reason if the
-code being developed has to be maintained.
+Hi,
+
+that link does not tell us why you need this option. And that would be
+the most important information.
+
+If what you need to disable is TLS, then configuring xenomai with
+--without-__thread is sufficient
+
+If what you need is to avoid the main thread shadowing, we are not going
+to configure xenomai with --enable-dlopen-skins as it breaks otherwise
+conformant applications, but we can add an environment variable like
+XENO_PTHREAD_NO_AUTO_SHADOW to allow supporting both situations.
 
 -- 
                                                                 Gilles.
