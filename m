@@ -1,14 +1,12 @@
-Message-ID: <5163C6DC.1070507@xenomai.org>
-Date: Tue, 09 Apr 2013 09:44:28 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <51713D3A.7050205@siemens.com>
+Date: Fri, 19 Apr 2013 14:48:58 +0200
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-References: <A46EF8CF1BBB8E4B8A27B73E177C4664EDD7CD@MAIL-SINTERS-01.sinters-int.fr>,
-	<516310E1.7080809@xenomai.org>
-	<A46EF8CF1BBB8E4B8A27B73E177C4664EDD826@MAIL-SINTERS-01.sinters-int.fr>
-In-Reply-To: <A46EF8CF1BBB8E4B8A27B73E177C4664EDD826@MAIL-SINTERS-01.sinters-int.fr>
-Content-Type: text/plain; charset=UTF-8
+References: <201304191346.38739.leo@alaxarxa.net>
+In-Reply-To: <201304191346.38739.leo@alaxarxa.net>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] RE :  xenomai on Sabre Lite i.MX6
+Subject: Re: [Xenomai] Default options in the debian package
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,25 +15,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Younes CHALABI <y.chalabi@sinters.fr>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
+Cc: xenomai <xenomai@xenomai.org>
 
-On 04/09/2013 09:03 AM, Younes CHALABI wrote:
-
-> Hi Gilles,
+On 2013-04-19 13:46, Leopold Palomo-Avellaneda wrote:
+> Hi,
 > 
-> Thank you for your answer.
 > 
-> At the moment I wanted just to know if the port was done on this
-> board.
+> in the last days we have had a thread in the orocos-list [1] about the 
+> convenience to have activated the option (enable-dlopen-skins) in xenomai to 
+> use it with orocos properly.
 > 
-> I will receive the board in few weeks, so I will probabely turn to
-> you, for deploying and using Xenomai.
+> I don't know exactly what does it means. The configure says:
+> 
+> --enable-dlopen-skins   Disable TLS features and automatic main thread
+>                           mapping by the POSIX skin to allows dlopen'ing
+>                           Xenomai libs. [default=no]
+> 
+> 
+> I would like to know the implications of have activated this option by default 
+> in the debian package (at least) . It could be possible? Implies to many 
+> things?
 
+Well, setting that feature extends the number of use cases for which the
+debian package can be used as-is, namely loading skin libraries or other
+libraries that require a skin lib via dlopen. We depend on this feature
+here, thus carry a local patch against the debian rules, but so far I
+thought that this is far from being a common requirement. Does Orocos
+have a dynamic plugin concept?
 
-I hope you will turn to the mailing list, only when you do not find your
-answers in the documentation...
+The downside of make the feature default is a micro-performance
+degradation (likely not an issue) and the lacking auto-shadowing of the
+main thread when using POSIX skins. The latter is a behavioral change
+that existing applications may depend and, thus, notice when updating to
+the next Xenomai package version.
+
+Jan
 
 -- 
-                                                                Gilles.
+Siemens AG, Corporate Technology, CT RTC ITP SDP-DE
+Corporate Competence Center Embedded Linux
 
