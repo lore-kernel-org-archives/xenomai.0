@@ -1,17 +1,16 @@
-Message-ID: <5163C990.8060506@wanadoo.fr>
-Date: Tue, 09 Apr 2013 09:56:00 +0200
-From: Thierry Bultel <thierry.bultel@wanadoo.fr>
+From: Paul <paul_c@tuxcnc.org>
+Date: Sun, 21 Apr 2013 00:44:57 +0100
+References: <516BA4E9.3070201@xenomai.org>
+	<201304151152.09727.paul_c@tuxcnc.org>
+	<516C5922.8000708@xenomai.org>
+In-Reply-To: <516C5922.8000708@xenomai.org>
 MIME-Version: 1.0
-References: <51613CE2.6010900@wanadoo.fr>
-	<51618B70.7070809@xenomai.org>	<5161CE7B.1040404@wanadoo.fr>
-	<5162711E.7080505@xenomai.org> <51627A31.80801@xenomai.org>
-	<516316C0.7000400@wanadoo.fr> <51632EC4.7000108@xenomai.org>
-	<5163B4E6.6040507@wanadoo.fr> <5163C4E7.8080007@xenomai.org>
-In-Reply-To: <5163C4E7.8080007@xenomai.org>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] Kernel 3.5.7 not booting in qemu for vexpress-a9 with
- xenomai-2.6.2.1
+Content-Type: text/plain;
+  charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Message-Id: <201304210044.57931.paul_c@tuxcnc.org>
+Subject: Re: [Xenomai] Raspberry and Beaglebone patches
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,112 +19,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: Xenomai <xenomai@xenomai.org>
 
-Le 09/04/2013 09:36, Gilles Chanteperdrix a écrit :
-> On 04/09/2013 08:27 AM, Thierry Bultel wrote:
+On Monday 15 April 2013, Gilles Chanteperdrix wrote:
+> On 04/15/2013 12:52 PM, Paul wrote:
+> > Hi Gilles
+> >
+> > On Monday 15 April 2013, Gilles Chanteperdrix wrote:
+> >> we have a problem with the patches for Raspberry and BeagleBone:
+> >> they are based on the 3.2.21 patch, which we know is broken. So,
+> >> we can not really ship the next version of Xenomai with these
+> >> patches.
+> >
+> > The original Raspberry patch from Ian-cim consisted of adding ipipe
+> > timer support to the BSP sources in 3.2.21. My efforts concentrated
+> > on backporting some of the Raspberry specific support from their
+> > 3.6.y tree to Xenomai 3.5.7 - Any breakages in 3.2.xx shouldn't be
+> > an issue.
+> >
+> >> There are two ways we could keep patches for these machines:
+> >> - you could send patches for 3.4 or 3.5, or even 3.8
+> >
+> > The Raspberry patch is already at 3.5.7, not sure what state the
+> > raspberry-3.8.y tree is in at the moment. Time allowing, I'll have
+> > a look at a 3.8 patch over the next few days.
+> >
+> >> - we could backport the fixes to 3.2, but as already discussed on
+> >> this list, this would cost some time to re-validate the 3.2 patch
+> >> on all architectures. However, if you do the backport, validate it
+> >> on your side, I could validate the result on my test boards, and
+> >> we would release a new version of the patch for 3.2 only for the
+> >> ARM architecture.
+> >
+> > I feel my time would be better spent on updating to 3.8, so I'll
+> > give the backport a miss for now ;-)
 >
->> Le 08/04/2013 22:55, Gilles Chanteperdrix a écrit :
->>> On 04/08/2013 09:13 PM, Thierry Bultel wrote:
->>>
->>>> Le 08/04/2013 10:05, Gilles Chanteperdrix a écrit :
->>>>> On 04/08/2013 09:26 AM, Gilles Chanteperdrix wrote:
->>>>>
->>>>>> On 04/07/2013 09:52 PM, Thierry Bultel wrote:
->>>>>>
->>>>>>> Le 07/04/2013 17:06, Gilles Chanteperdrix a écrit :
->>>>>>>> On 04/07/2013 11:31 AM, Thierry Bultel wrote:
->>>>>>>>
->>>>>>>>> Hi,
->>>>>>>>>
->>>>>>>>> I am using a vanilla 3.5.7 kernel in qemu-1.4.0
->>>>>>>>> The base defconfig is the vexpress.
->>>>>>>>>
->>>>>>>>> I want to use xenomai-2.6.2.1 with it.
->>>>>>>>>
->>>>>>>>> The non-patched kernel boots fine, the patched one doesnot, there is
->>>>>>>>> nothing on the console,
->>>>>>>>> the boot logo does not comeand Qemu then takes 100% CPU.
->>>>>>>>>
->>>>>>>>> Here is my command line
->>>>>>>>> ./qemu-1.4.0/arm-softmmu/qemu-system-arm -M vexpress-a9 -kernel
->>>>>>>>> ./Buildroot/output.linaro.vexpress-a9/build/linux-3.5.7/arch/arm/boot/uImage
->>>>>>>>> -append "console=ttyAMA0" -m 1024M -serial stdio
->>>>>>>>>
->>>>>>>>> Any ideas ? May I have missed something ?
->>>>>>>>
->>>>>>>>
->>>>>>>> Well, vexpress is not in the list of machines supported by Xenomai. So,
->>>>>>>> someone needs to port the I-pipe kernel to it.
->>>>>>>>
->>>>>>>>
->>>>>>>
->>>>>>> Hi Gilles,
->>>>>>>
->>>>>>> We already talked about the vexpress, it was at the beginning of the
->>>>>>> rtcan discussion.
->>>>>>> It used to work (and pretty well), my configuration was:
->>>>>>>
->>>>>>> linux-3.2.21+ipipe-core-3.2.21-arm-1.patch
->>>>>>>
->>>>>>> and I have just successfully tested
->>>>>>>
->>>>>>> linux-3.2.21+ipipe-core-3.2.21-arm-4.patch
->>>>>>> as well.
->>>>>>>
->>>>>>> There is likely not much missing for having it working on the 3.5.7
->>>>>>> kernel. I am taking a look.
->>>>>>
->>>>>>
->>>>>> Someone did the port of the I-pipe patch to vexpress (but did not
->>>>>> contribute it), the difference between vexpress and other cortex A9
->>>>>> based SOCs is that it does not support global timers, the one used by
->>>>>> the I-pipe patch as clocksource. The difference between 3.2 and later
->>>>>> patches is probably that later patches unconditionally use the global
->>>>>> timer. The fix around this is to add code do detect the cortex a9
->>>>>> revision and do not register the global timers when the revision is too old.
->>>>>>
->>>>>
->>>>>
->>>>> Found the mail: "I just got a reply from ARM support and obviously I
->>>>> missed the thing that my release of Cortex-A9 does NOT have a global
->>>>> timer (they added it from r1p0, mine is r0p1)."
->>>>>
->>>>> You know what version your processor is by reading the first few lines
->>>>> printed by the kernel:
->>>>> CPU: ARMv7 Processor [411fc092] revision 2 (ARMv7), cr=10c53c7d
->>>>>
->>>>> 41 is used by all cores from ARM
->>>>> fc09 represents the cortex a9
->>>>>
->>>>> The remaining 1 and 2 mean that this cortex a9 is an r1p2
->>>>>
->>>>
->>>>
->>>> Many thanks,
->>>> I confirm that this fix makes vexpress boot in qemu:
->>>
->>>
->>> Merged thanks. I believe you should keep the calculation of
->>> twd_timer_rate, otherwise the twd timers will not be calibratd
->>> correctly. The following:
->>>
->>> http://git.xenomai.org/?p=ipipe-gch.git;a=commitdiff;h=9a776ad3c41fa1aef1b60d0cce5de3ca9dece42d;hp=82b6948fed3581e65bcce64b91b16140686263a7
->>>
->>> Works for me.
->>>
->>>
->>
->> It works on what platform ? It does not in qemu. The boot hangs the same
->> way.
->
->
-> It works on omap4, a platform with global timers... So, what you are
-> saying is that it is in fact the twd calibration which hangs?
+> Sorry for the noise, I thought the Raspberry Pi patch was for 3.2.
+> Yes, the patch for 3.8 would be intersting to get for the 2.6.3
+> release.
 
-Yes indeed
+Just finished compiling a 3.8.8 kernel based on the 
+github.com/raspberrypi/linux.git sources with the for-core-3.8 patches 
+on top. When you're ready to tag an ipipe-core-3.8 and release the 
+patch, I can generate pre/post patches for the Raspberry Pi (almost) on 
+demand.
 
->
+
+Regards, Paul.
 
 
