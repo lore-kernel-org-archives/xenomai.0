@@ -1,13 +1,14 @@
-Message-ID: <5172B3CD.20007@web.de>
-Date: Sat, 20 Apr 2013 17:27:09 +0200
-From: Jan Kiszka <jan.kiszka@web.de>
+Message-ID: <5172B4AA.1060704@xenomai.org>
+Date: Sat, 20 Apr 2013 17:30:50 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <201304191346.38739.leo@alaxarxa.net>	<517195B6.8020209@xenomai.org>	<12ABCC03-FADF-4C5A-9CAE-CD9E5CA63A19@mah.priv.at>
 	<51724F82.2000809@web.de> <5172B0E5.7090806@xenomai.org>
 	<5172B1B5.10804@web.de> <5172B28C.6070503@xenomai.org>
-In-Reply-To: <5172B28C.6070503@xenomai.org>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+	<5172B3CD.20007@web.de>
+In-Reply-To: <5172B3CD.20007@web.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] Default options in the debian package
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -17,56 +18,78 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Jan Kiszka <jan.kiszka@web.de>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-T24gMjAxMy0wNC0yMCAxNzoyMSwgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4gT24gMDQv
-MjAvMjAxMyAwNToxOCBQTSwgSmFuIEtpc3prYSB3cm90ZToKPiAKPj4gT24gMjAxMy0wNC0yMCAx
-NzoxNCwgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4+PiBPbiAwNC8yMC8yMDEzIDEwOjE5
-IEFNLCBKYW4gS2lzemthIHdyb3RlOgo+Pj4KPj4+PiBPbiAyMDEzLTA0LTIwIDA4OjA0LCBNaWNo
-YWVsIEhhYmVybGVyIHdyb3RlOgo+Pj4+Pgo+Pj4+PiBBbSAxOS4wNC4yMDEzIHVtIDIxOjA2IHNj
-aHJpZWIgR2lsbGVzIENoYW50ZXBlcmRyaXggPGdpbGxlcy5jaGFudGVwZXJkcml4QHhlbm9tYWku
-b3JnPjoKPj4+Pj4KPj4+Pj4+IE9uIDA0LzE5LzIwMTMgMDE6NDYgUE0sIExlb3BvbGQgUGFsb21v
-LUF2ZWxsYW5lZGEgd3JvdGU6Cj4+Pj4+Pgo+Pj4+Pj4+IFsxXSAKPj4+Pj4+PiBodHRwOi8vbGlz
-dHMubWVjaC5rdWxldXZlbi5iZS9waXBlcm1haWwvb3JvY29zLXVzZXJzLzIwMTMtQXByaWwvMDA2
-OTg2Lmh0bWwKPj4+Pj4+Cj4+Pj4+Pgo+Pj4+Pj4gSGksCj4+Pj4+Pgo+Pj4+Pj4gdGhhdCBsaW5r
-IGRvZXMgbm90IHRlbGwgdXMgd2h5IHlvdSBuZWVkIHRoaXMgb3B0aW9uLiBBbmQgdGhhdCB3b3Vs
-ZCBiZQo+Pj4+Pj4gdGhlIG1vc3QgaW1wb3J0YW50IGluZm9ybWF0aW9uLgo+Pj4+Pgo+Pj4+PiB3
-aXRoIHRoZSBsaW51eGNuYyBwYWNrYWdlIGJ1aWxkIEkgbmVlZCB0byB0dXJuIG9uIC0tZW5hYmxl
-LWRsb3Blbi1za2lucyBhcyB3ZWxsIHRvIGdldCBQeXRob24gbW9kdWxlcyB0byB3b3JrIHByb3Bl
-cmx5Cj4+Pj4KPj4+PiBPSywgaXQgbG9va3MgbGlrZSB3ZSBzaG91bGQgdHJ5IGhhcmRlciB0byBk
-ZXRlY3QgZGxvcGVuIHNjZW5hcmlvcyBkdXJpbmcKPj4+PiBydW50aW1lIHRvIGF2b2lkIGJ1aWxk
-LXRpbWUgc3dpdGNoZXMuIFRoaXMgaXMgbGlrZWx5IFhlbm9tYWkgMyBtYXRlcmlhbDoKPj4+Pgo+
-Pj4+ICAtIFdlIG5lZWQgdG8gZGlzYWJsZSBUTFMgb3B0aW1pemF0aW9ucyBieSBkZWZhdWx0IChu
-byBiaWcgZGVhbCkuCj4+Pj4KPj4+PiAgLSBJbiB0aGUgUE9TSVggc2tpbiBjb25zdHJ1Y3Rvciwg
-d2UgbmVlZCB0byByZWFkIG91dCB0aGUgbWxvY2thbGwKPj4+PiAgICBzdGF0ZSwgbG9jayBldmVy
-eXRoaW5nIGlmIG5lY2Vzc2FyeSwgYW5kIHJlc3RvcmUgdGhlIHN0YXRlCj4+Pj4gICAgYWNjb3Jk
-aW5nbHkgYWZ0ZXJ3YXJkLiBUaGUgTnVjbGV1cyBtYXkgaGVscCB1cyBoZXJlIGlmIHRoZXJlIGlz
-IG5vCj4+Pj4gICAgYWRlcXVhdGUgbGliYyBzZXJ2aWNlIChBQkkgY2hhbmdlIC0+IFhlbm9tYWkg
-MykuCj4+Pj4KPj4+PiAgLSBJSVJDLCB0aGUgcHJvYmxlbSB3aXRoIHVuY29uZGl0aW9uYWwgYXV0
-by1zaGFkb3dpbmcgYmFjayB0aGVuIHdlcmUKPj4+PiAgICB0aGUgaW1wcm9wZXIgc2NoZWR1bGlu
-ZyBwYXJhbWV0ZXJzIHRoYXQgUE9TSVggdXNlZCB0byBhcHBseS4gVGhhdAo+Pj4+ICAgIHdhcyBm
-aXhlZCBhIHdoaWxlIGJhY2suIFNvIGlmIHdlIHNpbXBsZSByZS1hcHBseSB0aGUgY3VycmVudAo+
-Pj4+ICAgIHBhcmFtZXRlcnMsIGl0IHNob3VsZCBjYXVzZSBubyBoYXJtIGluIGEgZGxvcGVuIHNj
-ZW5hcmlvLiBCdXQgSSBuZWVkCj4+Pj4gICAgdG8gY2hlY2sgdGhpcyBhZ2FpbiBhdCB3b3JrIGFn
-YWluc3Qgb3VyIHNjZW5hcmlvLgo+Pj4KPj4+Cj4+PiBZb3UgZG8gbm90IGxpa2UgdGhlIGlkZWEg
-b2YgYW4gZW52aXJvbm1lbnQgdmFyaWFibGUgYWxsb3dpbmcgdG8gZGlzYWJsZQo+Pj4gdGhlIGF1
-dG9tYXRpYyBzaGFkb3dpbmc/Cj4+Cj4+IE5vdCBhcyBhIGxvbmctdGVybSBzb2x1dGlvbiBhcyBp
-dCBpcyB1c2VyLXVuZnJpZW5kbHkuIEJ1dCBpdCBjYW4gYmUgYW4KPj4gb3B0aW9uIHdvcnRoIGNv
-bnNpZGVyaW5nIGZvciAyLjYuCj4gCj4gCj4gQXBwYXJlbnRseSAtZm9yZ2UgaXMgYWxyZWFkeSBk
-b2luZyBpdC4gVGhlIGFkdmFudGFnZSBvZiB0aGlzIHNvbHV0aW9uIGlzCj4gdGhhdCB0aGUgc2Ft
-ZSBiaW5hcnkgc2VydmVzIHdlbGwgc2V2ZXJhbCB1c2FnZXMsIGlmIHdlIGludGVuZCB0byBwcm92
-aWRlCj4gcGFja2FnZXMgYXMgZ2VuZXJpYyBhcyBwb3NzaWJsZSwgdGhpcyBzZWVtcyBsaWtlIHRo
-ZSB3YXkgdG8gZ28uIFNldmVyYWwKPiBvZiB0aGUgY2hhbmdlcyBJIG1hZGUgaW4gdGhlIGxhc3Qg
-ZmV3IHdlZWtzIGdvIGluIHRoZSBzYW1lIGRpcmVjdGlvbi4KCkknbSBub3Qgc3VyZSBpZiB0aGVy
-ZSBpcyBhZGRlZCB2YWx1ZSBmb3IgdGhlIGNvbnRyb2xsaW5nIGF1dG8tc2hhZG93aW5nCmluIGdl
-bmVyYWwuIEJ1dCBmb3IgdGhlIGNhc2UgaXQgaXMgaW4gY29uZmxpY3Qgd2l0aCBkbG9wZW4sIHRo
-ZSBzb2x1dGlvbgpJJ20gcHJvcG9zaW5nIGlzIGNsZWFybHkgc3VwZXJpb3IgYXMgaXQgcmVtb3Zl
-cyB0aG9zZSBjb25mbGljdHMKYXV0b21hdGljYWxseS4KCk9mIGNvdXJzZSwgYW4gZW52aXJvbm1l
-bnQgdmFyaWFibGUgY29udHJvbCBjYW4gZXhpc3QgaW4gcGFyYWxsZWwgaWYKdGhlcmUgaXMgYSBu
-ZWVkIGJleW9uZCB0aGUgZGxvcGVuIGNvbmZsaWN0IHJlc29sdXRpb24uCgpKYW4KCgotLS0tLS0t
-LS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdh
-cyBzY3J1YmJlZC4uLgpOYW1lOiBzaWduYXR1cmUuYXNjClR5cGU6IGFwcGxpY2F0aW9uL3BncC1z
-aWduYXR1cmUKU2l6ZTogMjYzIGJ5dGVzCkRlc2M6IE9wZW5QR1AgZGlnaXRhbCBzaWduYXR1cmUK
-VVJMOiA8aHR0cDovL3d3dy54ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50
-cy8yMDEzMDQyMC9iNGZiNmJkNi9hdHRhY2htZW50LnBncD4K
+On 04/20/2013 05:27 PM, Jan Kiszka wrote:
+
+> On 2013-04-20 17:21, Gilles Chanteperdrix wrote:
+>> On 04/20/2013 05:18 PM, Jan Kiszka wrote:
+>>
+>>> On 2013-04-20 17:14, Gilles Chanteperdrix wrote:
+>>>> On 04/20/2013 10:19 AM, Jan Kiszka wrote:
+>>>>
+>>>>> On 2013-04-20 08:04, Michael Haberler wrote:
+>>>>>>
+>>>>>> Am 19.04.2013 um 21:06 schrieb Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>:
+>>>>>>
+>>>>>>> On 04/19/2013 01:46 PM, Leopold Palomo-Avellaneda wrote:
+>>>>>>>
+>>>>>>>> [1] 
+>>>>>>>> http://lists.mech.kuleuven.be/pipermail/orocos-users/2013-April/006986.html
+>>>>>>>
+>>>>>>>
+>>>>>>> Hi,
+>>>>>>>
+>>>>>>> that link does not tell us why you need this option. And that would be
+>>>>>>> the most important information.
+>>>>>>
+>>>>>> with the linuxcnc package build I need to turn on --enable-dlopen-skins as well to get Python modules to work properly
+>>>>>
+>>>>> OK, it looks like we should try harder to detect dlopen scenarios during
+>>>>> runtime to avoid build-time switches. This is likely Xenomai 3 material:
+>>>>>
+>>>>>  - We need to disable TLS optimizations by default (no big deal).
+>>>>>
+>>>>>  - In the POSIX skin constructor, we need to read out the mlockall
+>>>>>    state, lock everything if necessary, and restore the state
+>>>>>    accordingly afterward. The Nucleus may help us here if there is no
+>>>>>    adequate libc service (ABI change -> Xenomai 3).
+>>>>>
+>>>>>  - IIRC, the problem with unconditional auto-shadowing back then were
+>>>>>    the improper scheduling parameters that POSIX used to apply. That
+>>>>>    was fixed a while back. So if we simple re-apply the current
+>>>>>    parameters, it should cause no harm in a dlopen scenario. But I need
+>>>>>    to check this again at work against our scenario.
+>>>>
+>>>>
+>>>> You do not like the idea of an environment variable allowing to disable
+>>>> the automatic shadowing?
+>>>
+>>> Not as a long-term solution as it is user-unfriendly. But it can be an
+>>> option worth considering for 2.6.
+>>
+>>
+>> Apparently -forge is already doing it. The advantage of this solution is
+>> that the same binary serves well several usages, if we intend to provide
+>> packages as generic as possible, this seems like the way to go. Several
+>> of the changes I made in the last few weeks go in the same direction.
+> 
+> I'm not sure if there is added value for the controlling auto-shadowing
+> in general. But for the case it is in conflict with dlopen, the solution
+> I'm proposing is clearly superior as it removes those conflicts
+> automatically.
+> 
+> Of course, an environment variable control can exist in parallel if
+> there is a need beyond the dlopen conflict resolution.
+
+
+The difference with what you propose is that you propose a syscall to
+get the mlockall state. Another solution would be not to call munlockall
+after the main thread shadowing, this looks less complicated and does
+not require ABI changes.
+
+
+-- 
+                                                                Gilles.
+
