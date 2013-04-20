@@ -1,22 +1,10 @@
 MIME-Version: 1.0
-In-Reply-To: <5171A299.60905@grandegger.com>
-References: <CAD1EtognG+9J_Bbo3x6AsBCJ4eU4SLrXQz=wDvJtFw0vCSZ8NQ@mail.gmail.com>
-	<516BA7C4.1050403@grandegger.com>
-	<CADVgf9nD4Qkaz54ba1PuKx0h1WkSkhPYQM9C0RU2LkE7aE96nQ@mail.gmail.com>
-	<516E336C.1060509@xenomai.org>
-	<CADVgf9=CJ0MQEpsub3g=bDZvxk3U3G1tDDvjvFm1jZRmke35fg@mail.gmail.com>
-	<CAD1EtoiQm8rZtkDTjZK8Tq3xeDKHULjc7V6Stg=bZ9XpEp5o7w@mail.gmail.com>
-	<516F9E87.6020002@grandegger.com> <516FA077.20400@grandegger.com>
-	<CAD1EtoiZ05S5HXEvdq2+Sg6-1XbxHwMUpcVMrpYA6gv0JgLqJw@mail.gmail.com>
-	<5171069C.3020909@grandegger.com>
-	<CAMsuG6pte10W8AbABnwAzLnVKF6kTRv+M5m2o=JE6z6oT_Qc4g@mail.gmail.com>
-	<5171A299.60905@grandegger.com>
-Date: Fri, 19 Apr 2013 16:09:34 -0400
-Message-ID: <CAD1Etoi3iFSyWA_z4ex9T9=mbtHQyCkd0zR4Yq3Lf6e1NCu+0g@mail.gmail.com>
-From: "Daniel M. Drucker, Ph.D." <dmd@interactive-motion.com>
-Content-Type: text/plain; charset=UTF-8
-Subject: Re: [Xenomai] patch to src/utils/can/rtcansend.c to support data
- from a file
+From: Ankit Goila <agoila@umich.edu>
+Date: Sat, 20 Apr 2013 00:41:20 -0400
+Message-ID: <CACWvio7X6LGNpmBk2MQXQZY3gyzHHMHrx3aJXTG7dM08mOM=LQ@mail.gmail.com>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] Trouble with Xenomai - Desktop issues
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -25,31 +13,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Wolfgang Grandegger <wg@grandegger.com>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
->> do you guys think that it's interesting that rtcansendmulti supports
->> same syntax than rtcanrecv output?
->> To do for instance:
->> rtcanrecv | rtcansendmulti -
->
-> Good idea. Sounds useful.
+Hello friends,
 
-I'm not sure how I'd reconcile that idea with:
+I am working on setting up my machine for real time capability using
+Xenomai. The specs are: Intel Xeon CPU (with 8 cores), Ubuntu 12.10
+(Linux-3.5.0-17-generic).
+Recently, I installed Ubuntu 12.10 on my machine and configured it for
+Xenomai 2.6.2.1 kernel, following the instructions given on this page:
+http://www.stanley.gatech.edu/skelly/uncategorized/installing-xenomai-on-ub=
+untu-12-04/#comment-932
 
-> I would prefer removing -i, -r, -e, etc. and add it as data:
->  s 0x601 0x40 0x41 0x60 0x00   (standard frame)
->  e 0x12345678 0x40 0x41        (extended frame)
->  sr 0x601                      (standard rtr frame)
->  er 0x3456778                  (extended rtr frame)
+I was successful with the setup and the grub menu shows the xenomai kernel
+installed. But, on booting into the Xenomai option, a desktop is displayed
+without any menu/task bar etc. The PC freezes upon booting, with no
+internet connection available. Here is the screenshot of the post-boot
+screen. I think this might be a problem with configuring the kernel, but
+then there are no set rules for configuration for a particular machine. I
+will be really grateful if somebody could help me out here.
 
-I liked the format I came up with because it explicitly does NOT
-define any new syntax and does not require any kind of parsing beyond
-what rtcansend is already doing with getopt.
+- Ankit
 
-Is there a good reason to define a new syntax? Using the syntax that
-is the output of rtcanrecv would mean we couldn't have things like
-per-message delays.
+-- =
 
-Daniel
-
+Ankit Goila
+U-M ID: 83509056
+Graduate Student (2012-2014)
+M.S.E Mechanical Engineering
+University of Michigan, Ann Arbor
+Contact: 734-747-0829
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: Boot start.jpg
+Type: image/jpeg
+Size: 1589579 bytes
+Desc: not available
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20130420/18f6526=
+f/attachment.jpg>
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: Desktop.jpg
+Type: image/jpeg
+Size: 1652419 bytes
+Desc: not available
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20130420/18f6526=
+f/attachment-0001.jpg>
