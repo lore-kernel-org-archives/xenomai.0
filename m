@@ -1,10 +1,13 @@
-MIME-Version: 1.0
-From: Ankit Goila <agoila@umich.edu>
-Date: Sat, 20 Apr 2013 00:41:20 -0400
-Message-ID: <CACWvio7X6LGNpmBk2MQXQZY3gyzHHMHrx3aJXTG7dM08mOM=LQ@mail.gmail.com>
-Content-Type: text/plain; charset="iso-8859-1"
+Content-Type: text/plain; charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 6.3 \(1503\))
+From: Michael Haberler <mail17@mah.priv.at>
+In-Reply-To: <517195B6.8020209@xenomai.org>
+Date: Sat, 20 Apr 2013 08:04:37 +0200
 Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] Trouble with Xenomai - Desktop issues
+Message-Id: <12ABCC03-FADF-4C5A-9CAE-CD9E5CA63A19@mah.priv.at>
+References: <201304191346.38739.leo@alaxarxa.net>
+	<517195B6.8020209@xenomai.org>
+Subject: Re: [Xenomai] Default options in the debian package
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,49 +16,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hello friends,
 
-I am working on setting up my machine for real time capability using
-Xenomai. The specs are: Intel Xeon CPU (with 8 cores), Ubuntu 12.10
-(Linux-3.5.0-17-generic).
-Recently, I installed Ubuntu 12.10 on my machine and configured it for
-Xenomai 2.6.2.1 kernel, following the instructions given on this page:
-http://www.stanley.gatech.edu/skelly/uncategorized/installing-xenomai-on-ub=
-untu-12-04/#comment-932
+Am 19.04.2013 um 21:06 schrieb Gilles Chanteperdrix =
+<gilles.chanteperdrix@xenomai.org>:
 
-I was successful with the setup and the grub menu shows the xenomai kernel
-installed. But, on booting into the Xenomai option, a desktop is displayed
-without any menu/task bar etc. The PC freezes upon booting, with no
-internet connection available. Here is the screenshot of the post-boot
-screen. I think this might be a problem with configuring the kernel, but
-then there are no set rules for configuration for a particular machine. I
-will be really grateful if somebody could help me out here.
+> On 04/19/2013 01:46 PM, Leopold Palomo-Avellaneda wrote:
+>=20
+>> [1]=20
+>> =
+http://lists.mech.kuleuven.be/pipermail/orocos-users/2013-April/006986.htm=
+l
+>=20
+>=20
+> Hi,
+>=20
+> that link does not tell us why you need this option. And that would be
+> the most important information.
 
-- Ankit
+with the linuxcnc package build I need to turn on --enable-dlopen-skins =
+as well to get Python modules to work properly
 
--- =
+- Michael
 
-Ankit Goila
-U-M ID: 83509056
-Graduate Student (2012-2014)
-M.S.E Mechanical Engineering
-University of Michigan, Ann Arbor
-Contact: 734-747-0829
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: Boot start.jpg
-Type: image/jpeg
-Size: 1589579 bytes
-Desc: not available
-URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20130420/18f6526=
-f/attachment.jpg>
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: Desktop.jpg
-Type: image/jpeg
-Size: 1652419 bytes
-Desc: not available
-URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20130420/18f6526=
-f/attachment-0001.jpg>
+>=20
+> If what you need to disable is TLS, then configuring xenomai with
+> --without-__thread is sufficient
+>=20
+> If what you need is to avoid the main thread shadowing, we are not =
+going
+> to configure xenomai with --enable-dlopen-skins as it breaks otherwise
+> conformant applications, but we can add an environment variable like
+> XENO_PTHREAD_NO_AUTO_SHADOW to allow supporting both situations.
+>=20
+> --=20
+>                                                                Gilles.
+>=20
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> http://www.xenomai.org/mailman/listinfo/xenomai
+
+
