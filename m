@@ -1,12 +1,13 @@
-Message-ID: <5172B1B5.10804@web.de>
-Date: Sat, 20 Apr 2013 17:18:13 +0200
-From: Jan Kiszka <jan.kiszka@web.de>
+Message-ID: <5172B28C.6070503@xenomai.org>
+Date: Sat, 20 Apr 2013 17:21:48 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <201304191346.38739.leo@alaxarxa.net>	<517195B6.8020209@xenomai.org>	<12ABCC03-FADF-4C5A-9CAE-CD9E5CA63A19@mah.priv.at>
 	<51724F82.2000809@web.de> <5172B0E5.7090806@xenomai.org>
-In-Reply-To: <5172B0E5.7090806@xenomai.org>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+	<5172B1B5.10804@web.de>
+In-Reply-To: <5172B1B5.10804@web.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] Default options in the debian package
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -16,42 +17,61 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Jan Kiszka <jan.kiszka@web.de>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-T24gMjAxMy0wNC0yMCAxNzoxNCwgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4gT24gMDQv
-MjAvMjAxMyAxMDoxOSBBTSwgSmFuIEtpc3prYSB3cm90ZToKPiAKPj4gT24gMjAxMy0wNC0yMCAw
-ODowNCwgTWljaGFlbCBIYWJlcmxlciB3cm90ZToKPj4+Cj4+PiBBbSAxOS4wNC4yMDEzIHVtIDIx
-OjA2IHNjaHJpZWIgR2lsbGVzIENoYW50ZXBlcmRyaXggPGdpbGxlcy5jaGFudGVwZXJkcml4QHhl
-bm9tYWkub3JnPjoKPj4+Cj4+Pj4gT24gMDQvMTkvMjAxMyAwMTo0NiBQTSwgTGVvcG9sZCBQYWxv
-bW8tQXZlbGxhbmVkYSB3cm90ZToKPj4+Pgo+Pj4+PiBbMV0gCj4+Pj4+IGh0dHA6Ly9saXN0cy5t
-ZWNoLmt1bGV1dmVuLmJlL3BpcGVybWFpbC9vcm9jb3MtdXNlcnMvMjAxMy1BcHJpbC8wMDY5ODYu
-aHRtbAo+Pj4+Cj4+Pj4KPj4+PiBIaSwKPj4+Pgo+Pj4+IHRoYXQgbGluayBkb2VzIG5vdCB0ZWxs
-IHVzIHdoeSB5b3UgbmVlZCB0aGlzIG9wdGlvbi4gQW5kIHRoYXQgd291bGQgYmUKPj4+PiB0aGUg
-bW9zdCBpbXBvcnRhbnQgaW5mb3JtYXRpb24uCj4+Pgo+Pj4gd2l0aCB0aGUgbGludXhjbmMgcGFj
-a2FnZSBidWlsZCBJIG5lZWQgdG8gdHVybiBvbiAtLWVuYWJsZS1kbG9wZW4tc2tpbnMgYXMgd2Vs
-bCB0byBnZXQgUHl0aG9uIG1vZHVsZXMgdG8gd29yayBwcm9wZXJseQo+Pgo+PiBPSywgaXQgbG9v
-a3MgbGlrZSB3ZSBzaG91bGQgdHJ5IGhhcmRlciB0byBkZXRlY3QgZGxvcGVuIHNjZW5hcmlvcyBk
-dXJpbmcKPj4gcnVudGltZSB0byBhdm9pZCBidWlsZC10aW1lIHN3aXRjaGVzLiBUaGlzIGlzIGxp
-a2VseSBYZW5vbWFpIDMgbWF0ZXJpYWw6Cj4+Cj4+ICAtIFdlIG5lZWQgdG8gZGlzYWJsZSBUTFMg
-b3B0aW1pemF0aW9ucyBieSBkZWZhdWx0IChubyBiaWcgZGVhbCkuCj4+Cj4+ICAtIEluIHRoZSBQ
-T1NJWCBza2luIGNvbnN0cnVjdG9yLCB3ZSBuZWVkIHRvIHJlYWQgb3V0IHRoZSBtbG9ja2FsbAo+
-PiAgICBzdGF0ZSwgbG9jayBldmVyeXRoaW5nIGlmIG5lY2Vzc2FyeSwgYW5kIHJlc3RvcmUgdGhl
-IHN0YXRlCj4+ICAgIGFjY29yZGluZ2x5IGFmdGVyd2FyZC4gVGhlIE51Y2xldXMgbWF5IGhlbHAg
-dXMgaGVyZSBpZiB0aGVyZSBpcyBubwo+PiAgICBhZGVxdWF0ZSBsaWJjIHNlcnZpY2UgKEFCSSBj
-aGFuZ2UgLT4gWGVub21haSAzKS4KPj4KPj4gIC0gSUlSQywgdGhlIHByb2JsZW0gd2l0aCB1bmNv
-bmRpdGlvbmFsIGF1dG8tc2hhZG93aW5nIGJhY2sgdGhlbiB3ZXJlCj4+ICAgIHRoZSBpbXByb3Bl
-ciBzY2hlZHVsaW5nIHBhcmFtZXRlcnMgdGhhdCBQT1NJWCB1c2VkIHRvIGFwcGx5LiBUaGF0Cj4+
-ICAgIHdhcyBmaXhlZCBhIHdoaWxlIGJhY2suIFNvIGlmIHdlIHNpbXBsZSByZS1hcHBseSB0aGUg
-Y3VycmVudAo+PiAgICBwYXJhbWV0ZXJzLCBpdCBzaG91bGQgY2F1c2Ugbm8gaGFybSBpbiBhIGRs
-b3BlbiBzY2VuYXJpby4gQnV0IEkgbmVlZAo+PiAgICB0byBjaGVjayB0aGlzIGFnYWluIGF0IHdv
-cmsgYWdhaW5zdCBvdXIgc2NlbmFyaW8uCj4gCj4gCj4gWW91IGRvIG5vdCBsaWtlIHRoZSBpZGVh
-IG9mIGFuIGVudmlyb25tZW50IHZhcmlhYmxlIGFsbG93aW5nIHRvIGRpc2FibGUKPiB0aGUgYXV0
-b21hdGljIHNoYWRvd2luZz8KCk5vdCBhcyBhIGxvbmctdGVybSBzb2x1dGlvbiBhcyBpdCBpcyB1
-c2VyLXVuZnJpZW5kbHkuIEJ1dCBpdCBjYW4gYmUgYW4Kb3B0aW9uIHdvcnRoIGNvbnNpZGVyaW5n
-IGZvciAyLjYuCgpKYW4KCgotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0K
-QSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBzaWduYXR1cmUuYXNj
-ClR5cGU6IGFwcGxpY2F0aW9uL3BncC1zaWduYXR1cmUKU2l6ZTogMjYzIGJ5dGVzCkRlc2M6IE9w
-ZW5QR1AgZGlnaXRhbCBzaWduYXR1cmUKVVJMOiA8aHR0cDovL3d3dy54ZW5vbWFpLm9yZy9waXBl
-cm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDEzMDQyMC8yN2YzMTY5Zi9hdHRhY2htZW50LnBn
-cD4K
+On 04/20/2013 05:18 PM, Jan Kiszka wrote:
+
+> On 2013-04-20 17:14, Gilles Chanteperdrix wrote:
+>> On 04/20/2013 10:19 AM, Jan Kiszka wrote:
+>>
+>>> On 2013-04-20 08:04, Michael Haberler wrote:
+>>>>
+>>>> Am 19.04.2013 um 21:06 schrieb Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>:
+>>>>
+>>>>> On 04/19/2013 01:46 PM, Leopold Palomo-Avellaneda wrote:
+>>>>>
+>>>>>> [1] 
+>>>>>> http://lists.mech.kuleuven.be/pipermail/orocos-users/2013-April/006986.html
+>>>>>
+>>>>>
+>>>>> Hi,
+>>>>>
+>>>>> that link does not tell us why you need this option. And that would be
+>>>>> the most important information.
+>>>>
+>>>> with the linuxcnc package build I need to turn on --enable-dlopen-skins as well to get Python modules to work properly
+>>>
+>>> OK, it looks like we should try harder to detect dlopen scenarios during
+>>> runtime to avoid build-time switches. This is likely Xenomai 3 material:
+>>>
+>>>  - We need to disable TLS optimizations by default (no big deal).
+>>>
+>>>  - In the POSIX skin constructor, we need to read out the mlockall
+>>>    state, lock everything if necessary, and restore the state
+>>>    accordingly afterward. The Nucleus may help us here if there is no
+>>>    adequate libc service (ABI change -> Xenomai 3).
+>>>
+>>>  - IIRC, the problem with unconditional auto-shadowing back then were
+>>>    the improper scheduling parameters that POSIX used to apply. That
+>>>    was fixed a while back. So if we simple re-apply the current
+>>>    parameters, it should cause no harm in a dlopen scenario. But I need
+>>>    to check this again at work against our scenario.
+>>
+>>
+>> You do not like the idea of an environment variable allowing to disable
+>> the automatic shadowing?
+> 
+> Not as a long-term solution as it is user-unfriendly. But it can be an
+> option worth considering for 2.6.
+
+
+Apparently -forge is already doing it. The advantage of this solution is
+that the same binary serves well several usages, if we intend to provide
+packages as generic as possible, this seems like the way to go. Several
+of the changes I made in the last few weeks go in the same direction.
+
+
+-- 
+                                                                Gilles.
+
