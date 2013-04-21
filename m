@@ -1,14 +1,12 @@
 MIME-Version: 1.0
-In-Reply-To: <201304210044.57931.paul_c@tuxcnc.org>
-References: <516BA4E9.3070201@xenomai.org>
-	<201304151152.09727.paul_c@tuxcnc.org>
-	<516C5922.8000708@xenomai.org>
-	<201304210044.57931.paul_c@tuxcnc.org>
-Date: Sat, 20 Apr 2013 20:01:05 -0400
-Message-ID: <CA+T6QP=pnFuHR4A8FU5ErudfBvJtzzNj1fzGVh-vOpmpY5656A@mail.gmail.com>
-From: Jason Kridner <jkridner@beagleboard.org>
+In-Reply-To: <51725772.7050305@zultron.com>
+References: <CACWvio7X6LGNpmBk2MQXQZY3gyzHHMHrx3aJXTG7dM08mOM=LQ@mail.gmail.com>
+	<51725772.7050305@zultron.com>
+From: Ankit Goila <agoila@umich.edu>
+Date: Sun, 21 Apr 2013 17:37:30 -0400
+Message-ID: <CACWvio61cz7SR-KWBFjOCbEnof6T6jqfmsKbvV6ubxRJ1E1RhA@mail.gmail.com>
 Content-Type: text/plain; charset=ISO-8859-1
-Subject: Re: [Xenomai] Raspberry and Beaglebone patches
+Subject: Re: [Xenomai] Trouble with Xenomai - Desktop issues
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,70 +15,69 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Paul <paul_c@tuxcnc.org>
-Cc: Xenomai <xenomai@xenomai.org>
+To: John Morris <john@zultron.com>
+Cc: xenomai@xenomai.org
 
-On Sat, Apr 20, 2013 at 7:44 PM, Paul <paul_c@tuxcnc.org> wrote:
-> On Monday 15 April 2013, Gilles Chanteperdrix wrote:
->> On 04/15/2013 12:52 PM, Paul wrote:
->> > Hi Gilles
->> >
->> > On Monday 15 April 2013, Gilles Chanteperdrix wrote:
->> >> we have a problem with the patches for Raspberry and BeagleBone:
->> >> they are based on the 3.2.21 patch, which we know is broken. So,
->> >> we can not really ship the next version of Xenomai with these
->> >> patches.
->> >
->> > The original Raspberry patch from Ian-cim consisted of adding ipipe
->> > timer support to the BSP sources in 3.2.21. My efforts concentrated
->> > on backporting some of the Raspberry specific support from their
->> > 3.6.y tree to Xenomai 3.5.7 - Any breakages in 3.2.xx shouldn't be
->> > an issue.
->> >
->> >> There are two ways we could keep patches for these machines:
->> >> - you could send patches for 3.4 or 3.5, or even 3.8
->> >
->> > The Raspberry patch is already at 3.5.7, not sure what state the
->> > raspberry-3.8.y tree is in at the moment. Time allowing, I'll have
->> > a look at a 3.8 patch over the next few days.
->> >
->> >> - we could backport the fixes to 3.2, but as already discussed on
->> >> this list, this would cost some time to re-validate the 3.2 patch
->> >> on all architectures. However, if you do the backport, validate it
->> >> on your side, I could validate the result on my test boards, and
->> >> we would release a new version of the patch for 3.2 only for the
->> >> ARM architecture.
->> >
->> > I feel my time would be better spent on updating to 3.8, so I'll
->> > give the backport a miss for now ;-)
->>
->> Sorry for the noise, I thought the Raspberry Pi patch was for 3.2.
->> Yes, the patch for 3.8 would be intersting to get for the 2.6.3
->> release.
->
-> Just finished compiling a 3.8.8 kernel based on the
-> github.com/raspberrypi/linux.git sources with the for-core-3.8 patches
-> on top. When you're ready to tag an ipipe-core-3.8 and release the
-> patch, I can generate pre/post patches for the Raspberry Pi (almost) on
-> demand.
+Hi John,
 
-Should I ever expect to see a pull request to
-http://github.com/beagleboard/kernel/tree/3.8 to either pre or post
-patch in Xenomai?  The way we maintain the kernel, you simply drop the
-patches into a subdirectory of the patches directory and add the name
-of that subdirectory to patch.sh.  Running patch.sh applies all of the
-vendor patches against the mainline-stable tree.
+Thanks for your reply. I currently have Ubuntu 12.10 installed on my
+machine. In order to use the pre-compiled packages, do I need to just
+compile the code given online through the command line? Or do I need some
+other packages as well? The Ubuntu currently has the kernel version
+3.5.0-17-generic.
 
-Over time, I certainly hope our out-of-tree patches will go to 0 and
-we are working on it.
+Regards,
+
+Ankit
+
+
+On Sat, Apr 20, 2013 at 4:53 AM, John Morris <john@zultron.com> wrote:
 
 >
 >
-> Regards, Paul.
+> On 04/19/2013 11:41 PM, Ankit Goila wrote:
+> > Hello friends,
+> >
+> > I am working on setting up my machine for real time capability using
+> > Xenomai. The specs are: Intel Xeon CPU (with 8 cores), Ubuntu 12.10
+> > (Linux-3.5.0-17-generic).
+> > Recently, I installed Ubuntu 12.10 on my machine and configured it for
+> > Xenomai 2.6.2.1 kernel, following the instructions given on this page:
+> >
+> http://www.stanley.gatech.edu/skelly/uncategorized/installing-xenomai-on-ubuntu-12-04/#comment-932
+> >
+> > I was successful with the setup and the grub menu shows the xenomai
+> kernel
+> > installed. But, on booting into the Xenomai option, a desktop is
+> displayed
+> > without any menu/task bar etc. The PC freezes upon booting, with no
+> > internet connection available. Here is the screenshot of the post-boot
+> > screen. I think this might be a problem with configuring the kernel, but
+> > then there are no set rules for configuration for a particular machine. I
+> > will be really grateful if somebody could help me out here.
+> >
+> > - Ankit
+> >
 >
+> Hi Ankit,
 >
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> http://www.xenomai.org/mailman/listinfo/xenomai
+> Want to give some pre-compiled Debian packages a try?  See here:
+>
+> http://wiki.linuxcnc.org/cgi-bin/wiki.pl?XenomaiKernelPackages
+>
+> Also, if your NIC happens to be the r8168, you should compile that
+> driver separately.  There's a Debian package for that one as well,
+> pointed to in the above link.
+>
+>         John
+>
 
+
+
+-- 
+Ankit Goila
+U-M ID: 83509056
+Graduate Student (2012-2014)
+M.S.E Mechanical Engineering
+University of Michigan, Ann Arbor
+Contact: 734-747-0829
