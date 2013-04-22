@@ -1,14 +1,24 @@
-From: "Leopold Palomo-Avellaneda" <leo@alaxarxa.net>
-Date: Mon, 22 Apr 2013 09:18:35 +0200
-References: <201304191346.38739.leo@alaxarxa.net>
-	<517195B6.8020209@xenomai.org>
-In-Reply-To: <517195B6.8020209@xenomai.org>
+Message-ID: <5174F4E3.8030603@grandegger.com>
+Date: Mon, 22 Apr 2013 10:29:23 +0200
+From: Wolfgang Grandegger <wg@grandegger.com>
 MIME-Version: 1.0
-Content-Type: Text/Plain;
-  charset="utf-8"
+References: <CAD1EtognG+9J_Bbo3x6AsBCJ4eU4SLrXQz=wDvJtFw0vCSZ8NQ@mail.gmail.com>
+	<516BA7C4.1050403@grandegger.com>
+	<CADVgf9nD4Qkaz54ba1PuKx0h1WkSkhPYQM9C0RU2LkE7aE96nQ@mail.gmail.com>
+	<516E336C.1060509@xenomai.org>
+	<CADVgf9=CJ0MQEpsub3g=bDZvxk3U3G1tDDvjvFm1jZRmke35fg@mail.gmail.com>
+	<CAD1EtoiQm8rZtkDTjZK8Tq3xeDKHULjc7V6Stg=bZ9XpEp5o7w@mail.gmail.com>
+	<516F9E87.6020002@grandegger.com> <516FA077.20400@grandegger.com>
+	<CAD1EtoiZ05S5HXEvdq2+Sg6-1XbxHwMUpcVMrpYA6gv0JgLqJw@mail.gmail.com>
+	<5171069C.3020909@grandegger.com>
+	<CAMsuG6pte10W8AbABnwAzLnVKF6kTRv+M5m2o=JE6z6oT_Qc4g@mail.gmail.com>
+	<5171A299.60905@grandegger.com>
+	<CAD1Etoi3iFSyWA_z4ex9T9=mbtHQyCkd0zR4Yq3Lf6e1NCu+0g@mail.gmail.com>
+In-Reply-To: <CAD1Etoi3iFSyWA_z4ex9T9=mbtHQyCkd0zR4Yq3Lf6e1NCu+0g@mail.gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Message-Id: <201304220918.35684.leo@alaxarxa.net>
-Subject: Re: [Xenomai] Default options in the debian package
+Subject: Re: [Xenomai] patch to src/utils/can/rtcansend.c to support data
+ from a file
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,65 +27,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, Jan Kiszka <jan.kiszka@siemens.com>
-Cc: xenomai <xenomai@xenomai.org>
+To: "Daniel M. Drucker, Ph.D." <dmd@interactive-motion.com>
+Cc: xenomai@xenomai.org
 
-A Divendres, 19 d'abril de 2013, Gilles Chanteperdrix va escriure:
-> On 04/19/2013 01:46 PM, Leopold Palomo-Avellaneda wrote:
+On 04/19/2013 10:09 PM, Daniel M. Drucker, Ph.D. wrote:
+>>> do you guys think that it's interesting that rtcansendmulti supports
+>>> same syntax than rtcanrecv output?
+>>> To do for instance:
+>>> rtcanrecv | rtcansendmulti -
+>>
+>> Good idea. Sounds useful.
 > 
-> > [1] 
-> > http://lists.mech.kuleuven.be/pipermail/orocos-users/2013-
-April/006986.html
+> I'm not sure how I'd reconcile that idea with:
+> 
+>> I would prefer removing -i, -r, -e, etc. and add it as data:
+>>  s 0x601 0x40 0x41 0x60 0x00   (standard frame)
+>>  e 0x12345678 0x40 0x41        (extended frame)
+>>  sr 0x601                      (standard rtr frame)
+>>  er 0x3456778                  (extended rtr frame)
+> 
+> I liked the format I came up with because it explicitly does NOT
+> define any new syntax and does not require any kind of parsing beyond
+> what rtcansend is already doing with getopt.
+
+This method is not transparent/straight-forward, I feel. You mix various
+things making the code more complex than necessary.
+
+> Is there a good reason to define a new syntax? Using the syntax that
+
+I still prefer a simple ascii base syntax describing the complete message.
+
+> is the output of rtcanrecv would mean we couldn't have things like
+> per-message delays.
+
+You want to change the delay between messages as well? Anyway, the
+output of rtcanrecv  is probably to awkward to convert.
+
+Wolfgang.
+
+
+
+
+> Daniel
 > 
 > 
-> Hi,
-> 
-> that link does not tell us why you need this option. And that would be
-> the most important information.
 
-:-)
-
-you are right. I have pointed vague information about that. The complete 
-thread commented that some people are getting errors using orocos with 
-xenomai. Orocos use intensively the plugin architecture. As you can see in 
-this thread:
-
-http://www.orocos.org/forum/orocos/orocos-users/problem-orocos-under-xenomai
-
-some user point that the solution to load the plugin is to activate this 
-option in xenomai libs.
-
-> If what you need to disable is TLS, then configuring xenomai with
-> --without-__thread is sufficient
-> 
-> If what you need is to avoid the main thread shadowing, we are not going
-> to configure xenomai with --enable-dlopen-skins as it breaks otherwise
-> conformant applications, but we can add an environment variable like
-> XENO_PTHREAD_NO_AUTO_SHADOW to allow supporting both situations.
-> 
-
-I don't know if this is a solution, it overpass my knowledge. I would like to 
-put the detail that, under my subjective point of view, without numerical 
-data, the orocos users (and cnc users) are the main users of the debian 
-package. If, we activate that option and we solve this issue, no package 
-recompilation are needed, that's all. 
-
-I don't know the deep repercussion of that decision. Jan Kiszka said in 
-another mail:
-
-> default is a micro-performance degradation (likely not an issue) and the 
-lacking auto-shadowing of the main thread when using POSIX skins
-
-You are the main developers, your decisions are the most important, but I 
-think that a lot of people activate that, at least the users that use that 
-debian package.
-
-Best regards,
-
-Leo
-
--- 
---
-Linux User 152692
-Catalonia
 
