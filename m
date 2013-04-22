@@ -1,14 +1,19 @@
+Message-ID: <51758816.4050100@xenomai.org>
+Date: Mon, 22 Apr 2013 20:57:26 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <517468DB.1050701@zultron.com>
-References: <CACWvio7X6LGNpmBk2MQXQZY3gyzHHMHrx3aJXTG7dM08mOM=LQ@mail.gmail.com>
-	<51725772.7050305@zultron.com>
-	<CACWvio61cz7SR-KWBFjOCbEnof6T6jqfmsKbvV6ubxRJ1E1RhA@mail.gmail.com>
-	<517468DB.1050701@zultron.com>
-From: Ankit Goila <agoila@umich.edu>
-Date: Mon, 22 Apr 2013 14:47:58 -0400
-Message-ID: <CACWvio5Y5QC_FK8LEV2TvzCidbHvZ34eY5MadsdBXToey6c=rA@mail.gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Subject: Re: [Xenomai] Trouble with Xenomai - Desktop issues
+References: <201304191346.38739.leo@alaxarxa.net>
+	<517195B6.8020209@xenomai.org>
+	<12ABCC03-FADF-4C5A-9CAE-CD9E5CA63A19@mah.priv.at>
+	<51724F82.2000809@web.de> <5172B0E5.7090806@xenomai.org>
+	<5172B1B5.10804@web.de> <5172B28C.6070503@xenomai.org>
+	<5172B3CD.20007@web.de> <5172B4AA.1060704@xenomai.org>
+	<5174E2A0.1040906@siemens.com> <51752114.7040903@xenomai.org>
+	<51753E59.4090609@siemens.com>
+In-Reply-To: <51753E59.4090609@siemens.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Default options in the debian package
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,94 +22,117 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: John Morris <john@zultron.com>
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Sun, Apr 21, 2013 at 6:31 PM, John Morris <john@zultron.com> wrote:
+On 04/22/2013 03:42 PM, Jan Kiszka wrote:
 
-> On 04/21/2013 04:37 PM, Ankit Goila wrote:
-> > Hi John,
-> >
-> > Thanks for your reply. I currently have Ubuntu 12.10 installed on my
-> > machine. In order to use the pre-compiled packages, do I need to just
-> > compile the code given online through the command line? Or do I need
-> > some other packages as well? The Ubuntu currently has the kernel version
-> > 3.5.0-17-generic.
-> >
-> > Regards,
-> >
-> > Ankit
->
->
->
->
-> >
-> >
-> > On Sat, Apr 20, 2013 at 4:53 AM, John Morris <john@zultron.com
-> > <mailto:john@zultron.com>> wrote:
-> >
-> >
-> >
-> >     On 04/19/2013 11:41 PM, Ankit Goila wrote:
-> >     > Hello friends,
-> >     >
-> >     > I am working on setting up my machine for real time capability
-> using
-> >     > Xenomai. The specs are: Intel Xeon CPU (with 8 cores), Ubuntu 12.10
-> >     > (Linux-3.5.0-17-generic).
-> >     > Recently, I installed Ubuntu 12.10 on my machine and configured it
-> for
-> >     > Xenomai 2.6.2.1 kernel, following the instructions given on this
-> page:
-> >     >
-> >
-> http://www.stanley.gatech.edu/skelly/uncategorized/installing-xenomai-on-ubuntu-12-04/#comment-932
-> >     >
-> >     > I was successful with the setup and the grub menu shows the
-> >     xenomai kernel
-> >     > installed. But, on booting into the Xenomai option, a desktop is
-> >     displayed
-> >     > without any menu/task bar etc. The PC freezes upon booting, with no
-> >     > internet connection available. Here is the screenshot of the
-> post-boot
-> >     > screen. I think this might be a problem with configuring the
-> >     kernel, but
-> >     > then there are no set rules for configuration for a particular
-> >     machine. I
-> >     > will be really grateful if somebody could help me out here.
-> >     >
-> >     > - Ankit
-> >     >
-> >
-> >     Hi Ankit,
-> >
-> >     Want to give some pre-compiled Debian packages a try?  See here:
-> >
-> >     http://wiki.linuxcnc.org/cgi-bin/wiki.pl?XenomaiKernelPackages
-> >
-> >     Also, if your NIC happens to be the r8168, you should compile that
-> >     driver separately.  There's a Debian package for that one as well,
-> >     pointed to in the above link.
-> >
-> >             John
->
->
-Hi John,
+> On 2013-04-22 13:37, Gilles Chanteperdrix wrote:
+>> On 04/22/2013 09:11 AM, Jan Kiszka wrote:
+>>
+>>> On 2013-04-20 17:30, Gilles Chanteperdrix wrote:
+>>>> On 04/20/2013 05:27 PM, Jan Kiszka wrote:
+>>>>
+>>>>> On 2013-04-20 17:21, Gilles Chanteperdrix wrote:
+>>>>>> On 04/20/2013 05:18 PM, Jan Kiszka wrote:
+>>>>>>
+>>>>>>> On 2013-04-20 17:14, Gilles Chanteperdrix wrote:
+>>>>>>>> On 04/20/2013 10:19 AM, Jan Kiszka wrote:
+>>>>>>>>
+>>>>>>>>> On 2013-04-20 08:04, Michael Haberler wrote:
+>>>>>>>>>>
+>>>>>>>>>> Am 19.04.2013 um 21:06 schrieb Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>:
+>>>>>>>>>>
+>>>>>>>>>>> On 04/19/2013 01:46 PM, Leopold Palomo-Avellaneda wrote:
+>>>>>>>>>>>
+>>>>>>>>>>>> [1] 
+>>>>>>>>>>>> http://lists.mech.kuleuven.be/pipermail/orocos-users/2013-April/006986.html
+>>>>>>>>>>>
+>>>>>>>>>>>
+>>>>>>>>>>> Hi,
+>>>>>>>>>>>
+>>>>>>>>>>> that link does not tell us why you need this option. And that would be
+>>>>>>>>>>> the most important information.
+>>>>>>>>>>
+>>>>>>>>>> with the linuxcnc package build I need to turn on --enable-dlopen-skins as well to get Python modules to work properly
+>>>>>>>>>
+>>>>>>>>> OK, it looks like we should try harder to detect dlopen scenarios during
+>>>>>>>>> runtime to avoid build-time switches. This is likely Xenomai 3 material:
+>>>>>>>>>
+>>>>>>>>>  - We need to disable TLS optimizations by default (no big deal).
+>>>>>>>>>
+>>>>>>>>>  - In the POSIX skin constructor, we need to read out the mlockall
+>>>>>>>>>    state, lock everything if necessary, and restore the state
+>>>>>>>>>    accordingly afterward. The Nucleus may help us here if there is no
+>>>>>>>>>    adequate libc service (ABI change -> Xenomai 3).
+>>>>>>>>>
+>>>>>>>>>  - IIRC, the problem with unconditional auto-shadowing back then were
+>>>>>>>>>    the improper scheduling parameters that POSIX used to apply. That
+>>>>>>>>>    was fixed a while back. So if we simple re-apply the current
+>>>>>>>>>    parameters, it should cause no harm in a dlopen scenario. But I need
+>>>>>>>>>    to check this again at work against our scenario.
+>>>>>>>>
+>>>>>>>>
+>>>>>>>> You do not like the idea of an environment variable allowing to disable
+>>>>>>>> the automatic shadowing?
+>>>>>>>
+>>>>>>> Not as a long-term solution as it is user-unfriendly. But it can be an
+>>>>>>> option worth considering for 2.6.
+>>>>>>
+>>>>>>
+>>>>>> Apparently -forge is already doing it. The advantage of this solution is
+>>>>>> that the same binary serves well several usages, if we intend to provide
+>>>>>> packages as generic as possible, this seems like the way to go. Several
+>>>>>> of the changes I made in the last few weeks go in the same direction.
+>>>>>
+>>>>> I'm not sure if there is added value for the controlling auto-shadowing
+>>>>> in general. But for the case it is in conflict with dlopen, the solution
+>>>>> I'm proposing is clearly superior as it removes those conflicts
+>>>>> automatically.
+>>>>>
+>>>>> Of course, an environment variable control can exist in parallel if
+>>>>> there is a need beyond the dlopen conflict resolution.
+>>>>
+>>>>
+>>>> The difference with what you propose is that you propose a syscall to
+>>>> get the mlockall state. Another solution would be not to call munlockall
+>>>> after the main thread shadowing, this looks less complicated and does
+>>>> not require ABI changes.
+>>>
+>>> Yes, that's an option as well. But then we should apply this
+>>> consistently, invoking mlockall from all skin init functions
+>>> unconditionally. The nucleus depends on this anyway. Not sure if such
+>>> change would be fine for 2.6 - you decide.
+>>
+>>
+>> What we could do is:
+>> - if XENO_NOSHADOW is set, shadow the main thread, and call mlockall
+>> - if it is not set, do not shadow the main thread or call
+>> mlockall/munlockall
+> 
+> That's not what I suggested. I was questioning the value of _not_ doing
+> mlockall automatically during init, thus reducing user duties. That
+> would reduce the need to think about XENO_NOSHADOW or not as a normal user.
 
-I tried the Linux CNC pre-compiled packages mentioned in the link above, I
-followed all the instructions as per the article. On reboot, I am able to
-access the desktop from the Grub menu, however, the keyboard and the mouse
-are unresponsive. In a way, I can see the desktop, everything as such, but
-am not able to provide any input. Is this a configuration issue? Or is it
-with the drivers?
 
-- Ankit
+Currently, when the posix skin library start, it does:
+mlockall
+shadow main thread
+munlockall
 
+Now, the munlockall is certainly an issue when dlopening
+
+What I propose instead is to do:
+if (!getenv("XENO_NOSHADOW")) {
+	mlockall
+	shadow main thread
+}
+
+That will avoid the problem with calling munlockall, and if people who
+currently use --enable-dlopen-skins really want to avoid shadowing the
+main thread (which I doubt), they can set the environment variable
+XENO_NOSHADOW.
 
 -- 
-Ankit Goila
-U-M ID: 83509056
-Graduate Student (2012-2014)
-M.S.E Mechanical Engineering
-University of Michigan, Ann Arbor
-Contact: 734-747-0829
+                                                                Gilles.
+
