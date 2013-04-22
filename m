@@ -1,10 +1,24 @@
-Message-ID: <517536B8.4080508@gmail.com>
-Date: Mon, 22 Apr 2013 15:10:16 +0200
-From: Victor Hiairrassary <victor.hiairrassary.ml@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] How to use rtdm_(io/m)map_to_user
+In-Reply-To: <5174F4E3.8030603@grandegger.com>
+References: <CAD1EtognG+9J_Bbo3x6AsBCJ4eU4SLrXQz=wDvJtFw0vCSZ8NQ@mail.gmail.com>
+	<516BA7C4.1050403@grandegger.com>
+	<CADVgf9nD4Qkaz54ba1PuKx0h1WkSkhPYQM9C0RU2LkE7aE96nQ@mail.gmail.com>
+	<516E336C.1060509@xenomai.org>
+	<CADVgf9=CJ0MQEpsub3g=bDZvxk3U3G1tDDvjvFm1jZRmke35fg@mail.gmail.com>
+	<CAD1EtoiQm8rZtkDTjZK8Tq3xeDKHULjc7V6Stg=bZ9XpEp5o7w@mail.gmail.com>
+	<516F9E87.6020002@grandegger.com> <516FA077.20400@grandegger.com>
+	<CAD1EtoiZ05S5HXEvdq2+Sg6-1XbxHwMUpcVMrpYA6gv0JgLqJw@mail.gmail.com>
+	<5171069C.3020909@grandegger.com>
+	<CAMsuG6pte10W8AbABnwAzLnVKF6kTRv+M5m2o=JE6z6oT_Qc4g@mail.gmail.com>
+	<5171A299.60905@grandegger.com>
+	<CAD1Etoi3iFSyWA_z4ex9T9=mbtHQyCkd0zR4Yq3Lf6e1NCu+0g@mail.gmail.com>
+	<5174F4E3.8030603@grandegger.com>
+Date: Mon, 22 Apr 2013 09:40:17 -0400
+Message-ID: <CAD1EtoiMu-XmrSXy=fJ58Bz=2g6P07CPkJ=9JdU-N_0Agx=QRg@mail.gmail.com>
+From: "Daniel M. Drucker, Ph.D." <dmd@interactive-motion.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: Re: [Xenomai] patch to src/utils/can/rtcansend.c to support data
+ from a file
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,35 +27,19 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Wolfgang Grandegger <wg@grandegger.com>
+Cc: xenomai@xenomai.org
 
-Hello all,
+> I still prefer a simple ascii base syntax describing the complete message.
 
-This is my first post on this mailing list. I am really new with 
-xenomai, only
-few month ago.
+Ok. What would you suggest? I'm not super-familiar with some of the
+CAN stuff (like extended messages), so I'm not sure what would best
+make sense.
 
-Currently we have a real-time application using xenomai which interacts with
-hardware directly by mmaping /dev/mem.
+> You want to change the delay between messages as well?
 
-Now, we want to write a real-time device driver that will simulate the 
-hardware.
-For keeping the same interface than /dev/mem, a conventional linux device
-driver would register an mmap file operation, but this is not possible with
-rtdm.
+Yes, because often there are certain messages in the sequence that
+cause the slave to stop listening for several milliseconds.
 
-But I have seen in xenomai api the functions : rtdm_mmap_to_user and
-rtdm_iomap_to_user. Could you explain how to use them, i.e. where do we 
-need to
-put the function call, do we need to use ioctl file operation to get mmaped
-address, etc? Maybe you have an example (I have found nothing in xenomai 
-trunk)?
-
-In a near future, instead of use /dev/mem, we plan to use a real-time device
-driver and rtdm_iomap_to_user (only to have the same code in client
-application). In this case, is it necessary and possible to call
-request_mem_region() in the real-time device driver?
-
-Best regards,
-Victor Hiairrassary
+Daniel
 
