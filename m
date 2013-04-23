@@ -1,14 +1,16 @@
-References: <1366732845.34430.YahooMailNeo@web161405.mail.bf1.yahoo.com>
-	<5176B0E3.3030009@xenomai.org>
-Message-ID: <1366734857.26156.YahooMailNeo@web161401.mail.bf1.yahoo.com>
-Date: Tue, 23 Apr 2013 09:34:17 -0700 (PDT)
-From: Tom Z <tomz30@yahoo.com>
-In-Reply-To: <5176B0E3.3030009@xenomai.org>
+From: "George Pontis" <GPontis@z9.com>
+References: <mailman.252.1366321778.1444.xenomai@xenomai.org>
+	<00f801ce3fcb$30850ce0$918f26a0$@com>
+	<51763D6E.6090407@xenomai.org>
+In-Reply-To: <51763D6E.6090407@xenomai.org>
+Date: Tue, 23 Apr 2013 09:56:21 -0700
+Message-ID: <016901ce4043$7b54e1f0$71fea5d0$@com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain;
+	charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] rt_task_wait_period returns -11 (-EAGAIN)
-Reply-To: Tom Z <tomz30@yahoo.com>
+Content-Language: en-us
+Subject: Re: [Xenomai] for-core-3.8 on ARM ( i.MX53 )
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,24 +19,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-Thanks Phillppe. You are right, I did call rt_task_set_period()before rt_ta=
-sk_wait_period(), but it failed and I was too lazy to check rt_task_set_per=
-iod()'s return value.=0A=0A=0A=0A=0A________________________________=0A Fro=
-m: Philippe Gerum <rpm@xenomai.org>=0ATo: Tom Z <tomz30@yahoo.com> =0ACc: "=
-xenomai@xenomai.org" <xenomai@xenomai.org> =0ASent: Tuesday, 23 April 2013 =
-11:03 AM=0ASubject: Re: [Xenomai] rt_task_wait_period returns -11 (-EAGAIN)=
-=0A =0A=0AOn 04/23/2013 06:00 PM, Tom Z wrote:=0A> Hi,=0A>=0A> It seems thi=
-s problem didn't occur before, but yesterday when I ran the same program on=
- the same platform, a statement in my program calling rt_task_wait_period()=
- returns -11. I looked up the error code, and 11 is the value of EAGAIN def=
-ined in <LINUX INCLUDE>/asm-generic/error_base.h. So I tried to modify my c=
-ode like this=0A>=0A> unsigned long overrun;=0A>=0A> ret =3D -EAGAIN=0A> wh=
-ile(-EAGAIN =3D=3D ret)=0A>=C2=A0 =C2=A0 =C2=A0 ret =3D rt_task_wait_period=
-( &overrun);=0A>=0A>=0A> But it keeps spinning and throws an error in the e=
-nd: CPU time exceeded.=0A>=0A>=0A>=0A> What would be the possible cause?=E3=
-=80=80=EF=BC=AD=EF=BD=99 platform is a Core 2 Duo laptop with Xenomai 2.6.2=
-.1 on Linux 3.5.7.=0A>=0A=0A=0ACheck the doc for EWOULDBLOCK. rt_task_set_p=
-eriodic() was not=0Acalled for the task.=0A=0A-- =0APhilippe.
+> -----Original Message-----
+> From: Gilles Chanteperdrix [mailto:gilles.chanteperdrix@xenomai.org]
+> Sent: Tuesday, April 23, 2013 12:51 AM
+> To: George Pontis
+> Cc: xenomai@xenomai.org
+> Subject: Re: [Xenomai] for-core-3.8 on ARM ( i.MX53 )
+>=20
+> On 04/23/2013 04:35 AM, George Pontis wrote:
+>=20
+> > I took a crack at building a 3.8 kernel with Xenomai 2.6.2.1 for =
+ARM,
+> based
+> > on the work in progress toward that ipipe patch.
+>=20
+>=20
+> Xenomai 2.6.2.1 will not work, please upgrade to Xenomai 2.6 current
+> git
+> and tell us if you see the same issue.
+>=20
+> --
+>                                                                 =
+Gilles.
+
+I got the current Xenomai and rebuilt with that. The process went =
+smoothly and did not
+require any patching or manual intervention, but it still hangs at the =
+same point. Is
+it expected that the 2.6 current tree is identifying itself as 2.6.2.1 ? =
+
+
+George
+
+
+
