@@ -1,13 +1,13 @@
-Message-ID: <5176D40E.7060607@xenomai.org>
-Date: Tue, 23 Apr 2013 20:33:50 +0200
+Message-ID: <5176D47E.7050703@xenomai.org>
+Date: Tue, 23 Apr 2013 20:35:42 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <mailman.252.1366321778.1444.xenomai@xenomai.org>	<00f801ce3fcb$30850ce0$918f26a0$@com>	<51763D6E.6090407@xenomai.org>
-	<016901ce4043$7b54e1f0$71fea5d0$@com>
-In-Reply-To: <016901ce4043$7b54e1f0$71fea5d0$@com>
+References: <1366732845.34430.YahooMailNeo@web161405.mail.bf1.yahoo.com>	<5176B0E3.3030009@xenomai.org>
+	<1366738934.20080.YahooMailNeo@web161406.mail.bf1.yahoo.com>
+In-Reply-To: <1366738934.20080.YahooMailNeo@web161406.mail.bf1.yahoo.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] for-core-3.8 on ARM ( i.MX53 )
+Subject: Re: [Xenomai] rt_task_wait_period returns -11 (-EAGAIN)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,56 +16,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: George Pontis <GPontis@z9.com>
-Cc: xenomai@xenomai.org
+To: Tom Z <tomz30@yahoo.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 04/23/2013 06:56 PM, George Pontis wrote:
+On 04/23/2013 07:42 PM, Tom Z wrote:
 
->> -----Original Message-----
->> From: Gilles Chanteperdrix [mailto:gilles.chanteperdrix@xenomai.org]
->> Sent: Tuesday, April 23, 2013 12:51 AM
->> To: George Pontis
->> Cc: xenomai@xenomai.org
->> Subject: Re: [Xenomai] for-core-3.8 on ARM ( i.MX53 )
->>
->> On 04/23/2013 04:35 AM, George Pontis wrote:
->>
->>> I took a crack at building a 3.8 kernel with Xenomai 2.6.2.1 for ARM,
->> based
->>> on the work in progress toward that ipipe patch.
->>
->>
->> Xenomai 2.6.2.1 will not work, please upgrade to Xenomai 2.6 current
->> git
->> and tell us if you see the same issue.
->>
->> --
->>                                                                 Gilles.
+> Hi Philippe,
 > 
-> I got the current Xenomai and rebuilt with that. The process went smoothly and did not
-> require any patching or manual intervention, but it still hangs at the same point. Is
-> it expected that the 2.6 current tree is identifying itself as 2.6.2.1 ? 
+> Thanks for answering my previous question. However, I encountered another one regarding rt_task_wait_period(). NowI fixed a problematic parameter in rt_task_set_periodic(), and add the checking of the return values of rt_task_wait_period() and rt_task_set_periodic(). I use rt_task_set_periodic()to set a period of 500 ms for a rt_task, and call rt_task_wait_period() later. It seems that sometimes rt_task_wait_period()works good, but sometimes it just returns 0 immediately. Here is what my code looks like:
+> 
+> unsigned long overrun;
+> RTIME release_time;
+> 
+> if (0 != rt_task_set_periodic(NULL, TM_NOW, 500000000){
+>               rt_printf("Error\n");
+> }
+> ....
+> while (1){
+>     release_time = rt_timer_read();
+>     //Store release_time in an array for offline analysis
+>     //Some computation taking about 100 ms
+>     if (0 != rt_task_wait_period(&overrun)){
+>              rt_printf("Error\n");
+>       }
+> }
+> 
+> 
+> I noticed that, during the program's execution, no "Error" was printed, but some consecutive values of release_time is about 100 ms which is the computation time and far less than the period 500 ms.
+> 
+> This problem seems weird to me. Did I possibly overlook something?
 
 
-Yes it is expected, incrementing the version number is the last thing we
-do before a release. Now, about the hang, several questions:
-- does the very same kernel version without CONFIG_IPIPE and
-CONFIG_XENOMAI boot normally?
-- are the error messages:
-mmc0: no vqmmc regulator found
-mmc0: no vmmc regulator found
-mmc1: no vqmmc regulator found
-mmc1: no vmmc regulator found
-sgtl5000 1-000a: clock-frequency missing or invalid
-imx-sgtl5000: probe of sound.8 failed with error -22
-Expected?
-- does not the message:
-Console: switching to colour frame buffer device 80x30
-Tell us that in fact the kernel logs are continuing on the framebuffer?
-- is the timer running correctly?
-- is the clocksource incrementing correctly?
-
-Regards.
+A piece of code is worth a thousand words. Please send a self-contained
+test example showing the behaviour you suspect is wrong. Only the C code
+of the test is needed in the mail body, a tarball containing code and
+Makefile is useless, we know how to compile programs for Xenomai.
 
 -- 
                                                                 Gilles.
