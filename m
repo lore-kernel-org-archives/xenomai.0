@@ -1,15 +1,14 @@
-Message-ID: <5176C24B.3000300@siemens.com>
-Date: Tue, 23 Apr 2013 19:18:03 +0200
-From: Jan Kiszka <jan.kiszka@siemens.com>
+References: <1366732845.34430.YahooMailNeo@web161405.mail.bf1.yahoo.com>
+	<5176B0E3.3030009@xenomai.org>
+Message-ID: <1366738934.20080.YahooMailNeo@web161406.mail.bf1.yahoo.com>
+Date: Tue, 23 Apr 2013 10:42:14 -0700 (PDT)
+From: Tom Z <tomz30@yahoo.com>
+In-Reply-To: <5176B0E3.3030009@xenomai.org>
 MIME-Version: 1.0
-References: <51757858.6040604@bollue.de> <51767C09.3070502@siemens.com>
-	<51769250.7050504@bollue.de> <5176950F.3040702@siemens.com>
-	<5176AB28.7000305@bollue.de> <5176AC37.1040405@siemens.com>
-	<5176C108.5050102@bollue.de>
-In-Reply-To: <5176C108.5050102@bollue.de>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Sporadic freeze using RTnet
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] rt_task_wait_period returns -11 (-EAGAIN)
+Reply-To: Tom Z <tomz30@yahoo.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,64 +17,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Kai Bollue <mlist1@bollue.de>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 2013-04-23 19:12, Kai Bollue wrote:
-> On 23.04.2013 17:43, Jan Kiszka wrote:
->>
->> Here is the first (and hopefully the only) problem:
->>
->> [  100.359484] I-pipe: Detected illicit call from head domain 'Xenomai'
->> [  100.359484] <3>        into a regular Linux service
->> [  100.493487]  |  #*func    	   [  100.493482] Pid: 0, comm: swapper/6 Tainted: G           O 3.5.7-xenomai-2.6.2.1 #7
->> [  100.493483] Call Trace:
->> [  100.493485] I-pipe tracer log (100 points):
->> [  100.493510]  |  #*func    	        0 ipipe_prepare_panic+0x7 (ipipe_root_only+0x5d)
->> [  100.493536]  |  #*func    	        0 ipipe_root_only+0x9 (add_preempt_count+0x15)
->> [  100.493563]  |  #*func    	       -1 add_preempt_count+0x9 (_raw_spin_lock_irqsave+0x56)
->> [  100.493588]  |  # func    	       -1 _raw_spin_lock_irqsave+0x7 (alloc_iommu+0x68)
->> [  100.493612]  |  # func    	       -1 alloc_iommu+0x11 (dma_map_area+0x58)
->> [  100.493640]  |  # func    	       -1 dma_map_area+0x11 (gart_map_page+0x67)
->> [  100.493666]  |  # func    	       -1 gart_map_page+0x8 (pci_map_single+0x82 [rt_eepro100])
->> [  100.493693]  |  # func    	       -1 __phys_addr+0x4 (pci_map_single+0x53 [rt_eepro100])
->> [  100.493721]  |  # func    	       -1 ___xnpod_lock_sched+0x4 (__xnpod_lock_sched+0x21 [rt_eepro100])
->> [  100.493747]  |  + begin   0x80000000     -2 speedo_start_xmit+0x3a [rt_eepro100] (rtdev_locked_xmit+0x33 [rtnet])
->> [  100.493778]     + func    	       -2 speedo_start_xmit+0x11 [rt_eepro100] (rtdev_locked_xmit+0x33 [rtnet])
->>
->> You have an IOMMU enabled, but the rt_eepro100 is lacking support for
->> premapping its DMA buffers so that it does not call into Linux IOMMU
->> remapping code during runtime. The latter raises the error above.
->>
->> Unless you depend on the IOMMU (unlikely unless KVM is on your feature
->> list), disable it and retry.
-> 
-> OK, now we disabled IOMMU support in the kernel. Unfortunately, still 
-> the same problem.
-
-Yeah, its hairy:
-
-[   94.352526]  |  #*func    	        0 ipipe_trace_panic_freeze+0x9 (ipipe_root_only+0x62)
-[   94.360774]  |  #*func    	        0 ipipe_prepare_panic+0x7 (ipipe_root_only+0x5d)
-[   94.368618]  |  #*func    	        0 ipipe_root_only+0x9 (add_preempt_count+0x15)
-[   94.376263]  |  #*func    	        0 add_preempt_count+0x9 (_raw_spin_lock_irqsave+0x56)
-[   94.384515]  |  # func    	        0 _raw_spin_lock_irqsave+0x7 (swiotlb_tbl_map_single+0x96)
-[   94.392925]  |  # func    	       -1 __phys_addr+0x4 ( |  # func    	       -1 __phys_addr+0x4 (pci_map_single+0x53 [rt_eepro100])
-[   94.392945]  |  # func    	       -1 ___xnpod_lock_sched+0x4 (__xnpod_lock_sched+0x21 [rt_eepro100])
-[   94.392954]  |  + begin   0x80000000     -2 speedo_start_xmit+0x3a [rt_eepro100] (rtdev_locked_xmit+0x33 [rtnet])
-[   94.392964]     + func    	       -2 speedo_start_xmit+0x11 [rt_eepro100] (rtdev_locked_xmit+0x33 [rtnet])
-
-Now the swiotlb is active, a software IOMMU that helps on systems >4G
-RAM with devices that can only DMA to 32-bit addresses (it provides
-bounce buffers). You can work around that issue by limiting the memory
-used by your system (mem=) or by using an RTnet NIC that does not have
-this limitation (rt_e1000e and rt_igb compatible ones). Or add
-pre-mapping support to the rt_e100pro. Check e.g. the conversion of the
-e1000e for the pattern. Patches welcome.
-
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RTC ITP SDP-DE
-Corporate Competence Center Embedded Linux
-
+Hi Philippe,=0A=0AThanks for answering my previous question. However, I enc=
+ountered another one regarding rt_task_wait_period(). NowI fixed a problema=
+tic parameter in rt_task_set_periodic(), and add the checking of the return=
+ values of rt_task_wait_period() and rt_task_set_periodic(). I use rt_task_=
+set_periodic()to set a period of 500 ms for a rt_task, and call rt_task_wai=
+t_period() later. It seems that sometimes rt_task_wait_period()works good, =
+but sometimes it just returns 0 immediately. Here is what my code looks lik=
+e:=0A=0Aunsigned long overrun;=0ARTIME release_time;=0A=0Aif (0 !=3D rt_tas=
+k_set_periodic(NULL, TM_NOW, 500000000){=0A=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 rt_printf("Error\n");=0A}=
+=0A....=0Awhile (1){=0A=C2=A0=C2=A0=C2=A0 release_time =3D rt_timer_read();=
+=0A=C2=A0=C2=A0=C2=A0 //Store release_time in an array for offline analysis=
+=0A=C2=A0=C2=A0=C2=A0 //Some computation taking about 100 ms=0A=C2=A0=C2=A0=
+=C2=A0 if (0 !=3D rt_task_wait_period(&overrun)){=0A=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 rt_printf("Error\n");=
+=0A=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 }=0A}=0A=0A=0AI noticed that, during the =
+program's execution, no "Error" was printed, but some consecutive values of=
+ release_time is about 100 ms which is the computation time and far less th=
+an the period 500 ms.=0A=0AThis problem seems weird to me. Did I possibly o=
+verlook something?=0A=0AThanks,=0ATom=0A=0A=0A=0A=0A=0A____________________=
+____________=0A From: Philippe Gerum <rpm@xenomai.org>=0ATo: Tom Z <tomz30@=
+yahoo.com> =0ACc: "xenomai@xenomai.org" <xenomai@xenomai.org> =0ASent: Tues=
+day, 23 April 2013 11:03 AM=0ASubject: Re: [Xenomai] rt_task_wait_period re=
+turns -11 (-EAGAIN)=0A =0A=0AOn 04/23/2013 06:00 PM, Tom Z wrote:=0A> Hi,=
+=0A>=0A> It seems this problem didn't occur before, but yesterday when I ra=
+n the same program on the same platform, a statement in my program calling =
+rt_task_wait_period() returns -11. I looked up the error code, and 11 is th=
+e value of EAGAIN defined in <LINUX INCLUDE>/asm-generic/error_base.h. So I=
+ tried to modify my code like this=0A>=0A> unsigned long overrun;=0A>=0A> r=
+et =3D -EAGAIN=0A> while(-EAGAIN =3D=3D ret)=0A>=C2=A0 =C2=A0 =C2=A0 ret =
+=3D rt_task_wait_period( &overrun);=0A>=0A>=0A> But it keeps spinning and t=
+hrows an error in the end: CPU time exceeded.=0A>=0A>=0A>=0A> What would be=
+ the possible cause?=E3=80=80=EF=BC=AD=EF=BD=99 platform is a Core 2 Duo la=
+ptop with Xenomai 2.6.2.1 on Linux 3.5.7.=0A>=0A=0A=0ACheck the doc for EWO=
+ULDBLOCK. rt_task_set_periodic() was not=0Acalled for the task.=0A=0A-- =0A=
+Philippe.
