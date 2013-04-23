@@ -1,12 +1,19 @@
-Message-ID: <51764473.2020800@xenomai.org>
-Date: Tue, 23 Apr 2013 10:21:07 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <51764485.9020403@siemens.com>
+Date: Tue, 23 Apr 2013 10:21:25 +0200
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-References: <5176410F.1060100@gmail.com>
-In-Reply-To: <5176410F.1060100@gmail.com>
+References: <201304191346.38739.leo@alaxarxa.net>
+	<517195B6.8020209@xenomai.org>
+	<12ABCC03-FADF-4C5A-9CAE-CD9E5CA63A19@mah.priv.at>
+	<51724F82.2000809@web.de> <5172B0E5.7090806@xenomai.org>
+	<5172B1B5.10804@web.de> <5172B28C.6070503@xenomai.org>
+	<5172B3CD.20007@web.de> <5172B4AA.1060704@xenomai.org>
+	<5174E2A0.1040906@siemens.com> <51752114.7040903@xenomai.org>
+	<51753E59.4090609@siemens.com> <51758816.4050100@xenomai.org>
+In-Reply-To: <51758816.4050100@xenomai.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] xenomai "does not" ISO C, C99 and C++ standard
+Subject: Re: [Xenomai] Default options in the debian package
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,42 +22,126 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Victor Hiairrassary <victor.hiairrassary.ml@gmail.com>
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 04/23/2013 10:06 AM, Victor Hiairrassary wrote:
-
-> Hello all,
+On 2013-04-22 20:57, Gilles Chanteperdrix wrote:
+> On 04/22/2013 03:42 PM, Jan Kiszka wrote:
 > 
-> We use xenomai 2.6.2.1 with g++ 4.7.2 from buildroot on a Armadeus apf27
-> board. This works really fine, but if we add "-W -Werror -Wall -pedantic
-> -pedantic-errors" in compiler command line, g++ detects some warnings for
-> a code as simple as :
+>> On 2013-04-22 13:37, Gilles Chanteperdrix wrote:
+>>> On 04/22/2013 09:11 AM, Jan Kiszka wrote:
+>>>
+>>>> On 2013-04-20 17:30, Gilles Chanteperdrix wrote:
+>>>>> On 04/20/2013 05:27 PM, Jan Kiszka wrote:
+>>>>>
+>>>>>> On 2013-04-20 17:21, Gilles Chanteperdrix wrote:
+>>>>>>> On 04/20/2013 05:18 PM, Jan Kiszka wrote:
+>>>>>>>
+>>>>>>>> On 2013-04-20 17:14, Gilles Chanteperdrix wrote:
+>>>>>>>>> On 04/20/2013 10:19 AM, Jan Kiszka wrote:
+>>>>>>>>>
+>>>>>>>>>> On 2013-04-20 08:04, Michael Haberler wrote:
+>>>>>>>>>>>
+>>>>>>>>>>> Am 19.04.2013 um 21:06 schrieb Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>:
+>>>>>>>>>>>
+>>>>>>>>>>>> On 04/19/2013 01:46 PM, Leopold Palomo-Avellaneda wrote:
+>>>>>>>>>>>>
+>>>>>>>>>>>>> [1] 
+>>>>>>>>>>>>> http://lists.mech.kuleuven.be/pipermail/orocos-users/2013-April/006986.html
+>>>>>>>>>>>>
+>>>>>>>>>>>>
+>>>>>>>>>>>> Hi,
+>>>>>>>>>>>>
+>>>>>>>>>>>> that link does not tell us why you need this option. And that would be
+>>>>>>>>>>>> the most important information.
+>>>>>>>>>>>
+>>>>>>>>>>> with the linuxcnc package build I need to turn on --enable-dlopen-skins as well to get Python modules to work properly
+>>>>>>>>>>
+>>>>>>>>>> OK, it looks like we should try harder to detect dlopen scenarios during
+>>>>>>>>>> runtime to avoid build-time switches. This is likely Xenomai 3 material:
+>>>>>>>>>>
+>>>>>>>>>>  - We need to disable TLS optimizations by default (no big deal).
+>>>>>>>>>>
+>>>>>>>>>>  - In the POSIX skin constructor, we need to read out the mlockall
+>>>>>>>>>>    state, lock everything if necessary, and restore the state
+>>>>>>>>>>    accordingly afterward. The Nucleus may help us here if there is no
+>>>>>>>>>>    adequate libc service (ABI change -> Xenomai 3).
+>>>>>>>>>>
+>>>>>>>>>>  - IIRC, the problem with unconditional auto-shadowing back then were
+>>>>>>>>>>    the improper scheduling parameters that POSIX used to apply. That
+>>>>>>>>>>    was fixed a while back. So if we simple re-apply the current
+>>>>>>>>>>    parameters, it should cause no harm in a dlopen scenario. But I need
+>>>>>>>>>>    to check this again at work against our scenario.
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>> You do not like the idea of an environment variable allowing to disable
+>>>>>>>>> the automatic shadowing?
+>>>>>>>>
+>>>>>>>> Not as a long-term solution as it is user-unfriendly. But it can be an
+>>>>>>>> option worth considering for 2.6.
+>>>>>>>
+>>>>>>>
+>>>>>>> Apparently -forge is already doing it. The advantage of this solution is
+>>>>>>> that the same binary serves well several usages, if we intend to provide
+>>>>>>> packages as generic as possible, this seems like the way to go. Several
+>>>>>>> of the changes I made in the last few weeks go in the same direction.
+>>>>>>
+>>>>>> I'm not sure if there is added value for the controlling auto-shadowing
+>>>>>> in general. But for the case it is in conflict with dlopen, the solution
+>>>>>> I'm proposing is clearly superior as it removes those conflicts
+>>>>>> automatically.
+>>>>>>
+>>>>>> Of course, an environment variable control can exist in parallel if
+>>>>>> there is a need beyond the dlopen conflict resolution.
+>>>>>
+>>>>>
+>>>>> The difference with what you propose is that you propose a syscall to
+>>>>> get the mlockall state. Another solution would be not to call munlockall
+>>>>> after the main thread shadowing, this looks less complicated and does
+>>>>> not require ABI changes.
+>>>>
+>>>> Yes, that's an option as well. But then we should apply this
+>>>> consistently, invoking mlockall from all skin init functions
+>>>> unconditionally. The nucleus depends on this anyway. Not sure if such
+>>>> change would be fine for 2.6 - you decide.
+>>>
+>>>
+>>> What we could do is:
+>>> - if XENO_NOSHADOW is set, shadow the main thread, and call mlockall
+>>> - if it is not set, do not shadow the main thread or call
+>>> mlockall/munlockall
+>>
+>> That's not what I suggested. I was questioning the value of _not_ doing
+>> mlockall automatically during init, thus reducing user duties. That
+>> would reduce the need to think about XENO_NOSHADOW or not as a normal user.
 > 
-> #include <native/task.h>
-> int main() {
->      return 0;
+> 
+> Currently, when the posix skin library start, it does:
+> mlockall
+> shadow main thread
+> munlockall
+> 
+> Now, the munlockall is certainly an issue when dlopening
+> 
+> What I propose instead is to do:
+> if (!getenv("XENO_NOSHADOW")) {
+> 	mlockall
+> 	shadow main thread
 > }
 > 
-> The complete log of the compilation is attached with this email.
-> 
-> The compiler complains about various things, in differents files. I have 
-> not
-> tested other xenomai's headers like native/queue.h, etc. yet.
-> 
-> Do you have any plans to fix them?
+> That will avoid the problem with calling munlockall, and if people who
+> currently use --enable-dlopen-skins really want to avoid shadowing the
+> main thread (which I doubt), they can set the environment variable
+> XENO_NOSHADOW.
 
+Totally clear. But why still requiring the application to call mlockall
+if we do not autoshadow or use a different skin? It's pointless to have
+this explicit call in the application if we can easily do this from the
+library.
 
-What you could do to fix them is to move the functions implemented in
-trace.h to an src/skins/common/trace.c, this would allow to remove
-asm/xenomai/syscall.h from nucleus/trace.h, and would solve most of the
-warnings you are showing us. When you are done and it works for you,
-please submit a patch.
-
-As for the variadic macros, I believe they exist in C99, so perhaps you
-are not compiling with the right flag, or perhaps we do not use the C99
-syntax, which probably could be fixed too.
+Jan
 
 -- 
-                                                                Gilles.
+Siemens AG, Corporate Technology, CT RTC ITP SDP-DE
+Corporate Competence Center Embedded Linux
 
