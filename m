@@ -1,12 +1,12 @@
-Message-ID: <51766F9F.6070407@xenomai.org>
-Date: Tue, 23 Apr 2013 13:25:19 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <51767C09.3070502@siemens.com>
+Date: Tue, 23 Apr 2013 14:18:17 +0200
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-References: <517536B8.4080508@gmail.com>
-In-Reply-To: <517536B8.4080508@gmail.com>
-Content-Type: text/plain; charset=UTF-8
+References: <51757858.6040604@bollue.de>
+In-Reply-To: <51757858.6040604@bollue.de>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] How to use rtdm_(io/m)map_to_user
+Subject: Re: [Xenomai] Sporadic freeze using RTnet
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,37 +15,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Victor Hiairrassary <victor.hiairrassary.ml@gmail.com>
+To: Kai Bollue <mlist1@bollue.de>
 Cc: xenomai@xenomai.org
 
-On 04/22/2013 03:10 PM, Victor Hiairrassary wrote:
-
-> Hello all,
+On 2013-04-22 19:50, Kai Bollue wrote:
+> Hello,
 > 
-> This is my first post on this mailing list. I am really new with 
-> xenomai, only
-> few month ago.
+> after having used Xenomai with RTnet for quite some time, we switched to
+> new hardware and now experience sporadic freezes when communicating over
+> RTnet. (To trigger the problem, it is sufficient to call rtping in a
+> loop.) After several minutes (up to about an hour), the system stops
+> responding. Output over a serial console while this happens is
 > 
-> Currently we have a real-time application using xenomai which interacts with
-> hardware directly by mmaping /dev/mem.
 
+Does sysrq still work then? sysrq-l would be interesting e.g.
 
-This is wrong. The "abstraction layer" used by an application should be
-the usual driver interface open/read/write/ioctl and mmap if there are
-high volumes of data to exchange with the application. Access to the
-registers should be confined to the driver implementation.
+> - Either nothing at all, or
+> 
+> -
+> [  481.189349] INFO: rcu_bh detected stalls on CPUs/tasks: { 2}
+> (detected by 0, t=60042 jiffies)
+> [  481.291572] INFO: Stall ended before state dump start
+> [  541.224383] INFO: rcu_preempt detected stalls on CPUs/tasks: { 2}
+> (detected by 0, t=60002 jiffies)
+> [  541.331818] INFO: Stall ended before state dump start
+> (repeated), or
+> 
+> -
+> [ 2333.757994] Xenomai: Unbalanced lock/unlock
 
-This way, in order to simulate the real hardware you only have to
-implement another driver with the same interface (but with an
-implementation not using registers). And when you decide to use another
-hardware with a completely different registers interface, you do not
-have to emulate the first device registers using the second one, you
-simply implement another driver with the same interface.
+Ah, here's where the problem start.
 
-This is the way, the interface between Linux drivers and applications is
-done, and the way it can be done with Xenomai RTDM skin.
+CONFIG_IPIPE_TRACE_PANIC may provide further information. Enable it via
+the I-pipe tracer. Then, before triggering the lockup, increase the
+backtrace points to, say, 2000:
 
+echo 2000 > /proc/ipipe/trace/back_trace_points
+
+Jan
 
 -- 
-                                                                Gilles.
+Siemens AG, Corporate Technology, CT RTC ITP SDP-DE
+Corporate Competence Center Embedded Linux
 
