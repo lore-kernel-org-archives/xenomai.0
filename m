@@ -1,6 +1,6 @@
-Message-ID: <51767CF9.5090808@siemens.com>
-Date: Tue, 23 Apr 2013 14:22:17 +0200
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <5176813B.9030404@xenomai.org>
+Date: Tue, 23 Apr 2013 14:40:27 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 References: <201304191346.38739.leo@alaxarxa.net>
 	<517195B6.8020209@xenomai.org>
@@ -12,7 +12,7 @@ References: <201304191346.38739.leo@alaxarxa.net>
 	<51753E59.4090609@siemens.com> <51758816.4050100@xenomai.org>
 	<51764485.9020403@siemens.com> <51766E65.1010304@xenomai.org>
 In-Reply-To: <51766E65.1010304@xenomai.org>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] Default options in the debian package
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -24,11 +24,11 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+Cc: Jan Kiszka <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 2013-04-23 13:20, Gilles Chanteperdrix wrote:
+On 04/23/2013 01:20 PM, Gilles Chanteperdrix wrote:
 > On 04/23/2013 10:21 AM, Jan Kiszka wrote:
-> 
+>
 >> On 2013-04-22 20:57, Gilles Chanteperdrix wrote:
 >>> On 04/22/2013 03:42 PM, Jan Kiszka wrote:
 >>>
@@ -50,7 +50,7 @@ On 2013-04-23 13:20, Gilles Chanteperdrix wrote:
 >>>>>>>>>>>>>
 >>>>>>>>>>>>>> On 04/19/2013 01:46 PM, Leopold Palomo-Avellaneda wrote:
 >>>>>>>>>>>>>>
->>>>>>>>>>>>>>> [1] 
+>>>>>>>>>>>>>>> [1]
 >>>>>>>>>>>>>>> http://lists.mech.kuleuven.be/pipermail/orocos-users/2013-April/006986.html
 >>>>>>>>>>>>>>
 >>>>>>>>>>>>>>
@@ -64,18 +64,18 @@ On 2013-04-23 13:20, Gilles Chanteperdrix wrote:
 >>>>>>>>>>>> OK, it looks like we should try harder to detect dlopen scenarios during
 >>>>>>>>>>>> runtime to avoid build-time switches. This is likely Xenomai 3 material:
 >>>>>>>>>>>>
->>>>>>>>>>>>  - We need to disable TLS optimizations by default (no big deal).
+>>>>>>>>>>>>   - We need to disable TLS optimizations by default (no big deal).
 >>>>>>>>>>>>
->>>>>>>>>>>>  - In the POSIX skin constructor, we need to read out the mlockall
->>>>>>>>>>>>    state, lock everything if necessary, and restore the state
->>>>>>>>>>>>    accordingly afterward. The Nucleus may help us here if there is no
->>>>>>>>>>>>    adequate libc service (ABI change -> Xenomai 3).
+>>>>>>>>>>>>   - In the POSIX skin constructor, we need to read out the mlockall
+>>>>>>>>>>>>     state, lock everything if necessary, and restore the state
+>>>>>>>>>>>>     accordingly afterward. The Nucleus may help us here if there is no
+>>>>>>>>>>>>     adequate libc service (ABI change -> Xenomai 3).
 >>>>>>>>>>>>
->>>>>>>>>>>>  - IIRC, the problem with unconditional auto-shadowing back then were
->>>>>>>>>>>>    the improper scheduling parameters that POSIX used to apply. That
->>>>>>>>>>>>    was fixed a while back. So if we simple re-apply the current
->>>>>>>>>>>>    parameters, it should cause no harm in a dlopen scenario. But I need
->>>>>>>>>>>>    to check this again at work against our scenario.
+>>>>>>>>>>>>   - IIRC, the problem with unconditional auto-shadowing back then were
+>>>>>>>>>>>>     the improper scheduling parameters that POSIX used to apply. That
+>>>>>>>>>>>>     was fixed a while back. So if we simple re-apply the current
+>>>>>>>>>>>>     parameters, it should cause no harm in a dlopen scenario. But I need
+>>>>>>>>>>>>     to check this again at work against our scenario.
 >>>>>>>>>>>
 >>>>>>>>>>>
 >>>>>>>>>>> You do not like the idea of an environment variable allowing to disable
@@ -142,17 +142,23 @@ On 2013-04-23 13:20, Gilles Chanteperdrix wrote:
 >> if we do not autoshadow or use a different skin? It's pointless to have
 >> this explicit call in the application if we can easily do this from the
 >> library.
-> 
-> 
+>
+>
 > Well, we have --enable-posix-auto-mlockall for that. But you are right,
 > we get rid of all this and enable automatic mlockall for all skins. I do
 > not see any drawbacks.
+>
+>
 
-Perfect. Will work out some patches.
+ From the dept of Xenomai archive: the original intent of controlling 
+when and how memory locking is done was to address this bug with very 
+old kernels:
 
-Jan
+http://lkml.indiana.edu/hypermail/linux/kernel/0310.0/0649.html
+
+Back then, apps mmapping I/O space would then mlock(MCL_CURRENT), 
+mmap(I/O space), then mlock(MCL_FUTURE) to work around this bug manually.
 
 -- 
-Siemens AG, Corporate Technology, CT RTC ITP SDP-DE
-Corporate Competence Center Embedded Linux
+Philippe.
 
