@@ -1,13 +1,21 @@
-References: <517536B8.4080508@gmail.com> <51766F9F.6070407@xenomai.org>
-Mime-Version: 1.0 (1.0)
-In-Reply-To: <51766F9F.6070407@xenomai.org>
-Message-Id: <E3B5BC29-0015-4473-B5F5-304EEAEC8122@gmail.com>
-From: Victor Hiairrassary <victor.hiairrassary.ml@gmail.com>
-Date: Tue, 23 Apr 2013 14:50:15 +0200
-Content-Type: text/plain;
-	charset=us-ascii
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] How to use rtdm_(io/m)map_to_user
+Message-ID: <517684C3.2090607@siemens.com>
+Date: Tue, 23 Apr 2013 14:55:31 +0200
+From: Jan Kiszka <jan.kiszka@siemens.com>
+MIME-Version: 1.0
+References: <201304191346.38739.leo@alaxarxa.net>
+	<517195B6.8020209@xenomai.org>
+	<12ABCC03-FADF-4C5A-9CAE-CD9E5CA63A19@mah.priv.at>
+	<51724F82.2000809@web.de> <5172B0E5.7090806@xenomai.org>
+	<5172B1B5.10804@web.de> <5172B28C.6070503@xenomai.org>
+	<5172B3CD.20007@web.de> <5172B4AA.1060704@xenomai.org>
+	<5174E2A0.1040906@siemens.com> <51752114.7040903@xenomai.org>
+	<51753E59.4090609@siemens.com> <51758816.4050100@xenomai.org>
+	<51764485.9020403@siemens.com> <51766E65.1010304@xenomai.org>
+	<5176813B.9030404@xenomai.org>
+In-Reply-To: <5176813B.9030404@xenomai.org>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Default options in the debian package
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,37 +24,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
+On 2013-04-23 14:40, Philippe Gerum wrote:
+>> Well, we have --enable-posix-auto-mlockall for that. But you are right,
+>> we get rid of all this and enable automatic mlockall for all skins. I do
+>> not see any drawbacks.
+>>
+>>
+> 
+>  From the dept of Xenomai archive: the original intent of controlling 
+> when and how memory locking is done was to address this bug with very 
+> old kernels:
+> 
+> http://lkml.indiana.edu/hypermail/linux/kernel/0310.0/0649.html
+> 
+> Back then, apps mmapping I/O space would then mlock(MCL_CURRENT), 
+> mmap(I/O space), then mlock(MCL_FUTURE) to work around this bug manually.
+> 
 
+Interesting - but luckily no longer relevant. :)
 
-On 23 avr. 2013, at 13:25, Gilles Chanteperdrix <gilles.chanteperdrix@xenoma=
-i.org> wrote:
->=20
-> This is wrong. The "abstraction layer" used by an application should be
-> the usual driver interface open/read/write/ioctl and mmap if there are
-> high volumes of data to exchange with the application. Access to the
-> registers should be confined to the driver implementation.
->=20
+Jan
 
-The hardware is a FPGA which expose 1024 registers. Currently to read or wri=
-te in a register, we use mmap. How use them with read/write file operations o=
-f this registers? i.e. in userspace, once mmaped on an ptr, we do : ptr[addr=
-] =3D value.=20
-How achieve this with write operation, because write accepts only a value ?
+-- 
+Siemens AG, Corporate Technology, CT RTC ITP SDP-DE
+Corporate Competence Center Embedded Linux
 
-
-> This way, in order to simulate the real hardware you only have to
-> implement another driver with the same interface (but with an
-> implementation not using registers). And when you decide to use another
-> hardware with a completely different registers interface, you do not
-> have to emulate the first device registers using the second one, you
-> simply implement another driver with the same interface.
->=20
-> This is the way, the interface between Linux drivers and applications is
-> done, and the way it can be done with Xenomai RTDM skin.
->=20
->=20
-> --=20
->                                                                Gilles.
