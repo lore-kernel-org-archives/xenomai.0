@@ -1,13 +1,12 @@
-Message-ID: <5176D47E.7050703@xenomai.org>
-Date: Tue, 23 Apr 2013 20:35:42 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <5176D4C2.2090908@siemens.com>
+Date: Tue, 23 Apr 2013 20:36:50 +0200
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-References: <1366732845.34430.YahooMailNeo@web161405.mail.bf1.yahoo.com>	<5176B0E3.3030009@xenomai.org>
-	<1366738934.20080.YahooMailNeo@web161406.mail.bf1.yahoo.com>
-In-Reply-To: <1366738934.20080.YahooMailNeo@web161406.mail.bf1.yahoo.com>
+References: <5176A9B0.6080601@siemens.com> <5176D357.5000308@xenomai.org>
+In-Reply-To: <5176D357.5000308@xenomai.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] rt_task_wait_period returns -11 (-EAGAIN)
+Subject: Re: [Xenomai] Rework of mlockall and dlopen handling
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,42 +15,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Tom Z <tomz30@yahoo.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 04/23/2013 07:42 PM, Tom Z wrote:
+On 2013-04-23 20:30, Gilles Chanteperdrix wrote:
+> On 04/23/2013 05:33 PM, Jan Kiszka wrote:
+> 
+>> Hi,
+>>
+>> I've coded down what we discussed and pushed it into 'for-upstream'.
+>> This does not yet remove redundant mlockall from included userspace
+>> code or change the docs, but the core mechanisms are ready. Patch list
+>> below summarizes the steps.
+> 
+> 
+> I would have been a bit less extreme, and simply inverted the default
+> value of --enable-dlopen-skins and --enable-*-auto-mlockall, but what
+> you did is fine by me.
+> 
+> Maybe we could keep --disable-dlopen-skins though?
 
-> Hi Philippe,
-> 
-> Thanks for answering my previous question. However, I encountered another one regarding rt_task_wait_period(). NowI fixed a problematic parameter in rt_task_set_periodic(), and add the checking of the return values of rt_task_wait_period() and rt_task_set_periodic(). I use rt_task_set_periodic()to set a period of 500 ms for a rt_task, and call rt_task_wait_period() later. It seems that sometimes rt_task_wait_period()works good, but sometimes it just returns 0 immediately. Here is what my code looks like:
-> 
-> unsigned long overrun;
-> RTIME release_time;
-> 
-> if (0 != rt_task_set_periodic(NULL, TM_NOW, 500000000){
->               rt_printf("Error\n");
-> }
-> ....
-> while (1){
->     release_time = rt_timer_read();
->     //Store release_time in an array for offline analysis
->     //Some computation taking about 100 ms
->     if (0 != rt_task_wait_period(&overrun)){
->              rt_printf("Error\n");
->       }
-> }
-> 
-> 
-> I noticed that, during the program's execution, no "Error" was printed, but some consecutive values of release_time is about 100 ms which is the computation time and far less than the period 500 ms.
-> 
-> This problem seems weird to me. Did I possibly overlook something?
+...and translate it to --with-__thread? Or what should be the semantics?
 
-
-A piece of code is worth a thousand words. Please send a self-contained
-test example showing the behaviour you suspect is wrong. Only the C code
-of the test is needed in the mail body, a tarball containing code and
-Makefile is useless, we know how to compile programs for Xenomai.
+Jan
 
 -- 
-                                                                Gilles.
+Siemens AG, Corporate Technology, CT RTC ITP SDP-DE
+Corporate Competence Center Embedded Linux
 
