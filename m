@@ -1,12 +1,13 @@
-Message-ID: <51778082.4060504@xenomai.org>
-Date: Wed, 24 Apr 2013 08:49:38 +0200
+Message-ID: <51778229.1050109@xenomai.org>
+Date: Wed, 24 Apr 2013 08:56:41 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CAH8NBSf+nbREqxMkYt_398z81f-TNRNMbUvm1OSQuk6AagngaQ@mail.gmail.com>
-In-Reply-To: <CAH8NBSf+nbREqxMkYt_398z81f-TNRNMbUvm1OSQuk6AagngaQ@mail.gmail.com>
+References: <mailman.252.1366321778.1444.xenomai@xenomai.org>	<00f801ce3fcb$30850ce0$918f26a0$@com>	<51763D6E.6090407@xenomai.org>	<016901ce4043$7b54e1f0$71fea5d0$@com>	<5176D40E.7060607@xenomai.org>	<019a01ce40a5$95325b90$bf9712b0$@com>
+	<51777F8C.9000700@xenomai.org>
+In-Reply-To: <51777F8C.9000700@xenomai.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Spurious interrupt are raised with 2.6.1 xenomai patch
+Subject: Re: [Xenomai] for-core-3.8 on ARM ( i.MX53 )
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,26 +16,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Srikanth C <srikanthc9@gmail.com>
-Cc: Xenomai@xenomai.org
+To: George Pontis <GPontis@z9.com>
+Cc: xenomai@xenomai.org
 
-On 04/24/2013 08:29 AM, Srikanth C wrote:
+On 04/24/2013 08:45 AM, Gilles Chanteperdrix wrote:
 
-> Hi,
+> On 04/24/2013 06:38 AM, George Pontis wrote:
 > 
-> Spurious interrupts are raised on 2.6.1 Xenomai patch
-> with Linux Kernel version 3.2.34
+>>> - is the timer running correctly?
+>>> - is the clocksource incrementing correctly?
+>>
+>> I don't know how to check either of these.
 > 
-> for every pci interrupt raise  there is one spurious interrupt also getting
-> raised.
 > 
-> Without Xenomai patch pci interrupts are working fine (Spurious interrupts
-> are not raised).
+> Use printk...
+> 
 
 
-What architecture? What kind of interrupt? Do you know the latest
-version of Xenomai is 2.6.2.1, not 2.6.1? Where did you get an I-pipe
-patch for 3.2.34 as the one we provide is for 3.2.21?
+Ok, forget it, I will try and access an imx53 to see what is going wrong.
 
 -- 
                                                                 Gilles.
