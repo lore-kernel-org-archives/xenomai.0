@@ -1,13 +1,12 @@
-Message-ID: <5164936A.8000005@xenomai.org>
-Date: Wed, 10 Apr 2013 00:17:14 +0200
+Message-ID: <51778026.6080803@xenomai.org>
+Date: Wed, 24 Apr 2013 08:48:06 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <1362068715-3458-1-git-send-email-sr@denx.de>
-In-Reply-To: <1362068715-3458-1-git-send-email-sr@denx.de>
+References: <CAFByoKzbx1pMd7dauwoOyKODBOP4q_b=4qtC4H8uNWRwmhgtuA@mail.gmail.com>
+In-Reply-To: <CAFByoKzbx1pMd7dauwoOyKODBOP4q_b=4qtC4H8uNWRwmhgtuA@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PATCH] ipipe: MPC5200: Fix problem with
-	external	interrupts
+Subject: Re: [Xenomai] problem about task scheduling
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,32 +15,78 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Stefan Roese <sr@denx.de>, Xenomai <xenomai@xenomai.org>
+To: kidd <gong.kidd@gmail.com>
+Cc: xenomai@xenomai.org
 
-On 02/28/2013 05:25 PM, Stefan Roese wrote:
+On 04/24/2013 08:18 AM, kidd wrote:
 
-> The MPC5200 external interrupt are not working at all in the Linux
-> context with the current I-pipe support enabled. For example a
-> PCI firewire chip connected to an external interrupt doesn't generate
-> interrupts any more using the Linux FW drivers. With I-pipe
-> disabled or without the current I-pipe patch for the mpc52xx_pic.c
-> file, the external interrupts work just fine.
+> Hi guys
+>     I post Adeos+xenomai to S3C6410 SOC with Linux-2.6.35.9, and the Linux
+> kernel and Xenomai are ok when system boot(according the printed
+> information when system boot). When I run "xeno latency" in console, the
+> output is
+> RTT|  00:00:-01  (periodic user-mode task, 1000 us period, priority 99)
+> RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat best|--lat
+> worst
+> RTD|      0.000|      0.000|      0.000|       0|     0|
+> 900568.258|-900568.259
+> RTD|      0.000|      0.000|      0.000|       0|     0|
+> 900568.258|-900568.259
+> RTD|      0.000|      0.000|      0.000|       0|     0|
+> 900568.258|-900568.259
+> RTD|      0.000|      0.000|      0.000|       0|     0|
+> 900568.258|-900568.259
+> RTD|      0.000|      0.000|      0.000|       0|     0|
+> 900568.258|-900568.259
+> RTD|      0.000|      0.000|      0.000|       0|     0|
+> 900568.258|-900568.259
+> RTD|      0.000|      0.000|      0.000|       0|     0|
+> 900568.258|-900568.259
+> RTD|      0.000|      0.000|      0.000|       0|     0|
+> 900568.258|-900568.259
+> RTD|      0.000|      0.000|      0.000|       0|     0|
+> 900568.258|-900568.259
+> RTD|      0.000|      0.000|      0.000|       0|     0|
+> 900568.258|-900568.259
+> RTD|      0.000|      0.000|      0.000|       0|     0|
+> 900568.258|-900568.259
+> RTD|      0.000|      0.000|      0.000|       0|     0|
+> 900568.258|-900568.259
+> RTD|      0.000|      0.000|      0.000|       0|     0|
+> 900568.258|-900568.259
+> RTD|      0.000|      0.000|      0.000|       0|     0|
+> 900568.258|-900568.259
+> RTD|      0.000|      0.000|      0.000|       0|     0|
+> 900568.258|-900568.259
+> RTD|      0.000|      0.000|      0.000|       0|     0|
+> 900568.258|-900568.259
+> RTD|      0.000|      0.000|      0.000|       0|     0|
+> 900568.258|-900568.259
+> RTD|      0.000|      0.000|      0.000|       0|     0|
+> 900568.258|-900568.259
+> RTD|      0.000|      0.000|      0.000|       0|     0|
+> 900568.258|-900568.259
+> RTD|      0.000|      0.000|      0.000|       0|     0|
+> 900568.258|-900568.259
+> RTD|      0.000|      0.000|      0.000|       0|     0|
+> 900568.258|-900568.259
 > 
-> This patch now introduces the xxx_mask_ack() function for these
-> external interrupts as already done for the other interrupts handled
-> in this driver. With this change, the interrupts work regardless
-> if I-pipe support is enabled or not.
-> 
-> Additionally a small coding style issue has been included (spaces
-> around "-").
-> 
-> Signed-off-by: Stefan Roese <sr@denx.de>
-> Cc: Philippe Gerum <rpm@xenomai.org>
+> all data is 0. According the source code of latecny.c, I found that the
+> "main" function started 2 task(latency_task and display_task). The
+> latency_task is to update the value of timing variables, and the
+> display_task is to display the upated values. I found there was only one
+> task (display_task) was always active.
+> How to start other task? with timer interrupt or other ways? thanks
 
 
-Philippe, has this patch been forgotten? I can't seem to find it in the
-core-next branch.
+It is simple: Xenomai works on other ARM platforms. So, there is nothing
+wrong with Xenomai or the latency test, what is wrong is likely your
+port to the S3C6410.
+
+So, again, please use the following document:
+http://xenomai.org/index.php/I-pipe-core:ArmPorting
+
+As a list of things to check to be sure that your port is working.
 
 -- 
                                                                 Gilles.
