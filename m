@@ -1,5 +1,5 @@
-Message-ID: <51778C38.8030105@thrane.com>
-Date: Wed, 24 Apr 2013 09:39:36 +0200
+Message-ID: <51778C43.4060305@thrane.com>
+Date: Wed, 24 Apr 2013 09:39:47 +0200
 From: Jesper Christensen <jbc@thrane.com>
 MIME-Version: 1.0
 References: <517652E1.3090104@thrane.com> <51767C66.9030103@siemens.com>
@@ -36,7 +36,7 @@ On 04/23/2013 02:19 PM, Jan Kiszka wrote:
 > Jan
 >
 
-Its a real time device (ETSEC on a MPC8520) with xenomai 2.5.6 on a
+Its a real time device (ETSEC on a MPC8572) with xenomai 2.5.6 on a
 linux-2.6.29.6 and ipipe-2.7-04 and the stack is rtnet-0.9.12. The ipipe
 patch has minor modifications to make it apply to the freescale patched
 version of the linux source. The rtnet source also has several (heavier)
