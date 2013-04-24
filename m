@@ -1,13 +1,14 @@
-Message-ID: <51779EF1.6010801@xenomai.org>
-Date: Wed, 24 Apr 2013 10:59:29 +0200
-From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
+In-Reply-To: <51779EF1.6010801@xenomai.org>
 References: <CAH8NBSf+nbREqxMkYt_398z81f-TNRNMbUvm1OSQuk6AagngaQ@mail.gmail.com>
 	<51778082.4060504@xenomai.org>
 	<CAH8NBSfP3ToQtYMFZymuPwB_E96q=7wBWsL_Ag2r2c=dSwa6yA@mail.gmail.com>
-In-Reply-To: <CAH8NBSfP3ToQtYMFZymuPwB_E96q=7wBWsL_Ag2r2c=dSwa6yA@mail.gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
+	<51779EF1.6010801@xenomai.org>
+Date: Wed, 24 Apr 2013 15:03:23 +0530
+Message-ID: <CAH8NBSfmRw8mGdH4Fo10bxCHP4YTpCcNkXDg_AFxxArQ7we6wA@mail.gmail.com>
+From: Srikanth C <srikanthc9@gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Subject: Re: [Xenomai] Spurious interrupt are raised with 2.6.1 xenomai patch
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -17,58 +18,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Srikanth C <srikanthc9@gmail.com>
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: Xenomai@xenomai.org
 
-On 04/24/2013 08:57 AM, Srikanth C wrote:
-> Arch is PPC and interrupt is PCI, level sensitive interrupt.
->
-> ipipe 3.2.21 patch is applied to kernel 3.2.24 and even I tried with
-> ipipe-core-3.5.7-powerpc-3.patch with 3.5.7 kernel
-> same result is observed.
-
-Which powerpc platform? What is the test case? How do you notice the 
-spurious interrupt? Is there any kernel log info you may share that 
-reports it?
-
-Please, help us to help you.
-
->
->
->
-> On Wed, Apr 24, 2013 at 12:19 PM, Gilles Chanteperdrix <
-> gilles.chanteperdrix@xenomai.org> wrote:
->
->> On 04/24/2013 08:29 AM, Srikanth C wrote:
->>
->>> Hi,
->>>
->>> Spurious interrupts are raised on 2.6.1 Xenomai patch
->>> with Linux Kernel version 3.2.34
->>>
->>> for every pci interrupt raise  there is one spurious interrupt also
->> getting
->>> raised.
->>>
->>> Without Xenomai patch pci interrupts are working fine (Spurious
->> interrupts
->>> are not raised).
->>
->>
->> What architecture? What kind of interrupt? Do you know the latest
->> version of Xenomai is 2.6.2.1, not 2.6.1? Where did you get an I-pipe
->> patch for 3.2.34 as the one we provide is for 3.2.21?
->>
->> --
->>                                                                  Gilles.
->>
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> http://www.xenomai.org/mailman/listinfo/xenomai
->
-
-
--- 
-Philippe.
-
+U29ycnkgdGhlcmUgaXMgdHlwbyBtaXN0YWtlIGluIGtlcm5lbCB2ZXJzaW9uIDMuMi4yNCBpbnN0
+ZWFkIG9mIDMuMi4zNAoKUGxlYXNlIGZpbmQgdGhlIGF0dGFjaGVkIGJvb3QgbG9nIGFuZCBpbnRl
+cnJ1cHRzKC9wcm9jL2ludGVydXVwdHMpIGxvZwoKQWRkZWQgYSBkZWJ1ZyBtZXNzYWdlIGluIF9p
+cGlwZV9ncmFiX2lycSBmdW5jdGlvbiB0byB2ZXJpZnkgdGhlIHNwdXJpb3VzCmludGVycnVwdCBv
+Y2N1cnJlbmNlIGFmdGVyIElBQ0sgcmVhZAp0ZXN0IGNvZGUgcGFzdGVkIGJlbG93IDoKY291bnQg
+dmFyaWFibGUgaXMgZ2xvYmFsIHZhcmlhYmxlIGFuZCBpbml0aWFsaXNlZCB0byB6ZXJvCioqKioq
+KioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioq
+KioqCmNvdW50Kys7CmlycSA9IHBwY19tZC5nZXRfaXJxKCk7CiAgICAgICAgaWYgKHVubGlrZWx5
+KGlycSA9PSBOT19JUlEpKSB7CiAgICAgICAgICAgICAgICBfX2dldF9jcHVfdmFyKGlycV9zdGF0
+KS5zcHVyaW91c19pcnFzKys7CiAgICAgICAgICAgICAgICBwcmludGsoIlMuICVkIixjb3VudCk7
+CiAgICAgICAgICAgICAgICByZXR1cm4gX19pcGlwZV9leGl0X2lycShyZWdzKTsKICAgICAgICB9
+CioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioq
+KioqKioqKioqKgpDb250aW51b3VzIG9kZCBudW1iZXJzIGlzIHByaW50ZWQgZm9yIHNwdXJpb3Vz
+IGludGVycnVwdApTLiAxClMuIDMKUy4gNQoKCgpPbiBXZWQsIEFwciAyNCwgMjAxMyBhdCAyOjI5
+IFBNLCBQaGlsaXBwZSBHZXJ1bSA8cnBtQHhlbm9tYWkub3JnPiB3cm90ZToKCj4gT24gMDQvMjQv
+MjAxMyAwODo1NyBBTSwgU3Jpa2FudGggQyB3cm90ZToKPgo+PiBBcmNoIGlzIFBQQyBhbmQgaW50
+ZXJydXB0IGlzIFBDSSwgbGV2ZWwgc2Vuc2l0aXZlIGludGVycnVwdC4KPj4KPj4gaXBpcGUgMy4y
+LjIxIHBhdGNoIGlzIGFwcGxpZWQgdG8ga2VybmVsIDMuMi4yNCBhbmQgZXZlbiBJIHRyaWVkIHdp
+dGgKPj4gaXBpcGUtY29yZS0zLjUuNy1wb3dlcnBjLTMuKipwYXRjaCB3aXRoIDMuNS43IGtlcm5l
+bAo+PiBzYW1lIHJlc3VsdCBpcyBvYnNlcnZlZC4KPj4KPgo+IFdoaWNoIHBvd2VycGMgcGxhdGZv
+cm0/IFdoYXQgaXMgdGhlIHRlc3QgY2FzZT8gSG93IGRvIHlvdSBub3RpY2UgdGhlCj4gc3B1cmlv
+dXMgaW50ZXJydXB0PyBJcyB0aGVyZSBhbnkga2VybmVsIGxvZyBpbmZvIHlvdSBtYXkgc2hhcmUg
+dGhhdCByZXBvcnRzCj4gaXQ/Cj4KPiBQbGVhc2UsIGhlbHAgdXMgdG8gaGVscCB5b3UuCj4KPgo+
+Pgo+Pgo+PiBPbiBXZWQsIEFwciAyNCwgMjAxMyBhdCAxMjoxOSBQTSwgR2lsbGVzIENoYW50ZXBl
+cmRyaXggPAo+PiBnaWxsZXMuY2hhbnRlcGVyZHJpeEB4ZW5vbWFpLioqb3JnIDxnaWxsZXMuY2hh
+bnRlcGVyZHJpeEB4ZW5vbWFpLm9yZz4+Cj4+IHdyb3RlOgo+Pgo+PiAgT24gMDQvMjQvMjAxMyAw
+ODoyOSBBTSwgU3Jpa2FudGggQyB3cm90ZToKPj4+Cj4+PiAgSGksCj4+Pj4KPj4+PiBTcHVyaW91
+cyBpbnRlcnJ1cHRzIGFyZSByYWlzZWQgb24gMi42LjEgWGVub21haSBwYXRjaAo+Pj4+IHdpdGgg
+TGludXggS2VybmVsIHZlcnNpb24gMy4yLjM0Cj4+Pj4KPj4+PiBmb3IgZXZlcnkgcGNpIGludGVy
+cnVwdCByYWlzZSAgdGhlcmUgaXMgb25lIHNwdXJpb3VzIGludGVycnVwdCBhbHNvCj4+Pj4KPj4+
+IGdldHRpbmcKPj4+Cj4+Pj4gcmFpc2VkLgo+Pj4+Cj4+Pj4gV2l0aG91dCBYZW5vbWFpIHBhdGNo
+IHBjaSBpbnRlcnJ1cHRzIGFyZSB3b3JraW5nIGZpbmUgKFNwdXJpb3VzCj4+Pj4KPj4+IGludGVy
+cnVwdHMKPj4+Cj4+Pj4gYXJlIG5vdCByYWlzZWQpLgo+Pj4+Cj4+Pgo+Pj4KPj4+IFdoYXQgYXJj
+aGl0ZWN0dXJlPyBXaGF0IGtpbmQgb2YgaW50ZXJydXB0PyBEbyB5b3Uga25vdyB0aGUgbGF0ZXN0
+Cj4+PiB2ZXJzaW9uIG9mIFhlbm9tYWkgaXMgMi42LjIuMSwgbm90IDIuNi4xPyBXaGVyZSBkaWQg
+eW91IGdldCBhbiBJLXBpcGUKPj4+IHBhdGNoIGZvciAzLjIuMzQgYXMgdGhlIG9uZSB3ZSBwcm92
+aWRlIGlzIGZvciAzLjIuMjE/Cj4+Pgo+Pj4gLS0KPj4+ICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgR2lsbGVzLgo+Pj4KPj4+
+ICBfX19fX19fX19fX19fX19fX19fX19fX19fX19fX18qKl9fX19fX19fX19fX19fX19fCj4+IFhl
+bm9tYWkgbWFpbGluZyBsaXN0Cj4+IFhlbm9tYWlAeGVub21haS5vcmcKPj4gaHR0cDovL3d3dy54
+ZW5vbWFpLm9yZy8qKm1haWxtYW4vbGlzdGluZm8veGVub21haTxodHRwOi8vd3d3Lnhlbm9tYWku
+b3JnL21haWxtYW4vbGlzdGluZm8veGVub21haT4KPj4KPj4KPgo+IC0tCj4gUGhpbGlwcGUuCj4K
+LS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNo
+bWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogZG1lc2dfbG9nClR5cGU6IGFwcGxpY2F0aW9uL29j
+dGV0LXN0cmVhbQpTaXplOiAzODU2NSBieXRlcwpEZXNjOiBub3QgYXZhaWxhYmxlClVSTDogPGh0
+dHA6Ly93d3cueGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxMzA0
+MjQvMjlmMmE5N2IvYXR0YWNobWVudC5vYmo+Ci0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0t
+LS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IHBy
+b2NfbG9nClR5cGU6IGFwcGxpY2F0aW9uL29jdGV0LXN0cmVhbQpTaXplOiA0MTQgYnl0ZXMKRGVz
+Yzogbm90IGF2YWlsYWJsZQpVUkw6IDxodHRwOi8vd3d3Lnhlbm9tYWkub3JnL3BpcGVybWFpbC94
+ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTMwNDI0LzI5ZjJhOTdiL2F0dGFjaG1lbnQtMDAwMS5vYmo+
+Cg==
