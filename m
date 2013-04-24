@@ -1,15 +1,16 @@
-Message-ID: <5176E0D2.2080101@bollue.de>
-Date: Tue, 23 Apr 2013 21:28:18 +0200
-From: Kai Bollue <mlist1@bollue.de>
+From: "George Pontis" <GPontis@z9.com>
+References: <mailman.252.1366321778.1444.xenomai@xenomai.org>	<00f801ce3fcb$30850ce0$918f26a0$@com>	<51763D6E.6090407@xenomai.org>
+	<016901ce4043$7b54e1f0$71fea5d0$@com>
+	<5176D40E.7060607@xenomai.org>
+In-Reply-To: <5176D40E.7060607@xenomai.org>
+Date: Tue, 23 Apr 2013 21:38:35 -0700
+Message-ID: <019a01ce40a5$95325b90$bf9712b0$@com>
 MIME-Version: 1.0
-References: <51757858.6040604@bollue.de> <51767C09.3070502@siemens.com>
-	<51769250.7050504@bollue.de> <5176950F.3040702@siemens.com>
-	<5176AB28.7000305@bollue.de> <5176AC37.1040405@siemens.com>
-	<5176C108.5050102@bollue.de> <5176C24B.3000300@siemens.com>
-In-Reply-To: <5176C24B.3000300@siemens.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Sporadic freeze using RTnet
+Content-Type: text/plain;
+	charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+Content-Language: en-us
+Subject: Re: [Xenomai] for-core-3.8 on ARM ( i.MX53 )
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,41 +19,115 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Xenomai <xenomai@xenomai.org>
-
-On 23.04.2013 19:18, Jan Kiszka wrote:
->
-> Yeah, its hairy:
->
-> [   94.352526]  |  #*func    	        0 ipipe_trace_panic_freeze+0x9 (ipipe_root_only+0x62)
-> [   94.360774]  |  #*func    	        0 ipipe_prepare_panic+0x7 (ipipe_root_only+0x5d)
-> [   94.368618]  |  #*func    	        0 ipipe_root_only+0x9 (add_preempt_count+0x15)
-> [   94.376263]  |  #*func    	        0 add_preempt_count+0x9 (_raw_spin_lock_irqsave+0x56)
-> [   94.384515]  |  # func    	        0 _raw_spin_lock_irqsave+0x7 (swiotlb_tbl_map_single+0x96)
-> [   94.392925]  |  # func    	       -1 __phys_addr+0x4 ( |  # func    	       -1 __phys_addr+0x4 (pci_map_single+0x53 [rt_eepro100])
-> [   94.392945]  |  # func    	       -1 ___xnpod_lock_sched+0x4 (__xnpod_lock_sched+0x21 [rt_eepro100])
-> [   94.392954]  |  + begin   0x80000000     -2 speedo_start_xmit+0x3a [rt_eepro100] (rtdev_locked_xmit+0x33 [rtnet])
-> [   94.392964]     + func    	       -2 speedo_start_xmit+0x11 [rt_eepro100] (rtdev_locked_xmit+0x33 [rtnet])
->
-> Now the swiotlb is active, a software IOMMU that helps on systems >4G
-> RAM with devices that can only DMA to 32-bit addresses (it provides
-> bounce buffers). You can work around that issue by limiting the memory
-> used by your system (mem=) or by using an RTnet NIC that does not have
-> this limitation (rt_e1000e and rt_igb compatible ones).
-
-Yep, that's it, thank you very much.
-
-Does the rt_8139too driver support pre-mapping? Last year, we built a 
-system with two RTL 8139 and 8 GB of RAM - and did not experience any 
-such problems since...
-
->   Or add pre-mapping support to the rt_e100pro. Check e.g. the conversion of the
-> e1000e for the pattern. Patches welcome.
-
-I will see what I can do. For now, the system runs on an e1000e.
+To: xenomai@xenomai.org
 
 
-Regards,
-Kai
+
+> -----Original Message-----
+> From: Gilles Chanteperdrix [mailto:gilles.chanteperdrix@xenomai.org]
+> Sent: Tuesday, April 23, 2013 11:34 AM
+> To: George Pontis
+> Cc: xenomai@xenomai.org
+> Subject: Re: [Xenomai] for-core-3.8 on ARM ( i.MX53 )
+>=20
+> On 04/23/2013 06:56 PM, George Pontis wrote:
+>=20
+> >> -----Original Message-----
+> >> From: Gilles Chanteperdrix =
+[mailto:gilles.chanteperdrix@xenomai.org]
+> >> Sent: Tuesday, April 23, 2013 12:51 AM
+> >> To: George Pontis
+> >> Cc: xenomai@xenomai.org
+> >> Subject: Re: [Xenomai] for-core-3.8 on ARM ( i.MX53 )
+> >>
+> >> On 04/23/2013 04:35 AM, George Pontis wrote:
+> >>
+> >>> I took a crack at building a 3.8 kernel with Xenomai 2.6.2.1 for
+> ARM,
+> >> based
+> >>> on the work in progress toward that ipipe patch.
+> >>
+> >>
+> >> Xenomai 2.6.2.1 will not work, please upgrade to Xenomai 2.6 =
+current
+> >> git
+> >> and tell us if you see the same issue.
+> >>
+> >> --
+> >>
+> Gilles.
+> >
+> > I got the current Xenomai and rebuilt with that. The process went
+> smoothly and did not
+> > require any patching or manual intervention, but it still hangs at
+> the same point. Is
+> > it expected that the 2.6 current tree is identifying itself as
+> 2.6.2.1 ?
+>=20
+>=20
+> Yes it is expected, incrementing the version number is the last thing
+> we
+> do before a release. Now, about the hang, several questions:
+> - does the very same kernel version without CONFIG_IPIPE and
+> CONFIG_XENOMAI boot normally?
+
+
+With these undefined and the kernel rebuilt, it does boot normally.
+I noticed that there is a 1-2 second delay after that same line for
+eth0, but then it continues to boot to a login prompt. I tried
+just CONFIG_IPIPE=3Dy without Xenomai, and that kernel hangs at the
+same place.=20
+
+> - are the error messages:
+> mmc0: no vqmmc regulator found
+> mmc0: no vmmc regulator found
+> mmc1: no vqmmc regulator found
+> mmc1: no vmmc regulator found
+> sgtl5000 1-000a: clock-frequency missing or invalid
+> imx-sgtl5000: probe of sound.8 failed with error -22
+> Expected?
+
+These messages have been there all along, even when the kernel boots =
+normally.
+The sgtl5000 sound chip does not work, but we don't care about that now. =
+
+
+> - does not the message:
+> Console: switching to colour frame buffer device 80x30
+> Tell us that in fact the kernel logs are continuing on the =
+framebuffer?
+
+
+Even when the kernel boots it says this, but the boot messages continue =
+to display
+on the serial console. There is no output on the framebuffer except Tux, =
+until one
+logs in and runs an application.
+
+
+> - is the timer running correctly?
+> - is the clocksource incrementing correctly?
+
+I don't know how to check either of these.
+
+>=20
+> Regards.
+>=20
+> --
+>                                                                 =
+Gilles.
+
+Here in the Silicon Valley area of California we are having the embedded =
+system conference this week.
+I visited some vendors that had JTAG hardware + software packages that =
+could step through kernel code.
+ARM had a nice one but it included trace and was expensive. Arium had a =
+more affordable solution.
+I could get one on these and use it to get closer to the source of the =
+problem, but it would take a
+while. Any thoughts on the usefulness of those tools ?
+
+George
+
+
 
