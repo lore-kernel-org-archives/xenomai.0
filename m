@@ -1,13 +1,12 @@
-Message-ID: <5177865E.4060206@xenomai.org>
-Date: Wed, 24 Apr 2013 09:14:38 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <51778C38.8030105@thrane.com>
+Date: Wed, 24 Apr 2013 09:39:36 +0200
+From: Jesper Christensen <jbc@thrane.com>
 MIME-Version: 1.0
-References: <CAFByoKzbx1pMd7dauwoOyKODBOP4q_b=4qtC4H8uNWRwmhgtuA@mail.gmail.com>
-	<51778026.6080803@xenomai.org>
-In-Reply-To: <51778026.6080803@xenomai.org>
-Content-Type: text/plain; charset=UTF-8
+References: <517652E1.3090104@thrane.com> <51767C66.9030103@siemens.com>
+In-Reply-To: <51767C66.9030103@siemens.com>
+Content-Type: text/plain; charset="ISO-8859-1"
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] problem about task scheduling
+Subject: Re: [Xenomai] Lost interrupts
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,87 +15,55 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: kidd <gong.kidd@gmail.com>
+To: Jan Kiszka <jan.kiszka@siemens.com>, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On 04/24/2013 08:48 AM, Gilles Chanteperdrix wrote:
-
-> On 04/24/2013 08:18 AM, kidd wrote:
-> 
+On 04/23/2013 02:19 PM, Jan Kiszka wrote:
+> On 2013-04-23 11:22, Jesper Christensen wrote:
 >> Hi guys
->>     I post Adeos+xenomai to S3C6410 SOC with Linux-2.6.35.9, and the Linux
->> kernel and Xenomai are ok when system boot(according the printed
->> information when system boot). When I run "xeno latency" in console, the
->> output is
->> RTT|  00:00:-01  (periodic user-mode task, 1000 us period, priority 99)
->> RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat best|--lat
->> worst
->> RTD|      0.000|      0.000|      0.000|       0|     0|
->> 900568.258|-900568.259
->> RTD|      0.000|      0.000|      0.000|       0|     0|
->> 900568.258|-900568.259
->> RTD|      0.000|      0.000|      0.000|       0|     0|
->> 900568.258|-900568.259
->> RTD|      0.000|      0.000|      0.000|       0|     0|
->> 900568.258|-900568.259
->> RTD|      0.000|      0.000|      0.000|       0|     0|
->> 900568.258|-900568.259
->> RTD|      0.000|      0.000|      0.000|       0|     0|
->> 900568.258|-900568.259
->> RTD|      0.000|      0.000|      0.000|       0|     0|
->> 900568.258|-900568.259
->> RTD|      0.000|      0.000|      0.000|       0|     0|
->> 900568.258|-900568.259
->> RTD|      0.000|      0.000|      0.000|       0|     0|
->> 900568.258|-900568.259
->> RTD|      0.000|      0.000|      0.000|       0|     0|
->> 900568.258|-900568.259
->> RTD|      0.000|      0.000|      0.000|       0|     0|
->> 900568.258|-900568.259
->> RTD|      0.000|      0.000|      0.000|       0|     0|
->> 900568.258|-900568.259
->> RTD|      0.000|      0.000|      0.000|       0|     0|
->> 900568.258|-900568.259
->> RTD|      0.000|      0.000|      0.000|       0|     0|
->> 900568.258|-900568.259
->> RTD|      0.000|      0.000|      0.000|       0|     0|
->> 900568.258|-900568.259
->> RTD|      0.000|      0.000|      0.000|       0|     0|
->> 900568.258|-900568.259
->> RTD|      0.000|      0.000|      0.000|       0|     0|
->> 900568.258|-900568.259
->> RTD|      0.000|      0.000|      0.000|       0|     0|
->> 900568.258|-900568.259
->> RTD|      0.000|      0.000|      0.000|       0|     0|
->> 900568.258|-900568.259
->> RTD|      0.000|      0.000|      0.000|       0|     0|
->> 900568.258|-900568.259
->> RTD|      0.000|      0.000|      0.000|       0|     0|
->> 900568.258|-900568.259
 >>
->> all data is 0. According the source code of latecny.c, I found that the
->> "main" function started 2 task(latency_task and display_task). The
->> latency_task is to update the value of timing variables, and the
->> display_task is to display the upated values. I found there was only one
->> task (display_task) was always active.
->> How to start other task? with timer interrupt or other ways? thanks
-> 
-> 
-> It is simple: Xenomai works on other ARM platforms. So, there is nothing
-> wrong with Xenomai or the latency test, what is wrong is likely your
-> port to the S3C6410.
-> 
-> So, again, please use the following document:
-> http://xenomai.org/index.php/I-pipe-core:ArmPorting
-> 
-> As a list of things to check to be sure that your port is working.
-> 
+>> I have a quick question regarding rtdm synchronisation. Is it possible
+>> to "loose" an interrupt if it is generated while i am inside a critical
+>> section protected by a rtdm_lock_get_irqsave/rtdm_lock_put_irqrestore?
+> Nope, as Gilles already answered.
+>
+>> I have a problem with an ethernet driver where the Tx Queue fills up and
+>> i suspect that its because the Tx ISR isn't being executed for the above
+>> mentioned reason.
+> Are we talking about a Linux NIC or a real-time device? What is your
+> software stack in general (used components and their versions)?
+>
+> Jan
+>
 
-Or rather:
-http://xenomai.org/index.php/I-pipe:ArmPorting
+Its a real time device (ETSEC on a MPC8520) with xenomai 2.5.6 on a
+linux-2.6.29.6 and ipipe-2.7-04 and the stack is rtnet-0.9.12. The ipipe
+patch has minor modifications to make it apply to the freescale patched
+version of the linux source. The rtnet source also has several (heavier)
+modifications (scattered skbs, etc.).
 
-For 2.6.35
+So if an interrupt occurs during a critical section, the ISR will run
+upon exit from that section?
 
--- 
-                                                                Gilles.
+On 04/23/2013 01:21 PM, Gilles Chanteperdrix wrote:
+> On 04/23/2013 11:22 AM, Jesper Christensen wrote:
+>
+>> Hi guys
+>>
+>> I have a quick question regarding rtdm synchronisation. Is it possible
+>> to "loose" an interrupt if it is generated while i am inside a critical
+>> section protected by a rtdm_lock_get_irqsave/rtdm_lock_put_irqrestore?
+>>
+>> I have a problem with an ethernet driver where the Tx Queue fills up and
+>> i suspect that its because the Tx ISR isn't being executed for the above
+>> mentioned reason.
+> It is very unlikely, the cause could be the driver code instead. What
+> kind of interrupt are we talking about? level or edge?
+>
+>
+I believe its a level interrupt, i haven't been able to find any mention
+of it in the documentation, but the native linux driver reports them as
+level in /proc/interrupts
+
+/Jesper
 
