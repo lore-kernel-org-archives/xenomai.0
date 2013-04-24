@@ -1,13 +1,14 @@
-Message-ID: <5177960B.1050206@thrane.com>
-Date: Wed, 24 Apr 2013 10:21:31 +0200
-From: Jesper Christensen <jbc@thrane.com>
+Message-ID: <51779EF1.6010801@xenomai.org>
+Date: Wed, 24 Apr 2013 10:59:29 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <517652E1.3090104@thrane.com> <51767C66.9030103@siemens.com>
-	<51778C38.8030105@thrane.com> <51778F44.8030109@siemens.com>
-In-Reply-To: <51778F44.8030109@siemens.com>
-Content-Type: text/plain; charset="ISO-8859-1"
+References: <CAH8NBSf+nbREqxMkYt_398z81f-TNRNMbUvm1OSQuk6AagngaQ@mail.gmail.com>
+	<51778082.4060504@xenomai.org>
+	<CAH8NBSfP3ToQtYMFZymuPwB_E96q=7wBWsL_Ag2r2c=dSwa6yA@mail.gmail.com>
+In-Reply-To: <CAH8NBSfP3ToQtYMFZymuPwB_E96q=7wBWsL_Ag2r2c=dSwa6yA@mail.gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Lost interrupts
+Subject: Re: [Xenomai] Spurious interrupt are raised with 2.6.1 xenomai patch
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,43 +17,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Srikanth C <srikanthc9@gmail.com>
+Cc: Xenomai@xenomai.org
 
-On 04/24/2013 09:52 AM, Jan Kiszka wrote:
-> On 2013-04-24 09:39, Jesper Christensen wrote:
->> On 04/23/2013 02:19 PM, Jan Kiszka wrote:
->>> On 2013-04-23 11:22, Jesper Christensen wrote:
->>>> Hi guys
->>>>
->>>> I have a quick question regarding rtdm synchronisation. Is it possible
->>>> to "loose" an interrupt if it is generated while i am inside a critical
->>>> section protected by a rtdm_lock_get_irqsave/rtdm_lock_put_irqrestore?
->>> Nope, as Gilles already answered.
+On 04/24/2013 08:57 AM, Srikanth C wrote:
+> Arch is PPC and interrupt is PCI, level sensitive interrupt.
+>
+> ipipe 3.2.21 patch is applied to kernel 3.2.24 and even I tried with
+> ipipe-core-3.5.7-powerpc-3.patch with 3.5.7 kernel
+> same result is observed.
+
+Which powerpc platform? What is the test case? How do you notice the 
+spurious interrupt? Is there any kernel log info you may share that 
+reports it?
+
+Please, help us to help you.
+
+>
+>
+>
+> On Wed, Apr 24, 2013 at 12:19 PM, Gilles Chanteperdrix <
+> gilles.chanteperdrix@xenomai.org> wrote:
+>
+>> On 04/24/2013 08:29 AM, Srikanth C wrote:
+>>
+>>> Hi,
 >>>
->>>> I have a problem with an ethernet driver where the Tx Queue fills up and
->>>> i suspect that its because the Tx ISR isn't being executed for the above
->>>> mentioned reason.
->>> Are we talking about a Linux NIC or a real-time device? What is your
->>> software stack in general (used components and their versions)?
+>>> Spurious interrupts are raised on 2.6.1 Xenomai patch
+>>> with Linux Kernel version 3.2.34
 >>>
->>> Jan
+>>> for every pci interrupt raise  there is one spurious interrupt also
+>> getting
+>>> raised.
 >>>
->> Its a real time device (ETSEC on a MPC8520) with xenomai 2.5.6 on a
->> linux-2.6.29.6 and ipipe-2.7-04 and the stack is rtnet-0.9.12. The ipipe
->> patch has minor modifications to make it apply to the freescale patched
->> version of the linux source. The rtnet source also has several (heavier)
->> modifications (scattered skbs, etc.).
-> That introduces a lot of variations and potential breakage points. You
-> will have to debug through them.
-Agreed :)
->> So if an interrupt occurs during a critical section, the ISR will run
->> upon exit from that section?
-> Critical RT sections disable interrupts in hardware. And common CPUs
-> keep interrupts pending that arrive while delivery is disabled,
-> replaying them once the OS reenables them again.
-Great, thank you for your time Jan and Gilles.
-> Jan
+>>> Without Xenomai patch pci interrupts are working fine (Spurious
+>> interrupts
+>>> are not raised).
+>>
+>>
+>> What architecture? What kind of interrupt? Do you know the latest
+>> version of Xenomai is 2.6.2.1, not 2.6.1? Where did you get an I-pipe
+>> patch for 3.2.34 as the one we provide is for 3.2.21?
+>>
+>> --
+>>                                                                  Gilles.
+>>
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> http://www.xenomai.org/mailman/listinfo/xenomai
 >
 
+
+-- 
+Philippe.
 
