@@ -1,5 +1,5 @@
-Message-ID: <5178F16B.504@xenomai.org>
-Date: Thu, 25 Apr 2013 11:03:39 +0200
+Message-ID: <5178F226.7090206@xenomai.org>
+Date: Thu, 25 Apr 2013 11:06:46 +0200
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 References: <CAH8NBSf+nbREqxMkYt_398z81f-TNRNMbUvm1OSQuk6AagngaQ@mail.gmail.com>
@@ -8,7 +8,8 @@ References: <CAH8NBSf+nbREqxMkYt_398z81f-TNRNMbUvm1OSQuk6AagngaQ@mail.gmail.com>
 	<51779EF1.6010801@xenomai.org>
 	<CAH8NBSfmRw8mGdH4Fo10bxCHP4YTpCcNkXDg_AFxxArQ7we6wA@mail.gmail.com>
 	<CAH8NBSeCvBMAzGK8ewUvDW2TY4GYDzZSW8EF20+WyKFoMB2V0Q@mail.gmail.com>
-In-Reply-To: <CAH8NBSeCvBMAzGK8ewUvDW2TY4GYDzZSW8EF20+WyKFoMB2V0Q@mail.gmail.com>
+	<5178F16B.504@xenomai.org>
+In-Reply-To: <5178F16B.504@xenomai.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] Spurious interrupt are raised with 2.6.1 xenomai patch
@@ -23,30 +24,37 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: Srikanth C <srikanthc9@gmail.com>
 Cc: Xenomai@xenomai.org
 
-On 04/25/2013 09:57 AM, Srikanth C wrote:
-> Test Results with adeos-ipipe patch:
+On 04/25/2013 11:03 AM, Philippe Gerum wrote:
+> On 04/25/2013 09:57 AM, Srikanth C wrote:
+>> Test Results with adeos-ipipe patch:
+>>
+>> H/W Setup is same, S/W Changed to adeos-ipipe with 3.0.8 kernel.
+>>
+>> adeos-ipipe-3.0.8-powerpc-2.13-04.patch applied to 3.0.8 kernel,
+>> spurious interrupt is not raised with this patch.
+>>
 >
-> H/W Setup is same, S/W Changed to adeos-ipipe with 3.0.8 kernel.
+> I still don't know what ppc platform you are running on, which does not
+> allow me to figure out which interrupt controller might be involved, and
+> how to try reproducing this issue.
 >
-> adeos-ipipe-3.0.8-powerpc-2.13-04.patch applied to 3.0.8 kernel,
-> spurious interrupt is not raised with this patch.
+> Again and I won't ask for this once more:
+>
+> - what is your ppc platform: 40x, 44x, 52xx, 82xx, 83xx, 85xx, 86xx,
+> anything else?
+
+I need the cpu type _and_ the board type. Attaching your kernel .config 
+would provide the required information.
+
+>
+>> All ipipe series patches raising spurious interrupt in powerpc.
+>>
+>
+> The few patches > 3.0.8 you tried on your own PCI setup and kernel
+> configuration raise spurious interrupts on your own board, would be a
+> more informative way to describe the situation.
 >
 
-I still don't know what ppc platform you are running on, which does not 
-allow me to figure out which interrupt controller might be involved, and 
-how to try reproducing this issue.
-
-Again and I won't ask for this once more:
-
-- what is your ppc platform: 40x, 44x, 52xx, 82xx, 83xx, 85xx, 86xx, 
-anything else?
-
-> All ipipe series patches raising spurious interrupt in powerpc.
->
-
-The few patches > 3.0.8 you tried on your own PCI setup and kernel 
-configuration raise spurious interrupts on your own board, would be a 
-more informative way to describe the situation.
 
 -- 
 Philippe.
