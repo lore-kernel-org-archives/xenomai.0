@@ -1,18 +1,17 @@
-Message-ID: <5178F226.7090206@xenomai.org>
-Date: Thu, 25 Apr 2013 11:06:46 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <517956F9.3010404@web.de>
+Date: Thu, 25 Apr 2013 18:16:57 +0200
+From: Jan Kiszka <jan.kiszka@web.de>
 MIME-Version: 1.0
-References: <CAH8NBSf+nbREqxMkYt_398z81f-TNRNMbUvm1OSQuk6AagngaQ@mail.gmail.com>
-	<51778082.4060504@xenomai.org>
-	<CAH8NBSfP3ToQtYMFZymuPwB_E96q=7wBWsL_Ag2r2c=dSwa6yA@mail.gmail.com>
-	<51779EF1.6010801@xenomai.org>
-	<CAH8NBSfmRw8mGdH4Fo10bxCHP4YTpCcNkXDg_AFxxArQ7we6wA@mail.gmail.com>
-	<CAH8NBSeCvBMAzGK8ewUvDW2TY4GYDzZSW8EF20+WyKFoMB2V0Q@mail.gmail.com>
-	<5178F16B.504@xenomai.org>
-In-Reply-To: <5178F16B.504@xenomai.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Spurious interrupt are raised with 2.6.1 xenomai patch
+References: <51757858.6040604@bollue.de> <51767C09.3070502@siemens.com>
+	<51769250.7050504@bollue.de> <5176950F.3040702@siemens.com>
+	<5176AB28.7000305@bollue.de> <5176AC37.1040405@siemens.com>
+	<5176C108.5050102@bollue.de> <5176C24B.3000300@siemens.com>
+	<5176E0D2.2080101@bollue.de> <51778E9A.7090206@siemens.com>
+	<5177D2EA.7060306@bollue.de>
+In-Reply-To: <5177D2EA.7060306@bollue.de>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] Sporadic freeze using RTnet
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,41 +20,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Srikanth C <srikanthc9@gmail.com>
-Cc: Xenomai@xenomai.org
+To: Kai Bollue <mlist1@bollue.de>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 04/25/2013 11:03 AM, Philippe Gerum wrote:
-> On 04/25/2013 09:57 AM, Srikanth C wrote:
->> Test Results with adeos-ipipe patch:
+On 2013-04-24 14:41, Kai Bollue wrote:
+> On 24.04.2013 09:49, Jan Kiszka wrote:
+>> Yep, that's it, thank you very much.
 >>
->> H/W Setup is same, S/W Changed to adeos-ipipe with 3.0.8 kernel.
->>
->> adeos-ipipe-3.0.8-powerpc-2.13-04.patch applied to 3.0.8 kernel,
->> spurious interrupt is not raised with this patch.
->>
->
-> I still don't know what ppc platform you are running on, which does not
-> allow me to figure out which interrupt controller might be involved, and
-> how to try reproducing this issue.
->
-> Again and I won't ask for this once more:
->
-> - what is your ppc platform: 40x, 44x, 52xx, 82xx, 83xx, 85xx, 86xx,
-> anything else?
+>> Does the rt_8139too driver support pre-mapping?
+>> Nope, only the two I mentioned (simply because they are more common on
+>> platforms that have >4G and/or an IOMMU). But - wait - the 8139too has a
+>> fixed DMA window (due to some older chips) and therefore does copying
+>> to/from a pre-allocated bounce buffer on its own. That makes it work
+>> with IOMMUs as well.
+> =
 
-I need the cpu type _and_ the board type. Attaching your kernel .config 
-would provide the required information.
+> OK, this means that cards using the RTL 8139 are currently the only
+> non-Intel cards that work correctly with RTnet and > 4 GB of RAM, right?
+> Maybe this information should be put somewhere googleable, as modern
+> systems tend to have much RAM - and often still PCI slots.
 
->
->> All ipipe series patches raising spurious interrupt in powerpc.
->>
->
-> The few patches > 3.0.8 you tried on your own PCI setup and kernel
-> configuration raise spurious interrupts on your own board, would be a
-> more informative way to describe the situation.
->
+True. There is an RTnet-related section on the Xenomai Wiki, and I'm
+always open for patches against the in-tree doc of RTnet.
+
+Jan
 
 
--- 
-Philippe.
-
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 263 bytes
+Desc: OpenPGP digital signature
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20130425/a61ed1a=
+5/attachment.pgp>
