@@ -1,13 +1,14 @@
-Message-ID: <5179D2A5.7050906@xenomai.org>
-Date: Fri, 26 Apr 2013 03:04:37 +0200
+Message-ID: <517A2BCF.6020609@xenomai.org>
+Date: Fri, 26 Apr 2013 09:25:03 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CAFByoKzbx1pMd7dauwoOyKODBOP4q_b=4qtC4H8uNWRwmhgtuA@mail.gmail.com>	<51778026.6080803@xenomai.org>	<5177865E.4060206@xenomai.org>
-	<CAFByoKxqCXxzB37+S7cqvEf_+=taatJ2CDDVwatTKYn-OKtHsA@mail.gmail.com>
-In-Reply-To: <CAFByoKxqCXxzB37+S7cqvEf_+=taatJ2CDDVwatTKYn-OKtHsA@mail.gmail.com>
+References: <mailman.252.1366321778.1444.xenomai@xenomai.org>	<00f801ce3fcb$30850ce0$918f26a0$@com>	<51763D6E.6090407@xenomai.org>	<016901ce4043$7b54e1f0$71fea5d0$@com>	<5176D40E.7060607@xenomai.org>	<019a01ce40a5$95325b90$bf9712b0$@com>
+	<51777F8C.9000700@xenomai.org> <51778229.1050109@xenomai.org>
+	<01c601ce4249$27a8e8f0$76fabad0$@com>
+In-Reply-To: <01c601ce4249$27a8e8f0$76fabad0$@com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] problem about task scheduling
+Subject: Re: [Xenomai] for-core-3.8 on ARM ( i.MX53 )
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,36 +17,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: kidd <gong.kidd@gmail.com>
+To: George Pontis <GPontis@z9.com>
 Cc: Xenomai <xenomai@xenomai.org>
 
-On 04/26/2013 02:59 AM, kidd wrote:
+On 04/26/2013 08:42 AM, George Pontis wrote:
 
-> Hi Gilles
->     You are right about the reason to generate the problem above. When
-> "main" function of latency started "latency_task", the "latency" funciton
-> would call "rt_task_set_periodic" function, and then
-> "xntimer_start_aperiodic" finally. The "xntimer_start_aperiodic" funciton
-> returns -ETIMEDOUT, Error.
->     I found that the reason to this error is the data returned from
-> "__ipipe_tsc_get".("__ipipe_tsc_get" is defined in
-> "arch/arm/kernel/armv-entry.S" under Linux source code directory, and the
-> function returns 0 directly, I think the reason of problem is the function
-> returns 0 directly)
+> Hello Gilles,
+> 
+> I was experimenting with this and found that the problem is some kind
+> of interaction between my other patches, and the 3.8 ipipe patch. The
+> other patches were to add i.MX53 support for LCD, framebuffer, and
+> IPU ( image processing unit ). Those patches are newer versions of
+> the ones in staging from Sascha Hauer. Eventually I do need to get it
+> all playing together.
+> 
+> So as far as Xenomai-current, I am seeing it build and boot on
+> i.MX53, but have not done any more testing yet. I thought that I
+> tried the exact kernel that you had on git without success. Possibly
+> the kernel config file in my buildroot has some different IPIPE
+> options. This is what I have in the working .config:
 
 
-If you enable IPIPE_ARM_KUSER_TSC, you need to register a tsc with
-__ipipe_tsc_register, as described here:
-http://xenomai.org/index.php/I-pipe-core:ArmPorting#High_resolution_counter
+Hi Georges,
 
-Otherwise, you need to implement the function __ipipe_mach_get_tsc() as
-described here:
-http://xenomai.org/index.php/I-pipe:ArmPorting#Implementing_a_high-resolution_counter.
+I am currently testing Xenomai on imx53, there were a few missing
+pieces, but it seems to be running now, I am running the
+"xeno-regression-test" test.
 
-For the third time, please take the time to read the I-pipe porting
-guide(s), in order to understand what you are doing.
+Please make the patches you are talking about available, I will test them.
 
-The next private mail you send me will remain unanswered.
+> CONFIG_IPIPE=y CONFIG_IPIPE_LEGACY=y > <--- is this needed ?
+
+
+Yes.
+
+Regards.
 
 -- 
                                                                 Gilles.
