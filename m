@@ -1,13 +1,16 @@
-Content-Type: text/plain; charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 6.3 \(1503\))
-From: Michael Haberler <mail17@mah.priv.at>
-In-Reply-To: <5184483E.1050305@xenomai.org>
-Date: Sat, 4 May 2013 08:04:37 +0200
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <8A7AED52-BB19-44B2-B1FE-B1E7FBE84915@mah.priv.at>
-References: <8AC37F92-E842-45E8-8583-9C1A7D8C9930@mah.priv.at>
-	<5184483E.1050305@xenomai.org>
-Subject: Re: [Xenomai] 3.8.10 beaglebone failure: any clues I missed?
+Message-ID: <517A9F2C.6060303@xenomai.org>
+Date: Fri, 26 Apr 2013 17:37:16 +0200
+From: Philippe Gerum <rpm@xenomai.org>
+MIME-Version: 1.0
+References: <1366732845.34430.YahooMailNeo@web161405.mail.bf1.yahoo.com>
+	<5176B0E3.3030009@xenomai.org>
+	<1366738934.20080.YahooMailNeo@web161406.mail.bf1.yahoo.com>
+	<517A53E7.2030304@xenomai.org>
+	<1366989234.58956.YahooMailNeo@web161403.mail.bf1.yahoo.com>
+In-Reply-To: <1366989234.58956.YahooMailNeo@web161403.mail.bf1.yahoo.com>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] rt_task_wait_period returns -11 (-EAGAIN)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,104 +19,92 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, Stephan Kappertz <stephan.kappertz@kabelmail.de>
-Cc: xenomai@xenomai.org
+To: Tom Z <tomz30@yahoo.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Gilles, Stephan -
+On 04/26/2013 05:13 PM, Tom Z wrote:
+> After a code review, I think I now know what is going on there. My
+> program contains two parts, a user-space rt_task, and a kernel-space
+> task. While the user-space task is waiting for its next release point
+> (rt_task_wait_period), the kernel task calls rt_task_suspend and
+> rt_task_resume to suspend and resume that user-space task occasionally,
+> which should not be done.  I don't know whether rt_task_suspend or
+> rt_task_resume causes the user-space rt_task_wait_period() to return
+> prematurely, but it seems that where the cause is. And after I fixed
+> this bug, the problem was gone.
+>
 
-I suspect a more simple build goof on my behalf, but I dont quite see it =
-yet; these were the steps I used:
+Makes sense. The delayed and (forcibly) suspended conditions are 
+cumulative in the Xenomai scheduler, and the per-thread periodic timer 
+keeps running and eventually fires in the background even when the 
+thread is suspended (by a previous call to rt_task_suspend()).
+
+Because these states are cumulative, calling rt_task_resume() does not 
+cause any early shot for a delay timer though. The thread keeps on 
+sleeping until the timer fires, or rt_task_unblock() is called upon it, 
+whichever comes first.
+
+> Thanks a lot!
+>
+>
+> ------------------------------------------------------------------------
+> *From:* Philippe Gerum <rpm@xenomai.org>
+> *To:* Tom Z <tomz30@yahoo.com>
+> *Cc:* "xenomai@xenomai.org" <xenomai@xenomai.org>
+> *Sent:* Friday, 26 April 2013 5:16 AM
+> *Subject:* Re: [Xenomai] rt_task_wait_period returns -11 (-EAGAIN)
+>
+> On 04/23/2013 07:42 PM, Tom Z wrote:
+>  > Hi Philippe,
+>  >
+>  > Thanks for answering my previous question. However, I encountered
+>  > another one regarding rt_task_wait_period(). NowI fixed a problematic
+>  > parameter in rt_task_set_periodic(), and add the checking of the return
+>  > values of rt_task_wait_period() and rt_task_set_periodic(). I use
+>  > rt_task_set_periodic()to set a period of 500 ms for a rt_task, and call
+>  > rt_task_wait_period() later. It seems that sometimes
+>  > rt_task_wait_period()works good, but sometimes it just returns 0
+>  > immediately. Here is what my code looks like:
+>  >
+>  > unsigned long overrun;
+>  > RTIME release_time;
+>  >
+>  > if (0 != rt_task_set_periodic(NULL, TM_NOW, 500000000){
+>  >                rt_printf("Error\n");
+>  > }
+>  > ....
+>  > while (1){
+>  > release_time = rt_timer_read();
+>  > //Store release_time in an array for offline analysis
+>  > //Some computation taking about 100 ms
+>  > if (0 != rt_task_wait_period(&overrun)){
+>  >              rt_printf("Error\n");
+>  >        }
+>  > }
+>  >
+>  >
+>  > I noticed that, during the program's execution, no "Error" was printed,
+>  > but some consecutive values of release_time is about 100 ms which is the
+>  > computation time and far less than the period 500 ms.
+>  >
+>  > This problem seems weird to me. Did I possibly overlook something?
+>  >
+>
+> What does "some consecutive values" mean in this report, what about the
+> other values? Also, how do you observe this behavior, by looking at the
+> pace of rt_printf's output?
+>
+> If so, I would suggest to log all release times and wait_period() return
+> codes in an array, performing the sampling loop silently. Then check the
+> array for spurious samples, i.e. error returns or weird intervals
+> between samples.
+>
+> --
+> Philippe.
+>
+>
 
 
-tar xvf ipipe-kernel-3.8.10.patch.tar.bz2
-git clone git://git.xenomai.org/xenomai-2.6.git   # using master
-git clone https://github.com/RobertCNelson/linux-dev.git
-cd linux-dev
-git checkout 3.8.10-bone15 -b tmp
-./build_kernel.sh
-#... vanilla kernel builds fine..
-
-# suspicious: I get some patching fuzz here but no rejects:
- ../xenomai-2.6/scripts/prepare-kernel.sh  --linux=3DKERNEL --arch=3Darm =
---ipipe=3D../ipipe-kernel-3.8.10.patch
-
-cd KERNEL
-patch -p1 <../../post.patch # no fuzz
-cd ..
-tools/rebuild.sh=20
-# disable frequency scaling in menuconfig
-# xenomai kernel builds fine
-
-
-this time around, I get:=20
-
-./xeno-regression-test -l "/usr/lib/xenomai/testsuite/dohell -m /tmp =
-100" -t 2
-Started child 1921: /bin/bash /usr/xenomai/bin/xeno-test-run-wrapper =
-./xeno-regression-test -t 2
-++ echo 0
-++ /usr/xenomai/bin/arith
-Xenomai: native skin or CONFIG_XENO_OPT_PERVASIVE disabled.
-(modprobe xeno_native?)
-
-however:
-
-root@arm:/proc# cat /proc/ipipe/version=20
-3
-root@arm:/proc# cat /proc/xenomai/version=20
-2.6.2.1
-
-smoke, but no fire yet;)
-
-- Michael
-
-
-Am 04.05.2013 um 01:29 schrieb Gilles Chanteperdrix =
-<gilles.chanteperdrix@xenomai.org>:
-
-> On 05/03/2013 11:54 PM, Michael Haberler wrote:
->=20
->> I've built a 3.8.10 beaglebone kernel using Stephane's patch and
->> xenomai-2.6 master ; only config changes from default config were:=20
->> disable frequency scaling, and disable smp (but same symptoms as
->> below without these changes)
->=20
->=20
->>=20
->> - kernel boots fine - 'sudo xeno-regression-test -l
->> "/usr/lib/xenomai/testsuite/dohell -m /tmp 100" -t 2' aborts like so:
->> http://static.mah.priv.at/public/regression.txt
->=20
->=20
-> I can not reproduce these issues, so, I must assume it is either=20
-> specific to beaglebone or 3.8.10. Could you try 3.8.0 to help narrow=20=
-
-> down the issue?
->=20
-> What arguments are passed to xenomai configure script?
->=20
->> - starting the
->> linuxcnc latency-test (which basically starts two userland threads)
->> hangs the board
->>=20
->> I'm a bit at wit's end - any suggestions?
->=20
->=20
-> Try:
-> - running a kernel with CONFIG_IPIPE_DEBUG_CONTEXT and=20
-> CONFIG_IPIPE_DEBUG_INTERNAL enabled;
-> - booting a kernel without CONFIG_IPIPE and CONFIG_XENOMAI, run:
->=20
-> cat /proc/interrupts=20
->=20
-> and check that all the interrupts controller you find=20
-> mentioned here have been changed following the instructions on this=20
-> page:
-> =
-http://www.xenomai.org/index.php/I-pipe-core:ArmPorting#Interrupt_controll=
-er
->=20
-> --=20
->                                                                Gilles.
-
+-- 
+Philippe.
 
