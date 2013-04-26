@@ -1,10 +1,18 @@
-Message-ID: <5181302A.70900@gmail.com>
-Date: Wed, 01 May 2013 11:09:30 -0400
-From: Sebastian Pavez <sebastian.pavez.t@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"; format="flowed"
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] Help with the feasibility of some actions with Xenomai
+In-Reply-To: <517A933F.6020908@xenomai.org>
+References: <CAH8NBSf+nbREqxMkYt_398z81f-TNRNMbUvm1OSQuk6AagngaQ@mail.gmail.com>
+	<51778082.4060504@xenomai.org>
+	<CAH8NBSfP3ToQtYMFZymuPwB_E96q=7wBWsL_Ag2r2c=dSwa6yA@mail.gmail.com>
+	<51779EF1.6010801@xenomai.org>
+	<CAH8NBSfmRw8mGdH4Fo10bxCHP4YTpCcNkXDg_AFxxArQ7we6wA@mail.gmail.com>
+	<CAH8NBSeCvBMAzGK8ewUvDW2TY4GYDzZSW8EF20+WyKFoMB2V0Q@mail.gmail.com>
+	<5178F16B.504@xenomai.org> <5178F226.7090206@xenomai.org>
+	<517A933F.6020908@xenomai.org>
+Date: Sat, 27 Apr 2013 00:19:33 +0530
+Message-ID: <CAH8NBSdJ_6pOsMb=4D0Z15ifr0q=0Qw7=8=rvW6B1wTH-AdT+g@mail.gmail.com>
+From: Srikanth C <srikanthc9@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: Re: [Xenomai] Spurious interrupt are raised with 2.6.1 xenomai patch
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,37 +21,56 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Xenomai@xenomai.org
 
-Hi everyone,
+CONFIG_PCI_MSI is disabled in kernel, still spurious interrupts are raised.
 
-I'm using Xenomai to develop a real time control system with educational=20
-purposes. The idea is to show how a control system is affected by other=20
-tasks and how a real time approach will help to sustain his execution=20
-over other threads. To do this, I have a program with a control thread=20
-(used to control the position and velocity of a DC motor) and other one=20
-that consist in a for loop wich allow to change the execution time of=20
-this thread and see the effect on the control. I'm executing this on a=20
-i7 processor and I would like to know a couple of things, and hopefully=20
-you could help me with some advice.
+I tried with 3.1.10 kernel with adeos 3.1.10 patch with the same config
+file but  no spurious interrupts are raised.
 
-- Is there a way to get the information about the times related with the=20
-tasks? I mean I would like to draw a classic execution time line to=20
-explain the effect on the control thread with real data. This means=20
-having the release time, when a task is suspended and reactivated, etc.=20
-because sometimes I can see the degradation in the control performance=20
-but other times don't, even with the same conditions and to explain the=20
-fenomena this would be very helpful. I know that maybe this issue isn't=20
-so related with the purpose of this mail list but If you have some idea=20
-on how to do this, if is feasible to do it, or if Xenomai have some logs=20
-or something to get this data will be preciated.
+adeos patches are working fine, problem only with ipipe series.
 
-- I also would like to know if there is a way to assign the execution of=20
-a thread to a specific CPU and, for instance, force the execution of=20
-both threads in the same CPU. Or a least to know if there is a way to=20
-confirm that the threads are allocated in the same CPU.
+why ppc_md.get_irq is reading FF when interrupt is raised (this is
+happening after patching the xenomai, without xenomai patch same kernel
+with same configuration is working fine).
 
-Sorry if this is not the place to find some answers to this questions=20
-and thank you for your time and any reply you could gave me.
-Sebasti=E1n Pavez.
 
+On Fri, Apr 26, 2013 at 8:16 PM, Philippe Gerum <rpm@xenomai.org> wrote:
+
+> On 04/25/2013 11:06 AM, Philippe Gerum wrote:
+>
+>> On 04/25/2013 11:03 AM, Philippe Gerum wrote:
+>>
+>>> On 04/25/2013 09:57 AM, Srikanth C wrote:
+>>>
+>>>> Test Results with adeos-ipipe patch:
+>>>>
+>>>> H/W Setup is same, S/W Changed to adeos-ipipe with 3.0.8 kernel.
+>>>>
+>>>> adeos-ipipe-3.0.8-powerpc-2.**13-04.patch applied to 3.0.8 kernel,
+>>>> spurious interrupt is not raised with this patch.
+>>>>
+>>>>
+>>> I still don't know what ppc platform you are running on, which does not
+>>> allow me to figure out which interrupt controller might be involved, and
+>>> how to try reproducing this issue.
+>>>
+>>> Again and I won't ask for this once more:
+>>>
+>>> - what is your ppc platform: 40x, 44x, 52xx, 82xx, 83xx, 85xx, 86xx,
+>>> anything else?
+>>>
+>>
+>> I need the cpu type _and_ the board type. Attaching your kernel .config
+>> would provide the required information.
+>>
+>
+> CONFIG_PCI_MSI as found in your configuration won't work, with any past or
+> current pipeline release for powerpc (3.0.8 was certainly a fluke, or MSI
+> was disabled there). The IRQ chip handlers are still attempting to mask the
+> MSI source upon interrupt, which won't fly in the I-pipe case.
+>
+> --
+> Philippe.
+>
