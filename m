@@ -1,17 +1,13 @@
-Message-ID: <517956F9.3010404@web.de>
-Date: Thu, 25 Apr 2013 18:16:57 +0200
-From: Jan Kiszka <jan.kiszka@web.de>
+Message-ID: <5179D2A5.7050906@xenomai.org>
+Date: Fri, 26 Apr 2013 03:04:37 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <51757858.6040604@bollue.de> <51767C09.3070502@siemens.com>
-	<51769250.7050504@bollue.de> <5176950F.3040702@siemens.com>
-	<5176AB28.7000305@bollue.de> <5176AC37.1040405@siemens.com>
-	<5176C108.5050102@bollue.de> <5176C24B.3000300@siemens.com>
-	<5176E0D2.2080101@bollue.de> <51778E9A.7090206@siemens.com>
-	<5177D2EA.7060306@bollue.de>
-In-Reply-To: <5177D2EA.7060306@bollue.de>
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] Sporadic freeze using RTnet
+References: <CAFByoKzbx1pMd7dauwoOyKODBOP4q_b=4qtC4H8uNWRwmhgtuA@mail.gmail.com>	<51778026.6080803@xenomai.org>	<5177865E.4060206@xenomai.org>
+	<CAFByoKxqCXxzB37+S7cqvEf_+=taatJ2CDDVwatTKYn-OKtHsA@mail.gmail.com>
+In-Reply-To: <CAFByoKxqCXxzB37+S7cqvEf_+=taatJ2CDDVwatTKYn-OKtHsA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] problem about task scheduling
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,37 +16,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Kai Bollue <mlist1@bollue.de>
+To: kidd <gong.kidd@gmail.com>
 Cc: Xenomai <xenomai@xenomai.org>
 
-On 2013-04-24 14:41, Kai Bollue wrote:
-> On 24.04.2013 09:49, Jan Kiszka wrote:
->> Yep, that's it, thank you very much.
->>
->> Does the rt_8139too driver support pre-mapping?
->> Nope, only the two I mentioned (simply because they are more common on
->> platforms that have >4G and/or an IOMMU). But - wait - the 8139too has a
->> fixed DMA window (due to some older chips) and therefore does copying
->> to/from a pre-allocated bounce buffer on its own. That makes it work
->> with IOMMUs as well.
-> =
+On 04/26/2013 02:59 AM, kidd wrote:
 
-> OK, this means that cards using the RTL 8139 are currently the only
-> non-Intel cards that work correctly with RTnet and > 4 GB of RAM, right?
-> Maybe this information should be put somewhere googleable, as modern
-> systems tend to have much RAM - and often still PCI slots.
-
-True. There is an RTnet-related section on the Xenomai Wiki, and I'm
-always open for patches against the in-tree doc of RTnet.
-
-Jan
+> Hi Gilles
+>     You are right about the reason to generate the problem above. When
+> "main" function of latency started "latency_task", the "latency" funciton
+> would call "rt_task_set_periodic" function, and then
+> "xntimer_start_aperiodic" finally. The "xntimer_start_aperiodic" funciton
+> returns -ETIMEDOUT, Error.
+>     I found that the reason to this error is the data returned from
+> "__ipipe_tsc_get".("__ipipe_tsc_get" is defined in
+> "arch/arm/kernel/armv-entry.S" under Linux source code directory, and the
+> function returns 0 directly, I think the reason of problem is the function
+> returns 0 directly)
 
 
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: signature.asc
-Type: application/pgp-signature
-Size: 263 bytes
-Desc: OpenPGP digital signature
-URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20130425/a61ed1a=
-5/attachment.pgp>
+If you enable IPIPE_ARM_KUSER_TSC, you need to register a tsc with
+__ipipe_tsc_register, as described here:
+http://xenomai.org/index.php/I-pipe-core:ArmPorting#High_resolution_counter
+
+Otherwise, you need to implement the function __ipipe_mach_get_tsc() as
+described here:
+http://xenomai.org/index.php/I-pipe:ArmPorting#Implementing_a_high-resolution_counter.
+
+For the third time, please take the time to read the I-pipe porting
+guide(s), in order to understand what you are doing.
+
+The next private mail you send me will remain unanswered.
+
+-- 
+                                                                Gilles.
+
