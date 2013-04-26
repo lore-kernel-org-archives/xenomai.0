@@ -1,14 +1,18 @@
-Message-ID: <517A53E7.2030304@xenomai.org>
-Date: Fri, 26 Apr 2013 12:16:07 +0200
+Message-ID: <517A933F.6020908@xenomai.org>
+Date: Fri, 26 Apr 2013 16:46:23 +0200
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <1366732845.34430.YahooMailNeo@web161405.mail.bf1.yahoo.com>
-	<5176B0E3.3030009@xenomai.org>
-	<1366738934.20080.YahooMailNeo@web161406.mail.bf1.yahoo.com>
-In-Reply-To: <1366738934.20080.YahooMailNeo@web161406.mail.bf1.yahoo.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+References: <CAH8NBSf+nbREqxMkYt_398z81f-TNRNMbUvm1OSQuk6AagngaQ@mail.gmail.com>
+	<51778082.4060504@xenomai.org>
+	<CAH8NBSfP3ToQtYMFZymuPwB_E96q=7wBWsL_Ag2r2c=dSwa6yA@mail.gmail.com>
+	<51779EF1.6010801@xenomai.org>
+	<CAH8NBSfmRw8mGdH4Fo10bxCHP4YTpCcNkXDg_AFxxArQ7we6wA@mail.gmail.com>
+	<CAH8NBSeCvBMAzGK8ewUvDW2TY4GYDzZSW8EF20+WyKFoMB2V0Q@mail.gmail.com>
+	<5178F16B.504@xenomai.org> <5178F226.7090206@xenomai.org>
+In-Reply-To: <5178F226.7090206@xenomai.org>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] rt_task_wait_period returns -11 (-EAGAIN)
+Subject: Re: [Xenomai] Spurious interrupt are raised with 2.6.1 xenomai patch
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,53 +21,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Tom Z <tomz30@yahoo.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Srikanth C <srikanthc9@gmail.com>
+Cc: Xenomai@xenomai.org
 
-On 04/23/2013 07:42 PM, Tom Z wrote:
-> Hi Philippe,
+On 04/25/2013 11:06 AM, Philippe Gerum wrote:
+> On 04/25/2013 11:03 AM, Philippe Gerum wrote:
+>> On 04/25/2013 09:57 AM, Srikanth C wrote:
+>>> Test Results with adeos-ipipe patch:
+>>>
+>>> H/W Setup is same, S/W Changed to adeos-ipipe with 3.0.8 kernel.
+>>>
+>>> adeos-ipipe-3.0.8-powerpc-2.13-04.patch applied to 3.0.8 kernel,
+>>> spurious interrupt is not raised with this patch.
+>>>
+>>
+>> I still don't know what ppc platform you are running on, which does not
+>> allow me to figure out which interrupt controller might be involved, and
+>> how to try reproducing this issue.
+>>
+>> Again and I won't ask for this once more:
+>>
+>> - what is your ppc platform: 40x, 44x, 52xx, 82xx, 83xx, 85xx, 86xx,
+>> anything else?
 >
-> Thanks for answering my previous question. However, I encountered
-> another one regarding rt_task_wait_period(). NowI fixed a problematic
-> parameter in rt_task_set_periodic(), and add the checking of the return
-> values of rt_task_wait_period() and rt_task_set_periodic(). I use
-> rt_task_set_periodic()to set a period of 500 ms for a rt_task, and call
-> rt_task_wait_period() later. It seems that sometimes
-> rt_task_wait_period()works good, but sometimes it just returns 0
-> immediately. Here is what my code looks like:
->
-> unsigned long overrun;
-> RTIME release_time;
->
-> if (0 != rt_task_set_periodic(NULL, TM_NOW, 500000000){
->                rt_printf("Error\n");
-> }
-> ....
-> while (1){
-> release_time = rt_timer_read();
-> //Store release_time in an array for offline analysis
-> //Some computation taking about 100 ms
-> if (0 != rt_task_wait_period(&overrun)){
->               rt_printf("Error\n");
->        }
-> }
->
->
-> I noticed that, during the program's execution, no "Error" was printed,
-> but some consecutive values of release_time is about 100 ms which is the
-> computation time and far less than the period 500 ms.
->
-> This problem seems weird to me. Did I possibly overlook something?
->
+> I need the cpu type _and_ the board type. Attaching your kernel .config
+> would provide the required information.
 
-What does "some consecutive values" mean in this report, what about the 
-other values? Also, how do you observe this behavior, by looking at the 
-pace of rt_printf's output?
-
-If so, I would suggest to log all release times and wait_period() return 
-codes in an array, performing the sampling loop silently. Then check the 
-array for spurious samples, i.e. error returns or weird intervals 
-between samples.
+CONFIG_PCI_MSI as found in your configuration won't work, with any past 
+or current pipeline release for powerpc (3.0.8 was certainly a fluke, or 
+MSI was disabled there). The IRQ chip handlers are still attempting to 
+mask the MSI source upon interrupt, which won't fly in the I-pipe case.
 
 -- 
 Philippe.
