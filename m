@@ -1,13 +1,12 @@
-Message-ID: <5187F179.8070401@xenomai.org>
-Date: Mon, 06 May 2013 20:07:53 +0200
+Message-ID: <517C5DD3.3060809@xenomai.org>
+Date: Sun, 28 Apr 2013 01:22:59 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CAMDpcBF8cMMB1GWVRGys=43Rtx2kcckPd84YcY8AuRuOGSQHGQ@mail.gmail.com>	<51879972.30900@xenomai.org>
-	<CAMDpcBHdYV58jKhb9SC3jzVgumofXxU1bndKXBv1uChjwGGrdw@mail.gmail.com>
-In-Reply-To: <CAMDpcBHdYV58jKhb9SC3jzVgumofXxU1bndKXBv1uChjwGGrdw@mail.gmail.com>
+References: <5176410F.1060100@gmail.com>
+In-Reply-To: <5176410F.1060100@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Patch for Cubieboard
+Subject: Re: [Xenomai] xenomai "does not" ISO C, C99 and C++ standard
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,18 +15,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: kunming yang <yangkunming99@gmail.com>, Xenomai <xenomai@xenomai.org>
+To: Victor Hiairrassary <victor.hiairrassary.ml@gmail.com>
+Cc: xenomai@xenomai.org
 
-On 05/06/2013 02:08 PM, kunming yang wrote:
+On 04/23/2013 10:06 AM, Victor Hiairrassary wrote:
 
-> Yes, you are right. And I have also found this, but I don't know how to
-> adapt it to A10. I am absolutely a newer to Xenomai.
+> Hello all,
+> 
+> We use xenomai 2.6.2.1 with g++ 4.7.2 from buildroot on a Armadeus apf27
+> board. This works really fine, but if we add "-W -Werror -Wall -pedantic
+> -pedantic-errors" in compiler command line, g++ detects some warnings for
+> a code as simple as :
+> 
+> #include <native/task.h>
+> int main() {
+>      return 0;
+> }
+> 
+> The complete log of the compilation is attached with this email.
+> 
+> The compiler complains about various things, in differents files. I have 
+> not
+> tested other xenomai's headers like native/queue.h, etc. yet.
+> 
+> Do you have any plans to fix them?
 
 
-There is a guide here:
-http://www.xenomai.org/index.php/I-pipe-core:ArmPorting
+Hi Victor,
 
-Please no private mails.
+I have tried and fix this issue in Xenomai repository
+(git://xenomai.org/xenomai-2.6.git), the errors disappeared completely
+for the native and posix skins headers in C. The modifications made to
+the posix headers for C do not seem to work for C++. It would be
+interesting if you could download and try it.
+
+Without "-pedantic-errors", including posix headers in a C++ program
+simply triggers warning.
+
+Regards.
 
 -- 
                                                                 Gilles.
