@@ -1,11 +1,10 @@
-Message-ID: <1367884025.7491.YahooMailNeo@web161401.mail.bf1.yahoo.com>
-Date: Mon, 6 May 2013 16:47:05 -0700 (PDT)
-From: Tom Z <tomz30@yahoo.com>
+Date: Sun, 28 Apr 2013 09:38:16 +0800 (CST)
+From: jinxin16897123 <jinxin16897123@163.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] priority of alarm handler?
-Reply-To: Tom Z <tomz30@yahoo.com>
+Message-ID: <619b4bdc.2c97.13e4e4a5d0c.Coremail.jinxin16897123@163.com>
+Content-Type: text/plain; charset=GBK
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai] linux version question?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,13 +13,15 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai <xenomai@xenomai.org>
 
-Hi, I have question regarding using=0Aint rt_alarm_create =A0=A0=A0 ( =A0=
-=A0=A0 RT_ALARM *=A0 =A0=A0=A0 alarm,=0A=A0=A0=A0 =A0=A0=A0 const char *=A0=
- =A0=A0=A0 name,=0A=A0=A0=A0 =A0=A0=A0 rt_alarm_t=A0 =A0=A0=A0 handler,=0A=
-=A0=A0=A0 =A0=A0=A0 void *=A0 =A0=A0=A0 cookie=A0=A0=A0 =A0=0A=A0=A0=A0 ) =
-=A0=A0=A0 =0A=0AIf I installed a kernel-space handler to an RT_ALARM object=
-, then when this handler is executing, will this handler be preempted by ot=
-her higher-priority interrupts? If yes, can I prevent this from happening?=
-=0A=0A=0AThanks,=0ATom
+
+hi ,all
+I'm a newbie to xenomai, the basic question confused me was which linux version should I use with xenomai 2.6.2.1?
+
+Thank you very much.
+
+
+--
+Aking
+Best regards
