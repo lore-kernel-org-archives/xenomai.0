@@ -1,27 +1,12 @@
+Message-ID: <517E5A11.7040206@xenomai.org>
+Date: Mon, 29 Apr 2013 13:31:29 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <518BC2C3.3080004@xenomai.org>
-References: <CAPpP=rOMJi4u7sm9+a79aJ2GhhtJY7B5QD0+tVxsN7KoFMqxCw@mail.gmail.com>
-	<518A5F0C.50403@xenomai.org>
-	<CAPpP=rNt32NFsF5LhJybpcBRfm33za8kP2tQj+t4Vs9-hkH48w@mail.gmail.com>
-	<518ABA3D.5070106@xenomai.org>
-	<CAPpP=rOQm+GBuoB5KuAiAo5nG=HzggXb7CyLaP-SHAwebykPUw@mail.gmail.com>
-	<518B8C50.2050107@xenomai.org>
-	<CAPpP=rNkQTDCfRAxpN5wPNK-5R-4gngpxFGUCiqT2T8gwMKJRg@mail.gmail.com>
-	<518BA407.8020103@xenomai.org>
-	<CAPpP=rNCxHUfcBS7djmv8i+Er2PpXBdO101LfcxaZswzc9eBnw@mail.gmail.com>
-	<518BAF44.9060803@xenomai.org>
-	<CAPpP=rMLPeRAVCpdKQkLVD29pFUj8zPL5JRmTbrJkKEetJJbew@mail.gmail.com>
-	<CAPpP=rM6BTevvfoV+TT4ej6zkeyzdnY7yN_qVCUPkLFe38EUYA@mail.gmail.com>
-	<518BB895.3050208@xenomai.org>
-	<CAPpP=rNFf4qH0JPpR57i5qp1tmHbLb2k8X9qYjn+6dmZb_ckvA@mail.gmail.com>
-	<518BBFDC.7060102@xenomai.org>
-	<CAPpP=rOFw32ctFaLGtrPd-L0ZaTR_d38HhLZ9anSrk1tucv-xw@mail.gmail.com>
-	<518BC2C3.3080004@xenomai.org>
-Date: Thu, 9 May 2013 17:46:13 +0200
-Message-ID: <CAPpP=rNCqAAiAzTviRxk7Oy1MRO4A6VGk5cJKVSGSa9q_Xp+Fg@mail.gmail.com>
-From: alex alex <duch.alexandre@gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Subject: Re: [Xenomai] [Posix] I/O multiplexing with select
+References: <A46EF8CF1BBB8E4B8A27B73E177C4664EFC670@MAIL-SINTERS-01.sinters-int.fr>
+In-Reply-To: <A46EF8CF1BBB8E4B8A27B73E177C4664EFC670@MAIL-SINTERS-01.sinters-int.fr>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Xenomai : incompatible feature set (APF27)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -30,18 +15,54 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: Younes CHALABI <y.chalabi@sinters.fr>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
->
-> Ok, could you test the problematic code with the current contents of
-> xenomai git ?
-> git://git.xenomai.org/xenomai-2.6.git
-> branch master
-> --
->
+On 04/29/2013 12:05 PM, Younes CHALABI wrote:
 
-OK, but the patch you mentioned :
-http://git.xenomai.org/?p=xenomai-2.6.git;a=commitdiff;h=84b3b4ee50d2e2aa5ebd257a02d330994de674a3;hp=2a29477bbad419f5570e660e90f918c0627c893e
+> Hi all,
+> 
+> I'm using xenomai-2.6.2.1 with the APF27 board using the following configuration :
+> 
+> - Buildroot : 2013.02
+> - gcc : 4.4.7
+> - libc : uClibc 0.9.33.2
+> - busybox : 1.21.0
+> - U-boot : 2012.04
+> - Linux : 2.6.29.6
+> - Adeos_patch : adeos-ipipe-2.6.29-arm-1.13-05.patch
+> 
+> The installation and the deployment were done correctly, and after transfered the images on the target. I checked the correct installation of Xenomai on the board with : # dmesg | grep Xenomai and have this display :
+> 
+> I-pipe: Domain Xenomai registered.
+> Xenomai: hal/arm started.
+> Xenomai: scheduling class idle registered.
+> Xenomai: scheduling class rt registered.
+> Xenomai: real-time nucleus v2.6.2.1 (Day At The Beach) loaded.
+> Xenomai: starting native API services.
+> Xenomai: starting POSIX services.
+> Xenomai: starting RTDM services.
+> 
+> Now I want to use the tests proposed by Xenomai with : # xeno-test but have this following error message :
+> 
+> Started child 472: /bin/sh /usr/bin/xeno-test-run-wrapper /usr/bin/xeno-test
+> + echo 0
+> + /usr/bin/arith
+> Xenomai: incompatible feature set
+> (userland requires "kuser_tsc fastsynch", kernel provides "sa1100 eabi fastsynch nosmp", missing="kuser_tsc").
+> 
+> Searching in troubleshooting, I found that I have to --enable-arm-tsc option which I did by : ./configure --enable-arm-tsc=imx          
 
-is already in my xenomai tree.
-Have you done other changes with the pthread_name_set_np ?
+
+Could you show us the messages printed by configure when running it with
+this option?
+
+Also note that this happens because you are using the I-pipe patch for
+Linux 2.6.29 which is pretty old, and we have not been testing this
+configuration for a long time. Linux 2.6.29 was released in 2009. That
+is 4 years ago.
+
+
+-- 
+                                                                Gilles.
+
