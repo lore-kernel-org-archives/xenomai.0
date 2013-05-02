@@ -1,11 +1,18 @@
-Message-ID: <51826EEA.1090202@mitrol.it>
-Date: Thu, 02 May 2013 15:49:30 +0200
-From: Paolo Minazzi <Paolo.Minazzi@mitrol.it>
+Message-ID: <51829CF1.2090600@bollue.de>
+Date: Thu, 02 May 2013 19:05:53 +0200
+From: Kai Bollue <mlist1@bollue.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+References: <51757858.6040604@bollue.de> <51767C09.3070502@siemens.com>
+	<51769250.7050504@bollue.de> <5176950F.3040702@siemens.com>
+	<5176AB28.7000305@bollue.de> <5176AC37.1040405@siemens.com>
+	<5176C108.5050102@bollue.de> <5176C24B.3000300@siemens.com>
+	<5176E0D2.2080101@bollue.de> <51778E9A.7090206@siemens.com>
+	<5177D2EA.7060306@bollue.de> <517956F9.3010404@web.de>
+	<517EBD2D.1020009@bollue.de> <517EBF13.1020602@web.de>
+In-Reply-To: <517EBF13.1020602@web.de>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] Re : Sporadic problem : rt_task_sleep locked after
-	debugging
+Subject: Re: [Xenomai] Sporadic freeze using RTnet
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,70 +21,82 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@web.de>
+Cc: Xenomai <xenomai@xenomai.org>
 
-I'm Paolo Minazzi and some time ago I write you for a problem
-related to xenomai and gdb.
-After a long time I think to be near to a solution.
-I'd like your help and opinions because maybe also other people
-have the same problem.
+On 29.04.2013 20:42, Jan Kiszka wrote:
+> On 2013-04-29 20:34, Kai Bollue wrote:
+>> On 25.04.2013 18:16, Jan Kiszka wrote:
+>>> On 2013-04-24 14:41, Kai Bollue wrote:
+>>>> On 24.04.2013 09:49, Jan Kiszka wrote:
+>>>>> Yep, that's it, thank you very much.
+>>>>>
+>>>>> Does the rt_8139too driver support pre-mapping?
+>>>>> Nope, only the two I mentioned (simply because they are more common on
+>>>>> platforms that have >4G and/or an IOMMU). But - wait - the 8139too
+>>>>> has a
+>>>>> fixed DMA window (due to some older chips) and therefore does copying
+>>>>> to/from a pre-allocated bounce buffer on its own. That makes it work
+>>>>> with IOMMUs as well.
+>>>> OK, this means that cards using the RTL 8139 are currently the only
+>>>> non-Intel cards that work correctly with RTnet and > 4 GB of RAM, right?
+>>>> Maybe this information should be put somewhere googleable, as modern
+>>>> systems tend to have much RAM - and often still PCI slots.
+>>> True. There is an RTnet-related section on the Xenomai Wiki, and I'm
+>>> always open for patches against the in-tree doc of RTnet.
+>> Maybe like this?
+>>
+>> diff --git a/README b/README
+>> index b98e6fd..35e1cee 100644
+>> --- a/README
+>> +++ b/README
+>> @@ -26,6 +26,9 @@ What are the requirements?
+>>     e1000e), DEC 21x4x-based (tulip), AMD PCnet32/PCnetPCI, VIA Rhine,
+>> NatSemi
+>>     DP8381x, RTL8169 network adapter, MPC8260 FCC, MPC8xx SCC/FEC, or
+>> MPC5200
+>>     on-chip controllers, SMSC LAN91C111 embedded controller, Intel 82575
+>> (igb)
+>> +- CAUTION: On systems with > 4 GB RAM, currently only the following
+>> chipsets
+>> +  will work: RealTek 8139, Intel PRO/1000 PCI-E (e1000e, NOT e1000),
+>> +  Intel 82575 (igb)
+>>   - For Ethernet-over-FireWire see rtfirewire.berlios.de
+>>   - For RT-WLAN: Ralink 2500
+>>
+> Looks ok. Can you send as full patch (subject, description, signed-off)?
+>
+Here it is:
 
-In short, if I debug a xenomai user-space application,
-sometimes after a rt_task_sleep the application seems locked.
-After this condition, I have to restart my arm processor
-because xenomai seems locked. Normal linux application instead
-continue to work correctly.
+Subject: [PATCH] Added note in README on lacking support for several devices
+  on systems with > 4 GB RAM
 
-A solution that works for me is to comment some lines in
-xenomai-2.5.6/ksrc/nucleus/shadow.c:2620
-Please see my comments that begin with "// COMMENT"
 
-==================================================================================
-if (xnthread_test_state(next, XNDEBUG)) {
-         if (signal_pending(next_task)) {
-                 sigset_t pending;
-                 /*
-                  * Do not grab the sighand lock here:
-                  * it's useless, and we already own
-                  * the runqueue lock, so this would
-                  * expose us to deadlock situations on
-                  * SMP.
-                  */
-                 wrap_get_sigpending(&pending, next_task);
+Signed-off-by: Kai Bollue <k.bollue@irt.rwth-aachen.de>
+---
+  README | 4 ++++
+  1 file changed, 4 insertions(+)
 
-                 // COMMENT if (sigismember(&pending, SIGSTOP) ||
-                 // COMMENT     sigismember(&pending, SIGINT))
-                 // COMMENT         goto no_ptrace;
-         }
-         xnthread_clear_state(next, XNDEBUG);
-         unlock_timers();
-}
-no_ptrace:
-==================================================================================
+diff --git a/README b/README
+index b98e6fd..9010ad7 100644
+--- a/README
++++ b/README
+@@ -26,6 +26,10 @@ What are the requirements?
+    e1000e), DEC 21x4x-based (tulip), AMD PCnet32/PCnetPCI, VIA Rhine, 
+NatSemi
+    DP8381x, RTL8169 network adapter, MPC8260 FCC, MPC8xx SCC/FEC, or 
+MPC5200
+    on-chip controllers, SMSC LAN91C111 embedded controller, Intel 82575 
+(igb)
++- CAUTION: On systems with > 4 GB RAM, currently only the following 
+chipsets
++  will work: RealTek 8139, Intel PRO/1000 PCI-E (e1000e, NOT e1000),
++  Intel 82575 (igb). For other drivers, as a workaround, RAM usage can be
++  limited to 4 GB by giving mem=4096M as boot parameter.
+  - For Ethernet-over-FireWire see rtfirewire.berlios.de
+  - For RT-WLAN: Ralink 2500
 
-The source of my problem seems to be the locked timers.
-If I unlock the timers (manually using a dirty hack) when I'm in the bug 
-condition
-I can repeair the problem and continue to use xenomai without any problems.
-
-In xenomai-2.5.6/ksrc/nucleus/shadow.c:2615
-
-                 /*
-                  * Check whether we need to unlock the timers, each
-                  * time a Linux task resumes from a stopped state,
-                  * excluding tasks resuming shortly for entering a
-                  * stopped state asap due to ptracing. To identify the
-                  * latter, we need to check for SIGSTOP and SIGINT in
-                  * order to encompass both the NPTL and LinuxThreads
-                  * behaviours.
-                  */
-
-that explains why SIGINT and SIGSTOP are checked. I do not understand well
-all this but it seems related to signal used by gdb.
-Have you got an idea to solve in the right way the problem ?
-
-Thanks for your time
-
-Paolo Minazzi
+-- 
+1.8.2.2
 
 
