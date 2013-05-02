@@ -1,14 +1,11 @@
-From: "Leopold Palomo-Avellaneda" <leo@alaxarxa.net>
-Date: Thu, 2 May 2013 10:37:24 +0200
-References: <mailman.293.1366744201.1444.xenomai@xenomai.org>
-	<006201ce45e4$5dc8e4f0$195aaed0$@com>
-In-Reply-To: <006201ce45e4$5dc8e4f0$195aaed0$@com>
+Message-ID: <51826EEA.1090202@mitrol.it>
+Date: Thu, 02 May 2013 15:49:30 +0200
+From: Paolo Minazzi <Paolo.Minazzi@mitrol.it>
 MIME-Version: 1.0
-Content-Type: Text/Plain;
-  charset="iso-8859-1"
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
 Content-Transfer-Encoding: 7bit
-Message-Id: <201305021037.24643.leo@alaxarxa.net>
-Subject: Re: [Xenomai] Qt - Xenomai compatibility problem
+Subject: [Xenomai] Re : Sporadic problem : rt_task_sleep locked after
+	debugging
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,35 +15,69 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
-Cc: George Pontis <GPontis@z9.com>
 
-A Dimarts, 30 d'abril de 2013, George Pontis va escriure:
-> I took a snapshot from git of the current Xenomai code and put it in the 
-hands of the software
-> developers. They reported that Qt would not build after patching with 
-Xenomai. The problem was that
-> Qt uses "signals" as a keyword, and that conflicts with the function 
-prototype for rt_task_notify
-> under xenomai/native:
-> 
-> 
-> int rt_task_notify(RT_TASK *task, rt_sigset_t signals);
-> 
-> 
-> Although this is not a Xenomai problem, it might save some users the 
-annoyance if the name "signals"
-> could change.
+I'm Paolo Minazzi and some time ago I write you for a problem
+related to xenomai and gdb.
+After a long time I think to be near to a solution.
+I'd like your help and opinions because maybe also other people
+have the same problem.
 
-I'm not a C++ expert, but to solve this you must encapsulate all the Xenomai 
-calls of your software in a namespace. After that, I think that you could use 
-the signal word without problem of collision with another signal word.
+In short, if I debug a xenomai user-space application,
+sometimes after a rt_task_sleep the application seems locked.
+After this condition, I have to restart my arm processor
+because xenomai seems locked. Normal linux application instead
+continue to work correctly.
 
-Regards,
+A solution that works for me is to comment some lines in
+xenomai-2.5.6/ksrc/nucleus/shadow.c:2620
+Please see my comments that begin with "// COMMENT"
 
-Leopold
+==================================================================================
+if (xnthread_test_state(next, XNDEBUG)) {
+         if (signal_pending(next_task)) {
+                 sigset_t pending;
+                 /*
+                  * Do not grab the sighand lock here:
+                  * it's useless, and we already own
+                  * the runqueue lock, so this would
+                  * expose us to deadlock situations on
+                  * SMP.
+                  */
+                 wrap_get_sigpending(&pending, next_task);
 
--- 
---
-Linux User 152692
-Catalonia
+                 // COMMENT if (sigismember(&pending, SIGSTOP) ||
+                 // COMMENT     sigismember(&pending, SIGINT))
+                 // COMMENT         goto no_ptrace;
+         }
+         xnthread_clear_state(next, XNDEBUG);
+         unlock_timers();
+}
+no_ptrace:
+==================================================================================
+
+The source of my problem seems to be the locked timers.
+If I unlock the timers (manually using a dirty hack) when I'm in the bug 
+condition
+I can repeair the problem and continue to use xenomai without any problems.
+
+In xenomai-2.5.6/ksrc/nucleus/shadow.c:2615
+
+                 /*
+                  * Check whether we need to unlock the timers, each
+                  * time a Linux task resumes from a stopped state,
+                  * excluding tasks resuming shortly for entering a
+                  * stopped state asap due to ptracing. To identify the
+                  * latter, we need to check for SIGSTOP and SIGINT in
+                  * order to encompass both the NPTL and LinuxThreads
+                  * behaviours.
+                  */
+
+that explains why SIGINT and SIGSTOP are checked. I do not understand well
+all this but it seems related to signal used by gdb.
+Have you got an idea to solve in the right way the problem ?
+
+Thanks for your time
+
+Paolo Minazzi
+
 
