@@ -1,16 +1,17 @@
-From: "George Pontis" <GPontis@z9.com>
-References: <mailman.293.1366744201.1444.xenomai@xenomai.org>
-	<006201ce45e4$5dc8e4f0$195aaed0$@com>
-	<5183FDA4.2090003@xenomai.org>
-In-Reply-To: <5183FDA4.2090003@xenomai.org>
-Date: Fri, 3 May 2013 11:14:58 -0700
-Message-ID: <037901ce482a$1f10bce0$5d3236a0$@com>
+Message-ID: <5183FFB3.1000006@xenomai.org>
+Date: Fri, 03 May 2013 20:19:31 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="UTF-8"
+References: <516BA4E9.3070201@xenomai.org>
+	<90FBAEE5-D70C-4563-B9DB-776D6E4E7FA9@kabelmail.de>
+	<516D933F.8060502@xenomai.org>
+	<F484004F-9908-449C-A4DA-CB73E47EE764@kabelmail.de>
+	<5182B1B5.1000107@xenomai.org>
+	<12E434B4-4F26-44AC-8D50-2CF70B5089E1@kabelmail.de>
+In-Reply-To: <12E434B4-4F26-44AC-8D50-2CF70B5089E1@kabelmail.de>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Content-Language: en-us
-Subject: Re: [Xenomai] Qt - Xenomai compatibility problem
+Subject: Re: [Xenomai] Raspberry and Beaglebone patches
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,45 +20,104 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: 'Gilles Chanteperdrix' <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Stephan Kappertz <stephan.kappertz@kabelmail.de>
+Cc: Xenomai <xenomai@xenomai.org>
 
-> -----Original Message-----
-> From: Gilles Chanteperdrix [mailto:gilles.chanteperdrix@xenomai.org]
-> Sent: Friday, May 03, 2013 11:11 AM
-> To: George Pontis
-> Cc: xenomai@xenomai.org
-> Subject: Re: [Xenomai] Qt - Xenomai compatibility problem
+On 05/03/2013 04:28 PM, Stephan Kappertz wrote:
+
 > 
-> On 04/30/2013 10:50 PM, George Pontis wrote:
+> Am 02.05.2013 um 20:34 schrieb Gilles Chanteperdrix:
 > 
-> > I took a snapshot from git of the current Xenomai code and put it in the hands of the
-> software
-> > developers. They reported that Qt would not build after patching with Xenomai. The problem
-> was that
-> > Qt uses "signals" as a keyword, and that conflicts with the function prototype for
-> rt_task_notify
-> > under xenomai/native:
-> >
-> >
-> > int rt_task_notify(RT_TASK *task, rt_sigset_t signals);
-> >
-> >
-> > Although this is not a Xenomai problem, it might save some users the annoyance if the name
-> "signals"
-> > could change.
+>> On 05/02/2013 02:19 PM, Stephan Kappertz wrote:
+>> 
+>>> 
+>>> Am 16.04.2013 um 20:06 schrieb Gilles Chanteperdrix:
+>>> 
+>>>> On 04/16/2013 12:26 PM, Stephan Kappertz wrote:
+>>>> 
+>>>>> Am 15.04.2013 um 08:57 schrieb Gilles Chanteperdrix:
+>>>>> 
+>>>>>> 
+>>>>>> Hi Stephan, Paul,
+>>>>>> 
+>>>>>> we have a problem with the patches for Raspberry and
+>>>>>> BeagleBone: they are based on the 3.2.21 patch, which we
+>>>>>> know is broken. So, we can not really ship the next version
+>>>>>> of Xenomai with these patches.
+>>>>>> 
+>>>>>> There are two ways we could keep patches for these
+>>>>>> machines: - you could send patches for 3.4 or 3.5, or even
+>>>>>> 3.8 - we could backport the fixes to 3.2, but as already
+>>>>>> discussed on this list, this would cost some time to
+>>>>>> re-validate the 3.2 patch on all architectures. However, if
+>>>>>> you do the backport, validate it on your side, I could
+>>>>>> validate the result on my test boards, and we would release
+>>>>>> a new version of the patch for 3.2 only for the ARM
+>>>>>> architecture.
+>>>>>> 
+>>>>>> Regards.
+>>>>>> 
+>>>>>> -- Gilles.
+>>>>>> 
+>>>>> 
+>>>>> Hi Gilles,
+>>>>> 
+>>>>> there's a 3.8.7 branch available for beagleBone at
+>>>>> https://github.com/beagleboard/kernel/tree/3.8.
+>>>>> 
+>>>>> I can look into updating the beagleBone patch for that
+>>>>> repository. Where do I find the latest ipipe patch for 3.8 on
+>>>>> ARM?
+>>>> 
+>>>> 
+>>>> ipipe-gch repository, for-core-3.8 branch.
+>>>> 
+>>>> -- Gilles.
+>>>> 
+>>> 
+>>> Hi Gilles, do you have a script to create the ipipe patch file?
+>>> Can't find any in the pipe-gch repository.
+>> 
+>> 
+>> It is not yet in the repository, if you want the definitive patch, 
+>> please wait a bit, the patch should be released soon.
+>> 
+>> 
+>> -- Gilles.
+>> 
 > 
+> Hi Gilles,
 > 
-> Have you tried the obvious fix?
+> I have created a ipipe post patch for the beagleBone kernel v3.8.10
+> found here:
 > 
-> --
->                                                                 Gilles.
+> https://github.com/RobertCNelson/linux-dev/tree/am33x-v3.8, branch
+> am33x-v3.8
+> 
+> Your pipe-gch repository is based on 3.8 while the upper repository
+> is at 3.8.10. Thus I had to apply a few minor changes to the patch
+> file created from your git. Are you going to rebase the ipipe patch
+> to 3.8.10 or higher before releasing it?
 
 
-Yes, to us the obvious fix was to edit the function prototype in the include file
-and change "signals" to "_signals".
+I do not know, Philippe is going to make the patch, he will decide on
+which version he rebases.
 
-George
+> If so, the beagleBone patch
+> gets reduced to the post patch below:
 
 
+Ok, several remarks:
+- can not we put that code in the mainline kernel (meaning, does
+soc_is_am33xx() exist in the mainline kernel, if it does not exist, can
+not we add it?)
+- the coding style for the tsc declaration is bad, braces are not put on
+separate lines in the Linux kernel coding style;
+- since the only difference between am33xx and other omaps is
+OMAP_TIMER_CAPTURE_REG vs OMAP_TIMER_COUNTER_REG, why not put this in a
+local variable and use it twice?
+
+
+-- 
+                                                                Gilles.
 
