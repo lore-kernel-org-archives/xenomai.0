@@ -1,12 +1,15 @@
-Message-ID: <5183FDA4.2090003@xenomai.org>
-Date: Fri, 03 May 2013 20:10:44 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
+From: "George Pontis" <GPontis@z9.com>
 References: <mailman.293.1366744201.1444.xenomai@xenomai.org>
 	<006201ce45e4$5dc8e4f0$195aaed0$@com>
-In-Reply-To: <006201ce45e4$5dc8e4f0$195aaed0$@com>
-Content-Type: text/plain; charset=UTF-8
+	<5183FDA4.2090003@xenomai.org>
+In-Reply-To: <5183FDA4.2090003@xenomai.org>
+Date: Fri, 3 May 2013 11:14:58 -0700
+Message-ID: <037901ce482a$1f10bce0$5d3236a0$@com>
+MIME-Version: 1.0
+Content-Type: text/plain;
+	charset="UTF-8"
 Content-Transfer-Encoding: 7bit
+Content-Language: en-us
 Subject: Re: [Xenomai] Qt - Xenomai compatibility problem
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -16,26 +19,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: George Pontis <GPontis@z9.com>
+To: 'Gilles Chanteperdrix' <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On 04/30/2013 10:50 PM, George Pontis wrote:
-
-> I took a snapshot from git of the current Xenomai code and put it in the hands of the software
-> developers. They reported that Qt would not build after patching with Xenomai. The problem was that
-> Qt uses "signals" as a keyword, and that conflicts with the function prototype for rt_task_notify
-> under xenomai/native:
+> -----Original Message-----
+> From: Gilles Chanteperdrix [mailto:gilles.chanteperdrix@xenomai.org]
+> Sent: Friday, May 03, 2013 11:11 AM
+> To: George Pontis
+> Cc: xenomai@xenomai.org
+> Subject: Re: [Xenomai] Qt - Xenomai compatibility problem
+> 
+> On 04/30/2013 10:50 PM, George Pontis wrote:
+> 
+> > I took a snapshot from git of the current Xenomai code and put it in the hands of the
+> software
+> > developers. They reported that Qt would not build after patching with Xenomai. The problem
+> was that
+> > Qt uses "signals" as a keyword, and that conflicts with the function prototype for
+> rt_task_notify
+> > under xenomai/native:
+> >
+> >
+> > int rt_task_notify(RT_TASK *task, rt_sigset_t signals);
+> >
+> >
+> > Although this is not a Xenomai problem, it might save some users the annoyance if the name
+> "signals"
+> > could change.
 > 
 > 
-> int rt_task_notify(RT_TASK *task, rt_sigset_t signals);
+> Have you tried the obvious fix?
 > 
-> 
-> Although this is not a Xenomai problem, it might save some users the annoyance if the name "signals"
-> could change.
+> --
+>                                                                 Gilles.
 
 
-Have you tried the obvious fix?
+Yes, to us the obvious fix was to edit the function prototype in the include file
+and change "signals" to "_signals".
 
--- 
-                                                                Gilles.
+George
+
+
 
