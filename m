@@ -1,6 +1,6 @@
-Message-ID: <518BECA5.3020602@xenomai.org>
-Date: Thu, 09 May 2013 20:36:21 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <518BEDEC.7060302@web.de>
+Date: Thu, 09 May 2013 20:41:48 +0200
+From: Jan Kiszka <jan.kiszka@web.de>
 MIME-Version: 1.0
 References: <5144D3E9.2050205@xenomai.org>
 	<5144D524.4000302@web.de>	<5144D5AB.3080004@xenomai.org>
@@ -9,9 +9,10 @@ References: <5144D3E9.2050205@xenomai.org>
 	<518BE49D.2010404@xenomai.org> <518BE4CE.6020107@web.de>
 	<518BE4FC.6060507@xenomai.org> <518BE6D2.4090304@web.de>
 	<518BEAA2.1060703@xenomai.org> <518BEC1B.7080000@web.de>
-In-Reply-To: <518BEC1B.7080000@web.de>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+	<518BECA5.3020602@xenomai.org>
+In-Reply-To: <518BECA5.3020602@xenomai.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Subject: Re: [Xenomai] __get_user/__put_user
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -21,98 +22,77 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@web.de>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: Xenomai <xenomai@xenomai.org>
 
-On 05/09/2013 08:34 PM, Jan Kiszka wrote:
-
-> On 2013-05-09 20:27, Gilles Chanteperdrix wrote:
->> On 05/09/2013 08:11 PM, Jan Kiszka wrote:
->>
->>> On 2013-05-09 20:03, Gilles Chanteperdrix wrote:
->>>> On 05/09/2013 08:02 PM, Jan Kiszka wrote:
->>>>
->>>>> On 2013-05-09 20:02, Gilles Chanteperdrix wrote:
->>>>>> On 05/09/2013 07:58 PM, Jan Kiszka wrote:
->>>>>>
->>>>>>> On 2013-05-09 19:32, Gilles Chanteperdrix wrote:
->>>>>>>> On 03/16/2013 09:50 PM, Gilles Chanteperdrix wrote:
->>>>>>>>
->>>>>>>>> On 03/16/2013 09:28 PM, Jan Kiszka wrote:
->>>>>>>>>
->>>>>>>>>> On 2013-03-16 21:27, Gilles Chanteperdrix wrote:
->>>>>>>>>>> On 03/16/2013 09:25 PM, Jan Kiszka wrote:
->>>>>>>>>>>
->>>>>>>>>>>> On 2013-03-16 21:19, Gilles Chanteperdrix wrote:
->>>>>>>>>>>>>
->>>>>>>>>>>>> Hi,
->>>>>>>>>>>>>
->>>>>>>>>>>>> xenomai asm-generic/syscall.h defines __xn_put_user/__xn_get_user as
->>>>>>>>>>>>> aliases for __put_user/__get_user, which implementation, for the ARM
->>>>>>>>>>>>> architecture calls might_fault() which triggers an ipipe_root_only() check.
->>>>>>>>>>>>>
->>>>>>>>>>>>> So, the question is, what is the best way of avoiding this issue? Remove
->>>>>>>>>>>>> the call to might_fault() when compiling with CONFIG_IPIPE enabled?
->>>>>>>>>>>>> Define __ipipe_safe_put_user which avoids the call to might_fault() ?
->>>>>>>>>>>>
->>>>>>>>>>>> Adjust might_fault() in a way that it only considers atomic non-root
->>>>>>>>>>>> contexts as problematic.
->>>>>>>>>>>
->>>>>>>>>>>
->>>>>>>>>>> atomic meaning with hardware irqs off? or within an irq handler? This
->>>>>>>>>>> requires xenomai...
->>>>>>>>>>
->>>>>>>>>
->>>>>>>>>> Hard irqs off || head domain stalled, I would say.
->>>>>>>>>
->>>>>>>>> ok, done, thanks.
->>>>>>>>>
->>>>>>>>
->>>>>>>> Actually, it does not work, the WARN_ON triggers in __rt_heap_bind for
->>>>>>>> instance, which does some copies from user with hard irqs off.
->>>>>>>
->>>>>>> Hmm, isn't that a real bug? The nucleus should then try to migrate to
->>>>>>> Linux while the nklock is held - ouch...
->>>>>>
->>>>>>
->>>>>> In theory, the fault should be fixed up without requiring a migration. I
->>>>>> will test this.
->>>>>
->>>>> In theory, user space could also provide an invalid pointer.
->>>>
->>>>
->>>> Yes, this is what I am going to test, but an invalid pointer cause the
->>>> fault to be fixed up so that the copy_from_user return -EFAULT.
->>>>
->>>
->>> I don't think we fix-up over the head domain. Rather, the nucleus
->>> receives the information that a fault has happened over the head domain
->>> and migrates to root. 
->>
->>
->> It depends on where the notification happens in the I-pipe patch. You
->> could allow the kernel to fix-up the fault without notifying the
->> nucleus. I thought I did that in the past, but apparently not in the
->> latest patches as a segfault in rt_heap_bind causes a switch to
->> secondary mode, but the nklock is automatically released as part of the
->> migration to secondary mode.
->>
->> I am not sure the fix-up code is completely unsafe to be called over non
->> root domain, as it only uses preempt_disable, preempt_enable,
->> list_for_each_entry_rcu and only if the exception is found in a kernel
->> module.
->>
-> 
-> Maybe.
-> 
-> But why do we need to hold the nklock across the __rt_bind_helper in
-> __rt_queue_bind at all? Other binding services apparently don't have
-> this need.
-
-
-I suppose because we do not want the heap vanishing under our feet while
-we access its contents with the xnheap_* accessors.
-
--- 
-                                                                Gilles.
-
+T24gMjAxMy0wNS0wOSAyMDozNiwgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4gT24gMDUv
+MDkvMjAxMyAwODozNCBQTSwgSmFuIEtpc3prYSB3cm90ZToKPiAKPj4gT24gMjAxMy0wNS0wOSAy
+MDoyNywgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4+PiBPbiAwNS8wOS8yMDEzIDA4OjEx
+IFBNLCBKYW4gS2lzemthIHdyb3RlOgo+Pj4KPj4+PiBPbiAyMDEzLTA1LTA5IDIwOjAzLCBHaWxs
+ZXMgQ2hhbnRlcGVyZHJpeCB3cm90ZToKPj4+Pj4gT24gMDUvMDkvMjAxMyAwODowMiBQTSwgSmFu
+IEtpc3prYSB3cm90ZToKPj4+Pj4KPj4+Pj4+IE9uIDIwMTMtMDUtMDkgMjA6MDIsIEdpbGxlcyBD
+aGFudGVwZXJkcml4IHdyb3RlOgo+Pj4+Pj4+IE9uIDA1LzA5LzIwMTMgMDc6NTggUE0sIEphbiBL
+aXN6a2Egd3JvdGU6Cj4+Pj4+Pj4KPj4+Pj4+Pj4gT24gMjAxMy0wNS0wOSAxOTozMiwgR2lsbGVz
+IENoYW50ZXBlcmRyaXggd3JvdGU6Cj4+Pj4+Pj4+PiBPbiAwMy8xNi8yMDEzIDA5OjUwIFBNLCBH
+aWxsZXMgQ2hhbnRlcGVyZHJpeCB3cm90ZToKPj4+Pj4+Pj4+Cj4+Pj4+Pj4+Pj4gT24gMDMvMTYv
+MjAxMyAwOToyOCBQTSwgSmFuIEtpc3prYSB3cm90ZToKPj4+Pj4+Pj4+Pgo+Pj4+Pj4+Pj4+PiBP
+biAyMDEzLTAzLTE2IDIxOjI3LCBHaWxsZXMgQ2hhbnRlcGVyZHJpeCB3cm90ZToKPj4+Pj4+Pj4+
+Pj4+IE9uIDAzLzE2LzIwMTMgMDk6MjUgUE0sIEphbiBLaXN6a2Egd3JvdGU6Cj4+Pj4+Pj4+Pj4+
+Pgo+Pj4+Pj4+Pj4+Pj4+IE9uIDIwMTMtMDMtMTYgMjE6MTksIEdpbGxlcyBDaGFudGVwZXJkcml4
+IHdyb3RlOgo+Pj4+Pj4+Pj4+Pj4+Pgo+Pj4+Pj4+Pj4+Pj4+PiBIaSwKPj4+Pj4+Pj4+Pj4+Pj4K
+Pj4+Pj4+Pj4+Pj4+Pj4geGVub21haSBhc20tZ2VuZXJpYy9zeXNjYWxsLmggZGVmaW5lcyBfX3hu
+X3B1dF91c2VyL19feG5fZ2V0X3VzZXIgYXMKPj4+Pj4+Pj4+Pj4+Pj4gYWxpYXNlcyBmb3IgX19w
+dXRfdXNlci9fX2dldF91c2VyLCB3aGljaCBpbXBsZW1lbnRhdGlvbiwgZm9yIHRoZSBBUk0KPj4+
+Pj4+Pj4+Pj4+Pj4gYXJjaGl0ZWN0dXJlIGNhbGxzIG1pZ2h0X2ZhdWx0KCkgd2hpY2ggdHJpZ2dl
+cnMgYW4gaXBpcGVfcm9vdF9vbmx5KCkgY2hlY2suCj4+Pj4+Pj4+Pj4+Pj4+Cj4+Pj4+Pj4+Pj4+
+Pj4+IFNvLCB0aGUgcXVlc3Rpb24gaXMsIHdoYXQgaXMgdGhlIGJlc3Qgd2F5IG9mIGF2b2lkaW5n
+IHRoaXMgaXNzdWU/IFJlbW92ZQo+Pj4+Pj4+Pj4+Pj4+PiB0aGUgY2FsbCB0byBtaWdodF9mYXVs
+dCgpIHdoZW4gY29tcGlsaW5nIHdpdGggQ09ORklHX0lQSVBFIGVuYWJsZWQ/Cj4+Pj4+Pj4+Pj4+
+Pj4+IERlZmluZSBfX2lwaXBlX3NhZmVfcHV0X3VzZXIgd2hpY2ggYXZvaWRzIHRoZSBjYWxsIHRv
+IG1pZ2h0X2ZhdWx0KCkgPwo+Pj4+Pj4+Pj4+Pj4+Cj4+Pj4+Pj4+Pj4+Pj4gQWRqdXN0IG1pZ2h0
+X2ZhdWx0KCkgaW4gYSB3YXkgdGhhdCBpdCBvbmx5IGNvbnNpZGVycyBhdG9taWMgbm9uLXJvb3QK
+Pj4+Pj4+Pj4+Pj4+PiBjb250ZXh0cyBhcyBwcm9ibGVtYXRpYy4KPj4+Pj4+Pj4+Pj4+Cj4+Pj4+
+Pj4+Pj4+Pgo+Pj4+Pj4+Pj4+Pj4gYXRvbWljIG1lYW5pbmcgd2l0aCBoYXJkd2FyZSBpcnFzIG9m
+Zj8gb3Igd2l0aGluIGFuIGlycSBoYW5kbGVyPyBUaGlzCj4+Pj4+Pj4+Pj4+PiByZXF1aXJlcyB4
+ZW5vbWFpLi4uCj4+Pj4+Pj4+Pj4+Cj4+Pj4+Pj4+Pj4KPj4+Pj4+Pj4+Pj4gSGFyZCBpcnFzIG9m
+ZiB8fCBoZWFkIGRvbWFpbiBzdGFsbGVkLCBJIHdvdWxkIHNheS4KPj4+Pj4+Pj4+Pgo+Pj4+Pj4+
+Pj4+IG9rLCBkb25lLCB0aGFua3MuCj4+Pj4+Pj4+Pj4KPj4+Pj4+Pj4+Cj4+Pj4+Pj4+PiBBY3R1
+YWxseSwgaXQgZG9lcyBub3Qgd29yaywgdGhlIFdBUk5fT04gdHJpZ2dlcnMgaW4gX19ydF9oZWFw
+X2JpbmQgZm9yCj4+Pj4+Pj4+PiBpbnN0YW5jZSwgd2hpY2ggZG9lcyBzb21lIGNvcGllcyBmcm9t
+IHVzZXIgd2l0aCBoYXJkIGlycXMgb2ZmLgo+Pj4+Pj4+Pgo+Pj4+Pj4+PiBIbW0sIGlzbid0IHRo
+YXQgYSByZWFsIGJ1Zz8gVGhlIG51Y2xldXMgc2hvdWxkIHRoZW4gdHJ5IHRvIG1pZ3JhdGUgdG8K
+Pj4+Pj4+Pj4gTGludXggd2hpbGUgdGhlIG5rbG9jayBpcyBoZWxkIC0gb3VjaC4uLgo+Pj4+Pj4+
+Cj4+Pj4+Pj4KPj4+Pj4+PiBJbiB0aGVvcnksIHRoZSBmYXVsdCBzaG91bGQgYmUgZml4ZWQgdXAg
+d2l0aG91dCByZXF1aXJpbmcgYSBtaWdyYXRpb24uIEkKPj4+Pj4+PiB3aWxsIHRlc3QgdGhpcy4K
+Pj4+Pj4+Cj4+Pj4+PiBJbiB0aGVvcnksIHVzZXIgc3BhY2UgY291bGQgYWxzbyBwcm92aWRlIGFu
+IGludmFsaWQgcG9pbnRlci4KPj4+Pj4KPj4+Pj4KPj4+Pj4gWWVzLCB0aGlzIGlzIHdoYXQgSSBh
+bSBnb2luZyB0byB0ZXN0LCBidXQgYW4gaW52YWxpZCBwb2ludGVyIGNhdXNlIHRoZQo+Pj4+PiBm
+YXVsdCB0byBiZSBmaXhlZCB1cCBzbyB0aGF0IHRoZSBjb3B5X2Zyb21fdXNlciByZXR1cm4gLUVG
+QVVMVC4KPj4+Pj4KPj4+Pgo+Pj4+IEkgZG9uJ3QgdGhpbmsgd2UgZml4LXVwIG92ZXIgdGhlIGhl
+YWQgZG9tYWluLiBSYXRoZXIsIHRoZSBudWNsZXVzCj4+Pj4gcmVjZWl2ZXMgdGhlIGluZm9ybWF0
+aW9uIHRoYXQgYSBmYXVsdCBoYXMgaGFwcGVuZWQgb3ZlciB0aGUgaGVhZCBkb21haW4KPj4+PiBh
+bmQgbWlncmF0ZXMgdG8gcm9vdC4gCj4+Pgo+Pj4KPj4+IEl0IGRlcGVuZHMgb24gd2hlcmUgdGhl
+IG5vdGlmaWNhdGlvbiBoYXBwZW5zIGluIHRoZSBJLXBpcGUgcGF0Y2guIFlvdQo+Pj4gY291bGQg
+YWxsb3cgdGhlIGtlcm5lbCB0byBmaXgtdXAgdGhlIGZhdWx0IHdpdGhvdXQgbm90aWZ5aW5nIHRo
+ZQo+Pj4gbnVjbGV1cy4gSSB0aG91Z2h0IEkgZGlkIHRoYXQgaW4gdGhlIHBhc3QsIGJ1dCBhcHBh
+cmVudGx5IG5vdCBpbiB0aGUKPj4+IGxhdGVzdCBwYXRjaGVzIGFzIGEgc2VnZmF1bHQgaW4gcnRf
+aGVhcF9iaW5kIGNhdXNlcyBhIHN3aXRjaCB0bwo+Pj4gc2Vjb25kYXJ5IG1vZGUsIGJ1dCB0aGUg
+bmtsb2NrIGlzIGF1dG9tYXRpY2FsbHkgcmVsZWFzZWQgYXMgcGFydCBvZiB0aGUKPj4+IG1pZ3Jh
+dGlvbiB0byBzZWNvbmRhcnkgbW9kZS4KPj4+Cj4+PiBJIGFtIG5vdCBzdXJlIHRoZSBmaXgtdXAg
+Y29kZSBpcyBjb21wbGV0ZWx5IHVuc2FmZSB0byBiZSBjYWxsZWQgb3ZlciBub24KPj4+IHJvb3Qg
+ZG9tYWluLCBhcyBpdCBvbmx5IHVzZXMgcHJlZW1wdF9kaXNhYmxlLCBwcmVlbXB0X2VuYWJsZSwK
+Pj4+IGxpc3RfZm9yX2VhY2hfZW50cnlfcmN1IGFuZCBvbmx5IGlmIHRoZSBleGNlcHRpb24gaXMg
+Zm91bmQgaW4gYSBrZXJuZWwKPj4+IG1vZHVsZS4KPj4+Cj4+Cj4+IE1heWJlLgo+Pgo+PiBCdXQg
+d2h5IGRvIHdlIG5lZWQgdG8gaG9sZCB0aGUgbmtsb2NrIGFjcm9zcyB0aGUgX19ydF9iaW5kX2hl
+bHBlciBpbgo+PiBfX3J0X3F1ZXVlX2JpbmQgYXQgYWxsPyBPdGhlciBiaW5kaW5nIHNlcnZpY2Vz
+IGFwcGFyZW50bHkgZG9uJ3QgaGF2ZQo+PiB0aGlzIG5lZWQuCj4gCj4gCj4gSSBzdXBwb3NlIGJl
+Y2F1c2Ugd2UgZG8gbm90IHdhbnQgdGhlIGhlYXAgdmFuaXNoaW5nIHVuZGVyIG91ciBmZWV0IHdo
+aWxlCj4gd2UgYWNjZXNzIGl0cyBjb250ZW50cyB3aXRoIHRoZSB4bmhlYXBfKiBhY2Nlc3NvcnMu
+CgpSaWdodCwgYnV0IHRoZSBnZW5lcmFsIHBhdHRlcm4gZm9yIHRoaXMgaXMKCglvYmogPSB4bnJl
+Z2lzdHJ5X2ZldGNoKGhhbmRsZSkKCWdldF9ua2xvY2soKQoJaWYgKHZhbGlkKG9iaikpCgkJZG9f
+c29tZXRoaW5nX3dpdGgob2JqKQoJcHV0X25rbG9jaygpCgpKYW4KCgotLS0tLS0tLS0tLS0tLSBu
+ZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJl
+ZC4uLgpOYW1lOiBzaWduYXR1cmUuYXNjClR5cGU6IGFwcGxpY2F0aW9uL3BncC1zaWduYXR1cmUK
+U2l6ZTogMjYzIGJ5dGVzCkRlc2M6IE9wZW5QR1AgZGlnaXRhbCBzaWduYXR1cmUKVVJMOiA8aHR0
+cDovL3d3dy54ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDEzMDUw
+OS84ZTdlNzkzNi9hdHRhY2htZW50LnBncD4K
