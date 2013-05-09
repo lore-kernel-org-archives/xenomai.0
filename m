@@ -1,14 +1,15 @@
-Message-ID: <518BE49D.2010404@xenomai.org>
-Date: Thu, 09 May 2013 20:02:05 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <518BE4CE.6020107@web.de>
+Date: Thu, 09 May 2013 20:02:54 +0200
+From: Jan Kiszka <jan.kiszka@web.de>
 MIME-Version: 1.0
 References: <5144D3E9.2050205@xenomai.org>
 	<5144D524.4000302@web.de>	<5144D5AB.3080004@xenomai.org>
 	<5144D5E3.9050601@web.de> <5144DB0F.9050901@xenomai.org>
 	<518BDD9D.10804@xenomai.org> <518BE3C5.4090203@web.de>
-In-Reply-To: <518BE3C5.4090203@web.de>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+	<518BE49D.2010404@xenomai.org>
+In-Reply-To: <518BE49D.2010404@xenomai.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Subject: Re: [Xenomai] __get_user/__put_user
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -18,54 +19,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@web.de>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: Xenomai <xenomai@xenomai.org>
 
-On 05/09/2013 07:58 PM, Jan Kiszka wrote:
-
-> On 2013-05-09 19:32, Gilles Chanteperdrix wrote:
->> On 03/16/2013 09:50 PM, Gilles Chanteperdrix wrote:
->>
->>> On 03/16/2013 09:28 PM, Jan Kiszka wrote:
->>>
->>>> On 2013-03-16 21:27, Gilles Chanteperdrix wrote:
->>>>> On 03/16/2013 09:25 PM, Jan Kiszka wrote:
->>>>>
->>>>>> On 2013-03-16 21:19, Gilles Chanteperdrix wrote:
->>>>>>>
->>>>>>> Hi,
->>>>>>>
->>>>>>> xenomai asm-generic/syscall.h defines __xn_put_user/__xn_get_user as
->>>>>>> aliases for __put_user/__get_user, which implementation, for the ARM
->>>>>>> architecture calls might_fault() which triggers an ipipe_root_only() check.
->>>>>>>
->>>>>>> So, the question is, what is the best way of avoiding this issue? Remove
->>>>>>> the call to might_fault() when compiling with CONFIG_IPIPE enabled?
->>>>>>> Define __ipipe_safe_put_user which avoids the call to might_fault() ?
->>>>>>
->>>>>> Adjust might_fault() in a way that it only considers atomic non-root
->>>>>> contexts as problematic.
->>>>>
->>>>>
->>>>> atomic meaning with hardware irqs off? or within an irq handler? This
->>>>> requires xenomai...
->>>>
->>>
->>>> Hard irqs off || head domain stalled, I would say.
->>>
->>> ok, done, thanks.
->>>
->>
->> Actually, it does not work, the WARN_ON triggers in __rt_heap_bind for
->> instance, which does some copies from user with hard irqs off.
-> 
-> Hmm, isn't that a real bug? The nucleus should then try to migrate to
-> Linux while the nklock is held - ouch...
-
-
-In theory, the fault should be fixed up without requiring a migration. I
-will test this.
-
--- 
-                                                                Gilles.
-
+T24gMjAxMy0wNS0wOSAyMDowMiwgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4gT24gMDUv
+MDkvMjAxMyAwNzo1OCBQTSwgSmFuIEtpc3prYSB3cm90ZToKPiAKPj4gT24gMjAxMy0wNS0wOSAx
+OTozMiwgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4+PiBPbiAwMy8xNi8yMDEzIDA5OjUw
+IFBNLCBHaWxsZXMgQ2hhbnRlcGVyZHJpeCB3cm90ZToKPj4+Cj4+Pj4gT24gMDMvMTYvMjAxMyAw
+OToyOCBQTSwgSmFuIEtpc3prYSB3cm90ZToKPj4+Pgo+Pj4+PiBPbiAyMDEzLTAzLTE2IDIxOjI3
+LCBHaWxsZXMgQ2hhbnRlcGVyZHJpeCB3cm90ZToKPj4+Pj4+IE9uIDAzLzE2LzIwMTMgMDk6MjUg
+UE0sIEphbiBLaXN6a2Egd3JvdGU6Cj4+Pj4+Pgo+Pj4+Pj4+IE9uIDIwMTMtMDMtMTYgMjE6MTks
+IEdpbGxlcyBDaGFudGVwZXJkcml4IHdyb3RlOgo+Pj4+Pj4+Pgo+Pj4+Pj4+PiBIaSwKPj4+Pj4+
+Pj4KPj4+Pj4+Pj4geGVub21haSBhc20tZ2VuZXJpYy9zeXNjYWxsLmggZGVmaW5lcyBfX3huX3B1
+dF91c2VyL19feG5fZ2V0X3VzZXIgYXMKPj4+Pj4+Pj4gYWxpYXNlcyBmb3IgX19wdXRfdXNlci9f
+X2dldF91c2VyLCB3aGljaCBpbXBsZW1lbnRhdGlvbiwgZm9yIHRoZSBBUk0KPj4+Pj4+Pj4gYXJj
+aGl0ZWN0dXJlIGNhbGxzIG1pZ2h0X2ZhdWx0KCkgd2hpY2ggdHJpZ2dlcnMgYW4gaXBpcGVfcm9v
+dF9vbmx5KCkgY2hlY2suCj4+Pj4+Pj4+Cj4+Pj4+Pj4+IFNvLCB0aGUgcXVlc3Rpb24gaXMsIHdo
+YXQgaXMgdGhlIGJlc3Qgd2F5IG9mIGF2b2lkaW5nIHRoaXMgaXNzdWU/IFJlbW92ZQo+Pj4+Pj4+
+PiB0aGUgY2FsbCB0byBtaWdodF9mYXVsdCgpIHdoZW4gY29tcGlsaW5nIHdpdGggQ09ORklHX0lQ
+SVBFIGVuYWJsZWQ/Cj4+Pj4+Pj4+IERlZmluZSBfX2lwaXBlX3NhZmVfcHV0X3VzZXIgd2hpY2gg
+YXZvaWRzIHRoZSBjYWxsIHRvIG1pZ2h0X2ZhdWx0KCkgPwo+Pj4+Pj4+Cj4+Pj4+Pj4gQWRqdXN0
+IG1pZ2h0X2ZhdWx0KCkgaW4gYSB3YXkgdGhhdCBpdCBvbmx5IGNvbnNpZGVycyBhdG9taWMgbm9u
+LXJvb3QKPj4+Pj4+PiBjb250ZXh0cyBhcyBwcm9ibGVtYXRpYy4KPj4+Pj4+Cj4+Pj4+Pgo+Pj4+
+Pj4gYXRvbWljIG1lYW5pbmcgd2l0aCBoYXJkd2FyZSBpcnFzIG9mZj8gb3Igd2l0aGluIGFuIGly
+cSBoYW5kbGVyPyBUaGlzCj4+Pj4+PiByZXF1aXJlcyB4ZW5vbWFpLi4uCj4+Pj4+Cj4+Pj4KPj4+
+Pj4gSGFyZCBpcnFzIG9mZiB8fCBoZWFkIGRvbWFpbiBzdGFsbGVkLCBJIHdvdWxkIHNheS4KPj4+
+Pgo+Pj4+IG9rLCBkb25lLCB0aGFua3MuCj4+Pj4KPj4+Cj4+PiBBY3R1YWxseSwgaXQgZG9lcyBu
+b3Qgd29yaywgdGhlIFdBUk5fT04gdHJpZ2dlcnMgaW4gX19ydF9oZWFwX2JpbmQgZm9yCj4+PiBp
+bnN0YW5jZSwgd2hpY2ggZG9lcyBzb21lIGNvcGllcyBmcm9tIHVzZXIgd2l0aCBoYXJkIGlycXMg
+b2ZmLgo+Pgo+PiBIbW0sIGlzbid0IHRoYXQgYSByZWFsIGJ1Zz8gVGhlIG51Y2xldXMgc2hvdWxk
+IHRoZW4gdHJ5IHRvIG1pZ3JhdGUgdG8KPj4gTGludXggd2hpbGUgdGhlIG5rbG9jayBpcyBoZWxk
+IC0gb3VjaC4uLgo+IAo+IAo+IEluIHRoZW9yeSwgdGhlIGZhdWx0IHNob3VsZCBiZSBmaXhlZCB1
+cCB3aXRob3V0IHJlcXVpcmluZyBhIG1pZ3JhdGlvbi4gSQo+IHdpbGwgdGVzdCB0aGlzLgoKSW4g
+dGhlb3J5LCB1c2VyIHNwYWNlIGNvdWxkIGFsc28gcHJvdmlkZSBhbiBpbnZhbGlkIHBvaW50ZXIu
+CgpKYW4KCgotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4
+dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBzaWduYXR1cmUuYXNjClR5cGU6IGFw
+cGxpY2F0aW9uL3BncC1zaWduYXR1cmUKU2l6ZTogMjYzIGJ5dGVzCkRlc2M6IE9wZW5QR1AgZGln
+aXRhbCBzaWduYXR1cmUKVVJMOiA8aHR0cDovL3d3dy54ZW5vbWFpLm9yZy9waXBlcm1haWwveGVu
+b21haS9hdHRhY2htZW50cy8yMDEzMDUwOS8wZDU5NzZiMy9hdHRhY2htZW50LnBncD4K
