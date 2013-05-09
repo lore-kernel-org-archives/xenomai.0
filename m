@@ -1,14 +1,14 @@
-Message-ID: <518BE3C5.4090203@web.de>
-Date: Thu, 09 May 2013 19:58:29 +0200
-From: Jan Kiszka <jan.kiszka@web.de>
+Message-ID: <518BE49D.2010404@xenomai.org>
+Date: Thu, 09 May 2013 20:02:05 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <5144D3E9.2050205@xenomai.org>
 	<5144D524.4000302@web.de>	<5144D5AB.3080004@xenomai.org>
 	<5144D5E3.9050601@web.de> <5144DB0F.9050901@xenomai.org>
-	<518BDD9D.10804@xenomai.org>
-In-Reply-To: <518BDD9D.10804@xenomai.org>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+	<518BDD9D.10804@xenomai.org> <518BE3C5.4090203@web.de>
+In-Reply-To: <518BE3C5.4090203@web.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] __get_user/__put_user
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -18,36 +18,54 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Jan Kiszka <jan.kiszka@web.de>
 Cc: Xenomai <xenomai@xenomai.org>
 
-T24gMjAxMy0wNS0wOSAxOTozMiwgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4gT24gMDMv
-MTYvMjAxMyAwOTo1MCBQTSwgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4gCj4+IE9uIDAz
-LzE2LzIwMTMgMDk6MjggUE0sIEphbiBLaXN6a2Egd3JvdGU6Cj4+Cj4+PiBPbiAyMDEzLTAzLTE2
-IDIxOjI3LCBHaWxsZXMgQ2hhbnRlcGVyZHJpeCB3cm90ZToKPj4+PiBPbiAwMy8xNi8yMDEzIDA5
-OjI1IFBNLCBKYW4gS2lzemthIHdyb3RlOgo+Pj4+Cj4+Pj4+IE9uIDIwMTMtMDMtMTYgMjE6MTks
-IEdpbGxlcyBDaGFudGVwZXJkcml4IHdyb3RlOgo+Pj4+Pj4KPj4+Pj4+IEhpLAo+Pj4+Pj4KPj4+
-Pj4+IHhlbm9tYWkgYXNtLWdlbmVyaWMvc3lzY2FsbC5oIGRlZmluZXMgX194bl9wdXRfdXNlci9f
-X3huX2dldF91c2VyIGFzCj4+Pj4+PiBhbGlhc2VzIGZvciBfX3B1dF91c2VyL19fZ2V0X3VzZXIs
-IHdoaWNoIGltcGxlbWVudGF0aW9uLCBmb3IgdGhlIEFSTQo+Pj4+Pj4gYXJjaGl0ZWN0dXJlIGNh
-bGxzIG1pZ2h0X2ZhdWx0KCkgd2hpY2ggdHJpZ2dlcnMgYW4gaXBpcGVfcm9vdF9vbmx5KCkgY2hl
-Y2suCj4+Pj4+Pgo+Pj4+Pj4gU28sIHRoZSBxdWVzdGlvbiBpcywgd2hhdCBpcyB0aGUgYmVzdCB3
-YXkgb2YgYXZvaWRpbmcgdGhpcyBpc3N1ZT8gUmVtb3ZlCj4+Pj4+PiB0aGUgY2FsbCB0byBtaWdo
-dF9mYXVsdCgpIHdoZW4gY29tcGlsaW5nIHdpdGggQ09ORklHX0lQSVBFIGVuYWJsZWQ/Cj4+Pj4+
-PiBEZWZpbmUgX19pcGlwZV9zYWZlX3B1dF91c2VyIHdoaWNoIGF2b2lkcyB0aGUgY2FsbCB0byBt
-aWdodF9mYXVsdCgpID8KPj4+Pj4KPj4+Pj4gQWRqdXN0IG1pZ2h0X2ZhdWx0KCkgaW4gYSB3YXkg
-dGhhdCBpdCBvbmx5IGNvbnNpZGVycyBhdG9taWMgbm9uLXJvb3QKPj4+Pj4gY29udGV4dHMgYXMg
-cHJvYmxlbWF0aWMuCj4+Pj4KPj4+Pgo+Pj4+IGF0b21pYyBtZWFuaW5nIHdpdGggaGFyZHdhcmUg
-aXJxcyBvZmY/IG9yIHdpdGhpbiBhbiBpcnEgaGFuZGxlcj8gVGhpcwo+Pj4+IHJlcXVpcmVzIHhl
-bm9tYWkuLi4KPj4+Cj4+Cj4+PiBIYXJkIGlycXMgb2ZmIHx8IGhlYWQgZG9tYWluIHN0YWxsZWQs
-IEkgd291bGQgc2F5Lgo+Pgo+PiBvaywgZG9uZSwgdGhhbmtzLgo+Pgo+IAo+IEFjdHVhbGx5LCBp
-dCBkb2VzIG5vdCB3b3JrLCB0aGUgV0FSTl9PTiB0cmlnZ2VycyBpbiBfX3J0X2hlYXBfYmluZCBm
-b3IKPiBpbnN0YW5jZSwgd2hpY2ggZG9lcyBzb21lIGNvcGllcyBmcm9tIHVzZXIgd2l0aCBoYXJk
-IGlycXMgb2ZmLgoKSG1tLCBpc24ndCB0aGF0IGEgcmVhbCBidWc/IFRoZSBudWNsZXVzIHNob3Vs
-ZCB0aGVuIHRyeSB0byBtaWdyYXRlIHRvCkxpbnV4IHdoaWxlIHRoZSBua2xvY2sgaXMgaGVsZCAt
-IG91Y2guLi4KCkphbgoKCi0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpB
-IG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IHNpZ25hdHVyZS5hc2MK
-VHlwZTogYXBwbGljYXRpb24vcGdwLXNpZ25hdHVyZQpTaXplOiAyNjMgYnl0ZXMKRGVzYzogT3Bl
-blBHUCBkaWdpdGFsIHNpZ25hdHVyZQpVUkw6IDxodHRwOi8vd3d3Lnhlbm9tYWkub3JnL3BpcGVy
-bWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTMwNTA5LzYzYzE1YzQwL2F0dGFjaG1lbnQucGdw
-Pgo=
+On 05/09/2013 07:58 PM, Jan Kiszka wrote:
+
+> On 2013-05-09 19:32, Gilles Chanteperdrix wrote:
+>> On 03/16/2013 09:50 PM, Gilles Chanteperdrix wrote:
+>>
+>>> On 03/16/2013 09:28 PM, Jan Kiszka wrote:
+>>>
+>>>> On 2013-03-16 21:27, Gilles Chanteperdrix wrote:
+>>>>> On 03/16/2013 09:25 PM, Jan Kiszka wrote:
+>>>>>
+>>>>>> On 2013-03-16 21:19, Gilles Chanteperdrix wrote:
+>>>>>>>
+>>>>>>> Hi,
+>>>>>>>
+>>>>>>> xenomai asm-generic/syscall.h defines __xn_put_user/__xn_get_user as
+>>>>>>> aliases for __put_user/__get_user, which implementation, for the ARM
+>>>>>>> architecture calls might_fault() which triggers an ipipe_root_only() check.
+>>>>>>>
+>>>>>>> So, the question is, what is the best way of avoiding this issue? Remove
+>>>>>>> the call to might_fault() when compiling with CONFIG_IPIPE enabled?
+>>>>>>> Define __ipipe_safe_put_user which avoids the call to might_fault() ?
+>>>>>>
+>>>>>> Adjust might_fault() in a way that it only considers atomic non-root
+>>>>>> contexts as problematic.
+>>>>>
+>>>>>
+>>>>> atomic meaning with hardware irqs off? or within an irq handler? This
+>>>>> requires xenomai...
+>>>>
+>>>
+>>>> Hard irqs off || head domain stalled, I would say.
+>>>
+>>> ok, done, thanks.
+>>>
+>>
+>> Actually, it does not work, the WARN_ON triggers in __rt_heap_bind for
+>> instance, which does some copies from user with hard irqs off.
+> 
+> Hmm, isn't that a real bug? The nucleus should then try to migrate to
+> Linux while the nklock is held - ouch...
+
+
+In theory, the fault should be fixed up without requiring a migration. I
+will test this.
+
+-- 
+                                                                Gilles.
+
