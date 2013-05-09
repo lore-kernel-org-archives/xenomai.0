@@ -1,17 +1,20 @@
-Message-ID: <517EBD2D.1020009@bollue.de>
-Date: Mon, 29 Apr 2013 20:34:21 +0200
-From: Kai Bollue <mlist1@bollue.de>
+Message-ID: <518BF7BC.6030406@web.de>
+Date: Thu, 09 May 2013 21:23:40 +0200
+From: Jan Kiszka <jan.kiszka@web.de>
 MIME-Version: 1.0
-References: <51757858.6040604@bollue.de> <51767C09.3070502@siemens.com>
-	<51769250.7050504@bollue.de> <5176950F.3040702@siemens.com>
-	<5176AB28.7000305@bollue.de> <5176AC37.1040405@siemens.com>
-	<5176C108.5050102@bollue.de> <5176C24B.3000300@siemens.com>
-	<5176E0D2.2080101@bollue.de> <51778E9A.7090206@siemens.com>
-	<5177D2EA.7060306@bollue.de> <517956F9.3010404@web.de>
-In-Reply-To: <517956F9.3010404@web.de>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Sporadic freeze using RTnet
+References: <5144D3E9.2050205@xenomai.org>
+	<5144D524.4000302@web.de>	<5144D5AB.3080004@xenomai.org>
+	<5144D5E3.9050601@web.de> <5144DB0F.9050901@xenomai.org>
+	<518BDD9D.10804@xenomai.org> <518BE3C5.4090203@web.de>
+	<518BE49D.2010404@xenomai.org> <518BE4CE.6020107@web.de>
+	<518BE4FC.6060507@xenomai.org> <518BE6D2.4090304@web.de>
+	<518BEAA2.1060703@xenomai.org> <518BEC1B.7080000@web.de>
+	<518BECA5.3020602@xenomai.org> <518BEDEC.7060302@web.de>
+	<518BF425.3070504@xenomai.org>
+In-Reply-To: <518BF425.3070504@xenomai.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai] __get_user/__put_user
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,50 +23,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@web.de>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: Xenomai <xenomai@xenomai.org>
 
-On 25.04.2013 18:16, Jan Kiszka wrote:
-> On 2013-04-24 14:41, Kai Bollue wrote:
->> On 24.04.2013 09:49, Jan Kiszka wrote:
->>> Yep, that's it, thank you very much.
->>>
->>> Does the rt_8139too driver support pre-mapping?
->>> Nope, only the two I mentioned (simply because they are more common on
->>> platforms that have >4G and/or an IOMMU). But - wait - the 8139too has a
->>> fixed DMA window (due to some older chips) and therefore does copying
->>> to/from a pre-allocated bounce buffer on its own. That makes it work
->>> with IOMMUs as well.
->> OK, this means that cards using the RTL 8139 are currently the only
->> non-Intel cards that work correctly with RTnet and > 4 GB of RAM, right?
->> Maybe this information should be put somewhere googleable, as modern
->> systems tend to have much RAM - and often still PCI slots.
-> True. There is an RTnet-related section on the Xenomai Wiki, and I'm
-> always open for patches against the in-tree doc of RTnet.
-
-Maybe like this?
-
-diff --git a/README b/README
-index b98e6fd..35e1cee 100644
---- a/README
-+++ b/README
-@@ -26,6 +26,9 @@ What are the requirements?
-    e1000e), DEC 21x4x-based (tulip), AMD PCnet32/PCnetPCI, VIA Rhine, 
-NatSemi
-    DP8381x, RTL8169 network adapter, MPC8260 FCC, MPC8xx SCC/FEC, or 
-MPC5200
-    on-chip controllers, SMSC LAN91C111 embedded controller, Intel 82575 
-(igb)
-+- CAUTION: On systems with > 4 GB RAM, currently only the following 
-chipsets
-+  will work: RealTek 8139, Intel PRO/1000 PCI-E (e1000e, NOT e1000),
-+  Intel 82575 (igb)
-  - For Ethernet-over-FireWire see rtfirewire.berlios.de
-  - For RT-WLAN: Ralink 2500
-
-
-Regards,
-Kai
-
-
-
+T24gMjAxMy0wNS0wOSAyMTowOCwgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4+IFJpZ2h0
+LCBidXQgdGhlIGdlbmVyYWwgcGF0dGVybiBmb3IgdGhpcyBpcwo+Pgo+PiAJb2JqID0geG5yZWdp
+c3RyeV9mZXRjaChoYW5kbGUpCj4+IAlnZXRfbmtsb2NrKCkKPj4gCWlmICh2YWxpZChvYmopKQo+
+PiAJCWRvX3NvbWV0aGluZ193aXRoKG9iaikKPj4gCXB1dF9ua2xvY2soKQo+IAo+IAo+IEkgY2Fu
+IGRvIHRoYXQsIGl0IGF2b2lkcyB0aGUgaXNzdWUgd2l0aCBfX2lwaXBlX3VhY2Nlc3NfbWlnaHRf
+ZmF1bHQsIGJ1dDoKPiAtIGl0IGlzIG5vdCB0aGUgc2FtZSBndWFyYW50ZWUsIG5vdGhpbmcgdGVs
+bHMgeW91IHRoYXQgb2JqIGlzIHRoZSBvbmUKPiBhc3NvY2lhdGVkIHdpdGggdGhlIG5hbWUgeW91
+IHBhc3NlZCB0byB4bnJlZ2lzdHJ5X2ZldGNoLCBpdCBtYXkgaGF2ZQo+IGJlZW4gZGVzdHJveWVk
+IGFuZCBjcmVhdGVkIGluIHRoZSBtZWFuIHRpbWUKClNlZSBteSBvdGhlciByZXBseTogdXNlciBt
+aXN0YWtlLCBpdCBzaG91bGQgbm90IG1hdHRlci4KCj4gLSBJIGFtIG5vdCBzdXJlIHdlIGRvIG5v
+dCBoYXZlIHNvbWUgb3RoZXIgcGxhY2VzIHdoZXJlIHdlIGNhbGwKPiBjb3B5X2Zyb20vdG9fdXNl
+ciB3aXRoIGlycXMgb2ZmLgoKTWlnaHQgYmUgdGhlIGNhc2UsIGJ1dCBJIHRoaW5rIHNvIGZhciB3
+ZSBzaG91bGQgaGF2ZSB0cmllZCB0byBhdm9pZApmYXVsdGluZyB1bmRlciB0aGUgbmtsb2NrIGFz
+IHdlIHdlcmVuJ3QgY29uc2lkZXJpbmcgdGhpcyBzYWZlIGVub3VnaCBvcgphdCBsZWFzdCBnb29k
+IGZvciB0aGUgd29yc3QgY2FzZSBsYXRlbmN5LgoKSmFuCgoKLS0tLS0tLS0tLS0tLS0gbmV4dCBw
+YXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4K
+TmFtZTogc2lnbmF0dXJlLmFzYwpUeXBlOiBhcHBsaWNhdGlvbi9wZ3Atc2lnbmF0dXJlClNpemU6
+IDI2MyBieXRlcwpEZXNjOiBPcGVuUEdQIGRpZ2l0YWwgc2lnbmF0dXJlClVSTDogPGh0dHA6Ly93
+d3cueGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxMzA1MDkvNTU2
+M2IyYjIvYXR0YWNobWVudC5wZ3A+Cg==
