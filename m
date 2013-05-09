@@ -1,13 +1,12 @@
-Message-ID: <518BC59F.60208@xenomai.org>
-Date: Thu, 09 May 2013 17:49:51 +0200
+Message-ID: <518BCB32.6060007@xenomai.org>
+Date: Thu, 09 May 2013 18:13:38 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CAPpP=rOMJi4u7sm9+a79aJ2GhhtJY7B5QD0+tVxsN7KoFMqxCw@mail.gmail.com>	<518A5F0C.50403@xenomai.org>	<CAPpP=rNt32NFsF5LhJybpcBRfm33za8kP2tQj+t4Vs9-hkH48w@mail.gmail.com>	<518ABA3D.5070106@xenomai.org>	<CAPpP=rOQm+GBuoB5KuAiAo5nG=HzggXb7CyLaP-SHAwebykPUw@mail.gmail.com>	<518B8C50.2050107@xenomai.org>	<CAPpP=rNkQTDCfRAxpN5wPNK-5R-4gngpxFGUCiqT2T8gwMKJRg@mail.gmail.com>	<518BA407.8020103@xenomai.org>	<CAPpP=rNCxHUfcBS7djmv8i+Er2PpXBdO101LfcxaZswzc9eBnw@mail.gmail.com>	<518BAF44.9060803@xenomai.org>	<CAPpP=rMLPeRAVCpdKQkLVD29pFUj8zPL5JRmTbrJkKEetJJbew@mail.gmail.com>	<CAPpP=rM6BTevvfoV+TT4ej6zkeyzdnY7yN_qVCUPkLFe38EUYA@mail.gmail.com>	<518BB895.3050208@xenomai.org>	<CAPpP=rNFf4qH0JPpR57i5qp1tmHbLb2k8X9qYjn+6dmZb_ckvA@mail.gmail.com>	<518BBFDC.7060102@xenomai.org>	<CAPpP=rOFw32ctFaLGtrPd-L0ZaTR_d38HhLZ9anSrk1tucv-xw@mail.gmail.com>	<518BC2C3.3080004@xenomai.org>
-	<CAPpP=rNCqAAiAzTviRxk7Oy1MRO4A6VGk5cJKVSGSa9q_Xp+Fg@mail.gmail.com>
-In-Reply-To: <CAPpP=rNCqAAiAzTviRxk7Oy1MRO4A6VGk5cJKVSGSa9q_Xp+Fg@mail.gmail.com>
+References: <5182B42F.9090907@bollue.de>
+In-Reply-To: <5182B42F.9090907@bollue.de>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [Posix] I/O multiplexing with select
+Subject: Re: [Xenomai] native/heap: "removing non-linked element"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,30 +15,86 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: alex alex <duch.alexandre@gmail.com>
+To: Kai Bollue <mlist1@bollue.de>
 Cc: Xenomai <xenomai@xenomai.org>
 
-On 05/09/2013 05:46 PM, alex alex wrote:
+On 05/02/2013 08:45 PM, Kai Bollue wrote:
 
->>
->> Ok, could you test the problematic code with the current contents of
->> xenomai git ?
->> git://git.xenomai.org/xenomai-2.6.git
->> branch master
->> --
->>
+> Hello,
 > 
-> OK, but the patch you mentioned :
-> http://git.xenomai.org/?p=xenomai-2.6.git;a=commitdiff;h=84b3b4ee50d2e2aa5ebd257a02d330994de674a3;hp=2a29477bbad419f5570e660e90f918c0627c893e
+> we experience a crash upon unbinding of a previously deleted (and 
+> cleaned up) shared heap.
+> Scheme:
+> - Process A calls rt_heap_create() (with H_SHARED flag), waits for some 
+> time and then terminates.
+> - Process B calls rt_heap_bind() on that heap, uses it and calls 
+> rt_heap_unbind() (or terminates) after process A has terminated.
 > 
-> is already in my xenomai tree.
-> Have you done other changes with the pthread_name_set_np ?
+> Then the system crashes after the output of "Xenomai: removing 
+> non-linked element, holder=ffffc900125e4940, qslot=ffff880427aa90f8 at 
+> kernel/xenomai/skins/native/heap.c:374".
+> 
+> The crash does not always happen, but can quite reliably be reproduced 
+> by starting process A in a loop from bash (while [ TRUE ]; do ...) and 
+> keeping process B running.
+> 
+> Two aspects seem to be crucial:
+> - Calling rt_heap_delete() in process A is not sufficient to reproduce 
+> the problem, the process has to terminate (the cleaning up seems to be 
+> relevant).
+> - We could only reproduce the crash as long as process B accessed the 
+> heap after process A had terminated (e.g. using memcpy).
+> 
+> As a workaround, it could be tried to avoid access to a deleted heap, 
+> but it is not always possible to detect the termination of process A on 
+> time in such a constellation.
+> 
+> The system:
+> - AMD AM3 FX-8350
+> - Debian 6.0
+> - Kernel 3.5.7
+> - Xenomai 2.6.2.1
+> 
+> We also tested this on an older system (Xenomai 2.6.0, Kernel 2.6.37): 
+> Here, both processes hung indefinitely and could not be killed, but the 
+> system did not crash.
+> 
+> Any hints are appreciated.
+> 
+> Attachments:
+> - Console output
+> - Code of process A
+> - Code of process B
 
 
-No, could you show us a dissassembly of the function strncpy ?(on the
-exact kernel which has the bug, if you recompiled the kernel, please
-trigger the bug again to get the oops message that corresponds to it).
+Hi Kai,
 
+thank you very much for your test case, it allowed to reproduce the
+issue and try and understand what happens.
+
+>From what I understand, processA creates the shared heap which is added
+to the list of the objects it holds (xeno_get_rholder()), when processA
+dies, the heap is removed from the list, but not destroyed because it is
+also bound to processB.
+
+Then processB unbinds the heap, which triggers an auto-destruction,
+which tries to remove the heap from processA list again. If processA
+control block has not been re-used, this works, because the list is
+still there, if processA has be re-launched, the control block has been
+reinitialized, as well as the list, so removing the element from the
+list fails.
+
+I see several possible corrections:
+- get rt_heap_delete to return an error when the heap is currently bound
+to another process (EBUSY for instance), while still unmapping it from
+the current process. This will cause __xeno_flush_rq to move the heap to
+the "global" ressource holder, where it can safely be deleted later
+- put any rt_heap with the H_MAPPABLE flag directly on the global
+ressource holder, as it is a global object anyway, this means that when
+a process which created a mappable heap dies, the heap survives, but
+this is maybe what should be expected from shareable heaps.
+
+Regards.
 
 -- 
                                                                 Gilles.
