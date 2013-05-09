@@ -1,13 +1,18 @@
-Message-ID: <518BA407.8020103@xenomai.org>
-Date: Thu, 09 May 2013 15:26:31 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <518BA678.9030406@xenomai.org>
+Date: Thu, 09 May 2013 15:36:56 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <CAPpP=rOMJi4u7sm9+a79aJ2GhhtJY7B5QD0+tVxsN7KoFMqxCw@mail.gmail.com>	<518A5F0C.50403@xenomai.org>	<CAPpP=rNt32NFsF5LhJybpcBRfm33za8kP2tQj+t4Vs9-hkH48w@mail.gmail.com>	<518ABA3D.5070106@xenomai.org>	<CAPpP=rOQm+GBuoB5KuAiAo5nG=HzggXb7CyLaP-SHAwebykPUw@mail.gmail.com>	<518B8C50.2050107@xenomai.org>
-	<CAPpP=rNkQTDCfRAxpN5wPNK-5R-4gngpxFGUCiqT2T8gwMKJRg@mail.gmail.com>
-In-Reply-To: <CAPpP=rNkQTDCfRAxpN5wPNK-5R-4gngpxFGUCiqT2T8gwMKJRg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
+References: <51826EEA.1090202@mitrol.it>
+	<51830D98.7090309@xenomai.org>	<5183CDD6.80400@mitrol.it>
+	<518A06C9.50204@mitrol.it> <518A4C09.8030906@xenomai.org>
+	<518A505C.2090207@mitrol.it> <518A52A7.5000801@xenomai.org>
+	<518A5600.20508@mitrol.it> <518A6195.7030206@mitrol.it>
+	<518A77F8.3070404@xenomai.org> <518A78DF.7020300@xenomai.org>
+In-Reply-To: <518A78DF.7020300@xenomai.org>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [Posix] I/O multiplexing with select
+Subject: Re: [Xenomai] Re : Sporadic problem : rt_task_sleep locked after
+ debugging
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,27 +21,73 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: alex alex <duch.alexandre@gmail.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Paolo Minazzi <Paolo.Minazzi@mitrol.it>
+Cc: xenomai@xenomai.org
 
-On 05/09/2013 03:13 PM, alex alex wrote:
-
->  Could you reduce the faulting program to a program
+On 05/08/2013 06:10 PM, Philippe Gerum wrote:
+> On 05/08/2013 06:06 PM, Philippe Gerum wrote:
+>> On 05/08/2013 04:30 PM, Paolo Minazzi wrote:
+>>> I think to be very near to the solution of this problem.
+>>> Thanks to Gilles for his patience.
+>>>
+>>> Now I will retry to make a summary of the problem.
+>>>
+>>
+>> <snip>
+>>
+>>> The thread 1 finds thread 70 in debug mode !
+>>>
+>>
+>> Which is expected. thread 70 has to be scheduled in with no pending 
+>> ptrace signals for leaving this mode, and this may happen long after 
+>> the truckload of other threads releases the CPU.
+>>
+>>> My patch adjust this problem.
+>>>
+>>> I realize that it is a very special case, but it is my case.
+>>>
+>>> I'd like to know if the patch is valid or can be written in a different
+>>> way.
+>>> For example, I could insert my patch directly in xnpod_delete_thread().
+>>>
+>>> The function unlock_timers() cannot be called from
+>>> xenomai-2.5.6/ksrc/skins/native/task.c
+>>> because it is defined static. This is a detail. There are simple ways to
+>>> solve this.
+>>>
+>>
+>> No, really the patch is wrong, but what you expose does reveal a bug 
+>> in the Xenomai core for sure. As Gilles told you, you would be only 
+>> papering over that real bug, which would likely show up in a different 
+>> situation.
+>>
+>> First we need to check for a lock imbalance, I don't think that code 
+>> is particularly safe.
 > 
->> as simple as possible triggering the bug?
->>
->>
-> Using the new implementation of select, I don't have this bug anymore
-> . Thedifferent is
-> that with the former I called periodically pthread_set_name_np).
+> I mean a lock imbalance introduced by an unexpected race between the 
+> locking/unlocking calls. The assertions introduced by this patch might 
+> help detecting this, with some luck.
+> 
 
+Could you apply that patch below, and report whether some task triggers
+the message it introduces, when things go wrong with gdb? TIA,
 
-I you call pthread_set_name_np for a thread that may not exist, this is 
-an issue which has already been fixed:
-
-http://git.xenomai.org/?p=xenomai-2.6.git;a=commitdiff;h=84b3b4ee50d2e2aa5ebd257a02d330994de674a3;hp=2a29477bbad419f5570e660e90f918c0627c893e
-
+diff --git a/ksrc/nucleus/pod.c b/ksrc/nucleus/pod.c
+index 868f98f..2da3265 100644
+--- a/ksrc/nucleus/pod.c
++++ b/ksrc/nucleus/pod.c
+@@ -1215,6 +1215,10 @@ void xnpod_delete_thread(xnthread_t *thread)
+ #else /* !CONFIG_XENO_HW_UNLOCKED_SWITCH */
+ 	} else {
+ #endif /* !CONFIG_XENO_HW_UNLOCKED_SWITCH */
++		if (xnthread_test_state(thread, XNSHADOW|XNMAPPED) == XNSHADOW)
++			printk(KERN_WARNING "%s: deleting unmapped shadow %s\n",
++			       __func__, thread->name);
++
+ 		xnpod_run_hooks(&nkpod->tdeleteq, thread, "DELETE");
+ 
+ 		xnsched_forget(thread);
 
 -- 
-                                                                Gilles.
+Philippe.
 
