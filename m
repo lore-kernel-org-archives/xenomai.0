@@ -1,16 +1,16 @@
-Message-ID: <518BE6D2.4090304@web.de>
-Date: Thu, 09 May 2013 20:11:30 +0200
-From: Jan Kiszka <jan.kiszka@web.de>
+Message-ID: <518BEAA2.1060703@xenomai.org>
+Date: Thu, 09 May 2013 20:27:46 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <5144D3E9.2050205@xenomai.org>
 	<5144D524.4000302@web.de>	<5144D5AB.3080004@xenomai.org>
 	<5144D5E3.9050601@web.de> <5144DB0F.9050901@xenomai.org>
 	<518BDD9D.10804@xenomai.org> <518BE3C5.4090203@web.de>
 	<518BE49D.2010404@xenomai.org> <518BE4CE.6020107@web.de>
-	<518BE4FC.6060507@xenomai.org>
-In-Reply-To: <518BE4FC.6060507@xenomai.org>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+	<518BE4FC.6060507@xenomai.org> <518BE6D2.4090304@web.de>
+In-Reply-To: <518BE6D2.4090304@web.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] __get_user/__put_user
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -20,52 +20,84 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Jan Kiszka <jan.kiszka@web.de>
 Cc: Xenomai <xenomai@xenomai.org>
 
-T24gMjAxMy0wNS0wOSAyMDowMywgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4gT24gMDUv
-MDkvMjAxMyAwODowMiBQTSwgSmFuIEtpc3prYSB3cm90ZToKPiAKPj4gT24gMjAxMy0wNS0wOSAy
-MDowMiwgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4+PiBPbiAwNS8wOS8yMDEzIDA3OjU4
-IFBNLCBKYW4gS2lzemthIHdyb3RlOgo+Pj4KPj4+PiBPbiAyMDEzLTA1LTA5IDE5OjMyLCBHaWxs
-ZXMgQ2hhbnRlcGVyZHJpeCB3cm90ZToKPj4+Pj4gT24gMDMvMTYvMjAxMyAwOTo1MCBQTSwgR2ls
-bGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4+Pj4+Cj4+Pj4+PiBPbiAwMy8xNi8yMDEzIDA5OjI4
-IFBNLCBKYW4gS2lzemthIHdyb3RlOgo+Pj4+Pj4KPj4+Pj4+PiBPbiAyMDEzLTAzLTE2IDIxOjI3
-LCBHaWxsZXMgQ2hhbnRlcGVyZHJpeCB3cm90ZToKPj4+Pj4+Pj4gT24gMDMvMTYvMjAxMyAwOToy
-NSBQTSwgSmFuIEtpc3prYSB3cm90ZToKPj4+Pj4+Pj4KPj4+Pj4+Pj4+IE9uIDIwMTMtMDMtMTYg
-MjE6MTksIEdpbGxlcyBDaGFudGVwZXJkcml4IHdyb3RlOgo+Pj4+Pj4+Pj4+Cj4+Pj4+Pj4+Pj4g
-SGksCj4+Pj4+Pj4+Pj4KPj4+Pj4+Pj4+PiB4ZW5vbWFpIGFzbS1nZW5lcmljL3N5c2NhbGwuaCBk
-ZWZpbmVzIF9feG5fcHV0X3VzZXIvX194bl9nZXRfdXNlciBhcwo+Pj4+Pj4+Pj4+IGFsaWFzZXMg
-Zm9yIF9fcHV0X3VzZXIvX19nZXRfdXNlciwgd2hpY2ggaW1wbGVtZW50YXRpb24sIGZvciB0aGUg
-QVJNCj4+Pj4+Pj4+Pj4gYXJjaGl0ZWN0dXJlIGNhbGxzIG1pZ2h0X2ZhdWx0KCkgd2hpY2ggdHJp
-Z2dlcnMgYW4gaXBpcGVfcm9vdF9vbmx5KCkgY2hlY2suCj4+Pj4+Pj4+Pj4KPj4+Pj4+Pj4+PiBT
-bywgdGhlIHF1ZXN0aW9uIGlzLCB3aGF0IGlzIHRoZSBiZXN0IHdheSBvZiBhdm9pZGluZyB0aGlz
-IGlzc3VlPyBSZW1vdmUKPj4+Pj4+Pj4+PiB0aGUgY2FsbCB0byBtaWdodF9mYXVsdCgpIHdoZW4g
-Y29tcGlsaW5nIHdpdGggQ09ORklHX0lQSVBFIGVuYWJsZWQ/Cj4+Pj4+Pj4+Pj4gRGVmaW5lIF9f
-aXBpcGVfc2FmZV9wdXRfdXNlciB3aGljaCBhdm9pZHMgdGhlIGNhbGwgdG8gbWlnaHRfZmF1bHQo
-KSA/Cj4+Pj4+Pj4+Pgo+Pj4+Pj4+Pj4gQWRqdXN0IG1pZ2h0X2ZhdWx0KCkgaW4gYSB3YXkgdGhh
-dCBpdCBvbmx5IGNvbnNpZGVycyBhdG9taWMgbm9uLXJvb3QKPj4+Pj4+Pj4+IGNvbnRleHRzIGFz
-IHByb2JsZW1hdGljLgo+Pj4+Pj4+Pgo+Pj4+Pj4+Pgo+Pj4+Pj4+PiBhdG9taWMgbWVhbmluZyB3
-aXRoIGhhcmR3YXJlIGlycXMgb2ZmPyBvciB3aXRoaW4gYW4gaXJxIGhhbmRsZXI/IFRoaXMKPj4+
-Pj4+Pj4gcmVxdWlyZXMgeGVub21haS4uLgo+Pj4+Pj4+Cj4+Pj4+Pgo+Pj4+Pj4+IEhhcmQgaXJx
-cyBvZmYgfHwgaGVhZCBkb21haW4gc3RhbGxlZCwgSSB3b3VsZCBzYXkuCj4+Pj4+Pgo+Pj4+Pj4g
-b2ssIGRvbmUsIHRoYW5rcy4KPj4+Pj4+Cj4+Pj4+Cj4+Pj4+IEFjdHVhbGx5LCBpdCBkb2VzIG5v
-dCB3b3JrLCB0aGUgV0FSTl9PTiB0cmlnZ2VycyBpbiBfX3J0X2hlYXBfYmluZCBmb3IKPj4+Pj4g
-aW5zdGFuY2UsIHdoaWNoIGRvZXMgc29tZSBjb3BpZXMgZnJvbSB1c2VyIHdpdGggaGFyZCBpcnFz
-IG9mZi4KPj4+Pgo+Pj4+IEhtbSwgaXNuJ3QgdGhhdCBhIHJlYWwgYnVnPyBUaGUgbnVjbGV1cyBz
-aG91bGQgdGhlbiB0cnkgdG8gbWlncmF0ZSB0bwo+Pj4+IExpbnV4IHdoaWxlIHRoZSBua2xvY2sg
-aXMgaGVsZCAtIG91Y2guLi4KPj4+Cj4+Pgo+Pj4gSW4gdGhlb3J5LCB0aGUgZmF1bHQgc2hvdWxk
-IGJlIGZpeGVkIHVwIHdpdGhvdXQgcmVxdWlyaW5nIGEgbWlncmF0aW9uLiBJCj4+PiB3aWxsIHRl
-c3QgdGhpcy4KPj4KPj4gSW4gdGhlb3J5LCB1c2VyIHNwYWNlIGNvdWxkIGFsc28gcHJvdmlkZSBh
-biBpbnZhbGlkIHBvaW50ZXIuCj4gCj4gCj4gWWVzLCB0aGlzIGlzIHdoYXQgSSBhbSBnb2luZyB0
-byB0ZXN0LCBidXQgYW4gaW52YWxpZCBwb2ludGVyIGNhdXNlIHRoZQo+IGZhdWx0IHRvIGJlIGZp
-eGVkIHVwIHNvIHRoYXQgdGhlIGNvcHlfZnJvbV91c2VyIHJldHVybiAtRUZBVUxULgo+IAoKSSBk
-b24ndCB0aGluayB3ZSBmaXgtdXAgb3ZlciB0aGUgaGVhZCBkb21haW4uIFJhdGhlciwgdGhlIG51
-Y2xldXMKcmVjZWl2ZXMgdGhlIGluZm9ybWF0aW9uIHRoYXQgYSBmYXVsdCBoYXMgaGFwcGVuZWQg
-b3ZlciB0aGUgaGVhZCBkb21haW4KYW5kIG1pZ3JhdGVzIHRvIHJvb3QuIEFmdGVyIHJldHVybmlu
-ZyBmcm9tIHRoZSB0cmFwIGhhbmRsZXIsIHRoZSBMaW51eAprZXJuZWwgaGFuZGxlcyB0aGUgZmF1
-bHQgYXMgbm9ybWFsLCBpbmNsdWRpbmcgdGhlIGZpeC11cC4KCkphbgoKLS0tLS0tLS0tLS0tLS0g
-bmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJi
-ZWQuLi4KTmFtZTogc2lnbmF0dXJlLmFzYwpUeXBlOiBhcHBsaWNhdGlvbi9wZ3Atc2lnbmF0dXJl
-ClNpemU6IDI2MyBieXRlcwpEZXNjOiBPcGVuUEdQIGRpZ2l0YWwgc2lnbmF0dXJlClVSTDogPGh0
-dHA6Ly93d3cueGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxMzA1
-MDkvOGYxMTUyZmYvYXR0YWNobWVudC5wZ3A+Cg==
+On 05/09/2013 08:11 PM, Jan Kiszka wrote:
+
+> On 2013-05-09 20:03, Gilles Chanteperdrix wrote:
+>> On 05/09/2013 08:02 PM, Jan Kiszka wrote:
+>>
+>>> On 2013-05-09 20:02, Gilles Chanteperdrix wrote:
+>>>> On 05/09/2013 07:58 PM, Jan Kiszka wrote:
+>>>>
+>>>>> On 2013-05-09 19:32, Gilles Chanteperdrix wrote:
+>>>>>> On 03/16/2013 09:50 PM, Gilles Chanteperdrix wrote:
+>>>>>>
+>>>>>>> On 03/16/2013 09:28 PM, Jan Kiszka wrote:
+>>>>>>>
+>>>>>>>> On 2013-03-16 21:27, Gilles Chanteperdrix wrote:
+>>>>>>>>> On 03/16/2013 09:25 PM, Jan Kiszka wrote:
+>>>>>>>>>
+>>>>>>>>>> On 2013-03-16 21:19, Gilles Chanteperdrix wrote:
+>>>>>>>>>>>
+>>>>>>>>>>> Hi,
+>>>>>>>>>>>
+>>>>>>>>>>> xenomai asm-generic/syscall.h defines __xn_put_user/__xn_get_user as
+>>>>>>>>>>> aliases for __put_user/__get_user, which implementation, for the ARM
+>>>>>>>>>>> architecture calls might_fault() which triggers an ipipe_root_only() check.
+>>>>>>>>>>>
+>>>>>>>>>>> So, the question is, what is the best way of avoiding this issue? Remove
+>>>>>>>>>>> the call to might_fault() when compiling with CONFIG_IPIPE enabled?
+>>>>>>>>>>> Define __ipipe_safe_put_user which avoids the call to might_fault() ?
+>>>>>>>>>>
+>>>>>>>>>> Adjust might_fault() in a way that it only considers atomic non-root
+>>>>>>>>>> contexts as problematic.
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>> atomic meaning with hardware irqs off? or within an irq handler? This
+>>>>>>>>> requires xenomai...
+>>>>>>>>
+>>>>>>>
+>>>>>>>> Hard irqs off || head domain stalled, I would say.
+>>>>>>>
+>>>>>>> ok, done, thanks.
+>>>>>>>
+>>>>>>
+>>>>>> Actually, it does not work, the WARN_ON triggers in __rt_heap_bind for
+>>>>>> instance, which does some copies from user with hard irqs off.
+>>>>>
+>>>>> Hmm, isn't that a real bug? The nucleus should then try to migrate to
+>>>>> Linux while the nklock is held - ouch...
+>>>>
+>>>>
+>>>> In theory, the fault should be fixed up without requiring a migration. I
+>>>> will test this.
+>>>
+>>> In theory, user space could also provide an invalid pointer.
+>>
+>>
+>> Yes, this is what I am going to test, but an invalid pointer cause the
+>> fault to be fixed up so that the copy_from_user return -EFAULT.
+>>
+> 
+> I don't think we fix-up over the head domain. Rather, the nucleus
+> receives the information that a fault has happened over the head domain
+> and migrates to root. 
+
+
+It depends on where the notification happens in the I-pipe patch. You
+could allow the kernel to fix-up the fault without notifying the
+nucleus. I thought I did that in the past, but apparently not in the
+latest patches as a segfault in rt_heap_bind causes a switch to
+secondary mode, but the nklock is automatically released as part of the
+migration to secondary mode.
+
+I am not sure the fix-up code is completely unsafe to be called over non
+root domain, as it only uses preempt_disable, preempt_enable,
+list_for_each_entry_rcu and only if the exception is found in a kernel
+module.
+
+-- 
+                                                                Gilles.
+
