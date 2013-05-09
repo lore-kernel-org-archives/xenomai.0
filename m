@@ -1,5 +1,5 @@
-Message-ID: <518BF425.3070504@xenomai.org>
-Date: Thu, 09 May 2013 21:08:21 +0200
+Message-ID: <518BF5F7.5070205@xenomai.org>
+Date: Thu, 09 May 2013 21:16:07 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <5144D3E9.2050205@xenomai.org>
@@ -126,12 +126,8 @@ On 05/09/2013 08:41 PM, Jan Kiszka wrote:
 > 	put_nklock()
 
 
-I can do that, it avoids the issue with __ipipe_uaccess_might_fault, but:
-- it is not the same guarantee, nothing tells you that obj is the one
-associated with the name you passed to xnregistry_fetch, it may have
-been destroyed and created in the mean time
-- I am not sure we do not have some other places where we call
-copy_from/to_user with irqs off.
+Seems rather to be get_nklock before xnregistry_fetch.
+
 
 -- 
                                                                 Gilles.
