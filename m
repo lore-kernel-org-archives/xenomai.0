@@ -1,20 +1,20 @@
-Mime-Version: 1.0 (Apple Message framework v1283)
-From: Stephan Kappertz <stephan.kappertz@kabelmail.de>
-In-Reply-To: <518A98F5.30000@xenomai.org>
-Date: Fri, 10 May 2013 13:53:27 +0200
-Message-Id: <0ECFC8C0-CF1D-4D65-9724-B0A1A91887DC@kabelmail.de>
-References: <516BA4E9.3070201@xenomai.org>
-	<90FBAEE5-D70C-4563-B9DB-776D6E4E7FA9@kabelmail.de>
-	<516D933F.8060502@xenomai.org>
-	<F484004F-9908-449C-A4DA-CB73E47EE764@kabelmail.de>
-	<5182B1B5.1000107@xenomai.org>
-	<12E434B4-4F26-44AC-8D50-2CF70B5089E1@kabelmail.de>
-	<5183FFB3.1000006@xenomai.org>
-	<8D9AB79C-4A66-4511-B08B-ACF825FED1BF@kabelmail.de>
-	<518A98F5.30000@xenomai.org>
-Content-Type: text/plain; charset="us-ascii"
+Message-ID: <518CF311.60805@xenomai.org>
+Date: Fri, 10 May 2013 15:16:01 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+References: <5144D3E9.2050205@xenomai.org>
+	<5144D524.4000302@web.de>	<5144D5AB.3080004@xenomai.org>
+	<5144D5E3.9050601@web.de> <5144DB0F.9050901@xenomai.org>
+	<518BDD9D.10804@xenomai.org> <518BE3C5.4090203@web.de>
+	<518BE49D.2010404@xenomai.org> <518BE4CE.6020107@web.de>
+	<518BE4FC.6060507@xenomai.org> <518BE6D2.4090304@web.de>
+	<518BEAA2.1060703@xenomai.org> <518BEC1B.7080000@web.de>
+	<518BECA5.3020602@xenomai.org> <518BEDEC.7060302@web.de>
+	<518BF5F7.5070205@xenomai.org> <518BF710.9030500@xenomai.org>
+In-Reply-To: <518BF710.9030500@xenomai.org>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Raspberry and Beaglebone patches
+Subject: Re: [Xenomai] __get_user/__put_user
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -23,174 +23,204 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Jan Kiszka <jan.kiszka@web.de>, Xenomai <xenomai@xenomai.org>
 
-Am 08.05.2013 um 20:27 schrieb Gilles Chanteperdrix:
+On 05/09/2013 09:20 PM, Philippe Gerum wrote:
 
-> On 05/03/2013 10:41 PM, Stephan Kappertz wrote:
+> On 05/09/2013 09:16 PM, Gilles Chanteperdrix wrote:
+>> On 05/09/2013 08:41 PM, Jan Kiszka wrote:
+>>
+>>> On 2013-05-09 20:36, Gilles Chanteperdrix wrote:
+>>>> On 05/09/2013 08:34 PM, Jan Kiszka wrote:
+>>>>
+>>>>> On 2013-05-09 20:27, Gilles Chanteperdrix wrote:
+>>>>>> On 05/09/2013 08:11 PM, Jan Kiszka wrote:
+>>>>>>
+>>>>>>> On 2013-05-09 20:03, Gilles Chanteperdrix wrote:
+>>>>>>>> On 05/09/2013 08:02 PM, Jan Kiszka wrote:
+>>>>>>>>
+>>>>>>>>> On 2013-05-09 20:02, Gilles Chanteperdrix wrote:
+>>>>>>>>>> On 05/09/2013 07:58 PM, Jan Kiszka wrote:
+>>>>>>>>>>
+>>>>>>>>>>> On 2013-05-09 19:32, Gilles Chanteperdrix wrote:
+>>>>>>>>>>>> On 03/16/2013 09:50 PM, Gilles Chanteperdrix wrote:
+>>>>>>>>>>>>
+>>>>>>>>>>>>> On 03/16/2013 09:28 PM, Jan Kiszka wrote:
+>>>>>>>>>>>>>
+>>>>>>>>>>>>>> On 2013-03-16 21:27, Gilles Chanteperdrix wrote:
+>>>>>>>>>>>>>>> On 03/16/2013 09:25 PM, Jan Kiszka wrote:
+>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> On 2013-03-16 21:19, Gilles Chanteperdrix wrote:
+>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>> Hi,
+>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>> xenomai asm-generic/syscall.h defines __xn_put_user/__xn_get_user as
+>>>>>>>>>>>>>>>>> aliases for __put_user/__get_user, which implementation, for the ARM
+>>>>>>>>>>>>>>>>> architecture calls might_fault() which triggers an ipipe_root_only() check.
+>>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>>> So, the question is, what is the best way of avoiding this issue? Remove
+>>>>>>>>>>>>>>>>> the call to might_fault() when compiling with CONFIG_IPIPE enabled?
+>>>>>>>>>>>>>>>>> Define __ipipe_safe_put_user which avoids the call to might_fault() ?
+>>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>> Adjust might_fault() in a way that it only considers atomic non-root
+>>>>>>>>>>>>>>>> contexts as problematic.
+>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>>
+>>>>>>>>>>>>>>> atomic meaning with hardware irqs off? or within an irq handler? This
+>>>>>>>>>>>>>>> requires xenomai...
+>>>>>>>>>>>>>>
+>>>>>>>>>>>>>
+>>>>>>>>>>>>>> Hard irqs off || head domain stalled, I would say.
+>>>>>>>>>>>>>
+>>>>>>>>>>>>> ok, done, thanks.
+>>>>>>>>>>>>>
+>>>>>>>>>>>>
+>>>>>>>>>>>> Actually, it does not work, the WARN_ON triggers in __rt_heap_bind for
+>>>>>>>>>>>> instance, which does some copies from user with hard irqs off.
+>>>>>>>>>>>
+>>>>>>>>>>> Hmm, isn't that a real bug? The nucleus should then try to migrate to
+>>>>>>>>>>> Linux while the nklock is held - ouch...
+>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>> In theory, the fault should be fixed up without requiring a migration. I
+>>>>>>>>>> will test this.
+>>>>>>>>>
+>>>>>>>>> In theory, user space could also provide an invalid pointer.
+>>>>>>>>
+>>>>>>>>
+>>>>>>>> Yes, this is what I am going to test, but an invalid pointer cause the
+>>>>>>>> fault to be fixed up so that the copy_from_user return -EFAULT.
+>>>>>>>>
+>>>>>>>
+>>>>>>> I don't think we fix-up over the head domain. Rather, the nucleus
+>>>>>>> receives the information that a fault has happened over the head domain
+>>>>>>> and migrates to root.
+>>>>>>
+>>>>>>
+>>>>>> It depends on where the notification happens in the I-pipe patch. You
+>>>>>> could allow the kernel to fix-up the fault without notifying the
+>>>>>> nucleus. I thought I did that in the past, but apparently not in the
+>>>>>> latest patches as a segfault in rt_heap_bind causes a switch to
+>>>>>> secondary mode, but the nklock is automatically released as part of the
+>>>>>> migration to secondary mode.
+>>>>>>
+>>>>>> I am not sure the fix-up code is completely unsafe to be called over non
+>>>>>> root domain, as it only uses preempt_disable, preempt_enable,
+>>>>>> list_for_each_entry_rcu and only if the exception is found in a kernel
+>>>>>> module.
+>>>>>>
+>>>>>
+>>>>> Maybe.
+>>>>>
+>>>>> But why do we need to hold the nklock across the __rt_bind_helper in
+>>>>> __rt_queue_bind at all? Other binding services apparently don't have
+>>>>> this need.
+>>>>
+>>>>
+>>>> I suppose because we do not want the heap vanishing under our feet while
+>>>> we access its contents with the xnheap_* accessors.
+>>>
+>>> Right, but the general pattern for this is
+>>>
+>>> 	obj = xnregistry_fetch(handle)
+>>> 	get_nklock()
+>>> 	if (valid(obj))
+>>> 		do_something_with(obj)
+>>> 	put_nklock()
+>>
+>>
+>> Seems rather to be get_nklock before xnregistry_fetch.
+>>
+>>
 > 
->> 
->> Am 03.05.2013 um 20:19 schrieb Gilles Chanteperdrix:
->> 
->>> On 05/03/2013 04:28 PM, Stephan Kappertz wrote:
->>> 
->>>> 
->>>> Am 02.05.2013 um 20:34 schrieb Gilles Chanteperdrix:
->>>> 
->>>>> On 05/02/2013 02:19 PM, Stephan Kappertz wrote:
->>>>> 
->>>>>> 
->>>>>> Am 16.04.2013 um 20:06 schrieb Gilles Chanteperdrix:
->>>>>> 
->>>>>>> On 04/16/2013 12:26 PM, Stephan Kappertz wrote:
->>>>>>> 
->>>>>>>> Am 15.04.2013 um 08:57 schrieb Gilles Chanteperdrix:
->>>>>>>> 
->>>>>>>>> 
->>>>>>>>> Hi Stephan, Paul,
->>>>>>>>> 
->>>>>>>>> we have a problem with the patches for Raspberry and 
->>>>>>>>> BeagleBone: they are based on the 3.2.21 patch, which
->>>>>>>>> we know is broken. So, we can not really ship the next
->>>>>>>>> version of Xenomai with these patches.
->>>>>>>>> 
->>>>>>>>> There are two ways we could keep patches for these 
->>>>>>>>> machines: - you could send patches for 3.4 or 3.5, or
->>>>>>>>> even 3.8 - we could backport the fixes to 3.2, but as
->>>>>>>>> already discussed on this list, this would cost some
->>>>>>>>> time to re-validate the 3.2 patch on all architectures.
->>>>>>>>> However, if you do the backport, validate it on your
->>>>>>>>> side, I could validate the result on my test boards,
->>>>>>>>> and we would release a new version of the patch for 3.2
->>>>>>>>> only for the ARM architecture.
->>>>>>>>> 
->>>>>>>>> Regards.
->>>>>>>>> 
->>>>>>>>> -- Gilles.
->>>>>>>>> 
->>>>>>>> 
->>>>>>>> Hi Gilles,
->>>>>>>> 
->>>>>>>> there's a 3.8.7 branch available for beagleBone at 
->>>>>>>> https://github.com/beagleboard/kernel/tree/3.8.
->>>>>>>> 
->>>>>>>> I can look into updating the beagleBone patch for that 
->>>>>>>> repository. Where do I find the latest ipipe patch for
->>>>>>>> 3.8 on ARM?
->>>>>>> 
->>>>>>> 
->>>>>>> ipipe-gch repository, for-core-3.8 branch.
->>>>>>> 
->>>>>>> -- Gilles.
->>>>>>> 
->>>>>> 
->>>>>> Hi Gilles, do you have a script to create the ipipe patch
->>>>>> file? Can't find any in the pipe-gch repository.
->>>>> 
->>>>> 
->>>>> It is not yet in the repository, if you want the definitive
->>>>> patch, please wait a bit, the patch should be released soon.
->>>>> 
->>>>> 
->>>>> -- Gilles.
->>>>> 
->>>> 
->>>> Hi Gilles,
->>>> 
->>>> I have created a ipipe post patch for the beagleBone kernel
->>>> v3.8.10 found here:
->>>> 
->>>> https://github.com/RobertCNelson/linux-dev/tree/am33x-v3.8,
->>>> branch am33x-v3.8
->>>> 
->>>> Your pipe-gch repository is based on 3.8 while the upper
->>>> repository is at 3.8.10. Thus I had to apply a few minor changes
->>>> to the patch file created from your git. Are you going to rebase
->>>> the ipipe patch to 3.8.10 or higher before releasing it?
->>> 
->>> 
->>> I do not know, Philippe is going to make the patch, he will decide
->>> on which version he rebases.
->>> 
->>>> If so, the beagleBone patch gets reduced to the post patch
->>>> below:
->>> 
->>> 
->>> Ok, several remarks: - can not we put that code in the mainline
->>> kernel (meaning, does soc_is_am33xx() exist in the mainline kernel,
->>> if it does not exist, can not we add it?) - the coding style for
->>> the tsc declaration is bad, braces are not put on separate lines in
->>> the Linux kernel coding style; - since the only difference between
->>> am33xx and other omaps is OMAP_TIMER_CAPTURE_REG vs
->>> OMAP_TIMER_COUNTER_REG, why not put this in a local variable and
->>> use it twice?
->>> 
->>> 
->>> -- Gilles.
->>> 
->> 
->> Yes, soc_is_am33xx() is indeed defined in the mainline kernel
->> starting from 3.6. So the beagleBone patch can safely be put into the
->> mainline ipipe sources.
->> 
->> I'll fix the coding style and send a new patch. Actually using
->> soc_is_am33xx() for the TSC register location decision was an
->> unnecessary constraint. The OMAP timer struct has a revision field
->> that is 2 for the v2 timer IP. In rev 2, all functional registers are
->> offset by OMAP_TIMER_V2_FUNC_OFFSET.
-> 
-> 
-> Hi,
-> 
-> any news about this patch?
-> 
-> Regards.
-> 
-> -- 
->                                                                Gilles.
+> Yes. The other pattern is only used when the fetched handle shall be 
+> revalidated before actual use. __rt_bind_helper does not revalidate, so 
+> the handle is fetched under lock.
 > 
 
-Sorry for the delay, here it is. Tested against pipe-gch for-core-3.8. Xenomai is successfully starting on the beagleBone:
 
-[    0.537862] I-pipe: head domain Xenomai registered.
-[    0.537909] Xenomai: hal/arm started.
-[    0.539781] Xenomai: scheduling class idle registered.
-[    0.539815] Xenomai: scheduling class rt registered.
-[    0.545077] Xenomai: real-time nucleus v2.6.2.1 (Day At The Beach) loaded.
-[    0.545089] Xenomai: debug mode enabled.
-[    0.545733] Xenomai: starting native API services.
-[    0.545752] Xenomai: starting POSIX services.
-[    0.545930] Xenomai: starting RTDM services.
+I am not sure I understand what you mean, since __rt_bind_helper seems 
+to revalidate. Is this patch what you have in mind?
 
-# cat /proc/xenomai/version 
-2.6.2.1
+diff --git a/ksrc/skins/native/syscall.c b/ksrc/skins/native/syscall.c
+index a88a517..b9862e7 100644
+--- a/ksrc/skins/native/syscall.c
++++ b/ksrc/skins/native/syscall.c
+@@ -2098,15 +2098,19 @@ static int __rt_queue_bind(struct pt_regs *regs)
+ 	int err;
+ 	spl_t s;
+ 
+-	xnlock_get_irqsave(&nklock, s);
+-
+ 	err =
+ 	    __rt_bind_helper(p, regs, &ph.opaque, XENO_QUEUE_MAGIC,
+ 			     (void **)&q, 0);
+ 
+ 	if (err)
+-		goto unlock_and_exit;
++		return err;
++
++	xnlock_get_irqsave(&nklock, s);
++	if (xeno_test_magic(q, XENO_QUEUE_MAGIC) == 0) {
++		xnlock_put_irqrestore(&nklock, s);
+ 
++		return -EACCES;
++	}
+ 	ph.opaque2 = &q->bufpool;
+ 	ph.mapsize = xnheap_extentsize(&q->bufpool);
+ 	ph.area = xnheap_base_memory(&q->bufpool);
+@@ -2123,12 +2127,6 @@ static int __rt_queue_bind(struct pt_regs *regs)
+ 		xnshadow_relax(0, 0);
+ 
+ 	return 0;
+-
+-      unlock_and_exit:
+-
+-	xnlock_put_irqrestore(&nklock, s);
+-
+-	return err;
+ }
+ 
+ /*
+@@ -2622,15 +2620,19 @@ static int __rt_heap_bind(struct pt_regs *regs)
+ 	int err;
+ 	spl_t s;
+ 
+-	xnlock_get_irqsave(&nklock, s);
+-
+ 	err =
+ 	    __rt_bind_helper(p, regs, &ph.opaque, XENO_HEAP_MAGIC,
+ 			     (void **)&heap, 0);
+ 
+ 	if (err)
+-		goto unlock_and_exit;
++		return err;
++
++	xnlock_get_irqsave(&nklock, s);
++	if (xeno_test_magic(heap, XENO_HEAP_MAGIC) == 0) {
++		xnlock_put_irqrestore(&nklock, s);
+ 
++		return -EACCES;
++	}
+ 	ph.opaque2 = &heap->heap_base;
+ 	ph.mapsize = xnheap_extentsize(&heap->heap_base);
+ 	ph.area = xnheap_base_memory(&heap->heap_base);
+@@ -2648,12 +2650,6 @@ static int __rt_heap_bind(struct pt_regs *regs)
+ 		xnshadow_relax(0, 0);
+ 
+ 	return 0;
+-
+-      unlock_and_exit:
+-
+-	xnlock_put_irqrestore(&nklock, s);
+-
+-	return err;
+ }
+ 
+ /*
 
-# cat /proc/ipipe/version 
-3
 
-# ls /proc/xenomai/interfaces/
-native  posix   rtdm    sys
-
-but I do see the same problem as Michael, xenon-test output:
-
-# xeno-test
-Started child 127: /bin/sh /usr/bin/xeno-test-run-wrapper /usr/bin/xeno-test
-+ echo 0
-+ /usr/bin/arith
-Xenomai: native skin or CONFIG_XENO_OPT_PERVASIVE disabled.
-(modprobe xeno_native?)
-# 
-
-- Stephan
-
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: post.patch
-Type: application/octet-stream
-Size: 1478 bytes
-Desc: not available
-URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20130510/e97d1e4d/attachment.obj>
--------------- next part --------------
-
+-- 
+                                                                Gilles.
 
