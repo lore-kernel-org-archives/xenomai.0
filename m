@@ -1,13 +1,10 @@
-Message-ID: <518E7659.7080503@xenomai.org>
-Date: Sat, 11 May 2013 18:48:25 +0200
+Message-ID: <518E84CD.7010506@xenomai.org>
+Date: Sat, 11 May 2013 19:50:05 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <E1UbCuV-0003Mx-J1@xenomai.org>
-In-Reply-To: <E1UbCuV-0003Mx-J1@xenomai.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [Xenomai-git] Philippe Gerum : lib/cobalt: use common
- console message prefix
+Subject: [Xenomai] posix signals rework
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,18 +13,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
-
-On 05/11/2013 06:44 PM, git repository hosting wrote:
-
->  static void sigill_handler(int sig)
->  {
-> -	fprintf(stderr, "Xenomai disabled in kernel?\n");
-> +	const char *m = "Xenomai disabled in kernel?\n";
+To: Xenomai <xenomai@xenomai.org>
 
 
-I believe you want static const char m[] =
-otherwise sizeof(m) will be 4 or 8.
+Hi,
+
+following the discussions on the I-pipe patch, here is a proposed
+modification for the posix thread signals relying on
+xnshadow_call_mayday. xnshadow_call_mayday is modified to not send a
+signal, expecting its caller to have sent one, then a pending signal to
+a user-space posix skin thread causes xnshadow_call_mayday to be called.
+
+Whereas it works, what still seems strange with this implementation is
+to have to set the XNAMOK bit to cause xnshadow_sys_mayday to switch to
+secondary mode.
+
+Thanks in advance for your review.
+Regards.
 
 -- 
                                                                 Gilles.
