@@ -1,13 +1,29 @@
-Message-ID: <518D2815.7000602@xenomai.org>
-Date: Fri, 10 May 2013 19:02:13 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <516BA4E9.3070201@xenomai.org>	<90FBAEE5-D70C-4563-B9DB-776D6E4E7FA9@kabelmail.de>	<516D933F.8060502@xenomai.org>	<F484004F-9908-449C-A4DA-CB73E47EE764@kabelmail.de>	<5182B1B5.1000107@xenomai.org>	<12E434B4-4F26-44AC-8D50-2CF70B5089E1@kabelmail.de>	<5183FFB3.1000006@xenomai.org>	<8D9AB79C-4A66-4511-B08B-ACF825FED1BF@kabelmail.de>	<518A98F5.30000@xenomai.org>	<0ECFC8C0-CF1D-4D65-9724-B0A1A91887DC@kabelmail.de>	<518CF43E.3080601@xenomai.org>	<5F179C54-A023-4C27-9082-13195B16B9BB@kabelmail.de>	<518D07BB.1060900@xenomai.org>	<A359148C-7FCB-4D8C-A5DC-461065767DDA@kabelmail.de>
-	<518D24E8.6070305@xenomai.org>
-In-Reply-To: <518D24E8.6070305@xenomai.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Raspberry and Beaglebone patches
+In-Reply-To: <518BE26B.4080408@xenomai.org>
+References: <CAPpP=rOMJi4u7sm9+a79aJ2GhhtJY7B5QD0+tVxsN7KoFMqxCw@mail.gmail.com>
+	<CAPpP=rMLPeRAVCpdKQkLVD29pFUj8zPL5JRmTbrJkKEetJJbew@mail.gmail.com>
+	<CAPpP=rM6BTevvfoV+TT4ej6zkeyzdnY7yN_qVCUPkLFe38EUYA@mail.gmail.com>
+	<518BB895.3050208@xenomai.org>
+	<CAPpP=rNFf4qH0JPpR57i5qp1tmHbLb2k8X9qYjn+6dmZb_ckvA@mail.gmail.com>
+	<518BBFDC.7060102@xenomai.org>
+	<CAPpP=rOFw32ctFaLGtrPd-L0ZaTR_d38HhLZ9anSrk1tucv-xw@mail.gmail.com>
+	<518BC2C3.3080004@xenomai.org>
+	<CAPpP=rNCqAAiAzTviRxk7Oy1MRO4A6VGk5cJKVSGSa9q_Xp+Fg@mail.gmail.com>
+	<518BC59F.60208@xenomai.org>
+	<CAPpP=rPFd3h_aTBKoL6bUwAqbLT5yDp0G057h1PssUo8MVKxDg@mail.gmail.com>
+	<518BCB6B.5070908@xenomai.org>
+	<CAPpP=rNs37xZRsJRd3JvS4Pf16jhRWmxsS+Y6gVR=R9RQ6SWjQ@mail.gmail.com>
+	<518BCD6C.8060501@xenomai.org>
+	<CAPpP=rODvDuVjP+CfE=6jYTRP5nD5smumnAV3mj51YQm8mzw0Q@mail.gmail.com>
+	<CAPpP=rP1qoFzTHimu3hZA7fcR3dCqfQXYOKUpfsK__3pUPMB8A@mail.gmail.com>
+	<518BD2BF.3040801@xenomai.org>
+	<CAPpP=rN8hCBkm17e4X_Oqpt9p306kSh_hQQW9LKifbkqzd6zOQ@mail.gmail.com>
+	<518BE26B.4080408@xenomai.org>
+Date: Sat, 11 May 2013 15:11:09 +0200
+Message-ID: <CAPpP=rPk7RMy6A0u-nkkcP8wzhwbyoQEcoiidRS-az_Bd1dryA@mail.gmail.com>
+From: alex alex <duch.alexandre@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: Re: [Xenomai] [Posix] I/O multiplexing with select
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,43 +32,9 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Stephan Kappertz <stephan.kappertz@kabelmail.de>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Xenomai <xenomai@xenomai.org>
 
-On 05/10/2013 06:48 PM, Gilles Chanteperdrix wrote:
+Sorry for the delay.
 
-> On 05/10/2013 06:40 PM, Stephan Kappertz wrote:
-> 
->>>>>
->>>>
->>>> I'm using your git repository directly. Applied my post.patch and
->>>> compiled the kernel. So this is 3.8.0. Looks like my Xenomai user
->>>> space compile was broken. Still working on fixing it.
->>>
->>>
->>> What options did you pass to the configure script?
->>>
->>>
->>> -- 
->>>                                                                Gilles.
->>>
->>
->> ../configure --target=arm-buildroot-linux-uclibcgnueabi --host=arm-buildroot-linux-uclibcgnueabi --build=i686-pc-linux-gnu --prefix=/usr --exec-prefix=/usr --sysconfdir=/etc --program-prefix="" --enable-static --enable-shared  CFLAGS="-march=armv7-a -mfpu=vfp3" LDFLAGS="-march=armv7-a -mfpu=vfp3" --includedir=/usr/include/xenomai/
->>
->> This is a buildroot build.
-> 
-> 
-> Could you:
-> - tell me what version of gcc, binutils, etc... you use?
-> - show me a disassembly of the xeno_bind_skip_opt function in libxenomai.so?
-> - instrument the function xeno_sigill_handler in
-> src/skins/common/bind.c to see if you are indeed taking the SIGILL signal?
-
-
-Sorry, you do not take the SIGILL handler, please instrument
-xeno_bind_skin_opt to print the value of "muxid" returned by the
-XENOMAI_SYSBIND system call.
-
--- 
-                                                                Gilles.
-
+Your patch works fine, the program doesn't crash but instead
+pthread_set_name_np returned "No such process".
