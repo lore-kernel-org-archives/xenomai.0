@@ -1,15 +1,13 @@
-Message-ID: <51908A64.9080109@siemens.com>
-Date: Mon, 13 May 2013 08:38:28 +0200
-From: Jan Kiszka <jan.kiszka@siemens.com>
-MIME-Version: 1.0
-References: <50F96C89.8010004@siemens.com> <518D11D7.4040409@xenomai.org>
-	<518D15DA.3030902@xenomai.org> <518D1EA8.3000006@siemens.com>
-	<518E5B72.3030509@xenomai.org>
-In-Reply-To: <518E5B72.3030509@xenomai.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [CRITICAL PATCH] ipipe: Re-read domain context after
- IRQ	processing
+Mime-Version: 1.0 (Apple Message framework v1283)
+Content-Type: text/plain; charset=us-ascii
+From: Stephan Kappertz <stephan.kappertz@kabelmail.de>
+In-Reply-To: <518D2815.7000602@xenomai.org>
+Date: Mon, 13 May 2013 12:37:06 +0200
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <19C79116-400B-4A5C-BFDA-87EEF8799554@kabelmail.de>
+References: <516BA4E9.3070201@xenomai.org>	<90FBAEE5-D70C-4563-B9DB-776D6E4E7FA9@kabelmail.de>	<516D933F.8060502@xenomai.org>	<F484004F-9908-449C-A4DA-CB73E47EE764@kabelmail.de>	<5182B1B5.1000107@xenomai.org>	<12E434B4-4F26-44AC-8D50-2CF70B5089E1@kabelmail.de>	<5183FFB3.1000006@xenomai.org>	<8D9AB79C-4A66-4511-B08B-ACF825FED1BF@kabelmail.de>	<518A98F5.30000@xenomai.org>	<0ECFC8C0-CF1D-4D65-9724-B0A1A91887DC@kabelmail.de>	<518CF43E.3080601@xenomai.org>	<5F179C54-A023-4C27-9082-13195B16B9BB@kabelmail.de>	<518D07BB.1060900@xenomai.org>	<A359148C-7FCB-4D8C-A5DC-461065767DDA@kabelmail.de>
+	<518D24E8.6070305@xenomai.org> <518D2815.7000602@xenomai.org>
+Subject: Re: [Xenomai] Raspberry and Beaglebone patches
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,214 +16,107 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: Xenomai <xenomai@xenomai.org>
 
-On 2013-05-11 16:53, Philippe Gerum wrote:
-> On 05/10/2013 06:22 PM, Jan Kiszka wrote:
->> On 2013-05-10 17:44, Gilles Chanteperdrix wrote:
->>> On 05/10/2013 05:27 PM, Gilles Chanteperdrix wrote:
->>>
->>>> On 01/18/2013 04:38 PM, Jan Kiszka wrote:
->>>>
->>>>> This fixes a nasty bug on SMP boxes: We may migrate to root in the
->>>>> context of an IRQ handler, and then also to a different CPU. Therefore,
->>>>> we must not use domain contexts read before the invocation but update
->>>>> them afterward or use stable information like the domain reference.
->>>>>
->>>>> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
->>>>> ---
->>>>>
->>>>> We are still facing stalled, unkillable RT processes despite this fix,
->>>>> but at least the head domain status corruption (and related warnings)
->>>>> seems to be gone now.
->>>>>
->>>>>   kernel/ipipe/core.c |    5 +++--
->>>>>   1 files changed, 3 insertions(+), 2 deletions(-)
->>>>>
->>>>> diff --git a/kernel/ipipe/core.c b/kernel/ipipe/core.c
->>>>> index 68af0b3..6aa9572 100644
->>>>> --- a/kernel/ipipe/core.c
->>>>> +++ b/kernel/ipipe/core.c
->>>>> @@ -1173,18 +1173,19 @@ static void dispatch_irq_head(unsigned int irq) /* hw interrupts off */
->>>>>   	head->irqs[irq].handler(irq, head->irqs[irq].cookie);
->>>>>   	__ipipe_run_irqtail(irq);
->>>>>   	hard_local_irq_disable();
->>>>> +	p = ipipe_this_cpu_head_context();
->>>>>   	__clear_bit(IPIPE_STALL_FLAG, &p->status);
->>>>>
->>>>>   	/* Are we still running in the head domain? */
->>>>>   	if (likely(__ipipe_current_context == p)) {
->>>>>   		/* Did we enter this code over the head domain? */
->>>>> -		if (old == p) {
->>>>> +		if (old->domain == head) {
->>>>>   			/* Yes, do immediate synchronization. */
->>>>>   			if (__ipipe_ipending_p(p))
->>>>>   				__ipipe_sync_stage();
->>>>>   			return;
->>>>>   		}
->>>>> -		__ipipe_set_current_context(old);
->>>>> +		__ipipe_set_current_context(ipipe_this_cpu_root_context());
->>>>>   	}
->>>>>
->>>>>   	/*
->>>>
->>>>
->>>> Hi Jan,
->>>>
->>>> I may have an issue reported which resembles the problem fixed by this
->>>> patch. If I understand your patch, it means that an irq handler may
->>>> migrate domain.
->>
->> Likely not the IRQ handler itself but its bottom-half that may perform a
->> reschedule to an RT task that decides to migrate to handle a fault or a
->> Linux syscall etc.
->>
->>> But if I read __ipipe_sync_stage() code:
->>>>
->>>> void __ipipe_do_sync_stage(void)
->>>> {
->>>> 	struct ipipe_percpu_domain_data *p;
->>>> 	struct ipipe_domain *ipd;
->>>> 	int irq;
->>>>
->>>> 	p = __ipipe_current_context;
->>>> 	ipd = p->domain;
->>>>
->>>> 	__set_bit(IPIPE_STALL_FLAG, &p->status);
->>>> 	smp_wmb();
->>>>
->>>> 	if (ipd == ipipe_root_domain)
->>>> 		trace_hardirqs_off();
->>>>
->>>> 	for (;;) {
->>>> 		irq = __ipipe_next_irq(p);
->>>> 		if (irq < 0)
->>>> 			break;
->>>> 		/*
->>>> 		 * Make sure the compiler does not reorder wrongly, so
->>>> 		 * that all updates to maps are done before the
->>>> 		 * handler gets called.
->>>> 		 */
->>>> 		barrier();
->>>>
->>>> 		if (test_bit(IPIPE_LOCK_FLAG, &ipd->irqs[irq].control))
->>>> 			continue;
->>>>
->>>> 		if (ipd != ipipe_head_domain)
->>>> 			hard_local_irq_enable();
->>>>
->>>> 		if (likely(ipd != ipipe_root_domain)) {
->>>> 			ipd->irqs[irq].handler(irq, ipd->irqs[irq].cookie);
->>>> 			__ipipe_run_irqtail(irq);
->>>> 			hard_local_irq_disable();
->>>> 		} else if (ipipe_virtual_irq_p(irq)) {
->>>> 			irq_enter();
->>>> 			ipd->irqs[irq].handler(irq, ipd->irqs[irq].cookie);
->>>> 			irq_exit();
->>>> 			root_stall_after_handler();
->>>> 			hard_local_irq_disable();
->>>> 			while (__ipipe_check_root_resched())
->>>> 				__ipipe_preempt_schedule_irq();
->>>> 		} else {
->>>> 			ipd->irqs[irq].handler(irq, ipd->irqs[irq].cookie);
->>>> 			root_stall_after_handler();
->>>> 			hard_local_irq_disable();
->>>> 		}
->>>>
->>>> 		p = __ipipe_current_context;
->>>> 	}
->>>>
->>>> 	if (ipd == ipipe_root_domain)
->>>> 		trace_hardirqs_on();
->>>>
->>>> 	__clear_bit(IPIPE_STALL_FLAG, &p->status);
->>>> }
->>>>
->>>> It seems to me that at the end of each loop, we re-read p, but we assume
->>>> that p->domain did not change. So I would add:
->>>>
->>>> ipd = p->domain
->>>>
->>>> right after the line
->>>> p = __ipipe_current_context
->>
->> If we are supposed to unstall the current domain and not the old one,
->> that will be required. That case would only affect Linux tracing, what
->> you suggest below is way more critical.
->>
->>>>
->>>> But I am not sure that we are supposed to allow irq handlers to migrate
->>>> domains.
->>
->> We are, see above.
->>
->>>
->>>
->>> And I am not sure that this would not break the logic of
->>> __ipipe_sync_stage, so, maybe replacing:
->>>
->>> p = __ipipe_current_context
->>>
->>> with
->>>
->>> p = ipipe_this_cpu_context(ipd)
->>>
->>> would make more sense?
->>>
->>
->> Yes, this seems more consistent when comparing to dispatch_irq_head: We
-> 
-> IIRC, the fix in dispatch_irq_head was related to CPU migration, not 
-> domain migration.
+Am 10.05.2013 um 19:02 schrieb Gilles Chanteperdrix:
 
-Yes, though the former typically does not come without the latter.
+> On 05/10/2013 06:48 PM, Gilles Chanteperdrix wrote:
+>=20
+>> On 05/10/2013 06:40 PM, Stephan Kappertz wrote:
+>>=20
+>>>>>>=20
+>>>>>=20
+>>>>> I'm using your git repository directly. Applied my post.patch and
+>>>>> compiled the kernel. So this is 3.8.0. Looks like my Xenomai user
+>>>>> space compile was broken. Still working on fixing it.
+>>>>=20
+>>>>=20
+>>>> What options did you pass to the configure script?
+>>>>=20
+>>>>=20
+>>>> --=20
+>>>>                                                               =
+Gilles.
+>>>>=20
+>>>=20
+>>> ../configure --target=3Darm-buildroot-linux-uclibcgnueabi =
+--host=3Darm-buildroot-linux-uclibcgnueabi --build=3Di686-pc-linux-gnu =
+--prefix=3D/usr --exec-prefix=3D/usr --sysconfdir=3D/etc =
+--program-prefix=3D"" --enable-static --enable-shared  =
+CFLAGS=3D"-march=3Darmv7-a -mfpu=3Dvfp3" LDFLAGS=3D"-march=3Darmv7-a =
+-mfpu=3Dvfp3" --includedir=3D/usr/include/xenomai/
+>>>=20
+>>> This is a buildroot build.
+>>=20
+>>=20
+>> Could you:
+>> - tell me what version of gcc, binutils, etc... you use?
+>> - show me a disassembly of the xeno_bind_skip_opt function in =
+libxenomai.so?
+>> - instrument the function xeno_sigill_handler in
+>> src/skins/common/bind.c to see if you are indeed taking the SIGILL =
+signal?
+>=20
+>=20
+> Sorry, you do not take the SIGILL handler, please instrument
+> xeno_bind_skin_opt to print the value of "muxid" returned by the
+> XENOMAI_SYSBIND system call.
+>=20
+> --=20
+>                                                                Gilles.
+>=20
 
-> 
->> need to remove the stall flag from that domain which we stalled on
->> entry. Philippe?
->>
-> 
-> Actually, we never migrate domains over an IRQ strictly speaking, 
-> although we may migrate CPUs.
-> 
-> Migrating from root to head over a (root) IRQ handler is invalid, since 
-> the hardening machinery may only run over a Linux task context.
-> 
-> Migrating the other way around implies that a Xenomai thread is relaxing 
-> the same way, so we would have a Xenomai context switch interleaved, 
-> triggered by the IRQ handler, resuming a thread aslept in primary mode. 
-> Whatever that thread does after waking up, moving back to the handler 
-> would mean switching back to the preempted head domain context first.
 
-OK, makes sense.
+Ok, here's the compiler spec:
 
-> 
-> The test patch below should never trigger. Besides, the patch above 
-> would mean to play interrupts from the wrong domain at the next 
-> iteration (e.g.  still playing head interrupts despite we moved to 
-> root). However such migration should never happen.
-> 
-> diff --git a/kernel/ipipe/core.c b/kernel/ipipe/core.c
-> index c4598ad..fe3560c 100644
-> --- a/kernel/ipipe/core.c
-> +++ b/kernel/ipipe/core.c
-> @@ -1420,6 +1420,7 @@ void __ipipe_do_sync_stage(void)
->   			hard_local_irq_disable();
->   		}
-> 
-> +		WARN_ON_ONCE(ipipe_this_cpu_context(ipd) != p);
->   		p = __ipipe_current_context;
->   	}
-> 
+$ arm-linux-gnueabi-gcc -v
+Using built-in specs.
+COLLECT_GCC=3Darm-linux-gnueabi-gcc
+COLLECT_LTO_WRAPPER=3D/usr/lib/gcc/arm-linux-gnueabi/4.6/lto-wrapper
+Target: arm-linux-gnueabi
+Configured with: ../src/configure -v --with-pkgversion=3D'Ubuntu/Linaro =
+4.6.3-1ubuntu5' --with-bugurl=3Dfile:///usr/share/doc/gcc-4.6/README.Bugs =
+--enable-languages=3Dc,c++,fortran,objc,obj-c++ --prefix=3D/usr =
+--program-suffix=3D-4.6 --enable-shared --enable-linker-build-id =
+--with-system-zlib --libexecdir=3D/usr/lib --without-included-gettext =
+--enable-threads=3Dposix =
+--with-gxx-include-dir=3D/usr/arm-linux-gnueabi/include/c++/4.6.3 =
+--libdir=3D/usr/lib --enable-nls --enable-clocale=3Dgnu =
+--enable-libstdcxx-debug --enable-libstdcxx-time=3Dyes =
+--enable-gnu-unique-object --enable-plugin --enable-objc-gc =
+--enable-multilib --disable-sjlj-exceptions --with-arch=3Darmv7-a =
+--with-float=3Dsoftfp --with-fpu=3Dvfpv3-d16 --with-mode=3Dthumb =
+--disable-werror --enable-checking=3Drelease --build=3Di686-linux-gnu =
+--host=3Di686-linux-gnu --target=3Darm-linux-gnueabi =
+--program-prefix=3Darm-linux-gnueabi- =
+--includedir=3D/usr/arm-linux-gnueabi/include =
+--with-headers=3D/usr/arm-linux-gnueabi/include =
+--with-libs=3D/usr/arm-linux-gnueabi/lib
+Thread model: posix
+gcc version 4.6.3 (Ubuntu/Linaro 4.6.3-1ubuntu5)
 
-I have the feeling that it would be very helpful if someone could sit
-down on a rainy day and describe the typical control flows with
-potential domain and CPU switches for a Xenomai/I-pipe system.
+Binutils are 2.22:
 
-Jan
+arm-linux-gnueabi-as -v
+GNU assembler version 2.22 (arm-linux-gnueabi) using BFD version (GNU =
+Binutils for Ubuntu) 2.22
 
--- 
-Siemens AG, Corporate Technology, CT RTC ITP SDP-DE
-Corporate Competence Center Embedded Linux
+
+Now what's interesting is: as soon as I am adding an instrumentation =
+"fprintf(stdout, "Xenomai: xeno_bind_skin_opt muxid =3D %d\n", muxid);" =
+to "static inline int xeno_bind_skin(unsigned skin_magic, const char =
+*skin, const char *module)", binding succeeds and all xeno-test pass. =
+The other option to get it work was:  declaring "int =
+xeno_bind_skin(unsigned skin_magic, const char *skin, const char =
+*module);" in bind.h and defining it in bind.c.
+
+If I'm only instrumenting xeno_bind_skin_opt(), I see that it never gets =
+called in the original code.
+
+Do you still want to see the disassembly?
+
+-- Stephan
+
+
 
