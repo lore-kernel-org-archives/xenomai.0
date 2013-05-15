@@ -1,5 +1,5 @@
-Message-ID: <51940246.3020105@xenomai.org>
-Date: Wed, 15 May 2013 23:46:46 +0200
+Message-ID: <519404A6.2000708@xenomai.org>
+Date: Wed, 15 May 2013 23:56:54 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <5182B42F.9090907@bollue.de> <518BCB32.6060007@xenomai.org>
@@ -101,51 +101,14 @@ On 05/15/2013 08:01 PM, Kai Bollue wrote:
 > 
 > I am not sure if this is the best solution as the the heap object itself 
 > can actually be deleted, only the underlying xnheap remains.
-> 
->>> - put any rt_heap with the H_MAPPABLE flag directly on the global
->>> ressource holder, as it is a global object anyway, this means that when
->>> a process which created a mappable heap dies, the heap survives, but
->>> this is maybe what should be expected from shareable heaps.
-> 
-> This is probably better, but:
-> 
->>
->> - or remove the rt_heap from the list directly in rt_heap_delete, it
->> does not seem to make sense to keep it in the list after it has been
->> deleted: it will be automatically deleted when the last process bound to
->> it unbinds it anyway.
->>
-> 
-> This is IMHO the most consistent solution. With the following change, we 
-> cannot reproduce the crash anymore:
-> 
-> diff --git a/ksrc/skins/native/heap.c b/ksrc/skins/native/heap.c
-> index 4a39d07..be4aee9 100644
-> --- a/ksrc/skins/native/heap.c
-> +++ b/ksrc/skins/native/heap.c
-> @@ -371,8 +371,6 @@ static void __heap_post_release(struct xnheap *h)
-> 
->          xnlock_get_irqsave(&nklock, s);
-> 
-> -       removeq(heap->rqueue, &heap->rlink);
-> -
->          if (heap->handle)
->                  xnregistry_remove(heap->handle);
-> 
-> @@ -442,6 +440,8 @@ int rt_heap_delete_inner(RT_HEAP *heap, void __user 
-> *mapaddr)
-> 
->          xeno_mark_deleted(heap);
-> 
-> +       removeq(heap->rqueue, &heap->rlink);
-> +
->          /* Get out of the nklocked section before releasing the heap
->             memory, since we are about to invoke Linux kernel
 
->             services. */
 
-Yes, this is the fix I pushed:
-http://git.xenomai.org/?p=xenomai-2.6.git;a=commitdiff;h=ee28ad6936964ebf4198dcfd77dec4b8c5e8623c;hp=a2a6d456b23b9960f46964505668619b90b69400
+To answer you completely, I still think this would be the approach that
+would make most sense: a shared heap is a global object by definition,
+so it would make sense to keep it around when the process that created
+it dies, but another process has it mapped. Though it would
+significantly change the behaviour of the API, which we do not want in a
+stable branch.
 
 -- 
                                                                 Gilles.
