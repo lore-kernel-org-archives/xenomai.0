@@ -1,9 +1,12 @@
+Message-ID: <51960FB1.9030400@xenomai.org>
+Date: Fri, 17 May 2013 13:08:33 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Date: Fri, 17 May 2013 12:41:17 +0200
-Message-ID: <CAMDpcBGxGUCtcnREr9AeQihhiNO8D7vvxbFCa7647fOO4rMzow@mail.gmail.com>
-From: kunming yang <yangkunming99@gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Subject: [Xenomai] <6>Xenomai: scheduling class idle registered.
+References: <CAMDpcBGxGUCtcnREr9AeQihhiNO8D7vvxbFCa7647fOO4rMzow@mail.gmail.com>
+In-Reply-To: <CAMDpcBGxGUCtcnREr9AeQihhiNO8D7vvxbFCa7647fOO4rMzow@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] <6>Xenomai: scheduling class idle registered.
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,15 +15,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: kunming yang <yangkunming99@gmail.com>
+Cc: xenomai@xenomai.org
 
-Hello,
+On 05/17/2013 12:41 PM, kunming yang wrote:
 
-When I boot my Cubieboard(A10) with xenomai, the kernel hangs after this
-message:
-<6>Xenomai: scheduling class idle registered.
-What might cause this?
+> Hello,
+> 
+> When I boot my Cubieboard(A10) with xenomai, the kernel hangs after this
+> message:
+> <6>Xenomai: scheduling class idle registered.
+> What might cause this?
+> 
+> Any help would be appreciated!
 
-Any help would be appreciated!
 
-Chris
+To find where the kernel really blocks:
+- enable early printk (as described in the porting guide)
+- add calls to printascii in the code to find what is the last function
+called.
+
+My guess would be the hardware timer initialization.
+
+-- 
+                                                                Gilles.
+
