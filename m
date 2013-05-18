@@ -1,21 +1,10 @@
-Message-ID: <51979874.6070800@xenomai.org>
-Date: Sat, 18 May 2013 17:04:20 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <516BA4E9.3070201@xenomai.org>
-	<90FBAEE5-D70C-4563-B9DB-776D6E4E7FA9@kabelmail.de>
-	<516D933F.8060502@xenomai.org>
-	<F484004F-9908-449C-A4DA-CB73E47EE764@kabelmail.de>
-	<5182B1B5.1000107@xenomai.org>
-	<12E434B4-4F26-44AC-8D50-2CF70B5089E1@kabelmail.de>
-	<5183FFB3.1000006@xenomai.org>
-	<8D9AB79C-4A66-4511-B08B-ACF825FED1BF@kabelmail.de>
-	<518A98F5.30000@xenomai.org>
-	<0ECFC8C0-CF1D-4D65-9724-B0A1A91887DC@kabelmail.de>
-In-Reply-To: <0ECFC8C0-CF1D-4D65-9724-B0A1A91887DC@kabelmail.de>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Raspberry and Beaglebone patches
+From: Michael Haberler <mail17@mah.priv.at>
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <8D5AE3DA-87FF-4AC2-B888-4116ED22A9BF@mah.priv.at>
+Date: Sat, 18 May 2013 23:39:24 +0200
+Mime-Version: 1.0 (Mac OS X Mail 6.3 \(1503\))
+Subject: [Xenomai] Beagleboard 3.8 regression results
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -24,16 +13,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Stephan Kappertz <stephan.kappertz@kabelmail.de>
-Cc: Xenomai <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 05/10/2013 01:53 PM, Stephan Kappertz wrote:
+using Stephan's 3.8 patch for the BeagleBoard and running
 
-> Sorry for the delay, here it is. Tested against pipe-gch for-core-3.8. Xenomai is successfully starting on the beagleBone:
+arm:/usr/xenomai/bin# ./xeno-regression-test -l =
+"/usr/lib/xenomai/testsuite/dohell -m /tmp 100" -t 2
 
+gives=20
 
-This patch has been merged, thanks.
+select service with posix message queues: success
+++ start_load
+++ echo start_load
+++ check_alive /usr/xenomai/bin/switchtest
+++ echo check_alive /usr/xenomai/bin/switchtest
+++ check_alive /usr/xenomai/bin/switchtest -s 1000
+++ echo check_alive /usr/xenomai/bin/switchtest -s 1000
+++ check_alive /usr/xenomai/bin/latency -t 2
+./xeno-regression-test failed: dead child 1988 not found!
 
--- 
-                                                                Gilles.
+not sure what to make of it - any recommendations how to proceed?
+
+- Michael=
 
