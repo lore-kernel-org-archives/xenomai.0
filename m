@@ -1,13 +1,14 @@
-Message-ID: <51967FC3.9020409@xenomai.org>
-Date: Fri, 17 May 2013 21:06:43 +0200
+Message-ID: <519795E3.1040203@xenomai.org>
+Date: Sat, 18 May 2013 16:53:23 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CAMDpcBGxGUCtcnREr9AeQihhiNO8D7vvxbFCa7647fOO4rMzow@mail.gmail.com>	<51960FB1.9030400@xenomai.org>	<CAMDpcBF84ZRLG=eeyhus5qE5+t5Smf_jETtVGUSC9r7iu62ARg@mail.gmail.com>
-	<CAMDpcBF-EkDjQyXNY2OLeDTSEgPujBEr3Y1BNL27AEYRaJ068Q@mail.gmail.com>
-In-Reply-To: <CAMDpcBF-EkDjQyXNY2OLeDTSEgPujBEr3Y1BNL27AEYRaJ068Q@mail.gmail.com>
+References: <5182B42F.9090907@bollue.de> <518BCB32.6060007@xenomai.org>
+	<518BCF7F.3000407@xenomai.org> <5193CD8C.1090508@bollue.de>
+	<51940246.3020105@xenomai.org> <51949168.2040203@xenomai.org>
+In-Reply-To: <51949168.2040203@xenomai.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] <6>Xenomai: scheduling class idle registered.
+Subject: Re: [Xenomai] native/heap: "removing non-linked element"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,19 +17,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: kunming yang <yangkunming99@gmail.com>
-Cc: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 05/17/2013 03:34 PM, kunming yang wrote:
+On 05/16/2013 09:57 AM, Philippe Gerum wrote:
 
-> Hello Gilles,
+> On 05/15/2013 11:46 PM, Gilles Chanteperdrix wrote:
+>> Yes, this is the fix I pushed:
+>> http://git.xenomai.org/?p=xenomai-2.6.git;a=commitdiff;h=ee28ad6936964ebf4198dcfd77dec4b8c5e8623c;hp=a2a6d456b23b9960f46964505668619b90b69400
+>>
 > 
-> Is it ok that I configure the timer which is used for OS to generate a
-> periodic interrupt as xenomai clock? (Timer2 in my case)
+> RT_QUEUE implementation follows the same pattern. You may want to push a
+> fix for this one too.
+> 
 
-
-No, Xenomai needs a one-shot timer, not a periodic timer, see:
-http://www.xenomai.org/index.php/I-pipe-core:ArmPorting#The_general_case
+Pushed, thanks.
 
 -- 
                                                                 Gilles.
