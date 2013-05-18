@@ -1,14 +1,21 @@
-Message-ID: <519795E3.1040203@xenomai.org>
-Date: Sat, 18 May 2013 16:53:23 +0200
+Message-ID: <51979874.6070800@xenomai.org>
+Date: Sat, 18 May 2013 17:04:20 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <5182B42F.9090907@bollue.de> <518BCB32.6060007@xenomai.org>
-	<518BCF7F.3000407@xenomai.org> <5193CD8C.1090508@bollue.de>
-	<51940246.3020105@xenomai.org> <51949168.2040203@xenomai.org>
-In-Reply-To: <51949168.2040203@xenomai.org>
+References: <516BA4E9.3070201@xenomai.org>
+	<90FBAEE5-D70C-4563-B9DB-776D6E4E7FA9@kabelmail.de>
+	<516D933F.8060502@xenomai.org>
+	<F484004F-9908-449C-A4DA-CB73E47EE764@kabelmail.de>
+	<5182B1B5.1000107@xenomai.org>
+	<12E434B4-4F26-44AC-8D50-2CF70B5089E1@kabelmail.de>
+	<5183FFB3.1000006@xenomai.org>
+	<8D9AB79C-4A66-4511-B08B-ACF825FED1BF@kabelmail.de>
+	<518A98F5.30000@xenomai.org>
+	<0ECFC8C0-CF1D-4D65-9724-B0A1A91887DC@kabelmail.de>
+In-Reply-To: <0ECFC8C0-CF1D-4D65-9724-B0A1A91887DC@kabelmail.de>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] native/heap: "removing non-linked element"
+Subject: Re: [Xenomai] Raspberry and Beaglebone patches
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,21 +24,15 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
+To: Stephan Kappertz <stephan.kappertz@kabelmail.de>
 Cc: Xenomai <xenomai@xenomai.org>
 
-On 05/16/2013 09:57 AM, Philippe Gerum wrote:
+On 05/10/2013 01:53 PM, Stephan Kappertz wrote:
 
-> On 05/15/2013 11:46 PM, Gilles Chanteperdrix wrote:
->> Yes, this is the fix I pushed:
->> http://git.xenomai.org/?p=xenomai-2.6.git;a=commitdiff;h=ee28ad6936964ebf4198dcfd77dec4b8c5e8623c;hp=a2a6d456b23b9960f46964505668619b90b69400
->>
-> 
-> RT_QUEUE implementation follows the same pattern. You may want to push a
-> fix for this one too.
-> 
+> Sorry for the delay, here it is. Tested against pipe-gch for-core-3.8. Xenomai is successfully starting on the beagleBone:
 
-Pushed, thanks.
+
+This patch has been merged, thanks.
 
 -- 
                                                                 Gilles.
