@@ -1,13 +1,7 @@
-Message-ID: <519967A1.3030509@xenomai.org>
-Date: Mon, 20 May 2013 02:00:33 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <8D5AE3DA-87FF-4AC2-B888-4116ED22A9BF@mah.priv.at>
-	<51993D66.3070208@zultron.com>
-In-Reply-To: <51993D66.3070208@zultron.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Beagleboard 3.8 regression results
+Date: Mon, 20 May 2013 14:28:55 +0200
+Message-Id: <1369052935-19505-1-git-send-email-gilles.chanteperdrix@xenomai.org>
+Subject: [Xenomai] [PATCH] ipipe: fix percpu irqs with fasteoi irq chip
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,38 +10,78 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: John Morris <john@zultron.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 05/19/2013 11:00 PM, John Morris wrote:
+When percpu irqs share an irq chip with fasteoi irqs, the irq_hold
+and irq_release callbacks should be used to ack and unmask the irqs.
+Change __fixup_irq_handler, handle_percpu_irq and
+handle_percpu_devid_irq to adapt to use them.
+---
+ kernel/irq/chip.c |   27 ++++++++++++++++++++-------
+ 1 files changed, 20 insertions(+), 7 deletions(-)
 
-> On 05/18/2013 04:39 PM, Michael Haberler wrote:
->> using Stephan's 3.8 patch for the BeagleBoard and running
->>
->> arm:/usr/xenomai/bin# ./xeno-regression-test -l "/usr/lib/xenomai/testsuite/dohell -m /tmp 100" -t 2
->>
->> gives 
->>
->> select service with posix message queues: success
->> ++ start_load
->> ++ echo start_load
->> ++ check_alive /usr/xenomai/bin/switchtest
->> ++ echo check_alive /usr/xenomai/bin/switchtest
->> ++ check_alive /usr/xenomai/bin/switchtest -s 1000
->> ++ echo check_alive /usr/xenomai/bin/switchtest -s 1000
->> ++ check_alive /usr/xenomai/bin/latency -t 2
->> ./xeno-regression-test failed: dead child 1988 not found!
-> 
-> Be sure that the path to dohell is correct.  I think that's the correct
-> path for 2.6.0 and earlier, but in 2.6.2.1 it should be
-> /usr/lib/xenomai/dohell or similar.
-
-
-dohell is installed in the directory you pass to --with-testdir
-configure script option. If you do not pass this option, it gets
-installed in $bindir, that is $prefix/bin. I do not think this changed
-for 2.6.2.1.
-
+diff --git a/kernel/irq/chip.c b/kernel/irq/chip.c
+index 3d1ed7e..f6ec956 100644
+--- a/kernel/irq/chip.c
++++ b/kernel/irq/chip.c
+@@ -426,7 +426,7 @@ static void cond_release_fasteoi_irq(struct irq_desc *desc)
+ {
+ 	if (desc->irq_data.chip->irq_release && 
+ 	    !irqd_irq_disabled(&desc->irq_data) && !desc->threads_oneshot)
+-		desc->irq_data.chip->irq_release(&desc->irq_data);;
++		desc->irq_data.chip->irq_release(&desc->irq_data);
+ }
+ #endif /* CONFIG_IPIPE */
+ 
+@@ -620,10 +620,14 @@ handle_percpu_irq(unsigned int irq, struct irq_desc *desc)
+ 	kstat_incr_irqs_this_cpu(irq, desc);
+ 
+ #ifdef CONFIG_IPIPE
++	(void)chip;
++
+ 	handle_irq_event_percpu(desc, desc->action);
+ 
+-	if (chip->irq_eoi && !irqd_irq_masked(&desc->irq_data))
+-		chip->irq_unmask(&desc->irq_data);
++	if (cpumask_test_cpu(smp_processor_id(), desc->percpu_enabled) &&
++	    !irqd_irq_masked(&desc->irq_data) &&
++	    !desc->threads_oneshot)
++		desc->ipipe_end(desc->irq_data.irq, desc);
+ #else
+ 	if (chip->irq_ack)
+ 		chip->irq_ack(&desc->irq_data);
+@@ -671,8 +675,11 @@ void handle_percpu_devid_irq(unsigned int irq, struct irq_desc *desc)
+ 	if (chip->irq_eoi)
+ 		chip->irq_eoi(&desc->irq_data);
+ #else
+-	if (chip->irq_eoi && !irqd_irq_masked(&desc->irq_data))
+-		chip->irq_unmask(&desc->irq_data);
++	;
++	if (cpumask_test_cpu(smp_processor_id(), desc->percpu_enabled) && 
++	    !irqd_irq_masked(&desc->irq_data) &&
++	    !desc->threads_oneshot)
++		desc->ipipe_end(desc->irq_data.irq, desc);
+ #endif
+ }
+ 
+@@ -756,8 +763,14 @@ __fixup_irq_handler(struct irq_desc *desc, irq_flow_handler_t handle, int is_cha
+ 			desc->ipipe_end = __ipipe_end_fasteoi_irq;
+ 		} else if (handle == handle_percpu_irq ||
+ 			   handle == handle_percpu_devid_irq) {
+-			desc->ipipe_ack = __ipipe_ack_percpu_irq;
+-			desc->ipipe_end = __ipipe_nop_irq;
++			if (irq_desc_get_chip(desc) &&
++			    irq_desc_get_chip(desc)->irq_hold) {
++				desc->ipipe_ack = __ipipe_ack_fasteoi_irq;
++				desc->ipipe_end = __ipipe_end_fasteoi_irq;
++			} else {
++				desc->ipipe_ack = __ipipe_ack_percpu_irq;
++				desc->ipipe_end = __ipipe_nop_irq;
++			}
+ 		} else if (irq_desc_get_chip(desc) == &no_irq_chip) {
+ 			desc->ipipe_ack = __ipipe_nop_irq;
+ 			desc->ipipe_end = __ipipe_nop_irq;
 -- 
-                                                                Gilles.
+1.7.2.5
+
 
