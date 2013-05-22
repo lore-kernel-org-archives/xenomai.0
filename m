@@ -1,9 +1,10 @@
-Message-ID: <519CAB81.40403@xenomai.org>
-Date: Wed, 22 May 2013 13:26:57 +0200
+Message-ID: <519CB04E.902@xenomai.org>
+Date: Wed, 22 May 2013 13:47:26 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <595E8529-F95D-4AF7-990C-1E513191EC3B@mah.priv.at>
-In-Reply-To: <595E8529-F95D-4AF7-990C-1E513191EC3B@mah.priv.at>
+	<519CAB81.40403@xenomai.org>
+In-Reply-To: <519CAB81.40403@xenomai.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] kernel equivalent of SIGXCPU
@@ -18,42 +19,41 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: Michael Haberler <mail17@mah.priv.at>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 05/22/2013 12:01 PM, Michael Haberler wrote:
+On 05/22/2013 01:26 PM, Gilles Chanteperdrix wrote:
 
-> I'm trying to trap scheduling violations through an exception handler
-
-
-How do you define "scheduling violations" ?
-
+> On 05/22/2013 12:01 PM, Michael Haberler wrote:
 > 
-> in user RT it's straightforward - use the SIGXCPU handler
-
-
-No, SIGXCPU detect involuntary mode switches to secondary mode, if you
-have the XNWARNSW bit set, it traps Linux system calls made by a thread
-running in secondary mode.
-
+>> I'm trying to trap scheduling violations through an exception handler
 > 
-> is rthal_trap_catch() the way to go? 
-
-
-rthal_trap_catch, allows to trap machine exceptions.
-
 > 
-> or is it just evaluating the rt_task_wait_period() returns ? 
-
-
-rt_task_wait_period returns an error when an overrun happens, that is
-when the timer ticks twice without the periodic thread having called
-rt_task_wait_period.
-
+> How do you define "scheduling violations" ?
 > 
-> I'm a bit fuzzy as to the relation between these two - the manual says for rthal_trap_catch() '...uncontrolled exception or fault is caught at machine level.'; does this include scheduling overruns? it seems not to I guess
+>>
+>> in user RT it's straightforward - use the SIGXCPU handler
 > 
-> I have both in place but unsure atm what rthal_trap_catch() would buy me ontop
+> 
+> No, SIGXCPU detect involuntary mode switches to secondary mode, if you
+> have the XNWARNSW bit set, it traps Linux system calls made by a thread
+> running in secondary mode.
+> 
+>>
+>> is rthal_trap_catch() the way to go? 
+> 
+> 
+> rthal_trap_catch, allows to trap machine exceptions.
+> 
+>>
+>> or is it just evaluating the rt_task_wait_period() returns ? 
+> 
+> 
+> rt_task_wait_period returns an error when an overrun happens, that is
+> when the timer ticks twice without the periodic thread having called
+> rt_task_wait_period.
 
 
-There is not relation whatsoever between these three services.
+Sorry, when the thread finally wakes up more than one period after its
+expected wake up time. So, when the timer ticks twice without the
+periodic thread having been scheduled out of rt_taskw_wait_period.
 
 -- 
                                                                 Gilles.
