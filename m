@@ -1,10 +1,12 @@
-Date: Thu, 23 May 2013 12:03:09 +0800 (CST)
-From: jinxin16897123 <jinxin16897123@163.com>
+Message-ID: <519DC1C1.3020005@xenomai.org>
+Date: Thu, 23 May 2013 09:14:09 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Message-ID: <36f53837.5dc9.13ecf8dfe4d.Coremail.jinxin16897123@163.com>
-Content-Type: text/plain; charset=GBK
+References: <519D4262.2070206@free.fr>
+In-Reply-To: <519D4262.2070206@free.fr>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] name rule ?
+Subject: Re: [Xenomai] RTDM for a GPIO line in RT mode
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,22 +15,49 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai <xenomai@xenomai.org>
+To: CF <cfoissac@free.fr>
+Cc: xenomai@xenomai.org
+
+On 05/23/2013 12:10 AM, CF wrote:
+
+> Hello,
+> 
+> Despite my munerous reading, i'm locked in how to perform a basic RTDM
+> for a simple ppc board.
+> 
+> This is a simple pin level setting. The linux kernel module i developped
+> follow theses steps:
+> -reading DTS for IOCTL et GPIOCTL base adress registers
+> - out_be32(addr, value) at theses register to set line as an output and
+> then set the logical level with setbits32(addr, bit) or clrbits32(addr,bit)
+> 
+> Basically, it works but in NRT  ops modes, so i'm unable (or at least i
+> lack indication) to do this in RT ops mode (i don't think it is
+> important, but i use ioctl to make my changes). I based my work on
+> tut01/tut02 drivers, except i end up in using ioctl instead or
+> read/write in the RTDM driver.
+> 
+> I guess i still could read the DTS in nrt mode (because it is done at
+> rtdm_dev_register() time and won't interfere with RT task), but how can
+> i drive the hardware directly in RT op mode ?
 
 
-hi ,all
-I've download the xenomai, uncompress it and found :
-adeos-ipipe-3.0.36-arm-1.18-11.patch
-ipipe-core-3.2.21-arm-4.patch
-ipipe-core-3.4.6-arm-4.patch
-ipipe-core-3.5.7-arm-3.patch
+Hi,
 
+I am not sure I understand the problem you have. If the board you use
+uses gpiolib (I do not know if gpiolib is customary on ppc), you simply
+have to check that the gpiolib callbacks do not use any Linux services
+which can not be called from RT mode (if it uses a spinlock, the usual
+method is to turn the spinlock into an I-pipe spinlock, see:
+http://www.xenomai.org/index.php/I-pipe-core:ArmPorting#GPIOs_in_real-time_drivers)
 
-What's the difference between these file? what's the name rule?
-Thanks.
+If you are accessing directly the GPIO controller registers, and need a
+"read-modify-write" operation, which what you posted seem to suggest,
+you probably want to put a spinlock around these operations, but apart
+from that, you can do this from an RT driver ioctl callback.
 
+Regards.
 
+-- 
+                                                                Gilles.
 
---
-Aking
-Best regards
