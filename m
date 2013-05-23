@@ -1,12 +1,13 @@
-Message-ID: <51A75049.2020504@free.fr>
-Date: Thu, 30 May 2013 15:12:41 +0200
-From: =?UTF-8?B?U3TDqXBoYW5lIEFOQ0VMT1Q=?= <sancelot@free.fr>
-MIME-Version: 1.0
-References: <51A6F9AD.3000207@free.fr> <51A73A1A.8000404@xenomai.org>
-In-Reply-To: <51A73A1A.8000404@xenomai.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+From: "Poole Jr, Donald R." <donald.poole@swri.org>
+Date: Thu, 23 May 2013 23:15:40 +0000
+Message-ID: <E9605457112439448B6B3ED284E06533317AC624@mbx256-1.adm.swri.edu>
+In-Reply-To: <201305232352.24308.paul_c@tuxcnc.org>
+Content-Language: en-US
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <275FAC1FCCA18342AE059E0F5D9BC141@sw.pvt>
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] Context switching kernel tracing
+MIME-Version: 1.0
+Subject: Re: [Xenomai] Next Xenomai Release?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,85 +16,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 30/05/2013 13:38, Gilles Chanteperdrix wrote:
-> On 05/30/2013 09:03 AM, St=C3=A9phane ANCELOT wrote:
->
->> Hi,
+On 5/23/13 5:52 PM, "Paul" <paul_c@tuxcnc.org> wrote:
+
+
+>On Thursday 23 May 2013, Gilles Chanteperdrix wrote:
+>> On 05/23/2013 05:57 PM, Poole Jr, Donald R. wrote:
+>> > I guess I overlooked that post and response. Any clarifying
+>> > words/steps on what needs to be done to get the 3.8.x kernel
+>> > patched with Xenomai for running on the Beaglebone/Raspberry Pi in
+>> > the meantime?
 >>
->> I have got some problems with an architecture, and 2 realtime tasks.
->>
->> The realtime is not always respected.
+>> For beaglebone, it is integrated in the I-pipe tree for the ARM
+>> architecture (git://git.xenomai.org/ipipe-gch.git, branch
+>> for-core-3.8), which is currently based on 3.8.0 but will probably be
+>> rebased on a more recent version for the I-pipe 3.8 release, for the
+>> raspberry pi, you can try the patch which has been posted by Paul,
+>> but probably needs rebasing once the I-pipe for 3.8 is released.
 >
-> Hi,
 >
-> a few things to check:
+>I have a set of patches ready for 3.8.8 based on the "official"
+>Raspberry Pi sources [1] - Need to reduce the current set of nine down
+>to a pre and post pair which I'll try to do over the weekend. In the
+>meantime, if anyone wants to take the set for a spin, drop me a note
+>and I'll send them over.
 >
-> Would there be any involuntary mode switches? See rt_task_set_mode or
-> pthread_set_mode_np documentation to enable debug.
-There is not any involuntary mode switches in the xenomai application.
-
-The buggy architecture is celeron M:
-
-Intel=C2=AE 910GMLE / ICH6M chipsets
-
-the same disk application, if setted up in the following architecture,=20
-has no problem:
-Intel=C2=AE 852GM and ICH4 chipset
-
-Are you able to reproduce the problem with the latency test? You can=20
-launch several instances in parallel, if you absolutely need several=20
-task. If yes, then probably the easiest solution is to enable the I-pipe=20
-tracer, then run the latency test with the -f argument.
-
-I have read more documentation in kernel tracing, and it seems I won't=20
-need lttng, but it looks like only kernel tracing would be enough ?
-
-I have not managed to reproduce it with a single instance of latency=20
-test. (and I have no problem using a single rt task...) . I will try 2=20
-instances.
-
-One more thing that is surprising : I monitored the tasks delay using=20
-clock_gettime() , the software does not watch any big lag !!! ...but it=20
-is visible in the scopemeter using com port signals (up to 300us=20
-possible !!!!) ....
-
-I also was thinking about a problem with the high res. timers, I tried=20
-the HPET timers, but this has not helped.
-
->> This is a very strange problem in this architecture, since it happens
->> statically almost every three reboots...
->>
->> It looks like there is something in the kernel / or setted up by bios
->> that is happening and locks the task switching context.
+>In the meantime, I'm tracking BCM2835 integration in to the mainline
+>kernel with view to working on 3.10.y - Realistically, I don't think
+>support in 3.10.y will be complete by the time it is released, so we
+>may have to wait for 3.12.y.
 >
-> Ok, so if it has a bios, it is an x86. Which version of the I-pipe patc=
-h
-> and Xenomai are you using? Can not it be an SMI issue, have you tried
-> the SMI workaround?
+>
+>Regards, Paul.
 
+Hmm, this doesn't sound very good for Beaglebone users. As Gilles has
+mentioned in and earlier post, Beaglebone users could use his I-pipe tree
+for ARM, which is currently based on 3.8.0. But, if the v3.8 kernel has
+reached EOL like Wolfgang brought to our attention, does that mean Xenomai
+development on v3.8 stops as well?  I don't know when TI or
+Beagleboard.org will release as BSP with a more up-to-date, non-EOL
+kernel, so we might be stuck with the v3.8 for awhile.
 
-yes, I have tried disabling SMI, but in anyway it fails as follow:
-
-Xenomai: SMI-enabled chipset found
-Xenomai: SMI workaround failed!
-
-
-
-I have the same problem using either
-
-kernel 2.6.34 and xenomai 2.5.6
-
-or
-
-kernel 3.5.7 and xenomai 2.6.2.1
-
-Further informations on Monday.
-
-Regards,
-Steph
-
+Donald R. Poole, Jr.
+Research Engineer
+Voice: 210.522.3131 | Fax: 210.522.4931
+Tactical Networks & Communications (tacticalnetworks.swri.org)
+Southwest Research Institute (SwRI)
 
 
