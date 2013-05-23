@@ -1,12 +1,14 @@
-Message-ID: <519E90CC.6070500@xenomai.org>
-Date: Thu, 23 May 2013 23:57:32 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
+From: Paul <paul_c@tuxcnc.org>
+Date: Thu, 23 May 2013 23:52:24 +0100
 References: <E9605457112439448B6B3ED284E06533317AC337@mbx256-1.adm.swri.edu>
-	<20130523213304.D53E738047C@gemini.denx.de>
-In-Reply-To: <20130523213304.D53E738047C@gemini.denx.de>
-Content-Type: text/plain; charset=UTF-8
+	<519E677F.9050001@xenomai.org>
+In-Reply-To: <519E677F.9050001@xenomai.org>
+MIME-Version: 1.0
+Content-Type: text/plain;
+  charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Message-Id: <201305232352.24308.paul_c@tuxcnc.org>
 Subject: Re: [Xenomai] Next Xenomai Release?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -16,28 +18,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Wolfgang Denk <wd@denx.de>
-Cc: Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 05/23/2013 11:33 PM, Wolfgang Denk wrote:
+On Thursday 23 May 2013, Gilles Chanteperdrix wrote:
+> On 05/23/2013 05:57 PM, Poole Jr, Donald R. wrote:
+> > I guess I overlooked that post and response. Any clarifying
+> > words/steps on what needs to be done to get the 3.8.x kernel
+> > patched with Xenomai for running on the Beaglebone/Raspberry Pi in
+> > the meantime?
+>
+> For beaglebone, it is integrated in the I-pipe tree for the ARM
+> architecture (git://git.xenomai.org/ipipe-gch.git, branch
+> for-core-3.8), which is currently based on 3.8.0 but will probably be
+> rebased on a more recent version for the I-pipe 3.8 release, for the
+> raspberry pi, you can try the patch which has been posted by Paul,
+> but probably needs rebasing once the I-pipe for 3.8 is released.
 
-> Dear "Poole Jr, Donald R.",
-> 
-> In message <E9605457112439448B6B3ED284E06533317AC337@mbx256-1.adm.swri.edu> you wrote:
->>
->> I guess I overlooked that post and response. Any clarifying words/steps on
->> what needs to be done to get the 3.8.x kernel patched with Xenomai for
->> running on the Beaglebone/Raspberry Pi in the meantime?
-> 
-> Adding support for a v3.8.x kernel appears to be not really
-> attractive, given that v3.8 has already reached EOL...
+
+I have a set of patches ready for 3.8.8 based on the "official" 
+Raspberry Pi sources [1] - Need to reduce the current set of nine down 
+to a pre and post pair which I'll try to do over the weekend. In the 
+meantime, if anyone wants to take the set for a spin, drop me a note 
+and I'll send them over.
+
+In the meantime, I'm tracking BCM2835 integration in to the mainline 
+kernel with view to working on 3.10.y - Realistically, I don't think 
+support in 3.10.y will be complete by the time it is released, so we 
+may have to wait for 3.12.y.
 
 
-What happened, Canonical decided not to continue the maintenance of the
-3.8 kernel since that announce?
+Regards, Paul.
 
-http://lwn.net/Articles/550581/
 
--- 
-                                                                Gilles.
+
+[1] git://github.com/raspberrypi/linux.git
 
