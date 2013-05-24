@@ -1,13 +1,15 @@
-Message-ID: <51AC9B33.4070504@free.fr>
-Date: Mon, 03 Jun 2013 15:33:39 +0200
-From: =?UTF-8?B?U3TDqXBoYW5lIEFOQ0VMT1Q=?= <sancelot@free.fr>
+Message-ID: <519F57E9.9050701@xenomai.org>
+Date: Fri, 24 May 2013 14:07:05 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <51A6F9AD.3000207@free.fr> <51A73A1A.8000404@xenomai.org>
-	<51A75049.2020504@free.fr> <51A79835.1090609@xenomai.org>
-In-Reply-To: <51A79835.1090609@xenomai.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] Context switching kernel tracing
+References: <E9605457112439448B6B3ED284E06533317AC337@mbx256-1.adm.swri.edu>
+	<20130523213304.D53E738047C@gemini.denx.de>
+	<519F08C1.6060306@xenomai.org>
+	<20130524072236.A90C738047C@gemini.denx.de>
+In-Reply-To: <20130524072236.A90C738047C@gemini.denx.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Next Xenomai Release?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,104 +18,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Wolfgang Denk <wd@denx.de>
+Cc: Xenomai <xenomai@xenomai.org>
 
-Hi,
+On 05/24/2013 09:22 AM, Wolfgang Denk wrote:
 
-
-The SMI is the source of my problems. the global SMI bit in the ICH6 can=20
-not be disabled .
-
-However, I used a 32 bits mask trying to disable any bits and managed to=20
-reduce the latency (worst : 15us )
-
-
-refer to paragraph 10.8.3.12 for ICH6 chipset :
-http://www.intel.com/content/www/us/en/io/io-controller-hub-6-datasheet.h=
-tml
-
-
-
-Regards,
-Steph
-
-On 30/05/2013 20:19, Gilles Chanteperdrix wrote:
-> On 05/30/2013 03:12 PM, St=C3=A9phane ANCELOT wrote:
->
->> On 30/05/2013 13:38, Gilles Chanteperdrix wrote:
->>> On 05/30/2013 09:03 AM, St=C3=A9phane ANCELOT wrote:
->>>
->>>> Hi,
->>>>
->>>> I have got some problems with an architecture, and 2 realtime tasks.
->>>>
->>>> The realtime is not always respected.
->>> Hi,
->>>
->>> a few things to check:
->>>
->>> Would there be any involuntary mode switches? See rt_task_set_mode or
->>> pthread_set_mode_np documentation to enable debug.
->> There is not any involuntary mode switches in the xenomai application.
+> Dear Gilles,
+> 
+> In message <519F08C1.6060306@xenomai.org> you wrote:
 >>
->> The buggy architecture is celeron M:
+>>> Adding support for a v3.8.x kernel appears to be not really
+>>> attractive, given that v3.8 has already reached EOL...
 >>
->> Intel=C2=AE 910GMLE / ICH6M chipsets
+>> From what I understand from this post:
+>> http://www.linuxfoundation.org/news-media/blogs/browse/2013/02/linux-38-not-longterm-kernel
 >>
->> the same disk application, if setted up in the following architecture,
->> has no problem:
->> Intel=C2=AE 852GM and ICH4 chipset
+>> And this page:
+>> https://www.kernel.org/category/releases.html
 >>
->> Are you able to reproduce the problem with the latency test? You can
->> launch several instances in parallel, if you absolutely need several
->> task. If yes, then probably the easiest solution is to enable the I-pi=
-pe
->> tracer, then run the latency test with the -f argument.
+>> Every stable kernel until october 2013 will be EOLed when the next
+>> kernel is out.
 >>
->> I have read more documentation in kernel tracing, and it seems I won't
->> need lttng, but it looks like only kernel tracing would be enough ?
->>
->> I have not managed to reproduce it with a single instance of latency
->> test. (and I have no problem using a single rt task...) . I will try 2
->> instances.
->>
->> One more thing that is surprising : I monitored the tasks delay using
->> clock_gettime() , the software does not watch any big lag !!! ...but i=
-t
->> is visible in the scopemeter using com port signals (up to 300us
->> possible !!!!) ....
->
-> I would say it means that the tsc (and APIC) stop during some idle
-> states of the system. I suppose you have CONFIG_CPU_IDLE turned off?
->
-> Could you try booting with nohlt or idle=3Dpoll ?
->
->> I also was thinking about a problem with the high res. timers, I tried
->> the HPET timers, but this has not helped.
->
-> I do not believe Xenomai is able to use the HPET timers with Linux 2.6.=
-34.
->
->>>> This is a very strange problem in this architecture, since it happen=
-s
->>>> statically almost every three reboots...
->>>>
->>>> It looks like there is something in the kernel / or setted up by bio=
-s
->>>> that is happening and locks the task switching context.
->>> Ok, so if it has a bios, it is an x86. Which version of the I-pipe pa=
-tch
->>> and Xenomai are you using? Can not it be an SMI issue, have you tried
->>> the SMI workaround?
->>
->> yes, I have tried disabling SMI, but in anyway it fails as follow:
->>
->> Xenomai: SMI-enabled chipset found
->> Xenomai: SMI workaround failed!
->
-> Ok then, your BIOS vendor does not want you to disable the SMI global
-> bit, have you tried other bits?
->
+>> So, any other kernel than 3.0 and 3.4 is not "attractive" until october
+>> 2013.
+> 
+> Yes, probably.  The whole situation with LTS trees is IMO deeply
+> dissatisfactory, as it is not possible to plan anything in advance.
+> This has been discussed a couple of times before, but Greg Kroah-
+> Hartman refuses to provide any information in advance; he repeatedly
+> stated that a LTS kernel will be declared as such only after the
+> release; appearently after sufficent testing by a large number of
+> users has verified that there anre not too many serious issues in it.
 
+
+Which makes sense after all. I am afraid the people who are not
+maintaining the stable trees are not in position to demand anything.
+
+-- 
+                                                                Gilles.
 
