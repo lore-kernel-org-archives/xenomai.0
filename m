@@ -1,13 +1,12 @@
-Message-ID: <51B9D660.9080304@xenomai.org>
-Date: Thu, 13 Jun 2013 16:25:36 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <51A0FE20.5040202@control.lth.se>
+Date: Sat, 25 May 2013 20:08:32 +0200
+From: Anders Blomdell <anders.blomdell@control.lth.se>
 MIME-Version: 1.0
-References: <CAONLcG02QkWuaC=HvZZAptTPN+8ga1JVw5XSQpr71vgaf2zi6A@mail.gmail.com>
-In-Reply-To: <CAONLcG02QkWuaC=HvZZAptTPN+8ga1JVw5XSQpr71vgaf2zi6A@mail.gmail.com>
+References: <1369479458.60083.YahooMailNeo@web172203.mail.ir2.yahoo.com>
+In-Reply-To: <1369479458.60083.YahooMailNeo@web172203.mail.ir2.yahoo.com>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [xenomai-forge] psos interface: t_setpri keeps
- threadobj mutex locked
+Subject: Re: [Xenomai] Xenomai, rtnet and ethercat
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,53 +15,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Tom Philips <tom.philips1311@gmail.com>
-Cc: xenomai@xenomai.org
+To: Franz Engel <franz_lambert_engel@yahoo.de>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 06/13/2013 04:07 PM, Tom Philips wrote:
-> There seems to be a mutex problem when using psos call t_setpri()
-> There is one case where a threadobj_lock() is not matched with a
-> threadobj_unlock()
+On 05/25/2013 12:57 PM, Franz Engel wrote:
+> Hi,
 >
-> Here's the normal call sequence:
-> +++
-> t_setpri()
->    get_psos_task_or_self()
->      threadobj_lock()
->    threadobj_set_priority()
->      threadobj_unlock()
-> +++
+> I have to connect my realtime xenomai system with an lasertracker. The tracker is using ethercat. Has somebody experiences to do this? I would like to use rtnet as realtime stack. Is it possible to use an ethercat master with rtnet driver? Or is there a realtime ethercat master available?
 >
-> But in threadobj_set_priority() (Mercury version), the case below has no
-> threadobj_unlock()
-> +++
->    if (thobj->status & __THREAD_S_NOPREEMPT) {
->      thobj->core.prio_unlocked = prio;
->      thobj->core.policy_unlocked = prio ? SCHED_RT : SCHED_OTHER;
->      /****** No threadobj_unlock() *****/
->      return 0;
->    }
-> +++
->
-> This causes other threads to hang on a threadobj_lock()
->
+> I found the following Ethercat projects (but I think they have no ethercat capables):
+> http://soem.berlios.de/
+> http://etherlab.org/en/ethercat/index.php
 
-Definitely, yes.
-
-diff --git a/lib/copperplate/threadobj.c b/lib/copperplate/threadobj.c
-index 0ec95d7..cb001d1 100644
---- a/lib/copperplate/threadobj.c
-+++ b/lib/copperplate/threadobj.c
-@@ -547,6 +547,7 @@ int threadobj_set_priority(struct threadobj *thobj, 
-int prio) /* thobj->lock hel
-  	if (thobj->status & __THREAD_S_NOPREEMPT) {
-  		thobj->core.prio_unlocked = prio;
-  		thobj->core.policy_unlocked = prio ? SCHED_RT : SCHED_OTHER;
-+		threadobj_unlock(thobj);
-  		return 0;
-  	}
+Read the licensing terms carefully, last time I looked, the EtherCAT 
+license was not compatible with open licenses like GPL (see 
+https://mail.gna.org/public/xenomai-help/2009-10/msg00074.html)
 
 
--- 
-Philippe.
+Regards
+
+Anders Blomdell
+
 
