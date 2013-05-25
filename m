@@ -1,11 +1,11 @@
-Date: Sat, 8 Jun 2013 23:40:54 +0800 (CST)
-From: =?GBK?B?x7bI68q9uaSzzMqm?= <ericvic@163.com>
+Message-ID: <1369479458.60083.YahooMailNeo@web172203.mail.ir2.yahoo.com>
+Date: Sat, 25 May 2013 11:57:38 +0100 (BST)
+From: Franz Engel <franz_lambert_engel@yahoo.de>
 MIME-Version: 1.0
-Message-ID: <44b485fd.1ee68.13f24728cbf.Coremail.ericvic@163.com>
-Content-Type: text/plain; charset=GBK
-Content-Transfer-Encoding: base64
-Subject: [Xenomai] Set  gpio irq priority with tzic_set_irq_prio(int irq,
-	int hi)
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] Xenomai, rtnet and ethercat
+Reply-To: Franz Engel <franz_lambert_engel@yahoo.de>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,13 +14,12 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Tm93IEkgdXNlIElteDUzIGdwaW8yLTE0IHRvIGJlIGEgaW50ZXJydXB0IHNvdXJjZSAsYnV0IEkg
-Zm91bmQgaXRzIHByaW9yaXR5IHNvIGxvd2VyIC4gClNvIEkgdXNlIHR6aWNfc2V0X2lycV9wcmlv
-KGludCBpcnEsIGludCBoaSkgCi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLgouLi4u
-Li4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLgoKCgoKIE1ZX0dQSU8yXzE0PSgxKjMyKzE0KSsxMjg7
-CiBpcnE9aXJxXyB0b19ncGlvKCBNWV9HUElPMl8xNCk7CiBteGNfdHppY19pbml0X2lycShJTVg1
-M19UWklDX0JBU0VfQUREUik7CiB0emljX3NldF9pcnFfcHJpbyhpcnEsMjApOy8vY2hhbmcgdGhl
-IHByaW9yaXR5IHRvICMzMAouLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4KLi4uLi4u
-Li4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4KCgpJcyBpdCByaWdodKO/Cgo=
+Hi,=0A=0AI have to connect my realtime xenomai system with an lasertracker.=
+ The tracker is using ethercat. Has somebody experiences to do this? I woul=
+d like to use rtnet as realtime stack. Is it possible to use an ethercat ma=
+ster with rtnet driver? Or is there a realtime ethercat master available?=
+=0A=0AI found the following Ethercat projects (but I think they have no eth=
+ercat capables):=0Ahttp://soem.berlios.de/=0Ahttp://etherlab.org/en/etherca=
+t/index.php=0A=0AThanks and regards,=0A=A0=A0=A0=A0 Franz
