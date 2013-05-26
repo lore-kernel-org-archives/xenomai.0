@@ -1,11 +1,14 @@
-Date: Tue, 18 Jun 2013 17:02:01 +0200
-From: Nicholas Mc Guire <der.herr@hofr.at>
-Message-ID: <20130618150201.GA13577@opentech.at>
+From: Leopold Palomo Avellaneda <leo@alaxarxa.net>
+Date: Sun, 26 May 2013 02:24:59 +0200
+References: <1369479458.60083.YahooMailNeo@web172203.mail.ir2.yahoo.com>
+	<51A0FE20.5040202@control.lth.se>
+In-Reply-To: <51A0FE20.5040202@control.lth.se>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=unknown-8bit
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] 15th Real Time Linux Workshop - Call for Papers
+Content-Type: Text/Plain;
+  charset="iso-8859-1"
+Content-Transfer-Encoding: 7bit
+Message-Id: <201305260224.59809.leo@alaxarxa.net>
+Subject: Re: [Xenomai] Xenomai, rtnet and ethercat
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,151 +18,74 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
+Cc: Franz Engel <franz_lambert_engel@yahoo.de>
+
+A Dissabte, 25 de maig de 2013, Anders Blomdell va escriure:
+> On 05/25/2013 12:57 PM, Franz Engel wrote:
+> > Hi,
+> > 
+> > I have to connect my realtime xenomai system with an lasertracker. The
+> > tracker is using ethercat. Has somebody experiences to do this? I would
+> > like to use rtnet as realtime stack. Is it possible to use an ethercat
+> > master with rtnet driver? Or is there a realtime ethercat master
+> > available?
+> > 
+> > I found the following Ethercat projects (but I think they have no
+> > ethercat capables): http://soem.berlios.de/
+> > http://etherlab.org/en/ethercat/index.php
+> 
+> Read the licensing terms carefully, last time I looked, the EtherCAT
+> license was not compatible with open licenses like GPL (see
+> https://mail.gna.org/public/xenomai-help/2009-10/msg00074.html)
+> 
+
+I'm not a lawyer and I cannot make an opinion about that. I have read a lot 
+about ethercat, and its license and I have to admit that it's a bit of mess. 
+
+My recommendation is that if you don't want to make a commercial product, or 
+sell your software, you can use any of the two  ethercat master: soem and 
+etherlab. I don't think that Beckhoff makes you problems. If you want to do any 
+commercial product, ask to Beckoff first.
+
+About your question, etherlab provides a ethercat master under xenomai or 
+rtai. You have a limited options of drivers with both, but realtime 
+capabilities.
+
+Etherlab provides also ethercat master with standard kernel drivers with 
+PREMPT_RT, so you could have a softrealtime with any NIC supported by the 
+kernel.
+
+Soem provides also ethercat master, but it doesn't provides officially support 
+under xenomai (or rtai). You must use any standard driver and could work under 
+PREMPT_RT. 
+
+The orocos developers have a version of soem that works with rtnet, but it has 
+not been worked quit well for us, so by now, I cannot recommend it. However, I 
+have to say that I have to review it because it has been changed a lot.
+
+We have use soem with an standard ethernet driver and xenomai and we have been 
+able to communicate with or servos at 1 ms.
+
+Hope it helps.
+
+Regards,
+
+Leopold
 
 
 
 
-                      15th Real Time Linux Workshop
-                            1st Call for Papers
-
-                         October 28 - 31, 2013
-                    Dipartimento tecnologie innovative
-        Scuola universitaria professionale della Svizzera italiana
-                               Lugano-Manno
-                               Switzerland=20
-
-Following the meetings of academics, developers and users of real-time
-and embedded Linux at the previous 14 Real Time Linux Workshops held
-world-wide (Vienna, Orlando, Milano, Boston, Valencia, Singapore, Lille,
-Lanzhou, Linz, Guadalajara, Dresden, Nairobi, Prague and Chapel Hill) -=20
-the 2013 Real Time Linux Workshop will come to the Scuola Universitaria=20
-Professionale della Svizzera Italiana in Lugano-Manno, Switzerland. It wi=
-ll=20
-be held from October 28 to October 31, 2013.
-
-Rationale
-
-Real-time systems have evolved over the past decades in a relatively
-calm manner - performance has increased, one can say dramatically, but
-the main paradigms were pretty stable since the mid 80s. With the=20
-considerable increase of computing power, notably with multicore systems
-becoming mainstream in embedded devices, the requirements on RTOS are
-shifting and the tools are again trying to catch up.
-
-In stark contrast to 1999 (when the first RTLWS took place), Linux has a=20
-strong position in all kind of embedded systems, ranging from consumer
-electronics to network devices and a broad range of industrial applicatio=
-ns
-including safety related systems. The technological resources suitable
-for high-availability, real-time, and safety critical systems have been
-continuously expanding and improving - allowing to cover the entire
-development life cycle of industrial projects based on open-source
-tools. At the core of this development is the availability of stable
-operating systems with reliable real-time properties. Extending and
-improving the real-time properties of Open Source RTOS is a continuous
-research and development effort. The OSADL has set itself the ambitious=20
-goal to document these efforts and it's most effective tool to do so is=20
-the annual Real Time Linux Workshop.
 
 
-Call for papers
 
-Authors from regulatory bodies, academics, industry as well as the
-user-community are invited to submit original work dealing with general
-topics related to Open Source and Free Software based real-time systems
-research, experiments and case studies, as well as issues of integration
-of open-source real-time and embedded OS. A special focus will be on
-industrial case studies and safety related systems. Topics of interest
-include, but are not limited to:
- - Modifications and variants of the GNU/Linux operating system and
-   extending its real-time capabilities,
- - Contributions to real-time Linux variants, drivers and extensions,
- - Tools for the verification and validation of real-time properties,
- - User-mode real-time concepts, implementation and experience,
- - Real-time Linux applications, in academia, research and industry,
- - Safety related FLOSS systems,
- - Safety related systems using FLOSS components,
- - FLOSS Tools used to analyze, verify or validate safety properties,
- - Work in progress reports, covering recent developments,
- - Educational material on real-time Linux,
- - RTOS core concepts, RT-safe synchronization mechanisms,
- - RT-safe IPC mechanisms for RT and non RT components,
- - Analysis and benchmarking methods and results of real-time
-   GNU/Linux variants,
- - Debugging techniques and tools, both for code and temporal
-   debugging of core RTOS components, drivers and real-time
-   applications,
- - Real-time related extensions to development environments
 
-Abstract submission
-
-If you wish to present a paper at the workshop, please submit an
-abstract using the submission page at
-https://www.osadl.org/RTLWS15-Abstract.submission-form.0.html.
-
-Final paper to be included into the RTLWS15 Proceedings
-Upon acceptance of an abstract by the RTLWS15 Program Committee, the
-author will be invited to submit a full paper in a form defined by
-https://www.osadl.org/paper.tgz. A detailed description of the editing
-and formatting process will be provided along with the notification
-email.
-
-Further information: http://www.osadl.org/RTLWS
-
-Important dates
-July 29, 2013 - Abstract submission deadline
-August 26, 2013 - Notification of acceptance
-September 23, 2013 - Submission of final paper
-October 28-31, 2013 - Workshop
-
-Organization committee:
-
-Local organizers:
- - Roberto Bucher, Scuola universitaria professionale della Svizzera ital=
-iana
-   SUPSI, Switzerland
-
-OSADL/RTLF
- - Carsten Emde, OSADL
- - Nicholas Mc Guire, OSADL
- - Andreas Platschek, ICT, Vienna University of Technology, Austria
-
-Program committee:
- - Alexey Khoroshilov, ISPRAS, Russia
- - Andrea Bastoni, MBDA, Italy
- - Andreas Platschek, TU-Wien, Austria
- - Bernhard N=F6lte, IQSE TueV SueD Rail, Germany
- - Carsten Emde, OSADL, Germany
- - Cheng Sheng, Beijing Shenzhou Aerospace Software Technology, China
- - Fans, Spectrum Sys, China
- - Georg Schiesser, OpenTech EDV Research, Austria
- - Herman H=E4rtig, Technische Universit=E4t Dresden, Germany
- - Julia Lawall, Inria/LIP6, France
- - Julien Delange, Carnegie Mellon Software Engineering Institute, USA
- - Klaus Reichl, Base Systems Technology Thales, Austria
- - Matthias Auchmann, A&R TECH, Austria
- - Michal Sojka, Czech Technical University in Prague, Czech Republic
- - Nicholas Mc Guire, OpenTech EDV Research, Austria
- - Paul E. McKenney, IBM Linux Technology Center, USA
- - Paolo Mantegazza, Politecnico di Milano, Italy
- - Peter Okech, University of Nairobi, Kenya
- - Peter Wurmsdobler, Aveillant Ltd, UK
- - Peter Zijlstra, RedHat, Netherlands
- - Philippe Gerum, Xenomai, France
- - Roberto Bucher, SUPSI, Switzerland
- - Shawn Choo, Weslab, Singapur
- - Stefan Schoenegger, B&R, Austria
- - Steven Rostedt, RedHat, USA
- - Thomas Gleixner, Linutronix, Germany
- - Yutaka Matsuno, University of Electro-Communications, Japan
- - Zhou Qingguo, DSLab, Lanzhou University, China
-
-Workshop organizers:
- - Dipartimento Tecnologie Innovative, SUPSI, Switzerland
- - Open Source Automation Development Lab (OSADL)
-
-Roberto Bucher
-Carsten Emde
-Nicholas Mc Guire
-Andreas Platschek
+-- 
+--
+Linux User 152692     PGP: 0xF944807E
+Catalonia
+-------------------------------------
+A: Because it messes up the order in which people normally read text.
+Q: Why is top-posting such a bad thing?
+A: Top-posting.
+Q: What is the most annoying thing in e-mail?
 
