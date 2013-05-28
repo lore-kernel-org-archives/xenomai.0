@@ -1,15 +1,13 @@
-From: Paul <paul_c@tuxcnc.org>
-Date: Thu, 23 May 2013 23:52:24 +0100
-References: <E9605457112439448B6B3ED284E06533317AC337@mbx256-1.adm.swri.edu>
-	<519E677F.9050001@xenomai.org>
-In-Reply-To: <519E677F.9050001@xenomai.org>
+From: "Poole Jr, Donald R." <donald.poole@swri.org>
+Date: Tue, 28 May 2013 15:13:15 +0000
+Message-ID: <E9605457112439448B6B3ED284E06533317B0139@mbx256-1.adm.swri.edu>
+In-Reply-To: <51A43FAE.109@xenomai.org>
+Content-Language: en-US
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <7A7C60A3F51203458BE6AFD70241DCF6@sw.pvt>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain;
-  charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Message-Id: <201305232352.24308.paul_c@tuxcnc.org>
-Subject: Re: [Xenomai] Next Xenomai Release?
+Subject: Re: [Xenomai] Spinlock Bad Magic Error ipipe-3.8.0 Branch
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,38 +16,83 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Thursday 23 May 2013, Gilles Chanteperdrix wrote:
-> On 05/23/2013 05:57 PM, Poole Jr, Donald R. wrote:
-> > I guess I overlooked that post and response. Any clarifying
-> > words/steps on what needs to be done to get the 3.8.x kernel
-> > patched with Xenomai for running on the Beaglebone/Raspberry Pi in
-> > the meantime?
+On 5/28/13 12:25 AM, "Gilles Chanteperdrix"
+<gilles.chanteperdrix@xenomai.org> wrote:
+
+
+>On 05/28/2013 02:04 AM, Poole Jr, Donald R. wrote:
 >
-> For beaglebone, it is integrated in the I-pipe tree for the ARM
-> architecture (git://git.xenomai.org/ipipe-gch.git, branch
-> for-core-3.8), which is currently based on 3.8.0 but will probably be
-> rebased on a more recent version for the I-pipe 3.8 release, for the
-> raspberry pi, you can try the patch which has been posted by Paul,
-> but probably needs rebasing once the I-pipe for 3.8 is released.
+>> I just pulled down the git://git.xenomai.org/ipipe.git =3D> ipipe-3.8.0
+>>branch and compiled for my BeagleBone, but on boot I receive the
+>>following error with backtrace:
+>>=20
+>> omap-dma-engine omap-dma-engine: allocating channel for 25
+>> [    1.954937] BUG: spinlock bad magic on CPU#0, swapper/0/1
+>> [    1.960658]  lock: dma_chan_lock+0x0/0x20, .magic: 00000000, .owner:
+>><none>/-1, .owner_cpu: 0
+>> [    1.969683] [<c001b2d0>] (unwind_backtrace+0x0/0xf0) from
+>>[<c02d2500>] (do_raw_spin_lock+0x14c/0x18c)
+>> [    1.979427] [<c02d2500>] (do_raw_spin_lock+0x14c/0x18c) from
+>>[<c04eeaa0>] (_raw_spin_lock_irqsave+0x4c/0x58)
+>> [    1.989814] [<c04eeaa0>] (_raw_spin_lock_irqsave+0x4c/0x58) from
+>>[<c003ebfc>] (omap_request_dma+0x24/0x1b8)
+>> [    2.000109] [<c003ebfc>] (omap_request_dma+0x24/0x1b8) from
+>>[<c02fb710>] (omap_dma_alloc_chan_resources+0x3c/0x50)
+>> [    2.011033] [<c02fb710>] (omap_dma_alloc_chan_resources+0x3c/0x50)
+>>from [<c02f9f3c>] (dma_chan_get+0x50/0xec)
+>> [    2.021501] [<c02f9f3c>] (dma_chan_get+0x50/0xec) from [<c02fa6a0>]
+>>(__dma_request_channel+0x114/0x1b8)
+>> [    2.031432] [<c02fa6a0>] (__dma_request_channel+0x114/0x1b8) from
+>>[<c0407df4>] (omap_hsmmc_probe+0x518/0xc54)
+>> [    2.041899] [<c0407df4>] (omap_hsmmc_probe+0x518/0xc54) from
+>>[<c032f508>] (platform_drv_probe+0x18/0x1c)
+>> [    2.051905] [<c032f508>] (platform_drv_probe+0x18/0x1c) from
+>>[<c032e2c4>] (driver_probe_device+0x78/0x210)
+>> [    2.062091] [<c032e2c4>] (driver_probe_device+0x78/0x210) from
+>>[<c032e4f0>] (__driver_attach+0x94/0x98)
+>> [    2.072017] [<c032e4f0>] (__driver_attach+0x94/0x98) from
+>>[<c032cbc4>] (bus_for_each_dev+0x50/0x7c)
+>> [    2.081570] [<c032cbc4>] (bus_for_each_dev+0x50/0x7c) from
+>>[<c032daf0>] (bus_add_driver+0x178/0x240)
+>> [    2.091211] [<c032daf0>] (bus_add_driver+0x178/0x240) from
+>>[<c032e9c0>] (driver_register+0x78/0x144)
+>> [    2.100851] [<c032e9c0>] (driver_register+0x78/0x144) from
+>>[<c0008834>] (do_one_initcall+0x34/0x178)
+>> [    2.110507] [<c0008834>] (do_one_initcall+0x34/0x178) from
+>>[<c0709900>] (kernel_init_freeable+0x100/0x1d0)
+>> [    2.120708] [<c0709900>] (kernel_init_freeable+0x100/0x1d0) from
+>>[<c04e19f0>] (kernel_init+0x8/0xe4)
+>> [    2.130356] [<c04e19f0>] (kernel_init+0x8/0xe4) from [<c0013480>]
+>>(ret_from_fork+0x18/0x38)
+>> [    2.139299] omap_hsmmc mmc.4: unable to obtain RX DMA engine channel
+>>25
+>> [    2.146514] of_get_named_gpio_flags: can't parse gpios property
+>> [    2.152815] of_get_named_gpio_flags: can't parse gpios property
+>> [    2.159268] omap-dma-engine omap-dma-engine: allocating channel for 3
+>> [    2.166124] omap_hsmmc mmc.5: unable to obtain RX DMA engine channel
+>>3
+>>=20
+>> Would anyone know what might be wrong?  Is there a commit that I should
+>>avoid for the moment?
+>
+>
+>Don't you still have the error if you disable CONFIG_XENOMAI and
+>CONFIG_IPIPE?
+>
+>
+>--=20
+>                                                                Gilles.
 
+Just recompiled it with CONFIG_XENOMAI and CONFIG_IPIPE disable, and
+indeed, the error still occurs.  Not sure why yet.
 
-I have a set of patches ready for 3.8.8 based on the "official" 
-Raspberry Pi sources [1] - Need to reduce the current set of nine down 
-to a pre and post pair which I'll try to do over the weekend. In the 
-meantime, if anyone wants to take the set for a spin, drop me a note 
-and I'll send them over.
+Donald R. Poole, Jr.
+Research Engineer
+Voice: 210.522.3131 | Fax: 210.522.4931
+Tactical Networks & Communications (tacticalnetworks.swri.org)
+Southwest Research Institute (SwRI)
 
-In the meantime, I'm tracking BCM2835 integration in to the mainline 
-kernel with view to working on 3.10.y - Realistically, I don't think 
-support in 3.10.y will be complete by the time it is released, so we 
-may have to wait for 3.12.y.
-
-
-Regards, Paul.
-
-
-
-[1] git://github.com/raspberrypi/linux.git
 
