@@ -1,13 +1,12 @@
-Message-ID: <51A79835.1090609@xenomai.org>
-Date: Thu, 30 May 2013 20:19:33 +0200
+Message-ID: <51A79898.50805@xenomai.org>
+Date: Thu, 30 May 2013 20:21:12 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <51A6F9AD.3000207@free.fr> <51A73A1A.8000404@xenomai.org>
-	<51A75049.2020504@free.fr>
-In-Reply-To: <51A75049.2020504@free.fr>
+References: <4cacd80b.2131b.13ef60cf09e.Coremail.ericvic@163.com>
+In-Reply-To: <4cacd80b.2131b.13ef60cf09e.Coremail.ericvic@163.com>
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] Context switching kernel tracing
+Subject: Re: [Xenomai] freescale(imx53)  with xenomai patch
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,86 +15,18 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?B?U3TDqXBoYW5lIEFOQ0VMT1Q=?= <sancelot@free.fr>
+To: =?UTF-8?B?5bWM5YWl5byP5bel56iL5biI?= <ericvic@163.com>
 Cc: xenomai@xenomai.org
 
-On 05/30/2013 03:12 PM, Stéphane ANCELOT wrote:
+On 05/30/2013 05:27 PM, 嵌入式工程师 wrote:
 
-> On 30/05/2013 13:38, Gilles Chanteperdrix wrote:
->> On 05/30/2013 09:03 AM, Stéphane ANCELOT wrote:
->>
->>> Hi,
->>>
->>> I have got some problems with an architecture, and 2 realtime tasks.
->>>
->>> The realtime is not always respected.
->>
->> Hi,
->>
->> a few things to check:
->>
->> Would there be any involuntary mode switches? See rt_task_set_mode or
->> pthread_set_mode_np documentation to enable debug.
-> There is not any involuntary mode switches in the xenomai application.
-> 
-> The buggy architecture is celeron M:
-> 
-> Intel® 910GMLE / ICH6M chipsets
-> 
-> the same disk application, if setted up in the following architecture, 
-> has no problem:
-> Intel® 852GM and ICH4 chipset
-> 
-> Are you able to reproduce the problem with the latency test? You can 
-> launch several instances in parallel, if you absolutely need several 
-> task. If yes, then probably the easiest solution is to enable the I-pipe 
-> tracer, then run the latency test with the -f argument.
-> 
-> I have read more documentation in kernel tracing, and it seems I won't 
-> need lttng, but it looks like only kernel tracing would be enough ?
-> 
-> I have not managed to reproduce it with a single instance of latency 
-> test. (and I have no problem using a single rt task...) . I will try 2 
-> instances.
-> 
-> One more thing that is surprising : I monitored the tasks delay using 
-> clock_gettime() , the software does not watch any big lag !!! ...but it 
-> is visible in the scopemeter using com port signals (up to 300us 
-> possible !!!!) ....
+> I set freescale board (imx53) gpio2-14 as  interrupttriggerpin and the kernal with xenomai patch. When i  use Interrupt handling in kernel space like Below code:
 
 
-I would say it means that the tsc (and APIC) stop during some idle
-states of the system. I suppose you have CONFIG_CPU_IDLE turned off?
+What version of the I-pipe patch? What version of Xenomai?
 
-Could you try booting with nohlt or idle=poll ?
-
-> 
-> I also was thinking about a problem with the high res. timers, I tried 
-> the HPET timers, but this has not helped.
-
-
-I do not believe Xenomai is able to use the HPET timers with Linux 2.6.34.
-
-> 
->>> This is a very strange problem in this architecture, since it happens
->>> statically almost every three reboots...
->>>
->>> It looks like there is something in the kernel / or setted up by bios
->>> that is happening and locks the task switching context.
->>
->> Ok, so if it has a bios, it is an x86. Which version of the I-pipe patch
->> and Xenomai are you using? Can not it be an SMI issue, have you tried
->> the SMI workaround?
-> 
-> 
-> yes, I have tried disabling SMI, but in anyway it fails as follow:
-> 
-> Xenomai: SMI-enabled chipset found
-> Xenomai: SMI workaround failed!
-
-
-Ok then, your BIOS vendor does not want you to disable the SMI global
-bit, have you tried other bits?
+Also, could you try sending mails following a bit the netiquette? At
+least with words correctly detached?
 
 -- 
                                                                 Gilles.
