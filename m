@@ -1,14 +1,13 @@
-From: Wolfgang Denk <wd@denx.de>
+Date: Fri, 31 May 2013 09:34:39 +0800 (CST)
+From: =?UTF-8?B?5bWM5YWl5byP5bel56iL5biI?= <ericvic@163.com>
+In-Reply-To: <51A79898.50805@xenomai.org>
+References: <4cacd80b.2131b.13ef60cf09e.Coremail.ericvic@163.com>
+	<51A79898.50805@xenomai.org>
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
 MIME-Version: 1.0
-Content-type: text/plain; charset=UTF-8
-Content-transfer-encoding: 8bit
-In-reply-to: <519E90CC.6070500@xenomai.org>
-References: <E9605457112439448B6B3ED284E06533317AC337@mbx256-1.adm.swri.edu>
-	<20130523213304.D53E738047C@gemini.denx.de>
-	<519E90CC.6070500@xenomai.org>
-Date: Fri, 24 May 2013 09:15:44 +0200
-Message-Id: <20130524071544.B737338047C@gemini.denx.de>
-Subject: Re: [Xenomai] Next Xenomai Release?
+Message-ID: <34806652.2924.13ef838eb26.Coremail.ericvic@163.com>
+Subject: Re: [Xenomai] freescale(imx53)  with xenomai patch
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,30 +17,27 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
+Cc: xenomai@xenomai.org
 
-Dear Gilles Chanteperdrix,
+The I-pipe path version is adeos-ipipe-2.6.35.9-arm-1.18-01.patch ,
+the kernal version is 2.6.35.9 ,i am so sorry for he details do not speak c=
+learly
+=E5=9C=A8 2013-05-31 02:21:12=EF=BC=8C"Gilles Chanteperdrix" <gilles.chante=
+perdrix@xenomai.org> =E5=86=99=E9=81=93=EF=BC=9A
+>On 05/30/2013 05:27 PM, =E5=B5=8C=E5=85=A5=E5=BC=8F=E5=B7=A5=E7=A8=8B=E5=
+=B8=88 wrote:
+>
+>> I set freescale board (imx53) gpio2-14 as  interrupttriggerpin and the k=
+ernal with xenomai patch. When i  use Interrupt handling in kernel space li=
+ke Below code:
+>
+>
+>What version of the I-pipe patch? What version of Xenomai?
+>
+>Also, could you try sending mails following a bit the netiquette? At
+>least with words correctly detached?
+>
+>--=20
+>                                                                Gilles.
 
-In message <519E90CC.6070500@xenomai.org> you wrote:
-> 
-> > Adding support for a v3.8.x kernel appears to be not really
-> > attractive, given that v3.8 has already reached EOL...
-> 
-> What happened, Canonical decided not to continue the maintenance of the
-> 3.8 kernel since that announce?
-
-I have no information about Canonical's plans.  But this is a vendor
-tree after all, not an "official" stable kernel tree, as that should
-be hosted at kernel.org, then.
-
-Best regards,
-
-Wolfgang Denk
-
--- 
-DENX Software Engineering GmbH,     MD: Wolfgang Denk & Detlev Zundel
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
-Phone: (+49)-8142-66989-10 Fax: (+49)-8142-66989-80 Email: wd@denx.de
-In English, every word can be verbed.  Would that it were  so  in our
-programming languages.
 
