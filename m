@@ -1,14 +1,10 @@
-Date: Fri, 31 May 2013 09:36:59 +0800 (CST)
+Date: Fri, 31 May 2013 09:50:23 +0800 (CST)
 From: =?UTF-8?B?5bWM5YWl5byP5bel56iL5biI?= <ericvic@163.com>
-In-Reply-To: <34806652.2924.13ef838eb26.Coremail.ericvic@163.com>
-References: <4cacd80b.2131b.13ef60cf09e.Coremail.ericvic@163.com>
-	<51A79898.50805@xenomai.org>
-	<34806652.2924.13ef838eb26.Coremail.ericvic@163.com>
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
 MIME-Version: 1.0
-Message-ID: <4855a071.2a22.13ef83b0d46.Coremail.ericvic@163.com>
-Subject: Re: [Xenomai] freescale(imx53)  with xenomai patch
+Message-ID: <ecc0728.2ffc.13ef847506f.Coremail.ericvic@163.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
+Subject: [Xenomai] freescale(imx53) with xenomai patch
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,33 +13,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?B?5bWM5YWl5byP5bel56iL5biI?= <ericvic@163.com>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-The I-pipe path version is adeos-ipipe-2.6.35.9-arm-1.18-01.patch ,
-the kernal version is 2.6.35.9 ,i am so sorry for he details do not speak c=
-learly
-At 2013-05-31 09:34:39,"=E5=B5=8C=E5=85=A5=E5=BC=8F=E5=B7=A5=E7=A8=8B=E5=B8=
-=88" <ericvic@163.com> wrote:
->The I-pipe path version is adeos-ipipe-2.6.35.9-arm-1.18-01.patch ,
->the kernal version is 2.6.35.9 ,i am so sorry for he details do not speak =
-clearly
->=E5=9C=A8 2013-05-31 02:21:12=EF=BC=8C"Gilles Chanteperdrix" <gilles.chant=
-eperdrix@xenomai.org> =E5=86=99=E9=81=93=EF=BC=9A
->>On 05/30/2013 05:27 PM, =E5=B5=8C=E5=85=A5=E5=BC=8F=E5=B7=A5=E7=A8=8B=E5=
-=B8=88 wrote:
->>
->>> I set freescale board (imx53) gpio2-14 as  interrupttriggerpin and the =
-kernal with xenomai patch. When i  use Interrupt handling in kernel space l=
-ike Below code:
->>
->>
->>What version of the I-pipe patch? What version of Xenomai?
->>
->>Also, could you try sending mails following a bit the netiquette? At
->>least with words correctly detached?
->>
->>--=20
->>                                                                Gilles.
-
-
+SSBzZXQgZnJlZXNjYWxlIGJvYXJkIChpbXg1MykgZ3BpbzItMTQgYXMgIGludGVycnVwdCB0cmln
+Z2VyIHBpbiBhbmQgdGhlIGtlcm5hbCB3aXRoIHhlbm9tYWkgcGF0Y2guIFdoZW4gaSAgdXNlIElu
+dGVycnVwdCBoYW5kbGluZyBpbiBrZXJuZWwgc3BhY2UgbGlrZSBCZWxvdyBjb2RlOgoKI2RlZmlu
+ZSAgTVlJUlEgICgxKjMyKzE0KQoKaW50IGlycT1ncGlvX3RvX2lycShNWUlSUSk7CgpzdGF0aWMg
+aW50IGlzcl9jb2RlKHhuaW50cl90ICppbnRyKQoKewoKcnRfaW50cl9kaXNhYmxlKCZteWludGVy
+cnVwdCk7CgouLi4KCi4uLgpydF9pbnRyX2VuYWJsZSgmbXlpbnRlcnJ1cHQpOwoKcmV0dXJuIFJU
+X0lOVFJfSEFORExFRDsKCn0KCi4uLi4uCgpzYW1wbGluZ190YXNrMS4uLi4uLi4uLi4uCgpzYW1w
+bGluZ190YXNrMi4uLi4uLi4uLi4uLi4uLgoKc3RhdGljIGludCBfX2luaXQgZ3Bpb19pcnFfaW5p
+dCh2b2lkKQp7CgpydF9pbnRyX2NyZWF0ZSgmbXlpbnRlcnJ1cHQsICJteWludGVycnVwdCIsIGly
+cSwgaXNyX2NvZGUsIE5VTEwsIDApOwoKcnRfdGFza19jcmVhdGUuLi4uLnNhbXBsaW5nX3Rhc2sx
+CgouLi4uLi4uLi4uLi4uLi4uLi7vu79zYW1wbGluZ190YXNrMgoKcnRfaW50cl9lbmFibGUoJm15
+aW50ZXJydXB0KTsKCgogICAgcmV0dXJuIDA7Cn0KVGhlIEktcGlwZSBwYXRoIHZlcnNpb24gaXMg
+YWRlb3MtaXBpcGUtMi42LjM1LjktYXJtLTEuMTgtMDEucGF0Y2ggLAp0aGUga2VybmFsIHZlcnNp
+b24gaXMgMi42LjM1LjkKCkkgZmluZCBpZiB0aGUgdGFza3MgaSBoYXZlIGNyZWF0ZWQgbW9yZSBh
+bmQgbW9yZSB0aGUgIElTUiAoSW50ZXJydXB0IHJlc3BvbnNlIGZ1bmN0aW9uKXdpbGwgbG9zZSBh
+IGxvdCBvZiByZXNwb25zZSAuCgpTbyBJIGRvIG5vdCBrbm93IGlmIEkgc2V0IHRoZSBpbnRlcnJ1
+cHQgcHJpb3JpdHkgbGV2ZWwgaXMgdG9vIGxvdywgb3Igd2hhdD8KCklmIEkgaGFkIHRvIHNldCB0
+aGUgaW50ZXJydXB0IHByaW9yaXR5IHJlYWwtdGltZSBrZXJuZWwsIHRoZW4gaG93IGNhbiBJIHNl
+dCB1cD8KCm9yIGdwaW8gSW50ZXJydXB0IG51bWJlciBpcyByaWdodCA/CgpTdHJvbmcgcmVhbC10
+aW1lIHN5c3RlbSByZXF1aXJlbWVudHMsYnV0IEkgZG8gbm90IGtub3cgd2h5IGlmIGl0IGhhcyBs
+b3RzIG9mIHRhc2sgaXQgd2lsbCBsb3NlICByZWFsLXRpbWUgLgoKVGhhbmtzIQ==
