@@ -1,14 +1,15 @@
-Message-ID: <51A82D96.5000900@web.de>
-Date: Fri, 31 May 2013 13:56:54 +0900
-From: Jan Kiszka <jan.kiszka@web.de>
+Message-ID: <51A835DE.5020409@xenomai.org>
+Date: Fri, 31 May 2013 07:32:14 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <201305251236.38418.lux-integ@btconnect.com>
-	<51A2F3EF.3080404@web.de>
-	<201305281152.41490.lux-integ@btconnect.com>
-In-Reply-To: <201305281152.41490.lux-integ@btconnect.com>
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] uml question
+References: <4cacd80b.2131b.13ef60cf09e.Coremail.ericvic@163.com>
+	<51A79898.50805@xenomai.org>
+	<34806652.2924.13ef838eb26.Coremail.ericvic@163.com>
+	<4855a071.2a22.13ef83b0d46.Coremail.ericvic@163.com>
+In-Reply-To: <4855a071.2a22.13ef83b0d46.Coremail.ericvic@163.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] freescale(imx53)  with xenomai patch
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,54 +18,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: lux-integ <lux-integ@btconnect.com>
+To: =?UTF-8?B?5bWM5YWl5byP5bel56iL5biI?= <ericvic@163.com>
 Cc: xenomai@xenomai.org
 
-On 2013-05-28 19:52, lux-integ wrote:
-> On Monday 27 May 2013 06:49:35 Jan Kiszka wrote:
->>
->> UML is not supported, but you can do driver development very comfortably
->> inside virtual machines - at least on x86 (other archs are just gaining
->> virtualization support). See [1] for more details.
->>
->> Jan
->>
->> [1]
->> http://chemnitzer.linux-tage.de/2012/vortraege/folien/1061-VirtualDebugg=
-ing
->> .pdf
-> =
+On 05/31/2013 03:36 AM, 嵌入式工程师 wrote:
 
-> thanks for your link.  =
+> The I-pipe path version is adeos-ipipe-2.6.35.9-arm-1.18-01.patch ,
+> the kernal version is 2.6.35.9 ,i am so sorry for he details do not speak clearly
 
-> =
 
-> does  'is-not-supported' =3D  "cant-be-done"?
+Hi,
 
-A lot can be done (in software), but this thing would not make sense.
+there is no need to send your answer three times either. GPIO irqs are
+broken with this version of the I-pipe kernel. Please try updating to
+the I-pipe core patch for Linux 3.4 or 3.5.
 
-> =
+Regards.
 
-> "QEMU is a very flexible virtualization technology however it is quite sl=
-ow =
+-- 
+                                                                Gilles.
 
-> and it is recommended that you understand and evaluate alternative soluti=
-ons =
-
-> before picking this one"
-
-QEMU is a CPU emulator is slow - compared to native or KVM-based
-execution. Still, QEMU is faster in this domain than many other
-*emulator*. But you don't need to worry when you have hardware
-virtualization  support on your host and enabled KVM for QEMU.
-
-Jan
-
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: signature.asc
-Type: application/pgp-signature
-Size: 263 bytes
-Desc: OpenPGP digital signature
-URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20130531/e8808c1=
-5/attachment.pgp>
