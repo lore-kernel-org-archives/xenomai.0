@@ -1,17 +1,10 @@
-Date: Sat, 1 Jun 2013 16:41:48 +0800 (CST)
-From: =?utf-8?B?5bWM5YWl5byP5bel56iL5biI?= <ericvic@163.com>
-In-Reply-To: <700980f4.7d37.13ef927183f.Coremail.ericvic@163.com>
-References: <4cacd80b.2131b.13ef60cf09e.Coremail.ericvic@163.com>
-	<51A79898.50805@xenomai.org>
-	<34806652.2924.13ef838eb26.Coremail.ericvic@163.com>
-	<4855a071.2a22.13ef83b0d46.Coremail.ericvic@163.com>
-	<51A835DE.5020409@xenomai.org>
-	<700980f4.7d37.13ef927183f.Coremail.ericvic@163.com>
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=utf-8
+Date: Sat, 1 Jun 2013 16:43:51 +0800 (CST)
+From: =?GBK?B?x7bI68q9uaSzzMqm?= <ericvic@163.com>
 MIME-Version: 1.0
-Message-ID: <27b32d48.5247.13efee65625.Coremail.ericvic@163.com>
-Subject: Re: [Xenomai] freescale(imx53)  with xenomai patch
+Message-ID: <1427d68d.5288.13efee8374a.Coremail.ericvic@163.com>
+Content-Type: text/plain; charset=GBK
+Content-Transfer-Encoding: base64
+Subject: [Xenomai] freescale(imx53) with xenomai patch
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,292 +13,163 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?utf-8?B?5bWM5YWl5byP5bel56iL5biI?= <ericvic@163.com>
-Cc: xenomai@xenomai.org
+To: Xenomai@xenomai.org
 
-I have try the kernal-3.4.6 with ipipe-core-3.4.6-arm-4.patch=20
-when I set three same Priority tasks I found untill the tasks stop ,the int=
-errut founction will not run.
-It same like before version kernal-2.6.35.9 with  ipipe-core-2.6.35.9-arm-4=
-.patch
-
-
-static int test_thread(void *data)
-{
-=09//phase=3Dctrl_mnm1221_m();
-=09while(1)
-=09{
-=09if(flag)
-=09{
-=09=09printk("runting %lld\n",tt3);
-=09=09flag=3D0;
-=09=09}
-=09SLEEP_MILLI_SEC(50);
-
-=09}
-=09return 0;
-}
-
-int irq_handle_function(int irq, void *device_id)
-{
-=09//if(phase=3D=3DPH_RUNNING)
-=09//ctrl_mnm1221_m();
-=09rt_intr_disable(&amp;intr_desc);
-=09tt1=3Drt_timer_read();
-=09tt3=3Dtt1-tt2;
-=09if(tt3&gt;300000)
-=09flag=3D1;
-=09tt2=3Dtt1;
-=09rt_intr_enable(&amp;intr_desc);
-=09return RT_INTR_HANDLED;;
-}
-
-
-void taskOne(void*arg)
-{
-=09int i;
-=09for (i=3D0; i &lt; 0xffff; i++)
-=09{=09
-=09=09printk("Iam taskOneand global =3D %d................\n", tt3);
-=09}
-}
-void taskTwo(void*arg)
-{
-=09int i;
-=09for (i=3D0; i &lt; 0xffff; i++)
-=09{=09
-=09=09printk("Iam taskTwo global =3D %d................\n", tt3);
-=09}
-}
-void taskThree(void*arg)
-{
-=09int i;
-=09for (i=3D0; i &lt; 0xffff; i++)
-=09{=09
-=09=09printk("Iam taskThree global =3D %d................\n", tt3);
-=09}
-}
-
-
-static int __init rtex_init(void){
-=09irq=3D gpio_to_irq(MY_GPIO2_14);
-=09
-=09/*err=3Drequest_irq(irq, irq_handle_function, 0, "rtex", (void *)&amp;ir=
-q);
-=09if(err)
-=09{
-=09=09printk("regist irq failure...\n");
-=09=09return -EIO;
-=09}*/
-=09err =3D rt_intr_create(&amp;intr_desc,"MyIrq",irq,irq_handle_function,NU=
-LL,I_SHARED|I_EDGE);
-=09/* ... */
-=09
-=09rt_intr_enable(&amp;intr_desc);
-
-
-
-=09rt_task_create(&amp;t1, "task1", 0, 1, 0);
-=09rt_task_create(&amp;t2, "task2", 0, 1, 0);/* start the two tasks */
-=09rt_task_create(&amp;t3, "task2", 0, 1, 0);/* start the two tasks */
-=09rt_task_start(&amp;t1, &amp;taskOne, 0);
-=09rt_task_start(&amp;t2, &amp;taskTwo, 0);
-=09rt_task_start(&amp;t2, &amp;taskThree, 0);
-}
-
-
-
-
- Every 500m gpio send an interrupt.
- The result like blow:
-tt1=3Drt_timer_read();
-
-global =3D =09tt3=3Dtt1-tt2;
-
-Iam taskTwo global =3D 1610612755................                          =
-      =20
-Iam taskTwo global =3D 1610612755................                          =
-      =20
-Iam taskTwo global =3D 1610612755................                          =
-      =20
-Iam taskTwo global =3D 1610612755................                          =
-      =20
-Iam taskTwo global =3D 1610612755................    =20
-Iam taskTwo global =3D 1610612755................                          =
-      =20
-Iam taskTwo global =3D 1610612755................                          =
-      =20
-Iam taskTwo global =3D 1610612755................                          =
-      =20
-Iam taskTwo global =3D 1610612755................                          =
-      =20
-Iam taskTwo global =3D 1610612755................                          =
-      =20
-Iam taskTwo global =3D 1610612755................                          =
-      =20
-Iam taskTwo global =3D 1610612755................                          =
-      =20
-Iam taskTwo global =3D 1610612755................                          =
-      =20
-Iam taskTwo global =3D 1610612755................                          =
-      =20
-Iam taskTwo global =3D 1610612755................                          =
-      =20
-Iam taskTwo global =3D 1610612755................                          =
-      =20
-Iam taskTwo global =3D 1610612755................                          =
-      =20
-Iam taskTwo global =3D 1610612755................                          =
-      =20
-Iam taskTwo global =3D 1610612755................                          =
-      =20
-Iam taskTwo global =3D 1610612755................                          =
-      =20
-Iam taskTwo global =3D 1610612755................                          =
-      =20
-Iam taskTwo global =3D 1610612755................                          =
-      =20
-Iam taskTwo global =3D 1610612755................                          =
-      =20
-Iam taskTwo global =3D 1610612755................                          =
-      =20
-Iam taskTwo global =3D 1610612755.                           =20
-Iam taskTwo global =3D 1610612755................                          =
-      =20
-Iam taskTwo global =3D 1610612755................                          =
-      =20
-Iam taskTwo global =3D 1610612755................                          =
-      =20
-Iam taskTwo global =3D 1610612755................                          =
-      =20
-Iam taskTwo global =3D 1610612755................                          =
-      =20
-Iam taskTwo global =3D 1610612755................                          =
-      =20
-Iam taskTwo global =3D 1610612755................                          =
-      =20
-Iam taskTwo global =3D 1610612755................                          =
-      =20
-Irunting 502230                                                            =
-    =20
-root@freescale /opt$ runting 499995                                        =
-    =20
-runting 500025                                                             =
-    =20
-runting 500115                                                             =
-    =20
-runting 500055                                                             =
-    =20
-runting 500025                                                             =
-    =20
-runting 500025                                                             =
-    =20
-runting 500010       =20
-runting 500085                                                             =
-    =20
-runting 500010                                                             =
-    =20
-runting 500025                                                             =
-    =20
-runting 500055                                                             =
-    =20
-runting 500010                                                             =
-    =20
-runting 500055                                                             =
-    =20
-runting 499905                                                             =
-    =20
-runting 500460                                                             =
-    =20
-runting 500085                                                             =
-    =20
-runting 500070                                                             =
-    =20
-runting 500070                                                             =
-    =20
-runting 500010                                                             =
-    =20
-runting 500010                                                             =
-    =20
-runting 500085                                                             =
-    =20
-runting 500025                                                             =
-    =20
-runting 499980                                                             =
-    =20
-runting 500070                                                             =
-    =20
-runting 500040                                                             =
-    =20
-runting 500025                                                             =
-    =20
-runting 498735                                                             =
-    =20
-runting 500040                                                             =
-    =20
-runting 500025                                                             =
-    =20
-runting 500025                                                             =
-    =20
-runting 500220                                                             =
-    =20
-runting 499995                                                             =
-    =20
-runting 500010                                                             =
-    =20
-runting 500055                                                             =
-    =20
-runting 500010                                                             =
-    =20
-runting 500055                                                             =
-    =20
-runting 500025                                                             =
-    =20
-runting 500085                                                             =
-    =20
-runting 500025                                                             =
-    =20
-runting 500055                                                             =
-    =20
-runting 500025                                                             =
-    =20
-runting 500010                                                             =
-    =20
-runting 500100                                                             =
-    =20
-runting 500085                                                             =
-    =20
-runting 500010   =20
-
-Then I do not know what should i do next?
-=E5=9C=A8 2013-05-31 13:54:49=EF=BC=8C"=E5=B5=8C=E5=85=A5=E5=BC=8F=E5=B7=A5=
-=E7=A8=8B=E5=B8=88" <ericvic@163.com> =E5=86=99=E9=81=93=EF=BC=9A
->ok =EF=BC=8Cthanks=EF=BC=8Ci have a try
->=E5=9C=A8 2013-05-31 13:32:14=EF=BC=8C"Gilles Chanteperdrix" <gilles.chant=
-eperdrix@xenomai.org> =E5=86=99=E9=81=93=EF=BC=9A
->>On 05/31/2013 03:36 AM, =E5=B5=8C=E5=85=A5=E5=BC=8F=E5=B7=A5=E7=A8=8B=E5=
-=B8=88 wrote:
->>
->>> The I-pipe path version is adeos-ipipe-2.6.35.9-arm-1.18-01.patch ,
->>> the kernal version is 2.6.35.9 ,i am so sorry for he details do not spe=
-ak clearly
->>
->>
->>Hi,
->>
->>there is no need to send your answer three times either. GPIO irqs are
->>broken with this version of the I-pipe kernel. Please try updating to
->>the I-pipe core patch for Linux 3.4 or 3.5.
->>
->>Regards.
->>
->>--=20
->>                                                                Gilles.
->
->
->_______________________________________________
->Xenomai mailing list
->Xenomai@xenomai.org
->http://www.xenomai.org/mailman/listinfo/xenomai
-
-
+SSBoYXZlIHRyeSB0aGUga2VybmFsLTMuNC42IHdpdGggaXBpcGUtY29yZS0zLjQuNi1hcm0tNC5w
+YXRjaCAKd2hlbiBJIHNldCB0aHJlZSBzYW1lIFByaW9yaXR5IHRhc2tzIEkgZm91bmQgdW50aWxs
+IHRoZSB0YXNrcyBzdG9wICx0aGUgaW50ZXJydXQgZm91bmN0aW9uIHdpbGwgbm90IHJ1bi4KSXQg
+c2FtZSBsaWtlIGJlZm9yZSB2ZXJzaW9uIGtlcm5hbC0yLjYuMzUuOSB3aXRoICBpcGlwZS1jb3Jl
+LTIuNi4zNS45LWFybS00LnBhdGNoCgoKc3RhdGljIGludCB0ZXN0X3RocmVhZCh2b2lkICpkYXRh
+KQp7CgkvL3BoYXNlPWN0cmxfbW5tMTIyMV9tKCk7Cgl3aGlsZSgxKQoJewoJaWYoZmxhZykKCXsK
+CQlwcmludGsoInJ1bnRpbmcgJWxsZFxuIix0dDMpOwoJCWZsYWc9MDsKCQl9CglTTEVFUF9NSUxM
+SV9TRUMoNTApOwoKCX0KCXJldHVybiAwOwp9CgppbnQgaXJxX2hhbmRsZV9mdW5jdGlvbihpbnQg
+aXJxLCB2b2lkICpkZXZpY2VfaWQpCnsKCS8vaWYocGhhc2U9PVBIX1JVTk5JTkcpCgkvL2N0cmxf
+bW5tMTIyMV9tKCk7CglydF9pbnRyX2Rpc2FibGUoJmFtcDtpbnRyX2Rlc2MpOwoJdHQxPXJ0X3Rp
+bWVyX3JlYWQoKTsKCXR0Mz10dDEtdHQyOwoJaWYodHQzJmd0OzMwMDAwMCkKCWZsYWc9MTsKCXR0
+Mj10dDE7CglydF9pbnRyX2VuYWJsZSgmYW1wO2ludHJfZGVzYyk7CglyZXR1cm4gUlRfSU5UUl9I
+QU5ETEVEOzsKfQoKCnZvaWQgdGFza09uZSh2b2lkKmFyZykKewoJaW50IGk7Cglmb3IgKGk9MDsg
+aSAmbHQ7IDB4ZmZmZjsgaSsrKQoJewkKCQlwcmludGsoIklhbSB0YXNrT25lYW5kIGdsb2JhbCA9
+ICVkLi4uLi4uLi4uLi4uLi4uLlxuIiwgdHQzKTsKCX0KfQp2b2lkIHRhc2tUd28odm9pZCphcmcp
+CnsKCWludCBpOwoJZm9yIChpPTA7IGkgJmx0OyAweGZmZmY7IGkrKykKCXsJCgkJcHJpbnRrKCJJ
+YW0gdGFza1R3byBnbG9iYWwgPSAlZC4uLi4uLi4uLi4uLi4uLi5cbiIsIHR0Myk7Cgl9Cn0Kdm9p
+ZCB0YXNrVGhyZWUodm9pZCphcmcpCnsKCWludCBpOwoJZm9yIChpPTA7IGkgJmx0OyAweGZmZmY7
+IGkrKykKCXsJCgkJcHJpbnRrKCJJYW0gdGFza1RocmVlIGdsb2JhbCA9ICVkLi4uLi4uLi4uLi4u
+Li4uLlxuIiwgdHQzKTsKCX0KfQoKCnN0YXRpYyBpbnQgX19pbml0IHJ0ZXhfaW5pdCh2b2lkKXsK
+CWlycT0gZ3Bpb190b19pcnEoTVlfR1BJTzJfMTQpOwoJCgkvKmVycj1yZXF1ZXN0X2lycShpcnEs
+IGlycV9oYW5kbGVfZnVuY3Rpb24sIDAsICJydGV4IiwgKHZvaWQgKikmYW1wO2lycSk7CglpZihl
+cnIpCgl7CgkJcHJpbnRrKCJyZWdpc3QgaXJxIGZhaWx1cmUuLi5cbiIpOwoJCXJldHVybiAtRUlP
+OwoJfSovCgllcnIgPSBydF9pbnRyX2NyZWF0ZSgmYW1wO2ludHJfZGVzYywiTXlJcnEiLGlycSxp
+cnFfaGFuZGxlX2Z1bmN0aW9uLE5VTEwsSV9TSEFSRUR8SV9FREdFKTsKCS8qIC4uLiAqLwoJCgly
+dF9pbnRyX2VuYWJsZSgmYW1wO2ludHJfZGVzYyk7CgoKCglydF90YXNrX2NyZWF0ZSgmYW1wO3Qx
+LCAidGFzazEiLCAwLCAxLCAwKTsKCXJ0X3Rhc2tfY3JlYXRlKCZhbXA7dDIsICJ0YXNrMiIsIDAs
+IDEsIDApOy8qIHN0YXJ0IHRoZSB0d28gdGFza3MgKi8KCXJ0X3Rhc2tfY3JlYXRlKCZhbXA7dDMs
+ICJ0YXNrMiIsIDAsIDEsIDApOy8qIHN0YXJ0IHRoZSB0d28gdGFza3MgKi8KCXJ0X3Rhc2tfc3Rh
+cnQoJmFtcDt0MSwgJmFtcDt0YXNrT25lLCAwKTsKCXJ0X3Rhc2tfc3RhcnQoJmFtcDt0MiwgJmFt
+cDt0YXNrVHdvLCAwKTsKCXJ0X3Rhc2tfc3RhcnQoJmFtcDt0MiwgJmFtcDt0YXNrVGhyZWUsIDAp
+Owp9CgoKCgogRXZlcnkgNTAwbSBncGlvIHNlbmQgYW4gaW50ZXJydXB0LgogVGhlIHJlc3VsdCBs
+aWtlIGJsb3c6CnR0MT1ydF90aW1lcl9yZWFkKCk7CgpnbG9iYWwgPSAJdHQzPXR0MS10dDI7CgpJ
+YW0gdGFza1R3byBnbG9iYWwgPSAxNjEwNjEyNzU1Li4uLi4uLi4uLi4uLi4uLiAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgIApJYW0gdGFza1R3byBnbG9iYWwgPSAxNjEwNjEyNzU1Li4u
+Li4uLi4uLi4uLi4uLiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIApJYW0gdGFza1R3
+byBnbG9iYWwgPSAxNjEwNjEyNzU1Li4uLi4uLi4uLi4uLi4uLiAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgIApJYW0gdGFza1R3byBnbG9iYWwgPSAxNjEwNjEyNzU1Li4uLi4uLi4uLi4u
+Li4uLiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIApJYW0gdGFza1R3byBnbG9iYWwg
+PSAxNjEwNjEyNzU1Li4uLi4uLi4uLi4uLi4uLiAgICAgCklhbSB0YXNrVHdvIGdsb2JhbCA9IDE2
+MTA2MTI3NTUuLi4uLi4uLi4uLi4uLi4uICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+CklhbSB0YXNrVHdvIGdsb2JhbCA9IDE2MTA2MTI3NTUuLi4uLi4uLi4uLi4uLi4uICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgCklhbSB0YXNrVHdvIGdsb2JhbCA9IDE2MTA2MTI3NTUu
+Li4uLi4uLi4uLi4uLi4uICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCklhbSB0YXNr
+VHdvIGdsb2JhbCA9IDE2MTA2MTI3NTUuLi4uLi4uLi4uLi4uLi4uICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgCklhbSB0YXNrVHdvIGdsb2JhbCA9IDE2MTA2MTI3NTUuLi4uLi4uLi4u
+Li4uLi4uICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCklhbSB0YXNrVHdvIGdsb2Jh
+bCA9IDE2MTA2MTI3NTUuLi4uLi4uLi4uLi4uLi4uICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgCklhbSB0YXNrVHdvIGdsb2JhbCA9IDE2MTA2MTI3NTUuLi4uLi4uLi4uLi4uLi4uICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCklhbSB0YXNrVHdvIGdsb2JhbCA9IDE2MTA2
+MTI3NTUuLi4uLi4uLi4uLi4uLi4uICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCklh
+bSB0YXNrVHdvIGdsb2JhbCA9IDE2MTA2MTI3NTUuLi4uLi4uLi4uLi4uLi4uICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgCklhbSB0YXNrVHdvIGdsb2JhbCA9IDE2MTA2MTI3NTUuLi4u
+Li4uLi4uLi4uLi4uICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCklhbSB0YXNrVHdv
+IGdsb2JhbCA9IDE2MTA2MTI3NTUuLi4uLi4uLi4uLi4uLi4uICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgCklhbSB0YXNrVHdvIGdsb2JhbCA9IDE2MTA2MTI3NTUuLi4uLi4uLi4uLi4u
+Li4uICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCklhbSB0YXNrVHdvIGdsb2JhbCA9
+IDE2MTA2MTI3NTUuLi4uLi4uLi4uLi4uLi4uICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgCklhbSB0YXNrVHdvIGdsb2JhbCA9IDE2MTA2MTI3NTUuLi4uLi4uLi4uLi4uLi4uICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgCklhbSB0YXNrVHdvIGdsb2JhbCA9IDE2MTA2MTI3
+NTUuLi4uLi4uLi4uLi4uLi4uICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCklhbSB0
+YXNrVHdvIGdsb2JhbCA9IDE2MTA2MTI3NTUuLi4uLi4uLi4uLi4uLi4uICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgCklhbSB0YXNrVHdvIGdsb2JhbCA9IDE2MTA2MTI3NTUuLi4uLi4u
+Li4uLi4uLi4uICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCklhbSB0YXNrVHdvIGds
+b2JhbCA9IDE2MTA2MTI3NTUuLi4uLi4uLi4uLi4uLi4uICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgCklhbSB0YXNrVHdvIGdsb2JhbCA9IDE2MTA2MTI3NTUuLi4uLi4uLi4uLi4uLi4u
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCklhbSB0YXNrVHdvIGdsb2JhbCA9IDE2
+MTA2MTI3NTUuICAgICAgICAgICAgICAgICAgICAgICAgICAgIApJYW0gdGFza1R3byBnbG9iYWwg
+PSAxNjEwNjEyNzU1Li4uLi4uLi4uLi4uLi4uLiAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgIApJYW0gdGFza1R3byBnbG9iYWwgPSAxNjEwNjEyNzU1Li4uLi4uLi4uLi4uLi4uLiAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgIApJYW0gdGFza1R3byBnbG9iYWwgPSAxNjEwNjEy
+NzU1Li4uLi4uLi4uLi4uLi4uLiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIApJYW0g
+dGFza1R3byBnbG9iYWwgPSAxNjEwNjEyNzU1Li4uLi4uLi4uLi4uLi4uLiAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgIApJYW0gdGFza1R3byBnbG9iYWwgPSAxNjEwNjEyNzU1Li4uLi4u
+Li4uLi4uLi4uLiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIApJYW0gdGFza1R3byBn
+bG9iYWwgPSAxNjEwNjEyNzU1Li4uLi4uLi4uLi4uLi4uLiAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgIApJYW0gdGFza1R3byBnbG9iYWwgPSAxNjEwNjEyNzU1Li4uLi4uLi4uLi4uLi4u
+LiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIApJYW0gdGFza1R3byBnbG9iYWwgPSAx
+NjEwNjEyNzU1Li4uLi4uLi4uLi4uLi4uLiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+IApJcnVudGluZyA1MDIyMzAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgIApyb290QGZyZWVzY2FsZSAvb3B0JCBydW50aW5nIDQ5
+OTk5NSAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIApydW50aW5n
+IDUwMDAyNSAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgIApydW50aW5nIDUwMDExNSAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIApydW50aW5nIDUwMDA1NSAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgIApydW50aW5nIDUwMDAyNSAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIApydW50aW5nIDUwMDAyNSAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIApy
+dW50aW5nIDUwMDAxMCAgICAgICAgCnJ1bnRpbmcgNTAwMDg1ICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCnJ1bnRpbmcgNTAw
+MDEwICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgCnJ1bnRpbmcgNTAwMDI1ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCnJ1bnRpbmcgNTAwMDU1ICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgCnJ1bnRpbmcgNTAwMDEwICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgCnJ1bnRpbmcgNTAwMDU1ICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCnJ1bnRp
+bmcgNDk5OTA1ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgCnJ1bnRpbmcgNTAwNDYwICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCnJ1bnRpbmcgNTAwMDg1
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgCnJ1bnRpbmcgNTAwMDcwICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCnJ1bnRpbmcgNTAwMDcwICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+CnJ1bnRpbmcgNTAwMDEwICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgCnJ1bnRpbmcgNTAwMDEwICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCnJ1bnRpbmcg
+NTAwMDg1ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgCnJ1bnRpbmcgNTAwMDI1ICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCnJ1bnRpbmcgNDk5OTgwICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgCnJ1bnRpbmcgNTAwMDcwICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCnJ1bnRpbmcgNTAwMDQwICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCnJ1
+bnRpbmcgNTAwMDI1ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgCnJ1bnRpbmcgNDk4NzM1ICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCnJ1bnRpbmcgNTAw
+MDQwICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgCnJ1bnRpbmcgNTAwMDI1ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCnJ1bnRpbmcgNTAwMDI1ICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgCnJ1bnRpbmcgNTAwMjIwICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgCnJ1bnRpbmcgNDk5OTk1ICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCnJ1bnRp
+bmcgNTAwMDEwICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgCnJ1bnRpbmcgNTAwMDU1ICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCnJ1bnRpbmcgNTAwMDEw
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgCnJ1bnRpbmcgNTAwMDU1ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCnJ1bnRpbmcgNTAwMDI1ICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+CnJ1bnRpbmcgNTAwMDg1ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgCnJ1bnRpbmcgNTAwMDI1ICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCnJ1bnRpbmcg
+NTAwMDU1ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgCnJ1bnRpbmcgNTAwMDI1ICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCnJ1bnRpbmcgNTAwMDEwICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgCnJ1bnRpbmcgNTAwMTAwICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCnJ1bnRpbmcgNTAwMDg1ICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCnJ1
+bnRpbmcgNTAwMDEwICAgIAoKVGhlbiBJIGRvIG5vdCBrbm93IHdoYXQgc2hvdWxkIGkgZG8gbmV4
+dD8K1NogMjAxMy0wNS0zMSAxMzo1NDo0OaOsIse2yOvKvbmks8zKpiIgPGVyaWN2aWNAMTYzLmNv
+bT4g0LS1wKO6Cj5vayCjrHRoYW5rc6OsaSBoYXZlIGEgdHJ5Cj7U2iAyMDEzLTA1LTMxIDEzOjMy
+OjE0o6wiR2lsbGVzIENoYW50ZXBlcmRyaXgiIDxnaWxsZXMuY2hhbnRlcGVyZHJpeEB4ZW5vbWFp
+Lm9yZz4g0LS1wKO6Cj4+T24gMDUvMzEvMjAxMyAwMzozNiBBTSwgx7bI68q9uaSzzMqmIHdyb3Rl
+Ogo+Pgo+Pj4gVGhlIEktcGlwZSBwYXRoIHZlcnNpb24gaXMgYWRlb3MtaXBpcGUtMi42LjM1Ljkt
+YXJtLTEuMTgtMDEucGF0Y2ggLAo+Pj4gdGhlIGtlcm5hbCB2ZXJzaW9uIGlzIDIuNi4zNS45ICxp
+IGFtIHNvIHNvcnJ5IGZvciBoZSBkZXRhaWxzIGRvIG5vdCBzcGVhayBjbGVhcmx5Cj4+Cj4+Cj4+
+SGksCj4+Cj4+dGhlcmUgaXMgbm8gbmVlZCB0byBzZW5kIHlvdXIgYW5zd2VyIHRocmVlIHRpbWVz
+IGVpdGhlci4gR1BJTyBpcnFzIGFyZQo+PmJyb2tlbiB3aXRoIHRoaXMgdmVyc2lvbiBvZiB0aGUg
+SS1waXBlIGtlcm5lbC4gUGxlYXNlIHRyeSB1cGRhdGluZyB0bwo+PnRoZSBJLXBpcGUgY29yZSBw
+YXRjaCBmb3IgTGludXggMy40IG9yIDMuNS4KPj4KPj5SZWdhcmRzLgo+Pgo+Pi0tIAo+PiAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICBHaWxsZXMuCj4KPgo+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX18KPlhlbm9tYWkgbWFpbGluZyBsaXN0Cj5YZW5vbWFpQHhlbm9tYWkub3JnCj5odHRwOi8v
+d3d3Lnhlbm9tYWkub3JnL21haWxtYW4vbGlzdGluZm8veGVub21haQ==
