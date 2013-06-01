@@ -1,14 +1,17 @@
-From: Wolfgang Denk <wd@denx.de>
-MIME-Version: 1.0
-Content-type: text/plain; charset=UTF-8
-In-reply-to: <519F08C1.6060306@xenomai.org>
-References: <E9605457112439448B6B3ED284E06533317AC337@mbx256-1.adm.swri.edu>
-	<20130523213304.D53E738047C@gemini.denx.de>
-	<519F08C1.6060306@xenomai.org>
-Date: Fri, 24 May 2013 09:22:36 +0200
-Message-Id: <20130524072236.A90C738047C@gemini.denx.de>
+Date: Sat, 1 Jun 2013 16:41:48 +0800 (CST)
+From: =?utf-8?B?5bWM5YWl5byP5bel56iL5biI?= <ericvic@163.com>
+In-Reply-To: <700980f4.7d37.13ef927183f.Coremail.ericvic@163.com>
+References: <4cacd80b.2131b.13ef60cf09e.Coremail.ericvic@163.com>
+	<51A79898.50805@xenomai.org>
+	<34806652.2924.13ef838eb26.Coremail.ericvic@163.com>
+	<4855a071.2a22.13ef83b0d46.Coremail.ericvic@163.com>
+	<51A835DE.5020409@xenomai.org>
+	<700980f4.7d37.13ef927183f.Coremail.ericvic@163.com>
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] Next Xenomai Release?
+Content-Type: text/plain; charset=utf-8
+MIME-Version: 1.0
+Message-ID: <27b32d48.5247.13efee65625.Coremail.ericvic@163.com>
+Subject: Re: [Xenomai] freescale(imx53)  with xenomai patch
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,59 +20,292 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
+To: =?utf-8?B?5bWM5YWl5byP5bel56iL5biI?= <ericvic@163.com>
+Cc: xenomai@xenomai.org
 
-Dear Gilles,
+I have try the kernal-3.4.6 with ipipe-core-3.4.6-arm-4.patch=20
+when I set three same Priority tasks I found untill the tasks stop ,the int=
+errut founction will not run.
+It same like before version kernal-2.6.35.9 with  ipipe-core-2.6.35.9-arm-4=
+.patch
 
-In message <519F08C1.6060306@xenomai.org> you wrote:
->=20
-> > Adding support for a v3.8.x kernel appears to be not really
-> > attractive, given that v3.8 has already reached EOL...
->=20
-> From what I understand from this post:
-> http://www.linuxfoundation.org/news-media/blogs/browse/2013/02/linux-38=
--not-longterm-kernel
->=20
-> And this page:
-> https://www.kernel.org/category/releases.html
->=20
-> Every stable kernel until october 2013 will be EOLed when the next
-> kernel is out.
->=20
-> So, any other kernel than 3.0 and 3.4 is not "attractive" until october
-> 2013.
 
-Yes, probably.  The whole situation with LTS trees is IMO deeply
-dissatisfactory, as it is not possible to plan anything in advance.
-This has been discussed a couple of times before, but Greg Kroah-
-Hartman refuses to provide any information in advance; he repeatedly
-stated that a LTS kernel will be declared as such only after the
-release; appearently after sufficent testing by a large number of
-users has verified that there anre not too many serious issues in it.
+static int test_thread(void *data)
+{
+=09//phase=3Dctrl_mnm1221_m();
+=09while(1)
+=09{
+=09if(flag)
+=09{
+=09=09printk("runting %lld\n",tt3);
+=09=09flag=3D0;
+=09=09}
+=09SLEEP_MILLI_SEC(50);
 
-> As it turns out however, 3.8 is a bit less unattractive than the others=
-,
-> because Canonical seem to have announced they would be maintaining it
-> for a while longer (until August 2014, it seems) in the following post:
-> https://lwn.net/Articles/550581/
+=09}
+=09return 0;
+}
 
-Yes, indeed - but I wonder where this will lead to.  Now we have
-"official" stable kernel trees, and in addition vendor specific stable
-trees - this doesn't really scale to me.  If Canonical is willing to
-support 3.8 longer, they should take over the stable tree on
-kernel.org from Greg Kroah-Hartman.  But this is off topic here...
+int irq_handle_function(int irq, void *device_id)
+{
+=09//if(phase=3D=3DPH_RUNNING)
+=09//ctrl_mnm1221_m();
+=09rt_intr_disable(&amp;intr_desc);
+=09tt1=3Drt_timer_read();
+=09tt3=3Dtt1-tt2;
+=09if(tt3&gt;300000)
+=09flag=3D1;
+=09tt2=3Dtt1;
+=09rt_intr_enable(&amp;intr_desc);
+=09return RT_INTR_HANDLED;;
+}
 
-In any case, the whole situation is a mess.
 
-Best regards,
+void taskOne(void*arg)
+{
+=09int i;
+=09for (i=3D0; i &lt; 0xffff; i++)
+=09{=09
+=09=09printk("Iam taskOneand global =3D %d................\n", tt3);
+=09}
+}
+void taskTwo(void*arg)
+{
+=09int i;
+=09for (i=3D0; i &lt; 0xffff; i++)
+=09{=09
+=09=09printk("Iam taskTwo global =3D %d................\n", tt3);
+=09}
+}
+void taskThree(void*arg)
+{
+=09int i;
+=09for (i=3D0; i &lt; 0xffff; i++)
+=09{=09
+=09=09printk("Iam taskThree global =3D %d................\n", tt3);
+=09}
+}
 
-Wolfgang Denk
 
---=20
-DENX Software Engineering GmbH,     MD: Wolfgang Denk & Detlev Zundel
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
-Phone: (+49)-8142-66989-10 Fax: (+49)-8142-66989-80 Email: wd@denx.de
-A stone was placed at a ford in a river with the inscription:
-"When this stone is covered it is dangerous to ford here."
+static int __init rtex_init(void){
+=09irq=3D gpio_to_irq(MY_GPIO2_14);
+=09
+=09/*err=3Drequest_irq(irq, irq_handle_function, 0, "rtex", (void *)&amp;ir=
+q);
+=09if(err)
+=09{
+=09=09printk("regist irq failure...\n");
+=09=09return -EIO;
+=09}*/
+=09err =3D rt_intr_create(&amp;intr_desc,"MyIrq",irq,irq_handle_function,NU=
+LL,I_SHARED|I_EDGE);
+=09/* ... */
+=09
+=09rt_intr_enable(&amp;intr_desc);
+
+
+
+=09rt_task_create(&amp;t1, "task1", 0, 1, 0);
+=09rt_task_create(&amp;t2, "task2", 0, 1, 0);/* start the two tasks */
+=09rt_task_create(&amp;t3, "task2", 0, 1, 0);/* start the two tasks */
+=09rt_task_start(&amp;t1, &amp;taskOne, 0);
+=09rt_task_start(&amp;t2, &amp;taskTwo, 0);
+=09rt_task_start(&amp;t2, &amp;taskThree, 0);
+}
+
+
+
+
+ Every 500m gpio send an interrupt.
+ The result like blow:
+tt1=3Drt_timer_read();
+
+global =3D =09tt3=3Dtt1-tt2;
+
+Iam taskTwo global =3D 1610612755................                          =
+      =20
+Iam taskTwo global =3D 1610612755................                          =
+      =20
+Iam taskTwo global =3D 1610612755................                          =
+      =20
+Iam taskTwo global =3D 1610612755................                          =
+      =20
+Iam taskTwo global =3D 1610612755................    =20
+Iam taskTwo global =3D 1610612755................                          =
+      =20
+Iam taskTwo global =3D 1610612755................                          =
+      =20
+Iam taskTwo global =3D 1610612755................                          =
+      =20
+Iam taskTwo global =3D 1610612755................                          =
+      =20
+Iam taskTwo global =3D 1610612755................                          =
+      =20
+Iam taskTwo global =3D 1610612755................                          =
+      =20
+Iam taskTwo global =3D 1610612755................                          =
+      =20
+Iam taskTwo global =3D 1610612755................                          =
+      =20
+Iam taskTwo global =3D 1610612755................                          =
+      =20
+Iam taskTwo global =3D 1610612755................                          =
+      =20
+Iam taskTwo global =3D 1610612755................                          =
+      =20
+Iam taskTwo global =3D 1610612755................                          =
+      =20
+Iam taskTwo global =3D 1610612755................                          =
+      =20
+Iam taskTwo global =3D 1610612755................                          =
+      =20
+Iam taskTwo global =3D 1610612755................                          =
+      =20
+Iam taskTwo global =3D 1610612755................                          =
+      =20
+Iam taskTwo global =3D 1610612755................                          =
+      =20
+Iam taskTwo global =3D 1610612755................                          =
+      =20
+Iam taskTwo global =3D 1610612755................                          =
+      =20
+Iam taskTwo global =3D 1610612755.                           =20
+Iam taskTwo global =3D 1610612755................                          =
+      =20
+Iam taskTwo global =3D 1610612755................                          =
+      =20
+Iam taskTwo global =3D 1610612755................                          =
+      =20
+Iam taskTwo global =3D 1610612755................                          =
+      =20
+Iam taskTwo global =3D 1610612755................                          =
+      =20
+Iam taskTwo global =3D 1610612755................                          =
+      =20
+Iam taskTwo global =3D 1610612755................                          =
+      =20
+Iam taskTwo global =3D 1610612755................                          =
+      =20
+Irunting 502230                                                            =
+    =20
+root@freescale /opt$ runting 499995                                        =
+    =20
+runting 500025                                                             =
+    =20
+runting 500115                                                             =
+    =20
+runting 500055                                                             =
+    =20
+runting 500025                                                             =
+    =20
+runting 500025                                                             =
+    =20
+runting 500010       =20
+runting 500085                                                             =
+    =20
+runting 500010                                                             =
+    =20
+runting 500025                                                             =
+    =20
+runting 500055                                                             =
+    =20
+runting 500010                                                             =
+    =20
+runting 500055                                                             =
+    =20
+runting 499905                                                             =
+    =20
+runting 500460                                                             =
+    =20
+runting 500085                                                             =
+    =20
+runting 500070                                                             =
+    =20
+runting 500070                                                             =
+    =20
+runting 500010                                                             =
+    =20
+runting 500010                                                             =
+    =20
+runting 500085                                                             =
+    =20
+runting 500025                                                             =
+    =20
+runting 499980                                                             =
+    =20
+runting 500070                                                             =
+    =20
+runting 500040                                                             =
+    =20
+runting 500025                                                             =
+    =20
+runting 498735                                                             =
+    =20
+runting 500040                                                             =
+    =20
+runting 500025                                                             =
+    =20
+runting 500025                                                             =
+    =20
+runting 500220                                                             =
+    =20
+runting 499995                                                             =
+    =20
+runting 500010                                                             =
+    =20
+runting 500055                                                             =
+    =20
+runting 500010                                                             =
+    =20
+runting 500055                                                             =
+    =20
+runting 500025                                                             =
+    =20
+runting 500085                                                             =
+    =20
+runting 500025                                                             =
+    =20
+runting 500055                                                             =
+    =20
+runting 500025                                                             =
+    =20
+runting 500010                                                             =
+    =20
+runting 500100                                                             =
+    =20
+runting 500085                                                             =
+    =20
+runting 500010   =20
+
+Then I do not know what should i do next?
+=E5=9C=A8 2013-05-31 13:54:49=EF=BC=8C"=E5=B5=8C=E5=85=A5=E5=BC=8F=E5=B7=A5=
+=E7=A8=8B=E5=B8=88" <ericvic@163.com> =E5=86=99=E9=81=93=EF=BC=9A
+>ok =EF=BC=8Cthanks=EF=BC=8Ci have a try
+>=E5=9C=A8 2013-05-31 13:32:14=EF=BC=8C"Gilles Chanteperdrix" <gilles.chant=
+eperdrix@xenomai.org> =E5=86=99=E9=81=93=EF=BC=9A
+>>On 05/31/2013 03:36 AM, =E5=B5=8C=E5=85=A5=E5=BC=8F=E5=B7=A5=E7=A8=8B=E5=
+=B8=88 wrote:
+>>
+>>> The I-pipe path version is adeos-ipipe-2.6.35.9-arm-1.18-01.patch ,
+>>> the kernal version is 2.6.35.9 ,i am so sorry for he details do not spe=
+ak clearly
+>>
+>>
+>>Hi,
+>>
+>>there is no need to send your answer three times either. GPIO irqs are
+>>broken with this version of the I-pipe kernel. Please try updating to
+>>the I-pipe core patch for Linux 3.4 or 3.5.
+>>
+>>Regards.
+>>
+>>--=20
+>>                                                                Gilles.
+>
+>
+>_______________________________________________
+>Xenomai mailing list
+>Xenomai@xenomai.org
+>http://www.xenomai.org/mailman/listinfo/xenomai
+
 
