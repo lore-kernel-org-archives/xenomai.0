@@ -1,11 +1,11 @@
-From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
-Date: Mon, 3 Jun 2013 14:20:02 -0400
-Message-ID: <20130603182002.GS11182@csclub.uwaterloo.ca>
-References: <1370278240.95211.YahooMailNeo@web172203.mail.ir2.yahoo.com>
+Message-ID: <51ACDEEF.5090302@xenomai.org>
+Date: Mon, 03 Jun 2013 20:22:39 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <1370278240.95211.YahooMailNeo@web172203.mail.ir2.yahoo.com>
 In-Reply-To: <1370278240.95211.YahooMailNeo@web172203.mail.ir2.yahoo.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] gcc error: posix.wrappers
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -18,16 +18,19 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: Franz Engel <franz_lambert_engel@yahoo.de>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Mon, Jun 03, 2013 at 05:50:40PM +0100, Franz Engel wrote:
+On 06/03/2013 06:50 PM, Franz Engel wrote:
+
+> Hi,
+> 
 > I've a little problem. When I try to compile my code with my new system (xenomai 2.6.2.1) I get the following error:
 > gcc: error: ;-Wl,@/usr/xenomai/lib/posix.wrappers: No such file or directory
 
-What is that ';' doing there?  That looks weird.  That would end one
-command and make it seem the -Wl... is a command to try and execute,
-which is unlikely to work.
 
-The rest of your message is probably just symptoms of the above problem.
+If the build-tool you use supports pkg-config, you may find it easier to
+use the .pc files installed by xenomai. The posix skin library "package
+name" is libxenomai_posix (so the .pc file is called libxenomai_posix.pc).
+
 
 -- 
-Len Sorensen
+                                                                Gilles.
 
