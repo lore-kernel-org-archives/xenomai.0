@@ -1,14 +1,12 @@
-Message-ID: <51ACDB5C.8030206@xenomai.org>
-Date: Mon, 03 Jun 2013 20:07:24 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
+Date: Mon, 3 Jun 2013 14:20:02 -0400
+Message-ID: <20130603182002.GS11182@csclub.uwaterloo.ca>
+References: <1370278240.95211.YahooMailNeo@web172203.mail.ir2.yahoo.com>
 MIME-Version: 1.0
-References: <51A6F9AD.3000207@free.fr> <51A73A1A.8000404@xenomai.org>
-	<51A75049.2020504@free.fr> <51A79835.1090609@xenomai.org>
-	<51AC9B33.4070504@free.fr>
-In-Reply-To: <51AC9B33.4070504@free.fr>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] Context switching kernel tracing
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1370278240.95211.YahooMailNeo@web172203.mail.ir2.yahoo.com>
+Subject: Re: [Xenomai] gcc error: posix.wrappers
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,38 +15,19 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?B?U3TDqXBoYW5lIEFOQ0VMT1Q=?= <sancelot@free.fr>
-Cc: xenomai@xenomai.org
+To: Franz Engel <franz_lambert_engel@yahoo.de>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 06/03/2013 03:33 PM, Stéphane ANCELOT wrote:
+On Mon, Jun 03, 2013 at 05:50:40PM +0100, Franz Engel wrote:
+> I've a little problem. When I try to compile my code with my new system (xenomai 2.6.2.1) I get the following error:
+> gcc: error: ;-Wl,@/usr/xenomai/lib/posix.wrappers: No such file or directory
 
-> Hi,
-> 
-> 
-> The SMI is the source of my problems. the global SMI bit in the ICH6 can 
-> not be disabled .
+What is that ';' doing there?  That looks weird.  That would end one
+command and make it seem the -Wl... is a command to try and execute,
+which is unlikely to work.
 
-
-I read the URL you posted (which I had already read when writing the smi
-module when Xenomai was still part of the RTAI project), and it does not
-say that. It says that the global bit can only be used if the SMI_LOCK
-bit is not set. So there was a time when the smi module checked the
-SMI_LOCK bit, but after some time, we found that on some machines, even
-when the SMI_LOCK bit was not armed, it was not possible to mask the
-SMI_EN bit, so we replaced the check with the current check (re-reading
-the bits, to check if the masked bit are actually masked).
-
-Anyway, the only reason why the SMI_LOCK bit is armed, is if some code,
-so, presumably the BIOS code, has armed it. Hence my original answer to
-your query:
-
->> Ok then, your BIOS vendor does not want you to disable the SMI global
-
->> bit, have you tried other bits?
-
-
-Got it?
+The rest of your message is probably just symptoms of the above problem.
 
 -- 
-                                                                Gilles.
+Len Sorensen
 
