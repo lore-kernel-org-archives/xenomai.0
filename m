@@ -1,11 +1,19 @@
-Content-Type: text/plain; charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 6.3 \(1503\))
-From: Michael Haberler <mail17@mah.priv.at>
-Date: Sat, 1 Jun 2013 18:57:27 +0200
+Date: Mon, 3 Jun 2013 09:36:27 +0800 (CST)
+From: =?UTF-8?B?5bWM5YWl5byP5bel56iL5biI?= <ericvic@163.com>
+In-Reply-To: <51A9C9EF.2040702@xenomai.org>
+References: <4cacd80b.2131b.13ef60cf09e.Coremail.ericvic@163.com>
+	<51A79898.50805@xenomai.org>
+	<34806652.2924.13ef838eb26.Coremail.ericvic@163.com>
+	<4855a071.2a22.13ef83b0d46.Coremail.ericvic@163.com>
+	<51A835DE.5020409@xenomai.org>
+	<700980f4.7d37.13ef927183f.Coremail.ericvic@163.com>
+	<27b32d48.5247.13efee65625.Coremail.ericvic@163.com>
+	<51A9C9EF.2040702@xenomai.org>
 Content-Transfer-Encoding: quoted-printable
-Message-Id: <E921A3FF-ED99-4D82-8FB8-92F061A97E42@mah.priv.at>
-References: <51AA23BC.2080501@steinkuehler.net>
-Subject: [Xenomai] BeagleBone + BeBoPr 3D Printing
+Content-Type: text/plain; charset=UTF-8
+MIME-Version: 1.0
+Message-ID: <37d33293.2abd.13f07ada45c.Coremail.ericvic@163.com>
+Subject: Re: [Xenomai] freescale(imx53)  with xenomai patch
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,78 +22,57 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-things are coming together:
-
-Anfang der weitergeleiteten Nachricht:
-
-> Von: Charles Steinkuehler <charles@steinkuehler.net>
-> Betreff: [Emc-users] BeagleBone + BeBoPr 3D Printing
-> Datum: 01. Juni 2013 18:39:24 MESZ
-> An: "Enhanced Machine Controller (EMC)" =
-<emc-users@lists.sourceforge.net>
-> Antwort an: "Enhanced Machine Controller \(EMC\)" =
-<emc-users@lists.sourceforge.net>
->=20
-> -----BEGIN PGP SIGNED MESSAGE-----
-> Hash: SHA1
->=20
-> So I finally got enough of the pieces put together to run a print on
-> my MendelMax 3D printer using the BeagleBone with the BeBoPr cape and
-> LinuxCNC.  This is using the 3.2 Xenomai kernel from Michael Haberler
-> to get LinuxCNC working well on the 'Bone, and custom PRU code doing
-> step/dir and pwm generation.  Thanks also to Ian for the bb_gpio
-> module, which came in very handy.
->=20
-> Video or it didn't happen...
->=20
-> My first ever 3D print from the BeagleBone, second print using
-> LinuxCNC (the first LinuxCNC print used an x86 running preempt-rt).
-> The X axis is mirrored and the configuration and slicing settings need
-> to be tweaked to improve print quality, but overall it came out pretty
-> good:
->=20
-> http://www.youtube.com/watch?v=3Dn2IoHOZipLU
->=20
-> ...I particularly like the acceleration control in LinuxCNC.  It seems
-> smoother than the Arduino code.  Now if I could just get a slicing
-> program that outputs true arcs and nurbs...  :)
->=20
-> Code is in the arm335x-hal-pru-tasks branch of Michael's git =
-repository:
->=20
-> =
-http://git.mah.priv.at/gitweb?p=3Demc2-dev.git;a=3Dshortlog;h=3Drefs/heads=
-/arm335x-hal-pru-tasks
->=20
-> Up next is the great migration to a 3.8 kernel, where I get to craft
-> the magic device tree fragments necessary to get this all working =
-again.
->=20
-> - --=20
-> Charles Steinkuehler
-> charles@steinkuehler.net
-> -----BEGIN PGP SIGNATURE-----
-> Version: GnuPG v1.4.11 (MingW32)
-> Comment: Using GnuPG with Thunderbird - http://www.enigmail.net/
->=20
-> iEYEARECAAYFAlGqI7sACgkQLywbqEHdNFwEkwCgw6n50qq9fP9lQLltBwTTp/0u
-> rm8AoMU5hhohJljA6gpu5T+wsE/sOAES
-> =3D6IRC
-> -----END PGP SIGNATURE-----
->=20
-> =
---------------------------------------------------------------------------=
-----
-> Get 100% visibility into Java/.NET code with AppDynamics Lite
-> It's a free troubleshooting tool designed for production
-> Get down to code-level detail for bottlenecks, with <2% overhead.
-> Download for free and get started troubleshooting in minutes.
-> http://p.sf.net/sfu/appdyn_d2d_ap2
-> _______________________________________________
-> Emc-users mailing list
-> Emc-users@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/emc-users
+To prevent re-entry
+=E5=9C=A8 2013-06-01 18:16:15=EF=BC=8C"Gilles Chanteperdrix" <gilles.chante=
+perdrix@xenomai.org> =E5=86=99=E9=81=93=EF=BC=9A
+>On 06/01/2013 10:41 AM, =E5=B5=8C=E5=85=A5=E5=BC=8F=E5=B7=A5=E7=A8=8B=E5=
+=B8=88 wrote:
+>
+>> I have try the kernal-3.4.6 with ipipe-core-3.4.6-arm-4.patch=20
+>> when I set three same Priority tasks I found untill the tasks stop ,the =
+interrut founction will not run.
+>> It same like before version kernal-2.6.35.9 with  ipipe-core-2.6.35.9-ar=
+m-4.patch
+>>=20
+>>=20
+>> static int test_thread(void *data)
+>> {
+>> =09//phase=3Dctrl_mnm1221_m();
+>> =09while(1)
+>> =09{
+>> =09if(flag)
+>> =09{
+>> =09=09printk("runting %lld\n",tt3);
+>> =09=09flag=3D0;
+>> =09=09}
+>> =09SLEEP_MILLI_SEC(50);
+>>=20
+>> =09}
+>> =09return 0;
+>> }
+>>=20
+>> int irq_handle_function(int irq, void *device_id)
+>> {
+>> =09//if(phase=3D=3DPH_RUNNING)
+>> =09//ctrl_mnm1221_m();
+>> =09rt_intr_disable(&amp;intr_desc);
+>> =09tt1=3Drt_timer_read();
+>> =09tt3=3Dtt1-tt2;
+>> =09if(tt3&gt;300000)
+>> =09flag=3D1;
+>> =09tt2=3Dtt1;
+>> =09rt_intr_enable(&amp;intr_desc);
+>> =09return RT_INTR_HANDLED;;
+>> }
+>
+>
+>Why do you disable/enable the irq during the irq handler?
+>
+>
+>--=20
+>                                                                Gilles.
 
 
