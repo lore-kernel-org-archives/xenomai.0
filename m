@@ -1,15 +1,10 @@
-From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
-Date: Tue, 4 Jun 2013 11:07:33 -0400
-Message-ID: <20130604150733.GT11182@csclub.uwaterloo.ca>
-References: <1370278240.95211.YahooMailNeo@web172203.mail.ir2.yahoo.com>
-	<51ACDEEF.5090302@xenomai.org>
-	<1370331439.11278.YahooMailNeo@web172202.mail.ir2.yahoo.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <1370331439.11278.YahooMailNeo@web172202.mail.ir2.yahoo.com>
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] gcc error: posix.wrappers
+Date: Tue, 4 Jun 2013 22:26:16 +0200
+Message-ID: <CAONLcG3gGo=vPGe+x_XBhs2ovXF9nzSkq+jvGP8zZR4daa0_4g@mail.gmail.com>
+From: Tom Philips <tom.philips1311@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: Re: [Xenomai] [xenomai-forge] psos: crash while stressing event
+	timers
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,63 +13,53 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Franz Engel <franz_lambert_engel@yahoo.de>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On Tue, Jun 04, 2013 at 08:37:19AM +0100, Franz Engel wrote:
-> I changed my cmake file to this:
-> IF(USE_XENOMAI)
-> =C2=A0=C2=A0=C2=A0 message(STATUS "Starting Xenomai configuration")
-> =C2=A0=C2=A0=C2=A0=20
-> =C2=A0=C2=A0=C2=A0 find_package(PkgConfig)
->=20
-> =C2=A0=C2=A0=C2=A0 if(NOT DEFINED ENV{PKG_CONFIG_PATH})
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 set(ENV{PKG_CONFIG_PATH} $EN=
-V{PKG_CONFIG_PATH} "/usr/xenomai/lib/pkgconfig")=20
-> =C2=A0=C2=A0=C2=A0 endif(NOT DEFINED ENV{PKG_CONFIG_PATH})
-> =C2=A0=C2=A0=C2=A0=20
-> =C2=A0=C2=A0=C2=A0 pkg_search_module(XENOMAI REQUIRED libxenomai_posix)
-> =C2=A0=C2=A0=C2=A0 if (XENOMAI_FOUND)
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 message(STATUS "Start der pk=
-g Ergebnisse")
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 message(STATUS ${XENOMAI_CFL=
-AGS})
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 set(EXTRA_DEFINITIONS ${EXTR=
-A_DEFINITIONS} ${XENOMAI_CFLAGS})
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 message(STATUS ${XENOMAI_LDF=
-LAGS})
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 set(CMAKE_EXE_LINKER_FLAGS $=
-{CMAKE_EXE_LINKER_FLAGS} ${XENOMAI_LDFLAGS})
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 message(STATUS "Ende der pkg=
- Ergebnisse")
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ADD_DEFINITIONS(${EXTRA_DEFI=
-NITIONS})
-> =C2=A0=C2=A0=C2=A0 endif (XENOMAI_FOUND)
-> =C2=A0=C2=A0=C2=A0=20
-> =C2=A0=C2=A0=C2=A0 message(STATUS "Xenomai configuration finished")
-> ENDIF(USE_XENOMAI)
->=20
-> ADD_DEFINITIONS(${EXTRA_DEFINITIONS})
-> add_executable(${ProjectName} ${SOURCES})
-> TARGET_LINK_LIBRARIES(${ProjectName} ${EXTRA_LIBS})
-> install(TARGETS ${ProjectName} DESTINATION ${INSTALLDIR})
->=20
-> It looks like a better way then using the xeno-config file. But I have=20
-> still the problem: gcc: error:=20
-> ;-Wl,@//usr/xenomai/lib/posix.wrappers;-L/usr/xenomai/lib;-lpthread_rt;=
--lxenomai;-lpthread;-lrt: No such file or directory
-> In anouther project I build a .so. That works without any problem. I ju=
-st use this lines instead of the last four lines of my example above:
+We have made a core dump and the crash occurs in pvfree().
+See call sequence explanation below.
 
-Clearly something is using ';' as a delimiter where you don't want one.
+The actual problem however, seems to be in the libc library.
 
-I wasn't even aware xenomai used cmake.  I just assumed it had plain
-old simple to understand makefiles.  I guess if I ever had a need to
-poke at how it builds I would know.  Or are these makefiles for your
-own project that uses xenomai?
+I'll elaborate.
+The crash occurs when using the timer function tm_evafter()
 
-I would think it is your EXTRA_LIBS that is wrong.
+This is the code call sequence of tm_evafter(), pseudo code, annotated a
+bit:
 
---=20
-Len Sorensen
+tm_evafter()              called from our app
+  start_evtimer()
+    timerobj_init()       calls timer_create() POSIX function
+    timerobj_start()      calls timer_settime() POSIX function
+    if (error)            we get an error from timerobj_start()
+      timerobj_destroy()  destroy's POSIX timer
+      pvlist_remove()
+      pvfree()            ==> crashes (but not always)
 
+So in our tests, timer_setime() sometimes returns an error code,
+while the timer does seem to be started.
+I.e. we get a negative return code from timer_settime(),
+errno is set to 22 (EINVAL), but the timer is started anyhow.
+All of this was checked in the debugger.
+
+This does not seem correct behaviour of the timer_settime() system call.
+
+Obviously, you will run into problems eventually.
+I.e. the above code will clean up the the timer and pv objects and
+the code that is called at timer elapse does the same thing.
+So you will get a double free of the pv structures.
+
+This only occurs under heavy load.
+Not all false timer_settime() errors result in a crash.
+I guess it all depends in which order the destruction takes place.
+
+If I ignore the error returned by timerobj_start(), all works fine.
+
+I've tried this on different architectures (ARM, MIPS, x86),
+different LIBC versions (2.10, 2.11.3, 2.12, 2.15),
+different kernel versions (2.6.29, 2.6.32, 3.2, 3.4.24)
+They all exibit the same problem.
+
+We might need to contact the LIBC guys...
+
+--
+Tom
