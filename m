@@ -1,12 +1,12 @@
-Message-ID: <51A0924D.6040309@free.fr>
-Date: Sat, 25 May 2013 12:28:29 +0200
-From: CF <cfoissac@free.fr>
+Message-ID: <51AF8424.40300@xenomai.org>
+Date: Wed, 05 Jun 2013 20:32:04 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <519D4262.2070206@free.fr> <519DC1C1.3020005@xenomai.org>
-In-Reply-To: <519DC1C1.3020005@xenomai.org>
+References: <7EC33A2F-9868-4A32-A19F-9A7C70AF9EBB@mah.priv.at>
+In-Reply-To: <7EC33A2F-9868-4A32-A19F-9A7C70AF9EBB@mah.priv.at>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] RTDM for a GPIO line in RT mode
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Beaglebone kernels - automated builds WIP
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,61 +15,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Michael Haberler <mail17@mah.priv.at>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Le 23/05/2013 09:14, Gilles Chanteperdrix a =C3=A9crit :
-> On 05/23/2013 12:10 AM, CF wrote:
->
->> Hello,
->>
->> Despite my munerous reading, i'm locked in how to perform a basic RTDM
->> for a simple ppc board.
->>
->> This is a simple pin level setting. The linux kernel module i developp=
-ed
->> follow theses steps:
->> -reading DTS for IOCTL et GPIOCTL base adress registers
->> - out_be32(addr, value) at theses register to set line as an output an=
-d
->> then set the logical level with setbits32(addr, bit) or clrbits32(addr=
-,bit)
->>
->> Basically, it works but in NRT  ops modes, so i'm unable (or at least =
-i
->> lack indication) to do this in RT ops mode (i don't think it is
->> important, but i use ioctl to make my changes). I based my work on
->> tut01/tut02 drivers, except i end up in using ioctl instead or
->> read/write in the RTDM driver.
->>
->> I guess i still could read the DTS in nrt mode (because it is done at
->> rtdm_dev_register() time and won't interfere with RT task), but how ca=
-n
->> i drive the hardware directly in RT op mode ?
->
-> Hi,
->
-> I am not sure I understand the problem you have. If the board you use
-> uses gpiolib (I do not know if gpiolib is customary on ppc), you simply
-> have to check that the gpiolib callbacks do not use any Linux services
-> which can not be called from RT mode (if it uses a spinlock, the usual
-> method is to turn the spinlock into an I-pipe spinlock, see:
-> http://www.xenomai.org/index.php/I-pipe-core:ArmPorting#GPIOs_in_real-t=
-ime_drivers)
->
-> If you are accessing directly the GPIO controller registers, and need a
-> "read-modify-write" operation, which what you posted seem to suggest,
-> you probably want to put a spinlock around these operations, but apart
-> from that, you can do this from an RT driver ioctl callback.
->
-> Regards.
->
+On 06/05/2013 05:42 PM, Michael Haberler wrote:
 
-Thank you Gilles, very much.
+> just letting you know I'm working with Robert Nelson to tack on a
+> Xenomai kernel build to his automated build the thread is here:
+> http://eewiki.net/display/linuxonarm/BeagleBone+Black+Comments (cant
+> link to the actual post, search for xenomai)
+> 
+> this flow already produces the vanilla kernels which are in the BB
+> Ubuntu and Debian images; the process is outlined here:
+> http://tinyurl.com/n5ly89t ; the xenomai kernel(s) would be tacked
+> onto this stream: http://rcn-ee.net/deb/wheezy-armhf/
+> 
+> for now I'll use the patches Stephan had forwarded me in private, and
+> switch on next release (suggestions to do better than that welcome)
 
-Precisely, my main concern is how to know if i use linux services (in
-others words, how can i say a function - in my case in_beX() or
-out_beX() - is RT compatible ?). If you have some documentations about
-this, thank you :)
 
-CF
+You should probably use the ipipe-next branch in ipipe git tree.
+
+-- 
+                                                                Gilles.
 
