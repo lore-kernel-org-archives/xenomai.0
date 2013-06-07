@@ -1,19 +1,12 @@
+Message-ID: <51B22F1B.9090806@xenomai.org>
+Date: Fri, 07 Jun 2013 21:06:03 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <51AFA49A.3070604@xenomai.org>
-References: <CAONLcG3gGo=vPGe+x_XBhs2ovXF9nzSkq+jvGP8zZR4daa0_4g@mail.gmail.com>
-	<51AEF0A5.6010402@xenomai.org>
-	<CAMJ=MEe-gaqb-wUeVPnx-9O+bL+LyCBsndrBucji5c9vqwiJDQ@mail.gmail.com>
-	<51AEF87A.8060506@xenomai.org>
-	<CAONLcG0x0GWn0PQN3_5S6LfUbf8fMXzRVR82Udt9=C4yHZEJhg@mail.gmail.com>
-	<51AF0C0D.5060307@xenomai.org>
-	<CAMJ=MEcJN=Sbtz_kw9JUKR_ckQwzMprAdYgcinZvR7SrjmetmQ@mail.gmail.com>
-	<51AF120C.6070603@xenomai.org> <51AFA49A.3070604@xenomai.org>
-From: Ronny Meeus <ronny.meeus@gmail.com>
-Date: Fri, 7 Jun 2013 12:39:35 +0200
-Message-ID: <CAMJ=MEfF8HUhDmyGAWwUToD73eUNqp_aJ5_221=RtBxd1URUeA@mail.gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Subject: Re: [Xenomai] [xenomai-forge] psos: crash while stressing event
-	timers
+References: <CAGqv1CgCsZbpe668VG7_+p1BT1Gs43HmH=uLe_GYZ92OXrZqgQ@mail.gmail.com>
+In-Reply-To: <CAGqv1CgCsZbpe668VG7_+p1BT1Gs43HmH=uLe_GYZ92OXrZqgQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Conflict with Ubuntu 13.04
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,31 +15,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
+To: Travis Llado <travisllado@utexas.edu>
 Cc: xenomai@xenomai.org
 
->
->
->>
-> Please pull the last 6 commits from the "next" branch, referring to the
-> pSOS emulator and copperplate libraries. These fixes make the test case you
-> sent me stable, including on a 8-way machine running 50 batches. Feedback
-> welcome.
->
-> Thanks for the heads up on this issue, and for the test case as well.
->
->
->
-Philippe,
+On 06/07/2013 03:28 AM, Travis Llado wrote:
 
-I did some testing with your patches applied. The system looks very stable.
-Thanks for solving the issue.
+> Hi,
+> I'm new to xenomai and I just installed it with Ubuntu 13.04 and kernel
+> 3.5.7. As soon as I booted 3.5.7 with xenomai, the Unity GUI stopped
+> working. It looks like the problem is in compiz, a plugin for Unity. Unity
+> can't run without it. I'm getting the exact same problem on Ubuntu 13.04 on
+> a macbook and a Dell desktop. Has anyone else run across this problem? I
+> can still run xenomai code through the terminal and I can run graphics
+> applications, but if I try to load compiz the whole system freezes. It
+> looks like compiz is persistently broken, because when I reboot into the
+> 3.8.0 kernel that comes with Ubuntu 13.04, Unity/compiz are still broken.
+> Any thoughts?
 
-I used following test:
-ulimit -s 128 ; taskset 2 ./event_stress  -t 3 -b 80 -o 1
 
-It has run now for more than 1 hour without issues.
-I will also start a test during the weekend.
+Does Unity work with the exact same kernel configuration, only without
+CONFIG_IPIPE and CONFIG_XENOMAI?
 
-Best regards,
-Ronny
+-- 
+                                                                Gilles.
+
