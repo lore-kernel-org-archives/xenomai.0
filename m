@@ -1,11 +1,12 @@
-Message-ID: <1369479458.60083.YahooMailNeo@web172203.mail.ir2.yahoo.com>
-Date: Sat, 25 May 2013 11:57:38 +0100 (BST)
-From: Franz Engel <franz_lambert_engel@yahoo.de>
+Message-ID: <51B368EF.3060301@xenomai.org>
+Date: Sat, 08 Jun 2013 19:25:03 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] Xenomai, rtnet and ethercat
-Reply-To: Franz Engel <franz_lambert_engel@yahoo.de>
+References: <44b485fd.1ee68.13f24728cbf.Coremail.ericvic@163.com>
+In-Reply-To: <44b485fd.1ee68.13f24728cbf.Coremail.ericvic@163.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] Set gpio irq priority with tzic_set_irq_prio(int irq, int hi)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,12 +15,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: =?UTF-8?B?5bWM5YWl5byP5bel56iL5biI?= <ericvic@163.com>
+Cc: xenomai@xenomai.org
 
-Hi,=0A=0AI have to connect my realtime xenomai system with an lasertracker.=
- The tracker is using ethercat. Has somebody experiences to do this? I woul=
-d like to use rtnet as realtime stack. Is it possible to use an ethercat ma=
-ster with rtnet driver? Or is there a realtime ethercat master available?=
-=0A=0AI found the following Ethercat projects (but I think they have no eth=
-ercat capables):=0Ahttp://soem.berlios.de/=0Ahttp://etherlab.org/en/etherca=
-t/index.php=0A=0AThanks and regards,=0A=A0=A0=A0=A0 Franz
+On 06/08/2013 05:40 PM, 嵌入式工程师 wrote:
+
+> Now I use Imx53 gpio2-14 to be a interrupt source ,but I found its priority so lower . 
+
+
+How is that? All the gpio irqs have the same priority.
+
+> So I use tzic_set_irq_prio(int irq, int hi) 
+> .................................
+> .............................
+> 
+> 
+> 
+> 
+>  MY_GPIO2_14=(1*32+14)+128;
+>  irq=irq_ to_gpio( MY_GPIO2_14);
+>  mxc_tzic_init_irq(IMX53_TZIC_BASE_ADDR);
+>  tzic_set_irq_prio(irq,20);//chang the priority to #30
+> .................................
+> ......................................
+> 
+> 
+> Is it right？
+
+
+No. tzic_set_irq_prio is an internal function to be used by Xenomai. You
+do not need to use it.
+
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> http://www.xenomai.org/mailman/listinfo/xenomai
+
+
+
+-- 
+                                                                Gilles.
+
