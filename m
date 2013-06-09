@@ -1,14 +1,13 @@
-Content-Type: text/plain; charset=iso-8859-1
-Mime-Version: 1.0 (Mac OS X Mail 6.3 \(1503\))
-From: Michael Haberler <mail17@mah.priv.at>
-In-Reply-To: <CAFNBfteWESjgYQeMH0kv2w3qVGuX+XUkWqCNhbYPimH+vLcGTA@mail.gmail.com>
-Date: Sun, 9 Jun 2013 04:00:45 +0200
+Date: Sun, 9 Jun 2013 10:28:53 +0800 (CST)
+From: =?UTF-8?B?5bWM5YWl5byP5bel56iL5biI?= <ericvic@163.com>
+In-Reply-To: <51B368EF.3060301@xenomai.org>
+References: <44b485fd.1ee68.13f24728cbf.Coremail.ericvic@163.com>
+	<51B368EF.3060301@xenomai.org>
 Content-Transfer-Encoding: quoted-printable
-Message-Id: <C81D8B13-5C8C-4A4E-ABB7-E5035777D5A1@mah.priv.at>
-References: <7EC33A2F-9868-4A32-A19F-9A7C70AF9EBB@mah.priv.at>
-	<51AF8424.40300@xenomai.org>
-	<CAFNBfteWESjgYQeMH0kv2w3qVGuX+XUkWqCNhbYPimH+vLcGTA@mail.gmail.com>
-Subject: Re: [Xenomai] Beaglebone kernels - automated builds WIP
+Content-Type: text/plain; charset=UTF-8
+MIME-Version: 1.0
+Message-ID: <1920c252.310b.13f26c3cd2d.Coremail.ericvic@163.com>
+Subject: Re: [Xenomai] Set gpio irq priority with tzic_set_irq_prio(int irq, int hi)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,36 +16,50 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Flavio Castro Alves Filho <flavio.alves@gmail.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-
-Am 08.06.2013 um 22:17 schrieb Flavio Castro Alves Filho =
-<flavio.alves@gmail.com>:
-
-> Hello,
->=20
-> 2013/6/5 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>:
->> On 06/05/2013 05:42 PM, Michael Haberler wrote:
-...
->>> for now I'll use the patches Stephan had forwarded me in private, =
-and
->>> switch on next release (suggestions to do better than that welcome)
+Then what should change the priority please=EF=BC=9F
+=E5=9C=A8 2013-06-09 01:25:03=EF=BC=8C"Gilles Chanteperdrix" <gilles.chante=
+perdrix@xenomai.org> =E5=86=99=E9=81=93=EF=BC=9A
+>On 06/08/2013 05:40 PM, =E5=B5=8C=E5=85=A5=E5=BC=8F=E5=B7=A5=E7=A8=8B=E5=
+=B8=88 wrote:
+>
+>> Now I use Imx53 gpio2-14 to be a interrupt source ,but I found its prior=
+ity so lower .=20
+>
+>
+>How is that? All the gpio irqs have the same priority.
+>
+>> So I use tzic_set_irq_prio(int irq, int hi)=20
+>> .................................
+>> .............................
 >>=20
 >>=20
->> You should probably use the ipipe-next branch in ipipe git tree.
->=20
-> I'm sorry for my probably newbie question, but how should I use the
-> ipipe git tree?
-
-that question was the one I skimped to asked publically.. I was educated =
-by Stephan on the issue privately, tried and figured it's a tad above my =
-pay grade for now
-
-I decided to wait for 3.8.13 patches to appear and play "public =
-servant's mikado" - he who moves first, looses ;)
-
-- Michael
-
+>>=20
+>>=20
+>>  MY_GPIO2_14=3D(1*32+14)+128;
+>>  irq=3Dirq_ to_gpio( MY_GPIO2_14);
+>>  mxc_tzic_init_irq(IMX53_TZIC_BASE_ADDR);
+>>  tzic_set_irq_prio(irq,20);//chang the priority to #30
+>> .................................
+>> ......................................
+>>=20
+>>=20
+>> Is it right=EF=BC=9F
+>
+>
+>No. tzic_set_irq_prio is an internal function to be used by Xenomai. You
+>do not need to use it.
+>
+>> _______________________________________________
+>> Xenomai mailing list
+>> Xenomai@xenomai.org
+>> http://www.xenomai.org/mailman/listinfo/xenomai
+>
+>
+>
+>--=20
+>                                                                Gilles.
 
 
