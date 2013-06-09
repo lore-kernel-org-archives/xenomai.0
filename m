@@ -1,5 +1,5 @@
-Message-ID: <51B42B8C.9030202@xenomai.org>
-Date: Sun, 09 Jun 2013 09:15:24 +0200
+Message-ID: <51B42BC5.70901@xenomai.org>
+Date: Sun, 09 Jun 2013 09:16:21 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <44b485fd.1ee68.13f24728cbf.Coremail.ericvic@163.com>
@@ -25,8 +25,9 @@ On 06/09/2013 04:28 AM, 嵌入式工程师 wrote:
 > Then what should change the priority please？
 
 
-Again, you can not change the priority, all gpio irqs have the same
-priority.
+And you did not answer my question, what makes you think that one gpio
+interrupt priority interrupt is lower than another?
+
 
 -- 
                                                                 Gilles.
