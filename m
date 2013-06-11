@@ -1,5 +1,5 @@
-Message-ID: <51B73110.5000100@xenomai.org>
-Date: Tue, 11 Jun 2013 16:15:44 +0200
+Message-ID: <51B731A1.80504@xenomai.org>
+Date: Tue, 11 Jun 2013 16:18:09 +0200
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 References: <51A30F04.701@xenomai.org> <51A39043.5010609@xenomai.org>
@@ -79,18 +79,17 @@ On 06/11/2013 04:06 PM, Jan Kiszka wrote:
 > That makes no sense. Master just happens to still point to 3.8, but it
 > may have already moved on to 3.9 or higher. So stable merges must work
 > against the stable forks, no?
-
-Master is our tip, not mainline's. It contains the most recent kernel we 
-support I-pipe wise.
-
 >
 > FWIW, I've merged it into ipipe-3.8.0 now. Will push it soon and drop a
 > note for Gilles to review the arm conflict resolutions I made. Then I
 > think we could move ipipe-3.8 forward.
 >
-> Jan
->
 
+Btw, I've started porting to 3.9.4 in the meantime. See 
+unstable/ipipe-3.9.4. unstable because it may still contain merge 
+conflicts, and very bleeding edge with respect to buildable archs 
+anyway. This will move to ipipe-next when the conflicts will have been 
+fixed.
 
 -- 
 Philippe.
