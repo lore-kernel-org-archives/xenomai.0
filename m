@@ -1,14 +1,20 @@
-Message-ID: <51B42BC5.70901@xenomai.org>
-Date: Sun, 09 Jun 2013 09:16:21 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <44b485fd.1ee68.13f24728cbf.Coremail.ericvic@163.com>
-	<51B368EF.3060301@xenomai.org>
-	<1920c252.310b.13f26c3cd2d.Coremail.ericvic@163.com>
-In-Reply-To: <1920c252.310b.13f26c3cd2d.Coremail.ericvic@163.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] Set gpio irq priority with tzic_set_irq_prio(int irq, int hi)
+In-Reply-To: <CAMJ=MEfF8HUhDmyGAWwUToD73eUNqp_aJ5_221=RtBxd1URUeA@mail.gmail.com>
+References: <CAONLcG3gGo=vPGe+x_XBhs2ovXF9nzSkq+jvGP8zZR4daa0_4g@mail.gmail.com>
+	<51AEF0A5.6010402@xenomai.org>
+	<CAMJ=MEe-gaqb-wUeVPnx-9O+bL+LyCBsndrBucji5c9vqwiJDQ@mail.gmail.com>
+	<51AEF87A.8060506@xenomai.org>
+	<CAONLcG0x0GWn0PQN3_5S6LfUbf8fMXzRVR82Udt9=C4yHZEJhg@mail.gmail.com>
+	<51AF0C0D.5060307@xenomai.org>
+	<CAMJ=MEcJN=Sbtz_kw9JUKR_ckQwzMprAdYgcinZvR7SrjmetmQ@mail.gmail.com>
+	<51AF120C.6070603@xenomai.org> <51AFA49A.3070604@xenomai.org>
+	<CAMJ=MEfF8HUhDmyGAWwUToD73eUNqp_aJ5_221=RtBxd1URUeA@mail.gmail.com>
+From: Ronny Meeus <ronny.meeus@gmail.com>
+Date: Tue, 11 Jun 2013 12:10:41 +0200
+Message-ID: <CAMJ=MEfrszg=nwE8zZ1MWJGhhysRm3BZsSgJFdkADE5XSJ8e-A@mail.gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: Re: [Xenomai] [xenomai-forge] psos: crash while stressing event
+	timers
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,18 +23,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?UTF-8?B?5bWM5YWl5byP5bel56iL5biI?= <ericvic@163.com>
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On 06/09/2013 04:28 AM, 嵌入式工程师 wrote:
+>
+>
+> I used following test:
+> ulimit -s 128 ; taskset 2 ./event_stress  -t 3 -b 80 -o 1
+>
+> It has run now for more than 1 hour without issues.
+> I will also start a test during the weekend.
+>
 
-> Then what should change the priority please？
+During the weekend I executed following test on 7 cores:
+ulimit -s 128 ; taskset 0xfe ./event_stress  -t 3 -b 80 -o 1 &
+(this command was executed 7 times).
 
+No issues were observed so I think the code changes are OK.
 
-And you did not answer my question, what makes you think that one gpio
-interrupt priority interrupt is lower than another?
-
-
--- 
-                                                                Gilles.
-
+---
+Ronny
