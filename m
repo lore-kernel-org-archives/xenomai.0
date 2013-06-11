@@ -1,12 +1,14 @@
-Message-ID: <519EFC7B.8000305@xenomai.org>
-Date: Fri, 24 May 2013 07:36:59 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <51B724A9.4040307@xenomai.org>
+Date: Tue, 11 Jun 2013 15:22:49 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <E9605457112439448B6B3ED284E06533317AC624@mbx256-1.adm.swri.edu>
-In-Reply-To: <E9605457112439448B6B3ED284E06533317AC624@mbx256-1.adm.swri.edu>
-Content-Type: text/plain; charset=UTF-8
+References: <51A30F04.701@xenomai.org> <51A39043.5010609@xenomai.org>
+	<51B70BF0.9040904@siemens.com>
+In-Reply-To: <51B70BF0.9040904@siemens.com>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Next Xenomai Release?
+Subject: Re: [Xenomai] git://git.xenomai.org/ipipe.git reshuffle,
+	3.8.0 kernel support
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,64 +17,62 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Poole Jr, Donald R." <donald.poole@swri.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-On 05/24/2013 01:15 AM, Poole Jr, Donald R. wrote:
-
-> On 5/23/13 5:52 PM, "Paul" <paul_c@tuxcnc.org> wrote:
-> 
-> 
->> On Thursday 23 May 2013, Gilles Chanteperdrix wrote:
->>> On 05/23/2013 05:57 PM, Poole Jr, Donald R. wrote:
->>>> I guess I overlooked that post and response. Any clarifying
->>>> words/steps on what needs to be done to get the 3.8.x kernel
->>>> patched with Xenomai for running on the Beaglebone/Raspberry Pi in
->>>> the meantime?
+On 06/11/2013 01:37 PM, Jan Kiszka wrote:
+> On 2013-05-27 18:56, Philippe Gerum wrote:
+>> On 05/27/2013 09:45 AM, Philippe Gerum wrote:
 >>>
->>> For beaglebone, it is integrated in the I-pipe tree for the ARM
->>> architecture (git://git.xenomai.org/ipipe-gch.git, branch
->>> for-core-3.8), which is currently based on 3.8.0 but will probably be
->>> rebased on a more recent version for the I-pipe 3.8 release, for the
->>> raspberry pi, you can try the patch which has been posted by Paul,
->>> but probably needs rebasing once the I-pipe for 3.8 is released.
+>>> The I-pipe tree at git://git.xenomai.org/ipipe.git will be reorganized
+>>> today at 3pm GMT. At this chance, support for the 3.8.0 kernel will be
+>>> introduced.
+>>>
+>>> The complete commit history will be preserved, along with existing tags.
+>>> Branches may be renamed though, to better reflect the new development
+>>> workflow introduced with the pipeline "core" series.
+>>>
+>>> If you have scripts pulling from this repository in any automated way,
+>>> you may want to stop them for the day.
+>>>
+>>> A description of the few changes involved will be sent to this mailing
+>>> list later today, shortly before the new repository is published.
+>>>
 >>
+>> The reshuffled repository is now on line.
 >>
->> I have a set of patches ready for 3.8.8 based on the "official"
->> Raspberry Pi sources [1] - Need to reduce the current set of nine down
->> to a pre and post pair which I'll try to do over the weekend. In the
->> meantime, if anyone wants to take the set for a spin, drop me a note
->> and I'll send them over.
+>> The changes are as follows:
 >>
->> In the meantime, I'm tracking BCM2835 integration in to the mainline
->> kernel with view to working on 3.10.y - Realistically, I don't think
->> support in 3.10.y will be complete by the time it is released, so we
->> may have to wait for 3.12.y.
+>> - all legacy pipeline branches (i.e. pre-"core" series) have moved under
+>> the legacy/ hierarchy, e.g.
+>> ipipe-2.6.20-powerpc => legacy/ipipe-2.6.20-powerpc
+>> All branches under legacy/ are frozen, and won't be updated anymore.
 >>
+>> - the master branch now reflects the state of the mainline I-pipe
+>> development. Pull from this branch for the latest validated commits, for
+>> the latest supported kernel.
 >>
->> Regards, Paul.
-> 
-> Hmm, this doesn't sound very good for Beaglebone users. As Gilles has
-> mentioned in and earlier post, Beaglebone users could use his I-pipe tree
-> for ARM, which is currently based on 3.8.0. 
+>> - new ipipe-<kernel.version> branches are started off master
+>> periodically, for maintaining the pipeline over stable kernel releases.
+>> These branches include the pipeline code for a given kernel release, for
+>> a set of architectures we support in this release. There is neither
+>> arch-specific nor -noarch branches anymore.
+>
+> Will pulling in stable updates for a kernel major release create new
+> branches
 
+ipipe-3.8.0 is actually checkout -b from master prior to working on a 
+more recent release in ipipe-next. This is really for 3.8.0 material only.
 
-But I also said this is not the patch that would be released. Actually
-the Beaglebone situation is far better than the Pi situation, because
-they can already use the mainline kernel.
+  or is "ipipe-3.8.0" a misnomer that should actually be called
+> "ipipe-3.8"? I'd like to update 3.8 to the final stable release and was
+> wondering about the best process for this. We will need some core code
+> patch conflict resolutions that I already done here some time ago.
+>
+> Jan
+>
 
-> But, if the v3.8 kernel has
-> reached EOL like Wolfgang brought to our attention, does that mean Xenomai
-> development on v3.8 stops as well?  I don't know when TI or
-> Beagleboard.org will release as BSP with a more up-to-date, non-EOL
-> kernel, so we might be stuck with the v3.8 for awhile.
-
-
-Except exceptions (like the 3.8 kernel which Canonical has said they
-would maintain, like I posted in an answer to Wolfgang you seem to have
-missed), every kernel until october will be EOLed when the next kernel
-is out, from what I understood.
 
 -- 
-                                                                Gilles.
+Philippe.
 
