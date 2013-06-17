@@ -1,11 +1,12 @@
-From: HAUTBOIS Flavian <Flavian.HAUTBOIS@cea.fr>
-Date: Mon, 17 Jun 2013 07:54:44 +0000
-Message-ID: <49E736B33FAAA645BCAB9FFEC26712E6FD0C05@EXDAG0-B0.intra.cea.fr>
-Content-Language: fr-FR
+Message-ID: <51BEDC9B.6040603@gmail.com>
+Date: Mon, 17 Jun 2013 11:53:31 +0200
+From: Manuel Huber <manuel.h87@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] CPU time limit exceeded
+References: <51BE2859.8000307@gmail.com> <51BE9E2C.9090204@web.de>
+In-Reply-To: <51BE9E2C.9090204@web.de>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] rtdm: minimal patch for sys_rtdm_recvmsg
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,57 +15,94 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@web.de>
+Cc: xenomai@xenomai.org
 
-Hello,
+> Please post patches inline, makes reviewing easier. The explanatory
+> part, like above, can be put after the "---" so that it won't show up in
+> the commit log.
+Oh, sorry; I forgot to send it plain-text...
 
-I'm having a 'CPU time limit exceeded' error. Of course I tried to set ulim=
-it to unlimted, without any success.
+> Let's just only copy back what can change, msg_flags and msg_controllen,
+> just like the kernel does.
+I have already implemented a version that does that, but then I looked at
+rt_udp_recvmsg implementation (stack/ipv4/udp/udp.c) and saw that it also
+sets msg_namelen field. This member will never be used in RTnet source
+code, so I think it should be copied back to the user...
+I mean it seems a little useless, because the user has to know the structur
+anyway; I'm not sure if code really relies on this behaviour....
 
-I am running a program that uses RTNet over Xenomai 2.6.2. The source of th=
-e program can be found here: git.mech.kuleuven.be/robotics/soem.git
+So if it's necessary to write back the msg_namelen field, I would need 3
+__xn_put_user calls. I just though it looks ugly and probably does worse
+then a single __xn_copy_to_user call.
 
-Here is the core dump backtrace:
+Do you think it's necessary to write back msg_namelen? Because otherwise
+I would definitely prefer using __xn_put_user twice.
 
-    #0  0xb77b8424 in __kernel_vsyscall ()
-    #1  0xb5c03c2c in __wrap_send () from /usr/xenomai/lib/libpthread_rt.so=
-.1
-    #2  0xb43d2a93 in ec_outframe (idx=3D1 '\001', stacknumber=3D0) at /hom=
-e/alex/ros_workspace/orocos/soem/soem_core/build/soem_core/src/nicdrv.c:404
-    #3  0xb43d2b28 in ec_outframe_red (idx=3D1 '\001') at /home/alex/ros_wo=
-rkspace/orocos/soem/soem_core/build/soem_core/src/nicdrv.c:427
-    #4  0xb43d3248 in ec_srconfirm (idx=3D1 '\001', timeout=3D20000) at /ho=
-me/alex/ros_workspace/orocos/soem/soem_core/build/soem_core/src/nicdrv.c:70=
-2
-    #5  0xb43c9839 in ec_BRD (ADP=3D0, ADO=3D0, length=3D2, data=3D0xbffd53=
-a6, timeout=3D20000) at /home/alex/ros_workspace/orocos/soem/soem_core/buil=
-d/soem_core/src/ethercatbase.c:200
-    #6  0xb43cc282 in ec_config_init (usetable=3D0 '\000') at /home/alex/ro=
-s_workspace/orocos/soem/soem_core/build/soem_core/src/ethercatconfig.c:162
-    #7  0xb4413fb1 in soem_master::SoemMasterComponent::configureHook (this=
-=3D0x887d648) at /home/alex/ros_workspace/orocos/soem/soem_master/soem_mast=
-er_component.cpp:73
 
-Now the weird part. There are two libraries that are generated. The first o=
-ne is soem_core, and the second one is soem_master (if you dig into the sou=
-rce code you may find it's a little bit more complex).
 
-There is one executable which uses soem_core, and it succeeds in sending an=
- EtherCAT frame through RTNet without any problems.
-The soem_master library also depends on soem_core and uses _exactly_ the sa=
-me functions as the above executable, _in the same order_. The only differe=
-nce is that the soem_master lib is fed to Orocos (a robotic real-time middl=
-eware, not sure this is very important here though) to execute a Master.con=
-figure() function (if you were wondering where the configureHook came from)=
-. However, it crashes when executing the "send" function (see the bt). It i=
-s worth noting that Wireshark detects that one EtherCAT frame is send when =
-using this method (it crashes right after). It is also worth noting that ev=
-erything is built using the ROS build system.
+ From ddb64a6eebcfc811187df3859f2e0092c0b6cfbd Mon Sep 17 00:00:00 2001
+From: Manuel Huber <Manuel.h87@gmail.com>
+Date: Mon, 17 Jun 2013 09:49:25 +0200
+Subject: [PATCH] rtdm: Fix msghdr struct (cmsg) in sys_rtdm_recvmsg
 
-According to the soem developpers, everything works fine on Xenomai 2.5.6, =
-but I have to use Xenomai 2.6.2. Do you have any idea what could trigger th=
-is error and how to fix it?
+Whenever a new control message is put into msg_control buffer
+the actual address and the space left is saved to msg_control
+and msg_controllen. This allows adding messages as long as
+there is enough space left in the user-supplied buffer. Both
+fields have to be fixed again before passing them to the user
+by copying the original starting address of the buffer to
+msg_control and saving the actual amount of bytes written to
+the buffer to msg_controllen.
 
-Thanks
+* Explicit use of __xn_put_user rather then __xn_copy_to_user
+---
+  ksrc/skins/rtdm/syscall.c |   19 +++++++++++++++----
+  1 files changed, 15 insertions(+), 4 deletions(-)
 
-Flavian Hautbois
+diff --git a/ksrc/skins/rtdm/syscall.c b/ksrc/skins/rtdm/syscall.c
+index 0ff5d40..1f3bccb 100644
+--- a/ksrc/skins/rtdm/syscall.c
++++ b/ksrc/skins/rtdm/syscall.c
+@@ -79,22 +79,33 @@ static int sys_rtdm_recvmsg(struct pt_regs *regs)
+  {
+      struct task_struct *p = current;
+      struct msghdr krnl_msg;
++    void *cmsg_control;
++    struct msghdr __user *usr_msg;
+      int ret;
+
+-    if (unlikely(!access_wok(__xn_reg_arg2(regs),
++    usr_msg = (void __user *)__xn_reg_arg2(regs);
++
++    if (unlikely(!access_wok((void __user *)usr_msg,
+                   sizeof(krnl_msg)) ||
+               __xn_copy_from_user(&krnl_msg,
+-                     (void __user *)__xn_reg_arg2(regs),
++                     (void __user *)usr_msg,
+                       sizeof(krnl_msg))))
+          return -EFAULT;
+
++    cmsg_control = krnl_msg.msg_control;
++
+      ret = __rt_dev_recvmsg(p, __xn_reg_arg1(regs), &krnl_msg,
+                     __xn_reg_arg3(regs));
+      if (unlikely(ret < 0))
+          return ret;
+
+-    if (unlikely(__xn_copy_to_user((void __user *)__xn_reg_arg2(regs),
+- &krnl_msg, sizeof(krnl_msg))))
++    if (unlikely(__xn_put_user(krnl_msg.msg_namelen,
++                   (void __user *)&(usr_msg->msg_namelen)) ||
++             __xn_put_user((typeof(krnl_msg.msg_controllen))(
++                       krnl_msg.msg_control - cmsg_control),
++                   (void __user *)&usr_msg->msg_controllen) ||
++             __xn_put_user(krnl_msg.msg_flags,
++                   (void __user *)&(usr_msg->msg_flags))))
+          return -EFAULT;
+
+      return ret;
+-- 
+1.7.0.4
+
+
