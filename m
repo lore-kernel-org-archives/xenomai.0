@@ -1,11 +1,11 @@
-Message-ID: <1371536847.21649.YahooMailNeo@web193102.mail.sg3.yahoo.com>
-Date: Tue, 18 Jun 2013 14:27:27 +0800 (SGT)
-From: pritam munot <pkm_munot@yahoo.co.in>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+From: Younes CHALABI <y.chalabi@sinters.fr>
+Date: Tue, 18 Jun 2013 09:12:29 +0000
+Message-ID: <A46EF8CF1BBB8E4B8A27B73E177C4664F7578B@MAIL-SINTERS-01.sinters-int.fr>
+Content-Language: fr-FR
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] Xenomai port on IMX28.
-Reply-To: pritam munot <pkm_munot@yahoo.co.in>
+MIME-Version: 1.0
+Subject: [Xenomai] No Rootfs after installing Xenomai !
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,16 +16,161 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hello All,=0A=0AI am new to Xenomai and trying to find information about ru=
-nning QT and Xenomai on IMX28.=0A=0AOn http://www.xenomai.org/index.php/Emb=
-edded_Device_Support#Supported_SoC, I can see Xenomai port already exist fo=
-r IMX28.=0A=0AI have a IMX28 based development board TQMA28, its running Li=
-nux 2.6.35 and Linux 3.5. I am trying to find information on how to run Xen=
-omai on the development board.=0A=0Ahttp://www.xenomai.org/index.php/Xenoma=
-i_quick_build_quide tell how to build xenomai. I am trying to understand ho=
-w it will get information about linux kernel which came along with the boar=
-d. =0A=0AI am bit confused with Patch the kernel section. Will this patch l=
-inux kernel 2.6.35 or 3.5 which came along with the board. After patching w=
-hich kernel do i compile xenomai kernel or linux kernel which came along wi=
-th the board.=0A=0ACan some one please share some information or give some =
-pointers to information.=0A=0AThanks=0ATama
+Hi,
+
+I want to install xenomai on the i.MX6Q Sabre Lite board, for this I follow=
+ed differents strategies but still not able to have xenomai on the target.=
+=20
+
+
+     1- linux-3.5.7 vs xenomai-2.6.2.1 vs ipipe-core-3.5.7-arm-3.patch :
+          Using the installation procedure for ARM from : www.xenomai.org/d=
+ocumentation/xenomai-2.6/html/README.INSTALL/
+               The problem with this strategy is that I hadn't a rootfs to =
+boot the target, so I took a different strategy.
+                    HOW CAN I HAVE A ROOTFS TO BOOT THE TARGET WITH THE COM=
+PILED SOURCES ?
+
+
+     2- Using the L3.0.35_4.0.0_130424 Freescale Release I built LTIB and b=
+y the way a rootfs, an uImage and a u-boot.bin which work correctly on the =
+target.
+          Once having the rootfs I wanted to build the kernel patching it w=
+ith xenomai and using the previous rootfs (LTIB)
+               PATCHING FAILED
+
+
+     3- I tried to patch the linux-3.0.35 with : adeos-ipipe-3.0.36-arm-1.1=
+8-11-pre.patch | adeos-ipipe-3.0.36-arm-1.18-11.patch | adeos-ipipe-3.0.36-=
+arm-1.18-11-post.patch
+          But I had so many rejects, that why I prefered to use the rel_imx=
+_3.0.15_12.03.00 and it's advised in : xenomai-2.6.2.1/ksrc/arch/arm/patche=
+s/README
+               Doing the same procedure as for linux-3.5.7, I had an uImage=
+ that I loaded on the =B5-SD with the rootfs and u-boot either with the gen=
+erated files from LTIB or the L3.0.35_4.0.0_130424_images_MX6
+                    THE KERNEL LAUNCH BUT DOESN'T START :
+                          mmc1 is current device
+
+                          MMC read: dev # 1, block # 2048, count 8192 ... 8=
+192 blocks read: OK
+                          ## Booting kernel from Legacy Image at 10800000 .=
+..
+                             Image Name:   Linux-$ (3.0.15_12.03.00)
+                             Image Type:   ARM Linux Kernel Image (uncompre=
+ssed)
+                             Data Size:    3813344 Bytes =3D  3.6 MB
+                             Load Address: 10800000
+                             Entry Point:  10800000
+                             Verifying Checksum ... OK
+                             XIP Kernel Image ... OK
+                           OK
+
+                           Starting kernel ...
+                           "Stops here"
+
+
+How can I have a rootfs that woks with a kernel patched with xenomai ? To b=
+oot the target ?
+
+
+Waiting for your answers.
+
+
+Best regards,
+
+
+Younes
+
+
+________________________________________
+De : Thierry Bultel [thierry.bultel@wanadoo.fr]
+Date d'envoi : lundi 17 juin 2013 16:58
+=C0 : Younes CHALABI
+Objet : Re: TR : Xenomai-2.6.2.1 with a kernel-3.0.15 Freescale Release on =
+i.MX6Q Sabre Lite Booting problem
+
+Hi Younes,
+
+
+The kernel I wanted to patch was too much different from the rel_imx_3.0.15=
+_12.03.00.
+Mine was rather close to the rel_imx_3.0.35_12.09.01<http://git.freescale.c=
+om/git/cgit.cgi/imx/linux-2.6-imx.git/tag/?id=3Drel_imx_3.0.35_12.09.01>
+
+Thus I took a different stategy, I have taken the ipipe-3.0-imx6q branch
+of ipipe-gch.git, which is an already patched kernel, and merged the BSP of=
+ my provider into it.
+
+You do not mention if the non patched rel_imx_3.0.15_12.03.00 works fine,
+
+
+dit you try it ?
+
+Thierry
+
+Le 17/06/2013 16:44, Younes CHALABI a =E9crit :
+
+Hi Thierry,
+
+After googling I've seen that tou have already deployed xenomai on the i.MX=
+6q, and I'm doing the same with the imx6q sabre lite but have some troubles=
+.
+
+I'm trying to install xenomai-2.6.2.1 on the i.MX6Q Sabre Lite.
+
+Using U-boot-mx6q-sabrelite.bin and the rootfs.ext2 from the L3.0.35_4.0.0_=
+130424_images_MX6 directory.
+
+The kernel used is rel_imx_3.0.15_12.03.00, and after patching it with xeno=
+mai-2.6.2.1 following these steps :
+
+ 1- Applying xenomai-2.6.2.1/ksrc/arch/arm/patches/mxc/adeos-ipipe-3.0.36-a=
+rm-1.18-11-pre.patch (no rejects)
+ 2- Applying xenomai-2.6.2.1/ksrc/arch/arm/patches/adeos-ipipe-3.0.36-arm-1=
+.18-11.patch (no rejects)
+ 3- Applying xenomai-2.6.2.1/ksrc/arch/arm/patches/mxc/adeos-ipipe-3.0.36-a=
+rm-1.18-11-post.patch (no rejects)
+ 4- xenomai-2.6.2.1/scripts/prepare-kernel.sh --arch=3Darm --adeos=3D$xenom=
+ai_root/ksrc/arch/arm/patches/adeos-ipipe-3.0.36-arm-1.18-11.patch --linux=
+=3Drel_imx_3.0.15_12.03.00 (OK)
+ 5- make ARCH=3Darm CROSS_COMPILE=3Darm-none-linux-gnueabi- O=3D$build_root=
+/linux imx6_defconfig (OK)
+ 6- make ARCH=3Darm CROSS_COMPILE=3Darm-none-linux-gnueabi- O=3D$build_root=
+/linux bzImage modules (OK)
+ 7- xenomai-2.6.2.1/configure CFLAGS=3D"-march=3Darmv7-a -mfpu=3Dvfp3" FDFL=
+AGS=3D"-march=3Darmv7-a -mfpu=3Dvfp3" --build=3Di686-pc-linux-gnu --host=3D=
+arm-none-linux-gnueabi (OK)
+ 8- make DESTDIR=3D$staging_dir install (OK)
+
+Then putting the build_root/linux/arch/arm/boot/uImage | System.map | modul=
+es.builtin |   modules.order |  Module.symvers      =3D=3D> to /media/boot =
+(OK)
+
+But when booting the target the kernel doesn't start and have this display =
+:
+
+ mmc1 is current device
+
+ MMC read: dev # 1, block # 2048, count 8192 ... 8192 blocks read: OK
+ ## Booting kernel from Legacy Image at 10800000 ...
+   Image Name:   Linux-$ (3.0.15_12.03.00)
+   Image Type:   ARM Linux Kernel Image (uncompressed)
+   Data Size:    3813344 Bytes =3D  3.6 MB
+   Load Address: 10800000
+   Entry Point:  10800000
+   Verifying Checksum ... OK
+   XIP Kernel Image ... OK
+ OK
+
+ Starting kernel ...
+
+ "Stops here"
+
+If you have an idea why the kernel doesn't start or if you can explain me h=
+ow you did, it will be very helpful for me.
+
+Thanks in advance and waiting for your answer.
+
+Younes CHALABI
+
