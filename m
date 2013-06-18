@@ -1,11 +1,11 @@
-From: Younes CHALABI <y.chalabi@sinters.fr>
-Date: Tue, 18 Jun 2013 09:12:29 +0000
-Message-ID: <A46EF8CF1BBB8E4B8A27B73E177C4664F7578B@MAIL-SINTERS-01.sinters-int.fr>
-Content-Language: fr-FR
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Date: Tue, 18 Jun 2013 17:02:01 +0200
+From: Nicholas Mc Guire <der.herr@hofr.at>
+Message-ID: <20130618150201.GA13577@opentech.at>
 MIME-Version: 1.0
-Subject: [Xenomai] No Rootfs after installing Xenomai !
+Content-Type: text/plain; charset=unknown-8bit
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] 15th Real Time Linux Workshop - Call for Papers
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,163 +14,152 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
-
-Hi,
-
-I want to install xenomai on the i.MX6Q Sabre Lite board, for this I follow=
-ed differents strategies but still not able to have xenomai on the target.=
-=20
+To: xenomai@xenomai.org
 
 
-     1- linux-3.5.7 vs xenomai-2.6.2.1 vs ipipe-core-3.5.7-arm-3.patch :
-          Using the installation procedure for ARM from : www.xenomai.org/d=
-ocumentation/xenomai-2.6/html/README.INSTALL/
-               The problem with this strategy is that I hadn't a rootfs to =
-boot the target, so I took a different strategy.
-                    HOW CAN I HAVE A ROOTFS TO BOOT THE TARGET WITH THE COM=
-PILED SOURCES ?
 
 
-     2- Using the L3.0.35_4.0.0_130424 Freescale Release I built LTIB and b=
-y the way a rootfs, an uImage and a u-boot.bin which work correctly on the =
-target.
-          Once having the rootfs I wanted to build the kernel patching it w=
-ith xenomai and using the previous rootfs (LTIB)
-               PATCHING FAILED
+                      15th Real Time Linux Workshop
+                            1st Call for Papers
+
+                         October 28 - 31, 2013
+                    Dipartimento tecnologie innovative
+        Scuola universitaria professionale della Svizzera italiana
+                               Lugano-Manno
+                               Switzerland=20
+
+Following the meetings of academics, developers and users of real-time
+and embedded Linux at the previous 14 Real Time Linux Workshops held
+world-wide (Vienna, Orlando, Milano, Boston, Valencia, Singapore, Lille,
+Lanzhou, Linz, Guadalajara, Dresden, Nairobi, Prague and Chapel Hill) -=20
+the 2013 Real Time Linux Workshop will come to the Scuola Universitaria=20
+Professionale della Svizzera Italiana in Lugano-Manno, Switzerland. It wi=
+ll=20
+be held from October 28 to October 31, 2013.
+
+Rationale
+
+Real-time systems have evolved over the past decades in a relatively
+calm manner - performance has increased, one can say dramatically, but
+the main paradigms were pretty stable since the mid 80s. With the=20
+considerable increase of computing power, notably with multicore systems
+becoming mainstream in embedded devices, the requirements on RTOS are
+shifting and the tools are again trying to catch up.
+
+In stark contrast to 1999 (when the first RTLWS took place), Linux has a=20
+strong position in all kind of embedded systems, ranging from consumer
+electronics to network devices and a broad range of industrial applicatio=
+ns
+including safety related systems. The technological resources suitable
+for high-availability, real-time, and safety critical systems have been
+continuously expanding and improving - allowing to cover the entire
+development life cycle of industrial projects based on open-source
+tools. At the core of this development is the availability of stable
+operating systems with reliable real-time properties. Extending and
+improving the real-time properties of Open Source RTOS is a continuous
+research and development effort. The OSADL has set itself the ambitious=20
+goal to document these efforts and it's most effective tool to do so is=20
+the annual Real Time Linux Workshop.
 
 
-     3- I tried to patch the linux-3.0.35 with : adeos-ipipe-3.0.36-arm-1.1=
-8-11-pre.patch | adeos-ipipe-3.0.36-arm-1.18-11.patch | adeos-ipipe-3.0.36-=
-arm-1.18-11-post.patch
-          But I had so many rejects, that why I prefered to use the rel_imx=
-_3.0.15_12.03.00 and it's advised in : xenomai-2.6.2.1/ksrc/arch/arm/patche=
-s/README
-               Doing the same procedure as for linux-3.5.7, I had an uImage=
- that I loaded on the =B5-SD with the rootfs and u-boot either with the gen=
-erated files from LTIB or the L3.0.35_4.0.0_130424_images_MX6
-                    THE KERNEL LAUNCH BUT DOESN'T START :
-                          mmc1 is current device
+Call for papers
 
-                          MMC read: dev # 1, block # 2048, count 8192 ... 8=
-192 blocks read: OK
-                          ## Booting kernel from Legacy Image at 10800000 .=
-..
-                             Image Name:   Linux-$ (3.0.15_12.03.00)
-                             Image Type:   ARM Linux Kernel Image (uncompre=
-ssed)
-                             Data Size:    3813344 Bytes =3D  3.6 MB
-                             Load Address: 10800000
-                             Entry Point:  10800000
-                             Verifying Checksum ... OK
-                             XIP Kernel Image ... OK
-                           OK
+Authors from regulatory bodies, academics, industry as well as the
+user-community are invited to submit original work dealing with general
+topics related to Open Source and Free Software based real-time systems
+research, experiments and case studies, as well as issues of integration
+of open-source real-time and embedded OS. A special focus will be on
+industrial case studies and safety related systems. Topics of interest
+include, but are not limited to:
+ - Modifications and variants of the GNU/Linux operating system and
+   extending its real-time capabilities,
+ - Contributions to real-time Linux variants, drivers and extensions,
+ - Tools for the verification and validation of real-time properties,
+ - User-mode real-time concepts, implementation and experience,
+ - Real-time Linux applications, in academia, research and industry,
+ - Safety related FLOSS systems,
+ - Safety related systems using FLOSS components,
+ - FLOSS Tools used to analyze, verify or validate safety properties,
+ - Work in progress reports, covering recent developments,
+ - Educational material on real-time Linux,
+ - RTOS core concepts, RT-safe synchronization mechanisms,
+ - RT-safe IPC mechanisms for RT and non RT components,
+ - Analysis and benchmarking methods and results of real-time
+   GNU/Linux variants,
+ - Debugging techniques and tools, both for code and temporal
+   debugging of core RTOS components, drivers and real-time
+   applications,
+ - Real-time related extensions to development environments
 
-                           Starting kernel ...
-                           "Stops here"
+Abstract submission
 
+If you wish to present a paper at the workshop, please submit an
+abstract using the submission page at
+https://www.osadl.org/RTLWS15-Abstract.submission-form.0.html.
 
-How can I have a rootfs that woks with a kernel patched with xenomai ? To b=
-oot the target ?
+Final paper to be included into the RTLWS15 Proceedings
+Upon acceptance of an abstract by the RTLWS15 Program Committee, the
+author will be invited to submit a full paper in a form defined by
+https://www.osadl.org/paper.tgz. A detailed description of the editing
+and formatting process will be provided along with the notification
+email.
 
+Further information: http://www.osadl.org/RTLWS
 
-Waiting for your answers.
+Important dates
+July 29, 2013 - Abstract submission deadline
+August 26, 2013 - Notification of acceptance
+September 23, 2013 - Submission of final paper
+October 28-31, 2013 - Workshop
 
+Organization committee:
 
-Best regards,
+Local organizers:
+ - Roberto Bucher, Scuola universitaria professionale della Svizzera ital=
+iana
+   SUPSI, Switzerland
 
+OSADL/RTLF
+ - Carsten Emde, OSADL
+ - Nicholas Mc Guire, OSADL
+ - Andreas Platschek, ICT, Vienna University of Technology, Austria
 
-Younes
+Program committee:
+ - Alexey Khoroshilov, ISPRAS, Russia
+ - Andrea Bastoni, MBDA, Italy
+ - Andreas Platschek, TU-Wien, Austria
+ - Bernhard N=F6lte, IQSE TueV SueD Rail, Germany
+ - Carsten Emde, OSADL, Germany
+ - Cheng Sheng, Beijing Shenzhou Aerospace Software Technology, China
+ - Fans, Spectrum Sys, China
+ - Georg Schiesser, OpenTech EDV Research, Austria
+ - Herman H=E4rtig, Technische Universit=E4t Dresden, Germany
+ - Julia Lawall, Inria/LIP6, France
+ - Julien Delange, Carnegie Mellon Software Engineering Institute, USA
+ - Klaus Reichl, Base Systems Technology Thales, Austria
+ - Matthias Auchmann, A&R TECH, Austria
+ - Michal Sojka, Czech Technical University in Prague, Czech Republic
+ - Nicholas Mc Guire, OpenTech EDV Research, Austria
+ - Paul E. McKenney, IBM Linux Technology Center, USA
+ - Paolo Mantegazza, Politecnico di Milano, Italy
+ - Peter Okech, University of Nairobi, Kenya
+ - Peter Wurmsdobler, Aveillant Ltd, UK
+ - Peter Zijlstra, RedHat, Netherlands
+ - Philippe Gerum, Xenomai, France
+ - Roberto Bucher, SUPSI, Switzerland
+ - Shawn Choo, Weslab, Singapur
+ - Stefan Schoenegger, B&R, Austria
+ - Steven Rostedt, RedHat, USA
+ - Thomas Gleixner, Linutronix, Germany
+ - Yutaka Matsuno, University of Electro-Communications, Japan
+ - Zhou Qingguo, DSLab, Lanzhou University, China
 
+Workshop organizers:
+ - Dipartimento Tecnologie Innovative, SUPSI, Switzerland
+ - Open Source Automation Development Lab (OSADL)
 
-________________________________________
-De : Thierry Bultel [thierry.bultel@wanadoo.fr]
-Date d'envoi : lundi 17 juin 2013 16:58
-=C0 : Younes CHALABI
-Objet : Re: TR : Xenomai-2.6.2.1 with a kernel-3.0.15 Freescale Release on =
-i.MX6Q Sabre Lite Booting problem
-
-Hi Younes,
-
-
-The kernel I wanted to patch was too much different from the rel_imx_3.0.15=
-_12.03.00.
-Mine was rather close to the rel_imx_3.0.35_12.09.01<http://git.freescale.c=
-om/git/cgit.cgi/imx/linux-2.6-imx.git/tag/?id=3Drel_imx_3.0.35_12.09.01>
-
-Thus I took a different stategy, I have taken the ipipe-3.0-imx6q branch
-of ipipe-gch.git, which is an already patched kernel, and merged the BSP of=
- my provider into it.
-
-You do not mention if the non patched rel_imx_3.0.15_12.03.00 works fine,
-
-
-dit you try it ?
-
-Thierry
-
-Le 17/06/2013 16:44, Younes CHALABI a =E9crit :
-
-Hi Thierry,
-
-After googling I've seen that tou have already deployed xenomai on the i.MX=
-6q, and I'm doing the same with the imx6q sabre lite but have some troubles=
-.
-
-I'm trying to install xenomai-2.6.2.1 on the i.MX6Q Sabre Lite.
-
-Using U-boot-mx6q-sabrelite.bin and the rootfs.ext2 from the L3.0.35_4.0.0_=
-130424_images_MX6 directory.
-
-The kernel used is rel_imx_3.0.15_12.03.00, and after patching it with xeno=
-mai-2.6.2.1 following these steps :
-
- 1- Applying xenomai-2.6.2.1/ksrc/arch/arm/patches/mxc/adeos-ipipe-3.0.36-a=
-rm-1.18-11-pre.patch (no rejects)
- 2- Applying xenomai-2.6.2.1/ksrc/arch/arm/patches/adeos-ipipe-3.0.36-arm-1=
-.18-11.patch (no rejects)
- 3- Applying xenomai-2.6.2.1/ksrc/arch/arm/patches/mxc/adeos-ipipe-3.0.36-a=
-rm-1.18-11-post.patch (no rejects)
- 4- xenomai-2.6.2.1/scripts/prepare-kernel.sh --arch=3Darm --adeos=3D$xenom=
-ai_root/ksrc/arch/arm/patches/adeos-ipipe-3.0.36-arm-1.18-11.patch --linux=
-=3Drel_imx_3.0.15_12.03.00 (OK)
- 5- make ARCH=3Darm CROSS_COMPILE=3Darm-none-linux-gnueabi- O=3D$build_root=
-/linux imx6_defconfig (OK)
- 6- make ARCH=3Darm CROSS_COMPILE=3Darm-none-linux-gnueabi- O=3D$build_root=
-/linux bzImage modules (OK)
- 7- xenomai-2.6.2.1/configure CFLAGS=3D"-march=3Darmv7-a -mfpu=3Dvfp3" FDFL=
-AGS=3D"-march=3Darmv7-a -mfpu=3Dvfp3" --build=3Di686-pc-linux-gnu --host=3D=
-arm-none-linux-gnueabi (OK)
- 8- make DESTDIR=3D$staging_dir install (OK)
-
-Then putting the build_root/linux/arch/arm/boot/uImage | System.map | modul=
-es.builtin |   modules.order |  Module.symvers      =3D=3D> to /media/boot =
-(OK)
-
-But when booting the target the kernel doesn't start and have this display =
-:
-
- mmc1 is current device
-
- MMC read: dev # 1, block # 2048, count 8192 ... 8192 blocks read: OK
- ## Booting kernel from Legacy Image at 10800000 ...
-   Image Name:   Linux-$ (3.0.15_12.03.00)
-   Image Type:   ARM Linux Kernel Image (uncompressed)
-   Data Size:    3813344 Bytes =3D  3.6 MB
-   Load Address: 10800000
-   Entry Point:  10800000
-   Verifying Checksum ... OK
-   XIP Kernel Image ... OK
- OK
-
- Starting kernel ...
-
- "Stops here"
-
-If you have an idea why the kernel doesn't start or if you can explain me h=
-ow you did, it will be very helpful for me.
-
-Thanks in advance and waiting for your answer.
-
-Younes CHALABI
+Roberto Bucher
+Carsten Emde
+Nicholas Mc Guire
+Andreas Platschek
 
