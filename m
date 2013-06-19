@@ -1,15 +1,14 @@
-From: Leopold Palomo Avellaneda <leo@alaxarxa.net>
-Date: Tue, 18 Jun 2013 23:33:21 +0200
-References: <201306110043.26534.leo@alaxarxa.net>
-	<201306151740.30939.leo@alaxarxa.net>
-	<ca9bc8023d17b2e095231bfb1a527cef.squirrel@www.xenomai.org>
-In-Reply-To: <ca9bc8023d17b2e095231bfb1a527cef.squirrel@www.xenomai.org>
 MIME-Version: 1.0
-Content-Type: Text/Plain;
-  charset="iso-8859-1"
-Content-Transfer-Encoding: 7bit
-Message-Id: <201306182333.22218.leo@alaxarxa.net>
-Subject: Re: [Xenomai] Compiler and linker options for rtnet (and xenomai)
+In-Reply-To: <51BE9EC9.5090408@web.de>
+References: <51B73421.3050506@siemens.com>
+	<CAFNBfte827XTvCApOaGaUYVcj_uLn67Yz5=qBcY4pmAPEHVbvg@mail.gmail.com>
+	<CAFNBftfCrsdrbgkfzAr5ngJtYJ2PvPtJZAA1ZdBAongHAdO4xw@mail.gmail.com>
+	<51BE9EC9.5090408@web.de>
+Date: Tue, 18 Jun 2013 21:14:22 -0300
+Message-ID: <CAFNBfteWAvsk9psCpLRV6CrkByUwG43DtjDKNak_BsvDdP+B9g@mail.gmail.com>
+From: Flavio Castro Alves Filho <flavio.alves@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: Re: [Xenomai] Stable update for ipipe-3.8
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,78 +17,139 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>, rtnet-users@lists.sourceforge.net
+To: Jan Kiszka <jan.kiszka@web.de>
+Cc: Xenomai <xenomai@xenomai.org>
 
-A Dimarts, 18 de juny de 2013, Gilles Chanteperdrix va escriure:
-> Leopold Palomo Avellaneda wrote:
-> > Hi,
-> > 
-> > first of all sorry for the cross-posting but I think that there's
-> > something
-> > wrong in the xeno-config options in both projects. If I run:
-> > 
-> > $ xeno-config --skin=native --ldflags
-> > -lnative -L/usr/lib -lxenomai -lpthread -lrt
-> > 
-> > $ xeno-config --skin=posix --ldflags
-> > -Wl,@/usr/lib/posix.wrappers -L/usr/lib -lpthread_rt -lxenomai -lpthread
-> > -lrt
-> > 
-> > $ xeno-config --skin=rtdm  --ldflags
-> > -lrtdm -L/usr/lib -lxenomai -lpthread -lrt
-> > 
-> > 
-> > So, in my application, that I _only_ use rtnet calls and also, the
-> > pthread calls (pthread_*,  rt_* calls)
-> > 
-> > none of the options described fits my needs. Or rtdm skin adds the native
-> > lib,
-> > or we create another --ldflags with rtdm, native.
-> > 
-> > What do you think?
-> 
-> Hi,
-> 
-> I am not sure I understand your question.
-> 
-> If you want to use the RTDM skin only, then use the flags given by
-> xeno-config --skin=rtdm
-> 
-> If you want to use the RTDM skin with the native skin, then use the flags
-> given by both xeno-config --skin=rtdm and xeno-config --skin=native
-> 
-> If you want to use the RTDM skin through the posix skin, then only use the
-> flags given by xeno-config --skin=posix
-> 
-> If you want to use the 3 skins (RTDM, native, posix), then use the flags
-> given by all three calls to xeno-config.
-> 
-My problem is that neither of the three options fits my needs and to make a 
-combination of two of them puts repeated options in the compiler. For example 
-rtdm+native:
+Hello Jan,
 
--lnative -L/usr/lib -lxenomai -lpthread -lrt -lrtdm -L/usr/lib -lxenomai 
--lpthread -lrt
+2013/6/17 Jan Kiszka <jan.kiszka@web.de>:
+> On 2013-06-17 02:17, Flavio Castro Alves Filho wrote:
+>> Hello Jan,
+>>
+>> I tried to build Linux kerne from your ipipe repository but the
+>> compilation crashed, when building for BeagleBone Black.
+>>
+>> During the patch application, I got just one error, with the inclusion
+>> of a #include directive. I solved the problem by hand and then I had
+>> the compilation error.
+>
+> Err, what did you apply against which kernel? The repository is supposed
+> to be used as-is. Or are there still additional, non-upstream patches
+> required for your board?
 
-I miss a "skin" rtnet, because IMHO the common use of rtnet using that calls 
-cannot be set by none of the options of xeno-config, and you need a combination 
-of both (rtdm+native).
+I apply the patches from meta-beagleboard layer (master branch ... for
+mainline kernel 3.8.13) into your i-pipe repository, branch
+'for-upstream/3.8'.
 
-I hope have been more clear now.
+I believe the patches are not upstream (There are a lot of patches).
+The compilation error is the following:
 
-Regards,
+flavio@Phi06:/home/prjs/beaglebone/work/ipipe-jki$ make ARCH=arm
+CROSS_COMPILE=arm-angstrom-linux-gnueabi- uImage
+  CHK     include/generated/uapi/linux/version.h
+  CHK     include/generated/utsrelease.h
+make[1]: `include/generated/mach-types.h' is up to date.
+  CALL    scripts/checksyscalls.sh
+  CHK     include/generated/compile.h
+  CC      arch/arm/mach-omap2/gpmc.o
+arch/arm/mach-omap2/gpmc.c: In function 'gpmc_probe_nand_child':
+arch/arm/mach-omap2/gpmc.c:1378:2: error: implicit declaration of
+function 'of_get_nand_bus_width'
+[-Werror=implicit-function-declaration]
+arch/arm/mach-omap2/gpmc.c:1380:29: error: 'NAND_BUSWIDTH_16'
+undeclared (first use in this function)
+arch/arm/mach-omap2/gpmc.c:1380:29: note: each undeclared identifier
+is reported only once for each function it appears in
+arch/arm/mach-omap2/gpmc.c: In function 'gpmc_probe_generic_child':
+arch/arm/mach-omap2/gpmc.c:1455:2: error: implicit declaration of
+function 'of_address_to_resource'
+[-Werror=implicit-function-declaration]
+arch/arm/mach-omap2/gpmc.c:1505:2: error: implicit declaration of
+function 'of_platform_device_create'
+[-Werror=implicit-function-declaration]
+cc1: some warnings being treated as errors
+make[1]: *** [arch/arm/mach-omap2/gpmc.o] Error 1
+make: *** [arch/arm/mach-omap2] Error 2
+flavio@Phi06:/home/prjs/beaglebone/work/ipipe-jki$
 
-Leo
+I will check this out and inform you.
+
+For kernel 3.8.10, the same procedure worked fine.
+
+Best regards,
+
+Flavio
+
+>
+> Jan
+>
+>>
+>> Unfortunately I had to reboot my machine and I could not give you the
+>> complete feedback. I intend to do that tomorrow. Sorry ...
+>>
+>> Anyway, I would like to provide the feedback.
+>>
+>> Best regards
+>>
+>> Flavio
+>>
+>>
+>> 2013/6/12 Flavio Castro Alves Filho <flavio.alves@gmail.com>:
+>>> Hello,
+>>>
+>>> This weekend I'll try to test it with the current kernel version for
+>>> BeagleBone Black and I'll let you know about the results.
+>>>
+>>> Best regards,
+>>>
+>>> Flavio
+>>>
+>>>
+>>> 2013/6/11 Jan Kiszka <jan.kiszka@siemens.com>:
+>>>> Hi all,
+>>>>
+>>>> I've merged 3.8.13 into our stable 3.8 branch. This triggered some minor
+>>>> conflicts in generic and ARM code. Please see
+>>>>
+>>>> git://git.xenomai.org/ipipe-jki for-upstream/3.8
+>>>>
+>>>> for details. The result works fine for x86, and if it's also OK for the
+>>>> other arch, I'd propose this to be merged into the official 3.8 stable
+>>>> branch.
+>>>>
+>>>> Jan
+>>>>
+>>>> --
+>>>> Siemens AG, Corporate Technology, CT RTC ITP SES-DE
+>>>> Corporate Competence Center Embedded Linux
+>>>>
+>>>> _______________________________________________
+>>>> Xenomai mailing list
+>>>> Xenomai@xenomai.org
+>>>> http://www.xenomai.org/mailman/listinfo/xenomai
+>>>
+>>>
+>>>
+>>> --
+>>> Flavio de Castro Alves Filho
+>>>
+>>> flavio.alves@gmail.com
+>>> www.linuxembarcado.com
+>>> Twitter: http://twitter.com/#!/fraviofii
+>>> LinkedIn profile: www.linkedin.com/in/flaviocastroalves
+>>
+>>
+>>
+>
+>
 
 
--- 
+
 --
-Linux User 152692     PGP: 0xF944807E
-Catalonia
--------------------------------------
-A: Because it messes up the order in which people normally read text.
-Q: Why is top-posting such a bad thing?
-A: Top-posting.
-Q: What is the most annoying thing in e-mail?
+Flavio de Castro Alves Filho
+
+flavio.alves@gmail.com
+www.linuxembarcado.com
+Twitter: http://twitter.com/#!/fraviofii
+LinkedIn profile: www.linkedin.com/in/flaviocastroalves
 
