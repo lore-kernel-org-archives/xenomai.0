@@ -1,14 +1,12 @@
-Message-ID: <fb3e91c788e98c96e2c5061a83b96def.squirrel@www.xenomai.org>
-In-Reply-To: <49E736B33FAAA645BCAB9FFEC26712E6FD1648@EXDAG0-B0.intra.cea.fr>
-References: <49E736B33FAAA645BCAB9FFEC26712E6FD0C05@EXDAG0-B0.intra.cea.fr>
-	<b7108896dbd73baf5b1890f4cddc62b0.squirrel@www.xenomai.org>
-	<49E736B33FAAA645BCAB9FFEC26712E6FD1648@EXDAG0-B0.intra.cea.fr>
-Date: Wed, 19 Jun 2013 14:00:37 +0200
+Message-ID: <edab78ef9689f2f0202dcee35cbf4324.squirrel@www.xenomai.org>
+In-Reply-To: <A46EF8CF1BBB8E4B8A27B73E177C4664F7578B@MAIL-SINTERS-01.sinters-int.fr>
+References: <A46EF8CF1BBB8E4B8A27B73E177C4664F7578B@MAIL-SINTERS-01.sinters-int.fr>
+Date: Wed, 19 Jun 2013 14:06:35 +0200
 From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain;charset=iso-8859-1
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] CPU time limit exceeded
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] No Rootfs after installing Xenomai !
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,65 +15,53 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: HAUTBOIS Flavian <Flavian.HAUTBOIS@cea.fr>
+To: Younes CHALABI <y.chalabi@sinters.fr>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
 
-HAUTBOIS Flavian wrote:
-> Thanks a lot for this complete and short answer.
+Younes CHALABI wrote:
+>      3- I tried to patch the linux-3.0.35 with :
+> adeos-ipipe-3.0.36-arm-1.18-11-pre.patch |
+> adeos-ipipe-3.0.36-arm-1.18-11.patch |
+> adeos-ipipe-3.0.36-arm-1.18-11-post.patch
+>           But I had so many rejects, that why I prefered to use the
+> rel_imx_3.0.15_12.03.00 and it's advised in :
+> xenomai-2.6.2.1/ksrc/arch/arm/patches/README
+>                Doing the same procedure as for linux-3.5.7, I had an
+> uImage that I loaded on the =B5-SD with the rootfs and u-boot
+> either with the generated files from LTIB or the
+> L3.0.35_4.0.0_130424_images_MX6
+>                     THE KERNEL LAUNCH BUT DOESN'T START :
+>                           mmc1 is current device
 >
-> - I didn't find any mention of PTHREAD_WARNSWS throughout the entire code
-> via a grep command. However, I found a T_WARNSW mention in the Orocos
-> files, which according to sigdebug.c apparently does the same thing.
-
-Hi Flavian,
-
-Yes, that is the same thing.
-
-> - This __wrap_send problem might be a key to solving this issue. I
-> enclosed the "ldd" and "nm" traces of the some_core library (you can find
-> mentions of __wrap_send in the nm.txt file, as well as the core_dump.txt
-> file which contains a backtrace of the core dump when the program
-> crashes).
-
-send is replaced with __wrap_send when passing --wrap send to the linker,
-which happens when you are using the compiler flags given by:
-xeno-config --skin posix --ldflags
-__wrap_send is implemented in libpthread_rt.so, part of xenomai user-space
-support and emits a system call relying on xenomai kernel-space support,
-using rtnet or other rtdm based drivers, depending on the socket family the
-socket you pass to __wrap_send is using. If that fails, because, the
-correct options were not enabled in xenomai kernel-space, because the RTnet
-driver is not started, or for other reasons, __wrap_send falls back to the
-glibc send service, which will cause a SIGXCPU to be sent if you enabled
-T_WARNSW.
-
-So, either your application is using glibc to send the packet because this
-is what you want, in which case you should not arm the T_WARNSW bit for
-this thread, or you would like to use RTnet to send the particular packet
-which causes the SIGXCPU signal to be sent, in which case something is not
-configured correctly and you should find what.
-
-> - I included the handler of sigdebug.c in my own file. I'm also enclosing
-> what it returned in sigcpu.txt. I didn't find anything new or unexpected
-> in it, but I have to admit that I don't know how to read 95% of the file.
-
-The part of the sigdebug.c I was interested in was not the part which prints
-the backtrace, since you already had the backtrace, but the part that
-prints a message depending on the reason.
-
+>                           MMC read: dev # 1, block # 2048, count 8192 ...
+> 8192 blocks read: OK
+>                           ## Booting kernel from Legacy Image at 10800000
+> ...
+>                              Image Name:   Linux-$ (3.0.15_12.03.00)
+>                              Image Type:   ARM Linux Kernel Image
+> (uncompressed)
+>                              Data Size:    3813344 Bytes =3D  3.6 MB
+>                              Load Address: 10800000
+>                              Entry Point:  10800000
+>                              Verifying Checksum ... OK
+>                              XIP Kernel Image ... OK
+>                            OK
 >
-> Do you have any ideas why RTNet does not seem to be used? How to fix it?
+>                            Starting kernel ...
+>                            "Stops here"
 
-I do not really know what your application does, this may be normal or not.
-A first step to see if the socket you pass to __wrap_send is an RTnet socket
-is to check its value. RTDM normally uses socket numbers between 1024 -
-128 and 1023 inclusive.
+Hi Younes,
+
+this issue is different.
+
+See:
+http://www.xenomai.org/index.php/I-pipe-core:ArmPorting#The_kernel_stops_af=
+ter_the_message_.22Uncompressing_Linux..._done.2C_booting_the_kernel..22
 
 Regards.
 
-
--- 
+--=20
                     Gilles.
 
 
