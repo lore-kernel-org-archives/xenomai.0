@@ -1,20 +1,12 @@
-Message-ID: <51C486F6.6010701@xenomai.org>
-Date: Fri, 21 Jun 2013 19:01:42 +0200
+Message-ID: <51C4873D.9030000@xenomai.org>
+Date: Fri, 21 Jun 2013 19:02:53 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <49E736B33FAAA645BCAB9FFEC26712E6FD0C05@EXDAG0-B0.intra.cea.fr>
-	<b7108896dbd73baf5b1890f4cddc62b0.squirrel@www.xenomai.org>
-	<49E736B33FAAA645BCAB9FFEC26712E6FD1648@EXDAG0-B0.intra.cea.fr>
-	<fb3e91c788e98c96e2c5061a83b96def.squirrel@www.xenomai.org>
-	<49E736B33FAAA645BCAB9FFEC26712E6FD16CB@EXDAG0-B0.intra.cea.fr>
-	<0012b71cd44fa48b579be970738eb844.squirrel@www.xenomai.org>
-	<49E736B33FAAA645BCAB9FFEC26712E6FD1732@EXDAG0-B0.intra.cea.fr>
-	<41d414a76f40aa6f246bc60d89a11394.squirrel@www.xenomai.org>
-	<49E736B33FAAA645BCAB9FFEC26712E6FD1920@EXDAG0-B0.intra.cea.fr>
-In-Reply-To: <49E736B33FAAA645BCAB9FFEC26712E6FD1920@EXDAG0-B0.intra.cea.fr>
+References: <51C41FD4.9070608@163.com>
+In-Reply-To: <51C41FD4.9070608@163.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] CPU time limit exceeded
+Subject: Re: [Xenomai] request_irq with xenomai
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -23,31 +15,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: HAUTBOIS Flavian <Flavian.HAUTBOIS@cea.fr>
+To: aking_jin <jinxin16897123@163.com>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 06/21/2013 09:31 AM, HAUTBOIS Flavian wrote:
+On 06/21/2013 11:41 AM, aking_jin wrote:
 
-> Seems like the problem stems from XENOMAI_SKINCALL3, but this macro is pretty hard to figure out...
+> Hi,all
+>      I've patched the kernel 3.5.7 with xenomai,and xenomai have been 
+> enabled. After that, I want to have a  normal gpio interrupt test with 
+> normal way using request_irq, found its return value is -/EINVAL,
+> Finally found that IRQ_NOREQUEST was set in the irq_desc[irq_number] 
+> through debug. could you give me some advice? thanks.
+>          the following was the irq_desc of irq_gpio:
+> 
+>          [   66.087719] irq 10, desc: c1805600, depth: 0, count: 0, 
+> unhandled: 0
+>          [   66.097903] ->handle_irq():  c0065678, 
+> __ipipe_chained_irq+0x0/0x4
+>          [   66.104157] ->irq_data.chip(): c052de50, 
+> pxa_internal_irq_chip+0x0/0x70
+>          [   66.110751] ->action():   (null)
+>          [   66.114010]    IRQ_NOPROBE set
+>          [   66.117039]  IRQ_NOREQUEST set
+>          [   66.120063]   IRQ_NOTHREAD set
+> 
+> Thank you very much~
+> /
+> 
 
 
-Hi,
+I would say you are using the wrong irq number, you are using the irq
+number of the parent, multiplexed interrupt, instead of using the
+per-gpio irq number (which you should obtain with gpio_to_irq), but this
+question is off-topic on this list, since it has nothing to do with xenomai.
 
-No, the macro simply emits the syscall, the fact that the syscall
-switches to secondary mode, or something else is the problem.
-
-Please separate this in two steps:
-ret = XENOMAI_SKINCALL3...
-then
-set_errno(ret)
-
-check the value of ret
-and see what causes the signal to be sent (either the syscall, or
-set_ernno).
-
-Regards.
-
-P.S: could you stop top-posting?
 
 -- 
                                                                 Gilles.
