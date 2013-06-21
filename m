@@ -1,13 +1,20 @@
-Message-ID: <51C45C6F.9080109@siemens.com>
-Date: Fri, 21 Jun 2013 16:00:15 +0200
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <51C486F6.6010701@xenomai.org>
+Date: Fri, 21 Jun 2013 19:01:42 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <mailman.1.1371808801.4609.xenomai@xenomai.org>
-	<1371820048.30624.YahooMailNeo@web172205.mail.ir2.yahoo.com>
-In-Reply-To: <1371820048.30624.YahooMailNeo@web172205.mail.ir2.yahoo.com>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] High latency and smi with intel vendor chip
+References: <49E736B33FAAA645BCAB9FFEC26712E6FD0C05@EXDAG0-B0.intra.cea.fr>
+	<b7108896dbd73baf5b1890f4cddc62b0.squirrel@www.xenomai.org>
+	<49E736B33FAAA645BCAB9FFEC26712E6FD1648@EXDAG0-B0.intra.cea.fr>
+	<fb3e91c788e98c96e2c5061a83b96def.squirrel@www.xenomai.org>
+	<49E736B33FAAA645BCAB9FFEC26712E6FD16CB@EXDAG0-B0.intra.cea.fr>
+	<0012b71cd44fa48b579be970738eb844.squirrel@www.xenomai.org>
+	<49E736B33FAAA645BCAB9FFEC26712E6FD1732@EXDAG0-B0.intra.cea.fr>
+	<41d414a76f40aa6f246bc60d89a11394.squirrel@www.xenomai.org>
+	<49E736B33FAAA645BCAB9FFEC26712E6FD1920@EXDAG0-B0.intra.cea.fr>
+In-Reply-To: <49E736B33FAAA645BCAB9FFEC26712E6FD1920@EXDAG0-B0.intra.cea.fr>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] CPU time limit exceeded
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,43 +23,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Franz Engel <franz_lambert_engel@yahoo.de>
+To: HAUTBOIS Flavian <Flavian.HAUTBOIS@cea.fr>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 2013-06-21 15:07, Franz Engel wrote:
-> Hi,
->=20
-> In my dmesg I get the following message:
-> dmesg | grep -i xeno
-> [    4.478964] I-pipe: head domain Xenomai registered.
-> [    4.494089] Xenomai: hal/x86_64 started.
-> [    4.505969] Xenomai: scheduling class idle registered.
-> [    4.521300] Xenomai: scheduling class rt registered.
-> [    4.538525] Xenomai: real-time nucleus v2.6.2.1 (Day At The Beach) l=
-oaded.
-> [    4.559065] Xenomai: debug mode enabled.
-> [    4.579351] Xenomai: SMI-enabled chipset found
-> [    4.592628] Xenomai: SMI workaround failed!
-> [    4.605677] Xenomai: starting native API services.
-> [    4.619979] Xenomai: starting POSIX services.
-> [    4.633088] Xenomai: starting RTDM services.
->=20
->=20
-> And I have very high latencies. I read that I should try to insert my t=
-he ID of my LCP into the /usr/src/xenomai/ksrc/arch/x86/smi.c file.
+On 06/21/2013 09:31 AM, HAUTBOIS Flavian wrote:
 
-That is no longer true since 2.6.2.1. Xenomai already detects your LPC
-(see above), but the BIOS has apparently locked SMI disabling down.
+> Seems like the problem stems from XENOMAI_SKINCALL3, but this macro is pretty hard to figure out...
 
-In this case, you may want to play with smi_mask (see documentation of
-"SMI_EN =97 SMI Control and Enable Register" in the Intel chipset manuals=
-)
-to see if disabling of individual SMI features work. If not, the board
-is useless for low-latency real-time purposes.
 
-Jan
+Hi,
 
---=20
-Siemens AG, Corporate Technology, CT RTC ITP SES-DE
-Corporate Competence Center Embedded Linux
+No, the macro simply emits the syscall, the fact that the syscall
+switches to secondary mode, or something else is the problem.
+
+Please separate this in two steps:
+ret = XENOMAI_SKINCALL3...
+then
+set_errno(ret)
+
+check the value of ret
+and see what causes the signal to be sent (either the syscall, or
+set_ernno).
+
+Regards.
+
+P.S: could you stop top-posting?
+
+-- 
+                                                                Gilles.
 
