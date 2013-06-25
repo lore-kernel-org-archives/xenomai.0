@@ -1,13 +1,15 @@
-Message-ID: <519EFD0E.9090103@xenomai.org>
-Date: Fri, 24 May 2013 07:39:26 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: "Leopold Palomo-Avellaneda" <leo@alaxarxa.net>
+Date: Tue, 25 Jun 2013 16:05:52 +0200
+References: <201306171526.01532.leo@alaxarxa.net>
+	<51BF1787.9090309@xenomai.org>
+	<201306171629.22684.leo@alaxarxa.net>
+In-Reply-To: <201306171629.22684.leo@alaxarxa.net>
 MIME-Version: 1.0
-References: <E9605457112439448B6B3ED284E06533317AC337@mbx256-1.adm.swri.edu>	<519E677F.9050001@xenomai.org>
-	<201305232352.24308.paul_c@tuxcnc.org>
-In-Reply-To: <201305232352.24308.paul_c@tuxcnc.org>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: Text/Plain;
+  charset="iso-8859-1"
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Next Xenomai Release?
+Message-Id: <201306251605.52922.leo@alaxarxa.net>
+Subject: Re: [Xenomai] Using modern adeos patch with older xenomai version
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,35 +18,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Paul <paul_c@tuxcnc.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 05/24/2013 12:52 AM, Paul wrote:
-
-> On Thursday 23 May 2013, Gilles Chanteperdrix wrote:
->> On 05/23/2013 05:57 PM, Poole Jr, Donald R. wrote:
->>> I guess I overlooked that post and response. Any clarifying
->>> words/steps on what needs to be done to get the 3.8.x kernel
->>> patched with Xenomai for running on the Beaglebone/Raspberry Pi in
->>> the meantime?
->>
->> For beaglebone, it is integrated in the I-pipe tree for the ARM
->> architecture (git://git.xenomai.org/ipipe-gch.git, branch
->> for-core-3.8), which is currently based on 3.8.0 but will probably be
->> rebased on a more recent version for the I-pipe 3.8 release, for the
->> raspberry pi, you can try the patch which has been posted by Paul,
->> but probably needs rebasing once the I-pipe for 3.8 is released.
+A Dilluns, 17 de juny de 2013, Leopold Palomo-Avellaneda va escriure:
+> A Dilluns, 17 de juny de 2013, Philippe Gerum va escriure:
+> > On 06/17/2013 03:26 PM, Leopold Palomo-Avellaneda wrote:
+> > > Hi,
+> > >
+> > > can I use ipipe-core-3.5.7 adeos patch with xenomai 2.5.6?
+> > >
+> > > Regards,
+> > >
+> > > Leo
+> > >
+> > >
+> > 
+> > No, because Xenomai 2.5.6 won't build over the kernel 3.5 series.
 > 
-> 
-> I have a set of patches ready for 3.8.8 based on the "official" 
-> Raspberry Pi sources [1] - Need to reduce the current set of nine down 
-> to a pre and post pair which I'll try to do over the weekend. In the 
-> meantime, if anyone wants to take the set for a spin, drop me a note 
-> and I'll send them over.
+
+and with xenomai 2.6.1? 
+
+In the most modern kernel patch in 2.6.1 for amd64 is for 3.2.21 and I would 
+like to use 3.5.7.
 
 
-The ipipe-gch repository is not yet the final I-pipe.
+Best regards,
 
+Leo
 -- 
-                                                                Gilles.
+--
+Linux User 152692
+Catalonia
 
