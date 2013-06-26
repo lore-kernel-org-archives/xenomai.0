@@ -1,13 +1,13 @@
-Message-ID: <51A39043.5010609@xenomai.org>
-Date: Mon, 27 May 2013 18:56:35 +0200
+Message-ID: <51CB1E2C.2000302@xenomai.org>
+Date: Wed, 26 Jun 2013 19:00:28 +0200
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <51A30F04.701@xenomai.org>
-In-Reply-To: <51A30F04.701@xenomai.org>
+References: <1372258188.12144.161.camel@lx-henry>
+In-Reply-To: <1372258188.12144.161.camel@lx-henry>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] git://git.xenomai.org/ipipe.git reshuffle,
-	3.8.0 kernel support
+Subject: Re: [Xenomai] Kernel Panic not syncing kernel stack overflow on
+ AMCC PowerPC 460EX upon upgrade
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,65 +16,57 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: Henry Bausley <hbausley@deltatau.com>
+Cc: xenomai@xenomai.org
 
-On 05/27/2013 09:45 AM, Philippe Gerum wrote:
+On 06/26/2013 04:49 PM, Henry Bausley wrote:
 >
-> The I-pipe tree at git://git.xenomai.org/ipipe.git will be reorganized
-> today at 3pm GMT. At this chance, support for the 3.8.0 kernel will be
-> introduced.
 >
-> The complete commit history will be preserved, along with existing tags.
-> Branches may be renamed though, to better reflect the new development
-> workflow introduced with the pipeline "core" series.
+> I am attempting to upgrade to Xeno 2.6.2.1 / Ipipe 3.2.21 from
+> a working Xeno 2.5.6 / Ipipe 2.6.30.3 configuration
 >
-> If you have scripts pulling from this repository in any automated way,
-> you may want to stop them for the day.
+> I am getting a Kernel Panic not syncing kernel stack overflow errors
+> with the new kernel.
 >
-> A description of the few changes involved will be sent to this mailing
-> list later today, shortly before the new repository is published.
+> The application is a kernel module that operates soley from interrupts
+> and communicates to user space with applications with shared memory.  It
+> has been running with the earlier kernels without issues for many years.
+> Below are the messages I get when the system crashes.
+>
+> If anyone has any hints based upon the data when it crashes  below it
+> would be greatly appreciated.
+>
 >
 
-The reshuffled repository is now on line.
+<snip>
 
-The changes are as follows:
+> Call
+> Trace:
+> [8049bef0] [80006c00] show_stack+0x54/0x154
+> (unreliable)
+> [8049bf30] [8001a26c] __schedule_bug
+> +0x68/0x6c
+> [8049bf40] [80372b1c] __schedule
+> +0x3e8/0x430
+> [8049bf90] [80007738] cpu_idle
+> +0xd8/0xdc
+> [8049bfb0] [80001bd4] rest_init
+> +0x64/0x78
+> [8049bfc0] [8044a770] start_kernel
+> +0x2d0/0x2e4
+> [8049bff0] [80000044] _start
+> +0x44/0x88
+> Kernel panic - not syncing: kernel stack overflow
 
-- all legacy pipeline branches (i.e. pre-"core" series) have moved under 
-the legacy/ hierarchy, e.g.
-ipipe-2.6.20-powerpc => legacy/ipipe-2.6.20-powerpc
-All branches under legacy/ are frozen, and won't be updated anymore.
+This is typical of some code badly trashing the linux interrupt state 
+when running in primary domain. The idle loop breakage may be a 
+collateral damage of such issue.
 
-- the master branch now reflects the state of the mainline I-pipe 
-development. Pull from this branch for the latest validated commits, for 
-the latest supported kernel.
+Could you tell us a bit more about your kernel config, e.g.
 
-- new ipipe-<kernel.version> branches are started off master 
-periodically, for maintaining the pipeline over stable kernel releases. 
-These branches include the pipeline code for a given kernel release, for 
-a set of architectures we support in this release. There is neither 
-arch-specific nor -noarch branches anymore.
-
-The former core-<kernel.version> branches are now available as 
-legacy/core-<kernel.version>, with ipipe-<stable-kernel-version> 
-reflecting the latest stable fixes that were merged into those branches. 
-For instance, the former core-3.4 branch can be found as both 
-legacy/core-3.4, and ipipe-3.4.6 in the reorganized repository.
-
-- The new ipipe-next branch contains brewing stuff, possibly not fully 
-validated on all supported architectures yet. It receives new features 
-on their way to master, and arch-specific merges. Unlike other branches, 
-ipipe-next may be subject to rebase, prior to merging it into master.
-
-Practically, people who depend on a particular stable kernel version 
-should track the corresponding ipipe-<kernel.version> branch.
-
-People working over the bleeding edge tip should rebase over ipipe-next 
-periodically.
-
-People who want reasonably validated stuff for the latest kernel release 
-we support should track master.
-
-HTH,
+- which preemption model?
+- did you enable CONFIG_IPIPE_DEBUG_INTERNAL? otherwise, do you have any 
+warning notice when set?
 
 -- 
 Philippe.
