@@ -1,14 +1,14 @@
-From: "Leopold Palomo-Avellaneda" <leo@alaxarxa.net>
-Date: Thu, 27 Jun 2013 14:54:02 +0200
+Message-ID: <51CC36D8.8080709@xenomai.org>
+Date: Thu, 27 Jun 2013 14:58:00 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
 References: <201306260906.22955.leo@alaxarxa.net>
 	<201306271109.22749.leo@alaxarxa.net>
 	<51CC2DB7.2070806@xenomai.org>
-In-Reply-To: <51CC2DB7.2070806@xenomai.org>
-MIME-Version: 1.0
-Content-Type: Text/Plain;
-  charset="utf-8"
+	<201306271454.03648.leo@alaxarxa.net>
+In-Reply-To: <201306271454.03648.leo@alaxarxa.net>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Message-Id: <201306271454.03648.leo@alaxarxa.net>
 Subject: Re: [Xenomai] Xenomai warn_upon_switch
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -18,100 +18,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-A Dijous, 27 de juny de 2013, Gilles Chanteperdrix va escriure:
-> On 06/27/2013 11:09 AM, Leopold Palomo-Avellaneda wrote:
+On 06/27/2013 02:54 PM, Leopold Palomo-Avellaneda wrote:
+
+> A Dijous, 27 de juny de 2013, Gilles Chanteperdrix va escriure:
+>> On 06/27/2013 11:09 AM, Leopold Palomo-Avellaneda wrote:
+>>
+>>> A Dimecres, 26 de juny de 2013, Gilles Chanteperdrix va escriure:
+>>>> On 06/26/2013 09:06 AM, Leopold Palomo-Avellaneda wrote:
+>>> AAnd I don't know how to silent (or if is possible) this messages.
+>>
+>>
+>> The point is that these messages are telling you that there is a bug,
+>> either in xenomai code (a bug was fixed since xenomai 2.6.2.1 which
+>> could explain such a behaviour), or in orocos code. When the bug is
+>> fixed the signal will disappear.
 > 
-> > A Dimecres, 26 de juny de 2013, Gilles Chanteperdrix va escriure:
-> >> On 06/26/2013 09:06 AM, Leopold Palomo-Avellaneda wrote:
-> >>
-> >>> Hi,
-> >>>
-> >>> since 2.6.x the Orocos users have difficulties (or simple cannot) use 
-> > Xenomai. 
-> >>> Despite of some bug in the Orocos code, xenomai emits a warn_upon_switch 
-> > that 
-> >>> makes the user to use a console program - deployer - (basically for the 
-> > orocos 
-> >>> philosofy) to launch rt programs.
-> >>>
-> >>> I think that this signal must be treated in some way by the Orocos code, 
-> > but 
-> >>> it's not developed yet. Since then, there's a way to silent this signal, 
-> > or 
-> >>> simple that doesn't overflow the console but thousand of messages like 
-> > this:
-> >>
-> >>
-> >> In case it is a bug which has already been fixed, could you try xenomai
-> >> 2.6 git?
-> > 
-> > I don't understand that it could be a Xenomai bug. It's a Orocos bug IMHO. 
-In 
-> > the orocos list they commented that:
-> > 
-> >> AFAICS you've enabled the warn_upon_switch signal, AFAIK the printouts 
-all
-> >> refer to code paths that are causing mode switches.
-> > 
-> > 
-> > ......
-> >> Real-time memory: 517920 bytes free of 524288 allocated.
-> >> /opt/orocos-toolchain/install/lib/liborocos-rtt-
-> >> xenomai.so.2.6(warn_upon_switch+0x15)[0x7fda1b2fb295]
-> >> /lib/x86_64-linux-gnu/libpthread.so.0(+0xf030)[0x7fda19bdd030]
-> >> /usr/lib/libnative.so.3(rt_mutex_release+0xbb)[0x7fda19ff431b]
-> >> /opt/orocos-toolchain/install/lib/liborocos-rtt-
-> >> xenomai.so.2.6(_ZN3RTT2os6ThreadD1Ev+0x11d)[0x7fda1b2f730d]
-> >> /opt/orocos-toolchain/install/lib/liborocos-rtt-
-> >> xenomai.so.2.6(_ZN3RTT8ActivityD2Ev+0x37)[0x7fda1b2add27]
-> >> /opt/orocos-toolchain/install/lib/liborocos-rtt-
-> >> xenomai.so.2.6(_ZN3RTT8ActivityD0Ev+0x9)[0x7fda1b2add79]
-> >> /opt/orocos-toolchain/install/lib/liborocos-rtt-
-> >>
-> >>
-> > 
-xenomai.so.2.6(_ZN5boost10shared_ptrIN3RTT4base17ActivityInterfaceEEaSERKS4_+0x4e)
-> >> [0x7fda1b2b9cde]
-> >> /opt/orocos-toolchain/install/lib/liborocos-rtt-
-> >>
-> >>
-> > 
-xenomai.so.2.6(_ZN3RTT11TaskContext11setActivityEPNS_4base17ActivityInterfaceE+0x72)
-> >> [0x7fda1b2aecb2]
-> >> /opt/orocos-toolchain/install/lib/liborocos-ocl-deployment-
-> >> xenomai.so.2.6.0(_ZN3OCL19DeploymentComponent11setActivityERKSsdii+0x127)
-> >> [0x7fda1a9f8997]
-> >> /opt/orocos-toolchain/install/lib/liborocos-ocl-deployment-
-> >>
-> >> xenomai.so.2.6.0(_ZNK5boost9function4IbRKSsdiiEclES2_dii+0x18)
-> > [0x7fda1aa4dd68]
-> >> /opt/orocos-toolchain/install/lib/liborocos-ocl-deployment-
-> >>
-> > 
-> > AAnd I don't know how to silent (or if is possible) this messages.
+> I have compiled a new kernel and the messages are still. I'm using 2.6.2.1. I 
+> agree that there's a bug but in orocos. I understand that Xenomai emits a 
+> signal warning about context switch and orocos (or whatever application that 
+> uses Xenomai) must treat with it. This behavior was changed in 2.6.x.
 > 
-> 
-> The point is that these messages are telling you that there is a bug,
-> either in xenomai code (a bug was fixed since xenomai 2.6.2.1 which
-> could explain such a behaviour), or in orocos code. When the bug is
-> fixed the signal will disappear.
-
-I have compiled a new kernel and the messages are still. I'm using 2.6.2.1. I 
-agree that there's a bug but in orocos. I understand that Xenomai emits a 
-signal warning about context switch and orocos (or whatever application that 
-uses Xenomai) must treat with it. This behavior was changed in 2.6.x.
-
-Please could you confirm if is this the problem?
+> Please could you confirm if is this the problem?
 
 
-Regards,
+As I said, to answer this question, you should change the SIGDEBUG
+signal handler as is done in examples/native/sigdebug.c to know the
+signal reason.
 
-Leo
 -- 
---
-Linux User 152692
-Catalonia
+                                                                Gilles.
 
