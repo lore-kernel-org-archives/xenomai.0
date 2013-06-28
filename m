@@ -1,12 +1,14 @@
-Message-ID: <51CDA46C.6040100@xenomai.org>
-Date: Fri, 28 Jun 2013 16:57:48 +0200
-From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <51CD99C6.2050409@mitrol.it>
-In-Reply-To: <51CD99C6.2050409@mitrol.it>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Disable all iinterrupts on xenomai
+In-Reply-To: <51CC031A.9030905@xenomai.org>
+References: <201306260906.22955.leo@alaxarxa.net>
+	<51CB231E.8030600@xenomai.org>
+	<201306271109.22749.leo@alaxarxa.net> <51CC031A.9030905@xenomai.org>
+From: Peter Soetens <peter@thesourceworks.com>
+Date: Fri, 28 Jun 2013 17:35:13 +0200
+Message-ID: <CAMYDobV2YQez7qtcTxxQ1wsL23oPu0sT+WwHsQ6hW18pcgnJkA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Subject: Re: [Xenomai] Xenomai warn_upon_switch
+Reply-To: peter@thesourceworks.com
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,51 +17,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Paolo Minazzi <Paolo.Minazzi@mitrol.it>
-Cc: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 06/28/2013 04:12 PM, Paolo Minazzi wrote:
-> Hi to all
+On Thu, Jun 27, 2013 at 11:17 AM, Philippe Gerum <rpm@xenomai.org> wrote:
+> On 06/27/2013 11:09 AM, Leopold Palomo-Avellaneda wrote:
 >
-> I have to disable completely interrupts on arm on xenomai 2.5.6
-> I have a small piece of code that no one must interrupt.
+>>
+>> AAnd I don't know how to silent (or if is possible) this messages.
 >
-> I have seen there are a lot of #define and I have tried all.
-> 1) rthal_local_irq_save
-> 2) local_irq_save_hw
-> 3) rthal_irq_disable (this seems to work but I have to disable all irq
-> lines)
-
-Nope. rthal_irq_disable() is the strict equivalent of 
-local_irq_disable() from a non-virtualized IRQ context. This masks out 
-interrupts at CPU level.
-
-> 4) inline asm on cpsr register with mask 0x40 and 0x80
 >
+> Try disabling CONFIG_XENO_OPT_DEBUG_SYNCH_RELAX if currently set in your
+> kernel config. If that is still not enough, then you will have to switch off
+> PTHREAD_WARNSW manually, using pthread_set_mode_np(), for each thread which
+> triggers this signal.
 
-This may not be what you need, as this does not account for the 
-virtualized interrupt state the interrupt pipeline manages.
+Quoting Gilles:
+"The point is that these messages are telling you that there is a bug,
+either in xenomai code (a bug was fixed since xenomai 2.6.2.1 which
+could explain such a behaviour), or in orocos code. When the bug is
+fixed the signal will disappear."
 
-> I have tried all, but the best way seems
->
-> #define my_local_irq_save(x)      ((x) =
-> ipipe_test_and_stall_pipeline_head() & 1)
-> #define my_local_irq_restore(x)   ipipe_restore_pipeline_head(x)
->
-> but sometimes seems not works.
+We're having one thread ( main() ) which is modeswitching all the time
+since it's doing user IO using the console, filesystem etc.
 
-Certainly it does work, always. The entire house is built on top of 
-this. You may want to check your test code again.
+I didn't consider this as a bug, and we only enable PTHREAD_WARNSW for
+specific threads, where it does matter.
 
->
-> I only need the simple concept of local_irq_save and local_irq restore
-> of standard linux.
-> Is there something similar on xenomai ?
->
+I also have the CONFIG_XENO_OPT_DEBUG_SYNCH_RELAX option on in my test
+system, and I'm not seeing any of these messages (while the MSW
+increments).
 
-Over Xenomai 2.x, rthal_local_irq_save()/restore() is a wrapper to the 
-proper implementation, which depends on the underlying I-pipe code.
+So it beats me what is causing these messages in his setup.
 
--- 
-Philippe.
+Leo, which version (git hash tag) are you using ?
+
+Peter
 
