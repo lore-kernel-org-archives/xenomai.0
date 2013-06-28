@@ -1,5 +1,5 @@
-Message-ID: <51CDD88C.5000004@xenomai.org>
-Date: Fri, 28 Jun 2013 20:40:12 +0200
+Message-ID: <51CDDB6E.1080200@xenomai.org>
+Date: Fri, 28 Jun 2013 20:52:30 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <201306260906.22955.leo@alaxarxa.net>	<51CB231E.8030600@xenomai.org>	<201306271109.22749.leo@alaxarxa.net>
@@ -39,30 +39,9 @@ On 06/28/2013 05:35 PM, Peter Soetens wrote:
 > either in xenomai code (a bug was fixed since xenomai 2.6.2.1 which
 > could explain such a behaviour), or in orocos code. When the bug is
 > fixed the signal will disappear."
->
-> We're having one thread ( main() ) which is modeswitching all the time
-> since it's doing user IO using the console, filesystem etc.
->
-> I didn't consider this as a bug, and we only enable PTHREAD_WARNSW for
-> specific threads, where it does matter.
 
 
-What would be a problem would be to change scheduling policy from 
-SCHED_FIFO to SCHED_OTHER in a section protected by a mutex, you would 
-then get the signal when releasing the mutex. In this case, when using 
-xenomai 2.6.2.1, you would get a SIGDEBUG with reason 
-SIGDEBUG_MIGRATE_PRIOINV reason, after 2.6.2.1 you would get a SIGDEBUG 
-with reason SIGDEBUG_RESCNT_IMBALANCE.
-
-This is considered as a bug, because if the mutex is shared with other 
-threads using SCHED_FIFO policy, switching from SCHED_FIFO to 
-SCHED_OTHER would cause the thread holding the mutex to switch to 
-secondary mode, and so potentially cause a priority inversion.
-
-But I think we already discussed this a long time ago on this list.
-
-Anyway, a way to know what happens is to print the reason in the signal 
-handler.
+And in fact, the bug might as well be in the application code...
 
 -- 
                                                                  Gilles.
