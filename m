@@ -1,11 +1,16 @@
-Message-ID: <51A4A22D.2090308@siemens.com>
-Date: Tue, 28 May 2013 14:25:17 +0200
-From: Gernot Hillier <gernot.hillier@siemens.com>
+From: <dietmar.schindler@manroland-web.com>
+Date: Thu, 4 Jul 2013 11:20:26 +0000
+Message-ID: <208C6975C932E94F86239FEA59CCA6321892EBB8@AUSMXMBX02.mrws.biz>
+References: <CAOfKkXHkoPvJmp1mFNWCMpiyH1vGP1fjOLs=6awoSc8gF3C_9Q@mail.gmail.com>
+	<CAOfKkXE6rb1_aR_Jk_it=D5aVApUWERJxKHZg-4BXfEWdOeMvQ@mail.gmail.com>
+	<208C6975C932E94F86239FEA59CCA6321892EB8C@AUSMXMBX02.mrws.biz>
+	<51D53DCF.1070704@xenomai.org>
+In-Reply-To: <51D53DCF.1070704@xenomai.org>
+Content-Language: de-DE
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] compiler error due to __extension__ attribute in POSIX
-	skin headers
+Subject: Re: [Xenomai] Xenomai processes crash with "Illegal instruction"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,67 +19,55 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+Cc: xenomai@xenomai.org
 
-Hi there!
+> Von: Philippe Gerum [mailto:rpm@xenomai.org]
+> Gesendet: Donnerstag, 4. Juli 2013 11:18
+>
+> On 07/04/2013 11:04 AM, dietmar.schindler@manroland-web.com wrote:
+> > We are having trouble with "Illegal instruction" (illegal opcode) crash=
+es (dumping core) of
+> two different Xenomai programs on different computers, occuring approxima=
+tely once every few
+> days. Here are some perhaps relevant details...
+> >
+> > Linux kernel version: 2.6.34
+>
+> Which I-pipe release?
 
-The recent commit "posix: allow headers compilation with GCC pedantic 
-flag" added the "__extension__" attribute in front of #include_next 
-directives, likely to flag them as GNU extensions. This, however, 
-introduced compiler errors for us when we include those headers from C++ 
-code.
+... sorry for forgetting to mention - Adeos-Patch : ksrc/arch/powerpc/patch=
+es/adeos-ipipe-2.6.34.4-powerpc-2.10-05.patch
 
-This can be easily reproduced with the following code snippet using the 
-POSIX skin:
+> > So, the two cases look somewhat similar: The "Illegal instruction" is r=
+eported around
+> pthread_setcanceltype@plt; there are legal branch instructions there as w=
+ell as at the branch
+> target locations; pthread_setcanceltype@plt is called from timed wait fun=
+ctions
+> (pthread_wait_np() and rt_task_sleep() resp.).
+> >
+> > We would be grateful for suggestions how to analyze and cure the proble=
+m.
+>
+> This looks like mm woes. Is CONFIG_XENO_HW_UNLOCKED_SWITCH enabled?
 
---------
-extern "C" {
-# include <signal.h>
-}
-int main() {}
---------
-
-At least with gcc 4.6 (which is the most current version available in 
-Ubuntu 12.04 LTS), this gives:
-
-# g++ `xeno-config --skin posix --cflags --ldflags` test.cpp
-test.cpp:3:1: error: expected unqualified-id before '}' token
-
-Having a closer look (e.g. by looking at the preprocessor output with 
--E), we found that the __extension__ attribute is not understood by the 
-preprocessor and thus not removed when resolving #include_next. So after 
-the preprocessor run, #include_next is replaced by the actual content of 
-the signal.h header, but __extension__ stays there.
-
-Usually, this doesn't harm too much as some code will likely follow from 
-the included header which is accepted after __extension__.
-
-In the special case of signal.h, however, as it has two subsequent 
-#include_next<signal.h> statements, the latter is replaced by an empty 
-string, so that __extension__ ends up right in front of the } token of 
-the extern "C" block. Thus, we see the compiler error cited above.
-
-Even if it doesn't harm in most cases, I think that  __extension__ is 
-not the correct way to tag GNU preprocessor extensions (you don't see 
-this in libstdc++ neither wget or other popular code snippets using 
-#include_next).
-
-The "official" way I found is to tell the compiler that your header is a 
-system header - in that case, #include_next is also accepted in pedantic 
-mode. This is either reached by using -isystem for the search path of 
-such headers or by adding this line to the header:
-
-#pragma GCC system_header
-
-Both solutions worked for me and prevented any warning in gcc pedantic 
-mode. However, I'm not really sure about other possible side effects 
-they could have, so any further insight is greatly welcome...
-
--- 
+Yes, CONFIG_XENO_HW_UNLOCKED_SWITCH=3Dy. Should we try with it disabled?
+--
 Regards,
-Gernot
+Dietmar
+________________________________________
+manroland web systems GmbH -- Managing Director: Eckhard Hoerner-Marass
+Registered Office: Augsburg -- Trade Register: AG Augsburg -- HRB-No. 26816=
+ -- VAT: DE281389840
 
-Siemens AG, Corporate Technology, CT RTC ITP SDP-DE
-Corporate Competence Center Embedded Linux
+Confidentiality note:
+This eMail and any files transmitted with it are confidential and intended =
+solely for the use of the individual or entity to whom they are addressed. =
+If you are not the intended recipient, you are hereby notified that any use=
+ or dissemination of this communication is strictly prohibited. If you have=
+ received this eMail in error, then please delete this eMail.
 
+! Please consider your environmental responsibility before printing this eM=
+ail
+________________________________________
 
