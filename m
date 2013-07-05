@@ -1,5 +1,5 @@
-Message-ID: <51D708A5.7030800@xenomai.org>
-Date: Fri, 05 Jul 2013 19:55:49 +0200
+Message-ID: <51D70C4C.8000402@xenomai.org>
+Date: Fri, 05 Jul 2013 20:11:24 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <201307051538.58306.marex@denx.de> <51D6FC56.9000504@xenomai.org>
@@ -55,10 +55,22 @@ On 07/05/2013 07:34 PM, Marek Vasut wrote:
 > please help me some more on where to look from now on or how to fix this?
 
 
-Sorry, the bug is obvious, icoll_handle_irq should not call handle_IRQ, 
-but handle_multi_irq, as explained here:
+Please try the following patch:
 
-http://xenomai.org/index.php/I-pipe-core:ArmPorting#CONFIG_MULTI_IRQ_HANDLER
+diff --git a/arch/arm/mach-mxs/icoll.c b/arch/arm/mach-mxs/icoll.c
+index 905f267..9bc9c21 100644
+--- a/arch/arm/mach-mxs/icoll.c
++++ b/arch/arm/mach-mxs/icoll.c
+@@ -92,7 +92,7 @@ asmlinkage void __exception_irq_entry icoll_handle_irq(struct pt_regs *regs)
+ 		if (irqnr != 0x7f) {
+ 			__raw_writel(irqnr, icoll_base + HW_ICOLL_VECTOR);
+ 			irqnr = irq_find_mapping(icoll_domain, irqnr);
+-			handle_IRQ(irqnr, regs);
++			ipipe_handle_multi_irq(irqnr, regs);
+ 			continue;
+ 		}
+ 		break;
+
 
 -- 
                                                                 Gilles.
