@@ -1,11 +1,11 @@
-Message-ID: <51D706BB.8080900@xenomai.org>
-Date: Fri, 05 Jul 2013 19:47:39 +0200
+Message-ID: <51D708A5.7030800@xenomai.org>
+Date: Fri, 05 Jul 2013 19:55:49 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <201307051538.58306.marex@denx.de> <51D6FC56.9000504@xenomai.org>
 	<201307051934.17975.marex@denx.de>
 In-Reply-To: <201307051934.17975.marex@denx.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] Xenomai on i.MX28 failure
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -22,7 +22,7 @@ Cc: Detlev Zundel <dzu@denx.de>, xenomai@xenomai.org
 On 07/05/2013 07:34 PM, Marek Vasut wrote:
 
 > Dear Gilles Chanteperdrix,
->
+> 
 >> On 07/05/2013 03:38 PM, Marek Vasut wrote:
 >>> Hello,
 >>>
@@ -49,18 +49,17 @@ On 07/05/2013 07:34 PM, Marek Vasut wrote:
 >>
 >> Try:
 >> http://xenomai.org/index.php/I-pipe-core:ArmPorting
->
+> 
 > Thanks! The earlyprintk really helped, now I see this output [1] . I suspect
 > it's something going on with the ipipe since I see icoll crashing. Can you
 > please help me some more on where to look from now on or how to fix this?
 
 
-Try enabling the I-pipe tracer, and the option which causes a trace 
-freeze on bug. And see how you reach the point of the BUG, the one at 
-kernel/posix-timers.c. Looking at the code where the bug is should help 
-in understanding what happens too.
+Sorry, the bug is obvious, icoll_handle_irq should not call handle_IRQ, 
+but handle_multi_irq, as explained here:
 
+http://xenomai.org/index.php/I-pipe-core:ArmPorting#CONFIG_MULTI_IRQ_HANDLER
 
 -- 
-                                                                 Gilles.
+                                                                Gilles.
 
