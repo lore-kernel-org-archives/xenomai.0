@@ -1,14 +1,12 @@
-Message-ID: <51E16968.3000107@xenomai.org>
-Date: Sat, 13 Jul 2013 16:51:20 +0200
+Message-ID: <51D95573.4020308@xenomai.org>
+Date: Sun, 07 Jul 2013 13:48:03 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <50CB364C.70706@wanadoo.fr>
-	<50CB561D.5070706@grandegger.com>	<CANKLDmugXc4M08TYJaq0ON-Ls04=xk=6oh3dR0gLD0CPBxZjxg@mail.gmail.com>	<51B0353B.7060206@grandegger.com>
-	<51C213E4.5050905@grandegger.com>
-In-Reply-To: <51C213E4.5050905@grandegger.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Init issue with rtcan_flexcan
+References: <1373196748.98256.YahooMailNeo@web172204.mail.ir2.yahoo.com>
+In-Reply-To: <1373196748.98256.YahooMailNeo@web172204.mail.ir2.yahoo.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] Problem with shared memory (no entry in /dev/shm)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,64 +15,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Wolfgang Grandegger <wg@grandegger.com>
-Cc: Thierry Bultel <thierry.bultel@wanadoo.fr>, xenomai@xenomai.org
+To: Franz Engel <franz_lambert_engel@yahoo.de>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 06/19/2013 10:26 PM, Wolfgang Grandegger wrote:
+Le 07/07/2013 13:32, Franz Engel a écrit :
+> Hi,
+> 
+> Currently I'm upgrading my system to Xenomai 2.6.2.1 and the Linux
+> kernel 3.5.7. Everything looks fine. I see the services starting in
+> the dmesg and the latency test runs without problems (besides some
+> high latencies :-)). But I have a problem with the shared memory.
+> When I run my project in the old system, everything works fine and I
+> saw an entry in /dev/shm. With my new system I get segmentations
+> faults when I try to write to the shared memory I created. Futhermore
+> I have no entries in /dev/shm. If I compile the code (in my cmake
+> file it is possible to change between "normal" compiling and
+> compiling with xenomai) without xenomai everything works good and I
+> get an entry in /dev/shm. Does somebody else have the same problems
+> with the shared memory in the new xenomai version or is something
+> wrong with my code. Here is a small example with the corresponding
+> cmake-file (I get no errors):
 
-> Hi Henri,
->
-> On 06/06/2013 09:07 AM, Wolfgang Grandegger wrote:
->> Hi Henri,
->>
->> On 06/05/2013 09:15 AM, Henri Roosen wrote:
->>> On Fri, Dec 14, 2012 at 5:38 PM, Wolfgang Grandegger<wg@grandegger.com>wrote:
->>>
->>>> On 12/14/2012 03:23 PM, Thierry Bultel wrote:
->>>>> Hi,
->>>>> some days ago I have posted a patch for the rtcan_flexcan to be
->>>>> correctly probed on the iMX6q
->>>>>
->>>>> It is functional, but I have not tested it enough, I am sorry about that.
->>>>> It only works if the linux flexcan driver module has been used once
->>>> before.
->>>>>
->>>>> Else I have got IRQs but no packet go to the upper layer, I think it is
->>>>> stuck in passive state, I am investigating on it.
->>>>
->>>> It would be nice if you could port the missing patches from the mainline
->>>> Linux kernel to rtcan_flexcan.
->>>>
->>>
->>> I have ported code from the mainline linux flexcan driver that fixes the
->>> behavior described by Thierry. Please find attached:
->>> 0001-make-rtcan_flexcan-driver-compatible-with-non-OpenFi.patch
->>> 0002-Fix-rtcan_flexcan-for-mx6-for-OpenFirmware-platforms.patch
->>>
->>> The attached patches can be applied to the current mainline xenomai git
->>> (anywhere after commit-3ddc61cda095a9ae51277608d7fd4e9c2c481625). They make
->>> Thierry's patch obsolete.
->>>
->>> I have tested the rtcan_flexcan driver in the non-CONFIG_OF configuration
->>> only. On a wandboard with iMX6Solo using the freescale 3.0 kernel. I only
->>> compile tested the CONFIG_OF configuration for the current ipipe master
->>> (3.8) because wandboard solo is not yet supported by OpenFirmware. It would
->>> be great if someone could test the OF version.
->>
->> Thanks for your contribution. Looks good at a first glance. Just need to
->> check back- (and forward-) compatibility. I will also try to get access
->> to boards using Flexcan. Hope to find some time over the WE.
->
-> So far I didn't get a chance to test you driver modifications. Anyway,
-> the patch looks good. Gilles, could you please add my
->
-> "Acked-by: Wolfgang Grandegger<wg@grandegger.com>"
->
-> and apply the patch, thanks.
+The difference comes from the kernel configuration: if you have xenomai
+posix shared memory enabled in xenomai configuration, these one are
+used, and they do not appear in /dev/shm but in /proc/xenomai/heaps.
 
+As for the error with xenomai skin posix shared memory I will run your
+sample program to see if I can reproduce it, but would need a bit more
+information:
+what version of the I-pipe patch do you use?
+is running the example you posted sufficient, or do I have to add a call
+to mmap and a write to the mmaped area to reproduce the bug?
 
-Merged, thanks.
 
 -- 
-                                                                 Gilles.
+Gilles.
 
