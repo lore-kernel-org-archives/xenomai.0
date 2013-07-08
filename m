@@ -1,12 +1,14 @@
-Message-ID: <51EA7539.3000805@xenomai.org>
-Date: Sat, 20 Jul 2013 13:32:09 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <51DAC4DF.8030908@xenomai.org>
+Date: Mon, 08 Jul 2013 15:55:43 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <51B73421.3050506@siemens.com>
-In-Reply-To: <51B73421.3050506@siemens.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+References: <CE260BFE-CB8F-45DC-A46D-8CFE585069EC@mah.priv.at>
+	<51DAC0A9.1010709@xenomai.org>
+	<E46787D6-E990-4573-A1D4-124253BD8DEA@mah.priv.at>
+In-Reply-To: <E46787D6-E990-4573-A1D4-124253BD8DEA@mah.priv.at>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Stable update for ipipe-3.8
+Subject: Re: [Xenomai] q on rt_task_self() and mode switching
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,41 +17,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Michael Haberler <mail17@mah.priv.at>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 06/11/2013 04:28 PM, Jan Kiszka wrote:
-
-> Hi all,
+On 07/08/2013 03:45 PM, Michael Haberler wrote:
 >
-> I've merged 3.8.13 into our stable 3.8 branch. This triggered some minor
-> conflicts in generic and ARM code. Please see
+> Am 08.07.2013 um 15:37 schrieb Philippe Gerum <rpm@xenomai.org>:
 >
-> git://git.xenomai.org/ipipe-jki for-upstream/3.8
+>> On 07/08/2013 03:23 PM, Michael Haberler wrote:
+>>> if a userland RT thread gets modeswitched, the SIGXCPU handler obviously still executes in the RT domain,
+>>
+>>
+>> Nope. All regular signal handlers are executed in the linux domain. Xenomai 2.x does not provide real-time signal handlers fired from primary mode.
+>>
+>> at least rt_task_self() returns a valid task descriptor - fine.
+>>>
+>>> If a kernel RT thread misses the release point, it seems the thread is immediately switched to linux scheduling
+>>
+>> With Xenomai 2.x, there is no migration to secondary mode for a kernel(-only) RT thread.
+>>
+>> - or at least rt_task_self() returns NULL in this scenario:
+>>>
+>>> int result =  rt_task_wait_period(&overruns);
+>>>      switch (result) {
+>>>
+>>>      case -ETIMEDOUT: // release point was missed
+>>> 	task = rt_task_self(); // this returns NULL
+>>>
+>>>
+>>> not a big thing - I just would like to get at the thread name for error message purposes; any way to do this?
+>>>
+>>
+>> Certainly, but which context does the code above run? On top of some ioctl()?
 >
-> for details. The result works fine for x86, and if it's also OK for the
-> other arch, I'd propose this to be merged into the official 3.8 stable
-> branch.
+> from the RT thread, which is started by a kernel module
+>
 
-
-Hi Jan,
-
-I am not so sure 3.8.13. I am having random segfaults when running:
-
-xeno-regression-test -l "dohell -s 192.168.0.5 -m /mnt -l /ltp" -p 1000
-
-on geode and at91. I have first focused on at91 because the "unlocked 
-context switch" features is a usual suspect, but:
-- the hardware pgd is in sync with the software pgd, which means that 
-the unlocked context switch did not mess up the hardware pgd;
--  going back to 3.5, I am unable to trigger the faults, despite the 
-fact that the mm switch code is the same for this type of machine.
-
-So, could you run this same test on your x86 machines to see if you have 
-any issue?
-
-Regards.
+I still don't see how rt_task_self() could ever return a NULL pointer in 
+this case. What does xnpod_current_thread()->name give you in the same 
+context?
 
 -- 
-                                                                 Gilles.
+Philippe.
 
