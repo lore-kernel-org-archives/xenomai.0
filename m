@@ -1,13 +1,10 @@
-Message-ID: <5200B433.9000604@xenomai.org>
-Date: Tue, 06 Aug 2013 10:30:43 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <51DBF6B8.1000000@mitrol.it>
+Date: Tue, 09 Jul 2013 13:40:40 +0200
+From: Paolo Minazzi <Paolo.Minazzi@mitrol.it>
 MIME-Version: 1.0
-References: <1375743903.7948.33.camel@lx-henry>
-In-Reply-To: <1375743903.7948.33.camel@lx-henry>
-Content-Type: text/plain; charset=ISO-8859-1
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Using a PowerPC Critical Interrupt Input alongside
- Xenomai
+Subject: [Xenomai] Make a block of code atomic
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,68 +13,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Henry Bausley <hbausley@deltatau.com>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 08/06/2013 01:05 AM, Henry Bausley wrote:
-> 
-> 
-> I am experimenting with powerpc critical interrupts.
-> 
-> Is it feasible  to use a powerpc Critical Interrupt along side xenomai?
-> What would I have to do in general to accomplish this?
-> 
->    I have written to the appropiate powerpc registers to make the
-> interrupt critical.
-> 
->    I have modified head_44x.S to call my own routine.
-> ie.
-> changed
-> 
-> CRITICAL_EXCEPTION(0x0100, CriticalInput, unknown_exception)
-> 
-> to
-> 
-> CRITICAL_EXCEPTION(0x0100, CriticalInput, do_CIRQ)
-> 
-> 
-> My critical interrupt handler even works a few times. I can even see my
-> xenomai shared memories from my own critical interrupt handler.
-> However , after a few interrupts my xenomai application faults.
-> 
-> 
+Hi,
 
-You would need at least something along these lines for returning to user (happily untested):
+I would like to make a block of kernel code atomic, so that no one (both 
+xenomai and Linux) can interrupt it.
+I use the following :
 
-diff --git a/arch/powerpc/kernel/entry_32.S b/arch/powerpc/kernel/entry_32.S
-index 18df6e1..223723f 100644
---- a/arch/powerpc/kernel/entry_32.S
-+++ b/arch/powerpc/kernel/entry_32.S
-@@ -1154,7 +1154,7 @@ exc_exit_restart_end:
- 	lwz	r3,_MSR(r1);						\
- 	andi.	r3,r3,MSR_PR;						\
- 	LOAD_MSR_KERNEL(r10,MSR_KERNEL);				\
--	bne	user_exc_return;					\
-+	bne	__ipipe_user_exc_return;				\
- 	lwz	r0,GPR0(r1);						\
- 	lwz	r2,GPR2(r1);						\
- 	REST_4GPRS(3, r1);						\
-@@ -1399,6 +1399,12 @@ _GLOBAL(__ipipe_ret_from_except)
-         cmpwi   r3, 0
-         bne+ ret_from_except
-         b restore
-+_GLOBAL(__ipipe_user_exc_return)
-+        bl __ipipe_check_root
-+        cmpwi   r3, 0
-+	mfmsr	r10
-+        bne+ user_exc_return
-+        b restore_user
- #endif /* CONFIG_IPIPE */
- 
- /*
+#define my_local_irq_save(x)    ((x) = 
+ipipe_test_and_stall_pipeline_head() & 1)
+#define my_local_irq_restore(x) ipipe_restore_pipeline_head(x)
 
-Since MSR_CE is not part of the disabling mask the I-pipe uses in interrupt-free sections, you should not pipeline critical irqs through __ipipe_grab_irq and friends. do_CIRQ() should be restricted to local, self-contained and safe code of your own, not calling the infrastructure.
+my_local_irq_save(flags);
+< critical section >
+my_local_irq_restore(flags);
 
--- 
-Philippe.
+It works well enough, but rarely an rtdm irq enter into my critical 
+section.
+The rtdm irq is registered in this way : rtdm_irq_request(&priv->irqHnd, 
+ETH_PORT_IRQ_NUM(priv->port), irqHandler, RTDM_IRQTYPE_EDGE, "rtdm_eth", 
+priv);
+
+Is it normal ? Are you sure that it cannot happen ?
+
+Thanks,
+Paolo
 
