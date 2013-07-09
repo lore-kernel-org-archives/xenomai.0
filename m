@@ -1,12 +1,14 @@
-Message-ID: <52053496.6040704@xenomai.org>
-Date: Fri, 09 Aug 2013 20:27:34 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: Younes CHALABI <y.chalabi@sinters.fr>
+Date: Tue, 9 Jul 2013 12:18:07 +0000
+Message-ID: <A46EF8CF1BBB8E4B8A27B73E177C466402464B37@MAIL-SINTERS-01.sinters-int.fr>
+References: <A46EF8CF1BBB8E4B8A27B73E177C466402463ADE@MAIL-SINTERS-01.sinters-int.fr>,
+	<51DBF250.9070804@xenomai.org>
+In-Reply-To: <51DBF250.9070804@xenomai.org>
+Content-Language: fr-FR
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <1124806E0C09F04A992E69AE2EC7FA3C80A9A7@swexchange01.itk.local>
-In-Reply-To: <1124806E0C09F04A992E69AE2EC7FA3C80A9A7@swexchange01.itk.local>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Problems with running Xenomai on Core i5
+Subject: [Xenomai] RE :  No boot kernel with xenomai on i.MX6Q Sabrelite
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,25 +17,53 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Tobias Luksch <Tobias.Luksch@itk-engineering.de>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 08/09/2013 02:48 PM, Tobias Luksch wrote:
-> Hello Gilles,
-> 
-> thank you for your help. I disabled ACPI in the kernel as another
-> desperate try while hunting down my problem, now I will enable it
-> again.
-> 
-> I mainly opted for kernel version 3.2.21 as we need a 3.2 kernel
-> because of some other software we have to use in the project and the
-> adeos patch for 3.2.21 came with the xenomai 2.6.2.1 tarball. Could
-> you suggest another 3.2 kernel version, or would you discourage me
-> from using a 3.2.x kernel at all?
+Hi Gilles,
 
-If you want to use the 3.2 kernel, you have to backport some patches
-from the 3.4 or 3.5 branch.
+On git under tags, the latest version of Xenomai is 2.6.2.1 (5 months ago),=
+ and I think that is the same version I use.
 
--- 
-                                                                Gilles.
+Could you give me the direct link to get the latest version of xenomai, ple=
+ase ?
+
+I have a question about the images put on the target : I took the rootfs an=
+d the u-boot from LTIB, and took only the uImage from : build_root/linux/ar=
+ch/arm/boot/uImage
+
+Is this right ? And is there something else to do ? To put the patched kern=
+el with Xenomai on the target.
+
+Regards,
+
+Younes CHALABI
+________________________________________
+De : Gilles Chanteperdrix [gilles.chanteperdrix@xenomai.org]
+Date d'envoi : mardi 9 juillet 2013 13:21
+=C0 : Younes CHALABI
+Cc : xenomai@xenomai.org
+Objet : Re: [Xenomai] No boot kernel with xenomai on i.MX6Q Sabrelite
+
+On 07/09/2013 12:40 PM, Younes CHALABI wrote:
+
+> Hi to all,
+>
+> I am currently trying to deploy Xenomai-2.6.2.1 patched to Linux-3.0.35 (=
+Freescale Release) on the i.MX6Q Sabrelite board.
+>
+> I followed this procedure for the installation : http://www.xenomai.org/d=
+ocumentation/xenomai-2.6/html/README.INSTALL/#arm
+>
+> When I boot the target with an microSD card, the kernel starts to uncompr=
+essing but at one moment stops at this line : Switching to clocksource ipip=
+e_tsc ; and nothing happens after.
+>
+> Any suggestion will be welcome.
+
+
+Could you try with the latest version from xenomai git instead of 2.6.2.1?
+
+--
+                                                                 Gilles.
 
