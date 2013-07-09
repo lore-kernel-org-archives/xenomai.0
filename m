@@ -1,12 +1,14 @@
-Message-ID: <520A3AC2.6080304@xenomai.org>
-Date: Tue, 13 Aug 2013 15:55:14 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <51DC560F.90805@xenomai.org>
+Date: Tue, 09 Jul 2013 20:27:27 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <20130813025419.B4E993700FF@webmail.sinamail.sina.com.cn>
-In-Reply-To: <20130813025419.B4E993700FF@webmail.sinamail.sina.com.cn>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+References: <A46EF8CF1BBB8E4B8A27B73E177C466402463ADE@MAIL-SINTERS-01.sinters-int.fr>,
+	<51DBF250.9070804@xenomai.org>
+	<A46EF8CF1BBB8E4B8A27B73E177C466402464B37@MAIL-SINTERS-01.sinters-int.fr>
+In-Reply-To: <A46EF8CF1BBB8E4B8A27B73E177C466402464B37@MAIL-SINTERS-01.sinters-int.fr>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] About pathcing xenomai into linux
+Subject: Re: [Xenomai] RE : No boot kernel with xenomai on i.MX6Q Sabrelite
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,28 +17,19 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: wxs3314480@sina.cn
-Cc: xenomai <xenomai@xenomai.org>
+To: Younes CHALABI <y.chalabi@sinters.fr>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 08/13/2013 04:54 AM, wxs3314480@sina.cn wrote:
->
->
-> 	Thanks for reading.
->
->
-> 	I wonder that can I use xenomai 2.6.2.1 in linux kernel 3.2.1 versions or above .
-> 	And about using xenomai ,do I need Adeos with xenomai together?
+On 07/09/2013 02:18 PM, Younes CHALABI wrote:
 
-You should find answers to your questions here:
-https://www.xenomai.org/index.php/FAQs
-
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> http://www.xenomai.org/mailman/listinfo/xenomai
+> Hi Gilles,
 >
+> On git under tags, the latest version of Xenomai is 2.6.2.1 (5 months ago), and I think that is the same version I use.
+
+
+I mean xenomai 2.6 git current head.
 
 
 -- 
-Philippe.
+                                                                 Gilles.
 
