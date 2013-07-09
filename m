@@ -1,10 +1,12 @@
+Message-ID: <51DBED79.4020004@xenomai.org>
+Date: Tue, 09 Jul 2013 13:01:13 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Date: Mon, 29 Jul 2013 11:15:08 -0500
-Message-ID: <CAH9k9C9QCQuUMgOjgSiVPuVvdaz8zPzbAmLMd+=mAJ5LsC9a9Q@mail.gmail.com>
-From: =?UTF-8?Q?Ricardo_Am=C3=A9zquita?= <ramezquitao@cihologramas.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] Question about queues
+References: <51DBDF8E.1080408@axelsw.it>
+In-Reply-To: <51DBDF8E.1080408@axelsw.it>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] ipipe patch for linux kernel 3.3 arm
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,60 +15,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Roberto Bielli <roberto.bielli@axelsw.it>
+Cc: xenomai@xenomai.org
 
-Sorry... I accidentally sent my previous message incomplete. Here there is
-the complete message.
+On 07/09/2013 12:01 PM, Roberto Bielli wrote:
 
-I'm trying to use queues to transfer information between a RT process and
-an user-space process.
-As far as I understand, I should create a queue using rt_queue_create to
-use it latter, but I don see this line in the msg_queue.c example. Is this
-example correct?
+> HI,
 
-my rt program right now is something like:
+Hi,
 
-
-...
-...
-rt_queue_create(&motion_q,"Motion",1024*(sizeof(sd_points)+sizeof(amd_times=
-)),
-                    1024,Q_FIFO);
-
-while(1)
-{
-...
-wait for data
-....
-
-rt_queue_write(&monitor_q,&
-mon_data,sizeof(mon_data),Q_NORMAL);
-
-}
+> there is an ipipe-core patch for kernel 3.3 ARM that i can use with
+> xenomai 2.6.2.1 ?
 
 
-and my user space program is something like
+No.
 
-....
-err =3D rt_queue_bind(&q,"SomeQueueName",TM_INFINITE);
-while(1)
-{
-st=3Drt_queue_receive(&q,&bufp,mode)
-}
-Am I missing the rt_queue_free and rt_queue_alloc?
-Or they are not needed because I'm using the rt_queue_create?
+-- 
+                                                                 Gilles.
 
-
-Thanks
-
-
-
-
---=20
-Ricardo Am=C3=A9zquita O
-
-Combusti=C3=B3n Ingenieros Ltda
-Cll 25B # 85B - 76, Bogot=C3=A1 / Colombia
-Tel: 57-1-2635232
-Fax: 57-1-4296516
-http://www.cihologramas.com
