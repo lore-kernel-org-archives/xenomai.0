@@ -1,10 +1,12 @@
-From: Skander Bahloul <skander.bahloul@imag.fr>
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: quoted-printable
-Date: Thu, 1 Aug 2013 18:20:13 +0200
-Message-Id: <0DE90633-1CDC-4BB5-837D-D9FA5409B73D@imag.fr>
-Mime-Version: 1.0 (Apple Message framework v1085)
-Subject: [Xenomai] polling task and rt_task_sleep()
+Message-ID: <51DBF250.9070804@xenomai.org>
+Date: Tue, 09 Jul 2013 13:21:52 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
+References: <A46EF8CF1BBB8E4B8A27B73E177C466402463ADE@MAIL-SINTERS-01.sinters-int.fr>
+In-Reply-To: <A46EF8CF1BBB8E4B8A27B73E177C466402463ADE@MAIL-SINTERS-01.sinters-int.fr>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] No boot kernel with xenomai on i.MX6Q Sabrelite
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,18 +15,24 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Younes CHALABI <y.chalabi@sinters.fr>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Dear Xenomai list members,
+On 07/09/2013 12:40 PM, Younes CHALABI wrote:
 
-I'am trying to use xenomai for a polling task.
+> Hi to all,
+>
+> I am currently trying to deploy Xenomai-2.6.2.1 patched to Linux-3.0.35 (Freescale Release) on the i.MX6Q Sabrelite board.
+>
+> I followed this procedure for the installation : http://www.xenomai.org/documentation/xenomai-2.6/html/README.INSTALL/#arm
+>
+> When I boot the target with an microSD card, the kernel starts to uncompressing but at one moment stops at this line : Switching to clocksource ipipe_tsc ; and nothing happens after.
+>
+> Any suggestion will be welcome.
 
-I'am use rt_task_sleep() and i discover that this function is important =
-to execute the program but it causes latencies.
 
-If i delete this function, the terminal freeze.
+Could you try with the latest version from xenomai git instead of 2.6.2.1?
 
-Can you help me.
-
-Thank you very much!=
+-- 
+                                                                 Gilles.
 
