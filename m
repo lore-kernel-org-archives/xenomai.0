@@ -1,13 +1,16 @@
-Message-ID: <5214802B.9060001@siemens.com>
-Date: Wed, 21 Aug 2013 10:54:03 +0200
-From: Jan Kiszka <jan.kiszka@siemens.com>
+From: Younes CHALABI <y.chalabi@sinters.fr>
+Date: Wed, 10 Jul 2013 13:00:31 +0000
+Message-ID: <A46EF8CF1BBB8E4B8A27B73E177C4664033EC616@MAIL-SINTERS-01.sinters-int.fr>
+References: <A46EF8CF1BBB8E4B8A27B73E177C466402463ADE@MAIL-SINTERS-01.sinters-int.fr>,
+	<51DBF250.9070804@xenomai.org>
+	<A46EF8CF1BBB8E4B8A27B73E177C466402464B37@MAIL-SINTERS-01.sinters-int.fr>,
+	<51DC560F.90805@xenomai.org>
+In-Reply-To: <51DC560F.90805@xenomai.org>
+Content-Language: fr-FR
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <52147CD7.70400@siemens.com> <52147DF2.8060407@xenomai.org>
-	<52147E94.6070309@siemens.com>
-In-Reply-To: <52147E94.6070309@siemens.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [RFC] x86 port to kernel 3.10
+Subject: [Xenomai] RE : RE : No boot kernel with xenomai on i.MX6Q Sabrelite
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,44 +20,80 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 2013-08-21 10:47, Jan Kiszka wrote:
-> On 2013-08-21 10:44, Gilles Chanteperdrix wrote:
->> On 08/21/2013 10:39 AM, Jan Kiszka wrote:
->>> Hi all,
->>>
->>> in the process of updating our kernel support to current (and long-term)
->>> stable 3.10, I've pushed the I-pipe master tree to that version. The
->>> tree is available at
->>>
->>> git://git.xenomai.org/ipipe-jki.git next-x86
->>>
->>> Though the focus is on x86, this became a full merge, ie. I also tried
->>> to resolve ARM and PowerPC conflicts (other archs had none). But I'm
->>> sure I broke some things (or things were already broken after the 3.9
->>> merge - there were suspicious unresolved conflicts). So these arch need
->>> a careful check! Specifically watch out for merges that resolved
->>> conflicts in their trees.
->>>
->>
->> I would prefer to have the conflict markers in the git tree, so that we
->> know where the conflicts occur. Having to browse history to find all the
->> merge conflicts seems more complicated than greping for '>>>'. Of
->> course, it means that when all the conflicts are resolved, the kernel
->> should be rebased to remove the commits with the merge conflicts, so as
->> to keep a bisectable kernel.
-> 
-> As you cannot rebase merges (without losing history), this is not really
-> applicable. I can leave in conflicts that affect ARM or Power, sure, but
-> then the fix-ups will have to happen on top, taking away bisectability.
+Hi Gilles,
 
-Hmm, what we would really need is some tool to replay merges with their
-conflict resolution. That must be feasible, somehow...
+I followed your advice, using the xenomai-master, but now the kernel not bo=
+ot also. It stops at :=20
 
-Jan
+## Booting kernel from Legacy Image at 10800000 ...
+   Image Name:   Linux-3.0.15
+   Image Type:   ARM Linux Kernel Image (uncompressed)
+   Data Size:    3825732 Bytes =3D  3.6 MB
+   Load Address: 10008000
+   Entry Point:  10008000
+   Verifying Checksum ... OK
+   Loading Kernel Image ... OK
+OK
 
--- 
-Siemens AG, Corporate Technology, CT RTC ITP SES-DE
-Corporate Competence Center Embedded Linux
+Starting kernel ...
+
+Uncompressing Linux... done, booting the kernel.
+
+Sorry for disturbing you, but it's been a month since I still can not run x=
+enomai on the Sabrelite board. Now I need concise answers :
+
+1- Did you already used Xenomai on the Sabrelite board ?
+
+2- Which kernel | xenomai version and patches for the Sabrelite board ?
+
+3- After the build I've got two folders :=20
+
+     1) build_root contains  : linux and xenomai=20
+
+     2) staging_dir contains : dev and usr
+
+All I do to transfer the images is :=20
+
+     1) Take U-BOOT from LTIB
+
+     2) Take ROOTFS from LTIB
+
+     3) Take KERNEL (uImage) from build_root/linux/arch/arm/boot
+
+Are these files all I need to have, to run Xenomai on the Sabrelite board ?=
+=20
+
+Or I still have to do something ?
+
+Please, if you have a methodology of how to proceed step by step, for final=
+ly having Xenomai on my Sabrelite board, it would be nice of you.
+
+Thanks in advance for your precise answers.
+
+Best regards,
+
+Younes CHALABI
+
+________________________________________
+De : Gilles Chanteperdrix [gilles.chanteperdrix@xenomai.org]
+Date d'envoi : mardi 9 juillet 2013 20:27
+=C0 : Younes CHALABI
+Cc : xenomai@xenomai.org
+Objet : Re: RE : [Xenomai] No boot kernel with xenomai on i.MX6Q Sabrelite
+
+On 07/09/2013 02:18 PM, Younes CHALABI wrote:
+
+> Hi Gilles,
+>
+> On git under tags, the latest version of Xenomai is 2.6.2.1 (5 months ago=
+), and I think that is the same version I use.
+
+
+I mean xenomai 2.6 git current head.
+
+
+--
+                                                                 Gilles.=
 
