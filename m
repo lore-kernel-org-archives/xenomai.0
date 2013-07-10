@@ -1,17 +1,12 @@
-Message-ID: <5213E5D9.1090408@xenomai.org>
-Date: Tue, 20 Aug 2013 23:55:37 +0200
+Message-ID: <51DD4760.6050908@xenomai.org>
+Date: Wed, 10 Jul 2013 13:37:04 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CAMgy_J0idydJq8wzH3CwQoCa+BEbSyUyOJoWmvwc+oAB3jpZ6w@mail.gmail.com>
-	<CAKvQZ_2Nzfgj7oK12+t3CtLj-YWBCB=nFYSDU6B4KqW4aWQpnQ@mail.gmail.com>
-	<50B88506.6000002@xenomai.org>
-	<CAKvQZ_3LJ-u2B0zc0+pobSGnMZ4nNviyxfuP1uiVRVuHw9Y9pQ@mail.gmail.com>
-	<50B8F21B.5090503@xenomai.org>
-	<CAKvQZ_13VsZV9sKjNLqMTHJhGn55pjkLqffsb8kYQb1b8H7rFw@mail.gmail.com>
-In-Reply-To: <CAKvQZ_13VsZV9sKjNLqMTHJhGn55pjkLqffsb8kYQb1b8H7rFw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
+References: <51DBF6B8.1000000@mitrol.it>
+In-Reply-To: <51DBF6B8.1000000@mitrol.it>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Frustrating experience with Xenomai
+Subject: Re: [Xenomai] Make a block of code atomic
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,75 +15,50 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Willy Lambert <lambert.willy@gmail.com>
-Cc: Shamju Joseph <shamju.joseph@gmail.com>, xenomai@xenomai.org
+To: Paolo Minazzi <Paolo.Minazzi@mitrol.it>
+Cc: xenomai@xenomai.org
 
-On 01/22/2013 01:43 AM, Willy Lambert wrote:
-> 2012/11/30 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>:
->> On 11/30/2012 03:29 PM, Willy Lambert wrote:
->>> 2012/11/30 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>:
->>>> On 11/30/2012 09:45 AM, Willy Lambert wrote:
->>>>> P.S. : to xenomai community, is there a problem if I continue some
->>>>> support here, or should we go somewhere else more on topic ?
->>>>
->>>> Absolutely no problem, this is a recurring problem, so, we can not
->>>> really ignore it. The thingx I would add is:
->>>> - if you have a very recent computer, you will have more trouble
->>>> installing really old kernels than install the latest revision, so, I
->>>> would advise to use the I-pipe patch for Linux 3.2 with xenomai 2.6.1
->>>> - we can give you write access to the wiki if you wish to write some
->>>> documents about this.
->>>>
->>>
->>> Ok, let me know where I should write something.
->>>
->>> I'll rewrite something like my first mail in the "old debian way"
->>> (should be ok for debian and ubuntu) :
->>> _ explaining the idea "first compile your vanilla kernel before
->>> patching it, try boot, and add xenomai".
->>> _ getting compile tools
->>> _ getting linux source with ketchup (cause it's really no brain)
->>> _ getting current config, configuring personnal version
->>> _ compile command (producing .deb)
->>> _ install command / remove
->>> Keeping the aim to show a simple method without getting into details,
->>> and providing some general linux doc to read.
->>>
->>> I don't have time to update my process to "latest pratices", but at
->>> least it a starting point.
->>
->> Ok, I will create a login/password on the wiki.
->>
->> However, for the particular case of Debian, starting with the I-pipe for
->> Linux 3.4, we can probably provide a precompiled kernel with a
->> debian-like configuration which will run on any platform.
->>
->> --
->>                                             Gilles.
-> 
-> Here is a first try.
-> http://www.xenomai.org/index.php/Building_kernel
->  Don't hesitate to comment/correct this. I will add some links later to :
-> _ a good complete kernel building guide (if you have some please share)
-> _ x86 configure hints wiki page.
-> 
-> The end is a bit specific to Debian/Ubuntu distros. Is it a problem ?
-> Should I rework this ?
-> 
+On 07/09/2013 01:40 PM, Paolo Minazzi wrote:
 
-Hi Willy,
+> Hi,
+>
+> I would like to make a block of kernel code atomic, so that no one (both
+> xenomai and Linux) can interrupt it.
+> I use the following :
+>
+> #define my_local_irq_save(x)    ((x) =
+> ipipe_test_and_stall_pipeline_head()&  1)
+> #define my_local_irq_restore(x) ipipe_restore_pipeline_head(x)
+>
+> my_local_irq_save(flags);
+> <  critical section>
+> my_local_irq_restore(flags);
+>
+> It works well enough, but rarely an rtdm irq enter into my critical
+> section.
+> The rtdm irq is registered in this way : rtdm_irq_request(&priv->irqHnd,
+> ETH_PORT_IRQ_NUM(priv->port), irqHandler, RTDM_IRQTYPE_EDGE, "rtdm_eth",
+> priv);
+>
+> Is it normal ? Are you sure that it cannot happen ?
 
-sorry for answering safter uch a long time, the mail got buried and
-forgotten. The page is nice, I am going to put a link to it at least in
-the README.INSTALL guide, I guess we should put some links to it in the
-wiki too. However, I would like to advise people to first start with a
-prebuilt kernel, such as the Debian kernels available on xenomai servers
-or made available by the LinuxCNC project:
-http://wiki.linuxcnc.org/cgi-bin/wiki.pl?XenomaiKernelPackages
 
-before they start trying building their own kernel and come to the list
-asking the usual questions.
+Looking at ipipe_test_and_stall_head implementation on the I-pipe patch 
+for Linux 3.8:
+
+static inline unsigned long ipipe_test_and_stall_head(void)
+{
+	hard_local_irq_disable();
+	return __test_and_set_bit(IPIPE_STALL_FLAG, &__ipipe_head_status);
+}
+
+getting an interrupt in your critical section would mean that 
+"hard_local_irq_disable" is broken on the architecture where you use it.
+
+That being said, I do not know if I look at the implementation you are 
+using, since you did not give us any information about version and 
+architecture you are using.
 
 -- 
-                                                                Gilles.
+                                                                 Gilles.
 
