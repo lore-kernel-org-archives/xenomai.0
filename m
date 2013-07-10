@@ -1,12 +1,12 @@
-Message-ID: <52147DF2.8060407@xenomai.org>
-Date: Wed, 21 Aug 2013 10:44:34 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <51DD49A7.5060109@mitrol.it>
+Date: Wed, 10 Jul 2013 13:46:47 +0200
+From: Paolo Minazzi <Paolo.Minazzi@mitrol.it>
 MIME-Version: 1.0
-References: <52147CD7.70400@siemens.com>
-In-Reply-To: <52147CD7.70400@siemens.com>
-Content-Type: text/plain; charset=UTF-8
+References: <51DBF6B8.1000000@mitrol.it> <51DD4760.6050908@xenomai.org>
+In-Reply-To: <51DD4760.6050908@xenomai.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [RFC] x86 port to kernel 3.10
+Subject: Re: [Xenomai] Make a block of code atomic
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,33 +15,64 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On 08/21/2013 10:39 AM, Jan Kiszka wrote:
-> Hi all,
-> 
-> in the process of updating our kernel support to current (and long-term)
-> stable 3.10, I've pushed the I-pipe master tree to that version. The
-> tree is available at
-> 
-> git://git.xenomai.org/ipipe-jki.git next-x86
-> 
-> Though the focus is on x86, this became a full merge, ie. I also tried
-> to resolve ARM and PowerPC conflicts (other archs had none). But I'm
-> sure I broke some things (or things were already broken after the 3.9
-> merge - there were suspicious unresolved conflicts). So these arch need
-> a careful check! Specifically watch out for merges that resolved
-> conflicts in their trees.
-> 
+Il 10/07/2013 13.37, Gilles Chanteperdrix ha scritto:
+> On 07/09/2013 01:40 PM, Paolo Minazzi wrote:
+>
+>> Hi,
+>>
+>> I would like to make a block of kernel code atomic, so that no one (both
+>> xenomai and Linux) can interrupt it.
+>> I use the following :
+>>
+>> #define my_local_irq_save(x)    ((x) =
+>> ipipe_test_and_stall_pipeline_head()&  1)
+>> #define my_local_irq_restore(x) ipipe_restore_pipeline_head(x)
+>>
+>> my_local_irq_save(flags);
+>> <  critical section>
+>> my_local_irq_restore(flags);
+>>
+>> It works well enough, but rarely an rtdm irq enter into my critical
+>> section.
+>> The rtdm irq is registered in this way : rtdm_irq_request(&priv->irqHnd,
+>> ETH_PORT_IRQ_NUM(priv->port), irqHandler, RTDM_IRQTYPE_EDGE, "rtdm_eth",
+>> priv);
+>>
+>> Is it normal ? Are you sure that it cannot happen ?
+>
+>
+> Looking at ipipe_test_and_stall_head implementation on the I-pipe 
+> patch for Linux 3.8:
+>
+> static inline unsigned long ipipe_test_and_stall_head(void)
+> {
+>     hard_local_irq_disable();
+>     return __test_and_set_bit(IPIPE_STALL_FLAG, &__ipipe_head_status);
+> }
+>
+> getting an interrupt in your critical section would mean that 
+> "hard_local_irq_disable" is broken on the architecture where you use it.
+>
+> That being said, I do not know if I look at the implementation you are 
+> using, since you did not give us any information about version and 
+> architecture you are using.
+>
+Hi Gilles, thanks for your answer.
+I found this morning that was linux to re-enable interrupts.
 
-I would prefer to have the conflict markers in the git tree, so that we
-know where the conflicts occur. Having to browse history to find all the
-merge conflicts seems more complicated than greping for '>>>'. Of
-course, it means that when all the conflicts are resolved, the kernel
-should be rebased to remove the commits with the merge conflicts, so as
-to keep a bisectable kernel.
+The following
 
--- 
-                                                                Gilles.
+#define my_local_irq_save(x)    ((x) = 
+ipipe_test_and_stall_pipeline_head()&  1)
+#define my_local_irq_restore(x) ipipe_restore_pipeline_head(x)
+
+works well if no one touch irq flags directly. Unfortunately was not my 
+case.
+
+Thanks again,
+Paolo
+
 
