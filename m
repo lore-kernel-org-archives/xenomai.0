@@ -1,19 +1,12 @@
-Message-ID: <51DEF6FB.6080403@xenomai.org>
-Date: Thu, 11 Jul 2013 20:18:35 +0200
+Message-ID: <51DEF7EA.4030606@xenomai.org>
+Date: Thu, 11 Jul 2013 20:22:34 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <A46EF8CF1BBB8E4B8A27B73E177C466402463ADE@MAIL-SINTERS-01.sinters-int.fr>,
-	<51DBF250.9070804@xenomai.org>
-	<A46EF8CF1BBB8E4B8A27B73E177C466402464B37@MAIL-SINTERS-01.sinters-int.fr>,
-	<51DC560F.90805@xenomai.org>
-	<A46EF8CF1BBB8E4B8A27B73E177C4664033EC616@MAIL-SINTERS-01.sinters-int.fr>,
-	<51DDB5C3.7010307@xenomai.org>
-	<A46EF8CF1BBB8E4B8A27B73E177C4664033F268F@MAIL-SINTERS-01.sinters-int.fr>
-In-Reply-To: <A46EF8CF1BBB8E4B8A27B73E177C4664033F268F@MAIL-SINTERS-01.sinters-int.fr>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] RE : RE : RE : No boot kernel with xenomai on i.MX6Q
- Sabrelite
+References: <51DD7302.2010809@gmail.com>
+In-Reply-To: <51DD7302.2010809@gmail.com>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] failing compile of kernel-3.8 on arm
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,33 +15,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Younes CHALABI <y.chalabi@sinters.fr>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: sagar.behere@gmail.com
+Cc: xenomai@xenomai.org
 
-On 07/11/2013 01:35 PM, Younes CHALABI wrote:
+On 07/10/2013 04:43 PM, Sagar Behere wrote:
 
-> Hi Gilles,
+> Hello,
 >
-> Thanks for your answers.
+> I patched the vanilla linux-3.8 kernel sources with
+> ipipe-core-3.8-arm-1.patch. The patch was applied cleanly, but while
+> compiling the kernel, I get two problems
 >
-> It seems that I have a kernel panic while the boot and the cpu cores shut down one after the other still the target doesn't respond, and any new display is shown.
+> Problem 1: This is the same as
+> http://www.mail-archive.com/xenomai@xenomai.org/msg02719.html
 >
-> Using :
->
->       - Linux : rel_imx_3.0.15_12.03.00 (linux-3.0 Freescle Release)
->
->       - Patches :      1) adeos-ipipe-3.0.36-arm-1.18-11-pre.patch
->                            2) adeos-ipipe-3.0.36-arm-1.18-11.patch
->                            3) adeos-ipipe-3.0.36-arm-1.18-11-post.patch
+> Problem 2: The compilation halts with
 
 
-The important information about the kernel is its configuration. Please 
-try compiling a kernel with a configuration which does not enable 
-CONFIG_IPIPE and CONFIG_XENOMAI, when it boots, try enabling the 
-options. The error you have does not seem to be related to Xenomai.
-The first configuration to try would be imx6_defconfig, where you would 
-disable CONFIG_CPU_IDLE.
+> include/asm-generic/xenomai/syscall.h: In function
+> ‘__xn_safe_strncpy_from_user’:
+> include/asm-generic/xenomai/syscall.h:147: error: implicit declaration
+> of function ‘__strncpy_from_user’
+> make[3]: *** [kernel/xenomai/nucleus/bufd.o] Error 1
+> make[2]: *** [kernel/xenomai/nucleus] Error 2
+> make[1]: *** [kernel/xenomai] Error 2
+> make: *** [kernel] Error 2
+>
+> ----
+>
+> compiler is: arm-linux-gnueabi-gcc (Debian 4.4.5-8) 4.4.5
+>
+> Any ideas how to fix these issues? I'll be running this kernel on the
+> gumstix overo, if that matters..
 
+
+Please use xenomai git current head instead of xenomai 2.6.2.1 release. 
+Xenomai 2.6.2.1 only supports I-pipe patches up to Linux 3.5 on ARM.
+(in general, the latest I-pipe patch supported by a Xenomai version is 
+the one it ships with).
 
 -- 
                                                                  Gilles.
