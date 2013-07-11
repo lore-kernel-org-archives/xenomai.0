@@ -1,17 +1,10 @@
-Message-ID: <5215C1D1.1020707@siemens.com>
-Date: Thu, 22 Aug 2013 09:46:25 +0200
-From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-References: <52147CD7.70400@siemens.com> <52147DF2.8060407@xenomai.org>
-	<52147E94.6070309@siemens.com> <5214802B.9060001@siemens.com>
-	<5214A55E.2070902@xenomai.org> <5214A886.30608@siemens.com>
-	<5214A941.6070302@xenomai.org> <5214AA25.5070500@siemens.com>
-	<5214AB5F.7050302@xenomai.org> <5214C300.40205@siemens.com>
-	<5215059B.7020309@xenomai.org>
-In-Reply-To: <5215059B.7020309@xenomai.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [RFC] x86 port to kernel 3.10
+From: benehub@aol.com
+Message-Id: <8D04C20495DBA75-794-B61A4@webmailstg-m05.sysops.aol.com>
+Date: Thu, 11 Jul 2013 03:35:01 -0400 (EDT)
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] no kernel-patch on the boot menu
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,129 +13,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 2013-08-21 20:23, Gilles Chanteperdrix wrote:
-> On 08/21/2013 03:39 PM, Jan Kiszka wrote:
->> On 2013-08-21 13:58, Gilles Chanteperdrix wrote:
->>> On 08/21/2013 01:53 PM, Jan Kiszka wrote:
->>>> On 2013-08-21 13:49, Gilles Chanteperdrix wrote:
->>>>> On 08/21/2013 01:46 PM, Jan Kiszka wrote:
->>>>>> On 2013-08-21 13:32, Gilles Chanteperdrix wrote:
->>>>>>> On 08/21/2013 10:54 AM, Jan Kiszka wrote:
->>>>>>>> On 2013-08-21 10:47, Jan Kiszka wrote:
->>>>>>>>> On 2013-08-21 10:44, Gilles Chanteperdrix wrote:
->>>>>>>>>> On 08/21/2013 10:39 AM, Jan Kiszka wrote:
->>>>>>>>>>> Hi all,
->>>>>>>>>>>
->>>>>>>>>>> in the process of updating our kernel support to current (and long-term)
->>>>>>>>>>> stable 3.10, I've pushed the I-pipe master tree to that version. The
->>>>>>>>>>> tree is available at
->>>>>>>>>>>
->>>>>>>>>>> git://git.xenomai.org/ipipe-jki.git next-x86
->>>>>>>>>>>
->>>>>>>>>>> Though the focus is on x86, this became a full merge, ie. I also tried
->>>>>>>>>>> to resolve ARM and PowerPC conflicts (other archs had none). But I'm
->>>>>>>>>>> sure I broke some things (or things were already broken after the 3.9
->>>>>>>>>>> merge - there were suspicious unresolved conflicts). So these arch need
->>>>>>>>>>> a careful check! Specifically watch out for merges that resolved
->>>>>>>>>>> conflicts in their trees.
->>>>>>>>>>>
->>>>>>>>>>
->>>>>>>>>> I would prefer to have the conflict markers in the git tree, so that we
->>>>>>>>>> know where the conflicts occur. Having to browse history to find all the
->>>>>>>>>> merge conflicts seems more complicated than greping for '>>>'. Of
->>>>>>>>>> course, it means that when all the conflicts are resolved, the kernel
->>>>>>>>>> should be rebased to remove the commits with the merge conflicts, so as
->>>>>>>>>> to keep a bisectable kernel.
->>>>>>>>>
->>>>>>>>> As you cannot rebase merges (without losing history), this is not really
->>>>>>>>> applicable. I can leave in conflicts that affect ARM or Power, sure, but
->>>>>>>>> then the fix-ups will have to happen on top, taking away bisectability.
->>>>>>>>
->>>>>>>> Hmm, what we would really need is some tool to replay merges with their
->>>>>>>> conflict resolution. That must be feasible, somehow...
->>>>>>>
->>>>>>> You mean like git rerere? Anyway, why not just one big commit with all
->>>>>>> the conflicts?
->>>>>>
->>>>>> For the reason given in my original message.
->>>>>
->>>>> The mail explains the how, but not the why. Having to skim through tens
->>>>> of commits to find which ones may be related to a particular arch is
->>>>> simply a major pain. The "old" method which was to merge the patch with
->>>>> all the changes was much simpler. So, I do not see what we gain with the
->>>>> new method if it makes things more complicated.
->>>>
->>>> "The advantage of this pattern is that we get more bisection points in
->>>> case something subtly breaks between 3.8 and 3.10."
->>>
->>> However you do it, if there are several separate commits for all the
->>> architectures, the only bisectable architecture will be the one that was
->>> merged first. The others are broken anyway.
->>
->> Not necessarily. I tried to resolve all conflicts as they showed up, so
->> not every state needs to be broken.
->>
->>> At least if the conflict
->>> markers are in the tree we will know this at compilation time and not at
->>> run time. The only way to have bisectability is with one commit with all
->>> the architectures tested. Maybe we can do this by squashing the merge
->>> commit with all the fixup commits made afterwards?
->>
->> Squashing or rebasing (I tried rebase --preserve-merges by now - not
->> usable) means loosing track where the merges came from.
->>
->> To summarize, I think we are discussing two questions here:
->>
->> 1. How many merges per kernel version update (one vs. several as in my
->>    model)?
->> 2. How to deal with conflicts during the merge that affect architecture
->>    that the merger is not (immediately or at all) testing?
->>     - commit them unresolved and commit resolutions on top?
->>     - resolve them as good as possible and leave the review/fix-up to
->>       the respective arch maintainer?
->>
->> I don't see other options for 2. at this moment.
-> 
-> What I say, is that the two answers you propose to question 2 result in
-> a series of commit which can not be bisected.
 
-s/cannot/may not/. The current one is likely not bisectable due to the
-3.9 merge of Philippe which left some unresolved conflicts behind. But
-if we resolve conflicts for all arches during the mege, there is a good
-chance that early parts of the merge are still working and that later
-parts can be made working more easily (e.g. by temporarily applying
-fix-ups from the head) if bisection is required.
+Hello=20
 
-> With 2.1, you are warned
-> at compilation time, because the unbisectable commits do not compile,
-> with 2.2 you have to test the kernel to realize that it is not working.
+I installed xenomai2.6.2.1  linux-2.6.32 adeos-ipipe-2.6.32.7.x86-2.6-02.pa=
+tch=20
+next I followed=20
+http://www.xenomai.org/documentation/xenomai-2.6/html/README.INSTALL/#_buil=
+ding_for_x86_32_64bit
 
-With complex tree, you generally also have to fix-up bisection points in
-order to make them work. The question is, how much work that is.
 
-> 
-> So, the only possibility to have a fully bisectable hisotry would be to
-> somehow handle all architectures at once, whether with one, or several
-> commits.
-> 
-> The result being that the new approach results in a bisectable kernel
-> only for one architecture, and greatly complicates the merge of the
-> other architectures, I am wondering about the benefits of this new approach.
-> 
 
-I don't see yet what complicates the merge of other archs that much.
-Look at the merge commits that had conflicts on ARM (e.g. git log
---first-parent -p -c master..next-x86 arch/arm) and review the
-resolutions. Many of them will likely be correct, so you no longer have
-to do this job yourself. And the number of conflicts is not much higher
-than when doing a single merge, it's just spread over several commits.
+$ $xenomai_root/scripts/prepare-kernel.sh --arch=3Dx86 \
+  --adeos=3D$xenomai_root/ksrc/arch/x86/patches/adeos-ipipe-2.6.29.4-x86-X.=
+Y-ZZ.patch \
+  --linux=3D$linux_tree
+$ cd $linux_tree
+$ make [ARCH=3Di386] menuconfig
 
-Jan
 
--- 
-Siemens AG, Corporate Technology, CT RTC ITP SES-DE
-Corporate Competence Center Embedded Linux
 
+I configured my kernel then I did a "make", waited a long time and now when=
+ I boot , I just see my previous kernel.
+
+There is not kernel patched. Why?
+
+I
+
+
+
+I use a DELL INSPIRON 800 with DEBIAN SQUEEZE XFCE
+
+
+
+Best regards
+
+
+
+hubhub
