@@ -1,13 +1,14 @@
-Message-ID: <51DF2814.5000404@gmail.com>
-Date: Thu, 11 Jul 2013 23:48:04 +0200
-From: Sagar Behere <sagar.behere@gmail.com>
+Message-ID: <51E16968.3000107@xenomai.org>
+Date: Sat, 13 Jul 2013 16:51:20 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <51DD7302.2010809@gmail.com> <51DEF7EA.4030606@xenomai.org>
-In-Reply-To: <51DEF7EA.4030606@xenomai.org>
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] failing compile of kernel-3.8 on arm
-Reply-To: sagar.behere@gmail.com
+References: <50CB364C.70706@wanadoo.fr>
+	<50CB561D.5070706@grandegger.com>	<CANKLDmugXc4M08TYJaq0ON-Ls04=xk=6oh3dR0gLD0CPBxZjxg@mail.gmail.com>	<51B0353B.7060206@grandegger.com>
+	<51C213E4.5050905@grandegger.com>
+In-Reply-To: <51C213E4.5050905@grandegger.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Init issue with rtcan_flexcan
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,52 +17,64 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Wolfgang Grandegger <wg@grandegger.com>
+Cc: Thierry Bultel <thierry.bultel@wanadoo.fr>, xenomai@xenomai.org
 
-On 07/11/2013 08:22 PM, Gilles Chanteperdrix wrote:
-> On 07/10/2013 04:43 PM, Sagar Behere wrote:
->
->> Hello,
->>
->> I patched the vanilla linux-3.8 kernel sources with
->> ipipe-core-3.8-arm-1.patch. The patch was applied cleanly, but while
->> compiling the kernel, I get two problems
->>
->> Problem 1: This is the same as
->> http://www.mail-archive.com/xenomai@xenomai.org/msg02719.html
->>
->> Problem 2: The compilation halts with
->
->
->> include/asm-generic/xenomai/syscall.h: In function
->> ‘__xn_safe_strncpy_from_user’:
->> include/asm-generic/xenomai/syscall.h:147: error: implicit declaration
->> of function ‘__strncpy_from_user’
->> make[3]: *** [kernel/xenomai/nucleus/bufd.o] Error 1
->> make[2]: *** [kernel/xenomai/nucleus] Error 2
->> make[1]: *** [kernel/xenomai] Error 2
->> make: *** [kernel] Error 2
->>
->> ----
->>
->> compiler is: arm-linux-gnueabi-gcc (Debian 4.4.5-8) 4.4.5
->>
->> Any ideas how to fix these issues? I'll be running this kernel on the
->> gumstix overo, if that matters..
->
->
-> Please use xenomai git current head instead of xenomai 2.6.2.1 release.
-> Xenomai 2.6.2.1 only supports I-pipe patches up to Linux 3.5 on ARM.
-> (in general, the latest I-pipe patch supported by a Xenomai version is
-> the one it ships with).
+On 06/19/2013 10:26 PM, Wolfgang Grandegger wrote:
 
-Oh! I did not know that.
+> Hi Henri,
+>
+> On 06/06/2013 09:07 AM, Wolfgang Grandegger wrote:
+>> Hi Henri,
+>>
+>> On 06/05/2013 09:15 AM, Henri Roosen wrote:
+>>> On Fri, Dec 14, 2012 at 5:38 PM, Wolfgang Grandegger<wg@grandegger.com>wrote:
+>>>
+>>>> On 12/14/2012 03:23 PM, Thierry Bultel wrote:
+>>>>> Hi,
+>>>>> some days ago I have posted a patch for the rtcan_flexcan to be
+>>>>> correctly probed on the iMX6q
+>>>>>
+>>>>> It is functional, but I have not tested it enough, I am sorry about that.
+>>>>> It only works if the linux flexcan driver module has been used once
+>>>> before.
+>>>>>
+>>>>> Else I have got IRQs but no packet go to the upper layer, I think it is
+>>>>> stuck in passive state, I am investigating on it.
+>>>>
+>>>> It would be nice if you could port the missing patches from the mainline
+>>>> Linux kernel to rtcan_flexcan.
+>>>>
+>>>
+>>> I have ported code from the mainline linux flexcan driver that fixes the
+>>> behavior described by Thierry. Please find attached:
+>>> 0001-make-rtcan_flexcan-driver-compatible-with-non-OpenFi.patch
+>>> 0002-Fix-rtcan_flexcan-for-mx6-for-OpenFirmware-platforms.patch
+>>>
+>>> The attached patches can be applied to the current mainline xenomai git
+>>> (anywhere after commit-3ddc61cda095a9ae51277608d7fd4e9c2c481625). They make
+>>> Thierry's patch obsolete.
+>>>
+>>> I have tested the rtcan_flexcan driver in the non-CONFIG_OF configuration
+>>> only. On a wandboard with iMX6Solo using the freescale 3.0 kernel. I only
+>>> compile tested the CONFIG_OF configuration for the current ipipe master
+>>> (3.8) because wandboard solo is not yet supported by OpenFirmware. It would
+>>> be great if someone could test the OF version.
+>>
+>> Thanks for your contribution. Looks good at a first glance. Just need to
+>> check back- (and forward-) compatibility. I will also try to get access
+>> to boards using Flexcan. Hope to find some time over the WE.
+>
+> So far I didn't get a chance to test you driver modifications. Anyway,
+> the patch looks good. Gilles, could you please add my
+>
+> "Acked-by: Wolfgang Grandegger<wg@grandegger.com>"
+>
+> and apply the patch, thanks.
 
-I now did: git clone git://git.xenomai.org/xenomai-head.git
 
-and everything compiled properly in the subsequent steps.
+Merged, thanks.
 
-Thanks,
-Sagar
+-- 
+                                                                 Gilles.
 
