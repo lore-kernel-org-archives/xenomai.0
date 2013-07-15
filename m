@@ -1,9 +1,21 @@
+Message-ID: <51E43CE5.5020103@xenomai.org>
+Date: Mon, 15 Jul 2013 20:18:13 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Date: Mon, 15 Jul 2013 17:48:44 +0200
-Message-ID: <CANKLDmty3tu1DMtObXnQ5oNkJOJoOyprOp5BQJ5YZtoiYaYqWA@mail.gmail.com>
-From: Henri Roosen <henriroosen@gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Subject: [Xenomai] i.MX Timer Tick stall on iMX6Solo
+References: <A46EF8CF1BBB8E4B8A27B73E177C466402463ADE@MAIL-SINTERS-01.sinters-int.fr>,
+	<51DBF250.9070804@xenomai.org>
+	<A46EF8CF1BBB8E4B8A27B73E177C466402464B37@MAIL-SINTERS-01.sinters-int.fr>,
+	<51DC560F.90805@xenomai.org>
+	<A46EF8CF1BBB8E4B8A27B73E177C4664033EC616@MAIL-SINTERS-01.sinters-int.fr>,
+	<51DDB5C3.7010307@xenomai.org>
+	<A46EF8CF1BBB8E4B8A27B73E177C4664033F268F@MAIL-SINTERS-01.sinters-int.fr>,
+	<51DEF6FB.6080403@xenomai.org>
+	<A46EF8CF1BBB8E4B8A27B73E177C4664033F3724@MAIL-SINTERS-01.sinters-int.fr>
+In-Reply-To: <A46EF8CF1BBB8E4B8A27B73E177C4664033F3724@MAIL-SINTERS-01.sinters-int.fr>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] RE : RE : RE : RE : No boot kernel with xenomai on
+ i.MX6Q Sabrelite
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,20 +24,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Younes CHALABI <y.chalabi@sinters.fr>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi all,
+On 07/15/2013 03:00 PM, Younes CHALABI wrote:
 
-I'm running on a iMX6Solo (singlecore) chip. The problem we are seeing is
-that a couple of times during the day, the i.MX Timer Tick irq doesn't
-trigger and after some time starts running again. So the reprogramming of
-the timer is suspect ;-)
+> Hi Gilles,
+>
+> I have tried to disable the CONFIG_IPIPE and CONFIG_XENOMAI manually
+> on the .config, where CONFIG_cpu_IDLE was already disabled, then
+> recompile but still have the same issue as previously.
 
-I'm using ipipe-3.0-imx6q and Xenomai 2.6.2.1.
 
-Can anyone help me to make the timer reprogramming robust? Is there a
-robust way to do that (instead of adding a factor to the mxc_min_delay like
-commit-e1c0a1461512f does)? All help or pointers are highly appreciated!
+It is generally not a good idea to edit the .config manually. Automatic 
+dependencies may re-enable the options you want disabled.
 
-Thanks,
-Henri.
+Anyway, if indeed the kernel without CONFIG_IPIPE and CONFIG_XENOMAI 
+does not boot, your problem has probably nothing to do with Xenomai.
+
+Again, I would recommend using mx6q_defconfig and checking that this 
+default configuration at least boots.
+
+
+-- 
+                                                                 Gilles.
+
