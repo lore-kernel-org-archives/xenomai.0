@@ -1,12 +1,12 @@
-Message-ID: <51E7CCD9.4070204@xenomai.org>
-Date: Thu, 18 Jul 2013 13:09:13 +0200
+Message-ID: <51E7CD2B.7090004@xenomai.org>
+Date: Thu, 18 Jul 2013 13:10:35 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <1374143094.1082.YahooMailNeo@web172202.mail.ir2.yahoo.com>
-In-Reply-To: <1374143094.1082.YahooMailNeo@web172202.mail.ir2.yahoo.com>
+References: <1374133636.10239.YahooMailNeo@web172205.mail.ir2.yahoo.com>
+In-Reply-To: <1374133636.10239.YahooMailNeo@web172205.mail.ir2.yahoo.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] __xn_sys_current_info failed: Operation not permitted
+Subject: Re: [Xenomai] Start Process
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,16 +18,20 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: Franz Engel <franz_lambert_engel@yahoo.de>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 07/18/2013 12:24 PM, Franz Engel wrote:
+On 07/18/2013 09:47 AM, Franz Engel wrote:
 
-> Hi,
+> Hello,
 >
-> I get this error when I run a programm:
-> __xn_sys_current_info failed: Operation not permitted
+> I'm still busy with porting my project from an Linux 2.8 to Linux 3.5
+> with Xenomai 2.6.2.1. Now had to change something in my code and it
+> looks good. But I have a new problem. I have a main application with
+> an GUI that runs in low prior real time. This program is responsible
+> to start different "clients" and "interfaces". I realized them as
+> programs. On my old system I started this programs with QProcess. On
+> the new system it seems to be impossible.
 
 
-Are you running this program with root privileges?
-
+What is the problem exactly? "it seems to be impossible" sounds a bit vague.
 -- 
                                                                  Gilles.
 
