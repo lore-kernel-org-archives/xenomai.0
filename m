@@ -1,12 +1,13 @@
-Message-ID: <51E7FA79.6030602@163.com>
-Date: Thu, 18 Jul 2013 22:23:53 +0800
-From: aking <jinxin16897123@163.com>
+Message-ID: <51E845FF.80901@xenomai.org>
+Date: Thu, 18 Jul 2013 21:46:07 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <51E4F63A.7080203@163.com> <51E55AB0.8070600@siemens.com>
-In-Reply-To: <51E55AB0.8070600@siemens.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] general kernel functions in RTDM?
+References: <CANKLDmty3tu1DMtObXnQ5oNkJOJoOyprOp5BQJ5YZtoiYaYqWA@mail.gmail.com>	<51E43DA3.3090800@xenomai.org>	<CANKLDms-pK7aKYGgbL9g0RYi1PoE90+5vwx5VovoqEMwTr_gxw@mail.gmail.com>	<CANKLDmsC=3YB2ebeD1BnRvUBNc64yEqY-WPL2mNVwzSvwy96mQ@mail.gmail.com>	<CANKLDmvhwpNTTKz2-1sadpRtJ84V8-Hmi958da7fFTmuuVBHew@mail.gmail.com>	<51E7CEB4.7090700@xenomai.org>
+	<CANKLDmsri3ov9=M3-e_DaZmjoohBUgRvGvFvXauj-HNFv62vJQ@mail.gmail.com>
+In-Reply-To: <CANKLDmsri3ov9=M3-e_DaZmjoohBUgRvGvFvXauj-HNFv62vJQ@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] i.MX Timer Tick stall on iMX6Solo
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,34 +16,119 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Henri Roosen <henriroosen@gmail.com>
+Cc: xenomai@xenomai.org
 
-On 7/16/2013 Tuesday 10:37 PM, Jan Kiszka wrote:
-> On 2013-07-16 09:28, aking_jin wrote:
->> Hi,all
->> What should be take care of while using general kernel functions in
->> RTDM? for example: dma operation, GPIO operation and etc .
-> Depends on their usage context. You can normally use Linux service while
-> the driver is in Linux context. But once you run over an RT IRQ, RT
-> timer handler or RT thread (kernel/userspace), most Linux services
-> become taboo.
+On 07/18/2013 03:43 PM, Henri Roosen wrote:
+
+> On Thu, Jul 18, 2013 at 1:17 PM, Gilles Chanteperdrix<
+> gilles.chanteperdrix@xenomai.org>  wrote:
 >
-> DMA mapping/unmapping, e.g., may still work if it involves no hardware
-> or software IOMMU, otherwise it is required to premap the regions during
-> setup over a Linux context. GPIO may involve Linux code that
-> synchronizes against concurrent access. If that code was hardened as
-> part of the I-pipe patch, you are safe again.
+>> On 07/18/2013 12:46 PM, Henri Roosen wrote:
+>>
+>>
+>>>
+>>>
+>>> On Tue, Jul 16, 2013 at 10:04 AM, Henri Roosen<henriroosen@gmail.com
+>>> <mailto:henriroosen@gmail.com>**>  wrote:
+>>>
+>>>
+>>>
+>>>
+>>>      On Tue, Jul 16, 2013 at 9:01 AM, Henri Roosen<henriroosen@gmail.com
+>>>      <mailto:henriroosen@gmail.com>**>  wrote:
+>>>
+>>>
+>>>
+>>>
+>>>          On Mon, Jul 15, 2013 at 8:21 PM, Gilles Chanteperdrix
+>>>          <gilles.chanteperdrix@xenomai.**org<gilles.chanteperdrix@xenomai.org>
+>>>          <mailto:gilles.chanteperdrix@**xenomai.org<gilles.chanteperdrix@xenomai.org>>>
+>>> wrote:
+>>>
+>>>              On 07/15/2013 05:48 PM, Henri Roosen wrote:
+>>>
+>>>                  Hi all,
+>>>
+>>>                  I'm running on a iMX6Solo (singlecore) chip. The problem
+>>>                  we are seeing is
+>>>                  that a couple of times during the day, the i.MX Timer
+>>>                  Tick irq doesn't
+>>>                  trigger and after some time starts running again. So the
+>>>                  reprogramming of
+>>>                  the timer is suspect ;-)
+>>>
+>>>
+>>>
+>>>              That is a documented issue with timers of the type
+>>>              "free-running + match register", it means yes, that the
+>>>              timer was programmed for a too short delay, and that you had
+>>>              wait for it to wrap to finally tick.
+>>>
+>>>
+>>>
+>>>                  I'm using ipipe-3.0-imx6q and Xenomai 2.6.2.1.
+>>>
+>>>                  Can anyone help me to make the timer reprogramming
+>>>                  robust? Is there a
+>>>                  robust way to do that (instead of adding a factor to the
+>>>                  mxc_min_delay like
+>>>                  commit-e1c0a1461512f does)? All help or pointers are
+>>>                  highly appreciated!
+>>>
+>>>
+>>>
+>>>              The robust solution is the solution used by the commit you
+>>>              cite: use the "next_event" callback return value to manually
+>>>              trigger a timer irq.
+>>>              Unfortunately, this increases the number of timer registers
+>>>              access, and so the timer programming latency. But I agree
+>>>              that it is a better solution.
+>>>
+>>>
+>>>          Gilles, thanks for your reply! I think there is a
+>>>          misunderstanding about my referral to commit-e1c0a1461512f: this
+>>>          commit is already in the code I use (ipipe-3.0-imx6q). So the
+>>>          robust way should be implemented already, however it still fails
+>>>          to program the timer in time every once in a while.
+>>>
+>>>          Actually I was referring to the commit because it added a factor
+>>>          of 2 to the mxc_min_delay. I don't know why this factor of 2,
+>>>          Was it added 'just to be sure'?
+>>>
+>>>      Sorry, forget about the factor 2; debugging learned the
+>>>        __ipipe_cpu_freq is 0 anyway, so a delay of 1 is used.
+>>>
+>>>      Now looking into the reprogramming of the timer again: I noticed
+>>>      that v2_set_next_event() is missing the re-reading of the TCN like
+>>>      the function mx1_2_set_next_event() does .
+>>>      I will add this and do the duration tests. Will keep you posted
+>>>      about the outcome.
+>>>
+>>> This seems to have fixed that timer stall issue we were seeing.
+>>> Thanks Gilles for pointing us in the right direction!
+>>>
+>>
+>>
+>> You are welcome, if you send the pâtch, it could be merged in the I-pipe
+>> tree.
 >
-> Hope this helped to get the general picture. Detailed answers depend on
-> what you do, and on which hardware.
 >
-> Jan
->
-How could I toggle gpio in isr of xenomai RTDM?
-Thanks
+> Note that I'm using the ipipe-3.0-imx6q (freescale tree) from your ipipe
+> git repository.
+> It is actually commit-b3743135efb7fffffb864e468a922afa537222d9 that removed
+> the essential code from arch/arm/plat-mxc/time.c. Now, because I am not
+> using CONFIG_LOCAL_TIMERS for the iMX6Solo kernel, I can easily revert that
+> commit, but I don't know what the impact is for someone using
+> CONFIG_LOCAL_TIMERS...
+> Maybe you could review that commit?
+
+
+Well, enable_wait_mode is set to "false" with CONFIG_IPIPE and 
+CONFIG_SMP, so, we do not really care of the broadcast mode, and can put 
+back the re-reading of the mxc register, maybe compiled conditionnaly if 
+CONFIG_IPIPE is enabled.
 
 -- 
-Best Regards
-aking_jin
+                                                                 Gilles.
 
