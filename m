@@ -1,12 +1,12 @@
-Message-ID: <51DAC0A9.1010709@xenomai.org>
-Date: Mon, 08 Jul 2013 15:37:45 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <51E7FA79.6030602@163.com>
+Date: Thu, 18 Jul 2013 22:23:53 +0800
+From: aking <jinxin16897123@163.com>
 MIME-Version: 1.0
-References: <CE260BFE-CB8F-45DC-A46D-8CFE585069EC@mah.priv.at>
-In-Reply-To: <CE260BFE-CB8F-45DC-A46D-8CFE585069EC@mah.priv.at>
+References: <51E4F63A.7080203@163.com> <51E55AB0.8070600@siemens.com>
+In-Reply-To: <51E55AB0.8070600@siemens.com>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] q on rt_task_self() and mode switching
+Subject: Re: [Xenomai] general kernel functions in RTDM?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,52 +15,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Michael Haberler <mail17@mah.priv.at>
+To: Jan Kiszka <jan.kiszka@siemens.com>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 07/08/2013 03:23 PM, Michael Haberler wrote:
-> if a userland RT thread gets modeswitched, the SIGXCPU handler obviously still executes in the RT domain,
-
-
-Nope. All regular signal handlers are executed in the linux domain. 
-Xenomai 2.x does not provide real-time signal handlers fired from 
-primary mode.
-
-  at least rt_task_self() returns a valid task descriptor - fine.
+On 7/16/2013 Tuesday 10:37 PM, Jan Kiszka wrote:
+> On 2013-07-16 09:28, aking_jin wrote:
+>> Hi,all
+>> What should be take care of while using general kernel functions in
+>> RTDM? for example: dma operation, GPIO operation and etc .
+> Depends on their usage context. You can normally use Linux service while
+> the driver is in Linux context. But once you run over an RT IRQ, RT
+> timer handler or RT thread (kernel/userspace), most Linux services
+> become taboo.
 >
-> If a kernel RT thread misses the release point, it seems the thread is immediately switched to linux scheduling
-
-With Xenomai 2.x, there is no migration to secondary mode for a 
-kernel(-only) RT thread.
-
-  - or at least rt_task_self() returns NULL in this scenario:
+> DMA mapping/unmapping, e.g., may still work if it involves no hardware
+> or software IOMMU, otherwise it is required to premap the regions during
+> setup over a Linux context. GPIO may involve Linux code that
+> synchronizes against concurrent access. If that code was hardened as
+> part of the I-pipe patch, you are safe again.
 >
-> int result =  rt_task_wait_period(&overruns);
->      switch (result) {
+> Hope this helped to get the general picture. Detailed answers depend on
+> what you do, and on which hardware.
 >
->      case -ETIMEDOUT: // release point was missed
-> 	task = rt_task_self(); // this returns NULL
+> Jan
 >
->
-> not a big thing - I just would like to get at the thread name for error message purposes; any way to do this?
->
-
-Certainly, but which context does the code above run? On top of some 
-ioctl()?
-
-> - Michael
->
->
->
->
->
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> http://www.xenomai.org/mailman/listinfo/xenomai
->
-
+How could I toggle gpio in isr of xenomai RTDM?
+Thanks
 
 -- 
-Philippe.
+Best Regards
+aking_jin
 
