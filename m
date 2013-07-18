@@ -1,14 +1,14 @@
+Message-ID: <51E7D00B.4020604@xenomai.org>
+Date: Thu, 18 Jul 2013 13:22:51 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
 References: <1374143094.1082.YahooMailNeo@web172202.mail.ir2.yahoo.com>
 	<51E7CCD9.4070204@xenomai.org>
-Message-ID: <1374146492.53767.YahooMailNeo@web172202.mail.ir2.yahoo.com>
-Date: Thu, 18 Jul 2013 12:21:32 +0100 (BST)
-From: Franz Engel <franz_lambert_engel@yahoo.de>
-In-Reply-To: <51E7CCD9.4070204@xenomai.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: quoted-printable
+	<1374146492.53767.YahooMailNeo@web172202.mail.ir2.yahoo.com>
+In-Reply-To: <1374146492.53767.YahooMailNeo@web172202.mail.ir2.yahoo.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] __xn_sys_current_info failed: Operation not permitted
-Reply-To: Franz Engel <franz_lambert_engel@yahoo.de>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,11 +17,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Franz Engel <franz_lambert_engel@yahoo.de>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-> Gilles wrote:=0A>> Franz wrote:=0A>> Hi,=0A>>=0A>> I get this error when =
-I run a programm:=0A>> __xn_sys_current_info failed: Operation not permitte=
-d=0A=0A>Are you running this program with root privileges?=0AYes.=0A--=A0=
-=0A=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =
-=A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 =A0 Gilles.
+On 07/18/2013 01:21 PM, Franz Engel wrote:
+
+>  > Gilles wrote:
+>  >> Franz wrote:
+>  >> Hi,
+>  >>
+>  >> I get this error when I run a programm:
+>  >> __xn_sys_current_info failed: Operation not permitted
+>
+>  >Are you running this program with root privileges?
+> Yes.
+> --
+> Gilles.
+
+
+Could you post an example allowing us to reproduce the issue?
+
+-- 
+                                                                 Gilles.
+
