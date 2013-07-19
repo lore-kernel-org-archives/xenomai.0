@@ -1,12 +1,10 @@
-Message-ID: <51E900B7.9070604@xenomai.org>
-Date: Fri, 19 Jul 2013 11:02:47 +0200
-From: Philippe Gerum <rpm@xenomai.org>
-MIME-Version: 1.0
-References: <1374143094.1082.YahooMailNeo@web172202.mail.ir2.yahoo.com>
-In-Reply-To: <1374143094.1082.YahooMailNeo@web172202.mail.ir2.yahoo.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] __xn_sys_current_info failed: Operation not permitted
+From: Skander Bahloul <skander.bahloul@imag.fr>
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: quoted-printable
+Date: Fri, 19 Jul 2013 11:17:42 +0200
+Message-Id: <C83BFA2D-B71C-4494-B6F8-931A2F0EE44E@imag.fr>
+Mime-Version: 1.0 (Apple Message framework v1085)
+Subject: [Xenomai] shielding fully CPU or CORE
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,24 +13,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Franz Engel <franz_lambert_engel@yahoo.de>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 07/18/2013 12:24 PM, Franz Engel wrote:
-> Hi,
->
-> I get this error when I run a programm:
-> __xn_sys_current_info failed: Operation not permitted
->
-> I know that the error comes from the assert_nrt_inner(void) function inside the assert_context.c file. But I have no idea what is the reason. The Operation not permitted is the return value from XENOMAI_SYSCALL1(__xn_sys_current_info, &info);. But I found no documentation about this function.
->
+Dear Xenomai list members,
 
-This is reminiscent of a symptom observed for a bug fixed in the -forge 
-tree, a while ago: 
-http://git.xenomai.org/?p=xenomai-forge.git;a=commit;h=014898add6a697e1a0d69f9e20b910ade74f1940
+On a successful instal (but without NVIDIA driver, cf my previous =
+message), I am now starting using Xenomai.
 
-Do you happen to call fork() in your application?
+We need to :
+1* shield fully a CPU or core, against the scheduler, interruption, etc
+2* run a single thread on this isolated CPU or core
 
--- 
-Philippe.
+Step 2 is OK with the Xenomai API.
+But how should I achieve step 1 ?
+
+I did not find advice in the Xenomai documentation.
+I guess it should be done with :
+	$ sudo shield -a 0-3 -m -1
+
+Do you agree ?
+When may I find detailed info on CPU shielding ?
+
+Thanks,
+Skander BAHLOUL
+
+
 
