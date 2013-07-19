@@ -1,10 +1,16 @@
-Message-ID: <51E92C74.4000207@spesonline.com>
-Date: Fri, 19 Jul 2013 14:09:24 +0200
-From: Luca Bolli SPES <luca.bolli@spesonline.com>
+Message-ID: <51E93D95.40900@xenomai.org>
+Date: Fri, 19 Jul 2013 15:22:29 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
-Subject: [Xenomai] help for cyclictest
+References: <1374143094.1082.YahooMailNeo@web172202.mail.ir2.yahoo.com>
+	<51E900B7.9070604@xenomai.org>
+	<1374227358.60075.YahooMailNeo@web172203.mail.ir2.yahoo.com>
+	<51E9106C.3000909@xenomai.org>
+	<1374231441.29790.YahooMailNeo@web172205.mail.ir2.yahoo.com>
+In-Reply-To: <1374231441.29790.YahooMailNeo@web172205.mail.ir2.yahoo.com>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] __xn_sys_current_info failed: Operation not permitted
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,58 +19,99 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Franz Engel <franz_lambert_engel@yahoo.de>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Ckdvb2QgbW9ybmluZyBhdCBhbGwsIEknbSBuZXcgaW4gdGhpcyBtYWlsaW5nIGxpc3Qgc28gaW4g
-Zmlyc3QgdGltZSBJIAp3aWxsIGFwb2xvZ2l6ZSBmb3IgYW55IG1pc3Rha2UgdGhhdApJJ2xsIGRv
-LiBSZWNlbnRseSBJIHJlYWxpemVkIGEgdG9vbGNoYWluIGZvciBhbiBBUk05IEFUOTEgYmFzZWQg
-KGtlcm5lbCAKMy4wLjM2LCBnY2MgNC42LjMsIGxpYmMgMi4xMykKYW5kIEkgc3VjY2Vzc2Z1bGx5
-IHBvcnRlZCB0aGUgbGF0ZXN0IHZlcnNpb24gb2YgWGVub21haSAoMi42LjIuMSkuClRoZSBjcm9z
-cy1jb21waWxlZCBrZXJuZWwgKGFuZCBwYXRjaGVkIHdpdGggCmFkZW9zLWlwaXBlLTMuMC4zNi1h
-cm0tMS4xOC0xMS5wYXRjaCkgc3RhcnRzIHdpdGhvdXQKZXJyb3JzLiBBZnRlciB0aGlzLCBJJ2xs
-IHRyeSB0byBydW4gc29tZSB0ZXN0cyB3aXRoIGN5Y2xpY3Rlc3QgdGhhdCBJIApjb21waWxlZCwg
-d2l0aCB0aGUgc2FtZSB0b29sY2hhaW4KYW5kIHdpdGggdGhpcyBvcHRpb25zIChwYXNzZWQgdG8g
-Y29uZmlndXJlIHRvb2wpOgpjb25maWd1cmUgQ0ZMQUdTPSItbWFyY2g9YXJtdjR0IiBMREZMQUdT
-PSItbWFyY2g9YXJtdjR0IiAgCi0tYnVpbGQ9aTY4Ni1wYy1saW51eC1nbnUKLS1ob3N0PWFybS08
-dmVuZG9yPi1saW51eC1nbnVlYWJpLQoKV2hlbiBJIHN0YXJ0ZWQgdG8gY2Fycnkgb3V0IG15IHRl
-c3RzLCBJIG5vdGljZWQgYSBzdHJhbmdlIGJlaGF2aW9yIG9mIApjeWNsaWN0ZXN0IHNvZnR3YXJl
-IGFuZApJIHVzZWQgdGhpcyBvcHRpb24gZm9yIGxhdW5jaCB0aGUgdGVzdHM6IGN5Y2xpY3Rlc3Qg
-LXQgMiAtIHAgODAgLW4gLWkgCjEwMDAwIC1sIDEwMDAwIC12CgpUaGUgcHJvYmxlbSBpcyB0aGF0
-IHdpdGggbW9yZSAxIHRocmVhZCB0aGUgY3ljbGljdGVzdCBuZXZlciBlbmQsIGFuZCAKcmVtYWlu
-IGluIHJ1bm5pbmcgc3RhdGUKZXZlbiBpZiB0aGUgdGVzdCBpcyBjb21wbGV0ZWQuCgpUaGlzIGlz
-IHRoZSBjb2RlIG9mIG1haW4gaW4gY3ljbGljdGVzdCAKKHhlbm9tYWktMi42LjIuMS9zcmMvdGVz
-dHN1aXRlL2N5Y2xpYyk6CgogICAgIHdoaWxlICghdGVzdF9zaHV0ZG93bikgewogICAgICAgICBj
-aGFyIGxhdmdbMjU2XTsKICAgICAgICAgaW50IGZkLCBsZW4sIGFsbHN0b3BwZWQ7CgogICAgICAg
-ICBpZiAoIXZlcmJvc2UgJiYgIXF1aWV0KSB7CiAgICAgICAgICAgICBmZCA9IG9wZW4oIi9wcm9j
-L2xvYWRhdmciLCBPX1JET05MWSwgMDY2Nik7CiAgICAgICAgICAgICBsZW4gPSByZWFkKGZkLCAm
-bGF2ZywgMjU1KTsKICAgICAgICAgICAgIGNsb3NlKGZkKTsKICAgICAgICAgICAgIGxhdmdbbGVu
-LTFdID0gMHgwOwogICAgICAgICAgICAgcHJpbnRmKCIlcyAgICAgICAgICBcblxuIiwgbGF2Zyk7
-CiAgICAgICAgIH0KCiAgICAgICAgIGFsbHN0b3BwZWQgPSBtYXhfY3ljbGVzID8gMSA6IDA7Cgog
-ICAgICAgICBmb3IgKGkgPSAwOyBpIDwgbnVtX3RocmVhZHM7IGkrKykgewogICAgICAgICAgICAg
-cHJpbnRfc3RhdCgmcGFyW2ldLCBpLCB2ZXJib3NlKTsKICAgICAgICAgICAgIGlmIChzdGF0W2ld
-LmN5Y2xlcyA8IG1heF9jeWNsZXMpCiAgICAgICAgICAgICAgICAgYWxsc3RvcHBlZCA9IDA7CiAg
-ICAgICAgIH0KICAgICAgICAgdXNsZWVwKDEwMDAwKTsKICAgICAgICAgaWYgKHRlc3Rfc2h1dGRv
-d24gfHwgYWxsc3RvcHBlZCA9PSBudW1fdGhyZWFkcykKICAgICAgICAgICAgIGJyZWFrOwogICAg
-ICAgICBpZiAoIXZlcmJvc2UgJiYgIXF1aWV0KQogICAgICAgICAgICAgcHJpbnRmKCJcMDMzWyVk
-QSIsIG51bV90aHJlYWRzICsgMik7CiAgICAgfQoKSSB0aGluayB0aGF0IHRoZSAiYnJlYWsgY29u
-ZGl0aW9uIiBmb3IgZXhpdCBieSB0aGUgd2hpbGUoIXRlc3Rfc2h1dGRvd24pIAppcyB3cm9uZywg
-aW4gZmFjdCB3aGlsZSB0aGUKdGVzdF9zaHV0ZG93biBpcyB1c2VkIHRvIGNhdGNoIHRoZSBzaWdo
-YW5kIGludGVyYWN0aW9uIChjdHJsICtjIGZvciBzdG9wIAp0aGUgcHJvY2VzcyksIHRoZSB2YXJp
-YWJsZQphbGxzdG9wcGVkIGlzIGFsd2F5cyAwIG9yIDEsIGFuZCBmb3IgbW9yZSAxIHRocmVhZCB3
-aWxsIGhhdmUgbm8gdmFsdWUgCmdyZWF0ZXIgdGhhbiAxIGFuZCB0aGUKY29uZGl0aW9ucyBhbGxz
-dG9wcGVkID09IG51bV90aHJlYWRzIHdpbGwgbmV2ZXIgYmUgc2F0aXNmaWVkLgoKSSBkb24ndCBr
-bm93IGlmIHRoZXJlIGFyZSBhbnkgZXhwbGFuYXRpb25zIGZvciB0aGlzIGFwcGFyZW50IGVycm9y
-Li4uIHNvIApJIGRlY2lkZSB0byB3cml0ZSB0byB0aGlzIE1MLgooTWF5YmUgdGhlcmUgYXJlbid0
-IGFueSByZWFzb25zIHRvIHVzZSBjeWNsaWN0ZXN0IHdpdGggbW9yZSAxIHRocmVhZC4uLiApCgpJ
-IGhvcGUgdGhhdCB0aGUgcHJvYmxlbSBpcyBjbGVhciwgb3RoZXJ3aXNlIHBsZWFzZSBkb24ndCBo
-ZXNpdGF0ZSB0byBhc2sgCm1lIGZvciBtb3JlLgpleHBsYW5hdGlvbnMuCgpUaGFrIHlvdSBhbGwg
-Zm9yIGFueSBoZWxwLAoKS2luZCByZWFnYXJkcwoKCkx1Y2EgQm9sbGkKCgoKLS0gCgoqTHVjYSBC
-b2xsaSoKRW1iZWRkZWQgU29mdHdhcmUgRGVzaWduZXIKCipTUEVTLiBTLmMucC5hKgpWaWEgTGFt
-YmVydG8gQ29yc2ksIDQzIDYwMDQ0IEZhYnJpYW5vIChBTikKdGVsICszOSAwNzMyIDI1MjkgNDQw
-CmZheCArMzkgMDczMiAyNTI5IDQ0MQoKbHVjYS5ib2xsaUBzcGVzb25saW5lLmNvbSA8bWFpbHRv
-Omx1Y2EuYm9sbGlAc3Blc29ubGluZS5jb20+Cmh0dHA6Ly93d3cuc3Blc29ubGluZS5jb20KCmxv
-Z28gU3BlcwoKLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRl
-eHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogbHVjYV9ib2xsaS52Y2YKVHlwZTog
-dGV4dC94LXZjYXJkClNpemU6IDI5NiBieXRlcwpEZXNjOiBub3QgYXZhaWxhYmxlClVSTDogPGh0
-dHA6Ly93d3cueGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxMzA3
-MTkvOWFhNGM1ZjMvYXR0YWNobWVudC52Y2Y+Cg==
+On 07/19/2013 12:57 PM, Franz Engel wrote:
+>
+>
+>     ------------------------------------------------------------------------
+>     *Von:* Philippe Gerum <rpm@xenomai.org>
+>     *An:* Franz Engel <franz_lambert_engel@yahoo.de>
+>     *CC:* "xenomai@xenomai.org" <xenomai@xenomai.org>
+>     *Gesendet:* 12:09 Freitag, 19.Juli 2013
+>     *Betreff:* Re: [Xenomai] __xn_sys_current_info failed: Operation not
+>     permitted
+>
+>     On 07/19/2013 11:49 AM, Franz Engel wrote:
+>      > Philippe wrote:
+>      >>> Franz Engel wrote:
+>      >>> Hi,
+>      >> >
+>      >>> I get this error when I run a programm:
+>      >>> __xn_sys_current_info failed: Operation not permitted
+>      >> >
+>      >>> I know that the error comes from the assert_nrt_inner(void)
+>     function inside the assert_context.c file. But I have no idea what
+>     is the reason. The Operation not permitted is the return value from
+>     XENOMAI_SYSCALL1(__xn_sys_current_info, &info);. But I found no
+>     documentation about this function.
+>      >
+>      >
+>      >>This is reminiscent of a symptom observed for a bug fixed in the
+>     -forge
+>      >>tree, a while ago:
+>      >>http://git.xenomai.org/?p=xenomai-forge.git;a=commit;h=014898add6a697e1a0d69f9e20b910ade74f1940
+>      >
+>      >>Do you happen to call fork() in your  application?
+>      >
+>      > Yes. I do? What I can do to solve the problem. Should I try to modify
+>      > the xenomai files as discrept in the git-link?
+>      >
+>
+>     I'm unsure, although this would be possible to backport portions of the
+>     logic, the implementation has now diverged significantly between the
+>     2.x
+>     and 3.x code bases.
+>
+>     Could you try the patch below? It's untested, but should work around
+>     the
+>     root issue in your case:
+>
+>     diff --git a/include/nucleus/compiler.h b/include/nucleus/compiler.h
+>     index 30f32c7..da4ea03 100644
+>     --- a/include/nucleus/compiler.h
+>     +++ b/include/nucleus/compiler.h
+>     @@ -37,9 +37,11 @@
+>
+>        #ifdef __IN_XENO__
+>        #if __GNUC__ == 4 && __GNUC_MINOR__ == 6
+>     -#define __constructor__ __attribute__((constructor, noclone))
+>     +#define __constructor__ __attribute__((constructor(200), noclone))
+>     +#define __late_constructor__ __attribute__((constructor, noclone))
+>        #else /* Gcc not 4.6 */
+>     -#define __constructor__ __attribute__((constructor))
+>     +#define __constructor__ __attribute__((constructor(200)))
+>     +#define __late_constructor__ __attribute__((constructor))
+>        #endif /* Gcc not 4.6 */
+>        #endif /* In xenomai */
+>
+>     diff --git a/src/skins/common/rt_print.c b/src/skins/common/rt_print.c
+>     index dfa8b33..e056cd6 100644
+>     --- a/src/skins/common/rt_print.c
+>     +++ b/src/skins/common/rt_print.c
+>     @@ -738,7 +738,7 @@ static void forked_child_init(void)
+>                spawn_printer_thread();
+>     }
+>
+>     -static __constructor__ void __rt_print_init(void)
+>     +static __late_constructor__ void __rt_print_init(void)
+>        {
+>            const char *value_str;
+>            unsigned long long period;
+>
+>     --
+>     Philippe.
+>
+>     I tried the patch. But I think it is not the correct version of
+>     xenomai. In my compiler.h there is no line "#define __constructor__
+>     __attribute__((constructor, noclone))". I use Xenomai 2.6.2.1.
+>
+
+Simply ignore the noclone spec when applying the patch manually. You 
+should end up with the normal/high priority ctor at priority 200, the 
+late one with an implicit, unspecified low priority.
+
+-- 
+Philippe.
+
