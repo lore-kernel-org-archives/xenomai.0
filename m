@@ -1,10 +1,10 @@
 From: Skander Bahloul <skander.bahloul@imag.fr>
 Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: quoted-printable
-Date: Fri, 19 Jul 2013 11:17:42 +0200
-Message-Id: <C83BFA2D-B71C-4494-B6F8-931A2F0EE44E@imag.fr>
+Date: Fri, 19 Jul 2013 11:32:25 +0200
+Message-Id: <BC6109C5-9FF8-488D-9A1C-A983B1AD3415@imag.fr>
 Mime-Version: 1.0 (Apple Message framework v1085)
-Subject: [Xenomai] shielding fully CPU or CORE
+Subject: [Xenomai] Xenomai and NVIDIA graphics drivers
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,25 +17,58 @@ To: xenomai@xenomai.org
 
 Dear Xenomai list members,
 
-On a successful instal (but without NVIDIA driver, cf my previous =
-message), I am now starting using Xenomai.
+I'am a student and beginner.
+I am in charge of installing, configuring and testing Xenomai for hard =
+real-time interactive physically based simulation.
+The laboratory and myself have very small experience on Xenomai.
 
-We need to :
-1* shield fully a CPU or core, against the scheduler, interruption, etc
-2* run a single thread on this isolated CPU or core
+I need high quality graphics on the machine with the NVIDIA drivers, but =
+do not succeed.
 
-Step 2 is OK with the Xenomai API.
-But how should I achieve step 1 ?
-
-I did not find advice in the Xenomai documentation.
-I guess it should be done with :
-	$ sudo shield -a 0-3 -m -1
-
-Do you agree ?
-When may I find detailed info on CPU shielding ?
-
-Thanks,
-Skander BAHLOUL
+I have various installation ongoing, eg on Debian, Ubuntu, fedora.
+Only Debian is successful so far.
+OS :
+	Debian 7.1 AMD64
+	Kernel 3.2.21 (updated from 3.1.0 AMD64)
+	Xenomai 2.6.1
+Final xenomai version (uname -r) : Xenoami-ipipe-3.2.21
+Machine :
+	Architecture : Intel X86
+	GPU Quadro 2000
 
 
+Is it possible ? It is AFAIK.
+Can you indicate a good tutorial on this issue ?
+
+
+More details now.
+
+
+I tried installing the drivers before Xenomai, but i cannot :=20
+
+
+I tried installing the NVIDIA drivers after installing Xenomai, but then =
+the installation fails:
+
+Error! bad return status for module build on kernel 3.2.21-xenomai-ipipe =
+(X86-64). consult /var/lib/dkms/nvidia/319.31/build/make.log for me more =
+information.
+
+
+I try to do :
+$ sh Nvidia-linux-x86-319.31.run --kernel-name=3D'xenomai-ipipe-3.2.21'=20=
+
+
+but it fails.
+
+
+Could you help me please!
+
+
+
+
+
+I thank you very much,
+Best regards,
+Skander Bahloul=
 
