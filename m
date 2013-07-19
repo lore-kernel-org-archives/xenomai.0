@@ -1,13 +1,10 @@
-Message-ID: <51E9235B.7020802@xenomai.org>
-Date: Fri, 19 Jul 2013 13:30:35 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <51E92C74.4000207@spesonline.com>
+Date: Fri, 19 Jul 2013 14:09:24 +0200
+From: Luca Bolli SPES <luca.bolli@spesonline.com>
 MIME-Version: 1.0
-References: <51E4F63A.7080203@163.com> <51E55AB0.8070600@siemens.com>
-	<51E7FA79.6030602@163.com>
-In-Reply-To: <51E7FA79.6030602@163.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] general kernel functions in RTDM?
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Subject: [Xenomai] help for cyclictest
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,44 +13,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: aking <jinxin16897123@163.com>
-Cc: Jan Kiszka <jan.kiszka@siemens.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 07/18/2013 04:23 PM, aking wrote:
-
-> On 7/16/2013 Tuesday 10:37 PM, Jan Kiszka wrote:
->> On 2013-07-16 09:28, aking_jin wrote:
->>> Hi,all
->>> What should be take care of while using general kernel functions in
->>> RTDM? for example: dma operation, GPIO operation and etc .
->> Depends on their usage context. You can normally use Linux service while
->> the driver is in Linux context. But once you run over an RT IRQ, RT
->> timer handler or RT thread (kernel/userspace), most Linux services
->> become taboo.
->>
->> DMA mapping/unmapping, e.g., may still work if it involves no hardware
->> or software IOMMU, otherwise it is required to premap the regions during
->> setup over a Linux context. GPIO may involve Linux code that
->> synchronizes against concurrent access. If that code was hardened as
->> part of the I-pipe patch, you are safe again.
->>
->> Hope this helped to get the general picture. Detailed answers depend on
->> what you do, and on which hardware.
->>
->> Jan
->>
-> How could I toggle gpio in isr of xenomai RTDM?
-> Thanks
->
-
-No answer, so, you probably did not understand: on what architecture are 
-you using Xenomai? x86? arm? other?
-
-If on ARM, gpio_set_value should allow toggling the GPIO in an RTDM ISR, 
-but you have to pay attention to:
-
-http://www.xenomai.org/index.php/I-pipe-core:ArmPorting#GPIOs_in_real-time_drivers
-
--- 
-                                                                 Gilles.
-
+Ckdvb2QgbW9ybmluZyBhdCBhbGwsIEknbSBuZXcgaW4gdGhpcyBtYWlsaW5nIGxpc3Qgc28gaW4g
+Zmlyc3QgdGltZSBJIAp3aWxsIGFwb2xvZ2l6ZSBmb3IgYW55IG1pc3Rha2UgdGhhdApJJ2xsIGRv
+LiBSZWNlbnRseSBJIHJlYWxpemVkIGEgdG9vbGNoYWluIGZvciBhbiBBUk05IEFUOTEgYmFzZWQg
+KGtlcm5lbCAKMy4wLjM2LCBnY2MgNC42LjMsIGxpYmMgMi4xMykKYW5kIEkgc3VjY2Vzc2Z1bGx5
+IHBvcnRlZCB0aGUgbGF0ZXN0IHZlcnNpb24gb2YgWGVub21haSAoMi42LjIuMSkuClRoZSBjcm9z
+cy1jb21waWxlZCBrZXJuZWwgKGFuZCBwYXRjaGVkIHdpdGggCmFkZW9zLWlwaXBlLTMuMC4zNi1h
+cm0tMS4xOC0xMS5wYXRjaCkgc3RhcnRzIHdpdGhvdXQKZXJyb3JzLiBBZnRlciB0aGlzLCBJJ2xs
+IHRyeSB0byBydW4gc29tZSB0ZXN0cyB3aXRoIGN5Y2xpY3Rlc3QgdGhhdCBJIApjb21waWxlZCwg
+d2l0aCB0aGUgc2FtZSB0b29sY2hhaW4KYW5kIHdpdGggdGhpcyBvcHRpb25zIChwYXNzZWQgdG8g
+Y29uZmlndXJlIHRvb2wpOgpjb25maWd1cmUgQ0ZMQUdTPSItbWFyY2g9YXJtdjR0IiBMREZMQUdT
+PSItbWFyY2g9YXJtdjR0IiAgCi0tYnVpbGQ9aTY4Ni1wYy1saW51eC1nbnUKLS1ob3N0PWFybS08
+dmVuZG9yPi1saW51eC1nbnVlYWJpLQoKV2hlbiBJIHN0YXJ0ZWQgdG8gY2Fycnkgb3V0IG15IHRl
+c3RzLCBJIG5vdGljZWQgYSBzdHJhbmdlIGJlaGF2aW9yIG9mIApjeWNsaWN0ZXN0IHNvZnR3YXJl
+IGFuZApJIHVzZWQgdGhpcyBvcHRpb24gZm9yIGxhdW5jaCB0aGUgdGVzdHM6IGN5Y2xpY3Rlc3Qg
+LXQgMiAtIHAgODAgLW4gLWkgCjEwMDAwIC1sIDEwMDAwIC12CgpUaGUgcHJvYmxlbSBpcyB0aGF0
+IHdpdGggbW9yZSAxIHRocmVhZCB0aGUgY3ljbGljdGVzdCBuZXZlciBlbmQsIGFuZCAKcmVtYWlu
+IGluIHJ1bm5pbmcgc3RhdGUKZXZlbiBpZiB0aGUgdGVzdCBpcyBjb21wbGV0ZWQuCgpUaGlzIGlz
+IHRoZSBjb2RlIG9mIG1haW4gaW4gY3ljbGljdGVzdCAKKHhlbm9tYWktMi42LjIuMS9zcmMvdGVz
+dHN1aXRlL2N5Y2xpYyk6CgogICAgIHdoaWxlICghdGVzdF9zaHV0ZG93bikgewogICAgICAgICBj
+aGFyIGxhdmdbMjU2XTsKICAgICAgICAgaW50IGZkLCBsZW4sIGFsbHN0b3BwZWQ7CgogICAgICAg
+ICBpZiAoIXZlcmJvc2UgJiYgIXF1aWV0KSB7CiAgICAgICAgICAgICBmZCA9IG9wZW4oIi9wcm9j
+L2xvYWRhdmciLCBPX1JET05MWSwgMDY2Nik7CiAgICAgICAgICAgICBsZW4gPSByZWFkKGZkLCAm
+bGF2ZywgMjU1KTsKICAgICAgICAgICAgIGNsb3NlKGZkKTsKICAgICAgICAgICAgIGxhdmdbbGVu
+LTFdID0gMHgwOwogICAgICAgICAgICAgcHJpbnRmKCIlcyAgICAgICAgICBcblxuIiwgbGF2Zyk7
+CiAgICAgICAgIH0KCiAgICAgICAgIGFsbHN0b3BwZWQgPSBtYXhfY3ljbGVzID8gMSA6IDA7Cgog
+ICAgICAgICBmb3IgKGkgPSAwOyBpIDwgbnVtX3RocmVhZHM7IGkrKykgewogICAgICAgICAgICAg
+cHJpbnRfc3RhdCgmcGFyW2ldLCBpLCB2ZXJib3NlKTsKICAgICAgICAgICAgIGlmIChzdGF0W2ld
+LmN5Y2xlcyA8IG1heF9jeWNsZXMpCiAgICAgICAgICAgICAgICAgYWxsc3RvcHBlZCA9IDA7CiAg
+ICAgICAgIH0KICAgICAgICAgdXNsZWVwKDEwMDAwKTsKICAgICAgICAgaWYgKHRlc3Rfc2h1dGRv
+d24gfHwgYWxsc3RvcHBlZCA9PSBudW1fdGhyZWFkcykKICAgICAgICAgICAgIGJyZWFrOwogICAg
+ICAgICBpZiAoIXZlcmJvc2UgJiYgIXF1aWV0KQogICAgICAgICAgICAgcHJpbnRmKCJcMDMzWyVk
+QSIsIG51bV90aHJlYWRzICsgMik7CiAgICAgfQoKSSB0aGluayB0aGF0IHRoZSAiYnJlYWsgY29u
+ZGl0aW9uIiBmb3IgZXhpdCBieSB0aGUgd2hpbGUoIXRlc3Rfc2h1dGRvd24pIAppcyB3cm9uZywg
+aW4gZmFjdCB3aGlsZSB0aGUKdGVzdF9zaHV0ZG93biBpcyB1c2VkIHRvIGNhdGNoIHRoZSBzaWdo
+YW5kIGludGVyYWN0aW9uIChjdHJsICtjIGZvciBzdG9wIAp0aGUgcHJvY2VzcyksIHRoZSB2YXJp
+YWJsZQphbGxzdG9wcGVkIGlzIGFsd2F5cyAwIG9yIDEsIGFuZCBmb3IgbW9yZSAxIHRocmVhZCB3
+aWxsIGhhdmUgbm8gdmFsdWUgCmdyZWF0ZXIgdGhhbiAxIGFuZCB0aGUKY29uZGl0aW9ucyBhbGxz
+dG9wcGVkID09IG51bV90aHJlYWRzIHdpbGwgbmV2ZXIgYmUgc2F0aXNmaWVkLgoKSSBkb24ndCBr
+bm93IGlmIHRoZXJlIGFyZSBhbnkgZXhwbGFuYXRpb25zIGZvciB0aGlzIGFwcGFyZW50IGVycm9y
+Li4uIHNvIApJIGRlY2lkZSB0byB3cml0ZSB0byB0aGlzIE1MLgooTWF5YmUgdGhlcmUgYXJlbid0
+IGFueSByZWFzb25zIHRvIHVzZSBjeWNsaWN0ZXN0IHdpdGggbW9yZSAxIHRocmVhZC4uLiApCgpJ
+IGhvcGUgdGhhdCB0aGUgcHJvYmxlbSBpcyBjbGVhciwgb3RoZXJ3aXNlIHBsZWFzZSBkb24ndCBo
+ZXNpdGF0ZSB0byBhc2sgCm1lIGZvciBtb3JlLgpleHBsYW5hdGlvbnMuCgpUaGFrIHlvdSBhbGwg
+Zm9yIGFueSBoZWxwLAoKS2luZCByZWFnYXJkcwoKCkx1Y2EgQm9sbGkKCgoKLS0gCgoqTHVjYSBC
+b2xsaSoKRW1iZWRkZWQgU29mdHdhcmUgRGVzaWduZXIKCipTUEVTLiBTLmMucC5hKgpWaWEgTGFt
+YmVydG8gQ29yc2ksIDQzIDYwMDQ0IEZhYnJpYW5vIChBTikKdGVsICszOSAwNzMyIDI1MjkgNDQw
+CmZheCArMzkgMDczMiAyNTI5IDQ0MQoKbHVjYS5ib2xsaUBzcGVzb25saW5lLmNvbSA8bWFpbHRv
+Omx1Y2EuYm9sbGlAc3Blc29ubGluZS5jb20+Cmh0dHA6Ly93d3cuc3Blc29ubGluZS5jb20KCmxv
+Z28gU3BlcwoKLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRl
+eHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogbHVjYV9ib2xsaS52Y2YKVHlwZTog
+dGV4dC94LXZjYXJkClNpemU6IDI5NiBieXRlcwpEZXNjOiBub3QgYXZhaWxhYmxlClVSTDogPGh0
+dHA6Ly93d3cueGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxMzA3
+MTkvOWFhNGM1ZjMvYXR0YWNobWVudC52Y2Y+Cg==
