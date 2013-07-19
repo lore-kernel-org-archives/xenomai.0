@@ -1,12 +1,12 @@
-From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
-Date: Fri, 19 Jul 2013 09:29:22 -0400
-Message-ID: <20130719132922.GA17022@csclub.uwaterloo.ca>
-References: <BC6109C5-9FF8-488D-9A1C-A983B1AD3415@imag.fr>
+Message-ID: <51E97310.3060103@xenomai.org>
+Date: Fri, 19 Jul 2013 19:10:40 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <BC6109C5-9FF8-488D-9A1C-A983B1AD3415@imag.fr>
-Subject: Re: [Xenomai] Xenomai and NVIDIA graphics drivers
+References: <51E92C74.4000207@spesonline.com>
+In-Reply-To: <51E92C74.4000207@spesonline.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] help for cyclictest
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,52 +15,41 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Skander Bahloul <skander.bahloul@imag.fr>
+To: Luca Bolli SPES <luca.bolli@spesonline.com>
 Cc: xenomai@xenomai.org
 
-On Fri, Jul 19, 2013 at 11:32:25AM +0200, Skander Bahloul wrote:
-> Dear Xenomai list members,
-> 
-> I'am a student and beginner.
-> I am in charge of installing, configuring and testing Xenomai for hard real-time interactive physically based simulation.
-> The laboratory and myself have very small experience on Xenomai.
-> 
-> I need high quality graphics on the machine with the NVIDIA drivers, but do not succeed.
-> 
-> I have various installation ongoing, eg on Debian, Ubuntu, fedora.
-> Only Debian is successful so far.
-> OS :
-> 	Debian 7.1 AMD64
-> 	Kernel 3.2.21 (updated from 3.1.0 AMD64)
-> 	Xenomai 2.6.1
-> Final xenomai version (uname -r) : Xenoami-ipipe-3.2.21
-> Machine :
-> 	Architecture : Intel X86
-> 	GPU Quadro 2000
-> 
-> 
-> Is it possible ? It is AFAIK.
-> Can you indicate a good tutorial on this issue ?
-> 
-> 
-> More details now.
-> 
-> 
-> I tried installing the drivers before Xenomai, but i cannot : 
-> 
-> 
-> I tried installing the NVIDIA drivers after installing Xenomai, but then the installation fails:
-> 
-> Error! bad return status for module build on kernel 3.2.21-xenomai-ipipe (X86-64). consult /var/lib/dkms/nvidia/319.31/build/make.log for me more information.
+On 07/19/2013 02:09 PM, Luca Bolli SPES wrote:
 
-Did you actually do what it told you to do?  That is, look at the build
-log for the error/problem?
+>
+> Good morning at all, I'm new in this mailing list so in first time I
+> will apologize for any mistake that
+> I'll do. Recently I realized a toolchain for an ARM9 AT91 based (kernel
+> 3.0.36, gcc 4.6.3, libc 2.13)
+> and I successfully ported the latest version of Xenomai (2.6.2.1).
+> The cross-compiled kernel (and patched with
+> adeos-ipipe-3.0.36-arm-1.18-11.patch) starts without
+> errors. After this, I'll try to run some tests with cyclictest that I
+> compiled, with the same toolchain
+> and with this options (passed to configure tool):
+> configure CFLAGS="-march=armv4t" LDFLAGS="-march=armv4t"
+> --build=i686-pc-linux-gnu
+> --host=arm-<vendor>-linux-gnueabi-
+>
+> When I started to carry out my tests, I noticed a strange behavior of
+> cyclictest software and
+> I used this option for launch the tests: cyclictest -t 2 - p 80 -n -i
+> 10000 -l 10000 -v
 
-> I try to do :
-> $ sh Nvidia-linux-x86-319.31.run --kernel-name='xenomai-ipipe-3.2.21' 
-> 
-> but it fails.
+
+Hi,
+
+cyclictest is not a xenomai specific tool, and hence not maintained by 
+the Xenomai project. If a more recent version has important fixes you 
+need, we will simply update cyclictest. If you are interesting in 
+measuring the jitter of your system, you may use the "latency" test instead.
+
+Regards.
 
 -- 
-Len Sorensen
+                                                                 Gilles.
 
