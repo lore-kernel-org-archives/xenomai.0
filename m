@@ -1,16 +1,12 @@
-Message-ID: <51E93D95.40900@xenomai.org>
-Date: Fri, 19 Jul 2013 15:22:29 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
+Date: Fri, 19 Jul 2013 09:29:22 -0400
+Message-ID: <20130719132922.GA17022@csclub.uwaterloo.ca>
+References: <BC6109C5-9FF8-488D-9A1C-A983B1AD3415@imag.fr>
 MIME-Version: 1.0
-References: <1374143094.1082.YahooMailNeo@web172202.mail.ir2.yahoo.com>
-	<51E900B7.9070604@xenomai.org>
-	<1374227358.60075.YahooMailNeo@web172203.mail.ir2.yahoo.com>
-	<51E9106C.3000909@xenomai.org>
-	<1374231441.29790.YahooMailNeo@web172205.mail.ir2.yahoo.com>
-In-Reply-To: <1374231441.29790.YahooMailNeo@web172205.mail.ir2.yahoo.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] __xn_sys_current_info failed: Operation not permitted
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <BC6109C5-9FF8-488D-9A1C-A983B1AD3415@imag.fr>
+Subject: Re: [Xenomai] Xenomai and NVIDIA graphics drivers
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,99 +15,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Franz Engel <franz_lambert_engel@yahoo.de>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Skander Bahloul <skander.bahloul@imag.fr>
+Cc: xenomai@xenomai.org
 
-On 07/19/2013 12:57 PM, Franz Engel wrote:
->
->
->     ------------------------------------------------------------------------
->     *Von:* Philippe Gerum <rpm@xenomai.org>
->     *An:* Franz Engel <franz_lambert_engel@yahoo.de>
->     *CC:* "xenomai@xenomai.org" <xenomai@xenomai.org>
->     *Gesendet:* 12:09 Freitag, 19.Juli 2013
->     *Betreff:* Re: [Xenomai] __xn_sys_current_info failed: Operation not
->     permitted
->
->     On 07/19/2013 11:49 AM, Franz Engel wrote:
->      > Philippe wrote:
->      >>> Franz Engel wrote:
->      >>> Hi,
->      >> >
->      >>> I get this error when I run a programm:
->      >>> __xn_sys_current_info failed: Operation not permitted
->      >> >
->      >>> I know that the error comes from the assert_nrt_inner(void)
->     function inside the assert_context.c file. But I have no idea what
->     is the reason. The Operation not permitted is the return value from
->     XENOMAI_SYSCALL1(__xn_sys_current_info, &info);. But I found no
->     documentation about this function.
->      >
->      >
->      >>This is reminiscent of a symptom observed for a bug fixed in the
->     -forge
->      >>tree, a while ago:
->      >>http://git.xenomai.org/?p=xenomai-forge.git;a=commit;h=014898add6a697e1a0d69f9e20b910ade74f1940
->      >
->      >>Do you happen to call fork() in your  application?
->      >
->      > Yes. I do? What I can do to solve the problem. Should I try to modify
->      > the xenomai files as discrept in the git-link?
->      >
->
->     I'm unsure, although this would be possible to backport portions of the
->     logic, the implementation has now diverged significantly between the
->     2.x
->     and 3.x code bases.
->
->     Could you try the patch below? It's untested, but should work around
->     the
->     root issue in your case:
->
->     diff --git a/include/nucleus/compiler.h b/include/nucleus/compiler.h
->     index 30f32c7..da4ea03 100644
->     --- a/include/nucleus/compiler.h
->     +++ b/include/nucleus/compiler.h
->     @@ -37,9 +37,11 @@
->
->        #ifdef __IN_XENO__
->        #if __GNUC__ == 4 && __GNUC_MINOR__ == 6
->     -#define __constructor__ __attribute__((constructor, noclone))
->     +#define __constructor__ __attribute__((constructor(200), noclone))
->     +#define __late_constructor__ __attribute__((constructor, noclone))
->        #else /* Gcc not 4.6 */
->     -#define __constructor__ __attribute__((constructor))
->     +#define __constructor__ __attribute__((constructor(200)))
->     +#define __late_constructor__ __attribute__((constructor))
->        #endif /* Gcc not 4.6 */
->        #endif /* In xenomai */
->
->     diff --git a/src/skins/common/rt_print.c b/src/skins/common/rt_print.c
->     index dfa8b33..e056cd6 100644
->     --- a/src/skins/common/rt_print.c
->     +++ b/src/skins/common/rt_print.c
->     @@ -738,7 +738,7 @@ static void forked_child_init(void)
->                spawn_printer_thread();
->     }
->
->     -static __constructor__ void __rt_print_init(void)
->     +static __late_constructor__ void __rt_print_init(void)
->        {
->            const char *value_str;
->            unsigned long long period;
->
->     --
->     Philippe.
->
->     I tried the patch. But I think it is not the correct version of
->     xenomai. In my compiler.h there is no line "#define __constructor__
->     __attribute__((constructor, noclone))". I use Xenomai 2.6.2.1.
->
+On Fri, Jul 19, 2013 at 11:32:25AM +0200, Skander Bahloul wrote:
+> Dear Xenomai list members,
+> 
+> I'am a student and beginner.
+> I am in charge of installing, configuring and testing Xenomai for hard real-time interactive physically based simulation.
+> The laboratory and myself have very small experience on Xenomai.
+> 
+> I need high quality graphics on the machine with the NVIDIA drivers, but do not succeed.
+> 
+> I have various installation ongoing, eg on Debian, Ubuntu, fedora.
+> Only Debian is successful so far.
+> OS :
+> 	Debian 7.1 AMD64
+> 	Kernel 3.2.21 (updated from 3.1.0 AMD64)
+> 	Xenomai 2.6.1
+> Final xenomai version (uname -r) : Xenoami-ipipe-3.2.21
+> Machine :
+> 	Architecture : Intel X86
+> 	GPU Quadro 2000
+> 
+> 
+> Is it possible ? It is AFAIK.
+> Can you indicate a good tutorial on this issue ?
+> 
+> 
+> More details now.
+> 
+> 
+> I tried installing the drivers before Xenomai, but i cannot : 
+> 
+> 
+> I tried installing the NVIDIA drivers after installing Xenomai, but then the installation fails:
+> 
+> Error! bad return status for module build on kernel 3.2.21-xenomai-ipipe (X86-64). consult /var/lib/dkms/nvidia/319.31/build/make.log for me more information.
 
-Simply ignore the noclone spec when applying the patch manually. You 
-should end up with the normal/high priority ctor at priority 200, the 
-late one with an implicit, unspecified low priority.
+Did you actually do what it told you to do?  That is, look at the build
+log for the error/problem?
+
+> I try to do :
+> $ sh Nvidia-linux-x86-319.31.run --kernel-name='xenomai-ipipe-3.2.21' 
+> 
+> but it fails.
 
 -- 
-Philippe.
+Len Sorensen
 
