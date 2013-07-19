@@ -1,10 +1,14 @@
-From: Skander Bahloul <skander.bahloul@imag.fr>
-Content-Type: text/plain; charset=us-ascii
+References: <1374143094.1082.YahooMailNeo@web172202.mail.ir2.yahoo.com>
+	<51E900B7.9070604@xenomai.org>
+Message-ID: <1374227358.60075.YahooMailNeo@web172203.mail.ir2.yahoo.com>
+Date: Fri, 19 Jul 2013 10:49:18 +0100 (BST)
+From: Franz Engel <franz_lambert_engel@yahoo.de>
+In-Reply-To: <51E900B7.9070604@xenomai.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
 Content-Transfer-Encoding: quoted-printable
-Date: Fri, 19 Jul 2013 11:32:25 +0200
-Message-Id: <BC6109C5-9FF8-488D-9A1C-A983B1AD3415@imag.fr>
-Mime-Version: 1.0 (Apple Message framework v1085)
-Subject: [Xenomai] Xenomai and NVIDIA graphics drivers
+Subject: Re: [Xenomai] __xn_sys_current_info failed: Operation not permitted
+Reply-To: Franz Engel <franz_lambert_engel@yahoo.de>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,62 +17,18 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Dear Xenomai list members,
-
-I'am a student and beginner.
-I am in charge of installing, configuring and testing Xenomai for hard =
-real-time interactive physically based simulation.
-The laboratory and myself have very small experience on Xenomai.
-
-I need high quality graphics on the machine with the NVIDIA drivers, but =
-do not succeed.
-
-I have various installation ongoing, eg on Debian, Ubuntu, fedora.
-Only Debian is successful so far.
-OS :
-	Debian 7.1 AMD64
-	Kernel 3.2.21 (updated from 3.1.0 AMD64)
-	Xenomai 2.6.1
-Final xenomai version (uname -r) : Xenoami-ipipe-3.2.21
-Machine :
-	Architecture : Intel X86
-	GPU Quadro 2000
-
-
-Is it possible ? It is AFAIK.
-Can you indicate a good tutorial on this issue ?
-
-
-More details now.
-
-
-I tried installing the drivers before Xenomai, but i cannot :=20
-
-
-I tried installing the NVIDIA drivers after installing Xenomai, but then =
-the installation fails:
-
-Error! bad return status for module build on kernel 3.2.21-xenomai-ipipe =
-(X86-64). consult /var/lib/dkms/nvidia/319.31/build/make.log for me more =
-information.
-
-
-I try to do :
-$ sh Nvidia-linux-x86-319.31.run --kernel-name=3D'xenomai-ipipe-3.2.21'=20=
-
-
-but it fails.
-
-
-Could you help me please!
-
-
-
-
-
-I thank you very much,
-Best regards,
-Skander Bahloul=
-
+Philippe wrote:>> Franz Engel wrote:=0A>>=A0Hi,=0A>>=0A>>=A0I get this erro=
+r when I run a programm:=0A>>=A0__xn_sys_current_info failed: Operation not=
+ permitted=0A>>=0A>>=A0I know that the error comes from the assert_nrt_inne=
+r(void) function inside the assert_context.c file. But I have no idea what =
+is the reason. The Operation not permitted is the return value from XENOMAI=
+_SYSCALL1(__xn_sys_current_info, &info);. But I found no documentation abou=
+t this function.=0A=0A=0A>This is reminiscent of a symptom observed for a b=
+ug fixed in the -forge=A0=0A>tree, a while ago:=A0=0A>http://git.xenomai.or=
+g/?p=3Dxenomai-forge.git;a=3Dcommit;h=3D014898add6a697e1a0d69f9e20b910ade74=
+f1940=0A=0A>Do you happen to call fork() in your application?=0A=0A=0AYes. =
+I do? What I can do to solve the problem. Should I try to modify the xenoma=
+i files as discrept in the git-link?=0A=0Aregards,=0A=A0 =A0 franz
