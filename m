@@ -1,12 +1,13 @@
-Message-ID: <51EA4CAA.4040605@web.de>
-Date: Sat, 20 Jul 2013 10:39:06 +0200
-From: Jan Kiszka <jan.kiszka@web.de>
+Message-ID: <51EA4E3F.2070006@xenomai.org>
+Date: Sat, 20 Jul 2013 10:45:51 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <C83BFA2D-B71C-4494-B6F8-931A2F0EE44E@imag.fr>
 	<51EA4243.4020904@web.de> <51EA4AF7.2060008@xenomai.org>
-In-Reply-To: <51EA4AF7.2060008@xenomai.org>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+	<51EA4CAA.4040605@web.de>
+In-Reply-To: <51EA4CAA.4040605@web.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] shielding fully CPU or CORE
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -16,40 +17,61 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Jan Kiszka <jan.kiszka@web.de>
 Cc: Skander Bahloul <skander.bahloul@imag.fr>, xenomai@xenomai.org
 
-T24gMjAxMy0wNy0yMCAxMDozMSwgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4gT24gMDcv
-MjAvMjAxMyAwOTo1NCBBTSwgSmFuIEtpc3prYSB3cm90ZToKPiAKPj4gT24gMjAxMy0wNy0xOSAx
-MToxNywgU2thbmRlciBCYWhsb3VsIHdyb3RlOgo+Pj4gRGVhciBYZW5vbWFpIGxpc3QgbWVtYmVy
-cywKPj4+Cj4+PiBPbiBhIHN1Y2Nlc3NmdWwgaW5zdGFsIChidXQgd2l0aG91dCBOVklESUEgZHJp
-dmVyLCBjZiBteSBwcmV2aW91cwo+Pj4gbWVzc2FnZSksIEkgYW0gbm93IHN0YXJ0aW5nIHVzaW5n
-IFhlbm9tYWkuCj4+Pgo+Pj4gV2UgbmVlZCB0byA6Cj4+PiAxKiBzaGllbGQgZnVsbHkgYSBDUFUg
-b3IgY29yZSwgYWdhaW5zdCB0aGUgc2NoZWR1bGVyLCBpbnRlcnJ1cHRpb24sIGV0Ywo+Pj4gMiog
-cnVuIGEgc2luZ2xlIHRocmVhZCBvbiB0aGlzIGlzb2xhdGVkIENQVSBvciBjb3JlCj4+Pgo+Pj4g
-U3RlcCAyIGlzIE9LIHdpdGggdGhlIFhlbm9tYWkgQVBJLgo+Pj4gQnV0IGhvdyBzaG91bGQgSSBh
-Y2hpZXZlIHN0ZXAgMSA/Cj4+Pgo+Pj4gSSBkaWQgbm90IGZpbmQgYWR2aWNlIGluIHRoZSBYZW5v
-bWFpIGRvY3VtZW50YXRpb24uCj4+PiBJIGd1ZXNzIGl0IHNob3VsZCBiZSBkb25lIHdpdGggOgo+
-Pj4gICAgICQgc3VkbyBzaGllbGQgLWEgMC0zIC1tIC0xCj4+Pgo+Pj4gRG8geW91IGFncmVlID8K
-Pj4+IFdoZW4gbWF5IEkgZmluZCBkZXRhaWxlZCBpbmZvIG9uIENQVSBzaGllbGRpbmcgPwo+Pgo+
-PiBXaXRoICJzaGllbGQgZnVsbHkiLCBkbyB5b3UgbWVhbiA5OSw5Li4uJSBvciB0cnVlIDEwMCU/
-IFRoZSBsYXR0ZXIgaXMKPj4gbm90IHBvc3NpYmxlIHdpdGggY3VycmVudCBMaW51eCBrZXJuZWxz
-LCB0aHVzIGFsc28gbm90IHdpdGggWGVub21haS4gRm9yCj4+IHRoZSBmb3JtZXIsIHRyeSBrZXJu
-ZWwgcGFyYW1ldGVyIGlzb2NwdXMgKHRvIGtlZXAgTGludXggb2ZmIGNlcnRhaW4KPj4gY29yZXMp
-LCBwb3NzaWJseSBpbiBjb21iaW5hdGlvbiB3aXRoIHhlbm9faGFsLnJ0aGFsX3N1cHBvcnRlZF9j
-cHVzICh0bwo+PiBsaW1pdCBYZW5vbWFpIHRvIHRob3NlIGNvcmVzKS4KPiAKPiAKPiBNYXliZSBh
-IHN0dXBpZCBpZGVhLCBidXQgY2FuIHdlIG5vdCBzaHV0ZG93biBsaW51eCBjcHVzLCB1c2luZyBj
-cHUKPiBob3RwbHVnLCBzbyBhcyB0byBoYXZlIGZ1bGwgaXNvbGF0aW9uPwoKV2UgY2FuLCBidXQg
-d2Ugd2lsbCBhbHNvIGhhdmUgdG8KIC0gcmVib290IHRob3NlIENQVXMKIC0gaGFuZGxlIHN3aXRj
-aGVzIHRvIExpbnV4IG9uIHRoZSBpc29sYXRlZCBjb3JlcyAoZS5nLiBieSBtaWdyYXRpbmcKICAg
-dGhlIHRhc2sgdG8gYSBMaW51eCBjb3JlKQogLSBoYW5kbGUgY2hhbmdlcyB0byB0aGUgbW0gdGhh
-dCBpcyBpbiB1c2Ugb24gaXNvbGF0ZWQgY29yZXMgKFRMQgogICBzaG90ZG93bnMpCiAtIGhhbmRs
-ZSBMaW51eCBzaWduYWxzIHNlbnQgdG8gWGVub21haSB0YXNrcyBvbiBpc29sYXRlZCBjb3JlcwoK
-QW5kIHRoZXJlIG1pZ2h0IGJlIG1vcmUgc3VidGxlIHRyYXBzIHdoZW4gdXNpbmcgYSBjb3JlIHVu
-ZGVyIFhlbm9tYWkKdGhhdCBpcyBvZmZsaW5lIGZvciBMaW51eC4gTm90aGluZyBpcyBpbXBvc3Np
-YmxlLCBidXQgdGhpcyBpcyBzdXJlbHkgbm90CnN0cmFpZ2h0Zm9yd2FyZC4KCkphbgoKCi0tLS0t
-LS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQg
-d2FzIHNjcnViYmVkLi4uCk5hbWU6IHNpZ25hdHVyZS5hc2MKVHlwZTogYXBwbGljYXRpb24vcGdw
-LXNpZ25hdHVyZQpTaXplOiAyNjMgYnl0ZXMKRGVzYzogT3BlblBHUCBkaWdpdGFsIHNpZ25hdHVy
-ZQpVUkw6IDxodHRwOi8vd3d3Lnhlbm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1l
-bnRzLzIwMTMwNzIwLzU2MDcwNWNjL2F0dGFjaG1lbnQucGdwPgo=
+On 07/20/2013 10:39 AM, Jan Kiszka wrote:
+
+> On 2013-07-20 10:31, Gilles Chanteperdrix wrote:
+>> On 07/20/2013 09:54 AM, Jan Kiszka wrote:
+>>
+>>> On 2013-07-19 11:17, Skander Bahloul wrote:
+>>>> Dear Xenomai list members,
+>>>>
+>>>> On a successful instal (but without NVIDIA driver, cf my previous
+>>>> message), I am now starting using Xenomai.
+>>>>
+>>>> We need to :
+>>>> 1* shield fully a CPU or core, against the scheduler, interruption, etc
+>>>> 2* run a single thread on this isolated CPU or core
+>>>>
+>>>> Step 2 is OK with the Xenomai API.
+>>>> But how should I achieve step 1 ?
+>>>>
+>>>> I did not find advice in the Xenomai documentation.
+>>>> I guess it should be done with :
+>>>>      $ sudo shield -a 0-3 -m -1
+>>>>
+>>>> Do you agree ?
+>>>> When may I find detailed info on CPU shielding ?
+>>>
+>>> With "shield fully", do you mean 99,9...% or true 100%? The latter is
+>>> not possible with current Linux kernels, thus also not with Xenomai. For
+>>> the former, try kernel parameter isocpus (to keep Linux off certain
+>>> cores), possibly in combination with xeno_hal.rthal_supported_cpus (to
+>>> limit Xenomai to those cores).
+>>
+>>
+>> Maybe a stupid idea, but can we not shutdown linux cpus, using cpu
+>> hotplug, so as to have full isolation?
+>
+> We can, but we will also have to
+>   - reboot those CPUs
+>   - handle switches to Linux on the isolated cores (e.g. by migrating
+>     the task to a Linux core)
+>   - handle changes to the mm that is in use on isolated cores (TLB
+>     shotdowns)
+>   - handle Linux signals sent to Xenomai tasks on isolated cores
+
+ >
+
+> And there might be more subtle traps when using a core under Xenomai
+> that is offline for Linux. Nothing is impossible, but this is surely not
+> straightforward.
+
+
+Indeed, it was a stupid idea.
+
+-- 
+                                                                 Gilles.
+
