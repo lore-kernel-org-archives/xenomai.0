@@ -1,14 +1,12 @@
-Message-ID: <51EA4E3F.2070006@xenomai.org>
-Date: Sat, 20 Jul 2013 10:45:51 +0200
+Message-ID: <51EA7539.3000805@xenomai.org>
+Date: Sat, 20 Jul 2013 13:32:09 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <C83BFA2D-B71C-4494-B6F8-931A2F0EE44E@imag.fr>
-	<51EA4243.4020904@web.de> <51EA4AF7.2060008@xenomai.org>
-	<51EA4CAA.4040605@web.de>
-In-Reply-To: <51EA4CAA.4040605@web.de>
+References: <51B73421.3050506@siemens.com>
+In-Reply-To: <51B73421.3050506@siemens.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] shielding fully CPU or CORE
+Subject: Re: [Xenomai] Stable update for ipipe-3.8
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,60 +15,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@web.de>
-Cc: Skander Bahloul <skander.bahloul@imag.fr>, xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 07/20/2013 10:39 AM, Jan Kiszka wrote:
+On 06/11/2013 04:28 PM, Jan Kiszka wrote:
 
-> On 2013-07-20 10:31, Gilles Chanteperdrix wrote:
->> On 07/20/2013 09:54 AM, Jan Kiszka wrote:
->>
->>> On 2013-07-19 11:17, Skander Bahloul wrote:
->>>> Dear Xenomai list members,
->>>>
->>>> On a successful instal (but without NVIDIA driver, cf my previous
->>>> message), I am now starting using Xenomai.
->>>>
->>>> We need to :
->>>> 1* shield fully a CPU or core, against the scheduler, interruption, etc
->>>> 2* run a single thread on this isolated CPU or core
->>>>
->>>> Step 2 is OK with the Xenomai API.
->>>> But how should I achieve step 1 ?
->>>>
->>>> I did not find advice in the Xenomai documentation.
->>>> I guess it should be done with :
->>>>      $ sudo shield -a 0-3 -m -1
->>>>
->>>> Do you agree ?
->>>> When may I find detailed info on CPU shielding ?
->>>
->>> With "shield fully", do you mean 99,9...% or true 100%? The latter is
->>> not possible with current Linux kernels, thus also not with Xenomai. For
->>> the former, try kernel parameter isocpus (to keep Linux off certain
->>> cores), possibly in combination with xeno_hal.rthal_supported_cpus (to
->>> limit Xenomai to those cores).
->>
->>
->> Maybe a stupid idea, but can we not shutdown linux cpus, using cpu
->> hotplug, so as to have full isolation?
+> Hi all,
 >
-> We can, but we will also have to
->   - reboot those CPUs
->   - handle switches to Linux on the isolated cores (e.g. by migrating
->     the task to a Linux core)
->   - handle changes to the mm that is in use on isolated cores (TLB
->     shotdowns)
->   - handle Linux signals sent to Xenomai tasks on isolated cores
-
- >
-
-> And there might be more subtle traps when using a core under Xenomai
-> that is offline for Linux. Nothing is impossible, but this is surely not
-> straightforward.
+> I've merged 3.8.13 into our stable 3.8 branch. This triggered some minor
+> conflicts in generic and ARM code. Please see
+>
+> git://git.xenomai.org/ipipe-jki for-upstream/3.8
+>
+> for details. The result works fine for x86, and if it's also OK for the
+> other arch, I'd propose this to be merged into the official 3.8 stable
+> branch.
 
 
-Indeed, it was a stupid idea.
+Hi Jan,
+
+I am not so sure 3.8.13. I am having random segfaults when running:
+
+xeno-regression-test -l "dohell -s 192.168.0.5 -m /mnt -l /ltp" -p 1000
+
+on geode and at91. I have first focused on at91 because the "unlocked 
+context switch" features is a usual suspect, but:
+- the hardware pgd is in sync with the software pgd, which means that 
+the unlocked context switch did not mess up the hardware pgd;
+-  going back to 3.5, I am unable to trigger the faults, despite the 
+fact that the mm switch code is the same for this type of machine.
+
+So, could you run this same test on your x86 machines to see if you have 
+any issue?
+
+Regards.
 
 -- 
                                                                  Gilles.
