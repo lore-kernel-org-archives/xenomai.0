@@ -1,12 +1,12 @@
-Message-ID: <51E97310.3060103@xenomai.org>
-Date: Fri, 19 Jul 2013 19:10:40 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <51EA4243.4020904@web.de>
+Date: Sat, 20 Jul 2013 09:54:43 +0200
+From: Jan Kiszka <jan.kiszka@web.de>
 MIME-Version: 1.0
-References: <51E92C74.4000207@spesonline.com>
-In-Reply-To: <51E92C74.4000207@spesonline.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] help for cyclictest
+References: <C83BFA2D-B71C-4494-B6F8-931A2F0EE44E@imag.fr>
+In-Reply-To: <C83BFA2D-B71C-4494-B6F8-931A2F0EE44E@imag.fr>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] shielding fully CPU or CORE
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,41 +15,55 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Luca Bolli SPES <luca.bolli@spesonline.com>
+To: Skander Bahloul <skander.bahloul@imag.fr>
 Cc: xenomai@xenomai.org
 
-On 07/19/2013 02:09 PM, Luca Bolli SPES wrote:
+On 2013-07-19 11:17, Skander Bahloul wrote:
+> Dear Xenomai list members,
+> =
 
->
-> Good morning at all, I'm new in this mailing list so in first time I
-> will apologize for any mistake that
-> I'll do. Recently I realized a toolchain for an ARM9 AT91 based (kernel
-> 3.0.36, gcc 4.6.3, libc 2.13)
-> and I successfully ported the latest version of Xenomai (2.6.2.1).
-> The cross-compiled kernel (and patched with
-> adeos-ipipe-3.0.36-arm-1.18-11.patch) starts without
-> errors. After this, I'll try to run some tests with cyclictest that I
-> compiled, with the same toolchain
-> and with this options (passed to configure tool):
-> configure CFLAGS="-march=armv4t" LDFLAGS="-march=armv4t"
-> --build=i686-pc-linux-gnu
-> --host=arm-<vendor>-linux-gnueabi-
->
-> When I started to carry out my tests, I noticed a strange behavior of
-> cyclictest software and
-> I used this option for launch the tests: cyclictest -t 2 - p 80 -n -i
-> 10000 -l 10000 -v
+> On a successful instal (but without NVIDIA driver, cf my previous message=
+), I am now starting using Xenomai.
+> =
 
+> We need to :
+> 1* shield fully a CPU or core, against the scheduler, interruption, etc
+> 2* run a single thread on this isolated CPU or core
+> =
 
-Hi,
+> Step 2 is OK with the Xenomai API.
+> But how should I achieve step 1 ?
+> =
 
-cyclictest is not a xenomai specific tool, and hence not maintained by 
-the Xenomai project. If a more recent version has important fixes you 
-need, we will simply update cyclictest. If you are interesting in 
-measuring the jitter of your system, you may use the "latency" test instead.
+> I did not find advice in the Xenomai documentation.
+> I guess it should be done with :
+> 	$ sudo shield -a 0-3 -m -1
+> =
 
-Regards.
+> Do you agree ?
+> When may I find detailed info on CPU shielding ?
 
--- 
-                                                                 Gilles.
+With "shield fully", do you mean 99,9...% or true 100%? The latter is
+not possible with current Linux kernels, thus also not with Xenomai. For
+the former, try kernel parameter isocpus (to keep Linux off certain
+cores), possibly in combination with xeno_hal.rthal_supported_cpus (to
+limit Xenomai to those cores).
 
+True CPU domination is possible via virtualization, e.g. I'm working on
+such a solution. But you will not get a Linux process environment for
+your RT task, rather a set of bare-metal CPU cores you will have to boot
+up yourself. Also, a lot of noise comes from other shared resources
+(besides the CPU core itself), like memory and specifically the links to
+the I/O devices (PCI bridges/buses...). So no miracle to expect that way
+as well, at least on x86.
+
+Jan
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 263 bytes
+Desc: OpenPGP digital signature
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20130720/83b0855=
+b/attachment.pgp>
