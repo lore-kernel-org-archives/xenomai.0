@@ -1,15 +1,17 @@
-Content-Type: text/plain; charset=iso-8859-1
-Mime-Version: 1.0 (Mac OS X Mail 6.5 \(1508\))
-From: Michael Haberler <mail17@mah.priv.at>
-In-Reply-To: <51DAC4DF.8030908@xenomai.org>
-Date: Mon, 8 Jul 2013 16:03:22 +0200
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <751B86D8-E3C2-4DFD-8455-FBBCDD2CCF78@mah.priv.at>
-References: <CE260BFE-CB8F-45DC-A46D-8CFE585069EC@mah.priv.at>
-	<51DAC0A9.1010709@xenomai.org>
-	<E46787D6-E990-4573-A1D4-124253BD8DEA@mah.priv.at>
-	<51DAC4DF.8030908@xenomai.org>
-Subject: Re: [Xenomai] q on rt_task_self() and mode switching
+From: Christoph <c.stoidner@arvero.de>
+Date: Mon, 22 Jul 2013 16:52:00 +0000 (UTC)
+Message-ID: <loom.20130722T184351-130@post.gmane.org>
+References: <CAOiXNkD+-yANz15W_cnD9QLjyGH7LUT-Pf8LEJHqx4Kh24pL+g@mail.gmail.com>
+	<4F954ABE.20508@xenomai.org>
+	<CAOiXNkDKRpQKjtvC-H1YsJtHkNWYcWTUEKPqfYv0HQ_=SRHGCw@mail.gmail.com>
+	<4F955058.6080004@xenomai.org>
+	<CAOiXNkAGMH+CEQkp3rS0tSZbKQbu9BKrs8SDaFiyY-YFvAdcPA@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai]
+	=?utf-8?q?Jitter_while_generating_PWMs_with_GPIO_from_R?=
+	=?utf-8?q?TDM=09driver?=
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,29 +20,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
 
-Am 08.07.2013 um 15:55 schrieb Philippe Gerum <rpm@xenomai.org>:
+Hi Andrey,
 
->>> Certainly, but which context does the code above run? On top of some =
-ioctl()?
->>=20
->> from the RT thread, which is started by a kernel module
->>=20
->=20
-> I still don't see how rt_task_self() could ever return a NULL pointer =
-in this case. What does xnpod_current_thread()->name give you in the =
-same context?
+ 
+> 
+> I see... Nevertheless, I am surprised that context switch is so expensive.
 
-sorry, pls disregard, my fault - trivial #define missing. rt_task_self() =
-works fine as advertised in kernel too.
+Especially on ARM9 Platform a context switch takes very long time. The
+reason is the cache implementation, that requires to flush instruction cache
+and data cache at each context switch.
 
-- Michael
+There is a patch for the linux kernel called Fast Context Switch Extension
+(FSCE), that speeds up the context switch a lot. If you have installed
+i-pipe you should find it within the kernel config. Have a look at it's
+restriction that are mentioned in the config's help.
 
-
->=20
-> --=20
-> Philippe.
+Regards
+Christoph
 
 
