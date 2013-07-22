@@ -1,8 +1,9 @@
 From: "Kari Kumpulainen" <k_olavi@ovi.com>
 References: <CADVgf9kDgO9oHA3juWEGV-1RXBo5vNzzR208Ot3W3318Zryscw@mail.gmail.com>
-In-Reply-To: <CADVgf9kDgO9oHA3juWEGV-1RXBo5vNzzR208Ot3W3318Zryscw@mail.gmail.com>
-Date: Mon, 22 Jul 2013 21:20:49 +0300
-Message-ID: <002801ce8708$32059d80$9610d880$@ovi.com>
+	<002801ce8708$32059d80$9610d880$@ovi.com>
+In-Reply-To: <002801ce8708$32059d80$9610d880$@ovi.com>
+Date: Mon, 22 Jul 2013 22:00:57 +0300
+Message-ID: <002a01ce870d$ccf3fdf0$66dbf9d0$@ovi.com>
 MIME-Version: 1.0
 Content-Type: text/plain;
 	charset="iso-8859-1"
@@ -18,6 +19,24 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
+
+Hi Matt,
+
+I can't locate "ipipe-core-3.8-arm-3.patch" mentioned in your =
+instructions
+for 3.8 kernel.=20
+Did you mean " ipipe-core-3.8-arm-1.patch", in
+http://download.gna.org/adeos/patches/v3.x/arm/ ?
+
+Br, Kari
+
+-----Original Message-----
+From: xenomai-bounces@xenomai.org [mailto:xenomai-bounces@xenomai.org] =
+On
+Behalf Of Kari Kumpulainen
+Sent: 22. hein=E4kuuta 2013 21:21
+To: xenomai@xenomai.org
+Subject: Re: [Xenomai] Xenomai for Zynq
 
 Great, thank you so much!
 
@@ -56,6 +75,12 @@ I believe the later will be merged into the Xenomai tree at some point.
 Best Regards,
 
 Matt Fornero
+
+_______________________________________________
+Xenomai mailing list
+Xenomai@xenomai.org
+http://www.xenomai.org/mailman/listinfo/xenomai
+
 
 _______________________________________________
 Xenomai mailing list
