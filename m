@@ -1,11 +1,9 @@
-From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
-Date: Mon, 22 Jul 2013 12:57:43 -0400
-Message-ID: <20130722165743.GA11325@csclub.uwaterloo.ca>
-References: <001c01ce86ef$ce0d0ab0$6a272010$@ovi.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <001c01ce86ef$ce0d0ab0$6a272010$@ovi.com>
+Sender: mfornero@gmail.com
+Date: Mon, 22 Jul 2013 13:10:16 -0400
+Message-ID: <CADVgf9kDgO9oHA3juWEGV-1RXBo5vNzzR208Ot3W3318Zryscw@mail.gmail.com>
+From: Matthew Fornero <mfornero.lists@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
 Subject: Re: [Xenomai] Xenomai for Zynq
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -15,21 +13,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Kari Kumpulainen <k_olavi@ovi.com>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Mon, Jul 22, 2013 at 06:26:14PM +0300, Kari Kumpulainen wrote:
+On Mon, Jul 22, 2013 at 11:26 AM, Kari Kumpulainen <k_olavi@ovi.com> wrote:
+> Hello,
+>
 > Which kernel and Xenomai versions should I use if I want to build Xenomai
 > support for a Zynq (Xilinx) chip?
 > I tried to patch the 3.5 kernel provided by Xilinx, but patching failed
 > because of conflicts in some files.
 
-I believe satndard practice is:
+There are a couple projects on github which should get you started.
+Note that I haven't updated either of these for a while:
 
-Get the kernel.org kernel with the version xenomai has a patch for,
-then apply the xenomai patch, then add any extra patches needed for your
-system, fixing any conflicts and issues that come up.
+3.5 based kernel: https://github.com/mfornero/ipipe
+This is a merge of the Xilinx 3.5 tree and the ipipe 3.5 tree. Both
+are now fairly out of date
 
--- 
-Len Sorensen
+3.8 based kernel: use the patches and readme found here:
+https://github.com/mfornero/xenomai/tree/for-upstream/ksrc/arch/arm/patches
+
+I believe the later will be merged into the Xenomai tree at some point.
+
+Best Regards,
+
+Matt Fornero
 
