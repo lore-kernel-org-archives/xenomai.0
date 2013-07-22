@@ -1,12 +1,11 @@
-From: "George Pontis" <gpontis@z9.com>
-Date: Sun, 21 Jul 2013 13:19:13 -0700
-Message-ID: <04a701ce864f$91047590$b30d60b0$@z9.com>
+Message-ID: <1374478047.51902.YahooMailNeo@web172204.mail.ir2.yahoo.com>
+Date: Mon, 22 Jul 2013 08:27:27 +0100 (BST)
+From: Franz Engel <franz_lambert_engel@yahoo.de>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Content-Language: en-us
-Subject: [Xenomai] cannot open switchtest device ?
+Content-Type: text/plain; charset=iso-8859-1
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] (no subject)
+Reply-To: Franz Engel <franz_lambert_engel@yahoo.de>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,98 +14,67 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-I find a problem trying to run xeno-test when it goes to open the switchtest
-device. Before this post I searched the web and found a thread started by
-"raespi".
-We have a similar situation in which we are both using buildroot, but I'm
-not sure that the underlying cause is the same. I am building a kernel for
-3.8.13 using
-the patches from git, and also the current git xenomai. ( Current as of a
-month ago ). The target is an custom board based on the iMX53.
-
-To narrow the source of the problem, I modified switchtest.c to report on
-any case where the open() returns a negative number. I also made a temporary
-patch
-to not prepend the name with "/dev/". I might add that I'm using a new RTDM
-driver named fpga_rtdm that can be opened and access successfully.
-Here's what happens:
-
-~ >> xeno-test
-Started child 163: /bin/sh /usr/bin/xeno-test-run-wrapper /usr/bin/xeno-test
-+ echo 0
-+ /usr/bin/arith
-mul: 0x79364d93, shft: 26
-integ: 30, frac: 0x4d9364d9364d9364
-
-signed positive operation: 0x03ffffffffffffff * 1000000000 / 33000000
-inline calibration: 0x0000000000000000: 223.749 ns, rejected 2/10000
-inlined llimd: 0x79364d9364d9362f: 1347.417 ns, rejected 4/10000
-inlined llmulshft: 0x79364d92ffffffe1: 31.764 ns, rejected 0/10000
-inlined nodiv_llimd: 0x79364d9364d9362f: 61.416 ns, rejected 2/10000
-out of line calibration: 0x0000000000000000: 225.021 ns, rejected 1/10000
-out of line llimd: 0x79364d9364d9362f: 1340.784 ns, rejected 1/10000
-out of line llmulshft: 0x79364d92ffffffe1: 30.378 ns, rejected 2/10000
-out of line nodiv_llimd: 0x79364d9364d9362f: 59.940 ns, rejected 0/10000
-
-signed negative operation: 0xfc00000000000001 * 1000000000 / 33000000
-inline calibration: 0x0000000000000000: 225.024 ns, rejected 0/10000
-inlined llimd: 0x86c9b26c9b26c9d1: 1363.566 ns, rejected 3/10000
-inlined llmulshft: 0xd45d172d0000001e: 32.283 ns, rejected 1/10000
-inlined nodiv_llimd: 0x86c9b26c9b26c9d1: 75.027 ns, rejected 0/10000
-out of line calibration: 0x0000000000000000: 225.030 ns, rejected 2/10000
-out of line llimd: 0x86c9b26c9b26c9d1: 1363.653 ns, rejected 4/10000
-out of line llmulshft: 0xd45d172d0000001e: 31.272 ns, rejected 0/10000
-out of line nodiv_llimd: 0x86c9b26c9b26c9d1: 75.045 ns, rejected 0/10000
-
-unsigned operation: 0x03ffffffffffffff * 1000000000 / 33000000
-inline calibration: 0x0000000000000000: 226.083 ns, rejected 3/10000
-inlined nodiv_ullimd: 0x79364d9364d9362f: 45.735 ns, rejected 1/10000
-out of line calibration: 0x0000000000000000: 227.745 ns, rejected 1/10000
-out of line nodiv_ullimd: 0x79364d9364d9362f: 57.900 ns, rejected 1/10000
-+ /usr/bin/clocktest -C 42 -T 30
-== Tested clock: 42 (CLOCK_HOST_REALTIME)
-CPU      ToD offset [us] ToD drift [us/s]      warps max delta [us]
---- -------------------- ---------------- ---------- --------------
-  0                  1.6           -0.004          0            0.0
-+ /usr/bin/switchtest -T 30
-== Testing FPU check routines...
-d0: 1 != 2
-d1: 1 != 2
-d2: 1 != 2
-d3: 1 != 2
-d4: 1 != 2
-d5: 1 != 2
-d6: 1 != 2
-d7: 1 != 2
-d8: 1 != 2
-d9: 1 != 2
-d10: 1 != 2
-d11: 1 != 2
-d12: 1 != 2
-d13: 1 != 2
-d14: 1 != 2
-d15: 1 != 2
-== FPU check routines: OK.
-== Threads:switchtest open rttest-switchtest0: No such file or directory
-switchtest open rttest-switchtest1: No such file or directory
-switchtest open rttest-switchtest2: No such file or directory
-...
-switchtest open rttest-switchtest254: No such file or directory
-switchtest open rttest-switchtest255: No such file or directory
-switchtest: Unable to open switchtest device.
-(modprobe xeno_switchtest ?)
-~ >> 
-~ >> cat /proc/xenomai/rtdm/named_devices 
-Hash    Name                            Driver          /proc
-24      rttest-timerbench0              xeno_timerbench rttest-timerbench0
-55      rttest-switchtest0              xeno_switchtest rttest-switchtest0
-B4      fpga_rtdm                       fpga_rtdm_driver        fpga_rtdm
-~ >>
-
-George
-
-
-
-
+Franz Engel wrote: =0A> Philippe wrote=0A>> Philippe wrote: =0A>>>> Franz E=
+ngel wrote: =0A>>>> Hi, =0A>>>> =0A>>>> I get this error when I run a progr=
+amm: =0A>>>> __xn_sys_current_info failed: Operation not permitted =0A>>>> =
+=0A>>>> I know that the error comes from the assert_nrt_inner(void) =0A>>>>=
+ function inside the assert_context.c file. But I have no idea what =0A>>>>=
+ is the reason. The Operation not permitted is the return value from =0A>>>=
+> XENOMAI_SYSCALL1(__xn_sys_current_info, &info);. But I found no =0A>>>> d=
+ocumentation about this function. =0A>>>>=0A>>>This is reminiscent of a sym=
+ptom observed for a bug fixed in the =0A>>>=A0=A0=A0=A0 -forge tree, a whil=
+e ago: =0A>>>http://git.xenomai.org/?p=3Dxenomai-forge.git;a=3Dcommit;h=3D0=
+14898add6a697e1a0d69f9e20b910ade74f1940 =0A>>> =0A>>>Do you happen to call =
+fork() in your=A0 application? =0A>> =0A>> Yes, I do. What I can do to solv=
+e the problem. Should I try to modify =0A>> the xenomai files as discrept i=
+n the git-link? =0A>> =0A>>> =A0=A0=A0 I'm unsure, although this would be p=
+ossible to backport portions of the =0A>>>=A0=A0 =A0 logic, the implementat=
+ion has now diverged significantly between the =0A>>>=A0=A0=A0=A0 2.x and 3=
+.x code bases. =0A>>=0D>=0A>>>=A0=A0=A0=A0 Could you try the patch below? I=
+t's untested, but should work around =0A>>>=A0=A0=A0=A0 the =0A>>>=A0=A0=A0=
+=A0 root issue in your case: =0A>>> =0A>>>=A0=A0=A0=A0 diff --git a/include=
+/nucleus/compiler.h b/include/nucleus/compiler.h =0A>>>=A0=A0=A0=A0 index 3=
+0f32c7..da4ea03 100644 =0A>>>=A0=A0=A0=A0 --- a/include/nucleus/compiler.h =
+=0A>>>=A0=A0=A0=A0 +++ b/include/nucleus/compiler.h =0A>>>=A0=A0=A0=A0 @@ -=
+37,9 +37,11 @@ =0A>>> =0A>>>=A0=A0=A0=A0=A0=A0=A0 #ifdef __IN_XENO__ =0A>>>=
+=A0=A0=A0=A0=A0=A0=A0 #if __GNUC__ =3D=3D 4 && __GNUC_MINOR__ =3D=3D 6 =0A>=
+>>=A0=A0=A0=A0 -#define __constructor__ __attribute__((constructor, noclone=
+)) =0A>>>=A0=A0=A0=A0 +#define __constructor__ __attribute__((constructor(2=
+00), noclone)) =0A>>>=A0=A0=A0=A0 +#define __late_constructor__ __attribute=
+__((constructor, noclone)) =0A>>>=A0=A0=A0=A0=A0=A0=A0 #else /* Gcc not 4.6=
+ */ =0A>>>=A0=A0=A0=A0 -#define __constructor__ __attribute__((constructor)=
+) =0A>>>=A0=A0=A0=A0 +#define __constructor__ __attribute__((constructor(20=
+0))) =0A>>>=A0=A0=A0=A0 +#define __late_constructor__ __attribute__((constr=
+uctor)) =0A>>>=A0=A0=A0=A0=A0=A0=A0 #endif /* Gcc not 4.6 */ =0A>>>=A0=A0=
+=A0=A0=A0=A0=A0 #endif /* In xenomai */ =0A>>> =0A>>>=A0=A0=A0=A0 diff --gi=
+t a/src/skins/common/rt_print.c b/src/skins/common/rt_print.c =0A>>>=A0=A0=
+=A0=A0 index dfa8b33..e056cd6 100644 =0A>>>=A0=A0=A0=A0 --- a/src/skins/com=
+mon/rt_print.c =0A>>>=A0=A0=A0=A0 +++ b/src/skins/common/rt_print.c =0A>>>=
+=A0=A0=A0=A0 @@ -738,7 +738,7 @@ static void forked_child_init(void) =0A>>>=
+=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 spawn_printer_thread(); =0A>>=
+>=A0=A0=A0=A0 } =0A>>> =0A>>>=A0=A0=A0=A0 -static __constructor__ void __rt=
+_print_init(void) =0A>>>=A0=A0=A0=A0 +static __late_constructor__ void __rt=
+_print_init(void) =0A>>>=A0=A0=A0=A0=A0=A0=A0 { =0A>>>=A0=A0=A0=A0=A0=A0=A0=
+=A0=A0=A0=A0 const char *value_str; =0A>>>=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=
+ unsigned long long period; =0A>>> =0A>>>=A0=A0=A0=A0 -- =0A>>>=A0=A0=A0=A0=
+ Philippe. =0A>> =0A>>=A0=A0=A0=A0 I tried the patch. But I think it is not=
+ the correct version of =0A>>=A0=A0=A0=A0 xenomai. In my compiler.h there i=
+s no line "#define __constructor__ =0A>>=A0=A0=A0=A0 __attribute__((constru=
+ctor, noclone))". I use Xenomai 2.6.2.1. =0A>> =0A=A0=0A>Simply ignore the =
+noclone spec when applying the patch manually. You should end up with the >=
+normal/high priority ctor at priority 200, the late one with an implicit, u=
+nspecified low priority. =0A=A0=0AI'm not sure if I understand you correct.=
+ I change the function in rt_print.h (line 706) from "static __attribute__(=
+(constructor)) void __rt_print_init(void)" to "static __late_constructor__ =
+void __rt_print_init(void)"=0Aand I insert the following lines into the com=
+piler.h (absolutly new lines):=0A#ifdef __IN_XENO__=0A=A0 #if __GNUC__ =3D=
+=3D 4 && __GNUC_MINOR__ =3D=3D 6=0A=A0=A0=A0=A0 #define __constructor__ __a=
+ttribute__((constructor(200), noclone))=0A=A0=A0=A0=A0 #define __late_const=
+ructor__ __attribute__((constructor, noclone))=0A=A0 #else /* Gcc not 4.6 *=
+/=0A=A0=A0=A0=A0 #define __constructor__ __attribute__((constructor(200)))=
+=0A=A0=A0=A0=A0 #define __late_constructor__ __attribute__((constructor))=
+=0A=A0 #endif /* Gcc not 4.6 */=0A#endif /* In xenomai */=0A=0AIs it correc=
+t? I have still the same failure.=0A=0Aregards,=0A=A0=A0=A0=A0=A0 Franz=0A
