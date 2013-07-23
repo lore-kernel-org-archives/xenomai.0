@@ -1,15 +1,12 @@
+Message-ID: <51EEF1BC.1030504@xenomai.org>
+Date: Tue, 23 Jul 2013 23:12:28 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Sender: mfornero@gmail.com
-In-Reply-To: <002a01ce870d$ccf3fdf0$66dbf9d0$@ovi.com>
-References: <CADVgf9kDgO9oHA3juWEGV-1RXBo5vNzzR208Ot3W3318Zryscw@mail.gmail.com>
-	<002801ce8708$32059d80$9610d880$@ovi.com>
-	<002a01ce870d$ccf3fdf0$66dbf9d0$@ovi.com>
-Date: Mon, 22 Jul 2013 17:56:08 -0400
-Message-ID: <CADVgf9m+aW7TWiCNEvMd_xi96XaSQ9ydCXQSGFpVn2LWs8iVbQ@mail.gmail.com>
-From: Matthew Fornero <mfornero.lists@gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] Xenomai for Zynq
+References: <CAMJ=MEc70e-1C+ZFVHzZ1ECDgomXThLR3FypCqPcJdP1kbwxQQ@mail.gmail.com>
+In-Reply-To: <CAMJ=MEc70e-1C+ZFVHzZ1ECDgomXThLR3FypCqPcJdP1kbwxQQ@mail.gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [xenomai-forge] psos/sm_p: error handling not correct.
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,81 +15,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Kari Kumpulainen <k_olavi@ovi.com>
+To: Ronny Meeus <ronny.meeus@gmail.com>
 Cc: xenomai@xenomai.org
 
-Yep-- that one should work. I made those instructions before a 3.8
-ipipe patch was officially released, so the release number is bogus.
+On 07/22/2013 10:07 AM, Ronny Meeus wrote:
+> Hello
+>
+> If the sm_p service is called with the SM_NOWAIT flag and the semaphore is
+> not available the EWOULDBLOCK error code is returned to the application.
+> This is not correct since the application expects to see only pSOS
+> errorcodes.
+>
+> The attached patch solves the issue.
+>
 
-On Mon, Jul 22, 2013 at 3:00 PM, Kari Kumpulainen <k_olavi@ovi.com> wrote:
-> Hi Matt,
+Merged, thanks.
+
+> I have also included a small test application that can be used to verify
+> the code.
 >
-> I can't locate "ipipe-core-3.8-arm-3.patch" mentioned in your instruction=
-s
-> for 3.8 kernel.
-> Did you mean " ipipe-core-3.8-arm-1.patch", in
-> http://download.gna.org/adeos/patches/v3.x/arm/ ?
->
-> Br, Kari
->
-> -----Original Message-----
-> From: xenomai-bounces@xenomai.org [mailto:xenomai-bounces@xenomai.org] On
-> Behalf Of Kari Kumpulainen
-> Sent: 22. hein=E4kuuta 2013 21:21
-> To: xenomai@xenomai.org
-> Subject: Re: [Xenomai] Xenomai for Zynq
->
-> Great, thank you so much!
->
-> Br, Kari
->
-> -----Original Message-----
-> From: xenomai-bounces@xenomai.org [mailto:xenomai-bounces@xenomai.org] On
-> Behalf Of Matthew Fornero
-> Sent: 22. hein=E4kuuta 2013 20:10
-> To: xenomai@xenomai.org
-> Subject: Re: [Xenomai] Xenomai for Zynq
->
-> On Mon, Jul 22, 2013 at 11:26 AM, Kari Kumpulainen <k_olavi@ovi.com> wrot=
-e:
->> Hello,
->>
->> Which kernel and Xenomai versions should I use if I want to build
->> Xenomai support for a Zynq (Xilinx) chip?
->> I tried to patch the 3.5 kernel provided by Xilinx, but patching
->> failed because of conflicts in some files.
->
-> There are a couple projects on github which should get you started.
-> Note that I haven't updated either of these for a while:
->
-> 3.5 based kernel: https://github.com/mfornero/ipipe This is a merge of th=
-e
-> Xilinx 3.5 tree and the ipipe 3.5 tree. Both are now fairly out of date
->
-> 3.8 based kernel: use the patches and readme found here:
-> https://github.com/mfornero/xenomai/tree/for-upstream/ksrc/arch/arm/patch=
-es
->
-> I believe the later will be merged into the Xenomai tree at some point.
->
-> Best Regards,
->
-> Matt Fornero
->
+> Best regards,
+> Ronny
+> -------------- next part --------------
+> A non-text attachment was scrubbed...
+> Name: semaphore-nowait-return-code.patch
+> Type: application/octet-stream
+> Size: 855 bytes
+> Desc: not available
+> URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20130722/f191924c/attachment.obj>
+> -------------- next part --------------
+> A non-text attachment was scrubbed...
+> Name: simple_sm_p.c
+> Type: text/x-csrc
+> Size: 715 bytes
+> Desc: not available
+> URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20130722/f191924c/attachment.c>
 > _______________________________________________
 > Xenomai mailing list
 > Xenomai@xenomai.org
 > http://www.xenomai.org/mailman/listinfo/xenomai
 >
->
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> http://www.xenomai.org/mailman/listinfo/xenomai
->
->
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> http://www.xenomai.org/mailman/listinfo/xenomai
+
+
+-- 
+Philippe.
 
