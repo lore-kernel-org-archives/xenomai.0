@@ -1,11 +1,8 @@
-Message-ID: <51F189E7.1080601@xenomai.org>
-Date: Thu, 25 Jul 2013 22:26:15 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <1374789049.20424.BPMail_high_noncarrier@web125404.mail.ne1.yahoo.com>
+Date: Thu, 25 Jul 2013 14:50:49 -0700 (PDT)
+From: GP Orcullo <kinsamanka@ymail.com>
 MIME-Version: 1.0
-References: <1374667956.55879.YahooMailNeo@web125401.mail.ne1.yahoo.com>
-In-Reply-To: <1374667956.55879.YahooMailNeo@web125401.mail.ne1.yahoo.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Subject: Re: [Xenomai] XDDP test failure on Raspberry Pi, 3.8.13 kernel
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -15,25 +12,36 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: GP Orcullo <kinsamanka@ymail.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: gilles.chanteperdrix@xenomai.org
+Cc: xenomai@xenomai.org
 
-On 07/24/2013 02:12 PM, GP Orcullo wrote:
 
-> Hi,
+
+
+
+
+------------------------------
+On Thu, Jul 25, 2013 1:26 PM PDT Gilles Chanteperdrix wrote:
+
+>On 07/24/2013 02:12 PM, GP Orcullo wrote:
 >
-> Raspberry Pi on Xenomai v2.6.2.1 passes all the regression tests
-> except for the xddp_test.  The test fails with "FAILURE bind: Address
-> already in use".
+>> Hi,
+>>
+>> Raspberry Pi on Xenomai v2.6.2.1 passes all the regression tests
+>> except for the xddp_test.  The test fails with "FAILURE bind: Address
+>> already in use".
+>>
+>> How do I resolve this issue?
 >
-> How do I resolve this issue?
+>
+>Hi,
+>
+>do you have the same issue with Xenomai from git repository?
+>
+>
+>-- 
+>                                                                 Gilles.
 
+Sorry I forgot to add that I'm using the git repository. The 3.5.7 kernel has the same issue as well.
 
-Hi,
-
-do you have the same issue with Xenomai from git repository?
-
-
--- 
-                                                                 Gilles.
 
