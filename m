@@ -1,10 +1,12 @@
-Message-ID: <51DBDF8E.1080408@axelsw.it>
-Date: Tue, 09 Jul 2013 12:01:50 +0200
-From: Roberto Bielli <roberto.bielli@axelsw.it>
+Message-ID: <51F2A4E9.3000304@xenomai.org>
+Date: Fri, 26 Jul 2013 18:33:45 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+References: <1374841118.86884.BPMail_high_noncarrier@web125405.mail.ne1.yahoo.com>
+In-Reply-To: <1374841118.86884.BPMail_high_noncarrier@web125405.mail.ne1.yahoo.com>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] ipipe patch for linux kernel 3.3 arm
+Subject: Re: [Xenomai] XDDP test failure on Raspberry Pi, 3.8.13 kernel
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,48 +15,75 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: GP Orcullo <kinsamanka@ymail.com>
+Cc: xenomai@xenomai.org
 
-HI,
+On 07/26/2013 02:18 PM, GP Orcullo wrote:
+>
+> ------------------------------
+> On Fri, Jul 26, 2013 5:09 AM PDT GP Orcullo wrote:
+>
+>> ----- Original Message -----
+>>
+>> From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+>> To: GP Orcullo <kinsamanka@ymail.com>
+>> Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+>> Sent: Friday, July 26, 2013 4:26 AM
+>> Subject: Re: [Xenomai] XDDP test failure on Raspberry Pi, 3.8.13 kernel
+>>
+>> On 07/24/2013 02:12 PM, GP Orcullo wrote:
+>>
+>>> Hi,
+>>>
+>>> Raspberry Pi on Xenomai v2.6.2.1 passes all the regression tests
+>>> except for the xddp_test.  The test fails with "FAILURE bind: Address
+>>> already in use".
+>>>
+>>> How do I resolve this issue?
+>>
+>>
+>> Hi,
+>>
+>> do you have the same issue with Xenomai from git repository?
+>>
+>>
+>> --
+>>                                                                   Gilles.
+>>
+>>
+>> Hello Gilles,
+>>
+>> I have restarted from scratch and the issue seemed to have resolved itself. I have no clue why it initially failed.
+>>
+>> Thanks!
+>>
+>> GP Orcullo
+>
+> I have found the cause.
+>
+> If the module xeno_klat is loaded, xddp_test fails.
+>
 
-there is an ipipe-core patch for kernel 3.3 ARM that i can use with 
-xenomai 2.6.2.1 ?
+It looks like both the kernel latency and xddp tests do not cope well 
+together, with respect to the message pipe number they want to use. The 
+patch below works around the issue, but xddp_test should rather be fixed 
+to use the XDDP port auto-selection, like klat already does.
 
-Best Regards
+diff --git a/src/testsuite/regression/posix/xddp_test.c 
+b/src/testsuite/regression/posix/xddp_test.c
+index 194584e..2de07a3 100644
+--- a/src/testsuite/regression/posix/xddp_test.c
++++ b/src/testsuite/regression/posix/xddp_test.c
+@@ -23,7 +23,7 @@
+  static pthread_t rt, nrt;
+  static sem_t opened;
+
+-#define XDDP_PORT 0	/* [0..CONFIG-XENO_OPT_PIPE_NRDEV - 1] */
++#define XDDP_PORT 1	/* [0..CONFIG-XENO_OPT_PIPE_NRDEV - 1] */
+
+  static void *realtime_thread(void *arg)
+  {
 
 -- 
-+------------------------------------------------------------------------------------------------+
-							
-Roberto Bielli
-Sviluppo Software					
-Axel S.r.l.					
-							
-Via Del Cannino, 3 				
-21020 Crosio Della Valle			
-Varese - Italy					
-							
-Telefono: +39 0332 949600			
-Fax:      +39 0332 969315			
-							
-E-mail:   roberto.bielli@axelsw.it	
-Web Site: www.axelsw.it
-
-+------------------------------------------------------------------------------------------------+
-
-Si precisa che le informazioni contenute in questo messaggio sono riservate e ad uso esclusivo del destinatario.
-Qualora il messaggio in parola Le fosse pervenuto per errore, La preghiamo di eliminarlo senza copiarlo e di non inoltrarlo a terzi,
-dandocene gentilmente comunicazione. Grazie.
-Informativa sul trattamento dei dati personali (D. Lgs. 196/2003).
-I dati utilizzati per la spedizione del presente messaggio sono utilizzati da Axel S.r.l., titolare del trattamento,
-per l'invio delle comunicazioni dei diversi settori aziendali, non essendo autorizzata la divulgazione a terzi.
-Potrete rivolgere alla seguente mail richieste di verifica, rettifica o cancellazione dei Vostri dati: info@axelsw.it
-
-This e-mail and any attachments is confidential and may contain privileged information
-intended for the addressee(s) only. Dissemination, copying, printing or use by anybody
-else is unauthorised. If you are not the intended recipient,
-please delete this message and any attachments and advise the sender
-by return e-mail.Thank you.  			
-							
-+------------------------------------------------------------------------------------------------+
-
+Philippe.
 
