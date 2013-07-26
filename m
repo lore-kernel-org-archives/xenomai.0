@@ -1,13 +1,13 @@
-Message-ID: <51F2C9CF.6060206@xenomai.org>
-Date: Fri, 26 Jul 2013 21:11:11 +0200
+Message-ID: <51F2CA00.3060304@xenomai.org>
+Date: Fri, 26 Jul 2013 21:12:00 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <51B73421.3050506@siemens.com> <51EA7539.3000805@xenomai.org>
-	<51F2A6AC.1060408@siemens.com>
-In-Reply-To: <51F2A6AC.1060408@siemens.com>
+References: <51B8120C.9080906@siemens.com> <51F2B7CD.7080507@siemens.com>
+In-Reply-To: <51F2B7CD.7080507@siemens.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Stable update for ipipe-3.8
+Subject: Re: [Xenomai] [PATCH] posix: Skip auto-shadowing if current thread
+ is already shadowed
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,47 +19,48 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: Jan Kiszka <jan.kiszka@siemens.com>
 Cc: Xenomai <xenomai@xenomai.org>
 
-On 07/26/2013 06:41 PM, Jan Kiszka wrote:
+On 07/26/2013 07:54 PM, Jan Kiszka wrote:
 
-> On 2013-07-20 13:32, Gilles Chanteperdrix wrote:
->> On 06/11/2013 04:28 PM, Jan Kiszka wrote:
+> On 2013-06-12 08:15, Jan Kiszka wrote:
+>> While the user can also avoid double shadowing by providing the
+>> XENO_NOSHADOW environment variable, there is still no reason to attempt
+>> auto-shadowing in their absence if the current thread is already a
+>> Xenomai thread. This helps, e.g., in complex dlopen scenarios where
+>> the POSIX lib is pulled in belatedly, potentially after some other lib
+>> already shadowed the dlopen caller.
 >>
->>> Hi all,
->>>
->>> I've merged 3.8.13 into our stable 3.8 branch. This triggered some minor
->>> conflicts in generic and ARM code. Please see
->>>
->>> git://git.xenomai.org/ipipe-jki for-upstream/3.8
->>>
->>> for details. The result works fine for x86, and if it's also OK for the
->>> other arch, I'd propose this to be merged into the official 3.8 stable
->>> branch.
+>> Signed-off-by: Jan Kiszka<jan.kiszka@siemens.com>
+>> ---
+>>   src/skins/posix/init.c |    3 ++-
+>>   1 files changed, 2 insertions(+), 1 deletions(-)
 >>
+>> diff --git a/src/skins/posix/init.c b/src/skins/posix/init.c
+>> index 80725c5..ca1d9e1 100644
+>> --- a/src/skins/posix/init.c
+>> +++ b/src/skins/posix/init.c
+>> @@ -31,6 +31,7 @@
+>>   #include<rtdk.h>
 >>
->> Hi Jan,
+>>   #include<asm-generic/xenomai/bind.h>
+>> +#include<asm-generic/xenomai/current.h>
 >>
->> I am not so sure 3.8.13. I am having random segfaults when running:
+>>   int __pse51_muxid = -1;
+>>   int __pse51_rtdm_muxid = -1;
+>> @@ -67,7 +68,7 @@ static __constructor__ void __init_posix_interface(void)
+>>   	}
 >>
->> xeno-regression-test -l "dohell -s 192.168.0.5 -m /mnt -l /ltp" -p 1000
+>>   	noshadow = getenv("XENO_NOSHADOW");
+>> -	if (!noshadow || !*noshadow) {
+>> +	if ((!noshadow || !*noshadow)&&  xeno_get_current() == XN_NO_HANDLE) {
+>>   		err = __real_pthread_getschedparam(pthread_self(),&policy,
+>>   						&parm);
+>>   		if (err) {
 >>
->> on geode and at91. I have first focused on at91 because the "unlocked
->> context switch" features is a usual suspect, but:
->> - the hardware pgd is in sync with the software pgd, which means that
->> the unlocked context switch did not mess up the hardware pgd;
->> -  going back to 3.5, I am unable to trigger the faults, despite the
->> fact that the mm switch code is the same for this type of machine.
->>
->> So, could you run this same test on your x86 machines to see if you have
->> any issue?
 >
-> I've seen it once during a test run today, but I'm lacking LTP here.
+> Ping for this patch. Any concerns remaining?
 
 
-I forgot to add that yes, the issue is rare. It happens once in the 
-whole run here, I happen to have noticed it because sometimes, the 
-latency test is the victim. LTP exists as a debian package, if you are 
-using debian.
-
+Will merge, thanks for the reminder.
 
 -- 
                                                                  Gilles.
