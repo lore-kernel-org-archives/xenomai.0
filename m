@@ -1,13 +1,10 @@
-Message-ID: <51F2CA00.3060304@xenomai.org>
-Date: Fri, 26 Jul 2013 21:12:00 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <51B8120C.9080906@siemens.com> <51F2B7CD.7080507@siemens.com>
-In-Reply-To: <51F2B7CD.7080507@siemens.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PATCH] posix: Skip auto-shadowing if current thread
- is already shadowed
+Date: Fri, 26 Jul 2013 14:28:27 -0500
+Message-ID: <CAH9k9C-uqb3Y2j9UzGdKv-p67X2Vz11yiidb_oYuB5MiQ0y03A@mail.gmail.com>
+From: =?UTF-8?Q?Ricardo_Am=C3=A9zquita?= <ramezquitao@cihologramas.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] Queue issue
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,52 +13,28 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 07/26/2013 07:54 PM, Jan Kiszka wrote:
+Hello All
 
-> On 2013-06-12 08:15, Jan Kiszka wrote:
->> While the user can also avoid double shadowing by providing the
->> XENO_NOSHADOW environment variable, there is still no reason to attempt
->> auto-shadowing in their absence if the current thread is already a
->> Xenomai thread. This helps, e.g., in complex dlopen scenarios where
->> the POSIX lib is pulled in belatedly, potentially after some other lib
->> already shadowed the dlopen caller.
->>
->> Signed-off-by: Jan Kiszka<jan.kiszka@siemens.com>
->> ---
->>   src/skins/posix/init.c |    3 ++-
->>   1 files changed, 2 insertions(+), 1 deletions(-)
->>
->> diff --git a/src/skins/posix/init.c b/src/skins/posix/init.c
->> index 80725c5..ca1d9e1 100644
->> --- a/src/skins/posix/init.c
->> +++ b/src/skins/posix/init.c
->> @@ -31,6 +31,7 @@
->>   #include<rtdk.h>
->>
->>   #include<asm-generic/xenomai/bind.h>
->> +#include<asm-generic/xenomai/current.h>
->>
->>   int __pse51_muxid = -1;
->>   int __pse51_rtdm_muxid = -1;
->> @@ -67,7 +68,7 @@ static __constructor__ void __init_posix_interface(void)
->>   	}
->>
->>   	noshadow = getenv("XENO_NOSHADOW");
->> -	if (!noshadow || !*noshadow) {
->> +	if ((!noshadow || !*noshadow)&&  xeno_get_current() == XN_NO_HANDLE) {
->>   		err = __real_pthread_getschedparam(pthread_self(),&policy,
->>   						&parm);
->>   		if (err) {
->>
->
-> Ping for this patch. Any concerns remaining?
+I'm writing a simple wrapper in python to be able to control some real-time
+processes. To communicate between the real-time process, and the python
+process I'm using native queues. Sending messages from the python process
+to the realtime process is working fine, but when I try to send a message
+from the realtime process to the python process, I'm having problems. Using
+rt_queue inquire, I know that the message is in the queue, but the receive
+function in the python side, never receives it.
 
+Is there a limitation that apply to my application? I have tested with
+pipes, and it works, but I want to implement everything using queues.
 
-Will merge, thanks for the reminder.
+Thanks
 
--- 
-                                                                 Gilles.
+--=20
+Ricardo Am=C3=A9zquita O
 
+Combusti=C3=B3n Ingenieros Ltda
+Cll 25B # 85B - 76, Bogot=C3=A1 / Colombia
+Tel: 57-1-2635232
+Fax: 57-1-4296516
+http://www.cihologramas.com
