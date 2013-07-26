@@ -1,14 +1,13 @@
-Message-ID: <51F2C687.90303@xenomai.org>
-Date: Fri, 26 Jul 2013 20:57:11 +0200
+Message-ID: <51F2C9CF.6060206@xenomai.org>
+Date: Fri, 26 Jul 2013 21:11:11 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <04a701ce864f$91047590$b30d60b0$@z9.com>
-	<51F182E4.70907@xenomai.org>
-	<00d101ce8a1b$32cfeac0$986fc040$@z9.com>
-In-Reply-To: <00d101ce8a1b$32cfeac0$986fc040$@z9.com>
+References: <51B73421.3050506@siemens.com> <51EA7539.3000805@xenomai.org>
+	<51F2A6AC.1060408@siemens.com>
+In-Reply-To: <51F2A6AC.1060408@siemens.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] cannot open switchtest device ?
+Subject: Re: [Xenomai] Stable update for ipipe-3.8
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,61 +16,50 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: George Pontis <gpontis@z9.com>
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 07/26/2013 06:14 PM, George Pontis wrote:
+On 07/26/2013 06:41 PM, Jan Kiszka wrote:
 
->> -----Original Message-----
->> From: Gilles Chanteperdrix [mailto:gilles.chanteperdrix@xenomai.org]
->> Sent: Thursday, July 25, 2013 12:56 PM
->> To: George Pontis
->> Cc: xenomai@xenomai.org
->> Subject: Re: [Xenomai] cannot open switchtest device ?
+> On 2013-07-20 13:32, Gilles Chanteperdrix wrote:
+>> On 06/11/2013 04:28 PM, Jan Kiszka wrote:
 >>
->> On 07/21/2013 10:19 PM, George Pontis wrote:
->>
->>> I find a problem trying to run xeno-test when it goes to open the switchtest
->>> device. Before this post I searched the web and found a thread started by
->>> "raespi".
->>> We have a similar situation in which we are both using buildroot, but I'm
->>> not sure that the underlying cause is the same. I am building a kernel for
->>> 3.8.13 using
->>> the patches from git, and also the current git xenomai. ( Current as of a
->>> month ago ). The target is an custom board based on the iMX53.
+>>> Hi all,
 >>>
->>> To narrow the source of the problem, I modified switchtest.c to report on
->>> any case where the open() returns a negative number. I also made a
->> temporary
->>> patch
->>> to not prepend the name with "/dev/". I might add that I'm using a new RTDM
->>> driver named fpga_rtdm that can be opened and access successfully.
->>> Here's what happens:
+>>> I've merged 3.8.13 into our stable 3.8 branch. This triggered some minor
+>>> conflicts in generic and ARM code. Please see
+>>>
+>>> git://git.xenomai.org/ipipe-jki for-upstream/3.8
+>>>
+>>> for details. The result works fine for x86, and if it's also OK for the
+>>> other arch, I'd propose this to be merged into the official 3.8 stable
+>>> branch.
 >>
 >>
->> This may look like a stupid suggestion, but that is the only explanation
->> I see: you are probably using glibc's open instead of xenomai's open.
->> This may happen for instance if you are compiling xenomai libraries
->> statically and switchtest Makefile does not use the "wrap-link.sh" script.
->> --
->>                                                                   Gilles.
+>> Hi Jan,
+>>
+>> I am not so sure 3.8.13. I am having random segfaults when running:
+>>
+>> xeno-regression-test -l "dohell -s 192.168.0.5 -m /mnt -l /ltp" -p 1000
+>>
+>> on geode and at91. I have first focused on at91 because the "unlocked
+>> context switch" features is a usual suspect, but:
+>> - the hardware pgd is in sync with the software pgd, which means that
+>> the unlocked context switch did not mess up the hardware pgd;
+>> -  going back to 3.5, I am unable to trigger the faults, despite the
+>> fact that the mm switch code is the same for this type of machine.
+>>
+>> So, could you run this same test on your x86 machines to see if you have
+>> any issue?
 >
-> Not stupid, that was a useful suggestion. Both are dynamically linked, and I'm actually using
-> uClibc for this embedded system.
->
-> I tried to open the switchtest device from my application and it was successful.
-> One difference was that my application was opening these with a call to rt_dev_open(),
-> while the switchtest.c file used open(). Also, when building switchtest the open() is
-> resolved with open64() due to selecting large file support.
->
-> A quick mod of the switchtest code to use rt_dev_open() instead of open() would not build
-> without more effort.
+> I've seen it once during a test run today, but I'm lacking LTP here.
 
 
-Ah, thanks for digging. We simply need to implement __wrap_open64 and 
-add open64 to the long list of services we wrap.
+I forgot to add that yes, the issue is rare. It happens once in the 
+whole run here, I happen to have noticed it because sometimes, the 
+latency test is the victim. LTP exists as a debian package, if you are 
+using debian.
 
-Regards.
 
 -- 
                                                                  Gilles.
