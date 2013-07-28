@@ -1,14 +1,12 @@
-Message-ID: <51F59545.5090805@xenomai.org>
-Date: Mon, 29 Jul 2013 00:03:49 +0200
+Message-ID: <51F5990B.9010600@xenomai.org>
+Date: Mon, 29 Jul 2013 00:19:55 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <04a701ce864f$91047590$b30d60b0$@z9.com>
-	<51F182E4.70907@xenomai.org>
-	<00d101ce8a1b$32cfeac0$986fc040$@z9.com>
-In-Reply-To: <00d101ce8a1b$32cfeac0$986fc040$@z9.com>
+References: <51F3B976.3020802@163.com>
+In-Reply-To: <51F3B976.3020802@163.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] cannot open switchtest device ?
+Subject: Re: [Xenomai] Real Time about user thread
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,65 +15,51 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: George Pontis <gpontis@z9.com>
-Cc: xenomai@xenomai.org
+To: aking <jinxin16897123@163.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 07/26/2013 06:14 PM, George Pontis wrote:
+On 07/27/2013 02:13 PM, aking wrote:
 
->> -----Original Message-----
->> From: Gilles Chanteperdrix [mailto:gilles.chanteperdrix@xenomai.org]
->> Sent: Thursday, July 25, 2013 12:56 PM
->> To: George Pontis
->> Cc: xenomai@xenomai.org
->> Subject: Re: [Xenomai] cannot open switchtest device ?
->>
->> On 07/21/2013 10:19 PM, George Pontis wrote:
->>
->>> I find a problem trying to run xeno-test when it goes to open the switchtest
->>> device. Before this post I searched the web and found a thread started by
->>> "raespi".
->>> We have a similar situation in which we are both using buildroot, but I'm
->>> not sure that the underlying cause is the same. I am building a kernel for
->>> 3.8.13 using
->>> the patches from git, and also the current git xenomai. ( Current as of a
->>> month ago ). The target is an custom board based on the iMX53.
->>>
->>> To narrow the source of the problem, I modified switchtest.c to report on
->>> any case where the open() returns a negative number. I also made a
->> temporary
->>> patch
->>> to not prepend the name with "/dev/". I might add that I'm using a new RTDM
->>> driver named fpga_rtdm that can be opened and access successfully.
->>> Here's what happens:
->>
->>
->> This may look like a stupid suggestion, but that is the only explanation
->> I see: you are probably using glibc's open instead of xenomai's open.
->> This may happen for instance if you are compiling xenomai libraries
->> statically and switchtest Makefile does not use the "wrap-link.sh" script.
->> --
->>                                                                   Gilles.
+> Hi,all
+
+
+Hi,
+
+>       RTDM is in the xenoami domain ,
+
+
+A thread or an interrupt can be in the xenomai or linux domain, but RTDM 
+is a skin, so, it does not really make sense to say that it is in the 
+xenomai domain. RTDM allows to create real-time threads or to register 
+interrupt handlers which can be executed in the Xenomai domain, but also 
+allows defining callback executed in Linux domain.
+
+ > and it's  driven by the IRQ so that could provide hard real time.
+
+RTDM is no more driven by IRQ than the Linux kernel is driven by IRQ, 
+and this is not sufficient to provide hard real-time (otherwise, the 
+Linux kernel would provide hard real-time). The mechanism allowing hard 
+real-time response to interrupts is the so-called "Optimistic interrupt 
+protection" scheme, see [1] for more details.
+
+>       The userspace thread is in Linux domain(maybe?)
+
+
+Or maybe not, see above.
+
+  , what mechanism
+> was implemented to provide a Linux userspace thread real time?
+>           Thank you very much.
 >
-> Not stupid, that was a useful suggestion. Both are dynamically linked, and I'm actually using
-> uClibc for this embedded system.
->
-> I tried to open the switchtest device from my application and it was successful.
-> One difference was that my application was opening these with a call to rt_dev_open(),
-> while the switchtest.c file used open(). Also, when building switchtest the open() is
-> resolved with open64() due to selecting large file support.
->
-> A quick mod of the switchtest code to use rt_dev_open() instead of open() would not build
-> without more effort.
 
 
-Hi George,
+Xenomai uses the Adeos patch to allow executing user-space threads in 
+Xenomai domain, see [1] for more detains, and implements the classic 
+real-time scheduling policies, aka SCHED_FIFO and SCHED_RR to provide 
+deterministic scheduling.
 
-I added a wrapper for open64, could you try the current git contents, or 
-apply the following patch to the tree you use?
-
-http://git.xenomai.org/?p=xenomai-2.6.git;a=commit;h=d6127b245ed9876ce4153bac2996d88d0d7355c6
-
-Regards.
+[1] 
+http://www.xenomai.org/documentation/branches/v2.3.x/pdf/Life-with-Adeos-rev-B.pdf
 
 -- 
                                                                  Gilles.
