@@ -1,12 +1,14 @@
-Message-ID: <51DBED79.4020004@xenomai.org>
-Date: Tue, 09 Jul 2013 13:01:13 +0200
+Message-ID: <51F6B2BF.60807@xenomai.org>
+Date: Mon, 29 Jul 2013 20:21:51 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <51DBDF8E.1080408@axelsw.it>
-In-Reply-To: <51DBDF8E.1080408@axelsw.it>
+References: <201307051538.58306.marex@denx.de>
+	<201307051934.17975.marex@denx.de> <51D70C4C.8000402@xenomai.org>
+	<201307291422.32820.marex@denx.de>
+In-Reply-To: <201307291422.32820.marex@denx.de>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] ipipe patch for linux kernel 3.3 arm
+Subject: Re: [Xenomai] Xenomai on i.MX28 failure
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,20 +17,68 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Roberto Bielli <roberto.bielli@axelsw.it>
-Cc: xenomai@xenomai.org
+To: Marek Vasut <marex@denx.de>
+Cc: Detlev Zundel <dzu@denx.de>, xenomai@xenomai.org
 
-On 07/09/2013 12:01 PM, Roberto Bielli wrote:
+On 07/29/2013 02:22 PM, Marek Vasut wrote:
 
-> HI,
+> Hi Gilles,
+>
+>> On 07/05/2013 07:34 PM, Marek Vasut wrote:
+>>> Dear Gilles Chanteperdrix,
+>>>
+>>>> On 07/05/2013 03:38 PM, Marek Vasut wrote:
+>>>>> Hello,
+>>>>>
+>>>>> I attempted to use xenomai on i.MX28-based board, but unfortunatelly
+>>>>> failed so far. I use mainline Linux 3.8.2 on the board with no
+>>>>> additional patches,
+>>>>>
+>>>>> therefore I did:
+>>>>>      git clone git://git.xenomai.org/xenomai-2.6.git
+>>>>>
+>>>>> To retrieve xenomai-2.6/master . Then I went on to patch the Linux
+>>>>> kernel source:
+>>>>>
+>>>>> ./scripts/prepare-kernel.sh --linux=../linux-stable --
+>>>>> ipipe=ksrc/arch/arm/patches/ipipe-core-3.8-arm-1.patch --arch=arm
+>>>>>
+>>>>> Next I ran "make oldconfig" in the kernel tree. I enabled XENOMAI and
+>>>>> left the newly added configuration options at their default values.
+>>>>>
+>>>>> After compiling the kernel, the kernel does not boot on the board
+>>>>> anymore, while the kernel did boot before patching without problems.
+>>>>>
+>>>>> Can you please give me any pointers or ideas on how to progress ?
+>>>>
+>>>> Try:
+>>>> http://xenomai.org/index.php/I-pipe-core:ArmPorting
+>>>
+>>> Thanks! The earlyprintk really helped, now I see this output [1] . I
+>>> suspect it's something going on with the ipipe since I see icoll
+>>> crashing. Can you please help me some more on where to look from now on
+>>> or how to fix this?
+>>
+>> Please try the following patch:
+>>
+>> diff --git a/arch/arm/mach-mxs/icoll.c b/arch/arm/mach-mxs/icoll.c
+>> index 905f267..9bc9c21 100644
+>> --- a/arch/arm/mach-mxs/icoll.c
+>> +++ b/arch/arm/mach-mxs/icoll.c
+>> @@ -92,7 +92,7 @@ asmlinkage void __exception_irq_entry
+>> icoll_handle_irq(struct pt_regs *regs) if (irqnr != 0x7f) {
+>>   			__raw_writel(irqnr, icoll_base + HW_ICOLL_VECTOR);
+>>   			irqnr = irq_find_mapping(icoll_domain, irqnr);
+>> -			handle_IRQ(irqnr, regs);
+>> +			ipipe_handle_multi_irq(irqnr, regs);
+>>   			continue;
+>>   		}
+>>   		break;
+>
+> Did you possibly apply this fix to mainline xenomai please ?
 
-Hi,
 
-> there is an ipipe-core patch for kernel 3.3 ARM that i can use with
-> xenomai 2.6.2.1 ?
-
-
-No.
+It is already applied (but to the I-pipe patch, not to xenomai).
 
 -- 
                                                                  Gilles.
