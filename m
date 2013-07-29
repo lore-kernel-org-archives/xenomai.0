@@ -1,6 +1,6 @@
 MIME-Version: 1.0
-Date: Mon, 29 Jul 2013 10:53:18 -0500
-Message-ID: <CAH9k9C8OCRic+uuHsdwsJsnR8fhsB=EA=H=dDW=HCpwvMyUPDA@mail.gmail.com>
+Date: Mon, 29 Jul 2013 11:15:08 -0500
+Message-ID: <CAH9k9C9QCQuUMgOjgSiVPuVvdaz8zPzbAmLMd+=mAJ5LsC9a9Q@mail.gmail.com>
 From: =?UTF-8?Q?Ricardo_Am=C3=A9zquita?= <ramezquitao@cihologramas.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
@@ -15,6 +15,9 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
+Sorry... I accidentally sent my previous message incomplete. Here there is
+the complete message.
+
 I'm trying to use queues to transfer information between a RT process and
 an user-space process.
 As far as I understand, I should create a queue using rt_queue_create to
@@ -23,6 +26,8 @@ example correct?
 
 my rt program right now is something like:
 
+
+...
 ...
 rt_queue_create(&motion_q,"Motion",1024*(sizeof(sd_points)+sizeof(amd_times=
 )),
@@ -34,18 +39,28 @@ while(1)
 wait for data
 ....
 
-rt_queue_write(&monitor_q,&mon_data,sizeof(mon_data),Q_NORMAL);
+rt_queue_write(&monitor_q,&
+mon_data,sizeof(mon_data),Q_NORMAL);
 
 }
 
 
 and my user space program is something like
 
-
+....
+err =3D rt_queue_bind(&q,"SomeQueueName",TM_INFINITE);
 while(1)
 {
-
+st=3Drt_queue_receive(&q,&bufp,mode)
 }
+Am I missing the rt_queue_free and rt_queue_alloc?
+Or they are not needed because I'm using the rt_queue_create?
+
+
+Thanks
+
+
+
 
 --=20
 Ricardo Am=C3=A9zquita O
