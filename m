@@ -1,14 +1,13 @@
-Message-ID: <51F6B2BF.60807@xenomai.org>
-Date: Mon, 29 Jul 2013 20:21:51 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: "George Pontis" <gpontis@z9.com>
+Date: Mon, 29 Jul 2013 15:19:04 -0700
+Message-ID: <004401ce8ca9$a2ad4870$e807d950$@z9.com>
 MIME-Version: 1.0
-References: <201307051538.58306.marex@denx.de>
-	<201307051934.17975.marex@denx.de> <51D70C4C.8000402@xenomai.org>
-	<201307291422.32820.marex@denx.de>
-In-Reply-To: <201307291422.32820.marex@denx.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Xenomai on i.MX28 failure
+Content-Type: text/plain;
+	charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+Content-Language: en-us
+Subject: [Xenomai] Permissions problem/interaction with udev on Xenomai
+	current
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,69 +16,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Marek Vasut <marex@denx.de>
-Cc: Detlev Zundel <dzu@denx.de>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 07/29/2013 02:22 PM, Marek Vasut wrote:
+Permissions problem happening when building with the current git for =
+Xenomai:
 
-> Hi Gilles,
->
->> On 07/05/2013 07:34 PM, Marek Vasut wrote:
->>> Dear Gilles Chanteperdrix,
->>>
->>>> On 07/05/2013 03:38 PM, Marek Vasut wrote:
->>>>> Hello,
->>>>>
->>>>> I attempted to use xenomai on i.MX28-based board, but unfortunatelly
->>>>> failed so far. I use mainline Linux 3.8.2 on the board with no
->>>>> additional patches,
->>>>>
->>>>> therefore I did:
->>>>>      git clone git://git.xenomai.org/xenomai-2.6.git
->>>>>
->>>>> To retrieve xenomai-2.6/master . Then I went on to patch the Linux
->>>>> kernel source:
->>>>>
->>>>> ./scripts/prepare-kernel.sh --linux=../linux-stable --
->>>>> ipipe=ksrc/arch/arm/patches/ipipe-core-3.8-arm-1.patch --arch=arm
->>>>>
->>>>> Next I ran "make oldconfig" in the kernel tree. I enabled XENOMAI and
->>>>> left the newly added configuration options at their default values.
->>>>>
->>>>> After compiling the kernel, the kernel does not boot on the board
->>>>> anymore, while the kernel did boot before patching without problems.
->>>>>
->>>>> Can you please give me any pointers or ideas on how to progress ?
->>>>
->>>> Try:
->>>> http://xenomai.org/index.php/I-pipe-core:ArmPorting
->>>
->>> Thanks! The earlyprintk really helped, now I see this output [1] . I
->>> suspect it's something going on with the ipipe since I see icoll
->>> crashing. Can you please help me some more on where to look from now on
->>> or how to fix this?
->>
->> Please try the following patch:
->>
->> diff --git a/arch/arm/mach-mxs/icoll.c b/arch/arm/mach-mxs/icoll.c
->> index 905f267..9bc9c21 100644
->> --- a/arch/arm/mach-mxs/icoll.c
->> +++ b/arch/arm/mach-mxs/icoll.c
->> @@ -92,7 +92,7 @@ asmlinkage void __exception_irq_entry
->> icoll_handle_irq(struct pt_regs *regs) if (irqnr != 0x7f) {
->>   			__raw_writel(irqnr, icoll_base + HW_ICOLL_VECTOR);
->>   			irqnr = irq_find_mapping(icoll_domain, irqnr);
->> -			handle_IRQ(irqnr, regs);
->> +			ipipe_handle_multi_irq(irqnr, regs);
->>   			continue;
->>   		}
->>   		break;
->
-> Did you possibly apply this fix to mainline xenomai please ?
+for i in   vxworks psos rtai uitron vrtx ; do rm -f =
+/home/gpontis/b2/g/output/target/usr/lib/lib$i.* ; if [ $i =3D=3D =
+"posix" ] ; then rm -f =
+/home/gpontis/b2/g/output/target/usr/lib/posix.wrappers ; fi ; done
+if test -d /home/gpontis/b2/g/output/target/etc/udev/rules.d ; then for =
+f in =
+/home/gpontis/b2/g/output/build/xenomai-2.6/ksrc/nucleus/udev/*.rules ; =
+do cp $f /home/gpontis/b2/g/output/target/etc/udev/rules.d/ ; done ; fi;
+cp: cannot create regular file =
+`/home/gpontis/b2/g/output/target/etc/udev/rules.d/rtheap.rules': =
+Permission denied
+cp: cannot create regular file =
+`/home/gpontis/b2/g/output/target/etc/udev/rules.d/rtpipe.rules': =
+Permission denied
+make: *** =
+[/home/gpontis/b2/g/output/build/xenomai-2.6/.stamp_target_installed] =
+Error 1
+gpontis@ubuntuVm:~/b2/g$
 
 
-It is already applied (but to the I-pipe patch, not to xenomai).
 
--- 
-                                                                 Gilles.
+
 
