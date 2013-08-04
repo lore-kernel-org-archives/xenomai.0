@@ -1,17 +1,12 @@
-Message-ID: <51FB90A9.7060909@xenomai.org>
-Date: Fri, 02 Aug 2013 12:57:45 +0200
+Message-ID: <51FE46F6.7020909@xenomai.org>
+Date: Sun, 04 Aug 2013 14:20:06 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <004401ce8ca9$a2ad4870$e807d950$@z9.com>
-	<51F97FF7.2030203@xenomai.org>
-	<022801ce8e36$da4b7700$8ee26500$@z9.com>
-	<51FAB95A.4000002@xenomai.org>
-	<030f01ce8f2d$3672b330$a3581990$@z9.com>
-In-Reply-To: <030f01ce8f2d$3672b330$a3581990$@z9.com>
+References: <51F267DB.2050404@axelsw.it>
+In-Reply-To: <51F267DB.2050404@axelsw.it>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Permissions problem/interaction with udev on Xenomai
- current
+Subject: Re: [Xenomai] fcse best-effort mode has limitations in memory map
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,108 +15,50 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: George Pontis <gpontis@z9.com>
-Cc: xenomai@xenomai.org
+To: Roberto Bielli <roberto.bielli@axelsw.it>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 08/02/2013 05:05 AM, George Pontis wrote:
+On 07/26/2013 02:13 PM, Roberto Bielli wrote:
 
->> -----Original Message-----
->> From: Gilles Chanteperdrix [mailto:gilles.chanteperdrix@xenomai.org]
->> Sent: Thursday, August 01, 2013 12:39 PM
->> To: George Pontis
->> Cc: xenomai@xenomai.org
->> Subject: Re: [Xenomai] Permissions problem/interaction with udev on Xenomai
->> current
->>
->> On 07/31/2013 11:42 PM, George Pontis wrote:
->>
->>>> -----Original Message-----
->>>> From: Gilles Chanteperdrix [mailto:gilles.chanteperdrix@xenomai.org]
->>>> Sent: Wednesday, July 31, 2013 2:22 PM
->>>> To: George Pontis
->>>> Cc: xenomai@xenomai.org
->>>> Subject: Re: [Xenomai] Permissions problem/interaction with udev on
->> Xenomai
->>>> current
->>>>
->>>> On 07/30/2013 12:19 AM, George Pontis wrote:
->>>>
->>>>> Permissions problem happening when building with the current git for
->>>> Xenomai:
->>>>>
->>>>> for i in   vxworks psos rtai uitron vrtx ; do rm -f
->>>> /home/gpontis/b2/g/output/target/usr/lib/lib$i.* ; if [ $i == "posix" ] ; then
->> rm
->>>> -f /home/gpontis/b2/g/output/target/usr/lib/posix.wrappers ; fi ; done
->>>>> if test -d /home/gpontis/b2/g/output/target/etc/udev/rules.d ; then for f
->> in
->>>> /home/gpontis/b2/g/output/build/xenomai-2.6/ksrc/nucleus/udev/*.rules ;
->> do
->>>> cp $f /home/gpontis/b2/g/output/target/etc/udev/rules.d/ ; done ; fi;
->>>>> cp: cannot create regular file
->>>> `/home/gpontis/b2/g/output/target/etc/udev/rules.d/rtheap.rules':
->>>> Permission denied
->>>>> cp: cannot create regular file
->>>> `/home/gpontis/b2/g/output/target/etc/udev/rules.d/rtpipe.rules':
->> Permission
->>>> denied
->>>>> make: *** [/home/gpontis/b2/g/output/build/xenomai-
->>>> 2.6/.stamp_target_installed] Error 1
->>>>> gpontis@ubuntuVm:~/b2/g$
->>>>
->>>>
->>>> Normally, this copy is run as root. Maybe you are trying to run "make
->>>> install" on a directory through NFS with root squashing enabled on the
->>>> server side?
->>>>
->>>> --
->>>>                                                                    Gilles.
->>>
->>> I could see running it as root if building and installing on the same computer.
->> In my case the
->>> build runs on a PC for an embedded target. There are many files that need to
->> be handled
->>> specially by the build environment. In my case this is buildroot, which tries to
->> take care of
->>> ownership and permissions when it creates a rootfs.tar.
->>>
->>> I see that something is testing sudo and the build is interrupted until the
->> users supplies
->>> the password. And under some conditions the target directory
->> etc/udev/rules.d is created
->>> as being owned by me, other times as being owned by root. When it is owned
->> by me, then
->>> the build succeeds. I could make a patch for buildroot to apply to a Xenomai
->> makefile or
->>> shell script. But I thought that I should ask before doing this, since we did not
->> experience
->>> this problem with xenomai current a couple of months ago.
->>
->>
->> in xenomai sources, the copy is run as root, by using the sudo command,
->> so, chances are that buildroot patches xenomai makefile and that is the
->> reason why you have this issue. IOW, this looks like a buildroot issue
->> more than a xenomai issue.
->>
->>>
->>> George
->>>
->>>
->>>
->>
->>
->>
->> --
->>                                                                   Gilles.
+> Hi,
 >
-> It turned out that buildroot had a patch for this already. I just needed to adjust the offset for xenomai current
-> and actually apply it. Their patch was a one line mod to make install-exec-local not depend on "devices".
-> Sorry for the noise on the list.
+> i try to map a memory address fixed on 0x79000000 with mmap.
+> if i don't enable FCSE with best effort the mmap give me the desire
+> wanted address,
+> otherwise seems only an adress minor than 32MB.
+>
+> But i understand that fcse with best effort cannot has limitations.
+>
+> Xenomai 2.6.2.1 on kernel 3.4.6, tx28 karo ( freescale imx28 ) ARM.
 
 
-Running make install-user instead of "make install" has the same effect 
-as removing the dependency on "devices"..
+Hi,
 
+sorry for not seeing this message earlier, yes, this is a limitation in 
+the fcse patch modifications made to the mmap method. Note however that 
+if the process for which you create this mapping is a real-time process, 
+cache will be flushed every time the context is switched to this 
+process. So, in short, you will get little benefit from the FCSE patch.
+
+The best effort support for processes with address spaces larger than 
+32MB is made for other uses cases:
+- several processes with address-space larger than 32MB, but which are 
+not activated often, so most of the time cache will not have to be flushed;
+- only one process with an address-space larger than 32MB, and less than 
+95 processes total, so that all processes can cohabit without any cache 
+flushes.
+
+Your case could apply to the second case, but since the address 
+0x79000000 is very high, you will not be able to create many more 
+processes, for efficiency reason the FCSE patch supposes that your 
+process needs the whole space between 0 and the end of the 0x79000000 
+mapping, so, you could only create around 33 more processes with PIDs 
+above 0x7b000000 allowing to run your system without cache flushes.
+
+That being said, I will try and remove this limitation, thanks for 
+bringing this to the list attention.
+
+Regards.
 
 -- 
                                                                  Gilles.
