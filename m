@@ -1,5 +1,5 @@
-Message-ID: <51FE46F6.7020909@xenomai.org>
-Date: Sun, 04 Aug 2013 14:20:06 +0200
+Message-ID: <51FE5208.9090008@xenomai.org>
+Date: Sun, 04 Aug 2013 15:07:20 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <51F267DB.2050404@axelsw.it>
@@ -16,7 +16,7 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Roberto Bielli <roberto.bielli@axelsw.it>
-Cc: Xenomai <xenomai@xenomai.org>
+Cc: xenomai@xenomai.org
 
 On 07/26/2013 02:13 PM, Roberto Bielli wrote:
 
@@ -32,33 +32,9 @@ On 07/26/2013 02:13 PM, Roberto Bielli wrote:
 > Xenomai 2.6.2.1 on kernel 3.4.6, tx28 karo ( freescale imx28 ) ARM.
 
 
-Hi,
-
-sorry for not seeing this message earlier, yes, this is a limitation in 
-the fcse patch modifications made to the mmap method. Note however that 
-if the process for which you create this mapping is a real-time process, 
-cache will be flushed every time the context is switched to this 
-process. So, in short, you will get little benefit from the FCSE patch.
-
-The best effort support for processes with address spaces larger than 
-32MB is made for other uses cases:
-- several processes with address-space larger than 32MB, but which are 
-not activated often, so most of the time cache will not have to be flushed;
-- only one process with an address-space larger than 32MB, and less than 
-95 processes total, so that all processes can cohabit without any cache 
-flushes.
-
-Your case could apply to the second case, but since the address 
-0x79000000 is very high, you will not be able to create many more 
-processes, for efficiency reason the FCSE patch supposes that your 
-process needs the whole space between 0 and the end of the 0x79000000 
-mapping, so, you could only create around 33 more processes with PIDs 
-above 0x7b000000 allowing to run your system without cache flushes.
-
-That being said, I will try and remove this limitation, thanks for 
-bringing this to the list attention.
-
-Regards.
+Well, actually it works here, maybe you forgot to pass the "MAP_FIXED" 
+flag? If you do not pass this flag, the address is taken as a "hint", 
+and mmap has no obligation to use it.
 
 -- 
                                                                  Gilles.
