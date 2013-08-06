@@ -1,14 +1,13 @@
-Message-ID: <520145DA.8030800@xenomai.org>
-Date: Tue, 06 Aug 2013 20:52:10 +0200
+Message-ID: <52014A56.500@xenomai.org>
+Date: Tue, 06 Aug 2013 21:11:18 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CABSOR2gjLVQdXoxdPDHf6kuh-HT-XRPSj42vLP975-q2PR=jkw@mail.gmail.com>
-	<51F1820E.4030805@xenomai.org>
-	<CABSOR2j5WJAMpJ3Nz-DgTWw1XqmY2QKVrwepNR2jYnp4zF9Uag@mail.gmail.com>
-In-Reply-To: <CABSOR2j5WJAMpJ3Nz-DgTWw1XqmY2QKVrwepNR2jYnp4zF9Uag@mail.gmail.com>
+References: <51B73421.3050506@siemens.com> <51EA7539.3000805@xenomai.org>
+	<51F2A6AC.1060408@siemens.com>
+In-Reply-To: <51F2A6AC.1060408@siemens.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Xenomai application tracing
+Subject: Re: [Xenomai] Stable update for ipipe-3.8
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,55 +16,48 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: ILESH PATEL <patelilesh01@gmail.com>
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 08/06/2013 07:58 AM, ILESH PATEL wrote:
-> Hi,
+On 07/26/2013 06:41 PM, Jan Kiszka wrote:
+> On 2013-07-20 13:32, Gilles Chanteperdrix wrote:
+>> On 06/11/2013 04:28 PM, Jan Kiszka wrote:
+>>
+>>> Hi all,
+>>>
+>>> I've merged 3.8.13 into our stable 3.8 branch. This triggered some minor
+>>> conflicts in generic and ARM code. Please see
+>>>
+>>> git://git.xenomai.org/ipipe-jki for-upstream/3.8
+>>>
+>>> for details. The result works fine for x86, and if it's also OK for the
+>>> other arch, I'd propose this to be merged into the official 3.8 stable
+>>> branch.
+>>
+>>
+>> Hi Jan,
+>>
+>> I am not so sure 3.8.13. I am having random segfaults when running:
+>>
+>> xeno-regression-test -l "dohell -s 192.168.0.5 -m /mnt -l /ltp" -p 1000
+>>
+>> on geode and at91. I have first focused on at91 because the "unlocked
+>> context switch" features is a usual suspect, but:
+>> - the hardware pgd is in sync with the software pgd, which means that
+>> the unlocked context switch did not mess up the hardware pgd;
+>> -  going back to 3.5, I am unable to trigger the faults, despite the
+>> fact that the mm switch code is the same for this type of machine.
+>>
+>> So, could you run this same test on your x86 machines to see if you have
+>> any issue?
 > 
-> We are making bench mark of throughput,latency and Bandwidth of network
-> with Xenomai.
-> We make network of two i5-PC. On which Intel's 10G X-540-T2 NIC card is
-> installed on PCIe slot.
-> For measuring bench mark we use iperf ,netperf and jperf.
-> 
-> So I have little-bit of confusion about
-> 1.   whatever I test  and measure using iperf and jperf is through real
-> time Xenomai or not ?
-> 2.   Can we say  this bench-marking is real time bench marking with Xenomai
-> ?
-> 
-> 
-> If above is not real time then
-> 1.    Can you suggest some way to measure throughput, latency and bandwidth
-> of network using 10G NIC as real time using Xenomai.
-> 2.    Or any way to use iperf with Xenomai as real time execution for
-> measure throughput, latency and bandwidth of network using 10G NIC ?
-> 
-> 
-> On our PC following packages is installed.
-> Ubuntu 12.04 with kernel 3.5.1
-> Xenomai 2.6.2.1
-> NIC driver ixgbe 3.15.1
-> iperf 2.0.5
-> 
-> 
-> We have installed iperf as the regular installation method.
-> I use the following command to install iperf
-> 
-> #./configure
-> #make
-> #make install
+> I've seen it once during a test run today, but I'm lacking LTP here.
 
-Hi,
+Hi Jan,
 
-so no, iperf is not compiled for Xenomai. In order to do real-time
-networking with Xenomai, you need:
-- a network driver for Xenomai, likely using RTnet
-- an application compiled to use Xenomai services, if you want to port
-an application using the POSIX API, which is probably the case of iperf,
-you may have a look at this guide:
-https://www.xenomai.org/index.php/Porting_POSIX_applications_to_Xenomai
+I do not know if you have followed up on this issue, on my side, I have
+found the problem with FCSE which was a bad interaction between FCSE
+best effort mode and unlocked context switch. So, the issue is not generic.
 
 Regards.
 
