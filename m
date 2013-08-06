@@ -1,12 +1,13 @@
+Message-ID: <5200B433.9000604@xenomai.org>
+Date: Tue, 06 Aug 2013 10:30:43 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <51F1820E.4030805@xenomai.org>
-References: <CABSOR2gjLVQdXoxdPDHf6kuh-HT-XRPSj42vLP975-q2PR=jkw@mail.gmail.com>
-	<51F1820E.4030805@xenomai.org>
-Date: Tue, 6 Aug 2013 11:28:40 +0530
-Message-ID: <CABSOR2j5WJAMpJ3Nz-DgTWw1XqmY2QKVrwepNR2jYnp4zF9Uag@mail.gmail.com>
-From: ILESH PATEL <patelilesh01@gmail.com>
+References: <1375743903.7948.33.camel@lx-henry>
+In-Reply-To: <1375743903.7948.33.camel@lx-henry>
 Content-Type: text/plain; charset=ISO-8859-1
-Subject: Re: [Xenomai] Xenomai application tracing
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Using a PowerPC Critical Interrupt Input alongside
+ Xenomai
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,70 +16,68 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Henry Bausley <hbausley@deltatau.com>
+Cc: xenomai@xenomai.org
 
-Hi,
+On 08/06/2013 01:05 AM, Henry Bausley wrote:
+> 
+> 
+> I am experimenting with powerpc critical interrupts.
+> 
+> Is it feasible  to use a powerpc Critical Interrupt along side xenomai?
+> What would I have to do in general to accomplish this?
+> 
+>    I have written to the appropiate powerpc registers to make the
+> interrupt critical.
+> 
+>    I have modified head_44x.S to call my own routine.
+> ie.
+> changed
+> 
+> CRITICAL_EXCEPTION(0x0100, CriticalInput, unknown_exception)
+> 
+> to
+> 
+> CRITICAL_EXCEPTION(0x0100, CriticalInput, do_CIRQ)
+> 
+> 
+> My critical interrupt handler even works a few times. I can even see my
+> xenomai shared memories from my own critical interrupt handler.
+> However , after a few interrupts my xenomai application faults.
+> 
+> 
 
-We are making bench mark of throughput,latency and Bandwidth of network
-with Xenomai.
-We make network of two i5-PC. On which Intel's 10G X-540-T2 NIC card is
-installed on PCIe slot.
-For measuring bench mark we use iperf ,netperf and jperf.
+You would need at least something along these lines for returning to user (happily untested):
 
-So I have little-bit of confusion about
-1.   whatever I test  and measure using iperf and jperf is through real
-time Xenomai or not ?
-2.   Can we say  this bench-marking is real time bench marking with Xenomai
-?
+diff --git a/arch/powerpc/kernel/entry_32.S b/arch/powerpc/kernel/entry_32.S
+index 18df6e1..223723f 100644
+--- a/arch/powerpc/kernel/entry_32.S
++++ b/arch/powerpc/kernel/entry_32.S
+@@ -1154,7 +1154,7 @@ exc_exit_restart_end:
+ 	lwz	r3,_MSR(r1);						\
+ 	andi.	r3,r3,MSR_PR;						\
+ 	LOAD_MSR_KERNEL(r10,MSR_KERNEL);				\
+-	bne	user_exc_return;					\
++	bne	__ipipe_user_exc_return;				\
+ 	lwz	r0,GPR0(r1);						\
+ 	lwz	r2,GPR2(r1);						\
+ 	REST_4GPRS(3, r1);						\
+@@ -1399,6 +1399,12 @@ _GLOBAL(__ipipe_ret_from_except)
+         cmpwi   r3, 0
+         bne+ ret_from_except
+         b restore
++_GLOBAL(__ipipe_user_exc_return)
++        bl __ipipe_check_root
++        cmpwi   r3, 0
++	mfmsr	r10
++        bne+ user_exc_return
++        b restore_user
+ #endif /* CONFIG_IPIPE */
+ 
+ /*
 
+Since MSR_CE is not part of the disabling mask the I-pipe uses in interrupt-free sections, you should not pipeline critical irqs through __ipipe_grab_irq and friends. do_CIRQ() should be restricted to local, self-contained and safe code of your own, not calling the infrastructure.
 
-If above is not real time then
-1.    Can you suggest some way to measure throughput, latency and bandwidth
-of network using 10G NIC as real time using Xenomai.
-2.    Or any way to use iperf with Xenomai as real time execution for
-measure throughput, latency and bandwidth of network using 10G NIC ?
+-- 
+Philippe.
 
-
-On our PC following packages is installed.
-Ubuntu 12.04 with kernel 3.5.1
-Xenomai 2.6.2.1
-NIC driver ixgbe 3.15.1
-iperf 2.0.5
-
-
-We have installed iperf as the regular installation method.
-I use the following command to install iperf
-
-#./configure
-#make
-#make install
-
-
-
-
-On Fri, Jul 26, 2013 at 1:22 AM, Gilles Chanteperdrix <
-gilles.chanteperdrix@xenomai.org> wrote:
-
-> On 07/20/2013 04:59 PM, ILESH PATEL wrote:
->
->  Hi,
->>
->> I used iperf network testing utility on my network.
->> My PC is configured with ubuntu 12.04 with Xenomai 2.6.2.1
->>
->> So, I want to know iperf utility is running with real time environment
->> path
->> or non real time environment path.
->>
->> Please Give me hits tracing application.
->> So, I can know this application response is real time or non real time.
->>
->
->
-> It is a bit hard to know what you are testing, I mean you compiled iperf,
-> we have no idea how you compiled it. So, to be safe, we will say, no,
-> probably not, iperf is not using xenomai services.
->
-> --
->                                                                 Gilles.
->
