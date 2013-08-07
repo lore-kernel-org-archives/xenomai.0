@@ -1,13 +1,11 @@
-From: Henry Bausley <hbausley@deltatau.com>
-In-Reply-To: <5200B433.9000604@xenomai.org>
-References: <1375743903.7948.33.camel@lx-henry> <5200B433.9000604@xenomai.org>
-Content-Type: text/plain; charset="UTF-8"
-Date: Tue, 06 Aug 2013 16:08:53 -0700
-Message-ID: <1375830533.7948.40.camel@lx-henry>
-Mime-Version: 1.0
+From: Tobias Luksch <Tobias.Luksch@itk-engineering.de>
+Date: Wed, 7 Aug 2013 13:38:31 +0000
+Message-ID: <1124806E0C09F04A992E69AE2EC7FA3C80A6B1@swexchange01.itk.local>
+Content-Language: de-DE
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Using a PowerPC Critical Interrupt Input alongside
- Xenomai
+Subject: [Xenomai] Problems with running Xenomai on Core i5
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,115 +14,56 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Does this give any insight Philippe?  It appears to crash at
-finish_tlb_load_44x 
+Hello,
 
-
-chine Check exception is
-imprecise                                            
-Oops: Machine check, sig: 7
-[#1]                                                
-APM862xx
-vB                                                                     
-Modules linked in: usralgo(O) rtpmac(O) libppmac(O) ppmachw(O) [last
-unloaded: ]
-NIP: 8000119c LR: 800172dc CTR:
-80017730                                        
-REGS: afff3f10 TRAP: 0214   Tainted: G        W  O
-(3.2.21-aspen_2.01.09)      
-MSR: 00021000 <ME,CE>  CR: 84f42f22  XER:
-00000006                              
-TASK = 8075a380[0] 'swapper' THREAD:
-807a8000                                   
-GPR00: 000009e0 807abe40 8075a380 0000004f 80762c98 0000004f 47868bfe
-00000000  
-GPR08: 00000001 b10189e0 b1018210 00000210 df41051b 00000027 3ead3600
-00000000  
-GPR16: 00000000 00000000 3ead3aec 00000000 00000000 3ea98644 3ead619c
-0000000f  
-GPR24: 00000000 00000001 00001020 80762c98 0000004f 0000004f 80762c98
-af808000  
-NIP [8000119c] finish_tlb_load_44x
-+0x10/0x68                                    
-LR [800172dc] __mpic_mask_irq
-+0x18/0x46c                                        
-Call
-Trace:                                                                     
-[807abe40] [00000001] 0x1
-(unreliable)                                          
-[807abe70] [80017844] mpic_hold_irq
-+0x114/0x240                                 
-[807abe90] [8007cf68] __ipipe_ack_fasteoi_irq+0x20/0x30   
+(Some key data to begin with: kernel v3.2.21, xenomai v2.6.2.1, 
+ipipe-core-3.2.21-x86-5.patch as within the 2.6.2.1 xenomai release, all on 
+Ubuntu 12.04 with gcc 4.6.3)
 
 
-On Tue, 2013-08-06 at 10:30 +0200, Philippe Gerum wrote:
-> On 08/06/2013 01:05 AM, Henry Bausley wrote:
-> > 
-> > 
-> > I am experimenting with powerpc critical interrupts.
-> > 
-> > Is it feasible  to use a powerpc Critical Interrupt along side xenomai?
-> > What would I have to do in general to accomplish this?
-> > 
-> >    I have written to the appropiate powerpc registers to make the
-> > interrupt critical.
-> > 
-> >    I have modified head_44x.S to call my own routine.
-> > ie.
-> > changed
-> > 
-> > CRITICAL_EXCEPTION(0x0100, CriticalInput, unknown_exception)
-> > 
-> > to
-> > 
-> > CRITICAL_EXCEPTION(0x0100, CriticalInput, do_CIRQ)
-> > 
-> > 
-> > My critical interrupt handler even works a few times. I can even see my
-> > xenomai shared memories from my own critical interrupt handler.
-> > However , after a few interrupts my xenomai application faults.
-> > 
-> > 
-> 
-> You would need at least something along these lines for returning to user (happily untested):
-> 
-> diff --git a/arch/powerpc/kernel/entry_32.S b/arch/powerpc/kernel/entry_32.S
-> index 18df6e1..223723f 100644
-> --- a/arch/powerpc/kernel/entry_32.S
-> +++ b/arch/powerpc/kernel/entry_32.S
-> @@ -1154,7 +1154,7 @@ exc_exit_restart_end:
->  	lwz	r3,_MSR(r1);						\
->  	andi.	r3,r3,MSR_PR;						\
->  	LOAD_MSR_KERNEL(r10,MSR_KERNEL);				\
-> -	bne	user_exc_return;					\
-> +	bne	__ipipe_user_exc_return;				\
->  	lwz	r0,GPR0(r1);						\
->  	lwz	r2,GPR2(r1);						\
->  	REST_4GPRS(3, r1);						\
-> @@ -1399,6 +1399,12 @@ _GLOBAL(__ipipe_ret_from_except)
->          cmpwi   r3, 0
->          bne+ ret_from_except
->          b restore
-> +_GLOBAL(__ipipe_user_exc_return)
-> +        bl __ipipe_check_root
-> +        cmpwi   r3, 0
-> +	mfmsr	r10
-> +        bne+ user_exc_return
-> +        b restore_user
->  #endif /* CONFIG_IPIPE */
->  
->  /*
-> 
-> Since MSR_CE is not part of the disabling mask the I-pipe uses in interrupt-free sections, you should not pipeline critical irqs through __ipipe_grab_irq and friends. do_CIRQ() should be restricted to local, self-contained and safe code of your own, not calling the infrastructure.
-> 
+currently I am trying to use Xenomai on an embedded PC with an Intel Core i5 
+CPU (M520 @ 2.40GHz). While debugging processing times of our application, I 
+encountered strange non-determinism, i.e. parts of the program doing only 
+computations (w/o any mutexes etc.) sometimes took more than twice the time to 
+compute than usual.
 
+So I wrote a simple test program (attached) based on 
+examples/native/trivial-periodic creating a 1000Hz loop. In each cycle, a few 
+1000 sine functions are computed, with measuring the time it takes to do so. I 
+would expect a rather constant computation time, but I see significant jitter 
+(average duration ~0.09ms, jitter up to +-40%). 
 
+What's more, when I generate heavy CPU load on the linux side, the computation 
+time for the sine functions drops to about 0.06ms and shows no more significant 
+jitter at all. As soon as I stop producing CPU load, computation time and 
+jitter go up again.
 
+Running the same test program on a laptop with an Intel Core2 Duo and same 
+kernel version, kernel settings, and xenomai version runs as expected: constant 
+computation time, very low jitter, no influence by adding load on the linux 
+side.
 
+To me it looks like some power management feature of the CPU is kicking in. I 
+have disabled (hopefully) all relevant features in the BIOS (like EISS, 
+TurboBoost, Idle Modes, ...) and in the kernel (CPU frequency scaling, ..., 
+config file of me latest try is attached), /proc/cpuinfo always shows the same 
+frequency. Still I get the behavior described above.
 
-Outbound scan for Spam or Virus by Barracuda at Delta Tau
+Any help and feedback would be appreciated.
 
+Thanks,
+Tobias
 
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: config-3.2.21-xenomai-2.6.2.1
+Type: application/octet-stream
+Size: 143553 bytes
+Desc: config-3.2.21-xenomai-2.6.2.1
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20130807/f2a77ea9/attachment.obj>
+-------------- next part --------------
+An embedded and charset-unspecified text was scrubbed...
+Name: trivial-periodic.c
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20130807/f2a77ea9/attachment.c>
