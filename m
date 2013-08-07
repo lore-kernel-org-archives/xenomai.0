@@ -1,11 +1,11 @@
+Message-ID: <52028B6A.1040601@xenomai.org>
+Date: Wed, 07 Aug 2013 20:01:14 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Sender: mfornero@gmail.com
-In-Reply-To: <1124806E0C09F04A992E69AE2EC7FA3C80A6B1@swexchange01.itk.local>
 References: <1124806E0C09F04A992E69AE2EC7FA3C80A6B1@swexchange01.itk.local>
-Date: Wed, 7 Aug 2013 11:13:56 -0400
-Message-ID: <CADVgf9koTnR2AnnF3sOdpzFBN3j0TWbd8go_5c-=2MWs01cu4g@mail.gmail.com>
-From: Matthew Fornero <mfornero.lists@gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
+In-Reply-To: <1124806E0C09F04A992E69AE2EC7FA3C80A6B1@swexchange01.itk.local>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] Problems with running Xenomai on Core i5
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -18,33 +18,57 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: Tobias Luksch <Tobias.Luksch@itk-engineering.de>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Wed, Aug 7, 2013 at 9:38 AM, Tobias Luksch
-<Tobias.Luksch@itk-engineering.de> wrote:
-> To me it looks like some power management feature of the CPU is kicking in. I
-> have disabled (hopefully) all relevant features in the BIOS (like EISS,
-> TurboBoost, Idle Modes, ...) and in the kernel (CPU frequency scaling, ...,
-> config file of me latest try is attached), /proc/cpuinfo always shows the same
+On 08/07/2013 03:38 PM, Tobias Luksch wrote:
+> Hello,
+> 
+> (Some key data to begin with: kernel v3.2.21, xenomai v2.6.2.1, 
+> ipipe-core-3.2.21-x86-5.patch as within the 2.6.2.1 xenomai release, all on 
+> Ubuntu 12.04 with gcc 4.6.3)
+> 
+> 
+> currently I am trying to use Xenomai on an embedded PC with an Intel Core i5 
+> CPU (M520 @ 2.40GHz). While debugging processing times of our application, I 
+> encountered strange non-determinism, i.e. parts of the program doing only 
+> computations (w/o any mutexes etc.) sometimes took more than twice the time to 
+> compute than usual.
+> 
+> So I wrote a simple test program (attached) based on 
+> examples/native/trivial-periodic creating a 1000Hz loop. In each cycle, a few 
+> 1000 sine functions are computed, with measuring the time it takes to do so. I 
+> would expect a rather constant computation time, but I see significant jitter 
+> (average duration ~0.09ms, jitter up to +-40%). 
+> 
+> What's more, when I generate heavy CPU load on the linux side, the computation 
+> time for the sine functions drops to about 0.06ms and shows no more significant 
+> jitter at all. As soon as I stop producing CPU load, computation time and 
+> jitter go up again.
+> 
+> Running the same test program on a laptop with an Intel Core2 Duo and same 
+> kernel version, kernel settings, and xenomai version runs as expected: constant 
+> computation time, very low jitter, no influence by adding load on the linux 
+> side.
+> 
+> To me it looks like some power management feature of the CPU is kicking in. I 
+> have disabled (hopefully) all relevant features in the BIOS (like EISS, 
+> TurboBoost, Idle Modes, ...) and in the kernel (CPU frequency scaling, ..., 
+> config file of me latest try is attached), /proc/cpuinfo always shows the same 
 > frequency. Still I get the behavior described above.
 
-Hi Tobias,
+The config file lacks CONFIG_ACPI, you should enable ACPI, only
+CONFIG_ACPI_PROCESSOR should be disabled.
 
-What you're describing sounds exactly like C1E kicking in-- there
-seems to be a latency penalty when cores exit C1E. This is usually not
-exposed in the BIOS power settings (we had to add it to our boards).
-Fortunately it can be controlled via MSR and takes effect immediately.
-There's a bit in MSR 0x1FC (MSR_IA32_POWER_CTL) that needs to be
-cleared. I *believe* it's bit 1, but can't remember. Note that I
-believe this MSR is defined per-core, so you'll need to toggle the MSR
-on all the cores that you want to disable C1E on (usually all of
-them).
+Other than that, you should not use 3.2.21, this version is known to
+have issues with xenomai. Also, since you are using a Debian based
+system, you may try to add:
+deb http://www.xenomai.org/debian squeeze main
 
-A google search for MSR_IA32_POWER_CTL and C1E should be able to find
-some sort of documentation.
+to /etc/apt/sources.list, then do
 
-You should be able to tell if it's working using the built-in xenomai
-latency test. Run it on an idle (and otherwise well configured) system
-for 5-10 minutes and you should see a very noticable difference in
-scheduler latency with C1E on and off.
+apt-get update
+apt-get install xenomai-keyring
+apt-get update
+apt-get install linux-image-3.5.7-xenomai-2.6.2.1
 
--Matt
+-- 
+                                                                Gilles.
 
