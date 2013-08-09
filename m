@@ -1,11 +1,13 @@
-From: Tobias Luksch <Tobias.Luksch@itk-engineering.de>
-Date: Fri, 9 Aug 2013 12:48:11 +0000
-Message-ID: <1124806E0C09F04A992E69AE2EC7FA3C80A9A7@swexchange01.itk.local>
-Content-Language: de-DE
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
-Subject: Re: [Xenomai] Problems with running Xenomai on Core i5
+From: =?UTF-8?Q?Robert?= <robert-km@o2.pl>
+In-Reply-To: <2A0F278E-ED28-46CC-8727-DC97BB89A6D6@mah.priv.at>
+References: <52039EC3.4050908@gmail.com>
+	<2A0F278E-ED28-46CC-8727-DC97BB89A6D6@mah.priv.at>
+Mime-Version: 1.0
+Message-ID: <68671d77.6ce2003b.520526a4.3e2c@o2.pl>
+Date: Fri, 09 Aug 2013 19:28:04 +0200
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] =?utf-8?q?Using_hardware_PWM_generators_with_Xenomai?=
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,63 +16,88 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: =?UTF-8?Q?xenomai@xenomai.org?=, xenomai@xenomai.org, =?UTF-8?Q?Michael_Haberler?= <mail17@mah.priv.at>
 
-SGVsbG8gR2lsbGVzLA0KDQp0aGFuayB5b3UgZm9yIHlvdXIgaGVscC4gSSBkaXNhYmxlZCBBQ1BJ
-IGluIHRoZSBrZXJuZWwgYXMgYW5vdGhlciBkZXNwZXJhdGUgdHJ5IHdoaWxlIGh1bnRpbmcgZG93
-biBteSBwcm9ibGVtLCBub3cgSSB3aWxsIGVuYWJsZSBpdCBhZ2Fpbi4gDQoNCkkgbWFpbmx5IG9w
-dGVkIGZvciBrZXJuZWwgdmVyc2lvbiAzLjIuMjEgYXMgd2UgbmVlZCBhIDMuMiBrZXJuZWwgYmVj
-YXVzZSBvZiBzb21lIG90aGVyIHNvZnR3YXJlIHdlIGhhdmUgdG8gdXNlIGluIHRoZSBwcm9qZWN0
-IGFuZCB0aGUgYWRlb3MgcGF0Y2ggZm9yIDMuMi4yMSBjYW1lIHdpdGggdGhlIHhlbm9tYWkgMi42
-LjIuMSB0YXJiYWxsLiBDb3VsZCB5b3Ugc3VnZ2VzdCBhbm90aGVyIDMuMiBrZXJuZWwgdmVyc2lv
-biwgb3Igd291bGQgeW91IGRpc2NvdXJhZ2UgbWUgZnJvbSB1c2luZyBhIDMuMi54IGtlcm5lbCBh
-dCBhbGw/DQoNClJlZ2FyZHMsDQpUb2JpYXMNCg0KLS0tLS1VcnNwcsO8bmdsaWNoZSBOYWNocmlj
-aHQtLS0tLQ0KVm9uOiBHaWxsZXMgQ2hhbnRlcGVyZHJpeCBbbWFpbHRvOmdpbGxlcy5jaGFudGVw
-ZXJkcml4QHhlbm9tYWkub3JnXSANCkdlc2VuZGV0OiBNaXR0d29jaCwgNy4gQXVndXN0IDIwMTMg
-MjA6MDENCkFuOiBUb2JpYXMgTHVrc2NoDQpDYzogeGVub21haUB4ZW5vbWFpLm9yZw0KQmV0cmVm
-ZjogUmU6IFtYZW5vbWFpXSBQcm9ibGVtcyB3aXRoIHJ1bm5pbmcgWGVub21haSBvbiBDb3JlIGk1
-DQoNCk9uIDA4LzA3LzIwMTMgMDM6MzggUE0sIFRvYmlhcyBMdWtzY2ggd3JvdGU6DQo+IEhlbGxv
-LA0KPiANCj4gKFNvbWUga2V5IGRhdGEgdG8gYmVnaW4gd2l0aDoga2VybmVsIHYzLjIuMjEsIHhl
-bm9tYWkgdjIuNi4yLjEsIA0KPiBpcGlwZS1jb3JlLTMuMi4yMS14ODYtNS5wYXRjaCBhcyB3aXRo
-aW4gdGhlIDIuNi4yLjEgeGVub21haSByZWxlYXNlLCANCj4gYWxsIG9uIFVidW50dSAxMi4wNCB3
-aXRoIGdjYyA0LjYuMykNCj4gDQo+IA0KPiBjdXJyZW50bHkgSSBhbSB0cnlpbmcgdG8gdXNlIFhl
-bm9tYWkgb24gYW4gZW1iZWRkZWQgUEMgd2l0aCBhbiBJbnRlbCANCj4gQ29yZSBpNSBDUFUgKE01
-MjAgQCAyLjQwR0h6KS4gV2hpbGUgZGVidWdnaW5nIHByb2Nlc3NpbmcgdGltZXMgb2Ygb3VyIA0K
-PiBhcHBsaWNhdGlvbiwgSSBlbmNvdW50ZXJlZCBzdHJhbmdlIG5vbi1kZXRlcm1pbmlzbSwgaS5l
-LiBwYXJ0cyBvZiB0aGUgDQo+IHByb2dyYW0gZG9pbmcgb25seSBjb21wdXRhdGlvbnMgKHcvbyBh
-bnkgbXV0ZXhlcyBldGMuKSBzb21ldGltZXMgdG9vayANCj4gbW9yZSB0aGFuIHR3aWNlIHRoZSB0
-aW1lIHRvIGNvbXB1dGUgdGhhbiB1c3VhbC4NCj4gDQo+IFNvIEkgd3JvdGUgYSBzaW1wbGUgdGVz
-dCBwcm9ncmFtIChhdHRhY2hlZCkgYmFzZWQgb24gDQo+IGV4YW1wbGVzL25hdGl2ZS90cml2aWFs
-LXBlcmlvZGljIGNyZWF0aW5nIGEgMTAwMEh6IGxvb3AuIEluIGVhY2ggDQo+IGN5Y2xlLCBhIGZl
-dw0KPiAxMDAwIHNpbmUgZnVuY3Rpb25zIGFyZSBjb21wdXRlZCwgd2l0aCBtZWFzdXJpbmcgdGhl
-IHRpbWUgaXQgdGFrZXMgdG8gDQo+IGRvIHNvLiBJIHdvdWxkIGV4cGVjdCBhIHJhdGhlciBjb25z
-dGFudCBjb21wdXRhdGlvbiB0aW1lLCBidXQgSSBzZWUgDQo+IHNpZ25pZmljYW50IGppdHRlciAo
-YXZlcmFnZSBkdXJhdGlvbiB+MC4wOW1zLCBqaXR0ZXIgdXAgdG8gKy00MCUpLg0KPiANCj4gV2hh
-dCdzIG1vcmUsIHdoZW4gSSBnZW5lcmF0ZSBoZWF2eSBDUFUgbG9hZCBvbiB0aGUgbGludXggc2lk
-ZSwgdGhlIA0KPiBjb21wdXRhdGlvbiB0aW1lIGZvciB0aGUgc2luZSBmdW5jdGlvbnMgZHJvcHMg
-dG8gYWJvdXQgMC4wNm1zIGFuZCANCj4gc2hvd3Mgbm8gbW9yZSBzaWduaWZpY2FudCBqaXR0ZXIg
-YXQgYWxsLiBBcyBzb29uIGFzIEkgc3RvcCBwcm9kdWNpbmcgDQo+IENQVSBsb2FkLCBjb21wdXRh
-dGlvbiB0aW1lIGFuZCBqaXR0ZXIgZ28gdXAgYWdhaW4uDQo+IA0KPiBSdW5uaW5nIHRoZSBzYW1l
-IHRlc3QgcHJvZ3JhbSBvbiBhIGxhcHRvcCB3aXRoIGFuIEludGVsIENvcmUyIER1byBhbmQgDQo+
-IHNhbWUga2VybmVsIHZlcnNpb24sIGtlcm5lbCBzZXR0aW5ncywgYW5kIHhlbm9tYWkgdmVyc2lv
-biBydW5zIGFzIA0KPiBleHBlY3RlZDogY29uc3RhbnQgY29tcHV0YXRpb24gdGltZSwgdmVyeSBs
-b3cgaml0dGVyLCBubyBpbmZsdWVuY2UgYnkgDQo+IGFkZGluZyBsb2FkIG9uIHRoZSBsaW51eCBz
-aWRlLg0KPiANCj4gVG8gbWUgaXQgbG9va3MgbGlrZSBzb21lIHBvd2VyIG1hbmFnZW1lbnQgZmVh
-dHVyZSBvZiB0aGUgQ1BVIGlzIA0KPiBraWNraW5nIGluLiBJIGhhdmUgZGlzYWJsZWQgKGhvcGVm
-dWxseSkgYWxsIHJlbGV2YW50IGZlYXR1cmVzIGluIHRoZSANCj4gQklPUyAobGlrZSBFSVNTLCBU
-dXJib0Jvb3N0LCBJZGxlIE1vZGVzLCAuLi4pIGFuZCBpbiB0aGUga2VybmVsIChDUFUgDQo+IGZy
-ZXF1ZW5jeSBzY2FsaW5nLCAuLi4sIGNvbmZpZyBmaWxlIG9mIG1lIGxhdGVzdCB0cnkgaXMgYXR0
-YWNoZWQpLCANCj4gL3Byb2MvY3B1aW5mbyBhbHdheXMgc2hvd3MgdGhlIHNhbWUgZnJlcXVlbmN5
-LiBTdGlsbCBJIGdldCB0aGUgYmVoYXZpb3IgZGVzY3JpYmVkIGFib3ZlLg0KDQpUaGUgY29uZmln
-IGZpbGUgbGFja3MgQ09ORklHX0FDUEksIHlvdSBzaG91bGQgZW5hYmxlIEFDUEksIG9ubHkgQ09O
-RklHX0FDUElfUFJPQ0VTU09SIHNob3VsZCBiZSBkaXNhYmxlZC4NCg0KT3RoZXIgdGhhbiB0aGF0
-LCB5b3Ugc2hvdWxkIG5vdCB1c2UgMy4yLjIxLCB0aGlzIHZlcnNpb24gaXMga25vd24gdG8gaGF2
-ZSBpc3N1ZXMgd2l0aCB4ZW5vbWFpLiBBbHNvLCBzaW5jZSB5b3UgYXJlIHVzaW5nIGEgRGViaWFu
-IGJhc2VkIHN5c3RlbSwgeW91IG1heSB0cnkgdG8gYWRkOg0KZGViIGh0dHA6Ly93d3cueGVub21h
-aS5vcmcvZGViaWFuIHNxdWVlemUgbWFpbg0KDQp0byAvZXRjL2FwdC9zb3VyY2VzLmxpc3QsIHRo
-ZW4gZG8NCg0KYXB0LWdldCB1cGRhdGUNCmFwdC1nZXQgaW5zdGFsbCB4ZW5vbWFpLWtleXJpbmcN
-CmFwdC1nZXQgdXBkYXRlDQphcHQtZ2V0IGluc3RhbGwgbGludXgtaW1hZ2UtMy41LjcteGVub21h
-aS0yLjYuMi4xDQoNCi0tIA0KICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgIEdpbGxlcy4NCg==
+I=20wrote=20this=20driver=20recently,=20and=20it=20generates=20stable=20p=
+wm=20signal.=20Probably=20you=20will=20have=20to=20adapt=20it=20to=20beag=
+lebone=20black.
+It=20is=20written=20for=20Pandaboard=20and=20its=20hardware=20general=20p=
+urpose=20timer.
+There=20are=20some=20ioctl=20interfaces=20for=20user=20space.
+
+https://github.com/rkmiec/pandaboard-pwm-rtdm/tree/dc=5Fengine
+
+Do=20NOT=20use=20master=20branch=20now.
+
+Dnia=208=20sierpnia=202013=2016:26=20Michael=20Haberler=20<mail17@mah.pri=
+v.at>=20napisa=C5=82(a):
+
+>=20Sagar,
+>=20
+>=20you=20might=20want=20to=20study=20the=20LinuxCNC=20code,=20which=20do=
+es=20PWM=20-=20among=20other=20functions=20like=20a=20stepper=20generator=
+=20-=20via=20the=20PRU
+>=20
+>=20http://git.linuxcnc.org/gitweb?p=3Dlinuxcnc.git;a=3Dtree;f=3Dsrc/hal/=
+drivers/hal=5Fpru=5Fgeneric;h=3D5e7dc56c1891408833362fd7f480a9da20dcc31d;=
+hb=3Drefs/heads/unified-build-candidate-1
+>=20
+>=20-=20Michael
+>=20Am=2008.08.2013=20um=2015:36=20schrieb=20Sagar=20Behere=20<sagar.behe=
+re@gmail.com>:
+>=20
+>=20>=20Hello,
+>=20>=20
+>=20>=20I=20wish=20to=20generate=20PWM=20signals=20from=20Xenomai,=20usin=
+g=20the=20beaglebone=20black,=20kernel=203.8.13=20patched=20with=20xenoma=
+i.
+>=20>=20
+>=20>=20There=20already=20exist=20linux=20kernel=20modules=20for=20the=20=
+hardware=20PWM=20generator=20(eHRPWM)=20on=20the=20am335x=20chip=20in=20t=
+he=20beaglebone.=20The=20PWM=20generator=20can=20be=20configured=20and=20=
+controlled=20via=20the=20/sysfs=20interface=20and=20the=20whole=20thing=20=
+works=20very=20well.
+>=20>=20
+>=20>=20I=20understand=20that=20the=20/sysfs=20interface=20cannot=20be=20=
+used=20by=20xenomai=20tasks=20without=20triggering=20a=20transition=20awa=
+y=20from=20the=20primary=20xenomai=20(hard=20realtime)=20domain.=20So=20m=
+y=20question=20is:=20What=20is=20the=20least=20effort=20way=20to=20change=
+=20the=20duty=20cycle=20of=20the=20hardware=20PWM=20generator,=20from=20a=
+=20xenomai=20task?
+>=20>=20
+>=20>=20Does=20the=20following=20approach=20sound=20feasible?
+>=20>=20
+>=20>=201.=20Configure=20the=20PWM=20generator=20(freq,=20polarity=20etc.=
+)=20from=20the=20/sysfs=20interface=20at=20application=20startup.=20This=20=
+need=20not=20be=20realtime
+>=20>=202.=20Assuming=20that=20the=20duty-cycle=20is=20controlled=20by=20=
+the=20value=20of=20some=20memory-mapped=20register,=20use=20mmap()/iorema=
+p()=20to=20map=20that=20register's=20address=20into=20the=20xenomai=20tas=
+k's=20address=20space.
+>=20>=203.=20Write=20the=20duty-cycle=20values=20to=20the=20mapped=20memo=
+ry,=20from=20within=20the=20xenomai=20task
+>=20>=20
+>=20>=20So=20this=20is=20like=20a=20hybrid=20approach=20that=20uses=20the=
+=20existing=20linux=20kernel=20module=20for=20initializing/configuring=20=
+the=20hardware=20PWM=20and=20the=20xenomai=20task=20only=20changes=20the=20=
+value=20of=20one=20register=20that=20affects=20the=20duty=20cycle=20of=20=
+the=20output=20waveform.
+>=20>=20
+>=20>=20Thanks=20in=20advance,
+>=20>=20Sagar
+>=20>=20
+>=20>=20=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=
+=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=
+
+>=20>=20Xenomai=20mailing=20list
+>=20>=20Xenomai@xenomai.org
+>=20>=20http://www.xenomai.org/mailman/listinfo/xenomai
+>=20
+>=20
+>=20=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=
+=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F=5F
+>=20Xenomai=20mailing=20list
+>=20Xenomai@xenomai.org
+>=20http://www.xenomai.org/mailman/listinfo/xenomai
+>=20
 
