@@ -1,13 +1,12 @@
-Message-ID: <520A0800.5070803@xenomai.org>
-Date: Tue, 13 Aug 2013 12:18:40 +0200
+Message-ID: <520A3AC2.6080304@xenomai.org>
+Date: Tue, 13 Aug 2013 15:55:14 +0200
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <732137476.102328119.1376388062696.JavaMail.root@zimbra14-e2.priv.proxad.net>
-In-Reply-To: <732137476.102328119.1376388062696.JavaMail.root@zimbra14-e2.priv.proxad.net>
+References: <20130813025419.B4E993700FF@webmail.sinamail.sina.com.cn>
+In-Reply-To: <20130813025419.B4E993700FF@webmail.sinamail.sina.com.cn>
 Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Xenomai: fatal: Hardened thread xxxx running in Linux
- domain?!
+Subject: Re: [Xenomai] About pathcing xenomai into linux
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,59 +15,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: jeanmicheltaprest@free.fr
-Cc: xenomai@xenomai.org
+To: wxs3314480@sina.cn
+Cc: xenomai <xenomai@xenomai.org>
 
-On 08/13/2013 12:01 PM, jeanmicheltaprest@free.fr wrote:
-> hello,
+On 08/13/2013 04:54 AM, wxs3314480@sina.cn wrote:
 >
-> I use a Linux kernel 2.6.29.6 patched with Xenomai 2.5.2.
+>
+> 	Thanks for reading.
+>
+>
+> 	I wonder that can I use xenomai 2.6.2.1 in linux kernel 3.2.1 versions or above .
+> 	And about using xenomai ,do I need Adeos with xenomai together?
 
-Please upgrade to 2.6.2, 2.5.2 is seriously updated, and bugs have been 
-fixed since then, including in that area. Even if running a legacy 
-2.6.29 kernel is not recommended (at all), you can run the latest 2.6.x 
-Xenomai releases over this old kernel as well.
+You should find answers to your questions here:
+https://www.xenomai.org/index.php/FAQs
 
-If you have issues building Xenomai 2.6.x over kernel 2.6.29, please let 
-us now.
-
->
-> Very scarcely, i got the following message "Xenomai: fatal: Hardened thread taskFuncInjectionMigration[3516] running in Linux domain?!" and Linux freezes.
->
-> It happens when i turn the current Linux task into a native Xenomai task via rt_task_shadow, in the following code snippet.
->
-> extern RT_TASK rtTaskFuncInjectionMigration;
->
-> void foncInjectionMigration(char* TypeMode)
-> {
-> int InjMigration, modeInjectionMigration, err;
->
-> 	sscanf(TypeMode, "%d %d", &InjMigration, &modeInjectionMigration);
->
-> 	mlockall(MCL_CURRENT|MCL_FUTURE);
->
-> 	AN_PRINTF("Cree une tache Xeno non temps reel dans le contexte de la tache Linux !\n");
-> 	err = rt_task_shadow(&rtTaskFuncInjectionMigration, "taskFuncInjectionMigration", 10, 0);
-> 	if(err) {
-> 		AN_PRINTF("rt_task_shadow ? (%s)\n", strerror(err));
->
-> 	}
->
-> 	foncsInjectionMigration[InjMigration](modeInjectionMigration);
->
-> 	munlockall();
->
-> }
->
-> foncInjectionMigration is called from funcInjectionMigration, which is a son process resulting from a Linux fork.
->
-> Any help or idea about that issue would be enjoyed.
->
-> Thanks in advance
->
-> JmT
->
->
 > _______________________________________________
 > Xenomai mailing list
 > Xenomai@xenomai.org
