@@ -1,14 +1,10 @@
-Message-ID: <51DC560F.90805@xenomai.org>
-Date: Tue, 09 Jul 2013 20:27:27 +0200
+Message-ID: <520A7DE7.5000906@xenomai.org>
+Date: Tue, 13 Aug 2013 20:41:43 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <A46EF8CF1BBB8E4B8A27B73E177C466402463ADE@MAIL-SINTERS-01.sinters-int.fr>,
-	<51DBF250.9070804@xenomai.org>
-	<A46EF8CF1BBB8E4B8A27B73E177C466402464B37@MAIL-SINTERS-01.sinters-int.fr>
-In-Reply-To: <A46EF8CF1BBB8E4B8A27B73E177C466402464B37@MAIL-SINTERS-01.sinters-int.fr>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] RE : No boot kernel with xenomai on i.MX6Q Sabrelite
+Subject: [Xenomai] pull request for ipipe-3.8 branch
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,19 +13,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Younes CHALABI <y.chalabi@sinters.fr>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 07/09/2013 02:18 PM, Younes CHALABI wrote:
+The following changes since commit ab0f844da1e47a650fa36244713f08584f7ccf8a:
 
-> Hi Gilles,
->
-> On git under tags, the latest version of Xenomai is 2.6.2.1 (5 months ago), and I think that is the same version I use.
+  blackfin/ipipe: introduce support for bf60x (2013-06-24 16:07:25 +0200)
 
+are available in the git repository at:
+  git://git.xenomai.org/ipipe-gch.git for-ipipe-3.8
 
-I mean xenomai 2.6 git current head.
+Gilles Chanteperdrix (7):
+      x86/ipipe: fix compilation without I-pipe
+      arm/ipipe: fix mxs interrupt handler
+      ipipe/tracer: fix console messages alignment
+      arm/ipipe: rework context switch with VIVT caches
+      arm/ipipe: fix unlocked context switch with FCSE best-effort
+      arm/ipipe: add debug checks
+      arm/ipipe: split full L2 cache flush
 
+ arch/arm/include/asm/fcse.h        |   26 +++++++++---
+ arch/arm/include/asm/mmu_context.h |   36 +++++++++--------
+ arch/arm/kernel/entry-common.S     |    4 +-
+ arch/arm/kernel/entry-header.S     |   12 ++++++
+ arch/arm/kernel/ipipe.c            |   75 +++++++++++++++++++++++++++--------
+ arch/arm/mach-mxs/icoll.c          |    2 +-
+ arch/arm/mm/cache-l2x0.c           |   39 ++++++++++++++++++
+ arch/arm/mm/fcse.c                 |   70 ++++++++++++++++++++-------------
+ kernel/ipipe/tracer.c              |    2 +-
+ kernel/time/clocksource.c          |    2 +
+ 10 files changed, 198 insertions(+), 70 deletions(-)
 
 -- 
-                                                                 Gilles.
+                                                                Gilles.
 
