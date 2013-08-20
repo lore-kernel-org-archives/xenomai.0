@@ -1,12 +1,12 @@
-Message-ID: <51DD438C.4010903@xenomai.org>
-Date: Wed, 10 Jul 2013 13:20:44 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <5213C836.403@steinkuehler.net>
+Date: Tue, 20 Aug 2013 14:49:10 -0500
+From: Charles Steinkuehler <charles@steinkuehler.net>
 MIME-Version: 1.0
-References: <8B214237A3F6FD45BB5046C4308E5614C03309E7BB@UKHIG-MXVS07.emea.thermo.com>
-In-Reply-To: <8B214237A3F6FD45BB5046C4308E5614C03309E7BB@UKHIG-MXVS07.emea.thermo.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Xenomai configuration menu
+References: <52138425.2030000@steinkuehler.net> <5213B7D3.5030606@xenomai.org>
+In-Reply-To: <5213B7D3.5030606@xenomai.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai] Building BeagleBone kernel from git
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,24 +15,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Masiero, Marco" <marco.masiero@thermofisher.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On 07/10/2013 11:11 AM, Masiero, Marco wrote:
-
-> Hi,
->
-> I'm really new to the use of linux and xenomai, sorry for the banality of the question.
->
-> I installed Xenomai 2.6.2.1 on a desktop running Ubuntu 12.04.
-> Running the test I noted high latency, it seems I have a problem with SMI.
-> Troubleshoot guide told me to enable the SMI workaround in the Xenomai configuration menu.
->
-> How can I run  the Xenomai configuration menu ?
-
-
-It is the "Real-time subsystem" sub-menu in the kernel configuration menu.
-
--- 
-                                                                 Gilles.
-
+T24gOC8yMC8yMDEzIDE6MzkgUE0sIEdpbGxlcyBDaGFudGVwZXJkcml4IHdyb3RlOgo+IE9uIDA4
+LzIwLzIwMTMgMDQ6NTggUE0sIENoYXJsZXMgU3RlaW5rdWVobGVyIHdyb3RlOgo+PiBJIGFtIGN1
+cnJlbnRseSB3b3JraW5nIHdpdGggTGludXhDTkMgaW4gYSB4ZW5vbWFpIHJlYWwtdGltZSBlbnZp
+cm9ubWVudAo+PiBvbiB0aGUgQmVhZ2xlQm9uZToKPj4KPj4gaHR0cDovL2JiLWxjbmMuYmxvZ3Nw
+b3QuY29tL3AvbWFjaGluZWtpdF8xNi5odG1sCj4+Cj4+IEV2ZXJ5dGhpbmcgaXMgd29ya2luZyB3
+ZWxsLCBidXQgdGhlIGtlcm5lbCBpcyBiZWluZyBidWlsdCB1c2luZyBhbgo+PiBvdXQtb2YtdHJl
+ZSBwYXRjaCBzZXQgb2J0YWluZWQgYnkgTWljaGFlbCBIYWJlcmxlci4KPj4KPj4gSSB3b3VsZCBs
+aWtlIHRvIHN3aXRjaCB0byB1c2luZyBhIG1vcmUgJ29mZmljaWFsJyB4ZW5vbWFpIGJ1aWxkIGZy
+b20KPj4gZ2l0LCBidXQgYW0gdW5jbGVhciBob3cgdG8gcHJvY2VlZC4KPj4KPj4gV2hpY2ggZ2l0
+IHJlcG9zaXRvcnkvYnJhbmNoIHdvdWxkIGJlIHRoZSBtb3N0IGFwcHJvcHJpYXRlIGZvciB1c2Ug
+aW4KPj4gYnVpbGRpbmcgYSB4ZW5vbWFpIGtlcm5lbCBmb3IgdGhlIEJlYWdsZUJvbmUgLyBBTTMz
+NXggU29DPwo+Pgo+PiBBcmUgdGhlcmUgYW55ICdnb3RjaGFzJyB3aGVuIHVzaW5nIHhlbm9tYWkg
+ZnJvbSBnaXQsIG9yIGRvIHRoZQo+PiBpbnN0cnVjdGlvbnMgYW5kIHByb2NlZHVyZXMgZm9yIHVz
+aW5nIGEgcmVsZWFzZWQgdmVyc2lvbiBhcHBseT8KPiAKPiBZb3UgY2FuIHVzZSBrZXJuZWwgZnJv
+bSB0aGUgSS1waXBlIGdpdCBhdDoKPiBnaXQ6Ly9naXQueGVub21haS5vcmcvaXBpcGUuZ2l0IGJy
+YW5jaCBpcGlwZS0zLjgKClRoYW5rcyEgIEkgd2Fzbid0IHN1cmUgaWYgSSBjb3VsZCB1c2Ugb25l
+IG9mIHRoZSBpcGlwZSBicmFuY2hlcyBvciBpZiBJCnN0aWxsIG5lZWRlZCB0byB1c2Ugb25lIG9m
+IHRoZSBwZXJzb25hbCBicmFuY2hlcy4KCj4gQW5kIHhlbm9tYWkgZnJvbSB0aGUgeGVub21haSAy
+LjYgZ2l0IGF0Ogo+IGdpdDovL2dpdC54ZW5vbWFpLm9yZy94ZW5vbWFpLTIuNi5naXQgYnJhbmNo
+IG1hc3Rlcgo+IAo+IFRoZSBvbmx5IGRpZmZlcmVuY2UgaW4gdGhlIGluc3RhbGxhdGlvbiBwcm9j
+ZWR1cmUgd2hlbiB1c2luZyB0aGlzIGtlcm5lbAo+IHdpdGggdGhpcyB2ZXJzaW9uIG9mIFhlbm9t
+YWkgaXMgdGhhdCB0aGUgInByZXBhcmUta2VybmVsLnNoIiBzY3JpcHQgd2lsbAo+IG5vdCBhcHBs
+eSB0aGUgSS1waXBlIHBhdGNoIHRvIHRoZSBrZXJuZWwsIHNpbmNlIHRoZSBrZXJuZWwgaXMgYWxy
+ZWFkeQo+IHBhdGNoZWQsIHNvIHRoZSBhcmd1bWVudCB0byB0aGUgIi0tYWRlb3MiIHBhcmFtZXRl
+ciBvZiBwcmVwYXJlLWtlcm5lbC5zaAo+IGlzIGlnbm9yZWQuCgpPSywgc3R1cGlkIHF1ZXN0aW9u
+OgoKSSBzZWUgdGhlIGlwaXBlIGJyYW5jaCBoYXMgdGhlIGtlcm5lbCBzb3VyY2UsIGJ1dCBJIG5l
+ZWQgdG8gYXBwbHkgdGhlCnBhdGNoZXMgdG8gYSBub24tc3RvY2sga2VybmVsIChpZTogYSBtYWlu
+bGluZSAzLjguMTMga2VybmVsIHBhdGNoZWQgd2l0aAp0aGUgQmVhZ2xlQm9uZSBwYXRjaCBzZXQp
+LiAgSXMgdGhlcmUgYSB3YXkgdG8gZ2V0IHRoZSBwcmVwYXJlLWtlcm5lbC5zaApzY3JpcHQgYW5k
+L29yIGEgcGF0Y2ggc2V0IHRvIGFwcGx5IHRvIGEgbWFpbmxpbmUga2VybmVsIG91dCBvZiB0aGUg
+aXBpcGUKZ2l0IGJyYW5jaD8KClNvcnJ5IGlmIHRoaXMgaXMgYSB0b3RhbCBuZXdiaWUgcXVlc3Rp
+b24sIGJ1dCBJIHNlZSBpbnN0cnVjdGlvbnMgZm9yCnVzaW5nIHRoZSBwcmVwYXJlLWtlcm5lbC5z
+aCBzY3JpcHQgb24gYSBrZXJuZWwgZGlyZWN0b3J5LCBhbmQKaW5zdHJ1Y3Rpb25zIGZvciB1c2lu
+ZyB0aGUgaXBpcGUga2VybmVsIHNvdXJjZSBkaXJlY3RseSwgYnV0IG5vdCBob3cgdG8KZ2V0IGZy
+b20gb25lIHRvIHRoZSBvdGhlci4KCi0tIApDaGFybGVzIFN0ZWlua3VlaGxlcgpjaGFybGVzQHN0
+ZWlua3VlaGxlci5uZXQKCi0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpB
+IG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IHNpZ25hdHVyZS5hc2MK
+VHlwZTogYXBwbGljYXRpb24vcGdwLXNpZ25hdHVyZQpTaXplOiAyNjEgYnl0ZXMKRGVzYzogT3Bl
+blBHUCBkaWdpdGFsIHNpZ25hdHVyZQpVUkw6IDxodHRwOi8vd3d3Lnhlbm9tYWkub3JnL3BpcGVy
+bWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTMwODIwLzY5OTE4NmQ0L2F0dGFjaG1lbnQucGdw
+Pgo=
