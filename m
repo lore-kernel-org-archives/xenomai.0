@@ -1,13 +1,17 @@
-Message-ID: <5213E453.6020304@xenomai.org>
-Date: Tue, 20 Aug 2013 23:49:07 +0200
+Message-ID: <5213E5D9.1090408@xenomai.org>
+Date: Tue, 20 Aug 2013 23:55:37 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <521364EF.8050006@siemens.com> <5213B23C.6000507@xenomai.org>
-In-Reply-To: <5213B23C.6000507@xenomai.org>
+References: <CAMgy_J0idydJq8wzH3CwQoCa+BEbSyUyOJoWmvwc+oAB3jpZ6w@mail.gmail.com>
+	<CAKvQZ_2Nzfgj7oK12+t3CtLj-YWBCB=nFYSDU6B4KqW4aWQpnQ@mail.gmail.com>
+	<50B88506.6000002@xenomai.org>
+	<CAKvQZ_3LJ-u2B0zc0+pobSGnMZ4nNviyxfuP1uiVRVuHw9Y9pQ@mail.gmail.com>
+	<50B8F21B.5090503@xenomai.org>
+	<CAKvQZ_13VsZV9sKjNLqMTHJhGn55pjkLqffsb8kYQb1b8H7rFw@mail.gmail.com>
+In-Reply-To: <CAKvQZ_13VsZV9sKjNLqMTHJhGn55pjkLqffsb8kYQb1b8H7rFw@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] xeno-regression-test returns SUCCESS when Xenomai not
- available
+Subject: Re: [Xenomai] Frustrating experience with Xenomai
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,83 +20,74 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gernot Hillier <gernot.hillier@siemens.com>
-Cc: xenomai@xenomai.org
+To: Willy Lambert <lambert.willy@gmail.com>
+Cc: Shamju Joseph <shamju.joseph@gmail.com>, xenomai@xenomai.org
 
-On 08/20/2013 08:15 PM, Gilles Chanteperdrix wrote:
-> On 08/20/2013 02:45 PM, Gernot Hillier wrote:
->> Hi there!
+On 01/22/2013 01:43 AM, Willy Lambert wrote:
+> 2012/11/30 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>:
+>> On 11/30/2012 03:29 PM, Willy Lambert wrote:
+>>> 2012/11/30 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>:
+>>>> On 11/30/2012 09:45 AM, Willy Lambert wrote:
+>>>>> P.S. : to xenomai community, is there a problem if I continue some
+>>>>> support here, or should we go somewhere else more on topic ?
+>>>>
+>>>> Absolutely no problem, this is a recurring problem, so, we can not
+>>>> really ignore it. The thingx I would add is:
+>>>> - if you have a very recent computer, you will have more trouble
+>>>> installing really old kernels than install the latest revision, so, I
+>>>> would advise to use the I-pipe patch for Linux 3.2 with xenomai 2.6.1
+>>>> - we can give you write access to the wiki if you wish to write some
+>>>> documents about this.
+>>>>
+>>>
+>>> Ok, let me know where I should write something.
+>>>
+>>> I'll rewrite something like my first mail in the "old debian way"
+>>> (should be ok for debian and ubuntu) :
+>>> _ explaining the idea "first compile your vanilla kernel before
+>>> patching it, try boot, and add xenomai".
+>>> _ getting compile tools
+>>> _ getting linux source with ketchup (cause it's really no brain)
+>>> _ getting current config, configuring personnal version
+>>> _ compile command (producing .deb)
+>>> _ install command / remove
+>>> Keeping the aim to show a simple method without getting into details,
+>>> and providing some general linux doc to read.
+>>>
+>>> I don't have time to update my process to "latest pratices", but at
+>>> least it a starting point.
 >>
->> I'm currently working on an automatic test environment for Xenomai
->> kernels. Sometimes, Xenomai integration into my kernel fails completely 
->> and I expected this to be detected in a xeno-regression-test run - however:
+>> Ok, I will create a login/password on the wiki.
 >>
->> root@localhost:~# xeno-regression-test && echo Worked.
->> Started child 28231: /bin/bash 
->> /usr/lib/xenomai/testsuite/xeno-test-run-wrapper 
->> /usr/bin/xeno-regression-test
->> ++ echo 0
->> /usr/bin/xeno-regression-test: line 38: /proc/xenomai/latency: No such 
->> file or directory
->> ++ :
->> ++ /usr/lib/xenomai/testsuite/arith
->> Xenomai: /dev/rtheap is missing
->> (chardev, major=10 minor=254)
->> Worked.
+>> However, for the particular case of Debian, starting with the I-pipe for
+>> Linux 3.4, we can probably provide a precompiled kernel with a
+>> debian-like configuration which will run on any platform.
 >>
->> Looking into xeno-test-run.c, I see that a dead script child is not
->> causing an error exit of xeno-test-run in handle_script_child().
->>
->> Is there any special reason for that behaviour or could we just add a
->> comparable EXIT_FAILURE branch as in handle_checked_child(), something
->> like
+>> --
+>>                                             Gilles.
 > 
-> No, some piece is missing, but we can not exit right away, we have to
-> send a SIGTERM to all children, then return to the main loop which will
-> wait a bit, then send a SIGKILL if children are not answering, then
-> finally exit. And we have to take note somewhere of the child exit
-> status to call exit with the same exit status. Will send a patch shortly.
+> Here is a first try.
+> http://www.xenomai.org/index.php/Building_kernel
+>  Don't hesitate to comment/correct this. I will add some links later to :
+> _ a good complete kernel building guide (if you have some please share)
+> _ x86 configure hints wiki page.
 > 
+> The end is a bit specific to Debian/Ubuntu distros. Is it a problem ?
+> Should I rework this ?
 > 
 
-Please try the following patch:
+Hi Willy,
 
-diff --git a/src/testsuite/xeno-test/xeno-test-run.c b/src/testsuite/xeno-test/xeno-test-run.c
-index 12d3df4..ce02284 100644
---- a/src/testsuite/xeno-test/xeno-test-run.c
-+++ b/src/testsuite/xeno-test/xeno-test-run.c
-@@ -46,6 +46,7 @@ static char default_loadcmd[] = "dohell 900";
- static char *loadcmd = default_loadcmd;
- static fd_set inputs;
- static struct child script, load;
-+static int script_exit_status = EXIT_SUCCESS;
- 
- void handle_checked_child(struct child *child, fd_set *fds);
- void handle_script_child(struct child *child, fd_set *fds);
-@@ -417,7 +418,13 @@ void handle_script_child(struct child *child, fd_set *fds)
- 	int rc;
- 
- 	if (child->dead) {
-+		int status = child->exit_status;
- 		child_cleanup(child);
-+		if (WIFEXITED(status)) {
-+			script_exit_status = WEXITSTATUS(status);
-+			children_kill(CHILD_ANY, SIGTERM);
-+			sigexit_start = termload_start = mono_time();
-+		}
- 		return;
- 	}
- 
-@@ -664,5 +671,5 @@ int main(int argc, char *argv[])
- 		signal(sigexit, SIG_DFL);
- 		raise(sigexit);
- 	}
--	exit(EXIT_SUCCESS);
-+	exit(script_exit_status);
- }
+sorry for answering safter uch a long time, the mail got buried and
+forgotten. The page is nice, I am going to put a link to it at least in
+the README.INSTALL guide, I guess we should put some links to it in the
+wiki too. However, I would like to advise people to first start with a
+prebuilt kernel, such as the Debian kernels available on xenomai servers
+or made available by the LinuxCNC project:
+http://wiki.linuxcnc.org/cgi-bin/wiki.pl?XenomaiKernelPackages
 
-
-
+before they start trying building their own kernel and come to the list
+asking the usual questions.
 
 -- 
                                                                 Gilles.
