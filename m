@@ -1,13 +1,11 @@
-Message-ID: <52123B76.1070600@xenomai.org>
-Date: Mon, 19 Aug 2013 17:36:22 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <521364EF.8050006@siemens.com>
+Date: Tue, 20 Aug 2013 14:45:35 +0200
+From: Gernot Hillier <gernot.hillier@siemens.com>
 MIME-Version: 1.0
-References: <CAGQdp5zSpTPymv=J69LKaKSV0GxY-6TtKYVPVrvrOWG9fOURDw@mail.gmail.com>
-In-Reply-To: <CAGQdp5zSpTPymv=J69LKaKSV0GxY-6TtKYVPVrvrOWG9fOURDw@mail.gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] How to synchronize a non-realtime Linux thread with a
- Xenomai task?
+Subject: [Xenomai] xeno-regression-test returns SUCCESS when Xenomai not
+	available
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,31 +14,61 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Robert McCullough <robmccullough13@gmail.com>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 08/19/2013 03:06 PM, Robert McCullough wrote:
-> Hi,
->
-> I tried using a semaphore to synchronize the two, but when I call
-> rt_sem_p(...) in the  non-realtime Linux thread* *I
-> get the -EPERM error.
->
-> Is there a way to synchronize a non-realtime Linux thread with a Xenomai
-> task?
+Hi there!
 
-You need to make your non-rt thread Xenomai-enabled, so that it may wait 
-on Xenomai events. Check rt_task_shadow() from the native API.
+I'm currently working on an automatic test environment for Xenomai
+kernels. Sometimes, Xenomai integration into my kernel fails completely 
+and I expected this to be detected in a xeno-regression-test run - however:
 
->
-> Rob McCullough
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> http://www.xenomai.org/mailman/listinfo/xenomai
->
+root@localhost:~# xeno-regression-test && echo Worked.
+Started child 28231: /bin/bash 
+/usr/lib/xenomai/testsuite/xeno-test-run-wrapper 
+/usr/bin/xeno-regression-test
+++ echo 0
+/usr/bin/xeno-regression-test: line 38: /proc/xenomai/latency: No such 
+file or directory
+++ :
+++ /usr/lib/xenomai/testsuite/arith
+Xenomai: /dev/rtheap is missing
+(chardev, major=10 minor=254)
+Worked.
 
+Looking into xeno-test-run.c, I see that a dead script child is not
+causing an error exit of xeno-test-run in handle_script_child().
+
+Is there any special reason for that behaviour or could we just add a
+comparable EXIT_FAILURE branch as in handle_checked_child(), something
+like
+
+--- src/testsuite/xeno-test/xeno-test-run.c.orig        2013-08-20 
+10:10:04.452067093 +0200
++++ src/testsuite/xeno-test/xeno-test-run.c     2013-08-20 
+13:10:12.739924212 +0200
+@@ -420,7 +418,14 @@ void handle_script_child(struct child *c
+         int rc;
+
+         if (child->dead) {
++               int status = child->exit_status;
+                 child_cleanup(child);
++               if (WIFEXITED(status)) {
++                       fail_fprintf(stderr,
++                                  "child %d exited with status %d\n",
++                                  child->pid, WEXITSTATUS(status));
++                       exit(EXIT_FAILURE);
++               }
+                 return;
+         }
+
+However, as I didn't really get the concept yet how script and checked
+clients work together, I'm not sure whether this is the right way to 
+fix(?) that behaviour.
 
 -- 
-Philippe.
+With kind regards,
+Gernot Hillier
+
+Siemens AG, Corporate Technology, CT RTC ITP SES-DE
+Corporate Competence Center Embedded Linux
 
