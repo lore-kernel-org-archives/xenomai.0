@@ -1,11 +1,12 @@
-Message-ID: <5213C836.403@steinkuehler.net>
-Date: Tue, 20 Aug 2013 14:49:10 -0500
-From: Charles Steinkuehler <charles@steinkuehler.net>
+Message-ID: <5213C9AD.2010903@xenomai.org>
+Date: Tue, 20 Aug 2013 21:55:25 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <52138425.2030000@steinkuehler.net> <5213B7D3.5030606@xenomai.org>
-In-Reply-To: <5213B7D3.5030606@xenomai.org>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+	<5213C836.403@steinkuehler.net>
+In-Reply-To: <5213C836.403@steinkuehler.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] Building BeagleBone kernel from git
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -15,47 +16,67 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Charles Steinkuehler <charles@steinkuehler.net>
 Cc: xenomai@xenomai.org
 
-T24gOC8yMC8yMDEzIDE6MzkgUE0sIEdpbGxlcyBDaGFudGVwZXJkcml4IHdyb3RlOgo+IE9uIDA4
-LzIwLzIwMTMgMDQ6NTggUE0sIENoYXJsZXMgU3RlaW5rdWVobGVyIHdyb3RlOgo+PiBJIGFtIGN1
-cnJlbnRseSB3b3JraW5nIHdpdGggTGludXhDTkMgaW4gYSB4ZW5vbWFpIHJlYWwtdGltZSBlbnZp
-cm9ubWVudAo+PiBvbiB0aGUgQmVhZ2xlQm9uZToKPj4KPj4gaHR0cDovL2JiLWxjbmMuYmxvZ3Nw
-b3QuY29tL3AvbWFjaGluZWtpdF8xNi5odG1sCj4+Cj4+IEV2ZXJ5dGhpbmcgaXMgd29ya2luZyB3
-ZWxsLCBidXQgdGhlIGtlcm5lbCBpcyBiZWluZyBidWlsdCB1c2luZyBhbgo+PiBvdXQtb2YtdHJl
-ZSBwYXRjaCBzZXQgb2J0YWluZWQgYnkgTWljaGFlbCBIYWJlcmxlci4KPj4KPj4gSSB3b3VsZCBs
-aWtlIHRvIHN3aXRjaCB0byB1c2luZyBhIG1vcmUgJ29mZmljaWFsJyB4ZW5vbWFpIGJ1aWxkIGZy
-b20KPj4gZ2l0LCBidXQgYW0gdW5jbGVhciBob3cgdG8gcHJvY2VlZC4KPj4KPj4gV2hpY2ggZ2l0
-IHJlcG9zaXRvcnkvYnJhbmNoIHdvdWxkIGJlIHRoZSBtb3N0IGFwcHJvcHJpYXRlIGZvciB1c2Ug
-aW4KPj4gYnVpbGRpbmcgYSB4ZW5vbWFpIGtlcm5lbCBmb3IgdGhlIEJlYWdsZUJvbmUgLyBBTTMz
-NXggU29DPwo+Pgo+PiBBcmUgdGhlcmUgYW55ICdnb3RjaGFzJyB3aGVuIHVzaW5nIHhlbm9tYWkg
-ZnJvbSBnaXQsIG9yIGRvIHRoZQo+PiBpbnN0cnVjdGlvbnMgYW5kIHByb2NlZHVyZXMgZm9yIHVz
-aW5nIGEgcmVsZWFzZWQgdmVyc2lvbiBhcHBseT8KPiAKPiBZb3UgY2FuIHVzZSBrZXJuZWwgZnJv
-bSB0aGUgSS1waXBlIGdpdCBhdDoKPiBnaXQ6Ly9naXQueGVub21haS5vcmcvaXBpcGUuZ2l0IGJy
-YW5jaCBpcGlwZS0zLjgKClRoYW5rcyEgIEkgd2Fzbid0IHN1cmUgaWYgSSBjb3VsZCB1c2Ugb25l
-IG9mIHRoZSBpcGlwZSBicmFuY2hlcyBvciBpZiBJCnN0aWxsIG5lZWRlZCB0byB1c2Ugb25lIG9m
-IHRoZSBwZXJzb25hbCBicmFuY2hlcy4KCj4gQW5kIHhlbm9tYWkgZnJvbSB0aGUgeGVub21haSAy
-LjYgZ2l0IGF0Ogo+IGdpdDovL2dpdC54ZW5vbWFpLm9yZy94ZW5vbWFpLTIuNi5naXQgYnJhbmNo
-IG1hc3Rlcgo+IAo+IFRoZSBvbmx5IGRpZmZlcmVuY2UgaW4gdGhlIGluc3RhbGxhdGlvbiBwcm9j
-ZWR1cmUgd2hlbiB1c2luZyB0aGlzIGtlcm5lbAo+IHdpdGggdGhpcyB2ZXJzaW9uIG9mIFhlbm9t
-YWkgaXMgdGhhdCB0aGUgInByZXBhcmUta2VybmVsLnNoIiBzY3JpcHQgd2lsbAo+IG5vdCBhcHBs
-eSB0aGUgSS1waXBlIHBhdGNoIHRvIHRoZSBrZXJuZWwsIHNpbmNlIHRoZSBrZXJuZWwgaXMgYWxy
-ZWFkeQo+IHBhdGNoZWQsIHNvIHRoZSBhcmd1bWVudCB0byB0aGUgIi0tYWRlb3MiIHBhcmFtZXRl
-ciBvZiBwcmVwYXJlLWtlcm5lbC5zaAo+IGlzIGlnbm9yZWQuCgpPSywgc3R1cGlkIHF1ZXN0aW9u
-OgoKSSBzZWUgdGhlIGlwaXBlIGJyYW5jaCBoYXMgdGhlIGtlcm5lbCBzb3VyY2UsIGJ1dCBJIG5l
-ZWQgdG8gYXBwbHkgdGhlCnBhdGNoZXMgdG8gYSBub24tc3RvY2sga2VybmVsIChpZTogYSBtYWlu
-bGluZSAzLjguMTMga2VybmVsIHBhdGNoZWQgd2l0aAp0aGUgQmVhZ2xlQm9uZSBwYXRjaCBzZXQp
-LiAgSXMgdGhlcmUgYSB3YXkgdG8gZ2V0IHRoZSBwcmVwYXJlLWtlcm5lbC5zaApzY3JpcHQgYW5k
-L29yIGEgcGF0Y2ggc2V0IHRvIGFwcGx5IHRvIGEgbWFpbmxpbmUga2VybmVsIG91dCBvZiB0aGUg
-aXBpcGUKZ2l0IGJyYW5jaD8KClNvcnJ5IGlmIHRoaXMgaXMgYSB0b3RhbCBuZXdiaWUgcXVlc3Rp
-b24sIGJ1dCBJIHNlZSBpbnN0cnVjdGlvbnMgZm9yCnVzaW5nIHRoZSBwcmVwYXJlLWtlcm5lbC5z
-aCBzY3JpcHQgb24gYSBrZXJuZWwgZGlyZWN0b3J5LCBhbmQKaW5zdHJ1Y3Rpb25zIGZvciB1c2lu
-ZyB0aGUgaXBpcGUga2VybmVsIHNvdXJjZSBkaXJlY3RseSwgYnV0IG5vdCBob3cgdG8KZ2V0IGZy
-b20gb25lIHRvIHRoZSBvdGhlci4KCi0tIApDaGFybGVzIFN0ZWlua3VlaGxlcgpjaGFybGVzQHN0
-ZWlua3VlaGxlci5uZXQKCi0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpB
-IG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IHNpZ25hdHVyZS5hc2MK
-VHlwZTogYXBwbGljYXRpb24vcGdwLXNpZ25hdHVyZQpTaXplOiAyNjEgYnl0ZXMKRGVzYzogT3Bl
-blBHUCBkaWdpdGFsIHNpZ25hdHVyZQpVUkw6IDxodHRwOi8vd3d3Lnhlbm9tYWkub3JnL3BpcGVy
-bWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTMwODIwLzY5OTE4NmQ0L2F0dGFjaG1lbnQucGdw
-Pgo=
+On 08/20/2013 09:49 PM, Charles Steinkuehler wrote:
+> On 8/20/2013 1:39 PM, Gilles Chanteperdrix wrote:
+>> On 08/20/2013 04:58 PM, Charles Steinkuehler wrote:
+>>> I am currently working with LinuxCNC in a xenomai real-time
+>>> environment on the BeagleBone:
+>>> 
+>>> http://bb-lcnc.blogspot.com/p/machinekit_16.html
+>>> 
+>>> Everything is working well, but the kernel is being built using
+>>> an out-of-tree patch set obtained by Michael Haberler.
+>>> 
+>>> I would like to switch to using a more 'official' xenomai build
+>>> from git, but am unclear how to proceed.
+>>> 
+>>> Which git repository/branch would be the most appropriate for
+>>> use in building a xenomai kernel for the BeagleBone / AM335x
+>>> SoC?
+>>> 
+>>> Are there any 'gotchas' when using xenomai from git, or do the 
+>>> instructions and procedures for using a released version
+>>> apply?
+>> 
+>> You can use kernel from the I-pipe git at: 
+>> git://git.xenomai.org/ipipe.git branch ipipe-3.8
+> 
+> Thanks!  I wasn't sure if I could use one of the ipipe branches or
+> if I still needed to use one of the personal branches.
+> 
+>> And xenomai from the xenomai 2.6 git at: 
+>> git://git.xenomai.org/xenomai-2.6.git branch master
+>> 
+>> The only difference in the installation procedure when using this
+>> kernel with this version of Xenomai is that the
+>> "prepare-kernel.sh" script will not apply the I-pipe patch to the
+>> kernel, since the kernel is already patched, so the argument to
+>> the "--adeos" parameter of prepare-kernel.sh is ignored.
+> 
+> OK, stupid question:
+> 
+> I see the ipipe branch has the kernel source, but I need to apply
+> the patches to a non-stock kernel (ie: a mainline 3.8.13 kernel
+> patched with the BeagleBone patch set).  Is there a way to get the
+> prepare-kernel.sh script and/or a patch set to apply to a mainline
+> kernel out of the ipipe git branch?
+> 
+> Sorry if this is a total newbie question, but I see instructions
+> for using the prepare-kernel.sh script on a kernel directory, and 
+> instructions for using the ipipe kernel source directly, but not
+> how to get from one to the other.
+> 
+You want the I-pipe patch. To generate it, in the I-pipe tree, try:
+
+./scripts/ipipe/genpatches.sh
+
+You should then find a file ipipe-core-3.8.13-arm-1.patch which you
+can try and apply to another tree, possibly additionally patching with
+pre and post patches (respectively before and after the I-pipe patch).
+
+-- 
+                                                                Gilles.
+
