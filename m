@@ -1,12 +1,14 @@
-Message-ID: <51DD4760.6050908@xenomai.org>
-Date: Wed, 10 Jul 2013 13:37:04 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <5213EFBA.90608@steinkuehler.net>
+Date: Tue, 20 Aug 2013 17:37:46 -0500
+From: Charles Steinkuehler <charles@steinkuehler.net>
 MIME-Version: 1.0
-References: <51DBF6B8.1000000@mitrol.it>
-In-Reply-To: <51DBF6B8.1000000@mitrol.it>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Make a block of code atomic
+References: <52138425.2030000@steinkuehler.net> <5213B7D3.5030606@xenomai.org>
+	<5213C836.403@steinkuehler.net> <5213C9AD.2010903@xenomai.org>
+	<5213D09E.80103@steinkuehler.net>
+In-Reply-To: <5213D09E.80103@steinkuehler.net>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] Building BeagleBone kernel from git
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,50 +17,60 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Paolo Minazzi <Paolo.Minazzi@mitrol.it>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On 07/09/2013 01:40 PM, Paolo Minazzi wrote:
+On 8/20/2013 3:25 PM, Charles Steinkuehler wrote:
+> On 8/20/2013 2:55 PM, Gilles Chanteperdrix wrote:
+>> You want the I-pipe patch. To generate it, in the I-pipe tree, try:
+>>
+>> ./scripts/ipipe/genpatches.sh
+>>
+>> You should then find a file ipipe-core-3.8.13-arm-1.patch which you
+>> can try and apply to another tree, possibly additionally patching with
+>> pre and post patches (respectively before and after the I-pipe patch).
+> =
 
-> Hi,
->
-> I would like to make a block of kernel code atomic, so that no one (both
-> xenomai and Linux) can interrupt it.
-> I use the following :
->
-> #define my_local_irq_save(x)    ((x) =
-> ipipe_test_and_stall_pipeline_head()&  1)
-> #define my_local_irq_restore(x) ipipe_restore_pipeline_head(x)
->
-> my_local_irq_save(flags);
-> <  critical section>
-> my_local_irq_restore(flags);
->
-> It works well enough, but rarely an rtdm irq enter into my critical
-> section.
-> The rtdm irq is registered in this way : rtdm_irq_request(&priv->irqHnd,
-> ETH_PORT_IRQ_NUM(priv->port), irqHandler, RTDM_IRQTYPE_EDGE, "rtdm_eth",
-> priv);
->
-> Is it normal ? Are you sure that it cannot happen ?
+> Yep, that sounds like exactly what I want!  Thanks for the help!!
+> =
 
+> I'll report back if I run into more issues or if everything works out
+> OK.  I am trying to integrate the xenomai patches into a customized
+> version of Robert C. Nelson's BeagleBone kernel build scripts:
 
-Looking at ipipe_test_and_stall_head implementation on the I-pipe patch 
-for Linux 3.8:
+Problem #1 (solved):
+The genpatches.sh script calls awk, but seems to be incompatible with
+the stock awk (mawk) on my Debian Wheezy system.  I was getting errors
+on all the match ($0, ...) lines until I installed gawk:
 
-static inline unsigned long ipipe_test_and_stall_head(void)
-{
-	hard_local_irq_disable();
-	return __test_and_set_bit(IPIPE_STALL_FLAG, &__ipipe_head_status);
-}
+charles@machinekit:~/linux-dev/XENOMAI$ ./scripts/ipipe/genpatches.sh
+reference: v3.8.13, kernel version: 3.8.13
+awk: line 40: syntax error at or near ,
+awk: line 48: syntax error at or near ,
+awk: line 76: syntax error at or near ,
 
-getting an interrupt in your critical section would mean that 
-"hard_local_irq_disable" is broken on the architecture where you use it.
+charles@machinekit:~/linux-dev/XENOMAI$ sudo aptitude install gawk
 
-That being said, I do not know if I look at the implementation you are 
-using, since you did not give us any information about version and 
-architecture you are using.
+charles@machinekit:~/linux-dev/XENOMAI$ ./scripts/ipipe/genpatches.sh
+reference: v3.8.13, kernel version: 3.8.13
+ipipe-core-3.8.13-powerpc-1.patch
+ipipe-core-3.8.13-arm-1.patch
+ipipe-core-3.8.13-x86-1.patch
+ipipe-core-3.8.13-blackfin-1.patch
 
--- 
-                                                                 Gilles.
+...continuing on down the yellow brick road...
+:)
 
+-- =
+
+Charles Steinkuehler
+charles@steinkuehler.net
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 261 bytes
+Desc: OpenPGP digital signature
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20130820/3414698=
+5/attachment.pgp>
