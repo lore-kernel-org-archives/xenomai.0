@@ -1,13 +1,13 @@
-Message-ID: <5213D09E.80103@steinkuehler.net>
-Date: Tue, 20 Aug 2013 15:25:02 -0500
-From: Charles Steinkuehler <charles@steinkuehler.net>
+Message-ID: <5213E453.6020304@xenomai.org>
+Date: Tue, 20 Aug 2013 23:49:07 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <52138425.2030000@steinkuehler.net> <5213B7D3.5030606@xenomai.org>
-	<5213C836.403@steinkuehler.net> <5213C9AD.2010903@xenomai.org>
-In-Reply-To: <5213C9AD.2010903@xenomai.org>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] Building BeagleBone kernel from git
+References: <521364EF.8050006@siemens.com> <5213B23C.6000507@xenomai.org>
+In-Reply-To: <5213B23C.6000507@xenomai.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] xeno-regression-test returns SUCCESS when Xenomai not
+ available
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,33 +16,84 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Gernot Hillier <gernot.hillier@siemens.com>
 Cc: xenomai@xenomai.org
 
-T24gOC8yMC8yMDEzIDI6NTUgUE0sIEdpbGxlcyBDaGFudGVwZXJkcml4IHdyb3RlOgo+IE9uIDA4
-LzIwLzIwMTMgMDk6NDkgUE0sIENoYXJsZXMgU3RlaW5rdWVobGVyIHdyb3RlOgo+PiBTb3JyeSBp
-ZiB0aGlzIGlzIGEgdG90YWwgbmV3YmllIHF1ZXN0aW9uLCBidXQgSSBzZWUgaW5zdHJ1Y3Rpb25z
-Cj4+IGZvciB1c2luZyB0aGUgcHJlcGFyZS1rZXJuZWwuc2ggc2NyaXB0IG9uIGEga2VybmVsIGRp
-cmVjdG9yeSwgYW5kIAo+PiBpbnN0cnVjdGlvbnMgZm9yIHVzaW5nIHRoZSBpcGlwZSBrZXJuZWwg
-c291cmNlIGRpcmVjdGx5LCBidXQgbm90Cj4+IGhvdyB0byBnZXQgZnJvbSBvbmUgdG8gdGhlIG90
-aGVyLgo+Pgo+IFlvdSB3YW50IHRoZSBJLXBpcGUgcGF0Y2guIFRvIGdlbmVyYXRlIGl0LCBpbiB0
-aGUgSS1waXBlIHRyZWUsIHRyeToKPiAKPiAuL3NjcmlwdHMvaXBpcGUvZ2VucGF0Y2hlcy5zaAo+
-IAo+IFlvdSBzaG91bGQgdGhlbiBmaW5kIGEgZmlsZSBpcGlwZS1jb3JlLTMuOC4xMy1hcm0tMS5w
-YXRjaCB3aGljaCB5b3UKPiBjYW4gdHJ5IGFuZCBhcHBseSB0byBhbm90aGVyIHRyZWUsIHBvc3Np
-Ymx5IGFkZGl0aW9uYWxseSBwYXRjaGluZyB3aXRoCj4gcHJlIGFuZCBwb3N0IHBhdGNoZXMgKHJl
-c3BlY3RpdmVseSBiZWZvcmUgYW5kIGFmdGVyIHRoZSBJLXBpcGUgcGF0Y2gpLgoKWWVwLCB0aGF0
-IHNvdW5kcyBsaWtlIGV4YWN0bHkgd2hhdCBJIHdhbnQhICBUaGFua3MgZm9yIHRoZSBoZWxwISEK
-CkknbGwgcmVwb3J0IGJhY2sgaWYgSSBydW4gaW50byBtb3JlIGlzc3VlcyBvciBpZiBldmVyeXRo
-aW5nIHdvcmtzIG91dApPSy4gIEkgYW0gdHJ5aW5nIHRvIGludGVncmF0ZSB0aGUgeGVub21haSBw
-YXRjaGVzIGludG8gYSBjdXN0b21pemVkCnZlcnNpb24gb2YgUm9iZXJ0IEMuIE5lbHNvbidzIEJl
-YWdsZUJvbmUga2VybmVsIGJ1aWxkIHNjcmlwdHM6CgpodHRwczovL2dpdGh1Yi5jb20vY2RzdGVp
-bmt1ZWhsZXIvbGludXgtZGV2CgouLi50byBnbyBhbG9uZyB3aXRoIHRoZSBhdXRvbWF0aWMgRGVi
-aWFuIHJvb3RmcyBhbmQgU0QgY2FyZCBpbWFnZQpjcmVhdGlvbiBJIGFscmVhZHkgaGF2ZSB3b3Jr
-aW5nOgoKaHR0cHM6Ly9naXRodWIuY29tL2Nkc3RlaW5rdWVobGVyL29tYXAtaW1hZ2UtYnVpbGRl
-cgoKVGhhbmtzIGFnYWluISEhICA6KQoKLS0gCkNoYXJsZXMgU3RlaW5rdWVobGVyCmNoYXJsZXNA
-c3RlaW5rdWVobGVyLm5ldAoKLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0t
-CkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogc2lnbmF0dXJlLmFz
-YwpUeXBlOiBhcHBsaWNhdGlvbi9wZ3Atc2lnbmF0dXJlClNpemU6IDI2MSBieXRlcwpEZXNjOiBP
-cGVuUEdQIGRpZ2l0YWwgc2lnbmF0dXJlClVSTDogPGh0dHA6Ly93d3cueGVub21haS5vcmcvcGlw
-ZXJtYWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxMzA4MjAvMDMxYjU1YjMvYXR0YWNobWVudC5w
-Z3A+Cg==
+On 08/20/2013 08:15 PM, Gilles Chanteperdrix wrote:
+> On 08/20/2013 02:45 PM, Gernot Hillier wrote:
+>> Hi there!
+>>
+>> I'm currently working on an automatic test environment for Xenomai
+>> kernels. Sometimes, Xenomai integration into my kernel fails completely 
+>> and I expected this to be detected in a xeno-regression-test run - however:
+>>
+>> root@localhost:~# xeno-regression-test && echo Worked.
+>> Started child 28231: /bin/bash 
+>> /usr/lib/xenomai/testsuite/xeno-test-run-wrapper 
+>> /usr/bin/xeno-regression-test
+>> ++ echo 0
+>> /usr/bin/xeno-regression-test: line 38: /proc/xenomai/latency: No such 
+>> file or directory
+>> ++ :
+>> ++ /usr/lib/xenomai/testsuite/arith
+>> Xenomai: /dev/rtheap is missing
+>> (chardev, major=10 minor=254)
+>> Worked.
+>>
+>> Looking into xeno-test-run.c, I see that a dead script child is not
+>> causing an error exit of xeno-test-run in handle_script_child().
+>>
+>> Is there any special reason for that behaviour or could we just add a
+>> comparable EXIT_FAILURE branch as in handle_checked_child(), something
+>> like
+> 
+> No, some piece is missing, but we can not exit right away, we have to
+> send a SIGTERM to all children, then return to the main loop which will
+> wait a bit, then send a SIGKILL if children are not answering, then
+> finally exit. And we have to take note somewhere of the child exit
+> status to call exit with the same exit status. Will send a patch shortly.
+> 
+> 
+
+Please try the following patch:
+
+diff --git a/src/testsuite/xeno-test/xeno-test-run.c b/src/testsuite/xeno-test/xeno-test-run.c
+index 12d3df4..ce02284 100644
+--- a/src/testsuite/xeno-test/xeno-test-run.c
++++ b/src/testsuite/xeno-test/xeno-test-run.c
+@@ -46,6 +46,7 @@ static char default_loadcmd[] = "dohell 900";
+ static char *loadcmd = default_loadcmd;
+ static fd_set inputs;
+ static struct child script, load;
++static int script_exit_status = EXIT_SUCCESS;
+ 
+ void handle_checked_child(struct child *child, fd_set *fds);
+ void handle_script_child(struct child *child, fd_set *fds);
+@@ -417,7 +418,13 @@ void handle_script_child(struct child *child, fd_set *fds)
+ 	int rc;
+ 
+ 	if (child->dead) {
++		int status = child->exit_status;
+ 		child_cleanup(child);
++		if (WIFEXITED(status)) {
++			script_exit_status = WEXITSTATUS(status);
++			children_kill(CHILD_ANY, SIGTERM);
++			sigexit_start = termload_start = mono_time();
++		}
+ 		return;
+ 	}
+ 
+@@ -664,5 +671,5 @@ int main(int argc, char *argv[])
+ 		signal(sigexit, SIG_DFL);
+ 		raise(sigexit);
+ 	}
+-	exit(EXIT_SUCCESS);
++	exit(script_exit_status);
+ }
+
+
+
+
+-- 
+                                                                Gilles.
+
