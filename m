@@ -1,16 +1,14 @@
-Message-ID: <5215059B.7020309@xenomai.org>
-Date: Wed, 21 Aug 2013 20:23:23 +0200
+Message-ID: <5215061E.6060305@xenomai.org>
+Date: Wed, 21 Aug 2013 20:25:34 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <52147CD7.70400@siemens.com> <52147DF2.8060407@xenomai.org>
-	<52147E94.6070309@siemens.com> <5214802B.9060001@siemens.com>
-	<5214A55E.2070902@xenomai.org> <5214A886.30608@siemens.com>
-	<5214A941.6070302@xenomai.org> <5214AA25.5070500@siemens.com>
-	<5214AB5F.7050302@xenomai.org> <5214C300.40205@siemens.com>
-In-Reply-To: <5214C300.40205@siemens.com>
+References: <52138425.2030000@steinkuehler.net> <5213B7D3.5030606@xenomai.org>
+	<5213C836.403@steinkuehler.net> <5213C9AD.2010903@xenomai.org>
+	<5213D09E.80103@steinkuehler.net> <5214BDC1.30104@steinkuehler.net>
+In-Reply-To: <5214BDC1.30104@steinkuehler.net>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [RFC] x86 port to kernel 3.10
+Subject: Re: [Xenomai] Building BeagleBone kernel from git
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,103 +17,79 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Charles Steinkuehler <charles@steinkuehler.net>
+Cc: xenomai@xenomai.org
 
-On 08/21/2013 03:39 PM, Jan Kiszka wrote:
-> On 2013-08-21 13:58, Gilles Chanteperdrix wrote:
->> On 08/21/2013 01:53 PM, Jan Kiszka wrote:
->>> On 2013-08-21 13:49, Gilles Chanteperdrix wrote:
->>>> On 08/21/2013 01:46 PM, Jan Kiszka wrote:
->>>>> On 2013-08-21 13:32, Gilles Chanteperdrix wrote:
->>>>>> On 08/21/2013 10:54 AM, Jan Kiszka wrote:
->>>>>>> On 2013-08-21 10:47, Jan Kiszka wrote:
->>>>>>>> On 2013-08-21 10:44, Gilles Chanteperdrix wrote:
->>>>>>>>> On 08/21/2013 10:39 AM, Jan Kiszka wrote:
->>>>>>>>>> Hi all,
->>>>>>>>>>
->>>>>>>>>> in the process of updating our kernel support to current (and long-term)
->>>>>>>>>> stable 3.10, I've pushed the I-pipe master tree to that version. The
->>>>>>>>>> tree is available at
->>>>>>>>>>
->>>>>>>>>> git://git.xenomai.org/ipipe-jki.git next-x86
->>>>>>>>>>
->>>>>>>>>> Though the focus is on x86, this became a full merge, ie. I also tried
->>>>>>>>>> to resolve ARM and PowerPC conflicts (other archs had none). But I'm
->>>>>>>>>> sure I broke some things (or things were already broken after the 3.9
->>>>>>>>>> merge - there were suspicious unresolved conflicts). So these arch need
->>>>>>>>>> a careful check! Specifically watch out for merges that resolved
->>>>>>>>>> conflicts in their trees.
->>>>>>>>>>
->>>>>>>>>
->>>>>>>>> I would prefer to have the conflict markers in the git tree, so that we
->>>>>>>>> know where the conflicts occur. Having to browse history to find all the
->>>>>>>>> merge conflicts seems more complicated than greping for '>>>'. Of
->>>>>>>>> course, it means that when all the conflicts are resolved, the kernel
->>>>>>>>> should be rebased to remove the commits with the merge conflicts, so as
->>>>>>>>> to keep a bisectable kernel.
->>>>>>>>
->>>>>>>> As you cannot rebase merges (without losing history), this is not really
->>>>>>>> applicable. I can leave in conflicts that affect ARM or Power, sure, but
->>>>>>>> then the fix-ups will have to happen on top, taking away bisectability.
->>>>>>>
->>>>>>> Hmm, what we would really need is some tool to replay merges with their
->>>>>>> conflict resolution. That must be feasible, somehow...
->>>>>>
->>>>>> You mean like git rerere? Anyway, why not just one big commit with all
->>>>>> the conflicts?
->>>>>
->>>>> For the reason given in my original message.
+On 08/21/2013 03:16 PM, Charles Steinkuehler wrote:
+> On 8/20/2013 3:25 PM, Charles Steinkuehler wrote:
+>> On 8/20/2013 2:55 PM, Gilles Chanteperdrix wrote:
+>>> On 08/20/2013 09:49 PM, Charles Steinkuehler wrote:
+>>>> Sorry if this is a total newbie question, but I see instructions
+>>>> for using the prepare-kernel.sh script on a kernel directory, and 
+>>>> instructions for using the ipipe kernel source directly, but not
+>>>> how to get from one to the other.
 >>>>
->>>> The mail explains the how, but not the why. Having to skim through tens
->>>> of commits to find which ones may be related to a particular arch is
->>>> simply a major pain. The "old" method which was to merge the patch with
->>>> all the changes was much simpler. So, I do not see what we gain with the
->>>> new method if it makes things more complicated.
+>>> You want the I-pipe patch. To generate it, in the I-pipe tree, try:
 >>>
->>> "The advantage of this pattern is that we get more bisection points in
->>> case something subtly breaks between 3.8 and 3.10."
+>>> ./scripts/ipipe/genpatches.sh
+>>>
+>>> You should then find a file ipipe-core-3.8.13-arm-1.patch which you
+>>> can try and apply to another tree, possibly additionally patching with
+>>> pre and post patches (respectively before and after the I-pipe patch).
 >>
->> However you do it, if there are several separate commits for all the
->> architectures, the only bisectable architecture will be the one that was
->> merged first. The others are broken anyway.
+>> Yep, that sounds like exactly what I want!  Thanks for the help!!
+>>
+>> I'll report back if I run into more issues or if everything works out
+>> OK.  I am trying to integrate the xenomai patches into a customized
+>> version of Robert C. Nelson's BeagleBone kernel build scripts:
+>>
+>> https://github.com/cdsteinkuehler/linux-dev
 > 
-> Not necessarily. I tried to resolve all conflicts as they showed up, so
-> not every state needs to be broken.
+> Thanks again for the help!
 > 
->> At least if the conflict
->> markers are in the tree we will know this at compilation time and not at
->> run time. The only way to have bisectability is with one commit with all
->> the architectures tested. Maybe we can do this by squashing the merge
->> commit with all the fixup commits made afterwards?
+> I managed to get a working xenomai kernel from the automated builds.  I
+> have only done light testing so far, but there didn't look to be any
+> major issues with the process.
 > 
-> Squashing or rebasing (I tried rebase --preserve-merges by now - not
-> usable) means loosing track where the merges came from.
+> Additions to the "stock" RCN kernel build:
 > 
-> To summarize, I think we are discussing two questions here:
+> I pull the ipipe-3.8 branch from git and use it to generate an ipipe
+> patch file
 > 
-> 1. How many merges per kernel version update (one vs. several as in my
->    model)?
-> 2. How to deal with conflicts during the merge that affect architecture
->    that the merger is not (immediately or at all) testing?
->     - commit them unresolved and commit resolutions on top?
->     - resolve them as good as possible and leave the review/fix-up to
->       the respective arch maintainer?
+> The ipipe patch is applied to a BeagleBone patched kernel tree [1]
 > 
-> I don't see other options for 2. at this moment.
+> I pull xenomai 2.6 (master) from git and run it's setup_kernel.sh on the
+> ipipe patched source tree
+> 
+> ...build continues as usual.
+> 
+> More testing needs to be done, but it looks good so far!
+> 
+> [1] There was one hunk I could not get to apply automatically.  The code
+> in gpmc.c has changed extensively enough that git apply doesn't work
+> with this file.  To work around this, I skip this file when applying the
+> ipipe patch, and use a manual fix-up of the trivial 2-line change:
+> 
+> https://github.com/cdsteinkuehler/linux-dev/blob/am33x-v3.8-bone26-xenomai/patches/xenomai/0001-ipipe-core-3.8.13-arm-1.gpmc.patch
+> 
+> There's probably a better way to work around this problem, but this
+> should do until the next official xenomai release comes out...any day
+> now, right?!?  :)  Anyway, it doesn't look like it will be that hard to
+> roll forward with updated ipipe or xenomai patches.
 
-What I say, is that the two answers you propose to question 2 result in
-a series of commit which can not be bisected. With 2.1, you are warned
-at compilation time, because the unbisectable commits do not compile,
-with 2.2 you have to test the kernel to realize that it is not working.
+The general way to handle the non-mainline kernels is with a pre and
+post patch. The pre patch removes the changes which conflicts, and the
+post patch adds the merge.
 
-So, the only possibility to have a fully bisectable hisotry would be to
-somehow handle all architectures at once, whether with one, or several
-commits.
+As for the release date of 2.6.3 it should happen soon, but now that the
+I-pipe support for 3.10 is almost there, I am going to wait for it to
+have been tested (but not fully validated) so that 2.6.3 will be ready
+for 3.10.
 
-The result being that the new approach results in a bisectable kernel
-only for one architecture, and greatly complicates the merge of the
-other architectures, I am wondering about the benefits of this new approach.
+> 
+> Thanks again!!
+> 
+
 
 -- 
                                                                 Gilles.
