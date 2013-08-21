@@ -1,12 +1,15 @@
-Message-ID: <521527D7.1060600@xenomai.org>
-Date: Wed, 21 Aug 2013 22:49:27 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <52153BE5.8060409@steinkuehler.net>
+Date: Wed, 21 Aug 2013 17:15:01 -0500
+From: Charles Steinkuehler <charles@steinkuehler.net>
 MIME-Version: 1.0
-References: <52152657.4090600@gmail.com>
-In-Reply-To: <52152657.4090600@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] ipipe patch for 3.6.0 arm?
+References: <52138425.2030000@steinkuehler.net> <5213B7D3.5030606@xenomai.org>
+	<5213C836.403@steinkuehler.net> <5213C9AD.2010903@xenomai.org>
+	<5213D09E.80103@steinkuehler.net> <5213EFBA.90608@steinkuehler.net>
+	<5213F7DA.1010200@xenomai.org>
+In-Reply-To: <5213F7DA.1010200@xenomai.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: [Xenomai] [PATCH] Fix for awk vs. gawk
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,30 +18,62 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: sagar.behere@gmail.com
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On 08/21/2013 10:43 PM, Sagar Behere wrote:
-> Hello,
-> 
-> I wish to run xenomai on a gumstix duovero (OMAP4430-based). A kernel 
-> supporting the duovero is supposedly under development in the omap-3.6 
-> branch of Steve Sakoman's repo
-> 
-> http://git.sakoman.com/git/gitweb.cgi?p=linux.git;a=shortlog;h=refs/heads/omap-3.6
-> 
-> However, I don't see an ipipe patch for 3.6.0 in
-> http://download.gna.org/adeos/patches/v3.x/arm/older/
-> 
-> So how does one go about using xenomai with a 3.6.0 kernel?
-
-You have two choices:
-1- port the I-pipe patch to the target kernel
-2- back/forward port the board specific changes to a kernel which has an
-I-pipe patch.
-
-Usually 2 is easier.
-
--- 
-                                                                Gilles.
-
+T24gOC8yMC8yMDEzIDY6MTIgUE0sIEdpbGxlcyBDaGFudGVwZXJkcml4IHdyb3RlOgo+IE9uIDA4
+LzIxLzIwMTMgMTI6MzcgQU0sIENoYXJsZXMgU3RlaW5rdWVobGVyIHdyb3RlOgo+PiBQcm9ibGVt
+ICMxIChzb2x2ZWQpOiBUaGUgZ2VucGF0Y2hlcy5zaCBzY3JpcHQgY2FsbHMgYXdrLCBidXQgc2Vl
+bXMKPj4gdG8gYmUgaW5jb21wYXRpYmxlIHdpdGggdGhlIHN0b2NrIGF3ayAobWF3aykgb24gbXkg
+RGViaWFuIFdoZWV6eQo+PiBzeXN0ZW0uICBJIHdhcyBnZXR0aW5nIGVycm9ycyBvbiBhbGwgdGhl
+IG1hdGNoICgkMCwgLi4uKSBsaW5lcwo+PiB1bnRpbCBJIGluc3RhbGxlZCBnYXdrOgo+IAo+IEkg
+a25ldyB0aGF0LCBzb3JyeSBmb3Igbm90IG1lbnRpb25pbmcgaXQuIEFuZCBieSB0aGUgd2F5LCBp
+ZiB5b3Uga25vdwo+IGhvdyB0byByZXdyaXRlIHRoaXMgaW4gcG9ydGFibGUgYXdrLCBwYXRjaGVz
+IGFyZSB3ZWxjb21lLgoKSGVyZSB5b3UgZ28uICBZb3UgaGF2ZSB0byBkbyBhd2F5IHdpdGggdGhl
+IGNoYXJhY3RlciBjbGFzc2VzLCBidXQgdGhlCmdhd2sgY29kZSBpcyBvbmx5IHVzaW5nIFs6Ymxh
+bms6XSB3aGljaCBpcyBzcGFjZSBhbmQgdGFiLCBzbyBub3QgYSB3aG9sZQpsb3Qgb2YgaG9ycmli
+bGUgdGhpbmdzIHRvIGdvIHdyb25nIHdpdGggbXVsdGktY2hhcmFjdGVyIGludGVybmF0aW9uYWwK
+bG9jYWxlcy4gIDopCgpPbiBteSBzeXN0ZW0gdGhpcyBwcm9kdWNlcyB0aGUgZXhhY3Qgc2FtZSBv
+dXRwdXQgdXNpbmcgbWF3ayBhcyB0aGUKZXhpc3RpbmcgY29kZSBwcm9kdWNlcyB3aXRoIGdhd2ss
+IGJ1dCBJIG9ubHkgdGVzdGVkIGluIHRoZSBpcGlwZS0zLjgKYnJhbmNoLiAgVGhhdCBzYWlkLCBJ
+IHRoaW5rIEkgcHJvcGVybHkgY29udmVydGVkIHRoZSBpbnRlbnQgb2YgdGhlIHJlZ2V4Cm1hdGNo
+aW5nIGNvZGUgaW50byBzb21ldGhpbmcgbW9zdCBvbGRlciBhd2sgaW1wbGVtZW50YXRpb25zIGNh
+bgp1bmRlcnN0YW5kLgoKSXQgbWlnaHQgbm90IGJlIGFzIHByZXR0eSBhcyB0aGUgZ2F3ayBjb2Rl
+IChJJ20gbW9yZSB1c2VkIHRvIGhhY2tpbmcgc2VkCnRoYW4gYXdrLCBhbmQgdGhlIGdhd2sgZXh0
+ZW5zaW9ucyBfYXJlXyBuaWZ0eSksIGJ1dCBpdCBzaG91bGQgd29yayB3aXRoCm1vc3QgYXdrcyBu
+b3cuCgotLSAKQ2hhcmxlcyBTdGVpbmt1ZWhsZXIKY2hhcmxlc0BzdGVpbmt1ZWhsZXIubmV0Ci0t
+LS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpGcm9tIDI5MmJiZmM2NWI1ZTJm
+YjVjZDEzZjk2MzJjNzRlY2NkZmI1MGI4NGYgTW9uIFNlcCAxNyAwMDowMDowMCAyMDAxCkZyb206
+IENoYXJsZXMgU3RlaW5rdWVobGVyIDxjaGFybGVzQHN0ZWlua3VlaGxlci5uZXQ+CkRhdGU6IFdl
+ZCwgMjEgQXVnIDIwMTMgMTc6MDA6MjkgLTA1MDAKU3ViamVjdDogW1BBVENIXSBNb2RpZnkgYXdr
+IHNjcmlwdCB0byB3b3JrIHdpdGggdW5lbmhhbmNlZCBtYXRjaCgpIGZ1bmN0aW9uCiBhcyBmb3Vu
+ZCBpbiBtYXdrIGFuZCBvdGhlciBhd2tzCgpTaWduZWQtb2ZmLWJ5OiBDaGFybGVzIFN0ZWlua3Vl
+aGxlciA8Y2hhcmxlc0BzdGVpbmt1ZWhsZXIubmV0PgotLS0KIHNjcmlwdHMvaXBpcGUvZ2VucGF0
+Y2hlcy5zaCB8ICAgMTYgKysrKysrKysrKy0tLS0tLQogMSBmaWxlIGNoYW5nZWQsIDEwIGluc2Vy
+dGlvbnMoKyksIDYgZGVsZXRpb25zKC0pCgpkaWZmIC0tZ2l0IGEvc2NyaXB0cy9pcGlwZS9nZW5w
+YXRjaGVzLnNoIGIvc2NyaXB0cy9pcGlwZS9nZW5wYXRjaGVzLnNoCmluZGV4IDU2M2Q1YzEuLmQy
+OWNiOWUgMTAwNzU1Ci0tLSBhL3NjcmlwdHMvaXBpcGUvZ2VucGF0Y2hlcy5zaAorKysgYi9zY3Jp
+cHRzL2lwaXBlL2dlbnBhdGNoZXMuc2gKQEAgLTg0LDE2ICs4NCwxOSBAQCBCRUdJTiB7CiAgICAg
+ZHJpdmVyX2FyY2hbInBjaS9odGlycS5jIl09Ing4NiIKIH0KIAotbWF0Y2goJDAsIC9eZGlmZiAt
+LWdpdCBhXC9hcmNoXC8oW15bOmJsYW5rOl1cL10qKS8sIGFyY2gpIHsKLSAgICBhPWFyY2hbMV0K
+K21hdGNoKCQwLCAvXmRpZmYgLS1naXQgYVwvYXJjaFwvKFteIFx0XC9dKikvKSB7CisgICAgc3Bs
+aXQoc3Vic3RyKCQwLCBSU1RBUlQsIFJMRU5HVEgpLCBhcmNoLCAvXC8vKQorICAgIGE9YXJjaFsz
+XQogCiAgICAgc2V0X2N1cnJlbnRfYXJjaChhKQogICAgIHByaW50ICQwID4+IGN1cnJlbnRfZmls
+ZQogICAgIG5leHQKIH0KIAotbWF0Y2goJDAsIC9eZGlmZiAtLWdpdCBhXC9kcml2ZXJzXC8oW15b
+OmJsYW5rOl1dKikvLCBmaWxlKSB7Ci0gICAgZj1maWxlWzFdCittYXRjaCgkMCwgL15kaWZmIC0t
+Z2l0IGFcL2RyaXZlcnNcLyhbXiBcdF0qKS8pIHsKKyAgICBmaWxlPXN1YnN0cigkMCwgUlNUQVJU
+LCBSTEVOR1RIKQorICAgIHN1YigvXmRpZmYgLS1naXQgYVwvZHJpdmVyc1wvLywgIiIsIGZpbGUp
+CisgICAgZj1maWxlCiAKICAgICBpZiAoIWRyaXZlcl9hcmNoW2ZdKSB7CiAJIHByaW50ICJFcnJv
+ciB1bmtub3duIGFyY2hpdGVjdHVyZSBmb3IgZHJpdmVyICJmCkBAIC0xMjAsOCArMTIzLDkgQEAg
+bWF0Y2goJDAsIC9eZGlmZiAtLWdpdCBhXC9kcml2ZXJzXC8oW15bOmJsYW5rOl1dKikvLCBmaWxl
+KSB7CiAgICAgbmV4dAogfQogCi1tYXRjaCAoJDAsIC8jZGVmaW5lIFtJXVBJUEVfQ09SRV9SRUxF
+QVNFW1s6Ymxhbms6XV0qKFteWzpibGFuazpdXSopLywgdmVycykgewotICAgIHZlcnNpb25bY3Vy
+cmVudF9hcmNoXT12ZXJzWzFdCittYXRjaCAoJDAsIC8jZGVmaW5lIFtJXVBJUEVfQ09SRV9SRUxF
+QVNFWyBcdF0qKFteIFx0XSopLykgeworICAgIHNwbGl0KHN1YnN0cigkMCwgUlNUQVJULCBSTEVO
+R1RIKSwgdmVycywgL1sgXHRdLykKKyAgICB2ZXJzaW9uW2N1cnJlbnRfYXJjaF09dmVyc1szXQog
+fQogCiB7Ci0tIAoxLjcuMTAuNAotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0t
+LS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBzaWduYXR1cmUu
+YXNjClR5cGU6IGFwcGxpY2F0aW9uL3BncC1zaWduYXR1cmUKU2l6ZTogMjYxIGJ5dGVzCkRlc2M6
+IE9wZW5QR1AgZGlnaXRhbCBzaWduYXR1cmUKVVJMOiA8aHR0cDovL3d3dy54ZW5vbWFpLm9yZy9w
+aXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDEzMDgyMS80ZmFlYzU3ZS9hdHRhY2htZW50
+LnBncD4K
