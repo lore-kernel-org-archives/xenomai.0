@@ -1,12 +1,14 @@
-Message-ID: <51DD49A7.5060109@mitrol.it>
-Date: Wed, 10 Jul 2013 13:46:47 +0200
-From: Paolo Minazzi <Paolo.Minazzi@mitrol.it>
+Message-ID: <52147E20.3050500@siemens.com>
+Date: Wed, 21 Aug 2013 10:45:20 +0200
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-References: <51DBF6B8.1000000@mitrol.it> <51DD4760.6050908@xenomai.org>
-In-Reply-To: <51DD4760.6050908@xenomai.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+References: <52138425.2030000@steinkuehler.net> <5213B7D3.5030606@xenomai.org>
+	<5213B966.1010604@gmail.com>
+	<A3E26082-0FC3-40D3-83B3-61D927953375@mah.priv.at>
+In-Reply-To: <A3E26082-0FC3-40D3-83B3-61D927953375@mah.priv.at>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Make a block of code atomic
+Subject: Re: [Xenomai] Building BeagleBone kernel from git
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,64 +17,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Michael Haberler <mail17@mah.priv.at>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Il 10/07/2013 13.37, Gilles Chanteperdrix ha scritto:
-> On 07/09/2013 01:40 PM, Paolo Minazzi wrote:
->
->> Hi,
+On 2013-08-21 07:53, Michael Haberler wrote:
+> 
+> Am 20.08.2013 um 20:45 schrieb Sagar Behere <sagar.behere@gmail.com>:
+> 
+>> On 08/20/2013 08:39 PM, Gilles Chanteperdrix wrote:
+>>> On 08/20/2013 04:58 PM, Charles Steinkuehler wrote:
+>>>> I am currently working with LinuxCNC in a xenomai real-time environment
+>>>> on the BeagleBone:
+>>>>
+>>>> http://bb-lcnc.blogspot.com/p/machinekit_16.html
+>>>>
+>>>> Everything is working well, but the kernel is being built using an
+>>>> out-of-tree patch set obtained by Michael Haberler.
+>>>>
+>>>> I would like to switch to using a more 'official' xenomai build from
+>>>> git, but am unclear how to proceed.
+>>>>
+>>>> Which git repository/branch would be the most appropriate for use in
+>>>> building a xenomai kernel for the BeagleBone / AM335x SoC?
+>>>>
+>>>> Are there any 'gotchas' when using xenomai from git, or do the
+>>>> instructions and procedures for using a released version apply?
+>>>
+>>> You can use kernel from the I-pipe git at:
+>>> git://git.xenomai.org/ipipe.git branch ipipe-3.8
+>>>
+>>> And xenomai from the xenomai 2.6 git at:
+>>> git://git.xenomai.org/xenomai-2.6.git branch master
+>>>
+>>> The only difference in the installation procedure when using this kernel
+>>> with this version of Xenomai is that the "prepare-kernel.sh" script will
+>>> not apply the I-pipe patch to the kernel, since the kernel is already
+>>> patched, so the argument to the "--adeos" parameter of prepare-kernel.sh
+>>> is ignored.
 >>
->> I would like to make a block of kernel code atomic, so that no one (both
->> xenomai and Linux) can interrupt it.
->> I use the following :
+>> For what it's worth, I tried this procedure and documented it
 >>
->> #define my_local_irq_save(x)    ((x) =
->> ipipe_test_and_stall_pipeline_head()&  1)
->> #define my_local_irq_restore(x) ipipe_restore_pipeline_head(x)
+>> https://github.com/sagarbehere/beaglebone-xenomai/blob/master/beaglebone-xenomai-debian.md
 >>
->> my_local_irq_save(flags);
->> <  critical section>
->> my_local_irq_restore(flags);
->>
->> It works well enough, but rarely an rtdm irq enter into my critical
->> section.
->> The rtdm irq is registered in this way : rtdm_irq_request(&priv->irqHnd,
->> ETH_PORT_IRQ_NUM(priv->port), irqHandler, RTDM_IRQTYPE_EDGE, "rtdm_eth",
->> priv);
->>
->> Is it normal ? Are you sure that it cannot happen ?
->
->
-> Looking at ipipe_test_and_stall_head implementation on the I-pipe 
-> patch for Linux 3.8:
->
-> static inline unsigned long ipipe_test_and_stall_head(void)
-> {
->     hard_local_irq_disable();
->     return __test_and_set_bit(IPIPE_STALL_FLAG, &__ipipe_head_status);
-> }
->
-> getting an interrupt in your critical section would mean that 
-> "hard_local_irq_disable" is broken on the architecture where you use it.
->
-> That being said, I do not know if I look at the implementation you are 
-> using, since you did not give us any information about version and 
-> architecture you are using.
->
-Hi Gilles, thanks for your answer.
-I found this morning that was linux to re-enable interrupts.
+> 
+> Gilles says: use git://git.xenomai.org/ipipe.git branch ipipe-3.8
+> Sagar uses git://git.xenomai.org/ipipe-jki.git origin/for-upstream/3.8
 
-The following
+The official ipipe-3.8 is more recent than my upstream queue now, so the
+former shall be used (specifically as I didn't test ARM back then).
 
-#define my_local_irq_save(x)    ((x) = 
-ipipe_test_and_stall_pipeline_head()&  1)
-#define my_local_irq_restore(x) ipipe_restore_pipeline_head(x)
+Jan
 
-works well if no one touch irq flags directly. Unfortunately was not my 
-case.
-
-Thanks again,
-Paolo
-
+-- 
+Siemens AG, Corporate Technology, CT RTC ITP SES-DE
+Corporate Competence Center Embedded Linux
 
