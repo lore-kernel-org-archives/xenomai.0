@@ -1,13 +1,12 @@
-From: Younes CHALABI <y.chalabi@sinters.fr>
-Date: Wed, 21 Aug 2013 08:42:13 +0000
-Message-ID: <A46EF8CF1BBB8E4B8A27B73E177C4664033F8725@MAIL-SINTERS-01.sinters-int.fr>
-References: <C04BB818-2870-47BC-879F-1588F55C8303@imag.fr>
-In-Reply-To: <C04BB818-2870-47BC-879F-1588F55C8303@imag.fr>
-Content-Language: fr-FR
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Message-ID: <52147DF2.8060407@xenomai.org>
+Date: Wed, 21 Aug 2013 10:44:34 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Subject: [Xenomai] RE :  test latency : negative value
+References: <52147CD7.70400@siemens.com>
+In-Reply-To: <52147CD7.70400@siemens.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [RFC] x86 port to kernel 3.10
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,50 +15,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Skander Bahloul <skander.bahloul@imag.fr>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-Hi Skander,
+On 08/21/2013 10:39 AM, Jan Kiszka wrote:
+> Hi all,
+> 
+> in the process of updating our kernel support to current (and long-term)
+> stable 3.10, I've pushed the I-pipe master tree to that version. The
+> tree is available at
+> 
+> git://git.xenomai.org/ipipe-jki.git next-x86
+> 
+> Though the focus is on x86, this became a full merge, ie. I also tried
+> to resolve ARM and PowerPC conflicts (other archs had none). But I'm
+> sure I broke some things (or things were already broken after the 3.9
+> merge - there were suspicious unresolved conflicts). So these arch need
+> a careful check! Specifically watch out for merges that resolved
+> conflicts in their trees.
+> 
 
-Yes it's normal to have negative values. To resolve it you have to calibrat=
-e your system.
+I would prefer to have the conflict markers in the git tree, so that we
+know where the conflicts occur. Having to browse history to find all the
+merge conflicts seems more complicated than greping for '>>>'. Of
+course, it means that when all the conflicts are resolved, the kernel
+should be rebased to remove the commits with the merge conflicts, so as
+to keep a bisectable kernel.
 
-To do this, strat by putting 0 value on latency : echo 0 > /proc/xenomai/la=
-tency
-
-Then execute the test : latency -p100 -T1800 for example.=20
-
-Once the test finished, you may have the minimum value of latency.
-
-Now put it on latency : echo #min-latency-val > /proc/xenomai/latency
-
-And retry the test show before. You sould not have any more negative values=
-.=20
-
-Best regards,
-
-Younes CHALABI
-________________________________________
-De : xenomai-bounces@xenomai.org [xenomai-bounces@xenomai.org] de la part d=
-e Skander Bahloul [skander.bahloul@imag.fr]
-Date d'envoi : mercredi 21 ao=FBt 2013 10:35
-=C0 : xenomai@xenomai.org
-Objet : [Xenomai] test latency : negative value
-
-Hi Dear Xenomai mailing list,
-
-I'm using the latency test of Xenomai and sometimes i find negative values =
-of latency time.
-
-Is it  normal to have negative values of latency time?
-
-if no, what's the problem?
-
-
-Thank you very for help me to understand this issue.
-
-Best regards,
-_______________________________________________
-Xenomai mailing list
-Xenomai@xenomai.org
-http://www.xenomai.org/mailman/listinfo/xenomai
+-- 
+                                                                Gilles.
 
