@@ -1,10 +1,16 @@
-Message-ID: <5214D9C9.9090904@siemens.com>
-Date: Wed, 21 Aug 2013 17:16:25 +0200
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <5215059B.7020309@xenomai.org>
+Date: Wed, 21 Aug 2013 20:23:23 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+References: <52147CD7.70400@siemens.com> <52147DF2.8060407@xenomai.org>
+	<52147E94.6070309@siemens.com> <5214802B.9060001@siemens.com>
+	<5214A55E.2070902@xenomai.org> <5214A886.30608@siemens.com>
+	<5214A941.6070302@xenomai.org> <5214AA25.5070500@siemens.com>
+	<5214AB5F.7050302@xenomai.org> <5214C300.40205@siemens.com>
+In-Reply-To: <5214C300.40205@siemens.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] [PATCH] analogy: Update procfs usage to latest kernel API
+Subject: Re: [Xenomai] [RFC] x86 port to kernel 3.10
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,346 +19,104 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>, Alexis Berlemont <alexis.berlemont@gmail.com>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-This makes the Analogy layer compatible with kernel 3.10. We simply
-switch all procfs nodes to seq_file.
+On 08/21/2013 03:39 PM, Jan Kiszka wrote:
+> On 2013-08-21 13:58, Gilles Chanteperdrix wrote:
+>> On 08/21/2013 01:53 PM, Jan Kiszka wrote:
+>>> On 2013-08-21 13:49, Gilles Chanteperdrix wrote:
+>>>> On 08/21/2013 01:46 PM, Jan Kiszka wrote:
+>>>>> On 2013-08-21 13:32, Gilles Chanteperdrix wrote:
+>>>>>> On 08/21/2013 10:54 AM, Jan Kiszka wrote:
+>>>>>>> On 2013-08-21 10:47, Jan Kiszka wrote:
+>>>>>>>> On 2013-08-21 10:44, Gilles Chanteperdrix wrote:
+>>>>>>>>> On 08/21/2013 10:39 AM, Jan Kiszka wrote:
+>>>>>>>>>> Hi all,
+>>>>>>>>>>
+>>>>>>>>>> in the process of updating our kernel support to current (and long-term)
+>>>>>>>>>> stable 3.10, I've pushed the I-pipe master tree to that version. The
+>>>>>>>>>> tree is available at
+>>>>>>>>>>
+>>>>>>>>>> git://git.xenomai.org/ipipe-jki.git next-x86
+>>>>>>>>>>
+>>>>>>>>>> Though the focus is on x86, this became a full merge, ie. I also tried
+>>>>>>>>>> to resolve ARM and PowerPC conflicts (other archs had none). But I'm
+>>>>>>>>>> sure I broke some things (or things were already broken after the 3.9
+>>>>>>>>>> merge - there were suspicious unresolved conflicts). So these arch need
+>>>>>>>>>> a careful check! Specifically watch out for merges that resolved
+>>>>>>>>>> conflicts in their trees.
+>>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>> I would prefer to have the conflict markers in the git tree, so that we
+>>>>>>>>> know where the conflicts occur. Having to browse history to find all the
+>>>>>>>>> merge conflicts seems more complicated than greping for '>>>'. Of
+>>>>>>>>> course, it means that when all the conflicts are resolved, the kernel
+>>>>>>>>> should be rebased to remove the commits with the merge conflicts, so as
+>>>>>>>>> to keep a bisectable kernel.
+>>>>>>>>
+>>>>>>>> As you cannot rebase merges (without losing history), this is not really
+>>>>>>>> applicable. I can leave in conflicts that affect ARM or Power, sure, but
+>>>>>>>> then the fix-ups will have to happen on top, taking away bisectability.
+>>>>>>>
+>>>>>>> Hmm, what we would really need is some tool to replay merges with their
+>>>>>>> conflict resolution. That must be feasible, somehow...
+>>>>>>
+>>>>>> You mean like git rerere? Anyway, why not just one big commit with all
+>>>>>> the conflicts?
+>>>>>
+>>>>> For the reason given in my original message.
+>>>>
+>>>> The mail explains the how, but not the why. Having to skim through tens
+>>>> of commits to find which ones may be related to a particular arch is
+>>>> simply a major pain. The "old" method which was to merge the patch with
+>>>> all the changes was much simpler. So, I do not see what we gain with the
+>>>> new method if it makes things more complicated.
+>>>
+>>> "The advantage of this pattern is that we get more bisection points in
+>>> case something subtly breaks between 3.8 and 3.10."
+>>
+>> However you do it, if there are several separate commits for all the
+>> architectures, the only bisectable architecture will be the one that was
+>> merged first. The others are broken anyway.
+> 
+> Not necessarily. I tried to resolve all conflicts as they showed up, so
+> not every state needs to be broken.
+> 
+>> At least if the conflict
+>> markers are in the tree we will know this at compilation time and not at
+>> run time. The only way to have bisectability is with one commit with all
+>> the architectures tested. Maybe we can do this by squashing the merge
+>> commit with all the fixup commits made afterwards?
+> 
+> Squashing or rebasing (I tried rebase --preserve-merges by now - not
+> usable) means loosing track where the merges came from.
+> 
+> To summarize, I think we are discussing two questions here:
+> 
+> 1. How many merges per kernel version update (one vs. several as in my
+>    model)?
+> 2. How to deal with conflicts during the merge that affect architecture
+>    that the merger is not (immediately or at all) testing?
+>     - commit them unresolved and commit resolutions on top?
+>     - resolve them as good as possible and leave the review/fix-up to
+>       the respective arch maintainer?
+> 
+> I don't see other options for 2. at this moment.
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
+What I say, is that the two answers you propose to question 2 result in
+a series of commit which can not be bisected. With 2.1, you are warned
+at compilation time, because the unbisectable commits do not compile,
+with 2.2 you have to test the kernel to realize that it is not working.
 
-For review. Only build-tested.
+So, the only possibility to have a fully bisectable hisotry would be to
+somehow handle all architectures at once, whether with one, or several
+commits.
 
- include/analogy/device.h              |    4 +--
- include/analogy/driver.h              |    4 +--
- include/analogy/transfer.h            |    4 +--
- ksrc/drivers/analogy/device.c         |   51 ++++++++++++--------------------
- ksrc/drivers/analogy/driver.c         |   32 ++++-----------------
- ksrc/drivers/analogy/rtdm_interface.c |   42 ++++++++++++++++++--------
- ksrc/drivers/analogy/transfer.c       |   32 ++++-----------------
- 7 files changed, 63 insertions(+), 106 deletions(-)
+The result being that the new approach results in a bisectable kernel
+only for one architecture, and greatly complicates the merge of the
+other architectures, I am wondering about the benefits of this new approach.
 
-diff --git a/include/analogy/device.h b/include/analogy/device.h
-index 76aca28..93cc760 100644
---- a/include/analogy/device.h
-+++ b/include/analogy/device.h
-@@ -83,9 +83,7 @@ typedef struct a4l_dev_info a4l_dvinfo_t;
- /* --- Devices tab related functions --- */
- void a4l_init_devs(void);
- int a4l_check_cleanup_devs(void);
--int a4l_rdproc_devs(char *page,
--		    char **start,
--		    off_t off, int count, int *eof, void *data);
-+int a4l_rdproc_devs(struct seq_file *p, void *data);
- 
- /* --- Context related function / macro --- */
- void a4l_set_dev(a4l_cxt_t *cxt);
-diff --git a/include/analogy/driver.h b/include/analogy/driver.h
-index a7abb00..88c8e56 100644
---- a/include/analogy/driver.h
-+++ b/include/analogy/driver.h
-@@ -68,9 +68,7 @@ int a4l_register_drv(a4l_drv_t * drv);
- int a4l_unregister_drv(a4l_drv_t * drv);
- int a4l_lct_drv(char *pin, a4l_drv_t ** pio);
- #ifdef CONFIG_PROC_FS
--int a4l_rdproc_drvs(char *page,
--		    char **start,
--		    off_t off, int count, int *eof, void *data);
-+int a4l_rdproc_drvs(struct seq_file *p, void *data);
- #endif /* CONFIG_PROC_FS */
- 
- #endif /* !DOXYGEN_CPP */
-diff --git a/include/analogy/transfer.h b/include/analogy/transfer.h
-index 2850834..a823772 100644
---- a/include/analogy/transfer.h
-+++ b/include/analogy/transfer.h
-@@ -68,9 +68,7 @@ typedef struct a4l_transfer a4l_trf_t;
- 
- /* --- Proc function --- */
- 
--int a4l_rdproc_transfer(char *page,
--			char **start,
--			off_t off, int count, int *eof, void *data);
-+int a4l_rdproc_transfer(struct seq_file *p, void *data);
- 
- /* --- Upper layer functions --- */
- 
-diff --git a/ksrc/drivers/analogy/device.c b/ksrc/drivers/analogy/device.c
-index c00d38c..b93ae72 100644
---- a/ksrc/drivers/analogy/device.c
-+++ b/ksrc/drivers/analogy/device.c
-@@ -69,14 +69,12 @@ void a4l_set_dev(a4l_cxt_t *cxt)
- 
- #ifdef CONFIG_PROC_FS
- 
--int a4l_rdproc_devs(char *page,
--		    char **start, off_t off, int count, int *eof, void *data)
-+int a4l_rdproc_devs(struct seq_file *p, void *data)
- {
--	int i, len = 0;
--	char *p = page;
-+	int i;
- 
--	p += sprintf(p, "--  Analogy devices --\n\n");
--	p += sprintf(p, "| idx | status | driver\n");
-+	seq_printf(p, "--  Analogy devices --\n\n");
-+	seq_printf(p, "| idx | status | driver\n");
- 
- 	for (i = 0; i < A4L_NB_DEVICES; i++) {
- 		char *status, *name;
-@@ -93,29 +91,23 @@ int a4l_rdproc_devs(char *page,
- 			name = "Unknown";
- 		}
- 
--		p += sprintf(p, "|  %02d | %s | %s\n", i, status, name);
-+		seq_printf(p, "|  %02d | %s | %s\n", i, status, name);
- 	}
-+	return 0;
-+}
- 
--	/* Handle any proc-file reading way */
--	len = p - page - off;
--	/* If the requested size is greater than we provide,
--	   the read operation is over */
--	if (len <= off + count)
--		*eof = 1;
--	/* In case the read operation is performed in many steps,
--	   the start pointer must be redefined */
--	*start = page + off;
--	/* If the requested size is lower than we provide,
--	   the read operation will be done in more than one step */
--	if (len > count)
--		len = count;
--	/* In case the offset is not correct (too high) */
--	if (len < 0)
--		len = 0;
--
--	return len;
-+static int a4l_proc_transfer_open(struct inode *inode, struct file *file)
-+{
-+	return single_open(file, a4l_rdproc_transfer, PDE_DATA(inode));
- }
- 
-+static const struct file_operations a4l_proc_transfer_ops = {
-+	.open		= a4l_proc_transfer_open,
-+	.read		= seq_read,
-+	.llseek		= seq_lseek,
-+	.release	= single_release,
-+};
-+
- int a4l_proc_attach(a4l_cxt_t * cxt)
- {
- 	int ret = 0;
-@@ -135,7 +127,8 @@ int a4l_proc_attach(a4l_cxt_t * cxt)
- 	strncpy(p, dev->driver->board_name, A4L_NAMELEN);
- 
- 	/* Create the proc entry */
--	entry = create_proc_entry(entry_name, 0444, a4l_proc_root);
-+	entry = proc_create_data(entry_name, 0444, a4l_proc_root,
-+				 &a4l_proc_transfer_ops, &dev->transfer);
- 	if (entry == NULL) {
- 		__a4l_err("a4l_proc_attach: "
- 			  "failed to create /proc/analogy/%s\n",
-@@ -144,12 +137,6 @@ int a4l_proc_attach(a4l_cxt_t * cxt)
- 		goto out_setup_proc_transfer;
- 	}
- 
--	entry->nlink = 1;
--	entry->data = &dev->transfer;
--	entry->write_proc = NULL;
--	entry->read_proc = a4l_rdproc_transfer;
--	wrap_proc_dir_entry_owner(entry);
--
-       out_setup_proc_transfer:
- 	/* Free the file name buffer */
- 	rtdm_free(entry_name);
-diff --git a/ksrc/drivers/analogy/driver.c b/ksrc/drivers/analogy/driver.c
-index 3e67b0d..362ee49 100644
---- a/ksrc/drivers/analogy/driver.c
-+++ b/ksrc/drivers/analogy/driver.c
-@@ -89,40 +89,20 @@ int a4l_unregister_drv(a4l_drv_t * drv)
- 
- /* --- Driver list proc section --- */
- 
--int a4l_rdproc_drvs(char *page,
--		       char **start, off_t off, int count, int *eof, void *data)
-+int a4l_rdproc_drvs(struct seq_file *p, void *data)
- {
--	int i = 0, len = 0;
--	char *p = page;
-+	int i = 0;
- 	struct list_head *this;
- 
--	p += sprintf(p, "--  Analogy drivers --\n\n");
--	p += sprintf(p, "| idx | driver name\n");
-+	seq_printf(p, "--  Analogy drivers --\n\n");
-+	seq_printf(p, "| idx | driver name\n");
- 
- 	list_for_each(this, &a4l_drvs) {
- 		a4l_drv_t *drv = list_entry(this, a4l_drv_t, list);
- 
--		p += sprintf(p, "|  %02d | %s\n", i++, drv->board_name);
-+		seq_printf(p, "|  %02d | %s\n", i++, drv->board_name);
- 	}
--
--	/* Handles any proc-file reading way */
--	len = p - page - off;
--	/* If the requested size is greater than we provide,
--	   the read operation is over */
--	if (len <= off + count)
--		*eof = 1;
--	/* In case the read operation is performed in many steps,
--	   the start pointer must be redefined */
--	*start = page + off;
--	/* If the requested size is lower than we provide,
--	   the read operation will be done in more than one step */
--	if (len > count)
--		len = count;
--	/* In case the offset is not correct (too high) */
--	if (len < 0)
--		len = 0;
--
--	return len;
-+	return 0;
- }
- 
- #endif /* CONFIG_PROC_FS */
-diff --git a/ksrc/drivers/analogy/rtdm_interface.c b/ksrc/drivers/analogy/rtdm_interface.c
-index 3042ad5..e921b56 100644
---- a/ksrc/drivers/analogy/rtdm_interface.c
-+++ b/ksrc/drivers/analogy/rtdm_interface.c
-@@ -58,13 +58,37 @@ int (*a4l_ioctl_functions[NB_IOCTL_FUNCTIONS]) (a4l_cxt_t *, void *) = {
- #ifdef CONFIG_PROC_FS
- struct proc_dir_entry *a4l_proc_root;
- 
-+static int a4l_proc_devs_open(struct inode *inode, struct file *file)
-+{
-+	return single_open(file, a4l_rdproc_devs, NULL);
-+}
-+
-+static const struct file_operations a4l_proc_devs_ops = {
-+	.open		= a4l_proc_devs_open,
-+	.read		= seq_read,
-+	.llseek		= seq_lseek,
-+	.release	= single_release,
-+};
-+
-+static int a4l_proc_drvs_open(struct inode *inode, struct file *file)
-+{
-+	return single_open(file, a4l_rdproc_drvs, NULL);
-+}
-+
-+static const struct file_operations a4l_proc_drvs_ops = {
-+	.open		= a4l_proc_drvs_open,
-+	.read		= seq_read,
-+	.llseek		= seq_lseek,
-+	.release	= single_release,
-+};
-+
- int a4l_init_proc(void)
- {
- 	int ret = 0;
- 	struct proc_dir_entry *entry;
- 
- 	/* Creates the global directory */
--	a4l_proc_root = create_proc_entry("analogy", S_IFDIR, 0);
-+	a4l_proc_root = proc_mkdir("analogy", NULL);
- 	if (a4l_proc_root == NULL) {
- 		__a4l_err("a4l_proc_init: "
- 			  "failed to create /proc/analogy\n");
-@@ -72,33 +96,25 @@ int a4l_init_proc(void)
- 	}
- 
- 	/* Creates the devices related file */
--	entry = create_proc_entry("devices", 0444, a4l_proc_root);
-+	entry = proc_create("devices", 0444, a4l_proc_root,
-+			    &a4l_proc_devs_ops);
- 	if (entry == NULL) {
- 		__a4l_err("a4l_proc_init: "
- 			  "failed to create /proc/analogy/devices\n");
- 		ret = -ENOMEM;
- 		goto err_proc_init;
- 	}
--
--	entry->nlink = 1;
--	entry->data = NULL;
--	entry->write_proc = NULL;
--	entry->read_proc = a4l_rdproc_devs;
- 	wrap_proc_dir_entry_owner(entry);
- 
- 	/* Creates the drivers related file */
--	entry = create_proc_entry("drivers", 0444, a4l_proc_root);
-+	entry = proc_create("drivers", 0444, a4l_proc_root,
-+			    &a4l_proc_drvs_ops);
- 	if (entry == NULL) {
- 		__a4l_err("a4l_proc_init: "
- 			  "failed to create /proc/analogy/drivers\n");
- 		ret = -ENOMEM;
- 		goto err_proc_init;
- 	}
--
--	entry->nlink = 1;
--	entry->data = NULL;
--	entry->write_proc = NULL;
--	entry->read_proc = a4l_rdproc_drvs;
- 	wrap_proc_dir_entry_owner(entry);
- 
- 	return 0;
-diff --git a/ksrc/drivers/analogy/transfer.c b/ksrc/drivers/analogy/transfer.c
-index 5861a83..add4414 100644
---- a/ksrc/drivers/analogy/transfer.c
-+++ b/ksrc/drivers/analogy/transfer.c
-@@ -213,16 +213,13 @@ unsigned int a4l_get_irq(a4l_dev_t * dev)
- 
- #ifdef CONFIG_PROC_FS
- 
--int a4l_rdproc_transfer(char *page,
--			char **start,
--			off_t off, int count, int *eof, void *data)
-+int a4l_rdproc_transfer(struct seq_file *p, void *data)
- {
--	int i, len = 0;
--	char *p = page;
-+	int i;
- 	a4l_trf_t *transfer = (a4l_trf_t *) data;
- 
--	p += sprintf(p, "--  Subdevices --\n\n");
--	p += sprintf(p, "| idx | type\n");
-+	seq_printf(p, "--  Subdevices --\n\n");
-+	seq_printf(p, "| idx | type\n");
- 
- 	/* Gives the subdevice type's name */
- 	for (i = 0; i < transfer->nb_subd; i++) {
-@@ -268,27 +265,10 @@ int a4l_rdproc_transfer(char *page,
- 			type = "Unknown subdevice";
- 		}
- 
--		p += sprintf(p, "|  %02d | %s\n", i, type);
-+		seq_printf(p, "|  %02d | %s\n", i, type);
- 	}
- 
--	/* Handles any proc-file reading way */
--	len = p - page - off;
--	/* If the requested size is greater than we provide,
--	   the read operation is over */
--	if (len <= off + count)
--		*eof = 1;
--	/* In case the read operation is performed in many steps,
--	   the start pointer must be redefined */
--	*start = page + off;
--	/* If the requested size is lower than we provide,
--	   the read operation will be done in more than one step */
--	if (len > count)
--		len = count;
--	/* In case the offset is not correct (too high) */
--	if (len < 0)
--		len = 0;
--
--	return len;
-+	return 0;
- }
- 
- #endif /* CONFIG_PROC_FS */
 -- 
-1.7.3.4
+                                                                Gilles.
 
