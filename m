@@ -1,15 +1,17 @@
-Message-ID: <52153BE5.8060409@steinkuehler.net>
-Date: Wed, 21 Aug 2013 17:15:01 -0500
-From: Charles Steinkuehler <charles@steinkuehler.net>
+Message-ID: <5215C1D1.1020707@siemens.com>
+Date: Thu, 22 Aug 2013 09:46:25 +0200
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-References: <52138425.2030000@steinkuehler.net> <5213B7D3.5030606@xenomai.org>
-	<5213C836.403@steinkuehler.net> <5213C9AD.2010903@xenomai.org>
-	<5213D09E.80103@steinkuehler.net> <5213EFBA.90608@steinkuehler.net>
-	<5213F7DA.1010200@xenomai.org>
-In-Reply-To: <5213F7DA.1010200@xenomai.org>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: [Xenomai] [PATCH] Fix for awk vs. gawk
+References: <52147CD7.70400@siemens.com> <52147DF2.8060407@xenomai.org>
+	<52147E94.6070309@siemens.com> <5214802B.9060001@siemens.com>
+	<5214A55E.2070902@xenomai.org> <5214A886.30608@siemens.com>
+	<5214A941.6070302@xenomai.org> <5214AA25.5070500@siemens.com>
+	<5214AB5F.7050302@xenomai.org> <5214C300.40205@siemens.com>
+	<5215059B.7020309@xenomai.org>
+In-Reply-To: <5215059B.7020309@xenomai.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [RFC] x86 port to kernel 3.10
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,61 +21,128 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+Cc: Xenomai <xenomai@xenomai.org>
 
-T24gOC8yMC8yMDEzIDY6MTIgUE0sIEdpbGxlcyBDaGFudGVwZXJkcml4IHdyb3RlOgo+IE9uIDA4
-LzIxLzIwMTMgMTI6MzcgQU0sIENoYXJsZXMgU3RlaW5rdWVobGVyIHdyb3RlOgo+PiBQcm9ibGVt
-ICMxIChzb2x2ZWQpOiBUaGUgZ2VucGF0Y2hlcy5zaCBzY3JpcHQgY2FsbHMgYXdrLCBidXQgc2Vl
-bXMKPj4gdG8gYmUgaW5jb21wYXRpYmxlIHdpdGggdGhlIHN0b2NrIGF3ayAobWF3aykgb24gbXkg
-RGViaWFuIFdoZWV6eQo+PiBzeXN0ZW0uICBJIHdhcyBnZXR0aW5nIGVycm9ycyBvbiBhbGwgdGhl
-IG1hdGNoICgkMCwgLi4uKSBsaW5lcwo+PiB1bnRpbCBJIGluc3RhbGxlZCBnYXdrOgo+IAo+IEkg
-a25ldyB0aGF0LCBzb3JyeSBmb3Igbm90IG1lbnRpb25pbmcgaXQuIEFuZCBieSB0aGUgd2F5LCBp
-ZiB5b3Uga25vdwo+IGhvdyB0byByZXdyaXRlIHRoaXMgaW4gcG9ydGFibGUgYXdrLCBwYXRjaGVz
-IGFyZSB3ZWxjb21lLgoKSGVyZSB5b3UgZ28uICBZb3UgaGF2ZSB0byBkbyBhd2F5IHdpdGggdGhl
-IGNoYXJhY3RlciBjbGFzc2VzLCBidXQgdGhlCmdhd2sgY29kZSBpcyBvbmx5IHVzaW5nIFs6Ymxh
-bms6XSB3aGljaCBpcyBzcGFjZSBhbmQgdGFiLCBzbyBub3QgYSB3aG9sZQpsb3Qgb2YgaG9ycmli
-bGUgdGhpbmdzIHRvIGdvIHdyb25nIHdpdGggbXVsdGktY2hhcmFjdGVyIGludGVybmF0aW9uYWwK
-bG9jYWxlcy4gIDopCgpPbiBteSBzeXN0ZW0gdGhpcyBwcm9kdWNlcyB0aGUgZXhhY3Qgc2FtZSBv
-dXRwdXQgdXNpbmcgbWF3ayBhcyB0aGUKZXhpc3RpbmcgY29kZSBwcm9kdWNlcyB3aXRoIGdhd2ss
-IGJ1dCBJIG9ubHkgdGVzdGVkIGluIHRoZSBpcGlwZS0zLjgKYnJhbmNoLiAgVGhhdCBzYWlkLCBJ
-IHRoaW5rIEkgcHJvcGVybHkgY29udmVydGVkIHRoZSBpbnRlbnQgb2YgdGhlIHJlZ2V4Cm1hdGNo
-aW5nIGNvZGUgaW50byBzb21ldGhpbmcgbW9zdCBvbGRlciBhd2sgaW1wbGVtZW50YXRpb25zIGNh
-bgp1bmRlcnN0YW5kLgoKSXQgbWlnaHQgbm90IGJlIGFzIHByZXR0eSBhcyB0aGUgZ2F3ayBjb2Rl
-IChJJ20gbW9yZSB1c2VkIHRvIGhhY2tpbmcgc2VkCnRoYW4gYXdrLCBhbmQgdGhlIGdhd2sgZXh0
-ZW5zaW9ucyBfYXJlXyBuaWZ0eSksIGJ1dCBpdCBzaG91bGQgd29yayB3aXRoCm1vc3QgYXdrcyBu
-b3cuCgotLSAKQ2hhcmxlcyBTdGVpbmt1ZWhsZXIKY2hhcmxlc0BzdGVpbmt1ZWhsZXIubmV0Ci0t
-LS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpGcm9tIDI5MmJiZmM2NWI1ZTJm
-YjVjZDEzZjk2MzJjNzRlY2NkZmI1MGI4NGYgTW9uIFNlcCAxNyAwMDowMDowMCAyMDAxCkZyb206
-IENoYXJsZXMgU3RlaW5rdWVobGVyIDxjaGFybGVzQHN0ZWlua3VlaGxlci5uZXQ+CkRhdGU6IFdl
-ZCwgMjEgQXVnIDIwMTMgMTc6MDA6MjkgLTA1MDAKU3ViamVjdDogW1BBVENIXSBNb2RpZnkgYXdr
-IHNjcmlwdCB0byB3b3JrIHdpdGggdW5lbmhhbmNlZCBtYXRjaCgpIGZ1bmN0aW9uCiBhcyBmb3Vu
-ZCBpbiBtYXdrIGFuZCBvdGhlciBhd2tzCgpTaWduZWQtb2ZmLWJ5OiBDaGFybGVzIFN0ZWlua3Vl
-aGxlciA8Y2hhcmxlc0BzdGVpbmt1ZWhsZXIubmV0PgotLS0KIHNjcmlwdHMvaXBpcGUvZ2VucGF0
-Y2hlcy5zaCB8ICAgMTYgKysrKysrKysrKy0tLS0tLQogMSBmaWxlIGNoYW5nZWQsIDEwIGluc2Vy
-dGlvbnMoKyksIDYgZGVsZXRpb25zKC0pCgpkaWZmIC0tZ2l0IGEvc2NyaXB0cy9pcGlwZS9nZW5w
-YXRjaGVzLnNoIGIvc2NyaXB0cy9pcGlwZS9nZW5wYXRjaGVzLnNoCmluZGV4IDU2M2Q1YzEuLmQy
-OWNiOWUgMTAwNzU1Ci0tLSBhL3NjcmlwdHMvaXBpcGUvZ2VucGF0Y2hlcy5zaAorKysgYi9zY3Jp
-cHRzL2lwaXBlL2dlbnBhdGNoZXMuc2gKQEAgLTg0LDE2ICs4NCwxOSBAQCBCRUdJTiB7CiAgICAg
-ZHJpdmVyX2FyY2hbInBjaS9odGlycS5jIl09Ing4NiIKIH0KIAotbWF0Y2goJDAsIC9eZGlmZiAt
-LWdpdCBhXC9hcmNoXC8oW15bOmJsYW5rOl1cL10qKS8sIGFyY2gpIHsKLSAgICBhPWFyY2hbMV0K
-K21hdGNoKCQwLCAvXmRpZmYgLS1naXQgYVwvYXJjaFwvKFteIFx0XC9dKikvKSB7CisgICAgc3Bs
-aXQoc3Vic3RyKCQwLCBSU1RBUlQsIFJMRU5HVEgpLCBhcmNoLCAvXC8vKQorICAgIGE9YXJjaFsz
-XQogCiAgICAgc2V0X2N1cnJlbnRfYXJjaChhKQogICAgIHByaW50ICQwID4+IGN1cnJlbnRfZmls
-ZQogICAgIG5leHQKIH0KIAotbWF0Y2goJDAsIC9eZGlmZiAtLWdpdCBhXC9kcml2ZXJzXC8oW15b
-OmJsYW5rOl1dKikvLCBmaWxlKSB7Ci0gICAgZj1maWxlWzFdCittYXRjaCgkMCwgL15kaWZmIC0t
-Z2l0IGFcL2RyaXZlcnNcLyhbXiBcdF0qKS8pIHsKKyAgICBmaWxlPXN1YnN0cigkMCwgUlNUQVJU
-LCBSTEVOR1RIKQorICAgIHN1YigvXmRpZmYgLS1naXQgYVwvZHJpdmVyc1wvLywgIiIsIGZpbGUp
-CisgICAgZj1maWxlCiAKICAgICBpZiAoIWRyaXZlcl9hcmNoW2ZdKSB7CiAJIHByaW50ICJFcnJv
-ciB1bmtub3duIGFyY2hpdGVjdHVyZSBmb3IgZHJpdmVyICJmCkBAIC0xMjAsOCArMTIzLDkgQEAg
-bWF0Y2goJDAsIC9eZGlmZiAtLWdpdCBhXC9kcml2ZXJzXC8oW15bOmJsYW5rOl1dKikvLCBmaWxl
-KSB7CiAgICAgbmV4dAogfQogCi1tYXRjaCAoJDAsIC8jZGVmaW5lIFtJXVBJUEVfQ09SRV9SRUxF
-QVNFW1s6Ymxhbms6XV0qKFteWzpibGFuazpdXSopLywgdmVycykgewotICAgIHZlcnNpb25bY3Vy
-cmVudF9hcmNoXT12ZXJzWzFdCittYXRjaCAoJDAsIC8jZGVmaW5lIFtJXVBJUEVfQ09SRV9SRUxF
-QVNFWyBcdF0qKFteIFx0XSopLykgeworICAgIHNwbGl0KHN1YnN0cigkMCwgUlNUQVJULCBSTEVO
-R1RIKSwgdmVycywgL1sgXHRdLykKKyAgICB2ZXJzaW9uW2N1cnJlbnRfYXJjaF09dmVyc1szXQog
-fQogCiB7Ci0tIAoxLjcuMTAuNAotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0t
-LS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBzaWduYXR1cmUu
-YXNjClR5cGU6IGFwcGxpY2F0aW9uL3BncC1zaWduYXR1cmUKU2l6ZTogMjYxIGJ5dGVzCkRlc2M6
-IE9wZW5QR1AgZGlnaXRhbCBzaWduYXR1cmUKVVJMOiA8aHR0cDovL3d3dy54ZW5vbWFpLm9yZy9w
-aXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDEzMDgyMS80ZmFlYzU3ZS9hdHRhY2htZW50
-LnBncD4K
+On 2013-08-21 20:23, Gilles Chanteperdrix wrote:
+> On 08/21/2013 03:39 PM, Jan Kiszka wrote:
+>> On 2013-08-21 13:58, Gilles Chanteperdrix wrote:
+>>> On 08/21/2013 01:53 PM, Jan Kiszka wrote:
+>>>> On 2013-08-21 13:49, Gilles Chanteperdrix wrote:
+>>>>> On 08/21/2013 01:46 PM, Jan Kiszka wrote:
+>>>>>> On 2013-08-21 13:32, Gilles Chanteperdrix wrote:
+>>>>>>> On 08/21/2013 10:54 AM, Jan Kiszka wrote:
+>>>>>>>> On 2013-08-21 10:47, Jan Kiszka wrote:
+>>>>>>>>> On 2013-08-21 10:44, Gilles Chanteperdrix wrote:
+>>>>>>>>>> On 08/21/2013 10:39 AM, Jan Kiszka wrote:
+>>>>>>>>>>> Hi all,
+>>>>>>>>>>>
+>>>>>>>>>>> in the process of updating our kernel support to current (and long-term)
+>>>>>>>>>>> stable 3.10, I've pushed the I-pipe master tree to that version. The
+>>>>>>>>>>> tree is available at
+>>>>>>>>>>>
+>>>>>>>>>>> git://git.xenomai.org/ipipe-jki.git next-x86
+>>>>>>>>>>>
+>>>>>>>>>>> Though the focus is on x86, this became a full merge, ie. I also tried
+>>>>>>>>>>> to resolve ARM and PowerPC conflicts (other archs had none). But I'm
+>>>>>>>>>>> sure I broke some things (or things were already broken after the 3.9
+>>>>>>>>>>> merge - there were suspicious unresolved conflicts). So these arch need
+>>>>>>>>>>> a careful check! Specifically watch out for merges that resolved
+>>>>>>>>>>> conflicts in their trees.
+>>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>> I would prefer to have the conflict markers in the git tree, so that we
+>>>>>>>>>> know where the conflicts occur. Having to browse history to find all the
+>>>>>>>>>> merge conflicts seems more complicated than greping for '>>>'. Of
+>>>>>>>>>> course, it means that when all the conflicts are resolved, the kernel
+>>>>>>>>>> should be rebased to remove the commits with the merge conflicts, so as
+>>>>>>>>>> to keep a bisectable kernel.
+>>>>>>>>>
+>>>>>>>>> As you cannot rebase merges (without losing history), this is not really
+>>>>>>>>> applicable. I can leave in conflicts that affect ARM or Power, sure, but
+>>>>>>>>> then the fix-ups will have to happen on top, taking away bisectability.
+>>>>>>>>
+>>>>>>>> Hmm, what we would really need is some tool to replay merges with their
+>>>>>>>> conflict resolution. That must be feasible, somehow...
+>>>>>>>
+>>>>>>> You mean like git rerere? Anyway, why not just one big commit with all
+>>>>>>> the conflicts?
+>>>>>>
+>>>>>> For the reason given in my original message.
+>>>>>
+>>>>> The mail explains the how, but not the why. Having to skim through tens
+>>>>> of commits to find which ones may be related to a particular arch is
+>>>>> simply a major pain. The "old" method which was to merge the patch with
+>>>>> all the changes was much simpler. So, I do not see what we gain with the
+>>>>> new method if it makes things more complicated.
+>>>>
+>>>> "The advantage of this pattern is that we get more bisection points in
+>>>> case something subtly breaks between 3.8 and 3.10."
+>>>
+>>> However you do it, if there are several separate commits for all the
+>>> architectures, the only bisectable architecture will be the one that was
+>>> merged first. The others are broken anyway.
+>>
+>> Not necessarily. I tried to resolve all conflicts as they showed up, so
+>> not every state needs to be broken.
+>>
+>>> At least if the conflict
+>>> markers are in the tree we will know this at compilation time and not at
+>>> run time. The only way to have bisectability is with one commit with all
+>>> the architectures tested. Maybe we can do this by squashing the merge
+>>> commit with all the fixup commits made afterwards?
+>>
+>> Squashing or rebasing (I tried rebase --preserve-merges by now - not
+>> usable) means loosing track where the merges came from.
+>>
+>> To summarize, I think we are discussing two questions here:
+>>
+>> 1. How many merges per kernel version update (one vs. several as in my
+>>    model)?
+>> 2. How to deal with conflicts during the merge that affect architecture
+>>    that the merger is not (immediately or at all) testing?
+>>     - commit them unresolved and commit resolutions on top?
+>>     - resolve them as good as possible and leave the review/fix-up to
+>>       the respective arch maintainer?
+>>
+>> I don't see other options for 2. at this moment.
+> 
+> What I say, is that the two answers you propose to question 2 result in
+> a series of commit which can not be bisected.
+
+s/cannot/may not/. The current one is likely not bisectable due to the
+3.9 merge of Philippe which left some unresolved conflicts behind. But
+if we resolve conflicts for all arches during the mege, there is a good
+chance that early parts of the merge are still working and that later
+parts can be made working more easily (e.g. by temporarily applying
+fix-ups from the head) if bisection is required.
+
+> With 2.1, you are warned
+> at compilation time, because the unbisectable commits do not compile,
+> with 2.2 you have to test the kernel to realize that it is not working.
+
+With complex tree, you generally also have to fix-up bisection points in
+order to make them work. The question is, how much work that is.
+
+> 
+> So, the only possibility to have a fully bisectable hisotry would be to
+> somehow handle all architectures at once, whether with one, or several
+> commits.
+> 
+> The result being that the new approach results in a bisectable kernel
+> only for one architecture, and greatly complicates the merge of the
+> other architectures, I am wondering about the benefits of this new approach.
+> 
+
+I don't see yet what complicates the merge of other archs that much.
+Look at the merge commits that had conflicts on ARM (e.g. git log
+--first-parent -p -c master..next-x86 arch/arm) and review the
+resolutions. Many of them will likely be correct, so you no longer have
+to do this job yourself. And the number of conflicts is not much higher
+than when doing a single merge, it's just spread over several commits.
+
+Jan
+
+-- 
+Siemens AG, Corporate Technology, CT RTC ITP SES-DE
+Corporate Competence Center Embedded Linux
+
