@@ -1,12 +1,17 @@
-Message-ID: <5215F23E.3030102@xenomai.org>
-Date: Thu, 22 Aug 2013 13:13:02 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <5215C4FE.707@inmess.de>
-In-Reply-To: <5215C4FE.707@inmess.de>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] two dd processes: soft lockup
+In-Reply-To: <5213E5D9.1090408@xenomai.org>
+References: <CAMgy_J0idydJq8wzH3CwQoCa+BEbSyUyOJoWmvwc+oAB3jpZ6w@mail.gmail.com>
+	<CAKvQZ_2Nzfgj7oK12+t3CtLj-YWBCB=nFYSDU6B4KqW4aWQpnQ@mail.gmail.com>
+	<50B88506.6000002@xenomai.org>
+	<CAKvQZ_3LJ-u2B0zc0+pobSGnMZ4nNviyxfuP1uiVRVuHw9Y9pQ@mail.gmail.com>
+	<50B8F21B.5090503@xenomai.org>
+	<CAKvQZ_13VsZV9sKjNLqMTHJhGn55pjkLqffsb8kYQb1b8H7rFw@mail.gmail.com>
+	<5213E5D9.1090408@xenomai.org>
+Date: Thu, 22 Aug 2013 15:42:02 +0200
+Message-ID: <CAKvQZ_0yRSgH0fGAZs0TQ3sB5Sw8DjJEtK4em488=B6ZWwV7Gw@mail.gmail.com>
+From: Willy Lambert <lambert.willy@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: Re: [Xenomai] Frustrating experience with Xenomai
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,43 +20,82 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Benedikt Boeck <benedikt.boeck@inmess.de>
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Shamju Joseph <shamju.joseph@gmail.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 08/22/2013 09:59 AM, Benedikt Boeck wrote:
-> Hello,
-> 
-> I got a problem. After starting two dd processes (if=/dev/zero 
-> of=/dev/null), I get first a few messages about soft lockup:
-> kernel:[...] BUG: soft lockup - CPU#. stuck for ..s! [dd:...]
-> and little later a
-> Kernel panic - not syncing: Fatal exception in interrupt
-> 
-> But if I had running xeno-test before and then starting two dd processes 
-> I don't get a soft lockup. Strange?
-> 
-> Also there is no soft lockup with a kernel identical till a deactivated 
-> CONFIG_XENOMAI.
-> A deactivated CONFIG_SMP also prevent the error. But I like to have both 
-> cores. Trying all four variants of CONFIG_SCHED_SMT=y/n and 
-> CONFIG_SCHED_MC=y/n didn't effect the error.
-> 
-> Tested with different kernel versions (3.4.6, 3.5.7, 3.8) always with 
-> matching ipipe patch.  I think with 3.8 I didn't get a kernel panic but 
-> still soft lockups.
-> Using Xenomai 2.6.2.1 and haven't tried other versions yet. The 
-> processor is a Celeron Dual-Core T3100.
-> 
-> Does somebody have a idea? Maybe I just made a simple (but effective) 
-> mistake.
+2013/8/20 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 
-What does:
-cat /proc/xenomai/timer
-cat /proc/timer_list
-say? before you start anything?
+> On 01/22/2013 01:43 AM, Willy Lambert wrote:
+> > 2012/11/30 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>:
+> >> On 11/30/2012 03:29 PM, Willy Lambert wrote:
+> >>> 2012/11/30 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>:
+> >>>> On 11/30/2012 09:45 AM, Willy Lambert wrote:
+> >>>>> P.S. : to xenomai community, is there a problem if I continue some
+> >>>>> support here, or should we go somewhere else more on topic ?
+> >>>>
+> >>>> Absolutely no problem, this is a recurring problem, so, we can not
+> >>>> really ignore it. The thingx I would add is:
+> >>>> - if you have a very recent computer, you will have more trouble
+> >>>> installing really old kernels than install the latest revision, so, I
+> >>>> would advise to use the I-pipe patch for Linux 3.2 with xenomai 2.6.1
+> >>>> - we can give you write access to the wiki if you wish to write some
+> >>>> documents about this.
+> >>>>
+> >>>
+> >>> Ok, let me know where I should write something.
+> >>>
+> >>> I'll rewrite something like my first mail in the "old debian way"
+> >>> (should be ok for debian and ubuntu) :
+> >>> _ explaining the idea "first compile your vanilla kernel before
+> >>> patching it, try boot, and add xenomai".
+> >>> _ getting compile tools
+> >>> _ getting linux source with ketchup (cause it's really no brain)
+> >>> _ getting current config, configuring personnal version
+> >>> _ compile command (producing .deb)
+> >>> _ install command / remove
+> >>> Keeping the aim to show a simple method without getting into details,
+> >>> and providing some general linux doc to read.
+> >>>
+> >>> I don't have time to update my process to "latest pratices", but at
+> >>> least it a starting point.
+> >>
+> >> Ok, I will create a login/password on the wiki.
+> >>
+> >> However, for the particular case of Debian, starting with the I-pipe for
+> >> Linux 3.4, we can probably provide a precompiled kernel with a
+> >> debian-like configuration which will run on any platform.
+> >>
+> >> --
+> >>                                             Gilles.
+> >
+> > Here is a first try.
+> > http://www.xenomai.org/index.php/Building_kernel
+> >  Don't hesitate to comment/correct this. I will add some links later to :
+> > _ a good complete kernel building guide (if you have some please share)
+> > _ x86 configure hints wiki page.
+> >
+> > The end is a bit specific to Debian/Ubuntu distros. Is it a problem ?
+> > Should I rework this ?
+> >
+>
+> Hi Willy,
+>
+> sorry for answering safter uch a long time, the mail got buried and
+> forgotten. The page is nice, I am going to put a link to it at least in
+> the README.INSTALL guide, I guess we should put some links to it in the
+> wiki too. However, I would like to advise people to first start with a
+> prebuilt kernel, such as the Debian kernels available on xenomai servers
+> or made available by the LinuxCNC project:
+> http://wiki.linuxcnc.org/cgi-bin/wiki.pl?XenomaiKernelPackages
+>
+> before they start trying building their own kernel and come to the list
+> asking the usual questions.
+>
+> --
+>                                                                 Gilles.
+>
 
-Do you have the problem if you disable CONFIG_NO_HZ?
+Hi,
 
--- 
-                                                                Gilles.
-
+no problem, it's a starting point that people can evolves.  I'm happy the
+page pleased you and to give back my time to xenomai ^^.
