@@ -1,13 +1,19 @@
-Message-ID: <521C8A19.3080102@xenomai.org>
-Date: Tue, 27 Aug 2013 13:14:33 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <521CAA48.9070707@siemens.com>
+Date: Tue, 27 Aug 2013 15:31:52 +0200
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-References: <5215C4FE.707@inmess.de> <521871FD.30705@web.de>
-	<521C83B9.9010702@inmess.de>
-In-Reply-To: <521C83B9.9010702@inmess.de>
-Content-Type: text/plain; charset=UTF-8
+References: <52147CD7.70400@siemens.com> <52147DF2.8060407@xenomai.org>
+	<52147E94.6070309@siemens.com> <5214802B.9060001@siemens.com>
+	<5214A55E.2070902@xenomai.org> <5214A886.30608@siemens.com>
+	<5214A941.6070302@xenomai.org> <5214AA25.5070500@siemens.com>
+	<5214AB5F.7050302@xenomai.org> <5214C300.40205@siemens.com>
+	<5215059B.7020309@xenomai.org> <5215C1D1.1020707@siemens.com>
+	<f45934df5baec3a570da12209565f49f.squirrel@127.0.0.1>
+	<52164117.5080801@siemens.com>
+In-Reply-To: <52164117.5080801@siemens.com>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] two dd processes: soft lockup
+Subject: Re: [Xenomai] [RFC] x86 port to kernel 3.10
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,73 +22,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Benedikt Boeck <benedikt.boeck@inmess.de>
-Cc: Jan Kiszka <jan.kiszka@web.de>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, Philippe Gerum <rpm@xenomai.org>
+Cc: John Morris <john@zultron.com>, Xenomai <xenomai@xenomai.org>
 
-On 08/27/2013 12:47 PM, Benedikt Boeck wrote:
-> On 08/24/2013 10:42 AM, Jan Kiszka wrote:
->> On 2013-08-22 09:59, Benedikt Boeck wrote:
->>> Hello,
->>>
->>> I got a problem. After starting two dd processes (if=/dev/zero
->>> of=/dev/null), I get first a few messages about soft lockup:
->>> kernel:[...] BUG: soft lockup - CPU#. stuck for ..s! [dd:...]
->>> and little later a
->>> Kernel panic - not syncing: Fatal exception in interrupt
->>>
->>> But if I had running xeno-test before and then starting two dd processes
->>> I don't get a soft lockup. Strange?
->>>
->>> Also there is no soft lockup with a kernel identical till a deactivated
->>> CONFIG_XENOMAI.
->>> A deactivated CONFIG_SMP also prevent the error. But I like to have both
->>> cores. Trying all four variants of CONFIG_SCHED_SMT=y/n and
->>> CONFIG_SCHED_MC=y/n didn't effect the error.
->>>
->>> Tested with different kernel versions (3.4.6, 3.5.7, 3.8) always with
->>> matching ipipe patch.  I think with 3.8 I didn't get a kernel panic but
->>> still soft lockups.
->>> Using Xenomai 2.6.2.1 and haven't tried other versions yet. The
->>> processor is a Celeron Dual-Core T3100.
->>>
->>> Does somebody have a idea? Maybe I just made a simple (but effective)
->>> mistake.
->> I've tried your configuration on ipipe-3.8 [1] but wasn't able to
->> reproduced it in a 2-cpu VM with 2 dd instances. Could you provide the
->> 3.8 config as well that generates the warnings for you? And please
->> provide the information Gilles asked for,
->>
->> Thanks,
->> Jan
->>
->> [1] http://git.xenomai.org/?p=ipipe.git;a=shortlog;h=refs/heads/ipipe-3.8
->>
->>
-> 
-> Thanks for your replys
-> 
-> Tested a 3.8 kernel again. I'm using 
-> http://download.gna.org/adeos/patches/v3.x/x86/ipipe-core-3.8-x86-1.patch as 
-> patch. Now I'm know for sure the dd processes generate soft lockups but 
-> no kernel panic occurs (running two hours). Attached todays 3.8 config.
-> 
-> In my VM (VirtualBox) I can't produce the error either. But the host has 
-> a different CPU (Core 2 Quad Q6600, reduced numbers of cores for guest). 
-> Unfortunately I haven't got another System for testing here.
-> 
-> Tested yesterday the 3.5.7 config with disabled CONFIG_NO_HZ: got the 
-> same behavior.
-> Attached content of /proc/xenomai/timer and /proc/timer_list before 
-> starting dd or xeno-test (enabled NO_HZ). If needed i can also provide 
-> the content after calling xeno-test.
+On 2013-08-22 18:49, Jan Kiszka wrote:
+> OK, then I will redo the merge of 3.10 in a single commit, but
+> preserving the work of Philippe for 3.9.
 
-Yes please, the contents of the kernel boot logs would help too, as well
-as /proc/interrupts before and after xeno-test.
+Done, result can be found again at
 
-You have the HPET timer in broadcast mode, but the LAPIC timers are
-started, now it would be interesting to know whether they ticked, cat
-/proc/interrupts will tell us that.
+git://git.xenomai.org/ipipe-jki.git next-x86
+
+Gilles, Philippe, you may want to try John's suggestion and install that
+patched git version. It allows to amend also merge commits (or reorder
+them), thus could enable a workflow where the arch maintainers fixes up
+the merges. The downside: it is awfully slow. I had to wait 15 min. or
+so for git rebase -ip to give me the todo file and several minutes more
+to see the changes applied (I fixed up my own merge with a forgotten hunk).
+
+Jan
 
 -- 
-                                                                Gilles.
+Siemens AG, Corporate Technology, CT RTC ITP SES-DE
+Corporate Competence Center Embedded Linux
 
