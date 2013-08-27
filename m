@@ -1,15 +1,15 @@
-Message-ID: <52271E8C.8070801@gmail.com>
-Date: Wed, 04 Sep 2013 07:50:36 -0400
-From: Adam J <jacobvi123@gmail.com>
+Message-ID: <521D053B.7010005@steinkuehler.net>
+Date: Tue, 27 Aug 2013 14:59:55 -0500
+From: Charles Steinkuehler <charles@steinkuehler.net>
 MIME-Version: 1.0
-References: <CAC3AHrLQiZxgSrDxKhVa_171Ve7unw__ZjpA22z27mDDqVpmcQ@mail.gmail.com>
-	<52270CC9.1090102@siemens.com>
-	<CAC3AHr+NOAqPNAFnxGvcMxuJRorotv0O0WrGHCUGuV0zBZYEhw@mail.gmail.com>
-	<52271128.9010401@siemens.com>
-In-Reply-To: <52271128.9010401@siemens.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] unmapping and remapping /dev/rtheap
+References: <52138425.2030000@steinkuehler.net> <5213B7D3.5030606@xenomai.org>
+	<5213C836.403@steinkuehler.net> <5213C9AD.2010903@xenomai.org>
+	<5213D09E.80103@steinkuehler.net> <5214BDC1.30104@steinkuehler.net>
+	<5215061E.6060305@xenomai.org>
+In-Reply-To: <5215061E.6060305@xenomai.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: [Xenomai] [PATCH] BeagleBone 3.8.13 pre/post patches
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,90 +18,78 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-I'm a researcher who's trying to use a linux system as a testbed for a 
-new program sampling methodology. What I want to be able to do is take a 
-checkpoint at a given point in a program and then run that checkpoint 
-for a set amount of instructions repeatedly with deterministic run time. 
-I am new to running programs deterministically on Linux.
-
-Currently I am running my experiments on a vanilla 3.10.10 linux system. 
-I have all user-space processes disabled except for the shell I'm using 
-to launch jobs. I am running my process under test with SCHED_FIFO 99 
-priority on a CPUSet with a single CPU and I have NUMA emulation setup 
-to segregate a portion of memory for that CPU from the rest of the 
-system. DVFS is disabled, and if there is an involuntary context switch 
-the run is said to have failed. I'm also flushing the pagecache using 
-drop_caches before restoring the program to get the system state as 
-repeatable as possible.
-
-My test programs are controlled using performance counters via PAPI and 
-signaling. For example, if I want to run a program for 100M instructions 
-I write 100,000,000 to a specific file and then send a signal to the 
-program telling it to start. The program reads the file, runs for 100M 
-instructions, produces the unhalted cycle count, and then pauses. I want 
-this unhalted cycle count to be the same every time.
-
-I have my experiments set up to be able to repeatedly warm-up and run a 
-region of a program. For example, I have program A which I want to 
-measure run time for 100M instructions starting at Instruction 300M in 
-the program. To setup the experiment take a checkpoint at Instruction 
-100M. When running the experiment I restore the checkpoint at 
-Instruction 100M and then run the program for 200M instructions to 
-warm-up the micro-architectural state. Then I run the program for 100M 
-instructions and measure the run time.
-
-The issue I'm having right now is that I'm getting non-deterministic run 
-times when running samples and I'm not sure of the cause. The programs I 
-am sampling are from SPEC2006 which are not real-time applications. I am 
-also running the SPEC applications on a non-real time linux system. One 
-hypothesis I have is because the system isn't real time there are system 
-level effects causing the program region to run for a different amount 
-of time for each execution. To test this hypothesis I wanted to use a 
-real-time linux system such as Xenomai to see if running my program 
-under Xenomai will eliminate the variability. The programs I'm using are 
-still not designed for real-time linux, but since I'm only looking at a 
-small region of the program I'm hoping compiling the program unmodified 
-using Xenomai would be sufficient.
-
-Another hypothesis we have that the issue is due to different memory 
-mappings being used after every restore resulting in the program 
-occupying different ways in the cache. I am not sure how to determine if 
-this is the cause of the run time variability though.
-
-To test my first hypothesis I am trying to take a checkpoint of my 
-application using CRIU so I can compare the run time variability of the 
-Xenomai compiled application to that of the standard compilation of the 
-application. If you think though this is not a valid hypothesis, I am 
-open to other ideas.
-
-Thank you,
-
-Adam
-
-
-
-On 9/4/2013 6:53 AM, Jan Kiszka wrote:
-> On 2013-09-04 12:39, Adam Jacobvitz wrote:
->> Yeah...I suppose that's the fundamental issue. I'm brand new to xenomai and
->> I'm not really familiar to what state xenomai maintains for an application.
->>
->> Do you know what state I would need to checkpoint and if its even possible
->> to checkpoint it?
-> There is a lot, starting with core thread objects, sync objects etc.,
-> then there are skin-specific extensions of those and also objects that
-> are shared between processes. But even if you export all this, Xenomai
-> wasn't designed with this use case in mind. So you may find many tricky
-> corner cases around checkpoint/restart - just like in Linux...
->
-> What overall use case are you aiming at with CRIU for your RT
-> process(es)? What states would your processes be in when
-> saving/restoring? And what Xenomai version do you consider for this, 2.6
-> or upcoming 3.0?
->
-> Jan
->
-
-
+T24gOC8yMS8yMDEzIDE6MjUgUE0sIEdpbGxlcyBDaGFudGVwZXJkcml4IHdyb3RlOgo+IE9uIDA4
+LzIxLzIwMTMgMDM6MTYgUE0sIENoYXJsZXMgU3RlaW5rdWVobGVyIHdyb3RlOgo+PiBbMV0gVGhl
+cmUgd2FzIG9uZSBodW5rIEkgY291bGQgbm90IGdldCB0byBhcHBseSBhdXRvbWF0aWNhbGx5LiAg
+VGhlIGNvZGUKPj4gaW4gZ3BtYy5jIGhhcyBjaGFuZ2VkIGV4dGVuc2l2ZWx5IGVub3VnaCB0aGF0
+IGdpdCBhcHBseSBkb2Vzbid0IHdvcmsKPj4gd2l0aCB0aGlzIGZpbGUuICBUbyB3b3JrIGFyb3Vu
+ZCB0aGlzLCBJIHNraXAgdGhpcyBmaWxlIHdoZW4gYXBwbHlpbmcgdGhlCj4+IGlwaXBlIHBhdGNo
+LCBhbmQgdXNlIGEgbWFudWFsIGZpeC11cCBvZiB0aGUgdHJpdmlhbCAyLWxpbmUgY2hhbmdlOgo+
+Pgo+PiBodHRwczovL2dpdGh1Yi5jb20vY2RzdGVpbmt1ZWhsZXIvbGludXgtZGV2L2Jsb2IvYW0z
+M3gtdjMuOC1ib25lMjYteGVub21haS9wYXRjaGVzL3hlbm9tYWkvMDAwMS1pcGlwZS1jb3JlLTMu
+OC4xMy1hcm0tMS5ncG1jLnBhdGNoCj4+Cj4+IFRoZXJlJ3MgcHJvYmFibHkgYSBiZXR0ZXIgd2F5
+IHRvIHdvcmsgYXJvdW5kIHRoaXMgcHJvYmxlbSwgYnV0IHRoaXMKPj4gc2hvdWxkIGRvIHVudGls
+IHRoZSBuZXh0IG9mZmljaWFsIHhlbm9tYWkgcmVsZWFzZSBjb21lcyBvdXQuLi5hbnkgZGF5Cj4+
+IG5vdywgcmlnaHQ/IT8gIDopICBBbnl3YXksIGl0IGRvZXNuJ3QgbG9vayBsaWtlIGl0IHdpbGwg
+YmUgdGhhdCBoYXJkIHRvCj4+IHJvbGwgZm9yd2FyZCB3aXRoIHVwZGF0ZWQgaXBpcGUgb3IgeGVu
+b21haSBwYXRjaGVzLgo+IAo+IFRoZSBnZW5lcmFsIHdheSB0byBoYW5kbGUgdGhlIG5vbi1tYWlu
+bGluZSBrZXJuZWxzIGlzIHdpdGggYSBwcmUgYW5kCj4gcG9zdCBwYXRjaC4gVGhlIHByZSBwYXRj
+aCByZW1vdmVzIHRoZSBjaGFuZ2VzIHdoaWNoIGNvbmZsaWN0cywgYW5kIHRoZQo+IHBvc3QgcGF0
+Y2ggYWRkcyB0aGUgbWVyZ2UuCgpJIG1hZGUgYSBwcmUvcG9zdCBwYXRjaCBzZXQgZm9yIHRoZSBC
+ZWFnbGVCb25lIDMuOC4xMyBrZXJuZWwgYW5kIGFkZGVkCnRoZSBmaWxlcyB0byBteSB4ZW5vbWFp
+IDIuNiByZXBvc2l0b3J5IChwYXRjaCBhdHRhY2hlZCkuCgpOb3RlIHRoYXQgSSBqdXN0IGFkZGVk
+IHRoZSBmaWxlcy4uLkkgZGlkbid0IGRvIGFueXRoaW5nIHRvIHRyeSBhbmQKaW50ZWdyYXRlIHRo
+ZXNlIHdpdGggdGhlIHByZXBhcmVfa2VybmVsLnNoIHNjcmlwdCAoc2luY2UgSSdtIGFwcGx5aW5n
+CnRoZSBpcGlwZSBwYXRjaCBmcm9tIGdpdCBtYW51YWxseSkgb3IgYWRkIGRvY3VtZW50YXRpb24u
+ICBXaXRoIHRoaXMsIHRoZQpwYXRjaCBnZW5lcmF0ZWQgZnJvbSB0aGUgY3VycmVudCBnaXQgaXBp
+cGUtMy44IGJyYW5jaCBhcHBsaWVzIGNsZWFubHkuCgpBbnl3YXksIHRoZSBwYXRjaCB0dXJuZWQg
+b3V0IHRvIGJlIHF1aXRlIHNpbXBsZSBhbmQgd2lsbCBob3BlZnVsbHkgcm9sbApmb3J3YXJkIGZh
+aXJseSB3ZWxsLgoKVGhhbmtzIQoKLS0gCkNoYXJsZXMgU3RlaW5rdWVobGVyCmNoYXJsZXNAc3Rl
+aW5rdWVobGVyLm5ldAotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KRnJv
+bSBjNGUxNjgyMDU1MzA3NzU4ZDM5ZDI3NDFhOTE0OTY0NTY0NTU0NWFiIE1vbiBTZXAgMTcgMDA6
+MDA6MDAgMjAwMQpGcm9tOiBDaGFybGVzIFN0ZWlua3VlaGxlciA8Y2hhcmxlc0BzdGVpbmt1ZWhs
+ZXIubmV0PgpEYXRlOiBUdWUsIDI3IEF1ZyAyMDEzIDIwOjQ1OjEyICswMjAwClN1YmplY3Q6IFtQ
+QVRDSF0gQWRkIHByZS9wb3N0IHBhdGNoIHNldCBmb3IgQmVhZ2xlQm9uZSAzLjguMTMga2VybmVs
+CgpTaWduZWQtb2ZmLWJ5OiBDaGFybGVzIFN0ZWlua3VlaGxlciA8Y2hhcmxlc0BzdGVpbmt1ZWhs
+ZXIubmV0PgotLS0KIC4uLi9iZWFnbGVib25lL2lwaXBlLWNvcmUtMy44LjEzLWJlYWdsZWJvbmUt
+cG9zdC5wYXRjaCB8ICAgMTYgKysrKysrKysrKysrKysrKwogLi4uL2JlYWdsZWJvbmUvaXBpcGUt
+Y29yZS0zLjguMTMtYmVhZ2xlYm9uZS1wcmUucGF0Y2ggIHwgICAxNiArKysrKysrKysrKysrKysr
+CiAyIGZpbGVzIGNoYW5nZWQsIDMyIGluc2VydGlvbnMoKykKIGNyZWF0ZSBtb2RlIDEwMDY0NCBr
+c3JjL2FyY2gvYXJtL3BhdGNoZXMvYmVhZ2xlYm9uZS9pcGlwZS1jb3JlLTMuOC4xMy1iZWFnbGVi
+b25lLXBvc3QucGF0Y2gKIGNyZWF0ZSBtb2RlIDEwMDY0NCBrc3JjL2FyY2gvYXJtL3BhdGNoZXMv
+YmVhZ2xlYm9uZS9pcGlwZS1jb3JlLTMuOC4xMy1iZWFnbGVib25lLXByZS5wYXRjaAoKZGlmZiAt
+LWdpdCBhL2tzcmMvYXJjaC9hcm0vcGF0Y2hlcy9iZWFnbGVib25lL2lwaXBlLWNvcmUtMy44LjEz
+LWJlYWdsZWJvbmUtcG9zdC5wYXRjaCBiL2tzcmMvYXJjaC9hcm0vcGF0Y2hlcy9iZWFnbGVib25l
+L2lwaXBlLWNvcmUtMy44LjEzLWJlYWdsZWJvbmUtcG9zdC5wYXRjaApuZXcgZmlsZSBtb2RlIDEw
+MDY0NAppbmRleCAwMDAwMDAwLi4yOTJiMWMzCi0tLSAvZGV2L251bGwKKysrIGIva3NyYy9hcmNo
+L2FybS9wYXRjaGVzL2JlYWdsZWJvbmUvaXBpcGUtY29yZS0zLjguMTMtYmVhZ2xlYm9uZS1wb3N0
+LnBhdGNoCkBAIC0wLDAgKzEsMTYgQEAKK2RpZmYgLXVQciBpcGlwZS9hcmNoL2FybS9tYWNoLW9t
+YXAyL2dwbWMuYyBwb3N0L2FyY2gvYXJtL21hY2gtb21hcDIvZ3BtYy5jCistLS0gaXBpcGUvYXJj
+aC9hcm0vbWFjaC1vbWFwMi9ncG1jLmMJMjAxMy0wOC0yNyAyMDozNDoyMi4zNjYxOTkzNTEgKzAy
+MDAKKysrKyBwb3N0L2FyY2gvYXJtL21hY2gtb21hcDIvZ3BtYy5jCTIwMTMtMDgtMjcgMjA6MTY6
+NTYuOTkwNzAzNDEyICswMjAwCitAQCAtMjUsNiArMjUsMTIgQEAKKyAjaW5jbHVkZSA8bGludXgv
+bW9kdWxlLmg+CisgI2luY2x1ZGUgPGxpbnV4L2ludGVycnVwdC5oPgorICNpbmNsdWRlIDxsaW51
+eC9wbGF0Zm9ybV9kZXZpY2UuaD4KKysjaW5jbHVkZSA8bGludXgvb2YuaD4KKysjaW5jbHVkZSA8
+bGludXgvb2ZfYWRkcmVzcy5oPgorKyNpbmNsdWRlIDxsaW51eC9vZl9tdGQuaD4KKysjaW5jbHVk
+ZSA8bGludXgvb2ZfZGV2aWNlLmg+CisrI2luY2x1ZGUgPGxpbnV4L210ZC9uYW5kLmg+CisrI2lu
+Y2x1ZGUgPGxpbnV4L3BpbmN0cmwvY29uc3VtZXIuaD4KKyAjaW5jbHVkZSA8bGludXgvaXBpcGUu
+aD4KKyAKKyAjaW5jbHVkZSA8bGludXgvcGxhdGZvcm1fZGF0YS9tdGQtbmFuZC1vbWFwMi5oPgpk
+aWZmIC0tZ2l0IGEva3NyYy9hcmNoL2FybS9wYXRjaGVzL2JlYWdsZWJvbmUvaXBpcGUtY29yZS0z
+LjguMTMtYmVhZ2xlYm9uZS1wcmUucGF0Y2ggYi9rc3JjL2FyY2gvYXJtL3BhdGNoZXMvYmVhZ2xl
+Ym9uZS9pcGlwZS1jb3JlLTMuOC4xMy1iZWFnbGVib25lLXByZS5wYXRjaApuZXcgZmlsZSBtb2Rl
+IDEwMDY0NAppbmRleCAwMDAwMDAwLi5hYTM3NzI0Ci0tLSAvZGV2L251bGwKKysrIGIva3NyYy9h
+cmNoL2FybS9wYXRjaGVzL2JlYWdsZWJvbmUvaXBpcGUtY29yZS0zLjguMTMtYmVhZ2xlYm9uZS1w
+cmUucGF0Y2gKQEAgLTAsMCArMSwxNiBAQAorZGlmZiAtdVByIGJiL2FyY2gvYXJtL21hY2gtb21h
+cDIvZ3BtYy5jIHByZS9hcmNoL2FybS9tYWNoLW9tYXAyL2dwbWMuYworLS0tIGJiL2FyY2gvYXJt
+L21hY2gtb21hcDIvZ3BtYy5jCTIwMTMtMDgtMjcgMjA6MjY6NTUuMDgwNjcyNTY3ICswMjAwCisr
+KysgcHJlL2FyY2gvYXJtL21hY2gtb21hcDIvZ3BtYy5jCTIwMTMtMDgtMjcgMjA6MzE6MTUuNzI3
+NTc4MTUzICswMjAwCitAQCAtMjUsMTIgKzI1LDYgQEAKKyAjaW5jbHVkZSA8bGludXgvbW9kdWxl
+Lmg+CisgI2luY2x1ZGUgPGxpbnV4L2ludGVycnVwdC5oPgorICNpbmNsdWRlIDxsaW51eC9wbGF0
+Zm9ybV9kZXZpY2UuaD4KKy0jaW5jbHVkZSA8bGludXgvb2YuaD4KKy0jaW5jbHVkZSA8bGludXgv
+b2ZfYWRkcmVzcy5oPgorLSNpbmNsdWRlIDxsaW51eC9vZl9tdGQuaD4KKy0jaW5jbHVkZSA8bGlu
+dXgvb2ZfZGV2aWNlLmg+CistI2luY2x1ZGUgPGxpbnV4L210ZC9uYW5kLmg+CistI2luY2x1ZGUg
+PGxpbnV4L3BpbmN0cmwvY29uc3VtZXIuaD4KKyAKKyAjaW5jbHVkZSA8bGludXgvcGxhdGZvcm1f
+ZGF0YS9tdGQtbmFuZC1vbWFwMi5oPgorIAotLSAKMS43LjEwLjQK
