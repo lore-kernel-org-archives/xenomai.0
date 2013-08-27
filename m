@@ -1,12 +1,16 @@
-From: "Daniel Merrill" <daniel.merrill@psware.com>
-Date: Fri, 13 Sep 2013 13:48:55 -0700 (MST)
-Message-ID: <a61ffb56.00001e48.00000008@dmerrill_win764.PERF.PERFORMANCESOFTWARE>
+Message-ID: <521D167C.7070801@xenomai.org>
+Date: Tue, 27 Aug 2013 23:13:32 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Language: en-us
-Content-Type: text/plain;
-	charset="us-ascii"
+References: <52138425.2030000@steinkuehler.net> <5213B7D3.5030606@xenomai.org>
+	<5213C836.403@steinkuehler.net> <5213C9AD.2010903@xenomai.org>
+	<5213D09E.80103@steinkuehler.net> <5214BDC1.30104@steinkuehler.net>
+	<5215061E.6060305@xenomai.org> <521D053B.7010005@steinkuehler.net>
+	<521D1631.6030006@xenomai.org>
+In-Reply-To: <521D1631.6030006@xenomai.org>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] psos t_delete causing a SIGSEGV in suspended task.
+Subject: Re: [Xenomai] [PATCH] BeagleBone 3.8.13 pre/post patches
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,106 +19,29 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Charles Steinkuehler <charles@steinkuehler.net>
+Cc: xenomai@xenomai.org
 
-All,
+On 08/27/2013 11:12 PM, Gilles Chanteperdrix wrote:
+> On 08/27/2013 09:59 PM, Charles Steinkuehler wrote:
+>> I made a pre/post patch set for the BeagleBone 3.8.13 kernel and added
+>> the files to my xenomai 2.6 repository (patch attached).
+>>
+>> Note that I just added the files...I didn't do anything to try and
+>> integrate these with the prepare_kernel.sh script (since I'm applying
+>> the ipipe patch from git manually) or add documentation.  With this, the
+>> patch generated from the current git ipipe-3.8 branch applies cleanly.
+>>
+>> Anyway, the patch turned out to be quite simple and will hopefully roll
+>> forward fairly well.
+> 
+> Hi, thanks for the patch. The prepare-kernel script does not apply pre
+> and post patches automatically, but this could be arranged. The key
+> information to add to the documentation is the I-pipe repository/branch
+> and commit hash to which the patch applies.
 
- 
+I mean the git repository/branch and commit hash.
 
-I'm running into an issue I'm having trouble explaining. I'm hoping you
-all will be able to clear it up for me. From my understanding of psos
-(which could be wrong) I should be able to call t_delete from either
-myself or another task. However, in the xenomai implementation it only
-works if I call it from the original "main" thread. If I create two tasks
-and one calls t_delete on the other I get a SIGSEGV and the application
-dies. Can anyone explain if this is intended behavior and maybe I'm just
-not doing it correctly, or possibly a bug in t_delete? Any and all help is
-appreciated. I'm using xenomai 2.6.2.1 and Linux 3.5.7. If there are more
-details needed I will gladly provide them. TIA.
-
- 
-
-Here is an example app that demonstrates the issue I'm seeing.
-
- 
-
-#include <stdlib.h>
-
-#include <unistd.h>
-
-#include <sys/mman.h>
-
-#include <psos.h>
-
- 
-
-void suspended_task()
-
-{
-
-               printf("Suspending myself\n");
-
-               t_suspend(0);
-
-}
-
- 
-
-void deleter(u_long targs[])
-
-{
-
-               tm_wkafter(1000);
-
-               t_delete(targs[0]);
-
-               t_suspend(0);
-
-}
-
- 
-
-void main()
-
-{
-
-    mlockall(MCL_CURRENT | MCL_FUTURE);
-
-    u_long TID, TID2;
-
-    u_long args[4] = {TID, 0, 0, 0};
-
-    u_long Status = 0;
-
-    t_create("TSK1", 55, 10000, 0, T_LOCAL | T_NOFPU, &TID);
-
-    t_start(TID, T_PREEMPT | T_TSLICE, &suspended_task, NULL);
-
-    t_create("TSK2", 56, 10000, 0, T_LOCAL | T_NOFPU, &TID2);
-
-    t_start(TID2, T_PREEMPT | T_TSLICE, &deleter, args);
-
-    tm_wkafter(1000);
-
-//    Status = t_delete(TID);
-
-//    printf("Status of Delete is %lu\n", Status);
-
-    while(1)
-
-       tm_wkafter(5000);
-
-}
-
- 
-
-Regards,
-
- 
-
-Dan Merrill
-
- 
-
- 
+-- 
+                                                                Gilles.
 
