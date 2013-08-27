@@ -1,9 +1,13 @@
+Message-ID: <521D1A04.3030103@xenomai.org>
+Date: Tue, 27 Aug 2013 23:28:36 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-From: Seong-hyeon Kim <zedoul@gmail.com>
-Date: Mon, 16 Sep 2013 16:40:03 +0200
-Message-ID: <CA+dLyOXPdSs81MZgEjxuCtc9xRKuHkDkFJyF5sLvRaa4SOSzhg@mail.gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Subject: [Xenomai] Building a RTDM driver
+References: <5215C4FE.707@inmess.de> <521871FD.30705@web.de>
+	<521C8A19.3080102@xenomai.org> <521CB022.3080703@inmess.de>
+In-Reply-To: <521CB022.3080703@inmess.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] two dd processes: soft lockup
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,25 +16,88 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Benedikt Boeck <benedikt.boeck@inmess.de>
+Cc: Jan Kiszka <jan.kiszka@web.de>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-How to build RTDM driver for *arm* arch?
-I tried to build xenomai-head/examples/rtdm/driver-api
+On 08/27/2013 03:56 PM, Benedikt Boeck wrote:
+> On 08/27/2013 01:14 PM, Gilles Chanteperdrix wrote:
+>> On 08/27/2013 12:47 PM, Benedikt Boeck wrote:
+>>> On 08/24/2013 10:42 AM, Jan Kiszka wrote:
+>>>> On 2013-08-22 09:59, Benedikt Boeck wrote:
+>>>>> Hello,
+>>>>>
+>>>>> I got a problem. After starting two dd processes (if=/dev/zero
+>>>>> of=/dev/null), I get first a few messages about soft lockup:
+>>>>> kernel:[...] BUG: soft lockup - CPU#. stuck for ..s! [dd:...]
+>>>>> and little later a
+>>>>> Kernel panic - not syncing: Fatal exception in interrupt
+>>>>>
+>>>>> But if I had running xeno-test before and then starting two dd processes
+>>>>> I don't get a soft lockup. Strange?
+>>>>>
+>>>>> Also there is no soft lockup with a kernel identical till a deactivated
+>>>>> CONFIG_XENOMAI.
+>>>>> A deactivated CONFIG_SMP also prevent the error. But I like to have both
+>>>>> cores. Trying all four variants of CONFIG_SCHED_SMT=y/n and
+>>>>> CONFIG_SCHED_MC=y/n didn't effect the error.
+>>>>>
+>>>>> Tested with different kernel versions (3.4.6, 3.5.7, 3.8) always with
+>>>>> matching ipipe patch.  I think with 3.8 I didn't get a kernel panic but
+>>>>> still soft lockups.
+>>>>> Using Xenomai 2.6.2.1 and haven't tried other versions yet. The
+>>>>> processor is a Celeron Dual-Core T3100.
+>>>>>
+>>>>> Does somebody have a idea? Maybe I just made a simple (but effective)
+>>>>> mistake.
+>>>> I've tried your configuration on ipipe-3.8 [1] but wasn't able to
+>>>> reproduced it in a 2-cpu VM with 2 dd instances. Could you provide the
+>>>> 3.8 config as well that generates the warnings for you? And please
+>>>> provide the information Gilles asked for,
+>>>>
+>>>> Thanks,
+>>>> Jan
+>>>>
+>>>> [1] http://git.xenomai.org/?p=ipipe.git;a=shortlog;h=refs/heads/ipipe-3.8
+>>>>
+>>>>
+>>> Thanks for your replys
+>>>
+>>> Tested a 3.8 kernel again. I'm using
+>>> http://download.gna.org/adeos/patches/v3.x/x86/ipipe-core-3.8-x86-1.patch as
+>>> patch. Now I'm know for sure the dd processes generate soft lockups but
+>>> no kernel panic occurs (running two hours). Attached todays 3.8 config.
+>>>
+>>> In my VM (VirtualBox) I can't produce the error either. But the host has
+>>> a different CPU (Core 2 Quad Q6600, reduced numbers of cores for guest).
+>>> Unfortunately I haven't got another System for testing here.
+>>>
+>>> Tested yesterday the 3.5.7 config with disabled CONFIG_NO_HZ: got the
+>>> same behavior.
+>>> Attached content of /proc/xenomai/timer and /proc/timer_list before
+>>> starting dd or xeno-test (enabled NO_HZ). If needed i can also provide
+>>> the content after calling xeno-test.
+>> Yes please, the contents of the kernel boot logs would help too, as well
+>> as /proc/interrupts before and after xeno-test.
+>>
+>> You have the HPET timer in broadcast mode, but the LAPIC timers are
+>> started, now it would be interesting to know whether they ticked, cat
+>> /proc/interrupts will tell us that.
+>>
+> 
+> For the purpose  to get related output, I got also the timer and 
+> timer_list new. Here are the boot log, interrupts (after/before), timer 
+> (after/before), timer_list (after/before)
 
-1. clone xenomai-head
-2. cd xenomai-head
-3. ./configure --prefix=/usr/xenomai --host=arm
-4. make DESTDIR=/home/<usrname>/xeno-target-staging ARCH=arm install
-5. cd example
-6. DESTDIR=/home/<usrname>/ make XENO=/home/<usrname>/xeno-target-
-staging/usr/xenomai ARCH=arm KSRC=/home/<usrname>/<patched kernel root
-directory>
+So, the HPET timer used a PIT replacement for irq 0 only ticks 40 times.
+I had a similar issue when working on timers on I-pipe core for 3.2.21.
+If I remember correctly, it was due to the fact that IRQ 0 starts as a
+PIC interrupt, but at some points transitions from PIC to IOAPIC, is
+masked at I-pipe level when it is disabled, and never unmasked when
+enabled at IOAPIC level. Maybe it is a similar issue? You can try
+compiling a kernel without Xenomai support and see if irq 0 counter
+increments, and boot with the "hpet=disable" argument, to disable the
+HPET, in case I fixed the issue for the PIT, but not the HPET.
 
-I found that *compiler setting* and *arch* setting in "xeno-config" is gcc
-/ i386 in  xeno-config which is not I want. I should change those to
-arm-linux-gcc-gnueabi-hf- and arm.
+-- 
+                                                                Gilles.
 
-I already spend lots of hours to build it, unfortunately, it seems like I
-didn't find any suitable documents to build rtdm. So I will be very
-appreciate you if you let me know about documents or suitable instructions
-for building it.
