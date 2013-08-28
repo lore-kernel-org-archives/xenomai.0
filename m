@@ -1,10 +1,13 @@
-From: Manuel Huber <manuel.h87@gmail.com>
-Date: Wed,  2 Oct 2013 22:47:40 +0200
-Message-Id: <1380746860-1409-4-git-send-email-manuel.h87@gmail.com>
-In-Reply-To: <1380746860-1409-1-git-send-email-manuel.h87@gmail.com>
-References: <1380746860-1409-1-git-send-email-manuel.h87@gmail.com>
-Subject: [Xenomai] [PATCH 3/3] doc: Add documentation to
-	rtdm_recvmsg_handler_t
+Message-ID: <521DFBE7.2090406@xenomai.org>
+Date: Wed, 28 Aug 2013 15:32:23 +0200
+From: Philippe Gerum <rpm@xenomai.org>
+MIME-Version: 1.0
+References: <521DD3DD.6010300@siemens.com> <521DD7D9.6040108@siemens.com>
+	<521DD92F.7010509@xenomai.org> <521DDA0C.9040204@siemens.com>
+In-Reply-To: <521DDA0C.9040204@siemens.com>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] IPIPE_KEVT_SETAFFINITY
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,38 +16,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: jan.kiszka@web.de
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-From: Manuel Huber <Manuel.h87@gmail.com>
+On 08/28/2013 01:07 PM, Jan Kiszka wrote:
+> On 2013-08-28 13:04, Philippe Gerum wrote:
+>> On 08/28/2013 12:58 PM, Jan Kiszka wrote:
+>>> On 2013-08-28 12:41, Jan Kiszka wrote:
+>>>> Hi Philippe,
+>>>>
+>>>> please push to ipipe.git what introduces IPIPE_KEVT_SETAFFINITY. I'm
+>>>> riding on the tip of all trees and cannot build forge anymore.
+>>>
+>>> Ah, oversaw it. It's in stable ipipe-3.8 only. Will pick it up for my
+>>> master queue.
+>>>
+>>>> Or does
+>>>> this event rather require some feature detection in forge?
+>>>
+>>> I suppose the policy for forge is still to require latest, full-featured
+>>> I-pipe patches, right?
+>>>
+>>
+>> Yes, so that we start playing with wrappers as late as possible, at
+>> least not before the first official release is out.
+>
+> But wrappers for older kernel version (3.x) are fine? Asking as I will
+> introduce one for the procfs stuff of 3.10. See [1].
+>
 
-Describes consequences of changes in sys_rtdm_recvmsg to the
-interface regarding the msghdr struct.
----
- include/rtdm/rtdm_driver.h | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+Yes, since -forge still supports 3.8 anyway. Currently, the oldest 
+supported release is 3.5.
 
-diff --git a/include/rtdm/rtdm_driver.h b/include/rtdm/rtdm_driver.h
-index 8b01f04..d8e3695 100644
---- a/include/rtdm/rtdm_driver.h
-+++ b/include/rtdm/rtdm_driver.h
-@@ -294,7 +294,14 @@ typedef ssize_t (*rtdm_write_handler_t)(struct rtdm_dev_context *context,
-  * @param[in] user_info Opaque pointer to information about user mode caller,
-  * NULL if kernel mode call
-  * @param[in,out] msg Message descriptor as passed by the user, automatically
-- * mirrored to safe kernel memory in case of user mode call
-+ * mirrored to safe kernel memory in case of user mode call. If msg_control
-+ * points to a valid buffer (not NULL) and msg_controllen is > 0, cmsghdr
-+ * structures can be put into msg_control buffer by driver code. Driver code
-+ * has to move msg_control to point to the next free byte (or the end of the
-+ * buffer). The core layer will update msg_controllen to reflect the actual
-+ * number of meaningful bytes written to msg_control buffer. If there is
-+ * insufficient space to write all control messages, MSG_CTRUNC has to be set
-+ * by the driver (do not abort).
-  * @param[in] flags Message flags as passed by the user
-  *
-  * @return On success, the number of bytes received. On failure return
+
+> Jan
+>
+> [1]
+> http://git.xenomai.org/?p=xenomai-jki.git;a=commitdiff;h=e94d8b0b53b7309d640a97309f65056accbb2ec7
+>
+
+
 -- 
-1.8.3
-
+Philippe.
 
