@@ -1,12 +1,12 @@
-From: "Daniel Merrill" <daniel.merrill@psware.com>
-Date: Wed, 9 Oct 2013 09:29:38 -0700 (MST)
-Message-ID: <efafe9af.0000172c.00000011@dmerrill_win764.PERF.PERFORMANCESOFTWARE>
+Message-ID: <521E6E31.20308@web.de>
+Date: Wed, 28 Aug 2013 23:40:01 +0200
+From: Jan Kiszka <jan.kiszka@web.de>
 MIME-Version: 1.0
-Content-Language: en-us
-Content-Type: text/plain;
-	charset="us-ascii"
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] t_suspend and XNBREAK
+References: <521E3326.2010806@siemens.com> <521E56D9.3010803@xenomai.org>
+In-Reply-To: <521E56D9.3010803@xenomai.org>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] [PULL] Enable build against 3.10
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,26 +15,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: Xenomai <xenomai@xenomai.org>
 
-All,
+On 2013-08-28 22:00, Gilles Chanteperdrix wrote:
+> On 08/28/2013 07:28 PM, Jan Kiszka wrote:
+>> The following changes since commit 60957fb42f76275c2851c5720b65ce60fbd3e=
+75d:
+>>
+>>   posix: Skip auto-shadowing if current thread is already shadowed (2013=
+-07-29 00:05:05 +0200)
+>>
+>> are available in the git repository at:
+>>
+>>   git://git.xenomai.org/xenomai-jki.git for-upstream
+>>
+>> for you to fetch changes up to d63fd4e8be4d57a9a90481f6cfe5374be91fce8d:
+>>
+>>   analogy: Update procfs usage to latest kernel API (2013-08-21 17:00:53=
+ +0200)
+> =
 
- 
+> Merged, thanks, but it breaks the build on powerpc lite 5200 and 2.4
+> kernels:
+> =
 
-I'm hoping maybe someone can shed a little more light on the issue we see
-occasionally. Occasionally our code using the psos+ skin will fail a
-t_suspend(0) with error code -4, which I found to be EINTR and appears to
-be set if the XNBREAK flag is set. After digging around in the
-documentation I found some references that seem to indicate that this
-means the thread was forcibly unblocked for some reason. Is there some way
-to diagnose what caused this (I'm having trouble pinpointing anything)? It
-appears when debugging that the thread never really suspends at all but
-returns immediately from the call. Does anyone have some pointers on what
-might be a good place to start looking for the culprit? Thanks in advance.
+> http://sisyphus.hd.free.fr/~gilles/bx/
+> =
 
- 
 
- 
+Pushed two patches that should address the issues.
 
-Dan Merrill
+Jan
 
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 263 bytes
+Desc: OpenPGP digital signature
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20130828/3dfdd5d=
+7/attachment.pgp>
