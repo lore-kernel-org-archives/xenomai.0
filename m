@@ -1,18 +1,14 @@
-Message-ID: <52457550.2050501@axelsw.it>
-Date: Fri, 27 Sep 2013 14:08:48 +0200
-From: Roberto Bielli <roberto.bielli@axelsw.it>
+Message-ID: <521D95D3.5030801@web.de>
+Date: Wed, 28 Aug 2013 08:16:51 +0200
+From: Jan Kiszka <jan.kiszka@web.de>
 MIME-Version: 1.0
-References: <A46EF8CF1BBB8E4B8A27B73E177C466402463ADE@MAIL-SINTERS-01.sinters-int.fr>,
-	<51DBF250.9070804@xenomai.org>	<A46EF8CF1BBB8E4B8A27B73E177C466402464B37@MAIL-SINTERS-01.sinters-int.fr>,
-	<51DC560F.90805@xenomai.org>	<A46EF8CF1BBB8E4B8A27B73E177C4664033EC616@MAIL-SINTERS-01.sinters-int.fr>,
-	<51DDB5C3.7010307@xenomai.org>	<A46EF8CF1BBB8E4B8A27B73E177C4664033F268F@MAIL-SINTERS-01.sinters-int.fr>,
-	<51DEF6FB.6080403@xenomai.org>	<A46EF8CF1BBB8E4B8A27B73E177C4664033F3724@MAIL-SINTERS-01.sinters-int.fr>
-	<51E43CE5.5020103@xenomai.org>
-In-Reply-To: <51E43CE5.5020103@xenomai.org>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] RE : RE : RE : RE : No boot kernel with xenomai on
- i.MX6Q Sabrelite
+References: <5215C4FE.707@inmess.de> <521871FD.30705@web.de>
+	<521C8A19.3080102@xenomai.org> <521CB022.3080703@inmess.de>
+	<521D1E9F.9090808@xenomai.org>
+In-Reply-To: <521D1E9F.9090808@xenomai.org>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] two dd processes: soft lockup
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,85 +17,124 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, Younes CHALABI <y.chalabi@sinters.fr>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi,
-
-i'm try to do the same things (porting xenomai 2.6.2.1 on imx6q sabresd 
-kernel ) and i have the same error ('Switching to clocksource ipipe_tsc' 
-on boot the kernel).
-The steps was these:
-1. patch the kernel with the prepare-kernel.sh with the correct CFLAGS 
-and LDFLAGS (adeos-ipipe-3.0.36-arm-1.18-11.patch)
-2. apply the post patch (adeos-ipipe-3.0.36-arm-1.18-11-post.patch)
-3. boot the new kernel
-4. show the error 'Switching to clocksource ipipe_tsc'
-
-i have some simple question.
-1. There is a solution actually for this (are there some kernel 
-particular options to enable/disable)?
-
-thanks for all.
-
-
-
-
-Il 15/07/2013 20:18, Gilles Chanteperdrix ha scritto:
-> On 07/15/2013 03:00 PM, Younes CHALABI wrote:
->
->> Hi Gilles,
+On 2013-08-27 23:48, Gilles Chanteperdrix wrote:
+> On 08/27/2013 03:56 PM, Benedikt Boeck wrote:
+>> On 08/27/2013 01:14 PM, Gilles Chanteperdrix wrote:
+>>> On 08/27/2013 12:47 PM, Benedikt Boeck wrote:
+>>>> On 08/24/2013 10:42 AM, Jan Kiszka wrote:
+>>>>> On 2013-08-22 09:59, Benedikt Boeck wrote:
+>>>>>> Hello,
+>>>>>>
+>>>>>> I got a problem. After starting two dd processes (if=3D/dev/zero
+>>>>>> of=3D/dev/null), I get first a few messages about soft lockup:
+>>>>>> kernel:[...] BUG: soft lockup - CPU#. stuck for ..s! [dd:...]
+>>>>>> and little later a
+>>>>>> Kernel panic - not syncing: Fatal exception in interrupt
+>>>>>>
+>>>>>> But if I had running xeno-test before and then starting two dd proce=
+sses
+>>>>>> I don't get a soft lockup. Strange?
+>>>>>>
+>>>>>> Also there is no soft lockup with a kernel identical till a deactiva=
+ted
+>>>>>> CONFIG_XENOMAI.
+>>>>>> A deactivated CONFIG_SMP also prevent the error. But I like to have =
+both
+>>>>>> cores. Trying all four variants of CONFIG_SCHED_SMT=3Dy/n and
+>>>>>> CONFIG_SCHED_MC=3Dy/n didn't effect the error.
+>>>>>>
+>>>>>> Tested with different kernel versions (3.4.6, 3.5.7, 3.8) always with
+>>>>>> matching ipipe patch.  I think with 3.8 I didn't get a kernel panic =
+but
+>>>>>> still soft lockups.
+>>>>>> Using Xenomai 2.6.2.1 and haven't tried other versions yet. The
+>>>>>> processor is a Celeron Dual-Core T3100.
+>>>>>>
+>>>>>> Does somebody have a idea? Maybe I just made a simple (but effective)
+>>>>>> mistake.
+>>>>> I've tried your configuration on ipipe-3.8 [1] but wasn't able to
+>>>>> reproduced it in a 2-cpu VM with 2 dd instances. Could you provide the
+>>>>> 3.8 config as well that generates the warnings for you? And please
+>>>>> provide the information Gilles asked for,
+>>>>>
+>>>>> Thanks,
+>>>>> Jan
+>>>>>
+>>>>> [1] http://git.xenomai.org/?p=3Dipipe.git;a=3Dshortlog;h=3Drefs/heads=
+/ipipe-3.8
+>>>>>
+>>>>>
+>>>> Thanks for your replys
+>>>>
+>>>> Tested a 3.8 kernel again. I'm using
+>>>> http://download.gna.org/adeos/patches/v3.x/x86/ipipe-core-3.8-x86-1.pa=
+tch as
+>>>> patch. Now I'm know for sure the dd processes generate soft lockups but
+>>>> no kernel panic occurs (running two hours). Attached todays 3.8 config.
+>>>>
+>>>> In my VM (VirtualBox) I can't produce the error either. But the host h=
+as
+>>>> a different CPU (Core 2 Quad Q6600, reduced numbers of cores for guest=
+).
+>>>> Unfortunately I haven't got another System for testing here.
+>>>>
+>>>> Tested yesterday the 3.5.7 config with disabled CONFIG_NO_HZ: got the
+>>>> same behavior.
+>>>> Attached content of /proc/xenomai/timer and /proc/timer_list before
+>>>> starting dd or xeno-test (enabled NO_HZ). If needed i can also provide
+>>>> the content after calling xeno-test.
+>>> Yes please, the contents of the kernel boot logs would help too, as well
+>>> as /proc/interrupts before and after xeno-test.
+>>>
+>>> You have the HPET timer in broadcast mode, but the LAPIC timers are
+>>> started, now it would be interesting to know whether they ticked, cat
+>>> /proc/interrupts will tell us that.
+>>>
 >>
->> I have tried to disable the CONFIG_IPIPE and CONFIG_XENOMAI manually
->> on the .config, where CONFIG_cpu_IDLE was already disabled, then
->> recompile but still have the same issue as previously.
->
->
-> It is generally not a good idea to edit the .config manually. 
-> Automatic dependencies may re-enable the options you want disabled.
->
-> Anyway, if indeed the kernel without CONFIG_IPIPE and CONFIG_XENOMAI 
-> does not boot, your problem has probably nothing to do with Xenomai.
->
-> Again, I would recommend using mx6q_defconfig and checking that this 
-> default configuration at least boots.
->
->
+>> For the purpose  to get related output, I got also the timer and =
+
+>> timer_list new. Here are the boot log, interrupts (after/before), timer =
+
+>> (after/before), timer_list (after/before)
+> =
+
+> Please try the following patch:
+> =
+
+> diff --git a/arch/x86/kernel/apic/io_apic.c b/arch/x86/kernel/apic/io_api=
+c.c
+> index b60af5d..dacb305 100644
+> --- a/arch/x86/kernel/apic/io_apic.c
+> +++ b/arch/x86/kernel/apic/io_apic.c
+> @@ -2204,7 +2204,7 @@ static unsigned int startup_ioapic_irq(struct irq_d=
+ata *data)
+>  =
+
+>  	raw_spin_lock_irqsave(&ioapic_lock, flags);
+>  	if (irq < legacy_pic->nr_legacy_irqs) {
+> -		legacy_pic->mask(irq);
+> +		mask_legacy_irq(irq);
+>  		if (legacy_pic->irq_pending(irq))
+>  			was_pending =3D 1;
+>  	}
+> =
 
 
--- 
-+------------------------------------------------------------------------------------------------+
-							
-Roberto Bielli
-Sviluppo Software					
-Axel S.r.l.					
-							
-Via Del Cannino, 3 				
-21020 Crosio Della Valle			
-Varese - Italy					
-							
-Telefono: +39 0332 949600			
-Fax:      +39 0332 969315			
-							
-E-mail:   roberto.bielli@axelsw.it	
-Web Site: www.axelsw.it
+Good catch. I was starring at my current checkout, 3.10, wondering why
+that line was already there - Philippe silently fixed it up when merging
+3.9 into master. Well...
 
-+------------------------------------------------------------------------------------------------+
-
-Si precisa che le informazioni contenute in questo messaggio sono riservate e ad uso esclusivo del destinatario.
-Qualora il messaggio in parola Le fosse pervenuto per errore, La preghiamo di eliminarlo senza copiarlo e di non inoltrarlo a terzi,
-dandocene gentilmente comunicazione. Grazie.
-Informativa sul trattamento dei dati personali (D. Lgs. 196/2003).
-I dati utilizzati per la spedizione del presente messaggio sono utilizzati da Axel S.r.l., titolare del trattamento,
-per l'invio delle comunicazioni dei diversi settori aziendali, non essendo autorizzata la divulgazione a terzi.
-Potrete rivolgere alla seguente mail richieste di verifica, rettifica o cancellazione dei Vostri dati: info@axelsw.it
-
-This e-mail and any attachments is confidential and may contain privileged information
-intended for the addressee(s) only. Dissemination, copying, printing or use by anybody
-else is unauthorised. If you are not the intended recipient,
-please delete this message and any attachments and advise the sender
-by return e-mail.Thank you.  			
-							
-+------------------------------------------------------------------------------------------------+
+Jan
 
 
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 263 bytes
+Desc: OpenPGP digital signature
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20130828/004d843=
+6/attachment.pgp>
