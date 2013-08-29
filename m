@@ -1,12 +1,13 @@
-Message-ID: <521F409D.4070507@siemens.com>
-Date: Thu, 29 Aug 2013 14:37:49 +0200
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <521FB189.9020905@xenomai.org>
+Date: Thu, 29 Aug 2013 22:39:37 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CAMZj-5M0tr1Mqc7w10gTnfBwkHnY7xq87NOxNtc4TiPuX2_cvA@mail.gmail.com>
-In-Reply-To: <CAMZj-5M0tr1Mqc7w10gTnfBwkHnY7xq87NOxNtc4TiPuX2_cvA@mail.gmail.com>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] Virtualization with Xenomai
+References: <521E3326.2010806@siemens.com> <521E56D9.3010803@xenomai.org>
+	<521E6E31.20308@web.de>
+In-Reply-To: <521E6E31.20308@web.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [PULL] Enable build against 3.10
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,55 +16,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Asier Tamayo Arbide <atamayoarbide@gmail.com>
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@web.de>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 2013-08-29 13:06, Asier Tamayo Arbide wrote:
-> Hello all,
->=20
-> My embedded system has two boards running Linux: one runs the user
-> interface and the other one the critical real-time tasks. Both boards a=
-re
-> running Xenomai on an Atom N270 chipset.
->=20
-> Now, I am planning to compact my system in just one board and have two
-> options. The first one is to execute everything using Xenomai and the
-> second one is to port my user interface to Windows and to run both Wind=
-ows
-> and Xenomai on top of a hypervisor. My e-mail regards this second optio=
-n.
->=20
+On 08/28/2013 11:40 PM, Jan Kiszka wrote:
+> On 2013-08-28 22:00, Gilles Chanteperdrix wrote:
+>> On 08/28/2013 07:28 PM, Jan Kiszka wrote:
+>>> The following changes since commit
+>>> 60957fb42f76275c2851c5720b65ce60fbd3e75d:
+>>> 
+>>> posix: Skip auto-shadowing if current thread is already
+>>> shadowed (2013-07-29 00:05:05 +0200)
+>>> 
+>>> are available in the git repository at:
+>>> 
+>>> git://git.xenomai.org/xenomai-jki.git for-upstream
+>>> 
+>>> for you to fetch changes up to
+>>> d63fd4e8be4d57a9a90481f6cfe5374be91fce8d:
+>>> 
+>>> analogy: Update procfs usage to latest kernel API (2013-08-21
+>>> 17:00:53 +0200)
+>> 
+>> Merged, thanks, but it breaks the build on powerpc lite 5200 and
+>> 2.4 kernels:
+>> 
+>> http://sisyphus.hd.free.fr/~gilles/bx/
+>> 
+> 
+> Pushed two patches that should address the issues.
 
-Third option may be even more interesting (provided you really want to
-use Windows for the UI): Run Xenomai on the host and combine it with KVM
-to host another OS. This works fine with latest ipipe for 3.8 when RT
-tasks and the QEMU process (that uses KVM) are on separate CPUs, I just
-heard of issues (couldn't reproduce yet) when they share a CPU.
+Merged, thanks, it now builds.
 
-> I would like to know if anyone has any experience with this. Is the
-> real-time response affected in any way when using a hypervisor? My curr=
-ent
-> kernel has been compiled using the ELinOS Embedded Linux distribution. =
-Do I
-> have to patch it?
->=20
-
-Virtualizing your RT workload won't make things faster, naturally.
-Depending on the hypervisor architecture and hardware capabilities, it
-may not be measurable. But I would refrain from such stacking unless
-there is a real need (which I do not see for your setup).
-
-> I am studying Xen, VmWare, KVM and Enea. Do you recommend any of them? =
-The
-> board I=92ll use in the new (compact) system will support virtualizatio=
-n
-> extensions (Intel VT).
-
-See above.
-
-Jan
-
---=20
-Siemens AG, Corporate Technology, CT RTC ITP SES-DE
-Corporate Competence Center Embedded Linux
+-- 
+                                                                Gilles.
 
