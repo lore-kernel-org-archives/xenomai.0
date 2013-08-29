@@ -1,19 +1,12 @@
-Message-ID: <521CAA48.9070707@siemens.com>
-Date: Tue, 27 Aug 2013 15:31:52 +0200
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <521F3F1F.4020505@aaton.com>
+Date: Thu, 29 Aug 2013 14:31:27 +0200
+From: Nicolas Pinault <nicolasp@aaton.com>
 MIME-Version: 1.0
-References: <52147CD7.70400@siemens.com> <52147DF2.8060407@xenomai.org>
-	<52147E94.6070309@siemens.com> <5214802B.9060001@siemens.com>
-	<5214A55E.2070902@xenomai.org> <5214A886.30608@siemens.com>
-	<5214A941.6070302@xenomai.org> <5214AA25.5070500@siemens.com>
-	<5214AB5F.7050302@xenomai.org> <5214C300.40205@siemens.com>
-	<5215059B.7020309@xenomai.org> <5215C1D1.1020707@siemens.com>
-	<f45934df5baec3a570da12209565f49f.squirrel@127.0.0.1>
-	<52164117.5080801@siemens.com>
-In-Reply-To: <52164117.5080801@siemens.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [RFC] x86 port to kernel 3.10
+References: <CAMZj-5M0tr1Mqc7w10gTnfBwkHnY7xq87NOxNtc4TiPuX2_cvA@mail.gmail.com>
+In-Reply-To: <CAMZj-5M0tr1Mqc7w10gTnfBwkHnY7xq87NOxNtc4TiPuX2_cvA@mail.gmail.com>
+Content-Type: text/plain; charset="windows-1252"; format="flowed"
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] Virtualization with Xenomai
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,27 +15,51 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, Philippe Gerum <rpm@xenomai.org>
-Cc: John Morris <john@zultron.com>, Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 2013-08-22 18:49, Jan Kiszka wrote:
-> OK, then I will redo the merge of 3.10 in a single commit, but
-> preserving the work of Philippe for 3.9.
+Hello,
 
-Done, result can be found again at
+Le 29/08/2013 13:06, Asier Tamayo Arbide a =E9crit :
+> Hello all,
+>
+> My embedded system has two boards running Linux: one runs the user
+> interface and the other one the critical real-time tasks. Both boards are
+> running Xenomai on an Atom N270 chipset.
+>
+>
+>
+> Now, I am planning to compact my system in just one board and have two
+> options. The first one is to execute everything using Xenomai and the
+> second one is to port my user interface to Windows and to run both Windows
+> and Xenomai on top of a hypervisor. My e-mail regards this second option.
+>
+>
+>
+> I would like to know if anyone has any experience with this. Is the
+> real-time response affected in any way when using a hypervisor? My current
+> kernel has been compiled using the ELinOS Embedded Linux distribution. Do=
+ I
+> have to patch it?
+>
+>
+>
+> I am studying Xen, VmWare, KVM and Enea. Do you recommend any of them? The
+> board I=92ll use in the new (compact) system will support virtualization
+> extensions (Intel VT).
+>
+In Windows world, use RTX :=20
+http://www.intervalzero.com/products/rtx-rtx64/overview/
 
-git://git.xenomai.org/ipipe-jki.git next-x86
+>
+> Thank you for your help. Best regards,
+>
+>
+>
+> Ata
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> http://www.xenomai.org/mailman/listinfo/xenomai
+>
 
-Gilles, Philippe, you may want to try John's suggestion and install that
-patched git version. It allows to amend also merge commits (or reorder
-them), thus could enable a workflow where the arch maintainers fixes up
-the merges. The downside: it is awfully slow. I had to wait 15 min. or
-so for git rebase -ip to give me the todo file and several minutes more
-to see the changes applied (I fixed up my own merge with a forgotten hunk).
-
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RTC ITP SES-DE
-Corporate Competence Center Embedded Linux
 
