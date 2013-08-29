@@ -1,13 +1,10 @@
-Message-ID: <5256B03C.8080909@xenomai.org>
-Date: Thu, 10 Oct 2013 15:48:44 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <FA4CEC4EBE2FA145A7663764A1CCB31EC74CB0DA@VOITV-EXCH-BE02.transas.com>
-In-Reply-To: <FA4CEC4EBE2FA145A7663764A1CCB31EC74CB0DA@VOITV-EXCH-BE02.transas.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Kernel 2.6.32 patched with xenomai 2.6.0 and 2.6.3
- crashes on a Core i5 / QM77 system
+Date: Thu, 29 Aug 2013 13:04:15 +0200
+Message-ID: <CAMZj-5POg0tpsEu4A1c5jzygiukcU0b=QCkmGDdqoR5T_5bzzg@mail.gmail.com>
+From: Asier Tamayo Arbide <atamayoarbide@gmail.com>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] Xenomai on mainstream Linux distributions
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,27 +13,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Zemskov, Evgeny" <Evgeny.Zemskov@transas.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 10/10/2013 01:57 PM, Zemskov, Evgeny wrote:
-> Greetings !
->
-> I'm trying to run Xenomai system on an industrial computer with
-> Core i5-3610ME 2.70GHz and 8Gb RAM on QM 77 chipset.
->
-> Any attempts to boot xenomai-patched kernel fail with a stack stace stated below.
-> I've tried vanilla kernel 2.6.32 patched with Xenomai 2.6.0 and 2.6.3 (Adeos 2.7-03).
-> Xenomai 2.6.0 works fine on a number of other machines with Pentium4, Code 2 Duo and Core i7.
->
-> Regretably, we are unable to try use newer kernels (2.6.38 or 3.x) and Adeos versions,
-> since we're bound to a certified distrubution of Linux with 2.6.32 kernel.
->
-> Any suggestions are wery welcome.
+Hello all,
 
-Could you try a recent kernel, just to see if the issue is still there? 
-Could you also try to compile your kernel as a 64 bits kernel?
 
--- 
-					    Gilles.
+I have a working embedded system running Xenomai v2.5.5. The user interface
+has been developed with Qt Embedded. The kernel has been compiled using the
+ELinOS Embedded Linux distribution.
 
+
+
+Now, I want to change that interface to X11 so that I can use a desktop
+manager as well as some X11 applications. The ELinOS distribution has an
+XServer, but it lacks a way of easily adding any desktop manager. Thus, I=
+=92m
+thinking about using another Linux distribution.
+
+
+
+Does anyone know of a Linux distribution with Xenomai built-in support? Is
+any distribution based on the Yocto project currently supporting Xenomai? I
+need to be able to configure and compile the Linux kernel for my embedded
+system.
+
+
+
+Has anyone any experience in patching the kernel in order to add Xenomai to
+any of the main Linux distributions or to one based on the Yocto project?
+
+
+
+Thank you for your help. Best regards,
+
+
+
+Ata
