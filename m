@@ -1,10 +1,13 @@
-Message-ID: <525DC044.6090201@steinkuehler.net>
-Date: Tue, 15 Oct 2013 17:23:00 -0500
-From: Charles Steinkuehler <charles@steinkuehler.net>
+Message-ID: <521F3D6D.8050700@siemens.com>
+Date: Thu, 29 Aug 2013 14:24:13 +0200
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] Hung task on Xenomai patched ARM 3.8.13 BeagleBone Kernel
+References: <5215C4FE.707@inmess.de> <521871FD.30705@web.de>
+	<521E3260.4060601@xenomai.org> <521F3C94.7070909@inmess.de>
+In-Reply-To: <521F3C94.7070909@inmess.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] two dd processes: soft lockup
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,81 +16,125 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Benedikt Boeck <benedikt.boeck@inmess.de>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-There seems to be some minor issue with the Xenomai patches for the
-BeagleBone 3.8.13 ARM target.  Occasionally, the eMMC task will hang for
-greater than 60 seconds, causing the kernel to kill it, which basically
-brings down the system (root is on the eMMC device).
+On 2013-08-29 14:20, Benedikt Boeck wrote:
+> On 08/28/2013 07:24 PM, Gilles Chanteperdrix wrote:
+>> On 08/28/2013 08:00 AM, Jan Kiszka wrote:
+>>> On 2013-08-27 23:28, Gilles Chanteperdrix wrote:
+>>>> On 08/27/2013 03:56 PM, Benedikt Boeck wrote:
+>>>>> On 08/27/2013 01:14 PM, Gilles Chanteperdrix wrote:
+>>>>>> On 08/27/2013 12:47 PM, Benedikt Boeck wrote:
+>>>>>>> On 08/24/2013 10:42 AM, Jan Kiszka wrote:
+>>>>>>>> On 2013-08-22 09:59, Benedikt Boeck wrote:
+>>>>>>>>> Hello,
+>>>>>>>>>
+>>>>>>>>> I got a problem. After starting two dd processes
+>>>>>>>>> (if=/dev/zero of=/dev/null), I get first a few messages
+>>>>>>>>> about soft lockup: kernel:[...] BUG: soft lockup -
+>>>>>>>>> CPU#. stuck for ..s! [dd:...] and little later a Kernel
+>>>>>>>>> panic - not syncing: Fatal exception in interrupt
+>>>>>>>>>
+>>>>>>>>> But if I had running xeno-test before and then starting
+>>>>>>>>> two dd processes I don't get a soft lockup. Strange?
+>>>>>>>>>
+>>>>>>>>> Also there is no soft lockup with a kernel identical
+>>>>>>>>> till a deactivated CONFIG_XENOMAI. A deactivated
+>>>>>>>>> CONFIG_SMP also prevent the error. But I like to have
+>>>>>>>>> both cores. Trying all four variants of
+>>>>>>>>> CONFIG_SCHED_SMT=y/n and CONFIG_SCHED_MC=y/n didn't
+>>>>>>>>> effect the error.
+>>>>>>>>>
+>>>>>>>>> Tested with different kernel versions (3.4.6, 3.5.7,
+>>>>>>>>> 3.8) always with matching ipipe patch.  I think with
+>>>>>>>>> 3.8 I didn't get a kernel panic but still soft
+>>>>>>>>> lockups. Using Xenomai 2.6.2.1 and haven't tried other
+>>>>>>>>> versions yet. The processor is a Celeron Dual-Core
+>>>>>>>>> T3100.
+>>>>>>>>>
+>>>>>>>>> Does somebody have a idea? Maybe I just made a simple
+>>>>>>>>> (but effective) mistake.
+>>>>>>>> I've tried your configuration on ipipe-3.8 [1] but wasn't
+>>>>>>>> able to reproduced it in a 2-cpu VM with 2 dd instances.
+>>>>>>>> Could you provide the 3.8 config as well that generates
+>>>>>>>> the warnings for you? And please provide the information
+>>>>>>>> Gilles asked for,
+>>>>>>>>
+>>>>>>>> Thanks, Jan
+>>>>>>>>
+>>>>>>>> [1]
+>>>>>>>> http://git.xenomai.org/?p=ipipe.git;a=shortlog;h=refs/heads/ipipe-3.8
+>>>>>>>>
+>>>>>>>>
+>>>>>>>>
+>> Thanks for your replys
+>>>>>>> Tested a 3.8 kernel again. I'm using
+>>>>>>> http://download.gna.org/adeos/patches/v3.x/x86/ipipe-core-3.8-x86-1.patch
+>>>>>>>
+>>>>>>> as patch. Now I'm know for sure the dd processes generate
+>>>>>>> soft lockups but no kernel panic occurs (running two
+>>>>>>> hours). Attached todays 3.8 config.
+>>>>>>>
+>>>>>>> In my VM (VirtualBox) I can't produce the error either. But
+>>>>>>> the host has a different CPU (Core 2 Quad Q6600, reduced
+>>>>>>> numbers of cores for guest). Unfortunately I haven't got
+>>>>>>> another System for testing here.
+>>>>>>>
+>>>>>>> Tested yesterday the 3.5.7 config with disabled
+>>>>>>> CONFIG_NO_HZ: got the same behavior. Attached content of
+>>>>>>> /proc/xenomai/timer and /proc/timer_list before starting dd
+>>>>>>> or xeno-test (enabled NO_HZ). If needed i can also provide
+>>>>>>> the content after calling xeno-test.
+>>>>>> Yes please, the contents of the kernel boot logs would help
+>>>>>> too, as well as /proc/interrupts before and after xeno-test.
+>>>>>>
+>>>>>> You have the HPET timer in broadcast mode, but the LAPIC
+>>>>>> timers are started, now it would be interesting to know
+>>>>>> whether they ticked, cat /proc/interrupts will tell us that.
+>>>>>>
+>>>>> For the purpose  to get related output, I got also the timer
+>>>>> and timer_list new. Here are the boot log, interrupts
+>>>>> (after/before), timer (after/before), timer_list
+>>>>> (after/before)
+>>>> So, the HPET timer used a PIT replacement for irq 0 only ticks 40
+>>>> times. I had a similar issue when working on timers on I-pipe
+>>>> core for 3.2.21. If I remember correctly, it was due to the fact
+>>>> that IRQ 0 starts as a PIC interrupt, but at some points
+>>>> transitions from PIC to IOAPIC, is masked at I-pipe level when it
+>>>> is disabled, and never unmasked when enabled at IOAPIC level.
+>>>> Maybe it is a similar issue? You can try compiling a kernel
+>>>> without Xenomai support and see if irq 0 counter increments, and
+>>>> boot with the "hpet=disable" argument, to disable the HPET, in
+>>>> case I fixed the issue for the PIT, but not the HPET.
+>>>>
+>>> AFAIK, the broadcast timer is only used for kicking the APIC timers
+>>> out of deep sleep states where they tend to stop. That should be
+>>> rare, specifically when ACPI_PROCESSOR was disabled. And on modern
+>>> systems (with continuously running APIC timers), IRQ0 doesn't fire
+>>> at all after bootup.
+>>>
+>>> That said, it remains worthwhile trying what you suggested.
+>> Indeed, mode 1 is shutdown, so the timer is not supposed to tick.
+>>
+> 
+> Unfortunately the patch didn't solved my problem. Do you need something
+> tested with this kernel? Or other ideas, I can test to locate the problem.
 
-I was writing this off to bad SD cards, and indeed I did have a card
-that exhibited these symptoms on an x86 Linux system that had no xenomai
-patches at all.  I pitched this card and didn't have any more consistent
-problems, but it turns out the bug is fairly simple to 'tickle'.  Just
-boot the xenomai patched kernel and run:
+When the system reports the lockup, can you still interact with it in
+some way? I'm wondering if we could extract a backtrace from running (or
+stuck) tasks or even an ftrace dump.
 
-grep "TestConfig" /usr -r
+> Indeed the irq0 timer didn't increase with disabled xenomai and
+> hpet=disabled/enabled. If I disable hpet the irq0 has 41/1 (cpu0/1)
+> instead of 40/0 ticks.
 
-...after a while, the mmcqd task will hang.  I have not yet had a
-xenomai kernel survive this test, while a "stock" kernel has gotten
-through the whole /usr directory multiple times without issue.
+Those ticks happen during boot-up, but the lockup is apparently later,
+only if you start the dd processes. This is likely unrelated.
 
-So...how do I go about debugging this problem?  Will testing with
-different xenomai kernel configuration options (which ones?) possibly
-shed any light on what's going wrong?
+Jan
 
-I'm not totally out of my depth here (I design hardware, so the
-lower-level the code the easier it is for me to understand), but I don't
-really do a lot of Linux Kernel hacking.  I'm muddling forward as best I
-can, but any advice would be appreciated.
+-- 
+Siemens AG, Corporate Technology, CT RTC ITP SES-DE
+Corporate Competence Center Embedded Linux
 
-A typical "hung task" report follows:
-
-> [  200.279217] INFO: task mmcqd/1:73 blocked for more than 60 seconds.
-> [  200.285938] "echo 0>  /proc/sys/kernel/hung_task_timeout_secs" disable=
-s this message.
-> [  200.294286] mmcqd/1         D c06976c8     0    73      2 0x00000000
-> [  200.301177] [<c06976c8>] (__schedule+0x5b8/0x774) from [<c0695834>] (s=
-chedule_timeout+0x1c/0x21c)
-> [  200.310609] [<c0695834>] (schedule_timeout+0x1c/0x21c) from [<c0697a50=
->] (wait_for_common+0x130/0x170)
-> [  200.320537] [<c0697a50>] (wait_for_common+0x130/0x170) from [<c051c9a8=
->] (mmc_wait_for_req_done+0x1c/0x74)
-> [  200.330791] [<c051c9a8>] (mmc_wait_for_req_done+0x1c/0x74) from [<c051=
-d630>] (mmc_start_req+0x50/0x158)
-> [  200.340758] [<c051d630>] (mmc_start_req+0x50/0x158) from [<c0528bf0>] =
-(mmc_blk_issue_rw_rq+0xa4/0x348)
-> [  200.350659] [<c0528bf0>] (mmc_blk_issue_rw_rq+0xa4/0x348) from [<c0529=
-290>] (mmc_blk_issue_rq+0x3fc/0x450)
-> [  200.360952] [<c0529290>] (mmc_blk_issue_rq+0x3fc/0x450) from [<c05298c=
-c>] (mmc_queue_thread+0xa0/0x104)
-> [  200.371017] [<c05298cc>] (mmc_queue_thread+0xa0/0x104) from [<c005a69c=
->] (kthread+0xa0/0xb0)
-> [  200.380013] [<c005a69c>] (kthread+0xa0/0xb0) from [<c000dc00>] (ret_fr=
-om_fork+0x18/0x38)
-> [  200.388616] Kernel panic - not syncing: hung_task: blocked tasks
-> [  200.395001] [<c00138dc>] (unwind_backtrace+0x0/0xe0) from [<c06905d0>]=
- (panic+0x84/0x1e0)
-> [  200.403641] [<c06905d0>] (panic+0x84/0x1e0) from [<c00943d0>] (watchdo=
-g+0x1d4/0x234)
-> [  200.411843] [<c00943d0>] (watchdog+0x1d4/0x234) from [<c005a69c>] (kth=
-read+0xa0/0xb0)
-> [  200.420115] [<c005a69c>] (kthread+0xa0/0xb0) from [<c000dc00>] (ret_fr=
-om_fork+0x18/0x38)
-> [  200.428645] drm_kms_helper: panic occurred, switching back to text con=
-sole
-> [  200.435919] Rebooting in 5 seconds..
-
--- =
-
-Charles Steinkuehler
-charles@steinkuehler.net
-
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: signature.asc
-Type: application/pgp-signature
-Size: 261 bytes
-Desc: OpenPGP digital signature
-URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20131015/7ac57a7=
-d/attachment.pgp>
