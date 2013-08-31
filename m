@@ -1,9 +1,10 @@
-Message-ID: <5221F666.5030907@xenomai.org>
-Date: Sat, 31 Aug 2013 15:57:58 +0200
+Message-ID: <52220301.1000209@xenomai.org>
+Date: Sat, 31 Aug 2013 16:51:45 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <5221D88B.90108@xenomai.org> <5221F614.9060909@xenomai.org>
-In-Reply-To: <5221F614.9060909@xenomai.org>
+	<5221F666.5030907@xenomai.org>
+In-Reply-To: <5221F666.5030907@xenomai.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] CONFIG_CONTEXT_TRACKING
@@ -18,30 +19,37 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: Philippe Gerum <rpm@xenomai.org>
 Cc: Xenomai <xenomai@xenomai.org>
 
-On 08/31/2013 03:56 PM, Philippe Gerum wrote:
-> On 08/31/2013 01:50 PM, Gilles Chanteperdrix wrote:
+On 08/31/2013 03:57 PM, Gilles Chanteperdrix wrote:
+> On 08/31/2013 03:56 PM, Philippe Gerum wrote:
+>> On 08/31/2013 01:50 PM, Gilles Chanteperdrix wrote:
+>>>
+>>> Hi,
+>>>
+>>> this new option popped up in ARM's entry.S, what do other arches do, do
+>>> we support it? or do we forbid the option with CONFIG_IPIPE?
+>>>
 >>
->> Hi,
->>
->> this new option popped up in ARM's entry.S, what do other arches do, do
->> we support it? or do we forbid the option with CONFIG_IPIPE?
+>> Full nohz is desirable for an increasing number of users who have 
+>> requirements on power consumption, so enabling context tracking for our 
+>> supported archs seems desirable too.
 >>
 > 
-> Full nohz is desirable for an increasing number of users who have 
-> requirements on power consumption, so enabling context tracking for our 
-> supported archs seems desirable too.
+> Is replacing the test
 > 
-
-Is replacing the test
-
-if (in_interrupt())
-
-in user_enter and user_exit with
-
-if (ipipe_root_p == 0 || in_interrupt())
-
-sufficient? Or do we want to also track user context for tasks running
-in Xenomai domain.
+> if (in_interrupt())
+> 
+> in user_enter and user_exit with
+> 
+> if (ipipe_root_p == 0 || in_interrupt())
+> 
+> sufficient? Or do we want to also track user context for tasks running
+> in Xenomai domain.
+> 
+The reason I ask is because avoiding the call to user_enter for a task
+running in Xenomai domain is possible, however avoiding the call to
+user_exit implies calling an equivalent of ipipe_root_p for each kernel
+entry point, so, entering user_exit and adding the call to ipipe_root_p
+there seems easier, simply adding a function call on the way.
 
 -- 
                                                                 Gilles.
