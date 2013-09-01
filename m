@@ -1,11 +1,11 @@
-Message-ID: <522337CF.2010402@xenomai.org>
-Date: Sun, 01 Sep 2013 14:49:19 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <52233BCD.9070002@laposte.net>
+Date: Sun, 01 Sep 2013 15:06:21 +0200
+From: Marc Le Douarain <marc.le-douarain@laposte.net>
 MIME-Version: 1.0
-References: <52232BE0.6050400@laposte.net>
-In-Reply-To: <52232BE0.6050400@laposte.net>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+References: <52232BE0.6050400@laposte.net> <522337CF.2010402@xenomai.org>
+In-Reply-To: <522337CF.2010402@xenomai.org>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 Subject: Re: [Xenomai]
  =?utf-8?b?RXJyb3IgImZpZWxkIOKAmHBzZTUxX3Np4oCZIGhhcyBp?=
  =?utf-8?q?ncomplete_type=22_in_syscall=2Eh_after_upgrading_Ubuntu_Distrib?=
@@ -18,43 +18,65 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Marc Le Douarain <marc.le-douarain@laposte.net>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Xenomai <xenomai@xenomai.org>
 
-On 09/01/2013 01:58 PM, Marc Le Douarain wrote:
-> Hello everybody,
-> 
-> I have an application using Xenomai that do no more compile after I have 
-> recently upgraded from Ubuntu 12.10 to 13.04
-> 
-> Here the error I have in one one file including "phread.h" :
-> gcc -c tasks.c -o tasks.o -march=i486 ...(custom defines)... 
-> `xeno-config --skin posix --cflags`
-> In file included from /usr/xenomai/include/asm/xenomai/syscall.h:23:0,
->                   from /usr/xenomai/include/nucleus/trace.h:52,
->                   from /usr/xenomai/include/nucleus/system.h:27,
->                   from /usr/xenomai/include/asm/xenomai/system_32.h:137,
->                   from /usr/xenomai/include/asm/xenomai/system.h:2,
->                   from /usr/xenomai/include/nucleus/types.h:41,
->                   from /usr/xenomai/include/nucleus/thread.h:25,
->                   from /usr/xenomai/include/posix/pthread.h:136,
->                   from tasks.c:34:
-> /usr/xenomai/include/asm-generic/xenomai/syscall.h:78:17: erreur: field 
-> ‘pse51_si’ has incomplete type
-> make: *** [tasks.o] Erreur 1
-> 
-> gcc installed on this version is 4.7.3
-> My project based on Linux kernel 2.6.38.8 and Xenomai 2.5.6
-> 
-> any one have an idea, on something that could be done...?
-> else I'm thinking to install an older version in virtual machine to no 
-> more encounter bad surprises with upgrades !
-
-You are probably lacking a #include, add the missing include and it
-should be fine. Also, Xenomai 2.5.6 and Linux 2.6.38 are really old,
-updating is recommended.
-
-
--- 
-                                                                Gilles.
-
+TGUgMDEvMDkvMjAxMyAxNDo0OSwgR2lsbGVzIENoYW50ZXBlcmRyaXggYSDDqWNyaXQgOgo+IE9u
+IDA5LzAxLzIwMTMgMDE6NTggUE0sIE1hcmMgTGUgRG91YXJhaW4gd3JvdGU6Cj4+IEhlbGxvIGV2
+ZXJ5Ym9keSwKPj4KPj4gSSBoYXZlIGFuIGFwcGxpY2F0aW9uIHVzaW5nIFhlbm9tYWkgdGhhdCBk
+byBubyBtb3JlIGNvbXBpbGUgYWZ0ZXIgSSBoYXZlCj4+IHJlY2VudGx5IHVwZ3JhZGVkIGZyb20g
+VWJ1bnR1IDEyLjEwIHRvIDEzLjA0Cj4+Cj4+IEhlcmUgdGhlIGVycm9yIEkgaGF2ZSBpbiBvbmUg
+b25lIGZpbGUgaW5jbHVkaW5nICJwaHJlYWQuaCIgOgo+PiBnY2MgLWMgdGFza3MuYyAtbyB0YXNr
+cy5vIC1tYXJjaD1pNDg2IC4uLihjdXN0b20gZGVmaW5lcykuLi4KPj4gYHhlbm8tY29uZmlnIC0t
+c2tpbiBwb3NpeCAtLWNmbGFnc2AKPj4gSW4gZmlsZSBpbmNsdWRlZCBmcm9tIC91c3IveGVub21h
+aS9pbmNsdWRlL2FzbS94ZW5vbWFpL3N5c2NhbGwuaDoyMzowLAo+PiAgICAgICAgICAgICAgICAg
+ICAgZnJvbSAvdXNyL3hlbm9tYWkvaW5jbHVkZS9udWNsZXVzL3RyYWNlLmg6NTIsCj4+ICAgICAg
+ICAgICAgICAgICAgICBmcm9tIC91c3IveGVub21haS9pbmNsdWRlL251Y2xldXMvc3lzdGVtLmg6
+MjcsCj4+ICAgICAgICAgICAgICAgICAgICBmcm9tIC91c3IveGVub21haS9pbmNsdWRlL2FzbS94
+ZW5vbWFpL3N5c3RlbV8zMi5oOjEzNywKPj4gICAgICAgICAgICAgICAgICAgIGZyb20gL3Vzci94
+ZW5vbWFpL2luY2x1ZGUvYXNtL3hlbm9tYWkvc3lzdGVtLmg6MiwKPj4gICAgICAgICAgICAgICAg
+ICAgIGZyb20gL3Vzci94ZW5vbWFpL2luY2x1ZGUvbnVjbGV1cy90eXBlcy5oOjQxLAo+PiAgICAg
+ICAgICAgICAgICAgICAgZnJvbSAvdXNyL3hlbm9tYWkvaW5jbHVkZS9udWNsZXVzL3RocmVhZC5o
+OjI1LAo+PiAgICAgICAgICAgICAgICAgICAgZnJvbSAvdXNyL3hlbm9tYWkvaW5jbHVkZS9wb3Np
+eC9wdGhyZWFkLmg6MTM2LAo+PiAgICAgICAgICAgICAgICAgICAgZnJvbSB0YXNrcy5jOjM0Ogo+
+PiAvdXNyL3hlbm9tYWkvaW5jbHVkZS9hc20tZ2VuZXJpYy94ZW5vbWFpL3N5c2NhbGwuaDo3ODox
+NzogZXJyZXVyOiBmaWVsZAo+PiDigJhwc2U1MV9zaeKAmSBoYXMgaW5jb21wbGV0ZSB0eXBlCj4+
+IG1ha2U6ICoqKiBbdGFza3Mub10gRXJyZXVyIDEKPj4KPj4gZ2NjIGluc3RhbGxlZCBvbiB0aGlz
+IHZlcnNpb24gaXMgNC43LjMKPj4gTXkgcHJvamVjdCBiYXNlZCBvbiBMaW51eCBrZXJuZWwgMi42
+LjM4LjggYW5kIFhlbm9tYWkgMi41LjYKPj4KPj4gYW55IG9uZSBoYXZlIGFuIGlkZWEsIG9uIHNv
+bWV0aGluZyB0aGF0IGNvdWxkIGJlIGRvbmUuLi4/Cj4+IGVsc2UgSSdtIHRoaW5raW5nIHRvIGlu
+c3RhbGwgYW4gb2xkZXIgdmVyc2lvbiBpbiB2aXJ0dWFsIG1hY2hpbmUgdG8gbm8KPj4gbW9yZSBl
+bmNvdW50ZXIgYmFkIHN1cnByaXNlcyB3aXRoIHVwZ3JhZGVzICEKPiBZb3UgYXJlIHByb2JhYmx5
+IGxhY2tpbmcgYSAjaW5jbHVkZSwgYWRkIHRoZSBtaXNzaW5nIGluY2x1ZGUgYW5kIGl0Cj4gc2hv
+dWxkIGJlIGZpbmUuIEFsc28sIFhlbm9tYWkgMi41LjYgYW5kIExpbnV4IDIuNi4zOCBhcmUgcmVh
+bGx5IG9sZCwKPiB1cGRhdGluZyBpcyByZWNvbW1lbmRlZC4KPgo+ClRoYW5rIGZvciB0aGUgdGlw
+LCBidXQgSSd2ZSBleGFjdGx5IHRoZSBzYW1lIGVycm9yLCB3aXRoIGFuIG9sZCBsaXR0bGUgCiJo
+ZWxsbyIgZXhhbXBsZSwKSSd2ZSBpbmNsdWRlZC4KRXhhbXBsZSB1c2luZyBuYXRpdmUgdGFza3Ms
+IGFuZCB0aGF0IHdhcyBjb21waWxpbmcgY29ycmVjdGx5IGJlZm9yZSAKZGlzdHJpYiB1cGdyYWRl
+Li4uCgpCeWUsIGJ5ZS4KCmdjYyBoZWxsb190ZXN0LmMgLW1hcmNoPWk0ODYgLU8yIC1mbm8tb21p
+dC1mcmFtZS1wb2ludGVyIApgL3Vzci94ZW5vbWFpL2Jpbi94ZW5vLWNvbmZpZyAtLXNraW49bmF0
+aXZlIC0tY2ZsYWdzYCAtbWFyY2g9aTQ4NiAtTzIgCmAvdXNyL3hlbm9tYWkvYmluL3hlbm8tY29u
+ZmlnIC0tc2tpbj1uYXRpdmUgLS1sZGZsYWdzYCAtbyBoZWxsb190ZXN0CkluIGZpbGUgaW5jbHVk
+ZWQgZnJvbSAvdXNyL3hlbm9tYWkvaW5jbHVkZS9hc20veGVub21haS9zeXNjYWxsLmg6MjM6MCwK
+ICAgICAgICAgICAgICAgICAgIGZyb20gL3Vzci94ZW5vbWFpL2luY2x1ZGUvbnVjbGV1cy90cmFj
+ZS5oOjUyLAogICAgICAgICAgICAgICAgICAgZnJvbSAvdXNyL3hlbm9tYWkvaW5jbHVkZS9udWNs
+ZXVzL3N5c3RlbS5oOjI3LAogICAgICAgICAgICAgICAgICAgZnJvbSAvdXNyL3hlbm9tYWkvaW5j
+bHVkZS9hc20veGVub21haS9zeXN0ZW1fMzIuaDoxMzcsCiAgICAgICAgICAgICAgICAgICBmcm9t
+IC91c3IveGVub21haS9pbmNsdWRlL2FzbS94ZW5vbWFpL3N5c3RlbS5oOjIsCiAgICAgICAgICAg
+ICAgICAgICBmcm9tIC91c3IveGVub21haS9pbmNsdWRlL251Y2xldXMvdHlwZXMuaDo0MSwKICAg
+ICAgICAgICAgICAgICAgIGZyb20gL3Vzci94ZW5vbWFpL2luY2x1ZGUvbnVjbGV1cy90aHJlYWQu
+aDoyNSwKICAgICAgICAgICAgICAgICAgIGZyb20gL3Vzci94ZW5vbWFpL2luY2x1ZGUvbnVjbGV1
+cy9zY2hlZC5oOjMxLAogICAgICAgICAgICAgICAgICAgZnJvbSAvdXNyL3hlbm9tYWkvaW5jbHVk
+ZS9uYXRpdmUvdGFzay5oOjI1LAogICAgICAgICAgICAgICAgICAgZnJvbSBoZWxsb190ZXN0LmM6
+NzoKL3Vzci94ZW5vbWFpL2luY2x1ZGUvYXNtLWdlbmVyaWMveGVub21haS9zeXNjYWxsLmg6Nzg6
+MTc6IGVycmV1cjogZmllbGQgCuKAmHBzZTUxX3Np4oCZIGhhcyBpbmNvbXBsZXRlIHR5cGUKbWFr
+ZTogKioqIFthbGxdIEVycmV1ciAxCgoKCi0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0t
+LS0tLS0tLQpDRkxBR1MgPSAtbWFyY2g9aTQ4NiAtTzIgLWZuby1vbWl0LWZyYW1lLXBvaW50ZXIK
+TERGTEFHUyA9IC1tYXJjaD1pNDg2IC1PMgoKQ0ZMQUdTICs9IGAvdXNyL3hlbm9tYWkvYmluL3hl
+bm8tY29uZmlnIC0tc2tpbj1uYXRpdmUgLS1jZmxhZ3NgCkxERkxBR1MgKz0gYC91c3IveGVub21h
+aS9iaW4veGVuby1jb25maWcgLS1za2luPW5hdGl2ZSAtLWxkZmxhZ3NgCgoKYWxsOgoJZ2NjIGhl
+bGxvX3Rlc3QuYyAkKENGTEFHUykgJChMREZMQUdTKSAtbyBoZWxsb190ZXN0CgpjZmxhZ3M6Cgll
+Y2hvICQoQ0ZMQUdTKQoKbGRmbGFnczoKCWVjaG8gJChMREZMQUdTKQoKLS0tLS0tLS0tLS0tLS0g
+bmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJi
+ZWQuLi4KTmFtZTogaGVsbG9fdGVzdC5jClR5cGU6IHRleHQveC1jc3JjClNpemU6IDExNzEgYnl0
+ZXMKRGVzYzogbm90IGF2YWlsYWJsZQpVUkw6IDxodHRwOi8vd3d3Lnhlbm9tYWkub3JnL3BpcGVy
+bWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTMwOTAxLzUyYjhhNDE1L2F0dGFjaG1lbnQuYz4K
