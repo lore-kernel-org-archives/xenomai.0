@@ -1,13 +1,12 @@
-Message-ID: <52220301.1000209@xenomai.org>
-Date: Sat, 31 Aug 2013 16:51:45 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <52232BE0.6050400@laposte.net>
+Date: Sun, 01 Sep 2013 13:58:24 +0200
+From: Marc Le Douarain <marc.le-douarain@laposte.net>
 MIME-Version: 1.0
-References: <5221D88B.90108@xenomai.org> <5221F614.9060909@xenomai.org>
-	<5221F666.5030907@xenomai.org>
-In-Reply-To: <5221F666.5030907@xenomai.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] CONFIG_CONTEXT_TRACKING
+Content-Type: text/plain; charset="windows-1252"; format="flowed"
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] =?windows-1252?q?Error_=22field_=91pse51=5Fsi=92_has_in?=
+ =?windows-1252?q?complete_type=22_in_syscall=2Eh_after_upgrading_Ubuntu_D?=
+ =?windows-1252?q?istrib_to_13=2E04?=
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,41 +15,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Xenomai <xenomai@xenomai.org>
 
-On 08/31/2013 03:57 PM, Gilles Chanteperdrix wrote:
-> On 08/31/2013 03:56 PM, Philippe Gerum wrote:
->> On 08/31/2013 01:50 PM, Gilles Chanteperdrix wrote:
->>>
->>> Hi,
->>>
->>> this new option popped up in ARM's entry.S, what do other arches do, do
->>> we support it? or do we forbid the option with CONFIG_IPIPE?
->>>
->>
->> Full nohz is desirable for an increasing number of users who have 
->> requirements on power consumption, so enabling context tracking for our 
->> supported archs seems desirable too.
->>
-> 
-> Is replacing the test
-> 
-> if (in_interrupt())
-> 
-> in user_enter and user_exit with
-> 
-> if (ipipe_root_p == 0 || in_interrupt())
-> 
-> sufficient? Or do we want to also track user context for tasks running
-> in Xenomai domain.
-> 
-The reason I ask is because avoiding the call to user_enter for a task
-running in Xenomai domain is possible, however avoiding the call to
-user_exit implies calling an equivalent of ipipe_root_p for each kernel
-entry point, so, entering user_exit and adding the call to ipipe_root_p
-there seems easier, simply adding a function call on the way.
+Hello everybody,
 
--- 
-                                                                Gilles.
+I have an application using Xenomai that do no more compile after I have=20
+recently upgraded from Ubuntu 12.10 to 13.04
+
+Here the error I have in one one file including "phread.h" :
+gcc -c tasks.c -o tasks.o -march=3Di486 ...(custom defines)...=20
+`xeno-config --skin posix --cflags`
+In file included from /usr/xenomai/include/asm/xenomai/syscall.h:23:0,
+                  from /usr/xenomai/include/nucleus/trace.h:52,
+                  from /usr/xenomai/include/nucleus/system.h:27,
+                  from /usr/xenomai/include/asm/xenomai/system_32.h:137,
+                  from /usr/xenomai/include/asm/xenomai/system.h:2,
+                  from /usr/xenomai/include/nucleus/types.h:41,
+                  from /usr/xenomai/include/nucleus/thread.h:25,
+                  from /usr/xenomai/include/posix/pthread.h:136,
+                  from tasks.c:34:
+/usr/xenomai/include/asm-generic/xenomai/syscall.h:78:17: erreur: field=20
+=91pse51_si=92 has incomplete type
+make: *** [tasks.o] Erreur 1
+
+gcc installed on this version is 4.7.3
+My project based on Linux kernel 2.6.38.8 and Xenomai 2.5.6
+
+any one have an idea, on something that could be done...?
+else I'm thinking to install an older version in virtual machine to no=20
+more encounter bad surprises with upgrades !
+
+Many thanks in advance.
+
+
 
