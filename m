@@ -1,16 +1,12 @@
-Message-ID: <5227222E.2030000@gmail.com>
-Date: Wed, 04 Sep 2013 08:06:06 -0400
-From: Adam J <jacobvi123@gmail.com>
+Message-ID: <5228F853.7020002@wanadoo.fr>
+Date: Thu, 05 Sep 2013 23:32:03 +0200
+From: Thierry Bultel <thierry.bultel@wanadoo.fr>
 MIME-Version: 1.0
-References: <CAC3AHrLQiZxgSrDxKhVa_171Ve7unw__ZjpA22z27mDDqVpmcQ@mail.gmail.com>
-	<52270CC9.1090102@siemens.com>
-	<CAC3AHr+NOAqPNAFnxGvcMxuJRorotv0O0WrGHCUGuV0zBZYEhw@mail.gmail.com>
-	<52271128.9010401@siemens.com> <52271E8C.8070801@gmail.com>
-	<66b86652c6224bb4db31a858f05f8ab4.squirrel@127.0.0.1>
-In-Reply-To: <66b86652c6224bb4db31a858f05f8ab4.squirrel@127.0.0.1>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] unmapping and remapping /dev/rtheap
+References: <51CD5651.6030804@wanadoo.fr> <51D07B48.9060206@xenomai.org>
+In-Reply-To: <51D07B48.9060206@xenomai.org>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] Thermal issue on iMX6q
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,31 +15,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Oops, yeah I forgot to mention that. Before running the experiments I do:
+Hi,
 
-sysctl -w kernel.sched_rt_runtime_us=-1
-sysctl -w kernel.sched_rt_period_us=1000000000
+I have noticed something really weird.
+I was using for months the 3.0.43 kernel from ipipe-gch.git
 
-Adam
+When the target is idle, I mean, with 4 CPUs at almost 0 % load,
+the temperature (/sys/class/thermal/thermal_zone0/temp) is about 66 degrees.
+(there is no heat spreader).
 
-On 9/4/2013 8:03 AM, Gilles Chanteperdrix wrote:
-> Adam J wrote:
->> I'm a researcher who's trying to use a linux system as a testbed for a
->> new program sampling methodology. What I want to be able to do is take a
->> checkpoint at a given point in a program and then run that checkpoint
->> for a set amount of instructions repeatedly with deterministic run time.
->> I am new to running programs deterministically on Linux.
->>
->> Currently I am running my experiments on a vanilla 3.10.10 linux system.
->> I have all user-space processes disabled except for the shell I'm using
->> to launch jobs. I am running my process under test with SCHED_FIFO 99
-> Maybe I am stating the obvious, but have you tuned
-> /proc/sys/kernel/sched_rt_sched_rt_period_us
-> and
-> /proc/sys/kernel/sched_rt_runtime_us
+With each CPU at 100%, the temperature gets over 90 quickly and the 
+target reboots.
+
+Since today, I was -at last- able to apply the latest available ipipe patch
+(adeos-ipipe-3.0.43) from xenomai-2.6.git head) on the 3.0.35_4.0.0
+kernel from Freescale.
+
+With that kernel, in idle, the temperature is only 44 degrees,
+with 4 CPUs to 100% the temperature stabilizes at 60 degrees.
+
+I am a little bit puzzled ... I am obviously using the same config in 
+both cases.
+Does anyone have an idea ?
+
+Cheers
+Thierry
+
+Le 30/06/2013 20:39, Gilles Chanteperdrix a écrit :
+> On 06/28/2013 11:24 AM, Thierry Bultel wrote:
+>
+>> I understand that the thermal management is disabled with xenomai,
+>> because CPU_FREQ is forbidden.
+>
+>
+> If you are using the Freescale kernel, CPU_FREQ should actually be 
+> enabled. But it is true that the frequency should not be changed after 
+> Xenomai is started, as Xenomai does not support it. However, if I 
+> remember correctly, there was a kernel parameter allowing to select a 
+> frequency at boot time.
 >
 
 
