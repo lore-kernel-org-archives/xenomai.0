@@ -1,13 +1,10 @@
-Message-ID: <5228FAE9.4000904@xenomai.org>
-Date: Thu, 05 Sep 2013 23:43:05 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <51CD5651.6030804@wanadoo.fr> <51D07B48.9060206@xenomai.org>
-	<5228F853.7020002@wanadoo.fr>
-In-Reply-To: <5228F853.7020002@wanadoo.fr>
-Content-Type: text/plain; charset=UTF-8
+From: Henry Bausley <hbausley@deltatau.com>
+Content-Type: text/plain; charset="UTF-8"
+Date: Thu, 05 Sep 2013 16:08:51 -0700
+Message-ID: <1378422531.2707.96.camel@lx-henry>
+Mime-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Thermal issue on iMX6q
+Subject: [Xenomai] xenomai on APM86290 SMP PowerPC
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,39 +13,4986 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Thierry Bultel <thierry.bultel@wanadoo.fr>
-Cc: xenomai@xenomai.org
-
-On 09/05/2013 11:32 PM, Thierry Bultel wrote:
-> Hi,
-> 
-> I have noticed something really weird.
-> I was using for months the 3.0.43 kernel from ipipe-gch.git
-> 
-> When the target is idle, I mean, with 4 CPUs at almost 0 % load,
-> the temperature (/sys/class/thermal/thermal_zone0/temp) is about 66 degrees.
-> (there is no heat spreader).
-> 
-> With each CPU at 100%, the temperature gets over 90 quickly and the 
-> target reboots.
-> 
-> Since today, I was -at last- able to apply the latest available ipipe patch
-> (adeos-ipipe-3.0.43) from xenomai-2.6.git head) on the 3.0.35_4.0.0
-> kernel from Freescale.
-> 
-> With that kernel, in idle, the temperature is only 44 degrees,
-> with 4 CPUs to 100% the temperature stabilizes at 60 degrees.
-> 
-> I am a little bit puzzled ... I am obviously using the same config in 
-> both cases.
-> Does anyone have an idea ?
-
-Also, check the idle routine, maybe the mx6 specific patch removes some
-parts of the idle routine because it causes high latencies, which the
-mainline I-pipe patch can not do because it does not patch the mx6
-specific code.
+To: xenomai@xenomai.org
 
 
--- 
-                                                                Gilles.
+
+I am attempting to run xenomai on the APM86290 in SMP mode.  Xenomai is
+stable on the APM86290 in AMP mode.  However I am seeing the crash below
+with ipipe-core-3.2.21-powerpc-4.patch xenomai 2.6.2.1 when configured
+for SMP.  I did compile the user space libs the --enable-smp option
+
+Any feedback would be greatly appreciated.
+
+
+------------[ cut here ]------------
+kernel BUG at kernel/sched.c:1312!
+Oops: Exception in kernel mode, sig: 5 [#1]
+SMP NR_CPUS=2 APM862xx vB
+Modules linked in: usralgo(O) rtpmac(O) libppmac(O) ppmachw(O) [last
+unloaded: usralgo]
+NIP: 8003b16c LR: 8003b298 CTR: 8003fff8
+REGS: 807ebc60 TRAP: 0700   Tainted: G        W  O
+(3.2.17-aspen_2.02.03)
+MSR: 00029000 <EE,ME,CE>  CR: 22f42f48  XER: 00000000
+TASK = 807af360[0] 'swapper/0' THREAD: 807e8000 CPU: 0
+GPR00: 00000001 807ebd10 807af360 807af360 af955f80 00000000 55555555
+00000001 
+GPR08: 00000001 807e8000 006e5000 807aaf40 e17ff51a f7e57f5f 00000048
+80e8e420 
+GPR16: 00000000 7fffffff 3b9ac9ff 7fffffff ffffffff 00000048 116a2988
+00000000 
+GPR24: 006e5000 00000000 807aaf40 80802770 80e8ff40 af956388 af955f80
+80e8ff40 
+NIP [8003b16c] resched_task+0x38/0xc0
+LR [8003b298] check_preempt_curr+0x9c/0xc4
+Call Trace:
+[807ebd10] [8003b600] enqueue_task+0x3c/0x50 (unreliable)
+[807ebd20] [8003b298] check_preempt_curr+0x9c/0xc4
+[807ebd30] [8003b2dc] ttwu_do_wakeup+0x1c/0xec
+[807ebd40] [8004737c] try_to_wake_up+0x294/0x30c
+[807ebd70] [80070104] hrtimer_wakeup+0x28/0x3c
+[807ebd80] [800705dc] __run_hrtimer.clone.30+0x5c/0x10c
+[807ebda0] [800714bc] hrtimer_interrupt+0x158/0x408
+[807ebe10] [8000a51c] timer_interrupt+0x13c/0x1b4
+[807ebe30] [8000e974] __ipipe_do_timer+0x44/0x54
+[807ebe40] [8009659c] __ipipe_do_sync_stage+0x208/0x278
+[807ebe80] [8000efa4] __ipipe_grab_irq+0x50/0x1fc
+[807ebec0] [80010df0] __ipipe_ret_from_except+0x0/0xc
+--- Exception: 501 at ppc44x_idle+0x2c/0x3c
+    LR = cpu_idle+0xd4/0x190
+[807ebf80] [80009110] cpu_idle+0x128/0x190 (unreliable)
+[807ebfb0] [80002e20] rest_init+0x68/0x78
+[807ebfc0] [80770788] start_kernel+0x2e8/0x2fc
+[807ebff0] [80000250] __skip_smp+0x64/0xa0
+Instruction dump:
+3d608080 90010014 396b2770 81230004 80090008 5400103a 7d4b002e 3d60807b 
+396baf40 7c0b502e 7c000034 5400d97e <0f000000> 81690040 38090040
+716a0004 
+Kernel panic - not syncing: Fatal exception in interrupt
+Call Trace:
+[807ebab0] [80008568] show_stack+0x54/0x154 (unreliable)
+[807ebaf0] [805c2d1c] panic+0xa4/0x1d8
+[807ebb40] [8000b580] die+0x12c/0x1ec
+[807ebb60] [8000b73c] _exception+0xa4/0x11c
+[807ebc50] [8001078c] ret_from_except_full+0x0/0x4c
+--- Exception: 700 at resched_task+0x38/0xc0
+    LR = check_preempt_curr+0x9c/0xc4
+[807ebd10] [8003b600] enqueue_task+0x3c/0x50 (unreliable)
+[807ebd20] [8003b298] check_preempt_curr+0x9c/0xc4
+[807ebd30] [8003b2dc] ttwu_do_wakeup+0x1c/0xec
+[807ebd40] [8004737c] try_to_wake_up+0x294/0x30c
+[807ebd70] [80070104] hrtimer_wakeup+0x28/0x3c
+[807ebd80] [800705dc] __run_hrtimer.clone.30+0x5c/0x10c
+[807ebda0] [800714bc] hrtimer_interrupt+0x158/0x408
+[807ebe10] [8000a51c] timer_interrupt+0x13c/0x1b4
+[807ebe30] [8000e974] __ipipe_do_timer+0x44/0x54
+[807ebe40] [8009659c] __ipipe_do_sync_stage+0x208/0x278
+[807ebe80] [8000efa4] __ipipe_grab_irq+0x50/0x1fc
+[807ebec0] [80010df0] __ipipe_ret_from_except+0x0/0xc
+--- Exception: 501 at ppc44x_idle+0x2c/0x3c
+    LR = cpu_idle+0xd4/0x190
+[807ebf80] [80009110] cpu_idle+0x128/0x190 (unreliable)
+[807ebfb0] [80002e20] rest_init+0x68/0x78
+[807ebfc0] [80770788] start_kernel+0x2e8/0x2fc
+[807ebff0] [80000250] __skip_smp+0x64/0xa0
+Rebooting in 180 seconds..
+
+
+My kernel configuration is below
+--------------------------------
+#
+# Automatically generated file; DO NOT EDIT.
+# Linux/powerpc 3.2.17 Kernel Configuration
+#
+# CONFIG_PPC64 is not set
+
+#
+# Processor support
+#
+# CONFIG_PPC_BOOK3S_32 is not set
+# CONFIG_PPC_85xx is not set
+# CONFIG_PPC_8xx is not set
+# CONFIG_40x is not set
+CONFIG_44x=y
+# CONFIG_E200 is not set
+CONFIG_PPC_FPU=y
+CONFIG_4xx=y
+CONFIG_BOOKE=y
+CONFIG_PTE_64BIT=y
+CONFIG_PHYS_64BIT=y
+CONFIG_PPC_MMU_NOHASH=y
+# CONFIG_PPC_MM_SLICES is not set
+CONFIG_SMP=y
+CONFIG_NR_CPUS=2
+CONFIG_NOT_COHERENT_CACHE=y
+CONFIG_APMQM=y
+CONFIG_APMQM_CFG=y
+CONFIG_PPC32=y
+CONFIG_32BIT=y
+CONFIG_WORD_SIZE=32
+CONFIG_ARCH_PHYS_ADDR_T_64BIT=y
+CONFIG_ARCH_DMA_ADDR_T_64BIT=y
+CONFIG_MMU=y
+CONFIG_GENERIC_CMOS_UPDATE=y
+CONFIG_GENERIC_TIME_VSYSCALL=y
+CONFIG_GENERIC_CLOCKEVENTS=y
+# CONFIG_HAVE_SETUP_PER_CPU_AREA is not set
+# CONFIG_NEED_PER_CPU_EMBED_FIRST_CHUNK is not set
+CONFIG_NR_IRQS=512
+CONFIG_STACKTRACE_SUPPORT=y
+CONFIG_HAVE_LATENCYTOP_SUPPORT=y
+CONFIG_TRACE_IRQFLAGS_SUPPORT=y
+CONFIG_LOCKDEP_SUPPORT=y
+CONFIG_RWSEM_XCHGADD_ALGORITHM=y
+CONFIG_ARCH_HAS_ILOG2_U32=y
+CONFIG_GENERIC_HWEIGHT=y
+# CONFIG_ARCH_NO_VIRT_TO_BUS is not set
+CONFIG_PPC=y
+CONFIG_EARLY_PRINTK=y
+# CONFIG_SOFTDISABLE is not set
+CONFIG_IRQSTACKS=y
+CONFIG_GENERIC_NVRAM=y
+CONFIG_SCHED_OMIT_FRAME_POINTER=y
+CONFIG_ARCH_MAY_HAVE_PC_FDC=y
+CONFIG_PPC_OF=y
+CONFIG_PPC_UDBG_16550=y
+CONFIG_GENERIC_TBSYNC=y
+CONFIG_AUDIT_ARCH=y
+CONFIG_GENERIC_BUG=y
+# CONFIG_EPAPR_BOOT is not set
+# CONFIG_DEFAULT_UIMAGE is not set
+CONFIG_ARCH_HIBERNATION_POSSIBLE=y
+CONFIG_ARCH_SUSPEND_POSSIBLE=y
+CONFIG_PPC_DCR_NATIVE=y
+# CONFIG_PPC_DCR_MMIO is not set
+CONFIG_PPC_DCR=y
+CONFIG_ARCH_SUPPORTS_DEBUG_PAGEALLOC=y
+CONFIG_PPC_ADV_DEBUG_REGS=y
+CONFIG_PPC_ADV_DEBUG_IACS=4
+CONFIG_PPC_ADV_DEBUG_DACS=2
+CONFIG_PPC_ADV_DEBUG_DVCS=2
+CONFIG_PPC_ADV_DEBUG_DAC_RANGE=y
+CONFIG_DEFCONFIG_LIST="/lib/modules/$UNAME_RELEASE/.config"
+CONFIG_HAVE_IRQ_WORK=y
+
+#
+# General setup
+#
+CONFIG_EXPERIMENTAL=y
+CONFIG_INIT_ENV_ARG_LIMIT=32
+CONFIG_CROSS_COMPILE=""
+CONFIG_LOCALVERSION=""
+CONFIG_LOCALVERSION_AUTO=y
+CONFIG_DEFAULT_HOSTNAME="(none)"
+CONFIG_SWAP=y
+CONFIG_SYSVIPC=y
+CONFIG_SYSVIPC_SYSCTL=y
+# CONFIG_POSIX_MQUEUE is not set
+# CONFIG_BSD_PROCESS_ACCT is not set
+# CONFIG_FHANDLE is not set
+# CONFIG_TASKSTATS is not set
+# CONFIG_AUDIT is not set
+CONFIG_HAVE_GENERIC_HARDIRQS=y
+
+#
+# IRQ subsystem
+#
+CONFIG_GENERIC_HARDIRQS=y
+CONFIG_HAVE_SPARSE_IRQ=y
+CONFIG_GENERIC_IRQ_SHOW=y
+CONFIG_GENERIC_IRQ_SHOW_LEVEL=y
+# CONFIG_SPARSE_IRQ is not set
+
+#
+# RCU Subsystem
+#
+CONFIG_TREE_RCU=y
+# CONFIG_PREEMPT_RCU is not set
+# CONFIG_RCU_TRACE is not set
+CONFIG_RCU_FANOUT=32
+# CONFIG_RCU_FANOUT_EXACT is not set
+# CONFIG_RCU_FAST_NO_HZ is not set
+# CONFIG_TREE_RCU_TRACE is not set
+CONFIG_IKCONFIG=y
+CONFIG_IKCONFIG_PROC=y
+CONFIG_LOG_BUF_SHIFT=14
+# CONFIG_CGROUPS is not set
+# CONFIG_NAMESPACES is not set
+# CONFIG_SCHED_AUTOGROUP is not set
+# CONFIG_SYSFS_DEPRECATED is not set
+# CONFIG_RELAY is not set
+CONFIG_BLK_DEV_INITRD=y
+CONFIG_INITRAMFS_SOURCE=""
+CONFIG_RD_GZIP=y
+# CONFIG_RD_BZIP2 is not set
+# CONFIG_RD_LZMA is not set
+# CONFIG_RD_XZ is not set
+# CONFIG_RD_LZO is not set
+# CONFIG_CC_OPTIMIZE_FOR_SIZE is not set
+CONFIG_SYSCTL=y
+CONFIG_ANON_INODES=y
+CONFIG_EXPERT=y
+CONFIG_SYSCTL_SYSCALL=y
+CONFIG_KALLSYMS=y
+CONFIG_KALLSYMS_ALL=y
+CONFIG_HOTPLUG=y
+CONFIG_PRINTK=y
+CONFIG_BUG=y
+CONFIG_ELF_CORE=y
+CONFIG_BASE_FULL=y
+CONFIG_FUTEX=y
+CONFIG_EPOLL=y
+CONFIG_SIGNALFD=y
+CONFIG_TIMERFD=y
+CONFIG_EVENTFD=y
+CONFIG_SHMEM=y
+CONFIG_AIO=y
+CONFIG_EMBEDDED=y
+CONFIG_HAVE_PERF_EVENTS=y
+
+#
+# Kernel Performance Events And Counters
+#
+# CONFIG_PERF_EVENTS is not set
+# CONFIG_PERF_COUNTERS is not set
+CONFIG_VM_EVENT_COUNTERS=y
+CONFIG_PCI_QUIRKS=y
+# CONFIG_SLUB_DEBUG is not set
+CONFIG_COMPAT_BRK=y
+# CONFIG_SLAB is not set
+CONFIG_SLUB=y
+# CONFIG_SLOB is not set
+# CONFIG_PROFILING is not set
+CONFIG_HAVE_OPROFILE=y
+# CONFIG_KPROBES is not set
+# CONFIG_JUMP_LABEL is not set
+CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS=y
+CONFIG_HAVE_IOREMAP_PROT=y
+CONFIG_HAVE_KPROBES=y
+CONFIG_HAVE_KRETPROBES=y
+CONFIG_HAVE_ARCH_TRACEHOOK=y
+CONFIG_HAVE_DMA_ATTRS=y
+CONFIG_USE_GENERIC_SMP_HELPERS=y
+CONFIG_HAVE_REGS_AND_STACK_ACCESS_API=y
+CONFIG_HAVE_CLK=y
+CONFIG_HAVE_DMA_API_DEBUG=y
+CONFIG_HAVE_ARCH_JUMP_LABEL=y
+CONFIG_HAVE_RCU_TABLE_FREE=y
+CONFIG_ARCH_HAVE_NMI_SAFE_CMPXCHG=y
+
+#
+# GCOV-based kernel profiling
+#
+# CONFIG_HAVE_GENERIC_DMA_COHERENT is not set
+CONFIG_RT_MUTEXES=y
+CONFIG_BASE_SMALL=0
+CONFIG_MODULES=y
+# CONFIG_MODULE_FORCE_LOAD is not set
+CONFIG_MODULE_UNLOAD=y
+# CONFIG_MODULE_FORCE_UNLOAD is not set
+# CONFIG_MODVERSIONS is not set
+# CONFIG_MODULE_SRCVERSION_ALL is not set
+CONFIG_STOP_MACHINE=y
+CONFIG_BLOCK=y
+CONFIG_LBDAF=y
+CONFIG_BLK_DEV_BSG=y
+# CONFIG_BLK_DEV_BSGLIB is not set
+# CONFIG_BLK_DEV_INTEGRITY is not set
+
+#
+# IO Schedulers
+#
+CONFIG_IOSCHED_NOOP=y
+CONFIG_IOSCHED_DEADLINE=y
+CONFIG_IOSCHED_CFQ=y
+# CONFIG_DEFAULT_DEADLINE is not set
+CONFIG_DEFAULT_CFQ=y
+# CONFIG_DEFAULT_NOOP is not set
+CONFIG_DEFAULT_IOSCHED="cfq"
+# CONFIG_INLINE_SPIN_TRYLOCK is not set
+# CONFIG_INLINE_SPIN_TRYLOCK_BH is not set
+# CONFIG_INLINE_SPIN_LOCK is not set
+# CONFIG_INLINE_SPIN_LOCK_BH is not set
+# CONFIG_INLINE_SPIN_LOCK_IRQ is not set
+# CONFIG_INLINE_SPIN_LOCK_IRQSAVE is not set
+CONFIG_INLINE_SPIN_UNLOCK=y
+# CONFIG_INLINE_SPIN_UNLOCK_BH is not set
+CONFIG_INLINE_SPIN_UNLOCK_IRQ=y
+# CONFIG_INLINE_SPIN_UNLOCK_IRQRESTORE is not set
+# CONFIG_INLINE_READ_TRYLOCK is not set
+# CONFIG_INLINE_READ_LOCK is not set
+# CONFIG_INLINE_READ_LOCK_BH is not set
+# CONFIG_INLINE_READ_LOCK_IRQ is not set
+# CONFIG_INLINE_READ_LOCK_IRQSAVE is not set
+CONFIG_INLINE_READ_UNLOCK=y
+# CONFIG_INLINE_READ_UNLOCK_BH is not set
+CONFIG_INLINE_READ_UNLOCK_IRQ=y
+# CONFIG_INLINE_READ_UNLOCK_IRQRESTORE is not set
+# CONFIG_INLINE_WRITE_TRYLOCK is not set
+# CONFIG_INLINE_WRITE_LOCK is not set
+# CONFIG_INLINE_WRITE_LOCK_BH is not set
+# CONFIG_INLINE_WRITE_LOCK_IRQ is not set
+# CONFIG_INLINE_WRITE_LOCK_IRQSAVE is not set
+CONFIG_INLINE_WRITE_UNLOCK=y
+# CONFIG_INLINE_WRITE_UNLOCK_BH is not set
+CONFIG_INLINE_WRITE_UNLOCK_IRQ=y
+# CONFIG_INLINE_WRITE_UNLOCK_IRQRESTORE is not set
+CONFIG_MUTEX_SPIN_ON_OWNER=y
+
+#
+# Real-time sub-system
+#
+CONFIG_XENOMAI=y
+CONFIG_XENO_GENERIC_STACKPOOL=y
+CONFIG_XENO_FASTSYNCH=y
+CONFIG_XENO_OPT_NUCLEUS=y
+CONFIG_XENO_OPT_PERVASIVE=y
+# CONFIG_XENO_OPT_PRIOCPL is not set
+CONFIG_XENO_OPT_PIPELINE_HEAD=y
+# CONFIG_XENO_OPT_SCHED_CLASSES is not set
+CONFIG_XENO_OPT_PIPE=y
+CONFIG_XENO_OPT_VFILE=y
+CONFIG_XENO_OPT_PIPE_NRDEV=32
+CONFIG_XENO_OPT_REGISTRY_NRSLOTS=512
+CONFIG_XENO_OPT_SYS_HEAPSZ=256
+CONFIG_XENO_OPT_SYS_STACKPOOLSZ=128
+CONFIG_XENO_OPT_SEM_HEAPSZ=32
+CONFIG_XENO_OPT_GLOBAL_SEM_HEAPSZ=32
+CONFIG_XENO_OPT_STATS=y
+# CONFIG_XENO_OPT_DEBUG is not set
+# CONFIG_XENO_OPT_SHIRQ is not set
+CONFIG_XENO_OPT_SELECT=y
+
+#
+# Timing
+#
+# CONFIG_XENO_OPT_TIMING_PERIODIC is not set
+CONFIG_XENO_OPT_TIMING_VIRTICK=1000
+CONFIG_XENO_OPT_TIMING_SCHEDLAT=0
+
+#
+# Scalability
+#
+# CONFIG_XENO_OPT_SCALABLE_SCHED is not set
+CONFIG_XENO_OPT_TIMER_LIST=y
+# CONFIG_XENO_OPT_TIMER_HEAP is not set
+# CONFIG_XENO_OPT_TIMER_WHEEL is not set
+
+#
+# Machine
+#
+CONFIG_IPIPE_WANT_ACTIVE_MM=y
+CONFIG_IPIPE_WANT_PREEMPTIBLE_SWITCH=y
+CONFIG_XENO_HW_FPU=y
+CONFIG_XENO_HW_UNLOCKED_SWITCH=y
+
+#
+# Interfaces
+#
+CONFIG_XENO_SKIN_NATIVE=y
+CONFIG_XENO_OPT_NATIVE_PERIOD=0
+CONFIG_XENO_OPT_NATIVE_PIPE=y
+CONFIG_XENO_OPT_NATIVE_PIPE_BUFSZ=1024
+CONFIG_XENO_OPT_NATIVE_SEM=y
+CONFIG_XENO_OPT_NATIVE_EVENT=y
+CONFIG_XENO_OPT_NATIVE_MUTEX=y
+CONFIG_XENO_OPT_NATIVE_COND=y
+CONFIG_XENO_OPT_NATIVE_QUEUE=y
+CONFIG_XENO_OPT_NATIVE_BUFFER=y
+CONFIG_XENO_OPT_NATIVE_HEAP=y
+CONFIG_XENO_OPT_NATIVE_ALARM=y
+CONFIG_XENO_OPT_NATIVE_MPS=y
+CONFIG_XENO_OPT_NATIVE_INTR=y
+CONFIG_XENO_SKIN_POSIX=y
+CONFIG_XENO_OPT_POSIX_PERIOD=0
+CONFIG_XENO_OPT_POSIX_SHM=y
+# CONFIG_XENO_OPT_POSIX_INTR is not set
+CONFIG_XENO_OPT_POSIX_SELECT=y
+CONFIG_XENO_OPT_DEBUG_POSIX=y
+# CONFIG_XENO_SKIN_PSOS is not set
+# CONFIG_XENO_SKIN_UITRON is not set
+# CONFIG_XENO_SKIN_VRTX is not set
+# CONFIG_XENO_SKIN_VXWORKS is not set
+CONFIG_XENO_OPT_NOWARN_DEPRECATED=y
+CONFIG_XENO_SKIN_RTDM=y
+CONFIG_XENO_OPT_RTDM_PERIOD=0
+CONFIG_XENO_OPT_RTDM_FILDES=128
+CONFIG_XENO_OPT_RTDM_SELECT=y
+
+#
+# Drivers
+#
+
+#
+# Serial drivers
+#
+# CONFIG_XENO_DRIVERS_16550A is not set
+
+#
+# Testing drivers
+#
+CONFIG_XENO_DRIVERS_TIMERBENCH=y
+# CONFIG_XENO_DRIVERS_KLATENCY is not set
+# CONFIG_XENO_DRIVERS_IRQBENCH is not set
+CONFIG_XENO_DRIVERS_SWITCHTEST=y
+# CONFIG_XENO_DRIVERS_RTDMTEST is not set
+
+#
+# CAN drivers
+#
+# CONFIG_XENO_DRIVERS_CAN is not set
+
+#
+# ANALOGY drivers
+#
+# CONFIG_XENO_DRIVERS_ANALOGY is not set
+
+#
+# Real-time IPC drivers
+#
+# CONFIG_XENO_DRIVERS_RTIPC is not set
+CONFIG_FREEZER=y
+# CONFIG_PPC4xx_PCI_EXPRESS is not set
+CONFIG_APM86xxx_PCI_EXPRESS=y
+# CONFIG_PPC_XICS is not set
+# CONFIG_PPC_ICP_NATIVE is not set
+# CONFIG_PPC_ICP_HV is not set
+# CONFIG_PPC_ICS_RTAS is not set
+
+#
+# Platform support
+#
+# CONFIG_PPC_CELL is not set
+# CONFIG_PPC_CELL_NATIVE is not set
+# CONFIG_PQ2ADS is not set
+# CONFIG_PPC_47x is not set
+# CONFIG_BAMBOO is not set
+# CONFIG_BLUESTONE is not set
+# CONFIG_EBONY is not set
+# CONFIG_SAM440EP is not set
+# CONFIG_SEQUOIA is not set
+# CONFIG_TAISHAN is not set
+# CONFIG_KATMAI is not set
+# CONFIG_RAINIER is not set
+# CONFIG_WARP is not set
+# CONFIG_ARCHES is not set
+# CONFIG_CANYONLANDS is not set
+# CONFIG_GLACIER is not set
+# CONFIG_REDWOOD is not set
+# CONFIG_EIGER is not set
+# CONFIG_YOSEMITE is not set
+# CONFIG_SERENGETI is not set
+CONFIG_SERENGETIv2=y
+# CONFIG_CASCADE is not set
+# CONFIG_ASPEN is not set
+CONFIG_APM86xxx_NOCOHERENT_CACHE=y
+CONFIG_APM86xxx_IOCOHERENT=y
+CONFIG_APM86xxx_IOCOHERENT_COBE=y
+CONFIG_APM86xxx_OCM=y
+# CONFIG_APM86xxx_OCM_TEST is not set
+CONFIG_APM86xxx_GPT=y
+# CONFIG_ISS4xx is not set
+# CONFIG_ICON is not set
+# CONFIG_XILINX_VIRTEX440_GENERIC_BOARD is not set
+# CONFIG_PPC44x_SIMPLE is not set
+# CONFIG_PPC4xx_GPIO is not set
+CONFIG_APM86xxx=y
+CONFIG_APM862xxvB=y
+# CONFIG_PPC_WSP is not set
+# CONFIG_KVM_GUEST is not set
+# CONFIG_IPIC is not set
+CONFIG_MPIC=y
+# CONFIG_PPC_EPAPR_HV_PIC is not set
+# CONFIG_MPIC_WEIRD is not set
+# CONFIG_PPC_I8259 is not set
+CONFIG_MPIC_64BITS_TIMER=y
+# CONFIG_PPC_RTAS is not set
+# CONFIG_MMIO_NVRAM is not set
+# CONFIG_MPIC_U3_HT_IRQS is not set
+# CONFIG_PPC_MPC106 is not set
+# CONFIG_PPC_970_NAP is not set
+# CONFIG_PPC_P7_NAP is not set
+
+#
+# CPU Frequency scaling
+#
+# CONFIG_CPU_FREQ is not set
+# CONFIG_FSL_ULI1575 is not set
+CONFIG_IPP=y
+CONFIG_SLIMPRO_OFFLOAD=y
+# CONFIG_SIMPLE_GPIO is not set
+
+#
+# Kernel options
+#
+CONFIG_IPIPE=y
+CONFIG_IPIPE_CORE=y
+CONFIG_IPIPE_LEGACY=y
+CONFIG_IPIPE_DELAYED_ATOMICSW=y
+CONFIG_IPIPE_HAVE_PREEMPTIBLE_SWITCH=y
+# CONFIG_HIGHMEM is not set
+CONFIG_TICK_ONESHOT=y
+CONFIG_NO_HZ=y
+CONFIG_HIGH_RES_TIMERS=y
+CONFIG_GENERIC_CLOCKEVENTS_BUILD=y
+# CONFIG_HZ_100 is not set
+# CONFIG_HZ_250 is not set
+# CONFIG_HZ_300 is not set
+CONFIG_HZ_1000=y
+CONFIG_HZ=1000
+CONFIG_SCHED_HRTICK=y
+CONFIG_PREEMPT_NONE=y
+# CONFIG_PREEMPT_VOLUNTARY is not set
+# CONFIG_PREEMPT is not set
+CONFIG_BINFMT_ELF=y
+# CONFIG_CORE_DUMP_DEFAULT_ELF_HEADERS is not set
+# CONFIG_HAVE_AOUT is not set
+# CONFIG_BINFMT_MISC is not set
+# CONFIG_MATH_EMULATION is not set
+# CONFIG_IOMMU_HELPER is not set
+# CONFIG_SWIOTLB is not set
+CONFIG_HOTPLUG_CPU=y
+CONFIG_ARCH_CPU_PROBE_RELEASE=y
+CONFIG_ARCH_ENABLE_MEMORY_HOTPLUG=y
+CONFIG_ARCH_HAS_WALK_MEMORY=y
+CONFIG_ARCH_ENABLE_MEMORY_HOTREMOVE=y
+# CONFIG_IRQ_ALL_CPUS is not set
+CONFIG_MAX_ACTIVE_REGIONS=32
+CONFIG_ARCH_FLATMEM_ENABLE=y
+CONFIG_ARCH_POPULATES_NODE_MAP=y
+CONFIG_SELECT_MEMORY_MODEL=y
+CONFIG_FLATMEM_MANUAL=y
+CONFIG_FLATMEM=y
+CONFIG_FLAT_NODE_MEM_MAP=y
+CONFIG_HAVE_MEMBLOCK=y
+CONFIG_PAGEFLAGS_EXTENDED=y
+CONFIG_SPLIT_PTLOCK_CPUS=4
+# CONFIG_COMPACTION is not set
+CONFIG_MIGRATION=y
+CONFIG_PHYS_ADDR_T_64BIT=y
+CONFIG_ZONE_DMA_FLAG=1
+CONFIG_BOUNCE=y
+CONFIG_VIRT_TO_BUS=y
+# CONFIG_KSM is not set
+CONFIG_DEFAULT_MMAP_MIN_ADDR=4096
+# CONFIG_CLEANCACHE is not set
+CONFIG_STDBINUTILS=y
+CONFIG_PPC_4K_PAGES=y
+# CONFIG_PPC_16K_PAGES is not set
+# CONFIG_PPC_64K_PAGES is not set
+CONFIG_FORCE_MAX_ZONEORDER=11
+CONFIG_CMDLINE_BOOL=y
+CONFIG_CMDLINE=""
+CONFIG_EXTRA_TARGETS=""
+CONFIG_SUSPEND=y
+CONFIG_SUSPEND_FREEZER=y
+# CONFIG_HIBERNATION is not set
+CONFIG_PM_SLEEP=y
+CONFIG_PM_SLEEP_SMP=y
+# CONFIG_PM_RUNTIME is not set
+CONFIG_PM=y
+CONFIG_PM_DEBUG=y
+# CONFIG_PM_ADVANCED_DEBUG is not set
+# CONFIG_PM_TEST_SUSPEND is not set
+CONFIG_CAN_PM_TRACE=y
+CONFIG_PM_CLK=y
+CONFIG_APM86xxx_SUSPEND=y
+CONFIG_SECCOMP=y
+CONFIG_ISA_DMA_API=y
+
+#
+# Bus options
+#
+CONFIG_ZONE_DMA=y
+CONFIG_NEED_DMA_MAP_STATE=y
+CONFIG_NEED_SG_DMA_LENGTH=y
+CONFIG_GENERIC_ISA_DMA=y
+CONFIG_PPC_INDIRECT_PCI=y
+CONFIG_PPC4xx_CPM=y
+CONFIG_PPC_PCI_CHOICE=y
+CONFIG_PCI=y
+CONFIG_PCI_DOMAINS=y
+CONFIG_PCI_SYSCALL=y
+CONFIG_PCIEPORTBUS=y
+CONFIG_PCIEAER=y
+# CONFIG_PCIE_ECRC is not set
+# CONFIG_PCIEAER_INJECT is not set
+# CONFIG_PCIEASPM is not set
+CONFIG_ARCH_SUPPORTS_MSI=y
+# CONFIG_PCI_MSI is not set
+# CONFIG_PCI_DEBUG is not set
+# CONFIG_PCI_STUB is not set
+# CONFIG_PCI_IOV is not set
+# CONFIG_PCI_PRI is not set
+# CONFIG_PCI_PASID is not set
+# CONFIG_PCCARD is not set
+# CONFIG_HOTPLUG_PCI is not set
+# CONFIG_HAS_RAPIDIO is not set
+# CONFIG_RAPIDIO is not set
+
+#
+# Advanced setup
+#
+CONFIG_ADVANCED_OPTIONS=y
+CONFIG_LOWMEM_SIZE_BOOL=y
+CONFIG_LOWMEM_SIZE=0x30000000
+# CONFIG_RELOCATABLE is not set
+CONFIG_PAGE_OFFSET_BOOL=y
+CONFIG_PAGE_OFFSET=0x80000000
+CONFIG_KERNEL_START_BOOL=y
+CONFIG_KERNEL_START=0x80000000
+CONFIG_PHYSICAL_START=0x00000000
+CONFIG_TASK_SIZE_BOOL=y
+CONFIG_TASK_SIZE=0x80000000
+CONFIG_CONSISTENT_SIZE_BOOL=y
+CONFIG_CONSISTENT_SIZE=0x00A00000
+CONFIG_NET=y
+
+#
+# Networking options
+#
+CONFIG_PACKET=y
+CONFIG_UNIX=y
+CONFIG_XFRM=y
+CONFIG_XFRM_USER=y
+CONFIG_XFRM_SUB_POLICY=y
+CONFIG_XFRM_MIGRATE=y
+# CONFIG_XFRM_STATISTICS is not set
+CONFIG_NET_KEY=y
+# CONFIG_NET_KEY_MIGRATE is not set
+CONFIG_INET=y
+# CONFIG_IP_MULTICAST is not set
+# CONFIG_IP_ADVANCED_ROUTER is not set
+CONFIG_IP_PNP=y
+# CONFIG_IP_PNP_DHCP is not set
+# CONFIG_IP_PNP_BOOTP is not set
+# CONFIG_IP_PNP_RARP is not set
+CONFIG_NET_IPIP=y
+# CONFIG_NET_IPGRE_DEMUX is not set
+CONFIG_ARPD=y
+# CONFIG_SYN_COOKIES is not set
+CONFIG_INET_AH=y
+CONFIG_INET_ESP=y
+CONFIG_INET_ESP_NR_REQ_CACHE=128
+# CONFIG_INET_IPCOMP is not set
+# CONFIG_INET_XFRM_TUNNEL is not set
+CONFIG_INET_TUNNEL=y
+CONFIG_INET_XFRM_MODE_TRANSPORT=y
+CONFIG_INET_XFRM_MODE_TUNNEL=y
+# CONFIG_INET_XFRM_MODE_BEET is not set
+# CONFIG_INET_LRO is not set
+# CONFIG_INET_DIAG is not set
+# CONFIG_TCP_CONG_ADVANCED is not set
+CONFIG_TCP_CONG_CUBIC=y
+CONFIG_DEFAULT_TCP_CONG="cubic"
+# CONFIG_TCP_MD5SIG is not set
+CONFIG_IPV6=y
+# CONFIG_IPV6_PRIVACY is not set
+# CONFIG_IPV6_ROUTER_PREF is not set
+# CONFIG_IPV6_OPTIMISTIC_DAD is not set
+# CONFIG_INET6_AH is not set
+# CONFIG_INET6_ESP is not set
+# CONFIG_INET6_IPCOMP is not set
+# CONFIG_IPV6_MIP6 is not set
+# CONFIG_INET6_XFRM_TUNNEL is not set
+# CONFIG_INET6_TUNNEL is not set
+# CONFIG_INET6_XFRM_MODE_TRANSPORT is not set
+# CONFIG_INET6_XFRM_MODE_TUNNEL is not set
+# CONFIG_INET6_XFRM_MODE_BEET is not set
+# CONFIG_INET6_XFRM_MODE_ROUTEOPTIMIZATION is not set
+# CONFIG_IPV6_SIT is not set
+# CONFIG_IPV6_TUNNEL is not set
+# CONFIG_IPV6_MULTIPLE_TABLES is not set
+# CONFIG_IPV6_MROUTE is not set
+# CONFIG_NETWORK_SECMARK is not set
+# CONFIG_NETWORK_PHY_TIMESTAMPING is not set
+# CONFIG_NETFILTER is not set
+# CONFIG_IP_DCCP is not set
+# CONFIG_IP_SCTP is not set
+# CONFIG_RDS is not set
+# CONFIG_TIPC is not set
+# CONFIG_ATM is not set
+# CONFIG_L2TP is not set
+CONFIG_STP=y
+CONFIG_BRIDGE=y
+CONFIG_BRIDGE_IGMP_SNOOPING=y
+# CONFIG_NET_DSA is not set
+CONFIG_VLAN_8021Q=y
+# CONFIG_VLAN_8021Q_GVRP is not set
+# CONFIG_DECNET is not set
+CONFIG_LLC=y
+# CONFIG_LLC2 is not set
+# CONFIG_IPX is not set
+# CONFIG_ATALK is not set
+# CONFIG_X25 is not set
+# CONFIG_LAPB is not set
+# CONFIG_ECONET is not set
+# CONFIG_WAN_ROUTER is not set
+# CONFIG_PHONET is not set
+# CONFIG_IEEE802154 is not set
+# CONFIG_NET_SCHED is not set
+# CONFIG_DCB is not set
+CONFIG_DNS_RESOLVER=y
+# CONFIG_BATMAN_ADV is not set
+CONFIG_RPS=y
+CONFIG_RFS_ACCEL=y
+CONFIG_XPS=y
+
+#
+# Network testing
+#
+# CONFIG_NET_PKTGEN is not set
+# CONFIG_HAMRADIO is not set
+# CONFIG_CAN is not set
+# CONFIG_IRDA is not set
+# CONFIG_BT is not set
+# CONFIG_AF_RXRPC is not set
+CONFIG_WIRELESS=y
+# CONFIG_CFG80211 is not set
+# CONFIG_LIB80211 is not set
+
+#
+# CFG80211 needs to be enabled for MAC80211
+#
+# CONFIG_WIMAX is not set
+# CONFIG_RFKILL is not set
+# CONFIG_NET_9P is not set
+# CONFIG_CAIF is not set
+# CONFIG_CEPH_LIB is not set
+# CONFIG_NFC is not set
+
+#
+# Device Drivers
+#
+
+#
+# Generic Driver Options
+#
+CONFIG_UEVENT_HELPER_PATH="/sbin/hotplug"
+CONFIG_DEVTMPFS=y
+CONFIG_DEVTMPFS_MOUNT=y
+CONFIG_STANDALONE=y
+CONFIG_PREVENT_FIRMWARE_BUILD=y
+CONFIG_FW_LOADER=y
+CONFIG_FIRMWARE_IN_KERNEL=y
+CONFIG_EXTRA_FIRMWARE=""
+# CONFIG_DEBUG_DRIVER is not set
+# CONFIG_DEBUG_DEVRES is not set
+# CONFIG_SYS_HYPERVISOR is not set
+# CONFIG_CONNECTOR is not set
+CONFIG_MTD=y
+# CONFIG_MTD_TESTS is not set
+# CONFIG_MTD_REDBOOT_PARTS is not set
+CONFIG_MTD_CMDLINE_PARTS=y
+CONFIG_MTD_OF_PARTS=y
+# CONFIG_MTD_AR7_PARTS is not set
+
+#
+# User Modules And Translation Layers
+#
+CONFIG_MTD_CHAR=y
+CONFIG_MTD_BLKDEVS=y
+CONFIG_MTD_BLOCK=y
+# CONFIG_FTL is not set
+# CONFIG_NFTL is not set
+# CONFIG_INFTL is not set
+# CONFIG_RFD_FTL is not set
+# CONFIG_SSFDC is not set
+# CONFIG_SM_FTL is not set
+# CONFIG_MTD_OOPS is not set
+# CONFIG_MTD_SWAP is not set
+
+#
+# RAM/ROM/Flash chip drivers
+#
+CONFIG_MTD_CFI=y
+CONFIG_MTD_JEDECPROBE=y
+CONFIG_MTD_GEN_PROBE=y
+# CONFIG_MTD_CFI_ADV_OPTIONS is not set
+CONFIG_MTD_MAP_BANK_WIDTH_1=y
+CONFIG_MTD_MAP_BANK_WIDTH_2=y
+CONFIG_MTD_MAP_BANK_WIDTH_4=y
+# CONFIG_MTD_MAP_BANK_WIDTH_8 is not set
+# CONFIG_MTD_MAP_BANK_WIDTH_16 is not set
+# CONFIG_MTD_MAP_BANK_WIDTH_32 is not set
+CONFIG_MTD_CFI_I1=y
+CONFIG_MTD_CFI_I2=y
+# CONFIG_MTD_CFI_I4 is not set
+# CONFIG_MTD_CFI_I8 is not set
+# CONFIG_MTD_CFI_INTELEXT is not set
+CONFIG_MTD_CFI_AMDSTD=y
+# CONFIG_MTD_CFI_STAA is not set
+CONFIG_MTD_CFI_UTIL=y
+CONFIG_MTD_RAM=y
+# CONFIG_MTD_ROM is not set
+# CONFIG_MTD_ABSENT is not set
+
+#
+# Mapping drivers for chip access
+#
+# CONFIG_MTD_COMPLEX_MAPPINGS is not set
+# CONFIG_MTD_PHYSMAP is not set
+CONFIG_MTD_PHYSMAP_OF=y
+# CONFIG_MTD_INTEL_VR_NOR is not set
+CONFIG_MTD_PLATRAM=y
+
+#
+# Self-contained MTD device drivers
+#
+# CONFIG_MTD_PMC551 is not set
+# CONFIG_MTD_DATAFLASH is not set
+CONFIG_MTD_M25P80=y
+# CONFIG_M25PXX_USE_FAST_READ is not set
+CONFIG_MTD_MT29F=y
+# CONFIG_MTD_SST25L is not set
+# CONFIG_MTD_SLRAM is not set
+# CONFIG_MTD_PHRAM is not set
+# CONFIG_MTD_MTDRAM is not set
+# CONFIG_MTD_BLOCK2MTD is not set
+
+#
+# Disk-On-Chip Device Drivers
+#
+# CONFIG_MTD_DOC2000 is not set
+# CONFIG_MTD_DOC2001 is not set
+# CONFIG_MTD_DOC2001PLUS is not set
+# CONFIG_MTD_DOCG3 is not set
+CONFIG_MTD_NAND_ECC=y
+# CONFIG_MTD_NAND_ECC_SMC is not set
+CONFIG_MTD_NAND=y
+# CONFIG_MTD_NAND_VERIFY_WRITE is not set
+CONFIG_MTD_NAND_BCH=y
+CONFIG_MTD_NAND_ECC_BCH=y
+# CONFIG_MTD_SM_COMMON is not set
+# CONFIG_MTD_NAND_MUSEUM_IDS is not set
+# CONFIG_MTD_NAND_DENALI is not set
+CONFIG_MTD_NAND_IDS=y
+# CONFIG_MTD_NAND_RICOH is not set
+# CONFIG_MTD_NAND_NDFC is not set
+CONFIG_MTD_NAND_UFC=y
+# CONFIG_MTD_NAND_DISKONCHIP is not set
+# CONFIG_MTD_NAND_CAFE is not set
+# CONFIG_MTD_NAND_NANDSIM is not set
+# CONFIG_MTD_NAND_PLATFORM is not set
+# CONFIG_MTD_ALAUDA is not set
+# CONFIG_MTD_NAND_FSL_ELBC is not set
+# CONFIG_MTD_ONENAND is not set
+
+#
+# LPDDR flash memory drivers
+#
+# CONFIG_MTD_LPDDR is not set
+# CONFIG_MTD_UBI is not set
+CONFIG_DTC=y
+CONFIG_OF=y
+
+#
+# Device Tree and Open Firmware support
+#
+CONFIG_PROC_DEVICETREE=y
+CONFIG_OF_FLATTREE=y
+CONFIG_OF_EARLY_FLATTREE=y
+CONFIG_OF_DYNAMIC=y
+CONFIG_OF_ADDRESS=y
+CONFIG_OF_IRQ=y
+CONFIG_OF_DEVICE=y
+CONFIG_OF_I2C=y
+CONFIG_OF_NET=y
+CONFIG_OF_SPI=y
+CONFIG_OF_MDIO=y
+CONFIG_OF_PCI=y
+CONFIG_OF_PCI_IRQ=y
+# CONFIG_PARPORT is not set
+CONFIG_BLK_DEV=y
+# CONFIG_BLK_DEV_FD is not set
+# CONFIG_BLK_CPQ_DA is not set
+# CONFIG_BLK_CPQ_CISS_DA is not set
+# CONFIG_BLK_DEV_DAC960 is not set
+# CONFIG_BLK_DEV_UMEM is not set
+# CONFIG_BLK_DEV_COW_COMMON is not set
+CONFIG_BLK_DEV_LOOP=y
+CONFIG_BLK_DEV_LOOP_MIN_COUNT=8
+# CONFIG_BLK_DEV_CRYPTOLOOP is not set
+
+#
+# DRBD disabled because PROC_FS, INET or CONNECTOR not selected
+#
+# CONFIG_BLK_DEV_NBD is not set
+# CONFIG_BLK_DEV_SX8 is not set
+# CONFIG_BLK_DEV_UB is not set
+CONFIG_BLK_DEV_RAM=y
+CONFIG_BLK_DEV_RAM_COUNT=16
+CONFIG_BLK_DEV_RAM_SIZE=100352
+# CONFIG_BLK_DEV_XIP is not set
+# CONFIG_CDROM_PKTCDVD is not set
+# CONFIG_ATA_OVER_ETH is not set
+# CONFIG_XILINX_SYSACE is not set
+# CONFIG_BLK_DEV_HD is not set
+# CONFIG_BLK_DEV_RBD is not set
+# CONFIG_SENSORS_LIS3LV02D is not set
+# CONFIG_MISC_DEVICES is not set
+CONFIG_HAVE_IDE=y
+# CONFIG_IDE is not set
+
+#
+# SCSI device support
+#
+CONFIG_SCSI_MOD=y
+CONFIG_RAID_ATTRS=y
+CONFIG_SCSI=y
+CONFIG_SCSI_DMA=y
+# CONFIG_SCSI_TGT is not set
+# CONFIG_SCSI_NETLINK is not set
+CONFIG_SCSI_PROC_FS=y
+
+#
+# SCSI support type (disk, tape, CD-ROM)
+#
+CONFIG_BLK_DEV_SD=y
+# CONFIG_CHR_DEV_ST is not set
+# CONFIG_CHR_DEV_OSST is not set
+# CONFIG_BLK_DEV_SR is not set
+CONFIG_CHR_DEV_SG=y
+# CONFIG_CHR_DEV_SCH is not set
+CONFIG_SCSI_MULTI_LUN=y
+# CONFIG_SCSI_CONSTANTS is not set
+# CONFIG_SCSI_LOGGING is not set
+# CONFIG_SCSI_SCAN_ASYNC is not set
+CONFIG_SCSI_WAIT_SCAN=m
+
+#
+# SCSI Transports
+#
+# CONFIG_SCSI_SPI_ATTRS is not set
+# CONFIG_SCSI_FC_ATTRS is not set
+# CONFIG_SCSI_ISCSI_ATTRS is not set
+CONFIG_SCSI_SAS_ATTRS=y
+# CONFIG_SCSI_SAS_LIBSAS is not set
+# CONFIG_SCSI_SRP_ATTRS is not set
+CONFIG_SCSI_LOWLEVEL=y
+# CONFIG_ISCSI_TCP is not set
+# CONFIG_ISCSI_BOOT_SYSFS is not set
+# CONFIG_SCSI_CXGB3_ISCSI is not set
+# CONFIG_SCSI_CXGB4_ISCSI is not set
+# CONFIG_SCSI_BNX2_ISCSI is not set
+# CONFIG_SCSI_BNX2X_FCOE is not set
+# CONFIG_BE2ISCSI is not set
+# CONFIG_BLK_DEV_3W_XXXX_RAID is not set
+# CONFIG_SCSI_HPSA is not set
+# CONFIG_SCSI_3W_9XXX is not set
+# CONFIG_SCSI_3W_SAS is not set
+# CONFIG_SCSI_ACARD is not set
+# CONFIG_SCSI_AACRAID is not set
+# CONFIG_SCSI_AIC7XXX is not set
+# CONFIG_SCSI_AIC7XXX_OLD is not set
+# CONFIG_SCSI_AIC79XX is not set
+# CONFIG_SCSI_AIC94XX is not set
+# CONFIG_SCSI_MVSAS is not set
+# CONFIG_SCSI_MVUMI is not set
+# CONFIG_SCSI_DPT_I2O is not set
+# CONFIG_SCSI_ADVANSYS is not set
+# CONFIG_SCSI_ARCMSR is not set
+# CONFIG_MEGARAID_NEWGEN is not set
+# CONFIG_MEGARAID_LEGACY is not set
+# CONFIG_MEGARAID_SAS is not set
+CONFIG_SCSI_MPT2SAS=y
+CONFIG_SCSI_MPT2SAS_MAX_SGE=128
+# CONFIG_SCSI_MPT2SAS_LOGGING is not set
+# CONFIG_SCSI_HPTIOP is not set
+# CONFIG_SCSI_BUSLOGIC is not set
+# CONFIG_LIBFC is not set
+# CONFIG_LIBFCOE is not set
+# CONFIG_FCOE is not set
+# CONFIG_SCSI_DMX3191D is not set
+# CONFIG_SCSI_EATA is not set
+# CONFIG_SCSI_FUTURE_DOMAIN is not set
+# CONFIG_SCSI_GDTH is not set
+# CONFIG_SCSI_IPS is not set
+# CONFIG_SCSI_INITIO is not set
+# CONFIG_SCSI_INIA100 is not set
+# CONFIG_SCSI_STEX is not set
+# CONFIG_SCSI_SYM53C8XX_2 is not set
+# CONFIG_SCSI_IPR is not set
+# CONFIG_SCSI_QLOGIC_1280 is not set
+# CONFIG_SCSI_QLA_FC is not set
+# CONFIG_SCSI_QLA_ISCSI is not set
+# CONFIG_SCSI_LPFC is not set
+# CONFIG_SCSI_DC395x is not set
+# CONFIG_SCSI_DC390T is not set
+# CONFIG_SCSI_NSP32 is not set
+# CONFIG_SCSI_DEBUG is not set
+# CONFIG_SCSI_PMCRAID is not set
+# CONFIG_SCSI_PM8001 is not set
+# CONFIG_SCSI_SRP is not set
+# CONFIG_SCSI_BFA_FC is not set
+# CONFIG_SCSI_DH is not set
+# CONFIG_SCSI_OSD_INITIATOR is not set
+CONFIG_ATA=y
+# CONFIG_ATA_NONSTANDARD is not set
+CONFIG_ATA_VERBOSE_ERROR=y
+CONFIG_SATA_PMP=y
+
+#
+# Controllers with non-SFF native interface
+#
+CONFIG_SATA_AHCI=y
+# CONFIG_SATA_AHCI_PLATFORM is not set
+# CONFIG_SATA_INIC162X is not set
+# CONFIG_SATA_ACARD_AHCI is not set
+CONFIG_SATA_AHCI_OF=y
+CONFIG_SATA_APM86xxx=y
+CONFIG_SATA_SIL24=y
+CONFIG_ATA_SFF=y
+
+#
+# SFF controllers with custom DMA interface
+#
+# CONFIG_PDC_ADMA is not set
+# CONFIG_SATA_QSTOR is not set
+# CONFIG_SATA_SX4 is not set
+CONFIG_ATA_BMDMA=y
+
+#
+# SATA SFF controllers with BMDMA
+#
+# CONFIG_ATA_PIIX is not set
+# CONFIG_SATA_MV is not set
+# CONFIG_SATA_NV is not set
+# CONFIG_SATA_PROMISE is not set
+# CONFIG_SATA_SIL is not set
+# CONFIG_SATA_SIS is not set
+# CONFIG_SATA_SVW is not set
+# CONFIG_SATA_ULI is not set
+# CONFIG_SATA_VIA is not set
+# CONFIG_SATA_VITESSE is not set
+
+#
+# PATA SFF controllers with BMDMA
+#
+# CONFIG_PATA_ALI is not set
+# CONFIG_PATA_AMD is not set
+# CONFIG_PATA_ARASAN_CF is not set
+# CONFIG_PATA_ARTOP is not set
+# CONFIG_PATA_ATIIXP is not set
+# CONFIG_PATA_ATP867X is not set
+# CONFIG_PATA_CMD64X is not set
+# CONFIG_PATA_CS5520 is not set
+# CONFIG_PATA_CS5530 is not set
+# CONFIG_PATA_CS5536 is not set
+# CONFIG_PATA_CYPRESS is not set
+# CONFIG_PATA_EFAR is not set
+# CONFIG_PATA_HPT366 is not set
+# CONFIG_PATA_HPT37X is not set
+# CONFIG_PATA_HPT3X2N is not set
+# CONFIG_PATA_HPT3X3 is not set
+# CONFIG_PATA_IT8213 is not set
+# CONFIG_PATA_IT821X is not set
+# CONFIG_PATA_JMICRON is not set
+# CONFIG_PATA_MARVELL is not set
+# CONFIG_PATA_NETCELL is not set
+# CONFIG_PATA_NINJA32 is not set
+# CONFIG_PATA_NS87415 is not set
+# CONFIG_PATA_OLDPIIX is not set
+# CONFIG_PATA_OPTIDMA is not set
+# CONFIG_PATA_PDC2027X is not set
+# CONFIG_PATA_PDC_OLD is not set
+# CONFIG_PATA_RADISYS is not set
+# CONFIG_PATA_RDC is not set
+# CONFIG_PATA_SC1200 is not set
+# CONFIG_PATA_SCH is not set
+# CONFIG_PATA_SERVERWORKS is not set
+# CONFIG_PATA_SIL680 is not set
+# CONFIG_PATA_SIS is not set
+# CONFIG_PATA_TOSHIBA is not set
+# CONFIG_PATA_TRIFLEX is not set
+# CONFIG_PATA_VIA is not set
+# CONFIG_PATA_WINBOND is not set
+
+#
+# PIO-only SFF controllers
+#
+# CONFIG_PATA_CMD640_PCI is not set
+# CONFIG_PATA_MPIIX is not set
+# CONFIG_PATA_NS87410 is not set
+# CONFIG_PATA_OPTI is not set
+# CONFIG_PATA_PLATFORM is not set
+# CONFIG_PATA_RZ1000 is not set
+
+#
+# Generic fallback / legacy drivers
+#
+# CONFIG_ATA_GENERIC is not set
+# CONFIG_PATA_LEGACY is not set
+CONFIG_MD=y
+CONFIG_BLK_DEV_MD=y
+CONFIG_MD_AUTODETECT=y
+CONFIG_MD_LINEAR=y
+CONFIG_MD_RAID0=y
+CONFIG_MD_RAID1=y
+CONFIG_MD_RAID10=y
+CONFIG_MD_RAID456=y
+# CONFIG_MULTICORE_RAID456 is not set
+CONFIG_MD_RAID_SKIP_BIO_COPY=y
+# CONFIG_MD_MULTIPATH is not set
+# CONFIG_MD_FAULTY is not set
+CONFIG_BLK_DEV_DM=y
+# CONFIG_DM_DEBUG is not set
+# CONFIG_DM_CRYPT is not set
+# CONFIG_DM_SNAPSHOT is not set
+# CONFIG_DM_THIN_PROVISIONING is not set
+# CONFIG_DM_MIRROR is not set
+# CONFIG_DM_RAID is not set
+# CONFIG_DM_ZERO is not set
+# CONFIG_DM_MULTIPATH is not set
+# CONFIG_DM_DELAY is not set
+# CONFIG_DM_UEVENT is not set
+# CONFIG_DM_FLAKEY is not set
+# CONFIG_TARGET_CORE is not set
+CONFIG_FUSION=y
+# CONFIG_FUSION_SPI is not set
+# CONFIG_FUSION_FC is not set
+CONFIG_FUSION_SAS=y
+CONFIG_FUSION_MAX_SGE=128
+# CONFIG_FUSION_CTL is not set
+# CONFIG_FUSION_LOGGING is not set
+
+#
+# IEEE 1394 (FireWire) support
+#
+# CONFIG_FIREWIRE is not set
+# CONFIG_FIREWIRE_NOSY is not set
+# CONFIG_I2O is not set
+# CONFIG_MACINTOSH_DRIVERS is not set
+CONFIG_NETDEVICES=y
+CONFIG_NET_CORE=y
+CONFIG_BONDING=y
+# CONFIG_DUMMY is not set
+# CONFIG_EQUALIZER is not set
+# CONFIG_NET_FC is not set
+# CONFIG_MII is not set
+# CONFIG_MACVLAN is not set
+# CONFIG_NETCONSOLE is not set
+# CONFIG_NETPOLL is not set
+# CONFIG_NET_POLL_CONTROLLER is not set
+# CONFIG_TUN is not set
+# CONFIG_VETH is not set
+# CONFIG_ARCNET is not set
+
+#
+# CAIF transport drivers
+#
+CONFIG_ETHERNET=y
+# CONFIG_NET_VENDOR_3COM is not set
+CONFIG_NET_VENDOR_ADAPTEC=y
+# CONFIG_ADAPTEC_STARFIRE is not set
+CONFIG_NET_VENDOR_ALTEON=y
+# CONFIG_ACENIC is not set
+CONFIG_NET_VENDOR_AMD=y
+# CONFIG_AMD8111_ETH is not set
+# CONFIG_PCNET32 is not set
+CONFIG_NET_VENDOR_ATHEROS=y
+# CONFIG_ATL2 is not set
+# CONFIG_ATL1 is not set
+# CONFIG_ATL1E is not set
+# CONFIG_ATL1C is not set
+CONFIG_NET_VENDOR_BROADCOM=y
+# CONFIG_B44 is not set
+# CONFIG_BNX2 is not set
+# CONFIG_CNIC is not set
+# CONFIG_TIGON3 is not set
+# CONFIG_BNX2X is not set
+CONFIG_NET_VENDOR_BROCADE=y
+# CONFIG_BNA is not set
+CONFIG_NET_VENDOR_CHELSIO=y
+# CONFIG_CHELSIO_T1 is not set
+# CONFIG_CHELSIO_T3 is not set
+# CONFIG_CHELSIO_T4 is not set
+# CONFIG_CHELSIO_T4VF is not set
+CONFIG_NET_VENDOR_CISCO=y
+# CONFIG_ENIC is not set
+# CONFIG_DNET is not set
+CONFIG_NET_VENDOR_DEC=y
+# CONFIG_NET_TULIP is not set
+CONFIG_NET_VENDOR_DLINK=y
+# CONFIG_DL2K is not set
+# CONFIG_SUNDANCE is not set
+CONFIG_NET_VENDOR_EMULEX=y
+# CONFIG_BE2NET is not set
+CONFIG_NET_VENDOR_EXAR=y
+# CONFIG_S2IO is not set
+# CONFIG_VXGE is not set
+CONFIG_NET_VENDOR_HP=y
+# CONFIG_HP100 is not set
+CONFIG_NET_VENDOR_IBM=y
+# CONFIG_IBM_EMAC is not set
+# CONFIG_IBM_EMAC_ZMII is not set
+# CONFIG_IBM_EMAC_RGMII is not set
+# CONFIG_IBM_EMAC_TAH is not set
+# CONFIG_IBM_EMAC_EMAC4 is not set
+# CONFIG_IBM_EMAC_NO_FLOW_CTRL is not set
+# CONFIG_IBM_EMAC_MAL_CLR_ICINTSTAT is not set
+# CONFIG_IBM_EMAC_MAL_COMMON_ERR is not set
+CONFIG_NET_VENDOR_INTEL=y
+# CONFIG_E100 is not set
+# CONFIG_E1000 is not set
+CONFIG_E1000E=y
+# CONFIG_IGB is not set
+# CONFIG_IGBVF is not set
+# CONFIG_IXGB is not set
+# CONFIG_IXGBE is not set
+CONFIG_NET_VENDOR_I825XX=y
+# CONFIG_ZNET is not set
+# CONFIG_IP1000 is not set
+# CONFIG_JME is not set
+CONFIG_NET_VENDOR_MARVELL=y
+# CONFIG_MV643XX_ETH is not set
+# CONFIG_SKGE is not set
+# CONFIG_SKY2 is not set
+CONFIG_NET_VENDOR_MELLANOX=y
+# CONFIG_MLX4_EN is not set
+# CONFIG_MLX4_CORE is not set
+CONFIG_NET_VENDOR_MICREL=y
+# CONFIG_KS8842 is not set
+# CONFIG_KS8851 is not set
+# CONFIG_KS8851_MLL is not set
+# CONFIG_KSZ884X_PCI is not set
+CONFIG_NET_VENDOR_MICROCHIP=y
+# CONFIG_ENC28J60 is not set
+CONFIG_NET_VENDOR_MYRI=y
+# CONFIG_MYRI10GE is not set
+# CONFIG_FEALNX is not set
+CONFIG_NET_VENDOR_NATSEMI=y
+# CONFIG_NATSEMI is not set
+# CONFIG_NS83820 is not set
+CONFIG_NET_VENDOR_8390=y
+# CONFIG_NE2K_PCI is not set
+CONFIG_NET_VENDOR_NVIDIA=y
+# CONFIG_FORCEDETH is not set
+CONFIG_NET_VENDOR_OKI=y
+# CONFIG_PCH_GBE is not set
+# CONFIG_ETHOC is not set
+CONFIG_NET_PACKET_ENGINE=y
+# CONFIG_HAMACHI is not set
+# CONFIG_YELLOWFIN is not set
+CONFIG_NET_VENDOR_QLOGIC=y
+# CONFIG_QLA3XXX is not set
+# CONFIG_QLCNIC is not set
+# CONFIG_QLGE is not set
+# CONFIG_NETXEN_NIC is not set
+CONFIG_NET_VENDOR_REALTEK=y
+# CONFIG_8139CP is not set
+# CONFIG_8139TOO is not set
+# CONFIG_R8169 is not set
+CONFIG_NET_VENDOR_RDC=y
+# CONFIG_R6040 is not set
+CONFIG_NET_VENDOR_SEEQ=y
+# CONFIG_SEEQ8005 is not set
+CONFIG_NET_VENDOR_SILAN=y
+# CONFIG_SC92031 is not set
+CONFIG_NET_VENDOR_SIS=y
+# CONFIG_SIS900 is not set
+# CONFIG_SIS190 is not set
+# CONFIG_SFC is not set
+CONFIG_NET_VENDOR_SMSC=y
+# CONFIG_EPIC100 is not set
+# CONFIG_SMSC9420 is not set
+CONFIG_NET_VENDOR_STMICRO=y
+# CONFIG_STMMAC_ETH is not set
+CONFIG_NET_VENDOR_SUN=y
+# CONFIG_HAPPYMEAL is not set
+# CONFIG_SUNGEM is not set
+# CONFIG_CASSINI is not set
+# CONFIG_NIU is not set
+CONFIG_NET_VENDOR_TEHUTI=y
+# CONFIG_TEHUTI is not set
+CONFIG_NET_VENDOR_TI=y
+# CONFIG_TLAN is not set
+CONFIG_NET_VENDOR_VIA=y
+# CONFIG_VIA_RHINE is not set
+# CONFIG_VIA_VELOCITY is not set
+CONFIG_NET_VENDOR_XILINX=y
+# CONFIG_XILINX_EMACLITE is not set
+# CONFIG_XILINX_LL_TEMAC is not set
+# CONFIG_FDDI is not set
+# CONFIG_HIPPI is not set
+CONFIG_PHYLIB=y
+
+#
+# MII PHY device drivers
+#
+CONFIG_MARVELL_PHY=y
+# CONFIG_DAVICOM_PHY is not set
+# CONFIG_QSEMI_PHY is not set
+# CONFIG_LXT_PHY is not set
+# CONFIG_CICADA_PHY is not set
+# CONFIG_VITESSE_PHY is not set
+# CONFIG_SMSC_PHY is not set
+# CONFIG_BROADCOM_PHY is not set
+# CONFIG_ICPLUS_PHY is not set
+CONFIG_REALTEK_PHY=y
+# CONFIG_NATIONAL_PHY is not set
+# CONFIG_STE10XP is not set
+# CONFIG_LSI_ET1011C_PHY is not set
+# CONFIG_MICREL_PHY is not set
+# CONFIG_FIXED_PHY is not set
+# CONFIG_MDIO_BITBANG is not set
+# CONFIG_PPP is not set
+# CONFIG_SLIP is not set
+# CONFIG_TR is not set
+
+#
+# USB Network Adapters
+#
+# CONFIG_USB_CATC is not set
+# CONFIG_USB_KAWETH is not set
+# CONFIG_USB_PEGASUS is not set
+# CONFIG_USB_RTL8150 is not set
+# CONFIG_USB_USBNET is not set
+# CONFIG_USB_IPHETH is not set
+# CONFIG_WLAN is not set
+
+#
+# Enable WiMAX (Networking options) to see the WiMAX drivers
+#
+# CONFIG_WAN is not set
+# CONFIG_VMXNET3 is not set
+CONFIG_APM_CLE=y
+# CONFIG_APM_LAC is not set
+CONFIG_APM_NET=y
+CONFIG_APM_NET_SKB_HEADROOM=32
+CONFIG_INET_OFFLOAD=y
+CONFIG_APM_IPV4_OFFLOAD=y
+CONFIG_APM_ENET_IFO=y
+# CONFIG_APM_ENET_LRO is not set
+# CONFIG_APM_ENET_SLIMPRO_IPFW is not set
+CONFIG_CLE_BRIDGE=y
+# CONFIG_APM_VNET is not set
+# CONFIG_ISDN is not set
+# CONFIG_PHONE is not set
+
+#
+# Input device support
+#
+CONFIG_INPUT=y
+# CONFIG_INPUT_FF_MEMLESS is not set
+# CONFIG_INPUT_POLLDEV is not set
+# CONFIG_INPUT_SPARSEKMAP is not set
+
+#
+# Userland interfaces
+#
+CONFIG_INPUT_MOUSEDEV=y
+CONFIG_INPUT_MOUSEDEV_PSAUX=y
+CONFIG_INPUT_MOUSEDEV_SCREEN_X=1024
+CONFIG_INPUT_MOUSEDEV_SCREEN_Y=768
+# CONFIG_INPUT_JOYDEV is not set
+# CONFIG_INPUT_EVDEV is not set
+# CONFIG_INPUT_EVBUG is not set
+
+#
+# Input Device Drivers
+#
+CONFIG_INPUT_KEYBOARD=y
+# CONFIG_KEYBOARD_ADP5588 is not set
+# CONFIG_KEYBOARD_ADP5589 is not set
+CONFIG_KEYBOARD_ATKBD=y
+# CONFIG_KEYBOARD_QT1070 is not set
+# CONFIG_KEYBOARD_QT2160 is not set
+# CONFIG_KEYBOARD_LKKBD is not set
+# CONFIG_KEYBOARD_TCA6416 is not set
+# CONFIG_KEYBOARD_MAX7359 is not set
+# CONFIG_KEYBOARD_MCS is not set
+# CONFIG_KEYBOARD_MPR121 is not set
+# CONFIG_KEYBOARD_NEWTON is not set
+# CONFIG_KEYBOARD_OPENCORES is not set
+# CONFIG_KEYBOARD_STOWAWAY is not set
+# CONFIG_KEYBOARD_SUNKBD is not set
+# CONFIG_KEYBOARD_XTKBD is not set
+CONFIG_INPUT_MOUSE=y
+CONFIG_MOUSE_PS2=y
+CONFIG_MOUSE_PS2_ALPS=y
+CONFIG_MOUSE_PS2_LOGIPS2PP=y
+CONFIG_MOUSE_PS2_SYNAPTICS=y
+CONFIG_MOUSE_PS2_TRACKPOINT=y
+# CONFIG_MOUSE_PS2_ELANTECH is not set
+# CONFIG_MOUSE_PS2_SENTELIC is not set
+# CONFIG_MOUSE_PS2_TOUCHKIT is not set
+# CONFIG_MOUSE_SERIAL is not set
+# CONFIG_MOUSE_APPLETOUCH is not set
+# CONFIG_MOUSE_BCM5974 is not set
+# CONFIG_MOUSE_VSXXXAA is not set
+# CONFIG_MOUSE_SYNAPTICS_I2C is not set
+# CONFIG_INPUT_JOYSTICK is not set
+# CONFIG_INPUT_TABLET is not set
+# CONFIG_INPUT_TOUCHSCREEN is not set
+# CONFIG_INPUT_MISC is not set
+
+#
+# Hardware I/O ports
+#
+CONFIG_SERIO=y
+CONFIG_SERIO_I8042=y
+CONFIG_SERIO_SERPORT=y
+# CONFIG_SERIO_PCIPS2 is not set
+CONFIG_SERIO_LIBPS2=y
+# CONFIG_SERIO_RAW is not set
+# CONFIG_SERIO_XILINX_XPS_PS2 is not set
+# CONFIG_SERIO_ALTERA_PS2 is not set
+# CONFIG_SERIO_PS2MULT is not set
+# CONFIG_GAMEPORT is not set
+
+#
+# Character devices
+#
+CONFIG_VT=y
+CONFIG_CONSOLE_TRANSLATIONS=y
+CONFIG_VT_CONSOLE=y
+CONFIG_VT_CONSOLE_SLEEP=y
+CONFIG_HW_CONSOLE=y
+# CONFIG_VT_HW_CONSOLE_BINDING is not set
+CONFIG_UNIX98_PTYS=y
+# CONFIG_DEVPTS_MULTIPLE_INSTANCES is not set
+CONFIG_LEGACY_PTYS=y
+CONFIG_LEGACY_PTY_COUNT=256
+# CONFIG_SERIAL_NONSTANDARD is not set
+# CONFIG_NOZOMI is not set
+# CONFIG_N_GSM is not set
+# CONFIG_TRACE_SINK is not set
+# CONFIG_PPC_EPAPR_HV_BYTECHAN is not set
+CONFIG_DEVKMEM=y
+
+#
+# Serial drivers
+#
+CONFIG_SERIAL_8250=y
+CONFIG_SERIAL_8250_CONSOLE=y
+CONFIG_SERIAL_8250_PCI=y
+CONFIG_SERIAL_8250_NR_UARTS=4
+CONFIG_SERIAL_8250_RUNTIME_UARTS=4
+CONFIG_SERIAL_8250_EXTENDED=y
+# CONFIG_SERIAL_8250_MANY_PORTS is not set
+CONFIG_SERIAL_8250_SHARE_IRQ=y
+# CONFIG_SERIAL_8250_DETECT_IRQ is not set
+# CONFIG_SERIAL_8250_RSA is not set
+# CONFIG_SERIAL_8250_DW is not set
+
+#
+# Non-8250 serial port support
+#
+# CONFIG_SERIAL_MAX3100 is not set
+# CONFIG_SERIAL_MAX3107 is not set
+# CONFIG_SERIAL_MFD_HSU is not set
+# CONFIG_SERIAL_UARTLITE is not set
+CONFIG_SERIAL_CORE=y
+CONFIG_SERIAL_CORE_CONSOLE=y
+# CONFIG_SERIAL_JSM is not set
+# CONFIG_SERIAL_OF_PLATFORM is not set
+# CONFIG_SERIAL_OF_PLATFORM_NWPSERIAL is not set
+# CONFIG_SERIAL_TIMBERDALE is not set
+# CONFIG_SERIAL_ALTERA_JTAGUART is not set
+# CONFIG_SERIAL_ALTERA_UART is not set
+# CONFIG_SERIAL_PCH_UART is not set
+# CONFIG_SERIAL_XILINX_PS_UART is not set
+# CONFIG_TTY_PRINTK is not set
+# CONFIG_HVC_UDBG is not set
+# CONFIG_IPMI_HANDLER is not set
+CONFIG_HW_RANDOM=y
+# CONFIG_HW_RANDOM_TIMERIOMEM is not set
+# CONFIG_HW_RANDOM_PPC4XX is not set
+CONFIG_HW_RANDOM_TRNG4XX=y
+# CONFIG_NVRAM is not set
+# CONFIG_R3964 is not set
+# CONFIG_APPLICOM is not set
+# CONFIG_RAW_DRIVER is not set
+# CONFIG_TCG_TPM is not set
+CONFIG_DEVPORT=y
+# CONFIG_RAMOOPS is not set
+CONFIG_I2C=y
+CONFIG_I2C_BOARDINFO=y
+CONFIG_I2C_COMPAT=y
+CONFIG_I2C_CHARDEV=y
+# CONFIG_I2C_MUX is not set
+CONFIG_I2C_HELPER_AUTO=y
+
+#
+# I2C Hardware Bus support
+#
+
+#
+# PC SMBus host controller drivers
+#
+# CONFIG_I2C_ALI1535 is not set
+# CONFIG_I2C_ALI1563 is not set
+# CONFIG_I2C_ALI15X3 is not set
+# CONFIG_I2C_AMD756 is not set
+# CONFIG_I2C_AMD8111 is not set
+# CONFIG_I2C_I801 is not set
+# CONFIG_I2C_ISCH is not set
+# CONFIG_I2C_PIIX4 is not set
+# CONFIG_I2C_NFORCE2 is not set
+# CONFIG_I2C_SIS5595 is not set
+# CONFIG_I2C_SIS630 is not set
+# CONFIG_I2C_SIS96X is not set
+# CONFIG_I2C_VIA is not set
+# CONFIG_I2C_VIAPRO is not set
+
+#
+# I2C system bus drivers (mostly embedded / system-on-chip)
+#
+# CONFIG_I2C_DESIGNWARE_PLATFORM is not set
+# CONFIG_I2C_DESIGNWARE_PCI is not set
+# CONFIG_I2C_DESIGNWARE_APM86XXX is not set
+# CONFIG_I2C_IBM_IIC is not set
+# CONFIG_I2C_INTEL_MID is not set
+# CONFIG_I2C_MPC is not set
+# CONFIG_I2C_OCORES is not set
+# CONFIG_I2C_PCA_PLATFORM is not set
+# CONFIG_I2C_PXA_PCI is not set
+# CONFIG_I2C_SIMTEC is not set
+# CONFIG_I2C_XILINX is not set
+# CONFIG_I2C_EG20T is not set
+
+#
+# External I2C/SMBus adapter drivers
+#
+# CONFIG_I2C_DIOLAN_U2C is not set
+# CONFIG_I2C_PARPORT_LIGHT is not set
+# CONFIG_I2C_TAOS_EVM is not set
+# CONFIG_I2C_TINY_USB is not set
+
+#
+# Other I2C/SMBus bus drivers
+#
+# CONFIG_I2C_STUB is not set
+# CONFIG_I2C_DEBUG_CORE is not set
+# CONFIG_I2C_DEBUG_ALGO is not set
+# CONFIG_I2C_DEBUG_BUS is not set
+CONFIG_SPI=y
+# CONFIG_SPI_DEBUG is not set
+CONFIG_SPI_MASTER=y
+
+#
+# SPI Master Controller Drivers
+#
+# CONFIG_SPI_ALTERA is not set
+# CONFIG_SPI_BITBANG is not set
+# CONFIG_SPI_PPC4xx is not set
+CONFIG_SPI_APM86xxx=y
+# CONFIG_SPI_PXA2XX_PCI is not set
+# CONFIG_SPI_TOPCLIFF_PCH is not set
+# CONFIG_SPI_XILINX is not set
+# CONFIG_SPI_DESIGNWARE is not set
+
+#
+# SPI Protocol Masters
+#
+# CONFIG_SPI_SPIDEV is not set
+# CONFIG_SPI_TLE62X0 is not set
+
+#
+# PPS support
+#
+# CONFIG_PPS is not set
+
+#
+# PPS generators support
+#
+
+#
+# PTP clock support
+#
+
+#
+# Enable Device Drivers -> PPS to see the PTP clock options.
+#
+CONFIG_ARCH_WANT_OPTIONAL_GPIOLIB=y
+# CONFIG_GPIOLIB is not set
+# CONFIG_W1 is not set
+# CONFIG_POWER_SUPPLY is not set
+CONFIG_HWMON=y
+# CONFIG_HWMON_VID is not set
+# CONFIG_HWMON_DEBUG_CHIP is not set
+
+#
+# Native drivers
+#
+# CONFIG_SENSORS_AD7314 is not set
+# CONFIG_SENSORS_AD7414 is not set
+# CONFIG_SENSORS_AD7418 is not set
+# CONFIG_SENSORS_ADCXX is not set
+# CONFIG_SENSORS_ADM1021 is not set
+# CONFIG_SENSORS_ADM1025 is not set
+# CONFIG_SENSORS_ADM1026 is not set
+# CONFIG_SENSORS_ADM1029 is not set
+# CONFIG_SENSORS_ADM1031 is not set
+# CONFIG_SENSORS_ADM9240 is not set
+# CONFIG_SENSORS_ADT7411 is not set
+# CONFIG_SENSORS_ADT7462 is not set
+# CONFIG_SENSORS_ADT7470 is not set
+# CONFIG_SENSORS_ADT7475 is not set
+# CONFIG_SENSORS_ASC7621 is not set
+# CONFIG_SENSORS_ATXP1 is not set
+# CONFIG_SENSORS_DS620 is not set
+# CONFIG_SENSORS_DS1621 is not set
+# CONFIG_SENSORS_I5K_AMB is not set
+# CONFIG_SENSORS_F75375S is not set
+# CONFIG_SENSORS_G760A is not set
+# CONFIG_SENSORS_GL518SM is not set
+# CONFIG_SENSORS_GL520SM is not set
+# CONFIG_SENSORS_JC42 is not set
+# CONFIG_SENSORS_LINEAGE is not set
+# CONFIG_SENSORS_LM63 is not set
+# CONFIG_SENSORS_LM70 is not set
+# CONFIG_SENSORS_LM73 is not set
+# CONFIG_SENSORS_LM75 is not set
+# CONFIG_SENSORS_LM77 is not set
+# CONFIG_SENSORS_LM78 is not set
+# CONFIG_SENSORS_LM80 is not set
+# CONFIG_SENSORS_LM83 is not set
+# CONFIG_SENSORS_LM85 is not set
+# CONFIG_SENSORS_LM87 is not set
+# CONFIG_SENSORS_LM90 is not set
+# CONFIG_SENSORS_LM92 is not set
+# CONFIG_SENSORS_LM93 is not set
+# CONFIG_SENSORS_LTC4151 is not set
+# CONFIG_SENSORS_LTC4215 is not set
+# CONFIG_SENSORS_LTC4245 is not set
+# CONFIG_SENSORS_LTC4261 is not set
+CONFIG_SENSORS_LM95241=y
+# CONFIG_SENSORS_LM95245 is not set
+# CONFIG_SENSORS_MAX1111 is not set
+# CONFIG_SENSORS_MAX16065 is not set
+# CONFIG_SENSORS_MAX1619 is not set
+# CONFIG_SENSORS_MAX1668 is not set
+# CONFIG_SENSORS_MAX6639 is not set
+# CONFIG_SENSORS_MAX6642 is not set
+# CONFIG_SENSORS_MAX6650 is not set
+# CONFIG_SENSORS_NTC_THERMISTOR is not set
+# CONFIG_SENSORS_PCF8591 is not set
+# CONFIG_PMBUS is not set
+# CONFIG_SENSORS_SHT21 is not set
+# CONFIG_SENSORS_SIS5595 is not set
+# CONFIG_SENSORS_SMM665 is not set
+# CONFIG_SENSORS_EMC1403 is not set
+# CONFIG_SENSORS_EMC2103 is not set
+# CONFIG_SENSORS_EMC6W201 is not set
+# CONFIG_SENSORS_SMSC47M192 is not set
+# CONFIG_SENSORS_SCH56XX_COMMON is not set
+# CONFIG_SENSORS_ADS1015 is not set
+# CONFIG_SENSORS_ADS7828 is not set
+# CONFIG_SENSORS_ADS7871 is not set
+# CONFIG_SENSORS_AMC6821 is not set
+# CONFIG_SENSORS_THMC50 is not set
+# CONFIG_SENSORS_TMP102 is not set
+# CONFIG_SENSORS_TMP401 is not set
+# CONFIG_SENSORS_TMP421 is not set
+# CONFIG_SENSORS_VIA686A is not set
+# CONFIG_SENSORS_VT8231 is not set
+# CONFIG_SENSORS_W83781D is not set
+# CONFIG_SENSORS_W83791D is not set
+# CONFIG_SENSORS_W83792D is not set
+# CONFIG_SENSORS_W83793 is not set
+# CONFIG_SENSORS_W83795 is not set
+# CONFIG_SENSORS_W83L785TS is not set
+# CONFIG_SENSORS_W83L786NG is not set
+# CONFIG_THERMAL is not set
+# CONFIG_WATCHDOG is not set
+CONFIG_SSB_POSSIBLE=y
+
+#
+# Sonics Silicon Backplane
+#
+# CONFIG_SSB is not set
+CONFIG_BCMA_POSSIBLE=y
+
+#
+# Broadcom specific AMBA
+#
+# CONFIG_BCMA is not set
+
+#
+# Multifunction device drivers
+#
+# CONFIG_MFD_CORE is not set
+# CONFIG_MFD_88PM860X is not set
+# CONFIG_MFD_SM501 is not set
+# CONFIG_HTC_PASIC3 is not set
+# CONFIG_TPS6105X is not set
+# CONFIG_TPS6507X is not set
+# CONFIG_TWL4030_CORE is not set
+# CONFIG_MFD_STMPE is not set
+# CONFIG_MFD_TC3589X is not set
+# CONFIG_MFD_TMIO is not set
+# CONFIG_PMIC_DA903X is not set
+# CONFIG_PMIC_ADP5520 is not set
+# CONFIG_MFD_MAX8925 is not set
+# CONFIG_MFD_MAX8997 is not set
+# CONFIG_MFD_MAX8998 is not set
+# CONFIG_MFD_WM8400 is not set
+# CONFIG_MFD_WM831X_I2C is not set
+# CONFIG_MFD_WM831X_SPI is not set
+# CONFIG_MFD_WM8350_I2C is not set
+# CONFIG_MFD_WM8994 is not set
+# CONFIG_MFD_PCF50633 is not set
+# CONFIG_MFD_MC13XXX is not set
+# CONFIG_ABX500_CORE is not set
+# CONFIG_EZX_PCAP is not set
+# CONFIG_LPC_SCH is not set
+# CONFIG_MFD_RDC321X is not set
+# CONFIG_MFD_JANZ_CMODIO is not set
+# CONFIG_MFD_VX855 is not set
+# CONFIG_MFD_WL1273_CORE is not set
+# CONFIG_REGULATOR is not set
+# CONFIG_MEDIA_SUPPORT is not set
+
+#
+# Graphics support
+#
+# CONFIG_AGP is not set
+# CONFIG_VGA_ARB is not set
+# CONFIG_DRM is not set
+# CONFIG_STUB_POULSBO is not set
+# CONFIG_VGASTATE is not set
+# CONFIG_VIDEO_OUTPUT_CONTROL is not set
+CONFIG_FB=y
+# CONFIG_FIRMWARE_EDID is not set
+# CONFIG_FB_DDC is not set
+# CONFIG_FB_BOOT_VESA_SUPPORT is not set
+CONFIG_FB_CFB_FILLRECT=y
+CONFIG_FB_CFB_COPYAREA=y
+CONFIG_FB_CFB_IMAGEBLIT=y
+# CONFIG_FB_CFB_REV_PIXELS_IN_BYTE is not set
+# CONFIG_FB_SYS_FILLRECT is not set
+# CONFIG_FB_SYS_COPYAREA is not set
+# CONFIG_FB_SYS_IMAGEBLIT is not set
+# CONFIG_FB_FOREIGN_ENDIAN is not set
+# CONFIG_FB_SYS_FOPS is not set
+# CONFIG_FB_WMT_GE_ROPS is not set
+# CONFIG_FB_SVGALIB is not set
+CONFIG_FB_MACMODES=y
+# CONFIG_FB_BACKLIGHT is not set
+# CONFIG_FB_MODE_HELPERS is not set
+# CONFIG_FB_TILEBLITTING is not set
+
+#
+# Frame buffer hardware drivers
+#
+# CONFIG_FB_CIRRUS is not set
+# CONFIG_FB_PM2 is not set
+# CONFIG_FB_CYBER2000 is not set
+CONFIG_FB_OF=y
+# CONFIG_FB_CT65550 is not set
+# CONFIG_FB_ASILIANT is not set
+# CONFIG_FB_IMSTT is not set
+# CONFIG_FB_VGA16 is not set
+# CONFIG_FB_S1D13XXX is not set
+# CONFIG_FB_NVIDIA is not set
+# CONFIG_FB_RIVA is not set
+# CONFIG_FB_MATROX is not set
+# CONFIG_FB_RADEON is not set
+# CONFIG_FB_ATY128 is not set
+# CONFIG_FB_ATY is not set
+# CONFIG_FB_S3 is not set
+# CONFIG_FB_SAVAGE is not set
+# CONFIG_FB_SIS is not set
+# CONFIG_FB_NEOMAGIC is not set
+# CONFIG_FB_KYRO is not set
+# CONFIG_FB_3DFX is not set
+# CONFIG_FB_VOODOO1 is not set
+# CONFIG_FB_VT8623 is not set
+# CONFIG_FB_TRIDENT is not set
+# CONFIG_FB_ARK is not set
+# CONFIG_FB_PM3 is not set
+# CONFIG_FB_CARMINE is not set
+# CONFIG_FB_SMSCUFX is not set
+# CONFIG_FB_UDL is not set
+# CONFIG_FB_IBM_GXT4500 is not set
+# CONFIG_FB_VIRTUAL is not set
+# CONFIG_FB_METRONOME is not set
+# CONFIG_FB_MB862XX is not set
+# CONFIG_FB_BROADSHEET is not set
+CONFIG_BACKLIGHT_LCD_SUPPORT=y
+CONFIG_LCD_CLASS_DEVICE=y
+# CONFIG_LCD_LTV350QV is not set
+# CONFIG_LCD_TDO24M is not set
+# CONFIG_LCD_VGG2432A4 is not set
+CONFIG_LCD_PLATFORM=y
+# CONFIG_LCD_S6E63M0 is not set
+# CONFIG_LCD_LD9040 is not set
+# CONFIG_LCD_AMS369FG06 is not set
+CONFIG_BACKLIGHT_CLASS_DEVICE=y
+# CONFIG_BACKLIGHT_GENERIC is not set
+# CONFIG_BACKLIGHT_ADP8860 is not set
+# CONFIG_BACKLIGHT_ADP8870 is not set
+
+#
+# Display device support
+#
+# CONFIG_DISPLAY_SUPPORT is not set
+
+#
+# Console display driver support
+#
+CONFIG_DUMMY_CONSOLE=y
+CONFIG_FRAMEBUFFER_CONSOLE=y
+# CONFIG_FRAMEBUFFER_CONSOLE_DETECT_PRIMARY is not set
+# CONFIG_FRAMEBUFFER_CONSOLE_ROTATION is not set
+CONFIG_FONTS=y
+CONFIG_FONT_8x8=y
+CONFIG_FONT_8x16=y
+# CONFIG_FONT_6x11 is not set
+# CONFIG_FONT_7x14 is not set
+# CONFIG_FONT_PEARL_8x8 is not set
+# CONFIG_FONT_ACORN_8x8 is not set
+# CONFIG_FONT_MINI_4x6 is not set
+# CONFIG_FONT_SUN8x16 is not set
+# CONFIG_FONT_SUN12x22 is not set
+# CONFIG_FONT_10x18 is not set
+CONFIG_LOGO=y
+CONFIG_LOGO_LINUX_MONO=y
+CONFIG_LOGO_LINUX_VGA16=y
+CONFIG_LOGO_LINUX_CLUT224=y
+# CONFIG_SOUND is not set
+# CONFIG_HID_SUPPORT is not set
+CONFIG_USB_SUPPORT=y
+CONFIG_USB_COMMON=y
+CONFIG_USB_ARCH_HAS_HCD=y
+CONFIG_USB_ARCH_HAS_OHCI=y
+CONFIG_USB_ARCH_HAS_EHCI=y
+CONFIG_USB_ARCH_HAS_XHCI=y
+CONFIG_USB=y
+# CONFIG_USB_DEBUG is not set
+# CONFIG_USB_ANNOUNCE_NEW_DEVICES is not set
+
+#
+# Miscellaneous USB options
+#
+# CONFIG_USB_DEVICEFS is not set
+# CONFIG_USB_DEVICE_CLASS is not set
+# CONFIG_USB_DYNAMIC_MINORS is not set
+# CONFIG_USB_OTG_WHITELIST is not set
+# CONFIG_USB_OTG_BLACKLIST_HUB is not set
+# CONFIG_USB_DWC3 is not set
+# CONFIG_USB_MON is not set
+# CONFIG_USB_WUSB is not set
+# CONFIG_USB_WUSB_CBAF is not set
+
+#
+# USB Host Controller Drivers
+#
+# CONFIG_USB_C67X00_HCD is not set
+# CONFIG_USB_XHCI_HCD is not set
+CONFIG_USB_EHCI_HCD=y
+# CONFIG_USB_EHCI_ROOT_HUB_TT is not set
+# CONFIG_USB_EHCI_TT_NEWSCHED is not set
+# CONFIG_XPS_USB_HCD_XILINX is not set
+CONFIG_USB_EHCI_HCD_PPC_OF=y
+# CONFIG_USB_OXU210HP_HCD is not set
+# CONFIG_USB_ISP116X_HCD is not set
+# CONFIG_USB_ISP1760_HCD is not set
+# CONFIG_USB_ISP1362_HCD is not set
+CONFIG_USB_OHCI_HCD=y
+# CONFIG_USB_OHCI_HCD_PPC_OF_BE is not set
+CONFIG_USB_OHCI_HCD_PPC_OF_LE=y
+CONFIG_USB_OHCI_HCD_PPC_OF=y
+# CONFIG_USB_OHCI_HCD_PCI is not set
+# CONFIG_USB_OHCI_BIG_ENDIAN_DESC is not set
+# CONFIG_USB_OHCI_BIG_ENDIAN_MMIO is not set
+CONFIG_USB_OHCI_LITTLE_ENDIAN=y
+# CONFIG_USB_UHCI_HCD is not set
+# CONFIG_USB_SL811_HCD is not set
+# CONFIG_USB_R8A66597_HCD is not set
+# CONFIG_USB_WHCI_HCD is not set
+# CONFIG_USB_HWA_HCD is not set
+# CONFIG_USB_RENESAS_USBHS is not set
+
+#
+# USB Device Class drivers
+#
+# CONFIG_USB_ACM is not set
+# CONFIG_USB_PRINTER is not set
+# CONFIG_USB_WDM is not set
+# CONFIG_USB_TMC is not set
+
+#
+# NOTE: USB_STORAGE depends on SCSI but BLK_DEV_SD may
+#
+
+#
+# also be needed; see USB_STORAGE Help for more info
+#
+CONFIG_USB_STORAGE=y
+# CONFIG_USB_STORAGE_DEBUG is not set
+# CONFIG_USB_STORAGE_REALTEK is not set
+# CONFIG_USB_STORAGE_DATAFAB is not set
+# CONFIG_USB_STORAGE_FREECOM is not set
+# CONFIG_USB_STORAGE_ISD200 is not set
+# CONFIG_USB_STORAGE_USBAT is not set
+# CONFIG_USB_STORAGE_SDDR09 is not set
+# CONFIG_USB_STORAGE_SDDR55 is not set
+# CONFIG_USB_STORAGE_JUMPSHOT is not set
+# CONFIG_USB_STORAGE_ALAUDA is not set
+# CONFIG_USB_STORAGE_ONETOUCH is not set
+# CONFIG_USB_STORAGE_KARMA is not set
+# CONFIG_USB_STORAGE_CYPRESS_ATACB is not set
+# CONFIG_USB_STORAGE_ENE_UB6250 is not set
+# CONFIG_USB_UAS is not set
+# CONFIG_USB_LIBUSUAL is not set
+
+#
+# USB Imaging devices
+#
+# CONFIG_USB_MDC800 is not set
+# CONFIG_USB_MICROTEK is not set
+
+#
+# USB port drivers
+#
+CONFIG_USB_SERIAL=y
+CONFIG_USB_SERIAL_CONSOLE=y
+# CONFIG_USB_EZUSB is not set
+# CONFIG_USB_SERIAL_GENERIC is not set
+# CONFIG_USB_SERIAL_AIRCABLE is not set
+# CONFIG_USB_SERIAL_ARK3116 is not set
+# CONFIG_USB_SERIAL_BELKIN is not set
+# CONFIG_USB_SERIAL_CH341 is not set
+# CONFIG_USB_SERIAL_WHITEHEAT is not set
+# CONFIG_USB_SERIAL_DIGI_ACCELEPORT is not set
+# CONFIG_USB_SERIAL_CP210X is not set
+# CONFIG_USB_SERIAL_CYPRESS_M8 is not set
+# CONFIG_USB_SERIAL_EMPEG is not set
+CONFIG_USB_SERIAL_FTDI_SIO=y
+# CONFIG_USB_SERIAL_FUNSOFT is not set
+# CONFIG_USB_SERIAL_VISOR is not set
+# CONFIG_USB_SERIAL_IPAQ is not set
+# CONFIG_USB_SERIAL_IR is not set
+# CONFIG_USB_SERIAL_EDGEPORT is not set
+# CONFIG_USB_SERIAL_EDGEPORT_TI is not set
+# CONFIG_USB_SERIAL_GARMIN is not set
+# CONFIG_USB_SERIAL_IPW is not set
+# CONFIG_USB_SERIAL_IUU is not set
+# CONFIG_USB_SERIAL_KEYSPAN_PDA is not set
+# CONFIG_USB_SERIAL_KEYSPAN is not set
+# CONFIG_USB_SERIAL_KLSI is not set
+# CONFIG_USB_SERIAL_KOBIL_SCT is not set
+# CONFIG_USB_SERIAL_MCT_U232 is not set
+# CONFIG_USB_SERIAL_MOS7720 is not set
+# CONFIG_USB_SERIAL_MOS7840 is not set
+# CONFIG_USB_SERIAL_MOTOROLA is not set
+# CONFIG_USB_SERIAL_NAVMAN is not set
+CONFIG_USB_SERIAL_PL2303=y
+# CONFIG_USB_SERIAL_OTI6858 is not set
+# CONFIG_USB_SERIAL_QCAUX is not set
+# CONFIG_USB_SERIAL_QUALCOMM is not set
+# CONFIG_USB_SERIAL_SPCP8X5 is not set
+# CONFIG_USB_SERIAL_HP4X is not set
+# CONFIG_USB_SERIAL_SAFE is not set
+# CONFIG_USB_SERIAL_SIEMENS_MPI is not set
+# CONFIG_USB_SERIAL_SIERRAWIRELESS is not set
+# CONFIG_USB_SERIAL_SYMBOL is not set
+# CONFIG_USB_SERIAL_TI is not set
+# CONFIG_USB_SERIAL_CYBERJACK is not set
+# CONFIG_USB_SERIAL_XIRCOM is not set
+# CONFIG_USB_SERIAL_OPTION is not set
+# CONFIG_USB_SERIAL_OMNINET is not set
+# CONFIG_USB_SERIAL_OPTICON is not set
+# CONFIG_USB_SERIAL_VIVOPAY_SERIAL is not set
+# CONFIG_USB_SERIAL_ZIO is not set
+# CONFIG_USB_SERIAL_SSU100 is not set
+# CONFIG_USB_SERIAL_DEBUG is not set
+
+#
+# USB Miscellaneous drivers
+#
+# CONFIG_USB_EMI62 is not set
+# CONFIG_USB_EMI26 is not set
+# CONFIG_USB_ADUTUX is not set
+# CONFIG_USB_SEVSEG is not set
+# CONFIG_USB_RIO500 is not set
+# CONFIG_USB_LEGOTOWER is not set
+# CONFIG_USB_LCD is not set
+# CONFIG_USB_LED is not set
+# CONFIG_USB_CYPRESS_CY7C63 is not set
+# CONFIG_USB_CYTHERM is not set
+# CONFIG_USB_IDMOUSE is not set
+# CONFIG_USB_FTDI_ELAN is not set
+# CONFIG_USB_APPLEDISPLAY is not set
+# CONFIG_USB_SISUSBVGA is not set
+# CONFIG_USB_LD is not set
+# CONFIG_USB_TRANCEVIBRATOR is not set
+# CONFIG_USB_IOWARRIOR is not set
+# CONFIG_USB_TEST is not set
+# CONFIG_USB_ISIGHTFW is not set
+# CONFIG_USB_YUREX is not set
+CONFIG_USB_GADGET=y
+# CONFIG_USB_GADGET_DEBUG is not set
+# CONFIG_USB_GADGET_DEBUG_FILES is not set
+CONFIG_USB_GADGET_VBUS_DRAW=2
+CONFIG_USB_GADGET_STORAGE_NUM_BUFFERS=2
+# CONFIG_USB_R8A66597 is not set
+# CONFIG_USB_M66592 is not set
+# CONFIG_USB_AMD5536UDC is not set
+# CONFIG_USB_CI13XXX_PCI is not set
+# CONFIG_USB_NET2272 is not set
+# CONFIG_USB_NET2280 is not set
+# CONFIG_USB_GOKU is not set
+# CONFIG_USB_EG20T is not set
+CONFIG_USB_GADGET_APM_OTG=y
+CONFIG_DWC_HOST_ONLY=y
+# CONFIG_DWC_DEVICE_ONLY is not set
+# CONFIG_USB_GADGET_APM_OTG_SLAVE is not set
+# CONFIG_USB_GADGET_APM_OTG_DEBUG is not set
+# CONFIG_USB_DUMMY_HCD is not set
+CONFIG_USB_GADGET_DUALSPEED=y
+# CONFIG_USB_ZERO is not set
+# CONFIG_USB_ETH is not set
+# CONFIG_USB_G_NCM is not set
+CONFIG_USB_GADGETFS=m
+# CONFIG_USB_FUNCTIONFS is not set
+CONFIG_USB_FILE_STORAGE=m
+# CONFIG_USB_FILE_STORAGE_TEST is not set
+# CONFIG_USB_MASS_STORAGE is not set
+# CONFIG_USB_G_SERIAL is not set
+# CONFIG_USB_G_PRINTER is not set
+# CONFIG_USB_CDC_COMPOSITE is not set
+# CONFIG_USB_G_ACM_MS is not set
+# CONFIG_USB_G_MULTI is not set
+# CONFIG_USB_G_HID is not set
+# CONFIG_USB_G_DBGP is not set
+
+#
+# OTG and related infrastructure
+#
+# CONFIG_NOP_USB_XCEIV is not set
+# CONFIG_UWB is not set
+CONFIG_MMC=y
+# CONFIG_MMC_DEBUG is not set
+CONFIG_MMC_UNSAFE_RESUME=y
+# CONFIG_MMC_CLKGATE is not set
+
+#
+# MMC/SD/SDIO Card Drivers
+#
+CONFIG_MMC_BLOCK=y
+CONFIG_MMC_BLOCK_MINORS=8
+CONFIG_MMC_BLOCK_BOUNCE=y
+# CONFIG_SDIO_UART is not set
+# CONFIG_MMC_TEST is not set
+
+#
+# MMC/SD/SDIO Host Controller Drivers
+#
+CONFIG_MMC_SDHCI=y
+CONFIG_MMC_SDHCI_IO_ACCESSORS=y
+# CONFIG_MMC_SDHCI_PCI is not set
+# CONFIG_MMC_SDHCI_PLTFM is not set
+# CONFIG_MMC_WBSD is not set
+# CONFIG_MMC_TIFM_SD is not set
+# CONFIG_MMC_SPI is not set
+# CONFIG_MMC_CB710 is not set
+# CONFIG_MMC_VIA_SDMMC is not set
+CONFIG_MMC_APM_SDHC=y
+CONFIG_SDIO_SERIALIZE=y
+# CONFIG_MMC_VUB300 is not set
+# CONFIG_MMC_USHC is not set
+# CONFIG_MEMSTICK is not set
+# CONFIG_NEW_LEDS is not set
+# CONFIG_ACCESSIBILITY is not set
+# CONFIG_INFINIBAND is not set
+# CONFIG_EDAC is not set
+CONFIG_RTC_LIB=y
+CONFIG_RTC_CLASS=y
+CONFIG_RTC_HCTOSYS=y
+CONFIG_RTC_HCTOSYS_DEVICE="rtc0"
+# CONFIG_RTC_DEBUG is not set
+
+#
+# RTC interfaces
+#
+CONFIG_RTC_INTF_SYSFS=y
+CONFIG_RTC_INTF_PROC=y
+CONFIG_RTC_INTF_DEV=y
+# CONFIG_RTC_INTF_DEV_UIE_EMUL is not set
+# CONFIG_RTC_DRV_TEST is not set
+
+#
+# I2C RTC drivers
+#
+# CONFIG_RTC_DRV_DS1307 is not set
+# CONFIG_RTC_DRV_DS1374 is not set
+CONFIG_RTC_DRV_DS1672=y
+# CONFIG_RTC_DRV_DS3232 is not set
+# CONFIG_RTC_DRV_MAX6900 is not set
+# CONFIG_RTC_DRV_RS5C372 is not set
+# CONFIG_RTC_DRV_ISL1208 is not set
+# CONFIG_RTC_DRV_ISL12022 is not set
+# CONFIG_RTC_DRV_X1205 is not set
+# CONFIG_RTC_DRV_PCF8563 is not set
+# CONFIG_RTC_DRV_PCF8583 is not set
+# CONFIG_RTC_DRV_M41T80 is not set
+# CONFIG_RTC_DRV_BQ32K is not set
+# CONFIG_RTC_DRV_S35390A is not set
+# CONFIG_RTC_DRV_FM3130 is not set
+# CONFIG_RTC_DRV_RX8581 is not set
+# CONFIG_RTC_DRV_RX8025 is not set
+# CONFIG_RTC_DRV_EM3027 is not set
+# CONFIG_RTC_DRV_RV3029C2 is not set
+
+#
+# SPI RTC drivers
+#
+# CONFIG_RTC_DRV_M41T93 is not set
+# CONFIG_RTC_DRV_M41T94 is not set
+# CONFIG_RTC_DRV_DS1305 is not set
+# CONFIG_RTC_DRV_DS1390 is not set
+# CONFIG_RTC_DRV_MAX6902 is not set
+# CONFIG_RTC_DRV_R9701 is not set
+# CONFIG_RTC_DRV_RS5C348 is not set
+# CONFIG_RTC_DRV_DS3234 is not set
+# CONFIG_RTC_DRV_PCF2123 is not set
+
+#
+# Platform RTC drivers
+#
+# CONFIG_RTC_DRV_CMOS is not set
+# CONFIG_RTC_DRV_DS1286 is not set
+# CONFIG_RTC_DRV_DS1511 is not set
+# CONFIG_RTC_DRV_DS1553 is not set
+# CONFIG_RTC_DRV_DS1742 is not set
+# CONFIG_RTC_DRV_STK17TA8 is not set
+# CONFIG_RTC_DRV_M48T86 is not set
+# CONFIG_RTC_DRV_M48T35 is not set
+# CONFIG_RTC_DRV_M48T59 is not set
+# CONFIG_RTC_DRV_MSM6242 is not set
+# CONFIG_RTC_DRV_BQ4802 is not set
+# CONFIG_RTC_DRV_RP5C01 is not set
+# CONFIG_RTC_DRV_V3020 is not set
+
+#
+# on-CPU RTC drivers
+#
+# CONFIG_RTC_DRV_GENERIC is not set
+CONFIG_DMADEVICES=y
+# CONFIG_DMADEVICES_DEBUG is not set
+
+#
+# DMA Devices
+#
+CONFIG_ASYNC_TX_ENABLE_CHANNEL_SWITCH=y
+# CONFIG_DW_DMAC is not set
+# CONFIG_TIMB_DMA is not set
+CONFIG_APM_PKTDMA=y
+CONFIG_DMA_ENGINE=y
+
+#
+# DMA Clients
+#
+# CONFIG_NET_DMA is not set
+CONFIG_ASYNC_TX_DMA=y
+# CONFIG_DMATEST is not set
+# CONFIG_AUXDISPLAY is not set
+# CONFIG_UIO is not set
+
+#
+# Virtio drivers
+#
+# CONFIG_VIRTIO_PCI is not set
+# CONFIG_VIRTIO_BALLOON is not set
+# CONFIG_VIRTIO_MMIO is not set
+# CONFIG_STAGING is not set
+
+#
+# Hardware Spinlock drivers
+#
+CONFIG_IOMMU_SUPPORT=y
+# CONFIG_VIRT_DRIVERS is not set
+# CONFIG_PM_DEVFREQ is not set
+
+#
+# File systems
+#
+CONFIG_EXT2_FS=y
+# CONFIG_EXT2_FS_XATTR is not set
+# CONFIG_EXT2_FS_XIP is not set
+CONFIG_EXT3_FS=y
+# CONFIG_EXT3_DEFAULTS_TO_ORDERED is not set
+# CONFIG_EXT3_FS_XATTR is not set
+# CONFIG_EXT4_FS is not set
+CONFIG_JBD=y
+# CONFIG_REISERFS_FS is not set
+# CONFIG_JFS_FS is not set
+# CONFIG_XFS_FS is not set
+# CONFIG_GFS2_FS is not set
+# CONFIG_BTRFS_FS is not set
+# CONFIG_NILFS2_FS is not set
+CONFIG_SPLICE_MEMCPY=y
+# CONFIG_SPLICE_DMA is not set
+# CONFIG_SPLICE_SUPER is not set
+CONFIG_FS_POSIX_ACL=y
+CONFIG_FILE_LOCKING=y
+CONFIG_FSNOTIFY=y
+CONFIG_DNOTIFY=y
+CONFIG_INOTIFY_USER=y
+# CONFIG_FANOTIFY is not set
+# CONFIG_QUOTA is not set
+# CONFIG_QUOTACTL is not set
+CONFIG_AUTOFS4_FS=y
+# CONFIG_FUSE_FS is not set
+
+#
+# Caches
+#
+# CONFIG_FSCACHE is not set
+
+#
+# CD-ROM/DVD Filesystems
+#
+CONFIG_ISO9660_FS=y
+# CONFIG_JOLIET is not set
+# CONFIG_ZISOFS is not set
+# CONFIG_UDF_FS is not set
+
+#
+# DOS/FAT/NT Filesystems
+#
+CONFIG_FAT_FS=y
+CONFIG_MSDOS_FS=y
+CONFIG_VFAT_FS=y
+CONFIG_FAT_DEFAULT_CODEPAGE=437
+CONFIG_FAT_DEFAULT_IOCHARSET="iso8859-1"
+# CONFIG_NTFS_FS is not set
+
+#
+# Pseudo filesystems
+#
+CONFIG_PROC_FS=y
+CONFIG_PROC_KCORE=y
+CONFIG_PROC_SYSCTL=y
+CONFIG_PROC_PAGE_MONITOR=y
+CONFIG_SYSFS=y
+CONFIG_TMPFS=y
+# CONFIG_TMPFS_POSIX_ACL is not set
+# CONFIG_TMPFS_XATTR is not set
+# CONFIG_HUGETLB_PAGE is not set
+# CONFIG_CONFIGFS_FS is not set
+CONFIG_MISC_FILESYSTEMS=y
+# CONFIG_ADFS_FS is not set
+# CONFIG_AFFS_FS is not set
+# CONFIG_ECRYPT_FS is not set
+# CONFIG_HFS_FS is not set
+# CONFIG_HFSPLUS_FS is not set
+# CONFIG_BEFS_FS is not set
+# CONFIG_BFS_FS is not set
+# CONFIG_EFS_FS is not set
+# CONFIG_JFFS2_FS is not set
+# CONFIG_LOGFS is not set
+# CONFIG_CRAMFS is not set
+# CONFIG_SQUASHFS is not set
+# CONFIG_VXFS_FS is not set
+# CONFIG_MINIX_FS is not set
+# CONFIG_OMFS_FS is not set
+# CONFIG_HPFS_FS is not set
+# CONFIG_QNX4FS_FS is not set
+# CONFIG_ROMFS_FS is not set
+# CONFIG_PSTORE is not set
+# CONFIG_SYSV_FS is not set
+# CONFIG_UFS_FS is not set
+CONFIG_AUFS_FS=y
+CONFIG_AUFS_BRANCH_MAX_127=y
+# CONFIG_AUFS_BRANCH_MAX_511 is not set
+# CONFIG_AUFS_BRANCH_MAX_1023 is not set
+# CONFIG_AUFS_BRANCH_MAX_32767 is not set
+CONFIG_AUFS_SBILIST=y
+# CONFIG_AUFS_HNOTIFY is not set
+# CONFIG_AUFS_RDU is not set
+# CONFIG_AUFS_PROC_MAP is not set
+# CONFIG_AUFS_SP_IATTR is not set
+# CONFIG_AUFS_SHWH is not set
+# CONFIG_AUFS_BR_RAMFS is not set
+CONFIG_AUFS_BDEV_LOOP=y
+# CONFIG_AUFS_DEBUG is not set
+CONFIG_NETWORK_FILESYSTEMS=y
+CONFIG_NFS_FS=y
+CONFIG_NFS_V3=y
+CONFIG_NFS_V3_ACL=y
+CONFIG_NFS_V4=y
+CONFIG_NFS_V4_1=y
+CONFIG_PNFS_FILE_LAYOUT=y
+CONFIG_PNFS_BLOCK=m
+CONFIG_ROOT_NFS=y
+# CONFIG_NFS_USE_LEGACY_DNS is not set
+CONFIG_NFS_USE_KERNEL_DNS=y
+# CONFIG_NFS_USE_NEW_IDMAPPER is not set
+# CONFIG_NFSD is not set
+CONFIG_LOCKD=y
+CONFIG_LOCKD_V4=y
+CONFIG_NFS_ACL_SUPPORT=y
+CONFIG_NFS_COMMON=y
+CONFIG_SUNRPC=y
+CONFIG_SUNRPC_GSS=y
+CONFIG_SUNRPC_BACKCHANNEL=y
+# CONFIG_CEPH_FS is not set
+CONFIG_CIFS=y
+# CONFIG_CIFS_STATS is not set
+# CONFIG_CIFS_WEAK_PW_HASH is not set
+# CONFIG_CIFS_UPCALL is not set
+# CONFIG_CIFS_XATTR is not set
+# CONFIG_CIFS_DEBUG2 is not set
+# CONFIG_CIFS_DFS_UPCALL is not set
+# CONFIG_NCP_FS is not set
+# CONFIG_CODA_FS is not set
+# CONFIG_AFS_FS is not set
+
+#
+# Partition Types
+#
+# CONFIG_PARTITION_ADVANCED is not set
+CONFIG_MSDOS_PARTITION=y
+CONFIG_NLS=y
+CONFIG_NLS_DEFAULT="iso8859-1"
+CONFIG_NLS_CODEPAGE_437=y
+# CONFIG_NLS_CODEPAGE_737 is not set
+# CONFIG_NLS_CODEPAGE_775 is not set
+# CONFIG_NLS_CODEPAGE_850 is not set
+# CONFIG_NLS_CODEPAGE_852 is not set
+# CONFIG_NLS_CODEPAGE_855 is not set
+# CONFIG_NLS_CODEPAGE_857 is not set
+# CONFIG_NLS_CODEPAGE_860 is not set
+# CONFIG_NLS_CODEPAGE_861 is not set
+# CONFIG_NLS_CODEPAGE_862 is not set
+# CONFIG_NLS_CODEPAGE_863 is not set
+# CONFIG_NLS_CODEPAGE_864 is not set
+# CONFIG_NLS_CODEPAGE_865 is not set
+# CONFIG_NLS_CODEPAGE_866 is not set
+# CONFIG_NLS_CODEPAGE_869 is not set
+# CONFIG_NLS_CODEPAGE_936 is not set
+# CONFIG_NLS_CODEPAGE_950 is not set
+# CONFIG_NLS_CODEPAGE_932 is not set
+# CONFIG_NLS_CODEPAGE_949 is not set
+# CONFIG_NLS_CODEPAGE_874 is not set
+# CONFIG_NLS_ISO8859_8 is not set
+# CONFIG_NLS_CODEPAGE_1250 is not set
+# CONFIG_NLS_CODEPAGE_1251 is not set
+CONFIG_NLS_ASCII=y
+CONFIG_NLS_ISO8859_1=y
+# CONFIG_NLS_ISO8859_2 is not set
+# CONFIG_NLS_ISO8859_3 is not set
+# CONFIG_NLS_ISO8859_4 is not set
+# CONFIG_NLS_ISO8859_5 is not set
+# CONFIG_NLS_ISO8859_6 is not set
+# CONFIG_NLS_ISO8859_7 is not set
+# CONFIG_NLS_ISO8859_9 is not set
+# CONFIG_NLS_ISO8859_13 is not set
+# CONFIG_NLS_ISO8859_14 is not set
+# CONFIG_NLS_ISO8859_15 is not set
+# CONFIG_NLS_KOI8_R is not set
+# CONFIG_NLS_KOI8_U is not set
+CONFIG_NLS_UTF8=y
+# CONFIG_BINARY_PRINTF is not set
+
+#
+# Library routines
+#
+CONFIG_RAID6_PQ=y
+CONFIG_BITREVERSE=y
+# CONFIG_CRC_CCITT is not set
+# CONFIG_CRC16 is not set
+# CONFIG_CRC_T10DIF is not set
+# CONFIG_CRC_ITU_T is not set
+CONFIG_CRC32=y
+# CONFIG_CRC7 is not set
+# CONFIG_LIBCRC32C is not set
+# CONFIG_CRC8 is not set
+CONFIG_ZLIB_INFLATE=y
+# CONFIG_XZ_DEC is not set
+# CONFIG_XZ_DEC_BCJ is not set
+CONFIG_DECOMPRESS_GZIP=y
+CONFIG_BCH=y
+CONFIG_HAS_IOMEM=y
+CONFIG_HAS_IOPORT=y
+CONFIG_HAS_DMA=y
+CONFIG_CPU_RMAP=y
+CONFIG_NLATTR=y
+CONFIG_GENERIC_ATOMIC64=y
+# CONFIG_AVERAGE is not set
+# CONFIG_CORDIC is not set
+
+#
+# Kernel hacking
+#
+# CONFIG_PRINTK_TIME is not set
+CONFIG_DEFAULT_MESSAGE_LOGLEVEL=4
+CONFIG_ENABLE_WARN_DEPRECATED=y
+CONFIG_ENABLE_MUST_CHECK=y
+CONFIG_FRAME_WARN=1024
+CONFIG_MAGIC_SYSRQ=y
+# CONFIG_STRIP_ASM_SYMS is not set
+# CONFIG_UNUSED_SYMBOLS is not set
+# CONFIG_DEBUG_FS is not set
+# CONFIG_HEADERS_CHECK is not set
+# CONFIG_DEBUG_SECTION_MISMATCH is not set
+CONFIG_IPIPE_DEBUG=y
+CONFIG_IPIPE_DEBUG_CONTEXT=y
+CONFIG_IPIPE_DEBUG_INTERNAL=y
+# CONFIG_IPIPE_TRACE is not set
+CONFIG_DEBUG_KERNEL=y
+# CONFIG_DEBUG_SHIRQ is not set
+# CONFIG_LOCKUP_DETECTOR is not set
+# CONFIG_HARDLOCKUP_DETECTOR is not set
+CONFIG_DETECT_HUNG_TASK=y
+CONFIG_DEFAULT_HUNG_TASK_TIMEOUT=120
+# CONFIG_BOOTPARAM_HUNG_TASK_PANIC is not set
+CONFIG_BOOTPARAM_HUNG_TASK_PANIC_VALUE=0
+CONFIG_SCHED_DEBUG=y
+# CONFIG_SCHEDSTATS is not set
+# CONFIG_TIMER_STATS is not set
+# CONFIG_DEBUG_OBJECTS is not set
+# CONFIG_SLUB_STATS is not set
+# CONFIG_DEBUG_KMEMLEAK is not set
+# CONFIG_DEBUG_RT_MUTEXES is not set
+# CONFIG_RT_MUTEX_TESTER is not set
+# CONFIG_DEBUG_SPINLOCK is not set
+# CONFIG_DEBUG_MUTEXES is not set
+# CONFIG_DEBUG_LOCK_ALLOC is not set
+# CONFIG_PROVE_LOCKING is not set
+# CONFIG_SPARSE_RCU_POINTER is not set
+# CONFIG_LOCK_STAT is not set
+# CONFIG_DEBUG_ATOMIC_SLEEP is not set
+# CONFIG_DEBUG_LOCKING_API_SELFTESTS is not set
+# CONFIG_DEBUG_STACK_USAGE is not set
+# CONFIG_DEBUG_KOBJECT is not set
+CONFIG_DEBUG_BUGVERBOSE=y
+CONFIG_DEBUG_INFO=y
+# CONFIG_DEBUG_INFO_REDUCED is not set
+# CONFIG_DEBUG_VM is not set
+# CONFIG_DEBUG_WRITECOUNT is not set
+# CONFIG_DEBUG_MEMORY_INIT is not set
+# CONFIG_DEBUG_LIST is not set
+# CONFIG_TEST_LIST_SORT is not set
+# CONFIG_DEBUG_SG is not set
+# CONFIG_DEBUG_NOTIFIERS is not set
+# CONFIG_DEBUG_CREDENTIALS is not set
+# CONFIG_RCU_TORTURE_TEST is not set
+CONFIG_RCU_CPU_STALL_TIMEOUT=60
+# CONFIG_BACKTRACE_SELF_TEST is not set
+# CONFIG_DEBUG_BLOCK_EXT_DEVT is not set
+# CONFIG_DEBUG_FORCE_WEAK_PER_CPU is not set
+# CONFIG_DEBUG_PER_CPU_MAPS is not set
+# CONFIG_CPU_NOTIFIER_ERROR_INJECT is not set
+# CONFIG_FAULT_INJECTION is not set
+# CONFIG_LATENCYTOP is not set
+CONFIG_SYSCTL_SYSCALL_CHECK=y
+# CONFIG_DEBUG_PAGEALLOC is not set
+CONFIG_HAVE_FUNCTION_TRACER=y
+CONFIG_HAVE_FUNCTION_GRAPH_TRACER=y
+CONFIG_HAVE_FUNCTION_TRACE_MCOUNT_TEST=y
+CONFIG_HAVE_DYNAMIC_FTRACE=y
+CONFIG_HAVE_FTRACE_MCOUNT_RECORD=y
+CONFIG_HAVE_SYSCALL_TRACEPOINTS=y
+CONFIG_TRACING_SUPPORT=y
+CONFIG_FTRACE=y
+# CONFIG_FUNCTION_TRACER is not set
+# CONFIG_IRQSOFF_TRACER is not set
+# CONFIG_SCHED_TRACER is not set
+# CONFIG_ENABLE_DEFAULT_TRACERS is not set
+# CONFIG_FTRACE_SYSCALLS is not set
+CONFIG_BRANCH_PROFILE_NONE=y
+# CONFIG_PROFILE_ANNOTATED_BRANCHES is not set
+# CONFIG_PROFILE_ALL_BRANCHES is not set
+# CONFIG_STACK_TRACER is not set
+# CONFIG_BLK_DEV_IO_TRACE is not set
+# CONFIG_DMA_API_DEBUG is not set
+# CONFIG_ATOMIC64_SELFTEST is not set
+# CONFIG_ASYNC_RAID6_TEST is not set
+# CONFIG_SAMPLES is not set
+CONFIG_HAVE_ARCH_KGDB=y
+# CONFIG_KGDB is not set
+# CONFIG_TEST_KSTRTOX is not set
+# CONFIG_PPC_DISABLE_WERROR is not set
+CONFIG_PPC_WERROR=y
+CONFIG_PRINT_STACK_DEPTH=64
+# CONFIG_DEBUG_STACKOVERFLOW is not set
+# CONFIG_CODE_PATCHING_SELFTEST is not set
+# CONFIG_FTR_FIXUP_SELFTEST is not set
+# CONFIG_MSI_BITMAP_SELFTEST is not set
+# CONFIG_XMON is not set
+# CONFIG_BDI_SWITCH is not set
+# CONFIG_PPC_EARLY_DEBUG is not set
+
+#
+# Security options
+#
+CONFIG_KEYS=y
+# CONFIG_ENCRYPTED_KEYS is not set
+# CONFIG_KEYS_DEBUG_PROC_KEYS is not set
+# CONFIG_SECURITY_DMESG_RESTRICT is not set
+# CONFIG_SECURITY is not set
+# CONFIG_SECURITYFS is not set
+CONFIG_DEFAULT_SECURITY_DAC=y
+CONFIG_DEFAULT_SECURITY=""
+CONFIG_XOR_BLOCKS=y
+CONFIG_ASYNC_CORE=y
+CONFIG_ASYNC_MEMCPY=y
+CONFIG_ASYNC_XOR=y
+CONFIG_ASYNC_PQ=y
+CONFIG_ASYNC_RAID6_RECOV=y
+CONFIG_CRYPTO=y
+
+#
+# Crypto core or helper
+#
+CONFIG_CRYPTO_ALGAPI=y
+CONFIG_CRYPTO_ALGAPI2=y
+CONFIG_CRYPTO_AEAD=y
+CONFIG_CRYPTO_AEAD2=y
+CONFIG_CRYPTO_BLKCIPHER=y
+CONFIG_CRYPTO_BLKCIPHER2=y
+CONFIG_CRYPTO_HASH=y
+CONFIG_CRYPTO_HASH2=y
+CONFIG_CRYPTO_RNG=m
+CONFIG_CRYPTO_RNG2=y
+CONFIG_CRYPTO_PCOMP2=y
+CONFIG_CRYPTO_MANAGER=y
+# CONFIG_CRYPTO_MANAGER_DISABLE_ZERO_LEN_TEST is not set
+CONFIG_CRYPTO_MANAGER2=y
+# CONFIG_CRYPTO_USER is not set
+CONFIG_CRYPTO_MANAGER_DISABLE_TESTS=y
+CONFIG_CRYPTO_GF128MUL=y
+# CONFIG_CRYPTO_NULL is not set
+# CONFIG_CRYPTO_PCRYPT is not set
+CONFIG_CRYPTO_WORKQUEUE=y
+# CONFIG_CRYPTO_CRYPTD is not set
+CONFIG_CRYPTO_AUTHENC=y
+# CONFIG_CRYPTO_TEST is not set
+
+#
+# Authenticated Encryption with Associated Data
+#
+# CONFIG_CRYPTO_CCM is not set
+# CONFIG_CRYPTO_GCM is not set
+# CONFIG_CRYPTO_SEQIV is not set
+
+#
+# Block modes
+#
+CONFIG_CRYPTO_CBC=y
+# CONFIG_CRYPTO_CTR is not set
+# CONFIG_CRYPTO_CTS is not set
+CONFIG_CRYPTO_ECB=y
+# CONFIG_CRYPTO_LRW is not set
+# CONFIG_CRYPTO_PCBC is not set
+# CONFIG_CRYPTO_XTS is not set
+CONFIG_CRYPTO_CRYPTODEV=y
+
+#
+# Hash modes
+#
+CONFIG_CRYPTO_HMAC=y
+# CONFIG_CRYPTO_XCBC is not set
+# CONFIG_CRYPTO_VMAC is not set
+
+#
+# Digest
+#
+# CONFIG_CRYPTO_CRC32C is not set
+# CONFIG_CRYPTO_GHASH is not set
+CONFIG_CRYPTO_MD4=y
+CONFIG_CRYPTO_MD5=y
+# CONFIG_CRYPTO_MICHAEL_MIC is not set
+# CONFIG_CRYPTO_RMD128 is not set
+# CONFIG_CRYPTO_RMD160 is not set
+# CONFIG_CRYPTO_RMD256 is not set
+# CONFIG_CRYPTO_RMD320 is not set
+CONFIG_CRYPTO_SHA1=y
+CONFIG_CRYPTO_SHA256=y
+CONFIG_CRYPTO_SHA512=y
+# CONFIG_CRYPTO_TGR192 is not set
+# CONFIG_CRYPTO_WP512 is not set
+
+#
+# Ciphers
+#
+CONFIG_CRYPTO_AES=y
+# CONFIG_CRYPTO_ANUBIS is not set
+CONFIG_CRYPTO_ARC4=y
+# CONFIG_CRYPTO_BLOWFISH is not set
+# CONFIG_CRYPTO_CAMELLIA is not set
+# CONFIG_CRYPTO_CAST5 is not set
+# CONFIG_CRYPTO_CAST6 is not set
+CONFIG_CRYPTO_DES=y
+# CONFIG_CRYPTO_FCRYPT is not set
+# CONFIG_CRYPTO_KHAZAD is not set
+# CONFIG_CRYPTO_SALSA20 is not set
+# CONFIG_CRYPTO_SEED is not set
+# CONFIG_CRYPTO_SERPENT is not set
+# CONFIG_CRYPTO_TEA is not set
+# CONFIG_CRYPTO_TWOFISH is not set
+
+#
+# Compression
+#
+# CONFIG_CRYPTO_DEFLATE is not set
+# CONFIG_CRYPTO_ZLIB is not set
+# CONFIG_CRYPTO_LZO is not set
+
+#
+# Random Number Generation
+#
+CONFIG_CRYPTO_ANSI_CPRNG=m
+# CONFIG_CRYPTO_USER_API_HASH is not set
+# CONFIG_CRYPTO_USER_API_SKCIPHER is not set
+CONFIG_CRYPTO_HW=y
+# CONFIG_CRYPTO_DEV_PPC4XX is not set
+CONFIG_CRYPTO_DEV_APM86xxx=y
+CONFIG_CRYPTO_DEV_PKA_4XX=y
+CONFIG_PPC_CLOCK=y
+CONFIG_PPC_LIB_RHEAP=y
+# CONFIG_VIRTUALIZATION is not set-
+
+The file that did not cleanly patch was mpic.c
+----------------------------------------------
+/*
+ *  arch/powerpc/kernel/mpic.c
+ *
+ *  Driver for interrupt controllers following the OpenPIC standard, the
+ *  common implementation beeing IBM's MPIC. This driver also can deal
+ *  with various broken implementations of this HW.
+ *
+ *  Copyright (C) 2004 Benjamin Herrenschmidt, IBM Corp.
+ *  Copyright 2010-2011 Freescale Semiconductor, Inc.
+ *
+ *  This file is subject to the terms and conditions of the GNU General
+Public
+ *  License.  See the file COPYING in the main directory of this archive
+ *  for more details.
+ */
+
+#undef DEBUG
+#undef DEBUG_IPI
+#undef DEBUG_IRQ
+#undef DEBUG_LOW
+#ifdef CONFIG_APM86xxx
+#define CONFIG_IPI_LOCK
+#endif
+
+#include <linux/types.h>
+#include <linux/kernel.h>
+#include <linux/init.h>
+#include <linux/irq.h>
+#include <linux/smp.h>
+#include <linux/interrupt.h>
+#include <linux/bootmem.h>
+#include <linux/spinlock.h>
+#include <linux/pci.h>
+#include <linux/slab.h>
+#include <linux/syscore_ops.h>
+#include <linux/ratelimit.h>
+#include <linux/ipipe.h>
+#include <linux/delay.h>
+
+#include <asm/ptrace.h>
+#include <asm/signal.h>
+#include <asm/io.h>
+#include <asm/pgtable.h>
+#include <asm/irq.h>
+#include <asm/machdep.h>
+#include <asm/mpic.h>
+#include <asm/smp.h>
+#if defined(CONFIG_PM)
+#include <asm/apm86xxx_pm.h>
+#endif
+#include "mpic.h"
+
+#ifdef DEBUG
+#define DBG(fmt...) printk(fmt)
+#else
+#define DBG(fmt...)
+#endif
+
+static struct mpic *mpics;
+static struct mpic *mpic_primary;
+static IPIPE_DEFINE_RAW_SPINLOCK(mpic_lock);
+#if defined(CONFIG_APM86xxx) && defined(CONFIG_IPI_LOCK)
+static /*spinlock_t H.B. */ipipe_spinlock_t ipi_lock[8];
+#endif
+
+#ifdef CONFIG_PPC32	/* XXX for now */
+#ifdef CONFIG_IRQ_ALL_CPUS
+#define distribute_irqs	(1)
+#else
+#define distribute_irqs	(0)
+#endif
+#endif
+
+#ifdef CONFIG_MPIC_WEIRD
+static u32 mpic_infos[][MPIC_IDX_END] = {
+	[0] = {	/* Original OpenPIC compatible MPIC */
+		MPIC_GREG_BASE,
+		MPIC_GREG_FEATURE_0,
+		MPIC_GREG_GLOBAL_CONF_0,
+		MPIC_GREG_VENDOR_ID,
+		MPIC_GREG_IPI_VECTOR_PRI_0,
+		MPIC_GREG_IPI_STRIDE,
+		MPIC_GREG_PRR,
+		MPIC_GREG_SPURIOUS,
+		MPIC_GREG_TIMER_FREQ,
+
+		MPIC_TIMER_BASE,
+		MPIC_TIMER_STRIDE,
+		MPIC_TIMER_CURRENT_CNT,
+		MPIC_TIMER_BASE_CNT,
+		MPIC_TIMER_VECTOR_PRI,
+		MPIC_TIMER_DESTINATION,
+
+		MPIC_CPU_BASE,
+		MPIC_CPU_STRIDE,
+		MPIC_CPU_IPI_DISPATCH_0,
+		MPIC_CPU_IPI_DISPATCH_STRIDE,
+		MPIC_CPU_CURRENT_TASK_PRI,
+		MPIC_CPU_WHOAMI,
+		MPIC_CPU_INTACK,
+		MPIC_CPU_EOI,
+		MPIC_CPU_MCACK,
+
+		MPIC_IRQ_BASE,
+		MPIC_IRQ_STRIDE,
+		MPIC_IRQ_VECTOR_PRI,
+		MPIC_VECPRI_VECTOR_MASK,
+		MPIC_VECPRI_POLARITY_POSITIVE,
+		MPIC_VECPRI_POLARITY_NEGATIVE,
+		MPIC_VECPRI_SENSE_LEVEL,
+		MPIC_VECPRI_SENSE_EDGE,
+		MPIC_VECPRI_POLARITY_MASK,
+		MPIC_VECPRI_SENSE_MASK,
+		MPIC_IRQ_DESTINATION
+	},
+	[1] = {	/* Tsi108/109 PIC */
+		TSI108_GREG_BASE,
+		TSI108_GREG_FEATURE_0,
+		TSI108_GREG_GLOBAL_CONF_0,
+		TSI108_GREG_VENDOR_ID,
+		TSI108_GREG_IPI_VECTOR_PRI_0,
+		TSI108_GREG_IPI_STRIDE,
+		TSI108_GREG_SPURIOUS,
+		TSI108_GREG_TIMER_FREQ,
+
+		TSI108_TIMER_BASE,
+		TSI108_TIMER_STRIDE,
+		TSI108_TIMER_CURRENT_CNT,
+		TSI108_TIMER_BASE_CNT,
+		TSI108_TIMER_VECTOR_PRI,
+		TSI108_TIMER_DESTINATION,
+
+		TSI108_CPU_BASE,
+		TSI108_CPU_STRIDE,
+		TSI108_CPU_IPI_DISPATCH_0,
+		TSI108_CPU_IPI_DISPATCH_STRIDE,
+		TSI108_CPU_CURRENT_TASK_PRI,
+		TSI108_CPU_WHOAMI,
+		TSI108_CPU_INTACK,
+		TSI108_CPU_EOI,
+		TSI108_CPU_MCACK,
+
+		TSI108_IRQ_BASE,
+		TSI108_IRQ_STRIDE,
+		TSI108_IRQ_VECTOR_PRI,
+		TSI108_VECPRI_VECTOR_MASK,
+		TSI108_VECPRI_POLARITY_POSITIVE,
+		TSI108_VECPRI_POLARITY_NEGATIVE,
+		TSI108_VECPRI_SENSE_LEVEL,
+		TSI108_VECPRI_SENSE_EDGE,
+		TSI108_VECPRI_POLARITY_MASK,
+		TSI108_VECPRI_SENSE_MASK,
+		TSI108_IRQ_DESTINATION
+	},
+};
+
+#define MPIC_INFO(name) mpic->hw_set[MPIC_IDX_##name]
+
+#else /* CONFIG_MPIC_WEIRD */
+
+#define MPIC_INFO(name) MPIC_##name
+
+#endif /* CONFIG_MPIC_WEIRD */
+
+static inline unsigned int mpic_processor_id(struct mpic *mpic)
+{
+	unsigned int cpu = 0;
+
+	if (mpic->flags & MPIC_PRIMARY)
+		cpu = hard_smp_processor_id();
+
+	return cpu;
+}
+
+/*
+ * Register accessor functions
+ */
+
+
+static inline u32 _mpic_read(enum mpic_reg_type type,
+			     struct mpic_reg_bank *rb,
+			     unsigned int reg)
+{
+	switch(type) {
+#ifdef CONFIG_PPC_DCR
+	case mpic_access_dcr:
+		return dcr_read(rb->dhost, reg);
+#endif
+	case mpic_access_mmio_be:
+		return in_be32(rb->base + (reg >> 2));
+	case mpic_access_mmio_le:
+	default:
+		return in_le32(rb->base + (reg >> 2));
+	}
+}
+
+static inline void _mpic_write(enum mpic_reg_type type,
+			       struct mpic_reg_bank *rb,
+ 			       unsigned int reg, u32 value)
+{
+	switch(type) {
+#ifdef CONFIG_PPC_DCR
+	case mpic_access_dcr:
+		dcr_write(rb->dhost, reg, value);
+		break;
+#endif
+	case mpic_access_mmio_be:
+		out_be32(rb->base + (reg >> 2), value);
+		break;
+	case mpic_access_mmio_le:
+	default:
+		out_le32(rb->base + (reg >> 2), value);
+		break;
+	}
+}
+
+static inline u32 _mpic_gpt_read(struct mpic *mpic, unsigned int gpt)
+{
+	unsigned char idx;
+	unsigned int offset;
+	unsigned int grp_offs;
+
+	BUG_ON(!mpic || gpt < mpic->timer_vecs[0]
+			|| gpt > mpic->timer_vecs[MPIC_NUM_GPTS - 1]);
+
+	idx = gpt - mpic->timer_vecs[0];
+
+	grp_offs = (idx / MPIC_GPTS_IN_GRP) * MPIC_INFO(TIMER_GRP_STRIDE);
+	idx %= MPIC_GPTS_IN_GRP;
+
+	offset = MPIC_INFO(TIMER_BASE_OFFS) + grp_offs +
+		idx * MPIC_INFO(TIMER_STRIDE) + MPIC_INFO(TIMER_VECTOR_PRI);
+
+	return _mpic_read(mpic->reg_type, &mpic->tmregs, offset);
+}
+
+static inline void _mpic_gpt_write(struct mpic *mpic, unsigned int gpt,
+u32 value)
+{
+	unsigned char idx;
+	unsigned int offset;
+	unsigned int grp_offs;
+
+	BUG_ON(!mpic || gpt < mpic->timer_vecs[0]
+			|| gpt > mpic->timer_vecs[MPIC_NUM_GPTS - 1]);
+
+	idx = gpt - mpic->timer_vecs[0];
+
+	grp_offs = (idx / MPIC_GPTS_IN_GRP) * MPIC_INFO(TIMER_GRP_STRIDE);
+	idx %= MPIC_GPTS_IN_GRP;
+
+	offset = MPIC_INFO(TIMER_BASE_OFFS) + grp_offs +
+		idx * MPIC_INFO(TIMER_STRIDE) + MPIC_INFO(TIMER_VECTOR_PRI);
+
+	_mpic_write(mpic->reg_type, &mpic->tmregs, offset, value);
+}
+
+static inline u32 _mpic_ipi_read(struct mpic *mpic, unsigned int ipi)
+{
+	enum mpic_reg_type type = mpic->reg_type;
+	unsigned int offset = MPIC_INFO(GREG_IPI_VECTOR_PRI_0) +
+			      (ipi * MPIC_INFO(GREG_IPI_STRIDE));
+
+	if ((mpic->flags & MPIC_BROKEN_IPI) && type == mpic_access_mmio_le)
+		type = mpic_access_mmio_be;
+	return _mpic_read(type, &mpic->gregs, offset);
+}
+
+static inline void _mpic_ipi_write(struct mpic *mpic, unsigned int ipi,
+u32 value)
+{
+	unsigned int offset = MPIC_INFO(GREG_IPI_VECTOR_PRI_0) +
+			      (ipi * MPIC_INFO(GREG_IPI_STRIDE));
+
+	_mpic_write(mpic->reg_type, &mpic->gregs, offset, value);
+}
+
+static inline u32 _mpic_tm_read(struct mpic *mpic, unsigned int tm)
+{
+	unsigned int offset = MPIC_INFO(TIMER_VECTOR_PRI) +
+			      ((tm & 3) * MPIC_INFO(TIMER_STRIDE));
+
+	if (tm >= 4)
+		offset += 0x1000 / 4;
+
+	return _mpic_read(mpic->reg_type, &mpic->tmregs, offset);
+}
+
+static inline void _mpic_tm_write(struct mpic *mpic, unsigned int tm,
+u32 value)
+{
+	unsigned int offset = MPIC_INFO(TIMER_VECTOR_PRI) +
+			      ((tm & 3) * MPIC_INFO(TIMER_STRIDE));
+
+	if (tm >= 4)
+		offset += 0x1000 / 4;
+
+	_mpic_write(mpic->reg_type, &mpic->tmregs, offset, value);
+}
+
+static inline u32 _mpic_cpu_read(struct mpic *mpic, unsigned int reg)
+{
+	unsigned int cpu = mpic_processor_id(mpic);
+
+	return _mpic_read(mpic->reg_type, &mpic->cpuregs[cpu], reg);
+}
+
+static inline void _mpic_cpu_write(struct mpic *mpic, unsigned int reg,
+u32 value)
+{
+	unsigned int cpu = mpic_processor_id(mpic);
+
+	_mpic_write(mpic->reg_type, &mpic->cpuregs[cpu], reg, value);
+}
+
+static inline u32 _mpic_irq_read(struct mpic *mpic, unsigned int src_no,
+unsigned int reg)
+{
+	unsigned int	isu = src_no >> mpic->isu_shift;
+	unsigned int	idx = src_no & mpic->isu_mask;
+	unsigned int	val;
+
+	val = _mpic_read(mpic->reg_type, &mpic->isus[isu],
+			 reg + (idx * MPIC_INFO(IRQ_STRIDE)));
+#ifdef CONFIG_MPIC_BROKEN_REGREAD
+	if (reg == 0)
+		val = (val & (MPIC_VECPRI_MASK | MPIC_VECPRI_ACTIVITY)) |
+			mpic->isu_reg0_shadow[src_no];
+#endif
+	return val;
+}
+
+static inline void _mpic_irq_write(struct mpic *mpic, unsigned int
+src_no,
+				   unsigned int reg, u32 value)
+{
+	unsigned int	isu = src_no >> mpic->isu_shift;
+	unsigned int	idx = src_no & mpic->isu_mask;
+
+	_mpic_write(mpic->reg_type, &mpic->isus[isu],
+		    reg + (idx * MPIC_INFO(IRQ_STRIDE)), value);
+
+#ifdef CONFIG_MPIC_BROKEN_REGREAD
+	if (reg == 0)
+		mpic->isu_reg0_shadow[src_no] =
+			value & ~(MPIC_VECPRI_MASK | MPIC_VECPRI_ACTIVITY);
+#endif
+}
+
+#define mpic_read(b,r)		_mpic_read(mpic->reg_type,&(b),(r))
+#define mpic_write(b,r,v)	_mpic_write(mpic->reg_type,&(b),(r),(v))
+#define mpic_ipi_read(i)	_mpic_ipi_read(mpic,(i))
+#define mpic_ipi_write(i,v)	_mpic_ipi_write(mpic,(i),(v))
+#define mpic_tm_read(i)		_mpic_tm_read(mpic,(i))
+#define mpic_tm_write(i,v)	_mpic_tm_write(mpic,(i),(v))
+#define mpic_gpt_read(i)	_mpic_gpt_read(mpic,(i))
+#define mpic_gpt_write(i,v)	_mpic_gpt_write(mpic,(i),(v))
+#define mpic_cpu_read(i)	_mpic_cpu_read(mpic,(i))
+#define mpic_cpu_write(i,v)	_mpic_cpu_write(mpic,(i),(v))
+#define mpic_irq_read(s,r)	_mpic_irq_read(mpic,(s),(r))
+#define mpic_irq_write(s,r,v)	_mpic_irq_write(mpic,(s),(r),(v))
+
+
+/*
+ * Low level utility functions
+ */
+
+
+static void _mpic_map_mmio(struct mpic *mpic, phys_addr_t phys_addr,
+			   struct mpic_reg_bank *rb, unsigned int offset,
+			   unsigned int size)
+{
+	rb->base = ioremap(phys_addr + offset, size);
+	BUG_ON(rb->base == NULL);
+}
+
+#ifdef CONFIG_PPC_DCR
+static void _mpic_map_dcr(struct mpic *mpic, struct device_node *node,
+			  struct mpic_reg_bank *rb,
+			  unsigned int offset, unsigned int size)
+{
+	const u32 *dbasep;
+
+	dbasep = of_get_property(node, "dcr-reg", NULL);
+
+	rb->dhost = dcr_map(node, *dbasep + offset, size);
+	BUG_ON(!DCR_MAP_OK(rb->dhost));
+}
+
+static inline void mpic_map(struct mpic *mpic, struct device_node *node,
+			    phys_addr_t phys_addr, struct mpic_reg_bank *rb,
+			    unsigned int offset, unsigned int size)
+{
+	if (mpic->flags & MPIC_USES_DCR)
+		_mpic_map_dcr(mpic, node, rb, offset, size);
+	else
+		_mpic_map_mmio(mpic, phys_addr, rb, offset, size);
+}
+#else /* CONFIG_PPC_DCR */
+#define mpic_map(m,n,p,b,o,s)	_mpic_map_mmio(m,p,b,o,s)
+#endif /* !CONFIG_PPC_DCR */
+
+
+
+/* Check if we have one of those nice broken MPICs with a flipped endian
+on
+ * reads from IPI registers
+ */
+static void __init mpic_test_broken_ipi(struct mpic *mpic)
+{
+	u32 r;
+
+	mpic_write(mpic->gregs, MPIC_INFO(GREG_IPI_VECTOR_PRI_0),
+MPIC_VECPRI_MASK);
+	r = mpic_read(mpic->gregs, MPIC_INFO(GREG_IPI_VECTOR_PRI_0));
+
+	if (r == le32_to_cpu(MPIC_VECPRI_MASK)) {
+		printk(KERN_INFO "mpic: Detected reversed IPI registers\n");
+		mpic->flags |= MPIC_BROKEN_IPI;
+	}
+}
+
+#ifdef CONFIG_MPIC_U3_HT_IRQS
+
+/* Test if an interrupt is sourced from HyperTransport (used on broken
+U3s)
+ * to force the edge setting on the MPIC and do the ack workaround.
+ */
+static inline int mpic_is_ht_interrupt(struct mpic *mpic, unsigned int
+source)
+{
+	if (source >= 128 || !mpic->fixups)
+		return 0;
+	return mpic->fixups[source].base != NULL;
+}
+
+
+static inline void mpic_ht_end_irq(struct mpic *mpic, unsigned int
+source)
+{
+	struct mpic_irq_fixup *fixup = &mpic->fixups[source];
+
+	if (fixup->applebase) {
+		unsigned int soff = (fixup->index >> 3) & ~3;
+		unsigned int mask = 1U << (fixup->index & 0x1f);
+		writel(mask, fixup->applebase + soff);
+	} else {
+		raw_spin_lock(&mpic->fixup_lock);
+		writeb(0x11 + 2 * fixup->index, fixup->base + 2);
+		writel(fixup->data, fixup->base + 4);
+		raw_spin_unlock(&mpic->fixup_lock);
+	}
+}
+
+static void mpic_startup_ht_interrupt(struct mpic *mpic, unsigned int
+source,
+				      bool level)
+{
+	struct mpic_irq_fixup *fixup = &mpic->fixups[source];
+	unsigned long flags;
+	u32 tmp;
+
+	if (fixup->base == NULL)
+		return;
+
+	DBG("startup_ht_interrupt(0x%x) index: %d\n",
+	    source, fixup->index);
+	raw_spin_lock_irqsave(&mpic->fixup_lock, flags);
+	/* Enable and configure */
+	writeb(0x10 + 2 * fixup->index, fixup->base + 2);
+	tmp = readl(fixup->base + 4);
+	tmp &= ~(0x23U);
+	if (level)
+		tmp |= 0x22;
+	writel(tmp, fixup->base + 4);
+	raw_spin_unlock_irqrestore(&mpic->fixup_lock, flags);
+
+#ifdef CONFIG_PM
+	/* use the lowest bit inverted to the actual HW,
+	 * set if this fixup was enabled, clear otherwise */
+	mpic->save_data[source].fixup_data = tmp | 1;
+#endif
+}
+
+static void mpic_shutdown_ht_interrupt(struct mpic *mpic, unsigned int
+source)
+{
+	struct mpic_irq_fixup *fixup = &mpic->fixups[source];
+	unsigned long flags;
+	u32 tmp;
+
+	if (fixup->base == NULL)
+		return;
+
+	DBG("shutdown_ht_interrupt(0x%x)\n", source);
+
+	/* Disable */
+	raw_spin_lock_irqsave(&mpic->fixup_lock, flags);
+	writeb(0x10 + 2 * fixup->index, fixup->base + 2);
+	tmp = readl(fixup->base + 4);
+	tmp |= 1;
+	writel(tmp, fixup->base + 4);
+	raw_spin_unlock_irqrestore(&mpic->fixup_lock, flags);
+
+#ifdef CONFIG_PM
+	/* use the lowest bit inverted to the actual HW,
+	 * set if this fixup was enabled, clear otherwise */
+	mpic->save_data[source].fixup_data = tmp & ~1;
+#endif
+}
+
+#ifdef CONFIG_PCI_MSI
+static void __init mpic_scan_ht_msi(struct mpic *mpic, u8 __iomem
+*devbase,
+				    unsigned int devfn)
+{
+	u8 __iomem *base;
+	u8 pos, flags;
+	u64 addr = 0;
+
+	for (pos = readb(devbase + PCI_CAPABILITY_LIST); pos != 0;
+	     pos = readb(devbase + pos + PCI_CAP_LIST_NEXT)) {
+		u8 id = readb(devbase + pos + PCI_CAP_LIST_ID);
+		if (id == PCI_CAP_ID_HT) {
+			id = readb(devbase + pos + 3);
+			if ((id & HT_5BIT_CAP_MASK) == HT_CAPTYPE_MSI_MAPPING)
+				break;
+		}
+	}
+
+	if (pos == 0)
+		return;
+
+	base = devbase + pos;
+
+	flags = readb(base + HT_MSI_FLAGS);
+	if (!(flags & HT_MSI_FLAGS_FIXED)) {
+		addr = readl(base + HT_MSI_ADDR_LO) & HT_MSI_ADDR_LO_MASK;
+		addr = addr | ((u64)readl(base + HT_MSI_ADDR_HI) << 32);
+	}
+
+	printk(KERN_DEBUG "mpic:   - HT:%02x.%x %s MSI mapping found @ 0x%llx
+\n",
+		PCI_SLOT(devfn), PCI_FUNC(devfn),
+		flags & HT_MSI_FLAGS_ENABLE ? "enabled" : "disabled", addr);
+
+	if (!(flags & HT_MSI_FLAGS_ENABLE))
+		writeb(flags | HT_MSI_FLAGS_ENABLE, base + HT_MSI_FLAGS);
+}
+#else
+static void __init mpic_scan_ht_msi(struct mpic *mpic, u8 __iomem
+*devbase,
+				    unsigned int devfn)
+{
+	return;
+}
+#endif
+
+static void __init mpic_scan_ht_pic(struct mpic *mpic, u8 __iomem
+*devbase,
+				    unsigned int devfn, u32 vdid)
+{
+	int i, irq, n;
+	u8 __iomem *base;
+	u32 tmp;
+	u8 pos;
+
+	for (pos = readb(devbase + PCI_CAPABILITY_LIST); pos != 0;
+	     pos = readb(devbase + pos + PCI_CAP_LIST_NEXT)) {
+		u8 id = readb(devbase + pos + PCI_CAP_LIST_ID);
+		if (id == PCI_CAP_ID_HT) {
+			id = readb(devbase + pos + 3);
+			if ((id & HT_5BIT_CAP_MASK) == HT_CAPTYPE_IRQ)
+				break;
+		}
+	}
+	if (pos == 0)
+		return;
+
+	base = devbase + pos;
+	writeb(0x01, base + 2);
+	n = (readl(base + 4) >> 16) & 0xff;
+
+	printk(KERN_INFO "mpic:   - HT:%02x.%x [0x%02x] vendor %04x device %
+04x"
+	       " has %d irqs\n",
+	       devfn >> 3, devfn & 0x7, pos, vdid & 0xffff, vdid >> 16, n + 1);
+
+	for (i = 0; i <= n; i++) {
+		writeb(0x10 + 2 * i, base + 2);
+		tmp = readl(base + 4);
+		irq = (tmp >> 16) & 0xff;
+		DBG("HT PIC index 0x%x, irq 0x%x, tmp: %08x\n", i, irq, tmp);
+		/* mask it , will be unmasked later */
+		tmp |= 0x1;
+		writel(tmp, base + 4);
+		mpic->fixups[irq].index = i;
+		mpic->fixups[irq].base = base;
+		/* Apple HT PIC has a non-standard way of doing EOIs */
+		if ((vdid & 0xffff) == 0x106b)
+			mpic->fixups[irq].applebase = devbase + 0x60;
+		else
+			mpic->fixups[irq].applebase = NULL;
+		writeb(0x11 + 2 * i, base + 2);
+		mpic->fixups[irq].data = readl(base + 4) | 0x80000000;
+	}
+}
+ 
+
+static void __init mpic_scan_ht_pics(struct mpic *mpic)
+{
+	unsigned int devfn;
+	u8 __iomem *cfgspace;
+
+	printk(KERN_INFO "mpic: Setting up HT PICs workarounds for U3/U4\n");
+
+	/* Allocate fixups array */
+	mpic->fixups = kzalloc(128 * sizeof(*mpic->fixups), GFP_KERNEL);
+	BUG_ON(mpic->fixups == NULL);
+
+	/* Init spinlock */
+	raw_spin_lock_init(&mpic->fixup_lock);
+
+	/* Map U3 config space. We assume all IO-APICs are on the primary bus
+	 * so we only need to map 64kB.
+	 */
+	cfgspace = ioremap(0xf2000000, 0x10000);
+	BUG_ON(cfgspace == NULL);
+
+	/* Now we scan all slots. We do a very quick scan, we read the header
+	 * type, vendor ID and device ID only, that's plenty enough
+	 */
+	for (devfn = 0; devfn < 0x100; devfn++) {
+		u8 __iomem *devbase = cfgspace + (devfn << 8);
+		u8 hdr_type = readb(devbase + PCI_HEADER_TYPE);
+		u32 l = readl(devbase + PCI_VENDOR_ID);
+		u16 s;
+
+		DBG("devfn %x, l: %x\n", devfn, l);
+
+		/* If no device, skip */
+		if (l == 0xffffffff || l == 0x00000000 ||
+		    l == 0x0000ffff || l == 0xffff0000)
+			goto next;
+		/* Check if is supports capability lists */
+		s = readw(devbase + PCI_STATUS);
+		if (!(s & PCI_STATUS_CAP_LIST))
+			goto next;
+
+		mpic_scan_ht_pic(mpic, devbase, devfn, l);
+		mpic_scan_ht_msi(mpic, devbase, devfn);
+
+	next:
+		/* next device, if function 0 */
+		if (PCI_FUNC(devfn) == 0 && (hdr_type & 0x80) == 0)
+			devfn += 7;
+	}
+}
+
+#else /* CONFIG_MPIC_U3_HT_IRQS */
+
+static inline int mpic_is_ht_interrupt(struct mpic *mpic, unsigned int
+source)
+{
+	return 0;
+}
+
+static void __init mpic_scan_ht_pics(struct mpic *mpic)
+{
+}
+
+#endif /* CONFIG_MPIC_U3_HT_IRQS */
+
+/* Find an mpic associated with a given linux interrupt */
+static struct mpic *mpic_find(unsigned int irq)
+{
+	if (irq < NUM_ISA_INTERRUPTS)
+		return NULL;
+
+	return irq_get_chip_data(irq);
+}
+
+/* Determine if the linux irq is an IPI */
+static unsigned int mpic_is_ipi(struct mpic *mpic, unsigned int irq)
+{
+	unsigned int src = virq_to_hw(irq);
+
+	return (src >= mpic->ipi_vecs[0] && src <= mpic->ipi_vecs[3]);
+}
+
+/* Determine if the linux irq is a GPT */
+static unsigned int mpic_is_gpt(struct mpic *mpic, unsigned int irq)
+{
+	unsigned int src = virq_to_hw(irq);
+
+	return (src >= mpic->timer_vecs[0]
+		&& src <= mpic->timer_vecs[MPIC_NUM_GPTS - 1]);
+}
+
+/* Determine if the linux irq is a timer */
+static unsigned int mpic_is_tm(struct mpic *mpic, unsigned int irq)
+{
+	unsigned int src = virq_to_hw(irq);
+
+	return (src >= mpic->timer_vecs[0] && src <= mpic->timer_vecs[7]);
+}
+
+/* Convert a cpu mask from logical to physical cpu numbers. */
+static inline u32 mpic_physmask(u32 cpumask)
+{
+	int i;
+	u32 mask = 0;
+
+	for (i = 0; i < min(32, NR_CPUS); ++i, cpumask >>= 1)
+		mask |= (cpumask & 1) << get_hard_smp_processor_id(i);
+	return mask;
+}
+
+/* Get the mpic structure from the GPT number */
+static inline struct mpic *mpic_from_gpt(unsigned int irq)
+{
+	return irq_get_chip_data(irq);
+}
+
+/* Get the mpic structure from the IPI number */
+static inline struct mpic * mpic_from_ipi(struct irq_data *d)
+{
+	return irq_data_get_irq_chip_data(d);
+}
+
+/* Get the mpic structure from the irq number */
+static inline struct mpic * mpic_from_irq(unsigned int irq)
+{
+	return irq_get_chip_data(irq);
+}
+
+/* Get the mpic structure from the irq data */
+static inline struct mpic * mpic_from_irq_data(struct irq_data *d)
+{
+	return irq_data_get_irq_chip_data(d);
+}
+
+/* Send an EOI */
+static inline void mpic_eoi(struct mpic *mpic)
+{
+	mpic_cpu_write(MPIC_INFO(CPU_EOI), 0);
+	(void)mpic_cpu_read(MPIC_INFO(CPU_WHOAMI));
+}
+
+/*
+ * Linux descriptor level callbacks
+ */
+
+void __mpic_unmask_irq(struct irq_data *d)
+{
+	unsigned int loops = 100000;
+	struct mpic *mpic = mpic_from_irq_data(d);
+	unsigned int src = irqd_to_hwirq(d);
+	u32 val;
+	u32 ivpr;
+
+	DBG("%p: %s: enable_irq: %d (src %d)\n", mpic, mpic->name, d->irq,
+src);
+
+	ivpr = mpic_irq_read(src, MPIC_INFO(IRQ_VECTOR_PRI));
+	mpic_irq_write(src, MPIC_INFO(IRQ_VECTOR_PRI), 
+			ivpr & ~MPIC_VECPRI_MASK);
+
+	/* make sure mask gets to controller before we return to user */
+	do {
+		if (!loops--) {
+			printk(KERN_ERR "%s: timeout on hwirq %u\n",
+			       __func__, src);
+			break;
+		}
+		val = mpic_irq_read(src, MPIC_INFO(IRQ_VECTOR_PRI));
+
+		/* Temporary fix for APM867xx - Bug 21180 */
+		if (((val & MPIC_VECPRI_VECTOR_MASK) != (ivpr &
+MPIC_VECPRI_VECTOR_MASK))
+				|| (loops % 1000) == 0) {
+			printk(KERN_ERR 
+					"MPIC unmask irq src %d 0x%08X IVPR 0x%08X 0x%08X\n",
+					src, MPIC_INFO(IRQ_VECTOR_PRI), ivpr, val);
+			mpic_irq_write(src, MPIC_INFO(IRQ_VECTOR_PRI),
+					ivpr & ~MPIC_VECPRI_MASK);
+			val = mpic_irq_read(src, MPIC_INFO(IRQ_VECTOR_PRI)); 
+			printk(KERN_ERR 
+					"MPIC unmask2 irq src %d 0x%08X ivpr 0x%08X 0x%08X\n",
+					src, MPIC_INFO(IRQ_VECTOR_PRI), ivpr, val);
+		}
+	} while ((val & MPIC_VECPRI_MASK) ||
+			((val & MPIC_VECPRI_VECTOR_MASK) != (ivpr &
+MPIC_VECPRI_VECTOR_MASK)));  
+}
+
+void mpic_unmask_irq(struct irq_data *d)
+{
+	unsigned long flags;
+
+	spin_lock_irqsave(&mpic_lock, flags);
+	ipipe_unlock_irq(d->irq);
+	__mpic_unmask_irq(d);
+	spin_unlock_irqrestore(&mpic_lock, flags);
+}
+
+void __mpic_mask_irq(struct irq_data *d)
+{
+	unsigned int loops = 100000;
+	struct mpic *mpic = mpic_from_irq_data(d);
+	unsigned int src = irqd_to_hwirq(d);
+	u32 val;
+	u32 ivpr;
+
+	DBG("%s: disable_irq: %d (src %d)\n", mpic->name, d->irq, src);
+
+	ivpr = mpic_irq_read(src, MPIC_INFO(IRQ_VECTOR_PRI));
+	mpic_irq_write(src, MPIC_INFO(IRQ_VECTOR_PRI), ivpr |
+MPIC_VECPRI_MASK);
+
+	/* make sure mask gets to controller before we return to user */
+	do {
+		if (!loops--) {
+			printk(KERN_ERR "%s: timeout on hwirq %u\n",
+			       __func__, src);
+			break;
+		}
+		val = mpic_irq_read(src, MPIC_INFO(IRQ_VECTOR_PRI)); 
+
+		/* Temporary fix for APM867xx - Bug 21180 */
+		if ((loops % 1000) == 0) {
+			printk(KERN_ERR
+					"MPIC mask irq src %d 0x%08X val 0x%08X 0x%08X %d\n",
+					src, MPIC_INFO(IRQ_VECTOR_PRI), ivpr, val,
+					loops);
+			mpic_irq_write(src, MPIC_INFO(IRQ_VECTOR_PRI),
+					ivpr | MPIC_VECPRI_MASK);
+			val = mpic_irq_read(src, MPIC_INFO(IRQ_VECTOR_PRI)); 
+			printk(KERN_ERR
+					"MPIC mask2 irq src %d 0x%08X val 0x%08X 0x%08X %d\n",
+					src, MPIC_INFO(IRQ_VECTOR_PRI), ivpr, val,
+					loops);
+		}
+	} while (!(val & MPIC_VECPRI_MASK)); 
+}
+
+/*
+ * Need to have a disable_irq function otherwise
+ *     irq_chip_set_defaults() : linux/kernel/irq/chip.c
+ * set disable_irq to default_disable which is 
+ * an empty stubbed function.
+ */
+void mpic_disable_irq(struct irq_data *d)
+{
+	mpic_mask_irq(d);
+	irqd_set(d, IRQD_IRQ_MASKED);
+}
+
+void mpic_mask_irq(struct irq_data *d)
+{
+	unsigned long flags;
+
+	spin_lock_irqsave(&mpic_lock, flags);
+	__mpic_mask_irq(d);
+	ipipe_lock_irq(d->irq);
+	spin_unlock_irqrestore(&mpic_lock, flags);
+}
+
+void mpic_end_irq(struct irq_data *d)
+{
+	struct mpic *mpic = mpic_from_irq_data(d);
+
+#ifdef DEBUG_IRQ
+	DBG("%s: end_irq: %d\n", mpic->name, d->irq);
+#endif
+	/* We always EOI on end_irq() even for edge interrupts since that
+	 * should only lower the priority, the MPIC should have properly
+	 * latched another edge interrupt coming in anyway
+	 */
+
+	mpic_eoi(mpic);
+}
+
+#ifdef CONFIG_IPIPE
+
+void mpic_hold_irq(struct irq_data *d)
+{
+	struct mpic *mpic = mpic_from_irq_data(d);
+	unsigned long flags;
+	
+	spin_lock_irqsave(&mpic_lock, flags);
+	mpic_eoi(mpic);
+	__mpic_mask_irq(d);
+	spin_unlock_irqrestore(&mpic_lock, flags);
+}
+
+void mpic_release_irq(struct irq_data *d)
+{
+	unsigned long flags;
+	
+	spin_lock_irqsave(&mpic_lock, flags);
+	__mpic_unmask_irq(d);
+	spin_unlock_irqrestore(&mpic_lock, flags);
+}
+
+#endif
+
+#ifdef CONFIG_MPIC_U3_HT_IRQS
+
+static void mpic_unmask_ht_irq(struct irq_data *d)
+{
+	struct mpic *mpic = mpic_from_irq_data(d);
+	unsigned int src = irqd_to_hwirq(d);
+
+	__mpic_unmask_irq(d);
+
+	if (irqd_is_level_type(d))
+		mpic_ht_end_irq(mpic, src);
+}
+
+static unsigned int mpic_startup_ht_irq(struct irq_data *d)
+{
+	struct mpic *mpic = mpic_from_irq_data(d);
+	unsigned int src = irqd_to_hwirq(d);
+
+	__mpic_unmask_irq(d);
+	mpic_startup_ht_interrupt(mpic, src, irqd_is_level_type(d));
+
+	return 0;
+}
+
+static void mpic_shutdown_ht_irq(struct irq_data *d)
+{
+	struct mpic *mpic = mpic_from_irq_data(d);
+	unsigned int src = irqd_to_hwirq(d);
+
+	mpic_shutdown_ht_interrupt(mpic, src);
+	mpic_mask_irq(d);
+}
+
+static void mpic_end_ht_irq(struct irq_data *d)
+{
+	struct mpic *mpic = mpic_from_irq_data(d);
+	unsigned int src = irqd_to_hwirq(d);
+
+#ifdef DEBUG_IRQ
+	DBG("%s: end_ht_irq: %d\n", mpic->name, d->irq);
+#endif
+	/* We always EOI on end_irq() even for edge interrupts since that
+	 * should only lower the priority, the MPIC should have properly
+	 * latched another edge interrupt coming in anyway
+	 */
+
+	if (irqd_is_level_type(d))
+		mpic_ht_end_irq(mpic, src);
+	mpic_eoi(mpic);
+}
+#endif /* !CONFIG_MPIC_U3_HT_IRQS */
+
+static void mpic_unmask_ipi(struct irq_data *d)
+{
+	struct mpic *mpic = mpic_from_ipi(d);
+	unsigned int src = virq_to_hw(d->irq) - mpic->ipi_vecs[0];
+	unsigned long flags;
+
+	DBG("%s: unmask_ipi: %d (ipi %d)\n", mpic->name, d->irq, src);
+	spin_lock_irqsave(&mpic_lock, flags);
+	mpic_ipi_write(src, mpic_ipi_read(src) & ~MPIC_VECPRI_MASK);
+	spin_unlock_irqrestore(&mpic_lock, flags);
+}
+
+static void mpic_mask_ipi(struct irq_data *d)
+{
+	/* NEVER disable an IPI... that's just plain wrong! */
+}
+
+#if defined(CONFIG_APM86xxx) && defined(CONFIG_IPI_LOCK)
+static void mpic_ack_ipi(struct irq_data *d)
+{
+	/*
+	 * This is APM86xxx specific
+	 */
+	spin_lock(&ipi_lock[d->irq - 251 + (hard_smp_processor_id()?0:4)]);
+}
+#endif
+
+static void mpic_end_ipi(struct irq_data *d)
+{
+	struct mpic *mpic = mpic_from_ipi(d);
+
+	/*
+	 * IPIs are marked IRQ_PER_CPU. This has the side effect of
+	 * preventing the IRQ_PENDING/IRQ_INPROGRESS logic from
+	 * applying to them. We EOI them late to avoid re-entering.
+	 */
+	mpic_eoi(mpic);
+#if defined(CONFIG_APM86xxx) && defined(CONFIG_IPI_LOCK)
+	spin_unlock(&ipi_lock[d->irq - 251 + (hard_smp_processor_id()?0:4)]);
+#endif
+}
+
+static void mpic_mask_gpt(struct irq_data *d)
+{
+	struct mpic *mpic = mpic_from_gpt(d->irq);
+	unsigned int src = virq_to_hw(d->irq);
+
+	mpic_gpt_write(src, mpic_gpt_read(src) | MPIC_VECPRI_MASK);
+	mpic_gpt_read(src);
+}
+
+static void mpic_unmask_gpt(struct irq_data *d)
+{
+	struct mpic *mpic = mpic_from_gpt(d->irq);
+	unsigned int src = virq_to_hw(d->irq);
+
+	mpic_gpt_write(src, mpic_gpt_read(src) & ~MPIC_VECPRI_MASK);
+	mpic_gpt_read(src);
+}
+
+static void mpic_end_gpt(struct irq_data *d)
+{
+	struct mpic *mpic = mpic_from_gpt(d->irq);
+
+	BUG_ON(!mpic || d->irq < mpic->timer_vecs[0]
+			|| d->irq > mpic->timer_vecs[MPIC_NUM_GPTS - 1]);
+
+	mpic_eoi(mpic);
+}
+
+static void mpic_unmask_tm(struct irq_data *d)
+{
+	struct mpic *mpic = mpic_from_irq_data(d);
+	unsigned int src = virq_to_hw(d->irq) - mpic->timer_vecs[0];
+
+	DBG("%s: enable_tm: %d (tm %d)\n", mpic->name, d->irq, src);
+	mpic_tm_write(src, mpic_tm_read(src) & ~MPIC_VECPRI_MASK);
+	mpic_tm_read(src);
+}
+
+static void mpic_mask_tm(struct irq_data *d)
+{
+	struct mpic *mpic = mpic_from_irq_data(d);
+	unsigned int src = virq_to_hw(d->irq) - mpic->timer_vecs[0];
+
+	mpic_tm_write(src, mpic_tm_read(src) | MPIC_VECPRI_MASK);
+	mpic_tm_read(src);
+}
+
+int mpic_set_affinity(struct irq_data *d, const struct cpumask *cpumask,
+		      bool force)
+{
+	struct mpic *mpic = mpic_from_irq_data(d);
+	unsigned int src = irqd_to_hwirq(d);
+
+	if (mpic->flags & MPIC_SINGLE_DEST_CPU) {
+		int cpuid = irq_choose_cpu(cpumask);
+
+		mpic_irq_write(src, MPIC_INFO(IRQ_DESTINATION), 1 << cpuid);
+	} else {
+		u32 mask = cpumask_bits(cpumask)[0];
+
+		mask &= cpumask_bits(cpu_online_mask)[0];
+
+		mpic_irq_write(src, MPIC_INFO(IRQ_DESTINATION),
+			       mpic_physmask(mask));
+	}
+
+	return 0;
+}
+
+static unsigned int mpic_type_to_vecpri(struct mpic *mpic, unsigned int
+type)
+{
+	/* Now convert sense value */
+	switch(type & IRQ_TYPE_SENSE_MASK) {
+	case IRQ_TYPE_EDGE_RISING:
+		return MPIC_INFO(VECPRI_SENSE_EDGE) |
+		       MPIC_INFO(VECPRI_POLARITY_POSITIVE);
+	case IRQ_TYPE_EDGE_FALLING:
+	case IRQ_TYPE_EDGE_BOTH:
+		return MPIC_INFO(VECPRI_SENSE_EDGE) |
+		       MPIC_INFO(VECPRI_POLARITY_NEGATIVE);
+	case IRQ_TYPE_LEVEL_HIGH:
+		return MPIC_INFO(VECPRI_SENSE_LEVEL) |
+		       MPIC_INFO(VECPRI_POLARITY_POSITIVE);
+	case IRQ_TYPE_LEVEL_LOW:
+	default:
+		return MPIC_INFO(VECPRI_SENSE_LEVEL) |
+		       MPIC_INFO(VECPRI_POLARITY_NEGATIVE);
+	}
+}
+
+int mpic_set_irq_type(struct irq_data *d, unsigned int flow_type)
+{
+	struct mpic *mpic = mpic_from_irq_data(d);
+	unsigned int src = irqd_to_hwirq(d);
+	unsigned int vecpri, vold, vnew;
+	unsigned long flags;
+
+	DBG("mpic: set_irq_type(mpic:@%p,virq:%d,src:0x%x,type:0x%x)\n",
+	    mpic, d->irq, src, flow_type);
+
+	if (src >= mpic->irq_count)
+		return -EINVAL;
+
+	if (flow_type == IRQ_TYPE_NONE)
+		if (mpic->senses && src < mpic->senses_count)
+			flow_type = mpic->senses[src];
+	if (flow_type == IRQ_TYPE_NONE)
+		flow_type = IRQ_TYPE_LEVEL_LOW;
+
+	irqd_set_trigger_type(d, flow_type);
+
+	if (mpic_is_ht_interrupt(mpic, src))
+		vecpri = MPIC_VECPRI_POLARITY_POSITIVE |
+			MPIC_VECPRI_SENSE_EDGE;
+	else
+		vecpri = mpic_type_to_vecpri(mpic, flow_type);
+
+	flags = hard_cond_local_irq_save();
+
+	vold = mpic_irq_read(src, MPIC_INFO(IRQ_VECTOR_PRI));
+	vnew = vold & ~(MPIC_INFO(VECPRI_POLARITY_MASK) |
+			MPIC_INFO(VECPRI_SENSE_MASK));
+	vnew |= vecpri;
+	if (vold != vnew)
+		mpic_irq_write(src, MPIC_INFO(IRQ_VECTOR_PRI), vnew);
+
+	hard_cond_local_irq_restore(flags);
+
+	return IRQ_SET_MASK_OK_NOCOPY;;
+}
+
+void mpic_set_vector(unsigned int virq, unsigned int vector)
+{
+	struct mpic *mpic = mpic_from_irq(virq);
+	unsigned int src = virq_to_hw(virq);
+	unsigned int vecpri;
+
+	DBG("mpic: set_vector(mpic:@%p,virq:%d,src:%d,vector:0x%x)\n",
+	    mpic, virq, src, vector);
+
+	if (src >= mpic->irq_count)
+		return;
+
+	vecpri = mpic_irq_read(src, MPIC_INFO(IRQ_VECTOR_PRI));
+	vecpri = vecpri & ~MPIC_INFO(VECPRI_VECTOR_MASK);
+	vecpri |= vector;
+	mpic_irq_write(src, MPIC_INFO(IRQ_VECTOR_PRI), vecpri);
+}
+
+void mpic_set_destination(unsigned int virq, unsigned int cpuid)
+{
+	struct mpic *mpic = mpic_from_irq(virq);
+	unsigned int src = virq_to_hw(virq);
+
+	DBG("mpic: set_destination(mpic:@%p,virq:%d,src:%d,cpuid:0x%x)\n",
+	    mpic, virq, src, cpuid);
+
+	if (src >= mpic->irq_count)
+		return;
+
+	mpic_irq_write(src, MPIC_INFO(IRQ_DESTINATION), 1 << cpuid);
+}
+
+static struct irq_chip mpic_irq_chip = {
+	.irq_disable	= mpic_disable_irq,
+	.irq_mask	= mpic_mask_irq,
+	.irq_unmask	= mpic_unmask_irq,
+	.irq_eoi	= mpic_end_irq,
+	.irq_set_type	= mpic_set_irq_type,
+#ifdef CONFIG_IPIPE
+	.irq_hold	= mpic_hold_irq,
+	.irq_release	= mpic_release_irq,
+#endif
+};
+
+static struct irq_chip mpic_ipi_chip = {
+	.irq_mask	= mpic_mask_ipi,
+	.irq_unmask	= mpic_unmask_ipi,
+	.irq_eoi	= mpic_end_ipi,
+#if defined(CONFIG_APM86xxx) && defined(CONFIG_IPI_LOCK)
+	.irq_ack	= mpic_ack_ipi,
+#endif
+};
+
+static struct irq_chip mpic_tm_chip = {
+	.irq_mask	= mpic_mask_tm,
+	.irq_unmask	= mpic_unmask_tm,
+	.irq_eoi	= mpic_end_irq,
+};
+
+static struct irq_chip mpic_gpt_chip = {
+	.irq_mask	= mpic_mask_gpt,
+	.irq_unmask	= mpic_unmask_gpt,
+	.irq_eoi	= mpic_end_gpt,
+};
+
+#ifdef CONFIG_MPIC_U3_HT_IRQS
+static struct irq_chip mpic_irq_ht_chip = {
+	.irq_startup	= mpic_startup_ht_irq,
+	.irq_shutdown	= mpic_shutdown_ht_irq,
+	.irq_mask	= mpic_mask_irq,
+	.irq_unmask	= mpic_unmask_ht_irq,
+	.irq_eoi	= mpic_end_ht_irq,
+	.irq_set_type	= mpic_set_irq_type,
+};
+#endif /* CONFIG_MPIC_U3_HT_IRQS */
+
+
+static int mpic_host_match(struct irq_host *h, struct device_node *node)
+{
+	/* Exact match, unless mpic node is NULL */
+	return h->of_node == NULL || h->of_node == node;
+}
+
+static int mpic_host_map(struct irq_host *h, unsigned int virq,
+			 irq_hw_number_t hw)
+{
+	struct mpic *mpic = h->host_data;
+	struct irq_chip *chip;
+
+	DBG("mpic: map virq %d, hwirq 0x%lx\n", virq, hw);
+
+	if (hw == mpic->spurious_vec)
+		return -EINVAL;
+	if (mpic->protected && test_bit(hw, mpic->protected))
+		return -EINVAL;
+	else if (hw >= mpic->ipi_vecs[0]) {
+		WARN_ON(!(mpic->flags & MPIC_PRIMARY));
+
+		DBG("mpic: mapping as IPI\n");
+		irq_set_chip_data(virq, mpic);
+		irq_set_chip_and_handler(virq, &mpic->hc_ipi,
+				handle_percpu_irq);
+		return 0;
+	} 
+
+	if (hw >= mpic->timer_vecs[0] &&
+			hw <= mpic->timer_vecs[MPIC_NUM_GPTS - 1]) {
+		WARN_ON(!(mpic->flags & MPIC_PRIMARY));
+
+		DBG("mpic: mapping as GPT\n");
+		irq_set_chip_data(virq, mpic);
+		irq_set_chip_and_handler(virq, &mpic->hc_gpt,
+				handle_edge_irq);
+		return 0;
+	}
+
+	if (hw >= mpic->timer_vecs[0] && 
+			hw <= mpic->timer_vecs[MPIC_NUM_GPTS - 1]) {
+		WARN_ON(!(mpic->flags & MPIC_PRIMARY));
+
+		DBG("mpic: mapping as timer\n");
+		irq_set_chip_data(virq, mpic);
+		irq_set_chip_and_handler(virq, &mpic->hc_tm,
+					 handle_fasteoi_irq);
+		return 0;
+	}
+
+	if (hw >= mpic->irq_count)
+		return -EINVAL;
+
+	mpic_msi_reserve_hwirq(mpic, hw);
+
+	/* Default chip */
+	chip = &mpic->hc_irq;
+
+#ifdef CONFIG_MPIC_U3_HT_IRQS
+	/* Check for HT interrupts, override vecpri */
+	if (mpic_is_ht_interrupt(mpic, hw))
+		chip = &mpic->hc_ht_irq;
+#endif /* CONFIG_MPIC_U3_HT_IRQS */
+
+	DBG("mpic: mapping to irq chip @%p\n", chip);
+
+	irq_set_chip_data(virq, mpic);
+	irq_set_chip_and_handler(virq, chip, handle_fasteoi_irq);
+
+	/* Set default irq type */
+	irq_set_irq_type(virq, IRQ_TYPE_NONE);
+
+	/* If the MPIC was reset, then all vectors have already been
+	 * initialized.  Otherwise, a per source lazy initialization
+	 * is done here.
+	 */
+	if (!mpic_is_ipi(mpic, hw) && (mpic->flags & MPIC_NO_RESET)) {
+		mpic_set_vector(virq, hw);
+		mpic_set_destination(virq, mpic_processor_id(mpic));
+		mpic_irq_set_priority(virq, 8);
+	}
+
+	return 0;
+}
+
+static int mpic_host_xlate(struct irq_host *h, struct device_node *ct,
+			   const u32 *intspec, unsigned int intsize,
+			   irq_hw_number_t *out_hwirq, unsigned int *out_flags)
+
+{
+	struct mpic *mpic = h->host_data;
+	static unsigned char map_mpic_senses[4] = {
+		IRQ_TYPE_EDGE_RISING,
+		IRQ_TYPE_LEVEL_LOW,
+		IRQ_TYPE_LEVEL_HIGH,
+		IRQ_TYPE_EDGE_FALLING,
+	};
+
+	*out_hwirq = intspec[0];
+	if (intsize >= 4 && (mpic->flags & MPIC_FSL)) {
+		/*
+		 * Freescale MPIC with extended intspec:
+		 * First two cells are as usual.  Third specifies
+		 * an "interrupt type".  Fourth is type-specific data.
+		 *
+		 * See Documentation/devicetree/bindings/powerpc/fsl/mpic.txt
+		 */
+		switch (intspec[2]) {
+		case 0:
+		case 1: /* no EISR/EIMR support for now, treat as shared IRQ */
+			break;
+		case 2:
+			if (intspec[0] >= ARRAY_SIZE(mpic->ipi_vecs))
+				return -EINVAL;
+
+			*out_hwirq = mpic->ipi_vecs[intspec[0]];
+			break;
+		case 3:
+			if (intspec[0] >= ARRAY_SIZE(mpic->timer_vecs))
+				return -EINVAL;
+
+			*out_hwirq = mpic->timer_vecs[intspec[0]];
+			break;
+		default:
+			pr_debug("%s: unknown irq type %u\n",
+				 __func__, intspec[2]);
+			return -EINVAL;
+		}
+
+		*out_flags = map_mpic_senses[intspec[1] & 3];
+	} else if (intsize > 1) {
+		u32 mask = 0x3;
+
+		/* Apple invented a new race of encoding on machines with
+		 * an HT APIC. They encode, among others, the index within
+		 * the HT APIC. We don't care about it here since thankfully,
+		 * it appears that they have the APIC already properly
+		 * configured, and thus our current fixup code that reads the
+		 * APIC config works fine. However, we still need to mask out
+		 * bits in the specifier to make sure we only get bit 0 which
+		 * is the level/edge bit (the only sense bit exposed by Apple),
+		 * as their bit 1 means something else.
+		 */
+		if (machine_is(powermac))
+			mask = 0x1;
+		*out_flags = map_mpic_senses[intspec[1] & mask];
+	} else
+		*out_flags = IRQ_TYPE_NONE;
+
+	DBG("mpic: xlate (%d cells: 0x%08x 0x%08x) to line 0x%lx sense 0x%x\n",
+	    intsize, intspec[0], intspec[1], *out_hwirq, *out_flags);
+
+	return 0;
+}
+
+static struct irq_host_ops mpic_host_ops = {
+	.match = mpic_host_match,
+	.map = mpic_host_map,
+	.xlate = mpic_host_xlate,
+};
+
+static int mpic_reset_prohibited(struct device_node *node)
+{
+	return node && of_get_property(node, "pic-no-reset", NULL);
+}
+
+/*
+ * Exported functions
+ */
+
+struct mpic * __init mpic_alloc(struct device_node *node,
+				phys_addr_t phys_addr,
+				unsigned int flags,
+				unsigned int isu_size,
+				unsigned int irq_count,
+				const char *name)
+{
+	struct mpic	*mpic;
+	u32		greg_feature;
+	const char	*vers;
+	int		i;
+	int		intvec_top;
+	u64		paddr = phys_addr;
+
+	mpic = kzalloc(sizeof(struct mpic), GFP_KERNEL);
+	if (mpic == NULL)
+		return NULL;
+
+	mpic->name = name;
+
+	mpic->hc_irq = mpic_irq_chip;
+	mpic->hc_irq.name = name;
+	if (flags & MPIC_PRIMARY)
+		mpic->hc_irq.irq_set_affinity = mpic_set_affinity;
+#ifdef CONFIG_MPIC_U3_HT_IRQS
+	mpic->hc_ht_irq = mpic_irq_ht_chip;
+	mpic->hc_ht_irq.name = name;
+	if (flags & MPIC_PRIMARY)
+		mpic->hc_ht_irq.irq_set_affinity = mpic_set_affinity;
+#endif /* CONFIG_MPIC_U3_HT_IRQS */
+
+	mpic->hc_ipi = mpic_ipi_chip;
+	mpic->hc_ipi.name = name;
+
+	mpic->hc_gpt = mpic_gpt_chip;
+	mpic->hc_gpt.name = name;
+
+	mpic->hc_tm = mpic_tm_chip;
+	mpic->hc_tm.name = name;
+
+	mpic->flags = flags;
+	mpic->isu_size = isu_size;
+	mpic->irq_count = irq_count;
+	mpic->num_sources = 0; /* so far */
+
+	if (flags & MPIC_LARGE_VECTORS)
+		intvec_top = 2047;
+	else
+		intvec_top = 255;
+/* TODO: Review */
+#if 0 
+	mpic->timer_vecs[0] = intvec_top - 12;
+	mpic->timer_vecs[1] = intvec_top - 11;
+	mpic->timer_vecs[2] = intvec_top - 10;
+	mpic->timer_vecs[3] = intvec_top - 9;
+	mpic->timer_vecs[4] = intvec_top - 8;
+	mpic->timer_vecs[5] = intvec_top - 7;
+	mpic->timer_vecs[6] = intvec_top - 6;
+	mpic->timer_vecs[7] = intvec_top - 5;
+#else
+	for (i = 0; i < MPIC_NUM_GPTS; i++)
+		mpic->timer_vecs[i] = intvec_top - (4 + MPIC_NUM_GPTS - i);
+#endif
+
+	mpic->ipi_vecs[0]   = intvec_top - 4;
+	mpic->ipi_vecs[1]   = intvec_top - 3;
+	mpic->ipi_vecs[2]   = intvec_top - 2;
+	mpic->ipi_vecs[3]   = intvec_top - 1;
+	mpic->spurious_vec  = intvec_top;
+
+#if defined(CONFIG_APM86xxx) && defined(CONFIG_IPI_LOCK)
+	/*spin_lock_init(&ipi_lock[0]);
+	spin_lock_init(&ipi_lock[1]);
+	spin_lock_init(&ipi_lock[2]);
+	spin_lock_init(&ipi_lock[3]);
+	spin_lock_init(&ipi_lock[4]);
+	spin_lock_init(&ipi_lock[5]);
+	spin_lock_init(&ipi_lock[6]);
+	spin_lock_init(&ipi_lock[7]);*/
+        ipi_lock[0] = IPIPE_SPIN_LOCK_UNLOCKED;
+        ipi_lock[1] = IPIPE_SPIN_LOCK_UNLOCKED;
+        ipi_lock[2] = IPIPE_SPIN_LOCK_UNLOCKED;
+        ipi_lock[3] = IPIPE_SPIN_LOCK_UNLOCKED;
+        ipi_lock[4] = IPIPE_SPIN_LOCK_UNLOCKED;
+        ipi_lock[5] = IPIPE_SPIN_LOCK_UNLOCKED;
+        ipi_lock[6] = IPIPE_SPIN_LOCK_UNLOCKED;
+        ipi_lock[7] = IPIPE_SPIN_LOCK_UNLOCKED;
+#endif
+	/* Check for "big-endian" in device-tree */
+	if (node && of_get_property(node, "big-endian", NULL) != NULL)
+		mpic->flags |= MPIC_BIG_ENDIAN;
+	if (node && of_device_is_compatible(node, "fsl,mpic"))
+		mpic->flags |= MPIC_FSL;
+
+	/* Look for protected sources */
+	if (node) {
+		int psize;
+		unsigned int bits, mapsize;
+		const u32 *psrc =
+			of_get_property(node, "protected-sources", &psize);
+		if (psrc) {
+			psize /= 4;
+			bits = intvec_top + 1;
+			mapsize = BITS_TO_LONGS(bits) * sizeof(unsigned long);
+			mpic->protected = kzalloc(mapsize, GFP_KERNEL);
+			BUG_ON(mpic->protected == NULL);
+			for (i = 0; i < psize; i++) {
+				if (psrc[i] > intvec_top)
+					continue;
+				__set_bit(psrc[i], mpic->protected);
+			}
+		}
+	}
+
+#ifdef CONFIG_MPIC_WEIRD
+	mpic->hw_set = mpic_infos[MPIC_GET_REGSET(flags)];
+#endif
+
+	/* default register type */
+	mpic->reg_type = (flags & MPIC_BIG_ENDIAN) ?
+		mpic_access_mmio_be : mpic_access_mmio_le;
+
+	/* If no physical address is passed in, a device-node is mandatory */
+	BUG_ON(paddr == 0 && node == NULL);
+
+	/* If no physical address passed in, check if it's dcr based */
+	if (paddr == 0 && of_get_property(node, "dcr-reg", NULL) != NULL) {
+#ifdef CONFIG_PPC_DCR
+		mpic->flags |= MPIC_USES_DCR;
+		mpic->reg_type = mpic_access_dcr;
+#else
+		BUG();
+#endif /* CONFIG_PPC_DCR */
+	}
+
+	/* If the MPIC is not DCR based, and no physical address was passed
+	 * in, try to obtain one
+	 */
+	if (paddr == 0 && !(mpic->flags & MPIC_USES_DCR)) {
+		const u32 *reg = of_get_property(node, "reg", NULL);
+		BUG_ON(reg == NULL);
+		paddr = of_translate_address(node, reg);
+		BUG_ON(paddr == OF_BAD_ADDR);
+	}
+
+	/* Map the global registers */
+	mpic_map(mpic, node, paddr, &mpic->gregs, MPIC_INFO(GREG_BASE),
+0x1000);
+	mpic_map(mpic, node, paddr, &mpic->tmregs, MPIC_INFO(TIMER_BASE),
+MPIC_TIMER_WINDOW);
+
+	/* Reset */
+
+	/* When using a device-node, reset requests are only honored if the
+MPIC
+	 * is allowed to reset.
+	 */
+	if (mpic_reset_prohibited(node))
+		mpic->flags |= MPIC_NO_RESET;
+
+	if ((flags & MPIC_WANTS_RESET) && !(mpic->flags & MPIC_NO_RESET)) {
+		printk(KERN_DEBUG "mpic: Resetting\n");
+		mpic_write(mpic->gregs, MPIC_INFO(GREG_GLOBAL_CONF_0),
+			   mpic_read(mpic->gregs, MPIC_INFO(GREG_GLOBAL_CONF_0))
+			   | MPIC_GREG_GCONF_RESET);
+		while( mpic_read(mpic->gregs, MPIC_INFO(GREG_GLOBAL_CONF_0))
+		       & MPIC_GREG_GCONF_RESET)
+			mb();
+	}
+
+	/* CoreInt */
+	if (flags & MPIC_ENABLE_COREINT)
+		mpic_write(mpic->gregs, MPIC_INFO(GREG_GLOBAL_CONF_0),
+			   mpic_read(mpic->gregs, MPIC_INFO(GREG_GLOBAL_CONF_0))
+			   | MPIC_GREG_GCONF_COREINT);
+
+	if (flags & MPIC_ENABLE_MCK)
+		mpic_write(mpic->gregs, MPIC_INFO(GREG_GLOBAL_CONF_0),
+			   mpic_read(mpic->gregs, MPIC_INFO(GREG_GLOBAL_CONF_0))
+			   | MPIC_GREG_GCONF_MCK);
+
+	/*
+	 * Read feature register.  For non-ISU MPICs, num sources as well. On
+	 * ISU MPICs, sources are counted as ISUs are added
+	 */
+	greg_feature = mpic_read(mpic->gregs, MPIC_INFO(GREG_FEATURE_0));
+	if (isu_size == 0) {
+		if (flags & MPIC_BROKEN_FRR_NIRQS)
+			mpic->num_sources = mpic->irq_count;
+		else
+			mpic->num_sources =
+				((greg_feature & MPIC_GREG_FEATURE_LAST_SRC_MASK)
+				 >> MPIC_GREG_FEATURE_LAST_SRC_SHIFT) + 1;
+	}
+
+	/*
+	 * The MPIC driver will crash if there are more cores than we
+	 * can initialize, so we may as well catch that problem here.
+	 */
+	BUG_ON(num_possible_cpus() > MPIC_MAX_CPUS);
+
+	/* Map the per-CPU registers */
+	for_each_possible_cpu(i) {
+		unsigned int cpu = get_hard_smp_processor_id(i);
+
+#ifdef CONFIG_4xx
+		mpic_map(mpic, node, paddr, &mpic->cpuregs[cpu],
+				MPIC_INFO(CPU_THISBASE), 0x1000);
+
+#else
+		mpic_map(mpic, node, paddr, &mpic->cpuregs[cpu],
+				MPIC_INFO(CPU_BASE) + cpu * MPIC_INFO(CPU_STRIDE),
+				0x1000);
+#endif
+	}
+
+	/* Initialize main ISU if none provided */
+	if (mpic->isu_size == 0) {
+		mpic->isu_size = mpic->num_sources;
+#ifndef CONFIG_4xx
+		mpic_map(mpic, node, paddr, &mpic->isus[0],
+			 MPIC_INFO(IRQ_BASE), MPIC_INFO(IRQ_STRIDE) * mpic->isu_size);
+#else
+		mpic_map(mpic, node, paddr, &mpic->isus[0],
+				MPIC_INFO(IRQ_BASE), MPIC_INFO(IRQ_STRIDE) * 512);
+#endif
+	}
+	mpic->isu_shift = 1 + __ilog2(mpic->isu_size - 1);
+	mpic->isu_mask = (1 << mpic->isu_shift) - 1;
+
+	mpic->irqhost = irq_alloc_host(node, IRQ_HOST_MAP_LINEAR,
+				       isu_size ? isu_size : mpic->num_sources,
+				       &mpic_host_ops,
+				       flags & MPIC_LARGE_VECTORS ? 2048 : 256);
+	if (mpic->irqhost == NULL)
+		return NULL;
+
+	mpic->irqhost->host_data = mpic;
+
+	/* Display version */
+	switch (greg_feature & MPIC_GREG_FEATURE_VERSION_MASK) {
+	case 1:
+		vers = "1.0";
+		break;
+	case 2:
+		vers = "1.2";
+		break;
+	case 3:
+		vers = "1.3";
+		break;
+	default:
+		vers = "<unknown>";
+		break;
+	}
+	printk(KERN_INFO "mpic: Setting up MPIC \"%s\" version %s at %llx,"
+	       " max %d CPUs\n",
+	       name, vers, (unsigned long long)paddr, num_possible_cpus());
+	printk(KERN_INFO "mpic: ISU size: %d, shift: %d, mask: %x\n",
+	       mpic->isu_size, mpic->isu_shift, mpic->isu_mask);
+
+	mpic->next = mpics;
+	mpics = mpic;
+
+	if (flags & MPIC_PRIMARY) {
+		mpic_primary = mpic;
+		irq_set_default_host(mpic->irqhost);
+	}
+
+	return mpic;
+}
+
+void __init mpic_assign_isu(struct mpic *mpic, unsigned int isu_num,
+			    phys_addr_t paddr)
+{
+	unsigned int isu_first = isu_num * mpic->isu_size;
+
+	BUG_ON(isu_num >= MPIC_MAX_ISU);
+
+	mpic_map(mpic, mpic->irqhost->of_node,
+		 paddr, &mpic->isus[isu_num], 0,
+		 MPIC_INFO(IRQ_STRIDE) * mpic->isu_size);
+
+	if ((isu_first + mpic->isu_size) > mpic->num_sources)
+		mpic->num_sources = isu_first + mpic->isu_size;
+}
+
+void __init mpic_set_default_senses(struct mpic *mpic, u8 *senses, int
+count)
+{
+	mpic->senses = senses;
+	mpic->senses_count = count;
+}
+
+void mpic_init(struct mpic *mpic)
+{
+	int i;
+	int cpu;
+
+	BUG_ON(mpic->num_sources == 0);
+
+#ifdef CONFIG_PM
+	if (!resumed_from_deepsleep())
+#endif
+		printk(KERN_INFO "mpic: Initializing for %d sources\n",
+mpic->num_sources);
+
+	/* Set current processor priority to max */
+	mpic_cpu_write(MPIC_INFO(CPU_CURRENT_TASK_PRI), 0xf);
+
+	/* Initialize timers to our reserved vectors and mask them for now */
+	for (i = 0; i < MPIC_NUM_GPTS; i++) {
+		unsigned int grp_offs;
+		int tmp = i;
+		/* check if protected */
+		if (mpic->protected && 
+				test_bit(mpic->timer_vecs[0] + i, mpic->protected))
+			continue;	
+
+		grp_offs = (i / MPIC_GPTS_IN_GRP) * MPIC_INFO(TIMER_GRP_STRIDE);
+		i %= MPIC_GPTS_IN_GRP;
+
+		mpic_write(mpic->tmregs,
+				MPIC_INFO(TIMER_BASE_OFFS) + i * MPIC_INFO(TIMER_STRIDE) +
+				MPIC_INFO(TIMER_DESTINATION) + grp_offs,
+				1 << hard_smp_processor_id());
+		mpic_write(mpic->tmregs,
+				MPIC_INFO(TIMER_BASE_OFFS) + i * MPIC_INFO(TIMER_STRIDE) +
+				MPIC_INFO(TIMER_VECTOR_PRI) + grp_offs,
+				MPIC_VECPRI_MASK | (9 << MPIC_VECPRI_PRIORITY_SHIFT) |
+				(mpic->timer_vecs[0] + i));
+		i = tmp;
+	}
+
+	/* Initialize IPIs to our reserved vectors and mark them disabled for
+now */
+	if (!(mpic->flags & MPIC_SKIP_BROKEN_IPI_DETECT))
+		mpic_test_broken_ipi(mpic);
+	for (i = 0; i < 4; i++) {
+		/* check if protected */
+		if (mpic->protected && 
+				test_bit(mpic->ipi_vecs[0] + i, mpic->protected))
+			continue;
+
+		mpic_ipi_write(i,
+			       MPIC_VECPRI_MASK |
+			       (10 << MPIC_VECPRI_PRIORITY_SHIFT) |
+			       (mpic->ipi_vecs[0] + i));
+	}
+
+	/* Initialize interrupt sources */
+	if (mpic->irq_count == 0)
+		mpic->irq_count = mpic->num_sources;
+
+	/* Do the HT PIC fixups on U3 broken mpic */
+	DBG("MPIC flags: %x\n", mpic->flags);
+	if ((mpic->flags & MPIC_U3_HT_IRQS) && (mpic->flags & MPIC_PRIMARY)) {
+		mpic_scan_ht_pics(mpic);
+		mpic_u3msi_init(mpic);
+	}
+
+#ifdef CONFIG_PM
+	if (!resumed_from_deepsleep())
+#endif
+		mpic_pasemi_msi_init(mpic);
+
+	cpu = mpic_processor_id(mpic);
+
+	if (!(mpic->flags & MPIC_NO_RESET)) {
+		for (i = 0; i < mpic->num_sources; i++) {
+			/* start with vector = source number, and masked */
+			u32 vecpri = MPIC_VECPRI_MASK | i |
+				(8 << MPIC_VECPRI_PRIORITY_SHIFT);
+		
+			/* check if protected */
+			if (mpic->protected && test_bit(i, mpic->protected))
+				continue;
+			/* init hw */
+			mpic_irq_write(i, MPIC_INFO(IRQ_VECTOR_PRI), vecpri);
+			mpic_irq_write(i, MPIC_INFO(IRQ_DESTINATION), 1 << cpu);
+		}
+	}
+	
+	/* Init spurious vector */
+	mpic_write(mpic->gregs, MPIC_INFO(GREG_SPURIOUS), mpic->spurious_vec);
+
+	/* Disable 8259 passthrough, if supported */
+	if (!(mpic->flags & MPIC_NO_PTHROU_DIS))
+		mpic_write(mpic->gregs, MPIC_INFO(GREG_GLOBAL_CONF_0),
+			   mpic_read(mpic->gregs, MPIC_INFO(GREG_GLOBAL_CONF_0))
+			   | MPIC_GREG_GCONF_8259_PTHROU_DIS);
+
+	if (mpic->flags & MPIC_NO_BIAS)
+		mpic_write(mpic->gregs, MPIC_INFO(GREG_GLOBAL_CONF_0),
+			mpic_read(mpic->gregs, MPIC_INFO(GREG_GLOBAL_CONF_0))
+			| MPIC_GREG_GCONF_NO_BIAS);
+
+	/* Set current processor priority to 0 */
+	mpic_cpu_write(MPIC_INFO(CPU_CURRENT_TASK_PRI), 0);
+
+#ifdef CONFIG_PM
+	if (mpic->save_data == NULL) {
+		/* allocate memory to save mpic state */
+		mpic->save_data = kmalloc(mpic->num_sources *
+sizeof(*mpic->save_data),
+					  GFP_KERNEL);
+		BUG_ON(mpic->save_data == NULL);
+	}
+#endif
+}
+
+void __init mpic_set_clk_ratio(struct mpic *mpic, u32 clock_ratio)
+{
+	u32 v;
+
+	v = mpic_read(mpic->gregs, MPIC_GREG_GLOBAL_CONF_1);
+	v &= ~MPIC_GREG_GLOBAL_CONF_1_CLK_RATIO_MASK;
+	v |= MPIC_GREG_GLOBAL_CONF_1_CLK_RATIO(clock_ratio);
+	mpic_write(mpic->gregs, MPIC_GREG_GLOBAL_CONF_1, v);
+}
+
+void __init mpic_set_serial_int(struct mpic *mpic, int enable)
+{
+	unsigned long flags;
+	u32 v;
+
+	raw_spin_lock_irqsave(&mpic_lock, flags);
+	v = mpic_read(mpic->gregs, MPIC_GREG_GLOBAL_CONF_1);
+	if (enable)
+		v |= MPIC_GREG_GLOBAL_CONF_1_SIE;
+	else
+		v &= ~MPIC_GREG_GLOBAL_CONF_1_SIE;
+	mpic_write(mpic->gregs, MPIC_GREG_GLOBAL_CONF_1, v);
+	raw_spin_unlock_irqrestore(&mpic_lock, flags);
+}
+
+void mpic_irq_set_priority(unsigned int irq, unsigned int pri)
+{
+	struct mpic *mpic = mpic_find(irq);
+	unsigned int src = virq_to_hw(irq);
+	unsigned long flags;
+	u32 reg;
+
+	if (!mpic)
+		return;
+
+	raw_spin_lock_irqsave(&mpic_lock, flags);
+	if (mpic_is_ipi(mpic, irq)) {
+		reg = mpic_ipi_read(src - mpic->ipi_vecs[0]) &
+			~MPIC_VECPRI_PRIORITY_MASK;
+		mpic_ipi_write(src - mpic->ipi_vecs[0],
+			       reg | (pri << MPIC_VECPRI_PRIORITY_SHIFT));
+	} else if (mpic_is_tm(mpic, irq)) {
+		reg = mpic_tm_read(src - mpic->timer_vecs[0]) &
+			~MPIC_VECPRI_PRIORITY_MASK;
+		mpic_tm_write(src - mpic->timer_vecs[0],
+			      reg | (pri << MPIC_VECPRI_PRIORITY_SHIFT));
+	} else if (mpic_is_gpt(mpic, irq)) {
+		reg = mpic_gpt_read(src) & ~MPIC_VECPRI_PRIORITY_MASK;
+		mpic_gpt_write(src, reg | (pri << MPIC_VECPRI_PRIORITY_SHIFT));
+	} else {
+		reg = mpic_irq_read(src, MPIC_INFO(IRQ_VECTOR_PRI))
+			& ~MPIC_VECPRI_PRIORITY_MASK;
+		mpic_irq_write(src, MPIC_INFO(IRQ_VECTOR_PRI),
+			       reg | (pri << MPIC_VECPRI_PRIORITY_SHIFT));
+	}
+	raw_spin_unlock_irqrestore(&mpic_lock, flags);
+}
+
+void mpic_setup_this_cpu(void)
+{
+#ifdef CONFIG_SMP
+	struct mpic *mpic = mpic_primary;
+	unsigned long flags;
+	u32 msk = 1 << hard_smp_processor_id();
+	unsigned int i;
+
+	BUG_ON(mpic == NULL);
+
+	DBG("%s: setup_this_cpu(%d)\n", mpic->name, hard_smp_processor_id());
+
+	raw_spin_lock_irqsave(&mpic_lock, flags);
+
+ 	/* let the mpic know we want intrs. default affinity is 0xffffffff
+	 * until changed via /proc. That's how it's done on x86. If we want
+	 * it differently, then we should make sure we also change the default
+	 * values of irq_desc[].affinity in irq.c.
+ 	 */
+	if (distribute_irqs) {
+		for (i = 0; i < mpic->num_sources ; i++) {
+			if (mpic->protected && test_bit(i, mpic->protected))
+				continue;
+			mpic_irq_write(i, MPIC_INFO(IRQ_DESTINATION),
+				mpic_irq_read(i, MPIC_INFO(IRQ_DESTINATION)) | msk);
+		}
+	}
+
+	/* Set current processor priority to 0 */
+	mpic_cpu_write(MPIC_INFO(CPU_CURRENT_TASK_PRI), 0);
+
+	raw_spin_unlock_irqrestore(&mpic_lock, flags);
+#endif /* CONFIG_SMP */
+}
+
+int mpic_cpu_get_priority(void)
+{
+	struct mpic *mpic = mpic_primary;
+
+	return mpic_cpu_read(MPIC_INFO(CPU_CURRENT_TASK_PRI));
+}
+
+void mpic_cpu_set_priority(int prio)
+{
+	struct mpic *mpic = mpic_primary;
+
+	prio &= MPIC_CPU_TASKPRI_MASK;
+	mpic_cpu_write(MPIC_INFO(CPU_CURRENT_TASK_PRI), prio);
+}
+
+void mpic_teardown_this_cpu(int secondary)
+{
+	struct mpic *mpic = mpic_primary;
+	unsigned long flags;
+	u32 msk = 1 << hard_smp_processor_id();
+	unsigned int i;
+
+	BUG_ON(mpic == NULL);
+
+	DBG("%s: teardown_this_cpu(%d)\n", mpic->name,
+hard_smp_processor_id());
+	raw_spin_lock_irqsave(&mpic_lock, flags);
+
+	/* let the mpic know we don't want intrs.  */
+	for (i = 0; i < mpic->num_sources ; i++) {
+		if (mpic->protected && test_bit(i, mpic->protected))
+			continue;
+		mpic_irq_write(i, MPIC_INFO(IRQ_DESTINATION),
+			mpic_irq_read(i, MPIC_INFO(IRQ_DESTINATION)) & ~msk);
+	}
+
+	/* Set current processor priority to max */
+	mpic_cpu_write(MPIC_INFO(CPU_CURRENT_TASK_PRI), 0xf);
+	/* We need to EOI the IPI since not all platforms reset the MPIC
+	 * on boot and new interrupts wouldn't get delivered otherwise.
+	 */
+	mpic_eoi(mpic);
+
+	raw_spin_unlock_irqrestore(&mpic_lock, flags);
+}
+
+unsigned int mpic_read_msg(unsigned int irq)
+{
+	struct mpic *mpic = mpic_primary;
+
+	BUG_ON(!mpic || irq < MPIC_MSG_INTR 
+			|| irq >= (MPIC_MSG_INTR + MPIC_MSG_NUMS));
+
+#if defined(CONFIG_APM86xxx)
+	mpic_write(mpic->tmregs,
+			MPIC_INFO(TIMER_BASE_OFFS) + MPIC_INFO(MSG_MSTR_OFFS),
+			1 << (irq - MPIC_MSG_INTR));
+#endif
+
+	return mpic_read(mpic->tmregs, MPIC_INFO(MSG_REG_OFFS)
+			+ (irq - MPIC_MSG_INTR) * MPIC_INFO(MSG_REG_STRIDE));
+}
+
+static unsigned int _mpic_get_one_irq(struct mpic *mpic, int reg)
+{
+	u32 src;
+
+	src = mpic_cpu_read(reg) & MPIC_INFO(VECPRI_VECTOR_MASK);
+#ifdef DEBUG_LOW
+	DBG("%s: get_one_irq(reg 0x%x): %d\n", mpic->name, reg, src);
+#endif
+	if (unlikely(src == mpic->spurious_vec)) {
+		if (mpic->flags & MPIC_SPV_EOI)
+			mpic_eoi(mpic);
+		return NO_IRQ;
+	}
+	if (unlikely(mpic->protected && test_bit(src, mpic->protected))) {
+		printk_ratelimited(KERN_WARNING "%s: Got protected source %d !\n",
+				   mpic->name, (int)src);
+		mpic_eoi(mpic);
+		return NO_IRQ;
+	}
+
+	return irq_linear_revmap(mpic->irqhost, src);
+}
+
+unsigned int mpic_get_one_irq(struct mpic *mpic)
+{
+	return _mpic_get_one_irq(mpic, MPIC_INFO(CPU_INTACK));
+}
+
+unsigned int mpic_get_irq(void)
+{
+	struct mpic *mpic = mpic_primary;
+
+	BUG_ON(mpic == NULL);
+
+	return mpic_get_one_irq(mpic);
+}
+
+unsigned int mpic_get_coreint_irq(void)
+{
+#ifdef CONFIG_BOOKE
+	struct mpic *mpic = mpic_primary;
+	u32 src;
+
+	BUG_ON(mpic == NULL);
+
+	src = mfspr(SPRN_EPR);
+
+	if (unlikely(src == mpic->spurious_vec)) {
+		if (mpic->flags & MPIC_SPV_EOI)
+			mpic_eoi(mpic);
+		return NO_IRQ;
+	}
+	if (unlikely(mpic->protected && test_bit(src, mpic->protected))) {
+		printk_ratelimited(KERN_WARNING "%s: Got protected source %d !\n",
+				   mpic->name, (int)src);
+		return NO_IRQ;
+	}
+
+	return irq_linear_revmap(mpic->irqhost, src);
+#else
+	return NO_IRQ;
+#endif
+}
+
+unsigned int mpic_get_mcirq(void)
+{
+	struct mpic *mpic = mpic_primary;
+
+	BUG_ON(mpic == NULL);
+
+	return _mpic_get_one_irq(mpic, MPIC_INFO(CPU_MCACK));
+}
+
+#ifdef CONFIG_SMP
+void mpic_request_ipis(void)
+{
+	struct mpic *mpic = mpic_primary;
+	int i;
+	BUG_ON(mpic == NULL);
+
+	printk(KERN_INFO "mpic: requesting IPIs...\n");
+
+	for (i = 0; i < 4; i++) {
+		unsigned int vipi = irq_create_mapping(mpic->irqhost,
+						       mpic->ipi_vecs[0] + i);
+		if (vipi == NO_IRQ) {
+			printk(KERN_ERR "Failed to map %s\n", smp_ipi_name[i]);
+			continue;
+		}
+		smp_request_message_ipi(vipi, i);
+	}
+}
+
+void smp_mpic_message_pass(int cpu, int msg)
+{
+	struct mpic *mpic = mpic_primary;
+	u32 physmask;
+/* TODO: review for SMP */
+#if defined(CONFIG_APM86xxx) && defined(CONFIG_IPI_LOCK) &&
+defined(CONFIG_SMP)
+	unsigned long flags;
+#endif
+
+	BUG_ON(mpic == NULL);
+
+	/* make sure we're sending something that translates to an IPI */
+	if ((unsigned int)msg > 3) {
+		printk("SMP %d: smp_message_pass: unknown msg %d\n",
+		       smp_processor_id(), msg);
+		return;
+	}
+
+#ifdef DEBUG_IPI
+	DBG("%s: send_ipi(ipi_no: %d)\n", mpic->name, msg);
+#endif
+
+	physmask = 1 << get_hard_smp_processor_id(cpu);
+
+#if defined(CONFIG_SMP)
+#if defined(CONFIG_APM86xxx) && defined(CONFIG_IPI_LOCK)
+	spin_lock_irqsave(&ipi_lock[msg + hard_smp_processor_id() * 4], flags);
+#endif
+	mpic_cpu_write(MPIC_INFO(CPU_IPI_DISPATCH_0) +
+			msg * MPIC_INFO(CPU_IPI_DISPATCH_STRIDE), physmask);
+#if defined(CONFIG_APM86xxx) && defined(CONFIG_IPI_LOCK)
+	spin_unlock_irqrestore(&ipi_lock[msg + hard_smp_processor_id() * 4],
+flags);
+#endif
+
+#else	
+	mpic_cpu_write(MPIC_INFO(CPU_IPI_DISPATCH_0) +
+			msg * MPIC_INFO(CPU_IPI_DISPATCH_STRIDE), phymask);
+#endif /* CONFIG_SMP */
+}
+
+void mpic_send_trigger(unsigned int msg_idx, unsigned int core_id,
+		unsigned long core_entry)
+{
+	struct mpic *mpic = mpic_primary;
+	unsigned int vecprio;
+	unsigned int msiindex    = 116;         /* First Message Interrupt */
+	unsigned int msgrbase    =
+		MPIC_INFO(TIMER_BASE_OFFS) + 0x300;	/* Offset to message reg */
+	unsigned int merbase     =
+		MPIC_INFO(TIMER_BASE_OFFS) + 0x400;	/* Offset to messag enable reg*/
+	unsigned int msgr_stride = 0x10;
+
+	BUG_ON(mpic == NULL);
+
+	/* Enable interrupt */
+	vecprio = mpic_irq_read(msiindex + msg_idx, MPIC_INFO(IRQ_VECTOR_PRI));
+	vecprio &= ~MPIC_VECPRI_MASK;           
+	mpic_irq_write(msiindex + msg_idx, MPIC_INFO(IRQ_VECTOR_PRI), vecprio);
+	/* Set destination core */
+	mpic_irq_write(msiindex + msg_idx, MPIC_INFO(IRQ_DESTINATION),
+			1 << core_id);
+	/* Set message ID */                        
+	mpic_write(mpic->tmregs, merbase, 1 << msg_idx);
+	/* Send the message interrupt */
+	mpic_write(mpic->tmregs, msgrbase + msg_idx * msgr_stride, core_entry);
+	DBG("%s: send message to core %d vecpri 0x%08X dest 0x%08X\n", 
+			mpic->name, core_id, vecprio, 1 << core_id);
+}
+#endif /* CONFIG_SMP */
+
+unsigned int mpic_num_cpus(void)
+{
+	struct mpic *mpic = mpic_primary;
+	u32 greg_feature;
+	unsigned int num_cpus;
+
+	greg_feature = mpic_read(mpic->gregs, MPIC_INFO(GREG_FEATURE_0));
+        num_cpus = ((greg_feature & MPIC_GREG_FEATURE_LAST_CPU_MASK)
+                          >> MPIC_GREG_FEATURE_LAST_CPU_SHIFT) + 1;
+	return num_cpus;
+}
+
+void mpic_resetcore(unsigned int corenr)
+{
+	struct mpic *mpic = mpic_primary;
+	unsigned int reg_prr;
+
+#if 1 /* MAMBA_FIXME_MODEL_WORKAROUND */
+	/*
+	 * NOTE there is a bug in the Model so do the following
+	 *      1) Read PRR
+	 *      2) Assert NR bit
+	 *      3) Delay for a bit (two print statement will do)
+	 *      4) Read PRR
+	 *      5) Deassert NR bit
+	 */
+	reg_prr = mpic_read(mpic->gregs, MPIC_INFO(GREG_PRR));
+	mpic_write(mpic->gregs, MPIC_INFO(GREG_PRR), reg_prr | (1 << corenr));
+
+	printk(KERN_INFO "Resetting CPU #%d", corenr);
+	printk("            \n");
+
+	reg_prr = mpic_read(mpic->gregs, MPIC_INFO(GREG_PRR));
+	mpic_write(mpic->gregs, MPIC_INFO(GREG_PRR), reg_prr & ~(1 << corenr));
+#else
+	reg_prr = mpic_read(mpic->gregs, MPIC_INFO(GREG_PRR));
+	mpic_write(mpic->gregs, MPIC_INFO(GREG_PRR), reg_prr | (1 << corenr));
+
+	reg_prr = mpic_read(mpic->gregs, MPIC_INFO(GREG_PRR));
+	mpic_write(mpic->gregs, MPIC_INFO(GREG_PRR), reg_prr & ~(1 << corenr));
+#endif
+}
+
+void mpic_assertcore(unsigned int corenr)
+{
+	struct mpic *mpic = mpic_primary;
+	unsigned int reg_prr;
+	unsigned int tmp_prr;
+
+	reg_prr = mpic_read(mpic->gregs, MPIC_INFO(GREG_PRR));
+	reg_prr |= (1 << corenr);
+
+	mpic_write(mpic->gregs, MPIC_INFO(GREG_PRR), reg_prr);
+	udelay(100);
+
+	tmp_prr = mpic_read(mpic->gregs, MPIC_INFO(GREG_PRR));
+
+	if ( reg_prr != tmp_prr)
+		printk(KERN_ERR "failed to assert core %d\n", corenr);
+}
+
+#if defined(CONFIG_SMP)
+int __init smp_mpic_probe(void)
+{
+	int nr_cpus;
+
+	DBG("smp_mpic_probe()...\n");
+
+	nr_cpus = cpumask_weight(cpu_possible_mask);
+
+	DBG("nr_cpus: %d\n", nr_cpus);
+
+	if (nr_cpus > 1)
+		mpic_request_ipis();
+
+	return nr_cpus;
+}
+
+void __devinit smp_mpic_setup_cpu(int cpu)
+{
+	mpic_setup_this_cpu();
+}
+#endif
+
+void mpic_reset_core(int cpu)
+{
+	struct mpic *mpic = mpic_primary;
+	u32 pir;
+	int cpuid = get_hard_smp_processor_id(cpu);
+	int i;
+
+	/* Set target bit for core reset */
+	pir = mpic_read(mpic->gregs, MPIC_INFO(GREG_PROCESSOR_INIT));
+	pir |= (1 << cpuid);
+	mpic_write(mpic->gregs, MPIC_INFO(GREG_PROCESSOR_INIT), pir);
+	mpic_read(mpic->gregs, MPIC_INFO(GREG_PROCESSOR_INIT));
+
+	/* Restore target bit after reset complete */
+	pir &= ~(1 << cpuid);
+	mpic_write(mpic->gregs, MPIC_INFO(GREG_PROCESSOR_INIT), pir);
+	mpic_read(mpic->gregs, MPIC_INFO(GREG_PROCESSOR_INIT));
+
+	/* Perform 15 EOI on each reset core to clear pending interrupts.
+	 * This is required for FSL CoreNet based devices */
+	if (mpic->flags & MPIC_FSL) {
+		for (i = 0; i < 15; i++) {
+			_mpic_write(mpic->reg_type, &mpic->cpuregs[cpuid],
+				      MPIC_CPU_EOI, 0);
+		}
+	}
+}
+
+#ifdef CONFIG_PM
+static void mpic_suspend_one(struct mpic *mpic)
+{
+	int i;
+
+	for (i = 0; i < mpic->num_sources; i++) {
+		if (mpic->protected && test_bit(i, mpic->protected))
+			continue;
+		mpic->save_data[i].vecprio =
+			mpic_irq_read(i, MPIC_INFO(IRQ_VECTOR_PRI));
+		mpic->save_data[i].dest =
+			mpic_irq_read(i, MPIC_INFO(IRQ_DESTINATION));
+	}
+}
+
+static int mpic_suspend(void)
+{
+	struct mpic *mpic = mpics;
+
+	while (mpic) {
+		mpic_suspend_one(mpic);
+		mpic = mpic->next;
+	}
+
+	return 0;
+}
+
+static void mpic_resume_one(struct mpic *mpic)
+{
+	int i;
+
+	if (!resumed_from_deepsleep())
+		goto mpic_restore;
+
+	/* Reset */
+	if (mpic->flags & MPIC_WANTS_RESET) {
+		mpic_write(mpic->gregs, MPIC_INFO(GREG_GLOBAL_CONF_0),
+				mpic_read(mpic->gregs, MPIC_INFO(GREG_GLOBAL_CONF_0))
+				| MPIC_GREG_GCONF_RESET);
+		while( mpic_read(mpic->gregs, MPIC_INFO(GREG_GLOBAL_CONF_0))
+				& MPIC_GREG_GCONF_RESET)
+			mb();
+	}
+
+	/* CoreInt */
+	if (mpic->flags & MPIC_ENABLE_COREINT)
+		mpic_write(mpic->gregs, MPIC_INFO(GREG_GLOBAL_CONF_0),
+				mpic_read(mpic->gregs, MPIC_INFO(GREG_GLOBAL_CONF_0))
+				| MPIC_GREG_GCONF_COREINT);
+
+	if (mpic->flags & MPIC_ENABLE_MCK)
+		mpic_write(mpic->gregs, MPIC_INFO(GREG_GLOBAL_CONF_0),
+				mpic_read(mpic->gregs, MPIC_INFO(GREG_GLOBAL_CONF_0))
+				| MPIC_GREG_GCONF_MCK);
+
+	mpic_init(mpic);
+
+mpic_restore:
+	for (i = 0; i < mpic->num_sources; i++) {
+		if (mpic->protected && test_bit(i, mpic->protected))
+			continue;
+		mpic_irq_write(i, MPIC_INFO(IRQ_VECTOR_PRI),
+			       mpic->save_data[i].vecprio);
+		mpic_irq_write(i, MPIC_INFO(IRQ_DESTINATION),
+			       mpic->save_data[i].dest);
+
+#ifdef CONFIG_MPIC_U3_HT_IRQS
+	if (mpic->fixups) {
+		struct mpic_irq_fixup *fixup = &mpic->fixups[i];
+
+		if (fixup->base) {
+			/* we use the lowest bit in an inverted meaning */
+			if ((mpic->save_data[i].fixup_data & 1) == 0)
+				continue;
+
+			/* Enable and configure */
+			writeb(0x10 + 2 * fixup->index, fixup->base + 2);
+
+			writel(mpic->save_data[i].fixup_data & ~1,
+			       fixup->base + 4);
+		}
+	}
+#endif
+	} /* end for loop */
+	if (resumed_from_deepsleep()) {
+		/* Set current processor priority to 0 */
+		mpic_cpu_write(MPIC_INFO(CPU_CURRENT_TASK_PRI), 0);
+	}
+}
+
+static void mpic_resume(void)
+{
+	struct mpic *mpic = mpics;
+
+	while (mpic) {
+		mpic_resume_one(mpic);
+		mpic = mpic->next;
+	}
+}
+
+static struct syscore_ops mpic_syscore_ops = {
+	.resume = mpic_resume,
+	.suspend = mpic_suspend,
+};
+
+static int mpic_init_sys(void)
+{
+	register_syscore_ops(&mpic_syscore_ops);
+	return 0;
+}
+
+device_initcall(mpic_init_sys);
+
+#endif
+
+
+
+
+Outbound scan for Spam or Virus by Barracuda at Delta Tau
+
 
