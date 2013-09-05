@@ -1,5 +1,5 @@
-Message-ID: <5228FA40.6010107@xenomai.org>
-Date: Thu, 05 Sep 2013 23:40:16 +0200
+Message-ID: <5228FAE9.4000904@xenomai.org>
+Date: Thu, 05 Sep 2013 23:43:05 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <51CD5651.6030804@wanadoo.fr> <51D07B48.9060206@xenomai.org>
@@ -43,8 +43,11 @@ On 09/05/2013 11:32 PM, Thierry Bultel wrote:
 > both cases.
 > Does anyone have an idea ?
 
-Are you sure the CPU is running at the same frequency in both cases?
-Have you checked the kernel parameter I talked you about 3 monthes ago?
+Also, check the idle routine, maybe the mx6 specific patch removes some
+parts of the idle routine because it causes high latencies, which the
+mainline I-pipe patch can not do because it does not patch the mx6
+specific code.
+
 
 -- 
                                                                 Gilles.
