@@ -1,11 +1,9 @@
-Message-ID: <5229DB45.4030606@sigmatek.at>
-Date: Fri, 06 Sep 2013 15:40:21 +0200
-From: Johann Obermayr <johann.obermayr@sigmatek.at>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] xenomai freeze
-Reply-To: johann.obermayr@sigmatek.at
+Date: Fri, 6 Sep 2013 11:02:33 -0400
+Message-ID: <CAGQdp5xsj_rFLHiiYzOk1yb2fkFT_gLAQKrAkLYOvgoL+sfFZw@mail.gmail.com>
+From: Robert McCullough <robmccullough13@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: [Xenomai] rt_dev_open returns 0, not working
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,25 +12,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Xenomai@xenomai.org
 
-Hello,
+Hi,
 
-we use xenomai 2.5.6 with Linux 2.6.38.
-on a x86 platform. sometime after the message Xenomai: hal/i386 started
-the cpu is freezing.
+I am using Xenomai 2.6.2.1.
 
-this trouble is on 8 of 10 machines.
-most time after reboot. but some times on power on.
+I have a  RTDM driver "rt_kmdpr" that I have developed and used for many
+years.
+When I open it with our older application rt_dev_open returns 1 for the
+file number and everything works fine.
+With a different application on a different device when I open it
+rt_dev_open returns 0.
+>From the Xenomai API, a zero returned from  rt_dev_open should be
+valid.  "Positive
+file descriptor value on success, otherwise a negative error code."
+But when I call rt_dev_ioctl (0,...) it returns a -9, which I assume is
+-EBADF ("Bad file number").
 
+Is zero returned from rt_dev_open a valid file number?
+If so, why is rt_dev_ioctl returning a -9?
 
-[    0.075111] Xenomai: hal/i386 started.
---------- hangs many time ------------
-[    0.077132] Xenomai: scheduling class idle registered.
-
-any idee where we can fidn a solution ?
-
-Thanks
-   Johann
-
-
+Best Regards,
+Rob McCullough
