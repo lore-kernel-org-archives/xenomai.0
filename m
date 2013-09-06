@@ -1,9 +1,12 @@
+Message-ID: <5229F54B.4000008@xenomai.org>
+Date: Fri, 06 Sep 2013 17:31:23 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Date: Fri, 6 Sep 2013 11:02:33 -0400
-Message-ID: <CAGQdp5xsj_rFLHiiYzOk1yb2fkFT_gLAQKrAkLYOvgoL+sfFZw@mail.gmail.com>
-From: Robert McCullough <robmccullough13@gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Subject: [Xenomai] rt_dev_open returns 0, not working
+References: <5229DB45.4030606@sigmatek.at>
+In-Reply-To: <5229DB45.4030606@sigmatek.at>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] xenomai freeze
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,26 +15,18 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai@xenomai.org
+To: johann.obermayr@sigmatek.at
+Cc: xenomai@xenomai.org
 
-Hi,
+On 09/06/2013 03:40 PM, Johann Obermayr wrote:
+> Hello,
+> 
+> we use xenomai 2.5.6 with Linux 2.6.38.
 
-I am using Xenomai 2.6.2.1.
+Can you reproduce this with Xenomai 2.6.2.1? You can keep using Linux
+2.6.38 if you like, but you need to recompile it for the new version of
+Xenomai.
 
-I have a  RTDM driver "rt_kmdpr" that I have developed and used for many
-years.
-When I open it with our older application rt_dev_open returns 1 for the
-file number and everything works fine.
-With a different application on a different device when I open it
-rt_dev_open returns 0.
->From the Xenomai API, a zero returned from  rt_dev_open should be
-valid.  "Positive
-file descriptor value on success, otherwise a negative error code."
-But when I call rt_dev_ioctl (0,...) it returns a -9, which I assume is
--EBADF ("Bad file number").
+-- 
+                                                                Gilles.
 
-Is zero returned from rt_dev_open a valid file number?
-If so, why is rt_dev_ioctl returning a -9?
-
-Best Regards,
-Rob McCullough
