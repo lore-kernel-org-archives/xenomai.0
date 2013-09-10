@@ -1,16 +1,16 @@
-Message-ID: <522F8D26.8010907@steinkuehler.net>
-Date: Tue, 10 Sep 2013 16:20:38 -0500
-From: Charles Steinkuehler <charles@steinkuehler.net>
+From: Paul <paul_c@tuxcnc.org>
+Date: Wed, 11 Sep 2013 00:57:41 +0100
+References: <E9605457112439448B6B3ED284E06533317AC337@mbx256-1.adm.swri.edu>
+	<201305232352.24308.paul_c@tuxcnc.org>
+	<522F68FD.9070009@xenomai.org>
+In-Reply-To: <522F68FD.9070009@xenomai.org>
 MIME-Version: 1.0
-References: <52138425.2030000@steinkuehler.net> <5213B7D3.5030606@xenomai.org>
-	<5213C836.403@steinkuehler.net> <5213C9AD.2010903@xenomai.org>
-	<5213D09E.80103@steinkuehler.net> <5214BDC1.30104@steinkuehler.net>
-	<5215061E.6060305@xenomai.org> <521D053B.7010005@steinkuehler.net>
-	<522F696E.4090703@xenomai.org>
-In-Reply-To: <522F696E.4090703@xenomai.org>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] [PATCH] BeagleBone 3.8.13 pre/post patches
+Content-Type: text/plain;
+  charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Message-Id: <201309110057.41709.paul_c@tuxcnc.org>
+Subject: Re: [Xenomai] Next Xenomai Release?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,34 +22,48 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-T24gOS8xMC8yMDEzIDE6NDggUE0sIEdpbGxlcyBDaGFudGVwZXJkcml4IHdyb3RlOgo+IE9uIDA4
-LzI3LzIwMTMgMDk6NTkgUE0sIENoYXJsZXMgU3RlaW5rdWVobGVyIHdyb3RlOgoKPj4gSSBtYWRl
-IGEgcHJlL3Bvc3QgcGF0Y2ggc2V0IGZvciB0aGUgQmVhZ2xlQm9uZSAzLjguMTMga2VybmVsIGFu
-ZCBhZGRlZAo+PiB0aGUgZmlsZXMgdG8gbXkgeGVub21haSAyLjYgcmVwb3NpdG9yeSAocGF0Y2gg
-YXR0YWNoZWQpLgo+Pgo+PiBOb3RlIHRoYXQgSSBqdXN0IGFkZGVkIHRoZSBmaWxlcy4uLkkgZGlk
-bid0IGRvIGFueXRoaW5nIHRvIHRyeSBhbmQKPj4gaW50ZWdyYXRlIHRoZXNlIHdpdGggdGhlIHBy
-ZXBhcmVfa2VybmVsLnNoIHNjcmlwdCAoc2luY2UgSSdtIGFwcGx5aW5nCj4+IHRoZSBpcGlwZSBw
-YXRjaCBmcm9tIGdpdCBtYW51YWxseSkgb3IgYWRkIGRvY3VtZW50YXRpb24uICBXaXRoIHRoaXMs
-IHRoZQo+PiBwYXRjaCBnZW5lcmF0ZWQgZnJvbSB0aGUgY3VycmVudCBnaXQgaXBpcGUtMy44IGJy
-YW5jaCBhcHBsaWVzIGNsZWFubHkuCj4+Cj4+IEFueXdheSwgdGhlIHBhdGNoIHR1cm5lZCBvdXQg
-dG8gYmUgcXVpdGUgc2ltcGxlIGFuZCB3aWxsIGhvcGVmdWxseSByb2xsCj4+IGZvcndhcmQgZmFp
-cmx5IHdlbGwuCj4gCj4gSGkgQ2hhcmxlcywKPiAKPiBUaGUgZmluYWwgdmVyc2lvbiBvZiB0aGUg
-SS1waXBlIHBhdGNoIGZvciAzLjguMTMgaXMgYXZhaWxhYmxlLCBjb3VsZCB5b3UKPiBjaGVjayB0
-aGUgcGF0Y2hlcyB5b3UgcG9zdGVkIG5lZWQgcmViYXNpbmc/CgpJIGhhdmUgdmVyaWZpZWQgdGhl
-IHBhdGNoZXMgc3RpbGwgYXBwbHkgY2xlYW5seSwgYW5kIHRoZSByZXN1bHRpbmcKa2VybmVsIGJ1
-aWxkcyBhbmQgb3BlcmF0ZXMgYXMgZXhwZWN0ZWQuCgpJIHVzZWQgYW4gaXBpcGUgcGF0Y2ggZ2Vu
-ZXJhdGVkIGZyb20gdGhlIGlwaXBlLmdpdCByZXBvLCBidXQgSSB2ZXJpZmllZAppdCBpcyBpZGVu
-dGljYWwgdG8gdGhlIGlwaXBlIHBhdGNoIGluIHhlbm9tYWktMi42IG1hc3Rlci4KCkkgZGlkbid0
-IHNlZSB0aGUgYmVhZ2xlYm9uZSAzLjguMTMgLXByZSBhbmQgLXBvc3QgcGF0Y2hlcyBpbiB0aGUg
-eGVub21haQoyLjYgZ2l0IHJlcG9zaXRvcnkgKGp1c3QgdGhlIG9sZGVyIDMuMiB2ZXJzaW9uKSwg
-YnV0IEkgdXNlZCB0aGUgc2FtZQpvbmVzIEkgc2VudCBpbiBwcmV2aW91c2x5LgoKTGV0IG1lIGtu
-b3cgaWYgdGhlcmUgaXMgYW55dGhpbmcgSSBuZWVkIHRvIGRvIHRvIGFzc2lzdCB3aXRoIGdldHRp
-bmcgdGhlCmJlYWdsZWJvbmUgMy44LjEzIHByZS9wb3N0IHBhdGNoZXMgYWRkZWQgdG8gMi42IG1h
-c3Rlci4KClRoYW5rcyBmb3IgYWxsIHRoZSBncmVhdCB3b3JrLCBJJ20gbG9va2luZyBmb3J3YXJk
-IHRvIHRoZSBuZXh0IHJlbGVhc2UhCgotLSAKQ2hhcmxlcyBTdGVpbmt1ZWhsZXIKY2hhcmxlc0Bz
-dGVpbmt1ZWhsZXIubmV0CgotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0K
-QSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBzaWduYXR1cmUuYXNj
-ClR5cGU6IGFwcGxpY2F0aW9uL3BncC1zaWduYXR1cmUKU2l6ZTogMjYxIGJ5dGVzCkRlc2M6IE9w
-ZW5QR1AgZGlnaXRhbCBzaWduYXR1cmUKVVJMOiA8aHR0cDovL3d3dy54ZW5vbWFpLm9yZy9waXBl
-cm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDEzMDkxMC9mNTY3OTYzNy9hdHRhY2htZW50LnBn
-cD4K
+On Tuesday 10 September 2013, Gilles Chanteperdrix wrote:
+> On 05/24/2013 12:52 AM, Paul wrote:
+> > On Thursday 23 May 2013, Gilles Chanteperdrix wrote:
+> >> On 05/23/2013 05:57 PM, Poole Jr, Donald R. wrote:
+> >>> I guess I overlooked that post and response. Any clarifying
+> >>> words/steps on what needs to be done to get the 3.8.x kernel
+> >>> patched with Xenomai for running on the Beaglebone/Raspberry Pi
+> >>> in the meantime?
+> >>
+> >> For beaglebone, it is integrated in the I-pipe tree for the ARM
+> >> architecture (git://git.xenomai.org/ipipe-gch.git, branch
+> >> for-core-3.8), which is currently based on 3.8.0 but will probably
+> >> be rebased on a more recent version for the I-pipe 3.8 release,
+> >> for the raspberry pi, you can try the patch which has been posted
+> >> by Paul, but probably needs rebasing once the I-pipe for 3.8 is
+> >> released.
+> >
+> > I have a set of patches ready for 3.8.8 based on the "official"
+> > Raspberry Pi sources [1] - Need to reduce the current set of nine
+> > down to a pre and post pair which I'll try to do over the weekend.
+> > In the meantime, if anyone wants to take the set for a spin, drop
+> > me a note and I'll send them over.
+>
+> Hi Paul,
+>
+> I have at last pushed the final version of the I-pipe patch for Linux
+> 3.8.13, it is available both in the xenomai git as a patch and in the
+> I-pipe git.
+>
+> Could you rebase the pre- and post- patches for Raspberry so that I
+> can put them in the Xenomai sources too?
+
+Will do, although it will have to wait until the weekend.
+
+> Also note that the I-pipe patch for 3.10.0 is available, but it is
+> probably not yet the final version.
+
+Looks like BCM2835 support is making its way in to the mainline kernel, 
+so I'll also take a look at 3.10.y and report back.
+
+> Thanks in advance.
+> Regards.
+
+
+
