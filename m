@@ -1,14 +1,15 @@
-Message-ID: <522F696E.4090703@xenomai.org>
-Date: Tue, 10 Sep 2013 20:48:14 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <522F8D26.8010907@steinkuehler.net>
+Date: Tue, 10 Sep 2013 16:20:38 -0500
+From: Charles Steinkuehler <charles@steinkuehler.net>
 MIME-Version: 1.0
 References: <52138425.2030000@steinkuehler.net> <5213B7D3.5030606@xenomai.org>
 	<5213C836.403@steinkuehler.net> <5213C9AD.2010903@xenomai.org>
 	<5213D09E.80103@steinkuehler.net> <5214BDC1.30104@steinkuehler.net>
 	<5215061E.6060305@xenomai.org> <521D053B.7010005@steinkuehler.net>
-In-Reply-To: <521D053B.7010005@steinkuehler.net>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+	<522F696E.4090703@xenomai.org>
+In-Reply-To: <522F696E.4090703@xenomai.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Subject: Re: [Xenomai] [PATCH] BeagleBone 3.8.13 pre/post patches
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -18,48 +19,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Charles Steinkuehler <charles@steinkuehler.net>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On 08/27/2013 09:59 PM, Charles Steinkuehler wrote:
-> On 8/21/2013 1:25 PM, Gilles Chanteperdrix wrote:
->> On 08/21/2013 03:16 PM, Charles Steinkuehler wrote:
->>> [1] There was one hunk I could not get to apply automatically.  The code
->>> in gpmc.c has changed extensively enough that git apply doesn't work
->>> with this file.  To work around this, I skip this file when applying the
->>> ipipe patch, and use a manual fix-up of the trivial 2-line change:
->>>
->>> https://github.com/cdsteinkuehler/linux-dev/blob/am33x-v3.8-bone26-xenomai/patches/xenomai/0001-ipipe-core-3.8.13-arm-1.gpmc.patch
->>>
->>> There's probably a better way to work around this problem, but this
->>> should do until the next official xenomai release comes out...any day
->>> now, right?!?  :)  Anyway, it doesn't look like it will be that hard to
->>> roll forward with updated ipipe or xenomai patches.
->>
->> The general way to handle the non-mainline kernels is with a pre and
->> post patch. The pre patch removes the changes which conflicts, and the
->> post patch adds the merge.
-> 
-> I made a pre/post patch set for the BeagleBone 3.8.13 kernel and added
-> the files to my xenomai 2.6 repository (patch attached).
-> 
-> Note that I just added the files...I didn't do anything to try and
-> integrate these with the prepare_kernel.sh script (since I'm applying
-> the ipipe patch from git manually) or add documentation.  With this, the
-> patch generated from the current git ipipe-3.8 branch applies cleanly.
-> 
-> Anyway, the patch turned out to be quite simple and will hopefully roll
-> forward fairly well.
-
-Hi Charles,
-
-The final version of the I-pipe patch for 3.8.13 is available, could you
-check the patches you posted need rebasing?
-
-Thanks in advance.
-Regards.
-
-
--- 
-                                                                Gilles.
-
+T24gOS8xMC8yMDEzIDE6NDggUE0sIEdpbGxlcyBDaGFudGVwZXJkcml4IHdyb3RlOgo+IE9uIDA4
+LzI3LzIwMTMgMDk6NTkgUE0sIENoYXJsZXMgU3RlaW5rdWVobGVyIHdyb3RlOgoKPj4gSSBtYWRl
+IGEgcHJlL3Bvc3QgcGF0Y2ggc2V0IGZvciB0aGUgQmVhZ2xlQm9uZSAzLjguMTMga2VybmVsIGFu
+ZCBhZGRlZAo+PiB0aGUgZmlsZXMgdG8gbXkgeGVub21haSAyLjYgcmVwb3NpdG9yeSAocGF0Y2gg
+YXR0YWNoZWQpLgo+Pgo+PiBOb3RlIHRoYXQgSSBqdXN0IGFkZGVkIHRoZSBmaWxlcy4uLkkgZGlk
+bid0IGRvIGFueXRoaW5nIHRvIHRyeSBhbmQKPj4gaW50ZWdyYXRlIHRoZXNlIHdpdGggdGhlIHBy
+ZXBhcmVfa2VybmVsLnNoIHNjcmlwdCAoc2luY2UgSSdtIGFwcGx5aW5nCj4+IHRoZSBpcGlwZSBw
+YXRjaCBmcm9tIGdpdCBtYW51YWxseSkgb3IgYWRkIGRvY3VtZW50YXRpb24uICBXaXRoIHRoaXMs
+IHRoZQo+PiBwYXRjaCBnZW5lcmF0ZWQgZnJvbSB0aGUgY3VycmVudCBnaXQgaXBpcGUtMy44IGJy
+YW5jaCBhcHBsaWVzIGNsZWFubHkuCj4+Cj4+IEFueXdheSwgdGhlIHBhdGNoIHR1cm5lZCBvdXQg
+dG8gYmUgcXVpdGUgc2ltcGxlIGFuZCB3aWxsIGhvcGVmdWxseSByb2xsCj4+IGZvcndhcmQgZmFp
+cmx5IHdlbGwuCj4gCj4gSGkgQ2hhcmxlcywKPiAKPiBUaGUgZmluYWwgdmVyc2lvbiBvZiB0aGUg
+SS1waXBlIHBhdGNoIGZvciAzLjguMTMgaXMgYXZhaWxhYmxlLCBjb3VsZCB5b3UKPiBjaGVjayB0
+aGUgcGF0Y2hlcyB5b3UgcG9zdGVkIG5lZWQgcmViYXNpbmc/CgpJIGhhdmUgdmVyaWZpZWQgdGhl
+IHBhdGNoZXMgc3RpbGwgYXBwbHkgY2xlYW5seSwgYW5kIHRoZSByZXN1bHRpbmcKa2VybmVsIGJ1
+aWxkcyBhbmQgb3BlcmF0ZXMgYXMgZXhwZWN0ZWQuCgpJIHVzZWQgYW4gaXBpcGUgcGF0Y2ggZ2Vu
+ZXJhdGVkIGZyb20gdGhlIGlwaXBlLmdpdCByZXBvLCBidXQgSSB2ZXJpZmllZAppdCBpcyBpZGVu
+dGljYWwgdG8gdGhlIGlwaXBlIHBhdGNoIGluIHhlbm9tYWktMi42IG1hc3Rlci4KCkkgZGlkbid0
+IHNlZSB0aGUgYmVhZ2xlYm9uZSAzLjguMTMgLXByZSBhbmQgLXBvc3QgcGF0Y2hlcyBpbiB0aGUg
+eGVub21haQoyLjYgZ2l0IHJlcG9zaXRvcnkgKGp1c3QgdGhlIG9sZGVyIDMuMiB2ZXJzaW9uKSwg
+YnV0IEkgdXNlZCB0aGUgc2FtZQpvbmVzIEkgc2VudCBpbiBwcmV2aW91c2x5LgoKTGV0IG1lIGtu
+b3cgaWYgdGhlcmUgaXMgYW55dGhpbmcgSSBuZWVkIHRvIGRvIHRvIGFzc2lzdCB3aXRoIGdldHRp
+bmcgdGhlCmJlYWdsZWJvbmUgMy44LjEzIHByZS9wb3N0IHBhdGNoZXMgYWRkZWQgdG8gMi42IG1h
+c3Rlci4KClRoYW5rcyBmb3IgYWxsIHRoZSBncmVhdCB3b3JrLCBJJ20gbG9va2luZyBmb3J3YXJk
+IHRvIHRoZSBuZXh0IHJlbGVhc2UhCgotLSAKQ2hhcmxlcyBTdGVpbmt1ZWhsZXIKY2hhcmxlc0Bz
+dGVpbmt1ZWhsZXIubmV0CgotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0K
+QSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBzaWduYXR1cmUuYXNj
+ClR5cGU6IGFwcGxpY2F0aW9uL3BncC1zaWduYXR1cmUKU2l6ZTogMjYxIGJ5dGVzCkRlc2M6IE9w
+ZW5QR1AgZGlnaXRhbCBzaWduYXR1cmUKVVJMOiA8aHR0cDovL3d3dy54ZW5vbWFpLm9yZy9waXBl
+cm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDEzMDkxMC9mNTY3OTYzNy9hdHRhY2htZW50LnBn
+cD4K
