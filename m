@@ -1,14 +1,15 @@
-Message-ID: <522F68FD.9070009@xenomai.org>
-Date: Tue, 10 Sep 2013 20:46:21 +0200
+Message-ID: <522F696E.4090703@xenomai.org>
+Date: Tue, 10 Sep 2013 20:48:14 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <E9605457112439448B6B3ED284E06533317AC337@mbx256-1.adm.swri.edu>
-	<519E677F.9050001@xenomai.org>
-	<201305232352.24308.paul_c@tuxcnc.org>
-In-Reply-To: <201305232352.24308.paul_c@tuxcnc.org>
+References: <52138425.2030000@steinkuehler.net> <5213B7D3.5030606@xenomai.org>
+	<5213C836.403@steinkuehler.net> <5213C9AD.2010903@xenomai.org>
+	<5213D09E.80103@steinkuehler.net> <5214BDC1.30104@steinkuehler.net>
+	<5215061E.6060305@xenomai.org> <521D053B.7010005@steinkuehler.net>
+In-Reply-To: <521D053B.7010005@steinkuehler.net>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Next Xenomai Release?
+Subject: Re: [Xenomai] [PATCH] BeagleBone 3.8.13 pre/post patches
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,45 +18,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Paul <paul_c@tuxcnc.org>
+To: Charles Steinkuehler <charles@steinkuehler.net>
 Cc: xenomai@xenomai.org
 
-On 05/24/2013 12:52 AM, Paul wrote:
-> On Thursday 23 May 2013, Gilles Chanteperdrix wrote:
->> On 05/23/2013 05:57 PM, Poole Jr, Donald R. wrote:
->>> I guess I overlooked that post and response. Any clarifying
->>> words/steps on what needs to be done to get the 3.8.x kernel
->>> patched with Xenomai for running on the Beaglebone/Raspberry Pi in
->>> the meantime?
+On 08/27/2013 09:59 PM, Charles Steinkuehler wrote:
+> On 8/21/2013 1:25 PM, Gilles Chanteperdrix wrote:
+>> On 08/21/2013 03:16 PM, Charles Steinkuehler wrote:
+>>> [1] There was one hunk I could not get to apply automatically.  The code
+>>> in gpmc.c has changed extensively enough that git apply doesn't work
+>>> with this file.  To work around this, I skip this file when applying the
+>>> ipipe patch, and use a manual fix-up of the trivial 2-line change:
+>>>
+>>> https://github.com/cdsteinkuehler/linux-dev/blob/am33x-v3.8-bone26-xenomai/patches/xenomai/0001-ipipe-core-3.8.13-arm-1.gpmc.patch
+>>>
+>>> There's probably a better way to work around this problem, but this
+>>> should do until the next official xenomai release comes out...any day
+>>> now, right?!?  :)  Anyway, it doesn't look like it will be that hard to
+>>> roll forward with updated ipipe or xenomai patches.
 >>
->> For beaglebone, it is integrated in the I-pipe tree for the ARM
->> architecture (git://git.xenomai.org/ipipe-gch.git, branch
->> for-core-3.8), which is currently based on 3.8.0 but will probably be
->> rebased on a more recent version for the I-pipe 3.8 release, for the
->> raspberry pi, you can try the patch which has been posted by Paul,
->> but probably needs rebasing once the I-pipe for 3.8 is released.
+>> The general way to handle the non-mainline kernels is with a pre and
+>> post patch. The pre patch removes the changes which conflicts, and the
+>> post patch adds the merge.
 > 
+> I made a pre/post patch set for the BeagleBone 3.8.13 kernel and added
+> the files to my xenomai 2.6 repository (patch attached).
 > 
-> I have a set of patches ready for 3.8.8 based on the "official" 
-> Raspberry Pi sources [1] - Need to reduce the current set of nine down 
-> to a pre and post pair which I'll try to do over the weekend. In the 
-> meantime, if anyone wants to take the set for a spin, drop me a note 
-> and I'll send them over.
+> Note that I just added the files...I didn't do anything to try and
+> integrate these with the prepare_kernel.sh script (since I'm applying
+> the ipipe patch from git manually) or add documentation.  With this, the
+> patch generated from the current git ipipe-3.8 branch applies cleanly.
+> 
+> Anyway, the patch turned out to be quite simple and will hopefully roll
+> forward fairly well.
 
-Hi Paul,
+Hi Charles,
 
-I have at last pushed the final version of the I-pipe patch for Linux
-3.8.13, it is available both in the xenomai git as a patch and in the
-I-pipe git.
-
-Could you rebase the pre- and post- patches for Raspberry so that I can
-put them in the Xenomai sources too?
-
-Also note that the I-pipe patch for 3.10.0 is available, but it is
-probably not yet the final version.
+The final version of the I-pipe patch for 3.8.13 is available, could you
+check the patches you posted need rebasing?
 
 Thanks in advance.
 Regards.
+
 
 -- 
                                                                 Gilles.
