@@ -1,16 +1,10 @@
-From: Paul <paul_c@tuxcnc.org>
-Date: Wed, 11 Sep 2013 00:57:41 +0100
-References: <E9605457112439448B6B3ED284E06533317AC337@mbx256-1.adm.swri.edu>
-	<201305232352.24308.paul_c@tuxcnc.org>
-	<522F68FD.9070009@xenomai.org>
-In-Reply-To: <522F68FD.9070009@xenomai.org>
+Date: Thu, 12 Sep 2013 10:38:34 +0200
+From: Nicholas Mc Guire <der.herr@hofr.at>
+Message-ID: <20130912083834.GB21720@opentech.at>
 MIME-Version: 1.0
-Content-Type: text/plain;
-  charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Message-Id: <201309110057.41709.paul_c@tuxcnc.org>
-Subject: Re: [Xenomai] Next Xenomai Release?
+Subject: [Xenomai] RTLWS 15 Call for Participation
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,51 +13,130 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
-
-On Tuesday 10 September 2013, Gilles Chanteperdrix wrote:
-> On 05/24/2013 12:52 AM, Paul wrote:
-> > On Thursday 23 May 2013, Gilles Chanteperdrix wrote:
-> >> On 05/23/2013 05:57 PM, Poole Jr, Donald R. wrote:
-> >>> I guess I overlooked that post and response. Any clarifying
-> >>> words/steps on what needs to be done to get the 3.8.x kernel
-> >>> patched with Xenomai for running on the Beaglebone/Raspberry Pi
-> >>> in the meantime?
-> >>
-> >> For beaglebone, it is integrated in the I-pipe tree for the ARM
-> >> architecture (git://git.xenomai.org/ipipe-gch.git, branch
-> >> for-core-3.8), which is currently based on 3.8.0 but will probably
-> >> be rebased on a more recent version for the I-pipe 3.8 release,
-> >> for the raspberry pi, you can try the patch which has been posted
-> >> by Paul, but probably needs rebasing once the I-pipe for 3.8 is
-> >> released.
-> >
-> > I have a set of patches ready for 3.8.8 based on the "official"
-> > Raspberry Pi sources [1] - Need to reduce the current set of nine
-> > down to a pre and post pair which I'll try to do over the weekend.
-> > In the meantime, if anyone wants to take the set for a spin, drop
-> > me a note and I'll send them over.
->
-> Hi Paul,
->
-> I have at last pushed the final version of the I-pipe patch for Linux
-> 3.8.13, it is available both in the xenomai git as a patch and in the
-> I-pipe git.
->
-> Could you rebase the pre- and post- patches for Raspberry so that I
-> can put them in the Xenomai sources too?
-
-Will do, although it will have to wait until the weekend.
-
-> Also note that the I-pipe patch for 3.10.0 is available, but it is
-> probably not yet the final version.
-
-Looks like BCM2835 support is making its way in to the mainline kernel, 
-so I'll also take a look at 3.10.y and report back.
-
-> Thanks in advance.
-> Regards.
+To: xenomai@xenomai.org
 
 
+HI All !
+
+ RTLWS15 is getting ready - this year in Lugano Switzerland from Oct 28 to 
+ Oct 31 - find an overview below - hope to see some of you at RTLWS 15 !
+
+
+thx!
+hofrat
+                      15th Real Time Linux Workshop
+                         Call for Participation
+                         October 28 - 31, 2013
+                    Dipartimento tecnologie innovative
+        Scuola Universitaria Professionale della Svizzera Italiana
+                               Lugano-Manno
+                               Switzerland 
+
+Following the meetings of academics, developers and users of real-time
+and embedded Linux at the previous 14 Real Time Linux Workshops held
+world-wide (Vienna, Orlando, Milano, Boston, Valencia, Singapore, Lille,
+Lanzhou, Linz, Guadalajara, Dresden, Nairobi, Prague and Chapel Hill) - 
+the 2013 Real Time Linux Workshop will come to the Scuola Universitaria 
+Professionale della Svizzera Italiana in Lugano-Manno, Switzerland. It will 
+be held from October 28 to October 31, 2013.
+
+Rationale:
+Real-time systems have evolved over the past decades in a relatively
+calm manner - performance has increased, one can say dramatically, but
+the main paradigms were pretty stable since the mid 80s. With the 
+considerable increase of computing power, notably with multicore systems
+becoming mainstream in embedded devices, the requirements on RTOS are
+shifting and the tools are again trying to catch up.
+
+In stark contrast to 1999 (when the first RTLWS took place), Linux has a 
+strong position in all kind of embedded systems, ranging from consumer
+electronics to network devices and a broad range of industrial applications
+including safety related systems. The technological resources suitable
+for high-availability, real-time, and safety critical systems have been
+continuously expanding and improving - allowing to cover the entire
+development life cycle of industrial projects based on Open Source
+tools. At the core of this development is the availability of stable
+operating systems with reliable real-time properties. Extending and
+improving the real-time properties of Open Source RTOS is a continuous
+research and development effort. The OSADL has set itself the ambitious 
+goal to document these efforts and it's most effective tool to do so is 
+the annual Real Time Linux Workshop.
+
+Topics Covered:
+ - Modifications and variants of the GNU/Linux operating system and
+   extending its real-time capabilities,
+ - Contributions to real-time Linux variants, drivers and extensions,
+ - Tools for the verification and validation of real-time properties,
+ - User-mode real-time concepts, implementation and experience,
+ - Real-time Linux applications, in academia, research and industry,
+ - Safety related FLOSS systems,
+ - Safety related systems using FLOSS components,
+ - FLOSS Tools used to analyze, verify or validate safety properties,
+ - Work in progress reports, covering recent developments,
+ - Educational material on real-time Linux,
+ - RTOS core concepts, RT-safe synchronization mechanisms,
+ - RT-safe IPC mechanisms for RT and non RT components,
+ - Analysis and benchmarking methods and results of real-time
+   GNU/Linux variants,
+ - Debugging techniques and tools, both for code and temporal
+   debugging of core RTOS components, drivers and real-time
+   applications,
+ - Real-time related extensions to development environments
+
+Program Overview 2013:
+   October 28: Parallel paper tracks
+   October 29: Linux kernel developers track
+               Panel discussion 
+               "Has the Open Source concept actually arrived at industry yet?"
+   October 30: Parallel paper and safety track
+   October 31: Hands-on seminars
+
+RT-Summit report 2013:
+   In the context of RTLWS15 the RT-kernel developers will report on the
+   status and road-map of Preempt-RT in mainline as well as results of 
+   the RT-summit which is collocated at RTLWS15 this year.
+
+Safety track 2013:
+   With COTS and particularly GNU/Linux moving into safety-critical 
+   applications the OSADL Safety Critical Linux Working Group this year again
+   will host a topic session on Open Source in safety related systems.
+
+Seminars:
+   On October 31 half-day and full-day seminars will be offered to 
+   participants covering development and kernel analysis as well as
+   debugging tools.
+
+Late abstract submission:
+   If you wish to present a late work-in-progress report at the workshop, 
+   please submit an abstract using the submission page at:
+   https://www.osadl.org/RTLWS-Submission
+   or send it by e-mail to rtlws15@osadl.org
+
+Sponsoring:
+   We are inviting sponsors. Attractive sponsoring packages for Silver, Gold,
+   Platinum and Special sponsors are offered at:
+   https://www.osadl.org/RTLWS-Sponsoring.
+
+Registration:
+   In order to participate to the workshop, please register at the RTLWS15
+   registration page at:
+   https://www.osadl.org/RTLWS-Registration
+
+Accommodation:
+   Please refer to the RTLWS15 Hotel page for accommodation:
+   https://www.osadl.org/RTLWS-Hotels
+
+Organization committee:
+Local organizers:
+ - Roberto Bucher, Scuola Universitaria Professionale della Svizzera Italiana
+   SUPSI, Switzerland
+OSADL/RTLF:
+ - Carsten Emde, OSADL
+ - Nicholas Mc Guire, OSADL
+ - Andreas Platschek, ICT, Vienna University of Technology, Austria
+
+Roberto Bucher
+Carsten Emde
+Nicholas Mc Guire
+Andreas Platschek
 
