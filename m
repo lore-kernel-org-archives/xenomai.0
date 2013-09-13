@@ -1,11 +1,15 @@
-Message-ID: <52337BA2.4080106@xenomai.org>
-Date: Fri, 13 Sep 2013 22:54:58 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
+From: "Daniel Merrill" <daniel.merrill@psware.com>
 References: <a61ffb56.00001e48.00000008@dmerrill_win764.PERF.PERFORMANCESOFTWARE>
-In-Reply-To: <a61ffb56.00001e48.00000008@dmerrill_win764.PERF.PERFORMANCESOFTWARE>
-Content-Type: text/plain; charset=UTF-8
+	<52337BA2.4080106@xenomai.org>
+	<fcac2f91.00001e70.00000001@dmerrill_win764.PERF.PERFORMANCESOFTWARE>
+In-Reply-To: <fcac2f91.00001e70.00000001@dmerrill_win764.PERF.PERFORMANCESOFTWARE>
+Date: Fri, 13 Sep 2013 14:45:14 -0700 (MST)
+Message-ID: <86e45894.00001e70.0000000c@dmerrill_win764.PERF.PERFORMANCESOFTWARE>
+MIME-Version: 1.0
+Content-Type: text/plain;
+	charset="utf-8"
 Content-Transfer-Encoding: 7bit
+Content-Language: en-us
 Subject: Re: [Xenomai] psos t_delete causing a SIGSEGV in suspended task.
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -15,23 +19,55 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Daniel Merrill <daniel.merrill@psware.com>
+To: 'Gilles Chanteperdrix' <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
+
+Ok, good catch :) that was a stupid mistake I made while trying to condense 
+the problem down to a more manageable size. Which apparently when I do it 
+works, so I'm obviously not understanding the real issue here. So much for 
+trying to look smart. How about a stack trace from the real issue.
+
+#0  0xb7d474f6 in __gnat_is_handled_by_others ()
+   from /usr/lib/i386-linux-gnu/libgnat-4.6.so.1
+#1  0xb7ec4822 in __gnat_personality_v0 () from 
+/usr/lib/i386-linux-gnu/libgnat-4.6.so.1
+#2  0xb7c65056 in ?? () from /lib/i386-linux-gnu/libgcc_s.so.1
+#3  0xb7c65448 in _Unwind_ForcedUnwind () from 
+/lib/i386-linux-gnu/libgcc_s.so.1
+#4  0xb7f788c2 in _Unwind_ForcedUnwind () from 
+/lib/i386-linux-gnu/libpthread.so.0
+#5  0xb7f76381 in __pthread_unwind () from 
+/lib/i386-linux-gnu/libpthread.so.0
+#6  0xb7f6e5eb in sigcancel_handler () from 
+/lib/i386-linux-gnu/libpthread.so.0
+#7  <signal handler called>
+#8  0xb7fdd424 in __kernel_vsyscall ()
+#9  0xb7fd7541 in t_suspend () from /usr/lib/libpsos.so.0
+
+As soon as we call t_delete on the suspended task, we see this issue popping 
+up. Any ideas?
+
+-----Original Message-----
+From: Gilles Chanteperdrix [mailto:gilles.chanteperdrix@xenomai.org]
+Sent: Friday, September 13, 2013 1:55 PM
+To: Daniel Merrill
+Cc: xenomai@xenomai.org
+Subject: Re: [Xenomai] psos t_delete causing a SIGSEGV in suspended task.
 
 On 09/13/2013 10:48 PM, Daniel Merrill wrote:
 > void main()
-> 
+>
 > {
-> 
+>
 >     mlockall(MCL_CURRENT | MCL_FUTURE);
-> 
+>
 >     u_long TID, TID2;
-> 
+>
 >     u_long args[4] = {TID, 0, 0, 0};
 
-TID here is an uninitialized value, and this is what you pass to
-t_delete. I admit the segmentation does not seem like the best reaction,
-but the program looks faulty.
+TID here is an uninitialized value, and this is what you pass to t_delete. I 
+admit the segmentation does not seem like the best reaction, but the program 
+looks faulty.
 
 >    (...)
 >     t_start(TID2, T_PREEMPT | T_TSLICE, &deleter, args);
