@@ -1,12 +1,17 @@
-Message-ID: <52345AE4.3010806@web.de>
-Date: Sat, 14 Sep 2013 14:47:32 +0200
-From: Jan Kiszka <jan.kiszka@web.de>
+Message-ID: <52346905.1030401@xenomai.org>
+Date: Sat, 14 Sep 2013 15:47:49 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CAD1EtojVmN2YVhTXswREuxaue2gzZe=Hgsxhnfksop6YRghWrA@mail.gmail.com>
-In-Reply-To: <CAD1EtojVmN2YVhTXswREuxaue2gzZe=Hgsxhnfksop6YRghWrA@mail.gmail.com>
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] cat /proc/rtcan/sockets gives "Bad address"
+References: <a61ffb56.00001e48.00000008@dmerrill_win764.PERF.PERFORMANCESOFTWARE>
+	<52337BA2.4080106@xenomai.org>
+	<fcac2f91.00001e70.00000001@dmerrill_win764.PERF.PERFORMANCESOFTWARE>
+	<86e45894.00001e70.0000000c@dmerrill_win764.PERF.PERFORMANCESOFTWARE>
+	<52338808.4060404@xenomai.org>
+	<024b1d5a.00001e70.00000015@dmerrill_win764.PERF.PERFORMANCESOFTWARE>
+In-Reply-To: <024b1d5a.00001e70.00000015@dmerrill_win764.PERF.PERFORMANCESOFTWARE>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] psos t_delete causing a SIGSEGV in suspended task.
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,29 +20,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Daniel M. Drucker, Ph.D." <dmd@interactive-motion.com>
+To: Daniel Merrill <daniel.merrill@psware.com>
 Cc: xenomai@xenomai.org
 
-On 2013-09-13 00:17, Daniel M. Drucker, Ph.D. wrote:
-> $ cat /proc/rtcan/sockets
-> cat: /proc/rtcan/sockets: Bad address
-> =
+On 09/14/2013 01:23 AM, Daniel Merrill wrote:
+> Alright I think you solved it! We are actually calling the t_suspend from 
+> Ada, which had an exception block around the call. For some reason that is 
+> trying to catch the cancel signal and causes the SIGSEGV. When I remove that 
+> exception handling block the delete appears to work. Thanks for pointing me 
+> in the right direction.
 
-> Other than this, our Xenomai and CAN systems are working just fine. This
-> used to work. Any idea why we'd be getting that?
+>From what I understand, unwinding on pthread_cancel is a feature which
+allows automatic destruction of all the objects created on the thread
+stack in C++ (and other languages implementing exceptions apparently)
+upon pthread_cancel, this way, pthread_cleanup_push and pthread_cleanup
+pop are simply handled as C++ objects constructors/destructors when used
+in C++ code.
 
-Does it fail with the most recent xenomai git version? Or with the
-latest release? What is your target platform? Is there anything reported
-on the kernel console as well?
+-- 
+                                                                Gilles.
 
-Jan
-
-
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: signature.asc
-Type: application/pgp-signature
-Size: 263 bytes
-Desc: OpenPGP digital signature
-URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20130914/38f7791=
-3/attachment.pgp>
