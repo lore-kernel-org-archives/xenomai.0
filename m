@@ -1,10 +1,10 @@
-Message-ID: <52380AAA.1000303@siemens.com>
-Date: Tue, 17 Sep 2013 09:54:18 +0200
+Message-ID: <52384CC3.80904@siemens.com>
+Date: Tue, 17 Sep 2013 14:36:19 +0200
 From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] [PULL] x86/ipipe: Fix x86-64 issue when debugging
+Subject: [Xenomai] [PULL 3.8] x86/ipipe: Fix x86-64 issue when debugging
 	applications
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -17,17 +17,17 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: Philippe Gerum <rpm@xenomai.org>
 Cc: Xenomai <xenomai@xenomai.org>
 
-The following changes since commit 08c8af2d33a9d61c565b472cb770ff34a3d974d8:
+The following changes since commit 6c40e8586e309608579f4baa0b7b5252d061686a:
 
-  powerpc/ipipe: 3.10 merge fixup (2013-09-10 10:14:24 +0200)
+  arm/fcse: avoid compilation warning in guaranteed mode (2013-09-08 22:45:39 +0200)
 
 are available in the git repository at:
 
-  git://git.xenomai.org/ipipe-jki for-upstream/master
+  git://git.xenomai.org/ipipe-jki for-upstream/3.8
 
-for you to fetch changes up to 146b3f5b23407689b58b8bbe5d194600334f35e5:
+for you to fetch changes up to c0bd1a464ad22c588bc09591f26d6b2b122f82b0:
 
-  x86/ipipe: Remove changes from paranoidzeroentry_ist (2013-09-16 18:36:34 +0200)
+  x86/ipipe: Remove changes from paranoidzeroentry_ist (2013-09-17 13:19:57 +0200)
 
 ----------------------------------------------------------------
 Jan Kiszka (3):
