@@ -1,11 +1,14 @@
-Message-ID: <52384CC3.80904@siemens.com>
-Date: Tue, 17 Sep 2013 14:36:19 +0200
-From: Jan Kiszka <jan.kiszka@siemens.com>
+From: Paul <paul_c@tuxcnc.org>
+Date: Tue, 17 Sep 2013 16:26:07 +0100
+References: <E9605457112439448B6B3ED284E06533317AC337@mbx256-1.adm.swri.edu>
+	<201305232352.24308.paul_c@tuxcnc.org>
+	<522F68FD.9070009@xenomai.org>
+In-Reply-To: <522F68FD.9070009@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+Message-Id: <201309171626.08100.paul_c@tuxcnc.org>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] [PULL 3.8] x86/ipipe: Fix x86-64 issue when debugging
-	applications
+Subject: Re: [Xenomai] Next Xenomai Release?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,31 +17,40 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-The following changes since commit 6c40e8586e309608579f4baa0b7b5252d061686a:
+On Tuesday 10 September 2013, Gilles Chanteperdrix wrote:
+> I have at last pushed the final version of the I-pipe patch for Linux
+> 3.8.13, it is available both in the xenomai git as a patch and in the
+> I-pipe git.
+>
+> Could you rebase the pre- and post- patches for Raspberry so that I
+> can put them in the Xenomai sources too?
 
-  arm/fcse: avoid compilation warning in guaranteed mode (2013-09-08 22:45:39 +0200)
+Attached, two patches. Instructions for use:
 
-are available in the git repository at:
+1) Checkout kernel sources from git://github.com/raspberrypi/linux.git 
+and use the rpi-3.8.y branch - d996a1b is the SHA-1 hash used, but 
+later revisions should work.
+2) Apply ipipe-core-3.8.13-raspberry-pre.patch
+3) Apply ipipe-core-3.8.13-arm patch
+4) Apply ipipe-core-3.8.13-raspberry-post.patch
 
-  git://git.xenomai.org/ipipe-jki for-upstream/3.8
 
-for you to fetch changes up to c0bd1a464ad22c588bc09591f26d6b2b122f82b0:
+Regards, Paul.
 
-  x86/ipipe: Remove changes from paranoidzeroentry_ist (2013-09-17 13:19:57 +0200)
-
-----------------------------------------------------------------
-Jan Kiszka (3):
-      x86/ipipe: Switch off debug stack under I-pipe
-      x86/ipipe: Call __ipipe_notify_trap directly from ipipe code
-      x86/ipipe: Remove changes from paranoidzeroentry_ist
-
- arch/x86/include/asm/debugreg.h |  2 +-
- arch/x86/kernel/cpu/common.c    |  2 ++
- arch/x86/kernel/entry_64.S      | 22 ++++++----------------
- arch/x86/kernel/ipipe.c         |  4 ++--
- arch/x86/kernel/traps.c         |  5 +++++
- 5 files changed, 16 insertions(+), 19 deletions(-)
-
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: ipipe-core-3.8.13-raspberry-post.patch
+Type: text/x-diff
+Size: 12108 bytes
+Desc: not available
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20130917/586ff21e/attachment.patch>
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: ipipe-core-3.8.13-raspberry-pre.patch
+Type: text/x-diff
+Size: 5292 bytes
+Desc: not available
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20130917/586ff21e/attachment-0001.patch>
