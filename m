@@ -1,11 +1,13 @@
+Message-ID: <523AABE0.4010409@xenomai.org>
+Date: Thu, 19 Sep 2013 09:46:40 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <8A96DEF6-A9C8-4F5F-A411-D4B84215DE50@mah.priv.at>
-References: <8A96DEF6-A9C8-4F5F-A411-D4B84215DE50@mah.priv.at>
-Date: Wed, 18 Sep 2013 21:27:04 +0200
-Message-ID: <CAPRPZsA3Mvusw1vTv40L9-1QWwgrPR31gbziztVSY4zQ6cNmeA@mail.gmail.com>
-From: Jeroen Van den Keybus <jeroen.vandenkeybus@gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Subject: Re: [Xenomai] OT: Xenomai moving metal
+References: <52384CC3.80904@siemens.com>
+In-Reply-To: <52384CC3.80904@siemens.com>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [PULL 3.8] x86/ipipe: Fix x86-64 issue when debugging
+	applications
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,30 +16,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Michael Haberler <mail17@mah.priv.at>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-If it's metalmoving and haptic you're looking for, also check out:
-
-https://www.youtube.com/user/FormulaGroupT?feature=watch
-
-Xenomai primary mode processes on an onboard IPC are used to control
-currents through two electric motors at 10kHz rate and manage the electric
-energy flow.
-
-J.
-
-
-2013/9/18 Michael Haberler <mail17@mah.priv.at>
-
-> Here's something haptic for a change: Xenomai master + linux3.8.13 under
-> the hood of LinuxCNC driving an engraving machine:
+On 09/17/2013 02:36 PM, Jan Kiszka wrote:
+> The following changes since commit 6c40e8586e309608579f4baa0b7b5252d061686a:
 >
-> https://www.youtube.com/watch?v=6lMM-bSx6cc
+>    arm/fcse: avoid compilation warning in guaranteed mode (2013-09-08 22:45:39 +0200)
 >
-> -Michael
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> http://www.xenomai.org/mailman/listinfo/xenomai
+> are available in the git repository at:
 >
+>    git://git.xenomai.org/ipipe-jki for-upstream/3.8
+>
+> for you to fetch changes up to c0bd1a464ad22c588bc09591f26d6b2b122f82b0:
+>
+>    x86/ipipe: Remove changes from paranoidzeroentry_ist (2013-09-17 13:19:57 +0200)
+>
+> ----------------------------------------------------------------
+> Jan Kiszka (3):
+>        x86/ipipe: Switch off debug stack under I-pipe
+>        x86/ipipe: Call __ipipe_notify_trap directly from ipipe code
+>        x86/ipipe: Remove changes from paranoidzeroentry_ist
+>
+>   arch/x86/include/asm/debugreg.h |  2 +-
+>   arch/x86/kernel/cpu/common.c    |  2 ++
+>   arch/x86/kernel/entry_64.S      | 22 ++++++----------------
+>   arch/x86/kernel/ipipe.c         |  4 ++--
+>   arch/x86/kernel/traps.c         |  5 +++++
+>   5 files changed, 16 insertions(+), 19 deletions(-)
+>
+
+Merged, thanks.
+
+-- 
+Philippe.
+
