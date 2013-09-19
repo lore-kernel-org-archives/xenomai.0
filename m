@@ -1,9 +1,12 @@
+Message-ID: <523ADCBE.6000108@xenomai.org>
+Date: Thu, 19 Sep 2013 13:15:10 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Date: Thu, 19 Sep 2013 13:10:16 +0200
-Message-ID: <CAEk6gTC2n0iRT21RocjsChtsmz3u+q3b6hmyNb7c5Orj8Z605Q@mail.gmail.com>
-From: Drasko DRASKOVIC <drasko.draskovic@gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Subject: [Xenomai] Disable documentation generation
+References: <CAEk6gTC2n0iRT21RocjsChtsmz3u+q3b6hmyNb7c5Orj8Z605Q@mail.gmail.com>
+In-Reply-To: <CAEk6gTC2n0iRT21RocjsChtsmz3u+q3b6hmyNb7c5Orj8Z605Q@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Disable documentation generation
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,78 +15,23 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Drasko DRASKOVIC <drasko.draskovic@gmail.com>
+Cc: xenomai@xenomai.org
 
-Hi all,
-I am cross-compiling for ARM. How can I disable documentation generation?
+On 09/19/2013 01:10 PM, Drasko DRASKOVIC wrote:
+> Hi all,
+> I am cross-compiling for ARM. How can I disable documentation generation?
+> 
+> I tried adding --disable-dox-doc --disable-dbx to ./configure, but I
+> can still see doc generating during compilation (log below).
 
-I tried adding --disable-dox-doc --disable-dbx to ./configure, but I
-can still see doc generating during compilation (log below).
+The log shows that the documentationn is installed, not generated. If
+you do not want to install documentation, you can pass
+--disable-doc-install.
 
-Where can I see the options that should be passed to ./configure?
+Also note that the configure script has a --help option showing all its
+options.
 
-Best regards,
-Drasko
-
-
-
-
-docs="clocktest cyclictest irqbench irqloop klatency latency
-rtcanconfig rtcanrecv rtcansend switchbench switchtest xeno
-xeno-config"; abs_builddir=$PWD; \
-for dir in $docs; do \
-   dest=/home/drasko/yocto/build/tmp/work/armv7ahf-vfp-neon-poky-linux-gnueabi/xenomai-2.6.2.1-r0/image/usr/share/doc/xenomai/html/$dir;
-\
-   /bin/sh /home/drasko/yocto/build/tmp/work/armv7ahf-vfp-neon-poky-linux-gnueabi/xenomai-2.6.2.1-r0/xenomai-2.6.2.1/config/install-sh
--d $dest; \
-   abs_dest=`cd $dest && pwd` ; \
-   cd ./../generated/html/$dir || exit 1; \
-   for f in * ; do \
-case $f in \
-   *~|CVS|.svn|[mM]akefile*|GNUmakefile*);; \
-   *) /usr/bin/install -c -m 644 $f $abs_dest/$f;; \
-esac; \
-   done; cd $abs_builddir; \
-done
-docs=""; dest=/home/drasko/yocto/build/tmp/work/armv7ahf-vfp-neon-poky-linux-gnueabi/xenomai-2.6.2.1-r0/image/usr/share/doc/xenomai/ps;
-\
-/bin/sh /home/drasko/yocto/build/tmp/work/armv7ahf-vfp-neon-poky-linux-gnueabi/xenomai-2.6.2.1-r0/xenomai-2.6.2.1/config/install-sh
--d $dest && \
-for f in $docs; do \
-   /usr/bin/install -c -m 644 $f $dest; \
-done
-docs=""; dest=/home/drasko/yocto/build/tmp/work/armv7ahf-vfp-neon-poky-linux-gnueabi/xenomai-2.6.2.1-r0/image/usr/share/doc/xenomai/pdf;
-\
-/bin/sh /home/drasko/yocto/build/tmp/work/armv7ahf-vfp-neon-poky-linux-gnueabi/xenomai-2.6.2.1-r0/xenomai-2.6.2.1/config/install-sh
--d $dest && \
-for f in $docs; do \
-   /usr/bin/install -c -m 644 $f $dest; \
-done
-
- /bin/mkdir -p '/home/drasko/yocto/build/tmp/work/armv7ahf-vfp-neon-poky-linux-gnueabi/xenomai-2.6.2.1-r0/image/usr/share/man/man1'
-
- /usr/bin/install -c -m 644 clocktest.1 cyclictest.1 irqbench.1
-irqloop.1 klatency.1 latency.1 rtcanconfig.1 rtcanrecv.1 rtcansend.1
-switchbench.1 switchtest.1 xeno.1 xeno-config.1
-'/home/drasko/yocto/build/tmp/work/armv7ahf-vfp-neon-poky-linux-gnueabi/xenomai-2.6.2.1-r0/image/usr/share/man/man1'
-
-make[3]: Leaving directory
-`/home/drasko/yocto/build/tmp/work/armv7ahf-vfp-neon-poky-linux-gnueabi/xenomai-2.6.2.1-r0/xenomai-2.6.2.1/doc/man'
-make[2]: Leaving directory
-`/home/drasko/yocto/build/tmp/work/armv7ahf-vfp-neon-poky-linux-gnueabi/xenomai-2.6.2.1-r0/xenomai-2.6.2.1/doc/man'
-Making install in txt
-
-make[2]: Entering directory
-`/home/drasko/yocto/build/tmp/work/armv7ahf-vfp-neon-poky-linux-gnueabi/xenomai-2.6.2.1-r0/xenomai-2.6.2.1/doc/txt'
-
-make[3]: Entering directory
-`/home/drasko/yocto/build/tmp/work/armv7ahf-vfp-neon-poky-linux-gnueabi/xenomai-2.6.2.1-r0/xenomai-2.6.2.1/doc/txt'
-make[3]: Nothing to be done for `install-exec-am'.
-
- /bin/mkdir -p '/home/drasko/yocto/build/tmp/work/armv7ahf-vfp-neon-poky-linux-gnueabi/xenomai-2.6.2.1-r0/image/usr/share/doc/xenomai/txt'
-
- /usr/bin/install -c -m 644 16550A-driver.txt irqbench.txt
-pse51-skin.txt psos-skin.txt uITRON-skin.txt vrtx-skin.txt
-comedi-skin.txt vxworks-skin.txt ChangeLog.pre-git
-'/home/drasko/yocto/build/tmp/work/armv7ahf-vfp-neon-poky-linux-gnueabi/xenomai-2.6.2.1-r0/image/usr/share/doc/xenomai/txt'
+-- 
+                                                                Gilles.
 
