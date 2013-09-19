@@ -1,13 +1,12 @@
-Message-ID: <523AABE0.4010409@xenomai.org>
-Date: Thu, 19 Sep 2013 09:46:40 +0200
-From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <52384CC3.80904@siemens.com>
-In-Reply-To: <52384CC3.80904@siemens.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PULL 3.8] x86/ipipe: Fix x86-64 issue when debugging
-	applications
+In-Reply-To: <5239F446.3090407@xenomai.org>
+References: <CAEk6gTBsZCz4Z0N7dF1w6UEy_OVGF7_-Zbo=gVk3+N=DDpZ_VQ@mail.gmail.com>
+	<5239E937.4020805@xenomai.org> <5239F446.3090407@xenomai.org>
+Date: Thu, 19 Sep 2013 12:06:56 +0200
+Message-ID: <CAEk6gTCa6VrW3RuFR-=67K1RQupvjTWOZPAvtnAHF_1HA+s=8w@mail.gmail.com>
+From: Drasko DRASKOVIC <drasko.draskovic@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: Re: [Xenomai] Xenomai Yocto Bitbake recipe configuration error
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,38 +15,67 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On 09/17/2013 02:36 PM, Jan Kiszka wrote:
-> The following changes since commit 6c40e8586e309608579f4baa0b7b5252d061686a:
->
->    arm/fcse: avoid compilation warning in guaranteed mode (2013-09-08 22:45:39 +0200)
->
-> are available in the git repository at:
->
->    git://git.xenomai.org/ipipe-jki for-upstream/3.8
->
-> for you to fetch changes up to c0bd1a464ad22c588bc09591f26d6b2b122f82b0:
->
->    x86/ipipe: Remove changes from paranoidzeroentry_ist (2013-09-17 13:19:57 +0200)
->
-> ----------------------------------------------------------------
-> Jan Kiszka (3):
->        x86/ipipe: Switch off debug stack under I-pipe
->        x86/ipipe: Call __ipipe_notify_trap directly from ipipe code
->        x86/ipipe: Remove changes from paranoidzeroentry_ist
->
->   arch/x86/include/asm/debugreg.h |  2 +-
->   arch/x86/kernel/cpu/common.c    |  2 ++
->   arch/x86/kernel/entry_64.S      | 22 ++++++----------------
->   arch/x86/kernel/ipipe.c         |  4 ++--
->   arch/x86/kernel/traps.c         |  5 +++++
->   5 files changed, 16 insertions(+), 19 deletions(-)
->
+HI Gilles,
+thanks for the answer!
 
-Merged, thanks.
+On Wed, Sep 18, 2013 at 8:43 PM, Gilles Chanteperdrix
+<gilles.chanteperdrix@xenomai.org> wrote:
+> On 09/18/2013 07:56 PM, Gilles Chanteperdrix wrote:
+>> On 09/18/2013 07:29 PM, Drasko DRASKOVIC wrote:
+>>> Hi all,
+>>> regarding chapter  3.4. Building for ARM here:
+>>> http://www.xenomai.org/documentation/xenomai-2.6/html/README.INSTALL/
+>>> we should configure like :
+>>>
+>>> $xenomai_root/configure CFLAGS="-march=armv4t" LDFLAGS="-march=armv4t" \
+>>>   --build=i686-pc-linux-gnu --host=arm-none-linux-gnueabi-
+>>>
+>>> I wanted to know if CFLAGS and LDFLAGS are needed only for compile
+>>> time, or maybe later for runtime also?
+>>
+>> You only need to pass these flags if you are using a generic multilib
+>> compiler such as Mentor sourcery codebench. If you are using a compiler
+>> specially built for your target, you do not need to pass any flags.
 
--- 
-Philippe.
+
+So these are only needed for compile timem if I understand correctly.
+Since I am using Linaro's arm-linux-gnueabihf-gcc I will not pass
+CFLAGS and LDFLAGS
+
+>> However, I would be surprised if:
+>> - it was not possible to pass spaces in CFLAGS, maybe ' works instead of "
+
+Yes, ' works instead of ". That was the first workaround I found, but
+then I got curious.
+
+Looking at build/tmp/work/.../xenomai.../temp/run.do_configure.<pid>
+log I found out that Bitbake translates these EXTRA_OECONF to :
+CFLAGS=\"-march=armv7-a -mfpu=vfp3\" LDFLAGS=\"-march=armv7-a
+-mfpu=vfp3\", and passes this to the shell.
+
+So, strangely, declaring EXTRA_OECONF like:
+EXTRA_OECONF += "CFLAGS="-march=armv7-a -mfpu=vfp3"
+LDFLAGS="-march=armv7-a -mfpu=vfp3"
+seems to be working...
+
+However, I noticed also that configure demand include dir, as bitbake
+proposes by default /usr/include, and xenomai wants
+/usr/include/xenomai, so this must be added to EXTRA_OECONF:
+EXTRA_OECONF += "--include=${includedir}/${BPN}"
+
+>> - the rules for building Xenomai with Yocto did not exist somewhere.
+>
+> For instance:
+> http://www.xenomai.org/pipermail/xenomai/2012-October/026533.html
+> https://mail.gna.org/public/xenomai-help/2010-02/msg00186.html
+
+Thanks for this links, Gumstix recipe looks very promising. Maybe it
+is a good idea to explicitlydefine do_configure() procedure in .bb
+file than to let bitbake and autoconf
+
+BR,
+Drasko
 
