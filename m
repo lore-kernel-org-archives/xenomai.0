@@ -1,14 +1,13 @@
-Message-ID: <41178a65d105c2ecba29517766108672.squirrel@127.0.0.1>
-In-Reply-To: <OFC8321BA4.DEA5320E-ONC1257BEC.0055985D-C1257BEC.00567EE5@marposs.com>
-References: <OF396B4F72.527821E8-ONC1257BEC.0054EA5D-C1257BEC.00550203@marposs.com>
-	<31e1856136e687804b394e184552f972.squirrel@127.0.0.1>
-	<OFC8321BA4.DEA5320E-ONC1257BEC.0055985D-C1257BEC.00567EE5@marposs.com>
-Date: Fri, 20 Sep 2013 18:02:18 +0200
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
+Message-ID: <523D594F.1050605@xenomai.org>
+Date: Sat, 21 Sep 2013 10:31:11 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain;charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] memory mapped IO and secondary mode switch
+References: <E1VN5el-0002Ct-8K@xenomai.org>
+In-Reply-To: <E1VN5el-0002Ct-8K@xenomai.org>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] [Xenomai-git] Jan Kiszka : cobalt/posix/sem: Fix
+ locking imbalances in cobalt_sem_open
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,33 +16,63 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: stefano.franzoni@marposs.com
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
+Cc: "Kiszka, Jan" <jan.kiszka@siemens.com>
 
+On 09/20/2013 08:42 PM, git repository hosting wrote:
+> Module: xenomai-jki
+> Branch: for-forge
+> Commit: 8775720ae828d1e1be076f91b93a3eeac1b7ed90
+> URL:    http://git.xenomai.org/?p=xenomai-jki.git;a=commit;h=8775720ae828d1e1be076f91b93a3eeac1b7ed90
+>
+> Author: Jan Kiszka <jan.kiszka@siemens.com>
+> Date:   Fri Sep 20 20:39:18 2013 +0200
+>
+> cobalt/posix/sem: Fix locking imbalances in cobalt_sem_open
+>
+> We hold cobalt_assoc_lock, not nklock.
+>
+> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+>
 
-stefano.franzoni@marposs.com wrote:
-> These is the initialization functions
->
->
-> StartAddress = 0x60000000
-> Size = 4096
->
-> ...
-> int memD = open("/dev/mem", O_RDWR | O_SYNC))
-> ..
-> vouid *pMemIO = mmap(0, Size, PROT_READ | PROT_WRITE, MAP_SHARED, memD,
-> StartAddress);
-> ...
->
->
->
-> Then all access are made to pMemIO[4]
+This fix should be backported to 2.6.
 
-So, void * is char *, you need to lookup in the SOC documentation if this
-register can be accessed in byte mode, or if you need to use for instance
-a 32 bits access with *(unsigned *)&pMemIo[4].
+> ---
+>
+>   kernel/cobalt/posix/sem.c |    4 ++--
+>   1 files changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git a/kernel/cobalt/posix/sem.c b/kernel/cobalt/posix/sem.c
+> index 076f2d2..60906fd 100644
+> --- a/kernel/cobalt/posix/sem.c
+> +++ b/kernel/cobalt/posix/sem.c
+> @@ -916,7 +916,7 @@ int cobalt_sem_open(unsigned long __user *u_addr,
+>   	if (assoc) {
+>   		usm = container_of(assoc, struct cobalt_usem, assoc);
+>   		++usm->refcnt;
+> -		xnlock_put_irqrestore(&nklock, s);
+> +		xnlock_put_irqrestore(&cobalt_assoc_lock, s);
+>   		goto got_usm;
+>   	}
+>
+> @@ -936,7 +936,7 @@ int cobalt_sem_open(unsigned long __user *u_addr,
+>   	assoc = cobalt_assoc_lookup(&cc->usems, (u_long)sm->sem);
+>   	if (assoc) {
+>   		container_of(assoc, struct cobalt_usem, assoc)->refcnt++;
+> -		xnlock_put_irqrestore(&nklock, s);
+> +		xnlock_put_irqrestore(&cobalt_assoc_lock, s);
+>   		xnfree(usm);
+>   		usm = container_of(assoc, struct cobalt_usem, assoc);
+>   		goto got_usm;
+>
+>
+> _______________________________________________
+> Xenomai-git mailing list
+> Xenomai-git@xenomai.org
+> http://www.xenomai.org/mailman/listinfo/xenomai-git
+>
+
 
 -- 
-                                              Gilles
-
+Philippe.
 
