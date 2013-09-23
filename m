@@ -1,11 +1,12 @@
-Message-ID: <52404A46.3050801@siemens.com>
-Date: Mon, 23 Sep 2013 16:03:50 +0200
-From: Gernot Hillier <gernot.hillier@siemens.com>
+Message-ID: <52408790.3070907@xenomai.org>
+Date: Mon, 23 Sep 2013 20:25:20 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+References: <5240004A.6070703@mitrol.it>
+In-Reply-To: <5240004A.6070703@mitrol.it>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] missing branches in ipipe.git when fetching via http from
-	xenomai.org
+Subject: Re: [Xenomai] rt_intr_wait bug during debugging
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,38 +15,22 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Paolo Minazzi <Paolo.Minazzi@mitrol.it>
+Cc: xenomai@xenomai.org
 
-Hi there!
+On 09/23/2013 10:48 AM, Paolo Minazzi wrote:
+> Hi to all,
+> the problem arise when I debug an application that uses an external 
+> interrupt.
+> Below there is a sample (pseudo) code that show how I can see the problem.
+> The irq stuff is related on my specific machine, so I think it is not 
+> important
+> give details about GPIO programming and interrupt clear (CLEAR_IRQ).
 
-Sorry if this is the wrong place to report server problems. Please let 
-me know whom to contact if this is the case...
+Could you try reproducing this issue with a recent I-pipe patch? Say the
+I-pipe patch for Linux 3.5 or 3.8?
 
-When fetching ipipe via http://, I miss the ipipe-3.8 branch:
-
- > git remote add ipipe http://git.xenomai.org/ipipe.git
- > git remote update ipipe
-[...]
- > git branch -a | grep 3.8
-   remotes/ipipe/ipipe-3.8.0
- > git remote rm ipipe
-
-When using git://, everything works as expected:
-
- > git remote add ipipe git://git.xenomai.org/ipipe.git
- > git remote update ipipe
-[...]
- > git branch -a | grep 3.8
-   remotes/ipipe/ipipe-3.8
-   remotes/ipipe/ipipe-3.8.0
-
-Unfortunately, our Siemens firewall forces us to http in most cases - so 
-it would be great if you could fix it... TIA!
 
 -- 
-With kind regards,
-Gernot Hillier
-
-Siemens AG, Corporate Technology, CT RTC ITP SDP-DE
-Corporate Competence Center Embedded Linux
+                                                                Gilles.
 
