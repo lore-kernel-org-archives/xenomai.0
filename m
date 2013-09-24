@@ -1,18 +1,14 @@
-In-Reply-To: <52417BD8.1060509@xenomai.org>
-References: <OF396B4F72.527821E8-ONC1257BEC.0054EA5D-C1257BEC.00550203@marposs.com>
-	<31e1856136e687804b394e184552f972.squirrel@127.0.0.1>
-	<OFC8321BA4.DEA5320E-ONC1257BEC.0055985D-C1257BEC.00567EE5@marposs.com>
-	<41178a65d105c2ecba29517766108672.squirrel@127.0.0.1>
-	<OF9F68F0D3.ACCF0213-ONC1257BEF.002B87CA-C1257BEF.002CB465@marposs.com>
-	<52408833.3020701@xenomai.org>
-	<OF7E86F86A.D7514A07-ONC1257BF0.002BDD7A-C1257BF0.002C8E24@marposs.com>
-	<52417BD8.1060509@xenomai.org>
-Message-ID: <OF0F116A24.B99EE43E-ONC1257BF0.0040FD1C-C1257BF0.00415BA5@marposs.com>
-From: stefano.franzoni@marposs.com
-Date: Tue, 24 Sep 2013 13:53:52 +0200
+From: Paul <paul_c@tuxcnc.org>
+Date: Tue, 24 Sep 2013 13:00:47 +0100
+References: <CAK4EZFSLBBOs174xP+JAsqgJgG-MJ5UxMsj_FD5Pzjh1BHz7gw@mail.gmail.com>
+In-Reply-To: <CAK4EZFSLBBOs174xP+JAsqgJgG-MJ5UxMsj_FD5Pzjh1BHz7gw@mail.gmail.com>
 MIME-Version: 1.0
-Content-type: text/plain; charset=US-ASCII
-Subject: Re: [Xenomai] memory mapped IO and secondary mode switch
+Content-Type: text/plain;
+  charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Content-Disposition: inline
+Message-Id: <201309241300.47883.paul_c@tuxcnc.org>
+Subject: Re: [Xenomai] Raspberry Pi patch issue?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,52 +17,21 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-A good work around for my application is to make a dummy write access to
-memory IO outside reat time thread.
-
-However, I ask if, in a more complex application, the page can be swapped
-and then the transition to secondary mode can happens again.
-
-
+On Tuesday 24 September 2013, Adam Vaughan wrote:
+> I'm trying to build with the most recent xenomai-head in git for the
+> Raspberry Pi, and I'm encountering an issue (see below) when I
+> try to run prepare-kernel.sh . =A0I'm very new to this whole process
+> (so it definitely could be user error), but it would seem that
+> there's a problem with the patch.
 
 
-
-                                                                           
-             Gilles                                                        
-             Chanteperdrix                                                 
-             <gilles.chanteper                                          To 
-             drix@xenomai.org>         stefano.franzoni@marposs.com        
-                                                                        cc 
-             24/09/2013 13:47          xenomai@xenomai.org                 
-                                                                   Subject 
-                                       Re: [Xenomai] memory mapped IO and  
-                                       secondary mode switch               
-                                                                           
-                                                                           
-                                                                           
-                                                                           
-                                                                           
-                                                                           
+I'll have a look at it this evening and report back after making a few=20
+checks.
 
 
-
-
-On 09/24/2013 10:06 AM, stefano.franzoni@marposs.com wrote:
-> I tried the function rt_timer_tsc but it does not generate the swap to
-> secondary mode.
-> It seems that the first write access generates the fault instead the read
-> accesses do not generate it.
-> I attach a simple example.
-
-Then I am afraid there is nothing to do. Accessing registers in
-user-space is not recommended anyway, so we are not going to put
-some workarounds for this corner case in the I-pipe patch.
-
---
-                                                                Gilles.
+Regards, Paul.
 
 
 
