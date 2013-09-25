@@ -1,12 +1,13 @@
-Message-ID: <524290CC.8000705@xenomai.org>
-Date: Wed, 25 Sep 2013 09:29:16 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <52435E3D.7020202@xenomai.org>
+Date: Thu, 26 Sep 2013 00:05:49 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <5241DAB0.8000604@siemens.com>
-In-Reply-To: <5241DAB0.8000604@siemens.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+References: <CAK4EZFSLBBOs174xP+JAsqgJgG-MJ5UxMsj_FD5Pzjh1BHz7gw@mail.gmail.com>
+	<201309241300.47883.paul_c@tuxcnc.org>
+In-Reply-To: <201309241300.47883.paul_c@tuxcnc.org>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] libalchemy: failing test case task-5
+Subject: Re: [Xenomai] Raspberry Pi patch issue?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,46 +16,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Paul <paul_c@tuxcnc.org>
+Cc: xenomai@xenomai.org
 
-On 09/24/2013 08:32 PM, Jan Kiszka wrote:
-> Hi,
->
-> I played a bit with the native skin emulation in Xenomai 3. The shipped
-> test cases in lib/alchemy/testsuite point a problem:
-> rt_task_set_priority is no longer a pure real-time services. As it calls
-> libc's pthread_setschedparam internally, it will - at least briefly -
-> switch the caller to secondary mode. This break the task-5 test which
-> assumes a different behaviour.
->
-> Are there ideas/plans to address this issues?
+On 09/24/2013 02:00 PM, Paul wrote:
+> On Tuesday 24 September 2013, Adam Vaughan wrote:
+>> I'm trying to build with the most recent xenomai-head in git for the
+>> Raspberry Pi, and I'm encountering an issue (see below) when I
+>> try to run prepare-kernel.sh .  I'm very new to this whole process
+>> (so it definitely could be user error), but it would seem that
+>> there's a problem with the patch.
+> 
+> 
+> I'll have a look at it this evening and report back after making a few 
+> checks.
 
-The switch to secondary mode will remain, the 2.6 implementation is even 
-worse actually. We have to keep both schedulers in sync, and for that, 
-the glibc has to be notified about the policy/priority change as well. 
-In 2.6, the target thread would receive a SIGSHADOW notification, 
-causing it to switch to secondary mode, while the setschedparam caller 
-would remain in primary mode. With 3.x, this is reversed: the thread 
-which issues the request does the switch, but the target thread whose 
-priority/policy was changed does not.
+Hi Paul,
 
-At the very least, this behavior is much saner, since the issuer has to 
-be aware of the consequences of its request, and the target thread won't 
-move to secondary in a random fashion with respect to its code flow. In 
-addition, this lifts a potential deadlock situation, as 
-pthread_setschedparm is not async-safe, so running it over a SHIGSHADOW 
-handler is not that safe.
+any news? Maybe I committed the wrong versions?
 
-Are there more case known
-> where the new architecture provides some challenges when trying to
-> preserve original API semantics?
->
-
-All user-visible changes are tracked in an internal document here. I'll 
-publish it right after the Cobalt/POSIX extension model with Xenomai 3 
-is fully validated, since this might have a few implications more.
+Regards.
 
 -- 
-Philippe.
+                                                                Gilles.
 
