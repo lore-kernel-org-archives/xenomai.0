@@ -1,13 +1,18 @@
+Message-ID: <52457550.2050501@axelsw.it>
+Date: Fri, 27 Sep 2013 14:08:48 +0200
+From: Roberto Bielli <roberto.bielli@axelsw.it>
 MIME-Version: 1.0
-In-Reply-To: <50F66343.4060508@xenomai.org>
-References: <50F5741A.9060404@grandegger.com> <50F5B1FD.3040901@xenomai.org>
-	<50F658BA.7050107@grandegger.com> <50F66343.4060508@xenomai.org>
-Date: Fri, 27 Sep 2013 11:25:03 +0200
-Message-ID: <CANKLDmv1nQhB3=D=Z5ed6vwEpn5385NisvBTKoWK1ZmHwMgwhA@mail.gmail.com>
-From: Henri Roosen <henriroosen@gmail.com>
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] rtdm_iomap_to_user: fix caching and page fault issues
+References: <A46EF8CF1BBB8E4B8A27B73E177C466402463ADE@MAIL-SINTERS-01.sinters-int.fr>,
+	<51DBF250.9070804@xenomai.org>	<A46EF8CF1BBB8E4B8A27B73E177C466402464B37@MAIL-SINTERS-01.sinters-int.fr>,
+	<51DC560F.90805@xenomai.org>	<A46EF8CF1BBB8E4B8A27B73E177C4664033EC616@MAIL-SINTERS-01.sinters-int.fr>,
+	<51DDB5C3.7010307@xenomai.org>	<A46EF8CF1BBB8E4B8A27B73E177C4664033F268F@MAIL-SINTERS-01.sinters-int.fr>,
+	<51DEF6FB.6080403@xenomai.org>	<A46EF8CF1BBB8E4B8A27B73E177C4664033F3724@MAIL-SINTERS-01.sinters-int.fr>
+	<51E43CE5.5020103@xenomai.org>
+In-Reply-To: <51E43CE5.5020103@xenomai.org>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] RE : RE : RE : RE : No boot kernel with xenomai on
+ i.MX6Q Sabrelite
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,106 +21,85 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, Younes CHALABI <y.chalabi@sinters.fr>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On Wed, Jan 16, 2013 at 9:22 AM, Gilles Chanteperdrix <
-gilles.chanteperdrix@xenomai.org> wrote:
+Hi,
 
-> On 01/16/2013 08:37 AM, Wolfgang Grandegger wrote:
+i'm try to do the same things (porting xenomai 2.6.2.1 on imx6q sabresd 
+kernel ) and i have the same error ('Switching to clocksource ipipe_tsc' 
+on boot the kernel).
+The steps was these:
+1. patch the kernel with the prepare-kernel.sh with the correct CFLAGS 
+and LDFLAGS (adeos-ipipe-3.0.36-arm-1.18-11.patch)
+2. apply the post patch (adeos-ipipe-3.0.36-arm-1.18-11-post.patch)
+3. boot the new kernel
+4. show the error 'Switching to clocksource ipipe_tsc'
+
+i have some simple question.
+1. There is a solution actually for this (are there some kernel 
+particular options to enable/disable)?
+
+thanks for all.
+
+
+
+
+Il 15/07/2013 20:18, Gilles Chanteperdrix ha scritto:
+> On 07/15/2013 03:00 PM, Younes CHALABI wrote:
 >
-> > On 01/15/2013 08:46 PM, Gilles Chanteperdrix wrote:
-> >> On 01/15/2013 04:22 PM, Wolfgang Grandegger wrote:
-> >>
-> >>> From: Wolfgang Grandegger <wg@denx.de>
-> >>>
-> >>> Pages mapped by rtdm_iomap_to_user() might be cached and may
-> >>> page fault on the first write. At least that's the behaviour
-> >>> we observed on an ARM mx6q system. This patch fixes these
-> >>> issues.
-> >>>
-> >>> Signed-off-by: Wolfgang Grandegger <wg@denx.de>
-> >>> ---
-> >>>  include/asm-generic/wrappers.h | 2 +-
-> >>>  ksrc/skins/rtdm/drvlib.c       | 8 +++++---
-> >>>  2 files changed, 6 insertions(+), 4 deletions(-)
-> >>>
-> >>> diff --git a/include/asm-generic/wrappers.h
-> b/include/asm-generic/wrappers.h
-> >>> index de1f0d7..e71bcc3 100644
-> >>> --- a/include/asm-generic/wrappers.h
-> >>> +++ b/include/asm-generic/wrappers.h
-> >>> @@ -394,7 +394,7 @@ static inline void *kzalloc(size_t size, int flag=
-s)
-> >>>  #define wrap_remap_io_page_range(vma,from,to,size,prot)  ({
->      \
-> >>>      (vma)->vm_page_prot =3D pgprot_noncached((vma)->vm_page_prot);  =
- \
-> >
-> > Hm, here pgprot_noncached() is already used.
-> >
-> >>>      /* Sets VM_RESERVED | VM_IO | VM_PFNMAP on the vma. */         \
-> >>> -    remap_pfn_range(vma,from,(to) >> PAGE_SHIFT,size,prot);
->      \
-> >>> +    remap_pfn_range(vma,from,(to) >>
-> PAGE_SHIFT,size,pgprot_noncached(prot));              \
-> >>
-> >>
-> >> Should not this be decided in the upper layers?
-> >
-> > Upper layers? You mean calling xnarch_remap_io_page_range() with the
-> > protection argument "pgprot_noncached(PAGE_SHARED)" in
-> rtdm_mmap_buffer()?
+>> Hi Gilles,
+>>
+>> I have tried to disable the CONFIG_IPIPE and CONFIG_XENOMAI manually
+>> on the .config, where CONFIG_cpu_IDLE was already disabled, then
+>> recompile but still have the same issue as previously.
 >
 >
-> I mean users could want to map i/o regions cacheable, but as you say,
-> the pgprot_noncached is already hardcoded in the vma, so, I will merge
-> your patch.
+> It is generally not a good idea to edit the .config manually. 
+> Automatic dependencies may re-enable the options you want disabled.
+>
+> Anyway, if indeed the kernel without CONFIG_IPIPE and CONFIG_XENOMAI 
+> does not boot, your problem has probably nothing to do with Xenomai.
+>
+> Again, I would recommend using mx6q_defconfig and checking that this 
+> default configuration at least boots.
+>
 >
 
-I used rtdm_iomap_to_user() to map the iMX6 EIM device into user space and
-still see caching behavior.
 
-Wolfgang, your patch didn't apply the pgprot_noncached(prot) to the #if
-LINUX_VERSION_CODE >=3D KERNEL_VERSION(2,6,15) && defined(CONFIG_MMU) case.
-Was that intended? Were you using a non-mmu configuration or an old kernel?
+-- 
++------------------------------------------------------------------------------------------------+
+							
+Roberto Bielli
+Sviluppo Software					
+Axel S.r.l.					
+							
+Via Del Cannino, 3 				
+21020 Crosio Della Valle			
+Varese - Italy					
+							
+Telefono: +39 0332 949600			
+Fax:      +39 0332 969315			
+							
+E-mail:   roberto.bielli@axelsw.it	
+Web Site: www.axelsw.it
 
-Anyway, when I apply that change to the >v2.6.15&mmu case, then the caching
-behavior is gone. I think that is correct, because my assumption is the
->v2.6.15&mmu check should only switch the use of vm_insert_page(). Please
-comment on this assumption.
++------------------------------------------------------------------------------------------------+
 
-If the assumption is correct, then select one of the attached patches. The
-first one just adds the pgprot_noncached(prot) to the >v2.6.15&mmu case,
-while version 2 removes removes the duplicate code
-for wrap_remap_io_page_range() and wrap_remap_kmem_page_range(). So NOTE to
-only select one of the patches.
+Si precisa che le informazioni contenute in questo messaggio sono riservate e ad uso esclusivo del destinatario.
+Qualora il messaggio in parola Le fosse pervenuto per errore, La preghiamo di eliminarlo senza copiarlo e di non inoltrarlo a terzi,
+dandocene gentilmente comunicazione. Grazie.
+Informativa sul trattamento dei dati personali (D. Lgs. 196/2003).
+I dati utilizzati per la spedizione del presente messaggio sono utilizzati da Axel S.r.l., titolare del trattamento,
+per l'invio delle comunicazioni dei diversi settori aziendali, non essendo autorizzata la divulgazione a terzi.
+Potrete rivolgere alla seguente mail richieste di verifica, rettifica o cancellazione dei Vostri dati: info@axelsw.it
 
-Thanks,
-Henri
+This e-mail and any attachments is confidential and may contain privileged information
+intended for the addressee(s) only. Dissemination, copying, printing or use by anybody
+else is unauthorised. If you are not the intended recipient,
+please delete this message and any attachments and advise the sender
+by return e-mail.Thank you.  			
+							
++------------------------------------------------------------------------------------------------+
 
->
-> --
->                                                                 Gilles.
->
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> http://www.xenomai.org/mailman/listinfo/xenomai
->
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: fix_wrap_remap_io_page_range_cached_mapping_v1.patch
-Type: application/octet-stream
-Size: 729 bytes
-Desc: not available
-URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20130927/03f29aa=
-d/attachment.obj>
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: fix_wrap_remap_io_page_range_cached_mapping_v2.patch
-Type: application/octet-stream
-Size: 2085 bytes
-Desc: not available
-URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20130927/03f29aa=
-d/attachment-0001.obj>
+
