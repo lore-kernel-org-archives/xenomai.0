@@ -1,24 +1,13 @@
-Message-ID: <5245DB72.9060603@xenomai.org>
-Date: Fri, 27 Sep 2013 21:24:34 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <5246931B.3060503@xenomai.org>
+Date: Sat, 28 Sep 2013 10:28:11 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <A46EF8CF1BBB8E4B8A27B73E177C466402463ADE@MAIL-SINTERS-01.sinters-int.fr>,
-	<51DBF250.9070804@xenomai.org>
-	<A46EF8CF1BBB8E4B8A27B73E177C466402464B37@MAIL-SINTERS-01.sinters-int.fr>,
-	<51DC560F.90805@xenomai.org>
-	<A46EF8CF1BBB8E4B8A27B73E177C4664033EC616@MAIL-SINTERS-01.sinters-int.fr>,
-	<51DDB5C3.7010307@xenomai.org>
-	<A46EF8CF1BBB8E4B8A27B73E177C4664033F268F@MAIL-SINTERS-01.sinters-int.fr>,
-	<51DEF6FB.6080403@xenomai.org>
-	<A46EF8CF1BBB8E4B8A27B73E177C4664033F3724@MAIL-SINTERS-01.sinters-int.fr>
-	<51E43CE5.5020103@xenomai.org> <52457550.2050501@axelsw.it>
-	<979a2ecdb54e79afe900ef6a07f21ce9.squirrel@127.0.0.1>
-	<52457ED1.8050509@axelsw.it>
-In-Reply-To: <52457ED1.8050509@axelsw.it>
-Content-Type: text/plain; charset=UTF-8
+References: <E1VPeW6-00026B-Hu@xenomai.org>
+In-Reply-To: <E1VPeW6-00026B-Hu@xenomai.org>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] RE : RE : RE : RE : No boot kernel with xenomai on
- i.MX6Q Sabrelite
+Subject: Re: [Xenomai] [Xenomai-git] Gilles Chanteperdrix : hal/x86: fix smi
+	message
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -27,22 +16,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Roberto Bielli <roberto.bielli@axelsw.it>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
+Cc: git repository hosting <git@xenomai.org>, xenomai-git@xenomai.org
 
-On 09/27/2013 02:49 PM, Roberto Bielli wrote:
-> Hi,
-> 
-> my kernel working before applying adeos-ipipe-3.0.36-arm-1.18-11.patch + 
-> adeos-ipipe-3.0.36-arm-1.18-11-post.patch,
-> So is not a problem before installing ipipe.
+On 09/27/2013 10:19 PM, git repository hosting wrote:
+> Module: xenomai-gch
+> Branch: for-forge
+> Commit: 283fabdf63e23f03a45565fa1f9937f9a5825a59
+> URL:    http://git.xenomai.org/?p=xenomai-gch.git;a=commit;h=283fabdf63e23f03a45565fa1f9937f9a5825a59
+>
+> Author: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+> Date:   Sun Sep 15 15:59:52 2013 +0200
+>
+> hal/x86: fix smi message
+>
+> ---
+>
+>   kernel/cobalt/arch/x86/smi.c |    2 +-
+>   1 files changed, 1 insertions(+), 1 deletions(-)
+>
+> diff --git a/kernel/cobalt/arch/x86/smi.c b/kernel/cobalt/arch/x86/smi.c
+> index e06734a..124d311 100644
+> --- a/kernel/cobalt/arch/x86/smi.c
+> +++ b/kernel/cobalt/arch/x86/smi.c
+> @@ -123,7 +123,7 @@ void mach_x86_smi_init(void)
+>   	if (smi_state == 0) {
+>   		printk("Xenomai: SMI-enabled chipset found, but SMI "
+>   		       "workaround disabled\n"
+> -		       "         (see xeno_hal.smi parameter). You may encounter\n"
+> +		       "         (see x86_hal.smi parameter). You may encounter\n"
+>   		       "         high interrupt latencies!\n");
+>   		pci_dev_put(dev);
+>   		return;
+>
+>
 
-I missed that part, 3.0.36 is not the latest version, please try 3.0.43
-from xenomai git. Also, you have 3 patches to apply, not 2.
-
-Finally, it is important to test the patched kernel without CONFIG_IPIPE
-and CONFIG_XENOMAI.
+Strictly speaking, the HAL disappeared from x3, since most of the 
+arch-independant interface is already provided by the interrupt 
+pipeline, and the event driven simulator was dropped. We should not 
+reintroduce it in the naming.
 
 -- 
-                                                                Gilles.
+Philippe.
 
