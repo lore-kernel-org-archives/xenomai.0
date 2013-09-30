@@ -1,24 +1,19 @@
-Message-ID: <52491EF8.80908@axelsw.it>
-Date: Mon, 30 Sep 2013 08:49:28 +0200
-From: Roberto Bielli <roberto.bielli@axelsw.it>
+Message-ID: <524924CE.2050907@web.de>
+Date: Mon, 30 Sep 2013 09:14:22 +0200
+From: Jan Kiszka <jan.kiszka@web.de>
 MIME-Version: 1.0
-References: <A46EF8CF1BBB8E4B8A27B73E177C466402463ADE@MAIL-SINTERS-01.sinters-int.fr>,
-	<51DBF250.9070804@xenomai.org>
-	<A46EF8CF1BBB8E4B8A27B73E177C466402464B37@MAIL-SINTERS-01.sinters-int.fr>,
-	<51DC560F.90805@xenomai.org>
-	<A46EF8CF1BBB8E4B8A27B73E177C4664033EC616@MAIL-SINTERS-01.sinters-int.fr>,
-	<51DDB5C3.7010307@xenomai.org>
-	<A46EF8CF1BBB8E4B8A27B73E177C4664033F268F@MAIL-SINTERS-01.sinters-int.fr>,
-	<51DEF6FB.6080403@xenomai.org>
-	<A46EF8CF1BBB8E4B8A27B73E177C4664033F3724@MAIL-SINTERS-01.sinters-int.fr>
-	<51E43CE5.5020103@xenomai.org> <52457550.2050501@axelsw.it>
-	<979a2ecdb54e79afe900ef6a07f21ce9.squirrel@127.0.0.1>
-	<52457ED1.8050509@axelsw.it> <5245DB72.9060603@xenomai.org>
-In-Reply-To: <5245DB72.9060603@xenomai.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] RE : RE : RE : RE : No boot kernel with xenomai on
- i.MX6Q Sabrelite
+References: <E1VPeW6-00026B-Hu@xenomai.org> <5246931B.3060503@xenomai.org>
+	<52469507.3070101@xenomai.org> <5246A6D3.7070502@xenomai.org>
+	<5246B982.6030209@xenomai.org> <5247041A.8090102@xenomai.org>
+	<5247FD02.3050605@web.de> <52483F85.10508@xenomai.org>
+	<52484951.5050508@web.de> <52484B0D.3040309@xenomai.org>
+	<52484B4C.8050004@web.de> <52484EB0.6020807@xenomai.org>
+	<524850DA.7050407@web.de> <52485AD7.5020203@xenomai.org>
+In-Reply-To: <52485AD7.5020203@xenomai.org>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] [Xenomai-git] Gilles Chanteperdrix : hal/x86: fix smi
+	message
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -27,58 +22,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@xenomai.org
 
-Il 27/09/2013 21:24, Gilles Chanteperdrix ha scritto:
-> On 09/27/2013 02:49 PM, Roberto Bielli wrote:
->> Hi,
->>
->> my kernel working before applying adeos-ipipe-3.0.36-arm-1.18-11.patch +
->> adeos-ipipe-3.0.36-arm-1.18-11-post.patch,
->> So is not a problem before installing ipipe.
-> I missed that part, 3.0.36 is not the latest version, please try 3.0.43
-> from xenomai git. Also, you have 3 patches to apply, not 2.
->
-> Finally, it is important to test the patched kernel without CONFIG_IPIPE
-> and CONFIG_XENOMAI.
->
-I'll try the 3.0.43. The kernel patched without CONFIG_IPIPE and 
-CONFIG_XENOMAI works.
+On 2013-09-29 18:52, Philippe Gerum wrote:
+> Merging your proposal and mine, this would give the change below. I
+> don't have any preference between "xeno", "xenomai", whatever fits.
+> However, we should keep something in the name that clearly gives a hint
+> about the machine/arch-dependent nature of the parameter (i.e.
+> not merging those bits to xenomai-y).
+> =
 
--- 
-+------------------------------------------------------------------------------------------------+
-							
-Roberto Bielli
-Sviluppo Software					
-Axel S.r.l.					
-							
-Via Del Cannino, 3 				
-21020 Crosio Della Valle			
-Varese - Italy					
-							
-Telefono: +39 0332 949600			
-Fax:      +39 0332 969315			
-							
-E-mail:   roberto.bielli@axelsw.it	
-Web Site: www.axelsw.it
+> e.g.
+> =
 
-+------------------------------------------------------------------------------------------------+
+> diff --git a/kernel/cobalt/arch/arm/Makefile
+> b/kernel/cobalt/arch/arm/Makefile
+> index 25d33a5..d62976c 100644
+> --- a/kernel/cobalt/arch/arm/Makefile
+> +++ b/kernel/cobalt/arch/arm/Makefile
+> @@ -1,5 +1,5 @@
+> -obj-$(CONFIG_XENOMAI) +=3D arm_hal.o
+> +obj-$(CONFIG_XENOMAI) +=3D xeno_machine.o
+> =
 
-Si precisa che le informazioni contenute in questo messaggio sono riservate e ad uso esclusivo del destinatario.
-Qualora il messaggio in parola Le fosse pervenuto per errore, La preghiamo di eliminarlo senza copiarlo e di non inoltrarlo a terzi,
-dandocene gentilmente comunicazione. Grazie.
-Informativa sul trattamento dei dati personali (D. Lgs. 196/2003).
-I dati utilizzati per la spedizione del presente messaggio sono utilizzati da Axel S.r.l., titolare del trattamento,
-per l'invio delle comunicazioni dei diversi settori aziendali, non essendo autorizzata la divulgazione a terzi.
-Potrete rivolgere alla seguente mail richieste di verifica, rettifica o cancellazione dei Vostri dati: info@axelsw.it
+> -arm_hal-y :=3D machine.o mayday.o thread.o switch.o syscall.o
+> +xeno_machine-y :=3D machine.o mayday.o thread.o switch.o syscall.o
+> =
 
-This e-mail and any attachments is confidential and may contain privileged information
-intended for the addressee(s) only. Dissemination, copying, printing or use by anybody
-else is unauthorised. If you are not the intended recipient,
-please delete this message and any attachments and advise the sender
-by return e-mail.Thank you.  			
-							
-+------------------------------------------------------------------------------------------------+
+>  ccflags-y :=3D -Iarch/arm/xenomai/include -Iinclude/xenomai
+> =
 
 
+Looks good to me.
+
+Jan
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 263 bytes
+Desc: OpenPGP digital signature
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20130930/c8dd21e=
+6/attachment.pgp>
