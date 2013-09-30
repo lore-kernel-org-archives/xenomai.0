@@ -1,27 +1,12 @@
-Message-ID: <5249617B.8080701@xenomai.org>
-Date: Mon, 30 Sep 2013 13:33:15 +0200
+Message-ID: <52496200.2010808@xenomai.org>
+Date: Mon, 30 Sep 2013 13:35:28 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <A46EF8CF1BBB8E4B8A27B73E177C466402463ADE@MAIL-SINTERS-01.sinters-int.fr>,
-	<51DBF250.9070804@xenomai.org>
-	<A46EF8CF1BBB8E4B8A27B73E177C466402464B37@MAIL-SINTERS-01.sinters-int.fr>,
-	<51DC560F.90805@xenomai.org>
-	<A46EF8CF1BBB8E4B8A27B73E177C4664033EC616@MAIL-SINTERS-01.sinters-int.fr>,
-	<51DDB5C3.7010307@xenomai.org>
-	<A46EF8CF1BBB8E4B8A27B73E177C4664033F268F@MAIL-SINTERS-01.sinters-int.fr>,
-	<51DEF6FB.6080403@xenomai.org>
-	<A46EF8CF1BBB8E4B8A27B73E177C4664033F3724@MAIL-SINTERS-01.sinters-int.fr>
-	<51E43CE5.5020103@xenomai.org> <52457550.2050501@axelsw.it>
-	<979a2ecdb54e79afe900ef6a07f21ce9.squirrel@127.0.0.1>
-	<52457ED1.8050509@axelsw.it> <5245DB72.9060603@xenomai.org>
-	<52491EF8.80908@axelsw.it> <52492AE5.7060501@axelsw.it>
-	<39c6c7289cb74a9275153ed6ef82cf29.squirrel@127.0.0.1>
-	<52493B49.4000602@axelsw.it>
-In-Reply-To: <52493B49.4000602@axelsw.it>
+References: <8ceffc54095e43d88f6dfa0edd0bb852@DBXPR03MB093.eurprd03.prod.outlook.com>
+In-Reply-To: <8ceffc54095e43d88f6dfa0edd0bb852@DBXPR03MB093.eurprd03.prod.outlook.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] RE : RE : RE : RE : No boot kernel with xenomai on
- i.MX6Q Sabrelite
+Subject: Re: [Xenomai] No GPIO IRQ on imx28(apf28), kernel 3.8.13
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -30,22 +15,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Roberto Bielli <roberto.bielli@axelsw.it>
+To: Antoine MOREL <A.MOREL@polysoude.com>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 09/30/2013 10:50 AM, Roberto Bielli wrote:
-> hi,
+On 09/30/2013 11:47 AM, Antoine MOREL wrote:
+> Hi all,
 > 
-> where i can find the exact kernel that can apply the 
-> adeos-ipipe-3.0.43-mx6q-1.18-12-pre.patch, ...post, and so on ?
+> I'm testing Xenomai on an apf28 board, with imx28 processor.
+> I'm using a 3.8.13 kernel with the last Xenomai-head repositorie.
 > 
-> I downloaded 3.0.43 from kernel.org but is not correct.
+> When I use the kernel without xenomai, my GPIO irq works well. But when I patch my kernel with adeos and Xenomai, my gpio IRQ doesn't work!
+> I have the same problem with the kernel 3.4.6.
+> 
+> I test the gpio IRQ in user space and with RTDM driver.
+> Do I forget anything?
 
-The kernel.org sources do not need pre and post patches, pre and post
-patches are for vendor branches. See ksrc/arch/arm/patches/README to see
-to which commit these patches apply.
+The irq line probably needs to be enabled, you should use
+rtdm_irq_enable after rtdm_irq_request, if that does not work, try to
+request irq at Linux level, then please report your findings to the
+mailing list.
 
-Regards.
 
 -- 
                                                                 Gilles.
