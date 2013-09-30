@@ -1,14 +1,10 @@
-From: Antoine MOREL <A.MOREL@polysoude.com>
-Date: Mon, 30 Sep 2013 13:01:16 +0000
-Message-ID: <295e5f6a1e6849079d9fb3e53dcc1827@DBXPR03MB093.eurprd03.prod.outlook.com>
-References: <8ceffc54095e43d88f6dfa0edd0bb852@DBXPR03MB093.eurprd03.prod.outlook.com>
-	<52496200.2010808@xenomai.org>
-In-Reply-To: <52496200.2010808@xenomai.org>
-Content-Language: fr-FR
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Message-ID: <5249A8D5.4070401@axelsw.it>
+Date: Mon, 30 Sep 2013 18:37:41 +0200
+From: Roberto Bielli <roberto.bielli@axelsw.it>
 MIME-Version: 1.0
-Subject: Re: [Xenomai] No GPIO IRQ on imx28(apf28), kernel 3.8.13
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai] xenomai smp - how it works
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,30 +13,54 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-SGVsbG8gR2lsbGVzLA0KDQpJIHRyeSB3aXRoIHRoZSBmdW5jdGlvbiBydGRtX2lycV9lbmFibGUg
-YWZ0ZXIgcnRkbV9pcnFfcmVxdWVzdC4gSXQgZG9lc24ndCB3b3JrIGFnYWluLg0KSSByZXF1ZXN0
-IHRoZSBpcnEgYXQgbGludXggbGV2ZWwgKHNlZSBtYWluLmMpLCBidXQgd2l0aCB0aGUgYWRlb3Mg
-cGF0aCwgaXQgZG9lc24ndCB3b3JrLiBJIGRvbid0IGtub3cgd2h5IQ0KDQpSZWdhcmRzLA0KQW50
-b2luZSBNT1JFTA0KDQotLS0tLU1lc3NhZ2UgZCdvcmlnaW5lLS0tLS0NCkRlwqA6IEdpbGxlcyBD
-aGFudGVwZXJkcml4IFttYWlsdG86Z2lsbGVzLmNoYW50ZXBlcmRyaXhAeGVub21haS5vcmddIA0K
-RW52b3nDqcKgOiBsdW5kaSAzMCBzZXB0ZW1icmUgMjAxMyAxMzozNQ0Kw4DCoDogQW50b2luZSBN
-T1JFTA0KQ2PCoDogeGVub21haUB4ZW5vbWFpLm9yZw0KT2JqZXTCoDogUmU6IFtYZW5vbWFpXSBO
-byBHUElPIElSUSBvbiBpbXgyOChhcGYyOCksIGtlcm5lbCAzLjguMTMNCg0KT24gMDkvMzAvMjAx
-MyAxMTo0NyBBTSwgQW50b2luZSBNT1JFTCB3cm90ZToNCj4gSGkgYWxsLA0KPiANCj4gSSdtIHRl
-c3RpbmcgWGVub21haSBvbiBhbiBhcGYyOCBib2FyZCwgd2l0aCBpbXgyOCBwcm9jZXNzb3IuDQo+
-IEknbSB1c2luZyBhIDMuOC4xMyBrZXJuZWwgd2l0aCB0aGUgbGFzdCBYZW5vbWFpLWhlYWQgcmVw
-b3NpdG9yaWUuDQo+IA0KPiBXaGVuIEkgdXNlIHRoZSBrZXJuZWwgd2l0aG91dCB4ZW5vbWFpLCBt
-eSBHUElPIGlycSB3b3JrcyB3ZWxsLiBCdXQgd2hlbiBJIHBhdGNoIG15IGtlcm5lbCB3aXRoIGFk
-ZW9zIGFuZCBYZW5vbWFpLCBteSBncGlvIElSUSBkb2Vzbid0IHdvcmshDQo+IEkgaGF2ZSB0aGUg
-c2FtZSBwcm9ibGVtIHdpdGggdGhlIGtlcm5lbCAzLjQuNi4NCj4gDQo+IEkgdGVzdCB0aGUgZ3Bp
-byBJUlEgaW4gdXNlciBzcGFjZSBhbmQgd2l0aCBSVERNIGRyaXZlci4NCj4gRG8gSSBmb3JnZXQg
-YW55dGhpbmc/DQoNClRoZSBpcnEgbGluZSBwcm9iYWJseSBuZWVkcyB0byBiZSBlbmFibGVkLCB5
-b3Ugc2hvdWxkIHVzZSBydGRtX2lycV9lbmFibGUgYWZ0ZXIgcnRkbV9pcnFfcmVxdWVzdCwgaWYg
-dGhhdCBkb2VzIG5vdCB3b3JrLCB0cnkgdG8gcmVxdWVzdCBpcnEgYXQgTGludXggbGV2ZWwsIHRo
-ZW4gcGxlYXNlIHJlcG9ydCB5b3VyIGZpbmRpbmdzIHRvIHRoZSBtYWlsaW5nIGxpc3QuDQoNCg0K
-LS0gDQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgR2lsbGVzLg0K
+Hi,
+
+i would like to know how works in theory xenomai on smp system (with 
+local timers, imx6q for example).
+For example linux is always on one cpu and xenomai on other ?
+Or is there a complex algorithm to determine who is in a processor in a 
+instance ?
+Linux can disturb xenomai more than single processor ?
+Is better (jitter, latency, etc...) xenomai on a multi-core than to 
+single core ?
+
+Thanks a lot
+
+-- 
++------------------------------------------------------------------------------------------------+
+							
+Roberto Bielli
+Sviluppo Software					
+Axel S.r.l.					
+							
+Via Del Cannino, 3 				
+21020 Crosio Della Valle			
+Varese - Italy					
+							
+Telefono: +39 0332 949600			
+Fax:      +39 0332 969315			
+							
+E-mail:   roberto.bielli@axelsw.it	
+Web Site: www.axelsw.it
+
++------------------------------------------------------------------------------------------------+
+
+Si precisa che le informazioni contenute in questo messaggio sono riservate e ad uso esclusivo del destinatario.
+Qualora il messaggio in parola Le fosse pervenuto per errore, La preghiamo di eliminarlo senza copiarlo e di non inoltrarlo a terzi,
+dandocene gentilmente comunicazione. Grazie.
+Informativa sul trattamento dei dati personali (D. Lgs. 196/2003).
+I dati utilizzati per la spedizione del presente messaggio sono utilizzati da Axel S.r.l., titolare del trattamento,
+per l'invio delle comunicazioni dei diversi settori aziendali, non essendo autorizzata la divulgazione a terzi.
+Potrete rivolgere alla seguente mail richieste di verifica, rettifica o cancellazione dei Vostri dati: info@axelsw.it
+
+This e-mail and any attachments is confidential and may contain privileged information
+intended for the addressee(s) only. Dissemination, copying, printing or use by anybody
+else is unauthorised. If you are not the intended recipient,
+please delete this message and any attachments and advise the sender
+by return e-mail.Thank you.  			
+							
++------------------------------------------------------------------------------------------------+
+
 
