@@ -1,12 +1,15 @@
-Message-ID: <5249C2A0.7030204@xenomai.org>
-Date: Mon, 30 Sep 2013 20:27:44 +0200
+Message-ID: <5249C483.6090500@xenomai.org>
+Date: Mon, 30 Sep 2013 20:35:47 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <5249A8D5.4070401@axelsw.it>
-In-Reply-To: <5249A8D5.4070401@axelsw.it>
+References: <CAK4EZFSLBBOs174xP+JAsqgJgG-MJ5UxMsj_FD5Pzjh1BHz7gw@mail.gmail.com>
+	<201309241300.47883.paul_c@tuxcnc.org>
+	<52435E3D.7020202@xenomai.org>
+	<201309261032.30542.paul_c@tuxcnc.org>
+In-Reply-To: <201309261032.30542.paul_c@tuxcnc.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] xenomai smp - how it works
+Subject: Re: [Xenomai] Raspberry Pi patch issue?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,25 +18,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Roberto Bielli <roberto.bielli@axelsw.it>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Paul <paul_c@tuxcnc.org>
+Cc: xenomai@xenomai.org
 
-On 09/30/2013 06:37 PM, Roberto Bielli wrote:
-> Hi,
+On 09/26/2013 11:32 AM, Paul wrote:
+> On Wednesday 25 September 2013, Gilles Chanteperdrix wrote:
+>> On 09/24/2013 02:00 PM, Paul wrote:
+>>> On Tuesday 24 September 2013, Adam Vaughan wrote:
+>>>> I'm trying to build with the most recent xenomai-head in git for
+>>>> the Raspberry Pi, and I'm encountering an issue (see below) when I
+>>>> try to run prepare-kernel.sh .  I'm very new to this whole process
+>>>> (so it definitely could be user error), but it would seem that
+>>>> there's a problem with the patch.
+>>>
+>>> I'll have a look at it this evening and report back after making a
+>>> few checks.
+>>
+>> any news? Maybe I committed the wrong versions?
 > 
-> i would like to know how works in theory xenomai on smp system (with 
-> local timers, imx6q for example).
+> My fault entirely - I used the wrong ipipe-core patch in preparing the 
+> pre patch. Will have another look over the next couple of days (trying 
+> to fit it in around work commitments).
 
-On mx6q specifically, it seems the framebuffer is a latency killer,
-probably because of cache effects, the L2 full cache flush seems also to
-need splitting, but it may be a side effect of the framebuffer driver. I
-would recommend to try and map the framebuffer uncached to avoid
-disturbing the cache when writing to the framebuffer. At the expense of
-course of the graphic performance. I did not experience this first hand,
-it was only reported to me, so I am not sure of my diagnosis. What I
-could observe on other cortex A9 (OMAP4) is that the L2 cache spinlock
-creates large latencies as well, but the latest versions of the I-pipe
-patch should avoid this issue.
+Hi Paul,
+
+Did you have time to fix the patches?
+
+Regards.
+
 
 -- 
                                                                 Gilles.
