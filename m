@@ -1,12 +1,27 @@
-Message-ID: <521DD7D9.6040108@siemens.com>
-Date: Wed, 28 Aug 2013 12:58:33 +0200
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <5249651B.7060906@axelsw.it>
+Date: Mon, 30 Sep 2013 13:48:43 +0200
+From: Roberto Bielli <roberto.bielli@axelsw.it>
 MIME-Version: 1.0
-References: <521DD3DD.6010300@siemens.com>
-In-Reply-To: <521DD3DD.6010300@siemens.com>
-Content-Type: text/plain; charset=ISO-8859-1
+References: <A46EF8CF1BBB8E4B8A27B73E177C466402463ADE@MAIL-SINTERS-01.sinters-int.fr>,
+	<51DBF250.9070804@xenomai.org>
+	<A46EF8CF1BBB8E4B8A27B73E177C466402464B37@MAIL-SINTERS-01.sinters-int.fr>,
+	<51DC560F.90805@xenomai.org>
+	<A46EF8CF1BBB8E4B8A27B73E177C4664033EC616@MAIL-SINTERS-01.sinters-int.fr>,
+	<51DDB5C3.7010307@xenomai.org>
+	<A46EF8CF1BBB8E4B8A27B73E177C4664033F268F@MAIL-SINTERS-01.sinters-int.fr>,
+	<51DEF6FB.6080403@xenomai.org>
+	<A46EF8CF1BBB8E4B8A27B73E177C4664033F3724@MAIL-SINTERS-01.sinters-int.fr>
+	<51E43CE5.5020103@xenomai.org> <52457550.2050501@axelsw.it>
+	<979a2ecdb54e79afe900ef6a07f21ce9.squirrel@127.0.0.1>
+	<52457ED1.8050509@axelsw.it> <5245DB72.9060603@xenomai.org>
+	<52491EF8.80908@axelsw.it> <52492AE5.7060501@axelsw.it>
+	<39c6c7289cb74a9275153ed6ef82cf29.squirrel@127.0.0.1>
+	<52493B49.4000602@axelsw.it> <5249617B.8080701@xenomai.org>
+In-Reply-To: <5249617B.8080701@xenomai.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] IPIPE_KEVT_SETAFFINITY
+Subject: Re: [Xenomai] RE : RE : RE : RE : No boot kernel with xenomai on
+ i.MX6Q Sabrelite
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,24 +30,64 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 2013-08-28 12:41, Jan Kiszka wrote:
-> Hi Philippe,
-> 
-> please push to ipipe.git what introduces IPIPE_KEVT_SETAFFINITY. I'm
-> riding on the tip of all trees and cannot build forge anymore.
+Hi,
 
-Ah, oversaw it. It's in stable ipipe-3.8 only. Will pick it up for my
-master queue.
+In the readme spoke about 3.0.36, not your 3.0.43. is the same ?
 
-> Or does
-> this event rather require some feature detection in forge?
 
-I suppose the policy for forge is still to require latest, full-featured
-I-pipe patches, right?
 
-Jan
+Il 30/09/2013 13:33, Gilles Chanteperdrix ha scritto:
+> On 09/30/2013 10:50 AM, Roberto Bielli wrote:
+>> hi,
+>>
+>> where i can find the exact kernel that can apply the
+>> adeos-ipipe-3.0.43-mx6q-1.18-12-pre.patch, ...post, and so on ?
+>>
+>> I downloaded 3.0.43 from kernel.org but is not correct.
+> The kernel.org sources do not need pre and post patches, pre and post
+> patches are for vendor branches. See ksrc/arch/arm/patches/README to see
+> to which commit these patches apply.
+>
+> Regards.
+>
+
+
+-- 
++------------------------------------------------------------------------------------------------+
+							
+Roberto Bielli
+Sviluppo Software					
+Axel S.r.l.					
+							
+Via Del Cannino, 3 				
+21020 Crosio Della Valle			
+Varese - Italy					
+							
+Telefono: +39 0332 949600			
+Fax:      +39 0332 969315			
+							
+E-mail:   roberto.bielli@axelsw.it	
+Web Site: www.axelsw.it
+
++------------------------------------------------------------------------------------------------+
+
+Si precisa che le informazioni contenute in questo messaggio sono riservate e ad uso esclusivo del destinatario.
+Qualora il messaggio in parola Le fosse pervenuto per errore, La preghiamo di eliminarlo senza copiarlo e di non inoltrarlo a terzi,
+dandocene gentilmente comunicazione. Grazie.
+Informativa sul trattamento dei dati personali (D. Lgs. 196/2003).
+I dati utilizzati per la spedizione del presente messaggio sono utilizzati da Axel S.r.l., titolare del trattamento,
+per l'invio delle comunicazioni dei diversi settori aziendali, non essendo autorizzata la divulgazione a terzi.
+Potrete rivolgere alla seguente mail richieste di verifica, rettifica o cancellazione dei Vostri dati: info@axelsw.it
+
+This e-mail and any attachments is confidential and may contain privileged information
+intended for the addressee(s) only. Dissemination, copying, printing or use by anybody
+else is unauthorised. If you are not the intended recipient,
+please delete this message and any attachments and advise the sender
+by return e-mail.Thank you.  			
+							
++------------------------------------------------------------------------------------------------+
 
 
