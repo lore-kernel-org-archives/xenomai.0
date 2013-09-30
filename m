@@ -1,6 +1,6 @@
-Message-ID: <5249651B.7060906@axelsw.it>
-Date: Mon, 30 Sep 2013 13:48:43 +0200
-From: Roberto Bielli <roberto.bielli@axelsw.it>
+Message-ID: <52496481.3080403@xenomai.org>
+Date: Mon, 30 Sep 2013 13:46:09 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <A46EF8CF1BBB8E4B8A27B73E177C466402463ADE@MAIL-SINTERS-01.sinters-int.fr>,
 	<51DBF250.9070804@xenomai.org>
@@ -17,8 +17,9 @@ References: <A46EF8CF1BBB8E4B8A27B73E177C466402463ADE@MAIL-SINTERS-01.sinters-in
 	<52491EF8.80908@axelsw.it> <52492AE5.7060501@axelsw.it>
 	<39c6c7289cb74a9275153ed6ef82cf29.squirrel@127.0.0.1>
 	<52493B49.4000602@axelsw.it> <5249617B.8080701@xenomai.org>
-In-Reply-To: <5249617B.8080701@xenomai.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+	<5249651B.7060906@axelsw.it>
+In-Reply-To: <5249651B.7060906@axelsw.it>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] RE : RE : RE : RE : No boot kernel with xenomai on
  i.MX6Q Sabrelite
@@ -30,64 +31,17 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Roberto Bielli <roberto.bielli@axelsw.it>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi,
+On 09/30/2013 01:48 PM, Roberto Bielli wrote:
+> Hi,
+> 
+> In the readme spoke about 3.0.36, not your 3.0.43. is the same ?
 
-In the readme spoke about 3.0.36, not your 3.0.43. is the same ?
-
-
-
-Il 30/09/2013 13:33, Gilles Chanteperdrix ha scritto:
-> On 09/30/2013 10:50 AM, Roberto Bielli wrote:
->> hi,
->>
->> where i can find the exact kernel that can apply the
->> adeos-ipipe-3.0.43-mx6q-1.18-12-pre.patch, ...post, and so on ?
->>
->> I downloaded 3.0.43 from kernel.org but is not correct.
-> The kernel.org sources do not need pre and post patches, pre and post
-> patches are for vendor branches. See ksrc/arch/arm/patches/README to see
-> to which commit these patches apply.
->
-> Regards.
->
+Maybe you could try, and only post to the mailing list if it fails?
 
 
 -- 
-+------------------------------------------------------------------------------------------------+
-							
-Roberto Bielli
-Sviluppo Software					
-Axel S.r.l.					
-							
-Via Del Cannino, 3 				
-21020 Crosio Della Valle			
-Varese - Italy					
-							
-Telefono: +39 0332 949600			
-Fax:      +39 0332 969315			
-							
-E-mail:   roberto.bielli@axelsw.it	
-Web Site: www.axelsw.it
-
-+------------------------------------------------------------------------------------------------+
-
-Si precisa che le informazioni contenute in questo messaggio sono riservate e ad uso esclusivo del destinatario.
-Qualora il messaggio in parola Le fosse pervenuto per errore, La preghiamo di eliminarlo senza copiarlo e di non inoltrarlo a terzi,
-dandocene gentilmente comunicazione. Grazie.
-Informativa sul trattamento dei dati personali (D. Lgs. 196/2003).
-I dati utilizzati per la spedizione del presente messaggio sono utilizzati da Axel S.r.l., titolare del trattamento,
-per l'invio delle comunicazioni dei diversi settori aziendali, non essendo autorizzata la divulgazione a terzi.
-Potrete rivolgere alla seguente mail richieste di verifica, rettifica o cancellazione dei Vostri dati: info@axelsw.it
-
-This e-mail and any attachments is confidential and may contain privileged information
-intended for the addressee(s) only. Dissemination, copying, printing or use by anybody
-else is unauthorised. If you are not the intended recipient,
-please delete this message and any attachments and advise the sender
-by return e-mail.Thank you.  			
-							
-+------------------------------------------------------------------------------------------------+
-
+                                                                Gilles.
 
