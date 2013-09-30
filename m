@@ -1,28 +1,14 @@
-Message-ID: <52496481.3080403@xenomai.org>
-Date: Mon, 30 Sep 2013 13:46:09 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: Antoine MOREL <A.MOREL@polysoude.com>
+Date: Mon, 30 Sep 2013 13:01:16 +0000
+Message-ID: <295e5f6a1e6849079d9fb3e53dcc1827@DBXPR03MB093.eurprd03.prod.outlook.com>
+References: <8ceffc54095e43d88f6dfa0edd0bb852@DBXPR03MB093.eurprd03.prod.outlook.com>
+	<52496200.2010808@xenomai.org>
+In-Reply-To: <52496200.2010808@xenomai.org>
+Content-Language: fr-FR
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <A46EF8CF1BBB8E4B8A27B73E177C466402463ADE@MAIL-SINTERS-01.sinters-int.fr>,
-	<51DBF250.9070804@xenomai.org>
-	<A46EF8CF1BBB8E4B8A27B73E177C466402464B37@MAIL-SINTERS-01.sinters-int.fr>,
-	<51DC560F.90805@xenomai.org>
-	<A46EF8CF1BBB8E4B8A27B73E177C4664033EC616@MAIL-SINTERS-01.sinters-int.fr>,
-	<51DDB5C3.7010307@xenomai.org>
-	<A46EF8CF1BBB8E4B8A27B73E177C4664033F268F@MAIL-SINTERS-01.sinters-int.fr>,
-	<51DEF6FB.6080403@xenomai.org>
-	<A46EF8CF1BBB8E4B8A27B73E177C4664033F3724@MAIL-SINTERS-01.sinters-int.fr>
-	<51E43CE5.5020103@xenomai.org> <52457550.2050501@axelsw.it>
-	<979a2ecdb54e79afe900ef6a07f21ce9.squirrel@127.0.0.1>
-	<52457ED1.8050509@axelsw.it> <5245DB72.9060603@xenomai.org>
-	<52491EF8.80908@axelsw.it> <52492AE5.7060501@axelsw.it>
-	<39c6c7289cb74a9275153ed6ef82cf29.squirrel@127.0.0.1>
-	<52493B49.4000602@axelsw.it> <5249617B.8080701@xenomai.org>
-	<5249651B.7060906@axelsw.it>
-In-Reply-To: <5249651B.7060906@axelsw.it>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] RE : RE : RE : RE : No boot kernel with xenomai on
- i.MX6Q Sabrelite
+Subject: Re: [Xenomai] No GPIO IRQ on imx28(apf28), kernel 3.8.13
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -31,17 +17,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Roberto Bielli <roberto.bielli@axelsw.it>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 09/30/2013 01:48 PM, Roberto Bielli wrote:
-> Hi,
-> 
-> In the readme spoke about 3.0.36, not your 3.0.43. is the same ?
-
-Maybe you could try, and only post to the mailing list if it fails?
-
-
--- 
-                                                                Gilles.
+SGVsbG8gR2lsbGVzLA0KDQpJIHRyeSB3aXRoIHRoZSBmdW5jdGlvbiBydGRtX2lycV9lbmFibGUg
+YWZ0ZXIgcnRkbV9pcnFfcmVxdWVzdC4gSXQgZG9lc24ndCB3b3JrIGFnYWluLg0KSSByZXF1ZXN0
+IHRoZSBpcnEgYXQgbGludXggbGV2ZWwgKHNlZSBtYWluLmMpLCBidXQgd2l0aCB0aGUgYWRlb3Mg
+cGF0aCwgaXQgZG9lc24ndCB3b3JrLiBJIGRvbid0IGtub3cgd2h5IQ0KDQpSZWdhcmRzLA0KQW50
+b2luZSBNT1JFTA0KDQotLS0tLU1lc3NhZ2UgZCdvcmlnaW5lLS0tLS0NCkRlwqA6IEdpbGxlcyBD
+aGFudGVwZXJkcml4IFttYWlsdG86Z2lsbGVzLmNoYW50ZXBlcmRyaXhAeGVub21haS5vcmddIA0K
+RW52b3nDqcKgOiBsdW5kaSAzMCBzZXB0ZW1icmUgMjAxMyAxMzozNQ0Kw4DCoDogQW50b2luZSBN
+T1JFTA0KQ2PCoDogeGVub21haUB4ZW5vbWFpLm9yZw0KT2JqZXTCoDogUmU6IFtYZW5vbWFpXSBO
+byBHUElPIElSUSBvbiBpbXgyOChhcGYyOCksIGtlcm5lbCAzLjguMTMNCg0KT24gMDkvMzAvMjAx
+MyAxMTo0NyBBTSwgQW50b2luZSBNT1JFTCB3cm90ZToNCj4gSGkgYWxsLA0KPiANCj4gSSdtIHRl
+c3RpbmcgWGVub21haSBvbiBhbiBhcGYyOCBib2FyZCwgd2l0aCBpbXgyOCBwcm9jZXNzb3IuDQo+
+IEknbSB1c2luZyBhIDMuOC4xMyBrZXJuZWwgd2l0aCB0aGUgbGFzdCBYZW5vbWFpLWhlYWQgcmVw
+b3NpdG9yaWUuDQo+IA0KPiBXaGVuIEkgdXNlIHRoZSBrZXJuZWwgd2l0aG91dCB4ZW5vbWFpLCBt
+eSBHUElPIGlycSB3b3JrcyB3ZWxsLiBCdXQgd2hlbiBJIHBhdGNoIG15IGtlcm5lbCB3aXRoIGFk
+ZW9zIGFuZCBYZW5vbWFpLCBteSBncGlvIElSUSBkb2Vzbid0IHdvcmshDQo+IEkgaGF2ZSB0aGUg
+c2FtZSBwcm9ibGVtIHdpdGggdGhlIGtlcm5lbCAzLjQuNi4NCj4gDQo+IEkgdGVzdCB0aGUgZ3Bp
+byBJUlEgaW4gdXNlciBzcGFjZSBhbmQgd2l0aCBSVERNIGRyaXZlci4NCj4gRG8gSSBmb3JnZXQg
+YW55dGhpbmc/DQoNClRoZSBpcnEgbGluZSBwcm9iYWJseSBuZWVkcyB0byBiZSBlbmFibGVkLCB5
+b3Ugc2hvdWxkIHVzZSBydGRtX2lycV9lbmFibGUgYWZ0ZXIgcnRkbV9pcnFfcmVxdWVzdCwgaWYg
+dGhhdCBkb2VzIG5vdCB3b3JrLCB0cnkgdG8gcmVxdWVzdCBpcnEgYXQgTGludXggbGV2ZWwsIHRo
+ZW4gcGxlYXNlIHJlcG9ydCB5b3VyIGZpbmRpbmdzIHRvIHRoZSBtYWlsaW5nIGxpc3QuDQoNCg0K
+LS0gDQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgR2lsbGVzLg0K
 
