@@ -1,19 +1,24 @@
-Message-ID: <52485AD7.5020203@xenomai.org>
-Date: Sun, 29 Sep 2013 18:52:39 +0200
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <52491EF8.80908@axelsw.it>
+Date: Mon, 30 Sep 2013 08:49:28 +0200
+From: Roberto Bielli <roberto.bielli@axelsw.it>
 MIME-Version: 1.0
-References: <E1VPeW6-00026B-Hu@xenomai.org> <5246931B.3060503@xenomai.org>
-	<52469507.3070101@xenomai.org> <5246A6D3.7070502@xenomai.org>
-	<5246B982.6030209@xenomai.org> <5247041A.8090102@xenomai.org>
-	<5247FD02.3050605@web.de> <52483F85.10508@xenomai.org>
-	<52484951.5050508@web.de> <52484B0D.3040309@xenomai.org>
-	<52484B4C.8050004@web.de> <52484EB0.6020807@xenomai.org>
-	<524850DA.7050407@web.de>
-In-Reply-To: <524850DA.7050407@web.de>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+References: <A46EF8CF1BBB8E4B8A27B73E177C466402463ADE@MAIL-SINTERS-01.sinters-int.fr>,
+	<51DBF250.9070804@xenomai.org>
+	<A46EF8CF1BBB8E4B8A27B73E177C466402464B37@MAIL-SINTERS-01.sinters-int.fr>,
+	<51DC560F.90805@xenomai.org>
+	<A46EF8CF1BBB8E4B8A27B73E177C4664033EC616@MAIL-SINTERS-01.sinters-int.fr>,
+	<51DDB5C3.7010307@xenomai.org>
+	<A46EF8CF1BBB8E4B8A27B73E177C4664033F268F@MAIL-SINTERS-01.sinters-int.fr>,
+	<51DEF6FB.6080403@xenomai.org>
+	<A46EF8CF1BBB8E4B8A27B73E177C4664033F3724@MAIL-SINTERS-01.sinters-int.fr>
+	<51E43CE5.5020103@xenomai.org> <52457550.2050501@axelsw.it>
+	<979a2ecdb54e79afe900ef6a07f21ce9.squirrel@127.0.0.1>
+	<52457ED1.8050509@axelsw.it> <5245DB72.9060603@xenomai.org>
+In-Reply-To: <5245DB72.9060603@xenomai.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [Xenomai-git] Gilles Chanteperdrix : hal/x86: fix smi
-	message
+Subject: Re: [Xenomai] RE : RE : RE : RE : No boot kernel with xenomai on
+ i.MX6Q Sabrelite
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,144 +27,58 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@web.de>
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 09/29/2013 06:10 PM, Jan Kiszka wrote:
-> On 2013-09-29 18:00, Philippe Gerum wrote:
->> On 09/29/2013 05:46 PM, Jan Kiszka wrote:
->>> On 2013-09-29 17:45, Philippe Gerum wrote:
->>>> On 09/29/2013 05:37 PM, Jan Kiszka wrote:
->>>>> On 2013-09-29 16:56, Philippe Gerum wrote:
->>>>>> On 09/29/2013 12:12 PM, Jan Kiszka wrote:
->>>>>>> On 2013-09-28 18:30, Philippe Gerum wrote:
->>>>>>>> On 09/28/2013 01:12 PM, Gilles Chanteperdrix wrote:
->>>>>>>>> On 09/28/2013 11:52 AM, Philippe Gerum wrote:
->>>>>>>>>> On 09/28/2013 10:36 AM, Gilles Chanteperdrix wrote:
->>>>>>>>>>> On 09/28/2013 10:28 AM, Philippe Gerum wrote:
->>>>>>>>>>>> On 09/27/2013 10:19 PM, git repository hosting wrote:
->>>>>>>>>>>>> Module: xenomai-gch
->>>>>>>>>>>>> Branch: for-forge
->>>>>>>>>>>>> Commit: 283fabdf63e23f03a45565fa1f9937f9a5825a59
->>>>>>>>>>>>> URL:
->>>>>>>>>>>>> http://git.xenomai.org/?p=xenomai-gch.git;a=commit;h=283fabdf63e23f03a45565fa1f9937f9a5825a59
->>>>>>>>>>>>>
->>>>>>>>>>>>>
->>>>>>>>>>>>>
->>>>>>>>>>>>>
->>>>>>>>>>>>>
->>>>>>>>>>>>> Author: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
->>>>>>>>>>>>> Date:   Sun Sep 15 15:59:52 2013 +0200
->>>>>>>>>>>>>
->>>>>>>>>>>>> hal/x86: fix smi message
->>>>>>>>>>>>>
->>>>>>>>>>>>> ---
->>>>>>>>>>>>>
->>>>>>>>>>>>>         kernel/cobalt/arch/x86/smi.c |    2 +-
->>>>>>>>>>>>>         1 files changed, 1 insertions(+), 1 deletions(-)
->>>>>>>>>>>>>
->>>>>>>>>>>>> diff --git a/kernel/cobalt/arch/x86/smi.c
->>>>>>>>>>>>> b/kernel/cobalt/arch/x86/smi.c
->>>>>>>>>>>>> index e06734a..124d311 100644
->>>>>>>>>>>>> --- a/kernel/cobalt/arch/x86/smi.c
->>>>>>>>>>>>> +++ b/kernel/cobalt/arch/x86/smi.c
->>>>>>>>>>>>> @@ -123,7 +123,7 @@ void mach_x86_smi_init(void)
->>>>>>>>>>>>>             if (smi_state == 0) {
->>>>>>>>>>>>>                 printk("Xenomai: SMI-enabled chipset found, but
->>>>>>>>>>>>> SMI "
->>>>>>>>>>>>>                        "workaround disabled\n"
->>>>>>>>>>>>> -               "         (see xeno_hal.smi parameter). You may
->>>>>>>>>>>>> encounter\n"
->>>>>>>>>>>>> +               "         (see x86_hal.smi parameter). You may
->>>>>>>>>>>>> encounter\n"
->>>>>>>>>>>>>                        "         high interrupt latencies!\n");
->>>>>>>>>>>>>                 pci_dev_put(dev);
->>>>>>>>>>>>>                 return;
->>>>>>>>>>>>>
->>>>>>>>>>>>>
->>>>>>>>>>>>
->>>>>>>>>>>> Strictly speaking, the HAL disappeared from x3, since most of
->>>>>>>>>>>> the
->>>>>>>>>>>> arch-independant interface is already provided by the interrupt
->>>>>>>>>>>> pipeline, and the event driven simulator was dropped. We should
->>>>>>>>>>>> not
->>>>>>>>>>>> reintroduce it in the naming.
->>>>>>>>>>>>
->>>>>>>>>>> The parameter name is due to this Makefile chunk:
->>>>>>>>>>>
->>>>>>>>>>> obj-$(CONFIG_XENOMAI) += x86_hal.o
->>>>>>>>>>> x86_hal-y := machine.o mayday.o thread.o smi.o
->>>>>>>>>>>
->>>>>>>>>>
->>>>>>>>>> This is a left over, like the message you fixed. Should be
->>>>>>>>>> x86_machine
->>>>>>>>>> or something along these lines.
->>>>>>>>>>
->>>>>>>>>
->>>>>>>>> x86 alone maybe?
->>>>>>>>>
->>>>>>>>
->>>>>>>> Whatever fits. It's just that the code living under
->>>>>>>> kernel/cobalt/arch/*
->>>>>>>> is referred to as the machine layer elsewhere.
->>>>>>>
->>>>>>> Shouldn't this just be added to the Xenomai module (xenomai-y)?
->>>>>>>
->>>>>>
->>>>>> xenomai-y is supposed to include all arch-independent bits, for this
->>>>>> reason the machine layer is rather pulled from core-y in arch/*.
->>>>>
->>>>> If you want a different module name, then please make at least sure
->>>>> that
->>>>> it includes "xenomai", "xenomai_arch" or so. Current proposals are way
->>>>> too generic and confusing for the users.
->>>>>
->>>>
->>>> The point is such information is absolutely not visible to the user.
->>>
->>> And what else controls where the module parameters end up under
->>> /sys/modules?
->>>
+Il 27/09/2013 21:24, Gilles Chanteperdrix ha scritto:
+> On 09/27/2013 02:49 PM, Roberto Bielli wrote:
+>> Hi,
 >>
->> I'm discussing the internal sub-module name from the Kbuild hierarchy,
->> which is by no mean exported to the user
+>> my kernel working before applying adeos-ipipe-3.0.36-arm-1.18-11.patch +
+>> adeos-ipipe-3.0.36-arm-1.18-11-post.patch,
+>> So is not a problem before installing ipipe.
+> I missed that part, 3.0.36 is not the latest version, please try 3.0.43
+> from xenomai git. Also, you have 3 patches to apply, not 2.
 >
-> Sorry, but it is:
+> Finally, it is important to test the patched kernel without CONFIG_IPIPE
+> and CONFIG_XENOMAI.
 >
-> 	.module_name    = KBUILD_MODNAME,
->
-> So the KBUILD module name defines the parameter prefixes.
-
-Ack, you are right, I overlooked the x86 params, which is unfortunate 
-since they sparked the discussion... I moved all others to xenomai-y 
-already.
-
-  And that is
-> what we should discuss here. I don't mind the kbuild structure otherwise.
->
-
-Merging your proposal and mine, this would give the change below. I 
-don't have any preference between "xeno", "xenomai", whatever fits. 
-However, we should keep something in the name that clearly gives a hint 
-about the machine/arch-dependent nature of the parameter (i.e.
-not merging those bits to xenomai-y).
-
-e.g.
-
-diff --git a/kernel/cobalt/arch/arm/Makefile 
-b/kernel/cobalt/arch/arm/Makefile
-index 25d33a5..d62976c 100644
---- a/kernel/cobalt/arch/arm/Makefile
-+++ b/kernel/cobalt/arch/arm/Makefile
-@@ -1,5 +1,5 @@
--obj-$(CONFIG_XENOMAI) += arm_hal.o
-+obj-$(CONFIG_XENOMAI) += xeno_machine.o
-
--arm_hal-y := machine.o mayday.o thread.o switch.o syscall.o
-+xeno_machine-y := machine.o mayday.o thread.o switch.o syscall.o
-
-  ccflags-y := -Iarch/arm/xenomai/include -Iinclude/xenomai
+I'll try the 3.0.43. The kernel patched without CONFIG_IPIPE and 
+CONFIG_XENOMAI works.
 
 -- 
-Philippe.
++------------------------------------------------------------------------------------------------+
+							
+Roberto Bielli
+Sviluppo Software					
+Axel S.r.l.					
+							
+Via Del Cannino, 3 				
+21020 Crosio Della Valle			
+Varese - Italy					
+							
+Telefono: +39 0332 949600			
+Fax:      +39 0332 969315			
+							
+E-mail:   roberto.bielli@axelsw.it	
+Web Site: www.axelsw.it
+
++------------------------------------------------------------------------------------------------+
+
+Si precisa che le informazioni contenute in questo messaggio sono riservate e ad uso esclusivo del destinatario.
+Qualora il messaggio in parola Le fosse pervenuto per errore, La preghiamo di eliminarlo senza copiarlo e di non inoltrarlo a terzi,
+dandocene gentilmente comunicazione. Grazie.
+Informativa sul trattamento dei dati personali (D. Lgs. 196/2003).
+I dati utilizzati per la spedizione del presente messaggio sono utilizzati da Axel S.r.l., titolare del trattamento,
+per l'invio delle comunicazioni dei diversi settori aziendali, non essendo autorizzata la divulgazione a terzi.
+Potrete rivolgere alla seguente mail richieste di verifica, rettifica o cancellazione dei Vostri dati: info@axelsw.it
+
+This e-mail and any attachments is confidential and may contain privileged information
+intended for the addressee(s) only. Dissemination, copying, printing or use by anybody
+else is unauthorised. If you are not the intended recipient,
+please delete this message and any attachments and advise the sender
+by return e-mail.Thank you.  			
+							
++------------------------------------------------------------------------------------------------+
+
 
