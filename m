@@ -1,10 +1,12 @@
-Message-ID: <5249A8D5.4070401@axelsw.it>
-Date: Mon, 30 Sep 2013 18:37:41 +0200
-From: Roberto Bielli <roberto.bielli@axelsw.it>
+From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
+Date: Mon, 30 Sep 2013 12:41:24 -0400
+Message-ID: <20130930164124.GY13097@csclub.uwaterloo.ca>
+References: <5249A8D5.4070401@axelsw.it>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-15; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] xenomai smp - how it works
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <5249A8D5.4070401@axelsw.it>
+Subject: Re: [Xenomai] xenomai smp - how it works
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,54 +15,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Roberto Bielli <roberto.bielli@axelsw.it>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi,
+On Mon, Sep 30, 2013 at 06:37:41PM +0200, Roberto Bielli wrote:
+> i would like to know how works in theory xenomai on smp system (with
+> local timers, imx6q for example).
+> For example linux is always on one cpu and xenomai on other ?
+> Or is there a complex algorithm to determine who is in a processor
+> in a instance ?
+> Linux can disturb xenomai more than single processor ?
+> Is better (jitter, latency, etc...) xenomai on a multi-core than to
+> single core ?
 
-i would like to know how works in theory xenomai on smp system (with 
-local timers, imx6q for example).
-For example linux is always on one cpu and xenomai on other ?
-Or is there a complex algorithm to determine who is in a processor in a 
-instance ?
-Linux can disturb xenomai more than single processor ?
-Is better (jitter, latency, etc...) xenomai on a multi-core than to 
-single core ?
+Well on a single core xenomai always does whatever it wants, and linux
+gets whatever CPU is leftover.  So xenomai can cause a lot of trouble
+for linux if your realtime code isn't nice to it.  So xenomai runs fine,
+linux gets all the extra delays and jitter though.
 
-Thanks a lot
+I have no idea how it works with multiple cores yet (although I am sure
+I will learn soon).
 
 -- 
-+------------------------------------------------------------------------------------------------+
-							
-Roberto Bielli
-Sviluppo Software					
-Axel S.r.l.					
-							
-Via Del Cannino, 3 				
-21020 Crosio Della Valle			
-Varese - Italy					
-							
-Telefono: +39 0332 949600			
-Fax:      +39 0332 969315			
-							
-E-mail:   roberto.bielli@axelsw.it	
-Web Site: www.axelsw.it
-
-+------------------------------------------------------------------------------------------------+
-
-Si precisa che le informazioni contenute in questo messaggio sono riservate e ad uso esclusivo del destinatario.
-Qualora il messaggio in parola Le fosse pervenuto per errore, La preghiamo di eliminarlo senza copiarlo e di non inoltrarlo a terzi,
-dandocene gentilmente comunicazione. Grazie.
-Informativa sul trattamento dei dati personali (D. Lgs. 196/2003).
-I dati utilizzati per la spedizione del presente messaggio sono utilizzati da Axel S.r.l., titolare del trattamento,
-per l'invio delle comunicazioni dei diversi settori aziendali, non essendo autorizzata la divulgazione a terzi.
-Potrete rivolgere alla seguente mail richieste di verifica, rettifica o cancellazione dei Vostri dati: info@axelsw.it
-
-This e-mail and any attachments is confidential and may contain privileged information
-intended for the addressee(s) only. Dissemination, copying, printing or use by anybody
-else is unauthorised. If you are not the intended recipient,
-please delete this message and any attachments and advise the sender
-by return e-mail.Thank you.  			
-							
-+------------------------------------------------------------------------------------------------+
-
+Len Sorensen
 
