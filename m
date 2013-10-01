@@ -1,12 +1,9 @@
-Message-ID: <524A808E.8000405@xenomai.org>
-Date: Tue, 01 Oct 2013 09:58:06 +0200
-From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <c0f20d88.0000172c.00000009@dmerrill_win764.PERF.PERFORMANCESOFTWARE>
-In-Reply-To: <c0f20d88.0000172c.00000009@dmerrill_win764.PERF.PERFORMANCESOFTWARE>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] psos+ tm_wkafter never resumes task when using gdb
+Date: Tue, 1 Oct 2013 12:13:33 +0200
+Message-ID: <CAKc2Hpbkaj3j1sPCWy-k6JD8ACz=85VnbqPFbfmk3sP1MsNwcA@mail.gmail.com>
+From: "K. De Mey" <kim.demey@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: [Xenomai] Fuse version in Xenomai-forge with "--enabled-registry"
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,28 +12,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Daniel Merrill <daniel.merrill@psware.com>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 09/26/2013 05:33 PM, Daniel Merrill wrote:
-> We are attempting to port to xenomai some legacy code written for the
-> pSOS+ operating system. Up to this point everything in the xenomai pSOS+
-> skin has been working perfectly, but now we've uncovered a strange
-> problem. The legacy code has around 50 tasks. A handful of them are only
-> expected to run at slow periodic rates (one is run every 5 seconds,
-> another every 60 seconds, etc.) To achieve this, the task sits in an
-> infinite loop in which is performs the necessary work then puts itself to
-> sleep for the wait time. The code for putting the task to sleep calls the
-> pSOS+ API method tm_wkafter(), passing the appropriate number of ticks.
->
+Hello everybody,
 
-We'd need to know your current configuration to go further. Which kernel 
-release, which I-pipe version, which Xenomai release, which machine 
-architecture?
+We use xenomai-forge for a project. I however came across a problem when
+adding the "--enabled-registry" option.
+It seems that the FUSE functions (for example fuse_main()) that are being
+used are the compat functions of version 2.2 (fuse_main_real_compat22()).
+I found this strange as I have FUSE_USE_VERSION defined at 26.
 
-A simple test code stripped down to the bare minimum for reproducing the 
-issue would likely speed up the resolution too.
+I suspect it has something to do with the symbol versioning in FUSE.
+I believe so as when I change the version 22 ".symver" mapping in FUSE to
+use the newer compat functions then that works. (or removing all the symver
+completely works also)
+This is obviously not the way to make it work, however I don't know how to
+do it properly.
+I know this might be a FUSE issue and not necessary a Xenomai issue but I
+can't seem to get it working.
+I must say I know little to nothing of symbol versioning.
 
--- 
-Philippe.
+As test I also created a stand alone FUSE application (no Xenomai involved)
+and then it does use the functions of the latest version.
+So to be sure, I would like to know if there is something more in Xenomai
+that sets the "compat" version of FUSE to 2.2? Am I missing something ...?
 
+By the way, the actual version of FUSE that we use is 2.9.2 and the version
+of Xenomai-forge is also quite recent.
+
+I hope my question is a clear enough, else I can of course add more
+information.
+
+Thanks!
+
+Regards,
+Kim
