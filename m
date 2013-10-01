@@ -1,9 +1,10 @@
+Message-ID: <524ABEED.4090609@axelsw.it>
+Date: Tue, 01 Oct 2013 14:24:13 +0200
+From: Roberto Bielli <roberto.bielli@axelsw.it>
 MIME-Version: 1.0
-Date: Tue, 1 Oct 2013 12:13:33 +0200
-Message-ID: <CAKc2Hpbkaj3j1sPCWy-k6JD8ACz=85VnbqPFbfmk3sP1MsNwcA@mail.gmail.com>
-From: "K. De Mey" <kim.demey@gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Subject: [Xenomai] Fuse version in Xenomai-forge with "--enabled-registry"
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai] high latency with imx6q without smp
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -12,38 +13,52 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 
-Hello everybody,
+Hi,
 
-We use xenomai-forge for a project. I however came across a problem when
-adding the "--enabled-registry" option.
-It seems that the FUSE functions (for example fuse_main()) that are being
-used are the compat functions of version 2.2 (fuse_main_real_compat22()).
-I found this strange as I have FUSE_USE_VERSION defined at 26.
+i try to disable smp in the kernel for working with a single cpu on a 
+imx6q but i saw a very high max latency with the test ( 
+/usr/xenomai/bin/latency ), about ~350us.
+Any ideas to reduce the latency?
 
-I suspect it has something to do with the symbol versioning in FUSE.
-I believe so as when I change the version 22 ".symver" mapping in FUSE to
-use the newer compat functions then that works. (or removing all the symver
-completely works also)
-This is obviously not the way to make it work, however I don't know how to
-do it properly.
-I know this might be a FUSE issue and not necessary a Xenomai issue but I
-can't seem to get it working.
-I must say I know little to nothing of symbol versioning.
+Is the patch 3.0.43 for imx6q available without smp ?
 
-As test I also created a stand alone FUSE application (no Xenomai involved)
-and then it does use the functions of the latest version.
-So to be sure, I would like to know if there is something more in Xenomai
-that sets the "compat" version of FUSE to 2.2? Am I missing something ...?
 
-By the way, the actual version of FUSE that we use is 2.9.2 and the version
-of Xenomai-forge is also quite recent.
 
-I hope my question is a clear enough, else I can of course add more
-information.
+-- 
++------------------------------------------------------------------------------------------------+
+							
+Roberto Bielli
+Sviluppo Software					
+Axel S.r.l.					
+							
+Via Del Cannino, 3 				
+21020 Crosio Della Valle			
+Varese - Italy					
+							
+Telefono: +39 0332 949600			
+Fax:      +39 0332 969315			
+							
+E-mail:   roberto.bielli@axelsw.it	
+Web Site: www.axelsw.it
 
-Thanks!
++------------------------------------------------------------------------------------------------+
 
-Regards,
-Kim
+Si precisa che le informazioni contenute in questo messaggio sono riservate e ad uso esclusivo del destinatario.
+Qualora il messaggio in parola Le fosse pervenuto per errore, La preghiamo di eliminarlo senza copiarlo e di non inoltrarlo a terzi,
+dandocene gentilmente comunicazione. Grazie.
+Informativa sul trattamento dei dati personali (D. Lgs. 196/2003).
+I dati utilizzati per la spedizione del presente messaggio sono utilizzati da Axel S.r.l., titolare del trattamento,
+per l'invio delle comunicazioni dei diversi settori aziendali, non essendo autorizzata la divulgazione a terzi.
+Potrete rivolgere alla seguente mail richieste di verifica, rettifica o cancellazione dei Vostri dati: info@axelsw.it
+
+This e-mail and any attachments is confidential and may contain privileged information
+intended for the addressee(s) only. Dissemination, copying, printing or use by anybody
+else is unauthorised. If you are not the intended recipient,
+please delete this message and any attachments and advise the sender
+by return e-mail.Thank you.  			
+							
++------------------------------------------------------------------------------------------------+
+
+
