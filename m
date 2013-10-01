@@ -1,13 +1,14 @@
-Message-ID: <521DDA0C.9040204@siemens.com>
-Date: Wed, 28 Aug 2013 13:07:56 +0200
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <524B1E12.2010909@xenomai.org>
+Date: Tue, 01 Oct 2013 21:10:10 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <521DD3DD.6010300@siemens.com> <521DD7D9.6040108@siemens.com>
-	<521DD92F.7010509@xenomai.org>
-In-Reply-To: <521DD92F.7010509@xenomai.org>
-Content-Type: text/plain; charset=ISO-8859-1
+References: <524ABEED.4090609@axelsw.it>
+	<114ba7d302c4a7b01d85caf23c52fa10.squirrel@127.0.0.1>
+	<524AC518.2040901@axelsw.it>
+In-Reply-To: <524AC518.2040901@axelsw.it>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] IPIPE_KEVT_SETAFFINITY
+Subject: Re: [Xenomai] high latency with imx6q without smp
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,39 +17,45 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Roberto Bielli <roberto.bielli@axelsw.it>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 2013-08-28 13:04, Philippe Gerum wrote:
-> On 08/28/2013 12:58 PM, Jan Kiszka wrote:
->> On 2013-08-28 12:41, Jan Kiszka wrote:
->>> Hi Philippe,
->>>
->>> please push to ipipe.git what introduces IPIPE_KEVT_SETAFFINITY. I'm
->>> riding on the tip of all trees and cannot build forge anymore.
->>
->> Ah, oversaw it. It's in stable ipipe-3.8 only. Will pick it up for my
->> master queue.
->>
->>> Or does
->>> this event rather require some feature detection in forge?
->>
->> I suppose the policy for forge is still to require latest, full-featured
->> I-pipe patches, right?
->>
+On 10/01/2013 02:50 PM, Roberto Bielli wrote:
+> Hi,
 > 
-> Yes, so that we start playing with wrappers as late as possible, at
-> least not before the first official release is out.
+> excuse me for the previous question i have not seen your email.
+> i have tried the kernel with the ipipe patch 3.0.43 on xenomai 2.6.x 
+> branch without smp and has very high worst latency:
+> RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat 
+> best|--lat worst
+> RTD|      5.999|     11.333|     25.333|       0|     0| 5.666|    328.999
+> RTD|     10.999|     11.333|     19.666|       0|     0| 5.666|    328.999
+> RTD|      5.999|     10.999|     17.999|       0|     0| 5.666|    328.999
+> RTD|     10.999|     11.333|     17.999|       0|     0| 5.666|    328.999
+> RTD|      5.999|     11.333|     26.999|       0|     0| 5.666|    328.999
+> 
+> This behaviour isn't in smp version with 2 processors.
 
-But wrappers for older kernel version (3.x) are fine? Asking as I will
-introduce one for the procfs stuff of 3.10. See [1].
+It may be here in SMP but you do not see it. You should run the latency
+test under load to try and trigger the worst case latency.
 
-Jan
+> 
+> So i read your email and if i understand correctly could be the L2 cache 
+> spinlock that create large latencies (?328.999).
 
-[1]
-http://git.xenomai.org/?p=xenomai-jki.git;a=commitdiff;h=e94d8b0b53b7309d640a97309f65056accbb2ec7
+The L2 cache spinlock section are alreay reduced, the maximum was rather
+around 40us anyway.
+
+> I'm not using framebuffer directly.
+> You told me that there is a patch that can fix this behaviour in the 
+> last ipipe patch.
+> is there a commit for fixing only this behaviour that i can move on my 
+> kernel with patch 3.0.43 ?
+
+Please try disabling the framebuffer driver completely, and see if it
+changes anything. If it does not change anything, you have to use the
+I-pipe tracer.
 
 -- 
-Siemens AG, Corporate Technology, CT RTC ITP SES-DE
-Corporate Competence Center Embedded Linux
+                                                                Gilles.
 
