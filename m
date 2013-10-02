@@ -1,10 +1,7 @@
 From: Manuel Huber <manuel.h87@gmail.com>
-Date: Wed,  2 Oct 2013 22:47:38 +0200
-Message-Id: <1380746860-1409-2-git-send-email-manuel.h87@gmail.com>
-In-Reply-To: <1380746860-1409-1-git-send-email-manuel.h87@gmail.com>
-References: <1380746860-1409-1-git-send-email-manuel.h87@gmail.com>
-Subject: [Xenomai] [PATCH 1/3] rtdm: Fix msghdr struct (cmsg) in
-	sys_rtdm_recvmsg
+Date: Wed,  2 Oct 2013 22:47:37 +0200
+Message-Id: <1380746860-1409-1-git-send-email-manuel.h87@gmail.com>
+Subject: [Xenomai] [PATCH 0/3] Fix control messages in sys_rtdm_recvmsg
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,70 +13,37 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: jan.kiszka@web.de
 Cc: xenomai@xenomai.org
 
-From: Manuel Huber <Manuel.h87@gmail.com>
+This patch-set shall fix the recvmsg system-call and its handling
+of control messages and the msghdr structure. It is necessary
+to be able to apply another patch to RTnet, which depends on a
+correct handling of msg_controllen.
+Jan pointed out, that all driver code that relies on the current
+interface has to be adapted to the new one. I checked the driver
+code and I found can drivers to be the only ones affected.
+Finally, the changes to the system call have been documented in
+rtdm_driver.h header file. Please let me know if it's unclear...
 
-Whenever a new control message is put into msg_control buffer
-the actual address and the space left is saved to msg_control
-and msg_controllen. This allows adding messages as long as
-there is enough space left in the user-supplied buffer. Both
-fields have to be fixed again before passing them to the user
-by copying the original starting address of the buffer to
-msg_control and saving the actual amount of bytes written to
-the buffer to msg_controllen.
+I used a recent linux kernel as reference of how to implement the
+handling of msghdr. The patch changes the hadnling of msg_namelen
+as it won't get written back to user-space if it has been modified
+by driver code. That's what the Kernel does. However, there are
+also drivers in the Kernel tree that write to msg_namelen, so I'm
+not really sure what's the correct behaviour. So this might break
+user code that relies on this write-back although I can't really
+imagine a use-case where you actually need to check the size.
+Usually you have to know the address type (structure) to be able
+to interepret the address correctly.
 
-Note: Changes of msg_namelen (in driver code) will not be
-reflected to user-space anymore. This change could break
-user-space applications that depend on the previous
-implementation.
+Manuel Huber (3):
+  rtdm: Fix msghdr struct (cmsg) in sys_rtdm_recvmsg
+  rtcan: Adapt rtcan_raw to changes in rtdm
+  doc: Add documentation to rtdm_recvmsg_handler_t
 
-* Explicit use of __xn_put_user rather then __xn_copy_to_user
-* Don't write back msg->msg_namelen
-* Reset msg_flags before passing msg to driver code
----
- ksrc/skins/rtdm/syscall.c | 18 ++++++++++++++----
- 1 file changed, 14 insertions(+), 4 deletions(-)
+ include/rtdm/rtdm_driver.h   |  9 ++++++++-
+ ksrc/drivers/can/rtcan_raw.c | 33 ++++++++++++++++-----------------
+ ksrc/skins/rtdm/syscall.c    | 18 ++++++++++++++----
+ 3 files changed, 38 insertions(+), 22 deletions(-)
 
-diff --git a/ksrc/skins/rtdm/syscall.c b/ksrc/skins/rtdm/syscall.c
-index 0ff5d40..055cf7c 100644
---- a/ksrc/skins/rtdm/syscall.c
-+++ b/ksrc/skins/rtdm/syscall.c
-@@ -79,22 +79,32 @@ static int sys_rtdm_recvmsg(struct pt_regs *regs)
- {
- 	struct task_struct *p = current;
- 	struct msghdr krnl_msg;
-+	uintptr_t cmsg_ptr;
-+	struct msghdr __user *usr_msg;
- 	int ret;
- 
--	if (unlikely(!access_wok(__xn_reg_arg2(regs),
-+	usr_msg = (void __user *)__xn_reg_arg2(regs);
-+
-+	if (unlikely(!access_wok((void __user *)usr_msg,
- 				 sizeof(krnl_msg)) ||
- 		     __xn_copy_from_user(&krnl_msg,
--					 (void __user *)__xn_reg_arg2(regs),
-+					 (void __user *)usr_msg,
- 					 sizeof(krnl_msg))))
- 		return -EFAULT;
- 
-+	cmsg_ptr = (uintptr_t)krnl_msg.msg_control;
-+	krnl_msg.msg_flags = 0;
-+
- 	ret = __rt_dev_recvmsg(p, __xn_reg_arg1(regs), &krnl_msg,
- 			       __xn_reg_arg3(regs));
- 	if (unlikely(ret < 0))
- 		return ret;
- 
--	if (unlikely(__xn_copy_to_user((void __user *)__xn_reg_arg2(regs),
--				       &krnl_msg, sizeof(krnl_msg))))
-+	if (unlikely(__xn_put_user((typeof(krnl_msg.msg_controllen))
-+				   ((uintptr_t)krnl_msg.msg_control - cmsg_ptr),
-+				   (void __user *)&usr_msg->msg_controllen) ||
-+		     __xn_put_user(krnl_msg.msg_flags,
-+				   (void __user *)&(usr_msg->msg_flags))))
- 		return -EFAULT;
- 
- 	return ret;
 -- 
 1.8.3
 
