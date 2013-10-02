@@ -1,16 +1,10 @@
-Message-ID: <524BDFD7.5010104@xenomai.org>
-Date: Wed, 02 Oct 2013 10:56:55 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <8ceffc54095e43d88f6dfa0edd0bb852@DBXPR03MB093.eurprd03.prod.outlook.com>
-	<52496200.2010808@xenomai.org>
-	<295e5f6a1e6849079d9fb3e53dcc1827@DBXPR03MB093.eurprd03.prod.outlook.com>
-	<524B1F6C.7080705@xenomai.org>
-	<0181d61119d749ecaf4bfea3b3c827f3@DBXPR03MB093.eurprd03.prod.outlook.com>
-In-Reply-To: <0181d61119d749ecaf4bfea3b3c827f3@DBXPR03MB093.eurprd03.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] No GPIO IRQ on imx28(apf28), kernel 3.8.13
+Sender: patrickdepinguin@gmail.com
+Date: Wed, 2 Oct 2013 13:42:35 +0200
+Message-ID: <CAAXf6LUfHA9aHe2FRngFJSKVXeKPVwxGLcRPYGNBqd7U1dMzKg@mail.gmail.com>
+From: Thomas De Schampheleire <patrickdepinguin+xenomai@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: [Xenomai] xenomai-forge: multiple COPYING files
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,33 +13,59 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Antoine MOREL <A.MOREL@polysoude.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 10/02/2013 08:08 AM, Antoine MOREL wrote:
-> I try the same software (file main.c) with and without adeos.
-> It works without adeos, and it doesn't work with adeos!
-> Did I forget anything to do with adeos?
-> The same software can run well with and without adeos?
+Hi,
 
-Please try the following patch:
+The (L)GPL requires that every distribution of a derived work is
+accompanied with the license of the program (xenomai-forge).
+Currently, xenomai-forge contains several COPYING files:
 
-diff --git a/drivers/gpio/gpio-mxs.c b/drivers/gpio/gpio-mxs.c
-index fa2a63c..a8c6fe2 100644
---- a/drivers/gpio/gpio-mxs.c
-+++ b/drivers/gpio/gpio-mxs.c
-@@ -137,7 +137,7 @@ static void mxs_gpio_irq_handler(u32 irq, struct irq_desc *desc)
- 
- 	while (irq_stat != 0) {
- 		int irqoffset = fls(irq_stat) - 1;
--		generic_handle_irq(irq_find_mapping(port->domain, irqoffset));
-+		ipipe_handle_demuxed_irq(irq_find_mapping(port->domain, irqoffset));
- 		irq_stat &= ~(1 << irqoffset);
- 	}
- }
+./kernel/cobalt/nucleus/COPYING
+./kernel/cobalt/COPYING
+./kernel/cobalt/rtdm/COPYING
+./include/COPYING
+./lib/alchemy/COPYING
+./lib/psos/COPYING
+./lib/vxworks/COPYING
+./lib/analogy/COPYING
+./lib/cobalt/COPYING
+./lib/copperplate/COPYING
 
+An embedded build system like buildroot [1] has legal-info facilities
+to mark for each package which license it uses, and where the license
+files is located. A user can easily generate an overview of the
+license information for all packages used in the system, and contains
+almost everything necessary to comply with the (L)GPL. In buildroot,
+this is done with 'make legal-info'.
 
+In the case of buildroot, the license files are copied one by one in a
+directory named after the package. This would essentially mean:
+cp <xenomai-source>/kernel/cobalt/nucleus/COPYING licenses/xenomai/COPYING
+cp <xenomai-source>/kernel/cobalt/COPYING licenses/xenomai/COPYING
+cp <xenomai-source>/kernel/cobalt/rtdm/COPYING licenses/xenomai/COPYING
+...
 
--- 
-                                                                Gilles.
+Clearly, the fact that all license files have the same name poses a
+problem here. In order to have all files, one would either need to
+rename them, or duplicate the directory structure.
+
+Instead of moving this complexity outside of xenomai-forge (to the
+build system), I would like to discuss how it can be solved within
+xenomai-forge itself.
+
+Here are two proposals:
+1. Is it really necessary that there are multiple COPYING files? Is it
+not possible to have one COPYING file in the root of the project, and
+move the exception specified in include/COPYING to that file? This
+approach is similar to many many other open-source projects.
+
+2. Alternatively, what about renaming the license files to a unique
+name, e.g. COPYING.alchemy, COPYING.psos, COPYING.cobalt-nucleus ?
+Then, copying these files to one directory is possible without overwriting.
+
+Thanks,
+Thomas
+
+[1] http://buildroot.org
 
