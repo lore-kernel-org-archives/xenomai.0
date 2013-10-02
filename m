@@ -1,10 +1,10 @@
-MIME-Version: 1.0
-Sender: patrickdepinguin@gmail.com
-Date: Wed, 2 Oct 2013 13:42:35 +0200
-Message-ID: <CAAXf6LUfHA9aHe2FRngFJSKVXeKPVwxGLcRPYGNBqd7U1dMzKg@mail.gmail.com>
-From: Thomas De Schampheleire <patrickdepinguin+xenomai@gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Subject: [Xenomai] xenomai-forge: multiple COPYING files
+From: Manuel Huber <manuel.h87@gmail.com>
+Date: Wed,  2 Oct 2013 22:47:38 +0200
+Message-Id: <1380746860-1409-2-git-send-email-manuel.h87@gmail.com>
+In-Reply-To: <1380746860-1409-1-git-send-email-manuel.h87@gmail.com>
+References: <1380746860-1409-1-git-send-email-manuel.h87@gmail.com>
+Subject: [Xenomai] [PATCH 1/3] rtdm: Fix msghdr struct (cmsg) in
+	sys_rtdm_recvmsg
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,59 +13,74 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: jan.kiszka@web.de
+Cc: xenomai@xenomai.org
 
-Hi,
+From: Manuel Huber <Manuel.h87@gmail.com>
 
-The (L)GPL requires that every distribution of a derived work is
-accompanied with the license of the program (xenomai-forge).
-Currently, xenomai-forge contains several COPYING files:
+Whenever a new control message is put into msg_control buffer
+the actual address and the space left is saved to msg_control
+and msg_controllen. This allows adding messages as long as
+there is enough space left in the user-supplied buffer. Both
+fields have to be fixed again before passing them to the user
+by copying the original starting address of the buffer to
+msg_control and saving the actual amount of bytes written to
+the buffer to msg_controllen.
 
-./kernel/cobalt/nucleus/COPYING
-./kernel/cobalt/COPYING
-./kernel/cobalt/rtdm/COPYING
-./include/COPYING
-./lib/alchemy/COPYING
-./lib/psos/COPYING
-./lib/vxworks/COPYING
-./lib/analogy/COPYING
-./lib/cobalt/COPYING
-./lib/copperplate/COPYING
+Note: Changes of msg_namelen (in driver code) will not be
+reflected to user-space anymore. This change could break
+user-space applications that depend on the previous
+implementation.
 
-An embedded build system like buildroot [1] has legal-info facilities
-to mark for each package which license it uses, and where the license
-files is located. A user can easily generate an overview of the
-license information for all packages used in the system, and contains
-almost everything necessary to comply with the (L)GPL. In buildroot,
-this is done with 'make legal-info'.
+* Explicit use of __xn_put_user rather then __xn_copy_to_user
+* Don't write back msg->msg_namelen
+* Reset msg_flags before passing msg to driver code
+---
+ ksrc/skins/rtdm/syscall.c | 18 ++++++++++++++----
+ 1 file changed, 14 insertions(+), 4 deletions(-)
 
-In the case of buildroot, the license files are copied one by one in a
-directory named after the package. This would essentially mean:
-cp <xenomai-source>/kernel/cobalt/nucleus/COPYING licenses/xenomai/COPYING
-cp <xenomai-source>/kernel/cobalt/COPYING licenses/xenomai/COPYING
-cp <xenomai-source>/kernel/cobalt/rtdm/COPYING licenses/xenomai/COPYING
-...
+diff --git a/ksrc/skins/rtdm/syscall.c b/ksrc/skins/rtdm/syscall.c
+index 0ff5d40..055cf7c 100644
+--- a/ksrc/skins/rtdm/syscall.c
++++ b/ksrc/skins/rtdm/syscall.c
+@@ -79,22 +79,32 @@ static int sys_rtdm_recvmsg(struct pt_regs *regs)
+ {
+ 	struct task_struct *p = current;
+ 	struct msghdr krnl_msg;
++	uintptr_t cmsg_ptr;
++	struct msghdr __user *usr_msg;
+ 	int ret;
+ 
+-	if (unlikely(!access_wok(__xn_reg_arg2(regs),
++	usr_msg = (void __user *)__xn_reg_arg2(regs);
++
++	if (unlikely(!access_wok((void __user *)usr_msg,
+ 				 sizeof(krnl_msg)) ||
+ 		     __xn_copy_from_user(&krnl_msg,
+-					 (void __user *)__xn_reg_arg2(regs),
++					 (void __user *)usr_msg,
+ 					 sizeof(krnl_msg))))
+ 		return -EFAULT;
+ 
++	cmsg_ptr = (uintptr_t)krnl_msg.msg_control;
++	krnl_msg.msg_flags = 0;
++
+ 	ret = __rt_dev_recvmsg(p, __xn_reg_arg1(regs), &krnl_msg,
+ 			       __xn_reg_arg3(regs));
+ 	if (unlikely(ret < 0))
+ 		return ret;
+ 
+-	if (unlikely(__xn_copy_to_user((void __user *)__xn_reg_arg2(regs),
+-				       &krnl_msg, sizeof(krnl_msg))))
++	if (unlikely(__xn_put_user((typeof(krnl_msg.msg_controllen))
++				   ((uintptr_t)krnl_msg.msg_control - cmsg_ptr),
++				   (void __user *)&usr_msg->msg_controllen) ||
++		     __xn_put_user(krnl_msg.msg_flags,
++				   (void __user *)&(usr_msg->msg_flags))))
+ 		return -EFAULT;
+ 
+ 	return ret;
+-- 
+1.8.3
 
-Clearly, the fact that all license files have the same name poses a
-problem here. In order to have all files, one would either need to
-rename them, or duplicate the directory structure.
-
-Instead of moving this complexity outside of xenomai-forge (to the
-build system), I would like to discuss how it can be solved within
-xenomai-forge itself.
-
-Here are two proposals:
-1. Is it really necessary that there are multiple COPYING files? Is it
-not possible to have one COPYING file in the root of the project, and
-move the exception specified in include/COPYING to that file? This
-approach is similar to many many other open-source projects.
-
-2. Alternatively, what about renaming the license files to a unique
-name, e.g. COPYING.alchemy, COPYING.psos, COPYING.cobalt-nucleus ?
-Then, copying these files to one directory is possible without overwriting.
-
-Thanks,
-Thomas
-
-[1] http://buildroot.org
 
