@@ -1,18 +1,14 @@
-Message-ID: <524EA63E.8080507@xenomai.org>
-Date: Fri, 04 Oct 2013 13:27:58 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: Paul <paul_c@tuxcnc.org>
+Date: Fri, 4 Oct 2013 13:36:32 +0100
+References: <CAK4EZFSLBBOs174xP+JAsqgJgG-MJ5UxMsj_FD5Pzjh1BHz7gw@mail.gmail.com>
+	<52435E3D.7020202@xenomai.org>
+	<201309261032.30542.paul_c@tuxcnc.org>
+In-Reply-To: <201309261032.30542.paul_c@tuxcnc.org>
 MIME-Version: 1.0
-References: <8ceffc54095e43d88f6dfa0edd0bb852@DBXPR03MB093.eurprd03.prod.outlook.com>
-	<52496200.2010808@xenomai.org>
-	<295e5f6a1e6849079d9fb3e53dcc1827@DBXPR03MB093.eurprd03.prod.outlook.com>
-	<524B1F6C.7080705@xenomai.org>
-	<0181d61119d749ecaf4bfea3b3c827f3@DBXPR03MB093.eurprd03.prod.outlook.com>
-	<524BDFD7.5010104@xenomai.org>
-	<753016a9a00c43fca6252ef26d024461@DBXPR03MB093.eurprd03.prod.outlook.com>
-In-Reply-To: <753016a9a00c43fca6252ef26d024461@DBXPR03MB093.eurprd03.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] No GPIO IRQ on imx28(apf28), kernel 3.8.13
+Message-Id: <201310041336.33020.paul_c@tuxcnc.org>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] Raspberry Pi patch issue?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,17 +17,59 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Antoine MOREL <A.MOREL@polysoude.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 10/04/2013 11:01 AM, Antoine MOREL wrote:
-> Hello Gilles,
-> 
-> I tried the patch and it works!
-> Did the adeos patch will be updated?
+On Thursday 26 September 2013, Paul wrote:
+> On Wednesday 25 September 2013, Gilles Chanteperdrix wrote:
+> > On 09/24/2013 02:00 PM, Paul wrote:
+> > > On Tuesday 24 September 2013, Adam Vaughan wrote:
+> > >> I'm trying to build with the most recent xenomai-head in git for
+> > >> the Raspberry Pi, and I'm encountering an issue (see below) when
+> > >> I try to run prepare-kernel.sh . =A0I'm very new to this whole
+> > >> process (so it definitely could be user error), but it would
+> > >> seem that there's a problem with the patch.
+> > >
+> > > I'll have a look at it this evening and report back after making
+> > > a few checks.
+> >
+> > any news? Maybe I committed the wrong versions?
+>
+> My fault entirely - I used the wrong ipipe-core patch in preparing
+> the pre patch. Will have another look over the next couple of days
+> (trying to fit it in around work commitments).
 
-Yes, it will be updated.
+Apologies for the delay in looking at this. Please find updated patches.
 
--- 
-                                                                Gilles.
+1) Checkout kernel sources from git://github.com/raspberrypi/linux.git =
 
+and use the rpi-3.8.y branch - d996a1b is the SHA-1 hash used, but =
+
+later revisions should work.
+2) Apply ipipe-core-3.8.13-raspberry-pre-2.patch
+3) Apply ipipe-core-3.8.13-arm-2 patch
+4) Apply ipipe-core-3.8.13-raspberry-post-2.patch
+5) Resume generic installation instructions.
+
+
+Regards, Paul.
+
+
+
+
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: ipipe-core-3.8.13-raspberry-post-2.patch
+Type: text/x-diff
+Size: 7296 bytes
+Desc: not available
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20131004/60573d3=
+c/attachment.patch>
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: ipipe-core-3.8.13-raspberry-pre-2.patch
+Type: text/x-diff
+Size: 652 bytes
+Desc: not available
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20131004/60573d3=
+c/attachment-0001.patch>
