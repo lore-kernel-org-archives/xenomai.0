@@ -1,11 +1,12 @@
-Message-ID: <524E85CE.1090309@siemens.com>
-Date: Fri, 04 Oct 2013 11:09:34 +0200
-From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
+Sender: patrickdepinguin@gmail.com
+In-Reply-To: <524E85CE.1090309@siemens.com>
 References: <CAAXf6LUfHA9aHe2FRngFJSKVXeKPVwxGLcRPYGNBqd7U1dMzKg@mail.gmail.com>
-In-Reply-To: <CAAXf6LUfHA9aHe2FRngFJSKVXeKPVwxGLcRPYGNBqd7U1dMzKg@mail.gmail.com>
+	<524E85CE.1090309@siemens.com>
+Date: Fri, 4 Oct 2013 11:39:50 +0200
+Message-ID: <CAAXf6LVRmTVz04kcPsb67iAZ630zW-KOuS4HyODsjG8gS+jDFg@mail.gmail.com>
+From: Thomas De Schampheleire <patrickdepinguin+xenomai@gmail.com>
 Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] xenomai-forge: multiple COPYING files
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -15,69 +16,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Thomas De Schampheleire <patrickdepinguin+xenomai@gmail.com>
+To: Jan Kiszka <jan.kiszka@siemens.com>
 Cc: xenomai@xenomai.org
 
-On 2013-10-02 13:42, Thomas De Schampheleire wrote:
-> Hi,
-> 
-> The (L)GPL requires that every distribution of a derived work is
-> accompanied with the license of the program (xenomai-forge).
-> Currently, xenomai-forge contains several COPYING files:
-> 
-> ./kernel/cobalt/nucleus/COPYING
-> ./kernel/cobalt/COPYING
-> ./kernel/cobalt/rtdm/COPYING
-> ./include/COPYING
-> ./lib/alchemy/COPYING
-> ./lib/psos/COPYING
-> ./lib/vxworks/COPYING
-> ./lib/analogy/COPYING
-> ./lib/cobalt/COPYING
-> ./lib/copperplate/COPYING
-> 
-> An embedded build system like buildroot [1] has legal-info facilities
-> to mark for each package which license it uses, and where the license
-> files is located. A user can easily generate an overview of the
-> license information for all packages used in the system, and contains
-> almost everything necessary to comply with the (L)GPL. In buildroot,
-> this is done with 'make legal-info'.
-> 
-> In the case of buildroot, the license files are copied one by one in a
-> directory named after the package. This would essentially mean:
-> cp <xenomai-source>/kernel/cobalt/nucleus/COPYING licenses/xenomai/COPYING
-> cp <xenomai-source>/kernel/cobalt/COPYING licenses/xenomai/COPYING
-> cp <xenomai-source>/kernel/cobalt/rtdm/COPYING licenses/xenomai/COPYING
-> ...
-> 
-> Clearly, the fact that all license files have the same name poses a
-> problem here. In order to have all files, one would either need to
-> rename them, or duplicate the directory structure.
-> 
-> Instead of moving this complexity outside of xenomai-forge (to the
-> build system), I would like to discuss how it can be solved within
-> xenomai-forge itself.
-> 
-> Here are two proposals:
-> 1. Is it really necessary that there are multiple COPYING files? Is it
-> not possible to have one COPYING file in the root of the project, and
-> move the exception specified in include/COPYING to that file? This
-> approach is similar to many many other open-source projects.
-> 
-> 2. Alternatively, what about renaming the license files to a unique
-> name, e.g. COPYING.alchemy, COPYING.psos, COPYING.cobalt-nucleus ?
-> Then, copying these files to one directory is possible without overwriting.
+Hi Jan,
 
-Having multiple, per-subdir COPYING files is by far not that uncommon.
-So improving buildroot for such scenarios seems worthwhile.
+Thanks for your response.
 
-That said, we need consolidation and clarification, specifically to
-cover all files outside kernel/cobalt, include and lib. Will write a
-patch, and another one to append suffixes to the subdir COPYING files.
+On Fri, Oct 4, 2013 at 11:09 AM, Jan Kiszka <jan.kiszka@siemens.com> wrote:
 
-Jan
+> Having multiple, per-subdir COPYING files is by far not that uncommon.
+> So improving buildroot for such scenarios seems worthwhile.
 
--- 
-Siemens AG, Corporate Technology, CT RTC ITP SES-DE
-Corporate Competence Center Embedded Linux
+After my mail, I learned in the buildroot community that master
+already contains a patch to fix this, by reproducing the directory
+structure of the package when copying license files.
+
+>
+> That said, we need consolidation and clarification, specifically to
+> cover all files outside kernel/cobalt, include and lib. Will write a
+> patch, and another one to append suffixes to the subdir COPYING files.
+
+Given the above, my use case no longer requires such suffixes to the
+COPYING files. It still may be useful though for others.
+
+Best regards,
+Thomas
 
