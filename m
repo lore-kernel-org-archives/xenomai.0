@@ -1,18 +1,12 @@
-From: Antoine MOREL <A.MOREL@polysoude.com>
-Date: Fri, 4 Oct 2013 09:01:42 +0000
-Message-ID: <753016a9a00c43fca6252ef26d024461@DBXPR03MB093.eurprd03.prod.outlook.com>
-References: <8ceffc54095e43d88f6dfa0edd0bb852@DBXPR03MB093.eurprd03.prod.outlook.com>
-	<52496200.2010808@xenomai.org>
-	<295e5f6a1e6849079d9fb3e53dcc1827@DBXPR03MB093.eurprd03.prod.outlook.com>
-	<524B1F6C.7080705@xenomai.org>
-	<0181d61119d749ecaf4bfea3b3c827f3@DBXPR03MB093.eurprd03.prod.outlook.com>
-	<524BDFD7.5010104@xenomai.org>
-In-Reply-To: <524BDFD7.5010104@xenomai.org>
-Content-Language: fr-FR
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Message-ID: <524E85CE.1090309@siemens.com>
+Date: Fri, 04 Oct 2013 11:09:34 +0200
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-Subject: Re: [Xenomai] No GPIO IRQ on imx28(apf28), kernel 3.8.13
+References: <CAAXf6LUfHA9aHe2FRngFJSKVXeKPVwxGLcRPYGNBqd7U1dMzKg@mail.gmail.com>
+In-Reply-To: <CAAXf6LUfHA9aHe2FRngFJSKVXeKPVwxGLcRPYGNBqd7U1dMzKg@mail.gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] xenomai-forge: multiple COPYING files
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,30 +15,69 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Thomas De Schampheleire <patrickdepinguin+xenomai@gmail.com>
+Cc: xenomai@xenomai.org
 
-SGVsbG8gR2lsbGVzLA0KDQpJIHRyaWVkIHRoZSBwYXRjaCBhbmQgaXQgd29ya3MhDQpEaWQgdGhl
-IGFkZW9zIHBhdGNoIHdpbGwgYmUgdXBkYXRlZD8NCg0KVGhhbmtzLg0KQW50b2luZS4NCg0KLS0t
-LS1NZXNzYWdlIGQnb3JpZ2luZS0tLS0tDQpEZcKgOiBHaWxsZXMgQ2hhbnRlcGVyZHJpeCBbbWFp
-bHRvOmdpbGxlcy5jaGFudGVwZXJkcml4QHhlbm9tYWkub3JnXSANCkVudm95w6nCoDogbWVyY3Jl
-ZGkgMiBvY3RvYnJlIDIwMTMgMTA6NTcNCsOAwqA6IEFudG9pbmUgTU9SRUwNCkNjwqA6IHhlbm9t
-YWlAeGVub21haS5vcmcNCk9iamV0wqA6IFJlOiBbWGVub21haV0gTm8gR1BJTyBJUlEgb24gaW14
-MjgoYXBmMjgpLCBrZXJuZWwgMy44LjEzDQoNCk9uIDEwLzAyLzIwMTMgMDg6MDggQU0sIEFudG9p
-bmUgTU9SRUwgd3JvdGU6DQo+IEkgdHJ5IHRoZSBzYW1lIHNvZnR3YXJlIChmaWxlIG1haW4uYykg
-d2l0aCBhbmQgd2l0aG91dCBhZGVvcy4NCj4gSXQgd29ya3Mgd2l0aG91dCBhZGVvcywgYW5kIGl0
-IGRvZXNuJ3Qgd29yayB3aXRoIGFkZW9zIQ0KPiBEaWQgSSBmb3JnZXQgYW55dGhpbmcgdG8gZG8g
-d2l0aCBhZGVvcz8NCj4gVGhlIHNhbWUgc29mdHdhcmUgY2FuIHJ1biB3ZWxsIHdpdGggYW5kIHdp
-dGhvdXQgYWRlb3M/DQoNClBsZWFzZSB0cnkgdGhlIGZvbGxvd2luZyBwYXRjaDoNCg0KZGlmZiAt
-LWdpdCBhL2RyaXZlcnMvZ3Bpby9ncGlvLW14cy5jIGIvZHJpdmVycy9ncGlvL2dwaW8tbXhzLmMg
-aW5kZXggZmEyYTYzYy4uYThjNmZlMiAxMDA2NDQNCi0tLSBhL2RyaXZlcnMvZ3Bpby9ncGlvLW14
-cy5jDQorKysgYi9kcml2ZXJzL2dwaW8vZ3Bpby1teHMuYw0KQEAgLTEzNyw3ICsxMzcsNyBAQCBz
-dGF0aWMgdm9pZCBteHNfZ3Bpb19pcnFfaGFuZGxlcih1MzIgaXJxLCBzdHJ1Y3QgaXJxX2Rlc2Mg
-KmRlc2MpDQogDQogCXdoaWxlIChpcnFfc3RhdCAhPSAwKSB7DQogCQlpbnQgaXJxb2Zmc2V0ID0g
-ZmxzKGlycV9zdGF0KSAtIDE7DQotCQlnZW5lcmljX2hhbmRsZV9pcnEoaXJxX2ZpbmRfbWFwcGlu
-Zyhwb3J0LT5kb21haW4sIGlycW9mZnNldCkpOw0KKwkJaXBpcGVfaGFuZGxlX2RlbXV4ZWRfaXJx
-KGlycV9maW5kX21hcHBpbmcocG9ydC0+ZG9tYWluLCBpcnFvZmZzZXQpKTsNCiAJCWlycV9zdGF0
-ICY9IH4oMSA8PCBpcnFvZmZzZXQpOw0KIAl9DQogfQ0KDQoNCg0KLS0gDQogICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgR2lsbGVz
-Lg0K
+On 2013-10-02 13:42, Thomas De Schampheleire wrote:
+> Hi,
+> 
+> The (L)GPL requires that every distribution of a derived work is
+> accompanied with the license of the program (xenomai-forge).
+> Currently, xenomai-forge contains several COPYING files:
+> 
+> ./kernel/cobalt/nucleus/COPYING
+> ./kernel/cobalt/COPYING
+> ./kernel/cobalt/rtdm/COPYING
+> ./include/COPYING
+> ./lib/alchemy/COPYING
+> ./lib/psos/COPYING
+> ./lib/vxworks/COPYING
+> ./lib/analogy/COPYING
+> ./lib/cobalt/COPYING
+> ./lib/copperplate/COPYING
+> 
+> An embedded build system like buildroot [1] has legal-info facilities
+> to mark for each package which license it uses, and where the license
+> files is located. A user can easily generate an overview of the
+> license information for all packages used in the system, and contains
+> almost everything necessary to comply with the (L)GPL. In buildroot,
+> this is done with 'make legal-info'.
+> 
+> In the case of buildroot, the license files are copied one by one in a
+> directory named after the package. This would essentially mean:
+> cp <xenomai-source>/kernel/cobalt/nucleus/COPYING licenses/xenomai/COPYING
+> cp <xenomai-source>/kernel/cobalt/COPYING licenses/xenomai/COPYING
+> cp <xenomai-source>/kernel/cobalt/rtdm/COPYING licenses/xenomai/COPYING
+> ...
+> 
+> Clearly, the fact that all license files have the same name poses a
+> problem here. In order to have all files, one would either need to
+> rename them, or duplicate the directory structure.
+> 
+> Instead of moving this complexity outside of xenomai-forge (to the
+> build system), I would like to discuss how it can be solved within
+> xenomai-forge itself.
+> 
+> Here are two proposals:
+> 1. Is it really necessary that there are multiple COPYING files? Is it
+> not possible to have one COPYING file in the root of the project, and
+> move the exception specified in include/COPYING to that file? This
+> approach is similar to many many other open-source projects.
+> 
+> 2. Alternatively, what about renaming the license files to a unique
+> name, e.g. COPYING.alchemy, COPYING.psos, COPYING.cobalt-nucleus ?
+> Then, copying these files to one directory is possible without overwriting.
+
+Having multiple, per-subdir COPYING files is by far not that uncommon.
+So improving buildroot for such scenarios seems worthwhile.
+
+That said, we need consolidation and clarification, specifically to
+cover all files outside kernel/cobalt, include and lib. Will write a
+patch, and another one to append suffixes to the subdir COPYING files.
+
+Jan
+
+-- 
+Siemens AG, Corporate Technology, CT RTC ITP SES-DE
+Corporate Competence Center Embedded Linux
 
