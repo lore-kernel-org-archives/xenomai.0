@@ -1,15 +1,18 @@
-Message-ID: <524E83D4.8070007@siemens.com>
-Date: Fri, 04 Oct 2013 11:01:08 +0200
-From: Jan Kiszka <jan.kiszka@siemens.com>
+From: Antoine MOREL <A.MOREL@polysoude.com>
+Date: Fri, 4 Oct 2013 09:01:42 +0000
+Message-ID: <753016a9a00c43fca6252ef26d024461@DBXPR03MB093.eurprd03.prod.outlook.com>
+References: <8ceffc54095e43d88f6dfa0edd0bb852@DBXPR03MB093.eurprd03.prod.outlook.com>
+	<52496200.2010808@xenomai.org>
+	<295e5f6a1e6849079d9fb3e53dcc1827@DBXPR03MB093.eurprd03.prod.outlook.com>
+	<524B1F6C.7080705@xenomai.org>
+	<0181d61119d749ecaf4bfea3b3c827f3@DBXPR03MB093.eurprd03.prod.outlook.com>
+	<524BDFD7.5010104@xenomai.org>
+In-Reply-To: <524BDFD7.5010104@xenomai.org>
+Content-Language: fr-FR
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <1380568915-32582-1-git-send-email-gilles.chanteperdrix@xenomai.org>
-	<524E7D5B.5080004@siemens.com>
-	<fb449ebaab2d4e71a032af35d5a881b6.squirrel@127.0.0.1>
-In-Reply-To: <fb449ebaab2d4e71a032af35d5a881b6.squirrel@127.0.0.1>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PATCH] x86/ipipe: get FPU backup area allocated for
-	all threads
+Subject: Re: [Xenomai] No GPIO IRQ on imx28(apf28), kernel 3.8.13
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,41 +22,29 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 2013-10-04 10:53, Gilles Chanteperdrix wrote:
-> 
-> Jan Kiszka wrote:
->>> diff --git a/arch/x86/kernel/process.c b/arch/x86/kernel/process.c
->>> index a00bed1..4716eb2 100644
->>> --- a/arch/x86/kernel/process.c
->>> +++ b/arch/x86/kernel/process.c
->>> @@ -73,14 +73,6 @@ int arch_dup_task_struct(struct task_struct *dst,
->>> struct task_struct *src)
->>>  		if (ret)
->>>  			return ret;
->>>  		fpu_copy(dst, src);
->>> -	} else {
->>> -#ifdef CONFIG_IPIPE
->>> -		/* unconditionally allocate, RT domain may need it */
->>> -		memset(&dst->thread.fpu, 0, sizeof(dst->thread.fpu));
->>> -		ret = fpu_alloc(&dst->thread.fpu);
->>> -		if (ret)
->>> -			return ret;
->>> -#endif
->>
->> Why removing the systematic allocation? This is not explained above and
->> seems counterproductive.
-> 
-> Because when we stop deleting the fpu backup area upon exec, no fork ever
-> takes place for source thread without an fpu backup area. So, the "else"
-> clause never happens, and we can remove it entirely.
-
-OK, please add this to the commit log.
-
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RTC ITP SES-DE
-Corporate Competence Center Embedded Linux
+SGVsbG8gR2lsbGVzLA0KDQpJIHRyaWVkIHRoZSBwYXRjaCBhbmQgaXQgd29ya3MhDQpEaWQgdGhl
+IGFkZW9zIHBhdGNoIHdpbGwgYmUgdXBkYXRlZD8NCg0KVGhhbmtzLg0KQW50b2luZS4NCg0KLS0t
+LS1NZXNzYWdlIGQnb3JpZ2luZS0tLS0tDQpEZcKgOiBHaWxsZXMgQ2hhbnRlcGVyZHJpeCBbbWFp
+bHRvOmdpbGxlcy5jaGFudGVwZXJkcml4QHhlbm9tYWkub3JnXSANCkVudm95w6nCoDogbWVyY3Jl
+ZGkgMiBvY3RvYnJlIDIwMTMgMTA6NTcNCsOAwqA6IEFudG9pbmUgTU9SRUwNCkNjwqA6IHhlbm9t
+YWlAeGVub21haS5vcmcNCk9iamV0wqA6IFJlOiBbWGVub21haV0gTm8gR1BJTyBJUlEgb24gaW14
+MjgoYXBmMjgpLCBrZXJuZWwgMy44LjEzDQoNCk9uIDEwLzAyLzIwMTMgMDg6MDggQU0sIEFudG9p
+bmUgTU9SRUwgd3JvdGU6DQo+IEkgdHJ5IHRoZSBzYW1lIHNvZnR3YXJlIChmaWxlIG1haW4uYykg
+d2l0aCBhbmQgd2l0aG91dCBhZGVvcy4NCj4gSXQgd29ya3Mgd2l0aG91dCBhZGVvcywgYW5kIGl0
+IGRvZXNuJ3Qgd29yayB3aXRoIGFkZW9zIQ0KPiBEaWQgSSBmb3JnZXQgYW55dGhpbmcgdG8gZG8g
+d2l0aCBhZGVvcz8NCj4gVGhlIHNhbWUgc29mdHdhcmUgY2FuIHJ1biB3ZWxsIHdpdGggYW5kIHdp
+dGhvdXQgYWRlb3M/DQoNClBsZWFzZSB0cnkgdGhlIGZvbGxvd2luZyBwYXRjaDoNCg0KZGlmZiAt
+LWdpdCBhL2RyaXZlcnMvZ3Bpby9ncGlvLW14cy5jIGIvZHJpdmVycy9ncGlvL2dwaW8tbXhzLmMg
+aW5kZXggZmEyYTYzYy4uYThjNmZlMiAxMDA2NDQNCi0tLSBhL2RyaXZlcnMvZ3Bpby9ncGlvLW14
+cy5jDQorKysgYi9kcml2ZXJzL2dwaW8vZ3Bpby1teHMuYw0KQEAgLTEzNyw3ICsxMzcsNyBAQCBz
+dGF0aWMgdm9pZCBteHNfZ3Bpb19pcnFfaGFuZGxlcih1MzIgaXJxLCBzdHJ1Y3QgaXJxX2Rlc2Mg
+KmRlc2MpDQogDQogCXdoaWxlIChpcnFfc3RhdCAhPSAwKSB7DQogCQlpbnQgaXJxb2Zmc2V0ID0g
+ZmxzKGlycV9zdGF0KSAtIDE7DQotCQlnZW5lcmljX2hhbmRsZV9pcnEoaXJxX2ZpbmRfbWFwcGlu
+Zyhwb3J0LT5kb21haW4sIGlycW9mZnNldCkpOw0KKwkJaXBpcGVfaGFuZGxlX2RlbXV4ZWRfaXJx
+KGlycV9maW5kX21hcHBpbmcocG9ydC0+ZG9tYWluLCBpcnFvZmZzZXQpKTsNCiAJCWlycV9zdGF0
+ICY9IH4oMSA8PCBpcnFvZmZzZXQpOw0KIAl9DQogfQ0KDQoNCg0KLS0gDQogICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgR2lsbGVz
+Lg0K
 
