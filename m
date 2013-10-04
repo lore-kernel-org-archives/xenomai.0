@@ -1,16 +1,15 @@
-Message-ID: <9f434d35ca75b40717470732ef0f9483.squirrel@127.0.0.1>
-In-Reply-To: <524E81FB.2090701@siemens.com>
+Message-ID: <524E83D4.8070007@siemens.com>
+Date: Fri, 04 Oct 2013 11:01:08 +0200
+From: Jan Kiszka <jan.kiszka@siemens.com>
+MIME-Version: 1.0
 References: <1380568915-32582-1-git-send-email-gilles.chanteperdrix@xenomai.org>
 	<524E7D5B.5080004@siemens.com>
-	<30755fe0479d5f098c0d48818075a12b.squirrel@127.0.0.1>
-	<524E81FB.2090701@siemens.com>
-Date: Fri, 4 Oct 2013 10:57:07 +0200
-From: "Gilles Chanteperdrix" <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-Content-Type: text/plain;charset=UTF-8
-Content-Transfer-Encoding: 8bit
+	<fb449ebaab2d4e71a032af35d5a881b6.squirrel@127.0.0.1>
+In-Reply-To: <fb449ebaab2d4e71a032af35d5a881b6.squirrel@127.0.0.1>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] [PATCH] x86/ipipe: get FPU backup area allocated for
- all threads
+	all threads
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,49 +18,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
+On 2013-10-04 10:53, Gilles Chanteperdrix wrote:
+> 
+> Jan Kiszka wrote:
+>>> diff --git a/arch/x86/kernel/process.c b/arch/x86/kernel/process.c
+>>> index a00bed1..4716eb2 100644
+>>> --- a/arch/x86/kernel/process.c
+>>> +++ b/arch/x86/kernel/process.c
+>>> @@ -73,14 +73,6 @@ int arch_dup_task_struct(struct task_struct *dst,
+>>> struct task_struct *src)
+>>>  		if (ret)
+>>>  			return ret;
+>>>  		fpu_copy(dst, src);
+>>> -	} else {
+>>> -#ifdef CONFIG_IPIPE
+>>> -		/* unconditionally allocate, RT domain may need it */
+>>> -		memset(&dst->thread.fpu, 0, sizeof(dst->thread.fpu));
+>>> -		ret = fpu_alloc(&dst->thread.fpu);
+>>> -		if (ret)
+>>> -			return ret;
+>>> -#endif
+>>
+>> Why removing the systematic allocation? This is not explained above and
+>> seems counterproductive.
+> 
+> Because when we stop deleting the fpu backup area upon exec, no fork ever
+> takes place for source thread without an fpu backup area. So, the "else"
+> clause never happens, and we can remove it entirely.
 
-Jan Kiszka wrote:
-> On 2013-10-04 10:50, Gilles Chanteperdrix wrote:
->>
->> Jan Kiszka wrote:
->>> On 2013-09-30 21:21, Gilles Chanteperdrix wrote:
->>>> In order to be able to handle FPU faults in the Xenomai domain without
->>>> switching to the root domain, the FPU backup area must be
->>>> systematically
->>>> allocated for all Linux tasks. Currently, the backup area is
->>>> systematically
->>>> allocated in arch_dup_task_struct(), but gets freed upon exec by
->>>> flush_thread(). Stop freeing it in flush_thread(), there does not seem
->>>> to be any risk of leaking information, as the "used_math" flag is
->>>> cleared
->>>> by drop_init_fpui() so that upon next fault, the context is
->>>> reinitialized.
->>>
->>> How to reproduce the scenario? Would be good to document it in order to
->>> check for regressions in future kernels.
->>
->> Simply shadow the main thread, and use FPU in primary mode, without
->> having
->> first used it in secondary mode. You should get a kernel oops.
->>
->> We can add a test to switchtest, the problem is that switchtest
->> purposedly
->> avoided to use FPU in the main thread before creating the other threads
->> to test threads which are not created with the "used_math" flag. But we
->> can
->> use FPU after the other threads creation, right before the call to
->> sigwait.
->
-> Yes, having an explicit test case would be great. Also important is to
-> avoid using a modern CPU with XSAVE support. Most of our target have
-> this feature now.
+OK, please add this to the commit log.
 
-My tests machines do not have xsave.
+Jan
 
 -- 
-                                              Gilles
-
+Siemens AG, Corporate Technology, CT RTC ITP SES-DE
+Corporate Competence Center Embedded Linux
 
