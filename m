@@ -1,10 +1,15 @@
-Message-ID: <521E0D42.50605@siemens.com>
-Date: Wed, 28 Aug 2013 16:46:26 +0200
+Message-ID: <524E81FB.2090701@siemens.com>
+Date: Fri, 04 Oct 2013 10:53:15 +0200
 From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
+References: <1380568915-32582-1-git-send-email-gilles.chanteperdrix@xenomai.org>
+	<524E7D5B.5080004@siemens.com>
+	<30755fe0479d5f098c0d48818075a12b.squirrel@127.0.0.1>
+In-Reply-To: <30755fe0479d5f098c0d48818075a12b.squirrel@127.0.0.1>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] [PULL][forge] Enable build against 3.10
+Subject: Re: [Xenomai] [PATCH] x86/ipipe: get FPU backup area allocated for
+	all threads
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,52 +18,42 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-The following changes since commit 112dc09dcae854e16d2b01b3261a79cae95d9506:
+On 2013-10-04 10:50, Gilles Chanteperdrix wrote:
+> 
+> Jan Kiszka wrote:
+>> On 2013-09-30 21:21, Gilles Chanteperdrix wrote:
+>>> In order to be able to handle FPU faults in the Xenomai domain without
+>>> switching to the root domain, the FPU backup area must be systematically
+>>> allocated for all Linux tasks. Currently, the backup area is
+>>> systematically
+>>> allocated in arch_dup_task_struct(), but gets freed upon exec by
+>>> flush_thread(). Stop freeing it in flush_thread(), there does not seem
+>>> to be any risk of leaking information, as the "used_math" flag is
+>>> cleared
+>>> by drop_init_fpui() so that upon next fault, the context is
+>>> reinitialized.
+>>
+>> How to reproduce the scenario? Would be good to document it in order to
+>> check for regressions in future kernels.
+> 
+> Simply shadow the main thread, and use FPU in primary mode, without having
+> first used it in secondary mode. You should get a kernel oops.
+> 
+> We can add a test to switchtest, the problem is that switchtest purposedly
+> avoided to use FPU in the main thread before creating the other threads
+> to test threads which are not created with the "used_math" flag. But we can
+> use FPU after the other threads creation, right before the call to sigwait.
 
-  cobalt/kconfig: make Xenomai a menuconfig (2013-08-28 12:07:23 +0200)
-
-are available in the git repository at:
-
-  git://git.xenomai.org/xenomai-jki.git for-forge
-
-for you to fetch changes up to b759652f95c61b109f5764ccf8d653815c0fd216:
-
-  analogy: Update procfs usage to latest kernel API (2013-08-28 16:18:23 +0200)
-
-This is primarily the forward port of the vfile and driver updates for
-3.10 from my Xenomai 2.6 queue.
+Yes, having an explicit test case would be great. Also important is to
+avoid using a modern CPU with XSAVE support. Most of our target have
+this feature now.
 
 Jan
 
-----------------------------------------------------------------
-Jan Kiszka (8):
-      cobalt/vfile: Remove unused xnvfile_*_p helpers
-      cobalt/vfile: Adjust procfs usage to latest kernel API
-      cobalt/vfile: Add missing include of slab.h
-      cobalt/vfile: Remove obsolete parent field from xnvfile
-      cobalt/posix/timer: Fix debug output
-      rtcan: Debugging feature depends on procfs
-      rtcan: Update procfs usage to latest kernel API
-      analogy: Update procfs usage to latest kernel API
-
- include/analogy/device.h                           |   4 +-
- include/analogy/driver.h                           |   4 +-
- include/analogy/transfer.h                         |   4 +-
- include/cobalt/kernel/vfile.h                      |  18 --
- .../cobalt/include/asm-generic/xenomai/wrappers.h  |  11 +
- kernel/cobalt/posix/timer.c                        |   3 +-
- kernel/cobalt/vfile.c                              |  38 +--
- kernel/drivers/analogy/device.c                    |  50 ++--
- kernel/drivers/analogy/driver.c                    |  32 +--
- kernel/drivers/analogy/rtdm_interface.c            |  42 +++-
- kernel/drivers/analogy/transfer.c                  |  32 +--
- kernel/drivers/can/Kconfig                         |   2 +-
- kernel/drivers/can/mscan/rtcan_mscan_proc.c        | 147 ++++++------
- kernel/drivers/can/rtcan_internal.h                |  62 -----
- kernel/drivers/can/rtcan_module.c                  | 266 ++++++++++-----------
- kernel/drivers/can/sja1000/rtcan_sja1000_proc.c    |  48 ++--
- 16 files changed, 310 insertions(+), 453 deletions(-)
+-- 
+Siemens AG, Corporate Technology, CT RTC ITP SES-DE
+Corporate Competence Center Embedded Linux
 
