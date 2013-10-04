@@ -1,16 +1,10 @@
-MIME-Version: 1.0
-In-Reply-To: <2dd3a285e2284e2576787348a4fafc72.squirrel@127.0.0.1>
-References: <CAK4EZFSLBBOs174xP+JAsqgJgG-MJ5UxMsj_FD5Pzjh1BHz7gw@mail.gmail.com>
-	<52435E3D.7020202@xenomai.org>
-	<201309261032.30542.paul_c@tuxcnc.org>
-	<201310041336.33020.paul_c@tuxcnc.org>
-	<CAK4EZFRUKBxu-sW68LoGF0w+PdoMxa2wK9eRB3-eYZPtFY_UDg@mail.gmail.com>
-	<2dd3a285e2284e2576787348a4fafc72.squirrel@127.0.0.1>
-Date: Fri, 4 Oct 2013 13:19:39 -0400
-Message-ID: <CAK4EZFSCvgirOV=ZfsD__fyTL2y3SWBq7XBALTvPg3Z7NaJHOg@mail.gmail.com>
-From: Adam Vaughan <vaughana@umich.edu>
-Content-Type: text/plain; charset=ISO-8859-1
-Subject: Re: [Xenomai] Raspberry Pi patch issue?
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Date: Fri,  4 Oct 2013 22:18:12 +0200
+Message-Id: <1380917892-21501-1-git-send-email-gilles.chanteperdrix@xenomai.org>
+In-Reply-To: <524E83D4.8070007@siemens.com>
+References: <524E83D4.8070007@siemens.com>
+Subject: [Xenomai] [PATCH] x86/ipipe: get FPU backup area allocated for all
+	threads
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,44 +13,51 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-Oh wow, thank you for that reference.
+In order to be able to handle FPU faults in the Xenomai domain without
+switching to the root domain, an FPU context must be systematically
+allocated for all Linux tasks. Currently, the FPU context is systematically
+allocated in arch_dup_task_struct(), but gets freed upon exec by
+flush_thread(). Stop freeing it in flush_thread(), there does not seem
+to be any risk of leaking information, as the "used_math" flag is cleared
+by drop_init_fpu() so that upon next fault, the context is reinitialized.
+Also stop creating an FPU context in arch_dup_task_struct() if the source
+taks does not have one, as there are no longer any task without an FPU context.
+---
+ arch/x86/kernel/process.c |   10 +---------
+ 1 file changed, 1 insertion(+), 9 deletions(-)
 
-One thing that I'm curious about is how "disable_pvt=1" would affect
-the Raspberry Pi's 24-hour latency numbers.  I hope to run such a test
-in the next month or so after I get my code finished, but it might be
-of interest to others to look at too since it can add 8-16 us latency
-for SDRAM transactions every 500 ms (see [1]).
+diff --git a/arch/x86/kernel/process.c b/arch/x86/kernel/process.c
+index a00bed1..4716eb2 100644
+--- a/arch/x86/kernel/process.c
++++ b/arch/x86/kernel/process.c
+@@ -73,14 +73,6 @@ int arch_dup_task_struct(struct task_struct *dst, struct task_struct *src)
+ 		if (ret)
+ 			return ret;
+ 		fpu_copy(dst, src);
+-	} else {
+-#ifdef CONFIG_IPIPE
+-		/* unconditionally allocate, RT domain may need it */
+-		memset(&dst->thread.fpu, 0, sizeof(dst->thread.fpu));
+-		ret = fpu_alloc(&dst->thread.fpu);
+-		if (ret)
+-			return ret;
+-#endif
+ 	}
+ 	return 0;
+ }
+@@ -170,8 +162,8 @@ void flush_thread(void)
+ 	 * lazily at the first use.
+ 	 */
+ 	if (!use_eager_fpu())
+-#endif
+ 		free_thread_xstate(tsk);
++#endif
+ }
+ 
+ static void hard_disable_TSC(void)
+-- 
+1.7.10.4
 
-[1] http://www.raspberrypi.org/phpBB3/viewtopic.php?f=37&t=7696
-
-
-On Fri, Oct 4, 2013 at 12:44 PM, Gilles Chanteperdrix
-<gilles.chanteperdrix@xenomai.org> wrote:
->
-> Adam Vaughan wrote:
->> Hi Paul,
->>
->> Thank you!  I really do appreciate your efforts putting the patches
->> together.  Just to get a rough idea what latency to expect, will these
->> patches achieve similar performance compared to the older patches for
->> Linux 3.5.7 provided at [1] and tested at [2]?  For quick reference,
->> I've attached the 24 hour GPIO latency test histogram under high load
->> from [2].
->>
->> Finally, would like to just briefly mention that I think the Raspberry
->> Pi is a great hobbyist board for Xenomai to support because of it's
->> low cost and reasonably fast hardware FPU.  I've been really happy
->> with how easy it is to implement Xenomai code, and that incorporating
->> double precision matrix algebra support from the Eigen library has
->> been a breeze so far.
->
-> From the comparisons made on other ARMs, 3.8 and 3.5 look pretty similar:
-> http://www.xenomai.org/~gch/core-3.8-latencies/
->
-> --
->                                               Gilles
->
 
