@@ -1,13 +1,11 @@
-Message-ID: <52555C61.9000002@nta-inc.net>
-Date: Wed, 09 Oct 2013 08:38:41 -0500
-From: Jeff Webb <jeff.webb@nta-inc.net>
+Date: Wed, 09 Oct 2013 15:46:29 +0200
+From: =?utf-8?q?Petr_Cervenka?= <grugh@centrum.cz>
 MIME-Version: 1.0
-References: <52505D40.7070600@xenomai.org> <52543701.7050203@nta-inc.net>
-	<1066e955e4a2a71d812f72689fe7d4f0.squirrel@127.0.0.1>
-In-Reply-To: <1066e955e4a2a71d812f72689fe7d4f0.squirrel@127.0.0.1>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [Announce] Xenomai 2.6.3
+Message-Id: <20131009154629.56216CA3@centrum.cz>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Subject: [Xenomai] =?utf-8?q?Latency_peaks_without_IPIPE=5FDEBUG=5FINTERNA?=
+	=?utf-8?q?L?=
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,38 +14,22 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Xenomai <xenomai@xenomai.org>
 
-On 10/09/2013 05:04 AM, Gilles Chanteperdrix wrote:
->
-> Jeff Webb wrote:
->> On 10/05/2013 01:41 PM, Gilles Chanteperdrix wrote:
->>> at last, here comes Xenomai 2.6.3, available at the usual address:
->>> http://download.gna.org/xenomai/stable/xenomai-2.6.3.tar.bz2
->>>
->>> In addition to core bug fixes and improvements, it has the following
->>> more visible changes:
->>> - upgrade to support I-pipe patches to Linux 3.8, and Linux 3.10
->>> (not included);
->>> - contributed I-pipe patches for BeagleBone, Raspberry Pi and Zynq;
->>
->> Thanks to all of you for your hard work in putting together this latest
->> release.  I have an issue when trying to build a Xenomai-enabled kernel
->> for the Zynq platform, however.  I get a few failed hunks when applying
->> the included ipipe-core-3.8.13-arm-3.patch.  This patch seems to work
->> fine:
->> http://download.gna.org/adeos/patches/v3.x/arm/ipipe-core-3.8-arm-1.patch.
->
-> Yes, the patches author changed company and so no longer had access to
-> the hardware to update the patches. So, I kept the first set of patches
-> he sent, hoping that it would help anyone who wants to work on Zynq.
-
-Oh, I see.  Yes, thanks for including the zynq patches in the distribution.  I have built Xenomai and loaded it onto a ZedBoard I have at work.  I'm hoping we will be able to use this platform for some real-time work, but I'm not certain at this point.  If so, I will look into updating the patches.
-
-Thanks again,
-
--Jeff
-
-  
-
-
+SGVsbG8gZXZlcnlvbmUuCkkgaGF2ZSB2ZXJ5IGhpZ2ggbGF0ZW5jeSBwZWFrcyAofjQwMHVzKSB3
+aXRoIG15IGNvbmZpZ3VyYXRpb24gd2hlbiBJUElQRV9ERUJVRyBhbmQgSVBJUEVfREVCVUdfSU5U
+RVJOQUwgYXJlICFOT1QhIHN3aXRjaGVkIG9uLgpXYXkgdG8gcmVwcm9kdWNlIHRoZSBpc3N1ZSBp
+cyB0byBydW4gdGhlIGxhdGVuY3kgdGVzdCAodHJpZWQgd2l0aCBoaWdoIHByaW9yaXR5KToKJCBz
+dWRvIC91c3IveGVub21haS9iaW4vbGF0ZW5jeSAtUCA5OQphbmQgaW4gYW5vdGhlciB0ZXJtaW5h
+bCB0byBsaXN0IHhlbm9tYWkgc3RhdGlzdGljcyBjb3VwbGUgb2YgdGltZXM6CiQgY2F0IC9wcm9j
+L3hlbm9tYWkvc3RhdAoKdmVyc2lvbnM6Cmtlcm5lbCAzLjUuNwp4ZW5vbWFpIDIuNi4yLjEgYW5k
+IDIuNi4zCnRyaWVkIG9uIGRpZmZlcmVudCAoYnV0IHNpbWlsYXIpIGludGVsIGJhc2VkIGh3IChD
+b3JlMkR1byBFNzQwMCwgWGVvbiBFMy0xMjIwLCAgaTUtMjUwMEspCgpEbyB5b3UgaGF2ZSBhbnkg
+aWRlYSB3aGF0IGNvdWxkIGJlIHdyb25nPwoKUGV0ciBDZXJ2ZW5rYQoKUFM6IE15IGtlcm5lbCBj
+b25maWcgaXMgbm90IG9wdGltaXplZCBhbmQgaW5jbHVkZXMgbG90IG9mIG1vZHVsZXMuIFRoZSBj
+b21waWxhdGlvbiB0aW1lIGlzIHF1aXRlIGxvbmcKCgotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQg
+LS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1l
+OiBjb25maWctMy41LjctYWRlb3MKVHlwZTogYXBwbGljYXRpb24vb2N0ZXQtc3RyZWFtClNpemU6
+IDE0NTk4MCBieXRlcwpEZXNjOiBjb25maWctMy41LjctYWRlb3MKVVJMOiA8aHR0cDovL3d3dy54
+ZW5vbWFpLm9yZy9waXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDEzMTAwOS84MzMyMzk3
+NC9hdHRhY2htZW50Lm9iaj4K
