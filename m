@@ -1,12 +1,12 @@
-Message-ID: <5255BDB8.5070701@xenomai.org>
-Date: Wed, 09 Oct 2013 22:34:00 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: "Zemskov, Evgeny" <Evgeny.Zemskov@transas.com>
+Date: Thu, 10 Oct 2013 11:57:17 +0000
+Message-ID: <FA4CEC4EBE2FA145A7663764A1CCB31EC74CB0DA@VOITV-EXCH-BE02.transas.com>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <20131009154629.56216CA3@centrum.cz>
-In-Reply-To: <20131009154629.56216CA3@centrum.cz>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Latency peaks without IPIPE_DEBUG_INTERNAL
+Subject: [Xenomai] Kernel 2.6.32 patched with xenomai 2.6.0 and 2.6.3
+ crashes on a Core i5 / QM77 system
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,26 +15,54 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Petr Cervenka <grugh@centrum.cz>
-Cc: Xenomai <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 10/09/2013 03:46 PM, Petr Cervenka wrote:
-> Hello everyone.
-> I have very high latency peaks (~400us) with my configuration when IPIPE_DEBUG and IPIPE_DEBUG_INTERNAL are !NOT! switched on.
-> Way to reproduce the issue is to run the latency test (tried with high priority):
-> $ sudo /usr/xenomai/bin/latency -P 99
-> and in another terminal to list xenomai statistics couple of times:
-> $ cat /proc/xenomai/stat
-> 
-> versions:
-> kernel 3.5.7
-> xenomai 2.6.2.1 and 2.6.3
-> tried on different (but similar) intel based hw (Core2Duo E7400, Xeon E3-1220,  i5-2500K)
-> 
-> Do you have any idea what could be wrong?
-
-I would say /proc/xenomai/stat holds the nklock for too long.
-
--- 
-                                                                Gilles.
+R3JlZXRpbmdzICENCg0KSSdtIHRyeWluZyB0byBydW4gWGVub21haSBzeXN0ZW0gb24gYW4gaW5k
+dXN0cmlhbCBjb21wdXRlciB3aXRoDQpDb3JlIGk1LTM2MTBNRSAyLjcwR0h6IGFuZCA4R2IgUkFN
+IG9uIFFNIDc3IGNoaXBzZXQuDQoNCkFueSBhdHRlbXB0cyB0byBib290IHhlbm9tYWktcGF0Y2hl
+ZCBrZXJuZWwgZmFpbCB3aXRoIGEgc3RhY2sgc3RhY2Ugc3RhdGVkIGJlbG93Lg0KSSd2ZSB0cmll
+ZCB2YW5pbGxhIGtlcm5lbCAyLjYuMzIgcGF0Y2hlZCB3aXRoIFhlbm9tYWkgMi42LjAgYW5kIDIu
+Ni4zIChBZGVvcyAyLjctMDMpLg0KWGVub21haSAyLjYuMCB3b3JrcyBmaW5lIG9uIGEgbnVtYmVy
+IG9mIG90aGVyIG1hY2hpbmVzIHdpdGggUGVudGl1bTQsIENvZGUgMiBEdW8gYW5kIENvcmUgaTcu
+DQoNClJlZ3JldGFibHksIHdlIGFyZSB1bmFibGUgdG8gdHJ5IHVzZSBuZXdlciBrZXJuZWxzICgy
+LjYuMzggb3IgMy54KSBhbmQgQWRlb3MgdmVyc2lvbnMsDQpzaW5jZSB3ZSdyZSBib3VuZCB0byBh
+IGNlcnRpZmllZCBkaXN0cnVidXRpb24gb2YgTGludXggd2l0aCAyLjYuMzIga2VybmVsLg0KDQpB
+bnkgc3VnZ2VzdGlvbnMgYXJlIHdlcnkgd2VsY29tZS4NClJlZ2FyZHMsIEV2Z2VueQ0KDQotLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQ0KDQou
+Lk1QLUJJT1MgYnVnOiA4MjU0IHRpbWVyIG5vdCBjb25uZWN0ZWQgdG8gSU8tQVBJQw0KQlVHOiB1
+bmFibGUgdG8gaGFuZGxlIGtlcm5lbCBOVUxMIHBvaW50ZXIgZGVyZWZlcmVuY2UgYXQgKG51bGwp
+DQpJUDogWzxjMDViMWEwOT5dIGxpc3RfZGVsKzB4OS8weDgwDQoqcGRwdCA9IDAwMDAwMDAwMzI0
+NWYwMDEgKnBkZSA9IDAwMDAwMDAwMDAwMDAwMDANCk9vcHM6IDAwMDAgWyMxXSBTTVANCmxhc3Qg
+c3lzZnMgZmlsZTogL3N5cy9kZXZpY2VzL3BjaTAwMDA6MDAvMDAwMDowMDoxZC4wL3VzYjIvMi0x
+L2JjZERldmljZQ0KTW9kdWxlcyBsaW5rZWQgaW46IGV4dDQgbWJjYWNoZSBqYmQyIGF0YV9nZW5l
+cmljIGF0YV9waWl4IHNkX21vZCBjcmNfdDEwZGlmDQoNClBpZDogMTAsIGNvbW06IGV2ZW50cy8x
+IFRhaW50ZWQ6IEcgICAgICAgIFcgICgyLjYuMzJfeGVub21haS0yLjYuM18yLjctMDMgIzMpDQog
+SVRYLWk3N00xDQoNCkVJUDogMDA2MDpbPGMwNWIxYTA5Pl0gRUZMQUdTOiAwMDAxMDA4MiBDUFU6
+IDENCkVJUCBpcyBhdCBsaXN0X2RlbCsweDkvMHg4MA0KRUFYOiAwMDAwMDAwMCBFQlg6IGYyOGE3
+MDAwIEVDWDogZjcwMDJiMDAgRURYOiBjMTY1MzRlMA0KRVNJOiBmMjhhNzAwMCBFREk6IGY3MDAy
+YjAwIEVCUDogZjcwMDAwODAgRVNQOiBmNzA3NWVmOA0KIERTOiAwMDdiIEVTOiAwMDdiIEZTOiAw
+MGQ4IEdTOiAwMDAwIFNTOiAwMDY4DQpQcm9jZXNzIGV2ZW50cy8xIChwaWQ6IDEwLCB0aT1mNzA3
+NDAwMCB0YXNrPWY3MDVmNTcwIHRhc2sudGk9ZjcwNzQwMDApDQpJLXBpcGUgZG9tYWluIExpbnV4
+DQoNClN0YWNrOg0KIGMwNzc2ZGMwIDAwMDAwMDAyIGY3MDc1ZjVjIDAwMDAwNzQwIGYyYmQ0MDAw
+IGYyOGE3OTYwIGMwNGViMWIzIDAwMDAwMDNhDQo8MD4gMDAwMDAwMDAgMDAwMDAwNjAgZjcwMTI4
+MTQgMDAwMDAwNGMgZjcwMTI4MTQgZjcwMTI4MDAgMDAwMDAwNjAgZjcwMDJiMjQNCjwwPiBjMDRl
+YjJiNyAwMDAwMDAwMCAwMDAwMDAwMCAwMDAwMDAwMCBmNzAwMDA4MCBmNzAwMmIwMCBmNzAwMDA4
+MCBjNTMwZWRlMA0KDQpDYWxsIFRyYWNlOg0KIFs8YzA3NzZkYzA+XSA/IHNjaGVkdWxlKzB4NDUw
+LzB4YmQwDQogWzxjMDRlYjFiMz5dID8gZnJlZV9ibG9jaysweGEzLzB4MTMwDQogWzxjMDRlYjJi
+Nz5dID8gZHJhaW5fYXJyYXkrMHg3Ny8weGYwDQogWzxjMDRlYjcwOD5dID8gY2FjaGVfcmVhcCsw
+eGM4LzB4MTMwDQogWzxjMDQ1Y2FhMj5dID8gd29ya2VyX3RocmVhZCsweDEzMi8weDIzMA0KIFs8
+YzA0ZWI2NDA+XSA/IGNhY2hlX3JlYXArMHgwLzB4MTMwDQogWzxjMDQ2MDFmMD5dID8gYXV0b3Jl
+bW92ZV93YWtlX2Z1bmN0aW9uKzB4MC8weDUwDQogWzxjMDQ1Yzk3MD5dID8gd29ya2VyX3RocmVh
+ZCsweDAvMHgyMzANCiBbPGMwNDYwMTA0Pl0gPyBrdGhyZWFkKzB4NzQvMHg4MA0KIFs8YzA0NjAw
+OTA+XSA/IGt0aHJlYWQrMHgwLzB4ODANCiBbPGMwNDAzOTJiPl0gPyBrZXJuZWxfdGhyZWFkX2hl
+bHBlcisweDcvMHgzYw0KDQpDb2RlOiBmZiBmZiA4YiAxYyAyNCA4YiA3NCAyNCAwNCAwMSBjNyA4
+OSBmOCA4YiA3YyAyNCAwOCA4MyBjNCAwYyBjMyA5MCA5MCA5MA0KIDkwIDkwIDkwIDkwIDkwIDkw
+IDkwIDkwIDkwIDkwIDUzIDg5IGMzIDgzIGVjIDE0IDhiIDQwIDA0IDw4Yj4gMDAgMzkgZDggNzUg
+MjMNCjhiIDEzIDhiIDQyIDA0IDM5IGQ4IDc1IDQwIDhiIDQzIDA0IDg5IDQyIDA0DQoNCkVJUDog
+WzxjMDViMWEwOT5dIGxpc3RfZGVsKzB4OS8weDgwIFNTOkVTUCAwMDY4OmY3MDc1ZWY4DQpDUjI6
+IDAwMDAwMDAwMDAwMDAwMDANCi0tLVsgZW5kIHRyYWNlIDcxNTUxZGQ0MjYyODgxYjEgXS0tLQ0K
+DQoNCkV2Z2VueSBaZW1za292LCBUcmFuc2FzIEx0ZA0KZXZnZW55LnplbXNrb3ZAdHJhbnNhcy5j
+b20NCu+7v09mZmljZSBwaG9uZSAjICs3IDgxMiAzMjUzMTMxIGFkZC4gMzU5LTA0DQpDZWxsIHBo
+b25lICMgKzcgOTUyIDM5NDMxMjkNCg==
 
