@@ -1,13 +1,13 @@
-From: "Zemskov, Evgeny" <Evgeny.Zemskov@transas.com>
-Date: Fri, 11 Oct 2013 14:42:39 +0000
-Message-ID: <FA4CEC4EBE2FA145A7663764A1CCB31EC74CB2AE@VOITV-EXCH-BE02.transas.com>
+Message-ID: <52581527.2040508@xenomai.org>
+Date: Fri, 11 Oct 2013 17:11:35 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+MIME-Version: 1.0
 References: <FA4CEC4EBE2FA145A7663764A1CCB31EC74CB0DA@VOITV-EXCH-BE02.transas.com>,
 	<5256B03C.8080909@xenomai.org>
-In-Reply-To: <5256B03C.8080909@xenomai.org>
-Content-Language: en-US
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
+	<FA4CEC4EBE2FA145A7663764A1CCB31EC74CB2AE@VOITV-EXCH-BE02.transas.com>
+In-Reply-To: <FA4CEC4EBE2FA145A7663764A1CCB31EC74CB2AE@VOITV-EXCH-BE02.transas.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] Kernel 2.6.32 patched with xenomai 2.6.0 and 2.6.3
  crashes on a Core i5 / QM77 system
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -18,31 +18,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: "Zemskov, Evgeny" <Evgeny.Zemskov@transas.com>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-T24gMTAvMTAvMjAxMyAwMTo1NyBQTSwgWmVtc2tvdiwgRXZnZW55IHdyb3RlOg0KPiBHcmVldGlu
-Z3MgIQ0KPg0KPiBJJ20gdHJ5aW5nIHRvIHJ1biBYZW5vbWFpIHN5c3RlbSBvbiBhbiBpbmR1c3Ry
-aWFsIGNvbXB1dGVyIHdpdGgNCj4gQ29yZSBpNS0zNjEwTUUgMi43MEdIeiBhbmQgOEdiIFJBTSBv
-biBRTSA3NyBjaGlwc2V0Lg0KPg0KPiBBbnkgYXR0ZW1wdHMgdG8gYm9vdCB4ZW5vbWFpLXBhdGNo
-ZWQga2VybmVsIGZhaWwgd2l0aCBhIHN0YWNrIHN0YWNlIHN0YXRlZCBiZWxvdy4NCj4gSSd2ZSB0
-cmllZCB2YW5pbGxhIGtlcm5lbCAyLjYuMzIgcGF0Y2hlZCB3aXRoIFhlbm9tYWkgMi42LjAgYW5k
-IDIuNi4zIChBZGVvcyAyLjctMDMpLg0KPiBYZW5vbWFpIDIuNi4wIHdvcmtzIGZpbmUgb24gYSBu
-dW1iZXIgb2Ygb3RoZXIgbWFjaGluZXMgd2l0aCBQZW50aXVtNCwgQ29kZSAyIER1byBhbmQgQ29y
-ZSBpNy4NCj4NCj4gUmVncmV0YWJseSwgd2UgYXJlIHVuYWJsZSB0byB0cnkgdXNlIG5ld2VyIGtl
-cm5lbHMgKDIuNi4zOCBvciAzLngpIGFuZCBBZGVvcyB2ZXJzaW9ucywNCj4gc2luY2Ugd2UncmUg
-Ym91bmQgdG8gYSBjZXJ0aWZpZWQgZGlzdHJ1YnV0aW9uIG9mIExpbnV4IHdpdGggMi42LjMyIGtl
-cm5lbC4NCj4NCj4gQW55IHN1Z2dlc3Rpb25zIGFyZSB3ZXJ5IHdlbGNvbWUuDQoNCkNvdWxkIHlv
-dSB0cnkgYSByZWNlbnQga2VybmVsLCBqdXN0IHRvIHNlZSBpZiB0aGUgaXNzdWUgaXMgc3RpbGwg
-dGhlcmU/DQpDb3VsZCB5b3UgYWxzbyB0cnkgdG8gY29tcGlsZSB5b3VyIGtlcm5lbCBhcyBhIDY0
-IGJpdHMga2VybmVsPw0KDQotLQ0KICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICBHaWxsZXMuDQoNClRyaWVkIHRvIGJ1aWxkIDIuNi4zMiBwYXRjaGVkIHdpdGggMi42
-LjMgYW5kIEFkZW9zIDIuNy0wMyBhcyB4NjQ7IA0KVGhlIHJlc3VsdCBjcmFzaGVkIHdpdGggdGhl
-IHNhbWUgc3RhY2sgdHJhY2UgKGFsdGhvdWdoIEkgY2FuJ3QgdmVyaWZ5IHRoYXQgSSd2ZSBidWls
-dCBhIHByb3BlciB4NjQga2VybmVsKS4NCkV4cGVyaW1lbnRzIHdpdGggcmVjZW50IGtlcm5lbHMg
-YXJlIGRlbGF5ZWQsIGNhdXNlIEkgY2FuJ3QgYm9vdCBteSBkaXN0cmlidXRpb24gYW5kIHdhaXRp
-bmcgZm9yIGEgcmVhY3Rpb24gb2YgaXRzIHZlbmRvci4NCg0KRXVnZW5lDQoNCg0KRXZnZW55IFpl
-bXNrb3YsIFRyYW5zYXMgTHRkDQpldmdlbnkuemVtc2tvdkB0cmFuc2FzLmNvbQ0K77u/T2ZmaWNl
-IHBob25lICMgKzcgODEyIDMyNTMxMzEgYWRkLiAzNTktMDQNCkNlbGwgcGhvbmUgIyArNyA5NTIg
-Mzk0MzEyOQ0KDQo=
+On 10/11/2013 04:42 PM, Zemskov, Evgeny wrote:
+> On 10/10/2013 01:57 PM, Zemskov, Evgeny wrote:
+>> Greetings !
+>>
+>> I'm trying to run Xenomai system on an industrial computer with
+>> Core i5-3610ME 2.70GHz and 8Gb RAM on QM 77 chipset.
+>>
+>> Any attempts to boot xenomai-patched kernel fail with a stack stace stated below.
+>> I've tried vanilla kernel 2.6.32 patched with Xenomai 2.6.0 and 2.6.3 (Adeos 2.7-03).
+>> Xenomai 2.6.0 works fine on a number of other machines with Pentium4, Code 2 Duo and Core i7.
+>>
+>> Regretably, we are unable to try use newer kernels (2.6.38 or 3.x) and Adeos versions,
+>> since we're bound to a certified distrubution of Linux with 2.6.32 kernel.
+>>
+>> Any suggestions are wery welcome.
+>
+> Could you try a recent kernel, just to see if the issue is still there?
+> Could you also try to compile your kernel as a 64 bits kernel?
+>
+> --
+>                                              Gilles.
+>
+> Tried to build 2.6.32 patched with 2.6.3 and Adeos 2.7-03 as x64;
+> The result crashed with the same stack trace (although I can't verify that I've built a proper x64 kernel).
+> Experiments with recent kernels are delayed, cause I can't boot my distribution and waiting for a reaction of its vendor.
+
+If the problem is with the devices nodes creation, you can enable 
+devtmpfs in recent kernels to get the behaviour you had with devfs, 
+prior to udev.
+
+-- 
+					    Gilles.
 
