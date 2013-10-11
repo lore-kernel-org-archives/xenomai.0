@@ -1,10 +1,11 @@
+Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
-Date: Thu, 29 Aug 2013 13:04:15 +0200
-Message-ID: <CAMZj-5POg0tpsEu4A1c5jzygiukcU0b=QCkmGDdqoR5T_5bzzg@mail.gmail.com>
-From: Asier Tamayo Arbide <atamayoarbide@gmail.com>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] Xenomai on mainstream Linux distributions
+Content-Transfer-Encoding: 7bit
+Message-Id: <3426cfa7bb3a21b9b4cb.1381471566@devws164.be.alcatel-lucent.com>
+Date: Fri, 11 Oct 2013 08:06:06 +0200
+From: Kim De Mey <kim.demey@gmail.com>
+Subject: [Xenomai] [PATCH] Xenomai-forge pSOS task: Allow event send to self
+ (current task)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,37 +16,29 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Hello all,
+Support 0 as value for the tid parameter in ev_send.
+This then sends the event to the current task.
 
+Signed-off-by: Kim De Mey <kim.demey@gmail.com>
 
-I have a working embedded system running Xenomai v2.5.5. The user interface
-has been developed with Qt Embedded. The kernel has been compiled using the
-ELinOS Embedded Linux distribution.
+---
+Hello,
 
+I believe this is existing functionality in Xenomai.
+Would it be possible to add this in Xenomai-forge?
 
+Kim
 
-Now, I want to change that interface to X11 so that I can use a desktop
-manager as well as some X11 applications. The ELinOS distribution has an
-XServer, but it lacks a way of easily adding any desktop manager. Thus, I=
-=92m
-thinking about using another Linux distribution.
+diff --git a/lib/psos/task.c b/lib/psos/task.c
+--- a/lib/psos/task.c
++++ b/lib/psos/task.c
+@@ -672,7 +672,7 @@ u_long ev_send(u_long tid, u_long events
+ 	struct service svc;
+ 	int ret = SUCCESS;
+ 
+-	task = find_psos_task(tid, &ret);
++	task = find_psos_task_or_self(tid, &ret);
+ 	if (task == NULL)
+ 		return ret;
+ 
 
-
-
-Does anyone know of a Linux distribution with Xenomai built-in support? Is
-any distribution based on the Yocto project currently supporting Xenomai? I
-need to be able to configure and compile the Linux kernel for my embedded
-system.
-
-
-
-Has anyone any experience in patching the kernel in order to add Xenomai to
-any of the main Linux distributions or to one based on the Yocto project?
-
-
-
-Thank you for your help. Best regards,
-
-
-
-Ata
