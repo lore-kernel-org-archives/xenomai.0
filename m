@@ -1,10 +1,15 @@
-Message-ID: <5257A979.7080208@siemens.com>
-Date: Fri, 11 Oct 2013 09:32:09 +0200
-From: Jan Kiszka <jan.kiszka@siemens.com>
+From: "Zemskov, Evgeny" <Evgeny.Zemskov@transas.com>
+Date: Fri, 11 Oct 2013 14:42:39 +0000
+Message-ID: <FA4CEC4EBE2FA145A7663764A1CCB31EC74CB2AE@VOITV-EXCH-BE02.transas.com>
+References: <FA4CEC4EBE2FA145A7663764A1CCB31EC74CB0DA@VOITV-EXCH-BE02.transas.com>,
+	<5256B03C.8080909@xenomai.org>
+In-Reply-To: <5256B03C.8080909@xenomai.org>
+Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] [PULL] forge: Cleanup COPYING files
+Subject: Re: [Xenomai] Kernel 2.6.32 patched with xenomai 2.6.0 and 2.6.3
+ crashes on a Core i5 / QM77 system
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,53 +18,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi Philippe,
-
-The following changes since commit 926e0441446aae116bf5b0701753e4b87a5386a2:
-
-  doc: update installation guidelines (2013-10-04 15:46:23 +0200)
-
-are available in the git repository at:
-
-  git://git.xenomai.org/xenomai-jki.git for-forge
-
-for you to fetch changes up to f1559e40a39b1a54e0348732402a68eb0dfef0a4:
-
-  Rename include and lib copying files (2013-10-10 15:15:56 +0200)
-
-If you do not like COPYING.* renaming, just skip the second patch. The
-first on is important as we currently have code that is formally under
-no COPYING file.
-
-Jan
-
-----------------------------------------------------------------
-Jan Kiszka (2):
-      Consolidate and clarify scope of license files
-      Rename include and lib copying files
-
- kernel/cobalt/COPYING => COPYING     |   0
- include/{COPYING => COPYING.INC}     |   0
- kernel/cobalt/posix/COPYING          | 341 ------------------------
- kernel/cobalt/rtdm/COPYING           | 340 -----------------------
- lib/{analogy/COPYING => COPYING.LIB} |   0
- lib/alchemy/COPYING                  | 458 -------------------------------
- lib/cobalt/COPYING                   | 504 -----------------------------------
- lib/copperplate/COPYING              | 458 -------------------------------
- lib/psos/COPYING                     | 504 -----------------------------------
- lib/vxworks/COPYING                  | 458 -------------------------------
- 10 files changed, 3063 deletions(-)
- rename kernel/cobalt/COPYING => COPYING (100%)
- rename include/{COPYING => COPYING.INC} (100%)
- delete mode 100644 kernel/cobalt/posix/COPYING
- delete mode 100644 kernel/cobalt/rtdm/COPYING
- rename lib/{analogy/COPYING => COPYING.LIB} (100%)
- delete mode 100644 lib/alchemy/COPYING
- delete mode 100644 lib/cobalt/COPYING
- delete mode 100644 lib/copperplate/COPYING
- delete mode 100644 lib/psos/COPYING
- delete mode 100644 lib/vxworks/COPYING
+T24gMTAvMTAvMjAxMyAwMTo1NyBQTSwgWmVtc2tvdiwgRXZnZW55IHdyb3RlOg0KPiBHcmVldGlu
+Z3MgIQ0KPg0KPiBJJ20gdHJ5aW5nIHRvIHJ1biBYZW5vbWFpIHN5c3RlbSBvbiBhbiBpbmR1c3Ry
+aWFsIGNvbXB1dGVyIHdpdGgNCj4gQ29yZSBpNS0zNjEwTUUgMi43MEdIeiBhbmQgOEdiIFJBTSBv
+biBRTSA3NyBjaGlwc2V0Lg0KPg0KPiBBbnkgYXR0ZW1wdHMgdG8gYm9vdCB4ZW5vbWFpLXBhdGNo
+ZWQga2VybmVsIGZhaWwgd2l0aCBhIHN0YWNrIHN0YWNlIHN0YXRlZCBiZWxvdy4NCj4gSSd2ZSB0
+cmllZCB2YW5pbGxhIGtlcm5lbCAyLjYuMzIgcGF0Y2hlZCB3aXRoIFhlbm9tYWkgMi42LjAgYW5k
+IDIuNi4zIChBZGVvcyAyLjctMDMpLg0KPiBYZW5vbWFpIDIuNi4wIHdvcmtzIGZpbmUgb24gYSBu
+dW1iZXIgb2Ygb3RoZXIgbWFjaGluZXMgd2l0aCBQZW50aXVtNCwgQ29kZSAyIER1byBhbmQgQ29y
+ZSBpNy4NCj4NCj4gUmVncmV0YWJseSwgd2UgYXJlIHVuYWJsZSB0byB0cnkgdXNlIG5ld2VyIGtl
+cm5lbHMgKDIuNi4zOCBvciAzLngpIGFuZCBBZGVvcyB2ZXJzaW9ucywNCj4gc2luY2Ugd2UncmUg
+Ym91bmQgdG8gYSBjZXJ0aWZpZWQgZGlzdHJ1YnV0aW9uIG9mIExpbnV4IHdpdGggMi42LjMyIGtl
+cm5lbC4NCj4NCj4gQW55IHN1Z2dlc3Rpb25zIGFyZSB3ZXJ5IHdlbGNvbWUuDQoNCkNvdWxkIHlv
+dSB0cnkgYSByZWNlbnQga2VybmVsLCBqdXN0IHRvIHNlZSBpZiB0aGUgaXNzdWUgaXMgc3RpbGwg
+dGhlcmU/DQpDb3VsZCB5b3UgYWxzbyB0cnkgdG8gY29tcGlsZSB5b3VyIGtlcm5lbCBhcyBhIDY0
+IGJpdHMga2VybmVsPw0KDQotLQ0KICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICBHaWxsZXMuDQoNClRyaWVkIHRvIGJ1aWxkIDIuNi4zMiBwYXRjaGVkIHdpdGggMi42
+LjMgYW5kIEFkZW9zIDIuNy0wMyBhcyB4NjQ7IA0KVGhlIHJlc3VsdCBjcmFzaGVkIHdpdGggdGhl
+IHNhbWUgc3RhY2sgdHJhY2UgKGFsdGhvdWdoIEkgY2FuJ3QgdmVyaWZ5IHRoYXQgSSd2ZSBidWls
+dCBhIHByb3BlciB4NjQga2VybmVsKS4NCkV4cGVyaW1lbnRzIHdpdGggcmVjZW50IGtlcm5lbHMg
+YXJlIGRlbGF5ZWQsIGNhdXNlIEkgY2FuJ3QgYm9vdCBteSBkaXN0cmlidXRpb24gYW5kIHdhaXRp
+bmcgZm9yIGEgcmVhY3Rpb24gb2YgaXRzIHZlbmRvci4NCg0KRXVnZW5lDQoNCg0KRXZnZW55IFpl
+bXNrb3YsIFRyYW5zYXMgTHRkDQpldmdlbnkuemVtc2tvdkB0cmFuc2FzLmNvbQ0K77u/T2ZmaWNl
+IHBob25lICMgKzcgODEyIDMyNTMxMzEgYWRkLiAzNTktMDQNCkNlbGwgcGhvbmUgIyArNyA5NTIg
+Mzk0MzEyOQ0KDQo=
 
