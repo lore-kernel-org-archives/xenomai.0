@@ -1,15 +1,10 @@
-Message-ID: <52581527.2040508@xenomai.org>
-Date: Fri, 11 Oct 2013 17:11:35 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Date: Sat, 12 Oct 2013 09:29:54 +0800 (CST)
+From: =?GBK?B?x7bI68q9uaSzzMqm?= <ericvic@163.com>
 MIME-Version: 1.0
-References: <FA4CEC4EBE2FA145A7663764A1CCB31EC74CB0DA@VOITV-EXCH-BE02.transas.com>,
-	<5256B03C.8080909@xenomai.org>
-	<FA4CEC4EBE2FA145A7663764A1CCB31EC74CB2AE@VOITV-EXCH-BE02.transas.com>
-In-Reply-To: <FA4CEC4EBE2FA145A7663764A1CCB31EC74CB2AE@VOITV-EXCH-BE02.transas.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Message-ID: <4339274b.1465c.141aa48b81a.Coremail.ericvic@163.com>
+Content-Type: text/plain; charset=GBK
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Kernel 2.6.32 patched with xenomai 2.6.0 and 2.6.3
- crashes on a Core i5 / QM77 system
+Subject: [Xenomai] imx6d xenomai
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,39 +13,6 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Zemskov, Evgeny" <Evgeny.Zemskov@transas.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 10/11/2013 04:42 PM, Zemskov, Evgeny wrote:
-> On 10/10/2013 01:57 PM, Zemskov, Evgeny wrote:
->> Greetings !
->>
->> I'm trying to run Xenomai system on an industrial computer with
->> Core i5-3610ME 2.70GHz and 8Gb RAM on QM 77 chipset.
->>
->> Any attempts to boot xenomai-patched kernel fail with a stack stace stated below.
->> I've tried vanilla kernel 2.6.32 patched with Xenomai 2.6.0 and 2.6.3 (Adeos 2.7-03).
->> Xenomai 2.6.0 works fine on a number of other machines with Pentium4, Code 2 Duo and Core i7.
->>
->> Regretably, we are unable to try use newer kernels (2.6.38 or 3.x) and Adeos versions,
->> since we're bound to a certified distrubution of Linux with 2.6.32 kernel.
->>
->> Any suggestions are wery welcome.
->
-> Could you try a recent kernel, just to see if the issue is still there?
-> Could you also try to compile your kernel as a 64 bits kernel?
->
-> --
->                                              Gilles.
->
-> Tried to build 2.6.32 patched with 2.6.3 and Adeos 2.7-03 as x64;
-> The result crashed with the same stack trace (although I can't verify that I've built a proper x64 kernel).
-> Experiments with recent kernels are delayed, cause I can't boot my distribution and waiting for a reaction of its vendor.
-
-If the problem is with the devices nodes creation, you can enable 
-devtmpfs in recent kernels to get the behaviour you had with devfs, 
-prior to udev.
-
--- 
-					    Gilles.
-
+Recently, we have to use the freescale imx6d do development and real-time systems, and in view of the patch xenomai found ---- MXC (tested on iMX51, iMX53, iMX6Q) that is imx6q been tested on, So imx6d Can achieve real-time?
