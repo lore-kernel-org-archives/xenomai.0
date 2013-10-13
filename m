@@ -1,14 +1,13 @@
-Message-ID: <525A85FA.9060001@xenomai.org>
-Date: Sun, 13 Oct 2013 13:37:30 +0200
+Message-ID: <525A86D2.8090007@xenomai.org>
+Date: Sun, 13 Oct 2013 13:41:06 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CAKKWdtfW+p1twc63Z1t3AXQscNtCGMO0j0NUc9uqq4gXaCgfoA@mail.gmail.com>
-	<3b559e148cf71d636e41b420b7476428.squirrel@127.0.0.1>
-	<CAKKWdtctE64WA0v74-s6DgtBjVW14TJxjeTZtb66Sj5UKkw=Qw@mail.gmail.com>
-In-Reply-To: <CAKKWdtctE64WA0v74-s6DgtBjVW14TJxjeTZtb66Sj5UKkw=Qw@mail.gmail.com>
+References: <5257A979.7080208@siemens.com> <525A7127.3050101@xenomai.org>
+	<525A8012.8020703@web.de>
+In-Reply-To: <525A8012.8020703@web.de>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Watchdog timer does not function correctly
+Subject: Re: [Xenomai] [PULL] forge: Cleanup COPYING files
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,25 +16,44 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: ali hagigat <hagigatali@gmail.com>
-Cc: xenomai@xenomai.org
+To: Jan Kiszka <jan.kiszka@web.de>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 10/12/2013 05:30 PM, ali hagigat wrote:
->     printf("expiration = %.1llu, expiries = %.1lu, name = %s\n",
-> info1.expiration, info1.expiries, info1.name <http://info1.name> );
-> }
+On 10/13/2013 01:12 PM, Jan Kiszka wrote:
+> On 2013-10-13 12:08, Philippe Gerum wrote:
+>> On 10/11/2013 09:32 AM, Jan Kiszka wrote:
+>>> Hi Philippe,
+>>>
+>>> The following changes since commit
+>>> 926e0441446aae116bf5b0701753e4b87a5386a2:
+>>>
+>>>    doc: update installation guidelines (2013-10-04 15:46:23 +0200)
+>>>
+>>> are available in the git repository at:
+>>>
+>>>    git://git.xenomai.org/xenomai-jki.git for-forge
+>>>
+>>> for you to fetch changes up to f1559e40a39b1a54e0348732402a68eb0dfef0a4:
+>>>
+>>>    Rename include and lib copying files (2013-10-10 15:15:56 +0200)
+>>>
+>>> If you do not like COPYING.* renaming, just skip the second patch. The
+>>> first on is important as we currently have code that is formally under
+>>> no COPYING file.
+>>>
+>>
+>> Thanks for the heads up. However, I disagree with both patches. GPL has
+>> never been our default license.
 > 
-> while(1);
-> 
-> }
+> Where did we ever intentionally diverge from the pattern that everything
+> is GPL except those bits that need to be linked to or #included by
+> third-party programs? I strongly believe that this is a very reasonable
+> pattern, so I don't understand your disagreement here. And see below
+> what damage a missing default license can cause.
 
-So, the last syscall used before the infinite loop is a Linux syscall,
-and the thread is currently running in secondary mode. Hence, no
-watchdog. So, if you have not touched
-/proc/sys/kernel/sched_rt_runtime_us or
-/proc/sys/kernel/sched_rt_period_us, this is harmless, you can simply
-press ctrl-C to stop the program.
-
+I am sorry to feed the troll. But what is the point of making test code
+GPL? Who cares what the users do with it? Not me anyway. I'd rather be
+happy to have users cut and paste test code in their application code.
 
 -- 
                                                                 Gilles.
