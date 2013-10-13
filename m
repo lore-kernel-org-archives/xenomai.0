@@ -1,12 +1,12 @@
-Message-ID: <525A86D2.8090007@xenomai.org>
-Date: Sun, 13 Oct 2013 13:41:06 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <525A8887.8020206@web.de>
+Date: Sun, 13 Oct 2013 13:48:23 +0200
+From: Jan Kiszka <jan.kiszka@web.de>
 MIME-Version: 1.0
 References: <5257A979.7080208@siemens.com> <525A7127.3050101@xenomai.org>
-	<525A8012.8020703@web.de>
-In-Reply-To: <525A8012.8020703@web.de>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+	<525A8012.8020703@web.de> <525A86D2.8090007@xenomai.org>
+In-Reply-To: <525A86D2.8090007@xenomai.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Subject: Re: [Xenomai] [PULL] forge: Cleanup COPYING files
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -16,45 +16,43 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@web.de>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: Xenomai <xenomai@xenomai.org>
 
-On 10/13/2013 01:12 PM, Jan Kiszka wrote:
-> On 2013-10-13 12:08, Philippe Gerum wrote:
->> On 10/11/2013 09:32 AM, Jan Kiszka wrote:
->>> Hi Philippe,
->>>
->>> The following changes since commit
->>> 926e0441446aae116bf5b0701753e4b87a5386a2:
->>>
->>>    doc: update installation guidelines (2013-10-04 15:46:23 +0200)
->>>
->>> are available in the git repository at:
->>>
->>>    git://git.xenomai.org/xenomai-jki.git for-forge
->>>
->>> for you to fetch changes up to f1559e40a39b1a54e0348732402a68eb0dfef0a4:
->>>
->>>    Rename include and lib copying files (2013-10-10 15:15:56 +0200)
->>>
->>> If you do not like COPYING.* renaming, just skip the second patch. The
->>> first on is important as we currently have code that is formally under
->>> no COPYING file.
->>>
->>
->> Thanks for the heads up. However, I disagree with both patches. GPL has
->> never been our default license.
-> 
-> Where did we ever intentionally diverge from the pattern that everything
-> is GPL except those bits that need to be linked to or #included by
-> third-party programs? I strongly believe that this is a very reasonable
-> pattern, so I don't understand your disagreement here. And see below
-> what damage a missing default license can cause.
-
-I am sorry to feed the troll. But what is the point of making test code
-GPL? Who cares what the users do with it? Not me anyway. I'd rather be
-happy to have users cut and paste test code in their application code.
-
--- 
-                                                                Gilles.
-
+T24gMjAxMy0xMC0xMyAxMzo0MSwgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4gT24gMTAv
+MTMvMjAxMyAwMToxMiBQTSwgSmFuIEtpc3prYSB3cm90ZToKPj4gT24gMjAxMy0xMC0xMyAxMjow
+OCwgUGhpbGlwcGUgR2VydW0gd3JvdGU6Cj4+PiBPbiAxMC8xMS8yMDEzIDA5OjMyIEFNLCBKYW4g
+S2lzemthIHdyb3RlOgo+Pj4+IEhpIFBoaWxpcHBlLAo+Pj4+Cj4+Pj4gVGhlIGZvbGxvd2luZyBj
+aGFuZ2VzIHNpbmNlIGNvbW1pdAo+Pj4+IDkyNmUwNDQxNDQ2YWFlMTE2YmY1YjA3MDE3NTNlNGI4
+N2E1Mzg2YTI6Cj4+Pj4KPj4+PiAgICBkb2M6IHVwZGF0ZSBpbnN0YWxsYXRpb24gZ3VpZGVsaW5l
+cyAoMjAxMy0xMC0wNCAxNTo0NjoyMyArMDIwMCkKPj4+Pgo+Pj4+IGFyZSBhdmFpbGFibGUgaW4g
+dGhlIGdpdCByZXBvc2l0b3J5IGF0Ogo+Pj4+Cj4+Pj4gICAgZ2l0Oi8vZ2l0Lnhlbm9tYWkub3Jn
+L3hlbm9tYWktamtpLmdpdCBmb3ItZm9yZ2UKPj4+Pgo+Pj4+IGZvciB5b3UgdG8gZmV0Y2ggY2hh
+bmdlcyB1cCB0byBmMTU1OWU0MGEzOWIxYTU0ZTAzNDg3MzI0MDJhNjhlYjBkZmVmMGE0Ogo+Pj4+
+Cj4+Pj4gICAgUmVuYW1lIGluY2x1ZGUgYW5kIGxpYiBjb3B5aW5nIGZpbGVzICgyMDEzLTEwLTEw
+IDE1OjE1OjU2ICswMjAwKQo+Pj4+Cj4+Pj4gSWYgeW91IGRvIG5vdCBsaWtlIENPUFlJTkcuKiBy
+ZW5hbWluZywganVzdCBza2lwIHRoZSBzZWNvbmQgcGF0Y2guIFRoZQo+Pj4+IGZpcnN0IG9uIGlz
+IGltcG9ydGFudCBhcyB3ZSBjdXJyZW50bHkgaGF2ZSBjb2RlIHRoYXQgaXMgZm9ybWFsbHkgdW5k
+ZXIKPj4+PiBubyBDT1BZSU5HIGZpbGUuCj4+Pj4KPj4+Cj4+PiBUaGFua3MgZm9yIHRoZSBoZWFk
+cyB1cC4gSG93ZXZlciwgSSBkaXNhZ3JlZSB3aXRoIGJvdGggcGF0Y2hlcy4gR1BMIGhhcwo+Pj4g
+bmV2ZXIgYmVlbiBvdXIgZGVmYXVsdCBsaWNlbnNlLgo+Pgo+PiBXaGVyZSBkaWQgd2UgZXZlciBp
+bnRlbnRpb25hbGx5IGRpdmVyZ2UgZnJvbSB0aGUgcGF0dGVybiB0aGF0IGV2ZXJ5dGhpbmcKPj4g
+aXMgR1BMIGV4Y2VwdCB0aG9zZSBiaXRzIHRoYXQgbmVlZCB0byBiZSBsaW5rZWQgdG8gb3IgI2lu
+Y2x1ZGVkIGJ5Cj4+IHRoaXJkLXBhcnR5IHByb2dyYW1zPyBJIHN0cm9uZ2x5IGJlbGlldmUgdGhh
+dCB0aGlzIGlzIGEgdmVyeSByZWFzb25hYmxlCj4+IHBhdHRlcm4sIHNvIEkgZG9uJ3QgdW5kZXJz
+dGFuZCB5b3VyIGRpc2FncmVlbWVudCBoZXJlLiBBbmQgc2VlIGJlbG93Cj4+IHdoYXQgZGFtYWdl
+IGEgbWlzc2luZyBkZWZhdWx0IGxpY2Vuc2UgY2FuIGNhdXNlLgo+IAo+IEkgYW0gc29ycnkgdG8g
+ZmVlZCB0aGUgdHJvbGwuIEJ1dCB3aGF0IGlzIHRoZSBwb2ludCBvZiBtYWtpbmcgdGVzdCBjb2Rl
+Cj4gR1BMPyBXaG8gY2FyZXMgd2hhdCB0aGUgdXNlcnMgZG8gd2l0aCBpdD8gTm90IG1lIGFueXdh
+eS4gSSdkIHJhdGhlciBiZQo+IGhhcHB5IHRvIGhhdmUgdXNlcnMgY3V0IGFuZCBwYXN0ZSB0ZXN0
+IGNvZGUgaW4gdGhlaXIgYXBwbGljYXRpb24gY29kZS4KCkV4YW1wbGUgY29kZSwgT0suIEJ1dCB0
+ZXN0IGNhc2VzIHNob3VsZCBzdGF5IG9wZW4gc291cmNlIHNvIHRoYXQKZXZlcnlvbmUgYmVuZWZp
+dHMgZnJvbSB0aGVtLgoKSW4gYW55IGNhc2Ugd2UgaGF2ZSB0byBkZWNsYXJlIHRoZSB0ZXJtcywg
+b3RoZXJ3aXNlIG5vIG9uZSBjYW4gbGVnYWxseQp1c2UgaXQsIG5vdCBldmVuIFhlbm9tYWkgaXRz
+ZWxmLiBBbHNvLCB3ZSBhcmUgbm90IG9ubHkgaGF2aW5nIHVubGljZW5zZWQKdGVzdHMgYW5kIGV4
+YW1wbGVzIGhlcmUuCgpKYW4KCgotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0t
+LS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBzaWduYXR1cmUu
+YXNjClR5cGU6IGFwcGxpY2F0aW9uL3BncC1zaWduYXR1cmUKU2l6ZTogMjYzIGJ5dGVzCkRlc2M6
+IE9wZW5QR1AgZGlnaXRhbCBzaWduYXR1cmUKVVJMOiA8aHR0cDovL3d3dy54ZW5vbWFpLm9yZy9w
+aXBlcm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDEzMTAxMy83OWQzNzQzNC9hdHRhY2htZW50
+LnBncD4K
