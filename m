@@ -1,16 +1,10 @@
-Message-ID: <525BB89D.8070704@xenomai.org>
-Date: Mon, 14 Oct 2013 11:25:49 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <525C3B94.1060200@grandegger.com>
+Date: Mon, 14 Oct 2013 20:44:36 +0200
+From: Wolfgang Grandegger <wg@grandegger.com>
 MIME-Version: 1.0
-References: <CAKKWdtfW+p1twc63Z1t3AXQscNtCGMO0j0NUc9uqq4gXaCgfoA@mail.gmail.com>
-	<3b559e148cf71d636e41b420b7476428.squirrel@127.0.0.1>
-	<CAKKWdtctE64WA0v74-s6DgtBjVW14TJxjeTZtb66Sj5UKkw=Qw@mail.gmail.com>
-	<525A85FA.9060001@xenomai.org>
-	<CAKKWdtcJ1bkLTcBtY1NTf3war3d_tnwfNfbpTJyY_rG43ruHaQ@mail.gmail.com>
-In-Reply-To: <CAKKWdtcJ1bkLTcBtY1NTf3war3d_tnwfNfbpTJyY_rG43ruHaQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Watchdog timer does not function correctly
+Subject: [Xenomai] [PATCH] rtcan: add missing license terms
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,15 +13,68 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: ali hagigat <hagigatali@gmail.com>
-Cc: xenomai@xenomai.org
+To: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
 
-On 10/14/2013 11:23 AM, ali hagigat wrote:
-> if i use Linux syscalls , do i have to use real-time syscalls to return to
-> the primary mode?
+---
+ src/utils/can/rtcanrecv.c |   19 +++++++++++++++++++
+ src/utils/can/rtcansend.c |   19 +++++++++++++++++++
+ 2 files changed, 38 insertions(+)
 
-Yes.
-
+diff --git a/src/utils/can/rtcanrecv.c b/src/utils/can/rtcanrecv.c
+index f3178c5..644de55 100644
+--- a/src/utils/can/rtcanrecv.c
++++ b/src/utils/can/rtcanrecv.c
+@@ -1,3 +1,22 @@
++/*
++ * Program to receive CAN messages
++ *
++ * Copyright (C) 2006 Wolfgang Grandegger <wg@grandegger.com>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; either version 2 of the License, or
++ * (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
++ */
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <signal.h>
+diff --git a/src/utils/can/rtcansend.c b/src/utils/can/rtcansend.c
+index d178305..dd6ee30 100644
+--- a/src/utils/can/rtcansend.c
++++ b/src/utils/can/rtcansend.c
+@@ -1,3 +1,22 @@
++/*
++ * Program to send CAN messages
++ *
++ * Copyright (C) 2006 Wolfgang Grandegger <wg@grandegger.com>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; either version 2 of the License, or
++ * (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
++ */
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <signal.h>
 -- 
-					    Gilles.
+1.7.9.5
+
 
