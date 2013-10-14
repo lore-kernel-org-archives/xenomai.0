@@ -1,12 +1,9 @@
-Message-ID: <525C4CE1.8040902@grandegger.com>
-Date: Mon, 14 Oct 2013 21:58:25 +0200
-From: Wolfgang Grandegger <wg@grandegger.com>
 MIME-Version: 1.0
-References: <525C3B94.1060200@grandegger.com> <525C43BC.1000103@siemens.com>
-In-Reply-To: <525C43BC.1000103@siemens.com>
+Date: Mon, 14 Oct 2013 18:33:37 -0300
+Message-ID: <CAFNBftc-BvkD+oWV3czts90-vZF7EH=OduvBbZWuampEW2kyzw@mail.gmail.com>
+From: Flavio Castro Alves Filho <flavio.alves@gmail.com>
 Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PATCH] rtcan: add missing license terms
+Subject: [Xenomai] I2C and SPI Xenomai Drivers for BeagleBone Black
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,77 +12,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>, "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 10/14/2013 09:19 PM, Jan Kiszka wrote:
-> On 2013-10-14 20:44, Wolfgang Grandegger wrote:
->> ---
->>  src/utils/can/rtcanrecv.c |   19 +++++++++++++++++++
->>  src/utils/can/rtcansend.c |   19 +++++++++++++++++++
->>  2 files changed, 38 insertions(+)
->>
->> diff --git a/src/utils/can/rtcanrecv.c b/src/utils/can/rtcanrecv.c
->> index f3178c5..644de55 100644
->> --- a/src/utils/can/rtcanrecv.c
->> +++ b/src/utils/can/rtcanrecv.c
->> @@ -1,3 +1,22 @@
->> +/*
->> + * Program to receive CAN messages
->> + *
->> + * Copyright (C) 2006 Wolfgang Grandegger <wg@grandegger.com>
->> + *
->> + * This program is free software; you can redistribute it and/or modify
->> + * it under the terms of the GNU General Public License as published by
->> + * the Free Software Foundation; either version 2 of the License, or
->> + * (at your option) any later version.
->> + *
->> + * This program is distributed in the hope that it will be useful,
->> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
->> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
->> + * GNU General Public License for more details.
->> + *
->> + * You should have received a copy of the GNU General Public License
->> + * along with this program; if not, write to the Free Software
->> + * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
->> + */
->>  #include <stdio.h>
->>  #include <stdlib.h>
->>  #include <signal.h>
->> diff --git a/src/utils/can/rtcansend.c b/src/utils/can/rtcansend.c
->> index d178305..dd6ee30 100644
->> --- a/src/utils/can/rtcansend.c
->> +++ b/src/utils/can/rtcansend.c
->> @@ -1,3 +1,22 @@
->> +/*
->> + * Program to send CAN messages
->> + *
->> + * Copyright (C) 2006 Wolfgang Grandegger <wg@grandegger.com>
->> + *
->> + * This program is free software; you can redistribute it and/or modify
->> + * it under the terms of the GNU General Public License as published by
->> + * the Free Software Foundation; either version 2 of the License, or
->> + * (at your option) any later version.
->> + *
->> + * This program is distributed in the hope that it will be useful,
->> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
->> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
->> + * GNU General Public License for more details.
->> + *
->> + * You should have received a copy of the GNU General Public License
->> + * along with this program; if not, write to the Free Software
->> + * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
->> + */
->>  #include <stdio.h>
->>  #include <stdlib.h>
->>  #include <signal.h>
->>
-> 
-> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+Hello,
 
-Feel free to add my "Signed-off-by".  I did a "git log" on xenomai-2.6
-and realized only a few of them.
+I need to implement i2c and spi drivers for Xenomai.
 
-Wolfgang.
+I saw on the list that it is not possible to use Linux kernel's common
+drivers in Xenomai space.
 
+And I have some doubts?
 
+* Should I have to rewrite both drivers from scratch?
+* Is there any way to reuse device drivers implementation from
+original Linux kernel?
+
+Is there any clue about how to start developing such drivers?
+
+Thank you very much.
+
+Best regards,
+
+Flavio
+
+-- 
+Flavio de Castro Alves Filho
+
+flavio.alves@gmail.com
+www.linuxembarcado.com
+Twitter: http://twitter.com/#!/fraviofii
+LinkedIn profile: www.linkedin.com/in/flaviocastroalves
 
