@@ -1,12 +1,10 @@
-Content-Type: text/plain; charset="us-ascii"
+Message-ID: <525DC044.6090201@steinkuehler.net>
+Date: Tue, 15 Oct 2013 17:23:00 -0500
+From: Charles Steinkuehler <charles@steinkuehler.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Message-Id: <1eaa6333343a30020cd3.1381827039@devws164.be.alcatel-lucent.com>
-In-Reply-To: <patchbomb.1381827036@devws164.be.alcatel-lucent.com>
-References: <patchbomb.1381827036@devws164.be.alcatel-lucent.com>
-Date: Tue, 15 Oct 2013 10:50:39 +0200
-From: Kim De Mey <kim.demey@gmail.com>
-Subject: [Xenomai] [PATCH 3 of 3] Initial implementation registry pSOS queue
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] Hung task on Xenomai patched ARM 3.8.13 BeagleBone Kernel
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,127 +15,79 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Initial implementation of the registry functionality
-for pSOS queues.
+There seems to be some minor issue with the Xenomai patches for the
+BeagleBone 3.8.13 ARM target.  Occasionally, the eMMC task will hang for
+greater than 60 seconds, causing the kernel to kill it, which basically
+brings down the system (root is on the eMMC device).
 
-Signed-off-by: Kim De Mey <kim.demey@gmail.com>
+I was writing this off to bad SD cards, and indeed I did have a card
+that exhibited these symptoms on an x86 Linux system that had no xenomai
+patches at all.  I pitched this card and didn't have any more consistent
+problems, but it turns out the bug is fairly simple to 'tickle'.  Just
+boot the xenomai patched kernel and run:
 
----
+grep "TestConfig" /usr -r
 
-diff --git a/lib/psos/queue.c b/lib/psos/queue.c
---- a/lib/psos/queue.c
-+++ b/lib/psos/queue.c
-@@ -21,6 +21,7 @@
- #include <errno.h>
- #include <stdlib.h>
- #include <memory.h>
-+#include <fcntl.h>
- #include <copperplate/threadobj.h>
- #include <copperplate/heapobj.h>
- #include <copperplate/clockobj.h>
-@@ -74,10 +75,78 @@ objid_error:
- static void queue_finalize(struct syncobj *sobj)
- {
- 	struct psos_queue *q = container_of(sobj, struct psos_queue, sobj);
-+	registry_destroy_file(&q->fsobj);
- 	xnfree(q);
- }
- fnref_register(libpsos, queue_finalize);
- 
-+#ifdef CONFIG_XENO_REGISTRY
-+
-+static ssize_t queue_registry_read(struct fsobj *fsobj,
-+                                 char *buf, size_t size, off_t offset)
-+{
-+	struct psos_queue *queue;
-+	size_t len;
-+	struct msgholder *msg, *tmp;
-+	int i;
-+	void *msgbuffer = NULL;
-+	int typesize;
-+
-+	queue = container_of(fsobj, struct psos_queue, fsobj);
-+
-+	if(queue->flags & Q_VARIABLE) {
-+		// If queue is variable, we do not know type so we select one byte
-+		typesize = 1;
-+	}
-+	else {
-+		typesize = sizeof(unsigned long);
-+	}
-+	msgbuffer = (void*) malloc(queue->maxlen + 1);
-+	if(msgbuffer == NULL)
-+		return -ENOMEM;
-+
-+	len =  sprintf(buf,       "%-14s= %11s\n", "name", queue->name);
-+	len += sprintf(buf + len, "%-14s= %#011lx\n","queue_id",  mainheap_ref(queue, u_long));
-+	len += sprintf(buf + len, "%-14s= %11lu\n", "message_count", queue->msgcount);
-+	len += sprintf(buf + len, "%-14s= %11lu\n", "max_messages", queue->maxmsg);
-+	len += sprintf(buf + len, "%-14s= %11lu\n", "max_length", queue->maxlen);
-+	len += sprintf(buf + len, "%-14s= \n", "messages");
-+
-+	if (!list_empty(&queue->msg_list)) {
-+		list_for_each_entry_safe(msg, tmp, &queue->msg_list, link) {
-+			memcpy(msgbuffer, msg + 1, msg->size);
-+			for(i = 0; i < msg->size/typesize; i++){
-+				if(queue->flags & Q_VARIABLE) {
-+					len += sprintf(buf + len, "%02x ", 
-+					*(unsigned char *) (msgbuffer + i));
-+				}
-+				else {
-+					len += sprintf(buf + len, "%lu ",
-+					*(unsigned long *) (msgbuffer + i * typesize));
-+				}				
-+			}
-+			len += sprintf(buf + len, "\n");
-+		}
-+	}
-+	free(msgbuffer);
-+
-+	if(len < offset)
-+		return (ssize_t)0;
-+	else
-+		return (ssize_t)len;
-+}
-+
-+
-+static struct registry_operations registry_ops = {
-+        .read   = queue_registry_read
-+};
-+
-+#else
-+
-+static struct registry_operations registry_ops;
-+
-+#endif /* CONFIG_XENO_REGISTRY */
-+
- static u_long __q_create(const char *name, u_long count,
- 			 u_long flags, u_long maxlen, u_long *qid_r)
- {
-@@ -122,6 +191,14 @@ static u_long __q_create(const char *nam
- 	q->msgcount = 0;
- 	q->magic = queue_magic;
- 	*qid_r = mainheap_ref(q, u_long);
-+
-+        registry_init_file(&q->fsobj, &registry_ops);
-+
-+        ret = __bt(registry_add_file(&q->fsobj, O_RDONLY,
-+                                     "/psos/queues/%s", q->name));
-+        if (ret)
-+                warning("failed to export queue %s to registry",
-+                                q->name);
- out:
- 	CANCEL_RESTORE(svc);
- 
-diff --git a/lib/psos/queue.h b/lib/psos/queue.h
---- a/lib/psos/queue.h
-+++ b/lib/psos/queue.h
-@@ -39,6 +39,7 @@ struct psos_queue {
- 	struct syncobj sobj;
- 	struct list msg_list;
- 	struct clusterobj cobj;
-+	struct fsobj fsobj;
- };
- 
- struct psos_queue_wait {
+...after a while, the mmcqd task will hang.  I have not yet had a
+xenomai kernel survive this test, while a "stock" kernel has gotten
+through the whole /usr directory multiple times without issue.
 
+So...how do I go about debugging this problem?  Will testing with
+different xenomai kernel configuration options (which ones?) possibly
+shed any light on what's going wrong?
+
+I'm not totally out of my depth here (I design hardware, so the
+lower-level the code the easier it is for me to understand), but I don't
+really do a lot of Linux Kernel hacking.  I'm muddling forward as best I
+can, but any advice would be appreciated.
+
+A typical "hung task" report follows:
+
+> [  200.279217] INFO: task mmcqd/1:73 blocked for more than 60 seconds.
+> [  200.285938] "echo 0>  /proc/sys/kernel/hung_task_timeout_secs" disable=
+s this message.
+> [  200.294286] mmcqd/1         D c06976c8     0    73      2 0x00000000
+> [  200.301177] [<c06976c8>] (__schedule+0x5b8/0x774) from [<c0695834>] (s=
+chedule_timeout+0x1c/0x21c)
+> [  200.310609] [<c0695834>] (schedule_timeout+0x1c/0x21c) from [<c0697a50=
+>] (wait_for_common+0x130/0x170)
+> [  200.320537] [<c0697a50>] (wait_for_common+0x130/0x170) from [<c051c9a8=
+>] (mmc_wait_for_req_done+0x1c/0x74)
+> [  200.330791] [<c051c9a8>] (mmc_wait_for_req_done+0x1c/0x74) from [<c051=
+d630>] (mmc_start_req+0x50/0x158)
+> [  200.340758] [<c051d630>] (mmc_start_req+0x50/0x158) from [<c0528bf0>] =
+(mmc_blk_issue_rw_rq+0xa4/0x348)
+> [  200.350659] [<c0528bf0>] (mmc_blk_issue_rw_rq+0xa4/0x348) from [<c0529=
+290>] (mmc_blk_issue_rq+0x3fc/0x450)
+> [  200.360952] [<c0529290>] (mmc_blk_issue_rq+0x3fc/0x450) from [<c05298c=
+c>] (mmc_queue_thread+0xa0/0x104)
+> [  200.371017] [<c05298cc>] (mmc_queue_thread+0xa0/0x104) from [<c005a69c=
+>] (kthread+0xa0/0xb0)
+> [  200.380013] [<c005a69c>] (kthread+0xa0/0xb0) from [<c000dc00>] (ret_fr=
+om_fork+0x18/0x38)
+> [  200.388616] Kernel panic - not syncing: hung_task: blocked tasks
+> [  200.395001] [<c00138dc>] (unwind_backtrace+0x0/0xe0) from [<c06905d0>]=
+ (panic+0x84/0x1e0)
+> [  200.403641] [<c06905d0>] (panic+0x84/0x1e0) from [<c00943d0>] (watchdo=
+g+0x1d4/0x234)
+> [  200.411843] [<c00943d0>] (watchdog+0x1d4/0x234) from [<c005a69c>] (kth=
+read+0xa0/0xb0)
+> [  200.420115] [<c005a69c>] (kthread+0xa0/0xb0) from [<c000dc00>] (ret_fr=
+om_fork+0x18/0x38)
+> [  200.428645] drm_kms_helper: panic occurred, switching back to text con=
+sole
+> [  200.435919] Rebooting in 5 seconds..
+
+-- =
+
+Charles Steinkuehler
+charles@steinkuehler.net
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 261 bytes
+Desc: OpenPGP digital signature
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20131015/7ac57a7=
+d/attachment.pgp>
