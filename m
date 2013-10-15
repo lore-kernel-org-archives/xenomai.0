@@ -1,12 +1,13 @@
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Message-Id: <56a6d056c14acd5ef663.1381827037@devws164.be.alcatel-lucent.com>
+Message-Id: <1c0dc43665a4b66fa8c6.1381827038@devws164.be.alcatel-lucent.com>
 In-Reply-To: <patchbomb.1381827036@devws164.be.alcatel-lucent.com>
 References: <patchbomb.1381827036@devws164.be.alcatel-lucent.com>
-Date: Tue, 15 Oct 2013 10:50:37 +0200
+Date: Tue, 15 Oct 2013 10:50:38 +0200
 From: Kim De Mey <kim.demey@gmail.com>
-Subject: [Xenomai] [PATCH 1 of 3] Initial implementation registry pSOS task
+Subject: [Xenomai] [PATCH 2 of 3] Initial implementation registry pSOS
+	semaphore
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,114 +19,46 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: xenomai@xenomai.org
 
 Initial implementation of the registry functionality
-for pSOS tasks.
+for pSOS semaphores.
 
 Signed-off-by: Kim De Mey <kim.demey@gmail.com>
 
 ---
 
-diff --git a/include/psos/psos.h b/include/psos/psos.h
---- a/include/psos/psos.h
-+++ b/include/psos/psos.h
-@@ -367,6 +367,8 @@ u_long tm_wkwhen(u_long date,
- 
- int psos_task_normalize_priority(unsigned long psos_prio);
- 
-+int psos_task_denormalize_priority(unsigned long core_prio);
-+
- extern unsigned int psos_long_names;
- 
- #ifdef __cplusplus
-diff --git a/lib/psos/task.c b/lib/psos/task.c
---- a/lib/psos/task.c
-+++ b/lib/psos/task.c
-@@ -24,6 +24,7 @@
- #include <unistd.h>
- #include <pthread.h>
- #include <sched.h>
+diff --git a/lib/psos/sem.c b/lib/psos/sem.c
+--- a/lib/psos/sem.c
++++ b/lib/psos/sem.c
+@@ -21,6 +21,7 @@
+ #include <errno.h>
+ #include <stdlib.h>
+ #include <string.h>
 +#include <fcntl.h>
- #include "copperplate/init.h"
- #include "copperplate/heapobj.h"
- #include "copperplate/threadobj.h"
-@@ -167,8 +168,99 @@ static void task_finalizer(struct thread
- 	/* We have to hold a lock on a syncobj to destroy it. */
- 	syncobj_lock(&task->sobj, &syns);
- 	syncobj_destroy(&task->sobj, &syns);
-+
-+	registry_destroy_file(&task->fsobj);
+ #include <copperplate/heapobj.h>
+ #include <copperplate/init.h>
+ #include <copperplate/cluster.h>
+@@ -68,10 +69,44 @@ objid_error:
+ static void sem_finalize(struct semobj *smobj)
+ {
+ 	struct psos_sem *sem = container_of(smobj, struct psos_sem, smobj);
++	registry_destroy_file(&sem->fsobj);
+ 	xnfree(sem);
  }
+ fnref_register(libpsos, sem_finalize);
  
 +#ifdef CONFIG_XENO_REGISTRY
 +
-+static inline char *task_decode_status(struct psos_task *task, char *buf)
++static ssize_t sem_registry_read(struct fsobj *fsobj,
++                                 char *buf, size_t size, off_t offset)
 +{
-+	int status;
-+
-+	*buf = '\0';
-+	if (threadobj_get_lockdepth(&task->thobj) > 0)
-+		strcat(buf, "+sched_lock");
-+	status = threadobj_get_status(&task->thobj);
-+	if (status & __THREAD_S_RR)
-+		strcat(buf, "+sched_rr");
-+	if (status & __THREAD_S_SUSPENDED)
-+		strcat(buf, "+suspended");
-+	if (status & (__THREAD_S_WAIT|__THREAD_S_TIMEDWAIT))
-+		strcat(buf, "+pending");
-+	else if (status & __THREAD_S_DELAYED)
-+		strcat(buf, "+delayed");
-+	else
-+		strcat(buf, "+ready");
-+
-+	return buf + 1;
-+}
-+
-+static ssize_t task_registry_read(struct fsobj *fsobj,
-+				 char *buf, size_t size, off_t offset)
-+{
-+	struct psos_task *task;
-+	char sbuf[64];
++	struct psos_sem *sem;
 +	size_t len;
-+	int i;
-+	struct psos_tm *tm, *tmp;
-+	
-+	task = container_of(fsobj, struct psos_task, fsobj);
-+	len =  sprintf(buf,       "%-11s= %11s\n", "name", task->name);
-+	len += sprintf(buf + len, "%-11s= %11d\n", "errno", 
-+						threadobj_get_errno(&task->thobj));
-+	len += sprintf(buf + len, "%-11s= %11s\n", "status", 
-+						task_decode_status(task, sbuf));
-+	len += sprintf(buf + len, "%-11s= %11d\n", "priority", 
-+						psos_task_get_priority(task));
-+	len += sprintf(buf + len, "%-11s= %11d\n", "lock_depth", 
-+						threadobj_get_lockdepth(&task->thobj));
-+	len += sprintf(buf + len, "%-11s= %11d\n", "mode", task->mode);
-+	len += sprintf(buf + len, "%-11s= %#011lx\n", "task_id", 
-+						mainheap_ref(task, u_long));
-+	len += sprintf(buf + len, "%-11s= %11d\n", "process_id", 
-+						threadobj_get_pid(&task->thobj));
-+	len += sprintf(buf + len, "%-11s= %11lu\n", "events", task->events);	
-+	
-+	len += sprintf(buf + len, "\n%-11s= \n", "notepad");	
-+	len += sprintf(buf + len, "%-11s %-11s\n", "register", "value");
-+	for (i=0;i<PSOSTASK_NR_REGS;i++) {
-+		len += sprintf(buf + len, "%-11i %-11lu\n", i, task->notepad[i]);
-+	}
++	int value;
 +
-+	len += sprintf(buf + len, "\n%-11s= \n", "timer_list");	
-+	if (!pvlist_empty(&task->timer_list)) {
-+		len += sprintf(buf + len, "%-11s %-11s %-11s %-11s %-11s %-11s %-11s\n", 
-+				"tmid", "tid", "tm_events",
-+				"interval_s","interval_ns", "value_s", "value_ns");	
-+		pvlist_for_each_entry_safe(tm, tmp, &task->timer_list, link) {
-+			len += sprintf(buf + len, 
-+				"%-11lu %#011lx %-11lu %-11ld %-11ld %-11ld %-11ld\n",
-+				mainheap_ref(tm, u_long), tm->tid, tm->events,
-+				(long) tm->tmobj.itspec.it_interval.tv_sec, 
-+				tm->tmobj.itspec.it_interval.tv_nsec,
-+				(long) tm->tmobj.itspec.it_value.tv_sec, 
-+				tm->tmobj.itspec.it_value.tv_nsec);	
-+		}
-+	}
++	sem = container_of(fsobj, struct psos_sem, fsobj);
++	semobj_getvalue(&sem->smobj , &value);
++	len =  sprintf(buf,       "%-11s= %11s\n", "name", sem->name);
++	len += sprintf(buf + len, "%-11s= %#011lx\n","sem_id",  mainheap_ref(sem, u_long));
++	len += sprintf(buf + len, "%-11s= %11d\n", "value", value);
 +
 +	if(len < offset)
 +		return (ssize_t)0;
@@ -133,8 +66,9 @@ diff --git a/lib/psos/task.c b/lib/psos/task.c
 +		return (ssize_t)len;
 +}
 +
++
 +static struct registry_operations registry_ops = {
-+	.read	= task_registry_read
++	.read   = sem_registry_read
 +};
 +
 +#else
@@ -144,90 +78,33 @@ diff --git a/lib/psos/task.c b/lib/psos/task.c
 +#endif /* CONFIG_XENO_REGISTRY */
 +
 +
- static void *task_trampoline(void *arg)
+ u_long sm_create(const char *name,
+ 		 u_long count, u_long flags, u_long *smid_r)
  {
- 	struct psos_task *task = arg;
-@@ -182,6 +274,12 @@ static void *task_trampoline(void *arg)
+@@ -116,6 +151,14 @@ u_long sm_create(const char *name,
+ 		goto out;
+ 	}
  
- 	CANCEL_DEFER(svc);
- 
-+	ret = __bt(registry_add_file(&task->fsobj, O_RDONLY,
-+				     "/psos/tasks/%s", task->name));
++	registry_init_file(&sem->fsobj, &registry_ops);
++
++	ret = __bt(registry_add_file(&sem->fsobj, O_RDONLY,
++                                     "/psos/semaphores/%s", sem->name));
 +	if (ret)
-+		warning("failed to export task %s to registry",
-+			task->name);
++		warning("failed to export semaphore %s to registry",
++				sem->name);
 +
- 	threadobj_wait_start();
- 
- 	threadobj_lock(&task->thobj);
-@@ -234,6 +332,13 @@ int psos_task_normalize_priority(unsigne
- 	return psos_prio;
- }
- 
-+__attribute__ ((weak))
-+int psos_task_denormalize_priority(unsigned long core_prio)
-+{
-+	/* Map a SCHED_RT priority level to a pSOS one. */
-+	return core_prio;
-+}
-+
- static int check_task_priority(u_long psos_prio, int *core_prio)
- {
- 	if (psos_prio < 1 || psos_prio > 255) /* In theory. */
-@@ -244,6 +349,13 @@ static int check_task_priority(u_long ps
- 	return SUCCESS;
- }
- 
-+int psos_task_get_priority(struct psos_task *task)
-+{
-+	/* Can't fail if we hold the task lock as we should. */
-+	int prio = threadobj_get_priority(&task->thobj);
-+	return psos_task_denormalize_priority(prio);
-+}
-+
- u_long t_create(const char *name, u_long prio,
- 		u_long sstack, u_long ustack, u_long flags, u_long *tid_r)
- {
-@@ -309,6 +421,8 @@ u_long t_create(const char *name, u_long
- 	idata.priority = cprio;
- 	threadobj_init(&task->thobj, &idata);
- 
-+	registry_init_file(&task->fsobj, &registry_ops);
-+
- 	cta.prio = cprio;
- 	cta.start = task_trampoline;
- 	cta.arg = task;
-@@ -317,6 +431,7 @@ u_long t_create(const char *name, u_long
- 
- 	ret = __bt(copperplate_create_thread(&cta, &task->thobj.tid));
- 	if (ret) {
-+		registry_destroy_file(&task->fsobj);
- 		cluster_delobj(&psos_task_table, &task->cobj);
- 		threadobj_destroy(&task->thobj);
- 		ret = ERR_NOTCB;
-diff --git a/lib/psos/task.h b/lib/psos/task.h
---- a/lib/psos/task.h
-+++ b/lib/psos/task.h
-@@ -23,6 +23,7 @@
- #include <copperplate/threadobj.h>
- #include <copperplate/syncobj.h>
- #include <copperplate/cluster.h>
-+#include <copperplate/registry.h>
- 
- struct psos_task_args {
- 	void (*entry)(u_long a0, u_long a1, u_long a2, u_long a3);
-@@ -46,10 +47,13 @@ struct psos_task {
- 	struct psos_task_args args;
- 
- 	struct threadobj thobj;
-+	struct fsobj fsobj;
- 	struct syncobj sobj;	/* For events. */
+ 	*smid_r = mainheap_ref(sem, u_long);
+ out:
+ 	CANCEL_RESTORE(svc);
+diff --git a/lib/psos/sem.h b/lib/psos/sem.h
+--- a/lib/psos/sem.h
++++ b/lib/psos/sem.h
+@@ -28,6 +28,7 @@ struct psos_sem {
+ 	char name[32];
+ 	struct semobj smobj;
  	struct clusterobj cobj;
++	struct fsobj fsobj;
  };
  
-+int psos_task_get_priority(struct psos_task *task);
-+
- #define task_magic	0x8181fafa
- 
- static inline struct psos_task *psos_task_current(void)
+ extern struct cluster psos_sem_table;
 
