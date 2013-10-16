@@ -1,11 +1,11 @@
-Message-ID: <525E73FB.4060809@xenomai.org>
-Date: Wed, 16 Oct 2013 13:09:47 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <525E7433.6070807@steinkuehler.net>
+Date: Wed, 16 Oct 2013 06:10:43 -0500
+From: Charles Steinkuehler <charles@steinkuehler.net>
 MIME-Version: 1.0
-References: <525DC044.6090201@steinkuehler.net>
-In-Reply-To: <525DC044.6090201@steinkuehler.net>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <525DC044.6090201@steinkuehler.net> <525E6E17.8020103@xenomai.org>
+In-Reply-To: <525E6E17.8020103@xenomai.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Subject: Re: [Xenomai] Hung task on Xenomai patched ARM 3.8.13 BeagleBone
  Kernel
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -16,43 +16,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Charles Steinkuehler <charles@steinkuehler.net>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On 10/16/2013 12:23 AM, Charles Steinkuehler wrote:
-> There seems to be some minor issue with the Xenomai patches for the
-> BeagleBone 3.8.13 ARM target.  Occasionally, the eMMC task will hang for
-> greater than 60 seconds, causing the kernel to kill it, which basically
-> brings down the system (root is on the eMMC device).
-> 
-> I was writing this off to bad SD cards, and indeed I did have a card
-> that exhibited these symptoms on an x86 Linux system that had no xenomai
-> patches at all.  I pitched this card and didn't have any more consistent
-> problems, but it turns out the bug is fairly simple to 'tickle'.  Just
-> boot the xenomai patched kernel and run:
-> 
-> grep "TestConfig" /usr -r
-> 
-> ...after a while, the mmcqd task will hang.  I have not yet had a
-> xenomai kernel survive this test, while a "stock" kernel has gotten
-> through the whole /usr directory multiple times without issue.
-> 
-> So...how do I go about debugging this problem?  Will testing with
-> different xenomai kernel configuration options (which ones?) possibly
-> shed any light on what's going wrong?
-> 
-> I'm not totally out of my depth here (I design hardware, so the
-> lower-level the code the easier it is for me to understand), but I don't
-> really do a lot of Linux Kernel hacking.  I'm muddling forward as best I
-> can, but any advice would be appreciated.
-
-Could you attach:
-- the full boot logs
-- the kernel configuration
-- the result of cat /proc/interrupts, cat /proc/xenomai/irq, cat
-/proc/timer_list, cat /proc/xenomai/timer
-
-
--- 
-                                                                Gilles.
-
+T24gMTAvMTYvMjAxMyA1OjQ0IEFNLCBHaWxsZXMgQ2hhbnRlcGVyZHJpeCB3cm90ZToKPiBJdCBw
+b2ludHMgdG8gc2V2ZXJhbCBwb3NzaWJsZSBwcm9ibGVtcy4gU28sIGEgcXVlc3Rpb24sIGRvIHlv
+dSBnZXQgdGhpcwo+IHdoaWxlIGEgWGVub21haSB0YXNrIGlzIHJ1bm5pbmc/IE9yIG9uIGFuIG90
+aGVyd2lzZSBpZGxlIHN5c3RlbT8KPiBTZWNvbmQgcXVlc3Rpb246IGlzIHRoZSBMaW51eCB0aW1l
+ciBzeXN0ZW0gcnVubmluZyBjb3JyZWN0bHksIGZvcgo+IGluc3RhbmNlIGRvZXMgInNsZWVwIDEw
+IiBzbGVlcHMgYSBsaXR0bGUgYml0IGJlZm9yZSByZXR1cm5pbmcsIG9yIGRvZXMKPiBpdCBmYWls
+IHRvIHJldHVybiB0b28/CgpJbiB0aGUgdGVzdCBjYXNlLCB0aGUgc3lzdGVtIGlzIG90aGVyd2lz
+ZSBpZGxlIHdoZW4gdGhpcyBoYXBwZW5zLiAgSXQgaXMKdGhlIGxhcmdlIGFtb3VudCBvZiAiZGlz
+ayIgSS9PIHRvIHRoZSBTRCBjYXJkIHRoYXQgY2F1c2VzIHRoZSBtbWNxZApwcm9jZXNzIHRvIGhh
+bmcuICBBbHNvLCB0aGUgZ3JlcCAtciBkb2Vzbid0IGZhaWwgaW1tZWRpYXRlbHkuICBJdCBydW5z
+CmZvciBhIHdoaWxlLCBzb21ldGltZXMgZ2V0dGluZyBmYXIgZW5vdWdoIGl0IGZpbmRzIG9uZSBv
+ciB0d28gb2YgdGhlCmZvdXIgbWF0Y2hpbmcgZmlsZXMgaW4gL3VzciwgdGhlbiB0aGUgbW1jcWQg
+dGFzayBoYW5ncy4KCk90aGVyIHRoYW4gdGhpcyBvY2Nhc2lvbmFsIGdsaXRjaCwgdGhlIGtlcm5l
+bCBhbmQgc3lzdGVtIHdvcmsgbm9ybWFsbHkuCiBUaGlzIGlzIHRoZSBzYW1lIGtlcm5lbCBJIGFt
+IHVzaW5nIHRvIHJ1biBMaW51eENOQyBhbmQgSSd2ZSBtYW5hZ2VkIHRvCmdldCB0aHJvdWdoIG1h
+bnkgb3Zlcm5pZ2h0IDgrIGhvdXIgcHJpbnRzLCBhbmQgaGF2ZSBoYWQgdXB0aW1lcyBvZgpzZXZl
+cmFsIHdlZWtzLgoKSSBzdXNwZWN0IGFuIG9jY2FzaW9uYWwgbG9zdCBpbnRlcnJ1cHQgb3IgbWF5
+YmUgYSByYWNlIGNvbmRpdGlvbiBvcgpzb21ldGhpbmcgc3BlY2lmaWMgdG8gdGhlIEFNMzM1eCBN
+TUMgZHJpdmVyLiAgWGVub21haSBzZWVtcyBvdGhlcndpc2UgdG8KcnVuIHBlcmZlY3RseSB3ZWxs
+IG9uIHRoaXMgaGFyZHdhcmUuCgpOb3RlIHRoYXQgdGhpbmsgSSBoYXZlIGJlZW4gc2VlaW5nIHRo
+aXMgaXNzdWUgb2NjYXNpb25hbGx5IGZvciBhcyBsb25nCmFzIEkgaGF2ZSBiZWVuIHRlc3Rpbmcg
+WGVub21haW4gb24gdGhlIEJlYWdsZUJvbmUuICBJIG1vc3RseSBjaGFsa2VkIGl0CnVwIHRvIGEg
+YmFkIFNEIGNhcmQgSSBoYWQsIGJ1dCBpdCBzZWVtcyBsaWtlIHRoZXJlJ3MgYSBkZWVwZXIgaXNz
+dWUKaW52b2x2ZWQuICBXaGF0IGNoYW5nZWQgaXMgSSBqdXN0IHJlY2VudGx5IGdvdCBhIHJlcG9y
+dCB3aXRoIHRoZSB2ZXJ5CnNpbXBsZSB3YXkgdG8gdHJpZ2dlciB0aGUgYnVnIHVzaW5nIHRoZSBy
+ZWN1cnNpdmUgZ3JlcC4KCi0tIApDaGFybGVzIFN0ZWlua3VlaGxlcgpjaGFybGVzQHN0ZWlua3Vl
+aGxlci5uZXQKCi0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10
+ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IHNpZ25hdHVyZS5hc2MKVHlwZTog
+YXBwbGljYXRpb24vcGdwLXNpZ25hdHVyZQpTaXplOiAyNjEgYnl0ZXMKRGVzYzogT3BlblBHUCBk
+aWdpdGFsIHNpZ25hdHVyZQpVUkw6IDxodHRwOi8vd3d3Lnhlbm9tYWkub3JnL3BpcGVybWFpbC94
+ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTMxMDE2LzY1NDZiMDFmL2F0dGFjaG1lbnQucGdwPgo=
