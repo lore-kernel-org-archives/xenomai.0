@@ -1,56 +1,59 @@
-Message-ID: <52779547.7070002@steinkuehler.net>
-Date: Mon, 04 Nov 2013 06:38:31 -0600
+Message-ID: <525EEBE2.8080708@steinkuehler.net>
+Date: Wed, 16 Oct 2013 14:41:22 -0500
 From: Charles Steinkuehler <charles@steinkuehler.net>
 MIME-Version: 1.0
-References: <525DC044.6090201@steinkuehler.net>	<525E73FB.4060809@xenomai.org>	<525E7ABF.8040403@steinkuehler.net>	<525E7D85.9020307@xenomai.org>	<525E81CD.6000603@steinkuehler.net>	<525E8665.8000705@steinkuehler.net>	<525E8A43.5090601@xenomai.org>	<525E8BFF.1060201@steinkuehler.net>	<525EAFFD.3010207@steinkuehler.net>	<525EB7A2.1050601@xenomai.org>
- <525EBAD4.3080100@steinkuehler.net> <525EEBE2.8080708@steinkuehler.net>
- <525F362F.6080109@steinkuehler.net> <525FADFA.2020009@xenomai.org>
- <525FDA89.60104@steinkuehler.net> <52602FE5.4050809@xenomai.org>
-In-Reply-To: <52602FE5.4050809@xenomai.org>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+References: <525DC044.6090201@steinkuehler.net>	<525E73FB.4060809@xenomai.org>	<525E7ABF.8040403@steinkuehler.net>	<525E7D85.9020307@xenomai.org>	<525E81CD.6000603@steinkuehler.net>	<525E8665.8000705@steinkuehler.net>	<525E8A43.5090601@xenomai.org>
+	<525E8BFF.1060201@steinkuehler.net>	<525EAFFD.3010207@steinkuehler.net>
+	<525EB7A2.1050601@xenomai.org> <525EBAD4.3080100@steinkuehler.net>
+In-Reply-To: <525EBAD4.3080100@steinkuehler.net>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Subject: Re: [Xenomai] Hung task on Xenomai patched ARM 3.8.13 BeagleBone
  Kernel
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
- <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
-List-Archive: <http://www.xenomai.org/pipermail/xenomai/>
+	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
+List-Archive: <http://www.xenomai.org/pipermail/xenomai>
 List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
- <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+	<mailto:xenomai-request@xenomai.org?subject=subscribe>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-T24gMTAvMTcvMjAxMyAxOjQzIFBNLCBHaWxsZXMgQ2hhbnRlcGVyZHJpeCB3cm90ZToKPiBPbiAx
-MC8xNy8yMDEzIDAyOjM5IFBNLCBDaGFybGVzIFN0ZWlua3VlaGxlciB3cm90ZToKPiAKPj4gSWYg
-c28sIEkgc3VzcGVjdCBzb21ldGhpbmcgd2l0aCB0aGUgbW1jIGFuZCBkbWEgdXBkYXRlcyBzcGVj
-aWZpYyB0bwo+PiB0aGUgQmVhZ2xlQm9uZSBwYXRjaCBzZXQuICBNYXliZSBJIHNob3VsZCBiZSBw
-ZXN0ZXJpbmcgdGhlIE9NQVAKPj4ga2VybmVsIGxpc3Q/Cj4gCj4gQXMgSSBzYWlkIGluIG15IGZp
-cnN0IGFuc3dlciwgdGhlIHRoaW5nIHRoYXQgY291bGQgaGFwcGVuIGNvdWxkIGJlCj4gdGhhdCB0
-aGUgZHJpdmVyIGlzIG5vdCBwcmVwYXJlZCBmb3IgdGhlIGludGVycnVwdCBjb250cm9sbGVyIHRv
-Cj4gcmVjZWl2ZSBhbm90aGVyIGludGVycnVwdCB3aGlsZSB0aGUgaW50ZXJydXB0IGxpbmUgaXMg
-bWFza2VkIGFmdGVyCj4gcmVjZWl2aW5nIHRoZSBmaXJzdCBpbnRlcnJ1cHQsIHRoaXMgY291bGQg
-YmUgY29uc2lkZXJlZCBhIGRyaXZlciBidWcKPiB3aGljaCBpcyBleHBvc2VkIGJ5IHRoZSBmYWN0
-IHRoYXQgaW50ZXJydXB0cyBhcmUgbWFza2VkIGZvciBhIGxvbmdlcgo+IHRpbWUgd2l0aCB0aGUg
-SS1waXBlIHBhdGNoLgoKRm9yIGFueW9uZSBzdGlsbCBmb2xsb3dpbmcgb3Igc3R1bWJsaW5nIGFj
-cm9zcyB0aGlzIHRocmVhZCwgUmFsZiBSb2VzY2gKaWRlbnRpZmllZCBhIGNvbW1pdCBmcm9tIHRo
-ZSAzLjEyIGJyYW5jaCB0aGF0IGFwcGVhcnMgdG8gZml4IHRoZSBpc3N1ZSwKYm90aCBmb3IgdGhl
-IFhlbm9tYWkgcGF0Y2hlZCBCZWFnbGVCb25lIGtlcm5lbCBhbmQgZm9yIHRoZSAnc3RhbmRhcmQn
-CkJlYWdsZUJvbmUga2VybmVsIHdpdGhvdXQgeGVub21haSBwYXRjaGVzIGFwcGxpZWQuICBUaGUg
-b2RkIGJlaGF2aW9yIEkKd2FzIGdldHRpbmcgd2l0aCBhICdzdGFuZGFyZCcga2VybmVsIHZzIHRo
-ZSB4ZW5vbWFpIHBhdGNoZWQga2VybmVsIGlzCmFwcGFyZW50bHkgZHVlIHRvIG15IG5vdCBnZW5l
-cmF0aW5nIGVub3VnaCBzdHJlc3MgdG8gdHJpZ2dlciB0aGUgYnVnCndoZW4gdGhlIHhlbm9tYWkg
-cGF0Y2hlcyB3ZXJlIG5vdCBlbmFibGVkIChpdCBpcyBtdWNoIGVhc2llciB0byBnZW5lcmF0ZQp0
-aGUgaHVuZyB0YXNrIHdpdGggdGhlIHhlbm9tYWkgcGF0Y2hlcyBhcHBsaWVkLCBidXQgdGhlIGlz
-c3VlIGlzbid0CmRpcmVjdGx5IHJlbGF0ZWQgdG8geGVub21haSBpbiBhbnkgd2F5LCBpdCdzIGEg
-Z29vZiBpbiB0aGUgc3RhdHVzCnJlZ2lzdGVyIGhhbmRsaW5nIG9mIHRoZSBNTUMgY29udHJvbGxl
-cikuCgpUaGUgcGF0Y2ggd2l0aCB0aGUgZml4IGZyb20gdGhlIDMuMTIga2VybmVsIHNvdXJjZSBj
-YW4gYmUgZm91bmQgaGVyZToKCmh0dHA6Ly9naXQua2VybmVsLm9yZy9jZ2l0L2xpbnV4L2tlcm5l
-bC9naXQvdG9ydmFsZHMvbGludXguZ2l0L2NvbW1pdC8/aWQ9NzQ3MmJhYjIzNmJkZWUxMTczNDEy
-NTg1NTkxMzI5ZTcxOGY0ZDMyNAoKLS0gCkNoYXJsZXMgU3RlaW5rdWVobGVyCmNoYXJsZXNAc3Rl
-aW5rdWVobGVyLm5ldAoKLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEg
-bm9uLXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogc2lnbmF0dXJlLmFzYwpU
-eXBlOiBhcHBsaWNhdGlvbi9wZ3Atc2lnbmF0dXJlClNpemU6IDI2MSBieXRlcwpEZXNjOiBPcGVu
-UEdQIGRpZ2l0YWwgc2lnbmF0dXJlClVSTDogPGh0dHA6Ly93d3cueGVub21haS5vcmcvcGlwZXJt
-YWlsL3hlbm9tYWkvYXR0YWNobWVudHMvMjAxMzExMDQvNGE1ZGY3OGUvYXR0YWNobWVudC5zaWc+
-Cg==
+On 10/16/2013 11:12 AM, Charles Steinkuehler wrote:
+> I'll test with ipipe disabled, go through the Arm Porting guide, and see
+> where that gets me...
+
+After building a patched kernel without ipipe or xenomai enabled:
+
+$ egrep '(IPIPE|XENO)' KERNEL/.config
+# CONFIG_XENOMAI is not set
+CONFIG_XENO_GENERIC_STACKPOOL=3Dy
+CONFIG_XENO_FASTSYNCH_DEP=3Dy
+CONFIG_XENO_FASTSYNCH=3Dy
+# CONFIG_IPIPE is not set
+
+...the mmc issue seems fixed.  So according to the porting guide, this
+indicates a likely problem with interrupts or the interrupt controller
+(as Gilles indicated).
+
+Looks like I get to dive into IRQ code review...at least I have some
+configuration options to grep for to hopefully light the way.  And I
+have a test case that kills the system in fairly short order!
+
+Thanks again for all the help and hand-holding!
+
+-- =
+
+Charles Steinkuehler
+charles@steinkuehler.net
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 261 bytes
+Desc: OpenPGP digital signature
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20131016/1145586=
+6/attachment.pgp>
