@@ -1,11 +1,12 @@
-Message-ID: <525E7433.6070807@steinkuehler.net>
-Date: Wed, 16 Oct 2013 06:10:43 -0500
-From: Charles Steinkuehler <charles@steinkuehler.net>
+Message-ID: <525E74D8.8060308@xenomai.org>
+Date: Wed, 16 Oct 2013 13:13:28 +0200
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <525DC044.6090201@steinkuehler.net> <525E6E17.8020103@xenomai.org>
-In-Reply-To: <525E6E17.8020103@xenomai.org>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+	<525E7433.6070807@steinkuehler.net>
+In-Reply-To: <525E7433.6070807@steinkuehler.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] Hung task on Xenomai patched ARM 3.8.13 BeagleBone
  Kernel
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -16,37 +17,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Charles Steinkuehler <charles@steinkuehler.net>
 Cc: xenomai@xenomai.org
 
-T24gMTAvMTYvMjAxMyA1OjQ0IEFNLCBHaWxsZXMgQ2hhbnRlcGVyZHJpeCB3cm90ZToKPiBJdCBw
-b2ludHMgdG8gc2V2ZXJhbCBwb3NzaWJsZSBwcm9ibGVtcy4gU28sIGEgcXVlc3Rpb24sIGRvIHlv
-dSBnZXQgdGhpcwo+IHdoaWxlIGEgWGVub21haSB0YXNrIGlzIHJ1bm5pbmc/IE9yIG9uIGFuIG90
-aGVyd2lzZSBpZGxlIHN5c3RlbT8KPiBTZWNvbmQgcXVlc3Rpb246IGlzIHRoZSBMaW51eCB0aW1l
-ciBzeXN0ZW0gcnVubmluZyBjb3JyZWN0bHksIGZvcgo+IGluc3RhbmNlIGRvZXMgInNsZWVwIDEw
-IiBzbGVlcHMgYSBsaXR0bGUgYml0IGJlZm9yZSByZXR1cm5pbmcsIG9yIGRvZXMKPiBpdCBmYWls
-IHRvIHJldHVybiB0b28/CgpJbiB0aGUgdGVzdCBjYXNlLCB0aGUgc3lzdGVtIGlzIG90aGVyd2lz
-ZSBpZGxlIHdoZW4gdGhpcyBoYXBwZW5zLiAgSXQgaXMKdGhlIGxhcmdlIGFtb3VudCBvZiAiZGlz
-ayIgSS9PIHRvIHRoZSBTRCBjYXJkIHRoYXQgY2F1c2VzIHRoZSBtbWNxZApwcm9jZXNzIHRvIGhh
-bmcuICBBbHNvLCB0aGUgZ3JlcCAtciBkb2Vzbid0IGZhaWwgaW1tZWRpYXRlbHkuICBJdCBydW5z
-CmZvciBhIHdoaWxlLCBzb21ldGltZXMgZ2V0dGluZyBmYXIgZW5vdWdoIGl0IGZpbmRzIG9uZSBv
-ciB0d28gb2YgdGhlCmZvdXIgbWF0Y2hpbmcgZmlsZXMgaW4gL3VzciwgdGhlbiB0aGUgbW1jcWQg
-dGFzayBoYW5ncy4KCk90aGVyIHRoYW4gdGhpcyBvY2Nhc2lvbmFsIGdsaXRjaCwgdGhlIGtlcm5l
-bCBhbmQgc3lzdGVtIHdvcmsgbm9ybWFsbHkuCiBUaGlzIGlzIHRoZSBzYW1lIGtlcm5lbCBJIGFt
-IHVzaW5nIHRvIHJ1biBMaW51eENOQyBhbmQgSSd2ZSBtYW5hZ2VkIHRvCmdldCB0aHJvdWdoIG1h
-bnkgb3Zlcm5pZ2h0IDgrIGhvdXIgcHJpbnRzLCBhbmQgaGF2ZSBoYWQgdXB0aW1lcyBvZgpzZXZl
-cmFsIHdlZWtzLgoKSSBzdXNwZWN0IGFuIG9jY2FzaW9uYWwgbG9zdCBpbnRlcnJ1cHQgb3IgbWF5
-YmUgYSByYWNlIGNvbmRpdGlvbiBvcgpzb21ldGhpbmcgc3BlY2lmaWMgdG8gdGhlIEFNMzM1eCBN
-TUMgZHJpdmVyLiAgWGVub21haSBzZWVtcyBvdGhlcndpc2UgdG8KcnVuIHBlcmZlY3RseSB3ZWxs
-IG9uIHRoaXMgaGFyZHdhcmUuCgpOb3RlIHRoYXQgdGhpbmsgSSBoYXZlIGJlZW4gc2VlaW5nIHRo
-aXMgaXNzdWUgb2NjYXNpb25hbGx5IGZvciBhcyBsb25nCmFzIEkgaGF2ZSBiZWVuIHRlc3Rpbmcg
-WGVub21haW4gb24gdGhlIEJlYWdsZUJvbmUuICBJIG1vc3RseSBjaGFsa2VkIGl0CnVwIHRvIGEg
-YmFkIFNEIGNhcmQgSSBoYWQsIGJ1dCBpdCBzZWVtcyBsaWtlIHRoZXJlJ3MgYSBkZWVwZXIgaXNz
-dWUKaW52b2x2ZWQuICBXaGF0IGNoYW5nZWQgaXMgSSBqdXN0IHJlY2VudGx5IGdvdCBhIHJlcG9y
-dCB3aXRoIHRoZSB2ZXJ5CnNpbXBsZSB3YXkgdG8gdHJpZ2dlciB0aGUgYnVnIHVzaW5nIHRoZSBy
-ZWN1cnNpdmUgZ3JlcC4KCi0tIApDaGFybGVzIFN0ZWlua3VlaGxlcgpjaGFybGVzQHN0ZWlua3Vl
-aGxlci5uZXQKCi0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5vbi10
-ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IHNpZ25hdHVyZS5hc2MKVHlwZTog
-YXBwbGljYXRpb24vcGdwLXNpZ25hdHVyZQpTaXplOiAyNjEgYnl0ZXMKRGVzYzogT3BlblBHUCBk
-aWdpdGFsIHNpZ25hdHVyZQpVUkw6IDxodHRwOi8vd3d3Lnhlbm9tYWkub3JnL3BpcGVybWFpbC94
-ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTMxMDE2LzY1NDZiMDFmL2F0dGFjaG1lbnQucGdwPgo=
+On 10/16/2013 01:10 PM, Charles Steinkuehler wrote:
+> On 10/16/2013 5:44 AM, Gilles Chanteperdrix wrote:
+>> It points to several possible problems. So, a question, do you
+>> get this while a Xenomai task is running? Or on an otherwise idle
+>> system? Second question: is the Linux timer system running
+>> correctly, for instance does "sleep 10" sleeps a little bit
+>> before returning, or does it fail to return too?
+> 
+> In the test case, the system is otherwise idle when this happens.
+> It is the large amount of "disk" I/O to the SD card that causes the
+> mmcqd process to hang.  Also, the grep -r doesn't fail immediately.
+> It runs for a while, sometimes getting far enough it finds one or
+> two of the four matching files in /usr, then the mmcqd task hangs.
+> 
+> Other than this occasional glitch, the kernel and system work
+> normally. This is the same kernel I am using to run LinuxCNC and
+> I've managed to get through many overnight 8+ hour prints, and have
+> had uptimes of several weeks.
+
+This proves that Xenomai timer works correctly, not Linux timer. Could
+you do the simple "sleep 10" test to verify that Linux timer is
+running correctly?
+
+-- 
+                                                                Gilles.
+
