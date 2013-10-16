@@ -1,5 +1,5 @@
-Message-ID: <525E6E17.8020103@xenomai.org>
-Date: Wed, 16 Oct 2013 12:44:39 +0200
+Message-ID: <525E73FB.4060809@xenomai.org>
+Date: Wed, 16 Oct 2013 13:09:47 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <525DC044.6090201@steinkuehler.net>
@@ -46,11 +46,12 @@ On 10/16/2013 12:23 AM, Charles Steinkuehler wrote:
 > really do a lot of Linux Kernel hacking.  I'm muddling forward as best I
 > can, but any advice would be appreciated.
 
-It points to several possible problems. So, a question, do you get this
-while a Xenomai task is running? Or on an otherwise idle system?
-Second question: is the Linux timer system running correctly, for
-instance does "sleep 10" sleeps a little bit before returning, or does
-it fail to return too?
+Could you attach:
+- the full boot logs
+- the kernel configuration
+- the result of cat /proc/interrupts, cat /proc/xenomai/irq, cat
+/proc/timer_list, cat /proc/xenomai/timer
+
 
 -- 
                                                                 Gilles.
