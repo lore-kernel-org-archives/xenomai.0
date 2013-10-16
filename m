@@ -1,28 +1,52 @@
+Message-ID: <525E8BFF.1060201@steinkuehler.net>
+Date: Wed, 16 Oct 2013 07:52:15 -0500
+From: Charles Steinkuehler <charles@steinkuehler.net>
 MIME-Version: 1.0
-Date: Mon, 21 Oct 2013 17:35:28 +0330
-Message-ID: <CAKKWdtd22t=83-aTgGJX9F_yqFtqX6GtDoxUcWqfQ3Z295ToHQ@mail.gmail.com>
-From: ali hagigat <hagigatali@gmail.com>
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] where is the kernel code for rt_printf()?
+References: <525DC044.6090201@steinkuehler.net>
+	<525E73FB.4060809@xenomai.org>	<525E7ABF.8040403@steinkuehler.net>
+	<525E7D85.9020307@xenomai.org> <525E81CD.6000603@steinkuehler.net>
+	<525E8665.8000705@steinkuehler.net> <525E8A43.5090601@xenomai.org>
+In-Reply-To: <525E8A43.5090601@xenomai.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai] Hung task on Xenomai patched ARM 3.8.13 BeagleBone
+ Kernel
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
- <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
-List-Archive: <http://www.xenomai.org/pipermail/xenomai/>
+	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
+List-Archive: <http://www.xenomai.org/pipermail/xenomai>
 List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
- <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai <xenomai@xenomai.org>
+	<mailto:xenomai-request@xenomai.org?subject=subscribe>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai@xenomai.org
 
-i wonder if anybody can tell me where would be the source code of the
-fuction, rt_printf(), inside the kernel?  Is it the same as
-rt_printk()?
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: examp2.c
-Type: text/x-csrc
-Size: 3733 bytes
-Desc: not available
-URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20131021/87933eb=
-1/attachment.c>
+T24gMTAvMTYvMjAxMyA3OjQ0IEFNLCBHaWxsZXMgQ2hhbnRlcGVyZHJpeCB3cm90ZToKPiBPbiAx
+MC8xNi8yMDEzIDAyOjI4IFBNLCBDaGFybGVzIFN0ZWlua3VlaGxlciB3cm90ZToKPj4gQm90aCB0
+aGUgQmVhZ2xlQm9uZSBhbmQgdGhlIFhlbm9tYWkga2VybmVscyBiZWhhdmUgdGhlIHNhbWUgd2F5
+LiAgVGhlCj4+IEdQSU8gbW1jIGludGVycnVwdCBpcyBzdHVjayBhdCB6ZXJvLCBhbmQgdGhlIDgw
+OiBJTlRDIG1tYyBpbnRlcnJ1cHQKPj4gY291bnQgaW5jcmVhc2VzIG9uIGFjY2VzcyB0byB0aGUg
+ZmlsZXN5c3RlbS4KPj4KPiBNYXliZSB0aGUgR1BJTyBpbnRlcnJ1cHQgaXMgZm9yIHRoZSAiQ2Fy
+ZCBkZXRlY3Qgc2lnbmFsIiwgZG8geW91IHNlZSBpdAo+IGluY3JlYXNpbmcgaWYgeW91IHJlbW92
+ZSBhbmQgcmUtaW5zZXJ0IHRoZSBTRCBjYXJkPwoKSSBjYW4ndCByZWFsbHkgdHJ5IHRoYXQgd2l0
+aG91dCB0b3RhbGx5IGtpbGxpbmcgdGhlIHN5c3RlbSwgc2luY2UgSSBoYXZlCnRvIHJ1biBvZmYg
+dGhlIFNEIGNhcmQuICBJIGRvIGtub3cgdGhhdCBTRCBjYXJkIGRldGVjdGlvbiBhbmQgc3dhcHBp
+bmcKaXMgZXNzZW50aWFsbHkgYnJva2VuIGluIHRoZSBjdXJyZW50IEJlYWdsZUJvbmUga2VybmVs
+cyAoeW91IGNhbiB1c2UgdGhlCjJHIG9uLWJvYXJkIGVNTUMgb3IgdGhlIFNEIENhcmQgc29ja2V0
+LCBidXQgbm90IGJvdGggYXQgdGhlIHNhbWUKdGltZS4uLmZvciBzb2Z0d2FyZSBkcml2ZXIgcmVh
+c29ucywgbm90IGhhcmR3YXJlKS4KCkFueXdheSwgYXJlIHRoZXJlIGFueSBpbi1iZXR3ZWVuIHN0
+ZXBzIEkgY2FuIHRlc3Qgd2l0aCB0aGUga2VybmVsIHRoYXQKbWlnaHQgaGVscCBpc29sYXRlIHdo
+YXQgY29kZSB0byBnbyBvdmVyIGluIHRoZSBtbWMgZHJpdmVyPyAgQW55dGhpbmcKYmV0d2VlbiAi
+bm8geGVub21haSBwYXRjaGVzIiBhbmQgInBhdGNoZWQgYW5kIGNvbmZpZ3VyZWQgdG8gcnVuIHhl
+bm9tYWkiCm1pZ2h0IHBvdGVudGlhbGx5IGJlIGVubGlnaHRlbmluZy4gIElJUkMgdGhlcmUgaGF2
+ZSBiZWVuIGRpc2N1c3Npb25zCnByZXZpb3VzbHkgYWJvdXQgZGlzYWJsaW5nIHRoZSBpcGlwZSBw
+YXRjaCBhbmQgc2VlaW5nIGlmIHRoZSBrZXJuZWwKc3RpbGwgd29ya2VkLCBidXQgSSBjb3VsZG4n
+dCB0dXJuIHVwIGFueXRoaW5nIGxpa2UgdGhhdCBpbiB0aGUKdHJvdWJsZXNob290aW5nIGd1aWRl
+IGFuZCBJJ20gbm90IHBvc2l0aXZlIHdoaWNoIGNvbmZpZ3VyYXRpb24gc3dpdGNoZXMKYXJlIHNh
+ZmUgdG8gbWVzcyB3aXRoLgoKLS0gCkNoYXJsZXMgU3RlaW5rdWVobGVyCmNoYXJsZXNAc3RlaW5r
+dWVobGVyLm5ldAoKLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9u
+LXRleHQgYXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogc2lnbmF0dXJlLmFzYwpUeXBl
+OiBhcHBsaWNhdGlvbi9wZ3Atc2lnbmF0dXJlClNpemU6IDI2MSBieXRlcwpEZXNjOiBPcGVuUEdQ
+IGRpZ2l0YWwgc2lnbmF0dXJlClVSTDogPGh0dHA6Ly93d3cueGVub21haS5vcmcvcGlwZXJtYWls
+L3hlbm9tYWkvYXR0YWNobWVudHMvMjAxMzEwMTYvYThiNTlhYTQvYXR0YWNobWVudC5wZ3A+Cg==
