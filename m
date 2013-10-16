@@ -1,46 +1,40 @@
-Message-ID: <5268DCEA.7000202@basystemes.fr>
-Date: Thu, 24 Oct 2013 10:40:10 +0200
-From: Jean-Baptiste Tredez <jean-baptiste.tredez@basystemes.fr>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai]  xsave/xrstor compilation error
+Date: Wed, 16 Oct 2013 18:06:01 +0200
+Message-ID: <CAEk6gTAj51aYJiCLVx+4-O_tnxfyyPvtLZO-hFVZvS+WjBpDtg@mail.gmail.com>
+From: Drasko DRASKOVIC <drasko.draskovic@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: [Xenomai] Hardware I/O from Userspace
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
- <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
-List-Archive: <http://www.xenomai.org/pipermail/xenomai/>
+	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
+List-Archive: <http://www.xenomai.org/pipermail/xenomai>
 List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
- <mailto:xenomai-request@xenomai.org?subject=subscribe>
+	<mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi,
+Hi all,
+I would like to access to various peripheral and CPU regs of my FPGA
+from userspace.
 
-I tried to upgrade to xenomai 2.6.3 and compilation failed with :
+Is mmap of /dev/mem best way to it, or I should do it from kernelspace
+via kernel module?
 
-linux-2.6.38.8/arch/x86/include/asm/xenomai/bits/pod.h: Assembler messages:
-linux-2.6.38.8/arch/x86/include/asm/xenomai/bits/pod.h:305: Error: no 
-such instruction: `xrstor (%ebx)'
-linux-2.6.38.8/arch/x86/include/asm/xenomai/bits/pod.h:245: Error: no 
-such instruction: `xsave (%esi)'
-linux-2.6.38.8/arch/x86/include/asm/xenomai/bits/pod.h:305: Error: no 
-such instruction: `xrstor (%ecx)'
-linux-2.6.38.8/arch/x86/include/asm/xenomai/bits/pod.h:245: Error: no 
-such instruction: `xsave (%ecx)'
-linux-2.6.38.8/arch/x86/include/asm/xenomai/bits/pod.h:245: Error: no 
-such instruction: `xsave (%ecx)'
-linux-2.6.38.8/arch/x86/include/asm/xenomai/bits/pod.h:245: Error: no 
-such instruction: `xsave (%ebx)'
+I am looking at  examples/common/hw_direct_io.c of Xenomai examples.
+Can somebody explain me how Xenomai is used in this case, as I see
+only standard pthread interface. Was this patched by Xenomai patches?
+I do not see calls to RT tasks or some other Xenomai-related API.
 
-I am using kernel 2.6.38.8 with adeos-ipipe-2.6.38.8-x86-2.11-03.patch.
-I used binutils-2.18.1 and gcc-4.3.2.
-With a more recent toolchain, there is no compilation failure.
-Is there a new minimal binutils/gcc version for xenomai 2.6.3 ?
+I can see:
+struct sched_param param;
 
-Regards,
+printf("%s: %s %s\n", __FUNCTION__, __DATE__, __TIME__ );
+param.__sched_priority = 99;
+res = pthread_setschedparam(pthread_self(),  SCHED_FIFO, &param);
 
-Jean-Baptiste
+How these lines affect Xenomai?
 
-
+Thanks and best regards,
+Drasko
 
