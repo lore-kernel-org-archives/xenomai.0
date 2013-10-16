@@ -1,187 +1,68 @@
-From: "Daniel Merrill" <daniel.merrill@psware.com>
-References: <efafe9af.0000172c.00000011@dmerrill_win764.PERF.PERFORMANCESOFTWARE>	<52558563.2010408@xenomai.org>	<8fed609f.0000172c.00000017@dmerrill_win764.PERF.PERFORMANCESOFTWARE>	<525587A2.5000507@xenomai.org>
- <73cb019f.0000172c.0000001c@dmerrill_win764.PERF.PERFORMANCESOFTWARE>
- <8a1928a6.00000970.00000009@dmerrill_win764.PERF.PERFORMANCESOFTWARE>
- <1aa47ae4.00001700.00000005@dmerrill_win764.PERF.PERFORMANCESOFTWARE>
- <526681B9.1010302@xenomai.org> <5266907C.4010905@xenomai.org>
- <5266AD85.2040201@xenomai.org>
- <3f032cae.00001700.0000001c@dmerrill_win764.PERF.PERFORMANCESOFTWARE>
- <526807D4.9030405@xenomai.org>
- <d73ca437.00001700.00000035@dmerrill_win764.PERF.PERFORMANCESOFTWARE>
- <5268F068.7000201@xenomai.org>
-In-Reply-To: <5268F068.7000201@xenomai.org>
-Date: Thu, 24 Oct 2013 11:24:15 -0700 (MST)
-Message-ID: <b4532001.00001700.0000005e@dmerrill_win764.PERF.PERFORMANCESOFTWARE>
+Message-ID: <525EBAD4.3080100@steinkuehler.net>
+Date: Wed, 16 Oct 2013 11:12:04 -0500
+From: Charles Steinkuehler <charles@steinkuehler.net>
 MIME-Version: 1.0
-Content-Type: text/plain;
-	charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Content-Language: en-us
-Subject: Re: [Xenomai] t_suspend and XNBREAK
+References: <525DC044.6090201@steinkuehler.net>	<525E73FB.4060809@xenomai.org>	<525E7ABF.8040403@steinkuehler.net>	<525E7D85.9020307@xenomai.org>
+	<525E81CD.6000603@steinkuehler.net>	<525E8665.8000705@steinkuehler.net>
+	<525E8A43.5090601@xenomai.org> <525E8BFF.1060201@steinkuehler.net>
+	<525EAFFD.3010207@steinkuehler.net> <525EB7A2.1050601@xenomai.org>
+In-Reply-To: <525EB7A2.1050601@xenomai.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai] Hung task on Xenomai patched ARM 3.8.13 BeagleBone
+ Kernel
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
- <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
-List-Archive: <http://www.xenomai.org/pipermail/xenomai/>
+	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
+List-Archive: <http://www.xenomai.org/pipermail/xenomai>
 List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
- <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: 'Philippe Gerum' <rpm@xenomai.org>, 'Gilles Chanteperdrix' <gilles.chanteperdrix@xenomai.org>
+	<mailto:xenomai-request@xenomai.org?subject=subscribe>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-
->
-> - Do you handle SIG32 specifically in GDB, so that the
-> latter does not intercept the signal? If not, could you check whether
-> this makes any difference? (i.e. "handle SIG32 nostop noprint pass")
->
-> - Could you apply the patch below, keeping the previous one in?
-> We should be sending back -ERESTARTSYS to the kernel when the
-> issue happens, and this behaves as if the Xenomai core did
-> not.
->
-
-New log with new gdb output with patch applied
-
-Oct 24 11:16:19 JETSdev kernel: [  127.043727] t_suspend: self-suspend 
-SUB1[2280], sigpending=0, state=0x300180, info=0x0
-Oct 24 11:16:19 JETSdev kernel: [  127.043735] t_suspend: self-suspend 
-SUB2[2281], sigpending=0, state=0x300180, info=0x0
-Oct 24 11:16:19 JETSdev kernel: [  127.043754] t_suspend: self-suspend 
-SUB3[2282], sigpending=0, state=0x300180, info=0x0
-Oct 24 11:16:19 JETSdev kernel: [  127.054237] t_suspend: unblocked 
-SUB3[2282], sigpending=1, state=0x302180, info=0xc
-Oct 24 11:16:19 JETSdev kernel: [  127.054239]    => SIG19 pending
-Oct 24 11:16:19 JETSdev kernel: [  127.054240] request_syscall_restart[hi]: 
-SUB3, state=0x302180, info=0xc, rval=-4, sysflags=0x22
-Oct 24 11:16:19 JETSdev kernel: [  127.054251] t_suspend: unblocked 
-SUB2[2281], sigpending=1, state=0x302180, info=0xc
-Oct 24 11:16:19 JETSdev kernel: [  127.054251]    => SIG19 pending
-Oct 24 11:16:19 JETSdev kernel: [  127.054252] request_syscall_restart[hi]: 
-SUB2, state=0x302180, info=0xc, rval=-4, sysflags=0x22
-Oct 24 11:16:19 JETSdev kernel: [  127.054261] request_syscall_restart[lo]: 
-CONT, state=0x302180, info=0xc, rval=-4, sysflags=0x6
-Oct 24 11:16:19 JETSdev kernel: [  127.054269] request_syscall_restart[lo]: 
-MAIN, state=0xb02180, info=0xc, rval=-4, sysflags=0x6
-Oct 24 11:16:19 JETSdev kernel: [  127.055902] t_suspend: self-suspend 
-SUB3[2282], sigpending=0, state=0x300180, info=0x0
-Oct 24 11:16:19 JETSdev kernel: [  127.055910] t_suspend: self-suspend 
-SUB2[2281], sigpending=0, state=0x300180, info=0x0
-Oct 24 11:16:19 JETSdev kernel: [  127.055928] t_suspend: self-suspend 
-SUB1[2280], sigpending=0, state=0x300180, info=0x0
-Oct 24 11:16:19 JETSdev kernel: [  127.060439] t_suspend: unblocked 
-SUB3[2282], sigpending=1, state=0x302180, info=0xc
-Oct 24 11:16:19 JETSdev kernel: [  127.060441]    => SIG19 pending
-Oct 24 11:16:19 JETSdev kernel: [  127.060442] request_syscall_restart[lo]: 
-SUB3, state=0x302180, info=0xc, rval=-4, sysflags=0x22
-Oct 24 11:16:19 JETSdev kernel: [  127.060453] t_suspend: unblocked 
-SUB2[2281], sigpending=1, state=0x302180, info=0xc
-Oct 24 11:16:19 JETSdev kernel: [  127.060454]    => SIG19 pending
-Oct 24 11:16:19 JETSdev kernel: [  127.060455] request_syscall_restart[lo]: 
-SUB2, state=0x302180, info=0xc, rval=-4, sysflags=0x22
-Oct 24 11:16:19 JETSdev kernel: [  127.060464] t_suspend: unblocked 
-SUB1[2280], sigpending=1, state=0x302180, info=0xc
-Oct 24 11:16:19 JETSdev kernel: [  127.060465]    => SIG19 pending
-Oct 24 11:16:19 JETSdev kernel: [  127.060466] request_syscall_restart[lo]: 
-SUB1, state=0x302180, info=0xc, rval=-4, sysflags=0x22
-Oct 24 11:16:19 JETSdev kernel: [  127.060477] request_syscall_restart[lo]: 
-MAIN, state=0xb02180, info=0xc, rval=-4, sysflags=0x6
-Oct 24 11:16:19 JETSdev kernel: [  127.060935] t_suspend: self-suspend 
-SUB3[2282], sigpending=0, state=0x300180, info=0x0
-Oct 24 11:16:19 JETSdev kernel: [  127.060943] t_suspend: self-suspend 
-SUB2[2281], sigpending=0, state=0x300180, info=0x0
-Oct 24 11:16:19 JETSdev kernel: [  127.060950] t_suspend: self-suspend 
-SUB1[2280], sigpending=0, state=0x300180, info=0x0
-Oct 24 11:16:19 JETSdev kernel: [  127.061060] t_suspend: unblocked 
-SUB3[2282], sigpending=1, state=0x302180, info=0xc
-Oct 24 11:16:19 JETSdev kernel: [  127.061061]    => SIG19 pending
-Oct 24 11:16:19 JETSdev kernel: [  127.061062] request_syscall_restart[lo]: 
-SUB3, state=0x302180, info=0xc, rval=-4, sysflags=0x22
-Oct 24 11:16:19 JETSdev kernel: [  127.061070] t_suspend: unblocked 
-SUB2[2281], sigpending=1, state=0x302180, info=0xc
-Oct 24 11:16:19 JETSdev kernel: [  127.061071]    => SIG19 pending
-Oct 24 11:16:19 JETSdev kernel: [  127.061072] request_syscall_restart[lo]: 
-SUB2, state=0x302180, info=0xc, rval=-4, sysflags=0x22
-Oct 24 11:16:19 JETSdev kernel: [  127.061079] t_suspend: unblocked 
-SUB1[2280], sigpending=1, state=0x302180, info=0xc
-Oct 24 11:16:19 JETSdev kernel: [  127.061080]    => SIG19 pending
-Oct 24 11:16:19 JETSdev kernel: [  127.061081] request_syscall_restart[lo]: 
-SUB1, state=0x302180, info=0xc, rval=-4, sysflags=0x22
-Oct 24 11:16:19 JETSdev kernel: [  127.061089] request_syscall_restart[lo]: 
-MAIN, state=0xb02180, info=0xc, rval=-4, sysflags=0x6
-Oct 24 11:16:19 JETSdev kernel: [  127.062059] t_suspend: self-suspend 
-SUB3[2282], sigpending=0, state=0x300180, info=0x0
-Oct 24 11:16:19 JETSdev kernel: [  127.062068] t_suspend: self-suspend 
-SUB2[2281], sigpending=0, state=0x300180, info=0x0
-Oct 24 11:16:19 JETSdev kernel: [  127.062074] t_suspend: self-suspend 
-SUB1[2280], sigpending=0, state=0x300180, info=0x0
-Oct 24 11:16:19 JETSdev kernel: [  127.062116] t_suspend: unblocked 
-SUB1[2280], sigpending=1, state=0x300180, info=0xc
-Oct 24 11:16:19 JETSdev kernel: [  127.062117]    => SIG32 pending
-Oct 24 11:16:19 JETSdev kernel: [  127.062117] request_syscall_restart[lo]: 
-SUB1, state=0x300180, info=0xc, rval=-4, sysflags=0x22
-Oct 24 11:16:19 JETSdev kernel: [  127.062385] t_suspend: unblocked 
-SUB3[2282], sigpending=1, state=0x302180, info=0xc
-Oct 24 11:16:19 JETSdev kernel: [  127.062386]    => SIG19 pending
-Oct 24 11:16:19 JETSdev kernel: [  127.062387] request_syscall_restart[lo]: 
-SUB3, state=0x302180, info=0xc, rval=-4, sysflags=0x22
-Oct 24 11:16:19 JETSdev kernel: [  127.062396] request_syscall_restart[lo]: 
-CONT, state=0x302180, info=0xc, rval=-4, sysflags=0x6
-Oct 24 11:16:19 JETSdev kernel: [  127.062404] request_syscall_restart[lo]: 
-MAIN, state=0xb02180, info=0xc, rval=-4, sysflags=0x6
-Oct 24 11:16:19 JETSdev kernel: [  127.063467] t_suspend: self-suspend 
-SUB3[2282], sigpending=0, state=0x300180, info=0x0
-Oct 24 11:16:19 JETSdev kernel: [  127.063482] t_suspend: self-suspend 
-SUB2[2281], sigpending=0, state=0x300180, info=0x0
-Oct 24 11:16:19 JETSdev kernel: [  127.068227] t_suspend: unblocked 
-SUB2[2281], sigpending=1, state=0x300180, info=0xc
-Oct 24 11:16:19 JETSdev kernel: [  127.068228]    => SIG32 pending
-Oct 24 11:16:19 JETSdev kernel: [  127.068229] request_syscall_restart[lo]: 
-SUB2, state=0x300180, info=0xc, rval=-4, sysflags=0x22
-Oct 24 11:16:19 JETSdev kernel: [  127.068292] t_suspend: unblocked 
-SUB3[2282], sigpending=1, state=0x302180, info=0xc
-Oct 24 11:16:19 JETSdev kernel: [  127.068293]    => SIG19 pending
-Oct 24 11:16:19 JETSdev kernel: [  127.068294] request_syscall_restart[lo]: 
-SUB3, state=0x302180, info=0xc, rval=-4, sysflags=0x22
-Oct 24 11:16:19 JETSdev kernel: [  127.068310] request_syscall_restart[lo]: 
-MAIN, state=0xb02180, info=0xc, rval=-4, sysflags=0x6
-Oct 24 11:16:19 JETSdev kernel: [  127.068562] t_suspend: self-suspend 
-SUB3[2282], sigpending=0, state=0x300180, info=0x0
-
-
-GNU gdb (Ubuntu/Linaro 7.4-2012.04-0ubuntu2.1) 7.4-2012.04
-Copyright (C) 2012 Free Software Foundation, Inc.
-License GPLv3+: GNU GPL version 3 or later 
-<http://gnu.org/licenses/gpl.html>
-This is free software: you are free to change and redistribute it.
-There is NO WARRANTY, to the extent permitted by law.  Type "show copying"
-and "show warranty" for details.
-This GDB was configured as "i686-linux-gnu".
-For bug reporting instructions, please see:
-<http://bugs.launchpad.net/gdb-linaro/>...
-Reading symbols from /home/jets/projects/tdelete_fail_test/test...done.
-Breakpoint 1 at 0x80486fa: file test.c, line 20.
-Breakpoint 2 at 0x8048765: file test.c, line 35.
-Breakpoint 3 at 0x80487d0: file test.c, line 50.
-[Thread debugging using libthread_db enabled]
-Using host libthread_db library "/lib/i386-linux-gnu/libthread_db.so.1".
-[New Thread 0xb7fd3b40 (LWP 2279)]
-[New Thread 0xb7fceb40 (LWP 2280)]
-[New Thread 0xb7deab40 (LWP 2281)]
-[New Thread 0xb7de5b40 (LWP 2282)]
-SUB1 TID:4
-subTask1, suspend returned 0
-[Switching to Thread 0xb7fceb40 (LWP 2280)]
-
-Breakpoint 3, subTask1 () at test.c:50
-50		retValue = t_suspend(0);
-SUB2 TID:5
-subTask2, suspend returned 0
-[Switching to Thread 0xb7deab40 (LWP 2281)]
-
-Breakpoint 2, subTask2 () at test.c:35
-35		retValue = t_suspend(0);
-subTask1, suspend returned -4
-[Thread 0xb7deab40 (LWP 2281) exited]
-
-
+T24gMTAvMTYvMjAxMyAxMDo1OCBBTSwgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4gT24g
+MTAvMTYvMjAxMyAwNToyNSBQTSwgQ2hhcmxlcyBTdGVpbmt1ZWhsZXIgd3JvdGU6Cj4+IE9uIDEw
+LzE2LzIwMTMgNzo1MiBBTSwgQ2hhcmxlcyBTdGVpbmt1ZWhsZXIgd3JvdGU6Cj4+PiBBbnl3YXks
+IGFyZSB0aGVyZSBhbnkgaW4tYmV0d2VlbiBzdGVwcyBJIGNhbiB0ZXN0IHdpdGggdGhlIGtlcm5l
+bCB0aGF0Cj4+PiBtaWdodCBoZWxwIGlzb2xhdGUgd2hhdCBjb2RlIHRvIGdvIG92ZXIgaW4gdGhl
+IG1tYyBkcml2ZXI/ICBBbnl0aGluZwo+Pj4gYmV0d2VlbiAibm8geGVub21haSBwYXRjaGVzIiBh
+bmQgInBhdGNoZWQgYW5kIGNvbmZpZ3VyZWQgdG8gcnVuIHhlbm9tYWkiCj4+PiBtaWdodCBwb3Rl
+bnRpYWxseSBiZSBlbmxpZ2h0ZW5pbmcuCj4+Cj4+IEkgYnVpbHQgYW5kIHRlc3RlZCBhIHBhdGNo
+ZWQga2VybmVsIHRoYXQgaGFzIG5vIHhlbm9tYWkgY29uZmlndXJlCj4+IG9wdGlvbnMgZW5hYmxl
+ZDoKPj4KPj4gIyBDT05GSUdfWEVOIGlzIG5vdCBzZXQKCk9vcHMuLi50b28gcXVpY2sgd2l0aCB0
+aGUgY3V0LWFuZC1wYXN0ZS4gIFRoaXMgaXMgdGhlIGNvbmZpZ3VyYXRpb24gSQp0ZXN0ZWQgd2l0
+aCB0aGF0IHN0aWxsIGZhaWxzLgoKQ09ORklHX0lQSVBFX1dBTlRfQUNUSVZFX01NPXkKQ09ORklH
+X0lQSVBFX0FSTV9LVVNFUl9UU0M9eQpDT05GSUdfSVBJUEU9eQpDT05GSUdfSVBJUEVfTEVHQUNZ
+PXkKQ09ORklHX0lQSVBFX0NPUkU9eQpDT05GSUdfSVBJUEVfQ09SRV9BUElSRVY9MgpDT05GSUdf
+SVBJUEVfVEFSR0VUX0FQSVJFVj0xCkNPTkZJR19JUElQRV9IQVZFX0hPU1RSVD15CkNPTkZJR19J
+UElQRV9ERUxBWUVEX0FUT01JQ1NXPXkKIyBDT05GSUdfSVBJUEVfREVCVUcgaXMgbm90IHNldAoK
+IyBDT05GSUdfWEVOT01BSSBpcyBub3Qgc2V0CkNPTkZJR19YRU5PX0dFTkVSSUNfU1RBQ0tQT09M
+PXkKQ09ORklHX1hFTk9fRkFTVFNZTkNIX0RFUD15CkNPTkZJR19YRU5PX0ZBU1RTWU5DSD15Cgo+
+IENPTkZJR19YRU4gaXMgZm9yIFhlbiwgbm90IFhlbm9tYWkuIFRoZSBpbnRlcmVzdGluZyBzdGVw
+cyBhcmU6Cj4gLSBDT05GSUdfSVBJUEUgZW5hYmxlZCB3aXRoIENPTkZJR19YRU5PTUFJIGRpc2Fi
+bGVkCj4gLSBwYXRjaGVkIGtlcm5lbCB3aXRoIENPTkZJR19JUElQRSBvZmYgYW5kIENPTkZJR19Y
+RU5PTUFJIG9mZi4KClNvIGl0IGxvb2tzIGxpa2UgSSB0cmllZCB0aGUgZmlyc3Qgb3B0aW9uIChp
+cGlwZSBlbmFibGVkLCB4ZW5vbWFpCmRpc2FibGVkLCByZXN1bHQgPSBzdGlsbCBicm9rZW4pLCBJ
+J2xsIHRyeSBkaXNhYmxpbmcgaXBpcGUgYXMgd2VsbCBhbmQKc2VlIHdoYXQgaGFwcGVucy4KCj4g
+SW4gYWRkaXRpb24gdG8gdGhlIHRyb3VibGVzaG9vdGluZyBndWlkZSwgeW91IG1heSBmaW5kIHRo
+ZSBmb2xsb3dpbmcKPiBkb2N1bWVudGF0aW9uIHVzZWZ1bDoKPiBodHRwczovL3d3dy54ZW5vbWFp
+Lm9yZy9pbmRleC5waHAvSS1waXBlLWNvcmU6QXJtUG9ydGluZwoKVGhhbmtzIQoKPiBJZiB0aGUg
+aXNzdWUgaXMgbm90IGEgdGltZXIgaXNzdWUsIGFuZCBpdCBkb2VzIG5vdCBzZWVtIHRvIGJlLCB0
+aGUgbW9zdAo+IHByb2JhYmxlIGV4cGxhbmF0aW9uIGlzIHRoYXQgZWl0aGVyIHRoZSBNTUMgZHJp
+dmVyIG9yIHRoZSBpbnRlcnJ1cHQKPiBjb250cm9sbGVyIGRvZXMgbm90IGxpa2UgcmVjZWl2aW5n
+IGludGVycnVwdHMgd2hpbGUgdGhleSBhcmUgbWFza2VkLiBJbgo+IHRoaXMgY2FzZSwgeW91IHdp
+bGwgZmluZCB0aGF0IHRoZSBwYXRjaGVkIGtlcm5lbCBkb2VzIG5vdCB3b3JrIHdpdGgKPiBDT05G
+SUdfSVBJUEUgYnV0IHdvcmtzIHdpdGggQ09ORklHX0lQSVBFIG9mZiBhbmQgQ09ORklHX1hFTk9N
+QUkgb2ZmLgo+IERvIHlvdSBrbm93IGlmIHRoZSBpbnRlcnJ1cHQgaXMgbGV2ZWwgb3IgZWRnZSB0
+cmlnZ2VyZWQ/CgpJIGRvbid0IGtub3cgbXVjaCBkZXRhaWwgeWV0LCBJJ20gc3RpbGwgY3Jhd2xp
+bmcgYXJvdW5kIHRoZSBkcml2ZXIgY29kZQphbmQgdHJ5aW5nIHRvIG1ha2Ugc2Vuc2Ugb2YgdGhp
+bmdzLgoKSSdsbCB0ZXN0IHdpdGggaXBpcGUgZGlzYWJsZWQsIGdvIHRocm91Z2ggdGhlIEFybSBQ
+b3J0aW5nIGd1aWRlLCBhbmQgc2VlCndoZXJlIHRoYXQgZ2V0cyBtZS4uLgoKTWFueSB0aGFua3Mg
+Zm9yIGFsbCB0aGUgaGVscCEKCi0tIApDaGFybGVzIFN0ZWlua3VlaGxlcgpjaGFybGVzQHN0ZWlu
+a3VlaGxlci5uZXQKCi0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5v
+bi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IHNpZ25hdHVyZS5hc2MKVHlw
+ZTogYXBwbGljYXRpb24vcGdwLXNpZ25hdHVyZQpTaXplOiAyNjEgYnl0ZXMKRGVzYzogT3BlblBH
+UCBkaWdpdGFsIHNpZ25hdHVyZQpVUkw6IDxodHRwOi8vd3d3Lnhlbm9tYWkub3JnL3BpcGVybWFp
+bC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTMxMDE2LzkxNzAwMzI1L2F0dGFjaG1lbnQucGdwPgo=
