@@ -1,104 +1,74 @@
-Message-ID: <528A2486.4030606@xenomai.org>
-Date: Mon, 18 Nov 2013 15:30:30 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <E1ViO8p-0004L8-4y@sd-51317.dedibox.fr>
- <528A156C.1070501@xenomai.org> <528A21A9.9050502@siemens.com>
-In-Reply-To: <528A21A9.9050502@siemens.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [Xenomai-git] Jan Kiszka : switchtest: Account for
- invalid last_switch.from field
+In-Reply-To: <525EC963.2000005@xenomai.org>
+References: <CAEk6gTAj51aYJiCLVx+4-O_tnxfyyPvtLZO-hFVZvS+WjBpDtg@mail.gmail.com>
+	<525EC963.2000005@xenomai.org>
+Date: Thu, 17 Oct 2013 16:57:43 +0200
+Message-ID: <CAEk6gTC7=6NJVJJTATHApcf8G13bX=68ZOAR4XdEmhiAgf3ZoQ@mail.gmail.com>
+From: Drasko DRASKOVIC <drasko.draskovic@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: Re: [Xenomai] Hardware I/O from Userspace
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
- <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
-List-Archive: <http://www.xenomai.org/pipermail/xenomai/>
+	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
+List-Archive: <http://www.xenomai.org/pipermail/xenomai>
 List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
- <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: xenomai@xenomai.org
+	<mailto:xenomai-request@xenomai.org?subject=subscribe>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 11/18/2013 03:18 PM, Jan Kiszka wrote:
-> On 2013-11-18 14:26, Gilles Chanteperdrix wrote:
->> On 11/18/2013 01:41 PM, git repository hosting wrote:
->>> Module: xenomai-jki
->>> Branch: for-forge
->>> Commit: 3e6d8ff9a99262e78655329dc043aacc607eb158
->>> URL:
->>> http://git.xenomai.org/?p=xenomai-jki.git;a=commit;h=3e6d8ff9a99262e78655329dc043aacc607eb158
->>>
->>>
->>> Author: Jan Kiszka <jan.kiszka@siemens.com>
->>> Date:   Mon Nov 18 13:19:34 2013 +0100
->>>
->>> switchtest: Account for invalid last_switch.from field
->>>
->>> If we close a test device early, no switch may have yet taken place when
->>> the first call to rtswitch_to_rt/nrt happens. This can cause to_idx to
->>> become -1, and the system will crash. Handle this corner case
->>> gracefully.
->>>
->>> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
->>>
->>> ---
->>>
->>>    kernel/drivers/testing/switchtest.c |   10 ++++++++--
->>>    1 file changed, 8 insertions(+), 2 deletions(-)
->>>
->>> diff --git a/kernel/drivers/testing/switchtest.c
->>> b/kernel/drivers/testing/switchtest.c
->>> index 6f77ee9..7d17c5f 100644
->>> --- a/kernel/drivers/testing/switchtest.c
->>> +++ b/kernel/drivers/testing/switchtest.c
->>> @@ -147,8 +147,11 @@ static int rtswitch_to_rt(rtswitch_context_t *ctx,
->>>
->>>        /* to == from is a special case which means
->>>           "return to the previous task". */
->>> -    if (to_idx == from_idx)
->>> +    if (to_idx == from_idx) {
->>>            to_idx = ctx->error.last_switch.from;
->>> +        if (to_idx == -1)
->>> +            return -EINVAL;
->>> +    }
+Hi Gilles,
+
+On Wed, Oct 16, 2013 at 7:14 PM, Gilles Chanteperdrix
+<gilles.chanteperdrix@xenomai.org> wrote:
+> On 10/16/2013 06:06 PM, Drasko DRASKOVIC wrote:
+>> Hi all,
+>> I would like to access to various peripheral and CPU regs of my FPGA
+>> from userspace.
 >>
->> I do not see how we can reach rtswitch_to_rt without having switched
->> context, since the first task to run is not an rt task.
+>> Is mmap of /dev/mem best way to it, or I should do it from kernelspace
+>> via kernel module?
 >
-> Counter question: What should enforce this ordering? And via which call
-> stack should last_switch.from be first updated?
+> Hi,
 >
-> I suspect that the RT tasks overtake the non-RT one here, but - granted
-> - I didn't understand the control flow and synchronization of this
-> driver yet.
+> The RTDM kernel module is the recommended way, among other things, it may
+> be used to prevent several applications to access the registers at the
+> same time.
 
-At any time, there is at most one task running on each cpu. This task 
-then switches to every other task, in turn. The first task to run is the 
-"sleeper" task, which calls nanosleep in order to avoid the system to be 
-completely paralized.
+I will most probably have only one application who access these regs.
 
-For instance, with 3 tasks you would get:
-1(sleeper)
-2
-3
-1(sleeper)
-3
-2
-1(sleeper)
-2
-3
-
-etc...
-
+Is not putting this application into the user-space safer - if it
+breaks it will not block system?
+Did i misunderstand something, or RTDM kernel module is like standard
+kernel module - if it has a bug it can break the whole kernel.
 
 >
-> So even if this is not the cause, just curing a symptom, I think it is a
-> valid safety measure.
+>>
+>> I am looking at  examples/common/hw_direct_io.c of Xenomai examples.
+>> Can somebody explain me how Xenomai is used in this case, as I see
+>> only standard pthread interface. Was this patched by Xenomai patches?
+>> I do not see calls to RT tasks or some other Xenomai-related API.
+>>
+>> I can see:
+>> struct sched_param param;
+>>
+>> printf("%s: %s %s\n", __FUNCTION__, __DATE__, __TIME__ );
+>> param.__sched_priority = 99;
+>> res = pthread_setschedparam(pthread_self(),  SCHED_FIFO, &param);
+>>
+>> How these lines affect Xenomai?
+>
+> Xenomai has more skins than just the native skin, it has notably a
+> POSIX skin which attempts to implement the POSIX API. How
+> pthread_setschedparam is hijacked by Xenomai is explained here:
+>
+> https://www.xenomai.org/index.php/Porting_POSIX_applications_to_Xenomai#Compilation_flags
 
-I do not think we need this safety measure: AFAIK it works on 2.6, so I 
-would rather make it work on -forge.
+Usage of the compilation flags is pretty-much clear. What I was asing
+is can anybody elaborate of how Posix calls became Xenomai ones in
+this example (if they did).
 
--- 
-					    Gilles.
+BR,
+Drasko
 
