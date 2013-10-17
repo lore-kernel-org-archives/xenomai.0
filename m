@@ -1,14 +1,14 @@
-Message-ID: <525E81CD.6000603@steinkuehler.net>
-Date: Wed, 16 Oct 2013 07:08:45 -0500
-From: Charles Steinkuehler <charles@steinkuehler.net>
+From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
+Date: Thu, 17 Oct 2013 11:00:12 -0400
+Message-ID: <20131017150012.GM13097@csclub.uwaterloo.ca>
+References: <CAEk6gTAj51aYJiCLVx+4-O_tnxfyyPvtLZO-hFVZvS+WjBpDtg@mail.gmail.com>
+	<525EC963.2000005@xenomai.org>
+	<CAEk6gTC7=6NJVJJTATHApcf8G13bX=68ZOAR4XdEmhiAgf3ZoQ@mail.gmail.com>
 MIME-Version: 1.0
-References: <525DC044.6090201@steinkuehler.net> <525E73FB.4060809@xenomai.org>
-	<525E7ABF.8040403@steinkuehler.net> <525E7D85.9020307@xenomai.org>
-In-Reply-To: <525E7D85.9020307@xenomai.org>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] Hung task on Xenomai patched ARM 3.8.13 BeagleBone
- Kernel
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEk6gTC7=6NJVJJTATHApcf8G13bX=68ZOAR4XdEmhiAgf3ZoQ@mail.gmail.com>
+Subject: Re: [Xenomai] Hardware I/O from Userspace
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,25 +17,19 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Drasko DRASKOVIC <drasko.draskovic@gmail.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-T24gMTAvMTYvMjAxMyA2OjUwIEFNLCBHaWxsZXMgQ2hhbnRlcGVyZHJpeCB3cm90ZToKPiBPaywg
-c28gdGhlIE1NQyBpcnEgaXMgYSBncGlvIGlycS4gQW5kIGl0cyBjb3VudGVyIGlzIDAsIHdoaWNo
-IGRvZXMgbm90Cj4gc2VlbSB0byBiZSBub3JtYWwgaWYgdGhlIHJvb3QgZmlsZXN5c3RlbSBpbiBv
-biBNTUMuIElzIGl0IDAgdG9vIHdoZW4KPiB5b3UgYm9vdCBhbiB1bnBhdGNoZWQga2VybmVsPwo+
-IAo+IERvIHlvdSBydW4gYSB2YW5pbGxhIGtlcm5lbCBvciBhIHZlbmRvciBrZXJuZWwgd2l0aCBh
-ZGRpdGlvbmFsIHBhdGNoZXMKPiB0byBkcml2ZXJzL2dwaW8vZ3Bpby1vbWFwLmMsIG9yIG1heWJl
-IGEgYmVhZ2xlYm9uZSBzcGVjaWZpYyBHUElPCj4gZHJpdmVyIGluIGRyaXZlcnMvZ3BpbyA/CgpJ
-dCdzIGEgQmVhZ2xlQm9uZSBzcGVjaWZpYyBrZXJuZWwgd2l0aCBhIGxpc3Qgb2YgcGF0Y2hlcyBh
-cyBsb25nIGFzIG15CmFybS4uLmFuZCBJIGhhdmUgcHJldHR5IGxvbmcgYXJtcyEKCmh0dHBzOi8v
-Z2l0aHViLmNvbS9jZHN0ZWlua3VlaGxlci9saW51eC1kZXYvYmxvYi8zLjguMTMtYm9uZTI4LXhl
-bm9tYWkvcGF0Y2guc2gKCkknbSBub3Qgc3VyZSBhYm91dCB0aGUgR1BJTyBpbnRlcnJ1cHQuICBJ
-J2xsIHNlZSB3aGF0IGhhcHBlbnMgd2l0aCB0aGUKbm9uLXhlbm9tYWkga2VybmVsLCBhbmQgcmV2
-aWV3IHRoZSBib2FyZCBzZXR1cC4KCi0tIApDaGFybGVzIFN0ZWlua3VlaGxlcgpjaGFybGVzQHN0
-ZWlua3VlaGxlci5uZXQKCi0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpB
-IG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IHNpZ25hdHVyZS5hc2MK
-VHlwZTogYXBwbGljYXRpb24vcGdwLXNpZ25hdHVyZQpTaXplOiAyNjEgYnl0ZXMKRGVzYzogT3Bl
-blBHUCBkaWdpdGFsIHNpZ25hdHVyZQpVUkw6IDxodHRwOi8vd3d3Lnhlbm9tYWkub3JnL3BpcGVy
-bWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTMxMDE2L2RiZTVkMzgzL2F0dGFjaG1lbnQucGdw
-Pgo=
+On Thu, Oct 17, 2013 at 04:57:43PM +0200, Drasko DRASKOVIC wrote:
+> I will most probably have only one application who access these regs.
+> 
+> Is not putting this application into the user-space safer - if it
+> breaks it will not block system?
+> Did i misunderstand something, or RTDM kernel module is like standard
+> kernel module - if it has a bug it can break the whole kernel.
+
+What do you think using /dev/mem can do?
+
+-- 
+Len Sorensen
+
