@@ -1,13 +1,13 @@
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Message-Id: <8ad2934f0bf0d4009511.1382100608@devws164.be.alcatel-lucent.com>
+Message-Id: <feae5f95fd2d2de1b24f.1382100609@devws164.be.alcatel-lucent.com>
 In-Reply-To: <patchbomb.1382100607@devws164.be.alcatel-lucent.com>
 References: <patchbomb.1382100607@devws164.be.alcatel-lucent.com>
-Date: Fri, 18 Oct 2013 14:50:08 +0200
+Date: Fri, 18 Oct 2013 14:50:09 +0200
 From: Kim De Mey <kim.demey@gmail.com>
-Subject: [Xenomai] [PATCH 1 of 2] Xenomai-forge thread_obj: unset
- __THREAD_S_SAFE when not needed
+Subject: [Xenomai] [PATCH 2 of 2] Xenomai-forge notifier_init: panic on
+	failed pipe
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,29 +18,32 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-unset __THREAD_S_SAFE for thobj->status when the priority of the
-task is lower than then priority of the current task.
+Panic if one of the pipe() system calls fails. To indicate that there
+is an underlying problem.
 
 Signed-off-by: Kim De Mey <kim.demey@gmail.com>
 
 ---
 
- lib/copperplate/threadobj.c |  4 +++-
- 1 files changed, 3 insertions(+), 1 deletions(-)
+ lib/copperplate/notifier.c |  4 ++--
+ 1 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/lib/copperplate/threadobj.c b/lib/copperplate/threadobj.c
---- a/lib/copperplate/threadobj.c
-+++ b/lib/copperplate/threadobj.c
-@@ -929,8 +929,10 @@ int threadobj_start(struct threadobj *th
- 	thobj->status |= __THREAD_S_STARTED|__THREAD_S_SAFE;
- 	__RT(pthread_cond_signal(&thobj->barrier));
+diff --git a/lib/copperplate/notifier.c b/lib/copperplate/notifier.c
+--- a/lib/copperplate/notifier.c
++++ b/lib/copperplate/notifier.c
+@@ -144,12 +144,12 @@ int notifier_init(struct notifier *nf,
+ 	int fd;
  
--	if (current && thobj->priority <= current->priority)
-+	if (current && thobj->priority <= current->priority) {
-+		thobj->status &= ~__THREAD_S_SAFE;
- 		return 0;
-+	}
+ 	if (pipe(nf->psfd) < 0)
+-		return __bt(-errno);
++		panic("failed to create file descriptors");
  
- 	/*
- 	 * Caller needs synchronization with the thread being started,
+ 	if (pipe(nf->pwfd) < 0) {
+ 		__STD(close(nf->psfd[0]));
+ 		__STD(close(nf->psfd[1]));
+-		return __bt(-errno);
++		panic("failed to create file descriptors");
+ 	}
+ 
+ 	nf->callback = callback;
 
