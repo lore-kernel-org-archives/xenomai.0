@@ -1,17 +1,11 @@
-From: "Zemskov, Evgeny" <Evgeny.Zemskov@transas.com>
-Date: Fri, 18 Oct 2013 10:29:01 +0000
-Message-ID: <FA4CEC4EBE2FA145A7663764A1CCB31ED4275E9E@VOITV-EXCH-BE02.transas.com>
-References: <FA4CEC4EBE2FA145A7663764A1CCB31EC74CB0DA@VOITV-EXCH-BE02.transas.com>,
-	<5256B03C.8080909@xenomai.org>
-	<FA4CEC4EBE2FA145A7663764A1CCB31EC74CB2AE@VOITV-EXCH-BE02.transas.com>,
-	<52581527.2040508@xenomai.org>
-In-Reply-To: <52581527.2040508@xenomai.org>
-Content-Language: en-US
 Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Subject: Re: [Xenomai] Kernel 2.6.32 patched with xenomai 2.6.0 and 2.6.3
- crashes on a Core i5 / QM77 system
+Content-Transfer-Encoding: 7bit
+Message-Id: <patchbomb.1382100607@devws164.be.alcatel-lucent.com>
+Date: Fri, 18 Oct 2013 14:50:07 +0200
+From: Kim De Mey <kim.demey@gmail.com>
+Subject: [Xenomai] [PATCH 0 of 2] Xenomai-forge thread_obj: unset
+ __THREAD_S_SAFE when not needed
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,57 +14,105 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 10/11/2013 04:42 PM, Zemskov, Evgeny wrote:
-> On 10/10/2013 01:57 PM, Zemskov, Evgeny wrote:
->> Greetings !
->>
->> I'm trying to run Xenomai system on an industrial computer with
->> Core i5-3610ME 2.70GHz and 8Gb RAM on QM 77 chipset.
->>
->> Any attempts to boot xenomai-patched kernel fail with a stack stace stat=
-ed below.
->> I've tried vanilla kernel 2.6.32 patched with Xenomai 2.6.0 and 2.6.3 (A=
-deos 2.7-03).
->> Xenomai 2.6.0 works fine on a number of other machines with Pentium4, Co=
-de 2 Duo and Core i7.
->>
->> Regretably, we are unable to try use newer kernels (2.6.38 or 3.x) and A=
-deos versions,
->> since we're bound to a certified distrubution of Linux with 2.6.32 kerne=
-l.
->>
->> Any suggestions are wery welcome.
->
-> Could you try a recent kernel, just to see if the issue is still there?
-> Could you also try to compile your kernel as a 64 bits kernel?
->
-> --
->                                              Gilles.
->
-> Tried to build 2.6.32 patched with 2.6.3 and Adeos 2.7-03 as x64;
-> The result crashed with the same stack trace (although I can't verify tha=
-t I've built a proper x64 kernel).
-> Experiments with recent kernels are delayed, cause I can't boot my distri=
-bution and waiting for a reaction of its vendor.
+Hello list,
 
-If the problem is with the devices nodes creation, you can enable
-devtmpfs in recent kernels to get the behaviour you had with devfs,
-prior to udev.
+I believe that there is a problem in xenomai-forge when you create tasks
+from within another task and the newly created tasks have a lower 
+priority than the priority of the task where you created them from.
 
---
-                                            Gilles.
+In the threadobj_start() function the thobj->status is set to 
+__THREAD_S_STARTED|__THREAD_S_SAFE. After this there is a check if the 
+thobj priority is lower or equal to the current thobj priority. If that 
+is the case, it will return there. If it is not the case, 
+synchronization needs to be done.
 
-I believe that devtmpfs was enabled by default in all kernel configuration =
-I've tried; in .config it looks like :
->CONFIG_DEVTMPFS=3Dy
->CONFIG_DEVTMPFS_MOUNT=3Dy
+As far as I understand the code, however, I think that the 
+__THREAD_S_SAFE is only set there because you don't want the 
+finalize_thread to already clean up the thobj in case you are still 
+waiting for the synchronization in the threadobj_start(). Correct?
+If so then this is where I think there is a problem. In case that you 
+don't need to wait for the synchronization and return already before it,
+the __THREAD_S_SAFE is set but never unset. This has as result that in 
+the finalize_thread() (on deletion) the destroy_thread() function will 
+not be called, which has as consequence that proper clean up is not 
+done. The first patch should fix this.
 
-Anyway, latest Ubuntu 13.04 with 3.8.0 kernel patched with latest adeos (ip=
-ipe-core-3.8-x86-1.patch) and built in 32-bit mode seems to boot and work f=
-ine with our problematic hardware.
+I came to this conclusion after investigating a segmentation fault on a 
+test application that creates, starts and deletes tasks in a loop. I can 
+reproduce the issue with the test code at the end of this post. In the 
+code there is a main_task, with priority 90, from where the test_tasks 
+are created, started and deleted. The priority of the test_tasks is 50. 
 
-Eugene
+The result is that a lot of tasks created are not properly deleted. 
+This causes (among maybe other things) a LOT of file descriptors staying 
+open (4 per task I think). These file descriptors are created in the 
+notifier_init() function by doing two pipe() syscalls. If this fails, an 
+error is returned by notifier_init(). However the function 
+threadobj_setup_corespec() does not check this. At a certain point, no 
+more file descriptors are allowed on the process (max is 1024 here) and 
+the pipe() call will fail. If this now happens on the creation of a task
+with a higher priority than 90 (which is the last step in the test 
+code), then threadobj will be properly deleted or attempt this at least. 
+In the deletion, the notifier_destroy() function will be called. This 
+will give a segmentation fault when trying to do pvlist_remove_init() as 
+the notifier_init() function never ran completely in the first place 
+(because of error on pipe()).   
+To make sure that the fail on the pipe() call is seen, I created the 
+second patch. There could be a better thing to do than sending a panic 
+but at least you notice that there is a problem.
+
+Regards,
+Kim
+
+ lib/copperplate/notifier.c  |  4 ++--
+ lib/copperplate/threadobj.c |  4 +++-
+ 2 files changed, 5 insertions(+), 3 deletions(-)
+
+
+test code snippet:
+
+static void test_task(u_long a,u_long b,u_long c,u_long d)
+{
+  while (1)
+    tm_wkafter(1000);
+}
+
+static void main_task(u_long a,u_long b,u_long c,u_long d)
+{
+  u_long tid,args[4] = {0,0,0,0};
+  int i;
+  char name[32];
+  
+  for (i=0;i<256;i++) {
+    printf("counter i: %d\n", i);
+    sprintf(name, "TEST_%d", i);
+    t_create (name,50,0,0,0,&tid);
+    t_start(tid,T_PREEMPT,test_task,args);
+    t_delete(tid);
+  }
+  t_create ("FAIL",95,0,0,0,&tid);
+  t_start(tid,T_PREEMPT,test_task,args);
+  t_delete(tid);
+
+  while (1) tm_wkafter(1000);
+}
+
+int main(int argc, char * const argv[])
+{
+  u_long tid,args[4] = {0,0,0,0};
+
+  psos_long_names = 1;
+
+  mlockall(MCL_CURRENT | MCL_FUTURE);
+  copperplate_init(&argc,&argv);
+
+  t_create("MAIN",90,0,0,0,&tid);
+  t_start(tid,0,main_task, args);
+  while (1) tm_wkafter(1000);
+  return 0;
+}
+
+
 
