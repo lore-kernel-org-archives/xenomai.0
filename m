@@ -1,15 +1,13 @@
-Message-ID: <525E8665.8000705@steinkuehler.net>
-Date: Wed, 16 Oct 2013 07:28:21 -0500
-From: Charles Steinkuehler <charles@steinkuehler.net>
+Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
-References: <525DC044.6090201@steinkuehler.net>
-	<525E73FB.4060809@xenomai.org>	<525E7ABF.8040403@steinkuehler.net>
-	<525E7D85.9020307@xenomai.org> <525E81CD.6000603@steinkuehler.net>
-In-Reply-To: <525E81CD.6000603@steinkuehler.net>
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] Hung task on Xenomai patched ARM 3.8.13 BeagleBone
- Kernel
+Content-Transfer-Encoding: 7bit
+Message-Id: <8ad2934f0bf0d4009511.1382100608@devws164.be.alcatel-lucent.com>
+In-Reply-To: <patchbomb.1382100607@devws164.be.alcatel-lucent.com>
+References: <patchbomb.1382100607@devws164.be.alcatel-lucent.com>
+Date: Fri, 18 Oct 2013 14:50:08 +0200
+From: Kim De Mey <kim.demey@gmail.com>
+Subject: [Xenomai] [PATCH 1 of 2] Xenomai-forge thread_obj: unset
+ __THREAD_S_SAFE when not needed
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,45 +16,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 10/16/2013 7:08 AM, Charles Steinkuehler wrote:
-> On 10/16/2013 6:50 AM, Gilles Chanteperdrix wrote:
->> Ok, so the MMC irq is a gpio irq. And its counter is 0, which does not
->> seem to be normal if the root filesystem in on MMC. Is it 0 too when
->> you boot an unpatched kernel?
->>
->> Do you run a vanilla kernel or a vendor kernel with additional patches
->> to drivers/gpio/gpio-omap.c, or maybe a beaglebone specific GPIO
->> driver in drivers/gpio ?
-> =
+unset __THREAD_S_SAFE for thobj->status when the priority of the
+task is lower than then priority of the current task.
 
-> It's a BeagleBone specific kernel with a list of patches as long as my
-> arm...and I have pretty long arms!
-> =
+Signed-off-by: Kim De Mey <kim.demey@gmail.com>
 
-> https://github.com/cdsteinkuehler/linux-dev/blob/3.8.13-bone28-xenomai/pa=
-tch.sh
-> =
+---
 
-> I'm not sure about the GPIO interrupt.  I'll see what happens with the
-> non-xenomai kernel, and review the board setup.
+ lib/copperplate/threadobj.c |  4 +++-
+ 1 files changed, 3 insertions(+), 1 deletions(-)
 
-Both the BeagleBone and the Xenomai kernels behave the same way.  The
-GPIO mmc interrupt is stuck at zero, and the 80: INTC mmc interrupt
-count increases on access to the filesystem.
+diff --git a/lib/copperplate/threadobj.c b/lib/copperplate/threadobj.c
+--- a/lib/copperplate/threadobj.c
++++ b/lib/copperplate/threadobj.c
+@@ -929,8 +929,10 @@ int threadobj_start(struct threadobj *th
+ 	thobj->status |= __THREAD_S_STARTED|__THREAD_S_SAFE;
+ 	__RT(pthread_cond_signal(&thobj->barrier));
+ 
+-	if (current && thobj->priority <= current->priority)
++	if (current && thobj->priority <= current->priority) {
++		thobj->status &= ~__THREAD_S_SAFE;
+ 		return 0;
++	}
+ 
+ 	/*
+ 	 * Caller needs synchronization with the thread being started,
 
--- =
-
-Charles Steinkuehler
-charles@steinkuehler.net
-
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: signature.asc
-Type: application/pgp-signature
-Size: 261 bytes
-Desc: OpenPGP digital signature
-URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20131016/459dc82=
-a/attachment.pgp>
