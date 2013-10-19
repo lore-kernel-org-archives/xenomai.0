@@ -1,16 +1,13 @@
-Message-ID: <525E8A43.5090601@xenomai.org>
-Date: Wed, 16 Oct 2013 14:44:51 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <5262C351.8010704@xenomai.org>
+Date: Sat, 19 Oct 2013 19:37:21 +0200
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <525DC044.6090201@steinkuehler.net>
-	<525E73FB.4060809@xenomai.org>	<525E7ABF.8040403@steinkuehler.net>
-	<525E7D85.9020307@xenomai.org> <525E81CD.6000603@steinkuehler.net>
-	<525E8665.8000705@steinkuehler.net>
-In-Reply-To: <525E8665.8000705@steinkuehler.net>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+References: <patchbomb.1381827036@devws164.be.alcatel-lucent.com>
+In-Reply-To: <patchbomb.1381827036@devws164.be.alcatel-lucent.com>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Hung task on Xenomai patched ARM 3.8.13 BeagleBone
- Kernel
+Subject: Re: [Xenomai] [PATCH 0 of 3] Xenomai-forge: Initial implementation
+ of registry for pSOS
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,35 +16,62 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Charles Steinkuehler <charles@steinkuehler.net>
-Cc: xenomai@xenomai.org
+To: Kim De Mey <kim.demey@gmail.com>, xenomai@xenomai.org
 
-On 10/16/2013 02:28 PM, Charles Steinkuehler wrote:
-> On 10/16/2013 7:08 AM, Charles Steinkuehler wrote:
->> On 10/16/2013 6:50 AM, Gilles Chanteperdrix wrote:
->>> Ok, so the MMC irq is a gpio irq. And its counter is 0, which does not
->>> seem to be normal if the root filesystem in on MMC. Is it 0 too when
->>> you boot an unpatched kernel?
->>>
->>> Do you run a vanilla kernel or a vendor kernel with additional patches
->>> to drivers/gpio/gpio-omap.c, or maybe a beaglebone specific GPIO
->>> driver in drivers/gpio ?
->>
->> It's a BeagleBone specific kernel with a list of patches as long as my
->> arm...and I have pretty long arms!
->>
->> https://github.com/cdsteinkuehler/linux-dev/blob/3.8.13-bone28-xenomai/patch.sh
->>
->> I'm not sure about the GPIO interrupt.  I'll see what happens with the
->> non-xenomai kernel, and review the board setup.
+On 10/15/2013 10:50 AM, Kim De Mey wrote:
+> This patch set adds an initial implementation of registry for pSOS
+> tasks, semaphores and queues. It is similar as the already existing
+> vxworks implementation but with more output data.
 >
-> Both the BeagleBone and the Xenomai kernels behave the same way.  The
-> GPIO mmc interrupt is stuck at zero, and the 80: INTC mmc interrupt
-> count increases on access to the filesystem.
+> Important to mention is that the "size" parameter in the read function
+> is not used (it is also not used in the vxworks implementation).
+> This will be an issue if the data to output is larger than the buffer
+> used. This is now possible to happen as I added messages in the queue
+> read function and timers in the task read function. In that case an
+> implementation which uses size & offset is necessary.
 >
-Maybe the GPIO interrupt is for the "Card detect signal", do you see it 
-increasing if you remove and re-insert the SD card?
+> I am busy implementing a second patch that does this.
+> It creates a local buffer which is filled with the data on an "open"
+> call. A pointer to the local buffer is saved in the fuse_file_info->fh
+> field (requires FUSE version >=  2.5). A read will then just read from
+> the local buffer with offset and size given. A release is also needed to
+> free the buffer.
+>
+> However while I continue with this I would like to know whether you see
+> this as the right way to go.
+
+IIUC, this would add the quite unexpected requirement of having to 
+reopen a file for getting fresh data. read() should actually (re-)read 
+the current object state each time it is invoked, and not resend some 
+frozen state collected by the corresponding open() indefinitely.
+
+e.g. this has to work with code like:
+
+	fd = open("/mnt/xenomai/1235/foo/tasks", O_RDONLY);
+	for (;;) {
+		ret = read(fd, buf, sizeof(buf));
+		... process NEW data ...
+	}
+
+As I mentioned earlier, referring to fuse_file_info->fh from a registry 
+client is not acceptable. Exposing this fs-private information to the 
+clients directly (e.g. psos emulator) would prevent any further use by 
+copperplate/registry although it's actually the fs implementation layer 
+(not psos). So the day we'd need to store private data for the registry 
+fs, we could not use fh, although this is what we should definitely be 
+using in this case.
+
+If you really need to provide for holding private data in a fuse _file_ 
+object, instead of a copperplate _filesystem_ object (i.e. struct 
+fsobj), then the fuse file object should be abstracted first in 
+copperplate/registry (e.g. struct fileobj), then passed as an additional 
+parameter to all client callbacks. That file (descriptor) object could 
+then hold a client-specific private data pointer. In short, this change 
+should be introduced in the generic registry layer, not in the psos 
+emulator.
+
+The question being: do you really need this?
 
 -- 
-					    Gilles.
+Philippe.
 
