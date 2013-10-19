@@ -1,12 +1,13 @@
 MIME-Version: 1.0
-In-Reply-To: <patchbomb.1382100607@devws164.be.alcatel-lucent.com>
-References: <patchbomb.1382100607@devws164.be.alcatel-lucent.com>
+In-Reply-To: <5262C351.8010704@xenomai.org>
+References: <patchbomb.1381827036@devws164.be.alcatel-lucent.com>
+	<5262C351.8010704@xenomai.org>
 From: Ronny Meeus <ronny.meeus@gmail.com>
-Date: Sat, 19 Oct 2013 20:42:11 +0200
-Message-ID: <CAMJ=MEcagp21eJ+O1eDZRfNoZEyGuXzV5ctEYj42UL7VFM70Dg@mail.gmail.com>
+Date: Sat, 19 Oct 2013 20:56:05 +0200
+Message-ID: <CAMJ=MEdj=y2Uj_y2tr9+Dfvy1r57rhnNqTWxjo500JhVk4qbVg@mail.gmail.com>
 Content-Type: text/plain; charset=ISO-8859-1
-Subject: Re: [Xenomai] [PATCH 0 of 2] Xenomai-forge thread_obj: unset
- __THREAD_S_SAFE when not needed
+Subject: Re: [Xenomai] [PATCH 0 of 3] Xenomai-forge: Initial implementation
+ of registry for pSOS
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,60 +16,39 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Kim De Mey <kim.demey@gmail.com>, Philippe Gerum <rpm@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: xenomai@xenomai.org
 
 >
 >
-> test code snippet:
 >
-> static void test_task(u_long a,u_long b,u_long c,u_long d)
-> {
->   while (1)
->     tm_wkafter(1000);
-> }
 >
-> static void main_task(u_long a,u_long b,u_long c,u_long d)
-> {
->   u_long tid,args[4] = {0,0,0,0};
->   int i;
->   char name[32];
+> IIUC, this would add the quite unexpected requirement of having to reopen
+> a file for getting fresh data. read() should actually (re-)read the current
+> object state each time it is invoked, and not resend some frozen state
+> collected by the corresponding open() indefinitely.
 >
->   for (i=0;i<256;i++) {
->     printf("counter i: %d\n", i);
->     sprintf(name, "TEST_%d", i);
->     t_create (name,50,0,0,0,&tid);
->     t_start(tid,T_PREEMPT,test_task,args);
->     t_delete(tid);
->   }
->   t_create ("FAIL",95,0,0,0,&tid);
->   t_start(tid,T_PREEMPT,test_task,args);
->   t_delete(tid);
+> e.g. this has to work with code like:
 >
->   while (1) tm_wkafter(1000);
-> }
->
-> int main(int argc, char * const argv[])
-> {
->   u_long tid,args[4] = {0,0,0,0};
->
->   psos_long_names = 1;
->
->   mlockall(MCL_CURRENT | MCL_FUTURE);
->   copperplate_init(&argc,&argv);
->
->   t_create("MAIN",90,0,0,0,&tid);
->   t_start(tid,0,main_task, args);
->   while (1) tm_wkafter(1000);
->   return 0;
-> }
+>         fd = open("/mnt/xenomai/1235/foo/**tasks", O_RDONLY);
+>         for (;;) {
+>                 ret = read(fd, buf, sizeof(buf));
+>                 ... process NEW data ...
+>         }
 >
 >
 Philippe,
 
-I think it would be good to add this test to the testsuite of xenomai since
-we discovered a bug in an earlier version of Xenomai forge already with
-exactly this test.
+how to handle the case where the data is bigger than de buffer passed by
+the user?
+Suppose the task data is 20k while the user read only wants 4k. I would
+expect that the second read returns the second 4k block and so on.
 
-Regards,
+By generating the complete output in 1 shot (for example at open), the data
+would be more consistent in my opinion too.
+Suppose the data of a queue is dumped and the queue contains a lot of
+messages. I would like to see a consistent view on the queue and not the
+first 4k followed by some random messages after it because the application
+is processing the queue in parallel.
+
 Ronny
