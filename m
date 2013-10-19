@@ -1,13 +1,12 @@
-Message-ID: <5262C351.8010704@xenomai.org>
-Date: Sat, 19 Oct 2013 19:37:21 +0200
-From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <patchbomb.1381827036@devws164.be.alcatel-lucent.com>
-In-Reply-To: <patchbomb.1381827036@devws164.be.alcatel-lucent.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PATCH 0 of 3] Xenomai-forge: Initial implementation
- of registry for pSOS
+In-Reply-To: <patchbomb.1382100607@devws164.be.alcatel-lucent.com>
+References: <patchbomb.1382100607@devws164.be.alcatel-lucent.com>
+From: Ronny Meeus <ronny.meeus@gmail.com>
+Date: Sat, 19 Oct 2013 20:42:11 +0200
+Message-ID: <CAMJ=MEcagp21eJ+O1eDZRfNoZEyGuXzV5ctEYj42UL7VFM70Dg@mail.gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: Re: [Xenomai] [PATCH 0 of 2] Xenomai-forge thread_obj: unset
+ __THREAD_S_SAFE when not needed
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,62 +15,60 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Kim De Mey <kim.demey@gmail.com>, xenomai@xenomai.org
+To: Kim De Mey <kim.demey@gmail.com>, Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On 10/15/2013 10:50 AM, Kim De Mey wrote:
-> This patch set adds an initial implementation of registry for pSOS
-> tasks, semaphores and queues. It is similar as the already existing
-> vxworks implementation but with more output data.
 >
-> Important to mention is that the "size" parameter in the read function
-> is not used (it is also not used in the vxworks implementation).
-> This will be an issue if the data to output is larger than the buffer
-> used. This is now possible to happen as I added messages in the queue
-> read function and timers in the task read function. In that case an
-> implementation which uses size & offset is necessary.
 >
-> I am busy implementing a second patch that does this.
-> It creates a local buffer which is filled with the data on an "open"
-> call. A pointer to the local buffer is saved in the fuse_file_info->fh
-> field (requires FUSE version >=  2.5). A read will then just read from
-> the local buffer with offset and size given. A release is also needed to
-> free the buffer.
+> test code snippet:
 >
-> However while I continue with this I would like to know whether you see
-> this as the right way to go.
+> static void test_task(u_long a,u_long b,u_long c,u_long d)
+> {
+>   while (1)
+>     tm_wkafter(1000);
+> }
+>
+> static void main_task(u_long a,u_long b,u_long c,u_long d)
+> {
+>   u_long tid,args[4] = {0,0,0,0};
+>   int i;
+>   char name[32];
+>
+>   for (i=0;i<256;i++) {
+>     printf("counter i: %d\n", i);
+>     sprintf(name, "TEST_%d", i);
+>     t_create (name,50,0,0,0,&tid);
+>     t_start(tid,T_PREEMPT,test_task,args);
+>     t_delete(tid);
+>   }
+>   t_create ("FAIL",95,0,0,0,&tid);
+>   t_start(tid,T_PREEMPT,test_task,args);
+>   t_delete(tid);
+>
+>   while (1) tm_wkafter(1000);
+> }
+>
+> int main(int argc, char * const argv[])
+> {
+>   u_long tid,args[4] = {0,0,0,0};
+>
+>   psos_long_names = 1;
+>
+>   mlockall(MCL_CURRENT | MCL_FUTURE);
+>   copperplate_init(&argc,&argv);
+>
+>   t_create("MAIN",90,0,0,0,&tid);
+>   t_start(tid,0,main_task, args);
+>   while (1) tm_wkafter(1000);
+>   return 0;
+> }
+>
+>
+Philippe,
 
-IIUC, this would add the quite unexpected requirement of having to 
-reopen a file for getting fresh data. read() should actually (re-)read 
-the current object state each time it is invoked, and not resend some 
-frozen state collected by the corresponding open() indefinitely.
+I think it would be good to add this test to the testsuite of xenomai since
+we discovered a bug in an earlier version of Xenomai forge already with
+exactly this test.
 
-e.g. this has to work with code like:
-
-	fd = open("/mnt/xenomai/1235/foo/tasks", O_RDONLY);
-	for (;;) {
-		ret = read(fd, buf, sizeof(buf));
-		... process NEW data ...
-	}
-
-As I mentioned earlier, referring to fuse_file_info->fh from a registry 
-client is not acceptable. Exposing this fs-private information to the 
-clients directly (e.g. psos emulator) would prevent any further use by 
-copperplate/registry although it's actually the fs implementation layer 
-(not psos). So the day we'd need to store private data for the registry 
-fs, we could not use fh, although this is what we should definitely be 
-using in this case.
-
-If you really need to provide for holding private data in a fuse _file_ 
-object, instead of a copperplate _filesystem_ object (i.e. struct 
-fsobj), then the fuse file object should be abstracted first in 
-copperplate/registry (e.g. struct fileobj), then passed as an additional 
-parameter to all client callbacks. That file (descriptor) object could 
-then hold a client-specific private data pointer. In short, this change 
-should be introduced in the generic registry layer, not in the psos 
-emulator.
-
-The question being: do you really need this?
-
--- 
-Philippe.
-
+Regards,
+Ronny
