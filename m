@@ -1,12 +1,18 @@
-Message-ID: <52657C7A.3050000@xenomai.org>
-Date: Mon, 21 Oct 2013 21:11:54 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <CAKKWdtd22t=83-aTgGJX9F_yqFtqX6GtDoxUcWqfQ3Z295ToHQ@mail.gmail.com>
-In-Reply-To: <CAKKWdtd22t=83-aTgGJX9F_yqFtqX6GtDoxUcWqfQ3Z295ToHQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] where is the kernel code for rt_printf()?
+Message-ID: <BLU0-SMTP35782C9055C3C711BB32A0AAF010@phx.gbl>
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0 (Mac OS X Mail 6.6 \(1510\))
+From: Chiara <chiaracapretti@hotmail.it>
+In-Reply-To: <52657A3D.60804@xenomai.org>
+Date: Mon, 21 Oct 2013 21:16:06 +0200
+Content-Transfer-Encoding: quoted-printable
+References: <BLU0-SMTP919B70F18235329A81D0D5AF010@phx.gbl>
+ <52656F1E.9020701@xenomai.org>
+ <BLU0-SMTP2254E486BBB57FB632CD821AF010@phx.gbl>
+ <52657126.4020207@xenomai.org>
+ <BLU0-SMTP274243D6BCFEC579750ACE5AF010@phx.gbl>
+ <5265720F.9030704@xenomai.org>
+ <BLU0-SMTP135B9C053A6618D0890BB20AF010@phx.gbl> <52657A3D.60804@xenomai.org>
+Subject: Re: [Xenomai] HELP with xeno-test
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,20 +21,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: ali hagigat <hagigatali@gmail.com>
-Cc: xenomai <xenomai@xenomai.org>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 10/21/2013 04:05 PM, ali hagigat wrote:
-> i wonder if anybody can tell me where would be the source code of the
-> fuction, rt_printf(), inside the kernel?  Is it the same as
-> rt_printk()?
+So I should unistall libxenomai-dev, libxenomai1 and xenomai-runtime =
+utilities?
+How is it possible that I have some pieces of Xenomai 2.5 if i installed =
+xenomai using a guide?
 
-There is no rt_printk function.
+Thanks again for the help!
 
-rt_printf is implemented using the "write()" syscall as kernel-space
-support, it simply transmits message to a non real-time thread which
-uses printf.
+Chiara
 
--- 
-                                                                Gilles.
+
+Il giorno 21/ott/2013, alle ore 21:02, Gilles Chanteperdrix =
+<gilles.chanteperdrix@xenomai.org> ha scritto:
+
+> On 10/21/2013 08:50 PM, Chiara wrote:
+>> Sorry..
+>>=20
+>> I visualize:
+>>=20
+>> libxenomai-dev 2.5.5.2-1ubuntu2 i386=20
+>=20
+> So, you have some pieces of Xenomai 2.5 installed. Please remove them
+> before trying and installing a more recent version.
+>=20
+>=20
+> --=20
+>                                                                Gilles.
+>=20
+
 
