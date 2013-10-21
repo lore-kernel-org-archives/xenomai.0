@@ -1,12 +1,18 @@
-Message-ID: <526579EA.50203@xenomai.org>
-Date: Mon, 21 Oct 2013 21:00:58 +0200
+Message-ID: <52657A3D.60804@xenomai.org>
+Date: Mon, 21 Oct 2013 21:02:21 +0200
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CAKKWdtdYjRFk8rUs5x=g_cRYfOu=nP2DY-MAL9py9cZ9rwKMqQ@mail.gmail.com>
-In-Reply-To: <CAKKWdtdYjRFk8rUs5x=g_cRYfOu=nP2DY-MAL9py9cZ9rwKMqQ@mail.gmail.com>
+References: <BLU0-SMTP919B70F18235329A81D0D5AF010@phx.gbl>
+ <52656F1E.9020701@xenomai.org>
+ <BLU0-SMTP2254E486BBB57FB632CD821AF010@phx.gbl>
+ <52657126.4020207@xenomai.org>
+ <BLU0-SMTP274243D6BCFEC579750ACE5AF010@phx.gbl>
+ <5265720F.9030704@xenomai.org>
+ <BLU0-SMTP135B9C053A6618D0890BB20AF010@phx.gbl>
+In-Reply-To: <BLU0-SMTP135B9C053A6618D0890BB20AF010@phx.gbl>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] how to use an alarm handler
+Subject: Re: [Xenomai] HELP with xeno-test
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,43 +21,19 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: ali hagigat <hagigatali@gmail.com>
-Cc: xenomai@xenomai.org
+To: Chiara <chiaracapretti@hotmail.it>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 10/19/2013 04:50 PM, ali hagigat wrote:
-> I have two questions:
-
-Hi,
-
+On 10/21/2013 08:50 PM, Chiara wrote:
+> Sorry..
 > 
-> 1) I want to create an alarm object in kernel space and an alarm
-> handler and then i have a user space task which waits for that alarm
-> defined inside kernel.
-> How can i reference the created alarm object by that user-space task?
-> and how that task is unblocked inside kernel?
-
-See:
-http://www.xenomai.org/documentation/xenomai-2.6/html/api/group__alarm.html
-
+> I visualize:
 > 
-> 2) is there any book and tutorial about the real-time programming and
-> developing code for Xenomai?
+> libxenomai-dev 2.5.5.2-1ubuntu2 i386 
 
-"Building embedded Linux systems" has a chapter about Xenomai. A web search
-finds the following tutorial:
+So, you have some pieces of Xenomai 2.5 installed. Please remove them
+before trying and installing a more recent version.
 
-http://www.cs.ru.nl/lab/xenomai/
-with the following exercises:
-http://www.cs.ru.nl/lab/xenomai/exercises/index.html
-
-I once tried to explain how to port POSIX applications to Xenomai:
-https://www.xenomai.org/index.php/Porting_POSIX_applications_to_Xenomai
-
-Also, I know this is not what you ask, but you may have a look at the API
-documentation:
-http://www.xenomai.org/documentation/xenomai-2.6/html/api/group__native.html
-
-Regards.
 
 -- 
                                                                 Gilles.
