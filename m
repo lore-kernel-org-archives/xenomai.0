@@ -1,12 +1,9 @@
-Message-ID: <5264FD93.2070705@xenomai.org>
-Date: Mon, 21 Oct 2013 12:10:27 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <BLU0-SMTP361A4801D1D3A47014E894BAF010@phx.gbl>
-In-Reply-To: <BLU0-SMTP361A4801D1D3A47014E894BAF010@phx.gbl>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Help with the histogram of latency test
+Date: Mon, 21 Oct 2013 14:31:20 +0200
+Message-ID: <CAKS01omHoKh6EVznDXULTuxBS0O=3=V0fWL+24Z_8HgOuCAfxA@mail.gmail.com>
+From: Anup Kini <akini@synapticon.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: [Xenomai] error while porting Xenomai to linux-xlnx-V14.5 zynq soc
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,24 +12,132 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Chiara <chiaracapretti@hotmail.it>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 10/21/2013 07:48 AM, Chiara wrote:
-> Hi,
-> I'm new of xenomai.
-> I would analyze latency performance on different architecture and I want to use the histogram that latency produce with the option -g.
-> But when I use the script histo.gp I visualize this warning message:
-> "skipping unreadable file, no data in plot"
->
-> I write this command
->
-> gnuplot -e 'input_file="/usr/xenomai/bin/.latency -t1 - g gr ";output_file="/usr/xenomai/bin/gr";graph_title="graph";' /usr/xenomai/bin/histo.gp
+Hi All,
 
-The input file of the histo.gp script is the output file you obtained 
-with latency -g. The output file is the file where you want the script 
-to put the generated image.
+I am trying to port Xenomai 2.6.3 to linux-xlnx tag=14.5 as mentioned in
+the wiki.
+I could successfully run prepare-kernel.sh but failed to build the modules.
+
+patches applied: in the below mentioned order.
+ - ipipe-core-3.8-zynq-pre.patch
+ - ipipe-core-3.8-arm-1.patch
+ - ipipe-core-3.8-zynq-post.patch
+
+prepare-kernel.sh --arch=arm --linux=$LINUX_DIR
+cd $LINUX_DIR
+
+make ARCH=arm CROSS_COMPILE=arm-xilinx-linux-gnueabi xilinx_zynq_defconfig
+make ARCH=arm CROSS_COMPILE=arm-xilinx-linux-gnueabi
+CONFIG_DEBUG_SECTION_MISMATCH=y bzImage modules
+
+  LINK    vmlinux
+  LD      vmlinux.o
+  MODPOST vmlinux.o
+WARNING: vmlinux.o(.text+0xe510): Section mismatch in reference from the
+function armpmu_register() to the function .init.text:armpmu_init()
+The function armpmu_register() references
+the function __init armpmu_init().
+This is often because armpmu_register lacks a __init
+annotation or the annotation of armpmu_init is wrong.
+
+WARNING: vmlinux.o(.text+0x10128): Section mismatch in reference from the
+function __ipipe_tsc_register() to the variable
+.init.text:__ipipe_tsc_area_start
+The function __ipipe_tsc_register() references
+the variable __init __ipipe_tsc_area_start.
+This is often because __ipipe_tsc_register lacks a __init
+annotation or the annotation of __ipipe_tsc_area_start is wrong.
+
+WARNING: vmlinux.o(.text+0x10130): Section mismatch in reference from the
+function __ipipe_tsc_register() to the variable
+.init.text:__kuser_helper_end
+The function __ipipe_tsc_register() references
+the variable __init __kuser_helper_end.
+This is often because __ipipe_tsc_register lacks a __init
+annotation or the annotation of __kuser_helper_end is wrong.
+
+WARNING: vmlinux.o(.text+0x2942dc): Section mismatch in reference from the
+function vexpress_sysreg_probe() to the function
+.init.text:vexpress_sysreg_setup()
+The function vexpress_sysreg_probe() references
+the function __init vexpress_sysreg_setup().
+This is often because vexpress_sysreg_probe lacks a __init
+annotation or the annotation of vexpress_sysreg_setup is wrong.
+
+  GEN     .version
+  CHK     include/generated/compile.h
+  UPD     include/generated/compile.h
+  CC      init/version.o
+  LD      init/built-in.o
+  KSYM    .tmp_kallsyms1.o
+  KSYM    .tmp_kallsyms2.o
+  LD      vmlinux
+  SORTEX  vmlinux
+sort done marker at 602c48
+  SYSMAP  System.map
+  OBJCOPY arch/arm/boot/Image
+  Kernel: arch/arm/boot/Image is ready
+  GZIP    arch/arm/boot/compressed/piggy.gzip
+  AS      arch/arm/boot/compressed/piggy.gzip.o
+  CC      arch/arm/boot/compressed/misc.o
+  CC      arch/arm/boot/compressed/decompress.o
+  CC      arch/arm/boot/compressed/string.o
+  LD      arch/arm/boot/compressed/vmlinux
+  OBJCOPY arch/arm/boot/zImage
+  Kernel: arch/arm/boot/zImage is ready
+  Building modules, stage 2.
+  MODPOST 20 modules
+ERROR: "set_ipi_handler" [drivers/remoteproc/zynq_remoteproc.ko] undefined!
+ERROR: "clear_ipi_handler" [drivers/remoteproc/zynq_remoteproc.ko]
+undefined!
+make[1]: *** [__modpost] Error 1
+make: *** [modules] Error 2
+
+
+The entire make output is in the following link:
+http://pastebin.com/dyjZnh9F
+
+Let me know if i am missing some patch or should use a older version of
+xenomai.
 
 -- 
-					    Gilles.
 
+*Anup Kini
+*Systems Engineer****
+*
+------------------------------
+*
+
+*Synapticon** * |  Cyber-Physical System Solutions ****
+
+Mobile:
+
+Direct:
+
++49 151 / 638 646 73
+
++49 7335 / 186 999 21
+
+Fax:****
++49 7335 / 186 999 1
+
+
+ **
+
+ ****
+
+synapticon.com <http://www.synapticon.com/>  |
+@synapticon_co<https://twitter.com/#!/synapticon_co>
+****
+
+Synapticon GmbH  |  Hohlbachweg 2  |  73344 Gruibingen, DE
+Secretary +49 7335 / 186 999 0  |  General Manager: Nikolai Ensslen
+Registry Court Ulm HRB 725114  |  USt-ID DE271647127****
+
+This message and any files transmitted with it are confidential and
+intended
+solely for the use of the individual or entity to whom they are addressed.
+Please notify the sender immediately if you have received this e-mail by
+mistake and delete it from your system.
