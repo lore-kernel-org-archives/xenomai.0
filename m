@@ -1,13 +1,13 @@
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Message-Id: <aec0c1ddb8b863f99c08.1382364571@devws164.be.alcatel-lucent.com>
+Message-Id: <c63fca9992458b6b8711.1382364572@devws164.be.alcatel-lucent.com>
 In-Reply-To: <patchbomb.1382364570@devws164.be.alcatel-lucent.com>
 References: <patchbomb.1382364570@devws164.be.alcatel-lucent.com>
-Date: Mon, 21 Oct 2013 16:09:31 +0200
+Date: Mon, 21 Oct 2013 16:09:32 +0200
 From: Kim De Mey <kim.demey@gmail.com>
-Subject: [Xenomai] [PATCH 1 of 3 v2] Xenomai-forge thread_obj: Do not set
- __THREAD_S_SAFE when not needed
+Subject: [Xenomai] [PATCH 2 of 3 v2] Xenomai-forge notifier_init: warning on
+	failed pipe
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,34 +18,47 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Do not set __THREAD_S_SAFE for thobj->status when the priority
-of the task is lower than the priority of the current task.
+Give a warning if one of the pipe() system calls fails. To indicate that there
+is an underlying problem. Also add an assert on the notifier_init return
+value in threadobj_setup_coresp.
 
 Signed-off-by: Kim De Mey <kim.demey@gmail.com>
 
 ---
 
+ lib/copperplate/notifier.c  |  5 ++++-
  lib/copperplate/threadobj.c |  3 ++-
- 1 files changed, 2 insertions(+), 1 deletions(-)
+ 2 files changed, 6 insertions(+), 2 deletions(-)
 
+diff --git a/lib/copperplate/notifier.c b/lib/copperplate/notifier.c
+--- a/lib/copperplate/notifier.c
++++ b/lib/copperplate/notifier.c
+@@ -143,10 +143,13 @@ int notifier_init(struct notifier *nf,
+ 	sigset_t oset;
+ 	int fd;
+ 
+-	if (pipe(nf->psfd) < 0)
++	if (pipe(nf->psfd) < 0) {
++		warning("failed to create file descriptors");
+ 		return __bt(-errno);
++	}
+ 
+ 	if (pipe(nf->pwfd) < 0) {
++		warning("failed to create file descriptors");
+ 		__STD(close(nf->psfd[0]));
+ 		__STD(close(nf->psfd[1]));
+ 		return __bt(-errno);
 diff --git a/lib/copperplate/threadobj.c b/lib/copperplate/threadobj.c
 --- a/lib/copperplate/threadobj.c
 +++ b/lib/copperplate/threadobj.c
-@@ -926,7 +926,7 @@ int threadobj_start(struct threadobj *th
- 	if (thobj->status & __THREAD_S_STARTED)
- 		return 0;
+@@ -449,7 +449,8 @@ static inline int threadobj_setup_coresp
+ 	int ret;
  
--	thobj->status |= __THREAD_S_STARTED|__THREAD_S_SAFE;
-+	thobj->status |= __THREAD_S_STARTED;
- 	__RT(pthread_cond_signal(&thobj->barrier));
+ 	prctl(PR_SET_NAME, (unsigned long)thobj->name, 0, 0, 0);
+-	notifier_init(&thobj->core.notifier, notifier_callback, 1);
++	ret = notifier_init(&thobj->core.notifier, notifier_callback, 1);
++	assert(ret == 0);
+ 	thobj->core.period = 0;
  
- 	if (current && thobj->priority <= current->priority)
-@@ -943,6 +943,7 @@ int threadobj_start(struct threadobj *th
- 	 */
- 	pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, &oldstate);
- 
-+	thobj->status |= __THREAD_S_SAFE;
- 	wait_on_barrier(thobj, __THREAD_S_ACTIVE);
- 	thobj->status &= ~__THREAD_S_SAFE;
- 
+ 	/*
 
