@@ -1,10 +1,12 @@
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Message-Id: <patchbomb.1382364570@devws164.be.alcatel-lucent.com>
-Date: Mon, 21 Oct 2013 16:09:30 +0200
+Message-Id: <aec0c1ddb8b863f99c08.1382364571@devws164.be.alcatel-lucent.com>
+In-Reply-To: <patchbomb.1382364570@devws164.be.alcatel-lucent.com>
+References: <patchbomb.1382364570@devws164.be.alcatel-lucent.com>
+Date: Mon, 21 Oct 2013 16:09:31 +0200
 From: Kim De Mey <kim.demey@gmail.com>
-Subject: [Xenomai] [PATCH 0 of 3 v2] Xenomai-forge thread_obj: unset
+Subject: [Xenomai] [PATCH 1 of 3 v2] Xenomai-forge thread_obj: Do not set
  __THREAD_S_SAFE when not needed
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -16,20 +18,34 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Adjusted patches after feedback & suggestions:
+Do not set __THREAD_S_SAFE for thobj->status when the priority
+of the task is lower than the priority of the current task.
 
-PATCH 1: Setting the __THREAD_S_SAFE for thobj->status is done later 
-only when necessary.
+Signed-off-by: Kim De Mey <kim.demey@gmail.com>
 
-PATCH 2: Add warning when pipe() system call fails + assert on return 
-value of notifier_init().
+---
 
-PATCH 3: Extends task-9 with 3 more test loops (of which two make the
-error that PATCH 1 solves occur). 
+ lib/copperplate/threadobj.c |  3 ++-
+ 1 files changed, 2 insertions(+), 1 deletions(-)
 
-
- lib/copperplate/notifier.c  |   5 ++++-
- lib/copperplate/threadobj.c |   6 ++++--
- lib/psos/testsuite/task-9.c |  38 ++++++++++++++++++++++++++++++++++++--
- 3 files changed, 44 insertions(+), 5 deletions(-)
+diff --git a/lib/copperplate/threadobj.c b/lib/copperplate/threadobj.c
+--- a/lib/copperplate/threadobj.c
++++ b/lib/copperplate/threadobj.c
+@@ -926,7 +926,7 @@ int threadobj_start(struct threadobj *th
+ 	if (thobj->status & __THREAD_S_STARTED)
+ 		return 0;
+ 
+-	thobj->status |= __THREAD_S_STARTED|__THREAD_S_SAFE;
++	thobj->status |= __THREAD_S_STARTED;
+ 	__RT(pthread_cond_signal(&thobj->barrier));
+ 
+ 	if (current && thobj->priority <= current->priority)
+@@ -943,6 +943,7 @@ int threadobj_start(struct threadobj *th
+ 	 */
+ 	pthread_setcancelstate(PTHREAD_CANCEL_DISABLE, &oldstate);
+ 
++	thobj->status |= __THREAD_S_SAFE;
+ 	wait_on_barrier(thobj, __THREAD_S_ACTIVE);
+ 	thobj->status &= ~__THREAD_S_SAFE;
+ 
 
