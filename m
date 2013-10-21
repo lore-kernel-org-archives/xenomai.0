@@ -1,13 +1,13 @@
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Message-Id: <c63fca9992458b6b8711.1382364572@devws164.be.alcatel-lucent.com>
+Message-Id: <31c8dbe8d4bce4a0827e.1382364573@devws164.be.alcatel-lucent.com>
 In-Reply-To: <patchbomb.1382364570@devws164.be.alcatel-lucent.com>
 References: <patchbomb.1382364570@devws164.be.alcatel-lucent.com>
-Date: Mon, 21 Oct 2013 16:09:32 +0200
+Date: Mon, 21 Oct 2013 16:09:33 +0200
 From: Kim De Mey <kim.demey@gmail.com>
-Subject: [Xenomai] [PATCH 2 of 3 v2] Xenomai-forge notifier_init: warning on
-	failed pipe
+Subject: [Xenomai] [PATCH 3 of 3 v2] Xenomai-forge extend psos testsuite
+	task-9
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,47 +18,82 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Give a warning if one of the pipe() system calls fails. To indicate that there
-is an underlying problem. Also add an assert on the notifier_init return
-value in threadobj_setup_coresp.
+Extend the task-9 test with different root task priorities and
+with both incrementing and decrementing priorities for the test tasks.
 
 Signed-off-by: Kim De Mey <kim.demey@gmail.com>
 
 ---
 
- lib/copperplate/notifier.c  |  5 ++++-
- lib/copperplate/threadobj.c |  3 ++-
- 2 files changed, 6 insertions(+), 2 deletions(-)
+ lib/psos/testsuite/task-9.c |  38 ++++++++++++++++++++++++++++++++++++--
+ 1 files changed, 36 insertions(+), 2 deletions(-)
 
-diff --git a/lib/copperplate/notifier.c b/lib/copperplate/notifier.c
---- a/lib/copperplate/notifier.c
-+++ b/lib/copperplate/notifier.c
-@@ -143,10 +143,13 @@ int notifier_init(struct notifier *nf,
- 	sigset_t oset;
- 	int fd;
+diff --git a/lib/psos/testsuite/task-9.c b/lib/psos/testsuite/task-9.c
+--- a/lib/psos/testsuite/task-9.c
++++ b/lib/psos/testsuite/task-9.c
+@@ -14,7 +14,7 @@ static void test_task(u_long a0, u_long 
+ 	traceobj_exit(&trobj);
+ }
  
--	if (pipe(nf->psfd) < 0)
-+	if (pipe(nf->psfd) < 0) {
-+		warning("failed to create file descriptors");
- 		return __bt(-errno);
-+	}
+-static void root_task(u_long a0, u_long a1, u_long a2, u_long a3)
++static void root_task(u_long increment, u_long a1, u_long a2, u_long a3)
+ {
+ 	u_long args[] = { 1, 2, 3, 4 }, ret, tid;
+ 	int n;
+@@ -22,7 +22,10 @@ static void root_task(u_long a0, u_long 
+ 	traceobj_enter(&trobj);
  
- 	if (pipe(nf->pwfd) < 0) {
-+		warning("failed to create file descriptors");
- 		__STD(close(nf->psfd[0]));
- 		__STD(close(nf->psfd[1]));
- 		return __bt(-errno);
-diff --git a/lib/copperplate/threadobj.c b/lib/copperplate/threadobj.c
---- a/lib/copperplate/threadobj.c
-+++ b/lib/copperplate/threadobj.c
-@@ -449,7 +449,8 @@ static inline int threadobj_setup_coresp
- 	int ret;
+ 	for (n = 0; n < 512; n++) {
+-		ret = t_create ("TEST", (n % MAX_PRIO) + 2,100000, 0, 0, &tid);
++		if(increment)
++			ret = t_create ("TEST", (n % MAX_PRIO) + 2,100000, 0, 0, &tid);
++		else
++			ret = t_create ("TEST", MAX_PRIO - (n % MAX_PRIO) + 1,100000, 0, 0, &tid);
+ 		traceobj_assert(&trobj, ret == SUCCESS);
+ 		ret = t_start(tid, T_PREEMPT, test_task, args);
+ 		traceobj_assert(&trobj, ret == SUCCESS);
+@@ -39,6 +42,7 @@ int main(int argc, char *const argv[])
  
- 	prctl(PR_SET_NAME, (unsigned long)thobj->name, 0, 0, 0);
--	notifier_init(&thobj->core.notifier, notifier_callback, 1);
-+	ret = notifier_init(&thobj->core.notifier, notifier_callback, 1);
-+	assert(ret == 0);
- 	thobj->core.period = 0;
+ 	traceobj_init(&trobj, argv[0], 0);
  
- 	/*
++	// Low priority root task, loop incr. priority test tasks
+ 	ret = t_create("root", 3, 0, 0, 0, &tid);
+ 	traceobj_assert(&trobj, ret == SUCCESS);
+ 
+@@ -47,5 +51,35 @@ int main(int argc, char *const argv[])
+ 
+ 	traceobj_join(&trobj);
+ 
++	// Low priority root task, loop decr. priority test tasks
++	args[0] = 0;
++	ret = t_create("root", 3, 0, 0, 0, &tid);
++	traceobj_assert(&trobj, ret == SUCCESS);
++
++	ret = t_start(tid, 0, root_task, args);
++	traceobj_assert(&trobj, ret == SUCCESS);
++
++	traceobj_join(&trobj);
++
++	// High priority root task, loop incr. priority test tasks
++	args[0] = 1;
++	ret = t_create("root", 90, 0, 0, 0, &tid);
++	traceobj_assert(&trobj, ret == SUCCESS);
++
++	ret = t_start(tid, 0, root_task, args);
++	traceobj_assert(&trobj, ret == SUCCESS);
++
++	traceobj_join(&trobj);
++
++	// High priority root task, loop decr. priority test tasks 
++	args[0] = 0;
++	ret = t_create("root", 90, 0, 0, 0, &tid);
++	traceobj_assert(&trobj, ret == SUCCESS);
++
++	ret = t_start(tid, 0, root_task, args);
++	traceobj_assert(&trobj, ret == SUCCESS);
++	
++	traceobj_join(&trobj);
++
+ 	exit(0);
+ }
 
