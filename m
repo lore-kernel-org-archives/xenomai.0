@@ -1,12 +1,10 @@
-Message-ID: <5263FE03.5030900@xenomai.org>
-Date: Sun, 20 Oct 2013 18:00:03 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-MIME-Version: 1.0
-References: <526030DC.10107@xenomai.org>
-In-Reply-To: <526030DC.10107@xenomai.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] xenomai server upgrade
+Message-ID: <BLU0-SMTP361A4801D1D3A47014E894BAF010@phx.gbl>
+From: Chiara <chiaracapretti@hotmail.it>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+Date: Mon, 21 Oct 2013 07:48:46 +0200
+MIME-Version: 1.0 (Mac OS X Mail 6.6 \(1510\))
+Subject: [Xenomai] Help with the histogram of latency test
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,18 +13,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Xenomai <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On 10/17/2013 08:47 PM, Gilles Chanteperdrix wrote:
-> 
-> Hi,
-> 
-> please expect Xenomai server to be down for some time this week-end
-> while it is upgraded.
+Hi,
+I'm new of xenomai.=20
+I would analyze latency performance on different architecture and I want =
+to use the histogram that latency produce with the option -g.
+But when I use the script histo.gp I visualize this warning message:
+"skipping unreadable file, no data in plot"
 
-If you see this message, the Xenomai mailing list service should be back
-on line.
+I write this command
 
--- 
-                                                                Gilles.
+gnuplot -e 'input_file=3D"/usr/xenomai/bin/.latency -t1 - g gr =
+";output_file=3D"/usr/xenomai/bin/gr";graph_title=3D"graph";' =
+/usr/xenomai/bin/histo.gp
+
+Thanks!!=
 
