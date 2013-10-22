@@ -1,16 +1,13 @@
-Message-ID: <5266AD85.2040201@xenomai.org>
-Date: Tue, 22 Oct 2013 18:53:25 +0200
-From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <efafe9af.0000172c.00000011@dmerrill_win764.PERF.PERFORMANCESOFTWARE>	<52558563.2010408@xenomai.org>	<8fed609f.0000172c.00000017@dmerrill_win764.PERF.PERFORMANCESOFTWARE>	<525587A2.5000507@xenomai.org>
- <73cb019f.0000172c.0000001c@dmerrill_win764.PERF.PERFORMANCESOFTWARE>
- <8a1928a6.00000970.00000009@dmerrill_win764.PERF.PERFORMANCESOFTWARE>
- <1aa47ae4.00001700.00000005@dmerrill_win764.PERF.PERFORMANCESOFTWARE>
- <526681B9.1010302@xenomai.org> <5266907C.4010905@xenomai.org>
-In-Reply-To: <5266907C.4010905@xenomai.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] t_suspend and XNBREAK
+In-Reply-To: <1c0dc43665a4b66fa8c6.1381827038@devws164.be.alcatel-lucent.com>
+References: <patchbomb.1381827036@devws164.be.alcatel-lucent.com>
+ <1c0dc43665a4b66fa8c6.1381827038@devws164.be.alcatel-lucent.com>
+Date: Tue, 22 Oct 2013 18:54:50 +0200
+Message-ID: <CAKc2HpZK7FSJYzgs2nxgC0o=pQm6rOt+BpeRtV8ZZ4_6xAe64g@mail.gmail.com>
+From: Kim De Mey <kim.demey@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: Re: [Xenomai] [PATCH 2 of 3] Initial implementation registry pSOS
+	semaphore
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,69 +16,106 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 10/22/2013 04:49 PM, Gilles Chanteperdrix wrote:
-> On 10/22/2013 03:46 PM, Philippe Gerum wrote:
->> On 10/21/2013 08:21 PM, Daniel Merrill wrote:
->>
->>> More follow up on this, we went ahead and put some logging in shadow.c
->>> which from what we could find is where the signal is "kicking" the
->>> thread.
->>> >From the logging it looks like the only signals we get (while
->>> attached to
->>> GDB) are SIGSTOP, SIGTRAP, SIGRT32 and SIGKILL(upon exiting the
->>> debugger).
->>> I'm assuming the SIGSTOP, SIGTRAP and SIGKILL are normal from the
->>> debugger. It looks like shadow.c looks for SIGTRAP and SIGSTOP and
->>> sets an
->>> XNDEBUG state on the thread which I assume allows it to restart the
->>> suspend?
->>
->> XNDEBUG marks a thread which is ptraced, this has implications when
->> managing the system timer while the app is single-stepped/stopped by a
->> debugger.
->>
->>    SIGRT32 I believe comes from our calls to t_delete. I'm guessing
->>> this is what's causing the suspends to fail? Anyway, I appreciate any
->>> additional insight anyone can offer. Thanks again for all the help.
->>>
->>
->> t_delete() will cause t_suspend() to unblock if sent to the suspended
->> task, due to receiving SIGRT32/SIGCANCEL from the linux side, which is
->> how the NPTL deals with async cancellation internally (t_delete() ->
->> pthread_cancel() -> t(g)kill(SIGCANCEL)).
->>
->> Internally, XNBREAK will be raised for that task, causing -EINTR to be
->> propagated back. However, since there is SIGCANCEL pending for the task,
->> the NPTL handler should run on the way back to the call site in
->> t_suspend(), and the task should never return from this handler.
->>
->> In short, receiving EINTR from t_suspend() is unexpected, particularly
->> when unblocked by SIGCANCEL. I could not reproduce this issue based on
->> the simple test, running over GDB (7.5.1).
->>
->> A few questions more:
->>
->> - regardless of t_delete(), is the problem about one or multiple threads
->> unblocking unexpectedly from t_suspend(0), when single-stepping a
->> distinct thread over GDB?
->>
->> - I'm testing with Xenomai 2.6.3. Which version have you been using, on
->> which cpu/platform, using which I-pipe release in the kernel (check
->> /proc/xenomai/{version, hal}?
->>
->> - Also could you write a simple test code illustrating the issue so that
->> I could try reproducing it? Typically, would this be reproducible on
->> your setup with a single task running t_suspend(0), while ptracing the
->> main routine in parallel?
+2013/10/15 Kim De Mey <kim.demey@gmail.com>
+
+> Initial implementation of the registry functionality
+> for pSOS semaphores.
 >
-> Maybe cancellation is disabled with pthread_setcancelstate?
+> I noticed now that it is probably better to not let the
+registry_add_file() call return the data to the return var of sm_create as
+this might give an unexpected error at the creation of a semaphore. The
+same happens in the patch for a queue.
+It is also not consistent as in the patch for a task the error will not be
+returned as the registry_add_file is done in the trampoline.
+
+
+> Signed-off-by: Kim De Mey <kim.demey@gmail.com>
 >
-
-AFAIU the NPTL code, then SIGCANCEL should not be sent.
-
--- 
-Philippe.
-
+> ---
+>
+> diff --git a/lib/psos/sem.c b/lib/psos/sem.c
+> --- a/lib/psos/sem.c
+> +++ b/lib/psos/sem.c
+> @@ -21,6 +21,7 @@
+>  #include <errno.h>
+>  #include <stdlib.h>
+>  #include <string.h>
+> +#include <fcntl.h>
+>  #include <copperplate/heapobj.h>
+>  #include <copperplate/init.h>
+>  #include <copperplate/cluster.h>
+> @@ -68,10 +69,44 @@ objid_error:
+>  static void sem_finalize(struct semobj *smobj)
+>  {
+>         struct psos_sem *sem = container_of(smobj, struct psos_sem, smobj);
+> +       registry_destroy_file(&sem->fsobj);
+>         xnfree(sem);
+>  }
+>  fnref_register(libpsos, sem_finalize);
+>
+> +#ifdef CONFIG_XENO_REGISTRY
+> +
+> +static ssize_t sem_registry_read(struct fsobj *fsobj,
+> +                                 char *buf, size_t size, off_t offset)
+> +{
+> +       struct psos_sem *sem;
+> +       size_t len;
+> +       int value;
+> +
+> +       sem = container_of(fsobj, struct psos_sem, fsobj);
+> +       semobj_getvalue(&sem->smobj , &value);
+> +       len =  sprintf(buf,       "%-11s= %11s\n", "name", sem->name);
+> +       len += sprintf(buf + len, "%-11s= %#011lx\n","sem_id",
+>  mainheap_ref(sem, u_long));
+> +       len += sprintf(buf + len, "%-11s= %11d\n", "value", value);
+> +
+> +       if(len < offset)
+> +               return (ssize_t)0;
+> +       else
+> +               return (ssize_t)len;
+> +}
+> +
+> +
+> +static struct registry_operations registry_ops = {
+> +       .read   = sem_registry_read
+> +};
+> +
+> +#else
+> +
+> +static struct registry_operations registry_ops;
+> +
+> +#endif /* CONFIG_XENO_REGISTRY */
+> +
+> +
+>  u_long sm_create(const char *name,
+>                  u_long count, u_long flags, u_long *smid_r)
+>  {
+> @@ -116,6 +151,14 @@ u_long sm_create(const char *name,
+>                 goto out;
+>         }
+>
+> +       registry_init_file(&sem->fsobj, &registry_ops);
+> +
+> +       ret = __bt(registry_add_file(&sem->fsobj, O_RDONLY,
+> +                                     "/psos/semaphores/%s", sem->name));
+> +       if (ret)
+> +               warning("failed to export semaphore %s to registry",
+> +                               sem->name);
+> +
+>         *smid_r = mainheap_ref(sem, u_long);
+>  out:
+>         CANCEL_RESTORE(svc);
+> diff --git a/lib/psos/sem.h b/lib/psos/sem.h
+> --- a/lib/psos/sem.h
+> +++ b/lib/psos/sem.h
+> @@ -28,6 +28,7 @@ struct psos_sem {
+>         char name[32];
+>         struct semobj smobj;
+>         struct clusterobj cobj;
+> +       struct fsobj fsobj;
+>  };
+>
+>  extern struct cluster psos_sem_table;
+>
