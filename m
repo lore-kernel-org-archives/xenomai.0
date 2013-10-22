@@ -1,12 +1,13 @@
-Message-ID: <5265A173.4030608@xenomai.org>
-Date: Mon, 21 Oct 2013 23:49:39 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <l44714$imt$1@ger.gmane.org>
-In-Reply-To: <l44714$imt$1@ger.gmane.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Slow Sockets and Pipes with POSIX Skin
+Sender: mfornero@gmail.com
+In-Reply-To: <CAKS01omHoKh6EVznDXULTuxBS0O=3=V0fWL+24Z_8HgOuCAfxA@mail.gmail.com>
+References: <CAKS01omHoKh6EVznDXULTuxBS0O=3=V0fWL+24Z_8HgOuCAfxA@mail.gmail.com>
+Date: Mon, 21 Oct 2013 20:23:27 -0400
+Message-ID: <CADVgf9=r+JOynifZK+V70ttCJb-=0UUA7qYnmYR1QXFqOVKhgg@mail.gmail.com>
+From: Matthew Fornero <mfornero.lists@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: Re: [Xenomai] error while porting Xenomai to linux-xlnx-V14.5 zynq
+	soc
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,36 +16,163 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "Neil T. Dantam" <ntd@gatech.edu>
-Cc: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 10/21/2013 11:41 PM, Neil T. Dantam wrote:
-> I am seeing some surprisingly high latencies for socket and pipe
-> communication using Xenomai's POSIX skin.  Pipes, localhost TCP/UDP,
-> and local domain sockets all show worst case latency of ~100us on
-> Xenomai 2.6.2.1/Linux 3.4.6 on a Xeon E3-1270v2.  Average and 99%
-> latency is under 20us.  Running `xeno-test latency` gives worst-case
-> latency of ~10us.  POSIX message queues have worst case latency below
-> 20us.
-> 
-> I've done the following to reduce latency:
-> 
-> * Disabled CPU frequency scaling
-> * Disabled USB
-> * Set real-time scheduling priority
-> * Prefaulted the stack
-> 
-> The 100us delay seems like what one get from a System Management
-> Interrupt (SMI).  However, since `xeno-test latency` and message
-> queues both show low latency, it seems unlikely that this could be the
-> issue.
-> 
-> Has anyone else encountered (or not encountered) similar performance
-> issues with pipes and sockets?
+>   Kernel: arch/arm/boot/zImage is ready
+>   Building modules, stage 2.
+>   MODPOST 20 modules
+> ERROR: "set_ipi_handler" [drivers/remoteproc/zynq_remoteproc.ko] undefined!
+> ERROR: "clear_ipi_handler" [drivers/remoteproc/zynq_remoteproc.ko]
+> undefined!
+> make[1]: *** [__modpost] Error 1
+> make: *** [modules] Error 2
+(forgot to CC list, sorry for duplicate emails Anup)
 
-Xenomai posix skin does not handle pipes, and only handles TCP/IP
-sockets if you have installed and configured rtnet.
+IIRC, when I did the port, there were conflicts between Xilinx's AMP
+code (Linux running on one core, some other OS or bare-metal running
+on the other) and the ipipe patch in one of the assembly files. I
+opted to simply yank out the AMP code, as I didn't need it for my
+application (and getting it to work reliably with Xenomai would likely
+be a challenge). I believe this is why you're missing
+set/clea_ipi_handler calls.
 
--- 
-                                                                Gilles.
+I never built against xilinx_zynq_defconfig, but always a different
+stripped down defconfig. I would look at turning off the remoteproc
+module in your .config and see if you can build the rest of the
+modules. Remoteproc wouldn't work anyway with the current patch.
+
+-Matt
+
+On Mon, Oct 21, 2013 at 8:31 AM, Anup Kini <akini@synapticon.com> wrote:
+> Hi All,
+>
+> I am trying to port Xenomai 2.6.3 to linux-xlnx tag=14.5 as mentioned in
+> the wiki.
+> I could successfully run prepare-kernel.sh but failed to build the modules.
+>
+> patches applied: in the below mentioned order.
+>  - ipipe-core-3.8-zynq-pre.patch
+>  - ipipe-core-3.8-arm-1.patch
+>  - ipipe-core-3.8-zynq-post.patch
+>
+> prepare-kernel.sh --arch=arm --linux=$LINUX_DIR
+> cd $LINUX_DIR
+>
+> make ARCH=arm CROSS_COMPILE=arm-xilinx-linux-gnueabi xilinx_zynq_defconfig
+> make ARCH=arm CROSS_COMPILE=arm-xilinx-linux-gnueabi
+> CONFIG_DEBUG_SECTION_MISMATCH=y bzImage modules
+>
+>   LINK    vmlinux
+>   LD      vmlinux.o
+>   MODPOST vmlinux.o
+> WARNING: vmlinux.o(.text+0xe510): Section mismatch in reference from the
+> function armpmu_register() to the function .init.text:armpmu_init()
+> The function armpmu_register() references
+> the function __init armpmu_init().
+> This is often because armpmu_register lacks a __init
+> annotation or the annotation of armpmu_init is wrong.
+>
+> WARNING: vmlinux.o(.text+0x10128): Section mismatch in reference from the
+> function __ipipe_tsc_register() to the variable
+> .init.text:__ipipe_tsc_area_start
+> The function __ipipe_tsc_register() references
+> the variable __init __ipipe_tsc_area_start.
+> This is often because __ipipe_tsc_register lacks a __init
+> annotation or the annotation of __ipipe_tsc_area_start is wrong.
+>
+> WARNING: vmlinux.o(.text+0x10130): Section mismatch in reference from the
+> function __ipipe_tsc_register() to the variable
+> .init.text:__kuser_helper_end
+> The function __ipipe_tsc_register() references
+> the variable __init __kuser_helper_end.
+> This is often because __ipipe_tsc_register lacks a __init
+> annotation or the annotation of __kuser_helper_end is wrong.
+>
+> WARNING: vmlinux.o(.text+0x2942dc): Section mismatch in reference from the
+> function vexpress_sysreg_probe() to the function
+> .init.text:vexpress_sysreg_setup()
+> The function vexpress_sysreg_probe() references
+> the function __init vexpress_sysreg_setup().
+> This is often because vexpress_sysreg_probe lacks a __init
+> annotation or the annotation of vexpress_sysreg_setup is wrong.
+>
+>   GEN     .version
+>   CHK     include/generated/compile.h
+>   UPD     include/generated/compile.h
+>   CC      init/version.o
+>   LD      init/built-in.o
+>   KSYM    .tmp_kallsyms1.o
+>   KSYM    .tmp_kallsyms2.o
+>   LD      vmlinux
+>   SORTEX  vmlinux
+> sort done marker at 602c48
+>   SYSMAP  System.map
+>   OBJCOPY arch/arm/boot/Image
+>   Kernel: arch/arm/boot/Image is ready
+>   GZIP    arch/arm/boot/compressed/piggy.gzip
+>   AS      arch/arm/boot/compressed/piggy.gzip.o
+>   CC      arch/arm/boot/compressed/misc.o
+>   CC      arch/arm/boot/compressed/decompress.o
+>   CC      arch/arm/boot/compressed/string.o
+>   LD      arch/arm/boot/compressed/vmlinux
+>   OBJCOPY arch/arm/boot/zImage
+>   Kernel: arch/arm/boot/zImage is ready
+>   Building modules, stage 2.
+>   MODPOST 20 modules
+> ERROR: "set_ipi_handler" [drivers/remoteproc/zynq_remoteproc.ko] undefined!
+> ERROR: "clear_ipi_handler" [drivers/remoteproc/zynq_remoteproc.ko]
+> undefined!
+> make[1]: *** [__modpost] Error 1
+> make: *** [modules] Error 2
+>
+>
+> The entire make output is in the following link:
+> http://pastebin.com/dyjZnh9F
+>
+> Let me know if i am missing some patch or should use a older version of
+> xenomai.
+>
+> --
+>
+> *Anup Kini
+> *Systems Engineer****
+> *
+> ------------------------------
+> *
+>
+> *Synapticon** * |  Cyber-Physical System Solutions ****
+>
+> Mobile:
+>
+> Direct:
+>
+> +49 151 / 638 646 73
+>
+> +49 7335 / 186 999 21
+>
+> Fax:****
+> +49 7335 / 186 999 1
+>
+>
+>  **
+>
+>  ****
+>
+> synapticon.com <http://www.synapticon.com/>  |
+> @synapticon_co<https://twitter.com/#!/synapticon_co>
+> ****
+>
+> Synapticon GmbH  |  Hohlbachweg 2  |  73344 Gruibingen, DE
+> Secretary +49 7335 / 186 999 0  |  General Manager: Nikolai Ensslen
+> Registry Court Ulm HRB 725114  |  USt-ID DE271647127****
+>
+> This message and any files transmitted with it are confidential and
+> intended
+> solely for the use of the individual or entity to whom they are addressed.
+> Please notify the sender immediately if you have received this e-mail by
+> mistake and delete it from your system.
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> http://www.xenomai.org/mailman/listinfo/xenomai
 
