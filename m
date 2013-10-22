@@ -1,13 +1,10 @@
+Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
-Sender: mfornero@gmail.com
-In-Reply-To: <CAKS01omHoKh6EVznDXULTuxBS0O=3=V0fWL+24Z_8HgOuCAfxA@mail.gmail.com>
-References: <CAKS01omHoKh6EVznDXULTuxBS0O=3=V0fWL+24Z_8HgOuCAfxA@mail.gmail.com>
-Date: Mon, 21 Oct 2013 20:23:27 -0400
-Message-ID: <CADVgf9=r+JOynifZK+V70ttCJb-=0UUA7qYnmYR1QXFqOVKhgg@mail.gmail.com>
-From: Matthew Fornero <mfornero.lists@gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Subject: Re: [Xenomai] error while porting Xenomai to linux-xlnx-V14.5 zynq
-	soc
+Content-Transfer-Encoding: 7bit
+Message-Id: <7a6b7aaae44e8e8cdd75.1382447102@devws164.be.alcatel-lucent.com>
+Date: Tue, 22 Oct 2013 15:05:02 +0200
+From: Kim De Mey <kim.demey@gmail.com>
+Subject: [Xenomai] [PATCH] Xenomai-forge: psos: extended object names
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,163 +13,87 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
->   Kernel: arch/arm/boot/zImage is ready
->   Building modules, stage 2.
->   MODPOST 20 modules
-> ERROR: "set_ipi_handler" [drivers/remoteproc/zynq_remoteproc.ko] undefined!
-> ERROR: "clear_ipi_handler" [drivers/remoteproc/zynq_remoteproc.ko]
-> undefined!
-> make[1]: *** [__modpost] Error 1
-> make: *** [modules] Error 2
-(forgot to CC list, sorry for duplicate emails Anup)
+Extend object names with number to make them unique
 
-IIRC, when I did the port, there were conflicts between Xilinx's AMP
-code (Linux running on one core, some other OS or bare-metal running
-on the other) and the ipipe patch in one of the assembly files. I
-opted to simply yank out the AMP code, as I didn't need it for my
-application (and getting it to work reliably with Xenomai would likely
-be a challenge). I believe this is why you're missing
-set/clea_ipi_handler calls.
+Signed-off-by: Thomas De Schampheleire <thomas.de.schampheleire@gmail.com>
+Signed-off-by: Ronny Meeus <ronny.meeus@gmail.com>
+Signed-off-by: Kim De Mey <kim.demey@gmail.com>
 
-I never built against xilinx_zynq_defconfig, but always a different
-stripped down defconfig. I would look at turning off the remoteproc
-module in your .config and see if you can build the rest of the
-modules. Remoteproc wouldn't work anyway with the current patch.
+---
 
--Matt
+Although this is not a requirement for pSOS, it would be nice to have
+unique names for debugging purposes. This comes especially in the picture
+with the implementation of registry for pSOS. Without unique names no
+object with duplicate name will be added to registry. Unless changes
+are made to the creation of the files.
 
-On Mon, Oct 21, 2013 at 8:31 AM, Anup Kini <akini@synapticon.com> wrote:
-> Hi All,
->
-> I am trying to port Xenomai 2.6.3 to linux-xlnx tag=14.5 as mentioned in
-> the wiki.
-> I could successfully run prepare-kernel.sh but failed to build the modules.
->
-> patches applied: in the below mentioned order.
->  - ipipe-core-3.8-zynq-pre.patch
->  - ipipe-core-3.8-arm-1.patch
->  - ipipe-core-3.8-zynq-post.patch
->
-> prepare-kernel.sh --arch=arm --linux=$LINUX_DIR
-> cd $LINUX_DIR
->
-> make ARCH=arm CROSS_COMPILE=arm-xilinx-linux-gnueabi xilinx_zynq_defconfig
-> make ARCH=arm CROSS_COMPILE=arm-xilinx-linux-gnueabi
-> CONFIG_DEBUG_SECTION_MISMATCH=y bzImage modules
->
->   LINK    vmlinux
->   LD      vmlinux.o
->   MODPOST vmlinux.o
-> WARNING: vmlinux.o(.text+0xe510): Section mismatch in reference from the
-> function armpmu_register() to the function .init.text:armpmu_init()
-> The function armpmu_register() references
-> the function __init armpmu_init().
-> This is often because armpmu_register lacks a __init
-> annotation or the annotation of armpmu_init is wrong.
->
-> WARNING: vmlinux.o(.text+0x10128): Section mismatch in reference from the
-> function __ipipe_tsc_register() to the variable
-> .init.text:__ipipe_tsc_area_start
-> The function __ipipe_tsc_register() references
-> the variable __init __ipipe_tsc_area_start.
-> This is often because __ipipe_tsc_register lacks a __init
-> annotation or the annotation of __ipipe_tsc_area_start is wrong.
->
-> WARNING: vmlinux.o(.text+0x10130): Section mismatch in reference from the
-> function __ipipe_tsc_register() to the variable
-> .init.text:__kuser_helper_end
-> The function __ipipe_tsc_register() references
-> the variable __init __kuser_helper_end.
-> This is often because __ipipe_tsc_register lacks a __init
-> annotation or the annotation of __kuser_helper_end is wrong.
->
-> WARNING: vmlinux.o(.text+0x2942dc): Section mismatch in reference from the
-> function vexpress_sysreg_probe() to the function
-> .init.text:vexpress_sysreg_setup()
-> The function vexpress_sysreg_probe() references
-> the function __init vexpress_sysreg_setup().
-> This is often because vexpress_sysreg_probe lacks a __init
-> annotation or the annotation of vexpress_sysreg_setup is wrong.
->
->   GEN     .version
->   CHK     include/generated/compile.h
->   UPD     include/generated/compile.h
->   CC      init/version.o
->   LD      init/built-in.o
->   KSYM    .tmp_kallsyms1.o
->   KSYM    .tmp_kallsyms2.o
->   LD      vmlinux
->   SORTEX  vmlinux
-> sort done marker at 602c48
->   SYSMAP  System.map
->   OBJCOPY arch/arm/boot/Image
->   Kernel: arch/arm/boot/Image is ready
->   GZIP    arch/arm/boot/compressed/piggy.gzip
->   AS      arch/arm/boot/compressed/piggy.gzip.o
->   CC      arch/arm/boot/compressed/misc.o
->   CC      arch/arm/boot/compressed/decompress.o
->   CC      arch/arm/boot/compressed/string.o
->   LD      arch/arm/boot/compressed/vmlinux
->   OBJCOPY arch/arm/boot/zImage
->   Kernel: arch/arm/boot/zImage is ready
->   Building modules, stage 2.
->   MODPOST 20 modules
-> ERROR: "set_ipi_handler" [drivers/remoteproc/zynq_remoteproc.ko] undefined!
-> ERROR: "clear_ipi_handler" [drivers/remoteproc/zynq_remoteproc.ko]
-> undefined!
-> make[1]: *** [__modpost] Error 1
-> make: *** [modules] Error 2
->
->
-> The entire make output is in the following link:
-> http://pastebin.com/dyjZnh9F
->
-> Let me know if i am missing some patch or should use a older version of
-> xenomai.
->
-> --
->
-> *Anup Kini
-> *Systems Engineer****
-> *
-> ------------------------------
-> *
->
-> *Synapticon** * |  Cyber-Physical System Solutions ****
->
-> Mobile:
->
-> Direct:
->
-> +49 151 / 638 646 73
->
-> +49 7335 / 186 999 21
->
-> Fax:****
-> +49 7335 / 186 999 1
->
->
->  **
->
->  ****
->
-> synapticon.com <http://www.synapticon.com/>  |
-> @synapticon_co<https://twitter.com/#!/synapticon_co>
-> ****
->
-> Synapticon GmbH  |  Hohlbachweg 2  |  73344 Gruibingen, DE
-> Secretary +49 7335 / 186 999 0  |  General Manager: Nikolai Ensslen
-> Registry Court Ulm HRB 725114  |  USt-ID DE271647127****
->
-> This message and any files transmitted with it are confidential and
-> intended
-> solely for the use of the individual or entity to whom they are addressed.
-> Please notify the sender immediately if you have received this e-mail by
-> mistake and delete it from your system.
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> http://www.xenomai.org/mailman/listinfo/xenomai
+
+ lib/psos/queue.c |  5 ++++-
+ lib/psos/rn.c    |  5 ++++-
+ lib/psos/sem.c   |  5 ++++-
+ lib/psos/task.c  |  5 ++++-
+ 4 files changed, 16 insertions(+), 4 deletions(-)
+
+diff --git a/lib/psos/queue.c b/lib/psos/queue.c
+--- a/lib/psos/queue.c
++++ b/lib/psos/queue.c
+@@ -99,7 +99,10 @@ static u_long __q_create(const char *nam
+ 		sprintf(q->name, "q%lu", ++anon_qids);
+ 	else {
+ 		name = __psos_maybe_short_name(short_name, name);
+-		strncpy(q->name, name, sizeof(q->name));
++		if (cluster_findobj(&psos_queue_table, name) != NULL)
++			snprintf(q->name,sizeof(q->name), "%s_%lu", name, ++anon_qids);
++		else
++			strncpy(q->name, name, sizeof(q->name));
+ 		q->name[sizeof(q->name) - 1] = '\0';
+ 	}
+ 
+diff --git a/lib/psos/rn.c b/lib/psos/rn.c
+--- a/lib/psos/rn.c
++++ b/lib/psos/rn.c
+@@ -115,7 +115,10 @@ u_long rn_create(const char *name, void 
+ 		sprintf(rn->name, "rn%lu", ++anon_rnids);
+ 	else {
+ 		name = __psos_maybe_short_name(short_name, name);
+-		strncpy(rn->name, name, sizeof(rn->name));
++		if (cluster_findobj(&psos_rn_table, name) != NULL)
++			snprintf(rn->name,sizeof(rn->name), "%s_%lu", name, ++anon_rnids);
++		else
++			strncpy(rn->name, name, sizeof(rn->name));
+ 		rn->name[sizeof(rn->name) - 1] = '\0';
+ 	}
+ 
+diff --git a/lib/psos/sem.c b/lib/psos/sem.c
+--- a/lib/psos/sem.c
++++ b/lib/psos/sem.c
+@@ -93,7 +93,10 @@ u_long sm_create(const char *name,
+ 		sprintf(sem->name, "sm%lu", ++anon_smids);
+ 	else {
+ 		name = __psos_maybe_short_name(short_name, name);
+-		strncpy(sem->name, name, sizeof(sem->name));
++		if (cluster_findobj(&psos_sem_table, name) != NULL)
++			snprintf(sem->name,sizeof(sem->name), "%s_%lu", name, ++anon_smids);
++		else
++			strncpy(sem->name, name, sizeof(sem->name));
+ 		sem->name[sizeof(sem->name) - 1] = '\0';
+ 	}
+ 
+diff --git a/lib/psos/task.c b/lib/psos/task.c
+--- a/lib/psos/task.c
++++ b/lib/psos/task.c
+@@ -285,7 +285,10 @@ u_long t_create(const char *name, u_long
+ 		sprintf(task->name, "t%lu", ++anon_tids);
+ 	else {
+ 		name = __psos_maybe_short_name(short_name, name);
+-		strncpy(task->name, name, sizeof(task->name));
++		if (cluster_findobj(&psos_task_table, name) != NULL)
++			snprintf(task->name,sizeof(task->name), "%s_%lu", name, ++anon_tids);
++		else
++			strncpy(task->name, name, sizeof(task->name));
+ 		task->name[sizeof(task->name) - 1] = '\0';
+ 	}
+ 
 
