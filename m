@@ -1,16 +1,14 @@
-Message-ID: <5266907C.4010905@xenomai.org>
-Date: Tue, 22 Oct 2013 16:49:32 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <efafe9af.0000172c.00000011@dmerrill_win764.PERF.PERFORMANCESOFTWARE>	<52558563.2010408@xenomai.org>	<8fed609f.0000172c.00000017@dmerrill_win764.PERF.PERFORMANCESOFTWARE>	<525587A2.5000507@xenomai.org>
- <73cb019f.0000172c.0000001c@dmerrill_win764.PERF.PERFORMANCESOFTWARE>
- <8a1928a6.00000970.00000009@dmerrill_win764.PERF.PERFORMANCESOFTWARE>
- <1aa47ae4.00001700.00000005@dmerrill_win764.PERF.PERFORMANCESOFTWARE>
- <526681B9.1010302@xenomai.org>
-In-Reply-To: <526681B9.1010302@xenomai.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] t_suspend and XNBREAK
+In-Reply-To: <CAMJ=MEdj=y2Uj_y2tr9+Dfvy1r57rhnNqTWxjo500JhVk4qbVg@mail.gmail.com>
+References: <patchbomb.1381827036@devws164.be.alcatel-lucent.com>
+ <5262C351.8010704@xenomai.org>
+ <CAMJ=MEdj=y2Uj_y2tr9+Dfvy1r57rhnNqTWxjo500JhVk4qbVg@mail.gmail.com>
+Date: Tue, 22 Oct 2013 18:45:13 +0200
+Message-ID: <CAKc2HpY8CP+Kt63y_yvpuyjS8hb7Nep3veSgKBv0sT4C74LBMg@mail.gmail.com>
+From: Kim De Mey <kim.demey@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: Re: [Xenomai] [PATCH 0 of 3] Xenomai-forge: Initial implementation
+ of registry for pSOS
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,61 +17,62 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Philippe Gerum <rpm@xenomai.org>
+To: Ronny Meeus <ronny.meeus@gmail.com>
 Cc: xenomai@xenomai.org
 
-On 10/22/2013 03:46 PM, Philippe Gerum wrote:
-> On 10/21/2013 08:21 PM, Daniel Merrill wrote:
+2013/10/19 Ronny Meeus <ronny.meeus@gmail.com>
+
 >
->> More follow up on this, we went ahead and put some logging in shadow.c
->> which from what we could find is where the signal is "kicking" the thread.
->> >From the logging it looks like the only signals we get (while attached to
->> GDB) are SIGSTOP, SIGTRAP, SIGRT32 and SIGKILL(upon exiting the debugger).
->> I'm assuming the SIGSTOP, SIGTRAP and SIGKILL are normal from the
->> debugger. It looks like shadow.c looks for SIGTRAP and SIGSTOP and sets an
->> XNDEBUG state on the thread which I assume allows it to restart the
->> suspend?
->
-> XNDEBUG marks a thread which is ptraced, this has implications when
-> managing the system timer while the app is single-stepped/stopped by a
-> debugger.
->
->    SIGRT32 I believe comes from our calls to t_delete. I'm guessing
->> this is what's causing the suspends to fail? Anyway, I appreciate any
->> additional insight anyone can offer. Thanks again for all the help.
 >>
+>>
+>> IIUC, this would add the quite unexpected requirement of having to reopen
+>> a file for getting fresh data. read() should actually (re-)read the current
+>> object state each time it is invoked, and not resend some frozen state
+>> collected by the corresponding open() indefinitely.
+>>
+>> e.g. this has to work with code like:
+>>
+>>         fd = open("/mnt/xenomai/1235/foo/**tasks", O_RDONLY);
+>>         for (;;) {
+>>                 ret = read(fd, buf, sizeof(buf));
+>>                 ... process NEW data ...
+>>         }
+>>
+>>
+> Philippe,
 >
-> t_delete() will cause t_suspend() to unblock if sent to the suspended
-> task, due to receiving SIGRT32/SIGCANCEL from the linux side, which is
-> how the NPTL deals with async cancellation internally (t_delete() ->
-> pthread_cancel() -> t(g)kill(SIGCANCEL)).
+> how to handle the case where the data is bigger than de buffer passed by
+> the user?
+> Suppose the task data is 20k while the user read only wants 4k. I would
+> expect that the second read returns the second 4k block and so on.
 >
-> Internally, XNBREAK will be raised for that task, causing -EINTR to be
-> propagated back. However, since there is SIGCANCEL pending for the task,
-> the NPTL handler should run on the way back to the call site in
-> t_suspend(), and the task should never return from this handler.
+> By generating the complete output in 1 shot (for example at open), the
+> data would be more consistent in my opinion too.
+> Suppose the data of a queue is dumped and the queue contains a lot of
+> messages. I would like to see a consistent view on the queue and not the
+> first 4k followed by some random messages after it because the application
+> is processing the queue in parallel.
 >
-> In short, receiving EINTR from t_suspend() is unexpected, particularly
-> when unblocked by SIGCANCEL. I could not reproduce this issue based on
-> the simple test, running over GDB (7.5.1).
 >
-> A few questions more:
->
-> - regardless of t_delete(), is the problem about one or multiple threads
-> unblocking unexpectedly from t_suspend(0), when single-stepping a
-> distinct thread over GDB?
->
-> - I'm testing with Xenomai 2.6.3. Which version have you been using, on
-> which cpu/platform, using which I-pipe release in the kernel (check
-> /proc/xenomai/{version, hal}?
->
-> - Also could you write a simple test code illustrating the issue so that
-> I could try reproducing it? Typically, would this be reproducible on
-> your setup with a single task running t_suspend(0), while ptracing the
-> main routine in parallel?
+Philippe,
 
-Maybe cancellation is disabled with pthread_setcancelstate?
+As Ronny explains, the reason of "storing the state" at open is so that the
+data we read would be consistent. So yes, I think we need this.
 
--- 
-					    Gilles.
+I checked how this is handled in sysfs. There a buffer is also filled but
+it is done at the first read and it is refilled at a new read with offset
+0. Not at an open. Would it be acceptable to implement it also like this in
+the registry?
 
+This brings me to your second remark of referring to fuse_file_info->fh
+from a registry client. I understand that it is not acceptable, it belongs
+indeed in the registry fs. The open, read and release in registry fs could
+be implemented similar like sysfs. Then the read operation of the specific
+client would be used for filling the buffer at the first regfs_read, and
+the buffer will be allocated there in regfs_read and freed in
+regfs_release. The location of the buffer and other necessary data could be
+stored then in fuse_file_info->fh.
+I am currently not sure if there is still client-specific data that needs
+to be stored, but I don't think so.
+
+Kim
