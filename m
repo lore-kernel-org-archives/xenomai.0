@@ -1,16 +1,17 @@
-Message-ID: <5268C6D3.7040701@xenomai.org>
-Date: Thu, 24 Oct 2013 09:05:55 +0200
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <BLU0-SMTP361A4801D1D3A47014E894BAF010@phx.gbl>,
- <5264FD93.2070705@xenomai.org>
- <DUB123-W36A18BFF7B209662EE8979AF010@phx.gbl> <52650713.3060807@xenomai.org>
- <BLU0-SMTP278EEBC31356A65C16755F1AF030@phx.gbl>,
- <5268BE43.7010906@xenomai.org> <DUB123-W3326B51B0B1E7C8ED2DE7EAF0C0@phx.gbl>
-In-Reply-To: <DUB123-W3326B51B0B1E7C8ED2DE7EAF0C0@phx.gbl>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Help with the histogram of latency test
+In-Reply-To: <CAKc2HpacwSTShmnGT6q9P7TBvGSrVhbQ8vDRRY3xJS4fuFwUgg@mail.gmail.com>
+References: <patchbomb.1381827036@devws164.be.alcatel-lucent.com>
+ <5262C351.8010704@xenomai.org>
+ <CAMJ=MEdj=y2Uj_y2tr9+Dfvy1r57rhnNqTWxjo500JhVk4qbVg@mail.gmail.com>
+ <CAKc2HpY8CP+Kt63y_yvpuyjS8hb7Nep3veSgKBv0sT4C74LBMg@mail.gmail.com>
+ <5266B0B0.3030006@xenomai.org>
+ <CAKc2HpacwSTShmnGT6q9P7TBvGSrVhbQ8vDRRY3xJS4fuFwUgg@mail.gmail.com>
+Date: Thu, 24 Oct 2013 10:28:58 +0200
+Message-ID: <CAKc2HpY81vxvmtrkXr6RowMgqLz9n+rrtojiTQZ0VvOut6exYQ@mail.gmail.com>
+From: Kim De Mey <kim.demey@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: Re: [Xenomai] [PATCH 0 of 3] Xenomai-forge: Initial implementation
+ of registry for pSOS
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,33 +20,75 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Chiara Capretti <chiaracapretti@hotmail.it>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@xenomai.org
 
-On 10/24/2013 09:01 AM, Chiara Capretti wrote:
->> Date: Thu, 24 Oct 2013 08:29:23 +0200
->> From: gilles.chanteperdrix@xenomai.org
->> To: chiaracapretti@hotmail.it
->> CC: xenomai@xenomai.org
->> Subject: Re: [Xenomai] Help with the histogram of latency test
->>
->> On 10/23/2013 11:42 PM, Chiara wrote:
->>> Hi Gilles,
->>> I tried latency test and xeno-test..
->>> I would compare my histogram with yours but I think that our parameters are different..
->>> In my histogram the scale of the user space latency arrives on 300 microseconds and the difference between the values is 50 microseconds, while your's 5..could you say me how can I reproduce the same histogram? So I can compare them!
->>
->> On what platforms are you running the test? Except on at91rm9200, 300 
->> microseconds is an abnormal latency. See:
->> http://www.xenomai.org/documentation/xenomai-2.6/html/TROUBLESHOOTING/#_the_latency_test_shows_high_latencies
+2013/10/22 Kim De Mey <kim.demey@gmail.com>
+
 >
-> I'm running the test on an X86.. Intel core i7, 2.9 GHz. I installed >
-Ubuntu and Xenomai on a virtual machine.
+>
+>
+> 2013/10/22 Philippe Gerum <rpm@xenomai.org>
+>
+>> On 10/22/2013 06:45 PM, Kim De Mey wrote:
+>>
+>>>
+>>>
+>>>
+>>> 2013/10/19 Ronny Meeus <ronny.meeus@gmail.com
+>>> <mailto:ronny.meeus@gmail.com>**>
+>>>
+>>>
+>>>
+>>>         IIUC, this would add the quite unexpected requirement of having
+>>>         to reopen a file for getting fresh data. read() should actually
+>>>         (re-)read the current object state each time it is invoked, and
+>>>         not resend some frozen state collected by the corresponding
+>>>         open() indefinitely.
+>>>
+>>>         e.g. this has to work with code like:
+>>>
+>>>                  fd = open("/mnt/xenomai/1235/foo/__**tasks", O_RDONLY);
+>>>
+>>>                  for (;;) {
+>>>                          ret = read(fd, buf, sizeof(buf));
+>>>                          ... process NEW data ...
+>>>                  }
+>>>
+>>>     Philippe,
+>>>     how to handle the case where the data is bigger than de buffer
+>>>     passed by the user?
+>>>     Suppose the task data is 20k while the user read only wants 4k. I
+>>>     would expect that the second read returns the second 4k block and so
+>>> on.
+>>>     By generating the complete output in 1 shot (for example at open),
+>>>     the data would be more consistent in my opinion too.
+>>>     Suppose the data of a queue is dumped and the queue contains a lot
+>>>     of messages. I would like to see a consistent view on the queue and
+>>>     not the first 4k followed by some random messages after it because
+>>>     the application is processing the queue in parallel.
+>>>
+>>> Philippe,
+>>>
+>>> As Ronny explains, the reason of "storing the state" at open is so that
+>>> the data we read would be consistent. So yes, I think we need this.
+>>>
+>>>
+>> I don't think so. Implementing a snapshot mechanism so that reading from
+>> a channel does return a consistent set of data does not mean that we should
+>> do this in open(). This only means that we should implement a snapshot
+>> mechanism for reading.
+>>
+>
+> I meant that we need to be able to "store the state", not that we
+> necessary need to do it in the open(). My sentence was confusing, sorry. As
+> I explained further in my previous post we could do it in the initial
+> read() like it is done in sysfs for example.
+>
+> Philippe,
 
-The latencies you get do not mean anything then.
+I noticed that you made some changes to the registry code. Does this mean
+you have a plan in mind on how to tackle the "issue" in the discussion
+above?
 
-Please, no top posting.
-
--- 
-                                                                Gilles.
-
+Kim
