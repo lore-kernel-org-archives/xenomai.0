@@ -1,14 +1,20 @@
-Message-ID: <5268E1A3.4070206@xenomai.org>
-Date: Thu, 24 Oct 2013 11:00:19 +0200
+Message-ID: <5268F068.7000201@xenomai.org>
+Date: Thu, 24 Oct 2013 12:03:20 +0200
 From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <patchbomb.1381827036@devws164.be.alcatel-lucent.com>	<5262C351.8010704@xenomai.org>	<CAMJ=MEdj=y2Uj_y2tr9+Dfvy1r57rhnNqTWxjo500JhVk4qbVg@mail.gmail.com>	<CAKc2HpY8CP+Kt63y_yvpuyjS8hb7Nep3veSgKBv0sT4C74LBMg@mail.gmail.com>	<5266B0B0.3030006@xenomai.org>	<CAKc2HpacwSTShmnGT6q9P7TBvGSrVhbQ8vDRRY3xJS4fuFwUgg@mail.gmail.com>
- <CAKc2HpY81vxvmtrkXr6RowMgqLz9n+rrtojiTQZ0VvOut6exYQ@mail.gmail.com>
-In-Reply-To: <CAKc2HpY81vxvmtrkXr6RowMgqLz9n+rrtojiTQZ0VvOut6exYQ@mail.gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+References: <efafe9af.0000172c.00000011@dmerrill_win764.PERF.PERFORMANCESOFTWARE>	<52558563.2010408@xenomai.org>	<8fed609f.0000172c.00000017@dmerrill_win764.PERF.PERFORMANCESOFTWARE>	<525587A2.5000507@xenomai.org>
+ <73cb019f.0000172c.0000001c@dmerrill_win764.PERF.PERFORMANCESOFTWARE>
+ <8a1928a6.00000970.00000009@dmerrill_win764.PERF.PERFORMANCESOFTWARE>
+ <1aa47ae4.00001700.00000005@dmerrill_win764.PERF.PERFORMANCESOFTWARE>
+ <526681B9.1010302@xenomai.org> <5266907C.4010905@xenomai.org>
+ <5266AD85.2040201@xenomai.org>
+ <3f032cae.00001700.0000001c@dmerrill_win764.PERF.PERFORMANCESOFTWARE>
+ <526807D4.9030405@xenomai.org>
+ <d73ca437.00001700.00000035@dmerrill_win764.PERF.PERFORMANCESOFTWARE>
+In-Reply-To: <d73ca437.00001700.00000035@dmerrill_win764.PERF.PERFORMANCESOFTWARE>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PATCH 0 of 3] Xenomai-forge: Initial implementation
- of registry for pSOS
+Subject: Re: [Xenomai] t_suspend and XNBREAK
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,116 +23,197 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Kim De Mey <kim.demey@gmail.com>
+To: Daniel Merrill <daniel.merrill@psware.com>, 'Gilles Chanteperdrix' <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On 10/24/2013 10:28 AM, Kim De Mey wrote:
->
->
->
-> 2013/10/22 Kim De Mey <kim.demey@gmail.com <mailto:kim.demey@gmail.com>>
->
->
->
->
->     2013/10/22 Philippe Gerum <rpm@xenomai.org <mailto:rpm@xenomai.org>>
->
->         On 10/22/2013 06:45 PM, Kim De Mey wrote:
->
->
->
->
->             2013/10/19 Ronny Meeus <ronny.meeus@gmail.com
->             <mailto:ronny.meeus@gmail.com>
->             <mailto:ronny.meeus@gmail.com <mailto:ronny.meeus@gmail.com>>__>
->
->
->
->                      IIUC, this would add the quite unexpected
->             requirement of having
->                      to reopen a file for getting fresh data. read()
->             should actually
->                      (re-)read the current object state each time it is
->             invoked, and
->                      not resend some frozen state collected by the
->             corresponding
->                      open() indefinitely.
->
->                      e.g. this has to work with code like:
->
->                               fd =
->             open("/mnt/xenomai/1235/foo/____tasks", O_RDONLY);
->
->                               for (;;) {
->                                       ret = read(fd, buf, sizeof(buf));
->                                       ... process NEW data ...
->                               }
->
->                  Philippe,
->                  how to handle the case where the data is bigger than de
->             buffer
->                  passed by the user?
->                  Suppose the task data is 20k while the user read only
->             wants 4k. I
->                  would expect that the second read returns the second 4k
->             block and so on.
->                  By generating the complete output in 1 shot (for
->             example at open),
->                  the data would be more consistent in my opinion too.
->                  Suppose the data of a queue is dumped and the queue
->             contains a lot
->                  of messages. I would like to see a consistent view on
->             the queue and
->                  not the first 4k followed by some random messages after
->             it because
->                  the application is processing the queue in parallel.
->
->             Philippe,
->
->             As Ronny explains, the reason of "storing the state" at open
->             is so that
->             the data we read would be consistent. So yes, I think we
->             need this.
->
->
->         I don't think so. Implementing a snapshot mechanism so that
->         reading from a channel does return a consistent set of data does
->         not mean that we should do this in open(). This only means that
->         we should implement a snapshot mechanism for reading.
->
->
->     I meant that we need to be able to "store the state", not that we
->     necessary need to do it in the open(). My sentence was confusing,
->     sorry. As I explained further in my previous post we could do it in
->     the initial read() like it is done in sysfs for example.
->
-> Philippe,
->
-> I noticed that you made some changes to the registry code. Does this
-> mean you have a plan in mind on how to tackle the "issue" in the
-> discussion above?
->
+On 10/24/2013 01:11 AM, Daniel Merrill wrote:
+>>
+>> Ok, I can't reproduce with this code yet. Let's proceed differently.
+>> Could you apply the patch below, then send back the kernel output
+>> you should get when the issue happens? The traces are emitted only when
+>> a task self-suspends using a null tid, which should restrict the scope
+>> enough to avoid extraneous messages. I'd be interested in the gdb output
+>> you get as well when running over gdb into this issue (i.e. which
+>> t_suspend()
+>> call fails with -EINTR in this case - lineno?).
+>>
+>> In the meantime, you may also try switching temporarily to 2.6.3,
+>> just for testing. It is 100% ABI and API compatible with 2.6.2.1,
+>> you would only need to recompile your app, nothing more. You don't
+>> have to switch i-pipe support for doing this. We fixed a
+>> couple of issues in the 2.6.3 time frame wrt GDB support. Although
+>> I don't see a direct relationship between your issue and what we fixed,
+>> it makes sense to do a quick check anyway.
+>>
+>> TIA,
+>> --
+>> Philippe.
+> 
+> Ok, here is the log output, plus the gdb output run on 2.6.3
+> 
+> Oct 23 16:05:55 JETSdev kernel: [ 7013.901317] t_suspend: self-suspend
+> SUB1[1387], sigpending=0, state=0x300180, info=0x0
+> Oct 23 16:05:55 JETSdev kernel: [ 7013.901324] t_suspend: self-suspend
+> SUB2[1388], sigpending=0, state=0x300180, info=0x0
+> Oct 23 16:05:55 JETSdev kernel: [ 7013.901344] t_suspend: self-suspend
+> SUB3[1389], sigpending=0, state=0x300180, info=0x0
+> Oct 23 16:05:55 JETSdev kernel: [ 7013.906328] t_suspend: unblocked
+> SUB3[1389], sigpending=1, state=0x302180, info=0xc
+> Oct 23 16:05:55 JETSdev kernel: [ 7013.906330]    => SIG19 pending
+> Oct 23 16:05:55 JETSdev kernel: [ 7013.906339] t_suspend: unblocked
+> SUB2[1388], sigpending=1, state=0x302180, info=0xc
+> Oct 23 16:05:55 JETSdev kernel: [ 7013.906340]    => SIG19 pending
+> Oct 23 16:05:55 JETSdev kernel: [ 7013.907202] t_suspend: self-suspend
+> SUB3[1389], sigpending=0, state=0x300180, info=0x0
+> Oct 23 16:05:55 JETSdev kernel: [ 7013.907210] t_suspend: self-suspend
+> SUB2[1388], sigpending=0, state=0x300180, info=0x0
+> Oct 23 16:05:55 JETSdev kernel: [ 7013.907223] t_suspend: self-suspend
+> SUB1[1387], sigpending=0, state=0x300180, info=0x0
+> Oct 23 16:05:55 JETSdev kernel: [ 7013.912273] t_suspend: unblocked
+> SUB3[1389], sigpending=1, state=0x302180, info=0xc
+> Oct 23 16:05:55 JETSdev kernel: [ 7013.912274]    => SIG19 pending
+> Oct 23 16:05:55 JETSdev kernel: [ 7013.912282] t_suspend: unblocked
+> SUB2[1388], sigpending=1, state=0x302180, info=0xc
+> Oct 23 16:05:55 JETSdev kernel: [ 7013.912283]    => SIG19 pending
+> Oct 23 16:05:55 JETSdev kernel: [ 7013.912290] t_suspend: unblocked
+> SUB1[1387], sigpending=1, state=0x302180, info=0xc
+> Oct 23 16:05:55 JETSdev kernel: [ 7013.912291]    => SIG19 pending
+> Oct 23 16:05:55 JETSdev kernel: [ 7013.912694] t_suspend: self-suspend
+> SUB3[1389], sigpending=0, state=0x300180, info=0x0
+> Oct 23 16:05:55 JETSdev kernel: [ 7013.912701] t_suspend: self-suspend
+> SUB2[1388], sigpending=0, state=0x300180, info=0x0
+> Oct 23 16:05:55 JETSdev kernel: [ 7013.912707] t_suspend: self-suspend
+> SUB1[1387], sigpending=0, state=0x300180, info=0x0
+> Oct 23 16:05:55 JETSdev kernel: [ 7013.912783] t_suspend: unblocked
+> SUB3[1389], sigpending=1, state=0x302180, info=0xc
+> Oct 23 16:05:55 JETSdev kernel: [ 7013.912784]    => SIG19 pending
+> Oct 23 16:05:55 JETSdev kernel: [ 7013.912792] t_suspend: unblocked
+> SUB2[1388], sigpending=1, state=0x302180, info=0xc
+> Oct 23 16:05:55 JETSdev kernel: [ 7013.912792]    => SIG19 pending
+> Oct 23 16:05:55 JETSdev kernel: [ 7013.912799] t_suspend: unblocked
+> SUB1[1387], sigpending=1, state=0x302180, info=0xc
+> Oct 23 16:05:55 JETSdev kernel: [ 7013.912800]    => SIG19 pending
+> Oct 23 16:05:55 JETSdev kernel: [ 7013.914466] t_suspend: self-suspend
+> SUB3[1389], sigpending=0, state=0x300180, info=0x0
+> Oct 23 16:05:55 JETSdev kernel: [ 7013.914474] t_suspend: self-suspend
+> SUB2[1388], sigpending=0, state=0x300180, info=0x0
+> Oct 23 16:05:55 JETSdev kernel: [ 7013.914480] t_suspend: self-suspend
+> SUB1[1387], sigpending=0, state=0x300180, info=0x0
+> Oct 23 16:05:55 JETSdev kernel: [ 7013.914515] t_suspend: unblocked
+> SUB1[1387], sigpending=1, state=0x300180, info=0xc
+> Oct 23 16:05:55 JETSdev kernel: [ 7013.914516]    => SIG32 pending
+> Oct 23 16:05:55 JETSdev kernel: [ 7013.914751] t_suspend: unblocked
+> SUB3[1389], sigpending=1, state=0x302180, info=0xc
+> Oct 23 16:05:55 JETSdev kernel: [ 7013.914752]    => SIG19 pending
+> Oct 23 16:05:55 JETSdev kernel: [ 7013.915840] t_suspend: self-suspend
+> SUB3[1389], sigpending=0, state=0x300180, info=0x0
+> Oct 23 16:05:55 JETSdev kernel: [ 7013.915858] t_suspend: self-suspend
+> SUB2[1388], sigpending=0, state=0x300180, info=0x0
+> Oct 23 16:05:55 JETSdev kernel: [ 7013.920201] t_suspend: unblocked
+> SUB2[1388], sigpending=1, state=0x300180, info=0xc
+> Oct 23 16:05:55 JETSdev kernel: [ 7013.920203]    => SIG32 pending
+> Oct 23 16:05:55 JETSdev kernel: [ 7013.922922] t_suspend: unblocked
+> SUB3[1389], sigpending=1, state=0x302180, info=0xc
+> Oct 23 16:05:55 JETSdev kernel: [ 7013.922924]    => SIG19 pending
+> Oct 23 16:05:55 JETSdev kernel: [ 7013.923319] t_suspend: self-suspend
+> SUB3[1389], sigpending=0, state=0x300180, info=0x0
+> 
+> jets@JETSdev:~/projects/tdelete_fail_test$ gdb test
+> GNU gdb (Ubuntu/Linaro 7.4-2012.04-0ubuntu2.1) 7.4-2012.04
+> Copyright (C) 2012 Free Software Foundation, Inc.
+> License GPLv3+: GNU GPL version 3 or later
+> <http://gnu.org/licenses/gpl.html>
+> This is free software: you are free to change and redistribute it.
+> There is NO WARRANTY, to the extent permitted by law.  Type "show copying"
+> and "show warranty" for details.
+> This GDB was configured as "i686-linux-gnu".
+> For bug reporting instructions, please see:
+> <http://bugs.launchpad.net/gdb-linaro/>...
+> Reading symbols from /home/jets/projects/tdelete_fail_test/test...done.
+> Breakpoint 1 at 0x80486fa: file test.c, line 20.
+> Breakpoint 2 at 0x8048765: file test.c, line 35.
+> Breakpoint 3 at 0x80487d0: file test.c, line 50.
+> [Thread debugging using libthread_db enabled]
+> Using host libthread_db library "/lib/i386-linux-gnu/libthread_db.so.1".
+> [New Thread 0xb7fd3b40 (LWP 1386)]
+> [New Thread 0xb7fceb40 (LWP 1387)]
+> [New Thread 0xb7deab40 (LWP 1388)]
+> [New Thread 0xb7de5b40 (LWP 1389)]
+> SUB1 TID:124
+> subTask1, suspend returned 0
+> [Switching to Thread 0xb7fceb40 (LWP 1387)]
+> 
+> Breakpoint 3, subTask1 () at test.c:50
+> 50		retValue = t_suspend(0);
+> SUB2 TID:125
+> subTask2, suspend returned 0
+> [Switching to Thread 0xb7deab40 (LWP 1388)]
+> 
+> Breakpoint 2, subTask2 () at test.c:35
+> 35		retValue = t_suspend(0);
+> subTask1, suspend returned -4
+> [Thread 0xb7deab40 (LWP 1388) exited]
+> 
+> It hangs after subTask1 fails to suspend because subTask1 starts misbehaving
+> at that point and never gives up time.
+> 
+> Anyway hopefully this starts to lead us down the right path. Thanks
+> 
 
-I'm adding flexibility to the registry code, since there won't be any 
-one-fits-it-all solution, the client code should be able to define its 
-own policy with respect to handling fuse read requests, without imposing 
-a standard on the others. This is basically why the snapshot mechanism 
-should not be implemented in the generic registry code handling file 
-open requests, because other clients may want to act as unbuffered data 
-sources, returning fresh values each time they are read, assuming those 
-values always fit in a fuse read request.
+- Do you handle SIG32 specifically in GDB, so that the
+latter does not intercept the signal? If not, could you check whether
+this makes any difference? (i.e. "handle SIG32 nostop noprint pass")
 
-By exposing the open and release requests to the client code, we may 
-allow clients to deal with snapshot the way you wanted initially, 
-without imposing it to all others, making the approach acceptable.
+- Could you apply the patch below, keeping the previous one in?
+We should be sending back -ERESTARTSYS to the kernel when the
+issue happens, and this behaves as if the Xenomai core did
+not.
 
-I'm considering adding a simple mechanism for accumulating snapshot 
-data, that would be seekable from the client read() handler, maybe just 
-based on GNU obstacks, with a revision tag to detect changes in the data 
-set being snapshot, so that the client code does not have to hold locks 
-throughout the entire iteration over the object contents. This would be 
-reminiscent of what we already do with Cobalt's vfiles 
-(kernel/cobalt/vfile).
+diff --git a/ksrc/nucleus/shadow.c b/ksrc/nucleus/shadow.c
+index c91a6f3..9b96029 100644
+--- a/ksrc/nucleus/shadow.c
++++ b/ksrc/nucleus/shadow.c
+@@ -699,11 +699,21 @@ void __init xnheap_init_vdso(void)
+ 
+ static inline void request_syscall_restart(xnthread_t *thread,
+ 					   struct pt_regs *regs,
+-					   int sysflags)
++					   int sysflags,
++					   int head)
+ {
+ 	int notify = 0;
+ 
+ 	if (xnthread_test_info(thread, XNKICKED)) {
++		printk(KERN_WARNING
++		       "%s[%s]: %s, state=0x%lx, info=0x%lx, rval=%ld, sysflags=0x%x\n",
++		       __func__,
++		       head ? "hi" : "lo",
++		       thread->name,
++		       thread->state, thread->info,
++		       __xn_reg_rval(regs),
++		       sysflags);
++
+ 		if (__xn_interrupted_p(regs)) {
+ 			__xn_error_return(regs,
+ 					  (sysflags & __xn_exec_norestart) ?
+@@ -2364,7 +2374,7 @@ int do_hisyscall_event(unsigned event, rthal_pipeline_stage_t *stage,
+ 		if (signal_pending(p) || xnthread_amok_p(thread)) {
+ 			sigs = 1;
+ 			xnthread_clear_amok(thread);
+-			request_syscall_restart(thread, regs, sysflags);
++			request_syscall_restart(thread, regs, sysflags, 1);
+ 		} else if (xnthread_test_state(thread, XNOTHER) &&
+ 			   xnthread_get_rescnt(thread) == 0) {
+ 			if (switched)
+@@ -2537,7 +2547,7 @@ int do_losyscall_event(unsigned event, rthal_pipeline_stage_t *stage,
+ 		thread = xnshadow_thread(current);
+ 		if (signal_pending(current)) {
+ 			sigs = 1;
+-			request_syscall_restart(thread, regs, sysflags);
++			request_syscall_restart(thread, regs, sysflags, 0);
+ 		} else if (xnthread_test_state(thread, XNOTHER) &&
+ 			   xnthread_get_rescnt(thread) == 0)
+ 			sysflags |= __xn_exec_switchback;
 
 -- 
 Philippe.
