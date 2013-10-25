@@ -1,68 +1,81 @@
-Message-ID: <525EBAD4.3080100@steinkuehler.net>
-Date: Wed, 16 Oct 2013 11:12:04 -0500
-From: Charles Steinkuehler <charles@steinkuehler.net>
+Message-ID: <526A222C.7000804@basystemes.fr>
+Date: Fri, 25 Oct 2013 09:47:56 +0200
+From: Jean-Baptiste Tredez <jean-baptiste.tredez@basystemes.fr>
 MIME-Version: 1.0
-References: <525DC044.6090201@steinkuehler.net>	<525E73FB.4060809@xenomai.org>	<525E7ABF.8040403@steinkuehler.net>	<525E7D85.9020307@xenomai.org>
-	<525E81CD.6000603@steinkuehler.net>	<525E8665.8000705@steinkuehler.net>
-	<525E8A43.5090601@xenomai.org> <525E8BFF.1060201@steinkuehler.net>
-	<525EAFFD.3010207@steinkuehler.net> <525EB7A2.1050601@xenomai.org>
-In-Reply-To: <525EB7A2.1050601@xenomai.org>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] Hung task on Xenomai patched ARM 3.8.13 BeagleBone
- Kernel
+References: <5268DCEA.7000202@basystemes.fr> <5268F13E.4020402@siemens.com>
+ <5269414F.6020806@xenomai.org> <52694D61.7090902@siemens.com>
+ <5269583F.4080701@siemens.com>
+In-Reply-To: <5269583F.4080701@siemens.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] xsave/xrstor compilation error
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
-	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
-List-Archive: <http://www.xenomai.org/pipermail/xenomai>
+ <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
+List-Archive: <http://www.xenomai.org/pipermail/xenomai/>
 List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
-	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+ <mailto:xenomai-request@xenomai.org?subject=subscribe>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-T24gMTAvMTYvMjAxMyAxMDo1OCBBTSwgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4gT24g
-MTAvMTYvMjAxMyAwNToyNSBQTSwgQ2hhcmxlcyBTdGVpbmt1ZWhsZXIgd3JvdGU6Cj4+IE9uIDEw
-LzE2LzIwMTMgNzo1MiBBTSwgQ2hhcmxlcyBTdGVpbmt1ZWhsZXIgd3JvdGU6Cj4+PiBBbnl3YXks
-IGFyZSB0aGVyZSBhbnkgaW4tYmV0d2VlbiBzdGVwcyBJIGNhbiB0ZXN0IHdpdGggdGhlIGtlcm5l
-bCB0aGF0Cj4+PiBtaWdodCBoZWxwIGlzb2xhdGUgd2hhdCBjb2RlIHRvIGdvIG92ZXIgaW4gdGhl
-IG1tYyBkcml2ZXI/ICBBbnl0aGluZwo+Pj4gYmV0d2VlbiAibm8geGVub21haSBwYXRjaGVzIiBh
-bmQgInBhdGNoZWQgYW5kIGNvbmZpZ3VyZWQgdG8gcnVuIHhlbm9tYWkiCj4+PiBtaWdodCBwb3Rl
-bnRpYWxseSBiZSBlbmxpZ2h0ZW5pbmcuCj4+Cj4+IEkgYnVpbHQgYW5kIHRlc3RlZCBhIHBhdGNo
-ZWQga2VybmVsIHRoYXQgaGFzIG5vIHhlbm9tYWkgY29uZmlndXJlCj4+IG9wdGlvbnMgZW5hYmxl
-ZDoKPj4KPj4gIyBDT05GSUdfWEVOIGlzIG5vdCBzZXQKCk9vcHMuLi50b28gcXVpY2sgd2l0aCB0
-aGUgY3V0LWFuZC1wYXN0ZS4gIFRoaXMgaXMgdGhlIGNvbmZpZ3VyYXRpb24gSQp0ZXN0ZWQgd2l0
-aCB0aGF0IHN0aWxsIGZhaWxzLgoKQ09ORklHX0lQSVBFX1dBTlRfQUNUSVZFX01NPXkKQ09ORklH
-X0lQSVBFX0FSTV9LVVNFUl9UU0M9eQpDT05GSUdfSVBJUEU9eQpDT05GSUdfSVBJUEVfTEVHQUNZ
-PXkKQ09ORklHX0lQSVBFX0NPUkU9eQpDT05GSUdfSVBJUEVfQ09SRV9BUElSRVY9MgpDT05GSUdf
-SVBJUEVfVEFSR0VUX0FQSVJFVj0xCkNPTkZJR19JUElQRV9IQVZFX0hPU1RSVD15CkNPTkZJR19J
-UElQRV9ERUxBWUVEX0FUT01JQ1NXPXkKIyBDT05GSUdfSVBJUEVfREVCVUcgaXMgbm90IHNldAoK
-IyBDT05GSUdfWEVOT01BSSBpcyBub3Qgc2V0CkNPTkZJR19YRU5PX0dFTkVSSUNfU1RBQ0tQT09M
-PXkKQ09ORklHX1hFTk9fRkFTVFNZTkNIX0RFUD15CkNPTkZJR19YRU5PX0ZBU1RTWU5DSD15Cgo+
-IENPTkZJR19YRU4gaXMgZm9yIFhlbiwgbm90IFhlbm9tYWkuIFRoZSBpbnRlcmVzdGluZyBzdGVw
-cyBhcmU6Cj4gLSBDT05GSUdfSVBJUEUgZW5hYmxlZCB3aXRoIENPTkZJR19YRU5PTUFJIGRpc2Fi
-bGVkCj4gLSBwYXRjaGVkIGtlcm5lbCB3aXRoIENPTkZJR19JUElQRSBvZmYgYW5kIENPTkZJR19Y
-RU5PTUFJIG9mZi4KClNvIGl0IGxvb2tzIGxpa2UgSSB0cmllZCB0aGUgZmlyc3Qgb3B0aW9uIChp
-cGlwZSBlbmFibGVkLCB4ZW5vbWFpCmRpc2FibGVkLCByZXN1bHQgPSBzdGlsbCBicm9rZW4pLCBJ
-J2xsIHRyeSBkaXNhYmxpbmcgaXBpcGUgYXMgd2VsbCBhbmQKc2VlIHdoYXQgaGFwcGVucy4KCj4g
-SW4gYWRkaXRpb24gdG8gdGhlIHRyb3VibGVzaG9vdGluZyBndWlkZSwgeW91IG1heSBmaW5kIHRo
-ZSBmb2xsb3dpbmcKPiBkb2N1bWVudGF0aW9uIHVzZWZ1bDoKPiBodHRwczovL3d3dy54ZW5vbWFp
-Lm9yZy9pbmRleC5waHAvSS1waXBlLWNvcmU6QXJtUG9ydGluZwoKVGhhbmtzIQoKPiBJZiB0aGUg
-aXNzdWUgaXMgbm90IGEgdGltZXIgaXNzdWUsIGFuZCBpdCBkb2VzIG5vdCBzZWVtIHRvIGJlLCB0
-aGUgbW9zdAo+IHByb2JhYmxlIGV4cGxhbmF0aW9uIGlzIHRoYXQgZWl0aGVyIHRoZSBNTUMgZHJp
-dmVyIG9yIHRoZSBpbnRlcnJ1cHQKPiBjb250cm9sbGVyIGRvZXMgbm90IGxpa2UgcmVjZWl2aW5n
-IGludGVycnVwdHMgd2hpbGUgdGhleSBhcmUgbWFza2VkLiBJbgo+IHRoaXMgY2FzZSwgeW91IHdp
-bGwgZmluZCB0aGF0IHRoZSBwYXRjaGVkIGtlcm5lbCBkb2VzIG5vdCB3b3JrIHdpdGgKPiBDT05G
-SUdfSVBJUEUgYnV0IHdvcmtzIHdpdGggQ09ORklHX0lQSVBFIG9mZiBhbmQgQ09ORklHX1hFTk9N
-QUkgb2ZmLgo+IERvIHlvdSBrbm93IGlmIHRoZSBpbnRlcnJ1cHQgaXMgbGV2ZWwgb3IgZWRnZSB0
-cmlnZ2VyZWQ/CgpJIGRvbid0IGtub3cgbXVjaCBkZXRhaWwgeWV0LCBJJ20gc3RpbGwgY3Jhd2xp
-bmcgYXJvdW5kIHRoZSBkcml2ZXIgY29kZQphbmQgdHJ5aW5nIHRvIG1ha2Ugc2Vuc2Ugb2YgdGhp
-bmdzLgoKSSdsbCB0ZXN0IHdpdGggaXBpcGUgZGlzYWJsZWQsIGdvIHRocm91Z2ggdGhlIEFybSBQ
-b3J0aW5nIGd1aWRlLCBhbmQgc2VlCndoZXJlIHRoYXQgZ2V0cyBtZS4uLgoKTWFueSB0aGFua3Mg
-Zm9yIGFsbCB0aGUgaGVscCEKCi0tIApDaGFybGVzIFN0ZWlua3VlaGxlcgpjaGFybGVzQHN0ZWlu
-a3VlaGxlci5uZXQKCi0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAtLS0tLS0tLS0tLS0tLQpBIG5v
-bi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6IHNpZ25hdHVyZS5hc2MKVHlw
-ZTogYXBwbGljYXRpb24vcGdwLXNpZ25hdHVyZQpTaXplOiAyNjEgYnl0ZXMKRGVzYzogT3BlblBH
-UCBkaWdpdGFsIHNpZ25hdHVyZQpVUkw6IDxodHRwOi8vd3d3Lnhlbm9tYWkub3JnL3BpcGVybWFp
-bC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTMxMDE2LzkxNzAwMzI1L2F0dGFjaG1lbnQucGdwPgo=
+On 24/10/2013 19:26, Jan Kiszka wrote :
+> On 2013-10-24 17:40, Jan Kiszka wrote:
+>> On 2013-10-24 16:48, Gilles Chanteperdrix wrote:
+>>> On 10/24/2013 12:06 PM, Jan Kiszka wrote:
+>>>> We
+>>>> can, of course, replace the instructions with their obcodes (like the
+>>>> kernel does), just makes the code more ugly.
+>>> Jan, please do this, even if it makes the code more ugly, it makes sense
+>>> for the 2.6.3 release to continue working with the tools it already
+>>> supported. No question for -forge, but we try hard to keep ABI
+>>> compatibility so that users can upgrade xenomai without even recompiling
+>>> their application, it does not make sense to suddenly stop working with
+>>> a toolchain which always worked before.
+>> In fact, we already have legacy gas support: all these new instructions
+>> are wrapped with CONFIG_AS_AVX, and only if that is set we use the new
+>> assembler instructions. Given that this CONFIG has to be set based on
+>> some test, something seems to go wrong in the kernel build over there.
+>> But that's outside of the Xenomai scope. I'm currently trying to find
+>> out if there was some related kernel issue back then.
+> OK, something likely went wrong in my brain back then while I tried to
+> make this build for all the combinations. I can't recall what those
+> CONFIG_X86_64 tests were for. This should build and in theory also work:
+>
+> diff --git a/include/asm-x86/bits/pod.h b/include/asm-x86/bits/pod.h
+> index a32575f..c6fbcee 100644
+> --- a/include/asm-x86/bits/pod.h
+> +++ b/include/asm-x86/bits/pod.h
+> @@ -241,7 +241,7 @@ static inline void __save_i387(x86_fpustate *fpup)
+>   {
+>   #ifdef cpu_has_xsave
+>   	if (cpu_has_xsave) {
+> -#if defined(CONFIG_AS_AVX) || !defined CONFIG_X86_64
+> +#if defined(CONFIG_AS_AVX)
+>   		asm volatile("xsave" XSAVE_SUFFIX " %0"
+>   			     : "=m" (fpup->xsave) : "a" (-1), "d" (-1)
+>   			     : "memory");
+> @@ -301,7 +301,7 @@ static inline void __restore_i387(x86_fpustate *fpup)
+>   {
+>   #ifdef cpu_has_xsave
+>   	if (cpu_has_xsave) {
+> -#if defined(CONFIG_AS_AVX) || !defined(CONFIG_X86_64)
+> +#if defined(CONFIG_AS_AVX)
+>   		asm volatile("xrstor" XSAVE_SUFFIX " %0"
+>   			     : : "m" (fpup->xsave), "a" (-1), "d" (-1)
+>   			     : "memory");
+>
+> Jean-Baptiste, do you happen to have an xsave-capable box at hand to
+> test this (/proc/cpuinfo shows the available features)? Xenomai's
+> switchtest will stress the code.
+>
+> Thanks,
+> Jan
+>
+
+No, I do not have an xsave-capable box (no xsave or avx flag, only fxsr).
+This patch works fine here.
+
+Jean-Baptiste
+
