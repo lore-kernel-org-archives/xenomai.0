@@ -1,5 +1,5 @@
-Message-ID: <526D49C4.9020102@xenomai.org>
-Date: Sun, 27 Oct 2013 18:13:40 +0100
+Message-ID: <526D5C2A.1010500@xenomai.org>
+Date: Sun, 27 Oct 2013 19:32:10 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <526B99CD.3080303@xenomai.org>,
@@ -49,73 +49,28 @@ On 10/27/2013 05:54 PM, George Broz wrote:
 >> rt_heap_create().
 > 
 > Yes, sorry. Passing 256 MB (as 268,435,456) to rt_heap_create().
-> 
->>
->>  TM_NONBLOCK is used when calling
->>> rt_heap_alloc(). Both "0" and H_PRIO have been tried
->>> for "mode" when creating the area with rt_heap_create().
->>>
->>> Is this expected behavior?
->>>
->>> How can large memory allocations be built without a
->>> "realloc" equivalent offered in the memory heap
->>> services?
->>>
->>>
->>
->> There is no reallocation in the rt heap services, ever. If H_SINGLE
->> was 
->> passed to rt_heap_create(), there is not even any "allocation", the 
->> address of the heap memory is returned in that case, as it is viewed
->> as 
->> a single buffer.
->>
->> Assuming you don't pass H_SINGLE when creating the heap, 
-> 
-> 
-> We're not passing H_SINGLE when creating the heap. The only mode flag 
-> passed to _create() is H_PRIO or H_FIFO ("0") - have tried both, 
-> and resulting behavior is the same.
-> 
-> 
->> the only reason 
->> to get delays in non-blocking allocation mode would be that a minor
->> VM 
->> fault unexpectedly happens when the 5MB block is being pulled from
->> the 
->> heap, when writing our meta-data to that memory area. That would mean
->>
->> that your calling thread switches to secondary mode for handling the
->>
->> fault, and gets delayed for this reason.
->>
->> You should first try checking this assumption, by enabling T_WARNSW
->> for 
->> your thread. If this is confirmed, then there could be something
->> wrong 
->> in the i-pipe layer for your kernel release.
-> 
-> We always run with T_WARNSW turned on for the Xenomai tasks that
-> should never switch to secondary. A backtrace is generated if 
-> a secondary transition occurs. We have used this mechanism 
-> extensively in our development. When we attempt to allocate 
-> 5 MB, neither the calling task (prio=50), nor the high priority
-> task (prio=99) that gets held off logs a secondary mode 
-> transition.
-> 
-> 
-> Going a step further, we can run in "simulation" mode where the
-> hardware interrupt source (on which rt_intr_wait() is waiting) 
-> is replaced with rt_task_set_periodic()/rt_task_wait_period()
-> and the same behavior results.
-> 
-> Any ideas?
 
-I would suggest again trying the latest version, and it does not mean
-updating the kernel.
-Another idea would be to run the test without CONFIG_SMP, or booting
-with nr_cpus=1 if you are using hyper threading.
+I believe the rt_heap is not meant for such large sizes: to satisfy a 5
+MB allocation using 4096 bytes pages, it has to allocate 1280 pages,
+that means a lot of housekeeping which happens with a spinlock locked,
+irqs off. So, for your case you would want to use a larger page size,
+say 1MB. Please try the following patch which is not a fix, but simply
+an attempt at finding whether the page size is what causes the issue.
 
+diff --git a/ksrc/nucleus/heap.c b/ksrc/nucleus/heap.c
+index 568ba27..3a9105a 100644
+--- a/ksrc/nucleus/heap.c
++++ b/ksrc/nucleus/heap.c
+@@ -1362,7 +1362,7 @@ int xnheap_init_mapped(xnheap_t *heap, u_long
+heapsize, int memflags)
+ 	if (heapbase == NULL)
+ 		return -ENOMEM;
+
+-	err = xnheap_init(heap, heapbase, heapsize, PAGE_SIZE);
++	err = xnheap_init(heap, heapbase, heapsize, 1024 * 1024);
+ 	if (err) {
+ 		__unreserve_and_free_heap(heapbase, heapsize, memflags);
+ 		return err;
 
 -- 
                                                                 Gilles.
