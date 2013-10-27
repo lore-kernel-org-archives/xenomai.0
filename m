@@ -1,12 +1,13 @@
-Message-ID: <526CF0DA.7060505@xenomai.org>
-Date: Sun, 27 Oct 2013 11:54:18 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <CAKKWdteVT-rzPSkN2CwY-neQHgyFOy4-DrfH6LuTE9RgF4puXA@mail.gmail.com>
-In-Reply-To: <CAKKWdteVT-rzPSkN2CwY-neQHgyFOy4-DrfH6LuTE9RgF4puXA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] xenomai-2.6.3 installation failed !
+In-Reply-To: <526B99CD.3080303@xenomai.org>
+References: <526B99CD.3080303@xenomai.org>,
+ <OF415A91C1.3CB4977D-ON85257C0F.0078CAEF-85257C0F.0078CB7B@moog.com>
+From: George Broz <GBroz@moog.com>
+Message-ID: <OF4C4FACAC.0349F48E-ON85257C11.005CE00C-85257C11.005CE031@moog.com>
+Date: Sun, 27 Oct 2013 12:54:28 -0400
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="ISO-8859-1"
+Subject: Re: [Xenomai] rt_heap_alloc priority inversion
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,38 +16,105 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: ali hagigat <hagigatali@gmail.com>
-Cc: xenomai <xenomai@xenomai.org>
+To: rpm@xenomai.org
+Cc: Xenomai@xenomai.org
 
-On 10/27/2013 11:51 AM, ali hagigat wrote:
-> I am using Fedora 13, Intel: quad core:2.4GHZ, 32 bits machine:i686,
-> Build kernel: 2.6.33.3-85 or linux kernel 3.5.7 with xenomai 2.6.2.1,
+-----Philippe Gerum <rpm@xenomai.org> wrote: -----
+>
+>On 10/25/2013 11:59 PM, George Broz wrote:
+>> Hello All,
+>>
+>> I'm running Linux 2.6.37.6 w/Xenomai 2.6.1, native API
+>> on x86 (Atom, SMP, 32-bit).
+>>
+>> I have two tasks, both running in Xenomai user-space.
+>> One is priority=3D99 and blocks on rt=5Fintr=5Fwait(),
+>> running every 250 us with 125us margin. This task does
+>> not make direct calls to rt=5Fheap=5Falloc/free().
+>>
+>> The other task is priority=3D50, wakes 1msec, sleeps 1msec.
+>> This task routinely makes rt=5Fheap=5Falloc/free calls.
+>>
+>> When the priority=3D50 task makes rt=5Fheap=5Falloc() calls
+>> for "size" greater than 5 MB, the priority=3D99 task
+>> appears to be held off from executing for several ms.
+>>
+>> Plenty of memory is available (vmalloc=3D320M as linux
+>> boot arg).
+>
+>The size that matters in how much memory you assigned to the heap in
+>
+>rt=5Fheap=5Fcreate().
 
-Xenomai 2.6.2.1 our Xenomai 2.6.3?
+Yes, sorry. Passing 256 MB (as 268,435,456) to rt=5Fheap=5Fcreate().
 
-> binutils: 2.20.51.0.2, gcc: 4.4.4, motherboard: ASUS:commando
-> 
-> i patched kernel, 3.5.7 with ipipe-core-3.5.7 and then the make
-> process is successful but after rebooting there is a long delay and
-> unpleasant black screen and then it displays:
-> 
-> Welcome to Fedora 13
-> Press "I" for interactive start-up
-> 
-> then some messages from udev, and then
-> It stops forever!!
+>
+>  TM=5FNONBLOCK is used when calling
+>> rt=5Fheap=5Falloc(). Both "0" and H=5FPRIO have been tried
+>> for "mode" when creating the area with rt=5Fheap=5Fcreate().
+>>
+>> Is this expected behavior?
+>>
+>> How can large memory allocations be built without a
+>> "realloc" equivalent offered in the memory heap
+>> services?
+>>
+>>
+>
+>There is no reallocation in the rt heap services, ever. If H=5FSINGLE
+>was=20
+>passed to rt=5Fheap=5Fcreate(), there is not even any "allocation", the=20
+>address of the heap memory is returned in that case, as it is viewed
+>as=20
+>a single buffer.
+>
+>Assuming you don't pass H=5FSINGLE when creating the heap,=20
 
-Does the same kernel configuration works, without CONFIG_XENOMAI and
-CONFIG_IPIPE enabled.
 
-> 
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> http://www.xenomai.org/mailman/listinfo/xenomai
-> 
+We're not passing H=5FSINGLE when creating the heap. The only mode flag=20
+passed to =5Fcreate() is H=5FPRIO or H=5FFIFO ("0") - have tried both,=20
+and resulting behavior is the same.
 
 
--- 
-                                                                Gilles.
+>the only reason=20
+>to get delays in non-blocking allocation mode would be that a minor
+>VM=20
+>fault unexpectedly happens when the 5MB block is being pulled from
+>the=20
+>heap, when writing our meta-data to that memory area. That would mean
+>
+>that your calling thread switches to secondary mode for handling the
+>
+>fault, and gets delayed for this reason.
+>
+>You should first try checking this assumption, by enabling T=5FWARNSW
+>for=20
+>your thread. If this is confirmed, then there could be something
+>wrong=20
+>in the i-pipe layer for your kernel release.
+
+We always run with T=5FWARNSW turned on for the Xenomai tasks that
+should never switch to secondary. A backtrace is generated if=20
+a secondary transition occurs. We have used this mechanism=20
+extensively in our development. When we attempt to allocate=20
+5 MB, neither the calling task (prio=3D50), nor the high priority
+task (prio=3D99) that gets held off logs a secondary mode=20
+transition.
+
+
+Going a step further, we can run in "simulation" mode where the
+hardware interrupt source (on which rt=5Fintr=5Fwait() is waiting)=20
+is replaced with rt=5Ftask=5Fset=5Fperiodic()/rt=5Ftask=5Fwait=5Fperiod()
+and the same behavior results.
+
+Any ideas?
+
+>
+>--=20
+>Philippe.
+
+
+Thanks for your help! Much appreciated!
+--George=
+
 
