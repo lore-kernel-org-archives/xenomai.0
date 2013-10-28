@@ -1,13 +1,13 @@
-Message-ID: <526E3407.9050400@xenomai.org>
-Date: Mon, 28 Oct 2013 10:53:11 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <C0EBEDB7-2439-4083-AF21-4896462E5B7E@gmail.com>
-In-Reply-To: <C0EBEDB7-2439-4083-AF21-4896462E5B7E@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Static linking fails for global mutex variable(c++
- class) on embedded system
+In-Reply-To: <526CF0DA.7060505@xenomai.org>
+References: <CAKKWdteVT-rzPSkN2CwY-neQHgyFOy4-DrfH6LuTE9RgF4puXA@mail.gmail.com>
+ <526CF0DA.7060505@xenomai.org>
+Date: Mon, 28 Oct 2013 14:22:57 +0330
+Message-ID: <CAKKWdtf0Ayb_kqUqQn8kJKk84vKtFxk2PpvbqzDTCGWMWvknow@mail.gmail.com>
+From: ali hagigat <hagigatali@gmail.com>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] xenomai-2.6.3 installation failed !
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,28 +16,55 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Jaap Kempenaar <janjaapkempenaar@gmail.com>
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai <xenomai@xenomai.org>
 
-On 10/28/2013 10:44 AM, Jan Jaap Kempenaar wrote:
-> Hello,
-> 
-> For our projects we developed a multiplatform library which is used
-> to create our applications. We are now porting this to Xenomai. 
-> Because we compile for embedded targets, in this case an ARM board,
-> we use static linking as it might occur that dynamic libraries are
-> not available.
-> 
-> In one of our test cases we compile a global class containing a
-> mutex. This class gets initiated before the main function.
+Dear Gilles,
 
-Whether this works depends on initialization order: the Xenomai library
-has to be initialized before you call pthread_mutex_init, and this is
-probably not true when you link the library statically. The only
-solution is to defer the call to pthread_mutex_init somehow.
+The problem was the kernel configuration as you said. Thank you. Now
+xenomai-2.6.3 is up and running (seems OK so far) and i will continue
+testing it. I have attached the correct .config file.
 
-Also note that in order to static link the Xenomai library, you have to
-use the "wrap-link.sh" script.
--- 
-                                                                Gilles.
+Regards
 
+On 10/27/13, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote:
+> On 10/27/2013 11:51 AM, ali hagigat wrote:
+>> I am using Fedora 13, Intel: quad core:2.4GHZ, 32 bits machine:i686,
+>> Build kernel: 2.6.33.3-85 or linux kernel 3.5.7 with xenomai 2.6.2.1,
+>
+> Xenomai 2.6.2.1 our Xenomai 2.6.3?
+>
+>> binutils: 2.20.51.0.2, gcc: 4.4.4, motherboard: ASUS:commando
+>>
+>> i patched kernel, 3.5.7 with ipipe-core-3.5.7 and then the make
+>> process is successful but after rebooting there is a long delay and
+>> unpleasant black screen and then it displays:
+>>
+>> Welcome to Fedora 13
+>> Press "I" for interactive start-up
+>>
+>> then some messages from udev, and then
+>> It stops forever!!
+>
+> Does the same kernel configuration works, without CONFIG_XENOMAI and
+> CONFIG_IPIPE enabled.
+>
+>>
+>> _______________________________________________
+>> Xenomai mailing list
+>> Xenomai@xenomai.org
+>> http://www.xenomai.org/mailman/listinfo/xenomai
+>>
+>
+>
+> --
+>                                                                 Gilles.
+>
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: .config2
+Type: application/octet-stream
+Size: 131428 bytes
+Desc: not available
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20131028/569f657=
+8/attachment.obj>
