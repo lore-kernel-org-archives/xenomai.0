@@ -1,15 +1,9 @@
-Message-ID: <526E697D.6030005@xenomai.org>
-Date: Mon, 28 Oct 2013 14:41:17 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <C0EBEDB7-2439-4083-AF21-4896462E5B7E@gmail.com>
- <526E3407.9050400@xenomai.org>
- <072A853B-9DEA-4272-B2CA-88CA5FFCD8B1@gmail.com>
-In-Reply-To: <072A853B-9DEA-4272-B2CA-88CA5FFCD8B1@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Static linking fails for global mutex variable(c++
- class) on embedded system
+Date: Tue, 29 Oct 2013 13:43:05 +0100
+Message-ID: <CAKS01okfPOzCckUbe+NCfPT3fSqst2JaGpnGG8VaPCwbjvtE_Q@mail.gmail.com>
+From: Anup Kini <akini@synapticon.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: [Xenomai] xenomai - zynq - linux-xlxn14.5 - booting halted !
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,33 +12,72 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Jaap Kempenaar <janjaapkempenaar@gmail.com>
-Cc: xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 10/28/2013 02:36 PM, Jan Jaap Kempenaar wrote:
-> How exactly is the xenomai library initialised?
+Hi All,
 
-Witch a function having the "constructor" attribute which makes it
-executed before main, but does not give any guarantee that it will be
-executed before a C++ static object constructor.
+I am using xenomai-2.6.3 with linux-xlnx-v14.5.
+I have patched the kernel as given in the readme (for Zynq SoC).
 
-> Is this a kind of system function call performed by the application?
+My booting stops after the following messages:
 
-Yes.
 
->
-> Can you check whether or not the xenomai library is initialised at a
-> certain point in the application?
+   1. I-pipe: head domain Xenomai registered.
+   2. Xenomai: hal/arm started.
+   3. Xenomai: scheduling class idle registered.
+   4. Xenomai: scheduling class rt registered.
+   5. Xenomai: real-time nucleus v2.6.3 (Lies and Truths) loaded.
+   6. Xenomai: debug mode enabled.
+   7. Xenomai: starting native API services.
+   8. Xenomai: starting POSIX services.
+   9. Xenomai: starting RTDM services.
+   10. bounce pool size: 64 pages
 
-Well, if pthread_mutex_init returns ENOSYS, it means that it is not
-initialized. Also, when entering the "main" function, you are sure that 
-the library has been initialized.
 
->
-> As for the wrap-link.sh, we use that in our static linking.
+Pastebin link to entire bootlog: http://pastebin.com/jZTHEQU3
 
-Ok.
+<http://pastebin.com/jZTHEQU3>
+Kindly let me know how to proceed with fixing this issue.
 
+
+
+Thanks,
 -- 
-					    Gilles.
 
+*Anup Kini
+*Systems Engineer****
+*
+------------------------------
+*
+
+*Synapticon** * |  Cyber-Physical System Solutions ****
+
+Mobile:
+
+Direct:
+
++49 151 / 638 646 73
+
++49 7335 / 186 999 21
+
+Fax:****
++49 7335 / 186 999 1
+
+
+ **
+
+ ****
+
+synapticon.com <http://www.synapticon.com/>  |
+@synapticon_co<https://twitter.com/#!/synapticon_co>
+****
+
+Synapticon GmbH  |  Hohlbachweg 2  |  73344 Gruibingen, DE
+Secretary +49 7335 / 186 999 0  |  General Manager: Nikolai Ensslen
+Registry Court Ulm HRB 725114  |  USt-ID DE271647127****
+
+This message and any files transmitted with it are confidential and
+intended
+solely for the use of the individual or entity to whom they are addressed.
+Please notify the sender immediately if you have received this e-mail by
+mistake and delete it from your system.
