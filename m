@@ -1,18 +1,15 @@
+Message-ID: <20131104101653.20482fgez8ylxblx@webmail.upv.es>
+Date: Mon, 04 Nov 2013 10:16:53 +0100
+From: Jose Ignacio Cazalilla Morenas <jcazalilla@ai2.upv.es>
 MIME-Version: 1.0
-Sender: mfornero@gmail.com
-In-Reply-To: <CAKS01oncDWRS8rfyrBw2ctRSR=WX6Jyqp4=+jyRNPgpwqq_91g@mail.gmail.com>
-References: <CAKS01okfPOzCckUbe+NCfPT3fSqst2JaGpnGG8VaPCwbjvtE_Q@mail.gmail.com>
- <CADVgf9n6daP32wfGR+61Ko0m8q=nSD+uNe42PneJ_S5uhg7yyw@mail.gmail.com>
- <CAKS01om0rP3i3eAux+SC1Zt4-0-NdqOwLhg_8HQP4yjCiX2t2A@mail.gmail.com>
- <CADVgf9mprWu-s+1gNzhrHtXQf6d3u87P7AQ3eNd0=cdg6zWnvQ@mail.gmail.com>
- <CAKS01okXjCV9v6vJ9W8UoqJ6d57h1rQvkPSbGOUugc5gymhyjg@mail.gmail.com>
- <CADVgf9kPw+q77x30UU=bRiZ039NsKd+83Mdv2iMZvHNxKb-hAA@mail.gmail.com>
- <CAKS01oncDWRS8rfyrBw2ctRSR=WX6Jyqp4=+jyRNPgpwqq_91g@mail.gmail.com>
-Date: Thu, 31 Oct 2013 14:54:19 -0400
-Message-ID: <CADVgf9=fV1y=_Lb3PVswajy2jTnWDyPwZyOSVBONnPyYbtYG0w@mail.gmail.com>
-From: Matthew Fornero <mfornero.lists@gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Subject: Re: [Xenomai] xenomai - zynq - linux-xlxn14.5 - booting halted !
+Content-Type: text/plain;
+ charset=ISO-8859-1;
+ DelSp="Yes";
+ format="flowed"
+Content-Disposition: inline
+Content-Transfer-Encoding: 7bit
+Subject: [Xenomai] "Xenomai Posix skin init: pthread_setschedparam: Device
+ or resource busy" in ARM IgepV2 Orocos+Xenomai
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -21,28 +18,67 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Anup Kini <akini@synapticon.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: xenomai@xenomai.org
 
-On Thu, Oct 31, 2013 at 9:36 AM, Anup Kini <akini@synapticon.com> wrote:
-> Thanks a lot for correcting me Matt.
->
-> I would like to confirm one more thing regarding the ipipe xenomai patch.
-> which ipipe patch should i use ?
-> 1 - ipipe-core-3.8.13-arm-3.patch - this is availabe in the xenomai patches
-> folder.
-> 2 - ipipe-core-3.8-arm-1.patch - this is availabe from
-> http://download.gna.org/adeos/patches/v3.x/arm/
->
-> I cross checked the two patches and there are many additions in [1] related
-> to debug and other things i could not understand.
+Hi all.
+I'm trying to use Xenomai+Linaro under a IGEPv2, in order to install  
+Orocos (with the RT_TARGET=xenomai).
+I've been working with the IGEPv2 and ROS+Orocos, but with the  
+RTT_TARGET=gnulinux, instead of Xenomai.
 
-In case anyone else reading this runs into something similar-- did
-removing CONFIG_CPU_FREQ solve your problem?
+Now, I've downloaded from git.isee.biz the kernel patched with Xenomai:
 
-3.8-arm-1 is (I believe) the 3.8[.0] patch, which is what I worked
-against when I last worked with Xenomai on Zynq.
-3.8.13-arm-3 is what was released with Xenomai 2.6.3 (I believe), and
-it may contain general ipipe related bug fixes, but I've never tested
-it on Zynq so YMMV
+$git clone git://git.isee.biz/pub/scm/linux-omap-2.6.git
+$cd linux-omap-2.6/
+$git checkout linux-2.6.35.y-rt
+$make ARCH=arm igep00x0_defconfig
+$make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- zImage modules
+$sudo make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi-  
+INSTALL_MOD_PATH=/media/root modules_install
+
+/*Copy&Paste the zImage to the Boot partition*/
+
+When I run the IgepV2, the kernel informs that Xenomai have been  
+installed properly (dmesg).
+
+[ 0.108093] I-pipe: Domain Xenomai registered.
+[ 0.108123] Xenomai: hal/arm started.
+[ 0.109252] Xenomai: scheduling class idle registered.
+[ 0.109283] Xenomai: scheduling class rt registered.
+[ 0.117645] Xenomai: real-time nucleus v2.6.0 (Movin' On) loaded.
+[ 0.117675] Xenomai: debug mode enabled.
+[ 0.118164] Xenomai: starting native API services.
+[ 0.118164] Xenomai: starting POSIX services.
+[ 0.118316] Xenomai: starting RTDM services.
+
+
+Then, I have to install Xenomai at the user-space in order to use it  
+with Orocos (or other application), so I did (inside the IGEPv2, an  
+ARM embedded board):
+
+wget http://download.gna.org/xenomai/stable/xenomai-2.6.0.tar.bz2
+tar jxf xenomai-2.6.0.tar.bz2
+cd xenomai-2.6.0
+./configure CFLAGS="-march=armv7-a -mfpu=vfp3 -marm"
+make
+make install
+
+If I run /usr/xenomai/bin/xeno-test, it works fine (it seems).
+
+So, I compile Orocos. It detects the Xenomai installation and compile.
+However, when I run "deployer-xenomai" in order to start Orocos, I get  
+this error:
+
+root@igep2:~/orocos/orocos-toolchain# deployer-xenomai
+Xenomai Posix skin init: pthread_setschedparam: Device or resource busy
+
+Therefore, it doesn't work due to this error: "Xenomai Posix skin  
+init: pthread_setschedparam: Device or resource busy".
+I think it could be related to the configuration of Xenomai at the  
+user-space for the IGEPv2.
+Any idea?
+
+Regards,
+Jose
+
 
