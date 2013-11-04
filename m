@@ -1,15 +1,18 @@
-Message-ID: <20131104101653.20482fgez8ylxblx@webmail.upv.es>
-Date: Mon, 04 Nov 2013 10:16:53 +0100
-From: Jose Ignacio Cazalilla Morenas <jcazalilla@ai2.upv.es>
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=ISO-8859-1;
- DelSp="Yes";
- format="flowed"
-Content-Disposition: inline
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] "Xenomai Posix skin init: pthread_setschedparam: Device
- or resource busy" in ARM IgepV2 Orocos+Xenomai
+In-Reply-To: <CADVgf9=fV1y=_Lb3PVswajy2jTnWDyPwZyOSVBONnPyYbtYG0w@mail.gmail.com>
+References: <CAKS01okfPOzCckUbe+NCfPT3fSqst2JaGpnGG8VaPCwbjvtE_Q@mail.gmail.com>
+ <CADVgf9n6daP32wfGR+61Ko0m8q=nSD+uNe42PneJ_S5uhg7yyw@mail.gmail.com>
+ <CAKS01om0rP3i3eAux+SC1Zt4-0-NdqOwLhg_8HQP4yjCiX2t2A@mail.gmail.com>
+ <CADVgf9mprWu-s+1gNzhrHtXQf6d3u87P7AQ3eNd0=cdg6zWnvQ@mail.gmail.com>
+ <CAKS01okXjCV9v6vJ9W8UoqJ6d57h1rQvkPSbGOUugc5gymhyjg@mail.gmail.com>
+ <CADVgf9kPw+q77x30UU=bRiZ039NsKd+83Mdv2iMZvHNxKb-hAA@mail.gmail.com>
+ <CAKS01oncDWRS8rfyrBw2ctRSR=WX6Jyqp4=+jyRNPgpwqq_91g@mail.gmail.com>
+ <CADVgf9=fV1y=_Lb3PVswajy2jTnWDyPwZyOSVBONnPyYbtYG0w@mail.gmail.com>
+Date: Mon, 4 Nov 2013 11:47:30 +0100
+Message-ID: <CAKS01o=pMH3T=_QqhD4a-nm5KMma2+0cepS0tVeRnqubnJ2gBg@mail.gmail.com>
+From: Anup Kini <akini@synapticon.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: Re: [Xenomai] xenomai - zynq - linux-xlxn14.5 - booting halted !
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,67 +21,98 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Matthew Fornero <mfornero.lists@gmail.com>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi all.
-I'm trying to use Xenomai+Linaro under a IGEPv2, in order to install  
-Orocos (with the RT_TARGET=xenomai).
-I've been working with the IGEPv2 and ROS+Orocos, but with the  
-RTT_TARGET=gnulinux, instead of Xenomai.
+Hi All,
 
-Now, I've downloaded from git.isee.biz the kernel patched with Xenomai:
+Currently stuck with the following error:
 
-$git clone git://git.isee.biz/pub/scm/linux-omap-2.6.git
-$cd linux-omap-2.6/
-$git checkout linux-2.6.35.y-rt
-$make ARCH=arm igep00x0_defconfig
-$make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- zImage modules
-$sudo make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi-  
-INSTALL_MOD_PATH=/media/root modules_install
+  CC      arch/arm/kernel/setup.o
+In file included from arch/arm/kernel/setup.c:45:0:
+/home/akini/neo-linux/arch/arm/include/asm/tlbflush.h: In function
+'local_flush_tlb_mm':
+/home/akini/neo-linux/arch/arm/include/asm/tlbflush.h:343:19: error:
+invalid operands to binary & (have 'atomic64_t' and 'long long unsigned
+int')
+/home/akini/neo-linux/arch/arm/include/asm/tlbflush.h: In function
+'local_flush_tlb_page':
+/home/akini/neo-linux/arch/arm/include/asm/tlbflush.h:379:5: error: invalid
+operands to binary & (have 'atomic64_t' and 'long long unsigned int')
+make[1]: *** [arch/arm/kernel/setup.o] Error 1
+make: *** [arch/arm/kernel] Error 2
 
-/*Copy&Paste the zImage to the Boot partition*/
+I am using the 3.8.13-arm-3 patch currently, not sure where i went wrong.
+I did not face this when i used the 3.8-arm-1 patch.
+Any help / suggestion ?!! :)
 
-When I run the IgepV2, the kernel informs that Xenomai have been  
-installed properly (dmesg).
-
-[ 0.108093] I-pipe: Domain Xenomai registered.
-[ 0.108123] Xenomai: hal/arm started.
-[ 0.109252] Xenomai: scheduling class idle registered.
-[ 0.109283] Xenomai: scheduling class rt registered.
-[ 0.117645] Xenomai: real-time nucleus v2.6.0 (Movin' On) loaded.
-[ 0.117675] Xenomai: debug mode enabled.
-[ 0.118164] Xenomai: starting native API services.
-[ 0.118164] Xenomai: starting POSIX services.
-[ 0.118316] Xenomai: starting RTDM services.
+Will update once i have successfully built the kernel.
 
 
-Then, I have to install Xenomai at the user-space in order to use it  
-with Orocos (or other application), so I did (inside the IGEPv2, an  
-ARM embedded board):
-
-wget http://download.gna.org/xenomai/stable/xenomai-2.6.0.tar.bz2
-tar jxf xenomai-2.6.0.tar.bz2
-cd xenomai-2.6.0
-./configure CFLAGS="-march=armv7-a -mfpu=vfp3 -marm"
-make
-make install
-
-If I run /usr/xenomai/bin/xeno-test, it works fine (it seems).
-
-So, I compile Orocos. It detects the Xenomai installation and compile.
-However, when I run "deployer-xenomai" in order to start Orocos, I get  
-this error:
-
-root@igep2:~/orocos/orocos-toolchain# deployer-xenomai
-Xenomai Posix skin init: pthread_setschedparam: Device or resource busy
-
-Therefore, it doesn't work due to this error: "Xenomai Posix skin  
-init: pthread_setschedparam: Device or resource busy".
-I think it could be related to the configuration of Xenomai at the  
-user-space for the IGEPv2.
-Any idea?
-
-Regards,
-Jose
 
 
+On 31 October 2013 19:54, Matthew Fornero <mfornero.lists@gmail.com> wrote:
+
+> On Thu, Oct 31, 2013 at 9:36 AM, Anup Kini <akini@synapticon.com> wrote:
+> > Thanks a lot for correcting me Matt.
+> >
+> > I would like to confirm one more thing regarding the ipipe xenomai patch.
+> > which ipipe patch should i use ?
+> > 1 - ipipe-core-3.8.13-arm-3.patch - this is availabe in the xenomai
+> patches
+> > folder.
+> > 2 - ipipe-core-3.8-arm-1.patch - this is availabe from
+> > http://download.gna.org/adeos/patches/v3.x/arm/
+> >
+> > I cross checked the two patches and there are many additions in [1]
+> related
+> > to debug and other things i could not understand.
+>
+> In case anyone else reading this runs into something similar-- did
+> removing CONFIG_CPU_FREQ solve your problem?
+>
+> 3.8-arm-1 is (I believe) the 3.8[.0] patch, which is what I worked
+> against when I last worked with Xenomai on Zynq.
+> 3.8.13-arm-3 is what was released with Xenomai 2.6.3 (I believe), and
+> it may contain general ipipe related bug fixes, but I've never tested
+> it on Zynq so YMMV
+>
+
+
+
+-- 
+
+
+*Anup Kini*Systems Engineer
+*------------------------------*
+
+*Synapticon*  |  Cyber-Physical System Solutions
+
+Mobile:
+
+Direct:
+
++49 151 / 638 646 73
+
++49 7335 / 186 999 21
+
+Fax:
++49 7335 / 186 999 1
+
+
+
+
+
+
+synapticon.com <http://www.synapticon.com/>  |
+@synapticon_co<https://twitter.com/#!/synapticon_co>
+
+Synapticon GmbH  |  Hohlbachweg 2  |  73344 Gruibingen, DE
+Secretary +49 7335 / 186 999 0  |  General Manager: Nikolai Ensslen
+Registry Court Ulm HRB 725114  |  USt-ID DE271647127
+
+This message and any files transmitted with it are confidential and
+intended
+solely for the use of the individual or entity to whom they are addressed.
+Please notify the sender immediately if you have received this e-mail by
+mistake and delete it from your system.
