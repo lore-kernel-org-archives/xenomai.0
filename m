@@ -1,5 +1,5 @@
-Message-ID: <20131105103552.15065b908xg469yw@webmail.upv.es>
-Date: Tue, 05 Nov 2013 10:35:52 +0100
+Message-ID: <20131105134322.53865hwyc5hz8ve2@webmail.upv.es>
+Date: Tue, 05 Nov 2013 13:43:22 +0100
 From: Jose Ignacio Cazalilla Morenas <jcazalilla@ai2.upv.es>
 References: <20131104101653.20482fgez8ylxblx@webmail.upv.es>
  <5277B186.7010300@xenomai.org>
@@ -114,11 +114,12 @@ Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> escribi=F3:
 >                                                                 Gilles.
 >
 
-Which vanilla kernel do you mean exactly?
-Maybe this one for omap devices? =20
-https://git.kernel.org/cgit/linux/kernel/git/tmlind/linux-omap.git/
+Only to inform that using Xenomai 2.6.3 at user-space (instead of =20
+2.6.0), and Xenomai 2.6.0 in the kernel, WORKS FINE WITHOUT ERRORS. =20
+However, I'm going to compile and patch a vanilla kernel in order to =20
+use the same version of Xenomai (2.6.3) in my IgepV2, following the =20
+advice of Gilles.
 
-Thanks.
 Jose
 
 
