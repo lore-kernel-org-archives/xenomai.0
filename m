@@ -1,81 +1,125 @@
-Message-ID: <525F362F.6080109@steinkuehler.net>
-Date: Wed, 16 Oct 2013 19:58:23 -0500
-From: Charles Steinkuehler <charles@steinkuehler.net>
+Message-ID: <20131105103552.15065b908xg469yw@webmail.upv.es>
+Date: Tue, 05 Nov 2013 10:35:52 +0100
+From: Jose Ignacio Cazalilla Morenas <jcazalilla@ai2.upv.es>
+References: <20131104101653.20482fgez8ylxblx@webmail.upv.es>
+ <5277B186.7010300@xenomai.org>
+ <20131104162027.62643ch6wg2u2nuj@webmail.upv.es>
+ <5277C3FB.2000600@xenomai.org>
+In-Reply-To: <5277C3FB.2000600@xenomai.org>
 MIME-Version: 1.0
-References: <525DC044.6090201@steinkuehler.net>	<525E73FB.4060809@xenomai.org>	<525E7ABF.8040403@steinkuehler.net>	<525E7D85.9020307@xenomai.org>	<525E81CD.6000603@steinkuehler.net>	<525E8665.8000705@steinkuehler.net>	<525E8A43.5090601@xenomai.org>	<525E8BFF.1060201@steinkuehler.net>	<525EAFFD.3010207@steinkuehler.net>	<525EB7A2.1050601@xenomai.org>
-	<525EBAD4.3080100@steinkuehler.net>
-	<525EEBE2.8080708@steinkuehler.net>
-In-Reply-To: <525EEBE2.8080708@steinkuehler.net>
-Content-Type: text/plain; charset="iso-8859-1"
+Content-Type: text/plain; charset="iso-8859-1"; delsp="Yes"; format="flowed"
+Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] Hung task on Xenomai patched ARM 3.8.13 BeagleBone
- Kernel
+Subject: Re: [Xenomai] "Xenomai Posix skin init: pthread_setschedparam:
+ Device or resource busy" in ARM IgepV2 Orocos+Xenomai
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
-	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
-List-Archive: <http://www.xenomai.org/pipermail/xenomai>
+ <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
+List-Archive: <http://www.xenomai.org/pipermail/xenomai/>
 List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
-	<mailto:xenomai-request@xenomai.org?subject=subscribe>
+ <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On 10/16/2013 2:41 PM, Charles Steinkuehler wrote:
-> On 10/16/2013 11:12 AM, Charles Steinkuehler wrote:
->> I'll test with ipipe disabled, go through the Arm Porting guide, and see
->> where that gets me...
-> =
 
-> After building a patched kernel without ipipe or xenomai enabled:
-> =
+Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> escribi=F3:
 
-> $ egrep '(IPIPE|XENO)' KERNEL/.config
-> # CONFIG_XENOMAI is not set
-> CONFIG_XENO_GENERIC_STACKPOOL=3Dy
-> CONFIG_XENO_FASTSYNCH_DEP=3Dy
-> CONFIG_XENO_FASTSYNCH=3Dy
-> # CONFIG_IPIPE is not set
-> =
+> On 11/04/2013 04:20 PM, Jose Ignacio Cazalilla Morenas wrote:
+>>
+>> Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> escribi=F3:
+>>
+>>> On 11/04/2013 10:16 AM, Jose Ignacio Cazalilla Morenas wrote:
+>>>> Hi all.
+>>>> I'm trying to use Xenomai+Linaro under a IGEPv2, in order to install
+>>>> Orocos (with the RT_TARGET=3Dxenomai).
+>>>> I've been working with the IGEPv2 and ROS+Orocos, but with the
+>>>> RTT_TARGET=3Dgnulinux, instead of Xenomai.
+>>>>
+>>>> Now, I've downloaded from git.isee.biz the kernel patched with Xenomai:
+>>>>
+>>>> $git clone git://git.isee.biz/pub/scm/linux-omap-2.6.git
+>>>> $cd linux-omap-2.6/
+>>>> $git checkout linux-2.6.35.y-rt
+>>>> $make ARCH=3Darm igep00x0_defconfig
+>>>> $make ARCH=3Darm CROSS_COMPILE=3Darm-linux-gnueabi- zImage modules
+>>>> $sudo make ARCH=3Darm CROSS_COMPILE=3Darm-linux-gnueabi-
+>>>> INSTALL_MOD_PATH=3D/media/root modules_install
+>>>>
+>>>> /*Copy&Paste the zImage to the Boot partition*/
+>>>>
+>>>> When I run the IgepV2, the kernel informs that Xenomai have been
+>>>> installed properly (dmesg).
+>>>>
+>>>> [ 0.108093] I-pipe: Domain Xenomai registered.
+>>>> [ 0.108123] Xenomai: hal/arm started.
+>>>> [ 0.109252] Xenomai: scheduling class idle registered.
+>>>> [ 0.109283] Xenomai: scheduling class rt registered.
+>>>> [ 0.117645] Xenomai: real-time nucleus v2.6.0 (Movin' On) loaded.
+>>>> [ 0.117675] Xenomai: debug mode enabled.
+>>>> [ 0.118164] Xenomai: starting native API services.
+>>>> [ 0.118164] Xenomai: starting POSIX services.
+>>>> [ 0.118316] Xenomai: starting RTDM services.
+>>>>
+>>>>
+>>>> Then, I have to install Xenomai at the user-space in order to use it
+>>>> with Orocos (or other application), so I did (inside the IGEPv2, an
+>>>> ARM embedded board):
+>>>>
+>>>> wget http://download.gna.org/xenomai/stable/xenomai-2.6.0.tar.bz2
+>>>> tar jxf xenomai-2.6.0.tar.bz2
+>>>> cd xenomai-2.6.0
+>>>> ./configure CFLAGS=3D"-march=3Darmv7-a -mfpu=3Dvfp3 -marm"
+>>>> make
+>>>> make install
+>>>>
+>>>> If I run /usr/xenomai/bin/xeno-test, it works fine (it seems).
+>>>>
+>>>> So, I compile Orocos. It detects the Xenomai installation and compile.
+>>>> However, when I run "deployer-xenomai" in order to start Orocos, I get
+>>>> this error:
+>>>>
+>>>> root@igep2:~/orocos/orocos-toolchain# deployer-xenomai
+>>>> Xenomai Posix skin init: pthread_setschedparam: Device or resource busy
+>>>>
+>>>> Therefore, it doesn't work due to this error: "Xenomai Posix skin
+>>>> init: pthread_setschedparam: Device or resource busy".
+>>>> I think it could be related to the configuration of Xenomai at the
+>>>> user-space for the IGEPv2.
+>>>> Any idea?
+>>>
+>>> Do you have the same issue with Xenomai latest release, that is Xenomai
+>>> 2.6.3?
+>>>
+>>>
+>>> --
+>>>                                                                 Gilles.
+>>>
+>>
+>>
+>> Thanks for your answer, Gilles.
+>> I'm just installing Xenomai 2.6.3 for the user-space, with the kernel
+>> patched with Xenomai 2.6.0 (this kernel is provided by IgepV2
+>> developers). I don't know if different versions of Kernel and
+>> user-space are suitable...
+>
+> Xenomai 2.6.3 is ABI and API compatible with 2.6.0. However a lot of
+> things have been fixed since 2.6.0. Besides, I routinely test Xenomai on
+> IGEPv2 board, so I am pretty sure that the vanilla kernel works on IGEP,
+> you do not need to rely on a fork.
+>
+>
+> --
+>                                                                 Gilles.
+>
 
-> ...the mmc issue seems fixed.  So according to the porting guide, this
-> indicates a likely problem with interrupts or the interrupt controller
-> (as Gilles indicated).
+Which vanilla kernel do you mean exactly?
+Maybe this one for omap devices? =20
+https://git.kernel.org/cgit/linux/kernel/git/tmlind/linux-omap.git/
 
-Based on the ARM porting guide, the first thing I did was to disable IRQ
-muting by simply commenting out the two calls to:
+Thanks.
+Jose
 
-  ipipe_pic_muter_register
 
-...in <linux>/drivers/gpio/gpio-omap.c
 
-This results in a kernel that DOES NOT HANG with ipipe enabled!
-
-So it looks like the issue is related to interrupt muting, and I have
-two paths to push forward:
-
-1) Build a kernel with ipipe and xenomai both enabled (but no IRQ
-muting) and see if this works (and how much it affects worst-case latency)
-
-2) Dig into the IRQ muting code and look for any goofs
-
-I can handle #1, building and testing a kernel with IRQ muting disabled.
-
-Can anyone advise on a good way to approach #2?  Since everything
-_almost_ works, I suspect a problem that could be difficult to find,
-especially for someone like me who isn't really all that familiar with
-the Linux kernel and ipipe internals.
-
--- =
-
-Charles Steinkuehler
-charles@steinkuehler.net
-
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: signature.asc
-Type: application/pgp-signature
-Size: 261 bytes
-Desc: OpenPGP digital signature
-URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20131016/330bf34=
-d/attachment.pgp>
