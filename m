@@ -1,12 +1,10 @@
-Message-ID: <5279491A.4040106@xenomai.org>
-Date: Tue, 05 Nov 2013 20:38:02 +0100
+Message-ID: <527A760E.3030908@xenomai.org>
+Date: Wed, 06 Nov 2013 18:02:06 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <52790094.2040608@siemens.com>
-In-Reply-To: <52790094.2040608@siemens.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Xenomai-forge: merging debian/* from xenomai-2?
+Subject: [Xenomai] pull request: ipipe 3.8 fixes
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,36 +13,37 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gernot Hillier <gernot.hillier@siemens.com>
-Cc: xenomai@xenomai.org
+To: Xenomai <xenomai@xenomai.org>
 
-On 11/05/2013 03:28 PM, Gernot Hillier wrote:
-> Hi there!
-> 
-> Debian build for Xenomai-forge currently seems unmaintained, right?
-> 
-> For me it looks like someone should merge debian/*-touching commits from 
-> 2012-08 onwards (2a229690d) into -forge, right?
-> 
-> Is anyone probably about to fix this? :-)
-> 
-> Shall I try to prepare an according series? Please note, though, that 
-> I'm not really a Debian kernel packaging expert, so if someone feels 
-> more responsible...
-> 
+The following changes since commit 74307024d967e97252a49537e92b8eccea5f5c0b:
 
-Hi Gernot,
+  x86/ipipe: Fix !CONFIG_IPIPE build breakage of x86-64 (2013-10-07 12:25:09 +0200)
 
-I did not commit the Debian changes to -forge on purpose:
-- we are not in a hurry to change this on forge as we are not yet at the
-point of making a release;
-- maybe we will have some feedback from Debian users of 2.x which will
-trigger changes in the way the packages are built.
+are available in the git repository at:
 
-However if you need the Debian packaging, please feel free to submit the
-patches.
+  git://git.xenomai.org/ipipe-gch.git for-ipipe-3.8
 
-Regards.
+for you to fetch changes up to c5332cdd60ba82b1823d973b7fac64af5baf7139:
+
+  Merge remote-tracking branch 'origin/ipipe-3.8' into for-ipipe-3.8 (2013-11-05 18:44:06 +0100)
+
+----------------------------------------------------------------
+
+Gilles Chanteperdrix (6):
+      x86/ipipe: get FPU backup area allocated for all threads
+      arm/ipipe: fix mx28 gpio irq demuxing
+      arm/ipipe: add missing EXPORT_SYMBOL
+      x86/ipipe: ipipe-core-3.8.13-x86-4.patch
+      arm/ipipe: ipipe-core-3.8.13-arm-3.patch
+      Merge remote-tracking branch 'origin/ipipe-3.8' into for-ipipe-3.8
+
+ arch/arm/include/asm/ipipe.h |    2 +-
+ arch/arm/kernel/ipipe.c      |    1 +
+ arch/x86/include/asm/ipipe.h |    2 +-
+ arch/x86/kernel/process.c    |   10 +---------
+ drivers/gpio/gpio-mxs.c      |    2 +-
+ scripts/ipipe/genpatches.sh  |    1 +
+ 6 files changed, 6 insertions(+), 12 deletions(-)
 
 -- 
                                                                 Gilles.
