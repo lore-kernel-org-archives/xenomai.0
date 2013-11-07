@@ -1,13 +1,13 @@
-Message-ID: <527BD057.3020708@xenomai.org>
-Date: Thu, 07 Nov 2013 18:39:35 +0100
+Message-ID: <527BD591.9060504@xenomai.org>
+Date: Thu, 07 Nov 2013 19:01:53 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <527BCB0B.1010609@siemens.com>
-In-Reply-To: <527BCB0B.1010609@siemens.com>
+References: <527B5BBF.2040301@siemens.com>
+In-Reply-To: <527B5BBF.2040301@siemens.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [Xenomai-forge PATCH] testsuite: fix clocktest
- invocation in xeno-test
+Subject: Re: [Xenomai] [Xenomai-forge] [PATCH] Silence unused_result warning
+ from write()
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,10 +19,12 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: Gernot Hillier <gernot.hillier@siemens.com>
 Cc: xenomai@xenomai.org
 
-On 11/07/2013 06:16 PM, Gernot Hillier wrote:
-> As there are two testdir occurences in one line, we need global regex replace.
+On 11/07/2013 10:22 AM, Gernot Hillier wrote:
+> Some glibc versions mark write() with attribute warn_unused_result (found in
+> Ubuntu 12.04 / eglibc 2.15 / gcc 4.6.3), so we need to silence this warning,
+> especially when building with -Werror.
 
-This issue should have been fixed already.
+Why not casting write result to void, it does not work?
 
 -- 
                                                                 Gilles.
