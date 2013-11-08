@@ -1,11 +1,11 @@
 From: gernot.hillier@siemens.com
-Date: Fri,  8 Nov 2013 10:34:19 +0100
-Message-Id: <1383903263-10441-4-git-send-email-gernot.hillier@siemens.com>
+Date: Fri,  8 Nov 2013 10:34:20 +0100
+Message-Id: <1383903263-10441-5-git-send-email-gernot.hillier@siemens.com>
 In-Reply-To: <1383903263-10441-1-git-send-email-gernot.hillier@siemens.com>
 References: <1383903263-10441-1-git-send-email-gernot.hillier@siemens.com>
-Subject: [Xenomai] [Xenomai-forge PATCH 3/7] debian: adapt to latest I-pipe
-	core patches (cherry picked from commit
-	89ff2edf76dae49e4a3643f17e118954b68a692e)
+Subject: [Xenomai] [Xenomai-forge PATCH 4/7] debian: remove now useless
+	configure options (cherry picked from commit
+	c581878158605578792f88ced09f02ad34c092de)
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,22 +19,62 @@ To: xenomai@xenomai.org
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 
 ---
- debian/rules | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ debian/rules | 35 ++++-------------------------------
+ 1 file changed, 4 insertions(+), 31 deletions(-)
 
 diff --git a/debian/rules b/debian/rules
-index 83e175c..650c419 100755
+index 650c419..643173c 100755
 --- a/debian/rules
 +++ b/debian/rules
-@@ -97,7 +97,7 @@ install: build
- 	dh_install --sourcedir=$(CURDIR)/debian/tmp
- 	# Patch collection:
- 	mkdir -p $(CURDIR)/debian/linux-patch-xenomai/usr/src/kernel-patches/diffs/xenomai
--	cp adeos-ipipe-*.patch $(CURDIR)/debian/linux-patch-xenomai/usr/src/kernel-patches/diffs/xenomai
-+	cp *ipipe-*.patch $(CURDIR)/debian/linux-patch-xenomai/usr/src/kernel-patches/diffs/xenomai
- 	# xeno-config should be only in libxenomai-dev
- 	rm -f $(CURDIR)/debian/xenomai-runtime/usr/bin/xeno-config
- 	rm -f $(CURDIR)/debian/xenomai-runtime/usr/share/man/man1/xeno-config.1
+@@ -11,34 +11,10 @@ DEB_HOST_ARCH ?= $(shell dpkg-architecture -qDEB_HOST_ARCH)
+ DEB_HOST_GNU_TYPE=$(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
+ DEB_BUILD_GNU_TYPE=$(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
+ 
+-ifeq ($(DEB_HOST_ARCH), i386)
+-# Note: Would like to use --includedir=/usr/include/xenomai, but
+-# there appears to be a `make install` problem.
+-	CONFIG_OPTS = \
+-	            --enable-x86-tsc
+-endif
+-ifeq ($(DEB_HOST_ARCH), amd64)
+-	CONFIG_OPTS = \
+-	            --enable-smp \
+-	            --enable-x86-tsc \
+-	            --enable-x86-sep
+-endif
+-ifeq ($(DEB_HOST_ARCH), powerpc)
+-	CONFIG_OPTS =
+-endif
+-ifeq ($(DEB_HOST_ARCH), armeb)
+-	CONFIG_OPTS = --enable-arm-mach=generic --enable-arm-eabi
+-endif
+-ifeq ($(DEB_HOST_ARCH), armel)
+-	CONFIG_OPTS = --enable-arm-mach=generic --enable-arm-eabi
+-endif
+-ifeq ($(DEB_HOST_ARCH), arm)
+-	CONFIG_OPTS = --enable-arm-mach=generic
+-endif
+-	CONFIG_OPTS += --prefix=/usr \
+-	            --includedir=/usr/include/xenomai \
+-	            --mandir=/usr/share/man \
+-		    --with-testdir=/usr/lib/xenomai
++CONFIG_OPTS = --prefix=/usr \
++            --includedir=/usr/include/xenomai \
++            --mandir=/usr/share/man \
++	    --with-testdir=/usr/lib/xenomai
+ 
+ ifneq ($(DEB_HOST_GNU_TYPE),$(DEB_BUILD_GNU_TYPE))
+ 	CONFIG_OPTS += --build $(DEB_BUILD_GNU_TYPE) --host $(DEB_HOST_GNU_TYPE)
+@@ -46,9 +22,6 @@ else
+ 	CONFIG_OPTS += --build $(DEB_BUILD_GNU_TYPE)
+ endif
+ 
+-# necessary from GCC 4.6 on
+-CFLAGS += -fno-omit-frame-pointer
+-
+ build: build-arch build-indep
+ 
+ build-arch: build-arch-stamp
 -- 
 1.8.1.2
 
