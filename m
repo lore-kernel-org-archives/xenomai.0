@@ -1,11 +1,10 @@
 From: gernot.hillier@siemens.com
-Date: Fri,  8 Nov 2013 10:34:20 +0100
-Message-Id: <1383903263-10441-5-git-send-email-gernot.hillier@siemens.com>
+Date: Fri,  8 Nov 2013 10:34:23 +0100
+Message-Id: <1383903263-10441-8-git-send-email-gernot.hillier@siemens.com>
 In-Reply-To: <1383903263-10441-1-git-send-email-gernot.hillier@siemens.com>
 References: <1383903263-10441-1-git-send-email-gernot.hillier@siemens.com>
-Subject: [Xenomai] [Xenomai-forge PATCH 4/7] debian: remove now useless
-	configure options (cherry picked from commit
-	c581878158605578792f88ced09f02ad34c092de)
+Subject: [Xenomai] [Xenomai-forge PATCH 7/7] debian: Prepare packaging for
+	Xenomai-forge based on Xenomai-2.6 Debian rules
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,65 +15,69 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: Gernot Hillier <gernot.hillier@siemens.com>
 
+Signed-off-by: Gernot Hillier <gernot.hillier@siemens.com>
 ---
- debian/rules | 35 ++++-------------------------------
- 1 file changed, 4 insertions(+), 31 deletions(-)
+ debian/changelog              | 8 +++++++-
+ debian/libxenomai-dev.install | 1 -
+ debian/rules                  | 6 +++---
+ 3 files changed, 10 insertions(+), 5 deletions(-)
 
+diff --git a/debian/changelog b/debian/changelog
+index e12e856..666b446 100644
+--- a/debian/changelog
++++ b/debian/changelog
+@@ -1,4 +1,10 @@
+-xenomai (2.6.3) UNRELEASED; urgency=low
++xenomai (2.99.0) UNRELEASED; urgency=low
++
++  * Prepare Debian packaging for Xenomai-forge
++
++ -- Xenomai <xenomai@xenomai.org>  Wed, 20 Nov 2013 09:33:50 +0200
++
++xenomai (2.6.3) unstable; urgency=low
+ 
+   * New release
+ 
+diff --git a/debian/libxenomai-dev.install b/debian/libxenomai-dev.install
+index 0fbe55b..3aa55d5 100644
+--- a/debian/libxenomai-dev.install
++++ b/debian/libxenomai-dev.install
+@@ -5,4 +5,3 @@ usr/lib/*.a
+ usr/lib/*.so
+ usr/lib/cobalt.wrappers
+ usr/share/man/man1/xeno-config.1
+-../../examples usr/share/libxenomai-dev
 diff --git a/debian/rules b/debian/rules
-index 650c419..643173c 100755
+index 5e3c9df..46a89b1 100755
 --- a/debian/rules
 +++ b/debian/rules
-@@ -11,34 +11,10 @@ DEB_HOST_ARCH ?= $(shell dpkg-architecture -qDEB_HOST_ARCH)
- DEB_HOST_GNU_TYPE=$(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
- DEB_BUILD_GNU_TYPE=$(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
+@@ -75,13 +75,13 @@ install: build
+ 	cp debian/libxenomai1.lintian $(CURDIR)/debian/libxenomai1/usr/share/lintian/overrides/libxenomai1
+ 	cp debian/libxenomai-dev.lintian $(CURDIR)/debian/libxenomai-dev/usr/share/lintian/overrides/libxenomai-dev
+ 	mkdir -p $(CURDIR)/debian/xenomai-kernel-source/usr/src/xenomai-kernel-source $(CURDIR)/debian/xenomai-kernel-source/usr/share/doc/xenomai-kernel-source
+-	cp -a ksrc include scripts $(CURDIR)/debian/xenomai-kernel-source/usr/src/xenomai-kernel-source
++	cp -a kernel include scripts $(CURDIR)/debian/xenomai-kernel-source/usr/src/xenomai-kernel-source
  
--ifeq ($(DEB_HOST_ARCH), i386)
--# Note: Would like to use --includedir=/usr/include/xenomai, but
--# there appears to be a `make install` problem.
--	CONFIG_OPTS = \
--	            --enable-x86-tsc
--endif
--ifeq ($(DEB_HOST_ARCH), amd64)
--	CONFIG_OPTS = \
--	            --enable-smp \
--	            --enable-x86-tsc \
--	            --enable-x86-sep
--endif
--ifeq ($(DEB_HOST_ARCH), powerpc)
--	CONFIG_OPTS =
--endif
--ifeq ($(DEB_HOST_ARCH), armeb)
--	CONFIG_OPTS = --enable-arm-mach=generic --enable-arm-eabi
--endif
--ifeq ($(DEB_HOST_ARCH), armel)
--	CONFIG_OPTS = --enable-arm-mach=generic --enable-arm-eabi
--endif
--ifeq ($(DEB_HOST_ARCH), arm)
--	CONFIG_OPTS = --enable-arm-mach=generic
--endif
--	CONFIG_OPTS += --prefix=/usr \
--	            --includedir=/usr/include/xenomai \
--	            --mandir=/usr/share/man \
--		    --with-testdir=/usr/lib/xenomai
-+CONFIG_OPTS = --prefix=/usr \
-+            --includedir=/usr/include/xenomai \
-+            --mandir=/usr/share/man \
-+	    --with-testdir=/usr/lib/xenomai
- 
- ifneq ($(DEB_HOST_GNU_TYPE),$(DEB_BUILD_GNU_TYPE))
- 	CONFIG_OPTS += --build $(DEB_BUILD_GNU_TYPE) --host $(DEB_HOST_GNU_TYPE)
-@@ -46,9 +22,6 @@ else
- 	CONFIG_OPTS += --build $(DEB_BUILD_GNU_TYPE)
- endif
- 
--# necessary from GCC 4.6 on
--CFLAGS += -fno-omit-frame-pointer
--
- build: build-arch build-indep
- 
- build-arch: build-arch-stamp
+ # Build architecture-independent files here.
+ binary-indep: build install
+ 	dh_testdir -i
+ 	dh_testroot -i
+-	dh_installdocs -i -A CREDITS README.INSTALL TROUBLESHOOTING
++	dh_installdocs -i -A README.INSTALL TROUBLESHOOTING
+ 	dh_link -i
+ 	dh_installchangelogs -i
+ 	dh_strip -i
+@@ -100,7 +100,7 @@ binary-arch: build install
+ 	dh_testroot -s
+ 	dh_installinit -s --name=xenomai
+ 	dh_installman -s
+-	dh_installdocs -s -A CREDITS README.INSTALL TROUBLESHOOTING
++	dh_installdocs -s -A README.INSTALL TROUBLESHOOTING
+ 	dh_link -s
+ 	dh_installchangelogs -s
+ 	dh_strip -s
 -- 
 1.8.1.2
 
