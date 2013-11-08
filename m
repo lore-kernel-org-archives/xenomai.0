@@ -1,14 +1,14 @@
-Message-ID: <527CF7D6.2050202@xenomai.org>
-Date: Fri, 08 Nov 2013 15:40:22 +0100
+Message-ID: <527D1E27.3030708@xenomai.org>
+Date: Fri, 08 Nov 2013 18:23:51 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <527BCB0B.1010609@siemens.com> <527BD057.3020708@xenomai.org>
- <527C7D70.9040401@siemens.com>
-In-Reply-To: <527C7D70.9040401@siemens.com>
+References: <527B5BBF.2040301@siemens.com> <527BD591.9060504@xenomai.org>
+ <527C7CE6.6090603@siemens.com>
+In-Reply-To: <527C7CE6.6090603@siemens.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [Xenomai-forge PATCH] testsuite: fix clocktest
- invocation in xeno-test
+Subject: Re: [Xenomai] [Xenomai-forge] [PATCH] Silence unused_result warning
+ from write()
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -20,16 +20,34 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: Gernot Hillier <gernot.hillier@siemens.com>
 Cc: xenomai@xenomai.org
 
-On 11/08/2013 06:58 AM, Gernot Hillier wrote:
-> Am 07.11.2013 18:39, schrieb Gilles Chanteperdrix:
->> On 11/07/2013 06:16 PM, Gernot Hillier wrote:
->>> As there are two testdir occurences in one line, we need global regex replace.
+On 11/08/2013 06:55 AM, Gernot Hillier wrote:
+> Am 07.11.2013 19:01, schrieb Gilles Chanteperdrix:
+>> On 11/07/2013 10:22 AM, Gernot Hillier wrote:
+>>> Some glibc versions mark write() with attribute warn_unused_result (found in
+>>> Ubuntu 12.04 / eglibc 2.15 / gcc 4.6.3), so we need to silence this warning,
+>>> especially when building with -Werror.
 >>
->> This issue should have been fixed already.
+>> Why not casting write result to void, it does not work?
+>>
 > 
-> In 2.6, yes. In -forge, no.
+> No, it doesn't. For rationale, please see 
+> http://gcc.gnu.org/bugzilla/show_bug.cgi?id=25509.
+> 
+Ok, but I do not like your patch anyway:
+- it compares directly the function result, which no other code in
+Xenomai sources does, we always store the result in a variable and test
+the variable
+- it opens and closes braces for no good reason.
 
-See commit 7e4b15dfae125f1d90719b4ed0ca1208c35c1b06
+I believe you still can do:
+
+rc = write
+(void)rc
+
+The link you sent also indicates that the warning can be disabled with
+-Wno-unused-result
+
+Can you not compile with this option on distributions with this behaviour?
 
 -- 
                                                                 Gilles.
