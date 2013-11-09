@@ -1,14 +1,12 @@
-Message-ID: <527D2AF3.5050904@siemens.com>
-Date: Fri, 08 Nov 2013 19:18:27 +0100
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <527E4DD6.1050003@xenomai.org>
+Date: Sat, 09 Nov 2013 15:59:34 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <527B5BBF.2040301@siemens.com> <527BD591.9060504@xenomai.org>
- <527C7CE6.6090603@siemens.com> <527D1E27.3030708@xenomai.org>
-In-Reply-To: <527D1E27.3030708@xenomai.org>
-Content-Type: text/plain; charset=ISO-8859-1
+References: <005d01cedbb9$e2a83430$a7f89c90$@laurens@safire.fr>
+In-Reply-To: <005d01cedbb9$e2a83430$a7f89c90$@laurens@safire.fr>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [Xenomai-forge] [PATCH] Silence unused_result warning
-	from write()
+Subject: Re: [Xenomai] Atom N455
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,50 +15,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, Gernot Hillier <gernot.hillier@siemens.com>
+To: Marc LAURENS <marc.laurens@safire.fr>
 Cc: xenomai@xenomai.org
 
-On 2013-11-08 18:23, Gilles Chanteperdrix wrote:
-> On 11/08/2013 06:55 AM, Gernot Hillier wrote:
->> Am 07.11.2013 19:01, schrieb Gilles Chanteperdrix:
->>> On 11/07/2013 10:22 AM, Gernot Hillier wrote:
->>>> Some glibc versions mark write() with attribute warn_unused_result (found in
->>>> Ubuntu 12.04 / eglibc 2.15 / gcc 4.6.3), so we need to silence this warning,
->>>> especially when building with -Werror.
->>>
->>> Why not casting write result to void, it does not work?
->>>
->>
->> No, it doesn't. For rationale, please see 
->> http://gcc.gnu.org/bugzilla/show_bug.cgi?id=25509.
->>
-> Ok, but I do not like your patch anyway:
-> - it compares directly the function result, which no other code in
-> Xenomai sources does, we always store the result in a variable and test
-> the variable
-> - it opens and closes braces for no good reason.
+On 11/07/2013 02:04 PM, Marc LAURENS wrote:
+> Hello,
 > 
-> I believe you still can do:
+>  
 > 
-> rc = write
-> (void)rc
+> Can you tell me if the N455 Atom processor is supported by Xenomai ? I plan
+> to buy the adlink 745 CoreModule CPU Board.
 
-Yep, that's what other projects do as well when there is really no use
-for the return code.
-
-> 
-> The link you sent also indicates that the warning can be disabled with
-> -Wno-unused-result
-> 
-> Can you not compile with this option on distributions with this behaviour?
-
-Let's fix this in our source code, not in the ./configure command line.
-I expect the warning to become more frequent with recent compilers
-and/or distros.
-
-Jan
+If this processor is supported by Linux, there is no reason it should
+not work with Xenomai. But to be sure, someone has to test.
 
 -- 
-Siemens AG, Corporate Technology, CT RTC ITP SES-DE
-Corporate Competence Center Embedded Linux
+                                                                Gilles.
 
