@@ -1,73 +1,71 @@
-Message-ID: <525FDA89.60104@steinkuehler.net>
-Date: Thu, 17 Oct 2013 07:39:37 -0500
-From: Charles Steinkuehler <charles@steinkuehler.net>
+Message-ID: <52838180.7070701@xenomai.org>
+Date: Wed, 13 Nov 2013 14:41:20 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <525DC044.6090201@steinkuehler.net>	<525E73FB.4060809@xenomai.org>	<525E7ABF.8040403@steinkuehler.net>	<525E7D85.9020307@xenomai.org>	<525E81CD.6000603@steinkuehler.net>	<525E8665.8000705@steinkuehler.net>	<525E8A43.5090601@xenomai.org>	<525E8BFF.1060201@steinkuehler.net>	<525EAFFD.3010207@steinkuehler.net>	<525EB7A2.1050601@xenomai.org>
-	<525EBAD4.3080100@steinkuehler.net>
-	<525EEBE2.8080708@steinkuehler.net>
-	<525F362F.6080109@steinkuehler.net> <525FADFA.2020009@xenomai.org>
-In-Reply-To: <525FADFA.2020009@xenomai.org>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] Hung task on Xenomai patched ARM 3.8.13 BeagleBone
- Kernel
+References: <528290CE.1030002@xenomai.org> <52837DD0.1050405@siemens.com>
+In-Reply-To: <52837DD0.1050405@siemens.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] issues with debugging enabled
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
-	<mailto:xenomai-request@xenomai.org?subject=unsubscribe>
-List-Archive: <http://www.xenomai.org/pipermail/xenomai>
+ <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
+List-Archive: <http://www.xenomai.org/pipermail/xenomai/>
 List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
-	<mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+ <mailto:xenomai-request@xenomai.org?subject=subscribe>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Xenomai <xenomai@xenomai.org>
 
-T24gMTAvMTcvMjAxMyA0OjI5IEFNLCBHaWxsZXMgQ2hhbnRlcGVyZHJpeCB3cm90ZToKPiBPbiAx
-MC8xNy8yMDEzIDAyOjU4IEFNLCBDaGFybGVzIFN0ZWlua3VlaGxlciB3cm90ZToKPj4gT24gMTAv
-MTYvMjAxMyAyOjQxIFBNLCBDaGFybGVzIFN0ZWlua3VlaGxlciB3cm90ZToKPj4+IE9uIDEwLzE2
-LzIwMTMgMTE6MTIgQU0sIENoYXJsZXMgU3RlaW5rdWVobGVyIHdyb3RlOgo+Pj4+IEknbGwgdGVz
-dCB3aXRoIGlwaXBlIGRpc2FibGVkLCBnbyB0aHJvdWdoIHRoZSBBcm0gUG9ydGluZyBndWlkZSwg
-YW5kCj4+Pj4gc2VlCj4+Pj4gd2hlcmUgdGhhdCBnZXRzIG1lLi4uCj4+Pgo+Pj4gQWZ0ZXIgYnVp
-bGRpbmcgYSBwYXRjaGVkIGtlcm5lbCB3aXRob3V0IGlwaXBlIG9yIHhlbm9tYWkgZW5hYmxlZDoK
-Pj4+Cj4+PiAkIGVncmVwICcoSVBJUEV8WEVOTyknIEtFUk5FTC8uY29uZmlnCj4+PiAjIENPTkZJ
-R19YRU5PTUFJIGlzIG5vdCBzZXQKPj4+IENPTkZJR19YRU5PX0dFTkVSSUNfU1RBQ0tQT09MPXkK
-Pj4+IENPTkZJR19YRU5PX0ZBU1RTWU5DSF9ERVA9eQo+Pj4gQ09ORklHX1hFTk9fRkFTVFNZTkNI
-PXkKPj4+ICMgQ09ORklHX0lQSVBFIGlzIG5vdCBzZXQKPj4+Cj4+PiAuLi50aGUgbW1jIGlzc3Vl
-IHNlZW1zIGZpeGVkLiAgU28gYWNjb3JkaW5nIHRvIHRoZSBwb3J0aW5nIGd1aWRlLCB0aGlzCj4+
-PiBpbmRpY2F0ZXMgYSBsaWtlbHkgcHJvYmxlbSB3aXRoIGludGVycnVwdHMgb3IgdGhlIGludGVy
-cnVwdCBjb250cm9sbGVyCj4+PiAoYXMgR2lsbGVzIGluZGljYXRlZCkuCj4+Cj4+IEJhc2VkIG9u
-IHRoZSBBUk0gcG9ydGluZyBndWlkZSwgdGhlIGZpcnN0IHRoaW5nIEkgZGlkIHdhcyB0byBkaXNh
-YmxlIElSUQo+PiBtdXRpbmcgYnkgc2ltcGx5IGNvbW1lbnRpbmcgb3V0IHRoZSB0d28gY2FsbHMg
-dG86Cj4+Cj4+ICAgIGlwaXBlX3BpY19tdXRlcl9yZWdpc3Rlcgo+Pgo+PiAuLi5pbiA8bGludXg+
-L2RyaXZlcnMvZ3Bpby9ncGlvLW9tYXAuYwo+Pgo+PiBUaGlzIHJlc3VsdHMgaW4gYSBrZXJuZWwg
-dGhhdCBET0VTIE5PVCBIQU5HIHdpdGggaXBpcGUgZW5hYmxlZCEKPiAKPiBJdCBkb2VzIG5vdCBy
-ZWFsbHkgbWFrZSBzZW5zZTogd2hlbiBJLXBpcGUgaXMgZW5hYmxlZCBidXQgWGVub21haQo+IGRp
-c2FibGVkLCB0aGUgUElDIG11dGluZyBpcyBvbmx5IHVzZWQgdG8gdHdlYWsgdGhlIGludGVycnVw
-dCBjb250cm9sbGVyCj4gcHJpb3JpdHkuIFNpbmNlIHRoZXJlIGFyZSBvbmx5IHNlY29uZGFyeSBt
-b2RlIGlycXMsIHRoZXkgYWxsIHNob3VsZCB1c2UKPiB0aGUgc2FtZSBwcmlvcml0eS4KCkkgYW0g
-Y29uZnVzZWQgYXMgd2VsbCwgcGFydGljdWxhcmx5IGJ5IHRoZSBmYWN0IHRoYXQgYWRkaW5nIGJh
-Y2sgdGhlCnhlbm9tYWkgcGF0Y2hlcyAoYnV0IGxlYXZpbmcgdGhlIGdwaW8gSVJRIG1hc2tpbmcg
-ZGlzYWJsZWQpIGdldHMgbWUgYmFjawp0byB0aGUgaHVuZyBtbWMgdGFzay4KCj4gSXMgYXJjaC9h
-cm0vbWFjaC1vbWFwMi9pcnEuYyBtb2RpZmllZCBieSB0aGUgQmVhZ2xlQm9uZSBwYXRjaGVzLCBp
-ZiB5ZXMsCj4gY291bGQgeW91IHB1dCB0aGUgbW9kaWZpZWQgdmVyc2lvbiBzb21ld2hlcmUgSSBj
-b3VsZCBoYXZlIGEgbG9vayBhdCBpdD8KClRoZSBtaW5vciBwYXRjaCB0byB0aGUgaXJxIGZpbGUg
-ZG9lc24ndCBzZWVtIGxpa2VseSB0byBjYXVzZSBwcm9ibGVtcywKYnV0IHRoZXJlIGlzIGEgKkxP
-VCogb2YgbW1jIGRyaXZlciBjb2RlIHRoYXQgaXMgY2hhbmdlZCBiZXR3ZWVuIG1haW5saW5lCmFu
-ZCB0aGUgQmVhZ2xlQm9uZSBrZXJuZWwsIG11Y2ggb2YgaXQgcmVsYXRlZCB0byBETUEuCgpJJ3Zl
-IHB1dCB1cCBteSBmdWxsIGtlcm5lbCBidWlsZCB0cmVlIGluIGNhc2UgeW91IHdhbnQgdG8gbG9v
-ayBhdCBhbnkKb3RoZXIgZmlsZXMuICBUaGUgdG9wIGRpcmVjdG9yeSBpcyB0aGUgc2NyaXB0cyBh
-bmQgcGF0Y2hlcyB1c2VkIHRvIGJ1aWxkCnRoZSBrZXJuZWwuICBUaGUgYWN0dWFsIGtlcm5lbCBj
-b2RlIGFscmVhZHkgcGF0Y2hlZCB3aXRoIHRoZSBCZWFnbGVCb25lCnBhdGNoIHNldCBhcyB3ZWxs
-IGFzIGlwaXBlIGFuZCB4ZW5vbWFpIGlzIGluIHRoZSBLRVJORUwgZGlyZWN0b3J5OgoKaHR0cDov
-L21vcnBoZXVzLnN0ZWlua3VlaGxlci5uZXQveGVub21haQoKQXJlIHRoZSB4ZW5vbWFpIHBhdGNo
-ZXMgc2ltaWxhciB0byB0aGUgcHJlZW1wdC1ydCBwYXRjaCBzZXQgaW4gdGhhdCB0aGV5CmNhbiBl
-eHBvc2UgdW5kZXJseWluZyBmbGF3cyBpbiBkcml2ZXIgY29kZSB0aGF0IGlzIG5vdCBTTVAgY2xl
-YW4/CgpJZiBzbywgSSBzdXNwZWN0IHNvbWV0aGluZyB3aXRoIHRoZSBtbWMgYW5kIGRtYSB1cGRh
-dGVzIHNwZWNpZmljIHRvIHRoZQpCZWFnbGVCb25lIHBhdGNoIHNldC4gIE1heWJlIEkgc2hvdWxk
-IGJlIHBlc3RlcmluZyB0aGUgT01BUCBrZXJuZWwgbGlzdD8KCi0tIApDaGFybGVzIFN0ZWlua3Vl
-aGxlcgpjaGFybGVzQHN0ZWlua3VlaGxlci5uZXQKCi0tLS0tLS0tLS0tLS0tIG5leHQgcGFydCAt
-LS0tLS0tLS0tLS0tLQpBIG5vbi10ZXh0IGF0dGFjaG1lbnQgd2FzIHNjcnViYmVkLi4uCk5hbWU6
-IHNpZ25hdHVyZS5hc2MKVHlwZTogYXBwbGljYXRpb24vcGdwLXNpZ25hdHVyZQpTaXplOiAyNjEg
-Ynl0ZXMKRGVzYzogT3BlblBHUCBkaWdpdGFsIHNpZ25hdHVyZQpVUkw6IDxodHRwOi8vd3d3Lnhl
-bm9tYWkub3JnL3BpcGVybWFpbC94ZW5vbWFpL2F0dGFjaG1lbnRzLzIwMTMxMDE3LzMyNDY0M2Zh
-L2F0dGFjaG1lbnQucGdwPgo=
+On 11/13/2013 02:25 PM, Jan Kiszka wrote:
+> On 2013-11-12 21:34, Gilles Chanteperdrix wrote:
+>>
+>> Hi,
+>>
+>> for a change, I ran the xeno-regression-test with a lot of debugging and
+>> options known to having caused problems in the past and found two issues:
+>>
+>> on x86 SMP, with full dynticks and debugging enabled (preemptible kernel
+>> debugging, mutex, spinlocks, and sleep inside spinlocks), I get the
+>> series of warnings at the end of the mail.
+>
+> We are currently facing crashes inside __switch_to, FPU related
+> (non-existing save area).
+
+Probably the issue solved by this patch:
+http://git.xenomai.org/?p=ipipe-gch.git;a=commit;h=9b3320eef67e3f118f96065c8c2584b715710d94
+
+ > Once that is sorted out, we can have a look at
+ > that scenario as well. Do you have the .config online somewhere?
+
+http://sisyphus.hd.free.fr/~gilles/config-nestor
+
+>> on ARM, when a fault occurs, the fault ode is entered with hardware irqs
+>> off (this is a recent change in the mainline kernel, this code used to
+>> be executed with hardware irqs on), so I do:
+>>
+>> ipipe_stall_root();
+>> hard_local_irq_enabled();
+>>
+>> But the context checking does not like that.
+>>
+>> Any idea how to fix these?
+>
+> Only ARM's SMP version of ipipe_stall_root() contains
+> ipipe_stall_root(), UP and at least x86 do not have this. I understand
+> that it makes sense to deny this call over non-root, but as it is about
+> fixing up imbalances in the pipeline state, ipipe_stall_root() is likely
+> not the best choice. What about open-coding the relevant check for the
+> domain? Maybe it also works to push the check to the end of
+> ipipe_stall_root, i.e. after fixing up the pipeline state.
+
+I have to run again the test and check what really happens, because like 
+Philippe said, it may be that I am using ipipe_stall_root() when 
+entering this code over non root context, and that would be incorrect.
+I have to report the trap to the pipeline first so as to give a chance 
+to Xenomai to relax the thread, then enable irqs over root.
+
+-- 
+					    Gilles.
+
