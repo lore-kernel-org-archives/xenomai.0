@@ -1,10 +1,11 @@
-Message-ID: <52839493.4040300@xenomai.org>
-Date: Wed, 13 Nov 2013 16:02:43 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <5283967C.70403@xenomai.org>
+Date: Wed, 13 Nov 2013 16:10:52 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
 References: <CAN0CFw203jRKLtMmb9jCQbyQnM1hmAaHr=FtonvxxcSUov8Ujw@mail.gmail.com>
-In-Reply-To: <CAN0CFw203jRKLtMmb9jCQbyQnM1hmAaHr=FtonvxxcSUov8Ujw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+ <52839493.4040300@xenomai.org>
+In-Reply-To: <52839493.4040300@xenomai.org>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] patch the kernel?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -15,29 +16,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Grant <emailgrant@gmail.com>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, Grant <emailgrant@gmail.com>
 Cc: xenomai@xenomai.org
 
-On 11/13/2013 02:36 PM, Grant wrote:
-> Is patching the kernel necessary in order to use xenomai?
+On 11/13/2013 04:02 PM, Gilles Chanteperdrix wrote:
+> On 11/13/2013 02:36 PM, Grant wrote:
+>> Is patching the kernel necessary in order to use xenomai?
+>
+> It depends on which version of Xenomai you are talking about. If you are
+> talking about Xenomai stable version, then yes, you have to follow the
+> installation instructions here:
+> http://www.xenomai.org/documentation/xenomai-2.6/html/README.INSTALL/
+>
+> Which include running the "prepare-kernel.sh" patch, which modifies the
+> kernel.
+>
+> If you are talking about Xenomai current development version, a.k.a.
+> Xenomai forge, then it gives you the choice of running:
+> - on an unmodified kernel  (but you will not have real-time guarantees);
+> - a kernel patched with the PREEMPT_RT patch;
+> - a kernel modified as with the stable version.
+>
+> The current state of Xenomai forge is that it is stable enough on the
+> x86 and ARM architectures to run a latency test under load.
+>
 
-It depends on which version of Xenomai you are talking about. If you are 
-talking about Xenomai stable version, then yes, you have to follow the 
-installation instructions here:
-http://www.xenomai.org/documentation/xenomai-2.6/html/README.INSTALL/
-
-Which include running the "prepare-kernel.sh" patch, which modifies the 
-kernel.
-
-If you are talking about Xenomai current development version, a.k.a. 
-Xenomai forge, then it gives you the choice of running:
-- on an unmodified kernel  (but you will not have real-time guarantees);
-- a kernel patched with the PREEMPT_RT patch;
-- a kernel modified as with the stable version.
-
-The current state of Xenomai forge is that it is stable enough on the 
-x86 and ARM architectures to run a latency test under load.
+blackfin and powerpc32 are ok too.
+powerpc64 untested yet.
 
 -- 
-					    Gilles.
+Philippe.
 
