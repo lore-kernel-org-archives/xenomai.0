@@ -1,6 +1,6 @@
-Message-ID: <528A54F5.4000609@siemens.com>
-Date: Mon, 18 Nov 2013 18:57:09 +0100
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <528A5678.2000908@xenomai.org>
+Date: Mon, 18 Nov 2013 19:03:36 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <E1ViO8p-0004L8-4y@sd-51317.dedibox.fr>
  <528A156C.1070501@xenomai.org> <528A21A9.9050502@siemens.com>
@@ -9,8 +9,9 @@ References: <E1ViO8p-0004L8-4y@sd-51317.dedibox.fr>
  <528A2F96.7080302@xenomai.org> <528A3918.4000902@siemens.com>
  <528A3CEB.80909@xenomai.org> <528A446C.5060409@siemens.com>
  <528A4737.8040607@siemens.com> <528A5170.4070609@xenomai.org>
-In-Reply-To: <528A5170.4070609@xenomai.org>
-Content-Type: text/plain; charset=UTF-8
+ <528A54F5.4000609@siemens.com>
+In-Reply-To: <528A54F5.4000609@siemens.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] [Xenomai-git] Jan Kiszka : switchtest: Account for
  invalid last_switch.from field
@@ -22,24 +23,26 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
 Cc: xenomai@xenomai.org
 
-On 2013-11-18 18:42, Gilles Chanteperdrix wrote:
-> On 11/18/2013 05:58 PM, Jan Kiszka wrote:
->> Bailing out from rtswitch_pend_rt remains correct and necessary (with
->> the new RTDM semantics): rtdm_task_destroy will now kick us out of the
->> rtdm_even_wait, and that at a time where no switch happened yet.
-> 
-> So, you also have to check rtswitch_to_rt return value, and return in
-> that case as well.
+On 11/18/2013 06:57 PM, Jan Kiszka wrote:
+> On 2013-11-18 18:42, Gilles Chanteperdrix wrote:
+>> On 11/18/2013 05:58 PM, Jan Kiszka wrote:
+>>> Bailing out from rtswitch_pend_rt remains correct and necessary (with
+>>> the new RTDM semantics): rtdm_task_destroy will now kick us out of the
+>>> rtdm_even_wait, and that at a time where no switch happened yet.
+>>
+>> So, you also have to check rtswitch_to_rt return value, and return in
+>> that case as well.
+>
+> We could, but rtdm_task_should_stop already makes sure that we don't
+> spin endlessly.
 
-We could, but rtdm_task_should_stop already makes sure that we don't
-spin endlessly.
-
-Jan
+Then why do not just put rtdm_task_should_stop at the beginning of the 
+loop to catch both the case where rtswitch_pend_rt or rtswitch_to_rt 
+were interrupted?
 
 -- 
-Siemens AG, Corporate Technology, CT RTC ITP SES-DE
-Corporate Competence Center Embedded Linux
+					    Gilles.
 
