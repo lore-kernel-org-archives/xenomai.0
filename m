@@ -1,5 +1,5 @@
-Message-ID: <528A446C.5060409@siemens.com>
-Date: Mon, 18 Nov 2013 17:46:36 +0100
+Message-ID: <528A4737.8040607@siemens.com>
+Date: Mon, 18 Nov 2013 17:58:31 +0100
 From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
 References: <E1ViO8p-0004L8-4y@sd-51317.dedibox.fr>
@@ -7,8 +7,8 @@ References: <E1ViO8p-0004L8-4y@sd-51317.dedibox.fr>
  <528A2486.4030606@xenomai.org> <528A2567.2000105@siemens.com>
  <528A27AF.3060608@xenomai.org> <528A2BB3.9040902@siemens.com>
  <528A2F96.7080302@xenomai.org> <528A3918.4000902@siemens.com>
- <528A3CEB.80909@xenomai.org>
-In-Reply-To: <528A3CEB.80909@xenomai.org>
+ <528A3CEB.80909@xenomai.org> <528A446C.5060409@siemens.com>
+In-Reply-To: <528A446C.5060409@siemens.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] [Xenomai-git] Jan Kiszka : switchtest: Account for
@@ -24,144 +24,120 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On 2013-11-18 17:14, Gilles Chanteperdrix wrote:
-> On 11/18/2013 04:58 PM, Jan Kiszka wrote:
->> On 2013-11-18 16:17, Gilles Chanteperdrix wrote:
->>> On 11/18/2013 04:01 PM, Jan Kiszka wrote:
->>>> On 2013-11-18 15:43, Gilles Chanteperdrix wrote:
->>>>> On 11/18/2013 03:34 PM, Jan Kiszka wrote:
->>>>>> On 2013-11-18 15:30, Gilles Chanteperdrix wrote:
->>>>>>> On 11/18/2013 03:18 PM, Jan Kiszka wrote:
->>>>>>>> On 2013-11-18 14:26, Gilles Chanteperdrix wrote:
->>>>>>>>> On 11/18/2013 01:41 PM, git repository hosting wrote:
->>>>>>>>>> Module: xenomai-jki
->>>>>>>>>> Branch: for-forge
->>>>>>>>>> Commit: 3e6d8ff9a99262e78655329dc043aacc607eb158
->>>>>>>>>> URL:
->>>>>>>>>> http://git.xenomai.org/?p=xenomai-jki.git;a=commit;h=3e6d8ff9a99262e78655329dc043aacc607eb158
->>>>>>>>>>
->>>>>>>>>>
->>>>>>>>>>
->>>>>>>>>>
->>>>>>>>>>
->>>>>>>>>>
->>>>>>>>>> Author: Jan Kiszka <jan.kiszka@siemens.com>
->>>>>>>>>> Date:   Mon Nov 18 13:19:34 2013 +0100
->>>>>>>>>>
->>>>>>>>>> switchtest: Account for invalid last_switch.from field
->>>>>>>>>>
->>>>>>>>>> If we close a test device early, no switch may have yet taken
->>>>>>>>>> place
->>>>>>>>>> when
->>>>>>>>>> the first call to rtswitch_to_rt/nrt happens. This can cause
->>>>>>>>>> to_idx to
->>>>>>>>>> become -1, and the system will crash. Handle this corner case
->>>>>>>>>> gracefully.
->>>>>>>>>>
->>>>>>>>>> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
->>>>>>>>>>
->>>>>>>>>> ---
->>>>>>>>>>
->>>>>>>>>>       kernel/drivers/testing/switchtest.c |   10 ++++++++--
->>>>>>>>>>       1 file changed, 8 insertions(+), 2 deletions(-)
->>>>>>>>>>
->>>>>>>>>> diff --git a/kernel/drivers/testing/switchtest.c
->>>>>>>>>> b/kernel/drivers/testing/switchtest.c
->>>>>>>>>> index 6f77ee9..7d17c5f 100644
->>>>>>>>>> --- a/kernel/drivers/testing/switchtest.c
->>>>>>>>>> +++ b/kernel/drivers/testing/switchtest.c
->>>>>>>>>> @@ -147,8 +147,11 @@ static int rtswitch_to_rt(rtswitch_context_t
->>>>>>>>>> *ctx,
->>>>>>>>>>
->>>>>>>>>>           /* to == from is a special case which means
->>>>>>>>>>              "return to the previous task". */
->>>>>>>>>> -    if (to_idx == from_idx)
->>>>>>>>>> +    if (to_idx == from_idx) {
->>>>>>>>>>               to_idx = ctx->error.last_switch.from;
->>>>>>>>>> +        if (to_idx == -1)
->>>>>>>>>> +            return -EINVAL;
->>>>>>>>>> +    }
->>>>>>>>>
->>>>>>>>> I do not see how we can reach rtswitch_to_rt without having
->>>>>>>>> switched
->>>>>>>>> context, since the first task to run is not an rt task.
->>>>>>>>
->>>>>>>> Counter question: What should enforce this ordering? And via which
->>>>>>>> call
->>>>>>>> stack should last_switch.from be first updated?
->>>>>>>>
->>>>>>>> I suspect that the RT tasks overtake the non-RT one here, but -
->>>>>>>> granted
->>>>>>>> - I didn't understand the control flow and synchronization of this
->>>>>>>> driver yet.
+On 2013-11-18 17:46, Jan Kiszka wrote:
+>>>>>>> Ah, maybe this is the real bug:
 >>>>>>>
->>>>>>> At any time, there is at most one task running on each cpu. This
->>>>>>> task
->>>>>>> then switches to every other task, in turn. The first task to run
->>>>>>> is the
->>>>>>> "sleeper" task, which calls nanosleep in order to avoid the system
->>>>>>> to be
->>>>>>> completely paralized.
+>>>>>>> diff --git a/kernel/drivers/testing/switchtest.c
+>>>>>>> b/kernel/drivers/testing/switchtest.c
+>>>>>>> index 7d17c5f..b5080a6 100644
+>>>>>>> --- a/kernel/drivers/testing/switchtest.c
+>>>>>>> +++ b/kernel/drivers/testing/switchtest.c
+>>>>>>> @@ -404,7 +404,8 @@ static void rtswitch_ktask(void *cookie)
 >>>>>>>
->>>>>>> For instance, with 3 tasks you would get:
->>>>>>> 1(sleeper)
->>>>>>> 2
->>>>>>> 3
->>>>>>> 1(sleeper)
->>>>>>> 3
->>>>>>> 2
->>>>>>> 1(sleeper)
->>>>>>> 2
->>>>>>> 3
+>>>>>>>         to = task->base.index;
 >>>>>>>
->>>>>>> etc...
+>>>>>>> -    rtswitch_pend_rt(ctx, task->base.index);
+>>>>>>> +    if (rtswitch_pend_rt(ctx, task->base.index) != 0)
+>>>>>>> +        return;
+>>>>>>>
+>>>>>>>         for(;;) {
+>>>>>>>             if (task->base.flags & RTTST_SWTEST_USE_FPU)
+>>>>>>>
+>>>>>>> Still need to validate, will let you know.
 >>>>>>
->>>>>> Ah, maybe this is the real bug:
->>>>>>
->>>>>> diff --git a/kernel/drivers/testing/switchtest.c
->>>>>> b/kernel/drivers/testing/switchtest.c
->>>>>> index 7d17c5f..b5080a6 100644
->>>>>> --- a/kernel/drivers/testing/switchtest.c
->>>>>> +++ b/kernel/drivers/testing/switchtest.c
->>>>>> @@ -404,7 +404,8 @@ static void rtswitch_ktask(void *cookie)
->>>>>>
->>>>>>         to = task->base.index;
->>>>>>
->>>>>> -    rtswitch_pend_rt(ctx, task->base.index);
->>>>>> +    if (rtswitch_pend_rt(ctx, task->base.index) != 0)
->>>>>> +        return;
->>>>>>
->>>>>>         for(;;) {
->>>>>>             if (task->base.flags & RTTST_SWTEST_USE_FPU)
->>>>>>
->>>>>> Still need to validate, will let you know.
+>>>>>> I do not think that it is the right fix either: we should not have an
+>>>>>> error in a ktask, because they are destroyed before anything else is
+>>>>>> destroyed.
 >>>>>
->>>>> I do not think that it is the right fix either: we should not have an
->>>>> error in a ktask, because they are destroyed before anything else is
->>>>> destroyed.
+>>>>> Not an error, a destroyed rtdm event, thus return code < 0. This didn't
+>>>>> matter so far as we kill the kernel task where it was blocked. Now it
+>>>>> has to properly leave its main function.
 >>>>
->>>> Not an error, a destroyed rtdm event, thus return code < 0. This didn't
->>>> matter so far as we kill the kernel task where it was blocked. Now it
->>>> has to properly leave its main function.
+>>>> The rtdm event is destroyed after the ktask. So, normally, this should
+>>>> not happen.
 >>>
->>> The rtdm event is destroyed after the ktask. So, normally, this should
->>> not happen.
+>>> True. OK, but rtdm_task_destroy calls xnthread_cancel, and that should
+>>> kick us out of rtdm_event_wait with -EINTR - to my understanding.
+>>>
+>>> In any case, the patch didn't help. Trying to get some traces now for a
+>>> better picture.
 >>
->> True. OK, but rtdm_task_destroy calls xnthread_cancel, and that should
->> kick us out of rtdm_event_wait with -EINTR - to my understanding.
->>
->> In any case, the patch didn't help. Trying to get some traces now for a
->> better picture.
+>> Have you tried to check rtdm_task_join return value and print a message
+>> if it returns an error? I believe for the task to be still running after
+>> it was expected to terminate, rtdm_task_join would have to fail, at least.
 > 
-> Have you tried to check rtdm_task_join return value and print a message
-> if it returns an error? I believe for the task to be still running after
-> it was expected to terminate, rtdm_task_join would have to fail, at least.
+> rtdm_task_join returns void. Also, rtdm_task_destroy already joins in
+> order to maintain the original synchronous behavior.
+> 
+> I'm breaking a trace now when idx is -1 or rtswitch_pend_rt returns
+> non-zero, slowly trying to dig deeper.
 
-rtdm_task_join returns void. Also, rtdm_task_destroy already joins in
-order to maintain the original synchronous behavior.
+Bailing out from rtswitch_pend_rt remains correct and necessary (with
+the new RTDM semantics): rtdm_task_destroy will now kick us out of the
+rtdm_even_wait, and that at a time where no switch happened yet.
 
-I'm breaking a trace now when idx is -1 or rtswitch_pend_rt returns
-non-zero, slowly trying to dig deeper.
+
+However, stress-testing switchtest with early interrupts also triggers
+this oops once in a while:
+
+[  279.547820] [Xenomai] closing RTDM file descriptor 0
+[  279.548966] BUG: unable to handle kernel paging request at ffffc90002986f50
+[  279.550668] IP: [<ffffffff8112de10>] xntimer_destroy+0x110/0x290
+[  279.551563] PGD 3f830067 PUD 3f831067 PMD 3c299067 PTE 0
+[  279.552298] Oops: 0002 [#1] SMP DEBUG_PAGEALLOC
+[  279.552947] Modules linked in: xt_tcpudp xt_limit xt_pkttype ip6t_REJECT nf_conntrack_ipv6 nf_defrag_ipv6 ip6table_raw xt_CT ipt_REJECT xt_state iptable_raw iptable_filter ip6table_mangle nf_conntrack_netbios_ns nf_conntrack_broadcast nf_conntrack_ipv4 nf_conntrack nf_defrag_ipv4 ip_tables ip6table_filter ip6_tables x_tables dm_crypt 9pnet_virtio tpm_tis tpm psmouse microcode 9pnet tpm_bios serio_raw pcspkr e1000 i2c_piix4 floppy intel_agp intel_gtt virtio_pci virtio_blk virtio virtio_ring ahci libahci
+[  279.558564] CPU: 0 PID: 8217 Comm: rtuo_ufpp_ufps2 Not tainted 3.10.19+ #71
+[  279.558564] Hardware name: Bochs Bochs, BIOS Bochs 01/01/2011
+[  279.558564] task: ffff88003c128900 ti: ffff88003c138000 task.ti: ffff88003c138000
+[  279.558564] RIP: 0010:[<ffffffff8112de10>]  [<ffffffff8112de10>] xntimer_destroy+0x110/0x290
+[  279.558564] RSP: 0000:ffff88003c13b948  EFLAGS: 00010206
+[  279.558564] RAX: ffff88003e2a9288 RBX: ffff88003a5024a8 RCX: ffffffff818471e0
+[  279.558564] RDX: ffffc90002986f48 RSI: dead000000200200 RDI: dead000000100100
+[  279.558564] RBP: ffff88003c13b988 R08: 0000000000000218 R09: ffffffff81669c40
+[  279.558564] R10: ffff88003c13b9a0 R11: ffffffff811a0fbc R12: 0000000000000003
+[  279.558564] R13: 0000000000000000 R14: 0000000000016a90 R15: ffff88003c13b9a0
+[  279.558564] FS:  00007fdd847d2950(0000) GS:ffff88003d400000(0000) knlGS:0000000000000000
+[  279.558564] CS:  0010 DS: 0000 ES: 0000 CR0: 000000008005003b
+[  279.558564] CR2: ffffc90002986f50 CR3: 0000000001915000 CR4: 00000000000006f0
+[  279.558564] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[  279.558564] DR3: 0000000000000000 DR6: 00000000ffff0ff0 DR7: 0000000000000400
+[  279.558564] I-pipe domain Linux
+[  279.558564] Stack:
+[  279.558564]  ffff88003bae9260 ffffffff811a0fbc ffffc90002989540 0000000000000000
+[  279.558564]  0000000000000000 0000000000016a90 ffff88003a5024a8 ffff88003c13b9a0
+[  279.558564]  ffff88003c13b9d8 ffffffff8114119f ffff88003c13b9c8 000002b6fdeeead4
+[  279.558564] Call Trace:
+[  279.558564]  [<ffffffff811a0fbc>] ? __vunmap+0x9c/0x110
+[  279.558564]  [<ffffffff8114119f>] rtdm_timer_destroy+0xcf/0x220
+[  279.558564]  [<ffffffff8152e4d2>] rtswitch_close+0xe2/0x120
+[  279.558564]  [<ffffffff8113e2fe>] __rt_dev_close+0x39e/0x900
+[  279.558564]  [<ffffffff8113ea84>] cleanup_process_files+0x1f4/0x2b0
+[  279.558564]  [<ffffffff8114357a>] rtdm_process_detach+0x1a/0x30
+[  279.558564]  [<ffffffff8111f27b>] detach_ppd+0x1b/0x30
+[  279.558564]  [<ffffffff81122d88>] handle_taskexit_event+0x408/0x940
+[  279.558564]  [<ffffffff81125c98>] ipipe_kevent_hook+0x6d8/0x12a0
+[  279.558564]  [<ffffffff810e31a0>] ? rb_commit+0xd0/0x150
+[  279.558564]  [<ffffffff810e3375>] ? ring_buffer_unlock_commit+0x25/0xa0
+[  279.558564]  [<ffffffff810d87ec>] __ipipe_notify_kevent+0x9c/0x130
+[  279.558564]  [<ffffffff8104855d>] do_exit+0x80d/0xb00
+[  279.558564]  [<ffffffff810e3375>] ? ring_buffer_unlock_commit+0x25/0xa0
+[  279.558564]  [<ffffffff810ea023>] ? trace_buffer_unlock_commit+0x43/0x60
+[  279.558564]  [<ffffffff81048a12>] do_group_exit+0x52/0xc0
+[  279.558564]  [<ffffffff81058a92>] get_signal_to_deliver+0x242/0x5f0
+[  279.558564]  [<ffffffff810022a4>] do_signal+0x54/0x640
+[  279.558564]  [<ffffffff810d3b4f>] ? rcu_irq_exit+0xaf/0x100
+[  279.558564]  [<ffffffff810d8a0c>] ? __ipipe_do_sync_stage+0x18c/0x280
+[  279.558564]  [<ffffffff810028f5>] do_notify_resume+0x65/0x90
+[  279.558564]  [<ffffffff81364e5e>] ? trace_hardirqs_on_thunk+0x3a/0x3c
+[  279.558564]  [<ffffffff81651ee7>] int_signal+0x12/0x17
+[  279.558564] Code: 80 00 00 00 48 c7 43 48 00 00 00 00 48 89 43 30 48 8b 83 88 00 00 00 48 bf 00 01 10 00 00 00 ad de 48 be 00 02 20 00 00 00 ad de <48> 89 42 08 48 89 10 48 8b 05 6a 67 82 00 48 89 bb 80 00 00 00 
+[  279.558564] RIP  [<ffffffff8112de10>] xntimer_destroy+0x110/0x290
+[  279.558564]  RSP <ffff88003c13b948>
+[  279.558564] CR2: ffffc90002986f50
+
+This didn't happen when just catching idx==-1, likely because we are
+still racing somewhere else, and that other change just papered over
+this race.
 
 Jan
 
