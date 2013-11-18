@@ -1,11 +1,11 @@
-Message-ID: <528A1D6D.3060904@xenomai.org>
-Date: Mon, 18 Nov 2013 15:00:13 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <528A21A9.9050502@siemens.com>
+Date: Mon, 18 Nov 2013 15:18:17 +0100
+From: Jan Kiszka <jan.kiszka@siemens.com>
 MIME-Version: 1.0
 References: <E1ViO8p-0004L8-4y@sd-51317.dedibox.fr>
- <528A19A6.4010506@xenomai.org>
-In-Reply-To: <528A19A6.4010506@xenomai.org>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+ <528A156C.1070501@xenomai.org>
+In-Reply-To: <528A156C.1070501@xenomai.org>
+Content-Type: text/plain; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] [Xenomai-git] Jan Kiszka : switchtest: Account for
  invalid last_switch.from field
@@ -19,12 +19,12 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, xenomai@xenomai.org
 
-On 11/18/2013 02:44 PM, Gilles Chanteperdrix wrote:
+On 2013-11-18 14:26, Gilles Chanteperdrix wrote:
 > On 11/18/2013 01:41 PM, git repository hosting wrote:
 >> Module: xenomai-jki
 >> Branch: for-forge
 >> Commit: 3e6d8ff9a99262e78655329dc043aacc607eb158
->> URL:
+>> URL:   
 >> http://git.xenomai.org/?p=xenomai-jki.git;a=commit;h=3e6d8ff9a99262e78655329dc043aacc607eb158
 >>
 >>
@@ -37,17 +37,46 @@ On 11/18/2013 02:44 PM, Gilles Chanteperdrix wrote:
 >> the first call to rtswitch_to_rt/nrt happens. This can cause to_idx to
 >> become -1, and the system will crash. Handle this corner case
 >> gracefully.
->
-> I do not see how this can happen at all. Normally all the tasks are
-> destroyed and joined in rtswitch_close using rtdm_task_destroy /
-> rtdm_task_join. So, there is probably another problem.
->
->
+>>
+>> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+>>
+>> ---
+>>
+>>   kernel/drivers/testing/switchtest.c |   10 ++++++++--
+>>   1 file changed, 8 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/kernel/drivers/testing/switchtest.c
+>> b/kernel/drivers/testing/switchtest.c
+>> index 6f77ee9..7d17c5f 100644
+>> --- a/kernel/drivers/testing/switchtest.c
+>> +++ b/kernel/drivers/testing/switchtest.c
+>> @@ -147,8 +147,11 @@ static int rtswitch_to_rt(rtswitch_context_t *ctx,
+>>
+>>       /* to == from is a special case which means
+>>          "return to the previous task". */
+>> -    if (to_idx == from_idx)
+>> +    if (to_idx == from_idx) {
+>>           to_idx = ctx->error.last_switch.from;
+>> +        if (to_idx == -1)
+>> +            return -EINVAL;
+>> +    }
+> 
+> I do not see how we can reach rtswitch_to_rt without having switched
+> context, since the first task to run is not an rt task.
 
-The whole deletion path was heavily reworked as a consequence of moving 
-Xenomai kthreads over regular linux contexts, so I would not be 
-surprised if some rough edges still exist in that area.
+Counter question: What should enforce this ordering? And via which call
+stack should last_switch.from be first updated?
+
+I suspect that the RT tasks overtake the non-RT one here, but - granted
+- I didn't understand the control flow and synchronization of this
+driver yet.
+
+So even if this is not the cause, just curing a symptom, I think it is a
+valid safety measure.
+
+Jan
 
 -- 
-Philippe.
+Siemens AG, Corporate Technology, CT RTC ITP SES-DE
+Corporate Competence Center Embedded Linux
 
