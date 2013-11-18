@@ -1,5 +1,5 @@
-Message-ID: <528A156C.1070501@xenomai.org>
-Date: Mon, 18 Nov 2013 14:26:04 +0100
+Message-ID: <528A19A6.4010506@xenomai.org>
+Date: Mon, 18 Nov 2013 14:44:06 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <E1ViO8p-0004L8-4y@sd-51317.dedibox.fr>
@@ -33,31 +33,11 @@ On 11/18/2013 01:41 PM, git repository hosting wrote:
 > the first call to rtswitch_to_rt/nrt happens. This can cause to_idx to
 > become -1, and the system will crash. Handle this corner case
 > gracefully.
->
-> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
->
-> ---
->
->   kernel/drivers/testing/switchtest.c |   10 ++++++++--
->   1 file changed, 8 insertions(+), 2 deletions(-)
->
-> diff --git a/kernel/drivers/testing/switchtest.c b/kernel/drivers/testing/switchtest.c
-> index 6f77ee9..7d17c5f 100644
-> --- a/kernel/drivers/testing/switchtest.c
-> +++ b/kernel/drivers/testing/switchtest.c
-> @@ -147,8 +147,11 @@ static int rtswitch_to_rt(rtswitch_context_t *ctx,
->
->   	/* to == from is a special case which means
->   	   "return to the previous task". */
-> -	if (to_idx == from_idx)
-> +	if (to_idx == from_idx) {
->   		to_idx = ctx->error.last_switch.from;
-> +		if (to_idx == -1)
-> +			return -EINVAL;
-> +	}
 
-I do not see how we can reach rtswitch_to_rt without having switched 
-context, since the first task to run is not an rt task.
+I do not see how this can happen at all. Normally all the tasks are 
+destroyed and joined in rtswitch_close using rtdm_task_destroy / 
+rtdm_task_join. So, there is probably another problem.
+
 
 -- 
 					    Gilles.
