@@ -1,20 +1,12 @@
-Message-ID: <528A58B0.7070400@siemens.com>
-Date: Mon, 18 Nov 2013 19:13:04 +0100
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <1384955931.52735.YahooMailNeo@web122604.mail.ne1.yahoo.com>
+Date: Wed, 20 Nov 2013 05:58:51 -0800 (PST)
+From: Giuseppe Iellamo <peppedx@yahoo.com>
 MIME-Version: 1.0
-References: <E1ViO8p-0004L8-4y@sd-51317.dedibox.fr>
- <528A156C.1070501@xenomai.org> <528A21A9.9050502@siemens.com>
- <528A2486.4030606@xenomai.org> <528A2567.2000105@siemens.com>
- <528A27AF.3060608@xenomai.org> <528A2BB3.9040902@siemens.com>
- <528A2F96.7080302@xenomai.org> <528A3918.4000902@siemens.com>
- <528A3CEB.80909@xenomai.org> <528A446C.5060409@siemens.com>
- <528A4737.8040607@siemens.com> <528A5170.4070609@xenomai.org>
- <528A54F5.4000609@siemens.com> <528A5678.2000908@xenomai.org>
-In-Reply-To: <528A5678.2000908@xenomai.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [Xenomai-git] Jan Kiszka : switchtest: Account for
- invalid last_switch.from field
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] - RTDM and other Linux Kernel Facilities (device tree /
+	sysfs)
+Reply-To: Giuseppe Iellamo <peppedx@gmail.com>
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -23,33 +15,15 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 2013-11-18 19:03, Gilles Chanteperdrix wrote:
-> On 11/18/2013 06:57 PM, Jan Kiszka wrote:
->> On 2013-11-18 18:42, Gilles Chanteperdrix wrote:
->>> On 11/18/2013 05:58 PM, Jan Kiszka wrote:
->>>> Bailing out from rtswitch_pend_rt remains correct and necessary (with
->>>> the new RTDM semantics): rtdm_task_destroy will now kick us out of the
->>>> rtdm_even_wait, and that at a time where no switch happened yet.
->>>
->>> So, you also have to check rtswitch_to_rt return value, and return in
->>> that case as well.
->>
->> We could, but rtdm_task_should_stop already makes sure that we don't
->> spin endlessly.
-> 
-> Then why do not just put rtdm_task_should_stop at the beginning of the
-> loop to catch both the case where rtswitch_pend_rt or rtswitch_to_rt
-> were interrupted?
-> 
-
-Sure, will write the patch accordingly.
-
-Jan
-
--- 
-Siemens AG, Corporate Technology, CT RTC ITP SES-DE
-Corporate Competence Center Embedded Linux
-
+Hi all, =0A=0A=0AI finally managed to run a xenomai userspace task on a Bea=
+gleBoardBlack with xenomai 2.6.3 on linux 3.8.13, and it works fairly well,=
+ but at the moment the kernel driver I use are linux platform driver with t=
+he interaction happening via sysfs.=0ASo I know that sooner or later the wa=
+y is to migrate this driver from standard linux to RTDM driver, in order to=
+ remove unwanted mode switches.=0A=0AThe thing is that from the examples I'=
+ve found it seems the RTDM driver are pretty much char driver. Is it possib=
+ile for an RTDM driver to interact with the device tree and to use sysfs? D=
+o you have any pointer to some "interesting" driver I could study to unders=
+tand RTDM model more?=0A=0AThank you very much,=0AGiuseppe=0A
