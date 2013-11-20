@@ -1,12 +1,11 @@
-Message-ID: <1384955931.52735.YahooMailNeo@web122604.mail.ne1.yahoo.com>
-Date: Wed, 20 Nov 2013 05:58:51 -0800 (PST)
-From: Giuseppe Iellamo <peppedx@yahoo.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+From: Michael Haberler <mail17@mah.priv.at>
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] - RTDM and other Linux Kernel Facilities (device tree /
-	sysfs)
-Reply-To: Giuseppe Iellamo <peppedx@gmail.com>
+Message-Id: <A4FA4D76-58FD-4DB4-AE7F-5B2D3D20FF35@mah.priv.at>
+Date: Wed, 20 Nov 2013 15:33:12 +0100
+Mime-Version: 1.0 (Mac OS X Mail 6.6 \(1510\))
+Subject: [Xenomai] integrate event signaled by RT thread into non-RT event
+	loops (poll, select, eventfd..)?
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,13 +16,31 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi all, =0A=0A=0AI finally managed to run a xenomai userspace task on a Bea=
-gleBoardBlack with xenomai 2.6.3 on linux 3.8.13, and it works fairly well,=
- but at the moment the kernel driver I use are linux platform driver with t=
-he interaction happening via sysfs.=0ASo I know that sooner or later the wa=
-y is to migrate this driver from standard linux to RTDM driver, in order to=
- remove unwanted mode switches.=0A=0AThe thing is that from the examples I'=
-ve found it seems the RTDM driver are pretty much char driver. Is it possib=
-ile for an RTDM driver to interact with the device tree and to use sysfs? D=
-o you have any pointer to some "interesting" driver I could study to unders=
-tand RTDM model more?=0A=0AThank you very much,=0AGiuseppe=0A
+I'm looking for a simple method to post an event from an RT thread so a =
+userland non-RT thread can wait for, and pick it up via a file =
+descriptor (without switching the originating thread to primary domain, =
+of course)
+
+event context can be minimal since the userland handler can figure; =
+actual data transfer not required - event number or mask a plus
+
+purpose would be integration into existing event loops; only =
+RT->userland signalling needed
+
+if it's possible from a kernel RT context, it's a plus
+
+---
+
+one scheme I thought of was: using rt_event services, monitor the event =
+flag in a userland shadow thread and post to an eventfd whose other side =
+could be integrated into an event loop. Making sense?
+
+thanks in advance,
+
+Michael
+
+ps: this needs to be portable across RT kernel variants; my approach for =
+RTAI would be to use rt_request_srq() and post to an eventfd from the =
+Linux context
+
+
