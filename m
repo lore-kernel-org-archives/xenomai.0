@@ -1,9 +1,10 @@
 MIME-Version: 1.0
-Date: Sat, 23 Nov 2013 17:56:04 +0330
-Message-ID: <CAKKWdtdkR9QieGJ53owbkWD6fjO8ATep8BMMD7g1C2y3anWknQ@mail.gmail.com>
+Date: Sat, 23 Nov 2013 18:46:11 +0330
+Message-ID: <CAKKWdtchCb5BeK4xLpEyUot5960Cx9HA87g+L=7UzQTfpyYsFg@mail.gmail.com>
 From: ali hagigat <hagigatali@gmail.com>
 Content-Type: text/plain; charset=ISO-8859-1
-Subject: [Xenomai] some questions: domains and user/kernel code
+Subject: [Xenomai] a question about the Xenomai functionality when page
+	fault exception
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -14,13 +15,17 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai <xenomai@xenomai.org>
 
-I wonder if any one can answer the following questions:
+If a Xenomai task is created , i think not all of the pages of that
+task has been allocated inside the physical memory, so sooner or later
+that task is faced with "page fault exception".
+"page fault exception"  is handled by Linux kernel by default, so
+executing that exception may be delayed even up to 4 seconds when
+Linux executes and there is no other real time task.
 
-1) Some native functions like rt_cond_bind(), make a task switch to
-primary mode. If i have a regular linux task (not a xenomai task!) and
-i use the above function, will it become a Xenomai task which is
-running in the primary mode?
+Is the above idea correct? is it possible for a Xenomai task to
+experience a long delay because of a page fault exception?
 
-2) If i define a heap in user sapce, can a kernel-space code bind to
-that heap to read its data?
+Thank you so much in advance to read my question.
+
+Regards
 
