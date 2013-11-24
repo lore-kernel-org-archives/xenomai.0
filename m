@@ -1,12 +1,13 @@
-Message-ID: <5291BD6B.3090903@xenomai.org>
-Date: Sun, 24 Nov 2013 09:48:43 +0100
-From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <9bd00c3871dd96b26eaf.1385053376@devws164.be.alcatel-lucent.com>
-In-Reply-To: <9bd00c3871dd96b26eaf.1385053376@devws164.be.alcatel-lucent.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PATCH] Xenomai-forge: pSOS add priority denormalize
+In-Reply-To: <5290FFA4.1040603@xenomai.org>
+References: <CAKKWdtchCb5BeK4xLpEyUot5960Cx9HA87g+L=7UzQTfpyYsFg@mail.gmail.com>
+ <5290FFA4.1040603@xenomai.org>
+Date: Sun, 24 Nov 2013 08:24:52 -0500
+Message-ID: <CAKKWdtdHQGL7C9ENXE6TVwPmPGcgsG+rqAqyqM3gF-vyjEnhMQ@mail.gmail.com>
+From: ali hagigat <hagigatali@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
+Subject: Re: [Xenomai] a question about the Xenomai functionality when page
+ fault exception
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,37 +16,20 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Kim De Mey <kim.demey@gmail.com>, xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: xenomai <xenomai@xenomai.org>
 
-On 11/21/2013 06:02 PM, Kim De Mey wrote:
-> Add the psos_task_denormalize_priority() and psos_task_get_priority()
-> functions. Use psos_task_get_priority() to fill oldprio_r in t_setpri().
->
-> Signed-off-by: Kim De Mey <kim.demey@gmail.com>
->
-> ---
->
-> It is necessary to denormalize the oldprio_r in t_setpri(). Else this
-> oldprio_r value can not be used if the user application overrides the
-> normalize function.
->
+page fault exception is handled by the primary domain?
 
-Ack.
-
-[snip]
-
-> diff --git a/lib/psos/task.h b/lib/psos/task.h
-> --- a/lib/psos/task.h
-> +++ b/lib/psos/task.h
-> @@ -71,6 +71,8 @@ void put_psos_task(struct psos_task *tas
+On 11/23/13, Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote:
+> On 11/23/2013 04:16 PM, ali hagigat wrote:
+>> If a Xenomai task is created , i think not all of the pages of that
+>> task has been allocated inside the physical memory, so sooner or later
+>> that task is faced with "page fault exception".
 >
->   int __ev_send(struct psos_task *task, unsigned long events);
+> You think wrong.
 >
-> +int psos_task_get_priority(struct psos_task *task);
-> +
-
-Why do you have to introduce this routine in the API?
-
--- 
-Philippe.
+> --
+>                                                                 Gilles.
+>
 
