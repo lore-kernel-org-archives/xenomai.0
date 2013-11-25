@@ -1,15 +1,13 @@
-Message-ID: <5294B36D.5060202@xenomai.org>
-Date: Tue, 26 Nov 2013 15:42:53 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <52935EB4.9030306@xenomai.org>
+Date: Mon, 25 Nov 2013 15:29:08 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <5294A4C3.9090404@grinta.net> <5294A711.2010700@xenomai.org>
- <5294A933.5050300@grinta.net> <5294AAB4.5030707@xenomai.org>
- <5294AC3E.4040009@grinta.net> <5294AFBE.9060404@xenomai.org>
- <5294B125.2060501@grinta.net>
-In-Reply-To: <5294B125.2060501@grinta.net>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+References: <6e5a902f9794c477b1ae.1385378337@devws164.be.alcatel-lucent.com>
+In-Reply-To: <6e5a902f9794c477b1ae.1385378337@devws164.be.alcatel-lucent.com>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] cgit repository modification times
+Subject: Re: [Xenomai] [PATCH v2] Xenomai-forge: pSOS add priority
+	denormalize
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,59 +16,87 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Daniele Nicolodi <daniele@grinta.net>
-Cc: xenomai@xenomai.org
+To: Kim De Mey <kim.demey@gmail.com>, xenomai@xenomai.org
 
-On 11/26/2013 03:33 PM, Daniele Nicolodi wrote:
-> On 26/11/2013 15:27, Gilles Chanteperdrix wrote:
->> On 11/26/2013 03:12 PM, Daniele Nicolodi wrote:
->>> On 26/11/2013 15:05, Gilles Chanteperdrix wrote:
->>>> On 11/26/2013 02:59 PM, Daniele Nicolodi wrote:
->>>>> On 26/11/2013 14:50, Gilles Chanteperdrix wrote:
->>>>>> On 11/26/2013 02:40 PM, Daniele Nicolodi wrote:
->>>>>>> Hello,
->>>>>>>
->>>>>>> I've noticed that the new cgit web interface to the git repositories
->>>>>>> does not display the correct modification times for the repository in
->>>>>>> the repository list.  I don't know what may cause this, the displayed
->>>>>>> times seems completely arbitrary to me.
->>>>>>
->>>>>> Maybe that is because the time displayed in the repository list is not
->>>>>> the modification time, but the idle time, as the title line indicates?
->>>>>
->>>>> Sorry, wrong choice of words on my side. I believe that the idle time is
->>>>> defined as (current time) - (modification time). Isn't it?
->>>>
->>>>>
->>>>> Still, for example, the xenomai-force repository has two branches:
->>>>> "master" and "next", for which cgit shows an "Age" (which I believe
->>>>> should be interpreted in the same way as "Idle") of respectively 24
->>>>> hours and 3 weeks.  The "Idle" field in the repository list reports 11 days.
->>>>
->>>> It seems you are mixing the time when the last push occurred with the
->>>> time when the last commit occurred, with git the two are not necessarily
->>>> correlated. If you look at other projects using cgit, kernel.org for
->>>> instance, you will find the same disparities.
->>>>
->>>> In the case of Xenomai, most of the repositories appear to have been
->>>> pushed 11 days ago because this is the time when the repositories were
->>>> cloned from the old xenomai server to the new xenomai server.
->>>
->>> I know, but how is it possible that a changeset has been pushed before
->>> being committed?
->>
->> Indeed, that is strange, I will look at it. Maybe we miss some hooks
->> (like git-update-server).
+On 11/25/2013 12:18 PM, Kim De Mey wrote:
+> Add the psos_task_denormalize_priority() and psos_task_get_priority()
+> functions. Use psos_task_get_priority() to fill oldprio_r in t_setpri().
+
+Merged, thanks.
+
 >
-> I think it is due to the fact that only the master branch of each
-> repository is looked at.  I checked on gnome.org cgit instance and it
-> shows the same behavior.  I don't know if it is configurable.
+> Signed-off-by: Kim De Mey <kim.demey@gmail.com>
+>
+> ---
+>
+> v2: Removed the psos_task_get_priority() call from task.h
+>
+> diff --git a/include/psos/psos.h b/include/psos/psos.h
+> --- a/include/psos/psos.h
+> +++ b/include/psos/psos.h
+> @@ -366,6 +366,7 @@ u_long tm_wkwhen(u_long date,
+>   		 u_long ticks);
+>
+>   int psos_task_normalize_priority(unsigned long psos_prio);
+> +int psos_task_denormalize_priority(unsigned long core_prio);
+>
+>   extern unsigned int psos_long_names;
+>
+> diff --git a/lib/psos/task.c b/lib/psos/task.c
+> --- a/lib/psos/task.c
+> +++ b/lib/psos/task.c
+> @@ -236,6 +236,21 @@ int psos_task_normalize_priority(unsigne
+>   	return psos_prio;
+>   }
+>
+> +/*
+> + * Although default pSOS priorities are mapped 1:1 to SCHED_RT,
+> + * we do still have to use a denormalize function because these
+> + * calls are weak and application code may be override the call
+> + * and implement the mapping differently.
+> + */
+> +
+> +__attribute__ ((weak))
+> +int psos_task_denormalize_priority(unsigned long core_prio)
+> +{
+> +	/* Map a SCHED_RT priority level to a pSOS one. */
+> +	return core_prio;
+> +}
+> +
+> +
+>   static int check_task_priority(u_long psos_prio, int *core_prio)
+>   {
+>   	if (psos_prio < 1 || psos_prio > 255) /* In theory. */
+> @@ -246,6 +261,12 @@ static int check_task_priority(u_long ps
+>   	return SUCCESS;
+>   }
+>
+> +static int psos_task_get_priority(struct psos_task *task)
+> +{
+> +	int prio = threadobj_get_priority(&task->thobj);
+> +	return psos_task_denormalize_priority(prio);
+> +}
+> +
+>   u_long t_create(const char *name, u_long prio,
+>   		u_long sstack, u_long ustack, u_long flags, u_long *tid_r)
+>   {
+> @@ -416,7 +437,7 @@ u_long t_setpri(u_long tid, u_long newpr
+>   	if (task == NULL)
+>   		return ret;
+>
+> -	*oldprio_r = threadobj_get_priority(&task->thobj);
+> +	*oldprio_r = psos_task_get_priority(task);
+>
+>   	if (newprio == 0) { /* Only inquires for the task priority. */
+>   		put_psos_task(task);
+>
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> http://www.xenomai.org/mailman/listinfo/xenomai
+>
 
-Seems a fix exists:
-http://article.gmane.org/gmane.comp.version-control.cgit/1059
-
-Will try tonight.
 
 -- 
-					    Gilles.
+Philippe.
 
