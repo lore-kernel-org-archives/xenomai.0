@@ -1,10 +1,12 @@
-From: Ryan Wilkins <ryan@deadfrog.net>
-Content-Type: text/plain; charset=windows-1252
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <D1DE22A7-3BD6-4D79-A85B-55A9D5CF2587@deadfrog.net>
-Date: Sat, 30 Nov 2013 22:08:39 -0500
-Mime-Version: 1.0 (Mac OS X Mail 7.0 \(1822\))
-Subject: [Xenomai] Question about context switching
+Message-ID: <5294847D.3030501@xenomai.org>
+Date: Tue, 26 Nov 2013 12:22:37 +0100
+From: Philippe Gerum <rpm@xenomai.org>
+MIME-Version: 1.0
+References: <1385464837.54248.YahooMailNeo@web122606.mail.ne1.yahoo.com>
+In-Reply-To: <1385464837.54248.YahooMailNeo@web122606.mail.ne1.yahoo.com>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] mmap and domain switch
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,31 +15,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Giuseppe Iellamo <peppedx@gmail.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hello,
+On 11/26/2013 12:20 PM, Giuseppe Iellamo wrote:
+> Hi all,
+>
+> In my project I'm accessing a device using a linux device driver (via sysfs) . In order to speedup the control loop I've mmapped the register i need to read. The question is: If I access a device register using mmap
 
-I=92ve been working with Xenomai 2.6.x on a Core 2 Quad (Q9000) CPU =
-running at 2 GHz and it seems to be running fine so far.  The Linux OS =
-is compiled with Buildroot for a project that I=92m working on for my =
-employer.  Recently, I tried running my build on a new board with a Core =
-i5 CPU at 3 GHz.  While it ran, I noticed while running xeno-test that =
-the context switch test reported significantly less context switches on =
-the Core i5 (~380K) than on the previous Core 2 Quad (~930K).  =
-Otherwise, it seems to be running fine so far.  I would have expected =
-the Core i5 to complete context switches even quicker, and to that end I =
-don=92t even know that it=92s going to be a problem since not all the =
-code is done yet.
+assuming you mean "mmaped memory" here,
 
-Specifics on the current build.. Linux kernel 3.8.13.  Xenomai 2.6.3.  =
-Buildroot 2013-08.1.  Compiled with 32-bit support only.
+  from a xenomai task am i triggering a domain switch ?
+>
 
-My question to anyone on the list is why such the difference in context =
-switches?  Is there something obvious that I=92m missing here?
+No, unless you take a fault doing so, which should not happen if the MMR 
+is properly mapped/accessed.
 
-Thanks in advance for any help on figuring this one out.
+> BR,
+> Giuseppe
+> _______________________________________________
+> Xenomai mailing list
+> Xenomai@xenomai.org
+> http://www.xenomai.org/mailman/listinfo/xenomai
+>
 
-Best,
-Ryan Wilkins
 
+-- 
+Philippe.
 
