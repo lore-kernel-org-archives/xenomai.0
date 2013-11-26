@@ -1,13 +1,13 @@
+Message-ID: <52947CFD.6050400@sigmatek.at>
+Date: Tue, 26 Nov 2013 11:50:37 +0100
+From: Johann Obermayr <johann.obermayr@sigmatek.at>
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=UTF-8
+References: <52931AC3.4050103@sigmatek.at> <52931C75.30808@xenomai.org>
+In-Reply-To: <52931C75.30808@xenomai.org>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Date: Mon, 09 Dec 2013 20:09:31 +0100
-From: Wolfgang Grandegger <wg@grandegger.com>
-In-Reply-To: <001d01cef50a$f6d44e70$e47ceb50$@hs-augsburg.de>
-References: <001d01cef50a$f6d44e70$e47ceb50$@hs-augsburg.de>
-Message-ID: <61b2bd48b577d1bceeca67a6ec71661e@grandegger.com>
-Subject: Re: [Xenomai] rtdm can on mpc5121e - no rtcan devices detected
+Subject: Re: [Xenomai] rtdm_event_pulse  in user space
+Reply-To: johann.obermayr@sigmatek.at
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,202 +16,31 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Andreas Gareis <andreas.gareis@hs-augsburg.de>
-Cc: xenomai@xenomai.org
-
-On Mon, 9 Dec 2013 19:17:47 +0100, "Andreas Gareis"
-
-<andreas.gareis@hs-augsburg.de> wrote:
-
-> Von: Tom Evans
-
->  Gesendet: Sonntag, 8. Dezember 2013 23:07
-
->> 
-
->> On 09/12/13 06:44, Andreas Gareis wrote:
-
->> > Hi Wolfgang,
-
->> >
-
->> > Thanks for your answer.
-
->>  > ...
-
->> >> RTCAN devices are not visible in /dev. It's not a character device.
-
->> >> You can find more informations in /proc/rtnet.
-
->> >
-
->> > The files "devices" and "sockets" which are located in /proc/rtcan 
-
->> > don't have any entries. (/proc/rtnet doesn't exist on my system)
-
->> 
-
->> Did the CAN devices work before you installed Xenomai? Get them 
-
->> working there first.
-
->> 
-
->> On the device I'm using (Freescale i.MX53), the CAN drivers are 
-
->> connected via NETWORKING. So they don't show up in /dev, just as 
-
->> Ethernet doesn't show there either (/dev is so 1980's :-).
-
->> 
-
->> root@triton1:~# ls /proc/net/can
-
->> rcvlist_all  rcvlist_err  rcvlist_inv  reset_stats  version 
-
->> rcvlist_eff  rcvlist_fil rcvlist_sff  stats root@triton1:~# ifconfig
-
->> can0      Link encap:UNSPEC  HWaddr
-
->> 00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00
-
->>            UP RUNNING NOARP  MTU:16  Metric:1
-
->>            RX packets:0 errors:0 dropped:0 overruns:0 frame:0
-
->>            TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
-
->>            collisions:0 txqueuelen:256
-
->>            RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
-
->>            Interrupt:82
-
->> 
-
->> can1      Link encap:UNSPEC  HWaddr
-
->> 00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00
-
->>            UP RUNNING NOARP  MTU:16  Metric:1
-
->>            RX packets:2527 errors:0 dropped:0 overruns:0 frame:0
-
->>            TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
-
->>            collisions:0 txqueuelen:256
-
->>            RX bytes:19583 (19.1 KiB)  TX bytes:0 (0.0 B)
-
->>            Interrupt:83
-
->> 
-
->> eth0      Link encap:Ethernet  HWaddr 00:0C:C6:79:6C:6E
-
->> ... And so on.
-
->> 
-
->> Check for interrupts:
-
->> 
-
->> root@triton1:~# cat /proc/interrupts
-
->>             CPU0
-
->>    6:          0      tzic  sdma
-
->> ...
-
->>   64:          0      tzic  imx-i2c.2
-
->>   82:          0      tzic  can0
-
->>   83:       5832      tzic  can1
-
->>   87:     124900      tzic  imx25-fec.0
-
->> 
-
->> 
-
->> Tom
-
->> 
-
-> 
-
-> Yes, the CAN devices worked before Xenomai installation. They were shown
-
-in
-
-> ifconfig and communication with other CAN-devices was possible.
-
-> 
-
-> When I select normal (non rt) CAN-support and xenomai kernel (without
-
-> RT-CAN) in the kernelconfig, working CAN devices are also available.
-
-> 
-
-> Now I want to use RT-CAN with xenomai. So, I activated "RT-Socket-CAN"
-
-and
-
-> "MSCAN driver for MPC52xx and MPC512x" in the kernelconfig. When
-
-"normal"
-
-> CAN support (Networking support => CAN bus subsystem support => CAN
-
-Device
-
-> Drivers Freescale MPC5xxx onboard CAN controller) is disabled, the
-
-xenomai
-
-> module "xeno_can_mscan.ko" isn't able to start. When "normal" CAN
-
-support
-
-
-
-That's the real problem. What happen's if you want to start the CAN
-
-device?
-
-
-
-> is
-
-> enabled, the xenomai module "xeno_can_mscan.ko" can be loaded without
-
-> errors
-
-> in dmesg, but there are no rtcan devices.
-
-
-
-But the device are not probed because they are already bound to a the
-
-Linux
-
-CAN driver. You can unbind them before loading the RTCAN driver but then
-
-you
-
-will run into the same problem then reported above.
-
-
-
-Wolfgang.
-
-
-
-
-
-
+To: xenomai@xenomai.org
+
+Am 25.11.2013 10:46, schrieb Philippe Gerum:
+> On 11/25/2013 10:39 AM, Johann Obermayr wrote:
+>> Hello,
+>>
+>> Is there a way to make a
+>> rt_event_pulse.
+>> A kernel function  rtdm_event_pulse is available, but no user space
+>> function.
+>>
+>
+> rtdm_event_pulse() is part of the inter-driver API, which explains why 
+> there is no userland access to it. Assuming you need to wake up a RTDM 
+> task waiting on a particular event via rtdm_event_wait(), then you 
+> have to implement an rt/nrt ioctl handler in your RTDM driver which 
+> will send the event. Userland can issue this ioctl request from userland.
+>
+Hi,
+
+in userspace there are rt_event_signal & rt_event_clear, but no 
+rt_event_pulse.
+i need rt_event_pulse to make my source compatible with EventPulse 
+Window-Function.
+
+Best Regards
+    Johann
 
