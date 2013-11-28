@@ -1,12 +1,13 @@
-Message-ID: <52A8BB5F.70803@steinkuehler.net>
-Date: Wed, 11 Dec 2013 13:22:07 -0600
-From: Charles Steinkuehler <charles@steinkuehler.net>
+Message-ID: <5297BD30.4060007@xenomai.org>
+Date: Thu, 28 Nov 2013 23:01:20 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <52A88B17.8050707@steinkuehler.net> <52A8AEA5.7000409@xenomai.org>
-In-Reply-To: <52A8AEA5.7000409@xenomai.org>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] ARM 3.12 Kernel Support
+References: <20131128143152.04ac3eab.norbert.bukuli@mediso.hu>
+In-Reply-To: <20131128143152.04ac3eab.norbert.bukuli@mediso.hu>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] test suite programs crash with Illegal instruction on
+ MPC5200
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,35 +16,47 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Bukuli Norbert <norbert.bukuli@mediso.hu>, Xenomai <xenomai@xenomai.org>
 
-T24gMTIvMTEvMjAxMyAxMjoyNyBQTSwgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4gT24g
-MTIvMTEvMjAxMyAwNDo1NiBQTSwgQ2hhcmxlcyBTdGVpbmt1ZWhsZXIgd3JvdGU6Cj4+IEkgZmln
-dXJlIGV2ZW50dWFsbHkgdGhlIFhlbm9tYWkgcGF0Y2hlcyB3aWxsIGJlIHVwZGF0ZWQgZm9yIDMu
-MTIsIGJ1dCBJCj4+IG1pZ2h0IGJlIGFibGUgdG8gaGVscCBtb3ZlIHRoaW5ncyBhbG9uZy4gIElz
-IGFueW9uZSBhY3RpdmVseSB3b3JraW5nIG9uCj4+IDMuMTIgc3VwcG9ydCwgb3IgaXMgZGV2ZWxv
-cG1lbnQgc3RpbGwgY2VudGVyZWQgYXJvdW5kIDMuMTA/ICBJcyB0aGUKPj4gbWFzdGVyIGJyYW5j
-aCBmcm9tIGh0dHA6Ly9naXQueGVub21haS5vcmcvaXBpcGUuZ2l0LyB0aGUgbW9zdAo+PiBhcHBy
-b3ByaWF0ZSBicmFuY2ggdG8gdHJ5IGFuZCBmb3J3YXJkLXBvcnQ/ICBJdCBsb29rcyBsaWtlIHRo
-ZSAzLjEwCj4+IGJyYW5jaGVzIGhhdmUgbW9yZSByZWNlbnQgY29tbWl0cy4uLgo+IAo+IDMuMTAu
-MTggaXMgdmFsaWRhdGVkIG9uIEFSTSwgYW5kIHdvcmtzIGNvcnJlY3RseSBhcyBmYXIgYXMgSSBj
-YW4gdGVsbC4KPiBTbywgSSBjb3VsZCBzd2l0Y2ggdG8gMy4xMi4gSSB3b3VsZCBwcmVmZXIgdG8g
-Y29tcGxldGUgYSBmZXcgdGhpbmdzIG9uCj4geGVub21haS1mb3JnZSBpbiB0aGUgbmV4dCB3ZWVr
-cyBiZWZvcmUgSSBjYW4gc3dpdGNoIHRob3VnaC4KClNvdW5kcyBncmVhdCEgIEkndmUgYmVlbiBs
-aXZpbmcgd2l0aG91dCBHUFUgYWNjZWxlcmF0aW9uIG9uIHRoZSAnQm9uZQpmb3Igb3ZlciBhIHll
-YXIsIHNvIEkgdGhpbmsgSSBjYW4gbWFuZ2UgdG8gd2FpdCBhIHdoaWxlIGxvbmdlciEgIDopCgpT
-aW5jZSBpdCBzb3VuZHMgbGlrZSBYZW5vbWFpIG9uIDMuMTIgaXMgbm90IGluIHRoZSBmYXIgZGlz
-dGFudCBmdXR1cmUsIEkKd29uJ3Qgd29yayBvbiB0cnlpbmcgdG8gZ2V0IHRoZSBHUFUgZHJpdmVz
-IGJhY2stcG9ydGVkIHRvIDMuOCwgYnV0IHdpbGwKd29yayBvbiBnZXR0aW5nIHRoZSByZXN0IG9m
-IHRoZSBzeXN0ZW0gbWlncmF0ZWQgdG8gMy4xMi4KCkknbGwgaGFwcGlseSB0ZXN0IEFSTSAzLjEy
-IFhlbm9tYWkgcGF0Y2hlcywgYW5kIHZvbHVudGVlciB0byBkbyBzb21lCmdydW50IHdvcmsgd2l0
-aCB0aGUgcG9ydGluZywgaWYgdGhlcmUgaXMgYW55dGhpbmcgdGhhdCBjYW4gYmUgZG9uZQp3aXRo
-b3V0IGhhdmluZyBpbnRpbWF0ZSBrbm93bGVkZ2Ugb2YgdGhlIGNvZGUuCgpMZXQgbWUga25vdyB3
-aGF0IEkgY2FuIGRvIHRvIGhlbHAuCgotLSAKQ2hhcmxlcyBTdGVpbmt1ZWhsZXIKY2hhcmxlc0Bz
-dGVpbmt1ZWhsZXIubmV0CgotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0K
-QSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBzaWduYXR1cmUuYXNj
-ClR5cGU6IGFwcGxpY2F0aW9uL3BncC1zaWduYXR1cmUKU2l6ZTogMjYxIGJ5dGVzCkRlc2M6IE9w
-ZW5QR1AgZGlnaXRhbCBzaWduYXR1cmUKVVJMOiA8aHR0cDovL3d3dy54ZW5vbWFpLm9yZy9waXBl
-cm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDEzMTIxMS8xYjNhODNlZi9hdHRhY2htZW50LnNp
-Zz4K
+On 11/28/2013 02:31 PM, Bukuli Norbert wrote:
+> Hello!
+>
+> I am having a little problem with some programs from the Xenomai test
+> suite. The clocktest, cyclictest and switchtest crashes with "Illegal
+> instruction":
+>
+> ~ # /usr/xenomai/bin/clocktest
+> == Tested clock: 0 (CLOCK_REALTIME)
+> CPU      ToD offset [us] ToD drift [us/s]      warps max delta [us]
+> --- -------------------- ---------------- ---------- --------------
+>    0                  0.0            0.000          0            0.0
+> Illegal instruction
+>
+>
+
+Please make sure you are using a compiler for the 6xx processor family, 
+for building the user-space programs for an icecube/lite52xx/tqm5200 board.
+
+If the issue is still there, you should run the failing test over gdb, 
+then paste the backtrace output ("bt" command) obtained after the fault 
+to this list.
+
+> When I turn the debug.exception-trace kernel option on,
+> and run the clocktest, I have got the following kernel message:
+>
+> clocktest[243]: unhandled signal 4 at 0fdf4e74 nip 0fdf4e74 lr 0ffd8af8
+> code 30001
+>
+
+gdb will give you the faulty location in symbolic form.
+
+> I have read in a previous messages on this list, that the
+> CONFIG_XENO_HW_UNLOCKED_SWITCH option should be turned off, but
+> unfortunately this did not help.
+>
+
+Unlocked switching is no more an issue with 3.8.13 and beyond.
+
+-- 
+Philippe.
+
