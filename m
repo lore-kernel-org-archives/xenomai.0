@@ -1,21 +1,14 @@
-From: Tobias Luksch <Tobias.Luksch@itk-engineering.de>
-Date: Wed, 11 Dec 2013 16:04:29 +0000
-Message-ID: <1124806E0C09F04A992E69AE2EC7FA3CB1B138@swexchange01.itk.local>
-References: <529F1913.4030604@xenomai.org> <529F1974.60900@xenomai.org>
- <529F2BED.2030403@xenomai.org> <529F5254.8060501@xenomai.org>
- <529F69AD.6060003@xenomai.org>
- <CE87D5F4-FE47-4310-A74F-7F8E4CCEC92B@open.ac.uk>
- <52A05ED2.9050003@xenomai.org>
- <E8F821A2-2BD0-440D-BDA1-3751BD443662@open.ac.uk>
- <52A5E155.2040303@xenomai.org>
- <4453D563-1D0B-4C5E-BCF1-3E2E8068B514@open.ac.uk>
- <20131211145136.GL20884@csclub.uwaterloo.ca>
-In-Reply-To: <20131211145136.GL20884@csclub.uwaterloo.ca>
-Content-Language: de-DE
-Content-Type: text/plain; charset="Windows-1252"
-Content-Transfer-Encoding: quoted-printable
+Message-ID: <5297A7E0.9030207@xenomai.org>
+Date: Thu, 28 Nov 2013 21:30:24 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Subject: Re: [Xenomai] latency spikes under load
+References: <20131128143152.04ac3eab.norbert.bukuli@mediso.hu>
+ <5297A4E3.50807@xenomai.org>
+In-Reply-To: <5297A4E3.50807@xenomai.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] test suite programs crash with Illegal instruction on
+ MPC5200
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -24,29 +17,27 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Lennart Sorensen <lsorense@csclub.uwaterloo.ca>, Kurijn Buys <Kurijn.Buys@open.ac.uk>
-Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+To: Bukuli Norbert <norbert.bukuli@mediso.hu>
+Cc: Xenomai <xenomai@xenomai.org>
 
-> > On Wed, Dec 11, 2013 at 02:23:38PM +0000, Kurijn Buys wrote:
-> > I enabled APIC, and the latency peaks at 16us only now, and even less w=
-ith
-> load.
-> > This also had an effect on my analogy problem, but not completely... I =
-will
-> start a new thread for that...
->=20
-> If your latency drops under loads, it sounds as if your CPU is slowing
-> down when idle and taking a while to speed back up.  Perhaps changing
-> the CPU governer to performance or user controlled and setting a fixed
-> CPU speed would keep the latency low all the time (although at the cost
-> of more power consumption).
+On 11/28/2013 09:17 PM, Gilles Chanteperdrix wrote:
+> On 11/28/2013 02:31 PM, Bukuli Norbert wrote:
+>> Hello!
+>>
+>> I am having a little problem with some programs from the Xenomai test
+>> suite. The clocktest, cyclictest and switchtest crashes with "Illegal
+>> instruction":
+> 
+> What about the latency test? If it fails with the same error, you could 
+> try the following patch for powerpc SPE:
+> 
+> https://git.xenomai.org/xenomai-2.6.git/commit/?id=d09932cfd0ca422989b3c3a9d736236d74590ade
+> 
 
-I had a similar problem where the latency behavior changed depending on the=
- CPU load on an Intel CPU (see " Problems with running Xenomai on Core i5" =
-thread of this list). It turned out to be a C1E "feature" that I could not =
-influence in the BIOS. But clearing the second bit of the MSR_IA32_POWER_CT=
-L register did help. I used the wrmsr command of the msr-tools package.
+The patch is needed to get switchtest working, but otherwise, you simply
+need to disable CONFIG_XENO_HW_FPU and the other tests should work
+without the patch.
 
--Tobias
-
+-- 
+                                                                Gilles.
 
