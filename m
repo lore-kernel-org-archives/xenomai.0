@@ -1,6 +1,6 @@
-Date: Fri, 29 Nov 2013 09:41:57 +0100
+Date: Fri, 29 Nov 2013 09:41:43 +0100
 From: Bukuli Norbert <norbert.bukuli@mediso.hu>
-Message-ID: <20131129094157.3d7202e1.norbert.bukuli@mediso.hu>
+Message-ID: <20131129094143.118c13e5.norbert.bukuli@mediso.hu>
 In-Reply-To: <5297BD30.4060007@xenomai.org>
 References: <20131128143152.04ac3eab.norbert.bukuli@mediso.hu>
  <5297BD30.4060007@xenomai.org>
@@ -148,4 +148,4 @@ Name: signature.asc
 Type: application/pgp-signature
 Size: 490 bytes
 Desc: not available
-URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20131129/1634a7b5/attachment.sig>
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20131129/f275e740/attachment.sig>
