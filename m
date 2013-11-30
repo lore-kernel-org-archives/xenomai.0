@@ -1,14 +1,18 @@
-Message-ID: <529480C5.7040901@sigmatek.at>
-Date: Tue, 26 Nov 2013 12:06:45 +0100
-From: Johann Obermayr <johann.obermayr@sigmatek.at>
-MIME-Version: 1.0
-References: <52931AC3.4050103@sigmatek.at> <52931C75.30808@xenomai.org>
- <52947CFD.6050400@sigmatek.at> <52947E3E.7060304@xenomai.org>
-In-Reply-To: <52947E3E.7060304@xenomai.org>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+From: Rajeshkumar <rajesh.ramasamy@industeqsite.com>
+Date: Sat, 30 Nov 2013 06:50:53 +0000 (UTC)
+Message-ID: <loom.20131130T074521-186@post.gmane.org>
+References: <20110302151603.GA14557@riccoc20.at.omicron.at>
+ <4D6E61B6.906@xenomai.org> <4D6E8A06.9060508@siemens.com>
+ <20110303072147.GA4353@riccoc20.at.omicron.at>
+ <1299137548.2072.3.camel@cobalt> <4D6F88D6.4010105@grandegger.com>
+ <4D6F89C8.9060005@siemens.com> <1299156880.2072.6.camel@cobalt>
+ <4D702802.5080001@web.de> <1299225060.2107.20.camel@cobalt>
+ <20110307092604.GA21619@riccoc20.at.omicron.at>
+ <1299515837.2088.47.camel@cobalt>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] rtdm_event_pulse  in user space
-Reply-To: johann.obermayr@sigmatek.at
+Subject: Re: [Xenomai] Stuck MSI in normal Linux driver
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,47 +23,57 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Am 26.11.2013 11:55, schrieb Philippe Gerum:
-> On 11/26/2013 11:50 AM, Johann Obermayr wrote:
->> Am 25.11.2013 10:46, schrieb Philippe Gerum:
->>> On 11/25/2013 10:39 AM, Johann Obermayr wrote:
->>>> Hello,
->>>>
->>>> Is there a way to make a
->>>> rt_event_pulse.
->>>> A kernel function  rtdm_event_pulse is available, but no user space
->>>> function.
->>>>
->>>
->>> rtdm_event_pulse() is part of the inter-driver API, which explains why
->>> there is no userland access to it. Assuming you need to wake up a RTDM
->>> task waiting on a particular event via rtdm_event_wait(), then you
->>> have to implement an rt/nrt ioctl handler in your RTDM driver which
->>> will send the event. Userland can issue this ioctl request from 
->>> userland.
->>>
->> Hi,
->>
->> in userspace there are rt_event_signal & rt_event_clear, but no
->> rt_event_pulse.
->> i need rt_event_pulse to make my source compatible with EventPulse
->> Window-Function.
->>
->>
->
-> You mentioned both rt_event_pulse, and rtdm_event_pulse in your 
-> initial post, which is confusing: those are two different APIs.
->
-> RT_EVENTs - posted by rt_event_signal - from the native API are not 
-> what you look for. Check the RT_SEM object, with rt_sem_create() using 
-> the S_PULSE flag.
->
+Philippe Gerum <rpm <at> xenomai.org> writes:
 
-Thanks,
+> 
+> On Mon, 2011-03-07 at 10:26 +0100, Richard Cochran wrote:
+> > On Fri, Mar 04, 2011 at 08:51:00AM +0100, Philippe Gerum wrote:
+> > > I'm not saying this would be impossible to enable MSIs there, I'm just
+> > > saying that so far: nobody cared. Terrae incognitae.
+> > 
+.................
+.................
+> 
+> +#ifdef CONFIG_IPIPE
+> +
+> +static void fsl_msi_cascade(unsigned int irq, struct irq_desc *desc)
+.................
+.................
+> +#else /* !CONFIG_IPIPE */
+> +
+>  static void fsl_msi_cascade(unsigned int irq, struct irq_desc *desc)
+>  {
+>  	unsigned int cascade_irq;
+>  <at>  <at>  -250,6 +307,8  <at>  <at>  unlock:
+>  	raw_spin_unlock(&desc->lock);
+>  }
+> 
+> +#endif /* !CONFIG_IPIPE */
+> +
+>  static int fsl_of_msi_remove(struct platform_device *ofdev)
+>  {
+>  	struct fsl_msi *msi = ofdev->dev.platform_data;
+> 
+> > Thanks,
+> > 
+> > Richard
+> > 
+> 
 
-i will looking for rt_sem_create and S_PULSE.
 
-Regards
-   Johann
+Hi,
+
+I am using linux 2.6.30 & ipipe patch 2.6-70. I am also facing the same
+problem. Plain linux msi interrupt is coming. But in Xenomai interrupt is
+not coming. I checked with '__ipipe_grab_irq' in ipipe.c, the same function
+is invoked. But in device driver the registered isr isn't invoked.
+
+Can I do the above patch for above mentioned kernel. Will it work?
+
+
+Thanks & Regards,
+Rajeshkumar
+
+
 
 
