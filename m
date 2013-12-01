@@ -1,10 +1,10 @@
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Message-Id: <6e5a902f9794c477b1ae.1385378337@devws164.be.alcatel-lucent.com>
-Date: Mon, 25 Nov 2013 12:18:57 +0100
-From: Kim De Mey <kim.demey@gmail.com>
-Subject: [Xenomai] [PATCH v2] Xenomai-forge: pSOS add priority denormalize
+From: Ryan Wilkins <ryan@deadfrog.net>
+Content-Type: text/plain; charset=windows-1252
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <D1DE22A7-3BD6-4D79-A85B-55A9D5CF2587@deadfrog.net>
+Date: Sat, 30 Nov 2013 22:08:39 -0500
+Mime-Version: 1.0 (Mac OS X Mail 7.0 \(1822\))
+Subject: [Xenomai] Question about context switching
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,71 +15,29 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Add the psos_task_denormalize_priority() and psos_task_get_priority()
-functions. Use psos_task_get_priority() to fill oldprio_r in t_setpri().
+Hello,
 
-Signed-off-by: Kim De Mey <kim.demey@gmail.com>
+I=92ve been working with Xenomai 2.6.x on a Core 2 Quad (Q9000) CPU =
+running at 2 GHz and it seems to be running fine so far.  The Linux OS =
+is compiled with Buildroot for a project that I=92m working on for my =
+employer.  Recently, I tried running my build on a new board with a Core =
+i5 CPU at 3 GHz.  While it ran, I noticed while running xeno-test that =
+the context switch test reported significantly less context switches on =
+the Core i5 (~380K) than on the previous Core 2 Quad (~930K).  =
+Otherwise, it seems to be running fine so far.  I would have expected =
+the Core i5 to complete context switches even quicker, and to that end I =
+don=92t even know that it=92s going to be a problem since not all the =
+code is done yet.
 
----
+Specifics on the current build.. Linux kernel 3.8.13.  Xenomai 2.6.3.  =
+Buildroot 2013-08.1.  Compiled with 32-bit support only.
 
-v2: Removed the psos_task_get_priority() call from task.h
+My question to anyone on the list is why such the difference in context =
+switches?  Is there something obvious that I=92m missing here?
 
-diff --git a/include/psos/psos.h b/include/psos/psos.h
---- a/include/psos/psos.h
-+++ b/include/psos/psos.h
-@@ -366,6 +366,7 @@ u_long tm_wkwhen(u_long date,
- 		 u_long ticks);
- 
- int psos_task_normalize_priority(unsigned long psos_prio);
-+int psos_task_denormalize_priority(unsigned long core_prio);
- 
- extern unsigned int psos_long_names;
- 
-diff --git a/lib/psos/task.c b/lib/psos/task.c
---- a/lib/psos/task.c
-+++ b/lib/psos/task.c
-@@ -236,6 +236,21 @@ int psos_task_normalize_priority(unsigne
- 	return psos_prio;
- }
- 
-+/*
-+ * Although default pSOS priorities are mapped 1:1 to SCHED_RT,
-+ * we do still have to use a denormalize function because these
-+ * calls are weak and application code may be override the call
-+ * and implement the mapping differently.
-+ */
-+
-+__attribute__ ((weak))
-+int psos_task_denormalize_priority(unsigned long core_prio)
-+{
-+	/* Map a SCHED_RT priority level to a pSOS one. */
-+	return core_prio;
-+}
-+
-+
- static int check_task_priority(u_long psos_prio, int *core_prio)
- {
- 	if (psos_prio < 1 || psos_prio > 255) /* In theory. */
-@@ -246,6 +261,12 @@ static int check_task_priority(u_long ps
- 	return SUCCESS;
- }
- 
-+static int psos_task_get_priority(struct psos_task *task)
-+{
-+	int prio = threadobj_get_priority(&task->thobj);
-+	return psos_task_denormalize_priority(prio);
-+}
-+
- u_long t_create(const char *name, u_long prio,
- 		u_long sstack, u_long ustack, u_long flags, u_long *tid_r)
- {
-@@ -416,7 +437,7 @@ u_long t_setpri(u_long tid, u_long newpr
- 	if (task == NULL)
- 		return ret;
- 
--	*oldprio_r = threadobj_get_priority(&task->thobj);
-+	*oldprio_r = psos_task_get_priority(task);
- 
- 	if (newprio == 0) { /* Only inquires for the task priority. */
- 		put_psos_task(task);
+Thanks in advance for any help on figuring this one out.
+
+Best,
+Ryan Wilkins
+
 
