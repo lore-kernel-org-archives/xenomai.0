@@ -1,12 +1,19 @@
-Message-ID: <5294A711.2010700@xenomai.org>
-Date: Tue, 26 Nov 2013 14:50:09 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Date: Mon, 2 Dec 2013 10:24:55 +0100
+From: Bukuli Norbert <norbert.bukuli@mediso.hu>
+Message-ID: <20131202102455.4a81b5b6.norbert.bukuli@mediso.hu>
+In-Reply-To: <529C4FAA.9080502@xenomai.org>
+References: <20131128143152.04ac3eab.norbert.bukuli@mediso.hu>
+ <5297BD30.4060007@xenomai.org>
+ <20131129094157.3d7202e1.norbert.bukuli@mediso.hu>
+ <52985E94.4070101@xenomai.org>
+ <20131129225320.5327838040F@gemini.denx.de>
+ <20131202095057.175411b7.norbert.bukuli@mediso.hu>
+ <529C4FAA.9080502@xenomai.org>
 MIME-Version: 1.0
-References: <5294A4C3.9090404@grinta.net>
-In-Reply-To: <5294A4C3.9090404@grinta.net>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] cgit repository modification times
+Subject: Re: [Xenomai] test suite programs crash with Illegal instruction on
+ MPC5200
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,20 +22,75 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Daniele Nicolodi <daniele@grinta.net>
-Cc: xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 11/26/2013 02:40 PM, Daniele Nicolodi wrote:
-> Hello,
->
-> I've noticed that the new cgit web interface to the git repositories
-> does not display the correct modification times for the repository in
-> the repository list.  I don't know what may cause this, the displayed
-> times seems completely arbitrary to me.
 
-Maybe that is because the time displayed in the repository list is not 
-the modification time, but the idle time, as the title line indicates?
+
+On Mon, 2 Dec 2013 10:15:22 +0100
+Philippe Gerum <rpm@xenomai.org> wrote:
+> On 12/02/2013 09:50 AM, Bukuli Norbert wrote:
+> 
+> > Program received signal SIGILL, Illegal instruction.
+> > [Switching to Thread 338]
+> > 0x4800ce74 in ?? ()
+> >
+> > (gdb) bt
+> > #0  0x4800ce74 in ?? ()
+> > #1  0x0ff98534 in ?? ()
+> > #2  0x0fe17a68 in ?? ()
+> > #3  0x480eba4c in ?? ()
+> >
+> > (gdb) info sharedlibrary
+> >  From        To          Syms Read   Shared Object Library
+> > 0x00001ff0  0x0001b014
+> > Yes         /opt/eldk-5.4/powerpc/sysroots/powerpc-linux/lib/ld.so.1
+> > 0x00100360  0x00100648
+> > No          /srv/tftpboot/172.31.2.11/lib/modules/3.8.13/vdso/linux-vdso32.so.1
+> > 0x0ff979b4  0x0ff9e948
+> > No          /opt/eldk-5.4/powerpc/sysroots/powerpc-linux/usr/xenomai/lib/libpthread_rt.so.1
+> 
+> For some reason, it looks like the program flow jumps to a weird 
+> location. Assuming this backtrace is right, the last location that
+> would make sense seems to be frame #1 at 0x0ff98534 in
+> libpthread_rt.so.1, which is Xenomai's POSIX interface library.
+> 
+> - could you please make a full disassembly of libpthread_rt.so.1 
+> accessible via pastebin?
+
+Of course. You can find the output of
+$ powerpc-linux-objdump -d libpthread_rt.so.1
+here:
+http://pastebin.com/uywTZGfg
+
+> 
+> - we already had these kinds of events a couple of times on different 
+> architectures with new gcc releases due to, either broken TLS code 
+> generation by gcc, or some weaknesses in our inline syscall
+> trampoline code with respect to expressing constraints. Is
+> --with-__thread enabled when configuring the Xenomai build for
+> libaries and programs?
+> 
+Unfortunatelly I do not know exactly. The stock ELDK-5.4 version of
+libpthread_rt.so.1 is used. I will check it up.
+
+
 
 -- 
-					    Gilles.
+Norbert Bukuli
+software engineer
+embedded development
 
+Mediso Ltd.
+Tel.: +36 1 3993 030 Fax.: +36 1 3993 040
+Mailing address: Hungary, H-1047 Budapest, Baross utca 91-95.
+Billing address: Hungary, H-1022 Budapest, Alsotorokvesz 14.
+norbert.bukuli@mediso.com
+www.mediso.com
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 490 bytes
+Desc: not available
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20131202/f394c3b7/attachment.sig>
