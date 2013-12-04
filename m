@@ -1,13 +1,20 @@
-Message-ID: <52935EB4.9030306@xenomai.org>
-Date: Mon, 25 Nov 2013 15:29:08 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <529EF680.1040108@xenomai.org>
+Date: Wed, 04 Dec 2013 10:31:44 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <6e5a902f9794c477b1ae.1385378337@devws164.be.alcatel-lucent.com>
-In-Reply-To: <6e5a902f9794c477b1ae.1385378337@devws164.be.alcatel-lucent.com>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PATCH v2] Xenomai-forge: pSOS add priority
-	denormalize
+References: <40A5BE95-8E78-4CD6-81D2-C97AA7A58FBB@open.ac.uk>
+ <529DCF2F.1070702@xenomai.org>
+ <1507DF58-4A8D-42E0-92B8-4A9EAB4289E3@open.ac.uk>
+ <529DDB58.3090709@xenomai.org>
+ <5B55252A-19D2-4A0D-82BE-FC77BFA6AEE1@open.ac.uk>
+ <529DFEC3.1050106@xenomai.org>
+ <90F2A7A6-5B5E-4A25-8D9D-3D50D0EC0826@open.ac.uk>
+ <529E2801.5060505@xenomai.org> <529EEB7C.4090308@xenomai.org>
+ <529EED06.4010108@xenomai.org> <529EF58A.8030003@xenomai.org>
+In-Reply-To: <529EF58A.8030003@xenomai.org>
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [Xenomai] latency spikes under load
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,87 +23,124 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Kim De Mey <kim.demey@gmail.com>, xenomai@xenomai.org
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Kurijn Buys <Kurijn.Buys@open.ac.uk>, Xenomai@xenomai.org
 
-On 11/25/2013 12:18 PM, Kim De Mey wrote:
-> Add the psos_task_denormalize_priority() and psos_task_get_priority()
-> functions. Use psos_task_get_priority() to fill oldprio_r in t_setpri().
+On 12/04/2013 10:27 AM, Philippe Gerum wrote:
+> On 12/04/2013 09:51 AM, Gilles Chanteperdrix wrote:
+>> On 12/04/2013 09:44 AM, Philippe Gerum wrote:
+>>> On 12/03/2013 07:50 PM, Gilles Chanteperdrix wrote:
+>>>> On 12/03/2013 05:49 PM, Kurijn Buys wrote:
+>>>>> Op 3-dec.-2013, om 15:54 heeft Gilles Chanteperdrix het volgende
+>>>>> geschreven:
+>>>>>
+>>>>>> On 12/03/2013 04:31 PM, Kurijn Buys wrote:
+>>>>>>> Op 3-dec.-2013, om 13:23 heeft Gilles Chanteperdrix het volgende
+>>>>>>> geschreven:
+>>>>>>>
+>>>>>>>> On 12/03/2013 02:07 PM, Kurijn Buys wrote:
+>>>>>>>>> Thanks for the quick response, ACPI is enabled, I only disabled
+>>>>>>>>> "Processor" in there... -1 was a typo indeed, it is at 1... I
+>>>>>>>>> see SCHED_SMT [=y] in my kernel config... shall I recompile the
+>>>>>>>>> kernel with this disabled then... no other things to try first/at
+>>>>>>>>> the same time?
+>>>>>>>>
+>>>>>>>> To remove hyperthreading, either: - disable it in the BIOS
+>>>>>>>> configuration; - or disable CONFIG_SMP (not SCHED_SMPT) in the
+>>>>>>>> kernel configuration.
+>>>>>>>>
+>>>>>>> Ah I see, CONFIG_SMP is also enabled... I've disabled it in BIOS, but
+>>>>>>> no success (tell me if it is worth trying to disable it in the kernel
+>>>>>>> config in stead).
+>>>>>>
+>>>>>> When you say "no success", you mean you still have 2 cpus ? Or you
+>>>>>> still
+>>>>>> have latency pikes? If the former, then yes, try without
+>>>>>> CONFIG_SMP, or
+>>>>>> pass nr_cpus=1 on the command line. If the latter, then no, testing
+>>>>>> without CONFIG_SMP is useless.
+>>>>>
+>>>>> the second: still latency...
+>>>>> (lscpu says there is only 1 cpu now)
+>>>>>
+>>>>>>
+>>>>>>>
+>>>>>>>>>
+>>>>>>>>> I realized that the test with sched_rt_runtime_us on -1 I
+>>>>>>>>> performed was with an earlier set-up. When I set it now to -1, I
+>>>>>>>>> have better performance, but: 1) still spikes of up to 87us under
+>>>>>>>>> load with ./latency 2) still some completely shifted occurrences
+>>>>>>>>> with the other latency test, with a 1000µs period (but now only 2
+>>>>>>>>> out of 890814), and the rest of the distribution lies in
+>>>>>>>>> [861-1139]µs, which is also rather large I suppose.
+>>>>>>>>
+>>>>>>>> sched_rt_runtime_us should not make any difference.
+>>>>>>>>
+>>>>>>>> Something else you should try is to disable root thread priority
+>>>>>>>> coupling.
+>>>>>>>>
+>>>>>>> I have tried a config with priority coupling support disabled before,
+>>>>>>> but then the system was even more vulnerable for such latency peaks
+>>>>>>> (however the mean latency was a little lower!) (I still have the
+>>>>>>> kernel, but unfortunately the I-pipe tracer isn't installed there)
+>>>>>>
+>>>>>> Please keep priority coupling disabled in further tests.
+>>>>>>
+>>>>>>>
+>>>>>>>>>
+>>>>>>>>> The ipipe trace after test (1) was similar to the one I posted,
+>>>>>>>>> where this line seems to be the problem I suppose: :|   #end
+>>>>>>>>> 0x80000001 -179! 149.235  ipipe_check_context+0x87
+>>>>>>>>> (add_preempt_count+0x15)
+>>>>>>>>>
+>>>>>>> ...I hoped the I-pipe trace would help..?
+>>>>>>
+>>>>>> Unfortunately the trace is not helping much.
+>>>>>
+>>>>> If it would help, I've another trace (joint as txt) where the
+>>>>> following line seems to indicate a problem:
+>>>>> :    +func                -141! 117.825  i915_gem_flush_ring+0x9
+>>>>> [i915] (i915_gem_do_execbuffer+0xb46 [i915])
+>>>>> -- The Open University is incorporated by Royal Charter (RC 000391),
+>>>>> an exempt charity in England & Wales and a charity registered in
+>>>>> Scotland (SC 038302).
+>>>>
+>>>> Ah this is a known issue then. I traced back this issue some time ago,
+>>>> and from what I understood on the rt-users mailing list it is fixed on
+>>>> more recent kernels. So, I would advise to update to 3.10.18 branch,
+>>>> available here by git:
+>>>
+>>> Incidentally, I've been chasing a latency issue on x86 involving the
+>>> i915 chipset recently on 3.10,
+>>
+>> was it 3.10 or 3.10.18 ?
+>>
+>
+> http://git.xenomai.org/ipipe.git/log/?h=ipipe-3.10
+>
+> which is currently 3.10.18.
+>
+>>> and it turned out that we were still
+>>> badly hit by wbinvd instructions, emitted on _all_ cores via an IPI in
+>>> the GEM control code, when the LLC cache is present.
+>>>
+>>> The jitter incurred by invalidating all internal caches exceeds 300 us
+>>> in my test case, so it seems that we are not there yet.
+>>
+>> Ok, maybe the preempt_rt workaround is only enabled for
+>> CONFIG_PREEMPT_RT? In which case we can try and import the patch in the
+>> I-pipe.
+>>
+>
+> Looking at the comment in the GEM code, this invalidation is required to
+> flush transactions before updating the fence register.
+>
 
-Merged, thanks.
-
->
-> Signed-off-by: Kim De Mey <kim.demey@gmail.com>
->
-> ---
->
-> v2: Removed the psos_task_get_priority() call from task.h
->
-> diff --git a/include/psos/psos.h b/include/psos/psos.h
-> --- a/include/psos/psos.h
-> +++ b/include/psos/psos.h
-> @@ -366,6 +366,7 @@ u_long tm_wkwhen(u_long date,
->   		 u_long ticks);
->
->   int psos_task_normalize_priority(unsigned long psos_prio);
-> +int psos_task_denormalize_priority(unsigned long core_prio);
->
->   extern unsigned int psos_long_names;
->
-> diff --git a/lib/psos/task.c b/lib/psos/task.c
-> --- a/lib/psos/task.c
-> +++ b/lib/psos/task.c
-> @@ -236,6 +236,21 @@ int psos_task_normalize_priority(unsigne
->   	return psos_prio;
->   }
->
-> +/*
-> + * Although default pSOS priorities are mapped 1:1 to SCHED_RT,
-> + * we do still have to use a denormalize function because these
-> + * calls are weak and application code may be override the call
-> + * and implement the mapping differently.
-> + */
-> +
-> +__attribute__ ((weak))
-> +int psos_task_denormalize_priority(unsigned long core_prio)
-> +{
-> +	/* Map a SCHED_RT priority level to a pSOS one. */
-> +	return core_prio;
-> +}
-> +
-> +
->   static int check_task_priority(u_long psos_prio, int *core_prio)
->   {
->   	if (psos_prio < 1 || psos_prio > 255) /* In theory. */
-> @@ -246,6 +261,12 @@ static int check_task_priority(u_long ps
->   	return SUCCESS;
->   }
->
-> +static int psos_task_get_priority(struct psos_task *task)
-> +{
-> +	int prio = threadobj_get_priority(&task->thobj);
-> +	return psos_task_denormalize_priority(prio);
-> +}
-> +
->   u_long t_create(const char *name, u_long prio,
->   		u_long sstack, u_long ustack, u_long flags, u_long *tid_r)
->   {
-> @@ -416,7 +437,7 @@ u_long t_setpri(u_long tid, u_long newpr
->   	if (task == NULL)
->   		return ret;
->
-> -	*oldprio_r = threadobj_get_priority(&task->thobj);
-> +	*oldprio_r = psos_task_get_priority(task);
->
->   	if (newprio == 0) { /* Only inquires for the task priority. */
->   		put_psos_task(task);
->
-> _______________________________________________
-> Xenomai mailing list
-> Xenomai@xenomai.org
-> http://www.xenomai.org/mailman/listinfo/xenomai
->
-
+ From what I understood, the preempt_rt patch asks users to pin the X 
+server on one cpu and disables the IPI, so the invalidation can be run 
+on only one cpu. That said, if that had solved the issue, Kurijn would 
+not have observed the latency spikes when running with only one cpu.
 
 -- 
-Philippe.
+					    Gilles.
 
