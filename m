@@ -1,6 +1,6 @@
-Message-ID: <52A05E08.10105@xenomai.org>
-Date: Thu, 05 Dec 2013 12:05:44 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <52A05ED2.9050003@xenomai.org>
+Date: Thu, 05 Dec 2013 12:09:06 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <40A5BE95-8E78-4CD6-81D2-C97AA7A58FBB@open.ac.uk>
  <529DCF2F.1070702@xenomai.org>
@@ -19,9 +19,8 @@ References: <40A5BE95-8E78-4CD6-81D2-C97AA7A58FBB@open.ac.uk>
  <529F2BED.2030403@xenomai.org> <529F5254.8060501@xenomai.org>
  <529F69AD.6060003@xenomai.org>
  <CE87D5F4-FE47-4310-A74F-7F8E4CCEC92B@open.ac.uk>
- <BBB3C87A-FD9C-47B4-BE9F-BFE18DD0D6F3@open.ac.uk>
-In-Reply-To: <BBB3C87A-FD9C-47B4-BE9F-BFE18DD0D6F3@open.ac.uk>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+In-Reply-To: <CE87D5F4-FE47-4310-A74F-7F8E4CCEC92B@open.ac.uk>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] latency spikes under load
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
@@ -33,57 +32,31 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Kurijn Buys <Kurijn.Buys@open.ac.uk>
-Cc: "Xenomai@xenomai.org" <Xenomai@xenomai.org>
+Cc: Xenomai@xenomai.org
 
-On 12/05/2013 11:28 AM, Kurijn Buys wrote:
+On 12/05/2013 01:44 AM, Kurijn Buys wrote:
 >
-> Op 5-dec.-2013, om 00:44 heeft Kurijn Buys het volgende geschreven:
+> Op 4-dec.-2013, om 17:43 heeft Philippe Gerum het volgende geschreven:
 >
->>
->> Op 4-dec.-2013, om 17:43 heeft Philippe Gerum het volgende geschreven:
->>
->>> On 12/04/2013 05:03 PM, Gilles Chanteperdrix wrote:
->>>> On 12/04/2013 02:19 PM, Philippe Gerum wrote:
->>>>> On 12/04/2013 01:00 PM, Gilles Chanteperdrix wrote:
->>>>>> Ok, could you push the branch somewhere so that I can try it?
->>>>>>
+>> On 12/04/2013 05:03 PM, Gilles Chanteperdrix wrote:
+>>> On 12/04/2013 02:19 PM, Philippe Gerum wrote:
+>>>> On 12/04/2013 01:00 PM, Gilles Chanteperdrix wrote:
+>>>>> Ok, could you push the branch somewhere so that I can try it?
 >>>>>
->>>>> testing/ipipe-3.8-i915-fix
 >>>>
->>>> I could test it, I no longer get high latencies while moving a large
->>>> opengl window. So, it looks good.
->>
->> I've it running as well (with the priority coupling option disabled this time). The latency test results in a worst value of 52us (no idea if this is normal, the lat max globally stays between 10 and 30us), but I have no higher pikes under load in each case...
->> The other test I mentioned before still has a few measurements that occur at 10us in stead of 1000us... maybe it's an issue with this test...
->>
->> I have the same oddity as the other time I installed a 3.8 kernel on Ubuntu 10.04:
->> -the /proc/ipipe files don't look how they should I guess. The Linux file is full of lines with "__ipipe_do_IRQ" and near the end a line with "__ipipe_do_critical_sync"...
->> -the version file only states "1"
-
-Which is expected, the ipipe now reports its core release number. It 
-looks like we forgot to bump it a couple of times though.
-
->> -the xenomai file mainly has lines with "..." and also this critical sync line near the end.
->>
->> Also, I tried to enable the ipipe tracer but without the "tracing on boot" option, but I can't get it to work now. When I do "echo < 1 /proc/ipipe/trace/enable" (as root), the flag stays on 0. and the frozen file remains empty.
+>>>> testing/ipipe-3.8-i915-fix
+>>>
+>>> I could test it, I no longer get high latencies while moving a large
+>>> opengl window. So, it looks good.
 >
+> I've it running as well (with the priority coupling option disabled this time).
 
-You likely mean:
-
-# echo 1 > /proc/ipipe/trace/enable
-
-> For some unknown reason, now the tracer works (I didn't even do a reboot en the mean time), and now I have difficulties setting trace/enable to 0.
->
-> Another latency test had a pike of 62us (but pikes are very rare now, and not dependent on load anymore), which seems related to the ipipe frozen line:
-> -56!    44.220  __ipipe_spin_lock_irqsave+0x5 (mask_and_ack_8259A+0x22)
->
-
-Accessing the legacy 8259 PIC is slow.
-
-# cat /proc/interrupt
-
-?
+The options I asked you to change were meant to eliminate any possible 
+source for high latencies in case of bug. You can return to a normal 
+configuration now: re-enable SMP or APIC if you prefer to remain in 
+single processor mode, disable the I-pipe tracer if you want to avoid 
+the overhead, and re-enable priority coupling if you prefer to use it.
 
 -- 
-Philippe.
+					    Gilles.
 
