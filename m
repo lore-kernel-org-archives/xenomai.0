@@ -1,28 +1,10 @@
-Message-ID: <52A05ED2.9050003@xenomai.org>
-Date: Thu, 05 Dec 2013 12:09:06 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <52A184EC.40407@axelsw.it>
+Date: Fri, 06 Dec 2013 09:03:56 +0100
+From: Roberto Bielli <roberto.bielli@axelsw.it>
 MIME-Version: 1.0
-References: <40A5BE95-8E78-4CD6-81D2-C97AA7A58FBB@open.ac.uk>
- <529DCF2F.1070702@xenomai.org>
- <1507DF58-4A8D-42E0-92B8-4A9EAB4289E3@open.ac.uk>
- <529DDB58.3090709@xenomai.org>
- <5B55252A-19D2-4A0D-82BE-FC77BFA6AEE1@open.ac.uk>
- <529DFEC3.1050106@xenomai.org>
- <90F2A7A6-5B5E-4A25-8D9D-3D50D0EC0826@open.ac.uk>
- <529E2801.5060505@xenomai.org> <529EEB7C.4090308@xenomai.org>
- <529EED06.4010108@xenomai.org> <529EF58A.8030003@xenomai.org>
- <529EF680.1040108@xenomai.org> <529EF89E.6000302@xenomai.org>
- <529EFB3D.6090900@xenomai.org> <529F03FC.8040409@xenomai.org>
- <529F04DD.2070201@xenomai.org> <529F0C48.20705@xenomai.org>
- <529F0DBC.9080905@xenomai.org> <529F13A1.5070403@xenomai.org>
- <529F1913.4030604@xenomai.org> <529F1974.60900@xenomai.org>
- <529F2BED.2030403@xenomai.org> <529F5254.8060501@xenomai.org>
- <529F69AD.6060003@xenomai.org>
- <CE87D5F4-FE47-4310-A74F-7F8E4CCEC92B@open.ac.uk>
-In-Reply-To: <CE87D5F4-FE47-4310-A74F-7F8E4CCEC92B@open.ac.uk>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=ISO-8859-15; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] latency spikes under load
+Subject: [Xenomai] rt_task_set_priority hangs/loops sometimes on boot
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -31,32 +13,73 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Kurijn Buys <Kurijn.Buys@open.ac.uk>
-Cc: Xenomai@xenomai.org
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-On 12/05/2013 01:44 AM, Kurijn Buys wrote:
->
-> Op 4-dec.-2013, om 17:43 heeft Philippe Gerum het volgende geschreven:
->
->> On 12/04/2013 05:03 PM, Gilles Chanteperdrix wrote:
->>> On 12/04/2013 02:19 PM, Philippe Gerum wrote:
->>>> On 12/04/2013 01:00 PM, Gilles Chanteperdrix wrote:
->>>>> Ok, could you push the branch somewhere so that I can try it?
->>>>>
->>>>
->>>> testing/ipipe-3.8-i915-fix
->>>
->>> I could test it, I no longer get high latencies while moving a large
->>> opengl window. So, it looks good.
->
-> I've it running as well (with the priority coupling option disabled this time).
+Hi,
 
-The options I asked you to change were meant to eliminate any possible 
-source for high latencies in case of bug. You can return to a normal 
-configuration now: re-enable SMP or APIC if you prefer to remain in 
-single processor mode, disable the I-pipe tracer if you want to avoid 
-the overhead, and re-enable priority coupling if you prefer to use it.
+sometimes i have a strange behaviour on boot. The kernel hangs. I saw 
+with an hardware debugger the backtrace when i was in that situation and 
+i saw this:
+
+probe_irq_off | devm_free_irq
+probe_irq_on
+probe_irq_on
+register_handler_proc
+timecounter_read
+timer_list_show
+posix_cpu_timer_set
+stk5_esdhci_init
+load_module
+exit_irq_thread
+__setup_str_setup_slub_nomerge
+__setup_str_setup_slub_nomerge
+probe_irq_on
+probe_irq_on
+register_handler_proc
+__xnpod_schedule
+xnpipe_recv
+rt_task_set_priority
+
+The system is in loop/hangs in rt_task_set_priority.
+
+My system has xenomai 2.5.6 on freescale imx25 arm.
+
+Any ideas ?
+
+Thanks for all
 
 -- 
-					    Gilles.
++------------------------------------------------------------------------------------------------+
+							
+Roberto Bielli
+Sviluppo Software					
+Axel S.r.l.					
+							
+Via Del Cannino, 3 				
+21020 Crosio Della Valle			
+Varese - Italy					
+							
+Telefono: +39 0332 949600			
+Fax:      +39 0332 969315			
+							
+E-mail:   roberto.bielli@axelsw.it	
+Web Site: www.axelsw.it
+
++------------------------------------------------------------------------------------------------+
+
+Si precisa che le informazioni contenute in questo messaggio sono riservate e ad uso esclusivo del destinatario.
+Qualora il messaggio in parola Le fosse pervenuto per errore, La preghiamo di eliminarlo senza copiarlo e di non inoltrarlo a terzi,
+dandocene gentilmente comunicazione. Grazie.
+Informativa sul trattamento dei dati personali (D. Lgs. 196/2003).
+I dati utilizzati per la spedizione del presente messaggio sono utilizzati da Axel S.r.l., titolare del trattamento,
+per l'invio delle comunicazioni dei diversi settori aziendali, non essendo autorizzata la divulgazione a terzi.
+Potrete rivolgere alla seguente mail richieste di verifica, rettifica o cancellazione dei Vostri dati: info@axelsw.it
+
+This e-mail and any attachments is confidential and may contain privileged information
+intended for the addressee(s) only. Dissemination, copying, printing or use by anybody
+else is unauthorised. If you are not the intended recipient,
+please delete this message and any attachments and advise the sender
+by return e-mail.Thank you.  			
+							
++------------------------------------------------------------------------------------------------+
 
