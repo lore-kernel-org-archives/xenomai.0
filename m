@@ -1,30 +1,12 @@
-Message-ID: <52A5E155.2040303@xenomai.org>
-Date: Mon, 09 Dec 2013 16:27:17 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+From: "Andreas Gareis" <andreas.gareis@hs-augsburg.de>
+Date: Mon, 9 Dec 2013 19:17:47 +0100
+Message-ID: <001d01cef50a$f6d44e70$e47ceb50$@hs-augsburg.de>
 MIME-Version: 1.0
-References: <40A5BE95-8E78-4CD6-81D2-C97AA7A58FBB@open.ac.uk>
- <529DCF2F.1070702@xenomai.org>
- <1507DF58-4A8D-42E0-92B8-4A9EAB4289E3@open.ac.uk>
- <529DDB58.3090709@xenomai.org>
- <5B55252A-19D2-4A0D-82BE-FC77BFA6AEE1@open.ac.uk>
- <529DFEC3.1050106@xenomai.org>
- <90F2A7A6-5B5E-4A25-8D9D-3D50D0EC0826@open.ac.uk>
- <529E2801.5060505@xenomai.org> <529EEB7C.4090308@xenomai.org>
- <529EED06.4010108@xenomai.org> <529EF58A.8030003@xenomai.org>
- <529EF680.1040108@xenomai.org> <529EF89E.6000302@xenomai.org>
- <529EFB3D.6090900@xenomai.org> <529F03FC.8040409@xenomai.org>
- <529F04DD.2070201@xenomai.org> <529F0C48.20705@xenomai.org>
- <529F0DBC.9080905@xenomai.org> <529F13A1.5070403@xenomai.org>
- <529F1913.4030604@xenomai.org> <529F1974.60900@xenomai.org>
- <529F2BED.2030403@xenomai.org> <529F5254.8060501@xenomai.org>
- <529F69AD.6060003@xenomai.org>
- <CE87D5F4-FE47-4310-A74F-7F8E4CCEC92B@open.ac.uk>
- <52A05ED2.9050003@xenomai.org>
- <E8F821A2-2BD0-440D-BDA1-3751BD443662@open.ac.uk>
-In-Reply-To: <E8F821A2-2BD0-440D-BDA1-3751BD443662@open.ac.uk>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain;
+	charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] latency spikes under load
+Content-Language: de
+Subject: Re: [Xenomai] rtdm can on mpc5121e - no rtcan devices detected
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -33,47 +15,84 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Kurijn Buys <Kurijn.Buys@open.ac.uk>
-Cc: Xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On 12/09/2013 04:19 PM, Kurijn Buys wrote:
-> Op 5-dec.-2013, om 11:09 heeft Gilles Chanteperdrix het volgende geschreven:
->
->> On 12/05/2013 01:44 AM, Kurijn Buys wrote:
->>>
->>> Op 4-dec.-2013, om 17:43 heeft Philippe Gerum het volgende geschreven:
->>>
->>>> On 12/04/2013 05:03 PM, Gilles Chanteperdrix wrote:
->>>>> On 12/04/2013 02:19 PM, Philippe Gerum wrote:
->>>>>> On 12/04/2013 01:00 PM, Gilles Chanteperdrix wrote:
->>>>>>> Ok, could you push the branch somewhere so that I can try it?
->>>>>>>
->>>>>>
->>>>>> testing/ipipe-3.8-i915-fix
->>>>>
->>>>> I could test it, I no longer get high latencies while moving a large
->>>>> opengl window. So, it looks good.
->>>
->>> I've it running as well (with the priority coupling option disabled this time).
->>
->> The options I asked you to change were meant to eliminate any possible
->> source for high latencies in case of bug. You can return to a normal
->> configuration now: re-enable SMP or APIC if you prefer to remain in
->> single processor mode, disable the I-pipe tracer if you want to avoid
->> the overhead, and re-enable priority coupling if you prefer to use it.
->
-> Re-enabling SMP is fine, but doesn't necessarily seem to improve the latency.
-> While I'm still having some small pikes, they keep below 60us, so that is fine to me.
+Von: Tom Evans
+ Gesendet: Sonntag, 8. Dezember 2013 23:07
+> 
+> On 09/12/13 06:44, Andreas Gareis wrote:
+> > Hi Wolfgang,
+> >
+> > Thanks for your answer.
+>  > ...
+> >> RTCAN devices are not visible in /dev. It's not a character device.
+> >> You can find more informations in /proc/rtnet.
+> >
+> > The files "devices" and "sockets" which are located in /proc/rtcan 
+> > don't have any entries. (/proc/rtnet doesn't exist on my system)
+> 
+> Did the CAN devices work before you installed Xenomai? Get them 
+> working there first.
+> 
+> On the device I'm using (Freescale i.MX53), the CAN drivers are 
+> connected via NETWORKING. So they don't show up in /dev, just as 
+> Ethernet doesn't show there either (/dev is so 1980's :-).
+> 
+> root@triton1:~# ls /proc/net/can
+> rcvlist_all  rcvlist_err  rcvlist_inv  reset_stats  version 
+> rcvlist_eff  rcvlist_fil rcvlist_sff  stats root@triton1:~# ifconfig
+> can0      Link encap:UNSPEC  HWaddr
+> 00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00
+>            UP RUNNING NOARP  MTU:16  Metric:1
+>            RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+>            TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+>            collisions:0 txqueuelen:256
+>            RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+>            Interrupt:82
+> 
+> can1      Link encap:UNSPEC  HWaddr
+> 00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00
+>            UP RUNNING NOARP  MTU:16  Metric:1
+>            RX packets:2527 errors:0 dropped:0 overruns:0 frame:0
+>            TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+>            collisions:0 txqueuelen:256
+>            RX bytes:19583 (19.1 KiB)  TX bytes:0 (0.0 B)
+>            Interrupt:83
+> 
+> eth0      Link encap:Ethernet  HWaddr 00:0C:C6:79:6C:6E
+> ... And so on.
+> 
+> Check for interrupts:
+> 
+> root@triton1:~# cat /proc/interrupts
+>             CPU0
+>    6:          0      tzic  sdma
+> ...
+>   64:          0      tzic  imx-i2c.2
+>   82:          0      tzic  can0
+>   83:       5832      tzic  can1
+>   87:     124900      tzic  imx25-fec.0
+> 
+> 
+> Tom
+> 
 
-If your processor has hyper-threading, you may have much better results 
-indeed in single processor mode, but enabling APIC and IO/APIC to avoid 
-the spikes you got when using the legacy PIC.
+Yes, the CAN devices worked before Xenomai installation. They were shown in
+ifconfig and communication with other CAN-devices was possible.
 
-Experiences on atom processor:
-http://www.xenomai.org/~gch/core-3.4-latencies/atom.png
+When I select normal (non rt) CAN-support and xenomai kernel (without
+RT-CAN) in the kernelconfig, working CAN devices are also available.
 
-show that disabling hyper-threading divides latency by 2.
+Now I want to use RT-CAN with xenomai. So, I activated "RT-Socket-CAN" and
+"MSCAN driver for MPC52xx and MPC512x" in the kernelconfig. When "normal"
+CAN support (Networking support => CAN bus subsystem support => CAN Device
+Drivers Freescale MPC5xxx onboard CAN controller) is disabled, the xenomai
+module "xeno_can_mscan.ko" isn't able to start. When "normal" CAN support is
+enabled, the xenomai module "xeno_can_mscan.ko" can be loaded without errors
+in dmesg, but there are no rtcan devices.
 
--- 
-					    Gilles.
+
+Andreas
+
+
 
