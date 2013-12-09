@@ -1,13 +1,12 @@
-Message-ID: <52947CFD.6050400@sigmatek.at>
-Date: Tue, 26 Nov 2013 11:50:37 +0100
-From: Johann Obermayr <johann.obermayr@sigmatek.at>
+From: "Andreas Gareis" <andreas.gareis@hs-augsburg.de>
+Date: Mon, 9 Dec 2013 20:35:12 +0100
+Message-ID: <000001cef515$c786ed70$5694c850$@hs-augsburg.de>
 MIME-Version: 1.0
-References: <52931AC3.4050103@sigmatek.at> <52931C75.30808@xenomai.org>
-In-Reply-To: <52931C75.30808@xenomai.org>
-Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Type: text/plain;
+	charset="UTF-8"
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] rtdm_event_pulse  in user space
-Reply-To: johann.obermayr@sigmatek.at
+Content-Language: de
+Subject: Re: [Xenomai] rtdm can on mpc5121e - no rtcan devices detected
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -18,29 +17,56 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: xenomai@xenomai.org
 
-Am 25.11.2013 10:46, schrieb Philippe Gerum:
-> On 11/25/2013 10:39 AM, Johann Obermayr wrote:
->> Hello,
->>
->> Is there a way to make a
->> rt_event_pulse.
->> A kernel function  rtdm_event_pulse is available, but no user space
->> function.
->>
->
-> rtdm_event_pulse() is part of the inter-driver API, which explains why 
-> there is no userland access to it. Assuming you need to wake up a RTDM 
-> task waiting on a particular event via rtdm_event_wait(), then you 
-> have to implement an rt/nrt ioctl handler in your RTDM driver which 
-> will send the event. Userland can issue this ioctl request from userland.
->
-Hi,
+ Von: Wolfgang Grandegger
+ Gesendet: Montag, 9. Dezember 2013 20:10
+> 
+> On Mon, 9 Dec 2013 19:17:47 +0100, "Andreas Gareis"
+> <andreas.gareis@hs-augsburg.de> wrote:
+> > Von: Tom Evans
+> >  Gesendet: Sonntag, 8. Dezember 2013 23:07
+> >>
+> >> Did the CAN devices work before you installed Xenomai? Get them
+> >> working there first.
+> >>
+> >
+> > Yes, the CAN devices worked before Xenomai installation. They were
+> > shown in 
+> > ifconfig and communication with other CAN-devices was possible.
+> >
+> > When I select normal (non rt) CAN-support and xenomai kernel (without
+> > RT-CAN) in the kernelconfig, working CAN devices are also available.
+> >
+> > Now I want to use RT-CAN with xenomai. So, I activated "RT-Socket-CAN"
+> > and "MSCAN driver for MPC52xx and MPC512x" in the kernelconfig.
+> > When "normal" CAN support (Networking support => CAN bus
+> >  subsystem support => CAN Device Drivers Freescale MPC5xxx
+> > onboard CAN controller) is disabled, the xenomai module
+> > "xeno_can_mscan.ko" isn't able to start. When "normal" CAN support
+> 
+> That's the real problem. What happen's if you want to start the CAN device?
+ 
+First I call "insmod xeno_can.ko". dmesg shows:
+    RT-Socket-CAN 0.90.2 - (C) 2006 RT-Socket-CAN Development Team
 
-in userspace there are rt_event_signal & rt_event_clear, but no 
-rt_event_pulse.
-i need rt_event_pulse to make my source compatible with EventPulse 
-Window-Function.
+Then I call "insmod xeno_can_mscan.ko".
+This operation gets stuck (the insmod doesn't return). 
+In dmesg there are no messages. 
+lsmod shows that xeno_can is running and xeno_can_mscan is still loading.
 
-Best Regards
-    Johann
+> 
+> > is
+> > enabled, the xenomai module "xeno_can_mscan.ko" can be loaded
+> > without errors in dmesg, but there are no rtcan devices.
+> 
+> But the device are not probed because they are already bound to a the Linux
+> CAN driver. You can unbind them before loading the RTCAN driver but then
+> you will run into the same problem then reported above.
+> 
+> Wolfgang.
+> 
+> 
+
+Andreas
+
+
 
