@@ -1,11 +1,11 @@
-Message-ID: <52A8AEA5.7000409@xenomai.org>
-Date: Wed, 11 Dec 2013 19:27:49 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <52A8BB5F.70803@steinkuehler.net>
+Date: Wed, 11 Dec 2013 13:22:07 -0600
+From: Charles Steinkuehler <charles@steinkuehler.net>
 MIME-Version: 1.0
-References: <52A88B17.8050707@steinkuehler.net>
-In-Reply-To: <52A88B17.8050707@steinkuehler.net>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <52A88B17.8050707@steinkuehler.net> <52A8AEA5.7000409@xenomai.org>
+In-Reply-To: <52A8AEA5.7000409@xenomai.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Subject: Re: [Xenomai] ARM 3.12 Kernel Support
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -15,30 +15,35 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Charles Steinkuehler <charles@steinkuehler.net>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On 12/11/2013 04:56 PM, Charles Steinkuehler wrote:
-> I am successfully using Xenomai with a 3.8.13 kernel on the BeagleBone,
-> but there are no drivers for the on-chip GPU available.  TI is
-> apparently skipping the 3.8 kernel series, and now has drivers available
-> for 3.12.
->
-> So, if I want Xenomai and GPU acceleration on the BeagleBone, I either
-> need to back-port the TI GPU drivers from 3.12 to 3.8, or get Xenomai
-> working on a 3.12 ARM kernel.
->
-> I figure eventually the Xenomai patches will be updated for 3.12, but I
-> might be able to help move things along.  Is anyone actively working on
-> 3.12 support, or is development still centered around 3.10?  Is the
-> master branch from http://git.xenomai.org/ipipe.git/ the most
-> appropriate branch to try and forward-port?  It looks like the 3.10
-> branches have more recent commits...
-
-3.10.18 is validated on ARM, and works correctly as far as I can tell. 
-So, I could switch to 3.12. I would prefer to complete a few things on 
-xenomai-forge in the next weeks before I can switch though.
-
--- 
-					    Gilles.
-
+T24gMTIvMTEvMjAxMyAxMjoyNyBQTSwgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4gT24g
+MTIvMTEvMjAxMyAwNDo1NiBQTSwgQ2hhcmxlcyBTdGVpbmt1ZWhsZXIgd3JvdGU6Cj4+IEkgZmln
+dXJlIGV2ZW50dWFsbHkgdGhlIFhlbm9tYWkgcGF0Y2hlcyB3aWxsIGJlIHVwZGF0ZWQgZm9yIDMu
+MTIsIGJ1dCBJCj4+IG1pZ2h0IGJlIGFibGUgdG8gaGVscCBtb3ZlIHRoaW5ncyBhbG9uZy4gIElz
+IGFueW9uZSBhY3RpdmVseSB3b3JraW5nIG9uCj4+IDMuMTIgc3VwcG9ydCwgb3IgaXMgZGV2ZWxv
+cG1lbnQgc3RpbGwgY2VudGVyZWQgYXJvdW5kIDMuMTA/ICBJcyB0aGUKPj4gbWFzdGVyIGJyYW5j
+aCBmcm9tIGh0dHA6Ly9naXQueGVub21haS5vcmcvaXBpcGUuZ2l0LyB0aGUgbW9zdAo+PiBhcHBy
+b3ByaWF0ZSBicmFuY2ggdG8gdHJ5IGFuZCBmb3J3YXJkLXBvcnQ/ICBJdCBsb29rcyBsaWtlIHRo
+ZSAzLjEwCj4+IGJyYW5jaGVzIGhhdmUgbW9yZSByZWNlbnQgY29tbWl0cy4uLgo+IAo+IDMuMTAu
+MTggaXMgdmFsaWRhdGVkIG9uIEFSTSwgYW5kIHdvcmtzIGNvcnJlY3RseSBhcyBmYXIgYXMgSSBj
+YW4gdGVsbC4KPiBTbywgSSBjb3VsZCBzd2l0Y2ggdG8gMy4xMi4gSSB3b3VsZCBwcmVmZXIgdG8g
+Y29tcGxldGUgYSBmZXcgdGhpbmdzIG9uCj4geGVub21haS1mb3JnZSBpbiB0aGUgbmV4dCB3ZWVr
+cyBiZWZvcmUgSSBjYW4gc3dpdGNoIHRob3VnaC4KClNvdW5kcyBncmVhdCEgIEkndmUgYmVlbiBs
+aXZpbmcgd2l0aG91dCBHUFUgYWNjZWxlcmF0aW9uIG9uIHRoZSAnQm9uZQpmb3Igb3ZlciBhIHll
+YXIsIHNvIEkgdGhpbmsgSSBjYW4gbWFuZ2UgdG8gd2FpdCBhIHdoaWxlIGxvbmdlciEgIDopCgpT
+aW5jZSBpdCBzb3VuZHMgbGlrZSBYZW5vbWFpIG9uIDMuMTIgaXMgbm90IGluIHRoZSBmYXIgZGlz
+dGFudCBmdXR1cmUsIEkKd29uJ3Qgd29yayBvbiB0cnlpbmcgdG8gZ2V0IHRoZSBHUFUgZHJpdmVz
+IGJhY2stcG9ydGVkIHRvIDMuOCwgYnV0IHdpbGwKd29yayBvbiBnZXR0aW5nIHRoZSByZXN0IG9m
+IHRoZSBzeXN0ZW0gbWlncmF0ZWQgdG8gMy4xMi4KCkknbGwgaGFwcGlseSB0ZXN0IEFSTSAzLjEy
+IFhlbm9tYWkgcGF0Y2hlcywgYW5kIHZvbHVudGVlciB0byBkbyBzb21lCmdydW50IHdvcmsgd2l0
+aCB0aGUgcG9ydGluZywgaWYgdGhlcmUgaXMgYW55dGhpbmcgdGhhdCBjYW4gYmUgZG9uZQp3aXRo
+b3V0IGhhdmluZyBpbnRpbWF0ZSBrbm93bGVkZ2Ugb2YgdGhlIGNvZGUuCgpMZXQgbWUga25vdyB3
+aGF0IEkgY2FuIGRvIHRvIGhlbHAuCgotLSAKQ2hhcmxlcyBTdGVpbmt1ZWhsZXIKY2hhcmxlc0Bz
+dGVpbmt1ZWhsZXIubmV0CgotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0K
+QSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBzaWduYXR1cmUuYXNj
+ClR5cGU6IGFwcGxpY2F0aW9uL3BncC1zaWduYXR1cmUKU2l6ZTogMjYxIGJ5dGVzCkRlc2M6IE9w
+ZW5QR1AgZGlnaXRhbCBzaWduYXR1cmUKVVJMOiA8aHR0cDovL3d3dy54ZW5vbWFpLm9yZy9waXBl
+cm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDEzMTIxMS8xYjNhODNlZi9hdHRhY2htZW50LnNp
+Zz4K
