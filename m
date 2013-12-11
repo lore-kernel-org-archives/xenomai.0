@@ -1,19 +1,10 @@
-From: "Lennart Sorensen" <lsorense@csclub.uwaterloo.ca>
-Date: Wed, 11 Dec 2013 09:51:36 -0500
-Message-ID: <20131211145136.GL20884@csclub.uwaterloo.ca>
-References: <529F1913.4030604@xenomai.org> <529F1974.60900@xenomai.org>
- <529F2BED.2030403@xenomai.org> <529F5254.8060501@xenomai.org>
- <529F69AD.6060003@xenomai.org>
- <CE87D5F4-FE47-4310-A74F-7F8E4CCEC92B@open.ac.uk>
- <52A05ED2.9050003@xenomai.org>
- <E8F821A2-2BD0-440D-BDA1-3751BD443662@open.ac.uk>
- <52A5E155.2040303@xenomai.org>
- <4453D563-1D0B-4C5E-BCF1-3E2E8068B514@open.ac.uk>
+Message-ID: <52A88B17.8050707@steinkuehler.net>
+Date: Wed, 11 Dec 2013 09:56:07 -0600
+From: Charles Steinkuehler <charles@steinkuehler.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <4453D563-1D0B-4C5E-BCF1-3E2E8068B514@open.ac.uk>
-Subject: Re: [Xenomai] latency spikes under load
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: [Xenomai] ARM 3.12 Kernel Support
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -22,19 +13,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Kurijn Buys <Kurijn.Buys@open.ac.uk>
-Cc: Xenomai@xenomai.org
+To: xenomai@xenomai.org
 
-On Wed, Dec 11, 2013 at 02:23:38PM +0000, Kurijn Buys wrote:
-> I enabled APIC, and the latency peaks at 16us only now, and even less with load.
-> This also had an effect on my analogy problem, but not completely... I will start a new thread for that...
+I am successfully using Xenomai with a 3.8.13 kernel on the BeagleBone,
+but there are no drivers for the on-chip GPU available.  TI is
+apparently skipping the 3.8 kernel series, and now has drivers available
+for 3.12.
 
-If your latency drops under loads, it sounds as if your CPU is slowing
-down when idle and taking a while to speed back up.  Perhaps changing
-the CPU governer to performance or user controlled and setting a fixed
-CPU speed would keep the latency low all the time (although at the cost
-of more power consumption).
+So, if I want Xenomai and GPU acceleration on the BeagleBone, I either
+need to back-port the TI GPU drivers from 3.12 to 3.8, or get Xenomai
+working on a 3.12 ARM kernel.
 
--- 
-Len Sorensen
+I figure eventually the Xenomai patches will be updated for 3.12, but I
+might be able to help move things along.  Is anyone actively working on
+3.12 support, or is development still centered around 3.10?  Is the
+master branch from http://git.xenomai.org/ipipe.git/ the most
+appropriate branch to try and forward-port?  It looks like the 3.10
+branches have more recent commits...
 
+-- =
+
+Charles Steinkuehler
+charles@steinkuehler.net
+
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: signature.asc
+Type: application/pgp-signature
+Size: 261 bytes
+Desc: OpenPGP digital signature
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20131211/6a89ed8=
+4/attachment.sig>
