@@ -1,14 +1,10 @@
-Date: Fri, 29 Nov 2013 08:45:02 +0100
-From: Bukuli Norbert <norbert.bukuli@mediso.hu>
-Message-ID: <20131129084502.1031fab3.norbert.bukuli@mediso.hu>
-In-Reply-To: <5297A4E3.50807@xenomai.org>
-References: <20131128143152.04ac3eab.norbert.bukuli@mediso.hu>
- <5297A4E3.50807@xenomai.org>
+Message-ID: <52AE0F6D.10007@xenomai.org>
+Date: Sun, 15 Dec 2013 21:22:05 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] test suite programs crash with Illegal instruction on
- MPC5200
+Subject: [Xenomai] Reworking file descriptors
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,60 +13,32 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Jan Kiszka <jan.kiszka@web.de>
 Cc: Xenomai <xenomai@xenomai.org>
 
-The latency test works well for user task, kernel task and timer IRQ,
-too. Does it make a sense to try the patch in this case?
 
-I have done some trivial test with the native and posix skins, by the
-time: Create a realtime task with appropriate scheduling policy and
-priority, and increase a static integer variable in it.
-With the native skin it works well, however, with the posix skin it
-crashes with the following message:
+Hi Jan,
 
-pthread_create: 11 Resource temporarily unavailable
-Trace/breakpoint trap
+I have starting reworking the posix skin on forge to use the cobalt
+registry instead of the ad-hoc registry it currently uses. The next step
+for that work is to convert the file descriptors, offering a unified
+access with select to posix skin message queues and rtdm drivers, and
+working correctly with fork().
 
-Before the creation of the pthread, the stacksize is set to
-PTHREAD_STACK_MIN (128 Kib)
-Corresponding kernel option:
-CONFIG_XENO_OPT_SYS_HEAPSZ = 4096.
+I have a clear idea on how I would do it for the posix message queues
+only. Just as I did for the semaphores, I would implement a hash table,
+where the file descriptor structures are indexed by the user-space file
+descriptor (obtained with open(/dev/null) for instance, so that xenomai
+file descriptors follow the posix specification, and use the smallest
+available descriptor), and the mm structure.
 
-This issue probably related to the original one.
+However, RTDM allows opening file descriptors in kernel-space, so it
+would break my implementation, because we can use NULL or &init_mm as
+the mm key, but what would we use as the file descriptor index?
 
-On Thu, 28 Nov 2013 21:17:39 +0100
-Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org> wrote:
-> On 11/28/2013 02:31 PM, Bukuli Norbert wrote:
-> > Hello!
-> > 
-> > I am having a little problem with some programs from the Xenomai
-> > test suite. The clocktest, cyclictest and switchtest crashes with
-> > "Illegal instruction":
-> 
-> What about the latency test? If it fails with the same error, you
-> could try the following patch for powerpc SPE:
-> 
-> https://git.xenomai.org/xenomai-2.6.git/commit/?id=d09932cfd0ca422989b3c3a9d736236d74590ade
-> 
-
-
+Any idea is welcome.
+Regards.
 
 -- 
-Norbert Bukuli
-software engineer
-embedded development
+                                                                Gilles.
 
-Mediso Ltd.
-Tel.: +36 1 3993 030 Fax.: +36 1 3993 040
-Mailing address: Hungary, H-1047 Budapest, Baross utca 91-95.
-Billing address: Hungary, H-1022 Budapest, Alsotorokvesz 14.
-norbert.bukuli@mediso.com
-www.mediso.com
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: signature.asc
-Type: application/pgp-signature
-Size: 490 bytes
-Desc: not available
-URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20131129/038c502f/attachment.sig>
