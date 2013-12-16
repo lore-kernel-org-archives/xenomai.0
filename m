@@ -1,13 +1,12 @@
-Message-ID: <52AF1976.2080605@xenomai.org>
-Date: Mon, 16 Dec 2013 16:17:10 +0100
+Message-ID: <52AF4784.8030801@xenomai.org>
+Date: Mon, 16 Dec 2013 19:33:40 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <52AE0F6D.10007@xenomai.org> <52AE17FC.4070200@xenomai.org>
- <52AF1730.6010200@siemens.com>
-In-Reply-To: <52AF1730.6010200@siemens.com>
+References: <52AF4211.80203@siemens.com>
+In-Reply-To: <52AF4211.80203@siemens.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Reworking file descriptors
+Subject: Re: [Xenomai] forge: Trying to understand new semaphore code
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,65 +18,138 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: Jan Kiszka <jan.kiszka@siemens.com>
 Cc: Xenomai <xenomai@xenomai.org>
 
-On 12/16/2013 04:07 PM, Jan Kiszka wrote:
-> On 2013-12-15 21:58, Gilles Chanteperdrix wrote:
->> On 12/15/2013 09:22 PM, Gilles Chanteperdrix wrote:
->>>
->>> Hi Jan,
->>>
->>> I have starting reworking the posix skin on forge to use the cobalt
->>> registry instead of the ad-hoc registry it currently uses. The next step
->>> for that work is to convert the file descriptors, offering a unified
->>> access with select to posix skin message queues and rtdm drivers, and
->>> working correctly with fork().
->>>
->>> I have a clear idea on how I would do it for the posix message queues
->>> only. Just as I did for the semaphores, I would implement a hash table,
->>> where the file descriptor structures are indexed by the user-space file
->>> descriptor (obtained with open(/dev/null) for instance, so that xenomai
->>> file descriptors follow the posix specification, and use the smallest
->>> available descriptor), and the mm structure.
->>>
->>> However, RTDM allows opening file descriptors in kernel-space, so it
->>> would break my implementation, because we can use NULL or &init_mm as
->>> the mm key, but what would we use as the file descriptor index?
+On 12/16/2013 07:10 PM, Jan Kiszka wrote:
+> Hi Gilles,
+>
+> while rebasing my half-done ftrace instrumentation over next, I got
+> stuck reading nsem_open. Find my questions inline:
+>
+>> static struct __shadow_sem __user *
+>> nsem_open(struct __shadow_sem __user *ushadow, const char *name,
+>> 	int oflags, mode_t mode, unsigned value)
+>> {
+>> 	struct __shadow_sem shadow;
+>> 	struct cobalt_sem *sem;
+>> 	struct nsem *u, *v;
+>> 	xnhandle_t handle;
+>> 	spl_t s;
+>> 	int rc;
 >>
->> Crazy ideas include calling xnregistry_enter and using the returned
->> handler as file descriptor in kernel-space, but that would give a
->> different way to get the file descriptor structure for kernel-space and
->> user-space.
+>> 	trace_xn_sys_sem_open(name, oflags, mode, value);
+>>
+>> 	if (name[0] != '/' || name[1] == '\0')
+>> 		return ERR_PTR(-EINVAL);
+>>
+>>    retry_bind:
+>> 	rc = xnregistry_bind(&name[1], XN_NONBLOCK, XN_RELATIVE, &handle);
+>> 	switch (rc) {
+>> 	case 0:
+>> 		/* Found */
+>> 		if ((oflags & (O_CREAT | O_EXCL)) == (O_CREAT | O_EXCL))
+>> 			return ERR_PTR(-EEXIST);
+>>
+>> 		xnlock_get_irqsave(&nsem_lock, s);
+>> 		u = nsem_hash_search(handle, current->mm);
+>> 		if (u) {
+>> 			++u->refs;
+>> 			xnlock_put_irqrestore(&nsem_lock, s);
+>> 			return u->usem;
+>> 		}
+>> 		xnlock_put_irqrestore(&nsem_lock, s);
+>>
+>> 		xnlock_get_irqsave(&nklock, s);
+>> 		sem = xnregistry_fetch(handle);
+>> 		if (sem && sem->magic != COBALT_SEM_MAGIC) {
+>> 			xnlock_put_irqrestore(&nklock, s);
+>> 			return ERR_PTR(-EINVAL);
+>> 		}
+>> 			
+>> 		if (sem) {
+>> 			++sem->refs;
+>> 			xnlock_put_irqrestore(&nklock, s);
+>> 		} else {
+>> 			xnlock_put_irqrestore(&nklock, s);
+>> 			goto retry_bind;
+>> 		}
+>> 		break;
+>> 		
+>> 	case -EWOULDBLOCK:
+>> 		/* Not found */
+>> 		if ((oflags & O_CREAT) == 0)
+>> 			return ERR_PTR(-ENOENT);
+>>
+>> 		rc = cobalt_sem_init_inner
+>> 			(&name[1], &shadow, SEM_PSHARED, value);
+>> 		if (rc < 0) {
+>> 			if (rc == -EEXIST)
+>> 				goto retry_bind;
+>> 			return ERR_PTR(rc);
+>> 		}
+>>
+>> 		if (__xn_safe_copy_to_user(ushadow, &shadow, sizeof(shadow))) {
+>> 			cobalt_sem_destroy_inner(shadow.handle);
+>> 			return ERR_PTR(-EFAULT);
+>> 		}
+>> 		handle = shadow.handle;
+>> 		sem = xnregistry_fetch(handle);
+>> 		++sem->refs;
 >
-> I'm not sure if I got the idea yet: User space would obtain the file
-> descriptor index itself, via opening /dev/null, and provide this index
-> together with the open or socket request to the kernel, right? So far we
-> did the index management inside the RTDM layer, reusing Linux for it
-> would be the major change.
+> Why doesn't this lookup and referencing require nklock protection? After
+> cobalt_sem_init_inner, sem is now globally visible, so someone else
+> (like a competing nsem_open) could fetch it and reference it, no?
 
-Yes but:
-- would allow to have the same file descriptor index used in several 
-process, which a must to fix the issue with file descriptors and fork;
-- would allow to respect posix, and return the smallest available 
-integer, instead of a random integer between 896 and 1023.
+The idea was that the semaphore is new and "nobody knows it yet", but 
+then the xnregistry_enter was moved inside cobalt_sem_inner, which 
+breaks this assumption. I need to rethink about this code, indeed. That 
+said, the xnregistry_fetch can not fail, the current code holds a 
+reference to the sem structure, and any concurrent bind will have 
+incremented the reference counter, a decrement of the reference counter 
+can only correspond to a previous increment. The simplest solution is to 
+set the reference counter to 2 instead of 1 inside cobalt_sem_init_inner 
+when the semaphore is named.
 
 >
-> Then the only difference for kernel originated open is that there is no
-> Linux-provided source of file descriptor indexes. We will need a
-> separate one in RTDM, just like so far. The difference will be that this
-> one, likely again a simple bitmap, will serve in-kernel users only.
+>> 	}
+>>
+>> 	u = xnmalloc(sizeof(*u));
+>> 	if (u == NULL)
+>> 		return ERR_PTR(-ENOMEM);
+>>
+>> 	u->sem = sem;
+>> 	u->mm = current->mm;
+>> 	u->usem = ushadow;
+>> 	u->refs = 1;
+>>
+>> 	xnlock_get_irqsave(&nsem_lock, s);
+>> 	v = nsem_hash_search(handle, current->mm);
+>> 	if (v) {
+>> 		++v->refs;
+>> 		xnlock_put_irqrestore(&nsem_lock, s);
+>> 		xnlock_get_irqsave(&nklock, s);
+>> 		--sem->refs;
+>> 		xnlock_put_irqrestore(&nklock, s);
+>>
+>> 		if (rc == -EWOULDBLOCK)
+>> 			cobalt_sem_destroy_inner(sem->handle);
 >
-> Reading your proposal again, I see you mentioning user space file
-> descriptor structures. Where do they come from? What are their purpose?
-> We didn't have a need for them so far, why now?
+> I'm still not sure I fully understand the reason (and safety) of this
+> release. We get here when we lost the race to enter handle in the
+> current process' nsem hash table, right? So v != u, ok. But both v and u
+> must point to a sem object with the same handle value, otherwise they
+> wouldn't end up in the same hash table slot.
 
-We have them for message queues. I believe RTDM has the equivalent with 
-what it calls the "context". It is just a structure which will contain 
-data associated with the file descriptor, the only data needed for the 
-message queues for instance is the "open" flags, allowing mq_receive to 
-know whether if the corresponding mq_open was called with O_RD or not, 
-to be able to return -EPERM, and the pointer or registry handle to the 
-corresponding message queue object itself (the "file"). It also contains 
-the holder(s) necessary for the book-keeping, like making it available 
-through a hash table, or closing it automatically upon process termination.
+This part of the code is useless. When we reach this code, we have got 
+one sem, one way or another corresponding to the opened name, the thing 
+this code is trying to prevent is the concurrent creation of another 
+nsem structure for the same handle (and the same process). There is no 
+reason to destroy the semaphore, which is necessarily valid. There is 
+only one semaphore.
+
+Note that the corresponding code for file descriptors will be simpler: 
+what makes things complicated here is that it is required by the POSIX 
+specification that two sem_open with the same name return the sem_t 
+pointer for the same process.
+
 
 -- 
 					    Gilles.
