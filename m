@@ -1,12 +1,10 @@
-Message-ID: <52AE17FC.4070200@xenomai.org>
-Date: Sun, 15 Dec 2013 21:58:36 +0100
+Message-ID: <52AEB440.5090103@xenomai.org>
+Date: Mon, 16 Dec 2013 09:05:20 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <52AE0F6D.10007@xenomai.org>
-In-Reply-To: <52AE0F6D.10007@xenomai.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] Reworking file descriptors
+Subject: [Xenomai] rehashing
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,35 +13,22 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@web.de>
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: Xenomai <xenomai@xenomai.org>
 
-On 12/15/2013 09:22 PM, Gilles Chanteperdrix wrote:
-> 
-> Hi Jan,
-> 
-> I have starting reworking the posix skin on forge to use the cobalt
-> registry instead of the ad-hoc registry it currently uses. The next step
-> for that work is to convert the file descriptors, offering a unified
-> access with select to posix skin message queues and rtdm drivers, and
-> working correctly with fork().
-> 
-> I have a clear idea on how I would do it for the posix message queues
-> only. Just as I did for the semaphores, I would implement a hash table,
-> where the file descriptor structures are indexed by the user-space file
-> descriptor (obtained with open(/dev/null) for instance, so that xenomai
-> file descriptors follow the posix specification, and use the smallest
-> available descriptor), and the mm structure.
-> 
-> However, RTDM allows opening file descriptors in kernel-space, so it
-> would break my implementation, because we can use NULL or &init_mm as
-> the mm key, but what would we use as the file descriptor index?
 
-Crazy ideas include calling xnregistry_enter and using the returned
-handler as file descriptor in kernel-space, but that would give a
-different way to get the file descriptor structure for kernel-space and
-user-space.
+Hi Philippe,
 
+looking at the registry code, I had an idea: we could increase the
+number of descriptors dynamically when they are exhausted, and increase
+the hash size as well. This would make the configurable number of slots
+a starting point, but not a liimit. The access to the registry by name
+does not really need to be fast, so we could protect it with a mutex
+(that would mean that all services accessing the registry by name would
+need to run in secondary mode, but I am not sure we care, and if we do,
+we can use an xnsynch instead).
+
+What do you think?
 
 -- 
                                                                 Gilles.
