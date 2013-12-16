@@ -1,15 +1,14 @@
+Message-ID: <52AF2ED5.8070503@xenomai.org>
+Date: Mon, 16 Dec 2013 17:48:21 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-In-Reply-To: <52C87C01.1070900@xenomai.org>
-References: <CAFnctWFSGJc0Q6ebZ0zBhxRmFEwkvCYKinAEgD-xzcCbfLaPBg@mail.gmail.com>
- <52C7CF1E.2050404@xenomai.org> <52C85088.7020501@xenomai.org>
- <52C86093.4000609@xenomai.org>
- <CAFnctWG1QoQ=f9JCsdxAoU25mc797fKoT9dVS_DdZFRcQ5CP3A@mail.gmail.com>
- <52C87C01.1070900@xenomai.org>
-Date: Sat, 4 Jan 2014 13:31:19 -0800
-Message-ID: <CAFnctWH07OsA45ucoYcijFKBJH-c-e6oNuA=_r0F+04SfvOQ2g@mail.gmail.com>
-From: Nima Nourozi <n.nourozi@gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Subject: Re: [Xenomai] rtdm_task_init call freezes the system
+References: <52AEB440.5090103@xenomai.org> <52AF2686.7010907@xenomai.org>
+ <52AF26C1.1060300@xenomai.org> <52AF2BDF.9000801@xenomai.org>
+ <52AF2C6E.8010701@xenomai.org>
+In-Reply-To: <52AF2C6E.8010701@xenomai.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] rehashing
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -19,33 +18,67 @@ List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
 To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+Cc: Xenomai <xenomai@xenomai.org>
 
-On Sat, Jan 4, 2014 at 1:24 PM, Gilles Chanteperdrix <
-gilles.chanteperdrix@xenomai.org> wrote:
+On 12/16/2013 05:38 PM, Gilles Chanteperdrix wrote:
+> On 12/16/2013 05:35 PM, Philippe Gerum wrote:
+>> On 12/16/2013 05:13 PM, Gilles Chanteperdrix wrote:
+>>> On 12/16/2013 05:12 PM, Philippe Gerum wrote:
+>>>> On 12/16/2013 09:05 AM, Gilles Chanteperdrix wrote:
+>>>>>
+>>>>> Hi Philippe,
+>>>>>
+>>>>> looking at the registry code, I had an idea: we could increase the
+>>>>> number of descriptors dynamically when they are exhausted, and
+>>>>> increase
+>>>>> the hash size as well. This would make the configurable number of
+>>>>> slots
+>>>>> a starting point, but not a liimit. The access to the registry by name
+>>>>> does not really need to be fast, so we could protect it with a mutex
+>>>>
+>>>> The registry hash is a low contention resource, so using a dedicated
+>>>> mutex is likely more efficient than grabbing the big nklock in most
+>>>> cases anyway.
+>>>>
+>>>>> (that would mean that all services accessing the registry by name
+>>>>> would
+>>>>> need to run in secondary mode, but I am not sure we care, and if we
+>>>>> do,
+>>>>> we can use an xnsynch instead).
+>>>>>
+>>>>> What do you think?
+>>>>>
+>>>>
+>>>> Recent Cobalt users of the registry put aside, this is basically about
+>>>> deciding whether:
+>>>>
+>>>> - issuing connect() on a rtipc socket should switch the caller to
+>>>> secondary mode, since other in-kernel users disappeared during the
+>>>> Great
+>>>> Refactoring (tm). bind() does have such requirement already.
+>>>>
+>>>> - all present and future callers of xnregistry_remove() should run in
+>>>> secondary mode as well. There is only one caller remaining so far, and
+>>>> it does (i.e. thread cleanup code).
+>>>
+>>> sem_destroy/sem_close/sem_unlink, pthread_mutex_destroy, and
+>>> pthread_cond_destroy now call xnregistry_remove.
+>>>
+>>
+>> Since your recent additions involve dropping keys from the registry from
+>> mutex and cond deletion routines, I would then stick with an
+>> implementation that allows primary-mode calls.
+>
+> Ok, just forgot that mutex and conds are anonymous, so, they need not
+> access the hash table, only sem_unlink and sem_open will access the
+> hash. Ok, I need to see what exactly needs to be protected during the
+> rehash. Maybe not much after all.
+>
 
-> On 01/04/2014 09:29 PM, Nima Nourozi wrote:
-> > Here is the task function. But I'm not seeing the printout.
-> >
-> > void xx_start_transfer(void *arg) {
-> >   rtdm_wait_period();
-> >   rtdm_printk("hello world\n");
-> > }
->
-> Two things to try:
-> - see if:
-> latency -t 1 -p 100000
-> has the same issue?
-> - xenomai 2.6.3 instead of 2.6.1
->
->
-> --
->                                                                 Gilles.
->
+You also have to serialize access to the handle table, and keep key 
+indexing and handle registration seen as a single atomic operation from 
+external code.
 
-Will do when I get back to the office on Monday. I don't have the hardware
-at the house.
+-- 
+Philippe.
 
-I noticed xenomai 2.6.3 does not contain the adeos patch for linux
-2.6.38.8. Should I just put the patch I downloaded from adeos in the patch
-folder and patch the vanilla kernel that way?
