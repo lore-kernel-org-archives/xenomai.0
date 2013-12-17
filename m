@@ -1,13 +1,13 @@
-Message-ID: <52AF1C51.3040400@siemens.com>
-Date: Mon, 16 Dec 2013 16:29:21 +0100
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <52B06343.4050505@xenomai.org>
+Date: Tue, 17 Dec 2013 15:44:19 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <52AE0F6D.10007@xenomai.org> <52AE17FC.4070200@xenomai.org>
- <52AF1730.6010200@siemens.com> <52AF1976.2080605@xenomai.org>
-In-Reply-To: <52AF1976.2080605@xenomai.org>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Xenomai] Reworking file descriptors
+References: <3A58CFC9-23B9-4B72-A071-3790BEB0912A@mah.priv.at>
+ <52B0590F.5050108@xenomai.org> <201312171528.10577.leo@alaxarxa.net>
+In-Reply-To: <201312171528.10577.leo@alaxarxa.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] debian xenomai package
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,92 +16,72 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: Xenomai <xenomai@xenomai.org>
+To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
+Cc: xenomai@xenomai.org
 
-On 2013-12-16 16:17, Gilles Chanteperdrix wrote:
-> On 12/16/2013 04:07 PM, Jan Kiszka wrote:
->> On 2013-12-15 21:58, Gilles Chanteperdrix wrote:
->>> On 12/15/2013 09:22 PM, Gilles Chanteperdrix wrote:
->>>>
->>>> Hi Jan,
->>>>
->>>> I have starting reworking the posix skin on forge to use the cobalt
->>>> registry instead of the ad-hoc registry it currently uses. The next
->>>> step
->>>> for that work is to convert the file descriptors, offering a unified
->>>> access with select to posix skin message queues and rtdm drivers, and
->>>> working correctly with fork().
->>>>
->>>> I have a clear idea on how I would do it for the posix message queues
->>>> only. Just as I did for the semaphores, I would implement a hash table,
->>>> where the file descriptor structures are indexed by the user-space file
->>>> descriptor (obtained with open(/dev/null) for instance, so that xenomai
->>>> file descriptors follow the posix specification, and use the smallest
->>>> available descriptor), and the mm structure.
->>>>
->>>> However, RTDM allows opening file descriptors in kernel-space, so it
->>>> would break my implementation, because we can use NULL or &init_mm as
->>>> the mm key, but what would we use as the file descriptor index?
+On 12/17/2013 03:28 PM, Leopold Palomo-Avellaneda wrote:
+> A Dimarts, 17 de desembre de 2013, Gilles Chanteperdrix va escriure:
+>> On 12/17/2013 12:19 PM, Michael Haberler wrote:
+>>> we're considering how to package LinuxCNC such that it can eventually
+>>> be included in debian
 >>>
->>> Crazy ideas include calling xnregistry_enter and using the returned
->>> handler as file descriptor in kernel-space, but that would give a
->>> different way to get the file descriptor structure for kernel-space and
->>> user-space.
+>>> the core package will support RT-PREEMPT because an RT-PREEMPT kernel
+>>> is available stock in debian; the other RT kernels will be covered by
+>>> separate packages (Xenomai, RTAI).
+>>>
+>>> so far we've used the xenomai userland support straight off the git
+>>> repo, but it might make sense to switch to
+>>> http://packages.debian.org/jessie/xenomai-runtime for one less
+>>> external raw repo dependency
+>>>
+>>> question - is this a recommendable route?
+>>>
+>>> (depends a bit on how well the debian package tracks the repo - does
+>>> this happen 'occasionally', or per-release?; so far we havent had
+>>> major issues with userland support but better ask before relying on
+>>> something only loosely maintained)
 >>
->> I'm not sure if I got the idea yet: User space would obtain the file
->> descriptor index itself, via opening /dev/null, and provide this index
->> together with the open or socket request to the kernel, right? So far we
->> did the index management inside the RTDM layer, reusing Linux for it
->> would be the major change.
-> 
-> Yes but:
-> - would allow to have the same file descriptor index used in several
-> process, which a must to fix the issue with file descriptors and fork;
-> - would allow to respect posix, and return the smallest available
-> integer, instead of a random integer between 896 and 1023.
-
-Not voting against this change. RTDM's approach once started off with
-the goal to be simple and self-contained. Requirements were extended
-over the time.
-
-> 
+>> I think the user-space run-time is not really a problem, Xenomai 2.6
+>> does not need any particular option on configure command line to avoid
+>> issues, the defaults are fine for all architectures. Even the Debian
+>> project rule files, which passes options which either no longer even
+>> exists or are not useful, gets a working build.
 >>
->> Then the only difference for kernel originated open is that there is no
->> Linux-provided source of file descriptor indexes. We will need a
->> separate one in RTDM, just like so far. The difference will be that this
->> one, likely again a simple bitmap, will serve in-kernel users only.
->>
->> Reading your proposal again, I see you mentioning user space file
->> descriptor structures. Where do they come from? What are their purpose?
->> We didn't have a need for them so far, why now?
-> 
-> We have them for message queues. I believe RTDM has the equivalent with
-> what it calls the "context". It is just a structure which will contain
-> data associated with the file descriptor, the only data needed for the
-> message queues for instance is the "open" flags, allowing mq_receive to
-> know whether if the corresponding mq_open was called with O_RD or not,
-> to be able to return -EPERM, and the pointer or registry handle to the
-> corresponding message queue object itself (the "file"). It also contains
-> the holder(s) necessary for the book-keeping, like making it available
-> through a hash table, or closing it automatically upon process termination.
+>> What is much harder, and not really already available in the Debian
+>> project is to package a kernel compiled with the right options to avoid
+>> any issues, and avoid the hassle to all users to have to find out these
+>> options by themselves,
+>
+> I like the " right options to avoid any issues".
+>
+> Really, it's possible to provide a Xenomai patched kernel for the 95% of the
+> users/hardware?
 
-For sure, also RTDM needs a descriptor data structure in kernel space. I
-guess I misinterpreted your words that there are also structures *in*
-user space, not just *for* it.
+Yes. Starting with the I-pipe core patches, definitely. And if not, I 
+think this is something we should work on. Because in the long run, if 
+users installed pre-packaged kernels and did not have to follow the 
+traditional trial-and-error process of configuring kernels for xenomai, 
+we would have less questions on this subject on the mailing list.
 
-OK, so the callers of open and socket - user space or kernel space -
-will now have to provide an ID along with that request. This ID has to
-be unique within their namespaces, may it be a process or the whole
-kernel for drivers. For user space, ID allocation maps to POSIX file
-descriptor allocation. For kernel space, we are totally free to use a
-different source like a simple bitmap, the file descriptor data
-structure address or whatever is convenient. But it will be different,
-naturally.
+>
+>> whereas, at least on x86, we can provide one such
+>> Debian-like kernel. I did it for Linux 3.5.7 on xenomai 2.6.2.1, but did
+>> not renew the experience with xenomai 2.6.3 because nobody downloaded
+>> the .debs. But the "reprepro" directory is still there, so restarting it
+>> would be easy.
+>
+> Well, I use my own package, but I have not any problem to promote this ones.
+> We can talk. I have no interest in maintain any kernel package, on the
+> contrary.
 
-Jan
+That is my point, the same work, configuring the kernel, is replicated 
+by almost every user of xenomai, for almost no good reason. It makes 
+sense to optimize compilation for one processor on the ARM architecture, 
+because you easily loose microseconds latency with the wrong option. On 
+x86 however, I do not think there is not much to gain (except 
+compilation time) by trimming down the configuration.
+
 
 -- 
-Siemens AG, Corporate Technology, CT RTC ITP SES-DE
-Corporate Competence Center Embedded Linux
+					    Gilles.
 
