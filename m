@@ -1,10 +1,12 @@
-Message-ID: <52B231AD.2010604@alaxarxa.net>
-Date: Thu, 19 Dec 2013 00:37:17 +0100
-From: Leopold Palomo-Avellaneda <leo@alaxarxa.net>
+Message-ID: <52B3FE46.3010202@axelsw.it>
+Date: Fri, 20 Dec 2013 09:22:30 +0100
+From: Roberto Bielli <roberto.bielli@axelsw.it>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Subject: [Xenomai] Xddp protocol: question of one example
+References: <52A184EC.40407@axelsw.it> <52A1C10B.4010101@xenomai.org>
+In-Reply-To: <52A1C10B.4010101@xenomai.org>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Subject: Re: [Xenomai] rt_task_set_priority hangs/loops sometimes on boot
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,47 +15,64 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-Hi,
-
-I'm developing an application that need (as always) interchange data between a realtime part and non-realtime.
-
-Looking on the documentation and surfing on the web I have found interesting for my app the examples of xddp protocol. Some time ago, there was an interesting mail about it [1].
-
-There, the original author ask one thing that I would like to be sure that I understood. On the examples, the realtime thread uses the function recvfrom() to receive data from the non-rt thread.
-
-In the mail, the original author asked about make recvfrom 
-call non-blocking in xddp context, and *Philippe Gerum* answered that 
-MSG_DONTWAIT should be set in flags.
-
-So, my question is that using that flag, some code like this:
-
-
-/* Read back packets echoed by the regular thread */
-ret = recvfrom(s, buf, sizeof(buf), 0, NULL, 0);
-if(ret <= 0)
-    fail("recvfrom");
-
-recvfrom will not be blocked, but it will return 0?
-
-May I understood that if there's data on the sockect recvfrom will
-return something and if no, it would not be blocked and return something?
-
-Thanks in advance,
-
-Leopold
-
-[1] http://www.xenomai.org/pipermail/xenomai/2010-February/019364.html
-
--- 
---
-Linux User 152692     PGP: 0xF944807E
-Catalonia
--------------------------------------
-A: Because it messes up the order in which people normally read text.
-Q: Why is top-posting such a bad thing?
-A: Top-posting.
-Q: What is the most annoying thing in e-mail?
-
-
+SGkgR2lsbGVzLAoKaSBhdHRhY2hlZCBhbiBpbWFnZSB3aXRoIHRoZSBzdGFsbC4gKEV4Y3VzZSBt
+ZSBmb3IgdGhlIGltYWdlIGJ1dCBpdCdzIAppbXBvc3NpYmlsZSBpbiBhIGZhc3Qgd2F5IHRvIGNv
+bnZlcnQgaW50byB0ZXh0ICkuClRoZSBvbGQgYmFja3RyYWNlIGlzIGludmFsaWQuIFRoZSBzeXN0
+ZW0gY2Fubm90IGJlIHVwZGF0ZWQuClRoZSBuZXcgYmFja3RyYWNlIHNheXMgdGhhdCB0aGUgc3lz
+dGVtIGxvb3AgaW4gX19pcGlwZV93YWxrX3BpcGVsaW5lLgpJdCBzZWVtcyB0aGF0IGlycXBlbmRf
+aW1hc2sgPSAyIGFuZCBpcnFwZW5kX2xvd21hc2sgPSAoMCwgCjQxOTQzMDQsLi4uLi4uKSBhcmUg
+dGhlIHByb2JsZW0uCkluIGEgZ29vZCBzdGFydCB0aGVyZSBhcmVudCB0aGF0IHZhbHVlcy4KCkNh
+biB5b3UgaGVscCBtZSA/CgpUaGFua3MgYSBsb3QKCklsIDA2LzEyLzIwMTMgMTM6MjAsIEdpbGxl
+cyBDaGFudGVwZXJkcml4IGhhIHNjcml0dG86Cj4gT24gMTIvMDYvMjAxMyAwOTowMyBBTSwgUm9i
+ZXJ0byBCaWVsbGkgd3JvdGU6Cj4+IEhpLAo+Pgo+PiBzb21ldGltZXMgaSBoYXZlIGEgc3RyYW5n
+ZSBiZWhhdmlvdXIgb24gYm9vdC4gVGhlIGtlcm5lbCBoYW5ncy4gSSBzYXcKPj4gd2l0aCBhbiBo
+YXJkd2FyZSBkZWJ1Z2dlciB0aGUgYmFja3RyYWNlIHdoZW4gaSB3YXMgaW4gdGhhdCBzaXR1YXRp
+b24gYW5kCj4+IGkgc2F3IHRoaXM6Cj4+Cj4+IHByb2JlX2lycV9vZmYgfCBkZXZtX2ZyZWVfaXJx
+Cj4+IHByb2JlX2lycV9vbgo+PiBwcm9iZV9pcnFfb24KPj4gcmVnaXN0ZXJfaGFuZGxlcl9wcm9j
+Cj4+IHRpbWVjb3VudGVyX3JlYWQKPj4gdGltZXJfbGlzdF9zaG93Cj4+IHBvc2l4X2NwdV90aW1l
+cl9zZXQKPj4gc3RrNV9lc2RoY2lfaW5pdAo+PiBsb2FkX21vZHVsZQo+PiBleGl0X2lycV90aHJl
+YWQKPj4gX19zZXR1cF9zdHJfc2V0dXBfc2x1Yl9ub21lcmdlCj4+IF9fc2V0dXBfc3RyX3NldHVw
+X3NsdWJfbm9tZXJnZQo+PiBwcm9iZV9pcnFfb24KPj4gcHJvYmVfaXJxX29uCj4+IHJlZ2lzdGVy
+X2hhbmRsZXJfcHJvYwo+PiBfX3hucG9kX3NjaGVkdWxlCj4+IHhucGlwZV9yZWN2Cj4+IHJ0X3Rh
+c2tfc2V0X3ByaW9yaXR5Cj4gVGhpcyBiYWNrdHJhY2UgZG9lcyBub3Qgc2VlbSB0byByZWFsbHkg
+bWFrZSBzZW5zZS4gT3IgbWF5YmUgaXQgaXMgbm90IGEKPiBiYWNrdHJhY2U/Cj4KPj4gVGhlIHN5
+c3RlbSBpcyBpbiBsb29wL2hhbmdzIGluIHJ0X3Rhc2tfc2V0X3ByaW9yaXR5Lgo+Pgo+PiBNeSBz
+eXN0ZW0gaGFzIHhlbm9tYWkgMi41LjYgb24gZnJlZXNjYWxlIGlteDI1IGFybS4KPj4KPj4gQW55
+IGlkZWFzID8KPiBEbyB5b3UgaGF2ZSB0aGUgc2FtZSBpc3N1ZSB3aXRoIHhlbm9tYWkgMi42LjMg
+Pwo+Cj4KCgotLSAKKy0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLSsKCQkJ
+CQkJCQpSb2JlcnRvIEJpZWxsaQpTdmlsdXBwbyBTb2Z0d2FyZQkJCQkJCkF4ZWwgUy5yLmwuCQkJ
+CQkKCQkJCQkJCQpWaWEgRGVsIENhbm5pbm8sIDMgCQkJCQoyMTAyMCBDcm9zaW8gRGVsbGEgVmFs
+bGUJCQkKVmFyZXNlIC0gSXRhbHkJCQkJCQoJCQkJCQkJClRlbGVmb25vOiArMzkgMDMzMiA5NDk2
+MDAJCQkKRmF4OiAgICAgICszOSAwMzMyIDk2OTMxNQkJCQoJCQkJCQkJCkUtbWFpbDogICByb2Jl
+cnRvLmJpZWxsaUBheGVsc3cuaXQJCldlYiBTaXRlOiB3d3cuYXhlbHN3Lml0CgorLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tKwoKU2kgcHJlY2lzYSBjaGUgbGUgaW5mb3Jt
+YXppb25pIGNvbnRlbnV0ZSBpbiBxdWVzdG8gbWVzc2FnZ2lvIHNvbm8gcmlzZXJ2YXRlIGUgYWQg
+dXNvIGVzY2x1c2l2byBkZWwgZGVzdGluYXRhcmlvLgpRdWFsb3JhIGlsIG1lc3NhZ2dpbyBpbiBw
+YXJvbGEgTGUgZm9zc2UgcGVydmVudXRvIHBlciBlcnJvcmUsIExhIHByZWdoaWFtbyBkaSBlbGlt
+aW5hcmxvIHNlbnphIGNvcGlhcmxvIGUgZGkgbm9uIGlub2x0cmFybG8gYSB0ZXJ6aSwKZGFuZG9j
+ZW5lIGdlbnRpbG1lbnRlIGNvbXVuaWNhemlvbmUuIEdyYXppZS4KSW5mb3JtYXRpdmEgc3VsIHRy
+YXR0YW1lbnRvIGRlaSBkYXRpIHBlcnNvbmFsaSAoRC4gTGdzLiAxOTYvMjAwMykuCkkgZGF0aSB1
+dGlsaXp6YXRpIHBlciBsYSBzcGVkaXppb25lIGRlbCBwcmVzZW50ZSBtZXNzYWdnaW8gc29ubyB1
+dGlsaXp6YXRpIGRhIEF4ZWwgUy5yLmwuLCB0aXRvbGFyZSBkZWwgdHJhdHRhbWVudG8sCnBlciBs
+J2ludmlvIGRlbGxlIGNvbXVuaWNhemlvbmkgZGVpIGRpdmVyc2kgc2V0dG9yaSBhemllbmRhbGks
+IG5vbiBlc3NlbmRvIGF1dG9yaXp6YXRhIGxhIGRpdnVsZ2F6aW9uZSBhIHRlcnppLgpQb3RyZXRl
+IHJpdm9sZ2VyZSBhbGxhIHNlZ3VlbnRlIG1haWwgcmljaGllc3RlIGRpIHZlcmlmaWNhLCByZXR0
+aWZpY2EgbyBjYW5jZWxsYXppb25lIGRlaSBWb3N0cmkgZGF0aTogaW5mb0BheGVsc3cuaXQKClRo
+aXMgZS1tYWlsIGFuZCBhbnkgYXR0YWNobWVudHMgaXMgY29uZmlkZW50aWFsIGFuZCBtYXkgY29u
+dGFpbiBwcml2aWxlZ2VkIGluZm9ybWF0aW9uCmludGVuZGVkIGZvciB0aGUgYWRkcmVzc2VlKHMp
+IG9ubHkuIERpc3NlbWluYXRpb24sIGNvcHlpbmcsIHByaW50aW5nIG9yIHVzZSBieSBhbnlib2R5
+CmVsc2UgaXMgdW5hdXRob3Jpc2VkLiBJZiB5b3UgYXJlIG5vdCB0aGUgaW50ZW5kZWQgcmVjaXBp
+ZW50LApwbGVhc2UgZGVsZXRlIHRoaXMgbWVzc2FnZSBhbmQgYW55IGF0dGFjaG1lbnRzIGFuZCBh
+ZHZpc2UgdGhlIHNlbmRlcgpieSByZXR1cm4gZS1tYWlsLlRoYW5rIHlvdS4gIAkJCQoJCQkJCQkJ
+CistLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0rCgotLS0tLS0tLS0tLS0t
+LSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1
+YmJlZC4uLgpOYW1lOiBzdGFsbC5qcGVnClR5cGU6IGltYWdlL2pwZWcKU2l6ZTogMTAzMTY0IGJ5
+dGVzCkRlc2M6IG5vdCBhdmFpbGFibGUKVVJMOiA8aHR0cDovL3d3dy54ZW5vbWFpLm9yZy9waXBl
+cm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDEzMTIyMC9lMjExMTQxOS9hdHRhY2htZW50Lmpw
+ZWc+Cg==
