@@ -1,13 +1,12 @@
-Message-ID: <52B401DC.6080002@xenomai.org>
-Date: Fri, 20 Dec 2013 09:37:48 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <52B4184A.2090900@xenomai.org>
+Date: Fri, 20 Dec 2013 11:13:30 +0100
+From: Philippe Gerum <rpm@xenomai.org>
 MIME-Version: 1.0
-References: <52A184EC.40407@axelsw.it> <52A1C10B.4010101@xenomai.org>
- <52B3FE46.3010202@axelsw.it>
-In-Reply-To: <52B3FE46.3010202@axelsw.it>
-Content-Type: text/plain; charset=UTF-8
+References: <52B231AD.2010604@alaxarxa.net>
+In-Reply-To: <52B231AD.2010604@alaxarxa.net>
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] rt_task_set_priority hangs/loops sometimes on boot
+Subject: Re: [Xenomai] Xddp protocol: question of one example
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,46 +15,38 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Roberto Bielli <roberto.bielli@axelsw.it>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Leopold Palomo-Avellaneda <leo@alaxarxa.net>, xenomai@xenomai.org
 
-On 12/20/2013 09:22 AM, Roberto Bielli wrote:
-> Hi Gilles,
-> 
-> i attached an image with the stall. (Excuse me for the image but it's 
-> impossibile in a fast way to convert into text ).
-> The old backtrace is invalid. The system cannot be updated.
+On 12/19/2013 12:37 AM, Leopold Palomo-Avellaneda wrote:
+> Hi,
+>
+> I'm developing an application that need (as always) interchange data between a realtime part and non-realtime.
+>
+> Looking on the documentation and surfing on the web I have found interesting for my app the examples of xddp protocol. Some time ago, there was an interesting mail about it [1].
+>
+> There, the original author ask one thing that I would like to be sure that I understood. On the examples, the realtime thread uses the function recvfrom() to receive data from the non-rt thread.
+>
+> In the mail, the original author asked about make recvfrom
+> call non-blocking in xddp context, and *Philippe Gerum* answered that
+> MSG_DONTWAIT should be set in flags.
+>
+> So, my question is that using that flag, some code like this:
+>
+>
+> /* Read back packets echoed by the regular thread */
+> ret = recvfrom(s, buf, sizeof(buf), 0, NULL, 0);
+> if(ret <= 0)
+>      fail("recvfrom");
+>
+> recvfrom will not be blocked, but it will return 0?
+>
+> May I understood that if there's data on the sockect recvfrom will
+> return something and if no, it would not be blocked and return something?
+>
 
-Why is that, you do not have the root password on your test system? The
-root filesystem is read-only?
-
-I am just asking you to upgrade your test system, to see if you can
-reproduce the bug with the latest version, as a first step, not to
-upgrade the systems you have installed in the field. A lot of things
-happened since 2.5.6 and whatever linux version you are using, which is
-why I would like you to test xenomai 2.6.3 with linux 3.8.13. I do not
-have time to spare on an issue which has already been fixed.
-
-> The new backtrace says that the system loop in __ipipe_walk_pipeline.
-> It seems that irqpend_imask = 2 and irqpend_lowmask = (0,
-> 4194304,......) are the problem.
-> In a good start there arent that values.
-
-Using a symbolic debugguer shows you the things by the wrong end of the
-problem. It is a bit like looking at the sun with a microscope.
-ipipe_walk_pipeline is a function which is called all the time in the
-I-pipe patched kernel.
-
-If you feel like debugging the issue you have yourself, instead of
-answering my request of upgrading before retesting, my advice would be
-that there is no subtitute to really understanding what the code does,
-on a macroscopic view, rather than on a miscroscopic view of "variable x
-has value y".
-
-The first thing I would try, is to add a printk in the interrupt
-controller masking function, and the gpio demux function, if there is
-one, to see if either one is not called in a loop.
+Standard behavior when no data present: immediate return with ret = -1, 
+errno = EWOULDBLOCK/EAGAIN.
 
 -- 
-                                                                Gilles.
+Philippe.
 
