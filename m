@@ -1,11 +1,12 @@
-Message-ID: <52B3FE46.3010202@axelsw.it>
-Date: Fri, 20 Dec 2013 09:22:30 +0100
-From: Roberto Bielli <roberto.bielli@axelsw.it>
+Message-ID: <52B401DC.6080002@xenomai.org>
+Date: Fri, 20 Dec 2013 09:37:48 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <52A184EC.40407@axelsw.it> <52A1C10B.4010101@xenomai.org>
-In-Reply-To: <52A1C10B.4010101@xenomai.org>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+ <52B3FE46.3010202@axelsw.it>
+In-Reply-To: <52B3FE46.3010202@axelsw.it>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] rt_task_set_priority hangs/loops sometimes on boot
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -15,64 +16,46 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Roberto Bielli <roberto.bielli@axelsw.it>
 Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
 
-SGkgR2lsbGVzLAoKaSBhdHRhY2hlZCBhbiBpbWFnZSB3aXRoIHRoZSBzdGFsbC4gKEV4Y3VzZSBt
-ZSBmb3IgdGhlIGltYWdlIGJ1dCBpdCdzIAppbXBvc3NpYmlsZSBpbiBhIGZhc3Qgd2F5IHRvIGNv
-bnZlcnQgaW50byB0ZXh0ICkuClRoZSBvbGQgYmFja3RyYWNlIGlzIGludmFsaWQuIFRoZSBzeXN0
-ZW0gY2Fubm90IGJlIHVwZGF0ZWQuClRoZSBuZXcgYmFja3RyYWNlIHNheXMgdGhhdCB0aGUgc3lz
-dGVtIGxvb3AgaW4gX19pcGlwZV93YWxrX3BpcGVsaW5lLgpJdCBzZWVtcyB0aGF0IGlycXBlbmRf
-aW1hc2sgPSAyIGFuZCBpcnFwZW5kX2xvd21hc2sgPSAoMCwgCjQxOTQzMDQsLi4uLi4uKSBhcmUg
-dGhlIHByb2JsZW0uCkluIGEgZ29vZCBzdGFydCB0aGVyZSBhcmVudCB0aGF0IHZhbHVlcy4KCkNh
-biB5b3UgaGVscCBtZSA/CgpUaGFua3MgYSBsb3QKCklsIDA2LzEyLzIwMTMgMTM6MjAsIEdpbGxl
-cyBDaGFudGVwZXJkcml4IGhhIHNjcml0dG86Cj4gT24gMTIvMDYvMjAxMyAwOTowMyBBTSwgUm9i
-ZXJ0byBCaWVsbGkgd3JvdGU6Cj4+IEhpLAo+Pgo+PiBzb21ldGltZXMgaSBoYXZlIGEgc3RyYW5n
-ZSBiZWhhdmlvdXIgb24gYm9vdC4gVGhlIGtlcm5lbCBoYW5ncy4gSSBzYXcKPj4gd2l0aCBhbiBo
-YXJkd2FyZSBkZWJ1Z2dlciB0aGUgYmFja3RyYWNlIHdoZW4gaSB3YXMgaW4gdGhhdCBzaXR1YXRp
-b24gYW5kCj4+IGkgc2F3IHRoaXM6Cj4+Cj4+IHByb2JlX2lycV9vZmYgfCBkZXZtX2ZyZWVfaXJx
-Cj4+IHByb2JlX2lycV9vbgo+PiBwcm9iZV9pcnFfb24KPj4gcmVnaXN0ZXJfaGFuZGxlcl9wcm9j
-Cj4+IHRpbWVjb3VudGVyX3JlYWQKPj4gdGltZXJfbGlzdF9zaG93Cj4+IHBvc2l4X2NwdV90aW1l
-cl9zZXQKPj4gc3RrNV9lc2RoY2lfaW5pdAo+PiBsb2FkX21vZHVsZQo+PiBleGl0X2lycV90aHJl
-YWQKPj4gX19zZXR1cF9zdHJfc2V0dXBfc2x1Yl9ub21lcmdlCj4+IF9fc2V0dXBfc3RyX3NldHVw
-X3NsdWJfbm9tZXJnZQo+PiBwcm9iZV9pcnFfb24KPj4gcHJvYmVfaXJxX29uCj4+IHJlZ2lzdGVy
-X2hhbmRsZXJfcHJvYwo+PiBfX3hucG9kX3NjaGVkdWxlCj4+IHhucGlwZV9yZWN2Cj4+IHJ0X3Rh
-c2tfc2V0X3ByaW9yaXR5Cj4gVGhpcyBiYWNrdHJhY2UgZG9lcyBub3Qgc2VlbSB0byByZWFsbHkg
-bWFrZSBzZW5zZS4gT3IgbWF5YmUgaXQgaXMgbm90IGEKPiBiYWNrdHJhY2U/Cj4KPj4gVGhlIHN5
-c3RlbSBpcyBpbiBsb29wL2hhbmdzIGluIHJ0X3Rhc2tfc2V0X3ByaW9yaXR5Lgo+Pgo+PiBNeSBz
-eXN0ZW0gaGFzIHhlbm9tYWkgMi41LjYgb24gZnJlZXNjYWxlIGlteDI1IGFybS4KPj4KPj4gQW55
-IGlkZWFzID8KPiBEbyB5b3UgaGF2ZSB0aGUgc2FtZSBpc3N1ZSB3aXRoIHhlbm9tYWkgMi42LjMg
-Pwo+Cj4KCgotLSAKKy0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLSsKCQkJ
-CQkJCQpSb2JlcnRvIEJpZWxsaQpTdmlsdXBwbyBTb2Z0d2FyZQkJCQkJCkF4ZWwgUy5yLmwuCQkJ
-CQkKCQkJCQkJCQpWaWEgRGVsIENhbm5pbm8sIDMgCQkJCQoyMTAyMCBDcm9zaW8gRGVsbGEgVmFs
-bGUJCQkKVmFyZXNlIC0gSXRhbHkJCQkJCQoJCQkJCQkJClRlbGVmb25vOiArMzkgMDMzMiA5NDk2
-MDAJCQkKRmF4OiAgICAgICszOSAwMzMyIDk2OTMxNQkJCQoJCQkJCQkJCkUtbWFpbDogICByb2Jl
-cnRvLmJpZWxsaUBheGVsc3cuaXQJCldlYiBTaXRlOiB3d3cuYXhlbHN3Lml0CgorLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tKwoKU2kgcHJlY2lzYSBjaGUgbGUgaW5mb3Jt
-YXppb25pIGNvbnRlbnV0ZSBpbiBxdWVzdG8gbWVzc2FnZ2lvIHNvbm8gcmlzZXJ2YXRlIGUgYWQg
-dXNvIGVzY2x1c2l2byBkZWwgZGVzdGluYXRhcmlvLgpRdWFsb3JhIGlsIG1lc3NhZ2dpbyBpbiBw
-YXJvbGEgTGUgZm9zc2UgcGVydmVudXRvIHBlciBlcnJvcmUsIExhIHByZWdoaWFtbyBkaSBlbGlt
-aW5hcmxvIHNlbnphIGNvcGlhcmxvIGUgZGkgbm9uIGlub2x0cmFybG8gYSB0ZXJ6aSwKZGFuZG9j
-ZW5lIGdlbnRpbG1lbnRlIGNvbXVuaWNhemlvbmUuIEdyYXppZS4KSW5mb3JtYXRpdmEgc3VsIHRy
-YXR0YW1lbnRvIGRlaSBkYXRpIHBlcnNvbmFsaSAoRC4gTGdzLiAxOTYvMjAwMykuCkkgZGF0aSB1
-dGlsaXp6YXRpIHBlciBsYSBzcGVkaXppb25lIGRlbCBwcmVzZW50ZSBtZXNzYWdnaW8gc29ubyB1
-dGlsaXp6YXRpIGRhIEF4ZWwgUy5yLmwuLCB0aXRvbGFyZSBkZWwgdHJhdHRhbWVudG8sCnBlciBs
-J2ludmlvIGRlbGxlIGNvbXVuaWNhemlvbmkgZGVpIGRpdmVyc2kgc2V0dG9yaSBhemllbmRhbGks
-IG5vbiBlc3NlbmRvIGF1dG9yaXp6YXRhIGxhIGRpdnVsZ2F6aW9uZSBhIHRlcnppLgpQb3RyZXRl
-IHJpdm9sZ2VyZSBhbGxhIHNlZ3VlbnRlIG1haWwgcmljaGllc3RlIGRpIHZlcmlmaWNhLCByZXR0
-aWZpY2EgbyBjYW5jZWxsYXppb25lIGRlaSBWb3N0cmkgZGF0aTogaW5mb0BheGVsc3cuaXQKClRo
-aXMgZS1tYWlsIGFuZCBhbnkgYXR0YWNobWVudHMgaXMgY29uZmlkZW50aWFsIGFuZCBtYXkgY29u
-dGFpbiBwcml2aWxlZ2VkIGluZm9ybWF0aW9uCmludGVuZGVkIGZvciB0aGUgYWRkcmVzc2VlKHMp
-IG9ubHkuIERpc3NlbWluYXRpb24sIGNvcHlpbmcsIHByaW50aW5nIG9yIHVzZSBieSBhbnlib2R5
-CmVsc2UgaXMgdW5hdXRob3Jpc2VkLiBJZiB5b3UgYXJlIG5vdCB0aGUgaW50ZW5kZWQgcmVjaXBp
-ZW50LApwbGVhc2UgZGVsZXRlIHRoaXMgbWVzc2FnZSBhbmQgYW55IGF0dGFjaG1lbnRzIGFuZCBh
-ZHZpc2UgdGhlIHNlbmRlcgpieSByZXR1cm4gZS1tYWlsLlRoYW5rIHlvdS4gIAkJCQoJCQkJCQkJ
-CistLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0rCgotLS0tLS0tLS0tLS0t
-LSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBub24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1
-YmJlZC4uLgpOYW1lOiBzdGFsbC5qcGVnClR5cGU6IGltYWdlL2pwZWcKU2l6ZTogMTAzMTY0IGJ5
-dGVzCkRlc2M6IG5vdCBhdmFpbGFibGUKVVJMOiA8aHR0cDovL3d3dy54ZW5vbWFpLm9yZy9waXBl
-cm1haWwveGVub21haS9hdHRhY2htZW50cy8yMDEzMTIyMC9lMjExMTQxOS9hdHRhY2htZW50Lmpw
-ZWc+Cg==
+On 12/20/2013 09:22 AM, Roberto Bielli wrote:
+> Hi Gilles,
+> 
+> i attached an image with the stall. (Excuse me for the image but it's 
+> impossibile in a fast way to convert into text ).
+> The old backtrace is invalid. The system cannot be updated.
+
+Why is that, you do not have the root password on your test system? The
+root filesystem is read-only?
+
+I am just asking you to upgrade your test system, to see if you can
+reproduce the bug with the latest version, as a first step, not to
+upgrade the systems you have installed in the field. A lot of things
+happened since 2.5.6 and whatever linux version you are using, which is
+why I would like you to test xenomai 2.6.3 with linux 3.8.13. I do not
+have time to spare on an issue which has already been fixed.
+
+> The new backtrace says that the system loop in __ipipe_walk_pipeline.
+> It seems that irqpend_imask = 2 and irqpend_lowmask = (0,
+> 4194304,......) are the problem.
+> In a good start there arent that values.
+
+Using a symbolic debugguer shows you the things by the wrong end of the
+problem. It is a bit like looking at the sun with a microscope.
+ipipe_walk_pipeline is a function which is called all the time in the
+I-pipe patched kernel.
+
+If you feel like debugging the issue you have yourself, instead of
+answering my request of upgrading before retesting, my advice would be
+that there is no subtitute to really understanding what the code does,
+on a macroscopic view, rather than on a miscroscopic view of "variable x
+has value y".
+
+The first thing I would try, is to add a printk in the interrupt
+controller masking function, and the gpio demux function, if there is
+one, to see if either one is not called in a loop.
+
+-- 
+                                                                Gilles.
+
