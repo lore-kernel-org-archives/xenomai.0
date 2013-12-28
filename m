@@ -1,5 +1,5 @@
-Message-ID: <52BEC7B4.8080505@xenomai.org>
-Date: Sat, 28 Dec 2013 13:44:36 +0100
+Message-ID: <52BECBC2.4000709@xenomai.org>
+Date: Sat, 28 Dec 2013 14:01:54 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <1388233874-6599-1-git-send-email-romain.naour@openwide.fr>
@@ -27,11 +27,21 @@ On 12/28/2013 01:31 PM, Romain Naour wrote:
 > http://autobuild.buildroot.net/results/e3b/e3b534dafb6dd7d788b0c3629ccc0b25702790f0/build-end.log
 > 
 > This error is fixed by the following path.
+> 
+> Best regards,
+> Romain Naour
+> 
+> Romain Naour (1):
+>   arm: enable armv5tej support
+> 
+>  include/asm-arm/features.h | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
 
-This fixes xenomai build issue, yes, but I have no idea how xenomai
-behaves with programs using the jazelle instruction set.
-
-Does gcc generate jazelle instructions now?
+BTW:
+- you are not using xenomai latest version, which is 2.6.3
+- to disable installing documentation for the xenomai package, you
+should pass --disable-doc-install, as ./configure --help would show you.
 
 -- 
                                                                 Gilles.
