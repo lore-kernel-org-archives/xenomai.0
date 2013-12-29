@@ -1,5 +1,5 @@
-Message-ID: <52BFDCB1.8020808@xenomai.org>
-Date: Sun, 29 Dec 2013 09:26:25 +0100
+Message-ID: <52BFE8BA.9060308@xenomai.org>
+Date: Sun, 29 Dec 2013 10:17:46 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <CAKKWdtdP_fvvMwzC8YpZriL6mC_QbwRkmjzpPYVB8Ue8yBFt5Q@mail.gmail.com>
@@ -28,7 +28,8 @@ On 12/29/2013 09:15 AM, ali hagigat wrote:
 > The first time is OK. The second time the computer freezes and i have
 > a kernel panic and carsh dump every time.
 
-Please post the panic somewhere.
+You have to call rt_task_remove_hook in the module cleanup function.
+Otherwise the hook remains registered with a module address no longer valid.
 
 
 -- 
