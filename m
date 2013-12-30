@@ -1,12 +1,12 @@
-From: "Andreas Gareis" <andreas.gareis@hs-augsburg.de>
-Date: Mon, 30 Dec 2013 17:00:03 +0100
-Message-ID: <000201cf0578$33b94cf0$9b2be6d0$@hs-augsburg.de>
+Message-ID: <52C1EA3B.2030009@xenomai.org>
+Date: Mon, 30 Dec 2013 22:48:43 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Content-Language: de
-Content-Type: text/plain;
-	charset="us-ascii"
+References: <1388416530-5865-1-git-send-email-sr@denx.de>
+In-Reply-To: <1388416530-5865-1-git-send-email-sr@denx.de>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] rtdm can on mpc5121e - no rtcan devices detected
+Subject: Re: [Xenomai] [PATCH] hal/arm: Add Zynq v3.5.7 patches
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,122 +15,30 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Stefan Roese <sr@denx.de>
+Cc: xenomai@xenomai.org
 
-> Von: Wolfgang Grandegger 
+On 12/30/2013 04:15 PM, Stefan Roese wrote:
+> Xilinx Zynq is already supported in the mainline Xenomai git repository.
+> This patch adds support for the v3.5.7 Linux Kernel with the latest
+> arm-6 i-pipe patch additionally to the already present v3.8 support.
 
-> 
+Sorry, I can not take these patches:
+- they contain changes in the I-pipe core not related to the Zynq
+architecture, these should be submitted separately as patches to the
+I-pipe git itself;
+- they contain changes in the Linux code, not related to Zynq either,
+probably due to a mismatch between the stable revision you are using. In
+order to use a more recent revision, please post a patch modifying the
+I-pipe git to use that more recent stable revision;
+- they contain a defconfig file, if you want to make that file
+available, please put it to some ftp or http server somewhere and put
+the URL in the readme;
 
-> On Mon, 9 Dec 2013 20:35:12 +0100, "Andreas Gareis"
+Really, the pre and post patches should be short, here they are enormous.
 
-> < <mailto:andreas.gareis@hs-augsburg.de> andreas.gareis@hs-augsburg.de>
-wrote:
 
-> > Von: Wolfgang Grandegger
 
-> >  Gesendet: Montag, 9. Dezember 2013 20:10
-
-> >>
-
-> >> On Mon, 9 Dec 2013 19:17:47 +0100, "Andreas Gareis"
-
-> >> < <mailto:andreas.gareis@hs-augsburg.de> andreas.gareis@hs-augsburg.de>
-wrote:
-
-> >> > Von: Tom Evans
-
-> >> >  Gesendet: Sonntag, 8. Dezember 2013 23:07
-
-> >> >>
-
-> >> >> Did the CAN devices work before you installed Xenomai? Get them
-
-> >> >> working there first.
-
-> >> >>
-
-> >> >
-
-> >> > Yes, the CAN devices worked before Xenomai installation. They were
-
-> >> > shown in ifconfig and communication with other CAN-devices was
-
-> >> > possible.
-
-> >> >
-
-> >> > When I select normal (non rt) CAN-support and xenomai kernel
-
-> >> > (without
-
-> >> > RT-CAN) in the kernelconfig, working CAN devices are also available.
-
-> >> >
-
-> >> > Now I want to use RT-CAN with xenomai. So, I activated
-
-> "RT-Socket-CAN"
-
-> >> > and "MSCAN driver for MPC52xx and MPC512x" in the kernelconfig.
-
-> >> > When "normal" CAN support (Networking support => CAN bus
-
-> subsystem
-
-> >> > support => CAN Device Drivers Freescale MPC5xxx onboard CAN
-
-> >> > controller) is disabled, the xenomai module "xeno_can_mscan.ko"
-
-> >> > isn't able to start. When "normal" CAN support
-
-> >>
-
-> >> That's the real problem. What happen's if you want to start the CAN
-
-> >> device?
-
-> >
-
-> > First I call "insmod xeno_can.ko". dmesg shows:
-
-> >     RT-Socket-CAN 0.90.2 - (C) 2006 RT-Socket-CAN Development Team
-
-> >
-
-> > Then I call "insmod xeno_can_mscan.ko".
-
-> > This operation gets stuck (the insmod doesn't return).
-
-> > In dmesg there are no messages.
-
-> > lsmod shows that xeno_can is running and xeno_can_mscan is still
-
-> loading.
-
-> 
-
-> Add some pr_info/printk to the drivers probe function to see where it
-hangs.
-
-> 
-
-> Wolfgang.
-
-> 
-
- Sorry for my late answer. I've found the problem: I was using xenomai
-2.6.0-rc5. In the function rtcan_mscan_mode_stop() in rtcan_mscan.c there is
-a while() which is never terminated. So I used the code from current xenomai
-version as there is a counter within the while(). The rtcan devices can be
-used now.
-
- 
-
-Thank you for your help!
-
- 
-
-Andreas
-
- 
+-- 
+                                                                Gilles.
 
