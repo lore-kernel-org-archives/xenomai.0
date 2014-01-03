@@ -1,14 +1,12 @@
-Message-ID: <52C68FC4.70004@denx.de>
-Date: Fri, 03 Jan 2014 11:24:04 +0100
-From: Stefan Roese <sr@denx.de>
+Message-ID: <52C6C14C.9000306@web.de>
+Date: Fri, 03 Jan 2014 14:55:24 +0100
+From: Jan Kiszka <jan.kiszka@web.de>
 MIME-Version: 1.0
-References: <1388416530-5865-1-git-send-email-sr@denx.de>
- <52C1EA3B.2030009@xenomai.org> <52C2608E.2030609@denx.de>
- <52C2813E.3040106@xenomai.org>
-In-Reply-To: <52C2813E.3040106@xenomai.org>
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] [PATCH] hal/arm: Add Zynq v3.5.7 patches
+References: <52BD3D0E.3010802@xenomai.org>
+In-Reply-To: <52BD3D0E.3010802@xenomai.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+Subject: Re: [Xenomai] reworking rtdm
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,52 +15,82 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
-Cc: xenomai@xenomai.org
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, Philippe Gerum <rpm@xenomai.org>
+Cc: Xenomai <xenomai@xenomai.org>
 
-On 31.12.2013 09:33, Gilles Chanteperdrix wrote:
->> Its the other way around. The Xilinx code is based on Linux v3.5. And
->> the i-pipe patch is based on v3.5.7. So the pre-patch also includes the
->> move for the xilinx code from v3.5 to v3.5.7.
->>
->>> - they contain a defconfig file, if you want to make that file
->>> available, please put it to some ftp or http server somewhere and put
->>> the URL in the readme;
->>
->> Okay.
->>
->>> Really, the pre and post patches should be short, here they are enormous.
->>
->> Mostly because of the v3.5 -> v3.5.7 move for the Xilinx code. Should I
->> post this v3.5 -> v3.5.7 diff as a separate patch?
->>
-> 
-> One solution would be to dig the 3.5.0 patches from the I-pipe git, but
-> that would mean backporting changes that were done later, and having to
-> retest with 3.5 instead of 3.5.7.
-
-Hmmm. I really would not want to move from an already well tested
-"stable" 3.5.7 version back to v3.5.
-
-> Another solution would be to get the Xilinx tree updated, and send
-> patches to that updated tree.
-
-Its very unlikely that this will happen. As Xilinx is not actively
-maintaining older Linux versions once development has switched to a
-newer one. So I don't expect them to accept patches to v3.5.
-
-> If you can publish your updated git tree
-> for the Xilinx tree, then base your pre- and post- patches on that
-> updated git tree (it simply means that the README will contain
-> references to the git tree you publish instead of Xilinx tree, so, it
-> will not be much more complicated for users, they already have to use
-> git anyway).
-
-That's something I could do. Publish a git repository with the Xilinx
-v3.5 sources and the v3.5 -> v3.5.7 patch on-top. And re-base my pre-
-and post-patches (trimmed down, without the defconfig) for this git
-repository. I'll try to send an updated patch next week.
-
-Thanks,
-Stefan
-
+T24gMjAxMy0xMi0yNyAwOTo0MCwgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4gCj4gSGkg
+SmFuLCBQaGlsaXBwZSwKPiAKPiBUaGUgeG5mZCBzdXBwb3J0IGlzIHRha2luZyBzaGFwZSwgYW5k
+IEkgdGhpbmsgaXQgaXMgdGltZSB0byBzdGFydAo+IHJlYmFzaW5nIHJ0ZG0gb24gaXQuIEhvd2V2
+ZXIsIGxvb2tpbmcgYXQgcnRkbSwgSSBoYXZlIHNvbWUgcXVlc3Rpb25zIGZpcnN0Ogo+IAo+IF9y
+dC9fbnJ0IGNhbGxiYWNrczogdGhlIG9wZW5fcnQsIGNsb3NlX3J0LCBzb2NrZXRfcnQgY2FsbGJh
+Y2tzIGhhdmUgYmVlbgo+IGRlcHJlY2F0ZWQgZm9yIHNvbWUgdGltZSBub3csIHdvdWxkIG5vdCBp
+dCBtYWtlIHNlbnNlIHRvIHJlbW92ZSB0aGVtCj4gY29tcGxldGVseSBmcm9tIC1mb3JnZT8KClll
+cywgd2UgY2FuIGRyb3AgdGhlbS4KCj4gCj4gc3lzY2FsbCBmbGFnczogdGhpcyBpcyBhbiBpc3N1
+ZSB3aGljaCB3YXMgZGlzY3Vzc2VkIHNvbWUgdGltZSBhZ28sIHRoZQo+IHN5c2NhbGwgZmxhZ3Mg
+Zm9yIHJ0ZG0gY2FsbGJhY2sgd2hpY2ggd291bGQgbWFrZSBtb3N0IHNlbnNlIGFyZQo+IF9feG5f
+ZXhlY19jb25mb3JtaW5nfF9feG5fZXhlY19hZGFwdGl2ZSwgZm9yIHJlYXNvbnMgb2YgY29tcGF0
+aWJpbGl0eQo+IChpZiBJIHVuZGVyc3Rvb2QgY29ycmVjdGx5KSwgcnRkbSBzdGlsbCB1c2VzCj4g
+X194bl9leGVjX2N1cnJlbnR8X194bl9leGVjX2FkYXB0aXZlLCB3aXRoIGFuICJlbXVsYXRpb24i
+IG9mCj4gX194bl9leGVjX2NvbmZvcm1pbmcgaW4gYW5hbG9neSBjb2RlIHJlbHlpbmcgb24gcnRk
+bV9pc19ydF9jYXBhYmxlLgo+IFdvdWxkIG5vdCBpdCBtYWtlIHNlbnNlIHRvIGNoYW5nZSB0aGUg
+c3lzY2FsbCBmbGFncyBub3csIGFuZCByZW1vdmUgdGhlCj4gaGFjayBmcm9tIGFuYWxvZ3k/IElm
+IHlvdSBoYXZlIG5vdCBjaGFuZ2VkIHlvdXIgbWluZCwgd291bGQgY2hhbmdpbmcKPiBfX3huX2V4
+ZWNfY29uZm9ybWluZyBzbyB0aGF0IHNlY29uZGFyeSBtb2RlIGlzIHByZWZlcnJlZCBmb3IgdGhy
+ZWFkcwo+IHdpdGggdGhlIFhOV0VBSyBmbGFnIGhlbHA/CgpUaGUgb3JpZ2luYWwgaWRlYSBvZiBf
+X3huX2V4ZWNfY3VycmVudHxfX3huX2V4ZWNfYWRhcHRpdmUgd2FzIHRvIGVuYWJsZQp1c2Vyc3Bh
+Y2UgdG8gc2VsZWN0IFJUIHZzLiBub24tUlQgYnkgYWRqdXN0aW5nIHRoZSBpdHMgZXhlY3V0aW9u
+IG1vZGUuCkFzIHdlIGRlcHJlY2F0ZWQgdGhpcyBpbnRlcmZhY2UgbG9uZyBhZ28sIHdlIGNhbiBw
+cm9iYWJseSBhbHNvIHJlbW92ZQp0aGlzIHByb3BlcnR5IGZyb20gUlRETSBub3cuCgpUaGF0IHNh
+aWQgYW5kIGdpdmVuIHRoYXQgWE5XRUFLIHRocmVhZHMgZmFsbCBiYWNrIHRvIHNlY29uZGFyeSBt
+b2RlCmFmdGVyIGV4ZWN1dGluZyBwcmltYXJ5IG1vZGUgc3lzY2FsbHMsIGl0J3MgcHJvYmFibHkg
+bW9yZSAiY29uZm9ybWluZyIKZm9yIHRoZW0gdG8gZW50ZXIgUlRETSBzZXJ2aWNlcyBmcm9tIHNl
+Y29uZGFyeSBtb2RlIGZpcnN0LgoKPiAKPiBydGRtX3VzZXJfaW5mbzogd2l0aCB0aGUgc3dpdGNo
+IHRvIHhuZmQsIGEgZmlsZSBkZXNjcmlwdG9yIHdpbGwgYmUsIGJ5Cj4gY29uc3RydWN0aW9uLCBl
+aXRoZXIgYW4gYXBwbGljYXRpb24gZmlsZSBkZXNjcmlwdG9yLCBvciBhIGtlcm5lbCBmaWxlCj4g
+ZGVzY3JpcHRvci4gVGhlIGluZm9ybWF0aW9uIGNhbiBiZSByZXRyaWV2ZWQgZnJvbSB0aGUgbW0g
+aXQgaXMgYXR0YWNoZWQKPiB0by4gVGhpcyBtYWtlcyB0aGUgcnRkbV91c2VyX2luZm9fdCBhcmd1
+bWVudHMgcGFzc2VkIHRvIHRoZSBjYWxsYmFja3MKPiBlc3NlbnRpYWxseSByZWR1bmRhbnQuIEJl
+c2lkZXMsIGRlc3BpdGUgdGhlIGZhY3QgdGhhdCB0aGlzIGluZm9ybWF0aW9uCj4gaXMgcGFzc2Vk
+IHRvIGEgbG90IG9mIHJ0ZG0gc2VydmljZXMsIG9ubHkgYSBmZXcgb2YgdGhlbSBhY3R1YWxseSB1
+c2UgaXQuCgpUaGVyZSBhcmUgZmV3IGRyaXZlcnMgdGhhdCBhcmUgcmVhZHkgdG8gYmUgdXNlZCBp
+biBrZXJuZWwgc3BhY2UuIEFuZApzb21lIChSVG5ldCkgc3RpbGwgbGFjayBzYWZlIGNvcHkgdG8v
+ZnJvbSB1c2VyIHNwYWNlLiBTbyB0aGUgbGFjayBvZiB1c2UKanVzdCBpbmRpY2F0ZXMgaW5jb21w
+bGV0ZSBpbXBsZW1lbnRhdGlvbnMuCgo+IFNvLCB0aGVyZSBhcmUgc2V2ZXJhbCBwb3NzaWJpbGl0
+aWVzLgo+IAo+IEVpdGhlciB3ZSByZW1vdmUgdGhlIHJ0ZG1fdXNlcl9pbmZvX3QgY29tcGxldGVs
+eSBmcm9tIHRoZSBmZCBjYWxsYmFja3MsCj4gYW5kIGZyb20gdGhlIHNlcnZpY2VzIGxpa2UgcnRk
+bV9jb3B5X2Zyb21fdXNlciB3aGljaCBkbyBub3QgdXNlIGl0LiBGb3IKPiB0aGUgZmV3IHNlcnZp
+Y2VzIHdoaWNoIG5lZWQgaXQsIHRoZXkgY2FuIGJlIG9mZmVyZWQgYW4gYWNjZXNzb3IgZ2l2aW5n
+Cj4gdGhpcyBpbmZvcm1hdGlvbiBlaXRoZXIgZnJvbSB0aGUgeG5mZCBwb2ludGVyIG9mIGZyb20g
+dGhlIGRyaXZlciAicHJpdiIKPiBwb2ludGVyICh0aGUgbGF0dGVyIG1ha2VzIG1vcmUgc2Vuc2Us
+IHNpbmNlIGFuYWxvZ3kgb25seSBwYXNzZXMgaXRzIHByaXYKPiBwb2ludGVyIGRvd24gdGhlIGRy
+aXZlciBmdW5jdGlvbnMsIGFuZCBpdCBjdXJyZW50bHkgcmVzb3J0cyB0byBzYXZpbmcKPiB0aGUg
+dXNlcl9pbmZvIHBvaW50ZXIgaW4gaXRzIHByaXZhdGUgc3RydWN0dXJlIHNvIGFzIHRvIGJlIGFi
+bGUgdG8KPiByZXRyaWV2ZSBpdCBhbnl3aGVyZSBpbiB0aGUgZHJpdmVyKS4gVGhpcyBzb2x1dGlv
+biBpcyB0aGUgY2xlYW5lc3QsIHRoZQo+IGRyYXdiYWNrIGlzIHRoYXQgaXQgYnJlYWtzIHRoZSBk
+cml2ZXJzIEFQSSwgc28gb3V0LW9mLXRyZWUgZHJpdmVycyB3aGljaAo+IHdhbnQgdG8gYmUgY29t
+cGF0aWJsZSB3aXRoIHhlbm9tYWkgY2xhc3NpYyBhbmQgeGVub21haSBmb3JnZSB3aWxsIGhhdmUg
+YQo+IGhhcmQgdGltZS4gV2UgY2FuIGhlbHAgdGhlbSBieSBwcm92aWRpbmcgbWFjcm9zIGJvdGgg
+aW4gZm9yZ2UgYW5kIDIueCB0bwo+IGNvcGUgd2l0aCB0aGUgZGlmZmVyZW5jZXMuCgpUaGUgaWRl
+YSBvZiBoYXZpbmcgcnRkbV91c2VyX2luZm9fdCBpbiB0aGUgY29weSBmdW5jdGlvbnMgd2FzIG9u
+Y2UgdG8Ka2VlcCB0aGUgZG9vciBvcGVuIGZvciB1c2VyLXNwYWNlIHByb3RvdHlwaW5nIG9mIFJU
+RE0gZHJpdmVycy4gQnV0IHRoYXQKaXMgdW5yZWFsaXN0aWMgdG8gaGFwcGVuIGFueSB0aW1lIHNv
+b24sIGFuZCBpZiB0aGUgcGFyYW1ldGVyIGNvdWxkIGJlCmhlbHBmdWwgYXQgYWxsIGlzIHF1ZXN0
+aW9uYWJsZS4KCklmIHdlIGNhbiBmaW5kIGEgcmVhc29uYWJsZSBtaWdyYXRpb24gY29uY2VwdCwg
+SSdtIGZpbmUgd2l0aCBjbGVhbmluZwp1cC4gSSBndWVzcyB1c2VyX2luZm8gY291bGQgYmVjb21l
+IGEgZmllbGQgb2YgcnRkbV9kZXZfY29udGV4dC4KCkphbgoKPiAKPiBPciBydGRtIGtlZXBzIGl0
+cyBjYWxsYmFja3Mgc2VwYXJhdGVkIGZyb20geG5mZCBjYWxsYmFja3MsIGFuZCBydGRtIGZpbGUK
+PiBkZXNjcmlwdG9ycyBnZXQgeG5mZCBjYWxsYmFja3Mgd2hpY2ggY2FzY2FkZSB0byBydGRtIGNh
+bGxiYWNrcy4gVGhlCj4gZHJhd2JhY2sgb2YgdGhpcyBzb2x1dGlvbiBpcyB0aGUgYWRkZWQgY29z
+dCBvZiBjYXNjYWRpbmcgZnVuY3Rpb24KPiBwb2ludGVycy4gV2UgY2FuIG1pdGlnYXRlIHRoaXMg
+YnkgaGF2aW5nIHRvICJvcHMiIG1lbWJlcnMgaW4gdGhlIHJ0ZG0KPiBkcml2ZXIgc3RydWN0dXJl
+LCBhICJsZWdhY3lfb3BzIiB3aXRoIHRoZSBjYXNjYWRlZCBsZWdhY3kgY2FsbGJhY2tzLCBhbmQK
+PiBhbiAib3BzIiB3aGVyZSB0aGUgeG5mZCBjYWxsYmFja3MgYXJlIGltcGxlbWVudGVkIGRpcmVj
+dGx5LiBJZiBvcHMgaXMKPiB0aGVyZSBpdCBpcyB1c2VkLCBvdGhlcndpc2UgdGhlIGNhc2NhZGlu
+ZyB2ZXJzaW9uIGlzIHVzZWQuCj4gCj4gT3IgZmluYWxseSwgd2UgYnl0ZSB0aGUgYnVsbGV0LCBh
+bmQgYWRkIHRoZSBydGRtX3VzZXJfaW5mb190IGFyZ3VtZW50IHRvCj4geG5mZCBjYWxsYmFjay4K
+PiAKPiBOb3cgc2VlbXMgbGlrZSB0aGUgZ29vZCB0aW1lIGZvciBzb21lIGNsZWFudXAuCj4gCj4g
+UmVnYXJkcy4KPiAKCgotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBu
+b24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBzaWduYXR1cmUuYXNjClR5
+cGU6IGFwcGxpY2F0aW9uL3BncC1zaWduYXR1cmUKU2l6ZTogMjYzIGJ5dGVzCkRlc2M6IE9wZW5Q
+R1AgZGlnaXRhbCBzaWduYXR1cmUKVVJMOiA8aHR0cDovL3d3dy54ZW5vbWFpLm9yZy9waXBlcm1h
+aWwveGVub21haS9hdHRhY2htZW50cy8yMDE0MDEwMy9iYzZmNDNjZC9hdHRhY2htZW50LnNpZz4K
