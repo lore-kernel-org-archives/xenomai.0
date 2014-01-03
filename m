@@ -1,11 +1,11 @@
-Message-ID: <52C6C14C.9000306@web.de>
-Date: Fri, 03 Jan 2014 14:55:24 +0100
-From: Jan Kiszka <jan.kiszka@web.de>
+Message-ID: <52C6F57B.3090101@xenomai.org>
+Date: Fri, 03 Jan 2014 18:38:03 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <52BD3D0E.3010802@xenomai.org>
-In-Reply-To: <52BD3D0E.3010802@xenomai.org>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+References: <52BD3D0E.3010802@xenomai.org> <52C6C14C.9000306@web.de>
+In-Reply-To: <52C6C14C.9000306@web.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] reworking rtdm
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -15,82 +15,92 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>, Philippe Gerum <rpm@xenomai.org>
+To: Jan Kiszka <jan.kiszka@web.de>
 Cc: Xenomai <xenomai@xenomai.org>
 
-T24gMjAxMy0xMi0yNyAwOTo0MCwgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4gCj4gSGkg
-SmFuLCBQaGlsaXBwZSwKPiAKPiBUaGUgeG5mZCBzdXBwb3J0IGlzIHRha2luZyBzaGFwZSwgYW5k
-IEkgdGhpbmsgaXQgaXMgdGltZSB0byBzdGFydAo+IHJlYmFzaW5nIHJ0ZG0gb24gaXQuIEhvd2V2
-ZXIsIGxvb2tpbmcgYXQgcnRkbSwgSSBoYXZlIHNvbWUgcXVlc3Rpb25zIGZpcnN0Ogo+IAo+IF9y
-dC9fbnJ0IGNhbGxiYWNrczogdGhlIG9wZW5fcnQsIGNsb3NlX3J0LCBzb2NrZXRfcnQgY2FsbGJh
-Y2tzIGhhdmUgYmVlbgo+IGRlcHJlY2F0ZWQgZm9yIHNvbWUgdGltZSBub3csIHdvdWxkIG5vdCBp
-dCBtYWtlIHNlbnNlIHRvIHJlbW92ZSB0aGVtCj4gY29tcGxldGVseSBmcm9tIC1mb3JnZT8KClll
-cywgd2UgY2FuIGRyb3AgdGhlbS4KCj4gCj4gc3lzY2FsbCBmbGFnczogdGhpcyBpcyBhbiBpc3N1
-ZSB3aGljaCB3YXMgZGlzY3Vzc2VkIHNvbWUgdGltZSBhZ28sIHRoZQo+IHN5c2NhbGwgZmxhZ3Mg
-Zm9yIHJ0ZG0gY2FsbGJhY2sgd2hpY2ggd291bGQgbWFrZSBtb3N0IHNlbnNlIGFyZQo+IF9feG5f
-ZXhlY19jb25mb3JtaW5nfF9feG5fZXhlY19hZGFwdGl2ZSwgZm9yIHJlYXNvbnMgb2YgY29tcGF0
-aWJpbGl0eQo+IChpZiBJIHVuZGVyc3Rvb2QgY29ycmVjdGx5KSwgcnRkbSBzdGlsbCB1c2VzCj4g
-X194bl9leGVjX2N1cnJlbnR8X194bl9leGVjX2FkYXB0aXZlLCB3aXRoIGFuICJlbXVsYXRpb24i
-IG9mCj4gX194bl9leGVjX2NvbmZvcm1pbmcgaW4gYW5hbG9neSBjb2RlIHJlbHlpbmcgb24gcnRk
-bV9pc19ydF9jYXBhYmxlLgo+IFdvdWxkIG5vdCBpdCBtYWtlIHNlbnNlIHRvIGNoYW5nZSB0aGUg
-c3lzY2FsbCBmbGFncyBub3csIGFuZCByZW1vdmUgdGhlCj4gaGFjayBmcm9tIGFuYWxvZ3k/IElm
-IHlvdSBoYXZlIG5vdCBjaGFuZ2VkIHlvdXIgbWluZCwgd291bGQgY2hhbmdpbmcKPiBfX3huX2V4
-ZWNfY29uZm9ybWluZyBzbyB0aGF0IHNlY29uZGFyeSBtb2RlIGlzIHByZWZlcnJlZCBmb3IgdGhy
-ZWFkcwo+IHdpdGggdGhlIFhOV0VBSyBmbGFnIGhlbHA/CgpUaGUgb3JpZ2luYWwgaWRlYSBvZiBf
-X3huX2V4ZWNfY3VycmVudHxfX3huX2V4ZWNfYWRhcHRpdmUgd2FzIHRvIGVuYWJsZQp1c2Vyc3Bh
-Y2UgdG8gc2VsZWN0IFJUIHZzLiBub24tUlQgYnkgYWRqdXN0aW5nIHRoZSBpdHMgZXhlY3V0aW9u
-IG1vZGUuCkFzIHdlIGRlcHJlY2F0ZWQgdGhpcyBpbnRlcmZhY2UgbG9uZyBhZ28sIHdlIGNhbiBw
-cm9iYWJseSBhbHNvIHJlbW92ZQp0aGlzIHByb3BlcnR5IGZyb20gUlRETSBub3cuCgpUaGF0IHNh
-aWQgYW5kIGdpdmVuIHRoYXQgWE5XRUFLIHRocmVhZHMgZmFsbCBiYWNrIHRvIHNlY29uZGFyeSBt
-b2RlCmFmdGVyIGV4ZWN1dGluZyBwcmltYXJ5IG1vZGUgc3lzY2FsbHMsIGl0J3MgcHJvYmFibHkg
-bW9yZSAiY29uZm9ybWluZyIKZm9yIHRoZW0gdG8gZW50ZXIgUlRETSBzZXJ2aWNlcyBmcm9tIHNl
-Y29uZGFyeSBtb2RlIGZpcnN0LgoKPiAKPiBydGRtX3VzZXJfaW5mbzogd2l0aCB0aGUgc3dpdGNo
-IHRvIHhuZmQsIGEgZmlsZSBkZXNjcmlwdG9yIHdpbGwgYmUsIGJ5Cj4gY29uc3RydWN0aW9uLCBl
-aXRoZXIgYW4gYXBwbGljYXRpb24gZmlsZSBkZXNjcmlwdG9yLCBvciBhIGtlcm5lbCBmaWxlCj4g
-ZGVzY3JpcHRvci4gVGhlIGluZm9ybWF0aW9uIGNhbiBiZSByZXRyaWV2ZWQgZnJvbSB0aGUgbW0g
-aXQgaXMgYXR0YWNoZWQKPiB0by4gVGhpcyBtYWtlcyB0aGUgcnRkbV91c2VyX2luZm9fdCBhcmd1
-bWVudHMgcGFzc2VkIHRvIHRoZSBjYWxsYmFja3MKPiBlc3NlbnRpYWxseSByZWR1bmRhbnQuIEJl
-c2lkZXMsIGRlc3BpdGUgdGhlIGZhY3QgdGhhdCB0aGlzIGluZm9ybWF0aW9uCj4gaXMgcGFzc2Vk
-IHRvIGEgbG90IG9mIHJ0ZG0gc2VydmljZXMsIG9ubHkgYSBmZXcgb2YgdGhlbSBhY3R1YWxseSB1
-c2UgaXQuCgpUaGVyZSBhcmUgZmV3IGRyaXZlcnMgdGhhdCBhcmUgcmVhZHkgdG8gYmUgdXNlZCBp
-biBrZXJuZWwgc3BhY2UuIEFuZApzb21lIChSVG5ldCkgc3RpbGwgbGFjayBzYWZlIGNvcHkgdG8v
-ZnJvbSB1c2VyIHNwYWNlLiBTbyB0aGUgbGFjayBvZiB1c2UKanVzdCBpbmRpY2F0ZXMgaW5jb21w
-bGV0ZSBpbXBsZW1lbnRhdGlvbnMuCgo+IFNvLCB0aGVyZSBhcmUgc2V2ZXJhbCBwb3NzaWJpbGl0
-aWVzLgo+IAo+IEVpdGhlciB3ZSByZW1vdmUgdGhlIHJ0ZG1fdXNlcl9pbmZvX3QgY29tcGxldGVs
-eSBmcm9tIHRoZSBmZCBjYWxsYmFja3MsCj4gYW5kIGZyb20gdGhlIHNlcnZpY2VzIGxpa2UgcnRk
-bV9jb3B5X2Zyb21fdXNlciB3aGljaCBkbyBub3QgdXNlIGl0LiBGb3IKPiB0aGUgZmV3IHNlcnZp
-Y2VzIHdoaWNoIG5lZWQgaXQsIHRoZXkgY2FuIGJlIG9mZmVyZWQgYW4gYWNjZXNzb3IgZ2l2aW5n
-Cj4gdGhpcyBpbmZvcm1hdGlvbiBlaXRoZXIgZnJvbSB0aGUgeG5mZCBwb2ludGVyIG9mIGZyb20g
-dGhlIGRyaXZlciAicHJpdiIKPiBwb2ludGVyICh0aGUgbGF0dGVyIG1ha2VzIG1vcmUgc2Vuc2Us
-IHNpbmNlIGFuYWxvZ3kgb25seSBwYXNzZXMgaXRzIHByaXYKPiBwb2ludGVyIGRvd24gdGhlIGRy
-aXZlciBmdW5jdGlvbnMsIGFuZCBpdCBjdXJyZW50bHkgcmVzb3J0cyB0byBzYXZpbmcKPiB0aGUg
-dXNlcl9pbmZvIHBvaW50ZXIgaW4gaXRzIHByaXZhdGUgc3RydWN0dXJlIHNvIGFzIHRvIGJlIGFi
-bGUgdG8KPiByZXRyaWV2ZSBpdCBhbnl3aGVyZSBpbiB0aGUgZHJpdmVyKS4gVGhpcyBzb2x1dGlv
-biBpcyB0aGUgY2xlYW5lc3QsIHRoZQo+IGRyYXdiYWNrIGlzIHRoYXQgaXQgYnJlYWtzIHRoZSBk
-cml2ZXJzIEFQSSwgc28gb3V0LW9mLXRyZWUgZHJpdmVycyB3aGljaAo+IHdhbnQgdG8gYmUgY29t
-cGF0aWJsZSB3aXRoIHhlbm9tYWkgY2xhc3NpYyBhbmQgeGVub21haSBmb3JnZSB3aWxsIGhhdmUg
-YQo+IGhhcmQgdGltZS4gV2UgY2FuIGhlbHAgdGhlbSBieSBwcm92aWRpbmcgbWFjcm9zIGJvdGgg
-aW4gZm9yZ2UgYW5kIDIueCB0bwo+IGNvcGUgd2l0aCB0aGUgZGlmZmVyZW5jZXMuCgpUaGUgaWRl
-YSBvZiBoYXZpbmcgcnRkbV91c2VyX2luZm9fdCBpbiB0aGUgY29weSBmdW5jdGlvbnMgd2FzIG9u
-Y2UgdG8Ka2VlcCB0aGUgZG9vciBvcGVuIGZvciB1c2VyLXNwYWNlIHByb3RvdHlwaW5nIG9mIFJU
-RE0gZHJpdmVycy4gQnV0IHRoYXQKaXMgdW5yZWFsaXN0aWMgdG8gaGFwcGVuIGFueSB0aW1lIHNv
-b24sIGFuZCBpZiB0aGUgcGFyYW1ldGVyIGNvdWxkIGJlCmhlbHBmdWwgYXQgYWxsIGlzIHF1ZXN0
-aW9uYWJsZS4KCklmIHdlIGNhbiBmaW5kIGEgcmVhc29uYWJsZSBtaWdyYXRpb24gY29uY2VwdCwg
-SSdtIGZpbmUgd2l0aCBjbGVhbmluZwp1cC4gSSBndWVzcyB1c2VyX2luZm8gY291bGQgYmVjb21l
-IGEgZmllbGQgb2YgcnRkbV9kZXZfY29udGV4dC4KCkphbgoKPiAKPiBPciBydGRtIGtlZXBzIGl0
-cyBjYWxsYmFja3Mgc2VwYXJhdGVkIGZyb20geG5mZCBjYWxsYmFja3MsIGFuZCBydGRtIGZpbGUK
-PiBkZXNjcmlwdG9ycyBnZXQgeG5mZCBjYWxsYmFja3Mgd2hpY2ggY2FzY2FkZSB0byBydGRtIGNh
-bGxiYWNrcy4gVGhlCj4gZHJhd2JhY2sgb2YgdGhpcyBzb2x1dGlvbiBpcyB0aGUgYWRkZWQgY29z
-dCBvZiBjYXNjYWRpbmcgZnVuY3Rpb24KPiBwb2ludGVycy4gV2UgY2FuIG1pdGlnYXRlIHRoaXMg
-YnkgaGF2aW5nIHRvICJvcHMiIG1lbWJlcnMgaW4gdGhlIHJ0ZG0KPiBkcml2ZXIgc3RydWN0dXJl
-LCBhICJsZWdhY3lfb3BzIiB3aXRoIHRoZSBjYXNjYWRlZCBsZWdhY3kgY2FsbGJhY2tzLCBhbmQK
-PiBhbiAib3BzIiB3aGVyZSB0aGUgeG5mZCBjYWxsYmFja3MgYXJlIGltcGxlbWVudGVkIGRpcmVj
-dGx5LiBJZiBvcHMgaXMKPiB0aGVyZSBpdCBpcyB1c2VkLCBvdGhlcndpc2UgdGhlIGNhc2NhZGlu
-ZyB2ZXJzaW9uIGlzIHVzZWQuCj4gCj4gT3IgZmluYWxseSwgd2UgYnl0ZSB0aGUgYnVsbGV0LCBh
-bmQgYWRkIHRoZSBydGRtX3VzZXJfaW5mb190IGFyZ3VtZW50IHRvCj4geG5mZCBjYWxsYmFjay4K
-PiAKPiBOb3cgc2VlbXMgbGlrZSB0aGUgZ29vZCB0aW1lIGZvciBzb21lIGNsZWFudXAuCj4gCj4g
-UmVnYXJkcy4KPiAKCgotLS0tLS0tLS0tLS0tLSBuZXh0IHBhcnQgLS0tLS0tLS0tLS0tLS0KQSBu
-b24tdGV4dCBhdHRhY2htZW50IHdhcyBzY3J1YmJlZC4uLgpOYW1lOiBzaWduYXR1cmUuYXNjClR5
-cGU6IGFwcGxpY2F0aW9uL3BncC1zaWduYXR1cmUKU2l6ZTogMjYzIGJ5dGVzCkRlc2M6IE9wZW5Q
-R1AgZGlnaXRhbCBzaWduYXR1cmUKVVJMOiA8aHR0cDovL3d3dy54ZW5vbWFpLm9yZy9waXBlcm1h
-aWwveGVub21haS9hdHRhY2htZW50cy8yMDE0MDEwMy9iYzZmNDNjZC9hdHRhY2htZW50LnNpZz4K
+On 01/03/2014 02:55 PM, Jan Kiszka wrote:
+> On 2013-12-27 09:40, Gilles Chanteperdrix wrote:
+>>
+>> Hi Jan, Philippe,
+>>
+>> The xnfd support is taking shape, and I think it is time to start
+>> rebasing rtdm on it. However, looking at rtdm, I have some questions first:
+>>
+>> _rt/_nrt callbacks: the open_rt, close_rt, socket_rt callbacks have been
+>> deprecated for some time now, would not it make sense to remove them
+>> completely from -forge?
+>
+> Yes, we can drop them.
+>
+>>
+>> syscall flags: this is an issue which was discussed some time ago, the
+>> syscall flags for rtdm callback which would make most sense are
+>> __xn_exec_conforming|__xn_exec_adaptive, for reasons of compatibility
+>> (if I understood correctly), rtdm still uses
+>> __xn_exec_current|__xn_exec_adaptive, with an "emulation" of
+>> __xn_exec_conforming in analogy code relying on rtdm_is_rt_capable.
+>> Would not it make sense to change the syscall flags now, and remove the
+>> hack from analogy? If you have not changed your mind, would changing
+>> __xn_exec_conforming so that secondary mode is preferred for threads
+>> with the XNWEAK flag help?
+>
+> The original idea of __xn_exec_current|__xn_exec_adaptive was to enable
+> userspace to select RT vs. non-RT by adjusting the its execution mode.
+> As we deprecated this interface long ago, we can probably also remove
+> this property from RTDM now.
+>
+> That said and given that XNWEAK threads fall back to secondary mode
+> after executing primary mode syscalls, it's probably more "conforming"
+> for them to enter RTDM services from secondary mode first.
+>
+>>
+>> rtdm_user_info: with the switch to xnfd, a file descriptor will be, by
+>> construction, either an application file descriptor, or a kernel file
+>> descriptor. The information can be retrieved from the mm it is attached
+>> to. This makes the rtdm_user_info_t arguments passed to the callbacks
+>> essentially redundant. Besides, despite the fact that this information
+>> is passed to a lot of rtdm services, only a few of them actually use it.
+>
+> There are few drivers that are ready to be used in kernel space. And
+> some (RTnet) still lack safe copy to/from user space. So the lack of use
+> just indicates incomplete implementations.
+>
+>> So, there are several possibilities.
+>>
+>> Either we remove the rtdm_user_info_t completely from the fd callbacks,
+>> and from the services like rtdm_copy_from_user which do not use it. For
+>> the few services which need it, they can be offered an accessor giving
+>> this information either from the xnfd pointer of from the driver "priv"
+>> pointer (the latter makes more sense, since analogy only passes its priv
+>> pointer down the driver functions, and it currently resorts to saving
+>> the user_info pointer in its private structure so as to be able to
+>> retrieve it anywhere in the driver). This solution is the cleanest, the
+>> drawback is that it breaks the drivers API, so out-of-tree drivers which
+>> want to be compatible with xenomai classic and xenomai forge will have a
+>> hard time. We can help them by providing macros both in forge and 2.x to
+>> cope with the differences.
+>
+> The idea of having rtdm_user_info_t in the copy functions was once to
+> keep the door open for user-space prototyping of RTDM drivers. But that
+> is unrealistic to happen any time soon, and if the parameter could be
+> helpful at all is questionable.
+>
+> If we can find a reasonable migration concept, I'm fine with cleaning
+> up. I guess user_info could become a field of rtdm_dev_context.
+
+I was rather thinking of an accessor, like
+
+static inline struct task_struct *rtdm_user_info(struct xnfd *fd)
+{
+	return fd->mm ? current : NULL;
+}
+
+And typedefing struct xnfd to rtdm_dev_context
+
+Now the question is, do we want to have a macro allowing to fix the 
+callbacks signature to compile for both 2.x and forge? Or do you plan to 
+stop supporting 2.x for instance for rtnet, when 3.0 is out?
+
+-- 
+					    Gilles.
+
