@@ -1,11 +1,12 @@
-Message-ID: <52C6F57B.3090101@xenomai.org>
-Date: Fri, 03 Jan 2014 18:38:03 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <52C71AE0.3090807@web.de>
+Date: Fri, 03 Jan 2014 21:17:36 +0100
+From: Jan Kiszka <jan.kiszka@web.de>
 MIME-Version: 1.0
 References: <52BD3D0E.3010802@xenomai.org> <52C6C14C.9000306@web.de>
-In-Reply-To: <52C6C14C.9000306@web.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+ <52C6F57B.3090101@xenomai.org>
+In-Reply-To: <52C6F57B.3090101@xenomai.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Subject: Re: [Xenomai] reworking rtdm
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -15,92 +16,91 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Jan Kiszka <jan.kiszka@web.de>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: Xenomai <xenomai@xenomai.org>
 
-On 01/03/2014 02:55 PM, Jan Kiszka wrote:
-> On 2013-12-27 09:40, Gilles Chanteperdrix wrote:
->>
->> Hi Jan, Philippe,
->>
->> The xnfd support is taking shape, and I think it is time to start
->> rebasing rtdm on it. However, looking at rtdm, I have some questions first:
->>
->> _rt/_nrt callbacks: the open_rt, close_rt, socket_rt callbacks have been
->> deprecated for some time now, would not it make sense to remove them
->> completely from -forge?
->
-> Yes, we can drop them.
->
->>
->> syscall flags: this is an issue which was discussed some time ago, the
->> syscall flags for rtdm callback which would make most sense are
->> __xn_exec_conforming|__xn_exec_adaptive, for reasons of compatibility
->> (if I understood correctly), rtdm still uses
->> __xn_exec_current|__xn_exec_adaptive, with an "emulation" of
->> __xn_exec_conforming in analogy code relying on rtdm_is_rt_capable.
->> Would not it make sense to change the syscall flags now, and remove the
->> hack from analogy? If you have not changed your mind, would changing
->> __xn_exec_conforming so that secondary mode is preferred for threads
->> with the XNWEAK flag help?
->
-> The original idea of __xn_exec_current|__xn_exec_adaptive was to enable
-> userspace to select RT vs. non-RT by adjusting the its execution mode.
-> As we deprecated this interface long ago, we can probably also remove
-> this property from RTDM now.
->
-> That said and given that XNWEAK threads fall back to secondary mode
-> after executing primary mode syscalls, it's probably more "conforming"
-> for them to enter RTDM services from secondary mode first.
->
->>
->> rtdm_user_info: with the switch to xnfd, a file descriptor will be, by
->> construction, either an application file descriptor, or a kernel file
->> descriptor. The information can be retrieved from the mm it is attached
->> to. This makes the rtdm_user_info_t arguments passed to the callbacks
->> essentially redundant. Besides, despite the fact that this information
->> is passed to a lot of rtdm services, only a few of them actually use it.
->
-> There are few drivers that are ready to be used in kernel space. And
-> some (RTnet) still lack safe copy to/from user space. So the lack of use
-> just indicates incomplete implementations.
->
->> So, there are several possibilities.
->>
->> Either we remove the rtdm_user_info_t completely from the fd callbacks,
->> and from the services like rtdm_copy_from_user which do not use it. For
->> the few services which need it, they can be offered an accessor giving
->> this information either from the xnfd pointer of from the driver "priv"
->> pointer (the latter makes more sense, since analogy only passes its priv
->> pointer down the driver functions, and it currently resorts to saving
->> the user_info pointer in its private structure so as to be able to
->> retrieve it anywhere in the driver). This solution is the cleanest, the
->> drawback is that it breaks the drivers API, so out-of-tree drivers which
->> want to be compatible with xenomai classic and xenomai forge will have a
->> hard time. We can help them by providing macros both in forge and 2.x to
->> cope with the differences.
->
-> The idea of having rtdm_user_info_t in the copy functions was once to
-> keep the door open for user-space prototyping of RTDM drivers. But that
-> is unrealistic to happen any time soon, and if the parameter could be
-> helpful at all is questionable.
->
-> If we can find a reasonable migration concept, I'm fine with cleaning
-> up. I guess user_info could become a field of rtdm_dev_context.
-
-I was rather thinking of an accessor, like
-
-static inline struct task_struct *rtdm_user_info(struct xnfd *fd)
-{
-	return fd->mm ? current : NULL;
-}
-
-And typedefing struct xnfd to rtdm_dev_context
-
-Now the question is, do we want to have a macro allowing to fix the 
-callbacks signature to compile for both 2.x and forge? Or do you plan to 
-stop supporting 2.x for instance for rtnet, when 3.0 is out?
-
--- 
-					    Gilles.
-
+T24gMjAxNC0wMS0wMyAxODozOCwgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4gT24gMDEv
+MDMvMjAxNCAwMjo1NSBQTSwgSmFuIEtpc3prYSB3cm90ZToKPj4gT24gMjAxMy0xMi0yNyAwOTo0
+MCwgR2lsbGVzIENoYW50ZXBlcmRyaXggd3JvdGU6Cj4+Pgo+Pj4gSGkgSmFuLCBQaGlsaXBwZSwK
+Pj4+Cj4+PiBUaGUgeG5mZCBzdXBwb3J0IGlzIHRha2luZyBzaGFwZSwgYW5kIEkgdGhpbmsgaXQg
+aXMgdGltZSB0byBzdGFydAo+Pj4gcmViYXNpbmcgcnRkbSBvbiBpdC4gSG93ZXZlciwgbG9va2lu
+ZyBhdCBydGRtLCBJIGhhdmUgc29tZSBxdWVzdGlvbnMKPj4+IGZpcnN0Ogo+Pj4KPj4+IF9ydC9f
+bnJ0IGNhbGxiYWNrczogdGhlIG9wZW5fcnQsIGNsb3NlX3J0LCBzb2NrZXRfcnQgY2FsbGJhY2tz
+IGhhdmUgYmVlbgo+Pj4gZGVwcmVjYXRlZCBmb3Igc29tZSB0aW1lIG5vdywgd291bGQgbm90IGl0
+IG1ha2Ugc2Vuc2UgdG8gcmVtb3ZlIHRoZW0KPj4+IGNvbXBsZXRlbHkgZnJvbSAtZm9yZ2U/Cj4+
+Cj4+IFllcywgd2UgY2FuIGRyb3AgdGhlbS4KPj4KPj4+Cj4+PiBzeXNjYWxsIGZsYWdzOiB0aGlz
+IGlzIGFuIGlzc3VlIHdoaWNoIHdhcyBkaXNjdXNzZWQgc29tZSB0aW1lIGFnbywgdGhlCj4+PiBz
+eXNjYWxsIGZsYWdzIGZvciBydGRtIGNhbGxiYWNrIHdoaWNoIHdvdWxkIG1ha2UgbW9zdCBzZW5z
+ZSBhcmUKPj4+IF9feG5fZXhlY19jb25mb3JtaW5nfF9feG5fZXhlY19hZGFwdGl2ZSwgZm9yIHJl
+YXNvbnMgb2YgY29tcGF0aWJpbGl0eQo+Pj4gKGlmIEkgdW5kZXJzdG9vZCBjb3JyZWN0bHkpLCBy
+dGRtIHN0aWxsIHVzZXMKPj4+IF9feG5fZXhlY19jdXJyZW50fF9feG5fZXhlY19hZGFwdGl2ZSwg
+d2l0aCBhbiAiZW11bGF0aW9uIiBvZgo+Pj4gX194bl9leGVjX2NvbmZvcm1pbmcgaW4gYW5hbG9n
+eSBjb2RlIHJlbHlpbmcgb24gcnRkbV9pc19ydF9jYXBhYmxlLgo+Pj4gV291bGQgbm90IGl0IG1h
+a2Ugc2Vuc2UgdG8gY2hhbmdlIHRoZSBzeXNjYWxsIGZsYWdzIG5vdywgYW5kIHJlbW92ZSB0aGUK
+Pj4+IGhhY2sgZnJvbSBhbmFsb2d5PyBJZiB5b3UgaGF2ZSBub3QgY2hhbmdlZCB5b3VyIG1pbmQs
+IHdvdWxkIGNoYW5naW5nCj4+PiBfX3huX2V4ZWNfY29uZm9ybWluZyBzbyB0aGF0IHNlY29uZGFy
+eSBtb2RlIGlzIHByZWZlcnJlZCBmb3IgdGhyZWFkcwo+Pj4gd2l0aCB0aGUgWE5XRUFLIGZsYWcg
+aGVscD8KPj4KPj4gVGhlIG9yaWdpbmFsIGlkZWEgb2YgX194bl9leGVjX2N1cnJlbnR8X194bl9l
+eGVjX2FkYXB0aXZlIHdhcyB0byBlbmFibGUKPj4gdXNlcnNwYWNlIHRvIHNlbGVjdCBSVCB2cy4g
+bm9uLVJUIGJ5IGFkanVzdGluZyB0aGUgaXRzIGV4ZWN1dGlvbiBtb2RlLgo+PiBBcyB3ZSBkZXBy
+ZWNhdGVkIHRoaXMgaW50ZXJmYWNlIGxvbmcgYWdvLCB3ZSBjYW4gcHJvYmFibHkgYWxzbyByZW1v
+dmUKPj4gdGhpcyBwcm9wZXJ0eSBmcm9tIFJURE0gbm93Lgo+Pgo+PiBUaGF0IHNhaWQgYW5kIGdp
+dmVuIHRoYXQgWE5XRUFLIHRocmVhZHMgZmFsbCBiYWNrIHRvIHNlY29uZGFyeSBtb2RlCj4+IGFm
+dGVyIGV4ZWN1dGluZyBwcmltYXJ5IG1vZGUgc3lzY2FsbHMsIGl0J3MgcHJvYmFibHkgbW9yZSAi
+Y29uZm9ybWluZyIKPj4gZm9yIHRoZW0gdG8gZW50ZXIgUlRETSBzZXJ2aWNlcyBmcm9tIHNlY29u
+ZGFyeSBtb2RlIGZpcnN0Lgo+Pgo+Pj4KPj4+IHJ0ZG1fdXNlcl9pbmZvOiB3aXRoIHRoZSBzd2l0
+Y2ggdG8geG5mZCwgYSBmaWxlIGRlc2NyaXB0b3Igd2lsbCBiZSwgYnkKPj4+IGNvbnN0cnVjdGlv
+biwgZWl0aGVyIGFuIGFwcGxpY2F0aW9uIGZpbGUgZGVzY3JpcHRvciwgb3IgYSBrZXJuZWwgZmls
+ZQo+Pj4gZGVzY3JpcHRvci4gVGhlIGluZm9ybWF0aW9uIGNhbiBiZSByZXRyaWV2ZWQgZnJvbSB0
+aGUgbW0gaXQgaXMgYXR0YWNoZWQKPj4+IHRvLiBUaGlzIG1ha2VzIHRoZSBydGRtX3VzZXJfaW5m
+b190IGFyZ3VtZW50cyBwYXNzZWQgdG8gdGhlIGNhbGxiYWNrcwo+Pj4gZXNzZW50aWFsbHkgcmVk
+dW5kYW50LiBCZXNpZGVzLCBkZXNwaXRlIHRoZSBmYWN0IHRoYXQgdGhpcyBpbmZvcm1hdGlvbgo+
+Pj4gaXMgcGFzc2VkIHRvIGEgbG90IG9mIHJ0ZG0gc2VydmljZXMsIG9ubHkgYSBmZXcgb2YgdGhl
+bSBhY3R1YWxseSB1c2UgaXQuCj4+Cj4+IFRoZXJlIGFyZSBmZXcgZHJpdmVycyB0aGF0IGFyZSBy
+ZWFkeSB0byBiZSB1c2VkIGluIGtlcm5lbCBzcGFjZS4gQW5kCj4+IHNvbWUgKFJUbmV0KSBzdGls
+bCBsYWNrIHNhZmUgY29weSB0by9mcm9tIHVzZXIgc3BhY2UuIFNvIHRoZSBsYWNrIG9mIHVzZQo+
+PiBqdXN0IGluZGljYXRlcyBpbmNvbXBsZXRlIGltcGxlbWVudGF0aW9ucy4KPj4KPj4+IFNvLCB0
+aGVyZSBhcmUgc2V2ZXJhbCBwb3NzaWJpbGl0aWVzLgo+Pj4KPj4+IEVpdGhlciB3ZSByZW1vdmUg
+dGhlIHJ0ZG1fdXNlcl9pbmZvX3QgY29tcGxldGVseSBmcm9tIHRoZSBmZCBjYWxsYmFja3MsCj4+
+PiBhbmQgZnJvbSB0aGUgc2VydmljZXMgbGlrZSBydGRtX2NvcHlfZnJvbV91c2VyIHdoaWNoIGRv
+IG5vdCB1c2UgaXQuIEZvcgo+Pj4gdGhlIGZldyBzZXJ2aWNlcyB3aGljaCBuZWVkIGl0LCB0aGV5
+IGNhbiBiZSBvZmZlcmVkIGFuIGFjY2Vzc29yIGdpdmluZwo+Pj4gdGhpcyBpbmZvcm1hdGlvbiBl
+aXRoZXIgZnJvbSB0aGUgeG5mZCBwb2ludGVyIG9mIGZyb20gdGhlIGRyaXZlciAicHJpdiIKPj4+
+IHBvaW50ZXIgKHRoZSBsYXR0ZXIgbWFrZXMgbW9yZSBzZW5zZSwgc2luY2UgYW5hbG9neSBvbmx5
+IHBhc3NlcyBpdHMgcHJpdgo+Pj4gcG9pbnRlciBkb3duIHRoZSBkcml2ZXIgZnVuY3Rpb25zLCBh
+bmQgaXQgY3VycmVudGx5IHJlc29ydHMgdG8gc2F2aW5nCj4+PiB0aGUgdXNlcl9pbmZvIHBvaW50
+ZXIgaW4gaXRzIHByaXZhdGUgc3RydWN0dXJlIHNvIGFzIHRvIGJlIGFibGUgdG8KPj4+IHJldHJp
+ZXZlIGl0IGFueXdoZXJlIGluIHRoZSBkcml2ZXIpLiBUaGlzIHNvbHV0aW9uIGlzIHRoZSBjbGVh
+bmVzdCwgdGhlCj4+PiBkcmF3YmFjayBpcyB0aGF0IGl0IGJyZWFrcyB0aGUgZHJpdmVycyBBUEks
+IHNvIG91dC1vZi10cmVlIGRyaXZlcnMgd2hpY2gKPj4+IHdhbnQgdG8gYmUgY29tcGF0aWJsZSB3
+aXRoIHhlbm9tYWkgY2xhc3NpYyBhbmQgeGVub21haSBmb3JnZSB3aWxsIGhhdmUgYQo+Pj4gaGFy
+ZCB0aW1lLiBXZSBjYW4gaGVscCB0aGVtIGJ5IHByb3ZpZGluZyBtYWNyb3MgYm90aCBpbiBmb3Jn
+ZSBhbmQgMi54IHRvCj4+PiBjb3BlIHdpdGggdGhlIGRpZmZlcmVuY2VzLgo+Pgo+PiBUaGUgaWRl
+YSBvZiBoYXZpbmcgcnRkbV91c2VyX2luZm9fdCBpbiB0aGUgY29weSBmdW5jdGlvbnMgd2FzIG9u
+Y2UgdG8KPj4ga2VlcCB0aGUgZG9vciBvcGVuIGZvciB1c2VyLXNwYWNlIHByb3RvdHlwaW5nIG9m
+IFJURE0gZHJpdmVycy4gQnV0IHRoYXQKPj4gaXMgdW5yZWFsaXN0aWMgdG8gaGFwcGVuIGFueSB0
+aW1lIHNvb24sIGFuZCBpZiB0aGUgcGFyYW1ldGVyIGNvdWxkIGJlCj4+IGhlbHBmdWwgYXQgYWxs
+IGlzIHF1ZXN0aW9uYWJsZS4KPj4KPj4gSWYgd2UgY2FuIGZpbmQgYSByZWFzb25hYmxlIG1pZ3Jh
+dGlvbiBjb25jZXB0LCBJJ20gZmluZSB3aXRoIGNsZWFuaW5nCj4+IHVwLiBJIGd1ZXNzIHVzZXJf
+aW5mbyBjb3VsZCBiZWNvbWUgYSBmaWVsZCBvZiBydGRtX2Rldl9jb250ZXh0Lgo+IAo+IEkgd2Fz
+IHJhdGhlciB0aGlua2luZyBvZiBhbiBhY2Nlc3NvciwgbGlrZQo+IAo+IHN0YXRpYyBpbmxpbmUg
+c3RydWN0IHRhc2tfc3RydWN0ICpydGRtX3VzZXJfaW5mbyhzdHJ1Y3QgeG5mZCAqZmQpCj4gewo+
+ICAgICByZXR1cm4gZmQtPm1tID8gY3VycmVudCA6IE5VTEw7Cj4gfQoKcnRkbV91c2VyX2luZm8g
+c2hvdWxkIGFjY2VwdCBhbmQgcmV0dXJuIG9ubHkgUlRETSgtd3JhcHBlZCkgdHlwZXMsIHNvCiJ0
+eXBkZWYgc3RydWN0IHhuZmQgcnRkbV9mZF90IiB3b3VsZCBiZSBuZWVkZWQuCgo+IAo+IEFuZCB0
+eXBlZGVmaW5nIHN0cnVjdCB4bmZkIHRvIHJ0ZG1fZGV2X2NvbnRleHQKCkNhbm5vdCBmb2xsb3cg
+dGhpcy4KCnJ0ZG1fZGV2X2NvbnRleHQgY29udGFpbnMgYW4gZmQgZmllbGQsIGN1cnJlbnRseSBo
+b2xkaW5nIGFuIGludGVnZXIgKGFzCnRoYXQgdXNlZCB0byBiZSB0aGUgdW5pcXVlIGlkZW50aWZp
+ZXIpLiBXZSBtYXkgcmV0eXBlIGl0IHRvIHJ0ZG1fZmRfdCwKcHJvYmFieSwgYW5kIHVzZSB0aGF0
+IGZvciBydGRtX3VzZXJfaW5mby4gT3IganVzdCBsZXQgcnRkbV91c2VyX2luZm8KdGFrZSBydGRt
+X2Rldl9jb250ZXh0IGl0c2VsZiBhcyB0aGUgdGhhdCB3aWxsIGFsd2F5cyBiZSB0aGUgc291cmNl
+IGZvcgpydGRtX2ZkX3QuCgo+IAo+IE5vdyB0aGUgcXVlc3Rpb24gaXMsIGRvIHdlIHdhbnQgdG8g
+aGF2ZSBhIG1hY3JvIGFsbG93aW5nIHRvIGZpeCB0aGUKPiBjYWxsYmFja3Mgc2lnbmF0dXJlIHRv
+IGNvbXBpbGUgZm9yIGJvdGggMi54IGFuZCBmb3JnZT8gT3IgZG8geW91IHBsYW4gdG8KPiBzdG9w
+IHN1cHBvcnRpbmcgMi54IGZvciBpbnN0YW5jZSBmb3IgcnRuZXQsIHdoZW4gMy4wIGlzIG91dD8K
+PiAKCkkgZ3Vlc3MgUlRuZXQgd2lsbCBub3QgYmUgdGhlIG9ubHkgYWZmZWN0ZWQgcHJvamVjdC4K
+CkphbgoKLS0tLS0tLS0tLS0tLS0gbmV4dCBwYXJ0IC0tLS0tLS0tLS0tLS0tCkEgbm9uLXRleHQg
+YXR0YWNobWVudCB3YXMgc2NydWJiZWQuLi4KTmFtZTogc2lnbmF0dXJlLmFzYwpUeXBlOiBhcHBs
+aWNhdGlvbi9wZ3Atc2lnbmF0dXJlClNpemU6IDI2MyBieXRlcwpEZXNjOiBPcGVuUEdQIGRpZ2l0
+YWwgc2lnbmF0dXJlClVSTDogPGh0dHA6Ly93d3cueGVub21haS5vcmcvcGlwZXJtYWlsL3hlbm9t
+YWkvYXR0YWNobWVudHMvMjAxNDAxMDMvODNiZmU0MWIvYXR0YWNobWVudC5zaWc+Cg==
