@@ -1,14 +1,14 @@
-Message-ID: <52C87C01.1070900@xenomai.org>
-Date: Sat, 04 Jan 2014 22:24:17 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
+In-Reply-To: <52C87C01.1070900@xenomai.org>
 References: <CAFnctWFSGJc0Q6ebZ0zBhxRmFEwkvCYKinAEgD-xzcCbfLaPBg@mail.gmail.com>
  <52C7CF1E.2050404@xenomai.org> <52C85088.7020501@xenomai.org>
  <52C86093.4000609@xenomai.org>
  <CAFnctWG1QoQ=f9JCsdxAoU25mc797fKoT9dVS_DdZFRcQ5CP3A@mail.gmail.com>
-In-Reply-To: <CAFnctWG1QoQ=f9JCsdxAoU25mc797fKoT9dVS_DdZFRcQ5CP3A@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+ <52C87C01.1070900@xenomai.org>
+Date: Sat, 4 Jan 2014 13:31:19 -0800
+Message-ID: <CAFnctWH07OsA45ucoYcijFKBJH-c-e6oNuA=_r0F+04SfvOQ2g@mail.gmail.com>
+From: Nima Nourozi <n.nourozi@gmail.com>
+Content-Type: text/plain; charset=ISO-8859-1
 Subject: Re: [Xenomai] rtdm_task_init call freezes the system
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
@@ -18,24 +18,34 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Nima Nourozi <n.nourozi@gmail.com>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On 01/04/2014 09:29 PM, Nima Nourozi wrote:
-> Here is the task function. But I'm not seeing the printout.
-> 
-> void xx_start_transfer(void *arg) {
->   rtdm_wait_period();
->   rtdm_printk("hello world\n");
-> }
+On Sat, Jan 4, 2014 at 1:24 PM, Gilles Chanteperdrix <
+gilles.chanteperdrix@xenomai.org> wrote:
 
-Two things to try:
-- see if:
-latency -t 1 -p 100000
-has the same issue?
-- xenomai 2.6.3 instead of 2.6.1
+> On 01/04/2014 09:29 PM, Nima Nourozi wrote:
+> > Here is the task function. But I'm not seeing the printout.
+> >
+> > void xx_start_transfer(void *arg) {
+> >   rtdm_wait_period();
+> >   rtdm_printk("hello world\n");
+> > }
+>
+> Two things to try:
+> - see if:
+> latency -t 1 -p 100000
+> has the same issue?
+> - xenomai 2.6.3 instead of 2.6.1
+>
+>
+> --
+>                                                                 Gilles.
+>
 
+Will do when I get back to the office on Monday. I don't have the hardware
+at the house.
 
--- 
-                                                                Gilles.
-
+I noticed xenomai 2.6.3 does not contain the adeos patch for linux
+2.6.38.8. Should I just put the patch I downloaded from adeos in the patch
+folder and patch the vanilla kernel that way?
