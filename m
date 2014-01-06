@@ -1,12 +1,20 @@
-Message-ID: <52CD18FF.90908@xenomai.org>
-Date: Wed, 08 Jan 2014 10:23:11 +0100
-From: Philippe Gerum <rpm@xenomai.org>
+Message-ID: <52CB0B6A.8080405@xenomai.org>
+Date: Mon, 06 Jan 2014 21:00:42 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <45f0b39a.14947.1436fa4b0b8.Coremail.ericvic@163.com>
-In-Reply-To: <45f0b39a.14947.1436fa4b0b8.Coremail.ericvic@163.com>
-Content-Type: text/plain; charset="gbk"; format="flowed"
-Content-Transfer-Encoding: base64
-Subject: Re: [Xenomai] x86 with xenomai patch
+References: <CAFnctWFSGJc0Q6ebZ0zBhxRmFEwkvCYKinAEgD-xzcCbfLaPBg@mail.gmail.com>
+ <52C7CF1E.2050404@xenomai.org> <52C85088.7020501@xenomai.org>
+ <52C86093.4000609@xenomai.org>
+ <CAFnctWG1QoQ=f9JCsdxAoU25mc797fKoT9dVS_DdZFRcQ5CP3A@mail.gmail.com>
+ <52C891C1.2090007@xenomai.org>
+ <CAFnctWFb-dNtNDGf0kckejhQ+tFAj2hBw3gm5Xv8DoALi6f26g@mail.gmail.com>
+ <52C949D6.6090904@xenomai.org> <52C9B255.7030702@xenomai.org>
+ <52CA622D.806@xenomai.org>
+ <CAFnctWGs-mqukTTujenvex9Doq0DoJ_ohFEPDjd7ECYRzu6tpw@mail.gmail.com>
+In-Reply-To: <CAFnctWGs-mqukTTujenvex9Doq0DoJ_ohFEPDjd7ECYRzu6tpw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] rtdm_task_init call freezes the system
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,13 +23,19 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: =?gbk?Q?=C7=B6=C8=EB=CA=BD=B9=A4=B3=CC=CA=A6?= <ericvic@163.com>, "xenomai@xenomai.org" <xenomai@xenomai.org>
+To: Nima Nourozi <n.nourozi@gmail.com>
+Cc: xenomai@xenomai.org
 
-T24gMDEvMDgvMjAxNCAwMzoxOCBBTSwgx7bI68q9uaSzzMqmIHdyb3RlOgo+IEkgdXNlIGtlcm5h
-bC0zLjQuNiBhbmQga2VybmFsLTMuOC4xMyB3aXRoIHhlbm9tYWktMi42LjMgeDg2IHBhdGNoZXMg
-Lgo+CgpJZiB5b3VyIGdyYXBoaWMgaGFyZHdhcmUgaXMgYmFzZWQgb24gSW50ZWwncyBpOTE1IGNo
-aXBzZXQsIHlvdSB3aWxsIG5lZWQgCnRoZXNlIHR3byBwYXRjaGVzIG9uIHRvcCBvZiAzLjg6Cgpo
-dHRwOi8vZ2l0Lnhlbm9tYWkub3JnL2lwaXBlLmdpdC8/aD1pcGlwZS0zLjgKCjdhYTFiZDYgUmV2
-ZXJ0ICJkcm0vaTkxNTogV29ya2Fyb3VuZCBpbmNvaGVyZW5jZSBiZXR3ZWVuIGZlbmNlcyBhbmQg
-TExDIAphY3Jvc3MgbXVsdGlwbGUgQ1BVcyIKMDhkNGJlNCBkcm0vaTkxNTogRml4IGluY29oZXJl
-bmNlIHdpdGggZmVuY2UgdXBkYXRlcyBvbiBTYW5keWJyaWRnZSsKCi0tIApQaGlsaXBwZS4KCg==
+On 01/06/2014 08:10 PM, Nima Nourozi wrote:
+> [<c00250a0>] (do_undefinstr+0x0/0x1c8) from [<c002abd4>]
+> (__und_svc+0x54/0x80)
+
+What is interesting is what triggers this __und_svc. Will check if I can 
+reproduce this bug on at91sam9263. Could you try and disable CONFIG_KGDB 
+in the mean-time?
+
+Regards.
+
+-- 
+					    Gilles.
+
