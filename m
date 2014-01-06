@@ -1,12 +1,12 @@
-Message-ID: <52D2FB0E.6080506@xenomai.org>
-Date: Sun, 12 Jan 2014 21:29:02 +0100
+Message-ID: <52CB17A9.6080901@xenomai.org>
+Date: Mon, 06 Jan 2014 21:52:57 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <52D1B083.5090709@steinkuehler.net>
-In-Reply-To: <52D1B083.5090709@steinkuehler.net>
+References: <52CB0DA1.9080302@zultron.com>
+In-Reply-To: <52CB0DA1.9080302@zultron.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] BeagleBone Xenomai Latency
+Subject: Re: [Xenomai] Xenomai Red Hat packaging
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -15,72 +15,33 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Charles Steinkuehler <charles@steinkuehler.net>
+To: John Morris <john@zultron.com>
 Cc: xenomai@xenomai.org
 
-On 01/11/2014 09:58 PM, Charles Steinkuehler wrote:
-> (Starting a new thread)
-> On 1/7/2014 5:13 PM, Gilles Chanteperdrix wrote:
->> On 01/07/2014 11:55 PM, Charles Steinkuehler wrote:
->>> On 1/7/2014 4:47 PM, Gilles Chanteperdrix wrote:
->>>> Is there any chance you could trigger a trace with the I-pipe 
->>>> tracer?
->>
->>> I can try...give me a while to sort through the I-pipe:Tracer wiki
->>> page (or are there better instructions?).
->>
->> Enable I-pipe tracer in kernel configuration, especially
->> IPIPE_TRACE_MCOUNT, and IPIPE_TRACE_VMALLOC.
->>
->> When the system has booted, do:
->>
->> echo 1 > /proc/ipipe/trace/enable
->> echo 1000 > /proc/ipipe/trace/back_trace_points
->>
->> Then launch latency -p 200 -f
->>
->> Run the load you usually run (for instance dohell).
->>
->> When the test is finished, do
->> cat /proc/ipipe/trace/frozen > /tmp/frozen.txt
->>
->> then post the resulting frozen.txt to this list.
->>
->> Expect the latency found by the test to be double the latency you get
->> without the I-pipe tracer.
+On 01/06/2014 09:10 PM, John Morris wrote:
+> Here are the packaging materials I've been using on Red Hat Enterprise
+> Linux clones for some time now, also recently updated for Fedora.
 > 
-> OK, I tested a variety of kernels.  Simply enabling the ipipe trace
-> options on the otherwise unchanged kernel configuration I'm using
-> resulted in a system that was *EXTREMELY* slow and unresponsive, even
-> before I enabled the iPipe trace.  After waiting the better part of a
-> day for a GUI application to launch, I gave up on this kernel and tested
-> one with the recommended performance options:
+> https://github.com/zultron/xenomai-rpm
 > 
+> The packaging is pretty straightforward, and follows the Debian
+> packaging for the xenomai-devel subpackage.
 > 
-> Already in the BeagleBone Xenomai kernels I've been building:
->> optimize for size
->> disable CONFIG_PREEMPT
->> enable stack unwinding
->> disable root thread priority coupling (xenomai option)
-> 
-> Updated to desired setting in dbg_opt kernel:
->> disable unlocked context switch (xenomai option)
->> disable CONFIG_SMP
-> 
-> Recommended but not selected (causes linking errors apparently due to
-> the kernel size being too large for some of the limited reach thumb2
-> jump/branch instructions):
+> A significant addition is the 'xenomai-gid-ctl' script for configuring
+> non-root access to Xenomai services, plus sysv and systemd boot init
+> scripts.
 
-You mean thumb2? Did you enable the workaround for buggy gas?
+Are these specific to Red Hat, or can we put them in the set of files
+installed by default?
 
-> OVERALL RESULTS:
-> Adding the recommended options dramatically helped with latency when
-> iPipe trace was enabled, but not so much for the normal kernel.  I did
-> see typical and best case latency drop significantly (by about 25%) with
-> the recommended options, but worst-case latency for both kernels
-> remained around 50 uS.
+  I'd appreciate comments on the control script's correctness
+> and the init scripts' utility.
 
-I also get 50us at 1kHz, I only get 40us at 10kHz.
+You do not need to pass --enable-x86-tsc as it is enabled by default
+now. As for building the doc, xenomai sources contain generated
+documentation, so if you do not enable any option, you will have some
+documentation installed. If you still want to generate the doxygen
+documentation, what is the problem with --enable-dox-doc?
 
 
 -- 
