@@ -1,14 +1,19 @@
 MIME-Version: 1.0
-In-Reply-To: <CAKJ14NdEUTDywB=TY+azn+HE=nqcpNmL7f3cOD7E8p2JT3TUMg@mail.gmail.com>
-References: <CAKJ14NdsfwK4Vj=UpYb6p9bvFE=1ZoQb6ss--9f-WqXOXGDn2g@mail.gmail.com>
- <52CAEA4D.1020505@xenomai.org>
- <CAKJ14NdEUTDywB=TY+azn+HE=nqcpNmL7f3cOD7E8p2JT3TUMg@mail.gmail.com>
-Date: Tue, 7 Jan 2014 08:10:04 +0000
-Message-ID: <CAKJ14Ndj_eWoGd89afA_5meif6x+bjBnJ0jDrBheR-xv3p1pVA@mail.gmail.com>
-From: Andreas Glatz <andi.glatz@gmail.com>
-Content-Type: text/plain; charset=ISO-8859-1
-Subject: Re: [Xenomai] Command line freeze during xeno-regression-test on
-	omap4460
+In-Reply-To: <52CA622D.806@xenomai.org>
+References: <CAFnctWFSGJc0Q6ebZ0zBhxRmFEwkvCYKinAEgD-xzcCbfLaPBg@mail.gmail.com>
+ <52C7CF1E.2050404@xenomai.org> <52C85088.7020501@xenomai.org>
+ <52C86093.4000609@xenomai.org>
+ <CAFnctWG1QoQ=f9JCsdxAoU25mc797fKoT9dVS_DdZFRcQ5CP3A@mail.gmail.com>
+ <52C891C1.2090007@xenomai.org>
+ <CAFnctWFb-dNtNDGf0kckejhQ+tFAj2hBw3gm5Xv8DoALi6f26g@mail.gmail.com>
+ <52C949D6.6090904@xenomai.org> <52C9B255.7030702@xenomai.org>
+ <52CA622D.806@xenomai.org>
+Date: Mon, 6 Jan 2014 11:10:58 -0800
+Message-ID: <CAFnctWGs-mqukTTujenvex9Doq0DoJ_ohFEPDjd7ECYRzu6tpw@mail.gmail.com>
+From: Nima Nourozi <n.nourozi@gmail.com>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [Xenomai] rtdm_task_init call freezes the system
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -17,175 +22,507 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+To: Philippe Gerum <rpm@xenomai.org>
 Cc: xenomai@xenomai.org
 
- Hi Gilles,
+On Sun, Jan 5, 2014 at 11:58 PM, Philippe Gerum <rpm@xenomai.org> wrote:
 
-
-On Tue, Jan 7, 2014 at 7:23 AM, Andreas Glatz <andi.glatz@gmail.com> wrote:
-
-> Hi Gilles,
+> On 01/05/2014 08:28 PM, Gilles Chanteperdrix wrote:
 >
-> At first /tmp was tmpfs since I didn't want to wear out my flash with the
-> testing. Now I connected an external usb harddrive to the panda and mounted
-> one of the harddrive partions as /tmp. Additionally, I did not load
-> xeno_klat and xeno_rtdmtest, which were both in before. I started
-> xeno-regression-test -l "/usr/lib/xenomai/testsuite/dohell -m /tmp -l
-> /opt/ltp" -t 2 again (btw I modified dohell to call runltp instead of
-> runallscripts.sh since the latter is deprecated). And the good news was
-> that it ran nearly all the tests (everything up to cgroup*) and 'top' was
-> working all the way. However this morning I noticed that it's still at the
-> first test of the cgroup* and didn't go any further. 'top' stopped working
-> and i cannot open additional consoles. On the consoles that are still open
-> (3 of them) I can execute simple commands like ps, grep, df, ... but
-> nothing like reboot, top, shutdown, ... Suprisingly, cat /var/log/messages
-> also gets blocked:
->
-> Console 1:
-> root@arm:~# cat /var/log/messages
-> ^C # <-- notice: I tried to kill it here but no response
->
-> Console 2:
-> root@arm:/opt/ltp/results# ps ax
->   PID TTY      STAT   TIME COMMAND
-> ...
-> 15149 pts/2    D+     0:00 cat /var/log/messages
-> ...
->
-> Nothing else is running though (neither on linux nor xenomai) :
-> root@arm:/opt/ltp/results# cat /proc/xenomai/stat
-> CPU  PID    MSW        CSW        PF    STAT       %CPU  NAME
->   0  0      0          986564     0     00500080  100.0  ROOT/0
->   1  0      0          992712     0     00500080  100.0  ROOT/1
->   1  0      0          309543     0     00000000    0.0  IRQ29: [timer]
->
-> To me this looks like a problem with the filesystem (maybe my sd flash
-> card where the rootfs resides). I will try and install the rootfs on the
-> external harddrive and repreat everything... maybe this might solve the
-> problem.
->
-
-
-Firstly sorry for the toppost :)
-
-Secondly, I also noticed that the status led on the panda, which is
-triggered by mmc0, is constantly on after failure, whereas it turns only on
-when accessing the flash partition after a reboot. So I guest that's a good
-indication that mmc0 might have something to do with it?
-
-A.
-
-
-
-
->
-> I still have all three consoles open, where just one is still repsonsive.
-> Any further suggestions?
->
-> Thanks for any help,
->
-> A.
->
->
->
->
->
-> On Mon, Jan 6, 2014 at 5:39 PM, Gilles Chanteperdrix <
-> gilles.chanteperdrix@xenomai.org> wrote:
->
->> On 01/06/2014 04:30 PM, Andreas Glatz wrote:
+>> On 01/05/2014 01:02 PM, Philippe Gerum wrote:
 >>
->>> Hi,
+>>> On 01/05/2014 01:25 AM, Nima Nourozi wrote:
 >>>
->>> I managed to produce a kernel (v3.8.13) with xenomai 2.6.3 ipipe patch
->>> and
->>> rootfs (debian wheezy) with xenomai 2.6.3 libraries for my Pandaboard ES
->>> (omap4460). The simple regression test, which only calls dd during the
->>> switchtest, works fine. However the regression test with the linux test
->>> project (ltp-full-20130904) scripts causes some sort of system lock up.
->>> After that I only can ctrl-c xeno-regression-test (i.e. switchtest),
->>> which,
->>> however, doesn't help to regain console access (neigher over ethernet nor
->>> serial).
+>>>> On Sat, Jan 4, 2014 at 2:57 PM, Philippe Gerum <rpm@xenomai.org
+>>>> <mailto:rpm@xenomai.org>> wrote:
+>>>>
+>>>>      On 01/04/2014 09:29 PM, Nima Nourozi wrote:
+>>>>
+>>>>          Here is the task function. But I'm not seeing the printout.
+>>>>
+>>>>          void xx_start_transfer(void *arg) {
+>>>>              rtdm_wait_period();
+>>>>
+>>>>
+>>>>      What about checking the return code of rtdm_wait_period()? If
+>>>>      something goes wrong there, you do want to know, instead of
+>>>> entering
+>>>>      a tight runaway loop.
+>>>>
+>>>>      --
+>>>>      Philippe.
+>>>>
+>>>>
+>>>> I can't print anything since the system freezes so I don't know how I
+>>>> can check return value? Also, what loop are you referring to I don't
+>>>> have a loop just a print statement.
+>>>>
 >>>
->>> Here's what I did:
+>>> It does not make sense to have a single wait statement in a periodic
+>>> task, you should have a loop. Or you don't have periodic task. So your
+>>> task should implement a loop.
 >>>
->>> -- Building --
->>> As recomended in the Xenomai 2.6 readme I followed the instructions in
->>> [1]
->>> to produce a kernel and filesystem. To get a xenomai kernel I had to do
->>> three things differently:
->>>
->>> *) I used: git checkout origin/v3.8.x -b tmp
->>> *) I applied ipipe-core-3.8.13-arm-3.patch from the xenomai-2.6 git tree
->>> as
->>> described in the Xenomai 2.6 readme
->>> *) I disabled KGDB and TIDSPBRIDGE since those produced compile errors
->>> (see
->>> config [2])
->>>
->>> After a while I obtained the following messages from dmesg [3] and from
->>> the
->>> command prompt:
->>>
->>> root@arm:~# cat /proc/version
->>> Linux version 3.8.13-x3.6 (aglatz@linuxvbox) (gcc version 4.7.3 20130328
->>> (prerelease) (crosstool-NG linaro-1.13.1-4.7-2013.04-20130415 - Linaro
->>> GCC
->>> 2013.04) ) #4 SMP Sat Jan 4 15:54:20 GMT 2014
->>>
->>> -- Testing Linux --
->>> To see if everything works I downloaded and cross-compiled
->>> ltp-full-20130904 [4] with the same toolchain and flags (-march=armv7-a
->>> -mfpu=vfp3) as the xenomai libs and runtime. I started ltp with "./runltp
->>> -p -l dohell-2014-01-06-1.log -S xenomai.skiplist" and after a while it
->>> finished with a few failed tests [5]. The console access, however, worked
->>> fine.
->>>
->>> -- Testing Xenomai --
->>> First I sucessfully could run the simple xenomai regression test:
->>> xeno-regression-test -l "/usr/lib/xenomai/testsuite/dohell -m /tmp 100"
->>> -t
->>> 2 which produced the output in [6] and the following additional messages
->>> with dmesg:
->>>
->>> [  476.215057] Xenomai: RTDM: closing file descriptor 1.
->>> [  477.434936] Xenomai: Posix: destroying semaphore f0069c00.
->>> [  477.440887] Xenomai: Posix: destroying mutex f0069a00.
->>> [  477.475372] xnheap: destroying shared heap 'rt_heap: heap' with 16384
->>> bytes still in use.
->>> [  479.008453] Xenomai: Switching rt_task to secondary mode after
->>> exception
->>> #0 from user-space at 0x9620 (pid 2145)
->>> [  480.574462] Xenomai: watchdog triggered -- signaling runaway thread
->>> 'rt_task'
->>> [  480.582061] [sched_delayed] sched: RT throttling activated
->>> [  557.336425] Xenomai: Posix: closing message queue descriptor 3.
->>>
->>> and  "cat /proc/xenomai/*" produced [7].
->>>
->>> When I started the realistic xenomai regression test:
->>> xeno-regression-test
->>> -l "/usr/lib/xenomai/testsuite/dohell -m /tmp -l /opt/ltp" -t 2
->>> everything
->>> seemed fine at first - I could logon and start top to inspect the running
->>> processes. However, the command line (over serial and ethernet)
->>> consistently freezes after a while (at different ltp tests though).
->>> First I
->>> thought it's the massive system load which doesn't leave CPU for the
->>> console... however ctrl-c of xeno-regression-test does not help to regain
->>> console access...
+>>> To force a direct output through the serial console port, you may want
+>>> to try enabling DEBUG_LL and IPIPE_DEBUG, then call
+>>> __ipipe_serial_debug(), instead of printk. Do not use this in regular
+>>> code, this is for debugging purpose only, in mostly hopeless situations
+>>> where using buffered console output is not an option.
 >>>
 >>
->> That is because kill xeno-regression-test does not kill all the script
->> children. So, basically, the load tasks are still running. Also, what
->> filesystem is /tmp? dohell is using dd to alternatively write to /tmp, then
->> erase the file. If /tmp is some flash, it will become slow after a while.
->> If it is a tmpfs, it will eat RAM.
->>
->> --
->>                                             Gilles.
+>> I do not think 2.6.38 has __ipipe_serial_debug,
 >>
 >
+> It does. printascii() alone would not prevent output races, so it's better
+> to use __ipipe_serial_debug() for this.
 >
+>
+>  it as printascii though.
+>
+>>
+>>
+>>
+> --
+> Philippe.
+>
+
+
+OK I patched xenomai 2.6.3 and enabled DEBUG_LL,  IPIPE_DEBUG and
+disabled CONFIG_HIGH_RES_TIMERS.
+I've attached the latest .config for reference.
+
+Here is the task initialization code:
+
+*rtdm_printk("kicking of tasklet...\n");*
+* retval =3D rtdm_task_init(&heartbeat_task, "spi_transfer",
+xx_start_transfer, NULL, 99, 100000000 /* 100 ms */);*
+* __ipipe_serial_debug("*******return value =3D %d\n", retval);*
+* if(retval)*
+* {*
+* __ipipe_serial_debug("error initializing task: %i\n", retval);*
+* }*
+
+Here is the task function:
+
+void xx_start_transfer(void *arg)
+{
+
+int ret;
+
+while (1) {
+ret =3D rtdm_task_wait_period();
+__ipipe_serial_debug("*******return value =3D %d\n", ret);
+gpio_set_value(LED, 1);
+rtdm_task_sleep(0);
+}
+}
+
+I'm not seeing any output from any of the __ipipe_serial_debug(), however I=
+'m
+seeing the following kernel error (full console output attached):
+
+------------[ cut here ]------------
+
+WARNING: at kernel/sched.c:3826 add_preempt_count+0x68/0x104()
+
+Modules linked in:
+
+Backtrace:
+
+[<c002ea10>] (dump_backtrace+0x0/0x110) from [<c02d7b84>]
+(dump_stack+0x18/0x1c)
+ r6:c035110f r5:00000ef2 r4:00000000
+
+[<c02d7b6c>] (dump_stack+0x0/0x1c) from [<c003fc30>]
+(warn_slowpath_common+0x54/
+0x6c)
+
+[<c003fbdc>] (warn_slowpath_common+0x0/0x6c) from [<c003fc6c>]
+(warn_slowpath_nu
+ll+0x24/0x28)
+
+ r8:c03554b1 r7:00000001 r6:c03a3830 r5:c0543a60 r4:00000001
+
+[<c003fc48>] (warn_slowpath_null+0x0/0x28) from [<c0038824>]
+(add_preempt_count+
+0x68/0x104)
+
+[<c00387bc>] (add_preempt_count+0x0/0x104) from [<c0040998>]
+(vprintk+0x54/0x400
+)
+
+ r4:00000000
+
+[<c0040944>] (vprintk+0x0/0x400) from [<c02d7e04>] (printk+0xfc/0x1a8)
+
+[<c02d7d08>] (printk+0x0/0x1a8) from [<c0075c80>]
+(ipipe_check_context+0xa0/0xd0
+)
+
+ r3:00001c70 r2:c03517a4 r1:c0355d9b r0:c03554b1
+
+ r8:00000000 r7:eef84a10 r6:c03a3830 r5:c0543a60 r4:c0541d40
+
+[<c0075be0>] (ipipe_check_context+0x0/0xd0) from [<c00387d4>]
+(add_preempt_count
++0x18/0x104)
+
+ r6:c3900050 r5:c02453cc r4:00000001
+
+[<c00387bc>] (add_preempt_count+0x0/0x104) from [<c0025130>]
+(do_undefinstr+0x90
+/0x1c8)
+
+ r4:c3901548
+
+[<c00250a0>] (do_undefinstr+0x0/0x1c8) from [<c002abd4>]
+(__und_svc+0x54/0x80)
+
+Nima
+-------------- next part --------------
+Starting kernel ...                                                        =
+     =
+
+                                                                           =
+     =
+
+Uncompressing Linux... done, booting the kernel.                           =
+     =
+
+Linux version 2.6.38.8 (nima@nima-ThinkPad-W530) (gcc version 4.4.1 (Source=
+ry G+
++ Lite 2010q1-202) ) #12 PREEMPT Mon Jan 6 10:59:01 PST 2014               =
+     =
+
+CPU: ARM926EJ-S [41069265] revision 5 (ARMv5TEJ), cr=3D00053177            =
+       =
+
+CPU: VIVT data cache, VIVT instruction cache                               =
+     =
+
+Machine: Valhalla Base Station 32                                          =
+     =
+
+Memory policy: ECC disabled, Data cache writeback                          =
+     =
+
+Clocks: CPU 198 MHz, master 99 MHz, main 18.432 MHz                        =
+     =
+
+Built 1 zonelists in Zone order, mobility grouping on.  Total pages: 16256 =
+     =
+
+Kernel command line: mem=3D64M console=3DttyS0,115200 root=3D/dev/mtdblock2=
+ rw rootfst
+ype=3Djffs2 mtdparts=3Datmel_nand:1M(bootloader),2M(kernel),-(rootfs)      =
+         =
+
+PID hash table entries: 256 (order: -2, 1024 bytes)                        =
+     =
+
+Dentry cache hash table entries: 8192 (order: 3, 32768 bytes)              =
+     =
+
+Inode-cache hash table entries: 4096 (order: 2, 16384 bytes)               =
+     =
+
+Memory: 64MB =3D 64MB total                                                =
+       =
+
+Memory: 59388k/59388k available, 6148k reserved, 0K highmem                =
+     =
+
+Virtual kernel memory layout:                                              =
+     =
+
+    vector  : 0xffff0000 - 0xffff1000   (   4 kB)                          =
+     =
+
+    fixmap  : 0xfff00000 - 0xfffe0000   ( 896 kB)                          =
+     =
+
+    DMA     : 0xffc00000 - 0xffe00000   (   2 MB)                          =
+     =
+
+    vmalloc : 0xc4800000 - 0xfee00000   ( 934 MB)                          =
+     =
+
+    lowmem  : 0xc0000000 - 0xc4000000   (  64 MB)                          =
+     =
+
+    modules : 0xbf000000 - 0xc0000000   (  16 MB)                          =
+     =
+
+      .init : 0xc0008000 - 0xc0025000   ( 116 kB)                          =
+     =
+
+      .text : 0xc0025000 - 0xc0395000   (3520 kB)                          =
+     =
+
+      .data : 0xc0396000 - 0xc0536560   (1666 kB)                          =
+     =
+
+NR_IRQS:192                                                                =
+     =
+
+AT91: 96 gpio irqs in 3 banks                                              =
+     =
+
+AT91 I-pipe timer: div: 32, freq: 3.104000 MHz, wrap: 21.113402 ms         =
+     =
+
+I-pipe, 3.104 MHz clocksource                                              =
+     =
+
+I-pipe 1.18-09: pipeline enabled.                                          =
+     =
+
+Console: colour dummy device 80x30                                         =
+     =
+
+console [ttyS0] enabled                                                    =
+     =
+
+Calibrating delay loop... 93.24 BogoMIPS (lpj=3D45696)                     =
+       =
+
+pid_max: default: 32768 minimum: 301                                       =
+     =
+
+Mount-cache hash table entries: 512                                        =
+     =
+
+CPU: Testing write buffer coherency: ok                                    =
+     =
+
+NET: Registered protocol family 16                                         =
+     =
+
+bio: create slab <bio-0> at 0                                              =
+     =
+
+Switching to clocksource ipipe_tsc                                         =
+     =
+
+NET: Registered protocol family 2                                          =
+     =
+
+IP route cache hash table entries: 1024 (order: 0, 4096 bytes)             =
+     =
+
+TCP established hash table entries: 2048 (order: 2, 16384 bytes)           =
+     =
+
+TCP bind hash table entries: 2048 (order: 1, 8192 bytes)                   =
+     =
+
+TCP: Hash tables configured (established 2048 bind 2048)                   =
+     =
+
+TCP reno registered                                                        =
+     =
+
+UDP hash table entries: 256 (order: 0, 4096 bytes)                         =
+     =
+
+UDP-Lite hash table entries: 256 (order: 0, 4096 bytes)                    =
+     =
+
+NET: Registered protocol family 1                                          =
+     =
+
+RPC: Registered udp transport module.                                      =
+     =
+
+RPC: Registered tcp transport module.                                      =
+     =
+
+RPC: Registered tcp NFSv4.1 backchannel transport module.                  =
+     =
+
+I-pipe: Domain Xenomai registered.                                         =
+     =
+
+Xenomai: hal/arm started.                                                  =
+     =
+
+Xenomai: scheduling class idle registered.                                 =
+     =
+
+Xenomai: scheduling class rt registered.                                   =
+     =
+
+Xenomai: real-time nucleus v2.6.3 (Lies and Truths) loaded.                =
+     =
+
+Xenomai: debug mode enabled.                                               =
+     =
+
+Xenomai: starting native API services.                                     =
+     =
+
+Xenomai: starting POSIX services.                                          =
+     =
+
+Xenomai: starting RTDM services.                                           =
+     =
+
+JFFS2 version 2.2. (NAND) ?=A9 2001-2006 Red Hat, Inc.                     =
+       =
+
+ROMFS MTD (C) 2007 Red Hat, Inc.                                           =
+     =
+
+msgmni has been set to 115                                                 =
+     =
+
+NET: Registered protocol family 38                                         =
+     =
+
+io scheduler noop registered (default)                                     =
+     =
+
+atmel_usart.0: ttyS0 at MMIO 0xfefff200 (irq =3D 1) is a ATMEL_SERIAL      =
+       =
+
+brd: module loaded                                                         =
+     =
+
+NAND device: Manufacturer ID: 0xec, Chip ID: 0xda (Samsung NAND 256MiB 3,3V=
+ 8-bi
+t)                                                                         =
+     =
+
+Scanning device for bad blocks                                             =
+     =
+
+Bad eraseblock 182 at 0x0000016c0000                                       =
+     =
+
+Bad eraseblock 788 at 0x000006280000                                       =
+     =
+
+Bad eraseblock 1116 at 0x000008b80000                                      =
+     =
+
+Bad eraseblock 1117 at 0x000008ba0000                                      =
+     =
+
+Bad eraseblock 1206 at 0x0000096c0000                                      =
+     =
+
+Bad eraseblock 1422 at 0x00000b1c0000                                      =
+     =
+
+Bad eraseblock 1678 at 0x00000d1c0000                                      =
+     =
+
+Bad eraseblock 1679 at 0x00000d1e0000                                      =
+     =
+
+Bad eraseblock 1812 at 0x00000e280000                                      =
+     =
+
+Bad eraseblock 1952 at 0x00000f400000                                      =
+     =
+
+Creating 3 MTD partitions on "NAND 256MiB 3,3V 8-bit":                     =
+     =
+
+0x000000000000-0x000000100000 : "U-boot"                                   =
+     =
+
+0x000000100000-0x000000300000 : "Kernel"                                   =
+     =
+
+0x000000300000-0x000010000000 : "File system"                              =
+     =
+
+atmel_spi atmel_spi.0: Atmel SPI Controller at 0xfffc8000 (irq 12)         =
+     =
+
+kicking of tasklet...                                                      =
+     =
+
+------------[ cut here ]------------                                       =
+     =
+
+WARNING: at kernel/sched.c:3826 add_preempt_count+0x68/0x104()             =
+     =
+
+Modules linked in:                                                         =
+     =
+
+Backtrace:                                                                 =
+     =
+
+[<c002ea10>] (dump_backtrace+0x0/0x110) from [<c02d7b84>] (dump_stack+0x18/=
+0x1c)
+ r6:c035110f r5:00000ef2 r4:00000000                                       =
+     =
+
+[<c02d7b6c>] (dump_stack+0x0/0x1c) from [<c003fc30>] (warn_slowpath_common+=
+0x54/
+0x6c)                                                                      =
+     =
+
+[<c003fbdc>] (warn_slowpath_common+0x0/0x6c) from [<c003fc6c>] (warn_slowpa=
+th_nu
+ll+0x24/0x28)                                                              =
+     =
+
+ r8:c03554b1 r7:00000001 r6:c03a3830 r5:c0543a60 r4:00000001               =
+     =
+
+[<c003fc48>] (warn_slowpath_null+0x0/0x28) from [<c0038824>] (add_preempt_c=
+ount+
+0x68/0x104)                                                                =
+     =
+
+[<c00387bc>] (add_preempt_count+0x0/0x104) from [<c0040998>] (vprintk+0x54/=
+0x400
+)                                                                          =
+     =
+
+ r4:00000000                                                               =
+     =
+
+[<c0040944>] (vprintk+0x0/0x400) from [<c02d7e04>] (printk+0xfc/0x1a8)     =
+     =
+
+[<c02d7d08>] (printk+0x0/0x1a8) from [<c0075c80>] (ipipe_check_context+0xa0=
+/0xd0
+)                                                                          =
+     =
+
+ r3:00001c70 r2:c03517a4 r1:c0355d9b r0:c03554b1                           =
+     =
+
+ r8:00000000 r7:eef84a10 r6:c03a3830 r5:c0543a60 r4:c0541d40               =
+     =
+
+[<c0075be0>] (ipipe_check_context+0x0/0xd0) from [<c00387d4>] (add_preempt_=
+count
++0x18/0x104)                                                               =
+     =
+
+ r6:c3900050 r5:c02453cc r4:00000001                                       =
+     =
+
+[<c00387bc>] (add_preempt_count+0x0/0x104) from [<c0025130>] (do_undefinstr=
++0x90
+/0x1c8)                                                                    =
+     =
+
+ r4:c3901548                                                               =
+     =
+
+[<c00250a0>] (do_undefinstr+0x0/0x1c8) from [<c002abd4>] (__und_svc+0x54/0x=
+80)
+-------------- next part --------------
+A non-text attachment was scrubbed...
+Name: .config
+Type: application/octet-stream
+Size: 37121 bytes
+Desc: not available
+URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20140106/1e5d5e9=
+1/attachment.obj>
