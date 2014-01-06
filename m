@@ -1,13 +1,24 @@
-Message-ID: <52DFC734.2090906@geral.com>
-Date: Wed, 22 Jan 2014 14:27:16 +0100
-From: Alexandre COFFIGNAL <acoffignal@geral.com>
+Message-ID: <52CB232C.1050009@xenomai.org>
+Date: Mon, 06 Jan 2014 22:42:04 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-References: <52DF9C5F.70005@geral.com> <52DFAA18.6080703@xenomai.org>
- <52DFAD29.4000800@geral.com> <52DFB2DE.4050501@xenomai.org>
-In-Reply-To: <52DFB2DE.4050501@xenomai.org>
-Content-Type: text/plain; charset="iso-8859-1"; format="flowed"
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [Xenomai] imx28 rtcan flexcan system freezes
+References: <CAFnctWFSGJc0Q6ebZ0zBhxRmFEwkvCYKinAEgD-xzcCbfLaPBg@mail.gmail.com>
+ <52C7CF1E.2050404@xenomai.org> <52C85088.7020501@xenomai.org>
+ <52C86093.4000609@xenomai.org>
+ <CAFnctWG1QoQ=f9JCsdxAoU25mc797fKoT9dVS_DdZFRcQ5CP3A@mail.gmail.com>
+ <52C891C1.2090007@xenomai.org>
+ <CAFnctWFb-dNtNDGf0kckejhQ+tFAj2hBw3gm5Xv8DoALi6f26g@mail.gmail.com>
+ <52C949D6.6090904@xenomai.org> <52C9B255.7030702@xenomai.org>
+ <52CA622D.806@xenomai.org>
+ <CAFnctWGs-mqukTTujenvex9Doq0DoJ_ohFEPDjd7ECYRzu6tpw@mail.gmail.com>
+ <52CB0B6A.8080405@xenomai.org>
+ <CAFnctWGxXWKL2bdnf4s-Xubw2jGe249uSXim9oqLbiSPqxeXFA@mail.gmail.com>
+ <52CB1F67.1080909@xenomai.org>
+ <CAFnctWGi6cSxDUWN5e3qSbCHFumW7T6_f9XGwWW_Nr+Drj7=Xw@mail.gmail.com>
+In-Reply-To: <CAFnctWGi6cSxDUWN5e3qSbCHFumW7T6_f9XGwWW_Nr+Drj7=Xw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] rtdm_task_init call freezes the system
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -16,33 +27,17 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
+To: Nima Nourozi <n.nourozi@gmail.com>
 Cc: xenomai@xenomai.org
 
+On 01/06/2014 10:40 PM, Nima Nourozi wrote:
+> [<c00250a0>] (do_undefinstr+0x0/0x1f0) from [<c002ac74>]
+> (__und_svc+0x54/0x80)
 
-Le 22/01/2014 13:00, Gilles Chanteperdrix a =E9crit :
-> On 01/22/2014 12:36 PM, Alexandre COFFIGNAL wrote:
->>>> +        cf->data[3]=3D((data0 >> 0)  & 0xFF) ;
->>>> +        cf->data[2]=3D((data0 >> 8)  & 0xFF) ;
->>>> +        cf->data[1]=3D((data0 >> 16)  & 0xFF) ;
->>>> +        cf->data[0]=3D((data0 >> 24)  & 0xFF) ;
->>>> +        cf->data[7]=3D((data1 >> 0)  & 0xFF) ;
->>>> +        cf->data[6]=3D((data1 >> 8)  & 0xFF) ;
->>>> +        cf->data[5]=3D((data1 >> 16)  & 0xFF) ;
->>>> +        cf->data[4]=3D((data1 >> 24)  & 0xFF) ;
->>>>
->>>> rtcan flexcan works perfectly.
->>>> is  anyone know what is the problem with first instructions ?
->>> Probably mb->data does not have the right alignment. Could you not
->>> arrange to get it properly aligned? Failing that, you should use
->>> put_unaligned instead of open coding it.
->>>
->>>
->> here structures used in flexcan driver, it seem to be aligned
->
-> I am talking about the alignment of cf->data, since obviously, that is=20
-> the one which is causing problems.
->
->
-Thank a lot, put_unaligned fix this issue if you want, i can send a path
---=20
+The problem is do_undefinstr, which usually indicates a bug whether
+intentional (using the BUG macro) or not. The rest are false positive
+due to the debug checks happening during the handling of this bug.
+
+-- 
+                                                                Gilles.
 
