@@ -1,23 +1,12 @@
-Message-ID: <52CB29F9.4020100@xenomai.org>
-Date: Mon, 06 Jan 2014 23:11:05 +0100
-From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+Message-ID: <52CB30F9.50505@zultron.com>
+Date: Mon, 06 Jan 2014 16:40:57 -0600
+From: John Morris <john@zultron.com>
 MIME-Version: 1.0
-References: <CAFnctWFSGJc0Q6ebZ0zBhxRmFEwkvCYKinAEgD-xzcCbfLaPBg@mail.gmail.com>
- <52C7CF1E.2050404@xenomai.org> <52C85088.7020501@xenomai.org>
- <52C86093.4000609@xenomai.org>
- <CAFnctWG1QoQ=f9JCsdxAoU25mc797fKoT9dVS_DdZFRcQ5CP3A@mail.gmail.com>
- <52C891C1.2090007@xenomai.org>
- <CAFnctWFb-dNtNDGf0kckejhQ+tFAj2hBw3gm5Xv8DoALi6f26g@mail.gmail.com>
- <52C949D6.6090904@xenomai.org> <52C9B255.7030702@xenomai.org>
- <52CA622D.806@xenomai.org>
- <CAFnctWGs-mqukTTujenvex9Doq0DoJ_ohFEPDjd7ECYRzu6tpw@mail.gmail.com>
- <52CB23F5.6000006@xenomai.org>
- <CAFnctWGwssFMPeLwhpJnob46rXwRDDxuj_Snoh6Cqs8cbRN2Cw@mail.gmail.com>
- <52CB261F.1050808@xenomai.org>
-In-Reply-To: <52CB261F.1050808@xenomai.org>
+References: <52CB0DA1.9080302@zultron.com> <52CB17A9.6080901@xenomai.org>
+In-Reply-To: <52CB17A9.6080901@xenomai.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Subject: Re: [Xenomai] rtdm_task_init call freezes the system
+Subject: Re: [Xenomai] Xenomai Red Hat packaging
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -26,80 +15,59 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: Nima Nourozi <n.nourozi@gmail.com>
+To: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 Cc: xenomai@xenomai.org
 
-On 01/06/2014 10:54 PM, Gilles Chanteperdrix wrote:
-> On 01/06/2014 10:52 PM, Nima Nourozi wrote:
->> On Mon, Jan 6, 2014 at 1:45 PM, Gilles Chanteperdrix <
->> gilles.chanteperdrix@xenomai.org> wrote:
+On 01/06/2014 02:52 PM, Gilles Chanteperdrix wrote:
+> On 01/06/2014 09:10 PM, John Morris wrote:
+>> Here are the packaging materials I've been using on Red Hat Enterprise
+>> Linux clones for some time now, also recently updated for Fedora.
 >>
->>> On 01/06/2014 08:10 PM, Nima Nourozi wrote:
->>>> Here is the task initialization code:
->>>>
->>>> *rtdm_printk("kicking of tasklet...\n");*
->>>> * retval = rtdm_task_init(&heartbeat_task, "spi_transfer",
->>>> xx_start_transfer, NULL, 99, 100000000 /* 100 ms */);*
->>>> * __ipipe_serial_debug("*******return value = %d\n", retval);*
->>>> * if(retval)*
->>>> * {*
->>>> * __ipipe_serial_debug("error initializing task: %i\n", retval);*
->>>> * }*
->>>>
->>>> Here is the task function:
->>>>
->>>> void xx_start_transfer(void *arg)
->>>> {
->>>>
->>>> int ret;
->>>>
->>>> while (1) {
->>>> ret = rtdm_task_wait_period();
->>>> __ipipe_serial_debug("*******return value = %d\n", ret);
->>>> gpio_set_value(LED, 1);
->>>> rtdm_task_sleep(0);
->>>> }
->>>> }
->>>
->>> I can not reproduce your problem, it works fine here. Could you post the
->>> full code of a simplified driver which triggers the problem ?
->>>
->>>
->>> --
->>>                                                                 Gilles.
->>>
+>> https://github.com/zultron/xenomai-rpm
 >>
->> Sure, please find it attached. It's just the standard atmel_spi.c with
->> task_init command added in atmel_spi_probe() function.
+>> The packaging is pretty straightforward, and follows the Debian
+>> packaging for the xenomai-devel subpackage.
 >>
-> Whatever happened to "simplified"? Please try to reduce your code to the
-> minimum code which triggers the bug. By doing so, you may even find the
-> problem yourself.
+>> A significant addition is the 'xenomai-gid-ctl' script for configuring
+>> non-root access to Xenomai services, plus sysv and systemd boot init
+>> scripts.
 > 
-For instance, following your bug report, I wrote the following module:
+> Are these specific to Red Hat, or can we put them in the set of files
+> installed by default?
 
-#include <rtdm/rtdm_driver.h>
+The 'xenomai-gid-ctl' script should work anywhere.
 
-static rtdm_task_t t;
+The 'xenomai.default' file (installed into /etc/default/xenomai) works
+with RH- & Debian-derivatives, and other distros with the /etc/default
+directory.  /etc/default/xenomai is only used to override the default
+'xenomai' group, is semi-optional, and may be relocated.
 
-void xx_start_transfer(void *arg)
-{
-	rtdm_task_wait_period();
-	rtdm_printk("!!!!!!!!!!!tick!\n");
-}
+Installing 'xenomai-gid-ctl' (and 'xenomai.default', if /etc/default
+exists) from 'make install' could be useful to the end user, since it is
+a stand-alone utility.
 
-int init(void)
-{
-	rtdm_task_init(&t, "spi_transfer", xx_start_transfer, NULL, 99, 100000000);
-	return 0;
-}
+The EL6 sysv init script needs modification to support Debian's LSB init
+system, simple for someone more familiar.
 
-module_init(init);
-MODULE_LICENSE("GPL");
+Other projects I'm familiar with often ship system init scripts in a
+e.g. 'contrib' directory, and don't include complex makefile logic to
+detect distro and install the correct init script.  Manual installation
+is left up to the end user or the packager.
 
-Which works here. As I said, you can confirm whether rtdm_task_init 
-works for your configuration by launching latency -t 1 -p 100000
+>   I'd appreciate comments on the control script's correctness
+>> and the init scripts' utility.
+> 
+> You do not need to pass --enable-x86-tsc as it is enabled by default
+> now.
 
--- 
-                                                                Gilles.
+Thanks!
+
+> As for building the doc, xenomai sources contain generated
+> documentation, so if you do not enable any option, you will have some
+> documentation installed. If you still want to generate the doxygen
+> documentation, what is the problem with --enable-dox-doc?
+
+I'll find time to revisit doc generation and report back.
+
+	John
 
