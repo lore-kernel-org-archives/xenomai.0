@@ -1,10 +1,13 @@
+Message-ID: <52CAE8D8.3070809@xenomai.org>
+Date: Mon, 06 Jan 2014 18:33:12 +0100
+From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
-Date: Mon, 6 Jan 2014 18:30:55 +0100
-Message-ID: <CAOm2F2aOBQK3mGT462JNWbensZKrWS86HoVrsPe-+qwsQsq4kg@mail.gmail.com>
-From: Simone Chiale <zimbo2288@gmail.com>
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-Subject: [Xenomai] Xenomai-help
+References: <CAKJ14NdsfwK4Vj=UpYb6p9bvFE=1ZoQb6ss--9f-WqXOXGDn2g@mail.gmail.com>
+In-Reply-To: <CAKJ14NdsfwK4Vj=UpYb6p9bvFE=1ZoQb6ss--9f-WqXOXGDn2g@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Subject: Re: [Xenomai] Command line freeze during xeno-regression-test on
+ omap4460
 List-Id: Discussions about the Xenomai project <xenomai.xenomai.org>
 List-Unsubscribe: <http://www.xenomai.org/mailman/options/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=unsubscribe>
@@ -13,34 +16,25 @@ List-Post: <mailto:xenomai@xenomai.org>
 List-Help: <mailto:xenomai-request@xenomai.org?subject=help>
 List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
  <mailto:xenomai-request@xenomai.org?subject=subscribe>
-To: xenomai@xenomai.org
+To: Andreas Glatz <andi.glatz@gmail.com>
+Cc: xenomai@xenomai.org
 
-Hi all,
-I hope this is the right place to get an help for Xenomai.
-I'm new in Xenomai and i have lot of doubts about it.
-I've patched it correctly (or i hope so) on a Pentium M 740 (1.73 GHz) 1 Gb
-RAM with last Xubuntu OS.
-I've used patch 2.6.2.1 and vanilla 3.5.7 following "Installing Xenomai on
-Ubuntu 12.04 | A novice's guide" and it seems all ok till now.
-For my studies i need to create a real-time timer that every 4 ms use a
-thread to exchange informations with other threads.
-One of my problems is that my sistem uses NTP to synchronize the system
-clock and i have seen that with standard POSIX you can use
-CLOCK_MONOTONIC_RAW to avoid NTP jumps and adjusts.
-How can i use a similar solution with native xenomai?
-Now as now i've created a rt_thread and then with rt_task_set_periodic() i
-set 4 ms period. After that with a counter and a switch i can decide what
-to do in the right time, but i don't know if this solution is ok for the
-NTP problem.
-I attach my simple example based on other found in internet.
-Thank you very much,
+On 01/06/2014 04:30 PM, Andreas Glatz wrote:
+> Hi,
+>
+> I managed to produce a kernel (v3.8.13) with xenomai 2.6.3 ipipe patch and
+> rootfs (debian wheezy) with xenomai 2.6.3 libraries for my Pandaboard ES
+> (omap4460). The simple regression test, which only calls dd during the
+> switchtest, works fine. However the regression test with the linux test
+> project (ltp-full-20130904) scripts causes some sort of system lock up.
+> After that I only can ctrl-c xeno-regression-test (i.e. switchtest), which,
+> however, doesn't help to regain console access (neigher over ethernet nor
+> serial).
 
-Simon
--------------- next part --------------
-A non-text attachment was scrubbed...
-Name: threadtimer.c
-Type: text/x-csrc
-Size: 2569 bytes
-Desc: not available
-URL: <http://www.xenomai.org/pipermail/xenomai/attachments/20140106/a5c2935=
-e/attachment.c>
+If the problem happens during the ltp test itself (notably while running 
+msgctl10 or msgctl11) this is normal, the system is completely 
+overloaded. You have to wait for some time before it returns to normal.
+
+-- 
+					    Gilles.
+
