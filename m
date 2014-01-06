@@ -1,5 +1,5 @@
-Message-ID: <52CB261F.1050808@xenomai.org>
-Date: Mon, 06 Jan 2014 22:54:39 +0100
+Message-ID: <52CB29F9.4020100@xenomai.org>
+Date: Mon, 06 Jan 2014 23:11:05 +0100
 From: Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 MIME-Version: 1.0
 References: <CAFnctWFSGJc0Q6ebZ0zBhxRmFEwkvCYKinAEgD-xzcCbfLaPBg@mail.gmail.com>
@@ -13,7 +13,8 @@ References: <CAFnctWFSGJc0Q6ebZ0zBhxRmFEwkvCYKinAEgD-xzcCbfLaPBg@mail.gmail.com>
  <CAFnctWGs-mqukTTujenvex9Doq0DoJ_ohFEPDjd7ECYRzu6tpw@mail.gmail.com>
  <52CB23F5.6000006@xenomai.org>
  <CAFnctWGwssFMPeLwhpJnob46rXwRDDxuj_Snoh6Cqs8cbRN2Cw@mail.gmail.com>
-In-Reply-To: <CAFnctWGwssFMPeLwhpJnob46rXwRDDxuj_Snoh6Cqs8cbRN2Cw@mail.gmail.com>
+ <52CB261F.1050808@xenomai.org>
+In-Reply-To: <52CB261F.1050808@xenomai.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Subject: Re: [Xenomai] rtdm_task_init call freezes the system
@@ -28,51 +29,76 @@ List-Subscribe: <http://www.xenomai.org/mailman/listinfo/xenomai>,
 To: Nima Nourozi <n.nourozi@gmail.com>
 Cc: xenomai@xenomai.org
 
-On 01/06/2014 10:52 PM, Nima Nourozi wrote:
-> On Mon, Jan 6, 2014 at 1:45 PM, Gilles Chanteperdrix <
-> gilles.chanteperdrix@xenomai.org> wrote:
+On 01/06/2014 10:54 PM, Gilles Chanteperdrix wrote:
+> On 01/06/2014 10:52 PM, Nima Nourozi wrote:
+>> On Mon, Jan 6, 2014 at 1:45 PM, Gilles Chanteperdrix <
+>> gilles.chanteperdrix@xenomai.org> wrote:
+>>
+>>> On 01/06/2014 08:10 PM, Nima Nourozi wrote:
+>>>> Here is the task initialization code:
+>>>>
+>>>> *rtdm_printk("kicking of tasklet...\n");*
+>>>> * retval = rtdm_task_init(&heartbeat_task, "spi_transfer",
+>>>> xx_start_transfer, NULL, 99, 100000000 /* 100 ms */);*
+>>>> * __ipipe_serial_debug("*******return value = %d\n", retval);*
+>>>> * if(retval)*
+>>>> * {*
+>>>> * __ipipe_serial_debug("error initializing task: %i\n", retval);*
+>>>> * }*
+>>>>
+>>>> Here is the task function:
+>>>>
+>>>> void xx_start_transfer(void *arg)
+>>>> {
+>>>>
+>>>> int ret;
+>>>>
+>>>> while (1) {
+>>>> ret = rtdm_task_wait_period();
+>>>> __ipipe_serial_debug("*******return value = %d\n", ret);
+>>>> gpio_set_value(LED, 1);
+>>>> rtdm_task_sleep(0);
+>>>> }
+>>>> }
+>>>
+>>> I can not reproduce your problem, it works fine here. Could you post the
+>>> full code of a simplified driver which triggers the problem ?
+>>>
+>>>
+>>> --
+>>>                                                                 Gilles.
+>>>
+>>
+>> Sure, please find it attached. It's just the standard atmel_spi.c with
+>> task_init command added in atmel_spi_probe() function.
+>>
+> Whatever happened to "simplified"? Please try to reduce your code to the
+> minimum code which triggers the bug. By doing so, you may even find the
+> problem yourself.
 > 
->> On 01/06/2014 08:10 PM, Nima Nourozi wrote:
->>> Here is the task initialization code:
->>>
->>> *rtdm_printk("kicking of tasklet...\n");*
->>> * retval = rtdm_task_init(&heartbeat_task, "spi_transfer",
->>> xx_start_transfer, NULL, 99, 100000000 /* 100 ms */);*
->>> * __ipipe_serial_debug("*******return value = %d\n", retval);*
->>> * if(retval)*
->>> * {*
->>> * __ipipe_serial_debug("error initializing task: %i\n", retval);*
->>> * }*
->>>
->>> Here is the task function:
->>>
->>> void xx_start_transfer(void *arg)
->>> {
->>>
->>> int ret;
->>>
->>> while (1) {
->>> ret = rtdm_task_wait_period();
->>> __ipipe_serial_debug("*******return value = %d\n", ret);
->>> gpio_set_value(LED, 1);
->>> rtdm_task_sleep(0);
->>> }
->>> }
->>
->> I can not reproduce your problem, it works fine here. Could you post the
->> full code of a simplified driver which triggers the problem ?
->>
->>
->> --
->>                                                                 Gilles.
->>
-> 
-> Sure, please find it attached. It's just the standard atmel_spi.c with
-> task_init command added in atmel_spi_probe() function.
-> 
-Whatever happened to "simplified"? Please try to reduce your code to the
-minimum code which triggers the bug. By doing so, you may even find the
-problem yourself.
+For instance, following your bug report, I wrote the following module:
+
+#include <rtdm/rtdm_driver.h>
+
+static rtdm_task_t t;
+
+void xx_start_transfer(void *arg)
+{
+	rtdm_task_wait_period();
+	rtdm_printk("!!!!!!!!!!!tick!\n");
+}
+
+int init(void)
+{
+	rtdm_task_init(&t, "spi_transfer", xx_start_transfer, NULL, 99, 100000000);
+	return 0;
+}
+
+module_init(init);
+MODULE_LICENSE("GPL");
+
+Which works here. As I said, you can confirm whether rtdm_task_init 
+works for your configuration by launching latency -t 1 -p 100000
 
 -- 
                                                                 Gilles.
